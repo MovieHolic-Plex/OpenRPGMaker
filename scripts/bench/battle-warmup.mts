@@ -44,7 +44,7 @@ for(let round=0;round<Number(process.env.BATTLE_WARMUP_ROUNDS ?? 3);round++) for
  const warmStart=(await imageEntries()).length;
  const warm=await page.evaluate(variant=>{
   const {host,battle,warm}= (window as any).bench;
-  const append=host.append.bind(host);let images=0,backgrounds=0,width=0;
+  const append=host.append.bind(host);let images=0,backgrounds=0,width=0;let skin:any=null;
   host.append=(stage:HTMLElement)=>{
     if(variant==='baseline'){stage.style.transform='none';stage.style.left='-100000px';stage.style.top='0';}
     if(variant==='contain')stage.style.contain='layout style paint';
@@ -52,9 +52,15 @@ for(let round=0;round<Number(process.env.BATTLE_WARMUP_ROUNDS ?? 3);round++) for
     if(variant==='bounded'){stage.style.right='auto';stage.style.width='640px';}
     images=stage.querySelectorAll('img').length;backgrounds=[...stage.querySelectorAll<HTMLElement>('*')].filter(e=>e.style.backgroundImage).length;
     append(stage);width=stage.getBoundingClientRect().width;
+    // What the attached warm stage resolves for the window skin: the variable on the scene and every node whose computed
+    // border-image/background names an image. Lets a mount re-download of a stylesheet image be traced from the rows.
+    const scene=stage.querySelector<HTMLElement>('.battle-scene');
+    skin={sceneVar:scene?getComputedStyle(scene).getPropertyValue('--runtime-window-skin'):null,
+      nodes:[...stage.querySelectorAll<HTMLElement>('*')].map(e=>{const s=getComputedStyle(e);return {cls:String(e.className).slice(0,60),border:s.borderImageSource,bg:s.backgroundImage};})
+        .filter(n=>/url\(/.test(n.border)||/windowskin/.test(n.bg)).slice(0,20)};
   };
   const t=performance.now();if(variant!=='cold')warm.warmBattleStyles(host,battle.snapshot());const ms=performance.now()-t;
-  host.append=append;return {ms,images,backgrounds,width};
+  host.append=append;return {ms,images,backgrounds,width,skin};
  },variant);
  await settleImages();const b=await metrics();
  const warmPhase=await phaseEntries(warmStart);

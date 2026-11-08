@@ -40,7 +40,7 @@ describe("battle style preparation in the exported player", () => {
       // mount phase downloaded (and what warm requested) so the gap can be traced from the CI log alone.
       const top = (entries: any[]): string => [...entries].sort((a, b) => (b.bytes ?? 0) - (a.bytes ?? 0)).slice(0, 12)
         .map((entry) => `${entry.bytes ?? 0}B ${String(entry.url).replace(/^https?:\/\/[^/]+/, "")}`).join("; ");
-      expect(mountBytes, `mount re-downloaded stage images: ${top(stageMount)} | warm requested (${warmBytes}B): ${top(current.phases.warm)}`)
+      expect(mountBytes, `mount re-downloaded stage images: ${top(stageMount)} | warm requested (${warmBytes}B): ${top(current.phases.warm)} | warm stage skin: ${JSON.stringify(current.warm.skin)}`)
         .toBeLessThan(Math.max(4_096, warmBytes * 0.1));
       expect([...urls(current.phases.warm), ...urls(current.phases.mount)].sort()).toEqual(urls(cold.phases.mount));
     } finally {
