@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { planReliefRamp } from "@/editor/reliefRampPlan";
+import { LONG_RAMP_RUNOUT } from "@/project/relief/cutPieces";
 import { reliefAllowsStep } from "@/project/relief/walk";
 import type { GameMap } from "@/project/types";
 
@@ -21,7 +22,7 @@ function climbs(map: GameMap, rise: number): boolean {
 }
 
 describe("높은 절벽 경사로", () => {
-  for (const [rise, rows] of [[1, 1], [2, 1], [3, 1], [4, 1], [6, 2], [8, 2]] as const) it(`${rise}단 절벽: 발치 ${rows}줄, 걸어서 오른다`, () => {
+  for (const [rise, rows] of [[1, 1], [2, LONG_RAMP_RUNOUT], [3, LONG_RAMP_RUNOUT], [4, LONG_RAMP_RUNOUT], [6, LONG_RAMP_RUNOUT], [8, LONG_RAMP_RUNOUT]] as const) it(`${rise}단 절벽: 발치 ${rows}줄, 걸어서 오른다`, () => {
     const map = cliff(rise);
     const plan = planReliefRamp(map, { x: 5, y: 6, face: "top" }, 2, false);
     expect(plan.ok).toBe(true);
@@ -31,13 +32,22 @@ describe("높은 절벽 경사로", () => {
     expect(climbs(map, rise)).toBe(true);
   });
 
-  it("그림이 없는 높이(10단)는 이유와 한 번에 고치는 길을 준다", () => {
+  // 북향 긴 비탈은 높이 제한이 없다(133d84ccb9). 그림이 단 차에 묶이는 건 돌계단(stairs, 최대 CUT_MAX_RISE=4단)뿐이다.
+  it("긴 비탈은 10단도 놓는다", () => {
     const map = cliff(10);
     const plan = planReliefRamp(map, { x: 5, y: 6, face: "top" }, 2, false);
+    expect(plan.ok).toBe(true);
+    plan.apply!(map);
+    expect(climbs(map, 10)).toBe(true);
+  });
+
+  it("그림이 없는 높이의 돌계단(10단)은 이유와 한 번에 고치는 길을 준다", () => {
+    const map = cliff(10);
+    const plan = planReliefRamp(map, { x: 5, y: 6, face: "top" }, 2, true);
     expect(plan.ok).toBe(false);
     expect(plan.fix).toBeDefined();
     plan.fix!.apply(map);
-    expect(map.relief!.levels[3 * map.width + 5]).toBe(8);
-    expect(climbs(map, 8)).toBe(true);
+    expect(map.relief!.levels[3 * map.width + 5]).toBe(4);
+    expect(climbs(map, 4)).toBe(true);
   });
 });
