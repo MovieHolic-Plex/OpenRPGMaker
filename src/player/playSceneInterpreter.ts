@@ -44,7 +44,7 @@ import { holdBlockedCommandRoute } from "@/player/playerRouteState";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { resolvePlayerBody } from "@/project/playerFootprint";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import { resourceDisplayName } from "@/player/resourceDisplay";
+import { resourceDisplayName, showAudioIndicator } from "@/player/resourceDisplay";
 import { assertNever } from "@/player/playSceneTypes";
 import { tryBoardVehicle, tryGetOffVehicle } from "@/player/playSceneVehicles";
 import type { Command, MessageWindowSettings, MoveCommand } from "@/project/types";
@@ -771,7 +771,7 @@ async function consumeBlockingStep(
       playAudioCommand(step, store.getCurrent());
       // 배너는 "지금 흐르는 곡"을 알리는 장치라 루프(BGM/BGS)만 띄운다. 원샷 SE 까지 띄우면
       // clear 경로가 stopAudio 뿐이라 문 열림 효과음 하나에 리소스 id 가 화면에 박혀 남는다.
-      if (step.loop) scene.showRuntimeOverlay("audio-indicator", resourceDisplayName(step.resourceId, step.resourceId || "오디오"));
+      if (step.loop) showAudioIndicator(scene, step.resourceId);
       scene.syncRuntimeState();
       return resumeInterpreter(interpreter);
     case "stopAudio":
