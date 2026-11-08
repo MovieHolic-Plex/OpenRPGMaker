@@ -45,7 +45,10 @@ describe("내 게임 카드 ⋯ 메뉴", () => {
   it("게임이 몇 개든 전부 보인다(20개)", () => {
     const { actions } = recorder();
     const entries = Array.from({ length: 20 }, (_, index) => ({ projectDir: `/g/${index}`, title: `G${index}` }));
-    expect(shelf(actions, entries).querySelectorAll(`[data-testid^="${HOME_TESTIDS.game}-"]`)).toHaveLength(20);
+    // 카드 ⋯ 메뉴 항목(start-world-menu-*)도 같은 접두를 쓴다(252b218eab) — 카드 단추 자체(start-world-<번호>)만 센다.
+    const cards = [...shelf(actions, entries).querySelectorAll(`[data-testid^="${HOME_TESTIDS.game}-"]`)]
+      .filter((node) => new RegExp(`^${HOME_TESTIDS.game}-\\d+$`).test(node.getAttribute("data-testid") ?? ""));
+    expect(cards).toHaveLength(20);
   });
 
   it("이름 바꾸기는 새 제목을 저장하고 대화상자를 닫는다", async () => {
