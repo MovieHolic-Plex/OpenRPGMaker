@@ -2525,3 +2525,18 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 - 전투 부활약: `itemAllowsBattle` 은 `onlyEffectiveOnDeadActors` 약도 occasion battle/always 면 허용한다. 런타임 `deadOnlyItemResolution` 이 대상 후보·자동 대상을 쓰러진 아군으로 좁힌다(살아 있는 동료에게 쓰지 못한다).
 - 여관(`player/playSceneCommerce.ts`): 숙박은 파티의 상태를 전부 푼다(RM2003 FullHeal, 엔진 `recoverAll` 과 같다). 해제 문구의 「휴식」만 보던 옛 규칙은 없어졌다.
 - EXP 레벨 바닥(`project/actorModel.ts` `floorActorExperience`): 시작·changeLevel(필드·전투)·합류·QA 체크포인트·액션 전투 적립이 EXP 를 그 레벨 누적 바닥 이상으로 맞추고, 저장 불러오기가 한 번 맞춘다(내리지 않는다).
+
+## 적 몸짓 엔진 — 그림 한 장 적도 숨 쉬고 달려들고 쓰러진다 (monster-motion-engine, 2026-11-07)
+
+오너가 `monster-motion-3ways.html` 에서 본 「엔진 몸짓」(정지 적에 숨쉬기·달려듦·피격 번쩍·쓰러짐)을 설정 하나로 만들었다.
+
+- **설정** `system.enemyStillMotion`(`src/project/enemyStillMotion.ts`): `all`(기본) · `stillOnly` · `off`. 기본값은 저장하지 않는다(`databaseRecordModel` 정규화). 편집기 「전투 화면 → 전투 연출」 카드의 「적 그림 움직임」(`db-battle-enemy-still-motion`), 조수 `set_project_settings` 의 `battle.enemyStillMotion`.
+- **허용 목록(오너 선택 A, 2026-11-08)** `ENEMY_MOTION_RECORD_IDS` = `enemy_fs_wolf`(숲늑대)·`enemy_fs_boar`(엄니멧돼지). 엔진은 적 노드의 `data-record-id` 가 이 목록에 있을 때만 움직인다 — 오너 지시 「A로 몬스터 2마리만」. 몬스터별 수치는 없고 목록은 「누가 받는가」만 정한다. 넓힐 때는 이 목록에 레코드 id 를 더한다.
+- **두 단계** `stillMotionLevel(node, image, mode)`(허용 목록 밖이면 항상 `off`):
+  - `full` — 칸이 없는 그림 한 장(업로드 단일 그림 등). 숨쉬기 1px · 예비동작 −2px · 달려듦 · 피격 반동 + 흰 번쩍(filter) · 쓰러짐 기울기 −18° + 아래부터 사라짐(opacity·clip-path).
+  - `translate` — 칸 있는 그림(`data-pixel-enemy`·`data-charset-enemy`·`data-battler-extended`·`data-battler-anim`). **정수 이동·기울기만**, 그리고 `composite: "add"` 로 **더한다**. 이 그림들은 이미 자기 이동(바깥 노드 돌진 CSS)·진동(이미지 `translate` WAAPI `vibrateStruck`)을 갖고 있어서, replace 로 걸면 그 연출을 덮는다(측정으로 확인).
+  - `off` — `stillOnly` 의 칸 그림, `off` 모드, 또는 reduced-motion.
+- **안 건드리는 것**: 칸(`background-position`), `scale`(숨쉬기 CSS), 보스 무대가 소유한 filter(`stageOwnsFilters`: `bossSink` 적, 큰 보스 무대, 등장 연출 중)에는 filter·opacity 를 얹지 않는다.
+- **접근성**: OS `prefers-reduced-motion` 또는 플레이어 설정 `reduceMenuMotion` 이면 아무것도 걸지 않는다(`prefersReducedBattleMotion`).
+- **구현**: `src/player/battleEnemyStillMotion.ts`(WAAPI, 노드당 애니메이션 하나, 표식 `data-enemy-anim`), `battleRetroMotion.ts` 가 적 비트(approach→예비동작, impact→달려듦, recover→복귀)·`retroDamage`(피격·쓰러짐)에서 부르고, `battleDom.destroy` 가 `clearEnemyMotion` 으로 정리한다.
+- **QA**: `scripts/qa/runtime/mmeng_record.mjs`(player.html 실경로, 모드·적·칸 제거 여부를 바꿔 프레임 연사 + 적별 translate/rotate/filter/scale/background-position 측정). 비교 페이지 http://mdc-server:18301/monster-motion-engine.html

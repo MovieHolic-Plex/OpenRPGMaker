@@ -2679,3 +2679,4 @@ CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영�
 - (2026-10-25, fs-battle-3) 「전투 화면」 탭 **전투 연출** 카드(`db-battle-staging-card`): `db-battle-staging-lunge`·`-cutin`·`-fx`·`-hint` → `system.battleStaging`. 적 탭 「달려드는 속도 (%)」 슬라이더(`db-field-enemy-lunge-speed`, 25~300, 100 이면 필드 삭제). 연계기 카드 안 접힌 「컷인 · 착탄 연출」(`db-combo-tint-<id>` 색, 흔들림, 느린 화면, 작은 글) → `SkillRecord.comboStaging`(`updateSkillRecord` 화이트리스트).
 - (2026-10-25) 「전투 연출」 카드에 **적 약점 표시** 고르기(`db-battle-staging-reveal-weakness`: 안 보임 · 알아낸 뒤에만(기본) · 처음부터) → `system.battleStaging.revealWeakness`.
 - (2026-11-03) 같은 카드에 **전투 흐름** 고르기(`db-battle-staging-pace`: 빠르게(기본) · 차분하게) → `system.battleStaging.pace`. 동작 규칙은 `runtime-battle.md` 「폴른 스타 전투 체감」.
+- (2026-11-07) 같은 카드에 **적 그림 움직임** 고르기(`db-battle-enemy-still-motion`: 모든 적 그림에(기본) · 정지 그림 하나뿐인 적만 · 끄기) → `system.enemyStillMotion`. 동작 규칙은 `runtime-battle.md` 「적 몸짓 엔진」.

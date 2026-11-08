@@ -15,6 +15,8 @@ import type { BattleSnapshot } from "@/battle/runtime";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import type { DamageFeedback } from "@/player/battleSequencer";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
+import { clearEnemyStillMotion, enemyDeath, enemyHit, enemyIdle, enemyLunge, enemyRecover, enemyWindup, stillMotionOptionsFor, type EnemyStillMotionOptions } from "@/player/battleEnemyStillMotion";
+import { resolveEnemyStillMotion } from "@/project/enemyStillMotion";
 import { playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
 
 type Pose = ExtendedBattlerPose;
@@ -26,6 +28,11 @@ const currentEntries = new WeakMap<HTMLElement, BattleTimelineEntrySnapshot>();
 const hitGenerations = new WeakMap<HTMLElement, number>();
 const visualKinds = new Set(["action", "damage", "healing", "miss", "capture", "stateUpkeep", "stateRecovery"]);
 const reduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+
+/** 엔진 연출이 이 적 노드에 쓸 수 있는 단계 — 설정 모드(all·stillOnly·off)와 그림 소유자로 정해진다. */
+function stillOptions(node: HTMLElement): EnemyStillMotionOptions {
+  return stillMotionOptionsFor(node, node.querySelector<HTMLElement>(".battle-enemy-image"), resolveEnemyStillMotion(store.getCurrent()));
+}
 
 /** 포즈 원장과 별개인 짧은 연출 포즈. 기존 시트/idle 스트립 처리기를 그대로 통과한다. */
 export function retroMotionPose(node: HTMLElement, pose: Pose, paint: PaintPose): Pose {
@@ -113,6 +120,7 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       beatGenerations.set(node, (beatGenerations.get(node) ?? 0) + 1);
       delete node.dataset.retroFrame;
       paint(node, node.classList.contains("defeated") ? "dead" : "idle");
+      if (node.classList.contains("battle-enemy") && stillOptions(node).level !== "off" && !node.classList.contains("defeated")) enemyIdle(node, stillOptions(node));
     }
   }
   if (beat?.targetMotion === "knockback") {
@@ -206,6 +214,7 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
   animateRetroSkillFx(field, user, beat);
   user.dataset.retroBeat = beat.kind;
   user.style.setProperty("--retro-beat-ms", `${Math.max(1, beat.durationMs)}ms`);
+  if (user.classList.contains("battle-enemy")) driveEnemyStillBeat(user, beat);
   if (user.dataset.battlerExtended === "true") animateExtendedBeat(user, beat);
   else if (user.dataset.pixelEnemy || user.dataset.pixelParty) animatePixelEnemyBeat(user, beat);
   else paint(user, "idle");
@@ -213,6 +222,13 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
 
 export function retroDamage(node: HTMLElement | null, feedback: DamageFeedback, lethal: boolean): void {
   if (!node) return;
+  if (node.classList.contains("battle-enemy") && !feedback.healing && !feedback.miss && feedback.amount > 0) {
+    const opts = stillOptions(node);
+    if (opts.level !== "off") {
+      if (lethal) enemyDeath(node, opts);
+      else enemyHit(node, opts);
+    }
+  }
   if (node.dataset.pixelEnemy || node.dataset.pixelParty) {
     if (node.dataset.pixelParty && feedback.miss) { transientPose(node, "evade", 240); return; }
     if (feedback.healing || feedback.miss || feedback.amount <= 0) return;
@@ -274,6 +290,10 @@ export function retroHitRelease(node: HTMLElement): void {
   }, 220);
 }
 
+export function clearEnemyMotion(root: HTMLElement): void {
+  clearEnemyStillMotion(root);
+}
+
 export function retroVictory(field: HTMLElement): void {
   for (const node of field.querySelectorAll<HTMLElement>(".battle-actor:not(.defeated)")) {
     if (node.dataset.retroVictory) continue;
@@ -289,6 +309,22 @@ const transientGenerations = new WeakMap<HTMLElement, number>();
 
 function extendedFrame(value: string | undefined): Pose | undefined {
   return value && Object.hasOwn(EXTENDED_POSE_FRAME, value) ? value as Pose : undefined;
+}
+
+/**
+ * 적 하나의 비트 → 엔진 몸짓. 시퀀서가 고른 비트 종류(approach·impact·recover)만 읽으므로 몬스터별 분기가 없다.
+ * 이미 칸을 고르는 그림(도트 시트·걷기 칩)은 stillOptions 가 translate 단계로 좁혀 준다.
+ */
+function driveEnemyStillBeat(node: HTMLElement, beat: BattleActionBeat): void {
+  const opts = stillOptions(node);
+  if (opts.level === "off") return;
+  const beatMs = Math.max(1, beat.durationMs);
+  const reach = Number.parseFloat(node.style.getPropertyValue("--retro-enemy-dx"));
+  const reachPx = Number.isFinite(reach) ? reach : 12;
+  if (beat.kind === "approach") enemyWindup(node, beatMs, opts);
+  else if (beat.kind === "impact") enemyLunge(node, beatMs, reachPx, opts);
+  else if (beat.kind === "recover") enemyRecover(node, beatMs, reachPx, opts);
+  else enemyIdle(node, opts);
 }
 
 /** 비트가 바뀌면 이전 비트의 콜백은 폐기한다. 장면 종료는 공용 타이머 스코프가 맡는다. */

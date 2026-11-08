@@ -32,6 +32,7 @@ import { normalizeTouchControls } from "@/project/touchControls";
 import { normalizeBattleLook } from "@/project/battleLook";
 import { normalizeBattleFanfare } from "@/project/battleFanfare";
 import { normalizeBattleStaging, normalizeComboStaging } from "@/project/battleStaging";
+import { ENEMY_STILL_MOTION_DEFAULT, normalizeEnemyStillMotion } from "@/project/enemyStillMotion";
 import { DEFAULT_MENU_SKIN_ID, isMenuSkinId } from "@/player/menuSkins/registry";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import { normalizeActionCombatConfig, normalizeActionSkillProfile, normalizeActionWeaponProfile } from "@/project/actionCombat";
@@ -354,6 +355,9 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   // 전투 연출(적 달려들기·연계기 컷인·화려함·한 줄 도움말) — 기본은 저장하지 않는다(project/battleStaging.ts).
   const battleStaging = normalizeBattleStaging(system.battleStaging);
   if (battleStaging) records.battleStaging = battleStaging;
+  // 정지 적 엔진 연출(project/enemyStillMotion.ts) — 기본(all)만 저장하지 않는다. 바꾸는 프로젝트만 값을 남긴다.
+  const enemyStillMotion = normalizeEnemyStillMotion(system.enemyStillMotion);
+  if (enemyStillMotion && enemyStillMotion !== ENEMY_STILL_MOTION_DEFAULT) records.enemyStillMotion = enemyStillMotion;
   // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
   if (isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID) records.menuUiStyle = system.menuUiStyle;
   // 대화창 스타일도 같은 계약 — 기본(glass)과 미등록 값은 저장하지 않는다.
