@@ -4,6 +4,7 @@ import { defaultAiConfig } from "@/ai/llmClient";
 import { createAiTurnRunner, type AiTurnRunnerDeps } from "@/editor/panels/aiTurnRunner";
 import type { AiRunSurface } from "@/editor/panels/aiRunSurface";
 import { agentBlueprintForMap, clearAgentBlueprint, getAgentBlueprintState, syncAgentBlueprintWithSpec } from "@/editor/agentBlueprint";
+import { setAgentGhostDraftMapProvider } from "@/editor/agentGhostPreview";
 import { appendAgentGhostPreviewForToolCall, clearAgentGhostPreview, getAgentGhostPreviewState, setAgentGhostRunningTool, replaceAgentGhostPreviewFromProjectDiff, getAgentGhostDraftMap } from "@/editor/agentGhostPreview";
 import { getPendingRegionApply, setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { createBlankProject } from "@/project/defaults";
@@ -34,6 +35,7 @@ afterEach(() => {
   getPendingRegionApply()?.discard();
   clearAgentBlueprint(); clearAgentGhostPreview(); restoreDom?.(); vi.restoreAllMocks();
   resetAiRecordDbForTest();
+  setAgentGhostDraftMapProvider(null);
 });
 
 function setup() {
