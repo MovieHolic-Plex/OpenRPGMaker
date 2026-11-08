@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { advancePursuitDoors, pursuitTarget, seesPlayer, toggleHiding } from '@/player/horrorRuntime';
+import { LOS_GRACE_MS, advancePursuitDoors, pursuitTarget, seesPlayer, toggleHiding } from '@/player/horrorRuntime';
 import { updateAutonomousNPCs } from '@/player/playSceneAutonomous';
 import { findChasePath } from '@/player/chaseAi';
 import { canMoveFootprint } from '@/project/collision';
@@ -17,7 +17,8 @@ describe('connected pursuit continuity', () => {
     f.acquire();
     f.playerAt(4, 3);
     f.scene.map.lowerTiles[23] = 1; // Occluded, but a route around the corner is open.
-    expect(pursuitTarget(f.world(), f.view(), f.mover(), 250)).toMatchObject({ x: 4, y: 2, searching: true });
+    // 시야가 끊긴 직후 LOS_GRACE_MS 동안은 주인공이 간 쪽을 따라간다(searching false, 4127a63455) — 수색은 그 뒤에 시작한다.
+    expect(pursuitTarget(f.world(), f.view(), f.mover(), LOS_GRACE_MS + 250)).toMatchObject({ x: 4, y: 2, searching: true });
     f.queue();
     expect(f.state().doors).toHaveLength(1);
     expect(f.state().doors[0]).toMatchObject({ mapId: f.b.id, x: 2, y: 2 });
@@ -40,7 +41,7 @@ describe('connected pursuit continuity', () => {
   it('chooses a reachable search target beyond an unseen arrival tile', () => {
     const f = pursuitFixture(); f.arriveUnseen();
     expect(seesPlayer(f.world(), f.view())).toBe(false);
-    const target = pursuitTarget(f.world(), f.view(), f.mover(), 16);
+    const target = pursuitTarget(f.world(), f.view(), f.mover(), LOS_GRACE_MS + 16);
     expect(target).toMatchObject({ searching: true });
     expect(target).not.toMatchObject({ x: 2, y: 2 });
     if (!target) throw new Error('Missing arrival search target');
@@ -93,7 +94,9 @@ describe('door travel uses authored cadence and current phase', () => {
     updateAutonomousNPCs(f.scene, 800); updateAutonomousNPCs(f.scene, 160);
     expect(f.mover().activeMove).toMatchObject({ toX: 3, elapsedMs: 160 });
     f.queue(); f.enter(f.b);
-    const expectedMs = (STEP_MS - 160) + 2 * (800 + STEP_MS) + 500;
+    // 쫓는 걸음은 칸 사이에 서지 않는 박자(chaseCellMs)로 미끄러진다 — 끝나지 않은 걸음의 남은 시간은 그 걸음 자신의 길이로 잰다(4127a63455).
+    const tween = f.mover().activeMove?.durationMs ?? STEP_MS;
+    const expectedMs = (tween - 160) + 2 * (800 + STEP_MS) + 500;
     advancePursuitDoors(f.world(), expectedMs - 1);
     expect(f.scene.session.eventLocations.pursuer?.mapId).toBe(f.a.id);
     advancePursuitDoors(f.world(), 1);
@@ -211,13 +214,13 @@ describe('arrival projection, waiting and save continuation', () => {
 
   it('retains an in-progress unseen search and its next movement after save-slot reload', () => {
     const f = pursuitFixture(); f.arriveUnseen();
-    const target = pursuitTarget(f.world(), f.view(), f.mover(), 250);
+    const target = pursuitTarget(f.world(), f.view(), f.mover(), LOS_GRACE_MS + 250);
     const before = structuredClone(f.state()); reloadPursuit(f);
     expect(f.state()).toEqual(before);
     expect(pursuitTarget(f.world(), f.view(), f.mover(), 0)).toEqual(target);
     updateAutonomousNPCs(f.scene, f.mover().moveIntervalMs);
     expect(f.mover().activeMove).not.toBeNull();
-    expect(f.state().searchMs).toBe(1050);
+    expect(f.state().searchMs).toBe(LOS_GRACE_MS + 250 + 800);
   });
 });
 
