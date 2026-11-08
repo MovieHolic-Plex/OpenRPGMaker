@@ -17,6 +17,8 @@ const SUPPRESSING_TEST_IDS = [
   "inn-scene",
   "chest-scene",
   "ending-screen",
+  // 숫자 입력창 뒤로 목표 안내가 비쳐 두 창이 겹쳐 보였다(d0b27522d4, 장부 hud #18·#37).
+  "runtime-input-number",
 ] as const;
 
 let restoreDom: (() => void) | null = null;
