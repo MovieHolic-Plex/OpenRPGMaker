@@ -20,6 +20,7 @@ import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { hasExtraLayers, layerTileAt, shadowAt } from "@/project/mapLayers";
 import { isObjectGenRequest } from "@/editor/workshop/objectRequest";
+import { similarNote } from "@/editor/tools/objectGenTool";
 import { runHeadlessObjectGen, type HeadlessObjectGenDeps } from "./objectGen";
 
 export { runHeadlessObjectGen, type HeadlessObjectGenDeps, type HeadlessObjectGenResult } from "./objectGen";
@@ -174,7 +175,8 @@ export async function runHeadlessToolGenerating(
   const made = await runHeadlessObjectGen(next, request, deps);
   const route = deps.route ?? null;
   const reviewer = route ? `${route.model}` : "공방 검수";
-  const routeNote = made.ok && made.receipt === "none" ? ` — 3/4 영수증 없이 구움(${reviewer} 검수만). 이 기물은 이 게임 안에서만 쓴다` : "";
+  const routeNote = (made.ok && made.receipt === "none" ? ` — 3/4 영수증 없이 구움(${reviewer} 검수만). 이 기물은 이 게임 안에서만 쓴다` : "")
+    + (request.similar?.length ? `. ${similarNote(request.similar).trim()}` : "");
   if (!made.ok) {
     return { result: { ok: false, summary: made.error, issues: [{ severity: "error", code: "object-gen-failed", message: made.error }], data: { request, route, seconds: made.seconds, calls: made.calls, candidates: made.candidates } }, project };
   }

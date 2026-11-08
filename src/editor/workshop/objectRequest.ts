@@ -33,6 +33,8 @@ export interface ObjectGenRequest {
   readonly setting?: string;
   /** 3/4 관문 종류(조언 배지용, object-gate rules.ts). 옛 요청엔 없다. */
   readonly gateKind?: string;
+  /** 이름이 비슷하기만 한(정확히 같지 않은) 이미 있는 기물 — 거부하지 않고 알려만 준다(2026-11-08). 없으면 비슷한 것도 없다. */
+  readonly similar?: readonly { readonly id: string; readonly name: string; readonly how: string }[];
   /** 크기 결정(footprint.ts decideFootprint) — 칸 통행·종류·이유. 옛 요청엔 없다. */
   readonly footprint?: {
     readonly cls: string | null;
