@@ -189,6 +189,8 @@ describe("effective audio description search", () => {
     const scores = ["ALPHA_61 BETA_92", "ALPHA_61", "BETA_92 ALPHA_61"]
       .map(query => searchResources("bgm", query, options)[0]?.score);
     // Then
-    expect(scores).toEqual([40, 20, 60]);
+    // 통째 점수(설명 전체 일치 = 태그 40)가 50 미만이면 낱말 점수 합(20+20)+모두 맞음 20 = 60 과 견줘 큰 쪽을 쓴다(queryScore).
+    // 낱말 하나만 맞으면 20, 순서를 바꿔 통째로는 안 맞는 질의는 낱말 합산 60 이다.
+    expect(scores).toEqual([60, 20, 60]);
   });
 });

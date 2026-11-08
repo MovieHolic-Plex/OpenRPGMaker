@@ -223,7 +223,11 @@ describe("audio test dialog catalog", () => {
       project.resourceProfiles = project.resourceProfiles.filter(profile => profile.assetId !== AUDIO_SEARCH_ID);
     });
     expect(audioElement(document, "button", "audio-test-play").disabled).toBe(true);
-    expect(audioElement(document, "div", "audio-test-description").textContent).toBe("");
+    // 4491618789: 고른 항목이 없으면 오른쪽 칸은 빈 칸이 아니라 안내(selectionGuide)를 보인다 — 지워진 항목의 설명은 남지 않는다.
+    const description = audioElement(document, "div", "audio-test-description");
+    expect(description.querySelector('[data-testid="audio-test-guide"]')).not.toBeNull();
+    expect(description.textContent).toContain("고른 음악 없음");
+    expect(description.textContent).not.toContain(AUDIO_SEARCH_SENTINEL);
     expect(audioElement(document, "button", "audio-test-option-off").getAttribute("aria-selected")).toBe("true");
   });
 
