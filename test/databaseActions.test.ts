@@ -148,7 +148,8 @@ describe("Database actions", () => {
     expect(item?.stateEffects).toEqual([{ stateId: "state_death", chance: 100, operation: "remove" }]);
     expect(equipment).toMatchObject({ accuracy: 37, criticalRate: 14 });
     expect(equipment?.statBonuses.attack).toBe(9999);
-    expect(equipment?.statBonuses.defense).toBe(0);
+    // 음수 능력치는 무거운 장비의 감점이라 저장 왕복에 남는다(0으로 자르지 않는다). 상한만 ±9999.
+    expect(equipment?.statBonuses.defense).toBe(-50);
     expect(enemy?.stats.maxHp).toBe(99999);
     expect(enemy?.stats.maxMp).toBe(0);
     expect(enemy?.rewards).toEqual({ exp: 0, gold: 999999, dropItemId: itemId, dropRatePercent: 100 });

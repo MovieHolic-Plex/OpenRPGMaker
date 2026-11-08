@@ -348,6 +348,7 @@ describe("DB write tools", () => {
     const result = runTool(ctx, "upsert_enemy", { enemy: copy }, { dryRun: false });
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
     expect(ctx.project.database.enemies.some((entry) => entry.id === "enemy_copy_test")).toBe(true);
-    expect(JSON.stringify(result.warnings ?? result.issues ?? [])).toMatch(/graphicHue/);
+    // 쓰기 도구의 비차단 경고는 diff.warnings 로 나온다(toolRunner: diff.warnings.push(...exec.warnings)).
+    expect(JSON.stringify([...(result.diff?.warnings ?? []), ...(result.warnings ?? []), ...(result.issues ?? [])])).toMatch(/graphicHue/);
   });
 });

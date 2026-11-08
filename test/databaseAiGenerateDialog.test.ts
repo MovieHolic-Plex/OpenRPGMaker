@@ -196,7 +196,7 @@ describe("openDatabaseAiGenerateDialog", () => {
     const overlay = openDatabaseAiGenerateDialog({
       kind: "item",
       rerender: () => undefined,
-      deps: { loadConfig: () => ({ ...config(), providerId: "openai-codex" }) },
+      deps: { loadConfig: () => ({ ...config(), providerId: "openai-codex", imageProviderId: "google-antigravity" }) },
     });
     expect(overlay.querySelector("[data-testid='db-ai-generate-provider-notice']")?.textContent).toContain("google-antigravity");
   });
