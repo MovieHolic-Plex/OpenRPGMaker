@@ -761,9 +761,9 @@ describe("compile_puzzle", () => {
 
     const blockedPlateCtx = { project: startOnRetiredCombinedTown(createBlankProject()) };
     const blockedPlateMap = startMap(blockedPlateCtx.project);
-    // 자동 조정은 반경 5칸까지 찾는다(nearestPassableCell, #2894) — (2,2) 둘레 반경 5칸을 모두 물로 막는다.
-    for (let y = 0; y <= 7; y += 1) {
-      for (let x = 0; x <= 7; x += 1) blockedPlateMap.lowerTiles[x + y * blockedPlateMap.width] = TILE.WATER;
+    // 자동 조정은 입구에서 걸어 닿는 칸을 반경 10칸까지 찾는다(nearestPassableCell, b65ac788a4 #4050) — 닿을 칸이 아예 남지 않게 맵 전체를 물로 막는다.
+    for (let y = 0; y < blockedPlateMap.height; y += 1) {
+      for (let x = 0; x < blockedPlateMap.width; x += 1) blockedPlateMap.lowerTiles[x + y * blockedPlateMap.width] = TILE.WATER;
     }
     const blockedPlate = runTool(blockedPlateCtx, "compile_puzzle", {
       mapId: blockedPlateMap.id,

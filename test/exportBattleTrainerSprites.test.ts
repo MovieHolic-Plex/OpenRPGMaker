@@ -8,6 +8,7 @@ import { describe, expect, it } from "vitest";
 import spriteFiles from "@/assets/battleTrainerSpriteFiles.json";
 import { createBlankProject } from "@/project/defaults";
 import { collectWebExportAssets, trainerSpriteImagePaths } from "@/project/webExportAssets";
+import { requiredRuntimeAssetPaths } from "@/project/webExportRuntimeAssets";
 
 const PUBLIC_ROOT = join(process.cwd(), "public");
 const files = spriteFiles as Readonly<Record<string, readonly string[]>>;
@@ -68,10 +69,13 @@ describe("trainer battle sprite export dependencies", () => {
     project.database.troops = project.database.troops.map((troop) => ({ ...troop, trainerSprite: undefined }));
 
     // When exported
+    const declared = requiredRuntimeAssetPaths(project);
     const paths = collectWebExportAssets(project).map((asset) => asset.zipPath).filter((path) => path.startsWith("assets/battle-trainers/"));
 
-    // Then nothing from that folder ships
-    expect(paths).toEqual([]);
+    // Then the sprite collector adds nothing: only the always-shipped default roles that src/player/runtimeAssets.json
+    // declares (since 15f8ce5de1, the player prefetches them) are present, and no troop-derived path is.
+    expect(trainerSpriteImagePaths(project)).toEqual([]);
+    expect(paths.filter((path) => !declared.has(path))).toEqual([]);
   });
 
   it("ignores a role with no committed art instead of emitting a broken path", () => {
