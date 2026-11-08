@@ -1,5 +1,7 @@
+// @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
-import { isQuietTool, liveStatusHeadline, plannedStepsFromTodoArgs } from "@/editor/panels/aiLiveStatus";
+import { createAiLiveStatus, isQuietTool, liveStatusHeadline, plannedStepsFromTodoArgs } from "@/editor/panels/aiLiveStatus";
+import type { Project } from "@/project/types";
 
 describe("liveStatusHeadline", () => {
   it("names the map, the action and the step count when a plan exists", () => {
@@ -27,6 +29,26 @@ describe("plannedStepsFromTodoArgs", () => {
   it("reads append and ignores other operations", () => {
     expect(plannedStepsFromTodoArgs({ op: "append", phase: "마무리", items: [{ content: "NPC 두기" }] })).toEqual({ op: "append", items: ["NPC 두기"] });
     expect(plannedStepsFromTodoArgs({ op: "done", task: "t1" })).toBeNull();
+  });
+});
+
+describe("createAiLiveStatus finish", () => {
+  const base = { maps: {} } as unknown as Project;
+
+  it("hides the line when a turn ends without any step (connection failure, refused start)", () => {
+    const status = createAiLiveStatus({ baseProject: base });
+    expect(status.root.hidden).toBe(false);
+    status.finish();
+    expect(status.root.hidden).toBe(true);
+  });
+
+  it("keeps the finished summary when the turn did work", () => {
+    const status = createAiLiveStatus({ baseProject: base });
+    status.event({ type: "tool_start", id: "t1", name: "build_house", args: {} });
+    status.event({ type: "tool_end", id: "t1", name: "build_house", ok: true, summary: "" });
+    status.finish();
+    expect(status.root.hidden).toBe(false);
+    expect(status.root.textContent).toContain("1단계를 마쳤어요");
   });
 });
 
