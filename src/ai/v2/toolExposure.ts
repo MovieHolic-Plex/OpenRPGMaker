@@ -21,9 +21,15 @@ import { leanPromptFor, PLACE_BUILD_VERBS } from "./prompt";
 /**
  * 게임 요청에 처음부터 싣는 v1 도구 — 기록된 실행(위)에서 모델이 직접 부른 세션 수가 terra ≥10 또는 opus ≥20 인 것, 또는 그에 준하는 싼 읽기 도구.
  * 이 요청의 묶음에 든 것만 싣는다(교집합). 측정: scripts/qa/assistant-v2/toolExposureReplay.mts.
- * 뺀 것의 예: upsert_item·upsert_enemy(terra 4세션) · set_title_screen(terra 1) · set_map_properties(5) · place_npc(0) · compile_puzzle(0).
+ * 뺀 것의 예: upsert_enemy(terra 4세션) · set_title_screen(terra 1) · set_map_properties(5).
+ * 2026-11-08 실험 1(terra-game-strategy B7): 보상·인물 도구를 처음부터 싣는다 — 기록에서 호출 0이었던 것은 «안 쓰는 부품»이 아니라
+ * «쓸 기회가 없던 부품»이었다(terra-fun-game 부품 채점: reward high 0.75 · medium 0.4, 상점·골드는 전 판 0회). upsert_item·place_npc 는
+ * 게임 묶음에 원래 있었고, compile_puzzle 은 묶음에 없다가 같이 넣었다(V2_GAME_TOOLS).
  */
 export const V2_UP_FRONT: ReadonlySet<string> = new Set([
+  // 보상·인물·퍼즐의 «쓸 곳»을 처음부터: 얻은 아이템이 상점 재고·가격·페이지 조건에 다시 읽히고, 퍼즐이 잠금을 열고,
+  // 사람이 그 자리에 서야 보상이 보인다. 셋 다 게임 묶음에도 있어야 실제로 실린다(offered ∩ up-front).
+  "upsert_item", "place_npc", "compile_puzzle",
   "get_event", "find_events", "get_database_records", "get_story_state", "find_switch_usage", "list_endings", "read_npc_layout",
   "list_npc_graphics", "list_resources", "list_spatial_designs", "stamp_object", "find_empty_ground",
   "move_event", "remove_event", "patch_event_page", "add_event_page", "upsert_event", "run_scene_test",
