@@ -10,6 +10,7 @@
 import { describe, expect, it } from "vitest";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { renderCommandList } from "@/editor/panels/eventEditor/commandList";
+import { shortArmLabel } from "@/editor/panels/eventEditor/scriptLines";
 import { renderStoryboard } from "@/editor/panels/eventEditor/storyboardView";
 import { branchesOf, simulatePageCommands } from "@/editor/panels/eventEditor/previewSimulation";
 import { commandBranches } from "@/editor/tools/commandTraversal";
@@ -98,9 +99,11 @@ describe("분기 라벨은 뷰마다 갈리지 않는다", () => {
 
     // 플로우 어댑터
     expect(branchesOf(fork).map((branch) => branch.label)).toEqual(canonical);
-    // 목록 뷰
+    // 목록 뷰 — d885889d6e 부터 목록만 정본 라벨을 짧게 말한다(「그러면」/「아니면」).
+    // 그래도 정본 라벨에서 한 함수(shortArmLabel)로 파생되므로 뷰마다 갈리지 않는다.
     const list = textOf(listHostFor([fork]));
-    for (const label of canonical) expect(list).toContain(label);
+    expect(canonical.map(shortArmLabel)).toEqual(["그러면", "아니면"]);
+    for (const label of canonical) expect(list).toContain(shortArmLabel(label));
     // 스토리 뷰
     const storyboard = textOf(renderStoryboard([fork]));
     for (const label of canonical) expect(storyboard).toContain(label);
