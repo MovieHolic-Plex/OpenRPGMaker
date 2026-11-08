@@ -809,6 +809,8 @@ function syncPixelLoot(panel: HTMLElement, snapshot: BattleSnapshot): void {
       // 드롭이 글자 한 줄뿐이라 잡힌 것을 못 알아챘다(오너 2026-11-08). 자료집 아이콘을 이름 앞에 붙인다.
       const icon = lootIcon(entry[0]);
       if (icon) row.prepend(icon);
+      // 두 칸 줄에 아이콘이 들어가면 이름이 「그을…」로 잘렸다(1440 실측). 한 개면 「획득」 채움 글을 숨기고 이름에 자리를 준다.
+      if (entry[1] === 1) row.dataset.lootSingle = "true";
     }
     if (owned) row.append(el("span", { class: "battle-result-reward-owned", children: owned }));
   }
