@@ -133,7 +133,8 @@ describe("renderPlayer run controls", () => {
       const pending = new Promise<FakeGame>(resolve => { complete = resolve; });
       modeMocks.startPlayGame.mockReturnValue(pending);
       const booted = nextBoot();
-      render({ autoStartRun: true });
+      // 새 프로젝트는 기본 오프닝이 켜져 있어 엔진 기동이 첫 컷 뒤(최대 4초)로 밀린다 — 부팅 진단이 어느 세션 소유인지를 보는 시험이라 오프닝은 건너뛴다.
+      render({ autoStartRun: true, shouldPlayOpening: () => false });
       const callbacks: StartPlayGameOptions = modeMocks.startPlayGame.mock.calls[0]![2];
       if (transition !== "same-session") { diagnostics.clear(); diagnostics.start(true, ["asset"]); }
 
@@ -158,7 +159,7 @@ describe("renderPlayer run controls", () => {
       modeMocks.startPlayGame.mockReturnValue(new Promise((_resolve, reject) => { fail = reject; }));
       let failureDelivered!: () => void;
       const delivered = new Promise<void>(resolve => { failureDelivered = resolve; });
-      render({ autoStartRun: true, diagnosticSink: payload => {
+      render({ autoStartRun: true, shouldPlayOpening: () => false, diagnosticSink: payload => {
         if (payload.stage === "error") failureDelivered();
       } });
       if (transition !== "same-session") { diagnostics.clear(); diagnostics.start(true, ["asset"]); }
