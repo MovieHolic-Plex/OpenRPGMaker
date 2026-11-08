@@ -10,6 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { chromium } from "playwright-core";
 import sharp from "sharp";
+import { hiddenReason } from "../lib/hidden.mjs";
 
 const job = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
 const OUT = process.argv[3];
@@ -60,6 +61,8 @@ await page.addInitScript((b) => {
   try { Object.defineProperty(window, "__OPENRPG_BOOT__", { value: b, writable: false, configurable: false, enumerable: true }); }
   catch { window.__OPENRPG_BOOT__ = b; }
 }, boot);
+// The overflow measurement asks the same rule the tests pin (lib/hidden.mjs); an init script is not subject to the page CSP.
+await page.addInitScript({ content: `window.__qaHiddenReason = ${hiddenReason.toString()};` });
 
 const sleep = (ms) => page.waitForTimeout(ms);
 const visible = (sel) => page.locator(sel).first().isVisible().catch(() => false);
@@ -100,9 +103,14 @@ async function domDump() {
       const r = el.getBoundingClientRect();
       if (r.width < 2 || r.height < 2) continue;
       const cs = getComputedStyle(el);
-      if (cs.visibility === "hidden" || Number(cs.opacity) === 0) continue;
-      // Screen-reader-only text (clip / 1px box) is not drawn for players.
-      if ((cs.clip && cs.clip !== "auto") || (cs.clipPath && cs.clipPath !== "none") || /sr-only|visually-hidden/.test(el.className)) continue;
+      // Text the player cannot see (display:none / visually hidden on itself or an ancestor) is not measured.
+      const chain = [];
+      for (let n = el; n && n !== app.parentElement; n = n.parentElement) {
+        const s = n === el ? cs : getComputedStyle(n);
+        const box = n.getBoundingClientRect();
+        chain.push({ cls: typeof n.className === "string" ? n.className : "", display: s.display, visibility: s.visibility, opacity: s.opacity, clip: s.clip, clipPath: s.clipPath, overflow: s.overflow + " " + s.overflowX + " " + s.overflowY, w: box.width, h: box.height });
+      }
+      if (window.__qaHiddenReason(chain)) continue;
       // An item scrolled out of a scrolling list is not "off screen": the list is the viewport for it.
       let scroller = el.parentElement;
       while (scroller && scroller !== app) {
