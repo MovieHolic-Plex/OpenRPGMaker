@@ -302,6 +302,38 @@ export function decideObjectGateBoth(kind: ObjectGateKind, view34Answers: Array<
   return { state, pass: state === "pass", view34, style, reasons: [...view34.reasons.map(r => `3/4: ${r}`), ...style.reasons.map(r => `화풍: ${r}`)] };
 }
 
+/**
+ * 공방 단계 완화 판정(2026-11-08 tiles-relax, 오너 「검수를 완화해라」 — 제거가 아니다). 같은 판정자 답을 더 너그럽게 읽는다:
+ * - 3/4: 판정자 과반이 three_quarter 로 읽고 앞면이 있으면(아이소 옆면 과반 아님) 통과. 윗면 행 수 하한·기둥 머리 타원 판·윗끝 세로 면·모든 부분 윗면
+ *   규칙은 묻지 않는다(기둥·제단·석상은 받침 윗면이 따로 없어도 된다). 과반이 정면 입면·평면도로 읽으면 여전히 불합격.
+ * - 화풍: 버들항 수준 비교는 번들 출구의 일이다. 공방 단계는 판정자 과반이 「질감 없음(flat) + 칸 정보량 훨씬 낮음」이라고 본 덬어리만 떨어뜨린다
+ *   (근흑 윤곽·명암 단계·판정자 취향 fail 은 이유로만 남는다). 읽힘은 공방 검수(JUDGE quality)가 본다.
+ * 번들·공용 DB·스토어 출구는 decideObjectGateBoth 그대로다 — 이 판정은 공방 그림(그 게임에만 들어감)에만 쓴다.
+ */
+export const OBJECT_GATE_WORKSHOP_RELAX_VERSION = 1;
+export function decideWorkshopRelaxed(kind: ObjectGateKind, view34Answers: Array<ObjectGateJudgeAnswer | null>, styleAnswers: Array<ObjectGateStyleAnswer | null>): ObjectGateBothDecision {
+  const rule = OBJECT_GATE_KINDS[kind] ?? OBJECT_GATE_KINDS.other;
+  const n = view34Answers.length;
+  let view34: ObjectGateDecision;
+  if (!n || rule.exempt || rule.humanOnly) view34 = decideObjectGate(kind, view34Answers);
+  else {
+    const read = view34Answers.filter((a): a is ObjectGateJudgeAnswer => !!a && typeof a.reads_as === "string");
+    const threeQ = read.filter(a => a.reads_as === "three_quarter" && (a.front_face_rows ?? 0) >= OBJECT_GATE_MIN_FRONT_ROWS).length;
+    const notQ = n - read.length + read.filter(a => ["front_elevation", "side_profile_no_top", "top_down_slab"].includes(String(a.reads_as))).length;
+    const side = read.filter(a => a.side_face_visible === true).length;
+    const kindBad = read.filter(a => a.kind_matches === false).length;
+    if (kindBad > n / 2) view34 = decision("fail", ["종류 불일치"]);
+    else if (threeQ > n / 2 && !(kind !== "structure" && side > n / 2)) view34 = decision("pass", []);
+    else if (notQ > n / 2) view34 = decision("fail", [`판정자 과반이 3/4 가 아니라고 읽음(${read.filter(a => a.reads_as !== "three_quarter").map(a => a.reads_as).join(", ")})`]);
+    else view34 = decision("refer", [`공방 완화 판정에서도 갈림(3/4 ${threeQ}/${n}, 아님 ${notQ}/${n})`]);
+  }
+  const sn = styleAnswers.length;
+  const blob = styleAnswers.filter(s => !s || (s.texture === "flat" && s.density === "much_lower")).length;
+  const style = !sn ? decision("fail", ["판정 없음"]) : blob * 2 > sn ? decision("fail", [`화풍: 질감 없고 칸 정보량이 훨씬 낮다는 판정 ${blob}/${sn} — 덬어리 그림`]) : decision("pass", []);
+  const state = combineObjectGateStates(view34.state, style.state);
+  return { state, pass: state === "pass", view34, style, reasons: [...view34.reasons.map(r => `3/4: ${r}`), ...style.reasons.map(r => `화풍: ${r}`)] };
+}
+
 /** 판정 프로필 — 이 값이 바뀌면 프로필 해시가 바뀌고, 새 프로필은 보정을 다시 통과해야 쓸 수 있다. */
 export const OBJECT_GATE_PROFILE = {
   rulesVersion: OBJECT_GATE_RULES_VERSION,
