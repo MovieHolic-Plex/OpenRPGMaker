@@ -82,6 +82,7 @@ describe("gift and present-item dialog accessibility", () => {
       ],
       settings: DEFAULT_MESSAGE_WINDOW_SETTINGS,
     });
+    // item_knife 는 자료집에 없어 id 가 그대로 이름이 되고, item_letter 는 기본 자료집의 「배달 편지」로 풀린다.
     const dialog = document.querySelector<HTMLElement>("[data-testid='present-item-scene']");
     const title = document.getElementById("runtime-present-title");
     expect(dialog?.getAttribute("role")).toBe("dialog");
@@ -90,14 +91,14 @@ describe("gift and present-item dialog accessibility", () => {
     expect(title?.textContent).toBe("증거를 제시하라");
     expect(document.querySelector("[data-testid='present-item-list']")?.getAttribute("aria-label")).toBe("보여줄 물건");
     expect(document.querySelector("[data-testid='present-item-item_knife']")?.getAttribute("aria-label")).toBe("item_knife 1개");
-    expect(document.querySelector("[data-testid='present-item-item_letter']")?.getAttribute("aria-label")).toBe("item_letter 2개");
+    expect(document.querySelector("[data-testid='present-item-item_letter']")?.getAttribute("aria-label")).toBe("배달 편지 2개");
 
     const status = document.querySelector<HTMLElement>("[data-testid='present-item-announcement']");
     expect(status?.textContent).toBe("item_knife 1개");
     expect(document.activeElement).toBe(dialog);
 
     dialog?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
-    expect(status?.textContent).toBe("item_letter 2개");
+    expect(status?.textContent).toBe("배달 편지 2개");
 
     document.querySelector<HTMLButtonElement>("[data-testid='present-item-cancel']")?.click();
     await expect(pending).resolves.toBeUndefined();
