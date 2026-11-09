@@ -1,0 +1,6 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell shows the same pale grey-blue hooded ghost with the gaping dark mouth and the dark navy outline, at a consistent scale. The art is crisp with no fringe or specks. The idle cells change slightly in height and lean, the attack (sheet cell 6) is a clear horizontal lunge that looks nothing like the hit cell's upright, head-thrown-back recoil, and dead is a flattened heap on the ground; the weakest point is that idle_b and idle_c differ only slightly."
+}

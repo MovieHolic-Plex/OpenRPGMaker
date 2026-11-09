@@ -1,0 +1,155 @@
+{
+ "golem-clay": {
+  "resourceId": "generated-enemy-golem-clay",
+  "name": "달아오른 숯덩이 골렘",
+  "cell": 128,
+  "try": 2,
+  "gifSha": "4ce5a6ac00e16812fdf089b4df0b7f394aecf5a8764e7fa73fffc718c935cff1",
+  "sheetSha": "863b1cf9534fd7e9142e3a17082ebf65ab95fffc3933a9ad05446b90393bae28",
+  "idleShiftPx": {
+   "01": 5,
+   "12": 8,
+   "02": 13
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "golem-crystal": {
+  "resourceId": "generated-enemy-golem-crystal",
+  "name": "별지기의 수호상",
+  "cell": 128,
+  "try": 1,
+  "gifSha": "bc2e7cf2405e15d47e7036ccf687ce17e9a206e85248404a237eefb8218234e7",
+  "sheetSha": "077bd5a21d5671fc73c5d04c28540e8dd1b6e67b62fe0ed2f63950a7c880deca",
+  "idleShiftPx": {
+   "01": 3,
+   "12": 9,
+   "02": 11
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "ghost-pale": {
+  "resourceId": "generated-enemy-ghost-pale",
+  "name": "창백한 유령",
+  "cell": 96,
+  "try": 1,
+  "gifSha": "15c4f5551d29c871b1dca4d60adaeb6cbd87baf6dbc2b9a03b3a7fe5a4bd1021",
+  "sheetSha": "0e17d4cb53b5f9dd77fd9dcba328dc23f4ba892a9119e3cc0db71fced223a0c9",
+  "idleShiftPx": {
+   "01": 3,
+   "12": 4,
+   "02": 7
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "hound-hell": {
+  "resourceId": "generated-enemy-hound-hell",
+  "name": "굶은 들개",
+  "cell": 96,
+  "try": 1,
+  "gifSha": "62a939a225819451084f5f920239a670dcc6a710113a47ee16d5b9db4eb50e59",
+  "sheetSha": "a2e64dfdc3ecfed7b6be8df0e5b52b474aca00155f032c02876da5d72826accd",
+  "idleShiftPx": {
+   "01": 5,
+   "12": 12,
+   "02": 17
+  },
+  "opus": {
+   "score": 3.5,
+   "pass": true
+  }
+ },
+ "boar-tusk": {
+  "resourceId": "generated-enemy-boar-tusk",
+  "name": "엄니멧돼지",
+  "cell": 96,
+  "try": 1,
+  "gifSha": "8a2c215fdfd25fba3e4cb29b6849bad267d8471a8042be4fee69f08bb70ed60c",
+  "sheetSha": "13c4d4c17d4de88b6e705dd1f7f44d144b3e79ab5d006ba928e50289e211e826",
+  "idleShiftPx": {
+   "01": 3,
+   "12": 5,
+   "02": 8
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "wolf-grey": {
+  "resourceId": "generated-enemy-wolf-grey",
+  "name": "숲늑대",
+  "cell": 96,
+  "try": 2,
+  "gifSha": "17e3e673dd62dd175b3c8735056cc3174f41653c9fc99e84d6ec5980b28de9f8",
+  "sheetSha": "748594bae0318c4bebb51b9db17371f1d338a4be13062f0b74a246d85a12c9b0",
+  "idleShiftPx": {
+   "01": 4,
+   "12": 3,
+   "02": 7
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "crab-rock": {
+  "resourceId": "generated-enemy-crab-rock",
+  "name": "바위게",
+  "cell": 96,
+  "try": 1,
+  "gifSha": "bf09931c814f7e5e45d1127031d1bee580345831d50e5cf1d08aa146a9a31a38",
+  "sheetSha": "2e3547bb0680a24f0ab0d06ca8e594faf523b187c5af2228351eb36c71c72d17",
+  "idleShiftPx": {
+   "01": 4,
+   "12": 8,
+   "02": 12
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "eel-electric": {
+  "resourceId": "generated-enemy-eel-electric",
+  "name": "전기뱀장어",
+  "cell": 96,
+  "try": 1,
+  "gifSha": "9ed29cf712aa45ceaef66a42c3823f1df59b42c8d7f93317717975f1a2ef7101",
+  "sheetSha": "2751270dd21f791190d2a318e6742dcce6fbfb4edbe2901d16ff2d27f642d6de",
+  "idleShiftPx": {
+   "01": 3,
+   "12": 4,
+   "02": 7
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "plant-carnivore": {
+  "resourceId": "generated-enemy-plant-carnivore",
+  "name": "가시식충초",
+  "cell": 96,
+  "try": 1,
+  "gifSha": "60b45d2d056f7df252c0de0a579e5532d0cc0781882dfc763edf3d0fe11e798e",
+  "sheetSha": "8778cef462f08f4f587f8f334ccb2ec116e7a2a5bf94a94da1008f8bb9a15909",
+  "idleShiftPx": {
+   "01": 3,
+   "12": 5,
+   "02": 8
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ }
+}
