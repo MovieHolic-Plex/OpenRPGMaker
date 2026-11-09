@@ -48,8 +48,9 @@ export const WELL_SHAFT_LIGHTS = [
   { id: "l1", at: { x: 7, y: 4 }, radius: 4, intensity: 0.8, color: "#ffb860", flicker: true },
   // 우물 계단 — 벽 속으로 오르는 단이 위로 갈수록 어두워지는 게 보이려면 계단 자체에 빛이 있어야 한다(ambient 0.55 만으로는 검은 판).
   // 문 아치 옆 벽 횃불(그림 속 횃불 자리)과 아래 착지를 비추는 낮은 불빛 둘.
-  { id: "st_top", at: { x: 3, y: 1 }, radius: 2.5, intensity: 0.85, color: "#ffb860", flicker: true },
-  { id: "st_foot", at: { x: 4, y: 3 }, radius: 3, intensity: 0.7, color: "#ffc890" },
+  // 위가 밝으면 오르는 계단이 아니라 패인 벽으로 읽힌다(리드 실측) — 횃불은 문 아치 옆에서 작게, 빛은 아래 단부터 착지로 세게.
+  { id: "st_top", at: { x: 3, y: 1 }, radius: 1.2, intensity: 0.45, color: "#ffb860", flicker: true },
+  { id: "st_foot", at: { x: 4, y: 4 }, radius: 3.2, intensity: 0.95, color: "#ffd9a8" },
   { id: "c1", at: { x: 19, y: 4 }, radius: 4, intensity: 0.75, color: "#ffb860", flicker: true },
   { id: "c2", at: { x: 36, y: 4 }, radius: 4, intensity: 0.75, color: "#ffb860", flicker: true },
   { id: "cw", at: { x: 28, y: 9 }, radius: 4, intensity: 0.45, color: "#6fc8d8" },
