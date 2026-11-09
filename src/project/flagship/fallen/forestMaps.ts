@@ -496,7 +496,7 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
   const entryOf = (mapId: string, at: Cell): Cell => inward(project.maps[mapId]!, at).cell;
   const foes = (mapId: string): string[] => [...tables[mapId]!].sort((a, b) => b.weight - a.weight).map((e) => e.troopId);
   roamers(project, M.edge, entryOf(M.edge, edgeSouth), foes(M.edge), [0.45, 0.8]);
-  roamers(project, M.stream, entryOf(M.stream, STREAM_SPEC.exits[0]!), foes(M.stream), [0.35, 0.7]);
+  roamers(project, M.stream, entryOf(M.stream, STREAM_SPEC.exits[0]!), foes(M.stream), [0.35, 0.55, 0.75]); // 셋째 자리 = 등불해파리 부대(무게 순 셋째)
   roamers(project, M.thicket, entryOf(M.thicket, THICKET_SPEC.exits[0]!), foes(M.thicket), [0.35, 0.75]);
   roamers(project, M.glade, entryOf(M.glade, GLADE_SPEC.exits[0]!), foes(M.glade), [0.45, 0.8]);
   roamers(project, ids.forest, entryOf(ids.forest, deepSouth), foes(ids.forest), [0.4]);
