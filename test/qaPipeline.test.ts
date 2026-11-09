@@ -96,6 +96,19 @@ describe("qa pipeline planner", () => {
     if (broke) expect(broke.checkpoint.gold).toBe(0);
   });
 
+  // 왜: 이벤트 작업이 주인공을 이벤트 아래 칸에 무조건 세워, 아래가 지붕이면 지붕 위에 선 그림이 결함 후보가 됐다
+  // (폴른 스타 1.39 광역 QA a1 — 실제 게임은 그 칸에 서지 않는다).
+  it("이벤트 작업은 위층 타일(지붕)이 있는 칸에 주인공을 세우지 않는다", () => {
+    const project = tinyProject();
+    const m1 = project.maps.m1 as { width: number; height: number; upperTiles?: number[] };
+    m1.upperTiles = Array.from({ length: m1.width * m1.height }, () => -1);
+    m1.upperTiles[4 * m1.width + 3] = 22955; // npc (3,3) 바로 아래 칸이 지붕
+    const cp = planCoverage(project, { game: "g" }).find((job) => job.target?.eventId === "npc")!.checkpoint;
+    expect({ x: cp.x, y: cp.y, facing: cp.facing }).toEqual({ x: 3, y: 2, facing: "down" });
+    const plain = planCoverage(tinyProject(), { game: "g" }).find((job) => job.target?.eventId === "npc")!.checkpoint;
+    expect({ x: plain.x, y: plain.y }).toEqual({ x: 3, y: 4 });
+  });
+
   it("정적 검사: 맵 밖 이동·없는 상점 품목·끝나지 않는 반복·못 가는 맵", () => {
     const checks = staticLint(tinyProject(), { game: "g" }).map((f) => `${f.check}@${f.where}`);
     expect(checks).toContain("bad-transfer@m1 npc");

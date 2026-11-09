@@ -90,8 +90,20 @@ function pageCheckpointState(page) {
 }
 
 function standTile(map, event) {
-  // Stand below the event when inside the map, else above; the checkpoint runs the event directly, so this only
-  // decides what the camera frames.
+  // Stand next to the event (below, above, left, right); the checkpoint runs the event directly, so this only
+  // decides what the camera frames — but the hero is drawn there. Prefer a cell without an upper-layer tile (roof, wall
+  // top, prop — some upper tiles are walkable grass details, so this is a preference, not passability): standing on one drew the hero on a house roof (폴른 스타 1.39 광역 QA a1, fs_hub 오프닝 컷신 (28,37) 아래 칸이 지붕).
+  const n = map.width * map.height;
+  const free = (x, y) => {
+    if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+    const i = y * map.width + x;
+    if (i >= n) return false;
+    if ((map.upperTiles?.[i] ?? -1) >= 0 || (map.upperOverlayTiles?.[i] ?? -1) >= 0) return false;
+    return !(map.events ?? []).some((other) => other !== event && other.x === x && other.y === y);
+  };
+  for (const [dx, dy, facing] of [[0, 1, "up"], [0, -1, "down"], [-1, 0, "right"], [1, 0, "left"]]) {
+    if (free(event.x + dx, event.y + dy)) return { x: event.x + dx, y: event.y + dy, facing };
+  }
   const y = event.y + 1 < map.height ? event.y + 1 : Math.max(0, event.y - 1);
   return { x: event.x, y, facing: y > event.y ? "up" : "down" };
 }
