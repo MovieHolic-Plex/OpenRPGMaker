@@ -93,16 +93,39 @@ const fitSimCache = new WeakMap<Project, Map<string, ReturnType<typeof simulateB
  * 침묵하지 않고 기록한다(applied 한 줄 + 출하 검사 fit-budget). 맞춤은 «바뀐 것만 남는다» 라 중간에 멈춰도 프로젝트는 일관된다 — 레벨 곡선이 덜 맞을 뿐이다.
  */
 export const FIT_BUDGET_MS = 60_000;
-export class FitBudgetExceeded extends Error { constructor(readonly spentMs: number) { super(`required-battle fit incomplete (budget ${Math.round(FIT_BUDGET_MS / 1000)}s)`); } }
+/** applied 줄의 머리말 — 끝맺음 단계가 이 접두로 «맞춤 미완» 을 알아본다. */
+export const FIT_INCOMPLETE_PREFIX = "required-battle fit incomplete (budget";
+export class FitBudgetExceeded extends Error { constructor(readonly spentMs: number) { super(`${FIT_INCOMPLETE_PREFIX} ${Math.round(FIT_BUDGET_MS / 1000)}s)`); } }
 interface FitBudget { start: number; limitMs: number; exceededAt?: number }
 const fitBudgets = new WeakMap<Project, FitBudget>();
 /** 이 프로젝트의 맞춤 예산을 새로 시작한다(끝맺음 한 번 = applyShipDefaults 한 번). 이미 초과한 기록은 지운다. */
 export function beginFitBudget(project: Project, limitMs = FIT_BUDGET_MS): void { fitBudgets.set(project, { start: Date.now(), limitMs }); }
 /** 마지막 맞춤이 예산을 넘겨 멈췄나(출하 검사가 읽는다 — 다음 beginFitBudget 까지 남는다). */
 export function fitBudgetExceeded(project: Project): number | undefined { return fitBudgets.get(project)?.exceededAt; }
+/** 맞춤이 건드리는 부분의 스냅숏 — 적·트룹·종 배우는 기술 레벨·맵 조우표와 이벤트(선물 동료 splice). 예산이 시험 한가운데서 터져도 이 상태로 돌린다. */
+export interface FitState { readonly enemies: unknown; readonly troops: unknown; readonly species: unknown; readonly maps: ReadonlyMap<string, { readonly encounterTable: unknown; readonly events: unknown }> }
+export function snapshotFitState(project: Project): FitState {
+  const maps = new Map<string, { encounterTable: unknown; events: unknown }>();
+  for (const [id, map] of Object.entries(project.maps)) maps.set(id, { encounterTable: structuredClone(map.encounterTable), events: structuredClone(map.events) });
+  return { enemies: structuredClone(project.database.enemies), troops: structuredClone(project.database.troops), species: structuredClone(project.database.monsterSpecies), maps };
+}
+/** snapshotFitState 로 돌린다 — 값을 제자리에서 다시 대입한다(프로젝트 객체의 정체성은 그대로). */
+export function restoreFitState(project: Project, state: FitState): void {
+  project.database.enemies = state.enemies as typeof project.database.enemies;
+  project.database.troops = state.troops as typeof project.database.troops;
+  if (state.species !== undefined) project.database.monsterSpecies = state.species as NonNullable<typeof project.database.monsterSpecies>;
+  for (const [id, saved] of state.maps) {
+    const map = project.maps[id];
+    if (!map) continue;
+    map.encounterTable = saved.encounterTable as typeof map.encounterTable;
+    map.events = saved.events as typeof map.events;
+  }
+}
+
 export function checkFitBudget(project: Project): void {
   const budget = fitBudgets.get(project);
-  if (!budget || budget.exceededAt !== undefined) { if (budget?.exceededAt !== undefined) throw new FitBudgetExceeded(budget.exceededAt); return; }
+  if (!budget) return;
+  if (budget.exceededAt !== undefined) throw new FitBudgetExceeded(budget.exceededAt);
   const spent = Date.now() - budget.start;
   if (spent > budget.limitMs) { budget.exceededAt = spent; throw new FitBudgetExceeded(spent); }
 }

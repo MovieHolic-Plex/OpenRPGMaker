@@ -25,7 +25,7 @@ import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
 import { syncMenuFeatures, syncMenuUiStyle } from "@/project/menuSystem";
 import { normalizeFieldHud, projectCanLoseHp } from "@/project/fieldHud";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
-import { beginFitBudget, equipMonsterCampaign, FitBudgetExceeded, fitGateLevelCurve, fitRequiredBattlesToStarters, fitRouteLevelsToGates } from "./monsterRouteLevels";
+import { beginFitBudget, equipMonsterCampaign, FitBudgetExceeded, fitGateLevelCurve, fitRequiredBattlesToStarters, fitRouteLevelsToGates, restoreFitState, snapshotFitState } from "./monsterRouteLevels";
 
 type Obj = Record<string, unknown>;
 
@@ -47,15 +47,21 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   // 맞춤은 시간 예산이 있다(monsterRouteLevels FIT_BUDGET_MS) — 모의전이 워커 이벤트 루프를 수백 초 막아 턴이 끊겼다(2026-11-09 monster).
   // 예산을 넘으면 거기서 멈추고 «미완» 을 한 줄로 남긴다(침묵 금지; 출하 검사 fit-budget 도 같은 사실을 읽는다).
   beginFitBudget(project);
-  try {
-    for (let round = 0; round < 3; round += 1) {
+  // 바퀴마다 맞춤이 건드리는 부분(적·트룹·종 기술 레벨·맵 조우표·이벤트 — 시험으로 바꿨다 되돌리는 값, 선물 동료 splice 포함)을 먼저 떠 둔다.
+  // 예산이 시험 한가운데서 터지면(대부분 그렇다) 되돌리기 코드를 건너뛰어 퇴짜 맞은 종·레벨이 출하된다(2026-11-09 ultrabrain 검토) —
+  // 그래서 끊긴 바퀴는 통째로 버리고 «마지막으로 끝난 바퀴» 상태로 돌아간다. 그 바퀴까지의 applied 줄은 그대로 남는다.
+  for (let round = 0; round < 3; round += 1) {
+    const snap = snapshotFitState(project);
+    try {
       const changed = [...fitGateLevelCurve(project), ...fitRouteLevelsToGates(project), ...fitRequiredBattlesToStarters(project)];
       applied.push(...changed);
       if (!changed.length) break;
+    } catch (error) {
+      if (!(error instanceof FitBudgetExceeded)) throw error;
+      restoreFitState(project, snap);
+      applied.push(`${error.message} — ${round + 1}번째 바퀴를 버리고 직전 상태로 돌렸다(${Math.round(error.spentMs / 1000)}초 사용). 첫 관문 승률이 보정되지 않았을 수 있다`);
+      break;
     }
-  } catch (error) {
-    if (!(error instanceof FitBudgetExceeded)) throw error;
-    applied.push(`${error.message} — 레벨 곡선·필수 전투 맞춤을 멈췄다(${Math.round(error.spentMs / 1000)}초 사용). 첫 관문 승률이 보정되지 않았을 수 있다`);
   }
   if (endingConditionsUnset(project).length) applied.push(...dropDeadEndingConditions(project));
   if (selfLoopTransfers(project).length) applied.push(...dropSelfLoopTransfers(project));

@@ -540,6 +540,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     if (env && store.items.length) { refreshChecks(env, true); stamp(env); }
     const left = session.unresolved().filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS || !store.items.length);
     const leftovers = left.flatMap((o) => o.problems.slice(0, 3).map((p) => `${o.name}(${o.mapId}): ${p.replace(/ — (dress_room|네가 설계한 방이다).*$/u, "").slice(0, 200)}`));
+    if (session.fitIncomplete) autoNotes.push(`${session.fitIncomplete} — 게임은 열리지만 첫 관문 승률은 이 요청에서 보정되지 않았다`);
     const vqaLeft = vqaRounds.length ? vqaSummary(vqaRounds) : undefined;
     if (!(options.signal?.aborted) && !session.questions.length && (store.items.length || leftovers.length)) {
       const report = todoReport({ store, draft, leftovers, missing: [...session.missingArt], autoNotes, preexisting: [...preexisting.values()], ...(loopStop ? { loopStop } : {}), ...(vqaLeft && !vqaLeft.clean ? { vqa: vqaLeft.text } : {}) });

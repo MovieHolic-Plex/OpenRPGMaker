@@ -27,7 +27,6 @@ import { strayStepCopies, walkBlueprint } from "./blueprint";
 import { assemblyTimeMismatches, blankMap, blueprintStoryText } from "@/project/blueprintAssembly";
 import { openingMapViewMapId } from "@/project/openingMapView";
 import { battleSites, encounterMaps, healingSources, repeatableHealingSources } from "./combatChecks";
-import { fitBudgetExceeded } from "./monsterRouteLevels";
 import { projectScriptMentionsCmdKind } from "@/project/script/effects";
 
 type Obj = Record<string, unknown>;
@@ -127,7 +126,7 @@ function factory(): Project {
 /** 편집기 기본값 목록(LEDGER 의 목록과 같은 순서). 검사·문서가 같은 이름을 쓴다. */
 export const EDITOR_DEFAULT_INVENTORY = [
   "title-name", "title-image", "opening", "opening-music", "hud", "window-look", "map-bgm", "battle-bgm", "battle-background",
-  "game-over", "ending-screen", "party-names", "party-faces", "hero-look", "placeholder-text", "combat-leftovers", "ending-bg", "start-gear", "opening-missing", "fit-budget",
+  "game-over", "ending-screen", "party-names", "party-faces", "hero-look", "placeholder-text", "combat-leftovers", "ending-bg", "start-gear", "opening-missing",
 ] as const;
 
 /** 뼈대·자리표시 글(엔딩·이벤트 이름이나 대사에 남으면 안 된다). */
@@ -247,9 +246,6 @@ export function editorDefaultsLeft(project: Project): ShipBlocker[] {
   for (const m of Object.values(project.maps)) for (const ev of m.events ?? []) if (PLACEHOLDER_NAMES.has(String(ev.name ?? "").trim())) placeholders.push(`이벤트 「${ev.name}」(${m.name})`);
   for (const r of cmds) { const t = textOf(r.cmd); if (t && PLACEHOLDER_TEXT.test(t)) placeholders.push(`「${t.slice(0, 24)}」(${r.eventName})`); }
   if (placeholders.length) add("placeholder-text", `뼈대·자리표시 글이 남았다: ${[...new Set(placeholders)].slice(0, 4).join(" · ")} — 이 이야기의 장면·이름으로 바꾸거나 지운다.`, [...new Set(placeholders)].slice(0, 6).join(" | "));
-  // 8) 필수전투 맞춤이 시간 예산을 넘겨 멈췄다 — 레벨 곡선이 덜 맞아 첫 관문 승률이 보정되지 않았을 수 있다. 조용히 통과시키지 않는다.
-  const fitSpent = fitBudgetExceeded(project);
-  if (fitSpent !== undefined) add("fit-budget", `필수 전투 레벨 맞춤이 시간 예산(${Math.round(fitSpent / 1000)}초 사용)을 넘겨 멈췄다 — required-battle fit incomplete (budget). 첫 관문 승률이 보정되지 않았다: 관문 트룹의 레벨을 낮추거나 길 야생 레벨을 점검하고 다시 끝맺는다.`, `fitBudgetExceeded=${fitSpent}ms`);
   return out;
 }
 

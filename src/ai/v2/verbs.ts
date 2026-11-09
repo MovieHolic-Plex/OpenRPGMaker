@@ -145,6 +145,8 @@ export class V2Session {
   linkBuiltDone = false;
   /** 빈 맵을 가리키던 청사진 장소의 새 이름 → 그 빈 맵 id(renameBareBlueprintPlaces). 장소를 지으면 빈 맵 이벤트를 옮긴다. */
   barePlaces?: Map<string, string>;
+  /** 필수전투 레벨 맞춤이 시간 예산을 넘겨 멈췄다는 기록(끝맺음 ship-defaults 가 쓰고 최종 보고가 읽는다 — 프로젝트 객체는 체크포인트·다시 읽기에서 바뀌어 기록을 못 지킨다). */
+  fitIncomplete?: string;
   /** 끝맺음에서 이동 칸 앞을 막는 이벤트를 옮겼는가(한 번만). */
   autoLanesDone = false;
   /** 출구·이동 칸 마감을 돈 뒤의 맵 지문(finishAutoBuild.lanesStamp). 늦은 고치기 차례가 장소를 다시 지으면 달라져 마감을 다시 돈다. */
