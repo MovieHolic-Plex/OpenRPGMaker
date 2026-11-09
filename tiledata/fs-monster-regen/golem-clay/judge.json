@@ -1,0 +1,6 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell matches the current look: the same molten clay-pot golem with its swirl, lava cracks and colours. The three idle cells show clear breathing (idle_c squats down), attack lunges forward with a punch and looks nothing like the hit cell, which leans back with one leg kicked up, and dead lies collapsed. Minor nitpicks: idle_c looks noticeably smaller than idle_a, and a few small orange flecks near the attack cell's front foot may be intentional sparks rather than stray pixels."
+}

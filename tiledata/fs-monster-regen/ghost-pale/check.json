@@ -1,0 +1,50 @@
+{
+ "idleShiftPx": {
+  "01": 3,
+  "12": 4,
+  "02": 7
+ },
+ "idleXorPx": {
+  "01": 234,
+  "12": 224,
+  "02": 326
+ },
+ "idleCentroidY": {
+  "0": 65.9,
+  "1": 67.7,
+  "2": 69.7
+ },
+ "idleVisible": true,
+ "idleStepRatio": 1.33,
+ "attackVsHitXor": 803,
+ "attackHitDiffer": true,
+ "deadFlat": true,
+ "magentaPx": 0,
+ "noFringe": true,
+ "alphaBinary": true,
+ "emptyCells": [],
+ "paintedCells": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  16,
+  18,
+  19
+ ],
+ "pageErrors": [],
+ "battleIdlePainted": true,
+ "battleAttackHitDeadPainted": true,
+ "size": [
+  384,
+  480
+ ],
+ "sizeOk": true,
+ "machinePass": true
+}

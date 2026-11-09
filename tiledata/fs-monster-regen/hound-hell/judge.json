@@ -1,0 +1,6 @@
+{
+ "pass": true,
+ "score": 3.5,
+ "failed": [],
+ "reason": "The hound matches the current design in every cell. The attack lunge is clearly different from the rearing hit recoil, the dead cell lies flat, and the art is crisp with no fringe or clipping. The idle loop does move, but idle_c drops into a deep crouch that looks more like the windup than breathing, so the idle cycle may visibly jump, and idle_b/idle_c's overlapping hind legs read a little muddy."
+}
