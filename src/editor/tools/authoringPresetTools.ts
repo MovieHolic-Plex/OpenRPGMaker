@@ -88,6 +88,28 @@ const listPresets: ToolDefinition = {
     };
   },
 };
+/**
+ * 모르는 presetId 오류 문구. 측정(2026-11-10 ds-tools-500, deepseek-v4.1-flash-free effort max, 모델 행동 128행): read_authoring_preset 53호출 중 16 오류(30%),
+ * 모델이 넘긴 presetId 23종 중 12종이 실제 ID 가 아니었고 대부분이 분류 이름(exploration·npc-life·combat)이나 분류+주제 합성어(combat-encounter)였다.
+ * 그래서 오류에 실제 ID 후보를 돌려준다. 분류 이름을 받아 대신 읽어 주지는 않는다 — 성공 응답의 모양이 둘로 갈려 「지침을 읽었다」는 착각이 생기고
+ * 실패가 텔레메트리에서 가짜 성공으로 숨겨진다(ultrabrain). 후보가 하나여도 자동으로 그 ID 로 바꿔 읽지 않는다.
+ */
+function unknownPresetMessage(input: unknown): string {
+  const base = '알 수 없는 플레이 프리셋 ID입니다.';
+  const tail = '이 목록은 작성 지침이 아니다. 하나를 골라 read_authoring_preset({presetId})를 다시 호출한다.';
+  const text = typeof input === 'string' ? input.trim().toLowerCase() : '';
+  if (text.length === 0 || text.length > 100) return `${base} list_authoring_presets로 조회하세요.`;
+  const asCategory = AUTHORING_PRESET_CATEGORIES.find(entry => entry.id === text);
+  const head = text.split('-')[0];
+  const category = asCategory ?? AUTHORING_PRESET_CATEGORIES.find(entry => entry.id === head);
+  const pool = category ? AUTHORING_PRESETS.filter(entry => entry.category === category.id)
+    : searchAuthoringPresets(undefined, text.replace(/-/g, ' '));
+  const ids = pool.slice(0, category ? 12 : 5).map(entry => entry.id);
+  if (ids.length === 0) return `${base} list_authoring_presets({category})로 분류별 ID를 조회하세요.`;
+  const kind = asCategory ? `「${text}」는 프리셋 ID가 아니라 분류 이름이다. 이 분류의 실제 ID: `
+    : `「${text}」는 목록에 없다. 가까운 실제 ID: `;
+  return `${base} ${kind}${ids.join(', ')}. ${tail}`;
+}
 const readPreset: ToolDefinition = {
   name: 'read_authoring_preset', mode: 'read', domains: ['system'],
   description: '목록에서 고른 공용 플레이 프리셋의 작성 매뉴얼 전체와 해당 분야의 현재 system·프로젝트 설정·상태 슬롯 정의·맵 참조·저작 시작 상태를 읽는다. 기존 제작법·생활/경제·시간·전투·성장·엔딩 원본 보존과 수정 후 재조회에 사용한다. 상태 전이·단계별 실제 도구·산출물·실패/취소/재방문 검사·엔진 한계도 반환한다. 필요한 도구는 find_tools로 스키마를 찾아 실제로 호출해야 하며, 조회만으로 작성·검증·저장이 완료되지 않는다.',
@@ -96,7 +118,7 @@ const readPreset: ToolDefinition = {
   }, required: ['presetId'], additionalProperties: false },
   run(project, args) {
     const preset = typeof args.presetId === 'string' ? authoringPresetById(args.presetId) : undefined;
-    if (!preset) throw new ToolError('알 수 없는 플레이 프리셋 ID입니다. list_authoring_presets로 조회하세요.', { code: 'preset-not-found' });
+    if (!preset) throw new ToolError(unknownPresetMessage(args.presetId), { code: 'preset-not-found' });
     const names = [...new Set([...preset.tools.read, ...preset.tools.write, ...preset.tools.verify])];
     return {
       summary: `「${preset.title}」 작성 지침 — ${preset.steps.length}단계·검사 ${preset.checks.length}항목. 실제 작성과 플레이 검사는 아직 수행하지 않았습니다.`,
