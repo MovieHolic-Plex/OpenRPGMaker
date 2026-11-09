@@ -76,6 +76,7 @@ import { TodoLoop } from "./loop/continuation";
 import { HookStats } from "./loop/hookStats";
 import { zoneStatusLines } from "./loop/roomZones";
 import { buildBossEncounter, buildEndingScene, wantsBossEncounter, wantsEndingScene, type BossEncounterSpec, type EndingSceneSpec } from "./sceneVerbs";
+import { PRESET_REPORT_LINE, monsterPresetRefusal } from "./builders/monsterTown";
 
 // 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
 // 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
@@ -938,6 +939,10 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
           if (kept) spec = { ...spec, hints: { ...(spec.hints ?? {}), terrainSeed: kept.terrainSeed, width: kept.width, height: kept.height } };
         }
       }
+      // 프리셋 한도: 몬스터 수집 마을 생성기는 «게임 한 편»을 한 번에 깐다(마을·연구소·센터·1번길·캠페인). 사용자 글이 몬스터 수집을 말하지 않았는데 조수가 마을 하나 짓는 지름길로
+      // 고르면 어느 게임이나 같은 포켓몬풍 마을이 된다(2026-11-09 오너 규칙). 사용자가 몬스터 수집 게임을 분명히 청했을 때만 쓰고, 쓴 판은 «프리셋»이라고 보고하게 한다.
+      const presetRefusal = monsterPresetRefusal(builder.id, String(task ?? ""));
+      if (presetRefusal) return text({ ok: false, notFailure: true, summary: presetRefusal });
       const designed = hasLayout(spec) ? { spec, notes: [] as string[] } : await designMissingRooms(env, spec, "make_place 설계 빈 방");
       spec = designed.spec;
       env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${builder.id})` });
@@ -966,6 +971,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         result = { ...result, warnings: [`Your ${bboxState.bbox} layout was rejected ${n} times (${bboxState.rejected.slice(0, 3).join(" | ")}) — built by the automatic builder instead.`, ...result.warnings] };
       }
       result = withSetupDefaults(result, builder.id, run.ctx.project, String(task ?? ""), freshStart);
+      if (builder.id === "monster-town" && result.ok) result = { ...result, warnings: [PRESET_REPORT_LINE, ...result.warnings] };
       if (keptNote || designed.notes.length) result = { ...result, warnings: [...(keptNote ? [keptNote] : []), ...designed.notes, ...result.warnings] };
       // 요청에 주민이 있는데 마을만 짓고 끝냈다(2026-10-30 씬 벤치 「강가 마을」: 「주민 몇 명」 요청 → NPC 0명) — 마을 결과에 다음 할 일로 붙인다
       if (result.ok && builder.id === "village" && /주민|마을\s*사람|사람\s*몇|npc|villager|resident/i.test(String(task ?? ""))) {
@@ -1773,11 +1779,14 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
           if (parentMap && outsideBuilt(parentMap)) { const g = gateFor(env.ctx.project, parentMap, spec.dungeonDesign, place.side); if (g) spec = { ...spec, gate: g }; }
         }
         if (!builder) { session.missingArt.add(`${spec.name}(${spec.type}) — 이 종류를 짓는 빌더가 없다`); lines.push(`${place.key}: 짓는 빌더 없음`); continue; }
+        const presetRefusal = monsterPresetRefusal(builder.id, String(task ?? ""));
+        if (presetRefusal) { lines.push(`${place.key}: 짓지 않음 — ${presetRefusal.slice(0, 160)}`); continue; }
         env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${i + 1}/${order.length}, ${builder.id})` });
         await builder.prepare?.(spec);
         const sub = i === 0 ? env.ctx : { ...env.ctx, project: env.ctx.project, currentMapId: parentMap ?? env.ctx.currentMapId };
         const subRun = i === 0 ? run : createBuildRun(sub);
         let result = withSetupDefaults(builder.build(subRun, spec), builder.id, sub.project, String(task ?? ""), freshStart);
+        if (builder.id === "monster-town" && result.ok) result = { ...result, warnings: [PRESET_REPORT_LINE, ...result.warnings] };
         if (sub !== env.ctx) env.ctx.project = sub.project;
         recordWrite(env, subRun, `${id}:${place.key}`, "make_game", { place: place.key, spec }, result.ok, result.summary, { mapIds: result.mapIds });
         for (const m of result.missingArt) session.missingArt.add(m);
