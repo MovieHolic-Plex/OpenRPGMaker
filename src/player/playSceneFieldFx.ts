@@ -802,7 +802,9 @@ function openStateTexture(scene: PlaySceneContext, style: ContainerStyle, cell: 
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
-  ctx.putImageData(new ImageData(out, W, H), 0, 0);
+  const image = ctx.createImageData(W, H);
+  image.data.set(out);
+  ctx.putImageData(image, 0, 0);
   if (!scene.textures.addCanvas(key, canvas)) return null;
   return { key, cols: 3, rows: 2, layer: tiles.layer, tile: tiles.below };
 }
