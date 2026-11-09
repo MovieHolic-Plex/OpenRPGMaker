@@ -13,7 +13,6 @@ import type { GameMap, Project } from "@/project/types";
 // 에이전트 세션 규칙으로 작성 시점에는 실행하지 않았다(CI 에서 돈다).
 
 const whole = "마을과 던전이 있는 모험 게임을 만들어 줘";
-const WALL = 0;
 
 /** createBlankProject 의 시작 맵을 복제해 한 장 더 만든다 — 같은 배치는 «복사» 라 못 세므로 타일 하나를 바꿔 다르게 한다. */
 function cloneMap(project: Project, from: GameMap, id: string, tweak: number): GameMap {
