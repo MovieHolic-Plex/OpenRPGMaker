@@ -963,6 +963,8 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
   // 옛 상수도 — 물길이 방의 주인이다(바닥의 30%). 버들항 지하 수도교 키트를 칸 그대로 깐다(배치 검사·도달성은 도구가 한다).
   exec(project, "create_map", { id: FS2_SHAFT_ID, name: "우물 밑 · 옛 상수도", width: WELL_SHAFT_LAYOUT.map.w, height: WELL_SHAFT_LAYOUT.map.h, tilesetId: WELL_SHAFT_TILESET });
   exec(project, "lay_dungeon_layout", { mapId: FS2_SHAFT_ID, name: "우물 밑 · 옛 상수도", layout: JSON.parse(JSON.stringify(WELL_SHAFT_LAYOUT)) });
+  // 우물에서 내려오는 계단 — 어두운 벽 속으로 오르는 옛 상수도 계단(오너 위임 허용 2026-11-10, Discord 1569382832202186955). 가운데 줄이 걷는 칸, 맨 아래가 착지.
+  exec(project, "stamp_object", { objectId: "kit:beodeul_city/bd-wellboss-stairs-up", mapId: FS2_SHAFT_ID, x: SHAFT.ladder.x - 1, y: SHAFT.ladder.y - 2 });
   exec(project, "set_lighting_volume", {
     mapId: FS2_SHAFT_ID, ambient: 0.55, color: "#0b0f1a", applyMode: "map",
     sources: [
