@@ -17,6 +17,7 @@ import {
   swingArcOverlapsBody,
 } from "@/battle/action/hitbox";
 import { enemyMeleeCells, telegraphAlpha } from "@/battle/action/areaPattern";
+import { attackIsEligible, pickEnemyAttack } from "@/battle/action/enemyKit";
 import { bufferAttackPress, createAttackBuffer, tickAttackBuffer } from "@/battle/action/attackWindow";
 import { computeContactDamage, computeSwingDamage } from "@/battle/action/combatMath";
 import { consumeHitstop } from "@/battle/action/hitstop";
@@ -287,6 +288,8 @@ export function syncActionEnemiesForScene(scene: PlaySceneContext): void {
         attack: record.stats.attack,
         exp: record.rewards.exp,
         actionAttack: record.actionProfile?.attack,
+        attackKit: attackKitOf(record.actionProfile),
+        lastAttackIndex: -1,
         gold: record.rewards.gold,
         dropItemId: record.rewards.dropItemId,
         dropRatePercent: record.rewards.dropRatePercent,
@@ -305,6 +308,11 @@ export function syncActionEnemiesForScene(scene: PlaySceneContext): void {
   for (const eventId of [...state.enemies.keys()]) {
     if (!aliveIds.has(eventId)) state.enemies.delete(eventId);
   }
+}
+
+function attackKitOf(profile: EnemyRecord["actionProfile"]): readonly EnemyActionAttack[] {
+  if (!profile?.attack) return [];
+  return [profile.attack, ...(profile.extraAttacks ?? [])];
 }
 
 function resolveSpawnEnemyRecord(project: Project, troopId: string): EnemyRecord | undefined {
@@ -1245,9 +1253,21 @@ function updateEnemyModes(scene: PlaySceneContext, state: ActionCombatSceneState
     switch (enemy.mode) {
       case "combat": {
         if (!attack || enemy.attackCooldownMs > 0 || !target) break;
-        if (attack.kind === "melee" && cheby <= attack.range) startWindup(scene, enemy, attack, pos.x, pos.y, dx, dy);
-        else if (attack.kind === "projectile" && cheby <= attack.range && cheby >= 2) startWindup(scene, enemy, attack, pos.x, pos.y, dx, dy);
-        else if (attack.kind === "dash" && cheby <= attack.range && cheby >= 2 && (dx === 0 || dy === 0)) {
+        if (enemy.attackKit.length > 1) {
+          const picked = pickEnemyAttack(enemy.attackKit, enemy.lastAttackIndex, {
+            distance: cheby,
+            aligned: dx === 0 || dy === 0,
+            hpPercent: (enemy.hp / Math.max(1, enemy.maxHp)) * 100,
+          });
+          const chosen = picked >= 0 ? enemy.attackKit[picked] : undefined;
+          if (chosen) {
+            enemy.lastAttackIndex = picked;
+            enemy.actionAttack = chosen;
+            startWindup(scene, enemy, chosen, pos.x, pos.y, dx, dy);
+          }
+          break;
+        }
+        if (attackIsEligible(attack, { distance: cheby, aligned: dx === 0 || dy === 0, hpPercent: 100 })) {
           startWindup(scene, enemy, attack, pos.x, pos.y, dx, dy);
         }
         break;

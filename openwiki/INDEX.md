@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **192쪽 / 8065KB / 약 2,370,499 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **192쪽 / 8065KB / 약 2,370,629 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -2799,7 +2799,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 - `L17` 이번 적용
 
-### `openwiki/runtime-action-combat.md` — 31KB · 360줄 · ~8,117 토큰
+### `openwiki/runtime-action-combat.md` — 32KB · 362줄 · ~8,247 토큰
 
 - `L14` Activation contract
 - `L35` Architecture and pure rule modules
@@ -2811,21 +2811,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L131` `ActionWeaponProfile` (`EquipmentRecord.actionWeapon`)
   - `L136` `ActionSkillProfile` (`SkillRecord.actionSkill`)
 - `L143` HUD presentation
-- `L149` Design decision: Tile-grid movement vs pixel movement
-- `L159` Factions and NPC-vs-NPC combat
-  - `L163` Data flow
-  - `L167` Runtime stance overlay and its save rule
-  - `L173` Pure rule module
-  - `L181` Scene behaviour
-  - `L193` Bounding the simulation
-- `L197` Out of scope / deliberately unsupported
-- `L203` Verification and test coverage
-  - `L205` Runtime-owned AI action proof (2026-09-07)
-  - `L271` Pure rule unit tests
-  - `L298` E2E browser specifications
-- `L303` Feature16 field skill profiles (2026-09-21)
-- `L340` 옆보기 중력 · 액션 동료 AI · 전술 격자 전투 (명작 공백 #13 #30 #31, 2026-09-27)
-- `L352` 지형 높이 게임 규칙 (2026-10-03)
+- `L151` Design decision: Tile-grid movement vs pixel movement
+- `L161` Factions and NPC-vs-NPC combat
+  - `L165` Data flow
+  - `L169` Runtime stance overlay and its save rule
+  - `L175` Pure rule module
+  - `L183` Scene behaviour
+  - `L195` Bounding the simulation
+- `L199` Out of scope / deliberately unsupported
+- `L205` Verification and test coverage
+  - `L207` Runtime-owned AI action proof (2026-09-07)
+  - `L273` Pure rule unit tests
+  - `L300` E2E browser specifications
+- `L305` Feature16 field skill profiles (2026-09-21)
+- `L342` 옆보기 중력 · 액션 동료 AI · 전술 격자 전투 (명작 공백 #13 #30 #31, 2026-09-27)
+- `L354` 지형 높이 게임 규칙 (2026-10-03)
 
 ### `openwiki/runtime-and-data.md` — 3KB · 27줄 · ~733 토큰
 

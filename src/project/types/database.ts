@@ -871,6 +871,8 @@ export interface EnemyActionAttack {
   kind: "melee" | "projectile" | "dash";
   /** melee 전용 범위 모양. 생략하면 arc. */
   shape?: EnemyActionAttackShape;
+  /** 묶음 공격 전용 발동 조건: 남은 체력이 이 비율(%) 이하일 때만 쓴다. 생략하면 늘. */
+  hpBelowPercent?: number;
   /** 선딜 — 텔레그래프(적 점멸 + 위협 칸 표시) 시간. */
   windupMs: number;
   /** 후딜 — 공격 후 플레이어 반격 창. */
@@ -895,6 +897,8 @@ export interface EnemyActionProfile {
   knockbackResist?: number;
   /** 선딜/후딜이 있는 능동 공격. 생략 시 접촉만. */
   attack?: EnemyActionAttack;
+  /** attack 에 더해 번갈아 쓰는 추가 공격(최대 3개). 쓸 수 있는 공격이 여럿이면 직전 공격 다음 것부터 돈다. */
+  extraAttacks?: EnemyActionAttack[];
 }
 
 export interface EnemyStats {
