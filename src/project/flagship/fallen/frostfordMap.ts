@@ -6,7 +6,7 @@
  *   북쪽 절벽과 탑 문(성문루) → 기슭 돌계단 → 언 호수(바위섬 사당, 장대 얼음길, 동쪽 얼음 낚시터, 미리 갈라진 큰 균열 둘)
  *   → 휘어진 남쪽 기슭(하르마 집·부두 둘) → 광장(모닥불·우물·징발 게시판) → 동 여관 · 서 징발 창고 · 등 공방 · 어부 집 → 남쪽 어귀.
  * 그림은 전부 버들항 원본 키트(설원 마을 통나무 집·소품, 어촌 포구·늪 마을 소품, 성문루)와 오토타일(던전 얼음·어두운 물),
- * 눈 덮인 침엽 수관(beodeul_nature forestCanopy.snow). 새 그림 없음.
+ * 눈 덮인 침엽 수관(beodeul_nature forestCanopy.snow). 새 그림은 밟힌 눈길 오토타일(beodeul_snow_road) 하나.
  */
 import type { AutotileGroup, GameMap, Project, TilesetDef } from "@/project/types";
 import { autotileVariantForMask } from "@/project/defaults/autotileEngine";
@@ -23,8 +23,11 @@ const TS = "beodeul_city";
 const SNOW = (id: string) => `bd-pick-snowfield-${id}`;
 export const FROST_ICE_GROUP = "beodeul_dungeon_ice";
 export const FROST_WATER_GROUP = "beodeul_dungeon_water_C";
-/** 밟힌 눈길·광장 — 던전 얼음굴 바닥(회색 다진 눈, 테두리가 부드러운 오토타일). 마을 길 키트(줄 단위 그림)는 옆 테두리가 없어 계단 모양 직선으로 끊겼다(감독 r3). */
-const PATH_GROUP = "beodeul_dungeon_ice_ground";
+/** 밟힌 눈길·광장 — 설원 눈길 오토타일(눈 램프만, 눈밭으로 섞이는 사선 둑 테두리; dungeon-chipset snow-road-r1).
+ *  마을 길 키트는 옆 테두리가 없어 계단 직선으로 끊겼고(감독 r3), 던전 얼음굴 바닥은 바위 회색이라 회색 포장 띠로 읽혔다(A6).
+ *  눈길 그룹은 오너가 하네스 시트에서 고르고 3/4 관문을 통과해 구워져야 칩셋에 생긴다 — 없으면 옛 얼음굴 바닥으로 칠한다. */
+const PATH_GROUP = "beodeul_snow_road";
+const PATH_GROUP_FALLBACK = "beodeul_dungeon_ice_ground";
 
 export type FrostHouseRole = "harma" | "inn" | "warehouse" | "lamp" | "fisher" | "smoke" | "east";
 export interface FrostHouse { role: FrostHouseRole; kit: string; at: Cell; door: Cell; front: Cell }
@@ -248,8 +251,8 @@ export function paintFrostford(project: Project, exec: Exec, mapId: string, name
   const cliffRows2 = kitCells(tileset, "bd-pick-mining-valley-ground-cliff");
   const deckRows = kitCells(tileset, SNOW("ground-deck"));
   const groups = tileset.autotileGroups ?? [];
-  const iceG = groups.find((g) => g.id === FROST_ICE_GROUP), waterG = groups.find((g) => g.id === FROST_WATER_GROUP), pathG = groups.find((g) => g.id === PATH_GROUP);
-  if (!iceG || !waterG || !pathG) throw new Error("[fallen-star frostford] 던전 얼음·물·얼음굴 바닥 오토타일이 칩셋에 없다");
+  const iceG = groups.find((g) => g.id === FROST_ICE_GROUP), waterG = groups.find((g) => g.id === FROST_WATER_GROUP), pathG = groups.find((g) => g.id === PATH_GROUP) ?? groups.find((g) => g.id === PATH_GROUP_FALLBACK);
+  if (!iceG || !waterG || !pathG) throw new Error("[fallen-star frostford] 던전 얼음·물·눈길(또는 얼음굴 바닥) 오토타일이 칩셋에 없다");
   // 금 간 얼음(경고) = 얼음 오토타일의 「홀로 떨어진 조각」 칸 — 칸마다 테두리가 둘린 얼음 조각 사이로 검은 틈이 보인다.
   const crackTiles = [iceG.variantMap["0"]!];
   const face = new Set<number>(), plateau = new Set<number>(), ledge = new Set<number>();

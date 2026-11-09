@@ -1235,19 +1235,6 @@
  "runs": [
   {
    "round": "theme-floors-r6",
-   "at": "2026-10-27T19:47:37",
-   "fail": 0,
-   "warn": 0,
-   "warnByCode": {},
-   "polish": [],
-   "hashes": {
-    "other.ground": {
-     "A1": "7404c2f5b306e0d8e8fc725aef63b3f603a40e9c4045dea0dd90fb6723cc7e9f"
-    }
-   }
-  },
-  {
-   "round": "theme-floors-r6",
    "at": "2026-10-27T19:48:34",
    "fail": 0,
    "warn": 0,
@@ -2176,6 +2163,19 @@
     "tc.cave_stalactite": {
      "A1": "0d8fafac3ced710388b3261bc5001a91ffabb218cc4003d1a9a3c07a0cd84c38",
      "A2": "b9f659e96e8fb8ed68ed0541b76b14439b54fd840e1856bc5b8f26f215ae8083"
+    }
+   }
+  },
+  {
+   "round": "snow-road-r1",
+   "at": "2026-11-09T20:54:11",
+   "fail": 0,
+   "warn": 0,
+   "warnByCode": {},
+   "polish": [],
+   "hashes": {
+    "tc.snow_road": {
+     "A1": "55201d713b64a4779c53db6ac8af3ae4dc683708c3249c25e134aafbd205d6b6"
     }
    }
   }

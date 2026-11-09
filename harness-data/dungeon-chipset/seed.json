@@ -3604,6 +3604,28 @@
    ],
    "wave": "theme_climate",
    "common": "동굴 바위 재질 걸이 — 줄 A 흙굴(자연 동굴) 한 벌"
+  },
+  {
+   "id": "tc.snow_road",
+   "wave": "theme_climate",
+   "title": "밟힌 눈길 ↔ 눈밭 오토타일",
+   "kind": "autotile",
+   "size": [
+    1,
+    1
+   ],
+   "layer": "lower",
+   "walk": "걸음",
+   "brief": "설원 마을의 밟힌 눈길·광장. 버들항 설원 눈 타일(#e6f0fa 바탕·#cadaee 그늘)에서 한두 단 어두운 푸른 회색까지만(바위 회색·갈색 금지). 가장자리는 눈밭으로 부드럽게 섞이는 불규칙 테두리(직선 계단 금지), 오른쪽·아래 그림자 1px 이하.",
+   "refs": [
+    "snowfield:e1"
+   ],
+   "common": "눈길은 동굴 줄(A·B·C)과 무관한 설원 마을 재료 — 폴른 스타 서리나루(fs2_frostford) 눈길에 쓴다",
+   "accept": [
+    "눈밭 위에서 회색 포장 띠가 아니라 밟힌 눈으로 읽힘",
+    "굽이·갈림·막다른 길·모서리가 계단 모양 직선이 아님",
+    "몸통 이음 없음"
+   ]
   }
  ],
  "refs": {
@@ -4632,6 +4654,15 @@
     "tc.cave_stalactite"
    ],
    "lead": "r12 지도 검수 FAIL(밝음·이끼 점) → r11 밝기 + r12 결, 이끼 점 제거."
+  },
+  "snow-road-r1": {
+   "module": "src/harnesses/dungeon-chipset/rounds/snow_road_r1.py",
+   "wave": "theme_climate",
+   "title": "설원 눈길 snow-road-r1",
+   "items": [
+    "tc.snow_road"
+   ],
+   "lead": "서리나루 눈길이 던전 얼음굴 바닥(회색)이라 회색 계단 띠로 읽힘(A6) → 눈 램프만 쓴 눈길 오토타일, 둥근 둑 모서리."
   }
  }
 }
