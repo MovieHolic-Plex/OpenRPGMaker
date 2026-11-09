@@ -131,8 +131,8 @@
   },
   "devDependencies": {
     "@oh-my-pi/pi-ai": "18.16.0",
-    "@playwright/test": "^1.64.1",
-    "electron": "^45.2.1",
+    "@playwright/test": "^1.65.0",
+    "electron": "^45.2.3",
     "electron-builder": "^26.18.0",
     "esbuild": "^0.28.2",
     "fake-indexeddb": "^6.2.7",
@@ -141,9 +141,9 @@
     "pngjs": "7.0.0",
     "ts-ebml": "^3.0.2",
     "typescript": "^7.0.2",
-    "vite": "^8.3.5",
+    "vite": "^8.3.6",
     "vite-node": "6.0.0",
-    "vitest": "^5.0.5",
+    "vitest": "^5.1.0",
     "webm-duration-fix": "^1.0.4"
   },
   "overrides": {
