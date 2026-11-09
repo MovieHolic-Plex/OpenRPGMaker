@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "name": "Fallen Star level completeness scale",
+  "reference_game": "chrono-bell (Fallen Star flagship demo, dist/demos/chrono-bell.project.json, repo base 2026-11-09)",
+  "formula": "score = sum over components of weight * min(1, counted_value / reference). reference = the value measured on Fallen Star with the same counting rules, so Fallen Star = 100 and an empty project = 0. A component is capped at its weight: more than Fallen Star adds nothing.",
+  "anti_gaming": [
+    "maps count only when reachable from the start map (transfer or ending continueTo), at least 100 cells, at least 6 distinct tile ids, at least one event with a command, and a tile layout that no already counted map has",
+    "events count once per content hash (id, name, position and graphic stripped) and only with at least one command, on a counted map",
+    "dialogue counts once per normalized line (digits, spaces and punctuation removed, at least 3 chars): 'ok 1' and 'ok 2' are one line",
+    "enemies, skills, items+equipment count only when reached from a counted event, common event, quest, ending or system field, differ from the engine baseline entry, and have a distinct stat block (id, name, description, graphic ignored)",
+    "act_structure is the longest chain of counted events linked by switch or variable set -> required; it cannot be raised without real events that really set and read the flags"
+  ],
+  "components": [
+    { "id": "maps", "reference": 44, "weight": 12, "reason": "World size is the first thing that separates a one-map game from Fallen Star. Counted under the reachability and distinct-layout rules so empty or cloned maps are worth 0." },
+    { "id": "events", "reference": 428, "weight": 12, "reason": "Events are the authored interactions. Same weight as maps because maps without events are scenery." },
+    { "id": "dialogue", "reference": 1000, "weight": 10, "reason": "Distinct dialogue lines are the cheapest honest proxy for story volume; deduplicated so repeated lines do not count." },
+    { "id": "enemies", "reference": 82, "weight": 8, "reason": "Distinct reachable enemies show combat variety beyond the bundled slime-level defaults." },
+    { "id": "skills", "reference": 95, "weight": 6, "reason": "Distinct reachable skills show combat depth; lower weight than enemies because skills are often generated in batches." },
+    { "id": "items", "reference": 65, "weight": 5, "reason": "Distinct reachable items and equipment (changed from the engine baseline) show an economy and progression." },
+    { "id": "quests", "reference": 7, "weight": 7, "reason": "Quests with at least two distinct steps are the unit of side content; uniquely titled only." },
+    { "id": "quest_steps", "reference": 41, "weight": 5, "reason": "Quest steps measure quest depth, so a many-quest game of one-step quests does not saturate." },
+    { "id": "endings", "reference": 1, "weight": 3, "reason": "Fallen Star Act 1 has one authored ending; the scale only asks for a reachable authored ending, so its weight is small. Real endings need the play check." },
+    { "id": "music", "reference": 23, "weight": 6, "reason": "Distinct BGM tracks actually used (maps, events, battle, ending, opening) excluding the engine defaults; mood variety." },
+    { "id": "cutscenes", "reference": 25, "weight": 6, "reason": "Authored cutscene events plus an authored opening: directed scenes separate a story game from a walking game." },
+    { "id": "cast", "reference": 59, "weight": 5, "reason": "Distinct named speakers; a populated world versus two talking heads." },
+    { "id": "area_variety", "reference": 7, "weight": 6, "reason": "Distinct tilesets plus distinct map roles; a game of one repeated look scores low." },
+    { "id": "act_structure", "reference": 10, "weight": 9, "reason": "Longest switch chain between counted events: the closest measurable stand-in for acts, locks and unlocks. Weighted high because it needs genuinely connected events." }
+  ]
+}
