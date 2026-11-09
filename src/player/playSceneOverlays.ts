@@ -4,6 +4,7 @@ import { getPlayerPreferences } from "@/player/playerPreferences";
 import { playCinematicSequence } from "@/player/cinematicSequence";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
+import { endingBackdropCandidates, factoryArtResourceIds } from "@/project/defaultLeaks";
 import { gameOverOutcome, resolveGameOverSettings, type GameOverSettings, DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID, DEFAULT_GAME_OVER_FADE_OUT_MS } from "@/project/cinematicSettings";
 import { createTerminalScene, type TerminalScene } from "@/player/terminalScene";
 import type { EndingPresentation } from "@/project/cinematicSettings";
@@ -352,10 +353,11 @@ type EndingCg = { readonly layer: HTMLElement; readonly mode: "couple" | "scene"
 
 const ENDING_PETAL_COUNT = 14;
 
-/** 엔딩이 고른 장면 그림: 엔딩 자신의 배경 → 타이틀 그림 → 오프닝 마지막 스틸. 모두 이 게임이 가진 그림이다. */
+/** 엔딩이 고른 장면 그림: 엔딩 자신의 배경 → 타이틀 그림 → 오프닝 마지막 스틸. 엔진 기본 그림(빈 프로젝트의 눈 마을·기본 오프닝)은 대체 그림으로 쓰지 않는다 — 어느 게임이나 같은 그림이 된다. */
 function endingBackdropResourceId(project: Project, presentation?: EndingPresentation): string | undefined {
-  const openingStill = (project.system.opening?.scenes ?? []).flatMap((scene) => (scene.kind === "image" ? [scene.resourceId] : [])).at(-1);
-  return presentation?.backgroundResourceId ?? project.system.titleScreen?.backgroundResourceId ?? project.system.titleResourceId ?? openingStill;
+  if (presentation?.backgroundResourceId) return presentation.backgroundResourceId;
+  const factoryArt = factoryArtResourceIds();
+  return endingBackdropCandidates(project).find((id) => !factoryArt.has(id));
 }
 
 function endingBadge(endingId: string | undefined, hasPartner: boolean, presentation?: EndingPresentation): string {

@@ -81,6 +81,28 @@ describe("title screen", () => {
     }
   });
 
+  it("does not draw the fixed tagline under an authored title that has no subtitle", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleScreen = fullVisibilitySettings({ ...defaultTitleScreenSettings(), title: "붉은 달의 여관" });
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onResume: () => undefined,
+          onContinue: () => undefined,
+          onCredits: () => undefined,
+          onQuit: () => undefined,
+        }),
+      );
+      expect(findByTestId(screen, "title-kicker")).toBeNull();
+      expect(findByTestId(screen, "title-subtitle")).toBeNull();
+      expect(findByTestId(screen, "title-logo-subtitle")).toBeNull();
+    } finally {
+      restoreDom();
+    }
+  });
+
   it("replaces the stock tagline with an authored subtitle even when the logo style is unset", () => {
     const restoreDom = installFakeDom();
     try {
