@@ -13,8 +13,8 @@
  *     막던 가는 나무와 모랫길 토막을 걷어 운하 둑길(16열)까지 잇는다. 남쪽 큰길 34줄을 끊던 밑동 없는 나무 윗동(29·30열)을 걷고 31열을 잇는다.
  *     길 사이 한 칸 풀밭 구멍(좌우 또는 위아래가 모두 길)은 길로 메운다. 광장 판석 가장자리의 풀밭 홈·안쪽 모서리는 판석으로, 외딴 판석 칸은 풀밭으로.
  *     여관 앞 동쪽 큰길 끝(32·33줄)은 서쪽(33·34줄)에 맞춘다. 바꾼 칸과 이웃만 길 오토타일을 다시 고른다.
- *     길이 직각으로 두른 잔디 모퉁이 일부를 길로 먹여 네모 잔디 모서리를 깎고, 민 풀 칸(737) 한 가지만 깔린 잔디를 같은 이름표의
- *     변형 칸 11종과 풀 무늬(풀 포기·토끼풀·들꽃·잔돌)로 섞는다(같은 칸 4개 이상 잇지 않게) — 오너 「너무 반듯한데서 나오는 기괴함」.
+ *     민 풀 칸(737) 한 가지만 깔린 잔디에 같은 이름표의 변형 칸을 덩이로 듬성듬성 깔고, 길 모퉁이 대각선·나무 곁에 풀 무늬를 드물게,
+ *     줄 지은 들꽃은 솎는다 — 오너 「너무 반듯한데서 나오는 기괴함」.
  *     다리 상판 위 수납 통(은수저 퀘스트)은 통 그림·이벤트·곁의 토비를 다리 끝 둑 풀밭으로 옮긴다.
  *  4. 주인 없는 그림자 정리(clearOrphanShadows), 그리고 정리 전에 걸어 닿던 이벤트가 하나라도 닿지 않게 되면 굽기를 멈춘다.
  * 2막 「통금의 밤」 광장(fs2_hub_night)은 이 맵을 복제하므로 act2Opening 앞에서 부른다.
@@ -98,9 +98,11 @@ export function tidyFallenFirstVillage(project: Project, hubId: string): FirstVi
   for (const box of map.events.filter((e) => /^수납 · /.test(String(e.name ?? "")) && /다리 상판/.test(label(lo[at(e.x, e.y)])))) {
     const art = up[at(box.x, box.y)]!;
     let best: { x: number; y: number; d: number } | undefined;
-    for (let y = box.y - 3; y <= box.y + 3; y += 1) for (let x = box.x - 3; x <= box.x + 3; x += 1) {
+    for (let y = box.y - 6; y <= box.y + 6; y += 1) for (let x = box.x - 6; x <= box.x + 6; x += 1) {
       if (!inside(x, y) || eventAt.has(at(x, y)) || up[at(x, y)]! >= 0 && !TUFT.test(label(up[at(x, y)])) || paved(x, y)) continue;
       if (lo[at(x, y)] !== GRASS || !N4.some(([dx, dy]) => paved(x + dx, y + dy) && !/다리 상판/.test(label(lo[at(x + dx, y + dy)])))) continue;
+      const anchored = N4.some(([dx, dy]) => inside(x + dx, y + dy) && up[at(x + dx, y + dy)]! >= 0 && !TUFT.test(label(up[at(x + dx, y + dy)])) && !paved(x + dx, y + dy));
+      if (!anchored) continue;
       const d = Math.abs(x - box.x) + Math.abs(y - box.y);
       if (!best || d < best.d) best = { x, y, d };
     }
@@ -170,15 +172,7 @@ export function tidyFallenFirstVillage(project: Project, hubId: string): FirstVi
   if (isRoadAt(52, 32, /길/) && isRoadAt(52, 33, /길/) && !isRoadAt(52, 34, /길/) && isRoadAt(50, 34, /길/)) {
     for (let x = 52; x <= 54; x += 1) { setRoad(x, 34); setGrass(x, 32); }
   }
-  // 잔디 모서리 홈 — 길이 두 면(직각)으로 두른 잔디 모퉁이 칸 일부를 길로 먹여 네모 잔디 블록의 모서리를 깎는다(블록마다 다르게, 해시).
   const hash = (x: number, y: number, salt: number): number => (((x * 73856093) ^ (y * 19349663) ^ (salt * 83492791)) >>> 0) % 100;
-  for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) {
-    const i = at(x, y);
-    if (lo[i] !== GRASS || up[i]! >= 0 || eventAt.has(i)) continue;
-    const r = (dx: number, dy: number): boolean => roadSet.has(lo[at(x + dx, y + dy)]!);
-    const corner = ([[-1, -1], [1, -1], [-1, 1], [1, 1]] as const).some(([dx, dy]) => r(dx, 0) && r(0, dy) && r(dx, dy) && !r(-dx, 0) && !r(0, -dy));
-    if (corner && hash(x, y, 7) < 55) setRoad(x, y);
-  }
   // 길 사이 한 칸 풀밭 구멍.
   for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) {
     const i = at(x, y);
@@ -210,20 +204,27 @@ export function tidyFallenFirstVillage(project: Project, hubId: string): FirstVi
   }
   for (const [i, t] of next) lo[i] = t;
 
-  // 잔디 결 — 민 풀 칸을 같은 이름표의 변형 칸으로 섞고(가로·세로 같은 칸 4개 이상 잇지 않게), 풀 무늬(풀 포기·토끼풀·들꽃·잔돌)를 성기게.
+  // 잔디 결 — 민 풀(737)만 깔린 잔디에 같은 이름표의 변형 칸을 3×3 덩이 단위로 듬성듬성(덩이의 약 3분의 1) 깔고, 덩이 가장자리는
+  // 한두 칸 흐트린다. 풀 무늬(풀 포기·토끼풀·들꽃·잔돌)는 길이 직각으로 꺾이는 모퉁이의 대각선 풀밭 칸과 나무·건물 곁에만 드물게.
+  const roadAt = (x: number, y: number): boolean => inside(x, y) && roadSet.has(lo[at(x, y)]!);
+  const solidNear = (x: number, y: number): boolean => N4.some(([dx, dy]) => inside(x + dx, y + dy) && up[at(x + dx, y + dy)]! >= 0 && !TUFT.test(label(up[at(x + dx, y + dy)])));
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     const i = at(x, y);
     if (lo[i] !== GRASS) continue;
-    const h = hash(x, y, 11);
-    const pick = (k: number): number => (h < 9 ? GRASS_ACCENT[(hash(x, y, 13) + k) % GRASS_ACCENT.length]! : PLAIN_GRASS[(hash(x, y, 17) + k) % PLAIN_GRASS.length]!);
-    let k = 0;
-    let t = pick(k);
-    const repeats = (tile: number): boolean =>
-      (x >= 3 && lo[at(x - 1, y)] === tile && lo[at(x - 2, y)] === tile && lo[at(x - 3, y)] === tile)
-      || (y >= 3 && lo[at(x, y - 1)] === tile && lo[at(x, y - 2)] === tile && lo[at(x, y - 3)] === tile)
-      || (GRASS_ACCENT.includes(tile) && [[-1, 0], [0, -1], [-1, -1], [1, -1]].some(([dx, dy]) => inside(x + dx, y + dy) && lo[at(x + dx, y + dy)] === tile));
-    while (repeats(t) && k < 8) t = pick(++k);
-    lo[i] = t;
+    const jx = x + (hash(x, y, 3) < 25 ? 1 : 0), jy = y + (hash(x, y, 5) < 25 ? 1 : 0);
+    const bx = Math.floor(jx / 3), by = Math.floor(jy / 3);
+    const cornerDiag = ([[-1, -1], [1, -1], [-1, 1], [1, 1]] as const).some(([dx, dy]) => roadAt(x + dx, y + dy) && !roadAt(x + dx, y) && !roadAt(x, y + dy) && roadAt(x + 2 * dx, y + dy) && roadAt(x + dx, y + 2 * dy));
+    if ((cornerDiag && hash(x, y, 19) < 70) || (solidNear(x, y) && hash(x, y, 23) < 8)) {
+      const accent = GRASS_ACCENT[hash(x, y, 29) % GRASS_ACCENT.length]!;
+      if (![[-1, 0], [0, -1], [-1, -1], [1, -1]].some(([dx, dy]) => inside(x + dx, y + dy) && lo[at(x + dx, y + dy)] === accent)) { lo[i] = accent; continue; }
+    }
+    if (hash(bx, by, 31) < 34) lo[i] = PLAIN_GRASS[1 + (hash(bx, by, 37) % (PLAIN_GRASS.length - 1))]!;
+  }
+  // 줄 지은 들꽃 덤불 — 같은 줄에서 두 칸 간격으로 셋 이상 늘어선 덤불은 가운데 것을 걷는다.
+  for (let y = 0; y < H; y += 1) for (let x = 2; x < W - 2; x += 1) {
+    const i = at(x, y);
+    if (eventAt.has(i) || !TUFT.test(label(up[i])) ) continue;
+    if (TUFT.test(label(up[at(x - 2, y)])) && TUFT.test(label(up[at(x + 2, y)]))) { up[i] = -1; tufts += 1; }
   }
 
   // ── 4. 그림자·도달성 ──
