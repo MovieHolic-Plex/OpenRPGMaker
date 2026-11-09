@@ -587,7 +587,7 @@ function clearRootYSortTiles<TImage extends RenderedTileImage, TSprite extends R
 }
 
 /**
- * 칸 (x,y) 에 그려진 y 정렬 상층 타일(가구·기물) 이미지 — 수납을 흔드는 연출(playSceneFieldFx)이 쓴다.
+ * 칸 (x,y) 에 그려진 y 정렬 상층 타일(가구·기물) 이미지. 수납 연출은 더 이상 타일 이미지를 움직이지 않는다(2026-11-09, 물건만 움직임).
  * 들린(높이 지형) 타일과 굽힌(캡처) 타일은 개별 이미지가 없을 수 있다 — 그때는 빈 배열이다.
  */
 export function rootYSortTileImagesAt(scene: object & { sceneHost?: object }, x: number, y: number, tileSize: number): { x: number; y: number }[] {

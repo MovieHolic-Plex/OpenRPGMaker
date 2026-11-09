@@ -2,7 +2,10 @@
 // 필드 상호작용 연출 — 문 열기, 수납 뒤지기(뚜껑·흔들림·파편·소리), 찾은 것 떠오르기, 뒤진 흔적.
 //
 // 데이터(종류별 소리·흔들림·파편·흔적)는 project/containerFx.ts 가 갖고, 여기서는 그대로 그린다.
-// 그림은 전부 절차 그림(사각형·그래픽)과 칸에 이미 그려진 타일 이미지 흔들기다 — 새 그림 자산이 필요 없다.
+// 그림은 전부 절차 그림(사각형·그래픽)과 물건 칩셋 화소를 오려 낸 그림이다 — 새 그림 자산이 필요 없다.
+// 수납 연출은 물건만 움직인다(GIF 처럼): 칸·윗칸의 타일 이미지를 흔들거나 기울이지 않고, 화면 흔들림·확대·번착임도 없다
+// (오너 2026-11-09 「애니메이션을 만들 때 주변 화면이 일그러지는 건 곤란 … 오브젝트만 움직여야」 — 예전 shakeCell·poseCell 은
+// 그 칸의 바닥·벽 타일까지 함께 움직여 주변이 일그러졌다).
 //  - 문: 이동(transfer) 직전 문 칸에 맵 문(map.doors, 없으면 그림에서 추론한 자동문·미닫이·셔터·두 짝 문 — project/mapDoorKinds.ts)이
 //    있으면 그 종류대로 문 그림 전체를 연다(player/playSceneDoors.ts). 다가가서 이미 열린 자동문이면 연출을 겹치지 않는다.
 //    그다음, 문 칸이 타일셋의 닫힘/열림 키트 짝(project/kitDoors.ts, 예 1×2 던전 문)이면 그 문 자신의 그림으로
@@ -13,11 +16,11 @@
 //  - 흔적: `interaction: { kind: "container", searched: true }` 페이지가 켜진 칸 위에 그린다(syncContainerSearchedMarks).
 import type Phaser from "phaser";
 import { playSoundEffect } from "@/player/audio";
-import { characterDepth, characterSpriteY } from "@/player/characterDepth";
+import { characterDepth, characterSpriteY, mapUpperTileDepth } from "@/player/characterDepth";
 import { applyDoorCue, DOOR_OPEN_SE, doorSe } from "@/player/playSceneDoorway";
 import { projectSeCue } from "@/project/seCues";
 import { mapDoorForCells, openMapDoorNow } from "@/player/playSceneDoors";
-import { applyMapOverrides, rootYSortTileImagesAt } from "@/player/playSceneMapRuntime";
+import { applyMapOverrides } from "@/player/playSceneMapRuntime";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   CONTAINER_FX,
@@ -525,22 +528,6 @@ export function containerStyleAt(scene: PlaySceneContext, cell: Cell, eventId?: 
   return containerStyleForLabel(label);
 }
 
-/** 칸의 가구 이미지를 흔든다(같은 칸 + 같은 이름의 윗칸). 개별 이미지가 없으면 흔들지 않는다. */
-function shakeCell(scene: PlaySceneContext, cell: Cell, px: number, count: number): void {
-  if (px <= 0 || count <= 0) return;
-  const size = mapTileSize(scene.map);
-  const images = [...rootYSortTileImagesAt(scene, cell.x, cell.y, size), ...rootYSortTileImagesAt(scene, cell.x, cell.y - 1, size)];
-  const amp = Math.max(1, Math.round(px * size / 16));
-  for (const image of images) {
-    const baseX = image.x;
-    scene.tweens.add({
-      targets: image, x: baseX + amp, duration: 45, yoyo: true, repeat: count - 1, ease: "Sine.easeInOut",
-      onComplete: () => { image.x = baseX; },
-      onStop: () => { image.x = baseX; },
-    });
-  }
-}
-
 function burstParticles(scene: PlaySceneContext, cell: Cell, style: ContainerStyle): void {
   const spec = CONTAINER_FX[style].particles;
   const size = mapTileSize(scene.map);
@@ -595,10 +582,11 @@ async function liftLid(scene: PlaySceneContext, cell: Cell): Promise<void> {
   holdUntilMark(scene, cell, g);
 }
 
-const pendingLids = new WeakMap<PlaySceneContext, Map<string, Phaser.GameObjects.Graphics>>();
+type HeldFx = Phaser.GameObjects.Graphics | Phaser.GameObjects.Image;
+const pendingLids = new WeakMap<PlaySceneContext, Map<string, HeldFx>>();
 
-function holdUntilMark(scene: PlaySceneContext, cell: Cell, g: Phaser.GameObjects.Graphics): void {
-  const pending = pendingLids.get(scene) ?? new Map<string, Phaser.GameObjects.Graphics>();
+function holdUntilMark(scene: PlaySceneContext, cell: Cell, g: HeldFx): void {
+  const pending = pendingLids.get(scene) ?? new Map<string, HeldFx>();
   pendingLids.set(scene, pending);
   const key = `${scene.map.id}|${cell.x},${cell.y}`;
   pending.get(key)?.destroy();
@@ -607,43 +595,7 @@ function holdUntilMark(scene: PlaySceneContext, cell: Cell, g: Phaser.GameObject
   scene.time.delayedCall(15_000, () => { if (pending.get(key) === g) { pending.delete(key); g.destroy(); } });
 }
 
-type TileImage = Phaser.GameObjects.Image;
 type Px = (x: number, y: number, w: number, h: number, color: number, alpha?: number) => void;
-
-/** 칸(과 같은 이름의 윗칸)의 가구 이미지를 밑동 가운데를 축으로 비틀거나 눌렀다 되돌린다. 개별 이미지가 없으면 false. */
-function poseCell(scene: PlaySceneContext, cell: Cell, durationMs: number, pose: (t: number) => { angle: number; scaleY: number }): boolean {
-  const size = mapTileSize(scene.map);
-  const images = [...rootYSortTileImagesAt(scene, cell.x, cell.y, size), ...rootYSortTileImagesAt(scene, cell.x, cell.y - 1, size)] as unknown as TileImage[];
-  if (images.length === 0 || typeof scene.tweens?.add !== "function") return false;
-  const pivotX = cell.x * size + size / 2;
-  const pivotY = (cell.y + 1) * size;
-  const base = images.map((image) => ({ image, x: image.x, y: image.y, angle: image.angle, scaleY: image.scaleY }));
-  const apply = (t: number): void => {
-    const { angle, scaleY } = pose(t);
-    const rad = (angle * Math.PI) / 180;
-    const cos = Math.cos(rad), sin = Math.sin(rad);
-    for (const b of base) {
-      // 이미지 원점은 왼쪽 위다 — 축에서 본 원점을 세로로 누르고 돌린 자리가 새 원점이다.
-      const dx = b.x - pivotX, dy = (b.y - pivotY) * scaleY;
-      b.image.x = pivotX + dx * cos - dy * sin;
-      b.image.y = pivotY + dx * sin + dy * cos;
-      b.image.angle = b.angle + angle;
-      b.image.scaleY = b.scaleY * scaleY;
-    }
-  };
-  const restore = (): void => {
-    for (const b of base) { b.image.x = b.x; b.image.y = b.y; b.image.angle = b.angle; b.image.scaleY = b.scaleY; }
-  };
-  // 진행도는 별도 객체를 트윈해서 읽는다 — addCounter + getValue() 는 이 Phaser 에서 null 이라 한 프레임도 움직이지 않았다
-  // (playSceneActionCombat.ts 휘두르기 궤적과 같은 함정, 2026-11-09 출하 플레이어 실측).
-  const progress = { t: 0 };
-  scene.tweens.add({
-    targets: progress, t: 1, duration: durationMs,
-    onUpdate: () => apply(progress.t),
-    onComplete: restore, onStop: restore,
-  });
-  return true;
-}
 
 /** 칸 위에 잠깐 그리는 그림(판자·서랍·뚜껑·문짝). frames 를 ms 간격으로 그린 뒤 hold 면 흔적이 그려질 때까지 둔다. */
 async function overlayFrames(scene: PlaySceneContext, cell: Cell, ms: number, hold: boolean, frames: readonly ((px: Px) => void)[]): Promise<void> {
@@ -671,16 +623,10 @@ async function playMotion(scene: PlaySceneContext, style: ContainerStyle, cell: 
       return liftLid(scene, cell);
     case "rock":
       // 통: 밑동을 축으로 왼쪽·오른쪽으로 한 번씩 기울여 본다(흔들어 속을 가늠하는 몸짓).
-      if (!poseCell(scene, cell, 420, (t) => ({ angle: Math.sin(t * Math.PI * 2) * 7 * (1 - t * 0.4), scaleY: 1 }))) {
-        await overlayFrames(scene, cell, 90, false, [(px) => px(4, 2, 8, 2, GAP, 0.8), (px) => px(4, 2, 8, 2, GAP, 0.4)]);
-      }
-      return;
+      return overlayFrames(scene, cell, 90, false, [(px) => px(4, 2, 8, 2, GAP, 0.8), (px) => px(4, 2, 8, 2, GAP, 0.4)]);
     case "slump":
       // 자루·짚: 풀어 헤치자 폭 주저앉았다 다시 부푼다.
-      if (!poseCell(scene, cell, 380, (t) => ({ angle: 0, scaleY: 1 - Math.sin(t * Math.PI) * 0.14 }))) {
-        await overlayFrames(scene, cell, 90, false, [(px) => px(3, 2, 10, 2, GAP, 0.5)]);
-      }
-      return;
+      return overlayFrames(scene, cell, 90, false, [(px) => px(3, 2, 10, 2, GAP, 0.5)]);
     case "pry":
       // 상자: 윗판 하나를 비집어 들었다 털썩 내려놓는다 — 판자 끝이 비스듬히 뜨고 틈이 보인다.
       return overlayFrames(scene, cell, 75, false, [
@@ -719,12 +665,215 @@ async function playMotion(scene: PlaySceneContext, style: ContainerStyle, cell: 
   }
 }
 
+// ───────────── 물건 자체가 열린 모습(칩셋 그림을 잘라·옮기고·어둡게) ─────────────
+//
+// 오너 2026-11-09: 「애니메이션이라는 게 그냥 단순히 화면의 움직임이 아니라 해당 오브젝트의 최소 3픽셀 변화」.
+// 칸 위에 덧그린 파편·흔들림만으로는 물건 그림이 그대로라, 연 순간부터 물건 칸의 그림 자체를 바꾼다.
+// 새 그림 자산 없이 그 칸 타일(과 이어진 윗칸)의 화소만 쓴다: 뚜껑 띠를 들어 올리고, 드러난 속은 원래 화소를 어둡게,
+// 서랍 띠는 아래로 빼고, 문짝은 좌우로 뒤집어 접어 바깥에 둔다. 뒤진 뒤(셀프 스위치 페이지)에도 같은 열린 그림이 남는다.
+
+/** 열린 그림 캔버스: 물건 칸 가운데 세 칸 폭 × 두 칸 높이(윗칸 + 그 칸). 물건은 가운데 열에 있다. */
+type OpenCanvas = { readonly key: string; readonly cols: 3; readonly rows: 2; readonly layer?: (typeof LAYER_KEYS)[number]; readonly tile?: number };
+
+type Rgba = Uint8ClampedArray;
+
+const CONTAINER_WORD = /상자|궤|통|자루|포대|서랍|옷장|장롱|찬장|협탁|화장대|항아리|단지|독|바구니|짐짝|가방|트렁크|chest|crate|box|barrel|cask|keg|sack|bag|drawer|cabinet|dresser|cupboard|wardrobe|armoire|jar|pot|urn|basket|trunk/i;
+
+/**
+ * 칸의 물건 타일(투명 화소가 있는 층 — 수납 낱말 이름표가 붙은 층을 먼저, 없으면 가장 위 층)과,
+ * 그 그림이 윗칸으로 이어지면 윗칸 같은 층 타일. 바닥·장식 타일을 여는 일이 없도록 이름표를 먼저 본다(ultrabrain 2026-11-09).
+ */
+function containerObjectTiles(project: Project, map: GameMap, cell: Cell, scene: PlaySceneContext, textureKey: string, size: number): { below: number; above: number; layer: (typeof LAYER_KEYS)[number] } | null {
+  const entries = cellTiles(project, map, cell.x, cell.y);
+  const ordered = [...entries.filter((e) => CONTAINER_WORD.test(e.label)), ...entries.filter((e) => !CONTAINER_WORD.test(e.label))];
+  for (const entry of ordered) {
+    const read = framePixels(scene, textureKey, `tile_${entry.tile}`);
+    if (!read) continue;
+    let opaque = 0, clear = 0;
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) { const p = read(x, y); if (p && p[3] >= 128) opaque++; else clear++; }
+    // 바닥을 덮는 꽉 찬 타일은 물건이 아니다 — 단, 위층에 얹은 꽉 찬 가구(실내 옷장·서랍장 아랫칸)는 물건이다.
+    const upperLayer = entry.layer === "upperTiles" || entry.layer === "upperOverlayTiles";
+    if (opaque < 4 || (clear === 0 && !upperLayer)) continue;
+    let above = -1;
+    if (cell.y > 0) {
+      const tile = (map[entry.layer] as ArrayLike<number> | undefined)?.[(cell.y - 1) * map.width + cell.x] ?? -1;
+      const upper = tile >= 0 ? framePixels(scene, textureKey, `tile_${tile}`) : null;
+      const top = read;
+      // 윗칸 그림의 밑줄과 이 칸 그림의 윗줄이 같은 열에서 이어지면 한 물건이다(옷장·찬장처럼 두 칸 높이).
+      if (upper) for (let x = 0; x < size; x++) { const a = upper(x, size - 1), b = top(x, 0); if (a && a[3] >= 128 && b && b[3] >= 128) { above = tile; break; } }
+    }
+    return { below: entry.tile, above, layer: entry.layer };
+  }
+  return null;
+}
+
+/** 열린 그림을 원래 물건 타일보다 위에 둔다(위층 타일은 행 깊이보다 위에 그려질 수 있다). */
+function openStateDepth(scene: PlaySceneContext, cell: Cell, layer: (typeof LAYER_KEYS)[number] | undefined, tile: number | undefined, base: number): number {
+  const tileset = store.getCurrent().tilesets[scene.map.tilesetId];
+  if (!tileset || tile === undefined || (layer !== "upperTiles" && layer !== "upperOverlayTiles")) return base;
+  return Math.max(base, mapUpperTileDepth(tileset, tile, cell.y, mapTileSize(scene.map)) + 0.1);
+}
+
+/** 물건 열린 모습의 단계 그림(t=0..1)을 캔버스 텍스처로 만들어 둔다(같은 타일·종류·단계면 다시 쓴다). */
+function openStateTexture(scene: PlaySceneContext, style: ContainerStyle, cell: Cell, t: number): OpenCanvas | null {
+  const project = store.getCurrent();
+  const map = scene.map;
+  if (typeof document === "undefined" || typeof scene.textures?.addCanvas !== "function") return null;
+  const textureKey = tilesetTextureKeyFor(scene, project, map);
+  if (!textureKey) return null;
+  const size = mapTileSize(map);
+  const tiles = containerObjectTiles(project, map, cell, scene, textureKey, size);
+  if (!tiles) return null;
+  const step = Math.round(t * 3);
+  const key = `__cfx_open_${textureKey}_${tiles.above}_${tiles.below}_${style}_${step}`;
+  if (scene.textures.exists(key)) return { key, cols: 3, rows: 2, layer: tiles.layer, tile: tiles.below };
+  const W = size * 3, H = size * 2;
+  const src = new Uint8ClampedArray(W * H * 4);
+  const blit = (tile: number, oy: number) => {
+    const read = framePixels(scene, textureKey, `tile_${tile}`);
+    if (!read) return;
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+      const p = read(x, y);
+      if (!p) continue;
+      const i = ((oy + y) * W + size + x) * 4;
+      src[i] = p[0]; src[i + 1] = p[1]; src[i + 2] = p[2]; src[i + 3] = p[3];
+    }
+  };
+  if (tiles.above >= 0) blit(tiles.above, 0);
+  blit(tiles.below, size);
+  const out = openStatePixels(src, W, H, size, style, step / 3);
+  if (!out) return null;
+  const canvas = document.createElement("canvas");
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  const image = ctx.createImageData(W, H);
+  image.data.set(out);
+  ctx.putImageData(image, 0, 0);
+  if (!scene.textures.addCanvas(key, canvas)) return null;
+  return { key, cols: 3, rows: 2, layer: tiles.layer, tile: tiles.below };
+}
+
+/**
+ * 칩셋 화소만으로 만드는 열린 모습. 물건 화소 상자(bx0..bx1, by0..by1)를 기준으로 종류마다
+ * 「속 → 어둡게」, 「띠 → 옮기기(뒤집기·좁히기)」를 한다. 원래 물건 화소는 모두 덮인다(옮긴 자리는 어두운 속이 된다).
+ * 반환: 원래 그림 위에 얹을 화소(물건 밖은 투명). 물건 화소가 너무 적으면 null.
+ */
+export function openStatePixels(src: Rgba, W: number, H: number, size: number, style: ContainerStyle, t: number): Rgba | null {
+  const alphaAt = (x: number, y: number) => (x < 0 || y < 0 || x >= W || y >= H ? 0 : src[(y * W + x) * 4 + 3]!);
+  let bx0 = W, by0 = H, bx1 = -1, by1 = -1;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (alphaAt(x, y) >= 128) { bx0 = Math.min(bx0, x); by0 = Math.min(by0, y); bx1 = Math.max(bx1, x); by1 = Math.max(by1, y); }
+  if (bx1 - bx0 < 3 || by1 - by0 < 3) return null;
+  const bw = bx1 - bx0 + 1, bh = by1 - by0 + 1;
+  const s = size / 16;
+  const out = new Uint8ClampedArray(src);
+  const set = (x: number, y: number, r: number, g: number, b: number) => {
+    if (x < 0 || y < 0 || x >= W || y >= H) return;
+    const i = (y * W + x) * 4; out[i] = r; out[i + 1] = g; out[i + 2] = b; out[i + 3] = 255;
+  };
+  /** 속: 그 칸의 원래 화소를 아주 어둡게(결은 남는다). */
+  const hollow = (x0: number, y0: number, x1: number, y1: number, k = 0.24) => {
+    for (let y = Math.max(0, y0); y < Math.min(H, y1); y++) for (let x = Math.max(0, x0); x < Math.min(W, x1); x++) {
+      if (alphaAt(x, y) < 128) continue;
+      const i = (y * W + x) * 4;
+      set(x, y, src[i]! * k + 10, src[i + 1]! * k + 6, src[i + 2]! * k + 3);
+    }
+  };
+  /** 띠를 (dx, dy) 로 옮겨 얹는다. scaleX < 1 이면 좁히고, flip 이면 좌우로 뒤집고, shade 로 밝기를 바꾼다. */
+  const move = (x0: number, y0: number, x1: number, y1: number, dx: number, dy: number, o: { scaleX?: number; flip?: boolean; shade?: number; anchor?: "left" | "right" } = {}) => {
+    const scaleX = o.scaleX ?? 1, shade = o.shade ?? 1;
+    const w = x1 - x0, nw = Math.max(1, Math.round(w * scaleX));
+    const left = o.anchor === "right" ? x1 - nw : x0;
+    for (let y = y0; y < y1; y++) for (let k = 0; k < nw; k++) {
+      let sx = x0 + Math.min(w - 1, Math.floor((k + 0.5) / scaleX));
+      if (o.flip) sx = x1 - 1 - (sx - x0);
+      const i = (y * W + sx) * 4;
+      if (alphaAt(sx, y) < 128) continue;
+      set(left + k + dx, y + dy, Math.min(255, src[i]! * shade), Math.min(255, src[i + 1]! * shade), Math.min(255, src[i + 2]! * shade));
+    }
+  };
+  const rows = (f: number) => by0 + Math.max(1, Math.round(bh * f));
+  const lift = (n: number) => -Math.max(1, Math.round(n * s * t));
+  switch (CONTAINER_FX[style].motion) {
+    case "lid": {
+      // 궤짝: 위 40% 뚜껑 띠가 들리고 그 밑이 어두운 속.
+      const lid = rows(0.4);
+      hollow(bx0, by0, bx1 + 1, lid + Math.round(2 * s));
+      move(bx0, by0, bx1 + 1, lid, 0, lift(5), { shade: 1.08 });
+      break;
+    }
+    case "pry": {
+      // 상자: 윗판(위 30%) 오른쪽 절반을 비집어 올리고 틈은 어둡게.
+      const slat = rows(0.3);
+      const mid = bx0 + Math.floor(bw / 2);
+      hollow(mid, by0, bx1 + 1, slat + Math.round(2 * s));
+      move(mid, by0, bx1 + 1, slat, Math.round(1 * s * t), lift(4), { shade: 1.12 });
+      break;
+    }
+    case "rock": {
+      // 통: 위 28% 나무 뚜껑을 벗겨 비스듬히 옆으로 — 통 아가리가 어둡게 드러난다.
+      const lid = rows(0.28);
+      hollow(bx0 + Math.round(s), by0, bx1 + 1 - Math.round(s), lid + Math.round(s));
+      move(bx0, by0, bx1 + 1, lid, Math.round(5 * s * t), lift(3), { scaleX: 0.85, shade: 0.95 });
+      break;
+    }
+    case "lidHop": {
+      // 항아리: 위 25% 사기 뚜껑이 떠 있고 그 밑 아가리가 어둡다.
+      const lid = rows(0.25);
+      hollow(bx0 + Math.round(s), by0, bx1 + 1 - Math.round(s), lid + Math.round(s));
+      move(bx0, by0, bx1 + 1, lid, Math.round(1 * s * t), lift(5), { shade: 1.1 });
+      break;
+    }
+    case "slide": {
+      // 서랍: 가운데 띠(45~70%)가 앞으로(아래로) 빠지고 빠진 자리는 어두운 속, 서랍 밑엔 그림자.
+      const a = rows(0.45), b = rows(0.7);
+      const d = Math.max(1, Math.round(4 * s * t));
+      hollow(bx0 + Math.round(s), a, bx1 + 1 - Math.round(s), b);
+      move(bx0 + Math.round(s), a, bx1 + 1 - Math.round(s), b, 0, d + 1, { shade: 0.5 });
+      move(bx0 + Math.round(s), a, bx1 + 1 - Math.round(s), b, 0, d, { shade: 1.1 });
+      break;
+    }
+    case "slump": {
+      // 자루·짚: 묶은 주둥이(위 35%)를 풀어 헤친다 — 테두리가 양옆으로 벌어지고 가운데 아가리가 어둡다.
+      const mouth = rows(0.35);
+      const midX = bx0 + bw / 2;
+      const spread = Math.max(1, Math.round(2 * s * t));
+      move(bx0, by0, Math.floor(midX), mouth, -spread, Math.round(s * t), { shade: 1.05 });
+      move(Math.ceil(midX), by0, bx1 + 1, mouth, spread, Math.round(s * t), { shade: 1.05 });
+      hollow(Math.round(midX - bw * 0.28), by0, Math.round(midX + bw * 0.28), mouth + Math.round(s), 0.2);
+      break;
+    }
+    case "doors":
+      // 옷장은 칩셋 화소 합성을 쓰지 않는다 — 블라인드 판정 3회 모두 「어두워진 닫힌 문」(NO). 예전 문짝 덧그림(playMotion doors)과
+      // 빼꼼 열린 흔적(doors-ajar)을 그대로 쓴다. 후속: 문짝이 칸 앞으로 젖혀진 모습은 칸 밖 화소가 필요하다.
+      return null;
+  }
+  return out;
+}
+
+/** 연출 중 칸 위의 열린 그림(단계마다 바꾼다). 마지막 단계는 뒤진 흔적이 그려질 때까지 둔다. */
+async function playOpenState(scene: PlaySceneContext, style: ContainerStyle, cell: Cell): Promise<boolean> {
+  const first = openStateTexture(scene, style, cell, 1 / 3);
+  if (!first) return false;
+  const size = mapTileSize(scene.map);
+  const depth = openStateDepth(scene, cell, first.layer, first.tile, rowDepth(cell.y, size) + FX_DEPTH_BUMP);
+  const image = scene.add.image((cell.x - 1) * size, (cell.y - 1) * size, first.key).setOrigin(0, 0).setDepth(depth);
+  for (const t of [1 / 3, 2 / 3, 1]) {
+    const tex = openStateTexture(scene, style, cell, t);
+    if (tex) image.setTexture(tex.key);
+    await sleep(scene, 80);
+  }
+  holdUntilMark(scene, cell, image);
+  return true;
+}
+
 export async function playContainerFx(scene: PlaySceneContext, style: ContainerStyle, cell: Cell): Promise<void> {
   const spec = CONTAINER_FX[style];
   // 궤짝은 저작한 「상자」 자리(chest)가 있으면 그 소리.
   playSe(style === "chest" ? projectSeCue(store.getCurrent(), "chest") ?? spec.se : spec.se);
-  shakeCell(scene, cell, spec.shakePx, spec.shakes);
-  await playMotion(scene, style, cell);
+  // 타일 이미지는 움직이지 않는다 — 물건 칩셋 화소를 오려 낸 그림의 단계(뚜껑 들림·판자 비집기·서랍 빠짐·주둥이 벌어짐)만
+  // 칸 위에서 바뀐다. 예전 흔들기(상자·짚)·기울이기(통)·주저앉기(자루)는 칸의 바닥·벽 타일까지 움직여 뜬다.
+  if (!(await playOpenState(scene, style, cell))) await playMotion(scene, style, cell);
   burstParticles(scene, cell, style);
 }
 
@@ -802,7 +951,7 @@ export async function playFieldFx(scene: PlaySceneContext, fx: FieldFx, target: 
 
 // ───────────────────────── 뒤진 흔적 ─────────────────────────
 
-const markLayers = new WeakMap<PlaySceneContext, { mapId: string; marks: Map<string, Phaser.GameObjects.Graphics> }>();
+const markLayers = new WeakMap<PlaySceneContext, { mapId: string; marks: Map<string, HeldFx> }>();
 
 function drawMark(g: Phaser.GameObjects.Graphics, mark: ContainerSearchedMark, x0: number, y0: number, s: number): void {
   const px = (x: number, y: number, w: number, h: number, color: number, alpha = 1) => g.fillStyle(color, alpha).fillRect(x0 + x * s, y0 + y * s, w * s, h * s);
@@ -871,6 +1020,15 @@ export function syncContainerSearchedMarks(scene: PlaySceneContext): void {
     const lid = pendingLids.get(scene)?.get(lidKey);
     if (lid) { lid.destroy(); pendingLids.get(scene)!.delete(lidKey); }
     if (layer.marks.get(key)?.active) continue;
+    // 물건 자체의 열린 그림(칩셋 화소)이 되면 그것을 남기고, 안 되면(타일 화소를 못 읽음) 예전 흔적 그림.
+    // 그림이 보이는 이벤트(상자 캐릭터 시트)는 칸 타일이 물건이 아니다 — 예전 흔적만.
+    const spriteShown = !view.transparent && !!view.sprite?.id;
+    const open = spriteShown ? null : openStateTexture(scene, style, { x: view.x, y: view.y }, 1);
+    if (open) {
+      const depth = openStateDepth(scene, { x: view.x, y: view.y }, open.layer, open.tile, rowDepth(view.y, size) + 0.2);
+      layer.marks.set(key, scene.add.image((view.x - 1) * size, (view.y - 1) * size, open.key).setOrigin(0, 0).setDepth(depth));
+      continue;
+    }
     const g = scene.add.graphics().setDepth(rowDepth(view.y, size) + 0.2);
     drawMark(g, CONTAINER_FX[style].mark, view.x * size, view.y * size, s);
     layer.marks.set(key, g);
