@@ -22,6 +22,7 @@ import { monsterCenterCommands } from "@/project/monsterCenterRecipe";
 import { configureExpeditionFishing, EXPEDITION_FIELD_ITEM_IDS, EXPEDITION_FISHING_ROD_ID } from './fieldItems';
 import { repairExpeditionResidents } from './residents';
 import { repairExpeditionNpcLayout } from "./npcLayout";
+import { placeEdgeDoors, type EdgeDoor } from "./exitEdges";
 import { EXPEDITION_HERO_BACK, expeditionTrainerFront, gymLeaderArt, typeArt } from "./trainerArt";
 import { ensureGrassTerrainRecord, GRASS_TERRAIN_ID } from "@/project/defaults/defaultDatabaseUtilityRecords";
 import { terrainRecordAt } from "@/project/terrainAt";
@@ -290,6 +291,15 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     manifest.links.push({ from: map.id, to: target.id, eventId: e.id, source: at, destination: landing, ...(required ? { required } : {}) });
   }
 
+  // 길 출구(connect)는 문 칸만이 아니라 그 길의 폭 전체가 문이어야 한다 — 한 칸에만 놓으면 다른 열을 따라 지도 끝까지 걸어가도 넘어가지 못했다
+  // (별싹 마을 북쪽 길 왼쪽 열 x=10 에서 막힘, 사냥터 북쪽 14칸 폭 중 1칸만 문 — 2026-11-08 terra-autopilot c1·c4·c5·c9). 잠긴 길은 같은 잠금 문을 그대로 깐다.
+  // 건물 문(attachRoom)·계단은 한 칸이 맞으므로 늘리지 않는다. 다른 문·표지판·착지 칸 고르기를 방해하지 않도록 이벤트는 세계를 다 지은 뒤 깐다(placeEdgeDoors).
+  const edgeDoors: EdgeDoor[] = [];
+  function edgeDoor(map: GameMap, target: GameMap, at: Point): void {
+    const door = map.events.find(e => e.id === `${map.id}_to_${target.id}`)!;
+    edgeDoors.push({ map, name: door.id, at, commands: structuredClone(door.pages![0]!.commands) });
+  }
+
   // 입구에서 걸어 닿는 칸 — 막는 사람·표지판 칸은 지나지 못하고, 이동 칸(문)은 닿기만 하고 넘어가지 않는다.
   function walkable(map: GameMap, extraBlock?: Point): Set<string> {
     const solid = new Set(map.events.filter(e => e.pages?.[0]?.overlapForbidden).map(e => coord(e)));
@@ -351,6 +361,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const landB = nearest(b, { x: atB.x, y: atB.y + (drawnDoor ? 1 : -1) }, cb, true);
     reserve(b, landB);
     portal(a, b, atA, landB, required); portal(b, a, atB, landA);
+    edgeDoor(a, b, atA); edgeDoor(b, a, atB);
     // Visible, inspectable signposts explain interior route entrances.
     // 표지판은 길목이 아닌 칸에 세운다 — 그 칸 하나 말고는 걸어 닿는 칸이 줄지 않아야 한다.
     // 나무 이정표는 바깥(마을·길)에만, 이미 3칸 안에 표지판이 있으면 더 세우지 않는다 — 리그 경기장·배 복도에 나무 이정표가 서고
@@ -957,6 +968,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
       { x: pond.area.x - 1, y: pond.area.y + (pond.area.h >> 1) },
       [{ kind: "fork", condition: { kind: "item", itemId: EXPEDITION_FISHING_ROD_ID, present: false }, then: [gain(EXPEDITION_FISHING_ROD_ID, 1), text("낚싯대를 받았다! 물가를 바라보고 조사하면 낚시를 할 수 있다.")], else: [text("낚싯대는 이미 가지고 있구나. 물가에서 마음껏 써 봐.")] }], 6);
   }
+  placeEdgeDoors(project, edgeDoors, (map, suffix, at, commands) => { event(map, suffix, at, commands, { trigger: "playerTouch", below: true, graphic: invisible }); });
   repairExpeditionNpcLayout(project);
   repairExpeditionResidents(project, lookOf);
   repairExpeditionShopPrices(project);

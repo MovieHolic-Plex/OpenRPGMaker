@@ -330,3 +330,12 @@ It requires an existing catalog; full generation without the option remains supp
 - `homeTownAttempt`(townLayouts.ts): 연못·첫 나무는 가장 트인 자리(둘레 3칸 빈 땅이 가장 많은 곳)에, 다음 나무는 앞 나무 곁(덩이), 꽃밭은 연못·나무 곁, 낱 꽃·덤불·바위는 무언가 곁 두 칸 안에만 둔다. 상자 안 아무 데나 흩던 때는 집 넷이 몰린 반대편이 낱 나무만 흩어진 빈 초원이었다(큰 마을 동쪽 61%).
 - 큰 마을(large)은 `pond` 를 고르지 않았으면 연못을 둔다. 모델이 `pond:false` 를 주면 그대로.
 - 그 뒤 `fillAreaByUse`(kitAreaFurnish) 가 남은 빈터를 쓰임으로 채우는 것은 그대로다.
+
+## 길 출구는 폭 전체가 문 (2026-11-09, terra-autopilot c1·c4·c5·c9)
+
+- `connect()` 는 길 출구마다 이동 이벤트를 **한 칸**에만 놓았다. 길이 가장자리에서 2~14칸 폭이면 다른 열로 지도 끝까지 걸어가도 넘어가지 못했다
+  (별싹 마을 북쪽 길 왼쪽 열 x=10 에서 (10,0) 막힘 · c1 첫 사냥터 북쪽 14칸 폭(x=6..19, 스위치 `mx_rival_2` 잠금)에 문 하나).
+- `exitEdges.ts` 의 `placeEdgeDoors` 가 세계를 다 지은 뒤(world.ts 끝 · tournament.ts `finishWorld`) 문 칸에서 4칸 띠 안에서 걸어 닿는 가장자리 칸마다
+  **같은 이동 명령**(잠긴 길은 같은 잠금 fork)을 `<문 id>_edge_<x>_<y>` 이벤트로 깐다. 두 생성기(캠페인 `world.ts`·대회/탐험 `tournament.ts`)가 같은 함수를 쓴다.
+- 건물 문(`attachRoom`)·계단은 한 칸이 맞아 늘리지 않는다(문 칸이 가장자리에서 4칸보다 멀면 문 칸뿐). 이미 문·사람·표지판이 선 칸은 건너뛴다.
+- 검증: `test/monsterExpeditionRoadExits.test.ts` (캠페인 · 사냥터 2·4곳 · 잠금 명령 동일 · c1 14칸). 실플레이 캡처는 `runtime-qa` 로 별싹 마을 왼쪽 열 → 학교.

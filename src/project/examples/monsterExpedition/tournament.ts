@@ -17,6 +17,7 @@ import { repairExpeditionShopPrices } from "./shopPrices";
 import { monsterCenterCommands } from "@/project/monsterCenterRecipe";
 import { repairExpeditionResidents } from "./residents";
 import { repairExpeditionNpcLayout } from "./npcLayout";
+import { placeEdgeDoors, type EdgeDoor } from "./exitEdges";
 import { EXPEDITION_HERO_BACK, expeditionTrainerFront } from "./trainerArt";
 import { fillAreaByUse } from "@/project/kitAreaFurnish";
 
@@ -224,6 +225,13 @@ export function authorTournamentWorld(project: Project, options: TournamentOptio
     return candidates.find(p => walkable(map, p).size === before - 1) ?? nearest(map, wanted, connected(map), true);
   }
 
+  // 길 출구는 문 칸만이 아니라 그 길의 폭 전체가 문이다(잠긴 길은 같은 잠금) — world.ts 와 같은 규칙, 세계를 다 지은 뒤 깐다(finishWorld).
+  const edgeDoors: EdgeDoor[] = [];
+  function edgeDoor(map: GameMap, target: GameMap, at: Point): void {
+    const door = map.events.find(e => e.id === `${map.id}_to_${target.id}`)!;
+    edgeDoors.push({ map, name: door.id, at, commands: door.pages![0]!.commands });
+  }
+
   function connect(a: GameMap, b: GameMap, required?: string): void {
     // 이미 선 표지판·사람 뒤로 문을 두지 않는다 — 새순·달그림자 마을에서 둘째 북쪽 문이 첫 표지판에 막혔다(2026-10-06).
     const reachA = walkable(a);
@@ -238,6 +246,7 @@ export function authorTournamentWorld(project: Project, options: TournamentOptio
     const landB = nearest(b, { x: atB.x, y: atB.y + (drawnDoor ? 1 : -1) }, cb, true);
     reserve(b, landB);
     portal(a, b, atA, landB, required); portal(b, a, atB, landA);
+    edgeDoor(a, b, atA); edgeDoor(b, a, atB);
     // Visible, inspectable signposts explain interior route entrances.
     // 표지판은 길목이 아닌 칸에 세운다 — 그 칸 하나 말고는 걸어 닿는 칸이 줄지 않아야 한다.
     // 나무 이정표는 바깥(마을·길)에만, 이미 3칸 안에 표지판이 있으면 더 세우지 않는다 — 리그 경기장·배 복도에 나무 이정표가 서고
@@ -391,6 +400,7 @@ export function authorTournamentWorld(project: Project, options: TournamentOptio
 
   /** 두 형식 공통 마무리 — 스위치 등록, NPC 배치 보정, 마을 빈터 채우기. */
   function finishWorld(allSwitches: Set<string>): void {
+    placeEdgeDoors(project, edgeDoors, (map, suffix, at, commands) => { event(map, suffix, at, commands, { trigger: "playerTouch", below: true, graphic: invisible }); });
     const visitSwitches = (value: unknown): void => {
       if (Array.isArray(value)) { value.forEach(visitSwitches); return; }
       if (!value || typeof value !== "object") return;
