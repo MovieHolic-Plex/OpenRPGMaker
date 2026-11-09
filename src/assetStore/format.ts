@@ -5,6 +5,7 @@
  */
 import type { BattleAnimationRecord, TilesetDef, UploadedAsset } from "../project/types";
 import { validateObjectSpec, type ObjectSpecV1 } from "../project/objectSpec";
+import { PIXEL_ENEMY_GRIDS, isExtendedPixelGrid, pixelEnemyGridDims, pixelEnemyOptionalCells, pixelEnemyReservedCells } from "../assets/pixelEnemyGrid";
 
 export const STORE_PACK_SCHEMA = "oprn-store-pack/1" as const;
 /** 매니페스트 안의 data URL 을 대신하는 blob 자리표시. 받을 때 data URL 로 되돌린다. */
@@ -392,11 +393,9 @@ function portraitProblems(raw: unknown, assets: Record<string, unknown>, where: 
 export const STORE_MONSTER_MOTIONS = ["hop", "swoop", "stomp", "dash", "float", "shoot", "breath"] as const;
 export const STORE_MONSTER_SHEET_CELLS = [48, 64, 96, 128, 192, 256] as const;
 export const STORE_MONSTER_IDLE_MS = { min: 60, max: 2000 } as const;
-export const STORE_MONSTER_SHEET_GRIDS = ["3x3", "4x4"] as const;
-/** 4x4 시트에서 비울 수 있는 칸 번호. 0~8 은 늘 그려야 하고 15 는 늘 비어 있다. */
-export const STORE_MONSTER_OPTIONAL_CELLS = [9, 10, 11, 12, 13, 14] as const;
-/** 시트 한 변의 칸 수. grid 생략 = 3x3. */
-export const storeMonsterSheetSide = (grid: unknown): 3 | 4 => (grid === "4x4" ? 4 : 3);
+export const STORE_MONSTER_SHEET_GRIDS = PIXEL_ENEMY_GRIDS;
+/** 4x4 시트에서 비울 수 있는 칸 번호. 0~8 은 늘 그려야 하고 15 는 늘 비어 있다. 5x4 는 9~19(격자별 목록은 pixelEnemyOptionalCells). */
+export const STORE_MONSTER_OPTIONAL_CELLS = pixelEnemyOptionalCells("4x4");
 
 /** 몬스터 에셋 하나의 meta.pixelEnemySheet 검사(크기는 storeMonsterSheetSizeProblems). 표식이 없으면 빈 목록. */
 function monsterSheetProblems(id: string, raw: Record<string, unknown>, assets: Record<string, unknown>): string[] {
@@ -423,14 +422,17 @@ function monsterSheetProblems(id: string, raw: Record<string, unknown>, assets: 
   if (sheet.grid !== undefined && !includes(STORE_MONSTER_SHEET_GRIDS, sheet.grid)) out.push(`${where}: pixelEnemySheet.grid 는 ${STORE_MONSTER_SHEET_GRIDS.join("·")} 중 하나여야 합니다.`);
   if (sheet.missingCells !== undefined) {
     const cells = sheet.missingCells;
-    if (sheet.grid !== "4x4") out.push(`${where}: pixelEnemySheet.missingCells 는 grid 4x4 시트에만 씁니다.`);
-    else if (!Array.isArray(cells) || cells.some((cell) => !(STORE_MONSTER_OPTIONAL_CELLS as readonly unknown[]).includes(cell)) || new Set(cells).size !== cells.length) {
-      out.push(`${where}: pixelEnemySheet.missingCells 는 ${STORE_MONSTER_OPTIONAL_CELLS.join("·")} 중 겹치지 않는 칸 번호 목록이어야 합니다.`);
+    if (!isExtendedPixelGrid(sheet.grid)) out.push(`${where}: pixelEnemySheet.missingCells 는 grid 4x4·5x4 시트에만 씁니다.`);
+    else {
+      const optional: readonly unknown[] = pixelEnemyOptionalCells(sheet.grid);
+      if (!Array.isArray(cells) || cells.some((cell) => !optional.includes(cell)) || new Set(cells).size !== cells.length) {
+        out.push(`${where}: pixelEnemySheet.missingCells 는 ${optional.join("·")} 중 겹치지 않는 칸 번호 목록이어야 합니다.`);
+      }
     }
   }
   if (isRecord(target) && isRecord(target.meta) && target.meta.frames !== undefined) {
-    const side = storeMonsterSheetSide(sheet.grid);
-    if (target.meta.frames !== side * side) out.push(`${where}: 전투 도트 시트 그림의 meta.frames 는 ${side * side} 이어야 합니다(grid ${side}x${side}).`);
+    const { cols, rows } = pixelEnemyGridDims(sheet.grid);
+    if (target.meta.frames !== cols * rows) out.push(`${where}: 전투 도트 시트 그림의 meta.frames 는 ${cols * rows} 이어야 합니다(grid ${cols}x${rows}).`);
   }
   return out;
 }
@@ -455,9 +457,9 @@ export function storeMonsterSheetSizeProblems(
     }
     const sheetAsset = Object.hasOwn(assets, sheet.sheetResourceId) ? assets[sheet.sheetResourceId] : undefined;
     const size = sheetAsset ? sizeOfBlob(sheetAsset.blob) : null;
-    const side = storeMonsterSheetSide(sheet.grid);
-    if (!size || size.width !== cell * side || size.height !== cell * side) {
-      out.push(`${asset.name}: 전투 도트 시트(${sheet.sheetResourceId})는 ${side}×${side} 칸 ${cell * side}×${cell * side} 이어야 합니다(지금 ${size ? `${size.width}×${size.height}` : "PNG 아님"}) — ${id}.`);
+    const { cols, rows } = pixelEnemyGridDims(sheet.grid);
+    if (!size || size.width !== cell * cols || size.height !== cell * rows) {
+      out.push(`${asset.name}: 전투 도트 시트(${sheet.sheetResourceId})는 ${cols}×${rows} 칸 ${cell * cols}×${cell * rows} 이어야 합니다(지금 ${size ? `${size.width}×${size.height}` : "PNG 아님"}) — ${id}.`);
     }
   }
   return out;
@@ -476,21 +478,24 @@ export function storeMonsterSheetCellProblems(
   const assets = manifest.content.assets;
   for (const asset of Object.values(assets)) {
     const sheet = asset.kind === "monster" ? asset.meta.pixelEnemySheet : undefined;
-    if (!sheet || sheet.grid !== "4x4") continue;
+    if (!sheet || !isExtendedPixelGrid(sheet.grid)) continue;
     const sheetAsset = Object.hasOwn(assets, sheet.sheetResourceId) ? assets[sheet.sheetResourceId] : undefined;
     const image = sheetAsset ? decode(sheetAsset.blob) : null;
     const cell = sheet.cell;
-    if (!image || image.width !== cell * 4 || image.height !== cell * 4) continue;
+    const { cols, rows } = pixelEnemyGridDims(sheet.grid);
+    if (!image || image.width !== cell * cols || image.height !== cell * rows) continue;
     const missing = new Set(sheet.missingCells ?? []);
-    for (let index = 0; index < 16; index += 1) {
-      const x0 = (index % 4) * cell;
-      const y0 = Math.floor(index / 4) * cell;
+    const reserved = pixelEnemyReservedCells(sheet.grid);
+    for (let index = 0; index < cols * rows; index += 1) {
+      const x0 = (index % cols) * cell;
+      const y0 = Math.floor(index / cols) * cell;
       let filled = false;
       for (let y = y0; y < y0 + cell && !filled; y += 1) {
         for (let x = x0; x < x0 + cell; x += 1) if (image.data[(y * image.width + x) * 4 + 3] !== 0) { filled = true; break; }
       }
-      const mustBeEmpty = index === 15 || missing.has(index);
-      if (mustBeEmpty && filled) out.push(`${asset.name}: 전투 도트 시트 ${index}번 칸은 ${index === 15 ? "예약 칸이라" : "missingCells 에 적혀 있어"} 완전히 투명해야 합니다.`);
+      const isReserved = reserved.includes(index);
+      const mustBeEmpty = isReserved || missing.has(index);
+      if (mustBeEmpty && filled) out.push(`${asset.name}: 전투 도트 시트 ${index}번 칸은 ${isReserved ? "예약 칸이라" : "missingCells 에 적혀 있어"} 완전히 투명해야 합니다.`);
       if (!mustBeEmpty && !filled) out.push(`${asset.name}: 전투 도트 시트 ${index}번 칸이 비어 있습니다${index >= 9 ? " — 그리지 않았으면 missingCells 에 적으세요" : ""}.`);
     }
   }

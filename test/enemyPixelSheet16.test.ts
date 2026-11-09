@@ -46,6 +46,43 @@ describe("16-cell frame map", () => {
     expect(pixelEnemyFrame({ skillCell: true }, "skill")).toEqual(PIXEL_ENEMY_FRAME.recover);
   });
 
+  it("keeps every 3x3 and 4x4 background position byte-identical to the pre-5x4 formula", () => {
+    // 기대값은 예전 식(한 변 n 이면 칸당 100/(n-1)%, 소수 셋째 자리 반올림)으로 미리 계산해 박아 둔 문자열이다.
+    const three = { idle_a: "0% 0%", idle_b: "50% 0%", idle_c: "100% 0%", windup: "0% 50%", move: "50% 50%", attack: "100% 50%", recover: "0% 100%", hit: "50% 100%", dead: "100% 100%", skill: "100% 50%" } as const;
+    for (const [cell, position] of Object.entries(three)) {
+      expect(pixelEnemyBackgroundPosition({ grid: "3x3" }, cell as keyof typeof three)).toBe(position);
+      expect(pixelEnemyBackgroundPosition(undefined, cell as keyof typeof three)).toBe(position);
+    }
+    const four = {
+      idle_a: "0% 0%", idle_b: "33.333% 0%", idle_c: "66.667% 0%", windup: "100% 0%", move: "0% 33.333%", attack: "33.333% 33.333%", recover: "66.667% 33.333%", hit: "100% 33.333%", dead: "0% 66.667%",
+      attack_mid: "33.333% 66.667%", cast_charge: "66.667% 66.667%", cast_release: "100% 66.667%", guard: "0% 100%", weak: "33.333% 100%", intro: "66.667% 100%",
+    } as const;
+    for (const [cell, position] of Object.entries(four)) expect(pixelEnemyBackgroundPosition({ grid: "4x4" }, cell as keyof typeof four)).toBe(position);
+    // 4x4 에는 5x4 전용 칸이 없다 — 예전처럼 기본 칸으로 물린다.
+    expect(pixelEnemyHasCell({ grid: "4x4" }, "stunned")).toBe(false);
+    expect(pixelEnemyBackgroundPosition({ grid: "4x4" }, "move_b")).toBe(four.move);
+  });
+
+  it("places 5x4 cells 15..19 on a 5-wide grid and falls back for missing ones", () => {
+    const full: Pick<PixelEnemySheet, "grid" | "missingCells"> = { grid: "5x4", missingCells: [] };
+    expect(pixelEnemyBackgroundPosition(full, "intro")).toBe("100% 66.667%");
+    expect(pixelEnemyBackgroundPosition(full, "move_b")).toBe("0% 100%");
+    expect(pixelEnemyBackgroundPosition(full, "hit_b")).toBe("25% 100%");
+    expect(pixelEnemyBackgroundPosition(full, "attack_b")).toBe("50% 100%");
+    expect(pixelEnemyBackgroundPosition(full, "stunned")).toBe("75% 100%");
+    expect(pixelEnemyBackgroundPosition(full, "enrage")).toBe("100% 100%");
+    expect(pixelEnemyBackgroundPosition(full, "weak")).toBe("75% 66.667%");
+    expect(pixelEnemyBackgroundPosition(full, "idle_b")).toBe("25% 0%");
+    // 빠진 칸은 move_b → move, hit_b → hit, attack_b → attack 으로 물린다.
+    const missing: Pick<PixelEnemySheet, "grid" | "missingCells"> = { grid: "5x4", missingCells: [15, 16, 17] };
+    expect(pixelEnemyBackgroundPosition(missing, "attack_b")).toBe(pixelEnemyBackgroundPosition(missing, "attack"));
+    expect(pixelEnemyBackgroundPosition(missing, "attack_b")).toBe("0% 33.333%");
+    expect(pixelEnemyBackgroundPosition(missing, "move_b")).toBe(pixelEnemyBackgroundPosition(missing, "move"));
+    expect(pixelEnemyBackgroundPosition(missing, "hit_b")).toBe(pixelEnemyBackgroundPosition(missing, "hit"));
+    expect(pixelEnemyHasCell(missing, "hit_b")).toBe(false);
+    expect(pixelEnemyHasCell(missing, "enrage")).toBe(true);
+  });
+
   it("falls back for missing cells: attack_mid → attack, cast_charge → windup, cast_release → attack, guard/weak/intro → idle_a", () => {
     const none = sheet16([9, 10, 11, 12, 13, 14]);
     expect(pixelEnemyFrame(none, "attack_mid")).toEqual(pixelEnemyFrame(none, "attack"));
@@ -88,9 +125,9 @@ function pngHeader(width: number, height: number, salt = 0): Uint8Array {
 }
 const sha = (bytes: Uint8Array) => createHash("sha256").update(bytes).digest("hex");
 
-function pack(patch: Record<string, unknown> = {}, sheetSize = 256, frames = 16, portraitSize = 64): { manifest: StorePackManifest; blobs: Map<string, Uint8Array>; sheetSha: string } {
+function pack(patch: Record<string, unknown> = {}, sheetSize = 256, frames = 16, portraitSize = 64, sheetHeight = sheetSize): { manifest: StorePackManifest; blobs: Map<string, Uint8Array>; sheetSha: string } {
   const portrait = pngHeader(portraitSize, portraitSize, 1);
-  const sheet = pngHeader(sheetSize, sheetSize, 2);
+  const sheet = pngHeader(sheetSize, sheetHeight, 2);
   const blobs = new Map([[sha(portrait), portrait], [sha(sheet), sheet]]);
   const manifest: StorePackManifest = {
     schema: "oprn-store-pack/1", title: "Slimes", summary: "", description: "", tags: [], kind: "battler", license: "OPRN-GAME", aiGenerated: true, credits: "AI",
@@ -100,7 +137,7 @@ function pack(patch: Record<string, unknown> = {}, sheetSize = 256, frames = 16,
           id: "slime", name: "Slime", kind: "monster", blob: sha(portrait), mime: "image/png",
           meta: { width: 64, height: 64, pixelEnemySheet: { sheetResourceId: "slime-sheet", cell: 64, motion: "hop", idleFrameMs: 200, grid: "4x4", ...patch } as never },
         },
-        "slime-sheet": { id: "slime-sheet", name: "Slime sheet", kind: "picture", blob: sha(sheet), mime: "image/png", meta: { width: sheetSize, height: sheetSize, frameWidth: 64, frameHeight: 64, frames } },
+        "slime-sheet": { id: "slime-sheet", name: "Slime sheet", kind: "picture", blob: sha(sheet), mime: "image/png", meta: { width: sheetSize, height: sheetHeight, frameWidth: 64, frameHeight: 64, frames } },
       },
       tilesets: {},
     },
@@ -122,6 +159,19 @@ function rgbaSheet(cell: number, filled: readonly number[]): { width: number; he
   return { width, height: width, data };
 }
 const range = (n: number) => Array.from({ length: n }, (_, index) => index);
+
+/** 열·행 수가 다른 시트(5x4)용 RGBA 시트. */
+function rgbaGrid(cell: number, cols: number, rows: number, filled: readonly number[]): { width: number; height: number; data: Uint8Array } {
+  const width = cell * cols;
+  const height = cell * rows;
+  const data = new Uint8Array(width * height * 4);
+  for (const index of filled) {
+    const x = (index % cols) * cell + Math.floor(cell / 2);
+    const y = Math.floor(index / cols) * cell + Math.floor(cell / 2);
+    data[(y * width + x) * 4 + 3] = 255;
+  }
+  return { width, height, data };
+}
 
 describe("store format for 16-cell sheets", () => {
   it("accepts grid 4x4 with missingCells 9..14 and rejects bad grid / missingCells / frames", () => {
@@ -177,6 +227,37 @@ describe("store format for 16-cell sheets", () => {
     expect(storeMonsterSheetCellProblems(manifest, () => null)).toEqual([]);
   });
 
+  it("accepts a 5x4 pack (320x256 sheet, 20 frames) and rejects a wrong size, wrong frames or out-of-range missingCells", () => {
+    const ok = pack({ grid: "5x4" }, 320, 20, 64, 256);
+    expect(validateManifest(ok.manifest).ok).toBe(true);
+    expect(validateManifest(pack({ grid: "5x4", missingCells: [9, 15, 19] }, 320, 20, 64, 256).manifest).ok).toBe(true);
+    expect(storeMonsterSheetSizeProblems(ok.manifest, (key) => pngSize(ok.blobs.get(key)!))).toEqual([]);
+    const square = pack({ grid: "5x4" }, 256, 20, 64, 256);
+    expect(storeMonsterSheetSizeProblems(square.manifest, (key) => pngSize(square.blobs.get(key)!)).join()).toContain("320×256");
+    const errors = (patch: Record<string, unknown>, frames: number) => {
+      const result = validateManifest(pack(patch, 320, frames, 64, 256).manifest);
+      return result.ok ? "" : result.errors.join("\n");
+    };
+    expect(errors({ grid: "5x4" }, 16)).toContain("frames");
+    expect(errors({ grid: "5x4", missingCells: [20] }, 20)).toContain("missingCells");
+    expect(errors({ grid: "5x4", missingCells: [8] }, 20)).toContain("missingCells");
+    // 4x4 에서 15 를 missingCells 로 적는 것은 예전처럼 거절된다.
+    expect(errors({ grid: "4x4", missingCells: [15] }, 16)).toContain("missingCells");
+  });
+
+  it("checks 5x4 cell fill: all 20 drawn unless listed missing, no reserved cell", () => {
+    const { manifest, sheetSha } = pack({ grid: "5x4", cell: 4 } as never, 20, 20, 4, 16);
+    const check = (filled: readonly number[], missing?: number[]) => {
+      manifest.content.assets.slime!.meta.pixelEnemySheet!.missingCells = missing;
+      return storeMonsterSheetCellProblems(manifest, (key) => (key === sheetSha ? rgbaGrid(4, 5, 4, filled) : null));
+    };
+    expect(check(range(20))).toEqual([]);
+    expect(check(range(20).filter((index) => index !== 17)).join()).toContain("17번 칸이 비어");
+    expect(check(range(20).filter((index) => index !== 17), [17])).toEqual([]);
+    expect(check(range(20), [17]).join()).toContain("17번 칸은 missingCells");
+    expect(check(range(20).filter((index) => index !== 2)).join()).toContain("2번 칸이 비어");
+  });
+
   it("rewrites the sheet id at install and the runtime reads grid + missingCells", () => {
     const { manifest, blobs } = pack({ missingCells: [12, 13] });
     const project = createBlankProject();
@@ -195,6 +276,7 @@ describe("store format for 16-cell sheets", () => {
 const ONE_PX = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
 
 const VARIANTS: Readonly<Record<string, number[]>> = { full: [], noMid: [9], noGuardWeakIntro: [12, 13, 14] };
+const VARIANTS_20: Readonly<Record<string, number[]>> = { full: [], noStunEnrage: [18, 19], noHitB: [16] };
 
 /** 16칸 시트 세 벌(빠진 칸만 다르다)을 실은 프로젝트를 한 번만 만든다 — 부하가 큰 기계에서 시험마다 직렬화하면 15초를 넘긴다. */
 beforeAll(() => {
@@ -208,14 +290,21 @@ beforeAll(() => {
     };
     project.assets.uploaded[`golem16-${variant}-sheet`] = { id: `golem16-${variant}-sheet`, name: "Golem 16 sheet", kind: "picture", dataUrl: ONE_PX, meta: { width: 256, height: 256, frameWidth: 64, frameHeight: 64, frames: 16 } };
   }
+  for (const [variant, missingCells] of Object.entries(VARIANTS_20)) {
+    project.assets.uploaded[`golem20-${variant}`] = {
+      id: `golem20-${variant}`, name: "Golem 20", kind: "monster", dataUrl: ONE_PX,
+      meta: { width: 64, height: 64, pixelEnemySheet: { sheetResourceId: `golem20-${variant}-sheet`, cell: 64, motion: "stomp", idleFrameMs: 300, skillCell: true, grid: "5x4", missingCells } },
+    };
+    project.assets.uploaded[`golem20-${variant}-sheet`] = { id: `golem20-${variant}-sheet`, name: "Golem 20 sheet", kind: "picture", dataUrl: ONE_PX, meta: { width: 320, height: 256, frameWidth: 64, frameHeight: 64, frames: 20 } };
+  }
   store.replace(deserialize(serialize(project)));
 }, 180_000);
 
 /** 골렘 적이 16칸 프로젝트 시트(variant)를 쓰게 한 전투 필드. */
-function field16(variant: keyof typeof VARIANTS = "full"): { field: HTMLElement; golem: HTMLElement; image: HTMLElement; runtime: ReturnType<typeof createBattleRuntime> } {
+function field16(variant: keyof typeof VARIANTS = "full", prefix: "golem16" | "golem20" = "golem16"): { field: HTMLElement; golem: HTMLElement; image: HTMLElement; runtime: ReturnType<typeof createBattleRuntime> } {
   document.body.replaceChildren();
   const golemRecord = store.getCurrent().database.enemies.find((entry) => entry.id === "enemy_stone_golem")!;
-  golemRecord.monsterResourceId = `golem16-${variant}`;
+  golemRecord.monsterResourceId = `${prefix}-${variant}`;
   const runtime = createBattleRuntime({ project: store.getCurrent(), troopId: "troop_golem_guard", canEscape: true, canLose: false, rng: () => 0 });
   const field = battleField(runtime.snapshot());
   document.body.append(field);
@@ -283,6 +372,56 @@ describe("16-cell runtime cells", { timeout: 90_000 }, () => {
     expect(image.style.backgroundPosition).toBe("66.667% 100%");
     vi.advanceTimersByTime(600);
     expect(image.dataset.pixelCell).toBe("idle");
+  });
+
+  it("rest cell priority on a 5x4 sheet: guard > stunned > weak > enrage > idle, and 4x4 / missing cells ignore stunned and enrage", () => {
+    const full = field16("full", "golem20");
+    expect(full.golem.dataset.pixelGrid).toBe("5x4");
+    const node = full.golem;
+    node.dataset.battlerEnraged = "true";
+    expect(retroPixelEnemyCell(node)).toBe("idle");
+    expect(node.dataset.pixelEnrage).toBe("true");
+    expect(node.dataset.pixelWeak).toBeUndefined();
+    node.dataset.battlerWeak = "true";
+    expect(retroPixelEnemyCell(node)).toBe("idle");
+    expect(node.dataset.pixelWeak).toBe("true");
+    expect(node.dataset.pixelEnrage).toBeUndefined();
+    node.dataset.battlerRestricted = "true";
+    expect(retroPixelEnemyCell(node)).toBe("stunned");
+    expect(node.dataset.pixelWeak).toBeUndefined();
+    expect(node.dataset.pixelEnrage).toBeUndefined();
+    node.dataset.battlerDefending = "true";
+    expect(retroPixelEnemyCell(node)).toBe("guard");
+    const bare = field16("noStunEnrage", "golem20");
+    bare.golem.dataset.battlerRestricted = "true";
+    bare.golem.dataset.battlerEnraged = "true";
+    expect(retroPixelEnemyCell(bare.golem)).toBe("idle");
+    expect(bare.golem.dataset.pixelEnrage).toBeUndefined();
+    const sixteen = field16("full");
+    sixteen.golem.dataset.battlerRestricted = "true";
+    sixteen.golem.dataset.battlerEnraged = "true";
+    expect(retroPixelEnemyCell(sixteen.golem)).toBe("idle");
+    expect(sixteen.golem.dataset.pixelEnrage).toBeUndefined();
+  });
+
+  it("alternates hit and hit_b on consecutive non-lethal hits of a 5x4 sheet; without hit_b it keeps hit", () => {
+    const feedback = (golem: HTMLElement) => ({ targetId: golem.dataset.testid ?? "", amount: 5, critical: false, healing: false });
+    const full = field16("full", "golem20");
+    const seen: string[] = [];
+    for (let i = 0; i < 3; i += 1) {
+      retroDamage(full.golem, feedback(full.golem), false);
+      seen.push(full.image.dataset.pixelCell ?? "");
+    }
+    expect(seen).toEqual(["hit", "hit_b", "hit"]);
+    retroDamage(full.golem, feedback(full.golem), false);
+    // hit_b = 칸 16 = 열 1·행 3 (5열 격자).
+    expect(full.image.dataset.pixelCell).toBe("hit_b");
+    expect(full.image.style.backgroundPosition).toBe("25% 100%");
+    const bare = field16("noHitB", "golem20");
+    for (let i = 0; i < 2; i += 1) {
+      retroDamage(bare.golem, feedback(bare.golem), false);
+      expect(bare.image.dataset.pixelCell).toBe("hit");
+    }
   });
 
   it("normal attack shows windup → attack_mid → attack; without attack_mid it goes windup → attack", () => {

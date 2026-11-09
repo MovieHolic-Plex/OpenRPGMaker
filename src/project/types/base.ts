@@ -744,9 +744,9 @@ export interface UploadedPixelEnemySheetMeta {
   skillSlug?: string;
   /** 생성 인자(공방 대화상자를 다시 열 때 채운다). */
   recipe?: Record<string, unknown>;
-  /** 칸 배치. 생략 = 3x3(9칸, 시트 3cell×3cell). 4x4 = 16칸(시트 4cell×4cell, src/assets/pixelEnemySheets.ts PIXEL_ENEMY_CELL_INDEX). */
-  grid?: "3x3" | "4x4";
-  /** 4x4 시트에서 비워 둔(완전 투명) 확장 칸 번호 — 9~14 만. 런타임이 대신 칸으로 물린다. */
+  /** 칸 배치. 생략 = 3x3(9칸, 시트 3cell×3cell). 4x4 = 16칸(4cell×4cell), 5x4 = 20칸(5cell×4cell, 5열 4행) — src/assets/pixelEnemySheets.ts PIXEL_ENEMY_CELL_INDEX. */
+  grid?: "3x3" | "4x4" | "5x4";
+  /** 4x4·5x4 시트에서 비워 둔(완전 투명) 확장 칸 번호 — 4x4 는 9~14, 5x4 는 9~19. 런타임이 대신 칸으로 물린다. */
   missingCells?: number[];
 }
 

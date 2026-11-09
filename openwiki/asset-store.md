@@ -111,6 +111,25 @@ gzip 은 풀린 크기에도 같은 상한(`maxOutputLength`). 캐시 blob 은 �
 - 자료집 미리보기는 대기 루프 아래 15칸을 이름과 함께 펼치고 빠진 칸은 흐리게 「없음」.
 - 테스트 `test/enemyPixelSheet16.test.ts`.
 
+#### 20칸(5×4) 시트 (2026-11-09)
+
+`pixelEnemySheet.grid: "5x4"`(5열×4행)이면 시트는 5cell×4cell(가로 5·세로 4), 시트 그림 meta `frames: 20`. 번호는 같은 행 우선이고 0~14 는 4×4 와 같은 이름이다. 4×4 의 예약 칸 15 가 5×4 에서는 그려지는 칸이 된다. 열·행 수와 "확장 칸을 읽는 배치" 판정은 순수 모듈 `src/assets/pixelEnemyGrid.ts`(`pixelEnemyGridDims`·`isExtendedPixelGrid`·`pixelEnemyOptionalCells`·`pixelEnemyReservedCells`) 한 곳이다. 3×3·4×4 시트는 위치 문자열까지 예전과 같다.
+
+| 번호 | 칸 | 쓰이는 때 | 칸이 없으면 |
+|---|---|---|---|
+| 15 | move_b | 다가가기 비트의 두 번째 이후 `move`(발 바꿈, `withMoveB`) | move |
+| 16 | hit_b | 연속 피격에서 짝수 번째 맞음(`retroDamage`, 막타 제외) | hit |
+| 17 | attack_b | 몬스터 기술의 2타 이후 물리 타격 순간(`retroSkillChoreography` `playHit`·`monsterSheetCell`) | attack |
+| 18 | stunned | 행동을 막거나 게이지를 얼리는 상태(`stateBehavior().restrictsAction \|\| freezesGauge`, `data-battler-restricted`)가 걸려 있는 쉬는 칸 | 보통 대기 루프 |
+| 19 | enrage | HP ≤ 50% 이고 > 25% 인 쉬는 칸, `idle_b` 와 번갈아(`retro-pixel-enemy-enrage-20`) | 보통 대기 루프 |
+
+- 쉬는 칸 우선순위: guard > stunned > weak > enrage > idle. stunned 중에는 weak·enrage 번갈이를 끈다. 상태 이름·id 로 판정하지 않는다.
+- `missingCells`(선택): 4×4 는 9~14, 5×4 는 9~19. 5×4 에는 늘 투명한 예약 칸이 없다(`storeMonsterSheetCellProblems` 가 격자별로 본다).
+- 검사: 시트 크기 5·cell × 4·cell, `meta.frames` 20, 칸 채움은 0~8 과 적지 않은 9~19.
+- CSS: `[data-pixel-grid="5x4"]` 배경 500% 400%, 대기 루프 `retro-pixel-enemy-idle-20`(칸 0·1·2·1 = 0·25·50·25%), weak = 75% 66.667%, enrage = 100% 100%. 자료집은 `[data-grid="5x4"]`.
+- 조수: 20칸 소재에 `battleCells: 20`(`monsterBattleCells`). 폴른 스타 내보내기(`scripts/content/fallen-monster16/export.py`)는 시트 크기로 3x3·4x4·5x4 를 가린다.
+- 이 변경은 엔진·에디터 계약이다. 5×4 그림은 별도 작업으로 그린다.
+
 ### 전투 애니메이션 팩 (2026-10-31)
 
 종류 `animation`. `content.battleAnimations?` = `BattleAnimationRecord[]`(최대 64)이고 id·`resourceId`·`timings[].soundResourceId`·`followUps[].animationId` 는 **팩 안의 id** 다.

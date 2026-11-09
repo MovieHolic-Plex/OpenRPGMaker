@@ -10,6 +10,8 @@ import { charsetBattler, partyWalkChipBattler, resolvePartyBattleCharset, retroF
 import { appendWalkChipBattler, paintWalkChipBattler } from "@/player/battleWalkChipBattler";
 import { resolveBattlerAuras } from "@/assets/battleStateAuras";
 import { retroCastFrameFor, retroMotionPose, retroPartyPixelCell, retroPixelEnemyCell } from "@/player/battleRetroMotion";
+import { isExtendedPixelGrid } from "@/assets/pixelEnemyGrid";
+import { stateBehavior } from "@/battle/battleStates";
 import { pixelEnemyBackgroundPosition, pixelEnemySheet, pixelEnemySheetUrl, projectPixelEnemySheet } from "@/assets/pixelEnemySheets";
 import { partyPixelBackgroundPosition, partyPixelSheet, partyPixelSheetUrl, type PartyPixelSheet } from "@/assets/partyPixelSheets";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
@@ -193,7 +195,7 @@ function applyPixelEnemySheet(node: HTMLElement, image: HTMLImageElement, resour
   for (const key of dimensions) image.style.setProperty(key, `${cell * 2}px`);
   image.dataset.pixelSheet = sheet.resourceId;
   // 16칸(4×4) 시트: 배경 400%, 대기 루프는 한 칸이 33.3% 인 키프레임(27-retro-motion.css). 3×3 은 표식 없음 = 예전 그대로.
-  if (sheet.grid === "4x4") node.dataset.pixelGrid = "4x4";
+  if (isExtendedPixelGrid(sheet.grid)) node.dataset.pixelGrid = sheet.grid;
   else delete node.dataset.pixelGrid;
   image.style.setProperty("--pixel-enemy-url", `url("${url}")`);
   image.style.setProperty("--pixel-enemy-idle-ms", `${sheet.idleFrameMs * 4}ms`);
@@ -921,8 +923,17 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   node.dataset.battlerDefending = String(enemy.defending);
   // 막기(16칸 guard 칸으로 맞기): 방어 명령 중이거나 방어를 올리는 상태(단단해지기류)가 걸려 있을 때. 적은 방어 명령이 없어 상태가 주 경로다.
   const states = store.getCurrent().database.states;
-  node.dataset.battlerGuarded = String(enemy.defending || presentedStateIds(enemy, presentation)
+  const shownStateIds = presentedStateIds(enemy, presentation);
+  node.dataset.battlerGuarded = String(enemy.defending || shownStateIds
     .some((id) => (states.find((state) => state.id === id)?.runtimeEffects?.defenseMultiplier ?? 1) > 1));
+  // 20칸(5×4) 시트의 stunned 칸: 행동을 막거나 게이지를 얼리는 상태(battleStates.canBattlerAct 와 같은 기준)가 걸려 있을 때. 이름·id 로 판단하지 않는다.
+  node.dataset.battlerRestricted = String(shownStateIds.some((id) => {
+    const record = states.find((state) => state.id === id);
+    if (!record) return false;
+    const behavior = stateBehavior(record);
+    return behavior.restrictsAction === true || behavior.freezesGauge === true;
+  }));
+  node.dataset.battlerEnraged = String(presented.hp > 0 && presented.hp <= enemy.maxHp / 2);
   applyBattlerPose(node, presented.pose);
   if (!node.dataset.walkChipBattler) {
     const image = node.querySelector<HTMLElement>(".battle-enemy-image");

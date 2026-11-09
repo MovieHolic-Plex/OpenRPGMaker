@@ -24,6 +24,7 @@ import { BattlePlaybackClock } from "@/player/battlePlaybackClock";
 import { playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
 import { deferUntilBattleReady } from "@/player/battleReadiness";
 import { partyPixelBackgroundPosition, partyPixelSheet, partyPixelSheetUrl } from "@/assets/partyPixelSheets";
+import { isExtendedPixelGrid } from "@/assets/pixelEnemyGrid";
 import { pixelEnemyHasCell, pixelEnemySheet, type PartyPixelCell, type RetroMonsterCell } from "@/assets/pixelEnemySheets";
 
 /** Presentation only: the three sword cuts still resolve one authored damage event. */
@@ -560,6 +561,9 @@ interface ClassPlayer {
   readonly places: Readonly<Record<RetroStagePlace, Point>>;
   anchors?: MotionAnchors;
   last: Point;
+  /** 몹스터 스킬에서 지금까지 진행된 서로 다른 타격 시각 수(20칸 시트의 attack_b 는 2타 이후). */
+  hitsPlayed: number;
+  lastHitAt: number;
   /** blink-strike: 대상 등 뒤(적의 왼쪽)에 나타나 오른쪽을 보고 친다. */
   behind: boolean;
   move?: Animation;
@@ -975,6 +979,19 @@ function playScreen(field: HTMLElement, player: ClassPlayer, event: Extract<Retr
 }
 
 function playHit(field: HTMLElement, player: ClassPlayer, event: Extract<RetroTimelineEvent, { kind: "hit" }>): void {
+  if (player.plan.monster && (player.plan.timeline.hitCount ?? 1) > 1 && event.at !== player.lastHitAt) {
+    player.lastHitAt = event.at;
+    player.hitsPlayed += 1;
+    // 연타의 2타 이후: 마침 지금 타격 칸이 그려져 있으면 그 자리에서 attack_b 로 바꾼다(칸이 없는 시트는 monsterSheetCell 이 그대로 두는다).
+    const current = player.user.dataset.retroPixelCell as RetroMonsterCell | undefined;
+    if (player.hitsPlayed >= 2 && (current === "skill" || current === "attack")) {
+      const next = monsterSheetCell(player, current);
+      if (next !== current) {
+        player.user.dataset.retroPixelCell = next;
+        player.paint(player.user);
+      }
+    }
+  }
   const hosts = event.who === "target" ? [targetNode(field, player.primaryId)].filter((n): n is HTMLElement => Boolean(n)) : casterSideNodes(field, player, player.plan.side);
   const className = player.plan.side === "enemies" ? "retro-skill-struck" : "retro-skill-blessed";
   const duration = Math.round(Math.min(event.durationMs, player.plan.side === "enemies" ? 90 : 260) * player.clock);
@@ -1044,11 +1061,14 @@ export function stopRetroClassSkill(field: HTMLElement): void {
  */
 function monsterSheetCell(player: ClassPlayer, cell: RetroMonsterCell | undefined): RetroMonsterCell | undefined {
   const sheet = pixelEnemySheet(battlerImage(player.user).dataset.pixelSheet);
-  if (sheet?.grid !== "4x4") return cell;
+  if (!isExtendedPixelGrid(sheet?.grid)) return cell;
   const project = store.getCurrent();
   let kind = retroMonsterSkillCellKind(player.plan.record, (stateId) => (project.database.states.find((state) => state.id === stateId)?.runtimeEffects?.defenseMultiplier ?? 1) > 1);
   if (kind === "guard" && !pixelEnemyHasCell(sheet, "guard")) kind = "physical";
-  return retroMonster16Cell(cell, kind);
+  const picked = retroMonster16Cell(cell, kind);
+  // 연타(2타 이후) 타격 순간의 물리 공격 칸만 attack_b. 시전·막기 칸은 그대로.
+  if ((picked === "skill" || picked === "attack") && kind === "physical" && player.hitsPlayed >= 2 && pixelEnemyHasCell(sheet, "attack_b")) return "attack_b";
+  return picked;
 }
 
 /** 포즈 사건을 시전자에 그린다. 몬스터는 도트 시트 9칸(windup·move·attack·recover)으로 옮긴다 — 16칸 시트는 monsterSheetCell. */
@@ -1306,7 +1326,7 @@ function startPlayer(field: HTMLElement, user: HTMLElement, plan: ClassPlan, pri
   const player: ClassPlayer = {
     plan, user, primaryId, clock: Math.max(0.1, clock), paint, nodes: new Set(), animations: [], playback: new BattlePlaybackClock(), restores:new Map(),
     places: plan.monster ? measureMonsterPlaces(field, user, primary) : measurePlaces(field, user, primary, !plan.timeline.actors && plan.skill.motion === "blink-strike",plan.timeline.movement?.tracks?.length?false:plan.character?.style==="lancer"?"attack":"strike"),
-    last: currentTranslate(user), behind: false, done: false,
+    last: currentTranslate(user), behind: false, done: false, hitsPlayed: 0, lastHitAt: Number.NaN,
   };
   players.set(field, player);
   user.dataset.retroClassSkill = plan.skill.id;

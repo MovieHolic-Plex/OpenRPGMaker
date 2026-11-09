@@ -4,6 +4,7 @@
  * 문서에는 내용 주소와 출처(origin)만 남긴다. 같은 상품의 새 판본은 같은 id 를 덮어써 맵 참조가 유지된다.
  */
 import { storeMonsterSheetCellProblems, type StorePackManifest } from "@/assetStore/format";
+import { isExtendedPixelGrid } from "@/assets/pixelEnemyGrid";
 import { subsetAudioManifest } from "@/assetStore/storeSoundPick";
 import { applyPackToProject, packAssetTargets, type ApplyContext, type ApplyResult } from "@/assetStore/pack";
 import { MIME_EXTENSIONS, sniffMime } from "@/assetStore/sniff";
@@ -121,7 +122,7 @@ async function decodeMonsterSheets(manifest: StorePackManifest, blob: (sha: stri
   if (typeof createImageBitmap !== "function" || typeof OffscreenCanvas !== "function") return () => null;
   for (const asset of Object.values(manifest.content.assets)) {
     const sheet = asset.kind === "monster" ? asset.meta.pixelEnemySheet : undefined;
-    const sheetAsset = sheet?.grid === "4x4" && Object.hasOwn(manifest.content.assets, sheet.sheetResourceId) ? manifest.content.assets[sheet.sheetResourceId] : undefined;
+    const sheetAsset = isExtendedPixelGrid(sheet?.grid) && sheet && Object.hasOwn(manifest.content.assets, sheet.sheetResourceId) ? manifest.content.assets[sheet.sheetResourceId] : undefined;
     if (!sheetAsset || decoded.has(sheetAsset.blob)) continue;
     try {
       const bitmap = await createImageBitmap(new Blob([blob(sheetAsset.blob) as BlobPart], { type: "image/png" }), { premultiplyAlpha: "none", colorSpaceConversion: "none" });
