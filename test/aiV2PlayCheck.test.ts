@@ -14,7 +14,7 @@ describe("v2 finish gate: the game must play through to an ending", () => {
     expect(problems.length).toBeGreaterThan(0);
     expect(problems[0]!.text).toContain("[끝까지 플레이 불가]");
     expect(problems[0]!.key.length).toBeGreaterThan(0);
-    expect(problems[0]!.key).toContain("|");
+    expect(new Set(problems.map((p) => p.key)).size).toBe(problems.length);
   });
 
   it("raises nothing for a game whose auto-play reaches the ending", () => {
