@@ -133,7 +133,7 @@ export class V2Session {
    * generate_art 가 그림 생성을 시도한 기록(오너 2026-11-09 「인게임 스크린샷은 AI 가 그림을 그릴 수 없을 때로만」): 타이틀·엔딩 → 시도 결과.
    * ok = 만들어 건다 · failed = 생성이 실패(오류 글) · unavailable = 이미지 생성 경로가 이 실행에 없다. 끝맺음 관문은 map-view 그림을 이 기록이 있을 때만 허용한다.
    */
-  readonly artAttempts = new Map<"title" | "ending", { readonly status: "ok" | "failed" | "unavailable"; readonly error?: string }>();
+  readonly artAttempts = new Map<"title" | "ending", { readonly status: "ok" | "failed" | "unavailable"; readonly error?: string; readonly failures?: number }>();
   /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
   blueprintRewrites = 0;
   /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
@@ -1410,8 +1410,11 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       try { image = await env.generateImage({ prompt: full, ...(signal ? { signal } : {}) }); }
       catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        session.artAttempts.set(target, { status: "failed", error: message.slice(0, 300) });
-        return text({ ok: false, summary: `Picture generation failed (recorded): ${message.slice(0, 200)}. You may retry once with a different prompt; after a recorded failure a map-view ${target} picture is accepted — say so in the final report.` });
+        const prior = session.artAttempts.get(target);
+        // 한 번 성공한 그림은 뒤의 실패가 지우지 않는다(ok 가 이긴다). 일시 오류 한 번으로 문이 열리지 않게 같은 대상에서 두 번 실패해야 «실패 기록»이다.
+        const failures = (prior?.failures ?? 0) + 1;
+        if (prior?.status !== "ok") session.artAttempts.set(target, { status: "failed", error: message.slice(0, 300), failures });
+        return text({ ok: false, summary: `Picture generation failed (${failures}/2 recorded): ${message.slice(0, 200)}. Try again once with a different prompt; after two recorded failures a map-view ${target} picture is accepted — say so in the final report.` });
       }
       const resourceId = `gen-${target}-${Date.now().toString(36)}`;
       const reg = run.call("upsert_resource", { resource: { id: resourceId, name: `${target === "title" ? "Title" : "Ending"} art`, kind: target === "title" ? "title" : "backdrop", dataUrl: image.dataUrl } });
@@ -2088,7 +2091,8 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
     game = game.filter(isMusicWork);
     if (outside.length) env.emit({ type: "execution_status", name: "v2.music-only.notes", ok: true, summary: `음악 요청 밖 참고 ${outside.length}건 — 고치지 않음`, data: { notes: outside } });
   }
-  if (env) game.push(...mapViewArtProblems(env.ctx.project, session, !!env.generateImage, env.request.task));
+  // 작은 수정·음악 요청 턴이 «게임으로 시작한 프로젝트»의 옛 맵 화면 그림 때문에 막히지 않게: 이 요청이 게임 전체를 짓는 말(wantsWholeGame)이거나 시작 저장본에는 없던 map-view 일 때만.
+  if (env && (wantsWholeGame(env.request.task) || mapViewArtProblems(env.request.project, session, !!env.generateImage, env.request.task).length === 0)) game.push(...mapViewArtProblems(env.ctx.project, session, !!env.generateImage, env.request.task));
   const problems: V2GateProblem[] = [
     ...game.map((g) => ({ key: `game:${gateKey(g)}`, text: g, source: "gate" as const })),
     ...(env && !settingOnly && !storeOnly ? autoPlayGateProblems(env.ctx.project, env.request.task) : []),
@@ -2112,7 +2116,8 @@ export function mapViewArtProblems(project: Project, session: V2Session, canGene
   const out: string[] = [];
   const isView = (id: string | undefined): boolean => typeof id === "string" && id.startsWith("map-view:");
   const attempt = (t: "title" | "ending") => session.artAttempts.get(t);
-  const accepted = (t: "title" | "ending") => { const a = attempt(t); return !!a && a.status !== "ok"; };
+  // 열리는 경우: 이 실행에 생성기가 없었다(unavailable) 또는 같은 대상에서 두 번 실패(failed ≥ 2). 성공(ok)은 문을 열지 않는다.
+  const accepted = (t: "title" | "ending") => { const a = attempt(t); return !!a && (a.status === "unavailable" || (a.status === "failed" && (a.failures ?? 1) >= 2)); };
   const title = (project.system.titleScreen ?? {}) as { backgroundResourceId?: string };
   const titleBg = title.backgroundResourceId ?? ((project.system as unknown as { titleResourceId?: string }).titleResourceId);
   if (isView(titleBg) && !accepted("title")) out.push("[출하 차단 art-generation] 타이틀 그림이 게임 속 맵 화면(" + titleBg + ")이다 — 그림을 만들 수 있으니 맵 화면으로 두지 않는다. generate_art{target:\"title\", prompt:<이 이야기의 장면>} 으로 그림을 만든다. 생성이 오류로 실패하면(기록됨) 그때는 맵 화면을 받아 준다. 고치지 못하면 «완성» 이라고 하지 않는다.");

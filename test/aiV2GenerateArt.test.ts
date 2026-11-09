@@ -29,12 +29,17 @@ describe("map-view title/ending needs a generation attempt first", () => {
   });
   it("a recorded failure opens the gate; a recorded success on a still-map-view picture does not", () => {
     const failed = new V2Session();
-    failed.artAttempts.set("title", { status: "failed", error: "provider 503" });
+    failed.artAttempts.set("title", { status: "failed", error: "provider 503", failures: 2 });
     failed.artAttempts.set("ending", { status: "unavailable" });
     expect(mapViewArtProblems(mapViewGame(), failed, true, WHOLE)).toEqual([]);
     const ok = new V2Session();
     ok.artAttempts.set("title", { status: "ok" });
     expect(mapViewArtProblems(mapViewGame(), ok, true, WHOLE).length).toBeGreaterThan(0);
+  });
+  it("one transient failure does not open the gate; it takes two failures on the same target", () => {
+    const once = new V2Session();
+    once.artAttempts.set("title", { status: "failed", error: "provider 503", failures: 1 });
+    expect(mapViewArtProblems(mapViewGame(), once, true, WHOLE).some((t) => t.includes("타이틀"))).toBe(true);
   });
   it("ignores requests that are not building a whole game", () => {
     const p = mapViewGame(); p.gameBlueprint = undefined;
@@ -53,7 +58,16 @@ describe("generate_art verb", () => {
     const verb = createV2Tools(env, session).find((t) => t.name === "generate_art")!;
     const res = await verb.execute("a", { target: "title", prompt: "산골 마을에 등불이 켜지는 밤, 붉은 목도리의 여행자" } as never, undefined as never);
     expect(JSON.parse((res.content[0] as { text: string }).text).ok).toBe(false);
-    expect(session.artAttempts.get("title")).toMatchObject({ status: "failed" });
+    expect(session.artAttempts.get("title")).toMatchObject({ status: "failed", failures: 1 });
+  });
+  it("a later failure never erases an earlier success, and one throw records 1/2 only", async () => {
+    const project = mapViewGame(); const session = new V2Session();
+    let calls = 0;
+    const env = envFor(project, async () => { calls += 1; if (calls === 1) return { dataUrl: PNG, mimeType: "image/png", model: "m", provider: "p" }; throw new Error("provider 503"); });
+    const verb = createV2Tools(env, session).find((t) => t.name === "generate_art")!;
+    await verb.execute("a", { target: "title", prompt: "산골 마을에 등불이 켜지는 밤, 붉은 목도리의 여행자" } as never, undefined as never);
+    await verb.execute("b", { target: "title", prompt: "다른 장면으로 다시 그린 산골 마을의 저녁 풍경" } as never, undefined as never);
+    expect(session.artAttempts.get("title")).toMatchObject({ status: "ok" });
   });
   it("records 'unavailable' when the run has no generator", async () => {
     const project = mapViewGame(); const session = new V2Session();
