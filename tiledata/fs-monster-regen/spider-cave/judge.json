@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell matches the current purple cave spider's design, colours and proportions. The three idle cells show visible breathing, the attack (cell 6) is a low forward lunge that differs clearly from the reared-back hit, and dead is a flattened heap. Minor nitpicks: idle_a and some extras look slightly larger than the other cells, and the dead pose reads as more squashed than collapsed on its side. The prompt calls the monster 덤불거미, but the screenshots and reference are 동굴 거미 (spider-cave); I judged it against that reference.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

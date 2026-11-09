@@ -84,23 +84,6 @@
    "pass": true
   }
  },
- "wolf-grey": {
-  "resourceId": "generated-enemy-wolf-grey",
-  "name": "숲늑대",
-  "cell": 96,
-  "try": 2,
-  "gifSha": "17e3e673dd62dd175b3c8735056cc3174f41653c9fc99e84d6ec5980b28de9f8",
-  "sheetSha": "748594bae0318c4bebb51b9db17371f1d338a4be13062f0b74a246d85a12c9b0",
-  "idleShiftPx": {
-   "01": 4,
-   "12": 3,
-   "02": 7
-  },
-  "opus": {
-   "score": 4,
-   "pass": true
-  }
- },
  "crab-rock": {
   "resourceId": "generated-enemy-crab-rock",
   "name": "바위게",
@@ -112,6 +95,23 @@
    "01": 4,
    "12": 8,
    "02": 12
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "wolf-grey": {
+  "resourceId": "generated-enemy-wolf-grey",
+  "name": "숲늑대",
+  "cell": 96,
+  "try": 2,
+  "gifSha": "17e3e673dd62dd175b3c8735056cc3174f41653c9fc99e84d6ec5980b28de9f8",
+  "sheetSha": "748594bae0318c4bebb51b9db17371f1d338a4be13062f0b74a246d85a12c9b0",
+  "idleShiftPx": {
+   "01": 4,
+   "12": 3,
+   "02": 7
   },
   "opus": {
    "score": 4,
@@ -237,23 +237,6 @@
    "pass": true
   }
  },
- "eye-floating": {
-  "resourceId": "generated-enemy-eye-floating",
-  "name": "거두는 눈",
-  "cell": 96,
-  "try": 2,
-  "gifSha": "fb436a01f6dca0c252de4fd22f80a2461598264b5cdfd8ee859907e10d47d3b4",
-  "sheetSha": "361bb15165aab014d2f23cd70b007486620013f4775fa0a34085da55a65cefe9",
-  "idleShiftPx": {
-   "01": 3,
-   "12": 3,
-   "02": 6
-  },
-  "opus": {
-   "score": 3.5,
-   "pass": true
-  }
- },
  "bird-hawk": {
   "resourceId": "generated-enemy-bird-hawk",
   "name": "재까마귀",
@@ -288,6 +271,23 @@
    "pass": true
   }
  },
+ "eye-floating": {
+  "resourceId": "generated-enemy-eye-floating",
+  "name": "거두는 눈",
+  "cell": 96,
+  "try": 2,
+  "gifSha": "fb436a01f6dca0c252de4fd22f80a2461598264b5cdfd8ee859907e10d47d3b4",
+  "sheetSha": "361bb15165aab014d2f23cd70b007486620013f4775fa0a34085da55a65cefe9",
+  "idleShiftPx": {
+   "01": 3,
+   "12": 3,
+   "02": 6
+  },
+  "opus": {
+   "score": 3.5,
+   "pass": true
+  }
+ },
  "wisp-blue": {
   "resourceId": "generated-enemy-wisp-blue",
   "name": "길 잃은 도깨비불",
@@ -299,6 +299,193 @@
    "01": 4,
    "12": 3,
    "02": 7
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "bandit-mask": {
+  "resourceId": "generated-enemy-bandit-mask",
+  "name": "복면 밀렵꾼",
+  "cell": 64,
+  "try": 1,
+  "gifSha": "cbae033cb7f66e4a6b5822488456165b77245628a0a963fb4f0e15ab17396343",
+  "sheetSha": "c6993c4ba406d392f487d35b348d5cbe1d9d3e9a12882ad91d211ae9cea33207",
+  "idleShiftPx": {
+   "01": 3,
+   "12": 3,
+   "02": 6
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "bee-giant": {
+  "resourceId": "generated-enemy-bee-giant",
+  "name": "숲말벌",
+  "cell": 64,
+  "try": 1,
+  "gifSha": "a0b7649bb62de1ccbfea6a313d5cff0b32eeadf3beb7eaae7003b9c519ba01a1",
+  "sheetSha": "690e754b7507de50c305e4aa1f326af9d54b3b3e0bb9aa58f0606fe587b4156d",
+  "idleShiftPx": {
+   "01": 4,
+   "12": 5,
+   "02": 5
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "wraith-dark": {
+  "resourceId": "generated-enemy-wraith-dark",
+  "name": "재의 회수자",
+  "cell": 128,
+  "try": 1,
+  "gifSha": "15a5ec561749fb528d842a42e16d9c53c6466101d8f44a896f171ae31dd98481",
+  "sheetSha": "29fbafcdb677542843cf5a90796273bf35782fc1beb3cbac53b22fc4caa37d76",
+  "idleShiftPx": {
+   "01": 11,
+   "12": 6,
+   "02": 17
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "yeti-frost": {
+  "resourceId": "generated-enemy-yeti-frost",
+  "name": "서리예티",
+  "cell": 96,
+  "try": 1,
+  "gifSha": "0bed20b0f3f1c7f1c263b982930408c60520f759553afd1f286e524485cc7865",
+  "sheetSha": "2861afac2bb6ceefb621c8f37833f71dc367d544c30eb0a825f98df7db0c614c",
+  "idleShiftPx": {
+   "01": 3,
+   "12": 7,
+   "02": 10
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "beetle-horn": {
+  "resourceId": "generated-enemy-beetle-horn",
+  "name": "뿔딱정벌레",
+  "cell": 96,
+  "try": 1,
+  "gifSha": "b8a9c2b9ebec86cc1611cd58f968926c209727f1431a01baf3715457eb5f4d9a",
+  "sheetSha": "de353b45106600279109fc853512a37275c8fb744e66743906f603776df3108f",
+  "idleShiftPx": {
+   "01": 4,
+   "12": 4,
+   "02": 8
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "wolf-dire": {
+  "resourceId": "generated-enemy-wolf-dire",
+  "name": "서리늑대",
+  "cell": 96,
+  "try": 1,
+  "gifSha": "7fe881c4ebe2c6d96af0c309fe09a14db47a2b67e56a57fbc1c4cb0dab2970ad",
+  "sheetSha": "f024c1a78a834bc7a00d8ff0d680650f2b1d7a0e0d5eaf1e95e051309625e407",
+  "idleShiftPx": {
+   "01": 6,
+   "12": 6,
+   "02": 12
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "golem-iron": {
+  "resourceId": "generated-enemy-golem-iron",
+  "name": "탑 파수 기계",
+  "cell": 128,
+  "try": 2,
+  "gifSha": "73516123767b6d8b47308bdab12a9af90e50767ddf838c7b10e6e783a20b3a3e",
+  "sheetSha": "a78eaf148eaa06c7280135e9338dc2cc3b53a110979e4bd7f134a1e1742730ef",
+  "idleShiftPx": {
+   "01": 5,
+   "12": 5,
+   "02": 10
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "spider-cave": {
+  "resourceId": "generated-enemy-spider-cave",
+  "name": "덤불거미",
+  "cell": 96,
+  "try": 2,
+  "gifSha": "f3e9466a598431e2682417f0b0152134108c9bc68130d8c00a34a8c891fbc64f",
+  "sheetSha": "87dd0868d713962369d7eeb4f09796b52a00185e3d8ef1e18c818b944f268814",
+  "idleShiftPx": {
+   "01": 7,
+   "12": 5,
+   "02": 12
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "dragon-blue": {
+  "resourceId": "generated-enemy-dragon-blue",
+  "name": "달빛의 용",
+  "cell": 192,
+  "try": 3,
+  "gifSha": "f2687e74536da2c3d5fca199d460e9a301c266c3c789bfbd09bc25a4c6bac48b",
+  "sheetSha": "54b3da9ef03c5540c9c5e8eb6fba18935921af15b7480678162d3f1a83b19f2a",
+  "idleShiftPx": {
+   "01": 5,
+   "12": 9,
+   "02": 14
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "jelly-lantern": {
+  "resourceId": "generated-enemy-jelly-lantern",
+  "name": "등불해파리",
+  "cell": 96,
+  "try": 2,
+  "gifSha": "e7a8cd723fe7e1bd11108180e52739188a9fba767e92ca34f2d3d4110af51ad0",
+  "sheetSha": "4b75fc69a097eb482957889e893ee629b0ffb885d029330f3b86a4b9906601db",
+  "idleShiftPx": {
+   "01": 3,
+   "12": 4,
+   "02": 7
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "mantis-blade": {
+  "resourceId": "generated-enemy-mantis-blade",
+  "name": "칼날사마귀",
+  "cell": 96,
+  "try": 2,
+  "gifSha": "c0dc6d77393b27e50cfbc6221458ee2ffefca8c2b306bfa4fb611f8860b99042",
+  "sheetSha": "6825a270440384a30985592a92285080836cf4769179d0097ff43ff79d420d70",
+  "idleShiftPx": {
+   "01": 4,
+   "12": 4,
+   "02": 8
   },
   "opus": {
    "score": 4,
