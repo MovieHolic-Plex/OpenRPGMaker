@@ -5,6 +5,10 @@ import { detectRun, groupDeterministic, selectForObserver, textFindings } from "
 import { measurePlants } from "../scripts/qa/pipeline/lib/measure.mjs";
 import { extractJson, reviewerChain } from "../scripts/qa/pipeline/lib/models.mjs";
 import { reviewCandidates } from "../scripts/qa/pipeline/review.mjs";
+import { createEventLog, parseStepLines, sessionLifecycles, STEP_PREFIX } from "../scripts/qa/pipeline/lib/events.mjs";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 // 왜: QA 파이프라인은 모델 앞에서 결정적으로 거르는 단계가 핵심이다. 이 판정이 조용히 0건이 되면
 // 싼 관찰 모델과 Opus 검토가 전부를 떠안아 비용·오판이 되돌아온다(지난 3데모 VQA: 확정 29건 중 실제 약 9건).
@@ -234,5 +238,47 @@ describe("qa pipeline measurement", () => {  it("심은 결함은 그 위치를 
     } finally {
       globalThis.fetch = originalFetch;
     }
+  });
+});
+
+// 왜: 관제실 영상은 「누가 어느 세션을 언제 띄웠나」가 실제 기록이어야 한다. fs139-broad 에는 그 기록이 없어 파일 mtime(1초 해상도)으로
+// 되짚어야 했다. play.mjs --events 가 남기는 행이 순서·소유자·재시도를 잃으면 다음 영상도 다시 재구성이 된다.
+describe("qa pipeline control-room events", () => {
+  it("행마다 소유자와 단조 시계를 남기고, 시계가 뒤로 가도 mono 는 줄지 않으며 모르는 종류는 거절한다", () => {
+    const file = join(mkdtempSync(join(tmpdir(), "qa-events-")), "events.jsonl");
+    const ticks = [0n, 5_000_000n, 2_000_000n, 9_000_000n];
+    let i = 0;
+    const log = createEventLog(file, { owner: "lane:qa-control-room", run: "r1", clock: () => ticks[Math.min(i++, ticks.length - 1)] });
+    log.emit("spawn", "map-0001", { attempt: 1 });
+    log.emit("ack", "map-0001", { attempt: 1 });
+    log.emit("done", "map-0001", { attempt: 1, code: 0 });
+    expect(() => log.emit("launched", "map-0001")).toThrow();
+    log.close();
+    const rows = readFileSync(file, "utf8").trim().split("\n").map((l) => JSON.parse(l));
+    expect(rows.map((r) => r.mono)).toEqual([5, 5, 9]);
+    expect(rows.every((r) => r.owner === "lane:qa-control-room" && r.run === "r1")).toBe(true);
+    expect(() => createEventLog(file, { owner: "", run: "r1" })).toThrow();
+  });
+
+  it("쪼개진 stdout 에서 걸음 줄만 꺼내고, 남은 반 줄은 다음 조각과 이어 붙인다", () => {
+    const a = parseStepLines(`noise\n${STEP_PREFIX}{"seq":0,"t":40}\n${STEP_PREFIX}{"seq":1,`);
+    expect(a.steps).toEqual([{ seq: 0, t: 40 }]);
+    const b = parseStepLines(`${a.rest}"t":50}\n${STEP_PREFIX}not json\n`);
+    expect(b.steps).toEqual([{ seq: 1, t: 50 }]);
+    expect(b.rest).toBe("");
+  });
+
+  it("재시도한 세션은 시도 수 2, 첫 띄움 시각, 마지막 종료 코드로 묶인다", () => {
+    const rows = [
+      { mono: 0, owner: "o", type: "queued", id: "a" },
+      { mono: 1, owner: "o", type: "spawn", id: "a", attempt: 1 },
+      { mono: 2, owner: "o", type: "retry", id: "a", attempt: 1, code: 1 },
+      { mono: 3, owner: "o", type: "spawn", id: "a", attempt: 2 },
+      { mono: 4, owner: "o", type: "ack", id: "a", attempt: 2 },
+      { mono: 5, owner: "o", type: "progress", id: "a", seq: 1 },
+      { mono: 6, owner: "o", type: "done", id: "a", attempt: 2, code: 0 },
+      { mono: 7, owner: "o", type: "gauge", active: 0 },
+    ];
+    expect(sessionLifecycles(rows)).toEqual([{ id: "a", owner: "o", attempts: 2, steps: 1, queuedAt: 0, spawnAt: 1, ackAt: 4, doneAt: 6, code: 0 }]);
   });
 });
