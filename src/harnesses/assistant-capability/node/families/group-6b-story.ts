@@ -97,7 +97,7 @@ const cutsceneScript: Family = {
     if (!kinds.includes(wantTrigger)) return fail('발동이 ' + kinds.join(',') + ' — ' + wantTrigger + ' 여야 한다');
     const spoken = textOf(event);
     let at = 0;
-    for (const entry of spoken) if (at < lines.length && entry.body.includes(lines[at]!.text) && (entry.speaker ?? '').includes(lines[at]!.speaker)) at++;
+    for (const entry of spoken) if (at < lines.length && entry.body.includes(lines[at]!.text) && entry.speaker === lines[at]!.speaker) at++;
     if (at !== lines.length) return fail('대사·화자가 순서대로 나오지 않는다: ' + JSON.stringify(spoken));
     const flips = deepCommands(event).filter(command => command.kind === 'setSwitch');
     if (typeof args.switchId === 'string') {
@@ -129,7 +129,7 @@ const cutsceneScript: Family = {
       make({ x: numArg(args, 'x') + 3, y: numArg(args, 'y') + 1 }),
       lines.length > 1 ? make({}, lines.slice(0, -1)) : make({}, [{ ...lines[0]!, text: '……' }]),
       make({}, lines.map(line => ({ ...line, speaker: line.speaker + '의 형' }))),
-      typeof args.switchId === 'string' ? make({}, lines, false) : make({}, lines, true),
+      typeof args.switchId === 'string' ? make({}, lines, false) : attempt(() => runOn(clone(project), 'script_cutscene', { mapId: MAP, x: args.x, y: args.y, trigger: args.trigger, beats: [...lines.map(line => ({ kind: 'say', speaker: line.speaker, text: line.text })), { kind: 'switch', switchId: 'sw_catalog_gate_open', value: true }], ...(args.once === true ? { once: true } : {}) })),
       typeof args.switchId === 'string' ? attempt(() => runOn(clone(project), 'script_cutscene', { mapId: MAP, x: args.x, y: args.y, trigger: args.trigger, beats: [...lines.map(line => ({ kind: 'say', speaker: line.speaker, text: line.text })), { kind: 'switch', switchId: other, value: true }] })) : undefined,
       args.trigger === 'action' ? make({ trigger: 'playerTouch' }) : make({ trigger: 'action', once: undefined }),
     ]);
@@ -243,7 +243,10 @@ const timedEscape: Family = {
     if (forward ? !(early < late) : !(early > late)) return fail('무너지는 순서가 ' + spec.from + ' 쪽부터가 아니다(앞 ' + early.toFixed(1) + ' / 뒤 ' + late.toFixed(1) + ')');
     const timers = new Set(all(starters[0]).filter(command => command.kind === 'timer').map(command => command.timerId));
     void timers;
-    return sameExcept(input.before, input.after, blankNew(fresh.map(event => event.id))) ? pass('제한 시간 탈출 ' + spec.seconds + '초 · 무너지는 칸 ' + cells.length) : fail('탈출 장치 밖의 내용이 바뀌었다');
+    const locations: any[] = ((mapOf(input.after, MAP) as any)?.locations ?? []).filter((entry: any) => !((mapOf(input.before, MAP) as any)?.locations ?? []).some((old: any) => old.id === entry.id));
+    if (locations.some(entry => !(entry.tags ?? []).includes('timed-escape'))) return fail('탈출 칸 표식이 아닌 새 장소 이름표가 있다');
+    const blankEscape = (doc: any) => { blankNew(fresh.map(event => event.id))(doc); if (doc.maps?.[MAP]) delete doc.maps[MAP].locations; };
+    return sameExcept(input.before, input.after, blankEscape) ? pass('제한 시간 탈출 ' + spec.seconds + '초 · 무너지는 칸 ' + cells.length) : fail('탈출 장치 밖의 내용이 바뀌었다');
   },
   reference(project, args) {
     const spec = args as unknown as EscapeArgs;
@@ -286,7 +289,7 @@ const commonEventCutscene: Family = {
     const added = (((input.after as any).commonEvents ?? []) as any[]).filter(entry => !((input.before as any).commonEvents ?? []).some((old: any) => old.id === entry.id));
     if (added.length !== 1) return fail('새 공용 이벤트가 ' + added.length + '개다(하나여야 한다)');
     const common = added[0];
-    if (!String(common.name ?? '').includes(spec.name)) return fail('공용 이벤트 이름 「' + common.name + '」 — 「' + spec.name + '」 여야 한다');
+    if (String(common.name ?? '').trim() !== spec.name) return fail('공용 이벤트 이름 「' + common.name + '」 — 「' + spec.name + '」 여야 한다');
     const spoken = (common.commands ?? []).filter((command: any) => command.kind === 'text').map((command: any) => String(command.body ?? ''));
     let at = 0;
     for (const body of spoken) if (at < spec.lines.length && body.includes(spec.lines[at]!)) at++;
