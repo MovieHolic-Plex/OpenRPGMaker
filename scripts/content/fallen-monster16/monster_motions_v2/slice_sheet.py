@@ -28,6 +28,8 @@ def key_alpha(a):
     a = a.astype(int)
     r, g, b = a[..., 0], a[..., 1], a[..., 2]
     magenta_ish = (r - g > 50) & (b - g > 50) & (np.abs(r - b) < 110)
+    if os.environ.get('KEY_STRICT') == '1':  # 보라·자주 몸통(거미 등)이 배경으로 지워지지 않게 순자홍 근처만 지운다
+        magenta_ish = (r > 200) & (b > 200) & (g < 90)
     key = (a[..., 3] < 128) | ((r > 150) & (b > 150) & (g < 120) & (np.abs(r - b) < 90)) | magenta_ish
     out = a.copy(); out[..., 3] = np.where(key, 0, 255); out[key, :3] = 0
     return out.astype(np.uint8)
@@ -98,12 +100,22 @@ def main():
         b = blob(sub)
         if b is None: raise SystemExit(f'cell {gi} ({NAMES[gi]}) empty in source')
         raw[gi] = b
+    # FIT=1: 가장 넓은/높은 자세가 칸 안에 들어가도록 대기 폭 목표를 줄인다(큰 날개·팔이 잘리지 않게).
+    if os.environ.get('FIT') == '1':
+        w0r = raw[0].shape[1]
+        mw = max(b.shape[1] for b in raw.values()); mh = max(b.shape[0] for b in raw.values())
+        idle_w = min(idle_w, int((CELL - 2) * w0r / mw), int((GROUND - 1) * w0r / mh))
     s = raw[0].shape[1] / idle_w
     red0 = downscale(raw[0], s, 'g0')
     w0 = red0.getbbox()[2] - red0.getbbox()[0]
     s = s * w0 / idle_w
     reds = {gi: downscale(b, s, f'g{gi}') for gi, b in raw.items()}
-    pal = make_palette(reds[0])
+    # PAL_SRC=<지금 시트.png>:<칸px> 이면 그 시트 idle_a(0번 칸) 팔레트로 잠근다 — 생성 그림의 색 이탈(밝기·채도)을 지금 게임 그림 색으로 되돌린다.
+    if os.environ.get('PAL_SRC'):
+        p, c = os.environ['PAL_SRC'].rsplit(':', 1)
+        pal = make_palette(Image.open(p).convert('RGBA').crop((0, 0, int(c), int(c))))
+    else:
+        pal = make_palette(reds[0])
     reds = {gi: apply_palette(x, pal) for gi, x in reds.items()}
     sheet = Image.new('RGBA', (CELL * COLS, CELL * ROWS))
     meas = {'src': list(a.shape[:2]), 'scale': round(s, 3), 'colors': len(pal), 'cells': {}}
