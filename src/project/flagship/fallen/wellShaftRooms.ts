@@ -46,6 +46,10 @@ export const WELL = {
 /** 방마다 불빛 — 어둡지만 물가와 길은 보이게. 물 위에는 푸른 반사광. */
 export const WELL_SHAFT_LIGHTS = [
   { id: "l1", at: { x: 7, y: 4 }, radius: 4, intensity: 0.8, color: "#ffb860", flicker: true },
+  // 우물 계단 — 벽 속으로 오르는 단이 위로 갈수록 어두워지는 게 보이려면 계단 자체에 빛이 있어야 한다(ambient 0.55 만으로는 검은 판).
+  // 문 아치 옆 벽 횃불(그림 속 횃불 자리)과 아래 착지를 비추는 낮은 불빛 둘.
+  { id: "st_top", at: { x: 3, y: 1 }, radius: 2.5, intensity: 0.85, color: "#ffb860", flicker: true },
+  { id: "st_foot", at: { x: 4, y: 3 }, radius: 3, intensity: 0.7, color: "#ffc890" },
   { id: "c1", at: { x: 19, y: 4 }, radius: 4, intensity: 0.75, color: "#ffb860", flicker: true },
   { id: "c2", at: { x: 36, y: 4 }, radius: 4, intensity: 0.75, color: "#ffb860", flicker: true },
   { id: "cw", at: { x: 28, y: 9 }, radius: 4, intensity: 0.45, color: "#6fc8d8" },
