@@ -12,8 +12,8 @@
 - **설치 조건:** 출하 플레이어(`dist/export-player`) 실전투 캡처 + 8ms 칸 기록기에서 대기 세 쌍 모두 몸 3px 이상·xor 6% 이상, 공격^피격 ≥ 15%,
   쓰러짐 높이 < 대기 0.8, 자홍/초록 테두리 0, 알파 0/255, 20칸 채움, 크기, 페이지 오류 0 — 그리고 `claude -p --model claude-opus-5-5 --effort medium`
   적대 눈 판정 통과. 3번 실패하면 옛 시트를 둔다.
-- **엔진 몫(그림으로 못 고침):** 적 공격 칸은 impact 비트(히트스톱 110ms×무게)만 보인다(`battleActionBeats.ts:35·163-170`, `battleSequencer.ts:39`).
-  128칸 골렘은 공격 때 상자가 y=-63 까지 올라가 메시지 띠에 머리가 가린다. 둘 다 enemy-attack-hold 레인.
+- **엔진 몫(그림으로 못 고침):** 공격 칸이 히트스톱 110ms 만 보이던 것과 128칸 골렘 머리가 공격 때 메시지 띠에 가리던 것은
+  #4491(enemy-attack-hold 레인)이 고쳤다(공격 칸 약 200ms, 큰 적 dy 를 띠 아래로). 그 전 판정은 공격 칸을 시트로 봤다.
 - **등불해파리·서리예티:** 시트만 있고 적이 없어 게임에 안 나왔다. 해파리는 1막 옛 수로(`enemy_fs_jelly`, `troop_fs_stream_jellies`, `fs_forest_stream` 조우 무게 2),
   예티는 얼음 호수(`enemy_fs2_frost_yeti`, `troop_fs2_frost_yeti`, 필드 적 `ICE_SPOTS.yeti` (52,37)). 둘 다 필드 걷기 그림이 없어
   보이는 적은 선두 그림을 쓰는 `place_field_enemy` 규칙 때문에 장어·서리늑대가 부대 선두다. 번들 시트가 없는 그림은 적을 만들기 전에
