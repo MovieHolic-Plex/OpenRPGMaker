@@ -941,7 +941,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       }
       // 프리셋 한도: 몬스터 수집 마을 생성기는 «게임 한 편»을 한 번에 깐다(마을·연구소·센터·1번길·캠페인). 사용자 글이 몬스터 수집을 말하지 않았는데 조수가 마을 하나 짓는 지름길로
       // 고르면 어느 게임이나 같은 포켓몬풍 마을이 된다(2026-11-09 오너 규칙). 사용자가 몬스터 수집 게임을 분명히 청했을 때만 쓰고, 쓴 판은 «프리셋»이라고 보고하게 한다.
-      const presetRefusal = monsterPresetRefusal(builder.id, String(task ?? ""));
+      const presetRefusal = monsterPresetRefusal(builder.id, String(task ?? ""), env.ctx.project.gameBlueprint?.request);
       if (presetRefusal) return text({ ok: false, notFailure: true, summary: presetRefusal });
       const designed = hasLayout(spec) ? { spec, notes: [] as string[] } : await designMissingRooms(env, spec, "make_place 설계 빈 방");
       spec = designed.spec;
@@ -1779,7 +1779,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
           if (parentMap && outsideBuilt(parentMap)) { const g = gateFor(env.ctx.project, parentMap, spec.dungeonDesign, place.side); if (g) spec = { ...spec, gate: g }; }
         }
         if (!builder) { session.missingArt.add(`${spec.name}(${spec.type}) — 이 종류를 짓는 빌더가 없다`); lines.push(`${place.key}: 짓는 빌더 없음`); continue; }
-        const presetRefusal = monsterPresetRefusal(builder.id, String(task ?? ""));
+        const presetRefusal = monsterPresetRefusal(builder.id, String(task ?? ""), env.ctx.project.gameBlueprint?.request);
         if (presetRefusal) { lines.push(`${place.key}: 짓지 않음 — ${presetRefusal.slice(0, 160)}`); continue; }
         env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${i + 1}/${order.length}, ${builder.id})` });
         await builder.prepare?.(spec);

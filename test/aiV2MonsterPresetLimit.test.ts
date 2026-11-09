@@ -26,6 +26,12 @@ describe("monster town preset limit", () => {
     expect(monsterPresetRefusal(MONSTER_TOWN_BUILDER.id, task)).toContain("PRESET");
   });
 
+  it("lets a continuation turn through when the FIRST request asked for monster collecting", () => {
+    expect(monsterPresetRefusal(MONSTER_TOWN_BUILDER.id, "아직 다 안 된 것 같아. 끝까지 만들어 줘")).toContain("PRESET");
+    expect(monsterPresetRefusal(MONSTER_TOWN_BUILDER.id, "아직 다 안 된 것 같아. 끝까지 만들어 줘", "포켓몬 같은 몬스터 수집 게임 만들어 줘")).toBeUndefined();
+    expect(monsterPresetRefusal(MONSTER_TOWN_BUILDER.id, "아직 다 안 된 것 같아. 끝까지 만들어 줘", "마을 하나 만들어줘")).toContain("PRESET");
+  });
+
   it("never touches other builders, and the report line names the preset", () => {
     expect(monsterPresetRefusal("village", "마을 하나 만들어줘")).toBeUndefined();
     expect(PRESET_REPORT_LINE).toContain("프리셋");

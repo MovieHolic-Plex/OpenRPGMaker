@@ -139,8 +139,9 @@ export const PRESET_REPORT_LINE = "이것은 프리셋입니다 — 몬스터 �
  * 프리셋 한도: 이 빌더는 «게임 한 편»을 한 번에 깐다. 사용자 글(의도 메모 제외)이 몬스터 수집 게임을 청하지 않았는데 조수가 마을 하나 짓는 지름길로 고르면
  * 어느 게임이나 같은 포켓몬풍 마을이 된다(2026-11-09 오너 규칙). 허용이면 undefined, 거절이면 모델에게 돌려줄 글.
  */
-export function monsterPresetRefusal(builderId: string, task: string): string | undefined {
+export function monsterPresetRefusal(builderId: string, task: string, firstRequest?: string): string | undefined {
   if (builderId !== MONSTER_TOWN_BUILDER.id) return undefined;
-  if (hasMonsterCollectIntent(task)) return undefined;
+  // 첫 요청이 몬스터 수집이었으면 «끝까지 만들어 줘» 같은 이어 하기 턴도 허용(청사진이 첫 요청문을 들고 있다 — ultrabrain 후속 2026-11-09).
+  if (hasMonsterCollectIntent(task) || hasMonsterCollectIntent(firstRequest ?? "")) return undefined;
   return "Not built — style:'monster' is a whole-game PRESET (it lays the professor's lab, monster center, Route 1 and a campaign in one go) and the user did not ask for a monster-collecting game. Build the town yourself with make_place {type:'village', hints:{villageLayout…}} (no style:'monster'). Only when the user explicitly asks for a monster-collecting game is the preset allowed.";
 }
