@@ -181,7 +181,7 @@ const tileChangeEffect: ToolDefinition = {
     const lockedText = typeof trigger.lockedText === "string" && trigger.lockedText.trim() ? trigger.lockedText.trim() : "아직 이것을 할 수 없다.";
 
     const basePage = (suffix: string, conditions: Condition[], commands: Command[]): EventPage => ({
-      id: genId("page"), name: `${eventName} (${suffix})`, conditions, graphic, trigger: { kind }, priority: "same", movement: { type: "fixed" }, commands,
+      id: genId("page"), name: `${eventName} (${suffix})`, conditions, graphic, trigger: { kind }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands,
     } as EventPage);
     const fireCommands: Command[] = [
       ...(text ? [{ kind: "text", body: text } as Command] : []),

@@ -216,7 +216,7 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
     const m = map();
     const lock = m.events.find((e) => /_locked\d+$/.test(e.id) && WELL.gate.some((g) => g.x === e.x && g.y === e.y));
     if (!lock?.pages?.[0]) throw new Error(`[fallen-star well] 쇠살문 잠긴 문 이벤트가 없다: ${m.events.filter((e) => /_locked/.test(e.id)).map((e) => `${e.id}@${e.x},${e.y}`).join(" ")}`);
-    const closed = { ...structuredClone(lock.pages[0]), commands: [narrate("굵은 쇠살문이 내려와 있다.\n쇠사슬이 서쪽 배수 갱 쪽 벽 속으로 들어간다.")] } as EventPage;
+    const closed = { ...structuredClone(lock.pages[0]), movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [narrate("굵은 쇠살문이 내려와 있다.\n쇠사슬이 서쪽 배수 갱 쪽 벽 속으로 들어간다.")] } as EventPage;
     m.events = m.events.filter((e) => e !== lock);
     WELL.gate.forEach((g, i) => addEv(project, mapId, `ev_fs2_well_gate_${i}`, "쇠살문", g, [
       { ...structuredClone(closed), id: `ev_fs2_well_gate_${i}_p0` } as EventPage,
