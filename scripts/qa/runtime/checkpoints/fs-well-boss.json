@@ -1,0 +1,852 @@
+{
+  "set": "fs-well-boss",
+  "note": "fs-well-boss 레인 — 우물 밑 옛 상수도(fs2_well_shaft, 버들항 지하 수도교, 7방)와 중간 보스. 픽스처는 이 레인이 구운 chrono-bell play.json(로컬, 커밋하지 않음).",
+  "projectFixture": "/tmp/tmp.q2fjWjuT9m/fsb/demos/chrono-bell.play.json",
+  "viewport": {
+    "width": 960,
+    "height": 540
+  },
+  "checkpoints": [
+    {
+      "id": "landing",
+      "label": "R1 첫 착지 — 우물 사다리에서 내려온 자리, 오른쪽이 물로 떨어지는 낭떠러지",
+      "mapId": "fs2_well_shaft",
+      "x": 4,
+      "y": 4,
+      "facing": "down",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "arrive",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "cistern",
+      "label": "R2 저수조 — 큰 물길과 돌다리",
+      "mapId": "fs2_well_shaft",
+      "x": 28,
+      "y": 13,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "arrive",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "west",
+      "label": "R3 서쪽 배수 갱 — 세로 물길과 판자 다리, 고패",
+      "mapId": "fs2_well_shaft",
+      "x": 3,
+      "y": 23,
+      "facing": "right",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "arrive",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "drain",
+      "label": "R4 배수로 — 가로 물길과 다리 둘, 쇠살문",
+      "mapId": "fs2_well_shaft",
+      "x": 22,
+      "y": 25,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "arrive",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "niche",
+      "label": "R5 숨은 정비 벽감 — 상자 둘",
+      "mapId": "fs2_well_shaft",
+      "x": 25,
+      "y": 34,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "arrive",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "sluice",
+      "label": "R6 수문실 — 옛 저수조 석판·쉼터",
+      "mapId": "fs2_well_shaft",
+      "x": 44,
+      "y": 24,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "arrive",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "oldest",
+      "label": "R7 가장 오래된 저수조 — 잠든 눈먼 영주",
+      "mapId": "fs2_well_shaft",
+      "x": 42,
+      "y": 12,
+      "facing": "right",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "arrive",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "lift",
+      "label": "승강 장치로 천문대 서고에 돌아가기",
+      "mapId": "fs2_well_shaft",
+      "x": 5,
+      "y": 8,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "before",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1800
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "ride",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            },
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            },
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "boss-battle",
+      "label": "보스 전투 — 우물 밑 눈먼 영주",
+      "mapId": "fs2_well_shaft",
+      "x": 44,
+      "y": 10,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true,
+        "sw_fs2_well_beast_met": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "wake",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 2500
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "battle",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            },
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            },
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            },
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 90000
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 3500
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "battle-cmd",
+          "ops": [
+            {
+              "kind": "key",
+              "key": "Enter"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 2500
+            }
+          ],
+          "shot": true
+        }
+      ],
+      "startEventId": "ev_fs2_well_beast"
+    },
+    {
+      "id": "bridge-cistern",
+      "label": "저수조 동서 아치 다리 서쪽 착지",
+      "mapId": "fs2_well_shaft",
+      "x": 26,
+      "y": 9,
+      "facing": "right",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "arrive",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "bridge-west",
+      "label": "서쪽 배수 갱 아치 다리 서쪽 착지",
+      "mapId": "fs2_well_shaft",
+      "x": 3,
+      "y": 21,
+      "facing": "right",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "arrive",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "bridge-drain",
+      "label": "배수로 아치 다리 동쪽 착지",
+      "mapId": "fs2_well_shaft",
+      "x": 34,
+      "y": 24,
+      "facing": "left",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "arrive",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "stairs",
+      "label": "우물 계단 아래 착지",
+      "mapId": "fs2_well_shaft",
+      "x": 4,
+      "y": 5,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "arrive",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4500
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "boss-walkpast",
+      "label": "말 걸지 않으면 싸우지 않는다 — 보스 앞을 지나가고 몸으로 부딪힌다",
+      "mapId": "fs2_well_shaft",
+      "x": 42,
+      "y": 10,
+      "facing": "right",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true,
+        "sw_fs2_well_beast_met": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "walk-past",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 4500
+            },
+            {
+              "kind": "hold",
+              "dir": "right",
+              "ms": 1400
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1500
+            }
+          ],
+          "shot": true,
+          "expect": {
+            "mapId": "fs2_well_shaft",
+            "switches": {
+              "sw_fs2_well_beast_down": false
+            },
+            "pageAssertions": [
+              {
+                "id": "no-battle",
+                "fn": "() => !document.querySelector('[data-testid=\"battle-scene\"]')"
+              }
+            ]
+          }
+        },
+        {
+          "id": "bump",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": "up",
+              "ms": 1500
+            },
+            {
+              "kind": "hold",
+              "dir": "left",
+              "ms": 900
+            },
+            {
+              "kind": "hold",
+              "dir": "up",
+              "ms": 1200
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 2500
+            }
+          ],
+          "shot": true,
+          "expect": {
+            "mapId": "fs2_well_shaft",
+            "pageAssertions": [
+              {
+                "id": "no-battle",
+                "fn": "() => !document.querySelector('[data-testid=\"battle-scene\"]')"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
