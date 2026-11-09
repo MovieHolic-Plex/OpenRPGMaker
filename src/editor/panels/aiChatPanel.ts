@@ -2474,6 +2474,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       classified = await classifyPlainPiTurn({
         project: store.getCurrent(),
         text,
+        projectKey: aiProjectRunKey(),
         currentMapId: turnMapId,
         selection: (turnOptions?.selection !== undefined ? turnOptions.selection : mapContext().selection) ?? null,
         selectedEvent: selectedEventFact(store.getCurrent(), turnMapId, editorState.get().selectedEventId, editorState.get().selectedEventPageId),

@@ -7,6 +7,7 @@ import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_IN
 
 import { conceptCardsForText } from "../conceptCards";
 import { beodeulTownTargetFor } from "./beodeulTownRoute";
+import { pickVillageChipset } from "../villageChipsetPool";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import { formatIntentAudit, formatIntentClarifyMessage, type IntentDeclaration, type IntentSelectionFact } from "@/ai/intentDeclaration";
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
@@ -94,6 +95,8 @@ export interface PlainPiTurnInput {
    * (2026-11-06 agent-direct-edit: 한옥 장터 도안을 붙여도 매번 「눈 덮인 비탈 마을」). 대신 그림대로 지으라는 메모를 단다.
    */
   readonly hasUserImages?: boolean;
+  /** 프로젝트 열쇠(aiProjectRunKey) — 테마 없는 마을의 칩셋을 이 열쇠의 해시로 고른다. 없으면 고르지 않는다(버들항 그대로). */
+  readonly projectKey?: string;
 }
 
 /** 붙인 참고 그림이 있을 때 넓히기 대신 가는 메모. */
@@ -232,9 +235,12 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       }
     }
     if (declared.intent.source === "fallback" && !plan.readOnly && !intentTimedOut) throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
+    // 테마 낱말 없는 마을 요청은 프로젝트마다 다른 칩셋 마을로 간다(villageChipsetPool.ts) — 버들항 전용 넓히기·마을 노트보다 먼저 본다.
+    const villagePoolPick = !plan.readOnly && declared.intent.source === "llm" && declared.intent.mode === "create" && declared.intent.space !== "interior" && declared.intent.space !== "none"
+      ? pickVillageChipset(project, input.projectKey, text) : null;
     // 모호한 새로 짓기(「마을 만들어줘」) — 묻지 않고 이 프로젝트가 지을 수 있는 장면 하나로 넓혀 바로 짓는다(vagueWiden.ts, 2026-11-03 사용자).
     // 넓혔으면 되묻기를 지운다. 집은 외장+실내(both)로 짓는다 — 실내/야외가 갈리는 다른 요청(「방 만들어줘」 등)은 그대로 묻는다.
-    if (declared.intent.source === "llm" && declared.intent.mode === "create" && declared.intent.widenSubject && !plan.readOnly && !input.hasUserImages) {
+    if (declared.intent.source === "llm" && declared.intent.mode === "create" && declared.intent.widenSubject && !plan.readOnly && !input.hasUserImages && !villagePoolPick) {
       const decision = decideWiden(project, declared.intent.widenSubject, widenHistory(project), input.widenRandom);
       if (decision) {
         widen = decision;
@@ -287,11 +293,13 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     const campus = themesOff || eraTheme || jpCity || interiorPlus || gothic || pirateIsles || skyIsland ? null : campusTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // 도쿄풍 도시(modern_city) — 보는 맵이 modern_city 이거나 칩셋 이름을 불렀을 때만(거리·편의점 낱말은 jp_city, 학교는 캠퍼스 몫). 앞의 누구도 안 잡았을 때만 본다.
     const modernCity = themesOff || eraTheme || jpCity || interiorPlus || gothic || pirateIsles || skyIsland || campus ? null : modernCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
-    const beodeulTown = villageTypeSuppressesBeodeul(villageType) || eraTheme || jpCity || interiorPlus || gothic || pirateIsles || skyIsland || campus || modernCity ? null
+    const villagePool = villagePoolPick && !(villageTypeSuppressesBeodeul(villageType) || themesOff || eraTheme || jpCity || interiorPlus || gothic || pirateIsles || skyIsland || campus || modernCity) ? villagePoolPick : null;
+    const beodeulTown = villagePool || villageTypeSuppressesBeodeul(villageType) || eraTheme || jpCity || interiorPlus || gothic || pirateIsles || skyIsland || campus || modernCity ? null
       : beodeulTownTargetFor(project, declared.intent, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     intentNote = buildPiIntentNote({
       project,
       beodeulTown,
+      villagePool,
       jpCity,
       interiorPlus,
       gothic,
@@ -325,7 +333,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
       + (sengoku ? " → 전국·에도 맵" : steampunk ? " → 스팀펑크 도시 맵" : sfStation ? " → SF 맵" : prehistoric ? " → 선사 원시 세계 맵" : desertEast ? " → 사막·동양풍 맵" : snowNorth ? ` → 북방 설원 맵(${snowNorth.room ?? snowNorth.outdoor})`
         : jpCity ? " → 일본 도시 맵" : interiorPlus ? ` → 손 도트 실내(${interiorPlus.themes.join("·")})` : gothic ? " → 고딕 저택 맵" : pirateIsles ? " → 해적 군도 맵" : skyIsland ? ` → 하늘섬 맵(${skyIsland.style})`
-        : campus ? " → 캠퍼스 맵" : modernCity ? (modernCity.indoor ? " → 도쿄풍 도시 실내" : " → 도쿄풍 도시 맵") : beodeulTown ? " → 버들항 마을" : "")
+        : campus ? " → 캠퍼스 맵" : modernCity ? (modernCity.indoor ? " → 도쿄풍 도시 실내" : " → 도쿄풍 도시 맵") : villagePool ? ` → 칩셋 풀 마을(${villagePool.entry.tilesetId})` : beodeulTown ? " → 버들항 마을" : "")
       + (villageType ? ` · 마을 종류 ${villageType.id}(${villageType.status})` : "");
     if (declared.intent.mode === "question") {
       plan = { ...plan, readOnly: true };
@@ -350,6 +358,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
         ...(desertEast ? DESERT_EAST_EXPOSED_TOOLS : []),
         ...(snowNorth ? SNOW_NORTH_EXPOSED_TOOLS : []),
         ...villageTypeExposedTools(villageType),
+        ...(villagePool ? villagePool.entry.tools : []),
         ...(widen ? [...widenToolNames(widen.modifier), "build_from_plan", "generate_missing_object"] : []),
         ...(requestsOpeningProduction(text) || requestsFullGameOpeningProduction(text) || isRomanceGameRequest(text) ? OPENING_ANIMATIC_AUTHORING_TOOLS : []),
       ])];
