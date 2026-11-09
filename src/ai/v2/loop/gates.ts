@@ -50,11 +50,15 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
   const capped = capReopened(store, opened, "같은 문제");
   // 게임 검사가 «옮겨 길이 열리는 것을 확인한» 호출은 문구 맨 끝에 있는데 항목 내용은 220자에서 잘린다(todoStore) —
   // 잘리지 않은 문제 글에서 꺼내 항목의 다음 호출(meta.nextCall)로 둔다. 재주입의 «Next call» 이 이 호출을 그대로 쓴다.
-  for (const item of opened) {
-    if (!isOpen(item.status)) continue;
+  // 같은 열쇠의 항목이 아직 열려 있으면 append 는 opened 에 넣지 않는다 — 옮길 칸이 바뀌었거나 모델이 호출해 meta 가 지워졌어도 다시 채우도록 열린 gate 항목 전부를 돈다.
+  for (const item of store.items) {
+    if (item.source !== "gate" || !isOpen(item.status)) continue;
     const call = /Next call: (\w+)\((\{[^\n]*\})\)\s*$/u.exec(problems.find((p) => p.key === keyOf(store, item))?.text ?? "");
     if (!call || (available && !available.has(call[1]!))) continue;
-    try { if (JSON.parse(call[2]!) && typeof JSON.parse(call[2]!) === "object") store.meta.set(item.id, { ...(store.meta.get(item.id) ?? {}), nextCall: { verb: call[1]!, text: `${call[1]}(${call[2]})` } }); } catch { /* 뼈대로 */ }
+    try {
+      const args: unknown = JSON.parse(call[2]!);
+      if (args && typeof args === "object" && !Array.isArray(args)) store.meta.set(item.id, { ...(store.meta.get(item.id) ?? {}), nextCall: { verb: call[1]!, text: `${call[1]}(${call[2]})` } });
+    } catch { /* 뼈대로 */ }
   }
   // 고치는 법으로 이른 도구가 이 실행에 하나도 없으면 조수가 할 수 없다 — 돌리지 않고 막힘으로 닫는다(남은 문제로 보고된다).
   // 2026-10-30 omo-loop-1030 ending: «configure_field_menu 로 ESC 메뉴를 기본으로» 항목을 도구 없이 세 번 돌았다.
