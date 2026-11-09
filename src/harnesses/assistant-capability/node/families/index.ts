@@ -4,12 +4,24 @@ import { GROUP_2 } from './group-2';
 import { GROUP_3 } from './group-3';
 import { GROUP_4 } from './group-4';
 import { GROUP_5 } from './group-5';
+import { GROUP_6A } from './group-6a';
+import { GROUP_6B } from './group-6b';
 
 export type { Family, FamilyArea, FamilyOutcome, FamilyVariant } from './types';
 export { rectArg, strArg, numArg } from './types';
 
-export function allFamilies(): readonly Family[] {
+/** The original 100-family / 500-row matrix (spec `500`). Its counts are a contract; new game-making families live in `dsFamilies()`. */
+export function baseFamilies(): readonly Family[] {
   return [...GROUP_1, ...GROUP_2, ...GROUP_3, ...GROUP_4, ...GROUP_5];
+}
+
+/** Game-making families added for the ds500 matrix (quests, towns, endings, bosses …) — no drawing or tile painting. */
+export function dsFamilies(): readonly Family[] {
+  return [...GROUP_6A, ...GROUP_6B];
+}
+
+export function allFamilies(): readonly Family[] {
+  return [...baseFamilies(), ...dsFamilies()];
 }
 
 export function findFamily(id: string): Family | undefined {
