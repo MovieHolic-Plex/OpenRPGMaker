@@ -67,7 +67,9 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
       catch (again) {
         if (!(again instanceof FitBudgetExceeded)) throw again;
         restoreFitState(project, snap);
-        applied.push(`${again.message} — 필수 전투 맞춤을 ${round + 1}번째 바퀴에서 멈췄다(빠른 모드도 ${Math.round(again.spentMs / 1000)}초 넘음). 첫 관문 승률이 보정되지 않았을 수 있다`);
+        // 앞 바퀴의 필수전투 맞춤이 이미 끝나 남아 있으면 «미완» 이 아니다(접두 줄은 finish 단계가 session.fitIncomplete 로 읽는다).
+        if (round > 0) applied.push(`필수 전투 맞춤: ${round + 1}번째 바퀴는 시간이 모자라 버리고 앞 ${round}바퀴의 맞춤을 그대로 두었다`);
+        else applied.push(`${again.message} — 필수 전투 맞춤을 ${round + 1}번째 바퀴에서 멈췄다(빠른 모드도 ${Math.round(again.spentMs / 1000)}초 넘음). 첫 관문 승률이 보정되지 않았을 수 있다`);
         break;
       }
     }
