@@ -44,6 +44,7 @@ import { applyFallenStoryIndex } from "./fallen/storyIndex";
 import { applyFallenAct1Finale, applyFallenFieldRules } from "./fallen/act1Finale";
 import { FS_INQ_BUSTS } from "./fallen/vaultCombat";
 import { applyFallenAct2Opening } from "./fallen/act2Opening";
+import { tidyFallenFirstVillage } from "./fallen/firstVillageTidy";
 import { applyFallenWorldPass, applyFallenWorldPassTown } from "./fallen/worldPass";
 import { assertExaminesReachable } from "./fallen/worldPass/examine";
 import { makeFallenPodExaminable, polishFallenCrashClearing } from "./fallen/act1MapPolish";
@@ -2479,6 +2480,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenInteractiveProps(project);
   // 제1막 새 뼈대 — 추락지 발렌·지하 미궁(3·4층)·달빛의 용·「달의 아이」 패널·광장 포위 끝(fallen/act1Finale.ts). 얼굴 앞.
   applyFallenAct1Finale(project, execTool, ids);
+  // 첫 마을 정리 — 길가 낱 소품·길가 덤불을 걷고 큰길을 곧게 잇는다(fallen/firstVillageTidy.ts). 통금의 밤 광장이 이 맵을 복제하므로 2막 앞.
+  tidyFallenFirstVillage(project, ids.hub);
   // 제2막 여는 비트 — 1막 엔딩 → 「제2막으로」 → 초소 감방·막사 잠입·통금의 밤(fallen/act2Opening.ts). 얼굴 앞.
   applyFallenAct2Opening(project, execTool, { hub: ids.hub, observatory: ids.observatory, smithy: "fs_smithy" });
   // 월드 정비 — 가게 간판·광장 이정표·게시판과 서브 퀘스트 둘, 서리 가도 보급 행상(fallen/worldPass). 통금의 밤 복제(2막) 뒤라 밤 광장에는 안 붙는다.
