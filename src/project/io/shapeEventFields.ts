@@ -14,6 +14,7 @@ import { validateCommandArray, validateConditionShape, validateMoveRoute } from 
 import { validateLightingState } from "./shapeLightingFields";
 import { validateTrigger } from "./shapeReferenceFields";
 import { isSeason, isTimePhase } from "@/project/gameTime";
+import { isWeatherKind } from "@/project/p1FoundationRecords";
 import { EXTRA_LAYER_KEYS, malformedExtraLayerKeys } from "@/project/mapLayers";
 import { isMapRoleKind } from "@/project/mapRole";
 import {
@@ -483,6 +484,10 @@ function validateNpcScheduleWhen(label: string, value: unknown): void {
     assert(isSeason(season), `${label}.season이 잘못되었습니다.`);
   }
   if (when.dayRange !== undefined) validateNumberPair(`${label}.dayRange`, when.dayRange);
+  if (when.weather !== undefined) {
+    const weather = requireString(`${label}.weather`, when.weather);
+    assert(isWeatherKind(weather), `${label}.weather가 잘못되었습니다.`);
+  }
 }
 
 function validateNumberPair(label: string, value: unknown): void {

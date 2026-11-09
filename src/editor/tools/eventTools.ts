@@ -32,6 +32,7 @@ import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { roleCapabilities } from "@/project/tileRoles";
 import { isSeason, isTimePhase, resolveTimeSystem, type Season } from "@/project/gameTime";
+import { isWeatherKind } from "@/project/p1FoundationRecords";
 import { validateConditionShape, validateShopStock } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
@@ -232,6 +233,7 @@ const npcScheduleSchema = {
           hourRange: { type: "array" as const, items: { type: "number" as const } },
           season: { type: "string" as const, enum: ["spring", "summer", "fall", "winter"] },
           dayRange: { type: "array" as const, items: { type: "number" as const } },
+          weather: { type: "string" as const, enum: ["none", "rain", "storm", "snow", "fog"], description: "이 날씨일 때만 이 칸이 맞는다(예: 비가 오면 가게 문을 닫고 집으로). 지도 기후가 아니라 현재 전역 날씨 기준." },
         },
       },
       at: {
@@ -2640,6 +2642,7 @@ function parseScheduleWhen(raw: unknown, label: string): NpcScheduleWhen {
     ...(record.hourRange !== undefined ? { hourRange: numberPair(record.hourRange, `${label}.hourRange`) } : {}),
     ...(season !== undefined ? { season: parseSeasonArg(season, `${label}.season`) } : {}),
     ...(record.dayRange !== undefined ? { dayRange: numberPair(record.dayRange, `${label}.dayRange`) } : {}),
+    ...(record.weather !== undefined ? { weather: parseWeatherArg(record.weather, `${label}.weather`) } : {}),
   };
 }
 
@@ -2899,6 +2902,11 @@ function parseTimePhaseArg(raw: unknown, label: string): NonNullable<NpcSchedule
 function parseSeasonArg(raw: unknown, label: string): NonNullable<NpcScheduleWhen["season"]> {
   if (typeof raw === "string" && isSeason(raw)) return raw;
   throw new ToolError(`${label}은 spring/summer/fall/winter 중 하나여야 합니다.`, { code: "season" });
+}
+
+function parseWeatherArg(raw: unknown, label: string): NonNullable<NpcScheduleWhen["weather"]> {
+  if (isWeatherKind(raw)) return raw;
+  throw new ToolError(`${label}은 none/rain/storm/snow/fog 중 하나여야 합니다.`, { code: "weather" });
 }
 
 function stringArg(raw: unknown, label: string): string {

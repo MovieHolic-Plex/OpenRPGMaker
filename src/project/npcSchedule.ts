@@ -1,5 +1,5 @@
 import { timePhaseFor, type GameTime } from "@/project/gameTime";
-import type { GameEvent, MapId, NpcScheduleEntry } from "@/project/types";
+import type { GameEvent, MapId, NpcScheduleEntry, WeatherKind } from "@/project/types";
 
 export type NpcScheduleMatch = {
   readonly index: number;
@@ -18,11 +18,12 @@ export type NpcScheduleTarget = {
 
 export function matchNpcSchedule(
   schedule: readonly NpcScheduleEntry[] | undefined,
-  time: GameTime | undefined
+  time: GameTime | undefined,
+  weather: WeatherKind | undefined
 ): NpcScheduleMatch | null {
   if (!time || !schedule?.length) return null;
   for (const [index, entry] of schedule.entries()) {
-    if (npcScheduleWhenMatches(entry, time)) return { index, entry };
+    if (npcScheduleWhenMatches(entry, time, weather)) return { index, entry };
   }
   return null;
 }
@@ -30,10 +31,11 @@ export function matchNpcSchedule(
 export function npcScheduleTargetForEvent(
   sourceMapId: MapId,
   event: GameEvent,
-  time: GameTime | undefined
+  time: GameTime | undefined,
+  weather: WeatherKind | undefined
 ): NpcScheduleTarget | null {
   if (!event.schedule?.length) return null;
-  const match = matchNpcSchedule(event.schedule, time);
+  const match = matchNpcSchedule(event.schedule, time, weather);
   if (!match) {
     return {
       key: `origin:${sourceMapId}:${event.x},${event.y}`,
@@ -55,8 +57,9 @@ export function npcScheduleTargetForEvent(
   };
 }
 
-export function npcScheduleWhenMatches(entry: NpcScheduleEntry, time: GameTime): boolean {
+export function npcScheduleWhenMatches(entry: NpcScheduleEntry, time: GameTime, weather: WeatherKind | undefined): boolean {
   const when = entry.when ?? {};
+  if (when.weather !== undefined && when.weather !== weather) return false;
   if (when.timePhase !== undefined && timePhaseFor(time) !== when.timePhase) return false;
   if (when.season !== undefined && time.season !== when.season) return false;
   if (when.dayRange !== undefined && !numberInInclusiveRange(time.day, when.dayRange)) return false;

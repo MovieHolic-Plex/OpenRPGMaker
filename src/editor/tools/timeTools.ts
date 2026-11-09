@@ -84,7 +84,7 @@ function scheduleRelocations(project: Project): string[] {
   const moves: string[] = [];
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
-      const target = npcScheduleTargetForEvent(map.id, event, time);
+      const target = npcScheduleTargetForEvent(map.id, event, time, undefined);
       if (!target?.matched || (target.mapId === map.id && target.x === event.x && target.y === event.y)) continue;
       const where = target.mapId === map.id ? `(${target.x}, ${target.y})` : `${target.mapId} (${target.x}, ${target.y})`;
       moves.push(`${event.name ?? event.id} ${map.id} (${event.x}, ${event.y}) → ${where}${target.activity ? ` ${target.activity}` : ""}`);

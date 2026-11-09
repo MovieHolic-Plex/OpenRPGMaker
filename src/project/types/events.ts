@@ -856,6 +856,8 @@ export interface NpcScheduleWhen {
   readonly hourRange?: readonly [number, number];
   readonly season?: Season;
   readonly dayRange?: readonly [number, number];
+  /** 이 날씨일 때만 맞는다(전역 날씨, 지도 기후와 무관). 날씨를 알 수 없는 곳(시작 미리보기)에서는 맞지 않는다. */
+  readonly weather?: WeatherKind;
 }
 
 export interface NpcScheduleAt {
