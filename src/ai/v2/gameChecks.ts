@@ -14,6 +14,7 @@ import { gatesThatOpenNothing, lockBypasses, placeholderTexts, selfRevealingLock
 import { splitScriptSpeaker } from "@/project/endingSummary";
 import { wantsWholeGame } from "./shipChecks";
 import { enemyIdentityProblems } from "./enemyChecks";
+import { hudTitleChoiceProblems } from "./hudTitleChecks";
 import { withoutNegatedEncounters } from "./combatChecks";
 import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMismatch } from "./lookChecks";
 import { dryBoats, dryBridges, placementProblems, type PlacementProblem } from "./placementRules";
@@ -634,6 +635,8 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   }
   // 1j) 적 개성(2026-11-09 fs-use-tools E1): 게임을 만드는 요청에서 보스가 기본 공격뿐이거나 일반 적 기술이 전부 같다.
   if (wantsWholeGame(task)) problems.push(...enemyIdentityProblems(after));
+  // 1l) HUD·타이틀 선택(2026-11-09 fs-use-tools): 게임을 만드는 요청에서 HUD 가 이야기 기본 템플릿 그대로이거나 타이틀 모양을 아무도 고르지 않았다.
+  if (wantsWholeGame(task)) problems.push(...hudTitleChoiceProblems(after));
   // 2) 엔딩: 엔딩 정의 + triggerEnding.
   // 음악만 바라는 엔딩 요청(「잔잔하게 엔딩곡」)은 엔딩을 짓는 요청이 아니다. 엔딩 명령은 이번에 바꾼 이벤트가 아니라 프로젝트 전체에서 찾는다 —
   // 이미 있던 보스 이벤트의 triggerEnding 도 엔딩이다(2026-10-30 r11: 바꾼 이벤트만 봐서 «triggerEnding 이 없다»고 거짓으로 막았다).
