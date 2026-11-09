@@ -5,6 +5,7 @@
   python3 scripts/content/fs-well-boss/bake_waterworks.py         # 관문 통과한 조각만 굽는다(막힌 조각은 빼고 종료코드 2)
 
 그림 정본: tiledata/fs-well-boss/pieces/<조각>.png (Opus 5.5 high 코드 손 도트, ~/claude-viz/fs-well-boss/nsbridge/draw_nsbridge.py).
+다리(layer="upper")는 위층(upperTiles)에 둔다 — 투명 화소 밑으로 맵의 물·바닥이 비치고, 위층 통행(데크 걸음·난간 막힘)이 물 칸을 덮는다. 그리기 우선은 lower(사람 밑).
 3/4 관문(hard rule): 조각마다 object_gate.refusal(context="bundle"). 지금은 보정 프로필이 없어 오너 위임 허용
 (tiledata/fs-well-boss/decisions/*.json, Discord 원문·메시지 id·파일 해시)만 통과한다.
 시트 순서: … → 호숫가(bake_lakeshore.py, 34,048~34,815) → 옛 상수도(이것).
@@ -26,7 +27,7 @@ ITEMS = {
                       walk=["xxx", "xox", "xox", "ooo"],
                       desc="어두운 벽돌벽 속으로 오르는 돌계단 — 위로 갈수록 어두워지고 맨 위는 쐐기돌 문 아치, 벽 횃불·쇠 난간. 가운데 줄이 걷는 칸, 맨 아래 줄은 밝은 착지.",
                       rules="북쪽 벽 앞면(2단 벽)에 얹는다. 이동 이벤트는 가운데 위 칸, 맨 아래 가운데 칸이 도착 칸."),
-    "ew-bridge": dict(kit="bd-wellboss-bridge-ew", kind="structure", name="옛 상수도 동서 아치 돌다리 8×4",
+    "ew-bridge": dict(kit="bd-wellboss-bridge-ew", kind="structure", layer="upper", name="옛 상수도 동서 아치 돌다리 8×4",
                       walk=["xxxxxxxx", "oooooooo", "oooooooo", "xxxxxxxx"],
                       desc="남북 물길을 동서로 건너는 아치 돌다리 — 상판이 양쪽 바닥 벽돌로 이어지고(양 끝 2열 착지), 난간은 둑 위에서 낮은 연석으로 끝난다. 남쪽 면에 홍예 아치 둘, 아치 밑까지 물. 가운데 두 줄이 걷는 칸.",
                       rules="폭 4칸 남북 물길 위, 왼쪽 2열·오른쪽 2열이 양쪽 둑 바닥에 얹히게 놓는다(물길 서쪽 끝 x-2). 난간 줄(맨 위·맨 아래)은 막힘."),
@@ -81,7 +82,7 @@ def main():
         ts["priority"].append("lower")
         ts["terrain"].append(0)
         ts["tileMeta"].append(dict(label=f"버들항 · {d['name']} ({x},{y})", description=d["desc"], tags=["버들항", "옛 상수도", "waterworks", item],
-                                   defaultLayer="lower", passage="walk" if walk else "solid", source="bundled-default"))
+                                   defaultLayer=d.get("layer", "lower"), passage="walk" if walk else "solid", source="bundled-default"))
         d["_ids"][(x, y)] = tid
     for _ in range(len(cells), rows * COLS):
         ts["passability"].append({k: True for k in ("up", "down", "left", "right")}); ts["priority"].append("lower"); ts["terrain"].append(0)
@@ -91,7 +92,7 @@ def main():
     for item, d, _, _ in ok:
         ts["structureKits"].append({
             "id": d["kit"], "kind": "section", "name": f"버들항 옛 상수도 · {d['name']}", "width": d["_w"], "height": d["_h"], "tileSize": T,
-            "rows": [{"tiles": [d["_ids"][(x, y)] for x in range(d["_w"])], "upperTiles": [-1] * d["_w"]} for y in range(d["_h"])],
+            "rows": [({"tiles": [-1] * d["_w"], "upperTiles": [d["_ids"][(x, y)] for x in range(d["_w"])]} if d.get("layer") == "upper" else {"tiles": [d["_ids"][(x, y)] for x in range(d["_w"])], "upperTiles": [-1] * d["_w"]}) for y in range(d["_h"])],
             "learnedFrom": "db-authored", "ai": {"description": d["desc"], "rules": d["rules"]},
         })
     out.save(SHEET_PATH, optimize=True)

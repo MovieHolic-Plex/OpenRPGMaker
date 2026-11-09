@@ -22,7 +22,7 @@ import { mulberry32 } from "@/util/rng";
 import { BEODEUL_PLAIN_GRASS } from "@/editor/tools/wildRouteBeodeul";
 import { assertTownAnchors } from "./frozenTowns";
 import { applyFallenAct2Tower } from "./act2Tower";
-import { WELL as WELL_PLAN, WELL_SHAFT_LAYOUT, WELL_SHAFT_LIGHTS, WELL_SHAFT_TILESET } from "./wellShaftRooms";
+import { WELL as WELL_PLAN, WELL_SHAFT_BRIDGES, WELL_SHAFT_LAYOUT, WELL_SHAFT_LIGHTS, WELL_SHAFT_TILESET } from "./wellShaftRooms";
 import { applyFallenWellBeast, wellBeastHanelLine } from "./wellBeast";
 import { applySnowLandmarks } from "./snowLandmarks";
 import { buildFrostford, FS2_FROST, FS2_FROST_ID, FS2_RELEASE_STOP, SW_FROST_ARRIVE, SW_ICE_DONE, SW_STOP_B9, SW_VALEN_MET } from "./frostford";
@@ -964,6 +964,7 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
   exec(project, "create_map", { id: FS2_SHAFT_ID, name: "우물 밑 · 옛 상수도", width: WELL_SHAFT_LAYOUT.map.w, height: WELL_SHAFT_LAYOUT.map.h, tilesetId: WELL_SHAFT_TILESET });
   exec(project, "lay_dungeon_layout", { mapId: FS2_SHAFT_ID, name: "우물 밑 · 옛 상수도", layout: JSON.parse(JSON.stringify(WELL_SHAFT_LAYOUT)) });
   // 우물에서 내려오는 계단 — 어두운 벽 속으로 오르는 옛 상수도 계단(오너 위임 허용 2026-11-10, Discord 1569382832202186955). 가운데 줄이 걷는 칸, 맨 아래가 착지.
+  for (const b of WELL_SHAFT_BRIDGES) exec(project, "stamp_object", { objectId: "kit:beodeul_city/bd-wellboss-bridge-ew", mapId: FS2_SHAFT_ID, x: b.x, y: b.y });
   exec(project, "stamp_object", { objectId: "kit:beodeul_city/bd-wellboss-stairs-up", mapId: FS2_SHAFT_ID, x: SHAFT.ladder.x - 1, y: SHAFT.ladder.y - 2 });
   exec(project, "set_lighting_volume", {
     mapId: FS2_SHAFT_ID, ambient: 0.55, color: "#0b0f1a", applyMode: "map",
