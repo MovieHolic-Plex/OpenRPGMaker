@@ -22,7 +22,7 @@ import { mulberry32 } from "@/util/rng";
 import { BEODEUL_PLAIN_GRASS } from "@/editor/tools/wildRouteBeodeul";
 import { assertTownAnchors } from "./frozenTowns";
 import { applyFallenAct2Tower } from "./act2Tower";
-import { WELL, WELL_SHAFT_LAYOUT, WELL_SHAFT_LIGHTS, WELL_SHAFT_TILESET } from "./wellShaftRooms";
+import { WELL as WELL_PLAN, WELL_SHAFT_LAYOUT, WELL_SHAFT_LIGHTS, WELL_SHAFT_TILESET } from "./wellShaftRooms";
 import { applyFallenWellBeast, wellBeastHanelLine } from "./wellBeast";
 import { applySnowLandmarks } from "./snowLandmarks";
 import { buildFrostford, FS2_FROST, FS2_FROST_ID, FS2_RELEASE_STOP, SW_FROST_ARRIVE, SW_ICE_DONE, SW_STOP_B9, SW_VALEN_MET } from "./frostford";
@@ -958,7 +958,7 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
   ensureSwitch(project, SW_HANEL, "B3: 하넬 — 세린·인장");
   // 우물 밑 승강구 — 서고 지하. 쇠 사다리로 우물과, 승강 장치로 천문대와 잇는다.
   for (const k of ["ladder", "ladderUse", "arrive", "lift"] as const) {
-    if (WELL[k]?.x !== SHAFT[k].x || WELL[k]?.y !== SHAFT[k].y) throw new Error(`[fallen-star act2] 우물 밑 ${k} 좌표가 평면(${JSON.stringify(WELL[k])})과 다르다`);
+    if (WELL_PLAN[k].x !== SHAFT[k].x || WELL_PLAN[k].y !== SHAFT[k].y) throw new Error(`[fallen-star act2] 우물 밑 ${k} 좌표가 평면(${JSON.stringify(WELL_PLAN[k])})과 다르다`);
   }
   // 옛 상수도 — 물길이 방의 주인이다(바닥의 30%). 버들항 지하 수도교 키트를 칸 그대로 깐다(배치 검사·도달성은 도구가 한다).
   exec(project, "create_map", { id: FS2_SHAFT_ID, name: "우물 밑 · 옛 상수도", width: WELL_SHAFT_LAYOUT.map.w, height: WELL_SHAFT_LAYOUT.map.h, tilesetId: WELL_SHAFT_TILESET });
