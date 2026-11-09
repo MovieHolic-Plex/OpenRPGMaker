@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **192쪽 / 8063KB / 약 2,369,968 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **192쪽 / 8064KB / 약 2,370,329 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -2441,7 +2441,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L161` 개체 정체성: 별명·성별·색이 다른 개체 (2026-10-16, poke-sys-collect)
 - `L173` 성격·노력치 (옵트인, 2026-10-16)
 
-### `openwiki/monster-expedition.md` — 39KB · 333줄 · ~11,219 토큰
+### `openwiki/monster-expedition.md` — 40KB · 342줄 · ~11,580 토큰
 
 - `L6` Source and regeneration
 - `L41` Campaign metadata contract
@@ -2459,6 +2459,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L311` 야생 조우 보호·필드 도구·낚시 (2026-10-16, poke-sys ②)
 - `L321` 길 맵 키큰 풀숲 모양 (2026-10-28, 장부 125)
 - `L328` 시작 마을 빈 초원에 용도 (2026-10-28, 장부)
+- `L334` 길 출구는 폭 전체가 문 (2026-11-09, terra-autopilot c1·c4·c5·c9)
 
 ### `openwiki/monster-kit-origin.md` — 45KB · 307줄 · ~13,457 토큰
 
