@@ -17,10 +17,11 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 const STYLE_QUERY: Record<ContainerStyle, readonly string[]> = {
   chest: ["상자", "chest"], crate: ["상자", "crate"], barrel: ["통", "barrel"], sack: ["자루", "sack", "곡물"],
-  straw: ["짚", "건초", "hay"], drawer: ["서랍", "옷장", "장롱", "drawer", "cabinet"], jar: ["항아리", "단지", "jar", "pot", "통"],
+  straw: ["짚", "건초", "hay"], drawer: ["서랍", "drawer", "cabinet"], jar: ["항아리", "단지", "jar", "pot", "통"],
+  wardrobe: ["옷장", "장롱", "wardrobe"],
 };
 const STYLE_NAME: Record<ContainerStyle, string> = {
-  chest: "상자", crate: "나무 상자", barrel: "통", sack: "자루", straw: "짚더미", drawer: "서랍", jar: "항아리",
+  chest: "상자", crate: "나무 상자", barrel: "통", sack: "자루", straw: "짚더미", drawer: "서랍", jar: "항아리", wardrobe: "옷장",
 };
 
 type Rec = Record<string, unknown>;
@@ -63,7 +64,7 @@ const placeSearchContainers: ToolDefinition = {
           type: "object",
           properties: {
             x: { type: "integer" }, y: { type: "integer" },
-            style: { type: "string", enum: [...CONTAINER_STYLES], description: "chest·crate(나무 상자)·barrel(통)·sack(자루)·straw(짚)·drawer(서랍·옷장)·jar(항아리)" },
+            style: { type: "string", enum: [...CONTAINER_STYLES], description: "chest·crate(나무 상자)·barrel(통)·sack(자루)·straw(짚)·drawer(서랍)·jar(항아리)·wardrobe(옷장)" },
             name: { type: "string" },
             loot: {
               type: "object",

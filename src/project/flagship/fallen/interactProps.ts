@@ -11,10 +11,11 @@
 //  - 보상·잔 일(페이지가 덧붙은) 수납은 그대로 둔다. 「살펴보기」 한 줄뿐인 살림 수납(townLife)만 줄인다.
 //  - 방에 보상·잔 일 수납이 있으면 살림 수납은 모두 뺀다. 없으면 여닫는 것(궤짝·상자·가방·서랍·옷장·찬장·화장대·협탁) 하나만 남긴다.
 //    방(로케이션)이 없는 맵(거리)은 살림 수납을 남기지 않는다. 그림은 가구로 그대로 둔다 — 이벤트만 뺀다.
-//  - 남은 수납은 모두 「여는」 연출(뚜껑 소리·반짝임, 흔들림·파편 없음)로 연다. 통·자루를 흔들어 뒤지는 연출은 쓰지 않는다.
+//  - 여는 연출은 물건 종류마다 다르다(openEffects.ts 표, 오너 2026-11-09). 집주인이 듣는 거리는 종류와 무관하게 0 — 꼬지람은 예전과 같다.
 import { containerFxId, type ContainerStyle } from "@/project/containerFx";
 import { applyContainerSearchPattern, roomAwareCommands } from "@/project/containerSearchPattern";
 import type { Command, GameEvent, GameMap, Project } from "@/project/types";
+import { fallenOpenEffectFor, FALLEN_OPEN_EFFECTS, type FallenOpenEffect } from "./openEffects";
 
 const ROOM_NAMES: Readonly<Record<string, string>> = {
   kitchen: "부엌", living: "거실", bedroom: "침실", master_bedroom: "안방", dressing: "옷방", tailor_work: "재봉실",
@@ -113,23 +114,33 @@ function trimContainers(map: GameMap): number {
   return drop.size;
 }
 
-/** 이미 다른 종류의 여는 연출이 붙어 있으면 「여는」 연출로 갈아 끼운다(두 번 불러도 같다). */
-function retargetFx(event: GameEvent, style: ContainerStyle): void {
-  const fx = containerFxId(style);
+const OPEN_SE_IDS = new Set(FALLEN_OPEN_EFFECTS.flatMap((e) => (e.extraSe ? [e.extraSe] : [])));
+const openSe = (resourceId: string): Command => ({ kind: "playAudio", resourceId, loop: false, channel: "se" } as unknown as Command);
+const isOpenSe = (command: Command): boolean =>
+  command.kind === "playAudio" && OPEN_SE_IDS.has(String((command as { resourceId?: string }).resourceId));
+
+/** 여는 연출을 이 종류의 것으로 갈아 끼우고, 덧붙이는 소리는 연출 바로 앞에 하나만 둔다(두 번 불러도 같다). */
+function retargetFx(event: GameEvent, effect: FallenOpenEffect): void {
+  const fx = containerFxId(effect.style);
   for (const page of event.pages ?? []) {
     const interaction = (page as { interaction?: { kind?: string; style?: string } }).interaction;
-    if (interaction?.kind === "container") interaction.style = style;
-    for (const command of (page.commands ?? []) as Array<Command & { animationId?: string }>) {
-      if (command.kind === "showAnimation" && String(command.animationId ?? "").startsWith("fx:container:")) command.animationId = fx;
+    if (interaction?.kind === "container") interaction.style = effect.style;
+    const commands = ((page.commands ?? []) as Array<Command & { animationId?: string }>).filter((c) => !isOpenSe(c));
+    const at = commands.findIndex((c) => c.kind === "showAnimation" && String(c.animationId ?? "").startsWith("fx:container:"));
+    if (at >= 0) {
+      commands[at]!.animationId = fx;
+      if (effect.extraSe) commands.splice(at, 0, openSe(effect.extraSe));
     }
+    page.commands = commands;
   }
 }
 
 /** 뒤지는 칸의 버들항 「나무 상자」(못 박힌 짐 상자)는 뚜껑 달린 「선원 궤짝」 그림으로 — 여는 것으로 읽히게(같은 번들 칸). */
 const NAILED_CRATE = 26606, LIDDED_CHEST = 27120;
-function lidOnBox(map: GameMap, event: GameEvent): void {
+function lidOnBox(map: GameMap, event: GameEvent): boolean {
   const i = event.y * map.width + event.x;
   if (map.upperTiles[i] === NAILED_CRATE) map.upperTiles[i] = LIDDED_CHEST;
+  return map.upperTiles[i] === LIDDED_CHEST;
 }
 
 export type FallenInteractPropsResult = { containers: number; watched: number; cues: number; trimmed: number };
@@ -140,17 +151,20 @@ export function applyFallenInteractiveProps(project: Project): FallenInteractPro
     result.trimmed += trimContainers(map);
     for (const event of map.events) {
       if (!isContainer(event)) continue;
-      // 통·자루·상자를 흔들어 뒤지지 않는다 — 남은 수납은 모두 뚜껑을 여는 연출(흔들림·파편 없음).
-      const style: ContainerStyle = "chest";
-      retargetFx(event, style);
-      lidOnBox(map, event);
+      // 칸 그림이 괤짝이면(못 박힌 상자를 괤짝으로 바꾼 칸 포함) 괤짝처럼 연다 — 그림과 소리가 어긋나지 않게.
+      const effect = fallenOpenEffectFor(lidOnBox(map, event) ? "괤짝" : String(event.name ?? ""));
+      const style: ContainerStyle = effect.style;
+      retargetFx(event, effect);
       const ownerId = ownerOf(event);
       const name = ownerId ? shortName(map, ownerId) : "";
       if (ownerId && roomAwareCue(event, map, ownerId, name)) result.cues++;
       applyContainerSearchPattern(event, {
         style,
+        hearRange: 0,
         ...(ownerId ? { ownerId, heardLines: [say(name, "…방금 무슨 소리지?")] } : {}),
       });
+      // 패턴이 처음 단 연출 앞에 이 종류의 소리를 붙인다.
+      retargetFx(event, effect);
       result.containers++;
       if (ownerId) result.watched++;
     }

@@ -9,11 +9,18 @@
 //  - 한 번에 짓는 도우미: project/eventPatterns/containerSearch.ts.
 // 종류는 저작자가 고르거나, 타일 이름표에서 containerStyleForLabel 로 추정한다.
 
-export const CONTAINER_STYLES = ["chest", "crate", "barrel", "sack", "straw", "drawer", "jar"] as const;
+export const CONTAINER_STYLES = ["chest", "crate", "barrel", "sack", "straw", "drawer", "jar", "wardrobe"] as const;
 export type ContainerStyle = (typeof CONTAINER_STYLES)[number];
 
 export type ContainerParticleKind = "splinter" | "straw" | "dust" | "sparkle";
-export type ContainerSearchedMark = "lid-open" | "pried" | "lid-off" | "spill" | "drawer";
+export type ContainerSearchedMark = "lid-open" | "pried" | "lid-off" | "spill" | "drawer" | "doors-ajar";
+/**
+ * 여는 동작(종류마다 하나) — 칸 위에서 물건 자체가 어떻게 움직이나.
+ * lid: 뚜껑이 젖혀진다 · pry: 윗판 하나가 비스듬히 들렸다 떨어진다 · rock: 밑동을 축으로 좌우로 기울인다
+ * slump: 위아래로 찌그러졌다 돌아온다 · slide: 서랍 앞판이 아래로 빠져나온다 · lidHop: 작은 뚜껑이 톡 뛰었다 앉는다
+ * doors: 가운데에서 문짝 둘이 바깥으로 열린다.
+ */
+export type ContainerMotion = "lid" | "pry" | "rock" | "slump" | "slide" | "lidHop" | "doors";
 
 export interface ContainerFxSpec {
   /** 여는 소리(번들 CC0 SE). */
@@ -21,8 +28,7 @@ export interface ContainerFxSpec {
   /** 흔들림 폭(px, 16px 칸 기준)과 왕복 횟수. 0 = 흔들지 않는다. */
   readonly shakePx: number;
   readonly shakes: number;
-  /** 뚜껑이 열리는 그림(궤짝). */
-  readonly lid: boolean;
+  readonly motion: ContainerMotion;
   readonly particles: { readonly kind: ContainerParticleKind; readonly count: number; readonly colors: readonly number[] };
   /** 뒤진 뒤 칸에 남는 흔적. */
   readonly mark: ContainerSearchedMark;
@@ -34,31 +40,35 @@ export interface ContainerFxSpec {
 
 export const CONTAINER_FX: Readonly<Record<ContainerStyle, ContainerFxSpec>> = {
   chest: {
-    se: "cc0-se-osx-wooded-box-open", shakePx: 0, shakes: 0, lid: true,
+    se: "cc0-se-osx-wooded-box-open", shakePx: 0, shakes: 0, motion: "lid",
     particles: { kind: "sparkle", count: 6, colors: [0xfff3b0, 0xffd860, 0xffffff] }, mark: "lid-open", noise: 0, durationMs: 520,
   },
   crate: {
-    se: "cc0-se-ors-wood-03", shakePx: 2, shakes: 4, lid: false,
+    se: "cc0-se-ors-wood-03", shakePx: 2, shakes: 4, motion: "pry",
     particles: { kind: "splinter", count: 10, colors: [0xc8915a, 0x9a6634, 0x6e4422] }, mark: "pried", noise: 4, durationMs: 560,
   },
   barrel: {
-    se: "cc0-se-osx-wooden-02", shakePx: 2, shakes: 3, lid: false,
+    se: "cc0-se-osx-wooden-02", shakePx: 0, shakes: 0, motion: "rock",
     particles: { kind: "splinter", count: 6, colors: [0xb07a44, 0x7a5028] }, mark: "lid-off", noise: 3, durationMs: 500,
   },
   sack: {
-    se: "cc0-se-orp-inventory-cloth-heavy", shakePx: 1, shakes: 3, lid: false,
+    se: "cc0-se-orp-inventory-cloth-heavy", shakePx: 0, shakes: 0, motion: "slump",
     particles: { kind: "straw", count: 8, colors: [0xe6d08a, 0xc9a85a, 0xf2e2b0] }, mark: "spill", noise: 0, durationMs: 480,
   },
   straw: {
-    se: "cc0-se-orp-inventory-cloth", shakePx: 1, shakes: 4, lid: false,
+    se: "cc0-se-orp-inventory-cloth", shakePx: 1, shakes: 4, motion: "slump",
     particles: { kind: "straw", count: 12, colors: [0xe8c860, 0xc8a040, 0xf4dc84] }, mark: "spill", noise: 0, durationMs: 520,
   },
   drawer: {
-    se: "cc0-se-osx-wooden-01", shakePx: 1, shakes: 2, lid: false,
+    se: "cc0-se-osx-wooden-01", shakePx: 0, shakes: 0, motion: "slide",
     particles: { kind: "dust", count: 5, colors: [0xd8d0c0, 0xb8b0a0] }, mark: "drawer", noise: 0, durationMs: 420,
   },
+  wardrobe: {
+    se: "easyrpg-sound-close1", shakePx: 0, shakes: 0, motion: "doors",
+    particles: { kind: "dust", count: 6, colors: [0xd8d0c0, 0xb8b0a0, 0xe8e0d0] }, mark: "doors-ajar", noise: 0, durationMs: 460,
+  },
   jar: {
-    se: "cc0-se-ors-item-stone-02", shakePx: 1, shakes: 2, lid: false,
+    se: "cc0-se-ors-item-stone-02", shakePx: 0, shakes: 0, motion: "lidHop",
     particles: { kind: "dust", count: 4, colors: [0xcfc4b0, 0xa89c88] }, mark: "lid-off", noise: 0, durationMs: 420,
   },
 };
@@ -72,7 +82,8 @@ const STYLE_WORDS: readonly [ContainerStyle, RegExp][] = [
   ["sack", /자루|포대|바구니|sack|bag|basket/i],
   ["barrel", /통|술통|barrel|cask|keg/i],
   ["jar", /항아리|단지|물독|장독|jar|pot|urn/i],
-  ["drawer", /서랍|협탁|옷장|장롱|화장대|찬장|선반|책상|drawer|wardrobe|cabinet|dresser|cupboard|desk/i],
+  ["wardrobe", /옷장|장롱|wardrobe|armoire/i],
+  ["drawer", /서랍|협탁|화장대|찬장|선반|책상|drawer|cabinet|dresser|cupboard|desk/i],
   ["crate", /상자|짐짝|crate|box/i],
 ];
 
