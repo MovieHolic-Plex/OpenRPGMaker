@@ -191,6 +191,11 @@
   image-rendering: pixelated;
   width: 100%;
 }
+/* 게임 캔버스는 키 초점을 지키려고 tabindex=-1 로 초점을 받는다(focusGuard.ts) — 탭 순서에 없는 그림판이라
+   브라우저 기본 초점 링이 필드 둘레에 흰 테두리로 그려졌다(폴른 스타 1.35 #22 · 1.36 VQA 「그대로」, 실측 outline 1px #eee). */
+.player-layout .phaser-container canvas:focus {
+  outline: none;
+}
 
 /* 상점 오버레이는 스케일 밖 .play-viewport 에 마운트된다(playSceneShop). 뷰포트가 스테이지보다
    크면(전체 창 export 플레이어) 뷰포트가 아니라 스테이지 경계에 맞춰 중앙 정렬한다. */
