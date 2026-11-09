@@ -23,6 +23,20 @@ describe("ship checks: editor defaults (2026-10-25 user rule)", () => {
     for (const id of ["title-name", "title-image", "opening", "hud", "window-look", "party-names", "party-faces", "hero-look"]) expect(ids).not.toContain(id);
   });
 
+  it("flags an ending that falls back to the factory title art, and factory gear next to authored equipment", () => {
+    const p = createBlankProject() as Project;
+    p.system.titleScreen = { ...p.system.titleScreen!, title: "검은 장미 저택" };
+    p.endings = [{ id: "e1", name: "새벽의 탈출", conditions: [], priority: 1, presentation: { finalTitle: "끝" }, epilogue: [] } as never];
+    expect(editorDefaultsLeft(p).map((b) => b.id)).toContain("ending-bg");
+    p.endings = [{ id: "e1", name: "새벽의 탈출", conditions: [], priority: 1, presentation: { backgroundResourceId: "bg-dawn" }, epilogue: [] } as never];
+    expect(editorDefaultsLeft(p).map((b) => b.id)).not.toContain("ending-bg");
+    expect(editorDefaultsLeft(createBlankProject() as Project).map((b) => b.id)).not.toContain("start-gear");
+    const sword = structuredClone(p.database.equipment[0]!);
+    sword.id = "equip_rose_blade";
+    p.database.equipment.push(sword);
+    expect(editorDefaultsLeft(p).map((b) => b.id)).toContain("start-gear");
+  });
+
   it("flags placeholder endings and one-line endings", () => {
     const p = createBlankProject() as Project;
     p.endings = [{ id: "e1", name: "첫 구간 끝", conditions: [], priority: 1, epilogue: [{ kind: "say", text: "끝." }] }];
