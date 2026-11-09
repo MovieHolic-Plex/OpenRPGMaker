@@ -899,14 +899,14 @@ export function openStatePixels(src: Rgba, W: number, H: number, size: number, s
       break;
     }
     case "doors": {
-      // 옷장: 문짝 둘이 바깥으로 젖혀진다 — 몸통 속은 어둡고, 문짝(좌우 반쪽)은 뒤집혀 좁아진 채 몸통 밖에 붙는다.
+      // 옷장: 문짝 둘이 경첩(몸통 양 끝) 쪽으로 접힌다 — 문짝(좌우 반쪽)은 뒤집혀 좁아진 채 몸통 안 가장자리에 남고,
+      // 가운데는 깊게 어두운 속이 벌어진다. 문짝을 칸 밖으로 내보내면 칸만 볼 때 「어두워진 닫힌 문」으로 읽혔다(블라인드 판정).
       const top = rows(bh > size ? 0.28 : 0.08), bottom = by1 + 1 - Math.round(s);
       const midX = bx0 + Math.floor(bw / 2);
-      const scaleX = 1 - 0.55 * t;
-      hollow(bx0 + Math.round(s), top, bx1 + 1 - Math.round(s), bottom, 0.3);
-      const leaf = Math.max(1, Math.round((midX - bx0) * scaleX));
-      move(bx0, top, midX, bottom, -leaf, 0, { scaleX, flip: true, shade: 0.85, anchor: "left" });
-      move(midX, top, bx1 + 1, bottom, leaf, 0, { scaleX, flip: true, shade: 0.85, anchor: "right" });
+      const scaleX = 1 - 0.6 * t;
+      hollow(bx0 + Math.round(s), top, bx1 + 1 - Math.round(s), bottom, 0.12);
+      move(bx0 + Math.round(s), top, midX, bottom, 0, 0, { scaleX, flip: true, shade: 1.05, anchor: "left" });
+      move(midX, top, bx1 + 1 - Math.round(s), bottom, 0, 0, { scaleX, flip: true, shade: 1.05, anchor: "right" });
       break;
     }
   }
