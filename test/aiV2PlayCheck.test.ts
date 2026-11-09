@@ -3,7 +3,8 @@ import { deserialize, serialize } from "@/project/io";
 import { v2BaselineGameKeys } from "@/ai/v2/verbs";
 import { AUTOPLAY_GATE_PREFIX, playProblems } from "@/ai/v2/playCheck";
 import { buildQaFixture } from "./fixtures/qaGame/qaGameFixtures";
-import { nextForItem } from "@/ai/v2/loop/nextCall";
+import { syncGateItems } from "@/ai/v2/loop/gates";
+import { TodoStore } from "@/ai/v2/loop/todoStore";
 import type { Project } from "@/project/types";
 
 const load = (name: Parameters<typeof buildQaFixture>[0]): Project => deserialize(serialize(buildQaFixture(name)));
@@ -41,10 +42,15 @@ describe("v2 finish gate: the repair line carries the verified move_event call",
     start.events.push(solid("block_w", 15, 8), solid("block_e", 17, 8), solid("block_n", 16, 7), solid("block_s", 16, 9));
     const [problem] = playProblems(project);
     expect(problem!.text).toMatch(/ Next call: move_event\(\{"mapId":"[^"]+","eventId":"block_[wens]","x":\d+,"y":\d+\}\)$/u);
-    const item = { id: "t", content: problem!.text, status: "pending", attempts: 0 } as never;
-    const next = nextForItem(item, project, new Set(["move_event"]));
+    // 실제 경로: 문제 → 할 일 항목(내용은 220자에서 잘린다) → 항목의 다음 호출. 잘린 내용에는 호출이 없어도 meta.nextCall 이 그 호출이다.
+    const store = new TodoStore();
+    const { opened } = syncGateItems(store, [{ key: problem!.key, text: problem!.text, source: "gate" }], new Set(), new Set(["move_event"]));
+    expect(opened).toHaveLength(1);
+    expect(opened[0]!.content.length).toBeLessThanOrEqual(221);
+    expect(opened[0]!.content).not.toContain("Next call");
+    const next = store.meta.get(opened[0]!.id)?.nextCall;
     expect(next?.verb).toBe("move_event");
-    expect(next?.args).toMatchObject({ mapId: expect.any(String), eventId: expect.stringMatching(/^block_/u), x: expect.any(Number), y: expect.any(Number) });
+    expect(JSON.parse(/\((\{.*\})\)$/u.exec(next!.text)![1]!)).toMatchObject({ mapId: expect.any(String), eventId: expect.stringMatching(/^block_/u), x: expect.any(Number), y: expect.any(Number) });
     // 열쇠는 문구 앞쪽만 본다 — 호출은 문장 맨 뒤라 열쇠에 들어가지 않는다.
     expect(problem!.key).not.toContain("Next call");
   });

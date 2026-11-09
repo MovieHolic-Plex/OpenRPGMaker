@@ -48,6 +48,14 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
     ...store.append("비평", problems.filter((p) => p.source === "critic").map((p) => ({ content: p.text, key: p.key })), "critic"),
   ];
   const capped = capReopened(store, opened, "같은 문제");
+  // 게임 검사가 «옮겨 길이 열리는 것을 확인한» 호출은 문구 맨 끝에 있는데 항목 내용은 220자에서 잘린다(todoStore) —
+  // 잘리지 않은 문제 글에서 꺼내 항목의 다음 호출(meta.nextCall)로 둔다. 재주입의 «Next call» 이 이 호출을 그대로 쓴다.
+  for (const item of opened) {
+    if (!isOpen(item.status)) continue;
+    const call = /Next call: (\w+)\((\{[^\n]*\})\)\s*$/u.exec(problems.find((p) => p.key === keyOf(store, item))?.text ?? "");
+    if (!call || (available && !available.has(call[1]!))) continue;
+    try { if (JSON.parse(call[2]!) && typeof JSON.parse(call[2]!) === "object") store.meta.set(item.id, { ...(store.meta.get(item.id) ?? {}), nextCall: { verb: call[1]!, text: `${call[1]}(${call[2]})` } }); } catch { /* 뼈대로 */ }
+  }
   // 고치는 법으로 이른 도구가 이 실행에 하나도 없으면 조수가 할 수 없다 — 돌리지 않고 막힘으로 닫는다(남은 문제로 보고된다).
   // 2026-10-30 omo-loop-1030 ending: «configure_field_menu 로 ESC 메뉴를 기본으로» 항목을 도구 없이 세 번 돌았다.
   if (available) for (const item of opened) {
