@@ -1,0 +1,4 @@
+Pixel art game sprite, 16-bit JRPG side-view battle enemy (SNES era), facing RIGHT.
+The monster: a clockwork owl: a brass-and-copper mechanical owl with riveted plates, large round glass eyes glowing green, gear wheels visible on the wing joints, metal feather blades on spread wings, a small pendulum tail. Flying, hovering above the ground.
+Style: crisp hard-edged pixel art drawn on a 96x96 pixel grid, shown upscaled 6x with nearest-neighbour (each art pixel = one 6x6 block), limited palette of about 16 colours, a dark 1-pixel outline, simple two-tone shading, no anti-aliasing, no gradients, no dithering noise. Full body visible, about 70 art pixels wide and 50 tall.
+Flat solid magenta (#FF00FF) background. No text, no shadow, no scenery, no watermark. One single image, square.
