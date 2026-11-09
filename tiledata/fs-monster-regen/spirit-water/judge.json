@@ -1,0 +1,6 @@
+{
+ "pass": true,
+ "score": 3.5,
+ "failed": [],
+ "reason": "Every cell keeps the teal water-spirit design and palette. The idle frames visibly breathe, the attack (sheet cell 6) is a clear water-beam thrust unlike the backward-leaning hit, the dead cell lies flat, and the pixels are clean with no fringe, specks or edge clipping. It loses points because idle_c and hit are noticeably more compressed and smaller than idle_a, and the hit cell's head is rounder and less crested than the reference."
+}

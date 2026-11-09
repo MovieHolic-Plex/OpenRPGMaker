@@ -1,0 +1,6 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "All cells show the same green coiled viper with the pale belly and red tongue. The three idle cells change height and head pose, the attack cell is a clear lunge, and the dead cell is the body lying flat, with clean pixels and no fringe. The weakest cell is hit: it reads as a mild rear-back, close to an idle pose, so it is only a borderline pass for recoil."
+}
