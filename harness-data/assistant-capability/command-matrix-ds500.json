@@ -1,0 +1,4865 @@
+{
+  "schemaVersion": 1,
+  "suite": "assistant-command-matrix-ds500",
+  "description": "게임 제작에 필요한 명령 가족 × 5 변형(그림·타일 칠하기 제외). 재사용 가족은 ac500 id 를 그대로 쓴다.",
+  "expected": {
+    "families": 55,
+    "rows": 500
+  },
+  "counts": {
+    "families": 55,
+    "rows": 275
+  },
+  "complete": false,
+  "commands": [
+    {
+      "id": "door-se__village-door",
+      "n": 1,
+      "family": "door-se",
+      "variant": "village-door",
+      "area": "transfer",
+      "mode": "write",
+      "title": "이동 앞에 효과음 하나",
+      "prompt": "문이 열릴 때 효과음을 재생해줘.",
+      "args": {
+        "eventId": "ev_test_door",
+        "resourceId": "cc0-se-osx-door-open",
+        "allowWait": true
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "door-se__south-gate-polite",
+      "n": 2,
+      "family": "door-se",
+      "variant": "south-gate-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "이동 앞에 효과음 하나",
+      "prompt": "남쪽 출입구로 이동하기 직전에 문 여는 소리를 넣어 주세요.",
+      "args": {
+        "eventId": "ev_south_gate",
+        "resourceId": "cc0-se-osx-door-open",
+        "allowWait": true
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "door-se__plaza-door-terse",
+      "n": 3,
+      "family": "door-se",
+      "variant": "plaza-door-terse",
+      "area": "transfer",
+      "mode": "write",
+      "title": "이동 앞에 효과음 하나",
+      "prompt": "광장 가는 문, 이동 전에 문 닫는 소리 하나.",
+      "args": {
+        "eventId": "ev_plaza_back",
+        "mapId": "map_plaza",
+        "resourceId": "cc0-se-osx-door-close-01",
+        "allowWait": true,
+        "alsoAccept": [
+          {
+            "mapId": "map_ember_village",
+            "eventId": "ev_test_door"
+          }
+        ]
+      },
+      "setup": {
+        "event": "ev_plaza_back"
+      }
+    },
+    {
+      "id": "door-se__door-explained",
+      "n": 4,
+      "family": "door-se",
+      "variant": "door-explained",
+      "area": "transfer",
+      "mode": "write",
+      "title": "이동 앞에 효과음 하나",
+      "prompt": "마을 문 전이 명령 바로 앞에 효과음 재생 명령을 하나만 넣어 주세요. 다른 명령 순서는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_test_door",
+        "resourceId": "cc0-se-osx-door-open"
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "door-se__gate-casual",
+      "n": 5,
+      "family": "door-se",
+      "variant": "gate-casual",
+      "area": "transfer",
+      "mode": "write",
+      "title": "이동 앞에 효과음 하나",
+      "prompt": "출입구 밟으면 소리 나게 해줘.",
+      "args": {
+        "eventId": "ev_south_gate",
+        "resourceId": "cc0-se-osx-door-open",
+        "allowWait": true
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "door-to-plaza__house-door",
+      "n": 6,
+      "family": "door-to-plaza",
+      "variant": "house-door",
+      "area": "transfer",
+      "mode": "write",
+      "title": "집 문을 광장으로 연결",
+      "prompt": "이 문을 마을 맵의 광장으로 연결해줘.",
+      "args": {
+        "eventId": "ev_house_door",
+        "targetMapId": "map_plaza",
+        "x": 2,
+        "y": 2
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "door-to-plaza__house-polite",
+      "n": 7,
+      "family": "door-to-plaza",
+      "variant": "house-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "집 문을 광장으로 연결",
+      "prompt": "집 문을 열면 광장으로 나가게 해 주세요.",
+      "args": {
+        "eventId": "ev_house_door",
+        "targetMapId": "map_plaza",
+        "x": 4,
+        "y": 3
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "door-to-plaza__hamlet-gate",
+      "n": 8,
+      "family": "door-to-plaza",
+      "variant": "hamlet-gate",
+      "area": "transfer",
+      "mode": "write",
+      "title": "집 문을 광장으로 연결",
+      "prompt": "안동 어귀 문을 광장으로 이어줘.",
+      "args": {
+        "eventId": "ev_hamlet_gate",
+        "mapId": "map_hamlet",
+        "targetMapId": "map_plaza",
+        "x": 6,
+        "y": 4
+      },
+      "setup": {
+        "event": "ev_hamlet_gate"
+      }
+    },
+    {
+      "id": "door-to-plaza__explained-landing",
+      "n": 9,
+      "family": "door-to-plaza",
+      "variant": "explained-landing",
+      "area": "transfer",
+      "mode": "write",
+      "title": "집 문을 광장으로 연결",
+      "prompt": "집 문에 광장(map_plaza)으로 가는 전이를 넣어 주세요. 착지는 광장 안 통행 가능한 칸이면 됩니다.",
+      "args": {
+        "eventId": "ev_house_door",
+        "targetMapId": "map_plaza",
+        "x": 3,
+        "y": 3
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "door-to-plaza__terse-door",
+      "n": 10,
+      "family": "door-to-plaza",
+      "variant": "terse-door",
+      "area": "transfer",
+      "mode": "write",
+      "title": "집 문을 광장으로 연결",
+      "prompt": "집 문 → 광장.",
+      "args": {
+        "eventId": "ev_house_door",
+        "targetMapId": "map_plaza",
+        "x": 5,
+        "y": 2
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "align-portals__plaza-pair",
+      "n": 11,
+      "family": "align-portals",
+      "variant": "plaza-pair",
+      "area": "transfer",
+      "mode": "write",
+      "title": "두 출입구 방향 정렬",
+      "prompt": "두 맵 사이의 출입구 방향을 맞춰줘.",
+      "args": {
+        "out": {
+          "mapId": "map_ember_village",
+          "eventId": "ev_test_door",
+          "dir": "right"
+        },
+        "back": {
+          "mapId": "map_plaza",
+          "eventId": "ev_plaza_back",
+          "dir": "left"
+        }
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "align-portals__plaza-polite",
+      "n": 12,
+      "family": "align-portals",
+      "variant": "plaza-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "두 출입구 방향 정렬",
+      "prompt": "마을 문과 광장 문이 서로 마주 보게 방향을 맞춰 주세요.",
+      "args": {
+        "out": {
+          "mapId": "map_ember_village",
+          "eventId": "ev_test_door",
+          "dir": "right"
+        },
+        "back": {
+          "mapId": "map_plaza",
+          "eventId": "ev_plaza_back",
+          "dir": "left"
+        }
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "align-portals__field-pair",
+      "n": 13,
+      "family": "align-portals",
+      "variant": "field-pair",
+      "area": "transfer",
+      "mode": "write",
+      "title": "두 출입구 방향 정렬",
+      "prompt": "남쪽 출입구와 숲길 쪽 문의 방향을 서로 마주 보게 해줘.",
+      "args": {
+        "out": {
+          "mapId": "map_ember_village",
+          "eventId": "ev_south_gate",
+          "dir": "down"
+        },
+        "back": {
+          "mapId": "map_field",
+          "eventId": "ev_field_gate",
+          "dir": "up"
+        }
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "align-portals__explained-both",
+      "n": 14,
+      "family": "align-portals",
+      "variant": "explained-both",
+      "area": "transfer",
+      "mode": "write",
+      "title": "두 출입구 방향 정렬",
+      "prompt": "가는 문과 돌아오는 문 **둘 다**의 전이 방향을 맞춰 주세요. 좌표와 목적지는 바꾸지 마세요.",
+      "args": {
+        "out": {
+          "mapId": "map_ember_village",
+          "eventId": "ev_test_door",
+          "dir": "right"
+        },
+        "back": {
+          "mapId": "map_plaza",
+          "eventId": "ev_plaza_back",
+          "dir": "left"
+        }
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "align-portals__terse-mirror",
+      "n": 15,
+      "family": "align-portals",
+      "variant": "terse-mirror",
+      "area": "transfer",
+      "mode": "write",
+      "title": "두 출입구 방향 정렬",
+      "prompt": "두 문 방향 반대로 맞춰.",
+      "args": {
+        "out": {
+          "mapId": "map_ember_village",
+          "eventId": "ev_test_door",
+          "dir": "right"
+        },
+        "back": {
+          "mapId": "map_plaza",
+          "eventId": "ev_plaza_back",
+          "dir": "left"
+        }
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "worldmap-north__village-north",
+      "n": 16,
+      "family": "worldmap-north",
+      "variant": "village-north",
+      "area": "transfer",
+      "mode": "write",
+      "title": "월드맵 북쪽 ↔ 마을 양방향",
+      "prompt": "이 맵을 월드맵의 북쪽에 연결해줘.",
+      "args": {
+        "worldMapId": "map_world",
+        "villageMapId": "map_ember_village",
+        "gateX": 12,
+        "gateY": 1
+      },
+      "setup": {
+        "select": {
+          "x": 12,
+          "y": 0,
+          "w": 1,
+          "h": 3
+        }
+      }
+    },
+    {
+      "id": "worldmap-north__village-polite",
+      "n": 17,
+      "family": "worldmap-north",
+      "variant": "village-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "월드맵 북쪽 ↔ 마을 양방향",
+      "prompt": "마을에서 월드맵 북쪽으로 나갈 수 있게 이어 주세요. 왕복이 되어야 합니다.",
+      "args": {
+        "worldMapId": "map_world",
+        "villageMapId": "map_ember_village",
+        "gateX": 16,
+        "gateY": 1
+      },
+      "setup": {
+        "select": {
+          "x": 16,
+          "y": 0,
+          "w": 1,
+          "h": 3
+        }
+      }
+    },
+    {
+      "id": "worldmap-north__terse-north",
+      "n": 18,
+      "family": "worldmap-north",
+      "variant": "terse-north",
+      "area": "transfer",
+      "mode": "write",
+      "title": "월드맵 북쪽 ↔ 마을 양방향",
+      "prompt": "월드맵 북쪽에 이 마을 붙여.",
+      "args": {
+        "worldMapId": "map_world",
+        "villageMapId": "map_ember_village",
+        "gateX": 6,
+        "gateY": 1
+      },
+      "setup": {
+        "select": {
+          "x": 6,
+          "y": 0,
+          "w": 1,
+          "h": 3
+        }
+      }
+    },
+    {
+      "id": "worldmap-north__explained-preserve",
+      "n": 19,
+      "family": "worldmap-north",
+      "variant": "explained-preserve",
+      "area": "transfer",
+      "mode": "write",
+      "title": "월드맵 북쪽 ↔ 마을 양방향",
+      "prompt": "월드맵 북쪽 가장자리(y가 작은 쪽)에 이 마을로 오는 출입구를 만들고, 마을에서 돌아가는 출입구도 함께 넣어 주세요. 출입구 밖 타일과 기존 이벤트는 그대로 두세요.",
+      "args": {
+        "worldMapId": "map_world",
+        "villageMapId": "map_ember_village",
+        "gateX": 20,
+        "gateY": 1
+      },
+      "setup": {
+        "select": {
+          "x": 20,
+          "y": 0,
+          "w": 1,
+          "h": 3
+        }
+      }
+    },
+    {
+      "id": "worldmap-north__hamlet-north",
+      "n": 20,
+      "family": "worldmap-north",
+      "variant": "hamlet-north",
+      "area": "transfer",
+      "mode": "write",
+      "title": "월드맵 북쪽 ↔ 마을 양방향",
+      "prompt": "안동 마을을 월드맵 북쪽에 연결해줘.",
+      "args": {
+        "worldMapId": "map_world",
+        "villageMapId": "map_hamlet",
+        "gateX": 10,
+        "gateY": 1
+      },
+      "setup": {
+        "event": "ev_hamlet_gate"
+      }
+    },
+    {
+      "id": "transfer-two-way__house-hamlet",
+      "n": 21,
+      "family": "transfer-two-way",
+      "variant": "house-hamlet",
+      "area": "transfer",
+      "mode": "write",
+      "title": "양방향 전이 + 마주 보는 착지",
+      "prompt": "집 문과 안동 어귀를 양방향으로 이어줘. 서로의 문 앞에 도착해야 해.",
+      "args": {
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 7,
+          "y": 6
+        },
+        "to": {
+          "mapId": "map_hamlet",
+          "x": 10,
+          "y": 12
+        }
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "transfer-two-way__house-polite",
+      "n": 22,
+      "family": "transfer-two-way",
+      "variant": "house-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "양방향 전이 + 마주 보는 착지",
+      "prompt": "집 문에서 안동으로 나가고, 안동에서 다시 집 문 앞으로 돌아올 수 있게 두 방향 전이를 만들어 주세요.",
+      "args": {
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 7,
+          "y": 6
+        },
+        "to": {
+          "mapId": "map_hamlet",
+          "x": 11,
+          "y": 12
+        }
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "transfer-two-way__south-hamlet",
+      "n": 23,
+      "family": "transfer-two-way",
+      "variant": "south-hamlet",
+      "area": "transfer",
+      "mode": "write",
+      "title": "양방향 전이 + 마주 보는 착지",
+      "prompt": "남쪽 출입구랑 안동을 왕복으로 연결해줘.",
+      "args": {
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 12,
+          "y": 16
+        },
+        "to": {
+          "mapId": "map_hamlet",
+          "x": 10,
+          "y": 12
+        }
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "transfer-two-way__explained-both-directions",
+      "n": 24,
+      "family": "transfer-two-way",
+      "variant": "explained-both-directions",
+      "area": "transfer",
+      "mode": "write",
+      "title": "양방향 전이 + 마주 보는 착지",
+      "prompt": "마을과 안동 사이에 왕복 출입구를 만들어 주세요. 도착 칸은 서로의 문 바로 앞이어야 하고, 도착하면 문을 등지고 서야 합니다.",
+      "args": {
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 18,
+          "y": 9
+        },
+        "to": {
+          "mapId": "map_hamlet",
+          "x": 10,
+          "y": 12
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 18,
+          "y": 9,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "transfer-two-way__plaza-hamlet-terse",
+      "n": 25,
+      "family": "transfer-two-way",
+      "variant": "plaza-hamlet-terse",
+      "area": "transfer",
+      "mode": "write",
+      "title": "양방향 전이 + 마주 보는 착지",
+      "prompt": "광장 ↔ 안동 왕복.",
+      "args": {
+        "from": {
+          "mapId": "map_plaza",
+          "x": 6,
+          "y": 6
+        },
+        "to": {
+          "mapId": "map_hamlet",
+          "x": 10,
+          "y": 12
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 6,
+          "y": 6,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "transfer-landing-offset__village-door",
+      "n": 26,
+      "family": "transfer-landing-offset",
+      "variant": "village-door",
+      "area": "transfer",
+      "mode": "write",
+      "title": "착지 좌표만 오프셋",
+      "prompt": "마을 문의 착지 좌표를 한 칸 오른쪽으로 옮겨줘.",
+      "args": {
+        "eventId": "ev_test_door",
+        "dx": 1,
+        "dy": 0
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "transfer-landing-offset__village-polite",
+      "n": 27,
+      "family": "transfer-landing-offset",
+      "variant": "village-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "착지 좌표만 오프셋",
+      "prompt": "마을 문으로 광장에 도착하는 자리를 한 칸 아래로 내려 주세요. 다른 값은 그대로 두세요.",
+      "args": {
+        "eventId": "ev_test_door",
+        "dx": 0,
+        "dy": 1
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "transfer-landing-offset__plaza-back",
+      "n": 28,
+      "family": "transfer-landing-offset",
+      "variant": "plaza-back",
+      "area": "transfer",
+      "mode": "write",
+      "title": "착지 좌표만 오프셋",
+      "prompt": "광장에서 마을로 오는 문의 착지를 한 칸 위로.",
+      "args": {
+        "eventId": "ev_plaza_back",
+        "mapId": "map_plaza",
+        "dx": 0,
+        "dy": -1
+      },
+      "setup": {
+        "event": "ev_plaza_back"
+      }
+    },
+    {
+      "id": "transfer-landing-offset__south-gate-explained",
+      "n": 29,
+      "family": "transfer-landing-offset",
+      "variant": "south-gate-explained",
+      "area": "transfer",
+      "mode": "write",
+      "title": "착지 좌표만 오프셋",
+      "prompt": "남쪽 출입구의 전이 목적지 좌표를 x로 한 칸, y로 한 칸 옮겨 주세요. 페이드·방향은 유지하세요.",
+      "args": {
+        "eventId": "ev_south_gate",
+        "dx": 1,
+        "dy": 1
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "transfer-landing-offset__terse-offset",
+      "n": 30,
+      "family": "transfer-landing-offset",
+      "variant": "terse-offset",
+      "area": "transfer",
+      "mode": "write",
+      "title": "착지 좌표만 오프셋",
+      "prompt": "마을 문 착지 두 칸 오른쪽으로.",
+      "args": {
+        "eventId": "ev_test_door",
+        "dx": 2,
+        "dy": 0
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "transfer-conditional__south-clear",
+      "n": 31,
+      "family": "transfer-conditional",
+      "variant": "south-clear",
+      "area": "transfer",
+      "mode": "write",
+      "title": "전이를 스위치 조건으로 게이팅",
+      "prompt": "남쪽 출입구는 sw_ember_q1_clear 스위치가 켜져 있을 때만 열리게 해줘.",
+      "args": {
+        "eventId": "ev_south_gate",
+        "switchId": "sw_ember_q1_clear"
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "transfer-conditional__south-polite",
+      "n": 32,
+      "family": "transfer-conditional",
+      "variant": "south-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "전이를 스위치 조건으로 게이팅",
+      "prompt": "남쪽 출입구 전이에 「잿불 퀘스트 클리어」 스위치 조건을 붙여 주세요. 조건이 꺼져 있으면 지나갈 수 없어야 합니다.",
+      "args": {
+        "eventId": "ev_south_gate",
+        "switchId": "sw_ember_q1_clear"
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "transfer-conditional__village-door",
+      "n": 33,
+      "family": "transfer-conditional",
+      "variant": "village-door",
+      "area": "transfer",
+      "mode": "write",
+      "title": "전이를 스위치 조건으로 게이팅",
+      "prompt": "마을 문은 sw_ember_q1_started 가 켜졌을 때만 작동하게.",
+      "args": {
+        "eventId": "ev_test_door",
+        "switchId": "sw_ember_q1_started"
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "transfer-conditional__plaza-back-explained",
+      "n": 34,
+      "family": "transfer-conditional",
+      "variant": "plaza-back-explained",
+      "area": "transfer",
+      "mode": "write",
+      "title": "전이를 스위치 조건으로 게이팅",
+      "prompt": "광장에서 마을로 돌아오는 문을 sw_unused 스위치가 켜진 동안에만 통하게 해 주세요. 전이 자체는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_plaza_back",
+        "mapId": "map_plaza",
+        "switchId": "sw_unused"
+      },
+      "setup": {
+        "event": "ev_plaza_back"
+      }
+    },
+    {
+      "id": "transfer-conditional__south-terse",
+      "n": 35,
+      "family": "transfer-conditional",
+      "variant": "south-terse",
+      "area": "transfer",
+      "mode": "write",
+      "title": "전이를 스위치 조건으로 게이팅",
+      "prompt": "남쪽 출입구, sw_ember_q1_clear 켜야만 통과.",
+      "args": {
+        "eventId": "ev_south_gate",
+        "switchId": "sw_ember_q1_clear"
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "transfer-fade-choice__village-white",
+      "n": 36,
+      "family": "transfer-fade-choice",
+      "variant": "village-white",
+      "area": "transfer",
+      "mode": "write",
+      "title": "그 문의 페이드만 변경",
+      "prompt": "마을 문 전이의 페이드를 흰색으로 바꿔줘.",
+      "args": {
+        "eventId": "ev_test_door",
+        "fade": "white"
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "transfer-fade-choice__village-none-polite",
+      "n": 37,
+      "family": "transfer-fade-choice",
+      "variant": "village-none-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "그 문의 페이드만 변경",
+      "prompt": "마을 문으로 이동할 때 화면이 페이드되지 않게 해 주세요.",
+      "args": {
+        "eventId": "ev_test_door",
+        "fade": "none"
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "transfer-fade-choice__south-none",
+      "n": 38,
+      "family": "transfer-fade-choice",
+      "variant": "south-none",
+      "area": "transfer",
+      "mode": "write",
+      "title": "그 문의 페이드만 변경",
+      "prompt": "남쪽 출입구 페이드를 없애줘.",
+      "args": {
+        "eventId": "ev_south_gate",
+        "fade": "none"
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "transfer-fade-choice__plaza-explained",
+      "n": 39,
+      "family": "transfer-fade-choice",
+      "variant": "plaza-explained",
+      "area": "transfer",
+      "mode": "write",
+      "title": "그 문의 페이드만 변경",
+      "prompt": "광장에서 마을로 오는 문만 페이드를 흰색으로 바꿔 주세요. 다른 문의 페이드는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_plaza_back",
+        "mapId": "map_plaza",
+        "fade": "white"
+      },
+      "setup": {
+        "event": "ev_plaza_back"
+      }
+    },
+    {
+      "id": "transfer-fade-choice__village-terse",
+      "n": 40,
+      "family": "transfer-fade-choice",
+      "variant": "village-terse",
+      "area": "transfer",
+      "mode": "write",
+      "title": "그 문의 페이드만 변경",
+      "prompt": "마을 문 페이드 없애.",
+      "args": {
+        "eventId": "ev_test_door",
+        "fade": "none"
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "chain-create-then-link__well-yard",
+      "n": 41,
+      "family": "chain-create-then-link",
+      "variant": "well-yard",
+      "area": "transfer",
+      "mode": "write",
+      "title": "새 맵 생성 + 양방향 연결",
+      "prompt": "우물 마당이라는 새 맵(20×14)을 만들고 집 문과 양방향으로 이어줘.",
+      "args": {
+        "name": "우물 마당",
+        "width": 20,
+        "height": 14,
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 7,
+          "y": 6
+        },
+        "to": {
+          "x": 10,
+          "y": 8
+        }
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "chain-create-then-link__well-yard-polite",
+      "n": 42,
+      "family": "chain-create-then-link",
+      "variant": "well-yard-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "새 맵 생성 + 양방향 연결",
+      "prompt": "「우물 마당」이라는 20×14 맵을 새로 만들어 주시고, 집 문에서 갔다가 돌아올 수 있게 연결해 주세요.",
+      "args": {
+        "name": "우물 마당",
+        "width": 20,
+        "height": 14,
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 7,
+          "y": 6
+        },
+        "to": {
+          "x": 6,
+          "y": 9
+        }
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "chain-create-then-link__cellar",
+      "n": 43,
+      "family": "chain-create-then-link",
+      "variant": "cellar",
+      "area": "transfer",
+      "mode": "write",
+      "title": "새 맵 생성 + 양방향 연결",
+      "prompt": "지하 창고 16×12 맵 만들고 남쪽 출입구랑 왕복 연결해줘.",
+      "args": {
+        "name": "지하 창고",
+        "width": 16,
+        "height": 12,
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 12,
+          "y": 16,
+          "eventId": "ev_south_gate"
+        },
+        "to": {
+          "x": 8,
+          "y": 10
+        }
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "chain-create-then-link__hamlet-yard-explained",
+      "n": 44,
+      "family": "chain-create-then-link",
+      "variant": "hamlet-yard-explained",
+      "area": "transfer",
+      "mode": "write",
+      "title": "새 맵 생성 + 양방향 연결",
+      "prompt": "「안동 뒷마당」 18×12 맵을 새로 만든 뒤, 안동 어귀에서 그 맵으로 왕복 이동할 수 있게 해 주세요. 기존 맵과 이벤트는 그대로 두세요.",
+      "args": {
+        "name": "안동 뒷마당",
+        "width": 18,
+        "height": 12,
+        "from": {
+          "mapId": "map_hamlet",
+          "x": 10,
+          "y": 12,
+          "eventId": "ev_hamlet_gate"
+        },
+        "to": {
+          "x": 9,
+          "y": 6
+        }
+      },
+      "setup": {
+        "event": "ev_hamlet_gate"
+      }
+    },
+    {
+      "id": "chain-create-then-link__terse-yard",
+      "n": 45,
+      "family": "chain-create-then-link",
+      "variant": "terse-yard",
+      "area": "transfer",
+      "mode": "write",
+      "title": "새 맵 생성 + 양방향 연결",
+      "prompt": "새 맵 「뒷산」 16×16 만들고 집 문과 이어.",
+      "args": {
+        "name": "뒷산",
+        "width": 16,
+        "height": 16,
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 7,
+          "y": 6
+        },
+        "to": {
+          "x": 8,
+          "y": 8
+        }
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "battle-troop-create__slime-trio",
+      "n": 46,
+      "family": "battle-troop-create",
+      "variant": "slime-trio",
+      "area": "battle",
+      "mode": "write",
+      "title": "적 그룹 하나 생성(구성 일치)",
+      "prompt": "슬라임 셋으로 이루어진 「슬라임 삼인방」 적 그룹을 만들어줘.",
+      "args": {
+        "refId": "troop_g4_slime_trio",
+        "name": "슬라임 삼인방",
+        "nameStated": true,
+        "enemyName": "슬라임",
+        "enemyIds": [
+          "enemy_slime",
+          "enemy_slime",
+          "enemy_slime"
+        ]
+      }
+    },
+    {
+      "id": "battle-troop-create__bat-pair-polite",
+      "n": 47,
+      "family": "battle-troop-create",
+      "variant": "bat-pair-polite",
+      "area": "battle",
+      "mode": "write",
+      "title": "적 그룹 하나 생성(구성 일치)",
+      "prompt": "동굴 박쥐 두 마리짜리 적 그룹을 새로 만들어 주세요. 이름은 「박쥐 한 쌍」입니다.",
+      "args": {
+        "refId": "troop_g4_bat_pair",
+        "name": "박쥐 한 쌍",
+        "nameStated": true,
+        "enemyIds": [
+          "enemy_cave_bat",
+          "enemy_cave_bat"
+        ]
+      }
+    },
+    {
+      "id": "battle-troop-create__mixed-terse",
+      "n": 48,
+      "family": "battle-troop-create",
+      "variant": "mixed-terse",
+      "area": "battle",
+      "mode": "write",
+      "title": "적 그룹 하나 생성(구성 일치)",
+      "prompt": "슬라임+초원 슬라임 섞인 그룹 하나 추가.",
+      "args": {
+        "refId": "troop_g4_mixed",
+        "name": "슬라임 혼성",
+        "enemyIds": [
+          "enemy_slime",
+          "enemy_meadow_slime"
+        ]
+      }
+    },
+    {
+      "id": "battle-troop-create__golem-explained",
+      "n": 49,
+      "family": "battle-troop-create",
+      "variant": "golem-explained",
+      "area": "battle",
+      "mode": "write",
+      "title": "적 그룹 하나 생성(구성 일치)",
+      "prompt": "돌 골렘 하나로만 구성된 「골렘 파수꾼」 적 그룹을 추가해 주세요. 기존 적 그룹은 건드리지 마세요.",
+      "args": {
+        "refId": "troop_g4_golem",
+        "name": "골렘 파수꾼",
+        "nameStated": true,
+        "enemyIds": [
+          "enemy_stone_golem"
+        ]
+      }
+    },
+    {
+      "id": "battle-troop-create__dragon-pair",
+      "n": 50,
+      "family": "battle-troop-create",
+      "variant": "dragon-pair",
+      "area": "battle",
+      "mode": "write",
+      "title": "적 그룹 하나 생성(구성 일치)",
+      "prompt": "붉은 드래곤 두 마리 그룹 「쌍룡」 만들어.",
+      "args": {
+        "refId": "troop_g4_dragon_pair",
+        "name": "쌍룡",
+        "nameStated": true,
+        "enemyIds": [
+          "enemy_dragon",
+          "enemy_dragon"
+        ]
+      }
+    },
+    {
+      "id": "battle-event-start__keeper-slime",
+      "n": 51,
+      "family": "battle-event-start",
+      "variant": "keeper-slime",
+      "area": "battle",
+      "mode": "write",
+      "title": "이벤트 페이지가 그 troop 으로 전투",
+      "prompt": "투기장 문지기가 말을 걸면 슬라임 정찰대와 전투가 시작되게 해줘.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "troopId": "troop_slime",
+        "allowLeadText": true
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-event-start__keeper-polite",
+      "n": 52,
+      "family": "battle-event-start",
+      "variant": "keeper-polite",
+      "area": "battle",
+      "mode": "write",
+      "title": "이벤트 페이지가 그 troop 으로 전투",
+      "prompt": "투기장 문지기 이벤트에 전투 명령을 넣어 주세요. 상대는 「슬라임 정찰대」입니다. 대사는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "troopId": "troop_slime"
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-event-start__guard-bats",
+      "n": 53,
+      "family": "battle-event-start",
+      "variant": "guard-bats",
+      "area": "battle",
+      "mode": "write",
+      "title": "이벤트 페이지가 그 troop 으로 전투",
+      "prompt": "수문장이 동굴 박쥐 떼와 싸우게 해줘.",
+      "args": {
+        "eventId": "ev_arena_guard",
+        "troopId": "troop_bat_swarm",
+        "allowLeadText": true
+      },
+      "setup": {
+        "event": "ev_arena_guard"
+      }
+    },
+    {
+      "id": "battle-event-start__guard-explained",
+      "n": 54,
+      "family": "battle-event-start",
+      "variant": "guard-explained",
+      "area": "battle",
+      "mode": "write",
+      "title": "이벤트 페이지가 그 troop 으로 전투",
+      "prompt": "수문장 이벤트 페이지 끝에 「석상 수호병」 troop 과의 전투 명령을 하나 추가해 주세요. 기존 대사는 순서 그대로 남겨 주세요.",
+      "args": {
+        "eventId": "ev_arena_guard",
+        "troopId": "troop_golem_guard"
+      },
+      "setup": {
+        "event": "ev_arena_guard"
+      }
+    },
+    {
+      "id": "battle-event-start__keeper-terse",
+      "n": 55,
+      "family": "battle-event-start",
+      "variant": "keeper-terse",
+      "area": "battle",
+      "mode": "write",
+      "title": "이벤트 페이지가 그 troop 으로 전투",
+      "prompt": "문지기 → 슬라임 정찰대 전투.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "troopId": "troop_slime",
+        "allowLeadText": true
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-escape-allowed__keeper-forbid",
+      "n": 56,
+      "family": "battle-escape-allowed",
+      "variant": "keeper-forbid",
+      "area": "battle",
+      "mode": "write",
+      "title": "도주 플래그만 변경",
+      "prompt": "투기장 문지기 전투에서는 도망칠 수 없게 해줘.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "canEscape": false
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-escape-allowed__keeper-polite",
+      "n": 57,
+      "family": "battle-escape-allowed",
+      "variant": "keeper-polite",
+      "area": "battle",
+      "mode": "write",
+      "title": "도주 플래그만 변경",
+      "prompt": "투기장 전투의 도주 허용을 꺼 주세요. 다른 전투 설정은 그대로 두세요.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "canEscape": false
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-escape-allowed__guard-allow",
+      "n": 58,
+      "family": "battle-escape-allowed",
+      "variant": "guard-allow",
+      "area": "battle",
+      "mode": "write",
+      "title": "도주 플래그만 변경",
+      "prompt": "수문장 전투는 도망칠 수 있게 해줘.",
+      "args": {
+        "eventId": "ev_arena_guard",
+        "canEscape": true
+      },
+      "setup": {
+        "event": "ev_arena_guard"
+      }
+    },
+    {
+      "id": "battle-escape-allowed__guard-explained",
+      "n": 59,
+      "family": "battle-escape-allowed",
+      "variant": "guard-explained",
+      "area": "battle",
+      "mode": "write",
+      "title": "도주 플래그만 변경",
+      "prompt": "수문장과의 전투에서 플레이어가 도주를 고를 수 있도록 canEscape 를 켜 주세요. 상대·패배 허용은 바꾸지 마세요.",
+      "args": {
+        "eventId": "ev_arena_guard",
+        "canEscape": true
+      },
+      "setup": {
+        "event": "ev_arena_guard"
+      }
+    },
+    {
+      "id": "battle-escape-allowed__keeper-terse",
+      "n": 60,
+      "family": "battle-escape-allowed",
+      "variant": "keeper-terse",
+      "area": "battle",
+      "mode": "write",
+      "title": "도주 플래그만 변경",
+      "prompt": "문지기 전투 도주 금지.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "canEscape": false
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-defeat-branch__keeper-branches",
+      "n": 61,
+      "family": "battle-defeat-branch",
+      "variant": "keeper-branches",
+      "area": "battle",
+      "mode": "write",
+      "title": "승리·패배 분기 + 패배 시 맵 복귀",
+      "prompt": "투기장 전투에 승리·패배 분기를 만들고, 지면 게임오버 없이 마을로 돌아오게 해줘.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "retreat": {
+          "x": 8,
+          "y": 8
+        }
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-defeat-branch__keeper-polite",
+      "n": 62,
+      "family": "battle-defeat-branch",
+      "variant": "keeper-polite",
+      "area": "battle",
+      "mode": "write",
+      "title": "승리·패배 분기 + 패배 시 맵 복귀",
+      "prompt": "투기장 문지기 전투 결과로 갈라지게 해 주세요. 이기면 문지기 대사가 나오고, 지면 마을 입구로 돌아가며 게임오버는 없어야 합니다.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "retreat": {
+          "x": 9,
+          "y": 8
+        }
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-defeat-branch__guard-branches",
+      "n": 63,
+      "family": "battle-defeat-branch",
+      "variant": "guard-branches",
+      "area": "battle",
+      "mode": "write",
+      "title": "승리·패배 분기 + 패배 시 맵 복귀",
+      "prompt": "수문장 전투에 승패 분기를 넣고, 패배하면 마을로 되돌려 보내줘.",
+      "args": {
+        "eventId": "ev_arena_guard",
+        "retreat": {
+          "x": 10,
+          "y": 8
+        }
+      },
+      "setup": {
+        "event": "ev_arena_guard"
+      }
+    },
+    {
+      "id": "battle-defeat-branch__guard-explained",
+      "n": 64,
+      "family": "battle-defeat-branch",
+      "variant": "guard-explained",
+      "area": "battle",
+      "mode": "write",
+      "title": "승리·패배 분기 + 패배 시 맵 복귀",
+      "prompt": "수문장 전투를 branchOnResult 로 바꾸고 victoryBranch·defeatBranch 를 모두 채워 주세요. defeatBranch 는 게임오버가 아니라 마을 맵으로의 복귀여야 하고, canLose 도 켜 주세요.",
+      "args": {
+        "eventId": "ev_arena_guard",
+        "retreat": {
+          "x": 7,
+          "y": 8
+        }
+      },
+      "setup": {
+        "event": "ev_arena_guard"
+      }
+    },
+    {
+      "id": "battle-defeat-branch__keeper-terse",
+      "n": 65,
+      "family": "battle-defeat-branch",
+      "variant": "keeper-terse",
+      "area": "battle",
+      "mode": "write",
+      "title": "승리·패배 분기 + 패배 시 맵 복귀",
+      "prompt": "지면 마을로, 이기면 계속. 문지기 전투.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "retreat": {
+          "x": 6,
+          "y": 8
+        }
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-encounter-rate__field-rate",
+      "n": 66,
+      "family": "battle-encounter-rate",
+      "variant": "field-rate",
+      "area": "battle",
+      "mode": "write",
+      "title": "그 맵의 조우 스텝만 변경",
+      "prompt": "숲길 맵의 조우 발생률을 30으로 맞춰줘.",
+      "args": {
+        "mapId": "map_field",
+        "rate": 30
+      }
+    },
+    {
+      "id": "battle-encounter-rate__field-polite",
+      "n": 67,
+      "family": "battle-encounter-rate",
+      "variant": "field-polite",
+      "area": "battle",
+      "mode": "write",
+      "title": "그 맵의 조우 스텝만 변경",
+      "prompt": "숲길(map_field)의 인카운트율만 25로 설정해 주세요. 다른 맵은 건드리지 마세요.",
+      "args": {
+        "mapId": "map_field",
+        "rate": 25
+      }
+    },
+    {
+      "id": "battle-encounter-rate__village-rate",
+      "n": 68,
+      "family": "battle-encounter-rate",
+      "variant": "village-rate",
+      "area": "battle",
+      "mode": "write",
+      "title": "그 맵의 조우 스텝만 변경",
+      "prompt": "마을 조우 스텝 40으로.",
+      "args": {
+        "mapId": "map_ember_village",
+        "rate": 40
+      }
+    },
+    {
+      "id": "battle-encounter-rate__plaza-explained",
+      "n": 69,
+      "family": "battle-encounter-rate",
+      "variant": "plaza-explained",
+      "area": "battle",
+      "mode": "write",
+      "title": "그 맵의 조우 스텝만 변경",
+      "prompt": "광장 맵의 랜덤 조우 발생률을 12로 낮춰 주세요. 조우 테이블·타일·이벤트는 그대로 두세요.",
+      "args": {
+        "mapId": "map_plaza",
+        "rate": 12
+      }
+    },
+    {
+      "id": "battle-encounter-rate__field-terse",
+      "n": 70,
+      "family": "battle-encounter-rate",
+      "variant": "field-terse",
+      "area": "battle",
+      "mode": "write",
+      "title": "그 맵의 조우 스텝만 변경",
+      "prompt": "숲길 조우 50.",
+      "args": {
+        "mapId": "map_field",
+        "rate": 50
+      }
+    },
+    {
+      "id": "event-playtest__utility-npc",
+      "n": 71,
+      "family": "event-playtest",
+      "variant": "utility-npc",
+      "area": "battle",
+      "mode": "read",
+      "title": "이벤트를 실제 플레이처럼 실행",
+      "prompt": "이 이벤트를 실제 플레이처럼 실행해줘.",
+      "args": {
+        "eventId": "ev_utility_npc"
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "event-playtest__utility-polite",
+      "n": 72,
+      "family": "event-playtest",
+      "variant": "utility-polite",
+      "area": "battle",
+      "mode": "read",
+      "title": "이벤트를 실제 플레이처럼 실행",
+      "prompt": "선택한 NPC 이벤트를 실행해서 대사가 어떻게 나오는지 확인해 주세요.",
+      "args": {
+        "eventId": "ev_utility_npc"
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "event-playtest__shop",
+      "n": 73,
+      "family": "event-playtest",
+      "variant": "shop",
+      "area": "battle",
+      "mode": "read",
+      "title": "이벤트를 실제 플레이처럼 실행",
+      "prompt": "상점 이벤트 한 번 돌려봐.",
+      "args": {
+        "eventId": "ev_test_shop"
+      },
+      "setup": {
+        "event": "ev_test_shop"
+      }
+    },
+    {
+      "id": "event-playtest__cutscene-explained",
+      "n": 74,
+      "family": "event-playtest",
+      "variant": "cutscene-explained",
+      "area": "battle",
+      "mode": "read",
+      "title": "이벤트를 실제 플레이처럼 실행",
+      "prompt": "장면 연출 이벤트를 실행해 화면 숨기기·보이기와 대기가 제대로 지나가는지 결과를 알려 주세요.",
+      "args": {
+        "eventId": "ev_test_cutscene"
+      },
+      "setup": {
+        "event": "ev_test_cutscene"
+      }
+    },
+    {
+      "id": "event-playtest__arena-terse",
+      "n": 75,
+      "family": "event-playtest",
+      "variant": "arena-terse",
+      "area": "battle",
+      "mode": "read",
+      "title": "이벤트를 실제 플레이처럼 실행",
+      "prompt": "문지기 전투 이벤트 실행해 봐.",
+      "args": {
+        "eventId": "ev_arena_keeper"
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "media-bgm-map__village-amber",
+      "n": 76,
+      "family": "media-bgm-map",
+      "variant": "village-amber",
+      "area": "media",
+      "mode": "write",
+      "title": "맵 BGM만 교체",
+      "prompt": "이 맵 BGM을 새벽의 의뢰서로 바꿔줘.",
+      "args": {
+        "mapId": "map_ember_village",
+        "track": "cc0-bgm-rtp-ttl-001"
+      },
+      "setup": {
+        "select": {
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 18
+        }
+      }
+    },
+    {
+      "id": "media-bgm-map__plaza-amber",
+      "n": 77,
+      "family": "media-bgm-map",
+      "variant": "plaza-amber",
+      "area": "media",
+      "mode": "write",
+      "title": "맵 BGM만 교체",
+      "prompt": "광장 배경 음악을 호박빛 초원의 끝으로 바꿔 주세요.",
+      "args": {
+        "mapId": "map_plaza",
+        "track": "cc0-bgm-rtp-fld-003"
+      }
+    },
+    {
+      "id": "media-bgm-map__field-vanguard",
+      "n": 78,
+      "family": "media-bgm-map",
+      "variant": "field-vanguard",
+      "area": "media",
+      "mode": "write",
+      "title": "맵 BGM만 교체",
+      "prompt": "숲길 BGM → 선봉의 신호.",
+      "args": {
+        "mapId": "map_field",
+        "track": "cc0-bgm-rtp-btl-001"
+      }
+    },
+    {
+      "id": "media-bgm-map__world-amber",
+      "n": 79,
+      "family": "media-bgm-map",
+      "variant": "world-amber",
+      "area": "media",
+      "mode": "write",
+      "title": "맵 BGM만 교체",
+      "prompt": "월드맵에서 흐르는 곡만 호박빛 초원의 끝으로 바꾸고, 다른 맵 음악은 그대로 두세요.",
+      "args": {
+        "mapId": "map_world",
+        "track": "cc0-bgm-rtp-fld-003"
+      }
+    },
+    {
+      "id": "media-bgm-map__interior-ledger",
+      "n": 80,
+      "family": "media-bgm-map",
+      "variant": "interior-ledger",
+      "area": "media",
+      "mode": "write",
+      "title": "맵 BGM만 교체",
+      "prompt": "집 안 음악을 새벽의 의뢰서로 바꿔줘.",
+      "args": {
+        "mapId": "map_interior",
+        "track": "cc0-bgm-rtp-ttl-001"
+      }
+    },
+    {
+      "id": "media-weather-rain__village-rain",
+      "n": 81,
+      "family": "media-weather-rain",
+      "variant": "village-rain",
+      "area": "media",
+      "mode": "write",
+      "title": "맵 날씨만 비로",
+      "prompt": "이 맵에 비를 내려줘.",
+      "args": {
+        "mapId": "map_ember_village"
+      },
+      "setup": {
+        "select": {
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 18
+        }
+      }
+    },
+    {
+      "id": "media-weather-rain__plaza-polite",
+      "n": 82,
+      "family": "media-weather-rain",
+      "variant": "plaza-polite",
+      "area": "media",
+      "mode": "write",
+      "title": "맵 날씨만 비로",
+      "prompt": "광장에 비가 내리게 해 주세요. 날씨만 바꾸면 됩니다.",
+      "args": {
+        "mapId": "map_plaza"
+      }
+    },
+    {
+      "id": "media-weather-rain__field-terse",
+      "n": 83,
+      "family": "media-weather-rain",
+      "variant": "field-terse",
+      "area": "media",
+      "mode": "write",
+      "title": "맵 날씨만 비로",
+      "prompt": "숲길, 비.",
+      "args": {
+        "mapId": "map_field"
+      }
+    },
+    {
+      "id": "media-weather-rain__world-heavy",
+      "n": 84,
+      "family": "media-weather-rain",
+      "variant": "world-heavy",
+      "area": "media",
+      "mode": "write",
+      "title": "맵 날씨만 비로",
+      "prompt": "월드맵 날씨를 세찬 비로 바꾸고 조명·타일은 그대로 두세요.",
+      "args": {
+        "mapId": "map_world",
+        "intensity": 0.9
+      }
+    },
+    {
+      "id": "media-weather-rain__interior-rain",
+      "n": 85,
+      "family": "media-weather-rain",
+      "variant": "interior-rain",
+      "area": "media",
+      "mode": "write",
+      "title": "맵 날씨만 비로",
+      "prompt": "집 안에 창밖에서 비가 들리는 분위기를 날씨로 넣어줘.",
+      "args": {
+        "mapId": "map_interior"
+      }
+    },
+    {
+      "id": "media-screen-tint__night-blue",
+      "n": 86,
+      "family": "media-screen-tint",
+      "variant": "night-blue",
+      "area": "media",
+      "mode": "write",
+      "title": "연출 이벤트의 화면 색조만",
+      "prompt": "밤 장면 색조를 짙은 남색으로 바꿔줘.",
+      "args": {
+        "eventId": "ev_night_cutscene",
+        "color": "#141c3c",
+        "alpha": 0.5
+      },
+      "setup": {
+        "event": "ev_night_cutscene"
+      }
+    },
+    {
+      "id": "media-screen-tint__dusk-polite",
+      "n": 87,
+      "family": "media-screen-tint",
+      "variant": "dusk-polite",
+      "area": "media",
+      "mode": "write",
+      "title": "연출 이벤트의 화면 색조만",
+      "prompt": "이 연출의 화면 색조를 주황빛 노을(#ff8c3c)로 바꿔 주세요. 다른 명령은 그대로 두세요.",
+      "args": {
+        "eventId": "ev_night_cutscene",
+        "color": "#ff8c3c",
+        "alpha": 0.25
+      }
+    },
+    {
+      "id": "media-screen-tint__dark-terse",
+      "n": 88,
+      "family": "media-screen-tint",
+      "variant": "dark-terse",
+      "area": "media",
+      "mode": "write",
+      "title": "연출 이벤트의 화면 색조만",
+      "prompt": "색조 30,40,80,0.45 로.",
+      "args": {
+        "eventId": "ev_night_cutscene",
+        "color": "#1e2850",
+        "alpha": 0.45
+      },
+      "setup": {
+        "event": "ev_night_cutscene"
+      }
+    },
+    {
+      "id": "media-screen-tint__red-explain",
+      "n": 89,
+      "family": "media-screen-tint",
+      "variant": "red-explain",
+      "area": "media",
+      "mode": "write",
+      "title": "연출 이벤트의 화면 색조만",
+      "prompt": "위기 장면이라 화면을 붉게 물들여 주세요. 색 #a01018, 농도 0.35 로 하고 나머지 연출 명령은 손대지 마세요.",
+      "args": {
+        "eventId": "ev_night_cutscene",
+        "color": "#a01018",
+        "alpha": 0.35
+      }
+    },
+    {
+      "id": "media-screen-tint__pale-casual",
+      "n": 90,
+      "family": "media-screen-tint",
+      "variant": "pale-casual",
+      "area": "media",
+      "mode": "write",
+      "title": "연출 이벤트의 화면 색조만",
+      "prompt": "색조 좀 옅게, #2a3050 0.2 정도로 해줘.",
+      "args": {
+        "eventId": "ev_night_cutscene",
+        "color": "#2a3050",
+        "alpha": 0.2
+      },
+      "setup": {
+        "event": "ev_night_cutscene"
+      }
+    },
+    {
+      "id": "media-battle-bgm__amber-plain",
+      "n": 91,
+      "family": "media-battle-bgm",
+      "variant": "amber-plain",
+      "area": "media",
+      "mode": "write",
+      "title": "시스템 전투 BGM만 교체",
+      "prompt": "전투 BGM을 호박빛 초원의 끝으로 바꿔줘.",
+      "args": {
+        "track": "cc0-bgm-rtp-fld-003"
+      }
+    },
+    {
+      "id": "media-battle-bgm__ledger-polite",
+      "n": 92,
+      "family": "media-battle-bgm",
+      "variant": "ledger-polite",
+      "area": "media",
+      "mode": "write",
+      "title": "시스템 전투 BGM만 교체",
+      "prompt": "전투 음악을 새벽의 의뢰서로 바꿔 주세요. 다른 음악은 그대로 두세요.",
+      "args": {
+        "track": "cc0-bgm-rtp-ttl-001"
+      }
+    },
+    {
+      "id": "media-battle-bgm__battle-terse",
+      "n": 93,
+      "family": "media-battle-bgm",
+      "variant": "battle-terse",
+      "area": "media",
+      "mode": "write",
+      "title": "시스템 전투 BGM만 교체",
+      "prompt": "전투 BGM → 재의 왕관.",
+      "args": {
+        "track": "cc0-bgm-rtp-btl-002"
+      }
+    },
+    {
+      "id": "media-battle-bgm__boss-explain",
+      "n": 94,
+      "family": "media-battle-bgm",
+      "variant": "boss-explain",
+      "area": "media",
+      "mode": "write",
+      "title": "시스템 전투 BGM만 교체",
+      "prompt": "보스전 분위기에 맞게 시스템 전투 BGM 만 「새벽의 의뢰서」로 바꾸고, 맵 음악과 기본 BGM 은 유지해 주세요.",
+      "args": {
+        "track": "cc0-bgm-rtp-ttl-001"
+      }
+    },
+    {
+      "id": "media-battle-bgm__amber-casual",
+      "n": 95,
+      "family": "media-battle-bgm",
+      "variant": "amber-casual",
+      "area": "media",
+      "mode": "write",
+      "title": "시스템 전투 BGM만 교체",
+      "prompt": "전투 들어갈 때 나오는 음악, 호박빛 초원의 끝으로 해줘.",
+      "args": {
+        "track": "cc0-bgm-rtp-fld-003"
+      }
+    },
+    {
+      "id": "media-se-volume__bell-quiet",
+      "n": 96,
+      "family": "media-se-volume",
+      "variant": "bell-quiet",
+      "area": "media",
+      "mode": "write",
+      "title": "효과음 명령의 음량만",
+      "prompt": "이 이벤트의 종소리 효과음을 조금 작게 해줘. 음량 0.4.",
+      "args": {
+        "eventId": "ev_se_bell",
+        "volume": 0.4
+      },
+      "setup": {
+        "event": "ev_se_bell"
+      }
+    },
+    {
+      "id": "media-se-volume__bell-polite",
+      "n": 97,
+      "family": "media-se-volume",
+      "variant": "bell-polite",
+      "area": "media",
+      "mode": "write",
+      "title": "효과음 명령의 음량만",
+      "prompt": "종소리 효과음 음량을 0.25로 낮춰 주세요. 다른 명령은 그대로 두세요.",
+      "args": {
+        "eventId": "ev_se_bell",
+        "volume": 0.25
+      }
+    },
+    {
+      "id": "media-se-volume__bell-terse",
+      "n": 98,
+      "family": "media-se-volume",
+      "variant": "bell-terse",
+      "area": "media",
+      "mode": "write",
+      "title": "효과음 명령의 음량만",
+      "prompt": "종소리 0.15.",
+      "args": {
+        "eventId": "ev_se_bell",
+        "volume": 0.15
+      },
+      "setup": {
+        "event": "ev_se_bell"
+      }
+    },
+    {
+      "id": "media-se-volume__bell-explain",
+      "n": 99,
+      "family": "media-se-volume",
+      "variant": "bell-explain",
+      "area": "media",
+      "mode": "write",
+      "title": "효과음 명령의 음량만",
+      "prompt": "밤 장면이라 종소리가 너무 크게 들립니다. 그 효과음 명령의 음량만 0.6으로 줄이고 대사는 유지해 주세요.",
+      "args": {
+        "eventId": "ev_se_bell",
+        "volume": 0.6
+      }
+    },
+    {
+      "id": "media-se-volume__bell-casual",
+      "n": 100,
+      "family": "media-se-volume",
+      "variant": "bell-casual",
+      "area": "media",
+      "mode": "write",
+      "title": "효과음 명령의 음량만",
+      "prompt": "종소리 좀 키워줘, 0.8 정도로.",
+      "args": {
+        "eventId": "ev_se_bell",
+        "volume": 0.8
+      },
+      "setup": {
+        "event": "ev_se_bell"
+      }
+    },
+    {
+      "id": "potion-price__potion-polite",
+      "n": 101,
+      "family": "potion-price",
+      "variant": "potion-polite",
+      "area": "database",
+      "mode": "write",
+      "title": "아이템 가격 변경",
+      "prompt": "회복약 가격을 30골드로 바꿔 주세요. 다른 아이템 가격은 그대로 두세요.",
+      "args": {
+        "itemId": "item_potion",
+        "price": 30
+      }
+    },
+    {
+      "id": "potion-price__ether-short",
+      "n": 102,
+      "family": "potion-price",
+      "variant": "ether-short",
+      "area": "database",
+      "mode": "write",
+      "title": "아이템 가격 변경",
+      "prompt": "마력약 값 100으로.",
+      "args": {
+        "itemId": "item_ether",
+        "price": 100
+      }
+    },
+    {
+      "id": "potion-price__antidote-casual",
+      "n": 103,
+      "family": "potion-price",
+      "variant": "antidote-casual",
+      "area": "database",
+      "mode": "write",
+      "title": "아이템 가격 변경",
+      "prompt": "해독초 25골드로 내려줘.",
+      "args": {
+        "itemId": "item_antidote",
+        "price": 25
+      }
+    },
+    {
+      "id": "potion-price__hi-potion-explained",
+      "n": 104,
+      "family": "potion-price",
+      "variant": "hi-potion-explained",
+      "area": "database",
+      "mode": "write",
+      "title": "아이템 가격 변경",
+      "prompt": "상급 회복약의 판매 가격을 120골드로 조정해 주세요. 나머지 아이템은 손대지 마세요.",
+      "args": {
+        "itemId": "item_hi_potion",
+        "price": 120
+      }
+    },
+    {
+      "id": "potion-price__candy-terse",
+      "n": 105,
+      "family": "potion-price",
+      "variant": "candy-terse",
+      "area": "database",
+      "mode": "write",
+      "title": "아이템 가격 변경",
+      "prompt": "별사탕 12골드.",
+      "args": {
+        "itemId": "item_candy",
+        "price": 12
+      }
+    },
+    {
+      "id": "sword-attack__iron-sword",
+      "n": 106,
+      "family": "sword-attack",
+      "variant": "iron-sword",
+      "area": "database",
+      "mode": "write",
+      "title": "장비 능력치 조정",
+      "prompt": "철 검 공격력을 5 올려 주세요. 다른 장비는 그대로 두세요.",
+      "args": {
+        "equipmentId": "equip_iron_sword",
+        "stat": "attack",
+        "delta": 5
+      }
+    },
+    {
+      "id": "sword-attack__steel-sword-short",
+      "n": 107,
+      "family": "sword-attack",
+      "variant": "steel-sword-short",
+      "area": "database",
+      "mode": "write",
+      "title": "장비 능력치 조정",
+      "prompt": "강철 검 공격력 +3.",
+      "args": {
+        "equipmentId": "equip_steel_sword",
+        "stat": "attack",
+        "delta": 3
+      }
+    },
+    {
+      "id": "sword-attack__oak-shield-casual",
+      "n": 108,
+      "family": "sword-attack",
+      "variant": "oak-shield-casual",
+      "area": "database",
+      "mode": "write",
+      "title": "장비 능력치 조정",
+      "prompt": "참나무 방패 방어력 2만 올려줘.",
+      "args": {
+        "equipmentId": "equip_oak_shield",
+        "stat": "defense",
+        "delta": 2
+      }
+    },
+    {
+      "id": "sword-attack__mage-hat-explained",
+      "n": 109,
+      "family": "sword-attack",
+      "variant": "mage-hat-explained",
+      "area": "database",
+      "mode": "write",
+      "title": "장비 능력치 조정",
+      "prompt": "별무늬 수습모의 정신력 보너스를 1 올려 주세요. 다른 부위 장비는 손대지 마세요.",
+      "args": {
+        "equipmentId": "equip_mage_hat",
+        "stat": "mind",
+        "delta": 1
+      }
+    },
+    {
+      "id": "sword-attack__boots-polite",
+      "n": 110,
+      "family": "sword-attack",
+      "variant": "boots-polite",
+      "area": "database",
+      "mode": "write",
+      "title": "장비 능력치 조정",
+      "prompt": "바람길 가죽 장화의 민첩 보너스를 2 올려 주시겠어요?",
+      "args": {
+        "equipmentId": "equip_boots",
+        "stat": "agility",
+        "delta": 2
+      }
+    },
+    {
+      "id": "item-description__exact-line",
+      "n": 111,
+      "family": "item-description",
+      "variant": "exact-line",
+      "area": "database",
+      "mode": "write",
+      "title": "설명 없는 아이템에 설명 추가",
+      "prompt": "낡은 열쇠 아이템 설명을 \"오래된 창고 문을 여는 열쇠.\" 로 넣어 주세요.",
+      "args": {
+        "itemId": "item_old_key",
+        "description": "오래된 창고 문을 여는 열쇠.",
+        "exact": true
+      }
+    },
+    {
+      "id": "item-description__unnamed-fill",
+      "n": 112,
+      "family": "item-description",
+      "variant": "unnamed-fill",
+      "area": "database",
+      "mode": "write",
+      "title": "설명 없는 아이템에 설명 추가",
+      "prompt": "설명이 비어 있는 아이템 하나에 어울리는 설명을 채워 줘.",
+      "args": {
+        "itemId": "item_old_key",
+        "exact": false
+      }
+    },
+    {
+      "id": "item-description__old-key-polite",
+      "n": 113,
+      "family": "item-description",
+      "variant": "old-key-polite",
+      "area": "database",
+      "mode": "write",
+      "title": "설명 없는 아이템에 설명 추가",
+      "prompt": "낡은 열쇠 설명이 비어 있네요. 열쇠에 어울리는 설명 한 줄만 넣어 주세요.",
+      "args": {
+        "itemId": "item_old_key",
+        "exact": false
+      }
+    },
+    {
+      "id": "item-description__terse",
+      "n": 114,
+      "family": "item-description",
+      "variant": "terse",
+      "area": "database",
+      "mode": "write",
+      "title": "설명 없는 아이템에 설명 추가",
+      "prompt": "낡은 열쇠 설명 추가.",
+      "args": {
+        "itemId": "item_old_key",
+        "exact": false
+      }
+    },
+    {
+      "id": "item-description__explained",
+      "n": 115,
+      "family": "item-description",
+      "variant": "explained",
+      "area": "database",
+      "mode": "write",
+      "title": "설명 없는 아이템에 설명 추가",
+      "prompt": "낡은 열쇠 아이템에 설명을 붙여 주세요. 다른 아이템 설명은 건드리지 마세요.",
+      "args": {
+        "itemId": "item_old_key",
+        "exact": false
+      }
+    },
+    {
+      "id": "create-key-item__storage-polite",
+      "n": 116,
+      "family": "create-key-item",
+      "variant": "storage-polite",
+      "area": "database",
+      "mode": "write",
+      "title": "열쇠 아이템 만들기",
+      "prompt": "창고 열쇠 아이템을 하나 만들어 주세요. 기존 아이템은 그대로 두세요.",
+      "args": {
+        "name": "창고 열쇠",
+        "id": "item_g3_storage_key"
+      }
+    },
+    {
+      "id": "create-key-item__brass-short",
+      "n": 117,
+      "family": "create-key-item",
+      "variant": "brass-short",
+      "area": "database",
+      "mode": "write",
+      "title": "열쇠 아이템 만들기",
+      "prompt": "놋쇠 열쇠 아이템 추가.",
+      "args": {
+        "name": "놋쇠 열쇠",
+        "id": "item_g3_brass_key"
+      }
+    },
+    {
+      "id": "create-key-item__cellar-casual",
+      "n": 118,
+      "family": "create-key-item",
+      "variant": "cellar-casual",
+      "area": "database",
+      "mode": "write",
+      "title": "열쇠 아이템 만들기",
+      "prompt": "지하실 열쇠 하나 새로 만들어줘.",
+      "args": {
+        "name": "지하실 열쇠",
+        "id": "item_g3_cellar_key"
+      }
+    },
+    {
+      "id": "create-key-item__gold-explained",
+      "n": 119,
+      "family": "create-key-item",
+      "variant": "gold-explained",
+      "area": "database",
+      "mode": "write",
+      "title": "열쇠 아이템 만들기",
+      "prompt": "퀘스트 보상으로 쓸 금빛 열쇠 아이템을 새로 등록해 주세요. 설명은 \"성문을 여는 금빛 열쇠.\" 로 하고, 다른 아이템 항목은 바꾸지 마세요.",
+      "args": {
+        "name": "금빛 열쇠",
+        "id": "item_g3_gold_key",
+        "description": "성문을 여는 금빛 열쇠."
+      }
+    },
+    {
+      "id": "create-key-item__gate-terse",
+      "n": 120,
+      "family": "create-key-item",
+      "variant": "gate-terse",
+      "area": "database",
+      "mode": "write",
+      "title": "열쇠 아이템 만들기",
+      "prompt": "성문 열쇠.",
+      "args": {
+        "name": "성문 열쇠",
+        "id": "item_g3_gate_key"
+      }
+    },
+    {
+      "id": "db-skill-create__ember-wave-polite",
+      "n": 121,
+      "family": "db-skill-create",
+      "variant": "ember-wave-polite",
+      "area": "database",
+      "mode": "write",
+      "title": "스킬 하나 만들기",
+      "prompt": "위력 120, MP 14를 쓰는 「잿불 파동」 스킬을 하나 만들어 주세요. 기존 스킬은 그대로 두세요.",
+      "args": {
+        "name": "잿불 파동",
+        "id": "skill_g3_ember_wave",
+        "power": 120,
+        "mpCost": 14
+      }
+    },
+    {
+      "id": "db-skill-create__frost-needle-short",
+      "n": 122,
+      "family": "db-skill-create",
+      "variant": "frost-needle-short",
+      "area": "database",
+      "mode": "write",
+      "title": "스킬 하나 만들기",
+      "prompt": "「서리 침」 스킬 추가. 위력 90, MP 8.",
+      "args": {
+        "name": "서리 침",
+        "id": "skill_g3_frost_needle",
+        "power": 90,
+        "mpCost": 8
+      }
+    },
+    {
+      "id": "db-skill-create__stone-fist-casual",
+      "n": 123,
+      "family": "db-skill-create",
+      "variant": "stone-fist-casual",
+      "area": "database",
+      "mode": "write",
+      "title": "스킬 하나 만들기",
+      "prompt": "「바위 주먹」이라는 기술 만들어줘. 위력 110에 MP 12.",
+      "args": {
+        "name": "바위 주먹",
+        "id": "skill_g3_stone_fist",
+        "power": 110,
+        "mpCost": 12
+      }
+    },
+    {
+      "id": "db-skill-create__gale-explained",
+      "n": 124,
+      "family": "db-skill-create",
+      "variant": "gale-explained",
+      "area": "database",
+      "mode": "write",
+      "title": "스킬 하나 만들기",
+      "prompt": "적 하나에게 쓰는 공격 기술 「돌풍 베기」를 새로 등록해 주세요. 위력은 75, MP 소모는 6이며, 다른 스킬 레코드는 손대지 마세요.",
+      "args": {
+        "name": "돌풍 베기",
+        "id": "skill_g3_gale_slash",
+        "power": 75,
+        "mpCost": 6
+      }
+    },
+    {
+      "id": "db-skill-create__spark-terse",
+      "n": 125,
+      "family": "db-skill-create",
+      "variant": "spark-terse",
+      "area": "database",
+      "mode": "write",
+      "title": "스킬 하나 만들기",
+      "prompt": "「불꽃 파편」, 위력 60, MP 4.",
+      "args": {
+        "name": "불꽃 파편",
+        "id": "skill_g3_spark",
+        "power": 60,
+        "mpCost": 4
+      }
+    },
+    {
+      "id": "db-enemy-stat__slime-polite",
+      "n": 126,
+      "family": "db-enemy-stat",
+      "variant": "slime-polite",
+      "area": "database",
+      "mode": "write",
+      "title": "적 HP·공격력 올리기",
+      "prompt": "슬라임의 최대 HP를 50, 공격력을 5 올려 주세요. 다른 능력치와 다른 적은 그대로 두세요.",
+      "args": {
+        "enemyId": "enemy_slime",
+        "hpDelta": 50,
+        "attackDelta": 5
+      }
+    },
+    {
+      "id": "db-enemy-stat__bat-short",
+      "n": 127,
+      "family": "db-enemy-stat",
+      "variant": "bat-short",
+      "area": "database",
+      "mode": "write",
+      "title": "적 HP·공격력 올리기",
+      "prompt": "동굴 박쥐 HP +30, 공격력 +4.",
+      "args": {
+        "enemyId": "enemy_cave_bat",
+        "hpDelta": 30,
+        "attackDelta": 4
+      }
+    },
+    {
+      "id": "db-enemy-stat__golem-casual",
+      "n": 128,
+      "family": "db-enemy-stat",
+      "variant": "golem-casual",
+      "area": "database",
+      "mode": "write",
+      "title": "적 HP·공격력 올리기",
+      "prompt": "돌 골렘 체력 100 올리고 공격력도 10 올려줘.",
+      "args": {
+        "enemyId": "enemy_stone_golem",
+        "hpDelta": 100,
+        "attackDelta": 10
+      }
+    },
+    {
+      "id": "db-enemy-stat__meadow-explained",
+      "n": 129,
+      "family": "db-enemy-stat",
+      "variant": "meadow-explained",
+      "area": "database",
+      "mode": "write",
+      "title": "적 HP·공격력 올리기",
+      "prompt": "초원 슬라임을 조금 더 단단하게 만들어 주세요. 최대 HP를 20, 공격력을 3 올리되 방어력·민첩 같은 다른 수치는 건드리지 마세요.",
+      "args": {
+        "enemyId": "enemy_meadow_slime",
+        "hpDelta": 20,
+        "attackDelta": 3
+      }
+    },
+    {
+      "id": "db-enemy-stat__dragon-terse",
+      "n": 130,
+      "family": "db-enemy-stat",
+      "variant": "dragon-terse",
+      "area": "database",
+      "mode": "write",
+      "title": "적 HP·공격력 올리기",
+      "prompt": "붉은 드래곤 HP 200, 공격력 20 올려.",
+      "args": {
+        "enemyId": "enemy_dragon",
+        "hpDelta": 200,
+        "attackDelta": 20
+      }
+    },
+    {
+      "id": "db-class-skill-list__squire-polite",
+      "n": 131,
+      "family": "db-class-skill-list",
+      "variant": "squire-polite",
+      "area": "database",
+      "mode": "write",
+      "title": "클래스 습득 스킬 추가",
+      "prompt": "견습 기사 클래스가 30레벨에 「브레이브 블레이드」를 배우게 해 주세요. 다른 클래스는 그대로 두세요.",
+      "args": {
+        "classId": "class_squire",
+        "level": 30,
+        "skillId": "skill_hero_brave_blade"
+      }
+    },
+    {
+      "id": "db-class-skill-list__swordsman-short",
+      "n": 132,
+      "family": "db-class-skill-list",
+      "variant": "swordsman-short",
+      "area": "database",
+      "mode": "write",
+      "title": "클래스 습득 스킬 추가",
+      "prompt": "검객, 25레벨에 화염검.",
+      "args": {
+        "classId": "class_swordsman",
+        "level": 25,
+        "skillId": "skill_hero_flame_sword"
+      }
+    },
+    {
+      "id": "db-class-skill-list__mage-casual",
+      "n": 133,
+      "family": "db-class-skill-list",
+      "variant": "mage-casual",
+      "area": "database",
+      "mode": "write",
+      "title": "클래스 습득 스킬 추가",
+      "prompt": "마법사가 18레벨에 메테오 배우게 해줘.",
+      "args": {
+        "classId": "class_mage",
+        "level": 18,
+        "skillId": "skill_mage_meteor"
+      }
+    },
+    {
+      "id": "db-class-skill-list__miner-explained",
+      "n": 134,
+      "family": "db-class-skill-list",
+      "variant": "miner-explained",
+      "area": "database",
+      "mode": "write",
+      "title": "클래스 습득 스킬 추가",
+      "prompt": "광부 클래스의 습득 목록에 20레벨 「다이너마이트」를 추가해 주세요. 이미 있는 습득 항목은 지우지 마세요.",
+      "args": {
+        "classId": "class_miner",
+        "level": 20,
+        "skillId": "skill_miner_dynamite"
+      }
+    },
+    {
+      "id": "db-class-skill-list__guard-terse",
+      "n": 135,
+      "family": "db-class-skill-list",
+      "variant": "guard-terse",
+      "area": "database",
+      "mode": "write",
+      "title": "클래스 습득 스킬 추가",
+      "prompt": "수호 기사 24레벨 성스러운 방패.",
+      "args": {
+        "classId": "class_guardian",
+        "level": 24,
+        "skillId": "skill_guard_holy_shield"
+      }
+    },
+    {
+      "id": "db-item-price-batch__two-items-polite",
+      "n": 136,
+      "family": "db-item-price-batch",
+      "variant": "two-items-polite",
+      "area": "database",
+      "mode": "write",
+      "title": "여러 아이템 가격 한 번에",
+      "prompt": "회복약 30골드, 해독초 25골드로 바꿔 주세요. 다른 아이템 가격은 그대로 두세요.",
+      "args": {
+        "entries": [
+          {
+            "itemId": "item_potion",
+            "price": 30
+          },
+          {
+            "itemId": "item_antidote",
+            "price": 25
+          }
+        ]
+      }
+    },
+    {
+      "id": "db-item-price-batch__three-items-short",
+      "n": 137,
+      "family": "db-item-price-batch",
+      "variant": "three-items-short",
+      "area": "database",
+      "mode": "write",
+      "title": "여러 아이템 가격 한 번에",
+      "prompt": "마력약 100, 각성초 30, 붉은 사과 15.",
+      "args": {
+        "entries": [
+          {
+            "itemId": "item_ether",
+            "price": 100
+          },
+          {
+            "itemId": "item_wake_herb",
+            "price": 30
+          },
+          {
+            "itemId": "item_apple",
+            "price": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": "db-item-price-batch__food-casual",
+      "n": 138,
+      "family": "db-item-price-batch",
+      "variant": "food-casual",
+      "area": "database",
+      "mode": "write",
+      "title": "여러 아이템 가격 한 번에",
+      "prompt": "호밀빵 20, 소금 주먹밥 25로 내려줘.",
+      "args": {
+        "entries": [
+          {
+            "itemId": "item_bread",
+            "price": 20
+          },
+          {
+            "itemId": "item_rice_ball",
+            "price": 25
+          }
+        ]
+      }
+    },
+    {
+      "id": "db-item-price-batch__explained-batch",
+      "n": 139,
+      "family": "db-item-price-batch",
+      "variant": "explained-batch",
+      "area": "database",
+      "mode": "write",
+      "title": "여러 아이템 가격 한 번에",
+      "prompt": "상점 밸런스를 맞추려고 합니다. 상급 회복약 120골드, 만능약 50골드, 엘릭서 5000골드로 조정해 주세요. 나머지 아이템은 손대지 마세요.",
+      "args": {
+        "entries": [
+          {
+            "itemId": "item_hi_potion",
+            "price": 120
+          },
+          {
+            "itemId": "item_panacea",
+            "price": 50
+          },
+          {
+            "itemId": "item_elixir",
+            "price": 5000
+          }
+        ]
+      }
+    },
+    {
+      "id": "db-item-price-batch__tools-terse",
+      "n": 140,
+      "family": "db-item-price-batch",
+      "variant": "tools-terse",
+      "area": "database",
+      "mode": "write",
+      "title": "여러 아이템 가격 한 번에",
+      "prompt": "응급 붕대 40, 버터 과자 20.",
+      "args": {
+        "entries": [
+          {
+            "itemId": "item_bandages",
+            "price": 40
+          },
+          {
+            "itemId": "item_cookie",
+            "price": 20
+          }
+        ]
+      }
+    },
+    {
+      "id": "db-troop-member-count__bat-swarm-polite",
+      "n": 141,
+      "family": "db-troop-member-count",
+      "variant": "bat-swarm-polite",
+      "area": "database",
+      "mode": "write",
+      "title": "트룹 구성 수 바꾸기",
+      "prompt": "동굴 박쥐 떼 트룹의 적 수를 2마리로 줄여 주세요. 다른 트룹은 그대로 두세요.",
+      "args": {
+        "troopId": "troop_bat_swarm",
+        "count": 2
+      }
+    },
+    {
+      "id": "db-troop-member-count__slime-pair-short",
+      "n": 142,
+      "family": "db-troop-member-count",
+      "variant": "slime-pair-short",
+      "area": "database",
+      "mode": "write",
+      "title": "트룹 구성 수 바꾸기",
+      "prompt": "초원 슬라임 둘을 네 마리로.",
+      "args": {
+        "troopId": "troop_slime_pair",
+        "count": 4
+      }
+    },
+    {
+      "id": "db-troop-member-count__slime-casual",
+      "n": 143,
+      "family": "db-troop-member-count",
+      "variant": "slime-casual",
+      "area": "database",
+      "mode": "write",
+      "title": "트룹 구성 수 바꾸기",
+      "prompt": "슬라임 정찰대를 세 마리로 늘려줘.",
+      "args": {
+        "troopId": "troop_slime",
+        "count": 3
+      }
+    },
+    {
+      "id": "db-troop-member-count__archers-explained",
+      "n": 144,
+      "family": "db-troop-member-count",
+      "variant": "archers-explained",
+      "area": "database",
+      "mode": "write",
+      "title": "트룹 구성 수 바꾸기",
+      "prompt": "광산 해골 궁수 트룹의 구성 인원을 2마리로 맞춰 주세요. 다른 트룹 구성은 건드리지 마세요.",
+      "args": {
+        "troopId": "troop_mine_archers",
+        "count": 2
+      }
+    },
+    {
+      "id": "db-troop-member-count__hornets-terse",
+      "n": 145,
+      "family": "db-troop-member-count",
+      "variant": "hornets-terse",
+      "area": "database",
+      "mode": "write",
+      "title": "트룹 구성 수 바꾸기",
+      "prompt": "숲 말벌 무리 5마리.",
+      "args": {
+        "troopId": "troop_forest_hornets",
+        "count": 5
+      }
+    },
+    {
+      "id": "db-state-duration__poison-polite",
+      "n": 146,
+      "family": "db-state-duration",
+      "variant": "poison-polite",
+      "area": "database",
+      "mode": "write",
+      "title": "상태 지속 턴 바꾸기",
+      "prompt": "독 상태의 지속 턴을 5턴으로 바꿔 주세요. 다른 상태는 그대로 두세요.",
+      "args": {
+        "stateId": "state_poison",
+        "turns": 5
+      }
+    },
+    {
+      "id": "db-state-duration__sleep-short",
+      "n": 147,
+      "family": "db-state-duration",
+      "variant": "sleep-short",
+      "area": "database",
+      "mode": "write",
+      "title": "상태 지속 턴 바꾸기",
+      "prompt": "수면 4턴으로.",
+      "args": {
+        "stateId": "state_sleep",
+        "turns": 4
+      }
+    },
+    {
+      "id": "db-state-duration__paralysis-casual",
+      "n": 148,
+      "family": "db-state-duration",
+      "variant": "paralysis-casual",
+      "area": "database",
+      "mode": "write",
+      "title": "상태 지속 턴 바꾸기",
+      "prompt": "마비가 3턴만 지속되게 해줘.",
+      "args": {
+        "stateId": "state_paralysis",
+        "turns": 3
+      }
+    },
+    {
+      "id": "db-state-duration__silence-explained",
+      "n": 149,
+      "family": "db-state-duration",
+      "variant": "silence-explained",
+      "area": "database",
+      "mode": "write",
+      "title": "상태 지속 턴 바꾸기",
+      "prompt": "침묵 상태의 자연 회복 시점을 6턴으로 조정해 주세요. 회복 확률과 다른 상태 값은 바꾸지 마세요.",
+      "args": {
+        "stateId": "state_silence",
+        "turns": 6
+      }
+    },
+    {
+      "id": "db-state-duration__regen-terse",
+      "n": 150,
+      "family": "db-state-duration",
+      "variant": "regen-terse",
+      "area": "database",
+      "mode": "write",
+      "title": "상태 지속 턴 바꾸기",
+      "prompt": "재생 지속 7턴.",
+      "args": {
+        "stateId": "state_regen",
+        "turns": 7
+      }
+    },
+    {
+      "id": "chain-db-item-then-shop__lantern-polite",
+      "n": 151,
+      "family": "chain-db-item-then-shop",
+      "variant": "lantern-polite",
+      "area": "database",
+      "mode": "write",
+      "title": "아이템을 만들고 상점에 올리기",
+      "prompt": "「등불 기름」 아이템을 40골드로 만들고, 잡화점 주인 재고에 넣어 주세요. 기존 아이템과 기존 상점 물건은 그대로 두세요.",
+      "args": {
+        "eventId": "ev_test_shop",
+        "itemId": "item_g3_lantern_oil",
+        "itemName": "등불 기름",
+        "price": 40
+      }
+    },
+    {
+      "id": "chain-db-item-then-shop__rope-short",
+      "n": 152,
+      "family": "chain-db-item-then-shop",
+      "variant": "rope-short",
+      "area": "database",
+      "mode": "write",
+      "title": "아이템을 만들고 상점에 올리기",
+      "prompt": "「밧줄」 25골드로 만들고 잡화점에 팔게 해줘.",
+      "args": {
+        "eventId": "ev_test_shop",
+        "itemId": "item_g3_rope",
+        "itemName": "밧줄",
+        "price": 25
+      }
+    },
+    {
+      "id": "chain-db-item-then-shop__compass-casual",
+      "n": 153,
+      "family": "chain-db-item-then-shop",
+      "variant": "compass-casual",
+      "area": "database",
+      "mode": "write",
+      "title": "아이템을 만들고 상점에 올리기",
+      "prompt": "「낡은 나침반」을 150골드짜리로 하나 만들어서 잡화점 주인한테 팔게 해줘.",
+      "args": {
+        "eventId": "ev_test_shop",
+        "itemId": "item_g3_compass",
+        "itemName": "낡은 나침반",
+        "price": 150
+      }
+    },
+    {
+      "id": "chain-db-item-then-shop__flask-explained",
+      "n": 154,
+      "family": "chain-db-item-then-shop",
+      "variant": "flask-explained",
+      "area": "database",
+      "mode": "write",
+      "title": "아이템을 만들고 상점에 올리기",
+      "prompt": "잡화점에 새 물건을 들여놓으려 합니다. 「빈 물약병」 아이템을 15골드로 등록하고, 그 아이템이 잡화점 주인 상점 재고에 들어가게 해 주세요. 다른 아이템 가격과 기존 재고는 건드리지 마세요.",
+      "args": {
+        "eventId": "ev_test_shop",
+        "itemId": "item_g3_empty_flask",
+        "itemName": "빈 물약병",
+        "price": 15
+      }
+    },
+    {
+      "id": "chain-db-item-then-shop__tinder-terse",
+      "n": 155,
+      "family": "chain-db-item-then-shop",
+      "variant": "tinder-terse",
+      "area": "database",
+      "mode": "write",
+      "title": "아이템을 만들고 상점에 올리기",
+      "prompt": "「불쏘시개」 10골드, 잡화점 재고에.",
+      "args": {
+        "eventId": "ev_test_shop",
+        "itemId": "item_g3_tinder",
+        "itemName": "불쏘시개",
+        "price": 10
+      }
+    },
+    {
+      "id": "rename-npc__villager-polite",
+      "n": 156,
+      "family": "rename-npc",
+      "variant": "villager-polite",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 이름 변경(대사 화자 포함)",
+      "prompt": "이 NPC 이름을 하린으로 바꿔 주세요.",
+      "args": {
+        "eventId": "ev_utility_npc",
+        "name": "하린"
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "rename-npc__inn-short",
+      "n": 157,
+      "family": "rename-npc",
+      "variant": "inn-short",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 이름 변경(대사 화자 포함)",
+      "prompt": "여관 주인 이름을 마사로.",
+      "args": {
+        "eventId": "ev_ember_inn",
+        "name": "마사"
+      },
+      "setup": {
+        "event": "ev_ember_inn"
+      }
+    },
+    {
+      "id": "rename-npc__child-casual",
+      "n": 158,
+      "family": "rename-npc",
+      "variant": "child-casual",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 이름 변경(대사 화자 포함)",
+      "prompt": "얘 이름 미루로 바꿔줘.",
+      "args": {
+        "eventId": "ev_ember_child",
+        "name": "미루"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "rename-npc__guard-explained",
+      "n": 159,
+      "family": "rename-npc",
+      "variant": "guard-explained",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 이름 변경(대사 화자 포함)",
+      "prompt": "파수꾼 이벤트의 표시 이름을 데릭으로 바꾸고, 대사창에 뜨는 화자 이름도 전부 데릭으로 맞춰 주세요.",
+      "args": {
+        "eventId": "ev_ember_guard",
+        "name": "데릭"
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "rename-npc__cutscene-rename",
+      "n": 160,
+      "family": "rename-npc",
+      "variant": "cutscene-rename",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 이름 변경(대사 화자 포함)",
+      "prompt": "장면 연출 이벤트 이름을 「오프닝 연출」로 바꿔 주세요.",
+      "args": {
+        "eventId": "ev_test_cutscene",
+        "name": "오프닝 연출"
+      },
+      "setup": {
+        "event": "ev_test_cutscene"
+      }
+    },
+    {
+      "id": "npc-shop__villager-polite",
+      "n": 161,
+      "family": "npc-shop",
+      "variant": "villager-polite",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 대화에 상점 열기",
+      "prompt": "이 주민과 대화하면 회복약과 해독초를 파는 상점이 열리게 해 주세요.",
+      "args": {
+        "eventId": "ev_utility_npc",
+        "goods": [
+          "item_potion",
+          "item_antidote"
+        ]
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "npc-shop__inn-keeper-short",
+      "n": 162,
+      "family": "npc-shop",
+      "variant": "inn-keeper-short",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 대화에 상점 열기",
+      "prompt": "여관 주인한테 상점도 붙여줘. 상급 회복약이랑 마력약.",
+      "args": {
+        "eventId": "ev_ember_inn",
+        "goods": [
+          "item_hi_potion",
+          "item_ether"
+        ]
+      },
+      "setup": {
+        "event": "ev_ember_inn"
+      }
+    },
+    {
+      "id": "npc-shop__child-casual",
+      "n": 163,
+      "family": "npc-shop",
+      "variant": "child-casual",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 대화에 상점 열기",
+      "prompt": "얘가 별사탕이랑 버터 과자를 팔게 해줘.",
+      "args": {
+        "eventId": "ev_ember_child",
+        "goods": [
+          "item_candy",
+          "item_cookie"
+        ]
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "npc-shop__guard-explained",
+      "n": 164,
+      "family": "npc-shop",
+      "variant": "guard-explained",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 대화에 상점 열기",
+      "prompt": "파수꾼 이벤트에 상점 명령을 하나 넣어 주세요. 파는 물건은 투척 단검과 독병이고, 지금 있는 대사는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_ember_guard",
+        "goods": [
+          "item_throwing_knife",
+          "item_poison_vial"
+        ]
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "npc-shop__equipment-goods",
+      "n": 165,
+      "family": "npc-shop",
+      "variant": "equipment-goods",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 대화에 상점 열기",
+      "prompt": "잡화점 주인에게 철 검과 참나무 방패도 팔게 해 주세요.",
+      "args": {
+        "eventId": "ev_test_shop",
+        "goods": [
+          "equip_iron_sword",
+          "equip_oak_shield"
+        ]
+      },
+      "setup": {
+        "event": "ev_test_shop"
+      }
+    },
+    {
+      "id": "remove-shop-herb__polite-herb",
+      "n": 166,
+      "family": "remove-shop-herb",
+      "variant": "polite-herb",
+      "area": "npc",
+      "mode": "write",
+      "title": "상점 재고에서 약초만 빼기",
+      "prompt": "잡화점 주인 재고에서 약초만 빼 주세요. 상점 자체는 그대로 두고요.",
+      "args": {
+        "eventId": "ev_test_shop",
+        "itemId": "item_herb"
+      },
+      "setup": {
+        "event": "ev_test_shop"
+      }
+    },
+    {
+      "id": "remove-shop-herb__terse-potion",
+      "n": 167,
+      "family": "remove-shop-herb",
+      "variant": "terse-potion",
+      "area": "npc",
+      "mode": "write",
+      "title": "상점 재고에서 약초만 빼기",
+      "prompt": "잡화점, 회복약 빼.",
+      "args": {
+        "eventId": "ev_test_shop",
+        "itemId": "item_potion"
+      },
+      "setup": {
+        "event": "ev_test_shop"
+      }
+    },
+    {
+      "id": "remove-shop-herb__casual-herb",
+      "n": 168,
+      "family": "remove-shop-herb",
+      "variant": "casual-herb",
+      "area": "npc",
+      "mode": "write",
+      "title": "상점 재고에서 약초만 빼기",
+      "prompt": "여기 상점에서 약초는 안 팔게 해줘.",
+      "args": {
+        "eventId": "ev_test_shop",
+        "itemId": "item_herb"
+      },
+      "setup": {
+        "event": "ev_test_shop"
+      }
+    },
+    {
+      "id": "remove-shop-herb__explained-potion",
+      "n": 169,
+      "family": "remove-shop-herb",
+      "variant": "explained-potion",
+      "area": "npc",
+      "mode": "write",
+      "title": "상점 재고에서 약초만 빼기",
+      "prompt": "잡화점 재고에서 회복약(item_potion)만 제거해 주세요. 상점 명령과 다른 물건은 그대로 남겨 주세요.",
+      "args": {
+        "eventId": "ev_test_shop",
+        "itemId": "item_potion"
+      },
+      "setup": {
+        "event": "ev_test_shop"
+      }
+    },
+    {
+      "id": "remove-shop-herb__herbalist-herb",
+      "n": 170,
+      "family": "remove-shop-herb",
+      "variant": "herbalist-herb",
+      "area": "npc",
+      "mode": "write",
+      "title": "상점 재고에서 약초만 빼기",
+      "prompt": "약초 상인 재고에서 약초를 빼 주세요. 해독초는 계속 팔아야 합니다.",
+      "args": {
+        "eventId": "ev_g3_herbalist",
+        "itemId": "item_herb"
+      },
+      "setup": {
+        "event": "ev_g3_herbalist"
+      }
+    },
+    {
+      "id": "chain-npc-then-line__traveler-polite",
+      "n": 171,
+      "family": "chain-npc-then-line",
+      "variant": "traveler-polite",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 배치하고 대사 한 줄",
+      "prompt": "(8,6) 칸에 「나그네」라는 NPC를 놓고, 말을 걸면 \"요즘 길이 험하구먼.\" 이라고 하게 해 주세요. 다른 이벤트는 그대로 두세요.",
+      "args": {
+        "x": 8,
+        "y": 6,
+        "name": "나그네",
+        "line": "요즘 길이 험하구먼."
+      },
+      "setup": {
+        "select": {
+          "x": 8,
+          "y": 6,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "chain-npc-then-line__merchant-short",
+      "n": 172,
+      "family": "chain-npc-then-line",
+      "variant": "merchant-short",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 배치하고 대사 한 줄",
+      "prompt": "(5,4)에 「행상인」 놓고 \"싼 물건 많아요.\" 하게.",
+      "args": {
+        "x": 5,
+        "y": 4,
+        "name": "행상인",
+        "line": "싼 물건 많아요."
+      },
+      "setup": {
+        "select": {
+          "x": 5,
+          "y": 4,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "chain-npc-then-line__kid-casual",
+      "n": 173,
+      "family": "chain-npc-then-line",
+      "variant": "kid-casual",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 배치하고 대사 한 줄",
+      "prompt": "(10,10)에 「동네 아이」 하나 세우고 \"숨바꼭질 할래?\" 라고 말하게 해줘.",
+      "args": {
+        "x": 10,
+        "y": 10,
+        "name": "동네 아이",
+        "line": "숨바꼭질 할래?"
+      },
+      "setup": {
+        "select": {
+          "x": 10,
+          "y": 10,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "chain-npc-then-line__elder-explained",
+      "n": 174,
+      "family": "chain-npc-then-line",
+      "variant": "elder-explained",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 배치하고 대사 한 줄",
+      "prompt": "마을 어귀 (18,3) 자리에 「마을 노인」 NPC를 추가해 주세요. 조사하면 \"이 마을은 오래되었다네.\" 라는 대사가 나와야 하고, 기존 이벤트는 하나도 바뀌면 안 됩니다.",
+      "args": {
+        "x": 18,
+        "y": 3,
+        "name": "마을 노인",
+        "line": "이 마을은 오래되었다네."
+      },
+      "setup": {
+        "select": {
+          "x": 18,
+          "y": 3,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "chain-npc-then-line__guard-terse",
+      "n": 175,
+      "family": "chain-npc-then-line",
+      "variant": "guard-terse",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 배치하고 대사 한 줄",
+      "prompt": "(20,2) 「순찰병」, \"밤에는 다니지 마시오.\"",
+      "args": {
+        "x": 20,
+        "y": 2,
+        "name": "순찰병",
+        "line": "밤에는 다니지 마시오."
+      },
+      "setup": {
+        "select": {
+          "x": 20,
+          "y": 2,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "ambiguous-this-npc__this-npc-polite",
+      "n": 176,
+      "family": "ambiguous-this-npc",
+      "variant": "this-npc-polite",
+      "area": "npc",
+      "mode": "write",
+      "title": "선택한 NPC만 손보기",
+      "prompt": "이 NPC 좀 손봐 주세요. 다른 이벤트는 건드리지 마세요.",
+      "args": {
+        "eventId": "ev_utility_npc"
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "ambiguous-this-npc__this-one-short",
+      "n": 177,
+      "family": "ambiguous-this-npc",
+      "variant": "this-one-short",
+      "area": "npc",
+      "mode": "write",
+      "title": "선택한 NPC만 손보기",
+      "prompt": "이거 다듬어 줘.",
+      "args": {
+        "eventId": "ev_ember_child"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "ambiguous-this-npc__this-npc-casual",
+      "n": 178,
+      "family": "ambiguous-this-npc",
+      "variant": "this-npc-casual",
+      "area": "npc",
+      "mode": "write",
+      "title": "선택한 NPC만 손보기",
+      "prompt": "얘 좀 더 낫게 만들어줘.",
+      "args": {
+        "eventId": "ev_test_shop"
+      },
+      "setup": {
+        "event": "ev_test_shop"
+      }
+    },
+    {
+      "id": "ambiguous-this-npc__this-event-explained",
+      "n": 179,
+      "family": "ambiguous-this-npc",
+      "variant": "this-event-explained",
+      "area": "npc",
+      "mode": "write",
+      "title": "선택한 NPC만 손보기",
+      "prompt": "선택한 이벤트를 조금 더 자연스럽게 다듬어 주세요. 다른 이벤트나 맵은 그대로 두세요.",
+      "args": {
+        "eventId": "ev_ember_guard"
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "ambiguous-this-npc__this-scene-terse",
+      "n": 180,
+      "family": "ambiguous-this-npc",
+      "variant": "this-scene-terse",
+      "area": "npc",
+      "mode": "write",
+      "title": "선택한 NPC만 손보기",
+      "prompt": "이 장면 이벤트 손봐.",
+      "args": {
+        "eventId": "ev_test_cutscene"
+      },
+      "setup": {
+        "event": "ev_test_cutscene"
+      }
+    },
+    {
+      "id": "move-start__here-plain",
+      "n": 181,
+      "family": "move-start",
+      "variant": "here-plain",
+      "area": "maps",
+      "mode": "write",
+      "title": "시작 위치 이동",
+      "prompt": "시작 위치를 여기로 옮겨줘.",
+      "args": {
+        "x": 9,
+        "y": 8
+      },
+      "setup": {
+        "select": {
+          "x": 9,
+          "y": 8,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "move-start__here-polite",
+      "n": 182,
+      "family": "move-start",
+      "variant": "here-polite",
+      "area": "maps",
+      "mode": "write",
+      "title": "시작 위치 이동",
+      "prompt": "시작 지점을 (11, 9) 로 옮겨 주세요.",
+      "args": {
+        "x": 11,
+        "y": 9
+      },
+      "setup": {
+        "select": {
+          "x": 11,
+          "y": 9,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "move-start__terse-cell",
+      "n": 183,
+      "family": "move-start",
+      "variant": "terse-cell",
+      "area": "maps",
+      "mode": "write",
+      "title": "시작 위치 이동",
+      "prompt": "시작 (4,4)로.",
+      "args": {
+        "x": 4,
+        "y": 4
+      },
+      "setup": {
+        "select": {
+          "x": 4,
+          "y": 4,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "move-start__scope-explained",
+      "n": 184,
+      "family": "move-start",
+      "variant": "scope-explained",
+      "area": "maps",
+      "mode": "write",
+      "title": "시작 위치 이동",
+      "prompt": "게임 시작 위치를 마을 맵의 (14,13) 칸으로 바꿔 주세요. 다른 맵 설정은 그대로 두세요.",
+      "args": {
+        "x": 14,
+        "y": 13
+      },
+      "setup": {
+        "select": {
+          "x": 14,
+          "y": 13,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "move-start__south-cell",
+      "n": 185,
+      "family": "move-start",
+      "variant": "south-cell",
+      "area": "maps",
+      "mode": "write",
+      "title": "시작 위치 이동",
+      "prompt": "시작점을 아래쪽 (12,15) 로 내려줘.",
+      "args": {
+        "x": 12,
+        "y": 15
+      },
+      "setup": {
+        "select": {
+          "x": 12,
+          "y": 15,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "change-first-line__villager-polite",
+      "n": 186,
+      "family": "change-first-line",
+      "variant": "villager-polite",
+      "area": "events",
+      "mode": "write",
+      "title": "이벤트 첫 대사만 교체",
+      "prompt": "이 주민의 첫 대사를 「오늘은 조심해서 다녀오세요.」로 바꿔 주세요.",
+      "args": {
+        "eventId": "ev_utility_npc",
+        "body": "오늘은 조심해서 다녀오세요."
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "change-first-line__inn-casual",
+      "n": 187,
+      "family": "change-first-line",
+      "variant": "inn-casual",
+      "area": "events",
+      "mode": "write",
+      "title": "이벤트 첫 대사만 교체",
+      "prompt": "여관 주인 첫 대사를 \"방 하나 남았어, 들어와.\" 로 바꿔줘.",
+      "args": {
+        "eventId": "ev_ember_inn",
+        "body": "방 하나 남았어, 들어와."
+      },
+      "setup": {
+        "event": "ev_ember_inn"
+      }
+    },
+    {
+      "id": "change-first-line__child-terse",
+      "n": 188,
+      "family": "change-first-line",
+      "variant": "child-terse",
+      "area": "events",
+      "mode": "write",
+      "title": "이벤트 첫 대사만 교체",
+      "prompt": "미루 첫 대사 → \"나도 데려가 줘!\"",
+      "args": {
+        "eventId": "ev_ember_child",
+        "body": "나도 데려가 줘!"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "change-first-line__guard-explained",
+      "n": 189,
+      "family": "change-first-line",
+      "variant": "guard-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "이벤트 첫 대사만 교체",
+      "prompt": "파수꾼 이벤트의 첫 번째 대사만 「해가 지기 전에 돌아오게.」로 고쳐 주세요. 화자와 나머지 명령은 그대로 두세요.",
+      "args": {
+        "eventId": "ev_ember_guard",
+        "body": "해가 지기 전에 돌아오게."
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "change-first-line__cutscene-rewrite",
+      "n": 190,
+      "family": "change-first-line",
+      "variant": "cutscene-rewrite",
+      "area": "events",
+      "mode": "write",
+      "title": "이벤트 첫 대사만 교체",
+      "prompt": "장면 연출 이벤트의 첫 대사를 「해가 진다.」로 다시 써 줘.",
+      "args": {
+        "eventId": "ev_test_cutscene",
+        "body": "해가 진다."
+      },
+      "setup": {
+        "event": "ev_test_cutscene"
+      }
+    },
+    {
+      "id": "add-switch-condition__quest-started",
+      "n": 191,
+      "family": "add-switch-condition",
+      "variant": "quest-started",
+      "area": "events",
+      "mode": "write",
+      "title": "페이지에 스위치 조건 추가",
+      "prompt": "이 이벤트가 퀘스트 시작 스위치가 켜졌을 때만 나오게 조건을 붙여 주세요.",
+      "args": {
+        "eventId": "ev_utility_npc",
+        "switchId": "sw_ember_q1_started",
+        "value": true
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "add-switch-condition__quest-clear-casual",
+      "n": 192,
+      "family": "add-switch-condition",
+      "variant": "quest-clear-casual",
+      "area": "events",
+      "mode": "write",
+      "title": "페이지에 스위치 조건 추가",
+      "prompt": "여관 주인 페이지에 클리어 스위치 조건 달아줘.",
+      "args": {
+        "eventId": "ev_ember_inn",
+        "switchId": "sw_ember_q1_clear",
+        "value": true
+      },
+      "setup": {
+        "event": "ev_ember_inn"
+      }
+    },
+    {
+      "id": "add-switch-condition__unused-switch",
+      "n": 193,
+      "family": "add-switch-condition",
+      "variant": "unused-switch",
+      "area": "events",
+      "mode": "write",
+      "title": "페이지에 스위치 조건 추가",
+      "prompt": "미루 이벤트 페이지에 「미사용 스위치」가 켜져 있을 때만 보이도록 조건을 추가해 줘.",
+      "args": {
+        "eventId": "ev_ember_child",
+        "switchId": "sw_unused",
+        "value": true
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "add-switch-condition__guard-explained",
+      "n": 194,
+      "family": "add-switch-condition",
+      "variant": "guard-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "페이지에 스위치 조건 추가",
+      "prompt": "파수꾼 이벤트의 첫 페이지가 sw_ember_q1_started 스위치가 켜졌을 때만 실행되게 만들어 주세요. 대사와 명령은 그대로 두고요.",
+      "args": {
+        "eventId": "ev_ember_guard",
+        "switchId": "sw_ember_q1_started",
+        "value": true
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "add-switch-condition__branch-gate",
+      "n": 195,
+      "family": "add-switch-condition",
+      "variant": "branch-gate",
+      "area": "events",
+      "mode": "write",
+      "title": "페이지에 스위치 조건 추가",
+      "prompt": "성문 경비 페이지에 「초안 스위치」 조건 붙여 줘.",
+      "args": {
+        "eventId": "ev_g2_branch_gate",
+        "switchId": "sw_g2_draft",
+        "value": true
+      },
+      "setup": {
+        "event": "ev_g2_branch_gate"
+      }
+    },
+    {
+      "id": "touch-trigger__villager-polite",
+      "n": 196,
+      "family": "touch-trigger",
+      "variant": "villager-polite",
+      "area": "events",
+      "mode": "write",
+      "title": "실행 조건을 플레이어 접촉으로",
+      "prompt": "이 이벤트를 플레이어가 닿으면 실행되게 바꿔 주세요.",
+      "args": {
+        "eventId": "ev_utility_npc"
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "touch-trigger__inn-casual",
+      "n": 197,
+      "family": "touch-trigger",
+      "variant": "inn-casual",
+      "area": "events",
+      "mode": "write",
+      "title": "실행 조건을 플레이어 접촉으로",
+      "prompt": "여관 주인 접촉형으로 바꿔줘.",
+      "args": {
+        "eventId": "ev_ember_inn"
+      },
+      "setup": {
+        "event": "ev_ember_inn"
+      }
+    },
+    {
+      "id": "touch-trigger__child-terse",
+      "n": 198,
+      "family": "touch-trigger",
+      "variant": "child-terse",
+      "area": "events",
+      "mode": "write",
+      "title": "실행 조건을 플레이어 접촉으로",
+      "prompt": "미루, 닿으면 실행.",
+      "args": {
+        "eventId": "ev_ember_child"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "touch-trigger__guard-explained",
+      "n": 199,
+      "family": "touch-trigger",
+      "variant": "guard-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "실행 조건을 플레이어 접촉으로",
+      "prompt": "파수꾼 이벤트의 실행 조건을 플레이어 접촉으로 바꿔 주세요. 페이지의 대사·조건은 그대로 두세요.",
+      "args": {
+        "eventId": "ev_ember_guard"
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "touch-trigger__house-door",
+      "n": 200,
+      "family": "touch-trigger",
+      "variant": "house-door",
+      "area": "events",
+      "mode": "write",
+      "title": "실행 조건을 플레이어 접촉으로",
+      "prompt": "집 문 이벤트를 밟으면 열리게(플레이어 접촉) 바꿔 줘.",
+      "args": {
+        "eventId": "ev_house_door"
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "add-npc-line__villager-polite",
+      "n": 201,
+      "family": "add-npc-line",
+      "variant": "villager-polite",
+      "area": "events",
+      "mode": "write",
+      "title": "대사 한 줄 추가",
+      "prompt": "이 주민에게 「오늘은 조심해서 다녀오세요.」 대사를 한 줄만 추가해 주세요.",
+      "args": {
+        "eventId": "ev_utility_npc",
+        "line": "오늘은 조심해서 다녀오세요."
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "add-npc-line__inn-casual",
+      "n": 202,
+      "family": "add-npc-line",
+      "variant": "inn-casual",
+      "area": "events",
+      "mode": "write",
+      "title": "대사 한 줄 추가",
+      "prompt": "여관 주인한테 \"방은 아직 하나 남았어.\" 한 줄 붙여줘.",
+      "args": {
+        "eventId": "ev_ember_inn",
+        "line": "방은 아직 하나 남았어."
+      },
+      "setup": {
+        "event": "ev_ember_inn"
+      }
+    },
+    {
+      "id": "add-npc-line__child-terse",
+      "n": 203,
+      "family": "add-npc-line",
+      "variant": "child-terse",
+      "area": "events",
+      "mode": "write",
+      "title": "대사 한 줄 추가",
+      "prompt": "미루 + \"나도 데려가 줘!\"",
+      "args": {
+        "eventId": "ev_ember_child",
+        "line": "나도 데려가 줘!"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "add-npc-line__guard-explained",
+      "n": 204,
+      "family": "add-npc-line",
+      "variant": "guard-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "대사 한 줄 추가",
+      "prompt": "파수꾼 이벤트 맨 끝에 「문은 해가 지면 닫는다.」 대사를 하나만 덧붙여 주세요. 기존 대사와 순서는 그대로.",
+      "args": {
+        "eventId": "ev_ember_guard",
+        "line": "문은 해가 지면 닫는다."
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "add-npc-line__walker-short",
+      "n": 205,
+      "family": "add-npc-line",
+      "variant": "walker-short",
+      "area": "events",
+      "mode": "write",
+      "title": "대사 한 줄 추가",
+      "prompt": "산책하는 주민에게 \"길이 미끄러우니 조심해.\" 추가.",
+      "args": {
+        "eventId": "ev_g2_walker_a",
+        "line": "길이 미끄러우니 조심해."
+      },
+      "setup": {
+        "event": "ev_g2_walker_a"
+      }
+    },
+    {
+      "id": "npc-schedule__villager-polite",
+      "n": 206,
+      "family": "npc-schedule",
+      "variant": "villager-polite",
+      "area": "events",
+      "mode": "write",
+      "title": "NPC 하루 일정 등록",
+      "prompt": "이 주민이 8시부터 18시까지 (15,3) 자리로 가 있게 하루 일정에 등록해 주세요.",
+      "args": {
+        "eventId": "ev_utility_npc",
+        "hours": [
+          8,
+          18
+        ],
+        "at": {
+          "x": 15,
+          "y": 3
+        }
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "npc-schedule__inn-casual",
+      "n": 207,
+      "family": "npc-schedule",
+      "variant": "inn-casual",
+      "area": "events",
+      "mode": "write",
+      "title": "NPC 하루 일정 등록",
+      "prompt": "여관 주인을 9시~21시에 (17,4)로 움직이게 일정 잡아줘.",
+      "args": {
+        "eventId": "ev_ember_inn",
+        "hours": [
+          9,
+          21
+        ],
+        "at": {
+          "x": 17,
+          "y": 4
+        }
+      },
+      "setup": {
+        "event": "ev_ember_inn"
+      }
+    },
+    {
+      "id": "npc-schedule__child-terse",
+      "n": 208,
+      "family": "npc-schedule",
+      "variant": "child-terse",
+      "area": "events",
+      "mode": "write",
+      "title": "NPC 하루 일정 등록",
+      "prompt": "미루 10시-16시 (19,5) 일정.",
+      "args": {
+        "eventId": "ev_ember_child",
+        "hours": [
+          10,
+          16
+        ],
+        "at": {
+          "x": 19,
+          "y": 5
+        }
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "npc-schedule__guard-explained",
+      "n": 209,
+      "family": "npc-schedule",
+      "variant": "guard-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "NPC 하루 일정 등록",
+      "prompt": "파수꾼에게 6시부터 20시까지 (16,6)에서 근무하는 시간표를 넣어 주세요. 페이지 대사는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_ember_guard",
+        "hours": [
+          6,
+          20
+        ],
+        "at": {
+          "x": 16,
+          "y": 6
+        }
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "npc-schedule__walker-afternoon",
+      "n": 210,
+      "family": "npc-schedule",
+      "variant": "walker-afternoon",
+      "area": "events",
+      "mode": "write",
+      "title": "NPC 하루 일정 등록",
+      "prompt": "산책하는 주민을 7시부터 19시까지 (13,13)에서 보이게 해 줘.",
+      "args": {
+        "eventId": "ev_g2_walker_a",
+        "hours": [
+          7,
+          19
+        ],
+        "at": {
+          "x": 13,
+          "y": 13
+        }
+      },
+      "setup": {
+        "event": "ev_g2_walker_a"
+      }
+    },
+    {
+      "id": "branch-two-choices__villager-yesno",
+      "n": 211,
+      "family": "branch-two-choices",
+      "variant": "villager-yesno",
+      "area": "events",
+      "mode": "write",
+      "title": "선택지 두 갈래 추가",
+      "prompt": "이 주민 대화 끝에 「예」/「아니오」 두 갈래 선택지를 넣어 주세요. 양쪽 모두 무슨 일이 일어나게 해 주세요.",
+      "args": {
+        "eventId": "ev_utility_npc",
+        "optionA": "예",
+        "optionB": "아니오"
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "branch-two-choices__child-casual",
+      "n": 212,
+      "family": "branch-two-choices",
+      "variant": "child-casual",
+      "area": "events",
+      "mode": "write",
+      "title": "선택지 두 갈래 추가",
+      "prompt": "미루한테 \"같이 간다\"/\"여기 남는다\" 선택지 두 개 붙여줘. 각 갈래에 대사도 넣고.",
+      "args": {
+        "eventId": "ev_ember_child",
+        "optionA": "같이 간다",
+        "optionB": "여기 남는다"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "branch-two-choices__inn-terse",
+      "n": 213,
+      "family": "branch-two-choices",
+      "variant": "inn-terse",
+      "area": "events",
+      "mode": "write",
+      "title": "선택지 두 갈래 추가",
+      "prompt": "여관 주인 선택지 2개: 묵는다 / 나간다.",
+      "args": {
+        "eventId": "ev_ember_inn",
+        "optionA": "묵는다",
+        "optionB": "나간다"
+      },
+      "setup": {
+        "event": "ev_ember_inn"
+      }
+    },
+    {
+      "id": "branch-two-choices__gate-explained",
+      "n": 214,
+      "family": "branch-two-choices",
+      "variant": "gate-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "선택지 두 갈래 추가",
+      "prompt": "성문 경비 이벤트 뒤에 「통행증을 낸다」와 「돌아간다」 두 선택지를 붙이고, 두 갈래 모두 비어 있지 않게 해 주세요. 기존 대사는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_g2_branch_gate",
+        "optionA": "통행증을 낸다",
+        "optionB": "돌아간다"
+      },
+      "setup": {
+        "event": "ev_g2_branch_gate"
+      }
+    },
+    {
+      "id": "branch-two-choices__guard-two",
+      "n": 215,
+      "family": "branch-two-choices",
+      "variant": "guard-two",
+      "area": "events",
+      "mode": "write",
+      "title": "선택지 두 갈래 추가",
+      "prompt": "파수꾼 이벤트에 \"들어간다\" / \"나중에 온다\" 선택지 두 갈래 추가해 줘.",
+      "args": {
+        "eventId": "ev_ember_guard",
+        "optionA": "들어간다",
+        "optionB": "나중에 온다"
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "branch-nested-condition__trust-3",
+      "n": 216,
+      "family": "branch-nested-condition",
+      "variant": "trust-3",
+      "area": "events",
+      "mode": "write",
+      "title": "기존 분기 안에 변수 조건 분기",
+      "prompt": "문 앞 선택의 첫 갈래 안에 「신뢰가 3 이상이면」 변수 조건 분기를 넣어 주세요. 갈래의 기존 대사는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_g2_branch_choice",
+        "variableId": "var_g2_trust",
+        "op": ">=",
+        "value": 3
+      },
+      "setup": {
+        "event": "ev_g2_branch_choice"
+      }
+    },
+    {
+      "id": "branch-nested-condition__trust-5-casual",
+      "n": 217,
+      "family": "branch-nested-condition",
+      "variant": "trust-5-casual",
+      "area": "events",
+      "mode": "write",
+      "title": "기존 분기 안에 변수 조건 분기",
+      "prompt": "문 앞 선택 첫 번째 갈래에 신뢰 5 이상일 때만 나오는 분기 하나 끼워줘.",
+      "args": {
+        "eventId": "ev_g2_branch_choice",
+        "variableId": "var_g2_trust",
+        "op": ">=",
+        "value": 5
+      },
+      "setup": {
+        "event": "ev_g2_branch_choice"
+      }
+    },
+    {
+      "id": "branch-nested-condition__met-1-terse",
+      "n": 218,
+      "family": "branch-nested-condition",
+      "variant": "met-1-terse",
+      "area": "events",
+      "mode": "write",
+      "title": "기존 분기 안에 변수 조건 분기",
+      "prompt": "성문 경비 첫 갈래에 만남 횟수 1 이상 분기.",
+      "args": {
+        "eventId": "ev_g2_branch_gate",
+        "variableId": "var_g2_met",
+        "op": ">=",
+        "value": 1
+      },
+      "setup": {
+        "event": "ev_g2_branch_gate"
+      }
+    },
+    {
+      "id": "branch-nested-condition__purse-explained",
+      "n": 219,
+      "family": "branch-nested-condition",
+      "variant": "purse-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "기존 분기 안에 변수 조건 분기",
+      "prompt": "성문 경비의 「통행증을 보여준다」 갈래 안에 「가진 돈이 100 이상」이면 통행료를 내는 분기를 중첩해 주세요. 그 갈래의 기존 명령은 지우지 마세요.",
+      "args": {
+        "eventId": "ev_g2_branch_gate",
+        "variableId": "var_g2_purse",
+        "op": ">=",
+        "value": 100
+      },
+      "setup": {
+        "event": "ev_g2_branch_gate"
+      }
+    },
+    {
+      "id": "branch-nested-condition__met-2",
+      "n": 220,
+      "family": "branch-nested-condition",
+      "variant": "met-2",
+      "area": "events",
+      "mode": "write",
+      "title": "기존 분기 안에 변수 조건 분기",
+      "prompt": "문 앞 선택의 두 번째 갈래에 만남 횟수가 2 이상인지 보는 분기를 넣어 줘.",
+      "args": {
+        "eventId": "ev_g2_branch_choice",
+        "variableId": "var_g2_met",
+        "op": ">=",
+        "value": 2
+      },
+      "setup": {
+        "event": "ev_g2_branch_choice"
+      }
+    },
+    {
+      "id": "variable-create-and-set__visit-polite",
+      "n": 221,
+      "family": "variable-create-and-set",
+      "variant": "visit-polite",
+      "area": "events",
+      "mode": "write",
+      "title": "변수 생성 + 값 설정",
+      "prompt": "「방문 횟수」 변수를 새로 만들고, 이 이벤트에서 그 값을 3으로 설정해 주세요.",
+      "args": {
+        "eventId": "ev_utility_npc",
+        "variableId": "var_g2_visit",
+        "name": "방문 횟수",
+        "value": 3
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "variable-create-and-set__coins-casual",
+      "n": 222,
+      "family": "variable-create-and-set",
+      "variant": "coins-casual",
+      "area": "events",
+      "mode": "write",
+      "title": "변수 생성 + 값 설정",
+      "prompt": "「모은 동전」 변수 하나 새로 만들어서 여관 주인 이벤트에서 10으로 놔줘.",
+      "args": {
+        "eventId": "ev_ember_inn",
+        "variableId": "var_g2_coins",
+        "name": "모은 동전",
+        "value": 10
+      },
+      "setup": {
+        "event": "ev_ember_inn"
+      }
+    },
+    {
+      "id": "variable-create-and-set__step-terse",
+      "n": 223,
+      "family": "variable-create-and-set",
+      "variant": "step-terse",
+      "area": "events",
+      "mode": "write",
+      "title": "변수 생성 + 값 설정",
+      "prompt": "변수 var_g2_step 새로 만들고 미루 이벤트에서 2로.",
+      "args": {
+        "eventId": "ev_ember_child",
+        "variableId": "var_g2_step",
+        "name": "진행 단계",
+        "value": 2
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "variable-create-and-set__forest-explained",
+      "n": 224,
+      "family": "variable-create-and-set",
+      "variant": "forest-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "변수 생성 + 값 설정",
+      "prompt": "「숲 방문」 변수를 만들고 파수꾼 이벤트에서 그 변수를 1로 설정하는 명령을 넣어 주세요. 기존 대사는 지우지 마세요.",
+      "args": {
+        "eventId": "ev_ember_guard",
+        "variableId": "var_g2_forest",
+        "name": "숲 방문",
+        "value": 1
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "variable-create-and-set__walker-short",
+      "n": 225,
+      "family": "variable-create-and-set",
+      "variant": "walker-short",
+      "area": "events",
+      "mode": "write",
+      "title": "변수 생성 + 값 설정",
+      "prompt": "산책 주민 이벤트에 「산책 수」 변수 만들고 7로 설정.",
+      "args": {
+        "eventId": "ev_g2_walker_a",
+        "variableId": "var_g2_walks",
+        "name": "산책 수",
+        "value": 7
+      },
+      "setup": {
+        "event": "ev_g2_walker_a"
+      }
+    },
+    {
+      "id": "autorun-page__villager-polite",
+      "n": 226,
+      "family": "autorun-page",
+      "variant": "villager-polite",
+      "area": "events",
+      "mode": "write",
+      "title": "자동 실행 페이지 추가",
+      "prompt": "이 이벤트에 맵에 들어오면 저절로 실행되는 페이지를 하나 추가해 주세요. 원래 페이지는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_utility_npc"
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "autorun-page__inn-casual",
+      "n": 227,
+      "family": "autorun-page",
+      "variant": "inn-casual",
+      "area": "events",
+      "mode": "write",
+      "title": "자동 실행 페이지 추가",
+      "prompt": "여관 주인에 자동 실행 페이지 하나 붙여줘. 첫 페이지는 건드리지 마.",
+      "args": {
+        "eventId": "ev_ember_inn"
+      },
+      "setup": {
+        "event": "ev_ember_inn"
+      }
+    },
+    {
+      "id": "autorun-page__child-terse",
+      "n": 228,
+      "family": "autorun-page",
+      "variant": "child-terse",
+      "area": "events",
+      "mode": "write",
+      "title": "자동 실행 페이지 추가",
+      "prompt": "미루 이벤트 autorun 페이지 추가.",
+      "args": {
+        "eventId": "ev_ember_child"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "autorun-page__guard-explained",
+      "n": 229,
+      "family": "autorun-page",
+      "variant": "guard-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "자동 실행 페이지 추가",
+      "prompt": "파수꾼 이벤트에 자동 실행(autorun) 페이지를 새로 넣고, 그 페이지에서 안내 대사가 한 번 나오게 해 주세요. 기존 페이지의 대사는 그대로 유지하세요.",
+      "args": {
+        "eventId": "ev_ember_guard"
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "autorun-page__walker-short",
+      "n": 230,
+      "family": "autorun-page",
+      "variant": "walker-short",
+      "area": "events",
+      "mode": "write",
+      "title": "자동 실행 페이지 추가",
+      "prompt": "산책 주민에 autorun 페이지 하나.",
+      "args": {
+        "eventId": "ev_g2_walker_a"
+      },
+      "setup": {
+        "event": "ev_g2_walker_a"
+      }
+    },
+    {
+      "id": "common-event-call__villager-polite",
+      "n": 231,
+      "family": "common-event-call",
+      "variant": "villager-polite",
+      "area": "events",
+      "mode": "write",
+      "title": "커먼 이벤트 호출 삽입",
+      "prompt": "이 주민 대사 끝에서 「마을 소식」 커먼 이벤트를 부르게 해 주세요.",
+      "args": {
+        "eventId": "ev_utility_npc",
+        "commonEventId": "ce_g2_hello"
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "common-event-call__inn-casual",
+      "n": 232,
+      "family": "common-event-call",
+      "variant": "inn-casual",
+      "area": "events",
+      "mode": "write",
+      "title": "커먼 이벤트 호출 삽입",
+      "prompt": "여관 주인 이벤트에서 축제 안내 커먼 이벤트 불러줘.",
+      "args": {
+        "eventId": "ev_ember_inn",
+        "commonEventId": "ce_g2_notice"
+      },
+      "setup": {
+        "event": "ev_ember_inn"
+      }
+    },
+    {
+      "id": "common-event-call__child-terse",
+      "n": 233,
+      "family": "common-event-call",
+      "variant": "child-terse",
+      "area": "events",
+      "mode": "write",
+      "title": "커먼 이벤트 호출 삽입",
+      "prompt": "미루 → 마을 소식 커먼 이벤트 호출.",
+      "args": {
+        "eventId": "ev_ember_child",
+        "commonEventId": "ce_g2_hello"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "common-event-call__guard-explained",
+      "n": 234,
+      "family": "common-event-call",
+      "variant": "guard-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "커먼 이벤트 호출 삽입",
+      "prompt": "파수꾼 이벤트 마지막에 「축제 안내」 커먼 이벤트를 호출하는 명령을 하나 넣어 주세요. 커먼 이벤트 본문과 기존 대사는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_ember_guard",
+        "commonEventId": "ce_g2_notice"
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "common-event-call__walker-short",
+      "n": 235,
+      "family": "common-event-call",
+      "variant": "walker-short",
+      "area": "events",
+      "mode": "write",
+      "title": "커먼 이벤트 호출 삽입",
+      "prompt": "산책 주민이 마을 소식 커먼 이벤트 부르게.",
+      "args": {
+        "eventId": "ev_g2_walker_a",
+        "commonEventId": "ce_g2_hello"
+      },
+      "setup": {
+        "event": "ev_g2_walker_a"
+      }
+    },
+    {
+      "id": "chain-switch-then-gate__villager-gate",
+      "n": 236,
+      "family": "chain-switch-then-gate",
+      "variant": "villager-gate",
+      "area": "events",
+      "mode": "write",
+      "title": "스위치 생성 + 페이지 조건 연결",
+      "prompt": "「문 열림」 스위치를 새로 만들고, 이 주민 이벤트에 그 스위치가 켜졌을 때만 보이는 페이지를 붙여 주세요.",
+      "args": {
+        "eventId": "ev_utility_npc",
+        "switchId": "sw_g2_gate_open",
+        "switchName": "문 열림"
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "chain-switch-then-gate__inn-casual",
+      "n": 237,
+      "family": "chain-switch-then-gate",
+      "variant": "inn-casual",
+      "area": "events",
+      "mode": "write",
+      "title": "스위치 생성 + 페이지 조건 연결",
+      "prompt": "여관 준비 스위치(sw_g2_inn_ready) 하나 만들고, 여관 주인 이벤트를 그 스위치 조건 페이지로 갈라줘.",
+      "args": {
+        "eventId": "ev_ember_inn",
+        "switchId": "sw_g2_inn_ready",
+        "switchName": "여관 준비"
+      },
+      "setup": {
+        "event": "ev_ember_inn"
+      }
+    },
+    {
+      "id": "chain-switch-then-gate__child-terse",
+      "n": 238,
+      "family": "chain-switch-then-gate",
+      "variant": "child-terse",
+      "area": "events",
+      "mode": "write",
+      "title": "스위치 생성 + 페이지 조건 연결",
+      "prompt": "sw_g2_child_met 스위치 만들고 미루 이벤트 조건에 물려.",
+      "args": {
+        "eventId": "ev_ember_child",
+        "switchId": "sw_g2_child_met",
+        "switchName": "미루 만남"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "chain-switch-then-gate__gate-explained",
+      "n": 239,
+      "family": "chain-switch-then-gate",
+      "variant": "gate-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "스위치 생성 + 페이지 조건 연결",
+      "prompt": "「선택 완료」 스위치를 새로 등록한 뒤, 성문 경비 이벤트에 그 스위치가 켜져 있을 때만 나오는 페이지를 추가해 주세요. 기존 페이지 명령은 그대로 두세요.",
+      "args": {
+        "eventId": "ev_g2_branch_gate",
+        "switchId": "sw_g2_branch_pick",
+        "switchName": "선택 완료"
+      },
+      "setup": {
+        "event": "ev_g2_branch_gate"
+      }
+    },
+    {
+      "id": "chain-switch-then-gate__walker-short",
+      "n": 240,
+      "family": "chain-switch-then-gate",
+      "variant": "walker-short",
+      "area": "events",
+      "mode": "write",
+      "title": "스위치 생성 + 페이지 조건 연결",
+      "prompt": "산책 완료 스위치 만들고 산책 주민 페이지 조건으로.",
+      "args": {
+        "eventId": "ev_g2_walker_a",
+        "switchId": "sw_g2_walk_done",
+        "switchName": "산책 완료"
+      },
+      "setup": {
+        "event": "ev_g2_walker_a"
+      }
+    },
+    {
+      "id": "place-chest__potion-gold",
+      "n": 241,
+      "family": "place-chest",
+      "variant": "potion-gold",
+      "area": "events",
+      "mode": "write",
+      "title": "보물상자 이벤트 배치",
+      "prompt": "여기 (4,7) 칸에 회복약 하나와 30골드가 든 보물상자를 놓아 주세요.",
+      "args": {
+        "x": 4,
+        "y": 7,
+        "itemId": "item_potion",
+        "gold": 30
+      },
+      "setup": {
+        "select": {
+          "x": 4,
+          "y": 7,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "place-chest__ether-short",
+      "n": 242,
+      "family": "place-chest",
+      "variant": "ether-short",
+      "area": "events",
+      "mode": "write",
+      "title": "보물상자 이벤트 배치",
+      "prompt": "(10,3)에 마력약이랑 50골드짜리 상자.",
+      "args": {
+        "x": 10,
+        "y": 3,
+        "itemId": "item_ether",
+        "gold": 50
+      },
+      "setup": {
+        "select": {
+          "x": 10,
+          "y": 3,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "place-chest__candy-casual",
+      "n": 243,
+      "family": "place-chest",
+      "variant": "candy-casual",
+      "area": "events",
+      "mode": "write",
+      "title": "보물상자 이벤트 배치",
+      "prompt": "(18,4)에 상자 하나 놓고 별사탕 넣어줘. 돈은 10골드만.",
+      "args": {
+        "x": 18,
+        "y": 4,
+        "itemId": "item_candy",
+        "gold": 10
+      },
+      "setup": {
+        "select": {
+          "x": 18,
+          "y": 4,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "place-chest__antidote-explained",
+      "n": 244,
+      "family": "place-chest",
+      "variant": "antidote-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "보물상자 이벤트 배치",
+      "prompt": "선택한 (2,6) 칸에 해독초와 20골드가 나오는 보물상자를 만들어 주세요. 조사하면 열리는 상자여야 합니다.",
+      "args": {
+        "x": 2,
+        "y": 6,
+        "itemId": "item_antidote",
+        "gold": 20
+      },
+      "setup": {
+        "select": {
+          "x": 2,
+          "y": 6,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "place-chest__hi-potion-polite",
+      "n": 245,
+      "family": "place-chest",
+      "variant": "hi-potion-polite",
+      "area": "events",
+      "mode": "write",
+      "title": "보물상자 이벤트 배치",
+      "prompt": "맵 오른쪽 (14,4) 자리에 상급 회복약과 100골드가 들어 있는 보물상자를 하나 놓아 주시겠어요?",
+      "args": {
+        "x": 14,
+        "y": 4,
+        "itemId": "item_hi_potion",
+        "gold": 100
+      },
+      "setup": {
+        "select": {
+          "x": 14,
+          "y": 4,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "screen-shake__cutscene-polite",
+      "n": 246,
+      "family": "screen-shake",
+      "variant": "cutscene-polite",
+      "area": "events",
+      "mode": "write",
+      "title": "화면 흔들림 연출 추가",
+      "prompt": "이 컷신에 화면 흔들림을 하나 넣어 주세요.",
+      "args": {
+        "eventId": "ev_test_cutscene"
+      },
+      "setup": {
+        "event": "ev_test_cutscene"
+      }
+    },
+    {
+      "id": "screen-shake__plain-casual",
+      "n": 247,
+      "family": "screen-shake",
+      "variant": "plain-casual",
+      "area": "events",
+      "mode": "write",
+      "title": "화면 흔들림 연출 추가",
+      "prompt": "노을 장면에 화면 흔들림 넣어줘. 세게.",
+      "args": {
+        "eventId": "ev_g2_cutscene_plain",
+        "intensity": "6"
+      },
+      "setup": {
+        "event": "ev_g2_cutscene_plain"
+      }
+    },
+    {
+      "id": "screen-shake__two-fades-terse",
+      "n": 248,
+      "family": "screen-shake",
+      "variant": "two-fades-terse",
+      "area": "events",
+      "mode": "write",
+      "title": "화면 흔들림 연출 추가",
+      "prompt": "두 번 암전 장면에 흔들림 하나, 0.4초.",
+      "args": {
+        "eventId": "ev_g2_cutscene_two_fades",
+        "durationMs": 400
+      },
+      "setup": {
+        "event": "ev_g2_cutscene_two_fades"
+      }
+    },
+    {
+      "id": "screen-shake__child-explained",
+      "n": 249,
+      "family": "screen-shake",
+      "variant": "child-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "화면 흔들림 연출 추가",
+      "prompt": "미루 이벤트 마지막에 화면 흔들림 명령을 하나만 추가해 주세요. 기존 대사와 순서는 유지하세요.",
+      "args": {
+        "eventId": "ev_ember_child"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "screen-shake__villager-short",
+      "n": 250,
+      "family": "screen-shake",
+      "variant": "villager-short",
+      "area": "events",
+      "mode": "write",
+      "title": "화면 흔들림 연출 추가",
+      "prompt": "주민 연출에 흔들림 추가.",
+      "args": {
+        "eventId": "ev_utility_npc"
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "dialogue-position__cutscene-bottom",
+      "n": 251,
+      "family": "dialogue-position",
+      "variant": "cutscene-bottom",
+      "area": "events",
+      "mode": "write",
+      "title": "대사 표시 위치 변경",
+      "prompt": "이 대사의 표시 위치를 아래쪽으로 바꿔 주세요.",
+      "args": {
+        "eventId": "ev_test_cutscene",
+        "position": "bottom"
+      },
+      "setup": {
+        "event": "ev_test_cutscene"
+      }
+    },
+    {
+      "id": "dialogue-position__child-top",
+      "n": 252,
+      "family": "dialogue-position",
+      "variant": "child-top",
+      "area": "events",
+      "mode": "write",
+      "title": "대사 표시 위치 변경",
+      "prompt": "미루 첫 대사를 화면 위쪽에 띄워줘.",
+      "args": {
+        "eventId": "ev_ember_child",
+        "position": "top"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "dialogue-position__guard-center",
+      "n": 253,
+      "family": "dialogue-position",
+      "variant": "guard-center",
+      "area": "events",
+      "mode": "write",
+      "title": "대사 표시 위치 변경",
+      "prompt": "파수꾼 대사 위치를 가운데로.",
+      "args": {
+        "eventId": "ev_ember_guard",
+        "position": "center"
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "dialogue-position__plain-explained",
+      "n": 254,
+      "family": "dialogue-position",
+      "variant": "plain-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "대사 표시 위치 변경",
+      "prompt": "노을 장면의 대사창을 아래쪽에 고정해 주세요. 대사 본문과 화자는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_g2_cutscene_plain",
+        "position": "bottom"
+      },
+      "setup": {
+        "event": "ev_g2_cutscene_plain"
+      }
+    },
+    {
+      "id": "dialogue-position__inn-top",
+      "n": 255,
+      "family": "dialogue-position",
+      "variant": "inn-top",
+      "area": "events",
+      "mode": "write",
+      "title": "대사 표시 위치 변경",
+      "prompt": "여관 주인 대사는 위쪽에 나오게 해 줘.",
+      "args": {
+        "eventId": "ev_ember_inn",
+        "position": "top"
+      },
+      "setup": {
+        "event": "ev_ember_inn"
+      }
+    },
+    {
+      "id": "read-switch-usage__clear-plain",
+      "n": 256,
+      "family": "read-switch-usage",
+      "variant": "clear-plain",
+      "area": "read",
+      "mode": "read",
+      "title": "스위치를 쓰는 이벤트",
+      "prompt": "sw_ember_q1_clear 스위치를 쓰는 이벤트 다 알려줘.",
+      "args": {
+        "switchId": "sw_ember_q1_clear"
+      }
+    },
+    {
+      "id": "read-switch-usage__clear-polite",
+      "n": 257,
+      "family": "read-switch-usage",
+      "variant": "clear-polite",
+      "area": "read",
+      "mode": "read",
+      "title": "스위치를 쓰는 이벤트",
+      "prompt": "퀘스트 클리어 스위치를 참조하는 이벤트를 모두 찾아 주세요.",
+      "args": {
+        "switchId": "sw_ember_q1_clear"
+      }
+    },
+    {
+      "id": "read-switch-usage__clear-terse",
+      "n": 258,
+      "family": "read-switch-usage",
+      "variant": "clear-terse",
+      "area": "read",
+      "mode": "read",
+      "title": "스위치를 쓰는 이벤트",
+      "prompt": "sw_ember_q1_clear 쓰는 데?",
+      "args": {
+        "switchId": "sw_ember_q1_clear"
+      }
+    },
+    {
+      "id": "read-switch-usage__clear-explain",
+      "n": 259,
+      "family": "read-switch-usage",
+      "variant": "clear-explain",
+      "area": "read",
+      "mode": "read",
+      "title": "스위치를 쓰는 이벤트",
+      "prompt": "페이지 조건을 정리하려고 합니다. 클리어 스위치(sw_ember_q1_clear)를 조건으로 거는 이벤트가 어디어디인지 알려 주세요.",
+      "args": {
+        "switchId": "sw_ember_q1_clear"
+      }
+    },
+    {
+      "id": "read-switch-usage__started-casual",
+      "n": 260,
+      "family": "read-switch-usage",
+      "variant": "started-casual",
+      "area": "read",
+      "mode": "read",
+      "title": "스위치를 쓰는 이벤트",
+      "prompt": "퀘스트 시작 스위치 쓰는 이벤트 있어?",
+      "args": {
+        "switchId": "sw_ember_q1_started"
+      }
+    },
+    {
+      "id": "read-event-pages__child-plain",
+      "n": 261,
+      "family": "read-event-pages",
+      "variant": "child-plain",
+      "area": "read",
+      "mode": "read",
+      "title": "선택 이벤트의 페이지와 조건",
+      "prompt": "이 이벤트 페이지가 몇 개고 각 페이지 조건이 뭐야?",
+      "args": {
+        "eventId": "ev_ember_child"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "read-event-pages__guard-polite",
+      "n": 262,
+      "family": "read-event-pages",
+      "variant": "guard-polite",
+      "area": "read",
+      "mode": "read",
+      "title": "선택 이벤트의 페이지와 조건",
+      "prompt": "이 이벤트의 페이지 수와 페이지마다 걸린 조건을 알려 주세요.",
+      "args": {
+        "eventId": "ev_ember_guard"
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "read-event-pages__child-terse",
+      "n": 263,
+      "family": "read-event-pages",
+      "variant": "child-terse",
+      "area": "read",
+      "mode": "read",
+      "title": "선택 이벤트의 페이지와 조건",
+      "prompt": "페이지 수, 조건.",
+      "args": {
+        "eventId": "ev_ember_child"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "read-event-pages__guard-explain",
+      "n": 264,
+      "family": "read-event-pages",
+      "variant": "guard-explain",
+      "area": "read",
+      "mode": "read",
+      "title": "선택 이벤트의 페이지와 조건",
+      "prompt": "이 NPC 이벤트가 몇 개의 페이지로 되어 있고, 어떤 스위치 조건으로 페이지가 갈리는지 정리해 주세요.",
+      "args": {
+        "eventId": "ev_ember_guard"
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "read-event-pages__child-casual",
+      "n": 265,
+      "family": "read-event-pages",
+      "variant": "child-casual",
+      "area": "read",
+      "mode": "read",
+      "title": "선택 이벤트의 페이지와 조건",
+      "prompt": "얘 페이지 몇 개야? 조건도 알려줘.",
+      "args": {
+        "eventId": "ev_ember_child"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "read-db-items__items-plain",
+      "n": 266,
+      "family": "read-db-items",
+      "variant": "items-plain",
+      "area": "read",
+      "mode": "read",
+      "title": "아이템 id 와 가격",
+      "prompt": "아이템 목록이랑 가격 알려줘.",
+      "args": {}
+    },
+    {
+      "id": "read-db-items__items-polite",
+      "n": 267,
+      "family": "read-db-items",
+      "variant": "items-polite",
+      "area": "read",
+      "mode": "read",
+      "title": "아이템 id 와 가격",
+      "prompt": "데이터베이스의 아이템 id 와 가격을 정리해 주세요.",
+      "args": {}
+    },
+    {
+      "id": "read-db-items__items-terse",
+      "n": 268,
+      "family": "read-db-items",
+      "variant": "items-terse",
+      "area": "read",
+      "mode": "read",
+      "title": "아이템 id 와 가격",
+      "prompt": "아이템 가격표.",
+      "args": {}
+    },
+    {
+      "id": "read-db-items__items-explain",
+      "n": 269,
+      "family": "read-db-items",
+      "variant": "items-explain",
+      "area": "read",
+      "mode": "read",
+      "title": "아이템 id 와 가격",
+      "prompt": "상점 가격을 조정하려고 합니다. 아이템마다 id 와 현재 가격을 표로 보여 주세요.",
+      "args": {}
+    },
+    {
+      "id": "read-db-items__items-casual",
+      "n": 270,
+      "family": "read-db-items",
+      "variant": "items-casual",
+      "area": "read",
+      "mode": "read",
+      "title": "아이템 id 와 가격",
+      "prompt": "뭐뭐 팔고 각각 얼마인지 보여줘.",
+      "args": {
+        "allowShop": true
+      }
+    },
+    {
+      "id": "unreachable-links__plain",
+      "n": 271,
+      "family": "unreachable-links",
+      "variant": "plain",
+      "area": "read",
+      "mode": "read",
+      "title": "끊긴 연결 찾기",
+      "prompt": "현재 맵에서 갈 수 없는 연결을 찾아줘.",
+      "args": {
+        "mapId": "map_ember_village"
+      }
+    },
+    {
+      "id": "unreachable-links__polite",
+      "n": 272,
+      "family": "unreachable-links",
+      "variant": "polite",
+      "area": "read",
+      "mode": "read",
+      "title": "끊긴 연결 찾기",
+      "prompt": "이 마을에서 문으로 이어지지 않은 맵이 있는지 점검해 주세요.",
+      "args": {
+        "mapId": "map_ember_village"
+      }
+    },
+    {
+      "id": "unreachable-links__terse",
+      "n": 273,
+      "family": "unreachable-links",
+      "variant": "terse",
+      "area": "read",
+      "mode": "read",
+      "title": "끊긴 연결 찾기",
+      "prompt": "끊긴 링크 있어?",
+      "args": {
+        "mapId": "map_ember_village"
+      }
+    },
+    {
+      "id": "unreachable-links__scope-explained",
+      "n": 274,
+      "family": "unreachable-links",
+      "variant": "scope-explained",
+      "area": "read",
+      "mode": "read",
+      "title": "끊긴 연결 찾기",
+      "prompt": "연결 점검 도구로 돌려서, 시작 마을에서 걸어가거나 문으로 갈 수 없는 맵을 알려 주세요.",
+      "args": {
+        "mapId": "map_ember_village"
+      }
+    },
+    {
+      "id": "unreachable-links__lint",
+      "n": 275,
+      "family": "unreachable-links",
+      "variant": "lint",
+      "area": "read",
+      "mode": "read",
+      "title": "끊긴 연결 찾기",
+      "prompt": "맵 연결 상태를 점검하고 문제가 있으면 알려 줘.",
+      "args": {
+        "mapId": "map_ember_village"
+      }
+    }
+  ]
+}
