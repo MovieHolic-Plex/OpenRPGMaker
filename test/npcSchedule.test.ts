@@ -12,6 +12,8 @@ import { npcMoveDurationMs } from "@/player/playScenePageMoveRoutes";
 import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
 import { initialRuntimeEventPositions } from "@/project/runtimeEventState"
 import { runSceneTest } from "@/testing/sceneTestRunner";
+import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { validateMaps } from "@/project/io/shapeEventFields";
 import { createNpcScheduleDemoProject } from "./fixtures/npcScheduleDemo";
 import { mockSprite } from "./runtimeEventPageFixtures";
 
@@ -20,18 +22,64 @@ describe("NPC schedule matching", () => {
     const springMorning = { minute: 0, hour: 7, day: 3, season: "spring" as const, year: 1 };
     const entry = scheduleEntry({ timePhase: "morning", season: "spring", dayRange: [2, 4], hourRange: [6, 9] });
 
-    expect(npcScheduleWhenMatches(entry, springMorning)).toBe(true);
-    expect(npcScheduleWhenMatches(entry, { ...springMorning, season: "summer" })).toBe(false);
-    expect(npcScheduleWhenMatches(entry, { ...springMorning, day: 5 })).toBe(false);
-    expect(npcScheduleWhenMatches(entry, { ...springMorning, hour: 10 })).toBe(false);
-    expect(npcScheduleWhenMatches(scheduleEntry({ hourRange: [20, 6] }), { ...springMorning, hour: 23 })).toBe(true);
-    expect(npcScheduleWhenMatches(scheduleEntry({ hourRange: [20, 6] }), springMorning)).toBe(false);
+    expect(npcScheduleWhenMatches(entry, springMorning, undefined)).toBe(true);
+    expect(npcScheduleWhenMatches(entry, { ...springMorning, season: "summer" }, undefined)).toBe(false);
+    expect(npcScheduleWhenMatches(entry, { ...springMorning, day: 5 }, undefined)).toBe(false);
+    expect(npcScheduleWhenMatches(entry, { ...springMorning, hour: 10 }, undefined)).toBe(false);
+    expect(npcScheduleWhenMatches(scheduleEntry({ hourRange: [20, 6] }), { ...springMorning, hour: 23 }, undefined)).toBe(true);
+    expect(npcScheduleWhenMatches(scheduleEntry({ hourRange: [20, 6] }), springMorning, undefined)).toBe(false);
 
     const schedule = [
       scheduleEntry({ season: "winter" }),
       scheduleEntry({ timePhase: "morning" }, "field"),
     ];
-    expect(matchNpcSchedule(schedule, springMorning)).toMatchObject({ index: 1, entry: { activity: "field" } });
+    expect(matchNpcSchedule(schedule, springMorning, undefined)).toMatchObject({ index: 1, entry: { activity: "field" } });
+  });
+});
+
+describe("NPC schedule weather condition", () => {
+  const springMorning = { minute: 0, hour: 7, day: 3, season: "spring" as const, year: 1 };
+
+  it("matches a weather-conditioned slot only in that weather and never when the weather is unknown", () => {
+    const rainy = scheduleEntry({ weather: "rain" });
+    expect(npcScheduleWhenMatches(rainy, springMorning, "rain")).toBe(true);
+    expect(npcScheduleWhenMatches(rainy, springMorning, "snow")).toBe(false);
+    expect(npcScheduleWhenMatches(rainy, springMorning, "none")).toBe(false);
+    expect(npcScheduleWhenMatches(rainy, springMorning, undefined)).toBe(false);
+    expect(npcScheduleWhenMatches(scheduleEntry({}), springMorning, undefined)).toBe(true);
+  });
+
+  it("keeps first-match order, so a rain slot listed first wins over the day slot only while it rains", () => {
+    const schedule = [scheduleEntry({ weather: "rain" }, "shelter"), scheduleEntry({ timePhase: "morning" }, "market")];
+    expect(matchNpcSchedule(schedule, springMorning, "rain")).toMatchObject({ index: 0, entry: { activity: "shelter" } });
+    expect(matchNpcSchedule(schedule, springMorning, "none")).toMatchObject({ index: 1, entry: { activity: "market" } });
+    expect(matchNpcSchedule(schedule, springMorning, undefined)).toMatchObject({ index: 1, entry: { activity: "market" } });
+  });
+
+  it("moves the NPC to the shelter slot when it rains and back when the rain stops", () => {
+    const { project, map } = createScheduleProject([
+      { when: { weather: "rain" }, at: { mapId: "map_schedule_runtime", x: 6, y: 6 }, activity: "shelter" },
+      { when: { hourRange: [6, 18] }, at: { mapId: "map_schedule_runtime", x: 2, y: 1 }, activity: "market" },
+    ]);
+    const scene = scheduleScene(project, map);
+
+    updateNpcSchedules(scene);
+    expect(scene.session.npcActivities.npc).toBe("market");
+
+    ensureM2Runtime(scene.session).screen.weather = "rain,5";
+    updateNpcSchedules(scene);
+    expect(scene.session.npcActivities.npc).toBe("shelter");
+
+    ensureM2Runtime(scene.session).screen.weather = "none";
+    updateNpcSchedules(scene);
+    expect(scene.session.npcActivities.npc).toBe("market");
+  });
+});
+
+describe("NPC schedule weather shape", () => {
+  it("accepts a known weather kind and rejects an unknown one", () => {
+    expect(() => validateMaps({ m: mapWithSchedule({ weather: "rain" }) })).not.toThrow();
+    expect(() => validateMaps({ m: mapWithSchedule({ weather: "hail" }) })).toThrow(/weather/);
   });
 });
 
@@ -245,4 +293,9 @@ function advanceMover(scene: Parameters<typeof updateAutonomousNPCs>[0], eventId
     updateAutonomousNPCs(scene, mover.moveIntervalMs);
     if (mover.activeMove) updateAutonomousNPCs(scene, mover.moveDurationMs);
   }
+}
+
+function mapWithSchedule(when: Record<string, unknown>): Record<string, unknown> {
+  const { map } = createScheduleProject([{ when: when as NpcScheduleEntry["when"], at: { mapId: "map_schedule_runtime", x: 1, y: 1 } }]);
+  return JSON.parse(JSON.stringify(map)) as Record<string, unknown>;
 }
