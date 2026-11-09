@@ -136,7 +136,8 @@ export function wellData(project: Project, exec: Exec): void {
   skill({ id: SKILL_SONG, name: "아가미 노래", scope: "allEnemies", type: "normal", power: 150, variance: 8, hitRate: 100,
     description: "아가미를 펴 소리를 모았다가 갱도를 울린다. 맞으면 둔해진다.\n모으는 동안 번개에 맞거나 크게 다치면 끊긴다.",
     effect: { kind: "damage", statistic: "mind", affects: "hp" }, stateEffects: [{ stateId: "state_agility_down", chance: 90, operation: "add" }], animationId: "anim_gen_power_aura",
-    chargeTurns: 1, chargeBreak: { damage: 380, elementIds: ["thunder"], message: "아가미가 번개에 오그라든다! 노래가 끊겼다.", stagger: true } });
+    // 끊어도 비틀지는 않는다 — 비틀면 아는 플레이어가 영주의 차례를 통째로 빼앗아 승률이 100%가 됐다(시뮬 80판).
+    chargeTurns: 1, chargeBreak: { damage: 380, elementIds: ["thunder"], message: "아가미가 번개에 오그라든다! 노래가 끊겼다.", stagger: false } });
   // ④ 비늘 곤두세우기 — 예고 없는 자세. 두 차례 동안 물리 반격(100%)·물리 방어 1.6배. 마구 치는 플레이어를 벌한다.
   skill({ id: SKILL_SHELL, name: "비늘 곤두세우기", scope: "self", type: "normal", power: 0, variance: 0, hitRate: 100,
     description: "등비늘을 칼날처럼 세운다. 그 사이 몸을 치면 꼬리가 되받아친다.",
@@ -169,7 +170,8 @@ export function wellData(project: Project, exec: Exec): void {
   exec(project, "upsert_enemy", { enemy: {
     id: FS2_WELL_BEAST_ENEMY, name: "우물 밑 눈먼 영주", level: 18, monsterResourceId: "generated-enemy-golem-clay", battleScalePercent: 125,
     collapseEffect: "bossSink", hideHp: true,
-    stats: { maxHp: 5200, maxMp: 0, attack: 142, defense: 74, mind: 118, agility: 52 },
+    // 숨은 보스 — Lv14 두 사람 기준 시뮬 80판(scripts/qa/zz-well-beast-sim.mts)으로 맞춘 값. 민첩은 몇 포인트에도 승률이 크게 흔들린다.
+    stats: { maxHp: 7280, maxMp: 0, attack: 298, defense: 74, mind: 153, agility: 56 },
     skillIds: ["skill_attack", SKILL_BITE, SKILL_TAIL, SKILL_SONG, SKILL_SHELL, SKILL_MUD, SKILL_MOLT, SKILL_ROAR, SKILL_ECHO, SKILL_FLOOD],
     actions: [
       // 1페이즈(아가미 노래가 리듬의 중심 — 석판 「셋째 숨마다 노래」): 2·5·8…번째 차례에 노래를 모은다.
