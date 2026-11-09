@@ -614,7 +614,7 @@ type Px = (x: number, y: number, w: number, h: number, color: number, alpha?: nu
 function poseCell(scene: PlaySceneContext, cell: Cell, durationMs: number, pose: (t: number) => { angle: number; scaleY: number }): boolean {
   const size = mapTileSize(scene.map);
   const images = [...rootYSortTileImagesAt(scene, cell.x, cell.y, size), ...rootYSortTileImagesAt(scene, cell.x, cell.y - 1, size)] as unknown as TileImage[];
-  if (images.length === 0 || typeof scene.tweens?.addCounter !== "function") return false;
+  if (images.length === 0 || typeof scene.tweens?.add !== "function") return false;
   const pivotX = cell.x * size + size / 2;
   const pivotY = (cell.y + 1) * size;
   const base = images.map((image) => ({ image, x: image.x, y: image.y, angle: image.angle, scaleY: image.scaleY }));
@@ -634,9 +634,12 @@ function poseCell(scene: PlaySceneContext, cell: Cell, durationMs: number, pose:
   const restore = (): void => {
     for (const b of base) { b.image.x = b.x; b.image.y = b.y; b.image.angle = b.angle; b.image.scaleY = b.scaleY; }
   };
-  scene.tweens.addCounter({
-    from: 0, to: 1, duration: durationMs,
-    onUpdate: (tween: Phaser.Tweens.Tween) => apply(tween.getValue() ?? 0),
+  // 진행도는 별도 객체를 트윈해서 읽는다 — addCounter + getValue() 는 이 Phaser 에서 null 이라 한 프레임도 움직이지 않았다
+  // (playSceneActionCombat.ts 휘두르기 궤적과 같은 함정, 2026-11-09 출하 플레이어 실측).
+  const progress = { t: 0 };
+  scene.tweens.add({
+    targets: progress, t: 1, duration: durationMs,
+    onUpdate: () => apply(progress.t),
     onComplete: restore, onStop: restore,
   });
   return true;
@@ -704,14 +707,14 @@ async function playMotion(scene: PlaySceneContext, style: ContainerStyle, cell: 
     }
     case "doors": {
       // 옷장: 가운데 틈에서 문짝 둘이 바깥으로 열리며 어두운 속과 걸린 옷이 보인다. 대사 동안 열린 채 둔다.
-      const doors = (open: number) => (px: Px) => {
-        const half = open * 2;
-        px(8 - half, -6, half * 2, 18, GAP);
-        if (open >= 2) { px(8 - half + 1, -5, 2, 6, 0x8a3a3a); px(8 + half - 3, -4, 2, 5, 0x3a5a8a); }
-        px(8 - half - 2, -6, 2, 18, WOOD); px(8 - half - 2, -6, 1, 18, WOOD_LIGHT);
-        px(8 + half, -6, 2, 18, WOOD); px(8 + half + 1, -6, 1, 18, WOOD_DARK);
+      // 문짝 판(폭 6)이 가운데에서 바깥으로 접히며(6→4→2) 어두운 속이 넓어진다. 첫 판은 닫힌 문 — 그림이 열린 옷장이어도 여닫힘이 보인다.
+      const doors = (leaf: number) => (px: Px) => {
+        px(2, -6, 12, 20, GAP);
+        if (leaf <= 4) { px(4, -5, 2, 8, 0x8a3a3a); px(7, -4, 2, 7, 0x3a5a8a); px(10, -5, 2, 8, 0x6a7a3a); px(3, -5, 10, 1, 0xb8b0a0); }
+        px(2, -6, leaf, 20, WOOD); px(2, -6, 1, 20, WOOD_LIGHT); px(2 + leaf - 1, 3, 1, 2, 0xe8c070);
+        px(14 - leaf, -6, leaf, 20, WOOD); px(13, -6, 1, 20, WOOD_DARK); px(14 - leaf, 3, 1, 2, 0xe8c070);
       };
-      return overlayFrames(scene, cell, 70, true, [doors(1), doors(2), doors(3)]);
+      return overlayFrames(scene, cell, 80, true, [doors(6), doors(4), doors(2), doors(1)]);
     }
   }
 }
@@ -834,9 +837,9 @@ function drawMark(g: Phaser.GameObjects.Graphics, mark: ContainerSearchedMark, x
       px(4, 10, 8, 1, 0xb88250);
       break;
     case "doors-ajar":
-      px(7, -6, 2, 18, 0x140c06);
-      px(5, -6, 2, 18, 0x8a5a30);
-      px(5, -6, 1, 18, 0xb88250);
+      px(7, -6, 2, 20, 0x140c06);
+      px(5, -6, 2, 20, 0x8a5a30);
+      px(5, -6, 1, 20, 0xb88250);
       break;
   }
 }
