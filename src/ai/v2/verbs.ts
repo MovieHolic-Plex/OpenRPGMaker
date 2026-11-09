@@ -5,7 +5,7 @@ import { SET_OBJECTIVE_DESCRIPTION } from "@/ai/agentRules";
 import { sceneCraftProblems } from "./sceneCraft";
 import { flattenWrapperTool } from "./flatWrapper";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
-import { shipBlockers, wantsWholeGame } from "./shipChecks";
+import { buildsWholeGame, shipBlockers, wantsWholeGame } from "./shipChecks";
 import { applyBlueprintAssembly, isPlaceholderTitle } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, parseBlueprintArgs, walkBlueprint } from "./blueprint";
@@ -1978,7 +1978,7 @@ export function v2BaselineGameKeys(project: Project, task: string): Set<string> 
 
 /** 끝까지 플레이되는가(2026-11-09 assistant-reward 기준선: 몬스터 수집 두 판이 «완료»인데 엔딩까지 걸어갈 길이 없었다) — 게임을 만드는 요청만. 열쇠는 막힌 실행·단계마다 하나다. */
 function autoPlayGateProblems(project: Project, task: string): V2GateProblem[] {
-  if (!wantsWholeGame(task)) return [];
+  if (!buildsWholeGame(project, task)) return [];
   try { return playProblems(project).map((p) => ({ key: `${AUTOPLAY_GATE_PREFIX}${p.key}`, text: p.text, source: "gate" as const })); } catch { return []; }
 }
 

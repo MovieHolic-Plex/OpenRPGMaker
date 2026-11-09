@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { factoryArtResourceIds } from "@/project/defaultLeaks";
 import { applyShipDefaults } from "@/ai/v2/shipDefaults";
-import { buildsWholeGame, openingMissing, shipBlockers } from "@/ai/v2/shipChecks";
+import { buildsWholeGame, bundledPictureLeft, openingMissing, shipBlockers } from "@/ai/v2/shipChecks";
 import { splitPreexisting } from "@/ai/v2/loop/gates";
 import type { Project } from "@/project/types";
 
@@ -42,27 +42,24 @@ describe("ship gate keeps checking a continuation turn", () => {
   });
 });
 
-describe("the assistant's own fill never picks the engine's default picture for an ending", () => {
-  it("replaces a default ending picture and avoids the factory art in the story table", () => {
+describe("the harness no longer paints the title or ending picture itself", () => {
+  it("leaves a default ending picture in place so the ship check keeps blocking the finish", () => {
     const factory = factoryArtResourceIds();
     expect(factory.has("oprn-still-kingdom-day")).toBe(true);
     const p = adventure();
-    p.endings[0]!.presentation = { finalTitle: "끝", backgroundResourceId: "oprn-still-kingdom-day" } as never;
     const applied = applyShipDefaults(p, CONTINUE);
-    const shown = p.endings[0]!.presentation!.backgroundResourceId!;
-    expect(factory.has(shown)).toBe(false);
-    expect(applied.some((line) => line.includes("엔딩"))).toBe(true);
-    expect(shipBlockers(p, CONTINUE).map((b) => b.id)).not.toContain("ending-bg");
+    expect(p.endings[0]!.presentation!.backgroundResourceId).toBe("oprn-still-kingdom-day");
+    expect(applied.some((line) => line.includes("그림"))).toBe(false);
+    expect(shipBlockers(p, CONTINUE).map((b) => b.id)).toContain("ending-bg");
   });
 
-  it("closes a bare ending with a story picture that is not the engine default", () => {
+  it("does not give a bare ending a bundled still either", () => {
     const p = adventure();
     p.endings[0]!.presentation = undefined as never;
     p.endings[0]!.epilogue = [{ kind: "say", text: "끝." } as never];
     applyShipDefaults(p, WHOLE);
-    const shown = p.endings[0]!.presentation?.backgroundResourceId;
-    expect(shown).toBeTruthy();
-    expect(factoryArtResourceIds().has(shown!)).toBe(false);
+    expect(p.endings[0]!.presentation?.backgroundResourceId).toBeUndefined();
+    expect(shipBlockers(p, WHOLE).map((b) => b.id)).toContain("ending-screen");
   });
 
   it("leaves a picture the author chose alone", () => {
@@ -70,6 +67,7 @@ describe("the assistant's own fill never picks the engine's default picture for 
     p.endings[0]!.presentation = { finalTitle: "끝", backgroundResourceId: "bg-lantern-night" } as never;
     applyShipDefaults(p, WHOLE);
     expect(p.endings[0]!.presentation!.backgroundResourceId).toBe("bg-lantern-night");
+    expect(shipBlockers(p, WHOLE).map((b) => b.id)).not.toContain("ending-bg");
   });
 });
 
@@ -93,5 +91,32 @@ describe("a finished game must open with an opening", () => {
     const blank = createBlankProject() as Project;
     blank.system.opening = { ...blank.system.opening!, enabled: false, scenes: [] };
     expect(shipBlockers(blank, "촌장을 광장으로 옮겨 줘")).toHaveLength(0);
+  });
+});
+
+describe("a bundled still is not this game's picture", () => {
+  it("blocks a bundled still on the title and on the ending, and passes the game's own map view", () => {
+    const p = adventure();
+    p.system.titleScreen = { ...p.system.titleScreen!, backgroundResourceId: "oprn-still-farm-golden" };
+    p.endings[0]!.presentation = { finalTitle: "끝", backgroundResourceId: "oprn-pack-still-sky-01" } as never;
+    expect(bundledPictureLeft(p).map((b) => b.evidence.split("=")[0])).toEqual(["titleScreen.backgroundResourceId", expect.stringContaining("endings[e1]")]);
+    expect(shipBlockers(p, WHOLE).map((b) => b.id)).toContain("bundled-picture");
+    p.system.titleScreen = { ...p.system.titleScreen!, backgroundResourceId: `map-view:${p.startMapId}` };
+    p.endings[0]!.presentation = { finalTitle: "끝", backgroundResourceId: `map-view:${p.startMapId}` } as never;
+    expect(bundledPictureLeft(p)).toHaveLength(0);
+  });
+
+  it("lets the romance key art through, and an uploaded or generated picture", () => {
+    const p = adventure();
+    p.system.titleScreen = { ...p.system.titleScreen!, backgroundResourceId: "oprn-title-romance-campus" };
+    p.endings[0]!.presentation = { finalTitle: "끝", backgroundResourceId: "generated-ending-dawn" } as never;
+    expect(bundledPictureLeft(p)).toHaveLength(0);
+  });
+
+  it("is never excused as a preexisting defect on a continuation turn", () => {
+    const problem = { key: "game:bundled", text: "[출하 차단 bundled-picture] 타이틀 그림이 번들 스틸이다", source: "gate" as const };
+    const split = splitPreexisting([problem], new Set([problem.key]), undefined, undefined);
+    expect(split.current).toHaveLength(1);
+    expect(split.preexisting).toHaveLength(0);
   });
 });

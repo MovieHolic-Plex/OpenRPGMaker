@@ -11,12 +11,10 @@
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { findNpcGraphicMatches, queryNpcGraphics } from "@/assets/charsetQuery";
-import { findOpeningStillMood } from "@/assets/openingStillMoods";
 import { climateBattleBackground, dungeonBattleBackground, interiorBattleBackground, placeNameBattleBackground } from "@/battle/battleBackdrop";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { createBlankProject } from "@/project/defaults";
-import { factoryArtResourceIds } from "@/project/defaultLeaks";
-import { blueprintPlaceName, pickTitleArtForStory, blueprintPremiseText, blueprintStoryText } from "@/project/blueprintAssembly";
+import { blueprintPlaceName, blueprintPremiseText } from "@/project/blueprintAssembly";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
 import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, emptySparkles, selfLoopTransfers, silentLockedExits, writtenStateIds } from "./shipChecks";
@@ -64,7 +62,6 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   }
   applied.push(...forkStackedEndingCalls(project));
   if (endingClosureProblems(project).length) applied.push(...fillEndingClosure(project));
-  applied.push(...replaceFactoryEndingBackdrops(project));
   // 기본 지명 걷어내기는 엔딩 글을 채운 뒤에 — 채운 글(청사진 느낌 칸)에도 그 지명이 들 수 있다.
   applied.push(...removeDefaultPlaceWords(project, task));
   return applied;
@@ -89,56 +86,8 @@ export function applyLookDefaults(project: Project, story = ""): string[] {
   applied.push(...keepProgressOnDefeat(project));
   if (left.has("combat-leftovers")) applied.push(...clearCombatLeftovers(project));
   if (left.has("hud")) applied.push(...fillFieldHud(project, story));
-  if (left.has("title-image")) applied.push(...fillTitleImage(project, story));
-  if (left.has("ending-screen")) applied.push(...fillEndingScreens(project, story));
+  // 제목 그림·엔딩 그림은 함수가 번들 스틸로 대신 깔지 않는다 — 출하 검사(title-image·ending-bg·ending-screen)가 막고 모델이 그림 단계에서 고르거나 만든다.
   return applied;
-}
-
-/** 이야기에 맞는 번들 스틸 — 청사진이면 endingArt, 없으면(v1) 제목 + 요청 글을 같은 표(강한 타이틀 그림 → 이야기 종류별 스틸)에 대본다. */
-function storyStill(project: Project, story: string): string {
-  const fromBlueprint = endingArt(project);
-  if (fromBlueprint) return fromBlueprint;
-  const text = premiseOf(project, story);
-  // 좀비·생존은 표의 전용 줄이 먼저다 — 공포 타이틀 그림(저택 초상화 복도)은 좀비 생존 결말에 맞지 않는다.
-  if (ZOMBIE_ENDING.re.test(text)) return ZOMBIE_ENDING.id;
-  const strong = pickTitleArtForStory(text);
-  if (strong && findOpeningStillMood(strong.id) && !factoryArtResourceIds().has(strong.id)) return strong.id;
-  return endingStillFor(text);
-}
-
-/**
- * 타이틀 그림이 편집기 기본(풀밭) 그대로다 — 이야기에 맞는 번들 스틸로. 실측(2026-11-05 gpt-only-game 8차 「마을부터」): 제목은 「새싹 마을과 오래된 유적」인데
- * 타이틀 배경은 편집기 기본 oprn-title-field 였다.
- */
-function fillTitleImage(project: Project, story: string): string[] {
-  const still = storyStill(project, story);
-  const title = (project.system.titleScreen ?? {}) as { backgroundResourceId?: string };
-  if (title.backgroundResourceId === still) return [];
-  project.system.titleScreen = { ...project.system.titleScreen!, backgroundResourceId: still };
-  return [`타이틀 그림 → ${still}`];
-}
-
-/**
- * 연출 없는 엔딩(편집기 기본 엔딩 카드)에 이야기에 맞는 마지막 그림·분위기를 준다 — 글·크레딧은 만들지 않는다(글은 런타임 기본).
- * 실측(2026-11-05 gpt-only-game 6~8차): 학교·좀비·판타지 다섯 판이 엔딩에 도달하면 기본 카드만 뗴다.
- */
-function fillEndingScreens(project: Project, story: string): string[] {
-  // 청사진(v2)은 출하 검사가 모델에게 엔딩 연출(마지막 장 글·크레딧·곡)을 짓게 한다 — 여기서 채우면 그 요구가 사라진다. v1 만.
-  if (project.gameBlueprint) return [];
-  // 타이틀 그림을 이 게임에 맞게 이미 골랐으면(연애 캠퍼스 그림 등) 엔딩도 그것을 이어 쓴다 — 런타임 기본도 타이틀 배경이다.
-  const fs = factory().system as unknown as { titleScreen?: { backgroundResourceId?: string }; titleResourceId?: string };
-  const titleBg = (project.system.titleScreen as { backgroundResourceId?: string } | undefined)?.backgroundResourceId;
-  const still = titleBg && titleBg !== fs.titleScreen?.backgroundResourceId && titleBg !== fs.titleResourceId ? titleBg : storyStill(project, story);
-  const scary = /공포|호러|귀신|유령|괴담|좀비|horror/iu.test(premiseOf(project, story));
-  const out: string[] = [];
-  for (const ending of project.endings ?? []) {
-    if (ending.presentation && Object.keys(ending.presentation).length) continue;
-    // 어두운 분위기는 공포 이야기나 나쁜 결말(id·이름)만 — 좋은 탈출 엔딩에 「평범」 배지·어두운 머리글이 붙지 않게.
-    const bad = /bad|dead|fail|gameover|배드|죽음|실패|최악/iu.test(`${ending.id} ${ending.name}`);
-    ending.presentation = { backgroundResourceId: still, tone: scary || bad ? "dark" : "warm" };
-    out.push(`엔딩 「${ending.name}」 화면 → ${still}`);
-  }
-  return out;
 }
 
 /**
@@ -777,56 +726,6 @@ const sentence = (text: string): string => { const t = text.trim().replace(/[.�
 /** 「…다」로 끝나는 말(문장)인가 — 아니면 명사구(「평화가 찾아온 마을의 안도감」). */
 const isClause = (text: string): boolean => /다[.!?]?$/u.test(text.trim());
 
-/** 엔딩 그림 — 청사진 이야기에 강하게 맞는 번들 그림, 없으면 이야기 종류별 맺음 스틸(풍토가 이야기와 부딪치지 않는 것). */
-/** 좀비·생존 결말 — 푸른 불빛의 폐병원(탈출의 시작). 저택 초상화 복도(공포 줄)는 좀비 생존에 맞지 않는다. */
-const ZOMBIE_ENDING = { re: /좀비|생존|감염|폐허 도시|zombie/iu, id: "oprn-still-ride" } as const;
-const ENDING_STILLS: readonly { readonly re: RegExp; readonly id: string }[] = [
-  { re: /눈 덮인|설원|겨울|얼음/u, id: "oprn-still-snow-village" },
-  { re: /사막|피라미드|오아시스/u, id: "oprn-still-desert-ruin" },
-  ZOMBIE_ENDING,
-  { re: /공포|호러|귀신|유령|괴담|저택|horror/iu, id: "oprn-still-festival" },
-  { re: /마왕|왕국|용사|영웅|기사|판타지|모험|RPG/iu, id: "oprn-still-kingdom-day" },
-  { re: /추리|탐정|미스터리|사건|범인|여관/u, id: "oprn-still-moon-meadow" },
-  { re: /학교|학생|교실|도시|현대|일상|친구|탈출|escape/iu, id: "oprn-still-lullaby" },
-  { re: /농장|농사|귀농|목장/u, id: "oprn-still-farm-golden" },
-];
-/**
- * 엔딩 그림 표에서 엔진 기본 그림(빈 프로젝트의 타이틀·오프닝 그림)은 건너뛴다 — 실측(2026-11-09 assistant-reward, 23판): 판타지·모험·영웅 판이 전부
- * 엔진 기본 오프닝 그림(kingdom-day)을 엔딩에 깔아 출하 검사 ending-bg 가 오르는 값을 조수 자신의 채우기가 만들었다.
- * 표에서 첫 적중이 기본 그림이면 다음 적중으로 넘어가고, 다 기본이면 마지막 줄(농장)로 간다.
- */
-function endingStillFor(text: string): string {
-  const factoryArt = factoryArtResourceIds();
-  return (ENDING_STILLS.find((s) => s.re.test(text) && !factoryArt.has(s.id)) ?? { id: "oprn-still-farm-golden" }).id;
-}
-function endingArt(project: Project): string | undefined {
-  const blueprint = project.gameBlueprint;
-  if (!blueprint) return undefined;
-  const premise = blueprintPremiseText(project, blueprint);
-  const strong = pickTitleArtForStory(premise, blueprintStoryText(project, blueprint));
-  if (strong && findOpeningStillMood(strong.id) && !factoryArtResourceIds().has(strong.id)) return strong.id;
-  return endingStillFor(`${premise}\n${blueprint.ending.name}\n${blueprint.ending.how}`);
-}
-
-/**
- * 엔딩이 엔진 기본 그림(빈 프로젝트의 타이틀·오프닝 그림)을 깔고 있으면 이야기에 맞는 번들 스틸로 바꾼다 — 출하 검사 ending-bg 가 짚는 바로 그것.
- * 청사진이 있을 때만(이야기를 알아야 고른다). 모델이 직접 고른 기본 아닌 그림은 건드리지 않는다.
- */
-function replaceFactoryEndingBackdrops(project: Project): string[] {
-  if (!project.gameBlueprint) return [];
-  const factoryArt = factoryArtResourceIds();
-  const out: string[] = [];
-  for (const ending of project.endings ?? []) {
-    const shown = ending.presentation?.backgroundResourceId;
-    if (!shown || !factoryArt.has(shown)) continue;
-    const art = endingArt(project);
-    if (!art || art === shown) continue;
-    ending.presentation = { ...(ending.presentation ?? {}), backgroundResourceId: art } as typeof ending.presentation;
-    out.push(`엔딩 「${ending.name}」 그림이 엔진 기본(${shown})이라 ${art} 로 바꿈`);
-  }
-  return out;
-}
-
 /**
  * 장면으로 맺지 않는 엔딩(endingClosureProblems)에 청사진 ending.how·feeling 과 주인공 이름으로 짧은 맺음 글을 덧붙이고,
  * 마지막 그림이 없으면 이야기에 맞는 스틸을 준다. 모델이 쓴 줄은 그대로 두고 앞에 둔다.
@@ -837,7 +736,6 @@ function fillEndingClosure(project: Project): string[] {
   // 이름이 편집기 기본(「주인공」)이어도 그 이름으로 맺는다 — 기본 이름은 party-names 가 따로 짚는다.
   const heroName = project.database.actors.find((a) => a.id === project.system.startActorIds?.[0])?.name?.trim() ?? "";
   const place = blueprintPlaceName(project, blueprint);
-  const art = endingArt(project);
   const out: string[] = [];
   const failing = new Map(endingClosureProblems(project).map((b) => [b.evidence.split(":")[0]!, b.message]));
   for (const ending of project.endings ?? []) {
@@ -858,9 +756,7 @@ function fillEndingClosure(project: Project): string[] {
     if (!enough() && heroName) add(`${heroName}의 이야기는 여기서 한 매듭을 짓는다.`);
     (ending as unknown as Obj).epilogue = beats;
     const added = said().length - before;
-    const pictured = !needImage;
-    if (!pictured && art) { ending.presentation = { ...(ending.presentation ?? {}), backgroundResourceId: art } as typeof ending.presentation; }
-    if (added || (!pictured && art)) out.push(`엔딩 「${ending.name}」 맺음${added ? ` 글 ${added}줄` : ""}${!pictured && art ? ` · 그림 ${art}` : ""}`);
+    if (added) out.push(`엔딩 「${ending.name}」 맺음 글 ${added}줄`);
   }
   return out;
 }

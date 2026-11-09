@@ -8,7 +8,8 @@ import { bossTalkWithoutBattle } from "./bossTalkBattles";
 import { reloadProblem } from "./reloadCheck";
 import { chaserMapsWithoutHiding } from "@/project/chaserHiding";
 import { createBlankProject } from "@/project/defaults";
-import { projectDefaultLeaks } from "@/project/defaultLeaks";
+import { endingBackdropCandidates, isBundledPictureId, projectDefaultLeaks } from "@/project/defaultLeaks";
+import { ROMANCE_TITLE_BACKGROUNDS } from "@/project/romanceTitleArt";
 import type { Project } from "@/project/types";
 import { isBlankCanvasMap } from "@/project/tilesetBaseline";
 import { findOpeningStillMood } from "@/assets/openingStillMoods";
@@ -551,6 +552,26 @@ export function openingMissing(project: Project): ShipBlocker[] {
 }
 
 /**
+ * 타이틀·엔딩 그림이 번들 스틸(오프닝 스틸 카탈로그·번들 타이틀 그림)이다 — 어느 게임이나 고를 수 있는 같은 그림이다.
+ * 기본 그림(title-image·ending-bg)뿐 아니라 번들 스틸도 «그 게임의 그림»이 아니다. 게임의 첫 장소 화면(map-view:)·올린 그림·생성 그림으로 바꾼다.
+ * 연애 키아트(ROMANCE_TITLE_BACKGROUNDS)는 이 장르 전용으로 만든 그림이라 예외다.
+ */
+export function bundledPictureLeft(project: Project): ShipBlocker[] {
+  const out: ShipBlocker[] = [];
+  const bundled = (id: string | undefined): id is string => !!id && isBundledPictureId(id) && !ROMANCE_TITLE_BACKGROUNDS.includes(id);
+  const title = (project.system.titleScreen ?? {}) as { backgroundResourceId?: string };
+  const titleBg = title.backgroundResourceId ?? (project.system as unknown as Obj).titleResourceId as string | undefined;
+  if (bundled(titleBg)) out.push({ id: "bundled-picture", message: `타이틀 그림이 번들 스틸(${titleBg})이다 — 어느 게임이나 고를 수 있는 같은 그림이라 이 게임의 그림이 아니다. 이 게임의 시작 장소 화면(map-view:<맵 id>)이나 생성·올린 그림을 set_title_screen{backgroundResourceId} 로 쓴다(list_resources{kind:'backdrop'} 에서 map-view 를 고를 수 있다).`, evidence: `titleScreen.backgroundResourceId=${titleBg}` });
+  for (const ending of project.endings ?? []) {
+    const shown = endingBackdropCandidates(project, ending.presentation?.backgroundResourceId)[0];
+    if (!bundled(shown)) continue;
+    out.push({ id: "bundled-picture", message: `엔딩 「${ending.name || ending.id}」 그림이 번들 스틸(${shown})이다 — 어느 게임이나 고를 수 있는 같은 그림이다. define_ending 의 presentation.backgroundResourceId 에 이 게임의 장소 화면(map-view:<맵 id>)이나 생성·올린 그림을 준다.`, evidence: `endings[${ending.id}].backgroundResourceId=${shown}` });
+    break;
+  }
+  return out;
+}
+
+/**
  * 이 요청이 게임 하나를 만드는 일인가 — 이번 요청문, 아니면 청사진이 들고 있는 첫 요청문. 「끝까지 만들어 줘」 같은 이어 하기 턴이 낱말 판정에 안 걸려
  * 출하 검사·조립 기본값이 통째로 꺼지던 것을 막는다(2026-11-09 assistant-reward village-1).
  */
@@ -621,7 +642,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
     evidence: `battleSites=${sites.length} healingSources=0`,
   }] : [];
-  return [...reloadBlock, ...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
+  return [...reloadBlock, ...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...bundledPictureLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
 }
 
 /**
