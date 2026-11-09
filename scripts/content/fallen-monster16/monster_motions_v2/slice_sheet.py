@@ -1,4 +1,5 @@
 # monster-motions-v2: one ChatGPT 4x4 pose sheet -> engine 4x4 sheet (96px cells), code only.
+# CELL 환경변수로 칸 크기(48·64·96·128·192)를 바꾼다. 바닥 = CELL-4, 가운데 = CELL/2.
 # usage: python3 slice_sheet.py <sheet.png> <outDir> <idleWidthArtPx> [--empty 13] [--hover N]
 #  - keys out magenta, splits the image into a 4x4 grid (equal cells), takes the biggest opaque blob per grid cell
 #  - ONE scale for all poses (idle width -> idleWidthArtPx), unfake dominant downscale, palette from idle_a applied to all
@@ -10,7 +11,7 @@ from scipy import ndimage
 
 U = '/home/main/claude-viz/gif-pixel-refine/tools/unfake'
 TMP = os.environ.get('TMPDIR', '/tmp')
-CELL, GROUND, CX = 96, 92, 48
+CELL = int(os.environ.get('CELL', '96')); GROUND, CX = CELL - 4, CELL // 2
 NCOL = int(os.environ.get('NCOL', '16'))
 # ChatGPT reading order (1..16) -> engine index. engine: 0 idle_a 1 idle_b 2 idle_c 3 windup 4 move 5 attack 6 recover 7 hit 8 dead
 # 9 attack_mid 10 cast_charge 11 cast_release 12 guard 13 weak 14 intro 15 reserved

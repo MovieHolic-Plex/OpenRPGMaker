@@ -13,7 +13,7 @@ from PIL import Image
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 TS = os.path.join(ROOT, "src/project/flagship/fallen/monsterSheets16.ts")
-CELL = 96
+CELL = 96  # --cell 로 바꾼다
 
 ap = argparse.ArgumentParser()
 ap.add_argument("rid")
@@ -23,8 +23,10 @@ ap.add_argument("--missing", default="")
 ap.add_argument("--motion", default="dash")
 ap.add_argument("--idle-ms", type=int, default=180)
 ap.add_argument("--note", default="")
+ap.add_argument("--cell", type=int, default=96)
 ap.add_argument("--grid", default="4x4", choices=["4x4", "5x4"])
 args = ap.parse_args()
+CELL = args.cell
 missing = sorted(int(v) for v in args.missing.split(",") if v)
 COLS, ROWS = (5, 4) if args.grid == "5x4" else (4, 4)
 N = COLS * ROWS
