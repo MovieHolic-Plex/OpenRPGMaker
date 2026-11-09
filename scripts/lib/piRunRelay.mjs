@@ -94,7 +94,7 @@ const mapRuns = createMapRunLocks();
 function createRun(runId, controller) {
   const run = {
     runId, controller, lines: [], firstSeq: 0, bytes: 0, finished: false, listeners: new Set(),
-    detachedAt: Date.now(), graceTimer: null, cleanupTimer: null,
+    startedAt: Date.now(), lastChunkAt: Date.now(), maxGapMs: 0, maxGapAt: 0, detachedAt: Date.now(), graceTimer: null, cleanupTimer: null,
   };
   runs.set(runId, run);
   return run;
@@ -147,6 +147,9 @@ async function pump(run, ndjson) {
     for (;;) {
       const { value, done } = await reader.read();
       if (done) break;
+      const nowAt = Date.now();
+      if (nowAt - run.lastChunkAt > run.maxGapMs) { run.maxGapMs = nowAt - run.lastChunkAt; run.maxGapAt = Math.round((nowAt - run.startedAt) / 1000); }
+      run.lastChunkAt = nowAt;
       pending += decoder.decode(value, { stream: true });
       let index = pending.indexOf("\n");
       while (index >= 0) {
@@ -159,7 +162,14 @@ async function pump(run, ndjson) {
     pending += decoder.decode();
     if (pending.trim()) pushLine(run, pending.endsWith("\n") ? pending : pending + "\n");
   } catch (error) {
-    if (!run.controller.signal.aborted) pushLine(run, JSON.stringify({ type: "error", message: error instanceof Error ? error.message : String(error) }) + "\n");
+    if (!run.controller.signal.aborted) {
+      // undici 의 「terminated」 는 원인이 error.cause(UND_ERR_BODY_TIMEOUT·ECONNRESET 등)에 있다 — 글과 호스트 로그에 같이 싣는다(2026-11-09 monster 조사).
+      const cause = error instanceof Error ? error.cause : undefined;
+      const secs = Math.round((Date.now() - run.startedAt) / 1000);
+      const detail = ` [cause ${cause?.code ?? "none"} ${String(cause?.message ?? "").slice(0, 120)}; run ${secs}s, ${run.lines.length} lines, max gap ${Math.round(run.maxGapMs / 1000)}s at ${run.maxGapAt}s, silent now ${Math.round((Date.now() - run.lastChunkAt) / 1000)}s]`;
+      console.error(`[pi-run-relay] worker stream ended with error:${detail}`);
+      pushLine(run, JSON.stringify({ type: "error", message: (error instanceof Error ? error.message : String(error)) + detail }) + "\n");
+    }
   } finally {
     finish(run);
   }
