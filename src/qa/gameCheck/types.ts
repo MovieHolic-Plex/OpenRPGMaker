@@ -1,6 +1,6 @@
 // 모델 없는 게임 QA 검사기의 공용 타입.
 //
-// 이 검사기는 오프라인 QA 도구다 — 조수 실행 경로의 게이트가 아니다(조수에는 게이트를 더 붙이지 않는다).
+// 이 검사기는 오프라인 QA 도구다. 조수 v2 끝맺음 관문은 자동 플레이 결과(autoplay-failed)만 읽어 쓴다(src/ai/v2/playCheck.ts).
 // 프로젝트 데이터만 읽고, 자동 플레이는 헤드리스 런타임(runSceneTest)을 그대로 돌린다.
 
 export type FindingSeverity = "blocker" | "warning" | "info";

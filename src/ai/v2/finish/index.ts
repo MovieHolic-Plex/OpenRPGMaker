@@ -8,7 +8,7 @@ import type { PiAssistantV2Env } from "../env";
 import type { V2Session } from "../verbs";
 import { BLUEPRINT_PATH_IDS, walkBlueprint } from "../blueprint";
 import { battleSites, healingSources } from "../combatChecks";
-import { wantsWholeGame } from "../shipChecks";
+import { buildsWholeGame } from "../shipChecks";
 import { lanesStale } from "./lanesStamp";
 import type { FinishCtx, FinishPhase, FinishStage } from "./types";
 import * as registered from "./stages";
@@ -43,7 +43,7 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     for (const stage of phase("blueprint")) { const pending = stage.run(ctx); if (pending) await pending; }
     if (ctx.done.length) ctx.autoPath = [`[자동으로 지음] 청사진이 엔딩까지 이어지지 않거나 길목·출구가 막혀 함수가 대신 지었다 — 최종 보고에 「자동으로 지음:」으로 이 목록을 그대로 적는다(네가 지었다고 쓰지 않는다):`, ...ctx.done.map((d) => `- ${d}`), "대사를 다듬으려면 build_blueprint_path{steps:[{id,lines,lockedLines}]} 로 다시 부른다(같은 이벤트를 고쳐 쓴다). 자동으로 지은 장소를 꾸미려면 edit_place·dress_room."].join("\n");
   }
-  if (wantsWholeGame(env.request.task)) {
+  if (buildsWholeGame(env.ctx.project, env.request.task)) {
     for (const stage of phase("assembly")) { const pending = stage.run(ctx); if (pending) await pending; }
     if (ctx.assembled.length) {
       env.emit({ type: "execution_status", name: "v2.assembly", ok: true, summary: `청사진 조립 기본값: ${ctx.assembled.join(" · ")}` });

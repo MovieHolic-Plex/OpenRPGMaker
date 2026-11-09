@@ -5,6 +5,7 @@
 // 엔딩 배경을 안 정해 엔딩이 기본 타이틀 그림을 깐 판 13/24. 조수 v2 출하 검사(ai/v2/shipChecks)는 조수 경로에서만 돌아 `./oprn check`
 // (runGameCheck)에는 이 검사가 없었다. qa 층이 ai 층을 끌어오지 않도록 비교를 project 층에 둔다.
 // 빈 프로젝트의 기본값은 그대로 둔다 — 이 목록은 «저작자가 손대지 않았다»를 말할 뿐 값을 지우지 않는다.
+import { findOpeningStillMood } from "@/assets/openingStillMoods";
 import { createBlankProject } from "./defaults";
 import type { Project } from "./types";
 
@@ -27,6 +28,20 @@ export function factoryArtResourceIds(): ReadonlySet<string> {
   add(f.system.titleResourceId);
   for (const scene of f.system.opening?.scenes ?? []) add("resourceId" in scene ? scene.resourceId : undefined);
   return ids;
+}
+
+/**
+ * 엔진이 번들로 싣고 오는 그림인가 — 오프닝 스틸 카탈로그(oprn-still-*·oprn-pack-still-*)와 번들 타이틀 그림(oprn-title-*). 어느 게임이나 고를 수 있는 같은 그림이라
+ * 타이틀·엔딩 그림으로 그대로 두면 게임마다 같은 그림이 된다(2026-11-09 오너: 「기본 타이틀 그림이 들어가면 게임적 가치가 없다」). 맵 화면(map-view:)·올린 그림·생성 그림은 아니다.
+ */
+export function isBundledPictureId(id: string | undefined, project?: Pick<Project, "assets">): boolean {
+  if (!id) return false;
+  if (id.startsWith("oprn-title-") || findOpeningStillMood(id) !== undefined) return true;
+  // 이 게임의 그림은 맵 화면(map-view:)·오프닝 컷 한 순간(opening-still:)이거나 프로젝트가 올린·만든 그림(assets.uploaded)이다. 그 밖의 id 는 엔진이 싣고 오는 번들 그림이다
+  // (실측 2026-11-09 b1 cat-1: 엔딩 그림 scarloxy-backdrop-forest — 스칼록시 팩 배경 — 이 스틸 카탈로그 밖이라 처음 판정이 놓쳤다).
+  if (!project) return false;
+  if (id.startsWith("map-view:") || id.startsWith("opening-still:")) return false;
+  return project.assets.uploaded[id] === undefined && project.assets.sprites[id] === undefined;
 }
 
 /** 엔딩이 실제로 까는 그림 id(엔딩 자신의 배경 → 타이틀 그림 → 오프닝 마지막 스틸) — 플레이어 endingBackdropResourceId 와 같은 순서. */
