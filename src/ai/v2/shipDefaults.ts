@@ -741,7 +741,7 @@ function fillEndingClosure(project: Project): string[] {
   for (const ending of project.endings ?? []) {
     const problem = failing.get(ending.id);
     if (!problem) continue;
-    const needLines = problem.includes("맺음 대사가"), needPerson = problem.includes("인물의 매듭"), needImage = problem.includes("마지막 그림");
+    const needLines = problem.includes("맺음 대사가"), needPerson = problem.includes("인물의 매듭");
     const beats = ((ending.epilogue ?? []) as unknown as Obj[]);
     const said = () => beats.filter((b) => (b.kind === "say" || b.kind === "text") && typeof b.text === "string" && String(b.text).trim()).map((b) => String(b.text).trim());
     const has = (line: string) => said().some((t) => t.replace(/\s+/gu, "").includes(line.replace(/[.\s]+/gu, "")));
