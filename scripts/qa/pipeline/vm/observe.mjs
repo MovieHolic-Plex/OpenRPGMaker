@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Cheap vision observer (oc/deepseek-v4.1-flash-free, effort max) over the frames the deterministic stage
+// Cheap vision observer (oc/deepseek-v4.1-flash-free, effort high) over the frames the deterministic stage
 // selected. The DOM text of the same moment is given as ground truth so pixel-font misreads are caught at source.
 //
 // usage: node vm/observe.mjs --frames <observe-frames.json> --run <runDir> --out <observations.jsonl> [--pool 16]
@@ -22,6 +22,9 @@ const { values } = parseArgs({
     // deepseek-v4.1-flash-free allows 32k output. At 16k the reply was truncated mid-answer on most frames
     // (measured 2026-11-07: 12 of 22 capped and unparsable), which silently dropped half the VQA track.
     "max-tokens": { type: "string", default: "24000" },
+    // effort max spent the whole budget on reasoning: in the 1.39 run 234 of 1443 replies stopped at the 16k cap and
+    // 270 retries at the old 8k cap, so the JSON never arrived (360 of 812 frames unparsable). high leaves room for it.
+    effort: { type: "string", default: "high" },
   },
 });
 const KEY_FILE = process.env.OC_JSON ?? "/root/vqa-sinkiru/oc-exempt.json";
@@ -30,7 +33,7 @@ const mode = fs.statSync(KEY_FILE).mode & 0o777;
 if (mode & 0o077) throw new Error(`${KEY_FILE} must not be readable by group/other (mode ${mode.toString(8)})`);
 const keyId = oc.keyId ?? "unknown";
 const log = usageLedger(path.join(values.run, "usage.jsonl"));
-const chat = ocClient({ baseUrl: oc.baseUrl, apiKey: oc.apiKey, model: values.model, effort: "max", log, stage: "observe" });
+const chat = ocClient({ baseUrl: oc.baseUrl, apiKey: oc.apiKey, model: values.model, effort: values.effort, log, stage: "observe" });
 console.log(JSON.stringify({ stage: "observe", keyFile: KEY_FILE, keyId, mode: mode.toString(8), base: oc.baseUrl }));
 const frames = JSON.parse(fs.readFileSync(values.frames, "utf8"));
 const done = new Set(fs.existsSync(values.out) ? fs.readFileSync(values.out, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l).key) : []);
@@ -75,7 +78,7 @@ async function observe(f) {
   let parsed = res.ok ? extractJson(res.text, ["issues"]) : null;
   if (res.ok && !parsed) {
     // Retry with the hard no-tools system message: the usual failure is a tool-call envelope or prose before the JSON.
-    res = await chat([{ role: "system", content: SYS_RETRY }, ...messages.slice(1), { role: "user", content: "위 프레임을 다시 판정해 JSON 하나만 출력해." }], { maxTokens: 8000 });
+    res = await chat([{ role: "system", content: SYS_RETRY }, ...messages.slice(1), { role: "user", content: "위 프레임을 다시 판정해 JSON 하나만 출력해." }], { maxTokens: Number(values["max-tokens"]) });
     parsed = res.ok ? extractJson(res.text, ["issues"]) : null;
   }
   return { key: `${f.jobId}/${f.seq}`, ok: !!parsed, error: res.ok ? (parsed ? null : "unparsed") : res.error, issues: (parsed?.issues ?? []).filter((i) => CHECKS[i.check]).slice(0, 4) };
