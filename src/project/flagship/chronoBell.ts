@@ -57,7 +57,7 @@ import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import type { FlagshipDemoBuildResult } from "./types";
 import { applyFallenPixelFx } from "./fallen/pixelfx";
 import { applyFallenMobBalance } from "./fallen/mobBalance";
-import { applyFallenMonsterArt16 } from "./fallen/monsterArt16";
+import { applyFallenMonsterArt16, installFallenMonsterArtWithoutBundle } from "./fallen/monsterArt16";
 import { applyFallenAreaBackdrops } from "./fallen/areaBackdrops";
 import { applyFallenBattleMusic } from "./fallen/battleMusic";
 import { applyFallenWeaponTraits } from "./fallen/weaponTraits";
@@ -1557,6 +1557,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   setupCast(project);
   const troops = setupFoes(project);
   applyFallenBattleItems(project); // 속성 상성·검/창·회복약·기믹 잡화·드롭 (fallen/battleItems.ts)
+  installFallenMonsterArtWithoutBundle(project); // 번들 시트가 없는 그림(등불해파리·서리예티)은 적보다 먼저 (fallen/monsterArt16.ts)
   applyFallenBattleRoles(project); // 기술 역할·새 적·발렌 재설계·시그니처 무기·MP 회복 (fallen/battleRoles.ts)
   applyFallenBattleDepth(project, execTool); // 깔기→거두기·도발·정화·화상·연계기 셋 (fallen/battleDepth.ts)
   applyFallenGrowthCurves(project); // 역할별 성장 곡선 — 매 레벨 모든 능력치가 오른다 (fallen/battleDepth.ts)

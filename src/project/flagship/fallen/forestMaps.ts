@@ -230,7 +230,7 @@ export interface FallenForestResult {
 /** 구역 트룹(#3335 FS_AREA_ENCOUNTERS 와 같은 id·무게) — 데이터베이스에 있는 것만. 하나도 없으면 옛 셋으로. */
 const AREA_TROOPS: Record<string, ReadonlyArray<readonly [string, number]>> = {
   fs_forest_edge: [["troop_fs_wolves", 3], ["troop_fs_edge_boar", 2], ["troop_fs_edge_hornets", 2]],
-  fs_forest_stream: [["troop_fs_stream_crabs", 3], ["troop_fs_stream_eels", 2], ["troop_fs_wolves", 1]],
+  fs_forest_stream: [["troop_fs_stream_crabs", 3], ["troop_fs_stream_eels", 2], ["troop_fs_stream_jellies", 2], ["troop_fs_wolves", 1]],
   fs_forest_thicket: [["troop_fs_spiders", 3], ["troop_fs_thicket_moths", 2], ["troop_fs_thicket_flytrap", 2]],
   fs_forest_glade: [["troop_fs_glade_poachers", 3], ["troop_fs_edge_hornets", 1], ["troop_fs_edge_boar", 1]],
   fs_forest: [["troop_fs_wisps", 3], ["troop_fs_deep_ghosts", 2], ["troop_fs_spiders", 1]],
