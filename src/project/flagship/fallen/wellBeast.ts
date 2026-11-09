@@ -135,10 +135,6 @@ function wellData(project: Project, exec: Exec): void {
     rewards: { exp: 900, gold: 360, dropRatePercent: 0, drops: [] },
   } });
 
-  // 그림은 monsterArt16(굽기 끝 단계)이 uploaded 로 넣는다 — 도구는 아직 없는 그림 id 를 거절하므로 자리 그림으로 만들고 바로 바꿔 끼운다.
-  const beast = project.database.enemies.find((e) => e.id === FS2_WELL_BEAST_ENEMY);
-  if (!beast) throw new Error("[fallen-star well] 눈먼 영주 적 레코드가 없다");
-  beast.monsterResourceId = FS2_WELL_BEAST_ART;
   exec(project, "upsert_troop", { troop: {
     id: FS2_WELL_BEAST_TROOP, name: "우물 밑 눈먼 영주", enemyIds: [FS2_WELL_BEAST_ENEMY], uncapturable: true,
     previewBackgroundResourceId: "battle-scenery-cave",
@@ -252,7 +248,7 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
 
   // 보스 — 둥지 한가운데 웅크린 영주. 깨우는 줄을 밟으면 한 번 연출 뒤 조사로 싸운다(이기기 전까지 다시 도전).
   const beastId = "ev_fs2_well_beast";
-  const beastGfx = { sprite: { type: "uploaded", id: FS2_WELL_BEAST_ART }, direction: "down", pattern: 0, scale: 1.4, scaleMode: "manual" };
+  const beastGfx = { sprite: { type: "bundled", id: "tex_easyrpg_charset_monster1" }, direction: "down", pattern: 0, scale: 1.4, scaleMode: "manual" };
   const fight: Command[] = [
     bgm(BOSS_BGM),
     { kind: "battleProcessing", troopId: FS2_WELL_BEAST_TROOP, canEscape: false, canLose: true, branchOnResult: true,
@@ -314,4 +310,21 @@ export function wellBeastHanelLine(hanel: string): Command {
   return { kind: "fork", condition: { kind: "switch", switchId: SW_WELL_BEAST_DOWN, value: true }, then: [
     say(hanel, "…그 울음이 멎었구나. 우물 밑 영주를 만났느냐.\n서른 해 동안 광장 아이들이 무서워하던 소리다."),
   ], else: [] } as unknown as Command;
+}
+
+/**
+ * 그림은 monsterArt16(굽기 끝 단계)이 uploaded 리소스로 넣는다. 그 전에는 리소스가 없어 도구·무결성 검사가 이 id 를 거절하므로
+ * 지을 때는 자리 그림(돌 골렘·몬스터 칩)으로 두고, 그림 설치 바로 뒤(chronoBell, applyFallenMonsterArt16 다음)에 여기서 바꿔 끼운다.
+ */
+export function finishFallenWellBeastArt(project: Project, mapId: string): void {
+  if (!Object.hasOwn(project.assets.uploaded, FS2_WELL_BEAST_ART)) throw new Error(`[fallen-star well] 눈먼 영주 그림 ${FS2_WELL_BEAST_ART} 가 설치되지 않았다 — applyFallenMonsterArt16 다음에 부른다`);
+  const beast = project.database.enemies.find((e) => e.id === FS2_WELL_BEAST_ENEMY);
+  if (!beast) throw new Error("[fallen-star well] 눈먼 영주 적 레코드가 없다");
+  beast.monsterResourceId = FS2_WELL_BEAST_ART;
+  const ev = project.maps[mapId]?.events.find((e) => e.id === "ev_fs2_well_beast");
+  if (!ev) throw new Error("[fallen-star well] 잠든 영주 이벤트가 없다");
+  for (const pg of ev.pages) {
+    const g = pg.graphic as { sprite?: { type: string; id: string } } | undefined;
+    if (g?.sprite) g.sprite = { type: "uploaded", id: FS2_WELL_BEAST_ART };
+  }
 }
