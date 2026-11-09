@@ -228,7 +228,10 @@ const timedEscape: Family = {
     const returns = fresh.flatMap(event => all(event)).filter(command => command.kind === 'transfer');
     if (!returns.length) return fail('실패했을 때 되돌리는 이동 명령이 없다');
     if (!returns.every(command => command.mapId === MAP && command.x === spec.checkpoint.x && command.y === spec.checkpoint.y)) return fail('되돌아가는 곳이 (' + spec.checkpoint.x + ',' + spec.checkpoint.y + ') 가 아니다: ' + JSON.stringify(returns.map(command => [command.x, command.y])));
-    const cells = fresh.flatMap(event => all(event)).filter(command => command.kind === 'changeTile').map(command => ({ x: Number(command.x), y: Number(command.y) }));
+    // 바닥 복구(처음 상태로 되돌리는 changeTile)가 앞에 있고 무너짐이 그 뒤에 온다 — 칸마다 마지막 등장 순서가 곧 무너지는 순서다.
+    const lastSeen = new Map<string, { x: number; y: number; at: number }>();
+    fresh.flatMap(event => all(event)).filter(command => command.kind === 'changeTile').forEach((command, at) => lastSeen.set(command.x + ',' + command.y, { x: Number(command.x), y: Number(command.y), at }));
+    const cells = [...lastSeen.values()].sort((left, right) => left.at - right.at);
     if (!cells.length) return fail('무너지는 바닥(changeTile)이 없다');
     const out = cells.find(cell => !inRect(spec.area, cell.x, cell.y));
     if (out) return fail('무너지는 칸 (' + out.x + ',' + out.y + ') 이 지정한 구간 밖이다');

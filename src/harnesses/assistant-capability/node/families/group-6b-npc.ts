@@ -157,7 +157,7 @@ const villagerDialogue: Family = {
     const work = args.work as { x: number; y: number; hours: number[] } | undefined;
     return runOn(project, 'make_villager', {
       mapId: MAP, name: strArg(args, 'name'), home: { x: numArg(args, 'x'), y: numArg(args, 'y') }, id: 'ev_ref_villager',
-      dialogue: (args.lines as string[]).map(text => ({ text })),
+      dialogue: [{ text: (args.lines as string[]).join('\n') }],
       ...(work ? { dailyRoutine: { workAt: { x: work.x, y: work.y }, workHours: work.hours } } : {}),
     });
   },
@@ -167,12 +167,12 @@ const villagerDialogue: Family = {
     const work = args.work as { x: number; y: number; hours: number[] } | undefined;
     const reference = villagerDialogue.reference!(clone(project), args) as Project;
     const make = (patch: Record<string, unknown>) => attempt(() => runOn(clone(project), 'make_villager', {
-      mapId: MAP, name, home: { x, y }, id: 'ev_ref_villager', dialogue: lines.map(text => ({ text })),
+      mapId: MAP, name, home: { x, y }, id: 'ev_ref_villager', dialogue: [{ text: lines.join('\n') }],
       ...(work ? { dailyRoutine: { workAt: { x: work.x, y: work.y }, workHours: work.hours } } : {}), ...patch }));
     return distinct(reference, [
       make({ home: { x: x === 21 ? 20 : x + 3, y } }),
       make({ dialogue: [{ text: '……' }] }),
-      lines.length > 1 ? make({ dialogue: lines.slice(0, 1).map(text => ({ text })) }) : make({ name: name + '의 형' }),
+      lines.length > 1 ? make({ dialogue: [{ text: lines[0]! }] }) : make({ name: name + '의 형' }),
       work ? make({ dailyRoutine: undefined }) : make({ dailyRoutine: { workAt: { x: 17, y: 12 }, workHours: [8, 18] } }),
       work ? make({ dailyRoutine: { workAt: { x: work.x, y: work.y }, workHours: [work.hours[0]! + 4, work.hours[1]!] } }) : undefined,
     ]);
@@ -253,6 +253,7 @@ function withCastNpcs(project: Project): Project {
   return runOn(a, 'make_villager', { mapId: MAP, name: '새 주민 나', home: { x: 17, y: 6 }, id: CAST_B, movement: 'fixed', dialogue: [{ text: '……' }] });
 }
 type Resident = { eventId: string; name: string; role: string; line: string };
+const pageIdOf = (project: Project, eventId: string): string => String(eventIn(project, eventId)?.pages?.[0]?.id);
 
 const npcCast: Family = {
   id: 'npc-cast',
@@ -273,10 +274,10 @@ const npcCast: Family = {
     for (const resident of residents) {
       const after = eventIn(input.after, resident.eventId);
       if (!after) return fail(resident.eventId + ' 이벤트가 사라졌다');
-      if (!String(after.name ?? '').includes(resident.name) && !(after.pages ?? []).some((page: any) => String(page.name ?? '').includes(resident.name))) return fail(resident.eventId + ' 이름이 「' + resident.name + '」 가 아니다');
+      if (String(after.name ?? '') !== resident.name && !(after.pages ?? []).some((page: any) => String(page.name ?? '') === resident.name)) return fail(resident.eventId + ' 이름이 「' + resident.name + '」 가 아니다');
       const spoken = commandsOfKind(after, 'text');
       if (!spoken.some(command => String(command.body ?? '').includes(resident.line))) return fail(resident.eventId + ' 대사 「' + resident.line + '」 가 없다');
-      if (!spoken.every(command => command.speaker === undefined || String(command.speaker).includes(resident.name))) return fail(resident.eventId + ' 화자가 「' + resident.name + '」 가 아니다');
+      if (!spoken.every(command => command.speaker === undefined || String(command.speaker) === resident.name)) return fail(resident.eventId + ' 화자가 「' + resident.name + '」 가 아니다');
     }
     const untouched = [CAST_A, CAST_B].filter(id => !touched.includes(id));
     for (const id of untouched) if (!isDeepStrictEqual(eventIn(input.before, id), eventIn(input.after, id))) return fail(id + ' 은 요청하지 않았는데 바뀌었다');
@@ -291,24 +292,22 @@ const npcCast: Family = {
   reference(project, args) {
     return runOn(project, 'author_npc_cast', { mapId: MAP, residents: (args.residents as Resident[]).map(resident => ({
       eventId: resident.eventId, name: resident.name, role: resident.role, summary: resident.role + ' ' + resident.name,
-      pages: [{ pageId: resident.eventId + '_page', lines: [resident.line] }] })) });
+      pages: [{ pageId: pageIdOf(project, resident.eventId), lines: [resident.line] }] })) });
   },
   wrongs(project, args): FamilyOutcome[] {
     const residents = args.residents as Resident[];
     const reference = npcCast.reference!(clone(project), args) as Project;
     const cast = (list: Resident[]) => attempt(() => runOn(clone(project), 'author_npc_cast', { mapId: MAP, residents: list.map(resident => ({
       eventId: resident.eventId, name: resident.name, role: resident.role, summary: resident.role + ' ' + resident.name,
-      pages: [{ pageId: resident.eventId + '_page', lines: [resident.line] }] })) }));
+      pages: [{ pageId: pageIdOf(project, resident.eventId), lines: [resident.line] }] })) }));
     const first = residents[0]!;
-    const rename = (event: string, name: string, line: string) => attempt(() => runOn(clone(project), 'patch_event_page', { mapId: MAP, eventId: event, pageIndex: 0, set: { name, commands: [{ kind: 'text', speaker: name, body: line }] } }));
     return distinct(reference, [
       cast([{ ...first, line: '……' }, ...residents.slice(1)]),
       cast([{ ...first, name: first.name + '이' }, ...residents.slice(1)]),
       residents.length > 1 ? cast(residents.slice(0, 1)) : cast([{ ...first, eventId: first.eventId === CAST_A ? CAST_B : CAST_A }]),
       // 대사만 바꾸고 세계관 등록이 없는 부분 수행
       attempt(() => { let next = clone(project); for (const resident of residents) next = runOn(next, 'patch_event_page', { mapId: MAP, eventId: resident.eventId, pageIndex: 0, set: { name: resident.name, commands: [{ kind: 'text', speaker: resident.name, body: resident.line }] } }); return next; }),
-      void rename,
-    ].filter(Boolean) as Array<Project | undefined>);
+    ]);
   },
 };
 
