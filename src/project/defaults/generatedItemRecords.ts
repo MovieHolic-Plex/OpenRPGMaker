@@ -711,7 +711,7 @@ export function generatedEquipmentRecords(): EquipmentRecord[] {
       price: 110,
       imageResourceId: "cc0-jetrel-gen-sword-bronze",
       iconResourceId: "cc0-jetrel-gen-sword-bronze",
-      description: "청동으로 벼린 값싼 검입니다. 처음 쥔 검보다 조금 묵직한 대신 덜 정확합니다.",
+      description: "청동으로 벼린 값싼 검입니다. 조금 묵직한 대신 덜 정확합니다.",
       statBonuses: { attack: 9, defense: 0, mind: 0, agility: 0 },
       attackElementIds: ["sword"],
       accuracy: 98,
