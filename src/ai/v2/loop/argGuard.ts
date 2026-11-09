@@ -161,7 +161,59 @@ export function nearestStampSpot(map: GameMap, x: number, y: number, w: number, 
   return undefined;
 }
 
+/**
+ * upsert_skill: 스키마의 «고급 칸»을 기본값으로 다 채워 보내는 모델(terra)의 채움을 걷어 낸다(2026-11-09 fs-use-tools E1 측정: 3번 호출이 전부 거절 —
+ * exploitStates{stateIds:[]·bonusPercent:1}, clearActionSkill:true 와 actionSkill 동시, actionSkill.itemCost.itemId:"").
+ * 거절되지 않는 채움은 기술을 조용히 망가뜨린다 — damageFormula:"18" 은 능력치와 상관없이 항상 18, multiHit{2,2} 는 모든 기술이 2연타, area{circle,1} 은 범위기.
+ * 화이트리스트가 아니라 칸 이름 deny 목록이고, 지울지는 프로젝트 상태(gen1·액션 전투)와 그 기술 자신의 칸·이름·설명 낱말로 정한다 — 요청 글은 안 쓴다.
+ */
+const SKILL_MULTI_WORDS = /연타|연속|난타|\d+\s*회|두 번|세 번|multi/iu;
+const SKILL_AREA_WORDS = /범위|광역|폭발|주변|일대|전체|area/iu;
+const SKILL_GIMMICK_WORDS = /표식|기믹|추격|연계|흡수|반격|gimmick/iu;
+const hasItems = (v: unknown): boolean => Array.isArray(v) && v.length > 0;
+function dropSkillFill(args: Obj, project: Project): { args: Obj; note: string } | undefined {
+  const nested = isObj(args.skill);
+  const skill: Obj = nested ? { ...(args.skill as Obj) } : { ...args };
+  const top: Obj = nested ? { ...args } : skill;
+  const existing = ((project.database?.skills ?? []) as unknown as Obj[]).find((x) => String(x.id) === String(skill.id ?? ""));
+  const sys = (project.system ?? {}) as unknown as { battleModel?: string; actionCombat?: { enabled?: boolean } };
+  const gen1 = sys.battleModel === "gen1";
+  const action = sys.actionCombat?.enabled === true;
+  const words = `${String(skill.name ?? existing?.name ?? "")} ${String(skill.description ?? existing?.description ?? "")}`;
+  const dropped: string[] = [];
+  const drop = (obj: Obj, key: string, label = key): void => { if (key in obj) { delete obj[key]; dropped.push(label); } };
+  // 해제 칸: 해제할 액션이 없는 기술에 clearActionSkill:true 를 actionSkill 과 같이 보내면 «함께 요청할 수 없습니다» 로 거절된다.
+  for (const key of ["clearActionSkill", "clearActionFieldStatus", "clearActionItemCost"]) {
+    if (key in top && (top[key] !== true || !isObj(existing?.actionSkill))) drop(top, key);
+  }
+  if (isObj(skill.actionSkill) && !action && !isObj(existing?.actionSkill)) drop(skill, "actionSkill");
+  else if (isObj(skill.actionSkill)) {
+    const a = { ...(skill.actionSkill as Obj) };
+    if (isObj(a.itemCost) && !String((a.itemCost as Obj).itemId ?? "").trim()) { delete a.itemCost; dropped.push("actionSkill.itemCost"); }
+    skill.actionSkill = a;
+  }
+  const exploit = skill.exploitStates;
+  if (isObj(exploit) && (!hasItems(exploit.stateIds) || !(Number(exploit.bonusPercent) > 1))) drop(skill, "exploitStates");
+  if (!gen1) for (const key of ["weather", "fixedDamage", "maxPp", "gen1CriticalRate"]) drop(skill, key);
+  const formula = skill.damageFormula;
+  if (typeof formula === "string" && /^\s*\d+\s*$/u.test(formula) && formula.trim() === String(skill.power ?? "")) drop(skill, "damageFormula");
+  if (isObj(skill.chargeBreak) && !(Number(skill.chargeTurns ?? existing?.chargeTurns) >= 1)) drop(skill, "chargeBreak");
+  if (isObj(skill.comboStaging) && !hasItems(skill.comboActorIds) && !hasItems(existing?.comboActorIds)) drop(skill, "comboStaging");
+  if (isObj(skill.inputSequence) && !hasItems((skill.inputSequence as Obj).keys)) drop(skill, "inputSequence");
+  if (isObj(skill.weaponAffinity) && !(Number((skill.weaponAffinity as Obj).bonusPercent) >= 1)) drop(skill, "weaponAffinity");
+  if (isObj(skill.multiHit) && !SKILL_MULTI_WORDS.test(words) && !isObj(existing?.multiHit)) drop(skill, "multiHit");
+  if (isObj(skill.area) && !SKILL_AREA_WORDS.test(words) && !isObj(existing?.area)) drop(skill, "area");
+  if (isObj(skill.battleGimmick) && !SKILL_GIMMICK_WORDS.test(words) && !isObj(existing?.battleGimmick)) drop(skill, "battleGimmick");
+  if (!dropped.length) return undefined;
+  const out = nested ? { ...top, skill } : skill;
+  return { args: out, note: `dropped ${dropped.length} schema-filled advanced skill field(s) — they would be rejected or silently change the skill: ${dropped.slice(0, 8).join(", ")}${dropped.length > 8 ? ` +${dropped.length - 8} more` : ""}. Send them only when the skill really uses that feature.` };
+}
+
 const PRE_RULES: readonly PreRule[] = [
+  {
+    tool: /^upsert_skill$/u, id: "skill-schema-fill",
+    apply(args, project) { return dropSkillFill(args, project); },
+  },
   {
     tool: /^create_transfer_pair$/u, id: "transfer-doorAt",
     apply(args, project) {
