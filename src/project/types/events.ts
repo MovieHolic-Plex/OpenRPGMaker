@@ -925,7 +925,7 @@ export interface EventObjectInteraction {
    * 나오거나 붙잡히거나 맵을 떠나면 멈춘다. 저장 뒤 불러와도 숨어 있으면 다시 깔린다.
    */
   heldSe?: string;
-  /** container 전용: 수납 종류(ContainerStyle — chest·crate·barrel·sack·straw·drawer·jar). 생략 = 이름표로 추정. */
+  /** container 전용: 수납 종류(ContainerStyle — chest·crate·barrel·sack·straw·drawer·jar·wardrobe). 생략 = 이름표로 추정. */
   style?: string;
   /** container 전용: 이미 뒤진 페이지. 켜져 있는 동안 칸에 뒤진 흔적을 그린다. */
   searched?: boolean;

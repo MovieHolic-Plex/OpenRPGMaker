@@ -607,12 +607,121 @@ function holdUntilMark(scene: PlaySceneContext, cell: Cell, g: Phaser.GameObject
   scene.time.delayedCall(15_000, () => { if (pending.get(key) === g) { pending.delete(key); g.destroy(); } });
 }
 
+type TileImage = Phaser.GameObjects.Image;
+type Px = (x: number, y: number, w: number, h: number, color: number, alpha?: number) => void;
+
+/** 칸(과 같은 이름의 윗칸)의 가구 이미지를 밑동 가운데를 축으로 비틀거나 눌렀다 되돌린다. 개별 이미지가 없으면 false. */
+function poseCell(scene: PlaySceneContext, cell: Cell, durationMs: number, pose: (t: number) => { angle: number; scaleY: number }): boolean {
+  const size = mapTileSize(scene.map);
+  const images = [...rootYSortTileImagesAt(scene, cell.x, cell.y, size), ...rootYSortTileImagesAt(scene, cell.x, cell.y - 1, size)] as unknown as TileImage[];
+  if (images.length === 0 || typeof scene.tweens?.addCounter !== "function") return false;
+  const pivotX = cell.x * size + size / 2;
+  const pivotY = (cell.y + 1) * size;
+  const base = images.map((image) => ({ image, x: image.x, y: image.y, angle: image.angle, scaleY: image.scaleY }));
+  const apply = (t: number): void => {
+    const { angle, scaleY } = pose(t);
+    const rad = (angle * Math.PI) / 180;
+    const cos = Math.cos(rad), sin = Math.sin(rad);
+    for (const b of base) {
+      // 이미지 원점은 왼쪽 위다 — 축에서 본 원점을 세로로 누르고 돌린 자리가 새 원점이다.
+      const dx = b.x - pivotX, dy = (b.y - pivotY) * scaleY;
+      b.image.x = pivotX + dx * cos - dy * sin;
+      b.image.y = pivotY + dx * sin + dy * cos;
+      b.image.angle = b.angle + angle;
+      b.image.scaleY = b.scaleY * scaleY;
+    }
+  };
+  const restore = (): void => {
+    for (const b of base) { b.image.x = b.x; b.image.y = b.y; b.image.angle = b.angle; b.image.scaleY = b.scaleY; }
+  };
+  scene.tweens.addCounter({
+    from: 0, to: 1, duration: durationMs,
+    onUpdate: (tween: Phaser.Tweens.Tween) => apply(tween.getValue() ?? 0),
+    onComplete: restore, onStop: restore,
+  });
+  return true;
+}
+
+/** 칸 위에 잠깐 그리는 그림(판자·서랍·뚜껑·문짝). frames 를 ms 간격으로 그린 뒤 hold 면 흔적이 그려질 때까지 둔다. */
+async function overlayFrames(scene: PlaySceneContext, cell: Cell, ms: number, hold: boolean, frames: readonly ((px: Px) => void)[]): Promise<void> {
+  const size = mapTileSize(scene.map);
+  const s = size / 16;
+  const x0 = cell.x * size;
+  const y0 = cell.y * size;
+  const g = scene.add.graphics().setDepth(rowDepth(cell.y, size) + FX_DEPTH_BUMP);
+  const px: Px = (x, y, w, h, color, alpha = 1) => { g.fillStyle(color, alpha).fillRect(x0 + x * s, y0 + y * s, w * s, h * s); };
+  for (const frame of frames) {
+    g.clear();
+    frame(px);
+    await sleep(scene, ms);
+  }
+  if (hold) holdUntilMark(scene, cell, g);
+  else g.destroy();
+}
+
+const WOOD_DARK = 0x5a3416, WOOD = 0x8a5a30, WOOD_LIGHT = 0xb88250, GAP = 0x140c06;
+
+/** 종류마다 하나인 여는 동작(containerFx.ts ContainerMotion). 모두 durationMs 안에 끝난다. */
+async function playMotion(scene: PlaySceneContext, style: ContainerStyle, cell: Cell): Promise<void> {
+  switch (CONTAINER_FX[style].motion) {
+    case "lid":
+      return liftLid(scene, cell);
+    case "rock":
+      // 통: 밑동을 축으로 왼쪽·오른쪽으로 한 번씩 기울여 본다(흔들어 속을 가늠하는 몸짓).
+      if (!poseCell(scene, cell, 420, (t) => ({ angle: Math.sin(t * Math.PI * 2) * 7 * (1 - t * 0.4), scaleY: 1 }))) {
+        await overlayFrames(scene, cell, 90, false, [(px) => px(4, 2, 8, 2, GAP, 0.8), (px) => px(4, 2, 8, 2, GAP, 0.4)]);
+      }
+      return;
+    case "slump":
+      // 자루·짚: 풀어 헤치자 폭 주저앉았다 다시 부푼다.
+      if (!poseCell(scene, cell, 380, (t) => ({ angle: 0, scaleY: 1 - Math.sin(t * Math.PI) * 0.14 }))) {
+        await overlayFrames(scene, cell, 90, false, [(px) => px(3, 2, 10, 2, GAP, 0.5)]);
+      }
+      return;
+    case "pry":
+      // 상자: 윗판 하나를 비집어 들었다 털썩 내려놓는다 — 판자 끝이 비스듬히 뜨고 틈이 보인다.
+      return overlayFrames(scene, cell, 75, false, [
+        (px) => { px(3, 4, 10, 1, GAP); px(9, 2, 5, 2, WOOD); px(9, 2, 5, 1, WOOD_LIGHT); },
+        (px) => { px(3, 4, 10, 2, GAP); px(10, 0, 4, 2, WOOD); px(11, -1, 4, 1, WOOD_LIGHT); px(9, 2, 2, 1, WOOD_DARK); },
+        (px) => { px(3, 4, 10, 2, GAP); px(9, 2, 5, 2, WOOD); px(9, 2, 5, 1, WOOD_LIGHT); },
+      ]);
+    case "slide":
+      // 서랍: 앞판이 아래로 1→2→3칸 빠져나오며 그 위로 어두운 속이 드러난다.
+      return overlayFrames(scene, cell, 70, false, [1, 2, 3].map((d) => (px: Px) => {
+        px(4, 8, 8, d, GAP);
+        px(4, 8 + d, 8, 3, WOOD);
+        px(4, 8 + d, 8, 1, WOOD_LIGHT);
+        px(7, 9 + d, 2, 1, 0xe8c070);
+      }));
+    case "lidHop": {
+      // 항아리: 작은 사기 뚜껑이 톡 떠올랐다 비스듬히 내려앉는다(흰 빛 한 점).
+      const lid = (lift: number, tilt: number) => (px: Px) => {
+        px(5, 2, 6, 1, GAP, 0.9);
+        px(5 + tilt, 1 - lift, 6, 1, 0xb8a888); px(5 + tilt, 0 - lift, 6, 1, 0xe8e0cc);
+        px(7 + tilt, -1 - lift, 2, 1, 0xa89878); px(8 + tilt, 0 - lift, 1, 1, 0xffffff);
+      };
+      return overlayFrames(scene, cell, 70, false, [lid(1, 0), lid(3, 0), lid(4, 1), lid(2, 1), lid(0, 0)]);
+    }
+    case "doors": {
+      // 옷장: 가운데 틈에서 문짝 둘이 바깥으로 열리며 어두운 속과 걸린 옷이 보인다. 대사 동안 열린 채 둔다.
+      const doors = (open: number) => (px: Px) => {
+        const half = open * 2;
+        px(8 - half, -6, half * 2, 18, GAP);
+        if (open >= 2) { px(8 - half + 1, -5, 2, 6, 0x8a3a3a); px(8 + half - 3, -4, 2, 5, 0x3a5a8a); }
+        px(8 - half - 2, -6, 2, 18, WOOD); px(8 - half - 2, -6, 1, 18, WOOD_LIGHT);
+        px(8 + half, -6, 2, 18, WOOD); px(8 + half + 1, -6, 1, 18, WOOD_DARK);
+      };
+      return overlayFrames(scene, cell, 70, true, [doors(1), doors(2), doors(3)]);
+    }
+  }
+}
+
 export async function playContainerFx(scene: PlaySceneContext, style: ContainerStyle, cell: Cell): Promise<void> {
   const spec = CONTAINER_FX[style];
   // 궤짝은 저작한 「상자」 자리(chest)가 있으면 그 소리.
   playSe(style === "chest" ? projectSeCue(store.getCurrent(), "chest") ?? spec.se : spec.se);
   shakeCell(scene, cell, spec.shakePx, spec.shakes);
-  if (spec.lid) await liftLid(scene, cell);
+  await playMotion(scene, style, cell);
   burstParticles(scene, cell, style);
 }
 
@@ -723,6 +832,11 @@ function drawMark(g: Phaser.GameObjects.Graphics, mark: ContainerSearchedMark, x
       px(4, 9, 8, 1, 0x140c06);
       px(4, 10, 8, 2, 0x8a5a30);
       px(4, 10, 8, 1, 0xb88250);
+      break;
+    case "doors-ajar":
+      px(7, -6, 2, 18, 0x140c06);
+      px(5, -6, 2, 18, 0x8a5a30);
+      px(5, -6, 1, 18, 0xb88250);
       break;
   }
 }
