@@ -85,27 +85,8 @@ function addEv(project: Project, mapId: string, id: string, name: string, at: Ce
 function ensureSwitch(project: Project, id: string, name: string): void {
   if (!project.switches.some((s) => s.id === id)) project.switches.push({ id, name });
 }
-function layerOf(map: GameMap, at: Cell, tile: number): "lower" | "upper" | "lower2" | "upper2" {
-  const i = at.y * map.width + at.x;
-  const m = map as unknown as Record<string, number[] | undefined>;
-  if (m.upperTiles?.[i] === tile) return "upper";
-  if (m.lowerTiles?.[i] === tile) return "lower";
-  if (m.lowerOverlayTiles?.[i] === tile) return "lower2";
-  if (m.upperOverlayTiles?.[i] === tile) return "upper2";
-  throw new Error(`[fallen-star well] ${map.id} ${at.x},${at.y} 에 타일 ${tile} 이 없다`);
-}
-/** 손 도트 v5 쇠살문(6421 위 · 6422 아래) 열기 — 들어 올린 문짝(6423)만 남기고 발밑을 비운다(act1Finale openGate 와 같다). */
-function openGate(map: GameMap, cells: readonly Cell[]): Command[] {
-  return [
-    se("cc0-se-osx-machine-01"),
-    shake(1, 400),
-    ...cells.flatMap((c) => [
-      { kind: "changeTile", mapId: map.id, layer: layerOf(map, { x: c.x, y: c.y - 1 }, 6421), x: c.x, y: c.y - 1, tile: 6423 },
-      { kind: "changeTile", mapId: map.id, layer: layerOf(map, c, 6422), x: c.x, y: c.y, tile: -1 },
-    ] as unknown as Command[]),
-    se("cc0-se-osx-metal-04"),
-  ];
-}
+/** 쇠살문 그림(Object1 걷기 칩 — lay_dungeon_layout 의 잠긴 문과 같은 그림). 열리면 그 페이지가 꺼져 지나간다. */
+const BARS = { sprite: { type: "bundled", id: "tex_easyrpg_charset_object1" }, direction: "down", pattern: 1 } as const;
 const act = (skillId: string, priority: number, condition: Rec = { kind: "always" }) =>
   ({ skillId, priority, condition, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } });
 
@@ -139,7 +120,7 @@ function wellData(project: Project, exec: Exec): void {
   } });
 
   exec(project, "upsert_enemy", { enemy: {
-    id: FS2_WELL_BEAST_ENEMY, name: "우물 밑 눈먼 영주", level: 14, monsterResourceId: FS2_WELL_BEAST_ART, battleScalePercent: 125,
+    id: FS2_WELL_BEAST_ENEMY, name: "우물 밑 눈먼 영주", level: 14, monsterResourceId: "generated-enemy-golem-clay", battleScalePercent: 125,
     collapseEffect: "bossSink", hideHp: true,
     stats: { maxHp: 2600, maxMp: 0, attack: 118, defense: 62, mind: 96, agility: 44 },
     skillIds: ["skill_attack", SKILL_BITE, SKILL_TAIL, SKILL_SONG, SKILL_ROAR],
@@ -156,6 +137,10 @@ function wellData(project: Project, exec: Exec): void {
     rewards: { exp: 900, gold: 360, dropRatePercent: 0, drops: [] },
   } });
 
+  // 그림은 monsterArt16(굽기 끝 단계)이 uploaded 로 넣는다 — 도구는 아직 없는 그림 id 를 거절하므로 자리 그림으로 만들고 바로 바꿔 끼운다.
+  const beast = project.database.enemies.find((e) => e.id === FS2_WELL_BEAST_ENEMY);
+  if (!beast) throw new Error("[fallen-star well] 눈먼 영주 적 레코드가 없다");
+  beast.monsterResourceId = FS2_WELL_BEAST_ART;
   exec(project, "upsert_troop", { troop: {
     id: FS2_WELL_BEAST_TROOP, name: "우물 밑 눈먼 영주", enemyIds: [FS2_WELL_BEAST_ENEMY], uncapturable: true,
     previewBackgroundResourceId: "battle-scenery-cave",
@@ -214,43 +199,39 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
   addEv(project, mapId, "ev_fs2_well_winch", "녹슨 고패", WELL.winch, [
     page("ev_fs2_well_winch_p0", "고패", [], [
       narrate("굵은 쇠사슬을 감는 고패다.\n사슬이 벽을 타고 동쪽 저수조로 이어진다."),
-      { kind: "showChoices", choices: ["감는다", "그만둔다"], cancelType: "branch", cancelIndex: 1, branches: [[
-        se("cc0-se-osx-tools-02"), wait(300),
+      { kind: "choices", cancelBehavior: "branch", options: [
+        { text: "감는다", branch: [se("cc0-se-osx-tools-02"), wait(300),
         narrate("끼긱, 끼긱. 사슬이 팽팽해진다."),
+        se("cc0-se-osx-machine-01"), shake(1, 400),
         setSw(SW_WELL_GATE),
-        ...openGate(map(), WELL.gate),
+        se("cc0-se-osx-metal-04"),
         narrate("멀리 동쪽에서 쇠살문 올라가는 소리가 울린다."),
-        say(KAEL, "저수조 남쪽 문이 열렸나 봐."),
-      ], []] } as unknown as Command,
+        say(KAEL, "저수조 남쪽 문이 열렸나 봐.")] },
+        { text: "그만둔다", branch: [] },
+      ], cancelBranch: [] } as unknown as Command,
     ], { overlapForbidden: false }),
     page("ev_fs2_well_winch_p1", "감긴 고패", [sw(SW_WELL_GATE)], [narrate("사슬은 끝까지 감겨 있다.")]),
   ]);
-  // 쇠살문 칸 — 닫힌 동안 조사하면 한 줄, 열리면 걸어 지나간다.
+  // 쇠살문 — 도구가 단 잠긴 문 이벤트를 걷어 내고, 고패 스위치가 켜질 때까지 몸으로 막는 문으로 바꿔 단다.
+  { const m = map(); m.events = m.events.filter((e) => !/_locked\d+$/.test(e.id)); }
   WELL.gate.forEach((g, i) => addEv(project, mapId, `ev_fs2_well_gate_${i}`, "쇠살문", g, [
-    page(`ev_fs2_well_gate_${i}_p0`, "닫힌 쇠살문", [], [narrate("굵은 쇠살문이 내려와 있다.\n쇠사슬이 서쪽 벽 속으로 들어간다.")]),
+    page(`ev_fs2_well_gate_${i}_p0`, "닫힌 쇠살문", [], [narrate("굵은 쇠살문이 내려와 있다.\n쇠사슬이 서쪽 배수 갱 쪽 벽 속으로 들어간다.")],
+      { graphic: { ...BARS }, overlapForbidden: true, animationType: "fixedGraphic" }),
     page(`ev_fs2_well_gate_${i}_p1`, "열린 쇠살문", [sw(SW_WELL_GATE)], [], { priority: "below" }),
   ]));
 
-  // 금 간 벽 — 회랑 남쪽 통로 두 칸을 막아 두었다가 조사하면 무너진다(숨은 방).
-  const rubble = WELL.crack.map((c) => {
-    const m = map(); const i = c.y * m.width + c.x;
-    const layers = m as unknown as Record<string, number[] | undefined>;
-    const layer = (["upperTiles", "upperOverlayTiles", "lowerOverlayTiles"] as const).find((k) => (layers[k]?.[i] ?? -1) >= 0);
-    if (!layer) throw new Error(`[fallen-star well] 금 간 벽 돌무더기 그림이 (${c.x},${c.y}) 에 없다`);
-    const short = { upperTiles: "upper", upperOverlayTiles: "upper2", lowerOverlayTiles: "lower2" }[layer];
-    return { kind: "changeTile", mapId, layer: short, x: c.x, y: c.y, tile: -1 } as unknown as Command;
-  });
-  const crackPage0 = (i: number): EventPage => page(`ev_fs2_well_crack_${i}_p0`, "금 간 벽", [], [
-    narrate("벽돌 사이가 벌어져 바람이 샌다.\n안쪽이 비어 있는 것 같다."),
-    { kind: "showChoices", choices: ["밀어 본다", "그만둔다"], cancelType: "branch", cancelIndex: 1, branches: [[
-      se("cc0-se-osx-metal-04"), shake(3, 700),
-      narrate("우르르 — 벽돌이 안쪽으로 무너졌다!"),
-      ...rubble,
+  // 무너진 돌 더미 — 배수로 남쪽 통로 두 칸을 막아 두었다가 조사해 치우면 정비 벽감이 열린다.
+  const crackPage0 = (i: number): EventPage => page(`ev_fs2_well_crack_${i}_p0`, "무너진 돌 더미", [], [
+    narrate("무너진 돌 더미가 통로를 막고 있다.\n틈으로 찬바람이 샌다. 안쪽이 비어 있는 것 같다."),
+    { kind: "choices", cancelBehavior: "branch", options: [
+        { text: "치운다", branch: [se("cc0-se-osx-metal-04"), shake(3, 700),
+      narrate("우르르 — 돌 더미가 물길로 굴러떨어졌다!"),
       setSw(SW_WELL_CRACK),
-      say(ELENA, "물지기들 연장 창고야. 벽으로 막아 뒀었네."),
-    ], []] } as unknown as Command,
-  ], { priority: "same", overlapForbidden: true, graphic: { transparent: true } });
-  WELL.crack.forEach((c, i) => addEv(project, mapId, `ev_fs2_well_crack_${i}`, "금 간 벽", c, [
+      say(ELENA, "물지기들 연장 창고야. 벽으로 막아 뒀었네.")] },
+        { text: "그만둔다", branch: [] },
+      ], cancelBranch: [] } as unknown as Command,
+  ], { priority: "same", overlapForbidden: true, graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_object1" }, direction: "down", pattern: 4 }, animationType: "fixedGraphic" });
+  WELL.crack.forEach((c, i) => addEv(project, mapId, `ev_fs2_well_crack_${i}`, "무너진 돌 더미", c, [
     crackPage0(i),
     page(`ev_fs2_well_crack_${i}_p1`, "무너진 벽", [sw(SW_WELL_CRACK)], [], { priority: "below" }),
   ]));
@@ -306,7 +287,7 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
 
   // 쉼터 결정 — 보스 앞.
   exec(project, "place_savepoint", { mapId, x: WELL.save.x, y: WELL.save.y, id: "ev_fs2_well_save", name: "별빛 결정", heal: true, mode: "both",
-    objectId: "kit:beodeul_city/bd-pick-dungeon-theme-crystal-pedestal", sparkleRadius: 2 });
+    sparkleRadius: 2 });
 
   // 상자 — 구석(R5)·숨은 방(R6) 둘.
   exec(project, "place_chest", { mapId, x: WELL.chestCorner.x, y: WELL.chestCorner.y, contents: { itemId: "item_thunder_stone" }, name: "배수 갱 궤짝", id: "ev_fs2_well_chest_corner" });

@@ -1,142 +1,58 @@
 /**
- * 『폴른 스타』 2막 B3 — 광장 우물 밑 「서고 승강구」를 여러 방의 갱도로 넓힌 평면(손 도트 실내 v5, atlas_biome_interior).
+ * 『폴른 스타』 2막 B3 — 광장 우물 밑 「옛 상수도」(버들항 칩셋 beodeul_city, 지하 수도교 키트 · lay_dungeon_layout).
  *
- * 2026-11-09 오너: 「우물 갱도도 좀 ... 복잡하고 우물 밑에 사는 괴물 이런 중간보스도 좀 만들고」.
- * 이야기 길(우물 사다리 → 승강 발판 → 천문대 하넬)은 R1 안에서 끝난다 — 나머지 방은 곁가지라 이야기를 막지 않는다.
- * 컨셉(오너 재지적 2026-11-09 「우물 갱도라고 하기엔 컨셉이 안맞잖아」): 왕도 아스텔의 옛 상수도 — 저수조 사슬·배수 갱·펌프 장치·쇠살문.
- * 무덤·뼈 소품은 쓰지 않는다. 불빛은 매단 기름등, 물가는 쇠 격자 정비 발판, 벽을 따라 관.
- *   R1 첫 층계참(옛 12×9 방 그대로 — 사다리·승강 발판·도착 칸 좌표 불변)
- *   R2 첫 저수조(동) — 가운데 물, 둘레 쇠 격자 발판, 밸브·수위 계기. 남쪽 쇠살문을 R5 의 고패로 연다.
- *   R5 서쪽 배수 갱(남서) — R1 서쪽 좁은 갱으로 내려간다. 고패(쇠살문)·물지기 석판.
- *   R3 배수로 회랑(가운데 남) — R2 쇠살문과 R5 동쪽 길이 만나는 고리(R1→R5→R3→R2→R1).
- *   R4 가장 오래된 저수조(동) — 관 사이에 우물 밑 눈먼 영주(중간 보스)가 자리 잡았다. 둘째 석판·쉼터 결정.
- *   R6 정비 벽감(남) — R3 남벽의 금 간 벽 뒤, 물지기 연장 창고(보상).
- * 평면 규칙: '#' 위 첫 두 바닥 줄은 벽면(못 걷는다) — 동서 통로는 4줄 높이, 남북 통로는 2칸 폭.
+ * 2026-11-09 오너: 「우물 갱도도 좀 ... 복잡하고 우물 밑에 사는 괴물 이런 중간보스도 좀 만들고」 →
+ * 「우물 갱도라고 하기엔 컨셉이 안맞잖아」 → 「수로의 이미지가 전혀 아니잖아」. 그래서 물길이 방의 주인이다(바닥의 30%가 물):
+ *   landing  첫 층계참 — 우물 사다리(올라가는 계단)가 내려선 자리, 낭떠러지 밑에 물이 고였다. 승강 장치(천문대 서고) — 이야기 길은 여기서 끝난다.
+ *   cistern  첫 저수조 — 가운데 물(35%) 위 돌다리, 둘레 정비 발판. 남쪽 쇠살문은 west 의 고패로 연다.
+ *   west     서쪽 배수 갱 — 세로 물길(27%)과 다리, 고패·물지기 석판.
+ *   drain    배수로 회랑 — 가로 물길(23%)과 다리 둘. cistern·west·sluice·niche 를 잇는 고리.
+ *   niche    정비 벽감 — 무너진 돌 더미 뒤(조사하면 치운다), 물지기 연장 궤짝.
+ *   sluice   수문 앞방 — 쉼터 결정.
+ *   oldest   가장 오래된 저수조 — 반 넘게 잠긴 물(63%) 가에 우물 밑 눈먼 영주(중간 보스).
+ * 무덤·뼈 소품은 쓰지 않는다. 좌표는 지어진 맵 기준(이벤트는 wellBeast.ts · act2Opening.ts 가 같은 좌표에 둔다).
  */
 
 type Cell = { x: number; y: number };
-type Rect = readonly [number, number, number, number];
 
-function carve(width: number, height: number, rects: readonly Rect[]): string[] {
-  const rows = Array.from({ length: height }, () => new Array<string>(width).fill("#"));
-  for (const [x0, y0, x1, y1] of rects) for (let y = y0; y <= y1; y += 1) for (let x = x0; x <= x1; x += 1) rows[y]![x] = ".";
-  return rows.map((r) => r.join(""));
-}
-
-export const WELL_SHAFT_PLAN = carve(42, 32, [
-  [1, 1, 10, 7],    // R1 승강구(옛 방)
-  [11, 4, 12, 7],   // R1 → R2 물길
-  [13, 1, 27, 9],   // R2 잠긴 저수조
-  [20, 10, 21, 13], // R2 → R3 (쇠살문)
-  [13, 14, 29, 21], // R3 가라앉은 회랑
-  [3, 8, 4, 13],    // R1 → R5 좁은 길
-  [1, 14, 10, 21],  // R5 무너진 우물 밑동
-  [11, 18, 12, 21], // R5 → R3
-  [30, 18, 31, 21], // R3 → R4
-  [32, 12, 40, 27], // R4 우물 밑 둥지
-  [22, 22, 23, 23], // R3 → R6 (금 간 벽)
-  [17, 24, 28, 30], // R6 숨은 보물방
-])
+export const WELL_SHAFT_TILESET = "beodeul_city";
+export const WELL_SHAFT_LAYOUT = {"name": "우물 밑 · 옛 상수도", "theme": "catacomb", "map": {"w": 56, "h": 38}, "rooms": [{"id": "landing", "purpose": "entrance", "rects": [{"x": 2, "y": 4, "w": 12, "h": 8}], "landmark": {"id": "valve wheel", "x": 2, "y": 9}}, {"id": "cistern", "purpose": "puzzle", "rects": [{"x": 18, "y": 4, "w": 20, "h": 12}], "landmark": {"id": "valve wheel", "x": 35, "y": 4}}, {"id": "west", "purpose": "other", "rects": [{"x": 2, "y": 17, "w": 10, "h": 11}], "landmark": {"id": "lever up", "x": 9, "y": 16}}, {"id": "drain", "purpose": "guard", "rects": [{"x": 15, "y": 20, "w": 23, "h": 8}], "landmark": {"id": "manifold 3", "x": 16, "y": 20}}, {"id": "niche", "purpose": "treasure", "rects": [{"x": 22, "y": 32, "w": 8, "h": 5}], "landmark": {"id": "crate stack", "x": 22, "y": 32}}, {"id": "sluice", "purpose": "antechamber", "rects": [{"x": 41, "y": 20, "w": 8, "h": 8}], "landmark": {"id": "lantern post", "x": 41, "y": 20}}, {"id": "oldest", "purpose": "boss", "rects": [{"x": 41, "y": 4, "w": 13, "h": 12}], "landmark": {"id": "column sewer", "x": 41, "y": 4}}], "corridors": [{"id": "c_land_cist", "from": "landing", "to": "cistern", "width": 2, "path": [[14, 10], [17, 10]]}, {"id": "c_land_west", "from": "landing", "to": "west", "width": 2, "path": [[3, 12], [3, 16]]}, {"id": "c_west_drain", "from": "west", "to": "drain", "width": 2, "path": [[12, 25], [14, 25]]}, {"id": "c_cist_drain", "from": "cistern", "to": "drain", "width": 2, "path": [[26, 16], [26, 19]]}, {"id": "c_drain_niche", "from": "drain", "to": "niche", "width": 2, "path": [[25, 28], [25, 31]]}, {"id": "c_drain_sluice", "from": "drain", "to": "sluice", "width": 2, "path": [[38, 25], [40, 25]]}, {"id": "c_sluice_old", "from": "sluice", "to": "oldest", "width": 2, "path": [[42, 16], [42, 19]]}], "doors": [{"x": 14, "y": 10, "connects": ["c_land_cist", "landing"]}, {"x": 17, "y": 10, "connects": ["c_land_cist", "cistern"]}, {"x": 3, "y": 12, "connects": ["c_land_west", "landing"]}, {"x": 3, "y": 16, "connects": ["c_land_west", "west"]}, {"x": 12, "y": 25, "connects": ["c_west_drain", "west"]}, {"x": 14, "y": 25, "connects": ["c_west_drain", "drain"]}, {"x": 26, "y": 16, "connects": ["c_cist_drain", "cistern"]}, {"x": 26, "y": 19, "connects": ["c_cist_drain", "drain"], "locked": true}, {"x": 25, "y": 28, "connects": ["c_drain_niche", "drain"]}, {"x": 25, "y": 31, "connects": ["c_drain_niche", "niche"]}, {"x": 38, "y": 25, "connects": ["c_drain_sluice", "drain"]}, {"x": 40, "y": 25, "connects": ["c_drain_sluice", "sluice"]}, {"x": 42, "y": 16, "connects": ["c_sluice_old", "oldest"]}, {"x": 42, "y": 19, "connects": ["c_sluice_old", "sluice"]}], "hazards": [{"kind": "pit", "x": 9, "y": 4, "w": 4, "h": 2}, {"kind": "water", "x": 9, "y": 6, "w": 5, "h": 4}, {"kind": "water", "x": 20, "y": 7, "w": 18, "h": 5}, {"kind": "water", "x": 5, "y": 17, "w": 3, "h": 11}, {"kind": "water", "x": 15, "y": 23, "w": 23, "h": 2}, {"kind": "water", "x": 47, "y": 4, "w": 7, "h": 12}, {"kind": "water", "x": 44, "y": 11, "w": 3, "h": 5}], "bridges": [{"x": 29, "y": 7, "w": 1, "h": 5}, {"x": 5, "y": 21, "w": 3, "h": 1}, {"x": 21, "y": 23, "w": 1, "h": 2}, {"x": 33, "y": 23, "w": 1, "h": 2}], "objects": [{"id": "stairs up", "x": 4, "y": 2}, {"id": "torch wall", "x": 7, "y": 3}, {"id": "pipe copper", "x": 2, "y": 5}, {"id": "bucket", "x": 8, "y": 10}, {"id": "torch wall", "x": 19, "y": 3}, {"id": "arch water", "x": 24, "y": 2}, {"id": "arch water", "x": 33, "y": 2}, {"id": "torch wall", "x": 36, "y": 3}, {"id": "valve wheel", "x": 18, "y": 12}, {"id": "barrel", "x": 36, "y": 14}, {"id": "dock post", "x": 28, "y": 5}, {"id": "fish net", "x": 31, "y": 13}, {"id": "pipe copper", "x": 19, "y": 5}, {"id": "grate floor", "x": 24, "y": 13}, {"id": "torch wall", "x": 8, "y": 15}, {"id": "crate", "x": 10, "y": 26}, {"id": "bucket", "x": 2, "y": 26}, {"id": "pipe copper leak", "x": 9, "y": 19}, {"id": "torch wall", "x": 19, "y": 19}, {"id": "arch bars", "x": 29, "y": 18}, {"id": "torch wall", "x": 35, "y": 19}, {"id": "grate floor", "x": 28, "y": 26}, {"id": "barrel", "x": 36, "y": 26}, {"id": "valve wheel", "x": 31, "y": 21}, {"id": "pipe copper", "x": 15, "y": 26}, {"id": "bucket", "x": 28, "y": 35}, {"id": "barrel", "x": 29, "y": 35}, {"id": "torch wall", "x": 46, "y": 19}, {"id": "barrel", "x": 48, "y": 26}, {"id": "arch water", "x": 42, "y": 2}, {"id": "torch wall", "x": 44, "y": 3}, {"id": "pipe copper leak", "x": 43, "y": 14}, {"id": "valve wheel", "x": 46, "y": 5}, {"id": "waystone", "x": 2, "y": 17}, {"id": "lectern", "x": 31, "y": 4}, {"id": "waystone", "x": 47, "y": 20}, {"id": "grate floor", "x": 5, "y": 7}, {"id": "grate floor", "x": 6, "y": 7}, {"id": "grate floor", "x": 5, "y": 8}, {"id": "grate floor", "x": 6, "y": 8}], "chests": [{"x": 23, "y": 35}, {"x": 27, "y": 33}, {"x": 2, "y": 20}], "boss": {"x": 44, "y": 8}} as const;
 
 export const WELL = {
-  // R1 — 옛 방과 같은 좌표(act2Opening.ts SHAFT).
-  ladder: { x: 2, y: 1 } as Cell, ladderUse: { x: 2, y: 3 } as Cell, arrive: { x: 2, y: 4 } as Cell, lift: { x: 6, y: 4 } as Cell,
-  /** R2 → R3 쇠살문(1×1 바닥 문) — 문짝은 (x, y-1) 위층, 발밑은 (x, y). */
-  gate: [{ x: 20, y: 12 }, { x: 21, y: 12 }] as Cell[],
-  /** R5 고패(쇠살문을 감아 올린다) — 조사 칸. */
-  winch: { x: 8, y: 17 } as Cell,
-  /** 첫 비문(R5) · 둘째 비문(R4 입구) · 저수조 일지(R2). */
-  tabletWell: { x: 2, y: 17 } as Cell,
-  tabletNest: { x: 33, y: 16 } as Cell,
-  ledger: { x: 25, y: 4 } as Cell,
-  /** R3 남벽 금 간 벽(벽면 두 줄 R3 y20..21? — 남쪽 통로 입구 바닥 칸에서 조사). 통로 칸은 막아 두었다가 연다. */
-  crack: [{ x: 22, y: 22 }, { x: 23, y: 22 }] as Cell[],
-  /** 숨은 방 상자 둘. */
-  chestHidden: { x: 19, y: 28 } as Cell,
-  chestHidden2: { x: 27, y: 29 } as Cell,
-  /** R5 막다른 구석 상자. */
-  chestCorner: { x: 9, y: 20 } as Cell,
-  /** 보스(3×2 몸) 아랫줄 가운데 · 깨우는 줄 · 쉼터 결정. */
-  beast: { x: 37, y: 15 } as Cell,
-  wakeLine: [{ x: 33, y: 20 }, { x: 33, y: 21 }] as Cell[],
-  save: { x: 30, y: 20 } as Cell,
+  /** 우물에서 내려오는 사다리 = 입구 「올라가는 계단」 조각(4,2)-(4,3). 조사 칸은 그 아랫칸, 도착 칸은 그 앞. */
+  ladder: { x: 4, y: 2 } as Cell, ladderUse: { x: 4, y: 3 } as Cell, arrive: { x: 4, y: 4 } as Cell,
+  /** 천문대로 오르는 승강 발판(2×2 왼쪽 위). */
+  lift: { x: 5, y: 7 } as Cell,
+  /** cistern → drain 쇠살문(잠긴 문 칸). */
+  gate: [{ x: 26, y: 19 }, { x: 27, y: 19 }] as Cell[],
+  /** west 고패 — 벽 손잡이(9,16) 바로 아래 바닥 칸에서 조사. */
+  winch: { x: 9, y: 17 } as Cell,
+  tabletWell: { x: 2, y: 18 } as Cell,
+  ledger: { x: 31, y: 5 } as Cell,
+  tabletNest: { x: 47, y: 21 } as Cell,
+  /** drain → niche 통로를 막은 돌 더미(두 칸). */
+  crack: [{ x: 25, y: 29 }, { x: 26, y: 29 }] as Cell[],
+  chestHidden: { x: 23, y: 35 } as Cell,
+  chestHidden2: { x: 27, y: 33 } as Cell,
+  chestCorner: { x: 2, y: 20 } as Cell,
+  beast: { x: 44, y: 8 } as Cell,
+  wakeLine: [{ x: 42, y: 17 }, { x: 43, y: 17 }] as Cell[],
+  save: { x: 46, y: 22 } as Cell,
 };
 
-const objects = [
-  // R1 첫 층계참 — 옛 방 기물 그대로(우물 사다리·승강 장치·고패·계기).
-  { id: "wall torch", x: 4, y: 1 }, { id: "wall torch", x: 10, y: 1 }, { id: "barrel", x: 10, y: 6 }, { id: "drip puddle", x: 3, y: 6 },
-  { id: "gear wall", x: 6, y: 1 }, { id: "gauge panel", x: 8, y: 1 },
-  { id: "gate winch", x: 8, y: 4 }, { id: "anchor chain", x: 5, y: 5 }, { id: "wall lever", x: 9, y: 1 },
-  // R2 첫 저수조 — 가운데 물, 둘레는 쇠 격자 정비 발판. 북벽 관 · 수위 계기 · 밸브.
-  { id: "moon pool", x: 17, y: 5 }, { id: "moon pool", x: 20, y: 5 }, { id: "moon pool", x: 23, y: 5 },
-  { id: "hanging lantern", x: 16, y: 1 }, { id: "hanging lantern", x: 25, y: 1 }, { id: "gauge panel", x: 21, y: 1 },
-  { id: "ship wheel", x: 15, y: 7 }, { id: "water bucket", x: 26, y: 3 }, { id: "rope coil", x: 27, y: 8 },
-  { id: "drip puddle", x: 15, y: 8 }, { id: "drip puddle", x: 24, y: 8 },
-  { id: "hint tablet", x: 25, y: 4 },
-  // R2 → R3 쇠살문 둘.
-  { id: "iron gate", x: 20, y: 12 }, { id: "iron gate", x: 21, y: 12 },
-  // R5 서쪽 배수 갱 — 내려오는 줄사다리 밑, 쇠살문 고패, 물지기 석판, 물통·양동이.
-  { id: "ship ladder", x: 6, y: 16 }, { id: "hanging lantern", x: 2, y: 14 }, { id: "hanging lantern", x: 9, y: 14 },
-  { id: "gate winch", x: 8, y: 17 }, { id: "anchor chain", x: 7, y: 19 },
-  { id: "hint tablet", x: 2, y: 17 }, { id: "water trough", x: 1, y: 20 }, { id: "drain grate", x: 5, y: 20 },
-  { id: "barrel", x: 1, y: 18 }, { id: "broom and bucket", x: 10, y: 16 },
-  // R3 배수로 회랑 — 가운데 배수 창살 줄, 아치 기둥, 매단 등.
-  { id: "column stone", x: 17, y: 16 }, { id: "column stone", x: 27, y: 16 },
-  { id: "hanging lantern", x: 18, y: 14 }, { id: "hanging lantern", x: 26, y: 14 },
-  { id: "drain grate", x: 19, y: 19 }, { id: "drain grate", x: 22, y: 19 }, { id: "drain grate", x: 25, y: 19 },
-  { id: "drip puddle", x: 15, y: 20 }, { id: "drip puddle", x: 28, y: 18 },
-  { id: "barrel", x: 29, y: 16 }, { id: "crate", x: 13, y: 16 },
-  // R4 가장 오래된 저수조 — 물 두 줄, 낡은 펌프 톱니·계기, 영주가 관 사이에 자리 잡았다.
-  { id: "moon pool", x: 34, y: 23 }, { id: "moon pool", x: 37, y: 23 },
-  { id: "gear wall", x: 33, y: 12 }, { id: "gauge panel", x: 39, y: 12 },
-  { id: "hanging lantern", x: 35, y: 12 }, { id: "hanging lantern", x: 38, y: 12 },
-  { id: "ship wheel", x: 40, y: 17 }, { id: "hint tablet", x: 33, y: 16 },
-  { id: "drip puddle", x: 34, y: 20 }, { id: "drip puddle", x: 39, y: 21 }, { id: "drain grate", x: 37, y: 26 },
-  // R6 정비 벽감 — 물지기 연장 걸이·사물함·밧줄·일지.
-  { id: "hanging lantern", x: 19, y: 24 }, { id: "hanging lantern", x: 26, y: 24 },
-  { id: "tool wall", x: 20, y: 24 }, { id: "pick rack", x: 25, y: 24 },
-  { id: "guild lockers", x: 17, y: 26 }, { id: "rope coil", x: 28, y: 26 }, { id: "broom and bucket", x: 17, y: 30 },
-  { id: "desk 2x1", x: 23, y: 28 }, { id: "map rolls", x: 21, y: 28 },
-  // R3 → R6 통로를 막은 바위(금 간 벽) — 무너지면 칸을 비운다(wellBeast.ts).
-  { id: "push boulder", x: 22, y: 22 }, { id: "push boulder", x: 23, y: 22 },
-];
-
-export const WELL_SHAFT_ROOM = {
-  plan: WELL_SHAFT_PLAN,
-  floor: "wetstone",
-  wall: "dungeonw",
-  ceiling: "dark",
-  zones: [
-    { x0: 13, y0: 1, x1: 27, y1: 9, floor: "wetstone", wall: "stone" },
-    { x0: 13, y0: 3, x1: 27, y1: 4, floor: "grate", wall: "stone" },
-    { x0: 13, y0: 8, x1: 27, y1: 9, floor: "grate", wall: "stone" },
-    { x0: 1, y0: 14, x1: 10, y1: 21, floor: "cobble", wall: "stone" },
-    { x0: 13, y0: 14, x1: 29, y1: 21, floor: "flag", wall: "stone" },
-    { x0: 32, y0: 12, x1: 40, y1: 27, floor: "wetstone", wall: "mine" },
-    { x0: 32, y0: 14, x1: 40, y1: 16, floor: "grate", wall: "mine" },
-    { x0: 17, y0: 24, x1: 28, y1: 30, floor: "plank", wall: "stone" },
-  ],
-  objects,
-  lines: [
-    // 관은 벽을 따라서만 — 방 어귀 칸(R1→R2 x13, R3→R4 x32 y18~21)은 비운다(관 선은 지나갈 수 없다).
-    { id: "pipe", cells: [{ x: 27, y: 4 }, { x: 27, y: 5 }, { x: 27, y: 6 }] },
-    { id: "pipe", cells: [{ x: 32, y: 23 }, { x: 32, y: 24 }, { x: 32, y: 25 }, { x: 32, y: 26 }, { x: 32, y: 27 }, { x: 33, y: 27 }] },
-    { id: "pipe", cells: [{ x: 40, y: 19 }, { x: 40, y: 20 }, { x: 40, y: 21 }, { x: 40, y: 22 }, { x: 40, y: 23 }, { x: 40, y: 24 }, { x: 40, y: 25 }] },
-  ],
-};
-
-/** 방마다 불빛 — 어둡지만 길은 보이게(R1 의 두 횃불·승강 발판 빛은 act2Opening.ts 가 따로 둔다). */
+/** 방마다 불빛 — 어둡지만 물가와 길은 보이게. 물 위에는 푸른 반사광. */
 export const WELL_SHAFT_LIGHTS = [
-  { id: "r2a", at: { x: 17, y: 2 }, radius: 4, intensity: 0.7, color: "#9fd0ff", flicker: true },
-  { id: "r2b", at: { x: 25, y: 2 }, radius: 4, intensity: 0.7, color: "#9fd0ff", flicker: true },
-  { id: "r2pool", at: { x: 22, y: 6 }, radius: 3, intensity: 0.45, color: "#6fb8ff" },
-  { id: "r5a", at: { x: 2, y: 15 }, radius: 4, intensity: 0.8, color: "#ffb860", flicker: true },
-  { id: "r5b", at: { x: 9, y: 15 }, radius: 4, intensity: 0.8, color: "#ffb860", flicker: true },
-  { id: "r3a", at: { x: 18, y: 15 }, radius: 4, intensity: 0.8, color: "#ffb860", flicker: true },
-  { id: "r3b", at: { x: 26, y: 15 }, radius: 4, intensity: 0.8, color: "#ffb860", flicker: true },
-  { id: "r4a", at: { x: 35, y: 13 }, radius: 4, intensity: 0.8, color: "#ffb860", flicker: true },
-  { id: "r4b", at: { x: 38, y: 13 }, radius: 4, intensity: 0.8, color: "#ffb860", flicker: true },
-  { id: "r4pool", at: { x: 37, y: 23 }, radius: 3, intensity: 0.45, color: "#6fb8ff" },
-  { id: "r6a", at: { x: 19, y: 25 }, radius: 4, intensity: 0.8, color: "#ffc070", flicker: true },
-  { id: "r6b", at: { x: 26, y: 25 }, radius: 4, intensity: 0.8, color: "#ffc070", flicker: true },
+  { id: "l1", at: { x: 7, y: 4 }, radius: 4, intensity: 0.8, color: "#ffb860", flicker: true },
+  { id: "c1", at: { x: 19, y: 4 }, radius: 4, intensity: 0.75, color: "#ffb860", flicker: true },
+  { id: "c2", at: { x: 36, y: 4 }, radius: 4, intensity: 0.75, color: "#ffb860", flicker: true },
+  { id: "cw", at: { x: 28, y: 9 }, radius: 4, intensity: 0.45, color: "#6fc8d8" },
+  { id: "w1", at: { x: 8, y: 17 }, radius: 4, intensity: 0.75, color: "#ffb860", flicker: true },
+  { id: "ww", at: { x: 6, y: 23 }, radius: 3, intensity: 0.4, color: "#6fc8d8" },
+  { id: "d1", at: { x: 19, y: 20 }, radius: 4, intensity: 0.75, color: "#ffb860", flicker: true },
+  { id: "d2", at: { x: 35, y: 20 }, radius: 4, intensity: 0.75, color: "#ffb860", flicker: true },
+  { id: "dw", at: { x: 27, y: 24 }, radius: 4, intensity: 0.4, color: "#6fc8d8" },
+  { id: "n1", at: { x: 25, y: 33 }, radius: 4, intensity: 0.75, color: "#ffc070", flicker: true },
+  { id: "s1", at: { x: 41, y: 21 }, radius: 4, intensity: 0.85, color: "#ffd080", flicker: true },
+  { id: "o1", at: { x: 44, y: 4 }, radius: 4, intensity: 0.75, color: "#ffb860", flicker: true },
+  { id: "ow", at: { x: 50, y: 10 }, radius: 5, intensity: 0.45, color: "#6fc8d8" },
 ];
