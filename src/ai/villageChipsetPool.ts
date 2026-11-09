@@ -7,6 +7,7 @@
 
 import type { Project } from "@/project/types";
 import { isLivedMap } from "@/editor/tools/livedMap";
+import { matchVillageType } from "./villageTypeCatalog";
 
 export interface VillagePoolEntry {
   readonly tilesetId: string;
@@ -37,9 +38,6 @@ export const VILLAGE_POOL: readonly VillagePoolEntry[] = [
     tools: ["import_region_reference", "list_spatial_designs", "check_reachability", "show_map_region", "set_start_position"] },
 ];
 
-/** 풀의 시공 도구 전부 — 마을 요청이 선언된 턴에 모델이 존재를 알게 한다(완료 검사 adventureToolNames). */
-export const VILLAGE_POOL_TOOLS: readonly string[] = [...new Set(VILLAGE_POOL.flatMap((entry) => entry.tools))];
-
 /** 칩셋·시대·지형·기후 낱말 — 하나라도 있으면 «테마 있는 요청»이라 풀을 끼지 않는다(정책·마을 종류 표·버들항 theme 인자가 맡는다). */
 const THEME_WORD_RE = new RegExp([
   "버들\\s*항|beodeul", "조선|한양|사극|한옥|고려|삼국|일본|도쿄|에도|전국\\s*시대|사무라이|닌자|중국|무협|무림|로마|그리스|바이킹|북방|서양|중세|고딕|뱀파이어|드라큘라|해적|마법|호그와트|엘프|드워프|우주|사이버|스팀|SF|좀비|포스트|폐허|선사|원시|공룡|하늘\\s*섬|수중|해저",
@@ -66,7 +64,8 @@ export interface VillagePoolPick {
 }
 
 /**
- * 테마 없는 마을 새로 짓기 요청이면 이 프로젝트의 칩셋 후보 하나를 고른다. 풀을 끼지 않을 때(테마 낱말·버들항 지목·이미 손댄 야외 맵·고른 것이 버들항)는 null —
+ * 테마 없는 마을 새로 짓기 요청이면 이 프로젝트의 칩셋 후보 하나를 고른다. 풀을 끼지 않을 때(열쇠 없음·테마 낱말·마을 종류 표가 잡는 요청·버들항 지목·풀 밖 칩셋으로 이미 손댄 맵·고른 것이 버들항)는 null —
+ * 이미 풀 칩셋으로 손댄 맵이 있으면 그 칩셋을 이어 쓴다(한 게임 안에서 칩셋이 섞이지 않게).
  * 호출자는 종전 버들항 마을 경로를 그대로 쓴다. 후보는 프로젝트에 번들이 실제로 있는 것만 센다.
  */
 export function pickVillageChipset(
@@ -74,11 +73,15 @@ export function pickVillageChipset(
   projectKey: string | undefined,
   requestText: string | undefined,
 ): VillagePoolPick | null {
-  if (!isBareVillageRequest(requestText)) return null;
-  if (Object.values(project.maps).some((map) => isLivedMap(map))) return null;
+  if (!projectKey?.trim() || !isBareVillageRequest(requestText) || matchVillageType(requestText)) return null;
   const available = VILLAGE_POOL.filter((entry) => project.tilesets[entry.tilesetId]);
   if (available.length < 2) return null;
-  const hash = fnv1a(String(projectKey ?? ""));
+  const lived = Object.values(project.maps).filter((map) => isLivedMap(map));
+  const hash = fnv1a(projectKey);
+  if (lived.length) {
+    const kept = available.find((entry) => entry.tilesetId !== "beodeul_city" && lived.some((map) => map.tilesetId === entry.tilesetId));
+    return kept ? { entry: kept, seed: (hash >>> 8) % 9000 + 1 + lived.length } : null;
+  }
   const entry = available[hash % available.length]!;
   if (entry.tilesetId === "beodeul_city") return null;
   return { entry, seed: (hash >>> 8) % 9000 + 1 };

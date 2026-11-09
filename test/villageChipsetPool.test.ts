@@ -26,6 +26,24 @@ describe("테마 없는 마을의 칩셋 풀", () => {
     expect(chipsets.size).toBe(VILLAGE_POOL.length);
   });
 
+  it("열쇠가 없거나 마을 종류 표가 잡는 요청이면 풀을 끼지 않는다", () => {
+    const p = project();
+    expect(pickVillageChipset(p, undefined, "마을 하나 만들어 줘")).toBeNull();
+    expect(pickVillageChipset(p, "  ", "마을 하나 만들어 줘")).toBeNull();
+    for (const text of ["수도원 마을 만들어 줘", "장터 마을 만들어 줘", "엘프 마을 만들어 줘"]) {
+      for (let i = 0; i < 30; i += 1) expect(pickVillageChipset(p, `k${i}`, text), text).toBeNull();
+    }
+  });
+
+  it("풀 칩셋으로 이미 손댄 맵이 있으면 같은 칩셋을 이어 쓴다", () => {
+    const p = project();
+    const first = Array.from({ length: 80 }, (_, i) => `k${i}`).map((k) => ({ k, pick: pickVillageChipset(p, k, "마을 하나 만들어 줘") })).find((row) => row.pick)!;
+    const map = p.maps[p.startMapId]!;
+    map.tilesetId = first.pick!.entry.tilesetId;
+    map.lowerTiles[0] = map.lowerTiles[0]! + 1;
+    expect(pickVillageChipset(p, first.k, "마을 하나 만들어 줘")?.entry.tilesetId).toBe(first.pick!.entry.tilesetId);
+  });
+
   it("이미 손댄 야외 맵이 있으면 칩셋을 바꾸지 않는다", () => {
     const p = project();
     const key = Array.from({ length: 50 }, (_, i) => `k${i}`).find((k) => pickVillageChipset(p, k, "마을 하나 만들어 줘"))!;

@@ -237,6 +237,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     if (declared.intent.source === "fallback" && !plan.readOnly && !intentTimedOut) throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
     // 테마 낱말 없는 마을 요청은 프로젝트마다 다른 칩셋 마을로 간다(villageChipsetPool.ts) — 버들항 전용 넓히기·마을 노트보다 먼저 본다.
     const villagePoolPick = !plan.readOnly && declared.intent.source === "llm" && declared.intent.mode === "create" && declared.intent.space !== "interior" && declared.intent.space !== "none"
+      && (declared.intent.widenSubject === "village" || declared.intent.tools.some((name) => name === "author_beodeul_town" || name === "author_village"))
       ? pickVillageChipset(project, input.projectKey, text) : null;
     // 모호한 새로 짓기(「마을 만들어줘」) — 묻지 않고 이 프로젝트가 지을 수 있는 장면 하나로 넓혀 바로 짓는다(vagueWiden.ts, 2026-11-03 사용자).
     // 넓혔으면 되묻기를 지운다. 집은 외장+실내(both)로 짓는다 — 실내/야외가 갈리는 다른 요청(「방 만들어줘」 등)은 그대로 묻는다.
