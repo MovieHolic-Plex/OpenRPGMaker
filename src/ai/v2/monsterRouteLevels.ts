@@ -302,6 +302,7 @@ export function fitGateLevelCurve(project: Project): string[] {
     let delta = target - level;
     if (delta > 0 && base.size) {
       const saved = project.database.enemies.map((enemy) => enemy);
+      try {
       for (; delta > 0; delta -= 1) {
         for (const [enemyId, from] of base) { const enemy = project.database.enemies.find((item) => item.id === enemyId); if (enemy) relevel(project, enemy, from + delta); }
         const winsAll = gate.troopIds.every((troopId) => {
@@ -315,6 +316,11 @@ export function fitGateLevelCurve(project: Project): string[] {
         });
         if (winsAll) break;
         project.database.enemies = [...saved];
+      }
+      } catch (error) {
+        // 예산 초과 등 어떤 예외든 시도 중이던 레벨을 되돌린다 — 반쯤 올린 상태가 남으면 안 된다(맞춤은 «바뀐 것만 남는다»).
+        project.database.enemies = [...saved];
+        throw error;
       }
     } else delta = 0;
     const reached = level + delta;
@@ -366,12 +372,17 @@ export function fitRouteLevelsToGates(project: Project): string[] {
     // 왜: 레벨만 올리면 새로 배운 타입 기술(풀 스타터 상대 비행 노멀 자속 몸통박치기·벌레 기술)로 Lv6 한 마리가 Lv8 스타터를 94% 이겼다.
     const fits = (troopId: string, shift: number, apply: (delta: number) => void): number => {
       const saved = project.database.enemies.map((enemy) => enemy);
-      for (let delta = shift; delta > 0; delta -= 1) {
-        apply(delta);
-        const party = monsterBalanceParty(project, troopId, prev);
-        if (!party?.length) return delta;
-        if (fitSimulate(project, troopId, prev, party).winRate >= FIT_WIN_RATE) return delta;
-        project.database.enemies = [...saved];
+      try {
+        for (let delta = shift; delta > 0; delta -= 1) {
+          apply(delta);
+          const party = monsterBalanceParty(project, troopId, prev);
+          if (!party?.length) return delta;
+          if (fitSimulate(project, troopId, prev, party).winRate >= FIT_WIN_RATE) return delta;
+          project.database.enemies = [...saved];
+        }
+      } catch (error) {
+        project.database.enemies = [...saved]; // 예외(예산 초과 포함)로 빠져도 시도 중이던 레벨을 되돌린다.
+        throw error;
       }
       return 0;
     };
@@ -850,7 +861,9 @@ function runRequiredBattles(project: Project, adjust: boolean): { out: string[];
         if (!raisable.length) break;
         const saved = raisable.map((enemy) => structuredClone(enemy));
         for (const enemy of raisable) relevel(project, enemy, enemy.level! + 1);
-        const trial = evaluate();
+        let trial: StarterOutcome;
+        try { trial = evaluate(); }
+        catch (error) { for (const record of saved) project.database.enemies[project.database.enemies.findIndex((item) => item.id === record.id)] = record; throw error; } // 예외로 빠져도 올리던 레벨을 되돌린다.
         if (trial.rate < FIT_WIN_RATE) {
           for (const record of saved) project.database.enemies[project.database.enemies.findIndex((item) => item.id === record.id)] = record;
           low = evaluate();
