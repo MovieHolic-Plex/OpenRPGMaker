@@ -12,7 +12,7 @@ import numpy as np
 from PIL import Image
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
-TS = os.path.join(ROOT, "src/project/flagship/fallen/monsterSheets16.ts")
+TS = os.environ.get("FS_SHEETS_TS") or os.path.join(ROOT, "src/project/flagship/fallen/monsterSheets16.ts")
 CELL = 96  # --cell 로 바꾼다
 
 ap = argparse.ArgumentParser()
