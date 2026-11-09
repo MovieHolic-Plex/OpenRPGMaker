@@ -32,8 +32,8 @@ const LOOSE_TILES = new Set([6374, 1677, 9215, 6391, 27566, 26607, 2836]);
 /** 서쪽 길가 풀밭에 홀로 선 건초 단 더미(2×2). */
 const HAY_BALES = new Set([24371, 24372, 24373, 24374]);
 const PLAZA = 1509;
-/** 같은 「버들항 · 풀밭」 이름표의 가장 부드러운 민 풀 변형 둘 — 한 칸(737)만 깔려 잔디가 판박이로 보였다. */
-const SOFT_GRASS = [10456, 19144];
+/** 같은 「버들항 · 풀밭」 이름표에서 결이 보이는 민 풀 변형 셋 — 한 칸(737)만 깔려 잔디가 판박이로 보였다. */
+const SOFT_GRASS = [748, 749, 12949];
 /** 「버들항 농장 풀 무늬」 — 풀 포기·풀 포기 둘·토끼풀(길가 띠)과 흰·노란 들꽃(나무·벽 발치). 걸을 수 있는 바닥 칸. */
 const GRASS_TUFTS = [27808, 27809, 27810];
 const GRASS_FLOWERS = [27811, 27812];
@@ -213,20 +213,25 @@ export function tidyFallenFirstVillage(project: Project, hubId: string): FirstVi
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     const i = at(x, y);
     if (!base[i]) continue;
-    const bx = Math.floor((x + (hash(y, 0, 3) % 2)) / 4), by = Math.floor((y + (hash(x, 0, 5) % 2)) / 4);
-    if (hash(bx, by, 31) < 30 && hash(x, y, 41) < 70) lo[i] = SOFT_GRASS[hash(bx, by, 37) % SOFT_GRASS.length]!;
+    const bx = Math.floor((x + (hash(y, 0, 3) % 3)) / 3), by = Math.floor((y + (hash(x, 0, 5) % 3)) / 3);
+    if (hash(bx, by, 31) < 42 && hash(x, y, 41) < 72) lo[i] = SOFT_GRASS[hash(bx, by, 37) % SOFT_GRASS.length]!;
   }
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     const i = at(x, y);
     if (!SOFT_GRASS.includes(lo[i]!)) continue;
     if (N4.every(([dx, dy]) => !inside(x + dx, y + dy) || !SOFT_GRASS.includes(lo[at(x + dx, y + dy)]!))) lo[i] = GRASS;
   }
+  const roadCorner = (x: number, y: number): boolean => ([[-1, -1], [1, -1], [-1, 1], [1, 1]] as const)
+    .some(([dx, dy]) => [0, 1, 2].some((k) => paved(x + dx * k, y + dy) && paved(x + dx, y + dy * k)) && !paved(x + dx, y) && !paved(x, y + dy));
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     const i = at(x, y);
     if (!base[i] || up[i]! >= 0 || eventAt.has(i)) continue;
-    const runX = Math.floor((x + hash(y, 1, 43) % 3) / 3), runY = Math.floor((y + hash(x, 1, 47) % 3) / 3);
-    if (roadEdge(x, y) && hash(runX, runY, 53) < 45 && hash(x, y, 59) < 80) lo[i] = GRASS_TUFTS[hash(x, y, 61) % GRASS_TUFTS.length]!;
-    else if (solidNear(x, y) && hash(x, y, 67) < 22) lo[i] = GRASS_FLOWERS[hash(x, y, 71) % GRASS_FLOWERS.length]!;
+    const cx = Math.floor(x / 4), cy = Math.floor(y / 4);
+    const clump = hash(cx, cy, 73) < 30 && Math.abs((x % 4) - 1.5) + Math.abs((y % 4) - 1.5) <= 2 && hash(x, y, 79) < 55;
+    if (roadCorner(x, y) && hash(x, y, 83) < 85) lo[i] = GRASS_TUFTS[hash(x, y, 61) % GRASS_TUFTS.length]!;
+    else if (roadEdge(x, y) && hash(Math.floor(x / 3), Math.floor(y / 3), 53) < 35 && hash(x, y, 59) < 60) lo[i] = GRASS_TUFTS[hash(x, y, 61) % GRASS_TUFTS.length]!;
+    else if (clump) lo[i] = hash(cx, cy, 89) < 50 ? 27810 : GRASS_FLOWERS[hash(x, y, 71) % GRASS_FLOWERS.length]!;
+    else if (solidNear(x, y) && hash(x, y, 67) < 18) lo[i] = GRASS_FLOWERS[hash(x, y, 71) % GRASS_FLOWERS.length]!;
   }
   // 줄 지은 들꽃 덤불 — 같은 줄에서 두 칸 간격으로 셋 이상 늘어선 덤불은 가운데 것을 걷는다.
   for (let y = 0; y < H; y += 1) for (let x = 2; x < W - 2; x += 1) {
