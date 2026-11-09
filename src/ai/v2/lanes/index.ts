@@ -23,16 +23,22 @@ export function orderedLaneStages(stages: readonly LaneStage[] = Object.values(r
   return out;
 }
 
+/** 맵마다 합산해 2초 넘은 단계만 stderr 에 남긴다(2026-11-09 monster 조사, 동작 불변). */
+const laneMs = new Map<string, number>();
+const timedLane = (id: string, run: () => void): void => { const t0 = Date.now(); try { run(); } finally { laneMs.set(id, (laneMs.get(id) ?? 0) + Date.now() - t0); } };
+
 export const LANE_STAGES: readonly LaneStage[] = orderedLaneStages();
 
 /** 마감 단계를 모두 돌고 한 일 목록을 돌려준다(기록·체크포인트는 부르는 쪽). */
 export function runLaneStages(env: PiAssistantV2Env, session: V2Session, run: RecordingBuildRun): string[] {
   const ctx: LaneCtx = { env, session, run, notes: [], map: {} };
-  for (const stage of LANE_STAGES) if (stage.scope === "project") stage.run(ctx, "");
+  laneMs.clear();
+  for (const stage of LANE_STAGES) if (stage.scope === "project") timedLane(stage.id, () => stage.run(ctx, ""));
   const perMap = LANE_STAGES.filter((s) => s.scope === "map");
   for (const mapId of Object.keys(env.ctx.project.maps)) {
     ctx.map = {};
-    for (const stage of perMap) stage.run(ctx, mapId);
+    for (const stage of perMap) timedLane(stage.id, () => stage.run(ctx, mapId));
   }
+  for (const [id, ms] of laneMs) if (ms >= 2000) console.error(`[v2-lane] ${id} took ${Math.round(ms / 1000)}s in total`);
   return ctx.notes;
 }

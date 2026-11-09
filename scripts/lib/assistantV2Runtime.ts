@@ -34,6 +34,9 @@ import { leadFixNote, leadPlanMessages, leadReviewMessages, parseLeadReview, pla
 const advisorEnabled = (request: PiAgentRequest): boolean => process.env.OPRN_V2_ADVISOR !== "0" && !request.readOnly && request.assistantRoles?.advisor !== "off";
 const advisorChatOf = (env: PiAssistantV2Env) => env.advisorChat ?? env.sideChat;
 const safeShip = (env: PiAssistantV2Env) => { try { return shipBlockers(env.ctx.project, env.request.task); } catch { return []; } };
+/** 끝맺음 고리 단계 시간 계측(2026-11-09 monster «terminated» 조사): 2초 넘게 걸린 단계는 이름·시간을 stderr 에 남긴다. 동작은 바꾸지 않는다. */
+const timed = <T>(name: string, fn: () => T): T => { const t0 = Date.now(); try { return fn(); } finally { const ms = Date.now() - t0; if (ms >= 2000) console.error(`[v2-afterMain] ${name} took ${Math.round(ms / 1000)}s`); } };
+const timedAsync = async <T>(name: string, fn: () => Promise<T>): Promise<T> => { const t0 = Date.now(); try { return await fn(); } finally { const ms = Date.now() - t0; if (ms >= 2000) console.error(`[v2-afterMain] ${name} took ${Math.round(ms / 1000)}s`); } };
 const safeDiff = (env: PiAssistantV2Env): string => {
   try { return summarizeProjectDiff(env.request.project, env.ctx.project); } catch (error) { return `(변경 요약 실패: ${error instanceof Error ? error.message : String(error)})`; }
 };
@@ -406,7 +409,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
           }
           // 번호 자물쇠 ↔ 단서 대사는 모델이 멈출 때마다 다시 맞춘다 — 끝맺음(code-clues 단계)은 한 번만 돌아, 그 뒤 모델이 대사·자물쇠를 고치면
           // 어긋난 채 출하됐다(2026-10-31 meb1 terra 방탈출: 서랍 «4816» · 탈출문 정답 5937 → 엔딩 불가).
-          const codes = alignCodeClues(env.ctx.project);
+          const codes = timed("alignCodeClues", () => alignCodeClues(env.ctx.project));
           if (codes.notes.length) {
             env.ctx.project = codes.project;
             await env.checkpoint("align_code_clues");
@@ -414,7 +417,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
             autoNotes.push(`번호 자물쇠를 단서 대사에 다시 맞춤: ${codes.notes.join(" / ").slice(0, 300)}`);
           }
           // 증거 물건 칸의 자리 말도 같다 — 모델이 칸을 옮기면 귀띔·진술·지목 대사가 옛 자리를 가리켰다(2026-10-31 mef3 terra 추리).
-          const places = realignEvidencePlaces(env.ctx.project);
+          const places = timed("realignEvidencePlaces", () => realignEvidencePlaces(env.ctx.project));
           if (places.notes.length) {
             env.ctx.project = places.project;
             await env.checkpoint("align_evidence_places");
@@ -436,7 +439,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
           // ③ 끝맺음 자동 짓기(결정적 — 고리가 멈췄어도 돈다). 지은 뒤 기계 확인을 다시 본다(막힌 항목을 함수가 해냈을 수 있다).
           if (!autoBuilt) {
             autoBuilt = true;
-            const note = await autoBuild(env);
+            const note = await timedAsync("autoBuild", () => autoBuild(env));
             if (note) autoNotes.push(note);
             refreshChecks(env);
             if (!loopStop && store.openCount()) { const prompt = reinject(env, "[Items reopened by the machine check after the function finish]"); if (prompt) return prompt; }
@@ -458,7 +461,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
             }
           }
           // ④ 끝맺음 관문 — 남은 문제는 «한 바퀴 더» 글이 아니라 할 일 항목이다.
-          const gate = v2GateProblems(session, env);
+          const gate = timed("v2GateProblems", () => v2GateProblems(session, env));
           if (!baselineKeys) { try { baselineKeys = v2BaselineGameKeys(env.request.project, env.request.task); } catch { baselineKeys = new Set(); } }
           let nowIndex; try { nowIndex = indexProject(env.ctx.project); } catch { nowIndex = undefined; }
           const split = splitPreexisting(gate.problems, baselineKeys, store.baseline, nowIndex, autoTouched);

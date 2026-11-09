@@ -16,6 +16,9 @@ import * as registered from "./stages";
 export { lanesStamp } from "./lanesStamp";
 export type { FinishCtx, FinishPhase, FinishStage } from "./types";
 
+/** 2초 넘게 걸린 단계는 이름·시간을 stderr 에 남긴다(2026-11-09 monster «terminated»: assembly:ship-defaults 414초 — 동작 불변). */
+const timedStage = async (id: string, run: () => void | Promise<void>): Promise<void> => { const t0 = Date.now(); try { await run(); } finally { const ms = Date.now() - t0; if (ms >= 2000) console.error(`[v2-stage] ${id} took ${Math.round(ms / 1000)}s`); } };
+
 const PHASES: readonly FinishPhase[] = ["blueprint", "assembly", "reload"];
 
 /** 묶음 → order 순 단계 목록. 같은 묶음 안 order 가 겹치거나 reload 가 맨 끝이 아니면 모듈을 읽을 때 던진다(순서가 import 순서에 기대지 않게). */
@@ -40,17 +43,17 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
   const ctx: FinishCtx = { env, session, done: [], assembled: [], walked: [] };
   const phase = (p: FinishPhase) => FINISH_STAGES.filter((s) => s.phase === p);
   if (env.ctx.project.gameBlueprint) {
-    for (const stage of phase("blueprint")) { const pending = stage.run(ctx); if (pending) await pending; }
+    for (const stage of phase("blueprint")) await timedStage(`blueprint:${stage.id}`, () => stage.run(ctx));
     if (ctx.done.length) ctx.autoPath = [`[자동으로 지음] 청사진이 엔딩까지 이어지지 않거나 길목·출구가 막혀 함수가 대신 지었다 — 최종 보고에 「자동으로 지음:」으로 이 목록을 그대로 적는다(네가 지었다고 쓰지 않는다):`, ...ctx.done.map((d) => `- ${d}`), "대사를 다듬으려면 build_blueprint_path{steps:[{id,lines,lockedLines}]} 로 다시 부른다(같은 이벤트를 고쳐 쓴다). 자동으로 지은 장소를 꾸미려면 edit_place·dress_room."].join("\n");
   }
   if (buildsWholeGame(env.ctx.project, env.request.task)) {
-    for (const stage of phase("assembly")) { const pending = stage.run(ctx); if (pending) await pending; }
+    for (const stage of phase("assembly")) await timedStage(`assembly:${stage.id}`, () => stage.run(ctx));
     if (ctx.assembled.length) {
       env.emit({ type: "execution_status", name: "v2.assembly", ok: true, summary: `청사진 조립 기본값: ${ctx.assembled.join(" · ")}` });
       await env.checkpoint("blueprint_assembly");
     }
   }
-  for (const stage of phase("reload")) { const pending = stage.run(ctx); if (pending) await pending; }
+  for (const stage of phase("reload")) await timedStage(`reload:${stage.id}`, () => stage.run(ctx));
   return ctx.autoPath;
 }
 

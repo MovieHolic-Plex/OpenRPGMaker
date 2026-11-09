@@ -25,7 +25,7 @@ import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
 import { syncMenuFeatures, syncMenuUiStyle } from "@/project/menuSystem";
 import { normalizeFieldHud, projectCanLoseHp } from "@/project/fieldHud";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
-import { equipMonsterCampaign, fitGateLevelCurve, fitRequiredBattlesToStarters, fitRouteLevelsToGates } from "./monsterRouteLevels";
+import { beginFitBudget, equipMonsterCampaign, FitBudgetExceeded, fitGateLevelCurve, fitRequiredBattlesToStarters, fitRouteLevelsToGates } from "./monsterRouteLevels";
 
 type Obj = Record<string, unknown>;
 
@@ -44,10 +44,18 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   applied.push(...equipMonsterCampaign(project));
   // 곡선 → 스타터 맞춤(선물 동료·기술·깎기)을 바뀌는 것이 없을 때까지(최대 3바퀴). 선물 동료가 생기면 다음 바퀴 곡선이 관문을 더 올릴 수 있다 —
   // 한 바퀴만 돌면 두 번째 끝맺음이 관문을 또 올렸다(멱등 아님).
-  for (let round = 0; round < 3; round += 1) {
-    const changed = [...fitGateLevelCurve(project), ...fitRouteLevelsToGates(project), ...fitRequiredBattlesToStarters(project)];
-    applied.push(...changed);
-    if (!changed.length) break;
+  // 맞춤은 시간 예산이 있다(monsterRouteLevels FIT_BUDGET_MS) — 모의전이 워커 이벤트 루프를 수백 초 막아 턴이 끊겼다(2026-11-09 monster).
+  // 예산을 넘으면 거기서 멈추고 «미완» 을 한 줄로 남긴다(침묵 금지; 출하 검사 fit-budget 도 같은 사실을 읽는다).
+  beginFitBudget(project);
+  try {
+    for (let round = 0; round < 3; round += 1) {
+      const changed = [...fitGateLevelCurve(project), ...fitRouteLevelsToGates(project), ...fitRequiredBattlesToStarters(project)];
+      applied.push(...changed);
+      if (!changed.length) break;
+    }
+  } catch (error) {
+    if (!(error instanceof FitBudgetExceeded)) throw error;
+    applied.push(`${error.message} — 레벨 곡선·필수 전투 맞춤을 멈췄다(${Math.round(error.spentMs / 1000)}초 사용). 첫 관문 승률이 보정되지 않았을 수 있다`);
   }
   if (endingConditionsUnset(project).length) applied.push(...dropDeadEndingConditions(project));
   if (selfLoopTransfers(project).length) applied.push(...dropSelfLoopTransfers(project));

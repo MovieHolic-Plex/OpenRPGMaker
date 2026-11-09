@@ -85,6 +85,28 @@ function starterChoices(project: Project): string[] {
  * 그 밖에 모의전에 들어가는 것(기술·상태·타입 표·종 능력치)은 맞춤 중에 바뀌지 않는다 — 종의 배우는 기술 레벨(②)은 파티 기술에 드러난다.
  */
 const fitSimCache = new WeakMap<Project, Map<string, ReturnType<typeof simulateBattle>>>();
+
+/**
+ * 맞춤 시간 예산(벽시계). 끝맺음 한 번이 필수전투 모의전을 수백 초 동기로 돌려 워커 이벤트 루프를 막고, heartbeat 가 멎어 호스트가 300초
+ * 무음으로 턴을 끊었다(2026-11-09 monster m3~m9 일곱 판: assembly:ship-defaults 414초 · 프로파일 80% 가 fitRequiredBattlesToStarters 의 simulateBattle,
+ * 캐시 키 계산은 0.18초 — 비용은 키가 아니라 모의전 자체). 예산을 넘으면 FitBudgetExceeded 를 던져 맞춤 전체를 «미완» 으로 멈추고, 호출자가
+ * 침묵하지 않고 기록한다(applied 한 줄 + 출하 검사 fit-budget). 맞춤은 «바뀐 것만 남는다» 라 중간에 멈춰도 프로젝트는 일관된다 — 레벨 곡선이 덜 맞을 뿐이다.
+ */
+export const FIT_BUDGET_MS = 60_000;
+export class FitBudgetExceeded extends Error { constructor(readonly spentMs: number) { super(`required-battle fit incomplete (budget ${Math.round(FIT_BUDGET_MS / 1000)}s)`); } }
+interface FitBudget { start: number; limitMs: number; exceededAt?: number }
+const fitBudgets = new WeakMap<Project, FitBudget>();
+/** 이 프로젝트의 맞춤 예산을 새로 시작한다(끝맺음 한 번 = applyShipDefaults 한 번). 이미 초과한 기록은 지운다. */
+export function beginFitBudget(project: Project, limitMs = FIT_BUDGET_MS): void { fitBudgets.set(project, { start: Date.now(), limitMs }); }
+/** 마지막 맞춤이 예산을 넘겨 멈췄나(출하 검사가 읽는다 — 다음 beginFitBudget 까지 남는다). */
+export function fitBudgetExceeded(project: Project): number | undefined { return fitBudgets.get(project)?.exceededAt; }
+export function checkFitBudget(project: Project): void {
+  const budget = fitBudgets.get(project);
+  if (!budget || budget.exceededAt !== undefined) { if (budget?.exceededAt !== undefined) throw new FitBudgetExceeded(budget.exceededAt); return; }
+  const spent = Date.now() - budget.start;
+  if (spent > budget.limitMs) { budget.exceededAt = spent; throw new FitBudgetExceeded(spent); }
+}
+
 function fitSimulate(project: Project, troopId: string, heroLevel: number, monsterParty: MonsterInstance[]): ReturnType<typeof simulateBattle> {
   const troop = project.database.troops.find((item) => item.id === troopId);
   const enemies = (troop?.enemyIds ?? []).map((id) => project.database.enemies.find((item) => item.id === id) ?? null);
@@ -93,6 +115,7 @@ function fitSimulate(project: Project, troopId: string, heroLevel: number, monst
   if (!cache) fitSimCache.set(project, (cache = new Map()));
   const hit = cache.get(key);
   if (hit) return hit;
+  checkFitBudget(project); // 캐시 적중은 공짜 — 새 모의전을 시작하기 전에만 예산을 본다.
   const result = simulateBattle({ project, troopId, heroLevel, monsterParty, n: FIT_SAMPLES, seed: 1, useSkills: true });
   cache.set(key, result);
   return result;
