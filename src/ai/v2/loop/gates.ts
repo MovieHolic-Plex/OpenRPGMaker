@@ -7,7 +7,7 @@ import type { TodoItem } from "../todo/types";
 import type { ProjectIndex } from "./refs";
 
 /** 출하 차단 중 «편집기 기본값이 남았다» 계열(shipChecks EDITOR_DEFAULT_INVENTORY 의 그림·오프닝·제목) — 앞 턴 결과라는 이유로 면제하지 않는다. */
-const SHIP_DEFAULT_LEAK = /^\[출하 차단 (?:ending-bg|ending-screen|title-image|title-name|bundled-picture|art-generation|opening|opening-music|opening-missing)\]/u;
+const SHIP_DEFAULT_LEAK = /^\[출하 차단 (?:ending-bg|ending-screen|title-image|title-name|bundled-picture|art-generation|opening|opening-music|opening-missing|maps-min)\]/u;
 
 const keyOf = (store: TodoStore, item: TodoItem): string | undefined => store.meta.get(item.id)?.key;
 
