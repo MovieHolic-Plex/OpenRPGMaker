@@ -94,6 +94,8 @@ export const BEODEUL_CAPITAL_KIT_PREFIX = "bd-capital-";
  * 키트 `bd-pick-dungeon-theme2-*`, 칸 묶음 `beodeul:dungeon_theme2*`. 번들 소유, 덧붙이기 전용. 칸 정본 tiledata/beodeul-dungeon/theme2/.
  */
 export const BEODEUL_DUNGEON_THEME2_BASE = 33664;
+/** 주제 2 꼬리의 오토타일(2026-11-09): 설원 밟힌 눈길(폴른 스타 서리나루 길·광장). 기존 사본에도 주제 2 칸과 함께 들어간다. */
+export const BEODEUL_THEME2_AUTOTILE_IDS = ["beodeul_snow_road"];
 /** 고른 조각 키트 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const BEODEUL_PICK_KIT_PREFIX = "bd-pick-";
 /**
@@ -228,7 +230,7 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef, project?: Relocati
     const limit = dungeonBlocked ? BEODEUL_DUNGEON_CEILING_BASE : wallBlocked ? BEODEUL_TOWN_WALL_BASE : gapBlocked ? BEODEUL_DUNGEON_GAP_BASE : yardBlocked ? BEODEUL_YARD_BASE
       : capitalBlocked ? BEODEUL_CAPITAL_BASE : theme2Blocked ? BEODEUL_DUNGEON_THEME2_BASE : sheet.count;
     const extended = extendPickedParts(tileset, limit);
-    const farm = mergeShippedFarm(tileset, !dungeonBlocked, !wallBlocked, !gapBlocked, !yardBlocked, !capitalBlocked);
+    const farm = mergeShippedFarm(tileset, !dungeonBlocked, !wallBlocked, !gapBlocked, !yardBlocked, !capitalBlocked, !theme2Blocked);
     return mergeShippedKits(tileset, !wallBlocked, !gapBlocked, !yardBlocked, !capitalBlocked, !theme2Blocked) || extended || farm || familyFixed || !!moved;
   }
   const fresh = createBeodeulCityTileset();
@@ -303,12 +305,13 @@ function mergeShippedKits(tileset: TilesetDef, withWall = true, withGap = true, 
  * 농장·던전 천장 오토타일과 칸 묶음은 번들 소유(같은 id 는 번들 것으로 바꾸고, 없으면 더한다). 칸 그림·표는 extendPickedParts 가 꼬리째 들여온다.
  * 이 단계가 없으면 칸만 생기고 `farmland` 그룹이 없어 기존 프로젝트의 농사 런타임이 단색 흙 폴백을 쓴다.
  */
-function mergeShippedFarm(tileset: TilesetDef, withDungeon = true, withWall = true, withGap = true, withYard = true, withCapital = true): boolean {
+function mergeShippedFarm(tileset: TilesetDef, withDungeon = true, withWall = true, withGap = true, withYard = true, withCapital = true, withTheme2 = true): boolean {
   let changed = false;
   const groups = [...(tileset.autotileGroups ?? [])];
   for (const shipped of data().autotileGroups as unknown as AutotileGroup[]) {
     if (!BEODEUL_FARM_AUTOTILE_IDS.includes(shipped.id) && !(withDungeon && BEODEUL_DUNGEON_AUTOTILE_IDS.includes(shipped.id))
-      && !(withGap && isBeodeulDungeonGapAutotile(shipped.id)) && !(withYard && BEODEUL_YARD_AUTOTILE_IDS.includes(shipped.id))) continue;
+      && !(withGap && isBeodeulDungeonGapAutotile(shipped.id)) && !(withYard && BEODEUL_YARD_AUTOTILE_IDS.includes(shipped.id))
+      && !(withTheme2 && BEODEUL_THEME2_AUTOTILE_IDS.includes(shipped.id))) continue;
     const i = groups.findIndex(group => group.id === shipped.id);
     if (i < 0) { groups.push(structuredClone(shipped)); changed = true; }
     else if (JSON.stringify(groups[i]) !== JSON.stringify(shipped)) { groups[i] = structuredClone(shipped); changed = true; }

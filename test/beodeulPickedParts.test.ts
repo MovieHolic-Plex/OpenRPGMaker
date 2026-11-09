@@ -17,6 +17,7 @@ function oldCopy(): TilesetDef {
   ts.tileMeta = ts.tileMeta!.slice(0, base);
   ts.animationStrips = (ts.animationStrips ?? []).filter(strip => strip.baseTile < base);
   ts.structureKits = (ts.structureKits ?? []).filter(kit => !kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX));
+  ts.autotileGroups = (ts.autotileGroups ?? []).filter(group => group.id !== "beodeul_snow_road");
   ts.referenceDocuments = (ts.referenceDocuments ?? []).filter(cat => !cat.id.startsWith("beodeul-picks-"));
   // 새 사본은 시트 끝 뒤에 형태·검수·매싱 건물 이식 칸(tileGrafts)을 갖고 태어난다 — 옛 사본에는 그 칸이 없다.
   ts.tileGrafts = (ts.tileGrafts ?? []).filter(graft => graft.targetTile < base);
@@ -62,6 +63,10 @@ describe("버들항 고른 조각", () => {
     expect(ts.structureKits!.filter(kit => kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX)).length)
       .toBe(fresh.structureKits!.filter(kit => kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX)).length);
     expect((ts.referenceDocuments ?? []).some(cat => cat.id === "beodeul-picks-dungeon")).toBe(true);
+    // 주제 2 꼬리의 설원 눈길 오토타일은 칸과 함께 기존 사본에도 들어간다(폴른 스타 서리나루 길이 이 그룹을 찾는다).
+    const road = (ts.autotileGroups ?? []).find(group => group.id === "beodeul_snow_road");
+    expect(road?.memberTileIds.length).toBeGreaterThan(0);
+    expect(road).toEqual(fresh.autotileGroups!.find(group => group.id === "beodeul_snow_road"));
     // 두 번째 실행은 아무것도 바꾸지 않는다
     expect(ensureBeodeulCityTileset(ts)).toBe(false);
     expect(ensureBeodeulCityReferences(ts)).toBe(false);
