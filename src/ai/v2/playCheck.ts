@@ -11,6 +11,8 @@ import type { Project } from "@/project/types";
 export const AUTOPLAY_GATE_PREFIX = "game:autoplay:";
 export const PLAY_CHECK_BUDGET_MS = 90_000;
 const TIMED_OUT = "자동 플레이 시간 상한 초과";
+/** 엔진 문장의 «옮길 곳» — 맵 M 의 「이벤트 id」→(x,y). 길이 실제로 열리는 것을 확인한 칸만 적혀 있다. */
+const MOVE_FIX = /맵 (\S+) 의 「(.+?)」→\((\d+),(\d+)\)/u;
 const FAILED_RUN = /^자동 플레이\((.+?)\)가 「(.+?)」에서 실패했습니다/u;
 
 export interface PlayProblem {
@@ -29,9 +31,12 @@ export function playProblems(project: Project): readonly PlayProblem[] {
       if (seen.has(key)) continue;
       seen.add(key);
       const where = whereText(finding.where);
+      const fix = MOVE_FIX.exec(finding.message);
+      // 문장 끝(열쇠는 앞쪽만 본다) — 재주입의 «Next call» 이 이 호출을 그대로 쓴다(nextCall.ts).
+      const call = fix ? ` Next call: move_event(${JSON.stringify({ mapId: fix[1], eventId: fix[2], x: Number(fix[3]), y: Number(fix[4]) })})` : "";
       out.push({
         key,
-        text: `[끝까지 플레이 불가] ${finding.message}${where ? ` (${where})` : ""} — 플레이어가 엔딩까지 걸어서 갈 수 있어야 «완성»이다: 문장에 적힌 이벤트는 move_event 로 옮기고(문·이동 칸[문·이동 칸 표시]은 지우지 말고 옮기거나 그 옆으로 길을 낸다, 그 밖은 remove_event 도 된다), «지형이 막고 있다» 면 바닥·길을 놓은 뒤 다시 확인한다. 고치지 못하면 «완성»이라고 쓰지 말고 막힌 곳을 보고에 적는다.`,
+        text: `[끝까지 플레이 불가] ${finding.message}${where ? ` (${where})` : ""} — 플레이어가 엔딩까지 걸어서 갈 수 있어야 «완성»이다: 문장에 적힌 이벤트는 move_event 로 옮기고(문·이동 칸[문·이동 칸 표시]은 지우지 말고 옮기거나 그 옆으로 길을 낸다, 그 밖은 remove_event 도 된다), «지형이 막고 있다» 면 바닥·길을 놓은 뒤 다시 확인한다. 고치지 못하면 «완성»이라고 쓰지 말고 막힌 곳을 보고에 적는다.${call}`,
       });
     }
     return out;

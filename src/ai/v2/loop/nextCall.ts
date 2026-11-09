@@ -134,6 +134,9 @@ export function nextForItem(item: TodoItem, project: Project, available: Readonl
   const has = (v: string) => available.has(v);
   const mapId = (name?: string) => findMapId(project, name);
   if (!c || c.kind === "none") {
+    // 게임 검사가 «옮겨 길이 열리는 것을 확인한» 호출을 글 끝에 적었으면 그 호출 그대로(자리표시 뼈대보다 낫다).
+    const given = /Next call: (\w+)\((\{[^\n]*\})\)\s*$/u.exec(item.content);
+    if (given && has(given[1]!)) { try { const args = JSON.parse(given[2]!) as Obj; if (isObj(args)) return { verb: given[1]!, args, why: "the move the game check verified opens the route" }; } catch { /* 뼈대로 */ } }
     // 관문·비평 항목: 글 속 맵 id 와 «edit_place·move_object·dress_room / add_event» 낱말로.
     const m = /\((map_[\w-]+)\)/u.exec(item.content)?.[1];
     const verb = ["add_event", "edit_place", "stamp_object", "move_event", "create_transfer_pair"].find((v) => has(v) && new RegExp(`(^|[^a-z_])${v}([^a-z_]|$)`, "u").test(item.content));

@@ -6,7 +6,7 @@
 //
 // 러너는 매번 새 세션으로 처음부터 돈다 — 목표 하나를 붙일 때마다 누적 단계 전체를 다시 돌린다(작은 게임이면 수 초).
 
-import { canMove } from "@/project/collision";
+import { canMove, inBounds } from "@/project/collision";
 import { resolveEventPage as resolveEventPageRaw } from "@/project/io";
 import { actorKnownSkillIds, partyKnownSkillIds, partySkillContext, type PartySkillSession } from "@/project/partySkills";
 import { ANY_FRIENDSHIP_KEY, evalCondition, friendshipValueOf, type PlaySession } from "@/project/session";
@@ -1108,7 +1108,7 @@ function relaysTo(event: GameEvent, targetId: string): boolean {
  * 한 칸씩 걷는 경로. 러너의 walk 는 밑에 깔린 다른 문(접촉 이벤트) 위를 지나가다 엉뚱한 맵으로 튄다 —
  * 여기서는 목표 말고 모든 이벤트 칸을 피해서 BFS 한다. 충돌은 런타임과 같은 canMove.
  */
-function pathMoves(project: Project, session: PlaySession, mapId: string, from: { x: number; y: number }, target: GameEvent, adjacent: boolean, ignoreIds?: ReadonlySet<string>, moved?: SceneTestResult["movedEvents"], diag?: { blockers?: string; reach?: string }): SceneStep[] | null {
+function pathMoves(project: Project, session: PlaySession, mapId: string, from: { x: number; y: number }, target: GameEvent, adjacent: boolean, ignoreIds?: ReadonlySet<string>, moved?: SceneTestResult["movedEvents"], diag?: { blockers?: string; reach?: string; fix?: string }): SceneStep[] | null {
   // 장치가 changeTile 로 연 길까지 본다(세션 오버라이드를 입힌 맵).
   const authored = project.maps[mapId];
   if (!authored) return null;
@@ -1222,6 +1222,35 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
         }
         const need = blocking.filter((event) => keep.has(event.id));
         diag.blockers = `${need.slice(0, 6).map(label).join(", ")}${need.length > 6 ? ` 외 ${need.length - 6}개` : ""} — 이 ${need.length}개를 옮기거나 치우면 길이 열린다`;
+        // 옮길 칸까지 찾아 준다 — 모델이 «어디로» 를 찾느라 호출을 못 내던 것(2026-11-10 monster 두 판). 후보는 이벤트에서 가까운 순으로,
+        // 지금 닿는 영역 안의 지형상 걸을 수 있는 빈 칸(문 이동 칸은 같은 벽 줄 위)이고, 실제로 그 칸으로 옮겨 놓고 길을 다시 재서 열릴 때만 낸다.
+        if (need.length <= 4) {
+          const chosen: Record<string, { x: number; y: number }> = {};
+          const taken = new Set<string>([key(from.x, from.y), key(target.x, target.y)]);
+          for (const event of map.events ?? []) for (const cell of cellsOf(event)) taken.add(cell);
+          const open = (x: number, y: number) => inBounds(map, x, y) && !taken.has(key(x, y)) && !relayCells.has(key(x, y)) && !warps.has(key(x, y))
+            && seen.has(key(x, y)) && DIRS.some((d) => canMove(project, map, x + d.dx, y + d.dy, x, y));
+          let ok = true;
+          for (const event of need) {
+            const rest = need.filter((other) => other.id !== event.id && !chosen[other.id]).map((other) => other.id);
+            const cands: { x: number; y: number }[] = [];
+            for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) {
+              const dist = Math.abs(dx) + Math.abs(dy);
+              if (dist === 0 || dist > 3) continue;
+              const x = event.x + dx, y = event.y + dy;
+              if (isDoor(event) && x !== event.x && y !== event.y) continue;
+              if (open(x, y)) cands.push({ x, y });
+            }
+            cands.sort((a, b) => (Math.abs(a.x - event.x) + Math.abs(a.y - event.y)) - (Math.abs(b.x - event.x) + Math.abs(b.y - event.y)));
+            const pick = cands.find((c) => pathMoves(project, session, mapId, from, target, adjacent, new Set([...(ignoreIds ?? []), ...rest]), { ...(moved ?? {}), ...chosen, [event.id]: c }) !== null);
+            if (!pick) { ok = false; break; }
+            chosen[event.id] = pick;
+            taken.add(key(pick.x, pick.y));
+          }
+          if (ok && pathMoves(project, session, mapId, from, target, adjacent, ignoreIds, { ...(moved ?? {}), ...chosen }) !== null) {
+            diag.fix = need.map((event) => `맵 ${mapId} 의 「${event.id}」→(${chosen[event.id]!.x},${chosen[event.id]!.y})`).join(", ");
+          }
+        }
       }
     }
     return null;
@@ -1379,7 +1408,7 @@ function fireEvent(driver: Driver, event: GameEvent, visit: CommandVisit): strin
       return resolveChoices(driver, choiceSequence(visit, driver.caps));
     }
   }
-  const diag: { blockers?: string; reach?: string } = {};
+  const diag: { blockers?: string; reach?: string; fix?: string } = {};
   let moves = pathMoves(driver.project, session, mapId, { x: session.x, y: session.y }, event, !touch, undefined, driver.last.movedEvents, diag);
   let skillNote = "";
   if (!moves) {
@@ -1391,7 +1420,7 @@ function fireEvent(driver: Driver, event: GameEvent, visit: CommandVisit): strin
       moves = pathMoves(driver.project, now, now.currentMapId, { x: now.x, y: now.y }, event, !touch, undefined, driver.last.movedEvents);
     }
   }
-  if (!moves) return `${driver.project.maps[mapId]?.name ?? mapId} (${session.x},${session.y}) 에서 ${event.name ?? event.id} ${touch ? "칸" : "옆"} (${event.x},${event.y}) 까지 걸어갈 길이 없습니다(벽·물·다른 이벤트에 막힘).${diag.blockers ? ` ${diag.reach ? `${diag.reach}. ` : ""}${diag.blockers.startsWith("이벤트를") ? "" : "길을 막는 이벤트: "}${diag.blockers}.` : ""}${skillNote}`;
+  if (!moves) return `${driver.project.maps[mapId]?.name ?? mapId} (${session.x},${session.y}) 에서 ${event.name ?? event.id} ${touch ? "칸" : "옆"} (${event.x},${event.y}) 까지 걸어갈 길이 없습니다(벽·물·다른 이벤트에 막힘).${diag.fix ? ` 옮길 곳(옮겨 길이 열리는 것을 확인함): ${diag.fix}.` : ""}${diag.blockers ? ` ${diag.reach ? `${diag.reach}. ` : ""}${diag.blockers.startsWith("이벤트를") ? "" : "길을 막는 이벤트: "}${diag.blockers}.` : ""}${skillNote}`;
   if (moves.length > 0) {
     const walked = tryCommit(driver, moves);
     if (!walked.ok) return `${event.name ?? event.id} ${touch ? "칸" : "옆"} (${event.x},${event.y}) 까지 걷다 멈췄습니다: ${walked.reason}`;

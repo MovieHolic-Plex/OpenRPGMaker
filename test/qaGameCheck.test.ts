@@ -444,4 +444,25 @@ describe("걸어갈 길이 없다 — 막는 이벤트를 이름으로 댄다", 
     expect(failed).toContain("지금 닿는 영역");
     expect(failed).toContain("옮기거나 치우면 길이 열린다");
   });
+
+  it("옮길 칸까지 댄다 — 그 칸으로 옮긴 길찾기가 실제로 열릴 때만 «옮길 곳» 을 싣는다", () => {
+    const project = deserialize(serialize(buildQaFixture("clean")));
+    const start = project.maps[project.startMapId]!;
+    const solid = (id: string, x: number, y: number) => ({
+      id, name: id, x, y, trigger: { kind: "action" }, commands: [],
+      pages: [{ id: `${id}_p`, name: id, conditions: [], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [{ kind: "text", body: "막았다" }] }],
+    }) as unknown as (typeof start.events)[number];
+    start.events.push(solid("block_w", 15, 8), solid("block_e", 17, 8), solid("block_n", 16, 7), solid("block_s", 16, 9));
+    const report = runGameCheck(project, { autoPlayBudgetMs: 20_000 });
+    const failed = report.findings.filter((f) => f.code === "autoplay-failed").map((f) => f.message).join("\n");
+    const fix = /맵 (\S+) 의 「(block_[wens])」→\((\d+),(\d+)\)/u.exec(failed);
+    expect(fix, failed).not.toBeNull();
+    // 제안대로 옮기면 정말 길이 열린다(검증된 칸): 같은 입력에서 그 이벤트만 옮겨 다시 돌린다.
+    const moved = start.events.find((event) => event.id === fix![2])!;
+    moved.x = Number(fix![3]);
+    moved.y = Number(fix![4]);
+    const again = runGameCheck(project, { autoPlayBudgetMs: 20_000 }).findings.filter((f) => f.code === "autoplay-failed").map((f) => f.message).join("\n");
+    expect(again).not.toContain("길을 막는 이벤트");
+    expect(again).not.toContain("걸어갈 길이 없습니다");
+  });
 });
