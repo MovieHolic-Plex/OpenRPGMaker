@@ -15,6 +15,7 @@ const actionAttackSchema: JsonSchema = {
   additionalProperties: false,
   properties: {
     kind: { type: "string", enum: ["melee", "projectile", "dash"] },
+    shape: { type: "string", enum: ["arc", "circle", "ring", "cross"], description: "melee 전용 범위 모양. 생략하면 앞쪽 부채꼴(arc). circle=몸 주변 전체, ring=바깥 한 겹(안쪽은 안전), cross=네 방향 직선. 선딜 동안 같은 칸이 점점 진하게 칠해진다." },
     windupMs: { type: "integer" },
     recoverMs: { type: "integer" },
     damage: { type: "integer" },

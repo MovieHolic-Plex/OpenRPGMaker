@@ -18,7 +18,7 @@ function graphicsStub() {
   const api = {
     clear: vi.fn(), fillStyle: vi.fn(), fillRect: vi.fn(), fillPoints: vi.fn(),
     setDepth: vi.fn(), destroy: vi.fn(), beginPath: vi.fn(), closePath: vi.fn(),
-    fillPath: vi.fn(), lineStyle: vi.fn(), strokePath: vi.fn(), moveTo: vi.fn(), lineTo: vi.fn(),
+    fillPath: vi.fn(), lineStyle: vi.fn(), strokePath: vi.fn(), moveTo: vi.fn(), lineTo: vi.fn(), setAlpha: vi.fn(),
   };
   return api as unknown as Phaser.GameObjects.Graphics;
 }
