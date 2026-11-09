@@ -24,7 +24,7 @@ import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, 
 import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
 import { strayStepCopies, walkBlueprint } from "./blueprint";
-import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS } from "./mapCount";
+import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS, planLinks } from "./mapCount";
 import { countQuests, MIN_COUNTED_QUESTS } from "./questCount";
 import { assemblyTimeMismatches, blankMap, blueprintStoryText } from "@/project/blueprintAssembly";
 import { openingMapViewMapId } from "@/project/openingMapView";
@@ -603,10 +603,17 @@ export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
   if (counted.length >= need) return [];
   const why = uncounted.slice(0, 5).map((m) => `「${m.name}」(${m.id}) ${m.detail}`).join(" · ");
   const missing = need - counted.length;
+  // 만든 맵이 시작 맵에서 문으로 안 닿으면(2026-11-10 forest-0039 6장·ninja-0038 4장이 세는 맵 1/4) 문구 대신 이을 호출을 준다 —
+  // 무리(서로 이어진 안 닿는 맵끼리) 하나씩, 호출은 문구 맨 끝(열쇠는 앞 160자). 청사진 경로를 다시 지으면 단 문이 사라질 수 있다(forest).
+  const plan = planLinks(project);
+  const group = plan.groups.find((g) => g.cell);
+  const linkCall = plan.from && group?.cell
+    ? ` 안 닿는 맵 무리 ${plan.groups.length}개 — 문을 단 뒤에는 build_blueprint_path 를 다시 부르지 않는다(다시 지으면 문이 사라질 수 있다). Next call: create_transfer_pair(${JSON.stringify({ a: { mapId: plan.from.mapId, ...plan.from.cell }, b: { mapId: group.mapId, ...group.cell } })})`
+    : "";
   return [{
     id: "maps-min",
     // 할 일 항목의 열쇠는 문구 앞 160자(숫자는 #) — 바뀌는 부분(안 세는 맵 목록)은 고정 문장 뒤에 둔다. 앞에 두면 맵을 지을 때마다 열쇠가 바뀌어 «3번 뒤 막힘» 이 안 걸린다.
-    message: `세는 맵이 ${counted.length}/${need}장이다 — ${missing}장 더. 새 장소는 make_place{spec:{type:"village"|"dungeon"|"interior", name}} 로 지어 문(transfer)으로 잇고 사람·조사 이벤트를 하나 이상 둔다(청사진 경로면 build_blueprint_path). 맵은 ${MIN_MAP_CELLS}칸 이상(실내는 10×10 이상)·타일 6종 이상·다른 맵과 다른 배치여야 센다.${why ? ` 안 세는 맵: ${why}.` : ""}`,
+    message: `세는 맵이 ${counted.length}/${need}장이다 — ${missing}장 더. 새 장소는 make_place{spec:{type:"village"|"dungeon"|"interior", name}} 로 지어 문(transfer)으로 잇고 사람·조사 이벤트를 하나 이상 둔다(청사진 경로면 build_blueprint_path). 맵은 ${MIN_MAP_CELLS}칸 이상(실내는 10×10 이상)·타일 6종 이상·다른 맵과 다른 배치여야 센다.${why ? ` 안 세는 맵: ${why}.` : ""}${linkCall}`,
     evidence: `counted=${counted.length} need=${need} uncounted=${uncounted.length}`,
   }];
 }
