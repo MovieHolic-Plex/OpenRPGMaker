@@ -425,3 +425,22 @@ describe("qa gameCheck — 런타임 대화 필드는 모르는 필드가 아니
     expect(unknown).toEqual([]);
   });
 });
+
+describe("걸어갈 길이 없다 — 막는 이벤트를 이름으로 댄다", () => {
+  it("문 사방을 막는 이벤트가 있으면 그 이벤트의 id·칸과 «하나만 치우면 열린다» 를 문구에 싣는다", () => {
+    const project = deserialize(serialize(buildQaFixture("clean")));
+    const start = project.maps[project.startMapId]!;
+    const solid = (id: string, x: number, y: number) => ({
+      id, name: id, x, y, trigger: { kind: "action" }, commands: [],
+      pages: [{ id: `${id}_p`, name: id, conditions: [], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [{ kind: "text", body: "막았다" }] }],
+    }) as unknown as (typeof start.events)[number];
+    // 동굴 입구(16,8) 의 네 이웃을 막는다 — 걸어서 그 칸에 닿을 길이 없다.
+    start.events.push(solid("block_w", 15, 8), solid("block_e", 17, 8), solid("block_n", 16, 7), solid("block_s", 16, 9));
+    const report = runGameCheck(project, { autoPlayBudgetMs: 20_000 });
+    const failed = report.findings.filter((f) => f.code === "autoplay-failed").map((f) => f.message).join("\n");
+    expect(failed).toContain("걸어갈 길이 없습니다");
+    expect(failed).toContain("길을 막는 이벤트:");
+    expect(failed).toMatch(/block_[wens]\(block_[wens]\) \(\d+,\d+\)/u);
+    expect(failed).toContain("지금 닿는 영역");
+  });
+});

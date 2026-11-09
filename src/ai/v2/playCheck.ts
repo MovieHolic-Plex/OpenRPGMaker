@@ -31,7 +31,7 @@ export function playProblems(project: Project): readonly PlayProblem[] {
       const where = whereText(finding.where);
       out.push({
         key,
-        text: `[끝까지 플레이 불가] ${finding.message}${where ? ` (${where})` : ""} — 플레이어가 엔딩까지 걸어서 갈 수 있어야 «완성»이다: 막힌 곳의 길(문·길 잇기·이동 칸)이나 그 단계의 스위치를 켜는 이벤트를 고친 뒤 다시 확인한다. 고치지 못하면 «완성»이라고 쓰지 말고 막힌 곳을 보고에 적는다.`,
+        text: `[끝까지 플레이 불가] ${finding.message}${where ? ` (${where})` : ""} — 플레이어가 엔딩까지 걸어서 갈 수 있어야 «완성»이다: 문장에 «길을 막는 이벤트» 가 있으면 그 이벤트를 move_event 로 옮기거나 remove_event 로 치우고(그 이벤트 하나만 치우면 길이 열린다고 적힌 것부터), 없으면 막힌 곳의 길(문·길 잇기·이동 칸)이나 그 단계의 스위치를 켜는 이벤트를 고친 뒤 다시 확인한다. 고치지 못하면 «완성»이라고 쓰지 말고 막힌 곳을 보고에 적는다.`,
       });
     }
     return out;
