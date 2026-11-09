@@ -1,7 +1,8 @@
-// 수납(상자·통·자루·서랍) 뒤지기 연출 — 종류마다 소리·흔들림·파편·「뒤진 뒤 모습」을 데이터로 둔다.
+// 수납(상자·통·자루·서랍) 뒤지기 연출 — 종류마다 소리·여는 동작·파편·「뒤진 뒤 모습」을 데이터로 둔다.
+// 연출은 물건 그림만 움직인다(GIF 처럼) — 주변 타일·화면은 움직이지 않는다(오너 2026-11-09 「주변 화면이 일그러지는 건 곤란」).
 //
 // 저작 계약(엔진 명령 추가 없이 기존 명령으로 쓴다):
-//  - 연출: `showAnimation` 의 animationId 에 내장 연출 id 를 쓴다 — `fx:container:<종류>`(뚜껑·흔들림·파편·소리),
+//  - 연출: `showAnimation` 의 animationId 에 내장 연출 id 를 쓴다 — `fx:container:<종류>`(뚜껑·파편·소리),
 //    `fx:popup:item:<itemId>` · `fx:popup:gold:<금액>`(찾은 것이 머리 위로 떠오른다), `fx:door-open`(문 여는 연출).
 //    런타임은 이 접두사를 전투 애니메이션 DB 대신 절차 연출로 그린다(player/playSceneFieldFx.ts).
 //  - 뒤진 뒤 모습: 「이미 뒤짐」 페이지에 `interaction: { kind: "container", style, searched: true }` —
@@ -15,7 +16,8 @@ export type ContainerStyle = (typeof CONTAINER_STYLES)[number];
 export type ContainerParticleKind = "splinter" | "straw" | "dust" | "sparkle";
 export type ContainerSearchedMark = "lid-open" | "pried" | "lid-off" | "spill" | "drawer" | "doors-ajar";
 /**
- * 여는 동작(종류마다 하나) — 칸 위에서 물건 자체가 어떻게 움직이나.
+ * 여는 동작(종류마다 하나) — 칸 위에서 물건 자체가 어떻게 움직이나. 칸의 타일 이미지는 움직이지 않는다 —
+ * 물건 칩셋 화소를 오려 낸 그림만 움직인다(player/playSceneFieldFx.ts).
  * lid: 뚜껑이 젖혀진다 · pry: 윗판 하나가 비스듬히 들렸다 떨어진다 · rock: 밑동을 축으로 좌우로 기울인다
  * slump: 위아래로 찌그러졌다 돌아온다 · slide: 서랍 앞판이 아래로 빠져나온다 · lidHop: 작은 뚜껑이 톡 뛰었다 앉는다
  * doors: 가운데에서 문짝 둘이 바깥으로 열린다.
@@ -25,9 +27,6 @@ export type ContainerMotion = "lid" | "pry" | "rock" | "slump" | "slide" | "lidH
 export interface ContainerFxSpec {
   /** 여는 소리(번들 CC0 SE). */
   readonly se: string;
-  /** 흔들림 폭(px, 16px 칸 기준)과 왕복 횟수. 0 = 흔들지 않는다. */
-  readonly shakePx: number;
-  readonly shakes: number;
   readonly motion: ContainerMotion;
   readonly particles: { readonly kind: ContainerParticleKind; readonly count: number; readonly colors: readonly number[] };
   /** 뒤진 뒤 칸에 남는 흔적. */
@@ -40,35 +39,35 @@ export interface ContainerFxSpec {
 
 export const CONTAINER_FX: Readonly<Record<ContainerStyle, ContainerFxSpec>> = {
   chest: {
-    se: "cc0-se-osx-wooded-box-open", shakePx: 0, shakes: 0, motion: "lid",
+    se: "cc0-se-osx-wooded-box-open", motion: "lid",
     particles: { kind: "sparkle", count: 6, colors: [0xfff3b0, 0xffd860, 0xffffff] }, mark: "lid-open", noise: 0, durationMs: 520,
   },
   crate: {
-    se: "cc0-se-ors-wood-03", shakePx: 2, shakes: 4, motion: "pry",
+    se: "cc0-se-ors-wood-03", motion: "pry",
     particles: { kind: "splinter", count: 10, colors: [0xc8915a, 0x9a6634, 0x6e4422] }, mark: "pried", noise: 4, durationMs: 560,
   },
   barrel: {
-    se: "cc0-se-osx-wooden-02", shakePx: 0, shakes: 0, motion: "rock",
+    se: "cc0-se-osx-wooden-02", motion: "rock",
     particles: { kind: "splinter", count: 6, colors: [0xb07a44, 0x7a5028] }, mark: "lid-off", noise: 3, durationMs: 500,
   },
   sack: {
-    se: "cc0-se-orp-inventory-cloth-heavy", shakePx: 0, shakes: 0, motion: "slump",
+    se: "cc0-se-orp-inventory-cloth-heavy", motion: "slump",
     particles: { kind: "straw", count: 8, colors: [0xe6d08a, 0xc9a85a, 0xf2e2b0] }, mark: "spill", noise: 0, durationMs: 480,
   },
   straw: {
-    se: "cc0-se-orp-inventory-cloth", shakePx: 1, shakes: 4, motion: "slump",
+    se: "cc0-se-orp-inventory-cloth", motion: "slump",
     particles: { kind: "straw", count: 12, colors: [0xe8c860, 0xc8a040, 0xf4dc84] }, mark: "spill", noise: 0, durationMs: 520,
   },
   drawer: {
-    se: "cc0-se-osx-wooden-01", shakePx: 0, shakes: 0, motion: "slide",
+    se: "cc0-se-osx-wooden-01", motion: "slide",
     particles: { kind: "dust", count: 5, colors: [0xd8d0c0, 0xb8b0a0] }, mark: "drawer", noise: 0, durationMs: 420,
   },
   wardrobe: {
-    se: "easyrpg-sound-close1", shakePx: 0, shakes: 0, motion: "doors",
+    se: "easyrpg-sound-close1", motion: "doors",
     particles: { kind: "dust", count: 6, colors: [0xd8d0c0, 0xb8b0a0, 0xe8e0d0] }, mark: "doors-ajar", noise: 0, durationMs: 460,
   },
   jar: {
-    se: "cc0-se-ors-item-stone-02", shakePx: 0, shakes: 0, motion: "lidHop",
+    se: "cc0-se-ors-item-stone-02", motion: "lidHop",
     particles: { kind: "dust", count: 4, colors: [0xcfc4b0, 0xa89c88] }, mark: "lid-off", noise: 0, durationMs: 420,
   },
 };

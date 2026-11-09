@@ -2,7 +2,10 @@
 // 필드 상호작용 연출 — 문 열기, 수납 뒤지기(뚜껑·흔들림·파편·소리), 찾은 것 떠오르기, 뒤진 흔적.
 //
 // 데이터(종류별 소리·흔들림·파편·흔적)는 project/containerFx.ts 가 갖고, 여기서는 그대로 그린다.
-// 그림은 전부 절차 그림(사각형·그래픽)과 칸에 이미 그려진 타일 이미지 흔들기다 — 새 그림 자산이 필요 없다.
+// 그림은 전부 절차 그림(사각형·그래픽)과 물건 칩셋 화소를 오려 낸 그림이다 — 새 그림 자산이 필요 없다.
+// 수납 연출은 물건만 움직인다(GIF 처럼): 칸·윗칸의 타일 이미지를 흔들거나 기울이지 않고, 화면 흔들림·확대·번착임도 없다
+// (오너 2026-11-09 「애니메이션을 만들 때 주변 화면이 일그러지는 건 곤란 … 오브젝트만 움직여야」 — 예전 shakeCell·poseCell 은
+// 그 칸의 바닥·벽 타일까지 함께 움직여 주변이 일그러졌다).
 //  - 문: 이동(transfer) 직전 문 칸에 맵 문(map.doors, 없으면 그림에서 추론한 자동문·미닫이·셔터·두 짝 문 — project/mapDoorKinds.ts)이
 //    있으면 그 종류대로 문 그림 전체를 연다(player/playSceneDoors.ts). 다가가서 이미 열린 자동문이면 연출을 겹치지 않는다.
 //    그다음, 문 칸이 타일셋의 닫힘/열림 키트 짝(project/kitDoors.ts, 예 1×2 던전 문)이면 그 문 자신의 그림으로
@@ -17,7 +20,7 @@ import { characterDepth, characterSpriteY, mapUpperTileDepth } from "@/player/ch
 import { applyDoorCue, DOOR_OPEN_SE, doorSe } from "@/player/playSceneDoorway";
 import { projectSeCue } from "@/project/seCues";
 import { mapDoorForCells, openMapDoorNow } from "@/player/playSceneDoors";
-import { applyMapOverrides, rootYSortTileImagesAt } from "@/player/playSceneMapRuntime";
+import { applyMapOverrides } from "@/player/playSceneMapRuntime";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   CONTAINER_FX,
@@ -525,22 +528,6 @@ export function containerStyleAt(scene: PlaySceneContext, cell: Cell, eventId?: 
   return containerStyleForLabel(label);
 }
 
-/** 칸의 가구 이미지를 흔든다(같은 칸 + 같은 이름의 윗칸). 개별 이미지가 없으면 흔들지 않는다. */
-function shakeCell(scene: PlaySceneContext, cell: Cell, px: number, count: number): void {
-  if (px <= 0 || count <= 0) return;
-  const size = mapTileSize(scene.map);
-  const images = [...rootYSortTileImagesAt(scene, cell.x, cell.y, size), ...rootYSortTileImagesAt(scene, cell.x, cell.y - 1, size)];
-  const amp = Math.max(1, Math.round(px * size / 16));
-  for (const image of images) {
-    const baseX = image.x;
-    scene.tweens.add({
-      targets: image, x: baseX + amp, duration: 45, yoyo: true, repeat: count - 1, ease: "Sine.easeInOut",
-      onComplete: () => { image.x = baseX; },
-      onStop: () => { image.x = baseX; },
-    });
-  }
-}
-
 function burstParticles(scene: PlaySceneContext, cell: Cell, style: ContainerStyle): void {
   const spec = CONTAINER_FX[style].particles;
   const size = mapTileSize(scene.map);
@@ -608,43 +595,7 @@ function holdUntilMark(scene: PlaySceneContext, cell: Cell, g: HeldFx): void {
   scene.time.delayedCall(15_000, () => { if (pending.get(key) === g) { pending.delete(key); g.destroy(); } });
 }
 
-type TileImage = Phaser.GameObjects.Image;
 type Px = (x: number, y: number, w: number, h: number, color: number, alpha?: number) => void;
-
-/** 칸(과 같은 이름의 윗칸)의 가구 이미지를 밑동 가운데를 축으로 비틀거나 눌렀다 되돌린다. 개별 이미지가 없으면 false. */
-function poseCell(scene: PlaySceneContext, cell: Cell, durationMs: number, pose: (t: number) => { angle: number; scaleY: number }): boolean {
-  const size = mapTileSize(scene.map);
-  const images = [...rootYSortTileImagesAt(scene, cell.x, cell.y, size), ...rootYSortTileImagesAt(scene, cell.x, cell.y - 1, size)] as unknown as TileImage[];
-  if (images.length === 0 || typeof scene.tweens?.add !== "function") return false;
-  const pivotX = cell.x * size + size / 2;
-  const pivotY = (cell.y + 1) * size;
-  const base = images.map((image) => ({ image, x: image.x, y: image.y, angle: image.angle, scaleY: image.scaleY }));
-  const apply = (t: number): void => {
-    const { angle, scaleY } = pose(t);
-    const rad = (angle * Math.PI) / 180;
-    const cos = Math.cos(rad), sin = Math.sin(rad);
-    for (const b of base) {
-      // 이미지 원점은 왼쪽 위다 — 축에서 본 원점을 세로로 누르고 돌린 자리가 새 원점이다.
-      const dx = b.x - pivotX, dy = (b.y - pivotY) * scaleY;
-      b.image.x = pivotX + dx * cos - dy * sin;
-      b.image.y = pivotY + dx * sin + dy * cos;
-      b.image.angle = b.angle + angle;
-      b.image.scaleY = b.scaleY * scaleY;
-    }
-  };
-  const restore = (): void => {
-    for (const b of base) { b.image.x = b.x; b.image.y = b.y; b.image.angle = b.angle; b.image.scaleY = b.scaleY; }
-  };
-  // 진행도는 별도 객체를 트윈해서 읽는다 — addCounter + getValue() 는 이 Phaser 에서 null 이라 한 프레임도 움직이지 않았다
-  // (playSceneActionCombat.ts 휘두르기 궤적과 같은 함정, 2026-11-09 출하 플레이어 실측).
-  const progress = { t: 0 };
-  scene.tweens.add({
-    targets: progress, t: 1, duration: durationMs,
-    onUpdate: () => apply(progress.t),
-    onComplete: restore, onStop: restore,
-  });
-  return true;
-}
 
 /** 칸 위에 잠깐 그리는 그림(판자·서랍·뚜껑·문짝). frames 를 ms 간격으로 그린 뒤 hold 면 흔적이 그려질 때까지 둔다. */
 async function overlayFrames(scene: PlaySceneContext, cell: Cell, ms: number, hold: boolean, frames: readonly ((px: Px) => void)[]): Promise<void> {
@@ -672,16 +623,10 @@ async function playMotion(scene: PlaySceneContext, style: ContainerStyle, cell: 
       return liftLid(scene, cell);
     case "rock":
       // 통: 밑동을 축으로 왼쪽·오른쪽으로 한 번씩 기울여 본다(흔들어 속을 가늠하는 몸짓).
-      if (!poseCell(scene, cell, 420, (t) => ({ angle: Math.sin(t * Math.PI * 2) * 7 * (1 - t * 0.4), scaleY: 1 }))) {
-        await overlayFrames(scene, cell, 90, false, [(px) => px(4, 2, 8, 2, GAP, 0.8), (px) => px(4, 2, 8, 2, GAP, 0.4)]);
-      }
-      return;
+      return overlayFrames(scene, cell, 90, false, [(px) => px(4, 2, 8, 2, GAP, 0.8), (px) => px(4, 2, 8, 2, GAP, 0.4)]);
     case "slump":
       // 자루·짚: 풀어 헤치자 폭 주저앉았다 다시 부푼다.
-      if (!poseCell(scene, cell, 380, (t) => ({ angle: 0, scaleY: 1 - Math.sin(t * Math.PI) * 0.14 }))) {
-        await overlayFrames(scene, cell, 90, false, [(px) => px(3, 2, 10, 2, GAP, 0.5)]);
-      }
-      return;
+      return overlayFrames(scene, cell, 90, false, [(px) => px(3, 2, 10, 2, GAP, 0.5)]);
     case "pry":
       // 상자: 윗판 하나를 비집어 들었다 털썩 내려놓는다 — 판자 끝이 비스듬히 뜨고 틈이 보인다.
       return overlayFrames(scene, cell, 75, false, [
@@ -926,17 +871,8 @@ export async function playContainerFx(scene: PlaySceneContext, style: ContainerS
   const spec = CONTAINER_FX[style];
   // 궤짝은 저작한 「상자」 자리(chest)가 있으면 그 소리.
   playSe(style === "chest" ? projectSeCue(store.getCurrent(), "chest") ?? spec.se : spec.se);
-  // 흔들기·몸짓은 열린 그림을 얹기 전에 끝낸다 — 흔들리는 타일과 고정된 열린 그림이 겹쳐 두 개로 보이지 않게(ultrabrain).
-  shakeCell(scene, cell, spec.shakePx, spec.shakes);
-  if (spec.shakePx > 0 && spec.shakes > 0) await sleep(scene, spec.shakes * 90);
-  const motion = spec.motion;
-  if (motion === "rock" || motion === "slump") {
-    // 통·자루는 몸짓(기울이기·주저앉기)을 짧게 한 뒤 물건 그림이 열린 모습으로 바뀐다.
-    const posed = poseCell(scene, cell, 240, motion === "rock"
-      ? (t) => ({ angle: Math.sin(t * Math.PI * 2) * 7, scaleY: 1 })
-      : (t) => ({ angle: 0, scaleY: 1 - Math.sin(t * Math.PI) * 0.14 }));
-    if (posed) await sleep(scene, 240);
-  }
+  // 타일 이미지는 움직이지 않는다 — 물건 칩셋 화소를 오려 낸 그림의 단계(뚜껑 들림·판자 비집기·서랍 빠짐·주둥이 벌어짐)만
+  // 칸 위에서 바뀐다. 예전 흔들기(상자·짚)·기울이기(통)·주저앉기(자루)는 칸의 바닥·벽 타일까지 움직여 뜬다.
   if (!(await playOpenState(scene, style, cell))) await playMotion(scene, style, cell);
   burstParticles(scene, cell, style);
 }
