@@ -210,6 +210,8 @@ export type StepResult =
       kind: "shop";
       itemIds: string[];
       items?: readonly { readonly itemId: string; readonly price?: number }[];
+      /** 헤더의 가게 이름(명령의 title). */
+      title?: string;
       allowSell?: boolean;
       quantityMode?: "single" | "select";
       shopType?: ShopType;

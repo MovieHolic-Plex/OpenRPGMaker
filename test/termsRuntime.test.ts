@@ -157,6 +157,21 @@ describe("Terms runtime integration", () => {
     }
   });
 
+  it("shows the shop command title in the shop header and falls back to the service name", () => {
+    const cleanup = installFakeDom();
+    try {
+      const project = createBlankProject();
+      store.replace(project);
+      const terms = resolveTerms(project);
+      const header = (step: ShopStep) => (renderShopMenu(step, terms, () => undefined, () => undefined) as unknown as FakeElement).textContent;
+      expect(header({ ...shopStep(), title: "오든 약재상" })).toContain("오든 약재상");
+      expect(header({ ...shopStep(), title: "   " })).toContain("상점");
+      expect(header({ ...shopStep(), shopServiceKind: "repair" })).toContain("수리점");
+    } finally {
+      cleanup();
+    }
+  });
+
   it("renders shop text from terms overrides", () => {
     const cleanup = installFakeDom();
     try {

@@ -907,6 +907,7 @@ export function executeCommand(
       return pause("shop", {
         kind: "shop",
         itemIds: command.itemIds,
+        title: command.title,
         items: state.project
           ? resolvePricedShopStock(state.project, state.session, command, resolveCurrentGameEvent(state))
           : undefined,
