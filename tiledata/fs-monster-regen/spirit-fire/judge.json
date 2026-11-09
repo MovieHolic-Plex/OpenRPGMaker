@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell shows the same fire spirit as the current look: same palette, flame mane, fireball hand and curled tail. Idle has slight but visible breathing. The attack cell is a clear forward lunge, distinct from the leaning-back hit recoil (hit is a bit subtle). Dead is a flattened ember pile with closed eyes. Pixels are crisp with no fringe or clipping, and scale stays consistent.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

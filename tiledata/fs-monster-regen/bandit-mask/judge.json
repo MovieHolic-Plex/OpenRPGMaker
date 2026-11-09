@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell matches the current design: grey wide-brim hat, black mask, red scarf and cape, dagger. The sheet's attack cell is a clear lunging stab that looks nothing like the hit cell's backward head-snap recoil, and dead lies flat. The art is crisp and consistent in scale. Idle_a and idle_b are only subtly different (idle_c's crouch carries most of the breathing motion), so the breathing is weak but visible.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

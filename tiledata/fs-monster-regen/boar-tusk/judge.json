@@ -1,0 +1,6 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell shows the same brown spiky-maned boar with the cream tusk and the same palette and proportions as the current look. The idle cells visibly change (idle_c crouches lower, which is more of a pose change than breathing). The sheet's attack cell is a clear open-mouthed lunge, hit is a reared-back recoil, dead lies flat, and the pixel art is crisp, unclipped and consistent in scale."
+}

@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell keeps the reference design: the pale-faced blue flame with dark outline and trailing flame tongues, in the same colours and proportions. The idles visibly move (flames rise and fall, body bobs), the attack is a clear stretched forward lunge unlike the squinting hit recoil, and dead is a flat, closed-eyed heap; the art is crisp with no fringe or clipping. Minor nitpick: the attack is only a dash pose with no extra flare or effect, so it reads a little weaker than it could.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

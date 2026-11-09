@@ -263,6 +263,10 @@ export function applyFallenBattleRoles(project: Project): void {
   foe("eel-electric", "enemy_fs_eel", "전기뱀장어", [150, 54, 24, 50, 50], 46, 16,
     [act("skill_fs_discharge", 8), act("skill_attack", 4)],
     { spear: "A", thunder: "E", water: "D", earth: "A" }, { state_paralysis: "E" }, [["item_potion", 20]]);
+  // 등불해파리 — 물길 위를 떠다니는 빛. 몸에 닿으면 마비(술사·상태). 시트는 있었지만 적이 없어 게임에 안 나왔다(fs-monster-regen 2026-11-09).
+  foe("jelly-lantern", "enemy_fs_jelly", "등불해파리", [120, 40, 18, 66, 46], 44, 18,
+    [act("skill_fs_discharge", 7, { kind: "turn", start: 2, interval: 2 }), act("skill_mon_frost_orb", 5), act("skill_attack", 3)],
+    { thunder: "A", earth: "A", water: "E", ice: "D" }, { state_paralysis: "E", state_sleep: "B" }, [["item_ether", 25]]);
   // 가시덤불 샛길 — 상태·유리 대포·흡수 탱커
   foe("moth-dust", "enemy_fs_moth", "가루나방", [96, 40, 14, 56, 54], 36, 12,
     [act("skill_mon_spore_cloud", 9, { kind: "turn", start: 1, interval: 3 }), act("skill_attack", 4)],
@@ -386,6 +390,8 @@ const FS_AREA_TROOP_DEFS: ReadonlyArray<readonly [string, string, readonly strin
   // 옛 수로
   ["troop_fs_stream_crabs", "바위게와 물의 정령", ["enemy_fs_crab", "enemy_fs_undine", "enemy_fs_crab"]],
   ["troop_fs_stream_eels", "전기뱀장어 둘", ["enemy_fs_eel", "enemy_fs_eel"]],
+  // 등불해파리는 필드 걷기 그림이 없다 — 보이는 적(place_field_enemy)은 선두 그림을 쓰므로 뱀장어가 앞장선다.
+  ["troop_fs_stream_jellies", "전기뱀장어와 등불해파리", ["enemy_fs_eel", "enemy_fs_jelly", "enemy_fs_jelly"]],
   // 가시덤불 샛길
   ["troop_fs_spiders", "덤불거미와 뿔딱정벌레", ["enemy_fs_spider", "enemy_fs_beetle"]],
   ["troop_fs_thicket_moths", "가루나방과 칼날사마귀", ["enemy_fs_moth", "enemy_fs_mantis", "enemy_fs_moth"]],
@@ -400,7 +406,7 @@ const FS_AREA_TROOP_DEFS: ReadonlyArray<readonly [string, string, readonly strin
 /** 구역(맵 id) → 조우 표. 숲이 나뉜 판(fs_forest_edge…)과 한 장짜리 숲(fs_forest) 둘 다 받는다. */
 const FS_AREA_ENCOUNTERS: Readonly<Record<string, ReadonlyArray<readonly [string, number]>>> = {
   fs_forest_edge: [["troop_fs_wolves", 3], ["troop_fs_edge_boar", 2], ["troop_fs_edge_hornets", 2]],
-  fs_forest_stream: [["troop_fs_stream_crabs", 3], ["troop_fs_stream_eels", 2], ["troop_fs_wolves", 1]],
+  fs_forest_stream: [["troop_fs_stream_crabs", 3], ["troop_fs_stream_eels", 2], ["troop_fs_stream_jellies", 2], ["troop_fs_wolves", 1]],
   fs_forest_thicket: [["troop_fs_spiders", 3], ["troop_fs_thicket_moths", 2], ["troop_fs_thicket_flytrap", 2]],
   fs_forest_glade: [["troop_fs_glade_poachers", 3], ["troop_fs_edge_hornets", 1], ["troop_fs_edge_boar", 1]],
   fs_forest: [["troop_fs_wisps", 3], ["troop_fs_deep_ghosts", 2], ["troop_fs_spiders", 1]],

@@ -1,0 +1,6 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell matches the current design: the green goblin with a brown harness and a dagger, at the same proportions and scale. The three idle cells clearly differ in crouch and torso height, the attack cell is a lunge with the dagger thrust forward and is distinct from the upright hit recoil, and the dead cell lies flat with crisp edges and no fringe or cut-off. One small concern: idle_b differs from a and c more than a breath would, so the idle loop may look slightly jumpy instead of smooth breathing."
+}
