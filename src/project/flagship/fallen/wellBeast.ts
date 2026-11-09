@@ -39,7 +39,7 @@ const SKILL_TAIL = "skill_fs2_well_tail";
 const SKILL_SONG = "skill_fs2_well_gill_song";
 const SKILL_ROAR = "skill_fs2_well_roar";
 const SHAFT_BGM = "cc0-bgm-rtp-mys-002";
-const BOSS_BGM = "cc0-bgm-rtp-btl-004";
+const BOSS_BGM = "cc0-bgm-rtp-btl-002";
 
 // ── 명령 조각(act2Opening.ts 와 같은 꼴) ─────────────────────────────────────
 const say = (speaker: string, body: string): Command => ({ kind: "text", speaker, body } as unknown as Command);
