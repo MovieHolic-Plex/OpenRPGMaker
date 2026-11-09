@@ -34,6 +34,7 @@ describe("applyFallenInteractiveProps open effects", () => {
     expect(new Set(keys).size).toBe(4);
     expect(openFx(barrel!)?.animationId).toBe("fx:container:barrel");
     expect(openFx(jar!)?.animationId).toBe("fx:container:jar");
+    expect(openFx(wardrobe!)?.animationId).toBe("fx:container:wardrobe");
     for (const e of [barrel, crate, wardrobe, jar]) {
       expect(firstPage(e!).some((c) => c.kind === "changeGold")).toBe(true);
       expect(firstPage(e!).some((c) => c.kind === "setSelfSwitch")).toBe(true);
@@ -44,6 +45,6 @@ describe("applyFallenInteractiveProps open effects", () => {
     const project = fixture(["옷장"]);
     applyFallenInteractiveProps(project);
     applyFallenInteractiveProps(project);
-    expect(sounds(project.maps.fs_test!.events[0]!)).toEqual(["easyrpg-sound-close1"]);
+    expect(sounds(project.maps.fs_test!.events[0]!)).toEqual(["cc0-se-orp-inventory-cloth-heavy"]);
   });
 });

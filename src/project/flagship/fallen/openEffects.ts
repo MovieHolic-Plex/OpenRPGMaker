@@ -1,6 +1,6 @@
 // 폴른 스타 — 수납을 열 때의 연출을 물건 종류마다 다르게(오너 2026-11-09 「'여는 연출' 이 하나로 통일되어있음. 오브젝트마다 달라야한단말이다」).
 //
-// 데이터만 둔다. 연출은 엔진에 이미 있는 내장 수납 연출(showAnimation `fx:container:<종류>`, project/containerFx.ts ·
+// 데이터만 둔다. 연출은 엔진의 내장 수납 연출(showAnimation `fx:container:<종류>`, project/containerFx.ts ·
 // player/playSceneFieldFx.ts)과 효과음(playAudio se)·이모트로 짠다. 엔진 명령은 새로 만들지 않는다.
 //  - 종류는 수납 이벤트 이름(「수납 · 생선 상자」)의 낱말로 고른다. 위에서부터 처음 맞는 줄.
 //  - style: 엔진 연출 종류(소리·흔들림·뚜껑·파편·뒤진 흔적). 종류마다 소리 하나가 따라온다.
@@ -25,12 +25,12 @@ export interface FallenOpenEffect {
 /** 위에서부터 처음 맞는 줄. 「궤짝」은 「상자」보다, 「서랍장」·「찬장」은 「통」보다 먼저 본다. */
 export const FALLEN_OPEN_EFFECTS: readonly FallenOpenEffect[] = [
   {
-    kind: "wardrobe", match: /옷장|장롱/, style: "drawer", extraSe: "easyrpg-sound-close1",
-    note: "옷장: 경첩이 삐걱이며 문짝이 열린다(삐걱+덜컥), 먼지 몇 점, 빠진 문 흔적",
+    kind: "wardrobe", match: /옷장|장롱/, style: "wardrobe", extraSe: "cc0-se-orp-inventory-cloth-heavy",
+    note: "옷장: 경첩이 삐걱이며 문짝 둘이 바깥으로 열리고(삐걱+덜컥) 걸린 옷을 헤치는 소리, 문이 빼꼼 열린 흔적",
   },
   {
     kind: "drawer", match: /서랍|협탁|화장대|찬장/, style: "drawer", extraSe: "cc0-se-osx-paper-04",
-    note: "서랍·찬장: 나무 서랍이 미끄러져 나오는 탁 소리와 속을 뒤지는 바스락, 서랍 빠진 흔적",
+    note: "서랍·찬장: 서랍 앞판이 아래로 빠져나오며(탁) 속을 뒤지는 바스락, 서랍 빠진 흔적",
   },
   {
     kind: "chest", match: /궤짝|보물|트렁크/, style: "chest", extraSe: "easyrpg-sound-key",
@@ -42,11 +42,11 @@ export const FALLEN_OPEN_EFFECTS: readonly FallenOpenEffect[] = [
   },
   {
     kind: "barrel", match: /통/, style: "barrel", extraSe: "cc0-se-orp-inventory-cloth",
-    note: "통: 손마디로 통통 두드리고 흔들어 본다, 나무 뚜껑이 벗겨진 흔적",
+    note: "통: 통통 두드리고 밑동을 축으로 좌우로 기울여 본다, 나무 뚜껑이 벗겨진 흔적",
   },
   {
     kind: "jar", match: /항아리|단지|독/, style: "jar", extraSe: "cc0-se-ors-wood-04",
-    note: "항아리: 사기 뚜껑을 살짝 들어 올리는 맑은 팅 소리, 흔들림 거의 없음",
+    note: "항아리: 작은 사기 뚜껑이 톡 떠올랐다 내려앉는다(맑은 팅), 흔들림 없음",
   },
   {
     kind: "basket", match: /바구니/, style: "straw", extraSe: "cc0-se-osx-paper-03",
@@ -54,11 +54,11 @@ export const FALLEN_OPEN_EFFECTS: readonly FallenOpenEffect[] = [
   },
   {
     kind: "sack", match: /자루|포대/, style: "sack", extraSe: "cc0-se-ors-chain-01",
-    note: "자루: 묵직한 천 자루를 풀자 낟알이 사르륵 쏟아진다",
+    note: "자루: 묵직한 천 자루를 풀자 폭 주저앉으며 낟알이 사르륵 쏟아진다",
   },
   {
     kind: "crate", match: /상자|짐짝/, style: "crate",
-    note: "상자: 못 박힌 판자를 비집어 연다(둔탁한 쿵, 나무 조각 튐)",
+    note: "상자: 윗판 하나를 비집어 들었다 내려놓는다(둔탁한 쿵, 나무 조각 튐)",
   },
 ];
 
