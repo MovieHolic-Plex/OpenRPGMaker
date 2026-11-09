@@ -290,6 +290,53 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     manifest.links.push({ from: map.id, to: target.id, eventId: e.id, source: at, destination: landing, ...(required ? { required } : {}) });
   }
 
+  // 길 출구(connect)는 문 칸만이 아니라 그 길의 폭 전체가 문이어야 한다 — 한 칸에만 놓으면 다른 열을 따라 지도 끝까지 걸어가도 넘어가지 못했다
+  // (별싹 마을 북쪽 길 왼쪽 열 x=10 에서 막힘, 사냥터 북쪽 14칸 폭 중 1칸만 문 — 2026-11-08 terra-autopilot c1·c4·c5·c9). 잠긴 길은 같은 잠금 문을 그대로 깐다.
+  // 건물 문(attachRoom)·계단은 한 칸이 맞으므로 늘리지 않는다. 다른 문·표지판·착지 칸 고르기를 방해하지 않도록 이벤트는 세계를 다 지은 뒤 깐다(placeEdgeDoors).
+  const edgeDoors: { map: GameMap; name: string; at: Point; commands: Command[] }[] = [];
+  function edgeDoor(map: GameMap, target: GameMap, at: Point): void {
+    const door = map.events.find(e => e.id === `${map.id}_to_${target.id}`)!;
+    edgeDoors.push({ map, name: door.id, at, commands: structuredClone(door.pages![0]!.commands) });
+  }
+
+  /** 문 칸과 같은 줄에서 가장자리까지 곧게 걸어 나갈 수 있는 칸들(문 칸 포함). 문이 가장자리에서 4칸보다 멀면 문 칸뿐이다. */
+  function edgeLaneTiles(map: GameMap, at: Point): Point[] {
+    const dist = { N: at.y, S: map.height - 1 - at.y, W: at.x, E: map.width - 1 - at.x };
+    const [side, near] = Object.entries(dist).sort((a, b) => a[1] - b[1])[0]! as ["N" | "S" | "W" | "E", number];
+    if (near > 4) return [at];
+    const out = { N: [0, -1], S: [0, 1], W: [-1, 0], E: [1, 0] }[side];
+    const along = side === "N" || side === "S" ? [1, 0] : [0, 1];
+    const open = (p: Point, q: Point) => q.x >= 0 && q.y >= 0 && q.x < map.width && q.y < map.height && isPassableLanding(project, map, q.x, q.y) && canMove(project, map, p.x, p.y, q.x, q.y);
+    const lane = (p: Point) => { let q = p; for (let i = 0; i < near; i++) { const n = { x: q.x + out[0]!, y: q.y + out[1]! }; if (!open(q, n)) return false; q = n; } return true; };
+    const found: Point[] = [at];
+    for (const sign of [-1, 1]) for (let from = at; ;) {
+      const q = { x: from.x + sign * along[0]!, y: from.y + sign * along[1]! };
+      if (!open(from, q)) break;
+      if (lane(q)) found.push(q);
+      from = q;
+    }
+    // 곧은 열은 아니어도 돌아서 가장자리 줄에 닿는 통행 칸(문 주변 띠 안)도 문이다 — 막다른 가장자리 칸에 서면 더 갈 곳이 없다.
+    const toEdge = (p: Point) => side === "N" ? p.y : side === "S" ? map.height - 1 - p.y : side === "W" ? p.x : map.width - 1 - p.x;
+    const seen = new Set([coord(at)]), queue = [at];
+    for (let n = 0; n < queue.length; n++) {
+      const q = queue[n]!;
+      if (toEdge(q) === 0 && !found.some(f => f.x === q.x && f.y === q.y)) found.push(q);
+      for (const [dx, dy] of directions) {
+        const r = { x: q.x + dx, y: q.y + dy };
+        if (!seen.has(coord(r)) && r.x >= 0 && r.y >= 0 && r.x < map.width && r.y < map.height && toEdge(r) <= near && open(q, r)) { seen.add(coord(r)); queue.push(r); }
+      }
+    }
+    return found;
+  }
+
+  function placeEdgeDoors(): void {
+    for (const d of edgeDoors) for (const p of edgeLaneTiles(d.map, d.at)) {
+      // 이미 문이 선 칸·사람·표지판이 막은 칸은 건너뛴다(막힌 칸은 걸어 닿지 못한다).
+      if (d.map.events.some(e => e.x === p.x && e.y === p.y && (e.pages?.[0]?.overlapForbidden || JSON.stringify(e.pages ?? e.commands).includes('"kind":"transfer"')))) continue;
+      event(d.map, `${d.name}_edge_${p.x}_${p.y}`, p, structuredClone(d.commands), { trigger: "playerTouch", below: true, graphic: invisible });
+    }
+  }
+
   // 입구에서 걸어 닿는 칸 — 막는 사람·표지판 칸은 지나지 못하고, 이동 칸(문)은 닿기만 하고 넘어가지 않는다.
   function walkable(map: GameMap, extraBlock?: Point): Set<string> {
     const solid = new Set(map.events.filter(e => e.pages?.[0]?.overlapForbidden).map(e => coord(e)));
@@ -351,6 +398,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const landB = nearest(b, { x: atB.x, y: atB.y + (drawnDoor ? 1 : -1) }, cb, true);
     reserve(b, landB);
     portal(a, b, atA, landB, required); portal(b, a, atB, landA);
+    edgeDoor(a, b, atA); edgeDoor(b, a, atB);
     // Visible, inspectable signposts explain interior route entrances.
     // 표지판은 길목이 아닌 칸에 세운다 — 그 칸 하나 말고는 걸어 닿는 칸이 줄지 않아야 한다.
     // 나무 이정표는 바깥(마을·길)에만, 이미 3칸 안에 표지판이 있으면 더 세우지 않는다 — 리그 경기장·배 복도에 나무 이정표가 서고
@@ -957,6 +1005,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
       { x: pond.area.x - 1, y: pond.area.y + (pond.area.h >> 1) },
       [{ kind: "fork", condition: { kind: "item", itemId: EXPEDITION_FISHING_ROD_ID, present: false }, then: [gain(EXPEDITION_FISHING_ROD_ID, 1), text("낚싯대를 받았다! 물가를 바라보고 조사하면 낚시를 할 수 있다.")], else: [text("낚싯대는 이미 가지고 있구나. 물가에서 마음껏 써 봐.")] }], 6);
   }
+  placeEdgeDoors();
   repairExpeditionNpcLayout(project);
   repairExpeditionResidents(project, lookOf);
   repairExpeditionShopPrices(project);
