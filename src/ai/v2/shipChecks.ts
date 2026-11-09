@@ -24,7 +24,8 @@ import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, 
 import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
 import { strayStepCopies, walkBlueprint } from "./blueprint";
-import { assemblyTimeMismatches, blueprintStoryText } from "@/project/blueprintAssembly";
+import { assemblyTimeMismatches, blankMap, blueprintStoryText } from "@/project/blueprintAssembly";
+import { openingMapViewMapId } from "@/project/openingMapView";
 import { battleSites, encounterMaps, healingSources, repeatableHealingSources } from "./combatChecks";
 import { projectScriptMentionsCmdKind } from "@/project/script/effects";
 
@@ -543,10 +544,10 @@ export function openingMissing(project: Project): ShipBlocker[] {
   const op = (project.system as unknown as Obj).opening as Obj | undefined;
   const scenes = ((op?.scenes as unknown[] | undefined) ?? []).length;
   const staged = !!op?.stage;
-  if (op && op.enabled !== false && (scenes > 0 || staged)) return [];
+  if (op && op.enabled !== false && (scenes >= 2 || staged)) return [];
   return [{
     id: "opening-missing",
-    message: `이 게임에는 오프닝이 없다(${!op || op.enabled === false ? "꺼져 있다" : "장면이 0개다"}) — 새 게임을 누르면 설명 없이 곧바로 필드가 열린다. plan_opening·set_opening 으로 이 게임의 오프닝(장면 둘 이상, 첫 장면부터 이 이야기)을 짓고 {enabled:true} 로 둔다. 맵 위 무대는 author_opening_stage 로도 된다.`,
+    message: `이 게임에는 오프닝이 없다(${!op || op.enabled === false ? "꺼져 있다" : `장면이 ${scenes}개뿐이다(둘 이상 필요)`}) — 새 게임을 누르면 설명 없이 곧바로 필드가 열린다. plan_opening·set_opening 으로 이 게임의 오프닝(장면 둘 이상, 첫 장면부터 이 이야기)을 짓고 {enabled:true} 로 둔다. 맵 위 무대는 author_opening_stage 로도 된다.`,
     evidence: `opening.enabled=${String(op?.enabled)} scenes=${scenes} stage=${staged}`,
   }];
 }
@@ -559,11 +560,15 @@ export function openingMissing(project: Project): ShipBlocker[] {
 export function bundledPictureLeft(project: Project): ShipBlocker[] {
   const out: ShipBlocker[] = [];
   const bundled = (id: string | undefined): id is string => !!id && isBundledPictureId(id) && !ROMANCE_TITLE_BACKGROUNDS.includes(id);
+  // 아직 아무것도 짓지 않은 빈 맵의 화면은 단색이라 «이 게임의 그림»이 아니다 — 맵 화면도 지은 맵이어야 한다.
+  const blankView = (id: string | undefined): id is string => { const mapId = openingMapViewMapId(id); const map = mapId ? project.maps[mapId] : undefined; return !!map && blankMap(map); };
   const title = (project.system.titleScreen ?? {}) as { backgroundResourceId?: string };
   const titleBg = title.backgroundResourceId ?? (project.system as unknown as Obj).titleResourceId as string | undefined;
-  if (bundled(titleBg)) out.push({ id: "bundled-picture", message: `타이틀 그림이 번들 스틸(${titleBg})이다 — 어느 게임이나 고를 수 있는 같은 그림이라 이 게임의 그림이 아니다. 이 게임의 시작 장소 화면(map-view:<맵 id>)이나 생성·올린 그림을 set_title_screen{backgroundResourceId} 로 쓴다(list_resources{kind:'backdrop'} 에서 map-view 를 고를 수 있다).`, evidence: `titleScreen.backgroundResourceId=${titleBg}` });
+  if (blankView(titleBg)) out.push({ id: "bundled-picture", message: `타이틀 그림이 빈 맵 화면(${titleBg})이다 — 아직 아무것도 짓지 않은 맵은 단색이다. 이 게임의 장소를 지은 뒤 그 맵 화면을 쓰거나 다른 그림을 고른다.`, evidence: `titleScreen.backgroundResourceId=${titleBg}` });
+  else if (bundled(titleBg)) out.push({ id: "bundled-picture", message: `타이틀 그림이 번들 스틸(${titleBg})이다 — 어느 게임이나 고를 수 있는 같은 그림이라 이 게임의 그림이 아니다. 이 게임의 시작 장소 화면(map-view:<맵 id>)이나 생성·올린 그림을 set_title_screen{backgroundResourceId} 로 쓴다(list_resources{kind:'backdrop'} 에서 map-view 를 고를 수 있다).`, evidence: `titleScreen.backgroundResourceId=${titleBg}` });
   for (const ending of project.endings ?? []) {
     const shown = endingBackdropCandidates(project, ending.presentation?.backgroundResourceId)[0];
+    if (blankView(shown)) { out.push({ id: "bundled-picture", message: `엔딩 「${ending.name || ending.id}」 그림이 빈 맵 화면(${shown})이다 — 아직 아무것도 짓지 않은 맵은 단색이다. 지은 장소의 맵 화면이나 다른 그림을 준다.`, evidence: `endings[${ending.id}].backgroundResourceId=${shown}` }); break; }
     if (!bundled(shown)) continue;
     out.push({ id: "bundled-picture", message: `엔딩 「${ending.name || ending.id}」 그림이 번들 스틸(${shown})이다 — 어느 게임이나 고를 수 있는 같은 그림이다. define_ending 의 presentation.backgroundResourceId 에 이 게임의 장소 화면(map-view:<맵 id>)이나 생성·올린 그림을 준다.`, evidence: `endings[${ending.id}].backgroundResourceId=${shown}` });
     break;

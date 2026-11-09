@@ -175,10 +175,10 @@ export function blueprintPlaceMapId(project: Project, blueprint: GameBlueprint):
 }
 
 /**
- * 이 프로젝트의 청사진에 맞는 타이틀 그림: 강하게 맞는 번들 그림, 없으면 그 게임의 첫 장소(시작 맵)를 도트 그대로 그린 화면
+ * 이 프로젝트의 청사진에 맞는 타이틀 그림: 그 게임의 첫 장소(시작 맵)를 도트 그대로 그린 화면
  * (`map-view:<mapId>` — 오프닝의 「게임 속 맵 그대로」 배경과 같은 id, 플레이어가 타일 층을 그려 쓴다). 화풍이 게임과 같고 게임마다 다르다.
  */
-function blankMap(map: GameMap): boolean {
+export function blankMap(map: GameMap): boolean {
   if (map.events.length > 0 || Object.keys(map.lowerTileStacks ?? {}).length > 0 || Object.keys(map.upperTileStacks ?? {}).length > 0) return false;
   if (map.upperTiles.some((tile) => tile !== TILE.EMPTY)) return false;
   return map.lowerTiles.every((tile) => tile === map.lowerTiles[0]);
@@ -187,8 +187,8 @@ function blankMap(map: GameMap): boolean {
 export function pickBlueprintTitleArt(project: Project): TitleArtPick | undefined {
   const blueprint = project.gameBlueprint;
   if (!blueprint) return undefined;
-  const art = pickTitleArtForStory(blueprintPremiseText(project, blueprint), blueprintStoryText(project, blueprint));
-  if (art) return art;
+  // 번들 스틸(오프닝 스틸 카탈로그·번들 타이틀 그림)은 고르지 않는다 — 어느 게임이나 고를 수 있는 같은 그림이라 출하 검사(bundled-picture)가 막는다(2026-11-09).
+  // 그 게임의 첫 장소 화면이 타이틀 그림이다. 화풍이 게임과 같고 게임마다 다르다.
   const mapId = blueprintPlaceMapId(project, blueprint);
   const map = mapId ? project.maps[mapId] : undefined;
   // 아직 아무것도 안 지은 빈 맵은 화면이 단색이고, 타이틀이 그 맵을 가리키면 빌더가 빈 시작 맵을 지우고 다시 짓는 길이 무결성 검사에 막힌다

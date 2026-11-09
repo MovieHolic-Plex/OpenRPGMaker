@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
+import { blankMap } from "@/project/blueprintAssembly";
 import { factoryArtResourceIds } from "@/project/defaultLeaks";
 import { applyShipDefaults } from "@/ai/v2/shipDefaults";
 import { buildsWholeGame, bundledPictureLeft, openingMissing, shipBlockers } from "@/ai/v2/shipChecks";
@@ -79,6 +80,11 @@ describe("a finished game must open with an opening", () => {
     p.system.opening = { ...p.system.opening!, enabled: true, scenes: [] };
     expect(openingMissing(p)).toHaveLength(1);
     p.system.opening = { ...p.system.opening!, enabled: true, scenes: [{ id: "s1", kind: "text", narration: "새벽마을의 등불이 꺼졌다.", durationMs: 3000 } as never] };
+    expect(openingMissing(p)).toHaveLength(1);
+    p.system.opening = { ...p.system.opening!, enabled: true, scenes: [
+      { id: "s1", kind: "text", narration: "새벽마을의 등불이 꺼졌다.", durationMs: 3000 } as never,
+      { id: "s2", kind: "text", narration: "이안은 낡은 표지판을 향해 걸었다.", durationMs: 3000 } as never,
+    ] };
     expect(openingMissing(p)).toHaveLength(0);
     p.system.opening = { ...p.system.opening!, enabled: true, scenes: [], stage: { mapId: p.startMapId, x: 1, y: 1, eventId: "ev_opening_stage" } as never };
     expect(openingMissing(p)).toHaveLength(0);
@@ -101,8 +107,13 @@ describe("a bundled still is not this game's picture", () => {
     p.endings[0]!.presentation = { finalTitle: "끝", backgroundResourceId: "oprn-pack-still-sky-01" } as never;
     expect(bundledPictureLeft(p).map((b) => b.evidence.split("=")[0])).toEqual(["titleScreen.backgroundResourceId", expect.stringContaining("endings[e1]")]);
     expect(shipBlockers(p, WHOLE).map((b) => b.id)).toContain("bundled-picture");
+    const start = p.maps[p.startMapId!]!;
+    expect(blankMap(start)).toBe(true);
     p.system.titleScreen = { ...p.system.titleScreen!, backgroundResourceId: `map-view:${p.startMapId}` };
     p.endings[0]!.presentation = { finalTitle: "끝", backgroundResourceId: `map-view:${p.startMapId}` } as never;
+    expect(bundledPictureLeft(p).map((b) => b.message)).toEqual([expect.stringContaining("빈 맵"), expect.stringContaining("빈 맵")]);
+    start.events.push({ id: "ev_sign", name: "표지판", x: 3, y: 3, pages: [{ conditions: [], trigger: "action", commands: [] }] } as never);
+    expect(blankMap(start)).toBe(false);
     expect(bundledPictureLeft(p)).toHaveLength(0);
   });
 
@@ -114,9 +125,11 @@ describe("a bundled still is not this game's picture", () => {
   });
 
   it("is never excused as a preexisting defect on a continuation turn", () => {
-    const problem = { key: "game:bundled", text: "[출하 차단 bundled-picture] 타이틀 그림이 번들 스틸이다", source: "gate" as const };
-    const split = splitPreexisting([problem], new Set([problem.key]), undefined, undefined);
-    expect(split.current).toHaveLength(1);
-    expect(split.preexisting).toHaveLength(0);
+    for (const id of ["bundled-picture", "ending-screen", "ending-bg", "title-image", "opening-missing"]) {
+      const problem = { key: `game:${id}`, text: `[출하 차단 ${id}] 남은 기본값`, source: "gate" as const };
+      const split = splitPreexisting([problem], new Set([problem.key]), undefined, undefined);
+      expect(split.current, id).toHaveLength(1);
+      expect(split.preexisting, id).toHaveLength(0);
+    }
   });
 });

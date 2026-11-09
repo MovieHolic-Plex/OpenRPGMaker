@@ -5,6 +5,8 @@ import { playCinematicSequence } from "@/player/cinematicSequence";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
 import { endingBackdropCandidates, factoryArtResourceIds } from "@/project/defaultLeaks";
+import { openingMapViewMapId } from "@/project/openingMapView";
+import { renderMapViewCanvas } from "@/player/mapBackgroundMapView";
 import { gameOverOutcome, resolveGameOverSettings, type GameOverSettings, DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID, DEFAULT_GAME_OVER_FADE_OUT_MS } from "@/project/cinematicSettings";
 import { createTerminalScene, type TerminalScene } from "@/player/terminalScene";
 import type { EndingPresentation } from "@/project/cinematicSettings";
@@ -391,19 +393,29 @@ function buildEndingCg(terminal: TerminalScene, project: Project, presentation: 
   const partnerKey = ending?.conditions.find((condition) => condition.kind === "friendshipAtLeast" && condition.npcKey !== ANY_FRIENDSHIP_KEY);
   const couple = presentation?.portraits === "none" ? {} as ReturnType<typeof resolveEndingCouplePortraits> : resolveEndingCouplePortraits(project, partnerKey?.kind === "friendshipAtLeast" ? partnerKey.npcKey : undefined);
   const backdropId = endingBackdropResourceId(project, presentation);
-  const backdropUrl = backdropId ? resolveAssetResourceUrl(backdropId, { project }) : null;
+  const backdropMapId = openingMapViewMapId(backdropId);
+  // 「게임 속 맵 그대로」(map-view:<맵>)는 파일 주소가 없다 — 먼저 빈 판을 세우고 맵을 그리는 대로 그림을 넣는다(타이틀 배경과 같은 그림, systemGraphics.applyTitleMapView).
+  const backdropUrl = backdropId ? (backdropMapId ? "" : resolveAssetResourceUrl(backdropId, { project })) : null;
   const partnerFigure = couple.partner && endingFigure(project, couple.partner, "partner");
   const heroFigure = couple.hero && partnerFigure ? endingFigure(project, couple.hero, "hero") : undefined;
-  if (!backdropUrl && !partnerFigure) return undefined;
+  if (!backdropUrl && !backdropMapId && !partnerFigure) return undefined;
   const layer = textNode("div", "ending-cg", "");
   layer.dataset.testid = "ending-cg";
-  if (backdropUrl) {
+  if (backdropUrl || backdropMapId) {
     const image = document.createElement("img");
     image.className = "ending-cg-backdrop";
     image.alt = "";
     image.draggable = false;
     image.addEventListener("error", () => image.remove(), { once: true, signal: terminal.signal });
-    image.src = backdropUrl;
+    if (backdropUrl) image.src = backdropUrl;
+    else {
+      image.hidden = true;
+      void renderMapViewCanvas(project, { mapId: backdropMapId!, scale: 1, haze: 0, desaturate: 0, hazeColor: "#000000" }).then((canvas) => {
+        if (!canvas || terminal.signal.aborted) { image.remove(); return; }
+        image.src = canvas.toDataURL("image/png");
+        image.hidden = false;
+      }).catch(() => image.remove());
+    }
     layer.append(image);
   }
   layer.append(textNode("div", "ending-cg-grade", ""), textNode("div", "ending-cg-bokeh", ""));
