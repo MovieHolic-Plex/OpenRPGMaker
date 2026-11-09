@@ -199,6 +199,7 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
   // A fresh editor now starts with the conversation folded. Open it through
   // the visible restore control before using the actual input/settings UI.
   await openAssistant(page);
+  await selectAssistantTab(page);
   await page.getByTestId('ai-input').waitFor({state:'visible',timeout:HARNESS_WAIT_MS});
   // 로컬 CLI 엔진: 부팅 직후 첫 연결 확인이 부하로 시간 초과하면 그 결과(unreachable)를 캐시해 입력칸이 끝까지 잠긴다
   // (2026-10-30 실측, 부하 80: 「Claude Code (내 PC) 연결 확인 필요」 → fill 120초 초과). 워커는 그사이 데워지므로 다시 읽어 확인을 새로 받는다(최대 2번).
@@ -212,6 +213,7 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
     await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:bootTimeoutMs});
     await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && document.querySelector('[data-testid="ai-input"]'),null,{timeout:HARNESS_WAIT_MS});
     await openAssistant(page);
+    await selectAssistantTab(page);
     await page.getByTestId('ai-input').waitFor({state:'visible',timeout:HARNESS_WAIT_MS});
   }
   return { page,context,loads };
@@ -223,6 +225,17 @@ async function openAssistant(page){
   if(await top.isVisible().catch(()=>false)){await top.click();return;}
   const restore=page.getByTestId('ai-collapsed-restore');
   if(await restore.isVisible().catch(()=>false))await restore.click();
+}
+// 2026-11-07 (#4354): the assistant dock now carries a 「조수 | 에이전트」 tab row, and it defaults to the AGENT tab once a
+// coding agent is installed on the box (Claude Code is, on every harness host). The agent tab replaces ai-input, so the
+// assistant tab must be selected before the input is usable — otherwise every A run and every B/C live view times out on
+// `ai-input` visible (measured: 204 locator polls, 120 s, host-failed).
+async function selectAssistantTab(page){
+  const tab=page.getByTestId('agent-mode-tab-assistant');
+  if(!await tab.isVisible().catch(()=>false))return false;
+  if(await page.getByTestId('ai-input').isVisible().catch(()=>false))return true;
+  await tab.click();
+  return true;
 }
 async function saveThroughUi(page) {
   await page.getByTestId('toolbar-save').click();
