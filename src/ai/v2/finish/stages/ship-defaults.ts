@@ -11,7 +11,8 @@ export const stage: FinishStage = {
       assembled.push(...applied);
       // 예산을 넘긴 맞춤은 «기록하고 완료는 허용» — 모델이 풀 수 없고 같은 입력이면 같은 곳에서 또 멈춘다. 최종 보고가 이 줄을 읽는다.
       const cut = applied.find((line) => line.startsWith(FIT_INCOMPLETE_PREFIX));
-      if (cut) { session.fitIncomplete = cut; env.emit({ type: "execution_status", name: "v2.fit.incomplete", ok: false, summary: cut.slice(0, 300) }); }
+      session.fitIncomplete = cut; // 끊기지 않았으면 지운다 — 늦은 청사진으로 다시 돈 맞춤이 끝까지 성공하면 앞의 «미완» 기록이 남지 않는다.
+      if (cut) { env.emit({ type: "execution_status", name: "v2.fit.incomplete", ok: false, summary: cut.slice(0, 300) }); }
     }
     catch (error) { env.emit({ type: "execution_status", name: "v2.assembly", ok: false, summary: `출하 기본값을 채우지 못했다: ${error instanceof Error ? error.message : String(error)}` }); }
   },

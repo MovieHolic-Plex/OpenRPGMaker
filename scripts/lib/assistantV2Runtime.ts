@@ -542,7 +542,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     const leftovers = left.flatMap((o) => o.problems.slice(0, 3).map((p) => `${o.name}(${o.mapId}): ${p.replace(/ — (dress_room|네가 설계한 방이다).*$/u, "").slice(0, 200)}`));
     if (session.fitIncomplete) autoNotes.push(`${session.fitIncomplete} — 게임은 열리지만 첫 관문 승률은 이 요청에서 보정되지 않았다`);
     const vqaLeft = vqaRounds.length ? vqaSummary(vqaRounds) : undefined;
-    if (!(options.signal?.aborted) && !session.questions.length && (store.items.length || leftovers.length)) {
+    if (!(options.signal?.aborted) && !session.questions.length && (store.items.length || leftovers.length || session.fitIncomplete)) {
       const report = todoReport({ store, draft, leftovers, missing: [...session.missingArt], autoNotes, preexisting: [...preexisting.values()], ...(loopStop ? { loopStop } : {}), ...(vqaLeft && !vqaLeft.clean ? { vqa: vqaLeft.text } : {}) });
       options.onEvent?.({ type: "execution_status", name: "v2.todo.final", ok: report.complete, at: Date.now(), summary: `할 일 최종 — ${report.complete ? "완료" : "아직 완료 아님"} · ${store.view(0).split("\n")[0]}${report.receipts.length ? ` · 보고와 다른 것 ${report.receipts.length}` : ""}`, data: { complete: report.complete, receipts: report.receipts, list: store.view(), items: store.items, reinjections, loopStop } });
       if (store.items.length || /통과|없음|다\s*됐|완료/u.test(draft) || !draft) options.onEvent?.({ type: "assistant", text: report.text });

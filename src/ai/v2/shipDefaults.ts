@@ -45,7 +45,7 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   // 곡선 → 스타터 맞춤(선물 동료·기술·깎기)을 바뀌는 것이 없을 때까지(최대 3바퀴). 선물 동료가 생기면 다음 바퀴 곡선이 관문을 더 올릴 수 있다 —
   // 한 바퀴만 돌면 두 번째 끝맺음이 관문을 또 올렸다(멱등 아님).
   // 맞춤은 시간 예산이 있다(monsterRouteLevels FIT_BUDGET_MS) — 모의전이 워커 이벤트 루프를 수백 초 막아 턴이 끊겼다(2026-11-09 monster).
-  // 예산을 넘으면 거기서 멈추고 «미완» 을 한 줄로 남긴다(침묵 금지; 출하 검사 fit-budget 도 같은 사실을 읽는다).
+  // 예산을 넘으면 거기서 멈추고 «미완» 을 한 줄로 남긴다(침묵 금지; 끝맺음 단계가 session.fitIncomplete 로 옮겨 최종 보고가 읽는다).
   beginFitBudget(project);
   // 바퀴마다 맞춤이 건드리는 부분(적·트룹·종 기술 레벨·맵 조우표·이벤트 — 시험으로 바꿨다 되돌리는 값, 선물 동료 splice 포함)을 먼저 떠 둔다.
   // 예산이 시험 한가운데서 터지면(대부분 그렇다) 되돌리기 코드를 건너뛰어 퇴짜 맞은 종·레벨이 출하된다(2026-11-09 ultrabrain 검토) —

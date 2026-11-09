@@ -90,7 +90,7 @@ const fitSimCache = new WeakMap<Project, Map<string, ReturnType<typeof simulateB
  * 맞춤 시간 예산(벽시계). 끝맺음 한 번이 필수전투 모의전을 수백 초 동기로 돌려 워커 이벤트 루프를 막고, heartbeat 가 멎어 호스트가 300초
  * 무음으로 턴을 끊었다(2026-11-09 monster m3~m9 일곱 판: assembly:ship-defaults 414초 · 프로파일 80% 가 fitRequiredBattlesToStarters 의 simulateBattle,
  * 캐시 키 계산은 0.18초 — 비용은 키가 아니라 모의전 자체). 예산을 넘으면 FitBudgetExceeded 를 던져 맞춤 전체를 «미완» 으로 멈추고, 호출자가
- * 침묵하지 않고 기록한다(applied 한 줄 + 출하 검사 fit-budget). 맞춤은 «바뀐 것만 남는다» 라 중간에 멈춰도 프로젝트는 일관된다 — 레벨 곡선이 덜 맞을 뿐이다.
+ * 침묵하지 않고 기록한다(applied 한 줄 + session.fitIncomplete → 최종 보고; 끝내기는 막지 않는다). 시험 한가운데서 끊기면 시험값이 남으므로 호출자(applyShipDefaults)가 바퀴 단위로 snapshotFitState/restoreFitState 해 마지막으로 끝난 바퀴로 돌아간다 — 레벨 곡선이 덜 맞을 뿐이다.
  */
 export const FIT_BUDGET_MS = 60_000;
 /** applied 줄의 머리말 — 끝맺음 단계가 이 접두로 «맞춤 미완» 을 알아본다. */
@@ -100,7 +100,7 @@ interface FitBudget { start: number; limitMs: number; exceededAt?: number }
 const fitBudgets = new WeakMap<Project, FitBudget>();
 /** 이 프로젝트의 맞춤 예산을 새로 시작한다(끝맺음 한 번 = applyShipDefaults 한 번). 이미 초과한 기록은 지운다. */
 export function beginFitBudget(project: Project, limitMs = FIT_BUDGET_MS): void { fitBudgets.set(project, { start: Date.now(), limitMs }); }
-/** 마지막 맞춤이 예산을 넘겨 멈췄나(출하 검사가 읽는다 — 다음 beginFitBudget 까지 남는다). */
+/** 마지막 맞춤이 예산을 넘겨 멈췄나(다음 beginFitBudget 까지 남는다). 프로젝트 객체는 체크포인트·다시 읽기에서 바뀌어 기록을 못 지키므로 보고용 기록은 session.fitIncomplete 에 있다 — 이것은 같은 호출 안의 확인·테스트용이다. */
 export function fitBudgetExceeded(project: Project): number | undefined { return fitBudgets.get(project)?.exceededAt; }
 /** 맞춤이 건드리는 부분의 스냅숏 — 적·트룹·종 배우는 기술 레벨·맵 조우표와 이벤트(선물 동료 splice). 예산이 시험 한가운데서 터져도 이 상태로 돌린다. */
 export interface FitState { readonly enemies: unknown; readonly troops: unknown; readonly species: unknown; readonly maps: ReadonlyMap<string, { readonly encounterTable: unknown; readonly events: unknown }> }

@@ -98,9 +98,12 @@ describe("the finish stage records the cut on the session and never blocks finis
     try { shipDefaultsStage.run({ env, session, assembled, done: [], walked: [] } as never); } finally { state.mode = "pass"; }
     expect(session.fitIncomplete?.startsWith(FIT_INCOMPLETE_PREFIX)).toBe(true);
     expect(events.some((e) => e.name === "v2.fit.incomplete")).toBe(true);
-    // 체크포인트·다시 읽기가 프로젝트 객체를 바꿔도 세션 기록은 남는다.
+    // 체크포인트·다시 읽기가 프로젝트 객체를 바꿔도 세션 기록은 남고, 끝내기를 막는 출하 차단은 없다.
     const replaced = structuredClone(p);
-    expect(session.fitIncomplete).toBeDefined();
     expect(shipBlockers(replaced, WHOLE).map((b) => b.id)).not.toContain("fit-budget");
+    expect(session.fitIncomplete?.startsWith(FIT_INCOMPLETE_PREFIX)).toBe(true);
+    // 다시 돈 맞춤이 끝까지 성공하면 앞의 미완 기록은 지워진다.
+    shipDefaultsStage.run({ env: { ctx: { project: replaced }, request: { task: WHOLE }, emit() {} } as never, session, assembled: [], done: [], walked: [] } as never);
+    expect(session.fitIncomplete).toBeUndefined();
   });
 });
