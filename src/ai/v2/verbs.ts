@@ -129,6 +129,11 @@ export class V2Session {
   readonly dungeonBounced = new Set<string>();
   /** 장소 지식 카드(prompt.ts placeSpecCards)를 기록으로 준 종류 → 그때의 대화 번호(env.contextEpoch). 대화가 비워지면 다시 준다. */
   readonly specsShown = new Map<string, number>();
+  /**
+   * generate_art 가 그림 생성을 시도한 기록(오너 2026-11-09 「인게임 스크린샷은 AI 가 그림을 그릴 수 없을 때로만」): 타이틀·엔딩 → 시도 결과.
+   * ok = 만들어 건다 · failed = 생성이 실패(오류 글) · unavailable = 이미지 생성 경로가 이 실행에 없다. 끝맺음 관문은 map-view 그림을 이 기록이 있을 때만 허용한다.
+   */
+  readonly artAttempts = new Map<"title" | "ending", { readonly status: "ok" | "failed" | "unavailable"; readonly error?: string }>();
   /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
   blueprintRewrites = 0;
   /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
@@ -1375,6 +1380,61 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
+  /**
+   * generate_art — 타이틀·엔딩 그림을 이미지 모델로 만들어 건다(오너 2026-11-09: 맵 화면 그림은 생성이 안 될 때만 허용).
+   * 생성기가 이 실행에 없거나 던지면 그 사실(오류)을 session.artAttempts 에 남기고 실패로 돌려준다 — 끝맺음 관문이 그 기록이 있으면 맵 화면 그림을 받아 준다.
+   */
+  const generateArtVerb: PiToolShape = {
+    name: "generate_art", label: "타이틀·엔딩 그림 만들기", concurrency: "exclusive",
+    description: "Generate one picture with the image model and set it as this game's title background or an ending background. Use it so the title/ending are not a map screenshot or a bundled still. prompt = the scene in one or two sentences about THIS story (no text/letters in the picture).",
+    parameters: { type: "object", properties: {
+      target: { type: "string", enum: ["title", "ending"] },
+      prompt: { type: "string", description: "the scene of THIS game's story, 1-2 sentences; no text, logos or borders" },
+      endingId: { type: "string", description: "ending target only: the ending id (default: every ending without its own picture)" },
+    }, required: ["target", "prompt"] },
+    async execute(_id, params, signal) {
+      const p = params as { target?: string; prompt?: string; endingId?: string };
+      const target = p.target === "ending" ? "ending" : "title";
+      const prompt = String(p.prompt ?? "").replace(/\s+/gu, " ").trim();
+      if (prompt.length < 8) return text({ ok: false, summary: "prompt must describe the scene in at least a sentence" });
+      if (!env.generateImage) {
+        session.artAttempts.set(target, { status: "unavailable", error: "image generation is not available in this run" });
+        return text({ ok: false, summary: `Picture generation is unavailable in this run — recorded. A map-view ${target} picture is then accepted; say in the final report that the picture could not be generated.` });
+      }
+      const full = [
+        "Create exactly one 16:9 key-art background for the " + (target === "title" ? "title screen" : "ending screen") + " of a 2D JRPG.",
+        `Scene (this game's own story): ${JSON.stringify(prompt)}.`,
+        "Keep the left third calm so a menu or credits stay readable. Do not add any text, letters, logos, titles, watermarks, menus, buttons, borders or letterboxing.",
+      ].join("\n\n");
+      let image: Awaited<ReturnType<NonNullable<typeof env.generateImage>>>;
+      try { image = await env.generateImage({ prompt: full, ...(signal ? { signal } : {}) }); }
+      catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        session.artAttempts.set(target, { status: "failed", error: message.slice(0, 300) });
+        return text({ ok: false, summary: `Picture generation failed (recorded): ${message.slice(0, 200)}. You may retry once with a different prompt; after a recorded failure a map-view ${target} picture is accepted — say so in the final report.` });
+      }
+      const resourceId = `gen-${target}-${Date.now().toString(36)}`;
+      const reg = run.call("upsert_resource", { resource: { id: resourceId, name: `${target === "title" ? "Title" : "Ending"} art`, kind: target === "title" ? "title" : "backdrop", dataUrl: image.dataUrl } });
+      if (!reg.ok) { session.artAttempts.set(target, { status: "failed", error: String(reg.summary).slice(0, 300) }); return text({ ok: false, summary: `The picture was made but could not be registered: ${reg.summary}` }); }
+      if (target === "title") {
+        const set = run.call("set_title_screen", { backgroundResourceId: resourceId, backgroundFit: "cover", backgroundRendering: "smooth" });
+        if (!set.ok) return text({ ok: false, summary: `The title picture was registered but not set: ${set.summary}` });
+      } else {
+        const wanted = p.endingId ? [p.endingId] : (env.ctx.project.endings ?? []).map((e) => e.id);
+        if (!wanted.length) return text({ ok: false, summary: "No ending is defined yet — define the ending first (define_ending), then generate its picture." });
+        for (const eid of wanted) {
+          const ending = (env.ctx.project.endings ?? []).find((e) => e.id === eid);
+          if (!ending) return text({ ok: false, summary: `No ending ${eid}` });
+          const wrote = run.call("define_ending", { id: ending.id, name: ending.name, presentation: { ...(ending.presentation ?? {}), backgroundResourceId: resourceId } });
+          if (!wrote.ok) return text({ ok: false, summary: `Could not set the ending picture: ${wrote.summary}` });
+        }
+      }
+      session.artAttempts.set(target, { status: "ok" });
+      await env.checkpoint("generate_art");
+      return text({ ok: true, summary: `The ${target} picture is generated (${image.provider} ${image.model}) and set (${resourceId}).` });
+    },
+  };
+
   const drawObjectVerb: PiToolShape = {
     name: "draw_object", label: "없는 물건 그리기", concurrency: "exclusive",
     description: "Hand an object the chipset lacks to the workshop one-click drawing path. The result summary honestly says whether it was placed or is pending.",
@@ -1915,7 +1975,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [writeBlueprint, ...(lean ? [readSpecs] : []), buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, reviewLayout, findPiecesVerb, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
+  const verbs = [writeBlueprint, ...(lean ? [readSpecs] : []), buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, reviewLayout, findPiecesVerb, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, ...(buildsWholeGame(env.ctx.project, String(task ?? "")) ? [generateArtVerb] : []), placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
     // 음악만 바라는 요청은 맵·이벤트를 쓰는 동사를 싣지 않는다 — 보기·묻기만(2026-10-30 r12: 추격 음악 요청에 상자를 찍었다).
     .filter((tool) => !audioOnly(String(task ?? "")) || MUSIC_ONLY_VERBS.has(tool.name))
     .map((tool) => guard(flattenWrapperTool(tool)));
@@ -2028,6 +2088,7 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
     game = game.filter(isMusicWork);
     if (outside.length) env.emit({ type: "execution_status", name: "v2.music-only.notes", ok: true, summary: `음악 요청 밖 참고 ${outside.length}건 — 고치지 않음`, data: { notes: outside } });
   }
+  if (env) game.push(...mapViewArtProblems(env.ctx.project, session, !!env.generateImage, env.request.task));
   const problems: V2GateProblem[] = [
     ...game.map((g) => ({ key: `game:${gateKey(g)}`, text: g, source: "gate" as const })),
     ...(env && !settingOnly && !storeOnly ? autoPlayGateProblems(env.ctx.project, env.request.task) : []),
@@ -2039,6 +2100,27 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
   if (env) problems.push(...placeLayoutProblems(env.ctx.project, session, (m) => (session.places.get(m)?.rounds ?? 0) < V2_MAX_REPAIR_ROUNDS));
   const leftovers = open.filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS).map((o) => `${o.name}: ${o.problems.slice(0, 4).join(" / ")}`);
   return { problems, leftovers, missing };
+}
+
+/**
+ * 오너 2026-11-09 「인게임 스크린샷은 AI 가 그림을 그릴 수 없을 때로만」: 타이틀·엔딩 그림이 맵 화면(map-view)이면, 이 실행에 그림 생성 경로가 있는 한
+ * generate_art 를 먼저 시도해야 한다. 시도가 오류/불가로 기록돼 있으면(artAttempts) 그 실패가 증거라 맵 화면을 받아 준다.
+ * 시도가 성공했는데 그림이 여전히 맵 화면이면(그 뒤에 다시 덮어씀) 다시 열린다.
+ */
+export function mapViewArtProblems(project: Project, session: V2Session, canGenerate: boolean, task: string): string[] {
+  if (!canGenerate || !buildsWholeGame(project, task)) return [];
+  const out: string[] = [];
+  const isView = (id: string | undefined): boolean => typeof id === "string" && id.startsWith("map-view:");
+  const attempt = (t: "title" | "ending") => session.artAttempts.get(t);
+  const accepted = (t: "title" | "ending") => { const a = attempt(t); return !!a && a.status !== "ok"; };
+  const title = (project.system.titleScreen ?? {}) as { backgroundResourceId?: string };
+  const titleBg = title.backgroundResourceId ?? ((project.system as unknown as { titleResourceId?: string }).titleResourceId);
+  if (isView(titleBg) && !accepted("title")) out.push("[출하 차단 art-generation] 타이틀 그림이 게임 속 맵 화면(" + titleBg + ")이다 — 그림을 만들 수 있으니 맵 화면으로 두지 않는다. generate_art{target:\"title\", prompt:<이 이야기의 장면>} 으로 그림을 만든다. 생성이 오류로 실패하면(기록됨) 그때는 맵 화면을 받아 준다. 고치지 못하면 «완성» 이라고 하지 않는다.");
+  for (const ending of project.endings ?? []) {
+    const bg = ending.presentation?.backgroundResourceId;
+    if (isView(bg) && !accepted("ending")) { out.push("[출하 차단 art-generation] 엔딩 「" + (ending.name || ending.id) + "」 그림이 게임 속 맵 화면(" + bg + ")이다 — generate_art{target:\"ending\", prompt:<엔딩 장면>} 으로 그림을 만든다. 생성이 오류로 실패하면(기록됨) 그때는 맵 화면을 받아 준다."); break; }
+  }
+  return out;
 }
 
 /** 끝맺음 관문 글(옛 고리 — 한 번 더 돌게 하는 글). 할 일 고리는 v2GateProblems 를 항목으로 쓴다. 다 통과면 undefined. */
