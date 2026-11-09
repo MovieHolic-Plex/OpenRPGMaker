@@ -22,6 +22,8 @@ import { mulberry32 } from "@/util/rng";
 import { BEODEUL_PLAIN_GRASS } from "@/editor/tools/wildRouteBeodeul";
 import { assertTownAnchors } from "./frozenTowns";
 import { applyFallenAct2Tower } from "./act2Tower";
+import { WELL, WELL_SHAFT_LIGHTS, WELL_SHAFT_ROOM } from "./wellShaftRooms";
+import { applyFallenWellBeast, wellBeastHanelLine } from "./wellBeast";
 import { applySnowLandmarks } from "./snowLandmarks";
 import { buildFrostford, FS2_FROST, FS2_FROST_ID, FS2_RELEASE_STOP, SW_FROST_ARRIVE, SW_ICE_DONE, SW_STOP_B9, SW_VALEN_MET } from "./frostford";
 import { DAWNWELL_ASH_COLS, DAWNWELL_ASH_LOWER, DAWNWELL_ASH_PASS, DAWNWELL_ASH_PNG, DAWNWELL_ASH_SIZE, DAWNWELL_ASH_UPPER } from "./dawnwellAshSheet";
@@ -944,17 +946,8 @@ const HANEL = "천문대장 하넬";
 /** 광장 우물(2×2 그림의 아랫줄) — 앞(y29)에서 위를 보고 조사. */
 const WELL: Cell[] = [{ x: 40, y: 28 }, { x: 41, y: 28 }];
 const WELL_FRONT: Cell = { x: 40, y: 29 };
-const SHAFT_PLAN = [
-  "############",
-  "#..........#",
-  "#..........#",
-  "#..........#",
-  "#..........#",
-  "#..........#",
-  "#..........#",
-  "#..........#",
-  "############",
-];
+// 우물 밑 갱도 — 옛 12×9 승강구(R1)를 그대로 두고 방 다섯을 더했다(wellShaftRooms.ts · 중간 보스 wellBeast.ts, 2026-11-09).
+// 옛 방(R1) 좌표 — wellShaftRooms.ts WELL 과 같아야 한다(observatoryNight 가 확인한다).
 const SHAFT = { ladder: { x: 2, y: 1 } as Cell, ladderUse: { x: 2, y: 3 } as Cell, arrive: { x: 2, y: 4 } as Cell, lift: { x: 6, y: 4 } as Cell };
 /** 천문대 서쪽 서고 — 제1막 승강 장치가 올라오던 칸(3,19), 하넬은 서고 탁자 곁. */
 // 하넬은 서고(맵 맨 아래 줄)가 아니라 둥근 지붕 아래 망원경 곁 — 서고에서 이야기하면 흉상 대화창(늘 아래)이
@@ -964,21 +957,19 @@ const OBS = { lift: { x: 3, y: 19 } as Cell, hanel: { x: 17, y: 13 } as Cell, do
 function observatoryNight(project: Project, exec: Exec, obsId: string): void {
   ensureSwitch(project, SW_HANEL, "B3: 하넬 — 세린·인장");
   // 우물 밑 승강구 — 서고 지하. 쇠 사다리로 우물과, 승강 장치로 천문대와 잇는다.
+  for (const k of ["ladder", "ladderUse", "arrive", "lift"] as const) {
+    if (WELL[k]?.x !== SHAFT[k].x || WELL[k]?.y !== SHAFT[k].y) throw new Error(`[fallen-star act2] 우물 밑 ${k} 좌표가 평면(${JSON.stringify(WELL[k])})과 다르다`);
+  }
   exec(project, "build_hand_interior_room", {
-    mapId: FS2_SHAFT_ID, name: "우물 밑 · 서고 승강구", tileset: "atlas_biome_interior", plan: SHAFT_PLAN, start: SHAFT.arrive,
-    floor: "wetstone", wall: "dungeonw", ceiling: "dark",
-    // 승강 장치가 기계로 읽히게(B3 검수 2026-11-04: 「발판 한 장이라 기계로 안 읽힌다」) — 발판(6..7,4..5) 바로 위 벽면에 도는 톱니,
-    // 곁에 감는 고패·쇠사슬 더미·계기판·레버. 발판 칸과 그 앞 칸(6..7,6)은 비워 둔다.
-    objects: [{ id: "wall torch", x: 4, y: 1 }, { id: "wall torch", x: 10, y: 1 }, { id: "barrel", x: 10, y: 6 }, { id: "drip puddle", x: 3, y: 6 },
-      { id: "gear wall", x: 6, y: 1 }, { id: "gauge panel", x: 8, y: 1 },
-      { id: "gate winch", x: 8, y: 4 }, { id: "anchor chain", x: 5, y: 5 }, { id: "wall lever", x: 9, y: 1 }],
+    mapId: FS2_SHAFT_ID, name: "우물 밑 · 서고 승강구", tileset: "atlas_biome_interior", start: [{ ...SHAFT.arrive }], ...WELL_SHAFT_ROOM,
   });
   exec(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:ship ladder", mapId: FS2_SHAFT_ID, x: SHAFT.ladder.x, y: SHAFT.ladder.y });
   exec(project, "set_lighting_volume", {
     mapId: FS2_SHAFT_ID, ambient: 0.55, color: "#0b0f1a", applyMode: "map",
     sources: [{ id: "t1", at: { x: 4, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true }, { id: "t2", at: { x: 10, y: 2 }, radius: 4, intensity: 0.85, color: "#ffb860", flicker: true },
       // 승강 발판 — 위(천문대)에서 새는 푸른 별빛. 발판이 어둠에 묻혀 안 보였다(2026-10-29 결함 목록).
-      { id: "lift", at: { x: SHAFT.lift.x + 1, y: SHAFT.lift.y + 1 }, radius: 2.5, intensity: 0.7, color: "#9fb8ff" }],
+      { id: "lift", at: { x: SHAFT.lift.x + 1, y: SHAFT.lift.y + 1 }, radius: 2.5, intensity: 0.7, color: "#9fb8ff" },
+      ...WELL_SHAFT_LIGHTS],
   });
   const shaft = M(project, FS2_SHAFT_ID);
   (shaft as unknown as Rec).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" };
@@ -1023,6 +1014,8 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     mapId: FS2_OBS_NIGHT_ID, x: OBS.lift.x, y: OBS.lift.y, direction: "down", distance: 3, trigger: "action", text: "승강 장치를 타고 서고 밑으로 내려갔다.",
     toMapId: FS2_SHAFT_ID, toX: SHAFT.lift.x, toY: SHAFT.lift.y, toDirection: "down",
   });
+  // 우물 밑 갱도 곁가지 — 고패·금 간 벽·비문·상자와 중간 보스(이야기 길 밖, 지면 승강구로 물러난다).
+  applyFallenWellBeast(project, exec, FS2_SHAFT_ID, { mapId: FS2_SHAFT_ID, at: SHAFT.arrive });
   // 정문 — 연금 중. 기사가 지킨다.
   addEv(project, FS2_OBS_NIGHT_ID, "ev_fs2_obs_door", "천문대 정문", OBS.door, [
     page("ev_fs2_obs_door_p", "정문", [], [narrate("문 밖에서 쇠 장화 소리가 오간다.\n정문으로는 못 나간다.")], { trigger: { kind: "playerTouch" } }),
@@ -1055,13 +1048,14 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     say(KAEL, "선생님, 또 숙제예요?"),
     say(HANEL, "이번엔 내 숙제다."),
     say(HANEL, "북문은 기사들이 막았다. 로한을 찾아가거라.\n대장간 뒷문은 아무도 안 지킨다."),
+    wellBeastHanelLine(HANEL),
     setSw(SW_HANEL),
     cutLabel(),
     cutEnd(),
   ];
   addEv(project, FS2_OBS_NIGHT_ID, "ev_fs2_obs_hanel", HANEL, OBS.hanel, [
     page("ev_fs2_obs_hanel_p", "하넬(연금)", [], talk, { graphic: chip(hanelChip.textureKey, hanelChip.characterIndex, "left") }),
-    page("ev_fs2_obs_hanel_after", "하넬(뒤)", [sw(SW_HANEL)], [say(HANEL, "가거라. 별 이름은 잊지 말고.")], { graphic: chip(hanelChip.textureKey, hanelChip.characterIndex, "left") }),
+    page("ev_fs2_obs_hanel_after", "하넬(뒤)", [sw(SW_HANEL)], [wellBeastHanelLine(HANEL), say(HANEL, "가거라. 별 이름은 잊지 말고.")], { graphic: chip(hanelChip.textureKey, hanelChip.characterIndex, "left") }),
   ]);
   // 처음 올라오면 하넬이 먼저 부른다(승강 장치 도착 뒤 한 번).
   addEv(project, FS2_OBS_NIGHT_ID, "ev_fs2_obs_call", "하넬이 부른다", { x: 0, y: 0 }, [
