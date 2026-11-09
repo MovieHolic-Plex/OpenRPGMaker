@@ -45,7 +45,7 @@ export function applyFallenMonsterArt16(project: Project): void {
       id: art.resourceId, name: art.name, kind: "monster", dataUrl: art.portrait,
       meta: {
         width: art.cell, height: art.cell,
-        pixelEnemySheet: { sheetResourceId: sheetId, cell: art.cell, motion: art.motion, idleFrameMs: art.idleFrameMs, ...(art.grid === "4x4" ? { grid: "4x4" as const } : {}), ...(skillSlug ? { skillSlug } : {}) },
+        pixelEnemySheet: { sheetResourceId: sheetId, cell: art.cell, motion: art.motion, idleFrameMs: art.idleFrameMs, ...(art.grid === "4x4" ? { grid: "4x4" as const } : {}), ...(art.missingCells ? { missingCells: [...art.missingCells] } : {}), ...(skillSlug ? { skillSlug } : {}) },
       },
       generatedBy: GENERATED_BY,
     };
