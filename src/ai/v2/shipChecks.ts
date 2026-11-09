@@ -542,7 +542,8 @@ export function requestedFeatureGaps(project: Project, task: string): ShipBlocke
  */
 export function openingMissing(project: Project): ShipBlocker[] {
   const op = (project.system as unknown as Obj).opening as Obj | undefined;
-  const scenes = ((op?.scenes as unknown[] | undefined) ?? []).length;
+  // 장면은 글이 있거나 그림(resourceId)·애니메틱 구성이 있어야 센다 — 빈 글 장면 둘로 관문을 통과하지 못하게.
+  const scenes = ((op?.scenes as Obj[] | undefined) ?? []).filter((sc) => String(sc.narration ?? "").trim() || sc.resourceId || sc.composition).length;
   const staged = !!op?.stage;
   if (op && op.enabled !== false && (scenes >= 2 || staged)) return [];
   return [{

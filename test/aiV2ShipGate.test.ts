@@ -86,6 +86,11 @@ describe("a finished game must open with an opening", () => {
       { id: "s2", kind: "text", narration: "이안은 낡은 표지판을 향해 걸었다.", durationMs: 3000 } as never,
     ] };
     expect(openingMissing(p)).toHaveLength(0);
+    p.system.opening = { ...p.system.opening!, enabled: true, scenes: [
+      { id: "s1", kind: "text", narration: "  ", durationMs: 3000 } as never,
+      { id: "s2", kind: "text", narration: "", durationMs: 3000 } as never,
+    ] };
+    expect(openingMissing(p)).toHaveLength(1);
     p.system.opening = { ...p.system.opening!, enabled: true, scenes: [], stage: { mapId: p.startMapId, x: 1, y: 1, eventId: "ev_opening_stage" } as never };
     expect(openingMissing(p)).toHaveLength(0);
   });
