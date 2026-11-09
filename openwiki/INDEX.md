@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **192쪽 / 8065KB / 약 2,370,629 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **192쪽 / 8066KB / 약 2,370,687 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -2799,7 +2799,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 - `L17` 이번 적용
 
-### `openwiki/runtime-action-combat.md` — 32KB · 362줄 · ~8,247 토큰
+### `openwiki/runtime-action-combat.md` — 32KB · 362줄 · ~8,305 토큰
 
 - `L14` Activation contract
 - `L35` Architecture and pure rule modules
