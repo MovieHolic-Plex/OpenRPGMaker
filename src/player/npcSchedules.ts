@@ -5,6 +5,7 @@ import { store } from "@/project/store";
 import type { Dir, GameEvent, GameMap, MapId, MoveCommand, Project } from "@/project/types";
 import { findChasePath, nearestReachableCandidate, type ChasePoint } from "@/player/chaseAi";
 import { nearestPassableTile } from "@/player/playSceneMapCommands";
+import { weatherKindFromSession } from "@/player/playSceneWeather";
 import { runtimeEventGone } from "@/project/runtimeEventState";
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
 import type { RuntimeEventLocation } from "@/project/sessionRuntimeTypes"
@@ -78,6 +79,7 @@ export function updateNpcSchedules(scene: NpcScheduleSceneContext, paused = fals
   const scheduledIds = new Set<string>();
   // 예전에는 scheduledEvents(project) 가 매 프레임 배열 + 이벤트마다 래퍼 객체를 새로
   // 만들었다. 순회 자체는 같고 할당만 없앤다.
+  const weather = weatherKindFromSession(scene.session);
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
       if (!event.schedule?.length) continue;
@@ -88,7 +90,7 @@ export function updateNpcSchedules(scene: NpcScheduleSceneContext, paused = fals
       // 이벤트 스프라이트를 100ms 마다 파괴·재생성한다(무한 반복).
       if (runtimeEventGone(scene.session, map.id, event.id)) continue;
       scheduledIds.add(event.id);
-      const target = npcScheduleTargetForEvent(map.id, event, scene.session.gameTime);
+      const target = npcScheduleTargetForEvent(map.id, event, scene.session.gameTime, weather);
       if (!target) continue;
       changed = applyNpcScheduleTarget(scene, project, { mapId: map.id, map, event }, target) || changed;
     }

@@ -69,6 +69,7 @@ import { terrainRecordAt } from "@/project/terrainAt";
 import { scaledEncounterRate } from "@/project/terrainStep";
 import { monsterBattlePartyOf, monsterSpeciesForEnemy } from "@/project/monsterCollection";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
+import { weatherKindFromSession } from "@/player/playSceneWeather";
 import {
   advanceFieldSpawns,
   createFieldSpawnRuntime,
@@ -2077,7 +2078,7 @@ function applyNpcSchedulesForRunner(state: RunnerState): void {
     for (const event of map.events) {
       if (!event.schedule?.length) continue;
       activeIds.add(event.id);
-      const target = npcScheduleTargetForEvent(map.id, event, state.session.gameTime);
+      const target = npcScheduleTargetForEvent(map.id, event, state.session.gameTime, weatherKindFromSession(state.session));
       if (!target) continue;
       const targetMap = state.runtimeMaps[target.mapId];
       if (!targetMap) continue;

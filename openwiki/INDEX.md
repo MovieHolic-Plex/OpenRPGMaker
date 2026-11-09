@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **192쪽 / 8066KB / 약 2,370,687 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **192쪽 / 8066KB / 약 2,370,829 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -23,8 +23,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-ai-panel.md` | 738KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4762 | ~216,827 |
 | `openwiki/editor-ai-tools.md` | 638KB | 92KB ⚠상한 초과 — 절을 더 쪼개라 | 4107 | ~187,424 |
 | `openwiki/editor-database.md` | 459KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2682 | ~134,808 |
-| `openwiki/editor-event-authoring.md` | 186KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,388 |
-| `openwiki/editor-event-commands.md` | 85KB | 33KB | 360 | ~23,968 |
+| `openwiki/editor-event-authoring.md` | 186KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,433 |
+| `openwiki/editor-event-commands.md` | 86KB | 33KB | 360 | ~24,012 |
 | `openwiki/editor-genre-packs.md` | 54KB | 7KB | 358 | ~14,274 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
@@ -44,7 +44,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-m2-flow-controls.md` | 58KB | 29KB | 352 | ~15,674 |
 | `openwiki/runtime-pre-edit-routing.md` | 215KB | 104KB ⚠상한 초과 — 절을 더 쪼개라 | 1271 | ~64,088 |
 | `openwiki/runtime-project-schema.md` | 271KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1858 | ~76,711 |
-| `openwiki/runtime-sessions.md` | 177KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 943 | ~48,623 |
+| `openwiki/runtime-sessions.md` | 177KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 943 | ~48,676 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
 | `openwiki/testing.md` | 270KB | 48KB | 2438 | ~76,177 |
 | `openwiki/tileset-reference-documents.md` | 60KB | 4KB | 603 | ~18,386 |
@@ -1199,7 +1199,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L2660` 세계관 화면 컴팩트화 2차 (2026-10-16) — 속성 레일 폐지, 칩 줄
 - `L2671` 스킬 → 「연계기」 하위 보기 · 약점 공략 칸 · 결과 연출 카드 (2026-10-24, fs-battle-2)
 
-### `openwiki/editor-event-authoring.md` — 186KB · 1141줄 · ~54,388 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 186KB · 1141줄 · ~54,433 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
 - `L3` 이벤트 UX 2차 감사 후속: 선택·검색·목록·복제 (2026-10-04)
 - `L69` 이벤트 보기의 지연 생성 (2026-10-04)
@@ -1270,7 +1270,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L85` Follower removal and graphic intent (2026-09-06, U06)
 - `L92` Stable resource selections and field labels (2026-09-06, U07)
 
-### `openwiki/editor-event-commands.md` — 85KB · 360줄 · ~23,968 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-event-commands.md` — 86KB · 360줄 · ~24,012 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 선택지 줄 조건 — 숨김(showWhen)·흐리게(enableWhen) (2026-10-30)
 - `L16` 인물 연출 — 다가가기·쪽으로 돌기·대사 자동 돌아보기 (2026-10-22)
@@ -3125,7 +3125,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1846` 상태의 부위 손실·전투 오라 (2026-10-27)
 - `L1850` 효과음 자리 표 `system.seCues` (2026-10-30)
 
-### `openwiki/runtime-sessions.md` — 177KB · 943줄 · ~48,623 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 177KB · 943줄 · ~48,676 토큰 · 통째읽기 잘림
 
 - `L3` 여러 게임 오버의 실행과 미리보기 (2026-09-23)
 - `L21` 장르별 패배와 엔딩 흐름 (2026-09-22)
