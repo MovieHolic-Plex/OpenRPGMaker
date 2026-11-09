@@ -50,21 +50,34 @@ def palette_png(a):
     return data
 
 
-def sheet_problems(sheet, portrait, grid=4):
+GRID_DIMS = {"3x3": (3, 3), "4x4": (4, 4), "5x4": (5, 4)}
+
+
+def grid_name(sheet, C):
+    """Sheet pixel size -> grid name (3x3 / 4x4 / 5x4), or None when it is none of them."""
+    for name, (cols, rows) in GRID_DIMS.items():
+        if sheet.shape[:2] == (rows * C, cols * C):
+            return name
+    return None
+
+
+def sheet_problems(sheet, portrait, grid="4x4"):
     C = portrait.shape[0]
     if portrait.shape[:2] != (C, C) or C not in gates.ENEMY_CELLS:
         return [f"portrait {portrait.shape[1]}x{portrait.shape[0]} is not a square of {'/'.join(map(str, gates.ENEMY_CELLS))}"]
-    if sheet.shape[:2] != (grid * C, grid * C):
-        return [f"sheet {sheet.shape[1]}x{sheet.shape[0]} is not {grid * C}x{grid * C}"]
+    cols, rows = GRID_DIMS[grid]
+    if sheet.shape[:2] != (rows * C, cols * C):
+        return [f"sheet {sheet.shape[1]}x{sheet.shape[0]} is not {cols * C}x{rows * C}"]
     out = []
     if not set(np.unique(sheet[..., 3]).tolist()) <= {0, 255}:
         out.append("alpha must be 0 or 255")
-    for k in range(grid * grid):
-        cell = sheet[(k // grid) * C:(k // grid + 1) * C, (k % grid) * C:(k % grid + 1) * C]
+    reserved = {15} if grid == "4x4" else set()
+    for k in range(cols * rows):
+        cell = sheet[(k // cols) * C:(k // cols + 1) * C, (k % cols) * C:(k % cols + 1) * C]
         filled = bool((cell[..., 3] > 0).any())
-        if grid == 4 and k == 15 and filled:
-            out.append("cell 15 must be transparent")
-        if k < grid * grid - (grid == 4) and not filled:
+        if k in reserved and filled:
+            out.append(f"cell {k} must be transparent")
+        if k not in reserved and not filled:
             out.append(f"cell {k} is empty")
         if k == 0 and not np.array_equal(cell, portrait):
             out.append("idle_a differs from the portrait")
@@ -88,8 +101,8 @@ def usable(i):
     pit, mit = items.get(state.key("portrait", i)), items.get(state.key("motion", i))
     if not pit or not pit.get("art") or not mit or not mit.get("art"):
         return False, "no portrait or motion sheet", None
-    if mit.get("grid") != "4x4":
-        return False, "no 4x4 motion sheet yet", None
+    if mit.get("grid") not in ("4x4", "5x4"):
+        return False, "no 4x4/5x4 motion sheet yet", None
     portrait_ok, portrait_why = review.current_pass("portrait", i)
     picked = stages.owner_picked(pit)
     motion_ok, motion_why = review.current_pass("motion", i)
@@ -116,7 +129,10 @@ for row in rows:
     pit = items[state.key("portrait", i)]
     portrait_ok = review.current_pass("portrait", i)[0]
     portrait, sheet = rgba(os.path.join(BG, pit["art"])), rgba(sheet_path)
-    grid = 4 if sheet.shape[0] == 4 * portrait.shape[0] else 3
+    grid = grid_name(sheet, portrait.shape[0])
+    if grid is None:
+        bad.append(f"{i}: sheet {sheet.shape[1]}x{sheet.shape[0]} matches no grid (3x3 / 4x4 / 5x4) for cell {portrait.shape[0]}")
+        continue
     probs = sheet_problems(sheet, portrait, grid)
     if probs:
         bad.append(f"{i}: {'; '.join(probs)}")
@@ -127,9 +143,10 @@ for row in rows:
     note = f"초상 Opus {pv[-1].get('score')} ({pv[-1]['batch']})"
     if not portrait_ok:
         note += f" · 오너 선택(「{pit['ownerPick']['quote']}」)"
-    note += f" · {grid * grid - (grid == 4)}칸 Opus {mv[-1].get('score')} ({mv[-1]['batch']})"
+    cells = GRID_DIMS[grid][0] * GRID_DIMS[grid][1] - (grid == "4x4")
+    note += f" · {cells}칸 Opus {mv[-1].get('score')} ({mv[-1]['batch']})"
     url = lambda a: "data:image/png;base64," + base64.b64encode(palette_png(a)).decode()
-    entries.append({"resourceId": row["fallenStarResourceId"], "name": row["ko"], "cell": int(portrait.shape[0]), "grid": f"{grid}x{grid}",
+    entries.append({"resourceId": row["fallenStarResourceId"], "name": row["ko"], "cell": int(portrait.shape[0]), "grid": grid,
                     "motion": row["motion"], "idleFrameMs": int(row["idleFrameMs"]), "note": f"{row['ko']} {i[3:]} · {note}",
                     "portrait": url(portrait), "sheet": url(sheet)})
 
@@ -143,7 +160,7 @@ with open(OUT, "w") as f:
     f.write("export interface FallenMonsterSheet16 {\n")
     f.write("  /** 번들 시트 id(generated-enemy-<slug>) — 적 기록의 monsterResourceId 그대로. */\n")
     f.write("  readonly resourceId: string;\n  readonly name: string;\n  readonly cell: UploadedPixelEnemySheetMeta[\"cell\"];\n")
-    f.write('  readonly grid: "3x3" | "4x4";\n')
+    f.write('  readonly grid: "3x3" | "4x4" | "5x4";\n')
     f.write('  readonly motion: UploadedPixelEnemySheetMeta["motion"];\n  readonly idleFrameMs: number;\n')
     f.write("  readonly portrait: string;\n  readonly sheet: string;\n}\n\n")
     f.write("export const FS_MONSTER_SHEETS_16: readonly FallenMonsterSheet16[] = [\n")

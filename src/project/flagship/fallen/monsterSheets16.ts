@@ -7,7 +7,7 @@ export interface FallenMonsterSheet16 {
   readonly resourceId: string;
   readonly name: string;
   readonly cell: UploadedPixelEnemySheetMeta["cell"];
-  readonly grid: "3x3" | "4x4";
+  readonly grid: "3x3" | "4x4" | "5x4";
   readonly motion: UploadedPixelEnemySheetMeta["motion"];
   readonly idleFrameMs: number;
   readonly portrait: string;

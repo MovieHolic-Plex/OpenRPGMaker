@@ -6,6 +6,7 @@ import { sampleBasicMotion } from "@/battle/battleMotionProgram";
 import { beginEnemyCollapse } from "@/player/battleEnemyCollapse";
 import { animateRetroSkillFx, battleEntrySkillRecord, clearRetroSkillFx, driveRetroClassSkill, isRetroClassSkillActor, preloadRetroClassSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
+import { isExtendedPixelGrid } from "@/assets/pixelEnemyGrid";
 import { pixelEnemyHasCell, pixelEnemySheet, type PartyPixelCell, type PixelEnemyExtraCell, type PixelEnemySheet, type RetroMonsterCell } from "@/assets/pixelEnemySheets";
 import { store } from "@/project/store";
 import { enemyLungeOwnFactor, pixelEnemyLungeProfile, resolveBattleStaging } from "@/project/battleStaging";
@@ -24,6 +25,7 @@ const painters = new WeakMap<HTMLElement, PaintPose>();
 const cursors = new WeakMap<HTMLElement, number>();
 const currentEntries = new WeakMap<HTMLElement, BattleTimelineEntrySnapshot>();
 const hitGenerations = new WeakMap<HTMLElement, number>();
+const pixelEnemyHitCounts = new WeakMap<HTMLElement, number>();
 const visualKinds = new Set(["action", "damage", "healing", "miss", "capture", "stateUpkeep", "stateRecovery"]);
 const reduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
 
@@ -227,7 +229,11 @@ export function retroDamage(node: HTMLElement | null, feedback: DamageFeedback, 
       transientSequence(node, [["guard", 160], ["hit", 220]]);
       return;
     }
-    transientPose(node, "hit", lethal ? 200 : 380);
+    // 20칸 시트: 연속된 피격은 hit ↔ hit_b 를 번갈아 흔들림이 읽힌다(막타는 항상 hit). hit_b 칸이 없는 시트는 예전과 같다.
+    const hits = (pixelEnemyHitCounts.get(node) ?? 0) + 1;
+    pixelEnemyHitCounts.set(node, hits);
+    const second = !lethal && node.dataset.pixelEnemy !== undefined && hits % 2 === 0 && nodeHasCell(node, "hit_b");
+    transientPose(node, second ? "hit_b" : "hit", lethal ? 200 : 380);
     return;
   }
   if (node.dataset.battlerExtended === "true" && feedback.miss) {
@@ -383,7 +389,7 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
   }
 }
 
-function transientPose(node: HTMLElement, frame: Pose, duration: number): void {
+function transientPose(node: HTMLElement, frame: Pose | "hit_b", duration: number): void {
   const generation = (transientGenerations.get(node) ?? 0) + 1;
   transientGenerations.set(node, generation);
   node.dataset.retroTransient = frame;
@@ -424,7 +430,7 @@ function transientSequence(node: HTMLElement, steps: readonly (readonly [string,
  */
 export function retroBattleIntro(field: HTMLElement): void {
   if (reduced()) return;
-  const enemies = [...field.querySelectorAll<HTMLElement>(".battle-enemy[data-pixel-grid=\"4x4\"]:not(.defeated)")]
+  const enemies = [...field.querySelectorAll<HTMLElement>(".battle-enemy[data-pixel-grid]:not(.defeated)")]
     .filter((node) => nodeHasCell(node, "intro"));
   enemies.forEach((node, index) => {
     const boss = node.dataset.collapse === "bossSink";
@@ -839,8 +845,8 @@ export function retroPixelEnemyCell(node: HTMLElement): RetroMonsterCell | "idle
   const transient = node.dataset.retroTransient;
   // 저작한 쓰러짐 연출(data-collapse)이 있는 적은 녹은 칸(dead)으로 가지 않는다 — 그 칸이 0.8초 보였다가 연출이 서 있는
   // 모습부터 다시 시작해 「죽었다 살아나 다시 죽는」 것처럼 읽혔다(2026-10-02 영상). 연출 캔버스가 그림을 숨길 때까지 맞은 칸.
-  if (node.classList.contains("defeated")) return transient === "hit" || node.dataset.collapse ? "hit" : "dead";
-  if (transient === "hit") return "hit";
+  if (node.classList.contains("defeated")) return transient === "hit" || transient === "hit_b" || node.dataset.collapse ? "hit" : "dead";
+  if (transient === "hit" || transient === "hit_b") return transient;
   // 16칸 시트: 방어 중 맞으면 잠깐 막는 칸, 전투 시작 포효. 그 칸이 없는 시트는 이 표식을 달지 않는다(pixelEnemyRestCell).
   if (transient === "guard" || transient === "intro") return transient;
   const cell = node.dataset.retroBeat ? node.dataset.retroPixelCell : undefined;
@@ -852,21 +858,32 @@ function nodePixelSheet(node: HTMLElement): PixelEnemySheet | undefined {
   return pixelEnemySheet(node.querySelector<HTMLElement>(".battle-enemy-image")?.dataset.pixelSheet);
 }
 
-/** 16칸 시트가 그 확장 칸을 그렸는가. 3×3 시트·빠진 칸(missingCells)은 false — 그 동작은 일어나지 않는다. */
+/** 16·20칸 시트가 그 확장 칸을 그렸는가. 3×3 시트·빠진 칸(missingCells)·4×4 시트 밖의 칸은 false — 그 동작은 일어나지 않는다. */
 function nodeHasCell(node: HTMLElement, cell: PixelEnemyExtraCell): boolean {
-  return node.dataset.pixelGrid === "4x4" && pixelEnemyHasCell(nodePixelSheet(node), cell);
+  return isExtendedPixelGrid(node.dataset.pixelGrid) && pixelEnemyHasCell(nodePixelSheet(node), cell);
 }
 
 /**
- * 행동하지 않는 동안의 칸. 16칸 시트만 바뀐다: 방어 중 → guard, HP 25% 이하 → weak 와 idle_b 를 번갈아(숨이 가쁜 대기),
- * 그 밖은 CSS 대기 루프("idle"). weak 번갈이는 data-pixel-weak 가 CSS 로 돈다(27-retro-motion.css).
+ * 행동하지 않는 동안의 칸. 16·20칸 시트만 바뀐다. 우선순위 guard > stunned > weak > enrage > idle:
+ * 방어 중 → guard, 행동 제한 상태(기절·마비·정지) → stunned(정지 칸, 번갈이 없음), HP 25% 이하 → weak 와 idle_b 를 번갈아(숨이 가쁜 대기),
+ * HP 50% 이하·25% 초과 → enrage 와 idle_b 를 번갈아, 그 밖은 CSS 대기 루프("idle"). 번갈이는 data-pixel-weak·data-pixel-enrage 가 CSS 로 돈다(27-retro-motion.css).
+ * stunned·enrage 칸이 없는 시트(3×3·4×4·missingCells)는 이 두 상태가 대기 모습을 바꾸지 않는다.
  */
 function pixelEnemyRestCell(node: HTMLElement): RetroMonsterCell | "idle" {
-  if (node.dataset.pixelGrid !== "4x4") return "idle";
+  if (!isExtendedPixelGrid(node.dataset.pixelGrid)) return "idle";
   if (node.dataset.battlerDefending === "true" && nodeHasCell(node, "guard")) return "guard";
-  const weak = node.dataset.battlerWeak === "true" && nodeHasCell(node, "weak");
+  if (node.dataset.battlerRestricted === "true" && nodeHasCell(node, "stunned")) {
+    delete node.dataset.pixelWeak;
+    delete node.dataset.pixelEnrage;
+    return "stunned";
+  }
+  const weakFlag = node.dataset.battlerWeak === "true";
+  const weak = weakFlag && nodeHasCell(node, "weak");
   if (weak) node.dataset.pixelWeak = "true";
   else delete node.dataset.pixelWeak;
+  const enrage = !weakFlag && node.dataset.battlerEnraged === "true" && nodeHasCell(node, "enrage");
+  if (enrage) node.dataset.pixelEnrage = "true";
+  else delete node.dataset.pixelEnrage;
   return "idle";
 }
 
@@ -1087,7 +1104,7 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
     if (fraction === 0) play();
     else if (length > 0) scheduleBattleTimer(play, Math.min(length - 1, Math.round(length * fraction)));
   }
-  cells = withAttackMid(node, beat, cells, melee, stationary);
+  cells = withMoveB(node, beat, withAttackMid(node, beat, cells, melee, stationary));
   if (reduced() || length === 0) cells = [[0, cells[0]![1]]];
   pixelAnimations.get(node)?.cancel();
   pixelAnimations.delete(node);
@@ -1118,6 +1135,20 @@ function withAttackMid(node: HTMLElement, beat: BattleActionBeat, cells: readonl
   if (beat.kind !== "approach" || node.dataset.pixelParty !== undefined || !nodeHasCell(node, "attack_mid")) return cells;
   const at = melee ? 0.82 : stationary ? 0.7 : 0.5;
   return [...cells.filter(([fraction]) => fraction < at), [at, "attack_mid"]];
+}
+
+/**
+ * 20칸 시트의 걷기 2: 다가가기 비트에서 두 번째 이후의 move 를 move_b 로 바꾸어 한 걸음마다 발이 바뀐다.
+ * move_b 칸이 없는 시트·파티원은 그대로.
+ */
+function withMoveB(node: HTMLElement, beat: BattleActionBeat, cells: readonly [number, RetroMonsterCell][]): readonly [number, RetroMonsterCell][] {
+  if (beat.kind !== "approach" || node.dataset.pixelParty !== undefined || !nodeHasCell(node, "move_b")) return cells;
+  let seen = 0;
+  return cells.map(([fraction, cell]): [number, RetroMonsterCell] => {
+    if (cell !== "move") return [fraction, cell];
+    seen += 1;
+    return [fraction, seen >= 2 ? "move_b" : cell];
+  });
 }
 
 function characterApproachStyle(profile:CharacterMotionProfile):RetroApproachStyle {
