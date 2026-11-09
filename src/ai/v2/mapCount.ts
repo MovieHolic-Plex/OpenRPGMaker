@@ -2,6 +2,7 @@
 // 척도와 같아야 한다: 시작 맵에서 transfer(·쓰이는 공통 이벤트의 transfer)·엔딩 이어가기로 닿고, 100칸 이상, 타일 6종 이상,
 // 명령 있는 이벤트 1개 이상, 다른 센 맵과 배치(타일 층)가 다르다. test/aiV2MapCount.test.ts 가 같은 입력에서 척도와 같은 맵을 세는지 겨룬다.
 // 해시 대신 배치 문자열을 그대로 Set 에 넣는다 — 같은 배치는 복사한 맵이라 세지 않는다.
+// 순회 순서가 척도(도달한 순서)와 달라, 배치가 같은 맵이 여럿이면 어느 id 를 세는지는 다를 수 있다 — 세는 개수는 같다(관문은 개수만 쓴다).
 import type { Project } from "@/project/types";
 
 /** score.mjs MIN_TILE_KINDS · MIN_MAP_CELLS 와 같은 숫자. */
@@ -80,6 +81,7 @@ export function countMaps(project: Project): MapCountResult {
   const counted: string[] = []; const uncounted: MapCountResult["uncounted"][number][] = [];
   const nameOf = (id: string) => String(maps[id]?.name ?? id);
   for (const [id, map] of Object.entries(maps)) {
+    if (!map || typeof map !== "object") continue; // 깨진 항목은 세지도 이유로 적지도 않는다
     if (!reached.has(id)) { uncounted.push({ id, name: nameOf(id), reason: "unreachable", detail: "시작 맵에서 문(transfer)으로 닿지 않는다" }); continue; }
     const cells = Number(map.width) * Number(map.height);
     if (!(cells >= MIN_MAP_CELLS)) { uncounted.push({ id, name: nameOf(id), reason: "small", detail: `넓이 ${Number.isFinite(cells) ? cells : 0}칸<${MIN_MAP_CELLS}` }); continue; }

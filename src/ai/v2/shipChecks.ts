@@ -604,7 +604,8 @@ export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
   const missing = need - counted.length;
   return [{
     id: "maps-min",
-    message: `세는 맵이 ${counted.length}/${need}장이다 — ${missing}장 더. ${why ? `안 세는 맵: ${why}. ` : ""}새 장소는 make_place{spec:{type:"village"|"dungeon"|"interior", name}} 로 지어 문(transfer)으로 잇고 사람·조사 이벤트를 하나 이상 둔다(청사진 경로면 build_blueprint_path). 맵은 ${MIN_MAP_CELLS}칸 이상(실내는 10×10 이상)·타일 6종 이상·다른 맵과 다른 배치여야 센다.`,
+    // 할 일 항목의 열쇠는 문구 앞 160자(숫자는 #) — 바뀌는 부분(안 세는 맵 목록)은 고정 문장 뒤에 둔다. 앞에 두면 맵을 지을 때마다 열쇠가 바뀌어 «3번 뒤 막힘» 이 안 걸린다.
+    message: `세는 맵이 ${counted.length}/${need}장이다 — ${missing}장 더. 새 장소는 make_place{spec:{type:"village"|"dungeon"|"interior", name}} 로 지어 문(transfer)으로 잇고 사람·조사 이벤트를 하나 이상 둔다(청사진 경로면 build_blueprint_path). 맵은 ${MIN_MAP_CELLS}칸 이상(실내는 10×10 이상)·타일 6종 이상·다른 맵과 다른 배치여야 센다.${why ? ` 안 세는 맵: ${why}.` : ""}`,
     evidence: `counted=${counted.length} need=${need} uncounted=${uncounted.length}`,
   }];
 }
