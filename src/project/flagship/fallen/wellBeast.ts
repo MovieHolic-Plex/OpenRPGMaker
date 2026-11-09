@@ -85,8 +85,6 @@ function addEv(project: Project, mapId: string, id: string, name: string, at: Ce
 function ensureSwitch(project: Project, id: string, name: string): void {
   if (!project.switches.some((s) => s.id === id)) project.switches.push({ id, name });
 }
-/** 쇠살문 그림(Object1 걷기 칩 — lay_dungeon_layout 의 잠긴 문과 같은 그림). 열리면 그 페이지가 꺼져 지나간다. */
-const BARS = { sprite: { type: "bundled", id: "tex_easyrpg_charset_object1" }, direction: "down", pattern: 1 } as const;
 const act = (skillId: string, priority: number, condition: Rec = { kind: "always" }) =>
   ({ skillId, priority, condition, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } });
 
@@ -212,25 +210,41 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
     ], { overlapForbidden: false }),
     page("ev_fs2_well_winch_p1", "감긴 고패", [sw(SW_WELL_GATE)], [narrate("사슬은 끝까지 감겨 있다.")]),
   ]);
-  // 쇠살문 — 도구가 단 잠긴 문 이벤트를 걷어 내고, 고패 스위치가 켜질 때까지 몸으로 막는 문으로 바꿔 단다.
-  { const m = map(); m.events = m.events.filter((e) => !/_locked\d+$/.test(e.id)); }
-  WELL.gate.forEach((g, i) => addEv(project, mapId, `ev_fs2_well_gate_${i}`, "쇠살문", g, [
-    page(`ev_fs2_well_gate_${i}_p0`, "닫힌 쇠살문", [], [narrate("굵은 쇠살문이 내려와 있다.\n쇠사슬이 서쪽 배수 갱 쪽 벽 속으로 들어간다.")],
-      { graphic: { ...BARS }, overlapForbidden: true, animationType: "fixedGraphic" }),
-    page(`ev_fs2_well_gate_${i}_p1`, "열린 쇠살문", [sw(SW_WELL_GATE)], [], { priority: "below" }),
-  ]));
+  // 쇠살문 — lay_dungeon_layout 이 잠긴 문 칸에 단 쇠창살 이벤트(그림·막힘)를 그대로 쓰고, 고패 스위치가 켜지면 열린 페이지로 넘긴다.
+  // 두 칸 폭 통로라 옆 칸에도 같은 쇠창살을 하나 더 세운다.
+  {
+    const m = map();
+    const lock = m.events.find((e) => /_locked\d+$/.test(e.id) && WELL.gate.some((g) => g.x === e.x && g.y === e.y));
+    if (!lock?.pages?.[0]) throw new Error(`[fallen-star well] 쇠살문 잠긴 문 이벤트가 없다: ${m.events.filter((e) => /_locked/.test(e.id)).map((e) => `${e.id}@${e.x},${e.y}`).join(" ")}`);
+    const closed = { ...structuredClone(lock.pages[0]), commands: [narrate("굵은 쇠살문이 내려와 있다.\n쇠사슬이 서쪽 배수 갱 쪽 벽 속으로 들어간다.")] } as EventPage;
+    m.events = m.events.filter((e) => e !== lock);
+    WELL.gate.forEach((g, i) => addEv(project, mapId, `ev_fs2_well_gate_${i}`, "쇠살문", g, [
+      { ...structuredClone(closed), id: `ev_fs2_well_gate_${i}_p0` } as EventPage,
+      page(`ev_fs2_well_gate_${i}_p1`, "열린 쇠살문", [sw(SW_WELL_GATE)], [], { priority: "below" }),
+    ]));
+  }
 
   // 무너진 돌 더미 — 배수로 남쪽 통로 두 칸을 막아 두었다가 조사해 치우면 정비 벽감이 열린다.
+  // 돌 더미 그림 — 지하 수도교 「무너진 돌」 조각을 통로 두 칸에 찍고, 치우면 그 칸 그림을 지운다.
+  for (const c of WELL.crack) exec(project, "stamp_object", { objectId: "kit:beodeul_city/bd-pick-aqueduct-sewer-rubble", mapId, x: c.x, y: c.y });
+  const clearRubble: Command[] = WELL.crack.flatMap((c) => {
+    const m = map(); const i = c.y * m.width + c.x;
+    const L = m as unknown as Record<string, number[] | undefined>;
+    return (["upperTiles", "upperOverlayTiles", "lowerOverlayTiles"] as const).filter((k) => (L[k]?.[i] ?? -1) >= 0)
+      .map((k) => ({ kind: "changeTile", mapId, layer: { upperTiles: "upper", upperOverlayTiles: "upper2", lowerOverlayTiles: "lower2" }[k], x: c.x, y: c.y, tile: -1 } as unknown as Command));
+  });
+  if (!clearRubble.length) throw new Error("[fallen-star well] 돌 더미 그림이 찍히지 않았다");
   const crackPage0 = (i: number): EventPage => page(`ev_fs2_well_crack_${i}_p0`, "무너진 돌 더미", [], [
     narrate("무너진 돌 더미가 통로를 막고 있다.\n틈으로 찬바람이 샌다. 안쪽이 비어 있는 것 같다."),
     { kind: "choices", cancelBehavior: "branch", options: [
         { text: "치운다", branch: [se("cc0-se-osx-metal-04"), shake(3, 700),
       narrate("우르르 — 돌 더미가 물길로 굴러떨어졌다!"),
+      ...clearRubble,
       setSw(SW_WELL_CRACK),
       say(ELENA, "물지기들 연장 창고야. 벽으로 막아 뒀었네.")] },
         { text: "그만둔다", branch: [] },
       ], cancelBranch: [] } as unknown as Command,
-  ], { priority: "same", overlapForbidden: true, graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_object1" }, direction: "down", pattern: 4 }, animationType: "fixedGraphic" });
+  ], { priority: "same", overlapForbidden: true, graphic: { transparent: true } });
   WELL.crack.forEach((c, i) => addEv(project, mapId, `ev_fs2_well_crack_${i}`, "무너진 돌 더미", c, [
     crackPage0(i),
     page(`ev_fs2_well_crack_${i}_p1`, "무너진 벽", [sw(SW_WELL_CRACK)], [], { priority: "below" }),
