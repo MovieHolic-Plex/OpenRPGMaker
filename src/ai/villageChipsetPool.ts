@@ -8,6 +8,7 @@
 import type { Project } from "@/project/types";
 import { isLivedMap } from "@/editor/tools/livedMap";
 import { matchVillageType } from "./villageTypeCatalog";
+import { withoutIntentNote } from "./piAgent/monsterGameRequest";
 
 export interface VillagePoolEntry {
   readonly tilesetId: string;
@@ -42,7 +43,7 @@ export const VILLAGE_POOL: readonly VillagePoolEntry[] = [
 const THEME_WORD_RE = new RegExp([
   "버들\\s*항|beodeul", "조선|한양|사극|한옥|고려|삼국|일본|도쿄|에도|전국\\s*시대|사무라이|닌자|중국|무협|무림|로마|그리스|바이킹|북방|서양|중세|고딕|뱀파이어|드라큘라|해적|마법|호그와트|엘프|드워프|우주|사이버|스팀|SF|좀비|포스트|폐허|선사|원시|공룡|하늘\\s*섬|수중|해저",
   "눈|설원|겨울|얼음|빙|사막|오아시스|열대|늪|습지|화산|용암|정글|초원|숲|산골|산촌|산속|고원|언덕|절벽|계단식|다랑|협곡|섬|항구|포구|해안|바닷가|바다|어촌|강가|강변|하천|호수|호숫가|물가|강을|농촌|농가|시골|광산|포도|성벽|요새|성곽|도시|거리|상점가|캠퍼스|학교|역\\s*앞",
-  "몬스터|포켓몬|체육관|연애|로맨스|호러|공포|추리|방탈출|던전|\\b(?:snow|desert|island|harbou?r|port|river|forest|mountain|city|castle|japan|joseon|pirate|viking|medieval|roman|cyber|space)\\b",
+  "몬스터|포켓몬|체육관|연애|로맨스|호러|공포|추리|방탈출|\\b(?:snow|desert|island|harbou?r|port|river|forest|mountain|city|castle|japan|joseon|pirate|viking|medieval|roman|cyber|space)\\b",
 ].join("|"), "iu");
 const VILLAGE_WORD_RE = /마을|촌락|부락|village|hamlet/iu;
 
@@ -93,15 +94,20 @@ export function villagePoolEntryByStyle(style: string | undefined): VillagePoolE
   return style?.startsWith(VILLAGE_POOL_STYLE_PREFIX) ? VILLAGE_POOL.find((entry) => entry.v2Style === style) : undefined;
 }
 
-/** v2 make_place 명세: 스타일·테마를 안 준 마을이고 요청이 테마 없는 마을이면 풀이 고른 칩셋을 style 로 박는다(씨앗은 hints.poolSeed). */
+/**
+ * v2 make_place 명세: 요청 문장이 테마 없는 마을이면 풀이 고른 칩셋을 style 로 박는다(씨앗은 hints.poolSeed).
+ * 판정은 사용자 요청 문장만 본다 — 모델이 make_place 에 채운 style·theme(fantasy·river 같은 기본값)은 사용자 낱말이 아니라서 무시하고 덮는다
+ * (2026-11-10 측정: 모델 3판이 모두 style:fantasy·theme:river 를 넣어 불러 풀이 0번 발동했다). 요청에 테마 낱말·버들항이 있으면 pickVillageChipset 이 null 이라 명세는 그대로다.
+ * task 는 모델에 가는 문자열일 수 있어 의도 메모(시스템 지침 — author_beodeul_town 같은 낱말이 들어 있다)는 떼고 본다.
+ */
 export function localizeVillagePoolSpec<T extends { readonly type: string; readonly style?: string; readonly theme?: string; readonly hints?: Readonly<Record<string, unknown>> }>(
   spec: T,
   project: Pick<Project, "tilesets" | "maps">,
   projectKey: string | undefined,
   task: string | undefined,
 ): T {
-  if (spec.type !== "village" || spec.style || spec.theme) return spec;
-  const pick = pickVillageChipset(project, projectKey, task);
+  if (spec.type !== "village") return spec;
+  const pick = pickVillageChipset(project, projectKey, task === undefined ? undefined : withoutIntentNote(task));
   if (!pick) return spec;
   return { ...spec, style: pick.entry.v2Style, hints: { ...(spec.hints ?? {}), poolSeed: pick.seed } };
 }

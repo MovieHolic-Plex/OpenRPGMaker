@@ -5,6 +5,7 @@ import { adventureCompletionProblems } from "@/ai/adventureCompletion";
 import { VILLAGE_POOL, isBareVillageRequest, localizeVillagePoolSpec, pickVillageChipset } from "@/ai/villageChipsetPool";
 import { VILLAGE_POOL_BUILDER } from "@/ai/v2/builders/villagePool";
 import { builderFor } from "@/ai/v2/builders";
+import { INTENT_NOTE_BOUNDARY } from "@/ai/piAgent/monsterGameRequest";
 
 function project() {
   const p = createBlankProject();
@@ -53,13 +54,21 @@ describe("테마 없는 마을의 칩셋 풀", () => {
     expect(pickVillageChipset(p, key, "마을 하나 만들어 줘")).toBeNull();
   });
 
-  it("v2: 스타일·테마 없는 마을 명세만 풀 빌더로 가고, 말한 스타일은 그대로 둔다", () => {
+  it("v2: 요청 문장이 테마 없는 마을이면 모델이 채운 style·theme 를 무시하고 풀 빌더로 간다", () => {
     const p = project();
     const key = Array.from({ length: 50 }, (_, i) => `k${i}`).find((k) => pickVillageChipset(p, k, "마을 하나 만들어 줘"))!;
     const spec = localizeVillagePoolSpec({ type: "village", name: "시작 마을" }, p, key, "마을 하나 만들어 줘");
     expect(builderFor(spec as never)?.id).toBe(VILLAGE_POOL_BUILDER.id);
-    expect(localizeVillagePoolSpec({ type: "village", name: "마을", style: "joseon" }, p, key, "마을 하나 만들어 줘").style).toBe("joseon");
-    expect(localizeVillagePoolSpec({ type: "village", name: "마을", theme: "snow" }, p, key, "마을 하나 만들어 줘").style).toBeUndefined();
+    // 실측(2026-11-10): 모델 3판이 모두 style:fantasy·theme:river 를 채워 불렀고 풀이 0번 발동했다.
+    const filled = localizeVillagePoolSpec({ type: "village", name: "마을", style: "fantasy", theme: "river", hints: { layout: { houses: [] } } }, p, key, "마을 하나 만들어 줘");
+    expect(filled.style).toBe(spec.style);
+    expect(builderFor(filled as never)?.id).toBe(VILLAGE_POOL_BUILDER.id);
+    // 의도 메모(시스템 지침)는 사용자 글이 아니다 — 메모 속 낱말이 판정을 바꾸지 않는다.
+    expect(localizeVillagePoolSpec({ type: "village", name: "마을" }, p, key, `마을 하나 만들어 줘${INTENT_NOTE_BOUNDARY}어촌 숲 북방 author_beodeul_town`).style).toBe(spec.style);
+    // 요청 문장에 테마 낱말이 있으면 모델 인자와 상관없이 풀이 끼지 않는다.
+    for (const text of ["눈 덮인 마을 만들어 줘", "조선 마을 만들어 줘", "버들항 마을 만들어 줘", "어촌 마을 만들어 줘"]) {
+      expect(localizeVillagePoolSpec({ type: "village", name: "마을", style: "fantasy", theme: "river" }, p, key, text).style, text).toBe("fantasy");
+    }
     expect(localizeVillagePoolSpec({ type: "dungeon", name: "굴" }, p, key, "마을 하나 만들어 줘").style).toBeUndefined();
   });
 });
