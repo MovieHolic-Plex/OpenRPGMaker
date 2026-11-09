@@ -313,7 +313,14 @@ export default defineConfig(({ mode }) => {
     watch: freezeDevServer()
       ? null
       : {
-          ignored: ["**/.omo/**", "**/output/**", "**/tmp/**", "**/test-results/**"],
+          // tiledata·harness-data/object-gate·verify-shots 는 그림 작업 자료(추적 파일 수만 개)라 소스가 import 하지 않는다. 감시하면
+          // dev 서버마다 inotify watch 를 수만 개 먹어, 한 박스에서 서버 10개를 띄우는 matrix-native 가 `ENOSPC: file watchers reached`
+          // 로 페이지를 못 올린 채 모델 요청 0건으로 끝났다(2026-11-10 ds-tools-500, 107행 중 41행). 폴링은 쓰지 않는다.
+          // harness-data 전체는 제외하지 않는다 — src/concepts/draft.ts 가 harness-data/game-concepts/seed.json 을 import 한다.
+          ignored: [
+            "**/.omo/**", "**/output/**", "**/tmp/**", "**/test-results/**",
+            "**/tiledata/**", "**/harness-data/object-gate/**", "**/verify-shots/**", "**/.worktrees/**",
+          ],
         },
     // 상대 baseUrl(/api/ai)을 쓰는 클라이언트는 Authorization 을 보내지 않고
     // 이 프록시가 주입한다. 키가 없는 경로는 등록하지 않는다(빈 Bearer 전송 금지). 접근은
