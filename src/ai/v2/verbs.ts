@@ -50,6 +50,7 @@ import { critiqueStaging } from "./critic";
 import { createGameTools, wantsPuzzle, wantsGameTools, wantsMusicTools, wantsStoreTools, wantsTerrainTools } from "./game";
 import { audioOnly } from "./musicWords";
 import { gameContentProblems, unaskedChanges } from "./gameChecks";
+import { AUTOPLAY_GATE_PREFIX, playProblems } from "./playCheck";
 import { HELPER_LIMITS, helpersOn, runHelperJobs, type HelperJob } from "./helpers";
 import { isStoreCardRequest } from "@/editor/tools/storeTools";
 import { combatProblems } from "./combatChecks";
@@ -1970,7 +1971,15 @@ function gameProblemTexts(before: Project, after: Project, task: string): string
  * 완료를 막지 않는다(2026-10-30 omo-loop-1030: 버들마을 출입구 그림 없음이 세 장면 모두 할 일이 됐다).
  */
 export function v2BaselineGameKeys(project: Project, task: string): Set<string> {
-  return new Set(gameProblemTexts(project, project, task).map((g) => `game:${gateKey(g)}`));
+  const keys = new Set(gameProblemTexts(project, project, task).map((g) => `game:${gateKey(g)}`));
+  for (const p of autoPlayGateProblems(project, task)) keys.add(p.key);
+  return keys;
+}
+
+/** 끝까지 플레이되는가(2026-11-09 assistant-reward 기준선: 몬스터 수집 두 판이 «완료»인데 엔딩까지 걸어갈 길이 없었다) — 게임을 만드는 요청만. 열쇠는 막힌 실행·단계마다 하나다. */
+function autoPlayGateProblems(project: Project, task: string): V2GateProblem[] {
+  if (!wantsWholeGame(task)) return [];
+  try { return playProblems(project).map((p) => ({ key: `${AUTOPLAY_GATE_PREFIX}${p.key}`, text: p.text, source: "gate" as const })); } catch { return []; }
 }
 
 /** 컷신 이벤트(또는 그 컷신이 세운 사람) 명령 안에 전투(battleProcessing)가 있나 — 지금 프로젝트 기준. */
@@ -2021,6 +2030,7 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
   }
   const problems: V2GateProblem[] = [
     ...game.map((g) => ({ key: `game:${gateKey(g)}`, text: g, source: "gate" as const })),
+    ...(env && !settingOnly && !storeOnly ? autoPlayGateProblems(env.ctx.project, env.request.task) : []),
     // 열쇠는 맵(과 장소/컷신)마다 하나 — 고칠 때마다 문제 글이 바뀌어도 같은 항목이 다시 열려 시도 상한(3)이 센다.
     ...fixable.map((o) => ({ key: `place:${o.mapId}:${o.name.includes("컷신(") ? "stage" : "place"}`, text: `${o.name}(${o.mapId}) 고치기 — 장소는 edit_place·move_object·dress_room, 컷신은 add_event: ${o.problems.slice(0, 5).join(" / ")}`,
       source: o.problems.some((p) => p.startsWith("[비평")) ? "critic" as const : "gate" as const })),
