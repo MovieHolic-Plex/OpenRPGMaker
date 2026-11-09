@@ -1,6 +1,6 @@
 // 마을 배치 구조 비교(2026-11-09 assistant-reward 오너 규칙: 「마을의 배치 구조가 비슷한 게 계속 나온다 — 비슷한 구조가 쓰였으면 막아라」).
 // 칩셋 그림이 아니라 «구조»를 본다: 칸 중 배경이 아닌 덩어리(건물·울타리·숲…)의 위치·크기를 맵 크기로 나눠 점으로 만들고,
-// 8가지 뒤집기·돌리기 중 가장 잘 맞는 겹침을 본다. 알려진 마을은 데이터 파일(knownTowns.json, 조수가 지은 판·번들 예제 26장).
+// 8가지 뒤집기·돌리기 중 가장 잘 맞는 겹침을 본다. 알려진 마을은 데이터 파일(knownTowns.json, 마을로 지은 8장 — 출처는 data/knownTowns.md).
 import type { GameMap, Project } from "@/project/types";
 import known from "./data/knownTowns.json";
 
@@ -63,7 +63,7 @@ const SYM: readonly ((x: number, y: number) => readonly [number, number])[] = [
   (x, y) => [y, x], (x, y) => [1 - y, x], (x, y) => [y, 1 - x], (x, y) => [1 - y, 1 - x],
 ];
 
-/** 두 마을 구조의 유사도 0..1 — 8가지 뒤집기·돌리기 중 최선. 덩어리가 3개 미만이거나 채움이 3% 미만이면 비교하지 않는다(0). */
+/** 두 마을 구조의 유사도 0..1 — 8가지 뒤집기·돌리기 중 최선. 덩어리가 4개 미만이거나 채움이 3% 미만이면 비교하지 않는다(0). */
 export function townSimilarity(a: { readonly comps: readonly (readonly [number, number, number])[]; readonly density: number }, b: { readonly comps: readonly (readonly [number, number, number])[]; readonly density: number }): number {
   if (a.comps.length < MIN_BLOCKS || b.comps.length < MIN_BLOCKS || a.density < 0.03 || b.density < 0.03) return 0;
   const cnt = Math.sqrt(Math.min(a.comps.length, b.comps.length) / Math.max(a.comps.length, b.comps.length));
