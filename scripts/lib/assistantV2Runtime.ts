@@ -27,6 +27,7 @@ import { syncRoomZoneItems } from "../../src/ai/v2/loop/roomZones.ts";
 import { TODO_MAX_ATTEMPTS, checkLabel, isOpen } from "../../src/ai/v2/loop/todoStore.ts";
 import { changedSince, checkItem, indexProject } from "../../src/ai/v2/loop/refs.ts";
 import { countMaps, RECOMMENDED_MAPS } from "../../src/ai/v2/mapCount.ts";
+import { countQuests, RECOMMENDED_QUESTS } from "../../src/ai/v2/questCount.ts";
 import type { TodoItem } from "../../src/ai/v2/todo/types.ts";
 import { leadFixNote, leadPlanMessages, leadReviewMessages, parseLeadReview, planForWorker, projectDigest, toolCatalog, SPLIT_LIMITS } from "../../src/ai/v2/split.ts";
 
@@ -542,6 +543,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     const left = session.unresolved().filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS || !store.items.length);
     const leftovers = left.flatMap((o) => o.problems.slice(0, 3).map((p) => `${o.name}(${o.mapId}): ${p.replace(/ — (dress_room|네가 설계한 방이다).*$/u, "").slice(0, 200)}`));
     try { if (env && buildsWholeGame(env.ctx.project, env.request.task)) { const { counted } = countMaps(env.ctx.project); if (counted.length < RECOMMENDED_MAPS) autoNotes.push(`세는 맵 ${counted.length}/${RECOMMENDED_MAPS}장(권장) — ${RECOMMENDED_MAPS - counted.length}장 부족(차단 아님)`); } } catch { /* 이 줄이 없어도 최종 보고는 나간다 */ }
+    try { if (env && buildsWholeGame(env.ctx.project, env.request.task)) { const n = countQuests(env.ctx.project).counted.length; autoNotes.push(`세는 퀘스트 ${n}/${RECOMMENDED_QUESTS}개${n < RECOMMENDED_QUESTS ? ` — ${RECOMMENDED_QUESTS - n}개 부족` : ""}`); } } catch { /* 이 줄이 없어도 최종 보고는 나간다 */ }
     if (session.fitIncomplete) autoNotes.push(`${session.fitIncomplete} — 게임은 열리지만 첫 관문 승률은 이 요청에서 보정되지 않았다`);
     const vqaLeft = vqaRounds.length ? vqaSummary(vqaRounds) : undefined;
     if (!(options.signal?.aborted) && !session.questions.length && (store.items.length || leftovers.length || session.fitIncomplete)) {
