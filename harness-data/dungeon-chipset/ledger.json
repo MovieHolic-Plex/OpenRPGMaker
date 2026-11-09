@@ -1229,6 +1229,18 @@
    "by": "delegated",
    "delegatedBy": "delegated by user to supervisor 2026-10-27",
    "evidence": "harness-data/dungeon-chipset/evidence/2026-10-27-cave-stal-r11-panel.json"
+  },
+  {
+   "round": "snow-road-r1",
+   "item": "tc.snow_road",
+   "line": "*",
+   "letter": "A1",
+   "sha256": "55201d713b64a4779c53db6ac8af3ae4dc683708c3249c25e134aafbd205d6b6",
+   "note": "owner pick relayed by lead",
+   "at": "2026-11-09T21:07:36",
+   "by": "delegated",
+   "delegatedBy": "owner (Fallen Star thread msg 1569320375010197527: 「그래 새 눈길이 훨씬 낫다」)",
+   "evidence": "harness-data/dungeon-chipset/evidence/2026-11-09-pick-snow_road-owner.json"
   }
  ],
  "rejects": [],

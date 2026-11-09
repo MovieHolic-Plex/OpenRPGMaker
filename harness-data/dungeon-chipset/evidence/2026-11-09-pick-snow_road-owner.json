@@ -1,0 +1,12 @@
+{
+ "date": "2026-11-09",
+ "item": "tc.snow_road",
+ "round": "snow-road-r1",
+ "letter": "A1",
+ "artSha256Prefix": "55201d71",
+ "pickedBy": "owner",
+ "ownerWords": "그래 새 눈길이 훨씬 낫다",
+ "ownerMessage": "Fallen Star thread msg 1569320375010197527",
+ "context": "lead asked the owner whether to pick the new snow road (page http://mdc-server:18301/fs-snow-road.html); the owner answered with the words above. The lead relayed it; the lead did not pick.",
+ "judge": "Opus 5.5 medium x3 adversarial VQA: all rounds FAIL incl. the original Frostwood render (judge cannot separate good from bad; lead decision B). Raw: ~/.dori/state/lanes/fs-snow-road/evidence/judge/*.json"
+}
