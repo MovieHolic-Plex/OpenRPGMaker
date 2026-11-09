@@ -141,7 +141,7 @@ const villagerDialogue: Family = {
     if (fresh.length !== 1) return fail('새 이벤트가 ' + fresh.length + '개다(하나여야 한다)');
     const npc = fresh[0];
     if (npc.x !== x || npc.y !== y) return fail('집 자리 (' + npc.x + ',' + npc.y + ') — (' + x + ',' + y + ') 여야 한다');
-    if (!String(npc.name ?? '').includes(name)) return fail('이름 「' + npc.name + '」 — 「' + name + '」 여야 한다');
+    if (String(npc.name ?? '').trim() !== name) return fail('이름 「' + npc.name + '」 — 「' + name + '」 여야 한다');
     const spoken = textsOf(npc);
     for (const line of lines) if (!spoken.some(body => body.includes(line))) return fail('대사 「' + line + '」 가 없다: ' + spoken.join('|'));
     if (commandsOfKind(npc, 'shop', 'transfer', 'battleProcessing').length) return fail('요청하지 않은 상점·이동·전투 명령이 있다');
@@ -189,7 +189,10 @@ const lone = (id: string, name: string, x: number, y: number, body: string): any
 });
 function withPatrolNpcs(project: Project): Project {
   const a = runOn(project, 'make_villager', { mapId: MAP, name: '야간 경비', home: { x: 14, y: 10 }, id: GUARD, movement: 'fixed', dialogue: [{ text: '이상 없다.' }] });
-  return runOn(a, 'make_villager', { mapId: MAP, name: '농부', home: { x: 10, y: 14 }, id: FARMER, movement: 'fixed', dialogue: [{ text: '날씨가 좋군.' }] });
+  const b = runOn(a, 'make_villager', { mapId: MAP, name: '농부', home: { x: 10, y: 14 }, id: FARMER, movement: 'fixed', dialogue: [{ text: '날씨가 좋군.' }] });
+  // configure_npc_patrol 은 「대사 한 줄뿐인 단일 페이지 생활 주민」만 받는다 — 주민 도구가 붙인 얼굴 명령 등을 걷어 두 주민 모두 그 모양으로 맞춘다.
+  const plain = (base: Project, eventId: string, speaker: string, body: string) => runOn(base, 'patch_event_page', { mapId: MAP, eventId, pageIndex: 0, set: { commands: [{ kind: 'text', speaker, body }] } });
+  return plain(plain(b, GUARD, '야간 경비', '이상 없다.'), FARMER, '농부', '날씨가 좋군.');
 }
 void lone;
 
