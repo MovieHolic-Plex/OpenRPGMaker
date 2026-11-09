@@ -120,7 +120,7 @@ export const ACCEPTANCE_EXAMPLES: Readonly<Record<AcceptanceCriterion["kind"], A
   projectTitle: Object.freeze({ kind: "projectTitle", title: "Exact title" }),
   itemValues: Object.freeze({ kind: "itemValues", itemId: "item_id", name: "Potion", price: 37.5 }),
   dbRecordValues: Object.freeze({ kind: "dbRecordValues", collection: "enemies" as const, recordId: "enemy_id",
-    fields: Object.freeze({ "stats.maxHp": 300 }) }),
+    fields: Object.freeze({ "stats.maxHp": "300" }) }),
   projectPreserve: Object.freeze({ kind: "projectPreserve", scope: "project", allowedChanges: Object.freeze([Object.freeze({ kind: "projectTitle" as const })]) }),
   wikiDeclaration: Object.freeze({ kind: "wikiDeclaration", documentId: "w_combat_preference", combatMode: "contact", sourceQuote: "Record my contact battle preference." }),
 });
