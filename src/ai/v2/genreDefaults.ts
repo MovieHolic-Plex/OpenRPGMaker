@@ -40,6 +40,9 @@ export function applyModernSetupDefaults(project: Project, task: string, freshSt
   return applied;
 }
 
+/** 이야기 게임의 기본 HUD(체력 끔·시계 켬) — 조수가 HUD 를 고르지 않았는지 알아보는 지문이기도 하다(gameChecks 「HUD 선택」). */
+export const STORY_SETUP_HUD = { theme: "minimal", vitals: false, clock: true, tools: false, objective: true, hideEmpty: true } as const;
+
 /**
  * 전투를 말하지 않은 게임(현대든 판타지든): 체력 HUD 를 끈다(연애 기본값이 이미 호감 HUD 를 깔았으면 그대로).
  * 처음엔 현대 장소에만 깔아서 판타지 풍 이야기 게임(장난감 가게 회상)에 하트 다섯 개와 「514/514」가 남았다(2026-10-25 G51).
@@ -50,7 +53,7 @@ export function applyStorySetupDefaults(project: Project, task: string, freshSta
   if (!setup || BATTLE_WORDS.test(task)) return [];
   const applied: string[] = [];
   if (project.system.fieldHud === undefined) {
-    project.system.fieldHud = { theme: "minimal", vitals: false, clock: true, tools: false, objective: true, hideEmpty: true };
+    project.system.fieldHud = { ...STORY_SETUP_HUD };
     applied.push("체력 HUD 끔");
   }
   const hero = redressStoryHero(project, task);
