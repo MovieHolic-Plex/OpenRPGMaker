@@ -43,10 +43,10 @@ export function placeSnowMerchant(project: Project, mapId: string, at: Cell, ent
     say(BERN, "고개 넘으면 얼음 호수다. 약은 넉넉히 챙겨."),
   ];
   putEvent(map, "ev_fs2_snow_merchant", BERN, at, [
-    page("ev_fs2_snow_merchant_first", "처음", [], [...greet, { kind: "setSelfSwitch", key: "A", value: true } satisfies Command, shop(FS2_MERCHANT_STOCK)],
+    page("ev_fs2_snow_merchant_first", "처음", [], [...greet, { kind: "setSelfSwitch", key: "A", value: true } satisfies Command, shop(FS2_MERCHANT_STOCK, "행상 베른")],
       { graphic: chipGraphic("tex_easyrpg_charset_people4", 4), trigger: { kind: "action" } }),
     page("ev_fs2_snow_merchant_again", "다시", [{ kind: "selfSwitch", key: "A", value: true } satisfies Condition],
-      [say(BERN, "또 왔군. 불 쬐고 가."), shop(FS2_MERCHANT_STOCK)],
+      [say(BERN, "또 왔군. 불 쬐고 가."), shop(FS2_MERCHANT_STOCK, "행상 베른")],
       { graphic: chipGraphic("tex_easyrpg_charset_people4", 4), trigger: { kind: "action" } }),
   ]);
   const after = reachable(project, mapId, entry);

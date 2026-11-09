@@ -23,7 +23,7 @@ export const item = (itemId: string, amount: number): Command =>
   ({ kind: "changeItem", itemId, op: amount >= 0 ? "+=" : "-=", amount: Math.abs(amount) } satisfies Command);
 export const gainGold = (amount: number): Command => ({ kind: "changeGold", op: "+=", amount } satisfies Command);
 export const se = (resourceId: string): Command => ({ kind: "playAudio", resourceId, loop: false, channel: "se" });
-export const shop = (itemIds: readonly string[]): Command => ({ kind: "shop", shopType: "normal", itemIds: [...itemIds], allowSell: true } satisfies Command);
+export const shop = (itemIds: readonly string[], title?: string): Command => ({ kind: "shop", shopType: "normal", ...(title ? { title } : {}), itemIds: [...itemIds], allowSell: true } satisfies Command);
 export const label = (name: string): Command => ({ kind: "label", name } satisfies Command);
 export const gotoLabel = (name: string): Command => ({ kind: "gotoLabel", name } satisfies Command);
 export type Option = { text: string; branch: Command[]; showWhen?: Condition; enableWhen?: Condition; disabledText?: string };
