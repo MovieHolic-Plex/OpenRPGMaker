@@ -560,7 +560,7 @@ export function openingMissing(project: Project): ShipBlocker[] {
  */
 export function bundledPictureLeft(project: Project): ShipBlocker[] {
   const out: ShipBlocker[] = [];
-  const bundled = (id: string | undefined): id is string => !!id && isBundledPictureId(id) && !ROMANCE_TITLE_BACKGROUNDS.includes(id);
+  const bundled = (id: string | undefined): id is string => !!id && isBundledPictureId(id, project) && !ROMANCE_TITLE_BACKGROUNDS.includes(id);
   // 아직 아무것도 짓지 않은 빈 맵의 화면은 단색이라 «이 게임의 그림»이 아니다 — 맵 화면도 지은 맵이어야 한다.
   const blankView = (id: string | undefined): id is string => { const mapId = openingMapViewMapId(id); const map = mapId ? project.maps[mapId] : undefined; return !!map && blankMap(map); };
   const title = (project.system.titleScreen ?? {}) as { backgroundResourceId?: string };

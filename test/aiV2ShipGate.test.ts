@@ -122,6 +122,21 @@ describe("a bundled still is not this game's picture", () => {
     expect(bundledPictureLeft(p)).toHaveLength(0);
   });
 
+  it("blocks any engine-bundled picture outside the stills catalog: a pack backdrop, an item icon, a panorama", () => {
+    // 실측 2026-11-09 번들 1 측정: 엔딩 그림이 scarloxy-backdrop-forest·oprn-item-treasure-ruby-3·oprn-pano-… 로 끝났는데 스틸 카탈로그 판정이 놓쳤다.
+    for (const id of ["scarloxy-backdrop-forest", "oprn-item-treasure-ruby-3", "oprn-pano-sky-01"]) {
+      const p = adventure();
+      p.endings[0]!.presentation = { finalTitle: "끝", backgroundResourceId: id } as never;
+      expect(bundledPictureLeft(p).map((b) => b.evidence), id).toEqual([expect.stringContaining("endings[e1]")]);
+    }
+    const own = adventure();
+    own.assets.uploaded["own-ending"] = { id: "own-ending" } as never;
+    own.endings[0]!.presentation = { finalTitle: "끝", backgroundResourceId: "own-ending" } as never;
+    expect(bundledPictureLeft(own)).toHaveLength(0);
+    own.endings[0]!.presentation = { finalTitle: "끝", backgroundResourceId: `opening-still:forest_title_dark@1000` } as never;
+    expect(bundledPictureLeft(own)).toHaveLength(0);
+  });
+
   it("lets the romance key art through, and an uploaded or generated picture", () => {
     const p = adventure();
     p.system.titleScreen = { ...p.system.titleScreen!, backgroundResourceId: "oprn-title-romance-campus" };

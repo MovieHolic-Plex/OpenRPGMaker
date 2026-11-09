@@ -34,9 +34,14 @@ export function factoryArtResourceIds(): ReadonlySet<string> {
  * 엔진이 번들로 싣고 오는 그림인가 — 오프닝 스틸 카탈로그(oprn-still-*·oprn-pack-still-*)와 번들 타이틀 그림(oprn-title-*). 어느 게임이나 고를 수 있는 같은 그림이라
  * 타이틀·엔딩 그림으로 그대로 두면 게임마다 같은 그림이 된다(2026-11-09 오너: 「기본 타이틀 그림이 들어가면 게임적 가치가 없다」). 맵 화면(map-view:)·올린 그림·생성 그림은 아니다.
  */
-export function isBundledPictureId(id: string | undefined): boolean {
+export function isBundledPictureId(id: string | undefined, project?: Pick<Project, "assets">): boolean {
   if (!id) return false;
-  return id.startsWith("oprn-title-") || findOpeningStillMood(id) !== undefined;
+  if (id.startsWith("oprn-title-") || findOpeningStillMood(id) !== undefined) return true;
+  // 이 게임의 그림은 맵 화면(map-view:)·오프닝 컷 한 순간(opening-still:)이거나 프로젝트가 올린·만든 그림(assets.uploaded)이다. 그 밖의 id 는 엔진이 싣고 오는 번들 그림이다
+  // (실측 2026-11-09 b1 cat-1: 엔딩 그림 scarloxy-backdrop-forest — 스칼록시 팩 배경 — 이 스틸 카탈로그 밖이라 처음 판정이 놓쳤다).
+  if (!project) return false;
+  if (id.startsWith("map-view:") || id.startsWith("opening-still:")) return false;
+  return project.assets.uploaded[id] === undefined && project.assets.sprites[id] === undefined;
 }
 
 /** 엔딩이 실제로 까는 그림 id(엔딩 자신의 배경 → 타이틀 그림 → 오프닝 마지막 스틸) — 플레이어 endingBackdropResourceId 와 같은 순서. */
