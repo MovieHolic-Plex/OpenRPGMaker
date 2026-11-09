@@ -294,7 +294,7 @@ const endingDefine: Family = {
     const added = now.filter(ending => !was.some(old => old.id === ending.id));
     if (added.length !== 1) return fail(`새 엔딩이 ${added.length}개다(하나여야 한다)`);
     const ending = added[0];
-    if (!String(ending.name ?? '').includes(want.name)) return fail(`엔딩 이름이 「${ending.name}」 — 「${want.name}」 여야 한다`);
+    if (String(ending.name ?? '').trim() !== want.name) return fail(`엔딩 이름이 「${ending.name}」 — 「${want.name}」 여야 한다`);
     for (const old of was) if (!isDeepStrictEqual(old, now.find(entry => entry.id === old.id))) return fail(`기존 엔딩 ${old.id} 가 바뀌었다`);
     const before = eventOf(input.before, want.eventId), after = eventOf(input.after, want.eventId);
     if (!before || !after) return fail(`${want.eventId} 이벤트가 사라졌다`);
