@@ -26,7 +26,7 @@ export function telegraphAlpha(elapsedMs: number, windupMs: number): number {
 function distanceToBody(cell: TileCell, left: number, right: number, top: number, bottom: number): number {
   const dx = Math.max(left - cell.x, 0, cell.x - right);
   const dy = Math.max(top - cell.y, 0, cell.y - bottom);
-  return Math.hypot(dx, dy);
+  return Math.max(dx, dy);
 }
 
 /**
@@ -34,8 +34,8 @@ function distanceToBody(cell: TileCell, left: number, right: number, top: number
  * 그려진 칸과 맞는 칸이 어긋나지 않는다. 자기 몸 칸은 항상 뺀다.
  *
  * - arc: 기존 앞쪽 부채꼴(생략 시 기본, 기존 동작과 같다).
- * - circle: 몸에서 range 칸 이내 전부.
- * - ring: 몸에서 range-1 칸 초과, range 칸 이내(안쪽은 안전).
+ * - circle: 몸에서 range 칸 이내 전부(대각선 포함, 공격 시작 거리 판정과 같은 체비쇼프 거리).
+ * - ring: 몸에서 정확히 range 칸 떨어진 바깥 한 겹(안쪽은 안전).
  * - cross: 몸의 네 변에서 위·아래·왼·오른쪽으로 range 칸씩.
  */
 export function enemyMeleeCells(

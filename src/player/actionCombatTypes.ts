@@ -72,8 +72,6 @@ export interface ActionEnemyState {
   attackCooldownMs: number;
   dash?: ActionEnemyDashState;
   telegraph?: Phaser.GameObjects.Graphics;
-  /** 선딜 동안 다시 칠할 예고 칸. 시작 때 한 번 정하고 농도만 바꾼다. */
-  telegraphCells?: readonly { readonly x: number; readonly y: number }[];
   windupTween?: Phaser.Tweens.Tween;
   /** 사망 연출(페이드)이 이미 시작됐는가 — 보상 이중 지급 방지. */
   dying?: boolean;

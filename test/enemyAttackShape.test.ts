@@ -17,21 +17,28 @@ describe("enemyMeleeCells", () => {
     expect(keys(enemyMeleeCells("arc", "right", 10, 10, 2, UNIT))).toEqual(keys(old));
   });
 
-  it("circle covers every cell within range of a 1x1 body except the body", () => {
+  it("circle covers every cell within range of a 1x1 body, diagonals included, except the body", () => {
     const cells = enemyMeleeCells("circle", "down", 10, 10, 2, UNIT);
-    expect(cells).toHaveLength(12);
+    expect(cells).toHaveLength(24);
     expect(keys(cells)).toContain("8,10");
-    expect(keys(cells)).toContain("11,11");
+    expect(keys(cells)).toContain("12,12");
     expect(keys(cells)).not.toContain("10,10");
-    expect(keys(cells)).not.toContain("12,12");
+    expect(keys(cells)).not.toContain("13,10");
+  });
+
+  it("circle of range 1 reaches the diagonal neighbour the attack start gate accepts", () => {
+    const cells = enemyMeleeCells("circle", "down", 10, 10, 1, UNIT);
+    expect(cells).toHaveLength(8);
+    expect(keys(cells)).toContain("11,11");
   });
 
   it("ring leaves the inner layer safe", () => {
     const cells = enemyMeleeCells("ring", "down", 10, 10, 2, UNIT);
-    expect(cells).toHaveLength(8);
+    expect(cells).toHaveLength(16);
     expect(keys(cells)).not.toContain("11,10");
+    expect(keys(cells)).not.toContain("11,11");
     expect(keys(cells)).toContain("12,10");
-    expect(keys(cells)).toContain("11,11");
+    expect(keys(cells)).toContain("12,12");
   });
 
   it("cross runs straight out of the four sides", () => {

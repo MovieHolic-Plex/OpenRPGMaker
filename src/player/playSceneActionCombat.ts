@@ -1255,7 +1255,7 @@ function updateEnemyModes(scene: PlaySceneContext, state: ActionCombatSceneState
       case "windup": {
         enemy.modeTimerMs -= deltaMs;
         if (enemy.modeTimerMs <= 0) executeStrike(scene, state, enemy, attack, pos);
-        else if (attack) paintTelegraph(scene, enemy, telegraphAlpha(attack.windupMs - enemy.modeTimerMs, attack.windupMs));
+        else if (attack) enemy.telegraph?.setAlpha(telegraphAlpha(attack.windupMs - enemy.modeTimerMs, attack.windupMs));
         break;
       }
       case "dash": {
@@ -1330,6 +1330,7 @@ function stopWindupTelegraph(scene: PlaySceneContext, enemy: ActionEnemyState): 
 function drawTelegraph(scene: PlaySceneContext, enemy: ActionEnemyState, attack: EnemyActionAttack, ex: number, ey: number, dir: Dir, dx: number, dy: number): void {
   const graphics = scene.add.graphics();
   graphics.setDepth(COMBAT_DEPTH - 1);
+  graphics.fillStyle(0xff3322, 1);
   const project = store.getCurrent();
   const cells: { x: number; y: number }[] = [];
   if (attack.kind === "melee") {
@@ -1353,19 +1354,11 @@ function drawTelegraph(scene: PlaySceneContext, enemy: ActionEnemyState, attack:
     }
   }
   enemy.telegraph = graphics;
-  enemy.telegraphCells = cells;
-  paintTelegraph(scene, enemy, telegraphAlpha(0, attack.windupMs));
-}
-
-function paintTelegraph(scene: PlaySceneContext, enemy: ActionEnemyState, alpha: number): void {
-  const graphics = enemy.telegraph;
-  if (!graphics || !enemy.telegraphCells) return;
   const tile = mapTileSize(scene.map);
-  graphics.clear();
-  graphics.fillStyle(0xff3322, alpha);
-  for (const cell of enemy.telegraphCells) {
+  for (const cell of cells) {
     graphics.fillRect(characterSpriteX(cell.x, tile) - tile / 2, characterSpriteY(cell.y, tile) - tile, tile, tile);
   }
+  graphics.setAlpha(telegraphAlpha(0, attack.windupMs));
 }
 
 function executeStrike(scene: PlaySceneContext, state: ActionCombatSceneState, enemy: ActionEnemyState, attack: EnemyActionAttack | undefined, pos: { x: number; y: number }): void {
