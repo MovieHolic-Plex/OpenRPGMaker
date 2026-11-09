@@ -322,7 +322,7 @@ export function finishFallenWellBeastArt(project: Project, mapId: string): void 
   if (!beast) throw new Error("[fallen-star well] 눈먼 영주 적 레코드가 없다");
   beast.monsterResourceId = FS2_WELL_BEAST_ART;
   const ev = project.maps[mapId]?.events.find((e) => e.id === "ev_fs2_well_beast");
-  if (!ev) throw new Error("[fallen-star well] 잠든 영주 이벤트가 없다");
+  if (!ev?.pages?.length) throw new Error("[fallen-star well] 잠든 영주 이벤트(페이지)가 없다");
   for (const pg of ev.pages) {
     const g = pg.graphic as { sprite?: { type: string; id: string } } | undefined;
     if (g?.sprite) g.sprite = { type: "uploaded", id: FS2_WELL_BEAST_ART };
