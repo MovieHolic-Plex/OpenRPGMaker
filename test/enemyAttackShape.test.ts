@@ -65,13 +65,13 @@ describe("enemyMeleeCells", () => {
 
 describe("telegraphAlpha", () => {
   it("rises from the start alpha to the end alpha over the windup", () => {
-    expect(telegraphAlpha(0, 800)).toBeCloseTo(0.15, 5);
-    expect(telegraphAlpha(400, 800)).toBeCloseTo(0.35, 5);
+    expect(telegraphAlpha(0, 800)).toBeCloseTo(0.28, 5);
+    expect(telegraphAlpha(400, 800)).toBeCloseTo(0.415, 5);
     expect(telegraphAlpha(800, 800)).toBeCloseTo(0.55, 5);
   });
 
   it("clamps out-of-range elapsed time and a zero windup to the end alpha", () => {
-    expect(telegraphAlpha(-50, 800)).toBeCloseTo(0.15, 5);
+    expect(telegraphAlpha(-50, 800)).toBeCloseTo(0.28, 5);
     expect(telegraphAlpha(5000, 800)).toBeCloseTo(0.55, 5);
     expect(telegraphAlpha(0, 0)).toBeCloseTo(0.55, 5);
   });

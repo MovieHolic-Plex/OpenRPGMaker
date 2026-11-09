@@ -10,7 +10,7 @@ import { swingArcCellsFromBody, type TileCell } from "./hitbox";
 export const ENEMY_ATTACK_SHAPES: readonly EnemyActionAttackShape[] = ["arc", "circle", "ring", "cross"];
 
 /** 선딜 시작 때 예고 농도. 끝에 가까울수록 진해져 "곧 맞는다" 가 읽힌다. */
-export const TELEGRAPH_ALPHA_START = 0.15;
+export const TELEGRAPH_ALPHA_START = 0.28;
 export const TELEGRAPH_ALPHA_END = 0.55;
 
 export function isEnemyAttackShape(value: unknown): value is EnemyActionAttackShape {
