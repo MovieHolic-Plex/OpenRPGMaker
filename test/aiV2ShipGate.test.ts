@@ -137,10 +137,13 @@ describe("a bundled still is not this game's picture", () => {
     expect(bundledPictureLeft(own)).toHaveLength(0);
   });
 
-  it("lets the romance key art through, and an uploaded or generated picture", () => {
+  it("lets the romance key art through only in a romance game, and an uploaded or generated picture always", () => {
     const p = adventure();
     p.system.titleScreen = { ...p.system.titleScreen!, backgroundResourceId: "oprn-title-romance-campus" };
     p.endings[0]!.presentation = { finalTitle: "끝", backgroundResourceId: "generated-ending-dawn" } as never;
+    // 연애 게임이 아니면 연애 키아트도 번들 그림이다(b1 school-1: 학교 추리 엔딩이 oprn-title-romance-school 로 통과했다).
+    expect(bundledPictureLeft(p).map((b) => b.evidence.split("=")[0])).toEqual(["titleScreen.backgroundResourceId", expect.stringContaining("endings[e1]")].slice(0, 1));
+    p.system.genreLock = { preset: "romance" } as never;
     expect(bundledPictureLeft(p)).toHaveLength(0);
   });
 

@@ -9,7 +9,7 @@ import { reloadProblem } from "./reloadCheck";
 import { chaserMapsWithoutHiding } from "@/project/chaserHiding";
 import { createBlankProject } from "@/project/defaults";
 import { endingBackdropCandidates, isBundledPictureId, projectDefaultLeaks } from "@/project/defaultLeaks";
-import { ROMANCE_TITLE_BACKGROUNDS } from "@/project/romanceTitleArt";
+import { ROMANCE_TITLE_BACKGROUNDS, isRomanceTitleTarget } from "@/project/romanceTitleArt";
 import type { Project } from "@/project/types";
 import { isBlankCanvasMap } from "@/project/tilesetBaseline";
 import { findOpeningStillMood } from "@/assets/openingStillMoods";
@@ -560,7 +560,9 @@ export function openingMissing(project: Project): ShipBlocker[] {
  */
 export function bundledPictureLeft(project: Project): ShipBlocker[] {
   const out: ShipBlocker[] = [];
-  const bundled = (id: string | undefined): id is string => !!id && isBundledPictureId(id, project) && !ROMANCE_TITLE_BACKGROUNDS.includes(id);
+  // 연애 키아트는 «연애 게임»에서만 예외다 — 학교 추리 게임이 엔딩에 oprn-title-romance-school 을 걸어 통과했다(2026-11-09 b1 school-1 재실행).
+  const romance = isRomanceTitleTarget(project);
+  const bundled = (id: string | undefined): id is string => !!id && isBundledPictureId(id, project) && !(romance && ROMANCE_TITLE_BACKGROUNDS.includes(id));
   // 아직 아무것도 짓지 않은 빈 맵의 화면은 단색이라 «이 게임의 그림»이 아니다 — 맵 화면도 지은 맵이어야 한다.
   const blankView = (id: string | undefined): id is string => { const mapId = openingMapViewMapId(id); const map = mapId ? project.maps[mapId] : undefined; return !!map && blankMap(map); };
   const title = (project.system.titleScreen ?? {}) as { backgroundResourceId?: string };
