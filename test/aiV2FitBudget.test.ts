@@ -90,6 +90,16 @@ describe("budget guard and fast mode", () => {
   });
 });
 
+describe("total deadline", () => {
+  it("cuts the guarded stage once the total deadline has passed even if the stage budget is fresh", () => {
+    const p = createBlankProject() as Project;
+    beginFitBudget(p, 60_000);
+    const b = Date.now;
+    Date.now = () => b() + 151_000;
+    try { guardFitBudget(p, true); expect(() => checkFitBudget(p)).toThrow(FitBudgetExceeded); } finally { Date.now = b; }
+  });
+});
+
 describe("applyShipDefaults when the required-battle stage is cut by the budget", () => {
   it("keeps the cheap stage result, restores only the cut stage, and retries once in fast mode", () => {
     const p = monsterish();
@@ -100,6 +110,8 @@ describe("applyShipDefaults when the required-battle stage is cut by the budget"
       expect(applied).toContain("관문 곡선 줄");   // 싼 단계는 확정으로 남는다
       expect(applied).toContain("필수 전투 줄");   // 빠른 모드 재시도 결과
       expect(applied.some((line) => line.includes("빠른 모드(10판)"))).toBe(true);
+      // 빠른 모드가 성공했으면 «미완» 으로 보고하면 안 된다(finish stage 가 이 접두 줄로 session.fitIncomplete 를 세운다).
+      expect(applied.some((line) => line.startsWith(FIT_INCOMPLETE_PREFIX))).toBe(false);
       expect(JSON.stringify(p.database.enemies)).toBe(enemiesBefore);   // 끊긴 시도가 남긴 시험값은 없다
       expect(JSON.stringify(p.database.troops)).toBe(troopsBefore);
     } finally { state.mode = "pass"; }

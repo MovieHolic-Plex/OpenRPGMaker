@@ -63,7 +63,7 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
       if (!(error instanceof FitBudgetExceeded)) throw error;
       restoreFitState(project, snap);
       enterFastFit(project);
-      try { required = fitRequiredBattlesToStarters(project); applied.push(`${error.message} — 정밀 모의전(40판)이 예산을 넘겨 빠른 모드(10판)로 다시 맞췄다(${Math.round(error.spentMs / 1000)}초 사용)`); }
+      try { required = fitRequiredBattlesToStarters(project); applied.push(`필수 전투 맞춤: 정밀 모의전(40판)이 ${Math.round(error.spentMs / 1000)}초를 넘겨 빠른 모드(10판)로 다시 맞췄다`); }
       catch (again) {
         if (!(again instanceof FitBudgetExceeded)) throw again;
         restoreFitState(project, snap);

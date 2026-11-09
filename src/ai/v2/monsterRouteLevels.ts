@@ -29,6 +29,8 @@ type Obj = Record<string, unknown>;
 /** 곡선으로 올린 길 상대를 스타터 혼자 이겨야 하는 모의전 승률과 판 수(시드 고정 — 결정적). */
 const FIT_WIN_RATE = 0.8;
 const FIT_SAMPLES = 40;
+/** 전체 마감: 맞춤 전체(단계 예산 둘 + 바퀴)가 이 시간을 넘으면 더 하지 않는다. */
+const FIT_TOTAL_MS = 150_000;
 const FIT_SAMPLES_FAST = 10;
 /**
  * 필수 전투의 남은 HP 띠(모의전 평균, 파티 = 스타터 + 선물 동료). 아래 HP_MARGIN 미만이면 아슬아슬한 승리 — 못 이긴 것으로 친다.
@@ -97,15 +99,16 @@ export const FIT_BUDGET_MS = 60_000;
 /** applied 줄의 머리말 — 끝맺음 단계가 이 접두로 «맞춤 미완» 을 알아본다. */
 export const FIT_INCOMPLETE_PREFIX = "required-battle fit incomplete (budget";
 export class FitBudgetExceeded extends Error { constructor(readonly spentMs: number) { super(`${FIT_INCOMPLETE_PREFIX} ${Math.round(FIT_BUDGET_MS / 1000)}s)`); } }
-interface FitBudget { start: number; limitMs: number; exceededAt?: number; /** 예산은 필수전투 단계에서만 검사한다(곡선·길 맞춤은 싸다 — 실측 gate 2.5s·route 5ms·required 174s). */ guarded: boolean; /** 빠른 모드 = 모의전 표본 10(정밀 40) — 0% 와 80% 는 가르고 시간은 1/4. */ fast: boolean }
+interface FitBudget { start: number; limitMs: number; /** 단계 한도와 별개의 전체 마감(처음 시작부터) — 빠른 모드 재시도·바퀴가 쌓여 300초 무음을 넘기지 않게 한다. */ deadline: number; exceededAt?: number; /** 예산은 필수전투 단계에서만 검사한다(곡선·길 맞춤은 싸다 — 실측 gate 2.5s·route 5ms·required 174s). */ guarded: boolean; /** 빠른 모드 = 모의전 표본 10(정밀 40) — 0% 와 80% 는 가르고 시간은 1/4. */ fast: boolean }
 const fitBudgets = new WeakMap<Project, FitBudget>();
 /** 이 프로젝트의 맞춤 예산을 새로 시작한다(끝맺음 한 번 = applyShipDefaults 한 번). 이미 초과한 기록은 지운다. */
-export function beginFitBudget(project: Project, limitMs = FIT_BUDGET_MS): void { fitBudgets.set(project, { start: Date.now(), limitMs, guarded: false, fast: false }); }
+export function beginFitBudget(project: Project, limitMs = FIT_BUDGET_MS): void { fitBudgets.set(project, { start: Date.now(), limitMs, deadline: Date.now() + (limitMs < 0 ? limitMs : FIT_TOTAL_MS), guarded: false, fast: false }); }
 /** 필수전투 단계의 시작·끝 — 예산 검사는 이 사이에서만 한다. 시작할 때 예산 시계를 새로 켠다(앞 싼 단계의 시간은 세지 않는다). */
 export function guardFitBudget(project: Project, on: boolean): void { const b = fitBudgets.get(project); if (!b) return; b.guarded = on; if (on) { b.start = Date.now(); b.exceededAt = undefined; } }
 /** 빠른 모드로 바꾸고 예산 시계를 새로 켠다(예산을 넘긴 뒤 한 번 더 시도할 때). */
 export function enterFastFit(project: Project): void { const b = fitBudgets.get(project); if (b) { b.fast = true; b.start = Date.now(); b.exceededAt = undefined; } }
-export function fitIsFast(project: Project): boolean { return fitBudgets.get(project)?.fast === true; }
+/** 빠른 모드는 필수전투 단계(guarded) 안에서만 쓴다 — 싼 단계(곡선·길)는 예산 밖이라 정밀 40판으로 돈다. */
+export function fitIsFast(project: Project): boolean { const b = fitBudgets.get(project); return b?.fast === true && b.guarded; }
 /** 마지막 맞춤이 예산을 넘겨 멈췄나(다음 beginFitBudget 까지 남는다). 프로젝트 객체는 체크포인트·다시 읽기에서 바뀌어 기록을 못 지키므로 보고용 기록은 session.fitIncomplete 에 있다 — 이것은 같은 호출 안의 확인·테스트용이다. */
 export function fitBudgetExceeded(project: Project): number | undefined { return fitBudgets.get(project)?.exceededAt; }
 /** 맞춤이 건드리는 부분의 스냅숏 — 적·트룹·종 배우는 기술 레벨·맵 조우표와 이벤트(선물 동료 splice). 예산이 시험 한가운데서 터져도 이 상태로 돌린다. */
@@ -132,8 +135,9 @@ export function checkFitBudget(project: Project): void {
   const budget = fitBudgets.get(project);
   if (!budget || !budget.guarded) return;
   if (budget.exceededAt !== undefined) throw new FitBudgetExceeded(budget.exceededAt);
-  const spent = Date.now() - budget.start;
-  if (spent > budget.limitMs) { budget.exceededAt = spent; throw new FitBudgetExceeded(spent); }
+  const now = Date.now();
+  const spent = now - budget.start;
+  if (spent > budget.limitMs || now > budget.deadline) { budget.exceededAt = spent; throw new FitBudgetExceeded(spent); }
 }
 
 function fitSimulate(project: Project, troopId: string, heroLevel: number, monsterParty: MonsterInstance[]): ReturnType<typeof simulateBattle> {
