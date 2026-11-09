@@ -380,13 +380,14 @@ export function scoreProject(doc, options = {}) {
 
 // ---------- CLI ----------
 function parseArgs(argv) {
-  const args = { files: [], baseline: undefined, measure: false, json: false, weights: undefined };
+  const args = { files: [], baseline: undefined, measure: false, json: false, weights: undefined, looks: undefined };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === "--baseline") args.baseline = argv[(index += 1)];
     else if (arg === "--weights") args.weights = argv[(index += 1)];
     else if (arg === "--measure") args.measure = true;
     else if (arg === "--json") args.json = true;
+    else if (arg === "--looks") args.looks = argv[(index += 1)];
     else args.files.push(arg);
   }
   return args;
@@ -400,11 +401,19 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   }
   const baseline = args.baseline ? JSON.parse(readFileSync(args.baseline, "utf8")) : undefined;
   const weights = args.weights || !args.measure ? loadWeights(args.weights) : undefined;
+  // --looks <looks.mjs judge 결과 JSON>: 같은 게임(파일 이름에 id 가 든 것)의 0점·감점 줄을 점수 줄 뒤에 붙인다. 0점이면 점수는 0 으로 표시한다.
+  const looks = args.looks ? JSON.parse(readFileSync(args.looks, "utf8")) : undefined;
   const rows = [];
   for (const file of args.files) {
     const doc = JSON.parse(readFileSync(file, "utf8"));
-    rows.push({ file, ...(args.measure ? { raw: measure(doc, baseline) } : scoreProject(doc, { weights, baseline })) });
+    const row = { file, ...(args.measure ? { raw: measure(doc, baseline) } : scoreProject(doc, { weights, baseline })) };
+    const verdict = looks?.results?.find((result) => file.includes(String(result.id).replace(/^asst:/u, "").replace(/\//gu, "-")) || file.includes(String(result.id)));
+    if (verdict) { row.looks = { zero: verdict.zero, penalty: verdict.penalty, lines: verdict.lines, measure: looks.measure, corpus_sha: looks.corpus_sha }; if (verdict.zero && row.score !== undefined) row.score_before_zero = row.score, row.score = 0; }
+    rows.push(row);
   }
   if (args.json) console.log(JSON.stringify(rows, null, 2));
-  else for (const row of rows) console.log(args.measure ? `${row.file}\n${JSON.stringify(row.raw)}` : `${String(row.score).padStart(5)}  ${row.file}`);
+  else for (const row of rows) {
+    console.log(args.measure ? `${row.file}\n${JSON.stringify(row.raw)}` : `${String(row.score).padStart(5)}  ${row.file}`);
+    for (const line of row.looks?.lines ?? []) console.log(`       ${line}  [${row.looks.measure} corpus ${row.looks.corpus_sha}]`);
+  }
 }

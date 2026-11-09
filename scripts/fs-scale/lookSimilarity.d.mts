@@ -1,0 +1,12 @@
+export type LookShot = { measure: string; ahash: string; dhash: string; hist: number[]; sha: string };
+export type LookGame = { id: string; made_at: string; prompt_sha?: string; shots: { title?: LookShot; start?: LookShot } };
+export type LookHit = { kind: "zero" | "penalty" | "twin-penalty"; reason?: string; other: string; sim: number; screen: string };
+export type LookVerdict = { zero: boolean; penalty: number; lines: string[]; hits: LookHit[] };
+export const MEASURE_ID: string;
+export const THRESHOLDS: Record<string, { zero: number; penalty: number; penaltyPoints: number }>;
+export function features(rgba: Uint8Array, width: number, height: number): LookShot;
+export function hexOf(bits: number[]): string;
+export function similarity(a: LookShot, b: LookShot): { sim: number; struct: number; col: number };
+export function pairScore(x: LookGame, y: LookGame): { sim: number; screen: string | null; identical: boolean };
+export function isLater(x: { made_at: string; id: string }, y: { made_at: string; id: string }): boolean;
+export function judgeGame(game: LookGame, corpus: LookGame[], defaults: { title?: LookShot; start?: LookShot } | undefined, measure?: string): LookVerdict;
