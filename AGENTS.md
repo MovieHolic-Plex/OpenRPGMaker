@@ -306,6 +306,18 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
    typecheck exit 2 / vitest exit 1 이었다).
 4. 기준선이 빨간불이므로 게이트는 **기준선 대비 새 실패**만 회귀로 본다.
 
+## 푸시 전에 CI 줄을 먼저 본다 — 실패 메일은 오너의 받은편지함으로 간다 (hard rule)
+
+모든 에이전트 푸시의 행위자가 오너 계정이라, 에이전트 브랜치에서 실패한 CI 실행 하나마다 오너에게 메일이 한 통 간다.
+실패는 메일이 아니라 PR 의 CI 줄(`gh pr checks <번호>`, `oprn-ci-watch`)로 먼저 본다.
+
+1. 푸시 직전에 `oprn-push` 를 돌린다: `origin/main` 을 합친 상태에서 `node_modules` 를 연결해 `openwiki/INDEX.md` 를 다시 만들고,
+   달라졌으면 그 파일만 담은 커밋을 얹는다 (CI 는 패키지가 설치된 채로 만들어서, 맨 체크아웃의 목차는 1건 어긋난다).
+2. 스택 PR 의 밑 PR 이 스쿼시 머지되면 자기 커밋만 `git rebase --onto origin/main <옛 밑 브랜치>` 나 cherry-pick 으로 옮긴다.
+   옛 밑 커밋이 딸려 오면 목차·래칫이 줄줄이 낡는다.
+3. 빨간 줄은 원인(`oprn-ci-watch` 가 index·css-ratchet·typecheck·vitest·other 로 가른다)을 고친 뒤에 다시 푸시한다.
+   같은 원인으로 연속 푸시하지 않는다.
+
 ## 테스트는 GitHub CI 에서만 돈다 — 로컬 vitest·bun test·playwright test·gates 금지 (hard rule, 2026-10-25)
 
 **이 저장소는 공개 저장소이고, PR 마다 GitHub CI(ci-fast·ci-full)가 같은 검사를 돌린다. 개발 기계에서는 테스트 러너를 돌리지 않는다.**
