@@ -70,6 +70,12 @@ describe("normalizeEnemyActionProfile extraAttacks", () => {
     expect(out?.extraAttacks?.[0]).toMatchObject({ kind: "projectile", range: 20, hpBelowPercent: 99 });
   });
 
+  it("never keeps a health condition on the base attack, which would stop a lone-attack enemy from ever attacking", () => {
+    const out = normalizeEnemyActionProfile({ attack: { ...attack, hpBelowPercent: 40 }, extraAttacks: [{ ...attack, hpBelowPercent: 40 }] });
+    expect(out?.attack).not.toHaveProperty("hpBelowPercent");
+    expect(out?.extraAttacks?.[0]?.hpBelowPercent).toBe(40);
+  });
+
   it("drops invalid extras and ignores extras when there is no base attack", () => {
     expect(normalizeEnemyActionProfile({ attack, extraAttacks: [{ kind: "spin" } as never] })).not.toHaveProperty("extraAttacks");
     expect(normalizeEnemyActionProfile({ extraAttacks: [attack] })).toBeUndefined();

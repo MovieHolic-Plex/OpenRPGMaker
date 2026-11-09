@@ -108,6 +108,9 @@ function prepareActionEnemy(
   if (suppliedProfile?.attack !== undefined) {
     errors.push(...validateArgs(actionAttackSchema, suppliedProfile.attack).map((message) => `attack: ${message}`));
   }
+  suppliedProfile?.extraAttacks?.forEach((extra, index) => {
+    errors.push(...validateArgs(actionAttackSchema, extra).map((message) => `extraAttacks[${index}]: ${message}`));
+  });
   if (errors.length > 0) {
     throw new ToolError(`actionProfile: ${errors.join(" / ")}`, { code: "invalid-args" });
   }

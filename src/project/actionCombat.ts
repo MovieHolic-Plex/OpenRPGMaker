@@ -150,7 +150,10 @@ export function normalizeEnemyActionProfile(profile: Partial<EnemyActionProfile>
   if (profile.aggroRange !== undefined) out.aggroRange = clampInt(profile.aggroRange, 1, 30, 5);
   if (profile.knockbackResist !== undefined) out.knockbackResist = clamp01(profile.knockbackResist);
   const attack = normalizeEnemyActionAttack(profile.attack);
-  if (attack) out.attack = attack;
+  if (attack) {
+    delete attack.hpBelowPercent;
+    out.attack = attack;
+  }
   const extras = Array.isArray(profile.extraAttacks)
     ? profile.extraAttacks.slice(0, MAX_ENEMY_KIT_EXTRA_ATTACKS).map((entry) => normalizeEnemyActionAttack(entry)).filter((entry): entry is EnemyActionAttack => entry !== undefined)
     : [];

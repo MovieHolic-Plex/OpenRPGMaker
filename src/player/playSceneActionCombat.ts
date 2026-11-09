@@ -1238,7 +1238,7 @@ function updateEnemyModes(scene: PlaySceneContext, state: ActionCombatSceneState
     if (!pos) continue;
     // 원거리 적은 거리를 지킨다: 추객 묘버에 밴드를 심어 주면 붙지 않게 한다.
     const mover = scene.autonomousNPCs.get(enemy.eventId);
-    if (mover) mover.kite = kiteBandForAttack(enemy.actionAttack) ?? undefined;
+    if (mover) mover.kite = kiteBandForAttack(enemy.attackKit[0]) ?? undefined;
     const target = acquireEnemyTarget(scene, state, enemy, pos, refs);
     // 믄버는 기본적으로 플레이어를 췔는다. NPC 를 노릴 때만 목표 좌표를 심어 준다.
     if (mover) {
