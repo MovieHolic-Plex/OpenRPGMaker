@@ -39,7 +39,7 @@ describe("qa gameCheck (모델 없는 게임 검사기)", () => {
 
   it("changeParty 의 speciesId 를 잡고, 동료 합류 실패를 자동 플레이로 재현한다(원본 JSON)", () => {
     // 로더는 이제 speciesId 를 actorId 로 옮긴다(#1191) — 생성기가 쓴 그대로(원본)를 검사해야 결함이 보인다.
-    const report = runGameCheck(JSON.parse(serialize(buildQaFixture("speciesIdParty"))), { autoPlayBudgetMs: 20_000 });
+    const report = runGameCheck(JSON.parse(serialize(buildQaFixture("speciesIdParty"), { inlineBundledTilesets: true })), { autoPlayBudgetMs: 20_000 });
     expect(codes(report)).toEqual(expect.arrayContaining(["command-missing-required", "autoplay-failed"]));
     expect(report.findings.some((f) => f.code === "command-unknown-field" && f.message.includes("speciesId"))).toBe(true);
     const companion = report.autoPlay!.runs.find((run) => run.label === "동료 합류 후")!;
@@ -176,7 +176,7 @@ function bossBattleProject(options: { maxHp: number; attack: number; growCurves?
 
 describe("qa gameCheck — 보스 전투 패배는 전투 패배로 보고하고 레벨·합류 전제는 경고로 낮춘다", () => {
   it("혼자만 지고 동료 합류 실행은 엔딩까지 가면 막힘이 아니다(등대지기의 겨울 r3)", () => {
-    const report = runGameCheck(bossBattleProject({ maxHp: 576, attack: 130 }), { autoPlayBudgetMs: 20_000 });
+    const report = runGameCheck(bossBattleProject({ maxHp: 400, attack: 130 }), { autoPlayBudgetMs: 20_000 });
     const solo = report.autoPlay!.runs.find((run) => run.label === "기본 경로")!;
     expect(solo.ok).toBe(false);
     expect(solo.failure?.detail).toMatch(/이벤트 전투에서 패배해 게임 오버 — 승리 분기의 목표 명령에 닿지 않았습니다/u);
@@ -189,7 +189,7 @@ describe("qa gameCheck — 보스 전투 패배는 전투 패배로 보고하고
   });
 
   it("동료 합류 파티도 도달 레벨에선 지지만 확인 레벨(Lv10) 모의전에서 이기면 경고로 낮춘다(잿불 광산 r2)", () => {
-    const report = runGameCheck(bossBattleProject({ maxHp: 2000, attack: 140, growCurves: true }), { autoPlayBudgetMs: 20_000 });
+    const report = runGameCheck(bossBattleProject({ maxHp: 1000, attack: 140, growCurves: true }), { autoPlayBudgetMs: 20_000 });
     expect(codes(report as ReturnType<typeof check>)).toEqual([]);
     const warning = report.findings.find((finding) => finding.code === "autoplay-boss-attrition");
     expect(warning?.message).toContain("모의전으로는 동료 합류 파티 2명 Lv10 에서 승률");

@@ -79,7 +79,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/placementMatchingAudit.test.ts`
   - [ ] `test/playerBodyProjectPersistence.test.ts`
   - [ ] `test/pr687VerificationIntegration.test.ts`
-  - [ ] `test/qaGameCheck.test.ts`
+  - [x] `test/qaGameCheck.test.ts`
   - [ ] `test/runtimePlayerRouteThrough.test.ts`
   - [ ] `test/sceneTestRunner.test.ts`
   - [ ] `test/sharedCharacterGraphicsStore.test.ts`
