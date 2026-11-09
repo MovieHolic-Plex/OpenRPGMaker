@@ -697,7 +697,7 @@
       "label": "우물 계단 아래 착지",
       "mapId": "fs2_well_shaft",
       "x": 4,
-      "y": 5,
+      "y": 4,
       "facing": "up",
       "switches": {
         "sw_fs_main_started": true,
@@ -734,7 +734,7 @@
             {
               "kind": "hold",
               "dir": null,
-              "ms": 4500
+              "ms": 5000
             }
           ],
           "shot": true
@@ -845,6 +845,55 @@
               }
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "stairs-below",
+      "label": "우물 계단 — 두 칸 아래에서",
+      "mapId": "fs2_well_shaft",
+      "x": 4,
+      "y": 6,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_main_done": true,
+        "sw_fs_iris_joined": true,
+        "sw_fs2_act2_started": true,
+        "sw_fs2_out_of_cells": true,
+        "sw_fs2_hub_arrived": true,
+        "sw_fs2_mire_well": true,
+        "sw_fs2_bread_given": true,
+        "sw_fs2_cell_open": true,
+        "sw_fs2_barracks_cleared": true,
+        "sw_fs2_gear_meds": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 14
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 14
+        }
+      ],
+      "items": {
+        "item_potion": 6,
+        "item_ether": 2,
+        "item_thunder_stone": 1
+      },
+      "beats": [
+        {
+          "id": "arrive",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 5000
+            }
+          ],
+          "shot": true
         }
       ]
     }
