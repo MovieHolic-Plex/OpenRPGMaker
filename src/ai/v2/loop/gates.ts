@@ -1,6 +1,7 @@
 // 관문·비평·화면 검수가 짚은 것을 할 일 항목으로 맞춘다(옛 «한 바퀴 더» 글 대신 — 2026-10-30 omo 고리).
 // 같은 문제(열쇠)는 새 항목을 만들지 않고, 닫힌 항목이면 다시 연다(시도 +1). 사라진 문제의 항목은 함수가 닫는다.
 import type { V2GateProblem } from "../verbs";
+import { AUTOPLAY_GATE_PREFIX } from "../playCheck";
 import { TODO_MAX_ATTEMPTS, isOpen, type TodoStore } from "./todoStore";
 import type { TodoItem } from "../todo/types";
 import type { ProjectIndex } from "./refs";
@@ -69,6 +70,7 @@ export function splitPreexisting(problems: readonly V2GateProblem[], baselineKey
   for (const p of problems) {
     if (!p.key.startsWith("game:")) { current.push(p); continue; }
     if (baselineKeys?.has(p.key)) { preexisting.push(p); continue; }
+    if (p.key.startsWith(AUTOPLAY_GATE_PREFIX)) { current.push(p); continue; }
     const ids = [...new Set([...p.text.matchAll(/\bev_[A-Za-z0-9_\-]+/gu)].map((m) => m[0]))];
     const keys = ids.flatMap((id) => byId.get(id) ?? []);
     // 함수 마감(출구 길 잇기·출구 넓히기)만 건드린 기존 이벤트도 «조수가 안 건드림»으로 본다 — 2026-10-30 boss-room: 마감이 버들마을 출구를 옮기자
