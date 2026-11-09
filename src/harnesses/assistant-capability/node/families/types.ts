@@ -11,7 +11,9 @@ import type { JudgeInput, Rect, Setup, Verdict } from '../matrixNativeSpec';
 
 export type FamilyArea =
   | 'tiles' | 'maps' | 'events' | 'npc' | 'database' | 'media'
-  | 'transfer' | 'battle' | 'interior' | 'read' | 'plan';
+  | 'transfer' | 'battle' | 'interior' | 'read' | 'plan'
+  // ds500 game-making areas
+  | 'quest' | 'town' | 'story' | 'system' | 'boss' | 'gate' | 'party' | 'container';
 
 export type FamilyVariant = {
   /** Stable key inside the family; a spec row id is `<family>__<key>`. */
