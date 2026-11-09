@@ -1,0 +1,20 @@
+Attached is the approved sprite of this monster: pixel art upscaled 8x with nearest-neighbour (each art pixel = one 8x8 block), on a magenta background.
+The monster: a frost wolf: dark slate-blue fur, a darker navy saddle over the back, pale ice-blue crystals on the shoulders and on the tip of the tail, pale grey-blue muzzle and chest, small cyan eyes, fangs, dark navy outline. Make it a little sturdier than the attached sprite: deeper chest, thick shaggy neck ruff and fuller fur, so the body looks heavy and powerful (height about two thirds of its length), but keep the same colours and design.
+Draw ONE sprite sheet image of THE SAME MONSTER for a side-view turn-based RPG battle (16-bit JRPG): a 4 by 4 grid of 16 equal square cells, with wide empty magenta gaps between cells so no pose touches another. Every pose is drawn with exactly the same fur pattern, same colours, same crystals, same proportions and same pixel size, facing RIGHT, feet on the same ground line inside each cell, crisp hard edges, no anti-aliasing, no blood. Cells in reading order (left to right, top to bottom):
+1 idle: standing in a low wary crouch.
+2 idle breathing in: same as 1 but chest and shoulders one pixel higher.
+3 idle tail sway: same as 1 but tail tip moved up.
+4 wind-up: crouched very low, weight on the hind legs, head down, ready to pounce.
+5 run: full stride gallop, legs stretched.
+6 bite attack: lunging forward with jaws wide open, front legs reaching out.
+7 recover: landing back after the attack, front legs braced, skidding to a stop, head turning back.
+8 hit: struck hard: body squashed and bent backwards in a C shape, head snapped back and up, eyes shut, ears flat, mouth open in a yelp, front paws lifted off the ground, fur bristling. The recoil must read clearly by the shape alone.
+9 defeated: lying collapsed on its side on the ground, eyes closed.
+10 mid-leap: airborne in the middle of a pounce, body stretched horizontally, all four paws off the ground.
+11 frost breath charge: head lowered, mouth glowing with a small ice-blue light, crystals on the shoulders glowing.
+12 frost howl release: head thrown up, howling, a burst of ice shards bursting from the mouth.
+13 guard: braced defensive stance, head tucked low, shoulders hunched, crystals flared outward like a shield.
+14 leave this cell completely empty.
+15 battle cry intro: standing tall, chest out, head raised, snarling at the viewer side, tail raised high.
+16 leave this cell completely empty.
+Square image. Flat solid magenta (#FF00FF) background everywhere. No grid lines, no numbers, no text, no shadow, no scenery, no watermark.
