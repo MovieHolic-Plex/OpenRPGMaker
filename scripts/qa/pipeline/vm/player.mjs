@@ -6,8 +6,11 @@
 //
 // usage: node vm/player.mjs <job.json> <outDir>
 // env:   QA_BASE=http://127.0.0.1:7812  CHROME=<chromium path>
+//        QA_VIDEO=1  opt-in continuous recording -> <outDir>/video.webm (off by default; see recordVideo below)
+//        QA_VIDEO_FPS=10  QA_VIDEO_FFMPEG=<ffmpeg path>  QA_VIDEO_KEEP_FRAMES=1
 import fs from "node:fs";
 import path from "node:path";
+import { spawn } from "node:child_process";
 import { chromium } from "playwright-core";
 import sharp from "sharp";
 import { hiddenReason } from "../lib/hidden.mjs";
@@ -45,6 +48,7 @@ await ctx.route("**/*", (route) => {
 });
 const page = await ctx.newPage();
 page.setDefaultTimeout(8000);
+const video = process.env.QA_VIDEO === "1" ? await startVideo() : null;
 page.on("pageerror", (e) => errors.push({ kind: "pageerror", text: String(e?.message ?? e).slice(0, 300) }));
 page.on("console", (m) => { if (m.type() === "error") errors.push({ kind: "console", text: m.text().slice(0, 300) }); });
 page.on("requestfailed", (r) => { const u = r.url(); if (!blocked.includes(u.slice(0, 200))) net.push({ kind: "failed", url: u.slice(0, 200), why: r.failure()?.errorText ?? "" }); });
@@ -65,6 +69,70 @@ await page.addInitScript((b) => {
 // The overflow measurement asks the same rule the tests pin (lib/hidden.mjs); an init script is not subject to the page CSP.
 await page.addInitScript({ content: `window.__qaHiddenReason = ${hiddenReason.toString()};` });
 await page.addInitScript({ content: `window.__qaCutsceneOnScreen = ${cutsceneOnScreen.toString()};` });
+
+/**
+ * Opt-in continuous recording (QA_VIDEO=1). CDP screencast frames carry the browser's capture time, so each frame is
+ * stored with its offset from T0 — the same clock as trace.jsonl `t`. encode() resamples them to a constant frame rate
+ * where video second s shows the last frame captured at or before T0 + s, i.e. the frame at trace `t` is at t/1000 s.
+ * Frames are buffered on disk during play and encoded after the browser closes, so encoding does not compete with the
+ * session; encode time is reported in summary.video.
+ */
+async function startVideo() {
+  const dir = path.join(OUT, "video-frames");
+  fs.mkdirSync(dir, { recursive: true });
+  const frames = [];
+  const cdp = await ctx.newCDPSession(page);
+  cdp.on("Page.screencastFrame", (f) => {
+    cdp.send("Page.screencastFrameAck", { sessionId: f.sessionId }).catch(() => {});
+    const tMs = f.metadata?.timestamp ? Math.round(f.metadata.timestamp * 1000 - T0) : Date.now() - T0;
+    const file = `${String(frames.length).padStart(6, "0")}.jpg`;
+    fs.writeFileSync(path.join(dir, file), Buffer.from(f.data, "base64"));
+    frames.push({ tMs, file });
+  });
+  await cdp.send("Page.startScreencast", { format: "jpeg", quality: 70, maxWidth: vp.width, maxHeight: vp.height, everyNthFrame: 1 });
+  return {
+    stop: () => cdp.send("Page.stopScreencast"),
+    async encode() {
+      const fps = Number(process.env.QA_VIDEO_FPS ?? 10);
+      const ffmpeg = process.env.QA_VIDEO_FFMPEG ?? findFfmpeg();
+      const t0 = Date.now();
+      frames.sort((a, b) => a.tMs - b.tMs);
+      const out = { file: "video.webm", fps, frames: frames.length, firstFrameMs: frames[0]?.tMs ?? null, durationMs: Date.now() - T0 };
+      if (!frames.length || !ffmpeg) return { ...out, error: frames.length ? "no ffmpeg" : "no frames" };
+      // Before the first screencast frame there is nothing to show: those ticks repeat the first frame.
+      const ticks = Math.ceil(((frames.at(-1).tMs + 1000) * fps) / 1000);
+      const proc = spawn(ffmpeg, ["-y", "-loglevel", "error", "-f", "image2pipe", "-c:v", "mjpeg", "-framerate", String(fps), "-i", "pipe:0",
+        "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2", "-c:v", "libvpx-vp9", "-deadline", "realtime", "-cpu-used", "8", "-b:v", "0", "-crf", "40",
+        "-row-mt", "1", "-pix_fmt", "yuv420p", path.join(OUT, "video.webm")], { stdio: ["pipe", "ignore", "pipe"] });
+      let err = "";
+      proc.stderr.on("data", (d) => { err = (err + d).slice(-400); });
+      proc.stdin.on("error", (e) => { err += ` stdin: ${e.code ?? e}`; });
+      const closed = new Promise((resolve) => proc.on("close", resolve));
+      let k = 0;
+      for (let i = 0; i < ticks; i += 1) {
+        const tick = (i * 1000) / fps;
+        while (k + 1 < frames.length && frames[k + 1].tMs <= tick) k += 1;
+        if (proc.exitCode !== null || proc.stdin.destroyed) break;
+        if (!proc.stdin.write(fs.readFileSync(path.join(dir, frames[k].file)))) await Promise.race([new Promise((r) => proc.stdin.once("drain", r)), closed]);
+      }
+      proc.stdin.end();
+      const code = await closed;
+      if (code === 0 && process.env.QA_VIDEO_KEEP_FRAMES !== "1") fs.rmSync(dir, { recursive: true, force: true });
+      else fs.writeFileSync(path.join(dir, "frames.json"), JSON.stringify(frames));
+      return { ...out, ticks, encodeMs: Date.now() - t0, bytes: code === 0 ? fs.statSync(path.join(OUT, "video.webm")).size : 0, ...(code ? { error: `ffmpeg ${code}: ${err}` } : {}) };
+    },
+  };
+}
+/** Playwright ships an ffmpeg next to its browsers; a system ffmpeg works too. */
+function findFfmpeg() {
+  const root = path.join(process.env.HOME ?? "/root", ".cache/ms-playwright");
+  for (const d of fs.existsSync(root) ? fs.readdirSync(root) : []) {
+    if (!d.startsWith("ffmpeg")) continue;
+    for (const f of ["ffmpeg-linux", "ffmpeg-linux-arm64", "ffmpeg-mac"]) if (fs.existsSync(path.join(root, d, f))) return path.join(root, d, f);
+  }
+  for (const p of ["/usr/bin/ffmpeg", "/usr/local/bin/ffmpeg"]) if (fs.existsSync(p)) return p;
+  return null;
+}
 
 const sleep = (ms) => page.waitForTimeout(ms);
 const visible = (sel) => page.locator(sel).first().isVisible().catch(() => false);
@@ -160,6 +228,8 @@ async function snap(label) {
   const t = Date.now() - T0;
   for (let i = 0; i < 10 && (await readState().catch(() => ({}))).transition; i += 1) await sleep(250);
   let buf = await page.screenshot({ type: "jpeg", quality: 80 }).catch(() => null);
+  // With recording on, when the kept frame was captured: the video frame at shotT/1000 s shows this shot.
+  let shotT = video && buf ? Date.now() - T0 : undefined;
   let settled = false;
   let darkMs = 0;
   let stats = buf ? await frameStats(buf) : null;
@@ -167,6 +237,7 @@ async function snap(label) {
     await sleep(300);
     const nextBuf = await page.screenshot({ type: "jpeg", quality: 80 }).catch(() => null);
     if (!nextBuf) break;
+    if (video) shotT = Date.now() - T0;
     const nextStats = await frameStats(nextBuf);
     const dark = nextStats.lum < 10;
     if (dark) darkMs += 300;
@@ -180,7 +251,7 @@ async function snap(label) {
   const file = buf ? `${String(seq).padStart(3, "0")}-${String(label).replace(/[^a-zA-Z0-9_.-]+/g, "-").slice(0, 50)}.jpg` : null;
   if (buf) fs.writeFileSync(path.join(OUT, "shots", file), buf);
   const row = {
-    seq, t, label, file, settled, darkMs, lum: stats ? Math.round(stats.lum) : null, hash: buf ? await dhash(buf) : null,
+    seq, t, ...(video ? { shotT } : {}), label, file, settled, darkMs, lum: stats ? Math.round(stats.lum) : null, hash: buf ? await dhash(buf) : null,
     state, dom, inputs: recent.map((r) => r.a), errors: errors.splice(0), net: net.splice(0), blocked: blocked.length,
   };
   trace.write(JSON.stringify(row) + "\n");
@@ -517,8 +588,10 @@ try {
   summary.blocked = blocked.slice(0, 20);
   summary.blockedCount = blocked.length;
   summary.leftoverErrors = errors.slice(0, 20);
-  fs.writeFileSync(path.join(OUT, "summary.json"), JSON.stringify(summary, null, 1));
   trace.end();
+  if (video) await video.stop().catch(() => {});
   await browser.close().catch(() => {});
+  if (video) summary.video = await video.encode().catch((e) => ({ error: String(e?.message ?? e).slice(0, 300) }));
+  fs.writeFileSync(path.join(OUT, "summary.json"), JSON.stringify(summary, null, 1));
   console.log(JSON.stringify({ id: job.id, steps: seq, ms: summary.ms, fatal: summary.fatal ?? null }));
 }

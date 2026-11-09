@@ -35,6 +35,15 @@ node scripts/qa/pipeline/qa.mjs --game fallen-star --version 1.37 \
 `final.json`(병합된 결함), **`fix-queue.json`**(수정 레인 입력: 순위·심각도·트랙 `game-data` 또는
 `engine/editor/assistant`·증거 경로·재현·고칠 곳), `measure.json`(심은 결함), 증거 프레임.
 
+### 연속 녹화 (선택, 기본 꺼짐)
+
+`QA_VIDEO=1` 을 주면 `vm/player.mjs` 가 세션 전체를 CDP screencast 로 받아 세션 폴더에 `video.webm`(VP9, 기본 10fps
+`QA_VIDEO_FPS`)을 남긴다. 프레임마다 브라우저의 캡처 시각을 `trace.jsonl` 의 `t` 와 같은 시계(세션 시작 기준 ms)로
+적고, 고정 프레임률로 다시 맞춰 굽는다 — 영상 `s` 초 = trace `t = s*1000`. 녹화가 켜지면 trace 행에 `shotT`(저장한
+정착 프레임을 실제로 찍은 시각)가 붙고, 영상의 `shotT/1000` 초가 그 샷이다. 인코딩은 브라우저를 닫은 뒤에 하므로
+플레이와 CPU 를 다투지 않고, 걸린 시간은 `summary.json` 의 `video.encodeMs` 에 남는다. ffmpeg 는 Playwright 가 받은
+것(`~/.cache/ms-playwright/ffmpeg-*/`)이나 시스템 것을 쓴다(`QA_VIDEO_FFMPEG` 로 지정). 끄면 기존 동작과 같다.
+
 ### 수정 큐 규칙
 
 QA 로 찾은 결함을 고칠 때는 (a) 게임 데이터 수정과 (b) 엔진·에디터·AI 조수 개선으로 나누고, 둘 다 적용 전에
