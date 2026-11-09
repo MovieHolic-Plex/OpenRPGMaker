@@ -1,0 +1,18 @@
+{
+ "schema": "fs-well-boss-owner-allow/1",
+ "piece": "stairs-up",
+ "file": "stairs-up.png",
+ "fileSha256": "72ca59f1f5f69178efac096a8af07229f619c821f827ca7cacd511adc23081b8",
+ "pixelSha256Prefix": "38e818416a98",
+ "owner": "hyeon-seok-oh (Fallen Star thread owner)",
+ "ownerSentence": "계단은 됐고 다리는 이어진 느낌이 안 드는데.",
+ "discordMessageId": "1569382832202186955",
+ "question": "allow the stairs and bridge art, or fix the bridge more first?",
+ "shownImages": [
+  "http://mdc-server:18301/fs-well-boss-bridges.html",
+  "compare6x-stairs.png"
+ ],
+ "relayedBy": "dori lead (Fallen Star)",
+ "scope": "STAIRS ONLY — no bridge file is allowed by this sentence",
+ "advisoryReceipt": "FAIL 3/4:NO 화풍:NO wall_structure (uncalibrated profile, advisory)"
+}
