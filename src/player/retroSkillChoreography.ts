@@ -979,7 +979,7 @@ function playScreen(field: HTMLElement, player: ClassPlayer, event: Extract<Retr
 }
 
 function playHit(field: HTMLElement, player: ClassPlayer, event: Extract<RetroTimelineEvent, { kind: "hit" }>): void {
-  if (player.plan.monster && event.at !== player.lastHitAt) {
+  if (player.plan.monster && (player.plan.timeline.hitCount ?? 1) > 1 && event.at !== player.lastHitAt) {
     player.lastHitAt = event.at;
     player.hitsPlayed += 1;
     // 연타의 2타 이후: 마침 지금 타격 칸이 그려져 있으면 그 자리에서 attack_b 로 바꾼다(칸이 없는 시트는 monsterSheetCell 이 그대로 두는다).
