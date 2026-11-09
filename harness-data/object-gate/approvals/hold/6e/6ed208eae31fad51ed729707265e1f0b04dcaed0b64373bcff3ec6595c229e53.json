@@ -1,0 +1,24 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "6ed208eae31fad51ed729707265e1f0b04dcaed0b64373bcff3ec6595c229e53",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "fs-well-boss lane (supervisor)",
+ "decidedAt": "2026-11-09T16:25:15.328Z",
+ "by": "delegated",
+ "delegatedBy": "hyeon-seok-oh (owner, Discord msg 1569386677355552961)",
+ "evidence": "/home/main/z-project/rpg-zzu/.worktrees/fs-well-boss/tiledata/fs-well-boss/decisions/ew-bridge-61045007.json",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 3 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "note": "owner: 「괜찮네.」 on compare6x-ew-ctx.png — EAST-WEST bridge only; file sha256 61045007…; advisory FAIL kept",
+ "sig": "d8bce691b55bb077dce3eaafa7f4ab2888c8bb64dc2ab8580ecc545d49559df8"
+}

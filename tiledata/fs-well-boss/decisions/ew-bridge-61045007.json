@@ -1,0 +1,16 @@
+{
+ "schema": "fs-well-boss-owner-allow/1",
+ "piece": "ew-bridge",
+ "file": "ew-bridge.png",
+ "fileSha256": "6104500711419e697aec7b1a18318c51763318e15014fbc8ff861b68a0219fd4",
+ "pixelSha256": "6ed208eae31fad51ed729707265e1f0b04dcaed0b64373bcff3ec6595c229e53",
+ "owner": "hyeon-seok-oh (Fallen Star thread owner)",
+ "ownerSentence": "괜찮네. 근데 다리 오른쪽에 있는 노랑 원통같은건 뭐냐",
+ "discordMessageId": "1569386677355552961",
+ "question": "allow the east-west bridge art?",
+ "shownImages": [
+  "http://mdc-server:18301/fs-well-boss/nsbridge/compare6x-ew-ctx.png"
+ ],
+ "relayedBy": "dori lead (Fallen Star)",
+ "scope": "EAST-WEST BRIDGE ONLY — no north-south bridge file"
+}

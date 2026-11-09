@@ -1,0 +1,592 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6ed208eae31fad51ed729707265e1f0b04dcaed0b64373bcff3ec6595c229e53",
+ "width": 128,
+ "height": 64,
+ "kind": "structure",
+ "name": "waterworks east-west arched stone bridge",
+ "label": "fs-well-boss/ew-bridge",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 3 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 3 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "fs-well-boss",
+   "fallback": true,
+   "reason": "칩셋 fs-well-boss 의 화풍 기준 묶음이 없다",
+   "hash": "5f62fef078ef7661"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 16,
+  "darkV5": 41,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 21
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back parapet top rail",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "parapet balustrade with teal gaps (vertical face)",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bridge deck of stone paving slabs",
+      "rows": "16-38",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": "40-41"
+     },
+     {
+      "part": "front cornice band under deck",
+      "rows": "39-45",
+      "evidence": "none",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arched front face with two arches and water",
+      "rows": "46-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bridge deck (rows 16-38, width 115) is drawn as a large field of paving slabs seen from above, with a dark front-edge line at row 38. Dark eave shadow at rows 40-41 and a light cornice band at rows 42-44 follow it. Below, rows 46-62 are a vertical south face of 17 rows with two arch openings and water. A parapet rail at rows 5-9 has its own top band and edge line. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's dark edge pixels are 83% near-neutral, against 7-9% for the references, so the outline reads as a neutral dark grey line rather than a tinted material tone. The stone ramp shows only about 3 grey steps (light, mid, dark) where the references carry 5-6 per material. Visible tones per tile are 9, close to the references' 10-12, and near-flat coverage is only 3%, so the stones do carry some grain and the surface is not a flat fill. The stones are blocky, with uniform rectangular shading and little per-stone highlight or speckle. The arch and water area is dark and murky, with little ramp detail. Overall it is thinner and more sticker-like than the references, and the neutral outline together with the shallow ramps counts against it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15093
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "parapet coping",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "balustrade with teal gaps",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper stone courses (deck face)",
+      "rows": "16-38",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice ledge above arches",
+      "rows": "39-45",
+      "evidence": "none",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "40-41"
+     },
+     {
+      "part": "arched piers with water",
+      "rows": "46-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole bridge is drawn as a flat face-on elevation. A thin coping (rows 5-9) sits above a balustrade with teal gaps (rows 10-15). Below it are three brick-like stone courses (rows 16-38) and a cornice strip (rows 39-45). The arches and water fill rows 46-62. Every band is a vertical face stacked on the one below, with no receding horizontal deck, roof slope or ellipse. The coping and cornice are only 1-3 row strips with a dark line, which count as rims, not top surfaces. The width profile has no widening-then-narrowing shape that would indicate a top plane. So it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The bridge is built from grey stone blocks with a teal-green balustrade strip and two arches. Each block has only about 3 steps (light face, mid, dark joint), which is shallow next to the references' roughly 6 steps per material, where the roof tiles carry per-tile highlights and the stone wall is shaded stone by stone. Visible tones per tile (9) are close to the references (10-12), and near-flat coverage is only 3%, so density is not far off. The dark edge pixels are 83% near-neutral against 7-9% in the references, so the outline and joint lines read as neutral black/grey rather than the dark tone of the adjacent stone, which gives the sticker look. The block texture is mostly uniform flat-faced rectangles with a few speckle dots, and there is little per-stone variation or grain. The arch undersides are dark green blobs with little structure. Overall it is clean but shallower than the Beodeul standard on shading and outline craft.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18304
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "balustrade top rail",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "balusters with dark openings",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "parapet cornice ledge",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "stone block courses (bridge wall)",
+      "rows": "16-38",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "string-course band above arches",
+      "rows": "39-45",
+      "evidence": "none",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "40-41"
+     },
+     {
+      "part": "twin arches with water",
+      "rows": "46-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole bridge is drawn as vertical faces stacked in the same plane. The top is a 4-row railing rail (rows 5-8) closed by a dark line at row 9, with balusters below it. It is a rail, not a deck surface. Below it sit a cornice ledge (rows 11-15), brick-like stone courses (rows 16-38), a 3-row light band (rows 42-44) with a dark line at row 45, and the arches (rows 46-62). Every band is front-facing, with no receding deck, no foreshortened walkway and no ellipse. The silhouette widths change in steps (68, 84, 115, 74, 114, 84, 64), which reads as elevation layering and not as a receding top. The best candidate for a top is the 1-2 row ledge or lip, which counts as a rim. This is a front elevation without a clear top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts put the candidate at 9 visible tones per tile, close to the references (12 and 10), with only 3% near-flat coverage. By eye it is weaker. The stone courses are mostly a single grey with a light top edge and a dark seam, so each material ramp has about 3 steps against 5-6 in the references. The dark edge pixels are 83% near-neutral (references 7-9%), and the dark seams and arch outlines look like neutral grey-black rather than a tinted dark stone tone. This is the sticker-like outline the standard rejects. The bridge is also sparse and thin: the arches and the teal-green water or foliage are small, the parapet is a simple strip, and the surfaces lack per-stone shading and speckle. Beodeul stones are shaded one by one. A careful artist would not accept this beside the references, because it reads flatter and more outlined.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17309
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "balustrade cap and railing at the back of the deck",
+      "rows": "5-15",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone paved deck, drawn as courses of slabs seen from above",
+      "rows": "16-38",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": "40-41"
+     },
+     {
+      "part": "front cornice strip under the deck",
+      "rows": "42-45",
+      "evidence": "none",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arched front face with two arch openings and water",
+      "rows": "46-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a wide stone deck, rows 16-38 (23 rows). It is drawn as foreshortened slab courses and ends in a dark edge line at row 38. Dark eave shadow follows in rows 40-41, then a cornice strip in rows 42-45. Below that, the south face with two arches runs from row 46 to row 62 (about 17 rows). The balustrade at the back (rows 5-15) has its own cap band, and its top edge line is at row 9. No receding side face is drawn. The structure reads as a top surface over a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a stone bridge with a parapet, brick-like stone courses and two dark arches. The stones have only about 3 lightness steps (light grey, mid grey, dark joint) against the references' 5-6 on roof, plaster and stone. The measured facts support this: 83% of dark edge pixels are near-neutral, so the outlines and joints are grey-black lines, where the references sit at 7-9% with tinted dark edges. Visible tones per tile are 9, against 12 and 10 for the references, so density is slightly lower, not far off. Flat coverage is 3%, so nothing is a large flat fill. Individual stones do carry some speckle. But the stones are mostly uniform blocks with the same shade repeated and no per-stone highlights or shading like the reference stone wall, and the arches and water are dark and simple. The neutral outlines and shallow ramps make it look more like a sticker than the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15611
+  }
+ ],
+ "decidedAt": "2026-11-09T16:24:29.405Z",
+ "cells": {
+  "16": [
+   "0454da7dfeed5964",
+   "0b97221ac44acd68",
+   "24b5e4001d74cd8b",
+   "27db6e4766875c7b",
+   "2917877aaaeaa5dc",
+   "2c307ffe1e6893e3",
+   "2df4c0c35ca9c8f6",
+   "3f02566f1a8fab0f",
+   "46dd53d215bb277f",
+   "68a2af7df24d3692",
+   "755db2e675d7a4bf",
+   "7c38afdb5ce7eb15",
+   "81e2459f33fd5d68",
+   "837dbd8f43e920ef",
+   "872f65605a321776",
+   "8a21d305394a7b3f",
+   "8aeef26dcf61df0c",
+   "8e3265bc507e5645",
+   "8e415498a9e79206",
+   "9a7de2f3d0828f9d",
+   "a892590da9a92513",
+   "bf9df28ce713ce03",
+   "c0cd7cb467f2f1ea",
+   "cbd4aaa0a4b0f583",
+   "d78f9ec58287e7a7",
+   "fc57dd05538875eb"
+  ],
+  "24": [
+   "00379c2a1b1fe6a4",
+   "03389284c0474dfd",
+   "03fd792c59ac56fa",
+   "0a10b73726a0f6b1",
+   "0dab893533a17953",
+   "114841af7ab23401",
+   "14c4739e40bd5821",
+   "16d482bbe039bfbe",
+   "1ebcd5b466eb01d0",
+   "2a19f1a2aac173e0",
+   "2bfc2708b6ca6ee7",
+   "2c73d3b631f09e49",
+   "329794cc3717320e",
+   "3464ab70563cf5fd",
+   "3a213eedc74b8085",
+   "3d84b458c827eb10",
+   "422dd8675dea91fb",
+   "441d9f34806c5431",
+   "46cdde19486e8c34",
+   "5107dad9cc20a0b3",
+   "5154b923afa352ef",
+   "588773f5036b1e22",
+   "59148f56ac130f46",
+   "594e130b4a556e25",
+   "5be59827e96b1024",
+   "6033a2ec96195bef",
+   "612ed93426c83c66",
+   "646fbbc1bf3cdde9",
+   "6719347434352342",
+   "6bf100a1145a04ac",
+   "6d0bf602d6b217d6",
+   "6df67aebce298618",
+   "721835ce45969f35",
+   "74e7187e6a1206d5",
+   "7671d192a4461755",
+   "7a45e13880c54375",
+   "7b4c02d3787d21c4",
+   "7bb93f278d0d2cf2",
+   "7d116a867c648cae",
+   "7e3214893da8f877",
+   "805844d891cbd27c",
+   "84780cfd7f391e97",
+   "86305b2fe5d578ff",
+   "88d25e4ab754dcaa",
+   "8d6c66a002f7819f",
+   "8d786f64c9afea4b",
+   "90f85c8a708dc223",
+   "9869eb7a81558bcb",
+   "990275795ec4e90b",
+   "a712cf4b002a1897",
+   "a97fe3397796b465",
+   "a9becb4bce6ee55c",
+   "ac121d3b9951d503",
+   "af4950b33c4d461a",
+   "afa95ca718173317",
+   "afb5cd5feaf07c7a",
+   "b1f5b5a49f546523",
+   "b6b36adcbc9266ab",
+   "b93261e341896f41",
+   "bb8431fb0865fc8a",
+   "bc9b2152d2d25ab0",
+   "bcbc8cfe45b6e353",
+   "bd324d922d37cf3f",
+   "c21f68b31e94a812",
+   "c232f3246198a594",
+   "c471533101472653",
+   "c7e191e02de70f9e",
+   "c930bcf4c07b2e8c",
+   "ca7e36562072086c",
+   "cd9ca6095cff93ad",
+   "ce8450668a46304b",
+   "d02ead412e0ca265",
+   "d04fdcdfafbf0e3c",
+   "d8798f4efacda2b3",
+   "d95a2272f7c560e9",
+   "deb20efd3383b774",
+   "e0a216531f69205a",
+   "e2109608b1bf406a",
+   "e2aaf22c02a60ecd",
+   "e3655fe6805640e3",
+   "e5df5db004ab3213",
+   "e61d5c79841d22ca",
+   "ea2e2d308268b98e",
+   "ebf60e2c2ef969f6",
+   "ed552aaa93f9b553",
+   "ef60827b21db0fbc",
+   "f0211f4e122a953e",
+   "f6f66e6acad8ecde",
+   "fa54c2d1cba3e99a",
+   "fb181fff4f223c24",
+   "fc6882397f46a1b4"
+  ],
+  "32": [
+   "01a9741901d07208",
+   "3dd353d0a6d8f66e",
+   "4500cc9a8ad55df1",
+   "463e33369096608f",
+   "4dfa1192de185556",
+   "6b0afd43de8e3f69",
+   "aa1c8a7419cfb55b",
+   "feef211be24f5342"
+  ],
+  "48": [
+   "005975388e8ce963",
+   "01da93243b69bbaf",
+   "10ab7818baa44c06",
+   "147e1c969f36166c",
+   "18a5512184dac3b4",
+   "19a9f723ea299e35",
+   "2bfb63083cd84244",
+   "3c650c3e7ec3c3e3",
+   "48e2945fec62ea8f",
+   "4c6597a42bfc47fc",
+   "4d70c43e342c2070",
+   "55895fcaa5d9f1d3",
+   "6043a1c6117548e7",
+   "614d225eba6b39c4",
+   "627e626a2165ee1a",
+   "662e6d7e0fceb804",
+   "673937a87d2dc702",
+   "67c96ff1cf0b2b6c",
+   "696cf04fd5ddd42e",
+   "7b8b3d5f87c47994",
+   "7e006cab584d09e5",
+   "8010300f4ec0e2d6",
+   "86cc21b3127309c9",
+   "96c4c99c53957746",
+   "97efd7c3e058f1af",
+   "98f8d73f37d40332",
+   "a96d6ff34ad27d34",
+   "b187b34b707d9b0b",
+   "ca384d3268a54b31",
+   "d160f5e22bbdc381",
+   "e728cecaf77b1bb3",
+   "ecdda1f594afb646",
+   "f3bdde0000ba3a09",
+   "fa915d5f55edd0b0"
+  ]
+ }
+}
