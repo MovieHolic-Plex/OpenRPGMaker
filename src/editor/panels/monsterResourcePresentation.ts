@@ -1,6 +1,7 @@
 import { getMonsterResource } from "@/assets/monsterResourceCatalog";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { PIXEL_ENEMY_CELL_INDEX, pixelEnemyCell, pixelEnemySheetUrl, projectPixelEnemySheet, bundledPixelEnemySheet, type PixelEnemySheet } from "@/assets/pixelEnemySheets";
+import { isExtendedPixelGrid, pixelEnemyGridDims, pixelEnemyReservedCells } from "@/assets/pixelEnemyGrid";
 import { applyMagentaChromaKey } from "@/editor/panels/chromaKey";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -40,10 +41,10 @@ export function monsterResourcePreview(resource: MonsterResource, project: Proje
     sprite.style.setProperty("--monster-sheet-size", `${Math.min(160, cell * 2)}px`);
     frame.dataset.battleMotion = sheet.motion;
     frame.append(sprite);
-    if (sheet.grid === "4x4") {
-      // 16칸 시트: 대기 루프 옆에 칸 전부를 이름과 함께 펼친다. 빠진 칸(missingCells)은 흐리게 「없음」.
-      sprite.dataset.grid = "4x4";
-      frame.dataset.grid = "4x4";
+    if (isExtendedPixelGrid(sheet.grid)) {
+      // 16·20칸 시트: 대기 루프 옆에 칸 전부를 이름과 함께 펼친다. 빠진 칸(missingCells)은 흐리게 「없음」.
+      sprite.dataset.grid = sheet.grid;
+      frame.dataset.grid = sheet.grid;
       frame.append(monsterSheetCells(sheet, resource.name));
     }
     return frame;
@@ -67,19 +68,24 @@ export function monsterResourcePreview(resource: MonsterResource, project: Proje
 const CELL_LABELS: Readonly<Record<keyof typeof PIXEL_ENEMY_CELL_INDEX, string>> = {
   idle_a: "대기 a", idle_b: "대기 b", idle_c: "대기 c", windup: "준비", move: "이동", attack: "공격", recover: "복귀", hit: "피격", dead: "쓰러짐",
   attack_mid: "공격 중간", cast_charge: "시전 모으기", cast_release: "시전 방출", guard: "막기", weak: "빈사", intro: "등장",
+  move_b: "이동 2", hit_b: "피격 2", attack_b: "연타", stunned: "기절", enrage: "분노",
 };
 
-/** 4×4 시트의 15칸(15번 예약 칸 제외)을 작은 격자로. 칸 그림은 같은 시트 URL 의 배경 위치로 자른다. */
+/** 4×4 시트의 15칸(15번 예약 칸 제외)·5×4 시트의 20칸을 작은 격자로. 칸 그림은 같은 시트 URL 의 배경 위치로 자른다. */
 function monsterSheetCells(sheet: PixelEnemySheet, name: string): HTMLElement {
-  const grid = el("div", { class: "db-monster-sheet-cells", attrs: { role: "list", "aria-label": `${name} 전투 칸 15개` }, dataset: { testid: "db-monster-sheet-cells" } });
+  const { cols, rows } = pixelEnemyGridDims(sheet.grid);
+  const reserved = pixelEnemyReservedCells(sheet.grid);
+  const shown = (Object.entries(PIXEL_ENEMY_CELL_INDEX) as [keyof typeof PIXEL_ENEMY_CELL_INDEX, number][])
+    .filter(([, index]) => index < cols * rows && !reserved.includes(index));
+  const grid = el("div", { class: "db-monster-sheet-cells", attrs: { role: "list", "aria-label": `${name} 전투 칸 ${shown.length}개` }, dataset: { testid: "db-monster-sheet-cells" } });
   const url = `url("${pixelEnemySheetUrl(sheet)}")`;
   const missing = new Set(sheet.missingCells ?? []);
-  for (const [cell, index] of Object.entries(PIXEL_ENEMY_CELL_INDEX) as [keyof typeof PIXEL_ENEMY_CELL_INDEX, number][]) {
+  for (const [cell, index] of shown) {
     const absent = missing.has(index);
     const item = el("div", { class: "db-monster-sheet-cell", attrs: { role: "listitem" }, dataset: { cell, index: String(index), ...(absent ? { missing: "true" } : {}) } });
-    const swatch = el("span", { class: "db-monster-sheet-cell-image", attrs: { "aria-hidden": "true" } });
+    const swatch = el("span", { class: "db-monster-sheet-cell-image", attrs: { "aria-hidden": "true" }, dataset: { grid: sheet.grid ?? "" } });
     swatch.style.setProperty("--monster-sheet-url", url);
-    swatch.style.backgroundPosition = `${(index % 4) * (100 / 3)}% ${Math.floor(index / 4) * (100 / 3)}%`;
+    swatch.style.backgroundPosition = `${(index % cols) * (100 / (cols - 1))}% ${Math.floor(index / cols) * (100 / (rows - 1))}%`;
     item.append(swatch, el("small", { text: absent ? `${CELL_LABELS[cell]} · 없음` : CELL_LABELS[cell] }));
     grid.append(item);
   }
