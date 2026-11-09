@@ -6,6 +6,7 @@ import { sceneCraftProblems } from "./sceneCraft";
 import { flattenWrapperTool } from "./flatWrapper";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
 import { buildsWholeGame, shipBlockers, wantsWholeGame } from "./shipChecks";
+import { checkImageDataUrl } from "./imageCheck";
 import { applyBlueprintAssembly, isPlaceholderTitle } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, parseBlueprintArgs, walkBlueprint } from "./blueprint";
@@ -1415,6 +1416,14 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         const failures = (prior?.failures ?? 0) + 1;
         if (prior?.status !== "ok") session.artAttempts.set(target, { status: "failed", error: message.slice(0, 300), failures });
         return text({ ok: false, summary: `Picture generation failed (${failures}/2 recorded): ${message.slice(0, 200)}. Try again once with a different prompt; after two recorded failures a map-view ${target} picture is accepted — say so in the final report.` });
+      }
+      // 제공자가 돌려준 그림이 «끝까지 온 파일» 인지 본다 — 잘린 JPEG·깨진 base64 를 등록하면 타이틀이 검은 칸인데 관문은 그림이 있다고 본다(리드 2026-11-09).
+      const decodable = checkImageDataUrl(image.dataUrl);
+      if (!decodable.ok) {
+        const prior = session.artAttempts.get(target);
+        const failures = (prior?.failures ?? 0) + 1;
+        if (prior?.status !== "ok") session.artAttempts.set(target, { status: "failed", error: `undecodable image: ${decodable.reason}`.slice(0, 300), failures });
+        return text({ ok: false, summary: `The generated picture is not a valid image (${decodable.reason}) — it was NOT registered (${failures}/2 recorded). Try again once with a different prompt; after two recorded failures a map-view ${target} picture is accepted — say so in the final report.` });
       }
       const resourceId = `gen-${target}-${Date.now().toString(36)}`;
       const reg = run.call("upsert_resource", { resource: { id: resourceId, name: `${target === "title" ? "Title" : "Ending"} art`, kind: target === "title" ? "title" : "backdrop", dataUrl: image.dataUrl } });

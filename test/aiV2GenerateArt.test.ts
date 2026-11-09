@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { createV2Tools, mapViewArtProblems, V2Session } from "@/ai/v2/verbs";
+import { checkImageDataUrl } from "@/ai/v2/imageCheck";
 import type { Project } from "@/project/types";
 
 // 오너 2026-11-09: 타이틀·엔딩 그림이 게임 속 맵 화면(map-view)이면, 그림 생성이 가능한 실행은 generate_art 를 먼저 시도해야 한다.
@@ -86,5 +87,55 @@ describe("generate_art verb", () => {
     expect(JSON.stringify(env.ctx.project.assets ?? env.ctx.project)).toContain(bg!);
     expect(session.artAttempts.get("title")).toMatchObject({ status: "ok" });
     expect(mapViewArtProblems(env.ctx.project, session, true, WHOLE).filter((t) => t.includes("타이틀"))).toEqual([]);
+  });
+});
+
+// 리드 2026-11-09: 제공자가 돌려준 그림이 끝까지 오지 않았으면(잘린 JPEG 등) 등록하지 않고 타이틀·관문이 그대로여야 한다.
+// 실생성 한 장은 815 KB JPEG 였는데 위 시험은 1px PNG 만 썼다 — 두 형식 모두 «끝까지 온 파일» 조건을 본다.
+const b64 = (bytes: number[]) => Buffer.from(bytes).toString("base64");
+const JPEG_OK = `data:image/jpeg;base64,${b64([0xff, 0xd8, 0xff, 0xe0, 0, 16, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0, 1, 0xff, 0xd9])}`;
+const JPEG_CUT = `data:image/jpeg;base64,${b64([0xff, 0xd8, 0xff, 0xe0, 0, 16, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0, 1, 7, 7])}`;
+const WEBP_OK = `data:image/webp;base64,${b64([0x52, 0x49, 0x46, 0x46, 12, 0, 0, 0, 0x57, 0x45, 0x42, 0x50, 1, 2, 3, 4, 5, 6, 7, 8])}`;
+const WEBP_CUT = `data:image/webp;base64,${b64([0x52, 0x49, 0x46, 0x46, 200, 0, 0, 0, 0x57, 0x45, 0x42, 0x50, 1, 2, 3, 4, 5, 6, 7, 8])}`;
+
+describe("checkImageDataUrl", () => {
+  it("accepts a complete PNG, JPEG and WEBP", () => {
+    expect(checkImageDataUrl(PNG).ok).toBe(true);
+    expect(checkImageDataUrl(JPEG_OK).ok).toBe(true);
+    expect(checkImageDataUrl(WEBP_OK).ok).toBe(true);
+  });
+  it("rejects a truncated JPEG, a PNG without IEND, a short WEBP, broken base64 and a non-image", () => {
+    expect(checkImageDataUrl(JPEG_CUT).ok).toBe(false);
+    expect(checkImageDataUrl(PNG.slice(0, PNG.length - 24)).ok).toBe(false);
+    expect(checkImageDataUrl(WEBP_CUT).ok).toBe(false);
+    expect(checkImageDataUrl("data:image/jpeg;base64,@@@@").ok).toBe(false);
+    expect(checkImageDataUrl("data:text/html;base64,PGI+").ok).toBe(false);
+    expect(checkImageDataUrl(undefined).ok).toBe(false);
+  });
+});
+
+describe("generate_art verb with an undecodable picture", () => {
+  const envFor = (project: Project, generateImage: unknown) => ({
+    ctx: { project, currentMapId: project.startMapId, assistantRun: true }, request: { task: WHOLE, provider: "local-cli:claude", mapIds: [], project },
+    emit() {}, record() {}, sideChat: async () => "{}", render: async () => "", checkpoint: async () => {}, generateImage,
+  }) as never;
+  it("does not register a truncated JPEG: the title stays map-view, one failure is recorded and the gate stays closed to finishing", async () => {
+    const project = mapViewGame(); const session = new V2Session();
+    const env = envFor(project, async () => ({ dataUrl: JPEG_CUT, mimeType: "image/jpeg", model: "m", provider: "p" }));
+    const verb = createV2Tools(env, session).find((t) => t.name === "generate_art")!;
+    const res = await verb.execute("a", { target: "title", prompt: "산골 마을에 등불이 켜지는 밤, 붉은 목도리의 여행자" } as never, undefined as never);
+    expect(JSON.parse((res.content[0] as { text: string }).text).ok).toBe(false);
+    expect(project.system.titleScreen?.backgroundResourceId).toBe(`map-view:${project.startMapId}`);
+    expect(session.artAttempts.get("title")?.status).toBe("failed");
+    expect(session.artAttempts.get("title")?.failures).toBe(1);
+    expect(mapViewArtProblems(project, session, true, WHOLE).some((x) => x.includes("타이틀"))).toBe(true);
+  });
+  it("registers a complete JPEG and opens the gate for the title", async () => {
+    const project = mapViewGame(); const session = new V2Session();
+    const env = envFor(project, async () => ({ dataUrl: JPEG_OK, mimeType: "image/jpeg", model: "m", provider: "p" }));
+    const verb = createV2Tools(env, session).find((t) => t.name === "generate_art")!;
+    const res = await verb.execute("a", { target: "title", prompt: "산골 마을에 등불이 켜지는 밤, 붉은 목도리의 여행자" } as never, undefined as never);
+    expect(JSON.parse((res.content[0] as { text: string }).text).ok).toBe(true);
+    expect(project.system.titleScreen?.backgroundResourceId).toMatch(/^gen-title-/);
   });
 });
