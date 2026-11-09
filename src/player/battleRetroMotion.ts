@@ -831,6 +831,15 @@ function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): Re
 const pixelAnimations = new WeakMap<HTMLElement, Animation>();
 const reachCache = new WeakMap<HTMLElement, Map<number, RetroEnemyReach | null>>();
 const ENEMY_HOLD_MS = 260;
+/**
+ * 적 공격 칸이 화면에 읽히는 목표 시간. 착탄 비트 길이는 hit-stop(가벼운 일격·빗나감 0, 통상 110, 급소 ~209ms)이라
+ * 공격 칸이 번쩍 지나가 버렸다. 모자란 만큼을 recover 비트 앞머리에 공격 칸으로 이어 붙인다(비트 길이·hit-stop 불변).
+ */
+const ENEMY_ATTACK_SHOW_MS = 200;
+/** recover 길이 중 공격 칸 유지에 쓸 수 있는 최대 몫 — 짧은 recover 에서 복귀 칸이 사라지지 않게. */
+const ENEMY_ATTACK_HOLD_MAX_SHARE = 0.6;
+/** 이번 행동의 착탄 비트 길이(ms). approach 에서 비운다 — 앞 행동의 값이 새어 들어오지 않게. */
+const enemyImpactMs = new WeakMap<HTMLElement, number>();
 
 export interface RetroEnemyReach {
   /** 대상 앞까지의 이동량(무대 논리 px, 오른쪽·아래가 양수). */
@@ -1105,6 +1114,18 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
     else if (length > 0) scheduleBattleTimer(play, Math.min(length - 1, Math.round(length * fraction)));
   }
   cells = withMoveB(node, beat, withAttackMid(node, beat, cells, melee, stationary));
+  if (node.dataset.pixelEnemy !== undefined) {
+    if (beat.kind === "approach") enemyImpactMs.delete(node);
+    else if (beat.kind === "impact") enemyImpactMs.set(node, length);
+    else if (beat.kind === "recover" && !reduced() && length > 0) {
+      // 공격 칸을 recover 앞머리로 이어 간다. 이동 경로는 그대로 두므로 비트·전체 전투 길이는 변하지 않는다.
+      const holdMs = Math.min(Math.max(0, ENEMY_ATTACK_SHOW_MS - (enemyImpactMs.get(node) ?? 0)), length * ENEMY_ATTACK_HOLD_MAX_SHARE);
+      if (holdMs > 0) {
+        const share = holdMs / length;
+        cells = [[0, "attack"], ...cells.map(([fraction, cell]): [number, RetroMonsterCell] => [share + fraction * (1 - share), cell])];
+      }
+    }
+  }
   if (reduced() || length === 0) cells = [[0, cells[0]![1]]];
   pixelAnimations.get(node)?.cancel();
   pixelAnimations.delete(node);
