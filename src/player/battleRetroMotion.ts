@@ -978,8 +978,16 @@ function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapsho
   const dx = Math.round((actorFront - front) / scale - 2);
   const enemyAnchor = hovering ? cell / 2 - 4 : cell - 4;
   const actorAnchor = targetCell ? (hovering ? targetCell / 2 - 4 : targetCell - 4) : hovering ? 20 : 44;
-  const dy = Math.round((actorRect.top + actorRect.height * (actorAnchor / (targetCell || 48))
+  let dy = Math.round((actorRect.top + actorRect.height * (actorAnchor / (targetCell || 48))
     - (imageRect.top + imageRect.height * (enemyAnchor / cell))) / scale);
+  // 행동 중 로그 띠(.battle-message-window)가 필드 위에 떠 있다. 큰 적(128·192칸)은 목표 발 높이까지 올라가며 머리가 띠 뒤로 숨는다 —
+  // 그림 머리(빈 윗줄 제외)가 띠 아래에 남도록 위쪽 이동만 줄인다. 띠가 적 위쪽에 있을 때만(띠가 아래인 배치에서는 무관). 가로·아래 이동은 그대로.
+  const banner = field.closest(".battle-scene")?.querySelector<HTMLElement>(".battle-message-window")?.getBoundingClientRect();
+  if (banner && banner.height > 0 && banner.bottom <= imageRect.top + imageRect.height / 2) {
+    const topPad = (Number.parseFloat(user.style.getPropertyValue("--battle-sprite-top-pad")) || 0) / 100;
+    const headTop = imageRect.top + imageRect.height * topPad;
+    dy = Math.max(dy, Math.min(0, Math.round((banner.bottom + 4 - headTop) / scale)));
+  }
   if (!Number.isFinite(dx) || !Number.isFinite(dy)) return undefined;
   const distance = Math.hypot(dx, dy) * fieldAssetZoom(field);
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
