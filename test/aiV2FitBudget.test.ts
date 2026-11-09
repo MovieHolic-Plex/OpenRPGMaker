@@ -7,20 +7,22 @@ import type { Project } from "@/project/types";
 // 최종 보고가 읽는다(프로젝트 객체는 체크포인트에서 바뀌므로 기록은 세션에 둔다). 완료는 막지 않는다 — 모델이 풀 수 없다(ultrabrain 검토).
 // 에이전트 세션 규칙으로 작성 시점에는 실행하지 않았다(CI 에서 돈다).
 
-const state = vi.hoisted(() => ({ mode: "pass" as "pass" | "mutate-then-throw" }));
+const state = vi.hoisted(() => ({ mode: "pass" as "pass" | "throw-once" | "throw-always", calls: 0 }));
 
 vi.mock("@/ai/v2/monsterRouteLevels", async (importOriginal) => {
   const real = await importOriginal<typeof import("@/ai/v2/monsterRouteLevels")>();
   return {
     ...real,
-    // 시험 한가운데서 예산이 터지는 경우를 흉내 낸다: 적 레벨을 시험값으로 바꾸고 던진다.
-    fitGateLevelCurve: (project: Project) => {
-      if (state.mode === "mutate-then-throw") {
-        project.database.enemies[0]!.level = 99;
-        project.database.troops[0]!.name = "시험 중 이름";
-        throw new real.FitBudgetExceeded(61_000);
-      }
-      return [];
+    // 싼 단계(관문 곡선)는 항상 끝나고 확정된다 — 첫 바퀴에서만 한 줄을 낸다.
+    fitGateLevelCurve: () => (state.mode === "pass" ? [] : state.calls === 0 ? ["관문 곡선 줄"] : []),
+    // 필수전투 단계가 시험 한가운데서 예산을 넘기는 경우: 적 레벨을 시험값으로 바꾸고 던진다.
+    fitRequiredBattlesToStarters: (project: Project) => {
+      state.calls += 1;
+      if (state.mode === "pass") return [];
+      if (state.mode === "throw-once" && state.calls > 1) return ["필수 전투 줄"];
+      project.database.enemies[0]!.level = 99;
+      project.database.troops[0]!.name = "시험 중 이름";
+      throw new real.FitBudgetExceeded(61_000);
     },
   };
 });
@@ -29,7 +31,7 @@ import { applyShipDefaults } from "@/ai/v2/shipDefaults";
 import { shipBlockers } from "@/ai/v2/shipChecks";
 import { stage as shipDefaultsStage } from "@/ai/v2/finish/stages/ship-defaults";
 import { V2Session } from "@/ai/v2/verbs";
-import { beginFitBudget, checkFitBudget, FIT_BUDGET_MS, FIT_INCOMPLETE_PREFIX, FitBudgetExceeded, fitBudgetExceeded, restoreFitState, snapshotFitState } from "@/ai/v2/monsterRouteLevels";
+import { beginFitBudget, checkFitBudget, enterFastFit, fitIsFast, FIT_BUDGET_MS, guardFitBudget, FIT_INCOMPLETE_PREFIX, FitBudgetExceeded, fitBudgetExceeded, restoreFitState, snapshotFitState } from "@/ai/v2/monsterRouteLevels";
 
 const WHOLE = "몬스터 수집 모험 게임";
 function monsterish(): Project {
@@ -73,16 +75,46 @@ describe("snapshot / restore of what the fit touches", () => {
   });
 });
 
-describe("applyShipDefaults when the budget cuts a round", () => {
-  it("restores the half-tried state, says so in the applied list, and does not throw", () => {
+describe("budget guard and fast mode", () => {
+  it("checks the budget only inside the guarded (required-battle) stage; fast mode is per project", () => {
+    const p = createBlankProject() as Project;
+    beginFitBudget(p, -1);
+    expect(() => checkFitBudget(p)).not.toThrow(); // 싼 단계: 예산 면제
+    guardFitBudget(p, true);
+    expect(() => checkFitBudget(p)).toThrow(FitBudgetExceeded); // 필수전투 단계 안에서는 검사한다(한도 -1ms 라 바로 초과)
+    expect(fitIsFast(p)).toBe(false);
+    enterFastFit(p);
+    expect(fitIsFast(p)).toBe(true);
+    guardFitBudget(p, false);
+    expect(() => checkFitBudget(p)).not.toThrow(); // 단계 밖은 다시 면제
+  });
+});
+
+describe("applyShipDefaults when the required-battle stage is cut by the budget", () => {
+  it("keeps the cheap stage result, restores only the cut stage, and retries once in fast mode", () => {
     const p = monsterish();
     const enemiesBefore = JSON.stringify(p.database.enemies), troopsBefore = JSON.stringify(p.database.troops);
-    state.mode = "mutate-then-throw";
+    state.mode = "throw-once"; state.calls = 0;
     try {
       const applied = applyShipDefaults(p, WHOLE);
-      expect(applied.some((line) => line.startsWith(FIT_INCOMPLETE_PREFIX))).toBe(true);
-      expect(JSON.stringify(p.database.enemies)).toBe(enemiesBefore);
+      expect(applied).toContain("관문 곡선 줄");   // 싼 단계는 확정으로 남는다
+      expect(applied).toContain("필수 전투 줄");   // 빠른 모드 재시도 결과
+      expect(applied.some((line) => line.includes("빠른 모드(10판)"))).toBe(true);
+      expect(JSON.stringify(p.database.enemies)).toBe(enemiesBefore);   // 끊긴 시도가 남긴 시험값은 없다
       expect(JSON.stringify(p.database.troops)).toBe(troopsBefore);
+    } finally { state.mode = "pass"; }
+  });
+
+  it("when fast mode is cut too, restores, stops and says so", () => {
+    const p = monsterish();
+    const enemiesBefore = JSON.stringify(p.database.enemies);
+    state.mode = "throw-always"; state.calls = 0;
+    try {
+      const applied = applyShipDefaults(p, WHOLE);
+      expect(applied).toContain("관문 곡선 줄");
+      expect(applied.some((line) => line.startsWith(FIT_INCOMPLETE_PREFIX))).toBe(true);
+      expect(applied.some((line) => line.includes("멈췄다"))).toBe(true);
+      expect(JSON.stringify(p.database.enemies)).toBe(enemiesBefore);
     } finally { state.mode = "pass"; }
   });
 });
@@ -94,15 +126,13 @@ describe("the finish stage records the cut on the session and never blocks finis
     const assembled: string[] = [];
     const events: { name?: string }[] = [];
     const env = { ctx: { project: p }, request: { task: WHOLE }, emit: (e: { name?: string }) => events.push(e) } as never;
-    state.mode = "mutate-then-throw";
+    state.mode = "throw-always"; state.calls = 0;
     try { shipDefaultsStage.run({ env, session, assembled, done: [], walked: [] } as never); } finally { state.mode = "pass"; }
     expect(session.fitIncomplete?.startsWith(FIT_INCOMPLETE_PREFIX)).toBe(true);
     expect(events.some((e) => e.name === "v2.fit.incomplete")).toBe(true);
-    // 체크포인트·다시 읽기가 프로젝트 객체를 바꿔도 세션 기록은 남고, 끝내기를 막는 출하 차단은 없다.
     const replaced = structuredClone(p);
     expect(shipBlockers(replaced, WHOLE).map((b) => b.id)).not.toContain("fit-budget");
     expect(session.fitIncomplete?.startsWith(FIT_INCOMPLETE_PREFIX)).toBe(true);
-    // 다시 돈 맞춤이 끝까지 성공하면 앞의 미완 기록은 지워진다.
     shipDefaultsStage.run({ env: { ctx: { project: replaced }, request: { task: WHOLE }, emit() {} } as never, session, assembled: [], done: [], walked: [] } as never);
     expect(session.fitIncomplete).toBeUndefined();
   });
