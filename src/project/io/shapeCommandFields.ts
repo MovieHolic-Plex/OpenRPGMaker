@@ -475,6 +475,7 @@ function validateCommandShape(label: string, value: unknown): void {
       if (command.skippable !== undefined) requireBoolean(`${label}.skippable`, command.skippable);
       return;
     case "shop": {
+      if (command.title !== undefined) requireString(`${label}.title`, command.title);
       if ((command as Record<string, unknown>).shopServiceKind !== undefined) requireString(`${label}.shopServiceKind`, (command as Record<string, unknown>).shopServiceKind);
       if ((command as Record<string, unknown>).investmentLevel !== undefined) requireNumber(`${label}.investmentLevel`, (command as Record<string, unknown>).investmentLevel);
       for (const [index, itemId] of requireArray(`${label}.itemIds`, command.itemIds).entries()) {

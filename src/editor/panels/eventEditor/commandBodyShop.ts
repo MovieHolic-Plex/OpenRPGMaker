@@ -177,10 +177,20 @@ function shopAdvancedCard(context: CommandEditContext, command: ShopCommand): HT
     });
   });
 
+  const titleInput = el("input", {
+    class: "commerce-command-input",
+    attrs: { type: "text", placeholder: "비우면 「상점」", title: "상점 창 머리에 나오는 가게 이름" },
+    dataset: { testid: "shop-title" },
+  }) as HTMLInputElement;
+  titleInput.value = command.title ?? "";
+  titleInput.addEventListener("change", () => {
+    context.actions.replaceCommand(context.path, { ...latestShop(context, command), title: titleInput.value.trim() || undefined });
+  });
+
   const body = el("div", {
     class: "shop-advanced-body",
     dataset: { testid: "shop-advanced-body" },
-    children: [row("서비스", serviceSel), row("투자 Lv", invest), row("마일리지", mileage)],
+    children: [row("가게 이름", titleInput), row("서비스", serviceSel), row("투자 Lv", invest), row("마일리지", mileage)],
   });
   body.hidden = true;
   const toggle = el("button", {
