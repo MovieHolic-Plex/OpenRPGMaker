@@ -25,6 +25,7 @@ import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
 import { strayStepCopies, walkBlueprint } from "./blueprint";
 import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS } from "./mapCount";
+import { countQuests, MIN_COUNTED_QUESTS } from "./questCount";
 import { assemblyTimeMismatches, blankMap, blueprintStoryText } from "@/project/blueprintAssembly";
 import { openingMapViewMapId } from "@/project/openingMapView";
 import { battleSites, encounterMaps, healingSources, repeatableHealingSources } from "./combatChecks";
@@ -610,6 +611,23 @@ export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
   }];
 }
 
+/**
+ * 세는 퀘스트가 모자라면 출하 차단(2026-11-10 리드: 맵 다음 퀘스트 — 점수당 노력이 가장 큰 항목). 척도(questFacts)와 같은 규칙으로 센다.
+ * 한 장소 요청은 최소 1개(mapsMinBlocker 와 같은 낱말 판정). 문구는 고정 문장을 앞에 둔다 — 할 일 열쇠가 앞 160자라 바뀌는 목록은 뒤로.
+ */
+export function questsMinBlocker(project: Project, task: string): ShipBlocker[] {
+  const request = withoutIntentNote(task) + " " + withoutIntentNote(project.gameBlueprint?.request ?? "");
+  const need = SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request) ? 1 : MIN_COUNTED_QUESTS;
+  const { counted, uncounted } = countQuests(project);
+  if (counted.length >= need) return [];
+  const why = uncounted.slice(0, 4).map((q) => `「${q.title}」(${q.id}) ${q.detail}`).join(" · ");
+  return [{
+    id: "quests-min",
+    message: `세는 퀘스트가 ${counted.length}/${need}개다 — ${need - counted.length}개 더. 퀘스트마다 단계 2개 이상, 단계마다 서로 다른 label 이 있어야 센다(label 없는 단계는 안 센다), 제목은 퀘스트마다 다르게: create_quest{def:{key:"q_<영문>", title:"<제목>", giver:{create:{mapId,x,y,name}}, steps:[{kind:"talk", label:"<1단계 목표>", target:{create:{mapId,x,y,name}}, lines:["…"]}, {kind:"talk", label:"<2단계 목표>", target:{create:{mapId,x,y,name}}, lines:["…"]}]}}.${why ? ` 안 세는 퀘스트: ${why}.` : ""}`,
+    evidence: `counted=${counted.length} need=${need} uncounted=${uncounted.length}`,
+  }];
+}
+
 export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const spoilers = titleSpoilers(project);
   // 「끝까지 만들어 줘」 같은 이어 하기 요청은 낱말 판정(wantsWholeGame)에 안 걸려 출하 검사가 통째로 꺼졌다(2026-11-09 village-1: 2턴째에 엔딩 기본 그림이 항목이 안 됐다).
@@ -672,7 +690,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
     evidence: `battleSites=${sites.length} healingSources=0`,
   }] : [];
-  return [...reloadBlock, ...blueprint, ...mapsMinBlocker(project, task), ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...bundledPictureLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
+  return [...reloadBlock, ...blueprint, ...mapsMinBlocker(project, task), ...questsMinBlocker(project, task), ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...bundledPictureLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
 }
 
 /**
