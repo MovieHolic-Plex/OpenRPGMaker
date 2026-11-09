@@ -13,6 +13,8 @@ import { simulateBattle } from "@/battle/simulate";
 import { gatesThatOpenNothing, lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers, weakPuzzleLocks } from "./puzzleChecks";
 import { splitScriptSpeaker } from "@/project/endingSummary";
 import { wantsWholeGame } from "./shipChecks";
+import { enemyIdentityProblems } from "./enemyChecks";
+import { mapMusicVarietyProblems } from "./mapMusicChecks";
 import { withoutNegatedEncounters } from "./combatChecks";
 import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMismatch } from "./lookChecks";
 import { dryBoats, dryBridges, placementProblems, type PlacementProblem } from "./placementRules";
@@ -631,6 +633,10 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const encOn = Object.values(after.maps).some((m) => enc(m) && enc(m) !== enc(before.maps[m.id]));
     if (!encOn) problems.push("[게임 검사 전투] 요청에 싸울 몬스터·적이 있는데 이번에 단 전투(battleProcessing)도 켠 조우도 없다 — upsert_enemy·upsert_troop 로 적을 만들고 place_field_enemy 로 그 맵에 둔다(author_forest_route 결과 data.maps[i].enemySpots 가 적 자리, clearing·deadEnds·출입구 칸에 겹치지 않게).");
   }
+  // 1j) 적 개성(2026-11-09 fs-use-tools E1): 게임을 만드는 요청에서 보스가 기본 공격뿐이거나 일반 적 기술이 전부 같다.
+  if (wantsWholeGame(task)) problems.push(...enemyIdentityProblems(after));
+  // 1k) 맵 음악 다양성(2026-11-09 fs-use-tools H5): 게임을 만드는 요청에서 이야기 맵 3장 이상이 곡 한 가지뿐. 음악을 직접 요청했으면 위 [게임 검사 음악] 몫이다.
+  if (wantsWholeGame(task) && !musicAsked(task)) problems.push(...mapMusicVarietyProblems(after));
   // 2) 엔딩: 엔딩 정의 + triggerEnding.
   // 음악만 바라는 엔딩 요청(「잔잔하게 엔딩곡」)은 엔딩을 짓는 요청이 아니다. 엔딩 명령은 이번에 바꾼 이벤트가 아니라 프로젝트 전체에서 찾는다 —
   // 이미 있던 보스 이벤트의 triggerEnding 도 엔딩이다(2026-10-30 r11: 바꾼 이벤트만 봐서 «triggerEnding 이 없다»고 거짓으로 막았다).
