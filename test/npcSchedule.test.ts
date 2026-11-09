@@ -74,6 +74,21 @@ describe("NPC schedule weather condition", () => {
     updateNpcSchedules(scene);
     expect(scene.session.npcActivities.npc).toBe("market");
   });
+
+  it("sees the authored daily weather, which startSession writes into the same screen weather string", () => {
+    const { project, map } = createScheduleProject([
+      { when: { weather: "rain" }, at: { mapId: "map_schedule_runtime", x: 6, y: 6 }, activity: "shelter" },
+      { when: { hourRange: [6, 18] }, at: { mapId: "map_schedule_runtime", x: 2, y: 1 }, activity: "market" },
+    ]);
+    const rainOnly = [{ kind: "rain" as const, weight: 1, intensity: 0.6 }];
+    project.system.dailyWeather = { enabled: true, seasons: { spring: rainOnly, summer: rainOnly, fall: rainOnly, winter: rainOnly } };
+    const scene = scheduleScene(project, map);
+
+    updateNpcSchedules(scene);
+
+    expect(scene.session.dailyWeather?.kind).toBe("rain");
+    expect(scene.session.npcActivities.npc).toBe("shelter");
+  });
 });
 
 describe("NPC schedule weather shape", () => {
