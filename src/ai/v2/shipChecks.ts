@@ -24,6 +24,7 @@ import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, 
 import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
 import { strayStepCopies, walkBlueprint } from "./blueprint";
+import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS } from "./mapCount";
 import { assemblyTimeMismatches, blankMap, blueprintStoryText } from "@/project/blueprintAssembly";
 import { openingMapViewMapId } from "@/project/openingMapView";
 import { battleSites, encounterMaps, healingSources, repeatableHealingSources } from "./combatChecks";
@@ -588,6 +589,26 @@ export function buildsWholeGame(project: Project, task: string): boolean {
 }
 
 /** 조언자·끝맺음 관문이 같이 쓰는 출하 차단 목록(게임을 만드는 요청일 때만). 제목 스포일러는 어느 요청이든. */
+/**
+ * 세는 맵이 최소 수(MIN_COUNTED_MAPS)보다 적다 — 오너 2026-11-10 「맵을 가장 우선」. 척도(scripts/fs-scale)가 세는 규칙 그대로(닿고·100칸·타일 6종·이벤트·다른 배치).
+ * 실측(2026-11-10, 비몬스터 5판): 세는 맵 1·1·1·2·2장. 못 센 맵마다 이유를 적는다 — 이유가 없으면 조수가 세지 않는 맵만 계속 짓는다.
+ * 한 장소 게임(방탈출·「방 하나」)은 최소 1장. 3번 되풀이되면 할 일 고리가 막힘으로 닫고 최종 보고에 남긴다(42분 상한).
+ */
+export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
+  const request = withoutIntentNote(task) + " " + withoutIntentNote(project.gameBlueprint?.request ?? "");
+  const oneProject = SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request);
+  const need = oneProject ? 1 : MIN_COUNTED_MAPS;
+  const { counted, uncounted } = countMaps(project);
+  if (counted.length >= need) return [];
+  const why = uncounted.slice(0, 5).map((m) => `「${m.name}」(${m.id}) ${m.detail}`).join(" · ");
+  const missing = need - counted.length;
+  return [{
+    id: "maps-min",
+    message: `세는 맵이 ${counted.length}/${need}장이다 — ${missing}장 더. ${why ? `안 세는 맵: ${why}. ` : ""}새 장소는 make_place{spec:{type:"village"|"dungeon"|"interior", name}} 로 지어 문(transfer)으로 잇고 사람·조사 이벤트를 하나 이상 둔다(청사진 경로면 build_blueprint_path). 맵은 ${MIN_MAP_CELLS}칸 이상(실내는 10×10 이상)·타일 6종 이상·다른 맵과 다른 배치여야 센다.`,
+    evidence: `counted=${counted.length} need=${need} uncounted=${uncounted.length}`,
+  }];
+}
+
 export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const spoilers = titleSpoilers(project);
   // 「끝까지 만들어 줘」 같은 이어 하기 요청은 낱말 판정(wantsWholeGame)에 안 걸려 출하 검사가 통째로 꺼졌다(2026-11-09 village-1: 2턴째에 엔딩 기본 그림이 항목이 안 됐다).
@@ -650,7 +671,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
     evidence: `battleSites=${sites.length} healingSources=0`,
   }] : [];
-  return [...reloadBlock, ...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...bundledPictureLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
+  return [...reloadBlock, ...blueprint, ...mapsMinBlocker(project, task), ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...bundledPictureLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
 }
 
 /**
