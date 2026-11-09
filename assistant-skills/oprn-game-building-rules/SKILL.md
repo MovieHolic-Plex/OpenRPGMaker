@@ -28,12 +28,13 @@ These are the exact guard messages the editor prints when the objective line is 
 
 Save an ending definition (id, name, epilogue, presentation). It does nothing alone: put {kind:'triggerEnding',endingId} in a reachable event's commands. If the ending has conditions they are checked at the trigger — false = no ending, the next command runs. epilogue = script_cutscene beats. Act-end cards: presentation.finalTitle '제1막 끝' (End of Act 1).
 A switch used in a page condition must be turned on by some branch's setSwitch, or the ending never fires.
-Before you finish, 완료 직전 구조 점검(가드가 같은 것을 막는다): ① set_start_position 으로 시작 맵을 지은 게임의 첫 맵에 맞춘다(빈 시드 맵에서 시작하면 안 된다) ② 저작한 모든 맵이 시작 맵에서 문으로 닿는다(create_transfer_pair/create_time_gate) ③ define_ending 과 그것을 부르는 {kind:"triggerEnding"} 이벤트가 있다 ④ 새로하기 오프닝이 #2852 레이어드 도트 애니메틱 **6샷**(kind:"animatic" + pixelGrid 384×216 + 배경·캐릭터 칩 배우·광원/카메라·자막)으로 저장돼 있다.
+Before you finish, 완료 직전 구조 점검(가드가 같은 것을 막는다): ① set_start_position 으로 시작 맵을 지은 게임의 첫 맵에 맞춘다(빈 시드 맵에서 시작하면 안 된다) ② 저작한 모든 맵이 시작 맵에서 문으로 닿는다(create_transfer_pair/create_time_gate) ③ define_ending 과 그것을 부르는 {kind:"triggerEnding"} 이벤트가 있다 ④ 새로하기 오프닝이 #2852 레이어드 도트 애니메틱 **6샷**(kind:"animatic" + pixelGrid 384×216 + 배경·캐릭터 칩 배우·광원/카메라·자막)으로 저장돼 있다 ⑤ 엔진 기본값이 남지 않았다: 제목·타이틀 배경은 set_title_screen{title, backgroundResourceId, logoSubtitle}, 엔딩 그림은 define_ending 의 presentation.backgroundResourceId, 시작 장비는 upsert_actor{id, initialEquipment} 로 이 게임 것으로 바꾼다(기본 「새 프로젝트」·눈 덮인 마을 그림·「A NEW ADVENTURE」·기본 검과 방패가 남으면 ./oprn check 가 default-leak 경고로 짚는다).
 In practice:
 the start map is the first map of the game (set_start_position) — not the empty seed map,
 every map you authored is reachable from the start map through a door or gate (create_transfer_pair / create_time_gate),
 a define_ending definition exists and a reachable event calls it with {kind:"triggerEnding",endingId},
-the new-game opening is saved as the #2852 layered pixel animatic with 6 shots (kind:"animatic", pixelGrid 384×216, background + character chip actors + light/camera beats + subtitles).
+the new-game opening is saved as the #2852 layered pixel animatic with 6 shots (kind:"animatic", pixelGrid 384×216, background + character chip actors + light/camera beats + subtitles),
+no engine default is left in the finished game: the title text, title background and subtitle (set_title_screen), every ending's background (define_ending presentation.backgroundResourceId) and the starting gear (upsert_actor initialEquipment) are this game's own — the factory title 「새 프로젝트」, the snowy-village title art, the fixed 「A NEW ADVENTURE」 tagline and the stock sword-and-shield kit are the signs that the game looks like every other new project.
 
 ## 4. Play the whole path to an ending before you report done
 

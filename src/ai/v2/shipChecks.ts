@@ -8,6 +8,7 @@ import { bossTalkWithoutBattle } from "./bossTalkBattles";
 import { reloadProblem } from "./reloadCheck";
 import { chaserMapsWithoutHiding } from "@/project/chaserHiding";
 import { createBlankProject } from "@/project/defaults";
+import { projectDefaultLeaks } from "@/project/defaultLeaks";
 import type { Project } from "@/project/types";
 import { isBlankCanvasMap } from "@/project/tilesetBaseline";
 import { findOpeningStillMood } from "@/assets/openingStillMoods";
@@ -123,7 +124,7 @@ function factory(): Project {
 /** 편집기 기본값 목록(LEDGER 의 목록과 같은 순서). 검사·문서가 같은 이름을 쓴다. */
 export const EDITOR_DEFAULT_INVENTORY = [
   "title-name", "title-image", "opening", "opening-music", "hud", "window-look", "map-bgm", "battle-bgm", "battle-background",
-  "game-over", "ending-screen", "party-names", "party-faces", "hero-look", "placeholder-text", "combat-leftovers",
+  "game-over", "ending-screen", "party-names", "party-faces", "hero-look", "placeholder-text", "combat-leftovers", "ending-bg", "start-gear",
 ] as const;
 
 /** 뼈대·자리표시 글(엔딩·이벤트 이름이나 대사에 남으면 안 된다). */
@@ -233,6 +234,9 @@ export function editorDefaultsLeft(project: Project): ShipBlocker[] {
     const gear = party.flatMap((a) => Object.entries(a.initialEquipment ?? {}).filter(([slot, id]) => id && FACTORY_HERO_ARMS[slot] === id).map(([slot, id]) => `${a.name} ${slot}:${String(id)}`));
     if (combatRows.length || gear.length) add("combat-leftovers", `전투가 없는 게임인데 전투 기본값이 남았다 — ${[...(combatRows.length ? [`ESC 메뉴 ${combatRows.join("·")}`] : []), ...(gear.length ? [`시작 장비 ${gear.join(", ")}`] : [])].join(" / ")}. configure_field_menu{preset:'story'} 로 메뉴를 이야기용으로, upsert_actor{id, initialEquipment:{}} 로 기본 무기·방어구를 뺀다(전투 없는 게임에 검·방패를 «되돌리지» 않는다).`, [...combatRows, ...gear].join(" | ").slice(0, 200));
   }
+
+  // 9c) 엔딩이 기본 그림을 깐다·지은 장비가 주인공에게 닿지 않았다 — qa(runGameCheck)와 같은 비교(project/defaultLeaks).
+  for (const leak of projectDefaultLeaks(project, { includeBlank: true })) if (leak.id === "start-gear" || (leak.id === "ending-bg" && !bareEndings.length)) add(leak.id, leak.message, leak.field);
 
   // 10) 자리표시 글
   const placeholders: string[] = [];
