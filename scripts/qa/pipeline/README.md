@@ -1,7 +1,7 @@
 # QA 파이프라인 — 싼 모델이 대량으로 보고, 고급 모델이 보고서를 검토한다
 
 출하된 데모 게임을 **한 명령**으로 QA 한다. 브라우저 플레이와 1차 시각 관찰은 QA VM(신기루 `am3685-1`)에서
-싼 모델(`oc/deepseek-v4.1-flash-free`, effort max)이 하고, 최종 판정은 이 상자에서 Anthropic Opus 가 증거를 직접
+싼 모델(`oc/deepseek-v4.1-flash-free`, effort high — max 는 추론으로 출력 상한을 다 써 JSON 이 끊겼다)이 하고, 최종 판정은 이 상자에서 Anthropic Opus 가 증거를 직접
 보고 내린다. 게임 파일은 **VM 의 로컬 미러에서만** 읽는다 — 운영 게임 호스트에 요청을 보내지 않는다.
 
 ```

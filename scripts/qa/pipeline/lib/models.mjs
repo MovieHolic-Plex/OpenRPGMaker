@@ -64,7 +64,7 @@ export function extractJson(text, keys) {
 }
 
 /**
- * Cheap observer: OpenAI-compatible chat completions (oc gateway, deepseek-v4.1-flash-free, effort max).
+ * Cheap observer: OpenAI-compatible chat completions (oc gateway, deepseek-v4.1-flash-free; observe.mjs passes effort high).
  * Honors retry-after on 429/503 instead of hammering the shared key.
  */
 export function ocClient({ baseUrl, apiKey, model = "deepseek-v4.1-flash-free", effort = "max", log, stage = "observe" }) {
