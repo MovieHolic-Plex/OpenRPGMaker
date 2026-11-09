@@ -43,7 +43,10 @@ const townBuildNew: Family = {
     if (map.tilesetId !== 'beodeul_city') return fail(`타일셋이 ${map.tilesetId} — 버들항(beodeul_city)이어야 한다`);
     if (want.width !== undefined && (map.width !== want.width || map.height !== want.height)) return fail(`크기 ${map.width}×${map.height} — ${want.width}×${want.height} 여야 한다`);
     const houses = (map.structurePlacements ?? []).length;
-    if (want.houseCount !== undefined && !(houses >= want.houseCount + 3 && houses <= want.houseCount + 5)) return fail(`배치된 건물이 ${houses}채 — 집 ${want.houseCount}채(+앵커 건물)에 맞지 않는다`);
+    if (want.houseCount !== undefined) {
+      const low = want.houseCount + 3, high = want.houseCount + 5;
+      if (houses < low || houses > high) return fail(`배치된 건물이 ${houses}채 — 집 ${want.houseCount}채(+앵커·일터 건물)면 ${low}~${high}채여야 한다`);
+    }
     if (houses < 3) return fail('마을에 건물이 거의 없다');
     return sameExcept(input.before, input.after, dropMaps(added)) ? pass(`${map.name} ${map.width}×${map.height}, 건물 ${houses}`) : fail('새 마을 밖의 내용이 바뀌었다');
   },
@@ -57,7 +60,7 @@ const townBuildNew: Family = {
     const run = (extra: Record<string, unknown>) => attempt(() => runOn(clone(project), 'author_beodeul_town', { name: want.name, id: 'map_ds_town', ...(want.width ? { width: want.width, height: want.height } : {}), ...(want.houseCount ? { houseCount: want.houseCount } : {}), ...extra }));
     return distinct(reference, [
       run({ name: `${want.name} 옆` }),
-      want.width ? run({ width: want.width + 8, height: want.height! + 6 }) : run({ houseCount: want.houseCount === 5 ? 3 : 5 }),
+      want.width ? run({ width: want.width + 8, height: want.height! + 6 }) : attempt(() => { const side = clone(reference) as any; side.database.items[0].price = (side.database.items[0].price ?? 0) + 1; return side; }),
       attempt(() => runOn(clone(project), 'create_map', { name: want.name, id: 'map_ds_town', width: want.width ?? 40, height: want.height ?? 32 })),
     ]);
   },
@@ -101,7 +104,8 @@ const townHouseAdd: Family = {
     const first = want.anchors[0]!;
     return distinct(reference, [
       build(want.anchors.map(anchor => ({ x: anchor.x, y: anchor.y === 20 ? 14 : anchor.y + 2 }))),
-      build([...want.anchors, { x: first.x === 26 ? 4 : first.x + 6, y: first.y === 6 ? 12 : first.y - 6 }]),
+      build(want.anchors.map(anchor => ({ x: anchor.x + 3, y: anchor.y }))),
+      build([...want.anchors, { x: first.x > 15 ? 6 : 24, y: 20 }]),
       build(want.anchors.slice(0, -1).length ? want.anchors.slice(0, -1) : [{ x: 26, y: 10 }]),
     ]);
   },

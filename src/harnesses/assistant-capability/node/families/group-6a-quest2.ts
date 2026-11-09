@@ -48,9 +48,9 @@ const questChoice = questFamily({
   title: '선택지를 고르면 진행되는 선택 퀘스트',
   variants: [
     { key: 'bridge', prompt: '촌장이 「다리를 고칠까요, 부술까요?」라고 묻고 「고친다」, 「부순다」 중 고르게 하는 선택 퀘스트를 만들어줘.', args: choiceArgs(mayor, { name: '촌장' }, '다리를 고칠까요, 부술까요?', ['고친다', '부순다']) },
-    { key: 'thief', prompt: '이 마을 주민이 「도둑을 신고할까요?」라고 묻고 「신고한다」, 「눈감아 준다」 두 선택지를 주는 퀘스트를 추가해 줘.', args: choiceArgs(resident, resident, '도둑을 신고할까요?', ['신고한다', '눈감아 준다']), setup: { event: NPC_RESIDENT } },
+    { key: 'thief', prompt: '이 마을 주민이 의뢰하고, 「포졸」을 찾아가면 「도둑을 신고할까요?」라고 묻고 「신고한다」, 「눈감아 준다」 두 선택지를 주는 퀘스트를 추가해 줘. 포졸은 새로 만들어 줘.', args: choiceArgs(resident, { name: '포졸' }, '도둑을 신고할까요?', ['신고한다', '눈감아 준다']), setup: { event: NPC_RESIDENT } },
     { key: 'three-polite', prompt: '「심판관」이 「누구의 편을 들겠습니까?」라고 묻고 「왕」, 「백성」, 「중립」 세 가지 중에서 고르게 하는 퀘스트를 만들어 주세요.', args: choiceArgs({ name: '심판관' }, { name: '심판관' }, '누구의 편을 들겠습니까?', ['왕', '백성', '중립']) },
-    { key: 'terse', prompt: '잡화점 주인 선택 퀘스트: 「거래할래?」 → 「한다」/「안 한다」.', args: choiceArgs({ eventId: NPC_SHOP }, { eventId: NPC_SHOP }, '거래할래?', ['한다', '안 한다']) },
+    { key: 'terse', prompt: '잡화점 주인 의뢰, 새 NPC 「단골」에게 가면 선택 퀘스트: 「거래할래?」 → 「한다」/「안 한다」.', args: choiceArgs({ eventId: NPC_SHOP }, { name: '단골' }, '거래할래?', ['한다', '안 한다']) },
     { key: 'dragon', prompt: '「노인」이 「용을 깨울까요?」라고 묻고 「깨운다」, 「그냥 둔다」 중 선택하게 해 줘. 노인은 새로 만들어 줘.', args: choiceArgs({ name: '노인' }, { name: '노인' }, '용을 깨울까요?', ['깨운다', '그냥 둔다']) },
   ],
   build: args => ({
@@ -61,6 +61,9 @@ const questChoice = questFamily({
   check(quest, args) {
     if (JSON.stringify(kindsOf(quest)) !== JSON.stringify(['choice'])) return fail(`단계가 ${kindsOf(quest).join(',')} — choice 하나여야 한다`);
     const step = quest.steps[0];
+    const wantTarget = args.target as { eventId?: string; name?: string };
+    const targetMatches = wantTarget.eventId ? step.target?.eventId === wantTarget.eventId : String(step.target?.create?.name ?? '').includes(wantTarget.name ?? '');
+    if (!targetMatches) return fail(`선택을 묻는 인물이 ${JSON.stringify(step.target?.create?.name ?? step.target?.eventId)} — ${wantTarget.eventId ?? wantTarget.name} 여야 한다`);
     if (!String(step.prompt ?? '').includes(args.prompt as string)) return fail(`질문이 「${step.prompt}」 — 「${args.prompt}」 여야 한다`);
     const texts = (step.options ?? []).map((option: any) => String(option.text));
     const want = args.options as string[];
@@ -94,7 +97,7 @@ const questReward = questFamily({
     rewards: { ...(args.gold !== undefined ? { gold: args.gold } : {}), ...(args.rewardItems ? { items: args.rewardItems } : {}) },
   }),
   check(quest, args) {
-    if (args.noGold === true && (quest.rewards?.gold ?? 0) !== 0) return fail('골드는 주지 말라고 했는데 보상 골드가 있다');
+    if (args.gold === undefined && (quest.rewards?.gold ?? 0) !== 0) return fail('골드 보상을 요청하지 않았는데 보상 골드가 있다');
     if (args.gold === undefined && !args.rewardItems) return fail('보상이 정의되지 않은 가족 인자');
     if (args.gold !== undefined && quest.rewards?.gold !== args.gold) return fail(`보상 골드 ${quest.rewards?.gold} — ${args.gold} 여야 한다`);
     if (args.rewardItems && JSON.stringify(itemsOf(quest.rewards?.items)) !== JSON.stringify(itemsOf(args.rewardItems))) return fail(`보상 아이템 ${JSON.stringify(itemsOf(quest.rewards?.items))} 가 다르다`);
