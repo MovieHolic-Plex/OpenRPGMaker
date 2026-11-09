@@ -71,6 +71,8 @@ export const PLAYER_RUNTIME_AUDIO_RESOURCE_IDS: readonly string[] = Object.freez
   "cc0-se-osx-wooded-box-open",
   "cc0-se-osx-wooden-01",
   "cc0-se-osx-wooden-02",
+  // 옷장 종류의 여는 소리(containerFx wardrobe) — 목록에 없어 내보낸 게임에서 404 였다
+  "easyrpg-sound-close1",
   // mapDoorKinds · playSceneDoorway — 문 종류별 여닫는 소리
   "cc0-se-orp-inventory-armor-light",
   "cc0-se-ors-creature-slime-03",
