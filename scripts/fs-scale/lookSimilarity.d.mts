@@ -3,10 +3,10 @@ export type LookGame = { id: string; made_at: string; prompt_sha?: string; shots
 export type LookHit = { kind: "zero" | "penalty" | "twin-penalty"; reason?: string; other: string; sim: number; screen: string };
 export type LookVerdict = { zero: boolean; penalty: number; lines: string[]; hits: LookHit[] };
 export const MEASURE_ID: string;
-export const THRESHOLDS: Record<string, { zero: number; penalty: number; penaltyPoints: number }>;
+export const THRESHOLDS: Record<string, { zero: number; penalty: number; penaltyPoints: number; identical: number }>;
 export function features(rgba: Uint8Array, width: number, height: number): LookShot;
 export function hexOf(bits: number[]): string;
 export function similarity(a: LookShot, b: LookShot): { sim: number; struct: number; col: number };
-export function pairScore(x: LookGame, y: LookGame): { sim: number; screen: string | null; identical: boolean };
+export function pairScore(x: LookGame, y: LookGame, th?: { zero: number; penalty: number; penaltyPoints: number; identical: number }): { sim: number; screen: string | null; identical: boolean };
 export function isLater(x: { made_at: string; id: string }, y: { made_at: string; id: string }): boolean;
-export function judgeGame(game: LookGame, corpus: LookGame[], defaults: { title?: LookShot; start?: LookShot } | undefined, measure?: string): LookVerdict;
+export function judgeGame(game: LookGame, corpus: LookGame[], defaults: { title?: LookShot; start?: LookShot } | undefined, measure?: string, thresholds?: { zero: number; penalty: number; penaltyPoints: number; identical: number }): LookVerdict;

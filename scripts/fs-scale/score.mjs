@@ -407,8 +407,19 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   for (const file of args.files) {
     const doc = JSON.parse(readFileSync(file, "utf8"));
     const row = { file, ...(args.measure ? { raw: measure(doc, baseline) } : scoreProject(doc, { weights, baseline })) };
-    const verdict = looks?.results?.find((result) => file.includes(String(result.id).replace(/^asst:/u, "").replace(/\//gu, "-")) || file.includes(String(result.id)));
-    if (verdict) { row.looks = { zero: verdict.zero, penalty: verdict.penalty, lines: verdict.lines, measure: looks.measure, corpus_sha: looks.corpus_sha }; if (verdict.zero && row.score !== undefined) row.score_before_zero = row.score, row.score = 0; }
+    if (looks) {
+      // 판정은 프로젝트 파일 내용의 sha256(project_sha)으로 짝짓는다 — 파일 이름이 아니다. 짝이 없으면 조용히 넘기지 않고 적는다.
+      const sha = createHash("sha256").update(readFileSync(file)).digest("hex").slice(0, 32);
+      const verdict = looks.results?.find((result) => result.project_sha === sha);
+      if (!verdict) row.looks = { missing: true, lines: [`looks: no verdict for ${file} (project_sha ${sha})`], measure: looks.measure, corpus_sha: looks.corpus_sha };
+      else {
+        row.looks = { zero: verdict.zero, penalty: verdict.penalty, lines: verdict.lines, measure: looks.measure, corpus_sha: looks.corpus_sha };
+        if (row.score !== undefined) {
+          row.score_before_looks = row.score;
+          row.score = verdict.zero ? 0 : Math.max(0, Math.round((row.score - verdict.penalty) * 10) / 10);
+        }
+      }
+    }
     rows.push(row);
   }
   if (args.json) console.log(JSON.stringify(rows, null, 2));

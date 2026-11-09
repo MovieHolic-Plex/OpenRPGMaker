@@ -5,7 +5,8 @@
  * 판정 방식은 이름(`pic-v1`)으로 갈아 끼운다: 코퍼스·결과·임계값이 모두 그 이름에 묶이고, 이름이 다르면 비교하지 않고 던진다.
  *
  * pic-v1 (2026-11-10, 레인 Python rdb.py 의 정수 이식):
- *   - 밝기 L = (R*299 + G*587 + B*114) / 1000 (알파 무시, PIL convert("L") 과 같게 정수 반올림)
+ *   - 밝기 L = (R*299 + G*587 + B*114) / 1000 (알파 무시, 정수 반올림. PIL 의 정수 계수와 일부 값에서 1 차이가 날 수 있다)
+ *   - 축소는 면적 가중 BOX(경계에 걸친 화소는 면적 비율). PIL BOX 와는 경계 화소에서 다를 수 있다 — 이식 확인: 실제 쌍 21개 |Δsim| ≤ 0.0022, 판정 뒤집힘 0
  *   - ahash: 8x8 BOX 축소 → 평균보다 밝은 칸 1
  *   - dhash: 9x8 BOX 축소 → 오른쪽이 왼쪽보다 밝은 칸 1
  *   - hist: 64x64 BOX 축소 → 채널당 4단계(0~3) 64칸 정수 히스토그램(총합 4096)
@@ -16,9 +17,12 @@ import { createHash } from "node:crypto";
 
 export const MEASURE_ID = "pic-v1";
 
-/** 판정 이름별 기준값(RAW pic_sim 척도). 오너 2026-11-10: 0.90 이상 0점, 0.70~0.90 감점 2점. */
+/**
+ * 판정 이름별 기준값(RAW pic_sim 척도). 오너 2026-11-10: 0.90 이상 0점, 0.70~0.90 감점 2점(게임당 한 번),
+ * 똑같은 프리셋 복사(identical 이상 — 화소 sha 일치 또는 sim ≥ identical)는 양쪽 0점.
+ */
 export const THRESHOLDS = {
-  "pic-v1": { zero: 0.9, penalty: 0.7, penaltyPoints: 2 },
+  "pic-v1": { zero: 0.9, penalty: 0.7, penaltyPoints: 2, identical: 0.999 },
 };
 
 // ---------- 화면 특징 ----------
@@ -104,14 +108,14 @@ export function similarity(a, b) {
 // ---------- 규칙 ----------
 const ROLES = ["title", "start"];
 
-/** 한 쌍의 점수: 같은 역할(title↔title, start↔start) 중 최대. 똑같은 그림(sha 일치)이면 identical. */
-export function pairScore(x, y) {
+/** 한 쌍의 점수: 같은 역할(title↔title, start↔start) 중 최대. 똑같은 그림(sha 일치 또는 sim ≥ identical)이면 identical. */
+export function pairScore(x, y, th = THRESHOLDS[MEASURE_ID]) {
   let best = { sim: 0, screen: null, identical: false };
   for (const role of ROLES) {
     const a = x.shots?.[role], b = y.shots?.[role];
     if (!a || !b) continue;
-    const identical = a.sha === b.sha;
-    const sim = identical ? 1 : similarity(a, b).sim;
+    const sim = a.sha === b.sha ? 1 : similarity(a, b).sim;
+    const identical = a.sha === b.sha || sim >= th.identical;
     if (sim > best.sim || (identical && !best.identical)) best = { sim, screen: role, identical };
   }
   return best;
@@ -126,31 +130,40 @@ export function isLater(x, y) {
 /**
  * game: { id, made_at, prompt_sha, shots: {title, start} },  corpus: game[], defaults: { title, start }(특징)
  * 반환: { zero: bool, penalty: number, lines: string[], hits: [...] }
- * 규칙: 다른 프롬프트의 기록 게임과 sim >= zero 이면 0점(똑같은 그림이면 양쪽 — 이 함수는 game 쪽만 판정하고 'both' 로 표시).
- *       같은 프롬프트 쌍은 감점만. 기본 화면(default)과 sim >= zero 이면 0점. penalty <= sim < zero 는 감점.
+ * 규칙: 다른 프롬프트의 기록 게임과 — 똑같은 그림(identical)이면 0점(상대도 자기를 판정할 때 0점이라 양쪽),
+ *       sim ≥ zero 이고 이 게임이 나중에 만든 쪽이면 0점, penalty ≤ sim < zero 이면 감점.
+ *       같은 프롬프트 쌍(쌍둥이)은 감점만. 기본 화면(default)과 sim ≥ zero 이면 0점.
+ *       감점은 게임당 한 번(가장 닮은 상대 하나를 줄에 남기고 나머지는 hits 에만 둔다) — 코퍼스가 커져도 감점이 불어나지 않게.
+ *       「나중」은 시각으로 정한다: 먼저 만든 게임이 다른 이유로 이미 0점이어도 이 게임은 그대로 0점(누가 먼저 그 모습을 냈나를 본다).
  */
-export function judgeGame(game, corpus, defaults, measure = MEASURE_ID) {
-  const th = THRESHOLDS[measure];
+export function judgeGame(game, corpus, defaults, measure = MEASURE_ID, thresholds = THRESHOLDS[measure]) {
+  const th = thresholds;
   if (!th) throw new Error(`기준값이 없는 판정: ${measure}`);
+  for (const role of ROLES) if (game.shots?.[role] && game.shots[role].measure !== measure) throw new Error(`판정 이름이 다르다: ${game.shots[role].measure} ≠ ${measure}`);
   const hits = [];
-  let zero = false, penalty = 0;
+  let zero = false;
+  let penaltyHit;
   for (const other of corpus) {
     if (other.id === game.id) continue;
-    const { sim, screen, identical } = pairScore(game, other);
+    const { sim, screen, identical } = pairScore(game, other, th);
     if (!screen) continue;
     const samePrompt = game.prompt_sha && game.prompt_sha === other.prompt_sha;
-    if (samePrompt) { if (sim >= th.penalty) { penalty += th.penaltyPoints; hits.push({ kind: "twin-penalty", other: other.id, sim, screen }); } continue; }
+    if (samePrompt) {
+      if (sim >= th.penalty) { const hit = { kind: "twin-penalty", other: other.id, sim, screen }; hits.push(hit); if (!penaltyHit || sim > penaltyHit.sim) penaltyHit = hit; }
+      continue;
+    }
     if (identical) { zero = true; hits.push({ kind: "zero", reason: "identical-preset", other: other.id, sim, screen }); }
     else if (sim >= th.zero && isLater(game, other)) { zero = true; hits.push({ kind: "zero", reason: "look-similar", other: other.id, sim, screen }); }
-    else if (sim >= th.penalty && sim < th.zero) { penalty += th.penaltyPoints; hits.push({ kind: "penalty", other: other.id, sim, screen }); }
+    else if (sim >= th.penalty && sim < th.zero) { const hit = { kind: "penalty", other: other.id, sim, screen }; hits.push(hit); if (!penaltyHit || sim > penaltyHit.sim) penaltyHit = hit; }
   }
   for (const role of ROLES) {
     const shot = game.shots?.[role], base = defaults?.[role];
     if (!shot || !base) continue;
+    if (base.measure !== measure) throw new Error(`판정 이름이 다르다: ${base.measure} ≠ ${measure}`);
     const sim = shot.sha === base.sha ? 1 : similarity(shot, base).sim;
     if (sim >= th.zero) { zero = true; hits.push({ kind: "zero", reason: "default-screen", other: `default-${role}`, sim, screen: role }); }
   }
   const lines = hits.filter((h) => h.kind === "zero").map((h) => `zero: ${h.reason} similar game ${h.other} ${h.sim.toFixed(3)} ${h.screen}`);
-  for (const h of hits.filter((x) => x.kind !== "zero")) lines.push(`penalty: -${th.penaltyPoints} ${h.kind === "twin-penalty" ? "same-prompt twin" : "look-alike"} ${h.other} ${h.sim.toFixed(3)} ${h.screen}`);
-  return { zero, penalty, lines, hits };
+  if (penaltyHit && !zero) lines.push(`penalty: -${th.penaltyPoints} ${penaltyHit.kind === "twin-penalty" ? "same-prompt twin" : "look-alike"} ${penaltyHit.other} ${penaltyHit.sim.toFixed(3)} ${penaltyHit.screen}`);
+  return { zero, penalty: penaltyHit && !zero ? th.penaltyPoints : 0, lines, hits };
 }
