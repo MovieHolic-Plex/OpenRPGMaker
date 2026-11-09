@@ -23,7 +23,7 @@ import { romanceCompletionGaps } from "@/qa/gameCheck/romance";
 import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, repeatedDayDialogue, lingeringHeavyTints } from "./discoverability";
 import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
-import { strayStepCopies, walkBlueprint } from "./blueprint";
+import { isEscapeBlueprint, strayStepCopies, walkBlueprint } from "./blueprint";
 import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS, planLinks } from "./mapCount";
 import { countQuests, MIN_COUNTED_QUESTS } from "./questCount";
 import { assemblyTimeMismatches, blankMap, blueprintStoryText } from "@/project/blueprintAssembly";
@@ -595,9 +595,11 @@ export function buildsWholeGame(project: Project, task: string): boolean {
  * 실측(2026-11-10, 비몬스터 5판): 세는 맵 1·1·1·2·2장. 못 센 맵마다 이유를 적는다 — 이유가 없으면 조수가 세지 않는 맵만 계속 짓는다.
  * 한 장소 게임(방탈출·「방 하나」)은 최소 1장. 3번 되풀이되면 할 일 고리가 막힘으로 닫고 최종 보고에 남긴다(42분 상한).
  */
+/** 방탈출 청사진은 sealEscapeExits 가 바깥으로 나가는 문을 지우므로, 맵·퀘스트 최소는 1장으로 같이 면제한다(두 규칙이 서로 반대로 작동하면 3번 시도 끝에 막힘). */
+const escapeGame = (project: Project): boolean => (project.gameBlueprint ? isEscapeBlueprint(project.gameBlueprint) : false);
 export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
   const request = withoutIntentNote(task) + " " + withoutIntentNote(project.gameBlueprint?.request ?? "");
-  const oneProject = SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request);
+  const oneProject = SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request) || escapeGame(project);
   const need = oneProject ? 1 : MIN_COUNTED_MAPS;
   const { counted, uncounted } = countMaps(project);
   if (counted.length >= need) return [];
@@ -624,7 +626,7 @@ export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
  */
 export function questsMinBlocker(project: Project, task: string): ShipBlocker[] {
   const request = withoutIntentNote(task) + " " + withoutIntentNote(project.gameBlueprint?.request ?? "");
-  const need = SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request) ? 1 : MIN_COUNTED_QUESTS;
+  const need = SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request) || escapeGame(project) ? 1 : MIN_COUNTED_QUESTS;
   const { counted, uncounted } = countQuests(project);
   if (counted.length >= need) return [];
   const why = uncounted.slice(0, 4).map((q) => `「${q.title}」(${q.id}) ${q.detail}`).join(" · ");

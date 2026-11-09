@@ -318,9 +318,15 @@ export function battleStepBypass(project: Project, ev: GameEvent): string | unde
 // 왜(2026-10-29 mt3 flash 방탈출): 밀실 남쪽 틈에 시작 «빈 맵»으로 가는 이동 칸이 조건 없이 남아, 잠긴 방인데 걸어서 나갔다.
 // 빈 시작 맵 은퇴(blankStart.ts)는 자리표시 맵만 치우므로, 장소 맵이 아니면서 그림이 있는 맵(옛 마을·현관)으로 가는 출구는 못 잡는다.
 
+// 왜(2026-11-10 link 측정 forest-0001): 단독 «탈출» 은 «숲에서 탈출»·«성에서 탈출» 같은 열린 맵 게임도 잡았다. 그러면 sealEscapeExits 가 모델이 막
+// create_transfer_pair 로 만든 출구(시작 맵 → 새벽 숲 가장자리)를 «조건 없이 나가는 이동» 으로 지워 세는 맵이 1/4 로 돌아갔다(6판 모두 방탈출로 판정).
+// 단독으로 갇힌 방인 낱말은 shipChecks 의 한 방 면제(ONE_ROOM_GAME: 방탈출·밀실)와 같은 것만 둔다 — «갇힌 공주»·«감옥에서 동료 구출» 같은 열린 맵 이야기는 «탈출» 과 함께일 때만 센다.
+const ENCLOSED_WORDS = /방\s*탈출|밀실|잠긴\s*방|escape\s*room|locked\s*room/iu;
+const ENCLOSURE_NOUN = /(?:^|[^가-힣])(?:방|교실|감옥|지하실|저택|별장|병실|창고|엘리베이터|갇힌|갇혀)(?![가-힣]*[법향식])(?=[을를이가은는에서의으로와과\s]|$)/u;
 /** 청사진이 갇힌 방을 빠져나가는 게임인가(엔딩 = 잠긴 문 열기). */
 export function isEscapeBlueprint(bp: GameBlueprint): boolean {
-  return /방\s*탈출|탈출|밀실|갇힌|갇혀|잠긴\s*방|escape|locked\s*room/iu.test([bp.playerGoal, bp.ending.name, bp.ending.how, bp.request ?? ""].join(" "));
+  const text = [bp.playerGoal, bp.ending.name, bp.ending.how, bp.request ?? ""].join(" ");
+  return ENCLOSED_WORDS.test(text) || (/탈출|escape/iu.test(text) && ENCLOSURE_NOUN.test(text));
 }
 /** 조건 없이 열리는 페이지에서 청사진 장소가 아닌 맵으로 가는 이동. */
 export interface EscapeLeak { readonly mapId: string; readonly eventId: string; readonly x: number; readonly y: number; readonly toMapId: string }
