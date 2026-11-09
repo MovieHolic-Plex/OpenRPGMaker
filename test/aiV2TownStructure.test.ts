@@ -30,24 +30,37 @@ describe("town structure comparison", () => {
     expect(townSimilarity(a, fp(townMap(LAYOUT_B)))).toBeLessThan(TOWN_SIMILARITY_LIMIT);
   });
 
-  it("does not compare towns with fewer than three blocks", () => {
+  it("does not compare towns with fewer than four blocks, and ignores a block that is most of the map", () => {
     const a = fp(townMap(LAYOUT_A));
-    const tiny = { comps: [[0.5, 0.5, 0.1], [0.2, 0.2, 0.1]] as const, density: 0.2 };
+    const tiny = { comps: [[0.5, 0.5, 0.1], [0.2, 0.2, 0.1], [0.7, 0.3, 0.1]] as const, density: 0.2 };
     expect(townSimilarity(a, tiny)).toBe(0);
+    expect(townStructOf(townMap([[0, 0, 30, 20], ...LAYOUT_A]))!.comps.some((c) => c.size > 0.4)).toBe(false);
   });
 
-  it("blocks a newly built town that matches a known one and names the variants, but only for maps the request created", () => {
+  it("does not call two layouts the same when block sizes differ", () => {
+    const small = fp(townMap([[3, 3, 3, 3], [14, 3, 3, 3], [26, 4, 3, 3], [4, 14, 3, 3], [16, 15, 3, 3]]));
+    const big = fp(townMap([[3, 3, 9, 7], [14, 3, 9, 7], [26, 4, 9, 7], [4, 14, 9, 7], [16, 15, 9, 7]]));
+    expect(townSimilarity(small, big)).toBeLessThan(TOWN_SIMILARITY_LIMIT);
+  });
+
+  it("blocks a newly built VILLAGE that matches a known town, names the variants, and leaves other maps and old maps alone", () => {
     const before = createBlankProject() as Project;
     const after = structuredClone(before) as Project;
-    const known = nearestKnownTown(townMap(LAYOUT_A));
-    expect(known === undefined || known.similarity < 1).toBe(true);
-    // 알려진 마을을 그대로 복사한 맵: 가장 가까운 알려진 마을의 구조를 지문 그대로 되살려 만든다.
     const copy = townMap(LAYOUT_A);
-    const extra = [{ id: "mine/copy", comps: fp(copy).comps, density: fp(copy).density }];
-    expect(nearestKnownTown(copy, extra)!.similarity).toBeGreaterThanOrEqual(0.99);
+    const known = [{ id: "mine/copy", comps: fp(copy).comps, density: fp(copy).density }];
+    expect(nearestKnownTown(copy, known)!.similarity).toBeGreaterThanOrEqual(0.99);
     after.maps["town"] = copy;
-    expect(townStructureProblems(before, after)).toEqual([]); // 알려진 목록에 없으면 막지 않는다(extra 는 이 시험 전용)
+    const problems = townStructureProblems(before, after, new Set(["town"]), known);
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain("mine/copy");
+    expect(problems[0]).toContain("광장");
+    // 마을로 지은 맵이 아니면(던전·들판·실내) 같은 구조여도 막지 않는다.
+    expect(townStructureProblems(before, after, new Set(), known)).toEqual([]);
+    // 요청 전에 이미 있던 맵은 막지 않는다.
     const kept = structuredClone(after) as Project;
-    expect(townStructureProblems(kept, kept)).toEqual([]);
+    expect(townStructureProblems(kept, kept, new Set(["town"]), known)).toEqual([]);
+    // 다른 배치는 통과.
+    after.maps["town"] = townMap(LAYOUT_B);
+    expect(townStructureProblems(before, after, new Set(["town"]), known)).toEqual([]);
   });
 });

@@ -2027,7 +2027,7 @@ const gateKey = (text: string): string => text.replace(/\d+/gu, "#").replace(/\s
  * leftovers = 고치기 상한에 닿아 보고로만 갈 장소 문제, missing = 그림·부품이 없어 못 한 것. 사용자에게 물은 실행은 비운다.
  */
 /** 게임 내용 검사 글(날씨·엔딩·상태·물건·깃발·부작용 + 전투 + 출하 차단). before = 요청 시작 저장본. */
-function gameProblemTexts(before: Project, after: Project, task: string): string[] {
+function gameProblemTexts(before: Project, after: Project, task: string, villageIds: ReadonlySet<string> = new Set()): string[] {
   let game: string[] = [];
   try { game = [...gameContentProblems(before, after, task), ...unaskedChanges(before, after, task)]; } catch { game = []; }
   // 끝까지 깰 수 있는 전투인가(2026-10-25 판정 J55·J4): 회복 수단 없음·시키지 않은 무작위 조우·첫 구역이 너무 센 조우.
@@ -2037,7 +2037,7 @@ function gameProblemTexts(before: Project, after: Project, task: string): string
   // 장면 손질(2026-10-31 서사): 새로 쓴 장면의 반복 대사·대사 속 이름·한두 줄짜리 장면·멈춘 화면·혼잣말 대화·제자리 못 찾는 사람.
   try { game.push(...sceneCraftProblems(before, after, task)); } catch { /* 검사 실패는 무시 */ }
   // 마을 배치 구조(2026-11-09 오너): 새로 지은 마을이 알려진 마을과 구조가 같으면 끝맺음을 막는다.
-  try { game.push(...townStructureProblems(before, after)); } catch { /* 검사 실패는 무시 */ }
+  try { game.push(...townStructureProblems(before, after, villageIds)); } catch { /* 검사 실패는 무시 */ }
   // 출하 차단(2026-10-25 사용자 규칙): 게임을 만드는 요청이면 편집기 기본값·한 줄 엔딩이 남은 채 «다 됐다»고 하지 못한다.
   try { game.push(...shipBlockers(after, task).filter((b) => b.id !== "combat-no-healing" /* combatProblems no-healing 이 같은 것을 짚는다 */).map((b) => `[출하 차단 ${b.id}] ${b.message} 고치지 못하면 «완성»이라고 쓰지 말고 남은 기본값으로 보고한다.`)); } catch { /* 검사 실패는 무시 */ }
   return game;
@@ -2086,7 +2086,8 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
   const missing = [...session.missingArt];
   const fixable = open.filter((o) => o.rounds < V2_MAX_REPAIR_ROUNDS);
   // 게임 내용 검사(날씨·엔딩·상태·물건 고르기·깃발·부작용) — 요청 낱말과 실제로 바뀐 이벤트를 맞댄다.
-  let game: string[] = env ? gameProblemTexts(env.request.project, env.ctx.project, env.request.task) : [];
+  const villageIds = new Set([...session.places.entries()].filter(([, r]) => r.spec.type === "village").map(([mapId]) => mapId));
+  let game: string[] = env ? gameProblemTexts(env.request.project, env.ctx.project, env.request.task, villageIds) : [];
   // 아무것도 안 바꾸고 «도구가 없다»며 끝내기(2026-10-24 g3-edit-move: 대장장이 옮기기를 묻기만 했다, g3-apple-count: 그림 카드만 남겼다).
   // 설정이 이미 기본값(켜짐)이면 set_project_settings 가 아무것도 안 바꾸는 것이 맞다(2026-10-25 데모 과업: 탭 걷기·팡파레·빠른 달려들기는 기본 켜짐).
   const settingOnly = /휴대폰|모바일|터치|탭하면|진동|조이스틱|달리기 단추|레벨 ?업|팡파레|달려들|도움말/u.test(env?.request.task ?? "") && !/만들|두고|세워|놓아|놔|추가/u.test(env?.request.task ?? "");

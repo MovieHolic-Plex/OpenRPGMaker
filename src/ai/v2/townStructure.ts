@@ -12,6 +12,12 @@ interface KnownTown { readonly id: string; readonly comps: readonly (readonly [n
 export const TOWN_SIMILARITY_LIMIT = 0.75;
 const MIN_CELLS = 600;
 const MIN_COMP = 6;
+/** 덩어리가 이보다 적으면 우연히 겹친다(ultrabrain 실측: 3덩어리 무작위 배치의 8%, 큰 덩어리 하나+2개는 41% 가 오탐) — 비교하지 않는다. */
+const MIN_BLOCKS = 4;
+/** 맵의 이 비율보다 큰 덩어리(이어진 큰 길·물·숲 한 덩이)는 «배치»가 아니라 바탕이라 비교에서 뺀다. */
+const MAX_BLOCK_SHARE = 0.4;
+/** 덩어리 크기(맵 비율) 차이를 거리에 더하는 무게 — 위치만 같고 크기가 다른 배치를 같다고 하지 않는다. */
+const SIZE_W = 3;
 
 /** 맵 → 구조 지문. 배경(칸의 60% 를 덮는 가장 흔한 바닥 타일들)이 아닌 칸·위층 칸이 이루는 덩어리(4방향 이어짐, 6칸 이상). */
 export function townStructOf(map: GameMap): TownStruct | undefined {
@@ -47,7 +53,7 @@ export function townStructOf(map: GameMap): TownStruct | undefined {
       if (y > 0 && fg[i - w] && !seen[i - w]) { seen[i - w] = 1; stack.push(i - w); }
       if (y < h - 1 && fg[i + w] && !seen[i + w]) { seen[i + w] = 1; stack.push(i + w); }
     }
-    if (size >= MIN_COMP) comps.push({ x: sx / size / w, y: sy / size / h, size: size / n });
+    if (size >= MIN_COMP && size / n <= MAX_BLOCK_SHARE) comps.push({ x: sx / size / w, y: sy / size / h, size: size / n });
   }
   return { comps, density: fgCount / n };
 }
@@ -59,15 +65,15 @@ const SYM: readonly ((x: number, y: number) => readonly [number, number])[] = [
 
 /** 두 마을 구조의 유사도 0..1 — 8가지 뒤집기·돌리기 중 최선. 덩어리가 3개 미만이거나 채움이 3% 미만이면 비교하지 않는다(0). */
 export function townSimilarity(a: { readonly comps: readonly (readonly [number, number, number])[]; readonly density: number }, b: { readonly comps: readonly (readonly [number, number, number])[]; readonly density: number }): number {
-  if (a.comps.length < 3 || b.comps.length < 3 || a.density < 0.03 || b.density < 0.03) return 0;
+  if (a.comps.length < MIN_BLOCKS || b.comps.length < MIN_BLOCKS || a.density < 0.03 || b.density < 0.03) return 0;
   const cnt = Math.sqrt(Math.min(a.comps.length, b.comps.length) / Math.max(a.comps.length, b.comps.length));
   let best = 0;
   for (const f of SYM) {
-    const pts = a.comps.map(([x, y]) => f(x, y));
+    const pts = a.comps.map(([x, y, s]) => [...f(x, y), s] as const);
     let sumA = 0;
-    for (const p of pts) { let m = Infinity; for (const q of b.comps) m = Math.min(m, Math.hypot(p[0] - q[0], p[1] - q[1])); sumA += m; }
+    for (const p of pts) { let m = Infinity; for (const q of b.comps) m = Math.min(m, Math.hypot(p[0] - q[0], p[1] - q[1]) + SIZE_W * Math.abs(p[2] - q[2])); sumA += m; }
     let sumB = 0;
-    for (const q of b.comps) { let m = Infinity; for (const p of pts) m = Math.min(m, Math.hypot(p[0] - q[0], p[1] - q[1])); sumB += m; }
+    for (const q of b.comps) { let m = Infinity; for (const p of pts) m = Math.min(m, Math.hypot(p[0] - q[0], p[1] - q[1]) + SIZE_W * Math.abs(p[2] - q[2])); sumB += m; }
     const pos = Math.max(0, 1 - 2.5 * (sumA / pts.length + sumB / b.comps.length) / 2);
     if (pos > best) best = pos;
   }
@@ -95,11 +101,12 @@ const VARIANTS = "광장을 가운데가 아닌 한쪽 끝으로 옮기기 · �
  * 새로 지은 마을 맵(요청 시작 저장본에 없던 맵)의 구조가 알려진 마을과 같다 — 끝맺음 관문 문제 글. 비교는 구조(덩어리의 위치·크기)라 건물 그림을 바꿔도 소용없다.
  * 규칙 문장이 아니라 지은 맵을 재서 막는다(2026-11-09 오너: 「비슷한 구조가 쓰였으면 감점하고·막아라」).
  */
-export function townStructureProblems(before: Project, after: Project): string[] {
+export function townStructureProblems(before: Project, after: Project, villageIds: ReadonlySet<string>, extra: readonly KnownTown[] = []): string[] {
   const out: string[] = [];
   for (const [id, map] of Object.entries(after.maps)) {
-    if (before.maps[id] || map.width * map.height < MIN_CELLS) continue;
-    const hit = nearestKnownTown(map);
+    // 마을로 지은 맵만 본다(던전·동굴·실내·들판은 비교 대상이 아니다 — ultrabrain 2026-11-09 지적 1).
+    if (!villageIds.has(id) || before.maps[id] || map.width * map.height < MIN_CELLS) continue;
+    const hit = nearestKnownTown(map, extra);
     if (!hit || hit.similarity < TOWN_SIMILARITY_LIMIT) continue;
     out.push(`[마을 구조] 「${map.name || id}」(${id}) 의 배치 구조가 알려진 마을(${hit.id})과 ${Math.round(hit.similarity * 100)}% 같다(${Math.round(TOWN_SIMILARITY_LIMIT * 100)}% 이상은 같은 마을로 본다) — 건물 그림이 아니라 덩어리의 위치·크기가 같다. 이 마을의 배치를 바꿔 다시 짓는다(edit_place 또는 make_place 의 villageLayout): ${VARIANTS}.`);
   }
