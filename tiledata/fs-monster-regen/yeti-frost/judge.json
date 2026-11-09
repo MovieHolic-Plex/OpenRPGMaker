@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell matches the current design: the white shaggy fur, the slate-blue limbs and face, and the red eyes all stay the same, and the scale is consistent. The idles breathe visibly, hit leans back in recoil, dead lies flat, and the pixels are clean. The weakest cell is attack (sheet cell 6): it reads as a crouched ground-slam with impact sparks rather than a big arm swing, but it is still clearly different from hit.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

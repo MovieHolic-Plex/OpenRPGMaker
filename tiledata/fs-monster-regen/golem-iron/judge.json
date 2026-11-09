@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell matches the current iron golem: dark riveted armour, orange chest grate, yellow visor slit and the same proportions. Idle_a/b/c show a small but visible head and shoulder bob; attack (cell 6) is a clear forward lunge with an extended punch, different from hit's backward lean; dead is a collapsed heap; the pixel art is crisp with no fringe or cut-off edges and the scale stays consistent (the white tint in the battle hit/dead shots is the engine's flash effect, not an art defect).",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

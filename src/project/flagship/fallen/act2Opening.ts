@@ -2688,6 +2688,8 @@ const FS2_SNOW_PLAN: { maps: { mapId: string; entry: Cell; exit: Cell | null; ga
  */
 const FS2_FROST_WOLF = "enemy_fs2_frost_wolf";
 const FS2_FROST_BAT = "enemy_fs2_frost_bat";
+/** 서리예티 — 얼음 호수 동쪽 뼈 벌판의 큰 짐승. 시트는 있었지만 적이 없어 게임에 안 나왔다(fs-monster-regen 2026-11-09). */
+const FS2_FROST_YETI = "enemy_fs2_frost_yeti";
 const FROST_LAYERS = [{ preset: "snow" }, { preset: "mist", opacity: 50 }];
 function frostFoes(project: Project, exec: Exec, maps: { mapId: string; entry: Cell; exit: Cell | null; gaps: Cell[][] }[], fire: Cell): void {
   copyEnemy(project, exec, "enemy_fs_wolf", {
@@ -2702,10 +2704,19 @@ function frostFoes(project: Project, exec: Exec, maps: { mapId: string; entry: C
     skillIds: ["skill_attack", "skill_mon_frost_orb"], actions: [act("skill_attack", 5), act("skill_mon_frost_orb", 3)],
     rewards: { exp: 65, gold: 14, dropRatePercent: 0, drops: [potionDrop(8)] },
   });
+  copyEnemy(project, exec, "enemy_fs_wolf", {
+    id: FS2_FROST_YETI, name: "서리예티", monsterResourceId: "generated-enemy-yeti-frost", level: 11,
+    stats: { maxHp: 420, maxMp: 20, attack: 96, defense: 40, mind: 30, agility: 40 },
+    skillIds: ["skill_attack", "skill_mon_quake_stomp", "skill_mon_frost_nova"],
+    actions: [act("skill_attack", 5), act("skill_mon_quake_stomp", 3), act("skill_mon_frost_nova", 2)],
+    rewards: { exp: 140, gold: 30, dropRatePercent: 0, drops: [potionDrop(20)] },
+  });
   for (const [id, name, members] of [
     ["troop_fs2_frost_wolves", "서리늑대 한 쌍", [FS2_FROST_WOLF, FS2_FROST_WOLF]],
     ["troop_fs2_frost_bats", "서리박쥐 떼", [FS2_FROST_BAT, FS2_FROST_BAT, FS2_FROST_BAT]],
     ["troop_fs2_frost_mixed", "늑대와 박쥐", [FS2_FROST_WOLF, FS2_FROST_BAT, FS2_FROST_BAT]],
+    // 예티는 필드 걷기 그림이 없다(place_field_enemy 가 선두 그림을 요구) — 늑대가 앞장서고 예티가 뒤따른다.
+    ["troop_fs2_frost_yeti", "서리늑대와 서리예티", [FS2_FROST_WOLF, FS2_FROST_YETI]],
   ] as const) {
     exec(project, "upsert_troop", { troop: { id, name, enemyIds: [...members], previewBackgroundResourceId: "battle-scenery-snow", backdropLayers: FROST_LAYERS } });
   }
@@ -2966,7 +2977,7 @@ function iceLake(project: Project, exec: Exec): void {
     } });
   }
   requireReach(project, FS2_ICE_LAKE_ID, ICE_SPOTS.entry, {
-    ...Object.fromEntries(ICE_SPOTS.cave.map((c, i) => [`얼음 굴${i}`, c])), 늑대: ICE_SPOTS.wolves, 박쥐: ICE_SPOTS.bats, 섞인무리: ICE_SPOTS.mixed, 결정: ICE_SPOTS.save,
+    ...Object.fromEntries(ICE_SPOTS.cave.map((c, i) => [`얼음 굴${i}`, c])), 늑대: ICE_SPOTS.wolves, 박쥐: ICE_SPOTS.bats, 섞인무리: ICE_SPOTS.mixed, 예티: ICE_SPOTS.yeti, 결정: ICE_SPOTS.save,
   });
   exec(project, "create_transfer_pair", { a: { mapId: snowEnd, ...exit }, b: { mapId: FS2_ICE_LAKE_ID, ...ICE_SPOTS.entry } });
   exec(project, "create_transfer_pair", { a: { mapId: FS2_ICE_LAKE_ID, ...ICE_SPOTS.cave[0]! }, b: { mapId: FS2_FROST_ID, ...FS2_FROST.entry } });
@@ -2978,7 +2989,7 @@ function iceLake(project: Project, exec: Exec): void {
     for (const c of ICE_SPOTS.cave.slice(1)) if (!ice.events.some((e) => e.x === c.x && e.y === c.y)) ice.events.push({ ...structuredClone(cave), id: `${cave.id}_${c.x}`, x: c.x, y: c.y });
   }
   // 보이는 적 — 서리 가도와 같은 무리(서리늑대·서리박쥐). 알아채기는 detection() 이 정한다.
-  for (const [troopId, at, axis] of [["troop_fs2_frost_wolves", ICE_SPOTS.wolves, "horizontal"], ["troop_fs2_frost_bats", ICE_SPOTS.bats, "horizontal"], ["troop_fs2_frost_mixed", ICE_SPOTS.mixed, "vertical"]] as const) {
+  for (const [troopId, at, axis] of [["troop_fs2_frost_wolves", ICE_SPOTS.wolves, "horizontal"], ["troop_fs2_frost_bats", ICE_SPOTS.bats, "horizontal"], ["troop_fs2_frost_mixed", ICE_SPOTS.mixed, "vertical"], ["troop_fs2_frost_yeti", ICE_SPOTS.yeti, "horizontal"]] as const) {
     exec(project, "place_field_enemy", { mapId: FS2_ICE_LAKE_ID, x: at.x, y: at.y, troopId, behavior: "chase", patrol: { length: 2, axis },
       sightRange: 6, vision: "cone", pace: "normal", approachStyle: troopId === "troop_fs2_frost_bats" ? "swoop" : "dash", respawnSec: 90, checkpointOnEntry: true });
   }

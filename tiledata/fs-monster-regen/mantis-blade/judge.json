@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell matches the current mantis design, colours and proportions. The idles shift slightly, the attack is a long blade lunge that is clearly different from the hit, the hit rears back upright as recoil, and the dead cell lies flat and crisp with no fringe or cut-off edges. Minor nitpicks: the idle breathing is subtle, and the hit pose could be mistaken for rearing up rather than taking damage.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

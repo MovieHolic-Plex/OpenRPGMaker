@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell shows the same yellow-and-black wasp with grey wings and a red head as the current design, and the art is crisp with no fringe or clipping. Idle_a/b/c bob slightly and the wings shift; attack is a horizontal lunge, hit tilts up in recoil and dead lies flat with wings folded. The idle breathing is small, and the attack and dead cells read a bit smaller because the body is stretched flat, but not enough to fail.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

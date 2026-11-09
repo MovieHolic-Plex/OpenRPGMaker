@@ -230,7 +230,7 @@ export interface FallenForestResult {
 /** 구역 트룹(#3335 FS_AREA_ENCOUNTERS 와 같은 id·무게) — 데이터베이스에 있는 것만. 하나도 없으면 옛 셋으로. */
 const AREA_TROOPS: Record<string, ReadonlyArray<readonly [string, number]>> = {
   fs_forest_edge: [["troop_fs_wolves", 3], ["troop_fs_edge_boar", 2], ["troop_fs_edge_hornets", 2]],
-  fs_forest_stream: [["troop_fs_stream_crabs", 3], ["troop_fs_stream_eels", 2], ["troop_fs_wolves", 1]],
+  fs_forest_stream: [["troop_fs_stream_crabs", 3], ["troop_fs_stream_eels", 2], ["troop_fs_stream_jellies", 2], ["troop_fs_wolves", 1]],
   fs_forest_thicket: [["troop_fs_spiders", 3], ["troop_fs_thicket_moths", 2], ["troop_fs_thicket_flytrap", 2]],
   fs_forest_glade: [["troop_fs_glade_poachers", 3], ["troop_fs_edge_hornets", 1], ["troop_fs_edge_boar", 1]],
   fs_forest: [["troop_fs_wisps", 3], ["troop_fs_deep_ghosts", 2], ["troop_fs_spiders", 1]],
@@ -496,7 +496,7 @@ export function buildFallenForestMaps(project: Project, ids: { hub: string; fore
   const entryOf = (mapId: string, at: Cell): Cell => inward(project.maps[mapId]!, at).cell;
   const foes = (mapId: string): string[] => [...tables[mapId]!].sort((a, b) => b.weight - a.weight).map((e) => e.troopId);
   roamers(project, M.edge, entryOf(M.edge, edgeSouth), foes(M.edge), [0.45, 0.8]);
-  roamers(project, M.stream, entryOf(M.stream, STREAM_SPEC.exits[0]!), foes(M.stream), [0.35, 0.7]);
+  roamers(project, M.stream, entryOf(M.stream, STREAM_SPEC.exits[0]!), foes(M.stream), [0.35, 0.55, 0.75]); // 셋째 자리 = 등불해파리 부대(무게 순 셋째)
   roamers(project, M.thicket, entryOf(M.thicket, THICKET_SPEC.exits[0]!), foes(M.thicket), [0.35, 0.75]);
   roamers(project, M.glade, entryOf(M.glade, GLADE_SPEC.exits[0]!), foes(M.glade), [0.45, 0.8]);
   roamers(project, ids.forest, entryOf(ids.forest, deepSouth), foes(ids.forest), [0.4]);

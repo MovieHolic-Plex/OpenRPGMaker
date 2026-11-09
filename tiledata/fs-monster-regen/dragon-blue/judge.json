@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "The design, colours and proportions match the current look in every cell. The three idle cells show visible breathing (head and chest rise and fall), the attack sheet cell is a clear ice-breath lunge distinct from the rearing hit recoil, the dead cell lies flat, and the pixels are crisp with no fringe or cut-off and a consistent scale. Minor concerns: the attack cell's tail and breath run within a few pixels of the cell edges, and the in-battle hit capture shows a flattened, prone-looking dragon instead of the rearing hit cell, which is worth checking as an engine squash or cell-mapping issue.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell keeps the current design: the navy shell, pale grey-blue legs and the long curved horn, with steady proportions and scale. The lunging attack is clearly different from the reared-back hit recoil, dead lies flat and squashed, and the pixels are crisp with no fringe or cut-off. The weak spot is that the idle breathing is subtle, especially between idle_a and idle_b.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}
