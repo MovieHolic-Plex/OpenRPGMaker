@@ -11,7 +11,9 @@
  * 선택 행을 block:"nearest" 로 끌어오면 스크롤 위치도 행 경계에 선다(행 높이가 같을 때).
  * 부모 창 크기가 바뀌면(아래 설명창이 두 줄이 되는 등) 다시 잰다.
  */
-export function keepWholeRows(list: HTMLElement): void {
+export function keepWholeRows(list: HTMLElement, options?: { readonly marks?: boolean }): void {
+  const marks = options?.marks === true;
+  if (marks) list.addEventListener("scroll", () => markListOverflow(list), { passive: true });
   if (typeof ResizeObserver === "undefined") return;
   let watchingParent = false;
   const fit = (): void => {
@@ -22,7 +24,10 @@ export function keepWholeRows(list: HTMLElement): void {
     }
     list.style.maxHeight = "";
     const available = list.clientHeight;
-    if (available <= 0 || list.scrollHeight <= available + 1) return;
+    if (available <= 0 || list.scrollHeight <= available + 1) {
+      if (marks) markListOverflow(list);
+      return;
+    }
     const listRect = list.getBoundingClientRect();
     const scale = listRect.height > 0 ? listRect.height / list.offsetHeight : 1;
     if (!(scale > 0)) return;
@@ -37,9 +42,25 @@ export function keepWholeRows(list: HTMLElement): void {
     // 한 행도 통째로 안 들어가면 자르지 않는다(빈 창보다 반 행이 낫다).
     // BCR→배치 px 환산은 offsetHeight(정수) 반올림 오차가 섞인다. 행 경계는 보통 정수 px 이므로 가까운 정수로 붙인다.
     if (cut > 0) list.style.maxHeight = `${Math.round(cut) <= available ? Math.round(cut) : Math.floor(cut)}px`;
+    if (marks) markListOverflow(list);
   };
   const observer = new ResizeObserver(() => fit());
   observer.observe(list);
+}
+
+/**
+ * 목록이 창보다 길면 부모 창에 위·아래로 더 있다는 표시(data-more-above / data-more-below)를 단다.
+ * 제작 상점 fitWholeRows 와 같은 4px 여유. 왜(fs-vqa-loop 2회차): 도트 상점이 20개 중 6개만 보여 주고 더 있다는 표시가 없었다.
+ */
+export function markListOverflow(list: HTMLElement): void {
+  const panel = list.parentElement;
+  if (!panel) return;
+  const above = list.scrollTop > 4;
+  const below = list.scrollTop + list.clientHeight < list.scrollHeight - 4;
+  if (above) panel.dataset.moreAbove = "1";
+  else delete panel.dataset.moreAbove;
+  if (below) panel.dataset.moreBelow = "1";
+  else delete panel.dataset.moreBelow;
 }
 
 export type FitTextOptions = {

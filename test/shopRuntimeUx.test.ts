@@ -21,6 +21,7 @@ import {
   updateShopQuantityTotal,
   updateShopStatus,
 } from "@/player/playSceneShopDom";
+import { markListOverflow } from "@/player/runtimeTextFit";
 import { createBlankProject } from "@/project/defaults";
 import { changeItem, startSession } from "@/project/session";
 import { store } from "@/project/store";
@@ -244,6 +245,35 @@ describe("상점 접근성·제자리 갱신", () => {
     removeShopItemRow(overlay, "item_potion", "sell");
     expect(overlay.querySelector("[data-testid='shop-sell-item_potion']")).toBeNull();
     expect(overlay.querySelector("[data-testid='shop-sell-item_sword']")).not.toBeNull();
+  });
+});
+
+describe("상점 목록 더 있음 표시", () => {
+  function geometry(list: HTMLElement, scrollHeight: number, clientHeight: number, scrollTop: number): void {
+    Object.defineProperty(list, "scrollHeight", { configurable: true, value: scrollHeight });
+    Object.defineProperty(list, "clientHeight", { configurable: true, value: clientHeight });
+    Object.defineProperty(list, "scrollTop", { configurable: true, value: scrollTop });
+  }
+
+  it("목록이 창보다 길 때만 스크롤 방향에 맞는 표시를 목록 창에 단다", () => {
+    const overlay = render();
+    const list = overlay.querySelector<HTMLElement>(".runtime-shop-item-list")!;
+    const panel = list.parentElement!;
+
+    geometry(list, 600, 200, 0);
+    markListOverflow(list);
+    expect(panel.dataset.moreBelow).toBe("1");
+    expect(panel.dataset.moreAbove).toBeUndefined();
+
+    geometry(list, 600, 200, 400);
+    markListOverflow(list);
+    expect(panel.dataset.moreAbove).toBe("1");
+    expect(panel.dataset.moreBelow).toBeUndefined();
+
+    geometry(list, 200, 200, 0);
+    markListOverflow(list);
+    expect(panel.dataset.moreAbove).toBeUndefined();
+    expect(panel.dataset.moreBelow).toBeUndefined();
   });
 });
 
