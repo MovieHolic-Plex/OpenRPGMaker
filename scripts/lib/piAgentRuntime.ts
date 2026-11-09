@@ -572,7 +572,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const checkpoint = async (label: string, toolName: string, signal?: AbortSignal): Promise<void> => {
     const constructionLogs = pendingConstructionLogs;
     pendingConstructionLogs = undefined;
+    const ckT0 = Date.now(); const ckSlow = (what: string): void => { const ms = Date.now() - ckT0; if (ms >= 2000) console.error(`[v2-checkpoint] ${label}: ${what} at ${Math.round(ms / 1000)}s`); };
     if (!incremental || changedProjectKeys(accepted, ctx.project).length === 0) return;
+    ckSlow("changedProjectKeys");
     const scoped = request.scopeStrict !== false && request.mapIds.length > 0;
     const project = scoped ? mergeMapBundles(accepted, [{ mapIds: request.mapIds, project: ctx.project }]).project : ctx.project;
     if (scoped) authorMergedSpatialProposal(project, accepted);
@@ -581,8 +583,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     // 안 그러면 타일셋 이미지(수십 MB)가 쓰기마다 체크포인트 한 줄에 실려 오간다.
     // tilesets 가 바뀌어도(마을이 숲 타일셋 하나에 이식을 더한다) 그대로인 타일셋은 빼고 보낸다(unchangedTilesetIds).
     const wire = slimProjectForWire(accepted, project);
+    ckSlow("slimProjectForWire");
     const unchangedKeys: PiCheckpointHeavyKey[] = wire.unchangedKeys;
     try {
+      ckSlow("before onCheckpoint (host round trip)");
       const published = await options.onCheckpoint!({
         project: cloneProjectSharingSharedDictionaries(wire.project),
         label, toolName, spatialProof: exportSpatialToolProof(project), unchangedKeys,
@@ -591,6 +595,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       }, signal ?? options.signal);
       // ACK 는 같은 모양으로 돌아온다 — 뺀 타일셋은 이쪽 사본에서 다시 붙인다.
       const merged = restoreCheckpointProject(project, published ?? project, unchangedKeys, wire.unchangedTilesetIds);
+      ckSlow("after onCheckpoint+restore");
       ctx.project = merged;
       accepted = snapshotProjectKeepingHeavy(merged);
       ownHeavyForInPlaceEdits();
@@ -1640,6 +1645,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         .join("");
       if (text.trim()) { emit({ type: "assistant", text }); answered = true; lastAssistantText = text.trim(); }
       usage = addPiAgentUsage(usage, message.usage);
+      { const u = message.usage as { input?: number; cacheRead?: number } | undefined; if (u && typeof u.input === "number") console.error(`[pi-usage] input=${u.input} cacheRead=${u.cacheRead ?? 0}`); } // 턴별 입력 토큰(읽기 전용 계측)
       // 글도 도구 호출도 없는 «정상 끝» = 제공자가 답을 못 만든 것. 끝난 차례로 두지 않고 한 번 더 묻는다(그림이 원인이면 그림을 빼고).
       // 로컬 CLI 는 도구 호출 블록·사용량 결과를 내용 없는 message_end 로 알린다 — 빈 답으로 보지 않는다(끝에 보고가 없으면 아래 run.no_answer).
       if (!localLoop && !fatal && !options.signal?.aborted && isEmptyAssistantReply(message)) {

@@ -85,6 +85,51 @@ function starterChoices(project: Project): string[] {
  * 그 밖에 모의전에 들어가는 것(기술·상태·타입 표·종 능력치)은 맞춤 중에 바뀌지 않는다 — 종의 배우는 기술 레벨(②)은 파티 기술에 드러난다.
  */
 const fitSimCache = new WeakMap<Project, Map<string, ReturnType<typeof simulateBattle>>>();
+
+/**
+ * 맞춤 시간 예산(벽시계). 끝맺음 한 번이 필수전투 모의전을 수백 초 동기로 돌려 워커 이벤트 루프를 막고, heartbeat 가 멎어 호스트가 300초
+ * 무음으로 턴을 끊었다(2026-11-09 monster m3~m9 일곱 판: assembly:ship-defaults 414초 · 프로파일 80% 가 fitRequiredBattlesToStarters 의 simulateBattle,
+ * 캐시 키 계산은 0.18초 — 비용은 키가 아니라 모의전 자체). 예산을 넘으면 FitBudgetExceeded 를 던져 맞춤 전체를 «미완» 으로 멈추고, 호출자가
+ * 침묵하지 않고 기록한다(applied 한 줄 + session.fitIncomplete → 최종 보고; 끝내기는 막지 않는다). 시험 한가운데서 끊기면 시험값이 남으므로 호출자(applyShipDefaults)가 바퀴 단위로 snapshotFitState/restoreFitState 해 마지막으로 끝난 바퀴로 돌아간다 — 레벨 곡선이 덜 맞을 뿐이다.
+ */
+export const FIT_BUDGET_MS = 60_000;
+/** applied 줄의 머리말 — 끝맺음 단계가 이 접두로 «맞춤 미완» 을 알아본다. */
+export const FIT_INCOMPLETE_PREFIX = "required-battle fit incomplete (budget";
+export class FitBudgetExceeded extends Error { constructor(readonly spentMs: number) { super(`${FIT_INCOMPLETE_PREFIX} ${Math.round(FIT_BUDGET_MS / 1000)}s)`); } }
+interface FitBudget { start: number; limitMs: number; exceededAt?: number }
+const fitBudgets = new WeakMap<Project, FitBudget>();
+/** 이 프로젝트의 맞춤 예산을 새로 시작한다(끝맺음 한 번 = applyShipDefaults 한 번). 이미 초과한 기록은 지운다. */
+export function beginFitBudget(project: Project, limitMs = FIT_BUDGET_MS): void { fitBudgets.set(project, { start: Date.now(), limitMs }); }
+/** 마지막 맞춤이 예산을 넘겨 멈췄나(다음 beginFitBudget 까지 남는다). 프로젝트 객체는 체크포인트·다시 읽기에서 바뀌어 기록을 못 지키므로 보고용 기록은 session.fitIncomplete 에 있다 — 이것은 같은 호출 안의 확인·테스트용이다. */
+export function fitBudgetExceeded(project: Project): number | undefined { return fitBudgets.get(project)?.exceededAt; }
+/** 맞춤이 건드리는 부분의 스냅숏 — 적·트룹·종 배우는 기술 레벨·맵 조우표와 이벤트(선물 동료 splice). 예산이 시험 한가운데서 터져도 이 상태로 돌린다. */
+export interface FitState { readonly enemies: unknown; readonly troops: unknown; readonly species: unknown; readonly maps: ReadonlyMap<string, { readonly encounterTable: unknown; readonly events: unknown }> }
+export function snapshotFitState(project: Project): FitState {
+  const maps = new Map<string, { encounterTable: unknown; events: unknown }>();
+  for (const [id, map] of Object.entries(project.maps)) maps.set(id, { encounterTable: structuredClone(map.encounterTable), events: structuredClone(map.events) });
+  return { enemies: structuredClone(project.database.enemies), troops: structuredClone(project.database.troops), species: structuredClone(project.database.monsterSpecies), maps };
+}
+/** snapshotFitState 로 돌린다 — 값을 제자리에서 다시 대입한다(프로젝트 객체의 정체성은 그대로). */
+export function restoreFitState(project: Project, state: FitState): void {
+  project.database.enemies = state.enemies as typeof project.database.enemies;
+  project.database.troops = state.troops as typeof project.database.troops;
+  if (state.species !== undefined) project.database.monsterSpecies = state.species as NonNullable<typeof project.database.monsterSpecies>;
+  for (const [id, saved] of state.maps) {
+    const map = project.maps[id];
+    if (!map) continue;
+    map.encounterTable = saved.encounterTable as typeof map.encounterTable;
+    map.events = saved.events as typeof map.events;
+  }
+}
+
+export function checkFitBudget(project: Project): void {
+  const budget = fitBudgets.get(project);
+  if (!budget) return;
+  if (budget.exceededAt !== undefined) throw new FitBudgetExceeded(budget.exceededAt);
+  const spent = Date.now() - budget.start;
+  if (spent > budget.limitMs) { budget.exceededAt = spent; throw new FitBudgetExceeded(spent); }
+}
+
 function fitSimulate(project: Project, troopId: string, heroLevel: number, monsterParty: MonsterInstance[]): ReturnType<typeof simulateBattle> {
   const troop = project.database.troops.find((item) => item.id === troopId);
   const enemies = (troop?.enemyIds ?? []).map((id) => project.database.enemies.find((item) => item.id === id) ?? null);
@@ -93,6 +138,7 @@ function fitSimulate(project: Project, troopId: string, heroLevel: number, monst
   if (!cache) fitSimCache.set(project, (cache = new Map()));
   const hit = cache.get(key);
   if (hit) return hit;
+  checkFitBudget(project); // 캐시 적중은 공짜 — 새 모의전을 시작하기 전에만 예산을 본다.
   const result = simulateBattle({ project, troopId, heroLevel, monsterParty, n: FIT_SAMPLES, seed: 1, useSkills: true });
   cache.set(key, result);
   return result;
@@ -279,6 +325,7 @@ export function fitGateLevelCurve(project: Project): string[] {
     let delta = target - level;
     if (delta > 0 && base.size) {
       const saved = project.database.enemies.map((enemy) => enemy);
+      try {
       for (; delta > 0; delta -= 1) {
         for (const [enemyId, from] of base) { const enemy = project.database.enemies.find((item) => item.id === enemyId); if (enemy) relevel(project, enemy, from + delta); }
         const winsAll = gate.troopIds.every((troopId) => {
@@ -292,6 +339,11 @@ export function fitGateLevelCurve(project: Project): string[] {
         });
         if (winsAll) break;
         project.database.enemies = [...saved];
+      }
+      } catch (error) {
+        // 예산 초과 등 어떤 예외든 시도 중이던 레벨을 되돌린다 — 반쯤 올린 상태가 남으면 안 된다(맞춤은 «바뀐 것만 남는다»).
+        project.database.enemies = [...saved];
+        throw error;
       }
     } else delta = 0;
     const reached = level + delta;
@@ -343,12 +395,17 @@ export function fitRouteLevelsToGates(project: Project): string[] {
     // 왜: 레벨만 올리면 새로 배운 타입 기술(풀 스타터 상대 비행 노멀 자속 몸통박치기·벌레 기술)로 Lv6 한 마리가 Lv8 스타터를 94% 이겼다.
     const fits = (troopId: string, shift: number, apply: (delta: number) => void): number => {
       const saved = project.database.enemies.map((enemy) => enemy);
-      for (let delta = shift; delta > 0; delta -= 1) {
-        apply(delta);
-        const party = monsterBalanceParty(project, troopId, prev);
-        if (!party?.length) return delta;
-        if (fitSimulate(project, troopId, prev, party).winRate >= FIT_WIN_RATE) return delta;
-        project.database.enemies = [...saved];
+      try {
+        for (let delta = shift; delta > 0; delta -= 1) {
+          apply(delta);
+          const party = monsterBalanceParty(project, troopId, prev);
+          if (!party?.length) return delta;
+          if (fitSimulate(project, troopId, prev, party).winRate >= FIT_WIN_RATE) return delta;
+          project.database.enemies = [...saved];
+        }
+      } catch (error) {
+        project.database.enemies = [...saved]; // 예외(예산 초과 포함)로 빠져도 시도 중이던 레벨을 되돌린다.
+        throw error;
       }
       return 0;
     };
@@ -827,7 +884,9 @@ function runRequiredBattles(project: Project, adjust: boolean): { out: string[];
         if (!raisable.length) break;
         const saved = raisable.map((enemy) => structuredClone(enemy));
         for (const enemy of raisable) relevel(project, enemy, enemy.level! + 1);
-        const trial = evaluate();
+        let trial: StarterOutcome;
+        try { trial = evaluate(); }
+        catch (error) { for (const record of saved) project.database.enemies[project.database.enemies.findIndex((item) => item.id === record.id)] = record; throw error; } // 예외로 빠져도 올리던 레벨을 되돌린다.
         if (trial.rate < FIT_WIN_RATE) {
           for (const record of saved) project.database.enemies[project.database.enemies.findIndex((item) => item.id === record.id)] = record;
           low = evaluate();
