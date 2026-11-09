@@ -32,7 +32,7 @@ describe("v2 enemy identity check (fs-use-tools E1)", () => {
 
   it("flags several ordinary foes whose skills are all the same, and clears once one differs", () => {
     const flat = battleProject({ 해골: ["맹독 이빨", "뼈 저주"], 갑옷: ["맹독 이빨", "뼈 저주"] });
-    expect(enemyIdentityProblems(flat).filter((m) => m.includes("모두 같다"))).toHaveLength(1);
+    expect(enemyIdentityProblems(flat).filter((m) => m.includes("자기 기술이 없다"))).toHaveLength(1);
     const varied = battleProject({ 해골: ["맹독 이빨", "뼈 저주"], 갑옷: ["방패 밀치기"] });
     expect(enemyIdentityProblems(varied)).toEqual([]);
   });
@@ -43,8 +43,34 @@ describe("v2 enemy identity check (fs-use-tools E1)", () => {
 
   it("flags a boss that only has the basic attack, and clears once it has its own skill", () => {
     const flat = battleProject({}, { name: "마왕", skills: [] });
-    expect(enemyIdentityProblems(flat).filter((m) => m.includes("기본 공격뿐"))).toHaveLength(1);
+    expect(enemyIdentityProblems(flat).filter((m) => m.includes("자기 기술이 없다"))).toHaveLength(1);
     expect(enemyIdentityProblems(battleProject({}, { name: "마왕", skills: ["암흑 파동"] }))).toEqual([]);
+  });
+
+  it("checks each map on its own: a varied forest does not hide a demon castle whose foes share one skill set", () => {
+    const p = battleProject({ 늑대: ["맹독 이빨"], 식물: ["수면 포자"], 임프: ["검격", "약화"], 기사: ["검격", "약화"] });
+    const [forestA, forestB, demonA, demonB] = [0, 1, 2, 3].map((i) => p.maps[p.startMapId]!.events.find((e) => e.id === `ev_fight_${i}`)!);
+    const castle = structuredClone(p.maps[p.startMapId]!) as typeof p.maps[string];
+    castle.id = "map_castle"; castle.name = "마왕성"; castle.events = [demonA!, demonB!];
+    p.maps[p.startMapId]!.events = p.maps[p.startMapId]!.events.filter((e) => [forestA, forestB].includes(e));
+    p.maps.map_castle = castle;
+    const msgs = enemyIdentityProblems(p);
+    expect(msgs).toHaveLength(1);
+    expect(msgs[0]).toContain("마왕성");
+    expect(msgs[0]).toContain("임프");
+  });
+
+  it("flags a boss whose skills are all shared with the foes of its map, and clears once it owns one", () => {
+    expect(enemyIdentityProblems(battleProject({ 해골: ["검격"], 갑옷: ["방패 밀치기"] }, { name: "마왕", skills: ["검격"] })).some((m) => m.includes("보스"))).toBe(true);
+    expect(enemyIdentityProblems(battleProject({ 해골: ["검격"], 갑옷: ["방패 밀치기"] }, { name: "마왕", skills: ["검격", "암흑 파동"] }))).toEqual([]);
+  });
+
+  it("tells the model to fix it with upsert_enemy and names unused skills as candidates", () => {
+    const p = battleProject({ 해골: ["맹독 이빨"], 갑옷: ["맹독 이빨"] });
+    p.database.skills.push({ ...structuredClone(p.database.skills[0]!), id: "skill_spare_bolt", name: "여분 마법탄", scope: "enemy", power: 40 } as never);
+    const msg = enemyIdentityProblems(p)[0] ?? "";
+    expect(msg).toContain("upsert_enemy");
+    expect(msg).toContain("skill_spare_bolt");
   });
 
   it("reaches the finish gate only for a whole-game request", () => {
