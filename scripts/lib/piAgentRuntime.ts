@@ -1129,6 +1129,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const reply = await eventAssistChat(null, { messages, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
       return typeof reply.message.content === "string" ? reply.message.content : "";
     },
+    // 그림 생성(generate_art): 읽기 전용이 아니면 워커의 이미지 생성기를 그대로 준다 — 키가 없으면 호출이 던지고 동사가 그 오류를 기록한다.
+    ...(!request.readOnly && !options.readOnlyTools ? { generateImage: createWorkerImageGenerator(request, workerKeyFor) } : {}),
     ...(advisorChat ? { advisorChat, advisorModel: `${advisorRole!.provider}/${advisorRole!.model}` } : {}),
     ...(leadChat ? { leadChat, leadModel: `${split!.lead.provider}/${split!.lead.model}${split!.lead.effort ? `@${split!.lead.effort}` : ""}` } : {}),
     ...(options.renderToolImage ? { renderArt: async (art: { resourceId: string } | { shotId: string; atMs: readonly number[] }) => {
