@@ -61,7 +61,12 @@ export interface ActionEnemyState {
   readonly contactDamage: number | undefined;
   readonly attack: number;
   readonly exp: number;
-  readonly actionAttack: EnemyActionAttack | undefined;
+  /** 지금 쓰는 공격. 묶음(extraAttacks)이 있으면 공격을 시작할 때마다 바뀐다. */
+  actionAttack: EnemyActionAttack | undefined;
+  /** 공격 묶음(기본 공격 + 추가 공격). 한 개면 묶음이 아니다. */
+  readonly attackKit: readonly EnemyActionAttack[];
+  /** 직전에 쓴 묶음 번호. */
+  lastAttackIndex: number;
   readonly gold: number;
   readonly dropItemId: string | undefined;
   readonly dropRatePercent: number;

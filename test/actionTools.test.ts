@@ -152,6 +152,7 @@ describe("action combat AI tools", () => {
     { name: "invalid movement value", profile: { contactDamage: 8, moveIntervalMs: "fast" } },
     { name: "non-finite damage", profile: { contactDamage: Number.NaN } },
     { name: "non-object attack", profile: { contactDamage: 8, attack: [] } },
+    { name: "unknown extra attack kind", profile: { attack: { kind: "melee", windupMs: 500, recoverMs: 300, damage: 8, range: 1 }, extraAttacks: [{ kind: "beam", windupMs: 500, recoverMs: 300, damage: 8, range: 4 }] } },
   ])("rejects malformed action profiles without mutation: $name", ({ profile }) => {
     const { context, enemy } = authoredEnemyFixture();
     const before = serialize(context.project);

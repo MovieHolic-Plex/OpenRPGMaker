@@ -14,6 +14,7 @@ const actionAttackSchema: JsonSchema = {
   type: "object",
   additionalProperties: false,
   properties: {
+    hpBelowPercent: { type: "integer", description: "extraAttacks 전용. 남은 체력이 이 비율(%) 이하일 때만 이 공격을 쓴다(예: 50이면 반피 이하에서 새 패턴). 생략하면 늘 쓴다." },
     kind: { type: "string", enum: ["melee", "projectile", "dash"] },
     shape: { type: "string", enum: ["arc", "circle", "ring", "cross"], description: "melee 전용 범위 모양. 생략하면 앞쪽 부채꼴(arc). circle=몸 주변 전체, ring=바깥 한 겹(안쪽은 안전), cross=네 방향 직선. 선딜 동안 같은 칸이 점점 진하게 칠해진다." },
     windupMs: { type: "integer" },
@@ -35,6 +36,7 @@ const actionProfileSchema: JsonSchema = {
     aggroRange: { type: "integer" },
     knockbackResist: { type: "number" },
     attack: actionAttackSchema,
+    extraAttacks: { type: "array", maxItems: 3, items: actionAttackSchema, description: "attack에 더해 번갈아 쓰는 공격(최대 3개). 쓸 수 있는 공격이 여럿이면 직전 공격 다음 것부터 돈다. 한 몬스터가 근접+돌진+원거리를 섞거나, 반피 이하에서 패턴이 바뀌게 할 때 쓴다." },
   },
 };
 
@@ -106,6 +108,9 @@ function prepareActionEnemy(
   if (suppliedProfile?.attack !== undefined) {
     errors.push(...validateArgs(actionAttackSchema, suppliedProfile.attack).map((message) => `attack: ${message}`));
   }
+  suppliedProfile?.extraAttacks?.forEach((extra, index) => {
+    errors.push(...validateArgs(actionAttackSchema, extra).map((message) => `extraAttacks[${index}]: ${message}`));
+  });
   if (errors.length > 0) {
     throw new ToolError(`actionProfile: ${errors.join(" / ")}`, { code: "invalid-args" });
   }

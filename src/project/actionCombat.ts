@@ -3,6 +3,7 @@
 // timeSystem/monsterCollection과 같은 패턴: 생략 시 레거시(턴제 라우팅) 유지.
 
 import { isEnemyAttackShape } from "@/battle/action/areaPattern";
+import { MAX_ENEMY_KIT_EXTRA_ATTACKS } from "@/battle/action/enemyKit";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
 import { normalizeChargeTiers } from "@/battle/battleInputSequence";
 
@@ -133,6 +134,7 @@ export function normalizeEnemyActionAttack(attack: Partial<EnemyActionAttack> | 
     range: clampInt(attack.range, 1, 20, 1),
   };
   if (attack.kind === "melee" && isEnemyAttackShape(attack.shape) && attack.shape !== "arc") out.shape = attack.shape;
+  if (attack.hpBelowPercent !== undefined) out.hpBelowPercent = clampInt(attack.hpBelowPercent, 1, 99, 50);
   if (attack.cooldownMs !== undefined) out.cooldownMs = clampInt(attack.cooldownMs, 0, 30000, DEFAULT_ATTACK_COOLDOWN_MS);
   if (attack.projectileSpeedTilesPerSec !== undefined) {
     out.projectileSpeedTilesPerSec = clampInt(attack.projectileSpeedTilesPerSec, 1, 30, DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC);
@@ -148,7 +150,14 @@ export function normalizeEnemyActionProfile(profile: Partial<EnemyActionProfile>
   if (profile.aggroRange !== undefined) out.aggroRange = clampInt(profile.aggroRange, 1, 30, 5);
   if (profile.knockbackResist !== undefined) out.knockbackResist = clamp01(profile.knockbackResist);
   const attack = normalizeEnemyActionAttack(profile.attack);
-  if (attack) out.attack = attack;
+  if (attack) {
+    delete attack.hpBelowPercent;
+    out.attack = attack;
+  }
+  const extras = Array.isArray(profile.extraAttacks)
+    ? profile.extraAttacks.slice(0, MAX_ENEMY_KIT_EXTRA_ATTACKS).map((entry) => normalizeEnemyActionAttack(entry)).filter((entry): entry is EnemyActionAttack => entry !== undefined)
+    : [];
+  if (attack && extras.length > 0) out.extraAttacks = extras;
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
