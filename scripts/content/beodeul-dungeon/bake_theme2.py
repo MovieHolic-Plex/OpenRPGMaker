@@ -9,7 +9,8 @@
 
 bake_gap.py 의 칸 저장소·관문·칸 표 쓰기를 그대로 쓰고 상수만 바꾼다(bake_theme.py 와 같은 방식):
   - 칸 그림 정본 `tiledata/beodeul-dungeon/theme2/cells.png` + `cells.json`(덧붙이기 전용, 키 = 화소 해시 + 통행 + 층).
-  - 키트 id = `bd-pick-dungeon-theme2-<이름>`, 칸 묶음 `beodeul:dungeon_theme2*`. 오토타일은 없다.
+  - 키트 id = `bd-pick-dungeon-theme2-<이름>`, 칸 묶음 `beodeul:dungeon_theme2*`.
+  - 오토타일 하나: 설원 밟힌 눈길 `beodeul_snow_road`(tc.snow_road, 2026-11-09 폴른 스타 서리나루 A6 — gap 꼬리는 여유 40칸뿐이라 여기에).
   - 3/4 관문(hard rule): object_gate.refusal(context="bundle") — 서명된 허용(위임 포함) 또는 보정 프로필 PASS 만 굽는다.
 
 시트 순서: 성벽 → gap → 주제 → 마당 → 왕도 → 주제 2(이것). 앞 꼬리 스크립트는 시트를 자기 끝에서 자르므로 bake_capital.py 가 끝에서 이것을 부른다.
@@ -31,11 +32,30 @@ G.STORE_PNG = G.STORE / "cells.png"
 G.STORE_JSON = G.STORE / "cells.json"
 G.KIT_PREFIX = "bd-pick-dungeon-theme2-"
 G.GROUP_PREFIX = "beodeul_dungeon_theme2_"
-G.OWN_GROUPS = re.compile(r"^beodeul_dungeon_theme2_")
+G.OWN_GROUPS = re.compile(r"^(beodeul_dungeon_theme2_|beodeul_snow_road$)")
 G.TILEGROUP_PREFIX = "beodeul:dungeon_theme2"
 B.KP = G.KIT_PREFIX
-THEME2_ITEMS = {"other.ground"}
-HANDLERS = {"other.ground": B.bake_field_floor("otherworld-floor", "마계 검은 돌 바닥", "마계의 갈라진 보라 검은 돌 바닥")}
+THEME2_ITEMS = {"other.ground", "tc.snow_road"}
+SNOW_ROAD_GROUP = "beodeul_snow_road"
+
+
+def bake_snow_road(st, p, line, meta, origin):
+    """밟힌 눈길 오토타일(snow-road-r1) — 폴른 스타 서리나루 눈길·광장(frostfordMap.ts PATH_GROUP)."""
+    def cmeta(m):
+        s = G.mask_sides(m)
+        return G.cm("버들항 설원 · 밟힌 눈길" + (f"({s} 열림)" if s else " 몸통"),
+                    f"설원 마을의 밟힌 눈길·광장 오토타일(마스크 {m}). 눈밭으로 섞이는 둑 테두리. 걸음. 그룹 `{SNOW_ROAD_GROUP}`.",
+                    ["눈", "snow", "길", "road"], "passable", "lower")
+    g = G.bake_autotile(st, meta["autotiles"]["road"], SNOW_ROAD_GROUP, "버들항 설원 밟힌 눈길", origin, cmeta)
+    tg = dict(id=f"{G.TILEGROUP_PREFIX}_snow_road", name="버들항 설원 밟힌 눈길", role="floor", source="bundled-default", defaultLayer="lower",
+              confidence="high", tileIds=g["memberTileIds"],
+              description=f"눈밭(설원 눈 칸) 위의 밟힌 눈길·광장 오토타일 `{SNOW_ROAD_GROUP}`. 하네스 {p['round']} {p['letter']}.",
+              placementRules="걷는 길·광장 칸 전부를 이 오토타일로, 바깥은 설원 눈 칸. 집·부두 쪽은 이어진 것으로 본다.")
+    return [g], [tg], []
+
+
+HANDLERS = {"other.ground": B.bake_field_floor("otherworld-floor", "마계 검은 돌 바닥", "마계의 갈라진 보라 검은 돌 바닥"),
+            "tc.snow_road": bake_snow_road}
 
 
 def retail_cave():
@@ -78,7 +98,7 @@ def main():
                 for i in ids:
                     st.defs[kind_].pop(i, None)
             continue
-        if not meta.get("fieldCols"):
+        if p["item"] == "other.ground" and not meta.get("fieldCols"):
             report.append(f"  건너뜀 {p['item']:24} {p['round']} {p['letter']} — 판석 밭(fieldCols)이 아니다: 주제 꼬리(bake_theme.py)에서 굽는다")
             continue
         origin = f"{p['item']}/{line}/{p['round']}:{p['letter']}@{dot.image_hash(im)[:8]}"
@@ -88,12 +108,14 @@ def main():
             for i in ids:
                 st.defs[kind_].pop(i, None)
         groups, tgs, kits = HANDLERS[p["item"]](st, p, line, meta, origin)
+        for g in groups:
+            st.defs["autotileGroups"][g["id"]] = g
         for g in tgs:
             st.defs["tileGroups"][g["id"]] = g
         for k in kits:
             st.defs["structureKits"][k["id"]] = k
         st.baked[f"{p['item']}|{line}"] = dict(round=p["round"], letter=p["letter"], sha256=dot.image_hash(im), gate=gst,
-                                               defs=dict(autotileGroups=[], tileGroups=[g["id"] for g in tgs], structureKits=[k["id"] for k in kits]))
+                                               defs=dict(autotileGroups=[g["id"] for g in groups], tileGroups=[g["id"] for g in tgs], structureKits=[k["id"] for k in kits]))
         report.append(f"  굽기  {p['item']:24} {p['round']} {p['letter']} [{gst}] 새 칸 {st.added - before} · 키트 {[k['id'][len(G.KIT_PREFIX):] for k in kits]}")
     print("\n".join(report))
     bad = G.palette_problems(st)
