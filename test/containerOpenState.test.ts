@@ -25,7 +25,11 @@ function changed(a: Uint8ClampedArray, b: Uint8ClampedArray): number {
 }
 
 describe("수납 열린 모습 — 물건 그림 자체가 바뀐다(오너: 최소 3픽셀)", () => {
-  it.each(CONTAINER_STYLES)("%s: 다 열린 모습은 물건 화소가 6개 이상 바뀐다", (style) => {
+  it("옷장은 합성하지 않고 예전 문짝 덧그림·흔적을 쓴다(블라인드 판정 3회 NO)", () => {
+    expect(openStatePixels(objectCanvas(), W, H, SIZE, "wardrobe", 1)).toBeNull();
+  });
+
+  it.each(CONTAINER_STYLES.filter((style) => style !== "wardrobe"))("%s: 다 열린 모습은 물건 화소가 6개 이상 바뀐다", (style) => {
     const src = objectCanvas();
     const out = openStatePixels(src, W, H, SIZE, style, 1);
     expect(out).not.toBeNull();

@@ -898,24 +898,10 @@ export function openStatePixels(src: Rgba, W: number, H: number, size: number, s
       hollow(Math.round(midX - bw * 0.28), by0, Math.round(midX + bw * 0.28), mouth + Math.round(s), 0.2);
       break;
     }
-    case "doors": {
-      // 옷장: 문짝 둘이 경첩(몸통 양 끝) 쪽으로 접힌다 — 문짝(좌우 반쪽)은 뒤집혀 좁아진 채 몸통 안 가장자리에 남고,
-      // 가운데는 깊게 어두운 속이 벌어진다. 문짝을 칸 밖으로 내보내면 칸만 볼 때 「어두워진 닫힌 문」으로 읽혔다(블라인드 판정).
-      const top = rows(bh > size ? 0.28 : 0.08), bottom = by1 + 1 - Math.round(s);
-      const midX = bx0 + Math.floor(bw / 2);
-      const scaleX = 1 - 0.7 * t;
-      // 속은 거의 검게 — 원래 문 손잡이가 비쳐 보이면 「어두워진 닫힌 문」으로 읽힌다(블라인드 판정 2회).
-      hollow(bx0 + Math.round(s), top, bx1 + 1 - Math.round(s), bottom, 0.04);
-      move(bx0 + Math.round(s), top, midX, bottom, 0, 0, { scaleX, flip: true, shade: 1.1, anchor: "left" });
-      move(midX, top, bx1 + 1 - Math.round(s), bottom, 0, 0, { scaleX, flip: true, shade: 1.1, anchor: "right" });
-      // 열린 문짝의 안쪽 모서리(밝은 한 줄) — 문이 앞으로 젖혀진 두께가 보인다.
-      if (t > 0) {
-        const leafW = Math.max(1, Math.round((midX - bx0 - Math.round(s)) * scaleX));
-        move(bx0 + Math.round(s), top, bx0 + Math.round(s) + 1, bottom, leafW, 0, { shade: 1.45 });
-        move(bx1 - Math.round(s), top, bx1 + 1 - Math.round(s), bottom, -leafW, 0, { shade: 1.45 });
-      }
-      break;
-    }
+    case "doors":
+      // 옷장은 칩셋 화소 합성을 쓰지 않는다 — 블라인드 판정 3회 모두 「어두워진 닫힌 문」(NO). 예전 문짝 덧그림(playMotion doors)과
+      // 빼꼼 열린 흔적(doors-ajar)을 그대로 쓴다. 후속: 문짝이 칸 앞으로 젖혀진 모습은 칸 밖 화소가 필요하다.
+      return null;
   }
   return out;
 }
