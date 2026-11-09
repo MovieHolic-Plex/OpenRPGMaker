@@ -124,7 +124,7 @@ function factory(): Project {
 /** 편집기 기본값 목록(LEDGER 의 목록과 같은 순서). 검사·문서가 같은 이름을 쓴다. */
 export const EDITOR_DEFAULT_INVENTORY = [
   "title-name", "title-image", "opening", "opening-music", "hud", "window-look", "map-bgm", "battle-bgm", "battle-background",
-  "game-over", "ending-screen", "party-names", "party-faces", "hero-look", "placeholder-text", "combat-leftovers", "ending-bg", "start-gear",
+  "game-over", "ending-screen", "party-names", "party-faces", "hero-look", "placeholder-text", "combat-leftovers", "ending-bg", "start-gear", "opening-missing",
 ] as const;
 
 /** 뼈대·자리표시 글(엔딩·이벤트 이름이나 대사에 남으면 안 된다). */
@@ -534,10 +534,36 @@ export function requestedFeatureGaps(project: Project, task: string): ShipBlocke
   }));
 }
 
+/**
+ * 오프닝이 꺼졌거나 장면이 하나도 없다 — 게임을 새로 만들었는데 처음 화면에서 곧바로 들판이 열린다(2026-11-09 assistant-reward 기준선: monster-1 이 프리셋 오프닝을 끄고 끝냈다).
+ * 기본 장면이 남은 경우(editorDefaultsLeft opening)와 하늘만 보이는 경우(openingWithoutPlace)는 따로 짚는다. 무대(system.opening.stage)가 있으면 장면 없이도 시작이 연출된다.
+ */
+export function openingMissing(project: Project): ShipBlocker[] {
+  const op = (project.system as unknown as Obj).opening as Obj | undefined;
+  const scenes = ((op?.scenes as unknown[] | undefined) ?? []).length;
+  const staged = !!op?.stage;
+  if (op && op.enabled !== false && (scenes > 0 || staged)) return [];
+  return [{
+    id: "opening-missing",
+    message: `이 게임에는 오프닝이 없다(${!op || op.enabled === false ? "꺼져 있다" : "장면이 0개다"}) — 새 게임을 누르면 설명 없이 곧바로 필드가 열린다. plan_opening·set_opening 으로 이 게임의 오프닝(장면 둘 이상, 첫 장면부터 이 이야기)을 짓고 {enabled:true} 로 둔다. 맵 위 무대는 author_opening_stage 로도 된다.`,
+    evidence: `opening.enabled=${String(op?.enabled)} scenes=${scenes} stage=${staged}`,
+  }];
+}
+
+/**
+ * 이 요청이 게임 하나를 만드는 일인가 — 이번 요청문, 아니면 청사진이 들고 있는 첫 요청문. 「끝까지 만들어 줘」 같은 이어 하기 턴이 낱말 판정에 안 걸려
+ * 출하 검사·조립 기본값이 통째로 꺼지던 것을 막는다(2026-11-09 assistant-reward village-1).
+ */
+export function buildsWholeGame(project: Project, task: string): boolean {
+  return wantsWholeGame(task) || wantsWholeGame(project.gameBlueprint?.request ?? "");
+}
+
 /** 조언자·끝맺음 관문이 같이 쓰는 출하 차단 목록(게임을 만드는 요청일 때만). 제목 스포일러는 어느 요청이든. */
 export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const spoilers = titleSpoilers(project);
-  if (!wantsWholeGame(task)) return spoilers;
+  // 「끝까지 만들어 줘」 같은 이어 하기 요청은 낱말 판정(wantsWholeGame)에 안 걸려 출하 검사가 통째로 꺼졌다(2026-11-09 village-1: 2턴째에 엔딩 기본 그림이 항목이 안 됐다).
+  // 청사진은 첫 요청문을 들고 있다 — 게임을 만드는 요청으로 시작한 프로젝트면 이어 하는 턴도 같은 출하 검사를 받는다.
+  if (!buildsWholeGame(project, task)) return spoilers;
   // 저장 → 다시 읽기(reloadCheck): 저장본이 안 열리면 플레이어·편집기 모두 게임을 못 연다 — 다른 검사가 다 통과해도 출하 결함(2026-10-29 vm6 「events[9].trigger」).
   const reload = reloadProblem(project);
   const reloadBlock: ShipBlocker[] = reload ? [{ id: "project-reload-failed", message: `저장한 프로젝트를 다시 읽지 못한다 — 게임이 열리지 않는다: ${reload.slice(0, 240)}. 그 필드를 고친 뒤 다시 저장한다.`, evidence: reload.slice(0, 120) }] : [];
@@ -595,7 +621,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
     evidence: `battleSites=${sites.length} healingSources=0`,
   }] : [];
-  return [...reloadBlock, ...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
+  return [...reloadBlock, ...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
 }
 
 /**

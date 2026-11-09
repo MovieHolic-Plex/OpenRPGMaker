@@ -15,6 +15,7 @@ import { findOpeningStillMood } from "@/assets/openingStillMoods";
 import { climateBattleBackground, dungeonBattleBackground, interiorBattleBackground, placeNameBattleBackground } from "@/battle/battleBackdrop";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { createBlankProject } from "@/project/defaults";
+import { factoryArtResourceIds } from "@/project/defaultLeaks";
 import { blueprintPlaceName, pickTitleArtForStory, blueprintPremiseText, blueprintStoryText } from "@/project/blueprintAssembly";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
@@ -63,6 +64,7 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   }
   applied.push(...forkStackedEndingCalls(project));
   if (endingClosureProblems(project).length) applied.push(...fillEndingClosure(project));
+  applied.push(...replaceFactoryEndingBackdrops(project));
   // 기본 지명 걷어내기는 엔딩 글을 채운 뒤에 — 채운 글(청사진 느낌 칸)에도 그 지명이 들 수 있다.
   applied.push(...removeDefaultPlaceWords(project, task));
   return applied;
@@ -100,8 +102,8 @@ function storyStill(project: Project, story: string): string {
   // 좀비·생존은 표의 전용 줄이 먼저다 — 공포 타이틀 그림(저택 초상화 복도)은 좀비 생존 결말에 맞지 않는다.
   if (ZOMBIE_ENDING.re.test(text)) return ZOMBIE_ENDING.id;
   const strong = pickTitleArtForStory(text);
-  if (strong && findOpeningStillMood(strong.id)) return strong.id;
-  return (ENDING_STILLS.find((s) => s.re.test(text)) ?? { id: "oprn-still-farm-golden" }).id;
+  if (strong && findOpeningStillMood(strong.id) && !factoryArtResourceIds().has(strong.id)) return strong.id;
+  return endingStillFor(text);
 }
 
 /**
@@ -788,14 +790,41 @@ const ENDING_STILLS: readonly { readonly re: RegExp; readonly id: string }[] = [
   { re: /학교|학생|교실|도시|현대|일상|친구|탈출|escape/iu, id: "oprn-still-lullaby" },
   { re: /농장|농사|귀농|목장/u, id: "oprn-still-farm-golden" },
 ];
+/**
+ * 엔딩 그림 표에서 엔진 기본 그림(빈 프로젝트의 타이틀·오프닝 그림)은 건너뛴다 — 실측(2026-11-09 assistant-reward, 23판): 판타지·모험·영웅 판이 전부
+ * 엔진 기본 오프닝 그림(kingdom-day)을 엔딩에 깔아 출하 검사 ending-bg 가 오르는 값을 조수 자신의 채우기가 만들었다.
+ * 표에서 첫 적중이 기본 그림이면 다음 적중으로 넘어가고, 다 기본이면 마지막 줄(농장)로 간다.
+ */
+function endingStillFor(text: string): string {
+  const factoryArt = factoryArtResourceIds();
+  return (ENDING_STILLS.find((s) => s.re.test(text) && !factoryArt.has(s.id)) ?? { id: "oprn-still-farm-golden" }).id;
+}
 function endingArt(project: Project): string | undefined {
   const blueprint = project.gameBlueprint;
   if (!blueprint) return undefined;
   const premise = blueprintPremiseText(project, blueprint);
   const strong = pickTitleArtForStory(premise, blueprintStoryText(project, blueprint));
-  if (strong && findOpeningStillMood(strong.id)) return strong.id;
-  const text = `${premise}\n${blueprint.ending.name}\n${blueprint.ending.how}`;
-  return (ENDING_STILLS.find((s) => s.re.test(text)) ?? { id: "oprn-still-farm-golden" }).id;
+  if (strong && findOpeningStillMood(strong.id) && !factoryArtResourceIds().has(strong.id)) return strong.id;
+  return endingStillFor(`${premise}\n${blueprint.ending.name}\n${blueprint.ending.how}`);
+}
+
+/**
+ * 엔딩이 엔진 기본 그림(빈 프로젝트의 타이틀·오프닝 그림)을 깔고 있으면 이야기에 맞는 번들 스틸로 바꾼다 — 출하 검사 ending-bg 가 짚는 바로 그것.
+ * 청사진이 있을 때만(이야기를 알아야 고른다). 모델이 직접 고른 기본 아닌 그림은 건드리지 않는다.
+ */
+function replaceFactoryEndingBackdrops(project: Project): string[] {
+  if (!project.gameBlueprint) return [];
+  const factoryArt = factoryArtResourceIds();
+  const out: string[] = [];
+  for (const ending of project.endings ?? []) {
+    const shown = ending.presentation?.backgroundResourceId;
+    if (!shown || !factoryArt.has(shown)) continue;
+    const art = endingArt(project);
+    if (!art || art === shown) continue;
+    ending.presentation = { ...(ending.presentation ?? {}), backgroundResourceId: art } as typeof ending.presentation;
+    out.push(`엔딩 「${ending.name}」 그림이 엔진 기본(${shown})이라 ${art} 로 바꿈`);
+  }
+  return out;
 }
 
 /**

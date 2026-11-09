@@ -5,6 +5,9 @@ import { TODO_MAX_ATTEMPTS, isOpen, type TodoStore } from "./todoStore";
 import type { TodoItem } from "../todo/types";
 import type { ProjectIndex } from "./refs";
 
+/** 출하 차단 중 «편집기 기본값이 남았다» 계열(shipChecks EDITOR_DEFAULT_INVENTORY 의 그림·오프닝·제목) — 앞 턴 결과라는 이유로 면제하지 않는다. */
+const SHIP_DEFAULT_LEAK = /^\[출하 차단 (?:ending-bg|title-image|title-name|opening|opening-music|opening-missing)\]/u;
+
 const keyOf = (store: TodoStore, item: TodoItem): string | undefined => store.meta.get(item.id)?.key;
 
 /** 다시 연 항목이 시도 상한이면 막힘으로 닫는다. */
@@ -68,7 +71,9 @@ export function splitPreexisting(problems: readonly V2GateProblem[], baselineKey
   for (const key of now?.events.keys() ?? []) { const id = key.slice(key.indexOf(":") + 1); byId.set(id, [...(byId.get(id) ?? []), key]); }
   for (const p of problems) {
     if (!p.key.startsWith("game:")) { current.push(p); continue; }
-    if (baselineKeys?.has(p.key)) { preexisting.push(p); continue; }
+    // 편집기 기본값이 남은 것(출하 차단 ending-bg·title-image·opening…)은 시작 저장본에 있었어도 이번 턴이 끝낼 일이다 — 이어 하는 턴의 시작 저장본은 앞 턴의 결과라
+    // 기본 그림도 «기존 결함»이 되어 완료를 막지 못했다(2026-11-09 assistant-reward village-1: 엔딩 기본 그림이 2턴째에 항목이 안 됐다).
+    if (baselineKeys?.has(p.key) && !SHIP_DEFAULT_LEAK.test(p.text)) { preexisting.push(p); continue; }
     const ids = [...new Set([...p.text.matchAll(/\bev_[A-Za-z0-9_\-]+/gu)].map((m) => m[0]))];
     const keys = ids.flatMap((id) => byId.get(id) ?? []);
     // 함수 마감(출구 길 잇기·출구 넓히기)만 건드린 기존 이벤트도 «조수가 안 건드림»으로 본다 — 2026-10-30 boss-room: 마감이 버들마을 출구를 옮기자
