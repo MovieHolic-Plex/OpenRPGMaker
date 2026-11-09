@@ -864,8 +864,13 @@ export interface EnemyReaction {
   chance: number;
 }
 
+/** 근접 공격 범위 모양. arc(생략 시 기본, 앞쪽 부채꼴) · circle(몸 주변 전부) · ring(바깥 한 겹) · cross(네 방향 직선). */
+export type EnemyActionAttackShape = "arc" | "circle" | "ring" | "cross";
+
 export interface EnemyActionAttack {
   kind: "melee" | "projectile" | "dash";
+  /** melee 전용 범위 모양. 생략하면 arc. */
+  shape?: EnemyActionAttackShape;
   /** 선딜 — 텔레그래프(적 점멸 + 위협 칸 표시) 시간. */
   windupMs: number;
   /** 후딜 — 공격 후 플레이어 반격 창. */

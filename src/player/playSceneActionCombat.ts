@@ -14,9 +14,9 @@ import { DEFAULT_ATTACK_COOLDOWN_MS, DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC, isA
 import {
   cellInArc,
   expandRect,
-  swingArcCellsFromBody,
   swingArcOverlapsBody,
 } from "@/battle/action/hitbox";
+import { enemyMeleeCells, telegraphAlpha } from "@/battle/action/areaPattern";
 import { bufferAttackPress, createAttackBuffer, tickAttackBuffer } from "@/battle/action/attackWindow";
 import { computeContactDamage, computeSwingDamage } from "@/battle/action/combatMath";
 import { consumeHitstop } from "@/battle/action/hitstop";
@@ -122,7 +122,6 @@ const PLAYER_FLASH_MS = 200;
 const SWING_VFX_MS = 160;
 const COMBAT_DEPTH = MAP_UPPER_LAYER_DEPTH + 1;
 const DASH_STEP_MS = 70;
-const TELEGRAPH_ALPHA = 0.35;
 // 히트스톱: 타격 순간 액션 전투 갱신만 아주 짧게 건너뛴다(게임 전체는 얼리지 않음).
 const HITSTOP_HIT_ENEMY_MS = 70;
 const HITSTOP_PLAYER_HURT_MS = 110;
@@ -1256,6 +1255,7 @@ function updateEnemyModes(scene: PlaySceneContext, state: ActionCombatSceneState
       case "windup": {
         enemy.modeTimerMs -= deltaMs;
         if (enemy.modeTimerMs <= 0) executeStrike(scene, state, enemy, attack, pos);
+        else if (attack) paintTelegraph(scene, enemy, telegraphAlpha(attack.windupMs - enemy.modeTimerMs, attack.windupMs));
         break;
       }
       case "dash": {
@@ -1330,12 +1330,11 @@ function stopWindupTelegraph(scene: PlaySceneContext, enemy: ActionEnemyState): 
 function drawTelegraph(scene: PlaySceneContext, enemy: ActionEnemyState, attack: EnemyActionAttack, ex: number, ey: number, dir: Dir, dx: number, dy: number): void {
   const graphics = scene.add.graphics();
   graphics.setDepth(COMBAT_DEPTH - 1);
-  graphics.fillStyle(0xff3322, TELEGRAPH_ALPHA);
   const project = store.getCurrent();
   const cells: { x: number; y: number }[] = [];
   if (attack.kind === "melee") {
     // 예고는 executeStrike 와 **같은 호**를 그려야 한다 — 몸 사각에서 뻗는 호로 맞춘다.
-    cells.push(...swingArcCellsFromBody(dir, ex, ey, attack.range, enemy.footprint));
+    cells.push(...enemyMeleeCells(attack.shape, dir, ex, ey, attack.range, enemy.footprint));
   } else if (attack.kind === "dash") {
     const delta = dirDelta(dir);
     for (let step = 1; step <= attack.range; step += 1) {
@@ -1353,10 +1352,20 @@ function drawTelegraph(scene: PlaySceneContext, enemy: ActionEnemyState, attack:
       if (!cells.some((c) => c.x === cx && c.y === cy)) cells.push({ x: cx, y: cy });
     }
   }
-  for (const cell of cells) {
-    graphics.fillRect(characterSpriteX(cell.x, mapTileSize(scene.map)) - mapTileSize(scene.map) / 2, characterSpriteY(cell.y, mapTileSize(scene.map)) - mapTileSize(scene.map), mapTileSize(scene.map), mapTileSize(scene.map));
-  }
   enemy.telegraph = graphics;
+  enemy.telegraphCells = cells;
+  paintTelegraph(scene, enemy, telegraphAlpha(0, attack.windupMs));
+}
+
+function paintTelegraph(scene: PlaySceneContext, enemy: ActionEnemyState, alpha: number): void {
+  const graphics = enemy.telegraph;
+  if (!graphics || !enemy.telegraphCells) return;
+  const tile = mapTileSize(scene.map);
+  graphics.clear();
+  graphics.fillStyle(0xff3322, alpha);
+  for (const cell of enemy.telegraphCells) {
+    graphics.fillRect(characterSpriteX(cell.x, tile) - tile / 2, characterSpriteY(cell.y, tile) - tile, tile, tile);
+  }
 }
 
 function executeStrike(scene: PlaySceneContext, state: ActionCombatSceneState, enemy: ActionEnemyState, attack: EnemyActionAttack | undefined, pos: { x: number; y: number }): void {
@@ -1374,7 +1383,7 @@ function executeStrike(scene: PlaySceneContext, state: ActionCombatSceneState, e
     // 스윙 원점은 앵커가 아니라 **몸 사각의 앞면**이다 — 3x3 적이 팔을 뻗으면 사거리가
     // 앵커에서만 자라는 게 아니라 몸통 폭 전체에서 자란다. 1x1 이면 앵커 한 칸이라 항등이다.
     // 대상 선택은 main 의 진영/타깃 모델을 그대로 쓴다(플레이어 전용이 아니다).
-    const arc = swingArcCellsFromBody(dir, pos.x, pos.y, attack.range, enemy.footprint);
+    const arc = enemyMeleeCells(attack.shape, dir, pos.x, pos.y, attack.range, enemy.footprint);
     const hit = tiles.find((tile) => cellInArc(arc, tile.x, tile.y));
     if (hit && targetId !== undefined) {
       damageActionTarget(scene, state, enemy, targetId, attack.damage, hit.x, hit.y);

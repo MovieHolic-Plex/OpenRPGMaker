@@ -144,7 +144,7 @@ Action-combat data is authored in database records and normalized via `src/proje
 
 Action HUD is split between DOM and Phaser:
 - **DOM overlay (`src/player/actionHud.ts`)**: Mounted on `.play-stage` (`data-testid="action-hud"`). Renders player HP hearts or bar, stamina gauge, guard indicator, and active skill slot chips.
-- **Phaser graphics**: Enemy overhead HP bars above sprites, controlled by `config.enemyHpBars` (`always`, `damaged`, or `never`). Renders windup telegraph boxes (red fill for melee arc, line for dash, path for projectile).
+- **Phaser graphics**: Enemy overhead HP bars above sprites, controlled by `config.enemyHpBars` (`always`, `damaged`, or `never`). Renders windup telegraph boxes (red fill for melee arc, line for dash, path for projectile). The telegraph cells are chosen once at windup start and repainted each frame with an alpha that rises with windup progress (`telegraphAlpha`, `src/battle/action/areaPattern.ts`), so "about to land" reads without a number. A melee attack may set `shape` (`arc` default, `circle`, `ring`, `cross`); `enemyMeleeCells` is the single source for both the drawn telegraph and the strike hit test, so what is painted is what hits. Idea after OpenWorld (MIT, "The OpenWorld authors"); implemented from scratch on this repo's footprint model.
 
 ## Design decision: Tile-grid movement vs pixel movement
 

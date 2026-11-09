@@ -2,6 +2,7 @@
 // 실시간 액션 전투 옵트인 패키지의 스키마 정규화 + 런타임 설정 해석.
 // timeSystem/monsterCollection과 같은 패턴: 생략 시 레거시(턴제 라우팅) 유지.
 
+import { isEnemyAttackShape } from "@/battle/action/areaPattern";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
 import { normalizeChargeTiers } from "@/battle/battleInputSequence";
 
@@ -131,6 +132,7 @@ export function normalizeEnemyActionAttack(attack: Partial<EnemyActionAttack> | 
     damage: clampInt(attack.damage, 1, 9999, 1),
     range: clampInt(attack.range, 1, 20, 1),
   };
+  if (attack.kind === "melee" && isEnemyAttackShape(attack.shape) && attack.shape !== "arc") out.shape = attack.shape;
   if (attack.cooldownMs !== undefined) out.cooldownMs = clampInt(attack.cooldownMs, 0, 30000, DEFAULT_ATTACK_COOLDOWN_MS);
   if (attack.projectileSpeedTilesPerSec !== undefined) {
     out.projectileSpeedTilesPerSec = clampInt(attack.projectileSpeedTilesPerSec, 1, 30, DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC);

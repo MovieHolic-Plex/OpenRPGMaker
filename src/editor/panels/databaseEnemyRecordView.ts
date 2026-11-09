@@ -3,6 +3,7 @@ import { renderEnemyStudio } from "@/editor/panels/databaseEnemyStudio";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { emptyToUndefined, field, numberField, selectField, sliderStepperField, textField, toggleSwitch } from "@/editor/panels/databaseControls";
+import { isEnemyAttackShape } from "@/battle/action/areaPattern";
 import { damageTypeRatesFields } from "@/editor/panels/databaseDamageTypeRatesFields";
 import { ENEMY_COLLAPSE_EFFECTS, ENEMY_COLLAPSE_LABELS, normalizeEnemyCollapseEffect } from "@/project/enemyCollapse";
 import { capturePreviewLine } from "@/editor/panels/databaseCapturePreview";
@@ -1185,6 +1186,12 @@ function actionCombatFields(record: EnemyRecord): HTMLElement[] {
   // 슬라이더+스테퍼는 2열 수치 그리드 한 칸(≈130px)에 안 들어간다 — 한 줄을 다 쓴다.
   knockback.classList.add("db-enemy-wide-field");
   knockback.title = "맞았을 때 밀려나지 않는 정도. 0 = 그대로 밀림, 1 = 전혀 안 밀림";
+  const ENEMY_ATTACK_SHAPE_OPTIONS = [
+    { id: "arc", name: "앞쪽 부채꼴" },
+    { id: "circle", name: "주변 전체" },
+    { id: "ring", name: "바깥 한 겹" },
+    { id: "cross", name: "십자" },
+  ];
   const attackKindOptions = [
     { id: "", name: "없음(접촉만)" },
     { id: "melee", name: "근접" },
@@ -1254,6 +1261,17 @@ function actionCombatFields(record: EnemyRecord): HTMLElement[] {
       patchAttack("range", "사거리", "db-field-enemy-attack-range"),
       patchAttack("cooldownMs", "쿨다운(ms)", "db-field-enemy-attack-cooldown")
     );
+    if (attack.kind === "melee") {
+      fields.push(
+        selectField("범위 모양", "db-field-enemy-attack-shape", attack.shape ?? "arc", ENEMY_ATTACK_SHAPE_OPTIONS, (value) =>
+          patchProfile((draft) => {
+            if (!draft.attack) return;
+            if (isEnemyAttackShape(value) && value !== "arc") draft.attack.shape = value;
+            else delete draft.attack.shape;
+          })
+        )
+      );
+    }
     if (attack.kind === "projectile") {
       fields.push(patchAttack("projectileSpeedTilesPerSec", "탄 속도(타일/초)", "db-field-enemy-projectile-speed"));
     }
