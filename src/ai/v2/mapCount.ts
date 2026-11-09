@@ -126,11 +126,10 @@ export function edgeFloorCell(project: Project, map: GameMap): { x: number; y: n
 }
 
 /** 못 닿는 맵 무리와 이을 곳을 계획한다(순수 함수 — 호출 문구는 shipChecks 가 만든다). */
-export function planLinks(project: Project): LinkPlan {
+export function planLinks(project: Project, counted: readonly string[] = countMaps(project).counted): LinkPlan {
   const doc = project as unknown as Obj;
   const maps = (doc.maps ?? {}) as Record<string, GameMap>;
   const reached = reachable(doc);
-  const { counted } = countMaps(project);
   const links = new Map<string, Set<string>>();
   for (const [id, map] of Object.entries(maps)) {
     if (!map || typeof map !== "object") continue;

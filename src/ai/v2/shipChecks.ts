@@ -605,7 +605,7 @@ export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
   const missing = need - counted.length;
   // 만든 맵이 시작 맵에서 문으로 안 닿으면(2026-11-10 forest-0039 6장·ninja-0038 4장이 세는 맵 1/4) 문구 대신 이을 호출을 준다 —
   // 무리(서로 이어진 안 닿는 맵끼리) 하나씩, 호출은 문구 맨 끝(열쇠는 앞 160자). 청사진 경로를 다시 지으면 단 문이 사라질 수 있다(forest).
-  const plan = planLinks(project);
+  const plan = planLinks(project, counted);
   const group = plan.groups.find((g) => g.cell);
   const linkCall = plan.from && group?.cell
     ? ` 안 닿는 맵 무리 ${plan.groups.length}개 — 문을 단 뒤에는 build_blueprint_path 를 다시 부르지 않는다(다시 지으면 문이 사라질 수 있다). Next call: create_transfer_pair(${JSON.stringify({ a: { mapId: plan.from.mapId, ...plan.from.cell }, b: { mapId: group.mapId, ...group.cell } })})`

@@ -13,6 +13,8 @@ import type { GameMap, Project } from "@/project/types";
 // 에이전트 세션 규칙으로 작성 시점에는 실행하지 않았다(CI 에서 돈다).
 
 const whole = "마을과 던전이 있는 모험 게임을 만들어 줘";
+/** verbs.ts gameProblemTexts 가 출하 차단 줄에 붙이는 꼬리 문장 — 호출은 문구 맨 끝이 아니다. */
+const gateText = (message: string): string => `[출하 차단 maps-min] ${message} 고치지 못하면 «완성»이라고 쓰지 말고 남은 기본값으로 보고한다.`;
 
 /** createBlankProject 의 시작 맵을 복제해 한 장 더 만든다 — 같은 배치는 «복사» 라 못 세므로 타일 하나를 바꿔 다르게 한다. */
 function cloneMap(project: Project, from: GameMap, id: string, tweak: number): GameMap {
@@ -56,7 +58,7 @@ describe("안 닿는 맵 무리 — 이을 호출", () => {
   it("syncGateItems 를 거치면 항목 내용(220자 절단)에는 호출이 없어도 meta.nextCall 이 그 호출이다", () => {
     const [blocker] = mapsMinBlocker(isolatedProject(2), whole);
     const store = new TodoStore();
-    const text = `[출하 차단 maps-min] ${blocker!.message}`;
+    const text = gateText(blocker!.message);
     const { opened } = syncGateItems(store, [{ key: "game:" + text.replace(/\d+/gu, "#").slice(0, 160), text, source: "gate" }], new Set(), new Set(["create_transfer_pair"]));
     expect(opened).toHaveLength(1);
     expect(opened[0]!.content).not.toContain("Next call");
