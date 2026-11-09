@@ -1200,31 +1200,29 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
     }
   }
   if (!goal) {
-    // 길을 못 찾았다 — 닿는 영역(seen)의 가장자리에서 길을 막는 이벤트를 목표에 가까운 순으로 3개 적는다(어느 이벤트를 옮기거나 치워야 하는지).
+    // 길을 못 찾았다 — 어떤 이벤트를 치워야 열리는지 구한다: 막는 이벤트를 전부 무시해 열리면 거기서 빼 가며 최소 집합을 남기고,
+    // 전부 치워도 안 열리면 지형(벽·물)이 막는 것이다. 막힐 때만 도는 계산이다(이벤트 수만큼 길찾기).
     if (diag) {
-      const edge = new Map<string, GameEvent>();
-      for (const event of map.events ?? []) {
-        if (event.id === target.id || harmless(event) || ignoreIds?.has(event.id)) continue;
-        for (const cell of cellsOf(event)) if (!relayCells.has(cell) && !warps.has(cell)) edge.set(cell, event);
-      }
-      const near = new Map<string, { event: GameEvent; dist: number }>();
-      for (const cell of seen) {
-        const [cx, cy] = cell.split(",").map(Number) as [number, number];
-        for (const d of DIRS) {
-          const event = edge.get(key(cx + d.dx, cy + d.dy));
-          if (!event) continue;
-          const dist = Math.abs(event.x - target.x) + Math.abs(event.y - target.y);
-          const prev = near.get(event.id);
-          if (!prev || dist < prev.dist) near.set(event.id, { event, dist });
+      let loX = Infinity, hiX = -Infinity, loY = Infinity, hiY = -Infinity;
+      for (const cell of seen) { const [cx, cy] = cell.split(",").map(Number) as [number, number]; loX = Math.min(loX, cx); hiX = Math.max(hiX, cx); loY = Math.min(loY, cy); hiY = Math.max(hiY, cy); }
+      diag.reach = `지금 닿는 영역 ${seen.size}칸(x ${loX}~${hiX}, y ${loY}~${hiY})`;
+      const blocking = (map.events ?? []).filter((event) => event.id !== target.id && !harmless(event) && !ignoreIds?.has(event.id) && cellsOf(event).some((cell) => !relayCells.has(cell) && !warps.has(cell)));
+      const opensWith = (ids: ReadonlySet<string>) => pathMoves(project, session, mapId, from, target, adjacent, new Set([...(ignoreIds ?? []), ...ids]), moved) !== null;
+      // 다른 곳으로 보내는 이벤트(문·출입구·이동 칸)는 지우면 그 입구가 사라진다 — 최소 집합에서 먼저 빼 보고, 남으면 «옮기기» 로 적는다.
+      const isDoor = (event: GameEvent) => (event.pages?.length ? event.pages : [event]).some((pg) => ((pg as { commands?: readonly { kind?: string }[] }).commands ?? []).some((command) => command.kind === "transfer"));
+      const label = (event: GameEvent) => `${event.name ?? event.id}(${event.id}) (${event.x},${event.y})${isDoor(event) ? " [문·이동 칸 — 지우지 말고 옮긴다]" : ""}`;
+      const keep = new Set(blocking.map((event) => event.id));
+      if (blocking.length === 0 || !opensWith(keep)) diag.blockers = "이벤트를 전부 치워도 열리지 않는다 — 벽·물 같은 지형이 막고 있으니 길(바닥·문·이어 주는 칸)을 새로 놓아야 한다";
+      else {
+        // 목표에서 먼 것부터 빼 보고, 빼도 열리면 그 이벤트는 필요 없다.
+        const farFirst = (a: GameEvent, b: GameEvent) => (Math.abs(b.x - target.x) + Math.abs(b.y - target.y)) - (Math.abs(a.x - target.x) + Math.abs(a.y - target.y));
+        for (const event of [...blocking].sort((a, b) => (isDoor(b) ? 1 : 0) - (isDoor(a) ? 1 : 0) || farFirst(a, b))) {
+          keep.delete(event.id);
+          if (!opensWith(keep)) keep.add(event.id);
         }
+        const need = blocking.filter((event) => keep.has(event.id));
+        diag.blockers = `${need.slice(0, 6).map(label).join(", ")}${need.length > 6 ? ` 외 ${need.length - 6}개` : ""} — 이 ${need.length}개를 옮기거나 치우면 길이 열린다`;
       }
-      const ordered = [...near.values()].sort((a, b) => a.dist - b.dist).slice(0, 12);
-      // 그 이벤트 하나만 치우면 길이 열리는 것을 먼저(진짜 원인) — 없으면 목표에 가까운 순.
-      const opens = ordered.filter(({ event }) => pathMoves(project, session, mapId, from, target, adjacent, new Set([...(ignoreIds ?? []), event.id]), moved) !== null);
-      const xs = [...seen].map((cell) => Number(cell.split(",")[0])), ys = [...seen].map((cell) => Number(cell.split(",")[1]));
-      diag.reach = `지금 닿는 영역 ${seen.size}칸(x ${Math.min(...xs)}~${Math.max(...xs)}, y ${Math.min(...ys)}~${Math.max(...ys)})`;
-      const picked = (opens.length ? opens : ordered).slice(0, 3);
-      if (picked.length) diag.blockers = `${picked.map(({ event }) => `${event.name ?? event.id}(${event.id}) (${event.x},${event.y})`).join(", ")}${opens.length ? " — 이 이벤트만 옮기거나 치우면 길이 열린다" : " — 하나만 치워서는 열리지 않는다(길이 막힌 곳은 지형 가장자리·문 띠와 함께 닫혀 있다)"}`;
     }
     return null;
   }
@@ -1393,7 +1391,7 @@ function fireEvent(driver: Driver, event: GameEvent, visit: CommandVisit): strin
       moves = pathMoves(driver.project, now, now.currentMapId, { x: now.x, y: now.y }, event, !touch, undefined, driver.last.movedEvents);
     }
   }
-  if (!moves) return `${driver.project.maps[mapId]?.name ?? mapId} (${session.x},${session.y}) 에서 ${event.name ?? event.id} ${touch ? "칸" : "옆"} (${event.x},${event.y}) 까지 걸어갈 길이 없습니다(벽·물·다른 이벤트에 막힘).${diag.blockers ? ` ${diag.reach ? `${diag.reach}. ` : ""}길을 막는 이벤트: ${diag.blockers}.` : ""}${skillNote}`;
+  if (!moves) return `${driver.project.maps[mapId]?.name ?? mapId} (${session.x},${session.y}) 에서 ${event.name ?? event.id} ${touch ? "칸" : "옆"} (${event.x},${event.y}) 까지 걸어갈 길이 없습니다(벽·물·다른 이벤트에 막힘).${diag.blockers ? ` ${diag.reach ? `${diag.reach}. ` : ""}${diag.blockers.startsWith("이벤트를") ? "" : "길을 막는 이벤트: "}${diag.blockers}.` : ""}${skillNote}`;
   if (moves.length > 0) {
     const walked = tryCommit(driver, moves);
     if (!walked.ok) return `${event.name ?? event.id} ${touch ? "칸" : "옆"} (${event.x},${event.y}) 까지 걷다 멈췄습니다: ${walked.reason}`;

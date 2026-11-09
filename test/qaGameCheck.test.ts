@@ -442,5 +442,6 @@ describe("걸어갈 길이 없다 — 막는 이벤트를 이름으로 댄다", 
     expect(failed).toContain("길을 막는 이벤트:");
     expect(failed).toMatch(/block_[wens]\(block_[wens]\) \(\d+,\d+\)/u);
     expect(failed).toContain("지금 닿는 영역");
+    expect(failed).toContain("옮기거나 치우면 길이 열린다");
   });
 });
