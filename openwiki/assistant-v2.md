@@ -139,6 +139,22 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 - 판정 쪽(무대를 찍기, `bp-open-*` 결함을 모델 밖으로 빼기)은 B2(#4549)에 있다.
 - 증거: `test/openingStageReplacesDefault.test.ts`. 모델 없는 실행(설원 세계): 기본 장면 4개 → 무대 호출 뒤 0개 + 무대, 끝맺음을 다시 돌려도 그대로.
 
+## 도구가 빈 칸·막힌 문앞을 스스로 읽는다 — 감싸개 걷기 1차 (2026-11-11, B5a)
+
+구조 재점검 5-2: `game.ts` 의 감싸개 여섯 개가 한 도구씩 나쁜 기본값·거절을 밖에서 고쳤고, 대부분 한국어 거절 글을 정규식으로 읽어 다시 불렀다 — 도구의 오류 글 한 줄을 바꾸면 재시도가 조용히 멈춘다.
+
+도구로 옮긴 것(감싸개에서 지웠다):
+- `upsert_troop`: 빈 `members:[]` 는 안 준 것이다(전: 「최소 1마리의 적이 필요」 거절).
+- `place_field_enemy`: 서 있는 적의 `patrol`·추격 적의 내용 없는 `patrol`(directions 없음 + length ≤ 1)은 무시하고 알린다(전: 거절). 전투 그림과 다른 `graphic` 은 거절하지 않고 전투 그림으로 놓고 알린다(전: 거절 → 감싸개가 graphic 을 빼고 재호출).
+- `create_transfer_pair`: `doorAt` 이 `x,y` 와 같은 칸이면 문앞만 준 것으로 읽는다. 문앞이 막혀 그 자리에 못 이으면 `doorAt` 없이 가장 가까운 닿는 칸으로 옮겨 잇고, 옮긴 칸을 답에 적는다(전: 거절 → 감싸개가 거절 글에서 끝·좌표를 긁어 재호출).
+
+아직 감싸개로 남은 것(작은 일 측정 뒤에 정한다):
+- `withItemUtilityCleanup`: 회복약에 딸려 온 `escapeTo`·`repelSteps` 를 이름·설명 낱말로 가려 뺀다(모델 버릇 보정 — 도구 계약으로 옮길 근거가 아직 없다).
+- `withTransferRelocation`: 두 끝을 놓은 뒤의 거절(기존 문 봉쇄·도착 칸 겹침)에 `doorAt` 을 빼고 다시 부른다. 문앞 막힘은 이제 도구가 먼저 처리한다.
+- `withActorLookRetry`(칩 관문), `withEncountersOnlyWhenAsked`(요청에 따라 조우 끔), `withPictureSearchBudget`(그림 찾기 3번 상한).
+
+증거: `test/toolsReadEmptyAndBlocked.test.ts`.
+
 ## 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
 
 감사(`~/claude-viz/map-sameness-1029.html`, 묶음 vm1~vm8): 여관 1층 23개 중 13개가 같은 16×14 선술집 홀(「여관」 낱말 → 장소 견본 tavern, 뒤집기·손님 자리 네 판),

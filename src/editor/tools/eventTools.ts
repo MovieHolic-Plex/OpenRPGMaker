@@ -2941,8 +2941,8 @@ const createTransferPair: ToolDefinition = {
     required: ["a", "b"],
   },
   run(draft, args): ToolExecResult {
-    const a = args.a as { mapId: string; x: number; y: number; doorAt?: Point };
-    const b = args.b as { mapId: string; x: number; y: number; doorAt?: Point };
+    const a = { ...(args.a as { mapId: string; x: number; y: number; doorAt?: Point }) };
+    const b = { ...(args.b as { mapId: string; x: number; y: number; doorAt?: Point }) };
     const fade = (args.fade as TransferFade | undefined) ?? "black";
     const onDoor = args.trigger !== "front";
     const mapA = requireMap(draft, a.mapId);
@@ -2955,8 +2955,25 @@ const createTransferPair: ToolDefinition = {
       if (!check.group.has(candidate.landing.y * map.width + candidate.landing.x)) return "착지점이 방 바닥과 갈라진 주머니 칸이다";
       return true;
     };
-    const endpointA = resolveTransferEndpoint(draft, mapA, a, "A", reachNotes, sealAccept(mapA));
-    const endpointB = resolveTransferEndpoint(draft, mapB, b, "B", reachNotes, sealAccept(mapB));
+    // 문 칸(doorAt)을 단 끝: doorAt 이 x,y 와 같은 칸이면 문앞만 준 것으로 읽고, 문앞이 막혀 그 자리에 못 잇으면 doorAt 없이
+    // 가장 가까운 닿는 칸으로 옮겨 잇고 알린다 — 거절하면 모델이 같은 문앞으로 되풀이하다 이음이 막혔다.
+    const relocated: string[] = [];
+    const resolveEnd = (map: GameMap, end: typeof a, label: "A" | "B") => {
+      if (end.doorAt && end.doorAt.x === end.x && end.doorAt.y === end.y) delete end.doorAt;
+      if (!end.doorAt) return resolveTransferEndpoint(draft, map, end, label, reachNotes, sealAccept(map));
+      try { return resolveTransferEndpoint(draft, map, end, label, reachNotes, sealAccept(map)); }
+      catch (error) {
+        if (!(error instanceof ToolError)) throw error;
+        const door = end.doorAt;
+        const moved = resolveTransferEndpoint(draft, map, { mapId: end.mapId, x: end.x, y: end.y } as typeof a, label, reachNotes, sealAccept(map));
+        if (!moved) throw error;
+        delete end.doorAt;
+        relocated.push(`${label}: the door front (${end.x},${end.y}) could not take an entrance, so this end was linked at the nearest walkable cell (${moved.gate.x},${moved.gate.y}) and doorAt (${door.x},${door.y}) was not used. If a door picture belongs there, stamp one at the new cell.`);
+        return moved;
+      }
+    };
+    const endpointA = resolveEnd(mapA, a, "A");
+    const endpointB = resolveEnd(mapB, b, "B");
     if (!endpointA || !endpointB) {
       // 어느 쪽 출입구가 왜 실패했는지 짚는다 — 종전에는 두 쪽을 뭉뚱그려 같은 안내만 냈다.
       const failures = [
@@ -3067,6 +3084,7 @@ const createTransferPair: ToolDefinition = {
       ...(adjustedA ? [`출입구 A 위치 자동 조정: (${a.x},${a.y}) → (${gateA.x},${gateA.y})`] : []),
       ...(adjustedB ? [`출입구 B 위치 자동 조정: (${b.x},${b.y}) → (${gateB.x},${gateB.y})`] : []),
       ...reachNotes,
+      ...relocated,
       ...stairNotes,
       ...(stairPair ? [stairPair] : []),
       ...(sealedAfter.length > 0
