@@ -14,6 +14,7 @@ import {
   recoverMsForAnimation,
 } from "@/player/battleActionBeats";
 import { store } from "@/project/store";
+import { effectivenessFeedbackHidden } from "@/project/battleStaging";
 import {
   actorCommandDirectorState,
   battleResultRewardRowCount,
@@ -302,16 +303,18 @@ export function createBattleSequencer(
       if (entry.kind !== "damage") return undefined;
       return { targetId: entry.targetId, amount: 0, critical: false, healing: false, blocked: true, resource: entry.resource ?? "hp" };
     }
+    // 상성 알림을 끈 게임(battleStaging.effectivenessFeedback = hide)은 꼬리표·상성 타격음에 쓰일 배율을 싣지 않는다 — 피해 숫자만 남는다.
+    const showEffectiveness = !healing && !effectivenessFeedbackHidden(store.getCurrent().system.battleStaging);
     return {
       targetId: entry.targetId,
       amount,
       critical: Boolean(entry.critical),
       healing,
       resource: entry.resource ?? "hp",
-      ...(entry.effectiveness !== undefined && !healing ? { effectiveness: entry.effectiveness } : {}),
+      ...(entry.effectiveness !== undefined && showEffectiveness ? { effectiveness: entry.effectiveness } : {}),
       ...(entry.weaponAffinity && !healing ? { weaponAffinity: true } : {}),
       ...(entry.exploit && !healing ? { exploit: true } : {}),
-      ...(entry.weaknessDiscovered && !healing ? { weaknessDiscovered: true } : {}),
+      ...(entry.weaknessDiscovered && showEffectiveness ? { weaknessDiscovered: true } : {}),
     };
   }
 
@@ -868,6 +871,7 @@ export function createBattleSequencer(
       || snapshot.departedEnemies?.some((enemy) => enemy.id === row.targetId));
     if (healing) return `${onEnemies ? "적" : "아군"} ${targets}${onEnemies ? "체가" : "명이"} 합계 ${total} 회복했다!`;
     const base = onEnemies ? `적 ${targets}체에게 합계 ${total} 피해!` : `아군 ${targets}명이 합계 ${total} 피해를 입었다!`;
+    if (effectivenessFeedbackHidden(store.getCurrent().system.battleStaging)) return base;
     const rates = hits.map((row) => row.effectiveness).filter((rate): rate is number => rate !== undefined && rate > 0);
     const weak = rates.some((rate) => rate > 1);
     const resisted = rates.length === hits.length && rates.every((rate) => rate < 1);

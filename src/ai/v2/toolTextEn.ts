@@ -186,6 +186,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
       "battle.allowAutoBattle": "false = no player auto-battle.",
       "battle.clearStatesAfterBattle": "true = clear party ailments after battle.",
       "battle.revealWeakness": "never | afterDiscovery (default) | always.",
+      "battle.staging.effectivenessFeedback": "show (default) | hide = no 'Weak!' tag, no 'super effective' sentence ending, no 'hit a weakness' summary after hits; only the damage number (for games where the weakness is discovered by damage size). Charge telegraphs stay.",
       "battle.staging.pace": "quick (default) | steady = slower action motion and longer pauses between actions (use when the battle feels too fast).",
       saveAccess: "savePoints = save only at save points (place_savepoint). anywhere (default).",
       dialogue: "Default NPC dialogue window look, font and text sound for the whole game.",

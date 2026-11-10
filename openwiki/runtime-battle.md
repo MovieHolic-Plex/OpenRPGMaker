@@ -2500,6 +2500,7 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 - **공개 설정** `system.battleStaging.revealWeakness`: never · afterDiscovery(기본) · always. 대상 고르기(`battleDom.syncWeaknessReveal`, 명령 패널을 만들 때마다)가 지금 명령(통상 공격 = 무기 속성·물리, 기술 = 속성·statistic 으로 물리/마법)의 `revealedEffectiveness` 를 적마다 구해 적 노드 위 칩(`battle-weakness-reveal`)과 대상 목록 줄 이름 옆(`.battle-weakness-row`)에 「약점」·「저항」·「무효」를 단다. afterDiscovery 는 아는 칸만 곱한다. 스냅샷 `knownWeaknesses` 가 그 객체다.
 - QA: `fallen-battle-depth.json` `weakness-discovery`(첫 대상 고르기 칩 없음 `measureLayout reveal-before: null` → 화염검 「약점 발견!」 → 다음 화염검 대상 고르기 칩·목록 「약점」).
   2026-11-03 부터 폴른 스타는 `revealWeakness: never` 라 이 체크포인트의 「다음 대상 고르기 칩」은 뜨지 않는 것이 맞다(아래 절).
+- **맞힌 뒤 상성 알림** `system.battleStaging.effectivenessFeedback`: show(기본, 저장 안 함) · hide. hide 면 표시 계층 세 곳이 상성을 말하지 않는다 — ① 시퀀서 `feedbackFromTimeline` 이 피드백에 `effectiveness`·`weaknessDiscovered` 를 싣지 않아 숫자 위 「약점!·약점 발견!·저항·무효」 꼬리표와 3세대 상성 타격음이 없다, ② `battleDom` 의 `describeEffectiveness` 가 꺼지고 `battleDirectorDom.effectivenessPhrase`·`shownEffectiveness` 가 「효과가 굉장했다!/별로인 듯하다…」를 붙이지 않는다(에메랄드 문장 포함), ③ 광역 요약 `groupSummaryLine` 의 「약점을 찔렀다!」·「효과가 별로인 듯하다…」를 뺀다. 피해 숫자·기모으기 예고 띠·끊김 문장·런타임 발견 장부(`knownWeaknesses`)는 그대로다. 판단은 `effectivenessFeedbackHidden(system.battleStaging)` 하나. 2026-11-10 폴른 스타 오너 「예고는 해야 맞지만, 약점을 보여줄 필요는 없음」. 자료집 `db-battle-staging-effectiveness-feedback`, 조수 `set_project_settings {battle:{staging:{effectivenessFeedback}}}`. 테스트 `test/battleEffectivenessFeedbackSetting.test.ts`.
 
 ## 폴른 스타 전투 체감 — 차분한 흐름 · 무기 계열 평타 특성 · 약점 문구 걷기 (2026-11-03)
 
