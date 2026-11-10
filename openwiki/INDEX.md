@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **193쪽 / 8103KB / 약 2,381,980 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **193쪽 / 8104KB / 약 2,382,271 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,8 +16,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 75KB | 19KB | 487 | ~22,146 |
-| `openwiki/assistant-v2.md` | 291KB | 48KB | 903 | ~88,505 |
-| `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,760 |
+| `openwiki/assistant-v2.md` | 291KB | 48KB | 903 | ~88,514 |
+| `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,764 |
 | `openwiki/beodeul-city.md` | 240KB | 19KB | 1189 | ~73,036 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 740KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4774 | ~217,583 |
@@ -341,7 +341,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L375` 바로 플레이 게임 (2026-10-23)
   - `L479` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2-refactor.md` — 10KB · 102줄 · ~3,086 토큰
+### `openwiki/assistant-v2-refactor.md` — 11KB · 102줄 · ~3,360 토큰
 
 - `L6` 왜
 - `L15` 목표 구조
@@ -351,7 +351,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L71` 진행표
 - `L98` 알려 둘 것
 
-### `openwiki/assistant-v2.md` — 291KB · 903줄 · ~88,505 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 291KB · 903줄 · ~88,514 토큰 · 통째읽기 잘림
 
 - `L16` 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 - `L24` 게임 세계 — 게임마다 다른 칩셋 한 벌, 장소마다 다른 종류 (2026-11-10)
@@ -392,7 +392,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L864` 리드·워커 나누기 (2026-11-01, 기본 꺼짐 — `OPRN_V2_SPLIT`)
 - `L889` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
-### `openwiki/atlas-biome-interior.md` — 109KB · 534줄 · ~32,760 토큰 · 통째읽기 잘림
+### `openwiki/atlas-biome-interior.md` — 109KB · 534줄 · ~32,764 토큰 · 통째읽기 잘림
 
 - `L8` 원본과 칸
 - `L37` 코드
@@ -2297,7 +2297,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L68` 새 문구를 추가하면
 - `L83` 알려진 한계
 
-### `openwiki/joseon-baram.md` — 38KB · 199줄 · ~11,377 토큰
+### `openwiki/joseon-baram.md` — 38KB · 199줄 · ~11,380 토큰
 
 - `L16` 재실행 한 줄 (국내성 맵이 다시 바뀌면)
 - `L32` 변환기와 시트 합치기
@@ -3821,7 +3821,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L159` 검수 기록
 - `L171` 마을 종류 표 연결
 
-### `openwiki/wizarding-world.md` — 18KB · 151줄 · ~5,336 토큰
+### `openwiki/wizarding-world.md` — 18KB · 151줄 · ~5,337 토큰
 
 - `L7` 식별자
 - `L19` 현재 굽기 (2026-10-07)
