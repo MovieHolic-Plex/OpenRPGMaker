@@ -102,8 +102,8 @@ const V2_GAME_TOOLS: readonly string[] = [
 // tile_erase: 끝맺음 검사(gameChecks.ts «다리·출입구·방 쓰임»)가 «tile_erase 로 걷는다» 고 이르는데 v2 도구 풀에 없어 부를 수 없었다 — 이름으로 부르면 실린다.
 const V2_TERRAIN_TOOLS: readonly string[] = ["list_spatial_designs", "stamp_object", "fill_region", "tile_erase"];
 
-/** 휑한 야외를 채워 달라는 말(「빈 곳에 나무 좀」「허전해」「꾸며 줘」) — 빈 터 찾기·채우기 도구를 싣는다. */
-const DRESS_WORDS = /빈\s*(?:곳|터|땅|자리|공간)|허전|휑|썰렁|꾸며|꾸미|채워|소품|장식|decorate|dress up|fill the empty/iu;
+/** 휑한 야외를 채워 달라는 말(「빈 곳에 나무 좀」「빈 눈밭에 바위를 놓아 줘」「허전해」「꾸며 줘」) — 빈 터 찾기·채우기 도구를 싣는다. */
+const DRESS_WORDS = /빈\s*(?:곳|터|땅|자리|공간|눈밭|풀밭|들판|마당|공터)|공터|허전|휑|썰렁|꾸며|꾸미|채워|소품|장식|(?:나무|바위|덤불|수풀|꽃)[^.!?\n]{0,12}(?:심어|심고|놓아|놓고|더해|추가)|decorate|dress up|fill the empty/iu;
 export const V2_DRESS_TOOLS: readonly string[] = ["find_empty_ground", "furnish_outdoor_area", "list_spatial_designs", "stamp_object"];
 
 /**

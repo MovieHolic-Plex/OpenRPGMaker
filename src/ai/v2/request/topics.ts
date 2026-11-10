@@ -93,7 +93,7 @@ const SMALL_BY_TOPIC: Readonly<Partial<Record<GameTopic, readonly string[]>>> = 
 const SMALL_MAX = 19;
 
 /**
- * 작은 일에 처음부터 실을 도구 이름(앞이 먼저) — 늘 싣는 것, 사건·사람 도구, 주제가 부른 것 순. 넘치면 뒤를 자른다.
+ * 작은 일에 처음부터 실을 도구 이름(앞이 먼저) — 늘 싣는 것, 주제가 부른 것, 사람·사건 도구 순. 넘치면 뒤를 자른다.
  * 여기 없는 도구는 필요할 때 싣는다(load_tools 설명에 이름이 뜨고, 이름으로 부르면 그 자리에서 실린다).
  */
 export function smallJobTools(topics: readonly GameTopic[], facets: JobFacets, groups: ToolGroups, audio: AudioAsk, combat: CombatAsk): readonly string[] {
@@ -103,6 +103,7 @@ export function smallJobTools(topics: readonly GameTopic[], facets: JobFacets, g
   const terrain = groups.terrain ? ["list_spatial_designs", "stamp_object", "fill_region"] : [];
   const sound = [...(audio.music ? ["recommend_bgm", "store_find_music", "store_install", "set_game_audio"] : []), ...(audio.sound ? ["store_find_sound", "store_install", "set_game_audio"] : [])];
   const store = groups.store ? groups.extra.filter((name) => name.startsWith("store_")) : [];
-  const want = [...SMALL_BASE, ...(facets.logic ? SMALL_LOGIC : []), ...(facets.people ? SMALL_PEOPLE : []), ...byTopic, ...dress, ...terrain, ...sound, ...store];
+  // 요청이 이름 댄 주제의 도구가 일반 사건 도구보다 먼저다 — 수·글자 상한에 걸리면 뒤(덜 급한 것)가 필요할 때로 밀린다.
+  const want = [...SMALL_BASE, ...byTopic, ...dress, ...terrain, ...(facets.people ? SMALL_PEOPLE : []), ...(facets.logic ? SMALL_LOGIC : []), ...sound, ...store];
   return [...new Set(want)].slice(0, SMALL_MAX);
 }

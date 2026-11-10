@@ -154,6 +154,23 @@ function loadedSchema(tool: PiToolShape): string {
 /** 버들항 칩셋으로만 짓는 도구 — 구성기 세계의 게임에는 싣지 않는다. */
 const BEODEUL_ONLY_TOOLS: ReadonlySet<string> = new Set(["author_forest_route"]);
 
+/** 작은 일의 처음 싣는 도구 글자 상한 — load_tools 설명(약 5천 자)을 더해 4만 자 안에 든다. */
+const SMALL_TOOL_CHARS = 34_000;
+/** 앞(급한 것)부터 상한 안에 드는 도구 이름 — 안 드는 것은 건너뛰고 필요할 때 싣는다. */
+function withinSmallBudget(ordered: readonly PiToolShape[]): Set<string> {
+  const keep = new Set<string>();
+  const seen: ShapeIndex = new Map();
+  let used = 0;
+  for (const tool of ordered) {
+    // 실리는 모양 그대로 잰다(되풀이되는 스키마는 한 번만 실린다).
+    const copy = collapseRepeats(englishToolCopy(tool, true), seen);
+    const size = JSON.stringify({ n: copy.name, d: copy.description, p: copy.parameters }).length;
+    if (used + size > SMALL_TOOL_CHARS) continue;
+    used += size; keep.add(tool.name);
+  }
+  return keep;
+}
+
 export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolShape[]): V2ToolExposure {
   let tools = allTools;
   const task = String(env.request.task ?? "");
@@ -169,12 +186,13 @@ export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolSh
   const placeLazy = lean || composedWorld;
   // 작은 일(고치기·질문·게임 하나를 잇지 않는 이어 하기): 그 일이 쓸 도구만 처음부터 싣는다(request/topics.ts smallJobTools). 청사진·장소 짓기·오프닝·엔딩 도구는 필요할 때.
   // 실측(2026-11-11): 「이 NPC를 두 칸 왼쪽으로 옮겨 줘」에 도구 43개·9.7만 자가 처음부터 실렸고 첫 도구가 write_blueprint 였다.
-  const small = lean && !intent.wholeGame && intent.scope !== "audio" ? new Map(intent.smallTools.map((name, i) => [name, i] as const)) : undefined;
+  const order = lean && !intent.wholeGame && intent.scope !== "audio" ? new Map(intent.smallTools.map((name, i) => [name, i] as const)) : undefined;
+  if (order) tools = [...tools].sort((x, y) => (order.get(x.name) ?? order.size) - (order.get(y.name) ?? order.size));
+  const small = order && withinSmallBudget(tools.filter((t) => order.has(t.name)));
   const offeredSet = new Set([...intent.tools.extra, ...(placeLazy ? PLACE_BUILD_VERBS : [])]);
   // 처음부터 = 이 요청 묶음에 들었고(offered) 기록에서 쓴 것(V2_UP_FRONT). 묶음 밖 도구(v2ToolPool 로만 들어온 것)는 늘 필요할 때.
   const isLazy = (t: PiToolShape) => small ? !small.has(t.name) : (placeLazy && PLACE_BUILD_VERBS.has(t.name))
     || (lazyOn && !!getTool(t.name) && (!V2_UP_FRONT.has(t.name) || !offeredSet.has(t.name)));
-  if (small) tools = [...tools].sort((x, y) => (small.get(x.name) ?? small.size) - (small.get(y.name) ?? small.size));
   const seen: ShapeIndex = new Map();
   const upFront = tools.filter((t) => !isLazy(t)).map((t) => collapseRepeats(englishToolCopy(t, true), seen));
   const lazy = new Map<string, PiToolShape>();

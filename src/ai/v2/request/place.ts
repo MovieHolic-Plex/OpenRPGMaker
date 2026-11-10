@@ -13,8 +13,8 @@ const SHORT_PLACES = [
 ].join("|");
 const PLACE_NOUNS = `${SHORT_PLACES}|지도|마을|도시|거리|골목|던전|동굴|미궁|실내|건물|가게|상점|여관|주점|교회|성당|신전|사당|서재|침실|거실|교실|병실|연구실|연구소|대장간|잡화점|주막|도서관|창고|부엌|예배당|공방|들판|필드|평원|항구|부두|광장|학교|병원|저택|감옥|지하|장소|무대|공간|place|map|village|town|city|dungeon|cave|room|house|building|interior|street`;
 const BUILD_VERBS = "만들|지어|짓|그려|그리|깔아|깔|넓혀|넓히|키워|늘려|추가|하나 더|고쳐|바꿔|꾸며|꾸미|배치|build|make|add|create|expand|redesign|rebuild|draw";
-/** 장소의 이름·곡을 바꾸거나 그 장소의 사람을 넣는 말(「이 맵 이름을 …로 바꿔 줘」「상점 NPC 만들어 줘」)은 장소를 짓는 말이 아니다. */
-const NOT_THE_PLACE = String.raw`(?!\s*(?:의\s*)?(?:이름|제목|명칭|음악|배경\s*음|브금|bgm|곡|npc|주인|점원|상인|직원|손님|사람|주민|간판|대사))`;
+/** 장소의 이름·곡을 바꾸거나 그 장소의 사람을 넣는 말(「이 맵 이름을 …로 바꿔 줘」「상점 NPC 만들어 줘」), 그 장소에 문을 내는 말(「집에 뒷문을 하나 만들어 줘」)은 장소를 짓는 말이 아니다. */
+const NOT_THE_PLACE = String.raw`(?!\s*(?:의\s*)?(?:이름|제목|명칭|음악|배경\s*음|브금|bgm|곡|npc|주인|점원|상인|직원|손님|사람|주민|간판|대사))(?!에\s*(?:뒷문|쪽문|옆문|문(?![가-힣])|출입구|입구|출구|창문))`;
 /** 장소를 짓거나 다시 짓는 요청 낱말 — 장소 이름 뒤 열두 글자 안에 짓기 동사, 또는 «새 ○○». 넉넉히 잡는다(잘못 맞으면 장소 카드를 더 실을 뿐이다). */
 export const PLACE_BUILD_WORDS = new RegExp(`(?:${PLACE_NOUNS})${NOT_THE_PLACE}[^.!?\\n]{0,12}(?:${BUILD_VERBS})|(?:새|새로운|new)\\s*(?:${PLACE_NOUNS})`, "iu");
 

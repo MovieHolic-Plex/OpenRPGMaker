@@ -74,6 +74,13 @@ describe("small jobs get a small prompt and a short tool list", () => {
     expect(shoot("슬라임 세 마리와 싸우는 전투 하나 넣어 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["upsert_troop", "simulate_battle"]));
   });
 
+  it("a snowfield with no «빈 곳» word still gets the filling tools; a wandering foe keeps its tool under the size cap", () => {
+    expect(shoot("눈보라 마을 왼쪽 아래 빈 눈밭에 나무랑 바위를 좀 놓아 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["find_empty_ground", "furnish_outdoor_area"]));
+    const foe = shoot("얼어붙은 호수에 돌아다니는 적을 하나 놓아 줘. 부딪히면 전투가 시작되게 해 줘", "oneEvent");
+    expect(foe.upFront).toEqual(expect.arrayContaining(["place_field_enemy", "upsert_event"]));
+    expect(foe.toolChars).toBeLessThanOrEqual(40_000);
+  });
+
   it("dress words bring the outdoor filling tools and their card", () => {
     const shot = shoot("마을이 좀 허전해. 꾸며 줘", "oneEvent");
     expect(shot.upFront).toEqual(expect.arrayContaining(["find_empty_ground", "furnish_outdoor_area", "stamp_object"]));

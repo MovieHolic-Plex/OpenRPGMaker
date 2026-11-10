@@ -76,6 +76,8 @@ const CORPUS: readonly (readonly [string, Want])[] = [
   ["엔딩까지 가는 길에 표지판 하나 세워 줘", { scope: "edit", whole: false }],
   ["처음부터 끝까지 대사 맞춤법 검토해 줘", { scope: "edit", whole: false, continuation: false }],
   ["게임 속 상점 NPC 만들어 줘", { scope: "edit", whole: false }],
+  // 작은 일 하네스 실측(2026-11-11): 집에 문을 내는 말은 그 집을 짓는 말이 아니다.
+  ["족장의 긴 집에 뒷문을 하나 만들어 줘. 그 문으로 나가면 겨울 시장으로 가게 해 줘", { scope: "edit", whole: false }],
   ["독서실 실내 하나 지어 줘", { scope: "place", game: false }],
   ["썸네일 그림 하나 골라 줘", { scope: "edit", game: false }],
   ["사냥터에서 경험치 쌓게 해 줘", { scope: "edit", encounters: true, game: true }],
