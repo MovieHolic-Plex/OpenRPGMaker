@@ -1218,6 +1218,33 @@
     "the lift that leads to the next story place is not in the entrance room: walking distance from the ladder arrival to the lift pad is at least half of the longest walk in the dungeon, so the rooms are not skippable",
     "the lift stays reachable without optional content (locked gates, rubble, the optional boss); losing to an optional boss does not send the party back to the entrance"
    ]
+  },
+  {
+   "id": "equipment-each-piece-has-a-trait",
+   "label": "무기·방어구는 공격력 숫자만 다르게 두지 않는다",
+   "port": 19570,
+   "lessons": [
+    "equipment-trait-not-just-numbers"
+   ],
+   "prompt": "대장간에 검 셋·창 둘·갑옷 둘·방패 하나를 진열해 줘. 각자 사서 쓸 이유가 있게.",
+   "requirements": [
+    "no two weapons of the same family differ only in attack/defense numbers: each piece has one battle-visible trait the engine reads (normal-attack state, doubleAttack, attackAll, elementalDefenseIds, damageDealtPercent/damageTakenPercent, halfMpCost)",
+    "each piece's description ends with one player-side line naming that trait; no line names an enemy or an enemy weakness",
+    "pieces that share an icon are listed back to the user"
+   ]
+  },
+  {
+   "id": "equip-handover-actor-exists",
+   "label": "동료에게 장비를 건네는 장면은 그 동료가 실제로 장착할 수 있어야 한다",
+   "port": 19571,
+   "lessons": [
+    "equip-permission-before-actor-exists"
+   ],
+   "prompt": "대장장이가 아직 합류하지 않은 창기사 동료 몫으로 창을 만들어 두고, 나중에 합류하면 그 창을 건네 장착시키는 장면을 만들어 줘.",
+   "requirements": [
+    "the spear's equippableActorIds or equippableClassIds includes the companion after the whole build (an id that did not exist yet when the spear was authored must be added once the actor exists)",
+    "the changeEquipment hand-over is accepted in play: after the scene the companion's weapon slot holds the spear and the inventory no longer has it"
+   ]
   }
  ]
 }
