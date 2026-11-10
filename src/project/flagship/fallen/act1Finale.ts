@@ -962,10 +962,12 @@ function floorB3(project: Project, vault: GameMap): GameMap {
   ]);
   read("b3_diary", "찢긴 수첩", B3.diarySW, [
     sign("수첩", "아래층 비늘 짐승에게는\n기도도, 불도, 성광도 모두 미끄러진다."),
-    sign("수첩", "마르코가 비늘 틈에 창을 박았다.\n그제야 설교자님 성광이 먹혀들었다."),
-    sign("수첩", "세 배는 아팠을 거라며 설교자님이 웃었다.\n마르코는 돌아오지 못했다."),
-    // VQA 2026-10-31: 용의 약점을 수첩·엘레나·다친 광신도·카엘·후퇴 대사가 다섯 번 풀어 줬다 — 수첩을 읽은 사람의 몫으로 남긴다.
-    say(IRIS, "비늘 틈이라면… 제 광선도 들어가겠어요."),
+    sign("수첩", "마르코는 비늘 어딘가에 틈이 있다고 했다.\n그 틈을 본 뒤로는 설교자님 성광이 먹혀들었다."),
+    sign("수첩", "틈을 어떻게 냈는지는 끝내 적지 못했다.\n마르코는 돌아오지 못했다."),
+    // VQA 2026-10-31: 용의 약점을 수첩·엘레나·다친 광신도·카엘·후퇴 대사가 다섯 번 풀어 줬다.
+    // 2026-11-10(fs-boss-hide, 오너 「예고는 해야 맞지만, 약점을 보여줄 필요는 없음」): 「틈이 있다·틈이 열리면 마력이 든다」는
+    //   남기고, 무엇으로 틈을 내는지(창·찌르기)와 몇 배인지는 말하지 않는다. 틈을 내는 수단은 싸우며 찾는다.
+    say(IRIS, "틈이라… 어디를 어떻게 쳤을까요."),
   ]);
 
   // 쇠살문과 레버.
@@ -1202,14 +1204,14 @@ function floorB4(project: Project): GameMap {
       say(FANATIC, "…쫓아왔군. 상관없다.\n난 더는 못 걷는다."),
       say(FANATIC, "들어가지 마라. 저놈 비늘은 주문을 삼킨다.\n형제 셋이 불 주문을 외다가 쓰러졌다."),
       say(KAEL, "그럼 어떻게 이겨요?"),
-      say(FANATIC, "…창이다. 마르코가 창으로 비늘을 갈랐을 때\n그 틈으로만 성광이 들어갔다. 잠깐이었지만."),
-      say(FANATIC, "틈은 금방 닫힌다.\n가르고, 바로 쳐라. …그뿐이다."),
+      say(FANATIC, "…비늘이 갈라진 적이 한 번 있었다.\n그 틈으로만 성광이 들어갔다. 잠깐이었지만."),
+      say(FANATIC, "틈은 금방 닫힌다.\n열리면 망설이지 마라. …그뿐이다."),
       say(ELENA, "샘물 좀 떠다 줄게요.\n여기서 기다려요."),
       { kind: "setSelfSwitch", key: "A", value: true } as unknown as Command,
     ], { graphic: chip("tex_easyrpg_charset_actor3", 2, "left"), overlapForbidden: true, animationType: "fixedGraphic" }),
     page(`${woundedId}_p1`, "다친 광신도(물 받음)", [{ kind: "selfSwitch", key: "A", value: true } as unknown as Condition], [
       fork(sw(SW_DRAGON_DOWN), [say(FANATIC, "…정말 쓰러뜨렸군.\n그럼 나도 기어서라도 올라가 볼까.")],
-        [say(FANATIC, "가르고, 바로 쳐라.\n…살아서 돌아와라.")]),
+        [say(FANATIC, "틈이 열리면 망설이지 마라.\n…살아서 돌아와라.")]),
     ], { graphic: chip("tex_easyrpg_charset_actor3", 2, "left"), overlapForbidden: true, animationType: "fixedGraphic" }),
   ]);
 
@@ -1266,7 +1268,7 @@ function floorB4(project: Project): GameMap {
         emote("player", "exclamation", 700),
         say(ELENA, "용이잖아. 수첩에 적힌 그 비늘이야."),
         say(IRIS, "저 뒤 기계에서 신호가 나와요."),
-        say(KAEL, "내가 창으로 틈을 낼게.\n틈 나면 둘이 바로 쳐."),
+        say(KAEL, "어딘가 틈이 있을 거야.\n틈이 보이면 둘이 바로 쳐."),
         setSw(SW_DRAGON_MET),
         m2("m2-201-camera-control", { mode: "return", durationMs: "500", wait: "true" }),
         cutLabel(),
