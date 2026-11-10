@@ -1,0 +1,11 @@
+{
+ "pass": true,
+ "wolfLevel": 4,
+ "score": 4,
+ "failed": [],
+ "reason": "The candidate is real low-res pixel art at nearly the wolves' level: a limited green and brown palette, hard shading bands, a dark outline and leaf-and-branch construction, though the leaf texture is busier and less controlled than the wolves' fur. It faces right with a real face and no beak; the three idles differ, the attack is a clear staff thrust to the right, the hit throws the head back and leans left as recoil, and the dead cell is a collapsed pile with no fringe or clipping.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}
