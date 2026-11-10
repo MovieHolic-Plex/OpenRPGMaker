@@ -22,6 +22,14 @@ function fallenLike(): Project {
 }
 
 describe("Fallen Star item identity (batch 1)", () => {
+  it("every on-hit weapon state lands on at least one ordinary enemy (fs-vqa-fix-all: star lance pierce was blocked everywhere)", () => {
+    const project = fallenLike();
+    applyFallenItemIdentity(project);
+    const lance = project.database.equipment.find((row) => row.id === "equip_fs_spear_star")!;
+    expect(lance.stateInflictIds).not.toContain("state_fs_pierced");
+    expect(lance.stateInflictIds).toEqual(["state_fs_star_mark_1"]);
+  });
+
   it("each trait replaces the old trait line with exactly one new line and the shop spears let Sarah equip them", () => {
     const project = fallenLike();
     const report = applyFallenItemIdentity(project);

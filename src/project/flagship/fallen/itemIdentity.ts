@@ -60,8 +60,10 @@ export const FS_EQUIPMENT_TRAITS: readonly EquipmentTrait[] = [
     patch: (r) => { r.statBonuses = { ...r.statBonuses, attack: 15 }; r.damageDealtPercent = -30; r.effectFlags = { ...r.effectFlags, attackAll: true }; r.iconResourceId = r.imageResourceId = "cc0-jetrel-gen-halberd-guard"; },
   },
   {
-    id: "equip_fs_spear_star", traitLine: "평타: 맞히면 가끔 관통상을 낸다.",
-    patch: (r) => { r.stateInflictIds = ["state_fs_pierced"]; r.stateInflictionChance = 20; r.iconResourceId = r.imageResourceId = "cc0-jetrel-gen-spear-iron"; },
+    // 관통상은 달빛의 용 비늘 퍼즐 전용이라 다른 적 110종이 모두 면역(E, act1Finale)이다 — 확률 100% 로도 화면에 한 번도 안 떴다
+    // (fs-vqa-fix-all U1). 이름 그대로 별 표식을 새기게 해 카엘 마무리기와 이어지게 한다.
+    id: "equip_fs_spear_star", traitLine: "평타: 맞히면 가끔 별 표식을 새긴다.",
+    patch: (r) => { r.stateInflictIds = [STAR_MARK_1]; r.stateInflictionChance = 20; r.iconResourceId = r.imageResourceId = "cc0-jetrel-gen-spear-iron"; },
   },
   {
     id: "equip_fs_spear_pike", traitLine: "평타: 맞히면 가끔 방어를 깎는다.",

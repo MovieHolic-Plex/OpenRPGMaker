@@ -1272,6 +1272,19 @@
     "the arrival tile of every transfer into the dark map has a light source within 2 tiles (or the map ambient is below the player presence light threshold), so the party and the lift cage are visible on arrival",
     "the night mood is kept: map ambient stays dark (>= 0.5); only a small local light (radius <= 3) is added at the arrival"
    ]
+  },
+  {
+   "id": "weapon-state-lands-on-enemies",
+   "label": "무기·기술이 약속한 상태는 실제로 적에게 걸린다",
+   "port": 19573,
+   "lessons": [
+    "advertised-state-reaches-enemies"
+   ],
+   "prompt": "창 하나에 「맞히면 가끔 관통상」 특성을 달아 줘. 관통상은 용의 비늘을 깨는 상태야.",
+   "requirements": [
+    "if most enemies resist the state with rate E, the assistant reports how many enemies it can land on (n/m) instead of silently shipping a dead trait",
+    "a weapon's advertised on-hit state lands on at least one ordinary enemy the player meets with that weapon, or the trait line is changed"
+   ]
   }
  ]
 }
