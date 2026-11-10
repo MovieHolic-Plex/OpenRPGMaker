@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
 import { walkBlueprint } from "../../../src/ai/v2/blueprint.ts";
-import { buildBlueprintPath, type PathStepText } from "../../../src/ai/v2/blueprintPath.ts";
+import { buildBlueprintPath, type PathStepText } from "../../../src/ai/v2/story/blueprintPath.ts";
 import { runAutoPlay } from "../../../src/qa/gameCheck/autoPlay.ts";
 import type { Project } from "../../../src/project/types.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";

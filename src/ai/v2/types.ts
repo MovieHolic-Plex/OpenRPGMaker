@@ -167,6 +167,8 @@ export interface PlaceBuilder {
   accepts(spec: PlaceSpec): boolean;
   /** 명세 → v1 도구 호출. previous 가 있으면 같은 맵을 그 자리에서 다시 짓는다. */
   build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBuildResult;
+  /** 구성기가 한 번에 짜는 장소 — 같은 맵을 다시 짓지 않는다(edit_place 는 짓기 전에 거절하고 그 맵에서 되는 도구를 이른다, place/onePass.ts). */
+  readonly onePass?: true;
   /** (선택) 짓기 전에 기다릴 지연 재료 — 도구의 async prepare(예: build_monster_game 의 캠페인 모듈). */
   prepare?(spec: PlaceSpec): Promise<void>;
 }
@@ -185,6 +187,8 @@ export interface PersonSpec {
   readonly firstTalk?: readonly string[];
   readonly laterTalk?: readonly string[];
   readonly movement?: "still" | "wander" | "patrol";
+  /** 이 사람이 파는 물건 — 말을 걸면(대사 뒤에) 상점이 열린다. item 은 아이템·장비의 이름이나 id. 없는 이름은 값만 있는 잡화로 새로 만든다. */
+  readonly sells?: readonly { readonly item: string; readonly price?: number }[];
 }
 
 /** 사건·컷신 명세 — add_event 의 인자. */

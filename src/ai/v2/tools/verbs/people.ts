@@ -2,9 +2,9 @@
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { EventSpec, PersonSpec } from "../../types";
 import { buildPeople } from "../../people";
-import { buildEvent } from "../../events";
-import { buildScene, SCENE_SCHEMA, type SceneSpec } from "../../scene";
-import { buildBossEncounter, buildEndingScene, type BossEncounterSpec, type EndingSceneSpec } from "../../sceneVerbs";
+import { buildEvent } from "../../story/events";
+import { buildScene, SCENE_SCHEMA, type SceneSpec } from "../../story/scene";
+import { buildBossEncounter, buildEndingScene, type BossEncounterSpec, type EndingSceneSpec } from "../../story/sceneVerbs";
 import { POINT } from "../placeSchema";
 import type { VerbContext } from "../context";
 
@@ -13,13 +13,17 @@ export function peopleVerbs(c: VerbContext) {
   const { env, run, specGate, finishContent } = c;
   const addPeople: PiToolShape = {
     name: "add_people", label: "사람 두기", concurrency: "exclusive",
-    description: "Place NPCs from a spec (role, spot word, appearance words, lines). The function picks a walkable cell and builds the first-talk / later-talk pages.",
+    description: "Place NPCs from a spec (role, spot word, appearance words, lines). The function picks a walkable cell and builds the first-talk / later-talk pages. For a shopkeeper add sells:[{item, price?}] — the shop opens when the player talks to them.",
     parameters: { type: "object", properties: {
       mapId: { type: "string" },
       people: { type: "array", items: { type: "object", properties: {
         role: { type: "string" }, name: { type: "string" }, where: { type: "string" }, at: POINT, mapId: { type: "string" }, looks: { type: "string" },
         firstTalk: { type: "array", items: { type: "string" } }, laterTalk: { type: "array", items: { type: "string" } },
         movement: { type: "string", enum: ["still", "wander", "patrol"] },
+        sells: { type: "array", description: "Makes this person a shopkeeper: talking opens a buy/sell shop after the lines. One call — no set_shop_stock needed.", items: { type: "object", properties: {
+          item: { type: "string", description: "Item or equipment name or id (e.g. 회복약). A name that does not exist is created as a plain item." },
+          price: { type: "integer", description: "Price here. Omit = the item's own price." },
+        }, required: ["item"] } },
       }, required: ["role"] } },
     }, required: ["people"] },
     async execute(id, params) {

@@ -83,7 +83,7 @@ export function objectVerbs(c: VerbContext) {
       if (used >= MOVE_OBJECT_LIMIT) return text({ ok: false, summary: `${p.mapId} 의 가구 옮기기 상한(${MOVE_OBJECT_LIMIT}번)에 닿았다 — 남은 문제를 사용자에게 보고한다.` });
       const edits = (p.edits ?? []).filter((e) => e && e.at && (e.to || e.face || e.remove));
       if (!edits.length) return text({ ok: false, summary: "edits 마다 at 과 함께 to·face·remove 중 하나가 필요하다" });
-      const record = session.places.get(p.mapId);
+      const record = session.placeOf(p.mapId);
       type ArgsState = { tilesetId?: string; mapId?: string; args?: Record<string, unknown>; stampEdit?: boolean; adopted?: { tilesetId: string; args: Record<string, unknown> } };
       const state = record?.result.state as ArgsState | undefined;
       let base: { tilesetId: string; args: Record<string, unknown> } | undefined;

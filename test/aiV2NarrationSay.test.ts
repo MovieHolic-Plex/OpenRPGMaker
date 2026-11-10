@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { createBuildRun } from "@/ai/v2/buildRun";
-import { buildEvent } from "@/ai/v2/events";
+import { buildEvent } from "@/ai/v2/story/events";
 import type { Project } from "@/project/types";
 
 // 2026-10-25 장난감 가게 A/B: who 없는 say 비트가 「who.trim」 으로 add_event 를 죽였다. 이제 내레이션이다.

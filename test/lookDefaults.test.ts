@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { editorDefaultsLeft } from "@/ai/v2/shipChecks";
-import { applyLookDefaults } from "@/ai/v2/shipDefaults";
+import { applyLookDefaults } from "@/ai/v2/story/shipDefaults";
 import type { Project } from "@/project/types";
 
 // 2026-11-05 gpt-only-game round 5 (v1 assistant, Terra alone): all five games played to their ending,

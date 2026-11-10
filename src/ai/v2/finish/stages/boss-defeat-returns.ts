@@ -2,7 +2,7 @@
 // 2026-10-30 씬 벤치 boss-room «패배하면 먼 마을로, 재도전 길이 멂»). 출구·이동 칸 마감(말 거는 보스에 전투 붙이기) 뒤에.
 import type { FinishStage } from "../types";
 import { createBuildRun } from "../../buildRun";
-import { bossDefeatReturns } from "../../bossTalkBattles";
+import { bossDefeatReturns } from "../../story/bossTalkBattles";
 
 export const stage: FinishStage = {
   id: "boss-defeat-returns", phase: "blueprint", order: 97,

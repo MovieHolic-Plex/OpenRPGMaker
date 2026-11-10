@@ -7,7 +7,7 @@ import { builderFor } from "../../place/builders";
 import { summarizeChecks } from "../../checks";
 import type { PlaceSpec } from "../../types";
 import { HELPER_LIMITS, runHelperJobs, type HelperJob } from "../../helpers";
-import { restoreEventFromBefore } from "../../restoreEvent";
+import { restoreEventFromBefore } from "../../story/restoreEvent";
 import { roomParts, SHAPE_EXAMPLES } from "../../place/roomParts";
 import { ROOM_IDEA_RULE, roomIdeasFor } from "../../place/roomIdeas";
 import { text, see, withImages } from "../support";
@@ -93,7 +93,7 @@ export function readVerbs(c: VerbContext) {
       if (!map) return text({ ok: false, summary: `맵 ${mapId} 이 없다` });
       const seen = await see(env, session, task, "content", [mapId], undefined, false);
       const events = (map.events ?? []).slice(0, 30).map((e) => `${e.id} ${e.name ?? ""}(${e.x},${e.y})`);
-      return withImages({ ok: true, map: { id: map.id, name: map.name, tileset: map.tilesetId, size: `${map.width}×${map.height}` }, record: session.places.get(mapId)?.spec, machineChecks: summarizeChecks(seen.checks), events }, seen, 1);
+      return withImages({ ok: true, map: { id: map.id, name: map.name, tileset: map.tilesetId, size: `${map.width}×${map.height}` }, record: session.placeOf(mapId)?.spec, machineChecks: summarizeChecks(seen.checks), events }, seen, 1);
     },
   };
   const restoreEvent: PiToolShape = {

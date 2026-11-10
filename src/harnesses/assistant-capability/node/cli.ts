@@ -76,6 +76,12 @@ export async function run(argv: string[]): Promise<number> {
     const child = spawn('bun', [resolve('src/harnesses/assistant-capability/node/matrix500Entry.ts'), stage === 'matrix500-spec' ? 'spec' : stage === 'matrix-ds-spec' ? 'ds-spec' : 'selfcheck', ...argv.slice(1)], { stdio: 'inherit', cwd: process.cwd() });
     return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
   }
+  // 작은 일 30가지(small-jobs.json): 판정기 자기검사 · 실제 v2 턴 실행 · 보고서. 편집기 도구를 불러오므로 bun 으로 돈다.
+  if (stage === 'small-jobs' || stage === 'small-jobs-selfcheck' || stage === 'small-jobs-report' || stage === 'small-jobs-rescore') {
+    const mode = stage === 'small-jobs' ? 'run' : stage === 'small-jobs-selfcheck' ? 'selfcheck' : stage === 'small-jobs-rescore' ? 'rescore' : 'report';
+    const child = spawn('bun', [resolve('src/harnesses/assistant-capability/node/smallJobsEntry.ts'), mode, ...argv.slice(1)], { stdio: 'inherit', cwd: process.cwd() });
+    return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
+  }
   if (stage === 'matrix-score') {
     const root = option('out');
     if (!root) throw Error('matrix-score --out <새 실행 폴더>');
