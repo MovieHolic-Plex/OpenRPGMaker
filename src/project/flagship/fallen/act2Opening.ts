@@ -10,7 +10,7 @@
  * 좌표는 지어진 맵 기준. 감방 평면은 CELL_ROOM 한 곳에서만 고친다.
  */
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
-import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
+import type { Command, Condition, EnemyRecord, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { FS_NAMES } from "../fallenStarStory";
 import { FS_SILVER_SPOON } from "./townLife";
 import { FS_KEEPER_SEAL } from "./battleItems";
@@ -2052,6 +2052,32 @@ export const FS2_COMBO_EMBER_WALL = "combo_fs2_ember_wall";
 export const FS2_COMBO_FROST_STARS = "combo_fs2_frost_stars";
 export const FS2_COMBO_FLAME_CROSS_TWIN = "combo_fs2_flame_cross_twin";
 const PIERCED = "state_fs_pierced";
+
+/**
+ * 새라의 관통상이 2막 잡목에 걸리게 한다. 1막은 「다른 적은 관통상에 걸리지 않는다」(act1Finale.ts)로 그때 있던 모든 적에 E 를 거는데,
+ * 2막 적은 1막 기록(숲늑대 등)을 복제해 그 E 를 물려받았다 — 꿰뚫는 창·쌍창 돌파·뇌창·서리 별무리가 약속한 관통상이
+ * 2막 적 51종 어디에도 안 걸렸다(fs-vqa-fix-all). 보통 적만 기본 배율로 되돌린다.
+ * 남기는 E: 우물 보스(피해 숫자가 번개를 가리켜야 한다, #4517)·새라 결투·재의 회수자와 그 부분·우두머리(정예) —
+ * 마법 3배가 보스·우두머리 배율을 바꾸지 않게. 1막 적(달빛의 용 퍼즐)은 그대로다.
+ * 잡목 무리 나누기·우두머리 복제가 끝난 뒤(applyFallenMobBalance 다음)에 부른다.
+ */
+export const FS2_PIERCE_IMMUNE = [
+  "enemy_fs2_well_beast", "enemy_fs2_sarah",
+  "enemy_fs2_ash_collector", "enemy_fs2_collector_eye_grab", "enemy_fs2_collector_eye_burn", "enemy_fs2_swallowed_fire",
+] as const;
+export function letAct2PierceWoundLand(project: Project): string[] {
+  const keep = new Set<string>(FS2_PIERCE_IMMUNE);
+  const changed: string[] = [];
+  for (const enemy of project.database.enemies) {
+    if (!enemy.id.startsWith("enemy_fs2_") || keep.has(enemy.id)) continue;
+    const rates = { ...(enemy.stateRates ?? {}) } as Record<string, string>;
+    if (rates.state_fs_elite_aura === "A" || rates[PIERCED] !== "E") continue;
+    delete rates[PIERCED];
+    enemy.stateRates = rates as EnemyRecord["stateRates"];
+    changed.push(enemy.id);
+  }
+  return changed;
+}
 
 function sarahKit(project: Project, exec: Exec): void {
   exec(project, "upsert_skill", { skill: {
