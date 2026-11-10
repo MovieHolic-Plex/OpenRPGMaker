@@ -11,6 +11,9 @@ import type { RuntimeEventView } from "@/project/runtimeEventState";
  *
  * 고르는 순서: 지금 목표가 가리키는 이벤트 → 상하좌우 → 대각. 같은 등급이면 위·왼쪽·오른쪽·아래 순(결정적).
  * 밀기·숨기 이벤트는 고르지 않는다(등 뒤 가구가 밀리거나 몸이 숨는 일은 의도가 아니다).
+ * 장소를 옮기는 조사 이벤트(문·계단·사다리·승강 발판 — 페이지에 transfer 가 있고 말하는 사람이 아닌 것)도 고르지 않는다.
+ * 왜(2026-11-10 폴른 스타 우물 VQA D1·fs-defect-sweep C1): 도착 칸에서 대사를 넘기려고 누른 Enter 를 이 보조가 등 뒤·대각의
+ * 사다리로 잡아 방금 떠난 맵으로 되돌려 보냈다. 이동은 정면으로 보고 눌렀을 때만 일어난다(RM 관례).
  *
  * 닿으면 싸우는 적(`fieldFoe` 가 참인 접촉 이벤트)도 고른다 — 정면 조사 단추로 열리는 것(findFieldFoeFacing)과 같은 대상이다.
  * 왜(2026-10-31 jb3c terra jrpg): 3×2 몸 보스는 그림이 몸보다 크게 그려져, 판정자가 몸 바로 위 칸에 서서 위를 보고 눌렀을 때
@@ -63,6 +66,15 @@ export type NearbyActionTarget = {
   readonly diagonal: boolean;
 };
 
+/** 장소를 옮기는 페이지인가 — transfer 가 있고, 이름 붙은 대사를 하는 보이는 사람(대화 끝에 장면을 넘기는 인물)이 아니다. */
+function isTravelPage(page: RuntimeEventView["page"]): boolean {
+  const commands = page?.commands ?? [];
+  if (!commands.some((command) => command.kind === "transfer")) return false;
+  const visible = page?.graphic && !page.graphic.transparent && page.graphic.sprite;
+  const speaks = commands.some((command) => command.kind === "text" && typeof command.speaker === "string" && command.speaker.trim() !== "");
+  return !(visible && speaks);
+}
+
 export function pickNearbyActionTarget(
   views: readonly RuntimeEventView[],
   tileX: number,
@@ -81,6 +93,7 @@ export function pickNearbyActionTarget(
     if (view.trigger.kind !== "action" && !foe) continue;
     const kind = view.page?.interaction?.kind;
     if (kind === "pushable" || kind === "hiding") continue;
+    if (!foe && isTravelPage(view.page)) continue;
     if (!foe && options.usable && !options.usable(view)) continue;
     const rect = view.bodyRect;
     // 주인공 칸에서 몸 사각까지의 칸 거리(가로·세로 따로)
