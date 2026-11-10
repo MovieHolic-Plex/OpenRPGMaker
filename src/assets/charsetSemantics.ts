@@ -13,6 +13,7 @@ import { MODERN_CHARSET_SEMANTICS } from "@/assets/modernCharsets";
 import { REFMAP_DOLL_CHARSET_SEMANTICS } from "@/assets/refmapDollSemantics";
 import { SCARLOXY_PEOPLE_CHARSET_SEMANTICS } from "@/assets/scarloxyPeopleCharsets";
 import { WIZARDING_CHARSET_SEMANTICS } from "@/assets/wizardingCharsets";
+import { FALLEN_MIRROR_CHARSET_SEMANTICS } from "@/assets/fallenMirrorCharsets";
 import type { CharsetLabelOverride } from "@/project/types";
 
 export type CharsetGender = "male" | "female" | "none";
@@ -299,7 +300,7 @@ function withAppearance(entry: CharsetSemanticEntry): CharsetSemanticEntry {
   return { ...entry, appearance };
 }
 
-export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = [...CHARSET_SEMANTICS_RAW, ...WIZARDING_CHARSET_SEMANTICS, ...HEROES_CHARSET_SEMANTICS, ...MODERN_CHARSET_SEMANTICS, ...SCARLOXY_PEOPLE_CHARSET_SEMANTICS, ...REFMAP_DOLL_CHARSET_SEMANTICS].map(withAppearance);
+export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = [...CHARSET_SEMANTICS_RAW, ...WIZARDING_CHARSET_SEMANTICS, ...HEROES_CHARSET_SEMANTICS, ...MODERN_CHARSET_SEMANTICS, ...SCARLOXY_PEOPLE_CHARSET_SEMANTICS, ...REFMAP_DOLL_CHARSET_SEMANTICS, ...FALLEN_MIRROR_CHARSET_SEMANTICS].map(withAppearance);
 
 export function findCharsetSemantic(textureKey: string, characterIndex: number): CharsetSemanticEntry | undefined {
   return [...CHARSET_SEMANTICS, ...sharedCharacterSemantics()].find((entry) => entry.textureKey === textureKey && entry.characterIndex === characterIndex);

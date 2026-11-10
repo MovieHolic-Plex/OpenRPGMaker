@@ -25,6 +25,7 @@ import { resolveModernCharsetUrl } from "./modernCharsets";
 import { resolveRefmapDollBattlerUrl, resolveRefmapDollCharsetUrl } from "./refmapDollCharsets";
 import { resolveScarloxyPeopleCharsetUrl } from "./scarloxyPeopleCharsets";
 import { resolveWizardingCharsetUrl } from "./wizardingCharsets";
+import { resolveFallenMirrorCharsetUrl } from "./fallenMirrorCharsets";
 import { resolveGeneratedEffectAssetUrl } from "./generatedEffectSheets";
 import { resolveScarloxyAssetUrl } from "./scarloxyPack";
 import { resolveHarnessMonsterCharsetUrl, resolveHarnessMonsterUrl } from "./harnessMonsterArt";
@@ -281,6 +282,7 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     resolveWizardingCharsetUrl(resourceId) ??
     resolveHeroesCharsetUrl(resourceId) ??
     resolveModernCharsetUrl(resourceId) ??
+    resolveFallenMirrorCharsetUrl(resourceId) ??
     resolveRefmapDollCharsetUrl(resourceId) ??
     resolveRefmapDollBattlerUrl(resourceId) ??
     resolveScarloxyPeopleCharsetUrl(resourceId) ??

@@ -1205,6 +1205,20 @@
     "every mirror page that shows a one-frame object sprite (dark and lit) has animationType fixedGraphic (or another fixed-direction type), so inspecting it from the side or below never swaps in another row of the charset",
     "the mirrors are action-trigger, same priority, and stay reachable from at least one adjacent walkable cell"
    ]
+  },
+  {
+   "id": "mirror-puzzle-reads-as-mirrors",
+   "label": "빛 반사 퍼즐의 거울은 거울 그림이고 향한 쪽이 보인다",
+   "port": 19570,
+   "lessons": [
+    "puzzle-prop-art-matches-noun",
+    "puzzle-state-visible"
+   ],
+   "prompt": "탑 3층에 천창 빛을 거울 다섯 개로 꺾어 계단 빛 막까지 잇는 퍼즐을 만들어 줘. 거울은 돌릴 수 있고, 빛이 닿으면 밝아져야 해.",
+   "requirements": [
+    "each mirror event uses a sprite that depicts a mirror (glass pane in a frame), not a button, rock or unrelated object chip; dark and lit states are visibly different",
+    "the mirror sprite shows the direction it currently faces (one page per facing value, fixed graphic), so the player can plan the beam path without inspecting each mirror"
+   ]
   }
  ]
 }

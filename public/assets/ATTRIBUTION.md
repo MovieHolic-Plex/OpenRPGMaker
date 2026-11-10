@@ -526,6 +526,10 @@ the head of one REFMAP character is lifted as a blob (hair, headwear, face, bear
 - Names, appearance sentences, roles and tags were written by the same model looking at the chips.
 - Side-view battle sheets (2026-10-29): `generated/charset-battlers/refmap-doll/RefmapDoll<n>-<i>.png` (144×384, 24 poses) and `…/refmap-doll/cast/RefmapDoll<n>-<i>.png` (144×336, 7 elements × 3 steps) for 13 representative chips (the list is `REFMAP_DOLL_BATTLER_SLOTS` in `src/assets/refmapDollCharsets.ts`) are further modifications of the same chips under the same terms and credit line. A Claude Opus 5.5 agent typed each pose pixel by pixel from the chip and looked at its own renders, a separate Opus call reviewed every drawing adversarially for faults, and the drawing was redrawn from those findings; the walk cells and the front cell are the chip's own frames. Installer `src/harnesses/charset-actor/install_refmap_battlers.py`.
 
+## FallenMirror1 object chip — Fallen Star tower lens mirror (2026-11-10)
+
+`generated/charsets/FallenMirror1.png` (288×256 RM2K3 CharSet, 2 cells × 4 directions) is OPRN original code-drawn pixel art made by `scripts/content/fallen-tower-mirror/bake.py` (no third-party source). Cell 0 = dark mirror, cell 1 = lit mirror; each direction row shows the way the mirror faces. Same license as other OPRN default assets.
+
 ## Workshop character card sample (2026-10-22)
 
 `workshop/char-gen-sample.png` (248×116, shown at 1× on the editor's 공방 「캐릭터」 card) is a composite of real char-gen output:
