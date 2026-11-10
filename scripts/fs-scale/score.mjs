@@ -24,6 +24,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { applyArtPenalty, artPenalty } from "./artPenalty.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_WEIGHTS_PATH = join(HERE, "weights.json");
@@ -380,7 +381,7 @@ export function scoreProject(doc, options = {}) {
 
 // ---------- CLI ----------
 function parseArgs(argv) {
-  const args = { files: [], baseline: undefined, measure: false, json: false, weights: undefined, looks: undefined };
+  const args = { files: [], baseline: undefined, measure: false, json: false, weights: undefined, looks: undefined, art: false };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === "--baseline") args.baseline = argv[(index += 1)];
@@ -388,6 +389,7 @@ function parseArgs(argv) {
     else if (arg === "--measure") args.measure = true;
     else if (arg === "--json") args.json = true;
     else if (arg === "--looks") args.looks = argv[(index += 1)];
+    else if (arg === "--art") args.art = true;
     else args.files.push(arg);
   }
   return args;
@@ -396,7 +398,7 @@ function parseArgs(argv) {
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const args = parseArgs(process.argv.slice(2));
   if (args.files.length === 0) {
-    console.error("usage: node scripts/fs-scale/score.mjs [--baseline blank.project.json] [--measure] [--json] <project.json>...");
+    console.error("usage: node scripts/fs-scale/score.mjs [--baseline blank.project.json] [--measure] [--json] [--art] <project.json>...");
     process.exit(2);
   }
   const baseline = args.baseline ? JSON.parse(readFileSync(args.baseline, "utf8")) : undefined;
@@ -420,11 +422,21 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
         }
       }
     }
+    // --art: 그림 감점(npc-chipset·map-lookalike, 계열당 −5·상한 −10). 점수가 있을 때만 깎고 이유 줄을 붙인다.
+    if (args.art) {
+      const art = artPenalty(doc);
+      row.art = art;
+      if (row.score !== undefined) {
+        row.score_before_art = row.score;
+        row.score = applyArtPenalty(row.score, art);
+      }
+    }
     rows.push(row);
   }
   if (args.json) console.log(JSON.stringify(rows, null, 2));
   else for (const row of rows) {
     console.log(args.measure ? `${row.file}\n${JSON.stringify(row.raw)}` : `${String(row.score).padStart(5)}  ${row.file}`);
     for (const line of row.looks?.lines ?? []) console.log(`       ${line}  [${row.looks.measure} corpus ${row.looks.corpus_sha}]`);
+    for (const line of row.art?.lines ?? []) console.log(`       ${line}`);
   }
 }
