@@ -22,6 +22,8 @@ export type SmallJob = {
   allow?: Allow;
   /** 손으로 적용하는 정답: 실제 편집기 도구 호출 순서. 자기검사가 runTool 로 돌린다. */
   reference: ToolCall[];
+  /** 정답의 다른 모양(실모델이 실제로 낸 올바른 구현 등). 자기검사에서 모두 합격해야 한다. */
+  accept?: Array<{ note: string; calls: ToolCall[] }>;
   /** 그럴듯한 오답들. 자기검사에서 모두 불합격해야 한다. */
   wrong: Array<{ note: string; calls: ToolCall[] }>;
   note?: string;

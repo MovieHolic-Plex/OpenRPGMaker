@@ -1,6 +1,6 @@
 // 작은 일 실행 결과(summary.json)를 자체완결 HTML 한 장으로. 바깥 CDN·스크립트 없음.
 // 원인별 묶음은 실행 폴더의 causes.json(사람이 결과를 읽고 쓴 것: [{ title, why, jobs:[id…] }])이 있으면 그것을 쓰고,
-// 없으면 통과하지 못한 일을 까닭 글 그대로 나열한다 — 원인을 지어내지 않는다.
+// 없으면 통과하지 못한 일을 까닭 글 그대로 나열한다 — 원인을 지어내지 않는다. disclosures.json(문자열 배열)은 「판정에 대해 알아 둘 것」에 싣는다.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { JobResult } from './run';
@@ -8,7 +8,7 @@ import { loadSuite } from './suite';
 
 const esc = (text: unknown): string => String(text ?? '').replace(/[&<>"]/gu, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]!));
 const minutes = (ms: number): string => (ms / 60_000).toFixed(1);
-const kilo = (n: number): string => (n >= 1000 ? `${(n / 1000).toFixed(n >= 100_000 ? 0 : 1)}k` : String(n));
+const kilo = (n: number): string => (n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M` : n >= 1000 ? `${(n / 1000).toFixed(n >= 100_000 ? 0 : 1)}k` : String(n));
 const STATUS: Record<string, string> = { pass: '통과', fail: '불합격', timeout: '시간 초과', infra: '기반 오류' };
 const badge = (status: string): string => `<span class="badge ${status}">${STATUS[status] ?? status}</span>`;
 
@@ -34,6 +34,17 @@ export function writeSmallJobsReport(options: { run?: string; html?: string }): 
   const results: JobResult[] = summary.jobs;
   const causes: Array<{ title: string; why: string; jobs: string[] }> = existsSync(resolve(run, 'causes.json')) ? JSON.parse(readFileSync(resolve(run, 'causes.json'), 'utf8')) : [];
   const byId = new Map(results.map(result => [result.id, result]));
+  // 판정에 대해 알아 둘 것(사람이 쓴 disclosures.json: 문자열 배열)과, 오프라인 재판정으로 상태가 바뀐 일(result.liveVerdict 에서 계산).
+  const disclosures: string[] = existsSync(resolve(run, 'disclosures.json')) ? JSON.parse(readFileSync(resolve(run, 'disclosures.json'), 'utf8')) : [];
+  const flipped = results.filter(result => (result as any).liveVerdict && (result as any).liveVerdict.status !== result.status);
+  const median = (values: number[]): number => { const sorted = [...values].sort((x, y) => x - y); const mid = sorted.length >> 1; return !sorted.length ? 0 : sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2; };
+  const fixtureRows = Object.keys(suite.fixtures).filter(id => results.some(result => result.fixture === id)).map(id => {
+    const rows = results.filter(result => result.fixture === id);
+    return `<tr><td><b>${esc(id)}</b> <span class="muted">${esc(suite.fixtures[id]).slice(0, 90)}</span></td><td class="num"><b>${rows.filter(row => row.status === 'pass').length}</b>/${rows.length}</td><td class="num">${rows.filter(row => row.complete).length}/${rows.length}</td><td class="num">${median(rows.map(row => row.toolCallCount))}</td><td class="num">${minutes(median(rows.map(row => row.wallMs)))}</td><td class="num">${kilo(Math.round(median(rows.map(row => row.tokens.input + row.tokens.cacheRead))))}</td><td class="num">${Math.round(median(rows.map(row => row.systemPromptChars ?? 0))).toLocaleString('en')}</td></tr>`;
+  }).join('');
+  const verdictNotes = disclosures.length || flipped.length
+    ? `<h2>판정에 대해 알아 둘 것</h2>${disclosures.length ? `<ul>${disclosures.map(text => `<li>${esc(text)}</li>`).join('')}</ul>` : ''}${flipped.length ? `<p>실행 뒤 판정기만 고쳐 오프라인으로 다시 판정했다(모델은 다시 돌리지 않았다 — 저장해 둔 전/후 문서에 같은 검사를 다시 적용). 상태가 바뀐 일 ${flipped.length}건:</p><table class="jobs"><thead><tr><th>일</th><th>실행 때</th><th>실행 때 까닭</th><th>지금</th></tr></thead><tbody>${flipped.map(result => `<tr><td><b>${esc(result.id)}</b></td><td>${badge((result as any).liveVerdict.status)}</td><td class="why">${esc(String((result as any).liveVerdict.reason).slice(0, 220))}</td><td>${badge(result.status)}</td></tr>`).join('')}</tbody></table>` : ''}`
+    : '';
   const notPassed = results.filter(result => result.status !== 'pass');
   const c = summary.counts, m = summary.medians;
   const tile = (value: string, label: string, sub = ''): string => `<div class="tile"><div class="v">${value}</div><div class="l">${label}</div>${sub ? `<div class="s">${sub}</div>` : ''}</div>`;
@@ -64,10 +75,12 @@ table{border-collapse:collapse;width:100%;background:var(--card);border:1px soli
 </style></head><body><main>
 <h1>작은 일 30가지 — 조수 ${esc(summary.assistantVersion)} · ${esc(summary.model)}</h1>
 <p class="meta">기준 main ${esc(summary.git.mainBase || '-')} · 머리 ${esc(summary.git.sha)} (${esc(summary.git.branch)}${summary.git.dirty ? ' · 작업 트리 변경 있음' : ''}) · ${esc(String(summary.startedAt).slice(0, 16))} ~ ${esc(String(summary.finishedAt).slice(0, 16))} UTC · 일마다 새 픽스처 · 한 턴(되물으면 「네가 판단해서 진행해 줘」 한 번) · 상한 ${summary.timeLimitMin}분 · 판정은 저장·재로드한 문서의 기계 검사(모델 판정자 없음)</p>
-<div class="tiles">${tile(`${c.pass} / ${c.jobs}`, '통과', `불합격 ${c.fail} · 시간 초과 ${c.timeout} · 기반 오류 ${c.infra}`)}${tile(`${c.complete} / ${c.jobs}`, '턴이 «완료»로 끝남', '조수 자신의 턴 끝 판정')}${tile(`${c.sideEdited ?? 0} / ${c.jobs}`, '요청 밖 변경이 있었던 일', '타이틀·엔딩·자료집·다른 이벤트 내용 등')}${tile(String(m.toolCalls), '도구 호출 중앙값', `합계 ${summary.totals.toolCalls}회`)}${tile(`${minutes(m.wallMs)}분`, '걸린 시간 중앙값', `합계 ${minutes(summary.totals.wallMs)}분`)}${tile(`${kilo(m.inputTokens)} / ${kilo(m.outputTokens)}`, '토큰 in / out 중앙값', `합계 ${kilo(summary.totals.inputTokens)} / ${kilo(summary.totals.outputTokens)}`)}${tile(Number(m.systemPromptChars).toLocaleString('en'), '지시문 글자 중앙값', '첫 모델 호출')}${tile(String(m.toolsOffered), '처음 실린 도구 수 중앙값', m.toolSchemaChars ? `도구 설명 ${Number(m.toolSchemaChars).toLocaleString('en')}자` : '')}</div>
+<div class="tiles">${tile(`${c.pass} / ${c.jobs}`, '통과', `불합격 ${c.fail} · 시간 초과 ${c.timeout} · 기반 오류 ${c.infra}${flipped.length ? ` · 실행 때 판정은 ${results.filter(result => ((result as any).liveVerdict?.status ?? result.status) === 'pass').length} (아래 「판정에 대해 알아 둘 것」)` : ''}`)}${tile(`${c.complete} / ${c.jobs}`, '턴이 «완료»로 끝남', '조수 자신의 턴 끝 판정')}${tile(`${c.sideEdited ?? 0} / ${c.jobs}`, '요청 밖 변경이 있었던 일', '타이틀·엔딩·자료집·다른 이벤트 내용 등')}${tile(String(m.toolCalls), '도구 호출 중앙값', `합계 ${summary.totals.toolCalls}회`)}${tile(`${minutes(m.wallMs)}분`, '걸린 시간 중앙값', `합계 ${minutes(summary.totals.wallMs)}분`)}${tile(`${kilo(m.inputTokens)} / ${kilo(m.outputTokens)}`, '토큰 in / out 중앙값 (입력은 캐시 읽기 포함)', `합계 ${kilo(summary.totals.inputTokens)} / ${kilo(summary.totals.outputTokens)}`)}${tile(Number(m.systemPromptChars).toLocaleString('en'), '지시문 글자 중앙값', '첫 모델 호출')}${tile(String(m.toolsOffered), '처음 실린 도구 수 중앙값', m.toolSchemaChars ? `도구 설명 ${Number(m.toolSchemaChars).toLocaleString('en')}자` : '')}</div>
 <h2>가족별</h2><table class="fam"><thead><tr><th>가족</th><th>통과</th><th>일마다</th><th></th></tr></thead><tbody>${familyBars}</tbody></table>
+<h3>픽스처별</h3><table class="fx"><thead><tr><th>픽스처</th><th>통과</th><th>«완료»</th><th>호출 중앙값</th><th>분 중앙값</th><th>입력 토큰 중앙값</th><th>지시문 자 중앙값</th></tr></thead><tbody>${fixtureRows}</tbody></table>
 <p class="meta">칸 색: <span class="badge pass">통과</span> <span class="badge fail">불합격</span> <span class="badge timeout">시간 초과</span> <span class="badge infra">기반 오류</span> — 시간 초과와 기반 오류도 통과가 아닌 것으로 센다. 다시 돌려 초록으로 바꾸지 않았다.</p>
 <h2>무엇이 왜 실패하나</h2>${causeHtml}${uncovered.length ? `<section class="cause"><h3>묶지 못한 것 <span class="muted">— ${uncovered.length}건</span></h3>${uncovered.map(result => `<div class="ex"><div>${badge(result.status)} <b>${esc(result.id)}</b> <span class="req">${esc(result.request)}</span></div><p class="why">${esc(result.reason)}</p><p class="calls">${callLine(result)}</p></div>`).join('')}</section>` : ''}
+${verdictNotes}
 <h2>일마다</h2>${tables}
 <h2>다시 재기</h2><pre>npm run -s build:fast &amp;&amp; node scripts/build-electron.mjs
 npm run harness -- assistant-capability small-jobs-selfcheck            # 판정기 자기검사(모델 없음)

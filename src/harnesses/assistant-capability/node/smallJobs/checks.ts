@@ -26,7 +26,7 @@ function commandsDeep(commands: any[] | undefined, out: any[] = []): any[] {
   for (const command of commands ?? []) {
     if (!command || typeof command !== 'object') continue;
     out.push(command);
-    for (const key of ['then', 'else', 'body', 'branch', 'transactionBranch', 'failedTransactionBranch', 'cancelBranch', 'commands']) if (Array.isArray(command[key])) commandsDeep(command[key], out);
+    for (const key of ['then', 'else', 'body', 'branch', 'transactionBranch', 'failedTransactionBranch', 'cancelBranch', 'victoryBranch', 'escapeBranch', 'defeatBranch', 'commands']) if (Array.isArray(command[key])) commandsDeep(command[key], out);
     for (const option of command.options ?? []) if (Array.isArray(option?.branch)) commandsDeep(option.branch, out);
   }
   return out;
@@ -46,7 +46,7 @@ function upperTileAt(doc: Doc, mapId: string, x: number, y: number): boolean {
 }
 /** 눈에 보이는 것이 그 칸에 있나: 이벤트 그림이 있거나 그 칸에 윗층 타일이 깔려 있다. */
 /** 처음 말을 걸었을 때 그 글이 나오는가. */
-const saysFirst = (event: Ev, phrase: string): boolean => interact(event, freshSession()).texts.some(body => includesPhrase(body, phrase));
+const saysFirst = (doc: Doc, event: Ev, phrase: string): boolean => interact(event, freshSession(), doc).texts.some(body => includesPhrase(body, phrase));
 const visibleAt = (doc: Doc, mapId: string, event: Ev): boolean => hasSprite(event) || upperTileAt(doc, mapId, event.x, event.y);
 const inBounds = (doc: Doc, mapId: string, x: number, y: number): boolean => { const map = doc.maps?.[mapId]; return !!map && x >= 0 && y >= 0 && x < map.width && y < map.height; };
 const cheb = (a: { x: number; y: number }, b: { x: number; y: number }): number => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
@@ -79,7 +79,7 @@ const itemIdsByName = (doc: Doc, name: string): string[] => (doc.database?.items
 // 「한 번만 준다」「열쇠가 있을 때만 다른 글」은 명령이 있다는 것만으로는 알 수 없어서, 두 번 말을 걸어 본다.
 type Play = { session: any; texts: string[]; items: Record<string, number>; gold: number; shops: any[]; battles: any[] };
 const freshSession = (inventory: Record<string, number> = {}): any => ({ switches: {}, variables: {}, selfSwitches: {}, inventory: { ...inventory }, gold: 0, partyActorIds: [], timers: {}, flags: {}, friendship: {} });
-function interact(event: Ev, session: any): Play {
+function interact(event: Ev, session: any, doc?: Doc): Play {
   const play: Play = { session, texts: [], items: {}, gold: 0, shops: [], battles: [] };
   const page = event.pages?.length ? resolveEventPage(event as never, session) : { commands: event.commands ?? [] };
   const num = (value: unknown): number => (typeof value === 'number' ? value : NaN);
@@ -101,6 +101,8 @@ function interact(event: Ev, session: any): Play {
         const held = session.variables[command.variableId] ?? 0, value = num(command.value);
         session.variables[command.variableId] = command.op === '+=' ? held + value : command.op === '-=' ? held - value : command.op === '*=' ? held * value : command.op === '/=' ? held / value : value;
       } else if (command.kind === 'fork') run(evalCondition(session, command.condition, event.id) ? command.then : command.else, depth + 1);
+      // 공통 이벤트 호출은 그 명령들을 이어서 돈다(부르는 이벤트의 셀프 스위치를 쓴다).
+      else if (command.kind === 'callCommonEvent') run((doc?.commonEvents ?? []).find((common: any) => common?.id === command.commonEventId)?.commands, depth + 1);
       // 선택지는 사용자가 무엇을 고를지 모른다 — 모든 갈래를 차례로 따라가 합친다.
       else if (command.kind === 'choices') for (const option of command.options ?? []) run(option?.branch, depth + 1);
     }
@@ -143,7 +145,7 @@ const KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result
     if (!fresh.length) return no('새 이벤트가 없다');
     const notes: string[] = [];
     for (const { mapId, event } of fresh) {
-      if (!saysFirst(event, spec.say)) { notes.push(`${event.name ?? event.id}: 처음 말을 걸면 「${spec.say}」가 나오지 않는다`); continue; }
+      if (!saysFirst(after, event, spec.say)) { notes.push(`${event.name ?? event.id}: 처음 말을 걸면 「${spec.say}」가 나오지 않는다`); continue; }
       if (!hasSprite(event)) { notes.push(`${event.name ?? event.id}: 사람 그림이 없다(투명)`); continue; }
       if (!triggerKinds(event).includes('action')) { notes.push(`${event.name ?? event.id}: 말 걸기(action)로 열리지 않는다`); continue; }
       const bad = placeNote(spec, after, mapId, event) ?? (!passable(after, mapId, event.x, event.y) ? `선 칸 (${event.x},${event.y})이 막힌 칸` : !cellFree(after, mapId, event) ? `선 칸 (${event.x},${event.y})에 다른 이벤트` : null);
@@ -163,8 +165,8 @@ const KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result
     const notes: string[] = [];
     for (const { mapId, event } of candidates) {
       const session = freshSession();
-      const shops = interact(event, session).shops;
-      if (shops.length && !interact(event, session).shops.length) { notes.push(`${event.name ?? event.id}: 두 번째로 말을 걸면 상점이 열리지 않는다`); continue; }
+      const shops = interact(event, session, after).shops;
+      if (shops.length && !interact(event, session, after).shops.length) { notes.push(`${event.name ?? event.id}: 두 번째로 말을 걸면 상점이 열리지 않는다`); continue; }
       if (!shops.length) { notes.push(`${event.name ?? event.id}: ${allCommands(event).some(command => command.kind === 'shop') ? '처음 말을 걸어서는 상점이 열리지 않는다' : 'shop 명령 없음'}`); continue; }
       const sold = new Set<string>(shops.flatMap(shop => [...(shop.itemIds ?? []), ...(shop.equipmentIds ?? []), ...(shop.stock ?? []).map((entry: any) => entry?.itemId)]).filter(Boolean));
       const real = [...sold].filter(id => known.has(id));
@@ -196,7 +198,7 @@ const KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result
       // 두 번 말을 걸어 본다: 처음에 정확히 그만큼 주고, 다시 걸면 더 주지 않아야 한다.
       const session = freshSession();
       const gained = (play: Play): number => (spec.item ? itemIds.reduce((sum, id) => sum + (play.items[id] ?? 0), 0) : play.gold);
-      const first = gained(interact(event, session)), second = gained(interact(event, session));
+      const first = gained(interact(event, session, after)), second = gained(interact(event, session, after));
       const want = spec.item ? (spec.item.amount ?? 1) : spec.gold;
       if (first !== want) { notes.push(`${label}: 처음에 ${spec.item ? spec.item.name : '돈'} ${first} — 기대 ${want}`); continue; }
       if (second !== 0) { notes.push(`${label}: 다시 말을 걸면 또 ${second} 준다(한 번만이어야 한다)`); continue; }
@@ -217,7 +219,7 @@ const KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result
     const notes: string[] = [];
     for (const { mapId, event } of fresh) {
       const label = event.name ?? event.id;
-      if (!saysFirst(event, spec.say)) { notes.push(`${label}: 조사하면 「${spec.say}」가 나오지 않는다`); continue; }
+      if (!saysFirst(after, event, spec.say)) { notes.push(`${label}: 조사하면 「${spec.say}」가 나오지 않는다`); continue; }
       if (!triggerKinds(event).includes('action')) { notes.push(`${label}: 조사(action)로 열리지 않는다`); continue; }
       if (spec.visible !== false && !visibleAt(after, mapId, event)) { notes.push(`${label}: 그 칸에 보이는 것이 없다`); continue; }
       const bad = placeNote(spec, after, mapId, event);
@@ -316,7 +318,7 @@ const KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result
     const notes: string[] = [];
     for (const { mapId, event } of fresh) {
       const label = event.name ?? event.id;
-      const fights = interact(event, freshSession()).battles;
+      const fights = interact(event, freshSession(), after).battles;
       if (!fights.length) { notes.push(`${label}: 부딪히거나 말을 걸어도 전투가 시작되지 않는다`); continue; }
       if (!triggerKinds(event).some(kind => ['action', 'playerTouch', 'eventTouch'].includes(kind))) { notes.push(`${label}: 접촉·조사로 열리지 않는다`); continue; }
       const troop = troops.get(fights[0].troopId);
@@ -340,9 +342,9 @@ const KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result
       const now = eventOf(after, spec.mapId, eventId), was = eventOf(before, spec.mapId, eventId);
       if (!now) { notes.push(`${eventId} 없음`); continue; }
       const label = `${now.name ?? eventId}(${now.x},${now.y})`;
-      const withItem = itemIds.some(id => interact(now, freshSession({ [id]: 1 })).texts.some(body => includesPhrase(body, spec.say)));
+      const withItem = itemIds.some(id => interact(now, freshSession({ [id]: 1 }), after).texts.some(body => includesPhrase(body, spec.say)));
       if (!withItem) { notes.push(`${label}: 「${spec.itemName}」을 갖고 있어도 「${spec.say}」가 나오지 않는다`); continue; }
-      const without = interact(now, freshSession()).texts;
+      const without = interact(now, freshSession(), after).texts;
       if (without.some(body => includesPhrase(body, spec.say))) { notes.push(`${label}: 열쇠가 없어도 「${spec.say}」가 나온다`); continue; }
       if (spec.keep && !without.some(body => includesPhrase(body, spec.keep))) { notes.push(`${label}: 열쇠가 없을 때의 옛 글 「${spec.keep}」이 사라졌다`); continue; }
       if (was && (was.x !== now.x || was.y !== now.y)) { notes.push(`${label}: 문의 자리가 바뀌었다`); continue; }
@@ -398,7 +400,8 @@ function projectSideEdits(before: Doc, after: Doc, expected: RegExp | undefined)
     out.push(`자료집 ${table} ${delta ? `${delta > 0 ? '+' : ''}${delta}` : '내용 바뀜'}`);
   }
   // 공용 라이브러리 그림(shared_*)은 편집기가 첫 저장 뒤에 설치한다 — 조수가 만든 것이 아니다.
-  const images = Object.keys(after.assets?.uploaded ?? {}).filter(id => !id.startsWith('shared_') && !before.assets?.uploaded?.[id]);
+  // 새 사람의 얼굴 그림(appearance-*)은 사람을 세우는 일의 일부다.
+  const images = Object.keys(after.assets?.uploaded ?? {}).filter(id => !id.startsWith('shared_') && !id.startsWith('appearance-') && !before.assets?.uploaded?.[id]);
   if (images.length) out.push(`새 그림·소리 ${images.length}개(${images.slice(0, 3).join(', ').slice(0, 90)})`);
   return out;
 }
@@ -406,13 +409,14 @@ function projectSideEdits(before: Doc, after: Doc, expected: RegExp | undefined)
 const EXPECTED_SIDE: Record<string, RegExp> = {
   gameTitle: /^system\.titleScreen$/u,
   battleEvent: /^(switches|database\.(troops|enemies))$/u,
-  giveOnce: /^switches$/u,
+  giveOnce: /^(switches|commonEvents|database\.items)$/u,
   transferLink: /^(mapConnections|worldGraph|mapTree)$/u,
   itemGatedText: /^switches$/u,
-  shop: /^switches$/u,
+  shop: /^(switches|system\.peopleChipLock|database\.characterAppearances)$/u,
+  newNpc: /^(system\.peopleChipLock|database\.characterAppearances)$/u,
 };
 
-function damageOf(before: Doc, after: Doc, allow: Allow, kind: string): { damage: string[]; sideEdits: string[] } {
+function damageOf(before: Doc, after: Doc, allow: Allow, kind: string, targets: ReadonlySet<string>): { damage: string[]; sideEdits: string[] } {
   const damage: string[] = [], sideEdits: string[] = [];
   const beforeMaps = Object.keys(before.maps ?? {}), afterMaps = Object.keys(after.maps ?? {});
   for (const id of beforeMaps) if (!after.maps?.[id]) damage.push(`맵 「${mapName(before, id)}」 삭제`);
@@ -425,14 +429,16 @@ function damageOf(before: Doc, after: Doc, allow: Allow, kind: string): { damage
       const now = eventOf(after, id, was.id), label = `${mapName(before, id)}의 ${was.name ?? was.id}`;
       if (!now) { if (!(allow.removedEvents ?? []).includes(was.id)) damage.push(`${label} 삭제`); continue; }
       if ((now.x !== was.x || now.y !== was.y) && !(allow.movedEvents ?? []).includes(was.id)) damage.push(`${label} 이동 (${was.x},${was.y})→(${now.x},${now.y})`);
-      else if (!isDeepStrictEqual(was.pages, now.pages) || was.name !== now.name) sideEdits.push(`${label} 내용 바뀜`);
+      // 요청이 가리킨 이벤트 자신의 내용 변경은 부수 변경이 아니다.
+      else if (!targets.has(was.id) && (!isDeepStrictEqual(was.pages, now.pages) || was.name !== now.name)) sideEdits.push(`${label} 내용 바뀜`);
     }
   }
   if ((before.meta?.title ?? '') !== (after.meta?.title ?? '') && !allow.title) damage.push(`게임 제목 「${before.meta?.title}」 → 「${after.meta?.title}」`);
   if (before.startMapId !== after.startMapId || !isDeepStrictEqual(before.startPos, after.startPos)) damage.push(`시작 위치 ${before.startMapId}(${before.startPos?.x},${before.startPos?.y}) → ${after.startMapId}(${after.startPos?.x},${after.startPos?.y})`);
   // 새로 생긴 이벤트 수(요청이 만든 것 포함)와 맵 밖 변경.
   const fresh = newEvents(before, after).length;
-  if (fresh > 1) sideEdits.push(`새 이벤트 ${fresh}개`);
+  // 두 맵을 잇는 일은 이동 이벤트 한 쌍이 정상이다.
+  if (fresh > (kind === 'transferLink' ? 2 : 1)) sideEdits.push(`새 이벤트 ${fresh}개`);
   sideEdits.push(...projectSideEdits(before, after, EXPECTED_SIDE[kind]));
   return { damage, sideEdits };
 }
@@ -443,7 +449,8 @@ export function runCheck(spec: CheckSpec, allow: Allow | undefined, before: Proj
   let outcome: Result;
   try { outcome = kind(spec, before as unknown as Doc, after as unknown as Doc); }
   catch (error) { outcome = no(`판정 실행 오류: ${error instanceof Error ? error.message : String(error)}`); }
-  const { damage, sideEdits } = damageOf(before as unknown as Doc, after as unknown as Doc, allow ?? {}, spec.kind);
+  const targets = new Set([spec.eventId, ...(spec.eventIds ?? [])].filter((id): id is string => !!id));
+  const { damage, sideEdits } = damageOf(before as unknown as Doc, after as unknown as Doc, allow ?? {}, spec.kind, targets);
   const pass = outcome.ok && damage.length === 0;
   const reason = pass ? outcome.note : !outcome.ok ? outcome.note : `요청한 결과는 있다(${outcome.note}) — 그런데 ${damage.join(' · ')}`;
   return { pass, reason: !outcome.ok && damage.length ? `${reason} · 게다가 ${damage.join(' · ')}` : reason, outcome, damage, sideEdits };

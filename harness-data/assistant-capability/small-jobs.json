@@ -2847,7 +2847,8 @@
     "kind": "battleEvent",
     "mapId": "map_ember_village",
     "members": 3,
-    "enemyName": "슬라임"
+    "enemyName": "슬라임",
+    "visible": false
    },
    "reference": [
     {
@@ -2925,7 +2926,104 @@
      ]
     }
    ],
-   "note": "재점검 묶음의 「슬라임 세 마리와 싸우는 전투 하나」"
+   "note": "재점검 묶음의 「슬라임 세 마리와 싸우는 전투 하나」",
+   "accept": [
+    {
+     "note": "길목 칸을 밟으면 시작되는 보이지 않는 전투(2026-11-11 기준선에서 Terra 가 낸 구현)",
+     "calls": [
+      {
+       "tool": "upsert_troop",
+       "args": {
+        "troop": {
+         "id": "troop_ref_slime3",
+         "name": "슬라임 셋",
+         "enemyIds": [
+          "enemy_slime",
+          "enemy_slime",
+          "enemy_slime"
+         ],
+         "members": [
+          {
+           "enemyId": "enemy_slime",
+           "x": 60,
+           "y": 96
+          },
+          {
+           "enemyId": "enemy_slime",
+           "x": 104,
+           "y": 96
+          },
+          {
+           "enemyId": "enemy_slime",
+           "x": 148,
+           "y": 96
+          }
+         ]
+        }
+       }
+      },
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_ember_village",
+        "event": {
+         "id": "ev_ref_ambush",
+         "name": "길목 전투",
+         "x": 20,
+         "y": 8,
+         "trigger": {
+          "kind": "playerTouch"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_ambush_p0",
+           "name": "길목 전투",
+           "conditions": [
+            {
+             "kind": "selfSwitch",
+             "key": "A",
+             "value": false
+            }
+           ],
+           "graphic": {
+            "transparent": true
+           },
+           "trigger": {
+            "kind": "playerTouch"
+           },
+           "priority": "below",
+           "overlapForbidden": false,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "슬라임 세 마리가 길을 막아섰다!"
+            },
+            {
+             "kind": "battleProcessing",
+             "troopId": "troop_ref_slime3",
+             "canEscape": true,
+             "canLose": false
+            },
+            {
+             "kind": "setSelfSwitch",
+             "key": "A",
+             "value": true
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "give-key-once-starter",
@@ -3064,9 +3162,163 @@
        }
       }
      ]
+    },
+    {
+     "note": "공통 이벤트로 주지만 막는 장치가 없다(말 걸 때마다 준다)",
+     "calls": [
+      {
+       "tool": "upsert_common_event",
+       "args": {
+        "id": "ce_ref_key",
+        "name": "열쇠 선물",
+        "trigger": "none",
+        "commands": [
+         {
+          "kind": "changeItem",
+          "itemId": "item_old_key",
+          "op": "+=",
+          "amount": 1
+         }
+        ]
+       }
+      },
+      {
+       "tool": "patch_event_page",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_child",
+        "pageIndex": 0,
+        "set": {
+         "commands": [
+          {
+           "kind": "text",
+           "speaker": "꼬마 미루",
+           "body": "숲의 약초꾼 세라 누나가 반짝이는 풀을 찾고 있대! 나도 보고 싶다~"
+          },
+          {
+           "kind": "text",
+           "speaker": "꼬마 미루",
+           "body": "파수꾼 아저씨는 무서워 보여도 마을에서 제일 착해."
+          },
+          {
+           "kind": "callCommonEvent",
+           "commonEventId": "ce_ref_key"
+          }
+         ]
+        }
+       }
+      }
+     ]
     }
    ],
-   "note": "재점검 묶음의 「촌장한테 말 걸면 열쇠를 받게 해 줘」"
+   "note": "재점검 묶음의 「촌장한테 말 걸면 열쇠를 받게 해 줘」",
+   "accept": [
+    {
+     "note": "공통 이벤트로 주고, 준 뒤의 페이지를 따로 둔다(2026-11-11 기준선에서 Terra 가 낸 구현)",
+     "calls": [
+      {
+       "tool": "upsert_common_event",
+       "args": {
+        "id": "ce_ref_key",
+        "name": "열쇠 선물",
+        "trigger": "none",
+        "commands": [
+         {
+          "kind": "text",
+          "speaker": "꼬마 미루",
+          "body": "이 열쇠 주웠어! 너한테 줄게!"
+         },
+         {
+          "kind": "changeItem",
+          "itemId": "item_old_key",
+          "op": "+=",
+          "amount": 1
+         }
+        ]
+       }
+      },
+      {
+       "tool": "patch_event_page",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_child",
+        "pageIndex": 0,
+        "set": {
+         "commands": [
+          {
+           "kind": "text",
+           "speaker": "꼬마 미루",
+           "body": "숲의 약초꾼 세라 누나가 반짝이는 풀을 찾고 있대! 나도 보고 싶다~"
+          },
+          {
+           "kind": "text",
+           "speaker": "꼬마 미루",
+           "body": "파수꾼 아저씨는 무서워 보여도 마을에서 제일 착해."
+          },
+          {
+           "kind": "callCommonEvent",
+           "commonEventId": "ce_ref_key"
+          },
+          {
+           "kind": "setSelfSwitch",
+           "key": "A",
+           "value": true
+          }
+         ]
+        }
+       }
+      },
+      {
+       "tool": "add_event_page",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_child",
+        "page": {
+         "id": "child_given",
+         "name": "꼬마 미루",
+         "conditions": [
+          {
+           "kind": "selfSwitch",
+           "key": "A",
+           "value": true
+          }
+         ],
+         "graphic": {
+          "sprite": {
+           "type": "bundled",
+           "id": "tex_easyrpg_charset_people3"
+          },
+          "direction": "down",
+          "pattern": 31
+         },
+         "trigger": {
+          "kind": "action"
+         },
+         "priority": "same",
+         "overlapForbidden": true,
+         "movement": {
+          "type": "random",
+          "speed": 2,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "text",
+           "speaker": "꼬마 미루",
+           "body": "숲의 약초꾼 세라 누나가 반짝이는 풀을 찾고 있대! 나도 보고 싶다~"
+          },
+          {
+           "kind": "text",
+           "speaker": "꼬마 미루",
+           "body": "파수꾼 아저씨는 무서워 보여도 마을에서 제일 착해."
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "key-gated-door-built",
@@ -3238,10 +3490,10 @@
     "kind": "dressed",
     "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
     "rect": {
-     "x": 3,
-     "y": 22,
-     "w": 18,
-     "h": 8
+     "x": 0,
+     "y": 18,
+     "w": 23,
+     "h": 18
     },
     "minCells": 3,
     "maxCells": 150,
@@ -3292,7 +3544,7 @@
      ]
     }
    ],
-   "note": "재점검에서 확인한 구멍: find_empty_ground 가 세계 맵(설원)에서 「맨땅 0%」"
+   "note": "재점검에서 확인한 구멍: find_empty_ground 가 세계 맵(설원)에서 「맨땅 0%」 · 「왼쪽 아래」는 맵의 왼쪽 아래 4분면(x<23, y≥18)으로 본다"
   }
  ]
 }

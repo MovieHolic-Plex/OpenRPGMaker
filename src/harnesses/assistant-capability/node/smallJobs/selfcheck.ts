@@ -1,5 +1,5 @@
 // 작은 일 판정기 자기검사(모델·브라우저 없음). 일마다:
-//   ① 손대지 않은 픽스처는 불합격  ② 손으로 적용한 정답(실제 도구 호출)은 합격  ③ 그럴듯한 오답은 모두 불합격
+//   ① 손대지 않은 픽스처는 불합격  ② 손으로 적용한 정답(실제 도구 호출)과 다른 모양의 정답(accept)은 합격  ③ 그럴듯한 오답은 모두 불합격
 //   ④ 정답 + 시키지 않은 파괴(다른 이벤트 삭제 또는 다른 맵 이름 바꾸기)는 불합격
 // 하나라도 어긋난 판정은 묶음에 둘 수 없다 — 그런 판정으로 잰 실모델 점수는 뜻이 없다.
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -34,6 +34,12 @@ function checkJob(job: SmallJob, fixture: Project): Row {
     reference = runCheck(job.check, job.allow, fixture, referenceDoc);
     if (!reference.pass) problems.push(`손 정답이 불합격했다: ${reference.reason}`);
   } catch (error) { problems.push(`손 정답을 적용하지 못했다: ${error instanceof Error ? error.message : String(error)}`); }
+  for (const other of job.accept ?? []) {
+    try {
+      const verdict = runCheck(job.check, job.allow, fixture, applyCalls(fixture, other.calls));
+      if (!verdict.pass) problems.push(`다른 모양의 정답 「${other.note}」이 불합격했다: ${verdict.reason}`);
+    } catch (error) { problems.push(`다른 모양의 정답 「${other.note}」을 적용하지 못했다: ${error instanceof Error ? error.message : String(error)}`); }
+  }
   const wrongs = job.wrong.map(wrong => {
     try {
       const verdict = runCheck(job.check, job.allow, fixture, applyCalls(fixture, wrong.calls));
