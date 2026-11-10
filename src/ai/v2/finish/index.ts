@@ -10,6 +10,7 @@ import type { V2Session } from "../turn/session";
 import { BLUEPRINT_PATH_IDS, walkBlueprint } from "../blueprint";
 import { battleSites, healingSources } from "../judge/combatChecks";
 import { buildsWholeGame } from "../request/readers";
+import { classifyRequest } from "../request/intent";
 import { lanesStale } from "./lanesStamp";
 import type { FinishCtx, FinishPhase, FinishStage } from "./types";
 import * as registered from "./stages";
@@ -41,13 +42,28 @@ function orderedFinishStages(stages: readonly FinishStage[] = Object.values(regi
 
 const FINISH_STAGES: readonly FinishStage[] = orderedFinishStages();
 
+/**
+ * 이번 턴이 청사진의 게임을 짓는 일인가 — 게임 하나(또는 그 이어 하기)·맵 여러 장과 이야기를 맡긴 요청이거나, 이번 턴에 청사진을 쓰거나 고쳤다.
+ * 작은 요청(사람 옮기기·문 하나·대사 고치기)은 지은 게임에서도 청사진 끝맺음을 돌리지 않는다 — 돌리면 요청과 무관한 사람이 옮겨지고
+ * (2026-11-11 작은 일 기준선: 불합격 7건 중 2건), 턴마다 모든 맵을 다시 훑는다.
+ */
+function blueprintTurn(env: PiAssistantV2Env): boolean {
+  const blueprint = env.ctx.project.gameBlueprint;
+  if (!blueprint) return false;
+  const intent = classifyRequest(env.request.task, env.ctx.project);
+  if (intent.wholeGame || intent.makeGame) return true;
+  const before = (env.request.project as { gameBlueprint?: unknown } | undefined)?.gameBlueprint;
+  return blueprint !== before && JSON.stringify(blueprint) !== JSON.stringify(before ?? null);
+}
+
 /** 청사진 자동 짓기(한 실행에 한 번씩 — 세션 깃발). 무엇을 지었는지 조수에게 줄 글(없으면 undefined). */
 export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Session): Promise<string | undefined> {
   if (lanesStale(env, session)) { session.autoLanesDone = false; session.lanesReruns++; }
   const ctx: FinishCtx = { env, session, done: [], assembled: [], walked: [] };
   const phase = (p: FinishPhase) => FINISH_STAGES.filter((s) => s.phase === p);
   if (env.ctx.project.gameBlueprint) {
-    for (const stage of phase("blueprint")) await timedStage(`blueprint:${stage.id}`, () => recordedRun(ctx, stage));
+    const whole = blueprintTurn(env);
+    for (const stage of phase("blueprint")) if (whole || stage.ownWork) await timedStage(`blueprint:${stage.id}`, () => recordedRun(ctx, stage));
     if (ctx.done.length) ctx.autoPath = [`[자동으로 지음] 청사진이 엔딩까지 이어지지 않거나 길목·출구가 막혀 함수가 대신 지었다 — 최종 보고에 「자동으로 지음:」으로 이 목록을 그대로 적는다(네가 지었다고 쓰지 않는다):`, ...ctx.done.map((d) => `- ${d}`), `대사를 다듬으려면 build_blueprint_path{steps:[{id,lines,lockedLines}]} 로 다시 부른다(같은 이벤트를 고쳐 쓴다). ${worldOf(env.ctx.project)?.composer ? "세계 장소는 구성기가 한 번에 깐 맵이라 다시 짓지 않는다 — 꾸미려면 place_object·add_people." : "자동으로 지은 장소를 꾸미려면 edit_place·dress_room."}`].join("\n");
   }
   if (buildsWholeGame(env.ctx.project, env.request.task)) {
@@ -63,6 +79,7 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
 
 /** 끝맺음 뒤 차례에서 자동 단계를 다시 돌릴 일이 남았나(늦게 쓴 청사진·다시 끊긴 경로·회복 길). */
 export function finishBuildPending(env: PiAssistantV2Env, session: V2Session): boolean {
+  if (!blueprintTurn(env)) return false;
   if (env.ctx.project.gameBlueprint && lanesStale(env, session)) return true;
   return Boolean(env.ctx.project.gameBlueprint) && (!session.autoPlacesDone || !session.autoPathDone || !session.autoLanesDone)
     && (!session.autoLanesDone || (!session.autoPathDone && battleSites(env.ctx.project).length > 0 && healingSources(env.ctx.project).length === 0)

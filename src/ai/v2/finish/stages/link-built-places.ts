@@ -4,7 +4,7 @@ import type { FinishStage } from "../types";
 import { walkBlueprint } from "../../blueprint";
 
 export const stage: FinishStage = {
-  id: "link-built-places", phase: "blueprint", order: 32,
+  id: "link-built-places", phase: "blueprint", order: 32, ownWork: true,
   async run(ctx) {
     const { env, session, done } = ctx;
     if (!session.linkBuiltPlaces || session.linkBuiltDone) return;
