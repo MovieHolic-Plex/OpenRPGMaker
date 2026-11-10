@@ -15,14 +15,10 @@
 import type { Project } from "@/project/types";
 import { splitScriptSpeaker } from "@/project/endingSummary";
 import { isRereadMarker } from "./rereadPage";
+import { SCENE_WORDS, TALK_WORDS } from "./request/asks";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
-
-/** 요청이 장면(컷신·연출)을 시켰나. */
-export const SCENE_WORDS = /장면|컷신|컷씬|연출|오프닝|프롤로그|엔딩|에필로그|등장|나타나|회상|배신|본색|합류|축하|경고|첫\s*만남|만나는|이별|고백|scene|cutscene|opening|ending|flashback/iu;
-/** 요청이 주고받는 대화를 시켰나. */
-const TALK_WORDS = /대화|흥정|심문|설득|협상|말다툼|수다|만나|합류|고백|배신|대사|banter|haggle|interrogat|conversation|dialogue/iu;
 
 interface Line { readonly speaker: string; readonly body: string; readonly pageIndex: number; readonly path: string }
 interface ScenePage {

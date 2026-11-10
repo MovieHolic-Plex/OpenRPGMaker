@@ -75,7 +75,7 @@
 | R2b | 끝맺음 관문 → `judge/finishGate.ts`, 고치기 안내 → `judge/placeFix.ts`, 장소 스키마 → `tools/placeSchema.ts`, `stageOpensBattle` → `story/stageBattle.ts`. `verbs.ts` 2,357 → 1,921줄 | 끝 |
 | R2c | `createV2Tools`(1,662줄 함수 하나에 동사 25개가 지역 상태를 공유) 쪼개기: 공유 상태를 명시적 문맥 객체로 만들고 동사마다 파일로 | 다음 |
 | R3 | `turn/`: 실행기 스크립트의 판정자 조율을 `src/ai/v2/turn` 으로 | |
-| R4 | `request/`: 분류 함수·낱말 목록을 한 폴더로(동작 그대로) | |
+| R4 | `request/`: 요청 글(과 프로젝트)을 가르는 최상위 선언을 `request/` 아홉 파일로(동작 그대로) — `scope`(게임 하나·한 곳·고치기·이어 하기·쓰기 요청) · `audio`(옛 `musicWords.ts`) · `combat` · `place` · `genre` · `asks`(날씨·흔들림·엔딩·장면…) · `title` · `toolGroups`(낱말 → 도구 묶음, 옛 `game.ts` 의 묶음들) · `world`(옛 `worldRequest.ts`). `shipChecks.ts` 에는 `REQUESTED_FEATURES`(낱말+프로젝트 검사+고칠 글이 한 표) 만 남았다. 함수 본문 안의 익명 정규식(`gameChecks.ts` 약 25곳, `finishGate.ts` 2곳, `verbs.ts` 1곳)은 본문을 건드리지 않아 그대로다 | 끝 |
 | R5 | `judge/`: 검사들을 한 폴더로, 그 뒤 한 결과 형식으로 | |
 | R6 | `finish/` 와 `lanes/` 를 한 줄로 | |
 | R7 | `place/` `story/` `shared/`: 남은 평면 파일 정리, 600줄 넘는 파일 쪼개기 | |

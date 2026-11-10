@@ -8,26 +8,11 @@ import { simulateBattle } from "@/battle/simulate";
 import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { classLearnedSkillIdsUpToLevel } from "@/project/sessionClass";
 import type { Project } from "@/project/types";
-import { wantsWholeGame } from "./shipChecks";
+import { wantsWholeGame } from "./request/scope";
+import { asksForEncounters } from "./request/combat";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
-
-/** 요청이 무작위 조우를 말하는가 — 말하지 않으면 조수가 켜지 않는다(보이는 적·이벤트 전투로 충분하다). */
-const ENCOUNTER_ASK = /랜덤|무작위|인카운터|조우|마주치|튀어나|풀숲에서|사냥|레벨(을|이)?\s*(조금\s*)?(올|업)|경험치|몇 번 싸우|싸우면서|encounter|random battle|grind/iu;
-
-/**
- * 「무작위 조우는 없어」「랜덤 인카운터 없이」처럼 조우를 끄라는 말은 조우 요청이 아니다.
- * 실측(2026-10-31 asst-parity 숲 추격 opus): 「숲길에서는 무작위 조우는 없어」에 끝맺음 검사가
- * 「요청에 무작위 조우가 있는데 조우표가 안 바뀌었다」를 띄웠다. 같은 절 안에서 부정이 뒤따르는 조우 낱말은 지우고 본다.
- */
-const ENCOUNTER_NEGATED = /(?:랜덤|무작위|인카운터|조우|마주치|encounter|random battle)[^.,!?\n。]{0,12}?(?:없[어이게고음는다]|없도록|빼|말고|끄|꺼|금지|안\s*(?:나|생기|되)|않)|(?:no|without|disable|turn off)\s+(?:random\s+)?(?:encounters?|battles?)/giu;
-export function withoutNegatedEncounters(task: string): string {
-  return task.replace(ENCOUNTER_NEGATED, " ");
-}
-export function asksForEncounters(task: string): boolean {
-  return ENCOUNTER_ASK.test(withoutNegatedEncounters(task));
-}
 
 /** 첫 전투 구역 기준: 시작 파티·시작 레벨로 이 승률·남은 HP 비율 밑이면 «초반이 너무 세다». */
 const FIRST_AREA_MIN_WIN = 0.8;

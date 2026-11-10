@@ -13,10 +13,12 @@ import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { compactCliToolList } from "@/ai/piAgent/cliContextBudget";
 import type { PiAssistantV2Env } from "./env";
-import { v2ExtraToolNames, wantsGameTools } from "./game";
-import { musicOnly } from "./musicWords";
+import { v2ExtraToolNames, wantsGameTools } from "./request/toolGroups";
+import { musicOnly } from "./request/audio";
 import { V2_TOOL_EN, type ToolTextEn } from "./toolTextEn";
-import { composedWorldFor, leanPromptFor, PLACE_BUILD_VERBS } from "./prompt";
+import { PLACE_BUILD_VERBS } from "./prompt";
+import { composedWorldFor } from "./request/world";
+import { leanPromptFor } from "./request/scope";
 
 /**
  * 게임 요청에 처음부터 싣는 v1 도구 — 기록된 실행(위)에서 모델이 직접 부른 세션 수가 terra ≥10 또는 opus ≥20 인 것, 또는 그에 준하는 싼 읽기 도구.
