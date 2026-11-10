@@ -185,6 +185,8 @@ export interface PersonSpec {
   readonly firstTalk?: readonly string[];
   readonly laterTalk?: readonly string[];
   readonly movement?: "still" | "wander" | "patrol";
+  /** 이 사람이 파는 물건 — 말을 걸면(대사 뒤에) 상점이 열린다. item 은 아이템·장비의 이름이나 id. 없는 이름은 값만 있는 잡화로 새로 만든다. */
+  readonly sells?: readonly { readonly item: string; readonly price?: number }[];
 }
 
 /** 사건·컷신 명세 — add_event 의 인자. */
