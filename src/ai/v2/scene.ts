@@ -13,7 +13,9 @@ import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { sceneContract } from "@/harnesses/romance-scene/runtime";
 import { ROMANCE_IDS } from "@/harnesses/romance-scene/contract";
 import { startStateOf } from "@/project/session";
-import { findMap, pickPersonGraphic, placeNpcWithGraphic, resolveWhere } from "./people";
+import { pickPersonGraphic, placeNpcWithGraphic } from "./people";
+import { resolveWhere } from "./place/where";
+import { findMap } from "./place/cells";
 import type { BuildRun, ContentBuildResult } from "./types";
 
 interface SceneChoice { readonly label: string; readonly reaction: string; readonly revisit: string }

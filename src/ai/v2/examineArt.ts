@@ -12,7 +12,7 @@ import type { GameMap } from "@/project/types";
 import { objectEventFit } from "./place/placementRules";
 import { access, handObjectKitId } from "./place/builders/dressRoom";
 import { unreachableEvents } from "./eventReach";
-import { PERSON_SPOT_BAD, personSpotContext, personSpotCost } from "./people";
+import { PERSON_SPOT_BAD, personSpotContext, personSpotCost } from "./place/personSpot";
 import type { BuildRun } from "./types";
 
 /** 물건 낱말 → 탁상 물건(goods) 후보, 바닥 소품(objects) 후보. 앞이 먼저. */

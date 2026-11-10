@@ -8,7 +8,7 @@
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { reachableCells } from "./eventReach";
-import { roadCellSet } from "./people";
+import { roadCellSet } from "./place/cells";
 import type { BuildRun } from "./types";
 import type { Side } from "./transferSpot";
 

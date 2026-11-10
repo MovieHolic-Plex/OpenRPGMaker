@@ -3,7 +3,7 @@
 // 새 도구는 없다 — place_field_enemy(시작 파티에 맞춘 잡몹 사본)·place_chest 를 들어온 칸에서 먼 자리에 부른다. 되풀이 안전(이벤트 id 로 센다).
 import { chestLoot, pickFittedTroops, pickSpot } from "@/editor/tools/jrpgVolumeTools";
 import { isPassable } from "@/project/collision";
-import { walkStart } from "../people";
+import { walkStart } from "./cells";
 import type { BuildRun } from "../types";
 
 type Cell = { readonly x: number; readonly y: number };
