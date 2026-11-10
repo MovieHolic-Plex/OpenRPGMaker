@@ -5,7 +5,7 @@
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { blueprintMapFor } from "./blueprintPath";
-import { resolveWhere } from "./people";
+import { resolveWhere } from "./place/where";
 import type { BuildRun } from "./types";
 
 type Transfer = { mapId: string; x: number; y: number };

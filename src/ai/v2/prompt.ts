@@ -2,19 +2,19 @@
 // 2026-10-30: 모델이 읽는 글은 영어다(싼 모델 gpt-6.1-terra 가 영어 지시를 더 잘 따른다). 코드가 맞추는 한국어 낱말·사용자 글 예시만 한국어로 남긴다.
 // 바뀐 글은 scripts/qa/assistant-v2/dumpPrompt.mts 로 통째 본다.
 import type { Project } from "@/project/types";
-import { INTERIOR_CARD } from "./builders/interior";
+import { INTERIOR_CARD } from "./place/builders/interior";
 import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
-import { chipsetCatalog } from "./interiorCatalog";
-import { VILLAGE_CARD } from "./builders/village";
-import { DUNGEON_CARD } from "./builders/dungeon";
-import { JP_CITY_CARD } from "./builders/jpCity";
-import { MODERN_KR_CARD } from "./builders/modernCity";
-import { JOSEON_CARD, JOSEON_WORDS } from "./builders/joseon";
-import { WIZARDING_CARD, WIZARDING_WORDS } from "./builders/wizarding";
+import { chipsetCatalog } from "./place/interiorCatalog";
+import { VILLAGE_CARD } from "./place/builders/village";
+import { DUNGEON_CARD } from "./place/builders/dungeon";
+import { JP_CITY_CARD } from "./place/builders/jpCity";
+import { MODERN_KR_CARD } from "./place/builders/modernCity";
+import { JOSEON_CARD, JOSEON_WORDS } from "./place/builders/joseon";
+import { WIZARDING_CARD, WIZARDING_WORDS } from "./place/builders/wizarding";
 import { PEOPLE_CARD } from "./people";
 import { EVENT_CARD } from "./events";
-import { DRAW_OBJECT_CARD } from "./drawObject";
-import { MONSTER_TOWN_CARD } from "./builders/monsterTown";
+import { DRAW_OBJECT_CARD } from "./place/drawObject";
+import { MONSTER_TOWN_CARD } from "./place/builders/monsterTown";
 import { SCENE_CARD } from "./scene";
 import { gameCard, TERRAIN_CARD } from "./game";
 import { MUSIC_TIER, SOUND_TIER, fallenTierCard, storeTierCard, wantsGameTools, wantsMusicTools, wantsSoundTools, wantsStoreTools } from "./request/toolGroups";

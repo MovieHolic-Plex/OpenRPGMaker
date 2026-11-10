@@ -15,6 +15,7 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine";
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
 import type { AutotileGroup, GameMap, Project, TilesetDef } from "@/project/types";
+import { OPEN_GROUND, openGroundCells, openGroundProps } from "@/project/openGround";
 
 export class FurnishError extends Error {
   constructor(message: string, readonly code: string) { super(message); }
@@ -126,6 +127,22 @@ function mostUsedGroup(map: GameMap, tileset: TilesetDef, ids: readonly string[]
 const BUILDING_KIT = /^(house|center|mart|gym|cabin|two|shop|gable|apart|dept|office|hall|lighthouse|ruin_gate)/;
 const FOREST_KIT = /^(forest|sforest|aforest)_/;
 
+/** 이름표를 모르는 칩셋의 쓰임: 그 칩셋의 야외 소품(openGroundProps)으로 나무 덩이 · 소품 자리 · 덤불·바위 밭. */
+export function openGroundUses(tileset: TilesetDef, props?: readonly string[]): readonly Use[] {
+  const p = openGroundProps(tileset, props);
+  const single = p.smalls.filter(name => { const kit = tileset.structureKits?.find(k => k.name === name); return kit?.width === 1 && kit.height === 1; });
+  const uses: Use[] = [];
+  if (p.trees.length) uses.push({ id: "grove", label: "나무 덩이", anchors: p.trees, count: 2, around: p.smalls, edge: true });
+  if (p.features.length) uses.push({ id: "feature", label: "소품 자리", anchors: p.features, count: 1, around: p.smalls, yard: true });
+  if (single.length) uses.push({ id: "patch", label: "덤불·바위 밭", anchors: [], count: 0, around: [], patch: single, min: [2, 2] });
+  return uses;
+}
+
+/** 그 바닥에 쓸 쓰임 목록 — 알려진 지역 바닥은 LOT_USES, 그 밖(OPEN_GROUND)은 칩셋의 야외 소품. */
+function usesFor(tileset: TilesetDef, ground: string, props?: readonly string[]): readonly Use[] {
+  return ground === OPEN_GROUND ? openGroundUses(tileset, props) : LOT_USES[ground] ?? [];
+}
+
 /** 맵의 바닥·물체 판독(측정기와 꾸미기가 같은 판정을 쓴다). */
 export function readGround(project: Project, map: GameMap) {
   const tileset = project.tilesets[map.tilesetId]!;
@@ -137,14 +154,21 @@ export function readGround(project: Project, map: GameMap) {
     const into = BUILDING_KIT.test(k.name ?? "") ? building : FOREST_KIT.test(k.name ?? "") ? forest : null;
     if (into) for (const r of k.rows) for (const t of [...r.tiles, ...(r.upperTiles ?? [])]) if (t >= 0) into.add(t);
   }
-  const label = (i: number) => tileset.tileMeta?.[map.lowerTiles[i]!]?.label ?? "";
+  const rawLabel = (i: number) => tileset.tileMeta?.[map.lowerTiles[i]!]?.label ?? "";
+  // 이름표를 모르는 칩셋(지역 바닥이 1/4 미만)은 칸 정보로 읽는다 — 걸을 수 있는 야외 지형 칸이 땅이다(openGround.ts).
+  // 칸 정보(role)가 없는 시트는 야외 땅이 하나도 안 나온다 — 그때는 옛 이름표 판독을 그대로 쓴다.
+  const cells = isKitOutdoorMap(project, map) ? null : openGroundCells(project, map);
+  const open = cells?.includes(1) ? cells : null;
+  if (open) for (const k of tileset.structureKits ?? []) if ((k.ai as { role?: string } | undefined)?.role === "building") for (const r of k.rows) for (const t of [...r.tiles, ...(r.upperTiles ?? [])]) if (t >= 0) building.add(t);
+  const label = (i: number) => (open?.[i] ? OPEN_GROUND : rawLabel(i));
   const events = new Set(map.events.map(e => e.y * W + e.x));
-  const ground = (i: number) => PALETTES[label(i)] !== undefined;
-  /** 물체 = 위층 그림, 지역 바닥도 오토타일(길·물·띠)도 아닌 1층 칸, 이벤트. */
-  const object = (i: number) => map.upperTiles[i] !== -1 || (!ground(i) && !auto.has(map.lowerTiles[i]!)) || events.has(i);
+  const ground = (i: number) => (open ? open[i] === 1 : PALETTES[rawLabel(i)] !== undefined);
+  /** 물체 = 위층 그림, 지역 바닥도 오토타일(길·물·띠)도 아닌 1층 칸, 이벤트. 이름표를 모르는 칩셋에서는 걸을 수 있는 1층 칸(길·실내 바닥)은 물체가 아니다. */
+  const object = (i: number) => map.upperTiles[i] !== -1 || events.has(i)
+    || (!ground(i) && !auto.has(map.lowerTiles[i]!) && !(open && tileset.tileMeta?.[map.lowerTiles[i]!]?.passage === "passable"));
   const isBuilding = (i: number) => building.has(map.lowerTiles[i]!) || building.has(map.upperTiles[i]!);
   const isForest = (i: number) => forest.has(map.lowerTiles[i]!) || forest.has(map.upperTiles[i]!);
-  return { tileset, W, H, label, ground, object, isBuilding, isForest, events };
+  return { tileset, W, H, label, ground, object, isBuilding, isForest, events, generic: open !== null };
 }
 
 /**
@@ -387,7 +411,7 @@ function placeUse(c: Ctx, use: Use, lot: Rect & { ground: string }, edge: string
  * 터를 구획으로 나눠 쓰임으로 채운다. target = 멈출 맨땅 비율(기본 0.12). prefer = 첫 구획에 먼저 쓸 쓰임 id.
  * 돌려주는 lots 는 놓은 쓰임 목록(조수에게 보여 줄 요약).
  */
-export function fillAreaByUse(project: Project, map: GameMap, area: Rect, options: { seed?: number; target?: number; openTarget?: number; maxLots?: number; keep?: Iterable<number>; prefer?: string } = {}) {
+export function fillAreaByUse(project: Project, map: GameMap, area: Rect, options: { seed?: number; target?: number; openTarget?: number; maxLots?: number; keep?: Iterable<number>; prefer?: string; props?: readonly string[] } = {}) {
   const seed = options.seed ?? 1, target = options.target ?? 0.05, openTarget = options.openTarget ?? 0.45, maxLots = options.maxLots ?? 12;
   const c = makeCtx(project, map, area, seed, options.keep);
   const before = measureBareGround(project, map, area);
@@ -407,7 +431,7 @@ export function fillAreaByUse(project: Project, map: GameMap, area: Rect, option
     // 가는 띠(폭이나 높이 2)에는 큰 조각(2×2 이상) 쓰임을 두지 않는다 — 바닷가 모래 띠에 파라솔·어구·야자가 줄지어 서서 울타리처럼 읽혔다(검수 D1).
     const thin = lot.w < 3 || lot.h < 3;
     const bigAnchor = (u: Use) => available(c.g.tileset, u.anchors).some(name => { const pc = resolvePiece(c.g.tileset, name, 0); return !!pc && pc.width * pc.height > 2; });
-    const uses = (LOT_USES[lot.ground] ?? []).filter(u => (u.anchors.length === 0 || available(c.g.tileset, u.anchors).length) && (!u.patch || available(c.g.tileset, u.patch).length)
+    const uses = usesFor(c.g.tileset, lot.ground, options.props).filter(u => (u.anchors.length === 0 || available(c.g.tileset, u.anchors).length) && (!u.patch || available(c.g.tileset, u.patch).length)
       && lot.w >= (u.min?.[0] ?? 1) && lot.h >= (u.min?.[1] ?? 1) && !(thin && bigAnchor(u)));
     if (!uses.length) { for (let y = lot.y; y < lot.y + lot.h; y++) for (let x = lot.x; x < lot.x + lot.w; x++) c.margin.add(y * c.g.W + x); continue; }
     const ctx = lotContext(c, lot);
@@ -454,7 +478,7 @@ export function fillAreaByUse(project: Project, map: GameMap, area: Rect, option
  * 예전 한 스타일 꾸미기(grove|garden|plaza|pond) — 명시한 스타일을 첫 구획에 쓰고, 이어서 남은 터를 쓰임으로 채운다.
  * auto 는 쓰임 채우기만.
  */
-export function furnishOutdoorArea(project: Project, map: GameMap, area: Rect, style: Style, seed: number, options: { fill?: boolean; target?: number } = {}) {
+export function furnishOutdoorArea(project: Project, map: GameMap, area: Rect, style: Style, seed: number, options: { fill?: boolean; target?: number; props?: readonly string[] } = {}) {
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset?.structureKits?.length) throw new FurnishError(`${map.tilesetId} 에 구조 키트가 없어 이 도구로 꾸밀 수 없습니다 — place_props·stamp_object 를 쓰세요.`, "no-kits");
   const W = map.width, H = map.height;
@@ -467,15 +491,22 @@ export function furnishOutdoorArea(project: Project, map: GameMap, area: Rect, s
     const i = y * W + x;
     if (map.upperTiles[i] !== -1 || g.events.has(i)) continue;
     const name = g.label(i);
-    if (PALETTES[name]) counts.set(name, (counts.get(name) ?? 0) + 1);
+    if (g.ground(i)) counts.set(name, (counts.get(name) ?? 0) + 1);
   }
   const ground = [...counts].sort((a, b) => b[1] - a[1])[0]?.[0];
-  if (!ground) throw new FurnishError(`이 터의 바닥이 알려진 지역 바닥(${Object.keys(PALETTES).join("·")})이 아닙니다 — 빈 바닥 칸이 있는 터를 고르세요.`, "unknown-ground");
+  if (!ground) throw new FurnishError("No empty outdoor ground in this area (walkable terrain with nothing on it — roads, water and indoor floors do not count). Pick another region, or call find_empty_ground to see where the empty lots are.", "unknown-ground");
+  const generic = ground === OPEN_GROUND;
+  const chosen = generic ? openGroundProps(tileset, options.props) : undefined;
+  if (chosen?.unknown.length) throw new FurnishError(`props not found among this chipset's outdoor props: ${chosen.unknown.join(", ")}. Available: ${chosen.all.slice(0, 40).join(" · ")}.`, "unknown-props");
+  if (chosen && !chosen.trees.length && !chosen.features.length && !chosen.smalls.length) {
+    throw new FurnishError(`This chipset (${tileset.id}) has no nature props to scatter by default. Name what to place with props:[…]. Available: ${chosen.all.slice(0, 40).join(" · ") || "(no outdoor prop kits)"}.`, "no-props");
+  }
   const emptyBefore = plainCount(project, map, r);
-  const legacy = style === "auto" ? { trees: 0, smalls: 0, pathCells: 0, placed: [] as { name: string; x: number; y: number; w: number; h: number }[] } : furnishStyle(project, map, r, style, seed, ground);
+  // 한 스타일 꾸미기(grove|garden|plaza|pond)는 지역 재료표가 있는 바닥에만 있다 — 그 밖의 칩셋은 쓰임 채우기만 한다.
+  const legacy = style === "auto" || generic ? { trees: 0, smalls: 0, pathCells: 0, placed: [] as { name: string; x: number; y: number; w: number; h: number }[] } : furnishStyle(project, map, r, style, seed, ground);
   const filled = options.fill === false ? { lots: [] as PlacedLot[], before: measureBareGround(project, map, r), after: measureBareGround(project, map, r) }
-    : fillAreaByUse(project, map, r, { seed, ...(options.target !== undefined ? { target: options.target } : {}) });
-  const base = PALETTES[ground]!;
+    : fillAreaByUse(project, map, r, { seed, ...(options.target !== undefined ? { target: options.target } : {}), ...(options.props ? { props: options.props } : {}) });
+  const base = chosen ?? PALETTES[ground]!;
   return { ground, emptyBefore, emptyAfter: plainCount(project, map, r), ...legacy, lots: filled.lots, bareBefore: filled.before, bareAfter: filled.after,
     palette: { trees: available(tileset, base.trees), features: available(tileset, base.features), smalls: available(tileset, base.smalls) } };
 }
@@ -683,7 +714,7 @@ export function findEmptyGround(project: Project, map: GameMap, limit = 4, minAr
     const ground = g.label(best.y * W + best.x);
     const c = makeLightCtx(project, map, g);
     const ctx = lotContext(c, best);
-    const uses = LOT_USES[ground] ?? [];
+    const uses = usesFor(tileset, ground);
     const suggest = (ctx.edge ? uses.find(u => u.edge) : ctx.yard ? uses.find(u => u.yard) : uses[0])?.label ?? "";
     out.push({ ...best, ground, cells: bestArea, suggest });
   }

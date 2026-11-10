@@ -2,7 +2,7 @@
 //   lay_dungeon_layout — 던전 한 층(src/editor/dungeonKit/bboxFloor.ts). 다시 깔기(rebuild)는 같은 맵 자리에서: 바깥에서 들어오는 문은 새 입구 계단 앞으로,
 //                        이 층의 바깥 문 이벤트는 새 입구 계단 칸으로 옮기고, 짓기 도구 밖에서 붙은 이벤트(사람·컷신)는 가장 가까운 걷는 칸으로 옮겨 싣는다.
 //   lay_village_layout — 코드 지형 위 마을(src/editor/tools/bboxVillage.ts).
-// 조수 v2 빌더(src/ai/v2/builders/placeLayoutBuild.ts)가 부른다. 레지스트리에는 있지만 v2 는 레지스트리 도구를 모델에게 보이지 않는다.
+// 조수 v2 빌더(src/ai/v2/place/builders/placeLayoutBuild.ts)가 부른다. 레지스트리에는 있지만 v2 는 레지스트리 도구를 모델에게 보이지 않는다.
 import { isPassable } from "@/project/collision";
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import type { GameEvent, GameMap, Project } from "@/project/types";

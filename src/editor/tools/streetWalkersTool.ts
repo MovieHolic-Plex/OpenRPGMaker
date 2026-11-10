@@ -7,7 +7,7 @@
 // 길은 보도·횡단보도만 탄다 — 차도(칸 이름표 laneCells)는 횡단보도 칸이 아니면 걷지도 서지도 않는다.
 //   차도도 통행 가능 칸이라 지형 BFS 만 쓰면 행인이 차선 한가운데로 질러가 섰다(2026-10-26 첫사랑 op5, #3535 과 같은 규칙).
 // 그림은 프로젝트의 사람 칩(list_npc_graphics 결과·selectionId) 중에서 고른다 — 사람을 새로 생성하지 않는다.
-import { crosswalkCells, laneCells } from "@/ai/v2/placementRules";
+import { crosswalkCells, laneCells } from "@/ai/v2/place/placementRules";
 import { isPassable } from "@/project/collision";
 import type { Dir, EventPage, GameEvent, GameMap, MoveCommand, Project } from "@/project/types";
 import { charsetGraphic, resolveGraphic, usedCharsetGraphicKeysOnMap } from "./eventCompile";

@@ -23,10 +23,9 @@ import { readStoreSoundMeta } from "@/assets/storeSoundMeta";
 import { rankStoreAmbience } from "@/assetStore/storeSoundPick";
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { MachineCheck } from "./checks";
-import {
-  dist, edgeExitCells, eventsOf, findMap, keepsMapConnected, objectAt, placeNpcWithGraphic, resolveWhere, roadCellSet,
-  shortestPathCells, transferCells, walkReach, walkStart, eventBlockers,
-} from "./people";
+import { placeNpcWithGraphic } from "./people";
+import { resolveWhere } from "./place/where";
+import { dist, edgeExitCells, eventsOf, findMap, keepsMapConnected, objectAt, roadCellSet, shortestPathCells, transferCells, walkReach, walkStart, eventBlockers } from "./place/cells";
 import type { BuildRun, ContentBuildResult, EventBeat, EventSpec } from "./types";
 
 export const EVENT_CARD =
