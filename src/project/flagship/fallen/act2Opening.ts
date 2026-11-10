@@ -946,6 +946,8 @@ const HANEL = "천문대장 하넬";
 /** 광장 우물(2×2 그림의 아랫줄) — 앞(y29)에서 위를 보고 조사. */
 const WELL: Cell[] = [{ x: 40, y: 28 }, { x: 41, y: 28 }];
 const WELL_FRONT: Cell = { x: 40, y: 29 };
+/** 우물 사다리로 올라와 서는 칸 — 우물(y28)에서 두 칸 떨어져 곁 조사 보조가 우물을 잡지 않는다. */
+const WELL_CLIMB_LAND: Cell = { x: 40, y: 30 };
 // 우물 밑 갱도 — 옛 12×9 승강구(R1)를 그대로 두고 방 다섯을 더했다(wellShaftRooms.ts · 중간 보스 wellBeast.ts, 2026-11-09).
 // 옛 방(R1) 좌표 — wellShaftRooms.ts WELL 과 같아야 한다(observatoryNight 가 확인한다).
 const SHAFT = { ladder: { x: 4, y: 2 } as Cell, ladderUse: { x: 4, y: 3 } as Cell, arrive: { x: 4, y: 4 } as Cell, lift: { x: 5, y: 7 } as Cell };
@@ -1000,8 +1002,13 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
       ]),
     ]);
   });
+  // 사다리는 위로 걸어 들어가면 오른다(접촉) — 조사형이면 착지(4,4)에서 대사를 넘기던 Enter 를 엔진 곁 조사 보조
+  // (nearbyActionTarget)가 등 뒤 사다리로 잡아 마을로 튕겨 냈다(fs-vqa-well D1, 2026-11-10).
+  // 올라가면 우물 앞 한 칸 아래(40,30)에 선다 — 우물 앞(40,29)이면 같은 보조가 등 뒤 우물을 잡아 도로 내려갔다.
+  if (!walkSteps(project, M(project, FS2_HUB_NIGHT_ID), WELL_FRONT).has(`${WELL_CLIMB_LAND.x},${WELL_CLIMB_LAND.y}`)) throw new Error("[fallen-star act2] 우물에서 올라와 설 칸(40,30)을 걸을 수 없다");
   addEv(project, FS2_SHAFT_ID, "ev_fs2_shaft_ladder", "우물로 오르는 사다리", SHAFT.ladderUse, [
-    page("ev_fs2_shaft_ladder_p", "사다리", [], [narrate("사다리를 타고 우물 위로 올라갔다."), transfer(FS2_HUB_NIGHT_ID, WELL_FRONT, "down")]),
+    page("ev_fs2_shaft_ladder_p", "사다리", [], [narrate("사다리를 타고 우물 위로 올라갔다."), transfer(FS2_HUB_NIGHT_ID, WELL_CLIMB_LAND, "down")],
+      { priority: "same", trigger: { kind: "playerTouch" } }),
   ]);
   // 1막 지하 4층에서 탔던 승강 장치를 이번엔 서고 밑에서 탄다 — 오르면 천문대 서고, 내려오면 다시 여기.
   // 양쪽 다 도착 칸이 발판 위라, 밟으면 타는 방식이면 걸어 나가다 도로 탄다(QA 2026-10-26) — 발판 위에서 조사해야 탄다.

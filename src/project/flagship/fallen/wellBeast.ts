@@ -212,7 +212,8 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
     const m = map();
     const lock = m.events.find((e) => /_locked\d+$/.test(e.id) && WELL.gate.some((g) => g.x === e.x && g.y === e.y));
     if (!lock?.pages?.[0]) throw new Error(`[fallen-star well] 쇠살문 잠긴 문 이벤트가 없다: ${m.events.filter((e) => /_locked/.test(e.id)).map((e) => `${e.id}@${e.x},${e.y}`).join(" ")}`);
-    const closed = { ...structuredClone(lock.pages[0]), movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [narrate("굵은 쇠살문이 내려와 있다.\n쇠사슬이 서쪽 배수 갱 쪽 벽 속으로 들어간다.")] } as EventPage;
+    // 그림 고정(fixedGraphic) — 없으면 조사할 때 대화 방향 맞추기가 문을 플레이어 쪽으로 돌려 문짝 반쪽만 남았다(fs-vqa-well D3).
+    const closed = { ...structuredClone(lock.pages[0]), animationType: "fixedGraphic", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [narrate("굵은 쇠살문이 내려와 있다.\n쇠사슬이 서쪽 배수 갱 쪽 벽 속으로 들어간다.")] } as EventPage;
     m.events = m.events.filter((e) => e !== lock);
     WELL.gate.forEach((g, i) => addEv(project, mapId, `ev_fs2_well_gate_${i}`, "쇠살문", g, [
       { ...structuredClone(closed), id: `ev_fs2_well_gate_${i}_p0` } as EventPage,
@@ -221,9 +222,11 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
   }
 
   // 무너진 돌 더미 — 배수로 남쪽 통로 두 칸을 막아 두었다가 조사해 치우면 정비 벽감이 열린다.
-  // 돌 더미 그림 — 지하 수도교 「무너진 돌」 조각을 통로 두 칸에 찍고, 치우면 그 칸 그림을 지운다.
-  for (const c of WELL.crack) exec(project, "stamp_object", { objectId: "kit:beodeul_city/bd-pick-aqueduct-sewer-rubble", mapId, x: c.x, y: c.y });
-  const clearRubble: Command[] = WELL.crack.flatMap((c) => {
+  // 돌 더미 그림 — 통로 두 칸 폭을 덮는 2×2 돌무더기(윗면 보이는 덩이)를 통로 첫 줄부터 두 줄 찍고, 치우면 그 네 칸 그림을 지운다.
+  // 예전에는 1×1 바닥 자갈 조각이라 「통로를 막은 돌 더미」가 자갈 두 개로 보였다(fs-vqa-well D4).
+  const rubbleCells: Cell[] = [...WELL.crack, ...WELL.crack.map((c) => ({ x: c.x, y: c.y + 1 }))];
+  exec(project, "stamp_object", { objectId: "kit:beodeul_city/bd-pick-dungeon-theme-rubble-heap", mapId, x: WELL.crack[0]!.x, y: WELL.crack[0]!.y });
+  const clearRubble: Command[] = rubbleCells.flatMap((c) => {
     const m = map(); const i = c.y * m.width + c.x;
     const L = m as unknown as Record<string, number[] | undefined>;
     return (["upperTiles", "upperOverlayTiles", "lowerOverlayTiles"] as const).filter((k) => (L[k]?.[i] ?? -1) >= 0)
