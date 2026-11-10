@@ -464,7 +464,7 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
           }
         }
       }
-      if (write && bindTo) { const set = itemVerbs.get(bindTo.id) ?? new Set<string>(); set.add(tool.name); itemVerbs.set(bindTo.id, set); }
+      if (write && bindTo) { const set = itemVerbs.get(bindTo.id) ?? new Set<string>(); set.add(tool.name); itemVerbs.set(bindTo.id, set); store.noteTried(bindTo, tool.name); }
       // H2 실행 전 인자 검사·보정(argGuard.ts): 답이 하나뿐이면 고쳐 실행하고 결과에 «고침:», 아니면 실행하지 않고 고친 호출 예시를 돌려준다.
       const fixNotes: string[] = [];
       let callParams = params;

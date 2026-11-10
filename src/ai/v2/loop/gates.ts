@@ -37,6 +37,9 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
     if (item.source !== "gate" && item.source !== "critic") continue;
     const key = keyOf(store, item);
     if (!key || (!key.startsWith("game:") && !key.startsWith("place:")) || keys.has(key)) continue;
+    // 앞 턴에서 막힌 채 이어 받은 항목인데 이번 턴 검사에는 안 나온다 — 고쳐진 것이 아니라 검사의 기준(시작 저장본·이 실행이 지은 장소)이 옮겨 간 것이다.
+    // 이번 턴의 일이 아니므로 뺀다(막힌 채 두면 다시 나올 길이 없어 그 뒤 모든 턴이 미완료가 된다).
+    if (item.status === "blocked" && store.meta.get(item.id)?.restored) { store.drop(item, `앞 턴에서 막힘(${item.blockedReason ?? "이유 없음"}) — 이번 턴 함수 검사에는 나오지 않는다(기존 결함)`, "auto"); closed.push(item); continue; }
     if (!isOpen(item.status) && !(item.status === "completed" && store.meta.get(item.id)?.closedBy === "model")) continue;
     const mapId = key.startsWith("place:") ? key.slice(6, key.indexOf(":", 6)) : "";
     if (mapId && capMapIds.has(mapId)) store.block(item, "장소 고치기 상한(1바퀴)에 닿음 — 남은 문제로 보고", "auto");
