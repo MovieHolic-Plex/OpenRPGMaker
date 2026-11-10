@@ -5,7 +5,7 @@
 // 그 발이 동굴에서 마을로 내려오는 한 칸 폭 포석 길 (9,3) 한가운데 섰다. 길은 거기서 끊겼고, 남은 우회로는 집 지붕 밑이라 안 보였다.
 // 판정자는 마왕을 이긴 뒤 마을로 돌아가는 길을 끝내 못 찾았다. 광장처럼 넓은 포석 위 소품은 길을 끊지 않으므로 그대로 둔다.
 import { isPassable } from "@/project/collision";
-import { isRoadCell } from "@/ai/v2/edgeExitRoads";
+import { isRoadCell } from "@/ai/v2/place/edgeExitRoads";
 import type { GameMap, Project } from "@/project/types";
 
 type Cell = { x: number; y: number };

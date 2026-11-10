@@ -5,7 +5,7 @@ import fs from "node:fs";
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { HAND_INTERIOR_TILESET_ID, roomSpecOf } from "@/editor/handInterior/builder";
-import { checkLayout } from "@/ai/v2/interiorLayout";
+import { checkLayout } from "@/ai/v2/place/interiorLayout";
 
 const fixture = (name: string) => JSON.parse(fs.readFileSync(new URL(`./fixtures/${name}.json`, import.meta.url), "utf8"));
 

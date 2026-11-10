@@ -27,7 +27,7 @@ import { FITTED_TROOP_PREFIX, fitTroopCopy } from "@/editor/tools/bossThreatScal
 import { simulateBattle } from "@/battle/simulate";
 import { trivialCode } from "./puzzle";
 import { repairEventReach } from "./eventReach";
-import { dressInteriorExits } from "./exitDress";
+import { dressInteriorExits } from "./place/exitDress";
 import { bearingWord, landmarkWord, OBJECTIVE_SURFACE, planObjective } from "./discoverability";
 import { settleExamineSpots } from "./examineSpot";
 import { ensureHealingAccess, ensureSupplyShop } from "./healingAccess";

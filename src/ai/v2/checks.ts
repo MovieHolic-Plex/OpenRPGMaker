@@ -8,7 +8,7 @@ import { terrainReachability } from "@/project/terrainReachability";
 import { openStartCell } from "@/editor/tools/startOnBuiltMap";
 import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "@/editor/handInterior/bareFloor";
 import { roomSpecOf } from "@/editor/handInterior/builder";
-import { roomBarePct } from "./builders/dressRoom";
+import { roomBarePct } from "./place/builders/dressRoom";
 import type { GameMap, Project } from "@/project/types";
 
 export interface MachineCheck {

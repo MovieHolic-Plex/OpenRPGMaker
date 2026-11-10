@@ -38,7 +38,7 @@ import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/proje
 import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
 import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
-import { laneCells } from "@/ai/v2/placementRules";
+import { laneCells } from "@/ai/v2/place/placementRules";
 import { resolveWhere } from "@/ai/v2/place/where";
 import { noteToolChosenGraphic } from "./toolChosenGraphics";
 import { ensureHorrorSound, readFootstepsArg, resolveFootstepsSe } from "./horrorSoundAssets";

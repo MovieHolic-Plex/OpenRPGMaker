@@ -2,7 +2,7 @@
 import type { Dir, GameMap, Project } from "@/project/types";
 import { isPassable } from "@/project/collision";
 import { terrainReachability } from "@/project/terrainReachability";
-import { counterSide, exitThroats, isCounterArt, isShopkeeperName, laneCells } from "../placementRules";
+import { counterSide, exitThroats, isCounterArt, isShopkeeperName, laneCells } from "./placementRules";
 import { Cell, DIRS, eventsOf, transferCells, eventBodyCells, eventBlockers, walkReach, walkStart, dist, shortestPathCells, openness, edgeExitCells, SEAT_LABEL, STAIR_LABEL, WALL_LABEL, WINDOW_LABEL, tileLabel, layers, objectAt, roadCellSet } from "./cells";
 import { personSpotContext, personSpotCost } from "./personSpot";
 

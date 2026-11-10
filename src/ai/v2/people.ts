@@ -13,7 +13,7 @@ import { activeMonsterTurn } from "@/project/genreLockMonsterAssets";
 import { monsterAssetCatalogFilters } from "@/project/genreLockMonsterAssetsDiff";
 import { genreLockCharsetCatalogFilter } from "@/project/genreLockCharsets";
 import type { BuildRun, ContentBuildResult, PersonSpec } from "./types";
-import { exitThroats, laneCells, wanderReach } from "./placementRules";
+import { exitThroats, laneCells, wanderReach } from "./place/placementRules";
 import { Cell, findMap, eventsOf, eventBlockers, walkStart, keepsMapConnected } from "./place/cells";
 import { resolveWhere } from "./place/where";
 

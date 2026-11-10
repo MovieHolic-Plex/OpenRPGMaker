@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
-import { offPurposeProps } from "@/ai/v2/roomPurpose";
+import { offPurposeProps } from "@/ai/v2/place/roomPurpose";
 
 const DESK = "kit:modern_city/mc-in-mci-desk-pc-back";
 

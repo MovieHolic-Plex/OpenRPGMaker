@@ -4,7 +4,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
-import { dressInteriorExits } from "../../../src/ai/v2/exitDress.ts";
+import { dressInteriorExits } from "../../../src/ai/v2/place/exitDress.ts";
 import type { Project } from "../../../src/project/types.ts";
 import { layerTileAt, setLayerTileAt } from "../../../src/project/mapLayers.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";

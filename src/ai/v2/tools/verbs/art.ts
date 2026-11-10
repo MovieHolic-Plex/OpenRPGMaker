@@ -2,8 +2,8 @@
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { checkImageDataUrl } from "../../imageCheck";
 import type { ObjectSpec } from "../../types";
-import { drawObject } from "../../drawObject";
-import { rememberObjectPlan, type DrawObjectResult } from "../../drawObject";
+import { drawObject } from "../../place/drawObject";
+import { rememberObjectPlan, type DrawObjectResult } from "../../place/drawObject";
 import { DUNGEON_PLACE_WORD, requestedDungeonSide } from "../../request/place";
 import { POINT } from "../placeSchema";
 import { text } from "../support";

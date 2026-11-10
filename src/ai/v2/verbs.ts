@@ -14,7 +14,7 @@ import { helpersOn } from "./helpers";
 import { isStoreCardRequest } from "@/editor/tools/storeTools";
 import { makeGameOn } from "./makeGame";
 import { wantsMakeGame } from "./request/scope";
-import { createDungeonPartsVerb } from "./dungeonParts";
+import { createDungeonPartsVerb } from "./place/dungeonParts";
 import { V2Session } from "./turn/session";
 import { wantsEndingScene } from "./request/asks";
 import { wantsBossEncounter } from "./request/combat";

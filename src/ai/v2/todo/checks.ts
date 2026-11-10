@@ -19,11 +19,11 @@ import { endingConditionsUnset, writtenStateIds } from "../shipChecks";
 import { isObjectiveCommand } from "../discoverability";
 import { anchorsOf, bodyReached } from "../eventReach";
 import { puzzleFlow } from "../puzzleGates";
-import { isPersonEvent } from "../placementRules";
+import { isPersonEvent } from "../place/placementRules";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
 import { hint, nameScore, normName } from "./names";
 import type { CheckResult, TodoCheck, TodoCheckContext, TodoItem, TodoPlaceKind } from "./types";
-import { layoutReviewRounds, REVIEWS_TAG } from "../layoutReview";
+import { layoutReviewRounds, REVIEWS_TAG } from "../place/layoutReview";
 
 type Obj = Record<string, unknown>;
 type Cmd = Obj & { kind: string };

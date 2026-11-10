@@ -1,7 +1,7 @@
 // 코드 지형 그림 + 요약 → 실제 모델이 마을 자리(layout)를 고른다. 결과 layouts.json(village-code-terrain-probe.mts --layouts 입력).
 import fs from "node:fs";
 const R = new URL("../..", import.meta.url).pathname.replace(/\/$/, "");
-const { villageArgs, villageMapSize, villageLayoutGuide } = await import(`${R}/src/ai/v2/builders/village.ts`);
+const { villageArgs, villageMapSize, villageLayoutGuide } = await import(`${R}/src/ai/v2/place/builders/village.ts`);
 const { codeTerrainFor } = await import(`${R}/src/editor/tools/authorBeodeulTown.ts`);
 const { describeCodeTerrain } = await import(`${R}/src/editor/tools/beodeulTerrainGen.ts`);
 const { terrainPreviewPng } = await import(`${R}/src/editor/tools/beodeulTerrainPreview.ts`);
