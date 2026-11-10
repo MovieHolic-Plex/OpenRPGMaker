@@ -30,5 +30,7 @@ export interface FinishStage {
   readonly phase: FinishPhase;
   /** 같은 묶음 안 실행 순서(작을수록 먼저, 겹치면 안 된다). 사이에 끼우려면 소수도 된다(예: 135). */
   readonly order: number;
+  /** 이번 턴에 지은 것만 만지는 단계 — 게임을 짓는 턴이 아니어도(작은 요청) 돈다. 없으면 게임을 짓는 턴에만 돈다(finish/index.ts blueprintTurn). */
+  readonly ownWork?: true;
   run(ctx: FinishCtx): void | Promise<void>;
 }
