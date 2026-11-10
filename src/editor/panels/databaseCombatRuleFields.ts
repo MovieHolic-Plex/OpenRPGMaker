@@ -194,11 +194,11 @@ export function skillExploitFields(record: SkillRecord): HTMLElement[] {
   const firstState = current?.stateIds[0] ?? '';
   const save = (stateId: string, bonusPercent: number, consume: boolean): void => {
     const rest = (current?.stateIds ?? []).slice(1).filter(id => id !== stateId);
-    updateDatabaseRecord('skills', record.id, { exploitStates: stateId ? { stateIds: [stateId, ...rest], bonusPercent: Math.max(1, Math.min(300, bonusPercent)), ...(consume ? { consume: true } : {}) } : undefined });
+    updateDatabaseRecord('skills', record.id, { exploitStates: stateId ? { stateIds: [stateId, ...rest], bonusPercent: Math.max(1, Math.min(300, bonusPercent)), ...(consume ? { consume: true } : {}), ...(current?.bonusByState ? { bonusByState: current.bonusByState } : {}) } : undefined });
   };
   return [
     selectField(`약점 공략 — 이 상태인 대상에게 더 아프게${(current?.stateIds.length ?? 0) > 1 ? ` (외 ${current!.stateIds.length - 1}개)` : ''}`, 'feature16-exploit-state', firstState, [{ id: '', name: '없음' }, ...states.map(state => ({ id: state.id, name: state.name }))], value => save(value, current?.bonusPercent ?? 50, current?.consume === true)),
-    numberField('약점 공략 보너스 %', 'feature16-exploit-bonus', current?.bonusPercent ?? 50, value => { if (firstState) save(firstState, value, current?.consume === true); }, { min: 1, max: 300, step: 5 }),
+    numberField(current?.bonusByState ? `약점 공략 보너스 % (단계별: ${Object.entries(current.bonusByState).map(([id, value]) => `${states.find(state => state.id === id)?.name ?? id} +${value}`).join(' · ')})` : '약점 공략 보너스 %', 'feature16-exploit-bonus', current?.bonusPercent ?? 50, value => { if (firstState) save(firstState, value, current?.consume === true); }, { min: 1, max: 300, step: 5 }),
     selectField('약점 공략 뒤 그 상태', 'feature16-exploit-consume', current?.consume ? 'consume' : 'keep', [{ id: 'keep', name: '남긴다' }, { id: 'consume', name: '깨뜨린다(지운다)' }], value => { if (firstState) save(firstState, current?.bonusPercent ?? 50, value === 'consume'); }),
   ];
 }
