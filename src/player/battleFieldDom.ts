@@ -1199,11 +1199,16 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
       // 팝업은 자기 높이의 ~1.4배만큼 위로 튀므로(22-hit-feel.css bounce 정점) 그만큼 배너 아래에 둔다.
       const banner = field.closest(".battle-scene")?.querySelector<HTMLElement>(".battle-message-window");
       const bannerRect = banner?.getBoundingClientRect();
-      if (bannerRect && bannerRect.height > 0 && bannerRect.bottom > layerRect.top) {
+      // 효과 레이어가 배너 아래에서 시작해도(무대 윗여백 --battle-stage-inset-top, 폴른 스타 1280×720: 레이어 153 · 배너 아래변 144)
+      // 숫자는 튀면서 레이어 위로 나간다 — 레이어가 배너 아래에 있다는 이유로 이 보정을 건너뛰면 「약점 발견!」 두 줄 숫자가
+      // 튀는 내내 배너 뒤로 숨었다(fs-defect-sweep C2: 53부대 중 14부대). 배너가 필드 위쪽 절반에 떠 있으면 늘 맞춘다.
+      if (bannerRect && bannerRect.height > 0 && bannerRect.bottom < layerRect.top + layerRect.height / 2) {
         // 64 는 레이어 안 px 다 — 화면 px(rect)로 옮긴다. 무대 배율·필드 정수 zoom 이 곱해져 있다(battle-feel r2:
         // zoom 1.33 에서 큰 적 머리 위 숫자가 배너 뒤로 잘렸다).
         const layerScale = layer.offsetHeight > 0 ? layerRect.height / layer.offsetHeight : 1;
-        const clearance = 64 * layerScale * (POP_SCALE[anchor.dataset.hitIntensity ?? ""] ?? 1);
+        // 꼬리표(「약점 발견!」·「치명타!」)가 붙으면 숫자가 두 줄(높이 ~55px)이라 튀는 정점이 ~1.4배 위다 — 한 줄 기준 64 로는 윗줄이 걸렸다.
+        const lines = popup.querySelector(".battle-damage-popup-tag") ? 84 : 64;
+        const clearance = lines * layerScale * (POP_SCALE[anchor.dataset.hitIntensity ?? ""] ?? 1);
         topPx = Math.max(topPx, bannerRect.bottom - layerRect.top + clearance);
       }
       if (topPx > headTopPx) popup.dataset.underBanner = "true";
