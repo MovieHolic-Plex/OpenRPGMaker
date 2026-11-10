@@ -4,7 +4,7 @@ import { checkImageDataUrl } from "../../imageCheck";
 import type { ObjectSpec } from "../../types";
 import { drawObject } from "../../drawObject";
 import { rememberObjectPlan, type DrawObjectResult } from "../../drawObject";
-import { DUNGEON_PLACE_WORD, requestedDungeonSide } from "../../dungeonGates";
+import { DUNGEON_PLACE_WORD, requestedDungeonSide } from "../../request/place";
 import { POINT } from "../placeSchema";
 import { text } from "../support";
 import type { VerbContext } from "../context";

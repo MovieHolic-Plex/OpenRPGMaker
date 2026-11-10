@@ -1,9 +1,10 @@
 // 청사진 동사 — write_blueprint(게임 설계 적기) · build_blueprint_path(청사진 단계를 실제 사건으로 짓기).
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
-import { oneProjectGame } from "../../shipChecks";
+import { oneProjectGame } from "../../request/scope";
 import { applyBlueprintAssembly, isPlaceholderTitle } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
-import { MIN_BLUEPRINT_STEPS, WRITE_BLUEPRINT_SCHEMA, isEscapeBlueprint, parseBlueprintArgs, stepMixProblems, thinBlueprintReason, walkBlueprint } from "../../blueprint";
+import { MIN_BLUEPRINT_STEPS, WRITE_BLUEPRINT_SCHEMA, parseBlueprintArgs, stepMixProblems, thinBlueprintReason, walkBlueprint } from "../../blueprint";
+import { isEscapeBlueprint } from "../../request/scope";
 import { repairWorldPlaces, worldById, worldPlaceProblems } from "../../world";
 import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, keepStepText, pathTextProblems, type PathStepText } from "../../blueprintPath";
 import { WORLD_BOUNCES, text } from "../support";

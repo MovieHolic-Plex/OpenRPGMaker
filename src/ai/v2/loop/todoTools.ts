@@ -7,7 +7,6 @@
 //       · 성공한 쓰기의 결과 지문을 고리(TodoLoop)에 넘긴다(진척 판정)
 //       · 성공한 쓰기 전후 차이(맵·이벤트·아이템·적 그룹 id)를 진행 중 항목(또는 인자 todoId 의 항목) refs 에 묶는다(refs.ts)
 import type { PiToolExecResult, PiToolShape } from "@/ai/piAgent/toolAdapter";
-import type { PiAgentRequest } from "@/ai/piAgent/protocol";
 import type { PiAssistantV2Env } from "../env";
 import { parseTodoCheck, TODO_CHECK_SCHEMA, type CheckResult, type TodoCheck, type TodoItem } from "../todo/types";
 import { checkLabel, isOpen, TODO_MAX_ATTEMPTS, type TodoInput, type TodoPhaseInput, type TodoStore } from "./todoStore";
@@ -18,6 +17,7 @@ import { isRegistryTool, preCheck, retryCandidates } from "./argGuard";
 import { correctionFor, englishFailureLine, englishVerbFailureHead, formatV2Failure, formatV2VerbFailure } from "./failureText";
 import { covers, requestSkeleton, type SkeletonElement } from "./requestSkeleton";
 import { formatCall, MISSING_HIGH_VERB, VERB_SCOPE, nextAfterFailure, nextForItem, scopeRedirect, skeletonFor, strategyAfterRepeat, type NextCall } from "./nextCall";
+import { isWriteRequest } from "../request/scope";
 
 const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
 
@@ -27,16 +27,6 @@ const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", 
  */
 const READ_VERB = /^(todo|inspect|ask_user|ask_helpers|room_parts|dungeon_parts|run_scene_test|simulate_battle)$|^(get|list|find|read|show|preview|search|lint|check|validate|probe|describe|view|inspect)_|^store_(find|read|list|get)/u;
 const isReadVerb = (name: string): boolean => READ_VERB.test(name);
-
-/** 무엇을 바꾸라는 요청인가(질문·조회·설명은 아니다). 이 요청에만 첫 호출 todo 를 강제한다. */
-export function isWriteRequest(request: Pick<PiAgentRequest, "task" | "readOnly">): boolean {
-  if (request.readOnly) return false;
-  const t = request.task.trim();
-  // 만들라는 낱말이 있으면 쓰기다 — 「…「아직 아무 단서도 없다」고 알려 줘」처럼 게임 속 대사를 시키는 «알려 줘»를 질문으로 읽어
-  // 할 일 뼈대·첫 쓰기 관문이 통째로 꺼졌다(2026-11-01 자물쇠 요청, 모든 모델).
-  if (/넣어\s*줘|만들어|추가해|바꿔\s*줘|고쳐\s*줘|놓아\s*줘|지어\s*줘|깔아\s*줘|붙여\s*줘|구현해|짜\s*줘|세워\s*줘|그려\s*줘/u.test(t)) return true;
-  return !/\?\s*$|？\s*$|알려\s*줘|뭐야|뭐가 있|어디\s*있|있어\?|보여\s*줘|설명해|정리해서|요약해/u.test(t);
-}
 
 /** 도구 결과의 첫 글과 ok:false 여부. */
 function readResult(result: PiToolExecResult | undefined): { text: string; failed: boolean } {

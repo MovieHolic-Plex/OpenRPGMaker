@@ -1,6 +1,6 @@
-// 턴 구동기가 같이 쓰는 밑받침 — 켜고 끄는 스위치(환경 변수·요청), 단계 시간 재기, 변경 요약. 2026-11-11 리팩토링 R3: scripts/lib/assistantV2Runtime.ts 에서 옮겼다.
+// 턴 구동기가 같이 쓰는 밑받침 — 켜고 끄는 스위치(환경 변수), 단계 시간 재기, 변경 요약. 2026-11-11 리팩토링 R3: scripts/lib/assistantV2Runtime.ts 에서 옮겼다.
 import type { PiAgentRequest } from "../../piAgent/protocol";
-import { wantsWholeGame } from "../vqa";
+import { wantsWholeGame } from "../request/scope";
 import type { PiAssistantV2Env } from "../env";
 import { summarizeProjectDiff } from "../advisor";
 
@@ -24,6 +24,3 @@ export const safeDiff = (env: PiAssistantV2Env): string => {
  * 사용자 규칙(2026-10-25): 최소 한 판, 결함 없는 판이 나오거나 3판을 돌 때까지. 그림 경로가 없는 실행은 «검수 못 함»으로 보고한다.
  */
 export const vqaEnabled = (request: PiAgentRequest): boolean => process.env.OPRN_V2_VQA !== "0" && !request.readOnly && wantsWholeGame(request.task);
-
-/** 앞 실행이 남긴 할 일을 이어 받을 요청인가(«계속»·«이어서»·«마저»·«남은 것»). */
-export const CONTINUE_WORDS = /계속|이어서|이어 ?(해|가|만들|짓)|마저|남은 ?(것|일|항목)|끝까지|다시 ?해/u;

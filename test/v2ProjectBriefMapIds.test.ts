@@ -2,7 +2,7 @@
 // 2026-10-30 실조수 e2e: 「map_blank_start 「버들 마을」 beodeul_city 20×15」에서 7번 중 5번 set_game_audio mapIds 에 beodeul_city 를 넣었다.
 import { describe, expect, it } from "vitest";
 import { projectBrief } from "@/ai/v2/prompt";
-import { MUSIC_TIER } from "@/ai/v2/game";
+import { MUSIC_TIER } from "@/ai/v2/request/toolGroups";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 

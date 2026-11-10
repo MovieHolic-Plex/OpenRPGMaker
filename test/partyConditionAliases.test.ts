@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { canonicalizeCommandFieldAlias } from "@/project/eventCommands/commandFieldAliases";
-import { v2ExtraToolNames } from "@/ai/v2/game";
+import { v2ExtraToolNames } from "@/ai/v2/request/toolGroups";
 import { runSceneTest } from "@/testing/sceneTestRunner";
 
 describe("파티 조건 별칭", () => {

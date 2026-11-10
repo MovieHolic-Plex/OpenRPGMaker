@@ -7,10 +7,10 @@ import { loadVqaBook } from "./vqaItems";
 import { carryOver } from "./carryOver";
 import type { PiAssistantV2Env } from "../env";
 import { type AdvisorToolCall, type AdvisorVerdict } from "../advisor";
-import { isWriteRequest } from "../loop/todoTools";
+import { CONTINUE_WORDS, isWriteRequest } from "../request/scope";
 import { type V2ToolExposure } from "../toolExposure";
 import { changedSince, indexProject } from "../loop/refs";
-import { vqaEnabled, CONTINUE_WORDS } from "./support";
+import { vqaEnabled } from "./support";
 
 /** 실행기가 넘기는 것 가운데 턴 정책이 쓰는 것 — 사용자 화면으로 가는 이벤트와 중단 신호. */
 export interface TurnOptions {
