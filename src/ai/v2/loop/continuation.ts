@@ -91,7 +91,8 @@ export const STOP_REASON_KO: Record<Exclude<LoopDecision, { kind: "continue" }>[
 const failingLine = (store: TodoStore, item: TodoItem): string | undefined => {
   const m = store.meta.get(item.id);
   if (m?.lastCheck && !m.lastCheck.pass) return `- ${item.id} «${item.content}» machine check ✗ — ${m.lastCheck.en ?? m.lastCheck.detail}${m.lastCheck.detail.startsWith("모호함") ? ` → bind it with todo(op:"bind", task:"${item.id}", mapId|eventId|itemId|troopId:<candidate id>)` : ""}`;
-  if (m?.lastFail) return `- ${item.id} «${item.content}» last failure — ${m.lastFailEn ?? m.lastFail}`;
+  // 앞 턴에서 이어 받은 항목은 그때 부른 동사를 같이 보인다 — 같은 길을 다시 걷지 않게.
+  if (m?.lastFail) return `- ${item.id} «${item.content}» last failure — ${m.lastFailEn ?? m.lastFail}${m.restored && m.tried?.length ? ` (already tried in an earlier turn: ${m.tried.join(", ")})` : ""}`;
   return undefined;
 };
 
