@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveRetroClassChoreography, resolveSkillChoreography } from "@/assets/retroSkillCatalog";
+import { resolveRetroClassChoreography, resolveSkillChoreography, retroChoreographyIdForClone } from "@/assets/retroSkillCatalog";
 import { normalizeSkillChoreographyRecord } from "@/project/skillChoreographyRecords";
 import type { SkillChoreographyRecord } from "@/project/types";
 
@@ -27,6 +27,11 @@ describe("project choreography record named by a contract-id skill", () => {
   it("falls back to the contract when the named record does not exist", () => {
     expect(resolveSkillChoreography({ id: "skill_dragoon_sweeping_lance", retroChoreographyId: "chor_missing" }, [lance])?.id).toBe("skill_dragoon_sweeping_lance");
     expect(resolveSkillChoreography({ id: "skill_dragoon_sweeping_lance", retroChoreographyId: lance.id }, undefined)?.id).toBe("skill_dragoon_sweeping_lance");
+  });
+
+  it("a copy of a contract-id skill keeps the named project record", () => {
+    expect(retroChoreographyIdForClone({ id: "skill_dragoon_jump", retroChoreographyId: lance.id })).toBe(lance.id);
+    expect(retroChoreographyIdForClone({ id: "skill_dragoon_jump" })).toBe("skill_dragoon_jump");
   });
 
   it("still keeps an own contract ahead of another contract id", () => {

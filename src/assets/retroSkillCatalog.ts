@@ -119,7 +119,7 @@ function synthesizeRecord(record: SkillChoreographyRecord, kind: "class" | "mons
 
 /**
  * 스킬 레코드의 연출 **한 곳 조회**. 조회 순서:
- * ① 스킬 id 가 계약(기본 연출) id 이면 그 계약 ② retroChoreographyId 가 프로젝트 연출 레코드(chor_*) 면 그 레코드
+ * ① retroChoreographyId 가 실제로 있는 프로젝트 연출 레코드(chor_*) 면 그 레코드(스킬 id 가 계약이어도) ② 스킬 id 가 계약(기본 연출) id 이면 그 계약
  * ③ retroChoreographyId 가 기본 연출 id 이면 그 계약. 없으면 undefined.
  * `want` 를 주면 그 편의 모양으로 돌려준다. 기본 연출은 자기 편만(다른 편이면 undefined), 프로젝트 레코드는 동작을 짝 동작으로 바꿔 어느 편에서든 나온다.
  */
@@ -174,7 +174,7 @@ export function retroChoreographyKind(id: string | undefined): "class" | "monste
  */
 export function retroChoreographyIdForClone(source: RetroChoreographyRef): string | undefined {
   // 계약 id 가 자기 id 면 계약이 이긴다. 아니고 프로젝트 연출 레코드(chor_*)를 빌려 쓰고 있으면 그 id 를 이어받는다.
-  if (!retroChoreographyKind(source.id) && source.retroChoreographyId?.startsWith("chor_")) return source.retroChoreographyId;
+  if (source.retroChoreographyId?.startsWith("chor_")) return source.retroChoreographyId;
   return resolveRetroClassChoreography(source)?.id ?? resolveRetroMonsterChoreography(source)?.id;
 }
 
