@@ -4,6 +4,8 @@
 // 맵의 조명·날씨·BGM 그대로 인물을 이동 경로로 걷게 하며, 끝(건너뛰기로도)은 프로젝트 시작 위치로 옮긴다.
 import { clearOpeningStageCommand } from "@/project/openingStage";
 import { compileCutscene, type CutsceneBeat } from "@/editor/cutscene";
+import { resolveWhere } from "@/ai/v2/place/where";
+import { BLUEPRINT_OPENING_SHOT_PREFIX } from "./blueprintOpening";
 import { EVENT_TOOLS } from "./eventTools";
 import { requireMap } from "./mapHelpers";
 import { CUTSCENE_BEAT_SCHEMA } from "./schemaShapes";
@@ -24,18 +26,22 @@ const authorOpeningStage: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string", description: "무대 맵(실제 게임 맵 — 거리·마을·역)." },
-      x: { type: "integer", description: "무대에서 게임이 열리는 칸(주인공은 숨겨지지만 카메라의 출발점). 걸을 수 있는 칸." },
+      x: { type: "integer", description: "무대에서 게임이 열리는 칸(주인공은 숨겨지지만 카메라의 출발점). 걸을 수 있는 칸. x,y 를 생략하면 도구가 고른다 — 시작 맵이면 시작 위치, 다른 맵이면 맵 가운데에서 가장 가까운 걸을 수 있는 빈 칸." },
       y: { type: "integer" },
       eventId: { type: "string", description: "무대 컷신 이벤트 id. 생략하면 ev_opening_stage." },
       beats: { type: "array", description: "CutsceneBeat[] — script_cutscene 과 같은 비트.", items: CUTSCENE_BEAT_SCHEMA },
       skippable: { type: "boolean", description: "기본 true(Esc 두 번으로 건너뛰기)." },
     },
-    required: ["mapId", "x", "y", "beats"],
+    required: ["mapId", "beats"],
   },
   run(draft, args): ToolExecResult {
     if (!SCRIPT_CUTSCENE) throw new ToolError("script_cutscene 도구를 찾지 못했습니다.", { code: "tool-missing" });
     const map = requireMap(draft, args.mapId as string);
-    const x = Math.trunc(Number(args.x)), y = Math.trunc(Number(args.y));
+    // 칸을 안 주면 도구가 고른다(좌표를 얻으려고 맵을 다시 읽는 호출을 없앤다): 시작 맵이면 시작 위치, 아니면 맵 가운데에서 가까운 빈 칸.
+    const given = args.x !== undefined && args.y !== undefined;
+    const picked = given ? undefined : map.id === draft.startMapId ? draft.startPos
+      : resolveWhere(draft, map, undefined, { at: { x: Math.floor(map.width / 2), y: Math.floor(map.height / 2) } }).cell;
+    const x = Math.trunc(Number(picked?.x ?? args.x)), y = Math.trunc(Number(picked?.y ?? args.y));
     if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0 || x >= map.width || y >= map.height) {
       throw new ToolError(`무대 칸 (${args.x},${args.y}) 이 맵 ${map.id}(${map.width}×${map.height}) 밖입니다.`, { code: "opening-stage-invalid", mapId: map.id });
     }
@@ -80,10 +86,13 @@ const authorOpeningStage: ToolDefinition = {
     const lastTransfer = page.commands.map((command) => command.kind).lastIndexOf("transfer");
     page.commands.splice(lastTransfer + 1);
     const opening = draft.system.opening ?? { enabled: true, skippable: true, scenes: [] };
-    draft.system.opening = { ...opening, enabled: true, stage: { mapId: map.id, x, y, eventId } };
+    // 끝맺음이 스스로 깐 맵 조각 장면(bp-open-*)은 무대가 대신한다 — 남으면 무대 앞에서 같은 맵의 멈춘 그림이 먼저 돌고, 화면 검수는 그 그림만 본다.
+    const scenes = opening.scenes.filter((scene) => !String(scene.id ?? "").startsWith(BLUEPRINT_OPENING_SHOT_PREFIX));
+    const replaced = opening.scenes.length - scenes.length;
+    draft.system.opening = { ...opening, scenes, enabled: true, stage: { mapId: map.id, x, y, eventId } };
     return {
-      summary: `엔진 무대 오프닝 — ${map.name}(${x},${y}) 에서 컷신 '${eventId}' 재생 후 시작 위치(${draft.startMapId} ${draft.startPos.x},${draft.startPos.y})로 이동. 그림 장면 ${draft.system.opening.scenes.length}개가 앞에 남아 있다.`,
-      data: { mapId: map.id, x, y, eventId, pictureScenes: draft.system.opening.scenes.length, ...(cut.data as object | undefined) },
+      summary: `엔진 무대 오프닝 — ${map.name}(${x},${y}) 에서 컷신 '${eventId}' 재생 후 시작 위치(${draft.startMapId} ${draft.startPos.x},${draft.startPos.y})로 이동. 그림 장면 ${draft.system.opening.scenes.length}개가 앞에 남아 있다.${replaced ? ` Replaced the automatic map-still opening (${replaced} scenes).` : ""}${picked ? ` Stage cell picked by the tool: (${x},${y}).` : ""}`,
+      data: { mapId: map.id, x, y, eventId, pictureScenes: draft.system.opening.scenes.length, replacedDefaultScenes: replaced, ...(cut.data as object | undefined) },
       ...(cut.warnings && cut.warnings.length > 0 ? { warnings: cut.warnings } : {}),
     };
   },

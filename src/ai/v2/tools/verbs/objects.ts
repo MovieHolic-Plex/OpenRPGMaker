@@ -2,7 +2,8 @@
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { adoptExactInterior, interiorBuilder, interiorMoveObjects, type ObjectEdit } from "../../place/builders/interior";
 import type { PlaceSpec } from "../../types";
-import { findMap, resolveWhere } from "../../people";
+import { resolveWhere } from "../../place/where";
+import { findMap } from "../../place/cells";
 import { takeObjectPlan } from "../../place/drawObject";
 import { dressRoom } from "../../place/builders/dressRoom";
 import { tileMoveObjects } from "../../place/builders/tileMove";

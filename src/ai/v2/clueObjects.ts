@@ -19,7 +19,7 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
 import { doorArtCells, hostMentions, isDoorName, objectBaseName, objectCells, repairEventReach, unreachableEvents } from "./eventReach";
 import { staleBody } from "./examineSpot";
-import { objectAt, tileLabel } from "./people";
+import { objectAt, tileLabel } from "./place/cells";
 import type { BuildRun } from "./types";
 
 type Cmd = Record<string, unknown> & { kind?: string };

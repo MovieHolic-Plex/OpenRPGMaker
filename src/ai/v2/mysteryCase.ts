@@ -16,7 +16,8 @@ import { settleExamineSpot } from "./examineSpot";
 import { reachableCells, unreachableEvents } from "./eventReach";
 import { isObjectiveCommand, mapRegion, objectiveCommand, withWhere } from "./discoverability";
 import { isPassable } from "@/project/collision";
-import { buildPeople, tileLabel } from "./people";
+import { buildPeople } from "./people";
+import { tileLabel } from "./place/cells";
 import { shownToken } from "./codeClues";
 import type { BuildRun } from "./types";
 
