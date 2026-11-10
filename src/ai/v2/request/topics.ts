@@ -71,6 +71,7 @@ export function jobFacets(topic: string): JobFacets {
 
 /** 작은 일에 늘 처음부터 싣는 도구 — 사람·사건·물건을 놓고, 옮기고, 지우고, 고치고, 본다. */
 const SMALL_BASE: readonly string[] = ["add_people", "add_event", "place_object", "move_object", "move_event", "remove_event", "find_events", "get_event", "patch_event_page", "inspect", "restore_event", "ask_user", "read_specs"];
+/** 사건을 짜는 일의 도구 — 첫째(upsert_event)는 주제 도구보다 먼저, 나머지는 뒤에 싣는다. */
 const SMALL_LOGIC: readonly string[] = ["upsert_event", "add_event_page", "declare_story_flag", "run_scene_test"];
 const SMALL_PEOPLE: readonly string[] = ["list_npc_graphics", "read_npc_layout"];
 const SMALL_BY_TOPIC: Readonly<Partial<Record<GameTopic, readonly string[]>>> = {
@@ -93,7 +94,7 @@ const SMALL_BY_TOPIC: Readonly<Partial<Record<GameTopic, readonly string[]>>> = 
 const SMALL_MAX = 19;
 
 /**
- * 작은 일에 처음부터 실을 도구 이름(앞이 먼저) — 늘 싣는 것, 주제가 부른 것, 사람·사건 도구 순. 넘치면 뒤를 자른다.
+ * 작은 일에 처음부터 실을 도구 이름(앞이 먼저) — 늘 싣는 것, 사건 쓰기, 주제가 부른 것, 사람 도구, 나머지 사건 도구 순. 넘치면 뒤를 자른다.
  * 여기 없는 도구는 필요할 때 싣는다(load_tools 설명에 이름이 뜨고, 이름으로 부르면 그 자리에서 실린다).
  */
 export function smallJobTools(topics: readonly GameTopic[], facets: JobFacets, groups: ToolGroups, audio: AudioAsk, combat: CombatAsk): readonly string[] {
@@ -103,7 +104,8 @@ export function smallJobTools(topics: readonly GameTopic[], facets: JobFacets, g
   const terrain = groups.terrain ? ["list_spatial_designs", "stamp_object", "fill_region"] : [];
   const sound = [...(audio.music ? ["recommend_bgm", "store_find_music", "store_install", "set_game_audio"] : []), ...(audio.sound ? ["store_find_sound", "store_install", "set_game_audio"] : [])];
   const store = groups.store ? groups.extra.filter((name) => name.startsWith("store_")) : [];
-  // 요청이 이름 댄 주제의 도구가 일반 사건 도구보다 먼저다 — 수·글자 상한에 걸리면 뒤(덜 급한 것)가 필요할 때로 밀린다.
-  const want = [...SMALL_BASE, ...byTopic, ...dress, ...terrain, ...(facets.people ? SMALL_PEOPLE : []), ...(facets.logic ? SMALL_LOGIC : []), ...sound, ...store];
+  // 사건 쓰기(upsert_event) 다음에 요청이 이름 댄 주제의 도구가 온다 — 수·글자 상한에 걸리면 뒤(덜 급한 것)가 필요할 때로 밀린다.
+  const logic = facets.logic ? SMALL_LOGIC : [];
+  const want = [...SMALL_BASE, ...logic.slice(0, 1), ...byTopic, ...dress, ...terrain, ...(facets.people ? SMALL_PEOPLE : []), ...logic.slice(1), ...sound, ...store];
   return [...new Set(want)].slice(0, SMALL_MAX);
 }

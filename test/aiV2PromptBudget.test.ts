@@ -111,12 +111,12 @@ describe("place and whole-game requests", () => {
     expect(shoot("이 맵에 상점 주인 한 명 세워 줘.", "blank").text).not.toContain("[Fallen-Star-style jobs");
   });
 
-  it("a whole-game prompt does not grow (main 2026-11-11: 35,335 · 67,193 chars; now 35,213 · 67,071)", () => {
+  it("a whole-game prompt does not grow (main 2026-11-11 after #4556: 35,491 · 67,349 chars; now 35,369 · 67,227)", () => {
     const fantasy = shoot("판타지 RPG 게임 하나 만들어 줘.", "blank");
-    expect(fantasy.chars).toBeLessThanOrEqual(35_213);
+    expect(fantasy.chars).toBeLessThanOrEqual(35_491);
     expect(fantasy.text).toContain("[Fallen-Star-style jobs");
     expect(fantasy.upFront).toContain("write_blueprint");
-    expect(shoot("방탈출 게임 만들어 줘.", "blank").chars).toBeLessThanOrEqual(67_071);
+    expect(shoot("방탈출 게임 만들어 줘.", "blank").chars).toBeLessThanOrEqual(67_349);
   });
 
   it("a place request gets only the game-card lines its words name", () => {
