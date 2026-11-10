@@ -1,6 +1,7 @@
 // 장소 동사 — build_places(세계 장소 한 번에) · make_place · edit_place · review_layout · find_pieces.
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
-import { INTERIOR_WORDS, interiorCatalogCard, placeSpecKindOf } from "../../prompt";
+import { interiorCatalogCard, placeSpecKindOf } from "../../prompt";
+import { INTERIOR_WORDS } from "../../request/place";
 import { hasLayout } from "../../builders/interiorLayoutBuild";
 import { LAYOUT_FORMAT, LAYOUT_TAG, applyLayoutPatch, layoutGiven, layoutPatchIsEmpty, type LayoutPatch } from "../../interiorLayout";
 import { layoutReviewRounds, REVIEWS_TAG } from "../../layoutReview";
@@ -22,7 +23,8 @@ import { blueprintMapFor } from "../../blueprintPath";
 import { isPlaceholderMap } from "../../blankStart";
 import { walkGame } from "../../makeGame";
 import { DUNGEON_LAYOUT_SCHEMA, LAYOUT_CRITIQUE_ROUNDS, LAYOUT_REPAIRS, VILLAGE_LAYOUT_SCHEMA, attachLayoutCritique, bboxDungeonSpec, bboxPlacesOn, bboxVillageSpec, dungeonLayoutCard, hasDungeonLayout, hasVillageLayout, layoutRejectText, layoutSession, toBboxTerrain, villageLayoutCard } from "../../builders/placeLayout";
-import { DUNGEON_PLACE_WORD, gateFor, innerDungeonParent, innerGateSpot, requestedDungeonSide } from "../../dungeonGates";
+import { gateFor, innerDungeonParent, innerGateSpot } from "../../dungeonGates";
+import { DUNGEON_PLACE_WORD, requestedDungeonSide } from "../../request/place";
 import { DUNGEON_DESIGN_SCHEMA, arrivalEntrance, dungeonContext, dungeonParts, screenDungeonSpec } from "../../dungeonParts";
 import { buildsHandInterior, designMissingRooms } from "../../designRooms";
 import { dropModelSeed } from "../../modelSeed";

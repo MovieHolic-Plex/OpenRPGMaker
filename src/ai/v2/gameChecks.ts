@@ -12,10 +12,10 @@ import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { simulateBattle } from "@/battle/simulate";
 import { gatesThatOpenNothing, lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers, weakPuzzleLocks } from "./puzzleChecks";
 import { splitScriptSpeaker } from "@/project/endingSummary";
-import { wantsWholeGame } from "./shipChecks";
+import { wantsWholeGame } from "./request/scope";
 import { enemyIdentityProblems } from "./enemyChecks";
 import { hudTitleChoiceProblems } from "./hudTitleChecks";
-import { withoutNegatedEncounters } from "./combatChecks";
+import { withoutNegatedEncounters } from "./request/combat";
 import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMismatch } from "./lookChecks";
 import { dryBoats, dryBridges, placementProblems, type PlacementProblem } from "./placementRules";
 import { offPurposeProps } from "./roomPurpose";
@@ -26,7 +26,9 @@ import { projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
 import { gameHasCombat } from "@/project/combatPresence";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
 import { isStageWrite, type StageWrites } from "./stageWrites";
-import { musicAsked, musicOnly, soundOnly } from "./musicWords";
+import { musicAsked, musicOnly, soundOnly } from "./request/audio";
+import { FOE_ASK, STATE_WORDS } from "./request/combat";
+import { WEATHER_WORDS, SHAKE_WORDS, FLASH_WORDS, HIDDEN_WORDS, ENDING_WORDS } from "./request/asks";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -426,15 +428,6 @@ function deadClues(project: Project, changedIds: ReadonlySet<string>): string[] 
   }
   return out;
 }
-
-const WEATHER_WORDS = /비가|비\s*(가\s*)?오|빗방울|빗줄기|소나기|폭우|장마|눈이\s*(오|내|와|쌓)|눈\s*내리|함박눈|폭풍|폭설|안개|날씨|천둥 ?(이|소리|번개)|rain|snow|storm|fog|weather/iu;
-const SHAKE_WORDS = /흔들리|흔들린|흔들려|흔들어|지진|진동|쿵\s*(하|소리)|earthquake|tremor|shake/iu;
-const FLASH_WORDS = /번쩍|섬광|번개(?!\s*(의\s*서|마법|기술|스킬|주문|책|의\s*검))(?!['’」』])|빛이\s*터|flash|lightning/iu;
-const HIDDEN_WORDS = /숨겨|숨은|몰래|보이지\s*않|투명|비밀|hidden|secret|invisible/iu;
-const ENDING_WORDS = /엔딩|결말|ending/iu;
-/** 싸울 몬스터·적을 바라는 요청(「약한 몬스터가 있게」「고블린과 싸우는」). 「기적이 있」 같은 낱말 속 「적」은 빼려고 앞 글자를 본다. */
-const FOE_ASK = /(몬스터|마물|(?<![가-힣])적|고블린|슬라임|늑대|멧돼지|도적)(들)?(이|가|와|과|랑|하고)?\s*(있|나오|나타나|출몰|싸우|싸울|싸워|덤비|잡)|필드 적|(?<![가-힣])적을\s*(두|놓|배치)|monsters?|enemies|enemy/iu;
-const STATE_WORDS = /독초|독에|독이|독을|독\s*상태|중독|맹독|마비|수면\s*상태|잠\s*상태|상태\s*이상|혼란|침묵|poison|paraly|stun/iu;
 
 /** 맵 배경음·기본 전투곡·승리 팡파르·타이틀·오프닝·엔딩 곡 연결이 바뀌었나(set_game_audio) — 그러면 음악 요청은 이벤트 명령 없이도 채워졌다. */
 function audioBindingsChanged(before: Project, after: Project): boolean {

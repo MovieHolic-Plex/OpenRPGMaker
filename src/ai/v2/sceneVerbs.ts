@@ -44,10 +44,6 @@ export interface EndingSceneSpec {
   readonly after?: string;
 }
 
-/** 이 요청에 동사를 싣나 — 싣지 않으면 도구 목록이 늘지 않는다. */
-export const wantsBossEncounter = (task: string): boolean => /보스|관장전|마왕|결투|싸우|덤벼|boss/iu.test(task);
-export const wantsEndingScene = (task: string): boolean => /엔딩|결말|ending/iu.test(task);
-
 const clean = (lines: readonly unknown[] | undefined): string[] => (lines ?? []).map((l) => String(l ?? "").trim()).filter(Boolean).slice(0, 12);
 const result = (ok: boolean, run: BuildRun, firstCall: number, summary: string, warnings: string[], mapIds: string[], eventIds: { mapId: string; eventId: string }[] = []): ContentBuildResult =>
   ({ ok, mapIds, summary, warnings, missingArt: [], calls: run.calls.slice(firstCall), eventIds });

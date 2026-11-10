@@ -16,16 +16,21 @@ import { EVENT_CARD } from "./events";
 import { DRAW_OBJECT_CARD } from "./drawObject";
 import { MONSTER_TOWN_CARD } from "./builders/monsterTown";
 import { SCENE_CARD } from "./scene";
-import { gameCard, MUSIC_TIER, SOUND_TIER, TERRAIN_CARD, fallenTierCard, storeTierCard, wantsGameTools, wantsMusicTools, wantsSoundTools, wantsStoreTools, wantsTerrainTools } from "./game";
-import { MAKE_GAME_CARD, makeGameOn, wantsMakeGame } from "./makeGame";
+import { gameCard, TERRAIN_CARD } from "./game";
+import { MUSIC_TIER, SOUND_TIER, fallenTierCard, storeTierCard, wantsGameTools, wantsMusicTools, wantsSoundTools, wantsStoreTools } from "./request/toolGroups";
+import { wantsTerrainTools } from "./request/place";
+import { MAKE_GAME_CARD, makeGameOn } from "./makeGame";
+import { wantsMakeGame } from "./request/scope";
 import { BLUEPRINT_CARD, blueprintPin } from "./blueprint";
-import { wantsWholeGame } from "./shipChecks";
-import { audioOnly, musicOnly, wantsMusic } from "./musicWords";
+import { wantsWholeGame } from "./request/scope";
+import { audioOnly, musicOnly, wantsMusic } from "./request/audio";
 import { TODO_LOOP_LINE } from "@/ai/agentRules";
-import { isFreshProject } from "./genreDefaults";
 import type { TodoStore } from "./loop/todoStore";
 import { isComposedWorld, worldCard } from "./world";
-import { worldForRequest } from "./worldRequest";
+import { worldForRequest } from "./request/world";
+import { INTERIOR_WORDS } from "./request/place";
+import { leanPromptFor } from "./request/scope";
+import { MONSTER_WORDS, SCENE_WORDS } from "./request/genre";
 
 export const V2_CORE_PROMPT = [
   "You are the OPRN RPG editor assistant (v2). Split of work: you decide WHAT (the spec), functions decide HOW (deterministic builders), and other eyes (an independent critic and a screen check) look at the 1x picture.",
@@ -45,30 +50,6 @@ export const V2_CORE_PROMPT = [
 ].join("\n");
 
 export const V2_CARDS: readonly string[] = [INTERIOR_CARD, VILLAGE_CARD, DUNGEON_CARD, JP_CITY_CARD, MODERN_KR_CARD, PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
-
-/**
- * 지은 맵에 로직만 넣는 요청(editOnlyRequest)은 장소 짓기 지식 카드와 짓기 동사를 지시문·도구 목록에 싣지 않는다(2026-11-01 비용 분석 —
- * openwiki/assistant-v2.md 「토큰 비용 재기」). 실내·마을·던전·거리·사람·그리기 카드와 실내 칩셋 목록이 약 1.9만 토큰, make_place·edit_place 등
- * 짓기 동사가 약 1.6만 토큰인데, 로직 요청 18판에서 한 번도 쓰지 않으면서 호출마다 다시 읽었다.
- * 그런 요청이면 지시문에는 색인 한 줄(PLACE_SPEC_INDEX)만 두고, 짓기 동사는 load_tools 로, 카드는 read_specs 나 그 종류의 첫 짓기 호출이 기록(캐시 뒤쪽)으로 준다.
- * 게임 하나·장소 짓기·빈 프로젝트 요청은 예전 그대로 다 싣는다. 끄기: OPRN_V2_LEAN_PROMPT=0 (A/B 측정용).
- */
-function leanPromptOn(): boolean {
-  const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env;
-  return env?.OPRN_V2_LEAN_PROMPT !== "0";
-}
-/** 장소를 짓거나 다시 짓는 요청 낱말 — 장소 이름 뒤 열두 글자 안에 짓기 동사, 또는 «새 ○○». 넉넉히 잡는다(잘못 맞으면 예전처럼 다 실을 뿐이다). */
-const PLACE_NOUNS = "맵|지도|마을|도시|거리|골목|던전|동굴|미궁|탑|성|궁|방|실내|집|건물|가게|상점|여관|주점|교회|성당|신전|사당|숲|들판|필드|평원|항구|부두|광장|학교|병원|저택|감옥|지하|층|섬|산|장소|무대|공간|place|map|village|town|city|dungeon|cave|room|house|building|interior|street";
-const BUILD_VERBS = "만들|지어|짓|그려|그리|깔아|깔|넓혀|넓히|키워|늘려|추가|하나 더|고쳐|바꿔|꾸며|꾸미|배치|build|make|add|create|expand|redesign|rebuild|draw";
-const PLACE_BUILD_WORDS = new RegExp(`(${PLACE_NOUNS})[^.!?\\n]{0,12}(${BUILD_VERBS})|(새|새로운|new)\\s*(${PLACE_NOUNS})`, "iu");
-/** 이미 지은 게임에 로직·대사·데이터만 넣는 요청인가 — 게임 하나·첫 장소(빈 프로젝트)·장소 짓기 낱말이면 아니다. */
-export function editOnlyRequest(project: Project, task: string): boolean {
-  return !!task.trim() && !wantsWholeGame(task) && !wantsMakeGame(task) && !isFreshProject(project) && !PLACE_BUILD_WORDS.test(task);
-}
-/** 이 요청에 가벼운 지시문(장소 카드·짓기 동사를 필요할 때만)을 쓰나. */
-export function leanPromptFor(project: Project, task: string | undefined): boolean {
-  return leanPromptOn() && editOnlyRequest(project, task ?? "");
-}
 /** 가벼운 지시문에서 처음부터 싣지 않는 장소 짓기 동사(toolExposure.ts 가 load_tools 로 돌린다). add_people·move_object 같은 작은 동사는 남긴다. */
 export const PLACE_BUILD_VERBS: ReadonlySet<string> = new Set(["make_place", "edit_place", "review_layout", "dress_room", "room_parts", "dungeon_parts", "find_pieces", "draw_object"]);
 export const PLACE_SPEC_KINDS = ["interior", "village", "dungeon", "street", "people", "draw_object"] as const;
@@ -109,12 +90,6 @@ export function projectBrief(project: Project, currentMapId?: string): string {
   });
   return ["[Current project — fields that point at a map (mapId·mapIds) take the value after mapId=]", ...maps, Object.keys(project.maps).length > 24 ? `…first 24 of ${Object.keys(project.maps).length} maps` : ""].filter(Boolean).join("\n");
 }
-
-/** 요청·프로젝트가 맞을 때만 싣는 카드(각 한 장) — 몬스터 수집 마을, 두 선택 대화 장면. */
-const MONSTER_WORDS = /포켓몬|몬스터 ?수집|monster[- ]?collect|pok[eé]mon|트레이너|체육관|연구소|몬스터 ?센터/iu;
-const SCENE_WORDS = /대화 ?장면|선택지|고백|속마음|연애|데이트|첫 ?만남|romance|confess/iu;
-/** 실내 칸 배치용 칩셋 목록 카드(영어, 만든 것) — 실내 요청이거나 지금 맵이 손 도트 실내일 때만 싣는다(약 4k 토큰). */
-export const INTERIOR_WORDS = /실내|방|여관|주점|선술집|객잔|가게|상점|잡화|서재|도서|서고|감옥|뇌옥|감방|교회|성당|예배당|대장간|길드|집\s*안|부엌|연구실|inn|tavern|shop|store|library|study|jail|prison|room|interior|chapel|forge|guild|kitchen/iu;
 let catalogCard: string | undefined;
 /** 칸 배치 목록 카드 — 칩셋 메타데이터에서 생성(interiorCatalog.ts). 지금 맵의 칩셋이 방 역할표를 가진 실내 칩셋이면 그것, 아니면 손 도트 실내 v5. */
 export function interiorCatalogCard(project?: Project, currentMapId?: string, task = ""): string {
@@ -134,11 +109,6 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
   // 가벼운 지시문이면 실내 칩셋 목록은 interior 카드와 함께 필요할 때 준다(placeSpecCards).
   const interior = !lean && (INTERIOR_WORDS.test(task) || tileset?.id === HAND_INTERIOR_TILESET_ID);
   return [...(interior ? [interiorCatalogCard(project, currentMapId, task)] : []), ...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(audioOnly(task) ? [`[${musicOnly(task) ? "Music" : "Sound-effect"}-only request — only find, install and assign sounds. Do not change maps, events or objects (mention existing problems in the report as notes only)]`, ...(wantsMusic(task) ? [MUSIC_TIER.card] : []), ...(wantsSoundTools(task) ? [SOUND_TIER.card] : [])] : wantsGameTools(task) ? [gameCard(), ...[fallenTierCard(task)].filter(Boolean), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : wantsMusicTools(task) ? [...(wantsMusic(task) ? [`[Music request — use these tools]\n${MUSIC_TIER.card}`] : []), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : []), ...(wantsTerrainTools(task) && !audioOnly(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
-}
-
-/** 구성기 세계(world.ts)의 게임이면 장소는 build_places 가 짓는다 — 모델이 칸을 설계하는 장소 카드(실내·마을·던전·거리)와 짓기 동사는 처음부터 싣지 않는다. */
-export function composedWorldFor(project: Project, projectKey: string | undefined, task: string | undefined): boolean {
-  return isComposedWorld(worldForRequest(project, projectKey, task));
 }
 const WORLD_CARDS: readonly string[] = [PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
 

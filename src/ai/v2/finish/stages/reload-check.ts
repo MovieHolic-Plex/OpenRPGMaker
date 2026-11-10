@@ -1,6 +1,6 @@
 // 저장 → 다시 읽기(reloadCheck) — 끝맺음의 맨 마지막 관문. 빌더가 넣은 이벤트의 빠진 필드는 메우고, 그래도 안 열리면 그 필드를 조수에게 알린다(출하 검사도 project-reload-failed 로 막는다).
 import type { FinishStage } from "../types";
-import { wantsWholeGame } from "../../shipChecks";
+import { wantsWholeGame } from "../../request/scope";
 import { ensureReloadable } from "../../reloadCheck";
 
 export const stage: FinishStage = {

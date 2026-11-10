@@ -13,8 +13,8 @@ import { createV2Tools } from "../../../src/ai/v2/verbs";
 import { V2Session } from "../../../src/ai/v2/turn/session";
 import { exposeV2Tools } from "../../../src/ai/v2/toolExposure";
 import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt";
-import { buildsWholeGame, wantsWholeGame } from "../../../src/ai/v2/shipChecks";
-import { wantsGameTools } from "../../../src/ai/v2/game";
+import { buildsWholeGame, wantsWholeGame } from "../../../src/ai/v2/request/scope";
+import { wantsGameTools } from "../../../src/ai/v2/request/toolGroups";
 
 /** 요청 묶음 — 작은 일·장소·게임 전체·소리·이어 하기, 그리고 2026-11-11 재점검에서 잘못 갈린 문장들. 더하기만 한다(순서가 열쇠다). */
 const REQUESTS: readonly string[] = [
