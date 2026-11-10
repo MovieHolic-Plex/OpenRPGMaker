@@ -5,6 +5,7 @@
 // → 결함 목록(어디·무엇·왜) → 조수가 고침 → 다음 판. 결함 판정은 모델이 하되, 판 수·끝내기·보고 문구는 코드가 정한다.
 // 이 파일은 순수하다(찍기·호출은 넘겨받는다). 실행기 연결은 scripts/lib/assistantV2Runtime.ts.
 import { roomSpecOf } from "@/editor/handInterior/builder";
+import { BLUEPRINT_OPENING_SHOT_PREFIX } from "@/editor/tools/blueprintOpening";
 import type { Project } from "@/project/types";
 
 export const VQA_MAX_ROUNDS = 3;
@@ -22,6 +23,7 @@ export interface VqaShot {
   /** 사람이 읽는 자리 이름: 「타이틀」·「오프닝 1/3」·「맵 «검은 장미 저택 2층»」. */
   readonly where: string;
   readonly kind: "title" | "opening" | "map";
+  /** 대상 열쇠 — 맵 id · 그림 자원 id · 오프닝 애니메틱 장면 id · 오프닝 무대(`stage:<mapId>:<eventId>`). 같은 결함인지는 이 열쇠로 먼저 가른다. */
   readonly ref?: string;
   readonly image: string;
 }
@@ -31,7 +33,7 @@ export interface VqaDefect {
   readonly what: string;
   /** 「blocker」 = 플레이에 지장·약속과 다름·임시 그림. 「polish」 = 눈에 띄지만 쓸 수는 있음. 둘 다 결함이다. */
   readonly severity: "blocker" | "polish";
-  /** 결함이 난 그림의 대상 — 맵이면 mapId, 타이틀·오프닝이면 그림 자원 id. 고치기 지시가 «어디를 고칠지»를 정확히 짚게. */
+  /** 결함이 난 그림의 대상(VqaShot.ref) — 고치기 지시가 «어디를 고칠지»를 짚고, 판 사이에 같은 결함을 알아보는 열쇠다. */
   readonly target?: { readonly kind: VqaShot["kind"]; readonly ref?: string };
 }
 
@@ -44,31 +46,60 @@ export interface VqaRound {
   readonly problem?: string;
 }
 
-/** 찍을 자리. 이미지는 호출자가 그린다(편집기 렌더 브로커). 시작 맵을 맨 앞에, 그다음 이번 실행에서 바뀐 맵. */
-export function vqaShotPlan(project: Project, changedMapIds: ReadonlySet<string>): { kind: VqaShot["kind"]; where: string; ref?: string; shotId?: string; atMs?: number[] }[] {
-  const plan: { kind: VqaShot["kind"]; where: string; ref?: string; shotId?: string; atMs?: number[] }[] = [];
+interface VqaShotPlanItem {
+  readonly kind: VqaShot["kind"];
+  readonly where: string;
+  readonly ref?: string;
+  readonly shotId?: string;
+  readonly atMs?: number[];
+  /** 맵의 한 구역만 찍는다(오프닝 무대 둘레). */
+  readonly region?: { readonly mapId: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number };
+}
+
+/** 오프닝 무대 그림의 크기(칸) — 게임 화면 한 장쯤. */
+const STAGE_VIEW = { w: 24, h: 14 } as const;
+const stageRef = (mapId: string, eventId: string): string => `stage:${mapId}:${eventId}`;
+
+/**
+ * 찍을 자리. 이미지는 호출자가 그린다(편집기 렌더 브로커). 차례: 타이틀 → 오프닝 무대 → 모델이 지은 오프닝 장면 → 시작 맵 → 이번 실행에서 바뀐 맵
+ * → 나머지 맵 → 끝맺음 단계가 자동으로 지은 맵 조각 오프닝(빌더 몫이라 그림 수 상한에서 맨 뒤로 민다).
+ */
+export function vqaShotPlan(project: Project, changedMapIds: ReadonlySet<string>): VqaShotPlanItem[] {
+  const plan: VqaShotPlanItem[] = [];
+  const autoOpening: VqaShotPlanItem[] = [];
   const title = project.system.titleScreen?.backgroundResourceId;
   if (title) plan.push({ kind: "title", where: "타이틀 화면 배경", ref: title });
   const opening = project.system.opening;
   if (opening?.enabled) {
+    // 무대 오프닝(author_opening_stage)은 실제 맵 위의 컷신이다 — 그 칸 둘레를 찍어야 모델이 오프닝을 고친 것이 검수자 눈에 보인다.
+    const stageMap = opening.stage ? project.maps[opening.stage.mapId] : undefined;
+    if (opening.stage && stageMap) {
+      const w = Math.min(stageMap.width, STAGE_VIEW.w), h = Math.min(stageMap.height, STAGE_VIEW.h);
+      const x = Math.max(0, Math.min(stageMap.width - w, opening.stage.x - Math.floor(w / 2))), y = Math.max(0, Math.min(stageMap.height - h, opening.stage.y - Math.floor(h / 2)));
+      plan.push({ kind: "opening", where: `오프닝 무대 — 맵 «${stageMap.name}» 칸 ${opening.stage.x},${opening.stage.y} 둘레 ${w}×${h}칸(새 게임이 이 칸에서 열리고 컷신이 이 맵 위에서 연출된다 · 움직임·대사는 그림에 없음)`,
+        ref: stageRef(opening.stage.mapId, opening.stage.eventId), region: { mapId: opening.stage.mapId, x, y, w, h } });
+    }
     const scenes = opening.scenes;
     scenes.forEach((scene, index) => {
       const where = `오프닝 ${index + 1}/${scenes.length}`;
       if (scene.kind === "image" && scene.resourceId) plan.push({ kind: "opening", where, ref: scene.resourceId });
       else if (scene.kind === "animatic") {
         const duration = Math.max(1, Math.floor(scene.durationMs));
-        plan.push({ kind: "opening", where: `${where} (애니메틱 시작·중간·끝)`, shotId: scene.id, atMs: [0, Math.floor(duration / 2), Math.max(0, duration - 1)] });
+        (isAutoOpeningRef(scene.id) ? autoOpening : plan).push({ kind: "opening", where: `${where} (애니메틱 시작·중간·끝)`, ref: scene.id, shotId: scene.id, atMs: [0, Math.floor(duration / 2), Math.max(0, duration - 1)] });
       }
     });
   }
   const mapIds = Object.keys(project.maps);
   const ordered = [project.startMapId, ...mapIds.filter((id) => changedMapIds.has(id) && id !== project.startMapId), ...mapIds.filter((id) => !changedMapIds.has(id) && id !== project.startMapId)]
     .filter((id, i, all): id is string => Boolean(id && project.maps[id]) && all.indexOf(id) === i);
-  // 맵 그림은 편집기 렌더라 주인공을 그리지 않는다 — 검수자·조수가 「시작 맵에 주인공이 안 보인다」를 결함으로 되풀이했다(2026-10-28 mt2 argon escape).
-  const startNote = project.startPos ? ` (시작 맵 · 주인공은 게임에서만 그려짐, 시작 칸 ${project.startPos.x},${project.startPos.y})` : " (시작 맵)";
-  for (const id of ordered) plan.push({ kind: "map", where: `맵 «${project.maps[id]!.name}»${id === project.startMapId ? startNote : ""}`, ref: id });
-  return plan.slice(0, VQA_MAX_IMAGES);
+  // 맵 그림은 줄여서 간다 — 칸 수를 적어 두지 않으면 검수자가 그림에서 크기를 어림해 «시작 칸이 맵 밖»이라고 한다. 주인공은 편집기 렌더에 없다.
+  const startNote = project.startPos ? ` · 시작 맵 · 주인공은 게임에서만 그려짐, 시작 칸 ${project.startPos.x},${project.startPos.y}` : " · 시작 맵";
+  for (const id of ordered) { const map = project.maps[id]!; plan.push({ kind: "map", where: `맵 «${map.name}» (${map.width}×${map.height}칸${id === project.startMapId ? startNote : ""})`, ref: id }); }
+  return [...plan, ...autoOpening].slice(0, VQA_MAX_IMAGES);
 }
+
+/** 끝맺음 단계(applyBlueprintOpening)가 맵을 잘라 지은 기본 오프닝 장면인가 — 장면 id 로 가른다(검수자 글이 아니라 사실로). */
+const isAutoOpeningRef = (ref: string | undefined): boolean => !!ref && ref.startsWith(BLUEPRINT_OPENING_SHOT_PREFIX);
 
 /** 검수자에게 보내는 지시. 게임을 만든 이유·조수 보고는 보여 주지 않는다(눈가림) — 요청 원문과 그림만. */
 function vqaPrompt(task: string, shots: readonly VqaShot[], round: number, previous: readonly VqaDefect[]): string {
@@ -78,6 +109,7 @@ function vqaPrompt(task: string, shots: readonly VqaShot[], round: number, previ
     `Round ${round} of ${VQA_MAX_ROUNDS}. Images, in order: ${shots.map((s, i) => `[${i + 1}] ${s.where}`).join(" · ")}.`,
     ...(previous.length ? [`Last round you reported these; check whether each is still visible and report it again only if it is:\n${previous.map((d) => `- ${d.where}: ${d.what}`).join("\n")}`] : []),
     "Count as defects (with the exact image and spot): placeholder or editor-default art (generic fields, the default kingdom/sword opening, empty grey blocks); art that contradicts the request (wrong era, setting, characters, genre); unreadable or clipped text; characters standing inside walls, furniture or roofs; doors or exits that lead nowhere visible; rooms that are mostly empty floor; mismatched tile styles; a title that spoils the ending; obviously broken layering (tiles cut off, half trees).",
+    "Each map image shows the whole map scaled to fit; its label gives the real size in cells (e.g. 44×36칸) and cell coordinates in labels are cells of that grid. Never estimate the map size or a cell position from pixels. An «오프닝 무대» image is the map area where the opening cutscene plays in the running game (characters walk and talk there); judge what is placed there, not the missing motion.",
     "Do NOT count: pixel-art style itself, small decoration choices, things that need sound or animation to judge, anything you cannot actually see in the image, and a missing player character on a map image — map images are editor renders of the tiles and placed events; the player sprite is drawn only in the running game.",
     "Answer with JSON only: {\"defects\":[{\"image\":<number>,\"where\":\"<spot in that image, e.g. top-left, the shop counter>\",\"what\":\"<the defect in one Korean sentence>\",\"severity\":\"blocker\"|\"polish\"}]}. Empty list if you find nothing concrete. No more than 12 defects; most important first.",
   ].join("\n\n");
@@ -136,7 +168,7 @@ export async function reviewVqaRound(input: {
 // 낱말로 결정적으로 나눈다. 못 고치는 것은 장부(ai-activity 「런타임/빌더 결함(모델 밖)」)로만 남기고 고치기 차례에 넘기지 않는다.
 // 남은 결함 수(보고·출하 차단)는 그대로 센다 — 장부로 뺐다고 결함이 사라지지 않는다.
 type VqaDefectKind =
-  | "runtime-screen" | "runtime-hud" | "runtime-text" | "lighting" | "art-style" | "missing-art" | "title-art" | "sprite-scale" | "player-not-drawn" | "shot-limit" | "builder-exit" | "builder-tiles"
+  | "runtime-screen" | "runtime-hud" | "runtime-text" | "lighting" | "art-style" | "missing-art" | "title-art" | "sprite-scale" | "player-not-drawn" | "shot-limit" | "builder-exit" | "builder-tiles" | "builder-opening"
   | "fixable";
 interface VqaDefectClass { readonly fixable: boolean; readonly kind: VqaDefectKind; readonly why: string }
 type Target = VqaShot["kind"] | undefined;
@@ -155,34 +187,25 @@ const OUTSIDE: readonly (readonly [VqaDefectKind, RegExp, string, (readonly Targ
   ["missing-art", /맞는 그림이 없|그림이 없어|칩셋에 없|플레이스홀더|placeholder/iu, "칩셋에 맞는 그림이 없다", ["map"]],
 ];
 const EMPTY_MAP = /빈 맵|기본 (초록 )?잔디|잔디 (타일 )?(하나|한 장|한 가지|만)|(오브젝트|물체|사물|가구)[^.。]{0,8}(하나도 |아무것도 )?없|에디터 기본|플레이 공간이 (만들어지지|없)/u;
-/** 타이틀·오프닝 그림 «품질»(잘림·격자·구도)은 모델이 고칠 수 없다. 장르·장소에 안 맞는 그림·기본 템플릿 오프닝은 고칠 수 있다(다른 그림·map-view 타이틀·오프닝 끄기). */
+/** 타이틀·오프닝 그림 «품질»(잘림·격자·구도)은 모델이 고칠 수 없다. 장르·장소에 안 맞는 그림·모델이 지은 오프닝 장면은 고칠 수 있다(다른 그림·무대 오프닝 — 오프닝을 끄는 것은 고치기가 아니다). */
 const TITLE_QUALITY = /잘(려|린|림|렸)|구도|격자|그리드|여백|공백|마름모|끊겨|흐릿|번져/u;
-function vqaClassify(d: VqaDefect): VqaDefectClass {
-  const spot = d.where.includes(" · ") ? d.where.slice(d.where.lastIndexOf(" · ") + 3) : "";
-  const text = `${spot} ${d.what}`;
+/** 결함 글 + 그림 속 자리(위치 글의 맨 뒤 조각) — 위치 글 앞쪽(맵 이름·주석)의 낱말이 분류에 걸리지 않게. */
+const spotText = (d: VqaDefect): string => `${d.where.includes(" · ") ? d.where.slice(d.where.lastIndexOf(" · ") + 3) : ""} ${d.what}`;
+const isEmptyMap = (d: VqaDefect): boolean => d.target?.kind === "map" && (EMPTY_MAP.test(spotText(d)) || /«빈 맵»/u.test(d.where));
+export function vqaClassify(d: VqaDefect): VqaDefectClass {
+  // 자동으로 지은 맵 조각 오프닝의 결함은 검수자가 뭐라고 쓰든 빌더 몫이다(같은 것을 한 판은 «모델 밖», 다른 판은 «막음»으로 올렸다).
+  if (d.target?.kind === "opening" && isAutoOpeningRef(d.target.ref))
+    return { fixable: false, kind: "builder-opening", why: "끝맺음 단계가 맵을 잘라 지은 기본 오프닝이다 — 빌더가 고칠 것(모델에게 넘기지 않는다)" };
+  const text = spotText(d);
   const target = d.target?.kind;
   if ((target === "title" || target === "opening") && TITLE_QUALITY.test(d.what) && !/글자|제목|문구|자막/u.test(d.what))
     return { fixable: false, kind: "title-art", why: "타이틀·오프닝 그림 자체의 품질(잘림·구도·격자)은 자원 문제다" };
   // 빈 맵(바닥 한 장·오브젝트 없음·기본 잔디)은 그림이 없어서가 아니라 장소를 안 지었거나 안 쓰는 맵이 남은 것 — 짓거나 지우면 된다
   // (2026-10-28 mt3 flash: «빈 맵» 잔디 한 장이 missing-art 로 빠져 아무도 고치지 않았다).
-  if (target === "map" && (EMPTY_MAP.test(text) || /«빈 맵»/u.test(d.where)))
+  if (isEmptyMap(d))
     return { fixable: true, kind: "fixable", why: "빈 맵은 장소를 짓거나(make_place) 쓰지 않는 맵을 지우면(remove_map) 고친다 — 마감 게이트도 빈 시작 맵을 치운다" };
   for (const [kind, re, why, only] of OUTSIDE) if ((!only || only.includes(target)) && re.test(text)) return { fixable: false, kind, why };
   return { fixable: true, kind: "fixable", why: "가구·빈 방·이벤트·대사·그림 선택은 동사로 고친다" };
-}
-
-/**
- * 이번 판 결함을 나눈다: fix = 고치기 차례에 넘길 것, ledger = 모델 밖(장부), stuck = 고칠 수 있는 종류지만 앞 판에도 그대로 있던 것
- * (두 판 연속 그대로 — 고치기가 화면에서 효과가 없었다. 다음으로 넘어간다).
- */
-export function vqaActionable(round: VqaRound | undefined, previous?: VqaRound): { fix: VqaDefect[]; ledger: VqaDefect[]; stuck: VqaDefect[] } {
-  const fix: VqaDefect[] = [], ledger: VqaDefect[] = [], stuck: VqaDefect[] = [];
-  for (const d of round?.defects ?? []) {
-    if (!vqaClassify(d).fixable) ledger.push(d);
-    else if (vqaRepeated(d, previous)) stuck.push(d);
-    else fix.push(d);
-  }
-  return { fix, ledger, stuck };
 }
 
 /** 장부 줄(ai-activity 실행 상태로 남는다) — 우리가 모아 런타임·빌더에서 고칠 결함. */
@@ -194,34 +217,31 @@ export function vqaLedgerLine(d: VqaDefect): string {
 /** 깨끗한 판 = 검수가 실제로 돌았고 결함 0. 검수하지 못한 판은 깨끗하지 않다. */
 export const vqaClean = (round: VqaRound): boolean => !round.problem && round.defects.length === 0;
 
-/** 다음 판으로 갈지. 깨끗하면 멈춤, 3판이면 멈춤, 검수 불가가 두 판 이어지면 멈춤(그림 경로가 없는 실행). */
-export function vqaShouldContinue(rounds: readonly VqaRound[]): boolean {
-  const last = rounds.at(-1);
-  if (!last || vqaClean(last)) return false;
-  // 결함이 있는데 고칠 수 있는 것이 0(모두 모델 밖이거나 두 판 연속 그대로)이면 더 돌지 않는다. 검수 못 한 판(결함 0·problem)은 아래 규칙대로.
-  const act = vqaActionable(last, rounds.at(-2));
-  if (last.defects.length && !act.fix.length) return false;
-  // 판을 더 주는 막음(blocker) 연장은 고칠 수 있는 막음이 남았을 때만.
-  if (rounds.length >= (act.fix.some((d) => d.severity === "blocker") ? VQA_ROUND_CAP : VQA_MAX_ROUNDS)) return false;
-  if (last.problem && rounds.at(-2)?.problem) return false;
-  return true;
+/**
+ * 이 결함을 고치는 호출 — 있을 때만 돌려준다. 다듬기 급 결함은 이 호출이 있을 때만 할 일로 한 번 건넨다(없으면 장부에만 남는다).
+ * dress_room 은 방 짓기 역할표(roomKit)가 있는 칩셋의 방만 채운다 — 역할표 없는 칩셋 맵에 권하면 거절만 받는다.
+ */
+export function vqaFixCall(d: VqaDefect, project?: Project): string | undefined {
+  const kind = d.target?.kind, ref = d.target?.ref;
+  if (kind === "title") return "set_title_screen{backgroundResourceId} with a picture of this story's place (list_resources{kind:\"backdrop\"}), or generate_art{target:\"title\"}";
+  if (kind === "opening") return "restage the opening on the real map with author_opening_stage{mapId, x, y, beats} (people walk and talk there); do not turn the opening off";
+  if (kind !== "map" || !ref) return undefined;
+  // 빈 방 낱말이 먼저다 — «가구 없이 빈 바닥»은 빈 맵 낱말에도 걸리지만 채울 방이지 지울 맵이 아니다.
+  if (!SPARSE_ROOM.test(`${d.where} ${d.what}`)) return isEmptyMap(d) ? `build the place with make_place, or remove the unused map with remove_map{mapId:"${ref}"}` : undefined;
+  const map = project?.maps[ref];
+  const handRoom = !map || !project || !!roomSpecOf(project.tilesets[map.tilesetId]);
+  return handRoom
+    ? `dress_room({ mapId: "${ref}", at: <one floor cell of that room>, purpose: "<what the room is for>" }) fills it (do not stamp objects one by one)`
+    : `this map's chipset has no room kit (dress_room·edit_place are refused here): add 2–4 props of this chipset with place_object (names from list_spatial_designs{kind:"object", mapId:"${ref}"}) or people with add_people; if nothing fits, block this item`;
 }
 
-/** 결함 한 줄 — 고칠 대상(mapId·그림)을 같이 적는다. */
+/** 결함 한 줄 — 고칠 대상(mapId·그림)과, 있으면 고치는 호출을 같이 적는다. */
 export function vqaDefectLine(d: VqaDefect, index: number, project?: Project): string {
   const target = d.target?.kind === "map" && d.target.ref ? ` (mapId: ${d.target.ref})`
-    : d.target?.kind === "title" ? " (타이틀 화면 — set_title_screen)"
-    : d.target?.kind === "opening" ? " (오프닝 — 오프닝 장면 다시 그리기)" : "";
-  // dress_room 은 방 짓기 역할표(roomKit)가 있는 칩셋의 방만 채운다(손 도트 실내·일본·마법 학교·에도·캠퍼스…) — 역할표 없는 칩셋 맵(세계 구성기 방·바깥)에
-  // 권하면 거절만 받는다(2026-11-10 jrpg-w1 «족장의 긴집»: dress_room·edit_place 둘 다 거절 뒤 막힘).
-  const map = d.target?.kind === "map" && d.target.ref ? project?.maps[d.target.ref] : undefined;
-  const handRoom = !map || !project || !!roomSpecOf(project.tilesets[map.tilesetId]);
-  const sparse = d.target?.kind === "map" && d.target.ref && SPARSE_ROOM.test(`${d.where} ${d.what}`)
-    ? handRoom
-      ? ` → dress_room({ mapId: "${d.target.ref}", at: 그 방 바닥 한 칸, purpose: "<그 방의 쓰임>" }) 으로 채운다(물건을 하나씩 찍지 않는다)`
-      : ` → this map's chipset has no room kit (dress_room·edit_place are refused here): add 2–4 props of this chipset with place_object (names from list_spatial_designs{kind:"object", mapId:"${d.target.ref}"}) or people with add_people; if nothing fits, block this item`
-    : "";
-  return `${index + 1}. [${d.severity === "blocker" ? "막음" : "다듬기"}] ${d.where}${target} — ${d.what}${sparse}`;
+    : d.target?.kind === "title" ? " (title screen)"
+    : d.target?.kind === "opening" ? ` (opening${d.target.ref ? `: ${d.target.ref}` : ""})` : "";
+  const call = vqaFixCall(d, project);
+  return `${index + 1}. [${d.severity === "blocker" ? "막음" : "다듬기"}] ${d.where}${target} — ${d.what}${call ? ` → ${call}` : ""}`;
 }
 
 /** 「방이 비었다·빈 바닥이 많다」 결함 — 고치기 동사는 dress_room 이다(2026-10-26: 고치기 차례가 stamp_object 로 하나씩 찍다 겹침 거부에 막혀 결함이 1건에서 멈췄다). */
@@ -251,13 +271,30 @@ export function vqaFixBrief(task: string, project: Project, defects: readonly Vq
   ].join("\n");
 }
 
-/** 앞 판에도 있던 결함인가 — 같은 대상(맵·그림)이고 위치·내용 낱말이 겹친다. */
-export function vqaRepeated(defect: VqaDefect, previous: VqaRound | undefined): boolean {
-  if (!previous) return false;
-  const words = (text: string) => new Set(text.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 2));
-  const mine = words(`${defect.where} ${defect.what}`);
-  return previous.defects.some((old) => (old.target?.kind ?? "") === (defect.target?.kind ?? "") && (old.target?.ref ?? "") === (defect.target?.ref ?? "")
-    && [...words(`${old.where} ${old.what}`)].filter((w) => mine.has(w)).length >= 3);
+/** 결함 글 두 개가 닮은 정도(0~1) — 글자 두 개짜리 조각의 겹침(Dice). 한국어는 조사가 붙어 낱말 단위로는 같은 말도 어긋난다. */
+function whatSimilarity(a: string, b: string): number {
+  const grams = (text: string): Set<string> => {
+    const t = text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+    const out = new Set<string>();
+    for (let i = 0; i + 1 < t.length; i++) out.add(t.slice(i, i + 2));
+    return out;
+  };
+  const x = grams(a), y = grams(b);
+  if (!x.size || !y.size) return a.trim() === b.trim() ? 1 : 0;
+  let both = 0;
+  for (const g of x) if (y.has(g)) both += 1;
+  return (2 * both) / (x.size + y.size);
+}
+/** 같은 결함으로 보는 닮음 문턱 — 실제 판 기록에서 같은 결함을 다시 쓴 글은 0.57 이상, 같은 맵의 다른 결함은 0.36 이하였다. */
+const VQA_SAME_WHAT = 0.5;
+
+/**
+ * 같은 결함인가 — 같은 대상(종류+ref)이고 결함 글(what)끼리 닮았다. 위치 글(where)은 보지 않는다:
+ * 같은 그림의 결함은 위치 글 접두어(맵 이름·시작 칸 주석)가 모두 같아, 그것만으로 서로 다른 결함이 «그대로»가 됐다.
+ */
+export function vqaSameDefect(a: VqaDefect, b: VqaDefect): boolean {
+  if ((a.target?.kind ?? "") !== (b.target?.kind ?? "") || (a.target?.ref ?? "") !== (b.target?.ref ?? "")) return false;
+  return whatSimilarity(a.what, b.what) >= VQA_SAME_WHAT;
 }
 
 /** 끝난 고리의 요약 — 마지막 판이 깨끗하지 않으면 남은 결함을 그대로 적는다(정직한 남은 목록). */
@@ -268,7 +305,9 @@ export function vqaSummary(rounds: readonly VqaRound[]): { readonly clean: boole
   const counts = rounds.map((r) => (r.problem && !r.defects.length ? "검수 못 함" : `${r.defects.length}건`)).join(" → ") + weak;
   if (vqaClean(last)) return { clean: true, text: `화면 검수 ${rounds.length}판: ${counts} — 마지막 판 결함 없음`, leftover: [] };
   const outside = last.defects.filter((d) => !vqaClassify(d).fixable).length;
-  return { clean: false, text: `화면 검수 ${rounds.length}판: ${counts} — 남은 결함 ${last.defects.length}건${outside ? `(그중 모델 밖 ${outside}건)` : ""}${last.problem ? ` (${last.problem})` : ""}`, leftover: last.defects };
+  const blockers = vqaBlockers(last).filter((d) => vqaClassify(d).fixable).length;
+  const split = last.defects.length ? `(막음 ${blockers} · 다듬기 ${last.defects.length - blockers - outside}${outside ? ` · 모델 밖 ${outside}` : ""})` : "";
+  return { clean: false, text: `화면 검수 ${rounds.length}판: ${counts} — 남은 결함 ${last.defects.length}건${split}${last.problem ? ` (${last.problem})` : ""}`, leftover: last.defects };
 }
 
 /** 게임 전체를 만드는 요청인가 — 출하 검사(shipChecks.wantsWholeGame)와 같은 범위. */

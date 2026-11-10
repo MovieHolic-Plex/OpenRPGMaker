@@ -11,16 +11,17 @@ import { createV2Tools } from "../../src/ai/v2/verbs.ts";
 import { V2_MAX_REPAIR_ROUNDS } from "../../src/ai/v2/turn/session.ts";
 import { v2BaselineGameKeys, v2GateProblems } from "../../src/ai/v2/judge/finishGate.ts";
 import { V2Session } from "../../src/ai/v2/turn/session.ts";
-import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
 import { buildsWholeGame } from "../../src/ai/v2/request/readers.ts";
 import { finishBuildPending, runFinishAutoBuild } from "../../src/ai/v2/finishAutoBuild.ts";
 import { alignCodeClues } from "../../src/ai/v2/codeClues.ts";
 import { realignEvidencePlaces } from "../../src/ai/v2/mysteryCase.ts";
 import { assembledReport, isProviderErrorReply, todoReport } from "../../src/ai/v2/finalReport.ts";
-import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaShotPlan, vqaReviewerLabel, vqaShouldContinue, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, vqaActionable, vqaLedgerLine, vqaRepeated, vqaDefectLine, type VqaDefect, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
+import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaShotPlan, vqaReviewerLabel, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, vqaLedgerLine, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
+import { closeVqaUnchanged, handCarriedBlockers, loadVqaBook, noteVqaRound, saveVqaBook, vqaLedgerLines, vqaUnofferedBlockers } from "../../src/ai/v2/turn/vqaItems.ts";
+import { carryOver, reviewKey, stampTargets } from "../../src/ai/v2/turn/carryOver.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
-import { adviseTurn, scopeAdviceToRequest, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
+import { adviseTurn, scopeAdviceToRequest, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
 import { withTodoLoop } from "../../src/ai/v2/loop/todoTools.ts";
 import { isWriteRequest } from "../../src/ai/v2/request/readers.ts";
 import { exposeV2Tools, unknownToolText, type V2ToolExposure } from "../../src/ai/v2/toolExposure.ts";
@@ -41,7 +42,6 @@ import { CONTINUE_WORDS } from "../../src/ai/v2/request/readers";
 // 설정에서 검토자를 끈 경우(assistantRoles.advisor = "off")도 돌지 않는다. 검토자 모델은 env.advisorChat(따로 고른 칸) → 없으면 주 모델(sideChat).
 const advisorEnabled = (request: PiAgentRequest): boolean => process.env.OPRN_V2_ADVISOR !== "0" && !request.readOnly && request.assistantRoles?.advisor !== "off";
 const advisorChatOf = (env: PiAssistantV2Env) => env.advisorChat ?? env.sideChat;
-const safeShip = (env: PiAssistantV2Env) => { try { return shipBlockers(env.ctx.project, env.request.task); } catch { return []; } };
 /** 끝맺음 고리 단계 시간 계측(2026-11-09 monster «terminated» 조사): 2초 넘게 걸린 단계는 이름·시간을 stderr 에 남긴다. 동작은 바꾸지 않는다. */
 const timed = <T>(name: string, fn: () => T): T => { const t0 = Date.now(); try { return fn(); } finally { const ms = Date.now() - t0; if (ms >= 2000) console.error(`[v2-afterMain] ${name} took ${Math.round(ms / 1000)}s`); } };
 const timedAsync = async <T>(name: string, fn: () => Promise<T>): Promise<T> => { const t0 = Date.now(); try { return await fn(); } finally { const ms = Date.now() - t0; if (ms >= 2000) console.error(`[v2-afterMain] ${name} took ${Math.round(ms / 1000)}s`); } };
@@ -74,7 +74,8 @@ async function captureVqaShots(env: PiAssistantV2Env): Promise<{ shots: VqaShot[
     try {
       let image: string | undefined;
       let where = item.where;
-      if (item.kind === "map" && item.ref && env.render) {
+      if (item.region && env.render) image = await env.render(item.region.mapId, item.region.x, item.region.y, item.region.w, item.region.h);
+      else if (item.kind === "map" && item.ref && env.render) {
         const map = env.ctx.project.maps[item.ref]!;
         image = await env.render(item.ref, 0, 0, map.width, map.height);
         // 맵 그림은 조명을 그리지 않는다 — 게임처럼 어둠·빛을 입혀 검수자가 실제 화면의 밝기를 보게 한다.
@@ -97,22 +98,20 @@ async function captureVqaShots(env: PiAssistantV2Env): Promise<{ shots: VqaShot[
   return { shots, failed };
 }
 
-/** 화면 검수 결함 한 줄을 할 일 글 길이로 — 결함 설명은 220자에서 자르되 뒤의 고치기 동사(« → …»)는 남긴다(잘리면 모델이 어떤 동사로 고칠지 못 읽는다). */
-function clipDefectLine(line: string): string {
-  const cut = line.indexOf(" → ");
-  return cut < 0 ? line.slice(0, 220) : `${line.slice(0, Math.min(cut, 220))}${line.slice(cut, cut + 280)}`;
-}
-
 export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
   const session = new V2Session();
   const store = session.todo;
   const started = Date.now();
-  // 앞 실행의 열린 할 일(project.assistantTodo)을 «계속» 요청에서 되살린다.
-  if (CONTINUE_WORDS.test(request.task) && store.restore((request.project as { assistantTodo?: unknown }).assistantTodo)) {
-    options.onEvent?.({ type: "execution_status", name: "v2.todo.restore", ok: true, at: Date.now(), summary: `앞 실행의 할 일을 이어 받음 — ${store.counts().open}개 열림`, data: { list: store.view() } });
-  }
   // 판정 기준선 — 「만들어 달라」 항목(fresh)은 이 시점에 원래 있던 것으로는 ✓ 가 나지 않는다.
   try { store.baseline = indexProject(request.project as Project); } catch { store.baseline = undefined; }
+  // 앞 실행의 할 일(project.assistantTodo)을 «계속» 요청에서 되살린다. 막힌 항목은 막힌 채로 온다 — 대상이 바뀌었거나 요청이 짚은 것만 다시 연다(turn/carryOver.ts).
+  // 판정자 기억(화면 검수 장부)은 목록을 이어 받지 않는 턴에도 읽는다.
+  const priorTodo = (request.project as { assistantTodo?: unknown }).assistantTodo;
+  store.loadMemory(priorTodo);
+  if (CONTINUE_WORDS.test(request.task) && store.restore(priorTodo, carryOver(request.task, request.project as Project, store.baseline ?? { maps: new Map(), events: new Map(), items: new Map(), troops: new Map() }))) {
+    const c = store.counts();
+    options.onEvent?.({ type: "execution_status", name: "v2.todo.restore", ok: true, at: Date.now(), summary: `앞 실행의 할 일을 이어 받음 — ${c.open}개 열림 · ${c.blocked}개는 막힌 채(다시 다투지 않음)`, data: { list: store.view() } });
+  }
   // 시작 저장본에 이미 있던 게임 검사 문제(기존 결함) — 관문 항목으로 만들지 않고 보고에만 싣는다. 처음 관문을 볼 때 한 번 잰다.
   let baselineKeys: Set<string> | undefined;
   const preexisting = new Map<string, string>();
@@ -143,9 +142,9 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   let vqaCandidates: VqaReviewerPick[] | undefined;
   let vqaCandidateIndex = 0;
   let vqaMs = 0;
-  let vqaReviewedFingerprint: string | undefined;
-  const vqaLedgerSeen = new Set<string>();
-  const vqaItemDefects = new Map<string, VqaDefect>();
+  /** 화면 검수 장부 — 앞 턴부터 본 결함과 그 할 일 항목(src/ai/v2/turn/vqaItems.ts). 마지막으로 검수한 프로젝트 지문도 이어 받는다. */
+  const { book: vqaBook, reviewedFp: carriedVqaFp } = loadVqaBook(store.memory.vqa, store);
+  let vqaReviewedFingerprint: string | undefined = carriedVqaFp;
   const runVqaRound = async (env: PiAssistantV2Env): Promise<VqaRound> => {
     if (!env.render && !env.renderArt) {
       // 그림 경로가 없는 실행(편집기 렌더 브로커 없음): 검수자를 부르지 않고 «검수 못 함» 판 하나를 남긴다.
@@ -174,7 +173,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       reviewer = vqaReviewerLabel(pick);
       // 주 모델이 검수자일 때도 roleChat 으로 부른다 — Argon 이면 그림을 보는 high 별칭으로 가야 한다(sideChat 은 주 모델 강도 그대로).
       const chat = env.roleChat ? (messages: readonly unknown[], signal?: AbortSignal) => env.roleChat!(pick, messages, signal) : env.sideChat;
-      round = await reviewVqaRound({ task: env.request.task, shots, round: vqaRounds.length + 1, previous: vqaRounds.at(-1)?.defects ?? [], chat, reviewer, ...(env.signal ? { signal: env.signal } : {}) });
+      round = await reviewVqaRound({ task: env.request.task, shots, round: vqaRounds.length + 1, previous: vqaRounds.at(-1)?.defects ?? vqaBook.filter((f) => !f.gone).slice(-12).map((f) => ({ ...f.defect, what: f.lastWhat })), chat, reviewer, ...(env.signal ? { signal: env.signal } : {}) });
       if (!round.problem || !shots.length) { vqaCandidateIndex = index; break; }
       tried.push(`${reviewer}: ${round.problem}`);
       env.emit({ type: "execution_status", name: "v2.vqa.reviewer_fallback", ok: false, summary: `화면 검수자 ${reviewer} 가 답하지 못함(${round.problem}) — 다음 검수자로`, data: { reviewer, problem: round.problem } });
@@ -235,7 +234,16 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     changedNow = undefined;
   };
   // 할 일 상태를 프로젝트에 싣는다(새 뿌리 객체 — 요청 사본과 뿌리를 나눠 쓸 수 있어 제자리 수정하지 않는다). 다음 체크포인트·끝 저장에 같이 간다.
-  const stamp = (env: PiAssistantV2Env) => { if (store.items.length) env.ctx.project = { ...env.ctx.project, assistantTodo: store.serialize(env.request.task) }; };
+  // 막힌 항목의 대상 지문과 화면 검수 장부를 같이 싣는다 — 다음 턴이 같은 것을 처음부터 다시 다투지 않게(턴 사이 기억).
+  const stamp = (env: PiAssistantV2Env) => {
+    if (!store.items.length) return;
+    try { stampTargets(store, indexProject(env.ctx.project)); } catch { /* 지문이 없으면 다음 턴에 «바뀌었다»로 열리지 않을 뿐이다 */ }
+    // 검수하지 못한 판(problem)의 지문은 남기지 않는다 — 다음 턴이 «그대로»라며 건너뛰면 한 번도 검수되지 않는다.
+    const reviewed = vqaRounds.length ? (vqaRounds.at(-1)!.problem ? undefined : vqaReviewedFingerprint) : carriedVqaFp;
+    const memory = saveVqaBook(vqaBook, store, env.ctx.project, reviewed);
+    if (memory) store.memory.vqa = memory; else delete store.memory.vqa;
+    env.ctx.project = { ...env.ctx.project, assistantTodo: store.serialize(env.request.task) };
+  };
   /** ② 재주입 하나 — 고리 규칙이 막으면 undefined(loopStop 이 선다). */
   const reinject = (env: PiAssistantV2Env, batchNote?: string): string | undefined => {
     const c = store.counts();
@@ -255,6 +263,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       return text;
     };
     const prompt = continuationPrompt(store, { ...(pendingBrief ? { brief: pendingBrief } : {}), ...(batchNote ? { batchNote } : {}), nextCallFor });
+    store.markOffered();
     pendingBrief = undefined;
     env.emit({ type: "execution_status", name: "v2.loop.continue", ok: true, summary: `할 일 재주입 ${d.n}/${8}(전체 ${reinjections}) — 열림 ${c.open}/${c.total}${batchNote ? ` · ${batchNote.slice(0, 80)}` : ""}`, data: { n: d.n, total: reinjections, open: c.open, items: c.total, prompt } });
     env.requireToolNextTurn?.();
@@ -267,51 +276,36 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     session.loop.resetBatch();
     return reinject(env, note);
   };
-  /** ⑥ 화면 검수 한 판 — 결함을 vqa 항목으로 맞추고, 고칠 것이 있으면 덧붙인 항목을 돌려준다. */
+  /** ⑥ 화면 검수 한 판 — 결함을 장부와 vqa 항목에 맞추고(noteVqaRound), 새로 건넬 항목을 돌려준다. 건넬 것이 없으면 화면 검수는 끝이다. */
   const vqaStep = async (env: PiAssistantV2Env): Promise<TodoItem[]> => {
-    const closeAll = (why: string) => { for (const [id] of vqaItemDefects) { const item = store.get(id); if (item && isOpen(item.status)) store.block(item, why, "auto"); } vqaDone = true; };
-    if (vqaRounds.length && !vqaShouldContinue(vqaRounds)) { closeAll("화면 검수 판 상한 — 남은 결함"); return []; }
     const fingerprint = projectFingerprint(env.ctx.project);
-    if (vqaRounds.length && !vqaRounds.at(-1)!.problem && fingerprint && fingerprint === vqaReviewedFingerprint) {
-      env.emit({ type: "execution_status", name: "v2.vqa", ok: false, summary: `화면 검수 ${vqaRounds.length + 1}판 건너뜀 — 앞 판 뒤로 바뀐 것이 없음`, data: { skipped: true } });
-      closeAll("고치는 동안 프로젝트가 바뀌지 않음 — 남은 결함"); return [];
+    // 앞 판(이 턴) 또는 앞 턴의 마지막 검수 뒤로 프로젝트가 그대로면 같은 그림이다 — 다시 찍지 않는다.
+    if (!vqaRounds.at(-1)?.problem && fingerprint && fingerprint === vqaReviewedFingerprint) {
+      // 앞 턴이 판이 남지 않아 건네지 못한 막음은 같은 그림이니 다시 찍지 않고 지금 건넨다.
+      const carried = vqaRounds.length ? { opened: [], offered: [] } : handCarriedBlockers(vqaBook, store, env.ctx.project);
+      if (carried.opened.length) {
+        env.emit({ type: "execution_status", name: "v2.vqa.carried", ok: false, summary: `앞 턴이 건네지 못한 화면 검수 막음 ${carried.opened.length}건을 할 일로 건넴(다시 찍지 않음 — 앞 턴 검수 뒤로 바뀐 것이 없음)`, data: { items: carried.opened.map((i) => i.id) } });
+        pendingBrief = vqaFixBrief(env.request.task, env.ctx.project, carried.offered, draft);
+        freshNext = true;
+        return carried.opened;
+      }
+      const left = closeVqaUnchanged(vqaBook, store);
+      env.emit({ type: "execution_status", name: "v2.vqa", ok: false, summary: `화면 검수 ${vqaRounds.length + 1}판 건너뜀 — ${vqaRounds.length ? "앞 판" : "앞 턴의 검수"} 뒤로 바뀐 것이 없음(건넨 결함 ${left.length}건 그대로)`, data: { skipped: true, left: left.map((f) => f.key) } });
+      vqaDone = true; return [];
     }
     vqaReviewedFingerprint = fingerprint;
     const round = await runVqaRound(env);
-    const act = vqaActionable(round, vqaRounds.at(-2));
-    for (const d of act.ledger) {
-      const line = vqaLedgerLine(d);
-      if (vqaLedgerSeen.has(line)) continue;
-      vqaLedgerSeen.add(line);
-      env.emit({ type: "execution_status", name: "v2.vqa.outside", ok: false, summary: line.slice(0, 600), data: { round: round.round, defect: d } });
+    const out = noteVqaRound(vqaBook, store, round, env.ctx.project);
+    for (const f of out.outside) env.emit({ type: "execution_status", name: "v2.vqa.outside", ok: false, summary: vqaLedgerLine(f.defect).slice(0, 600), data: { round: round.round, defect: f.defect } });
+    if (out.left.length) env.emit({ type: "execution_status", name: "v2.vqa.stuck", ok: false, summary: `건넨 뒤에도 그대로인 결함 ${out.left.length}건 — 그 항목을 닫는다: ${out.left.map((f) => f.lastWhat).join(" / ").slice(0, 400)}`, data: { round: round.round, stuck: out.left.map((f) => ({ key: f.key, item: f.itemId, what: f.lastWhat })) } });
+    if (!out.opened.length) {
+      // 검수 못 함·깨끗함·건넬 것 없음·판 상한 — 남은 것은 보고(할 일 표와 장부)로.
+      if (!vqaClean(round)) env.emit({ type: "execution_status", name: "v2.vqa", ok: false, summary: `화면 검수 ${round.round}판 뒤 끝 — ${round.problem ?? `남은 결함 ${round.defects.length}건(모델 밖 ${out.outside.length} · 그대로 ${out.left.length})`}` });
+      vqaDone = true; return [];
     }
-    if (act.stuck.length) env.emit({ type: "execution_status", name: "v2.vqa.stuck", ok: false, summary: `두 판 연속 그대로인 결함 ${act.stuck.length}건 — 막힘으로 닫는다: ${act.stuck.map((d) => d.what).join(" / ").slice(0, 400)}`, data: { round: round.round, stuck: act.stuck } });
-    // 앞 판 결함 항목: 이번 판에 다시 나왔나. 없으면 고쳐졌다(함수가 닫음), 그대로면 다시 열거나(두 판 연속이면) 막힘.
-    const matched = new Set<VqaDefect>();
-    if (!round.problem) {
-      for (const [id, old] of vqaItemDefects) {
-        const item = store.get(id);
-        if (!item || item.status === "dropped") continue;
-        const again = round.defects.find((nd) => vqaRepeated(nd, { ...round, defects: [old] }));
-        if (!again) { if (item.status !== "blocked") store.done(item, { pass: true, detail: `화면 검수 ${round.round}판에서 사라짐` }, "auto"); continue; }
-        matched.add(again);
-        if (act.stuck.includes(again)) store.block(item, `화면 검수 두 판 연속 그대로 — ${again.what.slice(0, 120)}`, "auto");
-        else if (!isOpen(item.status)) { store.reopen(item, { pass: false, detail: `화면 검수 ${round.round}판에 다시 나옴: ${again.what.slice(0, 160)}` }); if (item.attempts >= TODO_MAX_ATTEMPTS) store.block(item, "같은 화면 결함이 다시 나옴 — 고치지 못함", "auto"); }
-      }
-    }
-    if (round.problem || !round.defects.length || !act.fix.length || !vqaShouldContinue(vqaRounds)) {
-      // 검수 못 함·깨끗함·고칠 것 없음·판 상한 — 남은 것은 보고로.
-      if (!vqaClean(round)) env.emit({ type: "execution_status", name: "v2.vqa", ok: false, summary: `화면 검수 ${round.round}판 뒤 끝 — ${round.problem ?? `남은 결함 ${round.defects.length}건(모델 밖 ${act.ledger.length} · 그대로 ${act.stuck.length})`}` });
-      closeAll(round.problem ? `화면 검수 못 함 — ${round.problem}` : "화면 검수 판 상한 — 남은 결함");
-      return [];
-    }
-    const fresh = act.fix.filter((d) => !matched.has(d));
-    const opened = store.append(`화면 검수 ${round.round}판`, fresh.map((d, i) => ({ content: clipDefectLine(vqaDefectLine(d, i, env.ctx.project).replace(/^\d+\.\s*/u, "")), key: `vqa:${round.round}:${i}` })), "vqa");
-    for (const [i, item] of opened.entries()) if (fresh[i]) vqaItemDefects.set(item.id, fresh[i]!);
-    const reopened = [...vqaItemDefects.keys()].map((id) => store.get(id)).filter((i): i is TodoItem => !!i && isOpen(i.status) && !opened.includes(i));
-    pendingBrief = vqaFixBrief(env.request.task, env.ctx.project, act.fix, draft);
+    pendingBrief = vqaFixBrief(env.request.task, env.ctx.project, out.offered, draft);
     freshNext = true;
-    return [...opened, ...reopened];
+    return out.opened;
   };
   // 청사진 자동 짓기(장소 → 경로 → 출구·이동 칸 마감 → 조립 기본값). 한 실행에 한 번씩(세션 깃발) + 늦게 생긴 청사진.
   /** 함수 마감(autoBuild)만 건드린 기존 이벤트 — 「mapId:eventId」 → 마감 직후 지문. 관문 문제가 이런 이벤트만 짚으면 요청 밖 기존 결함이다. */
@@ -512,7 +506,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
                 review = { approve: true, fixes: [], problem: error instanceof Error ? error.message : String(error) };
               }
               env.emit({ type: "execution_status", name: "v2.split.review", ok: review.approve, summary: `리드 검토 ${leadReviews} — ${review.problem ? `답 못 읽음(${review.problem.slice(0, 120)})` : review.approve ? "승인" : `고칠 것 ${review.fixes.length}`} · ${Math.round((Date.now() - t0) / 1000)}초`, data: { ...review, round: leadReviews, model: env.leadModel } });
-              const opened = store.append(leadReviews === 1 ? "리드 검토" : "리드 검토 다시", review.fixes.map((f, i) => ({ content: f.slice(0, 220), key: `lead:${leadReviews}:${i}` })), "critic");
+              const opened = store.append(leadReviews === 1 ? "리드 검토" : "리드 검토 다시", review.fixes.map((f) => ({ content: f.slice(0, 220), key: reviewKey("lead", f) })), "critic");
               for (const item of opened) leadItems.add(item.id);
               if (opened.length) {
                 const prompt = newBatch(env, opened, leadFixNote(opened.length, leadReviews));
@@ -522,14 +516,15 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
             }
           }
           // ⑤ 독립 검토자 — 보고 초안을 «실제로 바뀐 것»에 대어 본다. 막음만 항목으로(우려·참고는 기록만). 처음 한 번 + 그 항목을 닫은 뒤 한 번.
+          // 출하 차단은 ④ 관문만 본다(기존 결함 면제도 거기 하나) — 검토자가 같은 차단을 다시 항목으로 만들지 않는다.
           const advisorOpen = [...advisorItems].some((id) => { const i = store.get(id); return i && isOpen(i.status); });
           if (advisorEnabled(env.request) && !(env.leadChat && leadPlan) && advisorRuns < 2 && !advisorOpen && (advisorRuns === 0 || advisorItems.size > 0)) {
             advisorRuns += 1;
-            const verdict = scopeAdviceToRequest(withShipBlockers(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, advisorChatOf(env), env.signal), safeShip(env)), env.request.task);
+            const verdict = scopeAdviceToRequest(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: draft }, advisorChatOf(env), env.signal), env.request.task);
             advice = advice ? { ...verdict, ms: advice.ms + verdict.ms, inputChars: advice.inputChars + verdict.inputChars } : verdict;
             env.emit({ type: "execution_status", name: advisorRuns === 1 ? "v2.advisor" : "v2.advisor.recheck", ok: !verdict.notes.some((n) => n.level === "blocker"), summary: `${advisorRuns === 1 ? "" : "다시 검토 — "}${advisorSummary(verdict)} · ${env.advisorModel ?? "주 모델"}`, data: { ...verdict, model: env.advisorModel ?? "main" } });
             const blockers = verdict.notes.filter((n) => n.level === "blocker");
-            const opened = store.append(advisorRuns === 1 ? "검토자" : "검토자 다시", blockers.map((n, i) => ({ content: `${n.what}${n.claim ? ` (보고: «${n.claim.slice(0, 60)}»)` : ""}`.slice(0, 220), key: `adv:${advisorRuns}:${i}` })), "critic");
+            const opened = store.append(advisorRuns === 1 ? "검토자" : "검토자 다시", blockers.map((n) => ({ content: `${n.what}${n.claim ? ` (보고: «${n.claim.slice(0, 60)}»)` : ""}`.slice(0, 220), key: reviewKey("adv", `${n.what}|${n.claim ?? ""}`) })), "critic");
             for (const item of opened) advisorItems.add(item.id);
             if (opened.length) {
               const prompt = newBatch(env, opened, `[Independent reviewer blocked ${opened.length} item(s) — the draft report does not match the actual changes or misses part of the request. Fix them, or block(reason) if you cannot]`);
@@ -541,8 +536,8 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
           if (!vqaDone) {
             const opened = await vqaStep(env);
             if (opened.length) {
-              const r = vqaRounds.at(-1)!;
-              const prompt = newBatch(env, opened, `[Screen review round ${r.round} — a reviewer on another model (${r.reviewer}) found ${opened.length} defect(s) in the actual rendered images; they were added to the todo list. Look at the map again with inspect and fix them]`);
+              const r = vqaRounds.at(-1);
+              const prompt = newBatch(env, opened, `[Screen review ${r ? `round ${r.round} — a reviewer on another model (${r.reviewer})` : "(carried from the previous turn) — a reviewer on another model"} found ${opened.length} defect(s) in the actual rendered images; they were added to the todo list. Look again with inspect, fix each and call done. If the reviewer is wrong about one, drop it with the reason; if you cannot fix one, block it with the reason. Items marked [다듬기] are polish: try once, they do not hold completion]`);
               if (prompt) return prompt;
             }
           }
@@ -564,12 +559,12 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     if (session.fitIncomplete) autoNotes.push(`${session.fitIncomplete} — 게임은 열리지만 첫 관문 승률은 이 요청에서 보정되지 않았다`);
     const vqaLeft = vqaRounds.length ? vqaSummary(vqaRounds) : undefined;
     if (!(options.signal?.aborted) && !session.questions.length && (store.items.length || leftovers.length || session.fitIncomplete)) {
-      const report = todoReport({ store, draft, leftovers, missing: [...session.missingArt], autoNotes, preexisting: [...preexisting.values()], ...(loopStop ? { loopStop } : {}), ...(vqaLeft && !vqaLeft.clean ? { vqa: vqaLeft.text } : {}) });
+      const report = todoReport({ store, draft, leftovers, missing: [...session.missingArt], autoNotes, preexisting: [...preexisting.values()], ...(loopStop ? { loopStop } : {}), ...(vqaLeft && !vqaLeft.clean ? { vqa: vqaLeft.text } : {}), vqaLedger: vqaLedgerLines(vqaBook, store), vqaUnoffered: vqaUnofferedBlockers(vqaBook, store) });
       options.onEvent?.({ type: "execution_status", name: "v2.todo.final", ok: report.complete, at: Date.now(), summary: `할 일 최종 — ${report.complete ? "완료" : "아직 완료 아님"} · ${store.view(0).split("\n")[0]}${report.receipts.length ? ` · 보고와 다른 것 ${report.receipts.length}` : ""}`, data: { complete: report.complete, receipts: report.receipts, list: store.view(), items: store.items, reinjections, loopStop } });
       if (store.items.length || /통과|없음|다\s*됐|완료/u.test(draft) || !draft) options.onEvent?.({ type: "assistant", text: report.text });
     }
   } catch { /* 보고 조립 실패는 실행을 막지 않는다 */ }
   options.onEvent?.({ type: "execution_status", name: "v2.summary", ok: (done as { ok?: boolean }).ok, at: Date.now(), summary: `v2 요약: 할 일 ${store.view(0).split("\n")[0]}·재주입 ${reinjections}·갈고리 ${[...session.hooks.counts].map(([k, v]) => `${k}${v}`).join(" ") || "0"}${loopStop ? `(멈춤: ${loopStop})` : ""}·장소 ${new Set([...session.places.values()]).size}·사람/사건 ${session.content.length}·비평 ${session.criticCalls}회(${Math.round(session.criticMs / 1000)}초)·남은 문제 ${session.unresolved().length}·그림 없음 ${session.missingArt.size}${advice ? `·검토 ${advice.notes.filter((n) => n.level === "blocker").length}막음(${(advice.ms / 1000).toFixed(1)}초)` : ""}${vqaRounds.length ? `·${vqaSummary(vqaRounds).text}(${Math.round(vqaMs / 1000)}초)` : ""} · 전체 ${Math.round((Date.now() - started) / 1000)}초`,
-    data: { ...(leadPlan ? { split: { lead: liveEnv?.leadModel, planChars: leadPlan.length, reviews: leadReviews, leadItems: leadItems.size } } : {}), todo: store.items, reinjections, loopStop, hooks: session.hooks.toJSON(), places: [...session.places.keys()], unresolved: session.unresolved(), missingArt: [...session.missingArt], criticCalls: session.criticCalls, criticMs: session.criticMs, ...(vqaRounds.length ? { vqa: { rounds: vqaRounds.map(({ round, defects, problem, reviewer, ms }) => ({ round, defects, problem, reviewer, ms })), ...vqaSummary(vqaRounds), ms: vqaMs } } : {}), ...(advice ? { advisor: { blockers: advice.notes.filter((n) => n.level === "blocker").length, notes: advice.notes.length, ms: advice.ms, inputChars: advice.inputChars } } : {}) } });
+    data: { ...(leadPlan ? { split: { lead: liveEnv?.leadModel, planChars: leadPlan.length, reviews: leadReviews, leadItems: leadItems.size } } : {}), todo: store.items, reinjections, loopStop, hooks: session.hooks.toJSON(), places: [...session.places.keys()], unresolved: session.unresolved(), missingArt: [...session.missingArt], criticCalls: session.criticCalls, criticMs: session.criticMs, ...(vqaRounds.length ? { vqa: { rounds: vqaRounds.map(({ round, defects, problem, reviewer, ms }) => ({ round, defects, problem, reviewer, ms })), ...vqaSummary(vqaRounds), ms: vqaMs, ledger: vqaBook.map(({ key, work, lastRound, lastWhat, itemId, gone }) => ({ key, work, lastRound, what: lastWhat, ...(itemId ? { item: itemId } : {}), ...(gone ? { gone } : {}) })) } } : {}), ...(advice ? { advisor: { blockers: advice.notes.filter((n) => n.level === "blocker").length, notes: advice.notes.length, ms: advice.ms, inputChars: advice.inputChars } } : {}) } });
   return done;
 }

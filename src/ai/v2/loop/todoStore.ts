@@ -7,8 +7,8 @@ import { refsLabel, type ProjectIndex } from "./refs";
 
 type TodoSource = TodoItem["source"];
 
-/** 항목마다 따로 드는 기록(모델에게는 안 보인다). */
-interface TodoMeta {
+/** 항목마다 따로 드는 기록(모델에게는 안 보인다). 프로젝트에 같이 저장돼 다음 턴이 이어 받는다(restore — 그 턴 안에서만 뜻이 있는 칸은 뺀다). */
+export interface TodoMeta {
   /** gate·critic·vqa 항목의 문제 열쇠 — 같은 문제가 다시 나오면 새 항목 대신 이 항목을 다시 연다. */
   key?: string;
   /** 마지막 실패(도구 거절·기계 확인 ✗)의 서명과 연속 횟수 — 같은 서명이 이어지면 막힘으로 닫는다. */
@@ -30,7 +30,19 @@ interface TodoMeta {
   strategyGiven?: boolean;
   /** H3 마지막 거절 뒤 고리가 고른 다음 호출(재주입 글이 쓴다). */
   nextCall?: { verb: string; text: string };
+  /** 재주입 글에 실려 모델에게 일감으로 건네진 적이 있나(조수가 적은 항목은 묻지 않는다). */
+  offered?: boolean;
+  /** 이 항목을 하며 부른 쓰기 동사(최근 8개) — 다음 턴이 같은 길을 다시 걷지 않게. */
+  tried?: string[];
+  /** 막힌 때의 대상(맵·이벤트) 지문 — 다음 턴에 대상이 바뀌었는지 가른다(turn/carryOver.ts). */
+  targetFp?: string;
 }
+
+/** 이어 받을 때 항목 하나를 어떻게 할지: 그대로(keep) · 다시 연다(reopen — 시도 수를 새로 센다) · 뺀다(drop, 이유). */
+export type CarryDecision = "keep" | "reopen" | { readonly drop: string };
+/** 그 턴 안에서만 뜻이 있어 이어 받지 않는 칸. */
+const TURN_ONLY_META = ["blockBounced", "scoped", "strategyGiven", "nextCall", "restored"] as const;
+const TRIED_MAX = 8;
 
 /** 프로젝트에 같이 저장되는 모양(project.assistantTodo) — 다시 읽기·이어 하기에서 되살린다. */
 export interface AssistantTodoState {
@@ -39,6 +51,8 @@ export interface AssistantTodoState {
   readonly at: number;
   readonly items: readonly TodoItem[];
   readonly meta: Readonly<Record<string, TodoMeta>>;
+  /** 판정자들의 턴 사이 기억(화면 검수 장부 등) — 목록을 이어 받지 않는 턴에도 읽는다. */
+  readonly memory?: Readonly<Record<string, unknown>>;
 }
 
 export interface TodoInput {
@@ -46,6 +60,7 @@ export interface TodoInput {
   readonly id?: string;
   readonly check?: TodoCheck;
   readonly dependsOn?: readonly string[];
+  readonly severity?: "polish";
 }
 export interface TodoPhaseInput { readonly phase: string; readonly items: readonly TodoInput[] }
 
@@ -113,6 +128,8 @@ export class TodoStore {
   initialized = false;
   /** 이번 쓰기 턴 시작 때 프로젝트 지문(맵·이벤트·아이템·적 그룹) — 판정의 changed 기준. */
   baseline: ProjectIndex | undefined;
+  /** 판정자들의 턴 사이 기억 — 가게는 내용을 모른다(쓰는 쪽이 칸을 정한다). */
+  memory: Record<string, unknown> = {};
   private seq = 0;
 
   private nextId(prefix = "t"): string {
@@ -127,6 +144,8 @@ export class TodoStore {
   }
 
   get(id: string): TodoItem | undefined { return this.items.find((i) => i.id === id); }
+  /** 문제 열쇠(gate·critic·vqa)로 항목 찾기. */
+  byKey(key: string): TodoItem | undefined { return this.items.find((i) => this.meta.get(i.id)?.key === key); }
 
   /** id 그대로 → 내용 그대로 → 내용 일부(하나만 맞을 때). */
   resolve(ref: string | undefined): TodoItem | undefined {
@@ -178,7 +197,8 @@ export class TodoStore {
     const id = wanted && !this.items.some((i) => i.id === wanted) ? wanted : this.nextId(source === "model" ? "t" : source === "vqa" ? "v" : source === "critic" ? "c" : "g");
     const item: TodoItem = { id, phase: clip(phase.trim() || "할 일", 40), content: clip(input.content.trim(), 220), status: "pending", attempts: 0, source,
       ...(input.check ? { check: input.check } : {}),
-      ...(input.dependsOn?.length ? { dependsOn: [...input.dependsOn] } : {}) };
+      ...(input.dependsOn?.length ? { dependsOn: [...input.dependsOn] } : {}),
+      ...(input.severity ? { severity: input.severity } : {}) };
     this.items.push(item);
     if (key) this.metaOf(id).key = key;
     return item;
@@ -195,8 +215,10 @@ export class TodoStore {
 
   /** 조수 목록을 새로 적는다 — 조수가 적은 항목만 바꾸고, 관문·비평·검수 항목은 남긴다. */
   init(phases: readonly TodoPhaseInput[]): TodoItem[] {
-    const kept = this.items.filter((i) => i.source !== "model");
-    for (const i of this.items) if (i.source === "model") this.meta.delete(i.id);
+    // 앞 턴에서 막힌 채 이어 받은 조수 항목은 남긴다 — 새 목록이 덮으면 사용자에게 보고한 막힘이 말없이 사라진다.
+    const carried = (i: TodoItem) => i.status === "blocked" && !!this.meta.get(i.id)?.restored;
+    const kept = this.items.filter((i) => i.source !== "model" || carried(i));
+    for (const i of this.items) if (i.source === "model" && !carried(i)) this.meta.delete(i.id);
     this.items = kept;
     const added = phases.flatMap((p) => p.items.filter((it) => it.content?.trim()).map((it) => this.add(p.phase, it, "model")));
     this.linkDeps(added);
@@ -211,13 +233,13 @@ export class TodoStore {
     const fresh: TodoItem[] = [];
     for (const input of inputs) {
       if (!input.content?.trim()) continue;
-      const same = input.key ? this.items.find((i) => this.meta.get(i.id)?.key === input.key) : undefined;
+      const same = input.key ? this.byKey(input.key) : undefined;
       if (same) {
         // 끝났다던 문제가 다시 나왔다 — 거짓 완료이거나 고치기가 효과가 없었다. 다시 열고 한 번 실패로 센다.
         // 막힘(이유를 적고 닫음)·뺌은 다시 열지 않는다 — 같은 문제가 남는 것이 당연하다(남은 문제로 보고된다).
         if (same.status === "completed") { same.attempts += 1; same.status = "pending"; delete this.metaOf(same.id).closedBy; opened.push(same); }
-        // 같은 열쇠(맵마다 하나인 장소 고치기)라도 문제 글은 바뀐다 — 지금 글로 바꿔 둔다.
-        if (isOpen(same.status)) same.content = clip(input.content.trim(), 220);
+        // 같은 열쇠(맵마다 하나인 장소 고치기)라도 문제 글은 바뀐다 — 지금 글로 바꿔 둔다. 화면 검수 항목은 열쇠가 결함 하나라 글을 바꾸지 않는다.
+        if (isOpen(same.status) && source !== "vqa") same.content = clip(input.content.trim(), 220);
         continue;
       }
       const item = this.add(phase, input, source, input.key);
@@ -308,6 +330,26 @@ export class TodoStore {
     return undefined;
   }
 
+  /** 이 항목을 하며 부른 쓰기 동사를 적어 둔다. */
+  noteTried(item: TodoItem, verb: string): void {
+    const m = this.metaOf(item.id);
+    m.tried = [...(m.tried ?? []).filter((v) => v !== verb), verb].slice(-TRIED_MAX);
+  }
+
+  /** 지금 열린 항목을 «모델에게 건넸다»로 표시한다 — 재주입 글을 만든 쪽이 부른다. */
+  markOffered(): void { for (const i of this.open()) this.metaOf(i.id).offered = true; }
+
+  /**
+   * 막힌 항목이 완료를 막는가. 화면 검수 항목 가운데 다듬기 급과, 모델이 받아 보기 전에 코드가 닫은 것은 막지 않는다(보고에는 남는다).
+   * 그 밖의 막힘(조수 항목·함수 검사·비평·모델이 받아 본 화면 검수 막음)은 막는다.
+   */
+  holds(item: TodoItem): boolean {
+    if (item.status !== "blocked") return false;
+    if (item.source !== "vqa") return true;
+    const m = this.meta.get(item.id);
+    return item.severity !== "polish" && !(m?.closedBy === "auto" && !m.offered);
+  }
+
   counts(): { open: number; total: number; done: number; blocked: number; dropped: number } {
     const c = { open: 0, total: this.items.length, done: 0, blocked: 0, dropped: 0 };
     for (const i of this.items) {
@@ -362,25 +404,46 @@ export class TodoStore {
   }
 
   serialize(task: string): AssistantTodoState {
-    return { version: 1, task: clip(task, 1500), at: Date.now(), items: this.items.map((i) => ({ ...i, ...(i.dependsOn ? { dependsOn: [...i.dependsOn] } : {}) })), meta: Object.fromEntries([...this.meta].map(([k, v]) => [k, { ...v }])) };
+    return { version: 1, task: clip(task, 1500), at: Date.now(), items: this.items.map((i) => ({ ...i, ...(i.dependsOn ? { dependsOn: [...i.dependsOn] } : {}) })), meta: Object.fromEntries([...this.meta].map(([k, v]) => [k, { ...v }])),
+      ...(Object.keys(this.memory).length ? { memory: { ...this.memory } } : {}) };
   }
 
-  /** 앞 실행이 남긴 목록을 되살린다. 열린 항목이 없으면 아무것도 안 하고 false. */
-  restore(state: unknown): boolean {
+  /** 앞 실행이 남긴 판정자 기억만 읽는다(목록은 건드리지 않는다). */
+  loadMemory(state: unknown): void {
+    const m = (state as Partial<AssistantTodoState> | undefined)?.memory;
+    this.memory = m && typeof m === "object" ? { ...m } : {};
+  }
+
+  /**
+   * 앞 실행이 남긴 목록을 되살린다. 열렸거나 막힌 항목이 없으면 아무것도 안 하고 false.
+   * 막힌 항목은 막힌 채로, 시도 수·마지막 실패·부른 동사·막힌 이유와 함께 돌아온다 — 다시 열지는 decide 가 정한다(대상이 바뀌었거나 요청이 그 항목을 짚을 때).
+   * 예전에는 막힌 항목을 모두 대기로 돌리고 기록을 지워, 이어 하는 턴마다 같은 항목을 처음부터 다시 다퉜다.
+   */
+  restore(state: unknown, decide: (item: TodoItem, meta: TodoMeta) => CarryDecision = () => "keep"): boolean {
     const s = state as Partial<AssistantTodoState> | undefined;
     if (!s || s.version !== 1 || !Array.isArray(s.items)) return false;
     const items = s.items.filter((i): i is TodoItem => !!i && typeof i === "object" && typeof (i as TodoItem).id === "string" && typeof (i as TodoItem).content === "string")
       .map((i) => ({ ...i, attempts: Number(i.attempts) || 0, status: (["pending", "in_progress", "completed", "blocked", "dropped"] as const).includes(i.status) ? i.status : "pending" }));
     if (!items.some((i) => isOpen(i.status) || i.status === "blocked")) return false;
-    // 앞 실행에서 막혔던 항목은 이번 실행에서 다시 시도한다(새 요청 «계속»).
-    for (const i of items) if (i.status === "blocked") { i.status = "pending"; delete i.blockedReason; i.attempts = 0; }
     this.items = items;
     this.meta.clear();
-    for (const [k, v] of Object.entries(s.meta ?? {})) if (v && typeof v === "object") this.meta.set(k, { key: (v as TodoMeta).key });
-    for (const i of items) this.meta.set(i.id, { ...(this.meta.get(i.id) ?? {}), restored: true });
+    for (const i of items) {
+      const old = (s.meta ?? {})[i.id];
+      const meta: TodoMeta = old && typeof old === "object" ? { ...old } : {};
+      for (const k of TURN_ONLY_META) delete meta[k];
+      if (i.status === "in_progress") i.status = "pending";
+      if (i.status === "blocked" || isOpen(i.status)) {
+        const d = decide(i, meta);
+        if (d === "reopen" && i.status === "blocked") {
+          // 다시 여는 항목은 시도 수와 같은 실패 연속을 새로 센다. 마지막 실패 글과 부른 동사는 남아 재주입 글에 실린다.
+          i.status = "pending"; delete i.blockedReason; i.attempts = 0;
+          delete meta.closedBy; delete meta.failSig; delete meta.sigStreak; delete meta.targetFp;
+        } else if (typeof d === "object") { i.status = "dropped"; i.blockedReason = clip(d.drop, 200); meta.closedBy = "auto"; }
+      }
+      this.meta.set(i.id, { ...meta, restored: true });
+    }
     this.seq = items.length;
     this.initialized = true;
-    for (const i of this.items) if (i.status === "in_progress") i.status = "pending";
     this.promote();
     return true;
   }

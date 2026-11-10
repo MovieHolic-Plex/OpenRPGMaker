@@ -402,18 +402,6 @@ export async function adviseTurn(input: AdvisorInput, sideChat: (messages: reado
   }
 }
 
-/**
- * 출하 검사(src/ai/v2/shipChecks.ts shipBlockers — 편집기 기본값이 남음·한 줄 엔딩·제목 스포일러)를 막는 메모로 붙인다.
- * 모델 판단이 아니라 코드 검사라 항상 blocker 다. 같은 id 를 두 번 넣지 않는다.
- */
-export function withShipBlockers(verdict: AdvisorVerdict, blockers: readonly { readonly id: string; readonly message: string; readonly evidence: string }[]): AdvisorVerdict {
-  if (!blockers.length) return verdict;
-  const seen = new Set(verdict.notes.map((n) => n.what));
-  const extra = blockers.map((b): AdvisorNote => ({ level: "blocker", what: `[출하 차단 ${b.id}] ${b.message}`, evidence: b.evidence }))
-    .filter((n) => !seen.has(n.what));
-  return { ...verdict, notes: [...verdict.notes, ...extra] };
-}
-
 /** 요청 자체를 두고 한 지적(보고 주장·삭제·빠진 부분) — 음악만 바라는 요청에서도 일감이다. 나머지는 프로젝트에 이미 있던 것에 대한 지적이다. */
 const ABOUT_THIS_REQUEST = /^(보고의 주장|알린 삭제|시키지 않았고|요청 중 안 된 부분)/u;
 /**

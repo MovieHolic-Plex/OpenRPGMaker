@@ -148,7 +148,7 @@ export function editorDefaultsLeft(project: Project): ShipBlocker[] {
   const opening = (s.opening ?? {}) as Obj, fopening = (fs.opening ?? {}) as Obj;
   const fscenes = ((fopening.scenes as Obj[] | undefined) ?? []).map((sc) => `${String(sc.resourceId)}|${String(sc.narration ?? "")}`);
   const leftScenes = ((opening.scenes as Obj[] | undefined) ?? []).filter((sc) => fscenes.includes(`${String(sc.resourceId)}|${String(sc.narration ?? "")}`));
-  if (opening.enabled !== false && leftScenes.length) add("opening", `오프닝에 편집기 기본 장면 ${leftScenes.length}개(「${String(leftScenes[0]!.narration ?? "").slice(0, 20)}…」)가 남았다 — plan_opening·set_opening 으로 이 게임의 오프닝을 짓거나 set_opening{enabled:false} 로 끈다.`, leftScenes.map((sc) => String(sc.resourceId)).join(","));
+  if (opening.enabled !== false && leftScenes.length) add("opening", `오프닝에 편집기 기본 장면 ${leftScenes.length}개(「${String(leftScenes[0]!.narration ?? "").slice(0, 20)}…」)가 남았다 — 이 게임의 오프닝으로 바꾼다: 맵 위 무대는 author_opening_stage{mapId, x, y, beats}, 그림 장면은 plan_opening·set_opening. 오프닝을 끄는 것은 고치기가 아니다(끄면 «오프닝 없음» 차단이 선다).`, leftScenes.map((sc) => String(sc.resourceId)).join(","));
   if (opening.enabled !== false && opening.musicResourceId && opening.musicResourceId === fopening.musicResourceId && (leftScenes.length || !(opening.scenes as unknown[] | undefined)?.length)) add("opening-music", `오프닝 음악이 편집기 기본(${String(opening.musicResourceId)})이다 — 이 게임 분위기의 곡으로 바꾼다.`, `opening.musicResourceId=${String(opening.musicResourceId)}`);
 
   // 3) HUD: 아무도 정하지 않았다(편집기 기본 체력 HUD)
@@ -337,8 +337,8 @@ export function openingWithoutPlace(project: Project): ShipBlocker[] {
   return [{
     id: "opening-no-place",
     message: `오프닝 ${scenes.length}장면이 하늘·별·구름 같은 일반 배경(${used.slice(0, 4).join(", ")})만 보이고 이 게임의 장소가 한 번도 안 나온다 — 어디서 일이 나는지 모른 채 시작한다. `
-      + `걷는 인물·카메라 이동이 필요하면 맵 위 엔진 무대로 짓는다: author_opening_stage{mapId:'${firstMap?.id ?? "<무대 맵 id>"}', x, y, beats}. 그림 컷이 필요하고 맞는 장소 그림이 없으면 게임 맵을 그대로 쓴다: create_opening_animatic_shot{shotId} 뒤 place_opening_background{shotId, layerId:'bg', mapId:'${firstMap?.id ?? "<무대 맵 id>"}', focus:{x,y}}(${firstMap?.name ?? "무대"}의 대표 자리 — 건물 정문·광장), 인물은 place_opening_charset_actor. `
-      + `맞는 스틸이 있으면 list_opening_media{kind:'image', query:<장소 낱말>} 로 골라 그 장면에 쓴다. 하늘 층은 장소 장면 뒤 겹으로만.`,
+      + `이 게임의 장소를 맵 위 엔진 무대로 보인다: author_opening_stage{mapId:'${firstMap?.id ?? "<무대 맵 id>"}', x, y, beats}(${firstMap?.name ?? "무대"}의 대표 자리 — 건물 정문·광장 — 에서 인물이 걷고 말한다). `
+      + `맞는 장소 스틸이 있으면 list_opening_media{kind:'image', query:<장소 낱말>} 로 골라 그 장면에 쓴다. 하늘 층은 장소 장면 뒤 겹으로만. 인물 없는 맵 조각만 잘라 붙인 컷은 화면 검수가 오프닝으로 받지 않는다.`,
     evidence: `opening images=${used.join(",") || "none"}`,
   }];
 }

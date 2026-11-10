@@ -57,6 +57,8 @@ export interface TodoItem {
   /** 고리가 자동으로 묶는 대상 id. 있으면 판정은 이 id 들만 본다. */
   refs?: TodoRefs;
   source: "model" | "gate" | "critic" | "vqa";
+  /** 다듬기 급(화면 검수) — 남아도 완료를 막지 않고, 한 번 건넨 뒤 다시 열지 않는다. 없으면 보통 항목. */
+  severity?: "polish";
 }
 
 export interface CheckResult {
