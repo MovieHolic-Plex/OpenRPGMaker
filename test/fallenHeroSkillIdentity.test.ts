@@ -5,7 +5,7 @@ import { createBattleRuntime } from "@/battle/runtime";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { normalizeSkillRecord } from "@/project/databaseRecordModel";
 import {
-  FS2_LANCE_SKILLS, FS_HIT_FLASH, FS_STAR_FINISHER_SKILLS, FS_STAR_MARK_FINISHERS, FS_STAR_MARK_SLASHES, FS_STAR_MARK_STATES,
+  FS2_LANCE_SKILLS, FS_HIT_FLASH, FS_KAEL_STAR_SLASH, FS_STAR_FINISHER_SKILLS, FS_STAR_MARK_FINISHERS, FS_STAR_MARK_SLASHES, FS_STAR_MARK_STATES,
   applyFallenHeroSkillIdentity,
 } from "@/project/flagship/fallen/heroSkillIdentity";
 import type { Project, SkillRecord } from "@/project/types";
@@ -91,6 +91,46 @@ describe("Fallen Star hero skill identity (batch 1)", () => {
     expect(tiers[1]!.amount / zero.amount).toBeCloseTo(1.5, 1);
     expect(tiers[2]!.amount / zero.amount).toBeCloseTo(1.75, 1);
     for (const row of tiers) expect(row.after.some((id) => (FS_STAR_MARK_STATES as readonly string[]).includes(id))).toBe(false);
+  });
+
+  it("only Kael's own slash carves the star mark; the shared skill_sword_slash enemies use does not (fs-vqa-fix-all)", () => {
+    const project = fallenLike();
+    applyFallenHeroSkillIdentity(project);
+    const shared = project.database.skills.find((row) => row.id === "skill_sword_slash")!;
+    const kael = project.database.skills.find((row) => row.id === FS_KAEL_STAR_SLASH)!;
+    const marks = (skill: SkillRecord) => (skill.stateEffects ?? []).filter((row) => (FS_STAR_MARK_STATES as readonly string[]).includes(row.stateId));
+    expect(marks(shared)).toEqual([]);
+    expect(shared.description).not.toContain("별 표식");
+    expect(marks(kael)).toHaveLength(1);
+    expect(kael.name).toBe(shared.name);
+    expect(kael.animationId).toBe(shared.animationId);
+    const hero = project.database.classes.find((row) => row.id === "class_hero")!;
+    expect(hero.learnedSkills.map((row) => row.skillId)).toContain(FS_KAEL_STAR_SLASH);
+    expect(hero.learnedSkills.map((row) => row.skillId)).not.toContain("skill_sword_slash");
+    expect(hero.skillIds).not.toContain("skill_sword_slash");
+
+    // 실전: 적이 공용 검격으로 아군을 베어도 표식이 생기지 않는다.
+    project.system.battleModel = "rm2k3";
+    const actor = project.database.actors[0]!;
+    const enemy = project.database.enemies[0]!;
+    const troop = project.database.troops.find((row) => row.id === project.system.initialTroopId) ?? project.database.troops[0]!;
+    troop.enemyIds = [enemy.id];
+    troop.members = [{ enemyId: enemy.id, x: 80, y: 80 }];
+    troop.battleEventPages = [];
+    actor.initialEquipment = {};
+    actor.parameterCurves.maxHp = Array(99).fill(9999);
+    actor.parameterCurves.agility = Array(99).fill(1);
+    enemy.stats = { ...enemy.stats, maxHp: 99999, attack: 1, agility: 999 };
+    enemy.actions = [{ skillId: "skill_sword_slash", priority: 9, condition: { kind: "always" } } as never];
+    shared.damageFormula = "1";
+    const runtime = createBattleRuntime({
+      project, troopId: troop.id, canEscape: false, canLose: true, battleFlow: "strict", rng: () => 0.5,
+      party: { levels: { [actor.id]: 1 }, experience: {}, partyActorIds: [actor.id], skillIds: { [actor.id]: ["skill_attack"] } },
+    });
+    for (let i = 0; i < 3; i += 1) runtime.performActorCommand({ kind: "defend" });
+    const enemySlashed = runtime.snapshot().timeline.some((entry) => entry.side === "enemy" && entry.skillId === "skill_sword_slash");
+    expect(enemySlashed).toBe(true);
+    expect(runtime.snapshot().actors[0]!.stateIds.filter((id) => (FS_STAR_MARK_STATES as readonly string[]).includes(id))).toEqual([]);
   });
 
   it("gives each hero a hex flash colour pair", () => {
