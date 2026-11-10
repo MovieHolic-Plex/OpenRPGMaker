@@ -36,7 +36,8 @@ export function skeletonFor(verb: string, mapId?: string, extra: Obj = {}): Obj 
   const m = mapId ?? "<mapId>";
   switch (verb) {
     case "stamp_object": return { objectId: "<id from list_spatial_designs({kind:'object'})>", mapId: m, x: "<x>", y: "<y>", ...extra };
-    case "move_event": return { mapId: m, eventId: "<eventId>", x: "<x>", y: "<y>", ...extra };
+    // 칸을 모르면 자리 낱말로 — move_event 가 닿는 빈 칸을 고른다(전에는 x,y 뼈대뿐이라 모델이 «검증된 좌표가 없다» 며 막혔다).
+    case "move_event": return "x" in extra ? { mapId: m, eventId: "<eventId>", ...extra } : { mapId: m, eventId: "<eventId>", where: "<spot word, e.g. 'next to the counter' — or dx,dy steps, or x,y>", ...extra };
     case "fill_region": return { mapId: m, x: "<x>", y: "<y>", w: "<w>", h: "<h>", tile: "<tile>", ...extra };
     case "move_object": return { mapId: m, at: { x: "<x>", y: "<y>" }, to: { x: "<x>", y: "<y>" }, ...extra };
     case "dress_room": return { mapId: m, at: { x: "<floor x>", y: "<floor y>" }, purpose: "<room purpose>", ...extra };
