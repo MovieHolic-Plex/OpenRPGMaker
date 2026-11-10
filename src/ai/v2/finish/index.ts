@@ -9,7 +9,7 @@ import type { PiAssistantV2Env } from "../env";
 import type { V2Session } from "../turn/session";
 import { BLUEPRINT_PATH_IDS, walkBlueprint } from "../blueprint";
 import { battleSites, healingSources } from "../combatChecks";
-import { buildsWholeGame } from "../shipChecks";
+import { buildsWholeGame } from "../request/scope";
 import { lanesStale } from "./lanesStamp";
 import type { FinishCtx, FinishPhase, FinishStage } from "./types";
 import * as registered from "./stages";

@@ -14,7 +14,8 @@ import { WIZARDING_CARD } from "../../../src/ai/v2/builders/wizarding.ts";
 import { SCENE_CARD } from "../../../src/ai/v2/scene.ts";
 import { BLUEPRINT_CARD } from "../../../src/ai/v2/blueprint.ts";
 import { MAKE_GAME_CARD } from "../../../src/ai/v2/makeGame.ts";
-import { GAME_CARD, TERRAIN_CARD, MUSIC_TIER, FALLEN_TIERS, storeTierCard } from "../../../src/ai/v2/game.ts";
+import { GAME_CARD, TERRAIN_CARD } from "../../../src/ai/v2/game.ts";
+import { MUSIC_TIER, FALLEN_TIERS, storeTierCard } from "../../../src/ai/v2/request/toolGroups.ts";
 import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
 

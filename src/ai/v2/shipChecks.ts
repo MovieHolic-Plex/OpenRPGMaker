@@ -23,7 +23,7 @@ import { romanceCompletionGaps } from "@/qa/gameCheck/romance";
 import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, repeatedDayDialogue, lingeringHeavyTints } from "./discoverability";
 import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
-import { isEscapeBlueprint, strayStepCopies, walkBlueprint } from "./blueprint";
+import { strayStepCopies, walkBlueprint } from "./blueprint";
 import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS, planLinks } from "./mapCount";
 import { MAX_SAME_KIND, worldOf } from "./world";
 import { MIN_ACT_DEPTH, progressionDepth } from "./actDepth";
@@ -32,6 +32,8 @@ import { assemblyTimeMismatches, blankMap, blueprintStoryText } from "@/project/
 import { openingMapViewMapId } from "@/project/openingMapView";
 import { battleSites, encounterMaps, healingSources, repeatableHealingSources } from "./combatChecks";
 import { projectScriptMentionsCmdKind } from "@/project/script/effects";
+import { SINGLE_PLACE, buildsWholeGame, oneProjectGame, ONE_ROOM_GAME } from "./request/scope";
+import { requestedTitle } from "./request/title";
 
 type Obj = Record<string, unknown>;
 interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
@@ -84,41 +86,6 @@ export function selfLoopTransfers(project: Project): { mapId: string; eventId: s
     });
   }
   return out;
-}
-
-/** 게임 하나를 만들거나 완성하는 요청(작은 고치기 요청에는 출하 검사를 걸지 않는다). */
-// 컨셉 카드 한 줄(「폐업 직전 태엽 장난감 가게, 밤마다 손님이 깨어난다 (회상 스토리)」)도 게임 하나를 만드는 요청이다 — 끝의 (장르) 괄호가 표지.
-// 2026-10-26 toy-j90: 이 한 줄이 출하 검사·화면 검수 없이 1턴을 끝냈다.
-// 「… 게임으로」으로 끝나는 요청도 게임 하나다(2026-11-05 gpt-only-game: 「마을 하나 만들어줘. 거기서 시작하는 모험 게임으로」가 마을만 짓고 엔딩 없이 끝났다).
-export const WHOLE_GAME_WORDS = /(게임|game|RPG|알피지)[^.!?\n]{0,60}(만들|지어|짜\s*줘|완성|제작|build|make)|(만들|지어|완성)[^.!?\n]{0,20}(게임|game|RPG|알피지)|(?:^|[\s.,!?])[^\s.,!?]{0,9}[^\s.,!?을를]\s+(게임|game|RPG|알피지)\s*(으로|로)\s*(해\s*줘|부탁해)?\s*[.!]?\s*$|엔딩까지|처음부터 끝까지|whole game|\([^()\n]{0,24}(스토리|이야기|RPG|어드벤처|호러|공포|연애|로맨스|추리|미스터리|탐험|퍼즐|시뮬레이션|액션|비주얼\s*노벨|생존|육성|수집|게임)[^()\n]{0,12}\)\s*$/iu;
-/** 고치기 동사로 끝나는 짧은 요청(「버튼 효과 고쳐 (액션)」)은 괄호 장르가 붙어도 전체 게임 요청이 아니다. */
-const EDIT_REQUEST = /(고쳐|바꿔|옮겨|지워|없애|줄여|늘려|수정|변경)\s*(줘|주세요|라)?[^()\n]{0,4}\([^()\n]*\)\s*$/u;
-/** 「게임」 뒤에 바로 만들기 동사(「추리 게임 만들어 줘」·「RPG 하나 만들어」) — 게임 자체가 만들 대상이다. */
-const GAME_IS_OBJECT = /(게임|game|RPG|알피지)\s*(하나|한\s*개)?\s*(을|를)?\s*(만들|지어|짜\s*줘|완성|제작)/iu;
-const WHOLE_STRONG = /엔딩까지|처음부터 끝까지/u;
-/** 게임의 한 부분을 만드는 요청 — 「방탈출 게임에 쓸 서재」·「공포 게임에 나오는 병실」·「힐링 게임의 잡화점」·「배달 게임에서 소포 받는 빵집」. */
-const PART_OF_GAME = /(게임|game|RPG)\s*(에\s*(쓸|쓰일|나오는|넣을|들어갈)|에서|의)\s/iu;
-/**
- * 방·맵 하나만 짓는 요청(방 과제 접미 「다른 맵은 만들지 말고 이 방 하나만 지어 줘」, 「… 잡화점 실내를 만들어 줘」).
- * 게임 이름이 들어 있어도 장소 하나를 짓는 말이면 청사진 관문이 make_place·edit_place 를 막지 않게 한다(2026-10-29 room-base2x healing-store·delivery-bakery 0점).
- */
-const SINGLE_PLACE = /(방|맵|장소|실내|건물)\s*하나만|다른\s*맵은\s*만들지|(실내|방|맵|장소)(를|을)?\s*(하나\s*)?(만들어|지어)\s*(줘|주세요)/u;
-/**
- * 게임 하나를 만들거나 완성하는 요청인가 — 끝맺음 조립·출하 검사·화면 검수가 이 판정으로 켜진다.
- * 2026-10-29 판정표(scripts/qa/assistant-v2/wholeGameTable.mts, 스위트 12 프롬프트·방 과제 17개): 「짧은 판타지 RPG 만들어 줘」 가 false 라
- * jrpg 첫 차례에 끝맺음 조립이 돌지 않았고, 「공포 게임에 나오는 병실 실내를 만들어 줘. … 이 방 하나만 지어 줘」 같은 방 과제 6개가 true 라
- * 방 하나 짓기에 출하 검사가 걸렸다.
- */
-export function wantsWholeGame(raw: string): boolean {
-  // 실행기는 요청 뒤에 의도 메모(시스템 지침)를 붙여 보낸다 — 사용자 글만 본다. 「… 게임으로」 끝 맞춤이 메모 때문에 어긋났다(2026-11-05 gpt-only-game).
-  const task = withoutIntentNote(raw);
-  if (!WHOLE_GAME_WORDS.test(task)) return false;
-  const strong = WHOLE_STRONG.test(task);
-  if (EDIT_REQUEST.test(task) && !strong && !/(게임|game|RPG|알피지)[^.!?\n]{0,60}(만들|지어|완성|제작)/iu.test(task)) return false;
-  if (strong) return true;
-  // 「방 하나만 있는 방탈출 게임 만들어 줘」 는 게임 요청 — 게임이 만들 대상이면 방·부분 낱말로 끄지 않는다.
-  if ((SINGLE_PLACE.test(task) || PART_OF_GAME.test(task)) && !GAME_IS_OBJECT.test(task)) return false;
-  return true;
 }
 
 let factoryCache: Project | undefined;
@@ -453,22 +420,6 @@ export function defaultPlaceLeaks(project: Project, task: string): ShipBlocker[]
   }
   return out;
 }
-
-/**
- * 요청이 제목을 못박았는데 다른 제목으로 냈다(J71 hf2-mansion-flash 「검은 장미의 비밀」, J73 hf2-mansion-argon 「저택 탈출」 —
- * 요청은 「제목은 「검은 장미 저택」」). 「」『』"" 로 묶인 제목 낱말만 본다(묶지 않은 글은 제목인지 알 수 없다). 게임을 만드는 요청에서만 막는다.
- */
-// 게임 제목만 — 앞에 낱말이 붙거나(부제목·subtitle) 게임 안의 다른 제목(책·표지판·챕터·퀘스트·곡…)이면 아니다.
-const REQUESTED_TITLE = /(?<![\p{L}\p{N}])(?<!(?:책|표지판?|간판|챕터|퀘스트|노래|곡|장|편지|일기|그림|영화|소설|시|팻말|문서|보고서)\s?)(?:제목|타이틀|title)\s*(?:은|는|을|를|이|가|:|=)?\s*(?:「([^」\n]{1,40})」|『([^』\n]{1,40})』|"([^"\n]{1,40})"|“([^”\n]{1,40})”)(?!\s*(?:은|는|을|를)?\s*(?:말고|대신|쓰지|빼|아니))/giu;
-const firstTitle = (text: string): string | undefined => {
-  for (const m of text.matchAll(REQUESTED_TITLE)) { const t = m.slice(1).find((g) => g !== undefined)?.trim(); if (t) return t; }
-  return undefined;
-};
-/** 이번 글의 제목이 먼저, 없으면 앞선 요청 메모(J70)의 제목. */
-export function requestedTitle(task: string): string | undefined {
-  const own = withoutIntentNote(task);
-  return firstTitle(own) ?? firstTitle(task.slice(own.length));
-}
 const squash = (s: string): string => s.replace(/\s+/gu, "").normalize("NFC");
 export function titleMismatch(project: Project, task: string): ShipBlocker[] {
   const want = requestedTitle(task);
@@ -582,28 +533,12 @@ export function bundledPictureLeft(project: Project): ShipBlocker[] {
   }
   return out;
 }
-
-/**
- * 이 요청이 게임 하나를 만드는 일인가 — 이번 요청문, 아니면 청사진이 들고 있는 첫 요청문. 「끝까지 만들어 줘」 같은 이어 하기 턴이 낱말 판정에 안 걸려
- * 출하 검사·조립 기본값이 통째로 꺼지던 것을 막는다(2026-11-09 assistant-reward village-1).
- */
-export function buildsWholeGame(project: Project, task: string): boolean {
-  return wantsWholeGame(task) || wantsWholeGame(project.gameBlueprint?.request ?? "");
-}
-
 /** 조언자·끝맺음 관문이 같이 쓰는 출하 차단 목록(게임을 만드는 요청일 때만). 제목 스포일러는 어느 요청이든. */
 /**
  * 세는 맵이 최소 수(MIN_COUNTED_MAPS)보다 적다 — 오너 2026-11-10 「맵을 가장 우선」. 척도(scripts/fs-scale)가 세는 규칙 그대로(닿고·100칸·타일 6종·이벤트·다른 배치).
  * 실측(2026-11-10, 비몬스터 5판): 세는 맵 1·1·1·2·2장. 못 센 맵마다 이유를 적는다 — 이유가 없으면 조수가 세지 않는 맵만 계속 짓는다.
  * 한 장소 게임(방탈출·「방 하나」)은 최소 1장. 3번 되풀이되면 할 일 고리가 막힘으로 닫고 최종 보고에 남긴다(42분 상한).
  */
-/** 방탈출 청사진은 sealEscapeExits 가 바깥으로 나가는 문을 지우므로, 맵·퀘스트 최소는 1장으로 같이 면제한다(두 규칙이 서로 반대로 작동하면 3번 시도 끝에 막힘). */
-const escapeGame = (project: Project): boolean => (project.gameBlueprint ? isEscapeBlueprint(project.gameBlueprint) : false);
-/** 한 곳짜리 게임(방탈출·「방 하나」)인가 — 맵·퀘스트·진행 깊이 관문과 청사진 장소 검사가 같은 판정을 쓴다. */
-export function oneProjectGame(project: Project, task: string): boolean {
-  const request = withoutIntentNote(task) + " " + withoutIntentNote(project.gameBlueprint?.request ?? "");
-  return SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request) || escapeGame(project);
-}
 export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
   const need = oneProjectGame(project, task) ? 1 : MIN_COUNTED_MAPS;
   const { counted, uncounted } = countMaps(project);
@@ -767,8 +702,6 @@ export function thinGameSign(project: Project, task = ""): string | undefined {
   if (!short.length) return undefined;
   return `게임이 너무 얇다(${short.join(", ")})`;
 }
-/** 방 하나짜리 게임 요청 — 방탈출·밀실·한 방. */
-const ONE_ROOM_GAME = /방\s*탈출|밀실|한\s*방|방\s*하나|escape\s*room|one[-\s]room/iu;
 
 /** 다 지어진(엔딩·맵·회복) 게임이 얇을 때 한 번 넓혀 짓게 하는 글 — 「덜 지어졌다」가 아니라 「넓힌다」다. */
 export function widenGamePrompt(sign: string): string {
