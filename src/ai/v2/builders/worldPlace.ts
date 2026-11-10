@@ -91,7 +91,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const parsed = parseWorldStyle(spec.style);
   if (!parsed) return fail(`unknown world place style «${spec.style ?? ""}».`);
   const { world, kind } = parsed;
-  if (previous) return fail(`«${spec.name}» is a ${world.name} ${kind.id} laid by its composer in one pass — it is not rebuilt. Add people and events to it, or add another place with build_world{add:[{name, kind}]}.`);
+  if (previous) return fail(`«${spec.name}» is a ${world.name} ${kind.id} laid by its composer in one pass — it is not rebuilt. Add people and events to it, or add another place with build_places{add:[{name, kind}]}.`);
   if (!run.ctx.project.tilesets[world.tilesetId]) return fail(`this project has no ${world.tilesetId} chipset — the ${world.name} world cannot be built here.`);
   const made = compose(run, world, kind, spec.name, spec.salt ?? 1);
   if (!made.map) return fail(`${world.name} ${kind.id} «${spec.name}» could not be composed: ${made.error ?? ""}`);

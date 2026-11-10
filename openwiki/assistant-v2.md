@@ -35,13 +35,13 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 | 세계 표 `WORLDS` | `world.ts` | 세계 = 칩셋 하나 + 장소 종류 목록. 종류 하나 = 이미 있는 구성기 호출 하나(새 그림·새 시공기 없음). 버들항 세계만 종전 빌더(마을·던전)로 짓는다 |
 | 고르기 `pickWorld` | `world.ts`·`worldRequest.ts` | 요청이 세계를 말하면 그 세계(정책 파일의 `describes*` 를 그대로 쓴다) → 다른 테마·장르 낱말(`hasThemeWord`: 조선·현대·학교·연애·추리·숲…)이 있으면 고르지 않는다(종전 길) → 손댄 맵이 있으면 그 칩셋의 세계 → 낱말이 없으면 프로젝트 열쇠 해시로 풀에서 하나. 청사진이 생긴 뒤에는 `blueprint.setting` 이 정본이다(중간에 다시 고르지 않는다) |
 | 청사진 `places[{name, kind, from?}]`·`setting` | `gameBlueprint.ts` | 모델은 장소 이름과 종류만 정한다. `worldPlaceProblems` 가 종류·장소 수(6~8)·서로 다른 종류 5개·한 종류 2번까지·단계가 장소 4곳 이상을 지나는지 본다. 두 번 돌려보낸 뒤에는 `repairWorldPlaces` 가 메워서 건다 |
-| 짓기 `build_world` | `verbs.ts` `session.buildPlaces` | 끝맺음 자동 짓기와 같은 함수다. 바깥 장소를 먼저 짓고 가장자리로 잇는다(막힌 변이면 다른 변). 실내는 그 종류의 집 문(`WorldKind.door` — 얼음 동굴 방 ↔ 얼음 동굴 입구, 묘실 ↔ 피라미드 입구)에 단다. `add:[{name, kind}]` 로 장소를 더한다 |
+| 짓기 `build_places` | `verbs.ts` `session.buildPlaces` | 끝맺음 자동 짓기와 같은 함수다. 바깥 장소를 먼저 짓고 가장자리로 잇는다(막힌 변이면 다른 변). 실내는 그 종류의 집 문(`WorldKind.door` — 얼음 동굴 방 ↔ 얼음 동굴 입구, 묘실 ↔ 피라미드 입구)에 단다. `add:[{name, kind}]` 로 장소를 더한다 |
 | 빌더 | `builders/worldPlace.ts` | style `world:<세계>:<종류>`. 구성기가 씨앗에 따라 못 짜면 씨앗을 바꿔 4번까지. 결과에 들어오는 칸·집 문 앞 칸을 싣는다. 다시 짓기(edit_place)는 거절한다 |
 | 지시문 | `prompt.ts` | 세계 카드(`worldCard`)를 청사진 카드 뒤에 싣는다. 구성기 세계면 실내·마을·던전·거리 카드를 싣지 않는다(«판타지 RPG 게임 하나» 지시문 50,950자 → 34,109자) |
 | 도구 목록 | `toolExposure.ts` | 구성기 세계면 `make_place`·`edit_place` 등 짓기 동사는 필요할 때 싣고(이름으로 부르면 `make_place` 는 세계 짓기로 넘긴다), 버들항 전용 `author_forest_route` 는 싣지 않는다 |
-| 세는 맵 관문 | `shipChecks.ts` `mapsMinBlocker` | 세계 게임이면 «`build_world{add}` 로 아직 안 쓴 종류를 더하라» 로 말한다 |
+| 세는 맵 관문 | `shipChecks.ts` `mapsMinBlocker` | 세계 게임이면 «`build_places{add}` 로 아직 안 쓴 종류를 더하라» 로 말한다 |
 
-**재는 법(모델 없음).** `bun scripts/qa/assistant-v2/worldProbe.mts <outDir> [세계…]` — 세계마다 청사진 → `build_world` → `build_blueprint_path` 를 실제 동사로 돌려
+**재는 법(모델 없음).** `bun scripts/qa/assistant-v2/worldProbe.mts <outDir> [세계…]` — 세계마다 청사진 → `build_places` → `build_blueprint_path` 를 실제 동사로 돌려
 지어진 맵·세는 맵·걸어 닿는지를 표로 내고 PNG 를 남긴다. 2026-11-10 측정: 열 세계 모두 장소 6~8장 전부 지어지고·세어지고·시작에서 왕복으로 닿았고 칩셋은 세계마다 하나였다.
 낱말 없는 요청 200개의 고르기 분포: «재밌는 게임» 아홉 세계에 17~31개씩, «판타지 RPG» 다섯 세계에 36~48개씩.
 
@@ -49,7 +49,7 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 에도 실내·버들항 실내 종류는 아직 표에 없다.
 
 **Terra high 실측(2026-11-10, 위 코드로 두 판).** «판타지 RPG 게임 하나» → 북방 설원 6장(마을·장터·긴집·호수·절벽·얼음 동굴), «재밌는 게임» → 증기 도시 6장(거리·공방·선착장·공장지대·보일러실·기관실).
-둘 다 `write_blueprint` 1 → `build_world` 1 → `build_blueprint_path` 1 로 지었고 버들항 맵은 0장이었다(앞 판: 두 요청 모두 버들항 마을 + 동굴 + 숲길 4장). 첫 턴 도구 196·195회, 32~33분.
+둘 다 `write_blueprint` 1 → `build_places` 1 → `build_blueprint_path` 1 로 지었고 버들항 맵은 0장이었다(앞 판: 두 요청 모두 버들항 마을 + 동굴 + 숲길 4장). 첫 턴 도구 196·195회, 32~33분.
 이 두 판에서 나온 결함 둘은 같은 변경에서 고쳤다: ① 독립 검토자가 자리표시 시작 맵 은퇴를 «시키지 않은 삭제» 로 막아 조수가 「빈 맵」을 다시 만들었다(`advisor.ts` `PLACEHOLDER_MAP` — 막음이 아니라 참고)
 ② 화면 검수의 «방이 휑하다» 결함이 손 도트 실내가 아닌 맵에도 `dress_room` 을 권했고 할 일 글이 220자에서 잘려 동사가 안 보였다(`vqaDefectLine(d, i, project)`·실행기 `clipDefectLine`).
 

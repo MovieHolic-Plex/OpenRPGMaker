@@ -835,7 +835,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       await env.checkpoint("write_blueprint");
       if (world) {
         const unbuilt = (parsed.blueprint.places ?? []).filter((pl) => !blueprintMapFor(env.ctx.project, pl.name));
-        return text({ ok: true, summary: `Blueprint saved (${parsed.blueprint.steps.length} steps · world ${world.name} · ${parsed.blueprint.places?.length ?? 0} places).${worldNotes.length ? ` Code adjusted places: ${worldNotes.join("; ")}.` : ""} ${unbuilt.length ? `Next: build_world once — it builds and links ${unbuilt.length} place(s): ${unbuilt.map((pl) => `«${pl.name}»(${pl.kind})`).join(", ")}. Then build_blueprint_path once (do not write step events one by one with upsert_event).` : "All places are built. Next: build_blueprint_path once."}${assembled.length ? ` Title defaults set from the blueprint: ${assembled.join(" · ")}.` : ""}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
+        return text({ ok: true, summary: `Blueprint saved (${parsed.blueprint.steps.length} steps · world ${world.name} · ${parsed.blueprint.places?.length ?? 0} places).${worldNotes.length ? ` Code adjusted places: ${worldNotes.join("; ")}.` : ""} ${unbuilt.length ? `Next: build_places once — it builds and links ${unbuilt.length} place(s): ${unbuilt.map((pl) => `«${pl.name}»(${pl.kind})`).join(", ")}. Then build_blueprint_path once (do not write step events one by one with upsert_event).` : "All places are built. Next: build_blueprint_path once."}${assembled.length ? ` Title defaults set from the blueprint: ${assembled.join(" · ")}.` : ""}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
       }
       return text({ ok: true, summary: `청사진을 걸었다(${parsed.blueprint.steps.length}단계). 장소를 make_place 로 지은 뒤 build_blueprint_path 한 번으로 단계별 이벤트·조건·엔딩 호출을 짓는다(이벤트를 upsert_event 로 하나씩 쓰지 않는다).${assembled.length ? ` 청사진에 맞춰 타이틀 기본값을 바꿨다: ${assembled.join(" · ")}.` : ""}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
     },
@@ -928,14 +928,14 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     return text({ ok, summary, mapIds, links: notes.slice(0, 16) });
   };
   const buildWorld: PiToolShape = {
-    name: "build_world", label: "세계 짓기", concurrency: "exclusive",
+    name: "build_places", label: "세계 짓기", concurrency: "exclusive",
     description: "Build every place listed in the blueprint (write_blueprint places) with this game's world and link them (doors, roads) in one call — you only name places and pick kinds. Places that already stand are kept. add:[{name, kind, from?}] adds more places to the blueprint and builds them (kinds from the [World of this game] card).",
     parameters: { type: "object", properties: { add: { type: "array", description: "(optional) more places to add and build", items: { type: "object", properties: { name: { type: "string" }, kind: { type: "string", description: "place kind id from the [World of this game] card" }, from: { type: "string", description: "name of the place it is entered from" } }, required: ["name", "kind"] } } } },
     async execute(id, params) {
       const gate = await blueprintGate();
       if (gate) return text(gate);
       const add = Array.isArray((params as { add?: unknown })?.add) ? ((params as { add: unknown[] }).add.filter((x) => x && typeof x === "object") as { name?: unknown; kind?: unknown; from?: unknown }[]) : [];
-      return buildWorldPlaces(id, "build_world", params, add);
+      return buildWorldPlaces(id, "build_places", params, add);
     },
   };
 
@@ -951,7 +951,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       {
         const asked = (params as { spec?: Partial<PlaceSpec> })?.spec;
         if (isComposedWorld(worldOf(env.ctx.project)) && asked?.name && !parseWorldStyle(asked.style)) {
-          if (blueprintMapFor(env.ctx.project, asked.name) && !(env.ctx.project.gameBlueprint?.places ?? []).some((pl) => pl.name === asked.name)) return text({ ok: false, summary: `«${asked.name}» already stands and this world's maps are laid by composers in one pass — it is not rebuilt. Add another place with build_world{add:[{name, kind}]}.` });
+          if (blueprintMapFor(env.ctx.project, asked.name) && !(env.ctx.project.gameBlueprint?.places ?? []).some((pl) => pl.name === asked.name)) return text({ ok: false, summary: `«${asked.name}» already stands and this world's maps are laid by composers in one pass — it is not rebuilt. Add another place with build_places{add:[{name, kind}]}.` });
           const indoor = asked.type === "interior" || asked.type === "house";
           return buildWorldPlaces(id, "make_place", params, [{ name: asked.name, indoor, danger: asked.type === "dungeon" || asked.type === "cave" }]);
         }

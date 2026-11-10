@@ -158,7 +158,7 @@ export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolSh
   const task = String(env.request.task ?? "");
   const lazyOn = wantsGameTools(task) && !musicOnly(task);
   // 지은 맵에 로직만 넣는 요청(prompt.ts leanPromptFor)이면 장소 짓기 동사도 필요할 때 싣는다 — 지시문의 장소 카드와 함께 빠진다.
-  // 구성기 세계의 게임(world.ts)도 같다 — 장소는 build_world 가 짓는다. 버들항 전용 숲길 도구는 그 세계에 싣지 않는다(다른 칩셋 맵이 섞인다).
+  // 구성기 세계의 게임(world.ts)도 같다 — 장소는 build_places 가 짓는다. 버들항 전용 숲길 도구는 그 세계에 싣지 않는다(다른 칩셋 맵이 섞인다).
   const composedWorld = composedWorldFor(env.ctx.project, env.request.projectKey ? String(env.request.projectKey) : undefined, task);
   if (composedWorld) tools = tools.filter((t) => !BEODEUL_ONLY_TOOLS.has(t.name));
   const placeLazy = leanPromptFor(env.ctx.project, task) || composedWorld;

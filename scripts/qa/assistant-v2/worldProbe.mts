@@ -1,4 +1,4 @@
-// 조수 v2 게임 세계 증명(모델 없음): 세계마다 청사진(장소 목록) → build_world → build_blueprint_path 를 실제 동사로 돌려
+// 조수 v2 게임 세계 증명(모델 없음): 세계마다 청사진(장소 목록) → build_places → build_blueprint_path 를 실제 동사로 돌려
 // 지어진 맵 수·세는 맵 수·시작에서 걸어 닿는지·청사진 막힘을 표로 내고 맵 PNG 를 남긴다. 낱말 없는 요청의 세계 고르기 분포도 본다.
 //   bun scripts/qa/assistant-v2/worldProbe.mts <outDir> [worldId...]
 import fs from "node:fs";
@@ -77,7 +77,7 @@ async function probe(world: WorldSetting): Promise<void> {
     { id: "s5", lines: ["여기부터는 못 지나간다."], winLines: ["…강하군. 지나가라."] },
   ];
   const bp = await call("write_blueprint", { title: `${world.ko} 시험`, genre: "모험", playerGoal: "단서를 따라 마지막 장소까지 가자.", places, steps, ending: { name: "끝", how: "마지막 단서를 찾았다.", feeling: "안도" } });
-  const built = await call("build_world", {});
+  const built = await call("build_places", {});
   const bounced = await call("build_blueprint_path", {});
   const pathRes = await call("build_blueprint_path", { steps: stepText });
   const p = ctx.project;
@@ -86,10 +86,10 @@ async function probe(world: WorldSetting): Promise<void> {
   const walk = walkGame(p, worldMaps.map((m) => m.id));
   const blockers = walkBlueprint(p).blockers;
   const tilesets = [...new Set(Object.values(p.maps).map((m) => m.tilesetId))];
-  console.log(`\n== ${world.id} card=${hasCard ? "yes" : "NO"} prompt=${prompt.length}ch blueprint=${bp.ok} build_world=${built.ok} path=${pathRes.ok}`);
+  console.log(`\n== ${world.id} card=${hasCard ? "yes" : "NO"} prompt=${prompt.length}ch blueprint=${bp.ok} build_places=${built.ok} path=${pathRes.ok}`);
   console.log(`   maps ${worldMaps.length}/${places.length} · counted ${counted.counted.length} · reached ${walk.reached.length}/${worldMaps.length} · noWayBack ${walk.noWayBack.length} · tilesets ${tilesets.join(",")} · start «${p.maps[p.startMapId]?.name}»`);
   if (!bp.ok) console.log(`   blueprint: ${String(bp.summary).slice(0, 400)}`);
-  if (!built.ok) console.log(`   build_world: ${String(built.summary).slice(0, 700)}`);
+  if (!built.ok) console.log(`   build_places: ${String(built.summary).slice(0, 700)}`);
   for (const line of (built.links as string[] | undefined) ?? []) console.log(`   · ${line.slice(0, 220)}`);
   console.log(`   path bounce(no lines)=${bounced.ok === false ? "yes" : "NO"} · foes ${worldMaps.reduce((n, m) => n + m.events.filter((e) => /_wfoe\d+$/u.test(e.id)).length, 0)} · chests ${worldMaps.reduce((n, m) => n + m.events.filter((e) => e.id.endsWith("_wchest")).length, 0)}`);
   if (!pathRes.ok) console.log(`   path: ${String(pathRes.summary).slice(0, 400)}`);

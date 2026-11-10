@@ -13,11 +13,13 @@ import { parseAdvisorReply } from "@/ai/v2/advisor";
 import { builderFor } from "@/ai/v2/builders";
 import { WORLDS, fitsAnyWorld, parseWorldStyle, pickWorld, pickWorldDoor, repairWorldPlaces, worldById, worldCard, worldKind, worldPlaceProblems, worldPlaceSpec } from "@/ai/v2/world";
 import { worldForRequest } from "@/ai/v2/worldRequest";
+import { exposeV2Tools } from "@/ai/v2/toolExposure";
+import { isRegistryTool } from "@/ai/v2/loop/argGuard";
 import type { PiAssistantV2Env } from "@/ai/v2/env";
 import type { ToolContext } from "@/editor/tools/types";
 
 // 2026-11-10 오너 「자꾸 '비슷한' 맵을 만들어내는 조수도 문제」: 게임 하나를 만드는 요청이 요청과 상관없이 버들항 마을 + 동굴 + 숲길 4장이었다.
-// 게임마다 세계(칩셋 한 벌)를 고르고, 장소를 그 세계의 서로 다른 종류로 build_world 가 짓는다(src/ai/v2/world.ts).
+// 게임마다 세계(칩셋 한 벌)를 고르고, 장소를 그 세계의 서로 다른 종류로 build_places 가 짓는다(src/ai/v2/world.ts).
 // 에이전트 세션 규칙으로 작성 시점에는 실행하지 않았다(CI 에서 돈다). 같은 흐름의 실측은 scripts/qa/assistant-v2/worldProbe.mts.
 
 const key = (n: number) => `["project","p${n}"]`;
@@ -107,7 +109,7 @@ describe("세계 표", () => {
   });
 
   it("카드는 종류를 다 적는다", () => {
-    for (const world of WORLDS) { const card = worldCard(world); for (const kind of world.kinds) expect(card).toContain(kind.id); expect(card).toContain("build_world"); }
+    for (const world of WORLDS) { const card = worldCard(world); for (const kind of world.kinds) expect(card).toContain(kind.id); expect(card).toContain("build_places"); }
   });
 });
 
@@ -145,7 +147,7 @@ describe("청사진 장소 검사", () => {
   });
 });
 
-describe("build_world — 한 세계의 장소를 짓고 잇는다", () => {
+describe("build_places — 한 세계의 장소를 짓고 잇는다", () => {
   function harness(task: string, projectKey: string) {
     const project = createBlankProject();
     const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
@@ -160,11 +162,20 @@ describe("build_world — 한 세계의 장소를 짓고 잇는다", () => {
       const res = await tools.find((t) => t.name === name)!.execute(`c-${name}`, args);
       return JSON.parse((res.content as { type: string; text?: string }[]).find((c) => c.type === "text")!.text!) as { ok?: boolean; summary?: string };
     };
-    return { ctx, tools, call };
+    return { ctx, env, tools, call };
   }
   const task = "북방 설원에서 벌어지는 게임 하나 만들어 줘.";
   const places = [{ name: "눈마을", kind: "village" }, { name: "겨울 장터", kind: "market" }, { name: "얼어붙은 호수", kind: "lake" }, { name: "얼음 절벽", kind: "ice-cliff" }, { name: "촌장 회관", kind: "longhall" }, { name: "얼음 동굴", kind: "ice-cave" }];
   const blueprint = { title: "설원 시험", genre: "모험", playerGoal: "단서를 따라 얼음 동굴까지 가자.", places, steps: mixed(["눈마을", "촌장 회관", "겨울 장터", "얼어붙은 호수", "얼음 절벽", "얼음 동굴"]), ending: { name: "끝", how: "끝났다.", feeling: "안도" } };
+
+  it("세계 짓기 동사는 처음부터 실린다 — 레지스트리 도구와 이름이 겹치지 않는다", () => {
+    // 2026-11-10 Terra 네 판: 동사 이름이 v1 월드 그래프 도구(build_world)와 같아 «필요할 때 싣는 도구» 로 밀렸고, 모델이 load_tools 로 찾아 실은 뒤에야 불렀다.
+    const { env, tools } = harness(task, "world-up-front");
+    const exposure = exposeV2Tools(env, tools);
+    expect(exposure.tools.map((t) => t.name)).toContain("build_places");
+    expect(exposure.lazy.has("build_places")).toBe(false);
+    expect(isRegistryTool("build_places")).toBe(false);
+  });
 
   it("세계 카드가 지시문에 있고 장소 설계 카드는 없다", () => {
     const project = createBlankProject();
@@ -188,11 +199,11 @@ describe("build_world — 한 세계의 장소를 짓고 잇는다", () => {
   // 세계 한 벌을 짓는 시험은 구성기 여섯 번 + 잇기라 느리다(부하가 있는 기계에서 25초 안팎) — 한 번 지어 여러 가지를 본다.
   const SLOW = 240_000;
 
-  it("build_world 한 번으로 모든 장소가 서고, 한 칩셋이고, 시작에서 왕복으로 닿고, 다 세고, 위험한 곳에 적과 상자가 선다", async () => {
+  it("build_places 한 번으로 모든 장소가 서고, 한 칩셋이고, 시작에서 왕복으로 닿고, 다 세고, 위험한 곳에 적과 상자가 선다", async () => {
     const { ctx, tools, call } = harness(task, key(1));
-    expect(tools.some((t) => t.name === "build_world")).toBe(true);
+    expect(tools.some((t) => t.name === "build_places")).toBe(true);
     expect((await call("write_blueprint", blueprint)).ok).toBe(true);
-    const built = await call("build_world", {});
+    const built = await call("build_places", {});
     expect(built.ok).toBe(true);
     const project = ctx.project;
     const maps = places.map((p) => Object.values(project.maps).find((m) => m.name === p.name));
@@ -213,7 +224,7 @@ describe("build_world — 한 세계의 장소를 짓고 잇는다", () => {
     const total = () => Object.values(ctx.project.maps).reduce((n, m) => n + stocked(m).foes + stocked(m).chest, 0);
     const before = total();
     // 다시 불러도 다시 짓지 않고 더 세우지 않는다. add 는 장소를 더한다(모르는 종류는 남는 종류로 — 이름이 실내면 실내 종류).
-    const again = await call("build_world", { add: [{ name: "낚시 오두막", kind: "hut" }] });
+    const again = await call("build_places", { add: [{ name: "낚시 오두막", kind: "hut" }] });
     expect(again.ok).toBe(true);
     expect(Object.keys(ctx.project.maps)).toHaveLength(places.length + 1);
     expect(ctx.project.gameBlueprint?.places).toHaveLength(places.length + 1);

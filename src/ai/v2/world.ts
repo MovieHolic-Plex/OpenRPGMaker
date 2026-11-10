@@ -384,7 +384,7 @@ export function worldCard(world: WorldSetting): string {
     ...(indoor.length ? [`Indoor kinds: ${indoor.map(line).join(" · ")}.`] : []),
     "(★ = fits fights and a boss — code puts visible enemies and a treasure chest in every ★ place; put the battle steps there.)",
     `- In write_blueprint list places:[{name, kind, from?}] — ${Math.min(MIN_WORLD_PLACES, world.kinds.length * MAX_SAME_KIND)} to 8 places, at least ${minDistinct} different kinds, no kind more than ${MAX_SAME_KIND} times. The first place is where the game starts; each later place is entered from «from» (default: the place listed before it); an indoor place hangs off a door of its «from» place. Spread the steps over at least ${MIN_STEP_PLACES} places.`,
-    `- Then call build_world once: code builds every listed place and links the doors and roads between them${world.composer ? " (no make_place, no layouts to design, no author_forest_route)" : " (to design a village, dungeon or interior yourself, call make_place with the same name first — build_world builds whatever is still missing)"}. To add a place later: build_world{add:[{name, kind, from}]}.`,
-    "- After build_world: build_blueprint_path with steps:[{id, lines…}] (the words of every talk, choice and battle step), then more people and events per place (add_people, add_event…).",
+    `- Then call build_places once: code builds every listed place and links the doors and roads between them${world.composer ? " (no make_place, no layouts to design, no author_forest_route)" : " (to design a village, dungeon or interior yourself, call make_place with the same name first — build_places builds whatever is still missing)"}. To add a place later: build_places{add:[{name, kind, from}]}.`,
+    "- After build_places: build_blueprint_path with steps:[{id, lines…}] (the words of every talk, choice and battle step), then more people and events per place (add_people, add_event…).",
   ].join("\n");
 }

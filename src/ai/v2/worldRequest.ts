@@ -9,7 +9,7 @@ import { pickWorld, worldOf, type WorldSetting } from "./world";
 export function worldForRequest(project: Project, projectKey: string | undefined, task: string | undefined): WorldSetting | undefined {
   if (project.gameBlueprint) return worldOf(project);
   const text = String(task ?? "");
-  // 청사진 설계자(OPRN_V2_BLUEPRINT_DESIGNER)가 쓰는 청사진에는 장소 목록·세계가 없다 — 세계 카드와 build_world 를 내놓으면 지을 것이 없는 반쪽이 된다.
+  // 청사진 설계자(OPRN_V2_BLUEPRINT_DESIGNER)가 쓰는 청사진에는 장소 목록·세계가 없다 — 세계 카드와 build_places 를 내놓으면 지을 것이 없는 반쪽이 된다.
   if (!wantsWholeGame(text) || oneProjectGame(project, text) || blueprintDesignerFromEnv()) return undefined;
   return pickWorld(project, projectKey, withoutIntentNote(text));
 }

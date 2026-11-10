@@ -624,7 +624,7 @@ export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
     const spare = world.kinds.filter((k) => usedKinds.filter((u) => u === k.id).length < MAX_SAME_KIND).sort((x, y) => usedKinds.filter((u) => u === x.id).length - usedKinds.filter((u) => u === y.id).length).slice(0, 5).map((k) => k.id);
     return [{
       id: "maps-min",
-      message: `Counted maps ${counted.length}/${need} — ${missing} more. Add places of this world with build_world{add:[{name, kind, from}]} (kinds not used up yet: ${spare.join(" · ")}), then give each a person or an examine event. A map counts when it is reached by doors from the start, has ${MIN_MAP_CELLS}+ cells and its own layout.${why ? ` Not counted: ${why}.` : ""}${linkCall}`,
+      message: `Counted maps ${counted.length}/${need} — ${missing} more. Add places of this world with build_places{add:[{name, kind, from}]} (kinds not used up yet: ${spare.join(" · ")}), then give each a person or an examine event. A map counts when it is reached by doors from the start, has ${MIN_MAP_CELLS}+ cells and its own layout.${why ? ` Not counted: ${why}.` : ""}${linkCall}`,
       evidence: `counted=${counted.length} need=${need} uncounted=${uncounted.length}`,
     }];
   }
