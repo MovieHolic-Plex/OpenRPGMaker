@@ -25,6 +25,12 @@ export type LightingMaskContext = {
    * 화면 전체가 베이지·회색 판처럼 보였다(2026-10-28). 생략하면 화면 전체(예전과 같다).
    */
   readonly mapBounds?: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
+  /**
+   * 맵 밖 여백에도 그림이 그려지는 맵(map.background.showInEmptyCells — 하늘탑의 구름 등)이면 어둠 막·비네트를 화면 전체에 칠한다.
+   * 맵 사각으로만 칠하면 여백의 하늘만 밝게 남아 맵 경계에 세로 이음새가 생겼다(폴른 스타 하늘탑 3층, 2026-11-10 fs-vqa-today).
+   * 빛 색 얹기는 그대로 맵 사각 안이다(벽 너머 빛 쐐기 방지).
+   */
+  readonly darkMargin?: boolean;
 };
 
 export type LightGradientParam = {
@@ -52,6 +58,8 @@ export type LightingMaskParams = {
   readonly height: number;
   /** 어둠 막을 칠할 화면 사각(캔버스 px). 없으면 화면 전체. */
   readonly clip?: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
+  /** true 면 어둠 막·비네트는 clip 없이 화면 전체, 빛 색만 clip 안(LightingMaskContext.darkMargin). */
+  readonly darkMargin?: boolean;
   readonly gradients: readonly LightGradientParam[];
 };
 
@@ -78,6 +86,7 @@ export function lightingGradientParams(
     width,
     height,
     ...(context.mapBounds ? { clip: mapClip(context, width, height) } : {}),
+    ...(context.darkMargin ? { darkMargin: true } : {}),
     // 화면과 겹치지 않는 광원은 마스크에 아무 픽셀도 바꾸지 않는다. 서명·그리기에서 빼야 화면 밖
     // 깜빡이는 광원 하나 때문에 16ms 마다 캔버스 전체를 다시 그리고 텍스처를 올리지 않는다.
     gradients: sources
@@ -107,6 +116,7 @@ export function lightingMaskSignature(params: LightingMaskParams): string {
   // 매 프레임 불린다. 중간 객체·JSON 없이 같은 정보를 이어 붙인다(값·정밀도는 예전과 같다).
   let signature = `${round(params.ambient)}|${params.color}|${params.blend}|${round(params.vignette)}|${params.width}x${params.height}`;
   if (params.clip) signature += `|c${params.clip.x},${params.clip.y},${params.clip.width},${params.clip.height}`;
+  if (params.darkMargin) signature += "|m";
   for (const entry of params.gradients) {
     signature += `|${entry.id}:${round(entry.centerX)},${round(entry.centerY)},${round(entry.radiusPx)},${round(entry.intensity)},${entry.color ?? ""},${round(entry.flicker)}${entry.arc ? `,${round(entry.arc[0])}~${round(entry.arc[1])}` : ""}${entry.edge ? ",h" : ""}`;
   }
@@ -127,10 +137,11 @@ export function drawLightingMask(canvas: HTMLCanvasElement, params: LightingMask
   context.globalAlpha = params.ambient;
   context.fillStyle = params.color;
   const clip = params.clip;
-  if (clip) context.fillRect(clip.x, clip.y, clip.width, clip.height);
+  const darkClip = params.darkMargin ? undefined : clip;
+  if (darkClip) context.fillRect(darkClip.x, darkClip.y, darkClip.width, darkClip.height);
   else context.fillRect(0, 0, params.width, params.height);
   context.restore();
-  if (params.vignette > 0) drawVignette(context, params, clip);
+  if (params.vignette > 0) drawVignette(context, params, darkClip);
 
   // 현재 범위는 원형 반경 기반 마스크만 지원한다. 벽/시야선 차폐는 Phase 6a 범위 밖이다.
   context.save();
