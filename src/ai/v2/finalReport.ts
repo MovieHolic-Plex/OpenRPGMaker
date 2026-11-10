@@ -41,8 +41,9 @@ export function assembledReport(project: Project, extra: readonly string[] = [])
 }
 
 // ── 할 일 고리의 최종 보고(2026-10-30 omo 고리) ──────────────────────────────────────────────
-// 「완료」는 열린 항목 0 · 막힘 0 · 기계 확인이 달린 항목 전부 ✓ 일 때만. 아니면 항목별 ✓/✗/막힘 표를 기계 결과로 만들고,
+// 「완료」는 열린 항목 0 · 완료를 막는 막힘 0(TodoStore.holds) · 기계 확인이 달린 항목 전부 ✓ 일 때만. 아니면 항목별 ✓/✗/막힘 표를 기계 결과로 만들고,
 // 조수 보고가 «만들었다»고 쓴 항목이 ✗ 면 그 줄을 기계 결과로 고친다(claim receipt). 조수 보고는 참고로 뒤에 둔다.
+// 화면 검수의 다듬기 항목과 장부(모델 밖·건네지 않은 결함)는 보고에 그대로 적되 완료를 막지 않는다.
 
 const SUCCESS_WORD = /만들|지었|짓고|지어|추가|넣었|넣어|세웠|두었|놓았|완료|마쳤|됐|되었|했습니다|했다|이었|연결|붙였|걸었|열린다|열리|싸운|싸우|말을 ?(겁|건|걸)|나온다|나옵니다|등장|바뀐다|바뀝니다|받는다|받습니다/u;
 const FAIL_WORD = /못\s|못했|안\s?됐|실패|하지 않|않았|없었|거부|거절|막혔|미완|남은/u;
@@ -74,6 +75,8 @@ interface TodoReportInput {
   readonly autoNotes?: readonly string[];
   readonly loopStop?: string;
   readonly vqa?: string;
+  /** 화면 검수 장부 — 할 일 표에 없는 남은 결함(turn/vqaItems.ts vqaLedgerLines). 완료를 막지 않는다. */
+  readonly vqaLedger?: readonly string[];
   /** 시작 저장본에 이미 있던 결함(관문이 짚었지만 이번 요청의 완료를 막지 않는다). */
   readonly preexisting?: readonly string[];
 }
@@ -96,37 +99,42 @@ export function todoReport(input: TodoReportInput): { text: string; complete: bo
   const { store, draft } = input;
   const rows: string[] = [];
   const receipts: string[] = [];
-  let failing = 0;
+  let failing = 0, held = 0, soft = 0;
   for (const item of store.items) {
     const m = store.meta.get(item.id);
     const checked = item.check && item.check.kind !== "none";
     let mark: string, why: string;
     if (item.status === "completed") {
       if (checked && m?.lastCheck && !m.lastCheck.pass) { mark = "✗"; why = m.lastCheck.detail; failing += 1; }
-      else { mark = "✓"; why = checked ? (m?.lastCheck?.detail ?? checkLabel(item.check)) : m?.closedBy === "auto" ? "함수 검사에서 사라짐" : "조수 표시(기계 확인 없음)"; }
-    } else if (item.status === "blocked") { mark = "막힘"; why = item.blockedReason ?? ""; }
+      else { mark = "✓"; why = checked ? (m?.lastCheck?.detail ?? checkLabel(item.check)) : m?.closedBy === "auto" ? (m.lastCheck?.detail ?? "함수 검사에서 사라짐") : "조수 표시(기계 확인 없음)"; }
+    } else if (item.status === "blocked") {
+      why = item.blockedReason ?? "";
+      if (store.holds(item)) { mark = "막힘"; held += 1; }
+      else { mark = item.severity === "polish" ? "다듬기 남음" : "건네지 못함"; soft += 1; }
+    }
     else if (item.status === "dropped") { mark = "뺌"; why = item.blockedReason ?? ""; }
     else { mark = "✗"; why = m?.lastCheck && !m.lastCheck.pass ? m.lastCheck.detail : m?.lastFail ?? "끝내지 않음"; failing += 1; }
     rows.push(`| ${item.id} ${cell(item.content)}${item.source === "model" ? "" : ` (${item.source === "gate" ? "함수 검사" : item.source === "critic" ? "비평" : "화면 검수"})`} | ${mark} | ${cell(why)} |`);
-    if (mark !== "✓" && mark !== "뺌") {
+    if (mark === "✗" || mark === "막힘") {
       const claim = claimedSentence(draft, item);
       if (claim) receipts.push(`- 보고에 «${claim}» 라고 썼지만 기계 결과는 ${mark}: ${cell(why)}`);
     }
   }
   const c = store.counts();
-  const complete = store.items.length > 0 && c.open === 0 && c.blocked === 0 && failing === 0 && !(input.leftovers?.length);
+  const complete = store.items.length > 0 && c.open === 0 && held === 0 && failing === 0 && !(input.leftovers?.length);
   const table = rows.length ? ["| 할 일 | 결과 | 근거(기계) |", "|---|---|---|", ...rows] : [];
   const tail = [
     ...(input.leftovers?.length ? ["남은 문제(함수 검사 기록 — 고치기 상한):", ...input.leftovers.map((l) => `- ${l.slice(0, 220)}`)] : []),
     ...(input.missing?.length ? [`그림·부품이 없어 못 한 것: ${input.missing.join(" / ").slice(0, 400)}`] : []),
     ...(input.vqa ? [input.vqa] : []),
+    ...(input.vqaLedger?.length ? ["화면 검수 장부(할 일로 올리지 않은 남은 결함 — 완료를 막지 않음):", ...input.vqaLedger.map((l) => `- ${l.slice(0, 260)}`)] : []),
     ...(input.preexisting?.length ? ["기존 결함(시작 저장본에 이미 있던 것·요청 밖 — 이번 요청의 완료를 막지 않음):", ...input.preexisting.map((l) => `- ${l.slice(0, 220)}`)] : []),
     ...(autoLines(input.autoNotes).length ? ["자동으로 지음(함수):", ...autoLines(input.autoNotes).map((n) => `- ${n.slice(0, 300)}`)] : []),
   ];
   if (complete) {
-    return { complete, receipts, text: [draft.trim(), "", `[할 일 ${c.done}/${c.total} ✓ — 기계 확인]`, ...table, ...(tail.length ? ["", ...tail] : [])].join("\n") };
+    return { complete, receipts, text: [draft.trim(), "", `[할 일 ${c.done}/${c.total} ✓${soft ? ` · 다듬기 남음 ${soft}(완료를 막지 않음)` : ""} — 기계 확인]`, ...table, ...(tail.length ? ["", ...tail] : [])].join("\n") };
   }
-  const head = `최종 보고(기계 확인 — 아직 완료 아님: 열림 ${c.open} · 막힘 ${c.blocked} · ✗ ${failing - c.open}${input.loopStop ? ` · 고리 멈춤: ${input.loopStop}` : ""}):`;
+  const head = `최종 보고(기계 확인 — 아직 완료 아님: 열림 ${c.open} · 막힘 ${held} · ✗ ${failing - c.open}${soft ? ` · 다듬기 남음 ${soft}` : ""}${input.loopStop ? ` · 고리 멈춤: ${input.loopStop}` : ""}):`;
   return { complete, receipts, text: [head, ...table,
     ...(receipts.length ? ["", "보고와 다른 것(기계 결과로 고침):", ...receipts] : []),
     ...(tail.length ? ["", ...tail] : []),
