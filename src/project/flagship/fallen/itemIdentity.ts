@@ -60,7 +60,7 @@ export const FS_EQUIPMENT_TRAITS: readonly EquipmentTrait[] = [
     patch: (r) => { r.statBonuses = { ...r.statBonuses, attack: 15 }; r.damageDealtPercent = -30; r.effectFlags = { ...r.effectFlags, attackAll: true }; r.iconResourceId = r.imageResourceId = "cc0-jetrel-gen-halberd-guard"; },
   },
   {
-    id: "equip_fs_spear_star", traitLine: "평타: 맞히면 가끔 관통상을 낸다(마법이 세 배로 들어간다).",
+    id: "equip_fs_spear_star", traitLine: "평타: 맞히면 가끔 관통상을 낸다.",
     patch: (r) => { r.stateInflictIds = ["state_fs_pierced"]; r.stateInflictionChance = 20; r.iconResourceId = r.imageResourceId = "cc0-jetrel-gen-spear-iron"; },
   },
   {
@@ -109,7 +109,7 @@ export const FS_ITEM_ICONS: Readonly<Record<string, string>> = {
 interface ThrownTrait { readonly itemId: string; readonly stateId: string; readonly chance: number; readonly line: string }
 
 export const FS_THROWN_TRAITS: readonly ThrownTrait[] = [
-  { itemId: "item_fs_water_flask", stateId: "state_wet", chance: 100, line: "맞은 적은 젖는다(번개가 두 배, 불은 반)." },
+  { itemId: "item_fs_water_flask", stateId: "state_wet", chance: 100, line: "맞은 적은 젖는다." },
   { itemId: "item_gen2_frost_vial", stateId: "state_agility_down", chance: 50, line: "맞으면 가끔 둔해진다." },
   { itemId: "item_fs_fire_flask", stateId: "fs_state_burn", chance: 60, line: "맞으면 가끔 불이 붙는다." },
 ];
