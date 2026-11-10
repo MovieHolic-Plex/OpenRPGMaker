@@ -1259,6 +1259,19 @@
     "each mirror event uses a sprite that depicts a mirror (glass pane in a frame), not a button, rock or unrelated object chip; dark and lit states are visibly different",
     "the mirror sprite shows the direction it currently faces (one page per facing value, fixed graphic), so the player can plan the beam path without inspecting each mirror"
    ]
+  },
+  {
+   "id": "dark-map-arrival-is-lit",
+   "label": "어두운 맵에 내려 준 자리에는 도착한 사람이 보이는 작은 빛이 있다",
+   "port": 19572,
+   "lessons": [
+    "dark-arrival-needs-light"
+   ],
+   "prompt": "밤의 천문대 서고를 어둡게(조명 0.55) 만들고, 지하 승강기를 타면 서고 구석 승강 우리에 내리게 해 줘.",
+   "requirements": [
+    "the arrival tile of every transfer into the dark map has a light source within 2 tiles (or the map ambient is below the player presence light threshold), so the party and the lift cage are visible on arrival",
+    "the night mood is kept: map ambient stays dark (>= 0.5); only a small local light (radius <= 3) is added at the arrival"
+   ]
   }
  ]
 }

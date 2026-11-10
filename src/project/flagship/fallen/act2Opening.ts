@@ -987,6 +987,9 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     sources: [
       { id: "slit", at: { x: 15, y: 4 }, radius: 5, intensity: 0.6, color: "#9fb8ff" },
       { id: "lamp", at: { x: OBS.hanel.x, y: OBS.hanel.y - 1 }, radius: 3, intensity: 0.9, color: "#ffc070", flicker: true },
+      // 승강 우리(도착 칸) 작은 청백 점광 — ambient 0.55 는 플레이어 존재 빛(minAmbient 0.6) 아래라 내리자마자
+      // 파티와 우리가 어둠에 묻혔다(fs-vqa-fix-all). 밤 분위기는 그대로 두고 내린 자리만 보인다.
+      { id: "lift", at: { x: OBS.lift.x, y: OBS.lift.y - 1 }, radius: 2.5, intensity: 0.8, color: "#cfe0ff" },
     ],
   });
 
