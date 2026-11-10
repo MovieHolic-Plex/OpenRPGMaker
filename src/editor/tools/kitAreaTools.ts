@@ -7,6 +7,7 @@ import {
   FurnishError, REGIONS, STYLES, findEmptyGround, furnishOutdoorArea, measureBareGround, regionRect,
   type Rect, type Region, type Style,
 } from "@/project/kitAreaFurnish";
+import { OPEN_GROUND, openGroundProps } from "@/project/openGround";
 import type { Project } from "@/project/types";
 import { RECT_SCHEMA } from "./schemaShapes";
 import { ToolError, type ToolDefinition } from "./types";
@@ -52,9 +53,13 @@ export const KIT_AREA_TOOLS: readonly ToolDefinition[] = [{
     const areas = findEmptyGround(project, map, Number.isInteger(args.limit) ? Number(args.limit) : 4, 6, region === "all" ? undefined : zone);
     const bare = measureBareGround(project, map, zone);
     const head = `${map.name}${region === "all" ? "" : ` ${region} (${zone.x},${zone.y}) ${zone.w}×${zone.h}`} 맨땅 ${Math.round(bare.bareShare * 100)}%`;
+    // 이름표를 모르는 칩셋(OPEN_GROUND)이면 그 칩셋의 야외 소품 이름을 같이 준다 — furnish_outdoor_area 의 props 로 고를 수 있게.
+    const tileset = project.tilesets[map.tilesetId];
+    const props = tileset && areas.some(a => a.ground === OPEN_GROUND) ? openGroundProps(tileset) : undefined;
+    const propLine = props ? ` · props here — trees: ${props.trees.slice(0, 8).join(", ") || "-"} / small: ${props.smalls.slice(0, 8).join(", ") || "-"} / all: ${props.all.slice(0, 24).join(", ")}` : "";
     return {
-      summary: areas.length ? `${head} · 빈 터 ${areas.length}곳: ${areas.map(a => `(${a.x},${a.y}) ${a.w}×${a.h} ${a.ground}${a.suggest ? `→${a.suggest}` : ""}`).join(" · ")}` : `${head} · 꾸밀 만한 빈 터(2×2 이상)가 없습니다.`,
-      data: { mapId: map.id, region, regionRect: zone, bare, areas },
+      summary: areas.length ? `${head} · 빈 터 ${areas.length}곳: ${areas.map(a => `(${a.x},${a.y}) ${a.w}×${a.h} ${a.ground}${a.suggest ? `→${a.suggest}` : ""}`).join(" · ")}${propLine}` : `${head} · 꾸밀 만한 빈 터(2×2 이상)가 없습니다.`,
+      data: { mapId: map.id, region, regionRect: zone, bare, areas, ...(props ? { props: { trees: props.trees, smalls: props.smalls, all: props.all } } : {}) },
     };
   },
 }, {
@@ -62,7 +67,7 @@ export const KIT_AREA_TOOLS: readonly ToolDefinition[] = [{
   mode: "write",
   domains: ["map", "tile"],
   description:
-    "야외 맵의 휑한 빈 터·공터를 그 지역 재료로 「쓰임」별로 채운다(빈 곳 채워·허전해·휑해·꾸며 줘 요청). 몬스터 수집 시트(monster_*)처럼 구조 키트가 있는 시트용. " +
+    "야외 맵의 휑한 빈 터·공터를 그 지역 재료로 「쓰임」별로 채운다(빈 곳 채워·허전해·휑해·꾸며 줘 요청). 구조 키트가 있는 시트면 된다 — 몬스터 수집 시트는 지역 재료표로, 그 밖의 칩셋은 그 칩셋의 야외 소품(props 로 고를 수 있다, 기본은 나무·덤불·바위)으로 채운다. " +
     "region(사용자가 말한 쪽, 예 왼쪽 아래→bottom-left) 또는 area 하나만 주면 된다 — 코드가 그 안의 빈터를 큰 것부터 구획으로 떼어 구획마다 쓰임을 고른다: " +
     "맵 가장자리·숲 벽 곁은 나무 덩이, 건물 곁은 마당 쓰임(꽃밭·눈놀이 터·선인장 밭·어구 더미), 나머지는 바닥(눈밭·사막 모래·재 덮인 풀·풀밭·모래)에 맞는 다른 쓰임을 돌아가며. " +
     "구획마다 둘레 한 칸을 걷는 띠로 남기고, 모든 조각은 같은 바닥 위에만 선다. 문·출구 앞과 이벤트 둘레·주민 산책길은 비우고, 닿던 이벤트가 막히면 그 조각은 되돌린다. " +
@@ -77,6 +82,7 @@ export const KIT_AREA_TOOLS: readonly ToolDefinition[] = [{
       area: { ...RECT_SCHEMA, description: "{x,y,w,h} 꾸밀 터(region 대신 정확한 사각형을 줄 때)." },
       style: { type: "string", enum: [...STYLES], description: "auto|grove|garden|plaza|pond (기본 auto)" },
       seed: { type: "integer", description: "다른 배치를 원하면 바꾼다" },
+      props: { type: "array", items: { type: "string" }, description: "Names of this chipset's outdoor props to use (find_empty_ground lists them). Omit = the chipset's trees, bushes and rocks. Only for chipsets without a built-in ground palette." },
     },
     required: ["mapId"],
     additionalProperties: false,
@@ -97,7 +103,8 @@ export const KIT_AREA_TOOLS: readonly ToolDefinition[] = [{
     const area = given ?? regionRect(map, region);
     const style = (STYLES as readonly string[]).includes(String(args.style)) ? args.style as Style : "auto";
     let result: ReturnType<typeof furnishOutdoorArea>;
-    try { result = furnishOutdoorArea(project, map, area, style, Number.isInteger(args.seed) ? Number(args.seed) : 1); }
+    const props = Array.isArray(args.props) ? args.props.filter((name): name is string => typeof name === "string" && !!name.trim()) : [];
+    try { result = furnishOutdoorArea(project, map, area, style, Number.isInteger(args.seed) ? Number(args.seed) : 1, props.length ? { props } : {}); }
     catch (error) { if (error instanceof FurnishError) throw new ToolError(error.message, { code: error.code, mapId: map.id }); throw error; }
     const uses = result.lots.map(l => `${l.label}(${l.x},${l.y})`).join(" · ");
     const parts = [style !== "auto" ? `${style}: 나무 ${result.trees} · 소품 ${result.smalls}${result.pathCells ? ` · 길 ${result.pathCells}칸(기존 길에 이음)` : ""}` : "", uses ? `쓰임 ${result.lots.length}곳: ${uses}` : ""].filter(Boolean).join(" / ");

@@ -3,7 +3,8 @@
 // v1 generate_missing_object 는 «그리지 않는다». 그림 요청(ObjectGenRequest)만 돌려주고, 실제 그림은 브라우저의
 // 공방 카드가 사용자 AI 계정으로 나중에 그린다(수 분, 후보 1~3장, 사용자가 고르거나 「알아서 고르기」). 그래서 이 빌더도
 // 성공을 꾸미지 않는다: «카드를 띄웠다 / 기물은 아직 안 놓였다» 를 summary 와 missingArt 에 그대로 적는다.
-import { findMap, resolveWhere, type Footprint } from "../people";
+import { resolveWhere, type Footprint } from "./where";
+import { findMap } from "./cells";
 import type { BuildRun, ContentBuildResult, ObjectSpec } from "../types";
 
 export const DRAW_OBJECT_CARD =

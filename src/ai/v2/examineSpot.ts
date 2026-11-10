@@ -12,7 +12,7 @@ import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap } from "@/project/types";
 import { eventBlocks, isDoorName, reachableCells, unreachableEvents } from "./eventReach";
 import { showExaminedThing } from "./examineArt";
-import { objectAt, tileLabel } from "./people";
+import { objectAt, tileLabel } from "./place/cells";
 import type { BuildRun } from "./types";
 
 type Cell = { x: number; y: number };

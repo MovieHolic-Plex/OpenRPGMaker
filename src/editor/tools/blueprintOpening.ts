@@ -38,6 +38,8 @@ function openingVisuals(project: Project): { ids: string[]; textOnly: boolean; o
  */
 export function blueprintOpeningReplaceable(project: Project): { replace: boolean; why: string } {
   const opening = project.system.opening;
+  // 모델이 지은 엔진 무대(author_opening_stage)가 오프닝이다 — 그림 장면이 없어도 맵 조각 장면을 다시 깔지 않는다.
+  if (opening?.stage && opening.enabled !== false) return { replace: false, why: "엔진 무대 오프닝(모델이 지은 것)" };
   if (!opening || !opening.scenes.length) return { replace: true, why: "오프닝이 없었다" };
   if (opening.enabled === false) return { replace: true, why: "오프닝이 꺼져 있었다" };
   const { ids, textOnly, ours } = openingVisuals(project);
