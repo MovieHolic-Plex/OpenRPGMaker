@@ -19,6 +19,7 @@ import { assembledReport, isProviderErrorReply, todoReport } from "../../src/ai/
 import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaShotPlan, vqaReviewerLabel, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, vqaLedgerLine, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
 import { closeVqaUnchanged, handCarriedBlockers, loadVqaBook, noteVqaRound, saveVqaBook, vqaLedgerLines, vqaUnofferedBlockers } from "../../src/ai/v2/turn/vqaItems.ts";
 import { carryOver, reviewKey, stampTargets } from "../../src/ai/v2/turn/carryOver.ts";
+import { loadPlaces, savePlaces } from "../../src/ai/v2/tools/placeMemory.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, scopeAdviceToRequest, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
@@ -108,6 +109,9 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   // 판정자 기억(화면 검수 장부)은 목록을 이어 받지 않는 턴에도 읽는다.
   const priorTodo = (request.project as { assistantTodo?: unknown }).assistantTodo;
   store.loadMemory(priorTodo);
+  // 앞 턴이 지은 장소의 설계 — 맵이 그대로일 때만 이어 받는다(다음 턴의 edit_place 가 그 설계에서 고친다).
+  const carriedPlaces = loadPlaces(store.memory.places, session, request.project as Project, store.baseline);
+  if (carriedPlaces.restored || carriedPlaces.stale) options.onEvent?.({ type: "execution_status", name: "v2.places.restore", ok: true, at: Date.now(), summary: `앞 턴의 장소 설계 ${carriedPlaces.restored}곳을 이어 받음${carriedPlaces.stale ? ` · ${carriedPlaces.stale}곳은 맵이 조수 밖에서 바뀌어 버림` : ""}`, data: carriedPlaces });
   if (CONTINUE_WORDS.test(request.task) && store.restore(priorTodo, carryOver(request.task, request.project as Project, store.baseline ?? { maps: new Map(), events: new Map(), items: new Map(), troops: new Map() }))) {
     const c = store.counts();
     options.onEvent?.({ type: "execution_status", name: "v2.todo.restore", ok: true, at: Date.now(), summary: `앞 실행의 할 일을 이어 받음 — ${c.open}개 열림 · ${c.blocked}개는 막힌 채(다시 다투지 않음)`, data: { list: store.view() } });
@@ -236,8 +240,21 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   // 할 일 상태를 프로젝트에 싣는다(새 뿌리 객체 — 요청 사본과 뿌리를 나눠 쓸 수 있어 제자리 수정하지 않는다). 다음 체크포인트·끝 저장에 같이 간다.
   // 막힌 항목의 대상 지문과 화면 검수 장부를 같이 싣는다 — 다음 턴이 같은 것을 처음부터 다시 다투지 않게(턴 사이 기억).
   const stamp = (env: PiAssistantV2Env) => {
-    if (!store.items.length) return;
-    try { stampTargets(store, indexProject(env.ctx.project)); } catch { /* 지문이 없으면 다음 턴에 «바뀌었다»로 열리지 않을 뿐이다 */ }
+    if (!store.items.length && !session.places.size && !session.pastPlaces.size) return;
+    let index; try { index = indexProject(env.ctx.project); } catch { index = undefined; /* 지문이 없으면 다음 턴에 «바뀌었다»로 열리지 않을 뿐이다 */ }
+    const places = index ? savePlaces(session, env.ctx.project, index) : undefined;
+    if (places) store.memory.places = places; else delete store.memory.places;
+    if (!store.items.length) {
+      // 할 일을 적지 않은 턴: 앞 턴의 목록은 그대로 두고 장소 설계 기억만 갈아 끼운다(그대로면 프로젝트를 건드리지 않는다).
+      const prior = (env.ctx.project as { assistantTodo?: ReturnType<typeof store.serialize> }).assistantTodo;
+      if (JSON.stringify((prior?.memory as { places?: unknown } | undefined)?.places ?? null) === JSON.stringify(places ?? null)) return;
+      const { memory: priorMemory, ...list } = prior ?? store.serialize(env.request.task);
+      const { places: _old, ...kept } = { ...(priorMemory ?? {}) } as Record<string, unknown>;
+      const memory = { ...kept, ...(places ? { places } : {}) };
+      env.ctx.project = { ...env.ctx.project, assistantTodo: { ...list, ...(Object.keys(memory).length ? { memory } : {}) } };
+      return;
+    }
+    if (index) stampTargets(store, index);
     // 검수하지 못한 판(problem)의 지문은 남기지 않는다 — 다음 턴이 «그대로»라며 건너뛰면 한 번도 검수되지 않는다.
     const reviewed = vqaRounds.length ? (vqaRounds.at(-1)!.problem ? undefined : vqaReviewedFingerprint) : carriedVqaFp;
     const memory = saveVqaBook(vqaBook, store, env.ctx.project, reviewed);
@@ -551,7 +568,8 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   // 최종 보고 — 할 일이 있으면 기계 표로(완료는 열림 0·막힘 0·확인 전부 ✓ 일 때만). 모델 글이 «했다»고 쓴 ✗ 항목은 기계 결과로 고친다.
   try {
     const env = liveEnv;
-    if (env && store.items.length) { refreshChecks(env, true); stamp(env); }
+    if (env && store.items.length) refreshChecks(env, true);
+    if (env) stamp(env);
     const left = session.unresolved().filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS || !store.items.length);
     const leftovers = left.flatMap((o) => o.problems.slice(0, 3).map((p) => `${o.name}(${o.mapId}): ${p.replace(/ — (dress_room|네가 설계한 방이다).*$/u, "").slice(0, 200)}`));
     try { if (env && buildsWholeGame(env.ctx.project, env.request.task)) { const { counted } = countMaps(env.ctx.project); if (counted.length < RECOMMENDED_MAPS) autoNotes.push(`세는 맵 ${counted.length}/${RECOMMENDED_MAPS}장(권장) — ${RECOMMENDED_MAPS - counted.length}장 부족(차단 아님)`); } } catch { /* 이 줄이 없어도 최종 보고는 나간다 */ }

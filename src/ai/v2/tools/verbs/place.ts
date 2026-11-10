@@ -18,7 +18,7 @@ import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
 import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
 import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs } from "../../place/builders/interior";
 import { interiorStampEdit, type StampEditState } from "../../place/builders/interiorEdit";
-import type { PlacePatch, PlaceSpec } from "../../types";
+import type { PlacePatch, PlaceRecord, PlaceSpec } from "../../types";
 import { blueprintMapFor } from "../../blueprintPath";
 import { isPlaceholderMap } from "../../blankStart";
 import { walkGame } from "../../makeGame";
@@ -31,6 +31,8 @@ import { dropModelSeed } from "../../place/modelSeed";
 import { V2_MAX_REPAIR_ROUNDS } from "../../turn/session";
 import { SIZE, ROOM_DESIGN_SCHEMA, ZONE_SCHEMA, CONNECTIONS_SCHEMA, HINTS_SCHEMA, LAYOUT_SCHEMA, LAYOUT_PATCH_SCHEMA, PLACE_SPEC_SCHEMA, POINT } from "../placeSchema";
 import { OPP_SIDE, LAYOUT_BOUNCES, repairCap, HAND_LAYOUT_ROOM_TAG, text, INTERIOR_PLACE, CLEAR_DUNGEON, renderMap, recordWrite, adoptInterior, applyPatch, withSetupDefaults, placeVariety } from "../support";
+import { PAST_DESIGN_NOTE, noDesignRefusal } from "../placeMemory";
+import { onePassRefusal } from "../../place/onePass";
 import type { VerbContext } from "../context";
 
 /** createV2Tools 에서 뗀 것 — buildWorldPlaces · buildWorld · makePlace · editPlace · reviewLayout · findPiecesVerb. (placeVerbs) */
@@ -303,7 +305,7 @@ export function placeVerbs(c: VerbContext) {
       // 모델이 mapId 를 patch 바깥에 두기도 한다(2026-10-23 실조수) — 둘 다 받는다.
       const { seed: _seed, ...rawPatch } = (raw.patch ?? {}) as PlacePatch;
       const patch0: PlacePatch = { ...rawPatch, mapId: raw.patch?.mapId ?? raw.mapId ?? env.ctx.currentMapId ?? "" };
-      const editKind = placeSpecKindOf(session.places.get(patch0.mapId)?.spec.type) ?? (env.ctx.project.maps[patch0.mapId]?.tilesetId === HAND_INTERIOR_TILESET_ID ? "interior" : undefined);
+      const editKind = placeSpecKindOf(session.placeOf(patch0.mapId)?.spec.type) ?? (env.ctx.project.maps[patch0.mapId]?.tilesetId === HAND_INTERIOR_TILESET_ID ? "interior" : undefined);
       const editSpecFirst = specGate("edit_place", editKind);
       if (editSpecFirst) return editSpecFirst;
       const patch1: PlacePatch = patch0.set?.hints && "seed" in patch0.set.hints ? { ...patch0, set: { ...patch0.set, hints: Object.fromEntries(Object.entries(patch0.set.hints).filter(([k]) => k !== "seed")) } } : patch0;
@@ -312,7 +314,9 @@ export function placeVerbs(c: VerbContext) {
       const shellDesign = !!patch1.set?.dungeonDesign && !(Array.isArray(patch1.set.dungeonDesign.rooms) && patch1.set.dungeonDesign.rooms.length >= 2);
       let patch: PlacePatch = shellDesign ? { ...patch1, set: (({ dungeonDesign: _d, ...rest }) => rest)(patch1.set!) } : patch1;
       const shellNote = shellDesign ? ["고침: patch.set.dungeonDesign 에 방이 둘 미만이라(빈 설계) 설계는 그대로 두고 나머지만 고쳤다 — 층 설계를 바꾸려면 rooms 를 둘 이상(입구·보스 포함) 보낸다."] : [];
-      let record = session.places.get(patch.mapId);
+      let record = session.placeOf(patch.mapId);
+      // 앞 턴의 설계에서 고친다(tools/placeMemory.ts) — 결과에 그 사실을 적는다.
+      const fromPast = !!record && !session.places.has(patch.mapId);
       // 칸 배치 고침: 지금 배치에 그대로 적용해 set.layout 으로 다시 짓는다(검증은 짓기가 한다). 빈 껍데기는 «고침 없음».
       if (patch.layoutPatch && !layoutPatchIsEmpty(patch.layoutPatch)) {
         const cur = record?.spec.layout;
@@ -326,7 +330,7 @@ export function placeVerbs(c: VerbContext) {
           if (head && head.type === "text") { try { const j = JSON.parse(head.text) as Record<string, unknown>; res.content[0] = { type: "text", text: JSON.stringify({ note: `layoutPatch applied to your rejected (not yet built) layout for "${pending.name}" and sent as make_place.`, ...j }) }; } catch { /* 글 그대로 */ } }
           return res;
         }
-        if (!record || !layoutGiven(cur)) return text({ ok: false, summary: `layoutPatch needs a place laid from spec.layout; ${patch.mapId} was not laid that way in this run. Send patch.set.layout with a full layout instead.` });
+        if (!record || !layoutGiven(cur)) return text({ ok: false, summary: `layoutPatch needs a place laid from spec.layout; ${patch.mapId} was not laid that way. Send patch.set.layout with a full layout instead.` });
         const ap = applyLayoutPatch(cur!, patch.layoutPatch);
         if (ap.errors.length) return text({ ok: false, summary: `Rejected: the layout patch for "${record.spec.name}" does not apply:\n- ${ap.errors.join("\n- ")}\nYou sent: ${JSON.stringify(patch.layoutPatch).slice(0, 400)}\nFixed call: edit_place again with layoutPatch entries that match the current layout (exact id and x,y of an entry), or replace the whole field.` });
         patch = { ...patch, set: { ...(patch.set ?? {}), layout: ap.layout } };
@@ -371,7 +375,7 @@ export function placeVerbs(c: VerbContext) {
         const spec = applyPatch({ type: "interior", name: patch.set?.name ?? existing.name ?? "실내", mapId: patch.mapId }, patch);
         return makePlace.execute(id, { spec });
       }
-      if (!record) return text({ ok: false, summary: `${patch.mapId} 는 v2 가 지은 기록이 없고 다시 지을 방 구성도 읽지 못했다. make_place(mapId=${patch.mapId}) 로 그 자리에 새로 짓거나 못 한다고 알린다.` });
+      if (!record) return text({ ok: false, summary: noDesignRefusal(session, patch.mapId) });
       if (record.rounds >= repairCap(record.spec)) return text({ ok: false, summary: `고치기 상한(${repairCap(record.spec)}바퀴)에 닿았다. 남은 문제를 사용자에게 보고한다.` });
       // 칸 배치 장소의 자기 비평: «고칠 것 없음»(layoutReview) 은 한 바퀴로 세고 다시 깔지 않는다. 고친 배치(set.dungeonLayout·villageLayout)는 한 바퀴로 세고 다시 깐다.
       const layoutState = layoutSession(session).byMap.get(patch.mapId);
@@ -391,6 +395,9 @@ export function placeVerbs(c: VerbContext) {
         return res;
       }
       const builder = builderFor(newLayout ? applyPatch(record.spec, patch) : record.spec)!;
+      // 거절은 기록이 있던 자리에 한 바퀴로 적는다 — 앞 턴의 기록을 «이번 턴에 지은 것»으로 옮기지 않는다.
+      const keepRecord = (r: PlaceRecord) => { for (const mapId of r.result.mapIds) (fromPast ? session.pastPlaces : session.places).set(mapId, r); };
+      if (builder.onePass) { keepRecord({ ...record, rounds: record.rounds + 1 }); return text({ ok: false, summary: onePassRefusal(record.spec.name) }); }
       // 마을·던전·거리 빌더는 소품 하나하나·꾸밈 정도를 받지 않는다 — 그런 패치로 다시 지으면 같은 맵이 또 나오고 바퀴만 쓴다(2026-10-23 v2 실조수).
       if (builder.id !== interiorBuilder.id) {
         const effective = !!(patch.set || patch.variant !== undefined || patch.seed !== undefined || patch.addFeatures?.length || patch.removeFeatures?.length || patch.addZones?.length || patch.removeZones?.length
@@ -398,7 +405,7 @@ export function placeVerbs(c: VerbContext) {
         if (!effective) {
           // 거절도 한 바퀴로 센다 — 바퀴를 안 쓰면 모델이 같은 거절을 열 번 넘게 되풀이했다(2026-10-23 3차 피라미드: edit_place 13번 중 12번 거절).
           const spent = { ...record, rounds: record.rounds + 1 };
-          for (const mapId of record.result.mapIds) session.places.set(mapId, spent);
+          keepRecord(spent);
           const left = V2_MAX_REPAIR_ROUNDS - spent.rounds;
           return text({ ok: false, summary: `${builder.id} 빌더는 소품 하나하나·꾸밈(dressing)·단상·석관 같은 물건 지정을 받지 않는다 — 고칠 수 있는 것은 variant(다른 배치)·features·size·floors 뿐이다. 이 거절도 한 바퀴로 셌다(남은 바퀴 ${Math.max(0, left)}).${left <= 0 ? " 더 고치지 말고 남은 major 를 사용자에게 그대로 보고한다." : " 그 넷으로 못 고치는 major 는 고치려 하지 말고 보고에 적는다."}` });
         }
@@ -420,7 +427,7 @@ export function placeVerbs(c: VerbContext) {
         // 고친 배치가 거절되면 앞 장소를 그대로 둔다(바퀴는 셌다) — 문제 목록을 주고 다시 보내게.
         return text({ ok: false, notFailure: true, summary: `Rejected: the checker found ${rejectedLayout.rejected.length} problem(s) in your corrected ${rejectedLayout.bbox}Layout — the place was NOT re-laid (the previous version stays). Fix every problem and call edit_place again with the full corrected layout, or finish the round with layoutReview.`, problems: rejectedLayout.rejected.slice(0, 40) });
       }
-      const notes = [...shellNote, ...(redesigned?.notes ?? [])];
+      const notes = [...shellNote, ...(redesigned?.notes ?? []), ...(fromPast ? [PAST_DESIGN_NOTE] : [])];
       const result = notes.length ? { ...built, warnings: [...notes, ...built.warnings] } : built;
       const fixed = await finishPlace(id, "edit_place", params, spec, builder.id, result, record.rounds + 1, before.seen.size ? before : undefined);
       noteLayoutPlace(spec, result);
@@ -444,8 +451,8 @@ export function placeVerbs(c: VerbContext) {
       const mapId = p.mapId || env.ctx.currentMapId || "";
       const reviewSpecFirst = specGate("review_layout", "interior");
       if (reviewSpecFirst) return reviewSpecFirst;
-      const record = session.places.get(mapId);
-      if (!record || !hasLayout(record.spec)) return text({ ok: false, summary: `review_layout is for interiors laid from spec.layout in this run; ${mapId || "(no mapId)"} is not one. Laid interiors: ${[...new Set([...session.places.entries()].filter(([, r]) => hasLayout(r.spec)).map(([m]) => m))].join(", ") || "none"}.` });
+      const record = session.placeOf(mapId);
+      if (!record || !hasLayout(record.spec)) return text({ ok: false, summary: `review_layout is for interiors laid from spec.layout; ${mapId || "(no mapId)"} is not one. Laid interiors: ${[...new Set([...session.pastPlaces.entries(), ...session.places.entries()].filter(([, r]) => hasLayout(r.spec)).map(([m]) => m))].join(", ") || "none"}.` });
       const round = (Number(record.spec.hints?.layoutReviews ?? 0) || 0) + 1;
       const problems = (p.problems ?? []).map((x) => String(x)).filter(Boolean);
       const notes = [...String(record.spec.hints?.layoutReviewNotes ?? "").split(" || ").filter(Boolean), (problems.join("; ") || "nothing to fix").slice(0, 300)].slice(-6).join(" || ");
