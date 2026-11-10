@@ -119,7 +119,7 @@ function synthesizeRecord(record: SkillChoreographyRecord, kind: "class" | "mons
 
 /**
  * 스킬 레코드의 연출 **한 곳 조회**. 조회 순서:
- * ① 스킬 id 가 계약(기본 연출) id 이면 그 계약 ② retroChoreographyId 가 프로젝트 연출 레코드(chor_*) 면 그 레코드
+ * ① retroChoreographyId 가 실제로 있는 프로젝트 연출 레코드(chor_*) 면 그 레코드(스킬 id 가 계약이어도) ② 스킬 id 가 계약(기본 연출) id 이면 그 계약
  * ③ retroChoreographyId 가 기본 연출 id 이면 그 계약. 없으면 undefined.
  * `want` 를 주면 그 편의 모양으로 돌려준다. 기본 연출은 자기 편만(다른 편이면 undefined), 프로젝트 레코드는 동작을 짝 동작으로 바꿔 어느 편에서든 나온다.
  */
@@ -138,10 +138,12 @@ export function resolveSkillChoreography(
   };
   const bundled=BUNDLED_BATTLE_MOTIONS.find(r=>r.id===ref.retroChoreographyId || !ref.retroChoreographyId && `skill_motion_${r.movement!.pattern}`===ref.id);
   if(bundled){const kind=want??"class",skill=synthesizeRecord(bundled,kind);return {origin:"default",id:bundled.id,kind,motion:skill.motion,skill,record:bundled};}
+  // 프로젝트 연출 레코드(chor_*)를 이름으로 짚었고 실제로 있으면 그것이 이긴다 — 기술 id 가 계약 연출 id 여도.
+  // 짚지 않았거나 없는 레코드면 아래 계약 규칙 그대로(폴른 스타 새라의 용기사 기술이 카엘 검 시트를 벗는 길).
+  const record = ref.retroChoreographyId && records ? records.find((row) => row.id === ref.retroChoreographyId) : undefined;
   const own = contract(ref.id);
   // A request for the other kind cannot replace an existing own contract with a borrowed one.
-  if (retroChoreographyKind(ref.id)) return own;
-  const record = ref.retroChoreographyId && records ? records.find((row) => row.id === ref.retroChoreographyId) : undefined;
+  if (!record && retroChoreographyKind(ref.id)) return own;
   if (record) {
     const kind = want ?? skillChoreographyRecordKind(record);
     const skill = synthesizeRecord(record, kind);
@@ -172,7 +174,7 @@ export function retroChoreographyKind(id: string | undefined): "class" | "monste
  */
 export function retroChoreographyIdForClone(source: RetroChoreographyRef): string | undefined {
   // 계약 id 가 자기 id 면 계약이 이긴다. 아니고 프로젝트 연출 레코드(chor_*)를 빌려 쓰고 있으면 그 id 를 이어받는다.
-  if (!retroChoreographyKind(source.id) && source.retroChoreographyId?.startsWith("chor_")) return source.retroChoreographyId;
+  if (source.retroChoreographyId?.startsWith("chor_")) return source.retroChoreographyId;
   return resolveRetroClassChoreography(source)?.id ?? resolveRetroMonsterChoreography(source)?.id;
 }
 
