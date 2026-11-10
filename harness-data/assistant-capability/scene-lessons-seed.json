@@ -1205,6 +1205,19 @@
     "every mirror page that shows a one-frame object sprite (dark and lit) has animationType fixedGraphic (or another fixed-direction type), so inspecting it from the side or below never swaps in another row of the charset",
     "the mirrors are action-trigger, same priority, and stay reachable from at least one adjacent walkable cell"
    ]
+  },
+  {
+   "id": "story-lift-far-from-entrance",
+   "label": "던전의 다음 장소로 가는 승강 장치는 입구 방에 두지 않는다",
+   "port": 19569,
+   "lessons": [
+    "exit-device-past-the-dungeon"
+   ],
+   "prompt": "우물 밑 옛 상수도 던전(방 일곱)을 만들고, 그 끝에서 천문대 서고로 올라가는 승강 장치를 놓아 줘. 우물 사다리로 내려오는 곳이 입구야.",
+   "requirements": [
+    "the lift that leads to the next story place is not in the entrance room: walking distance from the ladder arrival to the lift pad is at least half of the longest walk in the dungeon, so the rooms are not skippable",
+    "the lift stays reachable without optional content (locked gates, rubble, the optional boss); losing to an optional boss does not send the party back to the entrance"
+   ]
   }
  ]
 }

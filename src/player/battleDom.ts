@@ -79,7 +79,7 @@ import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } fr
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
 import { emeraldNarrationActive, noEscapeNoticeLine } from "@/player/emeraldBattleNarration";
 import { revealedEffectiveness, WEAKNESS_REVEAL_LABEL } from "@/battle/weaknessDiscovery";
-import { BATTLE_STEADY_INTERLUDE_SCALE, BATTLE_STEADY_MOTION_TEMPO, resolveBattleStaging } from "@/project/battleStaging";
+import { BATTLE_STEADY_INTERLUDE_SCALE, BATTLE_STEADY_MOTION_TEMPO, effectivenessFeedbackHidden, resolveBattleStaging } from "@/project/battleStaging";
 import { keepResultPanelOffParty } from "@/player/battleResultPlacement";
 
 /** 포켓몬 스킨의 동작 템포(배율). 05-poses-motion.css·20-pokemon-skin.css 의 포켓몬 전환 길이도 이 배율로 줄여 두었다. */
@@ -808,7 +808,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     introHoldMs: () => (root.dataset.battleMotion === "retro" && field.querySelector(".battle-enemy[data-collapse='bossSink']") ? BATTLE_BOSS_INTRO_MS : undefined),
     motionTempo: () => motionTempo,
     // 상성 문장은 모든 스킨이 말한다(포켓몬은 문장만, 그 밖은 피해 숫자 뒤에 덧붙임 — battleDirectorDom.withEffectiveness).
-    describeEffectiveness: true,
+    // 단, 상성 알림을 끈 게임(battleStaging.effectivenessFeedback = hide)은 말하지 않는다.
+    describeEffectiveness: !effectivenessFeedbackHidden(store.getCurrent().system.battleStaging),
     // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
     ...(retroMotion ? {
       // 직업 스킬 48종은 타임라인 길이(첫 착탄·대상별 간격·남은 연출)를 비트로 준다. 필살기는 약 2.5초다.

@@ -1,0 +1,50 @@
+{
+ "golem-stone": {
+  "resourceId": "generated-enemy-golem-stone",
+  "name": "심문회 골렘",
+  "cell": 96,
+  "try": 3,
+  "gifSha": "69e4c74571f86a7ffcfe74e5e56efac64044728393ec6c0eb0056782015214ce",
+  "sheetSha": "7ff8f3f2aaca8cccc7cd33b9324cb3ecfaac30100fca72d43416bbc7d7f2019a",
+  "metrics": {
+   "colors": 16,
+   "outlineInner": 0.97,
+   "outlineColors": 12,
+   "smallSpecksPer100": 34.8,
+   "uniform2x2": 0.15,
+   "lumLevels": 13
+  },
+  "judge": {
+   "model": [
+    "claude-opus-5-5"
+   ],
+   "effort": "medium",
+   "wolfLevel": 4,
+   "pass": true
+  }
+ },
+ "leafling-01": {
+  "resourceId": "generated-enemy-leafling-01",
+  "name": "잎새 정령",
+  "cell": 96,
+  "try": 2,
+  "gifSha": "2e089f01005d36aac26b85cbe317827773d486ca9fe0b4d16e143231199899aa",
+  "sheetSha": "060ee04102c56b0bfe9572f1c40a1818bbc980791f3b7b9b82f67e9e8810c3d1",
+  "metrics": {
+   "colors": 14,
+   "outlineInner": 0.86,
+   "outlineColors": 13,
+   "smallSpecksPer100": 40.8,
+   "uniform2x2": 0.13,
+   "lumLevels": 13
+  },
+  "judge": {
+   "model": [
+    "claude-opus-5-5"
+   ],
+   "effort": "medium",
+   "wolfLevel": 4,
+   "pass": true
+  }
+ }
+}

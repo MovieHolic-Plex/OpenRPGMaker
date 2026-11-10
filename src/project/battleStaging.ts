@@ -14,6 +14,11 @@ export type BattleComboFx = "spectacular" | "simple";
 export type BattleSkillHint = "line" | "window";
 /** 적 약점·저항을 대상 고르기에서 보이는가 — 약점은 플레이어가 알아 가는 것(src/battle/weaknessDiscovery.ts). */
 export type BattleRevealWeakness = "never" | "afterDiscovery" | "always";
+/**
+ * 맞힌 뒤의 상성 알림 — 피해 숫자 위 「약점!·약점 발견!·저항·무효」 꼬리표, 문장 끝 「효과가 굉장했다!」, 광역 요약 「약점을 찌렀다!」.
+ * hide 면 셋 다 끄고 피해 숫자만 남는다(2026-11-10 폴른 스타 오너: 「예고는 해야 맞지만, 약점을 보여줄 필요는 없음」).
+ */
+export type BattleEffectivenessFeedback = "show" | "hide";
 /** 전투 흐름 빠르기 — 행동 비트(접근·돌진·회복·이펙트)와 행동 사이 쉼. quick = 지금 그대로, steady = 한 박자 느긋하게. */
 export type BattlePace = "quick" | "steady";
 
@@ -22,6 +27,7 @@ export const BATTLE_COMBO_CUT_INS: readonly BattleComboCutIn[] = ["faces", "band
 export const BATTLE_COMBO_FXS: readonly BattleComboFx[] = ["spectacular", "simple"];
 export const BATTLE_SKILL_HINTS: readonly BattleSkillHint[] = ["line", "window"];
 export const BATTLE_REVEAL_WEAKNESSES: readonly BattleRevealWeakness[] = ["never", "afterDiscovery", "always"];
+export const BATTLE_EFFECTIVENESS_FEEDBACKS: readonly BattleEffectivenessFeedback[] = ["show", "hide"];
 export const BATTLE_PACES: readonly BattlePace[] = ["quick", "steady"];
 
 /**
@@ -56,6 +62,10 @@ export const BATTLE_REVEAL_WEAKNESS_LABELS: Readonly<Record<BattleRevealWeakness
   afterDiscovery: "알아낸 뒤에만(처음 맞힌 「약점 발견!」 뒤로 대상 고를 때 표시)",
   always: "처음부터(대상 고를 때 늘 표시)",
 };
+export const BATTLE_EFFECTIVENESS_FEEDBACK_LABELS: Readonly<Record<BattleEffectivenessFeedback, string>> = {
+  show: "보임(맞힌 뒤 「약점!」·「효과가 굉장했다!」)",
+  hide: "안 보임(피해 숫자만)",
+};
 export const BATTLE_PACE_LABELS: Readonly<Record<BattlePace, string>> = {
   quick: "빠르게(기본)",
   steady: "차분하게(행동·격파 대사 사이를 넉넉히)",
@@ -72,6 +82,8 @@ export interface BattleStagingSettings {
   readonly skillHint?: BattleSkillHint;
   /** 생략 = afterDiscovery. */
   readonly revealWeakness?: BattleRevealWeakness;
+  /** 생략 = show. */
+  readonly effectivenessFeedback?: BattleEffectivenessFeedback;
   /** 생략 = quick. */
   readonly pace?: BattlePace;
 }
@@ -82,10 +94,11 @@ export interface ResolvedBattleStaging {
   readonly comboFx: BattleComboFx;
   readonly skillHint: BattleSkillHint;
   readonly revealWeakness: BattleRevealWeakness;
+  readonly effectivenessFeedback: BattleEffectivenessFeedback;
   readonly pace: BattlePace;
 }
 
-const DEFAULTS: ResolvedBattleStaging = { enemyLunge: "fast", comboCutIn: "faces", comboFx: "spectacular", skillHint: "line", revealWeakness: "afterDiscovery", pace: "quick" };
+const DEFAULTS: ResolvedBattleStaging = { enemyLunge: "fast", comboCutIn: "faces", comboFx: "spectacular", skillHint: "line", revealWeakness: "afterDiscovery", effectivenessFeedback: "show", pace: "quick" };
 
 const pick = <T extends string>(list: readonly T[], value: unknown): T | undefined =>
   typeof value === "string" && (list as readonly string[]).includes(value) ? (value as T) : undefined;
@@ -105,6 +118,8 @@ export function normalizeBattleStaging(value: unknown): BattleStagingSettings | 
   if (hint && hint !== DEFAULTS.skillHint) out.skillHint = hint;
   const reveal = pick(BATTLE_REVEAL_WEAKNESSES, raw.revealWeakness);
   if (reveal && reveal !== DEFAULTS.revealWeakness) out.revealWeakness = reveal;
+  const feedback = pick(BATTLE_EFFECTIVENESS_FEEDBACKS, raw.effectivenessFeedback);
+  if (feedback && feedback !== DEFAULTS.effectivenessFeedback) out.effectivenessFeedback = feedback;
   const pace = pick(BATTLE_PACES, raw.pace);
   if (pace && pace !== DEFAULTS.pace) out.pace = pace;
   return Object.keys(out).length > 0 ? out : undefined;
@@ -117,8 +132,14 @@ export function resolveBattleStaging(value: BattleStagingSettings | undefined): 
     comboFx: pick(BATTLE_COMBO_FXS, value?.comboFx) ?? DEFAULTS.comboFx,
     skillHint: pick(BATTLE_SKILL_HINTS, value?.skillHint) ?? DEFAULTS.skillHint,
     revealWeakness: pick(BATTLE_REVEAL_WEAKNESSES, value?.revealWeakness) ?? DEFAULTS.revealWeakness,
+    effectivenessFeedback: pick(BATTLE_EFFECTIVENESS_FEEDBACKS, value?.effectivenessFeedback) ?? DEFAULTS.effectivenessFeedback,
     pace: pick(BATTLE_PACES, value?.pace) ?? DEFAULTS.pace,
   };
+}
+
+/** 맞힌 뒤 상성 알림(꼬리표·문장 끝·광역 요약·상성 타격음)을 끄는가 — 표시 계층 세 곳이 이 하나만 본다. */
+export function effectivenessFeedbackHidden(value: BattleStagingSettings | undefined): boolean {
+  return resolveBattleStaging(value).effectivenessFeedback === "hide";
 }
 
 // ── 연계기 하나의 연출(SkillRecord.comboStaging) ─────────────────────────────────────────────

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **192쪽 / 8073KB / 약 2,372,859 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **192쪽 / 8074KB / 약 2,373,279 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -22,7 +22,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 738KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4762 | ~216,827 |
 | `openwiki/editor-ai-tools.md` | 638KB | 92KB ⚠상한 초과 — 절을 더 쪼개라 | 4107 | ~187,424 |
-| `openwiki/editor-database.md` | 459KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2682 | ~134,808 |
+| `openwiki/editor-database.md` | 459KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2683 | ~134,884 |
 | `openwiki/editor-event-authoring.md` | 186KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,388 |
 | `openwiki/editor-event-commands.md` | 87KB | 33KB | 360 | ~24,529 |
 | `openwiki/editor-genre-packs.md` | 54KB | 7KB | 358 | ~14,274 |
@@ -40,7 +40,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 111KB | 14KB | 511 | ~33,097 |
 | `openwiki/relief-terrain.md` | 52KB | 8KB | 376 | ~16,109 |
-| `openwiki/runtime-battle.md` | 465KB | 32KB | 2550 | ~136,756 |
+| `openwiki/runtime-battle.md` | 466KB | 32KB | 2551 | ~137,100 |
 | `openwiki/runtime-m2-flow-controls.md` | 58KB | 29KB | 352 | ~15,674 |
 | `openwiki/runtime-pre-edit-routing.md` | 215KB | 104KB ⚠상한 초과 — 절을 더 쪼개라 | 1271 | ~64,088 |
 | `openwiki/runtime-project-schema.md` | 271KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1858 | ~76,711 |
@@ -185,7 +185,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/release-and-version.md` | 2 | `docs/superpowers/specs/2026-09-15-oprn-local-sqlite-store-design.md`, `src/games.ts` |
 | `openwiki/relief-terrain.md` | 5 | `verify-shots/relief-slope-fix/SUMMARY.md`, `verify-shots/terrain-ai-edit/SUMMARY.md`, `verify-shots/terrain-assistant-live/SUMMARY.md`, `verify-shots/terrain-body-rims/SUMMARY.md`, `verify-shots/terrain-seams/SUMMARY.md` |
 | `openwiki/runtime-action-combat.md` | 4 | `export-player/player.html`, `src/project/defaults/actionCombatDemoProject.ts`, `test/actionDemoProject.test.ts`, `test/e2e/_verify-action-demo.spec.ts` |
-| `openwiki/runtime-battle.md` | 67 | `.omo/mx-rt/timeline-audit.ts`, `.omo/pixel-enemy-review/browser/report.json`, `.omo/r2check/a1-v2/MECHANICS.md`, `.omo/r2check/a1-v3/DISPLAY.md`, `.omo/retro-monsters/all/preview-big.png`, `.omo/retro-skills/big-target/preview.png`, `.omo/retro-skills/new-1/preview.png`, `_dragonquest.css`, `_mv.css`, `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`, `_retro-themes.css`, `ally-creature-back.png`, `assets/generated/charset-battlers/actorN-k.png`, `audio-score.js`, `battle.css`, `deprecated/README.md`, `dist/cli.mjs`, `docs/2026-09-30-battle-adversarial-review.md`, `docs/2026-09-30-battle-fixes.md`, `docs/experiments/hand-magic-20261005/README.md`, `docs/experiments/hero-magic-rework-20261005/README.md`, `docs/experiments/shared-hand-fx-20261005/README.md`, `docs/experiments/snes-study-redraw-20261005/README.md`, `docs/reviews/2026-09-20-battle-review-feedback.md`, `docs/reviews/2026-09-20-battle-review-fixes.md`, `docs/reviews/2026-09-20-pokemon-reference.md`, `docs/superpowers/specs/2026-09-03-battle-effect-hires-design.md`, `hero-03-battle-idle.png`, `metrics.json`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `pose-events.json`, `qa-runs/battle-moves/anim.js`, `qa-runs/battle-sfx/audio-score.js`, `raw.png`, `review-decision.json`, `scripts/asset-gen/charset-battler/art3/actorN.py`, `scripts/capture-ice-grand-adventure.mts`, `scripts/legacy-db-resource-root/catalog.mjs`, `skyStairGame.ts`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png`, `t1500.png`, `test/battleLookFrontSkin.test.ts`, `test/e2e/_battle-menu-fixed.spec.ts`, `test/troopBattlePageTools.test.ts`, `verify-shots/hand-magic-20261005/SUMMARY.md`, `verify-shots/hero-magic-rework-20261005/SUMMARY.md`, `verify-shots/hydra-redesign/SUMMARY.md`, `verify-shots/hydra-rm2003/SUMMARY.md`, `verify-shots/monster-battle-av/SUMMARY.md`, `verify-shots/monster-battle-four/SUMMARY.md`, `verify-shots/monster-redraw-all/SUMMARY.md`, `verify-shots/monster-redraw-studies/README.md`, `verify-shots/monster-refresh/SUMMARY.md`, `verify-shots/monster-refresh/runtime/SUMMARY.md`, `verify-shots/poke-sys-battle/ad1-double-attempt.png`, `verify-shots/retro-assistant/SUMMARY.md`, `verify-shots/retro-btl-b/probe.mts`, `verify-shots/retro-btl-b/reconnect.py`, `verify-shots/retro-choreo-a1/SUMMARY.md`, `verify-shots/retro-choreo-b/SUMMARY.md`, `verify-shots/retro-states/probe.mts`, `verify-shots/retro-states/reconnect.py`, `verify-shots/runtime-qa/retro2003-skills/SUMMARY.md`, `verify-shots/shared-hand-fx-20261005/SUMMARY.md`, `verify-shots/snes-study-redraw-20261005/SUMMARY.md`, `vite-node/vite-node.mjs` |
+| `openwiki/runtime-battle.md` | 66 | `.omo/mx-rt/timeline-audit.ts`, `.omo/pixel-enemy-review/browser/report.json`, `.omo/r2check/a1-v2/MECHANICS.md`, `.omo/r2check/a1-v3/DISPLAY.md`, `.omo/retro-monsters/all/preview-big.png`, `.omo/retro-skills/big-target/preview.png`, `.omo/retro-skills/new-1/preview.png`, `_dragonquest.css`, `_mv.css`, `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`, `_retro-themes.css`, `ally-creature-back.png`, `assets/generated/charset-battlers/actorN-k.png`, `audio-score.js`, `battle.css`, `deprecated/README.md`, `dist/cli.mjs`, `docs/2026-09-30-battle-adversarial-review.md`, `docs/2026-09-30-battle-fixes.md`, `docs/experiments/hand-magic-20261005/README.md`, `docs/experiments/hero-magic-rework-20261005/README.md`, `docs/experiments/shared-hand-fx-20261005/README.md`, `docs/experiments/snes-study-redraw-20261005/README.md`, `docs/reviews/2026-09-20-battle-review-feedback.md`, `docs/reviews/2026-09-20-battle-review-fixes.md`, `docs/reviews/2026-09-20-pokemon-reference.md`, `docs/superpowers/specs/2026-09-03-battle-effect-hires-design.md`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `pose-events.json`, `qa-runs/battle-moves/anim.js`, `qa-runs/battle-sfx/audio-score.js`, `raw.png`, `review-decision.json`, `scripts/asset-gen/charset-battler/art3/actorN.py`, `scripts/capture-ice-grand-adventure.mts`, `scripts/legacy-db-resource-root/catalog.mjs`, `skyStairGame.ts`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png`, `t1500.png`, `test/battleLookFrontSkin.test.ts`, `test/e2e/_battle-menu-fixed.spec.ts`, `test/troopBattlePageTools.test.ts`, `verify-shots/hand-magic-20261005/SUMMARY.md`, `verify-shots/hero-magic-rework-20261005/SUMMARY.md`, `verify-shots/hydra-redesign/SUMMARY.md`, `verify-shots/hydra-rm2003/SUMMARY.md`, `verify-shots/monster-battle-av/SUMMARY.md`, `verify-shots/monster-battle-four/SUMMARY.md`, `verify-shots/monster-redraw-all/SUMMARY.md`, `verify-shots/monster-redraw-studies/README.md`, `verify-shots/monster-refresh/SUMMARY.md`, `verify-shots/monster-refresh/runtime/SUMMARY.md`, `verify-shots/poke-sys-battle/ad1-double-attempt.png`, `verify-shots/retro-assistant/SUMMARY.md`, `verify-shots/retro-btl-b/probe.mts`, `verify-shots/retro-btl-b/reconnect.py`, `verify-shots/retro-choreo-a1/SUMMARY.md`, `verify-shots/retro-choreo-b/SUMMARY.md`, `verify-shots/retro-states/probe.mts`, `verify-shots/retro-states/reconnect.py`, `verify-shots/runtime-qa/retro2003-skills/SUMMARY.md`, `verify-shots/shared-hand-fx-20261005/SUMMARY.md`, `verify-shots/snes-study-redraw-20261005/SUMMARY.md`, `vite-node/vite-node.mjs` |
 | `openwiki/runtime-m2-flow-controls.md` | 7 | `.omo/evidence/event-runtime-adversarial/README.md`, `cloud-amount-editor.png`, `docs/reviews/2026-09-05-event-runtime-audit.md`, `scripts/capture/capture-parallax-easing.mjs`, `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 11 | `.json`, `.omo/evidence/dialogue-face-url-r13/README.md`, `_trace.json`, `dialogueControlBar.ts`, `docs/reviews/2026-09-05-event-runtime-audit.md`, `editor/core.part-1.css`, `replay.mjs`, `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/romance-art/SUMMARY.md`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
 | `openwiki/runtime-project-schema.md` | 61 | `.css`, `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `@/styles/map/delayed-tooltip.css`, `DRAFT_20260706_auth_rls.sql`, `bake_fallen_star_backdrops.mts`, `communitySaveBoot.test.ts`, `devMediaPromotion.test.ts`, `dist-electron/main.cjs`, `docs/superpowers/specs/2026-09-15-oprn-local-sqlite-store-design.md`, `docs/superpowers/specs/2026-09-24-mz-four-layer-design.md`, `docs/superpowers/specs/2026-10-07-concept-feed-design.md`, `firstWorldArrival.ts`, `interiorLoadConsistency.test.ts`, `largeRiverMarketVillageBuild.ts`, `mediaImportDurability.test.ts`, `newProjectDialog.ts`, `openwiki/large-village-generation.md`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `persist-trace.mjs`, `phaser.min.js`, `presets-editor.json`, `project.json`, `render-relief-maps.mts`, `scripts/lib/fixtureDefaultDatabase.mts`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `scripts/sync-fixture-default-database.mts`, `small-village-generation.md`, `src/project/defaults/fixtures/dew-village-demo.json`, `src/project/legacyDbProjectSync.ts`, `startLobby.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `tamper-doc.mjs`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/cropRegrowthContract.test.ts`, `test/fixtureDefaultDatabaseDrift.test.ts`, `test/fixtures/life-full/coverage.json`, `test/interiorConceptRoutes.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sampleAdventureNeedsNoBackfill.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts`, `verify-shots/battle-fix-2026-09-30/rules-probe.json`, `verify-shots/editor-lag-fix/F/normalizer-cost.mts`, `verify-shots/editor-lag-fix/F/ref-roundtrip-eq.mts`, `verify-shots/editor-ux-fixes-round2-20261004/storage/README.md`, `verify-shots/loc-transition/SUMMARY.md`, `verify-shots/worldmap-autotile-adversarial/export-checked.json`, `village/builder.ts` |
@@ -1045,7 +1045,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L4065` `build_blueprint_path` — 청사진 경로를 함수가 짓는다 (2026-10-28, fix-gamepath)
 - `L4104` 일정표 도구 (upsert_schedule)
 
-### `openwiki/editor-database.md` — 459KB · 2682줄 · ~134,808 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-database.md` — 459KB · 2683줄 · ~134,884 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 이야기 › 대사 탭 「대본」 보기 — 이야기 순서 시나리오 (2026-10-25)
 - `L29` 대사 탭 화면 다듬기 (2026-10-27, 독립 검수 지적 4건)
@@ -2833,7 +2833,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 465KB · 2550줄 · ~136,756 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 466KB · 2551줄 · ~137,100 토큰 · 통째읽기 잘림
 
 - `L1` 폴른 스타 몬스터 시트 다시 그리기 — ChatGPT 웹 GIF (fs-monster-regen, 2026-11-09)
 - `L22` pixelfx 코드 효과 애니메이션 (2026-10-31)
@@ -2955,10 +2955,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2451` 전투 깊이 — 기술 도움말 · 「연계」 명령 · 연계 대기 · 약점 공략 · 결과 팡파레 (fs-battle-2, 2026-10-24)
 - `L2476` 전투 연출 설정 — 달려드는 속도 · 얼굴 교차 컷인 · 화려한 연계 착탄 · 한 줄 도움말 · 성장 곡선 (fs-battle-3, 2026-10-25)
 - `L2493` 적 약점은 알아 가는 것 — 처음 맞힌 타격에서 발견 · 세이브 기록 · 공개 설정 (2026-10-25)
-- `L2504` 폴른 스타 전투 체감 — 차분한 흐름 · 무기 계열 평타 특성 · 약점 문구 걷기 (2026-11-03)
-- `L2513` 효과음 자리 — 세션 → 프로젝트 표 → 기본 (2026-10-30)
-- `L2524` 결투 규칙 — TroopRecord.duel (2026-10-30)
-- `L2544` 적 피해 대상 추첨 · 전투 부활약 · 여관 상태 해제 (fs2 스웜 R2, 2026-11-04)
+- `L2505` 폴른 스타 전투 체감 — 차분한 흐름 · 무기 계열 평타 특성 · 약점 문구 걷기 (2026-11-03)
+- `L2514` 효과음 자리 — 세션 → 프로젝트 표 → 기본 (2026-10-30)
+- `L2525` 결투 규칙 — TroopRecord.duel (2026-10-30)
+- `L2545` 적 피해 대상 추첨 · 전투 부활약 · 여관 상태 해제 (fs2 스웜 R2, 2026-11-04)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 58KB · 352줄 · ~15,674 토큰 · 통째읽기 잘림
 

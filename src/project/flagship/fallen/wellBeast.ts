@@ -7,8 +7,10 @@
  *   1페이즈: 물어뜯기·꼬리 휩쓸기. 「아가미 노래」는 한 차례 모았다가(chargeTurns 1) 파티 전체를 울려 둔하게 만든다.
  *   2페이즈(HP 50% 이하): 아가미가 붉게 선다 — 공격이 오르고 노래가 두 차례마다.
  *   약점(모르면 손해): 아가미가 젖어 있어 번개가 두 배(elementRates thunder A), 불은 반감(D). 그리고 노래를 모으는 동안
- *     번개에 맞거나 큰 피해를 받으면 노래가 끊긴다(chargeBreak) — 첫 비문(R5)·둘째 비문(R4)·저수조 일지가 미리 귀띔한다.
- *     엘레나 「연쇄 번개」(1막 Lv5 습득)·번개석이 답이다. 불 주문만 쓰던 플레이어는 손해를 본다.
+ *     번개에 맞거나 큰 피해를 받으면 노래가 끊긴다(chargeBreak). 엘레나 「연쇄 번개」(1막 Lv5 습득)·번개석이 답이다.
+ *   예고는 하되 답은 말하지 않는다(2026-11-10 오너 「약점이 사람에게 보이면 너무 쉬워짐. 예고는 해야 맞지만, 약점을 보여줄 필요는 없음」).
+ *     예고 띠·「준비한다!」·석판·일지는 무엇을 하는지(노래·메아리·탈피·비늘 반격)만 말하고, 무엇이 끊는지(번개·불 무효)는
+ *     말하지 않는다. 끊김 문장도 끊은 수단을 이름 대지 않는다 — 플레이어가 무엇으로 쳤을 때 끊겼는지 보고 알아낸다.
  * 진행 — 보스는 이야기 길 밖(R4)이다. 이기면 sw_fs2_well_beast_down + 「눈먼 영주의 아가미」(장신구, 둔화 막기)와
  *   하넬 대사 한 줄이 덧붙는다(하넬 대화의 분기 — 이긴 뒤에만). 지면 전멸이 아니라 R1 로 물러난다(이야기 진행 불변).
  * 무대는 왕도 옛 상수도의 가장 오래된 저수조(R4) — 영주는 녹슨 관 사이 물가에 산다(뼈·둥지 소품 없음).
@@ -134,10 +136,10 @@ export function wellData(project: Project, exec: Exec): void {
     effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_tackle_impact" });
   // ③ 아가미 노래 — 한 차례 모은 뒤 전체 큰 피해 + 둔화. 번개 한 번 또는 큰 피해로 끊긴다(예고: 「준비한다!」).
   skill({ id: SKILL_SONG, name: "아가미 노래", scope: "allEnemies", type: "normal", power: 150, variance: 8, hitRate: 100,
-    description: "아가미를 펴 소리를 모았다가 갱도를 울린다. 맞으면 둔해진다.\n모으는 동안 번개에 맞거나 크게 다치면 끊긴다.",
+    description: "아가미를 펴 소리를 모았다가 갱도를 울린다. 맞으면 둔해진다.\n모으는 동안 무언가에 끊길 수 있다.",
     effect: { kind: "damage", statistic: "mind", affects: "hp" }, stateEffects: [{ stateId: "state_agility_down", chance: 90, operation: "add" }], animationId: "anim_gen_power_aura",
     // 끊어도 비틀지는 않는다 — 비틀면 아는 플레이어가 영주의 차례를 통째로 빼앗아 승률이 100%가 됐다(시뮬 80판).
-    chargeTurns: 1, chargeBreak: { damage: 380, elementIds: ["thunder"], message: "아가미가 번개에 오그라든다! 노래가 끊겼다.", stagger: false } });
+    chargeTurns: 1, chargeBreak: { damage: 380, elementIds: ["thunder"], message: "아가미가 움찔 오그라든다! 노래가 끊겼다.", stagger: false } });
   // ④ 비늘 곤두세우기 — 예고 없는 자세. 두 차례 동안 물리 반격(100%)·물리 방어 1.6배. 마구 치는 플레이어를 벌한다.
   skill({ id: SKILL_SHELL, name: "비늘 곤두세우기", scope: "self", type: "normal", power: 0, variance: 0, hitRate: 100,
     description: "등비늘을 칼날처럼 세운다. 그 사이 몸을 치면 꼬리가 되받아친다.",
@@ -150,19 +152,19 @@ export function wellData(project: Project, exec: Exec): void {
   skill({ id: SKILL_MOLT, name: "물 속 탈피", scope: "self", type: "normal", power: 0, variance: 0, hitRate: 100,
     description: "물에 몸을 담그고 허물을 벗는다. 새 살이 돋는 동안 상처가 아문다.\n담그는 동안 크게 다치면 물 밖으로 뛰쳐나온다.",
     effect: { kind: "support" }, stateEffects: [{ stateId: STATE_MOLT, chance: 100, operation: "add" }], animationId: "anim_gen_power_aura",
-    chargeTurns: 1, chargeBreak: { damage: 300, elementIds: ["thunder"], message: "물속에서 번개를 맞고 뛰쳐나온다! 탈피가 끊겼다.", stagger: false } });
+    chargeTurns: 1, chargeBreak: { damage: 300, elementIds: ["thunder"], message: "물속에서 몸을 비틀며 뛰쳐나온다! 탈피가 끊겼다.", stagger: false } });
   // ⑦ 붉은 아가미 — 2페이즈 들어설 때 성을 낸다(공격 상승).
   skill({ id: SKILL_ROAR, name: "붉은 아가미", scope: "self", type: "normal", power: 0, variance: 0, hitRate: 100,
     description: "아가미를 곧추세우고 성을 낸다. 공격이 오른다.", effect: { kind: "support" },
     stateEffects: [{ stateId: "state_attack_up", chance: 100, operation: "add" }], animationId: "anim_gen_power_aura" });
   // ⑧ 메아리 사냥 — 2페이즈. 두 차례 모았다가 한 사람에게 큰 피해(가장 약한 쪽). 번개로만 끊긴다 — 피해로는 안 끊긴다.
   skill({ id: SKILL_ECHO, name: "메아리 사냥", scope: "enemy", type: "normal", power: 230, variance: 8, hitRate: 100,
-    description: "울음을 벽에 튕겨 숨은 먹이를 찾는다. 두 차례 소리를 모은 뒤 한 사람을 덮친다.\n번개만이 소리를 흩는다.",
+    description: "울음을 벽에 튕겨 숨은 먹이를 찾는다. 두 차례 소리를 모은 뒤 한 사람을 덮친다.",
     effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_claw_rake",
-    chargeTurns: 2, chargeBreak: { elementIds: ["thunder"], message: "번개 소리에 메아리가 흩어졌다!", stagger: true } });
+    chargeTurns: 2, chargeBreak: { elementIds: ["thunder"], message: "메아리가 어지럽게 흩어졌다!", stagger: true } });
   // ⑨ 저수조 해일 — 2페이즈. 한 차례 모은 뒤 전체 물 피해 + 젖음(다음 노래·번개에 약해진다). 큰 피해로 끊긴다.
   skill({ id: SKILL_FLOOD, name: "저수조 해일", scope: "allEnemies", type: "normal", power: 120, variance: 10, hitRate: 100,
-    description: "꼬리로 저수조 물을 퍼올려 덮친다. 젖은 몸은 소리와 번개를 더 맞는다.\n퍼올리는 동안 크게 다치면 물이 흩어진다.",
+    description: "꼬리로 저수조 물을 퍼올려 덮친다. 젖은 몸은 다음 공격을 더 맞는다.\n퍼올리는 동안 크게 다치면 물이 흩어진다.",
     effect: { kind: "damage", statistic: "attack", affects: "hp" }, elementId: "water",
     stateEffects: [{ stateId: "state_wet", chance: 100, operation: "add" }], animationId: "anim_gen_tackle_impact",
     chargeTurns: 1, chargeBreak: { damage: 420, message: "퍼올린 물이 흩어졌다!", stagger: false } });
@@ -171,7 +173,10 @@ export function wellData(project: Project, exec: Exec): void {
     id: FS2_WELL_BEAST_ENEMY, name: "우물 밑 눈먼 영주", level: 18, monsterResourceId: "generated-enemy-golem-clay", battleScalePercent: 125,
     collapseEffect: "bossSink", hideHp: true,
     // 숨은 보스 — Lv14 두 사람 기준 시뮬 80판(scripts/qa/zz-well-beast-sim.mts)으로 맞춘 값. 민첩은 몇 포인트에도 승률이 크게 흔들린다.
-    stats: { maxHp: 7280, maxMp: 0, attack: 298, defense: 74, mind: 153, agility: 56 },
+    // 2026-11-10 fs-boss-hide: 약점을 글·꼬리표로 알려 주지 않게 되면서(처음 하는 사람은 피해 숫자로 알아낸다) HP 7280 → 2184(0.30배).
+    //   리드 기준 = 아이템을 들고 처음 싸우며 숫자로 배우는 사람 25~40%(200판 33%), 지고 다시 3번 100% 미만(95%).
+    //   관통상 무효(아래 stateRates)와 함께 잰 값이다 — 관통상이 걸리면 찌르기 뒤 마법 3배로 훨씬 쉽다.
+    stats: { maxHp: 2184, maxMp: 0, attack: 298, defense: 74, mind: 153, agility: 56 },
     skillIds: ["skill_attack", SKILL_BITE, SKILL_TAIL, SKILL_SONG, SKILL_SHELL, SKILL_MUD, SKILL_MOLT, SKILL_ROAR, SKILL_ECHO, SKILL_FLOOD],
     actions: [
       // 1페이즈(아가미 노래가 리듬의 중심 — 석판 「셋째 숨마다 노래」): 2·5·8…번째 차례에 노래를 모은다.
@@ -192,8 +197,11 @@ export function wellData(project: Project, exec: Exec): void {
       act(SKILL_TAIL, 6, P2),
     ],
     // 아가미가 젖은 물짐승 — 번개 두 배, 불은 반감, 물은 흡수 가까이. 수면·정지·암흑은 안 먹는다(눈이 없다).
-    elementRates: { thunder: "A", fire: "D", water: "E" },
-    stateRates: { state_sleep: "E", state_stop: "E", state_blind: "E", state_paralysis: "D", state_poison: "D", state_wet: "E", state_silence: "E" },
+    // 어둠도 반감 — 엘레나 중력구(어둠, 위력 92)가 번개와 비슷한 숫자(270 대 285)를 내서 숫자만 보고는 약점을 못 찾았다.
+    elementRates: { thunder: "A", fire: "D", water: "E", dark: "D" },
+    // 관통상 무효 — 1막 「다른 적은 관통상에 걸리지 않는다」(act1Finale.ts) 를 이 upsert 가 덮어써 빠졌었다. 빠지면 돌진 찌르기 뒤 모든 마법이 3배라
+    // 가장 큰 숫자가 번개가 아니라 그때 쓴 마법(주로 얼음 폭풍)이 된다.
+    stateRates: { state_fs_pierced: "E", state_sleep: "E", state_stop: "E", state_blind: "E", state_paralysis: "D", state_poison: "D", state_wet: "E", state_silence: "E" },
     rewards: { exp: 1800, gold: 600, dropRatePercent: 0, drops: [] },
   } });
 
@@ -213,7 +221,7 @@ export function wellData(project: Project, exec: Exec): void {
         m2("m2-100-change-enemy-state", { target: FS2_WELL_BEAST_ENEMY, operation: "add", value: "state_attack_up" }),
         m2("m2-100-change-enemy-state", { target: FS2_WELL_BEAST_ENEMY, operation: "remove", value: STATE_MOLT }),
         setSw(SW_WELL_P2), setSw(SW_WELL_ECHO),
-        say(ELENA, "소리를 두 번 모으고 있어 — 저건 피해로는 안 끊겨. 번개로만!"),
+        say(ELENA, "벽에 소리를 튕기고 있어… 두 번 모으면 누군가를 덮칠 거야!"),
       ] },
   ];
   // 전리품 — 아가미 장신구(소리 공격 「둔함」 막기 + 마력). 보스 드롭은 확정이라 이벤트에서 준다.
@@ -232,22 +240,22 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
   wellData(project, exec);
   const map = (): GameMap => M(project, mapId);
 
-  // 읽을거리 — 약점을 세 번 나눠 귀띔한다(모르면 손해: 비문을 안 읽으면 불만 쓰다 길어진다).
+  // 읽을거리 — 영주가 무엇을 하는지(노래·메아리·비늘·탈피)만 귀띔한다. 무엇이 끊는지는 쓰지 않는다(2026-11-10 오너, 싸우며 알아낸다).
   addEv(project, mapId, "ev_fs2_well_tablet_1", "물지기 석판", WELL.tabletWell, [page("ev_fs2_well_tablet_1_p", "비문", [], [
     sign("물지기 석판", "왕도 상수도를 지키는 물지기들이 새긴다.\n가장 오래된 저수조에는 눈 없는 주인이 산다."),
     sign("물지기 석판", "주인은 소리로 본다. 아가미를 펴면 노래가 온다.\n노래를 들은 자는 발이 무거워진다."),
   ])]);
   addEv(project, mapId, "ev_fs2_well_ledger", "저수조 일지", WELL.ledger, [page("ev_fs2_well_ledger_p", "일지", [], [
     sign("물지기 일지", "셋째 해. 장마에 저수조가 넘쳤다.\n쇠살문은 서쪽 무너진 밑동의 고패로 올린다."),
-    sign("물지기 일지", "다섯째 해. 영주에게 횃불을 던졌더니 웃는 것 같았다.\n젖은 몸에 불은 소용없다."),
-    sign("물지기 일지", "여섯째 해. 천둥 치던 밤, 영주가 사흘을 숨어 나오지 않았다.\n…번개를 싫어하는 걸까."),
+    sign("물지기 일지", "다섯째 해. 영주에게 횃불을 던졌더니 웃는 것 같았다.\n…무엇이 통하는지는 아직 모르겠다."),
+    sign("물지기 일지", "여섯째 해. 사흘 밤낮 영주가 숨어 나오지 않았다.\n그동안 저수조가 이상하게 조용했다."),
     sign("물지기 일지", "일곱째 해. 셋째 숨마다 아가미가 열린다. 노래가 끝나면 등비늘이 선다.\n선 비늘을 창으로 찌른 바르그는 꼬리에 맞아 갈비가 나갔다."),
-    sign("물지기 일지", "아홉째 해. 영주가 물에 몸을 담그면 상처가 아문다. 그때 크게 쳐서 끌어내라.\n(이 장 아래는 물에 번져 읽을 수 없다.)"),
+    sign("물지기 일지", "아홉째 해. 영주가 물에 몸을 담그면 상처가 아문다. 그대로 두면 처음부터 다시다.\n(이 장 아래는 물에 번져 읽을 수 없다.)"),
   ])]);
   addEv(project, mapId, "ev_fs2_well_tablet_2", "옛 저수조 석판", WELL.tabletNest, [page("ev_fs2_well_tablet_2_p", "비문", [], [
-    sign("옛 저수조 석판", "노래가 차오를 때 하늘의 불로 아가미를 지져라.\n노래는 목에서 끊긴다."),
-    sign("옛 저수조 석판", "아가미가 피로 물들면 주인은 벽에 소리를 두 번 튕겨 한 사람을 찾는다.\n그 메아리는 칼로는 못 끊는다. 하늘의 불만이 흩는다."),
-    say(ELENA, "하늘의 불… 번개 말이야.\n내 연쇄 번개라면 닿을 거야."),
+    sign("옛 저수조 석판", "노래는 아가미에서 차오르고 목에서 터진다.\n차오르는 동안은 주인도 무방비다."),
+    sign("옛 저수조 석판", "아가미가 피로 물들면 주인은 벽에 소리를 두 번 튕겨 한 사람을 찾는다.\n두 번째 울림이 오기 전에 무언가 해야 한다."),
+    say(ELENA, "차오르는 동안이 기회라는 거지.\n…뭘로 끊을지는 부딪혀 봐야 알겠네."),
   ])]);
 
   // 고패 — 저수조 남쪽 쇠살문을 감아 올린다(고리: R1 → R5 → R3 → R2 → R1).

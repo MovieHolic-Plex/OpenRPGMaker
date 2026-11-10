@@ -19140,4 +19140,7 @@
 "{0} 사용 한도(쿼터·속도 제한)에 걸려 작업을 멈췄어요. 변경한 내용은 적용하지 않았어요. 한도가 풀릴 때까지 기다리거나 다른 AI 연결로 바꿔 다시 보내 주세요.":"Stopped: {0} hit its usage limit (quota or rate limit). No changes were applied. Wait for the limit to reset, or switch to another AI connection and send again.",
 "{0} 사용 한도(쿼터·속도 제한)에 걸려 작업을 멈췄어요. 멈추기 전에 반영한 변경은 남아 있고 되돌릴 수 있어요. 한도가 풀릴 때까지 기다리거나 다른 AI 연결로 바꿔 다시 보내 주세요.":"Stopped: {0} hit its usage limit (quota or rate limit). Changes applied before the stop remain and can be undone. Wait for the limit to reset, or switch to another AI connection and send again.",
 "AI 사용 한도(쿼터·속도 제한)에 걸려 멈췄어요. 한도가 풀리길 기다리거나 다른 AI 연결로 바꾸세요.":"Stopped by the AI usage limit (quota or rate limit). Wait for it to reset or switch to another AI connection.",
-"십자":"Cross"}
+"십자":"Cross",
+"맞힌 뒤 상성 알림":"Effectiveness feedback after a hit",
+"보임(맞힌 뒤 「약점!」·「효과가 굉장했다!」)":"Show (\"Weak!\" and \"It's super effective!\" after a hit)",
+"안 보임(피해 숫자만)":"Hide (damage numbers only)"}
