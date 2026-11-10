@@ -134,9 +134,10 @@ export const LAY_DUNGEON_LAYOUT_TOOL: ToolDefinition = {
       boss: o.boss ?? null, enemies: o.enemies, chests: o.chests, locked: o.locked,
     });
     // 잠긴 문 = 쇠창살(조사해도 열리지 않는 막힘 이벤트). 열쇠·레버는 조수가 add_event 로 붙인다.
+    // 그림 고정(fixedGraphic) — 없으면 조사 때 대화 방향 맞추기가 창살을 플레이어 쪽으로 돌려 다른 칸(문짝 반쪽)이 그려졌다(fs-vqa-well D3).
     const bars = resolveGraphic({ textureKey: "tex_easyrpg_charset_object1", characterIndex: 5 } as never);
     o.locked.forEach((d, k) => upsertEventIntoMap(map, { id: `ev_${map.id}_locked${k + 1}`, name: "잠긴 문", x: d.x, y: d.y, trigger: { kind: "action" }, commands: [],
-      pages: [{ id: `ev_${map.id}_locked${k + 1}_p1`, name: "잠긴 문", conditions: [], graphic: bars, trigger: { kind: "action" }, priority: "same", overlapForbidden: true, movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [{ kind: "text", body: "굳게 잠긴 쇠창살이다." }] }] } as unknown as GameEvent));
+      pages: [{ id: `ev_${map.id}_locked${k + 1}_p1`, name: "잠긴 문", conditions: [], graphic: bars, animationType: "fixedGraphic", trigger: { kind: "action" }, priority: "same", overlapForbidden: true, movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [{ kind: "text", body: "굳게 잠긴 쇠창살이다." }] }] } as unknown as GameEvent));
     if (old.length) carryEvents(draft, map, old, gate, land, notes);
     const entrance = args.entrance as { fromMapId?: string; x?: number; y?: number } | undefined;
     if (!old.some((e) => transfersOut(e, map.id)) && entrance?.fromMapId && draft.maps[entrance.fromMapId] && Number.isInteger(entrance.x) && Number.isInteger(entrance.y)) {

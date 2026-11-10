@@ -3,6 +3,8 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
+import { createBeodeulCityTileset } from "@/project/defaults/beodeulCity";
+import { WELL_SHAFT_LAYOUT } from "@/project/flagship/fallen/wellShaftRooms";
 
 // 도구가 만드는 이벤트 페이지는 movement.speed·frequency 를 갖고 있어야 한다 — 없으면 프로젝트 무결성 검사
 // (deserialize(serialize()))가 거부해 그 뒤 쓰기 도구(remove_map 등)가 모두 실패했다(폴른 스타 우물 갱도 굽기 실측).
@@ -19,8 +21,24 @@ describe("tool-made event pages carry full movement", () => {
     const pages = context.project.maps[0]!.events.flatMap((event) => event.pages);
     expect(pages.length).toBeGreaterThan(0);
     for (const page of pages) {
-      expect(page.movement).toMatchObject({ type: "fixed", speed: expect.any(Number), frequency: expect.any(Number) });
+      expect(page?.movement).toMatchObject({ type: "fixed", speed: expect.any(Number), frequency: expect.any(Number) });
     }
     expect(() => deserialize(serialize(context.project))).not.toThrow();
+  });
+
+  // 잠긴 문(쇠창살) 페이지는 그림을 고정한다 — 없으면 조사할 때 대화 방향 맞추기가 창살을 플레이어 쪽으로 돌려
+  // 다른 칸(문짝 반쪽)이 그려졌다(폴른 스타 우물 쫐살문, fs-vqa-well D3).
+  it("lay_dungeon_layout locked-door pages keep a fixed graphic and full movement", () => {
+    const project = createBlankProject();
+    project.tilesets.beodeul_city ??= createBeodeulCityTileset();
+    const context: ToolContext = { project };
+    const result = runTool(context, "lay_dungeon_layout", { layout: JSON.parse(JSON.stringify(WELL_SHAFT_LAYOUT)), id: "locked_probe", name: "잠긴 문 시험" }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    const locked = context.project.maps.locked_probe!.events.filter((event) => /_locked\d+$/u.test(event.id));
+    expect(locked.length).toBeGreaterThan(0);
+    for (const page of locked.flatMap((event) => event.pages)) {
+      expect(page?.animationType).toBe("fixedGraphic");
+      expect(page?.movement).toMatchObject({ type: "fixed", speed: expect.any(Number), frequency: expect.any(Number) });
+    }
   });
 });
