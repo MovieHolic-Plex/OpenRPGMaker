@@ -138,10 +138,12 @@ export function resolveSkillChoreography(
   };
   const bundled=BUNDLED_BATTLE_MOTIONS.find(r=>r.id===ref.retroChoreographyId || !ref.retroChoreographyId && `skill_motion_${r.movement!.pattern}`===ref.id);
   if(bundled){const kind=want??"class",skill=synthesizeRecord(bundled,kind);return {origin:"default",id:bundled.id,kind,motion:skill.motion,skill,record:bundled};}
+  // 프로젝트 연출 레코드(chor_*)를 이름으로 짚었고 실제로 있으면 그것이 이긴다 — 기술 id 가 계약 연출 id 여도.
+  // 짚지 않았거나 없는 레코드면 아래 계약 규칙 그대로(폴른 스타 새라의 용기사 기술이 카엘 검 시트를 벗는 길).
+  const record = ref.retroChoreographyId && records ? records.find((row) => row.id === ref.retroChoreographyId) : undefined;
   const own = contract(ref.id);
   // A request for the other kind cannot replace an existing own contract with a borrowed one.
-  if (retroChoreographyKind(ref.id)) return own;
-  const record = ref.retroChoreographyId && records ? records.find((row) => row.id === ref.retroChoreographyId) : undefined;
+  if (!record && retroChoreographyKind(ref.id)) return own;
   if (record) {
     const kind = want ?? skillChoreographyRecordKind(record);
     const skill = synthesizeRecord(record, kind);
