@@ -10,6 +10,7 @@ const step = (id: string, place: string, event: string) => ({ id, place, event, 
 // 단계 종류를 섞는다(사람 둘·싸움·번호 자물쇠) — 전부 «살펴본다» 인 초안은 종류 검사(stepMixProblems)가 한 번 돌려보낸다.
 const KINDS = [{ kind: "talk", who: "문지기 겐" }, { kind: "find" }, { kind: "battle", who: "그림자 무사" }, { kind: "puzzle" }, { kind: "talk", who: "하녀 유키" }, { kind: "find" }] as const;
 const args = (places: string[], count: number, kinded = true) => ({
+  genre: "잠입 액션",
   playerGoal: "비밀 문서를 훔쳐 탈출한다",
   steps: Array.from({ length: count }, (_, i) => ({ ...step(`s${i + 1}`, places[i % places.length]!, `이벤트${i + 1}`), ...(kinded ? KINDS[i % KINDS.length] : {}) })),
   ending: { name: "탈출", how: "문서를 들고 성을 나선다", feeling: "안도" },

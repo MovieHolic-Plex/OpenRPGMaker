@@ -14,6 +14,7 @@
 // 순수 함수(before·after·요청 글).
 import type { Project } from "@/project/types";
 import { splitScriptSpeaker } from "@/project/endingSummary";
+import { isRereadMarker } from "./rereadPage";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -125,6 +126,11 @@ function standingPeople(before: Project, mapId: string): Map<string, string> {
   return out;
 }
 
+/** 함수가 지은 표지 이벤트 — 같은 관문·같은 종류의 문은 칸마다 같은 글이다(gateKeyedEntrances·gateEntrySteps·잠긴 집 문·막힌 길). */
+const BUILT_SIGN_EVENT = /^ev_(?:world_)?gate_|^ev_locked_door_|^ev_dead_end_/u;
+/** 함수가 여러 자리에 같은 글로 적는 안내 줄 — 남은 단서 목록(«· 아직 …»)과 그 단계 이벤트의 자리(«「X」은 … 에 있다.»). */
+const BUILT_HINT_LINE = /^·\s|^「[^」]{1,40}」[은는이가]\s.{1,60}에 있다[.。]?$/u;
+
 export interface SceneCraftFinding { readonly id: "repeat" | "name" | "thin" | "static" | "oneVoice" | "offPost"; readonly text: string }
 
 export function sceneCraftFindings(before: Project, after: Project, task: string): SceneCraftFinding[] {
@@ -141,6 +147,9 @@ export function sceneCraftFindings(before: Project, after: Project, task: string
   const seen = new Map<string, { p: ScenePage; line: Line }>();
   const repeated = new Set<string>();
   for (const p of pages) for (const line of p.lines) {
+    // 함수가 일부러 같은 글로 지은 것은 반복으로 세지 않는다 — 모델에게 «고쳐라» 로 돌려보내면 함수가 다시 같은 글로 짓는다:
+    // 다시 읽기 쪽(rereadPage.ts), 길목·잠긴 문·막힌 길 표지(같은 관문의 여러 칸), 남은 단서 목록 줄(«· 아직 …»), 길 안내 줄(«「X」은 … 에 있다.»).
+    if (isRereadMarker(p.lines[0]?.body) || BUILT_SIGN_EVENT.test(p.eventId) || BUILT_HINT_LINE.test(line.body.trim())) continue;
     const k = norm(line.body);
     if (k.length < 8 || oldLines.has(k)) continue;
     const first = seen.get(k);

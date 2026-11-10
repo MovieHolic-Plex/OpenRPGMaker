@@ -56,10 +56,20 @@ function walkCommands(list: unknown, visit: (cmd: Obj) => void): void {
   }
 }
 
+/** 범인을 가리는 사건이 있다는 낱말 — «미스터리»(분위기 말)와 달리 이것만으로 추리 게임이다. */
+const WHODUNIT_WORDS = /추리|범인|탐정|용의자|진범|whodunit|detective|culprit/iu;
+
+/**
+ * 추리(범인 찾기) 청사진인가. 요청이 «미스터리» 라고 했거나, 청사진 어디든 범인·추리·탐정·용의자를 말할 때만.
+ * 왜(2026-11-10 Terra fun-w1 «재밌는 게임»): 모델이 장르를 「증기 도시 미스터리」로 적자 사건 세우기가 돌아, 폭주 기관을 멈추는 게임의
+ * 중앙 기관실에 「상인 도윤」「하녀 로자」「여행자 미라」와 «밤새 식당 구석 자리에 있었어요» 알리바이가 섰고 엔딩이 그 셋의 증언에 묶였다.
+ * 모델이 분위기로 쓴 «미스터리» 한 낱말(제목·장르·단계)은 사건이 아니다.
+ */
 export function isMysteryBlueprint(project: Project): boolean {
   const bp = project.gameBlueprint;
   if (!bp) return false;
-  return MYSTERY_WORDS.test([bp.request ?? "", bp.playerGoal, bp.title, bp.genre, bp.ending.name, bp.ending.how, ...bp.steps.flatMap((s) => [s.event, s.action, s.gives])].join(" "));
+  if (MYSTERY_WORDS.test(bp.request ?? "")) return true;
+  return WHODUNIT_WORDS.test([bp.playerGoal, bp.title, bp.genre, bp.ending.name, bp.ending.how, ...bp.steps.flatMap((s) => [s.event, s.action, s.gives])].join(" "));
 }
 
 /** 모델이 이미 사건을 지었나 — presentItem, author_mystery_case 이벤트, 사람이 하는 범인 고르기(엔딩 갈래와 아닌 갈래가 섞인 선택지). */

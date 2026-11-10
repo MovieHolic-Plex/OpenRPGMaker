@@ -4,7 +4,7 @@
 // 한 판 = 찍기(맵마다 1배 전체 · 타이틀 그림 · 오프닝 그림/애니메틱 틀) → 검수자(역할표의 «눈» 또는 «검토자», 주 모델과 다른 계열을 먼저)
 // → 결함 목록(어디·무엇·왜) → 조수가 고침 → 다음 판. 결함 판정은 모델이 하되, 판 수·끝내기·보고 문구는 코드가 정한다.
 // 이 파일은 순수하다(찍기·호출은 넘겨받는다). 실행기 연결은 scripts/lib/assistantV2Runtime.ts.
-import { HAND_INTERIOR_TILESET_ID } from "@/project/retiredInteriorTilesets";
+import { roomSpecOf } from "@/editor/handInterior/builder";
 import type { Project } from "@/project/types";
 
 export const VQA_MAX_ROUNDS = 3;
@@ -212,13 +212,14 @@ export function vqaDefectLine(d: VqaDefect, index: number, project?: Project): s
   const target = d.target?.kind === "map" && d.target.ref ? ` (mapId: ${d.target.ref})`
     : d.target?.kind === "title" ? " (타이틀 화면 — set_title_screen)"
     : d.target?.kind === "opening" ? " (오프닝 — 오프닝 장면 다시 그리기)" : "";
-  // dress_room 은 손 도트 실내 방만 채운다 — 다른 칩셋 맵(세계 구성기 방·바깥)에 권하면 거절만 받는다(2026-11-10 jrpg-w1 «족장의 긴집»: dress_room·edit_place 둘 다 거절 뒤 막힘).
+  // dress_room 은 방 짓기 역할표(roomKit)가 있는 칩셋의 방만 채운다(손 도트 실내·일본·마법 학교·에도·캠퍼스…) — 역할표 없는 칩셋 맵(세계 구성기 방·바깥)에
+  // 권하면 거절만 받는다(2026-11-10 jrpg-w1 «족장의 긴집»: dress_room·edit_place 둘 다 거절 뒤 막힘).
   const map = d.target?.kind === "map" && d.target.ref ? project?.maps[d.target.ref] : undefined;
-  const handRoom = !map || map.tilesetId === HAND_INTERIOR_TILESET_ID;
+  const handRoom = !map || !project || !!roomSpecOf(project.tilesets[map.tilesetId]);
   const sparse = d.target?.kind === "map" && d.target.ref && SPARSE_ROOM.test(`${d.where} ${d.what}`)
     ? handRoom
       ? ` → dress_room({ mapId: "${d.target.ref}", at: 그 방 바닥 한 칸, purpose: "<그 방의 쓰임>" }) 으로 채운다(물건을 하나씩 찍지 않는다)`
-      : ` → not a hand-dot interior (dress_room·edit_place are refused here): add 2–4 props of this chipset with place_object (names from list_spatial_designs{kind:"object", mapId:"${d.target.ref}"}) or people with add_people; if nothing fits, block this item`
+      : ` → this map's chipset has no room kit (dress_room·edit_place are refused here): add 2–4 props of this chipset with place_object (names from list_spatial_designs{kind:"object", mapId:"${d.target.ref}"}) or people with add_people; if nothing fits, block this item`
     : "";
   return `${index + 1}. [${d.severity === "blocker" ? "막음" : "다듬기"}] ${d.where}${target} — ${d.what}${sparse}`;
 }

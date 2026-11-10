@@ -13,6 +13,24 @@ import { assert, requireArray, requireRecord, requireString } from "./io/guards"
 export const STEP_KINDS = ["talk", "find", "battle", "puzzle", "choice"] as const;
 export type GameBlueprintStepKind = (typeof STEP_KINDS)[number];
 
+/**
+ * 단계의 글 — build_blueprint_path 가 받은 대사·고를 것을 청사진에 남긴다. 경로를 다시 지어도(한 단계의 대사만 고쳐 불러도, 다음 턴에 불러도)
+ * 다른 단계의 대사·고르기·승리 대사를 잃지 않는다(2026-11-10 검토: 한 단계만 준 다시 짓기가 나머지 단계의 고르기와 엔딩 갈래를 지웠다).
+ */
+export interface GameBlueprintStepText {
+  lines?: string[];
+  lockedLines?: string[];
+  doneLines?: string[];
+  /** battle: 이긴 뒤의 말. */
+  winLines?: string[];
+  wrongLines?: string[];
+  /** 번호 자물쇠의 답. */
+  code?: string;
+  options?: string[];
+  /** choice: 고를 것 — lines = 고른 뒤의 답, later = 엔딩 직전에 보이는 그 선택의 결과 한 줄. */
+  choices?: { text: string; lines?: string[]; later?: string }[];
+}
+
 export interface GameBlueprintStep {
   /** s1, s2 … 순서대로. */
   id: string;
@@ -32,6 +50,8 @@ export interface GameBlueprintStep {
   gives: string;
   /** 이 장면에서 의도한 느낌(설렘·긴장·안도…). */
   feeling: string;
+  /** 이 단계 이벤트의 글(build_blueprint_path 가 채운다). */
+  text?: GameBlueprintStepText;
 }
 
 /** 이 게임의 장소 하나 — 세계(setting)의 장소 종류(kind)로 함수가 짓는다(src/ai/v2/world.ts). */
@@ -86,6 +106,28 @@ export function blueprintListText(value: unknown): unknown {
   return parts.length ? parts.join(", ") : undefined;
 }
 
+const STEP_TEXT_LISTS = ["lines", "lockedLines", "doneLines", "winLines", "wrongLines", "options"] as const;
+/** 단계의 글을 저장 모양으로 — 빈 줄을 걷고 길이를 자른다. 남는 것이 없으면 undefined. 모양이 틀려도 던지지 않는다(글은 덧붙임이다). */
+export function normalizeStepText(raw: unknown): GameBlueprintStepText | undefined {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return undefined;
+  const r = raw as Record<string, unknown>;
+  const list = (v: unknown, max: number): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && !!x.trim()).map((x) => x.trim().slice(0, 400)).slice(0, max) : []);
+  const out: GameBlueprintStepText = {};
+  for (const key of STEP_TEXT_LISTS) { const got = list(r[key], 8); if (got.length) out[key] = got; }
+  if ((typeof r.code === "string" || typeof r.code === "number") && String(r.code).trim()) out.code = String(r.code).trim().slice(0, 24);
+  const choices = (Array.isArray(r.choices) ? r.choices : []).flatMap((c) => {
+    if (!c || typeof c !== "object") return [];
+    const o = c as Record<string, unknown>;
+    const text = typeof o.text === "string" ? o.text.trim().slice(0, 80) : "";
+    if (!text) return [];
+    const lines = list(o.lines, 6);
+    const later = typeof o.later === "string" ? o.later.trim().slice(0, 300) : "";
+    return [{ text, ...(lines.length ? { lines } : {}), ...(later ? { later } : {}) }];
+  }).slice(0, 4);
+  if (choices.length) out.choices = choices;
+  return Object.keys(out).length ? out : undefined;
+}
+
 /** 저장본·모델 입력 둘 다 이 한 곳으로 읽는다. 틀리면 무엇이 틀렸는지 한국어로 던진다. */
 export function normalizeGameBlueprint(value: unknown): GameBlueprint {
   const data = requireRecord("gameBlueprint", value);
@@ -112,6 +154,7 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
       ...(needsRaw === undefined || needsRaw === null || (typeof needsRaw === "string" && !needsRaw.trim()) ? {} : { needs: bounded(`steps[${i}].needs`, needsRaw, BLUEPRINT_LIMITS.text) }),
       gives: bounded(`steps[${i}].gives`, givesRaw, BLUEPRINT_LIMITS.text),
       feeling: bounded(`steps[${i}].feeling`, s.feeling, 60),
+      ...(() => { const text = normalizeStepText(s.text); return text ? { text } : {}; })(),
     };
   });
   const ending = requireRecord("gameBlueprint.ending", data.ending);

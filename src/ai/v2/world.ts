@@ -89,6 +89,10 @@ export const WORLDS: readonly WorldSetting[] = [
       classic("temple", "옛 신전", "ruined temple", { type: "dungeon", theme: "temple", size: "small" }, { danger: true }),
       classic("deep-forest", "깊은 숲", "forest maze of clearings", { type: "dungeon", theme: "forest", size: "small" }, { danger: true }),
       classic("tower", "마법사의 탑", "wizard tower going up", { type: "dungeon", theme: "tower", size: "small" }, { danger: true }),
+      // 실내(손 도트 실내 — 방은 모델이 설계한다). 없으면 «촌장의 집»·«여관» 이 바깥 종류(포구·늪지 마을)로 메워졌다(2026-11-10 검토).
+      classic("house", "집 안", "inside of a house (a named person's home)", { type: "interior", size: "small" }, { indoor: true }),
+      classic("inn", "여관", "inn or tavern common room", { type: "interior", size: "small" }, { indoor: true }),
+      classic("shop", "가게", "shop, smithy or workshop", { type: "interior", size: "small" }, { indoor: true }),
     ],
   },
   {
@@ -244,12 +248,27 @@ export const isComposedWorld = (world: WorldSetting | undefined): world is World
 
 const FANTASY_WORDS = /판타지|용사|마왕|기사|왕국|검과|드래곤|\b(?:fantasy|hero|knight|dragon|kingdom)\b/iu;
 
+/** 요청에서 뜻이 없는 낱말(«재밌는 게임 하나 만들어 줘») — 이것을 걷고 남는 글이 없으면 무엇이든 좋다는 요청이다. */
+const GENERIC_KO = /만들어\s*주세요|만들어\s*줘|만들어\s*줄래|만들어|해\s*주세요|해\s*줘|주세요|재미있는|재밌는|재미난|신나는|멋진|간단한|짧은|새로운|아무거나|아무|알아서|적당히|게임|하나|한\s*개|한\s*편|좀|줘/gu;
+const GENERIC_EN = /\b(?:please|make|create|build|give|me|a|an|the|some|any|game|fun|simple|short|new|cool|good|nice|one)\b/giu;
+/** 모험·RPG 쪽 요청 — 여러 장소를 다니는 게임이라 어느 세계든 어울린다. */
+const ADVENTURE_WORDS = /모험|어드벤처|RPG|알피지|롤플레잉|판타지|용사|마왕|던전|퀘스트|전설|영웅|기사|왕국|드래곤|보물|탐험|원정|여정|\b(?:adventure|fantasy|quest|hero|dungeon|dragon|treasure|expedition|journey)\b/iu;
+/**
+ * 낱말로 세계를 말하지 않은 요청에 세계를 골라 줘도 되나 — 무엇이든 좋다는 요청이거나 모험·RPG 요청일 때만.
+ * 왜(2026-11-10 검토): «저택에서 탈출하는 게임»·«탐정 게임»·«카페 경영 게임» 이 열쇠 해시로 선사 시대 세계를 받았다 — 그 게임들은 방을 설계해 짓는 종전 길이 맞다.
+ * 막을 낱말을 늘리는 대신 되는 요청을 좁게 정한다(모르는 장르는 종전 길로 간다).
+ */
+export function fitsAnyWorld(request: string): boolean {
+  if (ADVENTURE_WORDS.test(request)) return true;
+  return !request.replace(GENERIC_KO, " ").replace(GENERIC_EN, " ").replace(/[^\p{L}\p{N}]+/gu, "");
+}
+
 /**
  * 게임 하나를 새로 만드는 요청의 세계 고르기. 요청은 사용자 글(의도 메모를 뗀 것)이다.
  *  - 요청이 세계를 말하면 그 세계.
  *  - 다른 테마·장르 낱말(조선·현대·학교·연애·추리·숲·항구…)이 있으면 undefined — 종전 길(장소 이름으로 추정)이 맡는다.
  *  - 손댄 맵이 이미 있으면 그 칩셋의 세계(없으면 undefined) — 게임 중간에 칩셋이 바뀌지 않게.
- *  - 낱말이 없으면 프로젝트 열쇠 해시로 풀에서 하나(같은 게임은 늘 같은 세계, 다른 게임은 다른 세계). 열쇠가 없으면 undefined.
+ *  - 무엇이든 좋다는 요청·모험/RPG 요청(fitsAnyWorld)이면 프로젝트 열쇠 해시로 풀에서 하나(같은 게임은 늘 같은 세계, 다른 게임은 다른 세계). 열쇠가 없으면 undefined.
  * 후보는 프로젝트에 칩셋이 실제로 있는 세계만.
  */
 export function pickWorld(project: Pick<Project, "tilesets" | "maps">, projectKey: string | undefined, request: string): WorldSetting | undefined {
@@ -258,7 +277,7 @@ export function pickWorld(project: Pick<Project, "tilesets" | "maps">, projectKe
   if (lived.length) return have.find((w) => w.composer && lived.some((m) => m.tilesetId === w.tilesetId));
   const named = have.find((w) => w.named(request));
   if (named) return named;
-  if (hasThemeWord(request) || !projectKey?.trim()) return undefined;
+  if (hasThemeWord(request) || !projectKey?.trim() || !fitsAnyWorld(request)) return undefined;
   const pool = have.filter((w) => w.pool === "fantasy" || (w.pool === "open" && !FANTASY_WORDS.test(request)));
   return pool.length >= 2 ? pool[projectKeyHash(`world|${projectKey}`) % pool.length] : undefined;
 }
@@ -326,6 +345,10 @@ export function worldPlaceProblems(bp: Pick<GameBlueprint, "places" | "steps">, 
   return problems;
 }
 
+/** 장소 이름·모델이 적은 종류 낱말이 실내를 말하나(«촌장의 집»·«여관»·interior) — 메울 때 실내 종류를 먼저 고른다. 모르면 {}. */
+const INDOOR_NAME = /집$|집\s*안|\s안$|안쪽 방|내부|[가-힣]실$|방$|여관|주점|술집|주막|가게|상점|공방|회관|저택|서재|창고|오두막|선실|성당|예배당|\b(?:house|home|inn|tavern|shop|store|room|interior|inside|hall|cabin|hut|cellar)\b/iu;
+const indoorHint = (name: string, kindWord = ""): { indoor?: boolean } => (INDOOR_NAME.test(name.trim()) || INDOOR_NAME.test(kindWord.trim()) ? { indoor: true } : {});
+
 /**
  * 돌려보낸 뒤에도 남은 문제를 함수가 메운다(막다른 길을 만들지 않는다): 모르는 종류는 남는 종류로, 단계가 가리키는 없는 장소는 장소로 더한다.
  * 고친 것 한 줄씩과 고친 장소 목록.
@@ -337,13 +360,13 @@ export function repairWorldPlaces(bp: Pick<GameBlueprint, "places" | "steps">, w
   for (const p of bp.places ?? []) {
     const kind = worldKind(world, p.kind);
     const over = kind && used().filter((k) => k === kind.id).length >= MAX_SAME_KIND;
-    const fixed = kind && !over ? kind : spareKind(world, used(), kind ? { indoor: !!kind.indoor } : {});
+    const fixed = kind && !over ? kind : spareKind(world, used(), kind ? { indoor: !!kind.indoor } : indoorHint(p.name, p.kind));
     if (fixed.id !== p.kind) notes.push(`place «${p.name}» kind ${p.kind} → ${fixed.id}`);
     places.push({ ...p, kind: fixed.id });
   }
   for (const name of [...new Set(bp.steps.map((s) => s.place))]) {
     if (places.some((p) => norm(p.name) === norm(name))) continue;
-    const kind = spareKind(world, used());
+    const kind = spareKind(world, used(), indoorHint(name));
     places.push({ name, kind: kind.id });
     notes.push(`added place «${name}» as ${kind.id}`);
   }

@@ -6,8 +6,11 @@ import { buildV2SystemPrompt } from "@/ai/v2/prompt";
 import { countMaps } from "@/ai/v2/mapCount";
 import { walkGame } from "@/ai/v2/makeGame";
 import { battleStepBypass, stepMixProblems, walkBlueprint } from "@/ai/v2/blueprint";
+import { sceneCraftFindings } from "@/ai/v2/sceneCraft";
+import { isMysteryBlueprint } from "@/ai/v2/mysteryCase";
+import { parseAdvisorReply } from "@/ai/v2/advisor";
 import { builderFor } from "@/ai/v2/builders";
-import { WORLDS, parseWorldStyle, pickWorld, pickWorldDoor, repairWorldPlaces, worldById, worldCard, worldKind, worldPlaceProblems, worldPlaceSpec } from "@/ai/v2/world";
+import { WORLDS, fitsAnyWorld, parseWorldStyle, pickWorld, pickWorldDoor, repairWorldPlaces, worldById, worldCard, worldKind, worldPlaceProblems, worldPlaceSpec } from "@/ai/v2/world";
 import { worldForRequest } from "@/ai/v2/worldRequest";
 import type { PiAssistantV2Env } from "@/ai/v2/env";
 import type { ToolContext } from "@/editor/tools/types";
@@ -181,7 +184,10 @@ describe("build_world — 한 세계의 장소를 짓고 잇는다", () => {
     expect(ctx.project.gameBlueprint?.places).toHaveLength(6);
   });
 
-  it("build_world 한 번으로 모든 장소가 서고, 한 칩셋이고, 시작에서 왕복으로 닿고, 다 센다", async () => {
+  // 세계 한 벌을 짓는 시험은 구성기 여섯 번 + 잇기라 느리다(부하가 있는 기계에서 25초 안팎) — 한 번 지어 여러 가지를 본다.
+  const SLOW = 240_000;
+
+  it("build_world 한 번으로 모든 장소가 서고, 한 칩셋이고, 시작에서 왕복으로 닿고, 다 세고, 위험한 곳에 적과 상자가 선다", async () => {
     const { ctx, tools, call } = harness(task, key(1));
     expect(tools.some((t) => t.name === "build_world")).toBe(true);
     expect((await call("write_blueprint", blueprint)).ok).toBe(true);
@@ -199,12 +205,19 @@ describe("build_world — 한 세계의 장소를 짓고 잇는다", () => {
     // 얼음 동굴 방은 얼음 절벽의 동굴 입구에서 들어간다.
     const cliff = maps[3]!, cave = maps[5]!;
     expect(JSON.stringify(cliff.events)).toContain(`"mapId":"${cave.id}"`);
-    // 다시 불러도 다시 짓지 않는다. add 는 장소를 더한다(모르는 종류는 남는 종류로).
+    // 위험한 종류(★)의 장소에는 보이는 적과 보물상자, 안전한 장소에는 없다.
+    const stocked = (m: { events: readonly { id: string }[] }) => ({ foes: m.events.filter((e) => /_wfoe\d+$/u.test(e.id)).length, chest: m.events.filter((e) => e.id.endsWith("_wchest")).length });
+    for (const m of [cliff, cave]) { expect(stocked(m).foes).toBeGreaterThanOrEqual(1); expect(stocked(m).chest).toBe(1); }
+    expect(stocked(maps[0]!)).toEqual({ foes: 0, chest: 0 });
+    const total = () => Object.values(ctx.project.maps).reduce((n, m) => n + stocked(m).foes + stocked(m).chest, 0);
+    const before = total();
+    // 다시 불러도 다시 짓지 않고 더 세우지 않는다. add 는 장소를 더한다(모르는 종류는 남는 종류로 — 이름이 실내면 실내 종류).
     const again = await call("build_world", { add: [{ name: "낚시 오두막", kind: "hut" }] });
     expect(again.ok).toBe(true);
     expect(Object.keys(ctx.project.maps)).toHaveLength(places.length + 1);
     expect(ctx.project.gameBlueprint?.places).toHaveLength(places.length + 1);
-  });
+    expect(total()).toBe(before);
+  }, SLOW);
 
   it("전부 «살펴본다» 인 청사진은 종류를 섞으라고 돌려보낸다", async () => {
     const { ctx, call } = harness(task, key(1));
@@ -215,13 +228,48 @@ describe("build_world — 한 세계의 장소를 짓고 잇는다", () => {
     expect(res.summary).toContain("no puzzle and no choice step");
     expect(ctx.project.gameBlueprint).toBeUndefined();
     expect(stepMixProblems({ steps: mixed(["가", "나", "다", "라", "마", "바"]) }, true)).toEqual([]);
-    expect(stepMixProblems({ steps: mixed(["가", "나", "다", "라", "마", "바"]).map((st) => (st.kind === "talk" ? { ...st, who: undefined } : st)) }, true).join(" ")).toContain("needs who");
+    expect(stepMixProblems({ steps: mixed(["가", "나", "다", "라", "마", "바"]).map((st) => (st.kind === "talk" ? { ...st, who: "" } : st)) }, true).join(" ")).toContain("needs who");
   });
 
-  it("청사진 경로는 단계 종류대로 짓는다 — 사람은 제 말로, 고르기는 결말 한 줄을 바꾸고, 싸움은 이겨야 넘어간다", async () => {
+  it("구성기 세계에서 make_place 는 세계 장소로 짓는다(버들항 맵이 섞이지 않는다)", async () => {
     const { ctx, call } = harness(task, key(1));
-    await call("write_blueprint", blueprint);
-    await call("build_world", {});
+    // 장소 둘짜리 세계 청사진을 바로 건다(짓는 시간을 줄인다).
+    ctx.project.gameBlueprint = normalizeGameBlueprint({ ...blueprint, setting: "snow_north", places: [{ name: "눈마을", kind: "village" }, { name: "얼음 절벽", kind: "ice-cliff" }], steps: mixed(["눈마을", "얼음 절벽", "눈마을", "얼음 절벽", "눈마을", "얼음 절벽"]) });
+    const res = await call("make_place", { spec: { type: "cave", name: "숨은 굴" } });
+    expect(res.ok).toBe(true);
+    expect(new Set(Object.values(ctx.project.maps).map((m) => m.tilesetId))).toEqual(new Set(["snow_north"]));
+    expect(ctx.project.gameBlueprint?.places?.some((p) => p.name === "숨은 굴")).toBe(true);
+  }, SLOW);
+});
+
+// 경로 시험은 세계를 짓지 않는다 — 장소 맵이 없으면 경로 짓기가 시작 맵에 단계 이벤트를 둔다(빠르다). 세계 없는 요청(학교 = 다른 테마 낱말).
+describe("단계 종류 — 청사진 경로가 종류마다 다른 이벤트를 짓는다", () => {
+  const task = "학교 괴담 모험 게임 하나 만들어 줘.";
+  function harness() {
+    const project = createBlankProject();
+    const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
+    const env: PiAssistantV2Env = { ctx, request: { task, provider: "local-cli:claude", mapIds: [], project } as never, emit: () => {}, record: () => {}, sideChat: async () => "{}", render: async () => "", checkpoint: async () => {} };
+    const tools = createV2Tools(env, new V2Session());
+    const call = async (name: string, args: unknown): Promise<{ ok?: boolean; summary?: string }> => {
+      const res = await tools.find((t) => t.name === name)!.execute(`c-${name}`, args);
+      return JSON.parse((res.content as { type: string; text?: string }[]).find((c) => c.type === "text")!.text!) as { ok?: boolean; summary?: string };
+    };
+    const eventOf = (name: string) => Object.values(ctx.project.maps).flatMap((m) => m.events).find((e) => e.name === name)!;
+    return { ctx, call, eventOf, text: (name: string) => JSON.stringify(eventOf(name).pages) };
+  }
+  const SPOTS = ["현관", "복도", "교실", "도서실", "옥상 계단", "옥상"];
+  const base = (stepsIn: GameBlueprint["steps"]) => ({ title: "밤의 학교", genre: "모험", playerGoal: "밤의 학교에서 단서를 따라 옥상까지 가자.", steps: stepsIn, ending: { name: "새벽", how: "해가 뜨고 문이 열렸다.", feeling: "안도" } });
+
+  it("세계 없는 게임의 청사진에는 장소 목록을 남기지 않는다", async () => {
+    const { ctx, call } = harness();
+    expect((await call("write_blueprint", { ...base(mixed(SPOTS)), places: SPOTS.map((name) => ({ name, kind: "village" })) })).ok).toBe(true);
+    expect(ctx.project.gameBlueprint?.setting).toBeUndefined();
+    expect(ctx.project.gameBlueprint?.places).toBeUndefined();
+  });
+
+  it("사람은 제 말로, 고르기는 결말 한 줄을 바꾸고, 싸움은 이겨야 넘어간다", async () => {
+    const { ctx, call, eventOf, text } = harness();
+    expect((await call("write_blueprint", base(mixed(SPOTS)))).ok).toBe(true);
     // 사람이 말하는 단계에 대사가 없으면 한 번 돌려보낸다 — 두 번째는 받은 글로 짓는다.
     const bounced = await call("build_blueprint_path", {});
     expect(bounced.ok).toBe(false);
@@ -230,56 +278,102 @@ describe("build_world — 한 세계의 장소를 짓고 잇는다", () => {
     expect((await call("build_blueprint_path", { steps: STEP_TEXT })).ok).toBe(true);
     const project = ctx.project;
     expect(walkBlueprint(project).blockers).toEqual([]);
-    const eventOf = (name: string) => Object.values(project.maps).flatMap((m) => m.events).find((e) => e.name === name)!;
-    const text = (name: string) => JSON.stringify(eventOf(name).pages);
     // 사람: 그 사람 이름으로 말하고(괄호 줄은 서술), 캐릭터 칩으로 서고, «알아냈다» 토큰 줄이 없다.
     expect(text("촌장 하르")).toContain('"speaker":"촌장 하르","body":"어서 오게. 밤마다 종이 저절로 울린다네."');
     expect(text("촌장 하르")).toContain('{"kind":"text","body":"(촌장이 한숨을 쉰다.)"}');
     expect(text("촌장 하르")).not.toContain("알아냈다");
     expect((eventOf("촌장 하르").pages?.[0]?.graphic as { sprite?: unknown }).sprite).toBeDefined();
     // 찾기: 사람 칩으로 서지 않는다.
-    expect((eventOf("촌장 회관의 낡은 상자").pages?.[0]?.graphic as { sprite?: unknown }).sprite).toBeUndefined();
+    expect((eventOf("복도의 낡은 상자").pages?.[0]?.graphic as { sprite?: unknown }).sprite).toBeUndefined();
     // 고르기: 고를 것 둘, 고른 것마다 스위치 — 엔딩 직전 줄이 그 스위치로 갈린다.
     expect(text("떠돌이 상인 미라")).toContain('"kind":"choices"');
     expect(text("떠돌이 상인 미라")).toContain("등불을 산다");
-    const ending = Object.values(project.maps).flatMap((m) => m.events).find((e) => JSON.stringify(e.pages).includes("triggerEnding"))!;
-    expect(JSON.stringify(ending.pages)).toContain("미라의 등불이 마지막 길을 밝혔다.");
-    expect(JSON.stringify(ending.pages)).toContain("미라의 지도 덕에 지름길로 왔다.");
+    const endingText = () => JSON.stringify(Object.values(ctx.project.maps).flatMap((m) => m.events).find((e) => JSON.stringify(e.pages).includes("triggerEnding"))!.pages);
+    expect(endingText()).toContain("미라의 등불이 마지막 길을 밝혔다.");
+    expect(endingText()).toContain("미라의 지도 덕에 지름길로 왔다.");
     // 싸움: 대사 → 그 상대 이름의 무리와 전투 → 이긴 갈래에서만 진행.
-    const foe = eventOf("얼음 문지기");
-    const fight = (foe.pages ?? []).map((pg) => pg.commands ?? []).find((cmds) => cmds.some((c) => c.kind === "battleProcessing"))! as unknown as { kind: string; troopId?: string; then?: { kind: string }[] }[];
-    expect(fight.map((c) => c.kind)).toEqual(["text", "battleProcessing", "fork"]);
-    expect(fight[2]!.then!.some((c) => c.kind === "setSwitch")).toBe(true);
-    const troop = project.database.troops.find((t) => t.id === fight[1]!.troopId)!;
-    expect(troop.name).toBe("얼음 문지기");
+    const fightOf = () => (eventOf("얼음 문지기").pages ?? []).map((pg) => pg.commands ?? []).find((cmds) => cmds.some((c) => c.kind === "battleProcessing"))! as unknown as { kind: string; troopId?: string; then?: { kind: string; body?: string }[] }[];
+    expect(fightOf().map((c) => c.kind)).toEqual(["text", "battleProcessing", "fork"]);
+    expect(fightOf()[2]!.then!.some((c) => c.kind === "setSwitch")).toBe(true);
+    expect(project.database.troops.find((t) => t.id === fightOf()[1]!.troopId)!.name).toBe("얼음 문지기");
     expect(project.database.enemies.some((e) => e.name === "얼음 문지기")).toBe(true);
-    expect(battleStepBypass(project, foe)).toBeUndefined();
+    expect(battleStepBypass(project, eventOf("얼음 문지기"))).toBeUndefined();
+    // 다시 읽기 쪽(했던 말을 한 번 더)은 장면 반복 검사가 세지 않는다.
+    expect(text("촌장 하르")).toContain("(다시 묻는다.)");
+    expect(sceneCraftFindings(createBlankProject(), ctx.project, task).filter((f) => f.id === "repeat")).toEqual([]);
+
+    // 한 단계의 대사만 고쳐 다시 불러도 나머지 단계의 고르기·결말 갈래·승리 대사가 남는다(글은 청사진 단계에 남는다).
+    expect((await call("build_blueprint_path", { steps: [{ id: "s1", lines: ["자네가 왔군. 종탑을 봐 주게."] }] })).ok).toBe(true);
+    expect(text("촌장 하르")).toContain("자네가 왔군. 종탑을 봐 주게.");
+    expect(text("떠돌이 상인 미라")).toContain('"kind":"choices"');
+    expect(endingText()).toContain("미라의 등불이 마지막 길을 밝혔다.");
+    expect(fightOf()[2]!.then![0]!.body).toBe("…강하군. 지나가라.");
+    expect(ctx.project.gameBlueprint?.steps.find((st) => st.id === "s3")?.text?.choices).toHaveLength(2);
+    // 청사진을 같은 단계로 다시 써도(이름 맞추기) 단계 글을 물려받는다.
+    await call("write_blueprint", { ...base(ctx.project.gameBlueprint!.steps.map(({ text: _text, ...st }) => st)), playerGoal: "밤의 학교에서 단서를 따라 옥상 문을 열자." });
+    expect(ctx.project.gameBlueprint?.steps.find((st) => st.id === "s5")?.text?.winLines).toEqual(["…강하군. 지나가라."]);
+  }, 120_000);
+
+  it("마지막 단계가 고르기·싸움이어도 그 종류대로 짓는다", async () => {
+    // 마지막이 고르기: 엔딩 이벤트에서 고르고, 고른 것의 결말 줄 뒤에 엔딩.
+    const a = harness();
+    const lastChoice = mixed(SPOTS).map((st, i) => (i === 5 ? { ...st, kind: "choice" as const, who: "옥상의 소녀", event: "옥상의 소녀" } : i === 2 ? { ...st, kind: "talk" as const } : st));
+    await a.call("write_blueprint", base(lastChoice));
+    // 첫 호출은 다른 사람 단계의 대사가 없어 돌려보내지만 받은 글은 청사진에 남는다 — 두 번째는 글 없이 불러도 그 글로 짓는다.
+    expect((await a.call("build_blueprint_path", { steps: [{ id: "s6", lines: ["무엇을 바라지?"], choices: [{ text: "문을 연다", later: "문이 열리고 새벽빛이 들었다." }, { text: "남는다", later: "너는 소녀 곁에 남았다." }] }] })).ok).toBe(false);
+    expect((await a.call("build_blueprint_path", {})).ok).toBe(true);
+    const end = JSON.stringify(a.eventOf("옥상의 소녀").pages);
+    expect(end).toContain('"kind":"choices"');
+    expect(end).toContain("너는 소녀 곁에 남았다.");
+    expect(end).toContain("triggerEnding");
+    // 마지막이 싸움이고 대사를 안 줬다: 상대가 «살펴보았다»·엔딩 글을 말하지 않는다 — 서술로 열고, 엔딩 글은 이긴 뒤 서술.
+    const b = harness();
+    const lastBattle = mixed(SPOTS).map((st, i) => (i === 5 ? { ...st, kind: "battle" as const, who: "옥상의 그림자", event: "옥상의 그림자", action: "그림자와 싸워 이긴다" } : i === 4 ? { ...st, kind: "find" as const, who: undefined, event: "옥상 계단의 낡은 상자" } : st));
+    await b.call("write_blueprint", base(lastBattle as GameBlueprint["steps"]));
+    await b.call("build_blueprint_path", {});
+    await b.call("build_blueprint_path", {});
+    const foe = b.eventOf("옥상의 그림자");
+    const spoken = JSON.stringify(foe.pages);
+    expect(spoken).not.toContain('"speaker":"옥상의 그림자","body":"옥상의 그림자');
+    expect(spoken).not.toContain('"speaker":"옥상의 그림자","body":"해가 뜨고 문이 열렸다."');
+    const page = (foe.pages ?? []).map((pg) => pg.commands ?? []).find((cmds) => cmds.some((c) => c.kind === "battleProcessing"))! as unknown as { kind: string; then?: { kind: string; body?: string }[] }[];
+    expect(page.map((c) => c.kind)).toEqual(["text", "battleProcessing", "fork"]);
+    expect(page[2]!.then!.map((c) => c.kind)).toEqual(["text", "text", "triggerEnding"]);
+    expect(page[2]!.then![1]!.body).toBe("(해가 뜨고 문이 열렸다.)");
+  }, 120_000);
+});
+
+describe("함수가 지은 것을 검사가 다시 모델에게 돌려보내지 않는다", () => {
+  it("모델이 분위기로 쓴 «미스터리» 는 추리 사건이 아니다 — 요청이 말했거나 범인·추리가 있을 때만", () => {
+    const project = createBlankProject();
+    const bp = (genre: string, request: string, goal = "기관을 멈추자.") => normalizeGameBlueprint({ title: "t", genre, playerGoal: goal, request, steps: steps(["가", "나"]), ending: { name: "e", how: "h", feeling: "f" } });
+    project.gameBlueprint = bp("증기 도시 미스터리", "재밌는 게임 만들어 줘.");
+    expect(isMysteryBlueprint(project)).toBe(false);
+    project.gameBlueprint = bp("모험", "미스터리 게임 만들어 줘.");
+    expect(isMysteryBlueprint(project)).toBe(true);
+    project.gameBlueprint = bp("모험", "재밌는 게임 만들어 줘.", "여관에서 범인을 찾아내자.");
+    expect(isMysteryBlueprint(project)).toBe(true);
   });
 
-  it("위험한 종류의 장소에는 보이는 적과 보물상자가 선다(안전한 장소에는 없다)", async () => {
-    const { ctx, call } = harness(task, key(1));
-    await call("write_blueprint", blueprint);
-    await call("build_world", {});
-    const byName = (name: string) => Object.values(ctx.project.maps).find((m) => m.name === name)!;
-    for (const name of ["얼음 절벽", "얼음 동굴"]) {
-      const map = byName(name);
-      expect(map.events.some((e) => /_wfoe\d+$/u.test(e.id))).toBe(true);
-      expect(map.events.some((e) => e.id.endsWith("_wchest"))).toBe(true);
-    }
-    expect(byName("눈마을").events.some((e) => /_wfoe\d+$/u.test(e.id))).toBe(false);
-    // 다시 불러도 더 세우지 않는다.
-    const count = () => Object.values(ctx.project.maps).reduce((n, m) => n + m.events.filter((e) => /_wfoe\d+$|_wchest$/u.test(e.id)).length, 0);
-    const before = count();
-    await call("build_world", {});
-    expect(count()).toBe(before);
+  it("자리표시 시작 맵 은퇴는 막는 삭제가 아니다 — 그 맵 안의 것을 지운 삭제는 그대로 막는다", () => {
+    const level = (what: string) => parseAdvisorReply(JSON.stringify({ claims: [], removals: [{ what, mentioned: false }], unreachable: [], missing: [], notes: [] })).notes[0]!.level;
+    expect(level("빈 맵 삭제")).toBe("aside");
+    expect(level("맵 「빈 맵」(map_blank_start) 삭제")).toBe("aside");
+    expect(level("빈 맵에 있던 촌장 NPC 삭제")).toBe("blocker");
+    expect(level("여관 주인 이벤트 삭제")).toBe("blocker");
   });
 
-  it("구성기 세계에서 make_place 는 세계 장소로 짓는다(버들항 맵이 섞이지 않는다)", async () => {
-    const { ctx, call } = harness(task, key(1));
-    await call("write_blueprint", blueprint);
-    const res = await call("make_place", { spec: { type: "cave", name: "숨은 굴" } });
-    expect(res.ok).toBe(true);
-    expect(new Set(Object.values(ctx.project.maps).map((m) => m.tilesetId))).toEqual(new Set(["snow_north"]));
-    expect(ctx.project.gameBlueprint?.places?.some((p) => p.name === "숨은 굴")).toBe(true);
+  it("세계를 고르는 요청은 무엇이든 좋다는 요청과 모험·RPG 요청뿐이다", () => {
+    for (const ok of ["재밌는 게임 만들어 줘.", "게임 하나 만들어 줘", "판타지 RPG 게임 하나 만들어 줘.", "용사가 마왕을 물리치는 게임", "make me a fun game"]) expect(fitsAnyWorld(ok)).toBe(true);
+    for (const no of ["저택에서 탈출하는 게임 만들어 줘", "탐정 게임 하나 만들어 줘", "카페 경영 게임 만들어 줘", "농장 게임"]) expect(fitsAnyWorld(no)).toBe(false);
+    const project = createBlankProject();
+    for (let i = 0; i < 20; i++) for (const no of ["저택에서 탈출하는 게임 만들어 줘", "탐정 게임 하나 만들어 줘", "카페 경영 게임 만들어 줘"]) expect(pickWorld(project, key(i), no)).toBeUndefined();
+  });
+
+  it("버들항 세계는 집·여관을 실내 종류로 받고, 메우기는 실내 이름을 실내 종류로 메운다", () => {
+    const beodeul = worldById("beodeul")!;
+    expect(worldKind(beodeul, "inn")?.indoor).toBe(true);
+    const fixed = repairWorldPlaces({ places: [{ name: "강가 마을", kind: "village" }, { name: "촌장의 집", kind: "interior" }, { name: "여관", kind: "tavern-room" }], steps: steps(["강가 마을", "대장간 안"]) }, beodeul);
+    for (const name of ["촌장의 집", "여관", "대장간 안"]) expect(worldKind(beodeul, fixed.places.find((p) => p.name === name)!.kind)?.indoor).toBe(true);
   });
 });

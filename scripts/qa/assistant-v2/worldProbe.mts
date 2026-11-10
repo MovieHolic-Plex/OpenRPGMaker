@@ -63,7 +63,10 @@ async function probe(world: WorldSetting): Promise<void> {
   const prompt = buildV2SystemPrompt(ctx.project, ctx.currentMapId, task, undefined, `["project","probe-${world.id}"]`).join("\n");
   const hasCard = prompt.includes(`[World of this game — ${world.name}]`);
   // 장소: 종류를 차례로 8곳까지(종류가 적은 세계는 두 번씩), 단계는 앞 6곳에 하나씩.
-  const kinds = world.kinds.length >= 6 ? world.kinds.slice(0, 8) : [...world.kinds, ...world.kinds].slice(0, 6);
+  // 바깥 종류 먼저 여섯까지, 실내 종류 둘(단계는 앞 여섯 곳을 지난다).
+  const outdoor = world.kinds.filter((k) => !k.indoor), indoor = world.kinds.filter((k) => k.indoor);
+  const mix = [...outdoor.slice(0, indoor.length ? 6 : 8), ...indoor.slice(0, 8 - Math.min(outdoor.length, 6))].slice(0, 8);
+  const kinds = mix.length >= 6 ? mix : [...world.kinds, ...world.kinds].slice(0, 6);
   const places = kinds.map((k, i) => ({ name: `${k.ko}${kinds.findIndex((x) => x.id === k.id) === i ? "" : " 둘"}`, kind: k.id }));
   // 단계 종류를 섞는다(사람·고르기·번호 자물쇠·싸움) — 청사진 경로가 종류마다 다른 이벤트를 짓는지 본다.
   const KINDS = [{ kind: "talk", who: "촌장 하르" }, { kind: "find" }, { kind: "choice", who: "떠돌이 상인 미라" }, { kind: "puzzle" }, { kind: "battle", who: "문지기 그림자" }, { kind: "find" }] as const;

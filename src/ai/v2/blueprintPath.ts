@@ -13,7 +13,7 @@
 import { alignCodeClues, digitWord, shownToken } from "./codeClues";
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
-import { normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
+import { normalizeGameBlueprint, normalizeStepText, type GameBlueprint } from "@/project/gameBlueprint";
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
 import { incomingLandings, resolveWhere, walkStart } from "./people";
 import type { BuildRun, ContentBuildResult } from "./types";
@@ -692,7 +692,9 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   const bp = project0.gameBlueprint;
   const fail = (summary: string): BlueprintPathResult => ({ ok: false, mapIds: [], summary, warnings: [], missingArt: [], calls: [] });
   if (!bp) return fail("청사진이 없다 — write_blueprint 로 먼저 쓴다.");
-  const byId = new Map(text.map((t) => [t.id, t]));
+  // 이번에 받은 글이 먼저, 없으면 청사진에 남긴 그 단계의 글(GameBlueprintStep.text) — 한 단계만 고쳐 불러도 나머지 단계의 글이 남는다.
+  const given = new Map(text.map((t) => [t.id, t]));
+  const byId = { get: (id: string): PathStepText | undefined => given.get(id) ?? storedStepText(bp, id) };
   const warnings: string[] = [];
   // 갇힌 방에서 걸어 나가는 이동부터 치운다(경로 막힘 blueprint-escape-leak) — 그 뒤 사슬·출구 마감이 틈을 메운다.
   const sealed = sealEscapeExits(run);
@@ -851,9 +853,12 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     if (battle) base = { ...base, battle };
     const codeLocked = clueLearn ? ["번호 자물쇠가 걸려 있다. 번호를 알아야 열 수 있을 것 같다."] : undefined;
     if (last) {
-      const endLines = t?.lines?.length ? t.lines : code ? ["번호 자물쇠다. 알아낸 번호를 맞춰 보자."] : [lookLine(step.event), bp.ending.how];
-      const locked = t?.lockedLines?.length ? t.lockedLines : codeLocked ?? lockedDefault;
-      links.push({ ...base, role: "ending", endingId: ending!.id, lines: endLines, ...(variants.length ? { variants } : {}), ...(code ? { code, reward: { lines: [bp.ending.how] }, ...(t?.options?.length ? { options: t.options } : {}), ...(t?.wrongLines?.length ? { wrongLines: t.wrongLines } : {}) } : {}), ...(locked ? { lockedLines: locked } : {}) });
+      // 사람이 마지막 단계면: 대사가 없을 때 «살펴보았다»·엔딩 글을 그 사람 입으로 말하게 하지 않는다 — 할 일 한 줄 서술로 열고, 엔딩 글은 (싸움이 있으면 이긴 뒤) 서술로 붙인다.
+      const endLines = t?.lines?.length ? t.lines : code ? ["번호 자물쇠다. 알아낸 번호를 맞춰 보자."] : personal ? lines : [lookLine(step.event), bp.ending.how];
+      const closingNarration = personal && !t?.lines?.length && !code ? { closeLines: [`(${bp.ending.how.trim()})`] } : {};
+      const lockedPerson = personal && needShown ? [`(${who}${josa(who!, "은", "는")} 아직 할 말이 없는 듯하다. ${needShown}${josa(needShown, "이", "가")} 먼저다.)`] : undefined;
+      const locked = t?.lockedLines?.length ? t.lockedLines : codeLocked ?? lockedPerson ?? lockedDefault;
+      links.push({ ...base, role: "ending", endingId: ending!.id, lines: endLines, ...closingNarration, ...(choice ? { choice } : {}), ...(variants.length ? { variants } : {}), ...(code ? { code, reward: { lines: [bp.ending.how] }, ...(t?.options?.length ? { options: t.options } : {}), ...(t?.wrongLines?.length ? { wrongLines: t.wrongLines } : {}) } : {}), ...(locked ? { lockedLines: locked } : {}) });
     } else if (code) {
       const locked = t?.lockedLines?.length ? t.lockedLines : codeLocked ?? lockedDefault;
       const reward = isItem(step.gives) ? { item: step.gives } : { flag: step.gives };
@@ -931,6 +936,27 @@ export function foeTroop(project: Project, stepId: string, who: string | undefin
   return id;
 }
 
+/** 청사진에 남긴 그 단계의 글. */
+function storedStepText(bp: GameBlueprint, id: string): PathStepText | undefined {
+  const text = bp.steps.find((st) => st.id === id)?.text;
+  return text ? { id, ...text } : undefined;
+}
+
+/**
+ * 받은 글을 청사진 단계에 남긴다(준 칸만 바꾼다 — 안 준 칸은 앞서 남긴 글 그대로). 바뀐 청사진을 돌려준다(없는 단계 id 는 버린다).
+ */
+export function keepStepText(bp: GameBlueprint, text: readonly PathStepText[]): GameBlueprint {
+  const byId = new Map(text.map((t) => [t.id, t]));
+  return { ...bp, steps: bp.steps.map((st) => {
+    const t = byId.get(st.id);
+    if (!t) return st;
+    const { id: _id, ...fields } = t;
+    const merged = normalizeStepText({ ...st.text, ...Object.fromEntries(Object.entries(fields).filter(([, v]) => v !== undefined && v !== null)) });
+    const { text: _old, ...rest } = st;
+    return merged ? { ...rest, text: merged } : rest;
+  }) };
+}
+
 /**
  * build_blueprint_path 에 빠진 글 — 사람이 말하는 단계(talk·choice·battle)에 대사가 없거나 고르기 단계에 고를 것이 없으면 모델에게 돌려줄 영어 줄들.
  * 이미 명령이 있는 단계 이벤트(모델이 직접 지은 것)는 묻지 않는다.
@@ -938,7 +964,8 @@ export function foeTroop(project: Project, stepId: string, who: string | undefin
 export function pathTextProblems(project: Project, text: readonly PathStepText[]): string[] {
   const bp = project.gameBlueprint;
   if (!bp) return [];
-  const byId = new Map(text.map((t) => [t.id, t]));
+  const given = new Map(text.map((t) => [t.id, t]));
+  const byId = { get: (id: string): PathStepText | undefined => given.get(id) ?? storedStepText(bp, id) };
   const out: string[] = [];
   for (const step of bp.steps) {
     if (step.kind !== "talk" && step.kind !== "choice" && step.kind !== "battle") continue;

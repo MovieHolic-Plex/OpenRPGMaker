@@ -356,7 +356,10 @@ export function advisorPrompt(input: AdvisorInput): string {
  * 2026-11-10 Terra 두 판(jrpg-w1·fun-w1): 검토자가 «시키지 않았고 보고에도 없는 삭제: 빈 맵 삭제» 로 막아 조수가 빈 맵을 다시 만들었다
  * (게임에 쓰이지 않는 20×15 잔디 맵이 남고, 보고는 그 «복원»을 사과하는 글이 됐다).
  */
-const PLACEHOLDER_MAP = /map_blank_start|[「«"']?빈 ?맵[」»"']?|blank (start )?map/iu;
+const PLACEHOLDER_NAME = /[「«"'“]?(?:빈 ?맵|blank (?:start )?map)[」»"'”]?/giu;
+/** 삭제 메모가 자리표시 시작 맵만 말하나 — 맵 id 가 있거나, 그 이름과 «맵·시작·삭제» 같은 낱말을 빼면 남는 글이 없을 때만(「빈 맵에 있던 촌장 삭제」는 아니다). */
+const isPlaceholderRemoval = (what: string): boolean => /map_blank_start/u.test(what)
+  || (what.search(PLACEHOLDER_NAME) >= 0 && !what.replace(PLACEHOLDER_NAME, "").replace(/자리표시|시작|맵|삭제|제거|지움|지웠다|됨|placeholder|start|map|the|deleted|removed|was|\(|\)/giu, "").replace(/[^\p{L}\p{N}]+/gu, ""));
 
 /**
  * 응답을 메모로 바꾼다. 등급은 모델이 아니라 여기서 정한다 — 모델에게 「막음/우려」를 고르게 하면(2026-10-25 재생 1판) 시키지 않은 삭제와
@@ -377,7 +380,7 @@ export function parseAdvisorReply(text: string): { notes: AdvisorNote[]; problem
     if (c.status === "contradicted") notes.push({ level: "blocker", claim, what: `보고의 주장이 실제 변경과 반대다`, evidence: str(c.evidence, 300) });
     else if (c.status === "not_shown") notes.push({ level: "concern", claim, what: `보고의 주장이 실제 변경에 보이지 않는다`, evidence: str(c.evidence, 300) });
   }
-  for (const r of rows("removals")) if (str(r.what, 10)) notes.push({ level: r.mentioned === true || PLACEHOLDER_MAP.test(str(r.what, 240)) ? "aside" : "blocker", what: `${r.mentioned === true ? "알린 삭제" : PLACEHOLDER_MAP.test(str(r.what, 240)) ? "자리표시 시작 맵 은퇴(함수가 한 일 — 되살리지 않는다)" : "시키지 않았고 보고에도 없는 삭제"}: ${str(r.what, 240)}`, evidence: str(r.evidence, 300) });
+  for (const r of rows("removals")) if (str(r.what, 10)) notes.push({ level: r.mentioned === true || isPlaceholderRemoval(str(r.what, 240)) ? "aside" : "blocker", what: `${r.mentioned === true ? "알린 삭제" : isPlaceholderRemoval(str(r.what, 240)) ? "자리표시 시작 맵 은퇴(함수가 한 일 — 되살리지 않는다)" : "시키지 않았고 보고에도 없는 삭제"}: ${str(r.what, 240)}`, evidence: str(r.evidence, 300) });
   for (const u of rows("unreachable")) if (str(u.what, 10)) notes.push({ level: u.report_says_works === true ? "blocker" : "concern", what: `닿을 수 없는 내용: ${str(u.what, 240)}`, evidence: str(u.evidence, 300) });
   for (const m of rows("missing")) if (str(m.part, 10)) notes.push({ level: m.report_says_done === true ? "blocker" : "concern", what: `요청 중 안 된 부분: ${str(m.part, 240)}`, evidence: str(m.evidence, 300) });
   for (const n of rows("notes")) if (str(n.what, 10)) notes.push({ level: n.level === "concern" ? "concern" : "aside", what: str(n.what, 300), evidence: str(n.evidence, 300) });

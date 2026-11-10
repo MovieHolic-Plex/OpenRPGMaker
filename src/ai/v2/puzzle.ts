@@ -14,6 +14,7 @@ import { dressInteriorExits } from "./exitDress";
 import { fixObjectSheetFacing, showExaminedThing } from "./examineArt";
 import { examineHint, settleExamineSpot } from "./examineSpot";
 import { isPersonName, personGraphicFor } from "./personName";
+import { REREAD_PERSON, REREAD_THING } from "./rereadPage";
 
 type Obj = Record<string, unknown>;
 const STEPS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
@@ -53,10 +54,12 @@ export interface ChainLink {
   readonly thing?: boolean;
   /** 대사의 말하는 사람 이름. 「(」로 시작하는 줄은 서술(말하는 사람 없음). */
   readonly speaker?: string;
-  /** pickup: 고르기 — 고른 것마다 그 대사 뒤 flag 스위치가 켜지고(뒤 고리·엔딩이 읽는다) 보상은 어느 것을 골라도 받는다. 취소하면 아무 일도 없다. */
+  /** pickup·ending: 고르기 — 고른 것마다 그 대사 뒤 flag 스위치가 켜지고(뒤 고리·엔딩이 읽는다) 보상은 어느 것을 골라도 받는다. 취소하면 아무 일도 없다. */
   readonly choice?: { readonly options: readonly { readonly text: string; readonly lines?: readonly string[]; readonly flag: string }[] };
   /** pickup·ending: 대사(lines) 뒤에 이 무리와 싸운다(도망·패배 불가) — 이긴 갈래에서만 winLines·보상·엔딩이 이어진다. */
   readonly battle?: { readonly troopId: string; readonly winLines?: readonly string[] };
+  /** ending: 엔딩을 부르기 바로 앞의 서술 줄(싸움이 있으면 이긴 뒤). */
+  readonly closeLines?: readonly string[];
   /** ending: 엔딩 직전에 조건(앞 고리의 flag·물건 이름)이 맞으면 보이는 줄 — 고른 것에 따라 결말 한 줄이 달라진다. */
   readonly variants?: readonly { readonly needs: string; readonly lines: readonly string[] }[];
   /** code·ending: 틀린 횟수가 이 수에 닿으면(이상) 틀림 대사 뒤에 hintLines 를 보인다. */
@@ -247,10 +250,10 @@ export function shuffledOptions(options: readonly string[], answer: string, seed
  * 단서를 다시 읽을 수 없었다. 물건 보상(열쇠를 집어 감)은 그대로 「비어 있다」 쪽 말이다.
  */
 function pickupDoneLines(link: ChainLink): readonly string[] {
-  // 사람: 다시 말을 걸면 자기 말로 답한다(«다시 살펴본다» 서술을 붙이지 않는다) — 준 것이 없으면 마지막 대사 한 줄.
-  if (link.speaker) return link.doneLines?.length ? link.doneLines : link.lines?.length ? link.lines.slice(-1) : ["…"];
+  // 사람: 다시 말을 걸면 했던 말을 한 번 더 들려준다(단서를 다시 들을 수 있게) — 표식 줄로 시작하는 다시 읽기 쪽이다.
+  if (link.speaker) return link.doneLines?.length ? link.doneLines : link.lines?.length ? [REREAD_PERSON, ...link.lines] : ["…"];
   const generic = (lines: readonly string[] | undefined) => !lines?.length || lines.every((l) => /^(더는 볼 것이 없다|비어 있다|이미 .+)[.。]?$/u.test(l.trim()));
-  if (link.reward?.flag && !link.reward.item && generic(link.doneLines) && link.lines?.length) return ["다시 살펴본다.", ...link.lines];
+  if (link.reward?.flag && !link.reward.item && generic(link.doneLines) && link.lines?.length) return [REREAD_THING, ...link.lines];
   return link.doneLines ?? ["비어 있다."];
 }
 
@@ -519,10 +522,18 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
       }
       const speak = (lines: readonly string[] | undefined): Obj[] => sayAs(lines, link.speaker);
       if (need.length) pages.push(basePage({ commands: speak(link.lockedLines ?? ["아직 할 수 없다."]) }));
+      // 마지막 단계가 고르기면 여기서 고른다 — 고른 것의 스위치를 먼저 선언해야 아래 결말 갈래(variants)가 그 스위치를 읽는다.
+      const picks = (link.code ? [] : link.choice?.options ?? []).map((o) => {
+        const sw = flag(o.flag, `${args.name}: 고름 「${o.text}」`);
+        have.set(o.flag, { kind: "flag", switchId: sw });
+        return { ...o, sw };
+      });
       // 고른 것에 따라 달라지는 결말 줄 — 엔딩을 부르기 바로 앞에.
-      const closing: Obj[] = [...(link.variants ?? []).flatMap((v) => { const c = condFor(v.needs); return typeof c === "string" || c.length !== 1 ? [] : [{ kind: "fork", condition: c[0], then: say(v.lines) }]; }), { kind: "triggerEnding", endingId }];
+      const closing: Obj[] = [...say(link.closeLines), ...(link.variants ?? []).flatMap((v) => { const c = condFor(v.needs); return typeof c === "string" || c.length !== 1 ? [] : [{ kind: "fork", condition: c[0], then: say(v.lines) }]; }), { kind: "triggerEnding", endingId }];
       // code 가 있으면 번호를 맞혀야 엔딩(2026-10-28 mt3 flash 방탈출: 「비밀번호 입력」 단계가 조사만으로 엔딩을 불렀다).
-      const attempt = link.code ? codeAttempt(link, index, () => [...say(link.reward?.lines), ...closing]) : closing;
+      const attempt = link.code ? codeAttempt(link, index, () => [...say(link.reward?.lines), ...closing])
+        : picks.length ? [{ kind: "choices", cancelBehavior: "branch", cancelBranch: [], options: picks.map((o) => ({ text: o.text, branch: [...speak(o.lines), { kind: "setSwitch", switchId: o.sw, value: true }, ...closing] })) }]
+        : closing;
       if (typeof attempt === "string") return fail(attempt);
       pages.push(basePage({ conditions: need, commands: gated([...speak(link.lines), ...afterBattle(link, attempt)], "아직 할 수 없다.") }));
     }

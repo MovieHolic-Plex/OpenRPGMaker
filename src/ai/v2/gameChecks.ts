@@ -500,7 +500,10 @@ export function gameContentProblems(before: Project, after: Project, task: strin
       const raw = ((map?.events as Obj[] | undefined) ?? []).find((e) => e.id === ev.id);
       if (!map || !raw) continue;
       const pages = ev.pages;
-      if (!pages.length || !pages.some((pg) => obj(pg.trigger)?.kind === "action")) continue;
+      // 조사하는 쪽 = 결정 키로 열리고 명령이 있는 쪽. 명령이 없는 action 쪽(목표 줄 이벤트 ev_objective_* 의 «다 보여 준 뒤» 빈 쪽)은 조사할 것이 없다 —
+      // 2026-11-10 Terra 두 판(jrpg-w1·fun-w1): set_objective 가 지은 「시작 목표」가 «맨땅» 으로 걸려 조수가 그 칸 위에 물건을 찍었다.
+      const examinePages = pages.filter((pg) => obj(pg.trigger)?.kind === "action" && Array.isArray((pg as Obj).commands) && ((pg as Obj).commands as unknown[]).length > 0);
+      if (!examinePages.length) continue;
       if (pages.some((pg) => { const g = obj(pg.graphic); return !!(g && (g.sprite || g.appearanceId)); })) continue;
       const w = Number(map.width), i = Number(raw.y) * w + Number(raw.x);
       const at = (layer: unknown) => Array.isArray(layer) ? Number(layer[i]) : -1;
@@ -508,7 +511,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
       if (/^ev_(cutscene|escort)_/u.test(ev.id)) continue;
       // 바닥에 떨어진 증거(evidenceOnThing `<사람 id>_evidence`)는 그림 대신 가까이 오면 반짝인다(nearSparkle) — 맨땅이 아니다.
       // 이 칸에 「물건을 찍거나 옮겨라」를 내면 모델이 칸을 일곱 번 옮기고 대사의 자리 말과 어긋났다(2026-10-31 mef3 terra 추리).
-      if (pages.filter((pg) => obj(pg.trigger)?.kind === "action").every((pg) => !!obj((pg as Obj).nearSparkle))) continue;
+      if (examinePages.every((pg) => !!obj((pg as Obj).nearSparkle))) continue;
       const x0 = Number(raw.x), y0 = Number(raw.y), h = Number(map.height);
       let near = false;
       for (const [dx, dy] of [[0, 0], [0, -1]] as const) {
@@ -689,7 +692,10 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   if (undeclared.length) problems.push(`[게임 검사 깃발] 선언 안 된 스위치·변수: ${undeclared.slice(0, 6).join(", ")} — declare_story_flag 로 선언하거나 이미 선언된 깃발 id 를 쓴다.`);
   const unread = [...setSw.entries()].filter(([id]) => !reads.switches.has(id));
   if (unread.length) problems.push(`[게임 검사 깃발] 켜기만 하고 어떤 페이지·분기도 읽지 않는 스위치: ${unread.slice(0, 5).map(([id, who]) => `${id}(「${who}」)`).join(", ")} — 한 번만 일어나야 하는 관문이면 그 스위치 조건의 «이미 했다» 페이지를 두고, 필요 없는 깃발이면 지운다.`);
-  const unreadVar = [...setVar.entries()].filter(([id]) => !reads.variables.has(id));
+  // 퀘스트 도구가 등록한 진행 변수(var_<key>_progress — 퀘스트 기록이 읽는다)는 조건에서 안 읽어도 쓰는 값이다 —
+  // «쓰거나 지운다» 로 돌려보내면 조수가 퀘스트 변수를 지우거나 헛조건을 단다(2026-11-10 Terra 두 판 모두 이 줄을 받았다).
+  const questVars = new Set((Array.isArray((after as unknown as Obj).quests) ? ((after as unknown as Obj).quests as Obj[]) : []).map((q) => `var_${String(q?.key ?? q?.id ?? "")}_progress`));
+  const unreadVar = [...setVar.entries()].filter(([id]) => !reads.variables.has(id) && !questVars.has(id));
   if (unreadVar.length) problems.push(`[게임 검사 깃발] 값만 바꾸고 아무도 읽지 않는 변수: ${unreadVar.slice(0, 5).map(([id, who]) => `${id}(「${who}」)`).join(", ")} — 조건·분기에서 쓰거나 지운다.`);
   // 고쳐 쓰다 끊긴 고리: 전에는 어떤 이벤트가 켜던(바꾸던·부르던) 스위치·변수·공통 이벤트를 이번 실행 뒤에는 아무도 안 켜는데, 그것을 조건으로 보는
   // 페이지·분기는 남았다 → 그 내용에 영영 닿지 못한다(2026-10-25 조수 단독 게임 G15: 서연 대사를 날마다 다르게 다시 쓰며 「퇴근길에 같이 걸을래요?」
