@@ -93,7 +93,7 @@
 | B3 | 자리 규칙 하나 · 통행 기준 채우기 · 무대 오프닝 |
 | B4 | 턴 사이 기억(시도·실패·막힌 이유·장소 설계) |
 | B5 | 감싸개 여섯 겹을 도구 안으로 |
-| B6 | 작은 일 하네스를 v2 + Terra 로 돌리기, 오분류 요청 모음을 CI 에 |
+| B6 | 작은 일 하네스를 v2 + Terra 로 돌리기, 오분류 요청 모음을 CI 에 — **재는 쪽은 있음**: 작은 일 30가지 묶음·판정 자기검사·실행기·보고서(`npm run harness -- assistant-capability small-jobs --model terra-high --v2`, 문서 `openwiki/harnesses/assistant-capability.md` 「작은 일 30가지」). 이후 도구·분류 수정은 이 표로 전/후를 잰다. 오분류 모음의 CI 연결은 아직 |
 
 ## 알려 둘 것
 

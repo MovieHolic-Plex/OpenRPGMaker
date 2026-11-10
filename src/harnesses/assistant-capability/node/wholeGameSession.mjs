@@ -8,6 +8,7 @@
 //
 // Usage:
 //   node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir <dir> --out <session dir> [--v2] [--turn-timeout-ms N] [--store-url <store> [--store-ask-first]]
+//     [--ai-config <json>] [--snapshots] [--no-live] [--deadline-ms <epoch>]   (실행 중 상한은 <out>/deadline 파일로도 준다)
 // Control files (written by the operator into <out>/inbox/, processed in name order):
 //   NNN.txt    -> a natural-language request typed into ai-input and sent
 //   NNN.click  -> one data-testid (first line) of a visible assistant card button to click
@@ -50,6 +51,9 @@ const aiConfigOverride = option('ai-config') ? JSON.parse(readFileSync(resolve(o
 const turnTimeoutMs = Number(option('turn-timeout-ms') ?? 45 * 60_000);
 // --deadline-ms <epoch ms>: 판 전체 상한(시험 묶음용). 그 시각을 넘기면 도는 턴을 턴 상한처럼 끊고(abort) 기록한다.
 const deadlineMs = Number(option('deadline-ms') ?? 0);
+// <out>/deadline (epoch ms 한 줄): 실행 중에 정하는 상한 — 요청을 보낸 시각부터 재는 묶음(작은 일 10분)이 쓴다. --deadline-ms 와 같이 끊는다.
+const fileDeadlineMs = () => { try { return Number(readFileSync(resolve(out, 'deadline'), 'utf8').trim()) || 0; } catch { return 0; } };
+const pastDeadline = () => { const limit = deadlineMs || fileDeadlineMs(); return limit > 0 && Date.now() > limit; };
 const sleep = ms => new Promise(done => setTimeout(done, ms));
 const json = (file, data) => writeFileSync(file, JSON.stringify(data, null, 2));
 for (const sub of ['inbox', 'done', 'turns']) mkdirSync(resolve(out, sub), { recursive: true });
@@ -109,7 +113,7 @@ async function cards(selector = CARD_SELECTOR) {
 async function waitSettle(mark, startedAt, graceMs = 20000) {
   // A turn is over when the stream closed after the mark and the bridge is idle, or a card waits for an answer.
   for (;;) {
-    if (Date.now() - startedAt > turnTimeoutMs || (deadlineMs && Date.now() > deadlineMs)) return 'timeout';
+    if (Date.now() - startedAt > turnTimeoutMs || pastDeadline()) return 'timeout';
     const value = await page.evaluate(m => ({ events: (window.__capEvents ?? []).slice(m), busy: Boolean(window.__oprnAiBridge?.status().turnBusy) }), mark).catch(() => null);
     if (value) {
       const closed = value.events.some(e => ['stream_closed', 'error', 'stream_error'].includes(e.type));
@@ -157,10 +161,12 @@ try {
     const body = readFileSync(resolve(out, 'inbox', next), 'utf8').trim();
     renameSync(resolve(out, 'inbox', next), resolve(out, 'done', next));
     const startedAt = Date.now(), requestMark = requests.length, errorMark = pageErrors.length;
+    let sentAt = 0;
     if (kind === 'stop') {
       const receipt = await persistenceCheck(`final-${step}`);
       await editor.context.close();
-      writeRuntimeProject(projectDir, resolve(out, 'live.json'));
+      // --no-live: 끝의 통짜 프로젝트 JSON(live.json)을 쓰지 않는다 — 저장소(SQLite)를 직접 읽는 실행기(작은 일 묶음)용.
+      if (!argv.includes('--no-live')) writeRuntimeProject(projectDir, resolve(out, 'live.json'));
       log(`\n## ${step} STOP\nfinal persistence: same=${receipt.sameStoredDocument} rendererEqual=${receipt.rendererMapsAndDatabaseEqual} rev=${receipt.revision}\n`);
       writeState({ phase: 'stopped', final: receipt });
       break;
@@ -193,6 +199,7 @@ try {
       if (argv.includes('--snapshots')) { try { mkdirSync(resolve(out, 'snapshots'), { recursive: true }); writeRuntimeProject(projectDir, resolve(out, 'snapshots', `${step}-before.json`)); } catch (error) { log(`snapshot failed: ${error.message}\n`); } }
       await page.getByTestId('ai-input').fill(body);
       await page.getByTestId('ai-send').click();
+      sentAt = Date.now();
       log(`\n## ${step} USER (${new Date().toISOString()})\n${body}\n`);
     } else {
       // 가장 최근 카드 안의 첫 단추(앞 카드의 같은 단추는 이미 끝났다; 곡마다 「넣기」가 있는 카드에서는 맨 위 = 1순위 곡).
@@ -207,6 +214,7 @@ try {
     // 「바꾸기」처럼 턴을 열지 않는 단추는 오래 기다리지 않는다.
     const opensTurn = kind === 'click' && !/^ai-store-music-swap\b/u.test(body);
     const outcome = await waitSettle(mark, startedAt, opensTurn ? 5 * 60_000 : 20000);
+    const settledAt = Date.now();
     if (outcome === 'timeout') {
       await page.evaluate(() => window.__oprnAiBridge?.abort()).catch(() => {});
       await page.waitForFunction(() => !window.__oprnAiBridge?.status().turnBusy, null, { timeout: 60000 }).catch(() => {});
@@ -223,7 +231,9 @@ try {
     const tools = events.filter(e => e.type === 'tool_end' || e.type === 'tool_start').map(e => ({ type: e.type, name: e.name, ok: e.ok, summary: typeof e.summary === 'string' ? e.summary.slice(0, 400) : undefined,
       // 모델이 받은 글 그대로(영어 거절·Fixed call·고리 메모, 최대 4000자). summary 는 화면·장부용 원문 요약이다.
       ...(typeof e.modelText === 'string' ? { modelText: e.modelText.slice(0, 4000) } : {}) }));
-    const turn = { step, kind, input: body, outcome, elapsedMs: Date.now() - startedAt, saveKind, revision: snap.revision, sha256: snap.sha256,
+    const turn = { step, kind, input: body, outcome, elapsedMs: Date.now() - startedAt,
+      // 보낸 순간부터 턴이 가라앉을 때까지(앞의 스냅숏·카드 닫기 시간을 뺀 값). 저장 시간은 들어 있지 않다.
+      ...(sentAt ? { sentAt: new Date(sentAt).toISOString(), turnMs: settledAt - sentAt } : {}), saveKind, revision: snap.revision, sha256: snap.sha256,
       requests: requests.slice(requestMark), errors: events.filter(e => ['error', 'stream_error'].includes(e.type)).map(e => e.message),
       pageErrors: pageErrors.slice(errorMark), toolCalls: tools.filter(t => t.type === 'tool_end'), pendingCards: pending, answer, draftReports,
       done: events.filter(e => e.type === 'done').map(e => ({ stats: e.stats, usage: e.usage })),
@@ -232,6 +242,10 @@ try {
       // 완성 뒤 대사 윤문 고리(src/ai/piAgent/dialoguePolishHook.ts)의 실행기 기록 — 전/후 적중 수와 고친 줄 쌍.
       dialoguePolish: events.filter(e => e.type === 'execution_status' && String(e.name).startsWith('dialogue_polish')).map(e => ({ name: e.name, summary: e.summary, data: e.data })),
       toolArgs: events.filter(e => e.type === 'tool_start').map(e => ({ name: e.name, args: e.args })),
+      // 모델 호출마다의 요청 크기(지시문 글자·실은 도구 수) — 도구 이름은 첫 호출 것만 남긴다. 본문은 없다.
+      prompts: events.filter(e => e.type === 'prompt_inspection' && e.data?.sizes).map((e, index) => ({ at: e.at, ...e.data.sizes, toolNames: index === 0 ? e.data.sizes.toolNames : undefined })),
+      // v2 의 턴 끝 판정(할 일 장부: 열림 0 · 막힘 0 이면 완료).
+      v2Final: events.filter(e => e.type === 'execution_status' && e.name === 'v2.todo.final').map(e => ({ complete: e.ok === true, summary: String(e.summary ?? '').slice(0, 300) })),
       maps: Object.values(snap.project.maps).map(m => ({ id: m.id, name: m.name, size: `${m.width}x${m.height}`, events: (m.events ?? []).length })) };
     json(resolve(out, 'turns', `${step}.json`), turn);
     // 남은 카드·쪽지가 있으면 화면에 보이게 내린다(캡처가 대화 위쪽만 찍던 것).
