@@ -1332,6 +1332,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       surface.appendProcess?.(streamErrors.join("\n"));
       if (lastAssistantText.trim()) surface.appendBubble("assistant", lastAssistantText);
       reportQuotaStop(surface, provider, appliedQuotaError, true);
+      if (!saveAccepted) surface.appendBubble("system", "멈추기 전에 반영한 변경이 아직 저장되지 않았어요. 저장 표시에서 확인해 주세요.");
       surface.showChangeReceipt?.({
         before: base, after: merged.project, mapId: receiptMapId, title: receiptTitle,
         detail: "사용 한도로 멈추기 전에 반영한 변경이에요. 작업은 끝나지 않았어요.",
@@ -1428,7 +1429,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     void (async () => {
       try {
         const success = await apply();
-        if (success || changedCount === 0) clearReview();
+        // 한도로 멈춘 적용도 변경은 이미 반영·저장됐다 — 카드를 남기면 「적용」을 다시 눌러 같은 변경을 두 번 넣는다.
+        if (success || applied || changedCount === 0) clearReview();
       } catch {
         surface.appendBubble("system", "변경 내용을 적용하지 못했어요. 다시 적용하거나 변경안을 버려 주세요.");
       } finally {

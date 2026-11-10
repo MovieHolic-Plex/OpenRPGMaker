@@ -704,5 +704,21 @@ describe("Pi 경로 — 제공자 사용 한도로 멈춤", () => {
     expect(h.bubbles.some(line => line.includes("사용 한도(쿼터·속도 제한)"))).toBe(false);
     expect(h.statuses.some(line => line.includes("사용 한도 — 멈춤"))).toBe(false);
   });
-});
 
+  it("검토 카드에서 적용하다 한도에 걸려도 카드는 닫혀 같은 변경을 두 번 적용하지 않는다", async () => {
+    h.piApply = "review";
+    h.results.push({ project: projectWith("검토 한도") });
+    h.errorEvents.push(QUOTA);
+    const receipt = vi.fn();
+    const resolved = vi.fn();
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "바꿔라" },
+      { ...harness().surface(), showChangeReceipt: receipt, onReviewResolved: resolved });
+
+    const review = h.outcomes.at(-1) as unknown as { onApply: () => void };
+    expect(typeof review.onApply).toBe("function");
+    review.onApply();
+    await vi.waitFor(() => expect(resolved).toHaveBeenCalledWith(true));
+    expect(h.bubbles.some(line => line.includes("멈추기 전에 반영한 변경은 남아 있고 되돌릴 수 있어요"))).toBe(true);
+    expect(h.bubbles.some(line => line.includes("변경 내용을 적용했어요"))).toBe(false);
+  });
+});
