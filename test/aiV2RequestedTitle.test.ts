@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { requestedTitle, titleMismatch } from "@/ai/v2/shipChecks";
+import { titleMismatch } from "@/ai/v2/shipChecks";
+import { requestedTitle } from "@/ai/v2/request/title";
 import { createBlankProject } from "@/project/defaults";
 
 describe("J71/J73 requested title", () => {

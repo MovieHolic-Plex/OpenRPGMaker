@@ -18,7 +18,8 @@ const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
 import { interiorTilesetOf } from "./builders/interior";
 import { roomParts } from "./roomParts";
 import { ROOM_IDEA_RULE, roomIdeasFor } from "./roomIdeas";
-import { AREA_MAX, AREA_MIN, wantsSmallRoom } from "./designAreas";
+import { AREA_MAX, AREA_MIN } from "./designAreas";
+import { wantsSmallRoom } from "./request/place";
 
 /** 이 명세가 손 도트 실내(v5)로 지어지나 — 설계는 이 칩셋에서만 쓴다. */
 export function buildsHandInterior(project: Project, spec: PlaceSpec): boolean {

@@ -1,7 +1,7 @@
 // 조수 v2 음악 요청 길(2026-10-30 실조수 스토어 음악 e2e 5/8): 「X처럼」「엔딩곡」에도 음악 도구가 실리고, 엔딩곡 자리(set_game_audio ending)가 있다.
 import { describe, expect, it } from "vitest";
-import { MUSIC_TIER, v2ExtraToolNames, wantsGameTools, wantsMusicTools } from "@/ai/v2/game";
-import { musicAsked } from "@/ai/v2/musicWords";
+import { MUSIC_TIER, v2ExtraToolNames, wantsGameTools, wantsMusicTools } from "@/ai/v2/request/toolGroups";
+import { musicAsked } from "@/ai/v2/request/audio";
 import { gameContentProblems } from "@/ai/v2/gameChecks";
 import { expandStoreMusicQuery } from "@/assetStore/storeMusicPick";
 import { runTool } from "@/editor/tools/toolRunner";
