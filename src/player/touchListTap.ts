@@ -23,7 +23,8 @@ const ROW = "button, [role='menuitem'], [role='option'], [role='button'], li, .r
  * 대사 선택지(.choice-list)도 한 번 탭이다(2026-10-30) — RPG 쯔꾸르 MZ 처럼 누른 줄이 곧 답이다. 선택지는 두세 줄뿐이고 글이 보이므로
  * 「첫 탭 = 커서」는 고장처럼 느껴졌다. 대사를 넘기던 누름이 막 뜬 선택지를 고르지 않게 touchTap 이 그 누름의 click 을 삼킨다.
  */
-const ONE_TAP_GROUPS = [".status-menu-command-rail", ".choice-list"];
+// 전투 메뉴의 「뒤로」 줄은 무리가 아니라 줄 하나다 — 되돌리기 자체라 한 번 탭이다(2026-11-10 fs-combo-cancel: 첨 탭이 커서만 옮겨 취소가 안 됐다 6/6).
+const ONE_TAP_GROUPS = [".status-menu-command-rail", ".choice-list", ".battle-command[data-command-icon='back']"];
 const ONE_TAP = ONE_TAP_GROUPS.join(", ");
 const EXCLUDE = ["[role='tab']", ".touch-pad", ".name-entry-overlay", "[data-testid='dialogue-log']", "[data-testid='dialogue-backlog']", "input", "textarea", "select", ".play-fullscreen-toggle", ...ONE_TAP_GROUPS].join(", ");
 /** 눌림 영역을 넓히지 않는 곳 — EXCLUDE 에서 한 번 탭 줄(ONE_TAP)만 뺀 것. */
