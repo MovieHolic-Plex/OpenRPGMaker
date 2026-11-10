@@ -115,6 +115,13 @@ describe("art penalty — NPC chipset as monster art", () => {
     expect(art.npcChipset.enemies[0].resourceId).toBe("easyrpg-charset-actor2");
   });
 
+  it("a walking chip that is a monster sheet is not NPC art", () => {
+    const m = map("start", town());
+    m.events = [{ id: "e1", pages: [{ commands: [{ kind: "battleProcessing", troopId: "t1" }] }] }];
+    const d = doc([m], { database: { troops: [{ id: "t1", enemyIds: ["en1"] }], enemies: [{ id: "en1", name: "슬라임", monsterResourceId: "generated-enemy-slime", walkChip: { characterResourceId: "tex_easyrpg_charset_monster1", characterIndex: 2 } }] } });
+    expect(artPenalty(d).penalty).toBe(0);
+  });
+
   it("ignores an enemy no map places", () => {
     expect(characterSheetEnemies(withEnemy("tex_scarloxy_charset_people1", false))).toEqual([]);
   });

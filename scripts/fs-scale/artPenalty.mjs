@@ -65,7 +65,7 @@ export function characterSheetEnemies(doc) {
       if (!enemy || seen.has(enemyId)) continue;
       // walkChip 이 있으면 전투에는 그 걷기 칩이 선다(monsterResourceId 대신) — 사람 시트를 적으로 쓰는 가장 직접적인 길.
       const resourceId = enemy.walkChip?.characterResourceId ?? enemy.monsterResourceId;
-      if (enemy.walkChip?.characterResourceId || isCharacterSheetId(resourceId)) {
+      if (isCharacterSheetId(resourceId)) {
         seen.add(enemyId);
         hits.push({ enemyId, name: enemy.name ?? enemyId, resourceId, troopId });
       }
@@ -82,6 +82,7 @@ function tileDistribution(map) {
     const tiles = map[key];
     if (!Array.isArray(tiles)) continue;
     for (const tile of tiles) {
+      // -1 이 빈 칸이다. 0 번은 실제 타일(첫 오토타일)이라 센다 — 34판 재채점 결과는 0 번을 빼도 같았다.
       if (typeof tile !== "number" || tile < 0) continue;
       const id = `${set}:${layer}${tile}`;
       counts.set(id, (counts.get(id) ?? 0) + 1);
