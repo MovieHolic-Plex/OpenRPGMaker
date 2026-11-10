@@ -38,7 +38,7 @@ import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/proje
 import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
 import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
-import { laneCells } from "@/ai/v2/placementRules";
+import { laneCells } from "@/ai/v2/place/placementRules";
 import { noteToolChosenGraphic } from "./toolChosenGraphics";
 import { ensureHorrorSound, readFootstepsArg, resolveFootstepsSe } from "./horrorSoundAssets";
 import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, MoveCommand, MoveRoute, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";

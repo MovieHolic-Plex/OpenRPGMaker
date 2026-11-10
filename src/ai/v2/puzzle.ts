@@ -10,7 +10,7 @@ import type { GameMap, Project } from "@/project/types";
 import { playerAnchors } from "@/editor/tools/transferReachability";
 import type { BuildRun, ContentBuildResult } from "./types";
 import { repairEventReach } from "./eventReach";
-import { dressInteriorExits } from "./exitDress";
+import { dressInteriorExits } from "./place/exitDress";
 import { fixObjectSheetFacing, showExaminedThing } from "./examineArt";
 import { examineHint, settleExamineSpot } from "./examineSpot";
 import { isPersonName, personGraphicFor } from "./personName";

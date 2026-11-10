@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
-import { VILLAGE_BUILDER } from "@/ai/v2/builders/village";
+import { VILLAGE_BUILDER } from "@/ai/v2/place/builders/village";
 import { lintScenePolish } from "@/project/lint/scenePolishLint";
 import type { BuildRun, PlaceSpec } from "@/ai/v2/types";
 

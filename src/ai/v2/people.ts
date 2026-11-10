@@ -15,7 +15,7 @@ import { activeMonsterTurn } from "@/project/genreLockMonsterAssets";
 import { monsterAssetCatalogFilters } from "@/project/genreLockMonsterAssetsDiff";
 import { genreLockCharsetCatalogFilter } from "@/project/genreLockCharsets";
 import type { BuildRun, ContentBuildResult, PersonSpec } from "./types";
-import { counterSide, exitThroats, isCounterArt, isShopkeeperName, laneCells, wanderReach } from "./placementRules";
+import { counterSide, exitThroats, isCounterArt, isShopkeeperName, laneCells, wanderReach } from "./place/placementRules";
 
 export const PEOPLE_CARD =
   "People spec: {role,name?,where?,at?,looks?,firstTalk?,laterTalk?,movement?,mapId?}. " +

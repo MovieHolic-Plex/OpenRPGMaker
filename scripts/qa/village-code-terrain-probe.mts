@@ -5,7 +5,7 @@ import { runTool } from "../../src/editor/tools/index.ts";
 import { ensureBundledTilesets } from "../../src/project/defaults/defaultAssets.ts";
 import { createBlankProject } from "../../src/project/defaults.ts";
 import { analyzeCityForm } from "../../src/editor/tools/cityForm.ts";
-import { villageArgs } from "../../src/ai/v2/builders/village.ts";
+import { villageArgs } from "../../src/ai/v2/place/builders/village.ts";
 const CASES: any[] = [
   { n: 1, ask: "강가의 평범한 시골 마을", spec: { name: "버들 마을", theme: "river", size: "medium" }, seed: 7 },
   { n: 2, ask: "언덕 위에 자리 잡은 마을", spec: { name: "언덕 마을", theme: "river", features: ["hillside"], size: "medium" }, landform: "hill", seed: 11 },
