@@ -649,3 +649,14 @@
 }
 .battle-scene .battle-status-icon.battle-status-icon-image::before,
 .battle-scene .battle-status-icon.battle-status-icon-image::after { content: none; }
+/* 적 몸 옆 그림 배지는 풀숲·돌 바닥 위에 바로 얹혀 금별 표식(약 9px)이 배경에 묻혔다(2026-11-10 fs-vqa-today) —
+   어두운 판을 깔고 1.5배(24px)로. 아군 상태 행의 배지는 창 바탕 위라 그대로다. */
+.battle-scene .battle-enemy > .battle-status-icons > .battle-status-icon.battle-status-icon-image {
+  background-color: rgb(10 14 28 / 78%);
+  background-size: 16px 16px;
+  border: 1px solid rgb(255 255 255 / 45%);
+  border-radius: 4px;
+  height: 24px;
+  min-width: 24px;
+  width: 24px;
+}
