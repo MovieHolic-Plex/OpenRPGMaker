@@ -237,6 +237,17 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 
 증거: `test/toolsReadEmptyAndBlocked.test.ts`.
 
+## 엔딩을 다시 부르면 안 보낸 칸은 그대로 — `define_ending` (2026-11-11, 작은 일 기준선)
+
+첫 Terra 기준선(작은 일 30가지)에서 `generate_art{target:"ending"}` 는 41번 중 27번 거절됐다: 그림을 걸려고 `define_ending` 을 id·name·presentation 만으로
+불렀는데 `conditions` 가 필수라 인자 검증에서 떨어졌다. 통과했더라도 안 보낸 에필로그·우선순위는 지워졌을 것이다(도구가 엔딩을 통째로 갈아 끼웠다).
+
+- 이미 있는 id 로 다시 부르면 안 보낸 `conditions` · `priority` · `epilogue` · `presentation` · `continueTo` 는 그대로 둔다. 빈 `epilogue:[]` 는 안 보낸 것으로 읽는다.
+- 보낸 칸은 바꾼다 — `conditions:[]` 는 조건을 없앤다.
+- 필수는 `id` · `name` 뿐이다. 새 엔딩은 `conditions` 없이도 만든다(조건 없는 엔딩).
+- 같은 변경: 거절 글이 `move_event` 를 이를 때의 다음 호출 뼈대를 `where`(자리 낱말)로(`loop/nextCall.ts`), 더는 나지 않는 «graphic 이 전투 그림과 다릅니다» 번역 줄 삭제.
+- 증거: `test/defineEndingKeepsFields.test.ts`. golden 차이는 126 요청 중 90 요청의 `define_ending` 글·스키마뿐이다.
+
 ## 장소 설계는 턴을 넘어 남는다 — 다음 턴의 `edit_place` (2026-11-11, B4b)
 
 **무엇이 문제였나.** `edit_place` 는 「이번 실행에서 지은 설계」(`session.places`)가 있어야 고친다. 세션은 턴마다 새로 만들므로

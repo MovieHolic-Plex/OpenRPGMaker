@@ -108,7 +108,8 @@ const defineEnding: ToolDefinition = {
     '그 엔딩에 conditions가 있으면 호출 시점에도 검사한다 — 거짓이면 엔딩은 열리지 않고 다음 명령으로 넘어간다(호감 부족 고백이 성공으로 끝나면 안 된다). 조건이 없으면 바로 실행된다. ' +
     'endingId 없는 {"kind":"triggerEnding"}은 switch/variable conditions를 만족한 엔딩 중 priority가 가장 높은 항목을 선택한다. ' +
     'epilogue는 script_cutscene beat 배열이다. 아이템을 소비하는 출구는 완료 스위치로 선택되는 상위 페이지를 두어 재조사 시 재잠김·중복 소비를 막는다. ' +
-    '정의 후 연결 전은 유효한 중간 편집이지만, 완료 전에는 실제 에필로그·종료와 재조사를 플레이로 검증해야 한다.',
+    '정의 후 연결 전은 유효한 중간 편집이지만, 완료 전에는 실제 에필로그·종료와 재조사를 플레이로 검증해야 한다. ' +
+    '이미 있는 id 로 다시 부르면 안 보낸 conditions·priority·epilogue·presentation 은 그대로 둔다.',
   mode: "write",
   parameters: {
     type: "object",
@@ -134,7 +135,7 @@ const defineEnding: ToolDefinition = {
         required: ["mapId", "x", "y"],
       },
     },
-    required: ["id", "name", "conditions"],
+    required: ["id", "name"],
   },
   invalidArgsExample: {
     id: "ending_true",
@@ -147,11 +148,15 @@ const defineEnding: ToolDefinition = {
     const id = cleanId(args.id);
     const name = cleanName(args.name);
     const flagWarnings: string[] = [];
-    const conditions = parseEndingConditions(draft, args.conditions, flagWarnings);
-    const priority = typeof args.priority === "number" ? Math.trunc(args.priority) : 0;
-    const epilogueWarnings: string[] = [];
-    const epilogue = parseEpilogue(draft, args.epilogue, epilogueWarnings);
     const prior = draft.endings?.find(entry => entry.id === id);
+    // 이미 있는 엔딩을 다시 부르면 안 보낸 칸은 그대로 둔다 — 그림 하나 걸려고 다시 불렀다가 에필로그·조건·우선순위가 지워졌다
+    // (generate_art{target:"ending"} 는 conditions 를 안 보내 인자 검증에서 매번 거절됐다, 2026-11-11 작은 일 기준선).
+    const conditions = args.conditions === undefined ? structuredClone(prior?.conditions ?? []) : parseEndingConditions(draft, args.conditions, flagWarnings);
+    const priority = typeof args.priority === "number" ? Math.trunc(args.priority) : prior?.priority ?? 0;
+    const epilogueWarnings: string[] = [];
+    // 빈 에필로그([])는 안 보낸 것으로 읽는다(값싼 모델은 스키마 칸을 빈 값으로 채워 보낸다).
+    const sentEpilogue = Array.isArray(args.epilogue) && args.epilogue.length === 0 ? undefined : args.epilogue;
+    const epilogue = sentEpilogue === undefined ? prior?.epilogue : parseEpilogue(draft, sentEpilogue, epilogueWarnings);
     let presentation = args.presentation === undefined ? prior?.presentation : args.presentation as EndingPresentation;
     // 크레딧·엔딩 글에 줄바꿈을 글자 「\n」로 두 번 이스케이프해 보내면 화면에 「\n」이 그대로 찍혔다(2026-10-25 G50·심판 J2).
     if (presentation && typeof presentation.credits === "string" && /(?:\\r)?\\n/u.test(presentation.credits)) presentation = { ...presentation, credits: presentation.credits.replace(/(?:\\r)?\\n/gu, "\n") };
