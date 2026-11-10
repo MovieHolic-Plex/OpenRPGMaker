@@ -3,7 +3,7 @@
 import type { PiAgentRequest } from "@/ai/piAgent/protocol";
 import type { Project } from "@/project/types";
 import { classifyRequest, readRequest } from "./intent";
-import { fallenCard, storeCard } from "./toolGroups";
+import { storeCard } from "./toolGroups";
 
 // ── 범위 ──
 /** 이번 요청 글이 게임 하나를 만들거나 완성하라는 말인가(글만 본다 — 이어 하기 턴까지 보려면 buildsWholeGame). */
@@ -46,10 +46,9 @@ export const wantsPuzzle = (task: string): boolean => readRequest(task).puzzle;
 // ── 도구 묶음 ──
 export const wantsGameTools = (task: string): boolean => readRequest(task).tools.game;
 export const wantsMusicTools = (task: string): boolean => { const { audio } = readRequest(task); return audio.music || audio.sound; };
-export const wantsSoundTools = (task: string): boolean => readRequest(task).audio.sound;
-export const wantsTerrainTools = (task: string): boolean => readRequest(task).tools.terrain;
+/** 지은 맵에 덧그리거나(물길·다리·작은 물건) 휑한 야외를 채우는 요청 — 그 도구 묶음을 만든다. */
+export const wantsTerrainTools = (task: string): boolean => { const { tools } = readRequest(task); return tools.terrain || tools.dress; };
 export const wantsStoreTools = (task: string): boolean => readRequest(task).tools.store;
 /** 맵 동사(make_place·add_event…) 위에 덧붙일 도구 이름. */
 export const v2ExtraToolNames = (task: string): string[] => [...readRequest(task).tools.extra];
-export const fallenTierCard = (task: string): string => fallenCard(readRequest(task).tools);
 export const storeTierCard = (task: string): string => storeCard(readRequest(task).tools);

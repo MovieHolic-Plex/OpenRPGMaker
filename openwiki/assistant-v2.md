@@ -43,6 +43,43 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 
 아직 이 기록을 읽지 않는 자리(다른 줄기 파일 — 본문을 고치지 않았다): `gameChecks.ts` 의 익명 정규식 약 25곳(조우 1h 줄 포함), `judge/finishGate.ts` 의 질문·스토어 전용 판정, `verbs.ts` 의 generate_art 싣기(지금은 `buildsWholeGame` — 작은 요청에는 안 실린다. `art` 칸을 같이 보면 「타이틀 그림 새로 그려 줘」에도 실린다), `gameChecks`·`pathBattleBudget`·`vqa`·`reload-check`·실행기의 `wantsWholeGame(task)`(글만 본다 — 이어 하기 턴에는 `buildsWholeGame` 이 맞다).
 
+## 지시문·도구 예산 — 작은 일에는 그 일의 카드와 도구만 (2026-11-11, 리팩토링 B1 뒤)
+
+구조 재점검(2026-11-11) 실측: 빈 프로젝트에서 「이 맵에 상점 주인 한 명 세워 줘」 한 줄에 지시문 63,679자와 도구 43개(97,272자)가 실렸고 첫 도구가 `write_blueprint` 였다.
+「상점」이 실내 낱말이라 실내 칩셋 목록 1.6만 자가, 「게임 낱말」이 하나라도 걸리면 게임 카드 전부와 「Fallen-Star-style jobs」 16줄이 실렸다.
+이제 지시문과 처음 싣는 도구는 요청 의도(`request/intent.ts`)에서 나온다.
+
+| 요청 | 지시문 | 처음 싣는 도구 |
+|---|---|---|
+| 게임 하나(`wholeGame`) | 전과 같다 — 장소 카드 전부 + 게임 카드 전부 + 청사진 카드 | 전과 같다(+ `furnish_outdoor_area`) |
+| 장소 하나(`place`) | 장소 카드 전부 + 게임 카드는 **늘 싣는 줄과 요청이 말한 주제의 줄만** | 전과 같다 |
+| 작은 일(고치기·질문·소리·게임 하나를 잇지 않는 이어 하기) | 핵심 지시 + 그 일의 카드만: 사람을 세우면 People, 사건·대사를 짜면 Events, 옮기기·지우기·질문이면 둘 다 없음. 장소 카드는 색인 한 줄(`read_specs`) | `request/topics.ts` `smallJobTools` — 늘 싣는 13개(놓기·옮기기·지우기·읽기·`ask_user`·`read_specs`) → 사건 쓰기(`upsert_event`) → 주제가 부른 것 → 사람 2개 → 나머지 사건 3개 순. **19개 + `load_tools`** 와 글자 상한(`toolExposure.ts` `SMALL_TOOL_CHARS` 34,000자 + `load_tools`)을 넘기면 뒤가 필요할 때로 밀린다 |
+
+- **주제**(`request/topics.ts` `TOPIC_WORDS` + 전투 판정, 31개): 게임 카드(`game.ts` `GAME_LINES`)의 줄마다 주제 표지가 붙었다 — `core`(늘) · `items` · `equipment` · `battle` · `gates` · `weather` · `snow` · `forest` … 작은 일과 장소 하나에는 `core` 와 걸린 주제의 줄만 싣는다. 「Fallen-Star-style jobs」 머리줄은 그 아래 줄이 하나라도 실릴 때만 붙는다.
+- **작은 일은 빈 프로젝트에서도 작은 일이다.** 전에는 빈 프로젝트의 모든 요청이 장소 카드 전부를 받았다. 이제 시킨 일이 분명하면(`…세워 줘`·`옮겨 줘`) 작은 일이고, 시킨 일 없이 묘사만 온 글(「폐업 직전 태엽 장난감 가게」 — `scope.bareDescription`)과 빈 프로젝트의 「계속」만 첫 장소를 짓는 시작으로 본다.
+- **필요할 때 싣는 것**: `write_blueprint` `build_blueprint_path` `make_place` `edit_place` `review_layout` `set_project_settings` 와 오프닝 도구는 작은 일에 처음부터 싣지 않는다. 이름은 `load_tools` 설명에 뜨고, 이름으로 부르면 그 자리에서 실린다(있는 도구는 그대로다 — 싣는 때만 바뀌었다). 엔딩·전투·상자·이어 주기처럼 요청이 주제를 말하면 그 도구(`define_ending`·`upsert_troop`·`place_chest`·`create_transfer_pair`…)는 처음부터 실린다.
+- **실내 칩셋 목록**(약 1.6만 자)은 실내 방을 짓거나 고치는 요청에만 실린다. 작은 일에는 싣지 않는다(「상점 주인」의 「상점」은 방을 짓는 말이 아니다).
+- **장소에 문을 내는 말은 장소 짓기가 아니다**(`place.ts` `NOT_THE_PLACE`): 「족장의 긴 집에 뒷문을 하나 만들어 줘」는 고치기다 — 전에는 장소 짓기로 갈려 도구 44개·10만 자가 실렸다.
+- **휑한 야외 채우기**: 「빈 곳에」「빈 눈밭에 나무랑 바위를 놓아 줘」「허전해」「꾸며 줘」(`toolGroups.DRESS_WORDS`)면 `find_empty_ground` · `furnish_outdoor_area` · `list_spatial_designs` · `stamp_object` 와 `DRESS_CARD` 한 줄을 싣는다. `furnish_outdoor_area` 는 게임 도구 묶음과 처음 싣는 목록(`V2_UP_FRONT`)에도 들었다.
+
+서로 어긋나던 지시를 맞췄다:
+
+| 전 | 지금 |
+|---|---|
+| 핵심 «좌표를 지어내지 말고 비평가가 준 좌표만» ↔ 지형 카드 «rect·x,y 를 넘겨라» | 핵심: «x,y 나 rect 가 필요한 도구에는 도구 결과나 비평가가 준 칸만». 지형 카드: «rect·x,y 는 읽은 것에서만» |
+| 핵심 «비슷한 물건으로 몰래 바꾸지 말고 draw_object» ↔ 게임 카드 «가장 비슷한 물건을 써라, draw_object 카드에서 멈추지 마라» | 게임 카드: «draw_object 먼저(핵심 규칙), 아이템·대사·스위치는 그대로 짓는다. 그리기가 실패했을 때만 가장 가까운 물건에 조사 이벤트를 붙이고 보고에 적는다» |
+| 게임 카드가 숨긴 도구 `place_npc` 로 사람을 세우라고 함 | `add_people (a new NPC)` |
+| 게임 카드 «좌표가 꼭 필요하면 find_empty_ground» (옮길 때도 좌표를 찾음) | «옮기기는 `move_event{eventId, dx,dy \| where}`(칸을 돌려준다). x,y 가 필요한 도구(상자·레버)만 find_empty_ground» |
+
+증거(모델 없음):
+
+- `test/aiV2PromptBudget.test.ts` — 작은 일 10개 × (빈 프로젝트, 이벤트 하나)의 지시문 상한(상점 주인 ≤ 15,000자 · 옮기기 ≤ 12,000자 …), 처음 싣는 도구 ≤ 20개·≤ 40,000자, 무거운 도구가 처음 목록에 없음, 게임 하나 지시문이 main 보다 늘지 않음(#4556 뒤 main 35,491 · 67,349자, 이 조각 35,369 · 67,227자), 지시가 서로 어긋나지 않음.
+- 실측(빈 프로젝트, 전 → 지금): 상점 주인 63,679자·43개 → 14,114자·18개(16,836자) · NPC 옮기기 47,151자·43개 → 7,093자·14개(14,776자) · 대사 고치기 47,151 → 11,924자·18개 · 전투 하나 47,151자·48개 → 12,837자·20개 · 「뭐가 부족한지 알려 줘」 47,151 → 7,093자.
+- 작은 일 하네스 30건(`harness-data/assistant-capability/small-jobs.json`)을 모델 없이 분류·노출해 본 값: 작은 일로 간 29건 모두 도구 ≤ 20개·≤ 38,380자, 지시문 6,449~15,199자. 만든 게임 픽스처 16건 가운데 게임 하나로 본 것 0건(출하 검사 항목 0). 「게임 제목을 '별의 노래'로 바꿔 줘」에 `set_title_screen`, 「마을 빈 곳에 나무를 몇 그루 심어 줘」에 `place_object`·`stamp_object`·`find_empty_ground`·`furnish_outdoor_area` 가 처음부터 실린다. 남은 것: 「…들판에서 마을로 돌아오는 길도 만들어 줘」(두 맵 잇기)는 장소 짓기로 간다(없는 들판을 지어야 할 수 있어 그대로 뒀다).
+- `golden.mts --diff`(B1 기준): 게임 하나 요청은 지시문 −122자(핵심 지시 −2 · 게임 카드 −120), 도구 +1(`furnish_outdoor_area`). 장소 하나는 게임 카드가 줄었다(「여관 1층」 63,598 → 48,908). 늘어난 지시문은 「광장 빈 곳에 나무랑 벤치」 하나(+366자, `DRESS_CARD`).
+
+남은 것(다른 줄기 파일): `tools/context.ts` 의 `specShown("people")` 은 지시문에 People 카드가 이미 실린 턴(`classifyRequest(…).job.people`)에도 거짓이라 첫 `add_people` 이 카드를 한 번 더 돌려준다. `tools/verbs/place.ts` 의 실내 목록 판정은 지시문과 다른 식(낱말 또는 지금 맵의 칩셋)을 쓴다 — 한 읽기로 모으면 실내 맵에서 마을·숲을 짓는 요청의 목록 1.6만 자도 뺄 수 있다.
+
 ## 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 
 `make_place` 가 처음 지을 때 명세에 무작위 `salt` 를 넣고, 고치기(`edit_place`)는 기록된 명세의 salt 를 물려받는다(모델은 쓰지 않는다).
