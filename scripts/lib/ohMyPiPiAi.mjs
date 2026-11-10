@@ -259,6 +259,15 @@ export async function createOhMyPiAdapters() {
       // 만료됐지만 갱신 가능한 로그인은 여기서 되살린다(single-flight + 백오프, aiAuthRuntime.providerStatus).
       return providerStatus(provider);
     },
+    async usage(provider) {
+      const unknown = (reason) => ({ provider, readable: false, fetchedAt: Date.now(), windows: [], reason });
+      // 사용자 지정(OpenAI 호환)·로컬 CLI 는 공개 사용량 조회가 없다 — 캐물어 보지 않고 모른다고 말한다.
+      if (isOpenAiCompatProviderId(provider) || String(provider).startsWith("local-cli:")) return unknown("이 연결은 남은 한도를 알려 주지 않아요.");
+      let apiKey;
+      try { apiKey = await resolveRequestApiKey(provider); } catch { return unknown("로그인 정보를 확인하지 못해 남은 한도를 읽지 못했어요."); }
+      if (!apiKey) return unknown("로그인하면 남은 한도를 볼 수 있어요.");
+      return workerJson("/usage", { provider, apiKey });
+    },
     async setEnvScan(decision) {
       setEnvScanDecision(decision);
     },

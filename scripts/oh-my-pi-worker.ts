@@ -8,6 +8,7 @@ import { requestPiCheckpoint, resolvePiCheckpoint } from "./lib/piCheckpointBrok
 // 로그인조차 불가능해진다.
 
 import { completeProvider } from "./lib/ohMyPiPiAiRuntime.ts";
+import { fetchProviderUsage } from "./lib/providerUsageRuntime.ts";
 import { generateProviderImage } from "./lib/ohMyPiImageRuntime.ts";
 import { generateCodexImage } from "./lib/codexImageRuntime.ts";
 import { CODEX_PROVIDER_ID } from "../src/ai/oauth/credentials.ts";
@@ -97,6 +98,10 @@ const server = Bun.serve({
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
         registerOpenAiCompatEndpoints(body.compatEndpoints as never);
         return json(await completeProvider(provider, payload, { apiKey }));
+      }
+      if (request.method === "POST" && url.pathname === "/usage") {
+        const body = await request.json() as { provider?: unknown; apiKey?: unknown };
+        return json(await fetchProviderUsage(String(body.provider ?? ""), typeof body.apiKey === "string" ? body.apiKey : undefined));
       }
       if (request.method === "POST" && url.pathname === "/local-agents") {
         const body = await request.json().catch(() => ({})) as { fresh?: boolean };

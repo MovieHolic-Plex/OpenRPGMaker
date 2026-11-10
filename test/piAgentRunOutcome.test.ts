@@ -658,3 +658,67 @@ describe("five application modes", () => {
     expect(h.applyCalls).toBe(0);
   });
 });
+
+// 한도(쿼터·속도 제한)로 멈춘 실행 — 성공 문장 없이 제공자 이름·전환 안내를 낸다(2026-11-10 ai-quota-aware).
+// 깨질 것: 「AI 사용 한도에 도달했어요. 잠시 후 다시」만 두 번 나오거나, 반영 도중 한도면 「변경 내용을 적용했어요」로 끝난다.
+describe("Pi 경로 — 제공자 사용 한도로 멈춤", () => {
+  const QUOTA = '요청 한도 초과(429): 잠시 후 다시 시도하세요. — {"error":{"code":"insufficient_quota"}}';
+
+  it("변경 0건에서 한도면 제공자 이름이 든 멈춤 문장과 상태 줄을 내고 성공을 말하지 않는다", async () => {
+    h.results.push({ project: h.project, toolCalls: 0 });
+    h.errorEvents.push(QUOTA);
+    const { surface } = harness();
+
+    const ok = await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "바꿔라" }, surface());
+
+    expect(ok).toBe(false);
+    expect(h.statuses.at(-1)).toMatch(/사용 한도 — 멈춤$/u);
+    const stop = h.bubbles.find(line => line.includes("사용 한도(쿼터·속도 제한)에 걸려 작업을 멈췄어요"));
+    expect(stop).toContain("변경한 내용은 적용하지 않았어요");
+    expect(h.bubbles.some(line => /적용했|완료/u.test(line))).toBe(false);
+    expect(h.boardStates.at(-1)?.phase).toBe("실패");
+  });
+
+  it("반영 도중 한도면 반영분은 남기되 「적용했어요」 대신 멈춤 문장과 남은 변경 안내를 낸다", async () => {
+    h.results.push({ project: projectWith("반영됨"), toolErrors: 0 });
+    h.errorEvents.push(QUOTA);
+    const { outcomeCalls, surface } = harness();
+
+    const ok = await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "바꿔라" }, surface());
+
+    expect(ok).toBe(false);
+    expect(outcomeCalls.at(-1)).toMatchObject({ delivery: "applied" });
+    expect(h.statuses.at(-1)).toMatch(/사용 한도 — 멈춤$/u);
+    expect(h.bubbles.some(line => line.includes("멈추기 전에 반영한 변경은 남아 있고 되돌릴 수 있어요"))).toBe(true);
+    expect(h.bubbles.some(line => line.includes("변경 내용을 적용했어요"))).toBe(false);
+    expect(h.statuses).not.toContain("적용·저장 완료");
+  });
+
+  it("우리 실행 상한(작업 한도)은 제공자 한도로 보고하지 않는다", async () => {
+    h.results.push({ project: h.project, toolCalls: 0 });
+    h.errorEvents.push("자율성 「보통」의 작업 한도(30턴)에 도달해 중단했습니다");
+    const { surface } = harness();
+
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "바꿔라" }, surface());
+
+    expect(h.bubbles.some(line => line.includes("사용 한도(쿼터·속도 제한)"))).toBe(false);
+    expect(h.statuses.some(line => line.includes("사용 한도 — 멈춤"))).toBe(false);
+  });
+
+  it("검토 카드에서 적용하다 한도에 걸려도 카드는 닫혀 같은 변경을 두 번 적용하지 않는다", async () => {
+    h.piApply = "review";
+    h.results.push({ project: projectWith("검토 한도") });
+    h.errorEvents.push(QUOTA);
+    const receipt = vi.fn();
+    const resolved = vi.fn();
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "바꿔라" },
+      { ...harness().surface(), showChangeReceipt: receipt, onReviewResolved: resolved });
+
+    const review = h.outcomes.at(-1) as unknown as { onApply: () => void };
+    expect(typeof review.onApply).toBe("function");
+    review.onApply();
+    await vi.waitFor(() => expect(resolved).toHaveBeenCalledWith(true));
+    expect(h.bubbles.some(line => line.includes("멈추기 전에 반영한 변경은 남아 있고 되돌릴 수 있어요"))).toBe(true);
+    expect(h.bubbles.some(line => line.includes("변경 내용을 적용했어요"))).toBe(false);
+  });
+});

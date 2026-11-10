@@ -1,4 +1,5 @@
 import { observeActivitySave } from "./aiActivitySave";
+import { el } from "@/util/dom";
 import { formatLocalCliCost } from "@/ai/localCliEngine";
 import { activityNote, activityPhase, recordActivityEvent } from "@/ai/activityTrace";
 import { createPiPublication } from "./aiPiPublication";
@@ -53,7 +54,9 @@ import {
 } from "@/ai/piAgent/teamBoardState";
 import { changeChipsWithAreas, openWideChangeViewer, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
 import { createPiGhostBridge, scopePiGhostEvent } from "./aiPiGhostBridge";
-import { loadAiConfig } from "@/ai/llmClient";
+import { loadAiConfig, reportTransportHealth } from "@/ai/llmClient";
+import { isQuotaOrRateLimitError, quotaFailureCopy, quotaStatusLine } from "@/ai/providerQuota";
+import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { mapRunScope, independentMapRunRoots, settleMapRuns } from "@/ai/piAgent/mapRunLocks.mjs";
 import { editorAiMapRuns } from "@/ai/piAgent/editorMapRunLocks";
 import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
@@ -309,6 +312,40 @@ export interface PiCommandSurface {
    */
   readonly background?: boolean;
   readonly onActivity?: (state: TeamBoardState) => void;
+  /** 제공자 사용 한도로 멈춘 뒤 「다른 AI 연결로 바꾸기」 버튼이 여는 설정. 없으면 버튼 없이 문장만 남는다. */
+  readonly openAiSettings?: () => void;
+}
+
+/** 작업 카드 한 줄 실패 사유. 한도면 어느 연결인지 말한다 — 일반 문장 「잠시 후 다시」는 몇 시간짜리 창과 모순된다. */
+function boardFailureReason(providerId: string | undefined, message: string): string {
+  if (!isQuotaOrRateLimitError(message)) return friendlyExecutionError(message);
+  const id = parseOhMyPiProvider(providerId);
+  return quotaStatusLine(getOhMyPiProvider(id)?.label ?? id);
+}
+
+/**
+ * 한도·속도 제한 실패면 그 사실을 제공자 이름과 함께 말하고 처리했다고 돌려준다(호출자는 일반 실패 문장을 건너뛴다).
+ * 조수 실행은 HTTP 200 스트림이라 429 가 오류 문장으로만 온다 — 여기서 전송 상태를 올려야 칩이 「사용 한도 초과」로 바뀐다.
+ */
+function reportQuotaStop(surface: PiCommandSurface, providerId: string | undefined, message: string, applied: boolean): boolean {
+  if (!isQuotaOrRateLimitError(message)) return false;
+  const id = parseOhMyPiProvider(providerId);
+  const label = getOhMyPiProvider(id)?.label ?? id;
+  reportTransportHealth(false, 429, message);
+  surface.setStatus(quotaStatusLine(label));
+  const bubble = surface.appendBubble("system", quotaFailureCopy(label, applied));
+  if (surface.openAiSettings && typeof HTMLElement !== "undefined" && bubble instanceof HTMLElement) {
+    const open = surface.openAiSettings;
+    bubble.dataset.failureKind = "quota";
+    bubble.append(el("div", { class: "ai-retry-row ai-failure-actions", children: [el("button", {
+      class: "ai-assistant-action is-primary ai-quota-switch",
+      text: "다른 AI 연결로 바꾸기",
+      attrs: { type: "button" },
+      dataset: { testid: "ai-quota-switch-provider" },
+      on: { click: () => open() },
+    })] }));
+  }
+  return true;
 }
 
 export async function runPiCommand(
@@ -819,10 +856,11 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     const segmentReverted = publication.count > 0 && (await enforcePlayableSegment(publication.project).catch(() => null)) !== null;
     ghost.dispose();
     publishFinalOutcome();
-    boardState = markTeamBoardFailed(boardState, message); sync();
+    boardState = markTeamBoardFailed(boardState, isQuotaOrRateLimitError(message) ? boardFailureReason(provider, message) : message); sync();
     finishLog({ applied: publication.count > 0, changedCount: publication.count, error: message });
     surface.setStatus("작업을 마치지 못했어요.");
     surface.appendProcess?.(message);
+    if (reportQuotaStop(surface, provider, message, publication.count > 0 && !segmentReverted)) return false;
     surface.appendBubble("system", `${friendlyExecutionError(message)} ${segmentReverted ? "" : publication.count ? `이미 반영한 변경은 남아 있으며 되돌릴 수 있어요. ${describeAppliedWrites(succeededTools)}` : "변경한 내용은 적용하지 않았어요."}`.trim());
     return false;
   }
@@ -960,7 +998,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     // "바뀐 것이 없다" 로 끝내면 성공한 질문이 실패로 읽힌다(2026-09-12 실측).
     ghost.dispose();
     boardState = droppedEverything || streamErrors.length > 0
-      ? markTeamBoardFailed(boardState, droppedEverything ? spillReason : friendlyExecutionError(streamErrors[0]!))
+      ? markTeamBoardFailed(boardState, droppedEverything ? spillReason : boardFailureReason(provider, streamErrors[0]!))
       : markTeamBoardDone(
         boardState,
         undoneSteps ? "직전 변경을 되돌렸습니다." : options.planOnly ? "계획만 세웠습니다." : answer ? "답변했습니다 — 프로젝트는 그대로입니다." : "바뀐 것이 없습니다.",
@@ -996,6 +1034,12 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     surface.setStatus(droppedEverything ? "적용 실패" : streamErrors.length ? "응답을 마치지 못했어요." : failed ? "작업 실패" : "대기");
     // 답이 곧 결과인 턴은 본문 말풍선이 먼저다 — 보드의 잘린 한 줄·시스템 줄이 답 앞에 서지 않게 한다.
     if (answer && !droppedEverything) surface.appendBubble("assistant", answer);
+    const quotaError = streamErrors.find(isQuotaOrRateLimitError);
+    if (quotaError && !droppedEverything) {
+      surface.appendProcess?.(streamErrors.join("\n"));
+      reportQuotaStop(surface, provider, quotaError, false);
+      return false;
+    }
     if (streamErrors.length) {
       surface.appendProcess?.(streamErrors.join("\n"));
       surface.appendBubble("system", stoppedByLimit ? "작업 한도에 도달해 끝까지 마치지 못했어요. 작업 범위를 줄이거나 자율성 설정을 조정해 다시 요청해 주세요." : "작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요.");
@@ -1261,7 +1305,11 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       ? `적용했습니다 — 팀, 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개${spillNotice}${errorDigest()}.`
       : `변경 내용을 적용했습니다${spillNotice}${errorDigest()}.`;
     // 끊긴 실행만 보드를 실패로 둔다. 끝까지 간 실행의 회수 가능한 오류는 「적용됨」 캡션의 ⚠ 다이제스트로 남긴다(errorDigest).
-    boardState = streamErrors.length && (fatalErrors > 0 || stoppedByLimit)
+    // 반영 도중 한도에 걸린 실행 — 반영한 변경·영수증은 남기되, 「적용했어요」 성공 문장 대신 제공자 이름과 전환 안내를 낸다.
+    const appliedQuotaError = streamErrors.find(isQuotaOrRateLimitError);
+    boardState = appliedQuotaError
+      ? markTeamBoardFailed(boardState, `${boardFailureReason(provider, appliedQuotaError)} — 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요.`)
+      : streamErrors.length && (fatalErrors > 0 || stoppedByLimit)
       ? markTeamBoardFailed(boardState, `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요.`)
       : markTeamBoardApplied(boardState, appliedText); sync();
     observeActivitySave((name, summary, status, data) => {
@@ -1280,6 +1328,18 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       surface.appendProcess?.(`변경은 적용됐지만 저장하지 못했어요: ${error instanceof Error ? error.message : String(error)}`);
     }
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
+    if (appliedQuotaError) {
+      surface.appendProcess?.(streamErrors.join("\n"));
+      if (lastAssistantText.trim()) surface.appendBubble("assistant", lastAssistantText);
+      reportQuotaStop(surface, provider, appliedQuotaError, true);
+      if (!saveAccepted) surface.appendBubble("system", "멈추기 전에 반영한 변경이 아직 저장되지 않았어요. 저장 표시에서 확인해 주세요.");
+      surface.showChangeReceipt?.({
+        before: base, after: merged.project, mapId: receiptMapId, title: receiptTitle,
+        detail: "사용 한도로 멈추기 전에 반영한 변경이에요. 작업은 끝나지 않았어요.",
+        chips: receiptChips, ledger: receiptLedger, toolNames: [team ? "pi_team" : "pi_agent"],
+      });
+      return false;
+    }
     surface.setStatus(streamErrors.length ? "변경 반영됨 · 응답 중 오류" : (harmonyManualReview && applyMode !== "yolo") ? "반영됨 · 확인할 문제 있음" : saveAccepted ? "적용·저장 완료" : "적용됨 · 저장 확인 필요");
     if (streamErrors.length) surface.appendBubble("system", `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요. ${lastAssistantText.trim() ? "" : `${describeAppliedWrites(succeededTools)} `}저장 상태는 저장 표시에서 확인해 주세요.`);
     if (lastAssistantText.trim()) surface.appendBubble("assistant", lastAssistantText);
@@ -1369,7 +1429,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     void (async () => {
       try {
         const success = await apply();
-        if (success || changedCount === 0) clearReview();
+        // 한도로 멈춘 적용도 변경은 이미 반영·저장됐다 — 카드를 남기면 「적용」을 다시 눌러 같은 변경을 두 번 넣는다.
+        if (success || applied || changedCount === 0) clearReview();
       } catch {
         surface.appendBubble("system", "변경 내용을 적용하지 못했어요. 다시 적용하거나 변경안을 버려 주세요.");
       } finally {
