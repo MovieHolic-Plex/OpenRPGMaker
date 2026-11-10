@@ -8,11 +8,12 @@ import { createBlankProject } from "@/project/defaults";
 function fixture() {
   const ctx = { project: createBlankProject() };
   const mapId = ctx.project.startMapId;
-  const map = ctx.project.maps[mapId];
-  assert(map);
   const enemy = ctx.project.database.enemies[0];
   assert(enemy);
   const troop = runTool(ctx, "upsert_troop", { troop: { id: "troop_b5", name: "시험 무리", enemyIds: [enemy.id], members: [] } });
+  // 도구 호출은 프로젝트를 새 객체로 바꾼다 — 맵은 그 뒤에 집는다(앞에서 집은 맵을 고치면 도구가 보는 맵이 아니다).
+  const map = ctx.project.maps[mapId];
+  assert(map);
   return { ctx, mapId, map, troop };
 }
 const warningsOf = (result: { diff?: { warnings: string[] } }) => (result.diff?.warnings ?? []).join("\n");
