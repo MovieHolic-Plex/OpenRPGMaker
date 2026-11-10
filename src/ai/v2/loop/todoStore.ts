@@ -30,6 +30,8 @@ interface TodoMeta {
   strategyGiven?: boolean;
   /** H3 마지막 거절 뒤 고리가 고른 다음 호출(재주입 글이 쓴다). */
   nextCall?: { verb: string; text: string };
+  /** 재주입 글에 실려 모델에게 일감으로 건네진 적이 있나(조수가 적은 항목은 묻지 않는다). */
+  offered?: boolean;
 }
 
 /** 프로젝트에 같이 저장되는 모양(project.assistantTodo) — 다시 읽기·이어 하기에서 되살린다. */
@@ -46,6 +48,7 @@ export interface TodoInput {
   readonly id?: string;
   readonly check?: TodoCheck;
   readonly dependsOn?: readonly string[];
+  readonly severity?: "polish";
 }
 export interface TodoPhaseInput { readonly phase: string; readonly items: readonly TodoInput[] }
 
@@ -127,6 +130,8 @@ export class TodoStore {
   }
 
   get(id: string): TodoItem | undefined { return this.items.find((i) => i.id === id); }
+  /** 문제 열쇠(gate·critic·vqa)로 항목 찾기. */
+  byKey(key: string): TodoItem | undefined { return this.items.find((i) => this.meta.get(i.id)?.key === key); }
 
   /** id 그대로 → 내용 그대로 → 내용 일부(하나만 맞을 때). */
   resolve(ref: string | undefined): TodoItem | undefined {
@@ -178,7 +183,8 @@ export class TodoStore {
     const id = wanted && !this.items.some((i) => i.id === wanted) ? wanted : this.nextId(source === "model" ? "t" : source === "vqa" ? "v" : source === "critic" ? "c" : "g");
     const item: TodoItem = { id, phase: clip(phase.trim() || "할 일", 40), content: clip(input.content.trim(), 220), status: "pending", attempts: 0, source,
       ...(input.check ? { check: input.check } : {}),
-      ...(input.dependsOn?.length ? { dependsOn: [...input.dependsOn] } : {}) };
+      ...(input.dependsOn?.length ? { dependsOn: [...input.dependsOn] } : {}),
+      ...(input.severity ? { severity: input.severity } : {}) };
     this.items.push(item);
     if (key) this.metaOf(id).key = key;
     return item;
@@ -211,13 +217,13 @@ export class TodoStore {
     const fresh: TodoItem[] = [];
     for (const input of inputs) {
       if (!input.content?.trim()) continue;
-      const same = input.key ? this.items.find((i) => this.meta.get(i.id)?.key === input.key) : undefined;
+      const same = input.key ? this.byKey(input.key) : undefined;
       if (same) {
         // 끝났다던 문제가 다시 나왔다 — 거짓 완료이거나 고치기가 효과가 없었다. 다시 열고 한 번 실패로 센다.
         // 막힘(이유를 적고 닫음)·뺌은 다시 열지 않는다 — 같은 문제가 남는 것이 당연하다(남은 문제로 보고된다).
         if (same.status === "completed") { same.attempts += 1; same.status = "pending"; delete this.metaOf(same.id).closedBy; opened.push(same); }
-        // 같은 열쇠(맵마다 하나인 장소 고치기)라도 문제 글은 바뀐다 — 지금 글로 바꿔 둔다.
-        if (isOpen(same.status)) same.content = clip(input.content.trim(), 220);
+        // 같은 열쇠(맵마다 하나인 장소 고치기)라도 문제 글은 바뀐다 — 지금 글로 바꿔 둔다. 화면 검수 항목은 열쇠가 결함 하나라 글을 바꾸지 않는다.
+        if (isOpen(same.status) && source !== "vqa") same.content = clip(input.content.trim(), 220);
         continue;
       }
       const item = this.add(phase, input, source, input.key);
@@ -308,6 +314,20 @@ export class TodoStore {
     return undefined;
   }
 
+  /** 지금 열린 항목을 «모델에게 건넸다»로 표시한다 — 재주입 글을 만든 쪽이 부른다. */
+  markOffered(): void { for (const i of this.open()) this.metaOf(i.id).offered = true; }
+
+  /**
+   * 막힌 항목이 완료를 막는가. 화면 검수 항목 가운데 다듬기 급과, 모델이 받아 보기 전에 코드가 닫은 것은 막지 않는다(보고에는 남는다).
+   * 그 밖의 막힘(조수 항목·함수 검사·비평·모델이 받아 본 화면 검수 막음)은 막는다.
+   */
+  holds(item: TodoItem): boolean {
+    if (item.status !== "blocked") return false;
+    if (item.source !== "vqa") return true;
+    const m = this.meta.get(item.id);
+    return item.severity !== "polish" && !(m?.closedBy === "auto" && !m.offered);
+  }
+
   counts(): { open: number; total: number; done: number; blocked: number; dropped: number } {
     const c = { open: 0, total: this.items.length, done: 0, blocked: 0, dropped: 0 };
     for (const i of this.items) {
@@ -371,9 +391,9 @@ export class TodoStore {
     if (!s || s.version !== 1 || !Array.isArray(s.items)) return false;
     const items = s.items.filter((i): i is TodoItem => !!i && typeof i === "object" && typeof (i as TodoItem).id === "string" && typeof (i as TodoItem).content === "string")
       .map((i) => ({ ...i, attempts: Number(i.attempts) || 0, status: (["pending", "in_progress", "completed", "blocked", "dropped"] as const).includes(i.status) ? i.status : "pending" }));
-    if (!items.some((i) => isOpen(i.status) || i.status === "blocked")) return false;
-    // 앞 실행에서 막혔던 항목은 이번 실행에서 다시 시도한다(새 요청 «계속»).
-    for (const i of items) if (i.status === "blocked") { i.status = "pending"; delete i.blockedReason; i.attempts = 0; }
+    if (!items.some((i) => isOpen(i.status) || (i.status === "blocked" && i.severity !== "polish"))) return false;
+    // 앞 실행에서 막혔던 항목은 이번 실행에서 다시 시도한다(새 요청 «계속»). 다듬기 급 화면 검수 항목은 한 번 건넨 것으로 끝이다 — 다시 열지 않는다.
+    for (const i of items) if (i.status === "blocked" && i.severity !== "polish") { i.status = "pending"; delete i.blockedReason; i.attempts = 0; }
     this.items = items;
     this.meta.clear();
     for (const [k, v] of Object.entries(s.meta ?? {})) if (v && typeof v === "object") this.meta.set(k, { key: (v as TodoMeta).key });
