@@ -510,7 +510,10 @@ function checkPlace(project: Project, sc: Scope, name: string, kind?: TodoPlaceK
   if (!real.length) return { pass: false, detail: t(`${mapAt(maps[0]!)} 는 바닥 한 가지뿐인 빈 자리표시 맵이다 — 장소를 실제로 지어야 한다`, `${mapAt(maps[0]!)} is an empty placeholder map (one floor tile only) — actually build the place`), evidence: { mapId: maps[0]!.id } };
   for (const m of real) {
     const ks = mapKinds(m);
-    if (!kind || !ks.size || ks.has(kind) || [...ks].some((k) => GROUP[k] === GROUP[kind])) {
+    // 세계 청사진이 장소 목록에 적은 맵은 그 종류로 지은 것이다 — 이름 낱말로 추정한 종류(「속삭임 숲」 = 들판)와 할 일의 종류(던전)가 달라도 지어진 장소다
+    // (2026-11-10 Terra jrpg-w2: 버들항 세계의 deep-forest 를 지었는데 «looks like field — not a dungeon place» 로 끝내기가 거절됐다).
+    const listed = (project.gameBlueprint?.places ?? []).some((pl) => pl.name.normalize("NFC").replace(/\s+/gu, "") === String(m.name ?? "").normalize("NFC").replace(/\s+/gu, ""));
+    if (!kind || !ks.size || ks.has(kind) || listed || [...ks].some((k) => GROUP[k] === GROUP[kind])) {
       return { pass: true, detail: t(`장소 ${mapAt(m)} 가 있다(${m.width}×${m.height}, 이벤트 ${m.events?.length ?? 0}${kind ? `, 종류 ${ks.size ? [...ks].join("/") : "모름"} — 요청 ${kind}` : ""})`, `place ${mapAt(m)} exists (${m.width}x${m.height}, ${m.events?.length ?? 0} events${kind ? `, kind ${ks.size ? [...ks].join("/") : "unknown"} — requested ${kind}` : ""})`), evidence: { mapId: m.id } };
     }
   }
