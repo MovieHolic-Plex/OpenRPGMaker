@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **193쪽 / 8120KB / 약 2,387,105 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **193쪽 / 8121KB / 약 2,387,464 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -341,15 +341,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L375` 바로 플레이 게임 (2026-10-23)
   - `L479` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2-refactor.md` — 12KB · 102줄 · ~3,705 토큰
+### `openwiki/assistant-v2-refactor.md` — 14KB · 104줄 · ~4,064 토큰
 
 - `L6` 왜
 - `L15` 목표 구조
 - `L32` 규칙 (리팩토링 중에도, 끝난 뒤에도)
 - `L42` 한 조각을 검증하는 법
-- `L52` 옮기는 도구 (`scripts/qa/assistant-v2/refactor/`)
-- `L71` 진행표
-- `L98` 알려 둘 것
+- `L54` 옮기는 도구 (`scripts/qa/assistant-v2/refactor/`)
+- `L73` 진행표
+- `L100` 알려 둘 것
 
 ### `openwiki/assistant-v2.md` — 306KB · 1010줄 · ~93,003 토큰 · 통째읽기 잘림
 
