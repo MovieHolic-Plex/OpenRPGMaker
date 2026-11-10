@@ -6,6 +6,7 @@ import { isUntouchedMap } from "@/project/projectBlankness";
 import type { GameMap, Project } from "@/project/types";
 import { villagePoolEntryByStyle, VILLAGE_POOL_STYLE_PREFIX } from "../../../villageChipsetPool";
 import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../types";
+import { onePassRefusal } from "../onePass";
 
 const CREATE_SIZE: Record<string, readonly [number, number]> = { sengoku_edo: [54, 42], desert_east: [48, 36], pirate_isles: [48, 36] };
 
@@ -32,7 +33,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const entry = villagePoolEntryByStyle(spec.style);
   const fail = (summary: string): PlaceBuildResult => ({ ok: false, mapIds: previous?.result.mapIds ?? [], summary, warnings: [], missingArt: [], calls: run.calls.slice(first) });
   if (!entry) return fail("칩셋 풀 마을: 알 수 없는 칩셋 스타일이다.");
-  if (previous) return fail("칩셋 풀 마을은 구성기가 한 번에 짓는다 — 같은 맵을 다시 짓지 않는다. 사람은 add_people, 남은 문제는 보고에 적는다.");
+  if (previous) return fail(onePassRefusal(spec.name));
   const seed = typeof spec.hints?.poolSeed === "number" ? Math.max(1, Math.floor(spec.hints.poolSeed)) : (spec.salt ?? 1) % 9000 + 1;
   const tilesetId = entry.tilesetId;
   let mapId: string | undefined;
@@ -68,6 +69,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
 
 export const VILLAGE_POOL_BUILDER: PlaceBuilder = {
   id: "village-pool",
+  onePass: true,
   accepts: (spec) => spec.type === "village" && !!spec.style?.startsWith(VILLAGE_POOL_STYLE_PREFIX),
   prepare: async (spec) => { if (spec.style === "pool:joseon_baram") await prepareTool("import_region_reference", { id: "joseon-v20-64x56" }); },
   build,

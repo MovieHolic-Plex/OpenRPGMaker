@@ -93,8 +93,8 @@
 | B1 | 요청 분류를 한 번만 하고 기록해 모든 곳이 읽게(34곳의 따로 판정 없애기). 작은 일은 그 일의 검사만 |
 | B2 | 완료 판정: 화면 검수는 «건넨 막음»만 완료를 막고 다듬기·모델 밖은 장부로. 겹침 판정(`vqaSameDefect`)·항목 열쇠(대상+결함 글)·자동 오프닝 분류·무대 오프닝 찍기·맵 칸 수·검토자의 출하 차단 중복 삭제. 새 파일 `turn/vqaItems.ts`. 규칙은 `assistant-v2.md` 「완료 판정」 — 끝 (#4549) |
 | B3 | 자리 규칙 하나 · 통행 기준 채우기 · 무대 오프닝. **B3a 끝**: 자리 고르기를 `place/{cells,personSpot,where}.ts` 로 떼고(`people.ts` 1,073 → 332줄), `move_event` 가 `dx,dy` · `where` 를 받아 고른 칸을 돌려준다. **B3b 끝**: 빈 야외 땅을 이름표가 아니라 칸 정보로 읽고(`src/project/openGround.ts`) 그 칩셋의 야외 소품으로 채운다 — 세계 야외 맵 12장 「맨땅 0%」 → 한 번 호출로 채움. **B3c 끝**: `author_opening_stage` 가 끝맺음이 깐 `bp-open-*` 장면을 걷고, 무대가 있으면 끝맺음이 다시 깔지 않는다. 무대 칸은 생략할 수 있다 |
-| B4 | 턴 사이 기억: 막힌 항목은 막힌 채로(시도·마지막 실패·부른 동사·막힌 이유), 대상 지문이 바뀌었거나 요청이 짚은 것만 다시 연다. 화면 검수 장부를 `assistantTodo.memory.vqa` 로 이어 받는다. 검토자·리드 항목 열쇠를 지적 글로. 새 파일 `turn/carryOver.ts`. 규칙은 `assistant-v2.md` 「턴 사이 기억」 — 끝 (#4550). 장소 설계(세션)는 아직 |
-| B5 | 감싸개 여섯 겹을 도구 안으로 |
+| B4 | 턴 사이 기억: 막힌 항목은 막힌 채로(시도·마지막 실패·부른 동사·막힌 이유), 대상 지문이 바뀌었거나 요청이 짚은 것만 다시 연다. 화면 검수 장부를 `assistantTodo.memory.vqa` 로 이어 받는다. 검토자·리드 항목 열쇠를 지적 글로. 새 파일 `turn/carryOver.ts`. 규칙은 `assistant-v2.md` 「턴 사이 기억」 — 끝 (#4550). **B4b**: 장소 설계도 턴을 넘긴다 — `tools/placeMemory.ts`(`assistantTodo.memory.places`, 맵 지문이 그대로일 때만 `session.pastPlaces` 로 되살림), 다음 턴의 `edit_place` · `move_object` · `review_layout` 이 그 설계에서 고친다. 설계 없는 맵·한 번에 짜는 장소(`onePass`)의 거절 글은 이유와 그 맵에서 되는 도구를 이른다. 규칙은 `assistant-v2.md` 「장소 설계는 턴을 넘어 남는다」 |
+| B5 | 감싸개 여섯 겹을 도구 안으로. **B5a 끝**: 트룹의 빈 members · 필드 적의 patrol/graphic · 이동 쌍의 doorAt(같은 칸·막힌 문앞)을 도구가 스스로 읽는다 — `withSchemaFillCleanup` 은 아이템 한 규칙만 남겼다. 남은 것(B5b): 이동 쌍 뒤 단계 재시도 · 칩 관문 · 조우 · 그림 찾기 상한 |
 | B6 | 작은 일 하네스를 v2 + Terra 로 돌리기, 오분류 요청 모음을 CI 에 — **재는 쪽은 있음**: 작은 일 30가지 묶음·판정 자기검사·실행기·보고서(`npm run harness -- assistant-capability small-jobs --model terra-high --v2`, 문서 `openwiki/harnesses/assistant-capability.md` 「작은 일 30가지」). 이후 도구·분류 수정은 이 표로 전/후를 잰다. 기준선(2026-11-11, main `46274bc35f`): 통과 23/30 · 호출 중앙값 18 · 3.5분 — 불합격 원인 넷(마무리 단계 `clear_transfer_lanes` 가 사람을 옮김 2, 눈 칩셋 `find_empty_ground` 0% 2, 고른 도구 묶음에 도구 없음 2, 할 일 확인이 요청보다 좁음 1)과 만든 게임의 타이틀·엔딩 재작업 비용은 그 문서 「기준선」. 오분류 모음의 CI 연결은 아직 |
 
 ## 알려 둘 것
