@@ -25,6 +25,7 @@ def hexc(h, a=255):
 OUTLINE = hexc("1c1418")
 STONE = (hexc("a8a6b4"), hexc("767484"), hexc("4a485e"))
 BRASS = (hexc("ffe08a"), hexc("d0a040"), hexc("8a6018"))
+BACK = (hexc("4a3428"), hexc("3a281e"))  # 거울 뒷판(어두운 나무)
 
 
 def mirror_frame(lit, facing):
@@ -71,7 +72,12 @@ def mirror_frame(lit, facing):
             elif d > 1 - 2.3 / min(rx, ry):
                 p[x, y] = brass_l if (y < cy and x < cx + 1) else (brass_m if y < cy + 3 else brass_d)
             elif facing == "up":
-                p[x, y] = brass_m if (x * 3 + y) % 7 else brass_d
+                # 뒷면 — 반점 박힌 놋쇠 원판은 실제 크기에서 금빛 돌처럼 읽혔다(fs-sky-tower-mirrors).
+                # 어두운 나무 뒷판 + 놋쇠 십자 버팀으로 「거울을 뒤에서 본 것」이 되게 한다.
+                if abs(x - cx) < 1 or abs(y - cy) < 1:
+                    p[x, y] = brass_m
+                else:
+                    p[x, y] = BACK[0] if (x + y) % 5 else BACK[1]
             else:
                 p[x, y] = glass(x, y)
     if facing in ("down", "up"):
@@ -102,8 +108,10 @@ def mirror_frame(lit, facing):
                 p[xx, y] = (255, 255, 255, 255) if lit else (140, 170, 210, 255)
     else:
         # 뒷판 — 위 테두리 너머로 유리 가장자리가 한 줄 보인다(뒤에서 본 거울).
-        for x in range(9, 15):
-            p[x, 2] = (232, 244, 255, 255) if lit else (110, 140, 186, 255)
+        for x in range(8, 16):
+            p[x, 1] = (232, 244, 255, 255) if lit else (110, 140, 186, 255)
+        for x in range(10, 14):
+            p[x, 0] = (255, 255, 255, 255) if lit else (150, 176, 214, 255)
         p[11, 10] = brass_l
         p[12, 11] = OUTLINE
     if lit:
