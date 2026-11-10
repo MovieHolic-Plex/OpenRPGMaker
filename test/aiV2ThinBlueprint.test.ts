@@ -60,6 +60,12 @@ describe("write_blueprint thin first draft", () => {
     await write(project, session, args(["성 앞"], 3));
     expect(project.gameBlueprint?.steps.length).toBe(3);
   });
+  it("does not reject when only the request sentence says escape room", async () => {
+    const project = createBlankProject() as Project; const session = new V2Session();
+    await write(project, session, args(["작은 방"], 3), "밀실 탈출 게임 만들어 줘");
+    expect(project.gameBlueprint?.steps.length).toBe(3);
+    expect(session.blueprintThinRejects).toBe(0);
+  });
   it("does not reject a locked-room escape game", async () => {
     const project = createBlankProject() as Project; const session = new V2Session();
     await write(project, session, args(["작은 방"], 3), "방탈출 게임 만들어 줘");
