@@ -50,7 +50,7 @@ import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
 import { hitIntensity } from "@/player/battleHitIntensity";
 import { SWING_LEAD_MS, hurtShakeIntensity, spawnSlashTrail, vibrateStruck } from "@/player/battleHitFeelDom";
-import { createBattleImpactController } from "@/player/battleImpactDom";
+import { createBattleImpactController, type BattleHitFlashTint } from "@/player/battleImpactDom";
 import { stateAttackElementId } from "@/battle/battleStates";
 import { resolveBattleHitFeel } from "@/project/battleHitFeel";
 import { resolveBattleLook } from "@/project/battleLook";
@@ -285,6 +285,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let hitStopFeedbacks: DamageFeedback[] = [];
   // 광역기 착탄에서 함께 맞는 대상(맞는 포즈). 단일 대상은 lastDamageFeedback 하나로 충분하다.
   let impactGroupIds: readonly string[] | undefined;
+  // 지금 엔트리를 친 배우의 착탄 섬광 색(ActorRecord.battleHitFlash). 없거나 적이 치면 기본 섬광.
+  let entryHitFlash: BattleHitFlashTint | undefined;
   let activeAnimation: BattleAnimationPlayback | undefined;
   // 프레젠테이션 HP 원장 — 시퀀스가 도는 동안 화면은 이 원장을 본다.
   // 런타임 스냅샷(즉시 최종 상태)이 연출을 앞지르는 결함의 단일 수정 지점.
@@ -559,6 +561,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       const timelineCue = monsterTimelineCue(entry, store.getCurrent().database.states);
       if (timelineCue) playMonsterSfx(store.getCurrent(), timelineCue);
       playedTimelineSequence = Math.max(playedTimelineSequence, entry.sequence);
+      // 상태 피해(stateUpkeep)는 맞은 본인이 userRecordId 로 기록된다 — 자기 섬광 색을 자기에게 칠하지 않는다.
+      entryHitFlash = entry.side === "actor" && entry.userRecordId && entry.userId && entry.userId !== entry.targetId
+        ? store.getCurrent().database.actors.find((actor) => actor.id === entry.userRecordId)?.battleHitFlash
+        : undefined;
       if (pokemonMotion) {
         const skill = entry.skillId || entry.skillName ? battleEntrySkillRecord(entry) : undefined;
         pokemonMove = { motion: pokemonMoveMotion(skill), color: pokemonMoveColor(skill), fromBelow: pokemonStrikeFromBelow(skill), actionId: entry.actionId };
@@ -646,7 +652,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
           comboPartnersStrike(root);
         }
         if (retroMotion && hitFeel === "impact" && intensity && targetNode && !prefersReducedMotion()) {
-          impactContact.strike(targetNode, intensity, recoil);
+          impactContact.strike(targetNode, intensity, recoil, entryHitFlash);
         }
         // 포켓몬 스킨의 피해는 기술 연출(착탄 떨림·별) 뒤에 따로 온다(3세대 순서) — 아래 일반 경로를 타지 않는다.
         if (usesPokemonDamagePhase(feedback)) {

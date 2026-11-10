@@ -83,6 +83,7 @@ const FIELD_LABELS: Readonly<Record<string, string>> = {
   transparent: "투명",
   flying: "부양",
   battleScalePercent: "전투 표시 크기",
+  battleHitFlash: "착탄 섬광 색",
   duel: "결투 규칙",
   yieldAtPercent: "적 항복선(%)",
   playerYieldAtPercent: "아군 항복선(%)",

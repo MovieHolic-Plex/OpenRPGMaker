@@ -302,6 +302,10 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
           if (actorPatch.loadoutSlots === undefined) delete record.loadoutSlots;
           else record.loadoutSlots = actorPatch.loadoutSlots;
         }
+        if ("battleHitFlash" in actorPatch) {
+          if (actorPatch.battleHitFlash === undefined) delete record.battleHitFlash;
+          else record.battleHitFlash = actorPatch.battleHitFlash;
+        }
         if ("battleCommandIds" in actorPatch) {
           if (actorPatch.battleCommandIds === undefined) delete record.battleCommandIds;
           else record.battleCommandIds = actorPatch.battleCommandIds;
