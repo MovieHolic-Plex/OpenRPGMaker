@@ -105,6 +105,18 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 «저택 탈출»·«탐정»·«카페 경영» 요청이 열쇠 해시로 선사 시대 세계를 받음(`fitsAnyWorld` — 무엇이든 좋다는 요청과 모험·RPG 요청만) · 갇힌 방 게임은 세계를 쓰지 않음 ·
 세계 없는 게임의 청사진에 `places` 가 남아 끝맺음이 같은 장소를 한 번 더 지음 · 설계자 청사진(`OPRN_V2_BLUEPRINT_DESIGNER`)에서 세계 카드만 실리던 반쪽 상태 · 세계 시험이 vitest 15초 상한을 넘음(느린 시험에 상한을 주고 경로 시험은 세계를 짓지 않게).
 
+## 옮기기는 좌표 없이도 된다 — `move_event` 의 dx,dy · where (2026-11-11, B3a)
+
+구조 재점검 3-3: 화면 검수 결함에는 칸 좌표가 없는데 `move_event` 는 `x,y` 가 필수였다. Terra 는 「옮길 검증된 빈 바닥 좌표를 확인하지 못했습니다」로 막혔다.
+
+- `move_event` 의 목적지는 셋 중 하나다: `x,y`(칸) · `dx,dy`(지금 칸 기준, 「두 칸 왼쪽」 = `dx:-2`) · `where`(자리 낱말). 답에 고른 칸(`x,y`)과 떠난 칸(`from`), 낱말을 어떻게 풀었는지(`how`)가 온다.
+- `where` 는 `add_people` · `add_event` · `place_object` 와 같은 자리 규칙(`src/ai/v2/place/where.ts` `resolveWhere`)으로 푼다 — 걸어 닿고, 길·출구를 막지 않고, 가구·다른 이벤트·도착 칸이 아닌 칸. 옮기는 이벤트 자신의 칸은 빈 칸으로 본다(`exceptId`).
+- 「촌장 옆」처럼 **다른 이벤트 이름**도 기준이 된다(`findEventBox`). 전에는 칩셋 이름표에 있는 물건만 기준이 됐다. 새 사람·사건을 놓을 때도 같다.
+- 그 맵에 없는 낱말이면 옮기지 않고 거절한다(시작 근처로 보내지 않는다). 부르는 쪽은 글이 아니라 `WhereResolution.fallback` 으로 가른다.
+- `x,y` 를 준 호출의 착지 규칙(`resolveEventPlacement`, 반경 3 자동 조정)은 그대로다.
+- 자리 고르기는 `people.ts` 에서 `place/cells.ts`(칸 읽기) · `place/personSpot.ts`(실내 사람 자리 비용) · `place/where.ts`(낱말 → 칸)로 옮겼다.
+- 증거: `test/moveEventWhere.test.ts`. 모델 없는 실행 — `dx:-2` (5,5)→(3,5) · `where:"촌장 옆"` → (8,4) · `where:"용의 둥지 옆"` 거절.
+
 ## 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
 
 감사(`~/claude-viz/map-sameness-1029.html`, 묶음 vm1~vm8): 여관 1층 23개 중 13개가 같은 16×14 선술집 홀(「여관」 낱말 → 장소 견본 tavern, 뒤집기·손님 자리 네 판),

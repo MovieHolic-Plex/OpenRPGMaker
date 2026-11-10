@@ -39,6 +39,7 @@ import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
 import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
 import { laneCells } from "@/ai/v2/placementRules";
+import { resolveWhere } from "@/ai/v2/place/where";
 import { noteToolChosenGraphic } from "./toolChosenGraphics";
 import { ensureHorrorSound, readFootstepsArg, resolveFootstepsSe } from "./horrorSoundAssets";
 import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, MoveCommand, MoveRoute, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
@@ -4371,24 +4372,46 @@ function followScheduleSlots(mapId: string, event: GameEvent, previous: Point): 
   return notes;
 }
 
+/** move_event 의 목적지: x,y(절대) · dx,dy(지금 칸 기준) · where(자리 낱말 — 자리 규칙 resolveWhere 가 칸을 고른다) 가운데 하나. */
+function moveTarget(project: Project, map: GameMap, event: GameEvent, args: Readonly<Record<string, unknown>>): { x: number; y: number; how?: string } {
+  const int = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v);
+  if (int(args.x) && int(args.y)) return { x: args.x, y: args.y };
+  if (int(args.dx) || int(args.dy)) return { x: event.x + (int(args.dx) ? args.dx : 0), y: event.y + (int(args.dy) ? args.dy : 0) };
+  const where = typeof args.where === "string" ? args.where.trim() : "";
+  if (!where) {
+    throw new ToolError(`move_event needs a target for '${event.id}' (now at (${event.x}, ${event.y})): x and y (a cell), dx and dy (cells from where it stands: dx -2 = two cells left), or where (a place word such as "문 앞" or "카운터 옆" — the tool picks a free walkable cell and returns it).`, { code: "move-event-no-target", mapId: map.id });
+  }
+  const found = resolveWhere(project, map, where, { exceptId: event.id, role: event.name ?? "" });
+  if (found.fallback) {
+    throw new ToolError(`No free cell on ${map.name ?? map.id} matches where "${where}". Nothing was moved. Use a word this map has — 입구 (entrance) · 광장 (square) · 문 앞 (door) · «X 옆/앞/뒤» with X = an object label or an event name on this map · 구석 (corner) · 창가 (window) · 북쪽 벽 (north wall) — or give dx,dy from its current cell (${event.x}, ${event.y}).`, { code: "move-event-where-unknown", mapId: map.id });
+  }
+  return { ...found.cell, ...(found.how ? { how: found.how } : {}) };
+}
+
 const moveEvent: ToolDefinition = {
   name: "move_event",
-  description: "이벤트를 같은 맵 내 다른 좌표로 옮긴다. 이벤트 자신의 트리거/우선순위 기준으로 통행 가능 칸에 착지한다(밟는 이벤트는 통행 가능 칸 강제, 그 외는 인접 통행 가능 칸 필요). 배치를 옮기라는 요청은 이벤트를 지우고 새로 만들지 말고 이 툴로 옮긴다.",
+  description: "Move an event to another cell of the same map and return the cell it landed on. Give ONE target: x,y (a cell) · dx,dy (cells from where it stands now — dx -2 = two cells left, dy 1 = one cell down) · where (a place word; the tool picks a free walkable cell that blocks no path — no coordinates needed). "
+    + "The event lands on a cell that fits its trigger and body: people and step-on events need a walkable cell, others need a walkable neighbour; an unfit cell moves to the nearest fit one within 3 cells (the result says so). To relocate something, move it with this tool — do not delete the event and create a new one.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
-      mapId: { type: "string" }, eventId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" },
+      mapId: { type: "string" }, eventId: { type: "string" },
+      x: { type: "integer", description: "Target cell x (with y)." }, y: { type: "integer", description: "Target cell y (with x)." },
+      dx: { type: "integer", description: "Cells to the right of its current cell (negative = left). Use instead of x,y for «two cells left»." },
+      dy: { type: "integer", description: "Cells below its current cell (negative = up)." },
+      where: { type: "string", description: "Place word instead of coordinates: 입구 (entrance) · 광장 (square) · 문 앞 (in front of the door) · «X 옆/앞/뒤» (beside / in front of / behind X — X is an object label like 카운터·우물·침대 or the name of another event) · 구석 (corner) · 창가 (by the window) · 북쪽 벽 (north wall; also 남·동·서) — add a room word (홀·부엌·침실) to stay inside that room." },
       from: { ...COORD_SCHEMA, description: "접근성을 검사할 같은 맵의 진입 좌표. 린트 후보의 from을 그대로 전달한다. 생략하면 시작 맵의 시작 위치, 그 외 맵은 로컬 접근성을 사용한다." },
     },
-    required: ["mapId", "eventId", "x", "y"],
+    required: ["mapId", "eventId"],
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const event = map.events.find((entry) => entry.id === args.eventId);
     if (!event) throw new ToolError(`옮길 이벤트를 찾을 수 없습니다: ${args.eventId}`, { code: "event-not-found" });
-    const requestedX = args.x as number;
-    const requestedY = args.y as number;
+    const target = moveTarget(draft, map, event, args);
+    const requestedX = target.x;
+    const requestedY = target.y;
     if (!inMapBounds(map, requestedX, requestedY)) throw new ToolError(`이동 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { mapId: map.id, x: requestedX, y: requestedY });
     const from = args.from as Point | undefined;
     if (from !== undefined && (!Number.isInteger(from.x) || !Number.isInteger(from.y)
@@ -4423,8 +4446,8 @@ const moveEvent: ToolDefinition = {
       ...followScheduleSlots(map.id, event, previous),
     ];
     return {
-      summary: `이벤트 '${args.eventId}' → (${placement.x}, ${placement.y})${placement.adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
-      data: { eventId: event.id, x: placement.x, y: placement.y, adjusted: placement.adjusted },
+      summary: `이벤트 '${args.eventId}' → (${placement.x}, ${placement.y})${target.how ? ` — ${target.how}` : ""}${placement.adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
+      data: { eventId: event.id, x: placement.x, y: placement.y, from: previous, adjusted: placement.adjusted, ...(target.how ? { how: target.how } : {}) },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
