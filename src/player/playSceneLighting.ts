@@ -94,6 +94,7 @@ export function syncLightingLayer(scene: PlaySceneContext): void {
     timeMs: scene.lightingClockMs ?? 0,
     resolveAnchor: (anchor, source) => resolveLightAnchor(scene, anchor, source),
     mapBounds: mapWorldBounds(scene),
+    darkMargin: scene.map?.background?.showInEmptyCells === true,
   });
   const resized = texture.width !== params.width || texture.height !== params.height;
   if (resized) {
