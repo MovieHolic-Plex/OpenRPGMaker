@@ -329,6 +329,7 @@ export function createBattleSequencer(
       critical: Boolean(entry.critical),
       skillName: entry.skillName,
       ...(entry.skillId ? { skillId: entry.skillId } : {}),
+      ...(entry.comboActorIds ? { comboActorIds: entry.comboActorIds } : {}),
       ...(hooks.describeEffectiveness && entry.effectiveness !== undefined ? { effectiveness: entry.effectiveness } : {}),
     };
   }
