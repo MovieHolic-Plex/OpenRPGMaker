@@ -39,5 +39,6 @@ for f,code,msg,ln,col in new:
 print(f"errors {len(errs)} (baseline {sum(basekeys.values())}) · new {len(new)} · auto remove {len(ops['remove'])} · auto unimport {len(ops['unimport'])} · other {len(other)}")
 for o in other[:40]: print('  ',o)
 if fix and (ops['remove'] or ops['unimport']):
-    p=os.path.join(here,'ops-loop.json'); json.dump(ops,open(p,'w'),ensure_ascii=False)
+    import tempfile
+    fd,p=tempfile.mkstemp(suffix='.json',prefix='v2-ops-'); os.close(fd); json.dump(ops,open(p,'w'),ensure_ascii=False)  # 여러 체크아웃이 같은 도구 폴더를 써도 섞이지 않게
     print(subprocess.run(['bun',os.path.join(here,'prune.mts'),repo,p],capture_output=True,text=True).stdout[-1500:])
