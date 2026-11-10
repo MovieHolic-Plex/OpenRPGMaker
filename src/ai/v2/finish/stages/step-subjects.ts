@@ -2,7 +2,7 @@
 // 가구 앉히기 앞에 — 사람이 될 칸을 가구에 붙이지 않게.
 import type { FinishStage } from "../types";
 import { createBuildRun } from "../../buildRun";
-import { settleStepSubjects } from "../../stepSubjects";
+import { settleStepSubjects } from "../../story/stepSubjects";
 
 export const stage: FinishStage = {
   id: "step-subjects", phase: "blueprint", order: 60,

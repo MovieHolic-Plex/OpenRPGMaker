@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **193쪽 / 8122KB / 약 2,387,615 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **193쪽 / 8123KB / 약 2,387,870 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,12 +16,12 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 75KB | 19KB | 487 | ~22,146 |
-| `openwiki/assistant-v2.md` | 306KB | 48KB | 1010 | ~93,017 |
-| `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,764 |
+| `openwiki/assistant-v2.md` | 306KB | 48KB | 1010 | ~93,018 |
+| `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,766 |
 | `openwiki/beodeul-city.md` | 240KB | 19KB | 1189 | ~73,036 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 740KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4774 | ~217,583 |
-| `openwiki/editor-ai-tools.md` | 638KB | 92KB ⚠상한 초과 — 절을 더 쪼개라 | 4107 | ~187,424 |
+| `openwiki/editor-ai-tools.md` | 638KB | 92KB ⚠상한 초과 — 절을 더 쪼개라 | 4107 | ~187,432 |
 | `openwiki/editor-database.md` | 459KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2683 | ~134,884 |
 | `openwiki/editor-event-authoring.md` | 186KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,388 |
 | `openwiki/editor-event-commands.md` | 87KB | 33KB | 360 | ~24,529 |
@@ -46,7 +46,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-project-schema.md` | 271KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1858 | ~76,711 |
 | `openwiki/runtime-sessions.md` | 177KB | 74KB ⚠상한 초과 — 절을 더 쪼개라 | 943 | ~48,623 |
 | `openwiki/team-project-host.md` | 51KB | 5KB | 536 | ~15,628 |
-| `openwiki/testing.md` | 270KB | 48KB | 2438 | ~76,177 |
+| `openwiki/testing.md` | 270KB | 48KB | 2438 | ~76,178 |
 | `openwiki/tileset-reference-documents.md` | 60KB | 4KB | 603 | ~18,386 |
 
 ## 한국어 산문이 깨진 페이지
@@ -341,7 +341,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L375` 바로 플레이 게임 (2026-10-23)
   - `L479` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2-refactor.md` — 14KB · 104줄 · ~4,197 토큰
+### `openwiki/assistant-v2-refactor.md` — 15KB · 104줄 · ~4,440 토큰
 
 - `L6` 왜
 - `L15` 목표 구조
@@ -351,7 +351,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L73` 진행표
 - `L100` 알려 둘 것
 
-### `openwiki/assistant-v2.md` — 306KB · 1010줄 · ~93,017 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 306KB · 1010줄 · ~93,018 토큰 · 통째읽기 잘림
 
 - `L16` 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 - `L24` 게임 세계 — 게임마다 다른 칩셋 한 벌, 장소마다 다른 종류 (2026-11-10)
@@ -397,7 +397,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L971` 리드·워커 나누기 (2026-11-01, 기본 꺼짐 — `OPRN_V2_SPLIT`)
 - `L996` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
-### `openwiki/atlas-biome-interior.md` — 109KB · 534줄 · ~32,764 토큰 · 통째읽기 잘림
+### `openwiki/atlas-biome-interior.md` — 109KB · 534줄 · ~32,766 토큰 · 통째읽기 잘림
 
 - `L8` 원본과 칸
 - `L37` 코드
@@ -854,7 +854,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L4735` 그림 기본값은 ChatGPT, 모델 이름은 런타임에 고른다 (2026-11-07 실측)
 - `L4764` 제공자 사용 한도 — 레일 한도 칩과 멈춤 문장 (2026-11-10, ai-quota-aware)
 
-### `openwiki/editor-ai-tools.md` — 638KB · 4107줄 · ~187,424 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-ai-tools.md` — 638KB · 4107줄 · ~187,432 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L3` TypeScript 이벤트 스크립트 도구 `author_script` · `dry_run_script` 외 7개 (2026-10-31)
 - `L12` 설정집 쓰기 `upsert_world_codex` · 인물 한 줄 소개 · 데모 「이야기」 탭 (2026-10-29)
@@ -3564,7 +3564,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` 저장·크기 변경
 - `L79` 확인
 
-### `openwiki/testing.md` — 270KB · 2438줄 · ~76,177 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 270KB · 2438줄 · ~76,178 토큰 · 통째읽기 잘림
 
 - `L3` AI 세션 테스트의 모델 id 는 임의로 짓지 않는다 (2026-09-14)
 - `L19` 전체 스위트가 워커 힙에서 죽던 문제 (2026-09-11)

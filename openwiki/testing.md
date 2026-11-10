@@ -2419,7 +2419,7 @@ node scripts/runtime-qa.mjs --scenario whole-game-battle-jrpg --browser firefox 
 (joseon) 첫 필드 → 감옥 들어가기·나오기 → 주막 안(거리에서 들어가는 문이 없어 순간이동) → 나오기. 문 이동은 `transferBeat`(문 앞 순간이동 → 화살표를 `currentMapId` 가 바뀔 때까지).
 magic 첫 필드 비트가 「Esc 두 번」 회귀를 잡는다 — 대사 창이 떠 있는 컷신에서 건너뛰기가 안 되면 6회 뒤에도 「건너뛰기」 가 남아 실패한다.
 
-추리판 `whole-game-mystery`(2026-10-29, `ai/v2/mysteryCase.ts` 로 세운 판): `MYS='<json>'`(무대·무죄·범인·지목 칸, 증거 아이템, 그 페이지 조건 스위치, 고르기 번호)는 `scripts/qa/assistant-v2` 의 임시 도우미처럼 고친 프로젝트에서 뽑는다.
+추리판 `whole-game-mystery`(2026-10-29, `ai/v2/story/mysteryCase.ts` 로 세운 판): `MYS='<json>'`(무대·무죄·범인·지목 칸, 증거 아이템, 그 페이지 조건 스위치, 고르기 번호)는 `scripts/qa/assistant-v2` 의 임시 도우미처럼 고친 프로젝트에서 뽑는다.
 무대(용의자 셋) → 무죄 탐문(흉상·이름표·알리바이 증인) → 범인에게 증거 제시 창 → 맞는 증거 반응 → 지목 칸 범인 고르기 → 틀린 사람(엔딩 없음) → 범인 → 증거 제시 → 엔딩. `MYS_MODE=before` 는 고치기 전 판: 무대 → 지목 칸 → Enter 만으로 엔딩.
 
 목표 대상판 `whole-game-objective-target`(VM 측정 판 아무거나, 2026-10-29): `OBJ_APPROACH='{"x","y","face"}'`(시작 맵의 시작 목표 대상 곁 칸) 를 주면

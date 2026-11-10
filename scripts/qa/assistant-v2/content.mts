@@ -14,7 +14,7 @@ import { V2Session } from "../../../src/ai/v2/turn/session.ts";
 import { resolveWhere } from "../../../src/ai/v2/place/where.ts";
 import { findMap } from "../../../src/ai/v2/place/cells.ts";
 import { PEOPLE_CARD } from "../../../src/ai/v2/people.ts";
-import { EVENT_CARD } from "../../../src/ai/v2/events.ts";
+import { EVENT_CARD } from "../../../src/ai/v2/story/events.ts";
 import { DRAW_OBJECT_CARD } from "../../../src/ai/v2/place/drawObject.ts";
 import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";

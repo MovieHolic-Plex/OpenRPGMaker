@@ -2,7 +2,7 @@
 // 2026-10-30 회귀 sl1 terra 「용사의 보급품 얻는 곳 안내 없음」·sl3 opus 「촌장님이 광장에서」).
 import type { LaneStage } from "../types";
 import { mapLabel } from "../types";
-import { checkGuideTexts } from "../../guideTexts";
+import { checkGuideTexts } from "../../story/guideTexts";
 
 export const stage: LaneStage = {
   id: "guide-texts", scope: "map", order: 157,

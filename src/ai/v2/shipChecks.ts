@@ -4,7 +4,7 @@
 // 기본 이름(주인공)·기본 얼굴·기본 음악이 그대로 남았고(공포 저택 1턴·시타마치), 엔딩은 대사 한 줄이었다.
 // 기준은 빈 프로젝트(createBlankProject) 자체다 — 그 값과 같으면 «아무도 고르지 않은» 기본값이다.
 // 순수 함수(프로젝트만 읽는다). 끝맺음 관문(v2GateProblems)이 출하 차단으로, 조언자가 막는 항목(shipBlockers)으로 같이 부른다.
-import { bossTalkWithoutBattle } from "./bossTalkBattles";
+import { bossTalkWithoutBattle } from "./story/bossTalkBattles";
 import { reloadProblem } from "./reloadCheck";
 import { chaserMapsWithoutHiding } from "@/project/chaserHiding";
 import { createBlankProject } from "@/project/defaults";

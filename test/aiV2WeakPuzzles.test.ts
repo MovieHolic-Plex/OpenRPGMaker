@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { shuffledOptions, trivialCode } from "@/ai/v2/puzzle";
+import { shuffledOptions, trivialCode } from "@/ai/v2/story/puzzle";
 import { weakPuzzleLocks } from "@/ai/v2/judge/puzzleChecks";
 import type { Project } from "@/project/types";
 
