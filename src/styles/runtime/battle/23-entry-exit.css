@@ -63,10 +63,30 @@
   to { filter: none; transform: scale(1); }
 }
 @keyframes battle-entry-enemy {
-  0% { filter: brightness(0); opacity: 0; transform: translate(-150%, -100%); }
-  55% { filter: brightness(0); opacity: 1; transform: translate(-47%, -100%); }
-  72% { filter: brightness(2.4); transform: translate(-50%, -100%) scale(1.06); }
-  100% { filter: none; opacity: 1; transform: translate(-50%, -100%) scale(1); }
+  0% { opacity: 0; transform: translate(-150%, -100%); }
+  55% { opacity: 1; transform: translate(-47%, -100%); }
+  72% { transform: translate(-50%, -100%) scale(1.06); }
+  100% { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+}
+/* 실루엣은 그림에만 건다. 노드(.battle-enemy) 전체에 brightness(0) 을 걸면 이름표·HP·상태 칩·조준 괄호까지 검게 칠해져
+   「검은 막대·검은 사각 조각」으로 보였다(2026-11-10 fs-vqa-today, 늑대전 첫 프레임·보스 등장). 그림 쪽은 노드와 같은 길이·지연·이징이다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="intro"] .battle-enemy > .battle-enemy-image {
+  animation: battle-entry-enemy-silhouette 700ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  animation-delay: calc(120ms + var(--enemy-index, 0) * 90ms);
+}
+/* 이름표는 색을 입는 순간(72%)까지 숨겨 두고 그때 나타난다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="intro"] .battle-enemy > :not(.battle-enemy-image) {
+  animation: battle-entry-enemy-chrome 700ms steps(1, end) both;
+  animation-delay: calc(120ms + var(--enemy-index, 0) * 90ms);
+}
+@keyframes battle-entry-enemy-silhouette {
+  0%, 55% { filter: brightness(0); }
+  72% { filter: brightness(2.4); }
+  100% { filter: none; }
+}
+@keyframes battle-entry-enemy-chrome {
+  0%, 71% { opacity: 0; }
+  72%, 100% { opacity: 1; }
 }
 
 /* ---- 막타 → 결과 홀드: 승리·전멸 도장 ----------------------------------------------------- */

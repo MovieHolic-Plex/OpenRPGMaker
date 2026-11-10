@@ -185,13 +185,32 @@
   animation: bf-boss-entry 1400ms cubic-bezier(0.3, 0.7, 0.3, 1) calc(var(--battle-reveal-ms, 300ms) + 100ms) both;
 }
 @keyframes bf-boss-entry {
-  0% { filter: brightness(0); opacity: 0; transform: translate(-50%, -100%) translateY(-28px) scale(0.9); }
-  30% { filter: brightness(0); opacity: 1; transform: translate(-50%, -100%) translateY(-28px) scale(0.9); }
-  52% { filter: brightness(0); opacity: 1; transform: translate(-50%, -100%) translateY(0) scale(1); }
-  60% { filter: brightness(0) drop-shadow(0 0 10px rgb(255 60 40 / 0.9)); transform: translate(-50%, -100%) translateY(0) scale(1); }
-  70% { filter: brightness(3) saturate(0); transform: translate(-50%, -100%) translateY(0) scale(1.03); }
-  80% { filter: brightness(1.4); transform: translate(-50%, -100%) translateY(0) scale(1); }
-  100% { filter: none; opacity: 1; transform: translate(-50%, -100%) translateY(0) scale(1); }
+  0% { opacity: 0; transform: translate(-50%, -100%) translateY(-28px) scale(0.9); }
+  30% { opacity: 1; transform: translate(-50%, -100%) translateY(-28px) scale(0.9); }
+  52% { opacity: 1; transform: translate(-50%, -100%) translateY(0) scale(1); }
+  60% { transform: translate(-50%, -100%) translateY(0) scale(1); }
+  70% { transform: translate(-50%, -100%) translateY(0) scale(1.03); }
+  80% { transform: translate(-50%, -100%) translateY(0) scale(1); }
+  100% { opacity: 1; transform: translate(-50%, -100%) translateY(0) scale(1); }
+}
+/* 검은 실루엣·붉은 테두리·번쩍임은 그림에만 — 노드에 걸면 이름표·HP 상자가 실루엣 아래 검은 막대로 떴다(fs-vqa-today 우물 보스).
+   그림·이름표는 노드와 같은 길이·지연·이징이다. 이름표는 색을 입는 순간(70%)에 나타난다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="intro"] .battle-enemy[data-collapse="bossSink"] > .battle-enemy-image {
+  animation: bf-boss-entry-silhouette 1400ms cubic-bezier(0.3, 0.7, 0.3, 1) calc(var(--battle-reveal-ms, 300ms) + 100ms) both;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="intro"] .battle-enemy[data-collapse="bossSink"] > :not(.battle-enemy-image) {
+  animation: bf-boss-entry-chrome 1400ms steps(1, end) calc(var(--battle-reveal-ms, 300ms) + 100ms) both;
+}
+@keyframes bf-boss-entry-silhouette {
+  0%, 52% { filter: brightness(0); }
+  60% { filter: brightness(0) drop-shadow(0 0 10px rgb(255 60 40 / 0.9)); }
+  70% { filter: brightness(3) saturate(0); }
+  80% { filter: brightness(1.4); }
+  100% { filter: none; }
+}
+@keyframes bf-boss-entry-chrome {
+  0%, 69% { opacity: 0; }
+  70%, 100% { opacity: 1; }
 }
 .battle-scene[data-battle-motion="retro"][data-battle-director-step="intro"]:has(.battle-enemy[data-collapse="bossSink"]) .battle-field {
   animation: bf-boss-quake 520ms linear calc(var(--battle-reveal-ms, 300ms) + 830ms) both;
