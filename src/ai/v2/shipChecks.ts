@@ -598,10 +598,13 @@ export function buildsWholeGame(project: Project, task: string): boolean {
  */
 /** 방탈출 청사진은 sealEscapeExits 가 바깥으로 나가는 문을 지우므로, 맵·퀘스트 최소는 1장으로 같이 면제한다(두 규칙이 서로 반대로 작동하면 3번 시도 끝에 막힘). */
 const escapeGame = (project: Project): boolean => (project.gameBlueprint ? isEscapeBlueprint(project.gameBlueprint) : false);
-export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
+/** 한 곳짜리 게임(방탈출·「방 하나」)인가 — 맵·퀘스트·진행 깊이 관문과 청사진 장소 검사가 같은 판정을 쓴다. */
+export function oneProjectGame(project: Project, task: string): boolean {
   const request = withoutIntentNote(task) + " " + withoutIntentNote(project.gameBlueprint?.request ?? "");
-  const oneProject = SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request) || escapeGame(project);
-  const need = oneProject ? 1 : MIN_COUNTED_MAPS;
+  return SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request) || escapeGame(project);
+}
+export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
+  const need = oneProjectGame(project, task) ? 1 : MIN_COUNTED_MAPS;
   const { counted, uncounted } = countMaps(project);
   if (counted.length >= need) return [];
   const why = uncounted.slice(0, 5).map((m) => `「${m.name}」(${m.id}) ${m.detail}`).join(" · ");
@@ -626,8 +629,7 @@ export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
  * 한 장소 요청은 최소 1개(mapsMinBlocker 와 같은 낱말 판정). 문구는 고정 문장을 앞에 둔다 — 할 일 열쇠가 앞 160자라 바뀌는 목록은 뒤로.
  */
 export function questsMinBlocker(project: Project, task: string): ShipBlocker[] {
-  const request = withoutIntentNote(task) + " " + withoutIntentNote(project.gameBlueprint?.request ?? "");
-  const need = SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request) || escapeGame(project) ? 1 : MIN_COUNTED_QUESTS;
+  const need = oneProjectGame(project, task) ? 1 : MIN_COUNTED_QUESTS;
   const { counted, uncounted } = countQuests(project);
   if (counted.length >= need) return [];
   const why = uncounted.slice(0, 4).map((q) => `「${q.title}」(${q.id}) ${q.detail}`).join(" · ");
@@ -644,8 +646,7 @@ export function questsMinBlocker(project: Project, task: string): ShipBlocker[] 
  * 한 장소 게임(방탈출·「방 하나」)은 면제(깊이 1). 문구는 고정 문장을 앞에 둔다 — 할 일 열쇠가 앞 160자라 바뀌는 숫자는 뒤로.
  */
 export function actDepthMinBlocker(project: Project, task: string): ShipBlocker[] {
-  const request = withoutIntentNote(task) + " " + withoutIntentNote(project.gameBlueprint?.request ?? "");
-  if (SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request) || escapeGame(project)) return [];
+  if (oneProjectGame(project, task)) return [];
   const depth = progressionDepth(project);
   if (depth >= MIN_ACT_DEPTH) return [];
   return [{
