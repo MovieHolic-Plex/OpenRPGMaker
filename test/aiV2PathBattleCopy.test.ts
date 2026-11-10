@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { pathCopy, repairPathTroop } from "@/ai/v2/pathBattleBudget";
+import { pathCopy, repairPathTroop } from "@/ai/v2/story/pathBattleBudget";
 import type { Project } from "@/project/types";
 
 // 2026-10-31 script-ab sab-1031 던전 1회차(A·B 둘 다): 길 예산이 보스 무리를 사본으로 바꾸면서 반피 페이지의 enemyId 는 원본에 남아

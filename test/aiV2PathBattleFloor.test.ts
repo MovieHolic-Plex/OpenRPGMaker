@@ -13,7 +13,7 @@ vi.mock("@/battle/simulate", async (importOriginal) => {
   return { ...real, simulateBattle: () => ({ winRate: sim.win, avgHpRemaining: 1 - sim.loss, avgTurns: sim.turns }) };
 });
 
-import { fitPathBattlesIn, PATH_TROOP_PREFIX } from "@/ai/v2/pathBattleBudget";
+import { fitPathBattlesIn, PATH_TROOP_PREFIX } from "@/ai/v2/story/pathBattleBudget";
 
 function project(): Project {
   const p = createBlankProject() as Project;

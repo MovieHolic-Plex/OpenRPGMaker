@@ -1,7 +1,7 @@
 // 번호 자물쇠 ↔ 단서 대사 맞추기 + 청사진 영문 id 대사 고치기(codeClues.ts) — 모델이 지은 경로에도 돈다.
 import type { FinishStage } from "../types";
-import { alignCodeClues, fixDigitClaims, humanizeBlueprintTokens } from "../../codeClues";
-import { dropStaleChainClues } from "../../clueObjects";
+import { alignCodeClues, fixDigitClaims, humanizeBlueprintTokens } from "../../story/codeClues";
+import { dropStaleChainClues } from "../../story/clueObjects";
 
 export const stage: FinishStage = {
   id: "code-clues", phase: "blueprint", order: 50,

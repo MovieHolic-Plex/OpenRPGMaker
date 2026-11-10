@@ -9,7 +9,7 @@
 // 프로젝트에 함께 저장된다(SQLite current_json·내보내기). 옛 프로젝트는 없음 = 옛 동작.
 import { assert, requireArray, requireRecord, requireString } from "./io/guards";
 
-/** 단계에서 플레이어가 하는 일의 종류 — 경로 빌더가 종류마다 다른 이벤트를 짓는다(src/ai/v2/blueprintPath.ts). 없으면 낱말로 추정(옛 청사진). */
+/** 단계에서 플레이어가 하는 일의 종류 — 경로 빌더가 종류마다 다른 이벤트를 짓는다(src/ai/v2/story/blueprintPath.ts). 없으면 낱말로 추정(옛 청사진). */
 export const STEP_KINDS = ["talk", "find", "battle", "puzzle", "choice"] as const;
 export type GameBlueprintStepKind = (typeof STEP_KINDS)[number];
 

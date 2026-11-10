@@ -19,7 +19,7 @@ import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
 import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs } from "../../place/builders/interior";
 import { interiorStampEdit, type StampEditState } from "../../place/builders/interiorEdit";
 import type { PlacePatch, PlaceRecord, PlaceSpec } from "../../types";
-import { blueprintMapFor } from "../../blueprintPath";
+import { blueprintMapFor } from "../../story/blueprintPath";
 import { isPlaceholderMap } from "../../blankStart";
 import { walkGame } from "../../makeGame";
 import { DUNGEON_LAYOUT_SCHEMA, LAYOUT_CRITIQUE_ROUNDS, LAYOUT_REPAIRS, VILLAGE_LAYOUT_SCHEMA, attachLayoutCritique, bboxDungeonSpec, bboxPlacesOn, bboxVillageSpec, dungeonLayoutCard, hasDungeonLayout, hasVillageLayout, layoutRejectText, layoutSession, toBboxTerrain, villageLayoutCard } from "../../place/builders/placeLayout";

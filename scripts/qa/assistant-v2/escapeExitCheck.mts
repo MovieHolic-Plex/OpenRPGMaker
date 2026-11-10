@@ -7,7 +7,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
 import { walkBlueprint, escapeLeaks } from "../../../src/ai/v2/blueprint.ts";
-import { buildBlueprintPath, sealEscapeExits } from "../../../src/ai/v2/blueprintPath.ts";
+import { buildBlueprintPath, sealEscapeExits } from "../../../src/ai/v2/story/blueprintPath.ts";
 import { retireBlankStart } from "../../../src/ai/v2/blankStart.ts";
 import { dressInteriorExits } from "../../../src/ai/v2/place/exitDress.ts";
 import { runAutoPlay } from "../../../src/qa/gameCheck/autoPlay.ts";

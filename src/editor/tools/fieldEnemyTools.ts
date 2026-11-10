@@ -101,6 +101,16 @@ function walkRoute(project: Project, map: GameMap, from: { x: number; y: number 
   return cells;
 }
 
+/** 쓸 수 있는 patrol 인자만 남긴다: 빈 directions 는 뺀다. stationary 의 patrol, chase 의 내용 없는 patrol(directions 없음 + length ≤ 1)은 없는 것으로 본다. */
+function usablePatrolArg(raw: unknown, behavior: string): unknown {
+  if (raw === undefined || raw === null || typeof raw !== 'object') return raw ?? undefined;
+  const patrol = { ...(raw as Record<string, unknown>) };
+  if (Array.isArray(patrol.directions) && patrol.directions.length === 0) delete patrol.directions;
+  if (behavior !== 'patrol' && behavior !== 'chase') return undefined;
+  if (behavior === 'chase' && patrol.directions === undefined && !(Number(patrol.length) > 1)) return undefined;
+  return patrol;
+}
+
 /** patrol.directions 가 있으면 그대로(닫힌 경로 확인), 없으면 length 칸 왕복 직선을 통행 가능한 방향으로 고른다. */
 function resolvePatrol(project: Project, map: GameMap, from: { x: number; y: number }, raw: unknown, occupied: ReadonlySet<string>): { dirs: Dir[]; cells: { x: number; y: number }[] } {
   const spec = (raw && typeof raw === 'object' ? raw : {}) as { directions?: unknown; length?: unknown; axis?: unknown };
@@ -542,8 +552,11 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       const occupied = occupiedByOthers(map, id);
 
       let patrol: { dirs: Dir[]; cells: { x: number; y: number }[] } | undefined;
-      if (behavior === 'patrol' || (behavior === 'chase' && args.patrol !== undefined)) patrol = resolvePatrol(draft, map, start, args.patrol, occupied);
-      else if (args.patrol !== undefined) throw new ToolError('patrol 은 behavior:"patrol" 또는 "chase"(순찰+추격) 에서만 씁니다.', { code: 'invalid-args' });
+      // 스키마 칸을 기본값으로 다 채워 보내는 호출: 빈 directions 는 안 준 것이고, 서 있는 적(stationary)의 patrol 과
+      // 추격 적의 «한 칸짜리 기본 patrol» 은 쓰지 않는다 — 거절하지 않고 그 칸만 무시한다.
+      const patrolArg = usablePatrolArg(args.patrol, behavior);
+      const patrolIgnored = args.patrol !== undefined && patrolArg === undefined && behavior !== 'patrol';
+      if (behavior === 'patrol' || (behavior === 'chase' && patrolArg !== undefined)) patrol = resolvePatrol(draft, map, start, patrolArg, occupied);
       const cells = patrol?.cells ?? [start];
 
       // 출입구·시작점·표지 곁과 도달 불가 칸은 안 된다 — 들어서자마자 싸우거나, 못 가는 곳에 적이 갇힌다.
@@ -576,7 +589,9 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       if (explicitGraphic && !(queryOnly && autoAvailable)) {
         graphic = resolveGraphic(explicitGraphic, { overrides: draft.charsetLabels });
         if (expected && graphicCellKey(graphic) !== `${expected.textureKey}#${expected.characterIndex}`) {
-          throw new ToolError(`graphic 이 전투 그림과 다릅니다: 적 그룹 '${troopId}' 선두 '${lead?.name ?? troop.enemyIds[0]}'(${lead?.monsterResourceId}) 은(는) 필드에서 「${expected.label}」(${expected.textureKey}:${expected.characterIndex}) 로 보여야 합니다. graphic 을 생략하면 자동으로 맞춥니다.`, { code: 'field-enemy-graphic-mismatch', mapId: map.id });
+          // 필드 그림은 전투 그림을 따른다 — 다른 그림을 줬다고 거절하지 않고 전투 그림으로 놓고 알린다(같은 거절 두 번으로 전투 항목이 막혔다).
+          graphic = charsetGraphic(expected.textureKey, expected.characterIndex);
+          graphicNote = `The graphic you gave differs from the battle picture of '${lead?.name ?? troop.enemyIds[0]}', so the field sprite uses the battle picture 「${expected.label}」 (${expected.textureKey}:${expected.characterIndex}). To change how this enemy looks, change the enemy's battle picture.`;
         }
         if (!expected) graphicNote = `graphic 지정 — 이 적(${lead?.monsterResourceId ?? lead?.name ?? '?'})의 전투 그림과 같은 종류인지 검사할 수 없습니다(대응표에 없는 종).`;
       } else if (expected) {
@@ -655,6 +670,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
 
       if (placement.adjusted) warnings.push(placementAdjustedWarning(`필드 적 '${troopId}'`, { x, y }, start));
       if (graphicNote) warnings.push(graphicNote);
+      if (patrolIgnored) warnings.push(`patrol was not used — behavior is ${behavior}. For a walking enemy give behavior:"patrol" (or "chase") with patrol.length 2..8 or patrol.directions.`);
       if (draft.system.battleFormationRoll !== true) warnings.push('선제·기습(등 뒤 접촉 보정)은 꺼져 있습니다 — 켜려면 set_project_settings battle.formationRoll:true.');
       const mapEnemies = map.events.filter((entry) => entry.pages?.some((page) => page.id.endsWith('_fight') && page.trigger.kind === 'eventTouch')).length;
       if (mapEnemies > 8) warnings.push(`이 맵의 필드 적이 ${mapEnemies}마리입니다 — 한 화면에 몰리면 피할 길이 없습니다. 보통 3~6마리.`);

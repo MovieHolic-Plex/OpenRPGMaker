@@ -18,19 +18,19 @@ import { fieldGraphicForBattler } from "@/editor/tools/fieldEnemyGraphics";
 import type { GameMap, Project } from "@/project/types";
 import { normalizeGameBlueprint, normalizeStepText, type GameBlueprint } from "@/project/gameBlueprint";
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
-import { incomingLandings, resolveWhere } from "./place/where";
-import { walkStart } from "./place/cells";
-import type { BuildRun, ContentBuildResult } from "./types";
-import { BLUEPRINT_PATH_IDS, battleStepBypass, codeStepBypass, escapeLeaks, eventGives, isBattleStep, isCodeStep, victoryGatedSwitches, walkBlueprint } from "./blueprint";
+import { incomingLandings, resolveWhere } from "../place/where";
+import { walkStart } from "../place/cells";
+import type { BuildRun, ContentBuildResult } from "../types";
+import { BLUEPRINT_PATH_IDS, battleStepBypass, codeStepBypass, escapeLeaks, eventGives, isBattleStep, isCodeStep, victoryGatedSwitches, walkBlueprint } from "../blueprint";
 import { pickFittedTroops, pickSpot } from "@/editor/tools/jrpgVolumeTools";
 import { FITTED_TROOP_PREFIX, fitTroopCopy } from "@/editor/tools/bossThreatScaling";
 import { simulateBattle } from "@/battle/simulate";
 import { trivialCode } from "./puzzle";
-import { repairEventReach } from "./eventReach";
-import { dressInteriorExits } from "./place/exitDress";
-import { bearingWord, landmarkWord, OBJECTIVE_SURFACE, planObjective } from "./judge/discoverability";
+import { repairEventReach } from "../eventReach";
+import { dressInteriorExits } from "../place/exitDress";
+import { bearingWord, landmarkWord, OBJECTIVE_SURFACE, planObjective } from "../judge/discoverability";
 import { settleExamineSpots } from "./examineSpot";
-import { ensureHealingAccess, ensureSupplyShop } from "./healingAccess";
+import { ensureHealingAccess, ensureSupplyShop } from "../healingAccess";
 import { stageMysteryCase } from "./mysteryCase";
 
 /**

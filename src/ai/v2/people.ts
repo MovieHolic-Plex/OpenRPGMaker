@@ -18,7 +18,7 @@ import { Cell, findMap, eventsOf, eventBlockers, walkStart, keepsMapConnected } 
 import { resolveWhere } from "./place/where";
 
 export const PEOPLE_CARD =
-  "People spec: {role,name?,where?,at?,looks?,firstTalk?,laterTalk?,movement?,mapId?}. " +
+  "People spec: {role,name?,where?,at?,looks?,firstTalk?,laterTalk?,movement?,sells?,mapId?}. " +
   "role = a role like 문지기 (gatekeeper) · 촌장 (village chief) · 상인 (merchant) (also used to pick art — villagers never get monster or skeleton art; chips with a matching face come first). looks = appearance words (경비병 guard · 노인 old man · 소녀 girl · old woman). " +
   "where words: 입구·성문 (entrance/gate — roadside where the road leaves the map, facing the road) / 광장·가운데 (square/center) / 문 앞 (in front of the door) / «X 옆·앞·뒤» (beside/in front of/behind X: counter, bar, fireplace, well — found by chipset labels) / " +
   "한쪽·벽 쪽 (one side/by the wall) / 북쪽 벽 (north wall; also 남·동·서) / 구석 (corner) / 창가 (by the window) — add a room word (홀 hall · 부엌 kitchen · 침실 bedroom) to stay inside that room («홀 한쪽», «부엌 화덕 옆») / omit (near the start point). English words (entrance, center, behind the counter) also work. " +
@@ -26,6 +26,7 @@ export const PEOPLE_CARD =
   "firstTalk = lines the first time you talk (array), laterTalk = lines from the second time on (array; omit to repeat the same lines). " +
   "movement: still (default, stays put) · wander (roams — switched to still near exit throats or roads) · patrol (treated as still). " +
   "The builder picks only spots that do not block paths and checks them with pathfinding after placing. Never stand people in the middle of a road or rail track — sidewalk, inside a shop, bench, behind a counter or by a door. " +
+  "sells:[{item:'회복약', price?}] makes the person a shopkeeper in the same call (talk → lines → buy/sell shop); item is an item or equipment name or id. " +
   "Shopkeepers and clerks get where «카운터 뒤» (behind the counter) — they stand on the counter's north (owner) side; in front of the counter is the customer spot.";
 
 // ───────────────────────── 그림 고르기 ─────────────────────────
@@ -215,6 +216,37 @@ export function placeNpcWithGraphic(run: BuildRun, map: GameMap, baseArgs: Recor
   return { result };
 }
 
+/**
+ * 사람에게 상점을 단다(sells) — 이름으로 아이템·장비를 찾고, 없는 이름은 값만 있는 잡화로 만든 뒤 set_shop_stock 한 번.
+ * 상점 주인 한 명에 호출 4~6번(아이템 조회 → 사람 → 이벤트 조회 → 재고)이 들던 것을 add_people 한 번으로 줄인다.
+ */
+function openShop(run: BuildRun, mapId: string, eventId: string, sells: PersonSpec["sells"], label: string, warnings: string[]): string {
+  const wanted = (sells ?? []).filter((entry) => entry && typeof entry.item === "string" && entry.item.trim());
+  if (!wanted.length) return "";
+  const stock: { itemId: string; priceOverride?: number }[] = [];
+  const made: string[] = [];
+  for (const entry of wanted) {
+    const key = entry.item.trim().toLowerCase();
+    const db = run.ctx.project.database;
+    const hit = [...db.items, ...db.equipment].find((record) => record.id.toLowerCase() === key || (record.name ?? "").trim().toLowerCase() === key);
+    const price = typeof entry.price === "number" && Number.isFinite(entry.price) && entry.price >= 0 ? Math.trunc(entry.price) : undefined;
+    let itemId = hit?.id;
+    if (!itemId) {
+      const id = `item_shop_${db.items.length + 1}`;
+      const created = run.call("upsert_item", { item: { id, name: entry.item.trim(), price: price ?? 50, type: "normalGoods" } });
+      if (!created.ok) { warnings.push(`${label}: could not create the item «${entry.item}» to sell — ${String(created.summary).slice(0, 140)}`); continue; }
+      itemId = id;
+      made.push(entry.item.trim());
+    }
+    if (!stock.some((s) => s.itemId === itemId)) stock.push({ itemId, ...(price !== undefined ? { priceOverride: price } : {}) });
+  }
+  if (!stock.length) return "";
+  const set = run.call("set_shop_stock", { mapId, eventId, stock });
+  if (!set.ok) { warnings.push(`${label}: shop not attached — ${String(set.summary).slice(0, 160)}`); return ""; }
+  if (made.length) warnings.push(`${label}: new plain items were created to sell (${made.join(", ")}) — they have a price but no effect; give effects with upsert_item if they should heal or equip.`);
+  return ` · shop ${stock.length} items (talk → buy/sell)`;
+}
+
 export function buildPeople(run: BuildRun, people: readonly PersonSpec[], mapId?: string): ContentBuildResult {
   const warnings: string[] = [];
   const eventIds: { mapId: string; eventId: string }[] = [];
@@ -247,7 +279,8 @@ export function buildPeople(run: BuildRun, people: readonly PersonSpec[], mapId?
       }
       eventIds.push({ mapId: targetMapId, eventId: existing.id });
       mapIds.add(targetMapId);
-      notes.push(`${label} — 이미 있는 NPC(${existing.id}) 를 그대로 씀(그림·자리 유지${lines.length ? ", 대사만 바꿈" : ""})`);
+      const shopNote = openShop(run, targetMapId, existing.id, person.sells, label, warnings);
+      notes.push(`${label} — 이미 있는 NPC(${existing.id}) 를 그대로 씀(그림·자리 유지${lines.length ? ", 대사만 바꿈" : ""})${shopNote}`);
       continue;
     }
     // 바깥 맵에서는 같은 부름의 사람끼리 바로 옆에 붙여 세우지 않는다(마을 광장에 둘이 겹쳐 선 줄처럼 보였다) — 실내는 바 앞 손님처럼 붙어도 된다.
@@ -300,7 +333,8 @@ export function buildPeople(run: BuildRun, people: readonly PersonSpec[], mapId?
     mapIds.add(targetMapId);
     if (data.eventId) eventIds.push({ mapId: targetMapId, eventId: data.eventId });
     if (data.eventId && where.face) faceNpc(run, targetMapId, data.eventId, where.face);
-    notes.push(`${label} (${placed.x},${placed.y})${where.how ? ` ${where.how}` : ""} · 그림 ${placedNpc.graphic ? `${placedNpc.graphic.label}${placedNpc.graphic.faceResourceId ? "+얼굴" : "(짝 얼굴 없음)"}` : "도구 기본"}${where.face ? ` · ${where.face} 를 봄` : ""}`);
+    const shopNote = data.eventId ? openShop(run, targetMapId, data.eventId, person.sells, label, warnings) : "";
+    notes.push(`${label} (${placed.x},${placed.y})${where.how ? ` ${where.how}` : ""} · 그림 ${placedNpc.graphic ? `${placedNpc.graphic.label}${placedNpc.graphic.faceResourceId ? "+얼굴" : "(짝 얼굴 없음)"}` : "도구 기본"}${where.face ? ` · ${where.face} 를 봄` : ""}${shopNote}`);
 
     // 놓은 뒤 확인: 이 NPC 칸을 막고도 전에 닿던 칸에 다 닿는가.
     const after = findMap(run.ctx.project, targetMapId);
