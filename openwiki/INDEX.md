@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **192쪽 / 8073KB / 약 2,372,859 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **192쪽 / 8074KB / 약 2,373,279 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -22,7 +22,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 738KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4762 | ~216,827 |
 | `openwiki/editor-ai-tools.md` | 638KB | 92KB ⚠상한 초과 — 절을 더 쪼개라 | 4107 | ~187,424 |
-| `openwiki/editor-database.md` | 459KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2682 | ~134,808 |
+| `openwiki/editor-database.md` | 459KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2683 | ~134,884 |
 | `openwiki/editor-event-authoring.md` | 186KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,388 |
 | `openwiki/editor-event-commands.md` | 87KB | 33KB | 360 | ~24,529 |
 | `openwiki/editor-genre-packs.md` | 54KB | 7KB | 358 | ~14,274 |
@@ -40,7 +40,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 111KB | 14KB | 511 | ~33,097 |
 | `openwiki/relief-terrain.md` | 52KB | 8KB | 376 | ~16,109 |
-| `openwiki/runtime-battle.md` | 465KB | 32KB | 2550 | ~136,756 |
+| `openwiki/runtime-battle.md` | 466KB | 32KB | 2551 | ~137,100 |
 | `openwiki/runtime-m2-flow-controls.md` | 58KB | 29KB | 352 | ~15,674 |
 | `openwiki/runtime-pre-edit-routing.md` | 215KB | 104KB ⚠상한 초과 — 절을 더 쪼개라 | 1271 | ~64,088 |
 | `openwiki/runtime-project-schema.md` | 271KB | 83KB ⚠상한 초과 — 절을 더 쪼개라 | 1858 | ~76,711 |
@@ -1045,7 +1045,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L4065` `build_blueprint_path` — 청사진 경로를 함수가 짓는다 (2026-10-28, fix-gamepath)
 - `L4104` 일정표 도구 (upsert_schedule)
 
-### `openwiki/editor-database.md` — 459KB · 2682줄 · ~134,808 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-database.md` — 459KB · 2683줄 · ~134,884 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 이야기 › 대사 탭 「대본」 보기 — 이야기 순서 시나리오 (2026-10-25)
 - `L29` 대사 탭 화면 다듬기 (2026-10-27, 독립 검수 지적 4건)
@@ -2833,7 +2833,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 465KB · 2550줄 · ~136,756 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 466KB · 2551줄 · ~137,100 토큰 · 통째읽기 잘림
 
 - `L1` 폴른 스타 몬스터 시트 다시 그리기 — ChatGPT 웹 GIF (fs-monster-regen, 2026-11-09)
 - `L22` pixelfx 코드 효과 애니메이션 (2026-10-31)
@@ -2955,10 +2955,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2451` 전투 깊이 — 기술 도움말 · 「연계」 명령 · 연계 대기 · 약점 공략 · 결과 팡파레 (fs-battle-2, 2026-10-24)
 - `L2476` 전투 연출 설정 — 달려드는 속도 · 얼굴 교차 컷인 · 화려한 연계 착탄 · 한 줄 도움말 · 성장 곡선 (fs-battle-3, 2026-10-25)
 - `L2493` 적 약점은 알아 가는 것 — 처음 맞힌 타격에서 발견 · 세이브 기록 · 공개 설정 (2026-10-25)
-- `L2504` 폴른 스타 전투 체감 — 차분한 흐름 · 무기 계열 평타 특성 · 약점 문구 걷기 (2026-11-03)
-- `L2513` 효과음 자리 — 세션 → 프로젝트 표 → 기본 (2026-10-30)
-- `L2524` 결투 규칙 — TroopRecord.duel (2026-10-30)
-- `L2544` 적 피해 대상 추첨 · 전투 부활약 · 여관 상태 해제 (fs2 스웜 R2, 2026-11-04)
+- `L2505` 폴른 스타 전투 체감 — 차분한 흐름 · 무기 계열 평타 특성 · 약점 문구 걷기 (2026-11-03)
+- `L2514` 효과음 자리 — 세션 → 프로젝트 표 → 기본 (2026-10-30)
+- `L2525` 결투 규칙 — TroopRecord.duel (2026-10-30)
+- `L2545` 적 피해 대상 추첨 · 전투 부활약 · 여관 상태 해제 (fs2 스웜 R2, 2026-11-04)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 58KB · 352줄 · ~15,674 토큰 · 통째읽기 잘림
 

@@ -19132,4 +19132,7 @@
 "앞쪽 부채꼴":"Front arc",
 "주변 전체":"All around",
 "바깥 한 겹":"Outer ring",
-"십자":"Cross"}
+"십자":"Cross",
+"맞힌 뒤 상성 알림":"Effectiveness feedback after a hit",
+"보임(맞힌 뒤 「약점!」·「효과가 굉장했다!」)":"Show (\"Weak!\" and \"It's super effective!\" after a hit)",
+"안 보임(피해 숫자만)":"Hide (damage numbers only)"}

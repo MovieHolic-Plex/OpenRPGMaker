@@ -6,6 +6,7 @@ import { expForRewardActor } from "@/battle/rewardPolicy";
 import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import { DEFAULT_MONSTER_EXP_CURVE, monsterExpInLevelBand, monsterSpeciesById, stripWildNamePrefix } from "@/project/monsterCollection";
 import { store } from "@/project/store";
+import { effectivenessFeedbackHidden } from "@/project/battleStaging";
 import { formatBattleCommandPrompt, resolveTerms } from "@/project/terms";
 import { CONTINUE_KEY_PROMPT } from "@/player/keyBindings";
 import { disambiguatedBattlerName } from "@/player/battleCommandDom";
@@ -116,7 +117,7 @@ export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snap
     : `${userName}의 공격!`;
   if (emeraldNarrationActive()) {
     const outcome = emeraldOutcomeLine({
-      hit: entry.hit, amount: entry.amount, critical: entry.critical, effectiveness: entry.effectiveness,
+      hit: entry.hit, amount: entry.amount, critical: entry.critical, effectiveness: shownEffectiveness(entry.effectiveness),
       healing: effect?.healing, targetName: emeraldBattlerName(target, snapshot),
     });
     return {
@@ -147,8 +148,14 @@ export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snap
   };
 }
 
+/** 상성 알림을 끈 게임(battleStaging.effectivenessFeedback = hide)은 상성 배율을 문장에 넘기지 않는다. */
+function shownEffectiveness(effectiveness: number | undefined): number | undefined {
+  return effectivenessFeedbackHidden(store.getCurrent().system.battleStaging) ? undefined : effectiveness;
+}
+
 /** 상성 문장(포켓몬 3세대 resultmessage). effectiveness 는 시퀀서가 describeEffectiveness 일 때만 싣는다. */
 function effectivenessPhrase(effectiveness: number | undefined): string {
+  if (effectivenessFeedbackHidden(store.getCurrent().system.battleStaging)) return "";
   if (effectiveness === undefined || effectiveness === 1 || effectiveness <= 0) return "";
   return effectiveness > 1 ? "효과가 굉장했다!" : "효과가 별로인 듯하다…";
 }
@@ -240,7 +247,7 @@ export function actorCommandDirectorState(
   const emeraldOutcome = emeraldMove
     ? emeraldOutcomeLine({
       hit: result?.hit !== false, amount: Math.max(0, result?.amount ?? impact), critical: result?.critical,
-      effectiveness: result?.effectiveness, healing: effect?.healing, targetName: emeraldBattlerName(target, after),
+      effectiveness: shownEffectiveness(result?.effectiveness), healing: effect?.healing, targetName: emeraldBattlerName(target, after),
     })
     : "";
   // 에메랄드 교체: 「새싹토가 교체를 지시했다. 전열을 교체했다.」가 아니라 「가라! 바람삐!」.
