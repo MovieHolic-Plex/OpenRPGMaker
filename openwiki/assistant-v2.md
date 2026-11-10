@@ -52,6 +52,8 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 둘 다 `write_blueprint` 1 → `build_places` 1 → `build_blueprint_path` 1 로 지었고 버들항 맵은 0장이었다(앞 판: 두 요청 모두 버들항 마을 + 동굴 + 숲길 4장). 첫 턴 도구 196·195회, 32~33분.
 이 두 판에서 나온 결함 둘은 같은 변경에서 고쳤다: ① 독립 검토자가 자리표시 시작 맵 은퇴를 «시키지 않은 삭제» 로 막아 조수가 「빈 맵」을 다시 만들었다(`advisor.ts` `PLACEHOLDER_MAP` — 막음이 아니라 참고)
 ② 화면 검수의 «방이 휑하다» 결함이 손 도트 실내가 아닌 맵에도 `dress_room` 을 권했고 할 일 글이 220자에서 잘려 동사가 안 보였다(`vqaDefectLine(d, i, project)`·실행기 `clipDefectLine`).
+③ 그 판들의 동사 이름은 `build_world` 였다 — v1 월드 그래프 도구와 같은 이름이라 노출 규칙(`toolExposure` 의 `getTool(name)` 판정)이 레지스트리 도구로 보고 «필요할 때 싣는 도구» 로 밀었고,
+네 판 모두 `load_tools{names:["build_world"]}` 를 먼저 불렀다. `build_places` 로 바꿨다(동작 같음). **새 v2 동사는 레지스트리 도구와 이름이 겹치면 안 된다** — 노출·실패 글(`todoTools`)·인자 지키개(`argGuard isRegistryTool`)가 이름으로 가른다.
 
 ## 단계 종류 — 사람·싸움·퍼즐·고르기를 청사진이 정하고 함수가 짓는다 (2026-11-10)
 
