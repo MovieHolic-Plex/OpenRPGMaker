@@ -129,6 +129,16 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 - 증거: `test/openGroundFill.test.ts`.
 - 남은 것: `furnish_outdoor_area` 는 아직 v2 가 처음부터 싣는 도구가 아니다(`find_empty_ground` 만) — 요청 줄기의 도구 목록 작업에서 넣는다.
 
+## 무대 오프닝이 기본 맵 조각 장면을 대신한다 — `author_opening_stage` (2026-11-11, B3c)
+
+구조 재점검 3-2: 끝맺음 단계(`blueprint-opening`)가 맵 조각 장면(`bp-open-*`)을 스스로 깔고, 모델이 `author_opening_stage` 로 무대를 지어도 그 장면이 앞에 남았다. 화면 검수는 그 장면만 봤고(막힘 26건 중 10건), 모델이 그림 장면을 지우면 끝맺음이 「오프닝이 없었다」며 다시 깔았다.
+
+- `author_opening_stage` 는 `bp-open-*` 장면을 걷는다(무대가 대신한다). 모델이 지은 그림 장면(제목 카드·CG)은 앞에 남는다. 답의 `replacedDefaultScenes` 가 걷은 수다.
+- 무대가 있으면 `blueprintOpeningReplaceable` 은 다시 깔지 않는다 — 그림 장면이 0개여도.
+- `x,y` 는 필수가 아니다. 생략하면 시작 맵은 시작 위치, 다른 맵은 가운데에서 가장 가까운 걸을 수 있는 빈 칸(자리 규칙 `resolveWhere`)을 도구가 고르고 답에 적는다.
+- 판정 쪽(무대를 찍기, `bp-open-*` 결함을 모델 밖으로 빼기)은 B2(#4549)에 있다.
+- 증거: `test/openingStageReplacesDefault.test.ts`. 모델 없는 실행(설원 세계): 기본 장면 4개 → 무대 호출 뒤 0개 + 무대, 끝맺음을 다시 돌려도 그대로.
+
 ## 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
 
 감사(`~/claude-viz/map-sameness-1029.html`, 묶음 vm1~vm8): 여관 1층 23개 중 13개가 같은 16×14 선술집 홀(「여관」 낱말 → 장소 견본 tavern, 뒤집기·손님 자리 네 판),
