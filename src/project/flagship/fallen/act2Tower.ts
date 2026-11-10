@@ -13,6 +13,7 @@
  * 새 그림은 없다 — 버들항 던전 키트·RTP 칩·1막 칩만 쓴다.
  */
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { FALLEN_MIRROR_TEXTURE } from "@/assets/fallenMirrorCharsets";
 import { isPassable } from "@/project/collision";
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { FS_NAMES } from "../fallenStarStory";
@@ -588,8 +589,9 @@ function floorThree(project: Project, exec: Exec): void {
   const callBeam: Command = { kind: "callCommonEvent", commonEventId: CE_BEAM } as unknown as Command;
 
   // 거울 — 조사하면 지금 어느 쪽을 보는지 듣고, 돌릴 쪽을 고른다.
-  const LOOK_DARK = { sprite: { type: "bundled", id: "tex_easyrpg_charset_object2" }, direction: "down", pattern: charsetFrameIndex({ characterIndex: 3, direction: "down", pattern: 1 }) };
-  const LOOK_LIT = { sprite: { type: "bundled", id: "tex_easyrpg_charset_object2" }, direction: "down", pattern: charsetFrameIndex({ characterIndex: 6, direction: "down", pattern: 1 }) };
+  // 렌즈 거울 칩(FallenMirror1 칸 0 어두움 · 칸 1 빛) — 시트의 방향 줄이 거울 면이 향한 쪽이다(위 = 놋쇠 뒷판).
+  // 예전 판은 RTP Object2 의 누름 버튼(#3)·회보라 바위(#6) 칸이라 거울로 읽히지 않았고 방향은 글로만 알 수 있었다(fs-vqa-obs).
+  const look = (lit: boolean, d: Dir) => ({ sprite: { type: "bundled", id: FALLEN_MIRROR_TEXTURE }, direction: d, pattern: charsetFrameIndex({ characterIndex: lit ? 1 : 0, direction: d, pattern: 1 }) });
   for (const m of T3_MIRRORS) {
     const dirs = order(m.first);
     const nowLine = dirs.map((d, v) => fork({ kind: "variable", variableId: varOf(m.key), op: "==", value: v }, [narrate(`거울 면이 ${DIR_WORD[d]}쪽을 향해 있다.`)]));
@@ -605,9 +607,13 @@ function floorThree(project: Project, exec: Exec): void {
       ...nowLine, turn,
     ];
     // 거울 그림은 한 장(아래 방향 한 칸)이다 — 조사할 때 주인공 쪽으로 돌면 시트의 다른 줄이 나와 다른 물건으로 바뀌었다(fs-defect-sweep C3).
+    // 페이지 = 빛(꺼짐·켜짐) × 방향 변수 값 0..3. 뒤 페이지가 이기므로 빛 켜짐 페이지가 뒤에 온다.
+    const facePage = (lit: boolean, d: Dir, v: number) => page(`ev_fs2_t3_${m.key}_${lit ? "lit" : "dark"}_${d}`, `${lit ? "빛" : "어두움"} · ${DIR_WORD[d]}`,
+      [...(lit ? [sw(litOf(m.key))] : []), { kind: "variable", variableId: varOf(m.key), op: "==", value: v }],
+      body(lit), { graphic: look(lit, d), priority: "same", overlapForbidden: true, animationType: "fixedGraphic" });
     addEv(project, FS2_T3, `ev_fs2_t3_${m.key}`, m.name, m.at, [
-      page(`ev_fs2_t3_${m.key}_dark`, "어두움", [], body(false), { graphic: LOOK_DARK, priority: "same", overlapForbidden: true, animationType: "fixedGraphic" }),
-      page(`ev_fs2_t3_${m.key}_lit`, "빛", [sw(litOf(m.key))], body(true), { graphic: LOOK_LIT, priority: "same", overlapForbidden: true, animationType: "fixedGraphic" }),
+      ...dirs.map((d, v) => facePage(false, d, v)),
+      ...dirs.map((d, v) => facePage(true, d, v)),
     ]);
   }
   // 빛줄기가 흐르는 길 — 켜진 길마다 반짝이(계산은 처음 한 번 여기서).
@@ -1058,6 +1064,22 @@ function dress(project: Project, exec: Exec, mapId: string, kitId: string, cands
   return null;
 }
 
+/** 버들항 칩셋의 벽 속 어둠 칸(벽 덩어리 안쪽을 채우는 타일). */
+const BEODEUL_WALL_FILL = 32995;
+/** 아래층이 빈(-1) 칸 중 네 방향 끝까지 가며 칠한 칸을 만나는 칸 — 맵 안쪽의 구멍 — 을 채운다. 채운 칸 수를 돌려준다. */
+function fillEnclosedHoles(map: GameMap, tile: number): number {
+  const lower = map.lowerTiles as number[];
+  const painted = (x: number, y: number) => x >= 0 && y >= 0 && x < map.width && y < map.height && lower[y * map.width + x] !== -1;
+  const enclosed = (x: number, y: number) => ([[1, 0], [-1, 0], [0, 1], [0, -1]] as const).every(([dx, dy]) => {
+    for (let k = 1; x + dx * k >= 0 && y + dy * k >= 0 && x + dx * k < map.width && y + dy * k < map.height; k += 1) if (painted(x + dx * k, y + dy * k)) return true;
+    return false;
+  });
+  const holes: number[] = [];
+  for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) if (lower[y * map.width + x] === -1 && enclosed(x, y)) holes.push(y * map.width + x);
+  for (const i of holes) lower[i] = tile;
+  return holes.length;
+}
+
 /**
  * 1층·3층 다시 꾸미기 — 생성기가 두 층에 같은 연금 화로·약초 선반·수정 받침을 놓아 층이 복사돼 보였다(적대 검수 2026-11-01).
  * 1층은 「기사와 기계의 싸움터」: 깨진 바닥·무너진 기둥·쓰러진 심문회 깃발·부서진 관·무기 통. 연금 공방(북쪽 막다른 방)은 그대로.
@@ -1081,6 +1103,9 @@ function redressFloors(project: Project, exec: Exec): void {
   // 3층 — 거울 빛길·계단·도착 칸을 비운다.
   const keep3: Cell[] = [{ x: 7, y: 6 }, { x: 6, y: 6 }, { x: 8, y: 6 }, { x: 10, y: 22 }, { x: 10, y: 21 }, { x: 2, y: 6 }, { x: 17, y: 21 }, { x: 18, y: 12 }, { x: 5, y: 21 },
     ...T3_MIRRORS.map((m) => m.at)];
+  // 동쪽 벽 덩어리 속 바닥 칸 셋(14,13)(14,14)(15,14)이 비어(-1) 방 안에 하늘 배경이 구멍처럼 보였다(fs-vqa-obs).
+  // 네 방향 모두 칠한 칸에 둘러싸인 빈 칸만 벽 속 어둠 타일로 메운다 — 바깥 하늘 테두리는 건드리지 않는다.
+  fillEnclosedHoles(M(project, FS2_T3), BEODEUL_WALL_FILL);
   if (liftKit(project, FS2_T3, "bd-pick-wizard-tower-athanor", { x: 3, y: 6 })) stamp(project, exec, FS2_T3, "bd-pick-headland-lighthouse-telescope", { x: 3, y: 6 });
   if (liftKit(project, FS2_T3, "bd-pick-aqueduct-sewer-barrel", { x: 2, y: 10 })) stamp(project, exec, FS2_T3, "bd-pick-dungeon-theme-ice-crystal", { x: 2, y: 9 });
   dress(project, exec, FS2_T3, "bd-pick-dungeon-theme-corrupt-crystal-big", [{ x: 19, y: 23 }, { x: 18, y: 23 }, { x: 20, y: 23 }], keep3);
