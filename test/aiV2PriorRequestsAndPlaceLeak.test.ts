@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { priorRequestsNote } from "@/ai/v2/priorRequests";
 import { defaultPlaceLeaks } from "@/ai/v2/shipChecks";
-import { wantsWholeGame } from "@/ai/v2/request/scope";
+import { wantsWholeGame } from "@/ai/v2/request/readers";
 import { createBlankProject } from "@/project/defaults";
 
 describe("J70 prior requests note", () => {

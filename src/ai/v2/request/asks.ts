@@ -16,4 +16,5 @@ export const SCENE_WORDS = /장면|컷신|컷씬|연출|오프닝|프롤로그|�
 /** 요청이 주고받는 대화를 시켰나. */
 export const TALK_WORDS = /대화|흥정|심문|설득|협상|말다툼|수다|만나|합류|고백|배신|대사|banter|haggle|interrogat|conversation|dialogue/iu;
 
-export const wantsEndingScene = (task: string): boolean => /엔딩|결말|ending/iu.test(task);
+/** 타이틀·엔딩·오프닝 그림을 새로 그려 달라는 요청(generate_art 가 맡는 일). */
+export const ART_ASK = /(?:타이틀|제목\s*화면|표지|엔딩|오프닝|키\s*아트)[^.!?\n]{0,10}(?:그림|이미지|일러스트|아트|배경)[^.!?\n]{0,20}(?:그려|만들|생성|바꿔|새로)|(?:title|ending|key)\s*(?:art|picture|image)/iu;

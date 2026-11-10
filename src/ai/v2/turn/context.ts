@@ -7,7 +7,7 @@ import { loadVqaBook } from "./vqaItems";
 import { carryOver } from "./carryOver";
 import type { PiAssistantV2Env } from "../env";
 import { type AdvisorToolCall, type AdvisorVerdict } from "../judge/advisor";
-import { CONTINUE_WORDS, isWriteRequest } from "../request/scope";
+import { CONTINUE_WORDS, isWriteRequest } from "../request/readers";
 import { type V2ToolExposure } from "../toolExposure";
 import { changedSince, indexProject } from "../loop/refs";
 import { vqaEnabled } from "./support";

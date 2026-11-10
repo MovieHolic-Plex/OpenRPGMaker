@@ -17,7 +17,7 @@ import { isRegistryTool, preCheck, retryCandidates } from "./argGuard";
 import { correctionFor, englishFailureLine, englishVerbFailureHead, formatV2Failure, formatV2VerbFailure } from "./failureText";
 import { covers, requestSkeleton, type SkeletonElement } from "./requestSkeleton";
 import { formatCall, MISSING_HIGH_VERB, VERB_SCOPE, nextAfterFailure, nextForItem, scopeRedirect, skeletonFor, strategyAfterRepeat, type NextCall } from "./nextCall";
-import { isWriteRequest } from "../request/scope";
+import { isWriteRequest } from "../request/readers";
 
 const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
 

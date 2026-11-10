@@ -32,7 +32,8 @@ import { assemblyTimeMismatches, blankMap, blueprintStoryText } from "@/project/
 import { openingMapViewMapId } from "@/project/openingMapView";
 import { battleSites, encounterMaps, healingSources, repeatableHealingSources } from "./judge/combatChecks";
 import { projectScriptMentionsCmdKind } from "@/project/script/effects";
-import { SINGLE_PLACE, buildsWholeGame, oneProjectGame, ONE_ROOM_GAME } from "./request/scope";
+import { SINGLE_PLACE, ONE_ROOM_GAME } from "./request/scope";
+import { buildsWholeGame, oneProjectGame } from "./request/readers";
 import { requestedTitle } from "./request/title";
 
 type Obj = Record<string, unknown>;

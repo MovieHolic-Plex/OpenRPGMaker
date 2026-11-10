@@ -1,6 +1,6 @@
 // 턴 구동기가 같이 쓰는 밑받침 — 켜고 끄는 스위치(환경 변수), 단계 시간 재기, 변경 요약. 2026-11-11 리팩토링 R3: scripts/lib/assistantV2Runtime.ts 에서 옮겼다.
 import type { PiAgentRequest } from "../../piAgent/protocol";
-import { wantsWholeGame } from "../request/scope";
+import { wantsWholeGame } from "../request/readers";
 import type { PiAssistantV2Env } from "../env";
 import { summarizeProjectDiff } from "../judge/advisor";
 

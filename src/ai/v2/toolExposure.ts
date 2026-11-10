@@ -13,12 +13,13 @@ import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { compactCliToolList } from "@/ai/piAgent/cliContextBudget";
 import type { PiAssistantV2Env } from "./env";
-import { v2ExtraToolNames, wantsGameTools } from "./request/toolGroups";
-import { musicOnly } from "./request/audio";
+import { v2ExtraToolNames, wantsGameTools } from "./request/readers";
+import { musicOnly } from "./request/readers";
 import { V2_TOOL_EN, type ToolTextEn } from "./toolTextEn";
+import { classifyRequest, describeIntent } from "./request/intent";
 import { PLACE_BUILD_VERBS } from "./prompt";
 import { composedWorldFor } from "./request/world";
-import { leanPromptFor } from "./request/scope";
+import { leanPromptFor } from "./request/readers";
 
 /**
  * 게임 요청에 처음부터 싣는 v1 도구 — 기록된 실행(위)에서 모델이 직접 부른 세션 수가 terra ≥10 또는 opus ≥20 인 것, 또는 그에 준하는 싼 읽기 도구.
@@ -158,6 +159,9 @@ const BEODEUL_ONLY_TOOLS: ReadonlySet<string> = new Set(["author_forest_route"])
 export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolShape[]): V2ToolExposure {
   let tools = allTools;
   const task = String(env.request.task ?? "");
+  // 이 요청을 어떻게 갈랐는지 실행 기록에 한 줄 남긴다 — 지시문·도구·검사가 모두 이 분류를 읽는다.
+  const intent = classifyRequest(task, env.ctx.project);
+  env.emit({ type: "execution_status", name: "v2.request.intent", ok: true, summary: `요청 분류: ${describeIntent(intent)}`, data: { scope: intent.scope, wholeGame: intent.wholeGame, why: intent.why } });
   const lazyOn = wantsGameTools(task) && !musicOnly(task);
   // 지은 맵에 로직만 넣는 요청(prompt.ts leanPromptFor)이면 장소 짓기 동사도 필요할 때 싣는다 — 지시문의 장소 카드와 함께 빠진다.
   // 구성기 세계의 게임(world.ts)도 같다 — 장소는 build_places 가 짓는다. 버들항 전용 숲길 도구는 그 세계에 싣지 않는다(다른 칩셋 맵이 섞인다).
