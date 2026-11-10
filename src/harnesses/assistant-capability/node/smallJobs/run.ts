@@ -18,6 +18,7 @@ import { loadSuite, selectJobs, type SmallJob } from './suite';
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../..');
 const SESSION = resolve(REPO_ROOT, 'src/harnesses/assistant-capability/node/wholeGameSession.mjs');
+const PROVIDER_ERROR = /\b(429|5\d\d)\b|rate.?limit|overloaded|quota|ECONN|ETIMEDOUT|EAI_AGAIN|socket hang up|fetch failed|upstream|network|timed? ?out/iu;
 const MAX_PARALLEL = 2; // 값싼 모델 엔드포인트는 세션 둘을 넘기면 속도 제한에 걸린다.
 const BOOT_LIMIT_MS = 12 * 60_000, STOP_LIMIT_MS = 8 * 60_000;
 const sleep = (ms: number) => new Promise(done => setTimeout(done, ms));
@@ -79,9 +80,11 @@ function keepSlim(file: string, project: Project): void {
   const { tilesets: _tilesets, ...rest } = project as any;
   writeFileSync(file, gzipSync(JSON.stringify(rest), { level: 6 }));
 }
-function gitInfo(): { sha: string; branch: string; dirty: boolean } {
+function gitInfo(): { sha: string; branch: string; dirty: boolean; mainBase: string } {
   const git = (...args: string[]) => { try { return execFileSync('git', args, { cwd: REPO_ROOT, encoding: 'utf8' }).trim(); } catch { return ''; } };
-  return { sha: git('rev-parse', '--short=10', 'HEAD'), branch: git('rev-parse', '--abbrev-ref', 'HEAD'), dirty: git('status', '--porcelain', '--', 'src', 'scripts', 'electron').length > 0 };
+  // mainBase = 이 체크아웃이 올라탄 main 커밋(측정 브랜치의 머리가 아니라 조수 코드의 기준을 말한다).
+  return { sha: git('rev-parse', '--short=10', 'HEAD'), branch: git('rev-parse', '--abbrev-ref', 'HEAD'), dirty: git('status', '--porcelain', '--', 'src', 'scripts', 'electron').length > 0,
+    mainBase: git('merge-base', 'HEAD', 'origin/main').slice(0, 10) };
 }
 
 async function waitFor(test: () => boolean, limitMs: number, alive: () => boolean): Promise<'ok' | 'limit' | 'exited'> {
@@ -168,14 +171,15 @@ async function runJob(job: SmallJob, root: string, pin: { file: string; config: 
     const check = runCheck(job.check, job.allow, before, after);
     const timedOut = turns.some(turn => turn.outcome === 'timeout') || waited === 'limit';
     const stillAsking = turns.at(-1)?.outcome === 'awaiting-answer';
-    // 기반 오류: 모델·호스트 쪽 오류로 턴이 일을 시작하지 못했다(도구 호출 0 + 오류). 조수의 실패와 가른다.
-    const errors = metrics.errors ?? [];
-    const infra = metrics.toolCallCount === 0 && errors.length > 0 && !check.pass;
+    const errors = (metrics.errors ?? []).filter(error => !error.startsWith('page: '));
+    // 기반 오류: 모델·호스트 쪽 오류로 일을 못 했다 — 도구 호출 없이 오류로 끝났거나, 제공자 오류(속도 제한·연결·5xx)가 난 채 불합격.
+    const providerSide = errors.some(error => PROVIDER_ERROR.test(error));
+    const infra = !check.pass && errors.length > 0 && (metrics.toolCallCount === 0 || providerSide);
     const persisted = !!persistence && persistence.saved && persistence.reloadedSame;
     const status: JobStatus = infra ? 'infra' : timedOut ? 'timeout' : check.pass && persisted ? 'pass' : 'fail';
     const reason = infra ? `기반 오류: ${errors[0]?.slice(0, 240)}`
       : timedOut ? `시간 초과(${Math.round(options.limitMs / 60_000)}분) — 그때까지의 저장 결과: ${check.pass ? '판정은 통과' : check.reason}`
-        : !check.pass ? `${check.reason}${stillAsking ? ' · 조수가 두 번째 질문에서 멈췄다' : ''}`
+        : !check.pass ? `${check.reason}${stillAsking ? ' · 조수가 두 번째 질문에서 멈췄다' : ''}${errors.length ? ` · 턴 오류: ${errors[0]!.slice(0, 160)}` : ''}`
           : !persisted ? `판정은 통과했지만 저장·재로드 확인 실패(${JSON.stringify(persistence)})` : check.reason;
     return finish({ ...metrics, autoAnswered, persistence, check, status, pass: status === 'pass', reason });
   } catch (error) {
@@ -221,7 +225,7 @@ export function summarize(results: JobResult[], meta: Record<string, unknown>): 
     perFamily: Object.fromEntries(families.map(family => [family, count(results.filter(r => r.family === family))])),
     perFixture: Object.fromEntries([...new Set(results.map(r => r.fixture))].map(fixture => [fixture, count(results.filter(r => r.fixture === fixture))])),
     medians: { toolCalls: median(ran.map(r => r.toolCallCount)), wallMs: median(ran.map(r => r.wallMs)), runMs: median(ran.map(r => r.runMs)), modelCalls: median(ran.map(r => r.modelCalls)),
-      inputTokens: median(ran.map(r => r.tokens.input + r.tokens.cacheRead)), outputTokens: median(ran.map(r => r.tokens.output)), systemPromptChars: median(ran.map(r => r.systemPromptChars ?? NaN)), toolsOffered: median(ran.map(r => r.toolsOffered ?? NaN)) },
+      inputTokens: median(ran.map(r => r.tokens.input + r.tokens.cacheRead)), outputTokens: median(ran.map(r => r.tokens.output)), systemPromptChars: median(ran.map(r => r.systemPromptChars ?? NaN)), toolsOffered: median(ran.map(r => r.toolsOffered ?? NaN)), toolSchemaChars: median(ran.map(r => r.toolSchemaChars ?? NaN)) },
     totals: { wallMs: results.reduce((n, r) => n + r.wallMs, 0), inputTokens: results.reduce((n, r) => n + r.tokens.input + r.tokens.cacheRead, 0), outputTokens: results.reduce((n, r) => n + r.tokens.output, 0), toolCalls: results.reduce((n, r) => n + r.toolCallCount, 0) },
     jobs: results };
 }
@@ -229,9 +233,9 @@ const minutes = (ms: number) => (ms / 60_000).toFixed(1);
 function summaryMarkdown(summary: any): string {
   const c = summary.counts, m = summary.medians;
   const rows = (summary.jobs as JobResult[]).map(r => `| ${r.id} | ${r.family} | ${r.status.toUpperCase()} | ${r.complete === null ? '-' : r.complete ? '완료' : '미완료'} | ${r.toolCallCount}${r.toolErrors ? ` (✗${r.toolErrors})` : ''} | ${minutes(r.wallMs)} | ${Math.round((r.tokens.input + r.tokens.cacheRead) / 1000)}k/${(r.tokens.output / 1000).toFixed(1)}k | ${r.systemPromptChars ?? '-'} | ${r.toolsOffered ?? '-'} | ${r.reason.replace(/\|/gu, '/').slice(0, 160)} |`);
-  return `# 작은 일 30가지 — ${summary.model} · ${summary.assistantVersion}\n\n기준 ${summary.git.sha}(${summary.git.branch}${summary.git.dirty ? ', 작업 트리 변경 있음' : ''}) · ${summary.startedAt} ~ ${summary.finishedAt}\n\n` +
+  return `# 작은 일 30가지 — ${summary.model} · ${summary.assistantVersion}\n\n기준 main ${summary.git.mainBase || '-'} · 머리 ${summary.git.sha}(${summary.git.branch}${summary.git.dirty ? ', 작업 트리 변경 있음' : ''}) · ${summary.startedAt} ~ ${summary.finishedAt}\n\n` +
     `**통과 ${c.pass}/${c.jobs}** · 불합격 ${c.fail} · 시간 초과 ${c.timeout} · 기반 오류 ${c.infra} · 턴이 «완료»로 끝난 것 ${c.complete}\n\n` +
-    `중앙값: 도구 호출 ${m.toolCalls} · 시간 ${minutes(m.wallMs)}분 · 모델 호출 ${m.modelCalls} · 입력 ${Math.round(m.inputTokens / 1000)}k 토큰 · 출력 ${(m.outputTokens / 1000).toFixed(1)}k 토큰 · 지시문 ${m.systemPromptChars}자 · 처음 실린 도구 ${m.toolsOffered}개\n\n` +
+    `중앙값: 도구 호출 ${m.toolCalls} · 시간 ${minutes(m.wallMs)}분 · 모델 호출 ${m.modelCalls} · 입력 ${Math.round(m.inputTokens / 1000)}k 토큰 · 출력 ${(m.outputTokens / 1000).toFixed(1)}k 토큰 · 지시문 ${m.systemPromptChars}자 · 처음 실린 도구 ${m.toolsOffered}개(도구 설명 ${m.toolSchemaChars}자)\n\n` +
     `| 가족 | 통과 | 불합격 | 시간 초과 | 기반 오류 |\n|---|---|---|---|---|\n${Object.entries<any>(summary.perFamily).map(([family, n]) => `| ${family} | ${n.pass}/${n.jobs} | ${n.fail} | ${n.timeout} | ${n.infra} |`).join('\n')}\n\n` +
     `| 일 | 가족 | 결과 | 턴 끝 | 호출 | 분 | 토큰 in/out | 지시문 자 | 도구 수 | 까닭 |\n|---|---|---|---|---|---|---|---|---|---|\n${rows.join('\n')}\n`;
 }

@@ -356,9 +356,9 @@ const KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result
     if (!a || !b) return no(`맵 ${spec.mapId} 가 없다`);
     if (a.width !== b.width || a.height !== b.height) return no(`맵 크기가 바뀌었다 ${a.width}x${a.height} → ${b.width}x${b.height}`);
     const changed = new Set<number>();
-    for (const key of ['lowerTiles', 'upperTiles', 'lowerOverlayTiles', 'upperOverlayTiles']) {
-      const left: number[] = a[key] ?? [], right: number[] = b[key] ?? [];
-      for (let i = 0; i < a.width * a.height; i++) if ((left[i] ?? -1) !== (right[i] ?? -1)) changed.add(i);
+    for (const key of ['lowerTiles', 'upperTiles', 'lowerOverlayTiles', 'upperOverlayTiles', 'lowerTileStacks', 'upperTileStacks']) {
+      const left: unknown[] = a[key] ?? [], right: unknown[] = b[key] ?? [];
+      for (let i = 0; i < a.width * a.height; i++) if (JSON.stringify(left[i] ?? -1) !== JSON.stringify(right[i] ?? -1)) changed.add(i);
     }
     const cells = [...changed].map(i => ({ x: i % a.width, y: Math.floor(i / a.width) }));
     // 이벤트로 놓은 소품도 꾸미기로 센다(보이는 새 이벤트).
