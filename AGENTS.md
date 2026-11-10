@@ -145,6 +145,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 북방 설원 번들 snow_north · 눈 덮인 북방 마을·얼어붙은 호수 낚시터·얼음 동굴 입구·겨울 장터 + 오두막·회관·선술집·사우나·얼음 동굴 실내 코드 손 도트 131조각(오토타일 6, object-gate 영수증·조립 그림, 프로필 미보정), 구성기 `compose_snow_north_map`, 버들항 눈 기후(theme:"snow")와의 라우팅 경계는 `src/ai/snowNorthPolicy.ts`: `openwiki/snow-north.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - 조수 v2 (기본 꺼짐 — 모델은 명세만, 결정론 빌더가 짓고 독립 비평가가 1배 그림을 본다; `?assistant=v2`, v1 비교 결과): `openwiki/assistant-v2.md`
+   - **조수 v2 리팩토링 진행 중 (2026-11-11~)** — `src/ai/v2` 를 고치기 전에 읽는다. 목표 폴더 구조, 규칙 일곱(요청 낱말 목록·새 관문·감싸개를 더하지 않는다 등), 진행표, 옮기는 PR 검증법(`golden.mts`): `openwiki/assistant-v2-refactor.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
    - 코딩 에이전트의 스토어 제출 (`npm run -s store`, 에이전트 토큰·확인 대기·검사 목록): `openwiki/store-agent-contribution.md`
