@@ -169,18 +169,7 @@ async function runJob(job: SmallJob, root: string, pin: { file: string; config: 
     const after = readProjectSqlite(projectDir);
     keepSlim(resolve(dir, 'after.json.gz'), after);
     const check = runCheck(job.check, job.allow, before, after);
-    const timedOut = turns.some(turn => turn.outcome === 'timeout') || waited === 'limit';
-    const stillAsking = turns.at(-1)?.outcome === 'awaiting-answer';
-    const errors = (metrics.errors ?? []).filter(error => !error.startsWith('page: '));
-    // 기반 오류: 모델·호스트 쪽 오류로 일을 못 했다 — 도구 호출 없이 오류로 끝났거나, 제공자 오류(속도 제한·연결·5xx)가 난 채 불합격.
-    const providerSide = errors.some(error => PROVIDER_ERROR.test(error));
-    const infra = !check.pass && errors.length > 0 && (metrics.toolCallCount === 0 || providerSide);
-    const persisted = !!persistence && persistence.saved && persistence.reloadedSame;
-    const status: JobStatus = infra ? 'infra' : timedOut ? 'timeout' : check.pass && persisted ? 'pass' : 'fail';
-    const reason = infra ? `기반 오류: ${errors[0]?.slice(0, 240)}`
-      : timedOut ? `시간 초과(${Math.round(options.limitMs / 60_000)}분) — 그때까지의 저장 결과: ${check.pass ? '판정은 통과' : check.reason}`
-        : !check.pass ? `${check.reason}${stillAsking ? ' · 조수가 두 번째 질문에서 멈췄다' : ''}${errors.length ? ` · 턴 오류: ${errors[0]!.slice(0, 160)}` : ''}`
-          : !persisted ? `판정은 통과했지만 저장·재로드 확인 실패(${JSON.stringify(persistence)})` : check.reason;
+    const { status, reason } = decide({ check, turnOutcomes: turns.map(turn => String(turn.outcome)), waitedLimit: waited === 'limit', errors: metrics.errors ?? [], toolCallCount: metrics.toolCallCount ?? 0, persistence, limitMs: options.limitMs });
     return finish({ ...metrics, autoAnswered, persistence, check, status, pass: status === 'pass', reason });
   } catch (error) {
     await killGroup();
@@ -188,6 +177,26 @@ async function runJob(job: SmallJob, root: string, pin: { file: string; config: 
   } finally {
     await killGroup();
   }
+}
+
+/**
+ * 판정 + 턴 기록 → 상태 한 가지. 실행기와 오프라인 재판정(rescore)이 같은 규칙을 쓴다.
+ * 통과 = 판정 합격 + 저장·재로드 확인 + 시간 안. 기반 오류 = 모델·호스트 쪽 오류로 일을 못 한 것(조수의 불합격과 따로 센다).
+ */
+export function decide(input: { check: Verdict; turnOutcomes: string[]; waitedLimit: boolean; errors: string[]; toolCallCount: number; persistence: JobResult['persistence']; limitMs: number }): { status: JobStatus; reason: string } {
+  const { check, persistence } = input;
+  const errors = input.errors.filter(error => !error.startsWith('page: '));
+  const timedOut = input.turnOutcomes.includes('timeout') || input.waitedLimit;
+  const stillAsking = input.turnOutcomes.at(-1) === 'awaiting-answer';
+  // 도구 호출 없이 오류로 끝났거나, 제공자 오류(속도 제한·연결·5xx)가 난 채 불합격이면 기반 오류다.
+  const infra = !check.pass && errors.length > 0 && (input.toolCallCount === 0 || errors.some(error => PROVIDER_ERROR.test(error)));
+  const persisted = !!persistence && persistence.saved && persistence.reloadedSame;
+  const status: JobStatus = infra ? 'infra' : timedOut ? 'timeout' : check.pass && persisted ? 'pass' : 'fail';
+  const reason = infra ? `기반 오류: ${errors[0]?.slice(0, 240)}`
+    : timedOut ? `시간 초과(${Math.round(input.limitMs / 60_000)}분) — 그때까지의 저장 결과: ${check.pass ? '판정은 통과' : check.reason}`
+      : !check.pass ? `${check.reason}${stillAsking ? ' · 조수가 두 번째 질문에서 멈췄다' : ''}${errors.length ? ` · 턴 오류: ${errors[0]!.slice(0, 160)}` : ''}`
+        : !persisted ? `판정은 통과했지만 저장·재로드 확인 실패(${JSON.stringify(persistence)})` : check.reason;
+  return { status, reason };
 }
 
 /** 턴 기록(wholeGameSession 의 turns/NNN.json)에서 숫자와 발췌를 뽑는다. */
@@ -240,6 +249,13 @@ function summaryMarkdown(summary: any): string {
     `| 일 | 가족 | 결과 | 턴 끝 | 호출 | 분 | 토큰 in/out | 지시문 자 | 도구 수 | 까닭 |\n|---|---|---|---|---|---|---|---|---|---|\n${rows.join('\n')}\n`;
 }
 
+export function writeRunSummary(root: string, results: JobResult[], meta: Record<string, unknown>): any {
+  const summary = summarize(results, meta);
+  writeJson(resolve(root, 'summary.json'), summary);
+  writeFileSync(resolve(root, 'SUMMARY.md'), summaryMarkdown(summary));
+  return summary;
+}
+
 export async function runSmallJobs(options: RunOptions): Promise<number> {
   const suite = loadSuite();
   const jobs = selectJobs(suite, options.only);
@@ -269,11 +285,8 @@ export async function runSmallJobs(options: RunOptions): Promise<number> {
   const writeSummary = () => {
     const ordered = jobs.map(job => results.get(job.id)).filter((result): result is JobResult => !!result);
     const first = ordered.find(result => result.model);
-    const summary = summarize(ordered, { suite: 'harness-data/assistant-capability/small-jobs.json', modelPin: pinName, model: first ? `${first.provider} ${first.model} (${pin.config.reasoningEffort ?? '-'})` : `${pin.config.providerId} ${pin.config.model} (${pin.config.reasoningEffort ?? '-'})`,
+    return writeRunSummary(root, ordered, { suite: 'harness-data/assistant-capability/small-jobs.json', modelPin: pinName, model: first ? `${first.provider} ${first.model} (${pin.config.reasoningEffort ?? '-'})` : `${pin.config.providerId} ${pin.config.model} (${pin.config.reasoningEffort ?? '-'})`,
       assistantVersion: options.v2 ? 'v2' : 'v1', timeLimitMin: limitMs / 60_000, parallel, git, startedAt, finishedAt: new Date().toISOString(), planned: jobs.length });
-    writeJson(resolve(root, 'summary.json'), summary);
-    writeFileSync(resolve(root, 'SUMMARY.md'), summaryMarkdown(summary));
-    return summary as any;
   };
   const worker = async () => {
     for (let job = queue.shift(); job; job = queue.shift()) {

@@ -17,6 +17,9 @@ if (mode === 'selfcheck') {
 } else if (mode === 'report') {
   const { writeSmallJobsReport } = await import('./smallJobs/report');
   process.exitCode = writeSmallJobsReport({ run: option('run'), html: option('html') });
+} else if (mode === 'rescore') {
+  const { rescoreSmallJobs } = await import('./smallJobs/rescore');
+  process.exitCode = rescoreSmallJobs({ run: option('run') });
 } else {
-  throw new Error('smallJobsEntry: selfcheck | run | report');
+  throw new Error('smallJobsEntry: selfcheck | run | report | rescore');
 }

@@ -230,6 +230,7 @@ npm run -s build:fast && node scripts/build-electron.mjs                  # 편�
 npm run harness -- assistant-capability small-jobs-selfcheck [--out <폴더>] [--only id,가족]   # 모델 없음, 약 2분
 npm run harness -- assistant-capability small-jobs --model terra-high --v2 --out <새 폴더> [--only id,가족] [--skip-completed] [--timeout-min 10]
 npm run harness -- assistant-capability small-jobs-report --run <그 폴더> [--html <출력.html>]
+npm run harness -- assistant-capability small-jobs-rescore --run <그 폴더>   # 판정기만 고쳤을 때: 모델 없이 저장된 전/후 문서로 다시 판정
 ```
 
 ### 시작 상태(픽스처) — 일마다 새로 만든다
@@ -321,6 +322,8 @@ npm run harness -- assistant-capability small-jobs-report --run <그 폴더> [--
 - `summary.json`/`SUMMARY.md`: 합계 · 가족별 · 픽스처별 · 중앙값(호출·시간·모델 호출·토큰·지시문 글자·도구 수) · 일마다. 종료 코드는 실행기가 끝까지 돌았는지만 말한다.
 - 요청 크기 영수증: `editorDriver.mjs` 가 `prompt_inspection` 스냅숏에서 **글자 수와 도구 이름만** 남긴다(`sizes`: 절마다 글자 수 · 지시문 글자 수 · 실린 도구).
   지시문 본문은 저장하지 않는다. 턴 기록(`turns/NNN.json`)의 `prompts`(모델 호출마다) · `v2Final` · `turnMs` 가 여기서 나온다.
+- 재판정(`small-jobs-rescore`): 판정기를 고쳤으면 모델을 다시 부르지 않는다. `before/after.json.gz` 에 번들 타일셋을 되붙여 지금의 판정을 돌리고,
+  상태·까닭이 달라진 일은 처음 판정을 `liveVerdict` 로 남긴다. 실행기와 같은 상태 규칙(`decide`)을 쓴다.
 - 보고서(`small-jobs-report`): 자체완결 HTML. 실행 폴더에 `causes.json`(`[{title, why, jobs:[id…]}]` — 결과를 읽은 사람이 쓴다)이 있으면 원인별로 묶고,
   없으면 통과하지 못한 일을 판정 글 그대로 싣는다.
 
