@@ -81,7 +81,7 @@
 | R4 | `request/`: 요청 글(과 프로젝트)을 가르는 최상위 선언을 `request/` 아홉 파일로(동작 그대로) — `scope`(게임 하나·한 곳·고치기·이어 하기·쓰기 요청) · `audio`(옛 `musicWords.ts`) · `combat` · `place` · `genre` · `asks`(날씨·흔들림·엔딩·장면…) · `title` · `toolGroups`(낱말 → 도구 묶음, 옛 `game.ts` 의 묶음들) · `world`(옛 `worldRequest.ts`). `shipChecks.ts` 에는 `REQUESTED_FEATURES`(낱말+프로젝트 검사+고칠 글이 한 표) 만 남았다. 함수 본문 안의 익명 정규식(`gameChecks.ts` 약 25곳, `finishGate.ts` 2곳, `verbs.ts` 1곳)은 본문을 건드리지 않아 그대로다 | 끝 |
 | R5 | `judge/`: 검사들을 한 폴더로, 그 뒤 한 결과 형식으로 | |
 | R6 | `finish/` 와 `lanes/` 를 한 줄로 | |
-| R7 | `place/` `story/` `shared/`: 남은 평면 파일 정리, 600줄 넘는 파일 쪼개기 | |
+| R7 | `place/` `story/` `shared/`: 남은 평면 파일 정리, 600줄 넘는 파일 쪼개기 | 진행 중 — **place/ (옮기기만, 42파일):** `builders/*` 18 → `place/builders/*`, 평면 24 → `place/`(`worldPopulate` · `interiorCatalog` `interiorLayout` `interiorSpace` `interiorWalls` · `dungeonParts` · `exitDress` `deadEndRoads` `edgeExitRoads` `lockedDoors` `reliefShortcut` `landingPockets` `underRoof` · `placementRules` · `designAreas` `designRooms` `roomIdeas` `roomParts` `roomPurpose` `layoutReview` · `placeGuess` `mapNames` `modelSeed` `drawObject`). `place/` 는 `request/` 와 평면 파일만 끌어온다. 평면에 남긴 것: `transferSpot`(`request/place.ts` 가 형 `Side` 를 끌어와 request→place 가 된다 — `Side` 를 `shared/` 로 뺀 뒤) · `dungeonGates` `caveGates`(이름이 `*Gates` — judge 조각과 겹치지 않게) · `blankStart`(`blueprintPath` 를 끌어온다 — place→story) · `healingAccess`(빌더가 끌어오는데 판정 파일을 읽는다) · `interiorRoomChecks`(`*Checks`) · `makeGame`(장소+이야기+요청 낱말). 쪼개기·`shared/` 는 아직 |
 | R8 | `prompt/`: 흩어진 카드 모으기 | |
 
 동작을 바꾸는 조각(구조 재점검의 권고 — R 조각과 섞지 않는다):

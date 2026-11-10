@@ -1,13 +1,13 @@
 // v2 동사들이 같이 쓰는 밑받침 — 결과 글 싸기, 지은 맵 보기(기계 검사·비평·그림), 쓰기 기록, 다음 단계 안내, 장소 패치 적용, 상한 값.
 import type { PiToolExecResult } from "@/ai/piAgent/toolAdapter";
-import { hasLayout } from "../builders/interiorLayoutBuild";
-import { layoutGiven } from "../interiorLayout";
+import { hasLayout } from "../place/builders/interiorLayoutBuild";
+import { layoutGiven } from "../place/interiorLayout";
 import type { PiAssistantV2Env } from "../env";
 import { roomSpecOf } from "@/editor/handInterior/builder";
 import { type RecordingBuildRun } from "../buildRun";
 import { applyModernSetupDefaults, applyStorySetupDefaults } from "../genreDefaults";
 import { recordStageWrites, type StageWrites } from "../stageWrites";
-import { interiorBuilder, roomMaterials } from "../builders/interior";
+import { interiorBuilder, roomMaterials } from "../place/builders/interior";
 import { runMachineChecks, summarizeChecks } from "../checks";
 import { critique } from "../critic";
 import type { CriticVerdict } from "@/ai/piAgent/featureReview";

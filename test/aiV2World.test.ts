@@ -11,7 +11,7 @@ import { foeGraphic } from "@/ai/v2/blueprintPath";
 import { sceneCraftFindings } from "@/ai/v2/sceneCraft";
 import { isMysteryBlueprint } from "@/ai/v2/mysteryCase";
 import { parseAdvisorReply } from "@/ai/v2/advisor";
-import { builderFor } from "@/ai/v2/builders";
+import { builderFor } from "@/ai/v2/place/builders";
 import { WORLDS, parseWorldStyle, pickWorld, pickWorldDoor, repairWorldPlaces, worldById, worldCard, worldKind, worldPlaceProblems, worldPlaceSpec } from "@/ai/v2/world";
 import { fitsAnyWorld } from "@/ai/v2/request/genre";
 import { worldForRequest } from "@/ai/v2/request/world";

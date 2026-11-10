@@ -3,7 +3,7 @@
 // 판정자는 오른쪽 줄 (28,0)·(23,0)로 올라가 가장자리에서 막혔다 — 「표지판은 있는데 맵 전환이 일어나지 않는다」. 같은 고침(끝맺음 widen-road-exits)은
 // 게임 전체 요청의 조립 묶음(assembly)에서만 돌아 장면 판에는 닿지 않았다. 이 단계는 출구·이동 칸 마감 안에서 맵마다 같은 함수를 돈다(되풀이 안전 — 앞 사본을 걷고 다시 잰다).
 import { mapLabel, type LaneStage } from "../types";
-import { widenRoadExits } from "../../edgeExitRoads";
+import { widenRoadExits } from "../../place/edgeExitRoads";
 
 export const stage: LaneStage = {
   id: "widen-road-exits", scope: "map", order: 165,

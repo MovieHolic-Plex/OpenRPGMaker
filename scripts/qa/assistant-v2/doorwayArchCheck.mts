@@ -4,7 +4,7 @@
 import fs from "node:fs";
 import { PNG } from "pngjs";
 import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
-import { dressInteriorExits } from "../../../src/ai/v2/exitDress.ts";
+import { dressInteriorExits } from "../../../src/ai/v2/place/exitDress.ts";
 import { runAutoPlay } from "../../../src/qa/gameCheck/autoPlay.ts";
 import type { Project } from "../../../src/project/types.ts";
 import { renderMapPng } from "../../qa-game/render.mts";

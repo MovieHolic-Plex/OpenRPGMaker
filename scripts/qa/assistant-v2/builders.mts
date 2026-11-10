@@ -1,12 +1,12 @@
 // 조수 v2 빌더 증명(모델 없음): 명세 → 결정론 빌더 → 1배 PNG·결과 JSON.
 //   bun scripts/qa/assistant-v2/builders.mts <outDir> [caseId...]
-// 사례는 scripts/qa/assistant-v2/builderCases.ts 의 BUILDER_CASES. 빌더는 src/ai/v2/builders/index.ts 의 PLACE_BUILDERS 에서 고른다.
+// 사례는 scripts/qa/assistant-v2/builderCases.ts 의 BUILDER_CASES. 빌더는 src/ai/v2/place/builders/index.ts 의 PLACE_BUILDERS 에서 고른다.
 import fs from "node:fs";
 import path from "node:path";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
 import { renderMapPng } from "../../qa-game/render.mts";
 import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
-import { builderFor } from "../../../src/ai/v2/builders/index.ts";
+import { builderFor } from "../../../src/ai/v2/place/builders/index.ts";
 import { BUILDER_CASES } from "./builderCases.ts";
 import { measureInteriorBareFloor } from "../../../src/editor/handInterior/bareFloor.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";

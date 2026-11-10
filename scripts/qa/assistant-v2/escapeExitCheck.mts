@@ -9,7 +9,7 @@ import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
 import { walkBlueprint, escapeLeaks } from "../../../src/ai/v2/blueprint.ts";
 import { buildBlueprintPath, sealEscapeExits } from "../../../src/ai/v2/blueprintPath.ts";
 import { retireBlankStart } from "../../../src/ai/v2/blankStart.ts";
-import { dressInteriorExits } from "../../../src/ai/v2/exitDress.ts";
+import { dressInteriorExits } from "../../../src/ai/v2/place/exitDress.ts";
 import { runAutoPlay } from "../../../src/qa/gameCheck/autoPlay.ts";
 import type { Project } from "../../../src/project/types.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
