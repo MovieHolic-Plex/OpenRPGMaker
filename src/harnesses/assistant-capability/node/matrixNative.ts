@@ -26,10 +26,10 @@ type EventRecord = { type?: string; id?: string; name?: string; args?: unknown; 
 type ProviderPin = { provider: string; model: string; thinkingLevel: ThinkingEffort };
 
 const specName = process.env.MATRIX_NATIVE_SPEC?.trim();
-if (specName && specName !== '500') throw new Error(`MATRIX_NATIVE_SPEC 은 500 만 받습니다(받은 값: ${specName}). 비우면 50개 기본 행렬입니다.`);
-const spec500 = specName === '500';
+if (specName && specName !== '500' && specName !== 'ds500') throw new Error(`MATRIX_NATIVE_SPEC 은 500 또는 ds500 만 받습니다(받은 값: ${specName}). 비우면 50개 기본 행렬입니다.`);
+const spec500 = specName === '500' || specName === 'ds500';
 const matrix = JSON.parse(readFileSync(resolve(spec500
-  ? 'harness-data/assistant-capability/command-matrix-500.json'
+  ? (specName === 'ds500' ? 'harness-data/assistant-capability/command-matrix-ds500.json' : 'harness-data/assistant-capability/command-matrix-500.json')
   : 'harness-data/assistant-capability/command-matrix.json'), 'utf8')) as { commands: MatrixCommand[] };
 const commandStart = Number(process.env.MATRIX_NATIVE_START ?? 0);
 const commandLimit = process.env.MATRIX_NATIVE_LIMIT ? Number(process.env.MATRIX_NATIVE_LIMIT) : matrix.commands.length;

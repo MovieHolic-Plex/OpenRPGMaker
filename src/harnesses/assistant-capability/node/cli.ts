@@ -72,8 +72,8 @@ export async function run(argv: string[]): Promise<number> {
     const child = spawn('bun', [resolve('src/harnesses/assistant-capability/node/matrixNativeEntry.ts'), resolve(root)], { stdio: 'inherit', cwd: process.cwd() });
     return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
   }
-  if (stage === 'matrix500-spec' || stage === 'matrix500-selfcheck') {
-    const child = spawn('bun', [resolve('src/harnesses/assistant-capability/node/matrix500Entry.ts'), stage === 'matrix500-spec' ? 'spec' : 'selfcheck', ...argv.slice(1)], { stdio: 'inherit', cwd: process.cwd() });
+  if (stage === 'matrix500-spec' || stage === 'matrix500-selfcheck' || stage === 'matrix-ds-spec') {
+    const child = spawn('bun', [resolve('src/harnesses/assistant-capability/node/matrix500Entry.ts'), stage === 'matrix500-spec' ? 'spec' : stage === 'matrix-ds-spec' ? 'ds-spec' : 'selfcheck', ...argv.slice(1)], { stdio: 'inherit', cwd: process.cwd() });
     return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
   }
   if (stage === 'matrix-score') {
