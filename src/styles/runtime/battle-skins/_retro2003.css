@@ -262,9 +262,19 @@
   width: 24px;
   height: 24px;
   left: 50%;
-  top: -24px;
+  /* 노드 상자 윗변(top:-24px)이 아니라 그림 머리(빈 윗줄 비율 --battle-sprite-top-pad) 바로 위에 단다 — 칸이 큰 적은 상자 윗변이
+     전장 맨 위나 상단 메시지창 뒤라 ▼ 가 보이지 않았다(fs-defect-sweep C2: 폴른 스타 53부대 중 25부대, 예고 띠 #4505 와 같은 계열). */
+  top: auto;
+  bottom: calc(100% - var(--battle-sprite-top-pad, 0%) + 2px);
   transform: translateX(-50%);
   filter: none;
+}
+/* 힘 모으기 예고 띠(28-retro-state-aura.css)도 같은 머리 위에 단다 — 띠가 있으면 ▼ 를 띠 위로 한 줄 올린다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] :has(> .battle-charge-mark) > .battle-target-brackets {
+  bottom: calc(100% - var(--battle-sprite-top-pad, 0%) + 26px);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy:has(> .battle-charge-mark):has(> .battle-status-icons > *) > .battle-target-brackets {
+  bottom: calc(100% - var(--battle-sprite-top-pad, 0%) + 50px);
 }
 
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-brackets::before {

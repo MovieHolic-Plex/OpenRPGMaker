@@ -1193,18 +1193,25 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
       const topPad = (Number.parseFloat(anchor.style.getPropertyValue("--battle-sprite-top-pad")) || 0) / 100;
       // 상태 이름(label)은 머리 위 배지 줄과 겹치지 않게 몸통 쪽으로 조금 내린다.
       let topPx = spriteRect.top - layerRect.top + spriteRect.height * (Math.max(0.3, topPad) + (feedback.label ? 0.12 : 0));
+      const headTopPx = topPx;
       // 행동 중에는 로그 배너가 필드 위에 떠 있다(z 12). 배너보다 위로 튀면 숫자가 배너 뒤로 숨는다 —
       // 2026-09-27 프레임 실측: 슬라임 머리 위 -68 이 착탄 +80~+160ms 내내 윗줄이 잘렸다.
       // 팝업은 자기 높이의 ~1.4배만큼 위로 튀므로(22-hit-feel.css bounce 정점) 그만큼 배너 아래에 둔다.
       const banner = field.closest(".battle-scene")?.querySelector<HTMLElement>(".battle-message-window");
       const bannerRect = banner?.getBoundingClientRect();
-      if (bannerRect && bannerRect.height > 0 && bannerRect.bottom > layerRect.top) {
+      // 효과 레이어가 배너 아래에서 시작해도(무대 윗여백 --battle-stage-inset-top, 폴른 스타 1280×720: 레이어 153 · 배너 아래변 144)
+      // 숫자는 튀면서 레이어 위로 나간다 — 레이어가 배너 아래에 있다는 이유로 이 보정을 건너뛰면 「약점 발견!」 두 줄 숫자가
+      // 튀는 내내 배너 뒤로 숨었다(fs-defect-sweep C2: 53부대 중 14부대). 배너가 필드 위쪽 절반에 떠 있으면 늘 맞춘다.
+      if (bannerRect && bannerRect.height > 0 && bannerRect.bottom < layerRect.top + layerRect.height / 2) {
         // 64 는 레이어 안 px 다 — 화면 px(rect)로 옮긴다. 무대 배율·필드 정수 zoom 이 곱해져 있다(battle-feel r2:
         // zoom 1.33 에서 큰 적 머리 위 숫자가 배너 뒤로 잘렸다).
         const layerScale = layer.offsetHeight > 0 ? layerRect.height / layer.offsetHeight : 1;
-        const clearance = 64 * layerScale * (POP_SCALE[anchor.dataset.hitIntensity ?? ""] ?? 1);
+        // 꼬리표(「약점 발견!」·「치명타!」)가 붙으면 숫자가 두 줄(높이 ~55px)이라 튀는 정점이 ~1.4배 위다 — 한 줄 기준 64 로는 윗줄이 걸렸다.
+        const lines = popup.querySelector(".battle-damage-popup-tag") ? 84 : 64;
+        const clearance = lines * layerScale * (POP_SCALE[anchor.dataset.hitIntensity ?? ""] ?? 1);
         topPx = Math.max(topPx, bannerRect.bottom - layerRect.top + clearance);
       }
+      if (topPx > headTopPx) popup.dataset.underBanner = "true";
       popup.style.top = `${(topPx / layerRect.height) * 100}%`;
     }
     // 막타 팝업(900ms)이 기절 페이드(550~620ms)보다 오래 남아 빈 자리에 떠 있었다 —
@@ -1219,7 +1226,10 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     const earlier = [...layer.querySelectorAll<HTMLElement>(".battle-damage-popup")]
       .filter((node) => node.dataset.targetId === feedback.targetId && node.classList.contains("battle-damage-popup-status") === Boolean(feedback.label));
     if (earlier.length > 0) {
-      popup.style.marginTop = `${-Math.min(4, earlier.length) * 26}px`;
+      // 배너 아래로 내린 숫자(머리가 배너에 가까운 적)는 아래로 쌓는다 — 위로 쌓으면 둘째 줄부터 배너 뒤·전장 밖으로 나갔다
+      // (fs-defect-sweep C2: 굶은 들개 「163 약점 발견!」이 전장 위로 32px).
+      const below = popup.dataset.underBanner === "true";
+      popup.style.marginTop = `${(below ? 1 : -1) * Math.min(4, earlier.length) * 26}px`;
       popup.dataset.stacked = "true";
       for (const node of earlier) node.dataset.stacked = "true";
     }
