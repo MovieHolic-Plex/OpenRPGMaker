@@ -11,7 +11,7 @@ import { asksForEncounters } from "./request/readers";
 import { englishToolMessage, parseFailure } from "./loop/failureText";
 import { withForestRouteBrief } from "./forestBrief";
 import { v2ToolPool } from "./request/toolGroups";
-import { v2ExtraToolNames } from "./request/readers";
+import { classifyRequest } from "./request/intent";
 import type { GameTopic } from "./request/topics";
 
 /** 거절 본문(JSON·감싼 JSON·글)에서 첫 이유 한 줄 — 머리(«'도구' 실행 실패:»)를 걷는다. */
@@ -96,7 +96,8 @@ export const DRESS_CARD = "[Filling empty outdoor ground] furnish_outdoor_area{m
 /** 게임 도구 묶음 — 실행 기록은 v1 경로와 같은 onCall(env.record)로 남는다. */
 /** pool:true 면 이 요청의 도구에 v2ToolPool 전부를 더한다(필요할 때 싣는 도구도 같은 감싸개를 지나게). */
 export function createGameTools(env: PiAssistantV2Env, task = "", options: { readonly pool?: boolean } = {}): PiToolShape[] {
-  const names = [...new Set([...v2ExtraToolNames(task), ...(options.pool ? v2ToolPool() : [])])].filter((name) => getTool(name));
+  // 도구 묶음은 요청 글과 프로젝트를 같이 본 기록에서 읽는다(게임 하나를 잇는 «계속» 은 글에 게임 낱말이 없어도 게임 도구를 받는다).
+  const names = [...new Set([...classifyRequest(task, env.ctx.project).tools.extra, ...(options.pool ? v2ToolPool() : [])])].filter((name) => getTool(name));
   return withActorLookRetry(withItemUtilityCleanup(withTransferRelocation(withForestRouteBrief(withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task), () => env.ctx.project, env.record))));
 }
 

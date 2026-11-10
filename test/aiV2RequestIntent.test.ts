@@ -207,7 +207,10 @@ describe("request intent — one record, every reader agrees", () => {
       expect(wantsWholeGame(ask)).toBe(intent.scope === "wholeGame");
       expect(editOnlyRequest(built, ask)).toBe(intent.editOnly);
       expect(CONTINUE_WORDS.test(ask)).toBe(intent.continuation);
-      expect(v2ExtraToolNames(ask)).toEqual([...intent.tools.extra]);
+      // 글만 보는 읽기 함수는 글의 기록과 같다. 프로젝트를 같이 본 기록은 게임 하나를 잇는 이어 하기에 게임 도구를 더한다.
+      expect(v2ExtraToolNames(ask)).toEqual([...readRequest(ask).tools.extra]);
+      if (intent.wholeGame) expect(intent.tools.game).toBe(true);
+      else expect([...intent.tools.extra]).toEqual(v2ExtraToolNames(ask));
     }
   });
 
