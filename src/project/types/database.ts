@@ -65,6 +65,11 @@ export interface ActorRecord {
    * 지금은 파티원 몬스터 도트 시트(party-pixel-*)에 적용된다 — 마왕·드래곤처럼 사람보다 커야 하는 파티원.
    */
   battleScalePercent?: number;
+  /**
+   * 이 배우가 때린 타격의 착탄 섬광 색(도트 측면 전투·impact 손맛). core = 안쪽·살 앞, edge = 바깥·살 끝, 둘 다 #RRGGBB.
+   * 생략 = 기본 흰·금 섬광(기존 화면 그대로).
+   */
+  battleHitFlash?: { core: string; edge: string };
   critical: ActorCritical;
   parameterCurves: ActorParameterCurves;
   expCurve: ActorExperienceCurve;
