@@ -51,7 +51,7 @@ export function charsetFamilyOf(project: CharsetFamilyContext | undefined, idOrT
   if (/^(?:scarloxy-charset-people|oprn-charset-scarloxy-people)\d+$/u.test(s)) return "scarloxy-people";
   if (/^easyrpg-charset-monster[456]$/u.test(s) || /^oprn-charset-harness-monster\d+$/u.test(s) || s === "oprn-charset-dawning-skybirds") return "oprn-creature";
   if (/^easyrpg-charset-monster\d+$/u.test(s) || s === "easyrpg-charset-animal" || /^farming-charset-/u.test(s)) return "rtp-creature";
-  if (/^easyrpg-charset-(object\d+|vehicles?|template)$/u.test(s)) return "object";
+  if (/^easyrpg-charset-(object\d+|vehicles?|template)$/u.test(s) || /^oprn-charset-fallen-mirror\d+$/u.test(s)) return "object";
   if (/^oprn-charset-heroes\d+$/u.test(s)) return "heroes";
   if (/^oprn-charset-modern\d+$/u.test(s)) return "modern";
   if (/^oprn-charset-refmap-doll\d+$/u.test(s)) return "refmap-doll";

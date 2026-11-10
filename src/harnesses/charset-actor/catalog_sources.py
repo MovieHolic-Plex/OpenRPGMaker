@@ -118,6 +118,21 @@ def refmap_doll_catalog(directory):
                  group=group[1]) for number in range(1, count + 1)]
 
 
+def fallen_mirror_catalog(directory):
+    """Fallen Star tower lens-mirror object chip (fallenMirrorCharsets.ts): one literal entry, read field by field."""
+    source = (directory / 'fallenMirrorCharsets.ts').read_text()
+    block = source.split('export const FALLEN_MIRROR_CHARSET_ASSETS = [', 1)
+    texture = re.search(r'export const FALLEN_MIRROR_TEXTURE = "([^"]+)";', source)
+    if len(block) != 2 or not texture:
+        raise ValueError('폴른 스타 렌즈 거울 칩 원본 목록을 찾을 수 없습니다')
+    body = block[1].split('] as const', 1)[0]
+    entry = dict(re.findall(r'(\w+):\s*"([^"]*)"', body))
+    entry['textureKey'] = texture[1] if re.search(r'textureKey:\s*FALLEN_MIRROR_TEXTURE\b', body) else entry.get('textureKey')
+    if body.count('category:') != 1 or not all(entry.get(k) for k in ('id', 'name', 'path', 'textureKey', 'group')):
+        raise ValueError('폴른 스타 렌즈 거울 칩 원본 목록 형식을 읽을 수 없습니다')
+    return [{k: entry[k] for k in ('id', 'name', 'path', 'textureKey', 'group')}]
+
+
 def harness_monster_charsets(directory):
     """Walking chips baked from the species-harness bundle. Sheet count lives in the manifest."""
     count = json.loads((directory / 'harnessMonsterBundle.json').read_text()).get('fieldSheets') or 0
@@ -137,7 +152,7 @@ def editor_catalog():
     expected = {'EASYRPG_CHARSET_ASSETS', 'SCARLOXY_CHARSET_ASSETS',
                 'FARMING_ANIMAL_CHARSET_ASSETS', 'OPRN_MONSTER_CHARSET_ASSETS',
                 'HARNESS_MONSTER_CHARSET_ASSETS', 'WIZARDING_CHARSET_ASSETS', 'HEROES_CHARSET_ASSETS', 'MODERN_CHARSET_ASSETS',
-                'SCARLOXY_PEOPLE_CHARSET_ASSETS', 'REFMAP_DOLL_CHARSET_ASSETS'}
+                'SCARLOXY_PEOPLE_CHARSET_ASSETS', 'REFMAP_DOLL_CHARSET_ASSETS', 'FALLEN_MIRROR_CHARSET_ASSETS'}
     if set(providers) != expected:
         raise ValueError('에디터 캐릭터 카탈로그 공급자가 바뀌었습니다. 원본 목록 연결을 갱신하세요.')
     result = []
@@ -166,6 +181,7 @@ def editor_catalog():
     result.extend(modern_catalog(directory))
     result.extend(scarloxy_people_catalog(directory))
     result.extend(refmap_doll_catalog(directory))
+    result.extend(fallen_mirror_catalog(directory))
     if len({r['id'] for r in result}) != len(result):
         raise ValueError('에디터 원본 ID가 중복됐습니다')
     return result

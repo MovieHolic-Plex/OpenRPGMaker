@@ -13,6 +13,7 @@ import { MODERN_CHARSET_ASSETS } from "@/assets/modernCharsets";
 import { SCARLOXY_PEOPLE_CHARSET_ASSETS } from "@/assets/scarloxyPeopleCharsets";
 import { REFMAP_DOLL_CHARSET_ASSETS } from "@/assets/refmapDollCharsets";
 import { WIZARDING_CHARSET_ASSETS } from "@/assets/wizardingCharsets";
+import { FALLEN_MIRROR_CHARSET_ASSETS } from "@/assets/fallenMirrorCharsets";
 import type { UploadedAsset } from "@/project/types";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 
@@ -27,6 +28,7 @@ export const CHARSET_ASSETS: readonly EasyRpgCharsetAsset[] = [
   ...MODERN_CHARSET_ASSETS,
   ...SCARLOXY_PEOPLE_CHARSET_ASSETS,
   ...REFMAP_DOLL_CHARSET_ASSETS,
+  ...FALLEN_MIRROR_CHARSET_ASSETS,
 ];
 
 /**
