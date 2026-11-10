@@ -87,68 +87,27 @@ export const TERRAIN_CARD = `[Overpainting an existing map — water, bridges, s
 /** pool:true 면 이 요청의 도구에 v2ToolPool 전부를 더한다(필요할 때 싣는 도구도 같은 감싸개를 지나게). */
 export function createGameTools(env: PiAssistantV2Env, task = "", options: { readonly pool?: boolean } = {}): PiToolShape[] {
   const names = [...new Set([...v2ExtraToolNames(task), ...(options.pool ? v2ToolPool() : [])])].filter((name) => getTool(name));
-  return withActorLookRetry(withSchemaFillCleanup(withTransferRelocation(withForestRouteBrief(withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task), () => env.ctx.project, env.record))));
+  return withActorLookRetry(withItemUtilityCleanup(withTransferRelocation(withForestRouteBrief(withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task), () => env.ctx.project, env.record))));
 }
 
 /**
- * 스키마 칸을 기본값으로 다 채워 보내는 모델(terra)의 «빈 칸»을 «안 줬다»로 읽는다 — 도구 계약은 그대로, v2 감싸개만.
- * 2026-10-30 omo-loop-1030b(미완료 판 toolCalls):
- *  - upsert_troop enemyIds:[적] + members:[] → «트룹에는 최소 1마리의 적이 필요»(boss-room 3/3판). 빈 members 는 뺀다.
- *  - place_field_enemy behavior:"stationary" + patrol{length:1,…,directions:[]} → «patrol 은 patrol·chase 에서만», chase + directions:[] → «2..16개 닫힌 경로»
- *    (forest-path: 세 번째 실패로 전투 항목이 막힘). patrol·chase 가 아니면 patrol 을, 빈 directions 는 directions 를 뺀다.
- *  - upsert_item 회복약에 escapeTo:"entrance"·repelSteps:0(열거 첫 값·0) → «repelSteps 는 1 이상» 거절, 다시 보내자 회복약이 «던전 탈출» 아이템으로 저장됐다.
- *    이름·설명에 탈출·퇴치 낱말이 없으면 escapeTo·repelSteps·repelBelowLead 를 뺀다. repelSteps 0 은 늘 뺀다.
- *  - create_transfer_pair 끝의 doorAt 이 그 끝 x,y 와 같은 칸이면(문앞=문) doorAt 을 뺀다(terra 5/5판이 이 모양으로 처음 거절됐다).
- * 할 일 고리 갈고리 H2(loop/argGuard.ts)가 이보다 먼저 돈다 — 빈 칸 걷기는 H2 의 일반 규칙(스키마 기반)이 하고, 여기는 낱말로만 가르는 것
- * (회복약의 탈출·퇴치 칸)과 거절 뒤 그림 빼고 다시가 남는다. 문앞=문은 H2 가 먼저 걸을 수 있는 쪽으로 옮기고, 못 옮기면 여기서 뺀다. 겹쳐도 무해하다.
+ * 회복약에 딸려 온 탈출·퇴치 칸을 뺀다 — 스키마 칸을 기본값으로 다 채워 보내는 모델이 escapeTo:"entrance"(열거 첫 값)·repelSteps:0 을 실어
+ * 회복약이 «던전 탈출» 아이템으로 저장됐다. 이름·설명에 탈출·퇴치 낱말이 없으면 그 칸을 뺀다. repelSteps 0 은 늘 뺀다.
+ * 다른 도구의 빈 칸·어긋난 칸(트룹의 빈 members, 필드 적의 patrol·graphic, 이동 쌍의 doorAt)은 그 도구가 스스로 읽는다(2026-11-11 B5a).
  */
 const ESCAPE_ITEM_WORD = /탈출|귀환|되돌아|입구로|escape|rope|로프|밧줄/iu;
 const REPEL_ITEM_WORD = /퇴치|기피|쫓|피하|성수|향|repel|ward/iu;
-function cleanSchemaFill(name: string, params: unknown): unknown {
-  if (!params || typeof params !== "object") return params;
-  const args = structuredClone(params) as Record<string, unknown>;
-  if (name === "upsert_troop" && args.troop && typeof args.troop === "object") {
-    const t = args.troop as Record<string, unknown>;
-    if (Array.isArray(t.members) && t.members.length === 0) delete t.members;
-  }
-  if (name === "place_field_enemy") {
-    const behavior = String(args.behavior ?? "");
-    const patrol = args.patrol as Record<string, unknown> | undefined;
-    if (patrol && typeof patrol === "object" && Array.isArray(patrol.directions) && patrol.directions.length === 0) delete patrol.directions;
-    if (patrol !== undefined && behavior !== "patrol" && behavior !== "chase") delete args.patrol;
-    else if (behavior === "chase" && patrol && typeof patrol === "object" && patrol.directions === undefined && !(Number(patrol.length) > 1)) delete args.patrol;
-    // graphic{selectionId:"",query:"",textureKey:"",…} 기본값 채움 → «graphic 이 전투 그림과 다릅니다»(omo-unfinished-1030 forest 확인 판). 고른 그림이 없으면 뺀다 — 도구가 전투 그림에 맞춘다.
-    const g = args.graphic as Record<string, unknown> | undefined;
-    if (g && typeof g === "object" && !String(g.selectionId ?? "").trim() && !String(g.query ?? "").trim() && !String(g.textureKey ?? "").trim()) delete args.graphic;
-  }
-  if (name === "upsert_item" && args.item && typeof args.item === "object") {
-    const it = args.item as Record<string, unknown>;
-    const words = `${String(it.name ?? "")} ${String(it.description ?? "")}`;
-    if (it.escapeTo !== undefined && (it.escapeTo === "" || !ESCAPE_ITEM_WORD.test(words))) delete it.escapeTo;
-    if (it.repelSteps !== undefined && (!(Number(it.repelSteps) >= 1) || !REPEL_ITEM_WORD.test(words))) { delete it.repelSteps; delete it.repelBelowLead; }
-  }
-  if (name === "create_transfer_pair") {
-    for (const k of ["a", "b"] as const) {
-      const e = args[k] as { x?: unknown; y?: unknown; doorAt?: { x?: unknown; y?: unknown } } | undefined;
-      if (e?.doorAt && e.doorAt.x === e.x && e.doorAt.y === e.y) delete e.doorAt;
+function withItemUtilityCleanup(tools: PiToolShape[]): PiToolShape[] {
+  return tools.map((tool) => tool.name !== "upsert_item" ? tool : { ...tool, async execute(id, params, signal) {
+    if (!params || typeof params !== "object") return tool.execute(id, params, signal);
+    const args = structuredClone(params) as Record<string, unknown>;
+    if (args.item && typeof args.item === "object") {
+      const it = args.item as Record<string, unknown>;
+      const words = `${String(it.name ?? "")} ${String(it.description ?? "")}`;
+      if (it.escapeTo !== undefined && (it.escapeTo === "" || !ESCAPE_ITEM_WORD.test(words))) delete it.escapeTo;
+      if (it.repelSteps !== undefined && (!(Number(it.repelSteps) >= 1) || !REPEL_ITEM_WORD.test(words))) { delete it.repelSteps; delete it.repelBelowLead; }
     }
-  }
-  return args;
-}
-function withSchemaFillCleanup(tools: PiToolShape[]): PiToolShape[] {
-  const names = new Set(["upsert_troop", "place_field_enemy", "upsert_item", "create_transfer_pair"]);
-  return tools.map((tool) => !names.has(tool.name) ? tool : { ...tool, async execute(id, params, signal) {
-    const cleaned = cleanSchemaFill(tool.name, params) as typeof params;
-    const result = await tool.execute(id, cleaned, signal);
-    // 필드 적 그림이 전투 그림과 다르면 거절 대신 graphic 을 빼고 다시 — 도구가 «생략하면 자동으로 맞춘다»(같은 거절 두 번으로 전투 항목이 막혔다).
-    const body = (result.content.find((c) => c.type === "text") as { text?: string } | undefined)?.text ?? "";
-    if (tool.name === "place_field_enemy" && /graphic 이 전투 그림과 다릅니다/u.test(body) && cleaned && typeof cleaned === "object" && "graphic" in (cleaned as object)) {
-      const { graphic: _g, ...rest } = cleaned as Record<string, unknown>;
-      const second = await tool.execute(id, rest as typeof params, signal); // 같은 호출 id — 기록(tool_end)이 다시 놓은 성공을 싣게
-      const b2 = (second.content.find((c) => c.type === "text") as { text?: string } | undefined)?.text ?? "";
-      if (!/실행 실패|"ok":false/u.test(b2)) return { ...second, content: [...second.content, { type: "text", text: "[Graphic matched] The graphic you gave differed from the battle picture, so the enemy was placed again without graphic — the field sprite now matches the battle picture (the troop's lead enemy)." }] } as typeof second;
-    }
-    return result;
+    return tool.execute(id, args as typeof params, signal);
   } });
 }
 
