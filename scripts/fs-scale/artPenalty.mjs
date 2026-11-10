@@ -19,7 +19,8 @@ export const PENALTY_PER_FAMILY = 5;
 export const PENALTY_CAP = 10;
 
 const CHARACTER_SHEET = /(^|[-_])(charset[-_]?(actor|people|modern|npc)|actor|people)\d*([-_]|$)|^easyrpg-charset-actor|^oprn-charset|^tex_.*charset_(people|actor)|^shared-.*(bust|people)/iu;
-const MONSTER_ART = /^(generated-enemy-|harness-monster-|easyrpg-monster|monster[-_])/iu;
+// charset-battler-* 는 걷기 칩 사람 그림을 전투용으로 다시 그린 시트(charsetBattlers.ts)라 «NPC 걷기 칩을 몬스터로 쓴 것» 이 아니다.
+const MONSTER_ART = /^(generated-enemy-|harness-monster-|easyrpg-monster|monster[-_]|charset-battler-)/iu;
 
 /** 이 그림 id 가 사람·캐릭터 시트인가(몬스터 그림 접두가 먼저 이긴다). */
 export function isCharacterSheetId(id) {
@@ -58,13 +59,15 @@ export function characterSheetEnemies(doc) {
   const seen = new Set();
   for (const troopId of placedTroopIds(doc)) {
     const troop = troops.get(troopId);
-    const enemyIds = troop?.enemyIds ?? (troop?.members ?? []).map((member) => member.enemyId);
+    const enemyIds = troop?.enemyIds?.length ? troop.enemyIds : (troop?.members ?? []).map((member) => member.enemyId);
     for (const enemyId of enemyIds ?? []) {
       const enemy = enemies.get(enemyId);
       if (!enemy || seen.has(enemyId)) continue;
-      if (isCharacterSheetId(enemy.monsterResourceId)) {
+      // walkChip 이 있으면 전투에는 그 걷기 칩이 선다(monsterResourceId 대신) — 사람 시트를 적으로 쓰는 가장 직접적인 길.
+      const resourceId = enemy.walkChip?.characterResourceId ?? enemy.monsterResourceId;
+      if (enemy.walkChip?.characterResourceId || isCharacterSheetId(resourceId)) {
         seen.add(enemyId);
-        hits.push({ enemyId, name: enemy.name ?? enemyId, resourceId: enemy.monsterResourceId, troopId });
+        hits.push({ enemyId, name: enemy.name ?? enemyId, resourceId, troopId });
       }
     }
   }
@@ -72,14 +75,15 @@ export function characterSheetEnemies(doc) {
 }
 
 function tileDistribution(map) {
+  const set = typeof map.tilesetId === "string" ? map.tilesetId : "";
   const counts = new Map();
   let total = 0;
   for (const [layer, key] of [["l", "lowerTiles"], ["u", "upperTiles"]]) {
     const tiles = map[key];
     if (!Array.isArray(tiles)) continue;
     for (const tile of tiles) {
-      if (typeof tile !== "number" || tile <= 0) continue;
-      const id = `${layer}${tile}`;
+      if (typeof tile !== "number" || tile < 0) continue;
+      const id = `${set}:${layer}${tile}`;
       counts.set(id, (counts.get(id) ?? 0) + 1);
       total += 1;
     }
@@ -99,17 +103,23 @@ function cosine(a, b) {
 
 /** 서로 비슷한 맵 쌍. 시작 맵·참조 프리셋 맵(map_ref_ 접두)은 뺀다. */
 export function similarMapPairs(doc, threshold = SIMILAR_COSINE) {
-  const maps = Object.values(doc.maps ?? {}).filter((map) => Array.isArray(map.lowerTiles) && map.lowerTiles.length > 0
-    && map.id !== doc.startMapId && !String(map.id ?? "").startsWith("map_ref_"));
+  const maps = Object.entries(doc.maps ?? {})
+    .filter(([key, map]) => Array.isArray(map?.lowerTiles) && map.lowerTiles.length > 0 && key !== doc.startMapId && !key.startsWith("map_ref_"))
+    .map(([, map]) => map);
   const dist = maps.map((map) => tileDistribution(map));
   const pairs = [];
+  const partnered = new Set();
   let total = 0;
   for (let i = 0; i < maps.length; i += 1) for (let j = i + 1; j < maps.length; j += 1) {
     total += 1;
     const sim = cosine(dist[i], dist[j]);
-    if (sim >= threshold) pairs.push({ a: maps[i].name ?? maps[i].id, b: maps[j].name ?? maps[j].id, cosine: Math.round(sim * 1000) / 1000 });
+    if (sim >= threshold) {
+      partnered.add(i);
+      partnered.add(j);
+      pairs.push({ a: maps[i].name ?? maps[i].id, b: maps[j].name ?? maps[j].id, cosine: Math.round(sim * 1000) / 1000 });
+    }
   }
-  return { maps: maps.length, totalPairs: total, pairs };
+  return { maps: maps.length, totalPairs: total, pairs, partnered: partnered.size };
 }
 
 /** 게임 하나의 그림 감점. 읽기 전용. */
@@ -126,7 +136,7 @@ export function artPenalty(doc) {
     penalty: Math.min(PENALTY_CAP, families.length * PENALTY_PER_FAMILY),
     families,
     npcChipset: { hits: characterEnemies.length, enemies: characterEnemies.slice(0, 6) },
-    mapLookalike: { maps: similar.maps, similarPairs: similar.pairs.length, extraPairs099: extra.pairs.length, totalPairs: similar.totalPairs, share: Math.round(share * 1000) / 1000, pairs: similar.pairs.slice(0, 6) },
+    mapLookalike: { partnerShare: similar.maps > 0 ? Math.round((similar.partnered / similar.maps) * 1000) / 1000 : 0, maps: similar.maps, similarPairs: similar.pairs.length, extraPairs099: extra.pairs.length, totalPairs: similar.totalPairs, share: Math.round(share * 1000) / 1000, pairs: similar.pairs.slice(0, 6) },
     lines: [
       ...(characterEnemies.length > 0 ? [`art: npc-chipset −${PENALTY_PER_FAMILY} — 적 ${characterEnemies.slice(0, 3).map((hit) => `${hit.name}(${hit.resourceId})`).join(", ")} 이 사람·캐릭터 시트 그림`] : []),
       ...(lookalike ? [`art: map-lookalike −${PENALTY_PER_FAMILY} — 비슷한 맵 쌍 ${similar.pairs.length}/${similar.totalPairs}(코사인 ≥ ${SIMILAR_COSINE}): ${similar.pairs.slice(0, 3).map((pair) => `${pair.a}↔${pair.b}`).join(", ")}`] : []),

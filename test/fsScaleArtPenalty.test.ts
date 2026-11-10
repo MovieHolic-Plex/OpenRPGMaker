@@ -11,8 +11,8 @@ import {
 
 type Doc = Record<string, unknown>;
 
-function map(id: string, tiles: number[], name = id) {
-  return { id, name, width: 10, height: 10, lowerTiles: tiles, upperTiles: Array(tiles.length).fill(-1), events: [] as unknown[] };
+function map(id: string, tiles: number[], name = id, tilesetId = "ts") {
+  return { id, name, tilesetId, width: 10, height: 10, lowerTiles: tiles, upperTiles: Array(tiles.length).fill(-1), events: [] as unknown[] };
 }
 
 const forest = (seed: number) => Array.from({ length: 100 }, (_, i) => 1 + ((i + seed) % 3));
@@ -38,9 +38,15 @@ describe("art penalty — map lookalike", () => {
     expect(art.lines[0]).toContain("map-lookalike");
   });
 
-  it("two similar pairs are not enough", () => {
+  it("one similar pair is not enough", () => {
     const d = doc([map("start", town()), map("a", forest(0)), map("b", forest(1)), map("c", forest(2).map((t) => t + 50))]);
     expect(similarMapPairs(d).pairs.length).toBe(1);
+    expect(artPenalty(d).penalty).toBe(0);
+  });
+
+  it("maps on different tilesets are never alike even when the tile numbers match", () => {
+    const d = doc([map("start", town()), map("a", forest(0), "a", "ts1"), map("b", forest(0), "b", "ts2"), map("c", forest(0), "c", "ts3"), map("d", forest(0), "d", "ts4")]);
+    expect(similarMapPairs(d).pairs.length).toBe(0);
     expect(artPenalty(d).penalty).toBe(0);
   });
 
@@ -93,6 +99,20 @@ describe("art penalty — NPC chipset as monster art", () => {
     expect(art.families).toEqual(["npc-chipset"]);
     expect(art.penalty).toBe(PENALTY_PER_FAMILY);
     expect(art.npcChipset.hits).toBe(1);
+  });
+
+  it("a battler sheet drawn for combat (charset-battler-*) is not NPC art", () => {
+    expect(isCharacterSheetId("charset-battler-actor1-2")).toBe(false);
+    expect(characterSheetEnemies(withEnemy("charset-battler-people3-7"))).toEqual([]);
+  });
+
+  it("penalises an enemy that stands as a walking chip, even when monsterResourceId looks like a monster", () => {
+    const m = map("start", town());
+    m.events = [{ id: "e1", pages: [{ commands: [{ kind: "battleProcessing", troopId: "t1" }] }] }];
+    const d = doc([m], { database: { troops: [{ id: "t1", enemyIds: ["en1"] }], enemies: [{ id: "en1", name: "병사", monsterResourceId: "generated-enemy-imp", walkChip: { characterResourceId: "easyrpg-charset-actor2", characterIndex: 3 } }] } });
+    const art = artPenalty(d);
+    expect(art.families).toEqual(["npc-chipset"]);
+    expect(art.npcChipset.enemies[0].resourceId).toBe("easyrpg-charset-actor2");
   });
 
   it("ignores an enemy no map places", () => {
