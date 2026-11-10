@@ -16,7 +16,7 @@ export interface BlueprintBlocker { readonly id: string; readonly message: strin
 export const BLUEPRINT_CARD = [
   "[Blueprint first — write_blueprint] For a request to make a whole game, write one design sheet for the game with write_blueprint before building places (build verbs are rejected without a blueprint).",
   "- playerGoal: one guiding line for a new player (what leads to the ending). The judge gets only this line and plays the game to the end.",
-  "- steps: the 3–8 step critical path from start to ending. Per step: place (exact name of the map to build) · event (exact name of the event on that map) · action (what the player does) · needs (what opens this step) · gives (what opens the next step: key, switch, affection; the last one is the ending) · feeling (the scene's mood).",
+  "- steps: the 6–8 step critical path from start to ending (spread over 2+ places; each step reads the switch the previous step turned on — the finish gate measures that chain depth). Per step: place (exact name of the map to build) · event (exact name of the event on that map) · action (what the player does) · needs (what opens this step) · gives (what opens the next step: key, switch, affection; the last one is the ending) · feeling (the scene's mood).",
   "- ending: {name, how, feeling}. With several endings, write the critical path for the most basic ending and describe the rest in how.",
   "- After building the places call build_blueprint_path once — the function builds an event per step, uses the previous step's gives as the condition, and makes the last one call the ending (do not match them one by one with upsert_event/define_ending). Give dialogue only via steps[{id,lines}].",
   "- While building, use place and event names exactly as in the blueprint (an unnamed event may use its id in event). If they change, call write_blueprint again to match the real names. The ship check walks this path as data (do the map and event exist, can you walk there from the start, does an earlier step have the event that turns on the condition, does the last event call the ending).",
@@ -512,7 +512,7 @@ export async function designBlueprint(chat: (messages: readonly unknown[], signa
     "너는 RPG 편집기 조수의 설계자다. 사용자 요청으로 게임 하나의 청사진을 JSON 한 덩어리로만 쓴다(설명·코드 울타리 없이).",
     BLUEPRINT_CARD,
     `JSON 모양: ${JSON.stringify(WRITE_BLUEPRINT_SCHEMA)}`,
-    "장소는 이 편집기가 지을 수 있는 것(마을·거리·집·실내 방·던전·동굴)으로, 6곳 이상(끝맺음 관문이 문으로 닿는 맵 6장을 센다 — 장소마다 10×10 이상·사람이나 조사 이벤트 하나). 핵심 경로는 3~8단계(한 장소에 여러 단계를 둘 수 있다), 새 플레이어가 40분 안에 엔딩을 볼 크기로.",
+    "장소는 이 편집기가 지을 수 있는 것(마을·거리·집·실내 방·던전·동굴)으로, 6곳 이상(끝맺음 관문이 문으로 닿는 맵 6장을 센다 — 장소마다 10×10 이상·사람이나 조사 이벤트 하나). 핵심 경로는 6~8단계(장소를 2곳 이상에 나눠 두고, 단계마다 앞 단계가 켠 스위치를 조건으로 읽는다), 새 플레이어가 40분 안에 엔딩을 볼 크기로.",
   ].join("\n");
   let last = "";
   for (let attempt = 0; attempt < 2; attempt++) {
