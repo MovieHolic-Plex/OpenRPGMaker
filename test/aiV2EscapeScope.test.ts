@@ -61,8 +61,8 @@ describe("맵 최소와 갇힌 방 판정이 같은 편이다", () => {
     const p = projectWithExit("감옥 탈출 게임", "감옥에서 탈출한다");
     expect(mapsMinBlocker(p, "감옥 탈출 게임을 만들어 줘")[0]?.message).toContain("/1장");
   });
-  it("«숲에서 탈출» 청사진은 맵 최소 4장을 그대로 요구한다", () => {
+  it("«숲에서 탈출» 청사진은 맵 최소(현재 6장)를 그대로 요구한다", () => {
     const p = projectWithExit("무서운 숲에서 탈출하는 게임 만들어줘", "숲에서 탈출한다");
-    expect(mapsMinBlocker(p, "숲 탈출 게임을 만들어 줘")[0]?.message).toContain("/4장");
+    expect(mapsMinBlocker(p, "숲 탈출 게임을 만들어 줘")[0]?.message).toContain("/6장");
   });
 });

@@ -10,7 +10,7 @@ import { isPassableLanding } from "@/project/collision";
 export const MIN_TILE_KINDS = 6;
 export const MIN_MAP_CELLS = 100;
 /** 끝맺음 관문이 강제하는 세는 맵 수(2026-11-10 오너: 「맵을 가장 우선」). 한 번에 한 단계씩 올린다 — 6, 8 … */
-export const MIN_COUNTED_MAPS = 4;
+export const MIN_COUNTED_MAPS = 6;
 /** 단계 1 권장(강제 아님): 척도 단계 1 목표. 모자라면 최종 보고에 «N장 부족» 한 줄로만 낸다. */
 export const RECOMMENDED_MAPS = 15;
 

@@ -512,7 +512,7 @@ export async function designBlueprint(chat: (messages: readonly unknown[], signa
     "너는 RPG 편집기 조수의 설계자다. 사용자 요청으로 게임 하나의 청사진을 JSON 한 덩어리로만 쓴다(설명·코드 울타리 없이).",
     BLUEPRINT_CARD,
     `JSON 모양: ${JSON.stringify(WRITE_BLUEPRINT_SCHEMA)}`,
-    "장소는 이 편집기가 지을 수 있는 것(마을·거리·집·실내 방·던전·동굴)으로, 3~6곳 안에서. 핵심 경로는 3~8단계, 새 플레이어가 20분 안에 엔딩을 볼 크기로.",
+    "장소는 이 편집기가 지을 수 있는 것(마을·거리·집·실내 방·던전·동굴)으로, 6곳 이상(끝맺음 관문이 문으로 닿는 맵 6장을 센다 — 장소마다 10×10 이상·사람이나 조사 이벤트 하나). 핵심 경로는 3~8단계(한 장소에 여러 단계를 둘 수 있다), 새 플레이어가 40분 안에 엔딩을 볼 크기로.",
   ].join("\n");
   let last = "";
   for (let attempt = 0; attempt < 2; attempt++) {
