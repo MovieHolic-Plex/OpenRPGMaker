@@ -25,6 +25,7 @@ import { fieldApproachRecipe } from "@/project/fieldApproachStyle";
 import { projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
 import { gameHasCombat } from "@/project/combatPresence";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
+import { isStageWrite, type StageWrites } from "./stageWrites";
 import { musicAsked, musicOnly, soundOnly } from "./musicWords";
 
 type Obj = Record<string, unknown>;
@@ -928,7 +929,7 @@ const BATTLE_DATA: Record<"actors" | "classes", readonly string[]> = {
   classes: ["skillIds", "learnedSkills", "battleCommands", "equipmentPermissions"],
 };
 /** 배우·직업의 전투 데이터가 줄었다(요청이 메뉴·화면이 아니라 그 데이터를 지우라고 했을 때만 정상). */
-export function battleDataEmptied(before: Project, after: Project, task: string): string[] {
+export function battleDataEmptied(before: Project, after: Project, task: string, writes?: StageWrites): string[] {
   const deleteAsk = /(스킬|기술|장비|직업|전투\s*명령|skill|equip)[^.!?\n]{0,10}(지워|지우|없애|삭제|비워|빼앗|못\s*쓰게|배우지)/iu.test(task)
     && !/메뉴|탭|ESC|화면|창에서|창의|HUD|menu/iu.test(task);
   if (deleteAsk) return [];
@@ -940,7 +941,8 @@ export function battleDataEmptied(before: Project, after: Project, task: string)
       if (!prev) continue;
       // 전투 없는 게임에서 공장 기본 장비(검·방패·갑옷…)만 뺀 것은 장르 기본값이다 — 「되돌려라」 하지 않는다(J88: 그 말에 조수가 검·방패를 다시 넣었다).
       const lost = BATTLE_DATA[section].filter((k) => fill(prev[k]) > 0 && fill(r[k]) < fill(prev[k]))
-        .filter((k) => !(section === "actors" && k === "initialEquipment" && !gameHasCombat(after) && onlyFactoryGearRemoved(prev[k], r[k])));
+        .filter((k) => !(section === "actors" && k === "initialEquipment" && !gameHasCombat(after) && onlyFactoryGearRemoved(prev[k], r[k])))
+        .filter((k) => !isStageWrite(writes, section, r, k));
       if (!lost.length) continue;
       out.push(`[게임 검사 부작용] 기존 ${section === "actors" ? "배우" : "직업"} 「${String(r.name ?? r.id)}」의 전투 데이터(${lost.join(",")})를 비웠다 — 요청은 그 데이터를 지우라는 것이 아니다. 메뉴·화면에서 숨기는 것은 데이터 지우기가 아니다: 원래 값으로 되돌리고(${section === "actors" ? "upsert_actor" : "upsert_class"}), 메뉴 항목은 configure_field_menu{preset:'story'} 로, 체력 표시는 set_field_hud{off:true} 로 뺀다.`);
     }
@@ -990,7 +992,7 @@ export function placementContentProblems(before: Project, after: Project): strin
 }
 
 /** 요청과 상관없이 바뀌면 안 되는 것 — 기존 NPC 의 그림·이름이 요청 없이 바뀌었는지(고치기 요청에서 흔한 부작용). */
-export function unaskedChanges(before: Project, after: Project, task: string): string[] {
+export function unaskedChanges(before: Project, after: Project, task: string, writes?: StageWrites): string[] {
   const artAsk = /그림|외형|모습|얼굴|옷|칩|graphic|sprite|face/iu.test(task);
   const out: string[] = [];
   if (!artAsk) for (const map of Object.values(before.maps)) {
@@ -1023,7 +1025,7 @@ export function unaskedChanges(before: Project, after: Project, task: string): s
   // 배우·직업의 전투 데이터(배울 기술·처음 장비·전투 명령·장비 허용)를 비웠다 — 「메뉴의 스킬·장비 빼 줘」를 데이터 지우기로 흉내 냈다
   // (2026-10-25 장난감 가게 고치기 4턴: 메뉴 도구가 안 실려 upsert_actor·upsert_class 로 주인공 기술·직업을 비웠다. 요청에 「파티」「스킬」이 있어
   // 아래 일반 검사의 낱말 면제에 걸려 못 잡았다). 메뉴·화면에서 숨기는 요청이면 데이터는 그대로 둔다 — 낱말 면제 없이 본다.
-  out.push(...battleDataEmptied(before, after, task));
+  out.push(...battleDataEmptied(before, after, task, writes));
   // 이미 있던 데이터(아이템·장비·적·기술·직업)를 요청이 그 이름을 말하지 않았는데 고쳤다 — 값·능력치가 게임 전체에서 바뀐다(2026-10-24 스위트).
   const bdb = before.database as unknown as Record<string, unknown>, adb = after.database as unknown as Record<string, unknown>;
   if (!artAsk) for (const section of ["items", "weapons", "armors", "enemies", "skills", "classes", "actors"]) {
@@ -1041,14 +1043,8 @@ export function unaskedChanges(before: Project, after: Project, task: string): s
       if (section === "enemies" && /보스|적|몬스터|약점|약하|약해|내성|강하게|속성|난이도|어렵|쉽|밸런스|이기|체력|공격력|boss|enemy|weak/iu.test(task)) continue;
       if (section === "skills" && /기술|스킬|마법|위력|MP|마나|공격|회복|skill|spell/iu.test(task)) continue;
       if ((section === "items" || section === "weapons" || section === "armors") && /가격|값|상점|가게|아이템|장비|무기|방어구|갑옷|회복약|포션|price|item|weapon|armor/iu.test(task)) continue;
-      const keys = Object.keys({ ...prev, ...r }).filter((k) => JSON.stringify(prev[k]) !== JSON.stringify(r[k]));
-      // 장르 기본값(genreDefaults.ts): 판타지 기본 주인공 칩을 현대 칩으로 바꾼 것은 요청한 무대에 맞춘 것이다.
-      // 전투 없는 게임에서 공장 기본 장비만 뺀 것(stripFactoryHeroGear)도 같은 장르 기본값이다 — 이 줄이 initialEquipment 를 몰라 「되돌려라」가 떠서
-      // 두 모델 모두 할 일을 「주인공이 바뀌었는데 원래 값을 몰라 못 되돌린다」로 막고 사용자에게 문제라고 보고했다(2026-10-31 asst-parity 마왕 편의점 opus·terra).
-      const genreDefaultKey = (k: string) => ["characterResourceId", "characterIndex", "faceResourceId", "battleCharacterResourceId", "name", "nickname"].includes(k)
-        || (k === "initialEquipment" && !gameHasCombat(after) && onlyFactoryGearRemoved(prev[k], r[k]));
-      if (section === "actors" && keys.every(genreDefaultKey)
-        && (prev.characterResourceId === undefined || prev.characterResourceId === "easyrpg-charset-actor1") && /^oprn-charset-modern/u.test(String(r.characterResourceId ?? ""))) continue;
+      const keys = Object.keys({ ...prev, ...r }).filter((k) => JSON.stringify(prev[k]) !== JSON.stringify(r[k]) && !isStageWrite(writes, section, r, k));
+      if (!keys.length) continue;
       out.push(`[게임 검사 부작용] 요청에 없는 기존 ${section} 「${name || String(r.id)}」 를 바꿨다(${keys.slice(0, 4).join(",")}) — 게임 전체 값이 바뀐다. 요청과 상관없는 변경이면 되돌리고, 요청을 이루려고 바꾼 것이면 그대로 두고 보고에 무엇을 왜 바꿨는지 적는다(요청을 이룬 변경을 되돌리지 않는다).`);
     }
   }

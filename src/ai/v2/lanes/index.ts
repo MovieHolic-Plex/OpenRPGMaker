@@ -6,6 +6,7 @@ import type { V2Session } from "../verbs";
 import type { RecordingBuildRun } from "../buildRun";
 import type { LaneCtx, LaneScope, LaneStage } from "./types";
 import * as registered from "./stages";
+import { recordStageWrites } from "../stageWrites";
 
 export type { LaneCtx, LaneScope, LaneStage } from "./types";
 
@@ -31,6 +32,10 @@ export const LANE_STAGES: readonly LaneStage[] = orderedLaneStages();
 
 /** 마감 단계를 모두 돌고 한 일 목록을 돌려준다(기록·체크포인트는 부르는 쪽). */
 export function runLaneStages(env: PiAssistantV2Env, session: V2Session, run: RecordingBuildRun): string[] {
+  return recordStageWrites(() => env.ctx.project, session.stageWrites, () => runLaneStagesRecorded(env, session, run));
+}
+
+function runLaneStagesRecorded(env: PiAssistantV2Env, session: V2Session, run: RecordingBuildRun): string[] {
   const ctx: LaneCtx = { env, session, run, notes: [], map: {} };
   laneMs.clear();
   for (const stage of LANE_STAGES) if (stage.scope === "project") timedLane(stage.id, () => stage.run(ctx, ""));
