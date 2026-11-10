@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
-import { restoreEventFromBefore } from "@/ai/v2/restoreEvent";
+import { restoreEventFromBefore } from "@/ai/v2/story/restoreEvent";
 
 const withEvent = (): Project => {
   const p = createBlankProject() as Project;

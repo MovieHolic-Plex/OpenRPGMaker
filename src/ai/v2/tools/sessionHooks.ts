@@ -6,7 +6,7 @@ import type { GameBlueprintPlace } from "@/project/gameBlueprint";
 import type { PlaceBuildResult, PlaceRecord, PlaceSpec } from "../types";
 import type { Project } from "@/project/types";
 import { DEAD_END_PREFIX } from "../place/deadEndRoads";
-import { blueprintMapFor } from "../blueprintPath";
+import { blueprintMapFor } from "../story/blueprintPath";
 import { populateWorldPlace } from "../place/worldPopulate";
 import { repairEventReach } from "../eventReach";
 import { runLaneStages } from "../lanes";

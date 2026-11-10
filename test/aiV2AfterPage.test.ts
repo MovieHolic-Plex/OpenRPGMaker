@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { createBuildRun } from "@/ai/v2/buildRun";
-import { buildEvent } from "@/ai/v2/events";
+import { buildEvent } from "@/ai/v2/story/events";
 import { v2ExtraToolNames } from "@/ai/v2/request/readers";
 import type { Project } from "@/project/types";
 

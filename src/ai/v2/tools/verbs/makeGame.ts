@@ -7,7 +7,7 @@ import { localizeCultureSpec } from "../../place/builders/joseon";
 import { fixPlayerStart } from "../../checks";
 import type { PersonSpec, PlaceBuildResult, PlaceRecord, PlaceSpec } from "../../types";
 import { buildPeople } from "../../people";
-import { buildEvent } from "../../events";
+import { buildEvent } from "../../story/events";
 import { eventBeats, isInside, orderPlaces, walkGame, type GameSpec } from "../../makeGame";
 import { gateFor, settleDungeonGates } from "../../dungeonGates";
 import { arrivalEntrance } from "../../place/dungeonParts";

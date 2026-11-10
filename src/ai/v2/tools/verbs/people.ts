@@ -2,9 +2,9 @@
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { EventSpec, PersonSpec } from "../../types";
 import { buildPeople } from "../../people";
-import { buildEvent } from "../../events";
-import { buildScene, SCENE_SCHEMA, type SceneSpec } from "../../scene";
-import { buildBossEncounter, buildEndingScene, type BossEncounterSpec, type EndingSceneSpec } from "../../sceneVerbs";
+import { buildEvent } from "../../story/events";
+import { buildScene, SCENE_SCHEMA, type SceneSpec } from "../../story/scene";
+import { buildBossEncounter, buildEndingScene, type BossEncounterSpec, type EndingSceneSpec } from "../../story/sceneVerbs";
 import { POINT } from "../placeSchema";
 import type { VerbContext } from "../context";
 
