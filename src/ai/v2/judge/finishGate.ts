@@ -1,6 +1,6 @@
 // 끝맺음 관문 — 모델이 «끝» 이라 할 때 남은 문제를 모은다: 고칠 수 있는 장소 문제(비평·기계 검사), 게임 검사·출하 차단 줄, 자동 플레이, 그림 생성 시도.
 // 할 일 고리(loop/gates.ts)가 이 문제들을 gate·critic 항목으로 덧붙인다. 2026-11-11 리팩토링 R2: verbs.ts 끝에 있던 것을 옮겼다.
-import { sceneCraftProblems } from "../sceneCraft";
+import { sceneCraftProblems } from "./sceneCraft";
 import { shipBlockers } from "../shipChecks";
 import { buildsWholeGame, wantsWholeGame } from "../request/scope";
 import type { PiAssistantV2Env } from "../env";
@@ -8,9 +8,9 @@ import { type StageWrites } from "../stageWrites";
 import type { Project } from "@/project/types";
 import { wantsStoreTools } from "../request/toolGroups";
 import { audioOnly } from "../request/audio";
-import { gameContentProblems, unaskedChanges } from "../gameChecks";
-import { AUTOPLAY_GATE_PREFIX, playProblems } from "../playCheck";
-import { combatProblems } from "../combatChecks";
+import { gameContentProblems, unaskedChanges } from "./gameChecks";
+import { AUTOPLAY_GATE_PREFIX, playProblems } from "./playCheck";
+import { combatProblems } from "./combatChecks";
 import { fieldBattleStrain } from "../pathBattleBudget";
 import { placeLayoutProblems } from "../place/builders/placeLayout";
 import { V2Session } from "../turn/session";

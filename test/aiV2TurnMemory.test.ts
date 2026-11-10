@@ -3,12 +3,12 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { continuationPrompt } from "@/ai/v2/loop/continuation";
-import { syncGateItems } from "@/ai/v2/loop/gates";
+import { syncGateItems } from "@/ai/v2/judge/gates";
 import { indexProject } from "@/ai/v2/loop/refs";
 import { TodoStore } from "@/ai/v2/loop/todoStore";
 import { carryOver, reviewKey, stampTargets } from "@/ai/v2/turn/carryOver";
 import { handCarriedBlockers, loadVqaBook, noteVqaRound, saveVqaBook, vqaUnofferedBlockers, type VqaFinding } from "@/ai/v2/turn/vqaItems";
-import type { VqaDefect, VqaRound } from "@/ai/v2/vqa";
+import type { VqaDefect, VqaRound } from "@/ai/v2/judge/vqa";
 
 const project = (() => { const p = createBlankProject() as Project; p.maps[p.startMapId]!.name = "황금궁 정원"; return p; })();
 const mapId = project.startMapId;

@@ -4,8 +4,8 @@
 // - showEmote/showAnimation 의 'this' 대상.
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { gameContentProblems } from "@/ai/v2/gameChecks";
-import { runTodoCheck } from "@/ai/v2/todo/checks";
+import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
+import { runTodoCheck } from "@/ai/v2/judge/todoChecks";
 import { buildGameApiDts, scriptApiCheatSheet } from "@/project/script/dts";
 import type { Command, GameEvent, Project } from "@/project/types";
 

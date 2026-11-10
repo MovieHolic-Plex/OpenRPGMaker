@@ -1,10 +1,10 @@
 // 관문·비평·화면 검수가 짚은 것을 할 일 항목으로 맞춘다(옛 «한 바퀴 더» 글 대신 — 2026-10-30 omo 고리).
 // 같은 문제(열쇠)는 새 항목을 만들지 않고, 닫힌 항목이면 다시 연다(시도 +1). 사라진 문제의 항목은 함수가 닫는다.
-import type { V2GateProblem } from "../judge/finishGate";
-import { AUTOPLAY_GATE_PREFIX } from "../playCheck";
-import { TODO_MAX_ATTEMPTS, isOpen, type TodoStore } from "./todoStore";
+import type { V2GateProblem } from "./finishGate";
+import { AUTOPLAY_GATE_PREFIX } from "./playCheck";
+import { TODO_MAX_ATTEMPTS, isOpen, type TodoStore } from "../loop/todoStore";
 import type { TodoItem } from "../todo/types";
-import type { ProjectIndex } from "./refs";
+import type { ProjectIndex } from "../loop/refs";
 
 /** 출하 차단 중 «편집기 기본값이 남았다» 계열(shipChecks EDITOR_DEFAULT_INVENTORY 의 그림·오프닝·제목) — 앞 턴 결과라는 이유로 면제하지 않는다. */
 const SHIP_DEFAULT_LEAK = /^\[출하 차단 (?:ending-bg|ending-screen|title-image|title-name|bundled-picture|art-generation|opening|opening-music|opening-missing|maps-min|quests-min|act-depth-min)\]/u;

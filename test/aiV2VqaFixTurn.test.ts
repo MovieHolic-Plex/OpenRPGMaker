@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseVqaReply, vqaDefectLine, type VqaShot } from "@/ai/v2/vqa";
+import { parseVqaReply, vqaDefectLine, type VqaShot } from "@/ai/v2/judge/vqa";
 
 const shots: VqaShot[] = [
   { where: "타이틀 화면 배경", kind: "title", ref: "res_title", image: "data:," },

@@ -12,7 +12,7 @@
 import type { GameEvent, Project } from "@/project/types";
 import type { RuntimeEventView } from "@/project/runtimeEventState";
 import { objectiveTargetViews } from "@/player/objectiveTarget";
-import { isObjectiveCommand } from "./discoverability";
+import { isObjectiveCommand } from "./judge/discoverability";
 import { repairEventReach, unreachableEvents } from "./eventReach";
 import type { BuildRun } from "./types";
 

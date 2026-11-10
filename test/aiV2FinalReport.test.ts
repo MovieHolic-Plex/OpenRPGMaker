@@ -1,6 +1,6 @@
 // 완료 판정(2026-11-11 J-B2): 화면 검수의 다듬기·모델이 받아 보지 못한 항목·장부는 완료를 막지 않는다. 그 밖의 막힘은 막는다.
 import { describe, expect, it } from "vitest";
-import { todoReport } from "@/ai/v2/finalReport";
+import { todoReport } from "@/ai/v2/judge/finalReport";
 import { TodoStore } from "@/ai/v2/loop/todoStore";
 
 function storeWith(vqa: { severity?: "polish"; offered?: boolean; by?: "model" | "auto" }[], extra?: "gate-blocked"): TodoStore {

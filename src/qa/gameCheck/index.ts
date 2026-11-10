@@ -1,6 +1,6 @@
 // 모델 없는 게임 검사기 입구. `scripts/qa-game/check.mts` 와 테스트가 부른다.
 //
-// 오프라인 QA 도구다. 조수 v2 끝맺음 관문은 이 검사의 자동 플레이 결과(autoplay-failed)만 읽어 쓴다(src/ai/v2/playCheck.ts).
+// 오프라인 QA 도구다. 조수 v2 끝맺음 관문은 이 검사의 자동 플레이 결과(autoplay-failed)만 읽어 쓴다(src/ai/v2/judge/playCheck.ts).
 
 import type { Project } from "@/project/types";
 import { simulateBattle } from "@/battle/simulate";

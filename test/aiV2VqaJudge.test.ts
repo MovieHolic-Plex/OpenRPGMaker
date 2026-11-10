@@ -6,7 +6,7 @@ import type { Project } from "@/project/types";
 import { TodoStore } from "@/ai/v2/loop/todoStore";
 import { editorDefaultsLeft } from "@/ai/v2/shipChecks";
 import { closeVqaUnchanged, noteVqaRound, vqaLedgerLines, vqaUnofferedBlockers, type VqaFinding } from "@/ai/v2/turn/vqaItems";
-import { reviewVqaRound, vqaClassify, vqaDefectLine, vqaFixCall, vqaSameDefect, vqaShotPlan, type VqaDefect, type VqaRound } from "@/ai/v2/vqa";
+import { reviewVqaRound, vqaClassify, vqaDefectLine, vqaFixCall, vqaSameDefect, vqaShotPlan, type VqaDefect, type VqaRound } from "@/ai/v2/judge/vqa";
 
 const START_WHERE = "맵 «별샘 오아시스» (44×36칸 · 시작 맵 · 주인공은 게임에서만 그려짐, 시작 칸 19,35)";
 const onMap = (ref: string, what: string, severity: VqaDefect["severity"] = "polish", where = `맵 «${ref}» (20×15칸) · 어딘가`): VqaDefect => ({ where, what, severity, target: { kind: "map", ref } });
