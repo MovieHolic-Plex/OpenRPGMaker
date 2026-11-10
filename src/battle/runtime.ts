@@ -1670,6 +1670,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     for (const partner of comboPartners(actor, command)) {
       partner.gauge = 0;
       gaugeCycleActed.add(partner.id);
+      // 연계 대기에서 풀려 「이어 받을 차례」로 남은 동료도 이 연계로 차례를 썼다 — 다음 차례는 새 차례라 차례 시작 처리(지속 피해 등)를 받는다.
+      resumedFromHold.delete(partner.recordId);
     }
     // 사이클 계수는 효과 적용 뒤에 — 이번 행동으로 쓰러진 배틀러는 대기 목록에서 빠진다.
     applyTroopEvents(() => finishGaugeActorCommand(actor), markGaugeActionCycle(actor));
