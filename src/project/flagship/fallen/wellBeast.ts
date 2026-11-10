@@ -171,9 +171,10 @@ export function wellData(project: Project, exec: Exec): void {
     id: FS2_WELL_BEAST_ENEMY, name: "우물 밑 눈먼 영주", level: 18, monsterResourceId: "generated-enemy-golem-clay", battleScalePercent: 125,
     collapseEffect: "bossSink", hideHp: true,
     // 숨은 보스 — Lv14 두 사람 기준 시뮬 80판(scripts/qa/zz-well-beast-sim.mts)으로 맞춘 값. 민첩은 몇 포인트에도 승률이 크게 흔들린다.
-    // 2026-11-10 fs-boss-hide: 약점을 글·꼬리표로 알려 주지 않게 되면서(처음 하는 사람은 피해 숫자로 알아낸다) HP 7280 → 3640.
-    //   리드 기준 = 아이템을 들고 처음 싸우며 숫자로 배우는 사람 25~40%(200판 26.5%), 지고 다시 3번 85% 이하(71%).
-    stats: { maxHp: 3640, maxMp: 0, attack: 298, defense: 74, mind: 153, agility: 56 },
+    // 2026-11-10 fs-boss-hide: 약점을 글·꼬리표로 알려 주지 않게 되면서(처음 하는 사람은 피해 숫자로 알아낸다) HP 7280 → 2184(0.30배).
+    //   리드 기준 = 아이템을 들고 처음 싸우며 숫자로 배우는 사람 25~40%(200판 33%), 지고 다시 3번 100% 미만(95%).
+    //   관통상 무효(아래 stateRates)와 함께 잰 값이다 — 관통상이 걸리면 찌르기 뒤 마법 3배로 훨씬 쉽다.
+    stats: { maxHp: 2184, maxMp: 0, attack: 298, defense: 74, mind: 153, agility: 56 },
     skillIds: ["skill_attack", SKILL_BITE, SKILL_TAIL, SKILL_SONG, SKILL_SHELL, SKILL_MUD, SKILL_MOLT, SKILL_ROAR, SKILL_ECHO, SKILL_FLOOD],
     actions: [
       // 1페이즈(아가미 노래가 리듬의 중심 — 석판 「셋째 숨마다 노래」): 2·5·8…번째 차례에 노래를 모은다.
@@ -194,9 +195,11 @@ export function wellData(project: Project, exec: Exec): void {
       act(SKILL_TAIL, 6, P2),
     ],
     // 아가미가 젖은 물짐승 — 번개 두 배, 불은 반감, 물은 흡수 가까이. 수면·정지·암흑은 안 먹는다(눈이 없다).
-    // 어둠도 반감 — 엘레나 중력구(어둠, 위력 92)가 번개와 비슷한 숫자(270 대 285)를 내서 숫자만 보고는 약점을 못 찾았다. 반감하면 번개가 다음 큰 숫자의 1.9배.
+    // 어둠도 반감 — 엘레나 중력구(어둠, 위력 92)가 번개와 비슷한 숫자(270 대 285)를 내서 숫자만 보고는 약점을 못 찾았다.
     elementRates: { thunder: "A", fire: "D", water: "E", dark: "D" },
-    stateRates: { state_sleep: "E", state_stop: "E", state_blind: "E", state_paralysis: "D", state_poison: "D", state_wet: "E", state_silence: "E" },
+    // 관통상 무효 — 1막 「다른 적은 관통상에 걸리지 않는다」(act1Finale.ts) 를 이 upsert 가 덮어써 빠졌었다. 빠지면 돌진 찌르기 뒤 모든 마법이 3배라
+    // 가장 큰 숫자가 번개가 아니라 그때 쓴 마법(주로 얼음 폭풍)이 된다.
+    stateRates: { state_fs_pierced: "E", state_sleep: "E", state_stop: "E", state_blind: "E", state_paralysis: "D", state_poison: "D", state_wet: "E", state_silence: "E" },
     rewards: { exp: 1800, gold: 600, dropRatePercent: 0, drops: [] },
   } });
 
