@@ -1060,6 +1060,20 @@
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-chip.is-active { background: var(--shop-accent); border-color: var(--shop-accent); color: rgba(26, 20, 48, 1); text-shadow: none; }
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-chip.is-active .runtime-shop-chip-count { color: rgba(26, 20, 48, 0.72); }
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-list { gap: 0; padding: 0; scrollbar-width: none; }
+/* 목록이 창보다 길면 위·아래로 더 있다는 화살표(keepWholeRows marks → data-more-*). 스크롤바 없는 창이라 이것이 없으면
+   20개 중 6개만 보여도 더 있는 줄 모른다(fs-vqa-loop 2회차). 행 자리를 빼앗지 않게 검친 자리에 겹쳐 띄운다. */
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-list-panel { position: relative; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-list-panel[data-more-above]::before,
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-list-panel[data-more-below]::after {
+  position: absolute;
+  right: 0.6em;
+  color: var(--shop-accent);
+  font-size: var(--shop-text-small);
+  line-height: 1;
+  pointer-events: none;
+}
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-list-panel[data-more-above]::before { content: "▲"; top: 0.4em; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-list-panel[data-more-below]::after { content: "▼"; bottom: 0.2em; }
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row {
   /* 가격 칸은 3em 고정이 아니라 내용 폭 — 「180G」·네 자리 가격이 고정 칸을 넘고 이름 칸을 더 좁혀 「상급 회…」로 잘렸다(1.36 VQA #3). */
   grid-template-columns: var(--shop-art-row) minmax(0, 1fr) auto auto;

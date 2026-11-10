@@ -83,5 +83,7 @@ export const ICE_SPOTS = {
   cave: [{ x: 45, y: 10 }, { x: 46, y: 10 }] as Cell[],
   // 서리늑대 — 서쪽 눈 전나무 숲 가장자리. 박쥐 떼 — 언 호수 위. 늑대와 박쥐 — 동쪽 거대 짐승 뼈 벌판.
   wolves: { x: 20, y: 40 } as Cell, bats: { x: 24, y: 17 } as Cell, mixed: { x: 58, y: 44 } as Cell,
+  // 서리예티 — 뼈 벌판 북쪽 끝(얼음 굴로 가는 길목).
+  yeti: { x: 52, y: 37 } as Cell,
   save: { x: 33, y: 41 } as Cell,
 };

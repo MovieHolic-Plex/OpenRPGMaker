@@ -16,7 +16,7 @@ export interface BlueprintBlocker { readonly id: string; readonly message: strin
 export const BLUEPRINT_CARD = [
   "[Blueprint first — write_blueprint] For a request to make a whole game, write one design sheet for the game with write_blueprint before building places (build verbs are rejected without a blueprint).",
   "- playerGoal: one guiding line for a new player (what leads to the ending). The judge gets only this line and plays the game to the end.",
-  "- steps: the 3–8 step critical path from start to ending. Per step: place (exact name of the map to build) · event (exact name of the event on that map) · action (what the player does) · needs (what opens this step) · gives (what opens the next step: key, switch, affection; the last one is the ending) · feeling (the scene's mood).",
+  "- steps: the 6–8 step critical path from start to ending (spread over 2+ places; each step reads the switch the previous step turned on — the finish gate measures that chain depth). Per step: place (exact name of the map to build) · event (exact name of the event on that map) · action (what the player does) · needs (what opens this step) · gives (what opens the next step: key, switch, affection; the last one is the ending) · feeling (the scene's mood).",
   "- ending: {name, how, feeling}. With several endings, write the critical path for the most basic ending and describe the rest in how.",
   "- After building the places call build_blueprint_path once — the function builds an event per step, uses the previous step's gives as the condition, and makes the last one call the ending (do not match them one by one with upsert_event/define_ending). Give dialogue only via steps[{id,lines}].",
   "- While building, use place and event names exactly as in the blueprint (an unnamed event may use its id in event). If they change, call write_blueprint again to match the real names. The ship check walks this path as data (do the map and event exist, can you walk there from the start, does an earlier step have the event that turns on the condition, does the last event call the ending).",
@@ -51,6 +51,16 @@ export function parseBlueprintArgs(args: unknown, request: string, now = new Dat
   } catch (error) {
     return { error: error instanceof Error ? error.message : String(error) };
   }
+}
+
+/** 처음 쓴 청사진이 맵 관문(6장)·깊이 관문(5)의 최소 입력에 못 미치면 이유 한 줄, 아니면 undefined. 서로 다른 장소 2곳 미만 또는 단계 6 미만. */
+export const MIN_BLUEPRINT_PLACES = 2;
+export const MIN_BLUEPRINT_STEPS = 6;
+export function thinBlueprintReason(bp: GameBlueprint): string | undefined {
+  const places = [...new Set(bp.steps.map((step) => norm(step.place)))].filter(Boolean);
+  if (places.length >= MIN_BLUEPRINT_PLACES && bp.steps.length >= MIN_BLUEPRINT_STEPS) return undefined;
+  const first = bp.steps[0]?.place ?? "장소";
+  return `청사진이 ${bp.steps.length}단계·장소 ${places.length}곳이다 — 끝맺음 관문은 문으로 닿는 맵 6장과 이야기 사슬 깊이 5(청사진 6단계)를 센다. 청사진을 걸지 않았다. write_blueprint 를 한 번 더 부르되 steps 는 6~8개, place 는 서로 다른 장소 3곳 이상(예: 「${first} 앞」·「${first} 안쪽」·「지하 통로」처럼 나눈다), 단계마다 event 는 아직 없는 새 이름으로 쓴다.`;
 }
 
 export function blueprintPin(project: Project): string[] {
@@ -318,9 +328,15 @@ export function battleStepBypass(project: Project, ev: GameEvent): string | unde
 // 왜(2026-10-29 mt3 flash 방탈출): 밀실 남쪽 틈에 시작 «빈 맵»으로 가는 이동 칸이 조건 없이 남아, 잠긴 방인데 걸어서 나갔다.
 // 빈 시작 맵 은퇴(blankStart.ts)는 자리표시 맵만 치우므로, 장소 맵이 아니면서 그림이 있는 맵(옛 마을·현관)으로 가는 출구는 못 잡는다.
 
+// 왜(2026-11-10 link 측정 forest-0001): 단독 «탈출» 은 «숲에서 탈출»·«성에서 탈출» 같은 열린 맵 게임도 잡았다. 그러면 sealEscapeExits 가 모델이 막
+// create_transfer_pair 로 만든 출구(시작 맵 → 새벽 숲 가장자리)를 «조건 없이 나가는 이동» 으로 지워 세는 맵이 1/4 로 돌아갔다(6판 모두 방탈출로 판정).
+// 단독으로 갇힌 방인 낱말은 shipChecks 의 한 방 면제(ONE_ROOM_GAME: 방탈출·밀실)와 같은 것만 둔다 — «갇힌 공주»·«감옥에서 동료 구출» 같은 열린 맵 이야기는 «탈출» 과 함께일 때만 센다.
+const ENCLOSED_WORDS = /방\s*탈출|밀실|잠긴\s*방|escape\s*room|locked\s*room/iu;
+const ENCLOSURE_NOUN = /(?:^|[^가-힣])(?:방|교실|감옥|지하실|저택|별장|병실|창고|엘리베이터|갇힌|갇혀)(?![가-힣]*[법향식])(?=[을를이가은는에서의으로와과\s]|$)/u;
 /** 청사진이 갇힌 방을 빠져나가는 게임인가(엔딩 = 잠긴 문 열기). */
 export function isEscapeBlueprint(bp: GameBlueprint): boolean {
-  return /방\s*탈출|탈출|밀실|갇힌|갇혀|잠긴\s*방|escape|locked\s*room/iu.test([bp.playerGoal, bp.ending.name, bp.ending.how, bp.request ?? ""].join(" "));
+  const text = [bp.playerGoal, bp.ending.name, bp.ending.how, bp.request ?? ""].join(" ");
+  return ENCLOSED_WORDS.test(text) || (/탈출|escape/iu.test(text) && ENCLOSURE_NOUN.test(text));
 }
 /** 조건 없이 열리는 페이지에서 청사진 장소가 아닌 맵으로 가는 이동. */
 export interface EscapeLeak { readonly mapId: string; readonly eventId: string; readonly x: number; readonly y: number; readonly toMapId: string }
@@ -506,7 +522,7 @@ export async function designBlueprint(chat: (messages: readonly unknown[], signa
     "너는 RPG 편집기 조수의 설계자다. 사용자 요청으로 게임 하나의 청사진을 JSON 한 덩어리로만 쓴다(설명·코드 울타리 없이).",
     BLUEPRINT_CARD,
     `JSON 모양: ${JSON.stringify(WRITE_BLUEPRINT_SCHEMA)}`,
-    "장소는 이 편집기가 지을 수 있는 것(마을·거리·집·실내 방·던전·동굴)으로, 3~6곳 안에서. 핵심 경로는 3~8단계, 새 플레이어가 20분 안에 엔딩을 볼 크기로.",
+    "장소는 이 편집기가 지을 수 있는 것(마을·거리·집·실내 방·던전·동굴)으로, 6곳 이상(끝맺음 관문이 문으로 닿는 맵 6장을 센다 — 장소마다 10×10 이상·사람이나 조사 이벤트 하나). 핵심 경로는 6~8단계(장소를 2곳 이상에 나눠 두고, 단계마다 앞 단계가 켠 스위치를 조건으로 읽는다), 새 플레이어가 40분 안에 엔딩을 볼 크기로.",
   ].join("\n");
   let last = "";
   for (let attempt = 0; attempt < 2; attempt++) {

@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell matches the current brown hawk design, and idle_a/b/c show visible wing and body breathing. The attack cell is a clear talons-first lunge that looks different from the hit recoil, dead lies flat, the pixels are crisp with no fringe, and scale is consistent. One mismatch: the brief calls the monster 재까마귀, but the strip is labelled 매 (bird-hawk). The art still matches the reference image.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

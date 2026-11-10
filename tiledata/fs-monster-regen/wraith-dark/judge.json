@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell shows the same grey hooded reaper with yellow eyes and scythe, and idle_a/b/c have small but visible cloak and pose shifts. The attack cell (sheet cell 6) is a clear forward scythe lunge, distinct from the squinting lean-back hit, and dead lies flat; minor nits: the breathing is subtle and the attack cell's left cloak edge sits close to the cell border, though nothing is cut off.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

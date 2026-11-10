@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { allFamilies, familyProblems } from './families';
+import { baseFamilies, familyProblems } from './families';
 import type { Setup } from './matrixNativeSpec';
 
 export const SPEC_500_PATH = 'harness-data/assistant-capability/command-matrix-500.json';
@@ -31,7 +31,7 @@ export type Spec500 = {
 };
 
 export function buildSpec500(): Spec500 {
-  const families = allFamilies();
+  const families = baseFamilies();
   const commands: Spec500Row[] = [];
   for (const family of families) {
     for (const variant of family.variants) {
@@ -61,7 +61,7 @@ export function buildSpec500(): Spec500 {
 }
 
 export function spec500Problems(spec: Spec500): string[] {
-  const problems = familyProblems();
+  const problems = familyProblems(baseFamilies());
   const ids = new Set<string>();
   for (const row of spec.commands) {
     if (ids.has(row.id)) problems.push(`행 id 중복: ${row.id}`);

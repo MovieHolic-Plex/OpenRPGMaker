@@ -23,8 +23,9 @@ import { romanceCompletionGaps } from "@/qa/gameCheck/romance";
 import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, repeatedDayDialogue, lingeringHeavyTints } from "./discoverability";
 import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
-import { strayStepCopies, walkBlueprint } from "./blueprint";
-import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS } from "./mapCount";
+import { isEscapeBlueprint, strayStepCopies, walkBlueprint } from "./blueprint";
+import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS, planLinks } from "./mapCount";
+import { MIN_ACT_DEPTH, progressionDepth } from "./actDepth";
 import { countQuests, MIN_COUNTED_QUESTS } from "./questCount";
 import { assemblyTimeMismatches, blankMap, blueprintStoryText } from "@/project/blueprintAssembly";
 import { openingMapViewMapId } from "@/project/openingMapView";
@@ -595,18 +596,30 @@ export function buildsWholeGame(project: Project, task: string): boolean {
  * 실측(2026-11-10, 비몬스터 5판): 세는 맵 1·1·1·2·2장. 못 센 맵마다 이유를 적는다 — 이유가 없으면 조수가 세지 않는 맵만 계속 짓는다.
  * 한 장소 게임(방탈출·「방 하나」)은 최소 1장. 3번 되풀이되면 할 일 고리가 막힘으로 닫고 최종 보고에 남긴다(42분 상한).
  */
-export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
+/** 방탈출 청사진은 sealEscapeExits 가 바깥으로 나가는 문을 지우므로, 맵·퀘스트 최소는 1장으로 같이 면제한다(두 규칙이 서로 반대로 작동하면 3번 시도 끝에 막힘). */
+const escapeGame = (project: Project): boolean => (project.gameBlueprint ? isEscapeBlueprint(project.gameBlueprint) : false);
+/** 한 곳짜리 게임(방탈출·「방 하나」)인가 — 맵·퀘스트·진행 깊이 관문과 청사진 장소 검사가 같은 판정을 쓴다. */
+export function oneProjectGame(project: Project, task: string): boolean {
   const request = withoutIntentNote(task) + " " + withoutIntentNote(project.gameBlueprint?.request ?? "");
-  const oneProject = SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request);
-  const need = oneProject ? 1 : MIN_COUNTED_MAPS;
+  return SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request) || escapeGame(project);
+}
+export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
+  const need = oneProjectGame(project, task) ? 1 : MIN_COUNTED_MAPS;
   const { counted, uncounted } = countMaps(project);
   if (counted.length >= need) return [];
   const why = uncounted.slice(0, 5).map((m) => `「${m.name}」(${m.id}) ${m.detail}`).join(" · ");
   const missing = need - counted.length;
+  // 만든 맵이 시작 맵에서 문으로 안 닿으면(2026-11-10 forest-0039 6장·ninja-0038 4장이 세는 맵 1/4) 문구 대신 이을 호출을 준다 —
+  // 무리(서로 이어진 안 닿는 맵끼리) 하나씩, 호출은 문구 맨 끝(열쇠는 앞 160자). 청사진 경로를 다시 지으면 단 문이 사라질 수 있다(forest).
+  const plan = planLinks(project, counted);
+  const group = plan.groups.find((g) => g.cell);
+  const linkCall = plan.from && group?.cell
+    ? ` 안 닿는 맵 무리 ${plan.groups.length}개 — 문을 단 뒤에는 build_blueprint_path 를 다시 부르지 않는다(다시 지으면 문이 사라질 수 있다). Next call: create_transfer_pair(${JSON.stringify({ a: { mapId: plan.from.mapId, ...plan.from.cell }, b: { mapId: group.mapId, ...group.cell } })})`
+    : "";
   return [{
     id: "maps-min",
     // 할 일 항목의 열쇠는 문구 앞 160자(숫자는 #) — 바뀌는 부분(안 세는 맵 목록)은 고정 문장 뒤에 둔다. 앞에 두면 맵을 지을 때마다 열쇠가 바뀌어 «3번 뒤 막힘» 이 안 걸린다.
-    message: `세는 맵이 ${counted.length}/${need}장이다 — ${missing}장 더. 새 장소는 make_place{spec:{type:"village"|"dungeon"|"interior", name}} 로 지어 문(transfer)으로 잇고 사람·조사 이벤트를 하나 이상 둔다(청사진 경로면 build_blueprint_path). 맵은 ${MIN_MAP_CELLS}칸 이상(실내는 10×10 이상)·타일 6종 이상·다른 맵과 다른 배치여야 센다.${why ? ` 안 세는 맵: ${why}.` : ""}`,
+    message: `세는 맵이 ${counted.length}/${need}장이다 — ${missing}장 더. 새 장소는 make_place{spec:{type:"village"|"dungeon"|"interior", name}} 로 지어 문(transfer)으로 잇고 사람·조사 이벤트를 하나 이상 둔다(청사진 경로면 build_blueprint_path). 맵은 ${MIN_MAP_CELLS}칸 이상(실내는 10×10 이상)·타일 6종 이상·다른 맵과 다른 배치여야 센다.${why ? ` 안 세는 맵: ${why}.` : ""}${linkCall}`,
     evidence: `counted=${counted.length} need=${need} uncounted=${uncounted.length}`,
   }];
 }
@@ -616,8 +629,7 @@ export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
  * 한 장소 요청은 최소 1개(mapsMinBlocker 와 같은 낱말 판정). 문구는 고정 문장을 앞에 둔다 — 할 일 열쇠가 앞 160자라 바뀌는 목록은 뒤로.
  */
 export function questsMinBlocker(project: Project, task: string): ShipBlocker[] {
-  const request = withoutIntentNote(task) + " " + withoutIntentNote(project.gameBlueprint?.request ?? "");
-  const need = SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request) ? 1 : MIN_COUNTED_QUESTS;
+  const need = oneProjectGame(project, task) ? 1 : MIN_COUNTED_QUESTS;
   const { counted, uncounted } = countQuests(project);
   if (counted.length >= need) return [];
   const why = uncounted.slice(0, 4).map((q) => `「${q.title}」(${q.id}) ${q.detail}`).join(" · ");
@@ -625,6 +637,22 @@ export function questsMinBlocker(project: Project, task: string): ShipBlocker[] 
     id: "quests-min",
     message: `세는 퀘스트가 ${counted.length}/${need}개다 — ${need - counted.length}개 더. 퀘스트마다 단계 2개 이상, 단계마다 서로 다른 label 이 있어야 센다(label 없는 단계는 안 센다), 제목은 퀘스트마다 다르게: create_quest{def:{key:"q_<영문>", title:"<제목>", order:"sequence", giver:{create:{mapId,x,y,name}}, steps:[{kind:"talk", label:"<1단계 목표>", target:{create:{mapId,x,y,name}}, lines:["…"]}, {kind:"talk", label:"<2단계 목표>", target:{create:{mapId,x,y,name}}, lines:["…"]}]}}.${why ? ` 안 세는 퀘스트: ${why}.` : ""}`,
     evidence: `counted=${counted.length} need=${need} uncounted=${uncounted.length}`,
+  }];
+}
+
+/**
+ * 진행 깊이(척도 act_structure)가 모자라면 출하 차단(2026-11-10 리드·오너: 맵 다음 act_structure — 청사진 단계 늘리기). 척도(progressionDepth)와 같은 규칙으로 잰다 —
+ * 청사진 단계 수가 아니라 «스위치를 켜고 다음 이벤트가 그 스위치를 조건으로 읽는» 사슬의 길이라서, 이름만 늘리거나 이미 있는 이벤트 이름을 붙여도 통과하지 못한다.
+ * 한 장소 게임(방탈출·「방 하나」)은 면제(깊이 1). 문구는 고정 문장을 앞에 둔다 — 할 일 열쇠가 앞 160자라 바뀌는 숫자는 뒤로.
+ */
+export function actDepthMinBlocker(project: Project, task: string): ShipBlocker[] {
+  if (oneProjectGame(project, task)) return [];
+  const depth = progressionDepth(project);
+  if (depth >= MIN_ACT_DEPTH) return [];
+  return [{
+    id: "act-depth-min",
+    message: `이야기가 이어지는 단계(진행 깊이)가 ${depth}/${MIN_ACT_DEPTH} 이다 — 청사진 단계를 늘린다. write_blueprint 로 핵심 경로를 6~8단계로 다시 쓰고(장소를 2곳 이상 나눠 둔다) build_blueprint_path 를 한 번 부른다. 새 단계의 event 는 아직 없는 새 이름으로 — 이미 있는 이벤트 이름을 쓰면 사슬이 늘지 않는다. 전투·상점이 든 단계 이벤트는 다시 지어지지 않으니 patch_event_page 로 앞 단계가 켠 스위치를 조건으로 잇는다.`,
+    evidence: `depth=${depth} need=${MIN_ACT_DEPTH}`,
   }];
 }
 
@@ -690,7 +718,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
     evidence: `battleSites=${sites.length} healingSources=0`,
   }] : [];
-  return [...reloadBlock, ...blueprint, ...mapsMinBlocker(project, task), ...questsMinBlocker(project, task), ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...bundledPictureLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
+  return [...reloadBlock, ...blueprint, ...mapsMinBlocker(project, task), ...questsMinBlocker(project, task), ...actDepthMinBlocker(project, task), ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...bundledPictureLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
 }
 
 /**

@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "All cells show the same frost wolf with matching ice-blue crest, palette and proportions. Idle_a/b/c crouch progressively lower, attack is a clear open-jawed lunge that differs from the rearing hit recoil, dead lies flat, and the pixel art is crisp, with no fringe or clipping and consistent scale. Small deductions: the idle breathing is more of a crouch than a chest swell, and the dead pose is a flat heap where the head is hard to make out.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

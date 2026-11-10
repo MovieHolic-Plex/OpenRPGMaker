@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "The design, palette and proportions match the reference in every cell, and the pixel art is clean with no halo or cut-off edges. The attack cell is a clear wings-spread forward lunge that looks different from the backward-tilted hit recoil, and dead lies flat. The idle_a/b/c breathing is only subtle (small changes to the wing and body outline), and hit reads as recoil only moderately.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

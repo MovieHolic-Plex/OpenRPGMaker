@@ -7,7 +7,7 @@ import type { TodoItem } from "../todo/types";
 import type { ProjectIndex } from "./refs";
 
 /** 출하 차단 중 «편집기 기본값이 남았다» 계열(shipChecks EDITOR_DEFAULT_INVENTORY 의 그림·오프닝·제목) — 앞 턴 결과라는 이유로 면제하지 않는다. */
-const SHIP_DEFAULT_LEAK = /^\[출하 차단 (?:ending-bg|ending-screen|title-image|title-name|bundled-picture|art-generation|opening|opening-music|opening-missing|maps-min|quests-min)\]/u;
+const SHIP_DEFAULT_LEAK = /^\[출하 차단 (?:ending-bg|ending-screen|title-image|title-name|bundled-picture|art-generation|opening|opening-music|opening-missing|maps-min|quests-min|act-depth-min)\]/u;
 
 const keyOf = (store: TodoStore, item: TodoItem): string | undefined => store.meta.get(item.id)?.key;
 
@@ -48,6 +48,19 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
     ...store.append("비평", problems.filter((p) => p.source === "critic").map((p) => ({ content: p.text, key: p.key })), "critic"),
   ];
   const capped = capReopened(store, opened, "같은 문제");
+  // 게임 검사·관문이 «이 호출이면 풀린다» 를 문구 맨 끝에 적었는데 항목 내용은 220자에서 잘린다(todoStore) —
+  // 잘리지 않은 문제 글에서 꺼내 항목의 다음 호출(meta.nextCall)로 둔다. 재주입의 «Next call» 이 이 호출 그대로 나간다.
+  // 출하 차단 줄은 «[출하 차단 id] 문구 고치지 못하면 …» 로 꼬리 문장이 붙는다(verbs.ts gameProblemTexts) — 호출은 문구 끝이 아니라 중간에 있으므로 끝 고정 없이 첫 «})» 까지 읽는다(JSON 안에는 «})» 가 없다).
+  // 같은 열쇠의 항목이 아직 열려 있으면 append 는 opened 에 넣지 않는다 — 호출이 바뀌었거나 모델이 호출해 meta 가 지워졌어도 다시 채우도록 열린 gate 항목 전부를 돈다.
+  for (const item of store.items) {
+    if (item.source !== "gate" || !isOpen(item.status)) continue;
+    const call = /Next call: (\w+)\((\{[^\n]*?\})\)/u.exec(problems.find((p) => p.key === keyOf(store, item))?.text ?? "");
+    if (!call || (available && !available.has(call[1]!))) continue;
+    try {
+      const args: unknown = JSON.parse(call[2]!);
+      if (args && typeof args === "object" && !Array.isArray(args)) store.meta.set(item.id, { ...(store.meta.get(item.id) ?? {}), nextCall: { verb: call[1]!, text: `${call[1]}(${call[2]})` } });
+    } catch { /* 뼈대로 */ }
+  }
   // 고치는 법으로 이른 도구가 이 실행에 하나도 없으면 조수가 할 수 없다 — 돌리지 않고 막힘으로 닫는다(남은 문제로 보고된다).
   // 2026-10-30 omo-loop-1030 ending: «configure_field_menu 로 ESC 메뉴를 기본으로» 항목을 도구 없이 세 번 돌았다.
   if (available) for (const item of opened) {

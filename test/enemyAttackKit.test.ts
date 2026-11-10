@@ -33,7 +33,8 @@ describe("pickEnemyAttack", () => {
 
   it("starts at the attack after the last one and wraps around", () => {
     expect(pickEnemyAttack(kit, -1, ctx(1))).toBe(0);
-    expect(pickEnemyAttack(kit, 0, ctx(3, true))).toBe(2);
+    expect(pickEnemyAttack(kit, 0, ctx(3, true))).toBe(1);
+    expect(pickEnemyAttack(kit, 1, ctx(3, true))).toBe(2);
     expect(pickEnemyAttack(kit, 2, ctx(1))).toBe(0);
   });
 

@@ -1,0 +1,6 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell shows the same grey rock-crab as the current look (palette, amber flecks, big right claw), and idle_a/b/c clearly rise and squash. The attack lunges with the claw thrust forward and differs from the hit's lean-back recoil, the dead cell is a flattened heap, and the pixels are crisp with consistent scale. Minor nitpicks: the legs are a bit thinner and more spidery than in the reference, and idle_c's squash is fairly strong."
+}

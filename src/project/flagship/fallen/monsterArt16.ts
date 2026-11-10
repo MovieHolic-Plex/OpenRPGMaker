@@ -25,11 +25,24 @@ const FS_MONSTER_SCALE_16: readonly { readonly enemyId: string; readonly from: n
   { enemyId: "enemy_fs2_swallowed_fire", from: 110, to: 100 },
 ];
 
-export function applyFallenMonsterArt16(project: Project): void {
+/**
+ * 번들 시트가 없는 그림(등불해파리·서리예티)은 적 기록을 만들기 전에 있어야 한다 — 도구의 무결성 검사가
+ * 「monsterResourceId 가 존재하지 않습니다」로 막는다. chronoBell.ts 가 적을 만들기 전에 이것을 부른다(fs-monster-regen 2026-11-09).
+ */
+export function installFallenMonsterArtWithoutBundle(project: Project): void {
+  installArt(project, (art) => !bundledPixelEnemySheet(art.resourceId));
+}
+
+function installArt(project: Project, want: (art: (typeof FS_MONSTER_SHEETS_16)[number]) => boolean): Set<string> {
   const uploaded = project.assets.uploaded;
   const installed = new Set<string>();
   for (const art of FS_MONSTER_SHEETS_16) {
+    if (!want(art)) continue;
     const sheetId = `${art.resourceId}-sheet16`;
+    if (uploaded[art.resourceId]?.generatedBy === GENERATED_BY && uploaded[sheetId]?.generatedBy === GENERATED_BY) {
+      installed.add(art.resourceId);
+      continue;
+    }
     if (Object.hasOwn(uploaded, art.resourceId) || Object.hasOwn(uploaded, sheetId)) {
       console.warn(`[fallen-star art16] ${art.resourceId}: 같은 id 의 업로드가 이미 있어 새 그림을 넣지 않았다`);
       continue;
@@ -54,6 +67,11 @@ export function applyFallenMonsterArt16(project: Project): void {
     uploaded[art.resourceId] = portrait;
     installed.add(art.resourceId);
   }
+  return installed;
+}
+
+export function applyFallenMonsterArt16(project: Project): void {
+  const installed = installArt(project, () => true);
   for (const change of FS_MONSTER_SCALE_16) {
     const enemy = project.database.enemies.find((e) => e.id === change.enemyId);
     if (!enemy) { console.warn(`[fallen-star art16] ${change.enemyId} 적이 없다`); continue; }

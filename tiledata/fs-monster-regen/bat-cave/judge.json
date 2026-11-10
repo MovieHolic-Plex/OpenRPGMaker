@@ -1,0 +1,6 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell shows the same blue-grey bat with pink ears and the cream highlights from the current look, at a consistent scale, and the pixel edges are clean with no fringe or specks. Idle_a/b/c clearly differ in wing and body pose, the attack cell is a horizontal lunge, the hit cell is a hunched recoil with wings raised, and dead lies flat. My only complaint is that the hit pose reads a little more like a guard crouch than a sharp recoil."
+}

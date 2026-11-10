@@ -445,7 +445,7 @@ function shopItemList(request: ShopItemsRenderRequest, goods: readonly ShopGoods
   // 행을 고르고 결정키로 활성하는 패턴 — role=listbox 가 정확하다(행은 role=option).
   const wrap = el("div", { class: "runtime-shop-item-list", attrs: { role: "listbox", "aria-label": "상품 목록" } });
   // 창 테두리에 반쯤 걸린 마지막 행을 없앤다 — 남는 높이를 행 경계로 자른다(J21 「회복약 60G」 반토막).
-  if (shopUiPresetOf(request.step) === "pixel") keepWholeRows(wrap);
+  if (shopUiPresetOf(request.step) === "pixel") keepWholeRows(wrap, { marks: true });
   if (goods.length === 0) {
     wrap.append(
       el("div", {
@@ -699,6 +699,8 @@ function shopType(step: ShopStep): ShopType {
  * 예전에는 서비스 설정이 런타임에 도달하지 않아 수리점도 감정소도 그냥 '상점'이었다.
  */
 function shopTitle(step: ShopStep): string {
+  const named = step.title?.trim();
+  if (named) return named;
   switch (step.shopServiceKind) {
     case "repair":
       return "수리점";

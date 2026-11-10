@@ -5,11 +5,11 @@ import { SET_OBJECTIVE_DESCRIPTION } from "@/ai/agentRules";
 import { sceneCraftProblems } from "./sceneCraft";
 import { flattenWrapperTool } from "./flatWrapper";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
-import { buildsWholeGame, shipBlockers, wantsWholeGame } from "./shipChecks";
+import { buildsWholeGame, oneProjectGame, shipBlockers, wantsWholeGame } from "./shipChecks";
 import { checkImageDataUrl } from "./imageCheck";
 import { applyBlueprintAssembly, isPlaceholderTitle } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
-import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, parseBlueprintArgs, walkBlueprint } from "./blueprint";
+import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, isEscapeBlueprint, parseBlueprintArgs, thinBlueprintReason, walkBlueprint } from "./blueprint";
 import { INTERIOR_WORDS, interiorCatalogCard, leanPromptFor, PLACE_SPEC_KINDS, placeSpecCards, placeSpecKindOf, projectBrief, type PlaceSpecKind } from "./prompt";
 import { hasLayout } from "./builders/interiorLayoutBuild";
 import { LAYOUT_FORMAT, LAYOUT_TAG, applyLayoutPatch, layoutGiven, layoutPatchIsEmpty, type LayoutPatch } from "./interiorLayout";
@@ -21,6 +21,7 @@ import { createBuildRun, type RecordingBuildRun } from "./buildRun";
 import { builderFor } from "./builders";
 import { localizePlaceSpec } from "./builders/modernCity";
 import { localizeCultureSpec } from "./builders/joseon";
+import { localizeVillagePoolSpec } from "../villageChipsetPool";
 import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize } from "./builders/village";
 import { codeTerrainFor, usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
 import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
@@ -137,6 +138,8 @@ export class V2Session {
   readonly artAttempts = new Map<"title" | "ending", { readonly status: "ok" | "failed" | "unavailable"; readonly error?: string; readonly failures?: number }>();
   /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
   blueprintRewrites = 0;
+  /** 첫 청사진이 장소·단계가 모자라 거절된 횟수(세션당 1회만 거절하고 다음부터는 걸어 준다 — 막다른 길 방지). */
+  blueprintThinRejects = 0;
   /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
   autoPathDone = false;
   /** 끝맺음에서 청사진 장소를 함수가 대신 지었는가(한 번만). */
@@ -516,6 +519,7 @@ function placeVariety(env: PiAssistantV2Env, task: unknown): string {
 export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiToolShape[] {
   const task = env.request.task;
   const run = createBuildRun(env.ctx);
+  const poolVillage = <T extends PlaceSpec>(spec: T): T => localizeVillagePoolSpec(spec, run.ctx.project, String(env.request.projectKey ?? env.ctx.project.meta.title ?? ""), String(task ?? ""));
   // 이 차례를 시작할 때 빈 프로젝트였나 — 첫 장소를 짓는 요청은 「게임」 낱말이 없어도 게임 시작으로 보고 장르 기본값을 깐다(G51).
   const freshStart = isFreshProject(env.ctx.project);
 
@@ -748,6 +752,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const filled = { ...raw, title: raw.title || prior?.title || (isPlaceholderTitle(env.ctx.project.meta?.title) ? "" : env.ctx.project.meta?.title) || "제목 없는 게임", genre: raw.genre || prior?.genre || "게임" };
       const parsed = parseBlueprintArgs(filled, String(task ?? ""));
       if ("error" in parsed) return text({ ok: false, summary: `청사진을 읽지 못했다: ${parsed.error}` });
+      // 처음 쓰는 청사진이 장소 1곳·3단계처럼 얇으면 한 번만 거절한다(2026-11-10 ninja-0062: 3단계를 한 곳에 몰아 맵·퀘스트·깊이 관문을 3번 받고도 못 닫았다).
+      // 맵을 짓기 전이라 다시 쓰는 비용은 호출 한 번이다. 다시 쓰는 청사진(prior)·설계자 청사진·한 곳짜리 게임은 거절하지 않는다.
+      if (!prior && !designed && session.blueprintThinRejects < 1 && !oneProjectGame(env.ctx.project, String(task ?? "")) && !isEscapeBlueprint(parsed.blueprint)) {
+        const thin = thinBlueprintReason(parsed.blueprint);
+        if (thin) { session.blueprintThinRejects += 1; return text({ ok: false, summary: thin }); }
+      }
       // 같은 내용을 다시 쓰면 바꾸지 않는다 — 청사진을 되풀이해 쓰는 대신 경로를 짓게 한다.
       const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, s: b.steps, e: b.ending }) : "";
       if (prior && core(prior) === core(parsed.blueprint)) {
@@ -819,7 +829,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       // 던전·동굴은 세션 덧값도 섞는다 — 같은 시작 저장본의 같은 요청을 다른 세션에서 받아도 같은 굴이 되지 않게(2026-10-31 씬 벤치 보스 방 opus 3판).
       const varietyKey = placeVariety(env, task) + (raw.type === "dungeon" || raw.type === "cave" ? `|${session.nonce}` : "");
       let keptNoteEarly = "";
-      let spec: PlaceSpec = localizeCultureSpec(localizePlaceSpec(dropModelSeed({ ...raw, salt: Math.floor(Math.random() * 1_000_000), variety: varietyKey }, true), String(task ?? "")), String(task ?? ""));
+      let spec: PlaceSpec = poolVillage(localizeCultureSpec(localizePlaceSpec(dropModelSeed({ ...raw, salt: Math.floor(Math.random() * 1_000_000), variety: varietyKey }, true), String(task ?? "")), String(task ?? "")));
       // 없는 맵 id 는 버리고 새 맵에 짓는다 — flash 가 타일셋 id(beodeul_city)를 mapId 로 보내 「맵이 없습니다」로 한 채도 못 지었다(2026-10-29 b5 강가 마을).
       if (spec.mapId && !run.ctx.project.maps[spec.mapId]) { const { mapId: _gone, ...rest } = spec; spec = rest; }
       // 실내형 장소(감옥·여관·가게·서재…)는 요청이 던전을 분명히 말하지 않으면 실내 칸 배치 길로 짓는다(2026-10-31 감독 결정 — 성 지하 감옥 4판이
@@ -1759,7 +1769,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const lines: string[] = [];
       const linkNotes: string[] = [];
       for (const [i, place] of order.entries()) {
-        const spec0: PlaceSpec = localizeCultureSpec(localizePlaceSpec(dropModelSeed({ ...place.spec, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, true), String(task ?? "")), String(task ?? ""));
+        const spec0: PlaceSpec = poolVillage(localizeCultureSpec(localizePlaceSpec(dropModelSeed({ ...place.spec, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) }, true), String(task ?? "")), String(task ?? "")));
         const parent = place.from ? built.get(place.from) : undefined;
         const parentMap = parent?.result.mapIds[0];
         // 실내는 새 맵 id 로(지금 맵을 덮어쓰지 않게), 나머지는 부모 맵을 「지금 맵」으로 — 빌더가 새 맵을 만들고 던전은 부모와 입구를 잇는다.

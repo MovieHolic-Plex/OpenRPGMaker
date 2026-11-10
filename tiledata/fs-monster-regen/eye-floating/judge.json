@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 3.5,
+ "failed": [],
+ "reason": "It is the same pink-tendril eyeball with a green iris in every cell, at a consistent size. Idle_a/b/c differ visibly, the attack cell's thrust to the right reads clearly as an attack and differs from the tilted hit recoil, and dead lies flat. The weak points are that the attack thrust is a flat, unshaded, unoutlined beige bar that doesn't match the rest of the art, and there are a few loose tendril pixels at the edges.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

@@ -316,6 +316,7 @@ defineCommand({
       { value: "buyOnly", label: "구매만", key: "buy" },
       { value: "sellOnly", label: "판매만", key: "sell" },
     ]),
+    title: f.text("가게 이름", { optional: true }),
     // 재고는 아이템 × 계절 2차원 표(priceBySeason)라 필드 어휘로 표현되지 않는다.
     stock: f.custom("재고", "shopStock"),
     allowSell: f.bool("플레이어 물품 매입", { optional: true }),
@@ -340,7 +341,7 @@ defineCommand({
     c.branchOnTransaction ? [{ key: "transactionBranch", label: "거래 후", tone: "neutral" as const }] : [],
   summary: (c) => {
     const count = Array.isArray(c.stock) ? c.stock.length : Array.isArray(c.itemIds) ? c.itemIds.length : 0;
-    return `상점 · ${count}종`;
+    return `${typeof c.title === "string" && c.title.trim() ? c.title.trim() : "상점"} · ${count}종`;
   },
 });
 

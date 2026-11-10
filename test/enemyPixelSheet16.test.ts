@@ -439,4 +439,43 @@ describe("16-cell runtime cells", { timeout: 90_000 }, () => {
       expect(seen.has("attack_mid")).toBe(variant === "full");
     }
   });
+
+  it("keeps the attack cell readable (~200ms total) into the recover beat without changing beat lengths", () => {
+    // impact 길이는 hit-stop(0 = 빗나감·무피해, 110 = 통상, 209 = 급소)이라 공격 칸이 번쩍 지나갔다. 모자란 만큼 recover 앞머리가 공격 칸을 이어 간다.
+    for (const [impactMs, expectedHold] of [[0, 200], [110, 90], [209, 0]] as const) {
+      const { field, golem, runtime } = field16("full", "golem20");
+      const entry = { sequence: 1, kind: "action", side: "enemy", userId: golem.dataset.testid, userRecordId: "enemy_stone_golem", commandKind: "enemyAttack", targetId: "nobody" } as never;
+      retroTimelineEntry(field, entry);
+      const beat = (kind: "approach" | "impact" | "recover", durationMs: number) => retroActionMotion(field, { kind, userId: golem.dataset.testid!, durationMs } as never, runtime.snapshot());
+      beat("approach", 300);
+      vi.advanceTimersByTime(300);
+      beat("impact", impactMs);
+      expect(golem.dataset.retroPixelCell).toBe("attack");
+      vi.advanceTimersByTime(impactMs);
+      beat("recover", 500);
+      // 공격 칸은 recover 의 첫 순간에도 그대로 보이고, expectedHold ms 뒤에 복귀 칸으로 넘어간다.
+      expect(golem.dataset.retroPixelCell).toBe(expectedHold > 0 ? "attack" : "recover");
+      if (expectedHold > 0) {
+        vi.advanceTimersByTime(expectedHold - 1);
+        expect(golem.dataset.retroPixelCell).toBe("attack");
+        vi.advanceTimersByTime(2);
+        expect(golem.dataset.retroPixelCell).toBe("recover");
+      }
+    }
+  });
+
+  it("does not hold the attack cell under reduced motion", () => {
+    const { field, golem, runtime } = field16("full", "golem20");
+    const matchMedia = window.matchMedia;
+    window.matchMedia = ((query: string) => ({ matches: query.includes("reduce"), media: query, addEventListener() {}, removeEventListener() {} })) as never;
+    try {
+      retroTimelineEntry(field, { sequence: 1, kind: "action", side: "enemy", userId: golem.dataset.testid, userRecordId: "enemy_stone_golem", commandKind: "enemyAttack", targetId: "nobody" } as never);
+      for (const [kind, durationMs] of [["approach", 300], ["impact", 0], ["recover", 500]] as const) {
+        retroActionMotion(field, { kind, userId: golem.dataset.testid!, durationMs } as never, runtime.snapshot());
+      }
+      expect(golem.dataset.retroPixelCell).toBe("recover");
+    } finally {
+      window.matchMedia = matchMedia;
+    }
+  });
 });

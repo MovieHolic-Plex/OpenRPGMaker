@@ -25,6 +25,7 @@ import { formatSfStationNote, type SfStationTarget } from "@/ai/sfStationPolicy"
 import { formatPrehistoricNote, type PrehistoricTarget } from "@/ai/prehistoricPolicy";
 import { formatDesertEastNote, type DesertEastTarget } from "@/ai/desertEastPolicy";
 import { formatSnowNorthNote, type SnowNorthTarget } from "@/ai/snowNorthPolicy";
+import { formatVillagePoolNote, type VillagePoolPick } from "@/ai/villageChipsetPool";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import {
   formatIntentNote,
@@ -101,6 +102,8 @@ export interface PiIntentNoteInput {
   readonly selection: IntentSelectionFact | null;
   /** 요청이 버들항 계열 마을이면 그 대상 — 숲마을 노트 대신 author_beodeul_town 노트(beodeulTownRoute). */
   readonly beodeulTown?: BeodeulTownTarget | null;
+  /** 테마 낱말 없는 마을 요청이 이 프로젝트의 칩셋 풀에서 고른 칩셋(villageChipsetPool) — 버들항 노트 자리를 대신한다. */
+  readonly villagePool?: VillagePoolPick | null;
   /** 요청·대상 맵이 일본 도시(jp_city) 칩셋이면 그 대상 — 숲마을 노트 대신 build_jp_city_building 노트(jpCityPolicy). */
   readonly jpCity?: JpCityTarget | null;
   /** 요청·대상 맵이 고딕 저택(gothic_manor) 칩셋이면 그 대상(gothicPolicy). jp_city 대상이 잡히면 쓰지 않는다. */
@@ -167,6 +170,7 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
     : input.skyIsland ? formatSkyIslandNote(input.skyIsland, input.targetMap)
     : input.campus ? formatCampusNote(input.campus, input.targetMap)
     : input.modernCity ? formatModernCityNote(input.modernCity, input.targetMap)
+    : input.villagePool ? formatVillagePoolNote(input.villagePool)
     : input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
     : null;
   const scopeNote = input.selection

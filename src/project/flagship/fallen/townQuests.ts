@@ -87,7 +87,9 @@ const emote = (eventId: string | "player", kind: string, durationMs = 900): Comm
   ({ kind: "showEmote", target: eventId === "player" ? "player" : { eventId }, emote: kind, durationMs } as unknown as Command);
 const choices = (options: [string, Command[]][], cancel = options.length): Command =>
   ({ kind: "choices", options: options.map(([text, branch]) => ({ text, branch })), cancelBehavior: `choice${cancel}` } as unknown as Command);
-const shop = (itemIds: string[]): Command => ({ kind: "shop", shopType: "normal", itemIds, allowSell: true } as Command);
+const BAKERY = "토마네 빵집";
+const SMITHY = "로한 대장간";
+const shop = (itemIds: string[], title?: string): Command => ({ kind: "shop", shopType: "normal", ...(title ? { title } : {}), itemIds, allowSell: true } as Command);
 const selfOn = (key: "A" | "B" | "C" | "D"): Command => ({ kind: "setSelfSwitch", key, value: true } as Command);
 const self = (key: "A" | "B" | "C" | "D", value = true): Condition => ({ kind: "selfSwitch", key, value });
 
@@ -301,7 +303,7 @@ function toma(project: Project): void {
       say(TOMA, "설마 했는데 오늘 새벽엔\n반죽이 정말 안 부풀었어요."),
       setSw(Q1_HEARD),
       preGreeting,
-      shop(pre),
+      shop(pre, BAKERY),
     ] },
     { name: "의뢰(Q1)", conditions: [sw(Q1_HEARD)], commands: [
       say(TOMA, "납작빵이라도 아침 굶은 분들한테\n좀 갖다줄래요?"),
@@ -317,20 +319,20 @@ function toma(project: Project): void {
         ["다음에요", [say(TOMA, "그래요, 바쁘면 할 수 없죠.\n빵은 식어도 어디 안 가요.")]],
       ]),
       preGreeting,
-      shop(pre),
+      shop(pre, BAKERY),
     ] },
     { name: "의뢰를 마침", conditions: [sw(Q1_DONE)], commands: [
       say(TOMA, "어서 와요, 카엘."),
-      shop(full),
+      shop(full, BAKERY),
     ] },
     { name: "이리스 합류 뒤", conditions: [sw(SW_IRIS)], commands: [
       say(TOMA, "어, 반죽이 부풀었어요!\n오늘은 빵이 다 있어요, 카엘."),
       say(TOMA, "기계 아가씨도 빵을 먹나요?\n…먹는 흉내라도 내면 하나 싸 줄게요."),
-      shop(full),
+      shop(full, BAKERY),
     ] },
     { name: "의뢰 중(Q1)", conditions: [sw(Q1_ON), sw(Q1_DONE, false)], commands: [
       fork(varCond(Q1_COUNT, ">=", 4), complete, reminder),
-      fork(sw(SW_IRIS), [shop(full)], [fork(sw(Q1_DONE), [shop(full)], [shop(pre)])]),
+      fork(sw(SW_IRIS), [shop(full, BAKERY)], [fork(sw(Q1_DONE), [shop(full, BAKERY)], [shop(pre, BAKERY)])]),
     ] },
   ]);
 }
@@ -417,7 +419,7 @@ function rohan(project: Project): void {
   const event = mustEvent(project, "fs_smithy", "ev_fs_smith");
   const full = fallenSmithyStock(project);
   const noSpears = full.filter((id) => !/spear|halberd/.test(id));
-  const stock = (): Command => fork(sw(Q3_DONE), [shop(full)], [shop(noSpears)]);
+  const stock = (): Command => fork(sw(Q3_DONE), [shop(full, SMITHY)], [shop(noSpears, SMITHY)]);
   const daily = [
     say(ROHAN, "심문회가 칼을 갈러 왔었다.\n그쪽 일은 손 뗐다."),
     say(ROHAN, "한때는 교단 병기고 열쇠를 쥐었지.\n이젠 쇠나 두드린다."),

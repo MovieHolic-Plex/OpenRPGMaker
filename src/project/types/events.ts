@@ -644,6 +644,8 @@ export type Command =
       allowSell?: boolean;
       quantityMode?: "single" | "select";
       shopType?: ShopType;
+      /** 헤더의 가게 이름. 생략하면 서비스 종류 이름(수리점·감정소·전당포) 또는 「상점」. openCraftShop.title 과 같은 이름. */
+      title?: string;
       /** Visual arrangement for the runtime shop window. */
       shopUiPreset?: ShopUiPreset;
       messageType?: ShopMessageType;
