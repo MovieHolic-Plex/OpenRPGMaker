@@ -3,7 +3,8 @@
 //   bun scripts/qa/assistant-v2/roomGraphProbe.mts <snapshot.json> [outDir]
 import fs from "node:fs";
 import { loadHeadlessProject } from "../../../src/headless/index.ts";
-import { createV2Tools, V2Session } from "../../../src/ai/v2/verbs.ts";
+import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
+import { V2Session } from "../../../src/ai/v2/turn/session.ts";
 import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
 import { runTodoCheck } from "../../../src/ai/v2/todo/checks.ts";

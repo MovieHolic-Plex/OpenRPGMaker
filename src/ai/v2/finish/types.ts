@@ -1,6 +1,6 @@
 // 끝맺음 자동 단계(finish) 의 공용 형 — 단계 하나 = finish/stages/<id>.ts 하나. 순서는 각 단계의 order, 목록은 finish/stages/index.ts.
 import type { PiAssistantV2Env } from "../env";
-import type { V2Session } from "../verbs";
+import type { V2Session } from "../turn/session";
 import type { BlueprintBlocker } from "../blueprint";
 
 /**
