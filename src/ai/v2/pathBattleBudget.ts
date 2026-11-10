@@ -27,7 +27,8 @@ import type { ActorExperienceCurve, EnemyRecord, GameMap, Project, SkillRecord }
 import { blueprintMapFor } from "./blueprintPath";
 import { healingItemIds } from "./combatChecks";
 import { startHealingItem } from "./healingAccess";
-import { wantsWholeGame } from "./shipChecks";
+import { wantsWholeGame } from "./request/scope";
+import { WEAK_FOE_ASK } from "./request/combat";
 
 type Obj = Record<string, unknown>;
 type Role = "field" | "gate" | "boss";
@@ -409,9 +410,6 @@ export function fitFirstLevelUp(project: Project, troopId: string, party: { ids:
   }
   return [`경험치 곡선 extra ${curve.extra}→${next.extra}(배우 ${changed}) — 첫 길 전투 ${troopId} 경험치 ${exp} 로 Lv${party.level}→${party.level + 1}(필요 ${need}→${step(next)})`];
 }
-
-/** 「약한·쉬운 몬스터」 요청 낱말. */
-const WEAK_FOE_ASK = /약한|약해|쉬운|쉽게|초반|잡몹|weak|easy/iu;
 /** 필드 상징 적 한 판 HP 손실 상한 — 「약한」 요청 35%(Lv1 슬라임 한 마리 ≈30%), 그 밖 50%. 길 위 예산(잡몹 20%)은 이어 싸움을 전제한 끝맺음 맞추기 값이라 경고 문턱으로는 너무 엄하다. */
 const WEAK_LOSS = 0.35;
 const FIELD_LOSS = 0.5;

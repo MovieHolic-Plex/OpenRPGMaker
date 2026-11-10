@@ -9,13 +9,11 @@ import { runTodoItemCheck } from "../todo/checks";
 import { layoutReviewRounds } from "../layoutReview";
 import { normName } from "../todo/names";
 import { isOpen, type TodoStore } from "./todoStore";
+import { SMALL_ROOM_WORDS } from "../request/place";
 
 const ROOM_TAG = "hand-layout-room";
 const GRAPH_TAG = "room-graph";
 const mapLabel = (m: GameMap) => String((m as unknown as { displayName?: string }).displayName ?? "").trim() || String(m.name ?? m.id);
-
-/** 요청이 정말 작은 방인가(한 구역을 허락) — designAreas.wantsSmallRoom 과 같은 낱말. */
-export const SMALL_ROOM_WORDS = /작은\s*방|좁은|조그만|자그마한|단칸|한\s*칸|골방|cramped|tiny|small room/iu;
 const UPPER = /2층|3층|위층|다락|upper|floor\s*[2-9]|_f[2-9]\b/iu;
 
 const designedMap = (m: GameMap) => (m.locations ?? []).some((l) => (l.tags ?? []).includes(ROOM_TAG) && (l.tags ?? []).includes("model-designed"));

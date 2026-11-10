@@ -11,7 +11,8 @@ import { createV2Tools } from "../../src/ai/v2/verbs.ts";
 import { V2_MAX_REPAIR_ROUNDS } from "../../src/ai/v2/turn/session.ts";
 import { v2BaselineGameKeys, v2GateProblems } from "../../src/ai/v2/judge/finishGate.ts";
 import { V2Session } from "../../src/ai/v2/turn/session.ts";
-import { buildsWholeGame, shipBlockers } from "../../src/ai/v2/shipChecks.ts";
+import { shipBlockers } from "../../src/ai/v2/shipChecks.ts";
+import { buildsWholeGame } from "../../src/ai/v2/request/scope.ts";
 import { finishBuildPending, runFinishAutoBuild } from "../../src/ai/v2/finishAutoBuild.ts";
 import { alignCodeClues } from "../../src/ai/v2/codeClues.ts";
 import { realignEvidencePlaces } from "../../src/ai/v2/mysteryCase.ts";
@@ -20,7 +21,8 @@ import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaShotPl
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, scopeAdviceToRequest, withShipBlockers, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
-import { withTodoLoop, isWriteRequest } from "../../src/ai/v2/loop/todoTools.ts";
+import { withTodoLoop } from "../../src/ai/v2/loop/todoTools.ts";
+import { isWriteRequest } from "../../src/ai/v2/request/scope.ts";
 import { exposeV2Tools, unknownToolText, type V2ToolExposure } from "../../src/ai/v2/toolExposure.ts";
 import { formatCall, nextForItem } from "../../src/ai/v2/loop/nextCall.ts";
 import { requestSkeleton, skeletonCard } from "../../src/ai/v2/loop/requestSkeleton.ts";
@@ -33,6 +35,7 @@ import { countMaps, RECOMMENDED_MAPS } from "../../src/ai/v2/mapCount.ts";
 import { countQuests, RECOMMENDED_QUESTS } from "../../src/ai/v2/questCount.ts";
 import type { TodoItem } from "../../src/ai/v2/todo/types.ts";
 import { leadFixNote, leadPlanMessages, leadReviewMessages, parseLeadReview, planForWorker, projectDigest, toolCatalog, SPLIT_LIMITS } from "../../src/ai/v2/split.ts";
+import { CONTINUE_WORDS } from "../../src/ai/v2/request/scope";
 
 /** 독립 검토자(src/ai/v2/advisor.ts). 끄려면 OPRN_V2_ADVISOR=0 — 비교 실행·장애 때만 쓴다. 읽기 전용 실행에는 돌지 않는다. */
 // 설정에서 검토자를 끈 경우(assistantRoles.advisor = "off")도 돌지 않는다. 검토자 모델은 env.advisorChat(따로 고른 칸) → 없으면 주 모델(sideChat).
@@ -93,9 +96,6 @@ async function captureVqaShots(env: PiAssistantV2Env): Promise<{ shots: VqaShot[
   }
   return { shots, failed };
 }
-
-/** 앞 실행이 남긴 할 일을 이어 받을 요청인가(«계속»·«이어서»·«마저»·«남은 것»). */
-const CONTINUE_WORDS = /계속|이어서|이어 ?(해|가|만들|짓)|마저|남은 ?(것|일|항목)|끝까지|다시 ?해/u;
 
 /** 화면 검수 결함 한 줄을 할 일 글 길이로 — 결함 설명은 220자에서 자르되 뒤의 고치기 동사(« → …»)는 남긴다(잘리면 모델이 어떤 동사로 고칠지 못 읽는다). */
 function clipDefectLine(line: string): string {
