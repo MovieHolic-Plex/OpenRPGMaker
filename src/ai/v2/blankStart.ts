@@ -4,7 +4,7 @@
 //   걸어 닿는 칸으로 옮긴다. 다른 맵에서 그 빈 맵으로 가던 이동 이벤트도 지운다(남는 막다른 틈은 exitDress 가 문 그림으로 마감한다).
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { blueprintMapFor } from "./blueprintPath";
+import { blueprintMapFor } from "./story/blueprintPath";
 import { resolveWhere } from "./place/where";
 import type { BuildRun } from "./types";
 

@@ -6,7 +6,7 @@ import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { MIN_BLUEPRINT_STEPS, WRITE_BLUEPRINT_SCHEMA, parseBlueprintArgs, stepMixProblems, thinBlueprintReason, walkBlueprint } from "../../blueprint";
 import { isEscapeBlueprint } from "../../request/scope";
 import { repairWorldPlaces, worldById, worldPlaceProblems } from "../../world";
-import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, keepStepText, pathTextProblems, type PathStepText } from "../../blueprintPath";
+import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, keepStepText, pathTextProblems, type PathStepText } from "../../story/blueprintPath";
 import { WORLD_BOUNCES, text } from "../support";
 import type { VerbContext } from "../context";
 

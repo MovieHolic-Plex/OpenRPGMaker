@@ -1,4 +1,4 @@
-// ai/v2/pathBattleBudget.ts
+// ai/v2/story/pathBattleBudget.ts
 // 끝맺음: 청사진 길 위 전투(잡몹·길목 전투·보스)를 시작 파티 기준 «한 번에 이어 싸워도 전멸하지 않는» 예산에 맞춘다. 결정적(모의 시드 고정)·되풀이 안전.
 //
 // 왜(2026-10-29 vm4 argon·flash jrpg 판정): argon — 촌장 자리 붉은 드래곤(보스로 맞춘 사본, 모의 HP 손실 64%) 뒤 HP 174/514 로 동굴 임프 2마리
@@ -25,10 +25,10 @@ import { stateClearsOnBattleEnd } from "@/project/battleEndStates";
 import { mapRoute } from "@/player/objectiveTarget";
 import type { ActorExperienceCurve, EnemyRecord, GameMap, Project, SkillRecord } from "@/project/types";
 import { blueprintMapFor } from "./blueprintPath";
-import { healingItemIds } from "./judge/combatChecks";
-import { startHealingItem } from "./healingAccess";
-import { wantsWholeGame } from "./request/readers";
-import { WEAK_FOE_ASK } from "./request/combat";
+import { healingItemIds } from "../judge/combatChecks";
+import { startHealingItem } from "../healingAccess";
+import { wantsWholeGame } from "../request/readers";
+import { WEAK_FOE_ASK } from "../request/combat";
 
 type Obj = Record<string, unknown>;
 type Role = "field" | "gate" | "boss";

@@ -4,7 +4,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
-import { examineHint, settleExamineSpot } from "../../../src/ai/v2/examineSpot.ts";
+import { examineHint, settleExamineSpot } from "../../../src/ai/v2/story/examineSpot.ts";
 import { eventBlocks } from "../../../src/ai/v2/eventReach.ts";
 import { isPassable } from "../../../src/project/collision.ts";
 import type { Project } from "../../../src/project/types.ts";
