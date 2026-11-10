@@ -907,6 +907,7 @@ const skillRecordSchema = objectSchema({
       stateIds: stringArraySchema("노리는 상태 id(1~8). 대상이 이 중 하나에 걸려 있으면 보너스"),
       bonusPercent: integerSchema("피해 +N% (1~300)"),
       consume: booleanSchema("true 면 맞힌 순간 그 상태를 풀어 버린다(얼어붙은 적을 깨뜨림·잠든 적을 깨움)"),
+      bonusByState: { type: "object", description: "상태마다 다른 보너스 {상태 id: 1~300} — 대상이 걸린 상태들 중 가장 큰 값. 표에 없는 상태는 bonusPercent. 단계 표식(별 표식 I·II·III → 25·50·75)용" },
     },
     "약점 공략(준비 → 마무리 콤보): 대상이 stateIds 중 하나에 걸려 있으면 피해 +bonusPercent%. 숫자 아래 「공략!」 꼬리표. 둔화를 거는 기술 + 둔화 대상 +50% 기술처럼 동료끼리 짝을 만든다. 해제 = null",
   ),
@@ -1673,13 +1674,20 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
   }
   if (record.exploitStates !== undefined && record.exploitStates !== null) {
     const exploit = record.exploitStates as Record<string, unknown>;
-    const unknownKeys = exploit && typeof exploit === "object" && !Array.isArray(exploit) ? Object.keys(exploit).filter((key) => !["stateIds", "bonusPercent", "consume"].includes(key)) : ["(객체 아님)"];
+    const unknownKeys = exploit && typeof exploit === "object" && !Array.isArray(exploit) ? Object.keys(exploit).filter((key) => !["stateIds", "bonusPercent", "consume", "bonusByState"].includes(key)) : ["(객체 아님)"];
     if (unknownKeys.length > 0 || !Array.isArray(exploit.stateIds) || exploit.stateIds.length === 0 || typeof exploit.bonusPercent !== "number" || exploit.bonusPercent < 1 || exploit.bonusPercent > 300) {
       throw new ToolError(`skill.exploitStates 는 {stateIds:[상태 id 1~8개], bonusPercent:1~300, consume?:boolean} 입니다${unknownKeys.length ? `(모르는 키: ${unknownKeys.join(", ")})` : ""}. 예: {stateIds:["state_agility_down"], bonusPercent:50}`, { code: "invalid-exploit-states" });
     }
     const missing = (exploit.stateIds as unknown[]).filter((id) => typeof id !== "string" || !draft.database.states.some((state) => state.id === id));
     if (missing.length > 0) {
       throw new ToolError(`exploitStates.stateIds 에 없는 상태: ${missing.map(String).join(", ")} — 허용 예시: ${knownIds(draft.database.states)}`, { code: "state-not-found" });
+    }
+    if (exploit.bonusByState !== undefined) {
+      const table = exploit.bonusByState as Record<string, unknown>;
+      const bad = table && typeof table === "object" && !Array.isArray(table)
+        ? Object.entries(table).filter(([id, value]) => !(exploit.stateIds as unknown[]).includes(id) || typeof value !== "number" || value < 1 || value > 300).map(([id]) => id)
+        : ["(객체 아님)"];
+      if (bad.length > 0) throw new ToolError(`exploitStates.bonusByState 는 {stateIds 안의 상태 id: 1~300} 입니다(틀린 칸: ${bad.join(", ")}). 예: {state_mark_1:25, state_mark_2:50}`, { code: "invalid-exploit-states" });
     }
   }
   if (record.chargeBreak !== undefined && record.chargeBreak !== null) {

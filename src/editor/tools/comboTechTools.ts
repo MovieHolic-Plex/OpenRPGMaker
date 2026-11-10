@@ -101,7 +101,7 @@ const upsertComboTech: ToolDefinition = {
       exploitStates: {
         type: "object",
         description: "약점 공략: 대상이 이 상태면 피해 +bonusPercent%(consume 이면 그 상태를 깨뜨림)",
-        properties: { stateIds: { type: "array", items: { type: "string" } }, bonusPercent: { type: "integer" }, consume: { type: "boolean" } },
+        properties: { stateIds: { type: "array", items: { type: "string" } }, bonusPercent: { type: "integer" }, consume: { type: "boolean" }, bonusByState: { type: "object", description: "상태마다 다른 보너스 {상태 id: 1~300}(가장 큰 값)" } },
         required: ["stateIds", "bonusPercent"],
         additionalProperties: false,
       },
