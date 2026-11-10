@@ -46,5 +46,61 @@
    "wolfLevel": 4,
    "pass": true
   }
+ },
+ "slime-green": {
+  "resourceId": "generated-enemy-slime-green",
+  "name": "이끼 슬라임",
+  "cell": 96,
+  "try": 3,
+  "gifSha": "2d961dfdc3194b0caf0a71b5aa6eca3723bfd123ad42f6060efb57e4e5cd7370",
+  "sheetSha": "318244d92926eaaef7a7417cdcb8fda572c7e7c80a116e82d308d200140399dc",
+  "metrics": {
+   "colors": 14,
+   "outlineInner": 0.95,
+   "outlineColors": 8,
+   "smallSpecksPer100": 34.7,
+   "uniform2x2": 0.18,
+   "lumLevels": 13
+  },
+  "metricsOutsideWolves": [
+   "outlineColors"
+  ],
+  "ownerAccepted": "2026-11-10",
+  "judge": {
+   "model": [
+    "claude-opus-5-5"
+   ],
+   "effort": "medium",
+   "wolfLevel": 4,
+   "pass": true
+  }
+ },
+ "wraith-dark": {
+  "resourceId": "generated-enemy-wraith-dark",
+  "name": "재의 회수자",
+  "cell": 128,
+  "try": 3,
+  "gifSha": "76966c00c086cc70d0e7558672899cf9cee3a8c41c0709266403b952b1f10d58",
+  "sheetSha": "aa3c87afa826c682b2fc79e1372175b4e3e127d818bc9c7f663a8a4c2714e1cf",
+  "metrics": {
+   "colors": 16,
+   "outlineInner": 0.74,
+   "outlineColors": 15,
+   "smallSpecksPer100": 30.9,
+   "uniform2x2": 0.17,
+   "lumLevels": 14
+  },
+  "metricsOutsideWolves": [
+   "outlineInner"
+  ],
+  "ownerAccepted": "2026-11-10",
+  "judge": {
+   "model": [
+    "claude-opus-5-5"
+   ],
+   "effort": "medium",
+   "wolfLevel": 4,
+   "pass": true
+  }
  }
 }
