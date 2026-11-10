@@ -604,9 +604,10 @@ function floorThree(project: Project, exec: Exec): void {
       narrate(lit ? "거울에 빛이 맺혀 있다." : "어두운 거울. 아직 빛이 닿지 않는다."),
       ...nowLine, turn,
     ];
+    // 거울 그림은 한 장(아래 방향 한 칸)이다 — 조사할 때 주인공 쪽으로 돌면 시트의 다른 줄이 나와 다른 물건으로 바뀌었다(fs-defect-sweep C3).
     addEv(project, FS2_T3, `ev_fs2_t3_${m.key}`, m.name, m.at, [
-      page(`ev_fs2_t3_${m.key}_dark`, "어두움", [], body(false), { graphic: LOOK_DARK, priority: "same", overlapForbidden: true }),
-      page(`ev_fs2_t3_${m.key}_lit`, "빛", [sw(litOf(m.key))], body(true), { graphic: LOOK_LIT, priority: "same", overlapForbidden: true }),
+      page(`ev_fs2_t3_${m.key}_dark`, "어두움", [], body(false), { graphic: LOOK_DARK, priority: "same", overlapForbidden: true, animationType: "fixedGraphic" }),
+      page(`ev_fs2_t3_${m.key}_lit`, "빛", [sw(litOf(m.key))], body(true), { graphic: LOOK_LIT, priority: "same", overlapForbidden: true, animationType: "fixedGraphic" }),
     ]);
   }
   // 빛줄기가 흐르는 길 — 켜진 길마다 반짝이(계산은 처음 한 번 여기서).

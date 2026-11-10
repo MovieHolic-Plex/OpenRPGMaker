@@ -1192,6 +1192,19 @@
     "the boss troop has a battle page on enemyHpBelow 50 (phase 2), the enemy has elementRates thunder A, and at least one readable sign/tablet event mentions the weakness before the boss is reached",
     "defeat branch transfers the party back to the first room instead of game over; victory sets a switch and gives the accessory"
    ]
+  },
+  {
+   "id": "object-props-keep-their-frame",
+   "label": "조사하는 물건(거울·상자·문)은 돌아서지 않는다",
+   "port": 19568,
+   "lessons": [
+    "object-pages-fixed-graphic"
+   ],
+   "prompt": "탑 3층에 빛을 반사하는 거울 다섯 개를 놓고, 조사하면 지금 어느 쪽을 보는지 알려 준 뒤 돌릴 쪽을 고르게 해 줘. 빛이 닿은 거울은 밝은 그림으로 바꿔 줘.",
+   "requirements": [
+    "every mirror page that shows a one-frame object sprite (dark and lit) has animationType fixedGraphic (or another fixed-direction type), so inspecting it from the side or below never swaps in another row of the charset",
+    "the mirrors are action-trigger, same priority, and stay reachable from at least one adjacent walkable cell"
+   ]
   }
  ]
 }
