@@ -1190,7 +1190,8 @@
     "the new rooms are reachable from the arrival cell (the hidden room only after the cracked-wall event clears its blocking cells), and a loop returns to the first room",
     "a winch/lever event opens the gate with changeTile on the iron-gate cells and sets a switch",
     "the boss troop has a battle page on enemyHpBelow 50 (phase 2), the enemy has elementRates thunder A, and at least one readable sign/tablet event mentions the weakness before the boss is reached",
-    "defeat branch transfers the party back to the first room instead of game over; victory sets a switch and gives the accessory"
+    "defeat branch transfers the party back to the first room instead of game over; victory sets a switch and gives the accessory",
+    "if a second interrupt telegraph is added, it is answered by a different party skill than the first (e.g. sword vs thunder), is hinted on a tablet, and the boss is re-measured with simulate_battle so an interrupt-with-stagger does not quietly make the fight easier"
    ]
   }
  ]
