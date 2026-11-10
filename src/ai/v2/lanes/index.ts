@@ -2,7 +2,7 @@
 // 단계 하나 = lanes/stages/<id>.ts 하나({ id, scope, order, run }), 목록 = lanes/stages/index.ts(한 줄에 하나).
 // 순서: project 단계 전부(order 순) → 맵마다(그 시점 Object.keys(maps) 순) map 단계 전부(order 순).
 import type { PiAssistantV2Env } from "../env";
-import type { V2Session } from "../verbs";
+import type { V2Session } from "../turn/session";
 import type { RecordingBuildRun } from "../buildRun";
 import type { LaneCtx, LaneScope, LaneStage } from "./types";
 import * as registered from "./stages";

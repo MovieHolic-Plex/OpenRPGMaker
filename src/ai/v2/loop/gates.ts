@@ -1,6 +1,6 @@
 // 관문·비평·화면 검수가 짚은 것을 할 일 항목으로 맞춘다(옛 «한 바퀴 더» 글 대신 — 2026-10-30 omo 고리).
 // 같은 문제(열쇠)는 새 항목을 만들지 않고, 닫힌 항목이면 다시 연다(시도 +1). 사라진 문제의 항목은 함수가 닫는다.
-import type { V2GateProblem } from "../verbs";
+import type { V2GateProblem } from "../judge/finishGate";
 import { AUTOPLAY_GATE_PREFIX } from "../playCheck";
 import { TODO_MAX_ATTEMPTS, isOpen, type TodoStore } from "./todoStore";
 import type { TodoItem } from "../todo/types";

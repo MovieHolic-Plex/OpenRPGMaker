@@ -3,7 +3,8 @@ import { createBlankProject } from "@/project/defaults/blankProject";
 import { buildV2SystemPrompt, editOnlyRequest, PLACE_SPEC_INDEX, placeSpecCards, placeSpecKindOf } from "@/ai/v2/prompt";
 import { exposeV2Tools } from "@/ai/v2/toolExposure";
 import { INTERIOR_CARD } from "@/ai/v2/builders/interior";
-import { createV2Tools, V2Session } from "@/ai/v2/verbs";
+import { createV2Tools } from "@/ai/v2/verbs";
+import { V2Session } from "@/ai/v2/turn/session";
 
 const task = "이제 이 서재에 방탈출 규칙을 넣어 줘. 자물쇠에 4자리 비밀번호를 넣어.";
 afterEach(() => { delete process.env.OPRN_V2_LEAN_PROMPT; });

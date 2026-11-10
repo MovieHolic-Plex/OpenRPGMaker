@@ -3,10 +3,9 @@
 // 「비평 major 0 + 기계 검사 통과」가 아닌 장소를 남긴 채 「다 됐다」고 말하지 못하게 한다.
 import { withoutIntentNote } from "@/ai/piAgent/monsterGameRequest";
 import { SET_OBJECTIVE_DESCRIPTION } from "@/ai/agentRules";
-import { sceneCraftProblems } from "./sceneCraft";
 import { flattenWrapperTool } from "./flatWrapper";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
-import { buildsWholeGame, oneProjectGame, shipBlockers, wantsWholeGame } from "./shipChecks";
+import { buildsWholeGame, oneProjectGame, wantsWholeGame } from "./shipChecks";
 import { checkImageDataUrl } from "./imageCheck";
 import { applyBlueprintAssembly, isPlaceholderTitle } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
@@ -57,12 +56,8 @@ import { guessPlaceSpec } from "./placeGuess";
 import { critiqueStaging } from "./critic";
 import { createGameTools, wantsPuzzle, wantsGameTools, wantsMusicTools, wantsStoreTools, wantsTerrainTools } from "./game";
 import { audioOnly } from "./musicWords";
-import { gameContentProblems, unaskedChanges } from "./gameChecks";
-import { AUTOPLAY_GATE_PREFIX, playProblems } from "./playCheck";
 import { HELPER_LIMITS, helpersOn, runHelperJobs, type HelperJob } from "./helpers";
 import { isStoreCardRequest } from "@/editor/tools/storeTools";
-import { combatProblems } from "./combatChecks";
-import { fieldBattleStrain } from "./pathBattleBudget";
 import { edgeCell, eventBeats, isInside, isOutdoor, oppositeSide, makeGameOn, orderPlaces, pickDoor, villageDoors, walkGame, wantsMakeGame, type GameSpec } from "./makeGame";
 import { restoreEventFromBefore } from "./restoreEvent";
 import { pickStageFrames, stageFrameProject, type EventBuildResult } from "./events";
@@ -71,24 +66,20 @@ import { dressRoom } from "./builders/dressRoom";
 import { tileMoveObjects } from "./builders/tileMove";
 import { planObjective } from "./discoverability";
 import { roomParts, SHAPE_EXAMPLES } from "./roomParts";
-import { DUNGEON_LAYOUT_SCHEMA, LAYOUT_CRITIQUE_ROUNDS, LAYOUT_REPAIRS, VILLAGE_LAYOUT_SCHEMA, attachLayoutCritique, bboxDungeonSpec, bboxPlacesOn, bboxVillageSpec, dungeonLayoutCard, hasDungeonLayout, hasVillageLayout, layoutRejectText, layoutSession, placeLayoutProblems, toBboxTerrain, villageLayoutCard, type LayoutPlaceState } from "./builders/placeLayout";
+import { DUNGEON_LAYOUT_SCHEMA, LAYOUT_CRITIQUE_ROUNDS, LAYOUT_REPAIRS, VILLAGE_LAYOUT_SCHEMA, attachLayoutCritique, bboxDungeonSpec, bboxPlacesOn, bboxVillageSpec, dungeonLayoutCard, hasDungeonLayout, hasVillageLayout, layoutRejectText, layoutSession, toBboxTerrain, villageLayoutCard, type LayoutPlaceState } from "./builders/placeLayout";
 import { DUNGEON_PLACE_WORD, gateFor, innerDungeonParent, innerGateSpot, requestedDungeonSide, settleDungeonGates } from "./dungeonGates";
 const OPP_SIDE = { north: "south", south: "north", east: "west", west: "east" } as const;
 import { DUNGEON_DESIGN_SCHEMA, arrivalEntrance, createDungeonPartsVerb, dungeonContext, dungeonParts, screenDungeonSpec } from "./dungeonParts";
 import { ROOM_IDEA_RULE, roomIdeasFor } from "./roomIdeas";
 import { buildsHandInterior, designMissingRooms } from "./designRooms";
 import { dropModelSeed } from "./modelSeed";
-import { TodoStore } from "./loop/todoStore";
-import { TodoLoop } from "./loop/continuation";
-import { HookStats } from "./loop/hookStats";
+import { V2Session, type Seen } from "./turn/session";
 import { zoneStatusLines } from "./loop/roomZones";
 import { buildBossEncounter, buildEndingScene, wantsBossEncounter, wantsEndingScene, type BossEncounterSpec, type EndingSceneSpec } from "./sceneVerbs";
-
-// 2026-10-23 5차: 고치기 3바퀴는 바퀴마다 다시 짓기+비평(20~35초)이라 던전 한 장에 200~250초가 들었다.
-// 속도 우선(6차)으로 1바퀴만 — 첫 비평의 major 를 한 번 고치고 남은 것은 보고한다.
-// 2026-10-30 omo 할 일 고리: 1바퀴 상한이 비평 항목을 «상한 막힘»으로 닫았다(세 장면 모두). 상한은 할 일 항목의 시도 상한(TODO_MAX_ATTEMPTS=3)과
-// 고리의 진척 규칙(진척 없는 재주입 2번이면 멈춤)이 맡는다 — 맵당 다시 짓기 상한도 같은 3.
-export const V2_MAX_REPAIR_ROUNDS = 3;
+import { stageOpensBattle } from "./story/stageBattle";
+import { V2_MAX_REPAIR_ROUNDS } from "./turn/session";
+import { hasRoomKit } from "./judge/placeFix";
+import { SIZE, ROOM_DESIGN_SCHEMA, ZONE_SCHEMA, CONNECTIONS_SCHEMA, HINTS_SCHEMA, LAYOUT_SCHEMA, LAYOUT_PATCH_SCHEMA, PLACE_SPEC_SCHEMA, POINT } from "./tools/placeSchema";
 /** 청사진 장소가 게임 세계와 안 맞을 때 돌려보내는 횟수(그 뒤에는 함수가 메운다). */
 const WORLD_BOUNCES = 2;
 /** 한 장소에서 여러 바깥 장소로 나가는 길을 서로 다른 변에 둔다. */
@@ -101,286 +92,11 @@ const repairCap = (spec?: PlaceSpec): number => (spec && hasLayout(spec) ? LAYOU
 /** build_hand_interior_room 이 layout 방마다 다는 장소 꼬리표(handInteriorTools.ts 와 같은 값). */
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
 
-interface Seen {
-  readonly checks: readonly MachineCheck[];
-  readonly critics: readonly CriticVerdict[];
-  readonly images: readonly { readonly mapId: string; readonly dataUrl: string }[];
-}
-
-/** 이 실행의 v2 상태 — 맵별 장소 기록·마지막 검사·누적 「그림 없음」. */
-export class V2Session {
-  /** 이번 실행의 할 일 목록(omo todo — src/ai/v2/loop). todo 동사가 쓰고, 멈춤 재주입 고리·최종 보고가 읽는다. */
-  readonly todo = new TodoStore();
-  /** 멈춤 재주입 고리의 연속·진척 상태(src/ai/v2/loop/continuation.ts). */
-  readonly loop = new TodoLoop();
-  /** 할 일 고리 갈고리의 발화 수(src/ai/v2/loop/hookStats.ts) — v2.summary 에 싣는다. */
-  readonly hooks = new HookStats();
-  readonly places = new Map<string, PlaceRecord>();
-  /** 세션마다 다른 덧값 — 던전 설계 안내(예시 순서·입구 낱말 순서·설계 실마리)를 같은 요청의 다른 세션에서 다르게 돌린다. */
-  readonly nonce = Math.floor(Math.random() * 1_000_000_000);
-  readonly seen = new Map<string, Seen>();
-  readonly content: { verb: string; result: ContentBuildResult }[] = [];
-  readonly missingArt = new Set<string>();
-  /** 컷신 무대(맵별) — 무대 검사·연출 비평 major 가 남았는지(G39: 비평이 짚은 겹침을 보고만 하고 끝냈다). */
-  readonly stages = new Map<string, { name: string; rounds: number; problems: string[]; eventIds?: readonly string[] }>();
-  readonly questions: string[] = [];
-  /** ask_user 를 한 번 되돌려 보냈는가(아무것도 짓지 않고 물었을 때). */
-  askBounced = false;
-  /** 설계 없이 온 손 도트 실내 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「방을 짓는 건 조수여야만 한다」). */
-  /** 칸 배치 없이 온 손 도트 실내를 돌려보낸 횟수(장소 이름별). */
-  readonly designBounced = new Map<string, number>();
-  /** 장소 이름 → 칸 배치 거절 횟수(고치기 두 번까지). */
-  readonly layoutRejects = new Map<string, number>();
-  /** 거절된(아직 짓지 않은) 칸 배치 장소 — 맵 id·장소 이름으로. edit_place layoutPatch 가 이것을 고쳐 make_place 로 다시 보낸다. */
-  readonly pendingLayouts = new Map<string, PlaceSpec>();
-  /** 지형 설계(hints.landform) 없이 온 마을 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「지형을 먼저 깔고 마을은 지형에 맞춰 자란다」). */
-  readonly terrainBounced = new Set<string>();
-  /** 코드 지형 마을: 미리보기로 보여 준 땅(장소 이름 → 씨앗·크기·성격 힌트). 자리(hints.layout)를 받아 지을 때 같은 땅을 쓴다. */
-  readonly villageTerrain = new Map<string, { terrainSeed: number; width: number; height: number; shape: string; previews: number }>();
-  /** 설계(dungeonDesign) 없이 온 던전·동굴 make_place 를 한 번 되돌려 보낸 장소 이름(2026-10-29 「맵은 조수가 설계한다」). */
-  readonly dungeonBounced = new Set<string>();
-  /** 장소 지식 카드(prompt.ts placeSpecCards)를 기록으로 준 종류 → 그때의 대화 번호(env.contextEpoch). 대화가 비워지면 다시 준다. */
-  readonly specsShown = new Map<string, number>();
-  /**
-   * generate_art 가 그림 생성을 시도한 기록(오너 2026-11-09 「인게임 스크린샷은 AI 가 그림을 그릴 수 없을 때로만」): 타이틀·엔딩 → 시도 결과.
-   * ok = 만들어 건다 · failed = 생성이 실패(오류 글) · unavailable = 이미지 생성 경로가 이 실행에 없다. 끝맺음 관문은 map-view 그림을 이 기록이 있을 때만 허용한다.
-   */
-  readonly artAttempts = new Map<"title" | "ending", { readonly status: "ok" | "failed" | "unavailable"; readonly error?: string; readonly failures?: number }>();
-  /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
-  blueprintRewrites = 0;
-  /** 첫 청사진이 장소·단계가 모자라 거절된 횟수(세션당 1회만 거절하고 다음부터는 걸어 준다 — 막다른 길 방지). */
-  blueprintThinRejects = 0;
-  /** 청사진 장소가 이 게임 세계(world.ts)와 안 맞아 돌려보낸 횟수 — 상한 뒤에는 함수가 메워서 건다(막다른 길 방지). */
-  worldBounces = 0;
-  /** 보이는 적·보물상자를 이미 둔 세계 장소(맵 id) — 한 실행에 한 번만 채운다(못 둔 자리를 다음 호출이 다시 채우지 않게). */
-  readonly stockedPlaces = new Set<string>();
-  /** build_blueprint_path 를 대사 없이 불러 돌려보낸 횟수(한 번만). */
-  pathTextBounces = 0;
-  /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
-  autoPathDone = false;
-  /** 끝맺음에서 청사진 장소를 함수가 대신 지었는가(한 번만). */
-  autoPlacesDone = false;
-  /** 끝맺음에서 지은 장소를 시작과 이었는가(한 번만). */
-  linkBuiltDone = false;
-  /** 빈 맵을 가리키던 청사진 장소의 새 이름 → 그 빈 맵 id(renameBareBlueprintPlaces). 장소를 지으면 빈 맵 이벤트를 옮긴다. */
-  barePlaces?: Map<string, string>;
-  /** 필수전투 레벨 맞춤이 시간 예산을 넘겨 멈췄다는 기록(끝맺음 ship-defaults 가 쓰고 최종 보고가 읽는다 — 프로젝트 객체는 체크포인트·다시 읽기에서 바뀌어 기록을 못 지킨다). */
-  fitIncomplete?: string;
-  /** 끝맺음 단계·장르 기본값이 스스로 쓴 데이터베이스 칸(구역:id:칸 → 값 JSON) — 「[게임 검사 부작용]」이 모델이 한 변경과 가른다(stageWrites.ts). */
-  readonly stageWrites: StageWrites = new Map();
-  /** 끝맺음에서 이동 칸 앞을 막는 이벤트를 옮겼는가(한 번만). */
-  autoLanesDone = false;
-  /** 출구·이동 칸 마감을 돈 뒤의 맵 지문(finishAutoBuild.lanesStamp). 늦은 고치기 차례가 장소를 다시 지으면 달라져 마감을 다시 돈다. */
-  lanesStamp?: string;
-  /** 지문이 달라져 마감을 다시 돈 횟수(되풀이 상한). */
-  lanesReruns = 0;
-  /** 이동 칸(착지·문) 앞을 막는 이벤트를 옆으로 옮긴다(createV2Tools 가 건다). 한 일 목록. */
-  clearLanes?: () => Promise<string[]>;
-  /** 청사진에 있는데 없는(또는 닿지 않는) 장소를 짓고 앞 장소와 잇는다(createV2Tools 가 건다). 한 일 목록. */
-  buildPlaces?: () => Promise<string[]>;
-  /** 이번 실행에 make_place 로 지은 장소가 시작에서 닿지 않으면 요청 속 맵(없으면 지금·시작 맵)과 잇는다(createV2Tools 가 건다). 한 일 목록. */
-  linkBuiltPlaces?: () => Promise<string[]>;
-  /** 청사진 경로를 결정적으로 짓는다(createV2Tools 가 건다) — 끝맺음 단계가 모델 대신 부른다. */
-  buildPath?: (why: string) => Promise<{ ok: boolean; summary: string }>;
-  criticCalls = 0;
-  criticMs = 0;
-  /** 모델 입장에서 「아직 안 끝난 것」 — 끝맺음 관문이 읽는다. */
-  unresolved(): { mapId: string; name: string; rounds: number; problems: string[] }[] {
-    const out: { mapId: string; name: string; rounds: number; problems: string[] }[] = [];
-    for (const [mapId, record] of this.places) {
-      const seen = this.seen.get(mapId);
-      if (!seen) continue;
-      const critics = seen.critics.filter((v) => v.mapId === mapId);
-      const problems = [
-        ...seen.checks.filter((c) => !c.ok && c.mapId === mapId).map((c) => `[기계 ${c.id}] ${c.detail}`),
-        ...critics.flatMap((v) => v.majors.map((m) => `[비평 축${m.axis}${m.x !== undefined ? ` (${m.x},${m.y})${m.w ? ` ${m.w}×${m.h}` : ""}` : ""}] ${m.what}${m.fix ? ` → ${m.fix}` : ""}`)),
-        ...critics.filter((v) => v.problem).map((v) => `[비평 미판정] ${v.problem}`),
-      ];
-      if (problems.length) out.push({ mapId, name: record.spec.name, rounds: record.rounds, problems });
-    }
-    for (const [mapId, st] of this.stages) if (st.problems.length) out.push({ mapId, name: `${st.name} 컷신(add_event redo:${st.eventIds?.[0] ?? "<장면 id>"})`, rounds: st.rounds, problems: st.problems });
-    return out;
-  }
-}
-
 const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
-
-const PLACE_TYPES: PlaceType[] = ["interior", "village", "dungeon", "cave", "street", "house"];
-const SIZE = { type: "string", enum: ["small", "medium", "large"] };
-// 모델이 쓰는 방 설계(손 도트 실내) — 2026-10-29 사용자 결정 「방을 짓는 건 조수여야만 한다」. 함수는 조화·검사만(designRoom.ts).
-const ROOM_DESIGN_SCHEMA = {
-  type: "object",
-  description: "(interior, when you design this room yourself) room shape, size, door and furniture groups. When given, the builder lays no sample and builds this design, fixing only name matching, overlap, chair facing, the aisle in front of the door and reachability, and returns what it fixed. See part ids with room_parts.",
-  properties: {
-    shape: { type: "string", description: "rect · L (cuts the corner) · U (cuts the middle of the north wall) · T (two south corners) · bay window bump (two north corners) · alcove (keeps only the north-wall nook on the corner side and lowers the rest of the north wall). Minimum floor per shape, examples and pictures in room_parts. A side room is not a shape but one more zone (each with its own design)" },
-    w: { type: "integer", description: "floor width in cells (5–24)" },
-    h: { type: "integer", description: "floor height in cells (wall-face rows excluded, 4–18)" },
-    corner: { type: "string", description: "(nw·ne·sw·se) the corner L cuts" },
-    door: { type: "string", description: "south exit spot — left·center·right" },
-    floor: { type: "string", description: "floor material id (floors in room_parts)" },
-    wall: { type: "string", description: "wall-face material id (walls in room_parts)" },
-    areas: { type: "array", description: "(optional, 2–4 inside one big room) distinct zones of this room — each with its own use, focal part and a reason for the player to walk there. For several real rooms use one zone per room (x, y, connections) instead.", items: {
-      type: "object",
-      properties: {
-        name: { type: "string", description: "zone name: hearth · counter · locked stacks · ritual spot" },
-        purpose: { type: "string", description: "one line: what this zone is for" },
-        focal: { type: "string", description: "the zone's focal part — one part id from groups (fireplace · summoning circle · counter 3x1 · iron gate · altar)" },
-        visit: { type: "string", description: "why the player comes here — tied to this game (inspect point, clue, locked place, stairs, counter, a person)" },
-      }, required: ["name", "purpose", "focal", "visit"] } },
-    groups: { type: "array", description: "(up to 16) furniture groups — parts used together (desk+chair, two armchairs+round table+lamp, a row of bookshelves). This list is everything placed (the function adds nothing).", items: {
-      type: "object",
-      properties: {
-        name: { type: "string", description: "group name: desk spot · reading nook · bookshelf wall" },
-        area: { type: "string", description: "(optional) the areas[].name this group belongs to" },
-        at: { type: "string", description: "(north·south·west·east·center·nw·ne·sw·se) where it goes (wall, corner, center). Bookshelves/display cases (wall furniture) and hangings (window, map, frame) stand only on north." },
-        pos: { type: "number", description: "along that wall from 0 (west/north end) to 1 (east/south end). Default 0.5" },
-        x: { type: "integer", description: "(optional) floor cell coordinate — the floor's top-left is 0,0. Takes precedence over at" },
-        y: { type: "integer" },
-        rug: { type: "string", description: "(optional) rug color under the group: red·royal·blue·green·purple·brown" },
-        items: { type: "array", items: { type: "object", properties: {
-          id: { type: "string", description: "chipset part id (room_parts) — e.g. bookshelf 3w · desk 3x1 · chair N (chair facing north) · armchair" },
-          dx: { type: "integer", description: "relative cell inside the group (top-left 0,0). Omitted = next to the previous part (downward for west/east wall groups)" },
-          dy: { type: "integer", description: "hangings use -2 (top row of the wall face)" },
-          count: { type: "integer", description: "(1–8) how many of the same part in a row" },
-        }, required: ["id"] } },
-      },
-      required: ["items"],
-    } },
-  },
-};
-const ZONE_SCHEMA = {
-  type: "object",
-  properties: {
-    kind: { type: "string", description: "zone kind word (a word from the card)" },
-    purpose: { type: "string", description: "one line: what the place is for" },
-    anchors: { type: "array", items: { type: "string" }, description: "hero-object words for this zone" },
-    vignettes: { type: "array", items: { type: "string" }, description: "(interior, optional) furniture groups for this room — main part ids (bookshelf 2w · forge · counter 3x1). The function picks the spots. Omitted = chosen by room kind" },
-    size: SIZE,
-    design: ROOM_DESIGN_SCHEMA,
-    floor: { type: "number", description: "which floor (default 1)" },
-    id: { type: "string", description: "zone id — the room id in a room graph (connections, entrance)" },
-    x: { type: "integer", description: "(interior room graph) rough top-left cell of this room (x right, y down; the plan origin is free). The function snaps neighbours to a one-cell wall; it never chooses the arrangement for you" },
-    y: { type: "integer", description: "(interior room graph) see x" },
-    landmark: { type: "string", description: "(interior room graph) the one part this room is built around — a part id that is also in design.groups. Big multi-cell parts are welcome (great telescope · summoning circle · pulpit · long hearth 6 · fireplace · counter 3x1)" },
-    stairs: { type: "string", enum: ["none", "up", "down"], description: "(interior room graph) none (default) or this room has stairs up/down — then put a stairs part (stairs up wood · stairs up stone · stairs down · stairwell down) in design.groups" },
-    role: { type: "string", description: "(interior room graph) main · side (side room) · corridor · stairs" },
-  },
-  required: ["kind"],
-};
-const CONNECTIONS_SCHEMA = { type: "array", description: "(interior room graph) which rooms join — a and b are zones[].id; type door (a door in a one-cell wall) or open (no wall between them). With connections, the function does not pick the floor plan: it only snaps your rough positions, carves the doors and checks reachability, and rejects impossible geometry with a fixed call.", items: { type: "object", properties: { a: { type: "string" }, b: { type: "string" }, type: { type: "string", enum: ["door", "open"] } }, required: ["a", "b"] } };
-const HINTS_SCHEMA = {
-  type: "object",
-  description: "only builder knobs the card told you about. Leave out anything you do not know.",
-  properties: {
-    variant: { type: "number", description: "another layout of the same spec (0,1,2…)" },
-    dressing: { type: "number", description: "amount of dressing 0 normal · 1 more · 2 packed (cozy)" },
-    houseCount: { type: "number" },
-    roofs: { type: "string" },
-    water: { type: "string", description: "(village) water in the land design — river: a river flowing east-west in the south (crossed by plank bridges) · none: no water. Always set it for grassland villages" },
-    woods: { type: "string" },
-    form: { type: "string" },
-    terrain: { type: "string" },
-    landform: { type: "string", enum: ["terraces", "hill", "slope", "plateau", "flat"], description: "(village) terrain design — the land shape. The village grows to fit this land" },
-    settle: { type: "string", enum: ["middle", "low"], description: "(village) the tier the village sits on — low: the lowest waterside tier (riverside and swamp villages; the river runs in front of the village) · middle: the middle tier (lower road and barns on the low southern tier)" },
-    tiers: { type: "number", description: "(village) number of high tiers above the village tier, 1–4" },
-    high: { type: "string", enum: ["north", "center", "west", "east"], description: "(village) where the high ground is" },
-    forestType: { type: "string" },
-    walls: { type: "boolean" },
-    wallGate: { type: "string" },
-    width: { type: "number" },
-    height: { type: "number" },
-    length: { type: "string", description: "street length short|medium|long (only for builders the card mentions)" },
-    plaza: { type: "string" },
-    landmark: { type: "string" },
-    shops: { type: "string", description: "short shop names, comma-separated, left to right" },
-    mirror: { type: "boolean" },
-    floorShapes: { type: "string", description: "shape per floor, comma-separated (bottom floor first)" },
-    floorGimmicks: { type: "string", description: "device per floor, comma-separated (bottom floor first, none if none)" },
-    townSize: { type: "string" },
-    streets: { type: "string" },
-    pond: { type: "boolean" },
-    terrainSeed: { type: "number", description: "(village) code terrain seed — change only if you dislike the preview land" },
-    layout: { type: "object", description: "(village) spots chosen by land-picture coordinates (x right, y down, in cells). The function moves them to the nearest buildable spot and links roads", properties: {
-      gather: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, plaza: { type: "boolean" } }, required: ["x", "y"], description: "gathering place (square, well)" },
-      landmark: { ...{ type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "high-ground building (watchtower, chapel, temple) — usually on the high tier" },
-      anchor: { ...{ type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "big building (inn, hall) — usually beside the gathering place" },
-      work: { ...{ type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "workplace (barn, storehouse)" },
-      houses: { type: "array", items: { type: "object", properties: { x: { type: "number" }, y: { type: "number" }, kind: { type: "string", enum: ["small", "medium", "large"], description: "house size — mix them so the same house does not repeat" } }, required: ["x", "y"] }, description: "house spots (house center) 3–12" },
-      fields: { type: "array", items: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "field spots" },
-      orchards: { type: "array", items: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "orchard (rows of trees, about 14×9) spots" },
-      pastures: { type: "array", items: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "fenced pasture (sheep, haystacks) spots" },
-      forests: { type: "array", items: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "forest clump spots" },
-      props: { type: "array", items: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] }, description: "roadside prop piles (cart, crates, hay, firewood, signpost, bench) — placed beside the nearest road" },
-      exits: { type: "array", items: { type: "string", enum: ["west", "east", "north", "south"] }, description: "map edges where the main road leaves the village, 1–2" },
-    } },
-  },
-};
-const RECT_PROPS = { x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer" }, h: { type: "integer" } };
-const LAYOUT_OBJECT = { type: "object", properties: { id: { type: "string", description: "exact catalog id" }, x: { type: "integer" }, y: { type: "integer" },
-  repeat: { type: "object", properties: { count: { type: "integer" }, dx: { type: "integer" }, dy: { type: "integer" } } }, purpose: { type: "string" } }, required: ["id", "x", "y"] };
-/** (실내) 칸 배치 — 모델이 모든 칸을 쓴다. 코드는 그대로 깔고 검증만 한다(interiorLayout.ts). */
-const LAYOUT_SCHEMA = {
-  type: "object",
-  description: "(interior, hand-pixel chipset) your exact cell layout — code lays it as written and only checks it. Ids from the [Interior catalog] card. Leave it out for other place types.",
-  properties: {
-    map: { type: "object", properties: { w: { type: "integer" }, h: { type: "integer" } }, required: ["w", "h"] },
-    landmark: { type: "object", description: "the one big piece the place is built around (placed first; may repeat in objects/wall_items at the same x,y)", properties: { ...LAYOUT_OBJECT.properties, wall: { type: "string", description: "only for a wall piece: the wall it hangs on / stands against" } }, required: ["id", "x", "y"] },
-    outer_wall: { type: "object", description: "closed ring of wall around the building: corner points, straight segments", properties: { material: { type: "string" }, path: { type: "array", items: { type: "array", items: { type: "integer" } } } }, required: ["material", "path"] },
-    walls: { type: "array", description: "partition walls, each running wall to wall", items: { type: "object", properties: { id: { type: "string" }, material: { type: "string" }, thickness: { type: "integer" }, stub: { type: "boolean" }, path: { type: "array", items: { type: "array", items: { type: "integer" } } }, purpose: { type: "string" } }, required: ["id", "material", "path"] } },
-    doors: { type: "array", description: "openings on partition walls (vertical wall: 3 tall, x,y = bottom cell)", items: { type: "object", properties: { wall: { type: "string" }, x: { type: "integer" }, y: { type: "integer" }, width: { type: "integer" }, piece: { type: "string" }, purpose: { type: "string" } }, required: ["wall", "x", "y"] } },
-    rooms: { type: "array", description: "one label per space closed by walls", items: { type: "object", properties: { id: { type: "string" }, at: { type: "array", items: { type: "integer" } }, floor: { type: "string" }, purpose: { type: "string" }, role: { type: "string" }, landmark: { type: "string" }, stairs: { type: "string", enum: ["none", "up", "down"] }, repeat: { type: "boolean", description: "a truly repeated room (guest room, cell)" }, jo: { type: "integer", description: "tatami rooms only: number of 1x2 mats" } }, required: ["id", "at", "floor"] } },
-    wall_items: { type: "array", description: "wall-mounted (h) and against-wall (w) pieces, each with its wall", items: { type: "object", properties: { ...LAYOUT_OBJECT.properties, wall: { type: "string" } }, required: ["id", "x", "y", "wall"] } },
-    rails: { type: "array", items: { type: "object", properties: { id: { type: "string" }, path: { type: "array", items: { type: "array", items: { type: "integer" } } } }, required: ["id", "path"] } },
-    regions: { type: "array", description: "older rectangle form (use outer_wall/walls/doors/rooms instead): rooms/areas as rectangles (top two rows of each are its north wall face)", items: { type: "object", properties: { id: { type: "string" }, ...RECT_PROPS,
-      floor: { type: "string" }, wall: { type: "string" }, purpose: { type: "string" }, role: { type: "string", description: "main · side · corridor · stairs" }, landmark: { type: "string", description: "optional: the catalog id this region is built around (an object you place inside it)" },
-      stairs: { type: "string", enum: ["none", "up", "down"] } }, required: ["id", "x", "y", "w", "h", "floor", "wall"] } },
-    openings: { type: "array", description: "cells carved through solid walls between regions (1 cell in a horizontal wall, 3 tall in a vertical wall)", items: { type: "object", properties: { ...RECT_PROPS, purpose: { type: "string" } }, required: ["x", "y"] } },
-    entrance: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], description: "one cell on the bottom map row, under a region" },
-    carpets: { type: "array", items: { type: "object", properties: { id: { type: "string" }, ...RECT_PROPS }, required: ["id", "x", "y", "w", "h"] } },
-    daises: { type: "array", description: "raised walkable platforms (dais ids)", items: { type: "object", properties: { id: { type: "string" }, ...RECT_PROPS }, required: ["id", "x", "y", "w", "h"] } },
-    floor_zones: { type: "array", description: "a second floor inside one room (entry, kitchen tiles, wet area)", items: { type: "object", properties: { floor: { type: "string" }, ...RECT_PROPS, purpose: { type: "string" } }, required: ["floor", "x", "y", "w", "h"] } },
-    objects: { type: "array", items: LAYOUT_OBJECT },
-    required: { type: "array", description: "each thing the request names and the ids you placed for it (standing pieces), or why nothing fits", items: { type: "object", properties: { ask: { type: "string" }, ids: { type: "array", items: { type: "string" } }, missing: { type: "string" } }, required: ["ask"] } },
-  },
-};
 /** 실내형 장소 낱말(감옥·여관·가게·서재…) — 요청이 던전을 분명히 말하지 않으면 실내 길로 짓는다. */
 const INTERIOR_PLACE = /감옥|뇌옥|감방|옥사|여관|주점|선술집|객잔|가게|상점|잡화점|서재|도서관|서고|교회|성당|예배당|대장간|길드|병원|학교|교실|jail|prison|dungeon cell|inn\b|tavern|shop|store|library|study|chapel|church|forge|guild/iu;
 /** 던전을 분명히 말하는 낱말 — 미궁·던전 탐험·동굴·몬스터 소굴·보스 방·층 여럿. */
 const CLEAR_DUNGEON = /던전|미궁|동굴|굴\b|소굴|탐험|보스\s*방|몬스터|함정|labyrinth|maze|dungeon(?!\s*cell)|cave|lair|crawl|boss room/iu;
-/** 칸 배치 고침(review_layout·edit_place.layoutPatch) — 지금 배치에 그대로 적용하고, 짓기가 다시 검증한다. */
-const LAYOUT_PATCH_SCHEMA = { type: "object", description: "applied to your current layout exactly, then validated with the same rules", properties: {
-  remove_objects: { type: "array", description: "entries of objects by exact id and x,y (an entry with repeat is removed whole); to move a piece remove it and add it", items: { type: "object", properties: { id: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } }, required: ["id", "x", "y"] } },
-  add_objects: { type: "array", items: LAYOUT_OBJECT },
-  remove_wall_items: { type: "array", items: { type: "object", properties: { id: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } }, required: ["id", "x", "y"] } },
-  add_wall_items: { type: "array", items: { type: "object", properties: { ...LAYOUT_OBJECT.properties, wall: { type: "string" } }, required: ["id", "x", "y", "wall"] } },
-  replace: { type: "object", description: "each key replaces that whole field of the layout (the complete new value): map, landmark, outer_wall, walls, doors, entrance, rooms, wall_items, objects, carpets, rails, daises, floor_zones, required", properties: {
-    map: LAYOUT_SCHEMA.properties.map, landmark: LAYOUT_SCHEMA.properties.landmark, outer_wall: LAYOUT_SCHEMA.properties.outer_wall, walls: LAYOUT_SCHEMA.properties.walls, doors: LAYOUT_SCHEMA.properties.doors,
-    entrance: LAYOUT_SCHEMA.properties.entrance, rooms: LAYOUT_SCHEMA.properties.rooms, wall_items: LAYOUT_SCHEMA.properties.wall_items, objects: LAYOUT_SCHEMA.properties.objects, carpets: LAYOUT_SCHEMA.properties.carpets, rails: LAYOUT_SCHEMA.properties.rails, daises: LAYOUT_SCHEMA.properties.daises, floor_zones: LAYOUT_SCHEMA.properties.floor_zones, required: LAYOUT_SCHEMA.properties.required } },
-} };
-const PLACE_SPEC_SCHEMA = {
-  type: "object",
-  properties: {
-    type: { type: "string", enum: PLACE_TYPES },
-    name: { type: "string" },
-    style: { type: "string" },
-    theme: { type: "string" },
-    size: SIZE,
-    zones: { type: "array", items: ZONE_SCHEMA },
-    features: { type: "array", items: { type: "string" } },
-    floors: { type: "number" },
-    layout: LAYOUT_SCHEMA,
-    connections: CONNECTIONS_SCHEMA,
-    entrance: { type: "string", description: "(interior room graph) zones[].id of the room with the south exit — it must be the southernmost room" },
-    exits: { type: "array", items: { type: "string", enum: ["south", "north", "east", "west"] } },
-    mapId: { type: "string", description: "only to rebuild an existing map in place" },
-    hints: HINTS_SCHEMA,
-    dungeonDesign: DUNGEON_DESIGN_SCHEMA,
-    floorDesigns: { type: "array", items: DUNGEON_DESIGN_SCHEMA, description: "(multi-floor dungeon) a design per floor (bottom floor first)" },
-    ...(bboxPlacesOn() ? { dungeonLayout: DUNGEON_LAYOUT_SCHEMA, villageLayout: VILLAGE_LAYOUT_SCHEMA } : {}),
-  },
-  required: ["type", "name"],
-};
-const POINT = { type: "object", properties: { x: { type: "number" }, y: { type: "number" } }, required: ["x", "y"] };
 
 /** 맵 하나를 사람이 보는 1배 그림으로(모델·비평가 공용). 렌더 경로가 없으면 undefined. */
 async function renderMap(env: PiAssistantV2Env, mapId: string): Promise<string | undefined> {
@@ -451,17 +167,6 @@ function recordWrite(env: PiAssistantV2Env, run: RecordingBuildRun, toolCallId: 
   recorded.get(env)!.add(toolCallId);
   const logs = run.takeConstructionLogs();
   env.record({ toolCallId, name, args, result: { ok, summary, ...(data !== undefined ? { data } : {}) }, ...(logs.length ? { constructionLogs: logs } : {}) });
-}
-
-/** 끝맺음 관문이 «이 장소를 고쳐라»에 붙이는 동사 — 그 맵을 지은 빌더가 받는 것만 이른다(안 받는 동사를 이르면 거절만 쌓인다). */
-/** 그 맵의 칩셋에 방 짓기 역할표(roomKit)가 있나 — move_object·dress_room 이 듣는 맵(손 도트 실내·일본·마법 학교·에도·캠퍼스·고딕·현대 도시 방). */
-const hasRoomKit = (project: Project, mapId: string): boolean => !!roomSpecOf(project.tilesets[project.maps[mapId]?.tilesetId ?? ""]);
-
-function placeFixVerbs(session: V2Session, project: Project | undefined, mapId: string): string {
-  const builder = session.places.get(mapId)?.builder;
-  if (builder === "world") return "구성기가 한 번에 깐 세계 맵이라 다시 짓지 않는다: 이벤트는 move_event, 소품은 stamp_object, 못 고치면 보고";
-  if (project ? hasRoomKit(project, mapId) : builder === "interior") return "장소는 edit_place·move_object(설계하지 않은 방의 빈 바닥만 dress_room)";
-  return "장소는 edit_place(소품 하나는 stamp_object)";
 }
 
 function nextStep(seen: Seen, rounds: number, designed: boolean | "dungeon" = false, cap = V2_MAX_REPAIR_ROUNDS, handInterior = true): string {
@@ -2213,127 +1918,3 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
 
 /** 음악만 바라는 요청에 남기는 v2 동사 — 맵 보기·사용자에게 묻기. 곡 걸기는 음악 묶음(set_game_audio)이 한다. */
 const MUSIC_ONLY_VERBS: ReadonlySet<string> = new Set(["inspect", "ask_user"]);
-/** 음악 요청의 일감인 게임 검사 줄 — 나머지(이미 있던 위협·출하 차단 등)는 음악만 바라는 요청에서 참고다. */
-const isMusicWork = (line: string) => /^\[게임 검사 (음악|효과음|실행|부작용)\]/u.test(line);
-
-/** 끝맺음 관문이 짚은 문제 하나 — 할 일 고리(src/ai/v2/loop)가 gate·critic 항목으로 덧붙인다. key 가 같으면 같은 문제다. */
-export interface V2GateProblem { readonly key: string; readonly text: string; readonly source: "gate" | "critic" }
-const gateKey = (text: string): string => text.replace(/\d+/gu, "#").replace(/\s+/gu, " ").trim().slice(0, 160);
-
-/**
- * 끝맺음 관문의 재료 — 고칠 수 있는 장소 문제(비평 major·기계 검사, 맵당 고치기 상한 전)와 게임 검사·출하 차단 줄.
- * leftovers = 고치기 상한에 닿아 보고로만 갈 장소 문제, missing = 그림·부품이 없어 못 한 것. 사용자에게 물은 실행은 비운다.
- */
-/** 게임 내용 검사 글(날씨·엔딩·상태·물건·깃발·부작용 + 전투 + 출하 차단). before = 요청 시작 저장본. */
-function gameProblemTexts(before: Project, after: Project, task: string, writes?: StageWrites): string[] {
-  let game: string[] = [];
-  try { game = [...gameContentProblems(before, after, task), ...unaskedChanges(before, after, task, writes)]; } catch { game = []; }
-  // 끝까지 깰 수 있는 전투인가(2026-10-25 판정 J55·J4): 회복 수단 없음·시키지 않은 무작위 조우·첫 구역이 너무 센 조우.
-  try { game.push(...combatProblems(before, after, task)); } catch { /* 검사 실패는 무시 */ }
-  // 새로 둔 보이는 적을 시작 파티로 재기(2026-10-30 omo-fr-o: 「약한 몬스터」 숲에 승률 93% 무리를 두어 판정자가 졌다) — 청사진 길 밖 전투까지.
-  try { game.push(...fieldBattleStrain(before, after, task)); } catch { /* 검사 실패는 무시 */ }
-  // 장면 손질(2026-10-31 서사): 새로 쓴 장면의 반복 대사·대사 속 이름·한두 줄짜리 장면·멈춘 화면·혼잣말 대화·제자리 못 찾는 사람.
-  try { game.push(...sceneCraftProblems(before, after, task)); } catch { /* 검사 실패는 무시 */ }
-  // 출하 차단(2026-10-25 사용자 규칙): 게임을 만드는 요청이면 편집기 기본값·한 줄 엔딩이 남은 채 «다 됐다»고 하지 못한다.
-  try { game.push(...shipBlockers(after, task).filter((b) => b.id !== "combat-no-healing" /* combatProblems no-healing 이 같은 것을 짚는다 */).map((b) => `[출하 차단 ${b.id}] ${b.message} 고치지 못하면 «완성»이라고 쓰지 말고 남은 기본값으로 보고한다.`)); } catch { /* 검사 실패는 무시 */ }
-  return game;
-}
-
-/**
- * 시작 저장본에 이미 있던 게임 검사 문제의 열쇠(before=after=시작 저장본). 할 일 고리는 이 열쇠와 같은 관문 문제를 «기존 결함»으로 보고에만 싣고
- * 완료를 막지 않는다(2026-10-30 omo-loop-1030: 버들마을 출입구 그림 없음이 세 장면 모두 할 일이 됐다).
- */
-export function v2BaselineGameKeys(project: Project, task: string): Set<string> {
-  const keys = new Set(gameProblemTexts(project, project, task).map((g) => `game:${gateKey(g)}`));
-  for (const p of autoPlayGateProblems(project, task)) keys.add(p.key);
-  return keys;
-}
-
-/** 끝까지 플레이되는가(2026-11-09 assistant-reward 기준선: 몬스터 수집 두 판이 «완료»인데 엔딩까지 걸어갈 길이 없었다) — 게임을 만드는 요청만. 열쇠는 막힌 실행·단계마다 하나다. */
-function autoPlayGateProblems(project: Project, task: string): V2GateProblem[] {
-  if (!buildsWholeGame(project, task)) return [];
-  try { return playProblems(project).map((p) => ({ key: `${AUTOPLAY_GATE_PREFIX}${p.key}`, text: p.text, source: "gate" as const })); } catch { return []; }
-}
-
-/** 컷신 이벤트(또는 그 컷신이 세운 사람) 명령 안에 전투(battleProcessing)가 있나 — 지금 프로젝트 기준. */
-function stageOpensBattle(project: Project, mapId: string, eventIds: readonly string[] | undefined): boolean {
-  const map = project.maps[mapId];
-  if (!map || !eventIds?.length) return false;
-  const has = (n: unknown): boolean => Array.isArray(n) ? n.some(has) : !!n && typeof n === "object" && ((n as { kind?: unknown }).kind === "battleProcessing" || Object.values(n).some(has));
-  return map.events.some((e) => eventIds.includes(e.id) && has(e.pages ?? []));
-}
-/**
- * 연출 비평가는 지도 틀만 본다 — 전투 화면은 그 틀에 없다. 컷신(또는 그 사람)이 지금 전투를 연다면 «싸움이 안 보인다»류 지적은 지난 일이다
- * (2026-10-30 omo-loop-1030b terra boss-room r1·r3: 컷신에 전투를 patch_event_page 로 붙이고 run_scene_test 로 전투 진입까지 확인했는데,
- * 붙이기 전에 받은 연출 비평 «요청한 싸움은 보이지 않는다»가 관문 항목으로 남아 두 판 모두 막힘으로 끝났다).
- */
-const FIGHT_WORD = /싸움|싸우|전투|결투|battle|fight/iu;
-function withoutStaleFightCritique(project: Project, session: V2Session, open: ReturnType<V2Session["unresolved"]>): ReturnType<V2Session["unresolved"]> {
-  return open.map((o) => {
-    const st = o.name.includes("컷신(") ? session.stages.get(o.mapId) : undefined;
-    if (!st || !stageOpensBattle(project, o.mapId, st.eventIds)) return o;
-    return { ...o, problems: o.problems.filter((p) => !(p.startsWith("[연출 비평]") && FIGHT_WORD.test(p))) };
-  }).filter((o) => o.problems.length);
-}
-
-export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { problems: V2GateProblem[]; leftovers: string[]; missing: string[] } {
-  if (session.questions.length) return { problems: [], leftovers: [], missing: [] };
-  const open = env ? withoutStaleFightCritique(env.ctx.project, session, session.unresolved()) : session.unresolved();
-  const missing = [...session.missingArt];
-  const fixable = open.filter((o) => o.rounds < V2_MAX_REPAIR_ROUNDS);
-  // 게임 내용 검사(날씨·엔딩·상태·물건 고르기·깃발·부작용) — 요청 낱말과 실제로 바뀐 이벤트를 맞댄다.
-  let game: string[] = env ? gameProblemTexts(env.request.project, env.ctx.project, env.request.task, session.stageWrites) : [];
-  // 아무것도 안 바꾸고 «도구가 없다»며 끝내기(2026-10-24 g3-edit-move: 대장장이 옮기기를 묻기만 했다, g3-apple-count: 그림 카드만 남겼다).
-  // 설정이 이미 기본값(켜짐)이면 set_project_settings 가 아무것도 안 바꾸는 것이 맞다(2026-10-25 데모 과업: 탭 걷기·팡파레·빠른 달려들기는 기본 켜짐).
-  const settingOnly = /휴대폰|모바일|터치|탭하면|진동|조이스틱|달리기 단추|레벨 ?업|팡파레|달려들|도움말/u.test(env?.request.task ?? "") && !/만들|두고|세워|놓아|놔|추가/u.test(env?.request.task ?? "");
-  // 스토어 평가 읽기·답글·소식 카드는 프로젝트를 바꾸지 않는 것이 맞다(2026-10-25).
-  // «내 게임 평가에 답글 달아 줘»처럼 «게임» 낱말이 섞여도 만들기·고치기 동사가 없으면 스토어 일로 본다.
-  const storeOnly = wantsStoreTools(env?.request.task ?? "") && !/만들|추가|넣어|놓아|세워|지어|고쳐|바꿔|옮겨|줄여|늘려/u.test(env?.request.task ?? "");
-  if (env && !settingOnly && !storeOnly && !/\?\s*$|알려\s*줘|뭐야|어디|있어\?|보여\s*줘|설명|정리해서|요약/u.test(env.request.task.trim())) {
-    const pick = (p: typeof env.ctx.project) => JSON.stringify([p.maps, p.database, p.endings ?? null, p.commonEvents ?? null, p.switches, p.variables, p.startMapId, p.startPos ?? null, p.system ?? null, p.dialogueDesk ?? null]);
-    try {
-      if (pick(env.request.project) === pick(env.ctx.project)) game.push("[게임 검사 실행] 이 요청으로 맵·데이터가 하나도 바뀌지 않았다. 묻거나 «도구가 없다»·«도구 호출 횟수 초과»라고 끝내지 말고 실행한다(도구 호출 횟수 제한은 없다 — 2026-10-29 3c Argon 이 room_parts 한 번 뒤 «호출 횟수 초과»라며 짓지 않았다). 장소·방은 make_place(방은 zones[].design 을 채워서)로 짓는다. 있는 NPC·물건은 move_event·upsert_event·patch_event_page 로 고치고, 새 것은 add_people·add_event·upsert_event 로 만든다. 꼭 맞는 그림이 없으면 가장 비슷한 기존 그림·물건으로 두고 보고에 적는다(아이템·이벤트·대사는 그림과 상관없이 만든다).");
-    } catch { /* 비교 실패는 무시 */ }
-  }
-  // 음악만 바라는 요청: 음악 밖 지적(이미 있던 체크포인트 위협·출하 차단…)은 일감이 아니다 — 한 바퀴를 더 돌리지 않고 기록에만 남긴다.
-  if (env && audioOnly(env.request.task)) {
-    const outside = game.filter((g) => !isMusicWork(g));
-    game = game.filter(isMusicWork);
-    if (outside.length) env.emit({ type: "execution_status", name: "v2.music-only.notes", ok: true, summary: `음악 요청 밖 참고 ${outside.length}건 — 고치지 않음`, data: { notes: outside } });
-  }
-  // 작은 수정·음악 요청 턴이 «게임으로 시작한 프로젝트»의 옛 맵 화면 그림 때문에 막히지 않게: 이 요청이 게임 전체를 짓는 말(wantsWholeGame)이거나 시작 저장본에는 없던 map-view 일 때만.
-  if (env && (wantsWholeGame(env.request.task) || mapViewArtProblems(env.request.project, session, !!env.generateImage, env.request.task).length === 0)) game.push(...mapViewArtProblems(env.ctx.project, session, !!env.generateImage, env.request.task));
-  const problems: V2GateProblem[] = [
-    ...game.map((g) => ({ key: `game:${gateKey(g)}`, text: g, source: "gate" as const })),
-    ...(env && !settingOnly && !storeOnly ? autoPlayGateProblems(env.ctx.project, env.request.task) : []),
-    // 열쇠는 맵(과 장소/컷신)마다 하나 — 고칠 때마다 문제 글이 바뀌어도 같은 항목이 다시 열려 시도 상한(3)이 센다.
-    ...fixable.map((o) => ({ key: `place:${o.mapId}:${o.name.includes("컷신(") ? "stage" : "place"}`, text: `${o.name}(${o.mapId}) 고치기 — ${placeFixVerbs(session, env?.ctx.project, o.mapId)}, 컷신은 add_event: ${o.problems.slice(0, 5).join(" / ")}`,
-      source: o.problems.some((p) => p.startsWith("[비평")) ? "critic" as const : "gate" as const })),
-  ];
-  // 칸 배치 장소(placeLayout.ts): 배치 항목이 맵에 있나·이어짐·보스 앞방·문앞 길·자기 비평 두 바퀴 — 지금 맵에서 다시 잰다.
-  if (env) problems.push(...placeLayoutProblems(env.ctx.project, session, (m) => (session.places.get(m)?.rounds ?? 0) < V2_MAX_REPAIR_ROUNDS));
-  const leftovers = open.filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS).map((o) => `${o.name}: ${o.problems.slice(0, 4).join(" / ")}`);
-  return { problems, leftovers, missing };
-}
-
-/**
- * 오너 2026-11-09 「인게임 스크린샷은 AI 가 그림을 그릴 수 없을 때로만」: 타이틀·엔딩 그림이 맵 화면(map-view)이면, 이 실행에 그림 생성 경로가 있는 한
- * generate_art 를 먼저 시도해야 한다. 시도가 오류/불가로 기록돼 있으면(artAttempts) 그 실패가 증거라 맵 화면을 받아 준다.
- * 시도가 성공했는데 그림이 여전히 맵 화면이면(그 뒤에 다시 덮어씀) 다시 열린다.
- */
-export function mapViewArtProblems(project: Project, session: V2Session, canGenerate: boolean, task: string): string[] {
-  if (!canGenerate || !buildsWholeGame(project, task)) return [];
-  const out: string[] = [];
-  const isView = (id: string | undefined): boolean => typeof id === "string" && id.startsWith("map-view:");
-  const attempt = (t: "title" | "ending") => session.artAttempts.get(t);
-  // 열리는 경우: 이 실행에 생성기가 없었다(unavailable) 또는 같은 대상에서 두 번 실패(failed ≥ 2). 성공(ok)은 문을 열지 않는다.
-  const accepted = (t: "title" | "ending") => { const a = attempt(t); return !!a && (a.status === "unavailable" || (a.status === "failed" && (a.failures ?? 1) >= 2)); };
-  const title = (project.system.titleScreen ?? {}) as { backgroundResourceId?: string };
-  const titleBg = title.backgroundResourceId ?? ((project.system as unknown as { titleResourceId?: string }).titleResourceId);
-  if (isView(titleBg) && !accepted("title")) out.push("[출하 차단 art-generation] 타이틀 그림이 게임 속 맵 화면(" + titleBg + ")이다 — 그림을 만들 수 있으니 맵 화면으로 두지 않는다. generate_art{target:\"title\", prompt:<이 이야기의 장면>} 으로 그림을 만든다. 생성이 오류로 실패하면(기록됨) 그때는 맵 화면을 받아 준다. 고치지 못하면 «완성» 이라고 하지 않는다.");
-  for (const ending of project.endings ?? []) {
-    const bg = ending.presentation?.backgroundResourceId;
-    if (isView(bg) && !accepted("ending")) { out.push("[출하 차단 art-generation] 엔딩 「" + (ending.name || ending.id) + "」 그림이 게임 속 맵 화면(" + bg + ")이다 — generate_art{target:\"ending\", prompt:<엔딩 장면>} 으로 그림을 만든다. 생성이 오류로 실패하면(기록됨) 그때는 맵 화면을 받아 준다."); break; }
-  }
-  return out;
-}

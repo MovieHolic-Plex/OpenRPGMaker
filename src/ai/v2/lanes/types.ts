@@ -1,6 +1,6 @@
 // 출구·이동 칸 마감(session.clearLanes, 끝맺음 단계 lanes) 의 공용 형 — 단계 하나 = lanes/stages/<id>.ts 하나, 목록 lanes/stages/index.ts.
 import type { PiAssistantV2Env } from "../env";
-import type { V2Session } from "../verbs";
+import type { V2Session } from "../turn/session";
 import type { RecordingBuildRun } from "../buildRun";
 import type { ReachRepair } from "../eventReach";
 

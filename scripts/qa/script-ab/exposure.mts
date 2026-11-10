@@ -3,7 +3,8 @@
 //   bun scripts/qa/script-ab/exposure.mts                     (A arm)
 import { readFileSync } from "node:fs";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
-import { createV2Tools, V2Session } from "../../../src/ai/v2/verbs.ts";
+import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
+import { V2Session } from "../../../src/ai/v2/turn/session.ts";
 import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt.ts";
 import { withTodoLoop } from "../../../src/ai/v2/loop/todoTools.ts";
 import { exposeV2Tools } from "../../../src/ai/v2/toolExposure.ts";

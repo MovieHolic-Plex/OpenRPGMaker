@@ -1,8 +1,8 @@
-# 조수 v2 파일 목록: 줄 수·들어오는 의존(v2 안/밖)·나가는 의존·다른 곳이 안 쓰는 export. usage: python3 scripts/qa/assistant-v2/inventory.py <repo> > inventory.json
+# 조수 v2 파일 목록: 줄 수·들어오는 의존(v2 안/밖)·나가는 의존·다른 곳이 안 쓰는 export. usage: python3 scripts/qa/assistant-v2/refactor/inventory.py <repo> > inventory.json
 import os,re,sys,json,subprocess,collections
 repo=sys.argv[1]; root=os.path.join(repo,'src/ai/v2')
 files=sorted(os.path.relpath(os.path.join(d,f),repo) for d,_,fs in os.walk(root) for f in fs if f.endswith('.ts'))
-allts=subprocess.run(['git','-C',repo,'ls-files','src','scripts','test','electron'],capture_output=True,text=True).stdout.split('\n')
+allts=subprocess.run(['git','-C',repo,'ls-files','--cached','--others','--exclude-standard','src','scripts','test','electron'],capture_output=True,text=True).stdout.split('\n')
 allts=[f for f in allts if re.search(r'\.(ts|tsx|mts|mjs)$',f)]
 src={f:open(os.path.join(repo,f),encoding='utf-8',errors='ignore').read() for f in allts}
 def resolve(frm,spec):

@@ -1,6 +1,6 @@
 // 출구·이동 칸 마감의 맵 지문 — 마감 뒤 장소를 다시 지었는지 본다(finish 단계 lanes·lanes-stamp, finishBuildPending).
 import type { PiAssistantV2Env } from "../env";
-import type { V2Session } from "../verbs";
+import type { V2Session } from "../turn/session";
 import type { Project } from "@/project/types";
 
 /**

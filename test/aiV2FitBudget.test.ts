@@ -30,7 +30,7 @@ vi.mock("@/ai/v2/monsterRouteLevels", async (importOriginal) => {
 import { applyShipDefaults } from "@/ai/v2/shipDefaults";
 import { shipBlockers } from "@/ai/v2/shipChecks";
 import { stage as shipDefaultsStage } from "@/ai/v2/finish/stages/ship-defaults";
-import { V2Session } from "@/ai/v2/verbs";
+import { V2Session } from "@/ai/v2/turn/session";
 import { beginFitBudget, checkFitBudget, enterFastFit, fitIsFast, FIT_BUDGET_MS, guardFitBudget, FIT_INCOMPLETE_PREFIX, FitBudgetExceeded, fitBudgetExceeded, restoreFitState, snapshotFitState } from "@/ai/v2/monsterRouteLevels";
 
 const WHOLE = "몬스터 수집 모험 게임";

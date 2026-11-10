@@ -6,7 +6,7 @@
 // 재생 스크립트(scripts/qa/assistant-v2/finishReplay.mts)도 이 함수를 불러, 실제 실행기와 같은 순서를 지나는지 따로 맞추지 않아도 된다.
 import { worldOf } from "../world";
 import type { PiAssistantV2Env } from "../env";
-import type { V2Session } from "../verbs";
+import type { V2Session } from "../turn/session";
 import { BLUEPRINT_PATH_IDS, walkBlueprint } from "../blueprint";
 import { battleSites, healingSources } from "../combatChecks";
 import { buildsWholeGame } from "../shipChecks";
