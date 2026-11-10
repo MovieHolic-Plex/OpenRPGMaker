@@ -43,6 +43,7 @@ const SKILL_MUD = "skill_fs2_well_mud";
 const SKILL_MOLT = "skill_fs2_well_molt";
 const SKILL_ECHO = "skill_fs2_well_echo";
 const SKILL_FLOOD = "skill_fs2_well_flood";
+const SKILL_GULP = "skill_fs2_well_gulp";
 const STATE_SHELL = "state_fs2_well_shell";
 const STATE_MOLT = "state_fs2_well_molt";
 const SW_WELL_P2 = "sw_fs2_well_beast_p2";
@@ -166,13 +167,22 @@ export function wellData(project: Project, exec: Exec): void {
     effect: { kind: "damage", statistic: "attack", affects: "hp" }, elementId: "water",
     stateEffects: [{ stateId: "state_wet", chance: 100, operation: "add" }], animationId: "anim_gen_tackle_impact",
     chargeTurns: 1, chargeBreak: { damage: 420, message: "퍼올린 물이 흩어졌다!", stagger: false } });
+  // ⑩ 아가미 물 머금기 — 여섯째 숭마다(3·9·15…, 두 페이즈 모두). 아가미를 물로 부풀렸다가 한 사람에게 물대포를 쏜다.
+  //   (노래 박자 2·5·8 바로 앞에 두면 터지는 차례가 노래 차례를 먹는다 — 시뮬 덤프에서 노래가 사라졌다. 그래서 비늘 박자에 올린다.)
+  //   부푼 아가미는 칼날에 약하다: 검 속성 기술에 맞으면 터지고 영주가 한 차례 휘청인다(칼로만 끊는 두 번째 끊기 — 번개·아이템 없이도
+  //   카엘의 0MP 「검격」으로 답할 수 있다). 노래는 번개, 물 머금기는 칼 — 끊는 손이 둘로 나뉜다.
+  skill({ id: SKILL_GULP, name: "아가미 물 머금기", scope: "enemy", type: "normal", power: 190, variance: 8, hitRate: 100,
+    description: "아가미 가득 물을 머금었다가 한 사람에게 내뿜는다.\n모으는 동안 검 기술에 맞으면 아가미가 터진다.",
+    effect: { kind: "damage", statistic: "attack", affects: "hp" }, elementId: "water", animationId: "anim_gen_tackle_impact",
+    chargeTurns: 1, chargeBreak: { elementIds: ["sword"], message: "칼날이 부푼 아가미를 그었다! 머금은 물이 터져 나온다.", stagger: true } });
 
   exec(project, "upsert_enemy", { enemy: {
     id: FS2_WELL_BEAST_ENEMY, name: "우물 밑 눈먼 영주", level: 18, monsterResourceId: "generated-enemy-golem-clay", battleScalePercent: 125,
     collapseEffect: "bossSink", hideHp: true,
-    // 숨은 보스 — Lv14 두 사람 기준 시뮬 80판(scripts/qa/zz-well-beast-sim.mts)으로 맞춘 값. 민첩은 몇 포인트에도 승률이 크게 흔들린다.
-    stats: { maxHp: 7280, maxMp: 0, attack: 298, defense: 74, mind: 153, agility: 56 },
-    skillIds: ["skill_attack", SKILL_BITE, SKILL_TAIL, SKILL_SONG, SKILL_SHELL, SKILL_MUD, SKILL_MOLT, SKILL_ROAR, SKILL_ECHO, SKILL_FLOOD],
+    // 숨은 보스 — Lv14 두 사람 기준 시뮬 200판(레인 계측 zz-well-beast-sim)으로 맞춘 값. 민첩은 몇 포인트에도 승률이 크게 흔들린다.
+    // HP 7280→10920(물 머금기 추가 뒤): 예고를 기술로만 끊는 플레이 33% · 아이템까지 쓰면 84.5%.
+    stats: { maxHp: 10920, maxMp: 0, attack: 298, defense: 74, mind: 153, agility: 56 },
+    skillIds: ["skill_attack", SKILL_BITE, SKILL_TAIL, SKILL_SONG, SKILL_SHELL, SKILL_MUD, SKILL_MOLT, SKILL_ROAR, SKILL_ECHO, SKILL_FLOOD, SKILL_GULP],
     actions: [
       // 1페이즈(아가미 노래가 리듬의 중심 — 석판 「셋째 숨마다 노래」): 2·5·8…번째 차례에 노래를 모은다.
       act(SKILL_BITE, 5, P1), act(SKILL_TAIL, 4, P1), act(SKILL_MUD, 3, P1),
@@ -186,6 +196,9 @@ export function wellData(project: Project, exec: Exec): void {
       act(SKILL_ECHO, 40, { kind: "switch", switchId: SW_WELL_ECHO, value: true }, { off: SW_WELL_ECHO, on: SW_WELL_FLOOD }),
       act(SKILL_FLOOD, 40, { kind: "switch", switchId: SW_WELL_FLOOD, value: true }, { off: SW_WELL_FLOOD, on: SW_WELL_BITE2 }),
       act(SKILL_BITE, 40, { kind: "switch", switchId: SW_WELL_BITE2, value: true }, { off: SW_WELL_BITE2, on: SW_WELL_SONG }),
+      // 물 머금기 — 여섯째 숭마다(3·9·15…) 끼어든다(45 — 그 차례는 비늘·순환 칸을 누른다. 순환 칸은 쓰지 않았으니 다음 차례로 밀릴 뿐).
+      //   순환 스위치에 달지 않는 까늭: 끊긴 기술은 행동 뒤 스위치를 안 다루니 같은 칸이 끊임→다시 머금기로 갇힌다.
+      act(SKILL_GULP, 45, { kind: "turn", start: 3, interval: 6 }),
       act(SKILL_SONG, 40, { kind: "switch", switchId: SW_WELL_SONG, value: true }, { off: SW_WELL_SONG, on: SW_WELL_SHELL2 }),
       act(SKILL_SHELL, 40, { kind: "switch", switchId: SW_WELL_SHELL2, value: true }, { off: SW_WELL_SHELL2, on: SW_WELL_MUD2 }),
       act(SKILL_MUD, 40, { kind: "switch", switchId: SW_WELL_MUD2, value: true }, { off: SW_WELL_MUD2, on: SW_WELL_ECHO }),
@@ -247,6 +260,7 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
   addEv(project, mapId, "ev_fs2_well_tablet_2", "옛 저수조 석판", WELL.tabletNest, [page("ev_fs2_well_tablet_2_p", "비문", [], [
     sign("옛 저수조 석판", "노래가 차오를 때 하늘의 불로 아가미를 지져라.\n노래는 목에서 끊긴다."),
     sign("옛 저수조 석판", "아가미가 피로 물들면 주인은 벽에 소리를 두 번 튕겨 한 사람을 찾는다.\n그 메아리는 칼로는 못 끊는다. 하늘의 불만이 흩는다."),
+    sign("옛 저수조 석판", "여섯 숭에 한 번, 주인은 아가미 가득 물을 머금는다.\n부푼 아가미는 칼날 기술에 터진다. 그때는 번개를 아끼고 검 기술로 베어라."),
     say(ELENA, "하늘의 불… 번개 말이야.\n내 연쇄 번개라면 닿을 거야."),
   ])]);
 
