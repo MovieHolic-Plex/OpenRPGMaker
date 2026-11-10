@@ -334,6 +334,8 @@ npm run harness -- assistant-capability small-jobs-rescore --run <그 폴더>   
 - 보고서(`small-jobs-report`): 자체완결 HTML. 실행 폴더에 `causes.json`(`[{title, why, jobs:[id…]}]` — 결과를 읽은 사람이 쓴다)이 있으면 원인별로 묶고,
   없으면 통과하지 못한 일을 판정 글 그대로 싣는다. `disclosures.json`(문자열 배열)은 「판정에 대해 알아 둘 것」에 싣고, 재판정으로 상태가 바뀐 일은
   `liveVerdict` 에서 계산해 표로 보인다(실행 때 판정 → 지금). 픽스처별 표(통과·«완료»·호출·시간·토큰 중앙값)도 함께 낸다.
+  `--before <앞 실행 폴더>` 를 주면 맨 위에 전/후 표를 싣는다: 통과·중앙값·`generate_art`/`define_ending`/`edit_place` 거절 수, 가족·픽스처별,
+  앞에서 통과했다가 지금 통과하지 못한 일(회귀)과 앞에서 통과하지 못한 일을 일마다(앞 까닭 → 지금 까닭).
 
 ### 기준선 — 2026-11-11, main `46274bc35f`, Terra high + v2
 
@@ -377,6 +379,37 @@ npm run harness -- assistant-capability small-jobs-rescore --run <그 폴더>   
 저장·재로드 기준(파일 해시 → 새 컨텍스트가 읽은 내용) 12건, 공통 이벤트 호출을 따라가지 않던 시뮬레이터 1건(`give-key-once-starter`),
 요청에 없는 「보이는 적」 조건 1건(`encounter-slimes-starter`). `dress-snowfield-built` 의 구역은 실행 뒤 넓혔고 넓힌 뒤에도 불합격이다.
 고친 판정은 자기검사 30/30 을 다시 통과했다.
+
+### 다시 재기 — 2026-11-11, main `84a7fa331a` (B1~B5a · 예산 · 끝맺음 수정 뒤)
+
+같은 묶음·같은 판정·같은 모델 고정으로 한 번 돌렸다(07:58~08:39 KST, 41분). 판정은 고치지 않았고 재판정도 없다. 실행 전 자기검사 30/30.
+원본 `~/z-project/assistant-fable-runs/smalljobs/after-84a7fa331a/`, 보고서 http://mdc-server:18301/assistant-small-jobs-after.html (맨 위가 전/후 표).
+
+| | 기준선 `46274bc35f` | 지금 `84a7fa331a` |
+|---|---|---|
+| 통과 | 23/30 | **28/30** |
+| 턴이 «완료»로 끝남 | 21 | 25 |
+| 요청 밖 변경이 있었던 일 | 16 | 0 |
+| 도구 호출 중앙값 (합계) | 18 (530) | 9 (325) |
+| 걸린 시간 중앙값 (합계) | 3.5분 (111.9분) | 1.3분 (51.0분) |
+| 모델 호출 중앙값 | 20 | 8 |
+| 입력 토큰 중앙값 (합계) | 599k (18.9M) | 144k (6.8M) |
+| 지시문 글자 중앙값 | 32,371 | 15,080 |
+| 처음 실린 도구 수 중앙값 | 39 | 19 |
+| `generate_art` 거절 / 호출 | 27 / 41 | 0 / 0 |
+| 픽스처 blank · starter · built | 1/2 · 11/12 · 11/16 | 2/2 · 12/12 · 14/16 |
+
+시간은 기계 부하가 달라(기준선 때 부하 평균 22~26, 이번 5~9) 일부는 부하 차이일 수 있다. 호출 수·토큰은 부하와 무관하다.
+
+- 기준선 불합격 7건 중 6건 통과: `move-npc-door-front` · `shopkeeper-blank` · `chest-gold-built` · `rename-title-built` · `dress-trees-starter` · `dress-snowfield-built`.
+- **아직 불합격** `door-backdoor-built` — 원인이 바뀌었다. 사람을 옮기던 마무리 단계는 없어졌고(맵 밖·다른 이벤트 변경 0), 지금은 `place_door` 가
+  「타일셋 참고문서 선행 읽기 필요 (30건)」으로 3번 거절한다. 모델이 `read_tileset_reference` 를 「이 용도 전부」까지 읽은 뒤에도 같다. `create_transfer_pair` 는 부르지 않았다.
+- **회귀** `pickup-key-built`(통과 → 불합격) — 두 실행 모두 낱개 열쇠 그림이 없어 `draw_object` 로 공방 카드를 올렸다(한 턴 안에는 놓이지 않는다).
+  기준선은 그 뒤 끝맺음 관문의 할 일에서 다른 칩셋 키트의 열쇠 꾸러미를 `stamp_object` 로 찍어 「보이는 것」이 생겼고, 지금은 투명한 줍기 이벤트로 두고
+  「그림 대기 중」이라고 정직하게 미완료로 보고했다. 요청이 「바닥에 떨어져 있게」이므로 판정은 그대로 불합격이다.
+- 통과했지만 턴이 미완료인 것 3: `sign-starter` · `examine-fireplace-built`(조사 이벤트를 연출 비평이 인물 컷신으로 보고 「컷신 고치기」를 넣는다),
+  `dress-trees-starter`(나무는 심었는데 그 전에 막힘 처리된 할 일이 남는다).
+- 예산 밖 1: `door-roundtrip-starter` 만 처음 실린 도구 48개 · 지시문 34,755자(나머지는 9~21개).
 
 ## 시각 검수
 

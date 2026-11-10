@@ -16,7 +16,7 @@ if (mode === 'selfcheck') {
   process.exitCode = await runSmallJobs({ out: option('out'), model: option('model'), only: option('only'), v2: flag('v2'), parallel: option('parallel'), timeoutMin: option('timeout-min'), skipCompleted: flag('skip-completed') });
 } else if (mode === 'report') {
   const { writeSmallJobsReport } = await import('./smallJobs/report');
-  process.exitCode = writeSmallJobsReport({ run: option('run'), html: option('html') });
+  process.exitCode = writeSmallJobsReport({ run: option('run'), html: option('html'), before: option('before') });
 } else if (mode === 'rescore') {
   const { rescoreSmallJobs } = await import('./smallJobs/rescore');
   process.exitCode = rescoreSmallJobs({ run: option('run') });
