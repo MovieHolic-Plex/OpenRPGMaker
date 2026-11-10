@@ -10,7 +10,7 @@ import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
 import { builderFor } from "../../../src/ai/v2/builders/index.ts";
 import { measureInteriorBareFloor } from "../../../src/editor/handInterior/bareFloor.ts";
 import type { PlacePatch, PlaceSpec } from "../../../src/ai/v2/types.ts";
-import { applyPatch } from "../../../src/ai/v2/verbs.ts";
+import { applyPatch } from "../../../src/ai/v2/tools/support.ts";
 import type { Project } from "../../../src/project/types.ts";
 
 const [batch, out] = process.argv.slice(2);

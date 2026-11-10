@@ -62,6 +62,9 @@
 | `deadexports.py <repo>` | export 를 쓰임새로 가른다(A 어디서도 안 씀 · B 자기 파일만 · C 테스트만 · D 자기 파일+테스트) |
 | `inventory.py <repo>` | 파일별 줄 수·의존·순환 재료 |
 | `outline.mts` · `outline2.mts` | 파일의 최상위 선언 / 함수 본문의 문장 개요 |
+| `localdeps.mts <repo> <file> <fn>` | 큰 함수 안 문장들이 어느 지역 이름을 쓰는지(쪼갤 자리 찾기) |
+| `extractlocals.mts …` | 큰 함수의 지역 문장들을 다른 파일의 공장 함수로 뗀다(문맥 객체에서 받는다) |
+| `mvfile.mts <repo> <from> <to> …` | 파일 옮기기 + 저장소 전체 임포트 고치기 |
 
 한 조각의 흐름: 기준선 `tsc` 로그를 뜬다 → `movedecls` → `tsloop --fix` 를 새 오류 0 까지 → `deadexports` 의 A·B 를 `prune` → `golden --diff` → 커밋.
 
@@ -73,7 +76,7 @@
 | R1 | 죽은 것 지우기: 끌어오는 곳 없는 파일 2개 삭제, 어디서도 안 쓰는 선언 15개와 그에 딸린 것 삭제, 테스트만 부르던 함수 3개(`vqaFixRetry` `vqaFollowUp` `advisorFollowUp`)와 스크립트만 부르던 `v2FinishGate` 삭제, 자기 파일만 쓰는 export 266개에서 `export` 떼기. 41,421 → 40,884줄 | 끝 |
 | R2a | `V2Session` 을 `turn/session.ts` 로 — `verbs` ↔ `lanes` 35파일 순환이 끊겼다(남은 순환은 두 파일짜리 다섯) | 끝 |
 | R2b | 끝맺음 관문 → `judge/finishGate.ts`, 고치기 안내 → `judge/placeFix.ts`, 장소 스키마 → `tools/placeSchema.ts`, `stageOpensBattle` → `story/stageBattle.ts`. `verbs.ts` 2,357 → 1,921줄 | 끝 |
-| R2c | `createV2Tools`(1,662줄 함수 하나에 동사 25개가 지역 상태를 공유) 쪼개기: 공유 상태를 명시적 문맥 객체로 만들고 동사마다 파일로 | 다음 |
+| R2c | `createV2Tools` 쪼개기: 공유 지역 상태 → `tools/context.ts`(`makeVerbContext` · 형 `VerbContext`), 동사 공장 → `tools/verbs/{blueprint,place,people,puzzle,art,objects,makeGame,read}.ts`, 세션에 거는 끝맺음 함수 → `tools/sessionHooks.ts`, 밑받침 → `tools/support.ts`. `verbs.ts` 는 131줄(묶기만) | 끝 |
 | R3 | `turn/`: 실행기 스크립트의 판정자 조율을 `src/ai/v2/turn` 으로 | |
 | R4 | `request/`: 요청 글(과 프로젝트)을 가르는 최상위 선언을 `request/` 아홉 파일로(동작 그대로) — `scope`(게임 하나·한 곳·고치기·이어 하기·쓰기 요청) · `audio`(옛 `musicWords.ts`) · `combat` · `place` · `genre` · `asks`(날씨·흔들림·엔딩·장면…) · `title` · `toolGroups`(낱말 → 도구 묶음, 옛 `game.ts` 의 묶음들) · `world`(옛 `worldRequest.ts`). `shipChecks.ts` 에는 `REQUESTED_FEATURES`(낱말+프로젝트 검사+고칠 글이 한 표) 만 남았다. 함수 본문 안의 익명 정규식(`gameChecks.ts` 약 25곳, `finishGate.ts` 2곳, `verbs.ts` 1곳)은 본문을 건드리지 않아 그대로다 | 끝 |
 | R5 | `judge/`: 검사들을 한 폴더로, 그 뒤 한 결과 형식으로 | |
