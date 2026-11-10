@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import type { GameEvent, Project } from "@/project/types";
-import { adviseTurn, advisorFollowUp, compactToolLog, parseAdvisorReply, summarizeProjectDiff } from "@/ai/v2/advisor";
+import { adviseTurn, compactToolLog, parseAdvisorReply, summarizeProjectDiff } from "@/ai/v2/advisor";
 
 const page = (id: string, conditions: unknown[], commands: unknown[], sprite = true) => ({
   id, name: id, conditions, trigger: { kind: "action" }, priority: "same", movement: { type: "fixed" }, commands,
@@ -85,15 +85,11 @@ describe("parseAdvisorReply — 등급은 코드가 정한다", () => {
   });
 });
 
-describe("adviseTurn / advisorFollowUp", () => {
-  it("막음이 있으면 고치거나 못 했다고 쓰라는 후속 지시문을 만들고, 없으면 만들지 않는다", async () => {
+describe("adviseTurn", () => {
+  it("알리지 않은 삭제는 막음으로 판정한다", async () => {
     const chat = async () => JSON.stringify({ removals: [{ what: "오프닝 컷신", mentioned: false, evidence: "삭제: «오프닝 컷신»" }] });
     const verdict = await adviseTurn({ task: "회상을 넣어 줘", toolLog: "", diff: "삭제: «오프닝 컷신»", report: "다 됐습니다" }, chat);
     expect(verdict.notes[0]?.level).toBe("blocker");
-    const follow = advisorFollowUp(verdict)!;
-    expect(follow).toContain("[독립 검토자]");
-    expect(follow).toContain("최종 보고(앞 보고를 고침):");
-    expect(advisorFollowUp({ notes: [{ level: "concern", what: "x", evidence: "" }], ms: 0, inputChars: 0 })).toBeUndefined();
   });
 
   it("호출이 실패해도 던지지 않고 판정 불가로 남긴다", async () => {

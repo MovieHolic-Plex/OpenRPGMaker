@@ -32,7 +32,7 @@ const onEdge = (map: GameMap, c: { x: number; y: number }, side: Side) =>
   side === "north" ? c.y === 0 : side === "south" ? c.y === map.height - 1 : side === "west" ? c.x === 0 : c.x === map.width - 1;
 
 /** 칸이 맵의 어느 쪽 끝에 가장 가까운가. */
-export function nearestSide(map: GameMap, c: { x: number; y: number }): Side {
+function nearestSide(map: GameMap, c: { x: number; y: number }): Side {
   const d: [Side, number][] = [["north", c.y / map.height], ["south", (map.height - 1 - c.y) / map.height], ["west", c.x / map.width], ["east", (map.width - 1 - c.x) / map.width]];
   return d.sort((a, b) => a[1] - b[1])[0]![0];
 }
@@ -44,7 +44,7 @@ const edgeDist = (map: GameMap, c: { x: number; y: number }, side: Side) =>
  * side 쪽 가장자리의 걸어 닿는 칸 하나 — 가장자리에 가장 가까운 줄에서(그 줄이 맨 끝이 아니면 길이 끝까지 안 닿은 마을: terra 강가 마을 서쪽),
  * 길 칸 먼저, 없으면 길에서 가까운 칸, 같으면 가장자리 가운데. ignore 는 곧 걷을 문.
  */
-export function worldSideGateSpot(project: Project, map: GameMap, side: Side, ignore: ReadonlySet<string> = new Set()): { x: number; y: number; road: boolean; edge: number } | undefined {
+function worldSideGateSpot(project: Project, map: GameMap, side: Side, ignore: ReadonlySet<string> = new Set()): { x: number; y: number; road: boolean; edge: number } | undefined {
   const reach = reachableCells(project, map);
   if (!reach) return undefined;
   const w = map.width, h = map.height;
@@ -125,7 +125,7 @@ export function requestedDungeonSide(task: string): Side | undefined {
 }
 
 /** 설계의 입구 쪽 — entrance 낱말, 없으면 입구 방 자리(at)에서 가장 가까운 맵 끝(designLayout.normalizeDesign 과 같은 규칙). */
-export function entranceSideOf(design: { entrance?: unknown; rooms?: readonly { role?: unknown; at?: unknown }[] } | undefined): Side | undefined {
+function entranceSideOf(design: { entrance?: unknown; rooms?: readonly { role?: unknown; at?: unknown }[] } | undefined): Side | undefined {
   if (!design) return undefined;
   const said = SIDE_WORD[String(design.entrance ?? "").trim().toLowerCase()];
   if (said) return said;

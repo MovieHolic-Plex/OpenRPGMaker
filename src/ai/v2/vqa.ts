@@ -12,11 +12,11 @@ export const VQA_MAX_ROUNDS = 3;
  * 플레이에 지장 주는 결함(blocker)이 남으면 출하 차단으로 보고 판을 더 준다(2026-10-28 사용자: «VQA 가 핵심»).
  * 스위트 기준선에서 3판을 다 돌고도 결함이 남은 채 «보고만» 하고 끝난 게임이 절반이었다. polish 만 남으면 3판에서 멈춘다.
  */
-export const VQA_BLOCKER_EXTRA_ROUNDS = 2;
+const VQA_BLOCKER_EXTRA_ROUNDS = 2;
 export const VQA_ROUND_CAP = VQA_MAX_ROUNDS + VQA_BLOCKER_EXTRA_ROUNDS;
 export const vqaBlockers = (round: VqaRound | undefined): readonly VqaDefect[] => (round?.defects ?? []).filter((d) => d.severity === "blocker");
 /** 한 판에 검수자에게 보내는 그림 수 상한. 맵이 많으면 시작 맵·이번에 바뀐 맵을 먼저. */
-export const VQA_MAX_IMAGES = 10;
+const VQA_MAX_IMAGES = 10;
 
 export interface VqaShot {
   /** 사람이 읽는 자리 이름: 「타이틀」·「오프닝 1/3」·「맵 «검은 장미 저택 2층»」. */
@@ -71,7 +71,7 @@ export function vqaShotPlan(project: Project, changedMapIds: ReadonlySet<string>
 }
 
 /** 검수자에게 보내는 지시. 게임을 만든 이유·조수 보고는 보여 주지 않는다(눈가림) — 요청 원문과 그림만. */
-export function vqaPrompt(task: string, shots: readonly VqaShot[], round: number, previous: readonly VqaDefect[]): string {
+function vqaPrompt(task: string, shots: readonly VqaShot[], round: number, previous: readonly VqaDefect[]): string {
   return [
     "You are an adversarial visual QA reviewer for a 2D RPG built by an AI assistant. You did NOT build it. Find concrete defects a player would notice.",
     `The user's request (Korean, verbatim): «${task.slice(0, 1500)}»`,
@@ -135,10 +135,10 @@ export async function reviewVqaRound(input: {
 // 타이틀/맵 화풍 차이처럼 조수 동사로 못 고치는 것인데, 모델이 조명값만 바꾸며 돌았다. 결함마다 «동사로 고칠 수 있는가»를
 // 낱말로 결정적으로 나눈다. 못 고치는 것은 장부(ai-activity 「런타임/빌더 결함(모델 밖)」)로만 남기고 고치기 차례에 넘기지 않는다.
 // 남은 결함 수(보고·출하 차단)는 그대로 센다 — 장부로 뺐다고 결함이 사라지지 않는다.
-export type VqaDefectKind =
+type VqaDefectKind =
   | "runtime-screen" | "runtime-hud" | "runtime-text" | "lighting" | "art-style" | "missing-art" | "title-art" | "sprite-scale" | "player-not-drawn" | "shot-limit" | "builder-exit" | "builder-tiles"
   | "fixable";
-export interface VqaDefectClass { readonly fixable: boolean; readonly kind: VqaDefectKind; readonly why: string }
+interface VqaDefectClass { readonly fixable: boolean; readonly kind: VqaDefectKind; readonly why: string }
 type Target = VqaShot["kind"] | undefined;
 /** 순서대로 처음 맞는 것. only = 그 대상(맵·타이틀·오프닝) 결함에만. */
 const OUTSIDE: readonly (readonly [VqaDefectKind, RegExp, string, (readonly Target[])?])[] = [
@@ -157,7 +157,7 @@ const OUTSIDE: readonly (readonly [VqaDefectKind, RegExp, string, (readonly Targ
 const EMPTY_MAP = /빈 맵|기본 (초록 )?잔디|잔디 (타일 )?(하나|한 장|한 가지|만)|(오브젝트|물체|사물|가구)[^.。]{0,8}(하나도 |아무것도 )?없|에디터 기본|플레이 공간이 (만들어지지|없)/u;
 /** 타이틀·오프닝 그림 «품질»(잘림·격자·구도)은 모델이 고칠 수 없다. 장르·장소에 안 맞는 그림·기본 템플릿 오프닝은 고칠 수 있다(다른 그림·map-view 타이틀·오프닝 끄기). */
 const TITLE_QUALITY = /잘(려|린|림|렸)|구도|격자|그리드|여백|공백|마름모|끊겨|흐릿|번져/u;
-export function vqaClassify(d: VqaDefect): VqaDefectClass {
+function vqaClassify(d: VqaDefect): VqaDefectClass {
   const spot = d.where.includes(" · ") ? d.where.slice(d.where.lastIndexOf(" · ") + 3) : "";
   const text = `${spot} ${d.what}`;
   const target = d.target?.kind;
@@ -228,19 +228,6 @@ export function vqaDefectLine(d: VqaDefect, index: number, project?: Project): s
 const SPARSE_ROOM = /빈 바닥|맨바닥|빈 방|텅 빈|empty room|bare floor|(방|실|복도|바닥|공간|교실|room|office|classroom|floor|corridor|hall)[^.。\n]{0,24}(비어|비었|텅|휑|허전|썰렁|empty|bare|sparse|barren)|(비어|비었|텅|휑|허전|썰렁|empty|bare|sparse|barren)[^.。\n]{0,24}(방|실|복도|바닥|공간|room|floor|corridor|hall)/i;
 
 /**
- * 고치기 차례가 도구를 하나도 부르지 않고 글만 쓰고 끝났을 때(2026-10-25 실측: 결함 9→9→9, 판마다 도구 0회) — 그 차례는 판으로 세지 않고,
- * 결함 목록을 다시 주며 한 번 더 고치게 한다. 이 지시와 함께 첫 모델 호출에 tool_choice required 가 걸린다.
- */
-export function vqaFixRetry(round: VqaRound, brief?: string): string {
-  return [
-    ...(brief ? [brief, ""] : []),
-    `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS} — 고치기 다시] 앞 차례에서 도구를 하나도 부르지 않고 보고만 고쳤다. 보고를 고치는 것은 고치기가 아니다. 지금 도구로 아래 결함을 하나씩 고친다 — 결함마다 대상 맵·그림을 바꾸는 도구를 부른다.`,
-    ...vqaActionable(round).fix.map((d, i) => vqaDefectLine(d, i)),
-    "정말 고칠 수 없는 결함은 고치지 말고 최종 보고에 «미해결»로 남긴다. 고치지 않은 결함을 «고쳤다»고 쓰지 않는다.",
-  ].join("\n");
-}
-
-/**
  * 고치기 차례의 자기완결 머리글(J78): 고치기 차례는 앞 대화를 비우고 시작한다(로컬 Claude CLI 가 긴 실행 끝에 「Autocompact is thrashing」으로
  * 죽었다). 그래서 요청 원문과 결함 대상 맵의 요약(이름·id·크기·이벤트)만 싣는다. 더 필요하면 조수가 도구로 다시 본다.
  */
@@ -273,22 +260,6 @@ export function vqaRepeated(defect: VqaDefect, previous: VqaRound | undefined): 
     && [...words(`${old.where} ${old.what}`)].filter((w) => mine.has(w)).length >= 3);
 }
 
-/** 조수에게 줄 고치기 지시(판 사이). previous = 바로 앞 판 — 같은 결함이 다시 나오면 앞 고치기가 화면에서 효과가 없었다는 뜻이다. */
-export function vqaFollowUp(round: VqaRound, brief?: string, previous?: VqaRound, project?: Project): string {
-  if (round.problem && !round.defects.length) {
-    return `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS}] 검수를 하지 못했다(${round.problem}). 다시 찍어 검수하도록 할 것이 없으면 최종 보고에 «화면 검수 미완료»라고 쓴다.`;
-  }
-  return [
-    ...(brief ? [brief, ""] : []),
-    `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS}] 다른 모델의 검수자(${round.reviewer})가 실제 그림에서 아래 결함을 찾았다. 각각 고친다 — 맵은 show_map_region 으로 다시 보고, 타이틀·오프닝은 다시 그려 확인한다. 고칠 수 없으면 고치지 말고 최종 보고에 남은 결함으로 쓴다.`,
-    ...vqaActionable(round, previous).fix.map((d, i) => vqaDefectLine(d, i, project)),
-    // 모델 밖(런타임·빌더) 결함과 두 판 연속 그대로인 결함은 고치기 차례에 넘기지 않는다 — 남은 결함으로는 센다.
-    ...(() => { const a = vqaActionable(round, previous); const n = a.ledger.length + a.stuck.length; return n ? [`(이 밖에 결함 ${n}건 — 모델 밖 ${a.ledger.length}건은 런타임/빌더 장부로, 두 판 연속 그대로인 ${a.stuck.length}건은 미해결로 남긴다. 이것들은 고치지 말고, 최종 보고의 남은 결함에 그대로 센다.)`] : []; })(),
-    "보고만 다시 쓰는 것은 고치기가 아니다 — 이 차례에는 도구로 그림을 바꾼다(도구를 하나도 부르지 않으면 이 판은 세지 않고 한 번 더 시킨 뒤, 그래도 안 하면 «미해결»로 끝난다). 고치지 않은 결함을 «고쳤다»고 쓰지 않는다.",
-    "다 고친 뒤 「최종 보고(앞 보고를 고침):」로 시작하는 보고 하나로 앞 보고를 대신한다. 검수자가 다음 판에서 같은 그림을 다시 본다.",
-  ].join("\n");
-}
-
 /** 끝난 고리의 요약 — 마지막 판이 깨끗하지 않으면 남은 결함을 그대로 적는다(정직한 남은 목록). */
 export function vqaSummary(rounds: readonly VqaRound[]): { readonly clean: boolean; readonly text: string; readonly leftover: readonly VqaDefect[] } {
   const last = rounds.at(-1);
@@ -298,18 +269,6 @@ export function vqaSummary(rounds: readonly VqaRound[]): { readonly clean: boole
   if (vqaClean(last)) return { clean: true, text: `화면 검수 ${rounds.length}판: ${counts} — 마지막 판 결함 없음`, leftover: [] };
   const outside = last.defects.filter((d) => !vqaClassify(d).fixable).length;
   return { clean: false, text: `화면 검수 ${rounds.length}판: ${counts} — 남은 결함 ${last.defects.length}건${outside ? `(그중 모델 밖 ${outside}건)` : ""}${last.problem ? ` (${last.problem})` : ""}`, leftover: last.defects };
-}
-
-/** 결함이 남은 채 고리가 끝났을 때 조수에게 줄 마지막 지시 — 더 고치지 말고 남은 목록을 보고에 그대로 쓴다. */
-export function vqaLeftoverInstruction(rounds: readonly VqaRound[], why?: string): string {
-  const summary = vqaSummary(rounds);
-  const problem = rounds.at(-1)?.problem;
-  const blockers = vqaBlockers(rounds.at(-1));
-  return [
-    ...(blockers.length ? [`[출하 차단 vqa-blocker] 플레이에 지장 주는 화면 결함 ${blockers.length}건이 ${rounds.length}판 뒤에도 남았다 — 이 게임은 «완성»이 아니다. 보고 첫 줄에 「아직 완성 아님: 화면 결함 ${blockers.length}건」이라고 쓴다.`] : []),
-    `[화면 검수 끝 — ${summary.text}${why ? ` · ${why}` : ""}] 더 고치지 말고, 앞 보고를 대신하는 최종 보고를 「최종 보고(앞 보고를 고침):」로 시작해 쓴다. 끝에 아래 남은 것을 그대로 적는다(«다 됐다»고 쓰지 않는다):`,
-    ...(summary.leftover.length ? summary.leftover.map((d) => `- ${d.where}: ${d.what}${vqaClassify(d).fixable ? "" : " (런타임/빌더 결함 — 모델 밖)"}`) : [`- 화면 검수 미완료${problem ? `(${problem})` : ""}`]),
-  ].join("\n");
 }
 
 /** 게임 전체를 만드는 요청인가 — 출하 검사(shipChecks.wantsWholeGame)와 같은 범위. */
@@ -328,7 +287,7 @@ export interface VqaReviewerPick { readonly provider: string; readonly model: st
  * gemini-4-argon-high 만 그림을 봤다. 그래서 Argon 검수자는 늘 high 로 부른다 — google-antigravity 는 강도 라우팅(effort high →
  * gemini-4-argon-high), 이름에 강도가 박힌 사용자 지정 엔드포인트(openai-compat:*)는 모델 ID 자체를 -high 로.
  */
-export function vqaVisionModel(pick: { readonly provider: string; readonly model: string }): { provider: string; model: string; effort?: "high" } {
+function vqaVisionModel(pick: { readonly provider: string; readonly model: string }): { provider: string; model: string; effort?: "high" } {
   const argon = /^gemini-4-argon(?:-(?:low|medium|high))?$/u.exec(pick.model);
   if (!argon) return { provider: pick.provider, model: pick.model };
   if (pick.provider.startsWith("openai-compat:")) return { provider: pick.provider, model: "gemini-4-argon-high" };
@@ -338,7 +297,7 @@ export function vqaVisionModel(pick: { readonly provider: string; readonly model
 export const vqaReviewerLabel = (pick: VqaReviewerPick): string =>
   `${pick.provider}/${pick.effort === "high" && pick.model === "gemini-4-argon" ? "gemini-4-argon-high" : pick.model}${pick.sameAsMain ? " 「같은 계열 검수」(다른 계열 검수자가 답하지 못함 — 약한 증거)" : ""}`;
 
-export interface VqaReviewerInput {
+interface VqaReviewerInput {
   readonly main: { readonly provider: string; readonly model: string };
   readonly vision?: { readonly provider: string; readonly model: string };
   readonly advisor?: { readonly provider: string; readonly model: string };
@@ -375,8 +334,4 @@ export function vqaReviewerCandidates(input: VqaReviewerInput): VqaReviewerPick[
   if (input.advisor && usable(input.advisor.provider) && seesImages(input.advisor.provider) && !differs(input.advisor.provider)) add(input.advisor, true);
   add(input.main, true);
   return out;
-}
-
-export function pickVqaReviewer(input: VqaReviewerInput): VqaReviewerPick {
-  return vqaReviewerCandidates(input)[0]!;
 }

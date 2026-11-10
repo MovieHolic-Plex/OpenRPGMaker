@@ -23,7 +23,7 @@ const layoutMap = (m: GameMap) => (m.locations ?? []).some((l) => (l.tags ?? [])
 const graphMap = (m: GameMap) => (m.locations ?? []).some((l) => (l.tags ?? []).includes(GRAPH_TAG) && (l.tags ?? []).includes("decl"));
 
 /** 이번 턴에 새로 짓거나 바꾼 맵 가운데 모델 설계로 지은 손 도트 실내. */
-export function designedInteriorsChanged(project: Project, changed: TodoChanged | undefined): GameMap[] {
+function designedInteriorsChanged(project: Project, changed: TodoChanged | undefined): GameMap[] {
   if (!changed) return [];
   return [...changed.mapIds].map((id) => project.maps[id]).filter((m): m is GameMap => !!m && designedMap(m));
 }

@@ -22,7 +22,7 @@ const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Arr
 /** 요청이 장면(컷신·연출)을 시켰나. */
 export const SCENE_WORDS = /장면|컷신|컷씬|연출|오프닝|프롤로그|엔딩|에필로그|등장|나타나|회상|배신|본색|합류|축하|경고|첫\s*만남|만나는|이별|고백|scene|cutscene|opening|ending|flashback/iu;
 /** 요청이 주고받는 대화를 시켰나. */
-export const TALK_WORDS = /대화|흥정|심문|설득|협상|말다툼|수다|만나|합류|고백|배신|대사|banter|haggle|interrogat|conversation|dialogue/iu;
+const TALK_WORDS = /대화|흥정|심문|설득|협상|말다툼|수다|만나|합류|고백|배신|대사|banter|haggle|interrogat|conversation|dialogue/iu;
 
 interface Line { readonly speaker: string; readonly body: string; readonly pageIndex: number; readonly path: string }
 interface ScenePage {
@@ -131,7 +131,7 @@ const BUILT_SIGN_EVENT = /^ev_(?:world_)?gate_|^ev_locked_door_|^ev_dead_end_/u;
 /** 함수가 여러 자리에 같은 글로 적는 안내 줄 — 남은 단서 목록(«· 아직 …»)과 그 단계 이벤트의 자리(«「X」은 … 에 있다.»). */
 const BUILT_HINT_LINE = /^·\s|^「[^」]{1,40}」[은는이가]\s.{1,60}에 있다[.。]?$/u;
 
-export interface SceneCraftFinding { readonly id: "repeat" | "name" | "thin" | "static" | "oneVoice" | "offPost"; readonly text: string }
+interface SceneCraftFinding { readonly id: "repeat" | "name" | "thin" | "static" | "oneVoice" | "offPost"; readonly text: string }
 
 export function sceneCraftFindings(before: Project, after: Project, task: string): SceneCraftFinding[] {
   const pages = scenePages(before, after);

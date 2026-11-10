@@ -64,7 +64,7 @@ function villageRoomFor(zone: { readonly kind: string; readonly purpose?: string
 }
 
 /** 명세 → 가져올 등록 장소. 이름만 먼저 보고, 없으면 테마·방 종류까지. */
-export function joseonPlaceFor(spec: PlaceSpec): Pick {
+function joseonPlaceFor(spec: PlaceSpec): Pick {
   if (spec.type === "cave" || spec.type === "dungeon") return /사냥|들판|숲|field|hunt/iu.test(textOf(spec)) ? FIELD : CAVE;
   if (spec.type === "village" || spec.type === "street") {
     if (/사냥|들판|field|hunt/iu.test(spec.name)) return FIELD;

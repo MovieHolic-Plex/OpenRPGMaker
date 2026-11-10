@@ -11,7 +11,7 @@ import type { GameEvent, GameMap } from "@/project/types";
 import { doorArtCells, unreachableEvents } from "./eventReach";
 import type { BuildRun } from "./types";
 
-export const LOCKED_DOOR_PREFIX = "ev_locked_door_";
+const LOCKED_DOOR_PREFIX = "ev_locked_door_";
 const LINE = "문이 굳게 잠겨 있다. 들어갈 수 없는 집이다.";
 // 청사진 단계 이름(「잠긴 문」)과 겹치면 단계 찾기·지름길 검사가 이 칸을 단계로 잡는다(vm5 argon jrpg 재생) — 단계에 안 쓰일 이름.
 const DOOR_NAME = "굳게 닫힌 집 문";

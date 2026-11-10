@@ -7,12 +7,12 @@
 // 모델의 방 그래프가 어느 기준 방과 방 수·크기·자리까지 거의 같으면 베낀 것으로 보고 돌려보낸다(planFingerprint).
 // 그림은 public/assets/room-ideas/ 의 96색 축소 사본(1배, 원본은 suite/mapvqa/refs/anchors/). 실행기가 env.readPublicAsset 으로 읽는다.
 
-export type RoomIdeaKind = "hall" | "bed" | "study" | "other";
+type RoomIdeaKind = "hall" | "bed" | "study" | "other";
 
 /** 기준 방의 대략 평면(칸, 벽면 두 줄 포함 방 사각형) — 지문용. 그림을 눈으로 재서 적었다(16px 한 칸). */
-export interface RoomIdeaPlan { readonly w: number; readonly h: number; readonly rooms: readonly { readonly name: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }[] }
+interface RoomIdeaPlan { readonly w: number; readonly h: number; readonly rooms: readonly { readonly name: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }[] }
 
-export interface RoomIdea {
+interface RoomIdea {
   readonly id: string;
   readonly kind: RoomIdeaKind;
   readonly file: string;
@@ -69,7 +69,7 @@ export function roomIdeasFor(purpose: string, n = 2): RoomIdea[] {
 export const ROOM_IDEA_RULE = "Reference rooms (the ones players liked): look at their structure — how many rooms, how they connect (doors, open arches, a corridor), the stairs and side rooms, the one big landmark each room is built around, and why a player walks from one room to the next. Borrow structure, not the plan: do not reproduce a reference's room count, sizes and positions — a plan that matches one is sent back. Build your own plan from this request and story.";
 
 /** 우리 평면(방 사각형)과 기준 평면이 얼마나 같은가 — 방 수가 같고 평면 크기가 ±3 안일 때만, 정규화 사각형의 짝 IoU 평균. */
-export function planSimilarity(ours: RoomIdeaPlan, ref: RoomIdeaPlan): number {
+function planSimilarity(ours: RoomIdeaPlan, ref: RoomIdeaPlan): number {
   if (ours.rooms.length !== ref.rooms.length) return 0;
   if (Math.abs(ours.w - ref.w) > 3 || Math.abs(ours.h - ref.h) > 3) return 0;
   const norm = (p: RoomIdeaPlan) => p.rooms.map((r) => ({ x0: r.x / p.w, y0: r.y / p.h, x1: (r.x + r.w) / p.w, y1: (r.y + r.h) / p.h }));

@@ -84,7 +84,7 @@ const NARRATOR = /^(내레이션|나레이션|해설|narration|narrator|-)?$/iu;
 
 // ───────────────────────── 무대 모의 ─────────────────────────
 
-export interface StageActorPos {
+interface StageActorPos {
   readonly key: string; // "player" 또는 이벤트 id
   readonly name: string;
   readonly x: number;
@@ -92,11 +92,11 @@ export interface StageActorPos {
   readonly dir: Dir;
   readonly visible: boolean;
 }
-export interface StageFrame {
+interface StageFrame {
   readonly label: string;
   readonly actors: readonly StageActorPos[];
 }
-export interface WalkRecord {
+interface WalkRecord {
   readonly who: string;
   readonly from: Cell;
   readonly goal: Cell;
@@ -108,7 +108,7 @@ export interface WalkRecord {
   readonly onRoad: number;
   readonly path: readonly Cell[];
 }
-export interface CutsceneStage {
+interface CutsceneStage {
   readonly mapId: string;
   readonly hostEventId: string;
   readonly frames: readonly StageFrame[];

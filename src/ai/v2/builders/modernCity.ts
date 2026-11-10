@@ -12,7 +12,7 @@ import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec }
 const MODERN_CITY_ID = "modern_city";
 
 /** 한국 현대 배경 낱말 — 요청 원문이나 명세에 있으면 거리·집을 이 빌더가 맡는다. 「조선」 같은 옛 한국은 아니다. */
-export const KR_MODERN_WORDS = /kr-modern|korea|서울|부산|인천|대구|대전|홍대|강남|명동|신촌|이태원|성수|현대\s*한국|한국\s*(?:현대|도시|거리|동네|배경)|한국의\s*(?:도시|거리|동네)/iu;
+const KR_MODERN_WORDS = /kr-modern|korea|서울|부산|인천|대구|대전|홍대|강남|명동|신촌|이태원|성수|현대\s*한국|한국\s*(?:현대|도시|거리|동네|배경)|한국의\s*(?:도시|거리|동네)/iu;
 
 /** make_place·make_game 이 원문 요청을 보고 명세에 문화권 표시를 붙인다(계획 모델이 style 을 빠뜨려도 일본 거리로 새지 않게). */
 export function localizePlaceSpec<T extends PlaceSpec>(spec: T, task: string): T {

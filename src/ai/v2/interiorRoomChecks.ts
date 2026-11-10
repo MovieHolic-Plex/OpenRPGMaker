@@ -111,7 +111,7 @@ const REPEAT_OK = /chair|stool|bench|pew|seat|candle|sconce|torch|lantern|lamp|w
 const GENERIC = /window|sconce|torch|candle|chair|stool|bench|gate|locked door|bars|doormat|lamp|lantern/u;
 const famOf = (id: string) => /^([a-z-]+) \d+x\d+$/u.exec(id)?.[1] ?? id;
 
-export interface VarietyRoom { readonly id: string; readonly purpose?: string; readonly repeat?: boolean; readonly pieces: readonly string[] }
+interface VarietyRoom { readonly id: string; readonly purpose?: string; readonly repeat?: boolean; readonly pieces: readonly string[] }
 /** 다양성 알림 — 한 방에 같은 조각 5번 이상, 같은 용도 방 셋 이상에 같은 조각(같은 범주 다른 조각이 있을 때). 숫자도 낸다. */
 export function varietyNotes(rooms: readonly VarietyRoom[], S: HandInteriorSpec): { notes: string[]; distinctPerRoom: number; repetition: number } {
   const notes: string[] = [];

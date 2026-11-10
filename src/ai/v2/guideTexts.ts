@@ -46,7 +46,7 @@ function placeNear(project: Project, map: GameMap, at: { x: number; y: number },
 }
 
 /** 이 맵 이벤트의 목표 줄·대사를 실제 자리에 맞춘다. project 를 그 자리에서 고친다. 한 일 글. */
-export function fixGuideTexts(project: Project, mapId: string): string[] {
+function fixGuideTexts(project: Project, mapId: string): string[] {
   const map = project.maps[mapId];
   if (!map) return [];
   const notes: string[] = [];

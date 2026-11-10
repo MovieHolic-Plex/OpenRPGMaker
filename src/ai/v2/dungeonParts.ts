@@ -120,7 +120,7 @@ export const DUNGEON_DESIGN_EXAMPLES: readonly { readonly name: string; readonly
  * 맵 검수(suite/mapvqa refs/anchors.json)의 기준 그림과 같다 — 그래서 «구성 아이디어»로만 쓰고 베끼지 말라고 적는다(검수는 기준과 거의 같은 맵을 반복으로 친다).
  * 그림 파일은 저장소에만 있다(출하본에는 없음) — 없으면 글만 준다.
  */
-export const DUNGEON_REFERENCE_PICTURES: readonly { readonly id: string; readonly themes: readonly DungeonType[]; readonly idea: string }[] = [
+const DUNGEON_REFERENCE_PICTURES: readonly { readonly id: string; readonly themes: readonly DungeonType[]; readonly idea: string }[] = [
   { id: "sea-cave", themes: ["cave", "ice"], idea: "바다 동굴 56×42 — 해변 쪽 입구로 들어와 조간대 웅덩이 굴 → 기둥 홀 → 가장 먼 구석 밀수꾼 은닉처(끝). 가지로 바다와 이어진 밀수 부두·발광 이끼방." },
   { id: "volcano-cave", themes: ["volcano"], idea: "화산 동굴 56×44 — 입구 → 옛 대장간 폐허 → 용암 폭포 굴 → 바위다리로 용암 강 건너 → 재 벌판·흑요석 제단(끝) → 입구로 도는 고리." },
   { id: "castle-catacombs", themes: ["catacomb", "castle", "tower"], idea: "성 지하 감옥·카타콤 56×42 — 입구 계단실 → 한쪽 감방동·간수실 → 고문실 → 가장 안쪽 뼈의 방 제단. 방은 복도로만 잇고 고립 방 없음." },
@@ -129,7 +129,7 @@ export const DUNGEON_REFERENCE_PICTURES: readonly { readonly id: string; readonl
 ];
 
 /** 테마에 맞는 참고 그림을 앞에, 나머지는 게임마다 돌린 순서로. */
-export function referencePictures(theme: DungeonType, gameKey: string): typeof DUNGEON_REFERENCE_PICTURES {
+function referencePictures(theme: DungeonType, gameKey: string): typeof DUNGEON_REFERENCE_PICTURES {
   const h = [...`ref|${gameKey}`].reduce((a, c) => (Math.imul(a, 31) + c.charCodeAt(0)) >>> 0, 7);
   const fit = DUNGEON_REFERENCE_PICTURES.filter((r) => r.themes.includes(theme));
   const rest = DUNGEON_REFERENCE_PICTURES.filter((r) => !r.themes.includes(theme));
@@ -147,7 +147,7 @@ async function referencePng(id: string): Promise<string | undefined> {
 
 const ROLES = "entrance 입구(하나) · boss 보스(하나, 3×2 몸이 설 large 이상) · treasure 보물(막다른 곳이 좋다) · lake 호수 · camp 야영·둥지 · shrine 제단 · forge 대장간(화산만) · hall 넓은 굴 · grotto 곁굴";
 
-export interface DungeonPartsOut {
+interface DungeonPartsOut {
   readonly theme: DungeonType;
   readonly label: string;
   /** 어휘 한 덩이(모양·역할·물·특징·잇기·입구) — 글을 짧게(2026-10-30 실내 안내 동사 회귀: 글 1.3만 자+그림 8장이면 Gemini 가 짓지 못하고 끝났다). */
@@ -180,14 +180,14 @@ const DESIGN_ANGLES = [
   "아래로 내려가는 굴 — 입구가 가장 높고(level 2) 보스가 가장 낮다",
   "샛길 끝 숨은 곁굴(grotto) — 본길에서 안 보이는 막다른 곳",
 ] as const;
-export function designAngles(key: string): string {
+function designAngles(key: string): string {
   const h = [...`angle|${key}`].reduce((a, c) => (Math.imul(a, 31) + c.charCodeAt(0)) >>> 0, 3);
   const a = h % DESIGN_ANGLES.length; const b = (a + 1 + ((h >>> 8) % (DESIGN_ANGLES.length - 1))) % DESIGN_ANGLES.length;
   return `이번 설계 실마리(쓰거나 버린다 — 요청이 우선): ${DESIGN_ANGLES[a]} / ${DESIGN_ANGLES[b]}.`;
 }
 
 /** 입구 쪽 낱말 순서를 게임마다 돌린다 — 늘 south 가 먼저 적혀 있어 맨 요청의 입구가 남쪽으로 쏠렸다(2026-10-30 지문: 13/16). */
-export function sideOrder(gameKey: string): string[] {
+function sideOrder(gameKey: string): string[] {
   const all = ["north", "east", "south", "west"];
   const h = [...`side|${gameKey}`].reduce((a, c) => (Math.imul(a, 31) + c.charCodeAt(0)) >>> 0, 5) % all.length;
   return [...all.slice(h), ...all.slice(0, h)];
@@ -197,7 +197,7 @@ const OPP: Record<string, "north" | "south" | "east" | "west"> = { north: "south
 const KO_SIDE: Record<string, string> = { north: "북", south: "남", east: "동", west: "서" };
 
 /** 설계 한 줄(입구 쪽·방 수·역할@자리·높이) — 같은 게임의 다음 굴에 「이미 지은 굴」로 보여 준다. */
-export function designLine(d: DungeonDesign | undefined): string {
+function designLine(d: DungeonDesign | undefined): string {
   const rooms = (d?.rooms ?? []) as readonly { role?: unknown; at?: unknown; level?: unknown; shape?: unknown }[];
   return `입구 ${String(d?.entrance ?? "-")} · ${rooms.length}방 ${rooms.map((r) => `${String(r.role ?? "?")}@${typeof r.at === "string" ? r.at : JSON.stringify(r.at ?? "-")}${r.shape ? `/${String(r.shape)}` : ""}${r.level ? `/단${String(r.level)}` : ""}`).join(" ")}`;
 }
@@ -215,7 +215,7 @@ export function dungeonContext(places: Iterable<PlaceRecord>, name: string): str
 }
 
 /** 십자 공식: 방 넷 이상의 자리가 모두 나침반 낱말이고 가운데와 네 끝 중 셋 이상을 한 칸씩 채웠다(2026-10-30 terra 같은 요청 3판이 모두 s·center·e·w·n). */
-export function crossFormula(design: DungeonDesign | undefined): boolean {
+function crossFormula(design: DungeonDesign | undefined): boolean {
   const rooms = (design?.rooms ?? []) as readonly { at?: unknown }[];
   if (rooms.length < 4) return false;
   const word = (a: unknown) => (typeof a === "string" ? a.trim().toLowerCase() : "");
@@ -245,7 +245,7 @@ export function arrivalEntrance<T extends { name: string; exits?: readonly strin
 }
 
 /** 게임마다 예시 순서를 돌린다 — 모두 첫 예시(남쪽 입구·북쪽 보스 갈래)에 기대어 비슷하게 짰다(2026-10-29 실조수 terra·argon). 설계는 여전히 모델이 한다. */
-export function rotatedExamples(gameKey: string): typeof DUNGEON_DESIGN_EXAMPLES {
+function rotatedExamples(gameKey: string): typeof DUNGEON_DESIGN_EXAMPLES {
   const n = DUNGEON_DESIGN_EXAMPLES.length;
   const h = [...gameKey].reduce((a, c) => (Math.imul(a, 31) + c.charCodeAt(0)) >>> 0, 7) % n;
   return [...DUNGEON_DESIGN_EXAMPLES.slice(h), ...DUNGEON_DESIGN_EXAMPLES.slice(0, h)];

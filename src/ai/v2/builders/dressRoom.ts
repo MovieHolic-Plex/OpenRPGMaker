@@ -45,7 +45,7 @@ const ALIASES: readonly [RegExp, readonly string[], RegExp?][] = [
 ];
 
 /** 이 방 쓰임에 맞는 놓을 수 있는 가구(서는 것·바닥 것, 4×3 이하) — 무게(견본 개수) 순. */
-export function dressPalette(spec: HandInteriorSpec, purpose: string): { id: string; weight: number }[] {
+function dressPalette(spec: HandInteriorSpec, purpose: string): { id: string; weight: number }[] {
   // 「학교」「방」 같은 넓은 낱말은 뺀다 — 「학교 복도」가 학교 태그의 체육 매트·객석을 끌어왔다.
   const words = new Set(purpose.toLowerCase().split(/[\s,·/()]+/u).filter((w) => w.length >= 2 && !/^(학교|방|공간|구역|건물|room|school|space|area)$/u.test(w)));
   const deny: RegExp[] = [];
@@ -88,7 +88,7 @@ const DECOR_RULES: readonly [RegExp, RegExp][] = [
   [/다다미|방석|이불|tatami|zabuton|futon|화로/iu, /다다미|와실|일본|다실|화실|tatami|japanese/iu],
   [/코트|court|센터 서클/iu, /체육|강당|gym|court/iu],
 ];
-export function decorPalette(spec: HandInteriorSpec, purpose: string): string[] {
+function decorPalette(spec: HandInteriorSpec, purpose: string): string[] {
   const out: string[] = [];
   for (const [id, o] of Object.entries(spec.objects)) {
     if (o.kind !== "flat" || !o.cells?.length || o.w > 4 || o.h > 4 || (o.use ?? []).some((u) => ["gate", "trap", "key", "seal", "save", "travel"].includes(u))) continue;
@@ -166,7 +166,7 @@ function layerTiles(map: GameMap, x: number, y: number): number[] {
 }
 
 /** 방 안(둘레 2칸 포함)에 이미 놓인 그 가구의 자리들 — 그림 칸이 전부 맞는 원점. */
-export function placedInRoom(spec: HandInteriorSpec, map: GameMap, room: RoomRect, id: string): { x: number; y: number }[] {
+function placedInRoom(spec: HandInteriorSpec, map: GameMap, room: RoomRect, id: string): { x: number; y: number }[] {
   const o = spec.objects[id];
   if (!o?.cells?.length) return [];
   const out: { x: number; y: number }[] = [];
@@ -220,7 +220,7 @@ export function access(project: Project, mapId: string): { stranded: number; cut
   return { stranded, cutOff };
 }
 
-export interface DressRoomResult { readonly ok: boolean; readonly summary: string; readonly placed: readonly string[]; readonly before: number; readonly after: number }
+interface DressRoomResult { readonly ok: boolean; readonly summary: string; readonly placed: readonly string[]; readonly before: number; readonly after: number }
 
 /** 방 하나를 쓰임 가구로 채운다. 칸 하나 놓을 때마다 도달 검사 — 막으면 되돌린다. */
 export function dressRoom(run: BuildRun, mapId: string, at: { x: number; y: number }, purpose: string, target = DRESS_ROOM_TARGET): DressRoomResult {

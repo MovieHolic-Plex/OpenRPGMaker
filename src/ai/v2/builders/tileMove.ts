@@ -11,7 +11,7 @@ import type { GameMap, Project } from "@/project/types";
 import { access } from "./dressRoom";
 import type { ObjectEdit } from "./interior";
 
-export interface TileMoveResult { readonly ok: boolean; readonly project: Project; readonly done: readonly string[]; readonly refused: readonly string[] }
+interface TileMoveResult { readonly ok: boolean; readonly project: Project; readonly done: readonly string[]; readonly refused: readonly string[] }
 
 type Layers = { upper: number[]; overlay: number[] };
 

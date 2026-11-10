@@ -5,7 +5,7 @@ import path from "node:path";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
 import { renderMapPng } from "../../qa-game/render.mts";
 import { getTool } from "../../../src/editor/tools/toolRegistry.ts";
-import { createV2Tools, V2Session, v2FinishGate } from "../../../src/ai/v2/verbs.ts";
+import { createV2Tools, V2Session, v2GateProblems } from "../../../src/ai/v2/verbs.ts";
 import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt.ts";
 import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
@@ -64,7 +64,8 @@ async function scenario(name: string, setup: (ctx: ToolContext) => void, calls: 
     console.log(JSON.stringify(parsed).slice(0, 1500));
     for (const [n, c] of res.content.entries()) if (c.type === "image") fs.writeFileSync(path.join(out, `${name}-${i}-${n}.png`), Buffer.from((c as { data: string }).data, "base64"));
   }
-  console.log("gate:", v2FinishGate(session) ?? "(통과 — 더 돌지 않음)");
+  const gate = v2GateProblems(session);
+  console.log("gate:", gate.problems.length || gate.leftovers.length || gate.missing.length ? JSON.stringify(gate, null, 1) : "(통과 — 더 돌지 않음)");
   console.log(log.join("\n"));
 }
 

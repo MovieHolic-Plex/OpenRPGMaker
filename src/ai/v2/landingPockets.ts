@@ -34,7 +34,7 @@ function transfersInto(project: Project, mapId: string): { from: string; cmd: Ob
 const count = (a: Uint8Array) => { let n = 0; for (const v of a) n += v; return n; };
 
 /** 이 맵의 착지 주머니를 옮긴다. project 를 그 자리에서 고친다(부르는 쪽이 사본을 넘긴다). 한 일 글. */
-export function fixLandingPockets(project: Project, mapId: string): string[] {
+function fixLandingPockets(project: Project, mapId: string): string[] {
   const map = project.maps[mapId] as GameMap | undefined;
   if (!map || (map as { worldmapSource?: unknown }).worldmapSource) return [];
   const into = transfersInto(project, mapId).filter((t) => t.cmd.x as number >= 0 && (t.cmd.y as number) >= 0 && (t.cmd.x as number) < map.width && (t.cmd.y as number) < map.height);

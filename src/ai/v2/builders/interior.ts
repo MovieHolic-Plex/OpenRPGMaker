@@ -495,13 +495,13 @@ function rotateTemplate(tilesetId: string, kind: string, size: string | undefine
 }
 
 /** 견본의 «설계» — 손 견본은 크기 변형(-xs·-s·-sq·-m·-l·-l2…)을 한 설계로 친다. */
-export function templateDesign(t: Pick<InteriorRoomTemplate, "map">): string { return t.map.startsWith("authored-") ? t.map.replace(/-(xs|s|sq|m|l|xl|t)\d?$/u, "") : t.map; }
+function templateDesign(t: Pick<InteriorRoomTemplate, "map">): string { return t.map.startsWith("authored-") ? t.map.replace(/-(xs|s|sq|m|l|xl|t)\d?$/u, "") : t.map; }
 
 /**
  * 방 종류의 견본 후보: 그 종류의 손 견본 + 같은 종류의 평범한(EXOTIC 아닌) 예제 견본(2026-10-29 「서재가 늘 같은 방」 — 손 견본이 있으면 그것만 써서
  * 서재가 귀족 서재 한 설계(크기 변형 다섯)뿐이었다). 밀도 필터는 그대로. single(한 방짜리 장소)이면 4×5 같은 곁방 크기 견본은 뺀다(있으면).
  */
-export function templatePool(tilesetId: string, kind: string, single = false): InteriorRoomTemplate[] {
+function templatePool(tilesetId: string, kind: string, single = false): InteriorRoomTemplate[] {
   const ts = roomTemplates(tilesetId).filter((t) => t.kind === kind);
   const own = ts.filter((t) => t.map === kind || t.map.startsWith("authored-"));
   const plain = ts.filter((t) => !EXOTIC_MAPS.has(t.map));
@@ -1024,7 +1024,7 @@ function cosyFor(kind: string, context: string): readonly string[] {
 const COVERING_USES: readonly { readonly kind: string; readonly name: RegExp; readonly part: RegExp }[] = [
   { kind: "jail", name: /감옥|뇌옥|감방|jail|prison|dungeon cell/iu, part: /^(jail|cell|corridor|guard_room|armory)$|감방|감옥|간수|경비|복도|철창|죄수|\bcell|guard|corridor|prison/iu },
 ];
-export function coverZones(tilesetId: string, spec: PlaceSpec, zones: readonly ZoneSpec[], notes: string[]): readonly ZoneSpec[] {
+function coverZones(tilesetId: string, spec: PlaceSpec, zones: readonly ZoneSpec[], notes: string[]): readonly ZoneSpec[] {
   const first = zones.filter((z) => (z.floor ?? 1) === 1);
   if (first.length < 2 || first.some((z) => z.keep)) return zones;
   const text = `${spec.name} ${spec.theme ?? ""}`;

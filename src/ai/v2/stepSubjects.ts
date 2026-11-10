@@ -27,7 +27,7 @@ const isPerson = (ev: GameEvent) => (ev.pages ?? []).some((p) => { const g = (p.
 const transparent = (ev: GameEvent) => (ev.pages ?? []).every((p) => { const g = (p.graphic ?? {}) as { sprite?: unknown; appearanceId?: unknown; transparent?: boolean; tileId?: number }; return g.transparent === true || (!g.sprite && !g.appearanceId && !(typeof g.tileId === "number" && g.tileId > 0)); });
 
 /** 단계가 이야기하는 사람 — 행동(또는 이름)에서 사람 낱말 바로 뒤에 이야기 낱말이 오고, 무리(「투숙객들」)가 아니며, 뒤져 찾는 단계가 아니다. */
-export function talkPerson(step: { event: string; action: string; gives?: string }): string | undefined {
+function talkPerson(step: { event: string; action: string; gives?: string }): string | undefined {
   for (const text of [step.action, step.event]) {
     const m = new RegExp(`(?<![가-힣])${PERSON.source}(들)?\\s*(?:과|와|의|에게서|에게|께|을|를)?\\s*([^.,]{0,12})`, "u").exec(text);
     if (!m || m[2] || !TALK.test(m[3] ?? "")) continue;
@@ -47,7 +47,7 @@ export function talkPerson(step: { event: string; action: string; gives?: string
  * 판정자는 동굴 위치를 알려 줄 사람을 끝내 못 찾았다(목표는 그 칸 이름만 댔다). talkPerson 은 무리(「…들」)를 건너뛴다(추리의 투숙객들은 여럿이다).
  */
 const GROUP = /(?<![가-힣])(?:마을\s*)?(?:사람|주민|이웃|동네\s*사람)들?\s*(?:과|와|에게서|에게|께|을|를)?\s*([^.,]{0,12})/u;
-export function groupPerson(step: { event: string; action: string; gives?: string; place?: string }): string | undefined {
+function groupPerson(step: { event: string; action: string; gives?: string; place?: string }): string | undefined {
   for (const text of [step.action, step.event]) {
     const m = GROUP.exec(text);
     if (!m || !TALK.test(m[1] ?? "")) continue;

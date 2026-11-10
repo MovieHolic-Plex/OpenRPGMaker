@@ -6,7 +6,7 @@
 import type { HandInteriorSpec } from "@/editor/handInterior/builder";
 
 export interface VenueStamp { readonly part: string; readonly x: number; readonly y: number }
-export interface VenueBuild {
+interface VenueBuild {
   readonly args: Record<string, unknown>;
   /** 짓기 뒤 stamp_object(kit:…/hand-interior:<part>)로 덧찍을 그림 — 둥근 지붕·관측 틈처럼 짓기 도구가 평면 안에 못 거는 것. */
   readonly stamps: readonly VenueStamp[];
@@ -65,7 +65,7 @@ function mirror(spec: HandInteriorSpec, width: number, o: Obj): Obj {
   return { id: flipId, x: width - o.x - w, y: o.y };
 }
 
-export function observatoryVenue(spec: HandInteriorSpec): InteriorVenue {
+function observatoryVenue(spec: HandInteriorSpec): InteriorVenue {
   return {
     id: "observatory",
     words: /천문|관측|observ|astronom|별지기|망원경/iu,
@@ -100,7 +100,7 @@ const TAVERN_SOUTH_ALT: Obj[] = [{id: "chair S", x: 2, y: 8}, {id: "roundtable",
   {id: "potted fern", x: 5, y: 12}, {id: "potted fern", x: 9, y: 12}];
 const TAVERN_GOODS_ALT: Obj[] = [{id: "mug", x: 2, y: 5}, {id: "beer", x: 3, y: 5}, {id: "bottle", x: 4, y: 5}, {id: "mug", x: 2, y: 9}, {id: "beer", x: 4, y: 9}, {id: "plate", x: 10, y: 9}, {id: "mug", x: 12, y: 9}, {id: "breadplate", x: 2, y: 12}, {id: "mug", x: 13, y: 12}, {id: "candle", x: 1, y: 12}, {id: "candle", x: 14, y: 12}];
 
-export function tavernVenue(spec: HandInteriorSpec): InteriorVenue {
+function tavernVenue(spec: HandInteriorSpec): InteriorVenue {
   return {
     id: "tavern",
     words: /선술집|주점|술집|주막|tavern|\bpub\b|\binn\b|여관/iu,

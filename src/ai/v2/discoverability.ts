@@ -23,7 +23,7 @@ import { computeReachableCells } from "@/project/lint/reachability";
 import { josa } from "@/util/josa";
 import { unreachableEvents } from "./eventReach";
 
-export const OBJECTIVE_COMMAND_ID = "m2-214-ui-command";
+const OBJECTIVE_COMMAND_ID = "m2-214-ui-command";
 export const OBJECTIVE_SURFACE = "objectiveChip";
 
 /** 「현재 목표」 줄을 바꾸는 명령 — 실행되면 화면 오른쪽 위 목표 줄이 이 글로 바뀐다(playSceneZoneFeedback). */
@@ -78,7 +78,7 @@ const playerDriven = (page: PageRef): boolean => {
   return kind === "action" || kind === "playerTouch" || kind === "eventTouch" || kind === "touch";
 };
 
-export interface StoryEvent {
+interface StoryEvent {
   readonly mapId: string;
   readonly mapName: string;
   readonly eventId: string;
@@ -116,7 +116,7 @@ function pageVisible(project: Project, page: PageRef, map: GameMap, x: number, y
 }
 
 /** 주인공이 여는 이야기 이벤트 페이지들. */
-export function storyEvents(project: Project): StoryEvent[] {
+function storyEvents(project: Project): StoryEvent[] {
   const read = readers(project);
   const out: StoryEvent[] = [];
   for (const page of allPages(project)) {
@@ -487,7 +487,7 @@ export function bearingWord(origin: Cell, to: Cell): string {
  * 30분 가까이 헤맸다. flash jrpg: 촌장에서 본 「동쪽」은 마을 북쪽 한가운데 (28,5)였고 판정자는 동쪽 끝을 찾다 막혔다.
  * vm2 terra(서쪽 끝에 선 플레이어에게 「서쪽」)는 가장자리 말 「서쪽 끝 남쪽 편」이 푼다.
  */
-export function placeWord(map: GameMap, x: number, y: number): string {
+function placeWord(map: GameMap, x: number, y: number): string {
   const w = Math.max(1, map.width), h = Math.max(1, map.height);
   const west = x <= 1, east = x >= w - 2, north = y <= 1, south = y >= h - 2;
   if ((west || east) && (north || south)) return `${north ? "북" : "남"}${west ? "서" : "동"}쪽 구석`;
@@ -692,7 +692,7 @@ export function withWhere(project: Project, fromMapId: string, text: string, whe
   return extra.length ? `${text} (${extra.join(" / ")})` : text;
 }
 
-export interface ObjectivePlan {
+interface ObjectivePlan {
   readonly ok: boolean;
   readonly summary: string;
   /** upsert_event 로 쓸 이벤트들(맵별). */
@@ -899,7 +899,7 @@ export function planObjective(project: Project, input: { readonly text: string; 
   return { ok: false, summary: `이벤트 ${input.eventId} 를 찾지 못했다`, events: [] };
 }
 
-export interface OffArtEntrance {
+interface OffArtEntrance {
   readonly mapId: string;
   readonly mapName: string;
   readonly eventId: string;
@@ -1017,7 +1017,7 @@ function maxDay(project: Project, dayVar: string): number | undefined {
   return best;
 }
 
-export interface RepeatedDayPage { readonly mapName: string; readonly eventId: string; readonly name: string; readonly pageName: string; readonly from: number; readonly to: number; readonly line: string }
+interface RepeatedDayPage { readonly mapName: string; readonly eventId: string; readonly name: string; readonly pageName: string; readonly from: number; readonly to: number; readonly line: string }
 
 /**
  * 하루 반복 게임에서 날짜 구간 페이지가 여러 날을 덮는데 그 안에서 날을 가르지 않는 인물 대사 — 이튿날 첫날 대사를 그대로 다시 한다.
@@ -1055,7 +1055,7 @@ export function repeatedDayDialogue(project: Project): RepeatedDayPage[] {
   return out;
 }
 
-export interface HeavyTint { readonly mapName: string; readonly eventId: string; readonly name: string; readonly value: string; readonly alpha: number }
+interface HeavyTint { readonly mapName: string; readonly eventId: string; readonly name: string; readonly value: string; readonly alpha: number }
 
 /**
  * 장면이 끝난 뒤에도 남는 짙은 화면 색 — 필드 전체가 대화 배경이 걸린 것처럼 어둡다(2026-10-27 toy-j91 J98: 「밤」 색 20,30,80,0.5).

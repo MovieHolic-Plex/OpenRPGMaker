@@ -26,7 +26,7 @@ function startPage(pages: readonly Page[]): Page | undefined {
   return undefined;
 }
 
-export interface StepSkip { readonly step: number; readonly stepEvent: string; readonly map: string; readonly exits: { readonly from: string; readonly x: number; readonly y: number }[] }
+interface StepSkip { readonly step: number; readonly stepEvent: string; readonly map: string; readonly exits: { readonly from: string; readonly x: number; readonly y: number }[] }
 
 /**
  * 처음 상태에서 바로 앞 단계의 맵을 거치지 않고 닿는 뒤 단계 맵과, 그 맵으로 열려 있는 출구들.
@@ -73,7 +73,7 @@ export function stepSkipShortcuts(project: Project): StepSkip[] {
 
 const DOING = new Set(["setSwitch", "changeItem", "setVariable", "triggerEnding", "battle", "startBattle", "battleProcessing", "transfer", "changeParty"]);
 
-export interface StepSetterSkip { readonly skipped: number; readonly skippedEvent: string; readonly step: number; readonly stepEvent: string; readonly map: string; readonly via: string }
+interface StepSetterSkip { readonly skipped: number; readonly skippedEvent: string; readonly step: number; readonly stepEvent: string; readonly map: string; readonly via: string }
 
 export function stepSkipSetters(project: Project): StepSetterSkip[] {
   const steps = project.gameBlueprint?.steps ?? [];

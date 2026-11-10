@@ -14,7 +14,7 @@ type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
 
 /** 요청이 무작위 조우를 말하는가 — 말하지 않으면 조수가 켜지 않는다(보이는 적·이벤트 전투로 충분하다). */
-export const ENCOUNTER_ASK = /랜덤|무작위|인카운터|조우|마주치|튀어나|풀숲에서|사냥|레벨(을|이)?\s*(조금\s*)?(올|업)|경험치|몇 번 싸우|싸우면서|encounter|random battle|grind/iu;
+const ENCOUNTER_ASK = /랜덤|무작위|인카운터|조우|마주치|튀어나|풀숲에서|사냥|레벨(을|이)?\s*(조금\s*)?(올|업)|경험치|몇 번 싸우|싸우면서|encounter|random battle|grind/iu;
 
 /**
  * 「무작위 조우는 없어」「랜덤 인카운터 없이」처럼 조우를 끄라는 말은 조우 요청이 아니다.
@@ -30,8 +30,8 @@ export function asksForEncounters(task: string): boolean {
 }
 
 /** 첫 전투 구역 기준: 시작 파티·시작 레벨로 이 승률·남은 HP 비율 밑이면 «초반이 너무 세다». */
-export const FIRST_AREA_MIN_WIN = 0.8;
-export const FIRST_AREA_MIN_HP_SHARE = 0.3;
+const FIRST_AREA_MIN_WIN = 0.8;
+const FIRST_AREA_MIN_HP_SHARE = 0.3;
 
 function walk(list: unknown, visit: (cmd: Obj) => void): void {
   if (!Array.isArray(list)) return;
@@ -139,7 +139,7 @@ function healingSourceList(project: Project): { label: string; repeatable: boole
 }
 
 /** 이 실행이 전투를 건드렸는가(전투 데이터·조우표·전투 명령). 안 건드린 작은 고치기에는 전투 검사를 걸지 않는다. */
-export function touchedCombat(before: Project, after: Project): boolean {
+function touchedCombat(before: Project, after: Project): boolean {
   const db = (p: Project) => JSON.stringify([p.database.troops, p.database.enemies, p.database.skills, p.database.actors, p.database.classes]);
   const enc = (p: Project) => JSON.stringify(Object.values(p.maps).map((m) => [m.id, m.encounterRate ?? 0, m.encounterTable ?? null, m.troopIds ?? null, m.fieldSpawns ?? null]));
   const fights = (p: Project) => JSON.stringify(allCommands(p).filter((r) => r.cmd.kind === "battleProcessing").map((r) => [r.mapId, r.cmd.troopId]));
@@ -147,7 +147,7 @@ export function touchedCombat(before: Project, after: Project): boolean {
 }
 
 /** 시작 맵에서 전투 없는 맵을 지나 처음 닿는 전투 맵(첫 숲·첫 동굴). 이동 명령을 따라간다. */
-export function firstBattleMaps(project: Project): string[] {
+function firstBattleMaps(project: Project): string[] {
   const battle = new Set(encounterMaps(project));
   const links = new Map<string, Set<string>>();
   for (const r of allCommands(project)) if (r.cmd.kind === "transfer" && typeof r.cmd.mapId === "string" && r.mapId !== "common") {
@@ -168,7 +168,7 @@ export function firstBattleMaps(project: Project): string[] {
 }
 
 /** 시작 파티·시작 레벨로 첫 전투 맵의 조우 무리를 모의한다 — 너무 센 무리(승률·남은 HP). */
-export function firstAreaAttrition(project: Project): { mapId: string; troopId: string; winRate: number; hpShare: number; level: number }[] {
+function firstAreaAttrition(project: Project): { mapId: string; troopId: string; winRate: number; hpShare: number; level: number }[] {
   if (project.system.battleParty === "monsters" || project.system.monsterBattleParty === true) return [];
   const party = (project.system.startActorIds ?? []).filter((id) => project.database.actors.some((a) => a.id === id));
   if (!party.length) return [];

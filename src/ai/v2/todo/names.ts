@@ -70,7 +70,7 @@ function editDistance(a: string, b: string): number {
 }
 
 /** 이름 후보 가운데 가까운 것 몇 개(맞춤 실패 설명용). */
-export function nearestNames(want: string, names: Iterable<string>, n = 3): string[] {
+function nearestNames(want: string, names: Iterable<string>, n = 3): string[] {
   const a = normName(want);
   const seen = new Set<string>();
   const scored: { name: string; d: number }[] = [];

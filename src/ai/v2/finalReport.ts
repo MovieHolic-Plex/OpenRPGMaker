@@ -56,7 +56,7 @@ function subjects(item: TodoItem): string[] {
 }
 
 /** 조수 보고에서 이 항목을 «했다»고 쓴 문장. 없으면 undefined. */
-export function claimedSentence(draft: string, item: TodoItem): string | undefined {
+function claimedSentence(draft: string, item: TodoItem): string | undefined {
   const names = subjects(item);
   if (!names.length) return undefined;
   for (const sentence of draft.split(/(?<=[.!?。])\s+|\n+/u)) {
@@ -66,7 +66,7 @@ export function claimedSentence(draft: string, item: TodoItem): string | undefin
   return undefined;
 }
 
-export interface TodoReportInput {
+interface TodoReportInput {
   readonly store: TodoStore;
   readonly draft: string;
   readonly leftovers?: readonly string[];

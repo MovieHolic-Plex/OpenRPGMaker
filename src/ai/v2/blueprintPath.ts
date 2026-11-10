@@ -36,7 +36,7 @@ import { stageMysteryCase } from "./mysteryCase";
  * 이미 지은 청사진 단계 이벤트·퍼즐 고리 이벤트를 걸어 가 조사할 수 있는 자리로 옮긴다(내용은 그대로). 옮긴 것 목록.
  * 모델이 지은 고리(숫자 자물쇠 등)를 다시 짓지 않고 자리만 고칠 때 — 끝맺음 단계와 build_blueprint_path 가 먼저 부른다.
  */
-export function repairBlueprintReach(run: BuildRun): { moved: string[]; stuck: string[] } {
+function repairBlueprintReach(run: BuildRun): { moved: string[]; stuck: string[] } {
   const project = run.ctx.project;
   const bp = project.gameBlueprint;
   const byMap = new Map<string, string[]>();
@@ -162,7 +162,7 @@ const lookLine = (event: string): string => {
 };
 
 /** 번호 단계의 정답 — 같은 청사진이면 늘 같은 네 자리(앞자리 0 없음, 흔한 번호 아님). */
-export function stepCode(seed: string): string {
+function stepCode(seed: string): string {
   let h = 7;
   for (const c of seed) h = (h * 31 + c.charCodeAt(0)) | 0;
   for (let n = 0; ; n += 1) {
@@ -174,7 +174,7 @@ export function stepCode(seed: string): string {
 
 const RICH_KIND = /battle|shop|monster|trainer|recruit|encounter|party|gym|league|starter|capture/iu;
 
-export interface BlueprintPathResult extends ContentBuildResult {
+interface BlueprintPathResult extends ContentBuildResult {
   /** 실제 이름에 맞춘 청사진(지은 경우). */
   readonly blueprint?: GameBlueprint;
 }
@@ -428,7 +428,7 @@ export function gateBattleSteps(run: BuildRun): string[] {
  * 엔딩이 불렸고(blueprint-battle-bypass), gateBattleSteps 가 페이지 통째를 맞춘 보스 그룹(troop_fit_boss_dragon) 전투로 한 번 더 감쌌다 —
  * 플레이어는 용과 싸운 뒤 바로 마왕과 또 싸웠다(판정자 「보스가 두 번 나온다」). 전투가 이미 있으면 그 승리 갈래가 진행을 맡는다.
  */
-export function foldProgressIntoVictory(page: RawPage): { page: RawPage; moved: number } {
+function foldProgressIntoVictory(page: RawPage): { page: RawPage; moved: number } {
   type Cmd = Record<string, unknown> & { kind?: string };
   const cmds = (page.commands ?? []) as Cmd[];
   const b = cmds.findIndex((c) => c.kind === "battleProcessing");
@@ -629,7 +629,7 @@ const STEP_BATTLE_MIN_WIN = 0.5;
  * 그 전투를 시작 파티에 맞춘 사본 무리(fitTroopCopy — 원본 DB 적은 그대로)로 바꾼다. 결정적(모의 시드 고정)·되풀이 안전(맞춘 사본은 다시 안 맞춘다).
  * 왜(2026-10-29 vm1 argon·flash jrpg): 승리 관문을 건 뒤 옛 빌더의 마왕(Lv3, 승률 0)이 길을 막아 자동 플레이가 보스전 패배로 끝났다.
  */
-export function fitUnwinnableStepBattles(run: BuildRun): string[] {
+function fitUnwinnableStepBattles(run: BuildRun): string[] {
   return fitUnwinnableStepBattlesIn(run.ctx.project, (mapId, ev, pages) => run.call("upsert_event", { mapId, event: { ...structuredClone(ev), pages } as unknown as Record<string, unknown>, replacePages: true }));
 }
 /**
@@ -913,7 +913,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
  * 싸우는 단계의 상대 무리 — 시작 파티에 맞춘 보스(마지막 싸움)·중간 보스 사본. 상대 이름(who)이 있으면 그 이름을 단 사본을 단계마다 하나 둔다
  * (원본 DB 적은 그대로, 다시 지으면 같은 사본을 고쳐 쓴다). 전투 화면의 적 이름이 청사진의 그 사람이 된다.
  */
-export function foeTroop(project: Project, stepId: string, who: string | undefined, final: boolean): string | undefined {
+function foeTroop(project: Project, stepId: string, who: string | undefined, final: boolean): string | undefined {
   const picked = pickFittedTroops(project, undefined);
   const baseId = (final ? picked.boss : picked.midBoss) ?? picked.boss ?? picked.midBoss ?? picked.field.at(-1);
   const name = who?.trim();

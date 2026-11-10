@@ -159,7 +159,7 @@ export const BBOX_DUNGEON_BUILDER: PlaceBuilder = {
 
 // ── 마을 빌더 ──
 /** 마을 명세의 코드 지형(make_place 가 미리보기로 보여 준 땅). 같은 씨앗·크기면 같은 땅이다. */
-export function villageTerrainFor(spec: PlaceSpec): BboxVillageTerrain {
+function villageTerrainFor(spec: PlaceSpec): BboxVillageTerrain {
   const va = villageArgs(spec).args; const theme = String(va.theme ?? "river");
   const [width, height] = villageMapSize(spec, va);
   const seed = typeof spec.hints?.terrainSeed === "number" ? Math.max(0, Math.floor(spec.hints.terrainSeed)) : (spec.salt ?? 0) % 100000;
@@ -210,7 +210,7 @@ async function renderScratch(env: PiAssistantV2Env, project: Project, mapId: str
   try { env.ctx.project = project; return await env.render(mapId, 0, 0, m.width, m.height); } catch { return undefined; } finally { env.ctx.project = keep; }
 }
 
-export async function dungeonPieceSheet(env: PiAssistantV2Env): Promise<{ dataUrl?: string; pos: Map<string, { x: number; y: number }> }> {
+async function dungeonPieceSheet(env: PiAssistantV2Env): Promise<{ dataUrl?: string; pos: Map<string, { x: number; y: number }> }> {
   const ts = env.ctx.project.tilesets[TS];
   if (!ts) return { pos: new Map() };
   const cache = sheets.get(ts) ?? new Map(); sheets.set(ts, cache);
@@ -241,7 +241,7 @@ export async function dungeonPieceSheet(env: PiAssistantV2Env): Promise<{ dataUr
   return out;
 }
 
-export async function villageKitSheet(env: PiAssistantV2Env): Promise<{ dataUrl?: string; pos: Map<string, { x: number; y: number }> }> {
+async function villageKitSheet(env: PiAssistantV2Env): Promise<{ dataUrl?: string; pos: Map<string, { x: number; y: number }> }> {
   const ts = env.ctx.project.tilesets[TS];
   if (!ts) return { pos: new Map() };
   const cache = sheets.get(ts) ?? new Map(); sheets.set(ts, cache);
@@ -393,7 +393,7 @@ function png(w: number, h: number, px: Uint8Array): Uint8Array {
 }
 
 /** 배치 JSON 을 칸 상자 그림으로(8px/칸, 5칸 눈금·10칸 번호). 던전: 방 색 = 목적, 통로 회색, 문 흰색, 물·용암·구덩이, 상자 노랑·적 빨강·보스 주황, 조각 테두리. 마을: 지형 위 길·광장·집·밭·숲·나무·소품·계단. */
-export function layoutBoxesPng(kind: "dungeon" | "village", layout: unknown, opts: { W: number; H: number; terrain?: BboxVillageTerrain; pieces?: readonly [string, number, number, string][]; pieceSize?: (id: string) => { w: number; h: number } | undefined }): Uint8Array {
+function layoutBoxesPng(kind: "dungeon" | "village", layout: unknown, opts: { W: number; H: number; terrain?: BboxVillageTerrain; pieces?: readonly [string, number, number, string][]; pieceSize?: (id: string) => { w: number; h: number } | undefined }): Uint8Array {
   const S = 8, M = 16, W = opts.W, H = opts.H;
   const w = M + W * S, h = M + H * S; const px = new Uint8Array(w * h);
   const set = (x: number, y: number, v: number) => { if (x >= 0 && y >= 0 && x < w && y < h) px[y * w + x] = v; };

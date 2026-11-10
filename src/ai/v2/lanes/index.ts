@@ -11,7 +11,7 @@ import { recordStageWrites } from "../stageWrites";
 export type { LaneCtx, LaneScope, LaneStage } from "./types";
 
 /** scope → order 순 단계 목록. 같은 scope 안 order·id 가 겹치면 모듈을 읽을 때 던진다. */
-export function orderedLaneStages(stages: readonly LaneStage[] = Object.values(registered)): LaneStage[] {
+function orderedLaneStages(stages: readonly LaneStage[] = Object.values(registered)): LaneStage[] {
   const out: LaneStage[] = [];
   for (const scope of ["project", "map"] as const satisfies readonly LaneScope[]) {
     const list = stages.filter((s) => s.scope === scope).sort((a, b) => a.order - b.order);
@@ -28,7 +28,7 @@ export function orderedLaneStages(stages: readonly LaneStage[] = Object.values(r
 const laneMs = new Map<string, number>();
 const timedLane = (id: string, run: () => void): void => { const t0 = Date.now(); try { run(); } finally { laneMs.set(id, (laneMs.get(id) ?? 0) + Date.now() - t0); } };
 
-export const LANE_STAGES: readonly LaneStage[] = orderedLaneStages();
+const LANE_STAGES: readonly LaneStage[] = orderedLaneStages();
 
 /** 마감 단계를 모두 돌고 한 일 목록을 돌려준다(기록·체크포인트는 부르는 쪽). */
 export function runLaneStages(env: PiAssistantV2Env, session: V2Session, run: RecordingBuildRun): string[] {

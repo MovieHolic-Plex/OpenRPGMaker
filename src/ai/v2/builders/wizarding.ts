@@ -58,7 +58,7 @@ const SUBSTITUTE: readonly (readonly [RegExp, string, string])[] = [
 const pieces = WIZARDING_SPACE_SPEC.pieces as Readonly<Record<string, { readonly name: string }>>;
 
 /** 낱말 → 기물 id. sub 가 있으면 대신 놓은 것(경고 문구용). */
-export function wizardingKitFor(anchor: string): { kit: string; sub?: string } {
+function wizardingKitFor(anchor: string): { kit: string; sub?: string } {
   const word = anchor.replace(/^(?:큰|작은|커다란|낡은|올라가는|내려가는)\s*/u, "").trim();
   const same = SAME.find(([re]) => re.test(word));
   if (same) return { kit: same[1] };

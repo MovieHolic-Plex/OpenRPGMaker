@@ -10,7 +10,7 @@ import { resolveMapBgm } from "@/project/mapMusic";
 import { musicOnly } from "@/ai/v2/musicWords";
 import { v2ExtraToolNames } from "@/ai/v2/game";
 import { gameContentProblems } from "@/ai/v2/gameChecks";
-import { advisorFollowUp, scopeAdviceToRequest, type AdvisorVerdict } from "@/ai/v2/advisor";
+import { scopeAdviceToRequest, type AdvisorVerdict } from "@/ai/v2/advisor";
 import type { GameMap, Project } from "@/project/types";
 
 function chaseProject() {
@@ -92,7 +92,6 @@ describe("music-only requests", () => {
     const scoped = scopeAdviceToRequest(verdict, "아오오니 느낌으로 추격 음악");
     expect(scoped.notes.map((n) => n.level)).toEqual(["aside", "aside", "blocker"]);
     expect(scoped.notes[1]!.what).toMatch(/음악 요청 밖/u);
-    expect(advisorFollowUp(scoped)).toMatch(/보고의 주장/u);
     // 다른 일이 섞인 요청은 그대로.
     expect(scopeAdviceToRequest(verdict, "추격자 만들고 추격 음악")).toBe(verdict);
   });

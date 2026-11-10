@@ -34,7 +34,7 @@ export function placeTypeFromName(name: string): PlaceType | undefined {
 }
 
 /** 장소 종류 하나 — 이름이 말하지 않으면 장르·요청으로. */
-export function guessPlaceType(name: string, genre: string, task: string): PlaceType {
+function guessPlaceType(name: string, genre: string, task: string): PlaceType {
   if (CAVE.test(name)) return "cave";
   if (INTERIOR.test(name)) return "interior";
   if (DUNGEON.test(name)) return "dungeon";

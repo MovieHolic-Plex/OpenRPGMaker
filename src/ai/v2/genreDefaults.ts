@@ -14,7 +14,7 @@ import { charsetBattlerForCharacter } from "@/assets/charsetBattlers";
 import { sharedFaceIdForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
 
-export const ROMANCE_SETUP_WORDS = /연애|데이트|썸|고백|공략|호감도|러브|미연시|romance|dating/iu;
+const ROMANCE_SETUP_WORDS = /연애|데이트|썸|고백|공략|호감도|러브|미연시|romance|dating/iu;
 /** 게임 하나를 시작하는 요청(장소 하나만 짓는 요청이면 HUD·연애 루프는 건드리지 않는다). */
 const GAME_SETUP_WORDS = /게임|game/iu;
 /** 전투를 말하는 낱말(전투가 있으면 체력 HUD 를 둔다). */
@@ -72,7 +72,7 @@ export function applyStorySetupDefaults(project: Project, task: string, freshSta
 export const FACTORY_HERO_ARMS: Readonly<Record<string, string>> = { weapon: "equip_sword", shield: "equip_oak_shield", armor: "equip_leather_armor", helmet: "equip_traveler_hat", accessory: "equip_focus_charm" };
 
 /** 전투 없는 게임: 주인공 시작 장비 중 공장 기본값만 뺀다(저작자가 고른 장비는 그대로). 뺀 칸 수. */
-export function stripFactoryHeroGear(project: Project): number {
+function stripFactoryHeroGear(project: Project): number {
   const hero = project.database.actors.find((actor) => actor.id === "actor_hero") ?? project.database.actors[0];
   const equipment = hero?.initialEquipment;
   if (!equipment) return 0;

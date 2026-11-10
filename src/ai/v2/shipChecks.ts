@@ -3,7 +3,7 @@
 // 왜: 조수가 지은 게임에 편집기 기본 타이틀(「새 프로젝트」·들판 그림)·기본 오프닝(「강을 낀 왕국에는…」)·기본 체력 HUD·
 // 기본 이름(주인공)·기본 얼굴·기본 음악이 그대로 남았고(공포 저택 1턴·시타마치), 엔딩은 대사 한 줄이었다.
 // 기준은 빈 프로젝트(createBlankProject) 자체다 — 그 값과 같으면 «아무도 고르지 않은» 기본값이다.
-// 순수 함수(프로젝트만 읽는다). v2FinishGate 가 출하 차단으로, 조언자가 막는 항목(shipBlockers)으로 같이 부른다.
+// 순수 함수(프로젝트만 읽는다). 끝맺음 관문(v2GateProblems)이 출하 차단으로, 조언자가 막는 항목(shipBlockers)으로 같이 부른다.
 import { bossTalkWithoutBattle } from "./bossTalkBattles";
 import { reloadProblem } from "./reloadCheck";
 import { chaserMapsWithoutHiding } from "@/project/chaserHiding";
@@ -34,7 +34,7 @@ import { battleSites, encounterMaps, healingSources, repeatableHealingSources } 
 import { projectScriptMentionsCmdKind } from "@/project/script/effects";
 
 type Obj = Record<string, unknown>;
-export interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
+interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
 
 /**
  * 조건이 맞아야만 옮기는 출구인데, 조건이 안 맞을 때 켜지는 페이지(조건 없는 페이지)에 대사가 없다 — 걸어 들어가도 아무 말 없이 막힌다.
@@ -525,7 +525,7 @@ export const REQUESTED_FEATURES: readonly RequestedFeature[] = [
  * 추격자가 있는데 그 맵에 숨을 곳(interaction hiding)이 0곳이다(2026-10-29 standin horror 「폐병원」: 순찰·즉사 추격자, 은신처 0).
  * 기획이 «숨기» 를 말하지 않아도 막는다 — 쫓기기만 하고 피할 수단이 없다. 고칠 수 있는 결함: 맵에 있는 옷장·사물함·침대·커튼에 건다.
  */
-export function chaserWithoutHiding(project: Project): ShipBlocker[] {
+function chaserWithoutHiding(project: Project): ShipBlocker[] {
   return chaserMapsWithoutHiding(project).slice(0, 4).map((m): ShipBlocker => ({
     id: "chaser-no-hiding",
     message: `「${m.mapName}」 에 추격자(${m.chaserId})가 있는데 숨을 곳이 0곳이다 — 쫓기면 피할 수단이 없다. 그 맵의 옷장·사물함·침대·커튼 칸을 make_chase_scene 의 hidingSpots 또는 configure_object_behavior{kind:'hiding'} 로 은신처로 한다(순찰 길에서 걸어서 2~14걸음). 그런 가구가 없으면 place_object 로 사물함·옷장을 놓고 그 칸을 준다.`,

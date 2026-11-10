@@ -53,14 +53,14 @@ export const V2_CARDS: readonly string[] = [INTERIOR_CARD, VILLAGE_CARD, DUNGEON
  * 그런 요청이면 지시문에는 색인 한 줄(PLACE_SPEC_INDEX)만 두고, 짓기 동사는 load_tools 로, 카드는 read_specs 나 그 종류의 첫 짓기 호출이 기록(캐시 뒤쪽)으로 준다.
  * 게임 하나·장소 짓기·빈 프로젝트 요청은 예전 그대로 다 싣는다. 끄기: OPRN_V2_LEAN_PROMPT=0 (A/B 측정용).
  */
-export function leanPromptOn(): boolean {
+function leanPromptOn(): boolean {
   const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env;
   return env?.OPRN_V2_LEAN_PROMPT !== "0";
 }
 /** 장소를 짓거나 다시 짓는 요청 낱말 — 장소 이름 뒤 열두 글자 안에 짓기 동사, 또는 «새 ○○». 넉넉히 잡는다(잘못 맞으면 예전처럼 다 실을 뿐이다). */
 const PLACE_NOUNS = "맵|지도|마을|도시|거리|골목|던전|동굴|미궁|탑|성|궁|방|실내|집|건물|가게|상점|여관|주점|교회|성당|신전|사당|숲|들판|필드|평원|항구|부두|광장|학교|병원|저택|감옥|지하|층|섬|산|장소|무대|공간|place|map|village|town|city|dungeon|cave|room|house|building|interior|street";
 const BUILD_VERBS = "만들|지어|짓|그려|그리|깔아|깔|넓혀|넓히|키워|늘려|추가|하나 더|고쳐|바꿔|꾸며|꾸미|배치|build|make|add|create|expand|redesign|rebuild|draw";
-export const PLACE_BUILD_WORDS = new RegExp(`(${PLACE_NOUNS})[^.!?\\n]{0,12}(${BUILD_VERBS})|(새|새로운|new)\\s*(${PLACE_NOUNS})`, "iu");
+const PLACE_BUILD_WORDS = new RegExp(`(${PLACE_NOUNS})[^.!?\\n]{0,12}(${BUILD_VERBS})|(새|새로운|new)\\s*(${PLACE_NOUNS})`, "iu");
 /** 이미 지은 게임에 로직·대사·데이터만 넣는 요청인가 — 게임 하나·첫 장소(빈 프로젝트)·장소 짓기 낱말이면 아니다. */
 export function editOnlyRequest(project: Project, task: string): boolean {
   return !!task.trim() && !wantsWholeGame(task) && !wantsMakeGame(task) && !isFreshProject(project) && !PLACE_BUILD_WORDS.test(task);

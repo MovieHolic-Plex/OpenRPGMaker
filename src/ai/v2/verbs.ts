@@ -94,7 +94,7 @@ const WORLD_BOUNCES = 2;
 /** 한 장소에서 여러 바깥 장소로 나가는 길을 서로 다른 변에 둔다. */
 const LINK_SIDES = ["east", "west", "north", "south"] as const;
 /** 칸 배치(spec.layout) 장소의 다시 짓기 상한 — 고침이 싸고 매번 검증되므로 자기 검토·고치기를 막지 않게 크게(2026-10-31 감독: 3바퀴가 목업 시험의 자기 검토 고침을 막았다). */
-export const LAYOUT_MAX_REBUILDS = 12;
+const LAYOUT_MAX_REBUILDS = 12;
 /** 칸 배치 없이 온 손 도트 실내를 돌려보내는 최대 횟수 — 그 뒤엔 옛 설계 길로 짓는다. */
 const LAYOUT_BOUNCES = 3;
 const repairCap = (spec?: PlaceSpec): number => (spec && hasLayout(spec) ? LAYOUT_MAX_REBUILDS : V2_MAX_REPAIR_ROUNDS);
@@ -2200,12 +2200,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     if (r.name === "store_find_sound" && r.result.ok && isStoreCardRequest(r.result.data)) session.questions.push("스토어 효과음 카드: 사용자가 듣고 고른다");
     env.record(r);
   } };
-  // 같은 Command·페이지 스키마의 설명은 처음 한 번만 보낸다(schemaDedupe.ts — 매 턴 다시 가는 도구 목록이 21만 자였다).
+  // 같은 Command·페이지 스키마의 설명은 처음 한 번만 보낸다(매 턴 다시 가는 도구 목록이 21만 자였다).
   // 청사진이 있는 게임에서 이벤트·엔딩 하위 도구가 되풀이해 실패하면 build_blueprint_path 로 보낸다(mt2 Flash: upsert_event 6번 인자 실패).
   const escalate = (tool: PiToolShape): PiToolShape => !PATH_LOW_LEVEL.has(tool.name) ? tool : { ...tool, escalateHint: () => env.ctx.project.gameBlueprint
     ? `[상위 동사로] ${tool.name} 로 청사진 경로(단계 이벤트·조건·엔딩 호출)를 하나씩 맞추지 않는다 — build_blueprint_path 를 한 번 부르면 청사진 단계대로 함수가 짓는다(대사만 steps[{id,lines}]). 이 도구는 경로 밖의 작은 수정에만 쓴다.`
     : undefined };
-  // 설명 걷기(schemaDedupe)·영어 사본·필요할 때 싣기는 노출 단계(toolExposure.ts exposeV2Tools)가 한다 — 처음부터 싣는 도구만 기준으로 걷어야
+  // 설명 걷기·영어 사본·필요할 때 싣기는 노출 단계(toolExposure.ts exposeV2Tools)가 한다 — 처음부터 싣는 도구만 기준으로 걷어야
   // 나중에 싣는 도구를 가리키는 «같은 모양» 표시가 생기지 않는다. 게임 요청은 v2 도구 묶음 전부(v2ToolPool)를 같은 감싸개로 만들어 둔다.
   const pool = wantsGameTools(t) && !audioOnly(t);
   return wantsGameTools(t) || wantsMusicTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? [...verbs, ...createGameTools(gameEnv, t, { pool }).map((tool) => escalate(flattenWrapperTool(tool, gameEnv.record)))] : verbs;
@@ -2336,21 +2336,4 @@ export function mapViewArtProblems(project: Project, session: V2Session, canGene
     if (isView(bg) && !accepted("ending")) { out.push("[출하 차단 art-generation] 엔딩 「" + (ending.name || ending.id) + "」 그림이 게임 속 맵 화면(" + bg + ")이다 — generate_art{target:\"ending\", prompt:<엔딩 장면>} 으로 그림을 만든다. 생성이 오류로 실패하면(기록됨) 그때는 맵 화면을 받아 준다."); break; }
   }
   return out;
-}
-
-/** 끝맺음 관문 글(옛 고리 — 한 번 더 돌게 하는 글). 할 일 고리는 v2GateProblems 를 항목으로 쓴다. 다 통과면 undefined. */
-export function v2FinishGate(session: V2Session, env?: PiAssistantV2Env): string | undefined {
-  const { problems, leftovers, missing } = v2GateProblems(session, env);
-  const game = problems.filter((p) => p.key.startsWith("game:")).map((p) => p.text);
-  const fixable = problems.filter((p) => p.key.startsWith("place:")).map((p) => p.text);
-  // 고칠 것이 없으면 한 바퀴를 더 쓰지 않는다 — 남은 문제·「그림 없음」은 동사 결과가 이미 보고하라고 일렀다.
-  if (!fixable.length && !game.length) return undefined;
-  return [
-    "[v2 끝맺음 관문] 「다 됐다」고 말하기 전에:",
-    ...(game.length ? ["게임 검사가 짚은 것 — 고친 뒤 get_event 로 다시 읽어 확인한다(고칠 수 없으면 보고에 그대로 적는다):", ...game.map((g) => `- ${g}`)] : []),
-    ...(fixable.length ? [`아직 고칠 수 있는 곳 ${fixable.length}곳 — 장소는 edit_place, 컷신은 add_event 로 고친다:`, ...fixable.map((t) => `- ${t}`)] : []),
-    ...(leftovers.length ? ["고치기 상한에 닿은 장소의 남은 문제는 사용자 보고에 그대로 적는다:", ...leftovers.map((t) => `- ${t}`)] : []),
-    ...(missing.length ? [`그림·부품이 없어 못 한 것(보고에 반드시 적는다, 대체물로 지어내지 않는다): ${missing.join(" / ")}`] : []),
-    "고칠 것을 고친 뒤(또는 고칠 수 없으면 바로) 앞 보고를 대신하는 최종 보고 하나를 다시 쓴다 — 첫 줄을 「최종 보고(앞 보고를 고침):」로 시작하고, 지은 것·통과 여부·못 한 것을 처음부터 다시 적되 앞 보고와 달라진 것(고친 것·되돌린 것)을 분명히 밝힌다. 앞 보고에서 «했다»고 한 것을 되돌렸으면 반드시 그렇다고 쓴다(사용자는 두 보고를 다 본다).",
-  ].join("\n");
 }

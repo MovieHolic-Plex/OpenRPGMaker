@@ -24,7 +24,7 @@ import { hasThemeWord, projectKeyHash } from "@/ai/villageChipsetPool";
 import type { PlaceSpec } from "./types";
 
 /** 구성기 호출 하나로 짓는 종류 — 맵 크기는 구성기가 받는 크기(실내는 방 크기 그대로). */
-export interface ComposedKind {
+interface ComposedKind {
   /** 구성기에 넘기는 값(style·kind 인자). */
   readonly value: string;
   readonly size: readonly [number, number];
@@ -224,13 +224,13 @@ export const WORLDS: readonly WorldSetting[] = [
   },
 ];
 
-export const WORLD_STYLE_PREFIX = "world:";
+const WORLD_STYLE_PREFIX = "world:";
 /** 한 게임에서 같은 종류를 쓸 수 있는 횟수(씨앗이 달라 배치는 다르다). */
 export const MAX_SAME_KIND = 2;
 /** 세계 장소 수(끝맺음 관문의 세는 맵 수와 같다 — mapCount.MIN_COUNTED_MAPS). */
-export const MIN_WORLD_PLACES = 6;
+const MIN_WORLD_PLACES = 6;
 /** 핵심 경로가 지나야 하는 서로 다른 장소 수. */
-export const MIN_STEP_PLACES = 4;
+const MIN_STEP_PLACES = 4;
 
 export function worldById(id: string | undefined): WorldSetting | undefined {
   return id ? WORLDS.find((w) => w.id === id) : undefined;

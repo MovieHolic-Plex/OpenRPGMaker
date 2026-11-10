@@ -10,7 +10,7 @@
 import type { GameMap, Project } from "@/project/types";
 
 /** 쓰임 하나: 낱말 → 칩셋별 방 종류 후보 · 메우기 한 벌 · 이 방에 있으면 어색한 소품(이름표 낱말). */
-export interface RoomPurpose {
+interface RoomPurpose {
   readonly id: string;
   readonly ko: string;
   /** 구역 이름·kind·purpose·장소 이름에서 이 쓰임을 알아보는 낱말. */
@@ -30,7 +30,7 @@ export interface RoomPurpose {
 
 const HOME_PROPS = /안락의자|소파|침대|이불|냉장고|화장대|찻상|벽난로|욕조|세면대|armchair|sofa|\bbed\b|fridge|bathtub/iu;
 
-export const ROOM_PURPOSES: readonly RoomPurpose[] = [
+const ROOM_PURPOSES: readonly RoomPurpose[] = [
   {
     id: "chapel", ko: "예배당", words: /예배당|성당|교회|기도실|성소|제단|chapel|church|cathedral|shrine ?hall|sanctuary/iu,
     kinds: { atlas_biome_interior: ["chapel", "vestry"], modern_city: ["shrine-haiden"], jp_city: ["hall"] },
@@ -119,11 +119,6 @@ export function purposeOf(text: string): RoomPurpose | undefined {
   return undefined;
 }
 
-/** 이 쓰임에 이 칩셋 견본이 있는 방 종류(앞이 먼저). */
-export function purposeKind(purpose: RoomPurpose, tilesetId: string, available: ReadonlySet<string>): string | undefined {
-  return (purpose.kinds[tilesetId] ?? []).find((k) => available.has(k));
-}
-
 /** 방 종류 낱말 자체가 이 쓰임인가(chapel·weapon_shop…). 그러면 구역 kind 를 그대로 둔다. */
 export function kindServesPurpose(kind: string, purpose: RoomPurpose, tilesetId: string): boolean {
   return (purpose.kinds[tilesetId] ?? []).includes(kind);
@@ -142,7 +137,7 @@ function labelOf(project: Project, map: GameMap, tile: number | undefined): stri
 const INSTITUTION = new Set(["chapel", "school", "classroom", "hospital", "library"]);
 
 /** 맵의 방 기록(손 도트 layout 방)과 그 쓰임 — 방 이름(kind)과 맵 이름에서. */
-export function roomPurposes(map: GameMap): { room: RoomLoc; purpose: RoomPurpose }[] {
+function roomPurposes(map: GameMap): { room: RoomLoc; purpose: RoomPurpose }[] {
   const locs = ((map.locations ?? []) as unknown as (RoomLoc & { tags?: string[] })[]).filter((l) => (l.tags ?? []).includes("hand-layout-room"));
   const single = locs.length === 1;
   const out: { room: RoomLoc; purpose: RoomPurpose }[] = [];

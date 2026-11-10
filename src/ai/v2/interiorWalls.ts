@@ -7,10 +7,10 @@ import { analyseHandInteriorPlan, buildHandInteriorLayers, type HandInteriorInpu
 import type { TilesetDef } from "@/project/types";
 import type { LayoutCheck, LayoutObject } from "./interiorLayout";
 
-export interface WallPath { readonly id?: string; readonly material: string; readonly path: readonly (readonly [number, number])[]; readonly thickness?: number; readonly stub?: boolean; readonly purpose?: string }
-export interface WallDoor { readonly wall: string; readonly x: number; readonly y: number; readonly width?: number; readonly piece?: string | null; readonly purpose?: string }
-export interface WallRoom { readonly id: string; readonly at: readonly [number, number]; readonly floor: string; readonly purpose?: string; readonly role?: string; readonly landmark?: string; readonly stairs?: string; readonly repeat?: boolean; readonly jo?: number }
-export interface WallItem extends LayoutObject { readonly wall?: string }
+interface WallPath { readonly id?: string; readonly material: string; readonly path: readonly (readonly [number, number])[]; readonly thickness?: number; readonly stub?: boolean; readonly purpose?: string }
+interface WallDoor { readonly wall: string; readonly x: number; readonly y: number; readonly width?: number; readonly piece?: string | null; readonly purpose?: string }
+interface WallRoom { readonly id: string; readonly at: readonly [number, number]; readonly floor: string; readonly purpose?: string; readonly role?: string; readonly landmark?: string; readonly stairs?: string; readonly repeat?: boolean; readonly jo?: number }
+interface WallItem extends LayoutObject { readonly wall?: string }
 export interface WallsLayoutFields {
   readonly outer_wall?: WallPath;
   readonly walls?: readonly WallPath[];

@@ -7,7 +7,7 @@
 // 방 ≤27% 빈 칸, 가장 큰 빈 사각형 ≤3x4 · 1회차 모델 방은 25~64%, 18x4 까지). 문턱은 기준 방 값 바로 위에 둔다.
 // 빈 칸 = 바닥 칸인데 자기와 8 이웃 모두에 벽·벽면·가구·난간·단이 없다(가구 옆 통로는 쓰이는 칸, 가구에서 먼 맨바닥은 아니다).
 
-export interface SpaceRoom {
+interface SpaceRoom {
   readonly id: string;
   /** 방 칸(벽으로 닫힌 칸 전부 — 벽면 줄 포함). */
   readonly cells: readonly number[];
@@ -17,7 +17,7 @@ export interface SpaceRoom {
   /** 방을 두른 벽 id(줄이기 길에 이름을 댄다). */
   readonly walls: readonly string[];
 }
-export interface SpaceInput {
+interface SpaceInput {
   readonly W: number; readonly H: number;
   readonly isFloor: (x: number, y: number) => boolean;
   /** 서서 막는 칸(가구·탁자·난간 — 걸이·바닥 무늬·문짝 제외). */
@@ -33,7 +33,7 @@ export interface SpaceInput {
   readonly pieces: ReadonlyMap<string, number>;
 }
 export interface SpaceRoomStat { floor: number; empty: number; emptyPct: number; rect: [number, number, number, number] | null; rugs: number; fillPct: number; farPct: number; pieces: number }
-export interface SpaceResult { readonly problems: string[]; readonly notes: string[]; readonly rooms: Record<string, SpaceRoomStat>; readonly emptyPct: number; readonly roomCV: number }
+interface SpaceResult { readonly problems: string[]; readonly notes: string[]; readonly rooms: Record<string, SpaceRoomStat>; readonly emptyPct: number; readonly roomCV: number }
 
 /** 문턱 — 기준 방 실측 바로 위(위 주석). */
 export const SPACE = { minDensity: 0.18, densityMinFloor: 30, roomEmptyPct: 25, roomEmptyMinFloor: 30, rectMinSide: 3, rectArea: 12, corridorEmptyPct: 30, bigHall: 80, hallFillPct: 20, hallFarPct: 10, rugBigRoom: 150 } as const;

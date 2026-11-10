@@ -9,9 +9,9 @@
 type Part = { type?: string; text?: string; [k: string]: unknown };
 type Msg = { role?: string; content?: unknown; [k: string]: unknown };
 
-export const CONTEXT_KEEP_RESULTS = 10;
-export const CONTEXT_TRIM_STEP = 8;
-export const CONTEXT_TRIM_CHARS = 700;
+const CONTEXT_KEEP_RESULTS = 10;
+const CONTEXT_TRIM_STEP = 8;
+const CONTEXT_TRIM_CHARS = 700;
 
 /** 메시지 목록 사본: 오래된 도구 결과를 줄이고(경계는 STEP 단위), 카드를 마지막 메시지에 붙인다. 줄인 결과 수와 줄인 글자 수를 같이. */
 export function trimContext(messages: readonly unknown[], card?: string): { messages: unknown[]; trimmed: number; savedChars: number } {

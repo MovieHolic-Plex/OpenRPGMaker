@@ -68,7 +68,7 @@ function isTransparent(graphic: unknown): boolean {
 }
 
 /** 칩 그림 사물(문·상자·철창…)인가 — 사람 칩이 아니라 Object 시트. */
-export function isObjectSheetGraphic(graphic: unknown): boolean {
+function isObjectSheetGraphic(graphic: unknown): boolean {
   const id = String((graphic as { sprite?: { id?: string } } | undefined)?.sprite?.id ?? "");
   return /charset_object|_object\d|objects?$/iu.test(id);
 }

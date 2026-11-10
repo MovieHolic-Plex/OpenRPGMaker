@@ -13,10 +13,10 @@ import { reachWithout } from "./puzzleChecks";
 import type { BuildRun } from "./types";
 import { victoryGatedSwitches } from "./blueprint";
 
-export const HEALING_SPRING_ID = "ev_heal_spring";
-export const HEALING_SPRING_NAME = "회복의 샘";
+const HEALING_SPRING_ID = "ev_heal_spring";
+const HEALING_SPRING_NAME = "회복의 샘";
 /** 회복 길이 없을 때 시작 소지품에 넣는 회복약 개수. */
-export const START_POTIONS = 3;
+const START_POTIONS = 3;
 
 /**
  * 시작 소지품에 넣을 회복약 — 약(medicine) 가운데 한 개로 선두 영웅 최대 HP 의 4분의 1 이상을 채우는 가장 싼 약(값 1000 이하).
@@ -226,8 +226,8 @@ export function ensureBossRest(run: BuildRun): string[] {
   return notes;
 }
 
-export const SUPPLY_SHOP_ID = "ev_supply_shop";
-export const SUPPLY_SHOP_NAME = "떠돌이 상인";
+const SUPPLY_SHOP_ID = "ev_supply_shop";
+const SUPPLY_SHOP_NAME = "떠돌이 상인";
 
 /** 전투로 돈을 벌거나(적 보상·상자·이벤트 돈) 시작 돈이 있는가. */
 function goldObtainable(project: Project): boolean {

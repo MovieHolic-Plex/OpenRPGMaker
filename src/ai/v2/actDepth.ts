@@ -8,8 +8,6 @@ import { countMaps } from "./mapCount";
 
 /** 끝맺음 관문이 강제하는 진행 깊이(2026-11-10 리드·오너: 맵 다음 act_structure — 청사진 단계 4→8). 한 번에 한 단계씩 올린다. */
 export const MIN_ACT_DEPTH = 5;
-/** 단계 1 권장(강제 아님) — 척도 reference. */
-export const RECOMMENDED_ACT_DEPTH = 10;
 
 type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => !!v && typeof v === "object" && !Array.isArray(v);

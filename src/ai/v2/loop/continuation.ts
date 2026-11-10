@@ -7,12 +7,12 @@
 import { checkLabel, type TodoStore } from "./todoStore";
 import type { TodoItem } from "../todo/types";
 
-export const LOOP_CONTINUATION_CAP = 8;
-export const LOOP_NO_PROGRESS_LIMIT = 2;
+const LOOP_CONTINUATION_CAP = 8;
+const LOOP_NO_PROGRESS_LIMIT = 2;
 /** 지문 창 — 같은 호출을 돌려 부른 결과가 진척으로 세지 않게(omo GOAL_TOOL_EFFECT_WINDOW). */
-export const LOOP_EFFECT_WINDOW = 256;
+const LOOP_EFFECT_WINDOW = 256;
 
-export type LoopDecision = { readonly kind: "continue"; readonly n: number } | { readonly kind: "stop"; readonly reason: "ask_user" | "stale" | "no-progress" | "cap" };
+type LoopDecision = { readonly kind: "continue"; readonly n: number } | { readonly kind: "stop"; readonly reason: "ask_user" | "stale" | "no-progress" | "cap" };
 
 /** FNV-1a 두 번(씨앗 다름) — 16자리 16진. 편집기 번들에서도 돌게 node:crypto 를 쓰지 않는다(omo hashAssistantText 와 같은 식). */
 function hash(text: string): string {

@@ -53,8 +53,8 @@
 
 | 조각 | 무엇 | 상태 |
 |---|---|---|
-| R0 | 안전망: `golden.mts` · 이 문서 · 파일 목록(`scripts/qa/assistant-v2/inventory.py`) | 이 PR |
-| R1 | 죽은 것 지우기: 끌어오는 곳 없는 파일(`schemaDedupe.ts` `vqaFixBudget.ts`), 테스트만 부르는 함수, 안 쓰는 export 284개 | 다음 |
+| R0 | 안전망: `golden.mts` · 이 문서 · 파일 목록(`scripts/qa/assistant-v2/inventory.py`) | 끝 (#4544) |
+| R1 | 죽은 것 지우기: 끌어오는 곳 없는 파일 2개 삭제, 어디서도 안 쓰는 선언 15개와 그에 딸린 것 삭제, 테스트만 부르던 함수 3개(`vqaFixRetry` `vqaFollowUp` `advisorFollowUp`)와 스크립트만 부르던 `v2FinishGate` 삭제, 자기 파일만 쓰는 export 266개에서 `export` 떼기. 41,421 → 40,884줄 | 끝 |
 | R2 | `verbs.ts` 쪼개기(동사마다 파일 · `V2Session` · 끝맺음 관문) + `verbs` ↔ `lanes` 순환 끊기 | |
 | R3 | `turn/`: 실행기 스크립트의 판정자 조율을 `src/ai/v2/turn` 으로 | |
 | R4 | `request/`: 분류 함수·낱말 목록을 한 폴더로(동작 그대로) | |

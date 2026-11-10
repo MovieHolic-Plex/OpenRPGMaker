@@ -112,7 +112,7 @@ export function fitIsFast(project: Project): boolean { const b = fitBudgets.get(
 /** 마지막 맞춤이 예산을 넘겨 멈췄나(다음 beginFitBudget 까지 남는다). 프로젝트 객체는 체크포인트·다시 읽기에서 바뀌어 기록을 못 지키므로 보고용 기록은 session.fitIncomplete 에 있다 — 이것은 같은 호출 안의 확인·테스트용이다. */
 export function fitBudgetExceeded(project: Project): number | undefined { return fitBudgets.get(project)?.exceededAt; }
 /** 맞춤이 건드리는 부분의 스냅숏 — 적·트룹·종 배우는 기술 레벨·맵 조우표와 이벤트(선물 동료 splice). 예산이 시험 한가운데서 터져도 이 상태로 돌린다. */
-export interface FitState { readonly enemies: unknown; readonly troops: unknown; readonly species: unknown; readonly maps: ReadonlyMap<string, { readonly encounterTable: unknown; readonly events: unknown }> }
+interface FitState { readonly enemies: unknown; readonly troops: unknown; readonly species: unknown; readonly maps: ReadonlyMap<string, { readonly encounterTable: unknown; readonly events: unknown }> }
 export function snapshotFitState(project: Project): FitState {
   const maps = new Map<string, { encounterTable: unknown; events: unknown }>();
   for (const [id, map] of Object.entries(project.maps)) maps.set(id, { encounterTable: structuredClone(map.encounterTable), events: structuredClone(map.events) });
@@ -611,7 +611,7 @@ function levelOnCurve(project: Project, speciesId: string, fromLevel: number, ga
  * 이벤트로 받는 동료(선물 몬스터) — 원정 목표 스위치를 켜는 바로 그 명령 목록에서 setSwitch 뒤에 오는 giveMonster. 그 목표 다음 관문 단계부터 파티에 있다.
  * 스타터 고르기의 giveMonster 는 setSwitch 앞이라 세지 않는다. 고르기 포획과 달리 반드시 받는다(포획은 실패할 수 있다).
  */
-export function campaignGifts(project: Project): { speciesId: string; level: number; stage: number }[] {
+function campaignGifts(project: Project): { speciesId: string; level: number; stage: number }[] {
   const campaign = project.system.monsterCampaign;
   if (!campaign) return [];
   const gates = campaignGates(project);
@@ -647,7 +647,7 @@ interface StarterOutcome { readonly speciesId: string; readonly rate: number; re
  * 평균 남은 HP 가 min(파티 최대 × HP_MARGIN, 들어온 HP 의 절반) 미만이면 아슬아슬한 승리 — 승률을 80% 바로 아래로 친다.
  * extraGift 를 주면 그 동료도 받은 것으로 친다(선물 고르기 시험).
  */
-export function starterOutcome(project: Project, troopId: string, speciesId: string, starter: number, gained: number, stage: number, carryHp?: number, extraGift?: { speciesId: string; level: number }): StarterOutcome {
+function starterOutcome(project: Project, troopId: string, speciesId: string, starter: number, gained: number, stage: number, carryHp?: number, extraGift?: { speciesId: string; level: number }): StarterOutcome {
   const level = levelOnCurve(project, speciesId, starter, gained);
   const fresh = loneMonster(project, speciesId, level);
   if (!fresh) return { speciesId, rate: 1, level, hpLeft: 0, hpFrac: 1 };
@@ -716,10 +716,7 @@ export function fitRequiredBattlesToStarters(project: Project): string[] {
 }
 
 /** 필수 전투 한 판의 모의전 결과(스타터마다) — 끝맺음 기록·QA 표 대조용. 프로젝트를 바꾸지 않는다. */
-export interface RequiredBattleRow { readonly troopId: string; readonly name: string; readonly stage: number; readonly rank: number; readonly heal: boolean; readonly outcomes: readonly StarterOutcome[] }
-export function requiredBattleReport(project: Project): RequiredBattleRow[] {
-  return runRequiredBattles(project, false).rows;
-}
+interface RequiredBattleRow { readonly troopId: string; readonly name: string; readonly stage: number; readonly rank: number; readonly heal: boolean; readonly outcomes: readonly StarterOutcome[] }
 
 function runRequiredBattles(project: Project, adjust: boolean): { out: string[]; rows: RequiredBattleRow[] } {
   const rows: RequiredBattleRow[] = [];

@@ -283,7 +283,7 @@ export function codeStepBypass(project: Project, ev: GameEvent): string | undefi
 // 번호 단계와 같은 방식: 넘어가는(엔딩·스위치·아이템·이동) 명령이 전투 승리 갈래 안에만 있거나, 승리 갈래에서만 켜지는 스위치를 조건으로 건다.
 
 /** 싸워 이기는 행동 낱말. */
-export const BATTLE_STEP_WORDS = /결전|전투|처치|쓰러뜨|물리치|격파|무찌르|무찔|토벌|대결|보스전|battle|fight|defeat|slay|boss/iu;
+const BATTLE_STEP_WORDS = /결전|전투|처치|쓰러뜨|물리치|격파|무찌르|무찔|토벌|대결|보스전|battle|fight|defeat|slay|boss/iu;
 /** 듣기·묻기 단계(「마왕을 처치할 방법을 듣는다」)는 싸우는 단계가 아니다. */
 const TALK_ACTION = /대화|듣는|듣고|묻는|물어|이야기|말을\s*건|방법을|소문|정보/u;
 /**
@@ -370,7 +370,7 @@ export function isEscapeBlueprint(bp: GameBlueprint): boolean {
   return ENCLOSED_WORDS.test(text) || (/탈출|escape/iu.test(text) && ENCLOSURE_NOUN.test(text));
 }
 /** 조건 없이 열리는 페이지에서 청사진 장소가 아닌 맵으로 가는 이동. */
-export interface EscapeLeak { readonly mapId: string; readonly eventId: string; readonly x: number; readonly y: number; readonly toMapId: string }
+interface EscapeLeak { readonly mapId: string; readonly eventId: string; readonly x: number; readonly y: number; readonly toMapId: string }
 export function escapeLeaks(project: Project): EscapeLeak[] {
   const bp = project.gameBlueprint;
   if (!bp || !isEscapeBlueprint(bp)) return [];
@@ -388,10 +388,10 @@ export function escapeLeaks(project: Project): EscapeLeak[] {
 }
 
 /** 경로 막힘의 고칠 동사 한 줄 — 하위 도구(upsert_event·define_ending…)를 하나씩 맞추게 하지 않는다(2026-10-28 mt2 Flash: upsert_event 6번 인자 실패). */
-export const BLUEPRINT_PATH_FIX = "고치기: build_blueprint_path 를 한 번 부른다 — 청사진 단계대로 이벤트·조건·스위치·아이템·엔딩 호출을 함수가 짓는다(대사만 steps[{id,lines}] 로 준다).";
+const BLUEPRINT_PATH_FIX = "고치기: build_blueprint_path 를 한 번 부른다 — 청사진 단계대로 이벤트·조건·스위치·아이템·엔딩 호출을 함수가 짓는다(대사만 steps[{id,lines}] 로 준다).";
 export const BLUEPRINT_PATH_IDS: ReadonlySet<string> = new Set(["blueprint-event-unreachable", "blueprint-event-missing", "blueprint-event-empty", "blueprint-condition-unset", "blueprint-condition-order", "blueprint-no-ending", "blueprint-code-bypass", "blueprint-battle-bypass", "blueprint-escape-leak"]);
 
-export interface BlueprintWalk {
+interface BlueprintWalk {
   readonly blockers: BlueprintBlocker[];
   readonly lines: string[];
 }
@@ -537,7 +537,7 @@ export function walkBlueprint(project: Project): BlueprintWalk {
 
 // ── 설계자(다른 모델)가 청사진을 쓰는 길 — 비교 C(Argon 설계 + Flash 실행) ──────────────────────
 
-export interface BlueprintDesigner { readonly provider: string; readonly model: string; readonly effort?: "low" | "medium" | "high" }
+interface BlueprintDesigner { readonly provider: string; readonly model: string; readonly effort?: "low" | "medium" | "high" }
 /** OPRN_V2_BLUEPRINT_DESIGNER="provider|model|effort" — 시험 묶음에서만 켠다(제품 설정 칸이 아니다). */
 export function blueprintDesignerFromEnv(): BlueprintDesigner | undefined {
   const raw = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.OPRN_V2_BLUEPRINT_DESIGNER;

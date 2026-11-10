@@ -19,7 +19,7 @@ import type { BuildRun } from "./types";
 type Obj = Record<string, unknown>;
 
 /** 프로젝트의 목표 글 전부(같은 글은 한 번). */
-export function objectiveMessages(project: Project): string[] {
+function objectiveMessages(project: Project): string[] {
   const out = new Set<string>();
   const visit = (node: unknown): void => {
     if (Array.isArray(node)) { for (const n of node) visit(n); return; }
@@ -72,22 +72,4 @@ export function checkObjectiveTargets(run: BuildRun, mapId: string): string[] {
     notes.push(`목표 「${t.objective.slice(0, 40)}」 대상 「${t.event.name ?? id}」(${t.event.x},${t.event.y}) — 조사·접촉해도 아무 명령이 없다`);
   }
   return notes;
-}
-
-/** 출하 전 보기용: 맵마다 목표 대상이 닿는지·누르면 무엇이 일어나는지(바꾸지 않는다). */
-export function objectiveTargetGaps(project: Project): { mapId: string; eventId: string; name: string; x: number; y: number; why: "unreachable" | "inert" }[] {
-  const out: { mapId: string; eventId: string; name: string; x: number; y: number; why: "unreachable" | "inert" }[] = [];
-  const messages = objectiveMessages(project);
-  for (const map of Object.values(project.maps)) {
-    const views = staticViews(map);
-    const ids = new Map<string, GameEvent>();
-    for (const message of messages) for (const v of objectiveTargetViews(project, map, views, message)) ids.set(v.event.id, v.event);
-    if (!ids.size) continue;
-    const lost = new Set(unreachableEvents(project, map.id, [...ids.keys()]));
-    for (const [id, ev] of ids) {
-      if (lost.has(id)) out.push({ mapId: map.id, eventId: id, name: String(ev.name ?? id), x: ev.x, y: ev.y, why: "unreachable" });
-      else if (!pressable(ev)) out.push({ mapId: map.id, eventId: id, name: String(ev.name ?? id), x: ev.x, y: ev.y, why: "inert" });
-    }
-  }
-  return out;
 }
