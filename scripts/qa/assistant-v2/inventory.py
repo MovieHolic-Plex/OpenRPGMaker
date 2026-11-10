@@ -2,7 +2,7 @@
 import os,re,sys,json,subprocess,collections
 repo=sys.argv[1]; root=os.path.join(repo,'src/ai/v2')
 files=sorted(os.path.relpath(os.path.join(d,f),repo) for d,_,fs in os.walk(root) for f in fs if f.endswith('.ts'))
-allts=subprocess.run(['git','-C',repo,'ls-files','src','scripts','test','electron'],capture_output=True,text=True).stdout.split('\n')
+allts=subprocess.run(['git','-C',repo,'ls-files','--cached','--others','--exclude-standard','src','scripts','test','electron'],capture_output=True,text=True).stdout.split('\n')
 allts=[f for f in allts if re.search(r'\.(ts|tsx|mts|mjs)$',f)]
 src={f:open(os.path.join(repo,f),encoding='utf-8',errors='ignore').read() for f in allts}
 def resolve(frm,spec):
