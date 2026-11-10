@@ -9,7 +9,7 @@
 import type { Project } from "@/project/types";
 import { battleDataEmptied, placementContentProblems } from "./gameChecks";
 import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
-import { audioOnly, musicOnly } from "./request/readers";
+import { audioOnly, musicOnly } from "../request/readers";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);

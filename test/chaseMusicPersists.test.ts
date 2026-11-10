@@ -9,8 +9,8 @@ import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { resolveMapBgm } from "@/project/mapMusic";
 import { musicOnly } from "@/ai/v2/request/readers";
 import { v2ExtraToolNames } from "@/ai/v2/request/readers";
-import { gameContentProblems } from "@/ai/v2/gameChecks";
-import { scopeAdviceToRequest, type AdvisorVerdict } from "@/ai/v2/advisor";
+import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
+import { scopeAdviceToRequest, type AdvisorVerdict } from "@/ai/v2/judge/advisor";
 import type { GameMap, Project } from "@/project/types";
 
 function chaseProject() {

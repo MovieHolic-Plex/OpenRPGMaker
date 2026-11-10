@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { shuffledOptions, trivialCode } from "@/ai/v2/puzzle";
-import { weakPuzzleLocks } from "@/ai/v2/puzzleChecks";
+import { weakPuzzleLocks } from "@/ai/v2/judge/puzzleChecks";
 import type { Project } from "@/project/types";
 
 // 판정 J63: 정답이 첫 보기, 1024·1234·0000 같은 번호.

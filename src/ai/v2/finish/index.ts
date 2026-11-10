@@ -8,7 +8,7 @@ import { worldOf } from "../world";
 import type { PiAssistantV2Env } from "../env";
 import type { V2Session } from "../turn/session";
 import { BLUEPRINT_PATH_IDS, walkBlueprint } from "../blueprint";
-import { battleSites, healingSources } from "../combatChecks";
+import { battleSites, healingSources } from "../judge/combatChecks";
 import { buildsWholeGame } from "../request/readers";
 import { lanesStale } from "./lanesStamp";
 import type { FinishCtx, FinishPhase, FinishStage } from "./types";

@@ -49,6 +49,8 @@
 
 장소·경로 빌더를 옮긴 조각은 `bun scripts/qa/assistant-v2/worldProbe.mts <out>` 도 앞·뒤로 돌린다.
 
+턴 구동기(`turn/` · `loop/` · 판정자 차례)를 옮긴 조각은 `bun scripts/qa/assistant-v2/turnTrace.mts <out.json>` 도 앞·뒤로 찍어 `--diff` 가 「같다 (4개 장면)」 — 모델·검토자·화면 검수자를 대본으로 바꿔 `runAssistantV2` 를 네 요청(게임 전체 · «계속» · 작은 쓰기 · 질문)으로 돌리고 실행 상태·재주입 글·상태 카드·최종 보고·저장된 할 일을 찍는다. `golden.mts` 는 지시문과 도구 목록만 보므로 판정자 차례가 바뀐 것은 이것만 잡는다(`advisorRuns < 2` 를 `< 1` 로 바꾸면 네 장면 모두 「다르다」).
+
 ## 옮기는 도구 (`scripts/qa/assistant-v2/refactor/`)
 
 손으로 자르고 붙이지 않는다. TS 문법 나무로 위치를 찾아 글을 옮긴다(파서는 `node_modules/typescript5` — 저장소의 `typescript` 는 7이라 JS API 가 없다).
@@ -77,9 +79,9 @@
 | R2a | `V2Session` 을 `turn/session.ts` 로 — `verbs` ↔ `lanes` 35파일 순환이 끊겼다(남은 순환은 두 파일짜리 다섯) | 끝 |
 | R2b | 끝맺음 관문 → `judge/finishGate.ts`, 고치기 안내 → `judge/placeFix.ts`, 장소 스키마 → `tools/placeSchema.ts`, `stageOpensBattle` → `story/stageBattle.ts`. `verbs.ts` 2,357 → 1,921줄 | 끝 |
 | R2c | `createV2Tools` 쪼개기: 공유 지역 상태 → `tools/context.ts`(`makeVerbContext` · 형 `VerbContext`), 동사 공장 → `tools/verbs/{blueprint,place,people,puzzle,art,objects,makeGame,read}.ts`, 세션에 거는 끝맺음 함수 → `tools/sessionHooks.ts`, 밑받침 → `tools/support.ts`. `verbs.ts` 는 131줄(묶기만) | 끝 |
-| R3 | `turn/`: 실행기 스크립트의 판정자 조율을 `src/ai/v2/turn` 으로 | |
+| R3 | `turn/`: 실행기 스크립트(`scripts/lib/assistantV2Runtime.ts` 571 → 74줄, 그림 찍기와 `runPiAgent` 끼우기만 남음)의 턴 정책을 `src/ai/v2/turn` 으로 — 지역 `let` 24개는 `context.ts` 의 상태 객체 하나로, 나머지는 `events`(이벤트 모으기) · `modelHooks`(도구 싣기·상태 카드·리드 계획) · `recheck`(기계 확인·기억 싣기) · `reinject`(재주입) · `autoBuild`(끝맺음 자동 짓기) · `vqaRound`(화면 검수 한 판) · `afterMain`(판정자 차례) · `finishTurn`(최종 보고) · `support`(스위치·시간 재기) · `turn.ts`(조립). 문장 순서 그대로, 파일마다 200줄 아래 | PR 열림 |
 | R4 | `request/`: 요청 글(과 프로젝트)을 가르는 최상위 선언을 `request/` 아홉 파일로(동작 그대로) — `scope`(게임 하나·한 곳·고치기·이어 하기·쓰기 요청) · `audio`(옛 `musicWords.ts`) · `combat` · `place` · `genre` · `asks`(날씨·흔들림·엔딩·장면…) · `title` · `toolGroups`(낱말 → 도구 묶음, 옛 `game.ts` 의 묶음들) · `world`(옛 `worldRequest.ts`). `shipChecks.ts` 에는 `REQUESTED_FEATURES`(낱말+프로젝트 검사+고칠 글이 한 표) 만 남았다. 함수 본문 안의 익명 정규식(`gameChecks.ts` 약 25곳, `finishGate.ts` 2곳, `verbs.ts` 1곳)은 본문을 건드리지 않아 그대로다 | 끝 |
-| R5 | `judge/`: 검사들을 한 폴더로, 그 뒤 한 결과 형식으로 | |
+| R5 | `judge/`: 검사들을 한 폴더로, 그 뒤 한 결과 형식으로. **옮기기 끝**(`mvfile.mts`, 본문 그대로): `vqa` `advisor` `finalReport` `sceneCraft` `gameChecks` `combatChecks` `discoverability` `playCheck` `hudTitleChecks` `puzzleChecks` → `judge/` 같은 이름, `loop/gates.ts` → `judge/gates.ts`, `todo/checks.ts` → `judge/todoChecks.ts`. `shipChecks.ts` 는 남았다(요청 분류와 얽힌 표 — B1 뒤). 한 결과 형식(코드·대상·고칠 호출)과 600줄 넘는 셋(`gameChecks` `discoverability` `todoChecks`) 쪼개기는 아직 | 옮기기 PR 열림 |
 | R6 | `finish/` 와 `lanes/` 를 한 줄로 | |
 | R7 | `place/` `story/` `shared/`: 남은 평면 파일 정리, 600줄 넘는 파일 쪼개기 | 진행 중 — **place/ (옮기기만, 42파일):** `builders/*` 18 → `place/builders/*`, 평면 24 → `place/`(`worldPopulate` · `interiorCatalog` `interiorLayout` `interiorSpace` `interiorWalls` · `dungeonParts` · `exitDress` `deadEndRoads` `edgeExitRoads` `lockedDoors` `reliefShortcut` `landingPockets` `underRoof` · `placementRules` · `designAreas` `designRooms` `roomIdeas` `roomParts` `roomPurpose` `layoutReview` · `placeGuess` `mapNames` `modelSeed` `drawObject`). `place/` 는 `request/` 와 평면 파일만 끌어온다. 평면에 남긴 것: `transferSpot`(`request/place.ts` 가 형 `Side` 를 끌어와 request→place 가 된다 — `Side` 를 `shared/` 로 뺀 뒤) · `dungeonGates` `caveGates`(이름이 `*Gates` — judge 조각과 겹치지 않게) · `blankStart`(`blueprintPath` 를 끌어온다 — place→story) · `healingAccess`(빌더가 끌어오는데 판정 파일을 읽는다) · `interiorRoomChecks`(`*Checks`) · `makeGame`(장소+이야기+요청 낱말). 쪼개기·`shared/` 는 아직 |
 | R8 | `prompt/`: 흩어진 카드 모으기 | |

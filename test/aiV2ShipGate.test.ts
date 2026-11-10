@@ -5,7 +5,7 @@ import { factoryArtResourceIds } from "@/project/defaultLeaks";
 import { applyShipDefaults } from "@/ai/v2/shipDefaults";
 import { bundledPictureLeft, openingMissing, shipBlockers } from "@/ai/v2/shipChecks";
 import { buildsWholeGame } from "@/ai/v2/request/readers";
-import { splitPreexisting } from "@/ai/v2/loop/gates";
+import { splitPreexisting } from "@/ai/v2/judge/gates";
 import type { Project } from "@/project/types";
 
 const WHOLE = "마을 하나 만들어줘. 거기서 시작하는 모험 게임으로";

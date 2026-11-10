@@ -8,7 +8,7 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import { readProjectSqlite } from "../../content/read-project-sqlite.mts";
 import { openNodeSqliteDriver } from "../../../electron/local-store/driver";
-import { refreshObjectiveRoutes, startObjectiveReachGap, isObjectiveCommand } from "../../../src/ai/v2/discoverability.ts";
+import { refreshObjectiveRoutes, startObjectiveReachGap, isObjectiveCommand } from "../../../src/ai/v2/judge/discoverability.ts";
 import { objectiveTargetViews } from "../../../src/player/objectiveTarget.ts";
 import { runGameCheck } from "../../../src/qa/gameCheck/index.ts";
 import type { RuntimeEventView } from "../../../src/project/runtimeEventState.ts";

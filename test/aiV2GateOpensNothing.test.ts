@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { gatesThatOpenNothing } from "@/ai/v2/puzzleChecks";
+import { gatesThatOpenNothing } from "@/ai/v2/judge/puzzleChecks";
 import type { Project } from "@/project/types";
 
 // 판정 J1(약초 동굴): 다리 레버가 칸을 열지만 다리 없이도 보스 방까지 걸어갔다.

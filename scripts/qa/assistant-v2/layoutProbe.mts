@@ -7,7 +7,7 @@ import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
 import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
-import { runTodoCheck } from "../../../src/ai/v2/todo/checks.ts";
+import { runTodoCheck } from "../../../src/ai/v2/judge/todoChecks.ts";
 import { renderMapPng } from "../../qa-game/render.mts";
 
 const [snap, lf, out = "/tmp/layout-probe"] = process.argv.slice(2);
