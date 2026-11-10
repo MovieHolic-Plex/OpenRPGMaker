@@ -49,7 +49,7 @@ for (const h of stmtHeads) if (!moving.some((st) => st.getText().startsWith(h)))
 const staying = body.filter((st) => !moving.includes(st));
 const localNames = new Set(body.flatMap(declared));
 const params = fn.parameters.map((p) => ({ name: p.name.getText(), text: p.getText() }));
-const usedByMoved = used(moving), usedByStaying = used(staying);
+const usedByMoved = used(ctxOpt ? moving : [...moving, ...fn.parameters]), usedByStaying = used(staying);
 
 // 밖에서 받아야 하는 이름: 함수 인자 + 안 옮기는 지역 이름
 const outer = [...params.map((p) => p.name), ...[...localNames].filter((n) => !movedNames.has(n))].filter((n) => usedByMoved.has(n));
@@ -109,7 +109,7 @@ const factoryText = `${docOf(factory!)}\nexport function ${factory}(${signature}
 
 // 원래 함수: 첫 옮긴 문장 자리에 호출을 넣고 나머지를 지운다
 const callArgs = ctxOpt ? (() => { const ctxVar = ctxOpt.split(":")[0]!; const extra = outer.filter((n) => depMap.has(n)); return extra.length ? `{ ...${ctxVar}, ${extra.join(", ")} }` : ctxVar; })() : params.filter((p) => usedByMoved.has(p.name) || also.includes(p.name)).map((p) => p.name).join(", ");
-const wanted = returned.filter((n) => usedByStaying.has(n));
+const wanted = returned.filter((n) => usedByStaying.has(n) && !params.some((p) => p.name === n));
 const call = bind ? `const ${bind} = ${factory}(${callArgs});${wanted.length ? `\n  const { ${wanted.join(", ")} } = ${bind};` : ""}` : wanted.length ? `const { ${wanted.join(", ")} } = ${factory}(${callArgs});` : `${factory}(${callArgs});`;
 moving.forEach((st, i) => srcEdits.push({ start: startOf(st), end: st.end, put: i === 0 ? `\n  ${call}` : "" }));
 const lastImport = [...sf.statements].filter(ts.isImportDeclaration).pop();
