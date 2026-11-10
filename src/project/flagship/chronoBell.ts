@@ -43,7 +43,7 @@ import { applyFallenStoryPass } from "./fallen/storyPass";
 import { applyFallenStoryIndex } from "./fallen/storyIndex";
 import { applyFallenAct1Finale, applyFallenFieldRules } from "./fallen/act1Finale";
 import { FS_INQ_BUSTS } from "./fallen/vaultCombat";
-import { applyFallenAct2Opening } from "./fallen/act2Opening";
+import { applyFallenAct2Opening, letAct2PierceWoundLand } from "./fallen/act2Opening";
 import { tidyFallenFirstVillage } from "./fallen/firstVillageTidy";
 import { applyFallenWorldPass, applyFallenWorldPassTown } from "./fallen/worldPass";
 import { assertExaminesReachable } from "./fallen/worldPass/examine";
@@ -2528,6 +2528,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenMobBalance(project, execTool);
   // 몬스터 새 그림 24종(16칸 4×4)과 그 체급 배율 — 배율은 우두머리 표 다음에 덮는다(fallen/monsterArt16.ts).
   applyFallenMonsterArt16(project);
+  // 새라의 관통상 — 2막 보통 적이 1막 복제로 물려받은 관통상 E 를 푼다(보스·결투·우두머리는 그대로). 무리 나누기·우두머리 복제 뒤.
+  if (letAct2PierceWoundLand(project).length === 0) throw new Error("[fallen-star] 2막 보통 적 관통상 면역 해제가 아무 적도 바꾸지 않았다 — 복제·이름 규칙이 바뀌었는지 확인");
   // 우물 밑 눈먼 영주 — 그림이 방금 설치됐으니 자리 그림을 진짜 그림으로 바꾼다(fallen/wellBeast.ts).
   finishFallenWellBeastArt(project, "fs2_well_shaft");
   // 지역별 전투 배경 13장(battle-backdrop · Opus 최고점) — 맵·트룹 배경을 모두 지은 뒤에 덮는다(fallen/areaBackdrops.ts).
