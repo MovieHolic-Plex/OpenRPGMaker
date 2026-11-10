@@ -1285,6 +1285,19 @@
     "if most enemies resist the state with rate E, the assistant reports how many enemies it can land on (n/m) instead of silently shipping a dead trait",
     "a weapon's advertised on-hit state lands on at least one ordinary enemy the player meets with that weapon, or the trait line is changed"
    ]
+  },
+  {
+   "id": "cloned-enemy-keeps-intended-state-rates",
+   "label": "복제한 적이 원본의 상태 면역까지 물려받지 않게 한다",
+   "port": 19574,
+   "lessons": [
+    "advertised-state-reaches-enemies"
+   ],
+   "prompt": "2막 새 동료 창병에게 「맞으면 관통상」 기술을 줬어. 2막 잡몹은 1막 늑대를 복제해서 만들었어. 관통상이 실제로 걸리는지 확인하고 안 걸리면 고쳐 줘. 보스는 지금 면역 그대로 둬.",
+   "requirements": [
+    "the assistant counts how many act-2 enemies can take the state (n/m) before and after, instead of assuming the skill works",
+    "an inherited immunity copied from the cloned act-1 record is cleared on ordinary act-2 enemies while bosses that were made immune on purpose keep it"
+   ]
   }
  ]
 }
