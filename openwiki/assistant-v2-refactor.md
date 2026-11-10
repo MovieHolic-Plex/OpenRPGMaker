@@ -49,13 +49,31 @@
 
 장소·경로 빌더를 옮긴 조각은 `bun scripts/qa/assistant-v2/worldProbe.mts <out>` 도 앞·뒤로 돌린다.
 
+## 옮기는 도구 (`scripts/qa/assistant-v2/refactor/`)
+
+손으로 자르고 붙이지 않는다. TS 문법 나무로 위치를 찾아 글을 옮긴다(파서는 `node_modules/typescript5` — 저장소의 `typescript` 는 7이라 JS API 가 없다).
+
+| 도구 | 하는 일 |
+|---|---|
+| `movedecls.mts <repo> <from> <to> <이름…> [--header "…"]` | 최상위 선언을 다른 파일로 옮기고, 새 파일의 임포트를 만들고, 원래 파일·다른 파일들의 임포트를 고친다 |
+| `reimport.mts <repo> <from> <to> <이름…>` | 이름을 다른 파일에서 끌어오게 저장소 전체의 임포트를 고친다 |
+| `prune.mts <repo> <ops.json>` | 선언 지우기 · `export` 떼기 · 안 쓰는 임포트 지우기 |
+| `tsloop.py <repo> <기준선.log> [--fix]` | v2 와 v2 를 끌어오는 파일만 `tsc` 로 보고 기준선에 없던 오류만 보인다. `--fix` 는 안 쓰게 된 선언·임포트를 걷는다 |
+| `deadexports.py <repo>` | export 를 쓰임새로 가른다(A 어디서도 안 씀 · B 자기 파일만 · C 테스트만 · D 자기 파일+테스트) |
+| `inventory.py <repo>` | 파일별 줄 수·의존·순환 재료 |
+| `outline.mts` · `outline2.mts` | 파일의 최상위 선언 / 함수 본문의 문장 개요 |
+
+한 조각의 흐름: 기준선 `tsc` 로그를 뜬다 → `movedecls` → `tsloop --fix` 를 새 오류 0 까지 → `deadexports` 의 A·B 를 `prune` → `golden --diff` → 커밋.
+
 ## 진행표
 
 | 조각 | 무엇 | 상태 |
 |---|---|---|
-| R0 | 안전망: `golden.mts` · 이 문서 · 파일 목록(`scripts/qa/assistant-v2/inventory.py`) | 끝 (#4544) |
+| R0 | 안전망: `golden.mts` · 이 문서 · 파일 목록(`scripts/qa/assistant-v2/refactor/inventory.py`) | 끝 (#4544) |
 | R1 | 죽은 것 지우기: 끌어오는 곳 없는 파일 2개 삭제, 어디서도 안 쓰는 선언 15개와 그에 딸린 것 삭제, 테스트만 부르던 함수 3개(`vqaFixRetry` `vqaFollowUp` `advisorFollowUp`)와 스크립트만 부르던 `v2FinishGate` 삭제, 자기 파일만 쓰는 export 266개에서 `export` 떼기. 41,421 → 40,884줄 | 끝 |
-| R2 | `verbs.ts` 쪼개기(동사마다 파일 · `V2Session` · 끝맺음 관문) + `verbs` ↔ `lanes` 순환 끊기 | |
+| R2a | `V2Session` 을 `turn/session.ts` 로 — `verbs` ↔ `lanes` 35파일 순환이 끊겼다(남은 순환은 두 파일짜리 다섯) | 끝 |
+| R2b | 끝맺음 관문 → `judge/finishGate.ts`, 고치기 안내 → `judge/placeFix.ts`, 장소 스키마 → `tools/placeSchema.ts`, `stageOpensBattle` → `story/stageBattle.ts`. `verbs.ts` 2,357 → 1,921줄 | 끝 |
+| R2c | `createV2Tools`(1,662줄 함수 하나에 동사 25개가 지역 상태를 공유) 쪼개기: 공유 상태를 명시적 문맥 객체로 만들고 동사마다 파일로 | 다음 |
 | R3 | `turn/`: 실행기 스크립트의 판정자 조율을 `src/ai/v2/turn` 으로 | |
 | R4 | `request/`: 분류 함수·낱말 목록을 한 폴더로(동작 그대로) | |
 | R5 | `judge/`: 검사들을 한 폴더로, 그 뒤 한 결과 형식으로 | |
