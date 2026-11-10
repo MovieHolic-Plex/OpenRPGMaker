@@ -24,6 +24,8 @@ import { audioOnly, musicOnly, wantsMusic } from "./musicWords";
 import { TODO_LOOP_LINE } from "@/ai/agentRules";
 import { isFreshProject } from "./genreDefaults";
 import type { TodoStore } from "./loop/todoStore";
+import { isComposedWorld, worldCard } from "./world";
+import { worldForRequest } from "./worldRequest";
 
 export const V2_CORE_PROMPT = [
   "You are the OPRN RPG editor assistant (v2). Split of work: you decide WHAT (the spec), functions decide HOW (deterministic builders), and other eyes (an independent critic and a screen check) look at the 1x picture.",
@@ -31,10 +33,10 @@ export const V2_CORE_PROMPT = [
   "Loop (todo list — the runner enforces it):",
   TODO_LOOP_LINE,
   "2) Build the in-progress item with a verb (make_place, edit_place, add_people, add_event, draw_object…), then todo done right away — done runs the machine check and will not close on ✗. Do not end the reply after calling only todo.",
-  "3) If you cannot do it, close it with todo block (one-line reason) and move on. If a tool rejects, first try the other verb the rejection names. After 3 failures on one item the runner closes it as blocked.",
+  "3) If you cannot do it, close it with todo block (one-line reason) and move on. If a tool rejects, first try the other verb the rejection names. The runner closes an item as blocked after 3 failures, or when the same failure comes back twice in a row — so change the call, do not repeat it.",
   "4) If you stop with open items, the runner sends you back with «remaining items · do now». Findings from function checks, the critic and the screen check come back appended to the list (with source) — fix them the same way or block them.",
   "5) Report in 3–6 lines in the user's language: what you built (map names) and what you could not. The runner attaches a machine-check table — if you claim «done» for a ✗ check, the table corrects you.",
-  "Fixing a place: fix critic majors with one edit_place patch (1 round per map, gather everything in one patch; an interior laid from spec.layout takes review_layout / layoutPatch rounds instead). A placed piece of furniture that blocks a door or path or faces the wrong way: move_object (at→to · face · remove). An empty room or lots of bare floor: dress_room (mapId · at · purpose) — but in an interior laid from spec.layout fill or shrink it yourself with review_layout. Neither uses a round.",
+  "Fixing a place: fix critic majors with one edit_place patch (1 round per map, gather everything in one patch; an interior laid from spec.layout takes review_layout / layoutPatch rounds instead). A placed piece of furniture that blocks a door or path or faces the wrong way: move_object (at→to · face · remove). An empty room or lots of bare floor in an interior you laid from spec.layout: fill or shrink it yourself with review_layout. dress_room only fills a hand-pixel interior room that you did not design (it refuses designed rooms, outdoor maps, dungeons and world maps laid by build_world) — for those, stamp a prop with stamp_object or report it. None of these uses a round.",
   "Rules:",
   "- Never invent cell coordinates, tile numbers or plan strings — except where a verb asks you to design the cells yourself: an interior's spec.layout (you write every wall, door and piece position; code lays it exactly and checks it), review_layout patches, a village's hints.layout and a dungeon's rooms[].at. Elsewhere name spots with words (entrance, square, in front of the counter…) and pass only coordinates the critic gave you, as near/at.",
   "- To change a map that already exists, use edit_place(mapId=that map), not make_place. Never make_place the same place twice. Several floors go in one call via floors/zones.floor.",
@@ -134,12 +136,21 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
   return [...(interior ? [interiorCatalogCard(project, currentMapId, task)] : []), ...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(audioOnly(task) ? [`[${musicOnly(task) ? "Music" : "Sound-effect"}-only request — only find, install and assign sounds. Do not change maps, events or objects (mention existing problems in the report as notes only)]`, ...(wantsMusic(task) ? [MUSIC_TIER.card] : []), ...(wantsSoundTools(task) ? [SOUND_TIER.card] : [])] : wantsGameTools(task) ? [gameCard(), ...[fallenTierCard(task)].filter(Boolean), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : wantsMusicTools(task) ? [...(wantsMusic(task) ? [`[Music request — use these tools]\n${MUSIC_TIER.card}`] : []), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : []), ...(wantsTerrainTools(task) && !audioOnly(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
 }
 
-export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string, todo?: TodoStore): string[] {
+/** 구성기 세계(world.ts)의 게임이면 장소는 build_world 가 짓는다 — 모델이 칸을 설계하는 장소 카드(실내·마을·던전·거리)와 짓기 동사는 처음부터 싣지 않는다. */
+export function composedWorldFor(project: Project, projectKey: string | undefined, task: string | undefined): boolean {
+  return isComposedWorld(worldForRequest(project, projectKey, task));
+}
+const WORLD_CARDS: readonly string[] = [PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
+
+export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string, todo?: TodoStore, projectKey?: string): string[] {
   // 청사진은 핵심 지시 바로 뒤에 박아 매 모델 차례가 대조하게 한다(2026-10-28). 게임 하나를 만드는 요청이면 청사진 카드도 싣는다.
   const whole = wantsWholeGame(task ?? "");
   // «계속» 요청이 앞 실행의 할 일을 이어 받았으면 그 목록을 싣는다 — init 하지 말고 이어서 진행한다.
   const carried = todo?.initialized && todo.items.length ? [`[Todo carried over from the previous run — do not todo init; continue from the open items]\n${todo.view(40, true)}`] : [];
   const lean = leanPromptFor(project, task);
-  const cards = lean ? [EVENT_CARD, PLACE_SPEC_INDEX] : V2_CARDS;
-  return [V2_CORE_PROMPT, ...carried, ...blueprintPin(project), "[Knowledge cards]", ...(whole || project.gameBlueprint ? [BLUEPRINT_CARD] : []), ...cards, ...conditionalCards(project, currentMapId, task, lean), projectBrief(project, currentMapId)];
+  // 이 게임의 세계(게임마다 다른 칩셋 한 벌) — 청사진 카드 바로 뒤에 싣는다. 구성기 세계면 장소 설계 카드는 싣지 않는다.
+  const world = worldForRequest(project, projectKey, task);
+  const composed = isComposedWorld(world);
+  const cards = lean ? [EVENT_CARD, PLACE_SPEC_INDEX] : composed ? WORLD_CARDS : V2_CARDS;
+  return [V2_CORE_PROMPT, ...carried, ...blueprintPin(project), "[Knowledge cards]", ...(whole || project.gameBlueprint ? [BLUEPRINT_CARD] : []), ...(world ? [worldCard(world)] : []), ...cards, ...conditionalCards(project, currentMapId, task, lean || composed), projectBrief(project, currentMapId)];
 }

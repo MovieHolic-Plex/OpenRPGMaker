@@ -26,10 +26,24 @@ export interface GameBlueprintStep {
   feeling: string;
 }
 
+/** 이 게임의 장소 하나 — 세계(setting)의 장소 종류(kind)로 함수가 짓는다(src/ai/v2/world.ts). */
+export interface GameBlueprintPlace {
+  /** 맵 이름(steps[].place 가 이 이름을 가리킨다). */
+  name: string;
+  /** 세계의 장소 종류 id(village·lake·tomb…). */
+  kind: string;
+  /** 이 장소로 들어오는 앞 장소 이름. 없으면 목록의 바로 앞 장소. */
+  from?: string;
+}
+
 export interface GameBlueprint {
   version: 1;
   title: string;
   genre: string;
+  /** 이 게임의 세계(칩셋 한 벌) id — 게임마다 다른 세계를 고른다(src/ai/v2/world.ts). 옛 청사진은 없음 = 장소 이름으로 추정. */
+  setting?: string;
+  /** 이 게임의 장소 전부(시작 장소가 맨 앞). 옛 청사진은 없음 = steps 의 장소. */
+  places?: GameBlueprintPlace[];
   /** 판정자가 받는 유일한 글 — 새 플레이어에게 «무엇을 하면 되는지» 한 줄. */
   playerGoal: string;
   /** 핵심 경로(시작 → 엔딩) 2~12단계. */
@@ -40,7 +54,7 @@ export interface GameBlueprint {
   updatedAt?: string;
 }
 
-export const BLUEPRINT_LIMITS = { steps: 12, minSteps: 2, text: 160, goal: 140, request: 600 } as const;
+export const BLUEPRINT_LIMITS = { steps: 12, minSteps: 2, text: 160, goal: 140, request: 600, places: 12 } as const;
 
 function bounded(label: string, value: unknown, max: number): string {
   const text = requireString(label, value).trim();
@@ -89,10 +103,13 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
     };
   });
   const ending = requireRecord("gameBlueprint.ending", data.ending);
+  const places = normalizePlaces(data.places);
   return {
     version: 1,
     title: bounded("title", data.title, 60),
     genre: bounded("genre", data.genre, 40),
+    ...(typeof data.setting === "string" && data.setting.trim() ? { setting: data.setting.trim().slice(0, 40) } : {}),
+    ...(places.length ? { places } : {}),
     playerGoal: bounded("playerGoal", data.playerGoal, BLUEPRINT_LIMITS.goal),
     steps,
     ending: { name: bounded("ending.name", ending.name, 60), how: bounded("ending.how", ending.how, BLUEPRINT_LIMITS.text), feeling: bounded("ending.feeling", ending.feeling, 60) },
@@ -101,12 +118,31 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
   };
 }
 
+/**
+ * 장소 목록 — 이름이 비었거나 겹치는 항목, 종류가 빈 항목은 뺀다(스키마 칸을 빈 값으로 채워 보내는 모델이 있다). from 은 앞에 나온 장소 이름일 때만 남긴다.
+ */
+function normalizePlaces(value: unknown): GameBlueprintPlace[] {
+  if (!Array.isArray(value)) return [];
+  const out: GameBlueprintPlace[] = [];
+  for (const raw of value.slice(0, BLUEPRINT_LIMITS.places)) {
+    if (!raw || typeof raw !== "object") continue;
+    const p = raw as Record<string, unknown>;
+    const name = typeof p.name === "string" ? p.name.trim().slice(0, 60) : "";
+    const kind = typeof p.kind === "string" ? p.kind.trim().slice(0, 40) : "";
+    if (!name || !kind || out.some((o) => o.name === name)) continue;
+    const from = typeof p.from === "string" ? p.from.trim() : "";
+    out.push({ name, kind, ...(from && from !== name && out.some((o) => o.name === from) ? { from } : {}) });
+  }
+  return out;
+}
+
 /** 지시문 맨 위에 박는 청사진 글(매 차례 같은 모양). */
 export function gameBlueprintText(blueprint: GameBlueprint): string {
   return [
     `[이 게임의 청사진 — 짓는 모든 단계는 이 문서의 항목 하나를 구현한다. 바꾸려면 write_blueprint 로 다시 쓴다]`,
     `제목: ${blueprint.title} · 장르: ${blueprint.genre}`,
     `플레이어 목표(새 플레이어가 받는 유일한 안내): ${blueprint.playerGoal}`,
+    ...(blueprint.places?.length ? [`장소(세계 ${blueprint.setting ?? "-"}): ${blueprint.places.map((p) => `「${p.name}」=${p.kind}${p.from ? `←「${p.from}」` : ""}`).join(" · ")}`] : []),
     "핵심 경로:",
     ...blueprint.steps.map((s) => `- ${s.id} 「${s.place}」 이벤트 「${s.event}」: ${s.action}${s.needs ? ` (조건: ${s.needs})` : ""} → ${s.gives} · 느낌: ${s.feeling}`),
     `엔딩 「${blueprint.ending.name}」: ${blueprint.ending.how} · 느낌: ${blueprint.ending.feeling}`,

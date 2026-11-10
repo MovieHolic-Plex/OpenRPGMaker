@@ -25,6 +25,7 @@ import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
 import { isEscapeBlueprint, strayStepCopies, walkBlueprint } from "./blueprint";
 import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS, planLinks } from "./mapCount";
+import { MAX_SAME_KIND, worldOf } from "./world";
 import { MIN_ACT_DEPTH, progressionDepth } from "./actDepth";
 import { countQuests, MIN_COUNTED_QUESTS } from "./questCount";
 import { assemblyTimeMismatches, blankMap, blueprintStoryText } from "@/project/blueprintAssembly";
@@ -616,6 +617,17 @@ export function mapsMinBlocker(project: Project, task: string): ShipBlocker[] {
   const linkCall = plan.from && group?.cell
     ? ` 안 닿는 맵 무리 ${plan.groups.length}개 — 문을 단 뒤에는 build_blueprint_path 를 다시 부르지 않는다(다시 지으면 문이 사라질 수 있다). Next call: create_transfer_pair(${JSON.stringify({ a: { mapId: plan.from.mapId, ...plan.from.cell }, b: { mapId: group.mapId, ...group.cell } })})`
     : "";
+  // 세계 청사진 게임(world.ts)이면 그 세계의 아직 안 쓴 종류로 장소를 더하게 한다 — make_place·숲길로 다른 칩셋 맵을 채우지 않게.
+  const world = worldOf(project);
+  if (world) {
+    const usedKinds = (project.gameBlueprint?.places ?? []).map((pl) => pl.kind);
+    const spare = world.kinds.filter((k) => usedKinds.filter((u) => u === k.id).length < MAX_SAME_KIND).sort((x, y) => usedKinds.filter((u) => u === x.id).length - usedKinds.filter((u) => u === y.id).length).slice(0, 5).map((k) => k.id);
+    return [{
+      id: "maps-min",
+      message: `Counted maps ${counted.length}/${need} — ${missing} more. Add places of this world with build_world{add:[{name, kind, from}]} (kinds not used up yet: ${spare.join(" · ")}), then give each a person or an examine event. A map counts when it is reached by doors from the start, has ${MIN_MAP_CELLS}+ cells and its own layout.${why ? ` Not counted: ${why}.` : ""}${linkCall}`,
+      evidence: `counted=${counted.length} need=${need} uncounted=${uncounted.length}`,
+    }];
+  }
   return [{
     id: "maps-min",
     // 할 일 항목의 열쇠는 문구 앞 160자(숫자는 #) — 바뀌는 부분(안 세는 맵 목록)은 고정 문장 뒤에 둔다. 앞에 두면 맵을 지을 때마다 열쇠가 바뀌어 «3번 뒤 막힘» 이 안 걸린다.

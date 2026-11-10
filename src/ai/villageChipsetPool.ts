@@ -47,6 +47,15 @@ const THEME_WORD_RE = new RegExp([
 ].join("|"), "iu");
 const VILLAGE_WORD_RE = /마을|촌락|부락|village|hamlet/iu;
 
+/** 요청에 칩셋·시대·지형·기후·장르 낱말이 하나라도 있나 — 게임 세계 고르기(v2/world.ts)도 같은 낱말 표를 쓴다. */
+export function hasThemeWord(text: string | undefined): boolean {
+  return !!text && THEME_WORD_RE.test(text);
+}
+/** 프로젝트 열쇠 해시 — 같은 게임은 늘 같은 값(마을 칩셋 풀·게임 세계 고르기가 같이 쓴다). */
+export function projectKeyHash(projectKey: string): number {
+  return fnv1a(projectKey);
+}
+
 /** 「마을 하나 만들어 줘」처럼 마을만 말하고 테마가 없는 요청인가. */
 export function isBareVillageRequest(text: string | undefined): boolean {
   return !!text && VILLAGE_WORD_RE.test(text) && !THEME_WORD_RE.test(text);

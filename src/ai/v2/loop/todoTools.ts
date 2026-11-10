@@ -21,8 +21,11 @@ import { formatCall, MISSING_HIGH_VERB, VERB_SCOPE, nextAfterFailure, nextForIte
 
 const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
 
-/** 프로젝트를 바꾸지 않는 동사·도구 — 할 일 목록 없이도 부를 수 있고, 실패해도 항목 실패로 세지 않는다. */
-const READ_VERB = /^(todo|inspect|ask_user|ask_helpers|room_parts|dungeon_parts)$|^(get|list|find|read|show|preview|search|lint|check|validate|probe|describe|view|inspect)_|^store_(find|read|list|get)/u;
+/**
+ * 프로젝트를 바꾸지 않는 동사·도구 — 할 일 목록 없이도 부를 수 있고, 실패해도 항목 실패로 세지 않는다.
+ * run_scene_test·simulate_battle 도 여기다: 장면·전투를 돌려 보기만 한다. 쓰기로 세면 «기대와 다름»이 항목 실패로 쌓여 고치는 중인 항목이 막힘으로 닫혔다.
+ */
+const READ_VERB = /^(todo|inspect|ask_user|ask_helpers|room_parts|dungeon_parts|run_scene_test|simulate_battle)$|^(get|list|find|read|show|preview|search|lint|check|validate|probe|describe|view|inspect)_|^store_(find|read|list|get)/u;
 export const isReadVerb = (name: string): boolean => READ_VERB.test(name);
 
 /** 무엇을 바꾸라는 요청인가(질문·조회·설명은 아니다). 이 요청에만 첫 호출 todo 를 강제한다. */

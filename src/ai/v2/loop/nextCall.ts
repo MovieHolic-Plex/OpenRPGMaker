@@ -140,7 +140,13 @@ export function nextForItem(item: TodoItem, project: Project, available: Readonl
     return verb ? { verb, args: skeletonFor(verb, m), why: "the verb named in the item" } : undefined;
   }
   switch (c.kind) {
-    case "place": return has("make_place") ? { verb: "make_place", args: { type: PLACE_TYPE[c.placeKind ?? ""] ?? "<interior|village|dungeon|cave>", name: c.name }, why: "build the place" } : undefined;
+    case "place":
+      // 세계 청사진 게임(world.ts)이면 장소는 build_world 한 번이 짓는다 — 목록에 없는 장소면 add 로 더한다.
+      if (has("build_world") && project.gameBlueprint?.places?.length) {
+        const listed = project.gameBlueprint.places.some((pl) => pl.name === c.name);
+        return { verb: "build_world", args: listed ? {} : { add: [{ name: c.name, kind: "<kind from the [World of this game] card>" }] }, why: listed ? "builds and links every place of the blueprint" : "adds this place to the world and builds it" };
+      }
+      return has("make_place") ? { verb: "make_place", args: { type: PLACE_TYPE[c.placeKind ?? ""] ?? "<interior|village|dungeon|cave>", name: c.name }, why: "build the place" } : undefined;
     case "person": return has("add_people") ? { verb: "add_people", args: { mapId: mapId(c.map) ?? "<mapId>", people: [{ role: c.name, name: c.name, where: "<spot word>", firstTalk: ["<line>"] }] }, why: "place the person" } : undefined;
     case "talk": {
       // 그 인물이 이미 있으면 말 걸기 장면, 없으면 사람 두기(대사 포함).
@@ -181,7 +187,7 @@ export function nextForItem(item: TodoItem, project: Project, available: Readonl
  * battle 은 «말을 걸고 → 보스전» 을 한 번에 짓는 상위 동사가 없다 — 하위 도구 조립이 유일한 길이라 돌려보내지 않고 기록만 한다.
  */
 export const VERB_SCOPE: Readonly<Partial<Record<string, { high: readonly string[]; low: readonly string[] }>>> = {
-  place: { high: ["make_place", "author_forest_route", "edit_place"], low: ["stamp_object", "upsert_event", "patch_event_page", "add_event_page", "place_npc"] },
+  place: { high: ["build_world", "make_place", "author_forest_route", "edit_place"], low: ["stamp_object", "upsert_event", "patch_event_page", "add_event_page", "place_npc"] },
   person: { high: ["add_people"], low: ["upsert_event", "place_npc", "add_event_page"] },
   talk: { high: ["add_people", "add_event"], low: ["upsert_event", "place_npc"] },
   link: { high: ["create_transfer_pair"], low: ["upsert_event", "patch_event_page", "add_event_page"] },

@@ -324,7 +324,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   const leadItems = new Set<string>();
   const done = await runPiAgent({
     ...request,
-    systemPrompt: buildV2SystemPrompt(request.project, request.currentMapId, request.task, store),
+    systemPrompt: buildV2SystemPrompt(request.project, request.currentMapId, request.task, store, request.projectKey ? String(request.projectKey) : undefined),
     initialToolNames: [],
     openingProduction: false,
   }, {
@@ -446,7 +446,15 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
             refreshChecks(env);
             if (!loopStop && store.openCount()) { const prompt = reinject(env, "[Items reopened by the machine check after the function finish]"); if (prompt) return prompt; }
           }
-          if (loopStop) return undefined;
+          if (loopStop) {
+            // 고리가 멈추면 관문·검토자·화면 검수를 돌리지 않는다(모델을 더 부르지 않는다). 그래도 관문이 본 문제는 최종 보고에 싣는다 —
+            // 싣지 않으면 «엔딩을 부르는 이벤트가 없다» 같은 출하 차단이 조용히 빠진 채 «막힘 N» 만 남는다.
+            try {
+              const unseen = v2GateProblems(session, env).problems.filter((p) => !store.items.some((i) => i.content.includes(p.text.slice(0, 60))));
+              if (unseen.length) autoNotes.push(`끝맺음 관문이 본 문제 ${unseen.length}건(고리가 멈춰 고치지 못함): ${unseen.slice(0, 5).map((p) => p.text.slice(0, 140)).join(" / ")}`);
+            } catch { /* 관문 계산 실패는 보고를 막지 않는다 */ }
+            return undefined;
+          }
           // ③b 이번 턴에 지은 설계 실내 맵마다 room_zones 항목(구역·초점·갈 이유·반복) — 조수가 안 달았으면 함수가 덧붙인다(roomZones.ts).
           {
             let opened: TodoItem[] = [];

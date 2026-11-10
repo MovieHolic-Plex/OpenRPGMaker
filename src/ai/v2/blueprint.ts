@@ -27,6 +27,11 @@ export const WRITE_BLUEPRINT_SCHEMA = {
   properties: {
     title: { type: "string" },
     genre: { type: "string", description: "short genre word (horror, romance, JRPG…)" },
+    places: { type: "array", maxItems: 12, description: "every place of the game when the prompt has a [World of this game] card (the first is the start) — code builds them with build_world", items: { type: "object", properties: {
+      name: { type: "string", description: "map name (steps[].place uses this exact name)" },
+      kind: { type: "string", description: "a place kind id from the [World of this game] card" },
+      from: { type: "string", description: "name of the place this one is entered from (default: the place listed before it)" },
+    }, required: ["name", "kind"] } },
     playerGoal: { type: "string", description: "one guiding line for a new player (within 140 chars)" },
     steps: { type: "array", minItems: 2, maxItems: 12, items: { type: "object", properties: {
       id: { type: "string", description: "s1, s2 …" },
