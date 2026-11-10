@@ -1,6 +1,6 @@
 // 실행기 이벤트를 옆에서 모은다 — 검토자의 재료(도구 기록)와 마지막 보고 초안. 제공자 오류 문장은 보고로 받지 않는다. 2026-11-11 리팩토링 R3: runAssistantV2 에서 옮겼다.
 import type { PiAgentEvent } from "../../piAgent/protocol";
-import { assembledReport, isProviderErrorReply } from "../finalReport";
+import { assembledReport, isProviderErrorReply } from "../judge/finalReport";
 import type { TurnContext } from "./context";
 
 /** onEvent = 실행기가 내는 이벤트를 받아 도구 기록·보고 초안을 적고 사용자 화면으로 흘려보낸다. */

@@ -2,7 +2,7 @@
 //
 // 왜(2026-10-29 VM 측정 판 5개 판정자 공통 지적): 「조사 위치가 눈에 안 띈다 · 어떤 물건이 메모·시계인지 모른다 · 장화 자국 위치를 못 찾았다」.
 // 조사 이벤트는 대부분 투명이고 반짝임은 반경 2칸 안에서 한 번만 뜬다. 목표 글은 빌더가 「(젖은 장화: 시골 여관 가운데)」처럼
-// 대상 이벤트 이름을 꼬리에 붙이므로(ai/v2/discoverability withWhere), 그 이름으로 대상을 찾아 화면에 은은한 표시를 늘 둔다.
+// 대상 이벤트 이름을 꼬리에 붙이므로(ai/v2/judge/discoverability withWhere), 그 이름으로 대상을 찾아 화면에 은은한 표시를 늘 둔다.
 import type { RuntimeEventView } from "@/project/runtimeEventState";
 import type { Command, GameMap, Project } from "@/project/types";
 
@@ -49,7 +49,7 @@ function mapExits(map: GameMap): Set<string> {
 
 /**
  * from → to 의 가장 짧은 맵 경로(양 끝 포함, 옮기기 이벤트로 잇는다). 길이 없으면 undefined.
- * 목표 꼬리(ai/v2/discoverability whereHint)와 런타임 목표 표시가 같은 경로를 본다 — 다음 맵이 둘 이상 건너면 첫 출구를 가리킨다.
+ * 목표 꼬리(ai/v2/judge/discoverability whereHint)와 런타임 목표 표시가 같은 경로를 본다 — 다음 맵이 둘 이상 건너면 첫 출구를 가리킨다.
  */
 export function mapRoute(project: Pick<Project, "maps">, fromId: string, toId: string): string[] | undefined {
   if (fromId === toId) return [fromId];

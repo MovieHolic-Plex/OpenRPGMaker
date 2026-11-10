@@ -6,7 +6,7 @@
 // 기존 editorDefaultsLeft 의 'hud' 는 fieldHud 가 undefined 일 때만 울려서 이 14판을 못 잡는다. 도구를 한 번 부르면 풀리므로 헛도는 반복이 없다.
 // 순수 함수(프로젝트만 읽는다) — gameContentProblems 가 게임을 만드는 요청에서만 부른다.
 import type { Project } from "@/project/types";
-import { STORY_SETUP_HUD } from "./genreDefaults";
+import { STORY_SETUP_HUD } from "../genreDefaults";
 
 type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => !!v && typeof v === "object" && !Array.isArray(v);

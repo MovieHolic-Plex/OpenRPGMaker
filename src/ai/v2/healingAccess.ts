@@ -7,9 +7,9 @@
 import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { canMove, isPassableLanding } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
-import { allCommands, battleSites, healingItemIds, healingSources } from "./combatChecks";
-import { isObjectiveCommand, mapRegion } from "./discoverability";
-import { reachWithout } from "./puzzleChecks";
+import { allCommands, battleSites, healingItemIds, healingSources } from "./judge/combatChecks";
+import { isObjectiveCommand, mapRegion } from "./judge/discoverability";
+import { reachWithout } from "./judge/puzzleChecks";
 import type { BuildRun } from "./types";
 import { victoryGatedSwitches } from "./blueprint";
 

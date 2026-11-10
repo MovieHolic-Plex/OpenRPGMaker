@@ -1,4 +1,4 @@
-// 조수 v2 독립 검토자(src/ai/v2/advisor.ts) 재생 — 기록된 턴(요청·도구 기록·보고 초안)과 그 턴의 전/후 프로젝트로 검토자를 다시 부른다.
+// 조수 v2 독립 검토자(src/ai/v2/judge/advisor.ts) 재생 — 기록된 턴(요청·도구 기록·보고 초안)과 그 턴의 전/후 프로젝트로 검토자를 다시 부른다.
 //   bun scripts/qa/v2-advisor-replay.mts <cases.json> <out.jsonl>
 // cases.json: [{ id, task, report, before: <project json path>, after: <project json path>, tools: [{name, ok, args, summary}] }]
 // 모델 호출은 실행기의 보조 호출과 같은 모양(completeProvider, max_tokens 8192, 사고 강도 지정 없음)이다.
@@ -6,7 +6,7 @@ import { readFileSync, appendFileSync } from 'node:fs';
 import { completeProvider } from '../lib/ohMyPiPiAiRuntime.ts';
 import { resolveRequestApiKey } from '../lib/aiAuthRuntime.ts';
 import { decodeCinematicWire } from '../../src/project/cinematicWire.ts';
-import { adviseTurn, compactToolLog, summarizeProjectDiff } from '../../src/ai/v2/advisor.ts';
+import { adviseTurn, compactToolLog, summarizeProjectDiff } from '../../src/ai/v2/judge/advisor.ts';
 import type { Project } from '../../src/project/types.ts';
 
 const [casesPath, outPath] = process.argv.slice(2);

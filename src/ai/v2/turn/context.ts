@@ -2,11 +2,11 @@
 import type { Project } from "../../../project/types";
 import type { PiAgentEvent, PiAgentRequest } from "../../piAgent/protocol";
 import { V2Session } from "./session";
-import { type VqaReviewerPick, type VqaRound, type VqaShot } from "../vqa";
+import { type VqaReviewerPick, type VqaRound, type VqaShot } from "../judge/vqa";
 import { loadVqaBook } from "./vqaItems";
 import { carryOver } from "./carryOver";
 import type { PiAssistantV2Env } from "../env";
-import { type AdvisorToolCall, type AdvisorVerdict } from "../advisor";
+import { type AdvisorToolCall, type AdvisorVerdict } from "../judge/advisor";
 import { CONTINUE_WORDS, isWriteRequest } from "../request/scope";
 import { type V2ToolExposure } from "../toolExposure";
 import { changedSince, indexProject } from "../loop/refs";

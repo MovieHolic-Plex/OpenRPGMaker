@@ -139,7 +139,7 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 | 고치라고 건넨 뒤 프로젝트가 안 바뀌었는데 조수가 «끝»으로 표시한 항목이 ✓ 로 남음 | `closeVqaUnchanged` — 다시 찍지 않고 건넨 항목을 그대로로 닫는다 |
 | 사라진 결함의 항목이 막힘으로 남음 / 그림 수 상한으로 안 찍힌 맵의 결함이 «사라짐» | `noteVqaRound` — 그 대상을 이번 판이 찍었을 때만 사라졌다고 본다. 사라졌으면 막힌 항목도 닫는다 |
 
-코드: `src/ai/v2/turn/vqaItems.ts`(장부 `VqaFinding` · `noteVqaRound` · `closeVqaUnchanged` · `vqaLedgerLines` · `vqaUnofferedBlockers`), `src/ai/v2/vqa.ts`, `src/ai/v2/finalReport.ts`, `src/ai/v2/loop/todoStore.ts`(`holds` · `markOffered` · `byKey`).
+코드: `src/ai/v2/turn/vqaItems.ts`(장부 `VqaFinding` · `noteVqaRound` · `closeVqaUnchanged` · `vqaLedgerLines` · `vqaUnofferedBlockers`), `src/ai/v2/judge/vqa.ts`, `src/ai/v2/judge/finalReport.ts`, `src/ai/v2/loop/todoStore.ts`(`holds` · `markOffered` · `byKey`).
 시험: `test/aiV2VqaJudge.test.ts` · `test/aiV2FinalReport.test.ts`(결함 글은 판 기록 그대로).
 아직 아닌 것: 화면 검수 분류의 나머지는 여전히 검수자 글의 낱말로 가른다. (턴 사이 기억은 아래 절.)
 
@@ -174,7 +174,7 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 
 **열쇠.** 검토자·리드 항목의 열쇠도 지적 글에서 만든다(`reviewKey`). 옛 `adv:차례:순번` 은 다음 검토의 다른 지적이 같은 열쇠를 받아 내용을 덮었다.
 
-코드: `src/ai/v2/turn/carryOver.ts`, `src/ai/v2/turn/vqaItems.ts`, `src/ai/v2/loop/todoStore.ts`(`restore` · `loadMemory` · `noteTried` · `memory`), `src/ai/v2/loop/gates.ts`. 시험: `test/aiV2TurnMemory.test.ts`.
+코드: `src/ai/v2/turn/carryOver.ts`, `src/ai/v2/turn/vqaItems.ts`, `src/ai/v2/loop/todoStore.ts`(`restore` · `loadMemory` · `noteTried` · `memory`), `src/ai/v2/judge/gates.ts`. 시험: `test/aiV2TurnMemory.test.ts`.
 저장 크기(탐침): 막힌 항목 6개의 목록 1.4KB, 장부 4건 1.1KB.
 아직 아닌 것: 세션 상태(지은 장소 설계 `session.places` · 그림 시도 `artAttempts` · 장소 고치기 판 수)는 여전히 턴마다 새로 만든다 — `edit_place` 가 다음 턴에 거절하는 것은 도구 줄기의 일이다.
 
@@ -263,7 +263,7 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 ## 새 플레이어 길잡이 — 목표 줄·보이는 이야기 이벤트 (2026-10-26, J90~J96)
 
 사람 판정자가 엔딩에 못 닿는 게임이 자동 플레이로는 통과했다(연애 j90: 투명 「집 현관」, 장난감 가게 j90: 오프닝이 옮긴 인형).
-- `set_objective{text, at:'start' | eventId}` 동사(`src/ai/v2/discoverability.ts` planObjective) — UI 명령 `objectiveChip`(m2-214)을 넣어
+- `set_objective{text, at:'start' | eventId}` 동사(`src/ai/v2/judge/discoverability.ts` planObjective) — UI 명령 `objectiveChip`(m2-214)을 넣어
   「현재 목표」 줄을 바꾼다(자리는 런타임이 주인공·인물·HUD 를 피해 고른다 — `runtime-pre-edit-routing.md` 「목표 안내창 자리」). 목표 줄은 상태라 불러오기·장면 재생성 뒤에도 남는다(`zoneFeedback.lastObjective`).
   이야기·연애 기본 HUD 와 `set_field_hud{off:true}` 는 목표 줄을 켜 둔다.
 - 출하 막음(`shipChecks.shipBlockers`): `critical-invisible`(엔딩·이정표 이벤트가 투명이고 반짝임·작은 물건이 없음 — 건물 벽면 한 칸은 안 셈),
@@ -700,7 +700,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 
 - 타입 `src/ai/v2/todo/types.ts`(`TodoItem`·`TodoCheck`·`CheckResult`, 모델 도구 인자 스키마 `TODO_CHECK_SCHEMA` = 평평한 객체 하나·oneOf·자유 키 없음, 인자 검사 `parseTodoCheck`).
 - 대상 고르기(감독 검토 반영): 항목의 `refs`(고리가 쓰기 동사 전후 차이로 채우는 mapIds·eventIds·itemIds·troopIds)가 있으면 그 id 만 판정하고, 묶인 id 가 사라지면 실패. refs 가 없으면 이름으로 찾되 `fresh`(모델 인자 기본 true)면 `ctx.changed`(이번 턴에 새로 생기거나 바뀐 것)만 후보 — 시작 저장본에 원래 있던 엔딩·보스전으로 새 요청 항목이 통과하지 않는다. 가장 잘 맞는 후보가 이름이 다른 둘 이상이면 「모호함」 실패(같은 이름 무리는 하나로 본다). 부분 일치는 같음이 없을 때만, 짧은 쪽 ≥ 긴 쪽 절반. detail·evidence 에 잡은 id 를 싣는다. `runTodoItemCheck(project, item, ctx)` 는 item.refs 를 얹어 부른다.
-- 판정 `src/ai/v2/todo/checks.ts` `runTodoCheck(project, check, { startMapId?, changed?, refs? })` — 순수 함수, 프로젝트만 읽는다. 이름은 `todo/names.ts` 로 느슨히 맞추고(공백·괄호·부호 무시, 포함 일치, 영어 몇 낱말→한국어), 못 찾으면 detail 에 가까운 후보를 적는다.
+- 판정 `src/ai/v2/judge/todoChecks.ts` `runTodoCheck(project, check, { startMapId?, changed?, refs? })` — 순수 함수, 프로젝트만 읽는다. 이름은 `todo/names.ts` 로 느슨히 맞추고(공백·괄호·부호 무시, 포함 일치, 영어 몇 낱말→한국어), 못 찾으면 detail 에 가까운 후보를 적는다.
 - kind: place(빈 자리표시 맵이면 실패, placeKind 는 안/바깥 묶음으로 대략) · person(걷기 칩 이벤트, 이름·대사 화자·건 전투의 적 이름으로 찾는다) · talk(says 포함) · battle(boss = 이벤트/그룹 id 의 boss·보스, 도망 불가, 마왕·군주 같은 이름) · link(이동 이벤트에 들어오는 칸에서 걸어 닿고 도착 칸이 걸을 수 있다) · ending(map 을 주면 그 맵에서) · item(gives = 넣기 명령) · present_evidence(그 아이템을 받는 presentItem 갈래, 그 아이템을 얻는 길) · objective · reachable(시작 또는 from 맵에서 이동 이벤트를 타고 이벤트·맵까지) · party_join(changeParty add 가 살아 있는 이벤트에 있고 그 배우 이름이나 그 이벤트 이름이 맞고 시작에서 걸어 닿는다 — 배우 이름이 「강」이어도 「떠돌이 검사」 이벤트면 맞는다) · none(판정자 몫).
 - 걷기는 `puzzleFlow`(장치를 켜면 열리는 같은 맵 퍼즐 문 포함) + `bodyReached`, 맵 사이는 닿는 이동 이벤트를 따라 넓힌다. **영영 안 도는 페이지의 명령은 세지 않는다**: 뒤 페이지에 가림(`findShadowedPages`·`findSetterShadowedPages`), 아무도 켜지 않는 스위치·아무도 주지 않는 아이템 조건.
 - **실내 구역 room_zones**(2026-10-30, mapvqa ③ 기준 방 쌍 비교에서 진 이유 = «한 칸짜리 방이라 조사할 곳 없음»·«같은 서가·식탁 줄 반복», 이긴 방 = 서로 다른 구역을 오가는 방):

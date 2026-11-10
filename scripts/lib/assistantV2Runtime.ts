@@ -7,7 +7,7 @@ import type { GameMap, Project } from "../../src/project/types.ts";
 import { runPiAgent, type RunPiAgentOptions } from "./piAgentRuntime.ts";
 import type { PiAgentDoneEvent, PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
-import { vqaShotPlan, type VqaShot } from "../../src/ai/v2/vqa.ts";
+import { vqaShotPlan, type VqaShot } from "../../src/ai/v2/judge/vqa.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { createV2Turn } from "../../src/ai/v2/turn/turn.ts";
 

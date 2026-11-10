@@ -1,5 +1,5 @@
 // 화면 검수 한 판 — 검수자 후보를 차례로 부르고(runVqaRound), 결함을 장부와 할 일에 맞춘다(vqaStep). 2026-11-11 리팩토링 R3: runAssistantV2 에서 옮겼다.
-import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaReviewerLabel, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, vqaLedgerLine, type VqaRound } from "../vqa";
+import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaReviewerLabel, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, vqaLedgerLine, type VqaRound } from "../judge/vqa";
 import { closeVqaUnchanged, handCarriedBlockers, noteVqaRound } from "./vqaItems";
 import { familyOfProviderId } from "../../assistantRoles";
 import type { PiAssistantV2Env } from "../env";
