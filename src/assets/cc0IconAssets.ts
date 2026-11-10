@@ -307,6 +307,10 @@ export const CC0_ICON_ASSETS = [
   generatedIcon("cc0-jetrel-gen2-twin-dose-kit", "gen2-twin-dose-kit.png", "이중 약갑"),
   generatedIcon("cc0-jetrel-gen2-triple-aegis", "gen2-triple-aegis.png", "삼중 수호패"),
   generatedIcon("cc0-jetrel-gen2-five-spark-core", "gen2-five-spark-core.png", "오연 발화핵"),
+  // 폴른 스타 별 표식 Ⅰ·Ⅱ·Ⅲ — 위 오연 발화핵을 금빛으로 재채색해 1~3개 놓은 상태 아이콘(새 그림 아님).
+  generatedIcon("cc0-jetrel-gen2-fs-star-mark-1", "gen2-fs-star-mark-1.png", "별 표식 Ⅰ"),
+  generatedIcon("cc0-jetrel-gen2-fs-star-mark-2", "gen2-fs-star-mark-2.png", "별 표식 Ⅱ"),
+  generatedIcon("cc0-jetrel-gen2-fs-star-mark-3", "gen2-fs-star-mark-3.png", "별 표식 Ⅲ"),
   generatedIcon("cc0-jetrel-gen2-moonsilver-wire", "gen2-moonsilver-wire.png", "월은 철사"),
   generatedIcon("cc0-jetrel-gen2-frostglass-shard", "gen2-frostglass-shard.png", "서리유리 파편"),
   generatedIcon("cc0-jetrel-gen2-storm-sailcloth", "gen2-storm-sailcloth.png", "폭풍 돛천"),

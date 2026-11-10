@@ -24,6 +24,7 @@ const PAL = {
   ash: ["#1a1716", "#2e2a28", "#4a4441", "#6b6460", "#8f8883", "#b5afa9", "#d8d3ce", "#f2efeb"],
   dust: ["#2a2018", "#4a3a2a", "#6e5a44", "#93806a", "#b8a892", "#d8ccba"],
   gold: ["#3a2a08", "#6e4f12", "#a87a1c", "#d8a832", "#f2d266", "#fbeaa8", "#fffbe6", "#ffffff"],
+  bronze: ["#2a1608", "#5a3212", "#8a5424", "#b87a3c", "#d8a062", "#f0cc96", "#fff0d6"],
 } as const;
 
 export interface FallenPixelFxReport {
@@ -44,10 +45,13 @@ const fx = (effectId: string, extra: Omit<PixelFxSpec, "effectId"> = {}): PixelF
 
 export const FALLEN_SKILL_FX: readonly SkillFx[] = [
   // 카엘 — 검
-  { skill: "skill_sword_slash", spec: fx("melee/sword-slash"), hit: 1, note: "검격" },
+  { skill: "skill_sword_slash", spec: fx("melee/sword-slash", { palette: [...PAL.steel.slice(0, 5), "#ffd97a", "#fff6d8"] }), hit: 1, note: "검격(강철 궁적 · 금빛 끝)" },
   { skill: "skill_hero_cross_slash", spec: fx("melee/double-slash", { palette: [...PAL.steel] }), hit: 2, note: "십자베기" },
   { skill: "skill_hero_rush_pierce", spec: fx("melee/thrust", { palette: [...PAL.steel] }), hit: 1, note: "돌진 찌르기" },
   { skill: "skill_hero_flame_sword", spec: fx("fallenstar/flame-sword"), hit: 1, note: "화염검(불꽃 초승달 베기 · 폴른 스타 전용)" },
+  // 카엘 「별 새김 검」(fs-skill-build1): 베기는 강철 흰빛 궁적 + 끝에 금빛 불씨, 올려베기도 같은 결. 단죄의 일섬은 표식을 터뜨리는 빛 베기.
+  { skill: "skill_hero_rising_blade", spec: fx("melee/sword-slash", { palette: [...PAL.steel.slice(0, 5), "#ffd97a", "#fff6d8"], angle: -60 }), hit: 1, note: "올려베기(강철 궁적 · 금빛 끝)" },
+  { skill: "skill_fs_verdict", spec: fx("impacts/crit-hit", { palette: [...PAL.gold] }), hit: 1, note: "단죄의 일섬(별 표식 터뜨리기 · 금빛 터짐)" },
   // 마도사
   { skill: "skill_mage_fireball", spec: fx("explosions/small-explosion"), hit: 1, note: "파이어볼" },
   { skill: "skill_mage_chain_lightning", spec: fx("lightning/chain-lightning"), hit: 2, note: "연쇄 번개" },
