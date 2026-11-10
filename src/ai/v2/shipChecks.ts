@@ -25,6 +25,7 @@ import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "./genreDefaults";
 import { isEscapeBlueprint, strayStepCopies, walkBlueprint } from "./blueprint";
 import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS, planLinks } from "./mapCount";
+import { MIN_ACT_DEPTH, progressionDepth } from "./actDepth";
 import { countQuests, MIN_COUNTED_QUESTS } from "./questCount";
 import { assemblyTimeMismatches, blankMap, blueprintStoryText } from "@/project/blueprintAssembly";
 import { openingMapViewMapId } from "@/project/openingMapView";
@@ -637,6 +638,23 @@ export function questsMinBlocker(project: Project, task: string): ShipBlocker[] 
   }];
 }
 
+/**
+ * 진행 깊이(척도 act_structure)가 모자라면 출하 차단(2026-11-10 리드·오너: 맵 다음 act_structure — 청사진 단계 늘리기). 척도(progressionDepth)와 같은 규칙으로 잰다 —
+ * 청사진 단계 수가 아니라 «스위치를 켜고 다음 이벤트가 그 스위치를 조건으로 읽는» 사슬의 길이라서, 이름만 늘리거나 이미 있는 이벤트 이름을 붙여도 통과하지 못한다.
+ * 한 장소 게임(방탈출·「방 하나」)은 면제(깊이 1). 문구는 고정 문장을 앞에 둔다 — 할 일 열쇠가 앞 160자라 바뀌는 숫자는 뒤로.
+ */
+export function actDepthMinBlocker(project: Project, task: string): ShipBlocker[] {
+  const request = withoutIntentNote(task) + " " + withoutIntentNote(project.gameBlueprint?.request ?? "");
+  if (SINGLE_PLACE.test(request) || ONE_ROOM_GAME.test(request) || escapeGame(project)) return [];
+  const depth = progressionDepth(project);
+  if (depth >= MIN_ACT_DEPTH) return [];
+  return [{
+    id: "act-depth-min",
+    message: `이야기가 이어지는 단계(진행 깊이)가 ${depth}/${MIN_ACT_DEPTH} 이다 — 청사진 단계를 늘린다. write_blueprint 로 핵심 경로를 6~8단계로 다시 쓰고(장소를 2곳 이상 나눠 둔다) build_blueprint_path 를 한 번 부른다. 새 단계의 event 는 아직 없는 새 이름으로 — 이미 있는 이벤트 이름을 쓰면 사슬이 늘지 않는다. 전투·상점이 든 단계 이벤트는 다시 지어지지 않으니 patch_event_page 로 앞 단계가 켠 스위치를 조건으로 잇는다.`,
+    evidence: `depth=${depth} need=${MIN_ACT_DEPTH}`,
+  }];
+}
+
 export function shipBlockers(project: Project, task: string): ShipBlocker[] {
   const spoilers = titleSpoilers(project);
   // 「끝까지 만들어 줘」 같은 이어 하기 요청은 낱말 판정(wantsWholeGame)에 안 걸려 출하 검사가 통째로 꺼졌다(2026-11-09 village-1: 2턴째에 엔딩 기본 그림이 항목이 안 됐다).
@@ -699,7 +717,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
     evidence: `battleSites=${sites.length} healingSources=0`,
   }] : [];
-  return [...reloadBlock, ...blueprint, ...mapsMinBlocker(project, task), ...questsMinBlocker(project, task), ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...bundledPictureLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
+  return [...reloadBlock, ...blueprint, ...mapsMinBlocker(project, task), ...questsMinBlocker(project, task), ...actDepthMinBlocker(project, task), ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...bundledPictureLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
 }
 
 /**
