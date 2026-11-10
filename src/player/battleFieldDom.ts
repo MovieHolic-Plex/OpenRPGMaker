@@ -1193,6 +1193,7 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
       const topPad = (Number.parseFloat(anchor.style.getPropertyValue("--battle-sprite-top-pad")) || 0) / 100;
       // 상태 이름(label)은 머리 위 배지 줄과 겹치지 않게 몸통 쪽으로 조금 내린다.
       let topPx = spriteRect.top - layerRect.top + spriteRect.height * (Math.max(0.3, topPad) + (feedback.label ? 0.12 : 0));
+      const headTopPx = topPx;
       // 행동 중에는 로그 배너가 필드 위에 떠 있다(z 12). 배너보다 위로 튀면 숫자가 배너 뒤로 숨는다 —
       // 2026-09-27 프레임 실측: 슬라임 머리 위 -68 이 착탄 +80~+160ms 내내 윗줄이 잘렸다.
       // 팝업은 자기 높이의 ~1.4배만큼 위로 튀므로(22-hit-feel.css bounce 정점) 그만큼 배너 아래에 둔다.
@@ -1205,6 +1206,7 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
         const clearance = 64 * layerScale * (POP_SCALE[anchor.dataset.hitIntensity ?? ""] ?? 1);
         topPx = Math.max(topPx, bannerRect.bottom - layerRect.top + clearance);
       }
+      if (topPx > headTopPx) popup.dataset.underBanner = "true";
       popup.style.top = `${(topPx / layerRect.height) * 100}%`;
     }
     // 막타 팝업(900ms)이 기절 페이드(550~620ms)보다 오래 남아 빈 자리에 떠 있었다 —
@@ -1219,7 +1221,10 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     const earlier = [...layer.querySelectorAll<HTMLElement>(".battle-damage-popup")]
       .filter((node) => node.dataset.targetId === feedback.targetId && node.classList.contains("battle-damage-popup-status") === Boolean(feedback.label));
     if (earlier.length > 0) {
-      popup.style.marginTop = `${-Math.min(4, earlier.length) * 26}px`;
+      // 배너 아래로 내린 숫자(머리가 배너에 가까운 적)는 아래로 쌓는다 — 위로 쌓으면 둘째 줄부터 배너 뒤·전장 밖으로 나갔다
+      // (fs-defect-sweep C2: 굶은 들개 「163 약점 발견!」이 전장 위로 32px).
+      const below = popup.dataset.underBanner === "true";
+      popup.style.marginTop = `${(below ? 1 : -1) * Math.min(4, earlier.length) * 26}px`;
       popup.dataset.stacked = "true";
       for (const node of earlier) node.dataset.stacked = "true";
     }
