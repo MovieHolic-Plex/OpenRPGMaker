@@ -8,11 +8,11 @@
 import { isPassable } from "@/project/collision";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
 import type { GameMap, Project } from "@/project/types";
-import { isDoorName, reachableCells, unreachableEvents } from "./eventReach";
+import { isDoorName, reachableCells, unreachableEvents } from "../eventReach";
 import { isMysteryBlueprint, isProgressWord, resolveSteps } from "./mysteryCase";
 import { resolveGraphic } from "@/editor/tools/eventCompile";
 import { chestOpenCommands, chestOpenedGraphic } from "@/editor/lootFeedback";
-import type { BuildRun } from "./types";
+import type { BuildRun } from "../types";
 
 const ALTAR = "kit:beodeul_city/bd-pick-castle-catacombs-altar-stone";
 const SEAL = /봉인|제단|결계|의식|마법진|seal|altar/iu;

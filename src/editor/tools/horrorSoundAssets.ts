@@ -2,7 +2,7 @@
 // 음원 묶음에 없는 소리라 내장 합성(@/assets/originalSound)으로 굽는다 — generate_original_se 와 같은 자산 모양.
 import { musicWavDataUrl } from "@/assets/originalMusic";
 import { renderOriginalSound } from "@/assets/originalSound";
-import { HORROR_SOUNDS } from "@/ai/v2/horrorSounds";
+import { HORROR_SOUNDS } from "@/ai/v2/story/horrorSounds";
 import { setAudioDescriptionOverride } from "@/project/audioDescriptions";
 import type { EventFootsteps, Project } from "@/project/types";
 import { ToolError } from "./types";

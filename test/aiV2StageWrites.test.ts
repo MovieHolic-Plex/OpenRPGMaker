@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { unaskedChanges, battleDataEmptied } from "@/ai/v2/judge/gameChecks";
 import { isStageWrite, recordStageWrites, stageWriteKey, type StageWrites } from "@/ai/v2/stageWrites";
-import { fitFirstLevelUp } from "@/ai/v2/pathBattleBudget";
+import { fitFirstLevelUp } from "@/ai/v2/story/pathBattleBudget";
 import type { Project } from "@/project/types";
 
 // 2026-11-10 treasure 두 판(80분 측정): 끝맺음 단계가 쓴 값(경험치 곡선·주인공 이름·적 체력)을 관문이 «요청에 없는 기존 데이터를 바꿨다» 로 짚어

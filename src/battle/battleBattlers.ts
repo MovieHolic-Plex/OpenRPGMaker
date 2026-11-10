@@ -568,7 +568,7 @@ function wildLevelAdjusted(project: Project, enemy: ReturnType<typeof normalizeE
 
 /**
  * 종 몬스터 적 레코드를 다른 레벨로 옮긴 값(능력치·기술·행동) — 야생 레벨 굴림과 같은 계산이다. 끝맺음이 길 몬스터 레벨을 관문 곡선에
- * 맞출 때 레코드 자체를 바꾸는 데 쓴다(ai/v2/monsterRouteLevels). 종이 없거나 레벨이 같으면 undefined.
+ * 맞출 때 레코드 자체를 바꾸는 데 쓴다(ai/v2/story/monsterRouteLevels). 종이 없거나 레벨이 같으면 undefined.
  */
 export function speciesEnemyAtLevel(project: Project, enemy: EnemyRecord, level: number): { level: number; stats: EnemyRecord["stats"]; skillIds: SkillId[]; actions: EnemyActionPattern[] } | undefined {
   const adjusted = wildLevelAdjusted(project, normalizeEnemyRecord(enemy), level);
