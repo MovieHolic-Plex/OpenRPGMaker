@@ -1,0 +1,22 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "38e818416a984c5c7edd984e9414fd6d3992adc16bfb714f8cde0e77bc0faa2a",
+ "profileHash": "4d8774b517f41638",
+ "kind": "wall_structure",
+ "decision": "allow",
+ "decidedBy": "fs-well-boss lane (supervisor)",
+ "decidedAt": "2026-11-09T16:10:24.193Z",
+ "by": "delegated",
+ "delegatedBy": "hyeon-seok-oh (owner, Discord msg 1569382832202186955)",
+ "evidence": "/home/main/z-project/rpg-zzu/.worktrees/fs-well-boss/tiledata/fs-well-boss/decisions/stairs-up-72ca59f1.json",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 맨 위의 큰 부분(46행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (2/4)",
+  "3/4: 맨 위의 큰 부분(22행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/4)",
+  "3/4: 맨 위의 큰 부분(18행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "note": "owner: 「계단은 됐고 다리는 이어진 느낌이 안 드는데.」 — STAIRS only; file sha256 72ca59f1…; advisory FAIL kept",
+ "sig": "331c2ef32e04a22caca3a56530b10413630147aeec53b3952d8e54a90adb11dd"
+}

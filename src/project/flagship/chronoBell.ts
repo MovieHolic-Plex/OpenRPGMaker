@@ -58,6 +58,7 @@ import type { FlagshipDemoBuildResult } from "./types";
 import { applyFallenPixelFx } from "./fallen/pixelfx";
 import { applyFallenMobBalance } from "./fallen/mobBalance";
 import { applyFallenMonsterArt16, installFallenMonsterArtWithoutBundle } from "./fallen/monsterArt16";
+import { finishFallenWellBeastArt } from "./fallen/wellBeast";
 import { applyFallenAreaBackdrops } from "./fallen/areaBackdrops";
 import { applyFallenBattleMusic } from "./fallen/battleMusic";
 import { applyFallenWeaponTraits } from "./fallen/weaponTraits";
@@ -2523,6 +2524,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenMobBalance(project, execTool);
   // 몬스터 새 그림 24종(16칸 4×4)과 그 체급 배율 — 배율은 우두머리 표 다음에 덮는다(fallen/monsterArt16.ts).
   applyFallenMonsterArt16(project);
+  // 우물 밑 눈먼 영주 — 그림이 방금 설치됐으니 자리 그림을 진짜 그림으로 바꾼다(fallen/wellBeast.ts).
+  finishFallenWellBeastArt(project, "fs2_well_shaft");
   // 지역별 전투 배경 13장(battle-backdrop · Opus 최고점) — 맵·트룹 배경을 모두 지은 뒤에 덮는다(fallen/areaBackdrops.ts).
   applyFallenAreaBackdrops(project, (name, args) => execTool(project, name, args));
   // 무기 계열 특성(검 급소·창 방어 깎기·지팡이 기절·사출봉 둔화) — 대장간·2막 무기까지 다 생긴 뒤(fallen/weaponTraits.ts).

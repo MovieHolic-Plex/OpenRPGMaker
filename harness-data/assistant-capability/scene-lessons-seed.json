@@ -1175,6 +1175,23 @@
     "projectLint reports no openCraftShop.* error",
     "in the shipped player, talking to the artisan opens the craft window (data-testid craft-shop-scene) listing three rows, an unaffordable row shows its reason, crafting one returns to the same window, and 그만둔다 closes it"
    ]
+  },
+  {
+   "id": "side-dungeon-learnable-boss",
+   "label": "곁가지 던전 + 미리 귀띔한 약점이 있는 중간 보스",
+   "port": 19567,
+   "lessons": [
+    "side-branch-never-blocks-story",
+    "boss-weakness-hinted-before-fight"
+   ],
+   "prompt": "마을 우물 밑 작은 방을 방 다섯 개짜리 지하 갱도로 넓혀 줘. 원래 방의 사다리·승강 장치·도착 자리는 그대로 두고, 고패로 여는 쇠살문, 처음 방으로 돌아오는 고리 길, 금 간 벽 뒤 숨은 보물방, 맨 안쪽에 우물 밑에 사는 괴물 중간 보스를 넣어 줘. 보스는 두 단계로 싸우고, 번개에 약하다는 걸 싸우기 전에 비문으로 귀띔해 줘. 이기면 장신구를 주고 지면 처음 방으로 물러나게.",
+   "requirements": [
+    "the original room's ladder, lift and arrival cells keep their coordinates and the story transfer events still land on walkable cells",
+    "the new rooms are reachable from the arrival cell (the hidden room only after the cracked-wall event clears its blocking cells), and a loop returns to the first room",
+    "a winch/lever event opens the gate with changeTile on the iron-gate cells and sets a switch",
+    "the boss troop has a battle page on enemyHpBelow 50 (phase 2), the enemy has elementRates thunder A, and at least one readable sign/tablet event mentions the weakness before the boss is reached",
+    "defeat branch transfers the party back to the first room instead of game over; victory sets a switch and gives the accessory"
+   ]
   }
  ]
 }
