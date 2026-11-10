@@ -1,0 +1,11 @@
+{
+ "pass": true,
+ "wolfLevel": 4,
+ "score": 4,
+ "failed": [],
+ "reason": "The moss slime is real low-res pixel art: hard shading bands, a varied dark outline, hand-placed moss, pebble and sprout detail and a clear silhouette, though its interior texture is noisier and less cleanly clustered than the wolves'. It faces right, idle_a/b/c differ visibly, attack lunges right and differs from hit, dead is a flattened defeated puddle and nothing is clipped; the only weak point is hit (cell 8), which reads mainly as a wince and squash with only a slight lean to the left.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

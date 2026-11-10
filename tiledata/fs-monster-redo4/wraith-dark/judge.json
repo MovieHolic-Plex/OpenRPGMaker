@@ -1,0 +1,11 @@
+{
+ "pass": true,
+ "wolfLevel": 4,
+ "score": 4,
+ "failed": [],
+ "reason": "The ash-violet reaper reads as real low-res pixel art like the wolves: limited palette, hard shading bands, dark outline, hand-placed tatter texture and a clear hooded silhouette with a scythe, though its dense, noisy cloth texture is a bit busier than the wolves' cleaner clusters. It faces right; the attack is a clear rightward lunge with the scythe, the hit cell leans back to the left with squinted eyes, the three idles differ subtly but visibly, the dead cell is a collapsed heap, and nothing is cut off at the cell edges or fringed.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}
