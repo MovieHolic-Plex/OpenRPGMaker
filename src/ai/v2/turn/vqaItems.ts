@@ -11,7 +11,7 @@ import type { Project } from "@/project/types";
 import { textHash } from "../loop/continuation";
 import type { TodoStore } from "../loop/todoStore";
 import type { TodoItem } from "../todo/types";
-import { VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaClassify, vqaDefectLine, vqaFixCall, vqaSameDefect, type VqaDefect, type VqaRound, type VqaShot } from "../vqa";
+import { VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaClassify, vqaDefectLine, vqaFixCall, vqaSameDefect, type VqaDefect, type VqaRound, type VqaShot } from "../judge/vqa";
 
 /** 화면 검수가 한 번이라도 짚은 결함 하나. */
 export interface VqaFinding {

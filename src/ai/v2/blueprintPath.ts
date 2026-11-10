@@ -28,7 +28,7 @@ import { simulateBattle } from "@/battle/simulate";
 import { trivialCode } from "./puzzle";
 import { repairEventReach } from "./eventReach";
 import { dressInteriorExits } from "./place/exitDress";
-import { bearingWord, landmarkWord, OBJECTIVE_SURFACE, planObjective } from "./discoverability";
+import { bearingWord, landmarkWord, OBJECTIVE_SURFACE, planObjective } from "./judge/discoverability";
 import { settleExamineSpots } from "./examineSpot";
 import { ensureHealingAccess, ensureSupplyShop } from "./healingAccess";
 import { stageMysteryCase } from "./mysteryCase";

@@ -25,7 +25,7 @@ import { stateClearsOnBattleEnd } from "@/project/battleEndStates";
 import { mapRoute } from "@/player/objectiveTarget";
 import type { ActorExperienceCurve, EnemyRecord, GameMap, Project, SkillRecord } from "@/project/types";
 import { blueprintMapFor } from "./blueprintPath";
-import { healingItemIds } from "./combatChecks";
+import { healingItemIds } from "./judge/combatChecks";
 import { startHealingItem } from "./healingAccess";
 import { wantsWholeGame } from "./request/scope";
 import { WEAK_FOE_ASK } from "./request/combat";

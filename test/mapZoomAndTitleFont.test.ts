@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { getTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { resolveMapCameraZoom } from "@/project/cameraZoom";
-import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import type { GameEvent } from "@/project/types";
 
 describe("맵 카메라 배율", () => {

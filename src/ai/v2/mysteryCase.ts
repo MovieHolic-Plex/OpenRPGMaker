@@ -14,7 +14,7 @@ import { eventGives } from "./blueprint";
 import { showExaminedThing } from "./examineArt";
 import { settleExamineSpot } from "./examineSpot";
 import { reachableCells, unreachableEvents } from "./eventReach";
-import { isObjectiveCommand, mapRegion, objectiveCommand, withWhere } from "./discoverability";
+import { isObjectiveCommand, mapRegion, objectiveCommand, withWhere } from "./judge/discoverability";
 import { isPassable } from "@/project/collision";
 import { buildPeople } from "./people";
 import { tileLabel } from "./place/cells";

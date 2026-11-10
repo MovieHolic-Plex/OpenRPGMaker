@@ -2,8 +2,8 @@
 import type { PiAgentDoneEvent } from "../../piAgent/protocol";
 import { V2_MAX_REPAIR_ROUNDS } from "./session";
 import { buildsWholeGame } from "../request/scope";
-import { todoReport } from "../finalReport";
-import { vqaSummary } from "../vqa";
+import { todoReport } from "../judge/finalReport";
+import { vqaSummary } from "../judge/vqa";
 import { vqaLedgerLines, vqaUnofferedBlockers } from "./vqaItems";
 import { countMaps, RECOMMENDED_MAPS } from "../mapCount";
 import { countQuests, RECOMMENDED_QUESTS } from "../questCount";
