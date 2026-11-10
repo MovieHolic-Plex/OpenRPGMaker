@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { MUSIC_TIER, v2ExtraToolNames, wantsGameTools, wantsMusicTools } from "@/ai/v2/request/toolGroups";
 import { musicAsked } from "@/ai/v2/request/audio";
-import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { expandStoreMusicQuery } from "@/assetStore/storeMusicPick";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";

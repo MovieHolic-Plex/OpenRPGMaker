@@ -10,7 +10,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
-import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import type { Project } from "@/project/types";
 
 const sha = (n: number): string => n.toString(16).padStart(64, "0");

@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { hudIsStoryTemplate, hudTitleChoiceProblems } from "@/ai/v2/hudTitleChecks";
+import { hudIsStoryTemplate, hudTitleChoiceProblems } from "@/ai/v2/judge/hudTitleChecks";
 import { STORY_SETUP_HUD, applyStorySetupDefaults } from "@/ai/v2/genreDefaults";
-import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import type { Project } from "@/project/types";
 
 const WHOLE = "용사가 마왕을 잡으러 가는 짧은 RPG 만들어줘";

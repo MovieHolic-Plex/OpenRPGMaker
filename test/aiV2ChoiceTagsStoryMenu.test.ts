@@ -3,7 +3,7 @@ import { createBlankProject } from "@/project/defaults";
 import { choiceMetaTag, playerChoiceText } from "@/project/choiceText";
 import { fieldMenu } from "@/project/fieldMenu";
 import { applyStorySetupDefaults } from "@/ai/v2/genreDefaults";
-import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import type { Project } from "@/project/types";
 
 describe("choice meta tags (J37)", () => {

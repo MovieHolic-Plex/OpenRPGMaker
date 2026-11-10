@@ -14,8 +14,8 @@
 // 순수 함수(before·after·요청 글).
 import type { Project } from "@/project/types";
 import { splitScriptSpeaker } from "@/project/endingSummary";
-import { isRereadMarker } from "./rereadPage";
-import { SCENE_WORDS, TALK_WORDS } from "./request/asks";
+import { isRereadMarker } from "../rereadPage";
+import { SCENE_WORDS, TALK_WORDS } from "../request/asks";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);

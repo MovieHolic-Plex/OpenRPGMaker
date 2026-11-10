@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { getTool } from "@/editor/tools/toolRegistry";
-import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { projectCanLoseHp } from "@/project/fieldHud";
 import type { GameEvent, Project } from "@/project/types";
 
