@@ -12,7 +12,15 @@
   pointer-events: none;
   position: absolute;
   translate: -50% -50%;
-  z-index: 8;
+  /* 기술 연출(.retro-skill-fx 35 · 화면 36 · 투사체 37, 27-retro-motion.css)과 같은 필드에 붙는다. 8 이면 마법 폭발이
+     착탄 섬광을 덮어 영웅별 섬광 색(ActorRecord.battleHitFlash)이 마법 기술에서 한 프레임도 안 보였다(fs-vqa-fix-all,
+     엘레나 파이어볼). 37 은 투사체와 같고 DOM 순서로 그 위에, 베일 번창임(38)·연계 번창임(39)·컷인·숫자(40+) 아래다. */
+  z-index: 37;
+}
+/* 섬광을 올리면 같은 필드의 데미지 숫자 층(04-anim-damage-layers.css z 9)을 175ms 동안 덮는다 — 숫자는 섬광·기술 연출 위에 둔다.
+   컷인 띠·연계 번창임(39~46)은 그대로 숫자 위다. */
+.battle-scene[data-battle-motion="retro"] .battle-effects-layer {
+  z-index: 38;
 }
 
 /* Numbers land on contact, then settle; healing/miss/status keep their own cadence. */
