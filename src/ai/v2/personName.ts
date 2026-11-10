@@ -13,6 +13,13 @@ export const isPersonName = (name: string | undefined): boolean => !!name && PER
 
 /** 사람 이름 이벤트에 붙일 칩 그림(아래를 본 서 있는 자세). 못 고르면 undefined. */
 export function personGraphicFor(project: Project, map: GameMap, name: string): { graphic: Record<string, unknown>; label: string } | undefined {
+  // 같은 이름의 사람이 게임 어디엔가 이미 서 있으면 그 모습 그대로(한 사람이 장소마다 다른 얼굴이 되지 않게).
+  const wanted = name.trim();
+  for (const other of Object.values(project.maps)) for (const ev of other.events ?? []) {
+    if ((ev.name ?? "").trim() !== wanted) continue;
+    const graphic = (ev.pages ?? []).map((pg) => pg.graphic as Record<string, unknown> | undefined).find((g) => g?.sprite && g.transparent !== true);
+    if (graphic) return { graphic: structuredClone(graphic), label: `${wanted} 의 앞선 모습` };
+  }
   const pick = pickPersonGraphic(project, map, name, undefined);
   if (!pick) return undefined;
   return {

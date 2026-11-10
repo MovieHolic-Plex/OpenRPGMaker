@@ -806,6 +806,7 @@ const ROLE_LOOKS: ReadonlyArray<readonly [RegExp, readonly string[], ("male" | "
 ];
 const HOSTILE = /몬스터|언데드|해골|스켈레톤|좀비|유령|악마|뱀파이어|오크|고블린|슬라임|마물|monster|undead|skeleton|zombie|ghost|demon|vampire|orc|goblin|slime/i;
 
+const CHILD_LOOK = /아이|어린이|소년|소녀|꼬마|child|kid|boy|girl/iu;
 const ODD_LOOK = /이국|터번|닌자|요정|난쟁이|수녀|해적|광대|ninja|fairy|dwarf|nun|pirate|clown/i;
 
 export interface PersonGraphic {
@@ -870,8 +871,26 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
   // 그 칩이 뽑혔고, 뒤이은 upsert_event 가 «몬스터 수집 잠금»으로 거절돼 청사진 경로가 통째로 안 지어졌다(2026-11-10 worldProbe «촌장 하르»).
   const monsterOk = monsterAssetCatalogFilters(project, activeMonsterTurn())?.charset;
   const queries = graphicQueries(looks, role);
+  // 다른 맵에서 이미 쓴 칩(게임 전체) — 같은 맵만큼은 아니어도 뒤로 민다(게임의 사람들이 서로 달라 보이게).
+  const usedElsewhere = new Set<string>();
+  for (const other of Object.values(project.maps)) {
+    if (other.id === map.id) continue;
+    for (const e of eventsOf(other)) {
+      const g = e.pages?.[0]?.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
+      if (g?.sprite?.id && typeof g.pattern === "number" && g.pattern >= 3) usedElsewhere.add(`${g.sprite.id}#${decodeCharsetFrameIndex(g.pattern).characterIndex}`);
+    }
+  }
+  // 마지막 질의(«villager» — 역할 낱말을 못 알아들었거나 알아들은 칩이 이 맵에 안 맞을 때의 기본)는 이름으로 사람 칩을 돌려 고른다 — 순위 1등 고정이면 «족장 바라»·«무당 누리»·«동굴 지기 아루»가
+  // 모두 같은 「중년 남성 주민」으로 섰다(2026-11-10 Terra fun-w2: 사람 다섯이 한 얼굴).
+  const nameHash = [...asked.trim()].reduce((h, c) => (Math.imul(h, 31) + c.charCodeAt(0)) >>> 0, 7);
   queries.forEach((q, qi) => {
-    queryNpcGraphics(q, 30, overrides).forEach((m, rank) => {
+    // 이름으로 돌려 고를 때는 주민 한 줄(«villager» 4명)이 아니라 사람 칩 전체(«마을 사람»)에서 고른다.
+    const spin = qi === queries.length - 1;
+    const wide = spin ? queryNpcGraphics("마을 사람", 60, overrides) : [];
+    const matches = wide.length >= 8 ? wide : queryNpcGraphics(q, 30, overrides);
+    const rotate = spin && matches.length > 1 ? nameHash % matches.length : 0;
+    matches.forEach((m, rank0) => {
+      const rank = rotate ? (rank0 - rotate + matches.length) % matches.length : rank0;
       const e = m.entry;
       const text = `${e.label} ${e.tags.join(" ")} ${e.textureKey}`;
       // 「몬스터 수집」 장르 꼬리표가 붙은 사람 칩(Scarloxy 트레이너·주민)은 적이 아니다 — 그 낱말을 빼고 적 낱말을 본다.
@@ -885,10 +904,12 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
       // 맵 화풍과 다른 계열은 얼굴 짝(70)보다 무겁게 친다 — 현대 편의점 점장이 얼굴 있는 판타지 RTP 주민 칩으로 뽑혔고, 첫 사람 칩이라 사람 칩 잠금이
       // RTP 로 걸려 뒤이은 행인의 현대 칩 검색(여학생)이 0 개가 됐다(2026-10-31 asst-parity 마왕 편의점 opus 후).
       const score = qi * 100 + rank + (face ? 0 : 70) + (familyFits(map, e.textureKey) ? 0 : 120)
-        + (gender && e.gender && e.gender !== "none" && e.gender !== gender ? 25 : 0) + (used.has(key) ? 15 : 0)
+        + (gender && e.gender && e.gender !== "none" && e.gender !== gender ? 25 : 0) + (used.has(key) ? 15 : usedElsewhere.has(key) ? 8 : 0)
         + (heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`) ? 300 : 0)
         // 특이한 차림(이국 터번·닌자·요정·난쟁이·수녀)은 그렇게 말했을 때만 — 마을 촌장이 터번 노인으로 나왔다.
-        + (ODD_LOOK.test(text) && !ODD_LOOK.test(asked) ? 20 : 0);
+        + (ODD_LOOK.test(text) && !ODD_LOOK.test(asked) ? 20 : 0)
+        // 아이 칩은 아이라고 했을 때만 — 이름으로 돌려 고르다 «족장 바라» 가 남자아이로 서지 않게.
+        + (CHILD_LOOK.test(e.label) && !CHILD_LOOK.test(asked) ? 40 : 0);
       if (!best || score < best.score) best = { textureKey: e.textureKey, characterIndex: e.characterIndex, label: e.label, query: q, score, ...(face ? { faceResourceId: face } : {}) };
     });
   });

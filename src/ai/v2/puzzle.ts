@@ -52,6 +52,8 @@ export interface ChainLink {
   readonly person?: string;
   /** 이 고리는 사물이다(청사진 단계 종류 find·puzzle) — 그림 없는 칸을 기본 주민 칩으로 세우지 않는다(이름의 머리 명사가 사물 목록에 없어도). */
   readonly thing?: boolean;
+  /** 이 고리 이벤트의 그림을 정해 준다(싸우는 상대의 전투 그림과 같은 종류의 필드 그림) — 그림 없는 칸일 때만 쓴다. */
+  readonly graphic?: Readonly<Record<string, unknown>>;
   /** 대사의 말하는 사람 이름. 「(」로 시작하는 줄은 서술(말하는 사람 없음). */
   readonly speaker?: string;
   /** pickup·ending: 고르기 — 고른 것마다 그 대사 뒤 flag 스위치가 켜지고(뒤 고리·엔딩이 읽는다) 보상은 어느 것을 골라도 받는다. 취소하면 아무 일도 없다. */
@@ -434,6 +436,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     let invisible = !existing || lookGraphic.transparent === true || (!lookGraphic.sprite && !lookGraphic.appearanceId && !(typeof lookGraphic.tileId === "number" && lookGraphic.tileId > 0));
     // 이름이 사람(직함·호칭)이면 반짝이 칸 대신 공용 캐릭터 칩을 붙인다(2026-10-28 standin joseon 「주모」「포졸」「종사관」).
     const personName = link.name ?? (existing as { name?: string } | undefined)?.name;
+    if (invisible && link.graphic) { look.graphic = { ...link.graphic }; invisible = false; }
     if (invisible && (link.person || isPersonName(personName))) {
       const person = personGraphicFor(run.ctx.project, map, link.person ?? personName!);
       if (person) { look.graphic = person.graphic; invisible = false; personNotes.push(`${personName} → 「${person.label}」`); }

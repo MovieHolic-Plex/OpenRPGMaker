@@ -12,6 +12,9 @@
 // 지은 뒤 청사진의 place·event 를 실제 맵·이벤트 이름에 맞춰 둔다(출하 검사 walkBlueprint 가 같은 이름으로 걷는다).
 import { alignCodeClues, digitWord, shownToken } from "./codeClues";
 import { isPassable } from "@/project/collision";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
+import { fieldGraphicForBattler } from "@/editor/tools/fieldEnemyGraphics";
 import type { GameMap, Project } from "@/project/types";
 import { normalizeGameBlueprint, normalizeStepText, type GameBlueprint } from "@/project/gameBlueprint";
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
@@ -115,7 +118,7 @@ export const BUILD_BLUEPRINT_PATH_SCHEMA = {
       code: { type: "string", description: "make this step a number lock — the answer (3+ digits, written in the previous step's lines)" },
       options: { type: "array", items: { type: "string" }, description: "make code a choice instead (include the right answer)" },
       wrongLines: { type: "array", items: { type: "string" } },
-      winLines: { type: "array", items: { type: "string" }, description: "battle step: what is said after the player wins" },
+      winLines: { type: "array", items: { type: "string" }, description: "battle step: 1–2 lines after the player wins — the foe's own words, or narration wrapped in parentheses: «(The beast backs into the reeds.)»" },
       choices: { type: "array", description: "choice step: the 2–3 options the player picks from", items: { type: "object", properties: {
         text: { type: "string", description: "the option as the player reads it" },
         lines: { type: "array", items: { type: "string" }, description: "what the person answers when this is picked" },
@@ -850,7 +853,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     // 싸우기(battle): 대사 뒤 그 상대와 싸워 이겨야 보상·엔딩이 이어진다 — 마지막 싸움은 보스, 앞 싸움은 중간 보스 세기.
     const troopId = step.kind === "battle" && !code ? foeTroop(run.ctx.project, step.id, who, k === lastBattle) : undefined;
     const battle = troopId ? { troopId, winLines: t?.winLines?.length ? t.winLines : [`(${who ?? step.event}${josa(who ?? step.event, "을", "를")} 쓰러뜨렸다.)`] } : undefined;
-    if (battle) base = { ...base, battle };
+    const foeLook = troopId ? foeGraphic(run.ctx.project, troopId) : undefined;
+    if (battle) base = { ...base, battle, ...(foeLook ? { graphic: foeLook } : {}) };
     const codeLocked = clueLearn ? ["번호 자물쇠가 걸려 있다. 번호를 알아야 열 수 있을 것 같다."] : undefined;
     if (last) {
       // 사람이 마지막 단계면: 대사가 없을 때 «살펴보았다»·엔딩 글을 그 사람 입으로 말하게 하지 않는다 — 할 일 한 줄 서술로 열고, 엔딩 글은 (싸움이 있으면 이긴 뒤) 서술로 붙인다.
@@ -934,6 +938,21 @@ export function foeTroop(project: Project, stepId: string, who: string | undefin
   put(project.database.enemies as { id: string }[], enemy);
   put(project.database.troops as { id: string }[], troop);
   return id;
+}
+
+/**
+ * 싸우는 상대가 맵에 서는 모습 — 그 무리 앞장선 적의 전투 그림과 같은 종류의 필드 그림(보이는 적 place_field_enemy 와 같은 규칙:
+ * 대응하는 걷기 칩, 없으면 전투 도트 그림 그대로). 그런 그림이 없으면 undefined(사람 칩으로 선다).
+ * 왜(2026-11-10 Terra fun-w2): «늪의 송곳니»(짐승)·«재의 수호자» 가 「중년 남성 주민」 칩으로 서 있었다.
+ */
+export function foeGraphic(project: Project, troopId: string): Record<string, unknown> | undefined {
+  const troop = project.database.troops.find((t) => t.id === troopId);
+  const leadId = troop?.members?.length ? troop.members[0]!.enemyId : troop?.enemyIds?.[0];
+  const sprite = (project.database.enemies.find((e) => e.id === leadId) as { monsterResourceId?: string } | undefined)?.monsterResourceId;
+  if (!sprite) return undefined;
+  const cell = fieldGraphicForBattler(sprite);
+  if (cell) return { sprite: { type: "bundled", id: cell.textureKey }, direction: "down", pattern: charsetFrameIndex({ characterIndex: cell.characterIndex, direction: "down", pattern: 1 }) };
+  return isGeneratedMonsterSprite(sprite) ? { sprite: { type: "bundled", id: sprite }, direction: "down", pattern: 0 } : undefined;
 }
 
 /** 청사진에 남긴 그 단계의 글. */

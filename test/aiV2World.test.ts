@@ -6,6 +6,7 @@ import { buildV2SystemPrompt } from "@/ai/v2/prompt";
 import { countMaps } from "@/ai/v2/mapCount";
 import { walkGame } from "@/ai/v2/makeGame";
 import { battleStepBypass, stepMixProblems, walkBlueprint } from "@/ai/v2/blueprint";
+import { foeGraphic } from "@/ai/v2/blueprintPath";
 import { sceneCraftFindings } from "@/ai/v2/sceneCraft";
 import { isMysteryBlueprint } from "@/ai/v2/mysteryCase";
 import { parseAdvisorReply } from "@/ai/v2/advisor";
@@ -298,6 +299,12 @@ describe("단계 종류 — 청사진 경로가 종류마다 다른 이벤트를
     expect(project.database.troops.find((t) => t.id === fightOf()[1]!.troopId)!.name).toBe("얼음 문지기");
     expect(project.database.enemies.some((e) => e.name === "얼음 문지기")).toBe(true);
     expect(battleStepBypass(project, eventOf("얼음 문지기"))).toBeUndefined();
+    // 싸우는 상대는 그 무리의 전투 그림과 같은 종류의 필드 그림으로 선다(있을 때) — 주민 칩이 아니다.
+    const foeLook = foeGraphic(project, fightOf()[1]!.troopId!);
+    if (foeLook) expect((eventOf("얼음 문지기").pages?.[0]?.graphic as { sprite?: { id?: string } }).sprite?.id).toBe((foeLook.sprite as { id: string }).id);
+    // 사람 둘은 서로 다른 칩이다(이름으로 돌려 고른다).
+    const chip = (name: string) => JSON.stringify((eventOf(name).pages?.[0]?.graphic as { sprite?: unknown; pattern?: unknown }));
+    expect(chip("촌장 하르")).not.toBe(chip("떠돌이 상인 미라"));
     // 다시 읽기 쪽(했던 말을 한 번 더)은 장면 반복 검사가 세지 않는다.
     expect(text("촌장 하르")).toContain("(다시 묻는다.)");
     expect(sceneCraftFindings(createBlankProject(), ctx.project, task).filter((f) => f.id === "repeat")).toEqual([]);
