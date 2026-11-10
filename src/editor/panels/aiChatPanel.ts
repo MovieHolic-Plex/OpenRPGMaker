@@ -73,7 +73,9 @@ import { formatMaterialLabelHint } from "@/ai/turnGuide";
 import { createLlmIntentDeclarer, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyResolution } from "@/ai/autonomyLevels";
-import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
+import { isAutonomyLevel, loadAiConfig, reportTransportHealth, saveAiConfig, type AiConfig } from "@/ai/llmClient";
+import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { quotaStatusLine } from "@/ai/providerQuota";
 import { imagePlanBuildNote, type ImagePlanRead, type ImagePlanScene } from "@/ai/imagePlan";
 import { hasLayout, requestImagePlanMockup } from "@/editor/imagePlanMockup";
 import { builtMapOf, checkPlanFollow } from "@/editor/imagePlanFollowCheck";
@@ -81,6 +83,7 @@ import { isLocalCliProviderId } from "@/ai/localCliEngine";
 import { GOAL_MAX_TURNS, GOAL_TIMEOUT_MS } from "@/ai/piAgent/goalCommand";
 import { store } from "@/project/store";
 import { pendingLazyBundledTilesetIds } from "@/project/bundledTilesetDiff";
+import { renderAiQuotaChip } from "./aiQuotaChip";
 import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, type PiChangeReceipt, type PiRunOptions } from "./aiPiAgentCommand";
 import type { PiAgentEvent } from "@/ai/piAgent/protocol";
 import { reportImageGenerationUnavailable } from "./imageGenerationGate";
@@ -2306,6 +2309,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
         onStoreCard: (request) => { storeCards.push(request); },
         appendBubble: (role, line) => appendBubble(role, line),
+        openAiSettings: () => openAiSettings("first"),
         appendProcess: (text) => (reviewCard ?? ensureWorkCard()).attachElement(el("p", { class: "ai-work-process-note", text })),
         appendCard: (element) => { appendChangeCard(element); },
         appendReviewPrompt: (element) => {
@@ -2623,7 +2627,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 해석 실패 말풍선: 사람 문장 + 「다시 시도」·「AI 설정 열기」, 서버 원문은 접힌 상세(C-73).
   const appendIntentFailure = (reason: string, shown: string): void => {
     const failure = describeAiFailure(reason);
-    const bubble = appendBubble("system", `지시를 해석하지 못했습니다. ${failure.summary}`);
+    const quotaProviderId = failure.kind === "quota" ? parseOhMyPiProvider(loadAiConfig().providerId) : null;
+    const quotaProvider = quotaProviderId ? getOhMyPiProvider(quotaProviderId)?.label ?? quotaProviderId : undefined;
+    if (quotaProvider) {
+      reportTransportHealth(false, 429, reason);
+      setStatus(quotaStatusLine(quotaProvider));
+    }
+    const bubble = appendBubble("system", `지시를 해석하지 못했습니다. ${quotaProvider ? failure.summary.replace("이 AI 계정의", `${quotaProvider} 연결의`) : failure.summary}`);
     mountAiFailureActions(bubble, {
       failure,
       onRetry: () => {
@@ -3784,6 +3794,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   secondaryActions.append(contextMeter.button);
   // 상태 문장은 레일이 든다 — 컴포저 행의 상태 그룹은 멈추기 버튼 자리만 남는다.
   rail.statusSlot.append(status);
+  const quotaChip = renderAiQuotaChip(() => openAiSettings("first"));
+  rail.statusSlot.before(quotaChip.element);
   // ⋯ 메뉴·성향·맥락 팝오버는 토글이 있는 레일 아래 오른쪽에 붙는다 — 열림/닫힘 기계는 컴포저 것 그대로.
   // 컴포저 위로 띄우면 기록과 레일을 덮어 토글 자신이 가려진다(실측 2026-09-03).
   rail.root.append(commandMenu, composerShell.preferencePopover, composerShell.planningPopover, contextMeter.popover);
@@ -4581,6 +4593,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   activeAiChatPanelCleanup = () => {
     if (disposed) return;
     disposed = true;
+    quotaChip.dispose();
     logScroll.dispose();
     creationFeedRelease?.();
     creationFeedRelease = null;

@@ -4759,3 +4759,15 @@ API 키 로그인, 환경 변수 키(`env: true`), 이미 엔진을 고른 사�
   `test/imageGenerationClient.test.ts`(기본 제공자 id 단언).
 - **매트릭스**: 인증 × 런타임 실측표는 `~/claude-viz/terra-fun-game.html` 절 5 (http://mdc-server:18301/terra-fun-game.html).
 
+
+
+## 제공자 사용 한도 — 레일 한도 칩과 멈춤 문장 (2026-11-10, ai-quota-aware)
+
+배경: 점수 측정 중 terra 제공자 한도가 떨어졌는데(중계 `~/.opencodex/usage.jsonl`: 55초 안에 429 8건) 조수 화면은 「AI 사용 한도에 도달했어요. 잠시 후 다시 시도해 주세요.」를 두 번 겹쳐 말했을 뿐 **어느 연결인지·무엇을 하면 되는지**가 없었고, 톱바 연결 칩은 #4206 개편 뒤 화면에서 빠져 있었다. 조수 실행(`/v1/agent/run`)은 HTTP 200 NDJSON 이라 429 가 상태 코드로 오지 않으므로 `companionConnection` 의 429 경로(칩 「사용 한도 초과」)는 실행 중에 한 번도 타지 않았다.
+
+- 판정: `src/ai/providerQuota.ts isQuotaOrRateLimitError` 한 곳. 429·`insufficient_quota`·`RESOURCE_EXHAUSTED`·rate limit·usage limit·우리 한국어 문구. 502·소켓 끊김·인증 오류는 한도가 아니다.
+- 멈춤: `aiPiAgentCommand.ts reportQuotaStop` — 실패 두 경로(던짐·스트림 오류)에서 한도면 상태 줄 「<제공자> 사용 한도 — 멈춤」, 말풍선 「<제공자> 사용 한도(쿼터·속도 제한)에 걸려 작업을 멈췄어요…」 + 「다른 AI 연결로 바꾸기」(AI 설정), `reportTransportHealth(false, 429)` 로 칩을 「사용 한도 초과」로. 성공 문장은 쓰지 않는다. 의도 해석 단계 실패(`appendIntentFailure`)도 제공자 이름을 넣는다.
+- 한도 칩: `src/editor/panels/aiQuotaChip.ts` 가 조수 레일 상태 문장 앞에 선다. 「<제공자> · 남음 63%」(가장 적게 남은 창) 또는 「<제공자> · 남은 한도 알 수 없음」. 숫자를 지어내지 않는다. 누르면 AI 설정.
+- 사용량 조회: 동반 서비스 `GET /auth/usage?provider=` → Node 어댑터 `usage`(키는 `resolveRequestApiKey`) → 워커 `POST /usage` → `scripts/lib/providerUsageRuntime.ts` 가 `@oh-my-pi/pi-ai` `defaultUsageProvider(provider).fetchUsage` 를 부른다. 응답은 `{provider, readable, fetchedAt, windows:[{label, remainingFraction?, resetsAt?, exhausted?}], reason?}` 이고 토큰은 싣지 않는다. 사용자 지정(OpenAI 호환)·로컬 CLI 는 `readable:false`. 칩은 60초마다·설정 변경·전송 상태 변화 때 다시 읽는다.
+- 제공자별로 읽을 수 있는 것(공식 문서·응답 헤더 기준)은 레인 보고 http://mdc-server:18301/ai-quota-aware.html 표에 있다. Codex·Antigravity 사용량 경로는 각 CLI 가 쓰는 계정 경로라 공개 문서가 없다(비공식).
+- Tests: `test/providerQuota.test.ts`, `test/ohMyPiHttp.node.test.mjs` 「GET /auth/usage」.

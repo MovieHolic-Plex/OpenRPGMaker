@@ -455,3 +455,29 @@ it("앱이 대신 설치하는 경로: 어댑터가 없으면 501, 있으면 프
   await handleCompanionRequest({ method: "POST", url: "/v1/local-agents/install", body: { cli: 7 } }, adapters);
   assert.deepEqual(received, { cli: "" });
 });
+
+describe("GET /auth/usage — 남은 한도", () => {
+  it("동반 경로로 보고, 어댑터의 공개 요약만 그대로 돌려준다", async () => {
+    assert.equal(isCompanionPath("/auth/usage?provider=openai-codex"), true);
+    const seen = [];
+    const adapters = {
+      usage: async (provider) => {
+        seen.push(provider);
+        return { provider, readable: true, fetchedAt: 1, windows: [{ label: "5시간", remainingFraction: 0.4 }] };
+      },
+    };
+    const res = await handleCompanionRequest({ method: "GET", url: "/auth/usage?provider=openai-codex" }, adapters);
+    assert.equal(res.status, 200);
+    assert.deepEqual(seen, ["openai-codex"]);
+    assert.equal(res.body.readable, true);
+    assert.equal(res.body.windows[0].remainingFraction, 0.4);
+    assert.equal(JSON.stringify(res.body).includes("token"), false);
+  });
+
+  it("어댑터가 없으면 숫자 대신 「알 수 없음」 을 돌려준다", async () => {
+    const res = await handleCompanionRequest({ method: "GET", url: "/auth/usage?provider=openai-codex" }, {});
+    assert.equal(res.status, 200);
+    assert.equal(res.body.readable, false);
+    assert.deepEqual(res.body.windows, []);
+  });
+});

@@ -868,3 +868,66 @@ html[data-ai-render="off"] {
   outline: 1px solid var(--accent-border, var(--accent));
   outline-offset: -1px;
 }
+
+/* 한도 칩 — 지금 쓰는 AI 연결과 남은 한도(읽을 수 있을 때) 또는 「알 수 없음」. 좁으면 말줄임, 전체는 title. */
+.ai-quota-chip {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--ai-deck-line, var(--border));
+  border-radius: 999px;
+  color: var(--ai-deck-secondary, var(--text-2));
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 1 auto;
+  font: inherit;
+  font-size: 11px;
+  gap: 5px;
+  height: 22px;
+  max-width: 180px;
+  min-width: 0;
+  padding: 0 8px;
+}
+
+.ai-quota-chip:hover {
+  border-color: var(--text-muted);
+  color: var(--text-1);
+}
+
+.ai-quota-chip:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.ai-quota-chip-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-quota-chip-dot {
+  background: var(--text-disabled);
+  border-radius: 50%;
+  flex: none;
+  height: 6px;
+  width: 6px;
+}
+
+.ai-quota-chip[data-kind="ready"] .ai-quota-chip-dot {
+  background: var(--success);
+}
+
+.ai-quota-chip[data-kind="limited"],
+.ai-quota-chip[data-kind="disconnected"],
+.ai-quota-chip[data-kind="offline"],
+.ai-quota-chip[data-kind="error"] {
+  border-color: color-mix(in srgb, var(--danger) 40%, var(--ai-deck-line, var(--border)));
+  color: var(--danger);
+}
+
+.ai-quota-chip[data-kind="limited"] .ai-quota-chip-dot,
+.ai-quota-chip[data-kind="disconnected"] .ai-quota-chip-dot,
+.ai-quota-chip[data-kind="offline"] .ai-quota-chip-dot,
+.ai-quota-chip[data-kind="error"] .ai-quota-chip-dot {
+  background: var(--danger);
+}

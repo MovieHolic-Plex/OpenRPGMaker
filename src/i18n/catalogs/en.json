@@ -19132,4 +19132,12 @@
 "앞쪽 부채꼴":"Front arc",
 "주변 전체":"All around",
 "바깥 한 겹":"Outer ring",
+"다른 AI 연결로 바꾸기":"Switch to another AI connection",
+"{0} 사용 한도 — 멈춤":"{0} usage limit — stopped",
+"남은 한도 알 수 없음":"Remaining quota unknown",
+"남음 {0}%":"{0}% left",
+"사용 한도 초과":"Usage limit reached",
+"{0} 사용 한도(쿼터·속도 제한)에 걸려 작업을 멈췄어요. 변경한 내용은 적용하지 않았어요. 한도가 풀릴 때까지 기다리거나 다른 AI 연결로 바꿔 다시 보내 주세요.":"Stopped: {0} hit its usage limit (quota or rate limit). No changes were applied. Wait for the limit to reset, or switch to another AI connection and send again.",
+"{0} 사용 한도(쿼터·속도 제한)에 걸려 작업을 멈췄어요. 멈추기 전에 반영한 변경은 남아 있고 되돌릴 수 있어요. 한도가 풀릴 때까지 기다리거나 다른 AI 연결로 바꿔 다시 보내 주세요.":"Stopped: {0} hit its usage limit (quota or rate limit). Changes applied before the stop remain and can be undone. Wait for the limit to reset, or switch to another AI connection and send again.",
+"AI 사용 한도(쿼터·속도 제한)에 걸려 멈췄어요. 한도가 풀리길 기다리거나 다른 AI 연결로 바꾸세요.":"Stopped by the AI usage limit (quota or rate limit). Wait for it to reset or switch to another AI connection.",
 "십자":"Cross"}

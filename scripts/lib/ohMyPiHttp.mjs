@@ -30,6 +30,7 @@ export function isCompanionPath(url = "") {
   const path = companionPathname(url);
   return (
     path === "/auth/status"
+    || path === "/auth/usage"
     || path === "/auth/env-scan"
     || path === "/auth/login"
     || path === "/auth/login-cancel"
@@ -183,6 +184,14 @@ export async function handleCompanionRequest(req, adapters) {
       ...status,
       pendingLogin: publishLoopbackLaunch(status.pendingLogin, companionPublicOrigin(req)),
     } : status);
+  }
+
+  // 남은 한도. 어댑터는 공개 요약(비율·초기화 시각)만 돌려준다 — 못 읽으면 readable:false 로 「알 수 없음」을 말한다.
+  if (method === "GET" && path === "/auth/usage") {
+    if (typeof adapters.usage !== "function") {
+      return json(200, { provider, readable: false, fetchedAt: Date.now(), windows: [], reason: "이 동반 서비스는 남은 한도를 읽지 못해요." });
+    }
+    return json(200, await adapters.usage(provider));
   }
 
   if (method === "POST" && path === "/auth/login-cancel") {

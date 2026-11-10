@@ -16,7 +16,7 @@ export function friendlyExecutionError(message: string): string {
   if (/DataInspectionFailed|inappropriate content|moderation|content[_ ]policy|flagged by|data_inspection/iu.test(message)) return "이 AI 연결(제공자)이 요청이나 만든 내용 일부를 부적절한 표현으로 보고 막았어요. 공포·폭력 묘사가 있으면 표현을 조금 순하게 바꿔 다시 보내거나(예: 「피」 대신 「붉은 얼룩」), 설정에서 다른 AI 모델로 바꿔 보세요.";
   if (/PROHIBITED_CONTENT|content.filter|safety/i.test(message)) return "AI 제공자가 응답을 중단했어요. 답변을 끝까지 받지 못했어요.";
   if (/401|403|auth|credential|로그인|인증/i.test(message)) return "AI 연결을 확인하지 못했어요. 설정에서 로그인 상태를 확인해 주세요.";
-  if (/429|rate.limit|quota|한도/i.test(message)) return "AI 사용 한도에 도달했어요. 잠시 후 다시 시도해 주세요.";
+  if (/429|rate.limit|quota|한도/i.test(message)) return "AI 사용 한도(쿼터·속도 제한)에 걸려 멈췄어요. 한도가 풀리길 기다리거나 다른 AI 연결로 바꾸세요.";
   if (/timeout|timed.out|시간.*상한/i.test(message)) return "응답을 기다리다가 작업이 멈췄어요. 다시 시도해 주세요.";
   if (/fetch|network|connection|503|연결/i.test(message)) return "AI에 연결하지 못했어요. 연결 상태를 확인하고 다시 시도해 주세요.";
   return GENERIC_EXECUTION_ERROR;
