@@ -116,6 +116,9 @@ export function classifyRequest(task: string | undefined, project: Pick<Project,
       : inherits ? `${text.why}; the blueprint's first request was a whole game` : text.scope === "continue" ? `${text.why}; no whole-game blueprint to inherit` : text.why;
     return {
       ...text, scope, why, wholeGame, fresh,
+      // 게임 하나를 잇는 «계속» 은 글에 게임 낱말이 없어도 게임 도구 묶음을 받는다 — 전에는 동사 23개만 받아 엔딩·타이틀·이벤트를 고칠 도구가 없었다
+      // (출하 관문과 이어 받은 할 일은 그 도구들을 이른다).
+      ...(inherits && !text.tools.game ? { tools: matchToolGroups(text.topic, { wholeGame: true, audio: text.audio, combat: text.combat }) } : {}),
       oneRoom: text.oneRoom || !!first?.oneRoom || escape,
       // 빈 프로젝트의 이어 하기(「계속」)는 고칠 것이 없다 — 앞 실행이 아무것도 못 쓰고 끊긴 것이라 짓는 카드·도구를 그대로 싣는다.
       editOnly: !!text.own.trim() && scope !== "wholeGame" && scope !== "place" && !(fresh && scope === "continue"),

@@ -129,6 +129,11 @@ function gameCardFor(intent: RequestIntent): string {
  * 작은 일(장소를 짓지 않는 요청)의 카드 — 그 일이 쓰는 것만. 사람을 세우면 사람 카드, 사건·대사를 짜면 이벤트 카드, 옮기기·지우기·소리·질문이면 없음.
  * 장소 카드는 색인 한 줄(PLACE_SPEC_INDEX)로 두고 read_specs 가 준다. 이어 하기가 게임 하나를 잇는 턴은 이벤트 카드를 늘 싣는다.
  */
+/** 작은 일의 지시문이 이미 싣고 있는 카드 종류 — 동사가 «이 카드를 아직 안 줬다» 며 같은 카드를 한 번 더 돌려주지 않게(tools/context.ts specShown). */
+export function smallJobCardKinds(project: Project, task: string): readonly PlaceSpecKind[] {
+  const intent = classifyRequest(task, project);
+  return intent.scope !== "audio" && intent.job.people ? ["people"] : [];
+}
 function smallJobCards(intent: RequestIntent): string[] {
   if (intent.scope === "audio") return [];
   const events = intent.wholeGame || (!intent.job.moveOnly && (intent.scope !== "question" || intent.job.logic));
