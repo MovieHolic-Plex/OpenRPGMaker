@@ -24,6 +24,12 @@ export class V2Session {
   /** 할 일 고리 갈고리의 발화 수(src/ai/v2/loop/hookStats.ts) — v2.summary 에 싣는다. */
   readonly hooks = new HookStats();
   readonly places = new Map<string, PlaceRecord>();
+  /** 앞 턴에서 이어 받은 장소 기록(tools/placeMemory.ts) — 고치는 동사만 읽는다. 끝맺음 단계·관문은 places(이번 턴에 지은 것)만 본다. */
+  readonly pastPlaces = new Map<string, PlaceRecord>();
+  /** 앞 턴의 설계가 있었지만 맵이 조수 밖에서 바뀌어 버린 맵 — 거절 글이 이유를 댄다. */
+  readonly stalePlaces = new Set<string>();
+  /** 이번 턴 기록, 없으면 앞 턴에서 이어 받은 기록. */
+  placeOf(mapId: string): PlaceRecord | undefined { return this.places.get(mapId) ?? this.pastPlaces.get(mapId); }
   /** 세션마다 다른 덧값 — 던전 설계 안내(예시 순서·입구 낱말 순서·설계 실마리)를 같은 요청의 다른 세션에서 다르게 돌린다. */
   readonly nonce = Math.floor(Math.random() * 1_000_000_000);
   readonly seen = new Map<string, Seen>();

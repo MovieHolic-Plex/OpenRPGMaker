@@ -139,6 +139,27 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
         // (Keying by outer.runId alone dropped every event of turn 2 when lines carry no runId.)
         const method=String((args[1]&&args[1].method)||(args[0]&&args[0].method)||'GET').toUpperCase();
         if(method==='POST'||!window.__capLastSeq)window.__capLastSeq={};
+        // 요청 크기 영수증: 절마다 글자 수, 실은 도구 수, 지시문(system/developer) 글자 수. 본문은 남기지 않는다.
+        const promptSizes=snapshot=>{try{
+          const sections=snapshot.sections??[],chars=Object.fromEntries(sections.map(s=>[s.name,s.characters]));
+          let system=null,systemTruncated=false;
+          const whole=sections.find(s=>['instructions','system','systemInstruction','system_instruction'].includes(s.name));
+          if(whole)system=whole.characters;
+          const list=sections.find(s=>s.name==='messages'||s.name==='input');
+          if(system===null&&list){
+            const textOf=content=>typeof content==='string'?content.length:Array.isArray(content)?content.reduce((n,part)=>n+(typeof part?.text==='string'?part.text.length:0),0):0;
+            if(!list.omittedCharacters){
+              const first=JSON.parse(list.text).find(m=>m&&(m.role==='system'||m.role==='developer'));
+              if(first)system=textOf(first.content);
+            }else{
+              // 표시 상한에서 잘린 절: 첫 system 메시지의 문자열 리터럴만 따라 읽는다. 닫는 따옴표가 잘렸으면 하한이다.
+              const head=/^\[\s*\{\s*"role":\s*"(?:system|developer)",\s*"content":\s*"/u.exec(list.text);
+              if(head){let i=head[0].length,n=0;for(;i<list.text.length;i++,n++){const c=list.text[i];if(c==='\\'){i+=list.text[i+1]==='u'?5:1;continue;}if(c==='"')break;}
+                system=n;systemTruncated=i>=list.text.length;}
+            }
+          }
+          return {toolCount:(snapshot.toolNames??[]).length,toolNames:snapshot.toolNames??[],sectionChars:chars,systemChars:system,...(systemTruncated?{systemCharsIsLowerBound:true}:{}),estimatedTokens:snapshot.estimatedTokens};
+        }catch{return undefined;}};
         const consume=line=>{try{
           const outer=JSON.parse(line.replace(/^data:\s*/,'')),event=outer.type==='agent_event'?outer.event:outer;
           if(typeof outer.seq==='number'){const key=outer.runId??'_';if(outer.seq<=(window.__capLastSeq[key]??-1))return;window.__capLastSeq[key]=outer.seq;}
@@ -147,7 +168,7 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
             // scalar receipt (model·max_tokens·reasoning_effort) — the sections are the whole prompt and stay out.
             window.__capEvents.push({type:event.type,name:event.name??event.toolName,id:event.id,ok:event.ok,
               text:event.type==='assistant'?event.text:undefined,summary:event.summary,modelText:event.type==='tool_end'?event.modelText:undefined,message:event.message,args:event.args,
-              data:event.type==='prompt_inspection'?(event.snapshot?{boundary:event.snapshot.boundary,model:event.snapshot.model,scalars:event.snapshot.scalars}:undefined)
+              data:event.type==='prompt_inspection'?(event.snapshot?{boundary:event.snapshot.boundary,model:event.snapshot.model,scalars:event.snapshot.scalars,sizes:promptSizes(event.snapshot)}:undefined)
                 :['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair','cutscene.review','cutscene.review.judged','v2.advisor','v2.advisor.recheck','dialogue_polish','dialogue_polish.lint','dialogue_polish.skip','dialogue_polish.speaker_labels'].includes(event.name)?event.data:undefined,
               runId:outer.runId,usage:event.usage,stats:event.type==='done'?event.stats:undefined,at:Date.now()});
           }

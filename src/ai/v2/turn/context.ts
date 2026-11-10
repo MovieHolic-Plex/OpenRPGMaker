@@ -11,6 +11,7 @@ import { CONTINUE_WORDS, isWriteRequest } from "../request/readers";
 import { type V2ToolExposure } from "../toolExposure";
 import { changedSince, indexProject } from "../loop/refs";
 import { vqaEnabled } from "./support";
+import { loadPlaces } from "../tools/placeMemory";
 
 /** 실행기가 넘기는 것 가운데 턴 정책이 쓰는 것 — 사용자 화면으로 가는 이벤트와 중단 신호. */
 export interface TurnOptions {
@@ -60,6 +61,9 @@ export function createTurnContext(request: PiAgentRequest, options: TurnOptions,
   // 판정자 기억(화면 검수 장부)은 목록을 이어 받지 않는 턴에도 읽는다.
   const priorTodo = (request.project as { assistantTodo?: unknown }).assistantTodo;
   store.loadMemory(priorTodo);
+  // 앞 턴이 지은 장소의 설계 — 맵이 그대로일 때만 이어 받는다(다음 턴의 edit_place 가 그 설계에서 고친다, tools/placeMemory.ts).
+  const carriedPlaces = loadPlaces(store.memory.places, session, request.project as Project, store.baseline);
+  if (carriedPlaces.restored || carriedPlaces.stale) options.onEvent?.({ type: "execution_status", name: "v2.places.restore", ok: true, at: Date.now(), summary: `앞 턴의 장소 설계 ${carriedPlaces.restored}곳을 이어 받음${carriedPlaces.stale ? ` · ${carriedPlaces.stale}곳은 맵이 조수 밖에서 바뀌어 버림` : ""}`, data: carriedPlaces });
   if (CONTINUE_WORDS.test(request.task) && store.restore(priorTodo, carryOver(request.task, request.project as Project, store.baseline ?? { maps: new Map(), events: new Map(), items: new Map(), troops: new Map() }))) {
     const c = store.counts();
     options.onEvent?.({ type: "execution_status", name: "v2.todo.restore", ok: true, at: Date.now(), summary: `앞 실행의 할 일을 이어 받음 — ${c.open}개 열림 · ${c.blocked}개는 막힌 채(다시 다투지 않음)`, data: { list: store.view() } });

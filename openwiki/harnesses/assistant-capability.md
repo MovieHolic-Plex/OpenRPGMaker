@@ -210,6 +210,174 @@ DeepSeek 추론 계열로 읽어 `low, high, max` 사다리와 `reasoning_conten
 - **도달 가능성의 진실은 문 명령의 존재가 아니라 걸어서 들어갈 수 있는가다**(`reachableMaps`). 픽스처의 남쪽 출입구는
   덤불에 막혀 있으므로 그 너머 숲길은 「연결되지 않은 맵」이다.
 
+## 작은 일 30가지 — 값싼 모델 + v2 를 일 단위로 재기 (2026-11-11)
+
+목적: 조수 v2 가 **게임에 필요한 작은 일**을 값싼 모델(GPT 6.1 Terra high)로 해내는지를 일 단위로 잰다. 게임 통판(턴마다 30~45분, 한 번도
+«완료» 없음)으로는 도구 수정 하나가 좋아졌는지 알 수 없다. 이 묶음은 **일마다 통과/까닭(기계 판정) · 도구 호출 · 시간 · 토큰 · 지시문 글자 수 ·
+처음 실린 도구 수 · 턴이 «완료»로 끝났는지**를 표로 낸다. 500 가족 행렬(`matrix-native`)과 다른 점: v2 스위치를 켜고, 모델을
+`ai-configs/<이름>.json` 으로 고정하고, 시작 상태에 **조수가 실제로 만든 게임**이 있다.
+
+- 묶음(데이터): `harness-data/assistant-capability/small-jobs.json` — 일마다 `id · family · fixture · request(비개발자가 치는 한국어) ·
+  check(판정 종류 + 인자) · allow(요청이 요구하는 이동·이름 변경) · reference(손 정답 = 실제 도구 호출 순서) · wrong(그럴듯한 오답)`.
+- 코드: `src/harnesses/assistant-capability/node/smallJobs/` — `fixtures.ts`(시작 상태 셋) · `checks.ts`(판정) · `suite.ts`(읽기·정답 적용) ·
+  `selfcheck.ts` · `run.ts`(실행기) · `report.ts`(HTML) · `freezeFixture.ts`(픽스처 얼리기). 입구 `smallJobsEntry.ts`(bun).
+- 모델 고정: `--model terra-high` = `harness-data/assistant-capability/ai-configs/terra-high.json`(모든 역할을 `openai-compat:opencodex` 의
+  `gpt-6.1-terra` high 로). 엔드포인트 주소·키는 저장소 밖 `OPRN_OPENAI_COMPAT_PATH`(없으면 `~/.oprn-suite/openai-compat-endpoints.json`)에서만
+  읽는다. 다른 모델은 `ai-configs/` 에 파일을 더하고 그 이름을 준다.
+
+```bash
+npm run -s build:fast && node scripts/build-electron.mjs                  # 편집기·호스트 빌드(워크트리면 VITE_CACHE_DIR 를 준다)
+npm run harness -- assistant-capability small-jobs-selfcheck [--out <폴더>] [--only id,가족]   # 모델 없음, 약 2분
+npm run harness -- assistant-capability small-jobs --model terra-high --v2 --out <새 폴더> [--only id,가족] [--skip-completed] [--timeout-min 10]
+npm run harness -- assistant-capability small-jobs-report --run <그 폴더> [--html <출력.html>]
+npm run harness -- assistant-capability small-jobs-rescore --run <그 폴더>   # 판정기만 고쳤을 때: 모델 없이 저장된 전/후 문서로 다시 판정
+```
+
+### 시작 상태(픽스처) — 일마다 새로 만든다
+
+| id | 무엇 |
+|---|---|
+| `blank` | `createBlankProject()` 그대로 — 빈 맵 한 장 |
+| `starter` | 거의 빈 프로젝트 「잿불 마을 이야기」: 풀밭 마을(24×18)에 주민 셋(꼬마 미루·여관 주인 마사·파수꾼 데릭) + 이어지지 않은 「동쪽 들판」 |
+| `built` | **조수 v2 + Terra 가 실제로 만든 게임** 《얼음 아래의 노래》(설원, 맵 6장 · 이벤트 38개 · 청사진 · 할 일 장부 · 퀘스트 포함)를 얼린 것. `small-jobs/built-game.json.gz`(345KB) |
+
+`built` 는 2026-11-10 게임 통판의 저장 문서를 `freezeFixture.ts` 로 얼렸다: 빈 프로젝트와 같은 칸·타일셋 본문은 빼고(번들에서 다시 얻는다),
+그 게임만의 생성 그림 6장(타이틀·엔딩·얼굴 2·아이콘 2, 수 MB)과 그것을 가리키는 칸 6개를 뺐다. 공용 라이브러리 그림 목록과 설치 도장도 비워
+두어 첫 부팅에서 빈 프로젝트처럼 다시 설치된다(목록만 있고 파일이 없으면 편집기가 다시 받지 않는다 — 2026-11-11 실측). 얼려 두는 까닭은 도구·빌더를
+고치는 동안에도 모든 기준선이 같은 시작 상태에서 재야 비교가 되기 때문이다. 다시 얼리면 판정의 좌표·이벤트 id 를 함께 고쳐야 한다.
+
+### 판정 — 저장 문서 전/후만 본다
+
+`checks.ts` 의 `runCheck(check, allow, before, after)`. 모델 판정자가 없고 도구 이름도 보지 않는다. **전** = 편집기 첫 부팅·저장 뒤의 저장 문서,
+**후** = 턴 뒤 저장 → 새 브라우저 컨텍스트 재로드 → 종료한 뒤 `project.sqlite` 를 다시 읽은 문서.
+
+- **outcome** — 요청이 말한 결과. 종류 15가지(`eventMoved` `newNpc` `shop` `giveOnce` `textSpot` `transferLink` `lineChanged` `innPrice`
+  `gameTitle` `mapRenamed` `eventRenamed` `mapBgm` `battleEvent` `itemGatedText` `dressed`).
+- **말 걸기를 따라가 본다.** 「처음 말을 걸면 그 대사」「두 번째에도 상점이 열린다」「한 번만 준다」「열쇠가 있을 때만 다른 글」은 명령이 있다는
+  것만으로는 알 수 없다. 엔진의 `resolveEventPage`·`evalCondition` 으로 페이지를 고르고 상태를 바꾸는 명령(스위치·셀프 스위치·변수·아이템·돈·분기)만
+  흉내 내 한두 번 말을 걸어 본다. 선택지는 모든 갈래를 합친다.
+- **damage** — 시키지 않은 파괴는 요청한 결과가 있어도 불합격: 맵·이벤트 삭제, 다른 이벤트 이동, 맵·게임 이름 바뀜, 시작 위치 바뀜, 허락 없는 새 맵.
+  (끝맺음 단계가 작은 일 뒤에 사람을 옮기거나 맵을 더 짓는지 잡으려는 것이다.)
+- **sideEdits** — 불합격은 아니지만 적는다: 다른 이벤트의 내용 변경, 새 이벤트가 둘 이상, 맵 밖에서 바뀐 칸(`system.*` 타이틀·오프닝, `endings`, `quests`,
+  `gameBlueprint`, 자료집 표, 새 그림·소리). 요청이 스스로 건드리는 칸(제목 바꾸기의 타이틀 화면, 전투의 부대·스위치, 새 사람의 외형·얼굴 그림, 주는 아이템, 이동 이벤트 한 쌍, 요청이 가리킨 이벤트 자신)은 종류별로 뺀다.
+  공용 라이브러리 그림(`shared_*`)은 편집기가 첫 저장 뒤에 설치하므로 세지 않는다. 합계의 「요청 밖 변경이 있었던 일」이 이것이다.
+- 자리 판정은 뜻으로: 「두 칸 왼쪽」= 정확히 (−2,0), 「문 앞」= 문 칸 아래 두 줄, 「바로 옆」= 둘레 8칸, 「옆」= 2칸 안. 선 칸은 걸을 수 있고 다른 이벤트와 겹치지 않아야 한다.
+
+| # | id | 가족 | 픽스처 | 요청 | 판정(저장 문서) |
+|---|---|---|---|---|---|
+| 1 | `move-npc-left2` | move | built | 겨울 시장의 모피 상인을 두 칸 왼쪽으로 옮겨 줘 | 그 이벤트가 정확히 (-2,0)칸 옮겨지고 걸을 수 있는 빈 칸, 내용 그대로 |
+| 2 | `move-npc-door-front` | move | built | 떠돌이 상인을 족장의 긴 집 문 앞으로 옮겨 줘 | 그 이벤트가 문 앞 자리 x21~26, y17~18 안의 걸을 수 있는 빈 칸 |
+| 3 | `move-npc-next-to` | move | starter | 꼬마 미루를 여관 주인 마사 바로 옆으로 옮겨 줘 | 그 이벤트가 기준 이벤트에서 1칸 안(같은 칸 아님)의 걸을 수 있는 빈 칸 |
+| 4 | `add-npc-line-starter` | person | starter | 마을에 대장장이 한 명 세워 줘. 말을 걸면 "좋은 쇠는 거짓말을 안 하지."라고 말하게 해 줘 | 잿불 마을에 새 사람(그림 있음·말 걸기) — 처음 말을 걸면 「좋은 쇠는 거짓말을 안 하지」 |
+| 5 | `add-npc-near-built` | person | built | 떠돌이 상인 옆에 할머니 한 명 세워 줘. 말을 걸면 "오늘은 눈이 그칠 것 같구나."라고 말하게 해 줘 | 눈보라 마을에 새 사람(그림 있음·말 걸기) — 처음 말을 걸면 「오늘은 눈이 그칠 것 같구나」, 기준 이벤트에서 2칸 안 |
+| 6 | `add-npc-blank` | person | blank | 이 맵에 주민 한 명 세워 줘. 말을 걸면 "어서 와!" 하고 인사하게 해 줘 | 빈 맵/동쪽 들판에 새 사람(그림 있음·말 걸기) — 처음 말을 걸면 「어서 와」 |
+| 7 | `shopkeeper-blank` | shop | blank | 이 맵에 상점 주인 한 명 세워 줘. | 빈 맵/동쪽 들판의 새 사람에게 말을 걸면(두 번째에도) 상점이 열리고 자료집에 있는 물건을 1개 이상 판다 |
+| 8 | `shopkeeper-items-starter` | shop | starter | 잡화점 주인 한 명 세워 줘. 말을 걸면 회복약이랑 해독초를 살 수 있게 해 줘 | 잿불 마을의 새 사람에게 말을 걸면(두 번째에도) 상점이 열리고 회복약·해독초 를 판다 |
+| 9 | `shop-existing-npc-built` | shop | built | 겨울 시장의 모피 상인한테 말을 걸면 물건을 살 수 있게 해 줘. 회복약이랑 상급 회복약을 팔게 해 줘 | 있던 그 사람에게 말을 걸면(두 번째에도) 상점이 열리고 회복약·상급 회복약 를 판다 |
+| 10 | `chest-potion3-starter` | chest | starter | 마을에 보물상자 하나 놓고 회복약 3개 넣어 줘 | 잿불 마을의 새(보이는) 이벤트가 처음에 정확히 회복약 3개를 주고, 다시 걸면 더 주지 않는다 |
+| 11 | `chest-gold-built` | chest | built | 눈보라 마을에 보물상자 하나 놓아 줘. 열면 100골드를 얻게 해 줘 | 눈보라 마을의 새(보이는) 이벤트가 처음에 정확히 100골드를 주고, 다시 걸면 더 주지 않는다 |
+| 12 | `pickup-key-built` | chest | built | 족장의 긴 집 바닥에 낡은 열쇠가 떨어져 있게 해 줘. 조사하면 주워 가게 해 줘 | 족장의 긴 집의 새(보이는) 이벤트가 처음에 정확히 낡은 열쇠 1개를 주고, 다시 걸면 더 주지 않는다 |
+| 13 | `sign-starter` | sign | starter | 마을 입구에 표지판 하나 세워 줘. 읽으면 "잿불 마을에 오신 것을 환영합니다"라고 나오게 해 줘 | 잿불 마을에 새 조사 이벤트 — 조사하면 「잿불 마을에 오신 것을 환영합니다」, 그 칸에 보이는 것이 있다 |
+| 14 | `sign-ending-built` | sign | built | 엔딩까지 가는 길에 표지판 하나 세워 줘. "동굴은 북쪽"이라고 적어 줘 | 어느 맵이든 새 조사 이벤트 — 조사하면 「동굴은 북쪽」, 그 칸에 보이는 것이 있다 |
+| 15 | `examine-fireplace-built` | sign | built | 족장의 긴 집 벽난로를 조사하면 "장작이 따뜻하게 타오르고 있다."라고 나오게 해 줘 | 족장의 긴 집에 새 조사 이벤트 — 조사하면 「장작이 따뜻하게 타오르고 있다」, 벽난로 칸·바로 앞 칸 |
+| 16 | `door-roundtrip-starter` | door | starter | 잿불 마을 동쪽 끝에서 동쪽 들판으로 넘어갈 수 있게 해 줘. 들판에서 마을로 돌아오는 길도 만들어 줘 | 잿불 마을에서 걸어서 닿는 새 이동이 빈 맵/동쪽 들판의 걸을 수 있는 칸으로 보낸다 + 돌아오는 이동 |
+| 17 | `door-backdoor-built` | door | built | 족장의 긴 집에 뒷문을 하나 만들어 줘. 그 문으로 나가면 겨울 시장으로 가게 해 줘 | 족장의 긴 집에서 걸어서 닿는 새 이동이 겨울 시장의 걸을 수 있는 칸으로 보낸다 |
+| 18 | `edit-line-built` | dialogue | built | 겨울 시장 모피 상인의 첫 대사를 "어서 오게, 모피라면 여기가 제일이지."로 바꿔 줘 | 그 사람 첫 페이지 대사에 「어서 오게, 모피라면 여기가 제일이지」, 옛 대사 없음, 다른 페이지·자리 그대로 |
+| 19 | `edit-inn-price-starter` | dialogue | starter | 여관 주인 마사의 숙박비를 30G로 올려 줘. 대사에서도 30G라고 말하게 해 줘 | 여관 요금 30 + 대사에 「30G」, 「15G」 없음 |
+| 20 | `rename-title-built` | rename | built | 게임 제목을 '별의 노래'로 바꿔 줘 | meta.title = 「별의 노래」, 타이틀 화면 글자도 같다 |
+| 21 | `rename-map-starter` | rename | starter | 이 맵 이름을 '안개 마을'로 바꿔 줘 | 그 맵 이름 = 「안개 마을」 |
+| 22 | `rename-npc-built` | rename | built | 겨울 시장에 있는 '시장 손님'의 이름을 '하린'으로 바꿔 줘 | 이벤트 이름 = 「하린」, 대사 화자 칸에 옛 이름 없음 |
+| 23 | `bgm-same-as-built` | bgm | built | 겨울 시장 배경 음악을 눈보라 마을이랑 같은 곡으로 바꿔 줘 | 겨울 시장의 곡이 눈보라 마을의 곡과 같다 |
+| 24 | `bgm-add-starter` | bgm | starter | 이 마을에 잔잔한 배경 음악 깔아 줘 | 잿불 마을의 곡이 곡 목록에 있는 곡으로 새로 걸린다 |
+| 25 | `encounter-foe-built` | encounter | built | 얼어붙은 호수에 돌아다니는 적을 하나 놓아 줘. 부딪히면 전투가 시작되게 해 줘 | 얼어붙은 호수에 새(보이는) 이벤트 — 닿으면 전투, 부대가 자료집에 있다 |
+| 26 | `encounter-slimes-starter` | encounter | starter | 마을 밖으로 나가는 길목에 슬라임 세 마리와 싸우는 전투를 하나 넣어 줘 | 잿불 마을에 새 이벤트(보이지 않는 길목 전투도 된다) — 닿으면 전투, 부대가 자료집에 있다, 적 3마리 모두 「슬라임」 |
+| 27 | `give-key-once-starter` | quest | starter | 꼬마 미루한테 말을 걸면 낡은 열쇠를 하나 받게 해 줘. 한 번만 주게 해 줘 | 있던 그 사람이 처음에 정확히 낡은 열쇠 1개를 주고, 다시 걸면 더 주지 않는다 |
+| 28 | `key-gated-door-built` | quest | built | 눈보라 마을의 굳게 닫힌 집 문 하나를, 낡은 열쇠를 갖고 있으면 "문이 열렸다."라고 나오게 바꿔 줘. 열쇠가 없으면 지금처럼 잠겨 있게 해 줘 | 잠긴 문 넷 중 하나: 낡은 열쇠가 있으면 「문이 열렸다」, 없으면 옛 글 |
+| 29 | `dress-trees-starter` | fill | starter | 마을 빈 곳에 나무를 몇 그루 심어 줘 | 잿불 마을에서 타일·소품이 3칸 이상 바뀜, 200칸 이하, 사람·시작 칸을 막지 않음 |
+| 30 | `dress-snowfield-built` | fill | built | 눈보라 마을 왼쪽 아래 빈 눈밭에 나무랑 바위를 좀 놓아 줘 | 눈보라 마을에서 타일·소품이 3칸 이상 바뀜(8할 이상이 맵 왼쪽 아래 4분면 x0~22, y18~35 안), 150칸 이하, 사람·시작 칸을 막지 않음 |
+
+오분류 실측 문장 넷이 들어 있다: `rename-title-built`(「노래」 → 음악 전용), `sign-ending-built`(「엔딩까지」 → 게임 하나 만들기),
+`move-npc-left2`(작은 이동에 큰 지시문), `shopkeeper-blank`(상점 주인 한 명), 그리고 `dress-snowfield-built`(세계 맵에서 빈 터 찾기).
+「이 NPC」처럼 **선택한 이벤트**를 가리키는 문장은 넣지 않았다 — 이 실행기는 이벤트를 고르는 사람 손(선택 상태)을 만들지 않으므로 이름으로 부른다.
+편집기가 보고 있는 맵은 시작 맵이다(다른 맵의 일은 문장에 맵 이름을 적었다).
+
+### 자기검사 (`small-jobs-selfcheck`) — 판정을 먼저 증명한다
+
+일마다 모델·브라우저 없이: ① 손대지 않은 픽스처는 **불합격** ② `reference` 를 실제 편집기 도구(`runTool`)로 적용한 문서는 **합격**
+③ `wrong` 의 오답은 모두 **불합격** ④ 정답 + 시키지 않은 파괴(다른 이벤트 삭제, 이벤트가 없으면 맵 이름 바꾸기)는 **불합격**.
+넷 중 하나라도 어긋나면 그 일은 unsound 이고 묶음에 둘 수 없다. 새 일을 더하면 이 단계를 먼저 통과시킨다. 2026-11-11: 30/30 sound.
+`accept`(정답의 다른 모양 — 실모델이 실제로 낸 올바른 구현을 도구 호출로 옮긴 것)가 있으면 그것도 **합격**해야 한다. 실모델 결과를 보고 판정을 고칠 때는
+그 구현을 `accept` 로, 고친 판정이 여전히 걸러야 할 것을 `wrong` 으로 함께 넣는다(예: 공통 이벤트로 뺀 열쇠 주기, 보이지 않는 길목 전투).
+대화 시뮬레이터는 분기·선택지(모든 가지)·`callCommonEvent` 를 따라간다.
+정답은 도구가 받아야 한다 — 도구가 고쳐 버리는 오답(없는 아이템 id, 막힌 도착 칸)은 오답으로 쓸 수 없다.
+
+### 실행기 (`small-jobs`)
+
+일마다: 픽스처를 새 SQLite 프로젝트로 저장 → `wholeGameSession.mjs`(실제 편집기 · `ai-input` · `--v2` · `--ai-config`)를 자기 프로세스 그룹으로 띄움
+→ 요청 전 문서 읽기 → 요청 한 턴 → 조수가 되물으면 「좋아, 네가 판단해서 진행해 줘.」를 **한 번만** 답함 → 저장·새 컨텍스트 재로드·종료 → 판정.
+
+- 동시 실행은 **최대 2**(코드 상한 — 값싼 엔드포인트의 속도 제한). 일당 상한 10분(`--timeout-min`, 요청을 보낸 순간부터, 되물음에 답한 턴 포함).
+  상한은 세션의 `<out>/deadline` 파일로 전달한다.
+- 공용 라이브러리는 실행 폴더에 한 번 고정(`shared-content.sqlite`)해 모든 일이 같은 판본을 설치한다.
+- 결과 `jobs/<id>/result.json`: `status`(pass·fail·timeout·infra) · `reason` · `check`(outcome·damage·sideEdits) · `toolCalls`(이름 순서, 거절 표시) ·
+  `wallMs`(보낸 뒤 가라앉기까지) · `runMs` · `modelCalls` · `tokens`(input·output·cacheRead·검토자) · `systemPromptChars` · `toolsOffered`(+이름) ·
+  `complete`(v2 의 `v2.todo.final`) · `persistence` · `trace`(호출 인자·모델이 받은 글 발췌) · `answer`. `before.json.gz`/`after.json.gz` 는 타일셋 본문을 뺀 저장 문서다.
+- **통과 = 판정 합격 + 저장·재로드 확인 + 시간 안**. 저장·재로드 확인 = 저장 성공 + 새 컨텍스트가 읽은 맵·자료집이 저장한 것과 같다(`rendererEqual`).
+  새 컨텍스트는 부팅하며 한 번 더 저장해 저장 문서의 sha 가 달라질 수 있다(내용 변화 0 — 2026-11-11 실측). 그것은 유실이 아니고, 판정은 그 뒤의 저장 문서를 읽는다. `timeout` 은 그때까지의 저장 결과에 판정을 돌려 까닭에 적되 통과로 세지 않는다.
+  `infra` 는 도구 호출 0 + 오류로 턴이 시작하지 못한 경우(모델·호스트 쪽)이고 조수의 불합격과 따로 센다. 어느 것도 다시 돌려 초록으로 바꾸지 않는다 —
+  이미 결과가 있는 일은 덮어쓰지 않고 실패한다(`--skip-completed` 는 남은 일만).
+- `summary.json`/`SUMMARY.md`: 합계 · 가족별 · 픽스처별 · 중앙값(호출·시간·모델 호출·토큰·지시문 글자·도구 수) · 일마다. 종료 코드는 실행기가 끝까지 돌았는지만 말한다.
+- 요청 크기 영수증: `editorDriver.mjs` 가 `prompt_inspection` 스냅숏에서 **글자 수와 도구 이름만** 남긴다(`sizes`: 절마다 글자 수 · 지시문 글자 수 · 실린 도구).
+  지시문 본문은 저장하지 않는다. 턴 기록(`turns/NNN.json`)의 `prompts`(모델 호출마다) · `v2Final` · `turnMs` 가 여기서 나온다.
+- 재판정(`small-jobs-rescore`): 판정기를 고쳤으면 모델을 다시 부르지 않는다. `before/after.json.gz` 에 번들 타일셋을 되붙여 지금의 판정을 돌리고,
+  상태·까닭이 달라진 일은 처음 판정을 `liveVerdict` 로 남긴다. 실행기와 같은 상태 규칙(`decide`)을 쓴다.
+- 보고서(`small-jobs-report`): 자체완결 HTML. 실행 폴더에 `causes.json`(`[{title, why, jobs:[id…]}]` — 결과를 읽은 사람이 쓴다)이 있으면 원인별로 묶고,
+  없으면 통과하지 못한 일을 판정 글 그대로 싣는다. `disclosures.json`(문자열 배열)은 「판정에 대해 알아 둘 것」에 싣고, 재판정으로 상태가 바뀐 일은
+  `liveVerdict` 에서 계산해 표로 보인다(실행 때 판정 → 지금). 픽스처별 표(통과·«완료»·호출·시간·토큰 중앙값)도 함께 낸다.
+
+### 기준선 — 2026-11-11, main `46274bc35f`, Terra high + v2
+
+한 번 돌렸다(04:23~05:39 KST, 76분, 동시 2). 결과 원본은 저장소 밖 `~/z-project/assistant-fable-runs/smalljobs/baseline-46274bc35f/`,
+보고서 http://mdc-server:18301/assistant-small-jobs.html. 실패한 일을 다시 돌리지 않았다.
+
+**통과 23/30** · 불합격 7 · 시간 초과 0 · 기반 오류 0 · 턴이 «완료»로 끝난 것 21 · 요청 밖 변경이 있었던 일 16(만든 게임 픽스처의 16개 전부 — 다른 픽스처는 0).
+중앙값: 도구 호출 18 · 3.5분 · 모델 호출 20 · 입력 599k 토큰(캐시 읽기 포함) · 출력 1.9k · 지시문 32,371자 · 처음 실린 도구 39개(도구 설명 126,795자).
+합계: 도구 호출 530 · 111.9분 · 입력 18.9M · 출력 55k.
+
+| 가족 | 통과 | | 픽스처 | 통과 | 호출 중앙값 | 분 중앙값 | 입력 토큰 중앙값 |
+|---|---|---|---|---|---|---|---|
+| move | 2/3 | | blank | 1/2 | 4.5 | 1.2 | 175k |
+| person | 3/3 | | starter | 11/12 | 11 | 1.7 | 256k |
+| shop | 2/3 | | built | 11/16 | 23 | 5.3 | 762k |
+| chest | 2/3 | | | | | | |
+| sign | 3/3 | | | | | | |
+| door | 1/2 | | | | | | |
+| dialogue | 2/2 | | | | | | |
+| rename | 2/3 | | | | | | |
+| bgm | 2/2 | | | | | | |
+| encounter | 2/2 | | | | | | |
+| quest | 2/2 | | | | | | |
+| fill | 0/2 | | | | | | |
+
+불합격 7건의 원인(호출 기록으로 확인한 것):
+
+- **코드 마무리 단계가 사람을 옮긴다** (2) — `move-npc-door-front`: 모델은 상인을 문 앞 (21,17)에 놓았고 턴 끝의 `clear_transfer_lanes` 뒤 저장본은 (20,17), 조수는 «완료».
+  `door-backdoor-built`: 뒷문은 생겼지만 토르가 (23,12)→(24,12). 이 단계가 돈 일은 이 둘뿐이다(편집 기록 `output/edit-activity/index.json`).
+- **눈 칩셋에서 `find_empty_ground` 가 「맨땅 0%」** (2) — `chest-gold-built` 는 자리를 못 정해 `place_chest` 를 부르지 않았고,
+  `dress-snowfield-built` 는 맵 왼쪽 끝 (0,14)~(1,18)에 놓아 구역 안 2칸.
+- **요청 낱말로 고른 도구 묶음에 그 도구가 없다** (2) — `rename-title-built`(「노래」 → 음악 묶음, 도구 9개, 제목 도구·`load_tools` 없음),
+  `dress-trees-starter`(장소 묶음 15개, `edit_place` 5번 거절, 물건 놓기 도구를 불러올 수 없음).
+- **할 일의 기계 확인이 요청보다 좁다** (1) — `shopkeeper-blank`: 확인 종류 person 이 통과해 «완료», 상점은 없다.
+
+통과한 일에도 드는 값: 만든 게임 픽스처 16개 중 14개에서 요청 뒤에 완료 관문이 타이틀·엔딩을 할 일로 넣어
+`generate_art(title)` → `generate_art(ending)` 거절 → `define_ending` 을 돈다(`generate_art` 41회 중 27회 거절, 일마다 그림 3장·타이틀·엔딩·오프닝 변경).
+16개 모두에서 `blueprint_assembly` 가 돌았다. 그래서 같은 종류의 일이 만든 게임에서는 23회·5.3분, 시작 마을에서는 11회·1.7분이다.
+
+판정 정정(모델 재실행 없음, `small-jobs-rescore`): 실행 직후 요약은 통과 9/30 이었다(`summary.live.json`). 차이 14건은 판정기 결함이다 —
+저장·재로드 기준(파일 해시 → 새 컨텍스트가 읽은 내용) 12건, 공통 이벤트 호출을 따라가지 않던 시뮬레이터 1건(`give-key-once-starter`),
+요청에 없는 「보이는 적」 조건 1건(`encounter-slimes-starter`). `dress-snowfield-built` 의 구역은 실행 뒤 넓혔고 넓힌 뒤에도 불합격이다.
+고친 판정은 자기검사 30/30 을 다시 통과했다.
+
 ## 시각 검수
 
 검수 캡처와 matrix-score 그림은 편집기 전용 시작 위치 표시를 빼고 찍는다(`__oprnHideStartMarker`, `renderReviewMapPng`). 표시가 필요하면 `HARNESS_START_MARKER=1`.
