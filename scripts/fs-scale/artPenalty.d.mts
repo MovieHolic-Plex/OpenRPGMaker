@@ -1,0 +1,20 @@
+export const SIMILAR_COSINE: number;
+export const EXTRA_COSINE: number;
+export const MIN_SIMILAR_PAIRS: number;
+export const FEW_MAPS: number;
+export const SIMILAR_SHARE: number;
+export const PENALTY_PER_FAMILY: number;
+export const PENALTY_CAP: number;
+export type ArtPenalty = {
+  penalty: number;
+  families: ("npc-chipset" | "map-lookalike")[];
+  npcChipset: { hits: number; enemies: { enemyId: string; name: string; resourceId: string; troopId: string }[] };
+  mapLookalike: { partnerShare: number; maps: number; similarPairs: number; extraPairs099: number; totalPairs: number; share: number; pairs: { a: string; b: string; cosine: number }[] };
+  lines: string[];
+};
+export function isCharacterSheetId(id: unknown): boolean;
+export function placedTroopIds(doc: unknown): Set<string>;
+export function characterSheetEnemies(doc: unknown): { enemyId: string; name: string; resourceId: string; troopId: string }[];
+export function similarMapPairs(doc: unknown, threshold?: number): { maps: number; totalPairs: number; partnered: number; pairs: { a: string; b: string; cosine: number }[] };
+export function artPenalty(doc: unknown): ArtPenalty;
+export function applyArtPenalty(score: number, penalty: ArtPenalty): number;
