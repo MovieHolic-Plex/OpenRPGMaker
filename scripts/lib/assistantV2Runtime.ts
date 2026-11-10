@@ -94,6 +94,12 @@ async function captureVqaShots(env: PiAssistantV2Env): Promise<{ shots: VqaShot[
 /** 앞 실행이 남긴 할 일을 이어 받을 요청인가(«계속»·«이어서»·«마저»·«남은 것»). */
 const CONTINUE_WORDS = /계속|이어서|이어 ?(해|가|만들|짓)|마저|남은 ?(것|일|항목)|끝까지|다시 ?해/u;
 
+/** 화면 검수 결함 한 줄을 할 일 글 길이로 — 결함 설명은 220자에서 자르되 뒤의 고치기 동사(« → …»)는 남긴다(잘리면 모델이 어떤 동사로 고칠지 못 읽는다). */
+function clipDefectLine(line: string): string {
+  const cut = line.indexOf(" → ");
+  return cut < 0 ? line.slice(0, 220) : `${line.slice(0, Math.min(cut, 220))}${line.slice(cut, cut + 280)}`;
+}
+
 export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
   const session = new V2Session();
   const store = session.todo;
@@ -297,7 +303,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       return [];
     }
     const fresh = act.fix.filter((d) => !matched.has(d));
-    const opened = store.append(`화면 검수 ${round.round}판`, fresh.map((d, i) => ({ content: vqaDefectLine(d, i).replace(/^\d+\.\s*/u, "").slice(0, 220), key: `vqa:${round.round}:${i}` })), "vqa");
+    const opened = store.append(`화면 검수 ${round.round}판`, fresh.map((d, i) => ({ content: clipDefectLine(vqaDefectLine(d, i, env.ctx.project).replace(/^\d+\.\s*/u, "")), key: `vqa:${round.round}:${i}` })), "vqa");
     for (const [i, item] of opened.entries()) if (fresh[i]) vqaItemDefects.set(item.id, fresh[i]!);
     const reopened = [...vqaItemDefects.keys()].map((id) => store.get(id)).filter((i): i is TodoItem => !!i && isOpen(i.status) && !opened.includes(i));
     pendingBrief = vqaFixBrief(env.request.task, env.ctx.project, act.fix, draft);
@@ -324,7 +330,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
   const leadItems = new Set<string>();
   const done = await runPiAgent({
     ...request,
-    systemPrompt: buildV2SystemPrompt(request.project, request.currentMapId, request.task, store),
+    systemPrompt: buildV2SystemPrompt(request.project, request.currentMapId, request.task, store, request.projectKey ? String(request.projectKey) : undefined),
     initialToolNames: [],
     openingProduction: false,
   }, {
@@ -446,7 +452,15 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
             refreshChecks(env);
             if (!loopStop && store.openCount()) { const prompt = reinject(env, "[Items reopened by the machine check after the function finish]"); if (prompt) return prompt; }
           }
-          if (loopStop) return undefined;
+          if (loopStop) {
+            // 고리가 멈추면 관문·검토자·화면 검수를 돌리지 않는다(모델을 더 부르지 않는다). 그래도 관문이 본 문제는 최종 보고에 싣는다 —
+            // 싣지 않으면 «엔딩을 부르는 이벤트가 없다» 같은 출하 차단이 조용히 빠진 채 «막힘 N» 만 남는다.
+            try {
+              const unseen = v2GateProblems(session, env).problems.filter((p) => !store.items.some((i) => i.content.includes(p.text.slice(0, 60))));
+              if (unseen.length) autoNotes.push(`끝맺음 관문이 본 문제 ${unseen.length}건(고리가 멈춰 고치지 못함): ${unseen.slice(0, 5).map((p) => p.text.slice(0, 140)).join(" / ")}`);
+            } catch { /* 관문 계산 실패는 보고를 막지 않는다 */ }
+            return undefined;
+          }
           // ③b 이번 턴에 지은 설계 실내 맵마다 room_zones 항목(구역·초점·갈 이유·반복) — 조수가 안 달았으면 함수가 덧붙인다(roomZones.ts).
           {
             let opened: TodoItem[] = [];

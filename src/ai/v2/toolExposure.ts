@@ -16,7 +16,7 @@ import type { PiAssistantV2Env } from "./env";
 import { v2ExtraToolNames, wantsGameTools } from "./game";
 import { musicOnly } from "./musicWords";
 import { V2_TOOL_EN, type ToolTextEn } from "./toolTextEn";
-import { leanPromptFor, PLACE_BUILD_VERBS } from "./prompt";
+import { composedWorldFor, leanPromptFor, PLACE_BUILD_VERBS } from "./prompt";
 
 /**
  * 게임 요청에 처음부터 싣는 v1 도구 — 기록된 실행(위)에서 모델이 직접 부른 세션 수가 terra ≥10 또는 opus ≥20 인 것, 또는 그에 준하는 싼 읽기 도구.
@@ -150,11 +150,18 @@ function loadedSchema(tool: PiToolShape): string {
  * 할 일 고리(withTodoLoop)까지 감싼 v2 도구 목록을 받아 이번 요청에 내놓을 모양으로 나눈다.
  * 게임 요청이 아니면(맵만·음악만·덧그리기·스토어) 다 싣는다 — 영어 사본·같은 모양 걷기만 한다.
  */
-export function exposeV2Tools(env: PiAssistantV2Env, tools: readonly PiToolShape[]): V2ToolExposure {
+/** 버들항 칩셋으로만 짓는 도구 — 구성기 세계의 게임에는 싣지 않는다. */
+const BEODEUL_ONLY_TOOLS: ReadonlySet<string> = new Set(["author_forest_route"]);
+
+export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolShape[]): V2ToolExposure {
+  let tools = allTools;
   const task = String(env.request.task ?? "");
   const lazyOn = wantsGameTools(task) && !musicOnly(task);
   // 지은 맵에 로직만 넣는 요청(prompt.ts leanPromptFor)이면 장소 짓기 동사도 필요할 때 싣는다 — 지시문의 장소 카드와 함께 빠진다.
-  const placeLazy = leanPromptFor(env.ctx.project, task);
+  // 구성기 세계의 게임(world.ts)도 같다 — 장소는 build_places 가 짓는다. 버들항 전용 숲길 도구는 그 세계에 싣지 않는다(다른 칩셋 맵이 섞인다).
+  const composedWorld = composedWorldFor(env.ctx.project, env.request.projectKey ? String(env.request.projectKey) : undefined, task);
+  if (composedWorld) tools = tools.filter((t) => !BEODEUL_ONLY_TOOLS.has(t.name));
+  const placeLazy = leanPromptFor(env.ctx.project, task) || composedWorld;
   const offeredSet = new Set([...v2ExtraToolNames(task), ...(placeLazy ? PLACE_BUILD_VERBS : [])]);
   // 처음부터 = 이 요청 묶음에 들었고(offered) 기록에서 쓴 것(V2_UP_FRONT). 묶음 밖 도구(v2ToolPool 로만 들어온 것)는 늘 필요할 때.
   const isLazy = (t: PiToolShape) => (placeLazy && PLACE_BUILD_VERBS.has(t.name))

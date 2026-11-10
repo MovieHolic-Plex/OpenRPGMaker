@@ -46,7 +46,8 @@ stat("conditional cards (all)", out.slice(condStart).join("\n"));
 for (const task of TASKS) {
   const project = createBlankProject();
   hr(`SYSTEM PROMPT for task: ${task}`);
-  const sys = buildV2SystemPrompt(project, project.startMapId, task).join("\n");
+  // PROJECT_KEY=<열쇠> 를 주면 낱말 없는 게임 요청의 세계 고르기(world.ts)까지 실제 실행과 같게 본다.
+  const sys = buildV2SystemPrompt(project, project.startMapId, task, undefined, process.env.PROJECT_KEY).join("\n");
   out.push(sys);
   stat(`system prompt [${task.slice(0, 20)}…]`, sys);
 }

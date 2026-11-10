@@ -4,6 +4,7 @@
 // 한 판 = 찍기(맵마다 1배 전체 · 타이틀 그림 · 오프닝 그림/애니메틱 틀) → 검수자(역할표의 «눈» 또는 «검토자», 주 모델과 다른 계열을 먼저)
 // → 결함 목록(어디·무엇·왜) → 조수가 고침 → 다음 판. 결함 판정은 모델이 하되, 판 수·끝내기·보고 문구는 코드가 정한다.
 // 이 파일은 순수하다(찍기·호출은 넘겨받는다). 실행기 연결은 scripts/lib/assistantV2Runtime.ts.
+import { roomSpecOf } from "@/editor/handInterior/builder";
 import type { Project } from "@/project/types";
 
 export const VQA_MAX_ROUNDS = 3;
@@ -207,12 +208,19 @@ export function vqaShouldContinue(rounds: readonly VqaRound[]): boolean {
 }
 
 /** 결함 한 줄 — 고칠 대상(mapId·그림)을 같이 적는다. */
-export function vqaDefectLine(d: VqaDefect, index: number): string {
+export function vqaDefectLine(d: VqaDefect, index: number, project?: Project): string {
   const target = d.target?.kind === "map" && d.target.ref ? ` (mapId: ${d.target.ref})`
     : d.target?.kind === "title" ? " (타이틀 화면 — set_title_screen)"
     : d.target?.kind === "opening" ? " (오프닝 — 오프닝 장면 다시 그리기)" : "";
+  // dress_room 은 방 짓기 역할표(roomKit)가 있는 칩셋의 방만 채운다(손 도트 실내·일본·마법 학교·에도·캠퍼스…) — 역할표 없는 칩셋 맵(세계 구성기 방·바깥)에
+  // 권하면 거절만 받는다(2026-11-10 jrpg-w1 «족장의 긴집»: dress_room·edit_place 둘 다 거절 뒤 막힘).
+  const map = d.target?.kind === "map" && d.target.ref ? project?.maps[d.target.ref] : undefined;
+  const handRoom = !map || !project || !!roomSpecOf(project.tilesets[map.tilesetId]);
   const sparse = d.target?.kind === "map" && d.target.ref && SPARSE_ROOM.test(`${d.where} ${d.what}`)
-    ? ` → dress_room({ mapId: "${d.target.ref}", at: 그 방 바닥 한 칸, purpose: "<그 방의 쓰임>" }) 으로 채운다(물건을 하나씩 찍지 않는다)` : "";
+    ? handRoom
+      ? ` → dress_room({ mapId: "${d.target.ref}", at: 그 방 바닥 한 칸, purpose: "<그 방의 쓰임>" }) 으로 채운다(물건을 하나씩 찍지 않는다)`
+      : ` → this map's chipset has no room kit (dress_room·edit_place are refused here): add 2–4 props of this chipset with place_object (names from list_spatial_designs{kind:"object", mapId:"${d.target.ref}"}) or people with add_people; if nothing fits, block this item`
+    : "";
   return `${index + 1}. [${d.severity === "blocker" ? "막음" : "다듬기"}] ${d.where}${target} — ${d.what}${sparse}`;
 }
 
@@ -227,7 +235,7 @@ export function vqaFixRetry(round: VqaRound, brief?: string): string {
   return [
     ...(brief ? [brief, ""] : []),
     `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS} — 고치기 다시] 앞 차례에서 도구를 하나도 부르지 않고 보고만 고쳤다. 보고를 고치는 것은 고치기가 아니다. 지금 도구로 아래 결함을 하나씩 고친다 — 결함마다 대상 맵·그림을 바꾸는 도구를 부른다.`,
-    ...vqaActionable(round).fix.map(vqaDefectLine),
+    ...vqaActionable(round).fix.map((d, i) => vqaDefectLine(d, i)),
     "정말 고칠 수 없는 결함은 고치지 말고 최종 보고에 «미해결»로 남긴다. 고치지 않은 결함을 «고쳤다»고 쓰지 않는다.",
   ].join("\n");
 }
@@ -266,14 +274,14 @@ export function vqaRepeated(defect: VqaDefect, previous: VqaRound | undefined): 
 }
 
 /** 조수에게 줄 고치기 지시(판 사이). previous = 바로 앞 판 — 같은 결함이 다시 나오면 앞 고치기가 화면에서 효과가 없었다는 뜻이다. */
-export function vqaFollowUp(round: VqaRound, brief?: string, previous?: VqaRound): string {
+export function vqaFollowUp(round: VqaRound, brief?: string, previous?: VqaRound, project?: Project): string {
   if (round.problem && !round.defects.length) {
     return `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS}] 검수를 하지 못했다(${round.problem}). 다시 찍어 검수하도록 할 것이 없으면 최종 보고에 «화면 검수 미완료»라고 쓴다.`;
   }
   return [
     ...(brief ? [brief, ""] : []),
     `[화면 검수 ${round.round}/${VQA_MAX_ROUNDS}] 다른 모델의 검수자(${round.reviewer})가 실제 그림에서 아래 결함을 찾았다. 각각 고친다 — 맵은 show_map_region 으로 다시 보고, 타이틀·오프닝은 다시 그려 확인한다. 고칠 수 없으면 고치지 말고 최종 보고에 남은 결함으로 쓴다.`,
-    ...vqaActionable(round, previous).fix.map((d, i) => vqaDefectLine(d, i)),
+    ...vqaActionable(round, previous).fix.map((d, i) => vqaDefectLine(d, i, project)),
     // 모델 밖(런타임·빌더) 결함과 두 판 연속 그대로인 결함은 고치기 차례에 넘기지 않는다 — 남은 결함으로는 센다.
     ...(() => { const a = vqaActionable(round, previous); const n = a.ledger.length + a.stuck.length; return n ? [`(이 밖에 결함 ${n}건 — 모델 밖 ${a.ledger.length}건은 런타임/빌더 장부로, 두 판 연속 그대로인 ${a.stuck.length}건은 미해결로 남긴다. 이것들은 고치지 말고, 최종 보고의 남은 결함에 그대로 센다.)`] : []; })(),
     "보고만 다시 쓰는 것은 고치기가 아니다 — 이 차례에는 도구로 그림을 바꾼다(도구를 하나도 부르지 않으면 이 판은 세지 않고 한 번 더 시킨 뒤, 그래도 안 하면 «미해결»로 끝난다). 고치지 않은 결함을 «고쳤다»고 쓰지 않는다.",

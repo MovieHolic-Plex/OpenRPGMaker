@@ -5,7 +5,7 @@
 // (장소 → 이벤트 → 조건 → 다음 장소)를 데이터로 걸어 본다: 맵이 있나, 시작에서 걸어 닿나, 이벤트가 있나, 조건을 켜는 곳이
 // 그 단계 전에 있나, 마지막이 엔딩을 부르나. 순수 함수(프로젝트만 읽는다) — shipBlockers 가 부른다.
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { gameBlueprintText, normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
+import { STEP_KINDS, gameBlueprintText, normalizeGameBlueprint, type GameBlueprint, type GameBlueprintStepKind } from "@/project/gameBlueprint";
 import { walkGame } from "./makeGame";
 import { unreachableEvents } from "./eventReach";
 
@@ -16,9 +16,10 @@ export interface BlueprintBlocker { readonly id: string; readonly message: strin
 export const BLUEPRINT_CARD = [
   "[Blueprint first — write_blueprint] For a request to make a whole game, write one design sheet for the game with write_blueprint before building places (build verbs are rejected without a blueprint).",
   "- playerGoal: one guiding line for a new player (what leads to the ending). The judge gets only this line and plays the game to the end.",
-  "- steps: the 6–8 step critical path from start to ending (spread over 2+ places; each step reads the switch the previous step turned on — the finish gate measures that chain depth). Per step: place (exact name of the map to build) · event (exact name of the event on that map) · action (what the player does) · needs (what opens this step) · gives (what opens the next step: key, switch, affection; the last one is the ending) · feeling (the scene's mood).",
+  "- steps: the 6–8 step critical path from start to ending (spread over 2+ places; each step reads the switch the previous step turned on — the finish gate measures that chain depth). Per step: kind · place (exact name of the map to build) · event (exact name of the event on that map — for a person, the person's name) · who · action (what the player does) · needs (what opens this step) · gives (what opens the next step: key, switch, affection; the last one is the ending) · feeling (the scene's mood).",
+  "- kind decides what code builds for the step: talk = a named person (who) speaks your lines and hands over the next lead · find = the player examines or picks up a thing · battle = the player must win a fight against who · puzzle = a number lock whose answer is written in an earlier step's lines · choice = who offers 2–3 options and each option changes something the player sees later. A path of «examine X, then examine Y» is a walking tour, not a game — players score it lowest. Mix the kinds: at least 2 talk steps with different people, a battle in an adventure or RPG, a puzzle or a choice, and never 3 find steps in a row.",
   "- ending: {name, how, feeling}. With several endings, write the critical path for the most basic ending and describe the rest in how.",
-  "- After building the places call build_blueprint_path once — the function builds an event per step, uses the previous step's gives as the condition, and makes the last one call the ending (do not match them one by one with upsert_event/define_ending). Give dialogue only via steps[{id,lines}].",
+  "- After building the places call build_blueprint_path once — the function builds an event per step, uses the previous step's gives as the condition, and makes the last one call the ending (do not match them one by one with upsert_event/define_ending). Give dialogue only via steps[{id, lines, …}]: write lines for every talk, choice and battle step (2–4 short lines in that person's own voice — what they want, fear or know; not «X was examined»), and for a choice step also choices:[{text, lines, later}] (later = one line shown at the ending that tells what this choice led to).",
   "- While building, use place and event names exactly as in the blueprint (an unnamed event may use its id in event). If they change, call write_blueprint again to match the real names. The ship check walks this path as data (do the map and event exist, can you walk there from the start, does an earlier step have the event that turns on the condition, does the last event call the ending).",
 ].join("\n");
 
@@ -27,9 +28,16 @@ export const WRITE_BLUEPRINT_SCHEMA = {
   properties: {
     title: { type: "string" },
     genre: { type: "string", description: "short genre word (horror, romance, JRPG…)" },
+    places: { type: "array", maxItems: 12, description: "every place of the game when the prompt has a [World of this game] card (the first is the start) — code builds them with build_places", items: { type: "object", properties: {
+      name: { type: "string", description: "map name (steps[].place uses this exact name)" },
+      kind: { type: "string", description: "a place kind id from the [World of this game] card" },
+      from: { type: "string", description: "name of the place this one is entered from (default: the place listed before it)" },
+    }, required: ["name", "kind"] } },
     playerGoal: { type: "string", description: "one guiding line for a new player (within 140 chars)" },
     steps: { type: "array", minItems: 2, maxItems: 12, items: { type: "object", properties: {
       id: { type: "string", description: "s1, s2 …" },
+      kind: { type: "string", enum: [...STEP_KINDS], description: "talk (a named person) · find (examine or pick up) · battle (win a fight) · puzzle (number lock) · choice (options with different results)" },
+      who: { type: "string", description: "talk · choice · battle: that person's or foe's name (speaker name and character art)" },
       place: { type: "string", description: "map name (exactly the name you will build)" },
       event: { type: "string", description: "event name on that map (exactly the name you will build)" },
       action: { type: "string", description: "what the player does" },
@@ -61,6 +69,26 @@ export function thinBlueprintReason(bp: GameBlueprint): string | undefined {
   if (places.length >= MIN_BLUEPRINT_PLACES && bp.steps.length >= MIN_BLUEPRINT_STEPS) return undefined;
   const first = bp.steps[0]?.place ?? "장소";
   return `청사진이 ${bp.steps.length}단계·장소 ${places.length}곳이다 — 끝맺음 관문은 문으로 닿는 맵 6장과 이야기 사슬 깊이 5(청사진 6단계)를 센다. 청사진을 걸지 않았다. write_blueprint 를 한 번 더 부르되 steps 는 6~8개, place 는 서로 다른 장소 3곳 이상(예: 「${first} 앞」·「${first} 안쪽」·「지하 통로」처럼 나눈다), 단계마다 event 는 아직 없는 새 이름으로 쓴다.`;
+}
+
+/**
+ * 단계 종류가 고르게 섞였나 — 문제면 모델에게 돌려줄 영어 한 줄들, 없으면 [].
+ * 왜(2026-10-30~31 Terra 38판 눈가림 판정): 청사진 단계가 전부 «X 를 살펴보았다 → 『Y』를 알아냈다» 여서 재미 2.79/10 — 선택 0.26/3 · 인물 1.08/3 · 퍼즐 1.14/3.
+ * 종류를 적지 않은 단계는 find 로 센다. needBattle = 모험·RPG(싸움이 있어야 하는 게임).
+ */
+export function stepMixProblems(bp: Pick<GameBlueprint, "steps">, needBattle: boolean): string[] {
+  const kinds = bp.steps.map((st) => st.kind ?? "find");
+  const count = (k: GameBlueprintStepKind) => kinds.filter((x) => x === k).length;
+  const problems: string[] = [];
+  const unnamed = bp.steps.filter((st) => (st.kind === "talk" || st.kind === "choice" || st.kind === "battle") && !st.who?.trim());
+  if (unnamed.length) problems.push(`step ${unnamed.map((st) => st.id).join(", ")} needs who (the person's or foe's name).`);
+  const people = new Set(bp.steps.filter((st) => st.kind === "talk" || st.kind === "choice").map((st) => st.who?.trim()).filter(Boolean));
+  if (count("talk") + count("choice") < 2 || people.size < 2) problems.push(`only ${people.size} named ${people.size === 1 ? "person" : "people"} to talk to — make at least 2 steps talk (or choice) with different people (who).`);
+  if (needBattle && !count("battle")) problems.push("no battle step — an adventure needs at least one fight the player must win (kind battle, who = the foe).");
+  if (!count("puzzle") && !count("choice")) problems.push("no puzzle and no choice step — add one (puzzle = number lock with its answer in an earlier step's lines; choice = options with different results).");
+  let run = 0;
+  for (const k of kinds) { run = k === "find" ? run + 1 : 0; if (run >= 3) { problems.push("3 find steps in a row — break them up with a talk, battle, puzzle or choice step."); break; } }
+  return problems;
 }
 
 export function blueprintPin(project: Project): string[] {
@@ -180,7 +208,9 @@ export const CODE_STEP_WORDS = /비밀\s*번호|암호|패스\s*워드|숫자\s*
 /** 번호를 «주는» 단계(단서)의 gives 낱말 — 이런 단계는 맞히는 단계가 아니다. */
 const CODE_GIVES = /비밀\s*번호|암호|번호|단서|쪽지|힌트|password|code|clue|hint|note/iu;
 /** 청사진 단계가 번호·암호를 맞히는 단계인가(이벤트 이름·행동에 그 낱말이 있고, gives 가 번호·단서 자체가 아니다). */
-export function isCodeStep(step: { readonly event: string; readonly action: string; readonly gives: string; readonly needs?: string }): boolean {
+export function isCodeStep(step: { readonly event: string; readonly action: string; readonly gives: string; readonly needs?: string; readonly kind?: GameBlueprintStepKind }): boolean {
+  // 청사진이 종류를 적었으면 그것이 정본이다(낱말 추정은 종류가 없는 옛 청사진만).
+  if (step.kind) return step.kind === "puzzle";
   if (CODE_GIVES.test(step.gives)) return false;
   if (CODE_STEP_WORDS.test(`${step.event} ${step.action}`)) return true;
   // 앞 단계가 준 번호·암호 단서로 무언가를 «여는» 단계도 번호를 맞히는 단계다(2026-10-29 vm2 flash 방탈출: s2 「금고 열기 — 단서를 조합해 얻은
@@ -262,7 +292,8 @@ const TALK_ACTION = /대화|듣는|듣고|묻는|물어|이야기|말을\s*건|�
  */
 const BATTLE_ERRAND = /(결전|전투|처치|토벌|대결|보스전|격파)\s*(의|을|를)?\s*(부탁|의뢰|요청|명령|임무|준비|약속|소식)/gu;
 /** 청사진 단계가 싸워 이기는 단계인가(이벤트 이름에 전투 낱말, 또는 행동에 전투 낱말이 있고 듣기·묻기 단계가 아니다). */
-export function isBattleStep(step: { readonly event: string; readonly action: string }): boolean {
+export function isBattleStep(step: { readonly event: string; readonly action: string; readonly kind?: GameBlueprintStepKind }): boolean {
+  if (step.kind) return step.kind === "battle";
   const action = step.action.replace(BATTLE_ERRAND, " ");
   return BATTLE_STEP_WORDS.test(step.event) || (BATTLE_STEP_WORDS.test(action) && !TALK_ACTION.test(action));
 }

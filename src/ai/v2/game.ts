@@ -196,7 +196,8 @@ export function wantsGameTools(task: string): boolean {
 
 /** 이미 있는 맵에 물길·다리·작은 물건을 덧그리는 요청(맵을 새로 짓지 않는다) — v1 결정론 덧그리기 도구 셋. */
 export const TERRAIN_WORDS = /다리\s*(를|가|위|에|앞|옆|건너|밑|아래|목)|돌다리|나무다리|강을|강이|강물|강 상류|강 하류|개울|냇물|시냇|연못을|물길|폭포|레버|팻말|표지판|간판|bridge|lever|signpost/iu;
-export const V2_TERRAIN_TOOLS: readonly string[] = ["list_spatial_designs", "stamp_object", "fill_region"];
+// tile_erase: 끝맺음 검사(gameChecks.ts «다리·출입구·방 쓰임»)가 «tile_erase 로 걷는다» 고 이르는데 v2 도구 풀에 없어 부를 수 없었다 — 이름으로 부르면 실린다.
+export const V2_TERRAIN_TOOLS: readonly string[] = ["list_spatial_designs", "stamp_object", "fill_region", "tile_erase"];
 export const TERRAIN_CARD = `[Overpainting an existing map — water, bridges, small objects] For fixing a map without rebuilding it (river, bridge, lever, signpost in a village already built).
 - Water: fill_region{mapId, material, rect:{x,y,w,h}, shape?:'ellipse', referencePurpose} — on the Beodeul chipset (beodeul_city) use material:'버들항 물' (plain '물' becomes watered field soil) and referencePurpose:'beodeul-city-water'. A bending river is several rects. Avoid houses and finished areas, and leave the spot where a road crosses the water for a bridge.
 - Objects: find the id with list_spatial_designs{kind:'object', query} and stamp_object{mapId, objectId:'kit:…', x, y}. Common in Beodeul: bridge 'kit:beodeul_city/bd-bridge-arch', signpost 'kit:beodeul_city/bd-out-signpost',

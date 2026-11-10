@@ -1,6 +1,7 @@
 // 조수 v2 동사 — 모델이 부르는 도구는 이 열 개 안팎뿐이다. 동사마다: 명세 → 결정론 빌더 → 1배 그림 + 기계 검사 → 독립 비평가.
 // 고치기는 모델이 비평 결과(칸 좌표 major)를 보고 edit_place 패치로 한다(맵당 V2_MAX_REPAIR_ROUNDS 바퀴 상한). 끝맺음 관문(afterMain)이
 // 「비평 major 0 + 기계 검사 통과」가 아닌 장소를 남긴 채 「다 됐다」고 말하지 못하게 한다.
+import { withoutIntentNote } from "@/ai/piAgent/monsterGameRequest";
 import { SET_OBJECTIVE_DESCRIPTION } from "@/ai/agentRules";
 import { sceneCraftProblems } from "./sceneCraft";
 import { flattenWrapperTool } from "./flatWrapper";
@@ -9,7 +10,7 @@ import { buildsWholeGame, oneProjectGame, shipBlockers, wantsWholeGame } from ".
 import { checkImageDataUrl } from "./imageCheck";
 import { applyBlueprintAssembly, isPlaceholderTitle } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
-import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, isEscapeBlueprint, parseBlueprintArgs, thinBlueprintReason, walkBlueprint } from "./blueprint";
+import { MIN_BLUEPRINT_STEPS, WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, isEscapeBlueprint, parseBlueprintArgs, stepMixProblems, thinBlueprintReason, walkBlueprint } from "./blueprint";
 import { INTERIOR_WORDS, interiorCatalogCard, leanPromptFor, PLACE_SPEC_KINDS, placeSpecCards, placeSpecKindOf, projectBrief, type PlaceSpecKind } from "./prompt";
 import { hasLayout } from "./builders/interiorLayoutBuild";
 import { LAYOUT_FORMAT, LAYOUT_TAG, applyLayoutPatch, layoutGiven, layoutPatchIsEmpty, type LayoutPatch } from "./interiorLayout";
@@ -22,6 +23,9 @@ import { builderFor } from "./builders";
 import { localizePlaceSpec } from "./builders/modernCity";
 import { localizeCultureSpec } from "./builders/joseon";
 import { localizeVillagePoolSpec } from "../villageChipsetPool";
+import { isComposedWorld, parseWorldStyle, pickWorldDoor, repairWorldPlaces, spareKind, worldById, worldKind, worldOf, worldPlaceProblems, worldPlaceSpec, type WorldSetting } from "./world";
+import { worldForRequest } from "./worldRequest";
+import type { GameBlueprintPlace } from "@/project/gameBlueprint";
 import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize } from "./builders/village";
 import { codeTerrainFor, usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
 import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
@@ -42,7 +46,8 @@ import { buildEvent } from "./events";
 import { drawObject } from "./drawObject";
 import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
-import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, type PathStepText } from "./blueprintPath";
+import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, keepStepText, pathTextProblems, type PathStepText } from "./blueprintPath";
+import { populateWorldPlace } from "./worldPopulate";
 import { repairEventReach, spreadCrowdedPeople } from "./eventReach";
 import { runLaneStages } from "./lanes";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart } from "./blankStart";
@@ -84,6 +89,10 @@ import { buildBossEncounter, buildEndingScene, wantsBossEncounter, wantsEndingSc
 // 2026-10-30 omo 할 일 고리: 1바퀴 상한이 비평 항목을 «상한 막힘»으로 닫았다(세 장면 모두). 상한은 할 일 항목의 시도 상한(TODO_MAX_ATTEMPTS=3)과
 // 고리의 진척 규칙(진척 없는 재주입 2번이면 멈춤)이 맡는다 — 맵당 다시 짓기 상한도 같은 3.
 export const V2_MAX_REPAIR_ROUNDS = 3;
+/** 청사진 장소가 게임 세계와 안 맞을 때 돌려보내는 횟수(그 뒤에는 함수가 메운다). */
+const WORLD_BOUNCES = 2;
+/** 한 장소에서 여러 바깥 장소로 나가는 길을 서로 다른 변에 둔다. */
+const LINK_SIDES = ["east", "west", "north", "south"] as const;
 /** 칸 배치(spec.layout) 장소의 다시 짓기 상한 — 고침이 싸고 매번 검증되므로 자기 검토·고치기를 막지 않게 크게(2026-10-31 감독: 3바퀴가 목업 시험의 자기 검토 고침을 막았다). */
 export const LAYOUT_MAX_REBUILDS = 12;
 /** 칸 배치 없이 온 손 도트 실내를 돌려보내는 최대 횟수 — 그 뒤엔 옛 설계 길로 짓는다. */
@@ -141,6 +150,12 @@ export class V2Session {
   blueprintRewrites = 0;
   /** 첫 청사진이 장소·단계가 모자라 거절된 횟수(세션당 1회만 거절하고 다음부터는 걸어 준다 — 막다른 길 방지). */
   blueprintThinRejects = 0;
+  /** 청사진 장소가 이 게임 세계(world.ts)와 안 맞아 돌려보낸 횟수 — 상한 뒤에는 함수가 메워서 건다(막다른 길 방지). */
+  worldBounces = 0;
+  /** 보이는 적·보물상자를 이미 둔 세계 장소(맵 id) — 한 실행에 한 번만 채운다(못 둔 자리를 다음 호출이 다시 채우지 않게). */
+  readonly stockedPlaces = new Set<string>();
+  /** build_blueprint_path 를 대사 없이 불러 돌려보낸 횟수(한 번만). */
+  pathTextBounces = 0;
   /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
   autoPathDone = false;
   /** 끝맺음에서 청사진 장소를 함수가 대신 지었는가(한 번만). */
@@ -438,13 +453,27 @@ function recordWrite(env: PiAssistantV2Env, run: RecordingBuildRun, toolCallId: 
   env.record({ toolCallId, name, args, result: { ok, summary, ...(data !== undefined ? { data } : {}) }, ...(logs.length ? { constructionLogs: logs } : {}) });
 }
 
-function nextStep(seen: Seen, rounds: number, designed: boolean | "dungeon" = false, cap = V2_MAX_REPAIR_ROUNDS): string {
+/** 끝맺음 관문이 «이 장소를 고쳐라»에 붙이는 동사 — 그 맵을 지은 빌더가 받는 것만 이른다(안 받는 동사를 이르면 거절만 쌓인다). */
+/** 그 맵의 칩셋에 방 짓기 역할표(roomKit)가 있나 — move_object·dress_room 이 듣는 맵(손 도트 실내·일본·마법 학교·에도·캠퍼스·고딕·현대 도시 방). */
+const hasRoomKit = (project: Project, mapId: string): boolean => !!roomSpecOf(project.tilesets[project.maps[mapId]?.tilesetId ?? ""]);
+
+function placeFixVerbs(session: V2Session, project: Project | undefined, mapId: string): string {
+  const builder = session.places.get(mapId)?.builder;
+  if (builder === "world") return "구성기가 한 번에 깐 세계 맵이라 다시 짓지 않는다: 이벤트는 move_event, 소품은 stamp_object, 못 고치면 보고";
+  if (project ? hasRoomKit(project, mapId) : builder === "interior") return "장소는 edit_place·move_object(설계하지 않은 방의 빈 바닥만 dress_room)";
+  return "장소는 edit_place(소품 하나는 stamp_object)";
+}
+
+function nextStep(seen: Seen, rounds: number, designed: boolean | "dungeon" = false, cap = V2_MAX_REPAIR_ROUNDS, handInterior = true): string {
   const bad = seen.checks.filter((c) => !c.ok).length + seen.critics.reduce((n, v) => n + v.majors.length, 0);
   if (!bad && !seen.critics.some((v) => v.problem)) return "통과 — 비평 major 0, 기계 검사 통과. 다른 요청 부분이 남았으면 이어서, 아니면 사용자에게 보고한다.";
   // 조수가 설계한 방: 고치기도 설계로 — 함수가 가구를 골라 채우는 dress_room 을 권하지 않는다.
   if (designed === "dungeon") return `문제 ${bad}건 — 이 층은 네 dungeonDesign 대로 지었다. warnings 의 「고침:」 줄과 비평을 보고 설계(방 크기·모양·자리 at·길 links·물)를 고쳐 edit_place({patch:{mapId, set:{dungeonDesign: 고친 설계 전체}}}) 로 다시 짓는다. 못 고치는 것은 보고에 남긴다.`;
   if (designed) return `문제 ${bad}건 — 이 방은 네 design 대로 지었다. warnings 의 「고침:」·「맨바닥」 줄과 비평을 보고 design(크기 w·h, 모양, 묶음과 자리)을 고쳐 edit_place({patch:{mapId, design: 고친 설계 전체}}) 로 다시 짓는다. 가구 하나만 옮기거나 돌리려면 move_object. 못 고치는 것(그림이 없는 물건 등)은 보고에 남긴다.`;
-  const furniture = "놓인 가구 하나가 문·길을 막거나 방향이 틀린 major 는 move_object(그 칸 at → to·face·remove)로 고친다. 방이 비었다·빈 바닥이 많다는 문제는 dress_room(mapId, at: 그 방 바닥 한 칸, purpose: 방 쓰임)으로 채운다 — 둘 다 바퀴를 쓰지 않는다.";
+  // dress_room 은 설계하지 않은 손 도트 실내 방만 채운다 — 바깥 맵·던전에 권하면 거절만 쌓인다(2026-10-30~31 Terra 129판: dress_room 205번 중 194번 거절).
+  const furniture = handInterior
+    ? "놓인 가구 하나가 문·길을 막거나 방향이 틀린 major 는 move_object(그 칸 at → to·face·remove)로 고친다. 방이 비었다·빈 바닥이 많다는 문제는 dress_room(mapId, at: 그 방 바닥 한 칸, purpose: 방 쓰임)으로 채운다 — 둘 다 바퀴를 쓰지 않는다."
+    : "이 맵의 칩셋에는 방 짓기 역할표가 없어 move_object·dress_room 을 쓰지 않는다 — 빈 곳에 소품이 필요하면 stamp_object 로 하나씩 놓는다.";
   if (rounds >= cap) return `고치기 상한(${cap}바퀴)에 닿았다 — 다시 짓는 고치기는 더 하지 않는다. ${furniture} 그 밖의 남은 문제는 사용자에게 그대로 보고한다.`;
   return `문제 ${bad}건 — 고칠 수 있으면 edit_place 패치(구역 더하기·주인공 물건 near 좌표·크기·variant·dressing)로 한 번에 고친다(남은 바퀴 ${cap - rounds}). ${furniture} 패치로 못 고치는 것(그림이 없는 물건 등)은 보고에 적는다.`;
 }
@@ -523,6 +552,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   const task = env.request.task;
   const run = createBuildRun(env.ctx);
   const poolVillage = <T extends PlaceSpec>(spec: T): T => localizeVillagePoolSpec(spec, run.ctx.project, String(env.request.projectKey ?? env.ctx.project.meta.title ?? ""), String(task ?? ""));
+  // 이 게임의 세계(world.ts) — 청사진이 있으면 청사진이 정한 것, 없으면 요청·프로젝트 열쇠로 고른 것. 지시문(prompt.ts)의 세계 카드와 같은 답이다.
+  const requestWorld = (): WorldSetting | undefined => worldForRequest(env.ctx.project, env.request.projectKey ? String(env.request.projectKey) : undefined, String(task ?? ""));
   // 이 차례를 시작할 때 빈 프로젝트였나 — 첫 장소를 짓는 요청은 「게임」 낱말이 없어도 게임 시작으로 보고 장르 기본값을 깐다(G51).
   const freshStart = isFreshProject(env.ctx.project);
 
@@ -637,7 +668,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     // 설계 실내면 할 일 확인 room_zones 와 같은 판정을 결과에 싣는다(구역 수·초점·갈 이유·반복 — loop/roomZones.ts).
     const zones = zoneStatusLines(env.ctx.project, result.mapIds, String(task ?? ""));
-    return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seen), ...(zones.length ? { zones } : {}), round: rounds, next: nextStep(seen, rounds, spec.dungeonDesign ? "dungeon" : (spec.zones ?? []).some((z) => !!z.design), repairCap(spec)) }, seen);
+    return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seen), ...(zones.length ? { zones } : {}), round: rounds, next: nextStep(seen, rounds, spec.dungeonDesign ? "dungeon" : (spec.zones ?? []).some((z) => !!z.design), repairCap(spec), result.mapIds.some((id) => hasRoomKit(env.ctx.project, id))) }, seen);
   };
 
   const finishContent = async (toolCallId: string, verb: string, args: unknown, result: ContentBuildResult): Promise<PiToolExecResult> => {
@@ -757,12 +788,39 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       if ("error" in parsed) return text({ ok: false, summary: `청사진을 읽지 못했다: ${parsed.error}` });
       // 처음 쓰는 청사진이 장소 1곳·3단계처럼 얇으면 한 번만 거절한다(2026-11-10 ninja-0062: 3단계를 한 곳에 몰아 맵·퀘스트·깊이 관문을 3번 받고도 못 닫았다).
       // 맵을 짓기 전이라 다시 쓰는 비용은 호출 한 번이다. 다시 쓰는 청사진(prior)·설계자 청사진·한 곳짜리 게임은 거절하지 않는다.
-      if (!prior && !designed && session.blueprintThinRejects < 1 && !oneProjectGame(env.ctx.project, String(task ?? "")) && !isEscapeBlueprint(parsed.blueprint)) {
+      // 게임 세계(world.ts): 장소 목록이 이 세계의 종류로 고르게 퍼졌는지 본다. 두 번까지 돌려보내고, 그 뒤에는 함수가 메워서 건다.
+      // 다시 쓰는 청사진이 places 를 빼면 앞 청사진의 장소를 물려받는다(이름 맞추기 다시 쓰기가 장소를 지우지 않게).
+      // 앞 청사진의 단계 글(대사·고를 것)은 같은 단계(id·종류·사람이 같다)면 물려받는다 — 이름 맞추기 다시 쓰기가 대사를 지우지 않게.
+      if (prior) parsed.blueprint = { ...parsed.blueprint, steps: parsed.blueprint.steps.map((st) => {
+        const old = prior.steps.find((o) => o.id === st.id);
+        return !st.text && old?.text && old.kind === st.kind && (old.who ?? "") === (st.who ?? "") ? { ...st, text: old.text } : st;
+      }) };
+      // 갇힌 방 게임(방탈출·밀실)은 세계를 쓰지 않는다 — 방 하나를 설계해 짓는 종전 길이 맡는다(세계의 장소 종류에는 그 방이 없다).
+      const oneRoomGame = oneProjectGame(env.ctx.project, String(task ?? "")) || isEscapeBlueprint(parsed.blueprint);
+      const world = prior ? worldById(prior.setting) : designed || oneRoomGame ? undefined : requestWorld();
+      // 세계 없는 게임의 청사진에는 장소 목록을 남기지 않는다 — 남으면 끝맺음 장소 짓기가 이름이 똑같은 맵만 «이미 지었다»로 보아 같은 장소를 한 번 더 짓는다.
+      if (!world && parsed.blueprint.places) { const { places: _places, ...rest } = parsed.blueprint; parsed.blueprint = rest; }
+      const worldNotes: string[] = [];
+      if (world) {
+        let draft = !parsed.blueprint.places?.length && prior?.places?.length ? { ...parsed.blueprint, places: prior.places } : parsed.blueprint;
+        const oneRoom = oneRoomGame;
+        const problems = [...worldPlaceProblems(draft, world, oneRoom), ...(!oneRoom && draft.steps.length < MIN_BLUEPRINT_STEPS ? [`only ${draft.steps.length} steps — write ${MIN_BLUEPRINT_STEPS} to 8 (each step reads what the step before it gave).`] : []), ...(oneRoom ? [] : stepMixProblems(draft, wantsBattle(draft.genre)))];
+        if (problems.length && session.worldBounces < WORLD_BOUNCES) {
+          session.worldBounces += 1;
+          return text({ ok: false, summary: `Blueprint not saved yet (${session.worldBounces}/${WORLD_BOUNCES}) — this game's world is ${world.name}. Fix and call write_blueprint again: ${problems.join(" ")}` });
+        }
+        const fixed = repairWorldPlaces(draft, world);
+        draft = { ...draft, setting: world.id, places: fixed.places };
+        worldNotes.push(...fixed.notes);
+        parsed.blueprint = draft;
+      } else if (!prior && !designed && session.blueprintThinRejects < 1 && !oneProjectGame(env.ctx.project, String(task ?? "")) && !isEscapeBlueprint(parsed.blueprint)) {
         const thin = thinBlueprintReason(parsed.blueprint);
-        if (thin) { session.blueprintThinRejects += 1; return text({ ok: false, summary: thin }); }
+        // 단계 종류(사람·싸움·퍼즐·고르기)가 섞였는지도 같은 한 번에 돌려준다 — 전부 «살펴본다» 인 청사진은 걷기만 하는 게임이 된다.
+        const mix = stepMixProblems(parsed.blueprint, wantsBattle(parsed.blueprint.genre));
+        if (thin || mix.length) { session.blueprintThinRejects += 1; return text({ ok: false, summary: [thin, mix.length ? `Blueprint not saved yet — fix the step kinds and call write_blueprint again: ${mix.join(" ")}` : ""].filter(Boolean).join(" ") }); }
       }
       // 같은 내용을 다시 쓰면 바꾸지 않는다 — 청사진을 되풀이해 쓰는 대신 경로를 짓게 한다.
-      const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, s: b.steps, e: b.ending }) : "";
+      const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, s: b.steps, e: b.ending, w: b.setting, pl: b.places }) : "";
       if (prior && core(prior) === core(parsed.blueprint)) {
         session.blueprintRewrites += 1;
         const walked = walkBlueprint(env.ctx.project);
@@ -775,22 +833,36 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       noteAssembly(assembled);
       const walked = walkBlueprint(env.ctx.project);
       await env.checkpoint("write_blueprint");
+      if (world) {
+        const unbuilt = (parsed.blueprint.places ?? []).filter((pl) => !blueprintMapFor(env.ctx.project, pl.name));
+        return text({ ok: true, summary: `Blueprint saved (${parsed.blueprint.steps.length} steps · world ${world.name} · ${parsed.blueprint.places?.length ?? 0} places).${worldNotes.length ? ` Code adjusted places: ${worldNotes.join("; ")}.` : ""} ${unbuilt.length ? `Next: build_places once — it builds and links ${unbuilt.length} place(s): ${unbuilt.map((pl) => `«${pl.name}»(${pl.kind})`).join(", ")}. Then build_blueprint_path once (do not write step events one by one with upsert_event).` : "All places are built. Next: build_blueprint_path once."}${assembled.length ? ` Title defaults set from the blueprint: ${assembled.join(" · ")}.` : ""}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
+      }
       return text({ ok: true, summary: `청사진을 걸었다(${parsed.blueprint.steps.length}단계). 장소를 make_place 로 지은 뒤 build_blueprint_path 한 번으로 단계별 이벤트·조건·엔딩 호출을 짓는다(이벤트를 upsert_event 로 하나씩 쓰지 않는다).${assembled.length ? ` 청사진에 맞춰 타이틀 기본값을 바꿨다: ${assembled.join(" · ")}.` : ""}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
     },
   };
 
   // 청사진 경로 짓기(2026-10-28 mt2): 단계(place·event·needs·gives)와 엔딩에서 이벤트·조건·스위치·아이템·엔딩 호출을 함수가 짓는다.
+  /** 싸움이 있어야 하는 게임인가 — 장르나 요청이 모험·RPG·액션 쪽일 때만(경영·일상·추리·연애·퍼즐 게임에 싸움을 밀어 넣지 않는다). */
+  const wantsBattle = (genre: string): boolean => /RPG|알피지|롤플레잉|모험|어드벤처|판타지|액션|용사|마왕|전투|던전|adventure|action|fantasy|dungeon|quest/iu.test(`${genre} ${withoutIntentNote(String(task ?? ""))}`);
   const runBlueprintPath = (steps: readonly PathStepText[]) => {
     const result = buildBlueprintPath(run, steps);
     return result;
   };
   const buildBlueprintPathVerb: PiToolShape = {
     name: "build_blueprint_path", label: "청사진 경로 짓기", concurrency: "exclusive",
-    description: "Build the blueprint's (write_blueprint) critical path as a real play path — per step put an examine/talk event on that map (an event with the same name is rewritten), hang the previous step's gives (keys and notes become items, the rest switches) as the next step's condition, and make the last step call the ending (if no ending exists it is defined from the blueprint ending). Call once after building the places — do not match events one by one with upsert_event/define_ending. Only dialogue can be given, via steps[{id, lines, lockedLines}] (empty = filled from the blueprint text); a number lock gets code on that step and the answer in the previous step's lines. Calling again rewrites the same events.",
+    description: "Build the blueprint's (write_blueprint) critical path as a real play path — per step put an examine/talk event on that map (an event with the same name is rewritten), hang the previous step's gives (keys and notes become items, the rest switches) as the next step's condition, and make the last step call the ending (if no ending exists it is defined from the blueprint ending). Call once after building the places — do not match events one by one with upsert_event/define_ending. Only dialogue can be given, via steps[{id, lines, lockedLines}] (empty = filled from the blueprint text); a number lock gets code on that step and the answer in the previous step's lines. Calling again rewrites the same events; the text of each step is remembered, so send only the steps whose text you want to change.",
     parameters: BUILD_BLUEPRINT_PATH_SCHEMA as unknown as PiToolShape["parameters"],
     async execute(id, params) {
       if (!env.ctx.project.gameBlueprint) return text({ ok: false, summary: "청사진이 없다 — write_blueprint 를 먼저 부른다." });
       const steps = ((params as { steps?: PathStepText[] }).steps ?? []).filter((t) => t && typeof t.id === "string");
+      // 받은 글은 청사진 단계에 남긴다 — 다음에 한 단계만 고쳐 불러도(다음 턴이어도) 나머지 단계의 대사·고르기를 잃지 않는다.
+      if (steps.length) env.ctx.project = { ...env.ctx.project, gameBlueprint: keepStepText(env.ctx.project.gameBlueprint, steps) };
+      // 사람이 말하는 단계에 대사가 없으면 한 번만 돌려보낸다 — 그 뒤에는 있는 글로 짓는다(빈 대사는 단계의 할 일 한 줄로 채운다).
+      const lacking = session.pathTextBounces < 1 ? pathTextProblems(env.ctx.project, steps) : [];
+      if (lacking.length) {
+        session.pathTextBounces += 1;
+        return text({ ok: false, summary: `Path not built yet — the people on the path have no words. Call build_blueprint_path again with steps:[{id, lines, …}] for: ${lacking.join(" ")} (A line starting with «(» is narration. Calling again without them builds the path with one-line placeholders.)` });
+      }
       return finishContent(id, "build_blueprint_path", params, runBlueprintPath(steps));
     },
   };
@@ -814,6 +886,59 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     return notes;
   };
 
+  // 세계 짓기(world.ts): 청사진 장소 목록을 그 세계의 구성기로 한 번에 짓고 잇는다 — 모델은 장소 이름·종류만 정한다.
+  // add 로 장소를 더할 수 있다(세는 맵이 모자랄 때). 종류를 못 읽으면 아직 덜 쓴 종류를 준다(막다른 길을 만들지 않는다).
+  const buildWorldPlaces = async (toolCallId: string, verb: string, args: unknown, add: readonly { name?: unknown; kind?: unknown; from?: unknown; indoor?: boolean; danger?: boolean }[]): Promise<PiToolExecResult> => {
+    const bp0 = env.ctx.project.gameBlueprint;
+    const world = worldOf(env.ctx.project);
+    if (!bp0 || !world) return text({ ok: false, summary: "No blueprint with a world yet — call write_blueprint first (places:[{name, kind}] from the [World of this game] card)." });
+    const places: GameBlueprintPlace[] = [...(bp0.places ?? [])];
+    const adjusted: string[] = [];
+    for (const raw of add) {
+      const name = typeof raw.name === "string" ? raw.name.trim().slice(0, 60) : "";
+      if (!name || places.some((pl) => pl.name === name)) continue;
+      const asked = typeof raw.kind === "string" ? worldKind(world, raw.kind) : undefined;
+      const used = places.map((pl) => pl.kind);
+      const kind = asked ?? spareKind(world, used, { ...(raw.indoor !== undefined ? { indoor: raw.indoor } : {}), ...(raw.danger ? { danger: true } : {}) });
+      if (!asked) adjusted.push(`«${name}» → ${kind.id}${typeof raw.kind === "string" && raw.kind.trim() ? ` (unknown kind «${raw.kind}»)` : ""}`);
+      const from = typeof raw.from === "string" && places.some((pl) => pl.name === raw.from) ? raw.from : undefined;
+      places.push({ name, kind: kind.id, ...(from ? { from } : {}) });
+    }
+    if (places.length !== (bp0.places?.length ?? 0)) env.ctx.project = { ...env.ctx.project, gameBlueprint: { ...bp0, places } };
+    const before = new Set(Object.keys(env.ctx.project.maps));
+    const notes = await session.buildPlaces!();
+    const project = env.ctx.project;
+    const exact = (name: string) => Object.values(project.maps).find((m) => (m.name ?? "").normalize("NFC").replace(/\s+/gu, "") === name.normalize("NFC").replace(/\s+/gu, ""));
+    const rows = places.map((pl) => ({ place: pl, map: exact(pl.name) }));
+    const mapIds = rows.flatMap((r) => (r.map ? [r.map.id] : []));
+    const path = mapIds.length ? walkGame(project, mapIds) : undefined;
+    const missing = rows.filter((r) => !r.map).map((r) => `«${r.place.name}»(${r.place.kind})`);
+    const unreached = (path?.unreached ?? []).map((id) => `«${project.maps[id]?.name ?? id}»`);
+    const built = mapIds.filter((id) => !before.has(id));
+    const ok = !missing.length && !unreached.length;
+    const summary = [
+      `${world.name}: ${mapIds.length}/${places.length} places stand${built.length ? ` (${built.length} built now)` : ""} — ${rows.filter((r) => r.map).map((r) => `«${r.place.name}» ${r.place.kind} ${r.map!.width}×${r.map!.height} mapId=${r.map!.id}`).join(" · ")}.`,
+      ...(adjusted.length ? [`Kinds chosen by code: ${adjusted.join("; ")}.`] : []),
+      ...(missing.length ? [`Not built: ${missing.join(", ")} — ${notes.filter((n) => /실패|없다/u.test(n)).join(" / ").slice(0, 400)}`] : []),
+      ...(unreached.length ? [`Not reachable on foot from the start: ${unreached.join(", ")} — link each with create_transfer_pair.`] : [`Every place is reachable on foot from the start («${project.maps[project.startMapId]?.name ?? project.startMapId}»).`]),
+      ok ? "Next: build_blueprint_path once, then people and events per place (add_people, add_event). These maps are laid by composers in one pass — do not rebuild them with make_place or edit_place." : "",
+    ].filter(Boolean).join(" ");
+    recordWrite(env, run, toolCallId, verb, args, ok, summary, { mapIds });
+    await env.checkpoint(verb);
+    return text({ ok, summary, mapIds, links: notes.slice(0, 16) });
+  };
+  const buildWorld: PiToolShape = {
+    name: "build_places", label: "세계 짓기", concurrency: "exclusive",
+    description: "Build every place listed in the blueprint (write_blueprint places) with this game's world and link them (doors, roads) in one call — you only name places and pick kinds. Places that already stand are kept. add:[{name, kind, from?}] adds more places to the blueprint and builds them (kinds from the [World of this game] card).",
+    parameters: { type: "object", properties: { add: { type: "array", description: "(optional) more places to add and build", items: { type: "object", properties: { name: { type: "string" }, kind: { type: "string", description: "place kind id from the [World of this game] card" }, from: { type: "string", description: "name of the place it is entered from" } }, required: ["name", "kind"] } } } },
+    async execute(id, params) {
+      const gate = await blueprintGate();
+      if (gate) return text(gate);
+      const add = Array.isArray((params as { add?: unknown })?.add) ? ((params as { add: unknown[] }).add.filter((x) => x && typeof x === "object") as { name?: unknown; kind?: unknown; from?: unknown }[]) : [];
+      return buildWorldPlaces(id, "build_places", params, add);
+    },
+  };
+
   const makePlace: PiToolShape = {
     name: "make_place", label: "장소 짓기", concurrency: "exclusive",
     description: "Build a place (interior, village, dungeon, cave, street, house) from one spec. Do not write cells, coordinates or tile numbers — the function builds it and returns the 1x picture, machine checks and an independent critique."
@@ -822,6 +947,15 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     async execute(id, params) {
       const gate = await blueprintGate();
       if (gate) return text(gate);
+      // 구성기 세계의 게임이면 장소는 그 세계의 종류로 짓는다 — 다른 칩셋(버들항 마을·동굴)이 섞이지 않게 make_place 도 세계 짓기로 보낸다.
+      {
+        const asked = (params as { spec?: Partial<PlaceSpec> })?.spec;
+        if (isComposedWorld(worldOf(env.ctx.project)) && asked?.name && !parseWorldStyle(asked.style)) {
+          if (blueprintMapFor(env.ctx.project, asked.name) && !(env.ctx.project.gameBlueprint?.places ?? []).some((pl) => pl.name === asked.name)) return text({ ok: false, summary: `«${asked.name}» already stands and this world's maps are laid by composers in one pass — it is not rebuilt. Add another place with build_places{add:[{name, kind}]}.` });
+          const indoor = asked.type === "interior" || asked.type === "house";
+          return buildWorldPlaces(id, "make_place", params, [{ name: asked.name, indoor, danger: asked.type === "dungeon" || asked.type === "cave" }]);
+        }
+      }
       const specFirst = specGate("make_place", placeSpecKindOf((params as { spec?: PlaceSpec })?.spec?.type));
       if (specFirst) return specFirst;
       // 같은 요청 → 같은 맵을 막는다(2026-10-23 다양성: 역전 상점가가 v1·v2·4차·5차 모두 화소까지 같았다). 고치기는 기록된 명세의 salt 를 물려받는다.
@@ -1601,7 +1735,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     return (env.ctx.project.maps[fromId]?.events ?? []).some((e) => walk(e.commands ?? []) || walk(e.pages ?? []));
   };
   // 부모 맵 ↔ 새로 지은 자식 장소 잇기(make_game 과 끝맺음 자동 짓기가 같이 쓴다): 실내는 마을 집 문, 던전은 입구, 바깥끼리는 가장자리, 못 하면 이동 칸.
-  const linkChild = (parentMap: string, parentSpec: PlaceSpec | undefined, parentResult: PlaceBuildResult | undefined, spec: PlaceSpec, result: PlaceBuildResult, side?: "north" | "south" | "east" | "west"): string => {
+  const linkChild = (parentMap: string, parentSpec: PlaceSpec | undefined, parentResult: PlaceBuildResult | undefined, spec: PlaceSpec, result: PlaceBuildResult, side?: "north" | "south" | "east" | "west", givenDoor?: { x: number; y: number; kit?: string }): string => {
     const notes: string[] = [];
     const childMap = result.mapIds[0]!;
         const pName = env.ctx.project.maps[parentMap]?.name ?? parentMap, cName = env.ctx.project.maps[childMap]?.name ?? childMap;
@@ -1609,7 +1743,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         const usedDoors = new Set<string>((env.ctx.project.maps[parentMap]?.events ?? []).map((e) => `${e.x},${e.y + 1}`));
         let linked = false;
         if (isInside(spec) && result.entrance) {
-          const door = pickDoor(villageDoors(parentResult ?? ({ state: undefined } as unknown as PlaceBuildResult)), spec.name, usedDoors, env.ctx.project.maps[parentMap]!);
+          const door = givenDoor ?? pickDoor(villageDoors(parentResult ?? ({ state: undefined } as unknown as PlaceBuildResult)), spec.name, usedDoors, env.ctx.project.maps[parentMap]!);
           if (door) {
             const r = run.call("create_transfer_pair", { a: { mapId: parentMap, x: door.x, y: door.y, doorAt: { x: door.x, y: door.y - 1 } }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
             linked = r.ok; notes.push(r.ok ? `${pName} 집 문(${door.x},${door.y - 1}${door.kit ? ` ${door.kit}` : ""}) ↔ ${cName}` : `${pName} 집 문 잇기 실패: ${r.summary.slice(0, 160)}`);
@@ -1633,9 +1767,14 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
           linked = !!r?.ok && hasTransferTo(parentMap, childMap);
           if (linked) notes.push(`${pName}(${at!.x},${at!.y}) ↔ ${cName} 입구`);
         } else if (isOutdoor(spec) && !!parentSpec && isOutdoor(parentSpec)) {
-          const dir = side ?? "north";
-          const r = run.call("link_maps", { from: { mapId: parentMap, exit: { side: dir } }, to: { mapId: childMap, entry: { side: oppositeSide(dir) } } });
-          linked = r.ok; if (r.ok) notes.push(`${pName} ${dir} 가장자리 ↔ ${cName}`);
+          // 바깥끼리는 가장자리로 잇는다 — 그 변이 막혔으면(물·절벽) 다른 변을 차례로 해 본다. 다 안 되면 아래 이동 칸(집 문 그림이 바깥 맵 사이 문이 되지 않게 먼저 변을 다 쓴다).
+          const first = side ?? "north";
+          for (const dir of [first, ...LINK_SIDES.filter((d) => d !== first)]) {
+            const r = run.call("link_maps", { from: { mapId: parentMap, exit: { side: dir } }, to: { mapId: childMap, entry: { side: oppositeSide(dir) } } });
+            if (!r.ok) continue;
+            linked = true; notes.push(`${pName} ${dir} 가장자리 ↔ ${cName}`);
+            break;
+          }
         }
         if (!linked) {
           // 대신 걸어 닿는 칸끼리 문을 둔다(그림 없는 이동 칸) — 못 이은 채 두지 않는다.
@@ -1662,54 +1801,101 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     const start0 = env.ctx.project.maps[env.ctx.project.startMapId];
     const bareIds = new Set(session.barePlaces?.values() ?? []);
     const settle: { mapId: string; ids: string[] }[] = [];
-    let prev: { mapId: string; spec?: PlaceSpec; result?: PlaceBuildResult } = { mapId: start0 && (isPlaceholderMap(start0) || bareIds.has(start0.id)) ? "" : env.ctx.project.startMapId };
-    for (const step of bp.steps) {
-      let map = blueprintMapFor(env.ctx.project, step.place);
+    type Built = { mapId: string; spec?: PlaceSpec; result?: PlaceBuildResult };
+    const recordOf = (mapId: string): Built => { const known = session.places.get(mapId); return { mapId, ...(known ? { spec: known.spec, result: known.result } : {}) }; };
+    // 지을 장소 — 세계 청사진이면 장소 목록(종류·들어오는 앞 장소), 아니면 단계에 나온 장소를 차례로(종류는 이름으로 추정).
+    // 목록의 장소는 이름이 똑같은 맵만 «이미 지었다»로 본다(「별빛 마을」과 「별빛 마을 시장」은 다른 장소다) — 단계에서 온 장소는 예전처럼 느슨하게 맞춘다.
+    const world = worldOf(env.ctx.project);
+    const listed = bp.places ?? [];
+    const sameKey = (name: string) => name.normalize("NFC").replace(/\s+/gu, "");
+    const mapOf = (name: string, exact: boolean) => exact ? Object.values(env.ctx.project.maps).find((m) => m.id === name || sameKey(m.name ?? "") === sameKey(name)) : blueprintMapFor(env.ctx.project, name);
+    const kindOf = (place: GameBlueprintPlace | undefined) => (world && place ? worldKind(world, place.kind) : undefined);
+    const entries = [...listed.map((place) => ({ name: place.name, place: place as GameBlueprintPlace | undefined })),
+      ...[...new Set(bp.steps.map((st) => st.place))].filter((name) => !listed.some((pl) => pl.name === name)).map((name) => ({ name, place: undefined as GameBlueprintPlace | undefined }))];
+    // 바깥 장소를 먼저 짓는다 — 실내는 바깥 장소의 집 문에 달린다(얼음 동굴 방은 얼음 절벽의 동굴 입구에).
+    const plan = [...entries.filter((e) => !kindOf(e.place)?.indoor), ...entries.filter((e) => kindOf(e.place)?.indoor)];
+    const exitsFrom = new Map<string, number>();
+    const sideFrom = (parentId: string) => { const n = exitsFrom.get(parentId) ?? 0; exitsFrom.set(parentId, n + 1); return listed.length ? LINK_SIDES[n % LINK_SIDES.length] : undefined; };
+    const freeDoors = (parent: Built) => {
+      const used = new Set((env.ctx.project.maps[parent.mapId]?.events ?? []).map((e) => `${e.x},${e.y + 1}`));
+      return villageDoors(parent.result ?? ({ state: undefined } as unknown as PlaceBuildResult)).filter((d) => !used.has(`${d.x},${d.y}`));
+    };
+    const outdoors: Built[] = [];
+    let prev: Built = { mapId: start0 && (isPlaceholderMap(start0) || bareIds.has(start0.id)) ? "" : env.ctx.project.startMapId };
+    for (const { name, place } of plan) {
+      const kind = kindOf(place);
+      const fromMap = place?.from ? mapOf(place.from, true) : undefined;
+      // 들어오는 앞 장소: 청사진이 정했으면 그곳. 아니면 실내는 그 종류의 문이 남은 바깥 장소(없으면 마지막 바깥 장소), 바깥은 마지막 바깥 장소.
+      // 문 낱말이 없는 실내 종류(버들항의 집·여관·가게)는 집 문이 남은 바깥 장소(마을)에 단다 — 마지막 바깥 장소가 동굴이어도 그 안에 여관을 달지 않는다.
+      const doorHost = !kind?.indoor ? undefined
+        : kind.door ? [...outdoors].reverse().find((o) => freeDoors(o).some((d) => kind.door!.test(d.kit ?? "")))
+        : [...outdoors].reverse().find((o) => freeDoors(o).length > 0);
+      const parent: Built = fromMap ? recordOf(fromMap.id) : doorHost ?? (world && kind ? outdoors.at(-1) : undefined) ?? prev;
+      const door = world && kind?.indoor ? pickWorldDoor(world, kind, freeDoors(parent)) : undefined;
+      let map = mapOf(name, !!place);
       if (!map) {
-        const guess = guessPlaceSpec(step.place, env.ctx.project, bp.genre, String(task ?? ""));
-        const spec0: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(guess) ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}) };
+        const guess = world && kind ? worldPlaceSpec(world, kind, name) : guessPlaceSpec(name, env.ctx.project, bp.genre, String(task ?? ""));
+        const composed = !!parseWorldStyle(guess.style);
+        const spec0: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(guess) && !composed ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}) };
         const builder = builderFor(spec0);
-        if (!builder) { notes.push(`「${step.place}」(${spec0.type}) — 짓는 빌더가 없다`); continue; }
-        // 자동으로 짓는 실내도 방은 모델이 설계한다(견본 거실 9×10 이 vm6·7·8 flash 방탈출 시작 방이 됐다) — 같은 모델에게 따로 받는다.
-        const designedAuto = await designMissingRooms(env, spec0, `청사진 장소 「${step.place}」 자동 짓기`);
+        if (!builder) { notes.push(`「${name}」(${spec0.type}) — 짓는 빌더가 없다`); continue; }
+        // 자동으로 짓는 실내도 방은 모델이 설계한다(견본 거실 9×10 이 vm6·7·8 flash 방탈출 시작 방이 됐다) — 같은 모델에게 따로 받는다. 세계 구성기 방은 구성기가 짠다.
+        const designedAuto = composed ? { spec: spec0, notes: [] as string[] } : await designMissingRooms(env, spec0, `청사진 장소 「${name}」 자동 짓기`);
         const spec = designedAuto.spec;
         notes.push(...designedAuto.notes);
-        env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `청사진 장소 「${step.place}」 자동으로 짓는 중(${builder.id})` });
+        env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `청사진 장소 「${name}」 자동으로 짓는 중(${builder.id})` });
         await builder.prepare?.(spec);
-        const sub = { ...env.ctx, project: env.ctx.project, currentMapId: prev.mapId || env.ctx.project.startMapId };
+        const sub = { ...env.ctx, project: env.ctx.project, currentMapId: parent.mapId || env.ctx.project.startMapId };
         const subRun = createBuildRun(sub);
         const result = builder.build(subRun, spec);
         env.ctx.project = sub.project;
-        recordWrite(env, subRun, `auto-place-${step.id}`, "make_place", { spec, auto: true }, result.ok, result.summary, { mapIds: result.mapIds });
+        recordWrite(env, subRun, `auto-place-${name}`, "make_place", { spec, auto: true }, result.ok, result.summary, { mapIds: result.mapIds });
         for (const m of result.missingArt) session.missingArt.add(m);
-        if (!result.ok || !result.mapIds[0] || !env.ctx.project.maps[result.mapIds[0]]) { notes.push(`「${step.place}」 짓기 실패: ${result.summary.slice(0, 160)}`); continue; }
+        if (!result.ok || !result.mapIds[0] || !env.ctx.project.maps[result.mapIds[0]]) { notes.push(`「${name}」 짓기 실패: ${result.summary.slice(0, 160)}`); continue; }
         const first = env.ctx.project.maps[result.mapIds[0]]!;
-        if (first.name !== step.place) run.call("set_map_properties", { mapId: first.id, name: step.place });
-        const bareId = session.barePlaces?.get(step.place);
+        if (first.name !== name) run.call("set_map_properties", { mapId: first.id, name });
+        const bareId = session.barePlaces?.get(name);
         if (bareId) {
-          session.barePlaces!.delete(step.place);
+          session.barePlaces!.delete(name);
           const moved = moveBareEvents(env.ctx.project, bareId, first.id);
           env.ctx.project = moved.project;
-          if (moved.notes.length) notes.push(`빈 맵 이벤트를 「${step.place}」로 옮김: ${moved.notes.join(", ")}`);
+          if (moved.notes.length) notes.push(`빈 맵 이벤트를 「${name}」로 옮김: ${moved.notes.join(", ")}`);
           if (moved.ids.length) settle.push({ mapId: first.id, ids: moved.ids });
         }
         const record: PlaceRecord = { builder: builder.id, spec, result, rounds: 0 };
         for (const mapId of result.mapIds) session.places.set(mapId, record);
-        const link = prev.mapId && env.ctx.project.maps[prev.mapId] && prev.mapId !== first.id ? linkChild(prev.mapId, prev.spec, prev.result, spec, result) : "";
-        notes.push(`「${step.place}」(${spec.type}${spec.style ? `·${spec.style}` : ""}, ${first.id}) 지음${link ? ` — ${link}` : ""}`);
+        const link = parent.mapId && env.ctx.project.maps[parent.mapId] && parent.mapId !== first.id ? linkChild(parent.mapId, parent.spec, parent.result, spec, result, sideFrom(parent.mapId), door) : "";
+        notes.push(`「${name}」(${kind ? `${world!.id} ${kind.id}` : `${spec.type}${spec.style ? `·${spec.style}` : ""}`}, ${first.id}) 지음${link ? ` — ${link}` : ""}`);
         map = env.ctx.project.maps[first.id];
         prev = { mapId: first.id, spec, result };
+        if (!isInside(spec)) outdoors.push(prev);
         continue;
       }
       const known = session.places.get(map.id);
-      if (prev.mapId !== map.id && env.ctx.project.maps[prev.mapId] && walkGame(env.ctx.project, [map.id]).unreached.includes(map.id)) {
-        const spec = known?.spec ?? guessPlaceSpec(map.name ?? step.place, env.ctx.project, bp.genre, String(task ?? ""));
+      if (parent.mapId !== map.id && env.ctx.project.maps[parent.mapId] && walkGame(env.ctx.project, [map.id]).unreached.includes(map.id)) {
+        const spec = known?.spec ?? guessPlaceSpec(map.name ?? name, env.ctx.project, bp.genre, String(task ?? ""));
         const result: PlaceBuildResult = known?.result ?? { ok: true, mapIds: [map.id], summary: "", warnings: [], missingArt: [], calls: [] };
-        notes.push(`「${map.name ?? map.id}」 잇기 — ${linkChild(prev.mapId, prev.spec, prev.result, spec, result)}`);
+        notes.push(`「${map.name ?? map.id}」 잇기 — ${linkChild(parent.mapId, parent.spec, parent.result, spec, result, sideFrom(parent.mapId), door)}`);
       }
-      prev = { mapId: map.id, ...(known ? { spec: known.spec, result: known.result } : {}) };
+      prev = recordOf(map.id);
+      if (!kind?.indoor && !(prev.spec && isInside(prev.spec))) outdoors.push(prev);
     }
     for (const n of retireBlankStart(run)) notes.push(n);
+    // 게임은 목록의 첫 장소에서 시작한다 — 바깥 장소를 먼저 지어 시작이 다른 장소에 가 있으면 첫 장소로 옮긴다(이번에 지은 세계 장소일 때만).
+    const firstMap = listed[0] ? mapOf(listed[0].name, true) : undefined;
+    const firstRecord = firstMap ? session.places.get(firstMap.id) : undefined;
+    if (firstMap && firstRecord?.builder === "world" && env.ctx.project.startMapId !== firstMap.id && session.places.get(env.ctx.project.startMapId)?.builder === "world") {
+      const spot = (firstRecord.result.state as { start?: { x: number; y: number } } | undefined)?.start ?? firstRecord.result.entrance;
+      if (spot && run.call("set_start_position", { mapId: firstMap.id, x: spot.x, y: spot.y }).ok) notes.push(`시작을 첫 장소 「${firstMap.name}」로 옮김`);
+    }
+    // 위험한 종류(★)의 세계 장소에 보이는 적·보물상자 — 잇기가 끝난 뒤에(이동 칸 자리를 피한다). 이미 둔 맵은 건너뛴다.
+    if (world) for (const [mapId, rec] of session.places) {
+      const kind = rec.builder === "world" ? worldKind(world, String((rec.result.state as { kind?: string } | undefined)?.kind ?? "")) : undefined;
+      if (!kind?.danger || !env.ctx.project.maps[mapId] || session.stockedPlaces.has(mapId)) continue;
+      session.stockedPlaces.add(mapId);
+      const placed = populateWorldPlace(run, mapId, rec.result.entrance, rec.spec.salt ?? 1);
+      if (placed) notes.push(placed);
+    }
     // 옮긴 조사 이벤트를 이름이 가리키는 물건(책상·쪽지…)·문 그림 칸으로 — 빈 맵에서는 물건이 없어 아무 칸이었다.
     // 시작이 새 방으로 옮겨진 뒤에 돈다(걸어 닿는지는 시작점에서 잰다).
     for (const { mapId, ids } of settle) { const rep = repairEventReach(run, mapId, ids); if (rep.moved.length) notes.push(`옮긴 이벤트 자리 맞춤: ${rep.moved.join(", ").slice(0, 300)}`); }
@@ -2002,7 +2188,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [writeBlueprint, ...(lean ? [readSpecs] : []), buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, reviewLayout, findPiecesVerb, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, ...(buildsWholeGame(env.ctx.project, String(task ?? "")) ? [generateArtVerb] : []), placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
+  const verbs = [writeBlueprint, ...(lean ? [readSpecs] : []), ...(requestWorld() ? [buildWorld] : []), buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, reviewLayout, findPiecesVerb, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, ...(buildsWholeGame(env.ctx.project, String(task ?? "")) ? [generateArtVerb] : []), placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
     // 음악만 바라는 요청은 맵·이벤트를 쓰는 동사를 싣지 않는다 — 보기·묻기만(2026-10-30 r12: 추격 음악 요청에 상자를 찍었다).
     .filter((tool) => !audioOnly(String(task ?? "")) || MUSIC_ONLY_VERBS.has(tool.name))
     .map((tool) => guard(flattenWrapperTool(tool)));
@@ -2121,7 +2307,7 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
     ...game.map((g) => ({ key: `game:${gateKey(g)}`, text: g, source: "gate" as const })),
     ...(env && !settingOnly && !storeOnly ? autoPlayGateProblems(env.ctx.project, env.request.task) : []),
     // 열쇠는 맵(과 장소/컷신)마다 하나 — 고칠 때마다 문제 글이 바뀌어도 같은 항목이 다시 열려 시도 상한(3)이 센다.
-    ...fixable.map((o) => ({ key: `place:${o.mapId}:${o.name.includes("컷신(") ? "stage" : "place"}`, text: `${o.name}(${o.mapId}) 고치기 — 장소는 edit_place·move_object·dress_room, 컷신은 add_event: ${o.problems.slice(0, 5).join(" / ")}`,
+    ...fixable.map((o) => ({ key: `place:${o.mapId}:${o.name.includes("컷신(") ? "stage" : "place"}`, text: `${o.name}(${o.mapId}) 고치기 — ${placeFixVerbs(session, env?.ctx.project, o.mapId)}, 컷신은 add_event: ${o.problems.slice(0, 5).join(" / ")}`,
       source: o.problems.some((p) => p.startsWith("[비평")) ? "critic" as const : "gate" as const })),
   ];
   // 칸 배치 장소(placeLayout.ts): 배치 항목이 맵에 있나·이어짐·보스 앞방·문앞 길·자기 비평 두 바퀴 — 지금 맵에서 다시 잰다.
