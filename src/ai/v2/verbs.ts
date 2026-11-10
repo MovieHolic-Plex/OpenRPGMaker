@@ -5,11 +5,11 @@ import { SET_OBJECTIVE_DESCRIPTION } from "@/ai/agentRules";
 import { sceneCraftProblems } from "./sceneCraft";
 import { flattenWrapperTool } from "./flatWrapper";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
-import { buildsWholeGame, shipBlockers, wantsWholeGame } from "./shipChecks";
+import { buildsWholeGame, oneProjectGame, shipBlockers, wantsWholeGame } from "./shipChecks";
 import { checkImageDataUrl } from "./imageCheck";
 import { applyBlueprintAssembly, isPlaceholderTitle } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
-import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, parseBlueprintArgs, walkBlueprint } from "./blueprint";
+import { WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, isEscapeBlueprint, parseBlueprintArgs, thinBlueprintReason, walkBlueprint } from "./blueprint";
 import { INTERIOR_WORDS, interiorCatalogCard, leanPromptFor, PLACE_SPEC_KINDS, placeSpecCards, placeSpecKindOf, projectBrief, type PlaceSpecKind } from "./prompt";
 import { hasLayout } from "./builders/interiorLayoutBuild";
 import { LAYOUT_FORMAT, LAYOUT_TAG, applyLayoutPatch, layoutGiven, layoutPatchIsEmpty, type LayoutPatch } from "./interiorLayout";
@@ -138,6 +138,8 @@ export class V2Session {
   readonly artAttempts = new Map<"title" | "ending", { readonly status: "ok" | "failed" | "unavailable"; readonly error?: string; readonly failures?: number }>();
   /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
   blueprintRewrites = 0;
+  /** 첫 청사진이 장소·단계가 모자라 거절된 횟수(세션당 1회만 거절하고 다음부터는 걸어 준다 — 막다른 길 방지). */
+  blueprintThinRejects = 0;
   /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
   autoPathDone = false;
   /** 끝맺음에서 청사진 장소를 함수가 대신 지었는가(한 번만). */
@@ -750,6 +752,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       const filled = { ...raw, title: raw.title || prior?.title || (isPlaceholderTitle(env.ctx.project.meta?.title) ? "" : env.ctx.project.meta?.title) || "제목 없는 게임", genre: raw.genre || prior?.genre || "게임" };
       const parsed = parseBlueprintArgs(filled, String(task ?? ""));
       if ("error" in parsed) return text({ ok: false, summary: `청사진을 읽지 못했다: ${parsed.error}` });
+      // 처음 쓰는 청사진이 장소 1곳·3단계처럼 얇으면 한 번만 거절한다(2026-11-10 ninja-0062: 3단계를 한 곳에 몰아 맵·퀘스트·깊이 관문을 3번 받고도 못 닫았다).
+      // 맵을 짓기 전이라 다시 쓰는 비용은 호출 한 번이다. 다시 쓰는 청사진(prior)·설계자 청사진·한 곳짜리 게임은 거절하지 않는다.
+      if (!prior && !designed && session.blueprintThinRejects < 1 && !oneProjectGame(env.ctx.project, String(task ?? "")) && !isEscapeBlueprint(parsed.blueprint)) {
+        const thin = thinBlueprintReason(parsed.blueprint);
+        if (thin) { session.blueprintThinRejects += 1; return text({ ok: false, summary: thin }); }
+      }
       // 같은 내용을 다시 쓰면 바꾸지 않는다 — 청사진을 되풀이해 쓰는 대신 경로를 짓게 한다.
       const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, s: b.steps, e: b.ending }) : "";
       if (prior && core(prior) === core(parsed.blueprint)) {

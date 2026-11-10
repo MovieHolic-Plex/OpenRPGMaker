@@ -53,6 +53,16 @@ export function parseBlueprintArgs(args: unknown, request: string, now = new Dat
   }
 }
 
+/** 처음 쓴 청사진이 맵 관문(6장)·깊이 관문(5)의 최소 입력에 못 미치면 이유 한 줄, 아니면 undefined. 서로 다른 장소 2곳 미만 또는 단계 6 미만. */
+export const MIN_BLUEPRINT_PLACES = 2;
+export const MIN_BLUEPRINT_STEPS = 6;
+export function thinBlueprintReason(bp: GameBlueprint): string | undefined {
+  const places = [...new Set(bp.steps.map((step) => norm(step.place)))].filter(Boolean);
+  if (places.length >= MIN_BLUEPRINT_PLACES && bp.steps.length >= MIN_BLUEPRINT_STEPS) return undefined;
+  const first = bp.steps[0]?.place ?? "장소";
+  return `청사진이 ${bp.steps.length}단계·장소 ${places.length}곳이다 — 끝맺음 관문은 문으로 닿는 맵 6장과 이야기 사슬 깊이 5(청사진 6단계)를 센다. 청사진을 걸지 않았다. write_blueprint 를 한 번 더 부르되 steps 는 6~8개, place 는 서로 다른 장소 3곳 이상(예: 「${first} 앞」·「${first} 안쪽」·「지하 통로」처럼 나눈다), 단계마다 event 는 아직 없는 새 이름으로 쓴다.`;
+}
+
 export function blueprintPin(project: Project): string[] {
   return project.gameBlueprint ? [gameBlueprintText(project.gameBlueprint)] : [];
 }
