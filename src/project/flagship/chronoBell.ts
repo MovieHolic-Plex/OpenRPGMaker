@@ -141,7 +141,9 @@ function setupCast(project: Project): void {
   // 2026-11-03 사용자 시연 「전투도 지금 너무 빠름」·「약점을 자세히 설명하면 곤란 — 사용자가 찾아가야 재밌다」.
   // pace steady = 행동 비트·이펙트 0.75배 템포, 격파 대사·적 차례 정리 쉼을 엔진 원래 길이로. revealWeakness never = 대상 고를 때 약점 글자를 안 띄운다
   // (맞힌 순간의 「약점 발견!」·숫자 크기는 남는다).
-  project.system.battleStaging = { ...project.system.battleStaging, pace: "steady", revealWeakness: "never" };
+  // 2026-11-10 오너 「예고는 해야 맞지만, 약점을 보여줄 필요는 없음」 — effectivenessFeedback hide = 맞힌 뒤 「약점!」·「효과가 굉장했다!」·「약점을 찔렀다!」도 끈다.
+  //   기모으기 예고 띠는 그대로, 약점은 피해 숫자 크기로만 알아낸다.
+  project.system.battleStaging = { ...project.system.battleStaging, pace: "steady", revealWeakness: "never", effectivenessFeedback: "hide" };
 }
 
 // ── 적 ──────────────────────────────────────────────────────────────────
