@@ -11,7 +11,7 @@ import { audioOnly } from "../request/audio";
 import { gameContentProblems, unaskedChanges } from "./gameChecks";
 import { AUTOPLAY_GATE_PREFIX, playProblems } from "./playCheck";
 import { combatProblems } from "./combatChecks";
-import { fieldBattleStrain } from "../pathBattleBudget";
+import { fieldBattleStrain } from "../story/pathBattleBudget";
 import { placeLayoutProblems } from "../place/builders/placeLayout";
 import { V2Session } from "../turn/session";
 import { placeFixVerbs } from "./placeFix";

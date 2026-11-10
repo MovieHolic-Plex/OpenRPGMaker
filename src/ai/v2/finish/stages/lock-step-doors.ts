@@ -1,6 +1,6 @@
 // 단계 순서 문 잠금 — 다음 단계 맵으로 가는 문·계단은 이 맵의 단계를 마친 뒤에만 열린다(2026-10-29 vm5 deepseek jrpg: 검을 뽑기 전에 계단으로 내려가짐).
 import type { FinishStage } from "../types";
-import { lockStepOrderDoorsIn } from "../../blueprintPath";
+import { lockStepOrderDoorsIn } from "../../story/blueprintPath";
 
 export const stage: FinishStage = {
   id: "lock-step-doors", phase: "assembly", order: 210,

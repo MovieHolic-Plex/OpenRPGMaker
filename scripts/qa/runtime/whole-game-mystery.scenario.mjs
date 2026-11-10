@@ -6,7 +6,7 @@
 //
 // MYS = { stage:{mapId,at}, innocent:{mapId,at,face}, culprit:{mapId,at,face}, evidence, culpritSwitches[], accuse:{mapId,at,face},
 //         accuseSwitches[], rightIndex, wrongIndex } — scripts/qa/assistant-v2 쪽에서 고친 프로젝트를 읽어 만든다.
-// 2026-10-29 vm1/vm2 mystery 판정 「투명 칸 네 곳을 순서대로 누르면 끝·NPC 없음·추리·선택 없음」을 고친 판(ai/v2/mysteryCase.ts)을 본다.
+// 2026-10-29 vm1/vm2 mystery 판정 「투명 칸 네 곳을 순서대로 누르면 끝·NPC 없음·추리·선택 없음」을 고친 판(ai/v2/story/mysteryCase.ts)을 본다.
 import { fieldReady } from "./wholeGameBattleCommon.mjs";
 import { openingBeats, toFieldBeats } from "./wholeGameStoryCommon.mjs";
 

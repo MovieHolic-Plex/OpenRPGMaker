@@ -9,8 +9,8 @@ import type { Project } from "@/project/types";
 
 const state = vi.hoisted(() => ({ mode: "pass" as "pass" | "throw-once" | "throw-always", calls: 0 }));
 
-vi.mock("@/ai/v2/monsterRouteLevels", async (importOriginal) => {
-  const real = await importOriginal<typeof import("@/ai/v2/monsterRouteLevels")>();
+vi.mock("@/ai/v2/story/monsterRouteLevels", async (importOriginal) => {
+  const real = await importOriginal<typeof import("@/ai/v2/story/monsterRouteLevels")>();
   return {
     ...real,
     // 싼 단계(관문 곡선)는 항상 끝나고 확정된다 — 첫 바퀴에서만 한 줄을 낸다.
@@ -27,11 +27,11 @@ vi.mock("@/ai/v2/monsterRouteLevels", async (importOriginal) => {
   };
 });
 
-import { applyShipDefaults } from "@/ai/v2/shipDefaults";
+import { applyShipDefaults } from "@/ai/v2/story/shipDefaults";
 import { shipBlockers } from "@/ai/v2/shipChecks";
 import { stage as shipDefaultsStage } from "@/ai/v2/finish/stages/ship-defaults";
 import { V2Session } from "@/ai/v2/turn/session";
-import { beginFitBudget, checkFitBudget, enterFastFit, fitIsFast, FIT_BUDGET_MS, guardFitBudget, FIT_INCOMPLETE_PREFIX, FitBudgetExceeded, fitBudgetExceeded, restoreFitState, snapshotFitState } from "@/ai/v2/monsterRouteLevels";
+import { beginFitBudget, checkFitBudget, enterFastFit, fitIsFast, FIT_BUDGET_MS, guardFitBudget, FIT_INCOMPLETE_PREFIX, FitBudgetExceeded, fitBudgetExceeded, restoreFitState, snapshotFitState } from "@/ai/v2/story/monsterRouteLevels";
 
 const WHOLE = "몬스터 수집 모험 게임";
 function monsterish(): Project {

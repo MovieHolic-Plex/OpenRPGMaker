@@ -1,9 +1,9 @@
 // 출구·이동 칸 마감(session.clearLanes → src/ai/v2/lanes, 한 실행에 한 번) + 길목 뒤 조사 자리 다시 맞추기.
 import type { FinishStage } from "../types";
 import { createBuildRun } from "../../buildRun";
-import { alignClueObjects } from "../../clueObjects";
-import { settleFurnitureSpots } from "../../examineSpot";
-import { refreshRemainingClues } from "../../mysteryCase";
+import { alignClueObjects } from "../../story/clueObjects";
+import { settleFurnitureSpots } from "../../story/examineSpot";
+import { refreshRemainingClues } from "../../story/mysteryCase";
 
 export const stage: FinishStage = {
   id: "lanes", phase: "blueprint", order: 80,

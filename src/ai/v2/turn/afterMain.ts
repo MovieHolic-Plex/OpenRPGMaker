@@ -1,8 +1,8 @@
 // 모델이 멈출 때마다 도는 판정자 차례 — ① 기계 확인 다시 ② 재주입 ③ 끝맺음 자동 짓기 ④ 끝맺음 관문 ⑤ 리드·독립 검토자 ⑥ 화면 검수. 2026-11-11 리팩토링 R3: runAssistantV2 의 afterMain 에서 옮겼다.
 import { V2_MAX_REPAIR_ROUNDS } from "./session";
 import { v2BaselineGameKeys, v2GateProblems } from "../judge/finishGate";
-import { alignCodeClues } from "../codeClues";
-import { realignEvidencePlaces } from "../mysteryCase";
+import { alignCodeClues } from "../story/codeClues";
+import { realignEvidencePlaces } from "../story/mysteryCase";
 import { reviewKey } from "./carryOver";
 import type { PiAssistantV2Env } from "../env";
 import { adviseTurn, scopeAdviceToRequest, advisorSummary, compactToolLog } from "../judge/advisor";

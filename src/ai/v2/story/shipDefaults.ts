@@ -17,14 +17,14 @@ import { createBlankProject } from "@/project/defaults";
 import { blueprintPlaceName, blueprintPremiseText } from "@/project/blueprintAssembly";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
-import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, emptySparkles, selfLoopTransfers, silentLockedExits, writtenStateIds } from "./shipChecks";
-import { strayStepCopies } from "./blueprint";
-import { doorCellBlocked, lateStartObjective, objectiveCommand, offArtEntrances, planObjective, repeatingStartObjectives, staleMilestoneTargets, withWhere } from "./judge/discoverability";
+import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, emptySparkles, selfLoopTransfers, silentLockedExits, writtenStateIds } from "../shipChecks";
+import { strayStepCopies } from "../blueprint";
+import { doorCellBlocked, lateStartObjective, objectiveCommand, offArtEntrances, planObjective, repeatingStartObjectives, staleMilestoneTargets, withWhere } from "../judge/discoverability";
 import { normalizeGameOverSettings } from "@/project/cinematicSettings";
 import { fieldMenu, storyFieldMenu } from "@/project/fieldMenu";
 import { syncMenuFeatures, syncMenuUiStyle } from "@/project/menuSystem";
 import { normalizeFieldHud, projectCanLoseHp } from "@/project/fieldHud";
-import { FACTORY_HERO_ARMS } from "./genreDefaults";
+import { FACTORY_HERO_ARMS } from "../genreDefaults";
 import { beginFitBudget, enterFastFit, equipMonsterCampaign, FitBudgetExceeded, fitGateLevelCurve, fitRequiredBattlesToStarters, fitRouteLevelsToGates, restoreFitState, snapshotFitState } from "./monsterRouteLevels";
 
 type Obj = Record<string, unknown>;

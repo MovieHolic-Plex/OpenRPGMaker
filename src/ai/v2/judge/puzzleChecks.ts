@@ -8,7 +8,7 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import { eventBodyRect, eventPassageRect } from "@/project/eventFootprintQuery";
 import { playerAnchors, sameMapPassages } from "@/editor/tools/transferReachability";
 import { eventAlwaysBlocks } from "@/project/eventPassageBlock";
-import { trivialCode } from "../puzzle";
+import { trivialCode } from "../story/puzzle";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
