@@ -4,6 +4,7 @@
 //   assembly(게임 전체 요청일 때): 조립 기본값(타이틀·오프닝) → 출하 기본값 → 단계 순서·전투 맞춤 → 목표·출구 다듬기
 //   reload(맨 끝): 저장 → 다시 읽기 관문
 // 재생 스크립트(scripts/qa/assistant-v2/finishReplay.mts)도 이 함수를 불러, 실제 실행기와 같은 순서를 지나는지 따로 맞추지 않아도 된다.
+import { worldOf } from "../world";
 import type { PiAssistantV2Env } from "../env";
 import type { V2Session } from "../verbs";
 import { BLUEPRINT_PATH_IDS, walkBlueprint } from "../blueprint";
@@ -47,7 +48,7 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
   const phase = (p: FinishPhase) => FINISH_STAGES.filter((s) => s.phase === p);
   if (env.ctx.project.gameBlueprint) {
     for (const stage of phase("blueprint")) await timedStage(`blueprint:${stage.id}`, () => recordedRun(ctx, stage));
-    if (ctx.done.length) ctx.autoPath = [`[자동으로 지음] 청사진이 엔딩까지 이어지지 않거나 길목·출구가 막혀 함수가 대신 지었다 — 최종 보고에 「자동으로 지음:」으로 이 목록을 그대로 적는다(네가 지었다고 쓰지 않는다):`, ...ctx.done.map((d) => `- ${d}`), "대사를 다듬으려면 build_blueprint_path{steps:[{id,lines,lockedLines}]} 로 다시 부른다(같은 이벤트를 고쳐 쓴다). 자동으로 지은 장소를 꾸미려면 edit_place·dress_room."].join("\n");
+    if (ctx.done.length) ctx.autoPath = [`[자동으로 지음] 청사진이 엔딩까지 이어지지 않거나 길목·출구가 막혀 함수가 대신 지었다 — 최종 보고에 「자동으로 지음:」으로 이 목록을 그대로 적는다(네가 지었다고 쓰지 않는다):`, ...ctx.done.map((d) => `- ${d}`), `대사를 다듬으려면 build_blueprint_path{steps:[{id,lines,lockedLines}]} 로 다시 부른다(같은 이벤트를 고쳐 쓴다). ${worldOf(env.ctx.project)?.composer ? "세계 장소는 구성기가 한 번에 깐 맵이라 다시 짓지 않는다 — 꾸미려면 place_object·add_people." : "자동으로 지은 장소를 꾸미려면 edit_place·dress_room."}`].join("\n");
   }
   if (buildsWholeGame(env.ctx.project, env.request.task)) {
     for (const stage of phase("assembly")) await timedStage(`assembly:${stage.id}`, () => recordedRun(ctx, stage));

@@ -47,6 +47,18 @@ export interface ChainLink {
   readonly needsAny?: readonly string[];
   /** 이 고리 전부가 있어야 시도할 수 있다(페이지 조건 AND) — 없으면 lockedLines. */
   readonly needsAll?: readonly string[];
+  /** 이 고리는 사람이다 — 이름(역할)으로 캐릭터 칩을 고른다(이름에 직함이 없어도). 적 이름이면 적 칩. */
+  readonly person?: string;
+  /** 이 고리는 사물이다(청사진 단계 종류 find·puzzle) — 그림 없는 칸을 기본 주민 칩으로 세우지 않는다(이름의 머리 명사가 사물 목록에 없어도). */
+  readonly thing?: boolean;
+  /** 대사의 말하는 사람 이름. 「(」로 시작하는 줄은 서술(말하는 사람 없음). */
+  readonly speaker?: string;
+  /** pickup: 고르기 — 고른 것마다 그 대사 뒤 flag 스위치가 켜지고(뒤 고리·엔딩이 읽는다) 보상은 어느 것을 골라도 받는다. 취소하면 아무 일도 없다. */
+  readonly choice?: { readonly options: readonly { readonly text: string; readonly lines?: readonly string[]; readonly flag: string }[] };
+  /** pickup·ending: 대사(lines) 뒤에 이 무리와 싸운다(도망·패배 불가) — 이긴 갈래에서만 winLines·보상·엔딩이 이어진다. */
+  readonly battle?: { readonly troopId: string; readonly winLines?: readonly string[] };
+  /** ending: 엔딩 직전에 조건(앞 고리의 flag·물건 이름)이 맞으면 보이는 줄 — 고른 것에 따라 결말 한 줄이 달라진다. */
+  readonly variants?: readonly { readonly needs: string; readonly lines: readonly string[] }[];
   /** code·ending: 틀린 횟수가 이 수에 닿으면(이상) 틀림 대사 뒤에 hintLines 를 보인다. */
   readonly hintAfter?: number;
   readonly hintLines?: readonly string[];
@@ -62,6 +74,15 @@ function trig(page: Obj): string {
   return typeof t === "string" ? t : String((t as Obj | undefined)?.kind ?? "action");
 }
 const say = (lines: readonly string[] | undefined): Obj[] => (lines ?? []).filter((l) => l.trim()).map((body) => ({ kind: "text", body }));
+/** 말하는 사람이 있는 대사 — 「(」로 시작하는 줄은 서술이라 이름을 붙이지 않는다. */
+const sayAs = (lines: readonly string[] | undefined, speaker: string | undefined): Obj[] => (lines ?? []).filter((l) => l.trim())
+  .map((body) => (speaker && !/^\s*[(（]/u.test(body) ? { kind: "text", speaker, body } : { kind: "text", body }));
+
+/** 싸우는 고리: 전투 뒤 이긴 갈래에서만 뒤 명령(보상·엔딩)이 이어진다 — 승리 갈래 밖 진행은 출하 검사(blueprint-battle-bypass)가 막는다. */
+const afterBattle = (link: ChainLink, then: Obj[]): Obj[] => (link.battle
+  ? [{ kind: "battleProcessing", troopId: link.battle.troopId, canEscape: false, canLose: false },
+    { kind: "fork", condition: { kind: "battleResult", result: "victory" }, then: [...sayAs(link.battle.winLines, link.speaker), ...then] }]
+  : then);
 
 /** 맵을 고칠 사본 — before 스냅숏과 공유하지 않게 맵 하나만 깊게 복사한다. */
 function ownMap(run: BuildRun, mapId: string): GameMap | undefined {
@@ -226,6 +247,8 @@ export function shuffledOptions(options: readonly string[], answer: string, seed
  * 단서를 다시 읽을 수 없었다. 물건 보상(열쇠를 집어 감)은 그대로 「비어 있다」 쪽 말이다.
  */
 function pickupDoneLines(link: ChainLink): readonly string[] {
+  // 사람: 다시 말을 걸면 자기 말로 답한다(«다시 살펴본다» 서술을 붙이지 않는다) — 준 것이 없으면 마지막 대사 한 줄.
+  if (link.speaker) return link.doneLines?.length ? link.doneLines : link.lines?.length ? link.lines.slice(-1) : ["…"];
   const generic = (lines: readonly string[] | undefined) => !lines?.length || lines.every((l) => /^(더는 볼 것이 없다|비어 있다|이미 .+)[.。]?$/u.test(l.trim()));
   if (link.reward?.flag && !link.reward.item && generic(link.doneLines) && link.lines?.length) return ["다시 살펴본다.", ...link.lines];
   return link.doneLines ?? ["비어 있다."];
@@ -408,11 +431,11 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     let invisible = !existing || lookGraphic.transparent === true || (!lookGraphic.sprite && !lookGraphic.appearanceId && !(typeof lookGraphic.tileId === "number" && lookGraphic.tileId > 0));
     // 이름이 사람(직함·호칭)이면 반짝이 칸 대신 공용 캐릭터 칩을 붙인다(2026-10-28 standin joseon 「주모」「포졸」「종사관」).
     const personName = link.name ?? (existing as { name?: string } | undefined)?.name;
-    if (invisible && isPersonName(personName)) {
-      const person = personGraphicFor(run.ctx.project, map, personName!);
+    if (invisible && (link.person || isPersonName(personName))) {
+      const person = personGraphicFor(run.ctx.project, map, link.person ?? personName!);
       if (person) { look.graphic = person.graphic; invisible = false; personNotes.push(`${personName} → 「${person.label}」`); }
     }
-    const basePage = (extra: Obj): Obj => ({ trigger: look.trigger ?? { kind: "action" }, priority: look.priority ?? "same", graphic: look.graphic ?? {}, ...(look.movement ? { movement: look.movement } : {}), ...(look.animationType ? { animationType: look.animationType } : {}), ...(invisible ? { nearSparkle: { radius: 2 } } : (look.nearSparkle ? { nearSparkle: look.nearSparkle } : {})), conditions: [], ...extra });
+    const basePage = (extra: Obj): Obj => ({ trigger: look.trigger ?? { kind: "action" }, priority: look.priority ?? "same", graphic: look.graphic ?? (link.thing && invisible ? { transparent: true } : {}), ...(look.movement ? { movement: look.movement } : {}), ...(look.animationType ? { animationType: look.animationType } : {}), ...(invisible ? { nearSparkle: { radius: 2 } } : (look.nearSparkle ? { nearSparkle: look.nearSparkle } : {})), conditions: [], ...extra });
     const need = link.needsCondition?.length ? link.needsCondition.map((c) => ({ ...c })) : condFor(link.needs);
     if (typeof need === "string") return fail(`${index + 1}번 고리: ${need}`);
     // needsAll: 전부 — 페이지 조건으로 더한다(r8 flash 가 needsAll 을 줬는데 무시돼 단서 없이도 번호를 넣을 수 있었다).
@@ -455,9 +478,19 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     } else if (link.role === "pickup") {
       if (!link.reward?.item && !link.reward?.flag) return fail(`${index + 1}번 고리(pickup): reward.item 또는 reward.flag 가 없다`);
       const taken = flag(`taken_${index + 1}`, `${args.name}: 집어 감`);
-      if (need.length) pages.push(basePage({ commands: say(link.lockedLines ?? ["지금은 손댈 수 없다."]) }));
-      pages.push(basePage({ conditions: need, commands: [...say(link.lines), ...rewardCmds(), { kind: "setSwitch", switchId: taken, value: true }] }));
-      pages.push(basePage({ conditions: [{ kind: "switch", switchId: taken, value: true }], commands: say(pickupDoneLines(link)) }));
+      const speak = (lines: readonly string[] | undefined): Obj[] => sayAs(lines, link.speaker);
+      const finish = (): Obj[] => [...rewardCmds(), { kind: "setSwitch", switchId: taken, value: true }];
+      // 고르기: 고른 것마다 스위치가 켜지고 그 대사가 나온다. 보상(다음 단계를 여는 것)은 어느 것을 골라도 받는다 — 길은 안 끊기고 뒤가 달라진다.
+      const body: Obj[] = link.choice?.options.length
+        ? [{ kind: "choices", cancelBehavior: "branch", cancelBranch: [], options: link.choice.options.map((o) => {
+          const sw = flag(o.flag, `${args.name}: 고름 「${o.text}」`);
+          have.set(o.flag, { kind: "flag", switchId: sw });
+          return { text: o.text, branch: [...speak(o.lines), { kind: "setSwitch", switchId: sw, value: true }, ...finish()] };
+        }) }]
+        : finish();
+      if (need.length) pages.push(basePage({ commands: speak(link.lockedLines ?? ["지금은 손댈 수 없다."]) }));
+      pages.push(basePage({ conditions: need, commands: [...speak(link.lines), ...afterBattle(link, body)] }));
+      pages.push(basePage({ conditions: [{ kind: "switch", switchId: taken, value: true }], commands: speak(pickupDoneLines(link)) }));
     } else if (link.role === "door") {
       if (!need.length) return fail(`${index + 1}번 고리(door): needs(열쇠 물건 이름 또는 깃발)가 없다`);
       const opened = flag(`door_open_${index + 1}`, `${args.name}: 문 열림`);
@@ -484,11 +517,14 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
           }
         }
       }
-      if (need.length) pages.push(basePage({ commands: say(link.lockedLines ?? ["아직 할 수 없다."]) }));
+      const speak = (lines: readonly string[] | undefined): Obj[] => sayAs(lines, link.speaker);
+      if (need.length) pages.push(basePage({ commands: speak(link.lockedLines ?? ["아직 할 수 없다."]) }));
+      // 고른 것에 따라 달라지는 결말 줄 — 엔딩을 부르기 바로 앞에.
+      const closing: Obj[] = [...(link.variants ?? []).flatMap((v) => { const c = condFor(v.needs); return typeof c === "string" || c.length !== 1 ? [] : [{ kind: "fork", condition: c[0], then: say(v.lines) }]; }), { kind: "triggerEnding", endingId }];
       // code 가 있으면 번호를 맞혀야 엔딩(2026-10-28 mt3 flash 방탈출: 「비밀번호 입력」 단계가 조사만으로 엔딩을 불렀다).
-      const attempt = link.code ? codeAttempt(link, index, () => [...say(link.reward?.lines), { kind: "triggerEnding", endingId }]) : [{ kind: "triggerEnding", endingId }];
+      const attempt = link.code ? codeAttempt(link, index, () => [...say(link.reward?.lines), ...closing]) : closing;
       if (typeof attempt === "string") return fail(attempt);
-      pages.push(basePage({ conditions: need, commands: gated([...say(link.lines), ...attempt], "아직 할 수 없다.") }));
+      pages.push(basePage({ conditions: need, commands: gated([...speak(link.lines), ...afterBattle(link, attempt)], "아직 할 수 없다.") }));
     }
     const res = run.call("upsert_event", { mapId, replacePages: true, event: { id, ...(existing ? {} : { name: link.name ?? `${args.name} ${index + 1}`, x: link.at!.x, y: link.at!.y }), pages } });
     if (!res.ok) return fail(`${index + 1}번 고리 이벤트를 쓰지 못했다: ${String(res.summary).slice(0, 300)}`);

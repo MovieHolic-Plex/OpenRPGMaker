@@ -9,7 +9,7 @@ import { buildsWholeGame, oneProjectGame, shipBlockers, wantsWholeGame } from ".
 import { checkImageDataUrl } from "./imageCheck";
 import { applyBlueprintAssembly, isPlaceholderTitle } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
-import { MIN_BLUEPRINT_STEPS, WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, isEscapeBlueprint, parseBlueprintArgs, thinBlueprintReason, walkBlueprint } from "./blueprint";
+import { MIN_BLUEPRINT_STEPS, WRITE_BLUEPRINT_SCHEMA, blueprintDesignerFromEnv, blueprintProgressNote, designBlueprint, isEscapeBlueprint, parseBlueprintArgs, stepMixProblems, thinBlueprintReason, walkBlueprint } from "./blueprint";
 import { INTERIOR_WORDS, interiorCatalogCard, leanPromptFor, PLACE_SPEC_KINDS, placeSpecCards, placeSpecKindOf, projectBrief, type PlaceSpecKind } from "./prompt";
 import { hasLayout } from "./builders/interiorLayoutBuild";
 import { LAYOUT_FORMAT, LAYOUT_TAG, applyLayoutPatch, layoutGiven, layoutPatchIsEmpty, type LayoutPatch } from "./interiorLayout";
@@ -45,7 +45,8 @@ import { buildEvent } from "./events";
 import { drawObject } from "./drawObject";
 import { buildScene, SCENE_SCHEMA, type SceneSpec } from "./scene";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "./puzzle";
-import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, type PathStepText } from "./blueprintPath";
+import { BUILD_BLUEPRINT_PATH_SCHEMA, blueprintMapFor, buildBlueprintPath, pathTextProblems, type PathStepText } from "./blueprintPath";
+import { populateWorldPlace } from "./worldPopulate";
 import { repairEventReach, spreadCrowdedPeople } from "./eventReach";
 import { runLaneStages } from "./lanes";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart } from "./blankStart";
@@ -150,6 +151,8 @@ export class V2Session {
   blueprintThinRejects = 0;
   /** 청사진 장소가 이 게임 세계(world.ts)와 안 맞아 돌려보낸 횟수 — 상한 뒤에는 함수가 메워서 건다(막다른 길 방지). */
   worldBounces = 0;
+  /** build_blueprint_path 를 대사 없이 불러 돌려보낸 횟수(한 번만). */
+  pathTextBounces = 0;
   /** 끝맺음에서 청사진 경로를 함수가 대신 지었는가(한 번만). */
   autoPathDone = false;
   /** 끝맺음에서 청사진 장소를 함수가 대신 지었는가(한 번만). */
@@ -786,7 +789,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
       if (world) {
         let draft = !parsed.blueprint.places?.length && prior?.places?.length ? { ...parsed.blueprint, places: prior.places } : parsed.blueprint;
         const oneRoom = oneProjectGame(env.ctx.project, String(task ?? "")) || isEscapeBlueprint(draft);
-        const problems = [...worldPlaceProblems(draft, world, oneRoom), ...(!oneRoom && draft.steps.length < MIN_BLUEPRINT_STEPS ? [`only ${draft.steps.length} steps — write ${MIN_BLUEPRINT_STEPS} to 8 (each step reads what the step before it gave).`] : [])];
+        const problems = [...worldPlaceProblems(draft, world, oneRoom), ...(!oneRoom && draft.steps.length < MIN_BLUEPRINT_STEPS ? [`only ${draft.steps.length} steps — write ${MIN_BLUEPRINT_STEPS} to 8 (each step reads what the step before it gave).`] : []), ...(oneRoom ? [] : stepMixProblems(draft, wantsBattle(draft.genre)))];
         if (problems.length && session.worldBounces < WORLD_BOUNCES) {
           session.worldBounces += 1;
           return text({ ok: false, summary: `Blueprint not saved yet (${session.worldBounces}/${WORLD_BOUNCES}) — this game's world is ${world.name}. Fix and call write_blueprint again: ${problems.join(" ")}` });
@@ -797,7 +800,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         parsed.blueprint = draft;
       } else if (!prior && !designed && session.blueprintThinRejects < 1 && !oneProjectGame(env.ctx.project, String(task ?? "")) && !isEscapeBlueprint(parsed.blueprint)) {
         const thin = thinBlueprintReason(parsed.blueprint);
-        if (thin) { session.blueprintThinRejects += 1; return text({ ok: false, summary: thin }); }
+        // 단계 종류(사람·싸움·퍼즐·고르기)가 섞였는지도 같은 한 번에 돌려준다 — 전부 «살펴본다» 인 청사진은 걷기만 하는 게임이 된다.
+        const mix = stepMixProblems(parsed.blueprint, wantsBattle(parsed.blueprint.genre));
+        if (thin || mix.length) { session.blueprintThinRejects += 1; return text({ ok: false, summary: [thin, mix.length ? `Blueprint not saved yet — fix the step kinds and call write_blueprint again: ${mix.join(" ")}` : ""].filter(Boolean).join(" ") }); }
       }
       // 같은 내용을 다시 쓰면 바꾸지 않는다 — 청사진을 되풀이해 쓰는 대신 경로를 짓게 한다.
       const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, s: b.steps, e: b.ending, w: b.setting, pl: b.places }) : "";
@@ -822,6 +827,8 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   };
 
   // 청사진 경로 짓기(2026-10-28 mt2): 단계(place·event·needs·gives)와 엔딩에서 이벤트·조건·스위치·아이템·엔딩 호출을 함수가 짓는다.
+  /** 싸움이 있어야 하는 게임인가 — 장르·요청이 추리·연애·퍼즐·공포 쪽이면 아니다. */
+  const wantsBattle = (genre: string): boolean => !/추리|미스터리|탐정|연애|로맨스|퍼즐|방탈출|호러|공포|일상|힐링|mystery|detective|romance|dating|puzzle|escape|horror|visual novel|cozy/iu.test(`${genre} ${String(task ?? "")}`);
   const runBlueprintPath = (steps: readonly PathStepText[]) => {
     const result = buildBlueprintPath(run, steps);
     return result;
@@ -833,6 +840,12 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     async execute(id, params) {
       if (!env.ctx.project.gameBlueprint) return text({ ok: false, summary: "청사진이 없다 — write_blueprint 를 먼저 부른다." });
       const steps = ((params as { steps?: PathStepText[] }).steps ?? []).filter((t) => t && typeof t.id === "string");
+      // 사람이 말하는 단계에 대사가 없으면 한 번만 돌려보낸다 — 그 뒤에는 있는 글로 짓는다(빈 대사는 단계의 할 일 한 줄로 채운다).
+      const lacking = session.pathTextBounces < 1 ? pathTextProblems(env.ctx.project, steps) : [];
+      if (lacking.length) {
+        session.pathTextBounces += 1;
+        return text({ ok: false, summary: `Path not built yet — the people on the path have no words. Call build_blueprint_path again with steps:[{id, lines, …}] for: ${lacking.join(" ")} (A line starting with «(» is narration. Calling again without them builds the path with one-line placeholders.)` });
+      }
       return finishContent(id, "build_blueprint_path", params, runBlueprintPath(steps));
     },
   };
@@ -1854,6 +1867,13 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     if (firstMap && firstRecord?.builder === "world" && env.ctx.project.startMapId !== firstMap.id && session.places.get(env.ctx.project.startMapId)?.builder === "world") {
       const spot = (firstRecord.result.state as { start?: { x: number; y: number } } | undefined)?.start ?? firstRecord.result.entrance;
       if (spot && run.call("set_start_position", { mapId: firstMap.id, x: spot.x, y: spot.y }).ok) notes.push(`시작을 첫 장소 「${firstMap.name}」로 옮김`);
+    }
+    // 위험한 종류(★)의 세계 장소에 보이는 적·보물상자 — 잇기가 끝난 뒤에(이동 칸 자리를 피한다). 이미 둔 맵은 건너뛴다.
+    if (world) for (const [mapId, rec] of session.places) {
+      const kind = rec.builder === "world" ? worldKind(world, String((rec.result.state as { kind?: string } | undefined)?.kind ?? "")) : undefined;
+      if (!kind?.danger || !env.ctx.project.maps[mapId]) continue;
+      const placed = populateWorldPlace(run, mapId, rec.result.entrance, rec.spec.salt ?? 1);
+      if (placed) notes.push(placed);
     }
     // 옮긴 조사 이벤트를 이름이 가리키는 물건(책상·쪽지…)·문 그림 칸으로 — 빈 맵에서는 물건이 없어 아무 칸이었다.
     // 시작이 새 방으로 옮겨진 뒤에 돈다(걸어 닿는지는 시작점에서 잰다).

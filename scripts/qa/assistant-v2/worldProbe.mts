@@ -65,10 +65,18 @@ async function probe(world: WorldSetting): Promise<void> {
   // 장소: 종류를 차례로 8곳까지(종류가 적은 세계는 두 번씩), 단계는 앞 6곳에 하나씩.
   const kinds = world.kinds.length >= 6 ? world.kinds.slice(0, 8) : [...world.kinds, ...world.kinds].slice(0, 6);
   const places = kinds.map((k, i) => ({ name: `${k.ko}${kinds.findIndex((x) => x.id === k.id) === i ? "" : " 둘"}`, kind: k.id }));
-  const steps = places.slice(0, 6).map((p, i) => ({ id: `s${i + 1}`, place: p.name, event: `${p.name}의 단서 ${i + 1}`, action: `${p.name}에서 단서를 찾는다`, ...(i ? { needs: `단서 ${i}` } : {}), gives: i === 5 ? "엔딩" : `단서 ${i + 1}`, feeling: "호기심" }));
+  // 단계 종류를 섞는다(사람·고르기·번호 자물쇠·싸움) — 청사진 경로가 종류마다 다른 이벤트를 짓는지 본다.
+  const KINDS = [{ kind: "talk", who: "촌장 하르" }, { kind: "find" }, { kind: "choice", who: "떠돌이 상인 미라" }, { kind: "puzzle" }, { kind: "battle", who: "문지기 그림자" }, { kind: "find" }] as const;
+  const steps = places.slice(0, 6).map((p, i) => ({ id: `s${i + 1}`, ...KINDS[i]!, place: p.name, event: "who" in KINDS[i]! ? (KINDS[i] as { who: string }).who : KINDS[i]!.kind === "puzzle" ? `${p.name}의 번호 자물쇠` : `${p.name}의 단서 ${i + 1}`, action: `${p.name}에서 ${KINDS[i]!.kind === "battle" ? "문지기와 싸워 이긴다" : KINDS[i]!.kind === "puzzle" ? "번호를 맞춘다" : "단서를 찾는다"}`, ...(i ? { needs: `단서 ${i}` } : {}), gives: i === 5 ? "엔딩" : `단서 ${i + 1}`, feeling: "호기심" }));
+  const stepText = [
+    { id: "s1", lines: ["어서 오게. 요즘 밤마다 종이 저절로 울린다네.", "먼저 길 건너를 살펴봐 주게."] },
+    { id: "s3", lines: ["좋은 물건 있어요. 뭘로 하시겠어요?"], choices: [{ text: "등불을 산다", lines: ["밤길엔 등불이죠."], later: "미라의 등불이 마지막 길을 밝혔다." }, { text: "지도를 산다", lines: ["길을 잃진 않겠네요."], later: "미라의 지도 덕에 지름길로 왔다." }] },
+    { id: "s5", lines: ["여기부터는 못 지나간다."], winLines: ["…강하군. 지나가라."] },
+  ];
   const bp = await call("write_blueprint", { title: `${world.ko} 시험`, genre: "모험", playerGoal: "단서를 따라 마지막 장소까지 가자.", places, steps, ending: { name: "끝", how: "마지막 단서를 찾았다.", feeling: "안도" } });
   const built = await call("build_world", {});
-  const pathRes = await call("build_blueprint_path", {});
+  const bounced = await call("build_blueprint_path", {});
+  const pathRes = await call("build_blueprint_path", { steps: stepText });
   const p = ctx.project;
   const worldMaps = places.map((pl) => Object.values(p.maps).find((m) => m.name === pl.name)).filter((m): m is NonNullable<typeof m> => !!m);
   const counted = countMaps(p);
@@ -80,7 +88,13 @@ async function probe(world: WorldSetting): Promise<void> {
   if (!bp.ok) console.log(`   blueprint: ${String(bp.summary).slice(0, 400)}`);
   if (!built.ok) console.log(`   build_world: ${String(built.summary).slice(0, 700)}`);
   for (const line of (built.links as string[] | undefined) ?? []) console.log(`   · ${line.slice(0, 220)}`);
+  console.log(`   path bounce(no lines)=${bounced.ok === false ? "yes" : "NO"} · foes ${worldMaps.reduce((n, m) => n + m.events.filter((e) => /_wfoe\d+$/u.test(e.id)).length, 0)} · chests ${worldMaps.reduce((n, m) => n + m.events.filter((e) => e.id.endsWith("_wchest")).length, 0)}`);
   if (!pathRes.ok) console.log(`   path: ${String(pathRes.summary).slice(0, 400)}`);
+  if (process.env.DUMP_STEPS) for (const st of p.gameBlueprint?.steps ?? []) {
+    const ev = Object.values(p.maps).flatMap((m) => m.events).find((e) => e.id === st.event || e.name === st.event);
+    console.log(`   -- ${st.id} ${st.kind ?? "find"} «${st.event}» @${ev ? `${ev.x},${ev.y}` : "?"} graphic=${JSON.stringify(ev?.pages?.[0]?.graphic ?? {}).slice(0, 90)}`);
+    for (const [i, page] of (ev?.pages ?? []).entries()) console.log(`      p${i + 1} cond=${JSON.stringify(page.conditions ?? []).slice(0, 120)} cmds=${JSON.stringify(page.commands ?? []).slice(0, 700)}`);
+  }
   for (const u of counted.uncounted) console.log(`   uncounted «${u.name}» ${u.reason} ${u.detail.slice(0, 100)}`);
   for (const b of blockers.slice(0, 5)) console.log(`   blocker ${b.id}: ${b.message.slice(0, 200)}`);
   const dir = path.join(out, world.id);

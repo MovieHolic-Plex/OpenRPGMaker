@@ -9,9 +9,17 @@
 // 프로젝트에 함께 저장된다(SQLite current_json·내보내기). 옛 프로젝트는 없음 = 옛 동작.
 import { assert, requireArray, requireRecord, requireString } from "./io/guards";
 
+/** 단계에서 플레이어가 하는 일의 종류 — 경로 빌더가 종류마다 다른 이벤트를 짓는다(src/ai/v2/blueprintPath.ts). 없으면 낱말로 추정(옛 청사진). */
+export const STEP_KINDS = ["talk", "find", "battle", "puzzle", "choice"] as const;
+export type GameBlueprintStepKind = (typeof STEP_KINDS)[number];
+
 export interface GameBlueprintStep {
   /** s1, s2 … 순서대로. */
   id: string;
+  /** talk = 이름 있는 사람과 대화 · find = 물건·자리를 조사 · battle = 싸워 이긴다 · puzzle = 번호·암호를 맞힌다 · choice = 고르고 결과가 달라진다. */
+  kind?: GameBlueprintStepKind;
+  /** talk·choice·battle: 그 사람(상대)의 이름 — 말하는 사람 이름과 캐릭터 그림이 된다. */
+  who?: string;
   /** 맵 이름(지을 이름 그대로). */
   place: string;
   /** 그 맵 위 이벤트 이름 — 플레이어가 말을 걸거나 조사하는 대상. */
@@ -92,8 +100,12 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
     seen.add(id);
     const needsRaw = blueprintListText(s.needs);
     const givesRaw = blueprintListText(s.gives) ?? s.gives;
+    const kind = typeof s.kind === "string" ? STEP_KINDS.find((k) => k === String(s.kind).trim().toLowerCase()) : undefined;
+    const who = typeof s.who === "string" ? s.who.trim().slice(0, 40) : "";
     return {
       id,
+      ...(kind ? { kind } : {}),
+      ...(who ? { who } : {}),
       place: bounded(`steps[${i}].place`, s.place, 60),
       event: bounded(`steps[${i}].event`, s.event, 60),
       action: bounded(`steps[${i}].action`, s.action, BLUEPRINT_LIMITS.text),
@@ -144,7 +156,7 @@ export function gameBlueprintText(blueprint: GameBlueprint): string {
     `플레이어 목표(새 플레이어가 받는 유일한 안내): ${blueprint.playerGoal}`,
     ...(blueprint.places?.length ? [`장소(세계 ${blueprint.setting ?? "-"}): ${blueprint.places.map((p) => `「${p.name}」=${p.kind}${p.from ? `←「${p.from}」` : ""}`).join(" · ")}`] : []),
     "핵심 경로:",
-    ...blueprint.steps.map((s) => `- ${s.id} 「${s.place}」 이벤트 「${s.event}」: ${s.action}${s.needs ? ` (조건: ${s.needs})` : ""} → ${s.gives} · 느낌: ${s.feeling}`),
+    ...blueprint.steps.map((s) => `- ${s.id}${s.kind ? `[${s.kind}${s.who ? ` ${s.who}` : ""}]` : ""} 「${s.place}」 이벤트 「${s.event}」: ${s.action}${s.needs ? ` (조건: ${s.needs})` : ""} → ${s.gives} · 느낌: ${s.feeling}`),
     `엔딩 「${blueprint.ending.name}」: ${blueprint.ending.how} · 느낌: ${blueprint.ending.feeling}`,
   ].join("\n");
 }

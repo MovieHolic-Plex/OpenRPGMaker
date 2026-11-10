@@ -97,6 +97,8 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   if (!made.map) return fail(`${world.name} ${kind.id} «${spec.name}» could not be composed: ${made.error ?? ""}`);
   const mapId = made.map.id;
   if (made.map.name !== spec.name) run.call("set_map_properties", { mapId, name: spec.name });
+  // 위험한 종류는 맵 성격을 적어 둔다 — 이름에 «도시»·«마을»이 들면(「폐허 도시」) 이름 추정이 마을로 보아 보이는 적을 거절했다.
+  if (kind.danger) run.call("set_map_properties", { mapId, mapRole: kind.indoor ? "dungeon" : "field" });
   const project = run.ctx.project, map = project.maps[mapId]!;
   // 들어오는 칸: 실내는 아래 출입구 틈(구성기 exits, 없으면 맨 아래 걸음 칸), 바깥은 구성기 시작 칸.
   const exits = (Array.isArray(made.data.exits) ? made.data.exits : []).map(cellOf).filter((c): c is Cell => walkable(project, map, c));

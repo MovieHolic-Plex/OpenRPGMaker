@@ -11,6 +11,8 @@ import { terrainReachability } from "@/project/terrainReachability";
 import { queryNpcGraphics } from "@/assets/charsetQuery";
 import { sharedCharsetRow } from "@/project/sharedCharacterFaceResolver";
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import { activeMonsterTurn } from "@/project/genreLockMonsterAssets";
+import { monsterAssetCatalogFilters } from "@/project/genreLockMonsterAssetsDiff";
 import { genreLockCharsetCatalogFilter } from "@/project/genreLockCharsets";
 import type { BuildRun, ContentBuildResult, PersonSpec } from "./types";
 import { counterSide, exitThroats, isCounterArt, isShopkeeperName, laneCells, wanderReach } from "./placementRules";
@@ -864,6 +866,9 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
   let best: (PersonGraphic & { score: number }) | undefined;
   // 장르 잠금(몬스터 수집·현대 연애)이 강제 중이면 허용 칩만 — 막힌 칩을 골라 place_npc 가 거부하던 길을 미리 막는다.
   const allowed = genreLockCharsetCatalogFilter(project);
+  // 몬스터 수집 전용 칩(Scarloxy 트레이너·주민)은 몬스터 수집 게임이 아니면 고르지 않는다 — 도구 실행 구간 밖에서 부르면 카탈로그 필터가 없어
+  // 그 칩이 뽑혔고, 뒤이은 upsert_event 가 «몬스터 수집 잠금»으로 거절돼 청사진 경로가 통째로 안 지어졌다(2026-11-10 worldProbe «촌장 하르»).
+  const monsterOk = monsterAssetCatalogFilters(project, activeMonsterTurn())?.charset;
   const queries = graphicQueries(looks, role);
   queries.forEach((q, qi) => {
     queryNpcGraphics(q, 30, overrides).forEach((m, rank) => {
@@ -873,6 +878,7 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
       const hostileText = text.replace(/몬스터 ?수집|monster[- ]?collect(ion|ing)?/giu, "");
       if (!hostileOk && (HOSTILE.test(hostileText) || /monster/i.test(e.textureKey))) return;
       if (allowed && !allowed(e)) return;
+      if (monsterOk && !monsterOk(e)) return;
       const row = sharedCharsetRow(e.textureKey, e.characterIndex);
       const face = row?.status === "mapped" && row.faceResourceId ? row.faceResourceId : undefined;
       const key = `${e.textureKey}#${e.characterIndex}`;
