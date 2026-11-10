@@ -96,6 +96,7 @@ type LegacyActorRecord = {
   readonly characterTransparent?: boolean;
   readonly battleCharacterResourceId?: string;
   readonly battleScalePercent?: number;
+  readonly battleHitFlash?: unknown;
   readonly critical?: Partial<ActorCritical>;
   readonly parameterCurves?: Partial<ActorParameterCurves>;
   readonly expCurve?: Partial<ActorExperienceCurve>;
@@ -171,6 +172,10 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
       const battleScalePercent = Math.round(Math.max(50, Math.min(300, raw)));
       return battleScalePercent === 100 ? {} : { battleScalePercent };
     })(),
+    ...(() => {
+      const battleHitFlash = normalizeBattleHitFlash(actor.battleHitFlash);
+      return battleHitFlash ? { battleHitFlash } : {};
+    })(),
     critical: normalizeCritical(actor.critical),
     parameterCurves: normalizeParameterCurves(actor.parameterCurves),
     expCurve: normalizeExpCurve(actor.expCurve),
@@ -191,6 +196,18 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
       return battleCommandIds ? { battleCommandIds } : {};
     })(),
   };
+}
+
+const HIT_FLASH_HEX = /^#[0-9a-f]{6}$/i;
+
+/** 착탄 섬광 색 — core·edge 가 둘 다 #RRGGBB 일 때만 남긴다(소문자). 하나라도 아니면 버려 기본 섬광을 쓴다. */
+export function normalizeBattleHitFlash(value: unknown): { core: string; edge: string } | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const { core, edge } = value as { core?: unknown; edge?: unknown };
+  if (typeof core !== "string" || typeof edge !== "string") return undefined;
+  const c = core.trim(), e = edge.trim();
+  if (!HIT_FLASH_HEX.test(c) || !HIT_FLASH_HEX.test(e)) return undefined;
+  return { core: c.toLowerCase(), edge: e.toLowerCase() };
 }
 
 /** 배우 고유 전투 명령 — 빈 값·중복을 걷고, 비면 생략(직업 명령을 쓴다). 메뉴가 넘치지 않게 RM2003 처럼 7개까지. */
@@ -245,6 +262,7 @@ export function normalizeActorPatch(patch: Partial<ActorRecord>): Partial<ActorR
   if (patch.stateRates !== undefined) normalized.stateRates = normalizeRates(patch.stateRates);
   if (patch.elementRates !== undefined) normalized.elementRates = defaultElementRates(patch.elementRates);
   if ("battleCommandIds" in patch) normalized.battleCommandIds = normalizeBattleCommandIds(patch.battleCommandIds);
+  if ("battleHitFlash" in patch) normalized.battleHitFlash = normalizeBattleHitFlash(patch.battleHitFlash);
   if ("loadoutSlots" in patch) {
     const loadoutSlots = normalizeLoadoutSlots(patch.loadoutSlots);
     if (loadoutSlots === undefined) normalized.loadoutSlots = undefined;
