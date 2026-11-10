@@ -56,7 +56,7 @@ export const FS_EQUIPMENT_TRAITS: readonly EquipmentTrait[] = [
     patch: (r) => { r.damageTakenPercent = -10; },
   },
   {
-    id: "equip_gen_halberd_guard", traitLine: "평타: 적 전체를 휩쓴다. 대신 주는 피해가 30% 줄는다.",
+    id: "equip_gen_halberd_guard", traitLine: "평타: 적 전체를 휩쓴다. 대신 주는 피해가 30% 준다.",
     patch: (r) => { r.statBonuses = { ...r.statBonuses, attack: 15 }; r.damageDealtPercent = -30; r.effectFlags = { ...r.effectFlags, attackAll: true }; r.iconResourceId = r.imageResourceId = "cc0-jetrel-gen-halberd-guard"; },
   },
   {
@@ -96,6 +96,7 @@ export const FS_EQUIPMENT_TRAITS: readonly EquipmentTrait[] = [
 export const FS_EQUIPMENT_ICONS: Readonly<Record<string, string>> = {
   equip_fs_star_rod: "cc0-jetrel-gen-thunder-rod",
   equip_fs_judgment_blade: "cc0-jetrel-iron-sword",
+  equip_fs2_rohan_spear: "cc0-jetrel-gen-spear-iron",
 };
 
 export const FS_ITEM_ICONS: Readonly<Record<string, string>> = {
