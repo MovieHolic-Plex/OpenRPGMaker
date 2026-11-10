@@ -22,6 +22,7 @@ import { describesSnowNorth } from "@/ai/snowNorthPolicy";
 import { describesSteampunk } from "@/ai/steampunkCityPolicy";
 import { hasThemeWord, projectKeyHash } from "@/ai/villageChipsetPool";
 import type { PlaceSpec } from "./types";
+import { WASTELAND_WORDS, BEODEUL_WORDS, FANTASY_WORDS, fitsAnyWorld } from "./request/genre";
 
 /** 구성기 호출 하나로 짓는 종류 — 맵 크기는 구성기가 받는 크기(실내는 방 크기 그대로). */
 interface ComposedKind {
@@ -70,9 +71,6 @@ const out = (id: string, ko: string, about: string, size: readonly [number, numb
 const room = (id: string, ko: string, about: string, size: readonly [number, number], door: RegExp, flags: { danger?: true; value?: string; tool?: string } = {}): WorldKind =>
   ({ id, ko, about, indoor: true, door, ...(flags.danger ? { danger: true as const } : {}), compose: { value: flags.value ?? id, size, ...(flags.tool ? { tool: flags.tool } : {}) } });
 const classic = (id: string, ko: string, about: string, spec: WorldKind["spec"], flags: { indoor?: true; danger?: true } = {}): WorldKind => ({ id, ko, about, ...flags, spec });
-
-const WASTELAND_WORDS = /좀비|아포칼립스|종말|황무지|폐허\s*도시|포스트\s*아포|\b(?:zombies?|apocalypse|wasteland|post[-\s]?apocalyptic)\b/iu;
-const BEODEUL_WORDS = /버들\s*항|beodeul/iu;
 
 /** 세계 표. 방 크기는 구성기가 짜는 크기 그대로(100칸 미만 방은 세는 맵이 못 되어 싣지 않는다: 사우나 11×9·사막 가게 10×8). 찻집은 13×9 에서만 짜진다(12×9 는 문에서 안 닿는 바닥이 남는다 — scripts/qa/assistant-v2/worldProbe.mts 로 잰다). */
 export const WORLDS: readonly WorldSetting[] = [
@@ -245,23 +243,6 @@ export function worldOf(project: Pick<Project, "gameBlueprint">): WorldSetting |
 }
 /** 구성기로 짓는 세계인가(버들항은 종전 빌더). */
 export const isComposedWorld = (world: WorldSetting | undefined): world is WorldSetting => !!world?.composer;
-
-const FANTASY_WORDS = /판타지|용사|마왕|기사|왕국|검과|드래곤|\b(?:fantasy|hero|knight|dragon|kingdom)\b/iu;
-
-/** 요청에서 뜻이 없는 낱말(«재밌는 게임 하나 만들어 줘») — 이것을 걷고 남는 글이 없으면 무엇이든 좋다는 요청이다. */
-const GENERIC_KO = /만들어\s*주세요|만들어\s*줘|만들어\s*줄래|만들어|해\s*주세요|해\s*줘|주세요|재미있는|재밌는|재미난|신나는|멋진|간단한|짧은|새로운|아무거나|아무|알아서|적당히|게임|하나|한\s*개|한\s*편|좀|줘/gu;
-const GENERIC_EN = /\b(?:please|make|create|build|give|me|a|an|the|some|any|game|fun|simple|short|new|cool|good|nice|one)\b/giu;
-/** 모험·RPG 쪽 요청 — 여러 장소를 다니는 게임이라 어느 세계든 어울린다. */
-const ADVENTURE_WORDS = /모험|어드벤처|RPG|알피지|롤플레잉|판타지|용사|마왕|던전|퀘스트|전설|영웅|기사|왕국|드래곤|보물|탐험|원정|여정|\b(?:adventure|fantasy|quest|hero|dungeon|dragon|treasure|expedition|journey)\b/iu;
-/**
- * 낱말로 세계를 말하지 않은 요청에 세계를 골라 줘도 되나 — 무엇이든 좋다는 요청이거나 모험·RPG 요청일 때만.
- * 왜(2026-11-10 검토): «저택에서 탈출하는 게임»·«탐정 게임»·«카페 경영 게임» 이 열쇠 해시로 선사 시대 세계를 받았다 — 그 게임들은 방을 설계해 짓는 종전 길이 맞다.
- * 막을 낱말을 늘리는 대신 되는 요청을 좁게 정한다(모르는 장르는 종전 길로 간다).
- */
-export function fitsAnyWorld(request: string): boolean {
-  if (ADVENTURE_WORDS.test(request)) return true;
-  return !request.replace(GENERIC_KO, " ").replace(GENERIC_EN, " ").replace(/[^\p{L}\p{N}]+/gu, "");
-}
 
 /**
  * 게임 하나를 새로 만드는 요청의 세계 고르기. 요청은 사용자 글(의도 메모를 뗀 것)이다.

@@ -2,17 +2,22 @@
 // 동사마다: 명세 → 결정론 빌더 → 1배 그림 + 기계 검사 → 독립 비평가.
 import { flattenWrapperTool } from "./flatWrapper";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
-import { buildsWholeGame } from "./shipChecks";
+import { buildsWholeGame } from "./request/scope";
 import { blueprintProgressNote } from "./blueprint";
 import type { PiAssistantV2Env } from "./env";
-import { createGameTools, wantsPuzzle, wantsGameTools, wantsMusicTools, wantsStoreTools, wantsTerrainTools } from "./game";
-import { audioOnly } from "./musicWords";
+import { createGameTools } from "./game";
+import { wantsGameTools, wantsMusicTools, wantsStoreTools } from "./request/toolGroups";
+import { wantsPuzzle } from "./request/genre";
+import { wantsTerrainTools } from "./request/place";
+import { audioOnly } from "./request/audio";
 import { helpersOn } from "./helpers";
 import { isStoreCardRequest } from "@/editor/tools/storeTools";
-import { makeGameOn, wantsMakeGame } from "./makeGame";
+import { makeGameOn } from "./makeGame";
+import { wantsMakeGame } from "./request/scope";
 import { createDungeonPartsVerb } from "./dungeonParts";
 import { V2Session } from "./turn/session";
-import { wantsBossEncounter, wantsEndingScene } from "./sceneVerbs";
+import { wantsEndingScene } from "./request/asks";
+import { wantsBossEncounter } from "./request/combat";
 import { text, recorded, PATH_LOW_LEVEL, BLUEPRINT_PROGRESS_VERBS } from "./tools/support";
 import { makeVerbContext } from "./tools/context";
 import { blueprintVerbs } from "./tools/verbs/blueprint";

@@ -11,8 +11,8 @@ import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { clearStoreMusicCache, isStoreCardRequest } from "@/editor/tools/storeTools";
-import { SOUND_TIER, v2ExtraToolNames } from "@/ai/v2/game";
-import { audioOnly, musicAsked, soundOnly, wantsMusic, wantsSound } from "@/ai/v2/musicWords";
+import { SOUND_TIER, v2ExtraToolNames } from "@/ai/v2/request/toolGroups";
+import { audioOnly, musicAsked, soundOnly, wantsMusic, wantsSound } from "@/ai/v2/request/audio";
 import { gameContentProblems } from "@/ai/v2/gameChecks";
 import { projectSeCue } from "@/project/seCues";
 

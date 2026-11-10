@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { createBuildRun } from "@/ai/v2/buildRun";
 import { buildEvent } from "@/ai/v2/events";
-import { fallenTierTools } from "@/ai/v2/game";
+import { fallenTierTools } from "@/ai/v2/request/toolGroups";
 import type { Project } from "@/project/types";
 
 // 2026-10-25 장난감 가게 고치기 2턴: after 장면이 늘 0번(낮) 페이지 끝에 붙고 「장면 뒤」 페이지가 맨 끝에 놓여 밤 페이지를 가렸다.

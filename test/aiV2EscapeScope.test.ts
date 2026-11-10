@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { escapeLeaks, isEscapeBlueprint } from "@/ai/v2/blueprint";
+import { escapeLeaks } from "@/ai/v2/blueprint";
+import { isEscapeBlueprint } from "@/ai/v2/request/scope";
 import { mapsMinBlocker } from "@/ai/v2/shipChecks";
 import { createBlankProject } from "@/project/defaults";
 import type { GameMap, Project } from "@/project/types";

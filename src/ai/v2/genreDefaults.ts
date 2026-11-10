@@ -13,12 +13,8 @@ import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { charsetBattlerForCharacter } from "@/assets/charsetBattlers";
 import { sharedFaceIdForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
-
-const ROMANCE_SETUP_WORDS = /연애|데이트|썸|고백|공략|호감도|러브|미연시|romance|dating/iu;
-/** 게임 하나를 시작하는 요청(장소 하나만 짓는 요청이면 HUD·연애 루프는 건드리지 않는다). */
-const GAME_SETUP_WORDS = /게임|game/iu;
-/** 전투를 말하는 낱말(전투가 있으면 체력 HUD 를 둔다). */
-const BATTLE_WORDS = /전투|싸우|싸움|싸워|보스|적\b|적이|적을|적의|적과|적들|몬스터|마물|좀비|스킬|기술|마법|레벨|능력치|공격|체력|\bHP\b|마나|약점|인카운터|조우|무기|칼|검을|검이|갑옷|방패|장비|battle|enemy|skill|boss|monster|weapon|zombie/iu;
+import { ROMANCE_SETUP_WORDS, GAME_SETUP_WORDS } from "./request/genre";
+import { BATTLE_WORDS } from "./request/combat";
 const PRISTINE_HERO = new Set([undefined, "easyrpg-charset-actor1"]);
 
 /** 첫 현대 장소를 지은 뒤 한 번. 깐 것 이름 목록(보고용). */
@@ -105,9 +101,4 @@ function redressStoryHero(project: Project, task: string): string | undefined {
     if (face) hero.faceResourceId = face; else delete hero.faceResourceId;
   }
   return `주인공 차림 「${pick.label}」(${pick.appearance ?? query}) — 판타지 검사 기본 칩을 뺐다`;
-}
-
-/** 빈 프로젝트(이벤트·엔딩 없음)인가 — 첫 장소를 짓는 요청을 게임 시작으로 본다. */
-export function isFreshProject(project: Project): boolean {
-  return (project.endings ?? []).length === 0 && Object.values(project.maps).every((map) => (map.events ?? []).length === 0);
 }
