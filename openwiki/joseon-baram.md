@@ -175,7 +175,7 @@ BFS 는 `save-joseon-baram.mjs` 가 **엔진 `canMove`** 로 돌린다(`storage-
 
 ## 조수 v2 가 짓는 길 (2026-10-28)
 
-조수 v2 `make_place` 는 조선 낱말(조선·한양·사극·고려·한옥·저잣거리·포도청·주막…)이 요청이나 명세에 있으면 이 칩셋의 등록 장소를 가져온다(`src/ai/v2/builders/joseon.ts`): 마을 → 마을 20호(+저잣거리·장터면 `dress_joseon_market`), 실내 → 이름 낱말로 방 6·궁 4 중 하나, 동굴·사냥터. 새 판을 짓지 않고 등록 장소를 그대로 쓰므로 같은 마을이 판마다 같다. 자세한 규칙은 `openwiki/assistant-v2.md`.
+조수 v2 `make_place` 는 조선 낱말(조선·한양·사극·고려·한옥·저잣거리·포도청·주막…)이 요청이나 명세에 있으면 이 칩셋의 등록 장소를 가져온다(`src/ai/v2/place/builders/joseon.ts`): 마을 → 마을 20호(+저잣거리·장터면 `dress_joseon_market`), 실내 → 이름 낱말로 방 6·궁 4 중 하나, 동굴·사냥터. 새 판을 짓지 않고 등록 장소를 그대로 쓰므로 같은 마을이 판마다 같다. 자세한 규칙은 `openwiki/assistant-v2.md`.
 
 ## 건물 문 ↔ 방 잇기 `link_joseon_interior` (2026-10-30)
 
@@ -186,7 +186,7 @@ BFS 는 `save-joseon-baram.mjs` 가 **엔진 `canMove`** 로 돌린다(`storage-
   들어가는 이벤트는 **문 칸**(디딤돌 바로 위 막힌 창호 칸)의 부딪힘 이벤트라 디딤돌에서 문 쪽으로 밀 때만 발동한다(PR #3973 의 문 모델, `project/doorEntries.ts`).
   방 출구 깔개(맨 아래 줄 문간)는 밟는 발판이고, 나오면 디딤돌에 아래를 보고 선다. `map.doors` 에 외짝 여닫이를 적는다 — 조선 창호 이름표(「기와집 6칸 (5,4)」)에는 「문」 낱말이 없어 런타임이 문으로 추론하지 못하기 때문이다(적지 않으면 문 앞 칸·문간 걸음·도착 보호가 안 붙는다).
 - 문 표 `src/project/defaults/joseonDoors.json` 은 `scripts/content/prepare-joseon-doors.py` 가 구운 지도(`tiledata/joseon-village/maps/*.json` 의 `doors[].step`·`walk`)에서 만든다. 디딤돌이 없는 대문·사립·성문·굴 입구는 통로라 싣지 않는다. 가져온 맵이 장소 그대로인지는 지문(크기 + 아랫층 칸 16개)으로 본다 — 고쳐 그린 맵이면 표를 쓰지 않고 「디딤돌 위 첫 막힌 칸 = 문, 방 맨 아래 걸음 줄 = 출구」로 정한다. `rebuild-joseon.sh` 로 지도를 다시 구우면 이 스크립트도 다시 돌린다.
-- 조수 v2 `make_place`(조선 마을)는 구역(zones)에 주막·관아·약방·서당·대장간·민가 안을 적으면 그 방을 가져와 맞는 건물 문(주막 → 초가 jumak, 서당 → 기와 seodang, 관아 → 큰 기와집)과 잇는다(`src/ai/v2/builders/joseon.ts`).
+- 조수 v2 `make_place`(조선 마을)는 구역(zones)에 주막·관아·약방·서당·대장간·민가 안을 적으면 그 방을 가져와 맞는 건물 문(주막 → 초가 jumak, 서당 → 기와 seodang, 관아 → 큰 기와집)과 잇는다(`src/ai/v2/place/builders/joseon.ts`).
 - 증거: `scripts/qa/joseon-interior-link-proof.mts` — 마을 20호에 방 6종을 잇고 임시 SQLite 에 저장 → 별도 핸들로 다시 열기 → 엔진 `canMove` 로 시작 칸 → 디딤돌, 방 도착 칸 → 출구 깔개 도달과 문 입구(`doorEntryAt`) 일치를 본다.
 
 ## 한계

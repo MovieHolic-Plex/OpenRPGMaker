@@ -2,10 +2,10 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { counterSide, laneCells, objectEventFit, placementProblems } from "@/ai/v2/placementRules";
-import { offPurposeProps, purposeOf, purposeSwap } from "@/ai/v2/roomPurpose";
+import { counterSide, laneCells, objectEventFit, placementProblems } from "@/ai/v2/place/placementRules";
+import { offPurposeProps, purposeOf, purposeSwap } from "@/ai/v2/place/roomPurpose";
 import { placementContentProblems } from "@/ai/v2/gameChecks";
-import { roomSetsFor } from "@/ai/v2/builders/interior";
+import { roomSetsFor } from "@/ai/v2/place/builders/interior";
 
 const COUNTER = 30001, LANE = 30002, WARDROBE = 30003, CHEST = 30004, ARMCHAIR = 30005;
 

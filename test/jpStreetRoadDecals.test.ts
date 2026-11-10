@@ -5,7 +5,7 @@ import { planJpRegionScene } from "@/editor/jpCity/regionComposer";
 import { jpRegionById } from "@/editor/jpCity/japaneseRegionsCatalog";
 import { regionWithLayout } from "@/editor/jpCity/regionVariants";
 import { planJpCityStreet } from "@/project/jpCityStreetComposer";
-import { laneCells } from "@/ai/v2/placementRules";
+import { laneCells } from "@/ai/v2/place/placementRules";
 import type { GameMap } from "@/project/types";
 
 function kitSizes() {

@@ -2,7 +2,7 @@
 //   bun scripts/experiments/bbox-village/terrain.mts <port|hill> <out dir>
 import fs from "node:fs";
 const R = new URL("../../..", import.meta.url).pathname.replace(/\/$/, "");
-const { villageArgs, villageMapSize } = await import(`${R}/src/ai/v2/builders/village.ts`);
+const { villageArgs, villageMapSize } = await import(`${R}/src/ai/v2/place/builders/village.ts`);
 const { codeTerrainFor } = await import(`${R}/src/editor/tools/authorBeodeulTown.ts`);
 const { terrainPreviewPng } = await import(`${R}/src/editor/tools/beodeulTerrainPreview.ts`);
 const [brief, out] = process.argv.slice(2);

@@ -15,7 +15,7 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import type { BuildRun, ContentBuildResult, EventBeat } from "./types";
 import { buildEvent } from "./events";
 import { buildPeople, eventsOf } from "./people";
-import { ensureFoeTroop, enemyArtFor } from "./builders/dungeon";
+import { ensureFoeTroop, enemyArtFor } from "./place/builders/dungeon";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
 import { reachableCells } from "./eventReach";
 import { findMapId } from "./loop/argGuard";

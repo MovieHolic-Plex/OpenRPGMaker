@@ -24,7 +24,7 @@ import { dungeonGateSpot, pickTransferSpot } from "../transferSpot";
 import { critiqueStaging } from "../critic";
 import { edgeCell, isInside, isOutdoor, oppositeSide, pickDoor, villageDoors } from "../makeGame";
 import { pickStageFrames, stageFrameProject, type EventBuildResult } from "../events";
-import { LAYOUT_CRITIQUE_ROUNDS, layoutSession, type LayoutPlaceState } from "../builders/placeLayout";
+import { LAYOUT_CRITIQUE_ROUNDS, layoutSession, type LayoutPlaceState } from "../place/builders/placeLayout";
 import { settleDungeonGates } from "../dungeonGates";
 import { requestedDungeonSide } from "../request/place";
 import { type Seen } from "../turn/session";

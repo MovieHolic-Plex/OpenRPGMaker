@@ -9,7 +9,7 @@ import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
 import { runTodoCheck } from "../../../src/ai/v2/todo/checks.ts";
 import { harmonizeRoomGraph, RoomGraphError } from "../../../src/editor/handInterior/roomGraph.ts";
-import { copiedReference, ROOM_IDEAS } from "../../../src/ai/v2/roomIdeas.ts";
+import { copiedReference, ROOM_IDEAS } from "../../../src/ai/v2/place/roomIdeas.ts";
 import { renderMapPng } from "../../qa-game/render.mts";
 
 const [snap, out = "/tmp/room-graph-probe"] = process.argv.slice(2);
