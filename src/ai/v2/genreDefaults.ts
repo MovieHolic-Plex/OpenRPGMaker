@@ -13,7 +13,7 @@ import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { charsetBattlerForCharacter } from "@/assets/charsetBattlers";
 import { sharedFaceIdForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
-import { ROMANCE_SETUP_WORDS, GAME_SETUP_WORDS } from "./request/genre";
+import { ROMANCE_SETUP_WORDS, GAME_SETUP_WORDS, HEROINE_WORDS, SWORD_HERO_WORDS } from "./request/genre";
 import { BATTLE_WORDS } from "./request/combat";
 const PRISTINE_HERO = new Set([undefined, "easyrpg-charset-actor1"]);
 
@@ -86,8 +86,8 @@ function redressStoryHero(project: Project, task: string): string | undefined {
   const hero = project.database.actors.find((actor) => actor.id === "actor_hero") ?? project.database.actors[0];
   if (!hero || !PRISTINE_HERO.has(hero.characterResourceId) || (hero.characterIndex ?? 0) !== 0) return undefined;
   // 모험가·용사가 주인공인 판타지 이야기(전투 낱말이 없어도)는 검사 차림이 맞다.
-  if (/용사|모험|검사|기사|전사|영웅|퀘스트|rpg|hero|adventure|quest|knight|warrior/iu.test(task)) return undefined;
-  const query = /소녀|여자|여성|아가씨|그녀|girl|woman|heroine/iu.test(task) ? "젊은 여성" : "청년 남성";
+  if (SWORD_HERO_WORDS.test(task)) return undefined;
+  const query = HEROINE_WORDS.test(task) ? "젊은 여성" : "청년 남성";
   const pick = resolveNpcGraphic(query);
   const asset = pick ? findCharsetAsset(pick.textureKey) : undefined;
   if (!pick || !asset) return undefined;

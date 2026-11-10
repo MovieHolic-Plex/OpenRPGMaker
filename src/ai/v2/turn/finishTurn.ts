@@ -1,7 +1,7 @@
 // 턴의 끝 — 기계 표로 만든 최종 보고와 실행 요약. 2026-11-11 리팩토링 R3: runAssistantV2 의 꼬리에서 옮겼다.
 import type { PiAgentDoneEvent } from "../../piAgent/protocol";
 import { V2_MAX_REPAIR_ROUNDS } from "./session";
-import { buildsWholeGame } from "../request/scope";
+import { buildsWholeGame } from "../request/readers";
 import { todoReport } from "../judge/finalReport";
 import { vqaSummary } from "../judge/vqa";
 import { vqaLedgerLines, vqaUnofferedBlockers } from "./vqaItems";

@@ -86,7 +86,7 @@ import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompa
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
 import { WHOLE_GAME_REKICKS, thinGameSign, unbuiltGameSigns, wholeGameRekickPrompt, widenGamePrompt } from "../../src/ai/v2/shipChecks.ts";
-import { wantsWholeGame } from "../../src/ai/v2/request/scope.ts";
+import { wantsWholeGame } from "../../src/ai/v2/request/readers.ts";
 import { applyLookDefaults } from "../../src/ai/v2/story/shipDefaults.ts";
 import { DIALOGUE_POLISH_FAMILIES, DIALOGUE_POLISH_MAX_ROUNDS, DIALOGUE_POLISH_ROUND_TOKENS, DIALOGUE_POLISH_ROUND_TURNS, DIALOGUE_POLISH_TOOLS, baseDialogueTexts, dialoguePolishHookEnabled, dialoguePolishPairs, dialoguePolishReportText, dialoguePolishRewriteGate, dialoguePolishRoundPrompt, dialoguePolishWanted, emptyMeaningTally, emptyPolishReport, isRunWrittenText, lintPolishLines, noteDialoguePolishCall, runWrittenDialogueLines, screenPolishEdits, type DialoguePolishPair, type DialoguePolishReport } from "../../src/ai/piAgent/dialoguePolishHook.ts";
 import { knownSpeakerNames, liftDialogueSpeakerLabelsTool, parseSpeakerLabel, type SpeakerLabelOutcome } from "../../src/editor/dialogue/dialogueSpeakerLabel.ts";

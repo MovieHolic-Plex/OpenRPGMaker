@@ -12,7 +12,7 @@ import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { simulateBattle } from "@/battle/simulate";
 import { gatesThatOpenNothing, lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers, weakPuzzleLocks } from "./puzzleChecks";
 import { splitScriptSpeaker } from "@/project/endingSummary";
-import { wantsWholeGame } from "../request/scope";
+import { wantsWholeGame } from "../request/readers";
 import { enemyIdentityProblems } from "../enemyChecks";
 import { hudTitleChoiceProblems } from "./hudTitleChecks";
 import { withoutNegatedEncounters } from "../request/combat";
@@ -26,7 +26,7 @@ import { projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
 import { gameHasCombat } from "@/project/combatPresence";
 import { FACTORY_HERO_ARMS } from "../genreDefaults";
 import { isStageWrite, type StageWrites } from "../stageWrites";
-import { musicAsked, musicOnly, soundOnly } from "../request/audio";
+import { musicAsked, musicOnly, soundOnly } from "../request/readers";
 import { FOE_ASK, STATE_WORDS } from "../request/combat";
 import { WEATHER_WORDS, SHAKE_WORDS, FLASH_WORDS, HIDDEN_WORDS, ENDING_WORDS } from "../request/asks";
 

@@ -13,12 +13,11 @@ import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { compactCliToolList } from "@/ai/piAgent/cliContextBudget";
 import type { PiAssistantV2Env } from "./env";
-import { v2ExtraToolNames, wantsGameTools } from "./request/toolGroups";
-import { musicOnly } from "./request/audio";
 import { V2_TOOL_EN, type ToolTextEn } from "./toolTextEn";
+import { classifyRequest, describeIntent } from "./request/intent";
 import { PLACE_BUILD_VERBS } from "./prompt";
 import { composedWorldFor } from "./request/world";
-import { leanPromptFor } from "./request/scope";
+import { leanPromptFor } from "./request/readers";
 
 /**
  * 게임 요청에 처음부터 싣는 v1 도구 — 기록된 실행(위)에서 모델이 직접 부른 세션 수가 terra ≥10 또는 opus ≥20 인 것, 또는 그에 준하는 싼 읽기 도구.
@@ -27,7 +26,7 @@ import { leanPromptFor } from "./request/scope";
  */
 export const V2_UP_FRONT: ReadonlySet<string> = new Set([
   "get_event", "find_events", "get_database_records", "get_story_state", "find_switch_usage", "list_endings", "read_npc_layout",
-  "list_npc_graphics", "list_resources", "list_spatial_designs", "stamp_object", "find_empty_ground",
+  "list_npc_graphics", "list_resources", "list_spatial_designs", "stamp_object", "find_empty_ground", "furnish_outdoor_area",
   "move_event", "remove_event", "patch_event_page", "add_event_page", "upsert_event", "run_scene_test",
   "create_transfer_pair", "place_chest", "declare_story_flag", "set_start_position", "set_field_hud",
   "simulate_battle", "upsert_actor", "upsert_troop", "set_encounter_table", "place_field_enemy", "define_ending", "set_project_settings",
@@ -155,18 +154,44 @@ function loadedSchema(tool: PiToolShape): string {
 /** 버들항 칩셋으로만 짓는 도구 — 구성기 세계의 게임에는 싣지 않는다. */
 const BEODEUL_ONLY_TOOLS: ReadonlySet<string> = new Set(["author_forest_route"]);
 
+/** 작은 일의 처음 싣는 도구 글자 상한 — load_tools 설명(약 5천 자)을 더해 4만 자 안에 든다. */
+const SMALL_TOOL_CHARS = 34_000;
+/** 앞(급한 것)부터 상한 안에 드는 도구 이름 — 안 드는 것은 건너뛰고 필요할 때 싣는다. */
+function withinSmallBudget(ordered: readonly PiToolShape[]): Set<string> {
+  const keep = new Set<string>();
+  const seen: ShapeIndex = new Map();
+  let used = 0;
+  for (const tool of ordered) {
+    // 실리는 모양 그대로 잰다(되풀이되는 스키마는 한 번만 실린다).
+    const copy = collapseRepeats(englishToolCopy(tool, true), seen);
+    const size = JSON.stringify({ n: copy.name, d: copy.description, p: copy.parameters }).length;
+    if (used + size > SMALL_TOOL_CHARS) continue;
+    used += size; keep.add(tool.name);
+  }
+  return keep;
+}
+
 export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolShape[]): V2ToolExposure {
   let tools = allTools;
   const task = String(env.request.task ?? "");
-  const lazyOn = wantsGameTools(task) && !musicOnly(task);
-  // 지은 맵에 로직만 넣는 요청(prompt.ts leanPromptFor)이면 장소 짓기 동사도 필요할 때 싣는다 — 지시문의 장소 카드와 함께 빠진다.
+  // 이 요청을 어떻게 갈랐는지 실행 기록에 한 줄 남긴다 — 지시문·도구·검사가 모두 이 분류를 읽는다.
+  const intent = classifyRequest(task, env.ctx.project);
+  env.emit({ type: "execution_status", name: "v2.request.intent", ok: true, summary: `요청 분류: ${describeIntent(intent)}`, data: { scope: intent.scope, wholeGame: intent.wholeGame, why: intent.why } });
+  const lazyOn = intent.tools.game && !intent.audio.musicOnly;
+  // 장소를 짓지 않는 요청(readers.leanPromptFor)이면 장소 짓기 동사도 필요할 때 싣는다 — 지시문의 장소 카드와 함께 빠진다.
   // 구성기 세계의 게임(world.ts)도 같다 — 장소는 build_places 가 짓는다. 버들항 전용 숲길 도구는 그 세계에 싣지 않는다(다른 칩셋 맵이 섞인다).
   const composedWorld = composedWorldFor(env.ctx.project, env.request.projectKey ? String(env.request.projectKey) : undefined, task);
   if (composedWorld) tools = tools.filter((t) => !BEODEUL_ONLY_TOOLS.has(t.name));
-  const placeLazy = leanPromptFor(env.ctx.project, task) || composedWorld;
-  const offeredSet = new Set([...v2ExtraToolNames(task), ...(placeLazy ? PLACE_BUILD_VERBS : [])]);
+  const lean = leanPromptFor(env.ctx.project, task);
+  const placeLazy = lean || composedWorld;
+  // 작은 일(고치기·질문·게임 하나를 잇지 않는 이어 하기): 그 일이 쓸 도구만 처음부터 싣는다(request/topics.ts smallJobTools). 청사진·장소 짓기·오프닝·엔딩 도구는 필요할 때.
+  // 실측(2026-11-11): 「이 NPC를 두 칸 왼쪽으로 옮겨 줘」에 도구 43개·9.7만 자가 처음부터 실렸고 첫 도구가 write_blueprint 였다.
+  const order = lean && !intent.wholeGame && intent.scope !== "audio" ? new Map(intent.smallTools.map((name, i) => [name, i] as const)) : undefined;
+  if (order) tools = [...tools].sort((x, y) => (order.get(x.name) ?? order.size) - (order.get(y.name) ?? order.size));
+  const small = order && withinSmallBudget(tools.filter((t) => order.has(t.name)));
+  const offeredSet = new Set([...intent.tools.extra, ...(placeLazy ? PLACE_BUILD_VERBS : [])]);
   // 처음부터 = 이 요청 묶음에 들었고(offered) 기록에서 쓴 것(V2_UP_FRONT). 묶음 밖 도구(v2ToolPool 로만 들어온 것)는 늘 필요할 때.
-  const isLazy = (t: PiToolShape) => (placeLazy && PLACE_BUILD_VERBS.has(t.name))
+  const isLazy = (t: PiToolShape) => small ? !small.has(t.name) : (placeLazy && PLACE_BUILD_VERBS.has(t.name))
     || (lazyOn && !!getTool(t.name) && (!V2_UP_FRONT.has(t.name) || !offeredSet.has(t.name)));
   const seen: ShapeIndex = new Map();
   const upFront = tools.filter((t) => !isLazy(t)).map((t) => collapseRepeats(englishToolCopy(t, true), seen));

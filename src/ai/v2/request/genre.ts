@@ -1,21 +1,28 @@
 // 장르·주제 낱말 — 공포·퍼즐·연애·몬스터 수집·대화 장면, 그리고 어느 세계든 어울리는 요청(모험·무엇이든).
+import { kw } from "./text";
 
 export const HORROR_WORDS = /공포|호러|무서|오싹|귀신|유령|괴물|좀비|저택|폐교|폐병원|병원|추격|쫓아|쫓기|숨어|숨을 곳|옷장|손전등|어둠|비명|깜짝|horror|scary|ghost|haunted/iu;
 
-/** 퍼즐 사슬 동사를 실을 요청 — 단서·자물쇠·잠긴 방·탈출. */
-export function wantsPuzzle(task: string): boolean {
-  return HORROR_WORDS.test(task) || /퍼즐|단서|금고|비밀번호|암호|열쇠|잠긴|잠겨|탈출|수수께끼|puzzle|clue|escape|riddle/iu.test(task);
-}
+const PUZZLE_WORDS = /퍼즐|단서|금고|비밀번호|암호|열쇠|잠긴|잠겨|탈출|수수께끼|puzzle|clue|escape|riddle/iu;
+/** 퍼즐 사슬 동사를 실을 글인가 — 단서·자물쇠·잠긴 방·탈출, 그리고 공포(숨기·쫓기에 잠긴 문이 따른다). */
+export const puzzleAsk = (text: string): boolean => HORROR_WORDS.test(text) || PUZZLE_WORDS.test(text);
 
-export const ROMANCE_SETUP_WORDS = /연애|데이트|썸|고백|공략|호감도|러브|미연시|romance|dating/iu;
+/** 연애 게임 낱말(연애 기본값을 깐다). */
+export const ROMANCE_SETUP_WORDS = new RegExp(String.raw`연애|데이트|${kw("썸")}|썸\s*타|고백|공략|호감도|러브|미연시|romance|dating`, "iu");
 
 /** 게임 하나를 시작하는 요청(장소 하나만 짓는 요청이면 HUD·연애 루프는 건드리지 않는다). */
 export const GAME_SETUP_WORDS = /게임|game/iu;
 
+/** 모험가·용사가 주인공인 이야기 — 전투 낱말이 없어도 검사 차림이 맞다. */
+export const SWORD_HERO_WORDS = /용사|모험|검사|기사|전사|영웅|퀘스트|rpg|hero|adventure|quest|knight|warrior/iu;
+/** 주인공이 여자라고 말한 요청. */
+export const HEROINE_WORDS = /소녀|여자|여성|아가씨|그녀|girl|woman|heroine/iu;
+
 /** 요청·프로젝트가 맞을 때만 싣는 카드(각 한 장) — 몬스터 수집 마을, 두 선택 대화 장면. */
 export const MONSTER_WORDS = /포켓몬|몬스터 ?수집|monster[- ]?collect|pok[eé]mon|트레이너|체육관|연구소|몬스터 ?센터/iu;
 
-export const SCENE_WORDS = /대화 ?장면|선택지|고백|속마음|연애|데이트|첫 ?만남|romance|confess/iu;
+/** 두 선택 대화 장면(add_scene) 카드를 실을 낱말. 컷신·연출 요청 낱말은 asks.ts 의 SCENE_WORDS 다. */
+export const CHOICE_SCENE_WORDS = /대화 ?장면|선택지|고백|속마음|연애|데이트|첫 ?만남|romance|confess/iu;
 
 export const WASTELAND_WORDS = /좀비|아포칼립스|종말|황무지|폐허\s*도시|포스트\s*아포|\b(?:zombies?|apocalypse|wasteland|post[-\s]?apocalyptic)\b/iu;
 

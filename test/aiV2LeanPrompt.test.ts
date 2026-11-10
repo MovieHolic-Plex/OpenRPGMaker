@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { buildV2SystemPrompt, PLACE_SPEC_INDEX, placeSpecCards, placeSpecKindOf } from "@/ai/v2/prompt";
-import { editOnlyRequest } from "@/ai/v2/request/scope";
+import { editOnlyRequest } from "@/ai/v2/request/readers";
 import { exposeV2Tools } from "@/ai/v2/toolExposure";
 import { INTERIOR_CARD } from "@/ai/v2/place/builders/interior";
 import { createV2Tools } from "@/ai/v2/verbs";
@@ -24,13 +24,15 @@ describe("v2 lean prompt — place specs on demand", () => {
     expect(sys).not.toContain(INTERIOR_CARD);
     expect(sys).not.toContain("[Interior catalog");
   });
-  it("place-building, whole-game and fresh-project requests keep the full cards", () => {
+  it("place-building and whole-game requests keep the full cards; so does a bare description on an empty project", () => {
     const built = builtProject();
     expect(editOnlyRequest(built, task)).toBe(true);
     expect(editOnlyRequest(built, "마을에 대장간 하나 추가해 줘")).toBe(false);
     expect(editOnlyRequest(built, "새 맵에 동굴을 만들어 줘")).toBe(false);
     expect(editOnlyRequest(built, "방탈출 게임 하나 만들어 줘")).toBe(false);
-    expect(editOnlyRequest(createBlankProject(), task)).toBe(false);
+    // 빈 프로젝트라도 시킨 일이 분명한 작은 요청은 작은 일이다(2026-11-11 B3). 묘사뿐인 글은 첫 장소를 짓는 시작으로 본다.
+    expect(editOnlyRequest(createBlankProject(), task)).toBe(true);
+    expect(editOnlyRequest(createBlankProject(), "폐업 직전 태엽 장난감 가게")).toBe(false);
     const sys = buildV2SystemPrompt(built, built.startMapId, "마을에 대장간 하나 추가해 줘").join("\n");
     expect(sys).toContain(INTERIOR_CARD);
     expect(sys).not.toContain(PLACE_SPEC_INDEX);

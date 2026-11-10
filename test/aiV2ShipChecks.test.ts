@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { editorDefaultsLeft, endingClosureProblems, offPremiseArt, openingWithoutPlace, shipBlockers, titleSpoilers } from "@/ai/v2/shipChecks";
-import { wantsWholeGame } from "@/ai/v2/request/scope";
+import { wantsWholeGame } from "@/ai/v2/request/readers";
 import { getTool } from "@/editor/tools";
 import type { Project } from "@/project/types";
 
