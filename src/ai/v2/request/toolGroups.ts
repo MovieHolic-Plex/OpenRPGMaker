@@ -91,7 +91,7 @@ const V2_GAME_TOOLS: readonly string[] = [
   "upsert_item", "upsert_equipment", "set_shop_stock", "set_sell_prices", "place_chest", "upsert_craft_recipe",
   "upsert_actor", "upsert_class", "upsert_skill", "set_party", "add_companion",
   "upsert_enemy", "upsert_troop", "upsert_troop_battle_page", "set_encounter_table",
-  "find_empty_ground", "place_npc", "upsert_event", "patch_event_page", "add_event_page", "run_scene_test", "upsert_common_event", "set_npc_schedule", "configure_time_system", "place_savepoint", "set_start_position",
+  "find_empty_ground", "furnish_outdoor_area", "place_npc", "upsert_event", "patch_event_page", "add_event_page", "run_scene_test", "upsert_common_event", "set_npc_schedule", "configure_time_system", "place_savepoint", "set_start_position",
   // 2026-10-24 새 12 사례 비교: v1 이 쓰고 v2 에 없던 것 — 칩 고르기(없으면 그림 관문이 막는다)·이야기 깃발·엔딩·필드 적·이벤트 옮기기/지우기·문 잇기·날씨.
   "list_npc_graphics", "list_resources", "read_npc_layout", "declare_story_flag", "list_endings", "define_ending", "place_field_enemy",
   "move_event", "remove_event", "create_transfer_pair", "set_scene_mood",
@@ -101,6 +101,10 @@ const V2_GAME_TOOLS: readonly string[] = [
 
 // tile_erase: 끝맺음 검사(gameChecks.ts «다리·출입구·방 쓰임»)가 «tile_erase 로 걷는다» 고 이르는데 v2 도구 풀에 없어 부를 수 없었다 — 이름으로 부르면 실린다.
 const V2_TERRAIN_TOOLS: readonly string[] = ["list_spatial_designs", "stamp_object", "fill_region", "tile_erase"];
+
+/** 휑한 야외를 채워 달라는 말(「빈 곳에 나무 좀」「빈 눈밭에 바위를 놓아 줘」「허전해」「꾸며 줘」) — 빈 터 찾기·채우기 도구를 싣는다. */
+const DRESS_WORDS = /빈\s*(?:곳|터|땅|자리|공간|눈밭|풀밭|들판|마당|공터)|공터|허전|휑|썰렁|꾸며|꾸미|채워|소품|장식|(?:나무|바위|덤불|수풀|꽃)[^.!?\n]{0,12}(?:심어|심고|놓아|놓고|더해|추가)|decorate|dress up|fill the empty/iu;
+export const V2_DRESS_TOOLS: readonly string[] = ["find_empty_ground", "furnish_outdoor_area", "list_spatial_designs", "stamp_object"];
 
 /**
  * 스토어에 올린 내 게임의 평가·답글·소식(2026-10-25). 프로젝트를 바꾸지 않는 요청이라 게임 낱말과 따로 싣는다.
@@ -112,6 +116,11 @@ const STORE_TIERS: readonly { readonly words: RegExp; readonly tools: readonly s
   { words: /소식|공지|패치 ?노트|업데이트 (글|소식)|변경 ?사항|고친 (점|것)|changelog|news|patch ?notes|announce/iu, tools: ["store_game_reviews", "store_game_changes", "store_game_post"], card: "· News post about complaints: read frequent complaints with store_game_reviews and what actually changed with store_game_changes → issue a store_game_post{title, body, comment} card that says «fixed» only for complaints actually fixed (others «looking into it»). It is posted when the user presses." },
 ];
 
+/** 상점·값·장비를 말하는 낱말. */
+export const SHOP_WORDS = new RegExp(String.raw`상점|가게|팔게|팔기|파는|팔아|판매|구입|사는|살 수|가격|${kw("값")}|골드|${kw("돈")}|무기|갑옷|방패|장비|장신구|반지|목걸이|shop|price|equipment`, "iu");
+/** 엔딩·막 끝·게임 오버처럼 끝맺는 일을 말하는 낱말. */
+export const ENDING_WORK_WORDS = /엔딩|결말|끝나|끝내|끝이|끝에|마지막 날|마지막에|마지막 장면|막 끝|막이|제\s*\d+\s*막|에필로그|타이틀로|게임 오버|게임이 끝|ending|epilogue/iu;
+
 /**
  * 무거운 게임 도구 묶음 — 요청 낱말이 그 일을 말할 때만 싣는다.
  * 왜 (2026-10-25 조수 단독 게임 G12/G14 후속): 연애 게임 「서연 대사를 날마다 다르게」 한 턴에 도구 56개 스키마가 21만 자였고, 그중
@@ -122,8 +131,8 @@ const STORE_TIERS: readonly { readonly words: RegExp; readonly tools: readonly s
 const GAME_TOOL_GROUPS: readonly { readonly words: RegExp; readonly tools: readonly string[] }[] = [
   { words: BATTLE_TOOL_WORDS,
     tools: ["upsert_class", "upsert_skill", "upsert_enemy", "upsert_troop", "upsert_troop_battle_page", "set_encounter_table", "place_field_enemy", "upsert_equipment", "simulate_battle"] },
-  { words: new RegExp(String.raw`상점|가게|팔게|팔기|파는|팔아|판매|구입|사는|살 수|가격|${kw("값")}|골드|${kw("돈")}|무기|갑옷|방패|장비|장신구|반지|목걸이|shop|price|equipment`, "iu"), tools: ["upsert_equipment"] },
-  { words: /엔딩|결말|끝나|끝내|끝이|끝에|마지막 날|마지막에|마지막 장면|막 끝|막이|제\s*\d+\s*막|에필로그|타이틀로|게임 오버|게임이 끝|ending|epilogue/iu, tools: ["list_endings", "define_ending"] },
+  { words: SHOP_WORDS, tools: ["upsert_equipment"] },
+  { words: ENDING_WORK_WORDS, tools: ["list_endings", "define_ending"] },
   { words: /퀘스트|의뢰|심부름|부탁|임무|보상|일지|할 일|모으|모아|모았|수집|가져가|가져오|가져다|찾아 ?(주|오|와)|구해 ?(오|와)|quest/iu, tools: ["create_quest"] },
 ];
 
@@ -132,6 +141,7 @@ const GROUPED = new Set(GAME_TOOL_GROUPS.flatMap((g) => g.tools));
 export interface ToolGroups {
   /** 게임 요소 도구 묶음을 쓰는 요청이다(낱말·공포·게임 하나·조우·싸울 적). */ readonly game: boolean;
   /** 지은 맵에 물길·다리·작은 물건을 덧그리는 요청이다. */ readonly terrain: boolean;
+  /** 휑한 야외를 소품으로 채워 달라는 요청이다. */ readonly dress: boolean;
   /** 스토어에 올린 내 게임의 평가·답글·소식 요청이다. */ readonly store: boolean;
   /** 맞은 묶음(FALLEN_TIERS 의 자리) — 도구와 사용법 한 줄을 여기서 읽는다. */ readonly fallen: readonly number[];
   /** 맞은 스토어 묶음(STORE_TIERS 의 자리). */ readonly storeTiers: readonly number[];
@@ -148,14 +158,15 @@ export function matchToolGroups(topic: string, asked: { readonly wholeGame: bool
   const fights = combat.encounters || combat.foes;
   const game = GAME_WORDS.test(topic) || HORROR_WORDS.test(topic) || asked.wholeGame || fights;
   const terrain = TERRAIN_WORDS.test(topic);
+  const dress = DRESS_WORDS.test(topic);
   const fallen = FALLEN_TIERS.flatMap((tier, i) => ((tier === MUSIC_TIER ? audio.music : tier.whole ? asked.wholeGame : tier.words!.test(topic)) ? [i] : []));
   const storeTiers = STORE_TIERS.flatMap((tier, i) => (tier.words.test(topic) ? [i] : []));
   const storeTools = storeTiers.flatMap((i) => STORE_TIERS[i]!.tools);
   const audioTools = [...(audio.music ? MUSIC_TIER.tools : []), ...(audio.sound ? SOUND_TIER.tools : [])];
   const grouped = GAME_TOOL_GROUPS.filter((g, i) => g.words.test(topic) || (i === 0 && fights)).flatMap((g) => g.tools);
   const gameTools = [...V2_GAME_TOOLS.filter((name) => !GROUPED.has(name)), ...grouped, "list_spatial_designs", "stamp_object", ...fallen.flatMap((i) => FALLEN_TIERS[i]!.tools), ...(audio.sound ? SOUND_TIER.tools : [])];
-  const extra = audio.only ? [...audioTools, ...storeTools] : [...(game ? gameTools : audioTools), ...(terrain ? V2_TERRAIN_TOOLS : []), ...storeTools];
-  return { game, terrain, store: storeTiers.length > 0, fallen, storeTiers, extra: [...new Set(extra)] };
+  const extra = audio.only ? [...audioTools, ...storeTools] : [...(game ? gameTools : audioTools), ...(terrain ? V2_TERRAIN_TOOLS : []), ...(dress ? V2_DRESS_TOOLS : []), ...storeTools];
+  return { game, terrain, dress, store: storeTiers.length > 0, fallen, storeTiers, extra: [...new Set(extra)] };
 }
 
 /** 맞은 묶음의 사용법 한 줄씩(게임 카드 끝에 붙는다) — 도구만 싣고 쓰는 법을 안 주면 조수가 손으로 조립한다. */
@@ -177,6 +188,6 @@ export function storeCard(groups: ToolGroups): string {
 export function v2ToolPool(): string[] {
   return [...new Set([
     ...V2_GAME_TOOLS, ...GAME_TOOL_GROUPS.flatMap((g) => g.tools), ...FALLEN_TIERS.flatMap((t) => t.tools), ...MUSIC_TIER.tools,
-    ...V2_TERRAIN_TOOLS, ...STORE_TIERS.flatMap((t) => t.tools), "list_spatial_designs", "stamp_object",
+    ...V2_TERRAIN_TOOLS, ...V2_DRESS_TOOLS, ...STORE_TIERS.flatMap((t) => t.tools), "list_spatial_designs", "stamp_object",
   ])].filter((name) => getTool(name));
 }

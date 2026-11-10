@@ -85,6 +85,10 @@ export function asksToChange(text: string): boolean {
   return WRITE_VERB.test(t) || !QUESTION.test(t);
 }
 
+const ASKS_FOR_WORK = /줘|주세요|줄래|해\s*라|하자|해\s*봐|되게|하게|부탁|세워|옮겨|놓아|넣어|바꿔|지워|만들어|고쳐|추가|삭제|\b(?:please|make|add|move|put|create|change|remove|fix|build)\b/iu;
+/** 시킨 일 없이 무엇을 묘사만 한 글인가(「장난감 가게」「중세 판타지 느낌」) — 빈 프로젝트에서는 첫 장소를 짓는 시작으로 본다. */
+export const bareDescription = (text: string): boolean => !!text.trim() && !ASKS_FOR_WORK.test(text);
+
 const CONTINUE_REFERENCE = /처음에\s*(?:부탁|말|요청|얘기)한\s*(?:대로|것|거|게임)|아까\s*(?:부탁|말|요청|얘기)한|(?:앞|위|이전|지난번)에(?:서)?\s*(?:부탁|말|요청|얘기)한|하던\s*(?:거|것|일|작업)\s*(?:계속|마저|이어)/u;
 const CONTINUE_CORE = /계속|이어서|이어\s*(?:해|가|만들|짓|지어)|마저|남은\s*(?:거|것|일|항목|부분|작업)|끝까지|다시\s*(?:해|시도)|\bcontinue\b|\bgo on\b|keep going|carry on|finish (?:it|the rest)/iu;
 const CONTINUE_FILLER = /계속|이어서|이어|마저|남은|항목|부분|작업|끝까지|다시|시도|해\s*주세요|해\s*줘|진행|만들어|지어|완성|마무리|끝내|그럼|전부|주세요|continue|go on|keep going|carry on|finish|rest|please|[거것일해줘좀응네다도을를이가은는]|\b(?:it|the)\b/giu;
