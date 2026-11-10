@@ -1,0 +1,142 @@
+// 작은 일의 지시문·도구 예산 — 요청 한 줄에 실리는 지시문 글자 수와 처음 싣는 도구 수를 못박는다(모델 없음).
+// 2026-11-11 구조 재점검: 「이 맵에 상점 주인 한 명 세워 줘」에 지시문 63,679자·도구 43개(97,272자)가 실렸다. 이제 그 일이 쓰는 카드·도구만 싣는다.
+import { describe, expect, it } from "vitest";
+import { createBlankProject } from "@/project/defaults";
+import type { Project } from "@/project/types";
+import { buildV2SystemPrompt, V2_CORE_PROMPT } from "@/ai/v2/prompt";
+import { GAME_CARD, gameCard } from "@/ai/v2/game";
+import { classifyRequest } from "@/ai/v2/request/intent";
+import { exposeV2Tools } from "@/ai/v2/toolExposure";
+import { createV2Tools } from "@/ai/v2/verbs";
+import { V2Session } from "@/ai/v2/turn/session";
+
+type State = "blank" | "oneEvent";
+function project(state: State): Project {
+  const p = createBlankProject() as Project;
+  if (state === "oneEvent") {
+    const map = p.maps[p.startMapId]!;
+    map.events = [...(map.events ?? []), { id: "ev_npc", name: "촌장", x: 2, y: 2, pages: [{ id: "p1", conditions: [], trigger: { kind: "action" }, commands: [{ kind: "text", body: "어서 오게." }] }] } as never];
+  }
+  return p;
+}
+function shoot(task: string, state: State) {
+  const p = project(state);
+  const env = { ctx: { project: p, currentMapId: p.startMapId, assistantRun: true }, request: { task, provider: "local-cli:claude", mapIds: [], project: p, projectKey: "golden-key" },
+    emit() {}, record() {}, sideChat: async () => "{}", render: async () => "", checkpoint: async () => {} } as never;
+  const exposure = exposeV2Tools(env, createV2Tools(env, new V2Session()));
+  const sys = buildV2SystemPrompt(p, p.startMapId, task, undefined, "golden-key");
+  const toolChars = exposure.tools.reduce((n, t) => n + JSON.stringify({ n: t.name, d: t.description, p: t.parameters }).length, 0);
+  return { text: sys.join("\n"), chars: sys.reduce((n, block) => n + block.length, 0), upFront: exposure.tools.map((t) => t.name), toolChars, lazy: exposure.lazy };
+}
+
+/** 작은 일 — [요청, 지시문 글자 상한]. 처음 싣는 도구는 모두 20개·40,000자 안. */
+const SMALL_JOBS: readonly (readonly [string, number])[] = [
+  ["이 맵에 상점 주인 한 명 세워 줘.", 15_000],
+  ["이 NPC를 두 칸 왼쪽으로 옮겨 줘", 12_000],
+  ["저 상자를 방 안쪽으로 옮겨 줘", 12_000],
+  ["촌장 대사를 좀 더 무뚝뚝하게 바꿔 줘", 15_000],
+  ["여기 보물상자 하나 놓고 포션 3개 넣어 줘", 15_000],
+  ["촌장한테 말 걸면 열쇠를 받게 해 줘", 15_000],
+  ["슬라임 세 마리와 싸우는 전투 하나 넣어 줘", 15_000],
+  ["게임 제목을 '별의 노래'로 바꿔 줘", 15_000],
+  ["광장 빈 곳에 나무랑 벤치 좀 놓아 줘", 12_000],
+  ["이 게임 뭐가 부족한지 알려 줘", 12_000],
+];
+/** 작은 일에는 처음부터 싣지 않는 도구(필요할 때 싣는다). */
+const HEAVY = ["write_blueprint", "build_blueprint_path", "make_place", "edit_place", "review_layout", "set_project_settings", "set_opening", "edit_opening", "author_opening_stage", "create_opening_animatic_shot"];
+
+describe("small jobs get a small prompt and a short tool list", () => {
+  for (const state of ["blank", "oneEvent"] as const) {
+    it.each(SMALL_JOBS.map(([task, max]) => [task, max] as const))(`${state} | %s ≤ %d chars`, (task, max) => {
+      const shot = shoot(task, state);
+      expect(shot.chars).toBeLessThanOrEqual(max);
+      expect(shot.upFront.length).toBeLessThanOrEqual(20);
+      expect(shot.toolChars).toBeLessThanOrEqual(40_000);
+      expect(shot.upFront[0]).not.toBe("write_blueprint");
+      for (const name of HEAVY) expect(shot.upFront).not.toContain(name);
+      expect(shot.upFront).toContain("load_tools");
+      expect(shot.text).not.toContain("[Interior catalog —");
+      // 그 요청이 말한 주제의 줄만 — 게임 하나에는 16줄이 다 실린다.
+      expect(shot.text.split("\n").filter((line) => line.startsWith("  · ")).length).toBeLessThanOrEqual(2);
+    });
+  }
+
+  it("keeps the heavy tools loadable by name", () => {
+    const shot = shoot("이 맵에 상점 주인 한 명 세워 줘.", "oneEvent");
+    for (const name of ["write_blueprint", "make_place", "edit_place", "upsert_event"]) expect(shot.lazy.has(name)).toBe(true);
+  });
+
+  it("gives each job the tools it names", () => {
+    expect(shoot("이 NPC를 두 칸 왼쪽으로 옮겨 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["move_event", "find_events"]));
+    expect(shoot("이 맵에 상점 주인 한 명 세워 줘.", "blank").upFront).toEqual(expect.arrayContaining(["add_people", "set_shop_stock", "list_npc_graphics"]));
+    expect(shoot("촌장한테 말 걸면 열쇠를 받게 해 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["upsert_event", "patch_event_page", "run_scene_test"]));
+    expect(shoot("여기 보물상자 하나 놓고 포션 3개 넣어 줘", "oneEvent").upFront).toContain("place_chest");
+    expect(shoot("슬라임 세 마리와 싸우는 전투 하나 넣어 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["upsert_troop", "simulate_battle"]));
+  });
+
+  it("dress words bring the outdoor filling tools and their card", () => {
+    const shot = shoot("마을이 좀 허전해. 꾸며 줘", "oneEvent");
+    expect(shot.upFront).toEqual(expect.arrayContaining(["find_empty_ground", "furnish_outdoor_area", "stamp_object"]));
+    expect(shot.text).toContain("[Filling empty outdoor ground]");
+  });
+
+  it("on an empty project a bare description starts a first place; a clear small job stays small", () => {
+    expect(classifyRequest("폐업 직전 태엽 장난감 가게", project("blank"))).toMatchObject({ scope: "place", editOnly: false });
+    expect(classifyRequest("폐업 직전 태엽 장난감 가게", project("oneEvent"))).toMatchObject({ scope: "edit", editOnly: true });
+    expect(classifyRequest("이 맵에 상점 주인 한 명 세워 줘.", project("blank"))).toMatchObject({ scope: "edit", editOnly: true });
+    // 빈 프로젝트의 「계속」은 고칠 것이 없다 — 짓는 카드·도구를 그대로 싣는다.
+    expect(classifyRequest("계속", project("blank"))).toMatchObject({ scope: "continue", editOnly: false });
+    expect(classifyRequest("계속", project("oneEvent"))).toMatchObject({ scope: "continue", editOnly: true });
+  });
+
+  it("carries the people card for a new person and no event card for a bare move", () => {
+    expect(shoot("이 맵에 상점 주인 한 명 세워 줘.", "blank").text).toContain("People spec:");
+    const move = shoot("이 NPC를 두 칸 왼쪽으로 옮겨 줘", "oneEvent").text;
+    expect(move).not.toContain("Events spec:");
+    expect(move).not.toContain("People spec:");
+  });
+});
+
+describe("place and whole-game requests", () => {
+  it("an interior request carries the interior catalog; a village request does not", () => {
+    expect(shoot("여관 1층 하나 지어 줘", "blank").text).toContain("[Interior catalog —");
+    expect(shoot("작은 마을 하나 만들어 줘", "blank").text).not.toContain("[Interior catalog —");
+    expect(shoot("이 맵에 상점 주인 한 명 세워 줘.", "blank").text).not.toContain("[Fallen-Star-style jobs");
+  });
+
+  it("a whole-game prompt does not grow (main 2026-11-11: 35,335 · 67,193 chars; now 35,213 · 67,071)", () => {
+    const fantasy = shoot("판타지 RPG 게임 하나 만들어 줘.", "blank");
+    expect(fantasy.chars).toBeLessThanOrEqual(35_213);
+    expect(fantasy.text).toContain("[Fallen-Star-style jobs");
+    expect(fantasy.upFront).toContain("write_blueprint");
+    expect(shoot("방탈출 게임 만들어 줘.", "blank").chars).toBeLessThanOrEqual(67_071);
+  });
+
+  it("a place request gets only the game-card lines its words name", () => {
+    const inn = shoot("여관 1층 하나 지어 줘", "blank").text;
+    expect(inn).toContain("[Game elements");
+    expect(inn).not.toContain("[Fallen-Star-style jobs");
+  });
+});
+
+describe("instructions agree with each other and with the tools", () => {
+  it("coordinates come from a tool result, never a guess — and move_event needs none", () => {
+    expect(V2_CORE_PROMPT).toContain("gets only cells a tool or the critic gave you");
+    expect(V2_CORE_PROMPT).not.toContain("pass only coordinates the critic gave you");
+    expect(GAME_CARD).toContain("move_event{eventId, dx,dy | where}");
+  });
+  it("a missing object is drawn first; the nearest existing object is the fallback, said in the report", () => {
+    expect(V2_CORE_PROMPT).toContain("Do not quietly swap in a similar object");
+    expect(GAME_CARD).toContain("draw_object first (core rule)");
+    expect(GAME_CARD).not.toContain("do not stop at a draw_object card");
+  });
+  it("new NPCs are stood with add_people, not the hidden place_npc", () => {
+    expect(GAME_CARD).not.toContain("place_npc");
+    expect(GAME_CARD).toContain("add_people (a new NPC)");
+  });
+  it("the topic card is a subset of the full card", () => {
+    const full = new Set(GAME_CARD.split("\n"));
+    for (const line of gameCard(["items", "battle", "snow"]).split("\n")) expect(full.has(line)).toBe(true);
+    expect(gameCard([]).length).toBeLessThan(3_000);
+  });
+});

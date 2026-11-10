@@ -6,9 +6,10 @@ import { combatAsk, type CombatAsk } from "./combat";
 import { HORROR_WORDS, puzzleAsk } from "./genre";
 import { ART_ASK, ENDING_WORDS } from "./asks";
 import { PLACE_BUILD_WORDS } from "./place";
-import { MAKE_GAME_WORDS, ONE_ROOM_GAME, SINGLE_PLACE, asksToChange, asksToContinue, isEscapeBlueprint, isFreshProject, wholeGameAsk } from "./scope";
+import { MAKE_GAME_WORDS, ONE_ROOM_GAME, SINGLE_PLACE, asksToChange, asksToContinue, bareDescription, isEscapeBlueprint, isFreshProject, wholeGameAsk } from "./scope";
 import { maskNames, userText } from "./text";
 import { matchToolGroups, type ToolGroups } from "./toolGroups";
+import { gameTopics, jobFacets, smallJobTools, type GameTopic, type JobFacets } from "./topics";
 
 /**
  * 요청의 범위 — 하나만 고른다.
@@ -18,7 +19,7 @@ import { matchToolGroups, type ToolGroups } from "./toolGroups";
 export type RequestScope = "question" | "audio" | "wholeGame" | "continue" | "place" | "edit";
 
 /** 요청 글만 보고 정한 것. */
-export interface RequestText {
+interface RequestText {
   /** 사용자가 쓴 글(의도 메모를 뗀 것). */ readonly own: string;
   /** 낱말 판정에 쓴 글 — 지어 주는 이름·제목·시키는 대사를 가렸다. */ readonly topic: string;
   readonly scope: RequestScope;
@@ -35,6 +36,9 @@ export interface RequestText {
   /** 엔딩·결말을 말한다. */ readonly ending: boolean;
   /** 타이틀·엔딩·오프닝 그림을 새로 그려 달라고 한다. */ readonly art: boolean;
   readonly tools: ToolGroups;
+  /** 요청이 말한 주제 — 작은 요청에 게임 카드의 그 줄만 싣는다. */ readonly topics: readonly GameTopic[];
+  /** 작은 일의 생김새 — 사람을 세우나, 사건을 짜나, 옮기기만 하나. */ readonly job: JobFacets;
+  /** 작은 요청에 처음부터 실을 도구 이름(앞이 먼저). */ readonly smallTools: readonly string[];
 }
 
 /** 요청 글과 프로젝트를 같이 보고 정한 것. */
@@ -42,7 +46,7 @@ export interface RequestIntent extends RequestText {
   /** 이번 턴이 게임 하나를 짓는 일이다 — 범위가 wholeGame 이거나, 이어 하기가 게임 하나로 시작한 프로젝트를 잇는다. 출하 검사·끝맺음 조립·화면 검수가 이것으로 켜진다. */
   readonly wholeGame: boolean;
   /** 빈 프로젝트(이벤트·엔딩 없음)다. */ readonly fresh: boolean;
-  /** 지은 맵에 로직만 넣는 요청이다 — 장소 카드·짓기 동사를 필요할 때만 싣는다. */ readonly editOnly: boolean;
+  /** 장소를 짓지 않는 요청이다(고치기·질문·소리·이어 하기) — 장소 카드·짓기 동사를 필요할 때만 싣는다. */ readonly editOnly: boolean;
 }
 
 function scopeOf(own: string, topic: string, facts: { audioOnly: boolean; write: boolean; continuation: boolean; placeBuild: boolean; makeGame: boolean }): { scope: RequestScope; why: string } {
@@ -79,11 +83,13 @@ export function readRequest(task: string | undefined): RequestText {
     const write = asksToChange(raw), continuation = asksToContinue(own);
     const placeBuild = PLACE_BUILD_WORDS.test(topic), makeGame = MAKE_GAME_WORDS.test(topic);
     const { scope, why } = scopeOf(own, topic, { audioOnly: audio.only, write, continuation, placeBuild, makeGame });
+    const tools = matchToolGroups(topic, { wholeGame: scope === "wholeGame", audio, combat });
+    const topics = gameTopics(topic, combat), job = jobFacets(topic);
     return {
       own, topic, scope, why, write, continuation, placeBuild, makeGame,
       oneRoom: SINGLE_PLACE.test(topic) || ONE_ROOM_GAME.test(topic),
       audio, combat, horror: HORROR_WORDS.test(topic), puzzle: puzzleAsk(topic), ending: ENDING_WORDS.test(topic), art: ART_ASK.test(topic),
-      tools: matchToolGroups(topic, { wholeGame: scope === "wholeGame", audio, combat }),
+      tools, topics, job, smallTools: smallJobTools(topics, job, tools, audio, combat),
     };
   });
 }
@@ -103,11 +109,16 @@ export function classifyRequest(task: string | undefined, project: Pick<Project,
     // 청사진은 게임 하나를 만들 때만 생긴다 — 첫 요청 글이 남아 있지 않은 옛 청사진도 게임 하나로 본다.
     const inherits = text.scope === "continue" && !!blueprint && (first!.scope === "wholeGame" || !blueprint.request?.trim());
     const wholeGame = text.scope === "wholeGame" || inherits;
-    const why = inherits ? `${text.why}; the blueprint's first request was a whole game` : text.scope === "continue" ? `${text.why}; no whole-game blueprint to inherit` : text.why;
+    // 빈 프로젝트에 묘사만 온 글(「장난감 가게」)은 첫 장소를 짓는 시작이다 — 시킨 일이 분명한 작은 요청은 빈 프로젝트에서도 작은 요청이다.
+    const firstPlace = fresh && text.scope === "edit" && bareDescription(text.own);
+    const scope: RequestScope = firstPlace ? "place" : text.scope;
+    const why = firstPlace ? "a bare description on an empty project — start with a first place"
+      : inherits ? `${text.why}; the blueprint's first request was a whole game` : text.scope === "continue" ? `${text.why}; no whole-game blueprint to inherit` : text.why;
     return {
-      ...text, why, wholeGame, fresh,
+      ...text, scope, why, wholeGame, fresh,
       oneRoom: text.oneRoom || !!first?.oneRoom || escape,
-      editOnly: !!text.own.trim() && !fresh && text.scope !== "wholeGame" && text.scope !== "place",
+      // 빈 프로젝트의 이어 하기(「계속」)는 고칠 것이 없다 — 앞 실행이 아무것도 못 쓰고 끊긴 것이라 짓는 카드·도구를 그대로 싣는다.
+      editOnly: !!text.own.trim() && scope !== "wholeGame" && scope !== "place" && !(fresh && scope === "continue"),
     };
   });
 }

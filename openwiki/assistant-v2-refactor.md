@@ -89,6 +89,7 @@
 | 조각 | 무엇 |
 |---|---|
 | B1 | 요청 분류를 한 번만 하고 기록해 모든 곳이 읽게(34곳의 따로 판정 없애기). 작은 일은 그 일의 검사만 — **요청 쪽 끝**: `request/intent.ts`(`classifyRequest` → 범위·까닭·소리·전투·도구 묶음) + `request/readers.ts`(옛 이름은 기록을 읽기만), 오분류 규칙 수정, 말뭉치 `test/aiV2RequestIntent.test.ts`. 「작은 일은 그 일의 검사만」은 판정 줄기의 일로 남았다(`assistant-v2.md` 「요청 의도」) |
+| B1-지시문 | 지시문과 처음 싣는 도구를 요청 의도에서 예산을 두고 짓는다(요청 줄기) — 작은 일은 그 일의 카드·도구만(`request/topics.ts` 주제 31개 · `smallJobTools` 19개+`load_tools`), 게임 카드 줄마다 주제 표지(`game.ts` `GAME_LINES`), 실내 목록은 실내를 짓는 요청에만, 어긋나던 지시 넷 정리, `furnish_outdoor_area`·`move_event dx,dy` 반영. 예산 시험 `test/aiV2PromptBudget.test.ts` (`assistant-v2.md` 「지시문·도구 예산」) |
 | B2 | 완료 판정: 화면 검수는 장부로, 결정적 검사가 뒷받침하는 것만 할 일로. 겹침 판정·항목 열쇠 수정 (제품 기준 변경 — 오너 확인 뒤) |
 | B3 | 자리 규칙 하나 · 통행 기준 채우기 · 무대 오프닝 |
 | B4 | 턴 사이 기억(시도·실패·막힌 이유·장소 설계) |
