@@ -17,7 +17,7 @@ import { alignCodeClues } from "../../src/ai/v2/codeClues.ts";
 import { realignEvidencePlaces } from "../../src/ai/v2/mysteryCase.ts";
 import { assembledReport, isProviderErrorReply, todoReport } from "../../src/ai/v2/finalReport.ts";
 import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaShotPlan, vqaReviewerLabel, vqaSummary, wantsWholeGame, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, vqaLedgerLine, type VqaReviewerPick, type VqaRound, type VqaShot } from "../../src/ai/v2/vqa.ts";
-import { closeVqaUnchanged, noteVqaRound, vqaLedgerLines, type VqaFinding } from "../../src/ai/v2/turn/vqaItems.ts";
+import { closeVqaUnchanged, noteVqaRound, vqaLedgerLines, vqaUnofferedBlockers, type VqaFinding } from "../../src/ai/v2/turn/vqaItems.ts";
 import { familyOfProviderId } from "../../src/ai/assistantRoles.ts";
 import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
 import { adviseTurn, scopeAdviceToRequest, advisorSummary, compactToolLog, summarizeProjectDiff, type AdvisorToolCall, type AdvisorVerdict } from "../../src/ai/v2/advisor.ts";
@@ -537,7 +537,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
     if (session.fitIncomplete) autoNotes.push(`${session.fitIncomplete} — 게임은 열리지만 첫 관문 승률은 이 요청에서 보정되지 않았다`);
     const vqaLeft = vqaRounds.length ? vqaSummary(vqaRounds) : undefined;
     if (!(options.signal?.aborted) && !session.questions.length && (store.items.length || leftovers.length || session.fitIncomplete)) {
-      const report = todoReport({ store, draft, leftovers, missing: [...session.missingArt], autoNotes, preexisting: [...preexisting.values()], ...(loopStop ? { loopStop } : {}), ...(vqaLeft && !vqaLeft.clean ? { vqa: vqaLeft.text } : {}), vqaLedger: vqaLedgerLines(vqaBook, store) });
+      const report = todoReport({ store, draft, leftovers, missing: [...session.missingArt], autoNotes, preexisting: [...preexisting.values()], ...(loopStop ? { loopStop } : {}), ...(vqaLeft && !vqaLeft.clean ? { vqa: vqaLeft.text } : {}), vqaLedger: vqaLedgerLines(vqaBook, store), vqaUnoffered: vqaUnofferedBlockers(vqaBook, store) });
       options.onEvent?.({ type: "execution_status", name: "v2.todo.final", ok: report.complete, at: Date.now(), summary: `할 일 최종 — ${report.complete ? "완료" : "아직 완료 아님"} · ${store.view(0).split("\n")[0]}${report.receipts.length ? ` · 보고와 다른 것 ${report.receipts.length}` : ""}`, data: { complete: report.complete, receipts: report.receipts, list: store.view(), items: store.items, reinjections, loopStop } });
       if (store.items.length || /통과|없음|다\s*됐|완료/u.test(draft) || !draft) options.onEvent?.({ type: "assistant", text: report.text });
     }

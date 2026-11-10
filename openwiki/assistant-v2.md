@@ -118,7 +118,8 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 | 막음 급, 모델이 고칠 것 | 할 일 항목. 한 번 건넨 뒤 다음 판에도 그대로면 그 항목 자신의 글로 막힘 | **예** — 모델이 받아 본 뒤 남았을 때만 |
 | 다듬기 급, 고치는 호출이 있음(`vqaFixCall`: 빈 방·빈 맵·타이틀 그림·모델이 지은 오프닝) | 할 일 항목(`severity: "polish"`)으로 한 번 | 아니오 — 남으면 표에 «다듬기 남음», 다시 열지 않는다(다음 턴 «계속»에서도) |
 | 다듬기 급, 고치는 호출이 없음 | 장부 | 아니오 |
-| 고친 뒤 다시 찍어 볼 판이 남지 않은 판의 새 결함(다듬기 3판·막음 5판) | 장부 | 아니오 |
+| 다시 찍어 볼 판이 남지 않은 판(다듬기 3판·막음 5판)의 새 다듬기 | 장부 | 아니오 |
+| 다시 찍어 볼 판이 남지 않은 판의 새 막음(모델이 고칠 것) | 최종 보고 «건네지 못한 화면 검수 막음»(`vqaUnofferedBlockers`) — 할 일 항목은 아니다 | **예** — 알려진 막음이다. 다음 턴의 화면 검수가 할 일로 건넨다 |
 
 모델이 받아 보기 전에 코드가 닫은 화면 검수 항목(`closedBy: auto` 이고 재주입에 실린 적 없음)도 막힘으로 세지 않는다(표에 «건네지 못함»). 검수자가 틀렸으면 조수는 그 항목을 `drop`(이유) 한다.
 조수 항목·함수 검사·비평 항목의 막힘은 종전대로 완료를 막는다.
@@ -138,7 +139,7 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 | 고치라고 건넨 뒤 프로젝트가 안 바뀌었는데 조수가 «끝»으로 표시한 항목이 ✓ 로 남음 | `closeVqaUnchanged` — 다시 찍지 않고 건넨 항목을 그대로로 닫는다 |
 | 사라진 결함의 항목이 막힘으로 남음 / 그림 수 상한으로 안 찍힌 맵의 결함이 «사라짐» | `noteVqaRound` — 그 대상을 이번 판이 찍었을 때만 사라졌다고 본다. 사라졌으면 막힌 항목도 닫는다 |
 
-코드: `src/ai/v2/turn/vqaItems.ts`(장부 `VqaFinding` · `noteVqaRound` · `closeVqaUnchanged` · `vqaLedgerLines`), `src/ai/v2/vqa.ts`, `src/ai/v2/finalReport.ts`, `src/ai/v2/loop/todoStore.ts`(`holds` · `markOffered` · `byKey`).
+코드: `src/ai/v2/turn/vqaItems.ts`(장부 `VqaFinding` · `noteVqaRound` · `closeVqaUnchanged` · `vqaLedgerLines` · `vqaUnofferedBlockers`), `src/ai/v2/vqa.ts`, `src/ai/v2/finalReport.ts`, `src/ai/v2/loop/todoStore.ts`(`holds` · `markOffered` · `byKey`).
 시험: `test/aiV2VqaJudge.test.ts` · `test/aiV2FinalReport.test.ts`(결함 글은 판 기록 그대로).
 아직 아닌 것: 장부와 항목의 시도·실패 기억은 턴을 넘지 못한다(B4). 화면 검수 분류의 나머지는 여전히 검수자 글의 낱말로 가른다.
 

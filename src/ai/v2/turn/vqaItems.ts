@@ -4,6 +4,7 @@
 //   - 모델 밖 결함(런타임·빌더 몫 — vqaClassify)은 장부에만 남는다. 할 일이 되지 않는다.
 //   - 막음 급 결함은 할 일 항목이 된다. 한 번 건넨 뒤 다음 판에도 그대로면 그 항목 자신의 이유로 막힘 — 이것만 완료를 막는다.
 //   - 다듬기 급 결함은 고치는 호출이 있을 때만 한 번 건넨다. 남아도 완료를 막지 않고 다시 열지 않는다.
+//   - 다시 찍어 볼 판이 남지 않아 건네지 못한 막음 급 결함은 항목이 아니어도 완료를 막는다(vqaUnofferedBlockers) — 다음 턴이 건넨다.
 //   - 같은 결함인지는 대상(맵·장면)과 결함 글로 가른다(vqaSameDefect). 항목 열쇠는 결함 하나에 하나라 다른 결함이 내용을 덮어쓰지 않는다.
 import type { Project } from "@/project/types";
 import { textHash } from "../loop/continuation";
@@ -118,13 +119,22 @@ export function closeVqaUnchanged(book: readonly VqaFinding[], store: TodoStore)
 }
 
 const LEDGER_MAX_LINES = 12;
+/** 할 일 표에 없는 남은 결함. */
+const offTable = (book: readonly VqaFinding[], store: TodoStore): VqaFinding[] => book.filter((f) => !f.gone && !(f.itemId && store.get(f.itemId)));
+/** 모델이 고칠 막음인데 할 일로 건네지 못했다(다시 찍어 볼 판이 남지 않았다). */
+const unofferedBlocker = (f: VqaFinding): boolean => f.work && f.defect.severity === "blocker";
 
-/** 최종 보고의 장부 줄 — 할 일 표에 없는 남은 결함(모델 밖·고치는 호출이 없는 다듬기·판이 남지 않아 건네지 못한 것). 완료를 막지 않는다. */
+/** 최종 보고의 장부 줄 — 할 일 표에 없는 남은 결함 가운데 완료를 막지 않는 것(모델 밖·고치는 호출이 없는 다듬기·건네지 못한 다듬기). */
 export function vqaLedgerLines(book: readonly VqaFinding[], store: TodoStore): string[] {
-  const rest = book.filter((f) => !f.gone && !(f.itemId && store.get(f.itemId)));
-  const lines = rest.slice(0, LEDGER_MAX_LINES).map((f) => {
-    const tag = !f.work ? `런타임·빌더 몫(${vqaClassify(f.defect).kind})` : f.defect.severity === "blocker" ? "막음 — 판이 남지 않아 건네지 못함" : "다듬기";
-    return `[${tag}] ${f.defect.where} — ${f.lastWhat}`;
-  });
+  const rest = offTable(book, store).filter((f) => !unofferedBlocker(f));
+  const lines = rest.slice(0, LEDGER_MAX_LINES).map((f) => `[${f.work ? "다듬기" : `런타임·빌더 몫(${vqaClassify(f.defect).kind})`}] ${f.defect.where} — ${f.lastWhat}`);
   return rest.length > LEDGER_MAX_LINES ? [...lines, `…${rest.length - LEDGER_MAX_LINES}건 더`] : lines;
+}
+
+/**
+ * 건네지 못한 막음 — 모델이 고칠 막음 급 결함이 판이 남지 않은 판에 처음 보였다. 할 일 항목은 아니지만 알려진 막음이라 완료를 막는다
+ * (다음 턴의 화면 검수가 할 일로 건넨다).
+ */
+export function vqaUnofferedBlockers(book: readonly VqaFinding[], store: TodoStore): string[] {
+  return offTable(book, store).filter(unofferedBlocker).map((f) => `${f.defect.where} — ${f.lastWhat}`);
 }

@@ -5,7 +5,7 @@ import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { TodoStore } from "@/ai/v2/loop/todoStore";
 import { editorDefaultsLeft } from "@/ai/v2/shipChecks";
-import { closeVqaUnchanged, noteVqaRound, vqaLedgerLines, type VqaFinding } from "@/ai/v2/turn/vqaItems";
+import { closeVqaUnchanged, noteVqaRound, vqaLedgerLines, vqaUnofferedBlockers, type VqaFinding } from "@/ai/v2/turn/vqaItems";
 import { reviewVqaRound, vqaClassify, vqaDefectLine, vqaFixCall, vqaSameDefect, vqaShotPlan, type VqaDefect, type VqaRound } from "@/ai/v2/vqa";
 
 const START_WHERE = "맵 «별샘 오아시스» (44×36칸 · 시작 맵 · 주인공은 게임에서만 그려짐, 시작 칸 19,35)";
@@ -205,9 +205,22 @@ describe("noteVqaRound — findings ↔ todo items", () => {
     const store = new TodoStore();
     expect(noteVqaRound([], store, round(3, [sparse]), project).opened).toEqual([]);
     expect(noteVqaRound([], store, round(3, [dragon]), project).opened).toHaveLength(1);
+  });
+
+  it("a blocker first seen when no round is left is not an item, yet it is reported as an un-offered blocker (not as ledger polish)", () => {
     const book: VqaFinding[] = [];
-    expect(noteVqaRound(book, new TodoStore(), round(5, [chest]), project).opened).toEqual([]);
-    expect(vqaLedgerLines(book, new TodoStore())[0]).toContain("판이 남지 않아 건네지 못함");
+    const store = new TodoStore();
+    expect(noteVqaRound(book, store, round(5, [chest, boat, crop]), project).opened).toEqual([]);
+    expect(vqaUnofferedBlockers(book, store)).toHaveLength(1);
+    expect(vqaUnofferedBlockers(book, store)[0]).toContain("보물상자");
+    const ledger = vqaLedgerLines(book, store).join("\n");
+    expect(ledger).not.toContain("보물상자");
+    expect(ledger).toContain("배가 물이나 얼음 위가 아니라");
+    expect(ledger).toContain("builder-opening");
+    // 다음 판(또는 다음 턴의 1판)에서 다시 보이면 그때 할 일로 건넨다.
+    const next: VqaFinding[] = [];
+    expect(noteVqaRound(next, store, round(1, [chest]), project).offered).toEqual([chest]);
+    expect(vqaUnofferedBlockers(next, store)).toEqual([]);
   });
 
   it("a round that could not be reviewed changes nothing", () => {

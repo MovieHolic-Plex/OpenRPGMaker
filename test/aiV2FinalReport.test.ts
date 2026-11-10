@@ -39,6 +39,17 @@ describe("todoReport completion", () => {
     expect(report.text).toContain("배가 눈밭에 놓여 있다");
   });
 
+  it("a known model-fixable blocker that could not be handed over keeps the turn incomplete", () => {
+    const store = storeWith([{ severity: "polish" }]);
+    const line = "맵 «왕의 묘실» (20×15칸) · 오른쪽 — 보물상자가 벽에 묻혀 다가갈 수 없다";
+    expect(todoReport({ store, draft: "", vqaUnoffered: [] }).complete).toBe(true);
+    const report = todoReport({ store, draft: "", vqaUnoffered: [line], vqaLedger: ["[다듬기] 맵 «호수» — 배가 눈밭에 놓여 있다"] });
+    expect(report.complete).toBe(false);
+    expect(report.text).toContain("건네지 못한 화면 검수 막음 1");
+    expect(report.text).toContain("다음 턴에 할 일로 건넨다");
+    expect(report.text).toContain("보물상자가 벽에 묻혀");
+  });
+
   it("counts only holding items as 막힘 in the head line", () => {
     const report = todoReport({ store: storeWith([{ severity: "polish" }, {}]), draft: "" });
     expect(report.complete).toBe(false);
