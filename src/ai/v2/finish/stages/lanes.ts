@@ -1,4 +1,4 @@
-// 출구·이동 칸 마감(session.clearLanes → src/ai/v2/lanes, 한 실행에 한 번) + 길목 뒤 조사 자리 다시 맞추기.
+// 출구·이동 칸 마감(session.clearLanes → src/ai/v2/finish/lanes, 한 실행에 한 번) + 길목 뒤 조사 자리 다시 맞추기.
 import type { FinishStage } from "../types";
 import { createBuildRun } from "../../buildRun";
 import { alignClueObjects } from "../../story/clueObjects";

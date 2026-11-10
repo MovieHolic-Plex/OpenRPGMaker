@@ -9,7 +9,7 @@ import { DEAD_END_PREFIX } from "../place/deadEndRoads";
 import { blueprintMapFor } from "../story/blueprintPath";
 import { populateWorldPlace } from "../place/worldPopulate";
 import { repairEventReach } from "../eventReach";
-import { runLaneStages } from "../lanes";
+import { runLaneStages } from "../finish/lanes";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart } from "../blankStart";
 import { guessPlaceSpec } from "../place/placeGuess";
 import { edgeCell, isInside, villageDoors, walkGame } from "../makeGame";
@@ -31,7 +31,7 @@ export function installSessionHooks(c: VerbContext) {
   };
   // 끝맺음(2026-10-28 standin jrpg): 컷신에서 주인공에게 다가온 소녀가 동굴 입구 착지 칸 앞에 서서 자동 플레이가 막혔다.
   session.clearLanes = async () => {
-    // 단계(빈 시작 맵 치우기 → 방탈출 봉인 → … → 맵마다 출구 마감·길·그림·사람 자리)는 src/ai/v2/lanes/stages/ — 한 단계에 파일 하나.
+    // 단계(빈 시작 맵 치우기 → 방탈출 봉인 → … → 맵마다 출구 마감·길·그림·사람 자리)는 src/ai/v2/finish/lanes/stages/ — 한 단계에 파일 하나.
     const notes = runLaneStages(env, session, run);
     if (notes.length) {
       recordWrite(env, run, `auto-lanes-${Date.now()}`, "move_event", { auto: "transfer-lanes" }, true, notes.join(" / ").slice(0, 400), {});
