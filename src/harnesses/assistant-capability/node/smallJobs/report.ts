@@ -26,8 +26,42 @@ function jobRow(result: JobResult): string {
     `<td class="num">${kilo(result.tokens.input + result.tokens.cacheRead)} / ${kilo(result.tokens.output)}</td><td class="num">${result.systemPromptChars === null ? '-' : result.systemPromptChars.toLocaleString('en')}</td><td class="num">${result.toolsOffered ?? '-'}</td></tr>`;
 }
 
-export function writeSmallJobsReport(options: { run?: string; html?: string }): number {
-  if (!options.run) throw Error('small-jobs-report --run <실행 폴더> [--html <출력.html>]');
+/** 전/후 비교(`--before <앞 실행 폴더>`): 통과 수·중앙값·가족/픽스처별, 앞에서 불합격이던 일과 앞에서 통과했다가 지금 통과하지 못한 일(회귀)을 일마다. */
+function compareHtml(before: any, after: any, families: Record<string, string>): string {
+  const was: JobResult[] = before.jobs, now: JobResult[] = after.jobs;
+  const nowById = new Map(now.map(result => [result.id, result]));
+  const refusals = (results: JobResult[], name: string): string => { const calls = results.flatMap(result => result.toolCalls).filter(call => call.name === name); return `${calls.filter(call => !call.ok).length} / ${calls.length}`; };
+  const row = (label: string, a: string | number, b: string | number): string => `<tr><td>${label}</td><td class="num">${a}</td><td class="num"><b>${b}</b></td></tr>`;
+  const bm = before.medians, am = after.medians, bc = before.counts, ac = after.counts;
+  const head = `<table class="cmp"><thead><tr><th></th><th>앞 (main ${esc(before.git?.mainBase || '-')})</th><th>지금 (main ${esc(after.git?.mainBase || '-')})</th></tr></thead><tbody>` +
+    row('통과', `${bc.pass} / ${bc.jobs}`, `${ac.pass} / ${ac.jobs}`) + row('불합격 · 시간 초과 · 기반 오류', `${bc.fail} · ${bc.timeout} · ${bc.infra}`, `${ac.fail} · ${ac.timeout} · ${ac.infra}`) +
+    row('턴이 «완료»로 끝남', `${bc.complete} / ${bc.jobs}`, `${ac.complete} / ${ac.jobs}`) + row('요청 밖 변경이 있었던 일', bc.sideEdited ?? '-', ac.sideEdited ?? '-') +
+    row('도구 호출 중앙값 (합계)', `${bm.toolCalls} (${before.totals.toolCalls})`, `${am.toolCalls} (${after.totals.toolCalls})`) + row('걸린 시간 중앙값 (합계)', `${minutes(bm.wallMs)}분 (${minutes(before.totals.wallMs)}분)`, `${minutes(am.wallMs)}분 (${minutes(after.totals.wallMs)}분)`) +
+    row('모델 호출 중앙값', bm.modelCalls, am.modelCalls) + row('입력 토큰 중앙값 (합계, 캐시 읽기 포함)', `${kilo(bm.inputTokens)} (${kilo(before.totals.inputTokens)})`, `${kilo(am.inputTokens)} (${kilo(after.totals.inputTokens)})`) +
+    row('출력 토큰 중앙값 (합계)', `${kilo(bm.outputTokens)} (${kilo(before.totals.outputTokens)})`, `${kilo(am.outputTokens)} (${kilo(after.totals.outputTokens)})`) +
+    row('지시문 글자 중앙값', Number(bm.systemPromptChars).toLocaleString('en'), Number(am.systemPromptChars).toLocaleString('en')) + row('처음 실린 도구 수 중앙값', bm.toolsOffered, am.toolsOffered) +
+    row('도구 설명 글자 중앙값', Number(bm.toolSchemaChars ?? 0).toLocaleString('en'), Number(am.toolSchemaChars ?? 0).toLocaleString('en')) +
+    row('generate_art 거절 / 호출', refusals(was, 'generate_art'), refusals(now, 'generate_art')) + row('define_ending 호출(거절 / 전체)', refusals(was, 'define_ending'), refusals(now, 'define_ending')) +
+    row('edit_place 거절 / 호출', refusals(was, 'edit_place'), refusals(now, 'edit_place')) + '</tbody></table>';
+  const median = (values: number[]): number => { const sorted = [...values].sort((x, y) => x - y); const mid = sorted.length >> 1; return !sorted.length ? 0 : sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2; };
+  const group = (results: JobResult[]): string => `${results.filter(result => result.status === 'pass').length}/${results.length} · ${median(results.map(result => result.toolCallCount))}회 · ${minutes(median(results.map(result => result.wallMs)))}분`;
+  const familyRows = Object.keys(families).filter(family => now.some(result => result.family === family)).map(family => `<tr><td>${esc(families[family])}</td><td class="num">${group(was.filter(result => result.family === family))}</td><td class="num"><b>${group(now.filter(result => result.family === family))}</b></td></tr>`).join('');
+  const fixtureRows = [...new Set(now.map(result => result.fixture))].map(fixture => `<tr><td>${esc(fixture)}</td><td class="num">${group(was.filter(result => result.fixture === fixture))}</td><td class="num"><b>${group(now.filter(result => result.fixture === fixture))}</b></td></tr>`).join('');
+  const cost = (result: JobResult | undefined): string => (result ? `${result.toolCallCount}회 · ${minutes(result.wallMs)}분` : '-');
+  const jobRowOf = (old: JobResult): string => { const cur = nowById.get(old.id); return `<tr><td><b>${esc(old.id)}</b><div class="req">${esc(old.request)}</div></td><td>${badge(old.status)}<div class="req">${cost(old)}</div></td><td class="why">${esc(old.reason.slice(0, 200))}</td><td>${cur ? badge(cur.status) : '-'}<div class="req">${cost(cur)}</div></td><td class="why">${esc((cur?.reason ?? '이번 실행에 없음').slice(0, 260))}${cur ? `<details><summary>호출 순서</summary><p class="calls">${callLine(cur)}</p></details>` : ''}</td></tr>`; };
+  const table = (rows: JobResult[]): string => `<table class="jobs"><thead><tr><th>일 · 요청</th><th>앞</th><th>앞 까닭</th><th>지금</th><th>지금 까닭</th></tr></thead><tbody>${rows.map(jobRowOf).join('')}</tbody></table>`;
+  const failedBefore = was.filter(result => result.status !== 'pass');
+  const regressions = was.filter(result => result.status === 'pass' && nowById.get(result.id) && nowById.get(result.id)!.status !== 'pass');
+  const fixed = failedBefore.filter(result => nowById.get(result.id)?.status === 'pass').length;
+  const all = `<details><summary>30가지 전부 — 앞 → 지금(결과 · 호출 · 분)</summary><table class="cmp"><thead><tr><th>일</th><th>앞</th><th>지금</th></tr></thead><tbody>${was.map(old => { const cur = nowById.get(old.id); return `<tr><td>${esc(old.id)}</td><td>${badge(old.status)} <span class="muted">${cost(old)}</span></td><td>${cur ? badge(cur.status) : '-'} <span class="muted">${cost(cur)}</span></td></tr>`; }).join('')}</tbody></table></details>`;
+  return `<h2>앞 실행과 견주기 — ${bc.pass}/${bc.jobs} → ${ac.pass}/${ac.jobs}</h2><p class="meta">앞: ${esc(String(before.startedAt).slice(0, 16))} UTC, main ${esc(before.git?.mainBase || '-')} · 지금: ${esc(String(after.startedAt).slice(0, 16))} UTC, main ${esc(after.git?.mainBase || '-')} · 같은 묶음 · 같은 모델 고정 · 같은 판정. 둘 다 한 번씩 돌린 것이라 일 하나의 뒤집힘에는 모델의 흔들림이 섞여 있다.</p>${head}` +
+    `<h3>가족별 · 픽스처별 <span class="muted">통과 · 호출 중앙값 · 분 중앙값</span></h3><div class="two"><table class="cmp"><thead><tr><th>가족</th><th>앞</th><th>지금</th></tr></thead><tbody>${familyRows}</tbody></table><table class="cmp"><thead><tr><th>픽스처</th><th>앞</th><th>지금</th></tr></thead><tbody>${fixtureRows}</tbody></table></div>` +
+    `<h3>앞에서 통과했는데 지금 통과하지 못한 일(회귀) <span class="muted">— ${regressions.length}건</span></h3>${regressions.length ? table(regressions) : '<p>없다.</p>'}` +
+    `<h3>앞에서 통과하지 못한 일 ${failedBefore.length}건 <span class="muted">— 지금 통과 ${fixed}</span></h3>${failedBefore.length ? table(failedBefore) : '<p>없다.</p>'}${all}`;
+}
+
+export function writeSmallJobsReport(options: { run?: string; html?: string; before?: string }): number {
+  if (!options.run) throw Error('small-jobs-report --run <실행 폴더> [--html <출력.html>] [--before <견줄 앞 실행 폴더>]');
   const run = resolve(options.run);
   const summary = JSON.parse(readFileSync(resolve(run, 'summary.json'), 'utf8'));
   const suite = loadSuite();
@@ -72,10 +106,12 @@ table{border-collapse:collapse;width:100%;background:var(--card);border:1px soli
 .fam td:first-child{width:190px}.fam td:nth-child(2){width:70px}.jobs td:first-child{width:250px}.side{margin-top:4px;font-size:12.5px;color:var(--timeout)}.req{color:var(--mut);font-size:12.5px;margin-top:2px}.why{max-width:520px}.err{color:var(--fail)}details{margin-top:6px}summary{cursor:pointer;color:var(--mut);font-size:12.5px}.calls{font:12px/1.5 ui-monospace,Menlo,monospace;color:var(--mut);word-break:break-all;margin:6px 0}
 .trace{margin:6px 0;padding-left:20px;font-size:12.5px}.trace li{margin:3px 0}.trace li.bad b{color:var(--fail)}.trace code{display:block;font:11.5px/1.45 ui-monospace,Menlo,monospace;color:var(--mut);word-break:break-all}.trace .res{display:block;font-size:12px;color:var(--fg);opacity:.85;word-break:break-word;border-left:2px solid var(--line);padding-left:8px;margin-top:2px}
 .answer{white-space:pre-wrap;font-size:12.5px;color:var(--mut);border-left:2px solid var(--line);padding-left:8px}.cause{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 16px 12px;margin:12px 0}.ex{border-top:1px dashed var(--line);padding:8px 0 2px}.ex .why{margin:4px 0;max-width:none}pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow:auto;font-size:12.5px}
+.cmp td:first-child{width:auto}.cmp{margin:8px 0}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}@media(max-width:800px){.two{grid-template-columns:1fr}}
 </style></head><body><main>
 <h1>작은 일 30가지 — 조수 ${esc(summary.assistantVersion)} · ${esc(summary.model)}</h1>
 <p class="meta">기준 main ${esc(summary.git.mainBase || '-')} · 머리 ${esc(summary.git.sha)} (${esc(summary.git.branch)}${summary.git.dirty ? ' · 작업 트리 변경 있음' : ''}) · ${esc(String(summary.startedAt).slice(0, 16))} ~ ${esc(String(summary.finishedAt).slice(0, 16))} UTC · 일마다 새 픽스처 · 한 턴(되물으면 「네가 판단해서 진행해 줘」 한 번) · 상한 ${summary.timeLimitMin}분 · 판정은 저장·재로드한 문서의 기계 검사(모델 판정자 없음)</p>
 <div class="tiles">${tile(`${c.pass} / ${c.jobs}`, '통과', `불합격 ${c.fail} · 시간 초과 ${c.timeout} · 기반 오류 ${c.infra}${flipped.length ? ` · 실행 때 판정은 ${results.filter(result => ((result as any).liveVerdict?.status ?? result.status) === 'pass').length} (아래 「판정에 대해 알아 둘 것」)` : ''}`)}${tile(`${c.complete} / ${c.jobs}`, '턴이 «완료»로 끝남', '조수 자신의 턴 끝 판정')}${tile(`${c.sideEdited ?? 0} / ${c.jobs}`, '요청 밖 변경이 있었던 일', '타이틀·엔딩·자료집·다른 이벤트 내용 등')}${tile(String(m.toolCalls), '도구 호출 중앙값', `합계 ${summary.totals.toolCalls}회`)}${tile(`${minutes(m.wallMs)}분`, '걸린 시간 중앙값', `합계 ${minutes(summary.totals.wallMs)}분`)}${tile(`${kilo(m.inputTokens)} / ${kilo(m.outputTokens)}`, '토큰 in / out 중앙값 (입력은 캐시 읽기 포함)', `합계 ${kilo(summary.totals.inputTokens)} / ${kilo(summary.totals.outputTokens)}`)}${tile(Number(m.systemPromptChars).toLocaleString('en'), '지시문 글자 중앙값', '첫 모델 호출')}${tile(String(m.toolsOffered), '처음 실린 도구 수 중앙값', m.toolSchemaChars ? `도구 설명 ${Number(m.toolSchemaChars).toLocaleString('en')}자` : '')}</div>
+${options.before ? compareHtml(JSON.parse(readFileSync(resolve(resolve(options.before), 'summary.json'), 'utf8')), summary, suite.families) : ''}
 <h2>가족별</h2><table class="fam"><thead><tr><th>가족</th><th>통과</th><th>일마다</th><th></th></tr></thead><tbody>${familyBars}</tbody></table>
 <h3>픽스처별</h3><table class="fx"><thead><tr><th>픽스처</th><th>통과</th><th>«완료»</th><th>호출 중앙값</th><th>분 중앙값</th><th>입력 토큰 중앙값</th><th>지시문 자 중앙값</th></tr></thead><tbody>${fixtureRows}</tbody></table>
 <p class="meta">칸 색: <span class="badge pass">통과</span> <span class="badge fail">불합격</span> <span class="badge timeout">시간 초과</span> <span class="badge infra">기반 오류</span> — 시간 초과와 기반 오류도 통과가 아닌 것으로 센다. 다시 돌려 초록으로 바꾸지 않았다.</p>

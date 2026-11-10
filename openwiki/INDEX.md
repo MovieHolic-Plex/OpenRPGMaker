@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **193쪽 / 8170KB / 약 2,402,124 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **193쪽 / 8173KB / 약 2,403,051 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -32,7 +32,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-validation.md` | 64KB | 17KB | 419 | ~18,019 |
 | `openwiki/editor-workflows-misc.md` | 91KB | 33KB | 636 | ~25,541 |
 | `openwiki/editor-workshop.md` | 76KB | 15KB | 337 | ~22,898 |
-| `openwiki/harnesses/assistant-capability.md` | 84KB | 10KB | 565 | ~25,652 |
+| `openwiki/harnesses/assistant-capability.md` | 87KB | 10KB | 598 | ~26,579 |
 | `openwiki/harnesses/building-kit.md` | 99KB | 4KB | 984 | ~29,868 |
 | `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
 | `openwiki/harnesses/monster-collect-species.md` | 63KB | 18KB | 353 | ~19,132 |
@@ -1654,7 +1654,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L43` 하네스 목록
 - `L61` 다른 실행기와 공유하는 하네스 목록
 
-### `openwiki/harnesses/assistant-capability.md` — 84KB · 565줄 · ~25,652 토큰 · 통째읽기 잘림
+### `openwiki/harnesses/assistant-capability.md` — 87KB · 598줄 · ~26,579 토큰 · 통째읽기 잘림
 
 - `L7` 실행 경로
   - `L9` 여덟 장르 제작 실측 (2026-10-08)
@@ -1670,18 +1670,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L249` 판정 — 저장 문서 전/후만 본다
   - `L304` 자기검사 (`small-jobs-selfcheck`) — 판정을 먼저 증명한다
   - `L314` 실행기 (`small-jobs`)
-  - `L338` 기준선 — 2026-11-11, main `46274bc35f`, Terra high + v2
-- `L381` 시각 검수
-- `L396` 산출물과 확장
-- `L402` 최초 실측 — 2026-10-05
-- `L410` 제품 회귀와 오류 표시 controls (2026-10-05)
-- `L416` 수정 확인 — 2026-10-05
-- `L420` 월드맵 생성 MP4 증거
-  - `L440` 대사창 읽기 보조 실조수 시험 — Argon 5문장 (2026-10-17, `set_dialogue_system`)
-  - `L454` 미연시 추가 화면 실조수 시험 — Argon 5문장 (2026-10-17, `set_vn_extras`)
-- `L470` 장면 교훈 묶음 (2026-10-22)
-  - `L508` 첫 판 결과 (r2 기준선 → r3 수정 후)
-  - `L555` 루프 1 숫자 (Sonnet 5.5 high 조수 대용, 2026-10-22)
+  - `L340` 기준선 — 2026-11-11, main `46274bc35f`, Terra high + v2
+  - `L383` 다시 재기 — 2026-11-11, main `84a7fa331a` (B1~B5a · 예산 · 끝맺음 수정 뒤)
+- `L414` 시각 검수
+- `L429` 산출물과 확장
+- `L435` 최초 실측 — 2026-10-05
+- `L443` 제품 회귀와 오류 표시 controls (2026-10-05)
+- `L449` 수정 확인 — 2026-10-05
+- `L453` 월드맵 생성 MP4 증거
+  - `L473` 대사창 읽기 보조 실조수 시험 — Argon 5문장 (2026-10-17, `set_dialogue_system`)
+  - `L487` 미연시 추가 화면 실조수 시험 — Argon 5문장 (2026-10-17, `set_vn_extras`)
+- `L503` 장면 교훈 묶음 (2026-10-22)
+  - `L541` 첫 판 결과 (r2 기준선 → r3 수정 후)
+  - `L588` 루프 1 숫자 (Sonnet 5.5 high 조수 대용, 2026-10-22)
 
 ### `openwiki/harnesses/battle-backdrop.md` — 11KB · 83줄 · ~3,401 토큰
 
