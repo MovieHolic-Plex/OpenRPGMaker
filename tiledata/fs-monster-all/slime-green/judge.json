@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell matches the current moss slime: same green palette, leaf sprout, side leaflets and dot eyes. The idle cells squash visibly, the attack is a forward-leaning swell that is clearly different from the squinting, shrunken recoil of the hit, the dead cell is a flat puddle, and the pixels are crisp with no fringe. Points off because the attack mostly reads as a size bump rather than an obvious strike, and the attack-to-hit size change is large.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

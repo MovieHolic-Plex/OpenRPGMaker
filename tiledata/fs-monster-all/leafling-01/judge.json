@@ -1,0 +1,10 @@
+{
+ "pass": true,
+ "score": 4,
+ "failed": [],
+ "reason": "Every cell shows the same leafling as the current look (brown wooden head with a long beak nose and yellow eyes, spiky leaf crown, leaf cloak), and the art is crisp with no fringe or specks; the forward lunge in attack cell 6 is clearly different from the backward-leaning, eyes-shut hit pose, and dead lies flat. Minor weaknesses: the idle breathing is subtle, and the hit pose's kicked leg reads a little like running rather than pure recoil.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

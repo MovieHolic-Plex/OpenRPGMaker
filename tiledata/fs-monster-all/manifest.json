@@ -1,0 +1,70 @@
+{
+ "slime-green": {
+  "resourceId": "generated-enemy-slime-green",
+  "name": "이끼 슬라임",
+  "cell": 64,
+  "try": 1,
+  "gifSha": "ee02584c4269a50fae1e4e8d48504c3208e3d63ee6852e2e307d78ce10dfc9bf",
+  "sheetSha": "99a9098b1f0bbe6c9af4191611e7a8e728a48f54f047e06f61944b2a451e1ff6",
+  "idleShiftPx": {
+   "01": 3,
+   "12": 4,
+   "02": 7
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "moth-dust": {
+  "resourceId": "generated-enemy-moth-dust",
+  "name": "가루나방",
+  "cell": 64,
+  "try": 1,
+  "gifSha": "f60d2d32fb14369e2b6d03b0afd7427d5131ea96534a8246834d6bd66bb70ae3",
+  "sheetSha": "a304dd290cf5b89f082e20cd352698c10a4133274c76ba0c2494781988cf93c0",
+  "idleShiftPx": {
+   "01": 3,
+   "12": 3,
+   "02": 6
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "golem-stone": {
+  "resourceId": "generated-enemy-golem-stone",
+  "name": "심문회 골렘",
+  "cell": 64,
+  "try": 1,
+  "gifSha": "115bd731447d6eb0024f18b7a7e4775e1b62108610a49cc9346b92b3881735ae",
+  "sheetSha": "216279d17d9c6249cd3173b88f3fa81103b92ce6cbeb3ccc9cee95963449ee21",
+  "idleShiftPx": {
+   "01": 3,
+   "12": 4,
+   "02": 7
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ },
+ "leafling-01": {
+  "resourceId": "generated-enemy-leafling-01",
+  "name": "잎새 정령",
+  "cell": 64,
+  "try": 1,
+  "gifSha": "ccb657a8ea6e7258b422cec8610f0913b05aae07b862c94f711f51e290728c0f",
+  "sheetSha": "f843879aaf013a610c4ba357f48c372575a6bc51b01e1bb7a3395573e1c76d15",
+  "idleShiftPx": {
+   "01": 3,
+   "12": 4,
+   "02": 7
+  },
+  "opus": {
+   "score": 4,
+   "pass": true
+  }
+ }
+}
