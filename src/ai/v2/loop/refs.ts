@@ -4,7 +4,7 @@
 //   - 자동 묶기: 쓰기 동사 전후 차이를 그때 진행 중인 항목(또는 인자 todoId 의 항목)의 refs 에 붙인다. 모델 기억에 기대지 않는다.
 //     항목의 「주 대상」만: 장소·실내 구역(room_zones)=맵, 인물·대사·엔딩·목표·증거 내밀기=이벤트, 전투=이벤트·적 그룹, 아이템=아이템. link·reachable 은 이름으로 찾는다.
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { runTodoItemCheck } from "../todo/checks";
+import { runTodoItemCheck } from "../judge/todoChecks";
 import type { CheckResult, TodoChanged, TodoItem, TodoRefs } from "../todo/types";
 import type { TodoStore } from "./todoStore";
 

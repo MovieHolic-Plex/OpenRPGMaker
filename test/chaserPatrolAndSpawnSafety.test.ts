@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 
 import { getTool } from "@/editor/tools";
-import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { chaserThreatsAt, unsafeSpawnLines } from "@/project/chaserSpawnSafety";
 import { createBlankProject } from "@/project/defaults";
 import { startChaseSpawnGrace, tickChaseSpawnGrace } from "@/player/chaseSpawnGrace";

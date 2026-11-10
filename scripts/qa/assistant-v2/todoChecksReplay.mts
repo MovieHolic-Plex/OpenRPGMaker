@@ -1,4 +1,4 @@
-// omo 할 일 검사기(src/ai/v2/todo/checks.ts) 재생 — 실제 씬 벤치 판 저장본에 손으로 적은 TodoCheck 를 돌려 기대(성공 판 pass·실패 판 fail)와 맞는지 표로 본다.
+// omo 할 일 검사기(src/ai/v2/judge/todoChecks.ts) 재생 — 실제 씬 벤치 판 저장본에 손으로 적은 TodoCheck 를 돌려 기대(성공 판 pass·실패 판 fail)와 맞는지 표로 본다.
 //   bun scripts/qa/assistant-v2/todoChecksReplay.mts [--runs <scenes/runs>] [--bases <scenes/bases>] [--replayed <디렉터리>] [--only <라벨 부분>]
 // 저장본 출처(판마다 하나):
 //   sqlite   = 판 폴더의 project/(정본 SQLite, read-project-sqlite 경로)
@@ -12,7 +12,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { readProjectSqlite } from "../../content/read-project-sqlite.mts";
-import { runTodoCheck } from "../../../src/ai/v2/todo/checks.ts";
+import { runTodoCheck } from "../../../src/ai/v2/judge/todoChecks.ts";
 import type { TodoChanged, TodoCheck, TodoRefs } from "../../../src/ai/v2/todo/types.ts";
 import type { Project } from "../../../src/project/types.ts";
 

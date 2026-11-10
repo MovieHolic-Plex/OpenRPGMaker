@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { combatProblems, healingSources, stepsPerEncounter, weakPaidSkills } from "@/ai/v2/combatChecks";
+import { combatProblems, healingSources, stepsPerEncounter, weakPaidSkills } from "@/ai/v2/judge/combatChecks";
 import { withEncountersOnlyWhenAsked } from "@/ai/v2/game";
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { Project } from "@/project/types";

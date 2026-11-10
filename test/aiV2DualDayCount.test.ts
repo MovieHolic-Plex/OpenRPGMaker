@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dayCounterVariables } from "@/ai/v2/gameChecks";
+import { dayCounterVariables } from "@/ai/v2/judge/gameChecks";
 import type { Project } from "@/project/types";
 
 // 판정 J18(서울 연애): HUD 달력 「봄 4일」과 대사의 「1일차」 변수가 따로 셌다.

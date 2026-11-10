@@ -9,7 +9,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { createBlankProject } from "@/project/defaults";
 import { isStoreCardRequest } from "@/editor/tools/storeTools";
-import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { PiGameSystemProduction } from "@/ai/piAgent/gameSystemProduction";
 import type { Project } from "@/project/types";
 import { installedMusicSwaps, isAutoMusicChoice, storeCardFromEvent } from "@/editor/panels/aiStoreCard";

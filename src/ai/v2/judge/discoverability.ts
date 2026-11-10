@@ -1,4 +1,4 @@
-// ai/v2/discoverability.ts
+// ai/v2/judge/discoverability.ts
 /**
  * 새 플레이어가 길을 찾을 수 있나 — 이야기를 움직이는 이벤트가 화면에 보이고, 지금 할 일이 늘 화면에 있는가(2026-10-26 판정 J90).
  *
@@ -21,7 +21,7 @@ import { mapRoute, objectiveTargetViews } from "@/player/objectiveTarget";
 import type { RuntimeEventView } from "@/project/runtimeEventState";
 import { computeReachableCells } from "@/project/lint/reachability";
 import { josa } from "@/util/josa";
-import { unreachableEvents } from "./eventReach";
+import { unreachableEvents } from "../eventReach";
 
 const OBJECTIVE_COMMAND_ID = "m2-214-ui-command";
 export const OBJECTIVE_SURFACE = "objectiveChip";

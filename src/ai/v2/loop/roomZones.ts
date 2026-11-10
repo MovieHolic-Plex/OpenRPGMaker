@@ -5,7 +5,7 @@
 // 검사 자체는 todo/checks.ts — 맵 데이터만 읽는다. 함수는 가구를 고르거나 놓지 않는다. 모델이 보는 글(항목 내용·판정)은 영어.
 import type { GameMap, Project } from "@/project/types";
 import type { TodoChanged, TodoItem } from "../todo/types";
-import { runTodoItemCheck } from "../todo/checks";
+import { runTodoItemCheck } from "../judge/todoChecks";
 import { layoutReviewRounds } from "../place/layoutReview";
 import { normName } from "../todo/names";
 import { isOpen, type TodoStore } from "./todoStore";

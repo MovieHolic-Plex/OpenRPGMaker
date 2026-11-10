@@ -14,7 +14,7 @@ import { clearStoreMusicCache, isStoreCardRequest } from "@/editor/tools/storeTo
 import { SOUND_TIER } from "@/ai/v2/request/toolGroups";
 import { v2ExtraToolNames } from "@/ai/v2/request/readers";
 import { audioOnly, musicAsked, soundOnly, wantsMusic, wantsSound } from "@/ai/v2/request/readers";
-import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { projectSeCue } from "@/project/seCues";
 
 const RETRO = retroManifest as unknown as StorePackManifest;

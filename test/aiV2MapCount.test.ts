@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { countedContent } from "../scripts/fs-scale/score.mjs";
 import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS, MIN_TILE_KINDS } from "@/ai/v2/mapCount";
 import { mapsMinBlocker } from "@/ai/v2/shipChecks";
-import { splitPreexisting } from "@/ai/v2/loop/gates";
+import { splitPreexisting } from "@/ai/v2/judge/gates";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 
