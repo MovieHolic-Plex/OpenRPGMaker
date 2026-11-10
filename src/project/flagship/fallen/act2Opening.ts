@@ -950,7 +950,7 @@ const WELL_FRONT: Cell = { x: 40, y: 29 };
 const WELL_CLIMB_LAND: Cell = { x: 40, y: 30 };
 // 우물 밑 갱도 — 옛 12×9 승강구(R1)를 그대로 두고 방 다섯을 더했다(wellShaftRooms.ts · 중간 보스 wellBeast.ts, 2026-11-09).
 // 옛 방(R1) 좌표 — wellShaftRooms.ts WELL 과 같아야 한다(observatoryNight 가 확인한다).
-const SHAFT = { ladder: { x: 4, y: 2 } as Cell, ladderUse: { x: 4, y: 3 } as Cell, arrive: { x: 4, y: 4 } as Cell, lift: { x: 5, y: 7 } as Cell };
+const SHAFT = { ladder: { x: 4, y: 2 } as Cell, ladderUse: { x: 4, y: 3 } as Cell, arrive: { x: 4, y: 4 } as Cell, lift: { x: 42, y: 23 } as Cell };
 /** 천문대 서쪽 서고 — 제1막 승강 장치가 올라오던 칸(3,19), 하넬은 서고 탁자 곁. */
 // 하넬은 서고(맵 맨 아래 줄)가 아니라 둥근 지붕 아래 망원경 곁 — 서고에서 이야기하면 흉상 대화창(늘 아래)이
 // 하넬과 일행을 통째로 가렸다(첫 플레이 2026-11-01). 승강 장치로 오르면 서고에서 부르는 소리만 듣고 위로 걸어 올라간다.
@@ -1022,8 +1022,9 @@ function observatoryNight(project: Project, exec: Exec, obsId: string): void {
     mapId: FS2_OBS_NIGHT_ID, x: OBS.lift.x, y: OBS.lift.y, direction: "down", distance: 3, trigger: "action", text: "승강 장치를 타고 서고 밑으로 내려갔다.",
     toMapId: FS2_SHAFT_ID, toX: SHAFT.lift.x, toY: SHAFT.lift.y, toDirection: "down",
   });
-  // 우물 밑 갱도 곁가지 — 고패·금 간 벽·비문·상자와 중간 보스(이야기 길 밖, 지면 승강구로 물러난다).
-  applyFallenWellBeast(project, exec, FS2_SHAFT_ID, { mapId: FS2_SHAFT_ID, at: SHAFT.arrive });
+  // 우물 밑 갱도 곁가지 — 고패·금 간 벽·비문·상자와 중간 보스(이야기 길 밖). 지면 수문 앞방 승강 발판 곁(쉼터 결정 앞)으로 물러난다 —
+  // 착지(4,4)로 물러나면 66걸음을 다시 걸어야 했다(fs-vqa-obs, 승강 장치를 수문 앞방으로 옮기면서).
+  applyFallenWellBeast(project, exec, FS2_SHAFT_ID, { mapId: FS2_SHAFT_ID, at: { x: SHAFT.lift.x + 2, y: SHAFT.lift.y + 1 } });
   // 정문 — 연금 중. 기사가 지킨다.
   addEv(project, FS2_OBS_NIGHT_ID, "ev_fs2_obs_door", "천문대 정문", OBS.door, [
     page("ev_fs2_obs_door_p", "정문", [], [narrate("문 밖에서 쇠 장화 소리가 오간다.\n정문으로는 못 나간다.")], { trigger: { kind: "playerTouch" } }),

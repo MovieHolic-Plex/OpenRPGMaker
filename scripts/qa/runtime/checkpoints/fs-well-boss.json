@@ -354,8 +354,8 @@
       "id": "lift",
       "label": "승강 장치로 천문대 서고에 돌아가기",
       "mapId": "fs2_well_shaft",
-      "x": 5,
-      "y": 8,
+      "x": 42,
+      "y": 24,
       "facing": "up",
       "switches": {
         "sw_fs_main_started": true,
