@@ -100,7 +100,11 @@ export function skillHelpTags(project: Project, skill: SkillRecord): string[] {
   }
   if (skill.exploitStates) {
     const names = skill.exploitStates.stateIds.map((id) => stateName(project, id)).join("·");
-    tags.push(`${names} 대상 +${skill.exploitStates.bonusPercent}%${skill.exploitStates.consume ? "(깨뜨림)" : ""}`);
+    const byState = skill.exploitStates.bonusByState;
+    const tiers = byState && Object.keys(byState).length > 0
+      ? skill.exploitStates.stateIds.map((id) => `${stateName(project, id)} +${byState[id] ?? skill.exploitStates!.bonusPercent}%`).join(" · ")
+      : `${names} 대상 +${skill.exploitStates.bonusPercent}%`;
+    tags.push(`${tiers}${skill.exploitStates.consume ? "(깨뜨림)" : ""}`);
   }
   if (skill.cooldownTurns) tags.push(`재사용 ${skill.cooldownTurns}차례`);
   if (skill.oncePerBattle) tags.push("전투당 1회");
@@ -156,7 +160,11 @@ export function skillHelpOneLiner(project: Project, skill: SkillRecord, user?: S
   const hooks: string[] = [];
   const effect = skill.effect;
   // 기술 자신의 조건부 위력(「둔해진 적 +50%」)이다 — 지금 대상이 무엇에 약한지는 절대 말하지 않는다(약점은 처음 맞혀서 알게 된다, weaknessDiscovery.ts).
-  if (skill.exploitStates?.stateIds.length) hooks.push(`${stateName(project, skill.exploitStates.stateIds[0]!)} +${skill.exploitStates.bonusPercent}%`);
+  if (skill.exploitStates?.stateIds.length) {
+    const exploit = skill.exploitStates;
+    const top = Math.max(exploit.bonusPercent, ...Object.values(exploit.bonusByState ?? {}));
+    hooks.push(top > exploit.bonusPercent ? `${stateName(project, exploit.stateIds[0]!)} +${exploit.bonusPercent}~${top}%` : `${stateName(project, exploit.stateIds[0]!)} +${exploit.bonusPercent}%`);
+  }
   const added = (skill.stateEffects ?? []).filter((row) => row.operation === "add");
   const removed = (skill.stateEffects ?? []).filter((row) => row.operation === "remove");
   for (const row of added.slice(0, 2)) hooks.push(stateName(project, row.stateId));

@@ -240,6 +240,11 @@ type EnemyActionChoice = {
 };
 
 /** ATB 속도 1~8 → 충전 배율. Chrono Trigger 처럼 숫자가 작을수록 빠르다(4 = 1.0, 1 = 1.45, 8 = 0.4). */
+/** 약점 공략 보너스(%) — 대상이 걸린 노린 상태들 중 bonusByState 값이 가장 큰 것. 표에 없는 상태는 bonusPercent. */
+export function exploitBonusPercent(exploit: NonNullable<SkillRecord["exploitStates"]>, matched: readonly string[]): number {
+  return Math.max(...matched.map((stateId) => exploit.bonusByState?.[stateId] ?? exploit.bonusPercent));
+}
+
 export function atbSpeedMultiplier(speed: number | undefined): number {
   if (typeof speed !== "number" || !Number.isFinite(speed)) return 1;
   const clamped = Math.max(1, Math.min(8, Math.round(speed)));
@@ -4626,7 +4631,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const affinity = weaponAffinityMultiplier(user, skill);
     // 약점 공략(SkillRecord.exploitStates): 대상이 그 상태에 걸려 있으면 피해가 오른다(피해 기술만).
     const exploited = effectKind === "damage" ? exploitedStateIds(skill, target) : [];
-    const exploit = exploited.length > 0 ? 1 + (skill!.exploitStates!.bonusPercent / 100) : 1;
+    const exploit = exploited.length > 0 ? 1 + (exploitBonusPercent(skill!.exploitStates!, exploited) / 100) : 1;
     const rawResult = applySkillLike(user, target, {
       power,
       statistic,

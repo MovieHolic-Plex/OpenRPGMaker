@@ -830,7 +830,13 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
       if (!exploit || !Number.isFinite(exploit.bonusPercent) || exploit.bonusPercent <= 0 || !Array.isArray(exploit.stateIds)) return {};
       const stateIds = uniqueCleanIds(exploit.stateIds.filter((id): id is string => typeof id === "string")).slice(0, 8);
       if (stateIds.length === 0) return {};
-      return { exploitStates: { stateIds, bonusPercent: clampInteger(exploit.bonusPercent, 1, 300), ...(exploit.consume === true ? { consume: true as const } : {}) } };
+      const byState = exploit.bonusByState && typeof exploit.bonusByState === "object" && !Array.isArray(exploit.bonusByState)
+        ? Object.fromEntries(Object.entries(exploit.bonusByState)
+          .filter(([id, value]) => stateIds.includes(id) && typeof value === "number" && Number.isFinite(value) && value > 0)
+          .map(([id, value]) => [id, clampInteger(value, 1, 300)]))
+        : {};
+      return { exploitStates: { stateIds, bonusPercent: clampInteger(exploit.bonusPercent, 1, 300), ...(exploit.consume === true ? { consume: true as const } : {}),
+        ...(Object.keys(byState).length > 0 ? { bonusByState: byState } : {}) } };
     })(),
     ...(Number.isFinite(record.recoilPercent) && record.recoilPercent! > 0 ? { recoilPercent: clampInteger(record.recoilPercent!, 0, 100) } : {}),
     ...(normalizeFixedDamage(record.fixedDamage) ? { fixedDamage: normalizeFixedDamage(record.fixedDamage) } : {}),

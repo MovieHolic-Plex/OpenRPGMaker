@@ -412,7 +412,16 @@ export interface SkillRecord {
    * 약점 공략(set-up → payoff): 맞는 대상이 stateIds 중 하나에 걸려 있으면 피해 +bonusPercent%(1~300).
    * consume 이면 공략한 상태를 그 타격으로 풀어 버린다(「얼어붙은 적을 깨뜨린다」). 숫자 아래 「공략!」 꼬리표. 생략 = 없음.
    */
-  exploitStates?: { readonly stateIds: readonly string[]; readonly bonusPercent: number; readonly consume?: boolean };
+  exploitStates?: {
+    readonly stateIds: readonly string[];
+    readonly bonusPercent: number;
+    readonly consume?: boolean;
+    /**
+     * 상태마다 다른 보너스(1~300) — 대상이 걸린 노린 상태들 중 가장 큰 값을 쓴다(별 표식 I·II·III → +25·+50·+75).
+     * 표에 없는 상태는 bonusPercent. 생략 = 모든 상태 bonusPercent(기존 동작).
+     */
+    readonly bonusByState?: Readonly<Record<string, number>>;
+  };
   /**
    * 반동(0~100): 준 피해의 N% 를 시전자도 입는다(몸통박치기·이판사판). 피해가 1 이상일 때만, 최소 1. 타마다 적용한다.
    * 타임라인에 시전자 자신을 대상으로 한 damage 엔트리(aside recoil)를 남긴다. 생략 = 반동 없음.
