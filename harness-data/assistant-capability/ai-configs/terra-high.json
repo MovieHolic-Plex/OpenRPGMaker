@@ -1,0 +1,20 @@
+{
+  "authMode": "chatgpt",
+  "providerId": "openai-compat:opencodex",
+  "model": "gpt-6.1-terra",
+  "liteModel": "gpt-6.1-terra",
+  "reasoningEffort": "high",
+  "autonomyLevel": "balanced",
+  "roleModels": {
+    "deep": { "provider": "openai-compat:opencodex", "model": "gpt-6.1-terra", "thinkingLevel": "high" },
+    "build": { "provider": "openai-compat:opencodex", "model": "gpt-6.1-terra", "thinkingLevel": "high" },
+    "writer": { "provider": "openai-compat:opencodex", "model": "gpt-6.1-terra", "thinkingLevel": "high" },
+    "vision": { "provider": "openai-compat:opencodex", "model": "gpt-6.1-terra", "thinkingLevel": "high" }
+  },
+  "pixelModel": { "provider": "openai-compat:opencodex", "model": "gpt-6.1-terra", "thinkingLevel": "high" },
+  "ultrabrainProviderId": "openai-compat:opencodex",
+  "ultrabrainModel": "gpt-6.1-terra",
+  "ultrabrainReasoningEffort": "high",
+  "modelSelectionOverrides": { "ultrabrain": true, "vision": true, "writer": true, "deep": true, "build": true, "pixel": true },
+  "roleModelsPolicyVersion": 1
+}

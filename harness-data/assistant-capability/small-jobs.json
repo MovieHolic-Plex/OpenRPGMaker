@@ -1,0 +1,3550 @@
+{
+ "schemaVersion": 1,
+ "kind": "assistant-small-jobs",
+ "description": "게임 하나에 필요한 작은 일 30가지. 일마다 새 픽스처에서 한 턴. 판정은 저장 문서 전/후의 기계 검사(모델 판정자 없음).",
+ "autoAnswer": "좋아, 네가 판단해서 진행해 줘.",
+ "fixtures": {
+  "blank": "createBlankProject 그대로(빈 맵 한 장)",
+  "starter": "거의 빈 프로젝트 「잿불 마을 이야기」: 풀밭 마을에 주민 셋 + 이어지지 않은 동쪽 들판",
+  "built": "조수 v2 가 만든 작은 게임 《얼음 아래의 노래》(맵 6장·이벤트 38개·청사진과 할 일 장부 포함), small-jobs/built-game.json.gz"
+ },
+ "families": {
+  "move": "사람·물건 옮기기",
+  "person": "대사 있는 사람 세우기",
+  "shop": "실제로 열리는 상점",
+  "chest": "상자·줍기",
+  "sign": "표지판·조사 글",
+  "door": "두 맵 잇기",
+  "dialogue": "있던 대사 고치기",
+  "rename": "이름 바꾸기",
+  "bgm": "배경 음악",
+  "encounter": "적·전투",
+  "quest": "한 번만·조건부 사건",
+  "fill": "빈 곳 꾸미기"
+ },
+ "jobs": [
+  {
+   "id": "move-npc-left2",
+   "family": "move",
+   "fixture": "built",
+   "request": "겨울 시장의 모피 상인을 두 칸 왼쪽으로 옮겨 줘",
+   "check": {
+    "kind": "eventMoved",
+    "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+    "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212",
+    "dx": -2,
+    "dy": 0
+   },
+   "allow": {
+    "movedEvents": [
+     "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212"
+    ]
+   },
+   "reference": [
+    {
+     "tool": "move_event",
+     "args": {
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212",
+      "x": 17,
+      "y": 25
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "다른 사람(시장 손님)을 옮김",
+     "calls": [
+      {
+       "tool": "move_event",
+       "args": {
+        "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+        "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8",
+        "x": 20,
+        "y": 25
+       }
+      }
+     ]
+    },
+    {
+     "note": "오른쪽으로 두 칸",
+     "calls": [
+      {
+       "tool": "move_event",
+       "args": {
+        "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+        "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212",
+        "x": 21,
+        "y": 25
+       }
+      }
+     ]
+    }
+   ],
+   "note": "재점검에서 확인한 오분류 문장(「이 NPC를 두 칸 왼쪽으로」)의 이름 지정판"
+  },
+  {
+   "id": "move-npc-door-front",
+   "family": "move",
+   "fixture": "built",
+   "request": "떠돌이 상인을 족장의 긴 집 문 앞으로 옮겨 줘",
+   "check": {
+    "kind": "eventMoved",
+    "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+    "eventId": "ev_supply_shop",
+    "inRect": {
+     "x": 21,
+     "y": 17,
+     "w": 6,
+     "h": 2
+    }
+   },
+   "allow": {
+    "movedEvents": [
+     "ev_supply_shop"
+    ]
+   },
+   "reference": [
+    {
+     "tool": "move_event",
+     "args": {
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_supply_shop",
+      "x": 23,
+      "y": 17
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "문에서 먼 곳",
+     "calls": [
+      {
+       "tool": "move_event",
+       "args": {
+        "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+        "eventId": "ev_supply_shop",
+        "x": 24,
+        "y": 21
+       }
+      }
+     ]
+    }
+   ],
+   "note": "좌표 없이 장소 낱말(문 앞). 문 칸은 (22~25,16), 그 앞 두 줄이 정답 자리"
+  },
+  {
+   "id": "move-npc-next-to",
+   "family": "move",
+   "fixture": "starter",
+   "request": "꼬마 미루를 여관 주인 마사 바로 옆으로 옮겨 줘",
+   "check": {
+    "kind": "eventMoved",
+    "mapId": "map_ember_village",
+    "eventId": "ev_ember_child",
+    "nearEvent": {
+     "eventId": "ev_ember_inn",
+     "max": 1
+    }
+   },
+   "allow": {
+    "movedEvents": [
+     "ev_ember_child"
+    ]
+   },
+   "reference": [
+    {
+     "tool": "move_event",
+     "args": {
+      "mapId": "map_ember_village",
+      "eventId": "ev_ember_child",
+      "x": 7,
+      "y": 9
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "마사를 미루 옆으로(대상이 반대)",
+     "calls": [
+      {
+       "tool": "move_event",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_inn",
+        "x": 12,
+        "y": 14
+       }
+      }
+     ]
+    },
+    {
+     "note": "세 칸 떨어진 곳",
+     "calls": [
+      {
+       "tool": "move_event",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_child",
+        "x": 9,
+        "y": 9
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "add-npc-line-starter",
+   "family": "person",
+   "fixture": "starter",
+   "request": "마을에 대장장이 한 명 세워 줘. 말을 걸면 \"좋은 쇠는 거짓말을 안 하지.\"라고 말하게 해 줘",
+   "check": {
+    "kind": "newNpc",
+    "mapId": "map_ember_village",
+    "say": "좋은 쇠는 거짓말을 안 하지"
+   },
+   "reference": [
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_ember_village",
+      "event": {
+       "id": "ev_ref_smith",
+       "name": "대장장이",
+       "x": 10,
+       "y": 12,
+       "trigger": {
+        "kind": "action"
+       },
+       "commands": [],
+       "pages": [
+        {
+         "id": "ev_ref_smith_p0",
+         "name": "대장장이",
+         "conditions": [],
+         "graphic": {
+          "sprite": {
+           "type": "bundled",
+           "id": "tex_easyrpg_charset_people1"
+          },
+          "direction": "down",
+          "pattern": 73
+         },
+         "trigger": {
+          "kind": "action"
+         },
+         "priority": "same",
+         "overlapForbidden": true,
+         "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "text",
+           "body": "좋은 쇠는 거짓말을 안 하지.",
+           "speaker": "대장장이"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "다른 대사",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_ember_village",
+        "event": {
+         "id": "ev_ref_smith",
+         "name": "대장장이",
+         "x": 10,
+         "y": 12,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_smith_p0",
+           "name": "대장장이",
+           "conditions": [],
+           "graphic": {
+            "sprite": {
+             "type": "bundled",
+             "id": "tex_easyrpg_charset_people1"
+            },
+            "direction": "down",
+            "pattern": 73
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "어서 오게.",
+             "speaker": "대장장이"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "투명한 이벤트",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_ember_village",
+        "event": {
+         "id": "ev_ref_smith",
+         "name": "대장장이",
+         "x": 10,
+         "y": 12,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_smith_p0",
+           "name": "대장장이",
+           "conditions": [],
+           "graphic": {
+            "transparent": true
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "좋은 쇠는 거짓말을 안 하지.",
+             "speaker": "대장장이"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "add-npc-near-built",
+   "family": "person",
+   "fixture": "built",
+   "request": "떠돌이 상인 옆에 할머니 한 명 세워 줘. 말을 걸면 \"오늘은 눈이 그칠 것 같구나.\"라고 말하게 해 줘",
+   "check": {
+    "kind": "newNpc",
+    "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+    "say": "오늘은 눈이 그칠 것 같구나",
+    "nearEvent": {
+     "eventId": "ev_supply_shop",
+     "max": 2
+    }
+   },
+   "reference": [
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "event": {
+       "id": "ev_ref_granny",
+       "name": "할머니",
+       "x": 25,
+       "y": 33,
+       "trigger": {
+        "kind": "action"
+       },
+       "commands": [],
+       "pages": [
+        {
+         "id": "ev_ref_granny_p0",
+         "name": "할머니",
+         "conditions": [],
+         "graphic": {
+          "sprite": {
+           "type": "bundled",
+           "id": "tex_easyrpg_charset_people1"
+          },
+          "direction": "down",
+          "pattern": 73
+         },
+         "trigger": {
+          "kind": "action"
+         },
+         "priority": "same",
+         "overlapForbidden": true,
+         "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "text",
+           "body": "오늘은 눈이 그칠 것 같구나.",
+           "speaker": "할머니"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "상인에서 먼 곳",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+        "event": {
+         "id": "ev_ref_granny",
+         "name": "할머니",
+         "x": 30,
+         "y": 25,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_granny_p0",
+           "name": "할머니",
+           "conditions": [],
+           "graphic": {
+            "sprite": {
+             "type": "bundled",
+             "id": "tex_easyrpg_charset_people1"
+            },
+            "direction": "down",
+            "pattern": 73
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "오늘은 눈이 그칠 것 같구나.",
+             "speaker": "할머니"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "add-npc-blank",
+   "family": "person",
+   "fixture": "blank",
+   "request": "이 맵에 주민 한 명 세워 줘. 말을 걸면 \"어서 와!\" 하고 인사하게 해 줘",
+   "check": {
+    "kind": "newNpc",
+    "mapId": "map_blank_start",
+    "say": "어서 와"
+   },
+   "reference": [
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_blank_start",
+      "event": {
+       "id": "ev_ref_villager",
+       "name": "주민",
+       "x": 8,
+       "y": 8,
+       "trigger": {
+        "kind": "action"
+       },
+       "commands": [],
+       "pages": [
+        {
+         "id": "ev_ref_villager_p0",
+         "name": "주민",
+         "conditions": [],
+         "graphic": {
+          "sprite": {
+           "type": "bundled",
+           "id": "tex_easyrpg_charset_people1"
+          },
+          "direction": "down",
+          "pattern": 73
+         },
+         "trigger": {
+          "kind": "action"
+         },
+         "priority": "same",
+         "overlapForbidden": true,
+         "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "text",
+           "body": "어서 와!",
+           "speaker": "주민"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "스위치가 켜져야 나오는 페이지에만 대사",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_blank_start",
+        "event": {
+         "id": "ev_ref_villager",
+         "name": "주민",
+         "x": 8,
+         "y": 8,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "p0",
+           "name": "주민",
+           "conditions": [],
+           "graphic": {
+            "sprite": {
+             "type": "bundled",
+             "id": "tex_easyrpg_charset_people1"
+            },
+            "direction": "down",
+            "pattern": 73
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "...",
+             "speaker": "주민"
+            }
+           ]
+          },
+          {
+           "id": "p1",
+           "name": "주민",
+           "conditions": [
+            {
+             "kind": "switch",
+             "switchId": "sw_0001",
+             "value": true
+            }
+           ],
+           "graphic": {
+            "sprite": {
+             "type": "bundled",
+             "id": "tex_easyrpg_charset_people1"
+            },
+            "direction": "down",
+            "pattern": 73
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "어서 와!",
+             "speaker": "주민"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "shopkeeper-blank",
+   "family": "shop",
+   "fixture": "blank",
+   "request": "이 맵에 상점 주인 한 명 세워 줘.",
+   "check": {
+    "kind": "shop",
+    "mapId": "map_blank_start",
+    "minItems": 1
+   },
+   "reference": [
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_blank_start",
+      "event": {
+       "id": "ev_ref_shop",
+       "name": "상점 주인",
+       "x": 8,
+       "y": 8,
+       "trigger": {
+        "kind": "action"
+       },
+       "commands": [],
+       "pages": [
+        {
+         "id": "ev_ref_shop_p0",
+         "name": "상점 주인",
+         "conditions": [],
+         "graphic": {
+          "sprite": {
+           "type": "bundled",
+           "id": "tex_easyrpg_charset_people1"
+          },
+          "direction": "down",
+          "pattern": 73
+         },
+         "trigger": {
+          "kind": "action"
+         },
+         "priority": "same",
+         "overlapForbidden": true,
+         "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "text",
+           "body": "어서 오세요.",
+           "speaker": "상점 주인"
+          },
+          {
+           "kind": "shop",
+           "shopType": "normal",
+           "itemIds": [
+            "item_potion"
+           ],
+           "allowSell": true,
+           "branchOnTransaction": false,
+           "transactionBranch": [],
+           "branchOnFailedTransaction": false,
+           "failedTransactionBranch": []
+          }
+         ]
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "인사만 하는 사람(상점 없음)",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_blank_start",
+        "event": {
+         "id": "ev_ref_shop",
+         "name": "상점 주인",
+         "x": 8,
+         "y": 8,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_shop_p0",
+           "name": "상점 주인",
+           "conditions": [],
+           "graphic": {
+            "sprite": {
+             "type": "bundled",
+             "id": "tex_easyrpg_charset_people1"
+            },
+            "direction": "down",
+            "pattern": 73
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "어서 오세요.",
+             "speaker": "상점 주인"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "스위치가 켜져야 열리는 상점(처음 말을 걸면 인사뿐)",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_blank_start",
+        "event": {
+         "id": "ev_ref_shop",
+         "name": "상점 주인",
+         "x": 8,
+         "y": 8,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_shop_p0",
+           "name": "상점 주인",
+           "conditions": [],
+           "graphic": {
+            "sprite": {
+             "type": "bundled",
+             "id": "tex_easyrpg_charset_people1"
+            },
+            "direction": "down",
+            "pattern": 73
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "아직 준비 중이에요.",
+             "speaker": "상점 주인"
+            }
+           ]
+          },
+          {
+           "id": "ev_ref_shop_p1",
+           "name": "상점 주인",
+           "conditions": [
+            {
+             "kind": "switch",
+             "switchId": "sw_0001",
+             "value": true
+            }
+           ],
+           "graphic": {
+            "sprite": {
+             "type": "bundled",
+             "id": "tex_easyrpg_charset_people1"
+            },
+            "direction": "down",
+            "pattern": 73
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "shop",
+             "shopType": "normal",
+             "itemIds": [
+              "item_potion"
+             ],
+             "allowSell": true,
+             "branchOnTransaction": false,
+             "transactionBranch": [],
+             "branchOnFailedTransaction": false,
+             "failedTransactionBranch": []
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "note": "재점검의 「상점 주인 한 명 세워 줘」(지시문 63,679자 · 4~6회 호출)"
+  },
+  {
+   "id": "shopkeeper-items-starter",
+   "family": "shop",
+   "fixture": "starter",
+   "request": "잡화점 주인 한 명 세워 줘. 말을 걸면 회복약이랑 해독초를 살 수 있게 해 줘",
+   "check": {
+    "kind": "shop",
+    "mapId": "map_ember_village",
+    "items": [
+     "회복약",
+     "해독초"
+    ]
+   },
+   "reference": [
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_ember_village",
+      "event": {
+       "id": "ev_ref_shop",
+       "name": "잡화점 주인",
+       "x": 10,
+       "y": 12,
+       "trigger": {
+        "kind": "action"
+       },
+       "commands": [],
+       "pages": [
+        {
+         "id": "ev_ref_shop_p0",
+         "name": "잡화점 주인",
+         "conditions": [],
+         "graphic": {
+          "sprite": {
+           "type": "bundled",
+           "id": "tex_easyrpg_charset_people1"
+          },
+          "direction": "down",
+          "pattern": 73
+         },
+         "trigger": {
+          "kind": "action"
+         },
+         "priority": "same",
+         "overlapForbidden": true,
+         "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "text",
+           "body": "필요한 게 있나요?",
+           "speaker": "잡화점 주인"
+          },
+          {
+           "kind": "shop",
+           "shopType": "normal",
+           "itemIds": [
+            "item_potion",
+            "item_antidote"
+           ],
+           "allowSell": true,
+           "branchOnTransaction": false,
+           "transactionBranch": [],
+           "branchOnFailedTransaction": false,
+           "failedTransactionBranch": []
+          }
+         ]
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "회복약만 판다",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_ember_village",
+        "event": {
+         "id": "ev_ref_shop",
+         "name": "잡화점 주인",
+         "x": 10,
+         "y": 12,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_shop_p0",
+           "name": "잡화점 주인",
+           "conditions": [],
+           "graphic": {
+            "sprite": {
+             "type": "bundled",
+             "id": "tex_easyrpg_charset_people1"
+            },
+            "direction": "down",
+            "pattern": 73
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "shop",
+             "shopType": "normal",
+             "itemIds": [
+              "item_potion"
+             ],
+             "allowSell": true,
+             "branchOnTransaction": false,
+             "transactionBranch": [],
+             "branchOnFailedTransaction": false,
+             "failedTransactionBranch": []
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "shop-existing-npc-built",
+   "family": "shop",
+   "fixture": "built",
+   "request": "겨울 시장의 모피 상인한테 말을 걸면 물건을 살 수 있게 해 줘. 회복약이랑 상급 회복약을 팔게 해 줘",
+   "check": {
+    "kind": "shop",
+    "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+    "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212",
+    "items": [
+     "회복약",
+     "상급 회복약"
+    ]
+   },
+   "reference": [
+    {
+     "tool": "patch_event_page",
+     "args": {
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212",
+      "pageIndex": 0,
+      "set": {
+       "commands": [
+        {
+         "kind": "text",
+         "body": "따뜻한 모피가 필요하면 둘러보게. 호수 쪽 바람이 매섭다네.",
+         "speaker": "모피 상인"
+        },
+        {
+         "kind": "shop",
+         "shopType": "normal",
+         "itemIds": [
+          "item_potion",
+          "item_hi_potion"
+         ],
+         "allowSell": true,
+         "branchOnTransaction": false,
+         "transactionBranch": [],
+         "branchOnFailedTransaction": false,
+         "failedTransactionBranch": []
+        },
+        {
+         "kind": "setSelfSwitch",
+         "key": "A",
+         "value": true
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "patch_event_page",
+     "args": {
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212",
+      "pageIndex": 1,
+      "set": {
+       "commands": [
+        {
+         "kind": "text",
+         "body": "눈발이 더 굵어지기 전에 길을 나서게.",
+         "speaker": "모피 상인"
+        },
+        {
+         "kind": "shop",
+         "shopType": "normal",
+         "itemIds": [
+          "item_potion",
+          "item_hi_potion"
+         ],
+         "allowSell": true,
+         "branchOnTransaction": false,
+         "transactionBranch": [],
+         "branchOnFailedTransaction": false,
+         "failedTransactionBranch": []
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "첫 만남 페이지에만 상점(두 번째부터 안 열림)",
+     "calls": [
+      {
+       "tool": "patch_event_page",
+       "args": {
+        "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+        "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212",
+        "pageIndex": 0,
+        "set": {
+         "commands": [
+          {
+           "kind": "text",
+           "body": "따뜻한 모피가 필요하면 둘러보게. 호수 쪽 바람이 매섭다네.",
+           "speaker": "모피 상인"
+          },
+          {
+           "kind": "shop",
+           "shopType": "normal",
+           "itemIds": [
+            "item_potion",
+            "item_hi_potion"
+           ],
+           "allowSell": true,
+           "branchOnTransaction": false,
+           "transactionBranch": [],
+           "branchOnFailedTransaction": false,
+           "failedTransactionBranch": []
+          },
+          {
+           "kind": "setSelfSwitch",
+           "key": "A",
+           "value": true
+          }
+         ]
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "다른 사람(시장 손님)에게 상점",
+     "calls": [
+      {
+       "tool": "patch_event_page",
+       "args": {
+        "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+        "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8",
+        "pageIndex": 0,
+        "set": {
+         "commands": [
+          {
+           "kind": "shop",
+           "shopType": "normal",
+           "itemIds": [
+            "item_potion",
+            "item_hi_potion"
+           ],
+           "allowSell": true,
+           "branchOnTransaction": false,
+           "transactionBranch": [],
+           "branchOnFailedTransaction": false,
+           "failedTransactionBranch": []
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "note": "있던 사람에게 상점 달기. 이 사람은 「다시 말 걸면」 페이지가 있어 두 번째 대화에서도 열려야 한다"
+  },
+  {
+   "id": "chest-potion3-starter",
+   "family": "chest",
+   "fixture": "starter",
+   "request": "마을에 보물상자 하나 놓고 회복약 3개 넣어 줘",
+   "check": {
+    "kind": "giveOnce",
+    "mapId": "map_ember_village",
+    "item": {
+     "name": "회복약",
+     "amount": 3
+    }
+   },
+   "reference": [
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_ember_village",
+      "event": {
+       "id": "ev_ref_chest",
+       "name": "보물상자",
+       "x": 10,
+       "y": 12,
+       "trigger": {
+        "kind": "action"
+       },
+       "commands": [],
+       "pages": [
+        {
+         "id": "ev_ref_chest_closed",
+         "name": "보물상자",
+         "conditions": [
+          {
+           "kind": "selfSwitch",
+           "key": "A",
+           "value": false
+          }
+         ],
+         "graphic": {
+          "sprite": {
+           "type": "bundled",
+           "id": "tex_easyrpg_charset_object1"
+          },
+          "direction": "down",
+          "pattern": 82
+         },
+         "trigger": {
+          "kind": "action"
+         },
+         "priority": "same",
+         "overlapForbidden": true,
+         "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "changeItem",
+           "itemId": "item_potion",
+           "op": "+=",
+           "amount": 3
+          },
+          {
+           "kind": "text",
+           "body": "손에 넣었다!"
+          },
+          {
+           "kind": "setSelfSwitch",
+           "key": "A",
+           "value": true
+          }
+         ]
+        },
+        {
+         "id": "ev_ref_chest_opened",
+         "name": "보물상자(빈)",
+         "conditions": [
+          {
+           "kind": "selfSwitch",
+           "key": "A",
+           "value": true
+          }
+         ],
+         "graphic": {
+          "sprite": {
+           "type": "bundled",
+           "id": "tex_easyrpg_charset_object1"
+          },
+          "direction": "down",
+          "pattern": 82
+         },
+         "trigger": {
+          "kind": "action"
+         },
+         "priority": "same",
+         "overlapForbidden": true,
+         "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "text",
+           "body": "비어 있다."
+          }
+         ]
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "place_chest 기본(1개만 들어감)",
+     "calls": [
+      {
+       "tool": "place_chest",
+       "args": {
+        "mapId": "map_ember_village",
+        "x": 10,
+        "y": 12,
+        "contents": {
+         "itemId": "item_potion"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "열 때마다 3개씩 준다",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_ember_village",
+        "event": {
+         "id": "ev_ref_chest",
+         "name": "보물상자",
+         "x": 10,
+         "y": 12,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_chest_closed",
+           "name": "보물상자",
+           "conditions": [],
+           "graphic": {
+            "sprite": {
+             "type": "bundled",
+             "id": "tex_easyrpg_charset_object1"
+            },
+            "direction": "down",
+            "pattern": 82
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "changeItem",
+             "itemId": "item_potion",
+             "op": "+=",
+             "amount": 3
+            },
+            {
+             "kind": "text",
+             "body": "손에 넣었다!"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "note": "재점검 묶음의 「보물상자 하나 놓고 포션 3개」"
+  },
+  {
+   "id": "chest-gold-built",
+   "family": "chest",
+   "fixture": "built",
+   "request": "눈보라 마을에 보물상자 하나 놓아 줘. 열면 100골드를 얻게 해 줘",
+   "check": {
+    "kind": "giveOnce",
+    "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+    "gold": 100
+   },
+   "reference": [
+    {
+     "tool": "place_chest",
+     "args": {
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "x": 26,
+      "y": 20,
+      "contents": {
+       "gold": 100
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "50골드",
+     "calls": [
+      {
+       "tool": "place_chest",
+       "args": {
+        "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+        "x": 26,
+        "y": 20,
+        "contents": {
+         "gold": 50
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pickup-key-built",
+   "family": "chest",
+   "fixture": "built",
+   "request": "족장의 긴 집 바닥에 낡은 열쇠가 떨어져 있게 해 줘. 조사하면 주워 가게 해 줘",
+   "check": {
+    "kind": "giveOnce",
+    "mapId": "map_fc583fe3-d695-4574-98fd-0edf37aa00cb",
+    "item": {
+     "name": "낡은 열쇠",
+     "amount": 1
+    }
+   },
+   "reference": [
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_fc583fe3-d695-4574-98fd-0edf37aa00cb",
+      "event": {
+       "id": "ev_ref_key",
+       "name": "낡은 열쇠",
+       "x": 5,
+       "y": 8,
+       "trigger": {
+        "kind": "action"
+       },
+       "commands": [],
+       "pages": [
+        {
+         "id": "ev_ref_key_closed",
+         "name": "낡은 열쇠",
+         "conditions": [
+          {
+           "kind": "selfSwitch",
+           "key": "A",
+           "value": false
+          }
+         ],
+         "graphic": {
+          "sprite": {
+           "type": "bundled",
+           "id": "tex_easyrpg_charset_object1"
+          },
+          "direction": "down",
+          "pattern": 82
+         },
+         "trigger": {
+          "kind": "action"
+         },
+         "priority": "same",
+         "overlapForbidden": true,
+         "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "changeItem",
+           "itemId": "item_old_key",
+           "op": "+=",
+           "amount": 1
+          },
+          {
+           "kind": "text",
+           "body": "손에 넣었다!"
+          },
+          {
+           "kind": "setSelfSwitch",
+           "key": "A",
+           "value": true
+          }
+         ]
+        },
+        {
+         "id": "ev_ref_key_opened",
+         "name": "낡은 열쇠(빈)",
+         "conditions": [
+          {
+           "kind": "selfSwitch",
+           "key": "A",
+           "value": true
+          }
+         ],
+         "graphic": {
+          "sprite": {
+           "type": "bundled",
+           "id": "tex_easyrpg_charset_object1"
+          },
+          "direction": "down",
+          "pattern": 82
+         },
+         "trigger": {
+          "kind": "action"
+         },
+         "priority": "same",
+         "overlapForbidden": true,
+         "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "text",
+           "body": "비어 있다."
+          }
+         ]
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "보이지 않는 줍기 지점",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_fc583fe3-d695-4574-98fd-0edf37aa00cb",
+        "event": {
+         "id": "ev_ref_key",
+         "name": "낡은 열쇠",
+         "x": 5,
+         "y": 8,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_key_closed",
+           "name": "낡은 열쇠",
+           "conditions": [
+            {
+             "kind": "selfSwitch",
+             "key": "A",
+             "value": false
+            }
+           ],
+           "graphic": {
+            "transparent": true
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "changeItem",
+             "itemId": "item_old_key",
+             "op": "+=",
+             "amount": 1
+            },
+            {
+             "kind": "text",
+             "body": "손에 넣었다!"
+            },
+            {
+             "kind": "setSelfSwitch",
+             "key": "A",
+             "value": true
+            }
+           ]
+          },
+          {
+           "id": "ev_ref_key_opened",
+           "name": "낡은 열쇠(빈)",
+           "conditions": [
+            {
+             "kind": "selfSwitch",
+             "key": "A",
+             "value": true
+            }
+           ],
+           "graphic": {
+            "transparent": true
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "비어 있다."
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "주울 때마다 또 생긴다",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_fc583fe3-d695-4574-98fd-0edf37aa00cb",
+        "event": {
+         "id": "ev_ref_key",
+         "name": "낡은 열쇠",
+         "x": 5,
+         "y": 8,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_key_closed",
+           "name": "낡은 열쇠",
+           "conditions": [],
+           "graphic": {
+            "sprite": {
+             "type": "bundled",
+             "id": "tex_easyrpg_charset_object1"
+            },
+            "direction": "down",
+            "pattern": 82
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "changeItem",
+             "itemId": "item_old_key",
+             "op": "+=",
+             "amount": 1
+            },
+            {
+             "kind": "text",
+             "body": "손에 넣었다!"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sign-starter",
+   "family": "sign",
+   "fixture": "starter",
+   "request": "마을 입구에 표지판 하나 세워 줘. 읽으면 \"잿불 마을에 오신 것을 환영합니다\"라고 나오게 해 줘",
+   "check": {
+    "kind": "textSpot",
+    "mapId": "map_ember_village",
+    "say": "잿불 마을에 오신 것을 환영합니다"
+   },
+   "reference": [
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_ember_village",
+      "event": {
+       "id": "ev_ref_sign",
+       "name": "표지판",
+       "x": 13,
+       "y": 16,
+       "trigger": {
+        "kind": "action"
+       },
+       "commands": [],
+       "pages": [
+        {
+         "id": "ev_ref_sign_p0",
+         "name": "표지판",
+         "conditions": [],
+         "graphic": {
+          "sprite": {
+           "type": "bundled",
+           "id": "tex_easyrpg_charset_object1"
+          },
+          "direction": "down",
+          "pattern": 82
+         },
+         "trigger": {
+          "kind": "action"
+         },
+         "priority": "same",
+         "overlapForbidden": true,
+         "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "text",
+           "body": "잿불 마을에 오신 것을 환영합니다."
+          }
+         ]
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "글이 다르다",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_ember_village",
+        "event": {
+         "id": "ev_ref_sign",
+         "name": "표지판",
+         "x": 13,
+         "y": 16,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_sign_p0",
+           "name": "표지판",
+           "conditions": [],
+           "graphic": {
+            "sprite": {
+             "type": "bundled",
+             "id": "tex_easyrpg_charset_object1"
+            },
+            "direction": "down",
+            "pattern": 82
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "환영합니다."
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "보이는 것이 없는 투명 이벤트",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_ember_village",
+        "event": {
+         "id": "ev_ref_sign",
+         "name": "표지판",
+         "x": 13,
+         "y": 16,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_sign_p0",
+           "name": "표지판",
+           "conditions": [],
+           "graphic": {
+            "transparent": true
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "잿불 마을에 오신 것을 환영합니다."
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sign-ending-built",
+   "family": "sign",
+   "fixture": "built",
+   "request": "엔딩까지 가는 길에 표지판 하나 세워 줘. \"동굴은 북쪽\"이라고 적어 줘",
+   "check": {
+    "kind": "textSpot",
+    "say": "동굴은 북쪽"
+   },
+   "reference": [
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+      "event": {
+       "id": "ev_ref_sign",
+       "name": "표지판",
+       "x": 18,
+       "y": 12,
+       "trigger": {
+        "kind": "action"
+       },
+       "commands": [],
+       "pages": [
+        {
+         "id": "ev_ref_sign_p0",
+         "name": "표지판",
+         "conditions": [],
+         "graphic": {
+          "sprite": {
+           "type": "bundled",
+           "id": "tex_easyrpg_charset_object1"
+          },
+          "direction": "down",
+          "pattern": 82
+         },
+         "trigger": {
+          "kind": "action"
+         },
+         "priority": "same",
+         "overlapForbidden": true,
+         "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "text",
+           "body": "동굴은 북쪽"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "표지판은 세웠지만 새 맵도 지었다",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+        "event": {
+         "id": "ev_ref_sign",
+         "name": "표지판",
+         "x": 18,
+         "y": 12,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_sign_p0",
+           "name": "표지판",
+           "conditions": [],
+           "graphic": {
+            "sprite": {
+             "type": "bundled",
+             "id": "tex_easyrpg_charset_object1"
+            },
+            "direction": "down",
+            "pattern": 82
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "동굴은 북쪽"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      },
+      {
+       "tool": "create_map",
+       "args": {
+        "name": "새 맵",
+        "width": 20,
+        "height": 15
+       }
+      }
+     ]
+    }
+   ],
+   "note": "재점검에서 확인한 오분류: 「엔딩까지」 때문에 게임 하나 만들기로 갈린다"
+  },
+  {
+   "id": "examine-fireplace-built",
+   "family": "sign",
+   "fixture": "built",
+   "request": "족장의 긴 집 벽난로를 조사하면 \"장작이 따뜻하게 타오르고 있다.\"라고 나오게 해 줘",
+   "check": {
+    "kind": "textSpot",
+    "mapId": "map_fc583fe3-d695-4574-98fd-0edf37aa00cb",
+    "say": "장작이 따뜻하게 타오르고 있다",
+    "inRect": {
+     "x": 7,
+     "y": 2,
+     "w": 3,
+     "h": 3
+    },
+    "visible": false
+   },
+   "reference": [
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_fc583fe3-d695-4574-98fd-0edf37aa00cb",
+      "event": {
+       "id": "ev_ref_fire",
+       "name": "표지판",
+       "x": 8,
+       "y": 4,
+       "trigger": {
+        "kind": "action"
+       },
+       "commands": [],
+       "pages": [
+        {
+         "id": "ev_ref_fire_p0",
+         "name": "표지판",
+         "conditions": [],
+         "graphic": {
+          "transparent": true
+         },
+         "trigger": {
+          "kind": "action"
+         },
+         "priority": "same",
+         "overlapForbidden": true,
+         "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "text",
+           "body": "장작이 따뜻하게 타오르고 있다."
+          }
+         ]
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "벽난로에서 먼 곳",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_fc583fe3-d695-4574-98fd-0edf37aa00cb",
+        "event": {
+         "id": "ev_ref_fire",
+         "name": "표지판",
+         "x": 15,
+         "y": 8,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_fire_p0",
+           "name": "표지판",
+           "conditions": [],
+           "graphic": {
+            "transparent": true
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "장작이 따뜻하게 타오르고 있다."
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "note": "벽난로는 (8~9, 2~3). 그 칸이나 바로 앞 칸이 정답 자리"
+  },
+  {
+   "id": "door-roundtrip-starter",
+   "family": "door",
+   "fixture": "starter",
+   "request": "잿불 마을 동쪽 끝에서 동쪽 들판으로 넘어갈 수 있게 해 줘. 들판에서 마을로 돌아오는 길도 만들어 줘",
+   "check": {
+    "kind": "transferLink",
+    "fromMap": "map_ember_village",
+    "toMap": "map_blank_start",
+    "roundTrip": true
+   },
+   "reference": [
+    {
+     "tool": "create_transfer_pair",
+     "args": {
+      "a": {
+       "mapId": "map_ember_village",
+       "x": 23,
+       "y": 9
+      },
+      "b": {
+       "mapId": "map_blank_start",
+       "x": 0,
+       "y": 7
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "가는 길만 있다",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_ember_village",
+        "event": {
+         "id": "ev_ref_door",
+         "name": "문",
+         "x": 23,
+         "y": 9,
+         "trigger": {
+          "kind": "playerTouch"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_door_p0",
+           "name": "문",
+           "conditions": [],
+           "graphic": {
+            "transparent": true
+           },
+           "trigger": {
+            "kind": "playerTouch"
+           },
+           "priority": "below",
+           "overlapForbidden": false,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "transfer",
+             "mapId": "map_blank_start",
+             "x": 1,
+             "y": 7,
+             "fade": "black"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "door-backdoor-built",
+   "family": "door",
+   "fixture": "built",
+   "request": "족장의 긴 집에 뒷문을 하나 만들어 줘. 그 문으로 나가면 겨울 시장으로 가게 해 줘",
+   "check": {
+    "kind": "transferLink",
+    "fromMap": "map_fc583fe3-d695-4574-98fd-0edf37aa00cb",
+    "toMap": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+    "reachFrom": {
+     "x": 9,
+     "y": 10
+    }
+   },
+   "reference": [
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_fc583fe3-d695-4574-98fd-0edf37aa00cb",
+      "event": {
+       "id": "ev_ref_backdoor",
+       "name": "문",
+       "x": 18,
+       "y": 8,
+       "trigger": {
+        "kind": "playerTouch"
+       },
+       "commands": [],
+       "pages": [
+        {
+         "id": "ev_ref_backdoor_p0",
+         "name": "문",
+         "conditions": [],
+         "graphic": {
+          "transparent": true
+         },
+         "trigger": {
+          "kind": "playerTouch"
+         },
+         "priority": "below",
+         "overlapForbidden": false,
+         "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "transfer",
+           "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+           "x": 21,
+           "y": 13,
+           "fade": "black"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "눈보라 마을로 나간다(목적지가 다름)",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_fc583fe3-d695-4574-98fd-0edf37aa00cb",
+        "event": {
+         "id": "ev_ref_backdoor",
+         "name": "문",
+         "x": 18,
+         "y": 8,
+         "trigger": {
+          "kind": "playerTouch"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_backdoor_p0",
+           "name": "문",
+           "conditions": [],
+           "graphic": {
+            "transparent": true
+           },
+           "trigger": {
+            "kind": "playerTouch"
+           },
+           "priority": "below",
+           "overlapForbidden": false,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "transfer",
+             "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+             "x": 22,
+             "y": 18,
+             "fade": "black"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "겨울 시장에서 긴 집으로 오는 문만 만듦(방향이 반대)",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+        "event": {
+         "id": "ev_ref_backdoor",
+         "name": "문",
+         "x": 21,
+         "y": 13,
+         "trigger": {
+          "kind": "playerTouch"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_backdoor_p0",
+           "name": "문",
+           "conditions": [],
+           "graphic": {
+            "transparent": true
+           },
+           "trigger": {
+            "kind": "playerTouch"
+           },
+           "priority": "below",
+           "overlapForbidden": false,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "transfer",
+             "mapId": "map_fc583fe3-d695-4574-98fd-0edf37aa00cb",
+             "x": 17,
+             "y": 8,
+             "fade": "black"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "edit-line-built",
+   "family": "dialogue",
+   "fixture": "built",
+   "request": "겨울 시장 모피 상인의 첫 대사를 \"어서 오게, 모피라면 여기가 제일이지.\"로 바꿔 줘",
+   "check": {
+    "kind": "lineChanged",
+    "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+    "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212",
+    "say": "어서 오게, 모피라면 여기가 제일이지",
+    "gone": [
+     "따뜻한 모피가 필요하면 둘러보게"
+    ]
+   },
+   "reference": [
+    {
+     "tool": "patch_event_page",
+     "args": {
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212",
+      "pageIndex": 0,
+      "set": {
+       "commands": [
+        {
+         "kind": "text",
+         "body": "어서 오게, 모피라면 여기가 제일이지.",
+         "speaker": "모피 상인"
+        },
+        {
+         "kind": "setSelfSwitch",
+         "key": "A",
+         "value": true
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "다시 말 걸면 페이지를 바꿈",
+     "calls": [
+      {
+       "tool": "patch_event_page",
+       "args": {
+        "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+        "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212",
+        "pageIndex": 1,
+        "set": {
+         "commands": [
+          {
+           "kind": "text",
+           "body": "어서 오게, 모피라면 여기가 제일이지.",
+           "speaker": "모피 상인"
+          }
+         ]
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "옛 대사 뒤에 덧붙임",
+     "calls": [
+      {
+       "tool": "patch_event_page",
+       "args": {
+        "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+        "eventId": "ev_npc_70e5cd74-1107-4b8f-b4b6-a577cf406212",
+        "pageIndex": 0,
+        "set": {
+         "commands": [
+          {
+           "kind": "text",
+           "body": "따뜻한 모피가 필요하면 둘러보게. 호수 쪽 바람이 매섭다네.",
+           "speaker": "모피 상인"
+          },
+          {
+           "kind": "text",
+           "body": "어서 오게, 모피라면 여기가 제일이지.",
+           "speaker": "모피 상인"
+          },
+          {
+           "kind": "setSelfSwitch",
+           "key": "A",
+           "value": true
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "edit-inn-price-starter",
+   "family": "dialogue",
+   "fixture": "starter",
+   "request": "여관 주인 마사의 숙박비를 30G로 올려 줘. 대사에서도 30G라고 말하게 해 줘",
+   "check": {
+    "kind": "innPrice",
+    "mapId": "map_ember_village",
+    "eventId": "ev_ember_inn",
+    "price": 30,
+    "say": "30G",
+    "notSay": "15G"
+   },
+   "reference": [
+    {
+     "tool": "patch_event_page",
+     "args": {
+      "mapId": "map_ember_village",
+      "eventId": "ev_ember_inn",
+      "pageIndex": 0,
+      "set": {
+       "commands": [
+        {
+         "kind": "text",
+         "body": "여행자는 쉬어야 멀리 가는 법이죠. 하룻밤 30G입니다.",
+         "speaker": "여관 주인 마사"
+        },
+        {
+         "kind": "inn",
+         "price": 30
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "요금만 올림(대사는 15G)",
+     "calls": [
+      {
+       "tool": "patch_event_page",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_inn",
+        "pageIndex": 0,
+        "set": {
+         "commands": [
+          {
+           "kind": "text",
+           "body": "여행자는 쉬어야 멀리 가는 법이죠. 하룻밤 15G입니다.",
+           "speaker": "여관 주인 마사"
+          },
+          {
+           "kind": "inn",
+           "price": 30
+          }
+         ]
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "대사만 고침(요금은 15)",
+     "calls": [
+      {
+       "tool": "patch_event_page",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_inn",
+        "pageIndex": 0,
+        "set": {
+         "commands": [
+          {
+           "kind": "text",
+           "body": "여행자는 쉬어야 멀리 가는 법이죠. 하룻밤 30G입니다.",
+           "speaker": "여관 주인 마사"
+          },
+          {
+           "kind": "inn",
+           "price": 15
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rename-title-built",
+   "family": "rename",
+   "fixture": "built",
+   "request": "게임 제목을 '별의 노래'로 바꿔 줘",
+   "check": {
+    "kind": "gameTitle",
+    "title": "별의 노래"
+   },
+   "allow": {
+    "title": true
+   },
+   "reference": [
+    {
+     "tool": "set_project_settings",
+     "args": {
+      "title": "별의 노래"
+     }
+    },
+    {
+     "tool": "set_title_screen",
+     "args": {
+      "title": "별의 노래"
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "시작 맵 이름을 바꿈",
+     "calls": [
+      {
+       "tool": "set_map_properties",
+       "args": {
+        "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+        "name": "별의 노래"
+       }
+      }
+     ]
+    }
+   ],
+   "note": "재점검에서 확인한 오분류: 「노래」 때문에 음악 전용 요청으로 갈려 제목을 바꿀 도구가 없다"
+  },
+  {
+   "id": "rename-map-starter",
+   "family": "rename",
+   "fixture": "starter",
+   "request": "이 맵 이름을 '안개 마을'로 바꿔 줘",
+   "check": {
+    "kind": "mapRenamed",
+    "mapId": "map_ember_village",
+    "name": "안개 마을"
+   },
+   "allow": {
+    "renamedMaps": [
+     "map_ember_village"
+    ]
+   },
+   "reference": [
+    {
+     "tool": "set_map_properties",
+     "args": {
+      "mapId": "map_ember_village",
+      "name": "안개 마을"
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "다른 맵(동쪽 들판)의 이름을 바꿈",
+     "calls": [
+      {
+       "tool": "set_map_properties",
+       "args": {
+        "mapId": "map_blank_start",
+        "name": "안개 마을"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rename-npc-built",
+   "family": "rename",
+   "fixture": "built",
+   "request": "겨울 시장에 있는 '시장 손님'의 이름을 '하린'으로 바꿔 줘",
+   "check": {
+    "kind": "eventRenamed",
+    "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+    "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8",
+    "name": "하린"
+   },
+   "reference": [
+    {
+     "tool": "upsert_event",
+     "args": {
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "event": {
+       "id": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8",
+       "name": "하린"
+      }
+     }
+    },
+    {
+     "tool": "patch_event_page",
+     "args": {
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8",
+      "pageIndex": 0,
+      "set": {
+       "commands": [
+        {
+         "kind": "changeFace",
+         "resourceId": "easyrpg-faceset-people1-07",
+         "position": "left",
+         "flipHorizontally": false
+        },
+        {
+         "kind": "text",
+         "body": "호수의 얼음이 울었다지? 장을 보면서도 자꾸 귀가 쫑긋해져.",
+         "speaker": "하린"
+        },
+        {
+         "kind": "setSelfSwitch",
+         "key": "A",
+         "value": true
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "patch_event_page",
+     "args": {
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "eventId": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8",
+      "pageIndex": 1,
+      "set": {
+       "commands": [
+        {
+         "kind": "changeFace",
+         "resourceId": "easyrpg-faceset-people1-07",
+         "position": "left",
+         "flipHorizontally": false
+        },
+        {
+         "kind": "text",
+         "body": "어서 봄이 오면 좋겠어.",
+         "speaker": "하린"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "이벤트 이름만 바꿈(대사 화자는 시장 손님)",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+        "event": {
+         "id": "ev_npc_fea822e3-ce0f-4cc3-95e7-56d06c28d2f8",
+         "name": "하린"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "다른 사람(장터 주민)의 이름을 바꿈",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+        "event": {
+         "id": "ev_npc_2dbcb111-5ae0-4d17-b6f9-ed8cd2146354",
+         "name": "하린"
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bgm-same-as-built",
+   "family": "bgm",
+   "fixture": "built",
+   "request": "겨울 시장 배경 음악을 눈보라 마을이랑 같은 곡으로 바꿔 줘",
+   "check": {
+    "kind": "mapBgm",
+    "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+    "sameAsMap": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d"
+   },
+   "reference": [
+    {
+     "tool": "set_map_properties",
+     "args": {
+      "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+      "bgm": {
+       "mode": "custom",
+       "resourceId": "cc0-bgm-town"
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "다른 곡",
+     "calls": [
+      {
+       "tool": "set_map_properties",
+       "args": {
+        "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+        "bgm": {
+         "mode": "custom",
+         "resourceId": "cc0-bgm-field"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "눈보라 마을의 곡을 시장 곡으로(방향이 반대)",
+     "calls": [
+      {
+       "tool": "set_map_properties",
+       "args": {
+        "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+        "bgm": {
+         "mode": "custom",
+         "resourceId": "cc0-bgm-rtp-wks-001"
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bgm-add-starter",
+   "family": "bgm",
+   "fixture": "starter",
+   "request": "이 마을에 잔잔한 배경 음악 깔아 줘",
+   "check": {
+    "kind": "mapBgm",
+    "mapId": "map_ember_village"
+   },
+   "reference": [
+    {
+     "tool": "set_map_properties",
+     "args": {
+      "mapId": "map_ember_village",
+      "bgm": {
+       "mode": "custom",
+       "resourceId": "cc0-bgm-town"
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "다른 맵(동쪽 들판)에 건다",
+     "calls": [
+      {
+       "tool": "set_map_properties",
+       "args": {
+        "mapId": "map_blank_start",
+        "bgm": {
+         "mode": "custom",
+         "resourceId": "cc0-bgm-town"
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "note": "재점검 묶음의 「마을에 잔잔한 배경 음악 깔아 줘」"
+  },
+  {
+   "id": "encounter-foe-built",
+   "family": "encounter",
+   "fixture": "built",
+   "request": "얼어붙은 호수에 돌아다니는 적을 하나 놓아 줘. 부딪히면 전투가 시작되게 해 줘",
+   "check": {
+    "kind": "battleEvent",
+    "mapId": "map_9be2312c-43c7-4037-8a7b-73645ee8d6b3"
+   },
+   "reference": [
+    {
+     "tool": "place_battle_blocker",
+     "args": {
+      "mapId": "map_9be2312c-43c7-4037-8a7b-73645ee8d6b3",
+      "x": 10,
+      "y": 9,
+      "troopId": "troop_fit_field_slime",
+      "fightMovement": "random"
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "적처럼 생긴 사람(전투 없음)",
+     "calls": [
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_9be2312c-43c7-4037-8a7b-73645ee8d6b3",
+        "event": {
+         "id": "ev_ref_foe",
+         "name": "적",
+         "x": 10,
+         "y": 9,
+         "trigger": {
+          "kind": "action"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_foe_p0",
+           "name": "적",
+           "conditions": [],
+           "graphic": {
+            "sprite": {
+             "type": "bundled",
+             "id": "tex_easyrpg_charset_people1"
+            },
+            "direction": "down",
+            "pattern": 73
+           },
+           "trigger": {
+            "kind": "action"
+           },
+           "priority": "same",
+           "overlapForbidden": true,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "으르렁...",
+             "speaker": "적"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "encounter-slimes-starter",
+   "family": "encounter",
+   "fixture": "starter",
+   "request": "마을 밖으로 나가는 길목에 슬라임 세 마리와 싸우는 전투를 하나 넣어 줘",
+   "check": {
+    "kind": "battleEvent",
+    "mapId": "map_ember_village",
+    "members": 3,
+    "enemyName": "슬라임",
+    "visible": false
+   },
+   "reference": [
+    {
+     "tool": "upsert_troop",
+     "args": {
+      "troop": {
+       "id": "troop_ref_slime3",
+       "name": "슬라임 셋",
+       "enemyIds": [
+        "enemy_slime",
+        "enemy_slime",
+        "enemy_slime"
+       ],
+       "members": [
+        {
+         "enemyId": "enemy_slime",
+         "x": 60,
+         "y": 96
+        },
+        {
+         "enemyId": "enemy_slime",
+         "x": 104,
+         "y": 96
+        },
+        {
+         "enemyId": "enemy_slime",
+         "x": 148,
+         "y": 96
+        }
+       ]
+      }
+     }
+    },
+    {
+     "tool": "place_battle_blocker",
+     "args": {
+      "mapId": "map_ember_village",
+      "x": 12,
+      "y": 17,
+      "troopId": "troop_ref_slime3"
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "슬라임 한 마리 부대",
+     "calls": [
+      {
+       "tool": "place_battle_blocker",
+       "args": {
+        "mapId": "map_ember_village",
+        "x": 12,
+        "y": 17,
+        "troopId": "troop_slime"
+       }
+      }
+     ]
+    },
+    {
+     "note": "박쥐 세 마리 부대",
+     "calls": [
+      {
+       "tool": "place_battle_blocker",
+       "args": {
+        "mapId": "map_ember_village",
+        "x": 12,
+        "y": 17,
+        "troopId": "troop_bat_swarm",
+        "graphic": {
+         "textureKey": "tex_easyrpg_charset_monster1",
+         "characterIndex": 0
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "note": "재점검 묶음의 「슬라임 세 마리와 싸우는 전투 하나」",
+   "accept": [
+    {
+     "note": "길목 칸을 밟으면 시작되는 보이지 않는 전투(2026-11-11 기준선에서 Terra 가 낸 구현)",
+     "calls": [
+      {
+       "tool": "upsert_troop",
+       "args": {
+        "troop": {
+         "id": "troop_ref_slime3",
+         "name": "슬라임 셋",
+         "enemyIds": [
+          "enemy_slime",
+          "enemy_slime",
+          "enemy_slime"
+         ],
+         "members": [
+          {
+           "enemyId": "enemy_slime",
+           "x": 60,
+           "y": 96
+          },
+          {
+           "enemyId": "enemy_slime",
+           "x": 104,
+           "y": 96
+          },
+          {
+           "enemyId": "enemy_slime",
+           "x": 148,
+           "y": 96
+          }
+         ]
+        }
+       }
+      },
+      {
+       "tool": "upsert_event",
+       "args": {
+        "mapId": "map_ember_village",
+        "event": {
+         "id": "ev_ref_ambush",
+         "name": "길목 전투",
+         "x": 20,
+         "y": 8,
+         "trigger": {
+          "kind": "playerTouch"
+         },
+         "commands": [],
+         "pages": [
+          {
+           "id": "ev_ref_ambush_p0",
+           "name": "길목 전투",
+           "conditions": [
+            {
+             "kind": "selfSwitch",
+             "key": "A",
+             "value": false
+            }
+           ],
+           "graphic": {
+            "transparent": true
+           },
+           "trigger": {
+            "kind": "playerTouch"
+           },
+           "priority": "below",
+           "overlapForbidden": false,
+           "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+           },
+           "commands": [
+            {
+             "kind": "text",
+             "body": "슬라임 세 마리가 길을 막아섰다!"
+            },
+            {
+             "kind": "battleProcessing",
+             "troopId": "troop_ref_slime3",
+             "canEscape": true,
+             "canLose": false
+            },
+            {
+             "kind": "setSelfSwitch",
+             "key": "A",
+             "value": true
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "give-key-once-starter",
+   "family": "quest",
+   "fixture": "starter",
+   "request": "꼬마 미루한테 말을 걸면 낡은 열쇠를 하나 받게 해 줘. 한 번만 주게 해 줘",
+   "check": {
+    "kind": "giveOnce",
+    "mapId": "map_ember_village",
+    "eventId": "ev_ember_child",
+    "item": {
+     "name": "낡은 열쇠",
+     "amount": 1
+    }
+   },
+   "reference": [
+    {
+     "tool": "patch_event_page",
+     "args": {
+      "mapId": "map_ember_village",
+      "eventId": "ev_ember_child",
+      "pageIndex": 0,
+      "set": {
+       "commands": [
+        {
+         "kind": "fork",
+         "condition": {
+          "kind": "selfSwitch",
+          "key": "A",
+          "value": false
+         },
+         "then": [
+          {
+           "kind": "text",
+           "body": "이거 주웠어! 형(누나) 가져.",
+           "speaker": "꼬마 미루"
+          },
+          {
+           "kind": "changeItem",
+           "itemId": "item_old_key",
+           "op": "+=",
+           "amount": 1
+          },
+          {
+           "kind": "setSelfSwitch",
+           "key": "A",
+           "value": true
+          }
+         ],
+         "else": [
+          {
+           "kind": "text",
+           "body": "숲의 약초꾼 세라 누나가 반짝이는 풀을 찾고 있대! 나도 보고 싶다~",
+           "speaker": "꼬마 미루"
+          },
+          {
+           "kind": "text",
+           "body": "파수꾼 아저씨는 무서워 보여도 마을에서 제일 착해.",
+           "speaker": "꼬마 미루"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "말 걸 때마다 준다",
+     "calls": [
+      {
+       "tool": "patch_event_page",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_child",
+        "pageIndex": 0,
+        "set": {
+         "commands": [
+          {
+           "kind": "text",
+           "body": "이거 주웠어!",
+           "speaker": "꼬마 미루"
+          },
+          {
+           "kind": "changeItem",
+           "itemId": "item_old_key",
+           "op": "+=",
+           "amount": 1
+          }
+         ]
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "다른 사람(마사)이 준다",
+     "calls": [
+      {
+       "tool": "patch_event_page",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_inn",
+        "pageIndex": 0,
+        "set": {
+         "commands": [
+          {
+           "kind": "fork",
+           "condition": {
+            "kind": "selfSwitch",
+            "key": "A",
+            "value": false
+           },
+           "then": [
+            {
+             "kind": "changeItem",
+             "itemId": "item_old_key",
+             "op": "+=",
+             "amount": 1
+            },
+            {
+             "kind": "setSelfSwitch",
+             "key": "A",
+             "value": true
+            }
+           ],
+           "else": []
+          },
+          {
+           "kind": "inn",
+           "price": 15
+          }
+         ]
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "공통 이벤트로 주지만 막는 장치가 없다(말 걸 때마다 준다)",
+     "calls": [
+      {
+       "tool": "upsert_common_event",
+       "args": {
+        "id": "ce_ref_key",
+        "name": "열쇠 선물",
+        "trigger": "none",
+        "commands": [
+         {
+          "kind": "changeItem",
+          "itemId": "item_old_key",
+          "op": "+=",
+          "amount": 1
+         }
+        ]
+       }
+      },
+      {
+       "tool": "patch_event_page",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_child",
+        "pageIndex": 0,
+        "set": {
+         "commands": [
+          {
+           "kind": "text",
+           "speaker": "꼬마 미루",
+           "body": "숲의 약초꾼 세라 누나가 반짝이는 풀을 찾고 있대! 나도 보고 싶다~"
+          },
+          {
+           "kind": "text",
+           "speaker": "꼬마 미루",
+           "body": "파수꾼 아저씨는 무서워 보여도 마을에서 제일 착해."
+          },
+          {
+           "kind": "callCommonEvent",
+           "commonEventId": "ce_ref_key"
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ],
+   "note": "재점검 묶음의 「촌장한테 말 걸면 열쇠를 받게 해 줘」",
+   "accept": [
+    {
+     "note": "공통 이벤트로 주고, 준 뒤의 페이지를 따로 둔다(2026-11-11 기준선에서 Terra 가 낸 구현)",
+     "calls": [
+      {
+       "tool": "upsert_common_event",
+       "args": {
+        "id": "ce_ref_key",
+        "name": "열쇠 선물",
+        "trigger": "none",
+        "commands": [
+         {
+          "kind": "text",
+          "speaker": "꼬마 미루",
+          "body": "이 열쇠 주웠어! 너한테 줄게!"
+         },
+         {
+          "kind": "changeItem",
+          "itemId": "item_old_key",
+          "op": "+=",
+          "amount": 1
+         }
+        ]
+       }
+      },
+      {
+       "tool": "patch_event_page",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_child",
+        "pageIndex": 0,
+        "set": {
+         "commands": [
+          {
+           "kind": "text",
+           "speaker": "꼬마 미루",
+           "body": "숲의 약초꾼 세라 누나가 반짝이는 풀을 찾고 있대! 나도 보고 싶다~"
+          },
+          {
+           "kind": "text",
+           "speaker": "꼬마 미루",
+           "body": "파수꾼 아저씨는 무서워 보여도 마을에서 제일 착해."
+          },
+          {
+           "kind": "callCommonEvent",
+           "commonEventId": "ce_ref_key"
+          },
+          {
+           "kind": "setSelfSwitch",
+           "key": "A",
+           "value": true
+          }
+         ]
+        }
+       }
+      },
+      {
+       "tool": "add_event_page",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_child",
+        "page": {
+         "id": "child_given",
+         "name": "꼬마 미루",
+         "conditions": [
+          {
+           "kind": "selfSwitch",
+           "key": "A",
+           "value": true
+          }
+         ],
+         "graphic": {
+          "sprite": {
+           "type": "bundled",
+           "id": "tex_easyrpg_charset_people3"
+          },
+          "direction": "down",
+          "pattern": 31
+         },
+         "trigger": {
+          "kind": "action"
+         },
+         "priority": "same",
+         "overlapForbidden": true,
+         "movement": {
+          "type": "random",
+          "speed": 2,
+          "frequency": 3
+         },
+         "commands": [
+          {
+           "kind": "text",
+           "speaker": "꼬마 미루",
+           "body": "숲의 약초꾼 세라 누나가 반짝이는 풀을 찾고 있대! 나도 보고 싶다~"
+          },
+          {
+           "kind": "text",
+           "speaker": "꼬마 미루",
+           "body": "파수꾼 아저씨는 무서워 보여도 마을에서 제일 착해."
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "key-gated-door-built",
+   "family": "quest",
+   "fixture": "built",
+   "request": "눈보라 마을의 굳게 닫힌 집 문 하나를, 낡은 열쇠를 갖고 있으면 \"문이 열렸다.\"라고 나오게 바꿔 줘. 열쇠가 없으면 지금처럼 잠겨 있게 해 줘",
+   "check": {
+    "kind": "itemGatedText",
+    "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+    "eventIds": [
+     "ev_locked_door_21_31",
+     "ev_locked_door_24_31",
+     "ev_locked_door_21_30",
+     "ev_locked_door_24_30"
+    ],
+    "itemName": "낡은 열쇠",
+    "say": "문이 열렸다",
+    "keep": "문이 굳게 잠겨 있다"
+   },
+   "reference": [
+    {
+     "tool": "patch_event_page",
+     "args": {
+      "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+      "eventId": "ev_locked_door_21_31",
+      "pageIndex": 0,
+      "set": {
+       "commands": [
+        {
+         "kind": "fork",
+         "condition": {
+          "kind": "item",
+          "itemId": "item_old_key",
+          "present": true
+         },
+         "then": [
+          {
+           "kind": "text",
+           "body": "문이 열렸다."
+          }
+         ],
+         "else": [
+          {
+           "kind": "text",
+           "body": "문이 굳게 잠겨 있다. 들어갈 수 없는 집이다."
+          }
+         ]
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "열쇠가 없어도 열린다",
+     "calls": [
+      {
+       "tool": "patch_event_page",
+       "args": {
+        "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+        "eventId": "ev_locked_door_21_31",
+        "pageIndex": 0,
+        "set": {
+         "commands": [
+          {
+           "kind": "text",
+           "body": "문이 열렸다."
+          }
+         ]
+        }
+       }
+      }
+     ]
+    },
+    {
+     "note": "조건이 뒤집혔다",
+     "calls": [
+      {
+       "tool": "patch_event_page",
+       "args": {
+        "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+        "eventId": "ev_locked_door_21_31",
+        "pageIndex": 0,
+        "set": {
+         "commands": [
+          {
+           "kind": "fork",
+           "condition": {
+            "kind": "item",
+            "itemId": "item_old_key",
+            "present": false
+           },
+           "then": [
+            {
+             "kind": "text",
+             "body": "문이 열렸다."
+            }
+           ],
+           "else": [
+            {
+             "kind": "text",
+             "body": "문이 굳게 잠겨 있다. 들어갈 수 없는 집이다."
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "dress-trees-starter",
+   "family": "fill",
+   "fixture": "starter",
+   "request": "마을 빈 곳에 나무를 몇 그루 심어 줘",
+   "check": {
+    "kind": "dressed",
+    "mapId": "map_ember_village",
+    "minCells": 3,
+    "maxCells": 200
+   },
+   "reference": [
+    {
+     "tool": "place_props",
+     "args": {
+      "mapId": "map_ember_village",
+      "area": {
+       "x": 2,
+       "y": 2,
+       "w": 8,
+       "h": 5
+      },
+      "material": "버들항 · 나무·덤불",
+      "count": 5,
+      "seed": 1
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "맵 바닥을 통째로 모래로 바꿈",
+     "calls": [
+      {
+       "tool": "fill_region",
+       "args": {
+        "mapId": "map_ember_village",
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 18,
+        "layer": "lower",
+        "material": "버들항 모랫길"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "dress-snowfield-built",
+   "family": "fill",
+   "fixture": "built",
+   "request": "눈보라 마을 왼쪽 아래 빈 눈밭에 나무랑 바위를 좀 놓아 줘",
+   "check": {
+    "kind": "dressed",
+    "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+    "rect": {
+     "x": 0,
+     "y": 18,
+     "w": 23,
+     "h": 18
+    },
+    "minCells": 3,
+    "maxCells": 150,
+    "insideShare": 0.8
+   },
+   "reference": [
+    {
+     "tool": "copy_map_region",
+     "args": {
+      "from": {
+       "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+       "x": 3,
+       "y": 1,
+       "w": 5,
+       "h": 3
+      },
+      "to": {
+       "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+       "x": 14,
+       "y": 23
+      },
+      "layers": "upper"
+     }
+    }
+   ],
+   "wrong": [
+    {
+     "note": "오른쪽 위에 놓음(다른 곳)",
+     "calls": [
+      {
+       "tool": "copy_map_region",
+       "args": {
+        "from": {
+         "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+         "x": 3,
+         "y": 1,
+         "w": 5,
+         "h": 3
+        },
+        "to": {
+         "mapId": "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d",
+         "x": 36,
+         "y": 12
+        },
+        "layers": "upper"
+       }
+      }
+     ]
+    }
+   ],
+   "note": "재점검에서 확인한 구멍: find_empty_ground 가 세계 맵(설원)에서 「맨땅 0%」 · 「왼쪽 아래」는 맵의 왼쪽 아래 4분면(x<23, y≥18)으로 본다"
+  }
+ ]
+}
