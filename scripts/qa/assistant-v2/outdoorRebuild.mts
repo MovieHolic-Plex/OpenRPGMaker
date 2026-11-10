@@ -9,8 +9,8 @@ import { createBlankProject } from "../../../src/project/defaults/blankProject.t
 import { readProjectSqlite } from "../../content/read-project-sqlite.mts";
 import { renderMapPng } from "../../qa-game/render.mts";
 import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
-import { villageArgs } from "../../../src/ai/v2/builders/village.ts";
-import { builderFor } from "../../../src/ai/v2/builders/index.ts";
+import { villageArgs } from "../../../src/ai/v2/place/builders/village.ts";
+import { builderFor } from "../../../src/ai/v2/place/builders/index.ts";
 import type { PlaceSpec } from "../../../src/ai/v2/types.ts";
 import type { GameMap, Project } from "../../../src/project/types.ts";
 

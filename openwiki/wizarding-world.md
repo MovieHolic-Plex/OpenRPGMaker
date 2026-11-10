@@ -119,7 +119,7 @@ python3 scripts/content/wizarding/viz_wz.py             # ~/claude-viz/wizarding
 
 ### 조수 v2 경로 (2026-10-28)
 
-조수 v2 `make_place` 는 마법 학교 낱말이 있으면 `src/ai/v2/builders/wizarding.ts` 로 간다 — 구역마다 이 도구 한 번, 첫 방 북·동·서 문과 다른 방 남문을 `create_transfer_pair` 로 잇고, 요청 소품은 세트 기물로(없으면 가장 가까운 기물 + 경고). 규칙은 `openwiki/assistant-v2.md`.
+조수 v2 `make_place` 는 마법 학교 낱말이 있으면 `src/ai/v2/place/builders/wizarding.ts` 로 간다 — 구역마다 이 도구 한 번, 첫 방 북·동·서 문과 다른 방 남문을 `create_transfer_pair` 로 잇고, 요청 소품은 세트 기물로(없으면 가장 가까운 기물 + 경고). 규칙은 `openwiki/assistant-v2.md`.
 
 ## 통행 관문 WZ-ISLAND
 
