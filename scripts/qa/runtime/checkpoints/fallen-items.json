@@ -1,0 +1,657 @@
+{
+  "set": "fallen-items",
+  "note": "폴른 스타 아이템·장비 특색 QA(fs-item-identity). 픽스처는 fallen-battle-fixture.mjs. 장비는 sessionPatch.actorEquipment 로 입힌다.",
+  "projectFixture": ".omo/fs-item/fixture.json",
+  "viewport": {
+    "width": 960,
+    "height": 540
+  },
+  "checkpoints": [
+    {
+      "id": "star-sword",
+      "label": "별쇠 장검 — 평타가 별 표식을 새긴다",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 8
+        }
+      ],
+      "sessionPatch": {
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_fs_sword_star",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        }
+      },
+      "startEventId": "qa_fight_wolves",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "별쇠 장검 — 평타가 별 표식을 새긴다",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "attack@enemy-1"
+                ],
+                "actor_fs_elena": [
+                  "defend"
+                ],
+                "actor_fs_iris": [
+                  "defend"
+                ]
+              },
+              "commands": 3,
+              "logPath": "verify-shots/fs-item/logs/star-sword.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "defend"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1200
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "gale-double",
+      "label": "바람결 검 — 한 번에 두 번 벤다",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 8
+        }
+      ],
+      "sessionPatch": {
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_fs_sword_gale",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        }
+      },
+      "startEventId": "qa_fight_wolves",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "바람결 검 — 한 번에 두 번 벤다",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "attack@enemy-1"
+                ],
+                "actor_fs_elena": [
+                  "defend"
+                ],
+                "actor_fs_iris": [
+                  "defend"
+                ]
+              },
+              "commands": 3,
+              "logPath": "verify-shots/fs-item/logs/gale-double.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "defend"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1200
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "halberd-sweep",
+      "label": "경비 미늘창 — 평타가 적 전체를 휩쓴다",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 8
+        }
+      ],
+      "sessionPatch": {
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_gen_halberd_guard",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        }
+      },
+      "startEventId": "qa_fight_wisps",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "경비 미늘창 — 평타가 적 전체를 휩쓴다",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "attack"
+                ],
+                "actor_fs_elena": [
+                  "defend"
+                ],
+                "actor_fs_iris": [
+                  "defend"
+                ]
+              },
+              "commands": 3,
+              "logPath": "verify-shots/fs-item/logs/halberd-sweep.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "defend"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1200
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "flame-burn",
+      "label": "화염 검 — 평타에 불이 붙는다",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 8
+        }
+      ],
+      "sessionPatch": {
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_gen_sword_flame",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        }
+      },
+      "startEventId": "qa_fight_wolves",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "화염 검 — 평타에 불이 붙는다",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "attack@enemy-1"
+                ],
+                "actor_fs_elena": [
+                  "defend"
+                ],
+                "actor_fs_iris": [
+                  "defend"
+                ]
+              },
+              "commands": 6,
+              "logPath": "verify-shots/fs-item/logs/flame-burn.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "defend"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1200
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "star-spear-pierce",
+      "label": "별꿰기 창 — 관통상 뒤 엘레나 마법",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 8
+        }
+      ],
+      "sessionPatch": {
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_fs_spear_star",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        }
+      },
+      "startEventId": "qa_fight_wolves",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "별꿰기 창 — 관통상 뒤 엘레나 마법",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "attack@enemy-1"
+                ],
+                "actor_fs_elena": [
+                  "defend",
+                  "skill_arcane_bolt@enemy-1"
+                ],
+                "actor_fs_iris": [
+                  "defend"
+                ]
+              },
+              "commands": 6,
+              "logPath": "verify-shots/fs-item/logs/star-spear-pierce.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "defend"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1200
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "water-wet",
+      "label": "물 주머니 — 맞은 적이 젖는다",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 8
+        }
+      ],
+      "items": {
+        "item_fs_water_flask": 3
+      },
+      "sessionPatch": {
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_leather_armor",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        }
+      },
+      "startEventId": "qa_fight_wolves",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "물 주머니 — 맞은 적이 젖는다",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "item:item_fs_water_flask@enemy-1",
+                  "defend"
+                ],
+                "actor_fs_elena": [
+                  "defend"
+                ],
+                "actor_fs_iris": [
+                  "defend"
+                ]
+              },
+              "commands": 3,
+              "logPath": "verify-shots/fs-item/logs/water-wet.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "defend"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1200
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "crystal-halfmp",
+      "label": "수정 지팡이 — 기술 MP 절반",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_elena",
+          "level": 8
+        },
+        {
+          "actorId": "actor_fs_iris",
+          "level": 8
+        }
+      ],
+      "sessionPatch": {
+        "actorEquipment": {
+          "actor_fs_elena": {
+            "weapon": "equip_gen_staff_crystal",
+            "armor": "equip_mystic_robe",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        }
+      },
+      "startEventId": "qa_fight_wolves",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "수정 지팡이 — 기술 MP 절반",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "defend"
+                ],
+                "actor_fs_elena": [
+                  "skill_mage_fireball@enemy-1"
+                ],
+                "actor_fs_iris": [
+                  "defend"
+                ]
+              },
+              "commands": 3,
+              "logPath": "verify-shots/fs-item/logs/crystal-halfmp.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "defend"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1200
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "chain-guard",
+      "label": "사슬 갑옷 — 교단 광신도의 검격(베기)을 반만 받는다",
+      "mapId": "fs_forest_edge",
+      "x": 14,
+      "y": 22,
+      "facing": "up",
+      "switches": {
+        "sw_fs_main_started": true,
+        "sw_fs_valen_marched": true
+      },
+      "party": [
+        {
+          "actorId": "actor_hero",
+          "level": 8
+        }
+      ],
+      "sessionPatch": {
+        "actorEquipment": {
+          "actor_hero": {
+            "weapon": "equip_sword",
+            "shield": "equip_oak_shield",
+            "armor": "equip_gen_armor_chain",
+            "helmet": "equip_traveler_hat",
+            "accessory": "equip_focus_charm"
+          }
+        }
+      },
+      "startEventId": "qa_fight_fanatics",
+      "beats": [
+        {
+          "id": "battle",
+          "note": "전투 시작",
+          "ops": [
+            {
+              "kind": "waitFor",
+              "testid": "battle-scene",
+              "timeoutMs": 60000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "act",
+          "note": "사슬 갑옷 — 베기 피해 반감(교단 광신도의 검격)",
+          "ops": [
+            {
+              "kind": "battle",
+              "plan": {
+                "actor_hero": [
+                  "defend"
+                ]
+              },
+              "commands": 4,
+              "logPath": "verify-shots/fs-item/logs/chain-guard.jsonl",
+              "timeoutMs": 150000,
+              "fallback": "defend"
+            },
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 1200
+            }
+          ],
+          "shot": true
+        }
+      ]
+    }
+  ]
+}

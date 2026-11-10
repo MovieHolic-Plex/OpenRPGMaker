@@ -57,6 +57,7 @@ import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import type { FlagshipDemoBuildResult } from "./types";
 import { applyFallenPixelFx } from "./fallen/pixelfx";
 import { applyFallenHeroSkillIdentity } from "./fallen/heroSkillIdentity";
+import { applyFallenItemIdentity } from "./fallen/itemIdentity";
 import { applyFallenMobBalance } from "./fallen/mobBalance";
 import { applyFallenMonsterArt16, installFallenMonsterArtWithoutBundle } from "./fallen/monsterArt16";
 import { finishFallenWellBeastArt } from "./fallen/wellBeast";
@@ -2541,6 +2542,8 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenPixelFx(project);
   // 주인공 기술 개성 1차 — 착탄 섬광 색·카엘 별 표식·새라 창 연출(fallen/heroSkillIdentity.ts). pixelfx 다음.
   applyFallenHeroSkillIdentity(project);
+  // 아이템·장비 개성 1차 — 무기별 평타 특성·방어구 계열 반감·던지는 병 상태·새라 창 장착(fallen/itemIdentity.ts). 별 표식 다음.
+  applyFallenItemIdentity(project);
   // 표시 이름 정비(파이어볼→불덩이 등, id 는 그대로) — 기술·물건을 다시 쓰는 단계가 모두 끝난 뒤(fallen/displayNames.ts).
   applyFallenDisplayNames(project);
   // 전투곡 — 일반은 프로젝트·지역 맵 곡, 보스·우두머리만 보스곡(fallen/battleMusic.ts). 전투가 다 놓인 뒤.
