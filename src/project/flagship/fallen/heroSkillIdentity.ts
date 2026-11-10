@@ -3,7 +3,8 @@
 // 감사 결론: 맞는 순간이 모두 같은 흰 섬광이고, 새라의 창 기술이 카엘의 칼 시트를 빌렸고, 카엘의 탱커 버프 넷이 같은 힘 오라였다.
 // 새 그림 0장: 번들 pixelfx 색 바꾸기와 CC0 아이콘 금빛 재채색만.
 //
-// 1. 착탄 섬광 색(ActorRecord.battleHitFlash): 카엘 강철+주황 불씨 · 엘레나 남청+별빛 · 이리스 보라+시안 · 새라 녹슨 붉은색+은색.
+// 1. 착탄 섬광 색(ActorRecord.battleHitFlash): 카엘 강철+주황 불씨 · 엘레나 별빛+밝은 하늘색 · 이리스 보라+시안 · 새라 은색+진홍.
+//    (fs-vqa-fix-all: 새라 바깥 #a8442a 는 화면에서 카엘 주황과 구별되지 않았고, 엘레나 남청 #2b3f8f 는 어두운 숲 바닥에 묻혔다.)
 // 2. 카엘 「별 새김 검」: 단타 베기(검격·올려베기·회전베기)가 별 표식을 새긴다. 같은 계열(감정 사다리)이라 다시 새기면
 //    I → II → III 으로 오르고 하나만 남는다(battleEmotion.ts). 3차례 지나면 풀리고, 새로 새기면 다시 3차례.
 //    십자베기는 두 번 치는 기술이라 한 번에 I→II 가 되므로 표식을 주지 않는다(리드 결정 2026-11-10).
@@ -26,9 +27,9 @@ export const FS_STAR_MARK_FINISHERS = ["skill_hero_flame_sword", "skill_fs_verdi
 
 export const FS_HIT_FLASH: Readonly<Record<string, { core: string; edge: string }>> = {
   actor_hero: { core: "#eef3f8", edge: "#ff8a2a" },
-  actor_fs_elena: { core: "#e8f0ff", edge: "#2b3f8f" },
+  actor_fs_elena: { core: "#e8f0ff", edge: "#7fb8ff" },
   actor_fs_iris: { core: "#e6fbff", edge: "#8a4fd8" },
-  actor_fs2_sarah: { core: "#e6e9ee", edge: "#a8442a" },
+  actor_fs2_sarah: { core: "#e6e9ee", edge: "#d0283c" },
 };
 
 /** 녹슨 붉은 창끝 — 새라 색조(연출 레코드 tint). */
