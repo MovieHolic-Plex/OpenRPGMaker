@@ -27,6 +27,7 @@ import { codeTerrainFor, usesCodeTerrain } from "@/editor/tools/authorBeodeulTow
 import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
 import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
 import { applyModernSetupDefaults, applyStorySetupDefaults, isFreshProject } from "./genreDefaults";
+import { recordStageWrites, type StageWrites } from "./stageWrites";
 import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs, interiorMoveObjects, roomMaterials, type ObjectEdit } from "./builders/interior";
 import { interiorStampEdit, type StampEditState } from "./builders/interiorEdit";
 import { fixPlayerStart, runMachineChecks, summarizeChecks, type MachineCheck } from "./checks";
@@ -150,6 +151,8 @@ export class V2Session {
   barePlaces?: Map<string, string>;
   /** 필수전투 레벨 맞춤이 시간 예산을 넘겨 멈췄다는 기록(끝맺음 ship-defaults 가 쓰고 최종 보고가 읽는다 — 프로젝트 객체는 체크포인트·다시 읽기에서 바뀌어 기록을 못 지킨다). */
   fitIncomplete?: string;
+  /** 끝맺음 단계·장르 기본값이 스스로 쓴 데이터베이스 칸(구역:id:칸 → 값 JSON) — 「[게임 검사 부작용]」이 모델이 한 변경과 가른다(stageWrites.ts). */
+  readonly stageWrites: StageWrites = new Map();
   /** 끝맺음에서 이동 칸 앞을 막는 이벤트를 옮겼는가(한 번만). */
   autoLanesDone = false;
   /** 출구·이동 칸 마감을 돈 뒤의 맵 지문(finishAutoBuild.lanesStamp). 늦은 고치기 차례가 장소를 다시 지으면 달라져 마감을 다시 돈다. */
@@ -505,9 +508,9 @@ export function applyPatch(spec: PlaceSpec, patch: PlacePatch, floor = 1): Place
 }
 
 /** 현대(한국·일본 도시) 장소를 처음 지은 게임 요청이면 장르 기본값(주인공 현대 칩·체력 HUD 끄기·연애 기본값)을 깔고 보고에 한 줄 남긴다. */
-function withSetupDefaults(result: PlaceBuildResult, builderId: string, project: Project, task: string, freshStart = false): PlaceBuildResult {
+function withSetupDefaults(result: PlaceBuildResult, builderId: string, project: Project, task: string, freshStart = false, writes?: StageWrites): PlaceBuildResult {
   if (!result.ok) return result;
-  const set = builderId === "kr-modern" || builderId === "jp-city" ? applyModernSetupDefaults(project, task, freshStart) : applyStorySetupDefaults(project, task, freshStart);
+  const set = recordStageWrites(project, writes, () => builderId === "kr-modern" || builderId === "jp-city" ? applyModernSetupDefaults(project, task, freshStart) : applyStorySetupDefaults(project, task, freshStart));
   return set.length ? { ...result, warnings: [...result.warnings, `게임 기본값을 깔았다: ${set.join(" · ")} — 사용자가 다른 것을 원하면 바꾼다`] } : result;
 }
 
@@ -975,7 +978,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         result = fallback.build(run, spec);
         result = { ...result, warnings: [`Your ${bboxState.bbox} layout was rejected ${n} times (${bboxState.rejected.slice(0, 3).join(" | ")}) — built by the automatic builder instead.`, ...result.warnings] };
       }
-      result = withSetupDefaults(result, builder.id, run.ctx.project, String(task ?? ""), freshStart);
+      result = withSetupDefaults(result, builder.id, run.ctx.project, String(task ?? ""), freshStart, session.stageWrites);
       if (keptNote || designed.notes.length) result = { ...result, warnings: [...(keptNote ? [keptNote] : []), ...designed.notes, ...result.warnings] };
       // 요청에 주민이 있는데 마을만 짓고 끝냈다(2026-10-30 씬 벤치 「강가 마을」: 「주민 몇 명」 요청 → NPC 0명) — 마을 결과에 다음 할 일로 붙인다
       if (result.ok && builder.id === "village" && /주민|마을\s*사람|사람\s*몇|npc|villager|resident/i.test(String(task ?? ""))) {
@@ -1787,7 +1790,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
         await builder.prepare?.(spec);
         const sub = i === 0 ? env.ctx : { ...env.ctx, project: env.ctx.project, currentMapId: parentMap ?? env.ctx.currentMapId };
         const subRun = i === 0 ? run : createBuildRun(sub);
-        let result = withSetupDefaults(builder.build(subRun, spec), builder.id, sub.project, String(task ?? ""), freshStart);
+        let result = withSetupDefaults(builder.build(subRun, spec), builder.id, sub.project, String(task ?? ""), freshStart, session.stageWrites);
         if (sub !== env.ctx) env.ctx.project = sub.project;
         recordWrite(env, subRun, `${id}:${place.key}`, "make_game", { place: place.key, spec }, result.ok, result.summary, { mapIds: result.mapIds });
         for (const m of result.missingArt) session.missingArt.add(m);
@@ -2036,9 +2039,9 @@ const gateKey = (text: string): string => text.replace(/\d+/gu, "#").replace(/\s
  * leftovers = 고치기 상한에 닿아 보고로만 갈 장소 문제, missing = 그림·부품이 없어 못 한 것. 사용자에게 물은 실행은 비운다.
  */
 /** 게임 내용 검사 글(날씨·엔딩·상태·물건·깃발·부작용 + 전투 + 출하 차단). before = 요청 시작 저장본. */
-function gameProblemTexts(before: Project, after: Project, task: string): string[] {
+function gameProblemTexts(before: Project, after: Project, task: string, writes?: StageWrites): string[] {
   let game: string[] = [];
-  try { game = [...gameContentProblems(before, after, task), ...unaskedChanges(before, after, task)]; } catch { game = []; }
+  try { game = [...gameContentProblems(before, after, task), ...unaskedChanges(before, after, task, writes)]; } catch { game = []; }
   // 끝까지 깰 수 있는 전투인가(2026-10-25 판정 J55·J4): 회복 수단 없음·시키지 않은 무작위 조우·첫 구역이 너무 센 조우.
   try { game.push(...combatProblems(before, after, task)); } catch { /* 검사 실패는 무시 */ }
   // 새로 둔 보이는 적을 시작 파티로 재기(2026-10-30 omo-fr-o: 「약한 몬스터」 숲에 승률 93% 무리를 두어 판정자가 졌다) — 청사진 길 밖 전투까지.
@@ -2093,7 +2096,7 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
   const missing = [...session.missingArt];
   const fixable = open.filter((o) => o.rounds < V2_MAX_REPAIR_ROUNDS);
   // 게임 내용 검사(날씨·엔딩·상태·물건 고르기·깃발·부작용) — 요청 낱말과 실제로 바뀐 이벤트를 맞댄다.
-  let game: string[] = env ? gameProblemTexts(env.request.project, env.ctx.project, env.request.task) : [];
+  let game: string[] = env ? gameProblemTexts(env.request.project, env.ctx.project, env.request.task, session.stageWrites) : [];
   // 아무것도 안 바꾸고 «도구가 없다»며 끝내기(2026-10-24 g3-edit-move: 대장장이 옮기기를 묻기만 했다, g3-apple-count: 그림 카드만 남겼다).
   // 설정이 이미 기본값(켜짐)이면 set_project_settings 가 아무것도 안 바꾸는 것이 맞다(2026-10-25 데모 과업: 탭 걷기·팡파레·빠른 달려들기는 기본 켜짐).
   const settingOnly = /휴대폰|모바일|터치|탭하면|진동|조이스틱|달리기 단추|레벨 ?업|팡파레|달려들|도움말/u.test(env?.request.task ?? "") && !/만들|두고|세워|놓아|놔|추가/u.test(env?.request.task ?? "");

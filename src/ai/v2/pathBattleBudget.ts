@@ -38,6 +38,7 @@ const WEIGHT = { field: 1, gate: 2 } as const;
 const MAX_FIELD_EVENTS = 4;
 const SAMPLES = 24;
 const ROUNDS = 16;
+const STAT_FLOOR = 0.5;
 const MIN_CURVE_FACTOR = 0.2;
 export const PATH_TROOP_PREFIX = "troop_path_";
 export const PATH_SKILL_PREFIX = "skill_path_";
@@ -222,6 +223,19 @@ function pathSkillCopies(project: Project, copyId: string): string {
   return prefix;
 }
 
+/** 사본 적 `enemy_path_<무리 꼬리>_<적 꼬리>` 의 원래 적(`enemy_<꼬리>` 또는 `<꼬리>`) — 이미 한 번 깎인 사본이 아니라 원래 값으로 하한을 잡는다. */
+function sourceEnemy(project: Project, copy: EnemyRecord, troopCopyId: string): EnemyRecord | undefined {
+  const prefix = `enemy_path_${troopCopyId.slice(PATH_TROOP_PREFIX.length)}_`;
+  if (!copy.id.startsWith(prefix)) return undefined;
+  const tail = copy.id.slice(prefix.length);
+  return project.database.enemies.find((e) => e.id === `enemy_${tail}` || e.id === tail);
+}
+
+function sourceSkill(project: Project, copy: SkillRecord, skillPrefix: string): SkillRecord | undefined {
+  const tail = copy.id.slice(skillPrefix.length);
+  return project.database.skills.find((k) => k.id === `skill_${tail}` || k.id === tail);
+}
+
 export function fitPathBattlesIn(project: Project): string[] {
   if (!project.gameBlueprint || project.system.battleParty === "monsters" || project.system.monsterBattleParty === true) return [];
   for (const troop of project.database.troops) if (troop.id.startsWith(PATH_TROOP_PREFIX)) repairPathTroop(project, troop);
@@ -281,10 +295,15 @@ export function fitPathBattlesIn(project: Project): string[] {
     try { before = measure(troopId, start); } catch { continue; }
     const fits = (m: ReturnType<typeof measure>) => m.win >= limit.minWin && m.loss <= cap + 1e-9 && m.turns <= limit.turns;
     if (fits(before)) continue;
+    const rowIdsBefore = { troops: new Set(project.database.troops.map((t) => t.id)), enemies: new Set(project.database.enemies.map((e) => e.id)), skills: new Set(project.database.skills.map((k) => k.id)) };
     const copyId = pathCopy(project, troopId);
     if (!copyId) continue;
     const enemyIds = new Set(project.database.troops.find((t) => t.id === copyId)?.enemyIds ?? []);
     const skillPrefix = pathSkillCopies(project, copyId);
+    const originals = new Map<string, { stats: EnemyRecord["stats"]; power?: number }>();
+    for (const enemy of project.database.enemies) if (enemyIds.has(enemy.id)) originals.set(enemy.id, { stats: { ...(sourceEnemy(project, enemy, copyId)?.stats ?? enemy.stats) } });
+    const skillOriginals = new Map<string, number>();
+    for (const skill of project.database.skills) if (skill.id.startsWith(skillPrefix)) skillOriginals.set(skill.id, sourceSkill(project, skill, skillPrefix)?.power ?? skill.power);
     let now = measure(copyId, start);
     for (let round = 0; round < ROUNDS && !fits(now); round += 1) {
       const strong = now.win < limit.minWin || now.loss > cap;
@@ -293,20 +312,31 @@ export function fitPathBattlesIn(project: Project): string[] {
       for (const enemy of project.database.enemies) {
         if (!enemyIds.has(enemy.id)) continue;
         const s = enemy.stats;
+        const o = originals.get(enemy.id)!.stats;
+        const floorOf = (value: number) => Math.max(1, Math.floor(value * STAT_FLOOR));
         const next = {
           ...s,
-          ...(strong ? { attack: Math.max(1, Math.floor(s.attack * 0.85)), mind: Math.max(1, Math.floor(s.mind * 0.85)) } : {}),
-          ...(long || (strong && s.attack <= 1) ? { maxHp: Math.max(1, Math.floor(s.maxHp * 0.85)) } : {}),
+          ...(strong ? { attack: Math.max(floorOf(o.attack), Math.floor(s.attack * 0.85)), mind: Math.max(floorOf(o.mind), Math.floor(s.mind * 0.85)) } : {}),
+          ...(long || (strong && s.attack <= 1) ? { maxHp: Math.max(floorOf(o.maxHp), Math.floor(s.maxHp * 0.85)) } : {}),
         };
         if (next.attack !== s.attack || next.mind !== s.mind || next.maxHp !== s.maxHp) { enemy.stats = next; moved = true; }
       }
       if (strong) for (const skill of project.database.skills) {
         if (!skill.id.startsWith(skillPrefix) || !(skill.power > 1)) continue;
-        skill.power = Math.max(1, Math.floor(skill.power * 0.85));
+        skill.power = Math.max(Math.max(1, Math.floor((skillOriginals.get(skill.id) ?? skill.power) * STAT_FLOOR)), Math.floor(skill.power * 0.85));
         moved = true;
       }
       if (!moved) break;
       now = measure(copyId, start);
+    }
+    if (!fits(now)) {
+      for (const enemy of project.database.enemies) { const o = originals.get(enemy.id); if (o) enemy.stats = { ...o.stats }; }
+      for (const skill of project.database.skills) { const power = skillOriginals.get(skill.id); if (power !== undefined) skill.power = power; }
+      project.database.troops = project.database.troops.filter((t) => rowIdsBefore.troops.has(t.id));
+      project.database.enemies = project.database.enemies.filter((e) => rowIdsBefore.enemies.has(e.id));
+      project.database.skills = project.database.skills.filter((k) => rowIdsBefore.skills.has(k.id));
+      notes.push(`${troopId} 맞추기 미완 — 적 능력치를 원래 값의 ${Math.round(STAT_FLOOR * 100)}% 아래로 내려도 기준(승률·손실·턴)을 못 맞춰 원래 값으로 되돌렸다(승률 ${Math.round(now.win * 100)}%)`);
+      continue;
     }
     if (copyId !== troopId) rename.set(troopId, copyId);
     const pct = (x: number) => `${Math.round(x * 100)}%`;
@@ -346,9 +376,9 @@ export function fitPathBattlesIn(project: Project): string[] {
  * 첫 길 전투의 경험치로 시작 레벨에서 다음 레벨이 되도록 경험치 곡선(base·extra·acceleration)을 같은 비율로 줄인다.
  * 왜(2026-10-29 vm5 argon jrpg): 기본 곡선(extra 677)은 Lv2 까지 678 인데 첫 임프 두 마리가 346 이라, 판정자가
  * 「경험치 346 을 받았는데 메뉴에는 Lv 1 그대로」라고 적었다. 레벨이 더 빨리 오르는 쪽이라 위 예산(시작 레벨로 잰다)은 그대로 성립한다.
- * 곡선이 시작 파티의 맨 앞 배우와 같은 배우만 고친다 — 나중에 합류하는 같은 곡선 배우도 같은 속도로 오른다. 되풀이 안전(이미 맞으면 그대로).
+ * 시작 파티 배우 중 맨 앞 배우와 같은 곡선을 쓰는 배우만 고친다 — 파티 밖 배우(136명 중 대부분)는 손대지 않는다(2026-11-10 부작용 13건). 되풀이 안전(이미 맞으면 그대로).
  */
-function fitFirstLevelUp(project: Project, troopId: string, party: { ids: readonly string[]; level: number }): string[] {
+export function fitFirstLevelUp(project: Project, troopId: string, party: { ids: readonly string[]; level: number }): string[] {
   const troop = project.database.troops.find((t) => t.id === troopId);
   const exp = (troop?.enemyIds ?? []).reduce((sum, id) => {
     const enemy = project.database.enemies.find((e) => e.id === id);
@@ -373,7 +403,7 @@ function fitFirstLevelUp(project: Project, troopId: string, party: { ids: readon
   const same = (c: ActorExperienceCurve) => c.base === curve.base && c.extra === curve.extra && c.acceleration === curve.acceleration;
   let changed = 0;
   for (const actor of project.database.actors) {
-    if (!same(normalizeActorRecord(actor).expCurve)) continue;
+    if (!party.ids.includes(actor.id) || !same(normalizeActorRecord(actor).expCurve)) continue;
     actor.expCurve = { ...next };
     changed += 1;
   }
