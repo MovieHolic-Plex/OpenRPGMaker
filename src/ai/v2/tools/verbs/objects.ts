@@ -1,11 +1,12 @@
 // 물건 동사 — place_object · dress_room · move_object.
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
-import { adoptExactInterior, interiorBuilder, interiorMoveObjects, type ObjectEdit } from "../../builders/interior";
+import { adoptExactInterior, interiorBuilder, interiorMoveObjects, type ObjectEdit } from "../../place/builders/interior";
 import type { PlaceSpec } from "../../types";
-import { findMap, resolveWhere } from "../../people";
-import { takeObjectPlan } from "../../drawObject";
-import { dressRoom } from "../../builders/dressRoom";
-import { tileMoveObjects } from "../../builders/tileMove";
+import { resolveWhere } from "../../place/where";
+import { findMap } from "../../place/cells";
+import { takeObjectPlan } from "../../place/drawObject";
+import { dressRoom } from "../../place/builders/dressRoom";
+import { tileMoveObjects } from "../../place/builders/tileMove";
 import { POINT } from "../placeSchema";
 import { text } from "../support";
 import type { VerbContext } from "../context";

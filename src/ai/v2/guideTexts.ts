@@ -11,7 +11,7 @@
 //     <곳>을 말하는 이(그 대사 이벤트)에서 본 방위(「바로 남쪽」 「동쪽」)로 바꾼다. 말하는 이가 그 사람 자신이면 두지 않는다.
 // 고친 것만 적는다. 새 그림은 없다.
 import { isObjectiveCommand, landmarkWord, bearingWord } from "./discoverability";
-import { tileLabel } from "./people";
+import { tileLabel } from "./place/cells";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import type { BuildRun } from "./types";
 

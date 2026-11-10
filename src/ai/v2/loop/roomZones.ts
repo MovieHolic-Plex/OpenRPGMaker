@@ -6,7 +6,7 @@
 import type { GameMap, Project } from "@/project/types";
 import type { TodoChanged, TodoItem } from "../todo/types";
 import { runTodoItemCheck } from "../todo/checks";
-import { layoutReviewRounds } from "../layoutReview";
+import { layoutReviewRounds } from "../place/layoutReview";
 import { normName } from "../todo/names";
 import { isOpen, type TodoStore } from "./todoStore";
 import { SMALL_ROOM_WORDS } from "../request/place";

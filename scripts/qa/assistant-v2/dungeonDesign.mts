@@ -7,8 +7,8 @@ import path from "node:path";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
 import { renderMapPng } from "../../qa-game/render.mts";
 import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
-import { builderFor } from "../../../src/ai/v2/builders/index.ts";
-import { DUNGEON_DESIGN_EXAMPLES } from "../../../src/ai/v2/dungeonParts.ts";
+import { builderFor } from "../../../src/ai/v2/place/builders/index.ts";
+import { DUNGEON_DESIGN_EXAMPLES } from "../../../src/ai/v2/place/dungeonParts.ts";
 import type { PlaceSpec } from "../../../src/ai/v2/types.ts";
 import { canMove, isPassable } from "../../../src/project/collision.ts";
 

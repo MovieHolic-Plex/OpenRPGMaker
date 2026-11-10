@@ -3,8 +3,8 @@ import { createBlankProject } from "@/project/defaults";
 import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
 import { adventureCompletionProblems } from "@/ai/adventureCompletion";
 import { VILLAGE_POOL, isBareVillageRequest, localizeVillagePoolSpec, pickVillageChipset } from "@/ai/villageChipsetPool";
-import { VILLAGE_POOL_BUILDER } from "@/ai/v2/builders/villagePool";
-import { builderFor } from "@/ai/v2/builders";
+import { VILLAGE_POOL_BUILDER } from "@/ai/v2/place/builders/villagePool";
+import { builderFor } from "@/ai/v2/place/builders";
 import { INTENT_NOTE_BOUNDARY } from "@/ai/piAgent/monsterGameRequest";
 
 function project() {

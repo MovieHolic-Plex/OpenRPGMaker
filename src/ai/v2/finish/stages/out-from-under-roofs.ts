@@ -2,7 +2,7 @@
 // 시작 칸이 집 지붕 한가운데라 주인공이 가려진 채 시작, 지붕 뒤 첫 단계를 23분 뒤에야 찾음). 사람·단계 자리를 고치는 단계들 뒤, 목표 길 잇기 앞.
 import type { FinishStage } from "../types";
 import { createBuildRun } from "../../buildRun";
-import { stepOutFromUnderRoofs } from "../../underRoof";
+import { stepOutFromUnderRoofs } from "../../place/underRoof";
 
 export const stage: FinishStage = {
   id: "out-from-under-roofs", phase: "assembly", order: 245,
