@@ -175,9 +175,14 @@
   from { filter: brightness(1.05) drop-shadow(0 0 2px #ffd25a); }
   to { filter: brightness(1.45) saturate(1.3) drop-shadow(0 0 7px #ffe08a); }
 }
+/* 띠는 노드 상자 윗변이 아니라 그림 머리(빈 윗줄 비율 --battle-sprite-top-pad, battleFieldDom 이 잔다) 바로 위에 단다.
+   상자 윗변(top:-14px)에 달면 칸이 큰 적(battleScalePercent 125 보스)은 상자 윗변이 전장 맨 위라
+   띠가 전장 밖·상단 메시지창 뒤로 잘렸다(폴른 스타 우물 보스 「아가미 노래」, fs-vqa-well D2 — 큰 적 머리 #4491 과 같은 계열).
+   값이 없는 노드(아군)는 0% — 상자 윗변 바로 위, 예전과 거의 같다. */
 .battle-scene .battle-charge-mark {
   background: rgb(40 20 0 / 82%);
   border: 2px solid #ffcf4a;
+  bottom: calc(100% - var(--battle-sprite-top-pad, 0%) + 2px);
   color: #fff3c4;
   font-size: 11px;
   left: 50%;
@@ -185,11 +190,14 @@
   padding: 1px 6px;
   pointer-events: none;
   position: absolute;
-  top: -14px;
   transform: translateX(-50%);
   white-space: nowrap;
   z-index: 6;
   animation: charge-mark 0.5s steps(2) infinite;
+}
+/* 상태 배지가 같은 자리(그림 머리 위, _retro2003.css)에 있으면 띠를 배지 줄 위로 한 칸 올린다. */
+.battle-scene .battle-enemy:has(> .battle-status-icons > *) > .battle-charge-mark {
+  bottom: calc(100% - var(--battle-sprite-top-pad, 0%) + 26px);
 }
 @keyframes charge-mark {
   from { border-color: #ffcf4a; }
