@@ -124,12 +124,12 @@ function applyStarMarks(project: Project, report: HeroSkillIdentityReport): void
 
 function applyChoreographies(project: Project, report: HeroSkillIdentityReport): void {
   const db = project.database;
-  const all = [...FS_STAR_FINISHER_CHOREOGRAPHIES];
+  const all = [...FS2_LANCE_CHOREOGRAPHIES, ...FS_STAR_FINISHER_CHOREOGRAPHIES];
   const records = all.map((row) => normalizeSkillChoreographyRecord(row)).filter((row): row is SkillChoreographyRecord => Boolean(row));
   if (records.length !== all.length) throw new Error("[fallen-star] 기술 연출 레코드 정규화 실패(시트 키 확인)");
   const ids = new Set(records.map((row) => row.id));
   db.skillChoreographies = [...(db.skillChoreographies ?? []).filter((row) => !ids.has(row.id)), ...records];
-  for (const [skillId, chorId] of Object.entries(FS_STAR_FINISHER_SKILLS)) {
+  for (const [skillId, chorId] of Object.entries({ ...FS2_LANCE_SKILLS, ...FS_STAR_FINISHER_SKILLS })) {
     const skill = findSkill(project, skillId);
     if (!skill) { report.skipped.push(`연출 ${skillId} — 기술 없음`); continue; }
     skill.retroChoreographyId = chorId;

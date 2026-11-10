@@ -1,17 +1,20 @@
 import { describe, expect, it } from "vitest";
+import { resolveRetroClassChoreography } from "@/assets/retroSkillCatalog";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { createBattleRuntime } from "@/battle/runtime";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { normalizeSkillRecord } from "@/project/databaseRecordModel";
 import {
-  FS_STAR_FINISHER_SKILLS, FS_STAR_MARK_FINISHERS, FS_STAR_MARK_SLASHES, FS_STAR_MARK_STATES,
+  FS2_LANCE_SKILLS, FS_STAR_FINISHER_SKILLS, FS_STAR_MARK_FINISHERS, FS_STAR_MARK_SLASHES, FS_STAR_MARK_STATES,
   applyFallenHeroSkillIdentity,
 } from "@/project/flagship/fallen/heroSkillIdentity";
 import type { Project, SkillRecord } from "@/project/types";
 
+const KAEL_SWORD_SHEETS = ["hero_pierce", "hero_whirl", "hero_meteor_trail", "hero_meteor_impact", "hero_cross"];
+
 function fallenLike(): Project {
   const project = createBlankProject();
-  const ids = [...FS_STAR_MARK_SLASHES, ...FS_STAR_MARK_FINISHERS];
+  const ids = [...FS_STAR_MARK_SLASHES, ...FS_STAR_MARK_FINISHERS, ...Object.keys(FS2_LANCE_SKILLS)];
   for (const id of ids) {
     if (project.database.skills.some((skill) => skill.id === id)) continue;
     project.database.skills.push(normalizeSkillRecord({ id, name: id, scope: "enemy", power: 10, damageFormula: "100",
@@ -22,6 +25,19 @@ function fallenLike(): Project {
 }
 
 describe("Fallen Star hero skill identity (batch 1)", () => {
+  it("Sarah's lance skills resolve to lance records with no Kael sword sheet, ids unchanged", () => {
+    const project = fallenLike();
+    const report = applyFallenHeroSkillIdentity(project);
+    expect(report.skipped.filter((line) => line.includes("연출"))).toEqual([]);
+    for (const [skillId, chorId] of Object.entries(FS2_LANCE_SKILLS)) {
+      const skill = project.database.skills.find((row) => row.id === skillId)!;
+      expect(skill.retroChoreographyId).toBe(chorId);
+      const layers = resolveRetroClassChoreography(skill, project.database.skillChoreographies)!.layers.map((layer) => layer.key);
+      expect(layers.length).toBeGreaterThan(0);
+      for (const sheet of KAEL_SWORD_SHEETS) expect(layers).not.toContain(sheet);
+    }
+  });
+
   it("star finishers burst with heavy weight; mark icons resolve to bundled files", () => {
     const project = fallenLike();
     applyFallenHeroSkillIdentity(project);
