@@ -112,7 +112,13 @@ export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snap
   const userName = user?.name ?? "적";
   // 적의 기본 공격은 내부적으로 "공격" 스킬로 굴러가지만, "○○가 공격을 사용했다!"는
   // 아군의 "주인공의 공격!"과 문체가 어긋난다 — 기본 공격은 같은 문형으로 맞춘다.
-  const action = entry.skillName && entry.skillName !== "공격"
+  // 연계기의 둘째 타부터도 참가자 전원의 이름으로 부른다 — 「카엘이 불꽃 십자참을 사용했다!」는 혼자 쓴 기술로 읽혔다(2026-11-10 fs-combo-cancel).
+  const comboNames = user && entry.skillName && entry.comboActorIds && entry.comboActorIds.length >= 2
+    ? [user.name, ...entry.comboActorIds.filter((id) => id !== user.recordId).map((id) => snapshot.actors.find((actor) => actor.recordId === id)?.name ?? id)]
+    : undefined;
+  const action = comboNames
+    ? `${comboNames.join("·")}의 연계기 — ${entry.skillName}!`
+    : entry.skillName && entry.skillName !== "공격"
     ? `${withJosa(userName, "이/가")} ${withJosa(entry.skillName, "을/를")} 사용했다!`
     : `${userName}의 공격!`;
   if (emeraldNarrationActive()) {
