@@ -5,7 +5,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { wantsWholeGame } from "../../../src/ai/v2/request/scope.ts";
+import { wantsWholeGame } from "../../../src/ai/v2/request/readers.ts";
 import { priorRequestsNote } from "../../../src/ai/v2/priorRequests.ts";
 import { composePiTask } from "../../../src/ai/piAgent/executionRoute.ts";
 

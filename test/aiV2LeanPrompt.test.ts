@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { buildV2SystemPrompt, PLACE_SPEC_INDEX, placeSpecCards, placeSpecKindOf } from "@/ai/v2/prompt";
-import { editOnlyRequest } from "@/ai/v2/request/scope";
+import { editOnlyRequest } from "@/ai/v2/request/readers";
 import { exposeV2Tools } from "@/ai/v2/toolExposure";
 import { INTERIOR_CARD } from "@/ai/v2/builders/interior";
 import { createV2Tools } from "@/ai/v2/verbs";

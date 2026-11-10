@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { createBuildRun } from "@/ai/v2/buildRun";
 import { buildEvent } from "@/ai/v2/events";
-import { fallenTierTools } from "@/ai/v2/request/toolGroups";
+import { v2ExtraToolNames } from "@/ai/v2/request/readers";
 import type { Project } from "@/project/types";
 
 // 2026-10-25 장난감 가게 고치기 2턴: after 장면이 늘 0번(낮) 페이지 끝에 붙고 「장면 뒤」 페이지가 맨 끝에 놓여 밤 페이지를 가렸다.
@@ -41,6 +41,6 @@ describe("v2 add_event after: page choice", () => {
     expect(JSON.stringify(ev.pages[2]!.commands)).toContain("밤 추억");
   });
   it("loads HUD and menu tools for HUD/menu words", () => {
-    expect(fallenTierTools("HUD 를 끄고 메뉴에서 스킬·장비를 빼 줘")).toEqual(expect.arrayContaining(["set_field_hud", "configure_field_menu"]));
+    expect(v2ExtraToolNames("HUD 를 끄고 메뉴에서 스킬·장비를 빼 줘")).toEqual(expect.arrayContaining(["set_field_hud", "configure_field_menu"]));
   });
 });

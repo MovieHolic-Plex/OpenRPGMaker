@@ -7,10 +7,11 @@ import { createPiToolset, type PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { assistantScriptsOn } from "@/ai/scriptsSwitch";
 import { getTool } from "@/editor/tools/toolRegistry";
 import type { PiAssistantV2Env } from "./env";
-import { asksForEncounters } from "./request/combat";
+import { asksForEncounters } from "./request/readers";
 import { englishToolMessage, parseFailure } from "./loop/failureText";
 import { withForestRouteBrief } from "./forestBrief";
-import { v2ExtraToolNames, v2ToolPool } from "./request/toolGroups";
+import { v2ToolPool } from "./request/toolGroups";
+import { v2ExtraToolNames } from "./request/readers";
 
 /** 거절 본문(JSON·감싼 JSON·글)에서 첫 이유 한 줄 — 머리(«'도구' 실행 실패:»)를 걷는다. */
 const firstReason = (why: string): string => { const p = parseFailure(why); return (p.issues[0]?.message ?? p.summary).replace(/^'[^']+'\s*실행 실패:\s*/u, ""); };

@@ -2,12 +2,12 @@
 // 할 일 고리(loop/gates.ts)가 이 문제들을 gate·critic 항목으로 덧붙인다. 2026-11-11 리팩토링 R2: verbs.ts 끝에 있던 것을 옮겼다.
 import { sceneCraftProblems } from "../sceneCraft";
 import { shipBlockers } from "../shipChecks";
-import { buildsWholeGame, wantsWholeGame } from "../request/scope";
+import { buildsWholeGame, wantsWholeGame } from "../request/readers";
 import type { PiAssistantV2Env } from "../env";
 import { type StageWrites } from "../stageWrites";
 import type { Project } from "@/project/types";
-import { wantsStoreTools } from "../request/toolGroups";
-import { audioOnly } from "../request/audio";
+import { wantsStoreTools } from "../request/readers";
+import { audioOnly } from "../request/readers";
 import { gameContentProblems, unaskedChanges } from "../gameChecks";
 import { AUTOPLAY_GATE_PREFIX, playProblems } from "../playCheck";
 import { combatProblems } from "../combatChecks";

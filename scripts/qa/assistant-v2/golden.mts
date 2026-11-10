@@ -13,8 +13,8 @@ import { createV2Tools } from "../../../src/ai/v2/verbs";
 import { V2Session } from "../../../src/ai/v2/turn/session";
 import { exposeV2Tools } from "../../../src/ai/v2/toolExposure";
 import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt";
-import { buildsWholeGame, wantsWholeGame } from "../../../src/ai/v2/request/scope";
-import { wantsGameTools } from "../../../src/ai/v2/request/toolGroups";
+import { buildsWholeGame, wantsWholeGame } from "../../../src/ai/v2/request/readers";
+import { wantsGameTools } from "../../../src/ai/v2/request/readers";
 
 /** 요청 묶음 — 작은 일·장소·게임 전체·소리·이어 하기, 그리고 2026-11-11 재점검에서 잘못 갈린 문장들. 더하기만 한다(순서가 열쇠다). */
 const REQUESTS: readonly string[] = [
@@ -33,6 +33,8 @@ const REQUESTS: readonly string[] = [
   "사냥터에서 경험치 쌓게 해 줘", "처음부터 끝까지 대사 맞춤법 검토해 줘", "이 게임 뭐가 부족한지 알려 줘",
   // 이어 하기
   "계속", "남은 거 마저 해 줘", "아직 다 안 된 것 같아. 처음에 부탁한 대로 끝까지 만들어 줘. 게임을 처음부터 엔딩까지 실제로 플레이할 수 있게 해 줘.",
+  // 2026-11-11 요청 의도(B1) — 이어 하기·이름과 대사 속 낱말·게임의 한 부분·조우
+  "끝까지 만들어 줘", "이 대사 계속 나오게 해 줘", "촌장이 \"배경 음악이 참 좋지?\"라고 말하게 해 줘", "여관 주인 추가해 줘", "게임 타이틀 화면 만들어 줘", "풀숲에서 슬라임이 튀어나오게 해 줘",
 ];
 
 const sha = (value: unknown): string => createHash("sha1").update(typeof value === "string" ? value : JSON.stringify(value)).digest("hex").slice(0, 10);

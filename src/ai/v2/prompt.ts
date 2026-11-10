@@ -17,20 +17,21 @@ import { DRAW_OBJECT_CARD } from "./drawObject";
 import { MONSTER_TOWN_CARD } from "./builders/monsterTown";
 import { SCENE_CARD } from "./scene";
 import { gameCard, TERRAIN_CARD } from "./game";
-import { MUSIC_TIER, SOUND_TIER, fallenTierCard, storeTierCard, wantsGameTools, wantsMusicTools, wantsSoundTools, wantsStoreTools } from "./request/toolGroups";
-import { wantsTerrainTools } from "./request/place";
+import { MUSIC_TIER, SOUND_TIER } from "./request/toolGroups";
+import { fallenTierCard, storeTierCard, wantsGameTools, wantsMusicTools, wantsSoundTools, wantsStoreTools } from "./request/readers";
+import { wantsTerrainTools } from "./request/readers";
 import { MAKE_GAME_CARD, makeGameOn } from "./makeGame";
-import { wantsMakeGame } from "./request/scope";
+import { wantsMakeGame } from "./request/readers";
 import { BLUEPRINT_CARD, blueprintPin } from "./blueprint";
-import { wantsWholeGame } from "./request/scope";
-import { audioOnly, musicOnly, wantsMusic } from "./request/audio";
+import { wantsWholeGame } from "./request/readers";
+import { audioOnly, musicOnly, wantsMusic } from "./request/readers";
 import { TODO_LOOP_LINE } from "@/ai/agentRules";
 import type { TodoStore } from "./loop/todoStore";
 import { isComposedWorld, worldCard } from "./world";
 import { worldForRequest } from "./request/world";
 import { INTERIOR_WORDS } from "./request/place";
-import { leanPromptFor } from "./request/scope";
-import { MONSTER_WORDS, SCENE_WORDS } from "./request/genre";
+import { leanPromptFor } from "./request/readers";
+import { MONSTER_WORDS, CHOICE_SCENE_WORDS } from "./request/genre";
 
 export const V2_CORE_PROMPT = [
   "You are the OPRN RPG editor assistant (v2). Split of work: you decide WHAT (the spec), functions decide HOW (deterministic builders), and other eyes (an independent critic and a screen check) look at the 1x picture.",
@@ -108,7 +109,7 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
   const joseon = JOSEON_WORDS.test(task) || tileset?.id === "joseon_baram";
   // 가벼운 지시문이면 실내 칩셋 목록은 interior 카드와 함께 필요할 때 준다(placeSpecCards).
   const interior = !lean && (INTERIOR_WORDS.test(task) || tileset?.id === HAND_INTERIOR_TILESET_ID);
-  return [...(interior ? [interiorCatalogCard(project, currentMapId, task)] : []), ...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(audioOnly(task) ? [`[${musicOnly(task) ? "Music" : "Sound-effect"}-only request — only find, install and assign sounds. Do not change maps, events or objects (mention existing problems in the report as notes only)]`, ...(wantsMusic(task) ? [MUSIC_TIER.card] : []), ...(wantsSoundTools(task) ? [SOUND_TIER.card] : [])] : wantsGameTools(task) ? [gameCard(), ...[fallenTierCard(task)].filter(Boolean), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : wantsMusicTools(task) ? [...(wantsMusic(task) ? [`[Music request — use these tools]\n${MUSIC_TIER.card}`] : []), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : []), ...(wantsTerrainTools(task) && !audioOnly(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
+  return [...(interior ? [interiorCatalogCard(project, currentMapId, task)] : []), ...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(WIZARDING_WORDS.test(task) || tileset?.id === "wizarding_world" ? [WIZARDING_CARD] : []), ...(contract || CHOICE_SCENE_WORDS.test(task) ? [SCENE_CARD] : []), ...(audioOnly(task) ? [`[${musicOnly(task) ? "Music" : "Sound-effect"}-only request — only find, install and assign sounds. Do not change maps, events or objects (mention existing problems in the report as notes only)]`, ...(wantsMusic(task) ? [MUSIC_TIER.card] : []), ...(wantsSoundTools(task) ? [SOUND_TIER.card] : [])] : wantsGameTools(task) ? [gameCard(), ...[fallenTierCard(task)].filter(Boolean), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : wantsMusicTools(task) ? [...(wantsMusic(task) ? [`[Music request — use these tools]\n${MUSIC_TIER.card}`] : []), ...(wantsSoundTools(task) ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [])] : []), ...(wantsTerrainTools(task) && !audioOnly(task) ? [TERRAIN_CARD] : []), ...(wantsStoreTools(task) ? [storeTierCard(task)] : []), ...(makeGameOn() && wantsMakeGame(task) ? [MAKE_GAME_CARD] : [])];
 }
 const WORLD_CARDS: readonly string[] = [PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
 

@@ -13,6 +13,36 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 | 5 고치기 | 모델 → 빌더 | `edit_place` 패치(구역·주인공 물건 near·크기·variant·dressing)로 같은 빌더를 다시. 맵당 3바퀴(`V2_MAX_REPAIR_ROUNDS` — 2026-10-30 할 일 고리에서 1→3, 항목 시도 상한 3·진척 규칙과 같은 값; 그 전 6차는 속도로 1바퀴). 비평·검사·화면 검수 결함은 할 일 항목으로 돌아온다(아래 «할 일 고리»). |
 | 6 보고 | 모델 + 함수 | 「완료」는 할 일 열림 0·막힘 0·기계 확인 전부 ✓ 일 때만 — 아니면 함수가 기계 확인 표로 최종 보고를 쓴다. `missingArt` 는 그대로 보고. |
 
+## 요청 의도 — 요청을 한 번만 가른다 (2026-11-11, 리팩토링 B1)
+
+구조 재점검(2026-11-11) 4절: 요청을 낱말 목록 201개로 가르고, 「게임 하나 만들기냐」를 13파일 34곳이 따로 물어 서로 어긋났다.
+이제 요청 한 줄은 `src/ai/v2/request/intent.ts` 가 **한 번** 분류해 기록 하나로 남기고, 다른 곳은 그 기록만 읽는다.
+
+| 무엇 | 어디 |
+|---|---|
+| 글만 본 분류 `readRequest(task)` → `RequestText` | 범위 `scope`(question · audio · wholeGame · continue · place · edit) · 까닭 `why`(영어 한 줄) · `write` · `continuation` · `placeBuild` · `oneRoom` · `audio` · `combat` · `horror` · `puzzle` · `ending` · `art` · `tools`(도구 묶음) |
+| 프로젝트까지 본 분류 `classifyRequest(task, project)` → `RequestIntent` | 위 + `wholeGame`(이번 턴이 게임 하나를 짓는가) · `fresh` · `editOnly`. (요청 글, 프로젝트의 빈/청사진 상태)마다 한 번 계산해 기억한다 |
+| 옛 이름으로 읽기 `request/readers.ts` | `wantsWholeGame` `buildsWholeGame` `oneProjectGame` `editOnlyRequest` `leanPromptFor` `isWriteRequest` `CONTINUE_WORDS.test` `audioOnly` `musicOnly` `wantsGameTools` `v2ExtraToolNames` `asksForEncounters` … — 낱말을 다시 맞추지 않고 기록을 읽는다 |
+| 낱말·규칙 | `request/scope.ts` `audio.ts` `combat.ts` `place.ts` `genre.ts` `asks.ts` `toolGroups.ts` `text.ts`(이름 가리기·절 나누기·한 글자 낱말) |
+| 실행 기록 | `exposeV2Tools` 가 턴마다 `v2.request.intent` 상태 한 줄(「요청 분류: scope … — why」)을 낸다 |
+
+규칙(고칠 자리는 여기 한 곳):
+
+1. **이름·제목·대사 속 낱말은 주제가 아니다.** 「게임 제목을 '별의 노래'로 바꿔 줘」의 「노래」, 「"보스를 조심해"라고 말하게」의 「보스」는 가리고(□) 본다(`text.maskNames`: 이름 낱말 뒤 따옴표 · 따옴표 뒤 「~(이)라고/로 바꿔」 · 따옴표 없는 「이름을 X로 바꿔」). 그 밖의 따옴표(「「여관」 하나 지어 줘」)는 그대로다.
+2. **게임 하나 = 게임이 만들 대상일 때.** 「추리 게임 만들어 줘」「게임을 도트 그래픽으로 만들어 줘」「… 게임으로」「엔딩까지 이어지게 해 줘」「(회상 스토리)」 컨셉 카드. 「게임 속 상점 NPC」「게임에 쓸 서재」「게임 타이틀 화면 만들어 줘」「엔딩까지 가는 길에 표지판」「처음부터 끝까지 맞춤법 검토」는 아니다.
+3. **작은 요청은 게임 하나로 시작한 프로젝트에서도 작은 요청이다.** 청사진의 게임 하나 범위는 이어 하기만 물려받는다 — 「계속」「남은 거 마저 해 줘」「끝까지 만들어 줘」「다시 해 줘」처럼 이어 하라는 말뿐인 문장, 또는 「처음에 부탁한 대로」. 「이 대사 계속 나오게 해 줘」는 이어 하기가 아니다. 이어 하기 판정은 사용자 글만 본다(실행기가 붙이는 앞 요청 메모 안의 「계속」에 걸리지 않는다).
+4. **소리만 = 소리 일만.** 소리 낱말이 없는 절이 다른 일을 시키면(「음악 넣고 크레딧에 내 이름도 넣어 줘」) 소리만이 아니다.
+5. **한 글자 낱말은 낱말로만.** `text.kw`: 독·돈·적·칼·활·값·틈·잠·턴·썸·방·성·궁·집·층·섬·산·강. 「독서실」「썸네일」「방법」「성격」「건강을」「한 방에」는 걸리지 않는다. 붙여 쓰는 장소(다락방·마왕성·빵집·숲길)는 따로 든다.
+6. **겹친 목록은 한 표.** 조우(`combat.ENCOUNTER`: 이름 댄 조우 random / 조우가 있어야 되는 일 grind — 사냥·경험치 요청에 전투 도구가 실린다) · 방 하나(`scope.ROOM_GAME`: 갇힌 방 sealed ⊂ 맵 한 장 single) · 전투(`combat.COMBAT`: 전투가 있는 게임 core / 전투 도구까지 related) · 장면(컷신 `asks.SCENE_WORDS` 와 두 선택 대화 카드 `genre.CHOICE_SCENE_WORDS` 로 이름을 갈랐다).
+
+증거(모델 없음):
+
+- 말뭉치 `test/aiV2RequestIntent.test.ts` — 실제 요청 120줄 × 기대 칸(범위·게임 하나·소리만·도구 묶음·조우·방 하나·이어 하기). 재점검에서 잘못 갈린 문장이 모두 들어 있다. 규칙을 고치면 여기에 줄을 더한다.
+- `scripts/qa/assistant-v2/wholeGameTable.mts`(스위트 12 프롬프트·방 과제 17개·후속 차례 90줄): 어긋남 0.
+- `golden.mts --diff`: 기준 126줄 가운데 65줄이 달라졌다(더한 요청 6개 × 3상태는 따로) — 잘못 갈리던 문장 9개의 지시문·도구가 바뀌었고(「별의 노래」 8도구 → 온 도구, 「엔딩까지 가는 길에 표지판」·「처음부터 끝까지 맞춤법」·「게임 속 상점 NPC」 게임 하나 → 고치기, 「독서실」 게임 카드 빠짐, 「사냥터 경험치」 전투 도구 실림, 「동굴로 가게 이어 줘」 실내 목록 빠짐, 「맵 이름 바꿔 줘」·소리만 요청은 가벼운 지시문), 게임 하나로 시작한 프로젝트의 작은 요청 30여 줄이 `wholeWithProject true→false` 로 바뀌었다. 「계속」「남은 거 마저 해 줘」와 측정용 후속 문장은 그대로 게임 하나다.
+
+아직 이 기록을 읽지 않는 자리(다른 줄기 파일 — 본문을 고치지 않았다): `gameChecks.ts` 의 익명 정규식 약 25곳(조우 1h 줄 포함), `judge/finishGate.ts` 의 질문·스토어 전용 판정, `verbs.ts` 의 generate_art 싣기(지금은 `buildsWholeGame` — 작은 요청에는 안 실린다. `art` 칸을 같이 보면 「타이틀 그림 새로 그려 줘」에도 실린다), `gameChecks`·`pathBattleBudget`·`vqa`·`reload-check`·실행기의 `wantsWholeGame(task)`(글만 본다 — 이어 하기 턴에는 `buildsWholeGame` 이 맞다).
+
 ## 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 
 `make_place` 가 처음 지을 때 명세에 무작위 `salt` 를 넣고, 고치기(`edit_place`)는 기록된 명세의 salt 를 물려받는다(모델은 쓰지 않는다).

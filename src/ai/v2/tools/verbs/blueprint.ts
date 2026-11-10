@@ -1,6 +1,6 @@
 // 청사진 동사 — write_blueprint(게임 설계 적기) · build_blueprint_path(청사진 단계를 실제 사건으로 짓기).
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
-import { oneProjectGame } from "../../request/scope";
+import { oneProjectGame } from "../../request/readers";
 import { applyBlueprintAssembly, isPlaceholderTitle } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
 import { MIN_BLUEPRINT_STEPS, WRITE_BLUEPRINT_SCHEMA, parseBlueprintArgs, stepMixProblems, thinBlueprintReason, walkBlueprint } from "../../blueprint";

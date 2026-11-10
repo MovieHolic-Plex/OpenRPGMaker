@@ -4,7 +4,7 @@ import { blankMap } from "@/project/blueprintAssembly";
 import { factoryArtResourceIds } from "@/project/defaultLeaks";
 import { applyShipDefaults } from "@/ai/v2/shipDefaults";
 import { bundledPictureLeft, openingMissing, shipBlockers } from "@/ai/v2/shipChecks";
-import { buildsWholeGame } from "@/ai/v2/request/scope";
+import { buildsWholeGame } from "@/ai/v2/request/readers";
 import { splitPreexisting } from "@/ai/v2/loop/gates";
 import type { Project } from "@/project/types";
 

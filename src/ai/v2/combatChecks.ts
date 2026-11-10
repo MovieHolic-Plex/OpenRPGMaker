@@ -8,8 +8,8 @@ import { simulateBattle } from "@/battle/simulate";
 import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { classLearnedSkillIdsUpToLevel } from "@/project/sessionClass";
 import type { Project } from "@/project/types";
-import { wantsWholeGame } from "./request/scope";
-import { asksForEncounters } from "./request/combat";
+import { wantsWholeGame } from "./request/readers";
+import { asksForEncounters } from "./request/readers";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);

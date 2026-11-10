@@ -1,9 +1,10 @@
-// 조수 v2 «음악 요청» 낱말 — 음악 도구 묶음을 실을지(game.ts)와 끝맺음 음악 검사(gameChecks.ts)가 같은 판정을 쓴다.
+// 소리 요청 낱말과 규칙 — 음악·효과음을 바랐나, 소리 일만 바랐나. 한 요청의 답은 intent.ts 가 audioAsk 로 한 번 모은다(읽기는 readers.ts).
 //
 // 왜(2026-10-30 실조수 스토어 음악 e2e 5/8): 「테일즈런너처럼 신나는 거 마을에 깔아 줘」「투더문처럼 잔잔하게 엔딩곡」에는
 // 음악·배경음·bgm 낱말이 없어 음악 도구가 실리지 않았고, 조수는 도구 없이 마을을 다시 짓고 엔딩 이벤트를 새로 만들었다.
 // 게임 이름은 스토어 음악 표(storeMusicPick GAME_FEELS) 하나에서 가져온다 — 표에 줄을 더하면 여기서도 맞는다.
 import { STORE_MUSIC_GAME_NAME_SOURCE } from "@/assetStore/storeMusicPick";
+import { clauses } from "./text";
 
 /** 곡을 가리키는 낱말(음악·브금·사운드…). 「노래」는 부르는 장면(노래를 부르다·노래하다)이 아닐 때만. */
 const PLAIN = String.raw`음악|배경\s*음|배경곡|브금|비지엠|bgm|\bost\b|오에스티|사운드트랙|사운드|선율|멜로디|팡파르|팡파레|soundtrack|music|fanfare|노래(?!\s*(?:를|을)?\s*(?:부르|불러|불렀|하[는다며고면여]|해|했))`;
@@ -17,7 +18,7 @@ const GAME_FEEL = String.raw`(?:${STORE_MUSIC_GAME_NAME_SOURCE})\s*(?:의\s*)?(?
 /** 음악 요청 판정(플래그 iu, g 없음 — .test 를 되풀이해도 안전). */
 export const MUSIC_REQUEST_WORDS = new RegExp(`${PLAIN}|${GOK}|${GAME_FEEL}`, "iu");
 
-export function wantsMusic(task: string): boolean {
+function wantsMusic(task: string): boolean {
   return MUSIC_REQUEST_WORDS.test(withoutSoundWords(task));
 }
 
@@ -28,7 +29,7 @@ const BUILD = /만들|지어|짓|그려|세워|build|make/iu;
  * 끝맺음 검사용: 곡을 «꼭 걸어야» 하는 요청인가. 게임 이름의 결(「파판처럼 마을 만들어」)은 도구는 싣지만(wantsMusic)
  * 무언가를 짓는 요청이면 화풍을 말한 것일 수 있어 곡을 요구하지 않는다. 「테일즈런너처럼 신나는 거 깔아 줘」는 요구한다.
  */
-export function musicAsked(task: string): boolean {
+function musicAsked(task: string): boolean {
   const t = withoutSoundWords(task);
   return EXPLICIT.test(t) || (FEEL.test(t) && !BUILD.test(t));
 }
@@ -43,7 +44,7 @@ const OTHER_WORK = /만들|지어|짓|그려|세워|고쳐|추가|배치|놓아|
  * 왜(2026-10-30 실조수 e2e r12): 「추격 음악」 한 줄에 검토자의 «체크포인트가 추격자 시야 안» 우려가 관문 글로 넘어가 조수가 상자를 찍고
  * make_chase_scene 을 부르려 했다. 「보스 만들고 보스곡 넣어 줘」처럼 다른 일이 섞이면 음악만이 아니다.
  */
-export function musicOnly(task: string): boolean {
+function musicOnly(task: string): boolean {
   return musicAsked(task) && !OTHER_WORK.test(task.replace(MUSIC_PHRASE, " "));
 }
 
@@ -60,18 +61,36 @@ function withoutSoundWords(task: string): string {
   return task.replace(SOUND_WORDS_G, " ");
 }
 
-export function wantsSound(task: string): boolean {
+function wantsSound(task: string): boolean {
   return SOUND_REQUEST_WORDS.test(task);
 }
 
 const SOUND_PHRASE = new RegExp(String.raw`(?:${SOUND_PLAIN})\S*\s*(?:을|를|이|가|도|만|좀|으로|로)?\s*(?:하나\s*|새로\s*|전부\s*|다\s*)?\S*`, "giu");
 
 /** 효과음만 바라는 요청(「타격음 더 묵직하게」「효과음 전부 레트로로」) — 음악만 바라는 요청과 같은 범위 규칙을 따른다. */
-export function soundOnly(task: string): boolean {
+function soundOnly(task: string): boolean {
   return wantsSound(task) && !OTHER_WORK.test(task.replace(SOUND_PHRASE, " ").replace(MUSIC_PHRASE, " "));
 }
 
-/** 소리(음악·효과음)만 바라는 요청 — 맵·이벤트 쓰기 도구를 싣지 않고, 검토자·관문의 소리 밖 지적은 참고로 낮춘다. */
-export function audioOnly(task: string): boolean {
-  return musicOnly(task) || soundOnly(task);
+/** 소리 낱말이 없는 절에서 다른 일을 시키는 동사 — 「음악 넣고 크레딧에 내 이름도 넣어 줘」의 뒤 절. */
+const SIDE_WORK = /넣어|넣고|넣는|적어|써\s*줘|달아|붙여|바꿔|바꾸|수정|변경/u;
+const ANY_SOUND = new RegExp(`${PLAIN}|${GOK}|${GAME_FEEL}|${SOUND_PLAIN}`, "iu");
+/** 소리 일 말고 다른 일이 섞였나 — 소리 낱말이 없는 절이 무언가를 시킨다. */
+function otherWorkBeside(task: string): boolean {
+  return clauses(task).some((clause) => !ANY_SOUND.test(clause) && (OTHER_WORK.test(clause) || SIDE_WORK.test(clause)));
+}
+
+export interface AudioAsk {
+  /** 음악 도구를 실을 낱말이 있다. */ readonly music: boolean;
+  /** 효과음 도구를 실을 낱말이 있다. */ readonly sound: boolean;
+  /** 곡을 꼭 걸어야 하는 요청이다(끝맺음 검사). */ readonly musicAsked: boolean;
+  readonly musicOnly: boolean;
+  readonly soundOnly: boolean;
+  /** 소리 일만 바란다 — 맵·이벤트 쓰기 도구를 싣지 않고, 소리 밖 지적은 참고로 낮춘다. */ readonly only: boolean;
+}
+/** 한 요청의 소리 판정 — 이름·대사를 가린 글(text.maskNames)을 받는다. */
+export function audioAsk(task: string): AudioAsk {
+  const alone = !otherWorkBeside(task);
+  const music = alone && musicOnly(task), sound = alone && soundOnly(task);
+  return { music: wantsMusic(task), sound: wantsSound(task), musicAsked: musicAsked(task), musicOnly: music, soundOnly: sound, only: music || sound };
 }

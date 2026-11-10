@@ -3,7 +3,7 @@
 import type { Project } from "@/project/types";
 import { withoutIntentNote } from "@/ai/piAgent/monsterGameRequest";
 import { blueprintDesignerFromEnv } from "../blueprint";
-import { oneProjectGame, wantsWholeGame } from "./scope";
+import { oneProjectGame, wantsWholeGame } from "./readers";
 import { pickWorld, worldOf, type WorldSetting } from "../world";
 import { isComposedWorld } from "../world";
 
