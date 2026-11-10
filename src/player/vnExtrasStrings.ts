@@ -82,7 +82,8 @@ export type VnUiKey =
   | "ending.nextAct"
   | "onboard.objective"
   | "onboard.newObjective"
-  | "onboard.controls";
+  | "onboard.controls"
+  | "onboard.controlsTouch";
 
 type Row = Readonly<Record<SupportedLocale, string>>;
 
@@ -163,6 +164,7 @@ export const VN_UI_STRINGS: Readonly<Record<VnUiKey, Row>> = {
   "onboard.objective": { ko: "현재 목표", en: "Objective", ja: "現在の目標", zh: "当前目标" },
   "onboard.newObjective": { ko: "새 목표", en: "New objective", ja: "新しい目標", zh: "新目标" },
   "onboard.controls": { ko: "방향키 이동 · Z 조사 · Esc 메뉴", en: "Arrows  Move · Z  Examine · Esc  Menu", ja: "方向キー 移動 · Z 調べる · Esc メニュー", zh: "方向键 移动 · Z 调查 · Esc 菜单" },
+  "onboard.controlsTouch": { ko: "스틱 이동 · A 조사 · 메뉴", en: "Stick  Move · A  Examine · Menu", ja: "スティック 移動 · A 調べる · メニュー", zh: "摇杆 移动 · A 调查 · 菜单" },
 };
 
 export function vnUiText(language: { readonly language: DialogueUiLanguage } | undefined, key: VnUiKey, ...args: readonly (string | number)[]): string {

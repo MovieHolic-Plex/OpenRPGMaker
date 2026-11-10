@@ -63,14 +63,14 @@ export function syncObjectiveCard(
   if (!state.introDone) {
     state.introDone = true;
     state.lastObjective = objective;
-    show(card, host, objective ? cardText("onboard.objective") : null, objective, cardText("onboard.controls"), FIRST_MS, nowMs, "intro");
+    show(card, host, objective ? cardText("onboard.objective") : null, objective, controlsText(host), FIRST_MS, nowMs, "intro");
     return;
   }
   if (objective !== state.lastObjective) {
     state.lastObjective = objective;
     // 첫 카드가 떠 있는 동안 목표가 막 정해지면(병렬 이벤트가 한 프레임 늦게) 조작 안내를 지우지 말고 첫 카드에 합친다.
     if (objective && !card.element.hidden && card.element.dataset.kind === "intro") {
-      show(card, host, cardText("onboard.objective"), objective, cardText("onboard.controls"), FIRST_MS, nowMs, "intro");
+      show(card, host, cardText("onboard.objective"), objective, controlsText(host), FIRST_MS, nowMs, "intro");
       return;
     }
     if (objective) { show(card, host, cardText("onboard.newObjective"), objective, null, CHANGE_MS, nowMs, "change"); return; }
@@ -78,7 +78,13 @@ export function syncObjectiveCard(
   if (!card.element.hidden && nowMs >= card.hideAtMs) hide(card);
 }
 
-function cardText(key: "onboard.objective" | "onboard.newObjective" | "onboard.controls"): string {
+/** 터치 플레이 화면(playSurface 가 data-touch-ui 를 단다)에서는 키보드 글쇠 대신 화면 조작 단추 이름을 쓴다(fs-vqa-fix-all, 390 실측). */
+function controlsText(host: HTMLElement): string {
+  const touch = host.closest<HTMLElement>(".play-viewport")?.dataset.touchUi === "true";
+  return cardText(touch ? "onboard.controlsTouch" : "onboard.controls");
+}
+
+function cardText(key: "onboard.objective" | "onboard.newObjective" | "onboard.controls" | "onboard.controlsTouch"): string {
   return vnUiText(vnExtrasLanguage(store.getCurrent()), key);
 }
 
