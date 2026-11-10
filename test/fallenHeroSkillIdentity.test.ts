@@ -5,7 +5,7 @@ import { createBattleRuntime } from "@/battle/runtime";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { normalizeSkillRecord } from "@/project/databaseRecordModel";
 import {
-  FS2_LANCE_SKILLS, FS_STAR_FINISHER_SKILLS, FS_STAR_MARK_FINISHERS, FS_STAR_MARK_SLASHES, FS_STAR_MARK_STATES,
+  FS2_LANCE_SKILLS, FS_HIT_FLASH, FS_STAR_FINISHER_SKILLS, FS_STAR_MARK_FINISHERS, FS_STAR_MARK_SLASHES, FS_STAR_MARK_STATES,
   applyFallenHeroSkillIdentity,
 } from "@/project/flagship/fallen/heroSkillIdentity";
 import type { Project, SkillRecord } from "@/project/types";
@@ -98,5 +98,20 @@ describe("Fallen Star hero skill identity (batch 1)", () => {
     applyFallenHeroSkillIdentity(project);
     const hero = project.database.actors.find((row) => row.id === "actor_hero");
     if (hero) expect(hero.battleHitFlash).toEqual({ core: "#eef3f8", edge: "#ff8a2a" });
+  });
+
+  it("no two heroes share an edge hue family (fs-vqa-fix-all: Sarah read as Kael's orange)", () => {
+    const hue = (hex: string) => {
+      const [r, g, b] = [1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16) / 255);
+      const max = Math.max(r!, g!, b!), min = Math.min(r!, g!, b!), d = max - min;
+      if (d === 0) return 0;
+      const h = max === r ? ((g! - b!) / d) % 6 : max === g ? (b! - r!) / d + 2 : (r! - g!) / d + 4;
+      return (h * 60 + 360) % 360;
+    };
+    const edges = Object.values(FS_HIT_FLASH).map((flash) => hue(flash.edge));
+    for (let i = 0; i < edges.length; i += 1) for (let j = i + 1; j < edges.length; j += 1) {
+      const gap = Math.abs(edges[i]! - edges[j]!);
+      expect(Math.min(gap, 360 - gap)).toBeGreaterThanOrEqual(25);
+    }
   });
 });
