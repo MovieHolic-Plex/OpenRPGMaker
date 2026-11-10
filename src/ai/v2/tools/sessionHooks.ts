@@ -1,19 +1,19 @@
 // 끝맺음 단계가 모델 대신 부르는 것 — 청사진 경로 짓기, 이동 칸 앞 비우기, 청사진 장소 짓기·잇기. 세션에 걸어 둔다.
 import { createBuildRun } from "../buildRun";
-import { builderFor } from "../builders";
+import { builderFor } from "../place/builders";
 import { parseWorldStyle, pickWorldDoor, worldKind, worldOf, worldPlaceSpec } from "../world";
 import type { GameBlueprintPlace } from "@/project/gameBlueprint";
 import type { PlaceBuildResult, PlaceRecord, PlaceSpec } from "../types";
 import type { Project } from "@/project/types";
-import { DEAD_END_PREFIX } from "../deadEndRoads";
+import { DEAD_END_PREFIX } from "../place/deadEndRoads";
 import { blueprintMapFor } from "../blueprintPath";
-import { populateWorldPlace } from "../worldPopulate";
+import { populateWorldPlace } from "../place/worldPopulate";
 import { repairEventReach } from "../eventReach";
 import { runLaneStages } from "../lanes";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart } from "../blankStart";
-import { guessPlaceSpec } from "../placeGuess";
+import { guessPlaceSpec } from "../place/placeGuess";
 import { edgeCell, isInside, villageDoors, walkGame } from "../makeGame";
-import { designMissingRooms } from "../designRooms";
+import { designMissingRooms } from "../place/designRooms";
 import { LINK_SIDES, recordWrite, placeVariety } from "./support";
 import type { VerbContext } from "./context";
 

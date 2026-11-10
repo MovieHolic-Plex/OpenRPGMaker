@@ -8,7 +8,7 @@
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { doorArtCells, isDoorArtLabel, reachableCells } from "./eventReach";
-import { roadCellSet, tileLabel } from "./people";
+import { roadCellSet, tileLabel } from "./place/cells";
 import type { BuildRun } from "./types";
 import { pickDungeonGateSpot } from "@/editor/tools/dungeonLinkTools";
 

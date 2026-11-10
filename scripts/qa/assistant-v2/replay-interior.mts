@@ -12,7 +12,7 @@ import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
 import { measureInteriorBareFloor } from "../../../src/editor/handInterior/bareFloor.ts";
 import { isPassable } from "../../../src/project/collision.ts";
-import { roomBarePct } from "../../../src/ai/v2/builders/dressRoom.ts";
+import { roomBarePct } from "../../../src/ai/v2/place/builders/dressRoom.ts";
 import { isMonsterRequestTurn } from "../../../src/ai/piAgent/monsterGameRequest.ts";
 
 const argv = process.argv.slice(2);

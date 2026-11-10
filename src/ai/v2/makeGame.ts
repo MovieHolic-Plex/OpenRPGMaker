@@ -9,7 +9,7 @@
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { canMove, isPassable } from "@/project/collision";
 import type { EventSpec, PersonSpec, PlaceBuildResult, PlaceSpec } from "./types";
-import { walkReach, walkStart } from "./people";
+import { walkReach, walkStart } from "./place/cells";
 
 interface GamePlace {
   /** 계획 안의 짧은 이름(잇기·사람·사건이 가리킨다). */
