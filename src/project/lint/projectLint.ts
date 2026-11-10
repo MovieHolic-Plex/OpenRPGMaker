@@ -1,6 +1,7 @@
 import { lintHorrorAuthoring } from "./horrorAuthoringLint";
 import { OPENING_PICTURE_WALKERS_CODE, openingPictureWalkers } from "@/project/openingAuthoringReview";
 import { lintHazardEffects } from "./hazardEffectLint";
+import { lintBattleStateReach } from "./battleStateReachLint";
 // project/lint/projectLint.ts
 // 프로젝트 무결성 정적 검사기. 순수 함수(Node 헤드리스에서도 동작 — 브라우저 전역 접근 금지).
 // 예외를 던지지 않고 모든 문제를 LintIssue 배열로 수집한다(왕복/참조 검증이 throw하면 catch).
@@ -115,6 +116,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   issues.push(...lintWorldGraph(project));
   issues.push(...lintHorrorAuthoring(project));
   issues.push(...lintHazardEffects(project));
+  issues.push(...lintBattleStateReach(project));
   checkCharacterIdSocial(project, issues);
   checkUnplayableAudio(project, issues);
   checkReachabilitySpecs(project, opts.reachability ?? [], issues, analysis);

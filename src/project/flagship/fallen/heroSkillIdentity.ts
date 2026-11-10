@@ -20,8 +20,11 @@ import { normalizeStateRecord } from "@/project/databaseRecordModel";
 
 export const FS_STAR_MARK_STATES = ["state_fs_star_mark_1", "state_fs_star_mark_2", "state_fs_star_mark_3"] as const;
 export const FS_STAR_MARK_ICONS = ["cc0-jetrel-gen2-fs-star-mark-1", "cc0-jetrel-gen2-fs-star-mark-2", "cc0-jetrel-gen2-fs-star-mark-3"] as const;
-/** 별 표식을 새기는 단타 베기. */
-export const FS_STAR_MARK_SLASHES = ["skill_sword_slash", "skill_hero_rising_blade", "skill_hero_whirlwind"] as const;
+/** 카엘 전용 검격. 공용 skill_sword_slash 는 적 약 25종(심문회 창병 등)·다른 직업도 쓴다 — 거기에 표식을 달면
+ *  적이 아군에게 카엘의 별 표식을 새겼다(fs-vqa-fix-all). class_hero 의 검격만 이 사본으로 바꾼다. */
+export const FS_KAEL_STAR_SLASH = "skill_fs_star_slash";
+/** 별 표식을 새기는 단타 베기(모두 카엘만 쓴다). */
+export const FS_STAR_MARK_SLASHES = [FS_KAEL_STAR_SLASH, "skill_hero_rising_blade", "skill_hero_whirlwind"] as const;
 /** 표식을 터뜨리는 마무리기. */
 export const FS_STAR_MARK_FINISHERS = ["skill_hero_flame_sword", "skill_fs_verdict"] as const;
 
@@ -86,8 +89,30 @@ function applyHitFlash(project: Project, report: HeroSkillIdentityReport): void 
   }
 }
 
+/** 공용 검격을 통째로(조정·pixelfx 연출까지) 복사해 카엘 전용 사본을 만들고, class_hero 의 검격을 사본으로 바꾼다.
+ *  직업이 가르치는 기술은 세이브에 저장되지 않고 매번 직업에서 다시 계산된다(battleRewardsToSession). */
+function splitKaelStarSlash(project: Project, report: HeroSkillIdentityReport): void {
+  const db = project.database;
+  const shared = findSkill(project, "skill_sword_slash");
+  if (!shared) { report.skipped.push("카엘 검격 사본 — skill_sword_slash 없음"); return; }
+  const clone = { ...(JSON.parse(JSON.stringify(shared)) as SkillRecord), id: FS_KAEL_STAR_SLASH };
+  db.skills = [...db.skills.filter((skill) => skill.id !== FS_KAEL_STAR_SLASH), clone];
+  const hero = db.classes.find((row) => row.id === "class_hero");
+  const swap = (id: string) => (id === "skill_sword_slash" ? FS_KAEL_STAR_SLASH : id);
+  if (hero) {
+    hero.skillIds = hero.skillIds.map(swap);
+    // 실제로 배우는 길은 습득표다(sessionClass.classLearnedSkillIdsUpToLevel).
+    hero.learnedSkills = hero.learnedSkills.map((row) => ({ ...row, skillId: swap(row.skillId) }));
+  }
+  // 공용 검격에 남아 있을지 모를 표식(이전 판 적용분)과 설명 줄을 떼다.
+  shared.stateEffects = (shared.stateEffects ?? []).filter((row) => !(FS_STAR_MARK_STATES as readonly string[]).includes(row.stateId));
+  shared.description = shared.description.replace(/\n별 표식을 새긴다.*$/s, "");
+  report.applied.push(`카엘 검격 사본 ${FS_KAEL_STAR_SLASH}${hero ? " → class_hero" : " (class_hero 없음)"}`);
+}
+
 function applyStarMarks(project: Project, report: HeroSkillIdentityReport): void {
   const db = project.database;
+  splitKaelStarSlash(project, report);
   FS_STAR_MARK_STATES.forEach((id, index) => {
     const tier = index + 1;
     const record = normalizeStateRecord({
