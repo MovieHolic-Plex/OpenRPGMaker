@@ -45,12 +45,27 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
     p: { objectId: "Row id from list_spatial_designs (obj:… / kit:… / group:…).", x: "Top-left x.", y: "Top-left y.", layers: "Layers to stamp. Omit = the object's default.", onOverlap: "When a standing prop overlaps furniture: refuse (default, names a free spot) | nearest (stamp at that free spot) | replace (clear the overlapped furniture).", referencePurpose: "Terrain kits only: the tileset reference purpose id (read that reference first). Optional for finished prop kits." },
   },
   find_empty_ground: {
-    d: "Find empty outdoor ground rectangles (largest first) with a suggested use each. region limits the search to one side of the map.",
+    d: "Find empty outdoor ground rectangles (largest first) on any chipset — walkable terrain with nothing on it; roads, water and indoor floors do not count. Returns each lot's x,y,w,h, the bare-ground share, and the outdoor props this chipset has. To fill what it finds call furnish_outdoor_area with the same region.",
     p: { region: "all | top | bottom | left | right | top-left | top-right | bottom-left | bottom-right | center (default all)." },
   },
+  furnish_outdoor_area: {
+    d: "Fill empty outdoor ground in one call: the tool splits the area into lots, puts a clump (trees / a feature with small props / a patch of low plants and rocks) in each, keeps a walking strip around them, leaves doors, exits and events clear, and undoes any piece that would cut off a reachable event. Works on any chipset that has outdoor prop kits. Give region (or area); props is optional. Returns what it placed where and the bare-ground share before → after.",
+    p: {
+      region: "Side of the map to fill: all | top | bottom | left | right | top-left | top-right | bottom-left | bottom-right | center (default all).",
+      area: "{x,y,w,h} exact rectangle instead of region.",
+      props: "Names of this chipset's outdoor props to use (from find_empty_ground's props list), e.g. palm, cactus, lamp. Omit = the chipset's trees, bushes and rocks.",
+      style: "auto (default) | grove | garden | plaza | pond — the last four only on monster-collecting sheets.",
+      seed: "Change for a different arrangement.",
+    },
+  },
   move_event: {
-    d: "Move an event to another cell on the same map (lands on a walkable cell for its trigger). To relocate, move — do not delete and recreate.",
-    p: { from: "Entry cell used for the reachability check (copy the lint candidate's from). Omit = start position / local reachability." },
+    d: "Move an event to another cell of the same map and get back the cell it landed on. Give ONE target: x,y (a cell) · dx,dy (cells from where it stands — dx -2 = two cells left, dy 1 = one cell down) · where (a place word; the tool picks a free walkable cell that blocks no path, so you need no coordinates). An unfit cell moves to the nearest fit one within 3 cells. To relocate, move — do not delete and recreate.",
+    p: {
+      x: "Target cell x (with y).", y: "Target cell y (with x).",
+      dx: "Cells to the right of its current cell (negative = left).", dy: "Cells below its current cell (negative = up).",
+      where: "Place word instead of coordinates: 입구 (entrance) · 광장 (square) · 문 앞 (in front of the door) · «X 옆/앞/뒤» (beside / in front of / behind X — X is an object label like 카운터·우물·침대 or the name of another event) · 구석 (corner) · 창가 (by the window) · 북쪽 벽 (north wall; also 남·동·서) — add a room word (홀·부엌·침실) to stay inside that room.",
+      from: "Entry cell used for the reachability check (copy the lint candidate's from). Omit = start position / local reachability.",
+    },
   },
   remove_event: { d: "Delete an event from a map (destructive)." },
   patch_event_page: {
