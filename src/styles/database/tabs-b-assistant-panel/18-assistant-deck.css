@@ -899,10 +899,25 @@ html[data-ai-render="off"] {
 }
 
 .ai-quota-chip-label {
+  display: inline-flex;
   min-width: 0;
+  white-space: nowrap;
+}
+
+/* 좁으면 연결 이름만 줄인다 — 남은 한도 값(「남음 63%」·「알 수 없음」)은 잘리면 칩의 뜻이 사라진다. */
+.ai-quota-chip-name {
+  min-width: 2.5em;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.ai-quota-chip-value {
+  flex: none;
+}
+
+.ai-quota-chip-value::before {
+  content: "·";
+  margin: 0 4px;
 }
 
 .ai-quota-chip-dot {

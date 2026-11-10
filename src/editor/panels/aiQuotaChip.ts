@@ -26,7 +26,9 @@ export async function fetchProviderUsage(providerId: string): Promise<ProviderUs
 }
 
 export function renderAiQuotaChip(openSettings: () => void): { readonly element: HTMLElement; readonly dispose: () => void } {
-  const label = el("span", { class: "ai-quota-chip-label", dataset: { testid: "ai-quota-chip-label" } });
+  const name = el("span", { class: "ai-quota-chip-name" });
+  const value = el("span", { class: "ai-quota-chip-value" });
+  const label = el("span", { class: "ai-quota-chip-label", dataset: { testid: "ai-quota-chip-label" }, children: [name, value] });
   const button = el("button", {
     class: "ai-quota-chip",
     attrs: { type: "button" },
@@ -45,16 +47,18 @@ export function renderAiQuotaChip(openSettings: () => void): { readonly element:
     button.dataset.kind = kind;
     const current = usage && usageFor === status.providerId ? usage : null;
     const tail = status.limited ? "사용 한도 초과" : status.kind === "ready" ? usageChipSuffix(current) : status.label.replace(status.providerLabel, "").trim();
-    label.textContent = `${status.providerLabel} · ${tail}`;
+    name.textContent = status.providerLabel;
+    value.textContent = tail;
     const detail = status.kind === "ready" || status.limited ? usageDetail(current) : status.title;
     button.title = `${status.limited ? status.title : status.providerLabel} — ${detail} — 누르면 AI 설정에서 다른 연결을 고를 수 있어요.`;
-    button.setAttribute("aria-label", `${label.textContent} — AI 설정 열기`);
+    button.setAttribute("aria-label", `${status.providerLabel} · ${tail} — AI 설정 열기`);
   };
 
   const refreshUsage = (force: boolean): void => {
     const providerId = parseOhMyPiProvider(loadAiConfig().providerId);
     const status = getAiConnectionStatus();
-    if (status.kind !== "ready" || inflight) { paint(); return; }
+    const hidden = typeof document !== "undefined" && document.visibilityState === "hidden";
+    if (status.kind !== "ready" || inflight || (!force && hidden)) { paint(); return; }
     if (!force && usageFor === providerId && Date.now() - fetchedAt < USAGE_REFRESH_MS) { paint(); return; }
     inflight = true;
     void fetchProviderUsage(providerId).then((snapshot) => {

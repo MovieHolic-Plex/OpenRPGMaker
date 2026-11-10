@@ -18,6 +18,10 @@ describe("isQuotaOrRateLimitError", () => {
     "socket hang up",
     "stream ended without a finish reason",
     "인증 실패(401): API 키가 없거나 잘못되었습니다.",
+    "자율성 「보통」의 작업 한도(30턴)에 도달해 중단했습니다",
+    "작업 시간 한도에 닿아 멈췄다",
+    "QuotaExceededError: Failed to execute 'setItem' on 'Storage'",
+    "타일 429번을 칠했다",
     "",
   ])("일시 끊김·인증 오류는 한도로 보지 않는다: %s", (message) => {
     expect(isQuotaOrRateLimitError(message)).toBe(false);
@@ -61,8 +65,8 @@ describe("usage 칩 문구", () => {
 
   it("읽을 수 없으면 숫자를 지어내지 않고 「알 수 없음」 과 이유를 보인다", () => {
     const unknown: ProviderUsageSnapshot = { provider: "openai-compat:x", readable: false, fetchedAt: 0, windows: [], reason: "이 연결은 남은 한도를 알려 주지 않아요." };
-    expect(usageChipSuffix(unknown)).toBe("남은 한도 알 수 없음");
-    expect(usageChipSuffix(null)).toBe("남은 한도 알 수 없음");
+    expect(usageChipSuffix(unknown)).toBe("한도 알 수 없음");
+    expect(usageChipSuffix(null)).toBe("한도 알 수 없음");
     expect(usageDetail(unknown)).toBe("이 연결은 남은 한도를 알려 주지 않아요.");
   });
 });

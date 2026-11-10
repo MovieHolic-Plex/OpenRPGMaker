@@ -7,11 +7,14 @@
 // 이 모듈은 그 문장을 한 곳에서 판정한다. 판정만 하고 화면·상태는 호출자가 바꾼다.
 
 /** 한도·속도 제한 문구. 상태 코드·제공자 표준 오류 코드·흔한 영어 문구·우리 쪽 한국어 문구. */
-const QUOTA_PATTERN = /\b429\b|RESOURCE_EXHAUSTED|insufficient_quota|quota|rate[ _.-]?limit|usage limit|too many requests|사용 한도|한도 초과|한도에 (?:닿|도달)/i;
+// 429 는 상태 코드 문맥(「(429)」·「HTTP 429」·「status 429」·「429 Too Many」)일 때만 — 문장 속 다른 숫자(「타일 429번」)는 아니다.
+// 브라우저 저장공간 부족(QuotaExceededError)은 제공자 한도가 아니다. 「작업 한도」·「턴 한도」 같은 우리 실행 상한도 아니다.
+const QUOTA_PATTERN = /\(429\)|\b(?:HTTP|status|code|error)[ :=]*429\b|^429\b|\b429 Too Many|RESOURCE_EXHAUSTED|insufficient_quota|exceeded your current quota|\bquota (?:exceeded|exhausted)|rate[ _.-]?limit|usage limit|too many requests|사용 한도|요청 한도 초과/i;
+const NOT_PROVIDER_QUOTA = /QuotaExceededError|(?:작업|턴|시간|도구|실행) (?:시간 )?한도/u;
 
 /** 제공자 오류 문장이 사용 한도·속도 제한 때문인가. 일시 끊김(502·연결)과 구분해 다시 보내도 같은 결과임을 뜻한다. */
 export function isQuotaOrRateLimitError(message: string | undefined | null): boolean {
-  return !!message && QUOTA_PATTERN.test(message);
+  return !!message && QUOTA_PATTERN.test(message) && !NOT_PROVIDER_QUOTA.test(message);
 }
 
 export function quotaStatusLine(providerLabel: string): string {
@@ -41,10 +44,10 @@ export function lowestRemaining(snapshot: ProviderUsageSnapshot | null | undefin
   return values.length ? Math.min(...values) : null;
 }
 
-/** 칩 라벨 뒤에 붙는 짧은 꼬리: 「남음 63%」 또는 「남은 한도 알 수 없음」. */
+/** 칩 라벨 뒤에 붙는 짧은 꼬리: 「남음 63%」 또는 「한도 알 수 없음」. */
 export function usageChipSuffix(snapshot: ProviderUsageSnapshot | null | undefined): string {
   const lowest = lowestRemaining(snapshot);
-  return lowest === null ? "남은 한도 알 수 없음" : `남음 ${Math.round(lowest * 100)}%`;
+  return lowest === null ? "한도 알 수 없음" : `남음 ${Math.round(lowest * 100)}%`;
 }
 
 /** 칩 툴팁용 창별 설명. 읽을 수 없으면 이유. */

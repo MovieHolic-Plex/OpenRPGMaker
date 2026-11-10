@@ -1305,7 +1305,11 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       ? `적용했습니다 — 팀, 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개${spillNotice}${errorDigest()}.`
       : `변경 내용을 적용했습니다${spillNotice}${errorDigest()}.`;
     // 끊긴 실행만 보드를 실패로 둔다. 끝까지 간 실행의 회수 가능한 오류는 「적용됨」 캡션의 ⚠ 다이제스트로 남긴다(errorDigest).
-    boardState = streamErrors.length && (fatalErrors > 0 || stoppedByLimit)
+    // 반영 도중 한도에 걸린 실행 — 반영한 변경·영수증은 남기되, 「적용했어요」 성공 문장 대신 제공자 이름과 전환 안내를 낸다.
+    const appliedQuotaError = streamErrors.find(isQuotaOrRateLimitError);
+    boardState = appliedQuotaError
+      ? markTeamBoardFailed(boardState, `${boardFailureReason(provider, appliedQuotaError)} — 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요.`)
+      : streamErrors.length && (fatalErrors > 0 || stoppedByLimit)
       ? markTeamBoardFailed(boardState, `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요.`)
       : markTeamBoardApplied(boardState, appliedText); sync();
     observeActivitySave((name, summary, status, data) => {
@@ -1324,6 +1328,17 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       surface.appendProcess?.(`변경은 적용됐지만 저장하지 못했어요: ${error instanceof Error ? error.message : String(error)}`);
     }
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
+    if (appliedQuotaError) {
+      surface.appendProcess?.(streamErrors.join("\n"));
+      if (lastAssistantText.trim()) surface.appendBubble("assistant", lastAssistantText);
+      reportQuotaStop(surface, provider, appliedQuotaError, true);
+      surface.showChangeReceipt?.({
+        before: base, after: merged.project, mapId: receiptMapId, title: receiptTitle,
+        detail: "사용 한도로 멈추기 전에 반영한 변경이에요. 작업은 끝나지 않았어요.",
+        chips: receiptChips, ledger: receiptLedger, toolNames: [team ? "pi_team" : "pi_agent"],
+      });
+      return false;
+    }
     surface.setStatus(streamErrors.length ? "변경 반영됨 · 응답 중 오류" : (harmonyManualReview && applyMode !== "yolo") ? "반영됨 · 확인할 문제 있음" : saveAccepted ? "적용·저장 완료" : "적용됨 · 저장 확인 필요");
     if (streamErrors.length) surface.appendBubble("system", `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요. ${lastAssistantText.trim() ? "" : `${describeAppliedWrites(succeededTools)} `}저장 상태는 저장 표시에서 확인해 주세요.`);
     if (lastAssistantText.trim()) surface.appendBubble("assistant", lastAssistantText);

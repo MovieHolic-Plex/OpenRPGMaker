@@ -56,7 +56,8 @@ export async function fetchProviderUsage(provider: string, apiKey: string | unde
     );
     if (!report || report.limits.length === 0) return unknown("제공자가 남은 한도를 돌려주지 않았어요.");
     return compactUsageReport(provider, report);
-  } catch {
+  } catch (error) {
+    console.warn(`[provider-usage] ${provider}: ${error instanceof Error ? error.name : "error"}`);
     return unknown("남은 한도를 확인하는 중 오류가 났어요.");
   }
 }
