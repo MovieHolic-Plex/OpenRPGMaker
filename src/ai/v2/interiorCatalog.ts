@@ -27,7 +27,7 @@ const entry = (S: HandInteriorSpec, id: string): string | undefined => {
 };
 
 /** 요청 낱말에 맞는 방 종류 키(이름·한국어 이름·별칭이 낱말에 들어 있다). */
-export function roomKindsFor(S: HandInteriorSpec, text: string): string[] {
+function roomKindsFor(S: HandInteriorSpec, text: string): string[] {
   const t = text.toLowerCase();
   return Object.entries(S.rooms?.kinds ?? {}).filter(([k, v]) => {
     const words = [k.replace(/_/gu, " "), v.ko, ...(v.alias ?? [])].filter((w) => w && w.length >= 2);
@@ -36,7 +36,7 @@ export function roomKindsFor(S: HandInteriorSpec, text: string): string[] {
 }
 
 /** 이 장소에 맞는 기물 — 맞는 방 종류의 예제 표(많이 쓰인 순) → 낱말 검색. 최대 max 개. */
-export function suggestedPieces(S: HandInteriorSpec, text: string, max = 70): { kinds: string[]; ids: string[]; sized: string[] } {
+function suggestedPieces(S: HandInteriorSpec, text: string, max = 70): { kinds: string[]; ids: string[]; sized: string[] } {
   const kinds = roomKindsFor(S, text);
   const used = new Map<string, number>(); const sized = new Set<string>();
   for (const [, , room, items] of S.rooms?.examples ?? []) if (kinds.includes(room)) for (const [id, n] of items) used.set(id, (used.get(id) ?? 0) + n);

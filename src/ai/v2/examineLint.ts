@@ -22,7 +22,7 @@ function hasTransfer(node: unknown): boolean {
 }
 
 /** 조사만 하는 이벤트 — 모든 페이지가 확인 키 발동이고 이동이 없다. */
-export function isExamineOnly(event: GameEvent): boolean {
+function isExamineOnly(event: GameEvent): boolean {
   const pages = event.pages ?? [];
   return pages.length > 0 && pages.every((page) => triggerOf(page) === "action") && !hasTransfer(pages);
 }

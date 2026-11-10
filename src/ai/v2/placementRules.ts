@@ -220,7 +220,7 @@ const OBJECT_WORDS: readonly [RegExp, RegExp][] = [
   [/오르골|music box/iu, /오르골|music box/iu],
 ];
 /** 이벤트 이름에서 그 이벤트가 말하는 물건(이름표 정규식). 모르면 undefined. */
-export function objectWordOf(name: string): RegExp | undefined {
+function objectWordOf(name: string): RegExp | undefined {
   for (const [said, label] of OBJECT_WORDS) if (said.test(name)) return label;
   return undefined;
 }

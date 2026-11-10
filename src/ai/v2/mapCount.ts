@@ -16,8 +16,8 @@ export const RECOMMENDED_MAPS = 15;
 
 type Obj = Record<string, unknown>;
 
-export type UncountedReason = "unreachable" | "small" | "few-tiles" | "no-event" | "copy";
-export interface MapCountResult {
+type UncountedReason = "unreachable" | "small" | "few-tiles" | "no-event" | "copy";
+interface MapCountResult {
   readonly counted: readonly string[];
   readonly uncounted: readonly { readonly id: string; readonly name: string; readonly reason: UncountedReason; readonly detail: string }[];
 }
@@ -97,7 +97,7 @@ export function countMaps(project: Project): MapCountResult {
 }
 
 /** 시작 맵에서 안 닿는 맵 무리(서로 문으로 이어진 맵끼리 한 무리) — 무리마다 하나만 이으면 무리 전체가 닿는다. */
-export interface IsolatedGroup {
+interface IsolatedGroup {
   /** 이을 대표 맵(무리에서 가장 넓은 맵). */
   readonly mapId: string;
   readonly mapName: string;
@@ -112,7 +112,7 @@ export interface LinkPlan {
 }
 
 /** 맵 가장자리에서 가장 가까운(같으면 남쪽 가장자리 먼저) 걸을 수 있는 빈 바닥 칸. */
-export function edgeFloorCell(project: Project, map: GameMap): { x: number; y: number } | null {
+function edgeFloorCell(project: Project, map: GameMap): { x: number; y: number } | null {
   const taken = new Set<string>(); for (const e of map.events ?? []) taken.add(`${e.x},${e.y}`);
   let best: { x: number; y: number; d: number; south: number } | null = null;
   for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) {

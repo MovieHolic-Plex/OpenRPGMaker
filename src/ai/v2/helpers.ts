@@ -17,7 +17,7 @@ export interface HelperJob {
   readonly count?: number;
 }
 
-export interface HelperResult {
+interface HelperResult {
   readonly id: string;
   readonly ok: boolean;
   readonly text?: string;
@@ -36,7 +36,7 @@ export const HELPER_LIMITS = { jobs: 8, task: 2_000, context: 8_000, fields: 12,
 type Chat = (messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
 
 /** 입력 검사. 틀리면 이유 하나(그 일은 돌리지 않는다). */
-export function helperJobProblem(job: HelperJob): string | undefined {
+function helperJobProblem(job: HelperJob): string | undefined {
   if (!job || typeof job.task !== "string" || !job.task.trim()) return "task 가 비었다";
   if (job.task.length > HELPER_LIMITS.task) return `task 가 ${job.task.length}자 — ${HELPER_LIMITS.task}자 이하로`;
   if (job.context !== undefined && (typeof job.context !== "string" || job.context.length > HELPER_LIMITS.context)) return `context 는 ${HELPER_LIMITS.context}자 이하 글`;
@@ -46,7 +46,7 @@ export function helperJobProblem(job: HelperJob): string | undefined {
   return undefined;
 }
 
-export function helperPrompt(job: HelperJob): string {
+function helperPrompt(job: HelperJob): string {
   const shape = job.fields
     ? job.count
       ? `JSON 배열만 답한다(설명·코드 울타리 없이). 원소 ${job.count}개, 각 원소는 열쇠 ${job.fields.map((f) => `"${f}"`).join(", ")} 를 가진 객체.`
@@ -61,7 +61,7 @@ export function helperPrompt(job: HelperJob): string {
 }
 
 /** 답에서 JSON 을 꺼내 모양을 검사한다. */
-export function parseHelperReply(job: HelperJob, reply: string): { ok: true; data: unknown } | { ok: false; problem: string } {
+function parseHelperReply(job: HelperJob, reply: string): { ok: true; data: unknown } | { ok: false; problem: string } {
   const body = reply.replace(/^\s*```(?:json)?\s*/u, "").replace(/\s*```\s*$/u, "").trim();
   const start = job.count ? body.indexOf("[") : body.indexOf("{");
   const end = job.count ? body.lastIndexOf("]") : body.lastIndexOf("}");

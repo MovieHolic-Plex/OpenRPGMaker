@@ -10,7 +10,7 @@
 import type { PiToolCallRecord, PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { Project } from "@/project/types";
 
-export interface RouteDesign {
+interface RouteDesign {
   readonly bends?: number; readonly sway?: string; readonly entryAt?: number; readonly exitAt?: number; readonly width?: string;
   readonly branches?: readonly { readonly at?: number; readonly toward?: string; readonly length?: number; readonly end?: string }[];
   readonly clearings?: readonly { readonly at?: number; readonly size?: string; readonly toward?: string }[];
@@ -22,7 +22,7 @@ const clearings = (d: RouteDesign) => d.clearings ?? [];
 const sideOf = (t?: string) => (/^r/iu.test(t ?? "") ? "right" : /^l/iu.test(t ?? "") ? "left" : "");
 
 /** 지시서 항목 — 문장은 모델에게 가는 영어, ok 는 보낸 설계 숫자만 본다. groups 가 겹치는 항목끼리는 함께 뽑지 않는다. */
-export const BRIEF_ITEMS: readonly BriefItem[] = [
+const BRIEF_ITEMS: readonly BriefItem[] = [
   { id: "early-branch", text: "a branch right after the entrance (a branch with at ≤ 0.3) so the player chooses a way at once", fix: "add a branch with at ≤ 0.3", groups: [], ok: (d) => branches(d).some((b) => Number(b.at) <= 0.3) },
   { id: "straight", text: "few bends (bends 1–2) and one large clearing (clearings[].size \"large\")", fix: "set bends to 1 or 2 and add a clearing with size \"large\"", groups: ["bends"], ok: (d) => Number(d.bends) <= 2 && clearings(d).some((c) => c.size === "large") },
   { id: "twisty", text: "many bends (bends 5–6) on a narrow path (width \"narrow\")", fix: "set bends to 5 or 6 and width to \"narrow\"", groups: ["bends", "width"], ok: (d) => Number(d.bends) >= 5 && d.width === "narrow" },
@@ -36,7 +36,7 @@ export const BRIEF_ITEMS: readonly BriefItem[] = [
 ];
 
 /** 세션마다 겹치지 않는 지시서 둘. */
-export function pickForestBrief(rand: () => number = Math.random): readonly BriefItem[] {
+function pickForestBrief(rand: () => number = Math.random): readonly BriefItem[] {
   const a = BRIEF_ITEMS[Math.floor(rand() * BRIEF_ITEMS.length)]!;
   const rest = BRIEF_ITEMS.filter((b) => b.id !== a.id && !b.groups.some((g) => a.groups.includes(g)));
   return [a, rest[Math.floor(rand() * rest.length)]!];
@@ -48,7 +48,7 @@ export const briefText = (brief: readonly BriefItem[]) =>
  * 측정된 모델 버릇 — 같은 요청에 모델이 거듭 낸 설계(숲길 장면 벤치, 시작 저장본 bases/fantasy). 이것과 거의 같으면 «앞선 판과 같다».
  * 출처: sc-1030fr·fr2(opus·terra), omo-fr-t·omo-fr-o·omo-fr2-local(2026-10-30).
  */
-export const ROUTE_HABITS: readonly { readonly label: string; readonly d: RouteDesign }[] = [
+const ROUTE_HABITS: readonly { readonly label: string; readonly d: RouteDesign }[] = [
   { label: "opus habit (bends 3, wide, branches 0.30 left / 0.65 right)", d: { bends: 3, sway: "wide", entryAt: 0.5, branches: [{ at: 0.3, toward: "left" }, { at: 0.65, toward: "right" }] } },
   { label: "terra habit (bends 4, one branch 0.48 left)", d: { bends: 4, sway: "normal", entryAt: 0.5, branches: [{ at: 0.48, toward: "left", end: "chest" }] } },
   { label: "terra habit (bends 3–4, wide, chest branch 0.3–0.65 left, one clearing)", d: { bends: 3, sway: "wide", entryAt: 0.5, branches: [{ at: 0.5, toward: "left", end: "chest" }], clearings: [{ at: 0.8, size: "medium" }] } },
@@ -57,7 +57,7 @@ export const ROUTE_HABITS: readonly { readonly label: string; readonly d: RouteD
 ];
 
 /** 두 설계의 차이 점수 — 1 이하면 «거의 같다». */
-export function designDistance(a: RouteDesign, b: RouteDesign): number {
+function designDistance(a: RouteDesign, b: RouteDesign): number {
   let s = 0;
   const db = Math.abs(Number(a.bends ?? 4) - Number(b.bends ?? 4)); s += db >= 2 ? 2 : db;
   if ((a.sway ?? "normal") !== (b.sway ?? "normal")) s += 1;
@@ -76,7 +76,7 @@ export function designDistance(a: RouteDesign, b: RouteDesign): number {
 }
 
 /** 숲길 도구가 맵 위치(tags forest-route)에 남긴 설계 줄 → 설계 숫자. 「굽이 5 · 휨 wide · 폭 normal · 들어옴 0.48 · … · 갈림 0.50왼11→chest · 빈터 0.80medium」 */
-export function parseRouteLine(line: string): RouteDesign {
+function parseRouteLine(line: string): RouteDesign {
   const num = (re: RegExp) => { const m = re.exec(line); return m ? Number(m[1]) : undefined; };
   const word = (re: RegExp) => { const m = re.exec(line); return m && !/보통/u.test(m[1]!) ? m[1] : "normal"; };
   const br = /갈림 ([^·]*)/u.exec(line)?.[1] ?? "";
@@ -87,14 +87,14 @@ export function parseRouteLine(line: string): RouteDesign {
     clearings: [...cl.matchAll(/([\d.]+)(small|medium|large)/gu)].map((m) => ({ at: Number(m[1]), size: m[2] })),
   };
 }
-export function earlierRoutes(project: Project | undefined): { label: string; d: RouteDesign }[] {
+function earlierRoutes(project: Project | undefined): { label: string; d: RouteDesign }[] {
   return Object.values(project?.maps ?? {}).flatMap((m) => (m.locations ?? []).filter((l) => (l.tags ?? []).includes("forest-route") && l.note)
     .map((l) => ({ label: `earlier route in this project «${m.name}» (${l.note})`, d: parseRouteLine(l.note!) })));
 }
 
 const show = (d: RouteDesign) => JSON.stringify(d);
 /** 첫 설계 검사 — 막을 이유(영어)들. 비면 통과. */
-export function briefProblems(designs: readonly RouteDesign[], brief: readonly BriefItem[], earlier: readonly { label: string; d: RouteDesign }[]): { problems: string[]; fixes: string[] } {
+function briefProblems(designs: readonly RouteDesign[], brief: readonly BriefItem[], earlier: readonly { label: string; d: RouteDesign }[]): { problems: string[]; fixes: string[] } {
   const problems: string[] = []; const fixes: string[] = [];
   const first = designs[0];
   if (!first) return { problems: ["no designs were sent, so the route would be the default frame (bends 4, no branches)"], fixes: ["send designs[0] that follows the route brief: " + brief.map((b) => b.fix).join("; ")] };

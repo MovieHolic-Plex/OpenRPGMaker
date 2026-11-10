@@ -7,7 +7,7 @@ export type StageWrites = Map<string, string>;
 
 type Row = Record<string, unknown>;
 
-export const STAGE_WRITE_SECTIONS = ["items", "weapons", "armors", "enemies", "skills", "classes", "actors"] as const;
+const STAGE_WRITE_SECTIONS = ["items", "weapons", "armors", "enemies", "skills", "classes", "actors"] as const;
 
 export const stageWriteKey = (section: string, id: unknown, key: string): string => `${section}:${String(id)}:${key}`;
 

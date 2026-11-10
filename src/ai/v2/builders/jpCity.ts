@@ -4,7 +4,7 @@
 //   집:   build_hand_interior_room({tileset:"jp_city", layout:{program}}) — 일본 집·가게 실내 예제 구성. 2층이면 위층을 짓고 계단을 잇는다.
 // 모델은 칸·좌표를 쓰지 않는다. 도구가 못 하는 것은 missingArt 로 정직하게 보고한다(대체물을 지어내지 않는다).
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
-import { JP_REGIONS, jpRegionById } from "@/editor/jpCity/japaneseRegionsCatalog";
+import { jpRegionById } from "@/editor/jpCity/japaneseRegionsCatalog";
 import { isPassable } from "@/project/collision";
 import { layerTileAt } from "@/project/mapLayers";
 import { JP_CITY_ID } from "@/project/defaults/jpCity";
@@ -109,7 +109,7 @@ const AVOID_PROPS: readonly (readonly [RegExp, string])[] = [
 ];
 const NEGATED = /^(?:no|without|avoid|remove|not?)\b|없[이게음는]|빼|말고|금지|두지\s*마|놓지\s*마/iu;
 /** 부정 낱말(「no bicycle」「자전거 없이」)과 hints.avoidProps(쉼표 목록). 요청 낱말 목록에서 그 낱말은 확인 대상에서 뺀다. */
-export function jpAvoidProps(spec: PlaceSpec): { avoid: string[]; negatedWords: Set<string> } {
+function jpAvoidProps(spec: PlaceSpec): { avoid: string[]; negatedWords: Set<string> } {
   const negatedWords = new Set<string>();
   const avoid = new Set<string>();
   for (const w of requestedWords(spec)) {
@@ -454,6 +454,3 @@ export const JP_CITY_BUILDER: PlaceBuilder = {
   accepts: (spec) => spec.type === "street" || spec.type === "house" || (spec.type === "village" && JP_STYLE.test(spec.style ?? "")),
   build: (run, spec, previous) => (spec.type === "house" ? buildHouse(run, spec, previous) : buildStreet(run, spec, previous)),
 };
-
-/** 카드·검사용: 지역 id 목록(이 빌더가 아는 것). */
-export const JP_CITY_REGION_IDS: readonly string[] = JP_REGIONS.map((r) => r.id);

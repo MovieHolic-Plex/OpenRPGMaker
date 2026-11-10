@@ -15,7 +15,7 @@ export type PlaceType =
   | "street" // 현대 일본 거리·골목(jp_city)
   | "house"; // 현대 일본 집 실내(jp_city 실내) — 판타지 집 안은 interior
 
-export type PlaceSize = "small" | "medium" | "large";
+type PlaceSize = "small" | "medium" | "large";
 
 /** 구역 하나 — 실내면 방, 마을·거리면 쓰임 있는 자리(광장·밭·공원…). */
 export interface ZoneSpec {
@@ -235,7 +235,7 @@ export type EventBeat =
   | { readonly do: "music"; readonly action?: "bgm" | "se" | "bgs" | "stop" | "fade"; readonly query?: string }
   /** 플레이어가 고르는 말 — 갈래마다 대답 대사와 결과(돈·물건). 흥정·설득·고백처럼 고른 말에 따라 반응이 달라야 할 때. */
   | { readonly do: "choose"; readonly who?: string; readonly text?: string; readonly options: readonly ChooseOption[] };
-export interface ChooseOption {
+interface ChooseOption {
   readonly label: string;
   /** 고른 뒤 대사 — 「이름: 대사」 또는 그냥 대사(choose 의 who 가 말한다). */
   readonly lines?: readonly string[];

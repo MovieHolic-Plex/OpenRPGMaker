@@ -9,11 +9,11 @@ import { whereText } from "@/qa/gameCheck/types";
 import type { Project } from "@/project/types";
 
 export const AUTOPLAY_GATE_PREFIX = "game:autoplay:";
-export const PLAY_CHECK_BUDGET_MS = 90_000;
+const PLAY_CHECK_BUDGET_MS = 90_000;
 const TIMED_OUT = "자동 플레이 시간 상한 초과";
 const FAILED_RUN = /^자동 플레이\((.+?)\)가 「(.+?)」에서 실패했습니다/u;
 
-export interface PlayProblem {
+interface PlayProblem {
   readonly key: string;
   readonly text: string;
 }

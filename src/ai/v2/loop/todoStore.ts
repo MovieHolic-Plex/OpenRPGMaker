@@ -5,10 +5,10 @@
 import type { CheckResult, TodoCheck, TodoItem, TodoStatus } from "../todo/types";
 import { refsLabel, type ProjectIndex } from "./refs";
 
-export type TodoSource = TodoItem["source"];
+type TodoSource = TodoItem["source"];
 
 /** 항목마다 따로 드는 기록(모델에게는 안 보인다). */
-export interface TodoMeta {
+interface TodoMeta {
   /** gate·critic·vqa 항목의 문제 열쇠 — 같은 문제가 다시 나오면 새 항목 대신 이 항목을 다시 연다. */
   key?: string;
   /** 마지막 실패(도구 거절·기계 확인 ✗)의 서명과 연속 횟수 — 같은 서명이 이어지면 막힘으로 닫는다. */
@@ -52,7 +52,7 @@ export interface TodoPhaseInput { readonly phase: string; readonly items: readon
 /** 같은 항목이 몇 번 실패하면 막힘으로 닫나(omo loop-guard 의 3회와 같은 값). */
 export const TODO_MAX_ATTEMPTS = 3;
 /** 같은 실패 서명이 몇 번 이어지면 막힘으로 닫나. */
-export const TODO_SAME_FAIL_STREAK = 2;
+const TODO_SAME_FAIL_STREAK = 2;
 
 export const isOpen = (status: TodoStatus): boolean => status === "pending" || status === "in_progress";
 const MARK: Record<TodoStatus, string> = { pending: "○", in_progress: "→", completed: "✓", blocked: "✗막힘", dropped: "–뺌" };

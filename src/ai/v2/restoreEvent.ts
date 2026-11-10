@@ -5,7 +5,7 @@
 // 원본이 있으니 다시 쓰지 말고 그대로 복사한다. 순수 함수 — after 를 고친다.
 import type { Project } from "@/project/types";
 
-export interface RestoreEventResult { readonly ok: boolean; readonly summary: string; readonly mapId?: string }
+interface RestoreEventResult { readonly ok: boolean; readonly summary: string; readonly mapId?: string }
 
 export function restoreEventFromBefore(before: Project, after: Project, eventId: string, mapId?: string): RestoreEventResult {
   const key = eventId.trim();

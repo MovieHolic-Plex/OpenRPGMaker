@@ -16,7 +16,7 @@ import { startStateOf } from "@/project/session";
 import { findMap, pickPersonGraphic, placeNpcWithGraphic, resolveWhere } from "./people";
 import type { BuildRun, ContentBuildResult } from "./types";
 
-export interface SceneChoice { readonly label: string; readonly reaction: string; readonly revisit: string }
+interface SceneChoice { readonly label: string; readonly reaction: string; readonly revisit: string }
 export interface SceneSpec {
   readonly partner: string;
   readonly role?: string;
@@ -48,7 +48,7 @@ export const SCENE_SCHEMA = {
 const FACE = (resourceId: string): Command => ({ kind: "changeFace", resourceId, position: "left", flipHorizontally: false });
 
 /** 상대가 말하는 줄 앞에는 상대 얼굴, 다른 사람이 말하는 줄 앞에는 얼굴 지우기 — 바뀔 때만 넣는다. 선택 분기는 갈래마다 따로. */
-export function withSpeakerFaces(commands: readonly Command[], partner: string, faceId: string, start?: string): Command[] {
+function withSpeakerFaces(commands: readonly Command[], partner: string, faceId: string, start?: string): Command[] {
   const out: Command[] = [];
   let cur = start;
   for (const c of commands) {
@@ -71,7 +71,7 @@ function lines(v: readonly string[] | undefined): string[] {
 }
 
 /** 두 선택을 실제 해석기로: 걸어가 말 걸기 → 선택 → 마지막 대사(반응) → 다시 말 걸기(같은 첫 선택지가 다시 나오면 첫째를 고른다) → 마지막 대사(재대화). */
-export function probeTwoChoices(project: Project, mapId: string, eventId: string): { reaction: string; revisit: string; ok: boolean; why?: string }[] {
+function probeTwoChoices(project: Project, mapId: string, eventId: string): { reaction: string; revisit: string; ok: boolean; why?: string }[] {
   const map = project.maps[mapId];
   const event = map?.events.find((e) => e.id === eventId);
   if (!map || !event) return [];

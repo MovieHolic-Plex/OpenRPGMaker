@@ -16,7 +16,7 @@ const OUTDOOR_CONVENTIONS: Record<string, string> = {
 const PLACEMENT_MAJORS = "Placement majors (count each as a major with its cell): a person standing in the middle of a car lane, crosswalk or railway track (people stand on sidewalks, inside shops, by benches, counters and doors); a person standing in or next to the only one-cell-wide exit path so the way out is blocked; a shopkeeper standing on the customer side (south) of a counter instead of behind it (north); furniture from another kind of room — armchairs, sofas, beds, round rugs or potted plants in a chapel, a shop, a classroom, a hospital or a workshop (every room dressed like the same living room is a major).";
 
 /** 비평 지시문. 실내면 v1 루브릭 그대로, 아니면 장르 관례만 갈아 끼운다. 놓기 major 는 둘 다에 붙인다. */
-export function criticPrompt(task: string, type: PlaceType | "content", mapName: string, cells: { width: number; height: number }, px: { width: number; height: number } | undefined, otherMaps: readonly string[]): string {
+function criticPrompt(task: string, type: PlaceType | "content", mapName: string, cells: { width: number; height: number }, px: { width: number; height: number } | undefined, otherMaps: readonly string[]): string {
   const base = featureCriticPrompt(task, mapName, cells, px, otherMaps);
   const key = type === "interior" || type === "house" ? undefined : type === "cave" ? "dungeon" : type === "street" ? "street" : type === "dungeon" ? "dungeon" : "village";
   return base.split("\n").flatMap((line) => line.startsWith("Genre conventions") ? [key ? OUTDOOR_CONVENTIONS[key]! : line, PLACEMENT_MAJORS] : [line]).join("\n");
@@ -30,7 +30,7 @@ export function pngSize(dataUrl: string): { width: number; height: number } | un
   return bytes.length >= 24 ? { width: view.getUint32(16), height: view.getUint32(20) } : undefined;
 }
 
-export interface CriticRun {
+interface CriticRun {
   readonly verdict: CriticVerdict;
   readonly ms: number;
 }
@@ -65,7 +65,7 @@ export async function critique(input: {
  * 2026-10-23 눈가림 비교: 주인공이 1~2걸음만 걷고 촌장이 맵 구석에서 오는 컷신을 끝 상태 한 장만 본 비평가가 문제 0 으로 넘겼다.
  * 루브릭 S1 요청이 이루어졌나 · S2 무대가 읽히나(걸음 길이·다가오는 자리·마주 섬·가구/지붕 속에 선 사람) · S3 다듬기.
  */
-export function stagingCriticPrompt(task: string, mapName: string, frames: readonly { readonly label: string; readonly crop: { x: number; y: number; w: number; h: number }; readonly px?: { width: number; height: number } }[], notes: readonly string[]): string {
+function stagingCriticPrompt(task: string, mapName: string, frames: readonly { readonly label: string; readonly crop: { x: number; y: number; w: number; h: number }; readonly px?: { width: number; height: number } }[], notes: readonly string[]): string {
   const crop = frames[0]?.crop;
   const px = frames[0]?.px;
   const scale = crop && px ? ` Each image is ${px.width}×${px.height}px covering map cells x ${crop.x}..${crop.x + crop.w - 1}, y ${crop.y}..${crop.y + crop.h - 1} (about ${(px.width / crop.w).toFixed(1)}px per cell). Give coordinates as MAP cells (add the crop origin).` : " Give coordinates as map cells.";
@@ -84,7 +84,7 @@ export function stagingCriticPrompt(task: string, mapName: string, frames: reado
   ].join("\n");
 }
 
-export function parseStagingCritic(text: string, mapId: string, imagesSent: number): CriticVerdict {
+function parseStagingCritic(text: string, mapId: string, imagesSent: number): CriticVerdict {
   const match = text.match(/\{[\s\S]*\}/u)?.[0];
   let parsed: Record<string, unknown> | null = null;
   try { parsed = match ? JSON.parse(match) as Record<string, unknown> : null; } catch { parsed = null; }

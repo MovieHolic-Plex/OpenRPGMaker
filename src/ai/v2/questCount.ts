@@ -17,8 +17,8 @@ const normalizeLine = (text: unknown): string =>
     .replace(/[0-9０-９]+/g, "")
     .replace(/[\s.,!?…~·'"“”‘’()\[\]{}:;\-_*]+/g, "");
 
-export type UncountedQuestReason = "steps" | "no-title" | "dup-title";
-export interface QuestCountResult {
+type UncountedQuestReason = "steps" | "no-title" | "dup-title";
+interface QuestCountResult {
   /** 센 퀘스트 제목(정규화 전). */
   readonly counted: readonly string[];
   readonly uncounted: readonly { readonly id: string; readonly title: string; readonly reason: UncountedQuestReason; readonly detail: string }[];

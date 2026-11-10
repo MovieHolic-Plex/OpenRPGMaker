@@ -26,7 +26,7 @@ const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", 
  * run_scene_test·simulate_battle 도 여기다: 장면·전투를 돌려 보기만 한다. 쓰기로 세면 «기대와 다름»이 항목 실패로 쌓여 고치는 중인 항목이 막힘으로 닫혔다.
  */
 const READ_VERB = /^(todo|inspect|ask_user|ask_helpers|room_parts|dungeon_parts|run_scene_test|simulate_battle)$|^(get|list|find|read|show|preview|search|lint|check|validate|probe|describe|view|inspect)_|^store_(find|read|list|get)/u;
-export const isReadVerb = (name: string): boolean => READ_VERB.test(name);
+const isReadVerb = (name: string): boolean => READ_VERB.test(name);
 
 /** 무엇을 바꾸라는 요청인가(질문·조회·설명은 아니다). 이 요청에만 첫 호출 todo 를 강제한다. */
 export function isWriteRequest(request: Pick<PiAgentRequest, "task" | "readOnly">): boolean {
@@ -62,7 +62,7 @@ const TODO_ITEM_SCHEMA = {
   required: ["content"],
 } as const;
 
-export const TODO_TOOL_DESCRIPTION = [
+const TODO_TOOL_DESCRIPTION = [
   "The todo list for this request. For a write request, the first call is op:\"init\" listing the whole request as items grouped by phase — one item per place, person, line, battle, link, ending, and object in the request.",
   "Give every item a check (machine check): place=place, person=person, line=talk, battle=battle(boss), map link=link, ending=ending, item=item, present evidence=present_evidence, objective line=objective, reachable on foot=reachable, interior laid from spec.layout=layout_built, interior built as a room graph=room_graph, zones inside one interior room=room_zones. Use none only for what a machine cannot see.",
   "For an interior (inn, study, shop, jail, library, castle room, lab…) laid from spec.layout, add layout_built, layout_review and room_graph items (map=its name) after its place item. Otherwise add a room_graph item (map=its name) after its place item when you build it as several rooms (zones with x, y, landmark and connections), or room_zones (min 2) for one room split into zones. The function adds the item itself for designed interiors you did not cover.",
@@ -89,7 +89,7 @@ function itemOf(raw: unknown, warnings: string[]): TodoInput | undefined {
   return { content, ...(typeof r.id === "string" && r.id.trim() ? { id: r.id } : {}), ...(check ? { check } : {}), ...(deps.length ? { dependsOn: deps } : {}) };
 }
 
-export interface TodoToolsState {
+interface TodoToolsState {
   /** 쓰기 실패 기록(대안 동사 되돌리기용). */
   readonly failures: { name: string; text: string; at: number }[];
   /** 도구 이름 → 마지막으로 부른 호출 번호. */
@@ -131,10 +131,10 @@ function runCheck(env: PiAssistantV2Env, store: TodoStore, item: TodoItem): Chec
 }
 
 /** 「모호함」 판정에 붙이는 한 줄 — 후보 id 는 판정 글에 있다. */
-export const BIND_HINT = (id: string) => `→ bind the candidate this item means with todo(op:"bind", task:"${id}", mapId|eventId|itemId|troopId:<id>) and call done again.`;
+const BIND_HINT = (id: string) => `→ bind the candidate this item means with todo(op:"bind", task:"${id}", mapId|eventId|itemId|troopId:<id>) and call done again.`;
 
 /** H1 요청 뼈대 맞추기: 모델 목록(added)이 덮지 못한 확인 요소를 «요청 뼈대» 단계로 덧붙이고, 다시 init 해 이제 덮인 뼈대 항목은 뺀다. 돌려주는 값: 결과에 붙일 한 줄. */
-export function applySkeleton(env: PiAssistantV2Env, store: TodoStore, hooks: HookStats, added: readonly TodoItem[]): string | undefined {
+function applySkeleton(env: PiAssistantV2Env, store: TodoStore, hooks: HookStats, added: readonly TodoItem[]): string | undefined {
   if (!isWriteRequest(env.request)) return undefined;
   const els = requestSkeleton(env.request.task).filter((e) => e.check);
   if (!els.length) return undefined;
@@ -153,7 +153,7 @@ export function applySkeleton(env: PiAssistantV2Env, store: TodoStore, hooks: Ho
 }
 const skeletonKey = (e: SkeletonElement) => `skeleton:${e.check?.kind}:${JSON.stringify(e.check)}`;
 
-export function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: TodoToolsState, verbNames: ReadonlySet<string>, hooks: HookStats = new HookStats()): PiToolShape {
+function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: TodoToolsState, verbNames: ReadonlySet<string>, hooks: HookStats = new HookStats()): PiToolShape {
   const done = (summary: string, ok = true, extra: Record<string, unknown> = {}): PiToolExecResult => text({ ok, summary, ...extra, list: store.view(40, true) });
   return {
     name: "todo", label: "todo", concurrency: "exclusive", description: TODO_TOOL_DESCRIPTION,

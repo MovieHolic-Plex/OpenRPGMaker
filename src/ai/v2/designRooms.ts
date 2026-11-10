@@ -26,7 +26,7 @@ export function buildsHandInterior(project: Project, spec: PlaceSpec): boolean {
 }
 
 /** 설계가 필요한 구역 — 설계가 없고 원래 방 지키기(keep)도 아닌 것. 구역이 없으면 장소 이름 한 방, 2층 이상인데 위층 구역이 없으면 위층 방 하나. */
-export function zonesNeedingDesign(spec: PlaceSpec): { zones: ZoneSpec[]; need: number[] } {
+function zonesNeedingDesign(spec: PlaceSpec): { zones: ZoneSpec[]; need: number[] } {
   let zones: ZoneSpec[] = spec.zones?.length ? [...spec.zones] : [{ kind: spec.name, purpose: spec.name }];
   if ((spec.floors ?? 1) >= 2 && !zones.some((z) => (z.floor ?? 1) === 2)) zones = [...zones, { kind: "inn_room", purpose: `${spec.name} 위층 방`, floor: 2 }];
   const need = zones.map((z, i) => (!z.design && !z.keep ? i : -1)).filter((i) => i >= 0);
@@ -84,7 +84,7 @@ function promptFor(project: Project, spec: PlaceSpec, zones: readonly ZoneSpec[]
 }
 
 /** 모델 답에서 방 설계를 읽는다 — {rooms:[{i,design}]} · {zones:[…]} · 배열 · {design} 모두 받는다. */
-export function readDesignReply(reply: string, need: readonly number[], zones: readonly ZoneSpec[]): Map<number, RoomDesign> {
+function readDesignReply(reply: string, need: readonly number[], zones: readonly ZoneSpec[]): Map<number, RoomDesign> {
   const out = new Map<number, RoomDesign>();
   const start = reply.indexOf("{"), startA = reply.indexOf("[");
   const from = start < 0 ? startA : startA < 0 ? start : Math.min(start, startA);

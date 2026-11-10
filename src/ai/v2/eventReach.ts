@@ -441,7 +441,7 @@ function alwaysBlocks(ev: GameEvent): boolean {
 }
 
 /** 착지 칸·그 둘레, 이동 이벤트 둘레 — 막는 이벤트가 서면 안 되는 칸들. */
-export function transferLaneCells(project: Project, map: GameMap): Set<number> {
+function transferLaneCells(project: Project, map: GameMap): Set<number> {
   const w = map.width;
   const out = new Set<number>();
   const around = (c: Cell, self: boolean) => {

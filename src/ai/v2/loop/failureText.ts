@@ -16,8 +16,8 @@ import { nextAfterFailure } from "./nextCall";
 type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => !!v && typeof v === "object" && !Array.isArray(v);
 
-export interface FailureIssue { readonly severity?: string; readonly code?: string; readonly message: string; readonly mapId?: string; readonly x?: number; readonly y?: number }
-export interface ParsedFailure { readonly summary: string; readonly issues: readonly FailureIssue[]; readonly extra: readonly string[] }
+interface FailureIssue { readonly severity?: string; readonly code?: string; readonly message: string; readonly mapId?: string; readonly x?: number; readonly y?: number }
+interface ParsedFailure { readonly summary: string; readonly issues: readonly FailureIssue[]; readonly extra: readonly string[] }
 
 /** 거절 본문(JSON 한 줄 + 덧붙인 줄들, 또는 글) → 요약·이유·덧붙인 줄. 요약 안에 JSON 이 또 들어 있으면(감싸개가 감싼 거절) 풀어 쓴다. */
 export function parseFailure(text: string): ParsedFailure {
@@ -131,7 +131,7 @@ const show = (v: unknown) => clip(JSON.stringify(v) ?? String(v), 140);
  * 거절 글이 이름을 댄 인자와 실제로 보낸 값(글에 나온 차례). 깊은 경로(patrol.directions)가 글에 그대로 나오면 그것만, 아니면 부모만.
  * 칸 좌표로만 말하는 거절(«(0, 22)»)은 보낸 x,y 를 같이 보인다.
  */
-export function offendingArgs(sent: unknown, texts: readonly string[]): { path: string; value: unknown }[] {
+function offendingArgs(sent: unknown, texts: readonly string[]): { path: string; value: unknown }[] {
   const all = texts.map(withoutExample).join("\n");
   const paths = argPaths(sent).filter((p) => p.leaf !== "todoId");
   const pos = (p: { path: string; leaf: string }) => { const a = wordAt(all, p.path); return a >= 0 ? a : p.leaf.length >= 3 ? wordAt(all, p.leaf) : -1; };
@@ -149,7 +149,7 @@ export function offendingArgs(sent: unknown, texts: readonly string[]): { path: 
 }
 
 /** 보낸 인자 → 고친 인자의 차이: 바뀐 값·넣은 칸, 그리고 뺀 칸. */
-export function argDiff(sent: unknown, fixed: unknown, prefix = ""): { changed: string[]; removed: string[] } {
+function argDiff(sent: unknown, fixed: unknown, prefix = ""): { changed: string[]; removed: string[] } {
   const changed: string[] = [], removed: string[] = [];
   if (!isObj(sent) || !isObj(fixed)) {
     if (JSON.stringify(sent) !== JSON.stringify(fixed)) changed.push(`${prefix || "args"} ${show(sent)}→${show(fixed)}`);
@@ -169,7 +169,7 @@ export function argDiff(sent: unknown, fixed: unknown, prefix = ""): { changed: 
   return { changed, removed };
 }
 
-export interface FailureCorrection {
+interface FailureCorrection {
   /** 고친 인자(자리표시 <…> 가 남을 수 있다). reject 만 있으면 없다. */
   readonly args?: Obj;
   readonly why: string;
@@ -211,7 +211,7 @@ export function correctionFor(tool: string, schema: unknown, sent: unknown, fail
   return undefined;
 }
 
-export interface V2FailureInput {
+interface V2FailureInput {
   readonly tool: string;
   /** 실제로 실행한 인자(실행 전 고침 뒤). */
   readonly sent: unknown;
@@ -304,7 +304,7 @@ export function englishFailureLine(text: string, max = 200): string {
 
 /** v2 동사 요약 머리(«던전 짓기 실패: 'author_dungeon' 실행 실패: …», «add_ending_scene 실패: 적용 실패(commit-rejected): …»)를 걷는다. */
 const VERB_HEAD = /^(?:'[^']+'\s*(?:실행|후처리) 실패|적용 실패\([\w-]+\)|실행 실패\(인자 검증 또는 예외\)|[A-Za-z_]+ 실패|[가-힣]+(?: [가-힣]+)? 실패)\s*:\s*|^컷신을 만들지 못했다\s*—\s*/u;
-export function stripVerbHead(s: string): string {
+function stripVerbHead(s: string): string {
   let t = s.trim();
   for (let i = 0; i < 4; i += 1) { const n = stripHead(t).replace(VERB_HEAD, ""); if (n === t) break; t = n; }
   return t;
@@ -325,7 +325,7 @@ function twoRoomDesign(design: unknown): Obj {
 }
 
 /** v2 동사 거절의 결정적 고친 호출 — 표에 있는 것만. show = 모델에게 보일 호출 글(인자가 길면 바뀐 칸만 담은 짧은 호출). */
-export function verbCorrection(tool: string, sent: unknown, core: string): { args: Obj; show: string; why: string } | undefined {
+function verbCorrection(tool: string, sent: unknown, core: string): { args: Obj; show: string; why: string } | undefined {
   if (!isObj(sent)) return undefined;
   if (/dungeonDesign\.rooms 에 방이 둘 이상/u.test(core)) {
     if (tool === "edit_place" && isObj(sent.patch)) {

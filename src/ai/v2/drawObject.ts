@@ -26,7 +26,7 @@ export function inferObjectKind(what: string, description = ""): ObjectKind {
 }
 
 /** 놓기 계획 — draw_object 가 카드와 함께 미리 정한 자리. 그림이 끝난 뒤 place_object 가 where·at 없이 불리면 이 자리를 쓴다. */
-export interface ObjectPlan {
+interface ObjectPlan {
   readonly mapId: string;
   readonly what: string;
   /** 발밑 맨 아래 줄의 왼쪽 칸(stamp_tileset_object base). */
@@ -40,7 +40,7 @@ export type DrawObjectResult = ContentBuildResult & { readonly plan?: ObjectPlan
  * 이름·설명 낱말로 크기를 미리 정한다: 커다란·큰 → 2×2(아래 줄 막힘, 위 줄은 캐릭터 위로 그려짐), 키 큰 것(괘종시계·석상·옷장) → 1×2,
  * 그 밖의 작은 소품 → 1×1. 벽걸이·바닥 무늬는 도구 사전에 맡긴다.
  */
-export function inferFootprint(what: string, description: string, kind: ObjectKind): Footprint | undefined {
+function inferFootprint(what: string, description: string, kind: ObjectKind): Footprint | undefined {
   if (kind === "hang" || kind === "flat") return undefined;
   const t = `${what} ${description}`.toLowerCase();
   const big = /커다란|큼직한|대형|거대한|거대|large|big|huge|giant|^큰|\s큰/.test(t);

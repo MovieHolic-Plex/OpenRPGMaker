@@ -16,7 +16,7 @@ import { reachableCells, unreachableEvents } from "./eventReach";
 import type { BuildRun } from "./types";
 
 /** 주인공 위로 그려지는 윗층 그림이 덮은 칸인가. */
-export function coveredCell(project: Project, map: GameMap, x: number, y: number): boolean {
+function coveredCell(project: Project, map: GameMap, x: number, y: number): boolean {
   const ts = project.tilesets[map.tilesetId];
   if (!ts) return false;
   const m = map as unknown as Record<string, ArrayLike<number> | undefined>;

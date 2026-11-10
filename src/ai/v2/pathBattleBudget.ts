@@ -41,7 +41,7 @@ const ROUNDS = 16;
 const STAT_FLOOR = 0.5;
 const MIN_CURVE_FACTOR = 0.2;
 export const PATH_TROOP_PREFIX = "troop_path_";
-export const PATH_SKILL_PREFIX = "skill_path_";
+const PATH_SKILL_PREFIX = "skill_path_";
 
 type Battle = { mapId: string; eventId?: string; troopId: string; role: Role; touch: boolean };
 
@@ -411,7 +411,7 @@ export function fitFirstLevelUp(project: Project, troopId: string, party: { ids:
 }
 
 /** 「약한·쉬운 몬스터」 요청 낱말. */
-export const WEAK_FOE_ASK = /약한|약해|쉬운|쉽게|초반|잡몹|weak|easy/iu;
+const WEAK_FOE_ASK = /약한|약해|쉬운|쉽게|초반|잡몹|weak|easy/iu;
 /** 필드 상징 적 한 판 HP 손실 상한 — 「약한」 요청 35%(Lv1 슬라임 한 마리 ≈30%), 그 밖 50%. 길 위 예산(잡몹 20%)은 이어 싸움을 전제한 끝맺음 맞추기 값이라 경고 문턱으로는 너무 엄하다. */
 const WEAK_LOSS = 0.35;
 const FIELD_LOSS = 0.5;

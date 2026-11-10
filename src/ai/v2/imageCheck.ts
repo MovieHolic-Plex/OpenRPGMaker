@@ -2,7 +2,7 @@
 // 왜(오너·리드 2026-11-09): 제공자가 돌려준 dataUrl 을 그대로 등록하면 잘린 JPEG·깨진 base64 가 타이틀 배경이 되어 화면은 검은 칸인데 관문은 «그림 있음» 으로 통과한다.
 // 실측: 실생성 한 장은 815 KB JPEG(image/jpeg) 였고 시험은 1px PNG 만 썼다 — 두 형식 모두의 «끝까지 온 파일» 조건을 검사한다.
 
-export type ImageCheck = { readonly ok: true; readonly mime: "image/png" | "image/jpeg" | "image/webp"; readonly bytes: number } | { readonly ok: false; readonly reason: string };
+type ImageCheck = { readonly ok: true; readonly mime: "image/png" | "image/jpeg" | "image/webp"; readonly bytes: number } | { readonly ok: false; readonly reason: string };
 
 function decodeBase64(payload: string): Uint8Array | null {
   try {

@@ -223,7 +223,7 @@ function archInnerDoorways(project: Project, map: GameMap, k: Kit): { arches: nu
   return { arches, mats };
 }
 
-export interface ExitDressResult { readonly notes: string[] }
+interface ExitDressResult { readonly notes: string[] }
 
 /**
  * 문 노릇 이벤트(이름이 문·출구, 이동 없음)가 하나이고 그 이벤트가 칩셋 문 그림 칸에 서 있는데, 이벤트 없는 같은 종류 문 그림이 또 있으면

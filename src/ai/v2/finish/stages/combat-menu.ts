@@ -17,7 +17,7 @@ const hasBattle = (project: Project): boolean => {
 };
 
 /** 고칠 것이 있으면 새 메뉴, 없으면 undefined. */
-export function combatMenuFix(project: Project): AuthoredFieldMenu | undefined {
+function combatMenuFix(project: Project): AuthoredFieldMenu | undefined {
   const menu = fieldMenu(project);
   if (!menu || usesRelationshipMenu(project)) return undefined;
   const have = new Set(menu.entries.map((e) => e.command));

@@ -9,9 +9,9 @@ export type TodoStatus = "pending" | "in_progress" | "completed" | "blocked" | "
 export type TodoPlaceKind = "village" | "interior" | "dungeon" | "cave" | "field" | "street";
 
 /** 「만들어 달라」 요청으로 쓴 항목이면 true — 이번 턴에 새로 생기거나 바뀐 대상(TodoCheckContext.changed)만 통과로 센다. */
-export interface TodoCheckCommon { fresh?: boolean }
+interface TodoCheckCommon { fresh?: boolean }
 
-export type TodoCheckBody =
+type TodoCheckBody =
   | { kind: "place"; name: string; placeKind?: TodoPlaceKind }
   | { kind: "person"; name: string; map?: string }
   | { kind: "talk"; who: string; says?: string }
@@ -43,7 +43,7 @@ export interface TodoChanged { mapIds: Set<string>; eventKeys: Set<string>; item
 
 export interface TodoCheckContext { startMapId?: string; changed?: TodoChanged; refs?: TodoRefs }
 
-export type TodoCheckKind = TodoCheckBody["kind"];
+type TodoCheckKind = TodoCheckBody["kind"];
 
 export interface TodoItem {
   id: string;
@@ -68,7 +68,7 @@ export interface CheckResult {
   evidence?: { mapId?: string; eventId?: string; x?: number; y?: number };
 }
 
-export const TODO_CHECK_KINDS = [
+const TODO_CHECK_KINDS = [
   "place",
   "person",
   "talk",
@@ -88,10 +88,10 @@ export const TODO_CHECK_KINDS = [
   "none",
 ] as const satisfies readonly TodoCheckKind[];
 
-export const TODO_PLACE_KINDS = ["village", "interior", "dungeon", "cave", "field", "street"] as const satisfies readonly TodoPlaceKind[];
+const TODO_PLACE_KINDS = ["village", "interior", "dungeon", "cave", "field", "street"] as const satisfies readonly TodoPlaceKind[];
 
 /** kind 별로 반드시 있어야 하는 칸. 모델 인자 검사(parseTodoCheck)가 쓴다. */
-export const TODO_CHECK_REQUIRED: Record<TodoCheckKind, readonly string[]> = {
+const TODO_CHECK_REQUIRED: Record<TodoCheckKind, readonly string[]> = {
   place: ["name"],
   person: ["name"],
   talk: ["who"],

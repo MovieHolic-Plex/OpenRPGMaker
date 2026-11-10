@@ -17,7 +17,7 @@ import type { BuildRun, PlaceBuildResult, PlaceSpec } from "../types";
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
 type Rect = { id: string; x0: number; y0: number; x1: number; y1: number };
 
-export interface StampEditRequest {
+interface StampEditRequest {
   readonly dressing: number;
   readonly adds: readonly { readonly zone?: string; readonly what: string; readonly near?: { readonly x: number; readonly y: number } }[];
   readonly north: boolean;

@@ -9,8 +9,8 @@ import type { Project } from "../../project/types";
 import { isOpenAiCompatProviderId } from "../openAiCompat.ts";
 import { parseOhMyPiProvider } from "../ohMyPiProviders.ts";
 
-export interface SplitRole { readonly provider: string; readonly model: string; readonly effort?: "low" | "medium" | "high" }
-export interface SplitConfig { readonly lead: SplitRole; readonly worker?: string; readonly raw: string }
+interface SplitRole { readonly provider: string; readonly model: string; readonly effort?: "low" | "medium" | "high" }
+interface SplitConfig { readonly lead: SplitRole; readonly worker?: string; readonly raw: string }
 
 const EFFORTS = new Set(["low", "medium", "high"]);
 
@@ -80,7 +80,7 @@ export function leadForRequest<L extends RequestLead>(request: { readonly provid
  * 리드 답이 사실은 호출 실패인가. Claude Code 는 모델을 못 쓸 때(없는 모델·요금제에 없는 모델) 오류 대신 글 답으로
  * `API Error: 400 …` 을 돌려준다(2026-11-03 실측) — 그대로 두면 그 글이 «리드 계획»으로 워커에게 간다. 실패면 이유, 아니면 undefined.
  */
-export function leadCallFailure(text: string): string | undefined {
+function leadCallFailure(text: string): string | undefined {
   const head = text.trim().slice(0, 400);
   if (/^API Error\b/iu.test(head)) return head.slice(0, 200);
   // 한 줄짜리 오류 답만 본다 — 계획은 여러 줄(TODO·SPECS)이라 본문의 «not found» 같은 말에 걸리지 않는다.
@@ -181,7 +181,7 @@ export function planForWorker(plan: string): string {
   ].join("\n");
 }
 
-export interface LeadReview { readonly approve: boolean; readonly fixes: readonly string[]; readonly problem?: string }
+interface LeadReview { readonly approve: boolean; readonly fixes: readonly string[]; readonly problem?: string }
 
 /** 단계 끝 리드 검토 지시(영어). 리드는 사양·할 일 표(기계 확인)·변경 요약·워커 보고만 본다 — 도구 호출은 짧은 요약뿐. */
 export function leadReviewMessages(input: { task: string; plan: string; todo: string; diff: string; toolLog: string; report: string; round: number }): { role: "system" | "user"; content: string }[] {

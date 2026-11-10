@@ -17,7 +17,7 @@ import type { BuildRun } from "./types";
 
 type Cell = { x: number; y: number };
 type Obj = Record<string, unknown>;
-export type GatedPassage = { event: GameEvent; at: Cell; to: Cell[]; needs: string[] };
+type GatedPassage = { event: GameEvent; at: Cell; to: Cell[]; needs: string[] };
 
 /** 조건 속 「켜져 있어야」 하는 스위치들(all 은 펼친다, 그 밖의 조건은 채울 수 있다고 본다). */
 function switchNeeds(c: Condition | undefined): string[] {
@@ -47,7 +47,7 @@ function walkCommands(cmds: readonly unknown[] | undefined, needs: string[], fn:
 }
 
 /** 같은 맵 안으로 옮기는 이벤트와 그 통로가 열리는 데 필요한 스위치(페이지마다 따로). */
-export function gatedPassages(map: GameMap): GatedPassage[] {
+function gatedPassages(map: GameMap): GatedPassage[] {
   const out: GatedPassage[] = [];
   for (const ev of map.events ?? []) for (const page of ev.pages ?? []) {
     const byNeeds = new Map<string, GatedPassage>();
@@ -98,7 +98,7 @@ function setElsewhere(project: Project, mapId: string): Set<string> {
   return out;
 }
 
-export type PuzzleFlow = { on: Set<string>; reach: Uint8Array; map: GameMap; passages: GatedPassage[]; local: Set<string>; elsewhere: Set<string> };
+type PuzzleFlow = { on: Set<string>; reach: Uint8Array; map: GameMap; passages: GatedPassage[]; local: Set<string>; elsewhere: Set<string> };
 
 /**
  * 앵커에서 걸어 장치를 켜 가며 닿는 곳(고정점). anchors 를 주면 그 칸(장면 입구)에서, 아니면 시작점·착지점에서.
@@ -153,7 +153,7 @@ function hintOf(ev: GameEvent): string {
 }
 
 /** 이 맵에서 안 열리는 퍼즐 문·안 켜지는 스위치에 묶인 갈래. 바꾸지 않는다. */
-export function puzzleGateGaps(project: Project, mapId: string, opts: { anchors?: Cell[]; switches?: Record<string, boolean>; skip?: readonly string[] } = {}): string[] {
+function puzzleGateGaps(project: Project, mapId: string, opts: { anchors?: Cell[]; switches?: Record<string, boolean>; skip?: readonly string[] } = {}): string[] {
   const flow = puzzleFlow(project, mapId, opts);
   if (!flow) return [];
   const notes: string[] = [];
@@ -177,15 +177,6 @@ export function puzzleGateGaps(project: Project, mapId: string, opts: { anchors?
   return [...new Set(notes)];
 }
 
-/** 장면 입구 보정용: 맵 입구에서 퍼즐을 풀며 대상 앞까지 왔을 때 켜져 있을 이 맵 스위치(대상 자신이 켜는 것은 뺀다). */
-export function progressSwitchesBefore(project: Project, mapId: string, targetEventId: string, switches: Record<string, boolean> = {}): Record<string, boolean> {
-  const flow = puzzleFlow(project, mapId, { switches, skip: [targetEventId] });
-  if (!flow) return {};
-  const out: Record<string, boolean> = {};
-  for (const s of flow.on) if (flow.local.has(s) && !switches[s]) out[s] = true;
-  return out;
-}
-
 const DIR_OF = (dx: number, dy: number): "up" | "down" | "left" | "right" | null =>
   dx === 0 && dy < 0 ? "up" : dx === 0 && dy > 0 ? "down" : dy === 0 && dx < 0 ? "left" : dy === 0 && dx > 0 ? "right" : null;
 
@@ -195,7 +186,7 @@ const DIR_OF = (dx: number, dy: number): "up" | "down" | "left" | "right" | null
  * 위에서 누르면(아래를 봄) 아래 칸으로, 아래에서 누르면 위 칸으로. 옆에서 누르면 원래 선택지를 그대로 보인다.
  * project 를 그 자리에서 고친다(부르는 쪽이 사본을 넘긴다).
  */
-export function directPassageChoices(project: Project, mapId: string): string[] {
+function directPassageChoices(project: Project, mapId: string): string[] {
   const map = project.maps[mapId];
   if (!map) return [];
   const done: string[] = [];
@@ -243,58 +234,4 @@ export function checkPuzzleGates(run: BuildRun, mapId: string): string[] {
   if (notes.length) run.ctx.project = next;
   notes.push(...puzzleGateGaps(run.ctx.project, mapId));
   return notes;
-}
-
-// ── 장면 입구의 「현재 목표」 ─────────────────────────────────────────────────────
-// 목표 줄은 목표 명령이 실행될 때만 바뀐다. 체크포인트로 그 명령들을 건너뛰면 줄이 비거나 옛 글로 남는다
-// (2026-10-30 씬 벤치 gym-leader: 관장 앞인데 목표 줄 없음 / 처음부터 걸으면 「연구소에서 첫 몬스터를 받자」).
-// 켜진 스위치로 «이미 지나온» 목표 명령을 고른다: 목표 명령과 같은 명령 목록에서 켜는 스위치가 모두 켜져 있고, 그 목록에 이르는
-// 조건(페이지 조건·감싼 갈래)도 켜져 있으면 지나온 것이다. 그중 가장 «뒤» — 켜는 스위치의 깊이(그 스위치를 켜려면 먼저 켜야 하는
-// 스위치 사슬 길이)가 가장 큰 것, 같으면 뒤에 놓인 것.
-
-/** 명령 목록마다(감싼 조건의 스위치 요구와 함께). */
-function walkLists(cmds: readonly unknown[] | undefined, needs: string[], fn: (list: Obj[], needs: string[]) => void): void {
-  const list = (cmds ?? []).filter((c): c is Obj => !!c && typeof c === "object");
-  if (!list.length) return;
-  fn(list, needs);
-  for (const c of list) {
-    if (c.kind === "fork") { walkLists(c.then as unknown[], [...needs, ...switchNeeds(c.condition as Condition)], fn); walkLists(c.else as unknown[], needs, fn); continue; }
-    if (c.kind === "choices") { for (const o of (c.options as Obj[] | undefined) ?? []) walkLists(o.branch as unknown[], needs, fn); walkLists(c.cancelBranch as unknown[], needs, fn); continue; }
-    for (const v of Object.values(c)) if (Array.isArray(v) && v.length && typeof v[0] === "object" && (v[0] as Obj)?.kind) walkLists(v, needs, fn);
-  }
-}
-
-const isChip = (c: Obj): boolean => c.kind === "m2Command" && c.commandId === "m2-214-ui-command" && (c.fields as Obj | undefined)?.surface === "objectiveChip" && typeof (c.fields as Obj).message === "string" && !!String((c.fields as Obj).message).trim();
-const setsOn = (list: Obj[]): string[] => list.filter((c) => c.kind === "setSwitch" && typeof c.switchId === "string" && c.value !== false && c.value !== "off" && c.value !== "OFF").map((c) => String(c.switchId));
-
-/** 켜진 스위치로 보아 이미 지나온 목표 글 중 가장 뒤의 것. skip 은 보지 않을 이벤트(장면 대상 자신). */
-export function objectiveForSwitches(project: Project, switches: Record<string, boolean>, skip: readonly string[] = []): string | null {
-  const on = (s: string) => !!switches[s];
-  const lists: { owner: string; list: Obj[]; needs: string[] }[] = [];
-  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const page of ev.pages ?? []) {
-    walkLists(page.commands as unknown[], pageNeeds(ev, page), (list, needs) => lists.push({ owner: ev.id, list, needs }));
-  }
-  for (const ce of ((project as { commonEvents?: { id?: string; commands?: unknown[] }[] }).commonEvents ?? [])) walkLists(ce.commands, [], (list, needs) => lists.push({ owner: `common:${ce.id ?? ""}`, list, needs }));
-  // 스위치 깊이: 그 스위치를 켜는 자리의 조건 스위치 깊이 + 1(조건이 없으면 0). 순환은 반복 상한으로 끊는다.
-  const depth = new Map<string, number>();
-  for (let round = 0; round < 32; round++) {
-    let grew = false;
-    for (const l of lists) {
-      const d = l.needs.length ? 1 + Math.max(...l.needs.map((n) => depth.get(n) ?? 0)) : 0;
-      for (const s of setsOn(l.list)) if ((depth.get(s) ?? -1) < d) { depth.set(s, Math.min(d, 64)); grew = true; }
-    }
-    if (!grew) break;
-  }
-  let best: { message: string; score: number } | null = null;
-  for (const l of lists) {
-    if (skip.includes(l.owner)) continue;
-    const chip = l.list.find(isChip);
-    if (!chip) continue;
-    const sets = setsOn(l.list);
-    if (!sets.length || !sets.every(on) || !l.needs.every(on)) continue;
-    const score = Math.max(...[...sets, ...l.needs].map((s) => depth.get(s) ?? 0));
-    // 같은 깊이면 뒤에 놓인 것(같은 맵에서 나중에 푸는 장치가 대개 뒤에 있다 — 받침 다음 덤불).
-    if (!best || score >= best.score) best = { message: String((chip.fields as Obj).message).trim(), score };
-  }
-  return best?.message ?? null;
 }

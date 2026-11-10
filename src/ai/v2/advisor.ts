@@ -15,8 +15,8 @@ type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
 const clip = (s: string, n: number): string => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 
-export type AdvisorLevel = "aside" | "concern" | "blocker";
-export interface AdvisorNote {
+type AdvisorLevel = "aside" | "concern" | "blocker";
+interface AdvisorNote {
   readonly level: AdvisorLevel;
   /** 보고 속 주장(해당되면). */
   readonly claim?: string;
@@ -30,7 +30,7 @@ export interface AdvisorToolCall {
   readonly args?: unknown;
   readonly summary?: string;
 }
-export interface AdvisorInput {
+interface AdvisorInput {
   readonly task: string;
   /** compactToolLog 결과(압축한 한 덩이 글). */
   readonly toolLog: string;
@@ -46,7 +46,7 @@ export interface AdvisorVerdict {
 }
 
 /** 입력 상한(문자). 프로젝트 전체가 아니라 요약만 보낸다 — Argon low 한 번이 몇 초 안에 끝나는 크기. */
-export const ADVISOR_LIMITS = { task: 2_000, toolLog: 9_000, diff: 14_000, report: 5_000, perCallArgs: 220, perCallSummary: 200 } as const;
+const ADVISOR_LIMITS = { task: 2_000, toolLog: 9_000, diff: 14_000, report: 5_000, perCallArgs: 220, perCallSummary: 200 } as const;
 
 // ───────────────────────── 변경 요약 ─────────────────────────
 
@@ -328,7 +328,7 @@ export function compactToolLog(calls: readonly AdvisorToolCall[], maxChars: numb
 
 // ───────────────────────── 지시문 ─────────────────────────
 
-export function advisorPrompt(input: AdvisorInput): string {
+function advisorPrompt(input: AdvisorInput): string {
   return [
     "You are an independent ADVISOR reviewing one turn of an AI assistant that edits an RPG-maker style game project for a non-expert Korean user.",
     "You did not take part in the turn. You see: the user's request, a compact log of the assistant's tool calls, a deterministic SUMMARY OF WHAT ACTUALLY CHANGED (computed from the project before and after the turn — this is the ground truth), and the assistant's draft final report to the user.",
@@ -424,21 +424,6 @@ export function scopeAdviceToRequest(verdict: AdvisorVerdict, task: string): Adv
   if (!audioOnly(task)) return verdict;
   const label = musicOnly(task) ? "음악" : "효과음";
   return { ...verdict, notes: verdict.notes.map((n) => ABOUT_THIS_REQUEST.test(n.what) ? n : { ...n, level: "aside" as const, what: `(${label} 요청 밖 — 고치지 않음) ${n.what}` }) };
-}
-
-/** 막는 메모가 있으면 한 차례 더 돌릴 지시문. 없으면 undefined(검토 메모는 조수 기록에만 남는다). */
-export function advisorFollowUp(verdict: AdvisorVerdict): string | undefined {
-  const blockers = verdict.notes.filter((n) => n.level === "blocker");
-  if (!blockers.length) return undefined;
-  const others = verdict.notes.filter((n) => n.level !== "blocker");
-  return [
-    "[독립 검토자] 보고 초안을 실제 변경 기록과 맞대어 본 독립 검토자가 아래를 막았다. 「다 됐다」고 끝내기 전에 하나씩 처리한다:",
-    ...blockers.map((n, i) => `${i + 1}. ${n.claim ? `보고 「${n.claim}」 — ` : ""}${n.what} (근거: ${n.evidence || "-"})`),
-    "각각 둘 중 하나: (가) 고친다 — 도구로 실제로 바꾸고 get_event 등으로 다시 읽어 확인한다. (나) 고칠 수 없거나 사용자가 원한 게 아니면 고치지 않고, 최종 보고에 그 사실을 그대로 쓴다(«했다»고 쓰지 않는다).",
-    "시키지 않은 삭제·재작성이었다면 restore_event{eventId} 로 요청 전 그대로 되살리거나(기억으로 upsert_event 를 다시 쓰지 않는다 — 이름·조건이 달라진다), 왜 지웠는지 보고에 분명히 쓴다.",
-    ...(others.length ? ["참고(막지는 않음):", ...others.map((n) => `- [${n.level}] ${n.what}`)] : []),
-    "끝나면 앞 보고를 대신하는 최종 보고 하나를 「최종 보고(앞 보고를 고침):」로 시작해 다시 쓴다. 보고에는 실제로 바뀐 것만 «했다»고 쓰고, 검토자가 짚은 것을 어떻게 처리했는지(고침/못 함) 밝힌다.",
-  ].join("\n");
 }
 
 /** 기록용 한 줄 요약. */

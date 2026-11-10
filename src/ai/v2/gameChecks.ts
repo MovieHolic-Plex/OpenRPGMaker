@@ -205,7 +205,7 @@ function settersOf(project: Project): { switches: Map<string, string>; variables
 }
 
 /** 전에는 켜는 곳이 있었는데 지금은 없고, 지금도 그것을 기다리는 곳이 있는 고리(보고 문장). */
-export function lostLinks(before: Project, after: Project): string[] {
+function lostLinks(before: Project, after: Project): string[] {
   const was = settersOf(before), now = settersOf(after), reads = readsOf(after);
   const out: string[] = [];
   const waiting = (id: string, kind: "switch" | "variable"): string | undefined => {
@@ -258,7 +258,7 @@ function defaultPathEnd(commands: unknown): { kind: string; choice?: string } | 
 }
 
 /** 시작하자마자 끝나는 길: 시작 맵의 자동 실행, 또는 시작 칸에서 몇 걸음 안의 이벤트가 확인 키만으로 엔딩·게임 오버에 닿는다(2026-10-25 G24). */
-export function instantEndings(project: Project, near = 3): string[] {
+function instantEndings(project: Project, near = 3): string[] {
   const map = project.startMapId ? project.maps[project.startMapId] : undefined;
   const sp = project.startPos as { x: number; y: number } | undefined;
   if (!map || !sp) return [];
@@ -279,7 +279,7 @@ export function instantEndings(project: Project, near = 3): string[] {
 }
 
 /** 단서 건너뛰기: 같은 이벤트에서 단서 스위치 조건 페이지가 주는 물건·스위치를, 그 조건이 없는 아래 페이지도 준다(괘종시계 G25). */
-export function skippableClues(project: Project): string[] {
+function skippableClues(project: Project): string[] {
   const out: string[] = [];
   for (const ev of eventsOf(project).values()) {
     if (ev.mapId === "common" || ev.pages.length < 2) continue;
@@ -344,7 +344,7 @@ export function slowChasers(project: Project, changedIds?: ReadonlySet<string>):
 }
 
 /** 한 번 숨으면 영영 사라지는 추격자: 쫓는 페이지를 덮는 스위치 페이지에 그림·쫓기가 없고, 그 스위치를 다시 끄는 곳이 없다(G25). */
-export function vanishingChasers(project: Project): string[] {
+function vanishingChasers(project: Project): string[] {
   const out: string[] = [];
   const offs = new Set<string>();
   for (const ev of eventsOf(project).values()) for (const { cmd } of allCommands(ev)) if (cmd.kind === "setSwitch" && cmd.value === false && typeof cmd.switchId === "string") offs.add(cmd.switchId);
@@ -368,7 +368,7 @@ export function vanishingChasers(project: Project): string[] {
 }
 
 /** 같은 이름·같은 역할의 맵(「저택 2층」 둘, 「지하 예배당」과 「저택 지하 예배당」) — 이번 실행이 새로 만들거나 이름을 바꾼 맵이 낀 쌍만(G19). */
-export function duplicateMaps(before: Project, after: Project): string[] {
+function duplicateMaps(before: Project, after: Project): string[] {
   const norm = (s: string) => s.replace(/\s+/gu, "").replace(/\(.*?\)|（.*?）/gu, "");
   const maps = Object.values(after.maps).map((m) => ({ id: m.id, name: m.name ?? m.id, key: norm(m.name ?? ""), touched: !before.maps[m.id] || before.maps[m.id]!.name !== m.name }));
   const out: string[] = [];
@@ -384,7 +384,7 @@ export function duplicateMaps(before: Project, after: Project): string[] {
 }
 
 /** 날마다 달라지는 대사: 요청이 부른 사람마다 날짜 변수(호감 변수 말고) 값이 셋 이상 갈리는지(2026-10-25 G13: 서연은 7일 치, 지훈은 그대로). */
-export function flatPerDayPeople(project: Project, task: string): string[] {
+function flatPerDayPeople(project: Project, task: string): string[] {
   if (!/날마다|매일|하루하루|하루마다|일차마다|날짜마다|요일마다|날이 바뀔 때마다|\d+\s*일차|each day|every day|per day/iu.test(task)) return [];
   const people = new Map<string, { values: Set<string>; ids: string[] }>();
   for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
@@ -411,7 +411,7 @@ export function flatPerDayPeople(project: Project, task: string): string[] {
 }
 
 /** 아무것도 열지 않는 단서: 쪽지·일기를 읽으면 켜지는 스위치를 그 이벤트 자신의 「이미 읽음」 페이지만 본다 — 퍼즐은 단서 없이 풀린다(G25 재현: 괘종시계). */
-export function deadClues(project: Project, changedIds: ReadonlySet<string>): string[] {
+function deadClues(project: Project, changedIds: ReadonlySet<string>): string[] {
   const out: string[] = [];
   const all = [...eventsOf(project).values()];
   for (const ev of all) {
@@ -433,7 +433,7 @@ const FLASH_WORDS = /번쩍|섬광|번개(?!\s*(의\s*서|마법|기술|스킬|�
 const HIDDEN_WORDS = /숨겨|숨은|몰래|보이지\s*않|투명|비밀|hidden|secret|invisible/iu;
 const ENDING_WORDS = /엔딩|결말|ending/iu;
 /** 싸울 몬스터·적을 바라는 요청(「약한 몬스터가 있게」「고블린과 싸우는」). 「기적이 있」 같은 낱말 속 「적」은 빼려고 앞 글자를 본다. */
-export const FOE_ASK = /(몬스터|마물|(?<![가-힣])적|고블린|슬라임|늑대|멧돼지|도적)(들)?(이|가|와|과|랑|하고)?\s*(있|나오|나타나|출몰|싸우|싸울|싸워|덤비|잡)|필드 적|(?<![가-힣])적을\s*(두|놓|배치)|monsters?|enemies|enemy/iu;
+const FOE_ASK = /(몬스터|마물|(?<![가-힣])적|고블린|슬라임|늑대|멧돼지|도적)(들)?(이|가|와|과|랑|하고)?\s*(있|나오|나타나|출몰|싸우|싸울|싸워|덤비|잡)|필드 적|(?<![가-힣])적을\s*(두|놓|배치)|monsters?|enemies|enemy/iu;
 const STATE_WORDS = /독초|독에|독이|독을|독\s*상태|중독|맹독|마비|수면\s*상태|잠\s*상태|상태\s*이상|혼란|침묵|poison|paraly|stun/iu;
 
 /** 맵 배경음·기본 전투곡·승리 팡파르·타이틀·오프닝·엔딩 곡 연결이 바뀌었나(set_game_audio) — 그러면 음악 요청은 이벤트 명령 없이도 채워졌다. */

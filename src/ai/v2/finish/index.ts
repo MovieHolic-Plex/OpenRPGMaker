@@ -26,7 +26,7 @@ const recordedRun = async (ctx: FinishCtx, stage: FinishStage): Promise<void> =>
 const PHASES: readonly FinishPhase[] = ["blueprint", "assembly", "reload"];
 
 /** 묶음 → order 순 단계 목록. 같은 묶음 안 order 가 겹치거나 reload 가 맨 끝이 아니면 모듈을 읽을 때 던진다(순서가 import 순서에 기대지 않게). */
-export function orderedFinishStages(stages: readonly FinishStage[] = Object.values(registered)): FinishStage[] {
+function orderedFinishStages(stages: readonly FinishStage[] = Object.values(registered)): FinishStage[] {
   const out: FinishStage[] = [];
   for (const phase of PHASES) {
     const list = stages.filter((s) => s.phase === phase).sort((a, b) => a.order - b.order);
@@ -39,7 +39,7 @@ export function orderedFinishStages(stages: readonly FinishStage[] = Object.valu
   return out;
 }
 
-export const FINISH_STAGES: readonly FinishStage[] = orderedFinishStages();
+const FINISH_STAGES: readonly FinishStage[] = orderedFinishStages();
 
 /** 청사진 자동 짓기(한 실행에 한 번씩 — 세션 깃발). 무엇을 지었는지 조수에게 줄 글(없으면 undefined). */
 export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Session): Promise<string | undefined> {

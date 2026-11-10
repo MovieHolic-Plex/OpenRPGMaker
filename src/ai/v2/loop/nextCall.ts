@@ -102,10 +102,6 @@ export function nextAfterFailure(tool: string, args: unknown, failure: string, p
   return undefined;
 }
 
-/** 거절 서명 — 같은 거절인지 가른다(수·id 가림). */
-export const failureClass = (tool: string, failure: string): string =>
-  `${tool}:${failure.replace(/^[^:]*실행 실패:\s*/u, "").replace(/\d+/gu, "#").replace(/[0-9a-f]{8,}|ev_[\w-]+|map_[\w-]+/giu, "@").slice(0, 80)}`;
-
 /**
  * H8 — 같은 항목에서 같은 거절이 두 번: 같은 동사·모양을 버리는 결정적 전략 글. 없으면 undefined.
  * item.source 가 model(새로 만들기)이면 새 맵 + 잇기, 고치기 항목(gate·critic·vqa)이면 꾸밈 한두 번 뒤 막힘.

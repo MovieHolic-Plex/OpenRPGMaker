@@ -77,13 +77,13 @@ export function englishToolCopy(tool: PiToolShape, upFront: boolean): PiToolShap
 }
 
 /** 앞서 본 큰 하위 스키마 → 처음 나온 자리(«도구 경로»). collapseRepeats 가 채운다. */
-export type ShapeIndex = Map<string, string>;
+type ShapeIndex = Map<string, string>;
 
 /**
  * 같은 큰 하위 스키마가 다시 나오면 느슨한 자리표시로 바꾼다(앞쪽부터 걷는다 — 처음 나온 자리가 정본, 그 아래 작은 모양도 등록).
  * register=false 면 seen 에 새로 넣지 않는다(필요할 때 싣는 도구 — 다른 필요할 때 싣는 도구가 그 도구를 가리키면 안 된다). 자기 안의 반복은 걷는다.
  */
-export function collapseRepeats(tool: PiToolShape, seen: ShapeIndex, register = true): PiToolShape {
+function collapseRepeats(tool: PiToolShape, seen: ShapeIndex, register = true): PiToolShape {
   // v2 동사(레지스트리 밖)는 광고 스키마가 곧 검증기다 — 느슨하게 만들지 않고 모양만 등록한다(뒤 v1 도구가 가리킬 수 있게).
   const collapse = !!getTool(tool.name);
   const local: ShapeIndex = new Map();
@@ -93,7 +93,7 @@ export function collapseRepeats(tool: PiToolShape, seen: ShapeIndex, register = 
     const bare = JSON.stringify(strip(node));
     if (path && bare.length >= COLLAPSE_MIN) {
       const first = seen.get(bare) ?? local.get(bare);
-      // v2 동사: 구조는 그대로 두고 설명만 걷는다(schemaDedupe.ts 와 같은 원칙).
+      // v2 동사: 구조는 그대로 두고 설명만 걷는다.
       if (first && !collapse) return { ...(strip(node) as Obj), description: `Same shape as ${first} (see the field notes there)` };
       if (first) {
         const ref = `Same shape as ${first}${typeof node.description === "string" && !HANGUL.test(node.description) ? ` — ${node.description}` : ""}`;

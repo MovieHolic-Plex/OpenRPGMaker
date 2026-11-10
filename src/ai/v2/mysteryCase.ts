@@ -21,7 +21,7 @@ import { shownToken } from "./codeClues";
 import type { BuildRun } from "./types";
 
 /** 추리 청사진 낱말(요청·목표·단계·엔딩 어디든). 「도난」만으로는 추리로 보지 않는다(심부름 RPG). */
-export const MYSTERY_WORDS = /추리|범인|탐정|미스터리|용의자|진범|whodunit|mystery|detective|culprit/iu;
+const MYSTERY_WORDS = /추리|범인|탐정|미스터리|용의자|진범|whodunit|mystery|detective|culprit/iu;
 /** 용의자와 말하는 단계(심문). */
 const TALK_STEP = /심문|용의자|투숙객|대화|증언|알리바이|추궁|자백|캐묻|탐문|목격/u;
 /** 범인이 될 수 있는 사람 부름 + (있으면) 이름 — 「심부름꾼 준」「수상한 상인」. 주인·투숙객·손님은 의뢰인이거나 무리라 범인 이름으로 쓰지 않는다. */
@@ -73,7 +73,7 @@ export function isMysteryBlueprint(project: Project): boolean {
 }
 
 /** 모델이 이미 사건을 지었나 — presentItem, author_mystery_case 이벤트, 사람이 하는 범인 고르기(엔딩 갈래와 아닌 갈래가 섞인 선택지). */
-export function modelBuiltCase(project: Project): boolean {
+function modelBuiltCase(project: Project): boolean {
   for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
     if (ev.id.startsWith("ev_mystery_") || ev.id.startsWith("ev_case_")) return true;
     let found = false;
@@ -127,7 +127,7 @@ function showClueThings(run: BuildRun, resolved: readonly Resolved[]): string[] 
 }
 
 /** 단계 gives 글에서 물건 이름만(「물증(천 조각) 아이템」→「천 조각」, 「장화 자국 확인」→「장화 자국」). */
-export function evidenceName(gives: string): string {
+function evidenceName(gives: string): string {
   const inner = /«([^«»]+)»/u.exec(gives)?.[1] ?? /\(([^()]+)\)/u.exec(gives)?.[1];
   const base = (inner ?? gives).replace(/^(아이템|스위치)\s*[:：]\s*/u, "").replace(/\s*(아이템|스위치|확인|발견|획득|입수)$/u, "").trim();
   // 진행 낱말(「수사 시작」「모든 단서」)은 물건이 아니다 — 증거 이름으로 쓰면 「『수사 시작』… 내 것이 맞소」가 됐다(vm5 argon 추리).

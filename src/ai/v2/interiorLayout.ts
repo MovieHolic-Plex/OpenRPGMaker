@@ -9,7 +9,7 @@ import { buildHandInteriorLayers, type HandInteriorInput, type HandInteriorLayer
 import type { TilesetDef } from "@/project/types";
 import { checkWallLayout, type WallsLayoutFields, type WallsRoomOut } from "./interiorWalls";
 
-export interface LayoutRect { readonly x: number; readonly y: number; readonly w: number; readonly h: number }
+interface LayoutRect { readonly x: number; readonly y: number; readonly w: number; readonly h: number }
 export interface LayoutRegion extends LayoutRect { readonly id: string; readonly floor: string; readonly wall: string; readonly purpose?: string; readonly role?: string; readonly landmark?: string; readonly stairs?: string }
 export interface LayoutObject { readonly id: string; readonly x: number; readonly y: number; readonly repeat?: { readonly count?: number; readonly dx?: number; readonly dy?: number }; readonly purpose?: string }
 /** 두 형식: 벽 우선(outer_wall·walls·doors·rooms·wall_items — 정본, interiorWalls.ts) 또는 사각형 영역(regions·openings). */
@@ -92,15 +92,6 @@ export const LAYOUT_FORMAT_REGIONS = `{"map":{"w":W,"h":H}, "landmark":{"id":"<o
  "carpets":[{"id":"<carpet id>","x":X,"y":Y,"w":W,"h":H}], "daises":[{"id":"<dais id>","x":X,"y":Y,"w":W,"h":H}],
  "objects":[{"id":"<catalog id>","x":X,"y":Y,"repeat":{"count":3,"dx":2,"dy":0},"purpose":"..."}]}`;
 
-export const LAYOUT_GRID_RULES_REGIONS = [
-  "Cells are 16px, x to the right, y down, origin top-left. Every cell outside all regions is solid. Regions are rectangles of interior space.",
-  "Regions that touch or overlap merge into one open space. To put a wall between two regions leave at least one solid cell between them, then carve openings.",
-  "Wall face: inside a region the two rows directly below a solid cell are wall face (drawn as wall, not walkable) — a region's top two rows are its north wall; its floor starts at y+2. h pieces go on row y (the upper face row); w pieces and stairs up go on row y+2.",
-  "Openings carve solid cells. In a horizontal wall a 1-cell opening is a doorway. In a vertical wall an opening must be 3 cells tall (its top two cells become wall face; the bottom one is the passage).",
-  "Keep a solid border: regions inside x 1..w-2, y 1..h-2. The entrance is one cell on the bottom map row (y = h-1) directly below a region cell; the rest of the bottom row stays solid.",
-  "x,y of a piece = the top-left cell of its footprint. Footprints must not overlap, must lie on floor cells, and every piece needs a reachable free side. Keep paths from the entrance to every region and to the landmark. Carpets, decals and daises are walkable and may lie under furniture.",
-];
-
 /** 배치 JSON 을 읽어 고칠 말(영어)과 짓기 인자를 낸다. 함수는 칸을 고르지 않는다 — 막힌 것은 무엇이 어디서 막혔는지만 말한다. */
 export interface LayoutCheck {
   readonly errors: string[]; readonly warnings: string[];
@@ -125,7 +116,7 @@ export interface LayoutCheck {
 /** 칸 배치가 실제로 왔나 — 엄격 스키마로 빈 껍데기({regions:[], outer_wall:{path:[]}})를 채워 보내는 모델이 있다. */
 export const layoutGiven = (raw: unknown): boolean => !!raw && typeof raw === "object" && ((Array.isArray((raw as { regions?: unknown }).regions) && ((raw as { regions: unknown[] }).regions.length > 0)) || isWallsLayout(raw));
 /** 벽 우선 형식인가(바깥 벽 고리가 있다). */
-export const isWallsLayout = (raw: unknown): boolean => !!(raw && typeof raw === "object" && (raw as WallsLayoutFields).outer_wall && Array.isArray((raw as WallsLayoutFields).outer_wall?.path) && (raw as WallsLayoutFields).outer_wall!.path.length > 0);
+const isWallsLayout = (raw: unknown): boolean => !!(raw && typeof raw === "object" && (raw as WallsLayoutFields).outer_wall && Array.isArray((raw as WallsLayoutFields).outer_wall?.path) && (raw as WallsLayoutFields).outer_wall!.path.length > 0);
 
 const int = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v);
 const footprint = (S: HandInteriorSpec, id: string): { w: number; h: number } => {
@@ -259,7 +250,7 @@ export function rejectionText(name: string, check: LayoutCheck, sent: unknown, l
 }
 
 /** 지은 뒤 남기는 선언(맵 위치 note) — 할 일 검사 layout_built 가 읽는다. 좌표는 지은 맵 좌표. */
-export interface LayoutDecl {
+interface LayoutDecl {
   /** 방 상자(벽 우선 형식은 방 칸의 바깥 상자, cells = 방 칸 수). */
   readonly regions: readonly { id: string; x: number; y: number; w: number; h: number; cells?: number; purpose?: string; role?: string }[];
   readonly objects: readonly { id: string; x: number; y: number; w: number; h: number }[];

@@ -44,7 +44,7 @@ function allDefault(v: unknown): boolean {
  * 필수 칸은 그대로 둔다. 돌려주는 값: 고친 인자와 걷어 낸 칸 경로.
  * terra 는 스키마의 모든 칸을 기본값으로 채웠다(place_field_enemy patrol.directions:[]·graphic{…""}, upsert_troop members:[], referencePurpose:"").
  */
-export function pruneDefaults(schema: Schema | undefined, value: unknown, path = ""): { value: unknown; removed: string[] } {
+function pruneDefaults(schema: Schema | undefined, value: unknown, path = ""): { value: unknown; removed: string[] } {
   const removed: string[] = [];
   const walk = (s: Schema | undefined, v: unknown, p: string): unknown => {
     if (Array.isArray(v)) return s?.items ? v.map((x, i) => walk(s.items, x, `${p}[${i}]`)) : v;
@@ -108,7 +108,7 @@ function transferLandings(project: Project, mapId: string): Cell[] {
 
 // ───────────── 규칙 표 ─────────────
 
-export type PreOutcome = { kind: "ok"; args: unknown; notes: string[] } | { kind: "reject"; message: string };
+type PreOutcome = { kind: "ok"; args: unknown; notes: string[] } | { kind: "reject"; message: string };
 interface PreRule {
   /** 이 규칙이 보는 도구(정규식 또는 이름) */
   readonly tool: RegExp;
@@ -146,7 +146,7 @@ function objectBox(project: Project, objectId: unknown): { w: number; h: number;
 const rectHas = (x: number, y: number, w: number, h: number, c: Cell) => c.x >= x && c.y >= y && c.x < x + w && c.y < y + h;
 
 /** stamp_object 를 놓을 수 있는 가장 가까운 자리 — 맵과 겹치고, 완성된 집·이동 도착 칸을 덮지 않는다. 같은 거리 안에서는 위·왼쪽 먼저(결정적). */
-export function nearestStampSpot(map: GameMap, x: number, y: number, w: number, h: number, avoid: readonly Cell[], radius = 4): Cell | undefined {
+function nearestStampSpot(map: GameMap, x: number, y: number, w: number, h: number, avoid: readonly Cell[], radius = 4): Cell | undefined {
   const house = protectedHouseCells(map);
   // 옮긴 자리는 맵 안에 다 들어가야 한다 — 반쯤 걸치게 옮기면 그림이 잘린다(맵 위 가장자리 출입구 곁 덩굴 장식이 (20,-1) 로 갔다).
   const ok = (cx: number, cy: number) => cx >= 0 && cy >= 0 && cx + w <= map.width && cy + h <= map.height

@@ -244,7 +244,7 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
   이미 정해진 값보다 짧을 때만 줄이고, 0 이면 우리 상한 없음. 사용자 지정(openai-compat:*) 엔드포인트는 늘 씌운다 — 엔드포인트 「첫 토큰 대기」 600초가 토큰 사이 감시까지 10분으로 늘려 호출 하나가 10분씩 잡혔다.
   다른 제공자는 OPRN_MODEL_* 를 명시했을 때만. 감시가 끊은 호출(「timed out while waiting for the first event」·「stalled while waiting for the next event」)은 같은 기록으로
   `OPRN_MODEL_STALL_RETRIES`(기본 2)번 다시 요청(`provider_stall_retry`)하고, 그래도 조용하면 차례를 실패 문장으로 끝낸다(`provider_stall_giveup` + error — 적용한 변경은 남는다). 확인: `bun scripts/qa/model-stall-probe.mts`(헤더만 보내고 침묵하는 가짜 끝점).
-- **화면 검수 고치기 차례 상한**(`src/ai/v2/vqaFixBudget.ts` — 2026-10-30 할 일 고리로 대체, 실행기가 더 쓰지 않는다): 고치기 지시를 낸 차례마다 쓰기 도구 `OPRN_V2_VQA_FIX_MAX_CALLS`(12)회 · `OPRN_V2_VQA_FIX_MAX_MS`(600000) ·
+- **화면 검수 고치기 차례 상한**(옛 `vqaFixBudget.ts` — 2026-10-30 할 일 고리로 대체, 2026-11-11 리팩토링 R1 에서 파일 삭제): 고치기 지시를 낸 차례마다 쓰기 도구 `OPRN_V2_VQA_FIX_MAX_CALLS`(12)회 · `OPRN_V2_VQA_FIX_MAX_MS`(600000) ·
   같은 도구+같은 인자 실패 `OPRN_V2_VQA_FIX_SAME_FAILS`(2) · 같은 도구 실패 `OPRN_V2_VQA_FIX_TOOL_FAILS`(4). 넘으면 실행하지 않고 «남은 결함으로 보고하라» 거절을 돌려주며 `v2.vqa.fix_cap` 을 한 번 남긴다.
   읽기 도구(inspect·list_·find_·get_·read_)는 세지 않는다. 판 사이 반복은 기존 `vqaActionable`(두 판 연속 그대로 = stuck)·`VQA_MAX_ROUNDS` 가 막는다 — 이 상한은 **한 차례 안**의 반복이다
   (vm1 escape 001: 1판 결함 6건 뒤 고치기 차례 하나가 move_object 를 20번 넘게, 반은 같은 「길이 막혀 되돌림」 거절로 부르며 45분 상한까지 갔다).
@@ -694,7 +694,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   진척 = 성공한 쓰기 도구의 **새** 결과 지문(이름+인자+결과 글, 시각·긴 수·id 가림, 창 256) 또는 열린 항목 수 감소. 서명(열린 수/전체·프로젝트 지문(할 일 제외)·보고 해시)이 앞과 같으면 멈춤. ask_user 로 물은 실행은 다시 돌리지 않는다.
   멈추면 열린 항목은 «고리 멈춤 — 이유» 막힘으로 닫고 ④~⑥ 은 건너뛴다(③ 은 돈다). 재주입마다 Agent 경로는 tool_choice required.
 - **관문 항목 맞추기**(`loop/gates.ts`): 열쇠(문제 글, 수 가림)가 같은 문제는 새 항목을 만들지 않고 닫힌 항목이면 다시 연다(시도 +1, 상한이면 막힘).
-  문제가 사라진 항목은 함수가 닫고, 고치기 상한(맵당 3바퀴)에 닿은 장소 항목은 «상한» 막힘. 장소·컷신 문제의 열쇠는 맵마다 하나(`place:<mapId>:place|stage`)라 고칠 때마다 글이 바뀌어도 같은 항목이 다시 열려 시도 3에서 막힌다(글은 지금 것으로 바뀐다). 옛 `v2FinishGate` 글은 `v2GateProblems` 위의 얇은 포장으로 남았다.
+  문제가 사라진 항목은 함수가 닫고, 고치기 상한(맵당 3바퀴)에 닿은 장소 항목은 «상한» 막힘. 장소·컷신 문제의 열쇠는 맵마다 하나(`place:<mapId>:place|stage`)라 고칠 때마다 글이 바뀌어도 같은 항목이 다시 열려 시도 3에서 막힌다(글은 지금 것으로 바뀐다). 옛 `v2GateProblems` 글은 `v2GateProblems` 위의 얇은 포장으로 남았다.
 - **기존 결함**(`gates.ts splitPreexisting`): 시작 저장본에서 같은 게임 검사를 돌린 열쇠(`v2BaselineGameKeys`)에 있는 문제, 또는 문제 글이 짚는 이벤트가 모두 시작 저장본 그대로이거나 함수 마감(autoBuild)만 건드린 것이면 항목으로 만들지 않고 최종 보고 「기존 결함」 칸에만 싣는다 — 완료를 막지 않는다(omo-loop-1030: 버들마을 출입구 그림 없음이 세 장면 모두 할 일이 됐다).
 - **도구 없는 관문**: 관문 글이 이르는 도구가 이 실행에 없으면 막힘으로 닫지만, 결정적으로 고칠 수 있는 것은 끝맺음이 먼저 고친다 — `finish/stages/combat-menu.ts`(reload 묶음, 늘 돈다): 전투를 넣었는데 ESC 메뉴가 이야기용이면 소지품 뒤에 스킬·장비·상태 칸을 되돌린다.
 - **문 잇기 자리 옮기기**(`game.ts withTransferRelocation`): v2 의 `create_transfer_pair` 가 doorAt 모양 어긋남·문앞 막힘·도착 칸 겹침으로 거절되면 거절된 끝(그래도 안 되면 두 끝)의 doorAt 을 빼고 다시 불러 걸어 닿는 가장 가까운 칸에 잇는다(편집기 도구의 «문을 옆 칸으로 대신 잇지 않는다» 계약은 그대로, v2 감싸개만). terra boss-room r1~r3 저장본 셋 모두 link ✓ 로 재현.
@@ -760,7 +760,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
     H5 는 보스 전투(check.boss)·엔딩 항목의 하위 도구를 이 둘로 돌려보내고, 동사가 실리지 않은 실행에서만 «상위 동사 없음»을 기록한다. fantasy 바탕 저장본 확인: 보스 인물·대사·보스전 ✓, 엔딩 ✓(after:「마왕」 → 마왕의 동굴 보스 처치 스위치).
   - H6 문맥 정리(`loop/contextTrim.ts trimContext`, 실행기 transformContext 에서 `options.v2.stateCard` 가 있을 때만): 마지막 도구 결과 10개는 그대로, 그보다 앞은 글 700자만 남기고 그림은 뺀다 — 줄이는 경계는 8개 단위로만 옮겨 프롬프트 캐시 접두부를 지킨다.
     그리고 그 호출의 마지막 메시지 끝에만 상태 카드(진척 줄·지금 할 것+다음 호출·그 항목 마지막 ✗·남은 항목 6개)를 붙인다. 사본만 바꾸고 기록에는 남지 않는다. 줄인 수가 늘 때 `v2.hook.context`.
-- 화면 검수 고치기 차례 상한(`vqaFixBudget.ts`)·도구 0회 고치기 재시도는 이 고리의 항목 시도·재주입 규칙이 대신한다(파일은 남았지만 실행기가 쓰지 않는다).
+- 화면 검수 고치기 차례 상한(`vqaFixBudget.ts`)·도구 0회 고치기 재시도는 이 고리의 항목 시도·재주입 규칙이 대신한다(파일은 2026-11-11 리팩토링 R1 에서 지웠다).
 - **최종 보고**(`finalReport.ts todoReport`): 「완료」는 열림 0·막힘 0·확인이 달린 항목 전부 ✓·고치기 상한 남은 문제 0 일 때만 — 조수 보고 뒤에 `[할 일 N/N ✓]` 표.
   아니면 「최종 보고(기계 확인 — 아직 완료 아님 …)」 + ✓/✗/막힘/뺌 표 + **보고와 다른 것**(조수 문장이 ✗ 항목의 이름과 «만들었다»류 낱말을 같이 쓰면 기계 결과로 고침) + 남은 문제·그림 없음·자동으로 지음 + 조수 보고(참고). 기록 `v2.todo.final`.
 - **저장·이어 하기**: 상태는 `project.assistantTodo`(AssistantTodoState)로 afterMain 마다 프로젝트에 실려 체크포인트·끝 저장에 같이 간다. 다음 요청이 «계속·이어서·마저·남은 것·끝까지»면 열린(막혔던 것 포함) 항목을 되살리고 시스템 지시에 목록을 싣는다(init 하지 말 것).

@@ -11,7 +11,7 @@ import { canMove, isPassable } from "@/project/collision";
 import type { EventSpec, PersonSpec, PlaceBuildResult, PlaceSpec } from "./types";
 import { walkReach, walkStart } from "./people";
 
-export interface GamePlace {
+interface GamePlace {
   /** 계획 안의 짧은 이름(잇기·사람·사건이 가리킨다). */
   readonly key: string;
   readonly spec: PlaceSpec;
@@ -35,7 +35,7 @@ export const MAKE_GAME_CARD = [
   "- Result: per map a 1x picture, machine checks and critique, plus a start→each map→back path check. Add fixes with edit_place, add_people, add_event, and game elements (quests, items, battles) with the game tools.",
 ].join("\n");
 
-export const MAKE_GAME_WORDS = /게임\s*(하나|한\s*판|을|를)?\s*(만들|짓)|작은\s*게임|짧은\s*게임|맵\s*[5-8]\s*(장|개)|[5-8]\s*개의?\s*맵|마을.*(던전|동굴|숲).*(보스|이야기)|이야기가\s*있는|퀘스트\s*라인|챕터/iu;
+const MAKE_GAME_WORDS = /게임\s*(하나|한\s*판|을|를)?\s*(만들|짓)|작은\s*게임|짧은\s*게임|맵\s*[5-8]\s*(장|개)|[5-8]\s*개의?\s*맵|마을.*(던전|동굴|숲).*(보스|이야기)|이야기가\s*있는|퀘스트\s*라인|챕터/iu;
 /** make_game 을 싣는가 — 비교 측정 중에는 환경 변수로만 켠다(다른 시험의 도구 목록을 바꾸지 않게). */
 export function makeGameOn(): boolean {
   return (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.OPRN_V2_MAKE_GAME === "1";
@@ -100,7 +100,7 @@ function transfersOf(ev: GameEvent): { mapId: string; x: number; y: number }[] {
   return out;
 }
 
-export interface GamePathReport {
+interface GamePathReport {
   readonly reached: readonly string[];
   readonly unreached: readonly string[];
   /** 갔지만 들어온 맵으로 돌아가는 문이 걸어 닿는 곳에 없는 맵. */

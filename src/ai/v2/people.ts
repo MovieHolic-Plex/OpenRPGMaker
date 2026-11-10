@@ -57,7 +57,7 @@ export function transferCells(map: GameMap): Cell[] {
  * 큰 몸(page.footprint)을 가진 이벤트가 덮는 칸 전부(앵커 칸 제외) — 키운 보스(3×2)처럼 그림이 여러 칸을 덮는다.
  * 그 칸에 조사 칸을 두면 보스 그림 밑에 묻혀 보스를 쓰러뜨리기 전에는 조사할 수 없었다(2026-10-29 vm1 deepseek 「동굴 입구의 봉인」).
  */
-export function eventBodyCells(map: GameMap): Set<number> {
+function eventBodyCells(map: GameMap): Set<number> {
   const set = new Set<number>();
   for (const e of eventsOf(map)) for (const p of e.pages ?? []) {
     const fp = (p as { footprint?: { width?: number; height?: number } }).footprint;
@@ -202,7 +202,7 @@ export function edgeExitCells(map: GameMap, reach: Uint8Array): Cell[] {
   return odd.length > 0 && odd.length < edge.length ? odd : edge;
 }
 
-export interface WhereResolution {
+interface WhereResolution {
   /** 사람이 설 칸 — 물건(footprint)이면 발밑 맨 아래 줄의 왼쪽 칸(generate_missing_object·stamp_tileset_object 의 base). */
   readonly cell: Cell;
   /** 낱말을 못 알아듣거나 못 찾아 기본 자리로 갔을 때의 한 줄. */
@@ -432,7 +432,7 @@ function findObjectBox(project: Project, map: GameMap, word: string, room: RoomR
 // 끝맺음·다시 짓기 뒤(eventReach spreadCrowdedPeople)에 같이 쓴다. 비용 4 이상 = 길·가구·문을 막는 자리(양탄자는 이어진 칸 6 이상인 큰 것만 — 침대 밑 깔개는 괜찮다).
 const RUG_LABEL = /양탄자|카펫|러그|깔개|carpet|rug/iu;
 export const PERSON_SPOT_BAD = 4;
-export interface PersonSpotContext { readonly reach: Uint8Array; readonly doors: readonly Cell[]; readonly others: ReadonlySet<number>; readonly bigRug: ReadonlySet<number> }
+interface PersonSpotContext { readonly reach: Uint8Array; readonly doors: readonly Cell[]; readonly others: ReadonlySet<number>; readonly bigRug: ReadonlySet<number> }
 /** 큰 양탄자(이어진 칸 6 이상 — 통로 러너·홀 카펫) 칸. 침대 밑 작은 깔개는 서도 된다. */
 function bigRugCells(project: Project, map: GameMap): Set<number> {
   const w = map.width, n = w * map.height;
@@ -766,7 +766,7 @@ export function resolveWhere(
   return done(start, { note: fp ? `${fp.w}×${fp.foot + fp.over} 물건을 길을 막지 않고 놓을 빈 바닥을 못 찾았다.` : "걸어 닿는 빈 칸을 못 찾았다." });
 }
 
-export function dirTowardCell(from: Cell, to: Cell): Dir {
+function dirTowardCell(from: Cell, to: Cell): Dir {
   const dx = to.x - from.x, dy = to.y - from.y;
   if (Math.abs(dx) >= Math.abs(dy) && dx !== 0) return dx > 0 ? "right" : "left";
   return dy < 0 ? "up" : "down";
@@ -809,7 +809,7 @@ const HOSTILE = /몬스터|언데드|해골|스켈레톤|좀비|유령|악마|�
 const CHILD_LOOK = /아이|어린이|소년|소녀|꼬마|child|kid|boy|girl/iu;
 const ODD_LOOK = /이국|터번|닌자|요정|난쟁이|수녀|해적|광대|ninja|fairy|dwarf|nun|pirate|clown/i;
 
-export interface PersonGraphic {
+interface PersonGraphic {
   readonly textureKey: string;
   readonly characterIndex: number;
   readonly label: string;
@@ -818,7 +818,7 @@ export interface PersonGraphic {
 }
 
 /** 역할·외형 낱말 → v1 이 알아듣는 질의 순서(중복 제거, 마지막은 주민). */
-export function graphicQueries(looks: string | undefined, role: string | undefined): string[] {
+function graphicQueries(looks: string | undefined, role: string | undefined): string[] {
   const out: string[] = [];
   const add = (q: string | undefined): void => {
     const t = (q ?? "").trim();
@@ -919,7 +919,7 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
 }
 
 /** 놓은 NPC 의 모든 페이지 그림을 그 방향으로 돌려 세운다(문지기는 길 쪽을 본다). */
-export function faceNpc(run: BuildRun, mapId: string, eventId: string, dir: Dir): void {
+function faceNpc(run: BuildRun, mapId: string, eventId: string, dir: Dir): void {
   const map = findMap(run.ctx.project, mapId);
   const event = map ? eventsOf(map).find((e) => e.id === eventId) : undefined;
   (event?.pages ?? []).forEach((page, pageIndex) => {

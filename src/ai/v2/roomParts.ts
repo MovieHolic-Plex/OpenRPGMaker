@@ -60,7 +60,7 @@ const COMMON = /^(chair [NSEW]|stool|armchair|sofa|roundtable|dining 1x1|dining 
 
 export function roomKindOf(purpose: string): string { return KIND_WORDS.find(([re]) => re.test(purpose))?.[1] ?? "study"; }
 
-export interface RoomPartsOut {
+interface RoomPartsOut {
   readonly tileset: string;
   readonly kind: string;
   readonly floors: string[]; readonly walls: string[]; readonly rugs: string[];
@@ -125,7 +125,7 @@ function pickReferences(tpls: readonly InteriorRoomTemplate[], n: number): Inter
 }
 
 /** 견본 하나 → 바닥 좌표(바닥 왼쪽 위 0,0) 기물 목록. 걸이는 y -2. */
-export function referenceSummary(t: InteriorRoomTemplate, S: HandInteriorSpec): { id: string; floorSize: string; items: string[] } {
+function referenceSummary(t: InteriorRoomTemplate, S: HandInteriorSpec): { id: string; floorSize: string; items: string[] } {
   const items = t.items.filter((it) => it.t === "o" || it.t === "l").map((it) => it.t === "l"
     ? `rug ${it.id} ${(it.cells ?? []).length} cells (from ${(it.cells ?? [])[0]?.[0]},${((it.cells ?? [])[0]?.[1] ?? 2) - 2})`
     : `${it.id} (${it.x},${it.y - 2})${S.objects[it.id]?.kind === "hang" ? " hung" : ""}`);

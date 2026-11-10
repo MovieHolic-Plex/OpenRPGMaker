@@ -22,7 +22,7 @@ function transfersTo(cmds: unknown, mapId: string): boolean {
 }
 const condKey = (c: unknown) => { const r = c as { kind?: string; switchId?: string; itemId?: string; value?: unknown; present?: unknown }; return `${r.kind}:${r.switchId ?? r.itemId ?? ""}:${String(r.value ?? r.present ?? true)}`; };
 
-export function arrivalCompletesEntrySteps(project: Project): string[] {
+function arrivalCompletesEntrySteps(project: Project): string[] {
   if (!project.gameBlueprint) return [];
   const notes: string[] = [];
   for (const r of resolveSteps(project)) {

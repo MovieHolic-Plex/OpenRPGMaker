@@ -24,7 +24,7 @@ export function lanesStamp(project: Project): string {
   }
   return h.toString(16);
 }
-export const LANES_RERUN_CAP = 2;
+const LANES_RERUN_CAP = 2;
 /** 마감을 돈 뒤 맵이 바뀌었나(다시 돌 횟수가 남았을 때만). */
 export const lanesStale = (env: PiAssistantV2Env, session: V2Session) =>
   session.autoLanesDone && session.lanesStamp !== undefined && session.lanesReruns < LANES_RERUN_CAP && session.lanesStamp !== lanesStamp(env.ctx.project);

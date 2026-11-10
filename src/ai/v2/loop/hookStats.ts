@@ -5,7 +5,7 @@
 //       · scope(H5 동사 범위) · context(H6 문맥 정리) · reinject(H7 구체 재주입) · strategy(H8 전략 바꾸기)
 import type { PiAgentEvent } from "@/ai/piAgent/protocol";
 
-export type HookName = "arg_fix" | "arg_reject" | "retry_fix" | "next_call" | "prefer" | "prefer_forced" | "auto_check" | "auto_done"
+type HookName = "arg_fix" | "arg_reject" | "retry_fix" | "next_call" | "prefer" | "prefer_forced" | "auto_check" | "auto_done"
   | "skeleton" | "scope" | "context" | "reinject" | "strategy" | "not_failure";
 
 export class HookStats {

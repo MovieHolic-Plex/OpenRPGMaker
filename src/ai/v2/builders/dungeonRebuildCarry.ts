@@ -29,7 +29,7 @@ export function transferMapIds(ev: GameEvent): string[] {
 }
 
 /** want 에서 가장 가까운(맨해튼) 칸 — 걸을 수 있고, 걸어 닿고(닿는 칸 계산이 되면), taken 에 없는 칸. */
-export function nearestOpenCell(project: Project, map: GameMap, want: Cell, taken: ReadonlySet<string>, landingBelow = false): Cell | undefined {
+function nearestOpenCell(project: Project, map: GameMap, want: Cell, taken: ReadonlySet<string>, landingBelow = false): Cell | undefined {
   const reach = reachableCells(project, map);
   const w = map.width, h = map.height;
   const cx = Math.max(0, Math.min(w - 1, want.x)), cy = Math.max(0, Math.min(h - 1, want.y));

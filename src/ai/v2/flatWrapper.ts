@@ -8,7 +8,7 @@ type Schema = { readonly type?: unknown; readonly properties?: Readonly<Record<s
 type Obj = Record<string, unknown>;
 
 /** 펼 도구와 그 감싸는 칸. array 면 칸이 객체 목록이다(한 개는 최상위에, 여럿은 그 칸 목록으로). */
-export const FLAT_WRAPPERS: Readonly<Record<string, { readonly slot: string; readonly array?: boolean }>> = {
+const FLAT_WRAPPERS: Readonly<Record<string, { readonly slot: string; readonly array?: boolean }>> = {
   make_place: { slot: "spec" },
   add_event: { slot: "event" },
   add_scene: { slot: "scene" },

@@ -14,7 +14,7 @@ import { pickDungeonGateSpot } from "@/editor/tools/dungeonLinkTools";
 
 type Cell = { x: number; y: number };
 export type Side = "north" | "south" | "east" | "west";
-export interface TransferSpot { readonly x: number; readonly y: number; readonly doorAt?: Cell; readonly note: string }
+interface TransferSpot { readonly x: number; readonly y: number; readonly doorAt?: Cell; readonly note: string }
 
 const LAYERS = ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"] as const;
 const VERTICAL_PLACE = /\d\s*층|지하|탑|관측|다락|옥상|위층|아래층|floor|tower|basement|attic/iu;
@@ -74,7 +74,7 @@ function stampableDoor(project: Project, map: GameMap): { bottom: number; top?: 
 }
 
 /** 맵 가장자리에 닿는 길 끝 칸(시작점·착지점에서 걸어 닿는 것, side 쪽 먼저). */
-export function roadEndSpot(project: Project, map: GameMap, side: Side): TransferSpot | undefined {
+function roadEndSpot(project: Project, map: GameMap, side: Side): TransferSpot | undefined {
   const reach = reachableCells(project, map);
   if (!reach) return undefined;
   const w = map.width;
