@@ -11,7 +11,7 @@ import { exposeV2Tools } from "../../../src/ai/v2/toolExposure.ts";
 import { MONSTER_TOWN_CARD } from "../../../src/ai/v2/place/builders/monsterTown.ts";
 import { JOSEON_CARD } from "../../../src/ai/v2/place/builders/joseon.ts";
 import { WIZARDING_CARD } from "../../../src/ai/v2/place/builders/wizarding.ts";
-import { SCENE_CARD } from "../../../src/ai/v2/scene.ts";
+import { SCENE_CARD } from "../../../src/ai/v2/story/scene.ts";
 import { BLUEPRINT_CARD } from "../../../src/ai/v2/blueprint.ts";
 import { MAKE_GAME_CARD } from "../../../src/ai/v2/makeGame.ts";
 import { GAME_CARD, TERRAIN_CARD } from "../../../src/ai/v2/game.ts";

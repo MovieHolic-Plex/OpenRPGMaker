@@ -17,10 +17,10 @@
 // 지금 청사진 단계가 아니고 주는 것을 아무도 받지 않는(엔딩·이동·전투도 없는) 이벤트를 걷어 낸다.
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
-import { doorArtCells, hostMentions, isDoorName, objectBaseName, objectCells, repairEventReach, unreachableEvents } from "./eventReach";
+import { doorArtCells, hostMentions, isDoorName, objectBaseName, objectCells, repairEventReach, unreachableEvents } from "../eventReach";
 import { staleBody } from "./examineSpot";
-import { objectAt, tileLabel } from "./place/cells";
-import type { BuildRun } from "./types";
+import { objectAt, tileLabel } from "../place/cells";
+import type { BuildRun } from "../types";
 
 type Cmd = Record<string, unknown> & { kind?: string };
 

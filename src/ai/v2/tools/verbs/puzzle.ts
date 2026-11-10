@@ -1,7 +1,7 @@
 // 퍼즐·목표 동사 — author_puzzle_chain · set_objective · seal_locked_room.
 import { SET_OBJECTIVE_DESCRIPTION } from "@/ai/agentRules";
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
-import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "../../puzzle";
+import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "../../story/puzzle";
 import { planObjective } from "../../judge/discoverability";
 import { text } from "../support";
 import type { VerbContext } from "../context";

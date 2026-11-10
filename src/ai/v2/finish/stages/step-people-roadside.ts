@@ -2,7 +2,7 @@
 // 단계 주인공(투명 칸 → 사람)과 길 놓기(lanes) 뒤에.
 import type { FinishStage } from "../types";
 import { createBuildRun } from "../../buildRun";
-import { standStepPeopleByRoads } from "../../stepPeopleRoadside";
+import { standStepPeopleByRoads } from "../../story/stepPeopleRoadside";
 
 export const stage: FinishStage = {
   id: "step-people-roadside", phase: "blueprint", order: 95,

@@ -12,15 +12,15 @@
 //    언제: afterSwitchId(또는 after 낱말이 맞는 격파·처치 스위치)가 켜진 뒤 맵에 들어오면 자동, talkTo 가 있으면 그 인물에게 말 걸 때.
 //    둘 다 없으면 시작하자마자 끝나는 엔딩을 만들지 않으려고 거절한다.
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import type { BuildRun, ContentBuildResult, EventBeat } from "./types";
+import type { BuildRun, ContentBuildResult, EventBeat } from "../types";
 import { buildEvent } from "./events";
-import { buildPeople } from "./people";
-import { eventsOf } from "./place/cells";
-import { ensureFoeTroop, enemyArtFor } from "./place/builders/dungeon";
+import { buildPeople } from "../people";
+import { eventsOf } from "../place/cells";
+import { ensureFoeTroop, enemyArtFor } from "../place/builders/dungeon";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
-import { reachableCells } from "./eventReach";
-import { findMapId } from "./loop/argGuard";
-import { nameScore } from "./todo/names";
+import { reachableCells } from "../eventReach";
+import { findMapId } from "../loop/argGuard";
+import { nameScore } from "../todo/names";
 
 type Obj = Record<string, unknown>;
 type Pt = { x: number; y: number };

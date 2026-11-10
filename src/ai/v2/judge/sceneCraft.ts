@@ -14,7 +14,7 @@
 // 순수 함수(before·after·요청 글).
 import type { Project } from "@/project/types";
 import { splitScriptSpeaker } from "@/project/endingSummary";
-import { isRereadMarker } from "../rereadPage";
+import { isRereadMarker } from "../story/rereadPage";
 import { SCENE_WORDS, TALK_WORDS } from "../request/asks";
 
 type Obj = Record<string, unknown>;

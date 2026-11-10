@@ -5,10 +5,10 @@
 // 6칸 안에서 길과 맞닿은(상하좌우) 걸어 닿는 빈 칸(길 칸 자신은 아님 — 길을 막지 않게)으로 옮긴다. 옮긴 뒤 닿지 못하는 이벤트가 늘거나
 // 걸어 닿는 칸이 줄면(사람이 좁은 목을 막으면) 그 자리는 쓰지 않는다.
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import type { BuildRun } from "./types";
+import type { BuildRun } from "../types";
 import { resolveSteps } from "./mysteryCase";
-import { reachableCells, unreachableEvents } from "./eventReach";
-import { isRoadCell } from "./place/edgeExitRoads";
+import { reachableCells, unreachableEvents } from "../eventReach";
+import { isRoadCell } from "../place/edgeExitRoads";
 
 const shown = (ev: GameEvent) => (ev.pages ?? []).some((p) => { const g = (p.graphic ?? {}) as { transparent?: boolean; sprite?: unknown; appearanceId?: unknown }; return g.transparent !== true && Boolean(g.sprite || g.appearanceId); });
 const reachCount = (project: Project, map: GameMap) => { const r = reachableCells(project, map); let n = 0; if (r) for (const v of r) n += v ? 1 : 0; return n; };
