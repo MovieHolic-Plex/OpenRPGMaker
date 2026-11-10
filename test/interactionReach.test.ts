@@ -58,6 +58,20 @@ describe("interaction reach", () => {
     expect(picked?.face).toBe("up");
   });
 
+  it("does not reach sideways or diagonally into a door, ladder or lift that moves the player", () => {
+    const travel = (id: string, x: number, y: number, extra: Record<string, unknown> = {}) => ({
+      ...view(id, x, y),
+      page: { commands: [{ kind: "transfer", mapId: "m", x: 0, y: 0 }], graphic: { transparent: true }, ...extra },
+    }) as unknown as RuntimeEventView;
+    expect(pickNearbyActionTarget([travel("ladder-behind", 10, 9)], 10, 10)).toBeUndefined();
+    expect(pickNearbyActionTarget([travel("lift-diagonal", 11, 11)], 10, 10)).toBeUndefined();
+    const guide = travel("guide", 11, 10, {
+      graphic: { sprite: { type: "bundled", id: "chip" } },
+      commands: [{ kind: "text", speaker: "안내인", body: "가자" }, { kind: "transfer", mapId: "m", x: 0, y: 0 }],
+    });
+    expect(pickNearbyActionTarget([guide], 10, 10)?.view.event.id).toBe("guide");
+  });
+
   it("prefers the adjacent prop over a farther one in the same cluster", () => {
     const near = view("prop-near", 10, 9);
     const far = view("prop-far", 10, 8);
