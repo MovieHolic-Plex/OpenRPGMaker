@@ -190,7 +190,9 @@ export function decide(input: { check: Verdict; turnOutcomes: string[]; waitedLi
   const stillAsking = input.turnOutcomes.at(-1) === 'awaiting-answer';
   // 도구 호출 없이 오류로 끝났거나, 제공자 오류(속도 제한·연결·5xx)가 난 채 불합격이면 기반 오류다.
   const infra = !check.pass && errors.length > 0 && (input.toolCallCount === 0 || errors.some(error => PROVIDER_ERROR.test(error)));
-  const persisted = !!persistence && persistence.saved && persistence.reloadedSame;
+  // 저장이 됐고, 새 브라우저 컨텍스트가 읽은 맵·자료집이 저장한 것과 같으면 저장·재로드 확인이다. 새 컨텍스트가 부팅하며 한 번 더 저장해
+  // 저장 문서의 sha 가 달라지는 것(reloadedSame=false, 내용 변화 0)은 유실이 아니다 — 판정은 어차피 그 뒤의 저장 문서를 읽는다.
+  const persisted = !!persistence && persistence.saved && (persistence.reloadedSame || persistence.rendererEqual);
   const status: JobStatus = infra ? 'infra' : timedOut ? 'timeout' : check.pass && persisted ? 'pass' : 'fail';
   const reason = infra ? `기반 오류: ${errors[0]?.slice(0, 240)}`
     : timedOut ? `시간 초과(${Math.round(input.limitMs / 60_000)}분) — 그때까지의 저장 결과: ${check.pass ? '판정은 통과' : check.reason}`
@@ -227,7 +229,9 @@ function collect(turns: any[]): Partial<JobResult> {
 
 const median = (values: number[]): number => { const sorted = values.filter(Number.isFinite).sort((a, b) => a - b); return sorted.length ? (sorted.length % 2 ? sorted[(sorted.length - 1) / 2]! : Math.round((sorted[sorted.length / 2 - 1]! + sorted[sorted.length / 2]!) / 2)) : 0; };
 export function summarize(results: JobResult[], meta: Record<string, unknown>): Record<string, unknown> {
-  const count = (list: JobResult[]) => ({ jobs: list.length, pass: list.filter(r => r.status === 'pass').length, fail: list.filter(r => r.status === 'fail').length, timeout: list.filter(r => r.status === 'timeout').length, infra: list.filter(r => r.status === 'infra').length, complete: list.filter(r => r.complete === true).length });
+  const count = (list: JobResult[]) => ({ jobs: list.length, pass: list.filter(r => r.status === 'pass').length, fail: list.filter(r => r.status === 'fail').length, timeout: list.filter(r => r.status === 'timeout').length, infra: list.filter(r => r.status === 'infra').length, complete: list.filter(r => r.complete === true).length,
+    // 요청 밖에서 무언가(다른 이벤트 내용·타이틀·엔딩·자료집·새 그림)가 바뀐 일. 통과 여부와 따로 센다.
+    sideEdited: list.filter(r => (r.check?.sideEdits.length ?? 0) > 0).length });
   const families = [...new Set(results.map(r => r.family))];
   const ran = results.filter(r => r.status !== 'infra');
   return { schemaVersion: 1, kind: 'assistant-small-jobs-run', ...meta, counts: count(results),
@@ -243,7 +247,7 @@ function summaryMarkdown(summary: any): string {
   const c = summary.counts, m = summary.medians;
   const rows = (summary.jobs as JobResult[]).map(r => `| ${r.id} | ${r.family} | ${r.status.toUpperCase()} | ${r.complete === null ? '-' : r.complete ? '완료' : '미완료'} | ${r.toolCallCount}${r.toolErrors ? ` (✗${r.toolErrors})` : ''} | ${minutes(r.wallMs)} | ${Math.round((r.tokens.input + r.tokens.cacheRead) / 1000)}k/${(r.tokens.output / 1000).toFixed(1)}k | ${r.systemPromptChars ?? '-'} | ${r.toolsOffered ?? '-'} | ${r.reason.replace(/\|/gu, '/').slice(0, 160)} |`);
   return `# 작은 일 30가지 — ${summary.model} · ${summary.assistantVersion}\n\n기준 main ${summary.git.mainBase || '-'} · 머리 ${summary.git.sha}(${summary.git.branch}${summary.git.dirty ? ', 작업 트리 변경 있음' : ''}) · ${summary.startedAt} ~ ${summary.finishedAt}\n\n` +
-    `**통과 ${c.pass}/${c.jobs}** · 불합격 ${c.fail} · 시간 초과 ${c.timeout} · 기반 오류 ${c.infra} · 턴이 «완료»로 끝난 것 ${c.complete}\n\n` +
+    `**통과 ${c.pass}/${c.jobs}** · 불합격 ${c.fail} · 시간 초과 ${c.timeout} · 기반 오류 ${c.infra} · 턴이 «완료»로 끝난 것 ${c.complete} · 요청 밖 변경이 있었던 일 ${c.sideEdited ?? 0}\n\n` +
     `중앙값: 도구 호출 ${m.toolCalls} · 시간 ${minutes(m.wallMs)}분 · 모델 호출 ${m.modelCalls} · 입력 ${Math.round(m.inputTokens / 1000)}k 토큰 · 출력 ${(m.outputTokens / 1000).toFixed(1)}k 토큰 · 지시문 ${m.systemPromptChars}자 · 처음 실린 도구 ${m.toolsOffered}개(도구 설명 ${m.toolSchemaChars}자)\n\n` +
     `| 가족 | 통과 | 불합격 | 시간 초과 | 기반 오류 |\n|---|---|---|---|---|\n${Object.entries<any>(summary.perFamily).map(([family, n]) => `| ${family} | ${n.pass}/${n.jobs} | ${n.fail} | ${n.timeout} | ${n.infra} |`).join('\n')}\n\n` +
     `| 일 | 가족 | 결과 | 턴 끝 | 호출 | 분 | 토큰 in/out | 지시문 자 | 도구 수 | 까닭 |\n|---|---|---|---|---|---|---|---|---|---|\n${rows.join('\n')}\n`;

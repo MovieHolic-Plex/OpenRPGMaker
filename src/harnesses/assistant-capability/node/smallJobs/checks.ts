@@ -381,7 +381,38 @@ const KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result
 export const CHECK_KINDS = Object.keys(KINDS);
 
 // ── 시키지 않은 파괴 ────────────────────────────────────────────────────────
-function damageOf(before: Doc, after: Doc, allow: Allow): { damage: string[]; sideEdits: string[] } {
+/** 맵 밖에서 바뀐 것(타이틀·오프닝·엔딩·퀘스트·청사진·자료집·그림)을 칸 이름으로 적는다 — 요청이 스스로 요구하는 칸(expected)은 뺀다. */
+function projectSideEdits(before: Doc, after: Doc, expected: RegExp | undefined): string[] {
+  const out: string[] = [];
+  const note = (label: string) => { if (!expected?.test(label)) out.push(`${label} 바뀜`); };
+  for (const key of ['endings', 'quests', 'gameBlueprint', 'storyFlags', 'commonEvents', 'worldGraph', 'mapConnections', 'mapTree']) if (!isDeepStrictEqual(before[key], after[key])) note(key);
+  for (const key of new Set([...Object.keys(before.system ?? {}), ...Object.keys(after.system ?? {})])) if (!isDeepStrictEqual(before.system?.[key], after.system?.[key])) note(`system.${key}`);
+  for (const key of ['switches', 'variables']) {
+    const delta = (after[key]?.length ?? 0) - (before[key]?.length ?? 0);
+    if (delta !== 0 && !expected?.test(key)) out.push(`${key} ${delta > 0 ? '+' : ''}${delta}`);
+  }
+  for (const table of new Set([...Object.keys(before.database ?? {}), ...Object.keys(after.database ?? {})])) {
+    const a = before.database?.[table], b = after.database?.[table];
+    if (isDeepStrictEqual(a, b) || expected?.test(`database.${table}`)) continue;
+    const delta = (Array.isArray(b) ? b.length : 0) - (Array.isArray(a) ? a.length : 0);
+    out.push(`자료집 ${table} ${delta ? `${delta > 0 ? '+' : ''}${delta}` : '내용 바뀜'}`);
+  }
+  // 공용 라이브러리 그림(shared_*)은 편집기가 첫 저장 뒤에 설치한다 — 조수가 만든 것이 아니다.
+  const images = Object.keys(after.assets?.uploaded ?? {}).filter(id => !id.startsWith('shared_') && !before.assets?.uploaded?.[id]);
+  if (images.length) out.push(`새 그림·소리 ${images.length}개(${images.slice(0, 3).join(', ').slice(0, 90)})`);
+  return out;
+}
+/** 요청 자체가 건드리는 맵 밖 칸 — 그 종류의 일에서는 부수 변경으로 세지 않는다. */
+const EXPECTED_SIDE: Record<string, RegExp> = {
+  gameTitle: /^system\.titleScreen$/u,
+  battleEvent: /^(switches|database\.(troops|enemies))$/u,
+  giveOnce: /^switches$/u,
+  transferLink: /^(mapConnections|worldGraph|mapTree)$/u,
+  itemGatedText: /^switches$/u,
+  shop: /^switches$/u,
+};
+
+function damageOf(before: Doc, after: Doc, allow: Allow, kind: string): { damage: string[]; sideEdits: string[] } {
   const damage: string[] = [], sideEdits: string[] = [];
   const beforeMaps = Object.keys(before.maps ?? {}), afterMaps = Object.keys(after.maps ?? {});
   for (const id of beforeMaps) if (!after.maps?.[id]) damage.push(`맵 「${mapName(before, id)}」 삭제`);
@@ -399,6 +430,10 @@ function damageOf(before: Doc, after: Doc, allow: Allow): { damage: string[]; si
   }
   if ((before.meta?.title ?? '') !== (after.meta?.title ?? '') && !allow.title) damage.push(`게임 제목 「${before.meta?.title}」 → 「${after.meta?.title}」`);
   if (before.startMapId !== after.startMapId || !isDeepStrictEqual(before.startPos, after.startPos)) damage.push(`시작 위치 ${before.startMapId}(${before.startPos?.x},${before.startPos?.y}) → ${after.startMapId}(${after.startPos?.x},${after.startPos?.y})`);
+  // 새로 생긴 이벤트 수(요청이 만든 것 포함)와 맵 밖 변경.
+  const fresh = newEvents(before, after).length;
+  if (fresh > 1) sideEdits.push(`새 이벤트 ${fresh}개`);
+  sideEdits.push(...projectSideEdits(before, after, EXPECTED_SIDE[kind]));
   return { damage, sideEdits };
 }
 
@@ -408,7 +443,7 @@ export function runCheck(spec: CheckSpec, allow: Allow | undefined, before: Proj
   let outcome: Result;
   try { outcome = kind(spec, before as unknown as Doc, after as unknown as Doc); }
   catch (error) { outcome = no(`판정 실행 오류: ${error instanceof Error ? error.message : String(error)}`); }
-  const { damage, sideEdits } = damageOf(before as unknown as Doc, after as unknown as Doc, allow ?? {});
+  const { damage, sideEdits } = damageOf(before as unknown as Doc, after as unknown as Doc, allow ?? {}, spec.kind);
   const pass = outcome.ok && damage.length === 0;
   const reason = pass ? outcome.note : !outcome.ok ? outcome.note : `요청한 결과는 있다(${outcome.note}) — 그런데 ${damage.join(' · ')}`;
   return { pass, reason: !outcome.ok && damage.length ? `${reason} · 게다가 ${damage.join(' · ')}` : reason, outcome, damage, sideEdits };
