@@ -38,6 +38,22 @@ const SKILL_BITE = "skill_fs2_well_bite";
 const SKILL_TAIL = "skill_fs2_well_tail";
 const SKILL_SONG = "skill_fs2_well_gill_song";
 const SKILL_ROAR = "skill_fs2_well_roar";
+const SKILL_SHELL = "skill_fs2_well_shell";
+const SKILL_MUD = "skill_fs2_well_mud";
+const SKILL_MOLT = "skill_fs2_well_molt";
+const SKILL_ECHO = "skill_fs2_well_echo";
+const SKILL_FLOOD = "skill_fs2_well_flood";
+const STATE_SHELL = "state_fs2_well_shell";
+const STATE_MOLT = "state_fs2_well_molt";
+const SW_WELL_P2 = "sw_fs2_well_beast_p2";
+const SW_WELL_ECHO = "sw_fs2_well_beast_echo";
+const SW_WELL_FLOOD = "sw_fs2_well_beast_flood";
+const SW_WELL_SHELL2 = "sw_fs2_well_beast_shell2";
+const SW_WELL_BITE2 = "sw_fs2_well_beast_bite2";
+const SW_WELL_MUD2 = "sw_fs2_well_beast_mud2";
+/** 1페이즈 기본 행동은 2페이즈 스위치가 꺼져 있을 때만. 2페이즈 기본 행동은 켜져 있을 때만. */
+const P1 = { kind: "switch", switchId: SW_WELL_P2, value: false } as const;
+const P2 = { kind: "switch", switchId: SW_WELL_P2, value: true } as const;
 const SHAFT_BGM = "cc0-bgm-rtp-mys-002";
 const BOSS_BGM = "cc0-bgm-rtp-btl-002";
 
@@ -85,54 +101,100 @@ function addEv(project: Project, mapId: string, id: string, name: string, at: Ce
 function ensureSwitch(project: Project, id: string, name: string): void {
   if (!project.switches.some((s) => s.id === id)) project.switches.push({ id, name });
 }
-const act = (skillId: string, priority: number, condition: Rec = { kind: "always" }) =>
-  ({ skillId, priority, condition, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false } });
+const act = (skillId: string, priority: number, condition: Rec = { kind: "always" }, after?: { on?: string; off?: string }) =>
+  ({ skillId, priority, condition,
+    switchOnAfterAction: after?.on ? { enabled: true, switchId: after.on } : { enabled: false },
+    switchOffAfterAction: after?.off ? { enabled: true, switchId: after.off } : { enabled: false } });
 
 /**
  * 능력치 — 우물 밑은 2막 B3(이어 하기 도착 Lv13~14, 카엘+엘레나 둘). 같은 구간 우두머리 「달아오른 숯덩이 골렘」 다음 단계의
  * 결투 보스. scripts/qa/fallen-battle-sim.mts(FS_SIM_ONLY=well_beast)로 잰 값은 PR 본문에 적는다.
  */
-function wellData(project: Project, exec: Exec): void {
-  exec(project, "upsert_skill", { skill: {
-    id: SKILL_BITE, name: "물어뜯기", scope: "enemy", type: "normal", power: 62, variance: 15, hitRate: 95,
-    description: "넓은 입으로 한 사람을 문다.", mpCost: { flat: 0, percentMax: 0 },
-    effect: { kind: "damage", statistic: "attack", affects: "hp" }, stateEffects: [], animationId: "anim_gen_claw_rake",
-  } });
-  exec(project, "upsert_skill", { skill: {
-    id: SKILL_TAIL, name: "꼬리 휩쓸기", scope: "allEnemies", type: "normal", power: 40, variance: 15, hitRate: 90,
-    description: "굵은 꼬리로 앞을 쓸어 낸다.", mpCost: { flat: 0, percentMax: 0 },
-    effect: { kind: "damage", statistic: "attack", affects: "hp" }, stateEffects: [], animationId: "anim_gen_tackle_impact",
-  } });
-  exec(project, "upsert_skill", { skill: {
-    id: SKILL_SONG, name: "아가미 노래", scope: "allEnemies", type: "normal", power: 70, variance: 10, hitRate: 100,
-    description: "한 차례 아가미를 펴 소리를 모았다가 갱도를 울린다. 맞으면 둔해진다.\n모으는 동안 번개에 맞거나 크게 다치면 끊긴다.",
-    mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "mind", affects: "hp" },
-    stateEffects: [{ stateId: "state_agility_down", chance: 70, operation: "add" }], animationId: "anim_gen_power_aura",
-    chargeTurns: 1,
-    chargeBreak: { damage: 260, elementIds: ["thunder"], message: "아가미가 번개에 오그라든다! 노래가 끊겼다.", stagger: true },
-  } });
-  exec(project, "upsert_skill", { skill: {
-    id: SKILL_ROAR, name: "붉은 아가미", scope: "self", type: "normal", power: 0, variance: 0, hitRate: 100,
-    description: "아가미를 곧추세우고 성을 낸다. 공격이 오른다.", mpCost: { flat: 0, percentMax: 0 },
-    effect: { kind: "support" }, stateEffects: [{ stateId: "state_attack_up", chance: 100, operation: "add" }], animationId: "anim_gen_power_aura",
-  } });
+export function wellData(project: Project, exec: Exec): void {
+  for (const [id, name] of [[SW_WELL_GATE, "B3 우물 밑: 저수조 쇠살문"], [SW_WELL_CRACK, "B3 우물 밑: 금 간 벽"],
+    [SW_WELL_BEAST_MET, "B3 우물 밑: 눈먼 영주가 깼다"], [SW_WELL_BEAST_DOWN, "B3 우물 밑: 눈먼 영주를 쓰러뜨렸다"],
+    [SW_WELL_P2, "B3 우물 밑 전투: 붉은 아가미(2페이즈)"], [SW_WELL_ECHO, "B3 우물 밑 전투: 순환 ① 메아리"], [SW_WELL_FLOOD, "B3 우물 밑 전투: 순환 ② 해일"],
+    [SW_WELL_BITE2, "B3 우물 밑 전투: 순환 ③ 물어뜯기"], [SW_WELL_SONG, "B3 우물 밑 전투: 순환 ④ 노래"], [SW_WELL_SHELL2, "B3 우물 밑 전투: 순환 ⑤ 비늘"],
+    [SW_WELL_MUD2, "B3 우물 밑 전투: 순환 ⑥ 흙탕물"]] as const) {
+    ensureSwitch(project, id, name);
+  }
+  // 상태 — 「껍질 세우기」 반격 자세(물리에 맞으면 꼬리로 되받아친다)와 「물 속 탈피」 재생은 이 보스만 쓴다.
+  exec(project, "upsert_state", { state: { id: STATE_SHELL, name: "곤두선 비늘", restriction: "없음", removalCondition: "전투 종료",
+    recoverNaturallyFromTurn: 2, recoverNaturallyChance: 50, battleAura: "shield-shimmer",
+    runtimeEffects: { maxTurns: 2, counterChance: 100, physicalDefenseMultiplier: 1.6, removeOnBattleEnd: true } } });
+  exec(project, "upsert_state", { state: { id: STATE_MOLT, name: "물 속 탈피", restriction: "없음", removalCondition: "전투 종료",
+    recoverNaturallyFromTurn: 3, recoverNaturallyChance: 40, battleAura: "regen-sparkle",
+    runtimeEffects: { maxTurns: 3, hpHealPercentPerTurn: 6, removeOnBattleEnd: true } } });
+  const skill = (s: Rec) => exec(project, "upsert_skill", { skill: { variance: 12, hitRate: 95, mpCost: { flat: 0, percentMax: 0 }, stateEffects: [], ...s } });
+  // ① 물어뜯기 — 한 사람, 독.
+  skill({ id: SKILL_BITE, name: "물어뜯기", scope: "enemy", type: "normal", power: 78, description: "넓은 입으로 한 사람을 문다. 이빨의 물때가 독이 된다.",
+    effect: { kind: "damage", statistic: "attack", affects: "hp" }, stateEffects: [{ stateId: "state_poison", chance: 45, operation: "add" }], animationId: "anim_gen_claw_rake" });
+  // ② 꼬리 휩쓸기 — 파티 전체.
+  skill({ id: SKILL_TAIL, name: "꼬리 휩쓸기", scope: "allEnemies", type: "normal", power: 52, hitRate: 90, description: "굵은 꼬리로 앞을 쓸어 낸다.",
+    effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_tackle_impact" });
+  // ③ 아가미 노래 — 한 차례 모은 뒤 전체 큰 피해 + 둔화. 번개 한 번 또는 큰 피해로 끊긴다(예고: 「준비한다!」).
+  skill({ id: SKILL_SONG, name: "아가미 노래", scope: "allEnemies", type: "normal", power: 150, variance: 8, hitRate: 100,
+    description: "아가미를 펴 소리를 모았다가 갱도를 울린다. 맞으면 둔해진다.\n모으는 동안 번개에 맞거나 크게 다치면 끊긴다.",
+    effect: { kind: "damage", statistic: "mind", affects: "hp" }, stateEffects: [{ stateId: "state_agility_down", chance: 90, operation: "add" }], animationId: "anim_gen_power_aura",
+    // 끊어도 비틀지는 않는다 — 비틀면 아는 플레이어가 영주의 차례를 통째로 빼앗아 승률이 100%가 됐다(시뮬 80판).
+    chargeTurns: 1, chargeBreak: { damage: 380, elementIds: ["thunder"], message: "아가미가 번개에 오그라든다! 노래가 끊겼다.", stagger: false } });
+  // ④ 비늘 곤두세우기 — 예고 없는 자세. 두 차례 동안 물리 반격(100%)·물리 방어 1.6배. 마구 치는 플레이어를 벌한다.
+  skill({ id: SKILL_SHELL, name: "비늘 곤두세우기", scope: "self", type: "normal", power: 0, variance: 0, hitRate: 100,
+    description: "등비늘을 칼날처럼 세운다. 그 사이 몸을 치면 꼬리가 되받아친다.",
+    effect: { kind: "support" }, stateEffects: [{ stateId: STATE_SHELL, chance: 100, operation: "add" }], animationId: "anim_gen_power_aura" });
+  // ⑤ 흙탕물 뿜기 — 한 사람 암흑 + 젖음(젖으면 번개를 맞는 쪽이 된다 — 엘레나에게 쏘면 번개 운용이 꼬인다).
+  skill({ id: SKILL_MUD, name: "흙탕물 뿜기", scope: "enemy", type: "normal", power: 40, description: "썩은 흙탕물을 얼굴에 뿜는다. 눈이 흐려지고 몸이 젖는다.",
+    effect: { kind: "damage", statistic: "mind", affects: "hp" }, elementId: "water",
+    stateEffects: [{ stateId: "state_blind", chance: 80, operation: "add" }, { stateId: "state_silence", chance: 50, operation: "add" }], animationId: "anim_gen_power_aura" });
+  // ⑥ 물 속 탈피 — 예고(물에 몸을 담근다) 뒤 재생. 크게 때리면 끊긴다.
+  skill({ id: SKILL_MOLT, name: "물 속 탈피", scope: "self", type: "normal", power: 0, variance: 0, hitRate: 100,
+    description: "물에 몸을 담그고 허물을 벗는다. 새 살이 돋는 동안 상처가 아문다.\n담그는 동안 크게 다치면 물 밖으로 뛰쳐나온다.",
+    effect: { kind: "support" }, stateEffects: [{ stateId: STATE_MOLT, chance: 100, operation: "add" }], animationId: "anim_gen_power_aura",
+    chargeTurns: 1, chargeBreak: { damage: 300, elementIds: ["thunder"], message: "물속에서 번개를 맞고 뛰쳐나온다! 탈피가 끊겼다.", stagger: false } });
+  // ⑦ 붉은 아가미 — 2페이즈 들어설 때 성을 낸다(공격 상승).
+  skill({ id: SKILL_ROAR, name: "붉은 아가미", scope: "self", type: "normal", power: 0, variance: 0, hitRate: 100,
+    description: "아가미를 곧추세우고 성을 낸다. 공격이 오른다.", effect: { kind: "support" },
+    stateEffects: [{ stateId: "state_attack_up", chance: 100, operation: "add" }], animationId: "anim_gen_power_aura" });
+  // ⑧ 메아리 사냥 — 2페이즈. 두 차례 모았다가 한 사람에게 큰 피해(가장 약한 쪽). 번개로만 끊긴다 — 피해로는 안 끊긴다.
+  skill({ id: SKILL_ECHO, name: "메아리 사냥", scope: "enemy", type: "normal", power: 230, variance: 8, hitRate: 100,
+    description: "울음을 벽에 튕겨 숨은 먹이를 찾는다. 두 차례 소리를 모은 뒤 한 사람을 덮친다.\n번개만이 소리를 흩는다.",
+    effect: { kind: "damage", statistic: "attack", affects: "hp" }, animationId: "anim_gen_claw_rake",
+    chargeTurns: 2, chargeBreak: { elementIds: ["thunder"], message: "번개 소리에 메아리가 흩어졌다!", stagger: true } });
+  // ⑨ 저수조 해일 — 2페이즈. 한 차례 모은 뒤 전체 물 피해 + 젖음(다음 노래·번개에 약해진다). 큰 피해로 끊긴다.
+  skill({ id: SKILL_FLOOD, name: "저수조 해일", scope: "allEnemies", type: "normal", power: 120, variance: 10, hitRate: 100,
+    description: "꼬리로 저수조 물을 퍼올려 덮친다. 젖은 몸은 소리와 번개를 더 맞는다.\n퍼올리는 동안 크게 다치면 물이 흩어진다.",
+    effect: { kind: "damage", statistic: "attack", affects: "hp" }, elementId: "water",
+    stateEffects: [{ stateId: "state_wet", chance: 100, operation: "add" }], animationId: "anim_gen_tackle_impact",
+    chargeTurns: 1, chargeBreak: { damage: 420, message: "퍼올린 물이 흩어졌다!", stagger: false } });
 
   exec(project, "upsert_enemy", { enemy: {
-    id: FS2_WELL_BEAST_ENEMY, name: "우물 밑 눈먼 영주", level: 14, monsterResourceId: "generated-enemy-golem-clay", battleScalePercent: 125,
+    id: FS2_WELL_BEAST_ENEMY, name: "우물 밑 눈먼 영주", level: 18, monsterResourceId: "generated-enemy-golem-clay", battleScalePercent: 125,
     collapseEffect: "bossSink", hideHp: true,
-    stats: { maxHp: 2600, maxMp: 0, attack: 118, defense: 62, mind: 96, agility: 44 },
-    skillIds: ["skill_attack", SKILL_BITE, SKILL_TAIL, SKILL_SONG, SKILL_ROAR],
+    // 숨은 보스 — Lv14 두 사람 기준 시뮬 80판(scripts/qa/zz-well-beast-sim.mts)으로 맞춘 값. 민첩은 몇 포인트에도 승률이 크게 흔들린다.
+    stats: { maxHp: 7280, maxMp: 0, attack: 298, defense: 74, mind: 153, agility: 56 },
+    skillIds: ["skill_attack", SKILL_BITE, SKILL_TAIL, SKILL_SONG, SKILL_SHELL, SKILL_MUD, SKILL_MOLT, SKILL_ROAR, SKILL_ECHO, SKILL_FLOOD],
     actions: [
-      act(SKILL_BITE, 6), act(SKILL_TAIL, 4),
-      act(SKILL_SONG, 9, { kind: "turn", start: 2, interval: 3 }),
-      // 2페이즈 — 노래가 잦아지고 성을 낸다.
-      act(SKILL_SONG, 10, { kind: "switch", switchId: SW_WELL_SONG, value: true }),
-      act(SKILL_ROAR, 8, { kind: "turn", start: 6, interval: 5 }),
+      // 1페이즈(아가미 노래가 리듬의 중심 — 석판 「셋째 숨마다 노래」): 2·5·8…번째 차례에 노래를 모은다.
+      act(SKILL_BITE, 5, P1), act(SKILL_TAIL, 4, P1), act(SKILL_MUD, 3, P1),
+      act(SKILL_SONG, 20, { kind: "turn", start: 2, interval: 3 }),  // 2페이즈에 들어서면 순환 칸(40)이 이긴다
+      // 비늘은 노래 직후(3·6·9…) — 노래를 끊으려고 칼을 휘두르던 손이 비늘에 걸린다.
+      act(SKILL_SHELL, 18, { kind: "turn", start: 3, interval: 3 }),
+      // 피가 절반 아래로 내려가기 전, 크게 다쳤다 싶으면 물에 든다.
+      act(SKILL_MOLT, 15, { kind: "hp", minPercent: 51, maxPercent: 75 }),
+      // 2페이즈(붉은 아가미, 스위치) — 패턴이 바뀐다: 메아리 사냥(2차례 예고)·해일·노래가 번갈아, 비늘은 해일 뒤.
+      // 순환의 각 칸은 쓰고 나면 자기 스위치를 끄고 다음 칸을 켠다(행동 뒤 스위치 — 적 차례마다 한 칸). 그 사이에 기본 행동이 끼지 않는다.
+      act(SKILL_ECHO, 40, { kind: "switch", switchId: SW_WELL_ECHO, value: true }, { off: SW_WELL_ECHO, on: SW_WELL_FLOOD }),
+      act(SKILL_FLOOD, 40, { kind: "switch", switchId: SW_WELL_FLOOD, value: true }, { off: SW_WELL_FLOOD, on: SW_WELL_BITE2 }),
+      act(SKILL_BITE, 40, { kind: "switch", switchId: SW_WELL_BITE2, value: true }, { off: SW_WELL_BITE2, on: SW_WELL_SONG }),
+      act(SKILL_SONG, 40, { kind: "switch", switchId: SW_WELL_SONG, value: true }, { off: SW_WELL_SONG, on: SW_WELL_SHELL2 }),
+      act(SKILL_SHELL, 40, { kind: "switch", switchId: SW_WELL_SHELL2, value: true }, { off: SW_WELL_SHELL2, on: SW_WELL_MUD2 }),
+      act(SKILL_MUD, 40, { kind: "switch", switchId: SW_WELL_MUD2, value: true }, { off: SW_WELL_MUD2, on: SW_WELL_ECHO }),
+      act(SKILL_TAIL, 6, P2),
     ],
-    // 아가미가 젖은 물짐승 — 번개 두 배, 불은 반감, 얼음 보통. 수면·정지는 안 먹는다(눈이 없어 잠들지 않는다).
+    // 아가미가 젖은 물짐승 — 번개 두 배, 불은 반감, 물은 흡수 가까이. 수면·정지·암흑은 안 먹는다(눈이 없다).
     elementRates: { thunder: "A", fire: "D", water: "E" },
-    stateRates: { state_sleep: "E", state_stop: "E", state_blind: "E", state_paralysis: "C", state_poison: "C", state_wet: "E" },
-    rewards: { exp: 900, gold: 360, dropRatePercent: 0, drops: [] },
+    stateRates: { state_sleep: "E", state_stop: "E", state_blind: "E", state_paralysis: "D", state_poison: "D", state_wet: "E", state_silence: "E" },
+    rewards: { exp: 1800, gold: 600, dropRatePercent: 0, drops: [] },
   } });
 
   exec(project, "upsert_troop", { troop: {
@@ -148,12 +210,12 @@ function wellData(project: Project, exec: Exec): void {
       conditions: [{ kind: "enemyHpBelow", enemyId: FS2_WELL_BEAST_ENEMY, percent: 50 }],
       commands: [
         narrate("눈먼 영주가 몸을 일으킨다.\n아가미가 핏빛으로 곧추선다!"),
-        setSw(SW_WELL_SONG),
         m2("m2-100-change-enemy-state", { target: FS2_WELL_BEAST_ENEMY, operation: "add", value: "state_attack_up" }),
-        say(ELENA, "노래를 또 모을 거야. 그때 번개로 끊어!"),
+        m2("m2-100-change-enemy-state", { target: FS2_WELL_BEAST_ENEMY, operation: "remove", value: STATE_MOLT }),
+        setSw(SW_WELL_P2), setSw(SW_WELL_ECHO),
+        say(ELENA, "소리를 두 번 모으고 있어 — 저건 피해로는 안 끊겨. 번개로만!"),
       ] },
   ];
-
   // 전리품 — 아가미 장신구(소리 공격 「둔함」 막기 + 마력). 보스 드롭은 확정이라 이벤트에서 준다.
   const wearers = ["actor_hero", "actor_fs_elena", "actor_fs2_sarah", "actor_fs_iris"].filter((id) => project.database.actors.some((a) => a.id === id));
   const classes = [...new Set(wearers.map((id) => project.database.actors.find((a) => a.id === id)?.classId).filter((c): c is string => !!c))];
@@ -167,10 +229,6 @@ function wellData(project: Project, exec: Exec): void {
 
 /** wellShaftRooms 평면으로 지은 갱도에 장치·읽을거리·상자·보스를 단다. ret = 보스에게 지면 물러날 자리. */
 export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string, ret: { mapId: string; at: Cell }): void {
-  for (const [id, name] of [[SW_WELL_GATE, "B3 우물 밑: 저수조 쇠살문"], [SW_WELL_CRACK, "B3 우물 밑: 금 간 벽"],
-    [SW_WELL_BEAST_MET, "B3 우물 밑: 눈먼 영주가 깼다"], [SW_WELL_BEAST_DOWN, "B3 우물 밑: 눈먼 영주를 쓰러뜨렸다"], [SW_WELL_SONG, "B3 우물 밑: 붉은 아가미(전투)"]] as const) {
-    ensureSwitch(project, id, name);
-  }
   wellData(project, exec);
   const map = (): GameMap => M(project, mapId);
 
@@ -183,9 +241,12 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
     sign("물지기 일지", "셋째 해. 장마에 저수조가 넘쳤다.\n쇠살문은 서쪽 무너진 밑동의 고패로 올린다."),
     sign("물지기 일지", "다섯째 해. 영주에게 횃불을 던졌더니 웃는 것 같았다.\n젖은 몸에 불은 소용없다."),
     sign("물지기 일지", "여섯째 해. 천둥 치던 밤, 영주가 사흘을 숨어 나오지 않았다.\n…번개를 싫어하는 걸까."),
+    sign("물지기 일지", "일곱째 해. 셋째 숨마다 아가미가 열린다. 노래가 끝나면 등비늘이 선다.\n선 비늘을 창으로 찌른 바르그는 꼬리에 맞아 갈비가 나갔다."),
+    sign("물지기 일지", "아홉째 해. 영주가 물에 몸을 담그면 상처가 아문다. 그때 크게 쳐서 끌어내라.\n(이 장 아래는 물에 번져 읽을 수 없다.)"),
   ])]);
   addEv(project, mapId, "ev_fs2_well_tablet_2", "옛 저수조 석판", WELL.tabletNest, [page("ev_fs2_well_tablet_2_p", "비문", [], [
     sign("옛 저수조 석판", "노래가 차오를 때 하늘의 불로 아가미를 지져라.\n노래는 목에서 끊긴다."),
+    sign("옛 저수조 석판", "아가미가 피로 물들면 주인은 벽에 소리를 두 번 튕겨 한 사람을 찾는다.\n그 메아리는 칼로는 못 끊는다. 하늘의 불만이 흩는다."),
     say(ELENA, "하늘의 불… 번개 말이야.\n내 연쇄 번개라면 닿을 거야."),
   ])]);
 
@@ -252,7 +313,10 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
   // 보스 — 둥지 한가운데 웅크린 영주. 깨우는 줄을 밟으면 한 번 연출 뒤 조사로 싸운다(이기기 전까지 다시 도전).
   const beastId = "ev_fs2_well_beast";
   const beastGfx = { sprite: { type: "bundled", id: "tex_easyrpg_charset_monster1" }, direction: "down", pattern: 0, scale: 1.4, scaleMode: "manual" };
+  // 전투 스위치(2페이즈·순환)는 세션 스위치라 지고 다시 붙으면 남아 있다 — 싸움마다 처음 상태로 돌린다.
+  const resetFight = [SW_WELL_P2, SW_WELL_ECHO, SW_WELL_FLOOD, SW_WELL_BITE2, SW_WELL_SONG, SW_WELL_SHELL2, SW_WELL_MUD2].map((id) => setSw(id, false));
   const fight: Command[] = [
+    ...resetFight,
     bgm(BOSS_BGM),
     { kind: "battleProcessing", troopId: FS2_WELL_BEAST_TROOP, canEscape: false, canLose: true, branchOnResult: true,
       victoryBranch: [
@@ -276,7 +340,14 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
   addEv(project, mapId, beastId, "우물 밑 눈먼 영주", WELL.beast, [
     page(`${beastId}_sleep`, "웅크린 영주", [], [narrate("녹슨 관 사이 물가에 희고 커다란 짐승이 웅크려 있다.\n숨 쉴 때마다 붉은 아가미가 일렁인다.")],
       { graphic: beastGfx, footprint: { width: 3, height: 2 }, overlapForbidden: true, animationType: "fixedGraphic" }),
-    page(`${beastId}_awake`, "깨어난 영주", [sw(SW_WELL_BEAST_MET)], [narrate("눈먼 영주가 소리 나는 쪽으로 고개를 돌린다."), ...fight],
+    // 말을 걸어야만 싸운다(조사 버튼) — 닿거나 지나가면 아무 일도 없다. 싸울지 한 번 더 묻는다.
+    page(`${beastId}_awake`, "깨어난 영주", [sw(SW_WELL_BEAST_MET)], [
+      narrate("눈먼 영주가 소리 나는 쪽으로 고개를 돌린다."),
+      { kind: "choices", prompt: "싸울까?", cancelBehavior: "branch", options: [
+        { text: "싸운다", branch: fight },
+        { text: "아직이다", branch: [say(ELENA, "…천천히 물러나. 소리 내지 말고.")] },
+      ], cancelBranch: [say(ELENA, "…천천히 물러나. 소리 내지 말고.")] } as unknown as Command,
+    ],
       { graphic: beastGfx, footprint: { width: 3, height: 2 }, overlapForbidden: true, animationType: "step" }),
     page(`${beastId}_down`, "물러간 자리", [sw(SW_WELL_BEAST_DOWN)], [narrate("물가에 허옇게 벗겨진 허물만 남아 있다.\n관 속으로 물 흐르는 소리가 다시 고르다.")], { priority: "below" }),
   ]);
