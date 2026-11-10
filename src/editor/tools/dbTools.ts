@@ -2010,12 +2010,14 @@ const upsertEnemy: ToolDefinition = {
  */
 function withEnemyIdsFromMembers(troop: unknown): unknown {
   if (!troop || typeof troop !== "object" || Array.isArray(troop)) return troop;
-  const record = troop as Record<string, unknown>;
-  if (record.enemyIds !== undefined || !Array.isArray(record.members)) return troop;
+  let record = troop as Record<string, unknown>;
+  // 빈 members 는 안 준 것이다 — enemyIds 와 같이 온 빈 배열이 «적 0마리»로 읽혀 거절되지 않게.
+  if (Array.isArray(record.members) && record.members.length === 0) { const { members: _empty, ...rest } = record; record = rest; }
+  if (record.enemyIds !== undefined || !Array.isArray(record.members)) return record;
   const enemyIds = record.members
     .map((member) => (member && typeof member === "object" ? (member as { enemyId?: unknown }).enemyId : undefined))
     .filter((enemyId): enemyId is string => typeof enemyId === "string" && enemyId.length > 0);
-  return enemyIds.length > 0 ? { ...record, enemyIds } : troop;
+  return enemyIds.length > 0 ? { ...record, enemyIds } : record;
 }
 
 /**

@@ -279,6 +279,55 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 - 판정 쪽(무대를 찍기, `bp-open-*` 결함을 모델 밖으로 빼기)은 B2(#4549)에 있다.
 - 증거: `test/openingStageReplacesDefault.test.ts`. 모델 없는 실행(설원 세계): 기본 장면 4개 → 무대 호출 뒤 0개 + 무대, 끝맺음을 다시 돌려도 그대로.
 
+## 상점 주인은 `add_people` 한 번 — `sells` (2026-11-11, B5a)
+
+구조 재점검 5-1: 상점 주인 한 명에 호출 4~6번이 들었다(아이템 조회 → 사람 → 이벤트 조회 → `set_shop_stock`). `add_people` 에 상점 칸이 없었다.
+
+- 사람 명세에 `sells:[{item, price?}]`. `item` 은 아이템·장비의 이름이나 id 다. 대사 뒤에 사고파는 상점(`allowSell`)이 열린다 — 안에서 `set_shop_stock` 을 부른다.
+- 없는 이름은 값만 있는 잡화로 만들고 답에 그 사실을 적는다(효과는 `upsert_item` 으로).
+- 이미 있는 같은 이름의 NPC 에도 단다(그림·자리는 그대로).
+- 증거: `test/aiV2PeopleShop.test.ts`. 모델 없는 실행: 한 번 호출로 (10,6)에 상인 + `text → shop[회복약, 해독초@30, 마을 지도@15]`.
+
+## 도구가 빈 칸·막힌 문앞을 스스로 읽는다 — 감싸개 걷기 1차 (2026-11-11, B5a)
+
+구조 재점검 5-2: `game.ts` 의 감싸개 여섯 개가 한 도구씩 나쁜 기본값·거절을 밖에서 고쳤고, 대부분 한국어 거절 글을 정규식으로 읽어 다시 불렀다 — 도구의 오류 글 한 줄을 바꾸면 재시도가 조용히 멈춘다.
+
+도구로 옮긴 것(감싸개에서 지웠다):
+- `upsert_troop`: 빈 `members:[]` 는 안 준 것이다(전: 「최소 1마리의 적이 필요」 거절).
+- `place_field_enemy`: 서 있는 적의 `patrol`·추격 적의 내용 없는 `patrol`(directions 없음 + length ≤ 1)은 무시하고 알린다(전: 거절). 전투 그림과 다른 `graphic` 은 거절하지 않고 전투 그림으로 놓고 알린다(전: 거절 → 감싸개가 graphic 을 빼고 재호출).
+- `create_transfer_pair`: `doorAt` 이 `x,y` 와 같은 칸이면 문앞만 준 것으로 읽는다. 문앞이 막혀 그 자리에 못 이으면 `doorAt` 없이 가장 가까운 닿는 칸으로 옮겨 잇고, 옮긴 칸을 답에 적는다(전: 거절 → 감싸개가 거절 글에서 끝·좌표를 긁어 재호출).
+
+아직 감싸개로 남은 것(작은 일 측정 뒤에 정한다):
+- `withItemUtilityCleanup`: 회복약에 딸려 온 `escapeTo`·`repelSteps` 를 이름·설명 낱말로 가려 뺀다(모델 버릇 보정 — 도구 계약으로 옮길 근거가 아직 없다).
+- `withTransferRelocation`: 두 끝을 놓은 뒤의 거절(기존 문 봉쇄·도착 칸 겹침)에 `doorAt` 을 빼고 다시 부른다. 문앞 막힘은 이제 도구가 먼저 처리한다.
+- `withActorLookRetry`(칩 관문), `withEncountersOnlyWhenAsked`(요청에 따라 조우 끔), `withPictureSearchBudget`(그림 찾기 3번 상한).
+
+증거: `test/toolsReadEmptyAndBlocked.test.ts`.
+
+## 장소 설계는 턴을 넘어 남는다 — 다음 턴의 `edit_place` (2026-11-11, B4b)
+
+**무엇이 문제였나.** `edit_place` 는 「이번 실행에서 지은 설계」(`session.places`)가 있어야 고친다. 세션은 턴마다 새로 만들므로
+다음 턴의 «그 여관에 벽난로 하나 더» · «동굴 배치 좀 바꿔 줘» 는 항상 「지은 기록이 없다」로 거절됐고, 거절 글은 `make_place(mapId)` 로
+통째 새로 지으라고만 했다(구조 재점검 3-3). 세계 장소·칩셋 풀 마을은 같은 턴 안에서도 「구성기가 한 번에 짓는다 — 남은 문제는 보고에 적는다」로 끝났다.
+
+**규칙.** (`src/ai/v2/tools/placeMemory.ts`)
+
+- 턴 끝(`stamp`)에 지은 장소마다 빌더·명세·상태·입구와 그 맵들의 지문을 `assistantTodo.memory.places` 에 싣는다(호출 기록·고치기 바퀴 수는 싣지 않는다).
+  할 일을 적지 않은 턴은 앞 턴의 목록을 그대로 두고 이 기억만 갈아 끼운다.
+- 턴 시작에 읽는다. **맵 지문(이벤트 제외)이 저장할 때와 같을 때만** 되살린다 — 사이에 조수 밖에서 바뀐 맵은 설계가 더는 그 맵을 말하지 않고,
+  그 설계로 다시 지으면 사람이 손으로 고친 것이 지워진다. 사람을 더하거나 옮긴 것(이벤트)은 바뀐 것으로 치지 않는다.
+- 되살린 기록은 `session.pastPlaces` 에 둔다. `session.places` 는 «이번 턴에 지은 것» 이라 끝맺음 단계·관문이 읽는다 — 앞 턴의 장소를 거기 넣으면
+  이번 턴이 손대지 않은 맵까지 끝맺음이 만진다. `edit_place` · `move_object` · `review_layout` · `inspect` 만 `session.placeOf(mapId)` 로 둘 다 본다.
+  고치면 그때 이번 턴 기록이 되고, 결과에 «앞 턴의 설계에서 고쳤다 — 그 뒤에 맵에 더한 것은 설계에 없다» 는 글이 붙는다.
+- 설계가 없으면 거절 글이 **이유**(짓지 않은 맵 / 조수 밖에서 바뀐 맵)와 **그 맵에서 되는 도구**(`add_people` · `move_event` · `place_object` ·
+  `furnish_outdoor_area` · `move_object`)를 이르고, 통째 다시 짓기(`make_place` + `spec.mapId`)는 요청이 그것을 바랄 때만 하라고 적는다.
+- 구성기가 한 번에 짜는 장소(빌더의 `onePass` — 세계 장소 `world` · 칩셋 풀 마을 `village-pool`)는 `edit_place` 가 짓기 전에 거절한다
+  (`place/onePass.ts`). 맵은 그대로이고, 거절 글이 같은 도구들을 이른다. 거절은 한 바퀴로 세되 앞 턴 기록을 이번 턴 기록으로 옮기지 않는다.
+
+**근거(모델 없이).** 여관 실내를 짓고 → 저장본 왕복(`serialize` → `deserialize`) → 새 세션: 고치기 전 `edit_place` 는 거절, 고친 뒤에는 벽난로를 더한다.
+마을·동굴·실내 세 곳의 기억은 2,889자이고 저장본 왕복 뒤에도 지문이 같다(되살림 3 · 버림 0). 벽 한 칸을 손으로 바꾸면 그 장소만 버린다.
+시험 `test/aiV2PlaceMemory.test.ts`. Terra 로 잰 값은 아직 없다.
+
 ## 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
 
 감사(`~/claude-viz/map-sameness-1029.html`, 묶음 vm1~vm8): 여관 1층 23개 중 13개가 같은 16×14 선술집 홀(「여관」 낱말 → 장소 견본 tavern, 뒤집기·손님 자리 네 판),
