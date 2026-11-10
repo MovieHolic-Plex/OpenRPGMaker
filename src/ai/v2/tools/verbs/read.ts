@@ -3,13 +3,13 @@ import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { PLACE_SPEC_KINDS } from "../../prompt";
 import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
 import { createBuildRun } from "../../buildRun";
-import { builderFor } from "../../builders";
+import { builderFor } from "../../place/builders";
 import { summarizeChecks } from "../../checks";
 import type { PlaceSpec } from "../../types";
 import { HELPER_LIMITS, runHelperJobs, type HelperJob } from "../../helpers";
 import { restoreEventFromBefore } from "../../restoreEvent";
-import { roomParts, SHAPE_EXAMPLES } from "../../roomParts";
-import { ROOM_IDEA_RULE, roomIdeasFor } from "../../roomIdeas";
+import { roomParts, SHAPE_EXAMPLES } from "../../place/roomParts";
+import { ROOM_IDEA_RULE, roomIdeasFor } from "../../place/roomIdeas";
 import { text, see, withImages } from "../support";
 import type { VerbContext } from "../context";
 

@@ -7,7 +7,7 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 | 단계 | 누가 | 무엇 |
 |---|---|---|
 | 1 해석 | 모델 | 요청 → 타입 있는 명세 하나(`src/ai/v2/types.ts` PlaceSpec·PersonSpec·EventSpec·ObjectSpec). 좌표 없음, 자리는 낱말. |
-| 2 짓기 | 결정론 빌더 | 명세 → v1 결정론 도구 호출(`src/ai/v2/builders/*`, `people.ts`, `events.ts`, `drawObject.ts`). |
+| 2 짓기 | 결정론 빌더 | 명세 → v1 결정론 도구 호출(`src/ai/v2/place/builders/*`, `people.ts`, `events.ts`, `drawObject.ts`). |
 | 3 보기 | 코드 | 1배 그림 + 기계 검사(`checks.ts`: 도달·출입 착지·계단·NPC 도달·맨바닥·빈 칸). |
 | 4 비평 | 다른 호출 | 요청 원문 + 1배 그림만 보는 독립 비평가(`critic.ts`, v1 `featureCriticPrompt` 루브릭 축 1·2·6). major 를 칸 좌표로. |
 | 5 고치기 | 모델 → 빌더 | `edit_place` 패치(구역·주인공 물건 near·크기·variant·dressing)로 같은 빌더를 다시. 맵당 3바퀴(`V2_MAX_REPAIR_ROUNDS` — 2026-10-30 할 일 고리에서 1→3, 항목 시도 상한 3·진척 규칙과 같은 값; 그 전 6차는 속도로 1바퀴). 비평·검사·화면 검수 결함은 할 일 항목으로 돌아온다(아래 «할 일 고리»). |
@@ -75,7 +75,7 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 | 사람 칩 고르기 | `people.ts` `pickPersonGraphic` | 몬스터 수집 전용 칩(Scarloxy)은 몬스터 수집 게임이 아니면 고르지 않는다 — 도구 실행 구간 밖에서는 카탈로그 필터가 없어 그 칩이 뽑혔고 뒤이은 `upsert_event` 가 «몬스터 수집 잠금» 으로 거절돼 경로 전체가 안 지어졌다 |
 | 사람이 서로 달라 보이게 | `people.ts` `pickPersonGraphic` · `personName.ts` `personGraphicFor` | 역할 낱말을 못 알아들은 이름(«족장 바라»·«무당 누리»)은 순위 1등 고정이 아니라 사람 칩 전체(«마을 사람» 60)에서 이름 해시로 돌려 고른다 — Terra fun-w2 에서 사람 다섯이 모두 「중년 남성 주민」이었다. 다른 맵에서 이미 쓴 칩은 뒤로 밀고(+8), 아이 칩은 아이라고 했을 때만. 같은 이름의 사람이 게임 어디엔가 이미 서 있으면 그 모습을 그대로 쓴다 |
 | 싸우는 상대의 맵 그림 | `blueprintPath.ts` `foeGraphic` → `ChainLink.graphic` | 그 무리 앞장선 적의 전투 그림에 대응하는 필드 그림(보이는 적 `place_field_enemy` 와 같은 규칙: 걷기 칩, 없으면 전투 도트 그대로). 그런 그림이 없을 때만 사람 칩 — «늪의 송곳니»(짐승)가 주민 칩으로 서 있었다 |
-| 할 일의 장소 검사 | `todo/checks.ts` `checkPlace` | 세계 청사진 `places` 에 적힌 맵은 그 종류로 지은 장소다 — 이름 낱말로 추정한 종류(「속삭임 숲」 = 들판)가 할 일의 종류(던전)와 달라도 통과. Terra jrpg-w2 에서 지은 deep-forest 를 «looks like field — not a dungeon place» 로 거절해 끝내기가 막혔다 |
+| 할 일의 장소 검사 | `judge/todoChecks.ts` `checkPlace` | 세계 청사진 `places` 에 적힌 맵은 그 종류로 지은 장소다 — 이름 낱말로 추정한 종류(「속삭임 숲」 = 들판)가 할 일의 종류(던전)와 달라도 통과. Terra jrpg-w2 에서 지은 deep-forest 를 «looks like field — not a dungeon place» 로 거절해 끝내기가 막혔다 |
 
 | 단계 글은 청사진에 남는다 | `GameBlueprintStep.text`·`keepStepText` | `build_blueprint_path{steps}` 가 받은 대사·고를 것·승리 대사를 청사진 단계에 남긴다. 한 단계만 고쳐 다시 불러도, 다음 턴에 불러도, 끝맺음이 자동으로 다시 지어도 나머지 단계의 글이 남는다. `write_blueprint` 다시 쓰기는 같은 단계(id·종류·사람)의 글을 물려받는다 |
 | 마지막 단계 | `puzzle.ts` ending 고리 | 마지막이 고르기면 엔딩 이벤트에서 고르고(고른 것의 스위치 → 결말 줄 → 엔딩), 마지막이 사람·싸움인데 대사가 없으면 «살펴보았다»·엔딩 글을 그 사람 입으로 말하지 않는다(서술로 열고 엔딩 글은 이긴 뒤 서술 `closeLines`) |
@@ -105,6 +105,113 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 «저택 탈출»·«탐정»·«카페 경영» 요청이 열쇠 해시로 선사 시대 세계를 받음(`fitsAnyWorld` — 무엇이든 좋다는 요청과 모험·RPG 요청만) · 갇힌 방 게임은 세계를 쓰지 않음 ·
 세계 없는 게임의 청사진에 `places` 가 남아 끝맺음이 같은 장소를 한 번 더 지음 · 설계자 청사진(`OPRN_V2_BLUEPRINT_DESIGNER`)에서 세계 카드만 실리던 반쪽 상태 · 세계 시험이 vitest 15초 상한을 넘음(느린 시험에 상한을 주고 경로 시험은 세계를 짓지 않게).
 
+## 완료 판정 — 화면 검수는 «건넨 막음»만 완료를 막는다 (2026-11-11 리팩토링 B2)
+
+근거: Terra 최종 두 판 여섯 턴(`jrpg-w3`·`fun-w3`, 2026-11-10) 끝의 막힘 51건 가운데 50건이 화면 검수 항목이고 43건이 «다듬기» 급이었다. 2~3턴은 도구 200회를 쓰고 막힘 수가 그대로였다.
+구조 재점검 2절(`http://mdc-server:18301/assistant-structure-review.html`). 아래 규칙이 `vqaActionable`·`vqaRepeated`·`vqaShouldContinue`(위 «화면 검수 결함 나누기» 줄의 옛 이름)를 대신한다.
+
+**규칙.** 완료 = 열린 항목 0 · 기계 확인 ✗ 0 · 남은 문제 0 · **완료를 막는 막힘 0**(`TodoStore.holds`).
+
+| 화면 검수 결함 | 어디로 | 완료를 막나 |
+|---|---|---|
+| 모델 밖(런타임·빌더 몫 — `vqaClassify`) | 장부(`v2.vqa.outside` + 최종 보고 «화면 검수 장부») | 아니오 |
+| 막음 급, 모델이 고칠 것 | 할 일 항목. 한 번 건넨 뒤 다음 판에도 그대로면 그 항목 자신의 글로 막힘 | **예** — 모델이 받아 본 뒤 남았을 때만 |
+| 다듬기 급, 고치는 호출이 있음(`vqaFixCall`: 빈 방·빈 맵·타이틀 그림·모델이 지은 오프닝) | 할 일 항목(`severity: "polish"`)으로 한 번 | 아니오 — 남으면 표에 «다듬기 남음», 다시 열지 않는다(다음 턴 «계속»에서도) |
+| 다듬기 급, 고치는 호출이 없음 | 장부 | 아니오 |
+| 다시 찍어 볼 판이 남지 않은 판(다듬기 3판·막음 5판)의 새 다듬기 | 장부 | 아니오 |
+| 다시 찍어 볼 판이 남지 않은 판의 새 막음(모델이 고칠 것) | 최종 보고 «건네지 못한 화면 검수 막음»(`vqaUnofferedBlockers`) — 할 일 항목은 아니다 | **예** — 알려진 막음이다. 다음 턴의 화면 검수가 할 일로 건넨다 |
+
+모델이 받아 보기 전에 코드가 닫은 화면 검수 항목(`closedBy: auto` 이고 재주입에 실린 적 없음)도 막힘으로 세지 않는다(표에 «건네지 못함»). 검수자가 틀렸으면 조수는 그 항목을 `drop`(이유) 한다.
+조수 항목·함수 검사·비평 항목의 막힘은 종전대로 완료를 막는다.
+
+**같이 고친 것.**
+
+| 무엇이 틀렸나 | 고친 곳 |
+|---|---|
+| «두 판 연속 그대로» 가 위치 글+결함 글의 낱말 3개 겹침이라, 같은 그림의 서로 다른 결함이 위치 접두어(맵 이름·시작 칸 주석)만으로 모두 «그대로» → 모델이 손대기 전에 옆 항목의 이유로 막힘 | `vqa.ts` `vqaSameDefect` — 같은 대상(종류+ref)이고 **결함 글끼리** 글자 두 개 조각 겹침(Dice) 0.5 이상. 판 기록의 다시 쓴 같은 결함은 0.57 이상, 같은 맵의 다른 결함은 0.36 이하 |
+| 오프닝 애니메틱 그림에 대상 ref 가 없어 오프닝 1/4 와 4/4 가 같은 대상 | `vqaShotPlan` — 애니메틱 그림의 ref = 장면 id |
+| 항목 열쇠가 `vqa:판:순번` 이고 턴마다 1판부터라, 이어 받은 항목 내용이 다른 결함으로 덮임(1턴 v16 «오프닝 빈 블록» → 2턴 v16 «시작 칸이 맵 밖») | `turn/vqaItems.ts` — 열쇠 = 대상 + 결함 글 해시. 화면 검수 항목의 내용은 바꾸지 않는다(`TodoStore.append`) |
+| 같은 맵 조각 오프닝을 검수자가 한 판은 «모델 밖», 다른 판은 «막음»으로 올림 | `vqaClassify` — 장면 id 가 `bp-open-`(끝맺음 단계 `applyBlueprintOpening` 이 지은 것)이면 글·급에 상관없이 `builder-opening`(모델 밖). 그 그림들은 그림 수 상한에서 맨 뒤로 민다 |
+| 모델이 `author_opening_stage` 로 무대를 지어도 검수자는 옛 맵 조각만 봄 | `vqaShotPlan` — `opening.stage` 가 있으면 그 칸 둘레 24×14칸을 찍는다(ref `stage:<mapId>:<eventId>`) |
+| 화면 검수는 맵 조각 오프닝을 막고 → 조수가 오프닝을 끔 → 출하 관문이 «오프닝 없음», 검토자가 «보고와 반대» | 오프닝 결함의 고치는 호출은 무대(`author_opening_stage`)이고 «끄지 마라»를 적는다. 출하 검사 `opening` 줄에서 «끈다»를, `opening-no-place` 줄에서 맵 조각 깔기 권고를 뺐다 |
+| 독립 검토자가 출하 차단을 다시 막음으로 붙여(`withShipBlockers`), 관문이 기존 결함으로 면제한 것까지 비평 항목이 됨 | 출하 차단은 끝맺음 관문만 본다(면제 규칙도 `splitPreexisting` 하나). `withShipBlockers` 삭제 |
+| 검수자가 줄인 맵 그림에서 크기를 어림해 «시작 칸 19,35 가 약 30×25칸 맵 밖»(실제 44×36) | 맵 그림 이름표에 칸 수(「맵 «별샘 오아시스» (44×36칸 · …)」) + 지시문 «칸 수를 그림에서 어림하지 마라» |
+| 고치라고 건넨 뒤 프로젝트가 안 바뀌었는데 조수가 «끝»으로 표시한 항목이 ✓ 로 남음 | `closeVqaUnchanged` — 다시 찍지 않고 건넨 항목을 그대로로 닫는다 |
+| 사라진 결함의 항목이 막힘으로 남음 / 그림 수 상한으로 안 찍힌 맵의 결함이 «사라짐» | `noteVqaRound` — 그 대상을 이번 판이 찍었을 때만 사라졌다고 본다. 사라졌으면 막힌 항목도 닫는다 |
+
+코드: `src/ai/v2/turn/vqaItems.ts`(장부 `VqaFinding` · `noteVqaRound` · `closeVqaUnchanged` · `vqaLedgerLines` · `vqaUnofferedBlockers`), `src/ai/v2/judge/vqa.ts`, `src/ai/v2/judge/finalReport.ts`, `src/ai/v2/loop/todoStore.ts`(`holds` · `markOffered` · `byKey`).
+시험: `test/aiV2VqaJudge.test.ts` · `test/aiV2FinalReport.test.ts`(결함 글은 판 기록 그대로).
+아직 아닌 것: 화면 검수 분류의 나머지는 여전히 검수자 글의 낱말로 가른다. (턴 사이 기억은 아래 절.)
+
+## 턴 사이 기억 — 막힌 항목은 막힌 채로 이어 받는다 (2026-11-11 리팩토링 B4)
+
+근거: Terra 두 판의 2~3턴은 도구 200회(그중 `todo` 69회·읽기 40회)를 쓰고 막힘이 9→8→7, 10→8→9 였다. 이어 받을 때 막힌 항목을 모두 «대기»로 돌리고
+시도 수·실패 기록·막힌 이유를 지워, 턴마다 같은 항목을 처음부터 다시 다퉜다(구조 재점검 2-4절).
+
+**규칙.** «계속» 요청이 앞 턴의 목록을 이어 받을 때(`TodoStore.restore(state, decide)`, 결정은 `turn/carryOver.ts`):
+
+| 항목 | 이어 받는 모양 |
+|---|---|
+| 열린 항목 | 그대로 열림 |
+| 막힌 항목 | **막힌 채로** — 시도 수·마지막 실패 글·부른 동사(`meta.tried`, 8개까지)·막힌 이유가 같이 온다 |
+| 막힌 항목인데 대상(묶인 맵·이벤트, 장소 열쇠의 맵, 항목 글의 맵·이벤트 id)이 막힌 뒤로 바뀜(`meta.targetFp`) | 다시 연다(시도 수는 새로 세고, 마지막 실패와 부른 동사는 재주입 글에 «already tried in an earlier turn: …» 으로 실린다) |
+| 막힌 항목인데 이번 요청이 그 항목을 짚음(항목 id · 확인이 찾는 이름 · 묶인 맵 이름) | 다시 연다 |
+| 화면 검수 항목 | 대상이 바뀌어도 열지 않는다 — 이번 턴 화면 검수가 장부로 다시 본다(요청이 짚으면 연다) |
+| 검토자·리드 항목(앞 턴의 보고를 두고 한 지적) | 뺀다 — 그 보고는 이제 없고 이번 턴 보고는 다시 검토한다 |
+
+조수는 막힌 채 온 항목을 `todo(op:"start")` 로 스스로 다시 잡을 수 있다(새 방법이 있을 때). 새 목록(`init`)을 적어도 이어 받은 막힘은 지워지지 않는다.
+기계 확인이 달린 막힌 항목은 종전대로 매 멈춤마다 다시 재서 ✓ 면 닫힌다.
+
+**끝맺음 관문.** 이어 받은 막힌 관문 항목과 같은 문제가 이번 턴에도 나오면 새 항목을 만들지 않고 막힌 채 둔다(다시 다투지 않는다).
+이번 턴 검사에 안 나오면 «기존 결함»으로 뺀다 — 관문의 기준(시작 저장본·이 실행이 지은 장소)이 옮겨 가 다시 나올 길이 없는데 막힌 채 두면 그 뒤 모든 턴이 미완료가 된다(`syncGateItems`).
+
+**화면 검수 장부.** `assistantTodo.memory.vqa` 에 장부(결함·급·건넸는지·항목 연결, 40건까지)와 마지막으로 검수한 프로젝트 지문을 싣는다(`saveVqaBook`·`loadVqaBook`). 목록을 이어 받지 않는 턴에도 읽는다.
+
+- 새 턴 1판에서 앞 턴에 건넨 결함이 다시 보이면 새 항목이 되지 않는다(이어 받은 항목이 그 결함이다). 검수자에게는 장부의 남은 결함을 «지난번에 짚은 것»으로 준다.
+- 다듬기는 한 번 건넨 것으로 끝이다. 막음은 그 항목이 목록에 없을 때(목록을 이어 받지 않은 턴)만 다시 건넨다.
+- 앞 턴이 판이 남지 않아 건네지 못한 막음은 새 턴이 건넨다 — 프로젝트가 앞 턴 검수 뒤로 그대로면 다시 찍지 않고 바로(`handCarriedBlockers`, 실행 상태 `v2.vqa.carried`).
+- 프로젝트가 앞 턴의 마지막 검수 뒤로 그대로이고 건넬 것도 없으면 화면 검수를 돌리지 않는다(같은 그림이다).
+
+**열쇠.** 검토자·리드 항목의 열쇠도 지적 글에서 만든다(`reviewKey`). 옛 `adv:차례:순번` 은 다음 검토의 다른 지적이 같은 열쇠를 받아 내용을 덮었다.
+
+코드: `src/ai/v2/turn/carryOver.ts`, `src/ai/v2/turn/vqaItems.ts`, `src/ai/v2/loop/todoStore.ts`(`restore` · `loadMemory` · `noteTried` · `memory`), `src/ai/v2/judge/gates.ts`. 시험: `test/aiV2TurnMemory.test.ts`.
+저장 크기(탐침): 막힌 항목 6개의 목록 1.4KB, 장부 4건 1.1KB.
+아직 아닌 것: 세션 상태(지은 장소 설계 `session.places` · 그림 시도 `artAttempts` · 장소 고치기 판 수)는 여전히 턴마다 새로 만든다 — `edit_place` 가 다음 턴에 거절하는 것은 도구 줄기의 일이다.
+
+## 옮기기는 좌표 없이도 된다 — `move_event` 의 dx,dy · where (2026-11-11, B3a)
+
+구조 재점검 3-3: 화면 검수 결함에는 칸 좌표가 없는데 `move_event` 는 `x,y` 가 필수였다. Terra 는 「옮길 검증된 빈 바닥 좌표를 확인하지 못했습니다」로 막혔다.
+
+- `move_event` 의 목적지는 셋 중 하나다: `x,y`(칸) · `dx,dy`(지금 칸 기준, 「두 칸 왼쪽」 = `dx:-2`) · `where`(자리 낱말). 답에 고른 칸(`x,y`)과 떠난 칸(`from`), 낱말을 어떻게 풀었는지(`how`)가 온다.
+- `where` 는 `add_people` · `add_event` · `place_object` 와 같은 자리 규칙(`src/ai/v2/place/where.ts` `resolveWhere`)으로 푼다 — 걸어 닿고, 길·출구를 막지 않고, 가구·다른 이벤트·도착 칸이 아닌 칸. 옮기는 이벤트 자신의 칸은 빈 칸으로 본다(`exceptId`).
+- 「촌장 옆」처럼 **다른 이벤트 이름**도 기준이 된다(`findEventBox`). 전에는 칩셋 이름표에 있는 물건만 기준이 됐다. 새 사람·사건을 놓을 때도 같다.
+- 그 맵에 없는 낱말이면 옮기지 않고 거절한다(시작 근처로 보내지 않는다). 부르는 쪽은 글이 아니라 `WhereResolution.fallback` 으로 가른다.
+- `x,y` 를 준 호출의 착지 규칙(`resolveEventPlacement`, 반경 3 자동 조정)은 그대로다.
+- 자리 고르기는 `people.ts` 에서 `place/cells.ts`(칸 읽기) · `place/personSpot.ts`(실내 사람 자리 비용) · `place/where.ts`(낱말 → 칸)로 옮겼다.
+- 증거: `test/moveEventWhere.test.ts`. 모델 없는 실행 — `dx:-2` (5,5)→(3,5) · `where:"촌장 옆"` → (8,4) · `where:"용의 둥지 옆"` 거절.
+
+## 빈 야외 땅은 어느 칩셋에서나 읽고 채운다 — `find_empty_ground` · `furnish_outdoor_area` (2026-11-11, B3b)
+
+구조 재점검 3-1: 빈 터 찾기는 바닥 이름표 다섯 가지(눈밭·사막 모래·재 덮인 풀·풀밭·모래 — 몬스터 수집 시트)만 땅으로 셌다. 설원·사막·스팀펑크 세계의 야외 맵 13장이 전부 「맨땅 0% · 빈 터 없음」(성공 표시)이었고, 같은 맵을 화면 검수는 「대부분 빈 모래 바닥」으로 막았다.
+
+- 이름표를 모르는 칩셋(지역 바닥이 1/4 미만)은 **칸 정보**로 읽는다(`src/project/openGround.ts`): `tileMeta.role === "terrain"` 이고 걸을 수 있고, 실내 바닥·걷는 줄(길·보도·선로·다리·부두)·포장 바닥(포석·광장)·물·얼음이 아닌 칸이 빈 야외 땅(`open ground`)이다. 꼬리표는 칩셋 `tileMeta.tags` 의 낱말 그대로 맞춘다.
+- 채울 것은 그 칩셋의 구조 키트 가운데 야외 소품(`ai.role === "prop"`, 실내·출입 가능한 것 제외, 3×4 이하)이다. 기본은 자연 소품(나무·덤불·바위)만 — 가로등·노점처럼 자리에 뜻이 있는 것은 모델이 `props:[이름…]` 으로 고를 때만 쓴다. `find_empty_ground` 가 그 칩셋의 소품 이름을 같이 준다.
+- 구획 나누기·덩이·걷는 띠·문 앞 비우기·닿던 이벤트가 막히면 되돌리기는 몬스터 시트와 같은 코드(`kitAreaFurnish.ts`)다. 쓰임은 셋: 나무 덩이 · 소품 자리 · 덤불·바위 밭.
+- 칸 정보(`role`)가 없는 시트(버들항·조선)는 옛 이름표 판독 그대로다 — 버들항은 `dress_beodeul_ground` 를 쓴다.
+- 실측(모델 없음, 세계 셋의 야외 맵 12장): 전 `맨땅 0% · 빈 터 없음` 12/12 → 후 빈 터 4곳씩 찾고 한 번 호출로 맨땅 34~59% → 8~40%(구획 상한 12). 실내 12장은 그대로 빈 터 없음.
+- 증거: `test/openGroundFill.test.ts`.
+- 남은 것: `furnish_outdoor_area` 는 아직 v2 가 처음부터 싣는 도구가 아니다(`find_empty_ground` 만) — 요청 줄기의 도구 목록 작업에서 넣는다.
+
+## 무대 오프닝이 기본 맵 조각 장면을 대신한다 — `author_opening_stage` (2026-11-11, B3c)
+
+구조 재점검 3-2: 끝맺음 단계(`blueprint-opening`)가 맵 조각 장면(`bp-open-*`)을 스스로 깔고, 모델이 `author_opening_stage` 로 무대를 지어도 그 장면이 앞에 남았다. 화면 검수는 그 장면만 봤고(막힘 26건 중 10건), 모델이 그림 장면을 지우면 끝맺음이 「오프닝이 없었다」며 다시 깔았다.
+
+- `author_opening_stage` 는 `bp-open-*` 장면을 걷는다(무대가 대신한다). 모델이 지은 그림 장면(제목 카드·CG)은 앞에 남는다. 답의 `replacedDefaultScenes` 가 걷은 수다.
+- 무대가 있으면 `blueprintOpeningReplaceable` 은 다시 깔지 않는다 — 그림 장면이 0개여도.
+- `x,y` 는 필수가 아니다. 생략하면 시작 맵은 시작 위치, 다른 맵은 가운데에서 가장 가까운 걸을 수 있는 빈 칸(자리 규칙 `resolveWhere`)을 도구가 고르고 답에 적는다.
+- 판정 쪽(무대를 찍기, `bp-open-*` 결함을 모델 밖으로 빼기)은 B2(#4549)에 있다.
+- 증거: `test/openingStageReplacesDefault.test.ts`. 모델 없는 실행(설원 세계): 기본 장면 4개 → 무대 호출 뒤 0개 + 무대, 끝맺음을 다시 돌려도 그대로.
+
 ## 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
 
 감사(`~/claude-viz/map-sameness-1029.html`, 묶음 vm1~vm8): 여관 1층 23개 중 13개가 같은 16×14 선술집 홀(「여관」 낱말 → 장소 견본 tavern, 뒤집기·손님 자리 네 판),
@@ -112,14 +219,14 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 원칙: 방은 모델이 설계하고, 함수는 조화·검사만 하고 고친 것을 알린다. 견본은 `room_parts` 의 참고 배치·그림으로만 보인다.
 
 - 모든 손 도트 실내 짓기 길이 설계를 거친다: `make_place`(설계 없으면 장소마다 한 번 되돌려 보냄 → 그래도 없으면), `edit_place`(설계 없는 구역·더한 구역), `make_game`, 끝맺음 장소 자동 짓기(`buildPlaces`), 위층(`floor:2` 구역).
-  설계가 빈 구역은 짓기 직전 `designMissingRooms`(`src/ai/v2/designRooms.ts`)가 **같은 모델**(`env.sideChat`)에게 room_parts 재료(기물 이름표·바닥/벽면·깔개·모양 안내·견본 요약 둘·모양 예 하나)와
+  설계가 빈 구역은 짓기 직전 `designMissingRooms`(`src/ai/v2/place/designRooms.ts`)가 **같은 모델**(`env.sideChat`)에게 room_parts 재료(기물 이름표·바닥/벽면·깔개·모양 안내·견본 요약 둘·모양 예 하나)와
   이 게임에 이미 선 방 목록(«이것과 다르게»)을 주고 JSON 설계를 받는다. 두 번 못 받으면 예전 길(함수 배치)로 짓고 경고 「모델 설계 없음」을 남긴다. keep(원래 방 지키기) 구역은 묻지 않는다.
 - 되돌려 보내기는 빌더와 같은 칩셋 판정(`interiorTilesetOf`)으로 «손 도트 실내로 지어지나»를 본다 — `style:"modern"` 이어도 주인공 물건 때문에 v5 로 짓는 방(vm8 flash 방탈출)이 견본 서재로 섰다.
 - 위층: 설계가 있는 위층 구역은 설계대로 짓고(객실 견본 둘 + 복도 대신), 빈 바닥 메우기(fillBare)를 하지 않는다. 내려가는 계단통은 넓은 설계 방(바닥 24칸 이상)에 서고, 모두 좁을 때만 계단참 복도를 붙인다.
 - 끝맺음 단계 `adopt-model-places`(order 25, 자동 짓기 앞): 청사진 장소 이름이 모델이 지은 맵 이름과 어긋나면(모델이 맵 이름을 바꿨다) ① 이름이 겹치는 맵 ② 시작 맵 ③ 남은 장소·후보가 하나씩뿐일 때 그 맵을
   그 장소로 잇는다(실내/바깥이 이름 낱말과 맞을 때만). vm8 flash 방탈출 재구성 재생: 모델 방 「escape_room」을 장소로 이어 자동 짓기 없이 엔딩까지(자동 플레이 성공).
 - 예시 그림(2026-10-30 사용자 지시): 옛 서재 사람 견본 `authored-study-*` 는 반복의 원천이라 `room_parts` 참고에서 뺐고(`pickReferences`), 견본을 지어 찍던 그림 대신
-  사용자가 실내 기준으로 고른 assistant-rooms-2 방 10장(`public/assets/room-ideas/`, 목록·갈래·한 줄 설명 `src/ai/v2/roomIdeas.ts`)을 **구성 아이디어**(동선·초점·가구 묶음, 베끼지 않음)로 싣는다.
+  사용자가 실내 기준으로 고른 assistant-rooms-2 방 10장(`public/assets/room-ideas/`, 목록·갈래·한 줄 설명 `src/ai/v2/place/roomIdeas.ts`)을 **구성 아이디어**(동선·초점·가구 묶음, 베끼지 않음)로 싣는다.
   용도 낱말로 둘을 고른다(객실·위층 → bed, 여관·홀 → hall, 서재·도서 → study, 그 밖·방탈출 → other). 실행기가 `env.readPublicAsset` 으로 읽고, 못 읽으면 글만 간다.
 - 그림은 **한 장으로 합쳐** 싣는다(`env.combinePictures`, 기본 `roomPartsPictures:"one"`; `OPRN_ROOM_PARTS_PICTURES=one|each|none` 은 A/B 시험용). 모양 예시 6장 + 그림 2장을 따로 실은 결과(글 1.3만 자 + 그림 8장)
   뒤 Gemini 계열이 짓지 못한 판이 늘었다(서재 3d, 인계 `suite/ledger/handoff-study.md`). 설계 따로 묻기(`designMissingRooms`)도 아이디어 그림을 한 장으로 싣는다.
@@ -156,7 +263,7 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 ## 새 플레이어 길잡이 — 목표 줄·보이는 이야기 이벤트 (2026-10-26, J90~J96)
 
 사람 판정자가 엔딩에 못 닿는 게임이 자동 플레이로는 통과했다(연애 j90: 투명 「집 현관」, 장난감 가게 j90: 오프닝이 옮긴 인형).
-- `set_objective{text, at:'start' | eventId}` 동사(`src/ai/v2/discoverability.ts` planObjective) — UI 명령 `objectiveChip`(m2-214)을 넣어
+- `set_objective{text, at:'start' | eventId}` 동사(`src/ai/v2/judge/discoverability.ts` planObjective) — UI 명령 `objectiveChip`(m2-214)을 넣어
   「현재 목표」 줄을 바꾼다(자리는 런타임이 주인공·인물·HUD 를 피해 고른다 — `runtime-pre-edit-routing.md` 「목표 안내창 자리」). 목표 줄은 상태라 불러오기·장면 재생성 뒤에도 남는다(`zoneFeedback.lastObjective`).
   이야기·연애 기본 HUD 와 `set_field_hud{off:true}` 는 목표 줄을 켜 둔다.
 - 출하 막음(`shipChecks.shipBlockers`): `critical-invisible`(엔딩·이정표 이벤트가 투명이고 반짝임·작은 물건이 없음 — 건물 벽면 한 칸은 안 셈),
@@ -382,7 +489,7 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - 누가 정하나: **모델** = 방 수·역할·크기·모양·자리·물·특징·길·입구 쪽. **함수**(`layoutDesignedBlob`) = 겹치는 방 밀기(4칸 넘게 민 방만 알림), 이은 방 사이가 8칸 넘게 비면 판을 당기기(자리 순서 유지), 이어지지 않은 방을 가장 가까운 방과 잇기, 입구·보스 없음·여럿 고치기, 보스 방·고리·입구 최소 크기, 작은 방 호수 → 웅덩이, 테마에 없는 액체(용암↔물·액체 없는 테마) 바꾸기, 모르는 모양·특징 빼기. 고친 것은 모두 warnings 「고침: …」 줄. 방을 더하거나 고르지 않는다. 벽 두께·다리·도달은 원래대로 마스크 `settle` 이 맞춘다.
 - 불규칙 문법(cave·volcano·ice·forest·swamp·otherworld)은 설계 자리 그대로 판다(`layouts.ts` `layoutBlob` 첫 줄에서 갈린다). 입구 방은 계단 걸 평평한 북벽 심(7×)을 지키고 다른 방으로 가는 길은 옆구리로 나간다. 숲·늪은 설계한 입구 쪽 맵 끝으로 출구 길(`compose.ts` trailExit, `layout.entranceSide`). 방+통로 문법(catacomb·castle·temple·mine·sewer·pyramid·tower)은 `designToRooms` 가 rooms(kind·크기·from = 입구 쪽 이웃·dir = 두 방 at 비교)로 옮기고, 나무 밖 길이 있으면 `layout:"loop"`. 미궁은 설계를 쓰지 않는다(알림).
 - 특징은 방 꾸미기 뒤 `dress.ts` `dressDesignFeatures` 가 덩이로만 더한다(낱개 흩기 없음 — 트인 바닥 외톨이 기물 규칙). 놓을 자리·그림이 없으면 「고침: 방 X 의 특징 … 빠졌다」.
-- 재료: v2 동사 `dungeon_parts({theme})`(`src/ai/v2/dungeonParts.ts`) — 모양·역할·물·특징·연결 어휘, 뼈대가 서로 다른 예시 넷(`DUNGEON_DESIGN_EXAMPLES`: 남쪽 입구 갈래·서쪽 입구 물줄기 사슬·동쪽 입구 호수 고리·북쪽 입구 허브 — **게임(projectKey/제목)마다 순서를 돌린다** `rotatedExamples`, 모델이 모두 첫 예시에 기대어 «남쪽 입구·북쪽 보스»로 짰다)와 첫 예시를 사본에서 `author_dungeon` 으로 지은 1배 그림 하나(테마별 캐시).
+- 재료: v2 동사 `dungeon_parts({theme})`(`src/ai/v2/place/dungeonParts.ts`) — 모양·역할·물·특징·연결 어휘, 뼈대가 서로 다른 예시 넷(`DUNGEON_DESIGN_EXAMPLES`: 남쪽 입구 갈래·서쪽 입구 물줄기 사슬·동쪽 입구 호수 고리·북쪽 입구 허브 — **게임(projectKey/제목)마다 순서를 돌린다** `rotatedExamples`, 모델이 모두 첫 예시에 기대어 «남쪽 입구·북쪽 보스»로 짰다)와 첫 예시를 사본에서 `author_dungeon` 으로 지은 1배 그림 하나(테마별 캐시).
 - 참고 그림(2026-10-30 사용자 지시): `DUNGEON_REFERENCE_PICTURES` = 사람이 조각을 고른 버들항 던전 렌더 다섯(`tiledata/beodeul-variants/{sea-cave,volcano-cave,castle-catacombs,aqueduct-sewer,temple-ruins}/render-1x.png`, mapvqa `refs/anchors.json` 의 던전 기준과 같은 그림). 테마에 맞는 것 먼저 둘을 그림으로, 다섯 모두 구성 한 줄(구역 순서·볼거리·가지·고리)로 준다. 「그대로 베끼지 말고 구성 아이디어만 — 검수는 이 그림과 거의 같은 맵을 반복으로 친다」고 적는다. 그림 파일은 저장소에만 있어 없으면 글만. 지문(`suite/dungeon-design-fp.py`)은 맵마다 참고 그림과의 축소 그림 상관을 재고 ≥0.92 면 반복에 더한다.
 - 그림·글 크기: Gemini(argon·flash)가 큰 전맵 그림 넷을 받은 바로 다음 차례에 제공자 오류·글로 적은 tool_call 을 자주 냈다(2026-10-29 6판 중 4판; 실내 안내 동사도 글 1.3만 자+그림 8장에서 같은 회귀). 그래서 **그림 한 장**(참고 둘 + 첫 예시를 지은 그림을 반 크기 280px 높이로 나란히, `sideBySide` pngjs)과 **짧은 글**(어휘 한 덩이 `vocab`, 예시 설계 둘 + 나머지 한 줄, 참고 그림 구성 한 줄씩 — 약 3.3천 자).
 - 설계 없이 온 던전·동굴 `make_place`(이번 실행에서 지은 맵 `mapId` 다시 짓기 제외)는 장소 이름마다 한 번 되돌려 보낸다(`session.dungeonBounced`, 「아직 짓지 않았다(실패 아님)」 + parts). 다시 없이 오면 예전 함수 배치. 설계한 층의 `next` 는 `edit_place({patch:{mapId, set:{dungeonDesign: 고친 설계 전체}}})` 를 이른다.
@@ -457,7 +564,7 @@ salt 를 찾아(무작위 salt 를 고정해 몇 번 지어 본다) 같은 마�
 `assistant-capability genre-run`(실제 입력창 Pi 경로, opus 5.5 medium · gpt-6.1-terra medium)으로 코딩 에이전트판(마왕 편의점 데모 브랜치의 maouKonbini 굽기)과 같은
 「일본 상점가 + 편의점 + 원룸」 요청을 돌려 비교했다. 두 판 모두 저장·재로드·lint 0 은 통과했지만 아래 결함이 있었다.
 
-- **「상점가」가 실내로 읽혔다**(`todo/checks.ts` KIND_WORDS): `상점` 이 interior 낱말이라 거리 할 일의 기계 검사가 실내를 찾아 실패했다. interior 는 `상점(?!가)`·`가게(?!\s*거리)`, street 에 상점가·시장·아케이드.
+- **「상점가」가 실내로 읽혔다**(`judge/todoChecks.ts` KIND_WORDS): `상점` 이 interior 낱말이라 거리 할 일의 기계 검사가 실내를 찾아 실패했다. interior 는 `상점(?!가)`·`가게(?!\s*거리)`, street 에 상점가·시장·아케이드.
 - **문 잇기 도구가 v2 풀에 없었다**(`game.ts` FALLEN_TIERS 일본 거리 묶음): terra 가 `link_jp_city_interior` 를 불러 unknown tool, 둘 다 `create_transfer_pair` 로 손으로 이었다. 일본 거리 낱말이면 `link_jp_city_interior`·`list_map_locations`·`set_map_door`·`add_street_walkers` 를 싣고 카드에 「문마다 link_jp_city_interior」를 적는다.
 - **차임을 문 이벤트에 또 넣었다**(`mapDoorTools.doorLine`): 편의점 문은 이미 `chimeSe` 가 켜졌는데 두 모델 모두 `patch_event_page` 로 소리 명령을 넣다가 transfer 를 지웠다. 문 목록 줄에 「입점 차임 이미 켜짐 — 소리 명령을 따로 넣지 않는다」를 붙인다.
 - **「자전거 없이」를 빌더가 무시했다**(`builders/jpCity.ts` `jpAvoidProps`): 요청 낱말 중 부정형(없이·빼·말고·no/without)은 소품 낱말에서 빼고 `hints.avoidProps`(bike·vend·car·bench·planter·nobori·cone)를 `compose_jp_city_street` 의 avoidProps 로 넘긴다. opus 는 이걸 돌아가려고 15번쯤 불렀다.
@@ -535,7 +642,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   도구별 이름표 채우기는 `declare_story_flag` 의 id·kind 하나뿐이다(이름표라 어떤 값이든 동작이 같다).
 - **upsert_event id 없음**(`argGuard` `event-new-id`): 같은 이름 이벤트가 그 맵에 하나면 그 id, 없고 좌표가 있으면 새 id.
 - **쓰기 요청 판정**(`isWriteRequest`): 「…「아직 아무 단서도 없다」고 **알려 줘**」를 질문으로 읽어 요청 뼈대·첫 쓰기 관문이 모든 모델에서 꺼져 있었다. 「넣어 줘·만들어…」가 있으면 쓰기다.
-- **번호 자물쇠 확인 `code_lock`**(`todo/checks.ts`): 살아 있는 이벤트가 숫자를 받고(inputNumber) 그 변수 == 정답 분기가 무엇을 열고(스위치·이동·엔딩),
+- **번호 자물쇠 확인 `code_lock`**(`judge/todoChecks.ts`): 살아 있는 이벤트가 숫자를 받고(inputNumber) 그 변수 == 정답 분기가 무엇을 열고(스위치·이동·엔딩),
   hintAfter 면 틀린 횟수(+1)와 그 횟수에 힌트 대사가 있어야 ✓. 요청 뼈대가 「비밀번호 NNNN」에서 뽑아 덧붙인다 — Flash 가 할 일을 «목표 줄» 확인으로 적어 자물쇠 없이 ✓ 로 닫던 구멍.
   다음 호출 제안은 `author_puzzle_chain` 한 번(단서 → `role:"ending"|"code"` + `needsAny`·`hintAfter`·`hintLines`).
 - **author_puzzle_chain**: `needsAny`(단서 중 하나라도 봤으면 시도, 없으면 lockedLines), `hintAfter`+`hintLines`(틀린 횟수 변수를 세어 그 횟수부터 힌트), 스키마에 `ending` 역할·`endingId` 를 드러냈다.
@@ -586,14 +693,14 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 - **더하는 법**: (1) 새 파일 `stages/<id>.ts` — 단계 하나, 실패가 끝맺음을 깨면 안 되면 그 안에서 `try/catch`; 기록 키가 필요하면 `env.emit({ type:"execution_status", name:"v2.…" })`. (2) `stages/index.ts` 에 한 줄. (3) `order` 는 앞뒤 단계 사이 빈 번호(10 간격, 꽉 차면 소수 `135` 도 된다). 같은 묶음 안 `order`·`id` 가 겹치면 모듈을 읽을 때 던진다 — 순서가 import 줄 순서에 기대지 않는다. 다른 단계 파일·실행기는 고치지 않는다.
 - **제자리 수정과 체크포인트(2026-10-31 J107)**: 끝맺음 단계·청사진 경로·전투 맞춤은 도구 draft 없이 `env.ctx.project` 를 제자리에서 고친다(`database.troops.push` 등). 실행기 `scripts/lib/piAgentRuntime.ts` 는 v2 실행에서 수용·되돌림 때마다 `ctx.project` 에 자기 `database`·`assets` 사본을 준다(`ownHeavyForInPlaceEdits`). 그전에는 수용 스냅숏과 같은 객체라 바뀌어도 «그대로»로 보여 줄에서 빠졌고, 편집기가 옛 DB 를 다시 붙여 「troopId 없음」 직렬화 왕복 실패로 조립 체크포인트가 매 차례 통째 거부됐다(JRPG 출하 게임에 목표 이어 걸기·전투 맞춤·타이틀이 하나도 안 들어갔다). 새 단계도 DB 를 제자리에서 고쳐도 된다. `tilesets` 는 이 보호 밖이니 타일셋은 도구(`run.call`)로 바꾼다.
 - **보스를 이기면 단계가 이어진다(`boss-win-finishes-step`, assembly 195, J108)**: 청사진 단계 이벤트의 넘어가는 페이지가 같은 맵 보스의 승리 스위치를 조건으로 걸면, 그 보스 승리 갈래 끝에 `callMapEvent(<단계 이벤트>)` 를 단다. 이기자마자 다음 목표·엔딩이 이어지고, 앞 단계가 안 됐으면 그 이벤트의 잠김 대사가 뜬다. 승리 뒤 보스 옆 칸을 다시 찾아 눌러야 엔딩이 나던 판(sl2 opus jrpg)을 막는다.
-- **지붕 밑에서 꺼내기(`out-from-under-roofs`, assembly 245, src/ai/v2/underRoof.ts)**: 윗층 그림의 타일셋 우선순위가 upper(주인공 위로 그려짐)인 걸을 수 있는 칸을 «덮인 칸»으로 본다. 시작 자리가 덮인 칸이면 걸어 닿는 트인 칸(openStartCell)으로, 그림·반짝임이 있는 1×1 말 걸기·조사 이벤트가 덮인 칸이면 6칸 안 트인 칸으로 옮긴다(닿는 칸이 줄거나 못 닿는 이벤트가 늘거나 길이 끊기면 그 자리는 안 씀). 버들항 집 킷은 지붕 줄을 «뒤로 지나는» 칸으로 그려서, jb2a terra jrpg 는 시작 칸이 지붕 한가운데라 주인공이 가려진 채 시작했다.
+- **지붕 밑에서 꺼내기(`out-from-under-roofs`, assembly 245, src/ai/v2/place/underRoof.ts)**: 윗층 그림의 타일셋 우선순위가 upper(주인공 위로 그려짐)인 걸을 수 있는 칸을 «덮인 칸»으로 본다. 시작 자리가 덮인 칸이면 걸어 닿는 트인 칸(openStartCell)으로, 그림·반짝임이 있는 1×1 말 걸기·조사 이벤트가 덮인 칸이면 6칸 안 트인 칸으로 옮긴다(닿는 칸이 줄거나 못 닿는 이벤트가 늘거나 길이 끊기면 그 자리는 안 씀). 버들항 집 킷은 지붕 줄을 «뒤로 지나는» 칸으로 그려서, jb2a terra jrpg 는 시작 칸이 지붕 한가운데라 주인공이 가려진 채 시작했다.
 - **동작이 같은지 보기**: `bun scripts/qa/assistant-v2/finishReplay.mts <판> --trace --followup "<후속>" [--snapshot <json>]` — `--trace` 는 `Math.random`·`Date.now` 를 고정하고 `rec.trace`(emit 이름·ok·요약, 체크포인트 이름)·`rec.projectHash` 를 남긴다. 구조만 바꾸는 변경은 두 커밋의 출력(`after`·`trace`·`notes`·`reload`·프로젝트 해시)이 같아야 한다.
 
 ## 할 일 기계 검사 — omo 고리의 「끝났나」 판정 (2026-10-30)
 
 - 타입 `src/ai/v2/todo/types.ts`(`TodoItem`·`TodoCheck`·`CheckResult`, 모델 도구 인자 스키마 `TODO_CHECK_SCHEMA` = 평평한 객체 하나·oneOf·자유 키 없음, 인자 검사 `parseTodoCheck`).
 - 대상 고르기(감독 검토 반영): 항목의 `refs`(고리가 쓰기 동사 전후 차이로 채우는 mapIds·eventIds·itemIds·troopIds)가 있으면 그 id 만 판정하고, 묶인 id 가 사라지면 실패. refs 가 없으면 이름으로 찾되 `fresh`(모델 인자 기본 true)면 `ctx.changed`(이번 턴에 새로 생기거나 바뀐 것)만 후보 — 시작 저장본에 원래 있던 엔딩·보스전으로 새 요청 항목이 통과하지 않는다. 가장 잘 맞는 후보가 이름이 다른 둘 이상이면 「모호함」 실패(같은 이름 무리는 하나로 본다). 부분 일치는 같음이 없을 때만, 짧은 쪽 ≥ 긴 쪽 절반. detail·evidence 에 잡은 id 를 싣는다. `runTodoItemCheck(project, item, ctx)` 는 item.refs 를 얹어 부른다.
-- 판정 `src/ai/v2/todo/checks.ts` `runTodoCheck(project, check, { startMapId?, changed?, refs? })` — 순수 함수, 프로젝트만 읽는다. 이름은 `todo/names.ts` 로 느슨히 맞추고(공백·괄호·부호 무시, 포함 일치, 영어 몇 낱말→한국어), 못 찾으면 detail 에 가까운 후보를 적는다.
+- 판정 `src/ai/v2/judge/todoChecks.ts` `runTodoCheck(project, check, { startMapId?, changed?, refs? })` — 순수 함수, 프로젝트만 읽는다. 이름은 `todo/names.ts` 로 느슨히 맞추고(공백·괄호·부호 무시, 포함 일치, 영어 몇 낱말→한국어), 못 찾으면 detail 에 가까운 후보를 적는다.
 - kind: place(빈 자리표시 맵이면 실패, placeKind 는 안/바깥 묶음으로 대략) · person(걷기 칩 이벤트, 이름·대사 화자·건 전투의 적 이름으로 찾는다) · talk(says 포함) · battle(boss = 이벤트/그룹 id 의 boss·보스, 도망 불가, 마왕·군주 같은 이름) · link(이동 이벤트에 들어오는 칸에서 걸어 닿고 도착 칸이 걸을 수 있다) · ending(map 을 주면 그 맵에서) · item(gives = 넣기 명령) · present_evidence(그 아이템을 받는 presentItem 갈래, 그 아이템을 얻는 길) · objective · reachable(시작 또는 from 맵에서 이동 이벤트를 타고 이벤트·맵까지) · party_join(changeParty add 가 살아 있는 이벤트에 있고 그 배우 이름이나 그 이벤트 이름이 맞고 시작에서 걸어 닿는다 — 배우 이름이 「강」이어도 「떠돌이 검사」 이벤트면 맞는다) · none(판정자 몫).
 - 걷기는 `puzzleFlow`(장치를 켜면 열리는 같은 맵 퍼즐 문 포함) + `bodyReached`, 맵 사이는 닿는 이동 이벤트를 따라 넓힌다. **영영 안 도는 페이지의 명령은 세지 않는다**: 뒤 페이지에 가림(`findShadowedPages`·`findSetterShadowedPages`), 아무도 켜지 않는 스위치·아무도 주지 않는 아이템 조건.
 - **실내 구역 room_zones**(2026-10-30, mapvqa ③ 기준 방 쌍 비교에서 진 이유 = «한 칸짜리 방이라 조사할 곳 없음»·«같은 서가·식탁 줄 반복», 이긴 방 = 서로 다른 구역을 오가는 방):
@@ -605,7 +712,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   측정(2026-10-30 VM, inn·study·shop·jail × terra 3 + opus 1, 전 e22463a47d / 후 43cbfed0b3, gpt-6.1-sol 쌍 비교, 결과 `suite/rooms/runs-omo/results.json`·`~/claude-viz/interior-omo-1030.html`): 기준 방 승 **전 0/52 · 후 0/52**(무 4 → 2). 이벤트는 판당 0.6 → 3.4 로 늘었으나 방은 9×9 안팎 한 칸 상자 그대로(넓이 102 → 92, 가구 칸 25 → 18) — 판정자는 매번 계단·곁방·랜드마크가 있는 여러 칸 기준 방을 골랐다. 구역 기록·검사만으로는 승률이 움직이지 않는다. 다음 손잡이는 방 수·크기(여러 방·계단·곁방)와 초점 기물의 크기다; bare-floor 기준이 방을 줄이게 밀어 구역이 한 상자로 겹치는 충돌도 있다.
 - **실내 방 그래프 room_graph**(2026-10-30 2회차 — 1회차 0/52 → 0/52 의 답: 구조를 모델이 선언한다). 모델이 한 맵에 여러 방을 낼 때 zones 마다 `id·x·y(대략 왼쪽 위)·design·landmark(그 방이 서는 기물 id, 큰 여러 칸 기물 환영)·stairs(up|down)·role` 을 주고, place 에 `connections:[{a,b,type:"door"|"open"}]`·`entrance` 를 준다(edit_place 도 같은 칸 + `patch.zones` 로 그 층 구역 통째 교체).
   `src/editor/handInterior/roomGraph.ts harmonizeRoomGraph` 는 조화만 한다: 입구 방에서 연결을 따라 너비 우선으로 방을 칸막이 1칸 붙이고(붙는 쪽은 모델 자리에서 읽음, 어긋남은 모델 값에서 가까운 순·문 날 만큼만 겹치게), 다른 방과 부딪히면 그 쪽 안에서 민다. 못 붙이면·연결 없는 방·고리 연결이 안 붙음·입구가 남쪽 끝이 아님·52×44 초과면 영어 오류 + 고친 호출로 거절한다. 방 수·크기·쪽·연결·가구는 고르지 않는다. 결과는 `build_hand_interior_room` layout 의 `placed:{rooms,connect,exit}` 로 넘어가 `layoutCandidates` 를 건너뛴다.
-  빌더가 맵 이름표로 선언을 남긴다(`designAreaRecord.ts roomGraphDrafts`: `room-graph|decl` 위치 note = 선언 JSON, 방마다 `room:<id>`·`role:`·`landmark:`·`landmark-at:x,y,w,h|landmark-missing`·`stairs:`·`stairs-at:…|stairs-missing`). 할 일 검사 `{kind:"room_graph", map}`(todo/checks.ts) ✓ = 선언한 방이 다 지어짐 · 연결이 다 뚫림(두 방 상자+칸막이 띠 안 걷기) · 모든 방이 출입구에서 닿음 · 방마다 랜드마크가 놓이고 닿음 · 선언한 계단이 놓이고 닿음. 관문 ③b 는 방 그래프 맵이면 room_zones 대신 room_graph 항목(열쇠 `graph:<mapId>`)을 단다.
+  빌더가 맵 이름표로 선언을 남긴다(`designAreaRecord.ts roomGraphDrafts`: `room-graph|decl` 위치 note = 선언 JSON, 방마다 `room:<id>`·`role:`·`landmark:`·`landmark-at:x,y,w,h|landmark-missing`·`stairs:`·`stairs-at:…|stairs-missing`). 할 일 검사 `{kind:"room_graph", map}`(judge/todoChecks.ts) ✓ = 선언한 방이 다 지어짐 · 연결이 다 뚫림(두 방 상자+칸막이 띠 안 걷기) · 모든 방이 출입구에서 닿음 · 방마다 랜드마크가 놓이고 닿음 · 선언한 계단이 놓이고 닿음. 관문 ③b 는 방 그래프 맵이면 room_zones 대신 room_graph 항목(열쇠 `graph:<mapId>`)을 단다.
   빈 바닥은 방마다 잰다(v2/checks.ts — 설계 방이 둘 이상인 맵: 복도 빼고 방별 `roomBarePct` ≤ 실내 기준+5, 걸린 방만 고치라고 말함). 맵 전체 비율로 재면 방을 줄여 구역이 한 상자로 겹치던 충돌을 없앴다.
   기준 방(`roomIdeas.ts`, 판정자가 이긴 assistant-rooms-2 방 10개)은 구조 요약(영어)과 대략 평면을 갖고, room_parts 가 요약 3개 + 그림을 보인다. 지문 `copiedReference`(방 수 같고 평면 ±3 안, 정규화 사각형 짝 IoU 평균 ≥0.72)에 걸리면 make_place 가 거절한다(한 방 평면은 지문 아님). 손 시험 `bun scripts/qa/assistant-v2/roomGraphProbe.mts <스냅숏> [out]`(조화·거절·이름표·검사·지문).
   측정(2026-10-30 VM, 같은 4과제 × terra 3 + opus 1, 판정자·기준 방 같음, 6c95634b7d): 기준 방 승 **0/52**(무 3) — 전 0/52(무 4)·1회차 0/52(무 2)와 같다. 여러 방을 선언한 판은 16판 중 1판(opus 잡화점 2실, room_graph ✓); 나머지는 과제 문장 「이 방 하나만」을 «방 한 칸»으로 읽어 한 칸 방을 골랐다. terra 는 엄격 스키마로 한 방에도 x·y·stairs:"up" 을 채워 room_graph 가 거짓 ✗(«계단 선언·없음»)를 냈다 → 고침: stairs enum 에 none, 방이 하나면 그래프로 보지 않음, 빈·none 랜드마크 무시. 다음 손잡이는 여러 방을 고를 이유(요청 해석)이지 조화기가 아니다.
@@ -624,7 +731,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   - 칸 배치 장소의 다시 짓기 상한은 `LAYOUT_MAX_REBUILDS`(12) — 고침이 싸고 매번 검증되므로(3바퀴 상한이 자기 검토 고침을 막았다). 끝맺음 관문이 «더 고쳐라»를 다시 묻는 상한은 그대로 3.
   - 손 도트 실내를 칸 배치 없이 보내면 장소마다 세 번까지 돌려보낸다(zones/design 을 들고 와도, mapId 를 채워 와도). 핵심 규칙 «좌표를 지어내지 마라»는 칸 배치·검토 고침·마을 hints.layout·던전 rooms[].at 을 예외로 적는다 — terra 가 이 규칙을 근거로 감옥을 막아 버렸다(5회차 첫 판).
   - 측정(같은 4과제, 판정자 gpt-6.1-sol 쌍 비교 + 공정성 재판정 Opus 5.5 medium, 기준 방 assistant-rooms-2): 4회차(칸 배치, 7bff4341a7·f301d3ea29) sol 5/52 · Opus 13/52, 5회차(벽 우선 + 자기 검토, 65a565414f) sol 5/52 · Opus **15/52**(무 14). 3회차는 sol 5/52 · Opus 7/52. opus 판은 Opus 판정 4/13 → 10/13 → 11/13 로 올랐고, terra-high 는 3/39 → 3/39 → 4/39(무 9→13)로 거의 그대로다 — 5회차 terra 12판 모두 칸 배치·대부분 검토 2바퀴였지만 기물 12~24개로 성기다(opus 49~85개). 4·5회차 terra 는 high, 3회차는 medium. 결과 쪽: `~/claude-viz/interior-omo-1030.html`.
-  - **공간 검사(6회차, 3c3ddfe195 — `src/ai/v2/interiorSpace.ts`)**: terra 실내가 성겼다(기물 12~24개). bbox 실험(agent/bbox-walls `bbox-walls-3..5/lay.mts`, agent/bbox-chipsets `bbox-chipsets/space.mts`)의 검사를 옮겼다 — 함수는 재고 이름만 붙인다. 빈 칸 = 바닥인데 자기와 8 이웃에 벽·벽면·가구·난간이 없는 칸, 문·입구·계단 앞을 잇는 최단 길 3칸 폭은 빼고 센다. 방마다 빈 사각형 3x4 이상 · 빈 칸 25% 초과(바닥 30칸 이상) · 복도 30% 초과 · 바닥 80칸 이상 큰 방에서 통로 밖 가구 20% 미만이면 영어 고칠 말(벽 이름을 댄 «줄이기» 또는 방 쓰임에 맞는 묶음 예를 든 «채우기», 깔개는 안 친다). 문턱은 기준 방 실측 바로 위(기준 방 전체 7~20%, 방 ≤27%, 가장 큰 빈 사각형 ≤3x4). 깔개 상한 방마다 1개(바닥 150칸 이상 2개). 같은 크기·다른 쓰임 방 셋 이상은 위계 알림(경고). 공간 문제(soft)는 고치기가 남았으면 거절, 다 쓰면 «still open after the repairs» 경고로 깔고 자기 검토에서 고친다.
+  - **공간 검사(6회차, 3c3ddfe195 — `src/ai/v2/place/interiorSpace.ts`)**: terra 실내가 성겼다(기물 12~24개). bbox 실험(agent/bbox-walls `bbox-walls-3..5/lay.mts`, agent/bbox-chipsets `bbox-chipsets/space.mts`)의 검사를 옮겼다 — 함수는 재고 이름만 붙인다. 빈 칸 = 바닥인데 자기와 8 이웃에 벽·벽면·가구·난간이 없는 칸, 문·입구·계단 앞을 잇는 최단 길 3칸 폭은 빼고 센다. 방마다 빈 사각형 3x4 이상 · 빈 칸 25% 초과(바닥 30칸 이상) · 복도 30% 초과 · 바닥 80칸 이상 큰 방에서 통로 밖 가구 20% 미만이면 영어 고칠 말(벽 이름을 댄 «줄이기» 또는 방 쓰임에 맞는 묶음 예를 든 «채우기», 깔개는 안 친다). 문턱은 기준 방 실측 바로 위(기준 방 전체 7~20%, 방 ≤27%, 가장 큰 빈 사각형 ≤3x4). 깔개 상한 방마다 1개(바닥 150칸 이상 2개). 같은 크기·다른 쓰임 방 셋 이상은 위계 알림(경고). 공간 문제(soft)는 고치기가 남았으면 거절, 다 쓰면 «still open after the repairs» 경고로 깔고 자기 검토에서 고친다.
   - 기물 밀도(1028ae6d9d): 빈 칸 검사는 흩어 놓은 기물이 둘레 8칸을 «쓰는 칸»으로 만들어 성긴 방도 통과시켰다(6회차 첫 terra-high 여관 홀 15개/121칸 = 0.12, 빈 칸 5%). 바닥 30칸 이상 방(복도 빼고)은 서는 기물 0.18개/바닥 칸 이상 — 6회차 opus 방(Opus 판정 기준 방 대비 11/13 승)이 방마다 0.19~0.35, terra 0.09~0.12 였다. 고칠 말은 더할 개수와 묶음 예를 준다. 같은 맵의 끝맺음 기계 검사 bare-floor 는 칸 배치 맵이면 이 검사 결과(선언 위치 `space`)를 읽는다 — 통로 포함 20% 잣대로 다시 재면 두 검사가 엇갈려 opus 가 통로를 막는 채우기를 보내고 되돌려졌다.
   - 계단: 위로 가는 계단은 칩셋 계단 킷 그대로 3칸 폭 x 3줄(북벽 벽면 두 줄 + 첫 바닥 줄), 세 칸 모두 한 곧은 벽 아래, 남쪽 세 칸 빈 바닥. 내려가는 계단은 바닥 구멍, 아래 줄 빈 바닥. 어긋나면 가장 가까운 맞는 자리를 Fixed call 로 준다. 방이 `"stairs":"up|down"` 을 선언했는데 계단이 없으면 soft 문제.
   - 목록: 범주별 묶음에 개수를 붙이고, `find_pieces(category, tags)` 동사가 한 범주(또는 낱말에 맞는 것) 전부를 크기·놓는 자리·솟음·쓰인 예제 방·짝과 함께 영어로 준다(`interiorCatalog.findPieces`). 추천 조각만 쓰지 말라고 카드에 적었다.
@@ -676,12 +783,12 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
  ③b 이번 턴에 지은 설계 실내 맵마다 room_zones 항목(조수가 안 달았으면 덧붙임, ✗ 면 → ②)
  ④ v2GateProblems(게임 검사·출하 차단·고칠 수 있는 장소 문제) → gate·critic 항목 덧붙임 → ②
  ⑤ 독립 검토자 막음 → critic 항목(처음 한 번 + 그 항목을 닫은 뒤 한 번) → ②
- ⑥ 화면 검수(게임 전체 요청만) 결함 → vqa 항목(판마다, 두 판 그대로면 막힘) → ②
+ ⑥ 화면 검수(게임 전체 요청만) 결함 → 장부·vqa 항목(위 «완료 판정» 절 — 건넨 뒤에도 그대로면 그 항목이 막힘) → ②
  ⑦ 끝: 최종 보고 = 기계 확인 표(todoReport)
 ```
 
 - **todo 동사**(`loop/todoTools.ts`): `init/start/done/drop/block/append/bind/view`. 항목 = `src/ai/v2/todo/types.ts` `TodoItem`(id·phase·content·status·check·dependsOn·blockedReason·attempts·source model|gate|critic|vqa).
-  `check` 는 `TodoCheck`(place·person·talk·battle·link·ending·item·present_evidence·objective·reachable·party_join·none), 판정은 `todo/checks.ts runTodoCheck`(순수, 프로젝트만 읽음).
+  `check` 는 `TodoCheck`(place·person·talk·battle·link·ending·item·present_evidence·objective·reachable·party_join·none), 판정은 `judge/todoChecks.ts runTodoCheck`(순수, 프로젝트만 읽음).
   `done` 은 확인을 다시 돌려 ✗ 면 끝내지 않는다(실패 1회). 진행 중은 하나, `block` 은 기대는(dependsOn) 열린 항목도 막힘으로 닫는다.
   `block` 이유가 도구 거절이고 그 거절 글이 아직 안 쓴 다른 동사 이름을 일렀으면 한 번 되돌린다(terra boss-room: edit_place 거절 글의 make_place).
 - **id 묶기**(`loop/refs.ts`, 이름 오인 대책): 실행 시작 때 `indexProject`(맵(이벤트 뺀)·이벤트·아이템·적 그룹 지문)를 `store.baseline` 에 뜨고, 판정마다 기준선 대비 새로 생기거나 바뀐 것(`changed`)을 넘긴다 — `fresh`(기본) 항목은 원래 있던 것으로 ✓ 가 안 난다.
@@ -693,7 +800,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 - **재주입 규칙**(`loop/continuation.ts TodoLoop`): 묶음(조수 목록, 또는 ④~⑥ 이 덧붙인 묶음)마다 연속 8번, 진척 없는 재주입 2번 연속이면 멈춤 —
   진척 = 성공한 쓰기 도구의 **새** 결과 지문(이름+인자+결과 글, 시각·긴 수·id 가림, 창 256) 또는 열린 항목 수 감소. 서명(열린 수/전체·프로젝트 지문(할 일 제외)·보고 해시)이 앞과 같으면 멈춤. ask_user 로 물은 실행은 다시 돌리지 않는다.
   멈추면 열린 항목은 «고리 멈춤 — 이유» 막힘으로 닫고 ④~⑥ 은 건너뛴다(③ 은 돈다). 재주입마다 Agent 경로는 tool_choice required.
-- **관문 항목 맞추기**(`loop/gates.ts`): 열쇠(문제 글, 수 가림)가 같은 문제는 새 항목을 만들지 않고 닫힌 항목이면 다시 연다(시도 +1, 상한이면 막힘).
+- **관문 항목 맞추기**(`judge/gates.ts`): 열쇠(문제 글, 수 가림)가 같은 문제는 새 항목을 만들지 않고 닫힌 항목이면 다시 연다(시도 +1, 상한이면 막힘).
   문제가 사라진 항목은 함수가 닫고, 고치기 상한(맵당 3바퀴)에 닿은 장소 항목은 «상한» 막힘. 장소·컷신 문제의 열쇠는 맵마다 하나(`place:<mapId>:place|stage`)라 고칠 때마다 글이 바뀌어도 같은 항목이 다시 열려 시도 3에서 막힌다(글은 지금 것으로 바뀐다). 옛 `v2GateProblems` 글은 `v2GateProblems` 위의 얇은 포장으로 남았다.
 - **기존 결함**(`gates.ts splitPreexisting`): 시작 저장본에서 같은 게임 검사를 돌린 열쇠(`v2BaselineGameKeys`)에 있는 문제, 또는 문제 글이 짚는 이벤트가 모두 시작 저장본 그대로이거나 함수 마감(autoBuild)만 건드린 것이면 항목으로 만들지 않고 최종 보고 「기존 결함」 칸에만 싣는다 — 완료를 막지 않는다(omo-loop-1030: 버들마을 출입구 그림 없음이 세 장면 모두 할 일이 됐다).
 - **도구 없는 관문**: 관문 글이 이르는 도구가 이 실행에 없으면 막힘으로 닫지만, 결정적으로 고칠 수 있는 것은 끝맺음이 먼저 고친다 — `finish/stages/combat-menu.ts`(reload 묶음, 늘 돈다): 전투를 넣었는데 ESC 메뉴가 이야기용이면 소지품 뒤에 스킬·장비·상태 칸을 되돌린다.
@@ -704,9 +811,9 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   - **던전 다시 짓기는 거절하지 않는다**(`builders/dungeonRebuildCarry.ts`): 여러 맵·아래층에서 들어오는 문이 있어도 1층 문 하나는 다시 잇고 나머지는 남겨 다시 지은 층의 가까운 걸어 닿는 칸으로 다시 가리킨다. 짓기 도구 밖에서 붙은 이벤트(사람·컷신·상자 — id 가 `ev_<층>_` 가 아닌 것)는 같은 칸(막히면 가까운 칸)으로 옮겨 싣는다(rebuild:true 가 층 이벤트를 비워 해골 기사가 사라졌다).
   - **연출 비평의 «싸움이 안 보인다»**: 비평가는 지도 틀만 본다 — 컷신(또는 그 사람) 명령에 전투가 있으면 비평 글에 «전투 화면은 틀에 없다»를 싣고, 관문(`v2GateProblems`)은 지금 전투를 여는 컷신의 싸움 지적을 지난 일로 뺀다(전투를 patch_event_page 로 붙인 뒤에도 옛 비평이 항목으로 남았다).
   - **스키마 기본값 채움 정리**(`game.ts withSchemaFillCleanup`, v2 감싸개): upsert_troop 빈 members, place_field_enemy 의 patrol(patrol·chase 아닐 때)·빈 directions, upsert_item 회복약의 escapeTo·repelSteps(이름·설명에 탈출·퇴치 낱말이 없을 때, repelSteps 0), create_transfer_pair 의 x,y 와 같은 doorAt 을 «안 줬다»로 읽는다.
-  - 확인 판(omo-unfinished-1030 r1)에서 더 나온 것: place_field_enemy 의 기본값 graphic(빈 selectionId·query·textureKey)은 빼고, 그래도 «graphic 이 전투 그림과 다릅니다»면 graphic 을 빼고 한 번 다시 부른다. 사람·컷신 자리(`people.ts resolveWhere`)는 다른 맵에서 오는 이동의 도착 칸을 피한다(커밋 «transfer 목적지에 이벤트가 겹칩니다»). 관문 항목의 «고치는 도구» 낱말 찾기(`loop/gates.ts namedTools`)는 sw_·ev_·map_ 같은 id 를 도구 이름으로 읽지 않는다(깃발 항목이 «도구 없음»으로 막혔다).
+  - 확인 판(omo-unfinished-1030 r1)에서 더 나온 것: place_field_enemy 의 기본값 graphic(빈 selectionId·query·textureKey)은 빼고, 그래도 «graphic 이 전투 그림과 다릅니다»면 graphic 을 빼고 한 번 다시 부른다. 사람·컷신 자리(`people.ts resolveWhere`)는 다른 맵에서 오는 이동의 도착 칸을 피한다(커밋 «transfer 목적지에 이벤트가 겹칩니다»). 관문 항목의 «고치는 도구» 낱말 찾기(`judge/gates.ts namedTools`)는 sw_·ev_·map_ 같은 id 를 도구 이름으로 읽지 않는다(깃발 항목이 «도구 없음»으로 막혔다).
   - **숲길 갈림길**: `author_forest_route` 결과 글이 샛길(nooks) 갈림길·막다른 끝 좌표와 빈터를 이른다(갈림길이 있는데 «빌더가 못 한다»며 막힘으로 닫았다).
-- **대사 판정**(`todo/checks.ts checkTalk`): refs 로 묶인 이벤트 하나는 이름이 안 맞아도 골라지지만, 그때는 그 이벤트 대사에 그 인물이 말하는 줄(speaker·「이름: …」 머리)이 있어야 ✓.
+- **대사 판정**(`judge/todoChecks.ts checkTalk`): refs 로 묶인 이벤트 하나는 이름이 안 맞아도 골라지지만, 그때는 그 이벤트 대사에 그 인물이 말하는 줄(speaker·「이름: …」 머리)이 있어야 ✓.
 - **갈고리(2026-10-30, 싼 모델 terra 기준 — `loop/hookStats.ts`, 발화마다 `v2.hook.<이름>` 상태, 끝 `v2.summary` data.hooks 에 수)**:
     | 갈고리 | 언제 | 무엇 | 발화 기록(`v2.hook.<이름>`) |
     |---|---|---|---|

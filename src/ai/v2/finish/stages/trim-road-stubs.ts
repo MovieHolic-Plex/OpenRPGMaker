@@ -2,7 +2,7 @@
 // 출구를 그림 칸으로 옮기는 출하 기본값 뒤, 가장자리 출구 길 폭 사본 앞에.
 import type { FinishStage } from "../types";
 import { createBuildRun } from "../../buildRun";
-import { trimRoadStubs } from "../../edgeExitRoads";
+import { trimRoadStubs } from "../../place/edgeExitRoads";
 
 export const stage: FinishStage = {
   id: "trim-road-stubs", phase: "assembly", order: 265,

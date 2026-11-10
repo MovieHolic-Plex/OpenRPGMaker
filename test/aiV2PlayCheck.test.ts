@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { deserialize, serialize } from "@/project/io";
 import { v2BaselineGameKeys } from "@/ai/v2/judge/finishGate";
-import { AUTOPLAY_GATE_PREFIX, playProblems } from "@/ai/v2/playCheck";
+import { AUTOPLAY_GATE_PREFIX, playProblems } from "@/ai/v2/judge/playCheck";
 import { buildQaFixture } from "./fixtures/qaGame/qaGameFixtures";
 import type { Project } from "@/project/types";
 

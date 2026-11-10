@@ -1,7 +1,7 @@
 // 모델이 설계한 방의 구역(design.areas)을 맵 이름표(map.locations)로 남긴다 — 기록만 한다(가구를 고르거나 옮기지 않는다).
 //
 // 왜(2026-10-30 mapvqa ③): 판정자는 «한 칸짜리 방, 조사할 곳 없음, 같은 서가·식탁 줄 반복»을 졌다고, «서로 다른 구역을 오가는 방»을 이겼다고 봤다.
-// 할 일 고리의 검사 room_zones(src/ai/v2/todo/checks.ts)는 맵 데이터만 읽는다 — 그래서 빌더가 모델의 구역·초점과 실제로 놓인 자리를 여기 적어 둔다.
+// 할 일 고리의 검사 room_zones(src/ai/v2/judge/todoChecks.ts)는 맵 데이터만 읽는다 — 그래서 빌더가 모델의 구역·초점과 실제로 놓인 자리를 여기 적어 둔다.
 //  - 구역 이름표: tags [design-area, room:<방 id>, focal:<칩셋 기물 id>, focal-at:x,y,w,h | focal-missing, (area-unplaced)], 상자 = 그 구역 묶음이 실제로 놓인 자리.
 //  - 방 이름표 덧붙임: objs:<id>*<n>;… (놓인 기물 수) · same-groups:<n> (기물 구성이 같은 묶음이 가장 많이 겹친 수).
 import type { DesignRoomReport, PlacedDesignGroup, RoomDesign } from "./designRoom";

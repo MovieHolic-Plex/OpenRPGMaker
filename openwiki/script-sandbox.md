@@ -143,7 +143,7 @@
 | 공통 이벤트 순환 호출 | `src/editor/eventDraftValidator.ts` `checkCallDepth` | 스크립트의 `callCommonEvent` 도 호출 간선 |
 | 삭제 가드 | `src/editor/databaseReferences.ts`·`databaseRecordReferences.ts` | 스크립트·라이브러리가 리터럴로 부르는 공통 이벤트·배우·스킬·아이템·적 그룹·애니메이션·스위치·변수는 삭제 차단(`scriptRefersTo`). `projectCommonEventReferenceMessage` 는 순수 함수 |
 | 맵 삭제 영향 | `src/project/mapDeletion.ts`·`src/editor/mapDeleteConfirm.ts` | `incomingScriptCount` — 스크립트는 고치지 않고 남는다고 확인창에 적는다 |
-| 조수 고리 끊김 보고 | `src/ai/v2/gameChecks.ts` `lostLinks` | 스크립트의 쓰기·읽기·공통 이벤트 호출 |
+| 조수 고리 끊김 보고 | `src/ai/v2/judge/gameChecks.ts` `lostLinks` | 스크립트의 쓰기·읽기·공통 이벤트 호출 |
 
 의도적으로 안 건드린 것: 로드 검증(`commandReferenceValidation`, 위 이유), `gameCheck/commands.ts`(스키마가 없는 kind 는 필드 검사 대상 아님),
 `autoPlay`(실제 인터프리터로 스크립트를 돌리지 않는 시뮬레이션), 전투 이벤트(스크립트는 트룹 페이지에서 안 돈다).
@@ -341,5 +341,5 @@
 - 셀프 스위치 쓰기(`game.setSelfSwitch`)와 명령 kind(`game.cmd({kind:"triggerEnding"})`)는 effects 에 남지 않는다 — 셀프 스위치는 판정을 생략하고, 엔딩은 소스 글을 본다(주석에도 속는 어림셈, 검사기가 조용해지는 쪽으로만 틀린다).
 - 컴파일 결과의 줄 번호는 TS 원본과 대체로 같지만 정확히 같지는 않다(오류는 `compiled line N`). 소스맵은 없다.
 - 라이브러리 모듈은 최상위 `await` 를 못 쓴다(동기 `new Function` 으로 평가).
-- 조수 할 일 검사 `talk`(`src/ai/v2/todo/checks.ts`)는 스크립트의 `game.showMessage("리터럴")` 줄도 대사로 센다(변수·감싼 함수로 넘긴 글은 못 본다). 데모에서 이게 없어 상인 스크립트 앞에 평범한 대사 한 줄이 덧붙었다.
-- 끝맺음 게임 검사(`src/ai/v2/gameChecks.ts`)는 흔들기·번쩍·효과음·BGM 을 스크립트 소스의 `game.shake/flash/playSe/playBgm` 호출로도 인정한다(글 검색 — 주석에도 속는다).
+- 조수 할 일 검사 `talk`(`src/ai/v2/judge/todoChecks.ts`)는 스크립트의 `game.showMessage("리터럴")` 줄도 대사로 센다(변수·감싼 함수로 넘긴 글은 못 본다). 데모에서 이게 없어 상인 스크립트 앞에 평범한 대사 한 줄이 덧붙었다.
+- 끝맺음 게임 검사(`src/ai/v2/judge/gameChecks.ts`)는 흔들기·번쩍·효과음·BGM 을 스크립트 소스의 `game.shake/flash/playSe/playBgm` 호출로도 인정한다(글 검색 — 주석에도 속는다).

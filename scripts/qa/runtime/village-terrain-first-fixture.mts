@@ -8,7 +8,7 @@ import { runTool } from "../../../src/editor/tools/index.ts";
 import { ensureBundledTilesets } from "../../../src/project/defaults/defaultAssets.ts";
 import { createBlankProject } from "../../../src/project/defaults.ts";
 import { serializePretty } from "../../../src/project/io.ts";
-import { villageArgs } from "../../../src/ai/v2/builders/village.ts";
+import { villageArgs } from "../../../src/ai/v2/place/builders/village.ts";
 import type { PlaceSpec } from "../../../src/ai/v2/types.ts";
 import type { Project } from "../../../src/project/types.ts";
 

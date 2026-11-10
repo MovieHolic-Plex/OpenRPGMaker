@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { dryBoats, dryBridges, placementProblems } from "@/ai/v2/placementRules";
+import { dryBoats, dryBridges, placementProblems } from "@/ai/v2/place/placementRules";
 import { composeDungeon } from "@/editor/dungeonKit/beodeul/compose";
 
 const BOAT = 31001, BRIDGE = 31002, WATER = 31003, MOSS = 31004;

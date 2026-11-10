@@ -1,8 +1,8 @@
-// 조수 v2 독립 검토자(src/ai/v2/advisor.ts)의 결정적 부분 — 변경 요약·도구 기록 압축·응답 해석(등급은 코드가 정한다)·후속 지시문.
+// 조수 v2 독립 검토자(src/ai/v2/judge/advisor.ts)의 결정적 부분 — 변경 요약·도구 기록 압축·응답 해석(등급은 코드가 정한다)·후속 지시문.
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import type { GameEvent, Project } from "@/project/types";
-import { adviseTurn, compactToolLog, parseAdvisorReply, summarizeProjectDiff } from "@/ai/v2/advisor";
+import { adviseTurn, compactToolLog, parseAdvisorReply, summarizeProjectDiff } from "@/ai/v2/judge/advisor";
 
 const page = (id: string, conditions: unknown[], commands: unknown[], sprite = true) => ({
   id, name: id, conditions, trigger: { kind: "action" }, priority: "same", movement: { type: "fixed" }, commands,

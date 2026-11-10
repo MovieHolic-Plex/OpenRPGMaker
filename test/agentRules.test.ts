@@ -53,9 +53,9 @@ describe("게임 짓기 규칙 — 단일 소스", () => {
     const sources: readonly [string, string, string][] = [
       ["src/ai/v2/prompt.ts", "TODO_LOOP_LINE", TODO_LOOP_LINE],
       ["src/ai/v2/verbs.ts", "SET_OBJECTIVE_DESCRIPTION", SET_OBJECTIVE_DESCRIPTION],
-      ["src/ai/v2/discoverability.ts", "OBJECTIVE_MISSING_MESSAGE", OBJECTIVE_MISSING_MESSAGE],
-      ["src/ai/v2/discoverability.ts", "OBJECTIVE_NOT_AT_START_MESSAGE", OBJECTIVE_NOT_AT_START_MESSAGE],
-      ["src/ai/v2/discoverability.ts", "OBJECTIVE_HUD_HIDDEN_MESSAGE", OBJECTIVE_HUD_HIDDEN_MESSAGE],
+      ["src/ai/v2/judge/discoverability.ts", "OBJECTIVE_MISSING_MESSAGE", OBJECTIVE_MISSING_MESSAGE],
+      ["src/ai/v2/judge/discoverability.ts", "OBJECTIVE_NOT_AT_START_MESSAGE", OBJECTIVE_NOT_AT_START_MESSAGE],
+      ["src/ai/v2/judge/discoverability.ts", "OBJECTIVE_HUD_HIDDEN_MESSAGE", OBJECTIVE_HUD_HIDDEN_MESSAGE],
       ["src/ai/adventureCompletion.ts", "PRE_FINISH_STRUCTURE_CHECK", PRE_FINISH_STRUCTURE_CHECK],
       ["src/ai/v2/toolTextEn.ts", "RUN_SCENE_TEST_DESCRIPTION", RUN_SCENE_TEST_DESCRIPTION],
       ["src/ai/v2/toolTextEn.ts", "DEFINE_ENDING_DESCRIPTION", DEFINE_ENDING_DESCRIPTION],

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { oversizedSprites } from "@/ai/v2/lookChecks";
-import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import type { GameEvent, Project } from "@/project/types";
 
 function withEvent(project: Project, event: Partial<GameEvent> & { id: string }, scale?: number): Project {

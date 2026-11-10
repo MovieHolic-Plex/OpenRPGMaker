@@ -3,7 +3,7 @@
 import { isPassable } from "@/project/collision";
 import { checkKitPlacement, checkReliefPlacement } from "@/project/kitPlacementRules";
 import { footprintFromUpper, footprintRefusal, overlappedObjects } from "@/project/objectFootprint";
-import { offPurposeProps } from "@/ai/v2/roomPurpose";
+import { offPurposeProps } from "@/ai/v2/place/roomPurpose";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { regionReferenceScene, preloadRegionReferenceScene, type RegionReferenceScene } from "@/project/regionReferenceImport";
 import { installStampAssets, stampPattern, type StampPattern } from "@/project/objectStamp";
@@ -258,7 +258,7 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
   },
 ];
 
-/** 이 맵의 방에서 쓰임에 안 맞는 가구 이름(위층) — 방 기록(hand-layout-room)의 쓰임과 가구 이름표로(src/ai/v2/roomPurpose.ts). */
+/** 이 맵의 방에서 쓰임에 안 맞는 가구 이름(위층) — 방 기록(hand-layout-room)의 쓰임과 가구 이름표로(src/ai/v2/place/roomPurpose.ts). */
 function offPurposeLabels(project: Project, map: GameMap): Set<string> {
   return new Set(offPurposeProps(project, map).flatMap((room) => room.props.map((prop) => prop.label)));
 }

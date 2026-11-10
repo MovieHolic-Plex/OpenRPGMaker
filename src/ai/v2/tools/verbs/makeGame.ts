@@ -1,18 +1,18 @@
 // make_game — 장소·사람·사건·퍼즐을 한 번에 받는 동사(OPRN_V2_MAKE_GAME 일 때만 싣는다).
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { createBuildRun } from "../../buildRun";
-import { builderFor } from "../../builders";
-import { localizePlaceSpec } from "../../builders/modernCity";
-import { localizeCultureSpec } from "../../builders/joseon";
+import { builderFor } from "../../place/builders";
+import { localizePlaceSpec } from "../../place/builders/modernCity";
+import { localizeCultureSpec } from "../../place/builders/joseon";
 import { fixPlayerStart } from "../../checks";
 import type { PersonSpec, PlaceBuildResult, PlaceRecord, PlaceSpec } from "../../types";
 import { buildPeople } from "../../people";
 import { buildEvent } from "../../events";
 import { eventBeats, isInside, orderPlaces, walkGame, type GameSpec } from "../../makeGame";
 import { gateFor, settleDungeonGates } from "../../dungeonGates";
-import { arrivalEntrance } from "../../dungeonParts";
-import { designMissingRooms } from "../../designRooms";
-import { dropModelSeed } from "../../modelSeed";
+import { arrivalEntrance } from "../../place/dungeonParts";
+import { designMissingRooms } from "../../place/designRooms";
+import { dropModelSeed } from "../../place/modelSeed";
 import { type Seen } from "../../turn/session";
 import { PLACE_SPEC_SCHEMA } from "../placeSchema";
 import { text, see, withImages, recordWrite, withSetupDefaults, placeVariety } from "../support";

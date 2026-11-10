@@ -2,7 +2,7 @@
 // 2026-10-30 회귀 sl1 opus jrpg 「동굴에서 마을로 나오면 (0,21)에 갇힘」).
 import type { LaneStage } from "../types";
 import { mapLabel } from "../types";
-import { checkLandingPockets } from "../../landingPockets";
+import { checkLandingPockets } from "../../place/landingPockets";
 
 export const stage: LaneStage = {
   id: "landing-pockets", scope: "map", order: 118,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { battleDataEmptied, unaskedChanges } from "@/ai/v2/gameChecks";
+import { battleDataEmptied, unaskedChanges } from "@/ai/v2/judge/gameChecks";
 import type { Project } from "@/project/types";
 
 // 2026-10-25 장난감 가게 고치기 4턴: 「메뉴의 스킬·장비·파티도 빼 줘」에 주인공 기술·직업 전투 데이터를 비웠고, 「파티」「스킬」 낱말 면제로 못 잡았다.
@@ -40,7 +40,7 @@ describe("menu requests never empty actor/class battle data", () => {
 
 describe("advisor diff shows emptied battle data", () => {
   it("lists ⚠ 비운 데이터 lines instead of only counts", async () => {
-    const { summarizeProjectDiff } = await import("@/ai/v2/advisor");
+    const { summarizeProjectDiff } = await import("@/ai/v2/judge/advisor");
     const { before, after } = emptied();
     expect(summarizeProjectDiff(before, after)).toContain("⚠ 비운 데이터");
   });

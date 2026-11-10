@@ -13,7 +13,7 @@ import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { clearStoreMusicCache, isStoreCardRequest } from "@/editor/tools/storeTools";
 import { SOUND_TIER, v2ExtraToolNames } from "@/ai/v2/request/toolGroups";
 import { audioOnly, musicAsked, soundOnly, wantsMusic, wantsSound } from "@/ai/v2/request/audio";
-import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { projectSeCue } from "@/project/seCues";
 
 const RETRO = retroManifest as unknown as StorePackManifest;

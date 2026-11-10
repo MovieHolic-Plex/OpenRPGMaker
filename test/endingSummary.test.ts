@@ -1,7 +1,7 @@
 // J36: 엔딩 카드 요약은 내레이션 — 에필로그의 말한 사람이 「이름: 대사」 대본 머리말로 새지 않는다.
 import { describe, expect, it } from "vitest";
 import { endingSummaryText, splitScriptSpeaker } from "@/project/endingSummary";
-import { gameContentProblems } from "@/ai/v2/gameChecks";
+import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { createBlankProject } from "@/project/defaults";
 
 const TOY_SHOP_EPILOGUE = [

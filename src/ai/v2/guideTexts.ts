@@ -10,8 +10,8 @@
 //  2) 대사 글의 「<사람>(님)이 <곳>에서/에」에서 <사람>이 같은 맵 이벤트 이름이고 <곳> 낱말이 그 사람 둘레(3칸) 칸 이름표·이벤트 이름에 없으면,
 //     <곳>을 말하는 이(그 대사 이벤트)에서 본 방위(「바로 남쪽」 「동쪽」)로 바꾼다. 말하는 이가 그 사람 자신이면 두지 않는다.
 // 고친 것만 적는다. 새 그림은 없다.
-import { isObjectiveCommand, landmarkWord, bearingWord } from "./discoverability";
-import { tileLabel } from "./people";
+import { isObjectiveCommand, landmarkWord, bearingWord } from "./judge/discoverability";
+import { tileLabel } from "./place/cells";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import type { BuildRun } from "./types";
 

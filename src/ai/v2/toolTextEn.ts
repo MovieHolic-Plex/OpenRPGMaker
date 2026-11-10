@@ -45,12 +45,27 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
     p: { objectId: "Row id from list_spatial_designs (obj:… / kit:… / group:…).", x: "Top-left x.", y: "Top-left y.", layers: "Layers to stamp. Omit = the object's default.", onOverlap: "When a standing prop overlaps furniture: refuse (default, names a free spot) | nearest (stamp at that free spot) | replace (clear the overlapped furniture).", referencePurpose: "Terrain kits only: the tileset reference purpose id (read that reference first). Optional for finished prop kits." },
   },
   find_empty_ground: {
-    d: "Find empty outdoor ground rectangles (largest first) with a suggested use each. region limits the search to one side of the map.",
+    d: "Find empty outdoor ground rectangles (largest first) on any chipset — walkable terrain with nothing on it; roads, water and indoor floors do not count. Returns each lot's x,y,w,h, the bare-ground share, and the outdoor props this chipset has. To fill what it finds call furnish_outdoor_area with the same region.",
     p: { region: "all | top | bottom | left | right | top-left | top-right | bottom-left | bottom-right | center (default all)." },
   },
+  furnish_outdoor_area: {
+    d: "Fill empty outdoor ground in one call: the tool splits the area into lots, puts a clump (trees / a feature with small props / a patch of low plants and rocks) in each, keeps a walking strip around them, leaves doors, exits and events clear, and undoes any piece that would cut off a reachable event. Works on any chipset that has outdoor prop kits. Give region (or area); props is optional. Returns what it placed where and the bare-ground share before → after.",
+    p: {
+      region: "Side of the map to fill: all | top | bottom | left | right | top-left | top-right | bottom-left | bottom-right | center (default all).",
+      area: "{x,y,w,h} exact rectangle instead of region.",
+      props: "Names of this chipset's outdoor props to use (from find_empty_ground's props list), e.g. palm, cactus, lamp. Omit = the chipset's trees, bushes and rocks.",
+      style: "auto (default) | grove | garden | plaza | pond — the last four only on monster-collecting sheets.",
+      seed: "Change for a different arrangement.",
+    },
+  },
   move_event: {
-    d: "Move an event to another cell on the same map (lands on a walkable cell for its trigger). To relocate, move — do not delete and recreate.",
-    p: { from: "Entry cell used for the reachability check (copy the lint candidate's from). Omit = start position / local reachability." },
+    d: "Move an event to another cell of the same map and get back the cell it landed on. Give ONE target: x,y (a cell) · dx,dy (cells from where it stands — dx -2 = two cells left, dy 1 = one cell down) · where (a place word; the tool picks a free walkable cell that blocks no path, so you need no coordinates). An unfit cell moves to the nearest fit one within 3 cells. To relocate, move — do not delete and recreate.",
+    p: {
+      x: "Target cell x (with y).", y: "Target cell y (with x).",
+      dx: "Cells to the right of its current cell (negative = left).", dy: "Cells below its current cell (negative = up).",
+      where: "Place word instead of coordinates: 입구 (entrance) · 광장 (square) · 문 앞 (in front of the door) · «X 옆/앞/뒤» (beside / in front of / behind X — X is an object label like 카운터·우물·침대 or the name of another event) · 구석 (corner) · 창가 (by the window) · 북쪽 벽 (north wall; also 남·동·서) — add a room word (홀·부엌·침실) to stay inside that room.",
+      from: "Entry cell used for the reachability check (copy the lint candidate's from). Omit = start position / local reachability.",
+    },
   },
   remove_event: { d: "Delete an event from a map (destructive)." },
   patch_event_page: {
@@ -211,7 +226,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   },
   edit_opening: { d: "Add/insert (index), update/delete/move (sceneId) one opening scene, or change settings.", p: { scene: "One scene (same shape as set_opening scenes[]).", "scene.narrationAudioResourceId": "Narration voice resource id. Empty = no voice." } },
   list_opening_media: { d: "List opening media ids with mood, use cases, series and cautions. query words are ANDed. Preview a picture with show_opening_image." },
-  author_opening_stage: { d: "Author the opening as an in-engine scene on a real map: New Game starts at mapId x,y (after any picture scenes), the beats cutscene plays once (NPC events walk move routes, camera pans, weather, narration), then transfers to the project start. Default for any opening where characters move; pictures only for close-up CG.", p: { mapId: "Stage map (a real game map).", beats: "Same beats as script_cutscene." } },
+  author_opening_stage: { d: "Author the opening as an in-engine scene on a real map: New Game starts at mapId x,y (after any picture scenes), the beats cutscene plays once (NPC events walk move routes, camera pans, weather, narration), then transfers to the project start. Default for any opening where characters move; pictures only for close-up CG. It replaces the automatic map-still opening (scenes bp-open-*); picture scenes you authored stay in front.", p: { mapId: "Stage map (a real game map).", x: "Cell where the stage opens (camera start). Omit x and y to let the tool pick: the start position on the start map, else the free walkable cell nearest the map centre.", y: "With x.", beats: "Same beats as script_cutscene." } },
   create_opening_animatic_shot: { d: "Add an empty composited opening shot. Replacing needs replace:true together with clearLayers:true. track:'title-intro' = intro before the title screen.", p: { track: "opening = after New Game (default) · title-intro = before the title screen." } },
   place_opening_background: { d: "Lay a full-stage background layer correctly (x,y are anchor points — do not hand-fill). Give mapId instead of a picture to use the game map itself as the background: focus {x,y} = map cell at the centre, zoom 1 = 1:1. People are not drawn — add them with place_opening_charset_actor.", p: { sampling: "nearest (default) = pixel art / maps. linear = painted key art scaled down." } },
   place_opening_charset_actor: { d: "Place a bundled 24×32 character chip as an opening actor with a stepping walk, tagged with its scene role." },
