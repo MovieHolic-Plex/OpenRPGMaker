@@ -70,6 +70,17 @@ describe("추리 증거 — 말로 건네는 것과 바닥에 떨어진 것", ()
     expect(evidenceOnThing(run)).toEqual([]);
   });
 
+  it("조사 칸·문 표시가 가로로 늘어선 줄에는 증거 칸을 놓지 않는다", () => {
+    const plain = game("떨어진 은단추", "수사 시작");
+    evidenceOnThing(plain.run);
+    // 표시가 없으면 사람 둘레에서 가장 위 칸(같은 줄 y=2)에 놓인다 — 그 줄에 문 표시를 세우면 비켜 간다.
+    expect(eventOf(plain.ctx.project, "ev_seojin_evidence")!.y).toBe(2);
+    const { ctx, run } = game("떨어진 은단추", "수사 시작");
+    for (const x of [2, 6]) expect(run.call("upsert_event", { mapId: ctx.project.startMapId, event: { id: `ev_door_${x}`, name: "들어갈 수 없는 입구", x, y: 2, pages: [{ ...base, id: "p0", conditions: [], graphic: hidden, commands: [{ kind: "text", body: "문이 잠겨 있다." }] }] } }).ok).toBe(true);
+    evidenceOnThing(run);
+    expect(eventOf(ctx.project, "ev_seojin_evidence")!.y).not.toBe(2);
+  });
+
   it("이미 바닥 칸이 된 말 증거(저장된 판)는 되돌린다 — 칸과 귀띔을 걷고 그 말이 다시 건넨다", () => {
     const { ctx, run } = game("떨어진 은단추", "수사 시작");
     evidenceOnThing(run);
