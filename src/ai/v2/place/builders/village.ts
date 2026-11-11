@@ -260,7 +260,11 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const farm = farmAddons(run, builtId, words(spec), warnings, missing);
   calls.push(...run.calls.slice(firstCall + calls.length));
   const parts = [`${String(data.theme ?? "")} ${String(data.form ?? "")} 마을`, farm.length ? `농가 ${farm.join("·")}` : "", `집 ${houses ?? "?"}채`, data.gathering ? `모이는 곳 ${(data.gathering as { why?: string }).why ?? ""}` : "", data.walls ? "성벽" : "", data.bridge ? "다리" : ""].filter(Boolean);
-  const state: VillageState = { args, seed, variant, ...(Array.isArray(data.doors) ? { doors: data.doors as VillageState["doors"] } : {}) };
+  // 시작에서 걸어 닿지 않는 집(강 건너·막힌 터)의 문은 목록에서 뺀다 — 그 문앞으로 이으면 출입구가 닿는 맨바닥으로 옮겨 붙는다(2026-11-11 문 앞 칸 탐침 seed 202).
+  const allDoors = Array.isArray(data.doors) ? data.doors as (NonNullable<VillageState["doors"]>[number] & { reached?: boolean })[] : undefined;
+  const doors = allDoors?.filter((d) => d.reached !== false);
+  if (allDoors && doors && doors.length < allDoors.length) warnings.push(`${allDoors.length - doors.length} house door(s) cannot be walked to from the map entrance and are left out of the door list — do not link interiors to those houses.`);
+  const state: VillageState = { args, seed, variant, ...(doors ? { doors } : {}) };
   // 집 문 앞 칸 — 실내를 잇는 create_transfer_pair 는 이 칸을 쓴다(2026-11-03 조수 대조 B8 서리나루 Opus: 결과에 문 자리가 없어
   // 광장 칸(34,27)을 문으로 짐작해 「맨바닥 이동」이 남았고, set_map_door 로 문 그림을 찾다 여섯 번 거절됐다).
   const doorList = (state.doors ?? []).slice(0, 14).map((d) => `${String(d.kit ?? "").replace(/^bd-/, "")}(${d.x},${d.y})`);

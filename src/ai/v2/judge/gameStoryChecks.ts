@@ -20,18 +20,18 @@ export function storyChecks({ before, after, task, changed }: GameCheck): Findin
   {
     const changedIds = new Set(changed.map((ev) => ev.id));
     const clues = skippableClues(after).filter((line) => [...changedIds].some((id) => line.includes(`(${id})`)));
-    if (clues.length) problems.push(tagged("game", "퍼즐", `${clues.slice(0, 3).join(" / ")}. 단서 전 페이지에서는 보상 항목을 빼고 「뭔가 단서가 필요하다」 대사만 두며, 보상은 단서 스위치 조건 페이지에만 남긴다.`));
+    if (clues.length) problems.push(tagged("game", "퍼즐", `${clues.slice(0, 3).join(" / ")}. 단서 전 페이지에서는 보상 항목을 빼고 「뭔가 단서가 필요하다」 대사만 두며, 보상은 단서 스위치 조건 페이지에만 남긴다.`, { variant: "skippable-clue" }));
     if (asksClueForLock(task)) {
       // 숫자·글자를 입력하는 자물쇠는 답을 알아야 풀리니 단서 스위치로 막지 않아도 된다 — 고르기 창으로 찍어 맞힐 수 있는 퍼즐만 본다.
       const guessable = changed.some((ev) => !allCommands(ev).some((r) => /^input/u.test(String(r.cmd.kind)))
         && allCommands(ev).some((r) => r.cmd.kind === "choices" && JSON.stringify(r.cmd.options ?? []).match(/"kind":"(changeItem|setSwitch)"/u)));
       const dead = guessable ? deadClues(after, changedIds) : [];
-      if (dead.length) problems.push(tagged("game", "퍼즐", `${dead.slice(0, 3).join(" / ")} — 퍼즐 이벤트가 그 스위치를 보지 않아 단서를 안 읽어도 풀린다. 퍼즐 이벤트의 첫 페이지는 「뭔가 단서가 필요하다」 대사만 두고, 정답 고르기·보상은 그 단서 스위치 조건의 다음 페이지로 옮긴다.`));
+      if (dead.length) problems.push(tagged("game", "퍼즐", `${dead.slice(0, 3).join(" / ")} — 퍼즐 이벤트가 그 스위치를 보지 않아 단서를 안 읽어도 풀린다. 퍼즐 이벤트의 첫 페이지는 「뭔가 단서가 필요하다」 대사만 두고, 정답 고르기·보상은 그 단서 스위치 조건의 다음 페이지로 옮긴다.`, { variant: "unread-clue" }));
     }
     const slow = slowChasers(after, changedIds);
-    if (slow.length) problems.push(tagged("game", "위협", `${slow.slice(0, 3).join(" / ")}. 추격 페이지 movement 를 speed 6 이상·frequency 8 로 두거나(빠른 걸음새가 필요하면 approachStyle dash·swoop) — make_chase_scene 기본값(speed 6·frequency 8)이 그 값이다. 느린 추격이 의도면(숨바꼭질형) 보고에 적는다.`));
+    if (slow.length) problems.push(tagged("game", "위협", `${slow.slice(0, 3).join(" / ")}. 추격 페이지 movement 를 speed 6 이상·frequency 8 로 두거나(빠른 걸음새가 필요하면 approachStyle dash·swoop) — make_chase_scene 기본값(speed 6·frequency 8)이 그 값이다. 느린 추격이 의도면(숨바꼭질형) 보고에 적는다.`, { variant: "slow-chaser" }));
     const chasers = vanishingChasers(after).filter((line) => [...changedIds].some((id) => line.includes(`(${id})`)));
-    if (chasers.length) problems.push(tagged("game", "위협", `${chasers.slice(0, 3).join(" / ")}. 숨기가 «이번 한 번» 지나가게 하는 것이면 그 스위치를 다시 끈다(예: 옷장에서 나온 뒤 기다렸다 setSwitch false, 또는 맵을 나갈 때), 영영 사라지는 것이 요청이면 보고에 적는다.`));
+    if (chasers.length) problems.push(tagged("game", "위협", `${chasers.slice(0, 3).join(" / ")}. 숨기가 «이번 한 번» 지나가게 하는 것이면 그 스위치를 다시 끈다(예: 옷장에서 나온 뒤 기다렸다 setSwitch false, 또는 맵을 나갈 때), 영영 사라지는 것이 요청이면 보고에 적는다.`, { variant: "vanishing-chaser" }));
   }
   // 말로만 쫓는 추격자(2026-10-25 심판 J54): 요청이 「시야·추격·순찰·느낌표」인데 바뀐 이벤트 어디에도 쫓는 움직임·순찰 길·시야가 없다.
   {
@@ -40,7 +40,7 @@ export function storyChecks({ before, after, task, changed }: GameCheck): Findin
       const mv = obj(pg.movement) ?? obj(pg.moveRoute);
       return !!mv && (mv.type === "chase" || !!obj(mv.route) || !!obj(mv.sight) || typeof mv.sightRange === "number");
     }));
-    if (asked && !built) problems.push(tagged("game", "위협", `요청은 시야·추격·순찰인데 이번에 바꾼 이벤트에 쫓는 움직임(movement.type 'chase')·순찰 길(movement.route)·시야가 하나도 없다 — make_chase_scene{mapId, chaser, patrol:{mode:'auto'}} 로 실제 추격자를 만들거나(이미 있으면 configure_npc_patrol 로 순찰 길을 더한다), 못 지었으면 보고에 「추격 없음」이라고 적는다. 대사·느낌표 말풍선만으로는 쫓아오지 않는다.`));
+    if (asked && !built) problems.push(tagged("game", "위협", `요청은 시야·추격·순찰인데 이번에 바꾼 이벤트에 쫓는 움직임(movement.type 'chase')·순찰 길(movement.route)·시야가 하나도 없다 — make_chase_scene{mapId, chaser, patrol:{mode:'auto'}} 로 실제 추격자를 만들거나(이미 있으면 configure_npc_patrol 로 순찰 길을 더한다), 못 지었으면 보고에 「추격 없음」이라고 적는다. 대사·느낌표 말풍선만으로는 쫓아오지 않는다.`, { variant: "no-chase" }));
   }
   // 맵 기본 배율을 이벤트로 켜고 끄기(2026-10-25 J69): 자동 실행 페이지가 카메라 배율만 건다 — 저장·불러오기·맵 재진입에서 어긋나고 매번 한 박자 늦게 걸린다.
   {
@@ -58,7 +58,7 @@ export function storyChecks({ before, after, task, changed }: GameCheck): Findin
     const changedIds = new Set(changed.map((ev) => ev.id));
     const startTouched = after.startMapId !== before.startMapId || JSON.stringify(after.startPos) !== JSON.stringify(before.startPos);
     const unsafe = unsafeSpawnLines(after).filter((entry) => startTouched || changedIds.has(entry.eventId) || (!!entry.spotEventId && changedIds.has(entry.spotEventId)));
-    if (unsafe.length) problems.push(tagged("game", "위협", `${unsafe.slice(0, 3).map((entry) => entry.line).join(" / ")}. 추격자를 시야 밖(벽 너머·다른 방)에 두거나, set_start_position 으로 시작을 옮기거나, 체크포인트를 추격 구역 앞(문 밖)으로 옮긴다.`));
+    if (unsafe.length) problems.push(tagged("game", "위협", `${unsafe.slice(0, 3).map((entry) => entry.line).join(" / ")}. 추격자를 시야 밖(벽 너머·다른 방)에 두거나, set_start_position 으로 시작을 옮기거나, 체크포인트를 추격 구역 앞(문 밖)으로 옮긴다.`, { variant: "unsafe-spawn" }));
   }
   // 사슬 전체 검사(2026-10-25 판정 J11~J14): 잠긴 방이 벽 틈으로 열림·자물쇠가 답을 말함·자리 표시 글·파티에 없는 동료.
   {
@@ -66,11 +66,11 @@ export function storyChecks({ before, after, task, changed }: GameCheck): Findin
     const bypass = lockBypasses(after, changedIds);
     if (bypass.length) problems.push(tagged("game", "잠긴 방", `${bypass.slice(0, 3).join(" / ")}. seal_locked_room{mapId, eventId} 로 문 말고 다른 길(벽 틈)을 막거나, 퍼즐 전체를 author_puzzle_chain 으로 다시 묶는다.`));
     const idle = gatesThatOpenNothing(after, changedIds);
-    if (idle.length) problems.push(tagged("game", "퍼즐", `${idle.slice(0, 3).join(" / ")}. 장치가 연 칸 말고 다른 길(벽 틈·옆 통로)을 막아 그 칸이 유일한 길이 되게 하거나(seal_locked_room), 보스 방 앞 진짜 외길에 장치를 다시 둔다.`));
+    if (idle.length) problems.push(tagged("game", "퍼즐", `${idle.slice(0, 3).join(" / ")}. 장치가 연 칸 말고 다른 길(벽 틈·옆 통로)을 막아 그 칸이 유일한 길이 되게 하거나(seal_locked_room), 보스 방 앞 진짜 외길에 장치를 다시 둔다.`, { variant: "idle-gate" }));
     const weak = weakPuzzleLocks(after, changedIds);
-    if (weak.length) problems.push(tagged("game", "퍼즐", `${weak.slice(0, 3).join(" / ")}. 답은 단서에서만 알 수 있는 번호(날짜·시계 바늘·쪽수를 이은 것)로 바꾸고 단서 대사도 같이 고친다. 고르기면 정답을 첫 보기가 아닌 자리에 둔다(author_puzzle_chain 은 자동으로 섞는다).`));
+    if (weak.length) problems.push(tagged("game", "퍼즐", `${weak.slice(0, 3).join(" / ")}. 답은 단서에서만 알 수 있는 번호(날짜·시계 바늘·쪽수를 이은 것)로 바꾸고 단서 대사도 같이 고친다. 고르기면 정답을 첫 보기가 아닌 자리에 둔다(author_puzzle_chain 은 자동으로 섞는다).`, { variant: "weak-lock" }));
     const leaks = selfRevealingLocks(after, changedIds);
-    if (leaks.length) problems.push(tagged("game", "퍼즐", `${leaks.slice(0, 3).join(" / ")}. 자물쇠 대사에서 답을 빼고(「번호를 모르겠다」), 답은 단서(일기·쪽지)에만 두고 단서를 읽으면 켜지는 스위치 조건 페이지에서만 입력받는다 — author_puzzle_chain 이 이 순서로 짓는다.`));
+    if (leaks.length) problems.push(tagged("game", "퍼즐", `${leaks.slice(0, 3).join(" / ")}. 자물쇠 대사에서 답을 빼고(「번호를 모르겠다」), 답은 단서(일기·쪽지)에만 두고 단서를 읽으면 켜지는 스위치 조건 페이지에서만 입력받는다 — author_puzzle_chain 이 이 순서로 짓는다.`, { variant: "lock-tells-answer" }));
     const holes = placeholderTexts(after, changedIds, JSON.stringify(after.system.opening ?? null) !== JSON.stringify(before.system.opening ?? null) || JSON.stringify(after.endings ?? []) !== JSON.stringify(before.endings ?? []));
     if (holes.length) problems.push(tagged("game", "글", `화면에 그대로 보이는 자리 표시가 남았다: ${holes.slice(0, 4).join(" / ")} — 주인공 이름은 실제 이름(또는 \\N[1])으로, 줄바꿈 「\\n」 글자는 실제 줄바꿈으로 고친다.`));
     const loners = unjoinedFollowers(after, changedIds, task);
@@ -136,7 +136,7 @@ export function sceneChecks({ before, after, task, changed, cmds, kinds }: GameC
       if (rows.some((r) => timeKinds.has(String(r.cmd.kind)))) continue;
       off.push(`「${ev.name}」(${ev.id})`);
     }
-    if (off.length) problems.push(tagged("game", "시계", `시간 체계가 켜져 있어 화면 시계(HUD)가 따로 흐르는데, ${off.slice(0, 3).join(", ")} 은 밤을 스위치와 화면 색으로만 만든다 — 「자정」 뒤에도 시계는 아침 시각을 보인다. 밤으로 바꾸는 갈래에 {kind:'setTime',hour:24,minute:0}(자정), 낮으로 돌리는 갈래에 {kind:'setTime',hour:6,minute:0} 을 같이 넣는다. 시계가 필요 없는 이야기면 configure_time_system{enabled:false} 로 끈다.`));
+    if (off.length) problems.push(tagged("game", "시계", `시간 체계가 켜져 있어 화면 시계(HUD)가 따로 흐르는데, ${off.slice(0, 3).join(", ")} 은 밤을 스위치와 화면 색으로만 만든다 — 「자정」 뒤에도 시계는 아침 시각을 보인다. 밤으로 바꾸는 갈래에 {kind:'setTime',hour:24,minute:0}(자정), 낮으로 돌리는 갈래에 {kind:'setTime',hour:6,minute:0} 을 같이 넣는다. 시계가 필요 없는 이야기면 configure_time_system{enabled:false} 로 끈다.`, { variant: "night-by-tint" }));
   }
   // 날짜를 두 번 센다(2026-10-25 판정 J18, 서울 연애): 시간 체계가 켜져 HUD 달력이 「봄 4일」을 보이는데 대사·엔딩은
   // 「서울에서 보낸 일수」 변수로 1일차를 센다. 대화마다 advanceTime 이 달력을 넘기고 잠자기가 또 넘겨 두 날짜가 어긋난다.
@@ -148,16 +148,16 @@ export function sceneChecks({ before, after, task, changed, cmds, kinds }: GameC
       || JSON.stringify(before.system.timeSystem ?? null) !== JSON.stringify(after.system.timeSystem ?? null);
     if (dualDays.length && touched) {
       const v = dualDays[0]!;
-      problems.push(tagged("game", "시계", `시간 체계가 켜져 HUD 달력(「봄 N일」)이 따로 흐르는데, 날짜를 변수 「${v.name}」(${v.id})로 또 센다(${v.where}) — 대화의 advanceTime·잠자기가 달력을 넘겨 화면 날짜와 대사·엔딩의 「N일차」가 어긋난다. 하나만 쓴다: 변수로 세려면 configure_time_system{enabled:false} 로 달력을 끄고(잠자기 대신 화면 전환·대사로 하루를 넘긴다), 달력을 쓰려면 그 변수를 지우고 날짜는 set_deadline_ending(onDayEnd 카운트)으로 센다.`));
+      problems.push(tagged("game", "시계", `시간 체계가 켜져 HUD 달력(「봄 N일」)이 따로 흐르는데, 날짜를 변수 「${v.name}」(${v.id})로 또 센다(${v.where}) — 대화의 advanceTime·잠자기가 달력을 넘겨 화면 날짜와 대사·엔딩의 「N일차」가 어긋난다. 하나만 쓴다: 변수로 세려면 configure_time_system{enabled:false} 로 달력을 끄고(잠자기 대신 화면 전환·대사로 하루를 넘긴다), 달력을 쓰려면 그 변수를 지우고 날짜는 set_deadline_ending(onDayEnd 카운트)으로 센다.`, { variant: "double-day-count" }));
     }
   }
   // 「제1막 끝」 카드: 대사 한 줄로 흉내 내면 게임이 그대로 이어진다 — 진짜 엔딩(막 끝 화면)이어야 한다(fs-end-act).
   if (asksActEnd(task) && !kinds.has("triggerEnding")) {
-    problems.push(tagged("game", "엔딩", "요청에 「막 끝」 화면이 있는데 바꾼 이벤트에 진짜 엔딩 명령이 없다 — 대사 「제1막 끝」만으로는 게임이 그대로 이어진다. define_ending{id:'ending_act1',presentation:{finalTitle:'제1막 끝',badge:'제2막으로 이어집니다'}} 뒤 그 장면 끝에 {kind:'triggerEnding',endingId:'ending_act1'} 를 넣는다."));
+    problems.push(tagged("game", "엔딩", "요청에 「막 끝」 화면이 있는데 바꾼 이벤트에 진짜 엔딩 명령이 없다 — 대사 「제1막 끝」만으로는 게임이 그대로 이어진다. define_ending{id:'ending_act1',presentation:{finalTitle:'제1막 끝',badge:'제2막으로 이어집니다'}} 뒤 그 장면 끝에 {kind:'triggerEnding',endingId:'ending_act1'} 를 넣는다.", { variant: "act-end" }));
   }
   // 레터박스(위아래 검은 띠): 컷신이 띠를 저절로 넣지 않는다 — 실제 띠 명령이 있어야 한다(2026-10-25 폴른 과업 fs-cine-letterbox: 「자동」이라 믿고 빠뜨림).
   if (asksLetterbox(task) && JSON.stringify(after.system.opening ?? null) === JSON.stringify(before.system.opening ?? null) && !JSON.stringify(changed.map((ev) => ev.pages)).includes("letterbox")) {
-    problems.push(tagged("game", "화면", "요청에 위아래 검은 띠(레터박스)가 있는데 바꾼 이벤트에 띠 명령이 없다 — 컷신은 띠를 저절로 넣지 않는다. add_scene/script_cutscene 의 letterbox 비트({do:'letterbox',show:true,size:12}) 또는 {kind:'m2Command',commandId:'m2-202-screen-effect',fields:{effect:'letterbox',value:12,durationMs:400}} 를 장면 맨 앞에 넣는다."));
+    problems.push(tagged("game", "화면", "요청에 위아래 검은 띠(레터박스)가 있는데 바꾼 이벤트에 띠 명령이 없다 — 컷신은 띠를 저절로 넣지 않는다. add_scene/script_cutscene 의 letterbox 비트({do:'letterbox',show:true,size:12}) 또는 {kind:'m2Command',commandId:'m2-202-screen-effect',fields:{effect:'letterbox',value:12,durationMs:400}} 를 장면 맨 앞에 넣는다.", { variant: "letterbox" }));
   }
   // 새 게임인데 오프닝이 공장 기본(「강을 낀 왕국…」) 그대로 켜져 있다 — 첫 화면부터 다른 이야기가 나온다(2026-10-25 조수 단독 게임 G3).
   {

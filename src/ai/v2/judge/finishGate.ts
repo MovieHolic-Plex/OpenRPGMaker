@@ -17,17 +17,30 @@ import { V2Session } from "../turn/session";
 import { placeFixVerbs } from "./placeFix";
 import { V2_MAX_REPAIR_ROUNDS } from "../turn/session";
 import { stageOpensBattle } from "../story/stageBattle";
-import { findingLine, tagged, type Finding } from "./finding";
+import { findingKey, findingLine, tagged, type Finding } from "./finding";
 
 /** 음악 요청의 일감인 게임 검사 — 나머지(이미 있던 위협·출하 차단 등)는 음악만 바라는 요청에서 참고다. */
 const MUSIC_WORK: ReadonlySet<string> = new Set(["음악", "효과음", "실행", "부작용"]);
 const isMusicWork = (f: Finding) => f.judge === "game" && MUSIC_WORK.has(f.id);
 
-/** 끝맺음 관문이 짚은 문제 하나 — 할 일 고리(src/ai/v2/loop)가 gate·critic 항목으로 덧붙인다. key 가 같으면 같은 문제다. */
-export interface V2GateProblem { readonly key: string; readonly text: string; readonly source: "gate" | "critic" }
+/**
+ * 끝맺음 관문이 짚은 문제 하나 — 할 일 고리(src/ai/v2/loop)가 gate·critic 항목으로 덧붙인다. key 가 같으면 같은 문제다.
+ * finding = 판정이 낸 문제(장소 고치기 묶음에는 없다). textKey = 글로 만든 열쇠(2026-11-11 전의 열쇠) — 시작 저장본 대조와 저장된 할 일의 옛 열쇠 옮기기에 쓴다.
+ */
+export interface V2GateProblem { readonly key: string; readonly text: string; readonly source: "gate" | "critic"; readonly finding?: Finding; readonly textKey?: string }
 
 const gateKey = (text: string): string => text.replace(/\d+/gu, "#").replace(/\s+/gu, " ").trim().slice(0, 160);
-const gameKey = (f: Finding): string => `game:${gateKey(findingLine(f))}`;
+const textKey = (f: Finding): string => (f.judge === "play" ? `${AUTOPLAY_GATE_PREFIX}${f.target?.ref ?? ""}` : `game:${gateKey(findingLine(f))}`);
+
+/** 판정이 낸 문제들을 관문 문제로 — 열쇠는 규칙·대상(findingKey). 한 번에 같은 열쇠가 둘 이상이면 글로 갈라 하나로 뭉개지 않는다. */
+export function gateProblems(findings: readonly Finding[]): V2GateProblem[] {
+  const count = new Map<string, number>();
+  for (const f of findings) count.set(findingKey(f), (count.get(findingKey(f)) ?? 0) + 1);
+  return findings.map((f) => ({
+    key: count.get(findingKey(f))! > 1 ? `${findingKey(f)}:${gateKey(findingLine(f))}` : findingKey(f),
+    text: findingLine(f), source: "gate" as const, finding: f, textKey: textKey(f),
+  }));
+}
 
 /**
  * 끝맺음 관문의 재료 — 고칠 수 있는 장소 문제(비평 major·기계 검사, 맵당 고치기 상한 전)와 게임 검사·출하 차단 줄.
@@ -52,19 +65,17 @@ function gameFindings(before: Project, after: Project, task: string, writes?: St
 }
 
 /**
- * 시작 저장본에 이미 있던 게임 검사 문제의 열쇠(before=after=시작 저장본). 할 일 고리는 이 열쇠와 같은 관문 문제를 «기존 결함»으로 보고에만 싣고
+ * 시작 저장본에 이미 있던 게임 검사 문제의 글 열쇠(textKey — before=after=시작 저장본). 할 일 고리는 글이 같은 관문 문제를 «기존 결함»으로 보고에만 싣고
  * 완료를 막지 않는다(2026-10-30 omo-loop-1030: 버들마을 출입구 그림 없음이 세 장면 모두 할 일이 됐다).
  */
 export function v2BaselineGameKeys(project: Project, task: string): Set<string> {
-  const keys = new Set(gameFindings(project, project, task).map(gameKey));
-  for (const p of autoPlayGateProblems(project, task)) keys.add(p.key);
-  return keys;
+  return new Set([...gameFindings(project, project, task), ...autoPlayFindings(project, task)].map(textKey));
 }
 
 /** 끝까지 플레이되는가(2026-11-09 assistant-reward 기준선: 몬스터 수집 두 판이 «완료»인데 엔딩까지 걸어갈 길이 없었다) — 게임을 만드는 요청만. 열쇠는 막힌 실행·단계마다 하나다. */
-function autoPlayGateProblems(project: Project, task: string): V2GateProblem[] {
+function autoPlayFindings(project: Project, task: string): readonly Finding[] {
   if (!buildsWholeGame(project, task)) return [];
-  try { return playProblems(project).map((f) => ({ key: `${AUTOPLAY_GATE_PREFIX}${f.target?.ref ?? ""}`, text: findingLine(f), source: "gate" as const })); } catch { return []; }
+  try { return playProblems(project); } catch { return []; }
 }
 
 /**
@@ -110,8 +121,7 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
   // 작은 수정·음악 요청 턴이 «게임으로 시작한 프로젝트»의 옛 맵 화면 그림 때문에 막히지 않게: 이번 턴이 게임 하나를 짓는 일(buildsWholeGame — 이어 하기 턴도)이거나 시작 저장본에는 없던 map-view 일 때만.
   if (env && (buildsWholeGame(env.ctx.project, env.request.task) || mapViewArtProblems(env.request.project, session, !!env.generateImage, env.request.task).length === 0)) game.push(...mapViewArtProblems(env.ctx.project, session, !!env.generateImage, env.request.task));
   const problems: V2GateProblem[] = [
-    ...game.map((f) => ({ key: gameKey(f), text: findingLine(f), source: "gate" as const })),
-    ...(env && !settingOnly && !storeOnly ? autoPlayGateProblems(env.ctx.project, env.request.task) : []),
+    ...gateProblems([...game, ...(env && !settingOnly && !storeOnly ? autoPlayFindings(env.ctx.project, env.request.task) : [])]),
     // 열쇠는 맵(과 장소/컷신)마다 하나 — 고칠 때마다 문제 글이 바뀌어도 같은 항목이 다시 열려 시도 상한(3)이 센다.
     ...fixable.map((o) => ({ key: `place:${o.mapId}:${o.name.includes("컷신(") ? "stage" : "place"}`, text: `${o.name}(${o.mapId}) 고치기 — ${placeFixVerbs(session, env?.ctx.project, o.mapId)}, 컷신은 add_event: ${o.problems.slice(0, 5).join(" / ")}`,
       source: o.problems.some((p) => p.startsWith("[비평")) ? "critic" as const : "gate" as const })),
@@ -136,10 +146,10 @@ export function mapViewArtProblems(project: Project, session: V2Session, canGene
   const accepted = (t: "title" | "ending") => { const a = attempt(t); return !!a && (a.status === "unavailable" || (a.status === "failed" && (a.failures ?? 1) >= 2)); };
   const title = (project.system.titleScreen ?? {}) as { backgroundResourceId?: string };
   const titleBg = title.backgroundResourceId ?? ((project.system as unknown as { titleResourceId?: string }).titleResourceId);
-  if (isView(titleBg) && !accepted("title")) out.push(tagged("ship", "art-generation", "타이틀 그림이 게임 속 맵 화면(" + titleBg + ")이다 — 그림을 만들 수 있으니 맵 화면으로 두지 않는다. generate_art{target:\"title\", prompt:<이 이야기의 장면>} 으로 그림을 만든다. 생성이 오류로 실패하면(기록됨) 그때는 맵 화면을 받아 준다. 고치지 못하면 «완성» 이라고 하지 않는다."));
+  if (isView(titleBg) && !accepted("title")) out.push(tagged("ship", "art-generation", "타이틀 그림이 게임 속 맵 화면(" + titleBg + ")이다 — 그림을 만들 수 있으니 맵 화면으로 두지 않는다. generate_art{target:\"title\", prompt:<이 이야기의 장면>} 으로 그림을 만든다. 생성이 오류로 실패하면(기록됨) 그때는 맵 화면을 받아 준다. 고치지 못하면 «완성» 이라고 하지 않는다.", { variant: "title" }));
   for (const ending of project.endings ?? []) {
     const bg = ending.presentation?.backgroundResourceId;
-    if (isView(bg) && !accepted("ending")) { out.push(tagged("ship", "art-generation", "엔딩 「" + (ending.name || ending.id) + "」 그림이 게임 속 맵 화면(" + bg + ")이다 — generate_art{target:\"ending\", prompt:<엔딩 장면>} 으로 그림을 만든다. 생성이 오류로 실패하면(기록됨) 그때는 맵 화면을 받아 준다.")); break; }
+    if (isView(bg) && !accepted("ending")) { out.push(tagged("ship", "art-generation", "엔딩 「" + (ending.name || ending.id) + "」 그림이 게임 속 맵 화면(" + bg + ")이다 — generate_art{target:\"ending\", prompt:<엔딩 장면>} 으로 그림을 만든다. 생성이 오류로 실패하면(기록됨) 그때는 맵 화면을 받아 준다.", { variant: "ending" })); break; }
   }
   return out;
 }

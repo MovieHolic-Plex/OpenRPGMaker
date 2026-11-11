@@ -40,29 +40,35 @@ function allDefault(v: unknown): boolean {
 }
 
 /**
- * 스키마 기준으로 선택 칸의 «기본값 채움»을 걷어 낸다: 빈 글·빈 배열·null, 그리고 잎이 모두 기본값인 선택 객체.
- * 필수 칸은 그대로 둔다. 돌려주는 값: 고친 인자와 걷어 낸 칸 경로.
+ * 선택 enum 칸에 온 "none" 이 «비워 둔다» 는 뜻인가 — 도구의 진짜 enum 에 "none" 이 없을 때만.
+ * 값 하나짜리 선택 enum 은 v2 가 "none" 을 더해 보여 준다(tools/toolExposure withNone); 진짜 값이 "none" 인 칸(날씨 none 등)은 건드리지 않는다.
+ */
+const unsetWord = (real: Schema | undefined, v: unknown): boolean => v === "none" && Array.isArray(real?.enum) && !real.enum.includes("none");
+
+/**
+ * 스키마 기준으로 선택 칸의 «기본값 채움»을 걷어 낸다: 빈 글·빈 배열·null, 잎이 모두 기본값인 선택 객체, 그리고 «비워 둔다» 는 뜻의 "none".
+ * 필수 칸은 그대로 둔다. 돌려주는 값: 고친 인자와 걷어 낸 칸 경로. real = 도구의 진짜 스키마(모델이 본 것과 enum 이 다를 수 있다).
  * terra 는 스키마의 모든 칸을 기본값으로 채웠다(place_field_enemy patrol.directions:[]·graphic{…""}, upsert_troop members:[], referencePurpose:"").
  */
-function pruneDefaults(schema: Schema | undefined, value: unknown, path = ""): { value: unknown; removed: string[] } {
+function pruneDefaults(schema: Schema | undefined, value: unknown, real?: Schema): { value: unknown; removed: string[] } {
   const removed: string[] = [];
-  const walk = (s: Schema | undefined, v: unknown, p: string): unknown => {
-    if (Array.isArray(v)) return s?.items ? v.map((x, i) => walk(s.items, x, `${p}[${i}]`)) : v;
+  const walk = (s: Schema | undefined, r: Schema | undefined, v: unknown, p: string): unknown => {
+    if (Array.isArray(v)) return s?.items ? v.map((x, i) => walk(s.items, r?.items, x, `${p}[${i}]`)) : v;
     if (!isObj(v) || !s?.properties) return v;
     const required = new Set(s.required ?? []);
     const out: Obj = {};
     for (const [k, child] of Object.entries(v)) {
       const cs = s.properties[k];
       const at = p ? `${p}.${k}` : k;
-      if (cs && !required.has(k) && (emptyish(child) || allDefault(child))) { removed.push(at); continue; }
-      const next = cs ? walk(cs, child, at) : child;
+      if (cs && !required.has(k) && (emptyish(child) || allDefault(child) || unsetWord(r?.properties?.[k], child))) { removed.push(at); continue; }
+      const next = cs ? walk(cs, r?.properties?.[k], child, at) : child;
       // 안을 걷어 내 비게 된 선택 객체도 뺀다(patrol:{directions:[]} → patrol:{}).
       if (cs && !required.has(k) && isObj(next) && !Object.keys(next).length && isObj(child) && Object.keys(child).length) { removed.push(at); continue; }
       out[k] = next;
     }
     return out;
   };
-  return { value: walk(schema, value, path), removed };
+  return { value: walk(schema, real, value, ""), removed };
 }
 
 // ───────────── 프로젝트 조회 ─────────────
@@ -349,7 +355,7 @@ export function preCheck(toolName: string, schema: unknown, rawArgs: unknown, pr
   const notes: string[] = [];
   let args: Obj = clone(rawArgs);
   if (isRegistryTool(toolName)) {
-    const pruned = pruneDefaults(schema as Schema, args);
+    const pruned = pruneDefaults(schema as Schema, args, getTool(toolName)?.parameters as Schema | undefined);
     if (pruned.removed.length) { args = pruned.value as Obj; notes.push(`dropped empty/default optional fields: ${pruned.removed.slice(0, 8).join(", ")}${pruned.removed.length > 8 ? ` +${pruned.removed.length - 8} more` : ""}`); }
   }
   for (const rule of PRE_RULES) {
