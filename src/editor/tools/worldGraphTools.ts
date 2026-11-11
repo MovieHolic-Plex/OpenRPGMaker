@@ -1,3 +1,4 @@
+import { isRoadCell } from "@/ai/v2/place/surface";
 import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 // 선언형 월드 그래프 툴: plan_world / link_maps / build_world / lint_world.
 
@@ -156,6 +157,7 @@ const linkMaps: ToolDefinition = {
           y: { type: "integer" },
           exit: WORLD_GATE_SCHEMA,
           doorAt: COORD_SCHEMA,
+          exact: { type: "boolean", description: "x,y 를 그대로 출입구 칸으로 쓴다(벽 쪽으로 당기거나 옆 칸으로 옮기지 않는다) — 길 끝·다리 끝에 세우는 출구" },
         },
         required: ["mapId"],
       },
@@ -168,6 +170,7 @@ const linkMaps: ToolDefinition = {
           y: { type: "integer" },
           entry: WORLD_GATE_SCHEMA,
           doorAt: COORD_SCHEMA,
+          exact: { type: "boolean", description: "x,y 를 그대로 출입구 칸으로 쓴다(벽 쪽으로 당기거나 옆 칸으로 옮기지 않는다) — 길 끝·다리 끝에 세우는 출구" },
         },
         required: ["mapId"],
       },
@@ -314,8 +317,9 @@ export function linkMapsInDraft(
     return { x: value.x as number, y: value.y as number };
   };
   const doorA = doorAt(options.from), doorB = doorAt(options.to);
-  const endpointA = resolveTransferEndpoint(projectView, viewA, { ...requestedA, ...(doorA ? { doorAt: doorA } : {}) }, 'A', warnings);
-  const endpointB = resolveTransferEndpoint(projectView, viewB, { ...requestedB, ...(doorB ? { doorAt: doorB } : {}) }, 'B', warnings);
+  const exact = (endpoint: JsonRecord) => (endpoint.exact === true && typeof endpoint.x === "number" ? { exact: true } : {});
+  const endpointA = resolveTransferEndpoint(projectView, viewA, { ...requestedA, ...(doorA ? { doorAt: doorA } : {}), ...exact(options.from) }, 'A', warnings);
+  const endpointB = resolveTransferEndpoint(projectView, viewB, { ...requestedB, ...(doorB ? { doorAt: doorB } : {}), ...exact(options.to) }, 'B', warnings);
   if (!endpointA || !endpointB) throw new ToolError('출입구 인접에 왕복 통행 가능한 빈 착지 칸이 없습니다. 길·문앞을 먼저 비우세요.', { code: 'transfer-no-landing' });
   assertDoorExitWidths(projectView, viewA, endpointA.gate, viewB, endpointB.gate, doorA, doorB);
   // 문이 있으면 이벤트를 문 칸에 묶는다 — 문 앞 칸을 밟는 순간이 아니라 문 쪽으로 걸어 들어갈 때 옮기고,
@@ -328,15 +332,16 @@ export function linkMapsInDraft(
     ? assertProvidedLanding(projectView, viewB, requestedLandingB, endpointB.gate, "to.entry")
     : boundB?.landing ?? endpointB.landing;
   const landingA = options.bidirectional ? boundA?.landing ?? endpointA.landing : undefined;
-  const facing = (bound: typeof boundA, landing: Point | undefined) =>
-    bound && landing && landing.x === bound.landing.x && landing.y === bound.landing.y ? { direction: bound.direction } : {};
+  // 문으로 나오면 문을 등지고, 맵 가장자리 출구로 들어오면 맵 안쪽을 보고 선다(뒤로 한 걸음이면 돌아가는 칸이다).
+  const facing = (bound: typeof boundA, landing: Point | undefined, map: GameMap, gate: Point) =>
+    bound && landing && landing.x === bound.landing.x && landing.y === bound.landing.y ? { direction: bound.direction } : landing ? gateArrivalFacing(projectView, map, gate, landing) : {};
 
   const outcomeA = upsertEventIntoMap(fromMap, transferGateEvent(eventIdA, gateA, {
     kind: "transfer",
     mapId: toMap.id,
     x: landingB.x,
     y: landingB.y,
-    ...facing(boundB, landingB),
+    ...facing(boundB, landingB, viewB, gateB),
     fade: options.fade,
   }, kitDoorOpenCommands(draft, fromMap, gateA), boundA?.bump ?? false));
   let changedEvents = outcomeA === "added" ? 1 : 0;
@@ -348,7 +353,7 @@ export function linkMapsInDraft(
       mapId: fromMap.id,
       x: landingA.x,
       y: landingA.y,
-      ...facing(boundA, landingA),
+      ...facing(boundA, landingA, viewA, gateA),
       fade: options.fade,
     }, kitDoorOpenCommands(draft, toMap, gateB), boundB?.bump ?? false));
     if (outcomeB === "added") changedEvents += 1;
@@ -537,7 +542,7 @@ function gatePointForEndpoint(
     return point;
   }
   if (typeof endpoint.x === "number" && typeof endpoint.y === "number") {
-    const point = snapFlushToWall(project, map, endpoint.x, endpoint.y);
+    const point = endpoint.exact === true ? { x: endpoint.x, y: endpoint.y } : snapFlushToWall(project, map, endpoint.x, endpoint.y);
     assertPointInMap(map, point, label);
     return point;
   }
@@ -577,6 +582,15 @@ function assertProvidedLanding(project: Project, map: GameMap, point: Point, gat
   const check = transferGatesStayApproachable(project, map, gate);
   if (!check.group.has(point.y * map.width + point.x)) throw new ToolError(`${label} 착지에서 출입구가 있는 방으로 걸어갈 수 없습니다.`, { code: 'transfer-unreachable', mapId: map.id, x: point.x, y: point.y });
   return { x: point.x, y: point.y };
+}
+
+/** 맵 가장자리나 길 위의 출입구로 들어와 바로 곁 칸에 서면 출입구를 등지고 선다(가장자리면 맵 안쪽, 길 끝이면 길을 따라 안쪽). 그 밖에는 방향을 정하지 않는다. */
+function gateArrivalFacing(project: Project, map: GameMap, gate: Point, landing: Point): { direction?: "up" | "down" | "left" | "right" } {
+  const dx = landing.x - gate.x, dy = landing.y - gate.y;
+  if (Math.abs(dx) + Math.abs(dy) !== 1) return {};
+  const inward = (gate.x === 0 && dx === 1) || (gate.x === map.width - 1 && dx === -1) || (gate.y === 0 && dy === 1) || (gate.y === map.height - 1 && dy === -1);
+  if (!inward && !(isRoadCell(project, map, gate.x, gate.y) && isRoadCell(project, map, landing.x, landing.y))) return {};
+  return { direction: dx === 1 ? "right" : dx === -1 ? "left" : dy === 1 ? "down" : "up" };
 }
 
 function sideCenter(map: GameMap, side: WorldGraphSide): Point {

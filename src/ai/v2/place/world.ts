@@ -62,7 +62,8 @@ export interface WorldSetting {
   /** 낱말 없는 요청의 풀: fantasy = 판타지 요청도, open = 장르 낱말이 전혀 없을 때만, named = 요청이 말했을 때만. */
   readonly pool: "fantasy" | "open" | "named";
   /** 이 세계의 구성기(종류마다 value 만 다르다). newMap = 구성기가 칩셋·크기를 맞춘 새 맵을 스스로 만든다. */
-  readonly composer?: { readonly tool: string; readonly param: "style" | "kind"; readonly newMap?: true };
+  /** exits: 그 구성 도구가 `exits`(다른 맵으로 나가는 변까지 길 내기)를 받는가. */
+  readonly composer?: { readonly tool: string; readonly param: "style" | "kind"; readonly newMap?: true; readonly exits?: true };
   readonly kinds: readonly WorldKind[];
 }
 
@@ -96,7 +97,7 @@ export const WORLDS: readonly WorldSetting[] = [
   {
     id: "snow_north", tilesetId: "snow_north", name: "Snowbound North", ko: "북방 설원", pool: "fantasy", named: (t) => describesSnowNorth(t),
     pitch: "Log villages behind palisades, frozen lakes and ice caves; long winters, hearth stories, things sleeping under the ice.",
-    composer: { tool: "compose_snow_north_map", param: "style", newMap: true },
+    composer: { tool: "compose_snow_north_map", param: "style", newMap: true, exits: true },
     kinds: [
       out("village", "눈 덮인 마을", "log village inside a palisade (houses with doors)", [46, 36]),
       out("market", "겨울 장터", "winter market square with stalls", [42, 32]),
@@ -111,7 +112,7 @@ export const WORLDS: readonly WorldSetting[] = [
   {
     id: "desert_east", tilesetId: "desert_east", name: "Desert of the East", ko: "사막 동방", pool: "fantasy", named: (t) => describesDesertEast(t),
     pitch: "Oasis towns, bazaars and a sultan's palace on the sand, with pyramids and sealed tombs beyond; caravans, bargains, curses.",
-    composer: { tool: "compose_desert_east_map", param: "kind" },
+    composer: { tool: "compose_desert_east_map", param: "kind", exits: true },
     kinds: [
       out("oasis", "오아시스 마을", "adobe village around an oasis pond", [44, 36]),
       out("bazaar", "바자르", "crowded market street of stalls", [46, 34]),
@@ -174,7 +175,7 @@ export const WORLDS: readonly WorldSetting[] = [
   {
     id: "prehistoric", tilesetId: "prehistoric", name: "Primeval World", ko: "선사 시대", pool: "open", named: (t) => describesPrehistoric(t),
     pitch: "Tribal huts around a fire, swamps, a smoking volcano and a valley of giant bones; hunts, spirits and omens.",
-    composer: { tool: "compose_prehistoric_map", param: "style", newMap: true },
+    composer: { tool: "compose_prehistoric_map", param: "style", newMap: true, exits: true },
     kinds: [
       out("village", "부족 마을", "tribal village around a bonfire", [48, 36]),
       out("fossil", "화석 계곡", "valley of giant fossils", [46, 34]),
