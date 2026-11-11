@@ -329,8 +329,8 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
     if (heldDirections.length > 0) scheduleDirectionRepeat();
     // knob 시각 이동(반경 제한).
     const maxTravel = safeKnobTravel(base, knob);
-    // 손잡이는 달리기 고리(반지름 70%)를 넘어갈 만큼 움직인다 — 손잡이가 고리 밖에 있으면 달리는 중이다.
-    const visualTravel = Math.min(distance, Math.max(maxTravel, (Math.min(base.offsetWidth, base.offsetHeight) / 2) * 0.78));
+    // 손잡이는 판 안에 머문다(달리기 고리가 있던 때는 판 밖으로 나갔다 — 달리기는 이제 A 를 누르고 있기다).
+    const visualTravel = Math.min(distance, maxTravel);
     knob.style.transform = `translate(${unitX * visualTravel}px, ${unitY * visualTravel}px)`;
     // 손가락이 반경 밖으로 멀리 끌면 조이스틱 중심이 따라온다(엄지가 미끄러져도 방향이 살아 있다).
     if (center && !anchored && maxTravel > 0 && distance > maxTravel * 1.6) {
@@ -397,7 +397,8 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
     const canFloat = zone.isConnected && zone.getBoundingClientRect().width > 0;
     if (!canFloat || mode === "fixed" || (mode === "auto" && nearBase)) {
       center = baseCenter;
-      anchored = mode === "fixed";
+      // 판을 옮길 수 없는 배치(무대 안 패드)에서는 중심도 따라가지 않는다 — 판은 그대로인데 중심만 손가락 쪽으로 흘러 방향이 틀어졌다.
+      anchored = mode === "fixed" || !canFloat;
     } else {
       center = { x: event.clientX, y: event.clientY };
       placeBase(event.clientX, event.clientY);
