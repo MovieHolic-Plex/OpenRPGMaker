@@ -2,14 +2,15 @@
 // 왜: v2 는 모델이 명세(청사진·장소·경로 단계)만 쓰고 함수가 맵·문·출구·적·HUD·끝맺음을 짓는다. 눈가림 플레이가 짚은 결함은 거의 그 함수 쪽인데,
 //     고친 것을 저장본 두세 판이나 90분짜리 Terra 판으로만 확인했다. 은행은 같은 명세로 빌더만 다시 돌린다.
 //
-//   bun scripts/qa/assistant-v2/specBank.mts run --out <결과 폴더> [--at <커밋>] [--only id,id] [--jobs 4] [--no-render] [--no-autoplay]
+//   bun scripts/qa/assistant-v2/specBank.mts ab --out <결과 폴더> [--base origin/main] [--only id,id] [--jobs N]
+//        빌더를 고친 사람이 쓰는 한 줄: 기준 커밋의 빌더(<결과>/a)와 지금 작업 폴더의 빌더(<결과>/b)로 은행을 돌리고 대조를 찍는다.
+//   bun scripts/qa/assistant-v2/specBank.mts run --out <결과 폴더> [--at <커밋>] [--only id,id] [--jobs N] [--no-render] [--no-autoplay]
 //        은행의 명세마다 재생 → 재기. --at 을 주면 그 커밋의 빌더로 재생한다(/tmp 에 임시 작업 폴더를 만들고 끝나면 지운다). 재는 자는 늘 지금 폴더의 것.
 //   bun scripts/qa/assistant-v2/specBank.mts --diff <결과A> <결과B>        칸마다 은행 합계의 전/후와 나빠진 게임 목록
 //   bun scripts/qa/assistant-v2/specBank.mts extract <판 폴더>… [--out <은행 폴더>]   저장된 판 → 명세 파일(은행에 더한다)
 //   bun scripts/qa/assistant-v2/specBank.mts measure <결과 폴더>            재생은 두고 재기만 다시(탐침을 고친 뒤)
 //   bun scripts/qa/assistant-v2/specBank.mts list                           은행에 든 것
-// 빌더를 고치는 사람이 쓰는 한 줄:  고치기 전 `run --out /tmp/bank-a` → 고친 뒤 `run --out /tmp/bank-b` → `--diff /tmp/bank-a /tmp/bank-b`
-// (고치기 전 판은 `run --at origin/main --out /tmp/bank-a` 로 작업 폴더를 건드리지 않고도 낼 수 있다). 문서: openwiki/assistant-v2.md 「명세 은행」.
+// 문서: openwiki/assistant-v2.md 「명세 은행」.
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -21,7 +22,7 @@ const BANK = path.join(ROOT, "harness-data/assistant-capability/spec-bank");
 const argv = process.argv.slice(2);
 const flag = (name: string): string | undefined => { const at = argv.indexOf(name); return at >= 0 ? argv[at + 1] : undefined; };
 const has = (name: string): boolean => argv.includes(name);
-const VALUE_FLAGS = ["--out", "--at", "--only", "--jobs", "--bank"];
+const VALUE_FLAGS = ["--out", "--at", "--only", "--jobs", "--bank", "--base"];
 const rest = argv.filter((a, i) => !a.startsWith("--") && !VALUE_FLAGS.includes(argv[i - 1] ?? ""));
 const bankDir = flag("--bank") ?? BANK;
 
@@ -54,7 +55,7 @@ function summarize(out: string, meta: Record<string, unknown>): void {
   const total = sumMetrics(games);
   const wholeGames = games.filter((g) => g.kind !== "place"), places = games.filter((g) => g.kind === "place");
   const gameTotal = sumMetrics(wholeGames), placeTotal = sumMetrics(places);
-  const replays = games.map((g) => { const f = path.join(out, g.id, "replay.json"); return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) as { id: string; ms: number; calls: { total: number; played: number; sameOutcome: number; writes: number; writesSame: number; needsOutside: string[]; unresolvedIds: string[]; okToFail: string[] }; turns: { forced: number; error?: string }[]; salts: { recorded: number; kept: number }; pictures: string[] } : undefined; });
+  const replays = games.map((g) => { const f = path.join(out, g.id, "replay.json"); return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) as { id: string; ms: number; calls: { total: number; played: number; sameOutcome: number; writes: number; writesSame: number; needsOutside: string[]; unresolvedIds: string[]; okToFail: string[]; renamed?: string[]; resent?: string[] }; turns: { forced: number; error?: string }[]; salts: { recorded: number; kept: number }; pictures: string[] } : undefined; });
   const keys = METRICS.filter((d) => total[d.key] !== undefined);
   const text = [
     `명세 은행 — ${String(meta.head ?? "")}${meta.at ? ` (빌더 ${String(meta.at)})` : ""} · 게임 ${games.length} · ${String(meta.wallSec ?? "?")}초`,
@@ -63,7 +64,7 @@ function summarize(out: string, meta: Record<string, unknown>): void {
     table([["칸", `합계(${games.length})`, `게임 하나(${wholeGames.length})`, `장소 하나(${places.length})`], ...keys.map((d) => [d.label, show(total[d.key]), show(gameTotal[d.key]), show(placeTotal[d.key])])]),
     "",
     "## 그대로 못 되살린 호출",
-    ...replays.filter(Boolean).map((r) => `${r!.id}: 재생 ${r!.calls.played}/${r!.calls.total} · 그때와 다른 결과 ${r!.calls.played - r!.calls.sameOutcome} · 못 찾은 id ${r!.calls.unresolvedIds.length} · 모델·그림이 있어야 하는 호출 ${r!.calls.needsOutside.length} · 판정자가 다시 연 자리(대본을 이어 붙임) ${r!.turns.reduce((n, t) => n + t.forced, 0)}${r!.turns.some((t) => t.error) ? " · 예외로 멈춤" : ""}`),
+    ...replays.filter(Boolean).map((r) => `${r!.id}: 재생 ${r!.calls.played}/${r!.calls.total} · 그때와 다른 결과 ${r!.calls.played - r!.calls.sameOutcome} · 못 찾은 id ${r!.calls.unresolvedIds.length} · 모델·그림이 있어야 하는 호출 ${r!.calls.needsOutside.length} · 판정자가 다시 연 자리(대본을 이어 붙임) ${r!.turns.reduce((n, t) => n + t.forced, 0)}${r!.calls.renamed?.length ? ` · 이름이 바뀐 도구 ${r!.calls.renamed.length}` : ""}${r!.calls.resent?.length ? ` · 지금 규칙이 돌려보내 다시 보낸 청사진 ${r!.calls.resent.join(", ")}` : ""}${r!.turns.some((t) => t.error) ? " · 예외로 멈춤" : ""}`),
     "",
     ...games.flatMap((g) => [`## ${g.id}`, gameTable(g), ...(g.probeErrors.length ? [`탐침 오류: ${g.probeErrors.join(" | ")}`] : []), `그림: ${path.join(out, g.id, "maps")}/`, ""]),
     "(수치는 그림을 보지 않은 것이다 — 화면 미검증)",
@@ -121,7 +122,8 @@ async function run(): Promise<void> {
     if (worktree) { sh(["git", "worktree", "remove", "--force", worktree]); fs.rmSync(worktree, { recursive: true, force: true }); sh(["git", "worktree", "prune"]); }
   }
   const replaySec = Math.round((Date.now() - started) / 1000);
-  await measureAll(out, files.map((f) => path.basename(f, ".json")), jobs);
+  // 재기는 재생보다 가볍다(탐침 하나씩, 1GB 안팎) — 두 배로 띄운다.
+  await measureAll(out, files.map((f) => path.basename(f, ".json")), jobs * 2);
   const wallSec = Math.round((Date.now() - started) / 1000);
   summarize(out, { head, ...(at ? { at: atSha, atRef: at } : {}), jobs, replaySec, wallSec, finishedAt: new Date().toISOString() });
   console.log(`\n${fs.readFileSync(path.join(out, "bank.txt"), "utf8").split("\n## 그대로 못 되살린")[0]}`);
@@ -143,9 +145,24 @@ function list(): void {
   console.log(`\n${rows.length}개 · ${bankDir}`);
 }
 
+/** 전/후를 한 번에: 기준 커밋(기본 origin/main)의 빌더와 지금 작업 폴더의 빌더로 은행을 차례로 돌리고 대조를 찍는다. */
+async function ab(): Promise<number> {
+  const out = path.resolve(flag("--out") ?? "");
+  if (!flag("--out")) { console.error("ab --out <결과 폴더> [--base origin/main] 가 필요하다"); return 2; }
+  const base = flag("--base") ?? "origin/main";
+  const pass = [...(flag("--only") ? ["--only", flag("--only")!] : []), ...(flag("--jobs") ? ["--jobs", flag("--jobs")!] : []), ...(has("--no-render") ? ["--no-render"] : []), ...(has("--no-autoplay") ? ["--no-autoplay"] : []), ...(flag("--bank") ? ["--bank", flag("--bank")!] : [])];
+  const self = path.join(ROOT, "scripts/qa/assistant-v2/specBank.mts");
+  for (const args of [["run", "--at", base, "--out", path.join(out, "a"), ...pass], ["run", "--out", path.join(out, "b"), ...pass]]) {
+    const code = Bun.spawnSync(["bun", self, ...args], { cwd: ROOT, stdout: "inherit", stderr: "inherit" }).exitCode;
+    if (code !== 0) return code;
+  }
+  return Bun.spawnSync(["bun", self, "--diff", path.join(out, "a"), path.join(out, "b")], { cwd: ROOT, stdout: "inherit", stderr: "inherit" }).exitCode;
+}
+
 const command = has("--diff") ? "diff" : rest[0];
 if (command === "diff") process.exit(diff());
 else if (command === "run") await run();
+else if (command === "ab") process.exit(await ab());
 else if (command === "list") list();
 else if (command === "measure") {
   const out = path.resolve(rest[1] ?? "");
@@ -158,6 +175,6 @@ else if (command === "measure") {
   const code = Bun.spawnSync(["bun", path.join(ROOT, "scripts/qa/assistant-v2/specBank/extract.mts"), ...rest.slice(1), "--out", flag("--out") ?? bankDir], { cwd: ROOT, stdout: "inherit", stderr: "inherit" }).exitCode;
   process.exit(code);
 } else {
-  console.log("usage: specBank.mts run --out <dir> [--at <commit>] [--only id,…] [--jobs N] | --diff <A> <B> | extract <run-dir>… | measure <dir> | list");
+  console.log("usage: specBank.mts ab --out <dir> [--base origin/main] | run --out <dir> [--at <commit>] [--only id,…] [--jobs N] | --diff <A> <B> | extract <run-dir>… | measure <dir> | list");
   process.exit(2);
 }

@@ -53,6 +53,8 @@ if (replay) {
   lines.gateProblems = gate;
   values.replayPlayed = [replay.calls.played, replay.calls.total];
   values.replaySame = [replay.calls.sameOutcome, replay.calls.played];
+  // 명세의 나이: 쓰기 호출 가운데 그때와 성공·실패가 같은 것 — 낮으면 그 명세는 지금 빌더와 멀어진 것이다(뒤쪽 호출이 과녁을 잃었다).
+  values.replayWritesSame = [replay.calls.writesSame, replay.calls.writes];
   const gaps = [...new Set(replay.turns.flatMap((t) => t.missingArt ?? []))];
   values.artGaps = gaps.filter((g) => g.startsWith("[art-gap]")).length;
   values.missingArt = gaps.length;

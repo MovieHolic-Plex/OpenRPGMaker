@@ -48,6 +48,7 @@ export const METRICS: readonly { key: string; label: string; better: "up" | "dow
   { key: "events", label: "이벤트", better: "none" },
   { key: "replayPlayed", label: "재생한 호출/전체", better: "none" },
   { key: "replaySame", label: "그때와 같은 결과의 호출", better: "none" },
+  { key: "replayWritesSame", label: "그때와 같은 결과의 쓰기 호출", better: "none" },
   { key: "trustMapTiles", label: "저장본과 타일이 같은 맵", better: "none" },
   { key: "trustEvents", label: "저장본과 짝지은 이벤트", better: "none" },
   { key: "trustEventContent", label: "저장본과 내용까지 같은 이벤트", better: "none" },

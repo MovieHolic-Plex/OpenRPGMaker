@@ -17,7 +17,7 @@ if (!out || !before || !after) { console.error("page --out <html> --before <결�
 const esc = (s: unknown): string => String(s ?? "").replace(/[&<>"]/gu, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]!);
 const readJson = <T,>(file: string): T => JSON.parse(fs.readFileSync(file, "utf8")) as T;
 const metricsOf = (dir: string): GameMetrics[] => fs.readdirSync(dir).filter((d) => fs.existsSync(path.join(dir, d, "metrics.json"))).sort().map((d) => readJson<GameMetrics>(path.join(dir, d, "metrics.json")));
-type Replay = { id: string; kind?: string; replayedAt: string; layout: string; ms: number; source: Spec["source"]; calls: { total: number; played: number; sameOutcome: number; writes: number; writesSame: number; okToFail: string[]; failToOk: string[]; unresolvedIds: string[]; needsOutside: string[] }; salts: { recorded: number; kept: number }; turns: { forced: number; verdictWas?: { complete: boolean }; verdictNow?: { complete: boolean }; error?: string }[]; trust?: { maps: { saved: number; named: number; sameSize: number; sameTiles: number }; events: { saved: number; matched: number; samePlace: number; sameContent: number } }; counters: { blockedFetch: number } };
+type Replay = { id: string; kind?: string; replayedAt: string; layout: string; ms: number; source: Spec["source"]; calls: { total: number; played: number; sameOutcome: number; writes: number; writesSame: number; okToFail: string[]; failToOk: string[]; unresolvedIds: string[]; needsOutside: string[]; renamed?: string[]; resent?: string[] }; salts: { recorded: number; kept: number }; turns: { forced: number; verdictWas?: { complete: boolean }; verdictNow?: { complete: boolean }; error?: string }[]; trust?: { maps: { saved: number; named: number; sameSize: number; sameTiles: number }; events: { saved: number; matched: number; samePlace: number; sameContent: number } }; counters: { blockedFetch: number } };
 const replaysOf = (dir: string): Replay[] => fs.readdirSync(dir).filter((d) => fs.existsSync(path.join(dir, d, "replay.json"))).sort().map((d) => readJson<Replay>(path.join(dir, d, "replay.json")));
 type Bank = { head?: string; at?: string; jobs?: number; replaySec?: number; wallSec?: number; games?: string[] };
 const bankOf = (dir: string): Bank => fs.existsSync(path.join(dir, "bank.json")) ? readJson<Bank>(path.join(dir, "bank.json")) : {};
@@ -55,6 +55,12 @@ const picture = (dir: string, game: string, mapName: string): string | undefined
 };
 const pairs = (one("--pairs") ?? "").split(",").map((p) => p.trim()).filter(Boolean).map((p) => { const [game, map] = p.split(":"); return { game: game!, map: map!, a: picture(before, game!, map!), b: picture(after, game!, map!) }; }).filter((p) => p.a && p.b);
 const exitLines = (dir: string, game: string, map: string): string[] => { const f = path.join(dir, game, "metrics.json"); return fs.existsSync(f) ? (readJson<GameMetrics>(f).lines.exits ?? []).filter((l) => l.startsWith(`${map} `)).map((l) => l.slice(map.length + 1)) : []; };
+
+// 판마다: 머리 칸의 전→후와 «그때와 같은 결과의 쓰기»(명세의 나이).
+const cell = (list: GameMetrics[], id: string, key: string): string => show(list.find((g) => g.id === id)?.values[key]);
+const perGame = A.filter((g) => g.kind !== "place" && B.some((x) => x.id === g.id)).map((g) => [g.id, `${cell(A, g.id, "replayWritesSame")} → ${cell(B, g.id, "replayWritesSame")}`, ...HEADLINE.slice(0, 4).map((key) => `${cell(A, g.id, key)} → ${cell(B, g.id, key)}`)]);
+const placeA = sumMetrics(A.filter((g) => g.kind === "place")), placeB = sumMetrics(B.filter((g) => g.kind === "place"));
+perGame.push([`장소 하나 ${A.filter((g) => g.kind === "place").length}판 합계`, `${show(placeA.replayWritesSame)} → ${show(placeB.replayWritesSame)}`, ...HEADLINE.slice(0, 4).map((key) => `${show(placeA[key])} → ${show(placeB[key])}`)]);
 
 // ── 4. 시간 · 5. 못 되살리는 것 ──────────────────────────────────────────────────────────────────────────────
 const afterReplays = replaysOf(after);
@@ -105,14 +111,17 @@ ${table(["판", "재생 커밋", "재생한 호출", "같은 결과", "쓰기 �
 <h2>3. 이력으로 증명 — PR #4609(출구는 길 끝에 선다) 앞 커밋 → 지금 main</h2>
 <p>같은 은행을 <code>${esc(bankA.at ?? bankA.head ?? "")}</code>(#4609 바로 앞)의 빌더와 <code>${esc(bankB.at ?? bankB.head ?? "")}</code>(지금)의 빌더로 재생하고 같은 자(지금 폴더의 탐침)로 쟀다. 그 PR 이 모델 없는 표본(세계 열 + 주제 넷)에서 낸 수치는 길 위 17/79 → 81/81 · 길 폭 전체 0/73 → 68/73 · 도착 안쪽 19 → 84/86 이었다 — Terra 판의 «후»는 그때 재지 못했다.</p>
 ${table(["칸", nameA, nameB, "합계", "좋아진 판", "나빠진 판"], headline.map(rowHtml))}
+<h3>판마다</h3>
+${table(["판", "그때와 같은 결과의 쓰기(전 → 후)", "출구가 길 위", "가장자리 출구가 길 폭 전체", "도착 칸이 길 위", "도착 칸이 안쪽"], perGame)}
+<p>«그때와 같은 결과의 쓰기»가 낮은 판은 명세가 그 빌더와 멀어진 것이다(옛 판 — 청사진 규칙·도구가 바뀌었다). 그런 판의 수는 «그 명세로 지금 빌더가 지은 다른 게임»의 수다.</p>
 <details><summary>모든 칸(${report.rows.length})</summary>${table(["칸", nameA, nameB, "합계", "좋아진 판", "나빠진 판"], report.rows.map(rowHtml))}</details>
 ${pairs.map((p) => `<h3>${esc(p.game)} · ${esc(p.map)}</h3><div class="pair"><figure><img src="${p.a}" alt="전"><figcaption>${esc(nameA)} — ${esc(exitLines(before, p.game, p.map).join(" | ") || "바깥 맵 출구 없음")}</figcaption></figure><figure><img src="${p.b}" alt="후"><figcaption>${esc(nameB)} — ${esc(exitLines(after, p.game, p.map).join(" | ") || "바깥 맵 출구 없음")}</figcaption></figure></div>`).join("")}
 <p>그림의 파란 칸은 맵 사이 이동 이벤트, 자주 칸은 그 밖의 투명 이벤트(잠김 한 줄 등)다.</p>
 
 <h2>4. 한 줄 명령과 시간</h2>
-<pre>bun scripts/qa/assistant-v2/specBank.mts run --at origin/main --out /tmp/bank-a   # 고치기 전(작업 폴더를 건드리지 않는다)
-bun scripts/qa/assistant-v2/specBank.mts run --out /tmp/bank-b                     # 고친 뒤
-bun scripts/qa/assistant-v2/specBank.mts --diff /tmp/bank-a /tmp/bank-b            # 칸마다 전/후 + 나빠진 판</pre>
+<pre>bun scripts/qa/assistant-v2/specBank.mts ab --out /tmp/bank      # 기준(origin/main)의 빌더 → /tmp/bank/a · 지금 작업 폴더의 빌더 → /tmp/bank/b · 대조 표
+# 나눠서: run --at origin/main --out A · run --out B · --diff A B   (몇 판만: --only fun-x1,lay-main-village)</pre>
+<p>한 줄은 은행을 두 번 돈다(전·후). 아래는 이력 증명에 쓴 두 번의 시간이다 — 두 번을 같은 때에 돌렸고 다른 작업자들도 기계를 쓰고 있었다.</p>
 ${table(["실행", "빌더", "판", "동시에", "재생", "전체"], [["전", bankA.at ?? bankA.head ?? "", A.length, bankA.jobs ?? "", `${bankA.replaySec ?? "?"}초`, `${bankA.wallSec ?? "?"}초`], ["후", bankB.at ?? bankB.head ?? "", B.length, bankB.jobs ?? "", `${bankB.replaySec ?? "?"}초`, `${bankB.wallSec ?? "?"}초`]])}
 <p>가장 긴 판: ${afterReplays.slice().sort((x, y) => y.ms - x.ms).slice(0, 3).map((r) => `${esc(r.id)} ${Math.round(r.ms / 1000)}초`).join(" · ")}. 장소 판은 하나에 ${Math.round(afterReplays.filter((r) => r.kind === "place").reduce((n, r) => n + r.ms, 0) / Math.max(1, afterReplays.filter((r) => r.kind === "place").length) / 1000)}초쯤이다.</p>
 
@@ -120,9 +129,11 @@ ${table(["실행", "빌더", "판", "동시에", "재생", "전체"], [["전", b
 <ul>
 <li><b>모델 쪽 판정자</b>(독립 검토자·화면 검수·장소 비평가)는 돌지 않는다. 그 판정자가 다시 연 자리에서는 남은 대본을 이어 붙인다 — 지금 main 재생에서 ${sumAfter((r) => r.turns.reduce((n, t) => n + t.forced, 0))}번. 그 항목(c…·v…)을 닫는 todo 호출은 대상이 없어 실패한다.</li>
 <li><b>모델·그림·네트워크가 있어야 하는 호출</b> ${[...outside].map(([name, n]) => `${esc(name)} ${n}`).join(" · ") || "없음"} — generate_art 는 자리표시 그림으로 대신하고, 나머지는 부르되 결과를 믿지 않는다.</li>
+<li><b>옛 명세를 지금 빌더로 돌릴 때</b>: 이름이 바뀐 도구(build_world → build_places)는 지금 이름으로 부른다 — ${sumAfter((r) => r.calls.renamed?.length ?? 0)}번. 그때는 받았는데 지금 규칙이 돌려보내는 청사진은 같은 것을 다시 보낸다(제품이 두 번 돌려보낸 뒤 함수가 메워서 건다) — ${afterReplays.filter((r) => r.calls.resent?.length).map((r) => esc(r.id)).join(" · ") || "없음"}. 그런 판은 그때와 다른 게임이 된다(아래 «같은 결과의 쓰기»가 낮다).</li>
 <li><b>재생하지 못한 호출</b> ${sumAfter((r) => r.calls.total - r.calls.played)}개 / ${sumAfter((r) => r.calls.total)} · <b>지금 재생본에서 못 찾은 id</b>를 쓴 호출 ${sumAfter((r) => r.calls.unresolvedIds.length)}개(빌더가 달라져 그 이벤트가 없거나, 판정자 항목).</li>
 <li><b>기계 «완료» 판정</b>은 그때 판정과 같지 않다(위 표의 마지막 열). 재생에는 편집기의 적용 검증·정규화가 없어 끝맺음 관문이 짚는 항목이 한두 개 다르고, 대본에는 그 항목을 고치는 호출이 없다. 전/후를 견주는 수로만 쓴다 — 지금 main 합계 ${esc(show(total.complete))}.</li>
 <li><b>명세는 그때 빌더가 낸 결과에 대한 모델의 반응</b>이다. 빌더가 바뀌면 뒤쪽 고치기 호출(그때 생긴 이벤트 id 를 짚는 patch 등)은 과녁을 잃는다 — 표의 «그때와 같은 결과의 호출»이 그 수다.</li>
+<li><b>공용 자료</b>: 재생은 이 기계의 공용 DB(<code>shared-content.sqlite</code> — 공용 캐릭터 칩·타일셋)를 편집기처럼 올린 뒤 빈 프로젝트를 만든다. 은행 파일에는 그 DB 가 없다 — 다른 기계에서는 사람 그림 고르기가 달라질 수 있다.</li>
 <li>소금 기록이 없는 옛 판(2026-11-10 의 여덟 판)은 장소 이름에서 정한 소금으로 짓는다 — 저장본과 같은 배치는 아니고, 전/후 두 재생끼리만 같다.</li>
 </ul>
 <p class="lead">만든 때 ${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC · 문서 openwiki/assistant-v2.md 「명세 은행」</p>

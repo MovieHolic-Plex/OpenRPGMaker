@@ -124,8 +124,23 @@ const GEN_ID = /gen-(?:title|ending)-[a-z0-9]+/gu;
 /** 그때 만든 그림 id → 재생이 만든 그림 id(generate_art 결과 글에서 짝짓는다). */
 const genIds = new Map<string, string>();
 
+// ── 옛 명세를 지금 빌더로: 이름이 바뀐 도구 · 지금 규칙이 돌려보내는 청사진 ──────────────────────────────────────
+// 도구 이름이 바뀐 것(인자는 같다)은 이 작업 폴더에 있는 쪽 이름으로 부른다. 어느 쪽이 있는지는 v2 도구 소스에서 읽는다.
+const RENAMES: readonly [string, string][] = [["build_world", "build_places"]];
+const v2Source = ((): string => {
+  const dir = path.join(ROOT, "src/ai/v2");
+  const files = fs.existsSync(dir) ? (fs.readdirSync(dir, { recursive: true }) as string[]).filter((f) => f.endsWith(".ts")) : [];
+  return files.map((f) => { const text = fs.readFileSync(path.join(dir, f), "utf8"); return RENAMES.flat().some((n) => text.includes(`"${n}"`)) ? text : ""; }).join("\n");
+})();
+const hasTool = (name: string): boolean => new RegExp(`name:\\s*"${name}"`, "u").test(v2Source);
+const renameTo = new Map<string, string>();
+for (const [a, b] of RENAMES) { if (!hasTool(a) && hasTool(b)) renameTo.set(a, b); else if (!hasTool(b) && hasTool(a)) renameTo.set(b, a); }
+/** 그때는 받았는데 지금 규칙이 «아직 저장 안 함»으로 돌려보내는 청사진은 같은 것을 다시 보낸다 — 제품이 두 번 돌려보낸 뒤에는 함수가 메워서 건다(blueprint.ts WORLD_BOUNCES). */
+const BOUNCED = /not saved yet/iu;
+const MAX_RESENDS = 3;
+
 // ── 재생 ─────────────────────────────────────────────────────────────────────────────────────────────────────
-interface CallLog { turn: number; i: number; n: string; was: boolean; now?: boolean; s?: string; note?: string }
+interface CallLog { turn: number; i: number; n: string; was: boolean; now?: boolean; s?: string; note?: string; as?: string; resent?: number }
 const log: CallLog[] = [];
 const turnsOut: { input: string; calls: number; played: number; forced: number; gateItems: string[]; verdictWas?: { complete: boolean; summary: string }; verdictNow?: { complete: boolean; summary: string }; statuses: Record<string, number>; missingArt?: string[]; notes: string[]; trust?: Trust; ms: number; error?: string }[] = [];
 let live: LiveEnv | undefined;
@@ -185,7 +200,19 @@ function translate(args: unknown, project: AnyProject): { args: unknown; unresol
   return { args: out, unresolved };
 }
 
+// 편집기는 공용 자료(공용 캐릭터 칩·타일셋 — 이 기계의 shared-content.sqlite)를 올린 뒤에 빈 프로젝트를 만든다. 같은 차례로 한다 —
+// 빠지면 빌더가 고른 공용 캐릭터 칩이 프로젝트에 없어 그 이벤트의 저장이 거절된다(jrpg-x1: 경로 짓기가 첫 이벤트에서 멈췄다).
+const sharedNote = { installed: false, assets: 0 };
+try {
+  const worker = await import(path.join(ROOT, "scripts/lib/piWorkerSharedContent.ts")) as { preparePiWorkerSharedContent?: () => Promise<void> };
+  if (worker.preparePiWorkerSharedContent) { await worker.preparePiWorkerSharedContent(); sharedNote.installed = true; }
+} catch (e) { console.error(`[${spec.id}] 공용 자료를 못 올림: ${(e as Error).message.slice(0, 160)}`); }
 let project = createBlankProject();
+try {
+  const shared = await import(path.join(ROOT, "src/project/sharedContent.ts")) as { ensureSharedContent?: (project: unknown) => boolean };
+  shared.ensureSharedContent?.(project);
+} catch { /* 옛 커밋에 없으면 그대로 */ }
+sharedNote.assets = Object.keys((project as unknown as { assets?: { uploaded?: Record<string, unknown> } }).assets?.uploaded ?? {}).filter((id) => id.startsWith("shared_")).length;
 project.meta.title = spec.title;
 const started = Date.now();
 for (const [t, turn] of spec.turns.entries()) {
@@ -193,7 +220,7 @@ for (const [t, turn] of spec.turns.entries()) {
   const t0 = Date.now();
   const calls = turn.calls;
   const mainEnd = turn.polishFrom ?? calls.length;
-  let cursor = 0, forced = 0, modelCalls = 0;
+  let cursor = 0, forced = 0, modelCalls = 0, sends = 0;
   const stopsTaken = new Set<number>();
   const statuses: Record<string, number> = {};
   const notes: string[] = [];
@@ -211,13 +238,16 @@ for (const [t, turn] of spec.turns.entries()) {
     const messages = context?.messages ?? [];
     for (let at = messages.length - 1; at >= 0; at -= 1) {
       const m = messages[at]!;
-      const id = /^sb-(\d+)-(\d+)$/u.exec(String(m.toolCallId ?? ""));
+      const id = /^sb-(\d+)-(\d+)(?:-|$)/u.exec(String(m.toolCallId ?? ""));
       if (m.role !== "toolResult" || !id) continue;
       const key = `${id[1]}-${id[2]}`;
       if (resultTexts.has(key)) break;
       resultTexts.set(key, Array.isArray(m.content) ? m.content.map((part) => String((part as { text?: string }).text ?? "")).join("\n") : String(m.content ?? ""));
     }
     const stream = createAssistantMessageEventStream();
+    // 방금 보낸 청사진을 지금 규칙이 돌려보냈으면(그때는 받았다) 같은 것을 다시 보낸다.
+    const last = cursor > 0 ? log.find((l) => l.turn === t + 1 && l.i === cursor - 1) : undefined;
+    if (last && last.n === "write_blueprint" && last.was && last.now === false && BOUNCED.test(last.s ?? "") && (last.resent ?? 0) < MAX_RESENDS) { last.resent = (last.resent ?? 0) + 1; last.now = undefined; cursor -= 1; }
     // 멈출 자리: 대본이 끝났거나, 그때 모델이 멈춘 자리(한 번만), 또는 윤문 차례 앞.
     const stopHere = cursor >= calls.length || ((calls[cursor - 1]?.stop === 1 || cursor === turn.polishFrom) && cursor > 0 && !stopsTaken.has(cursor));
     let msg;
@@ -231,15 +261,20 @@ for (const [t, turn] of spec.turns.entries()) {
         const same = todoItems().find((item) => itemKey(item.content) === wasItem);
         if (same) (translated.args as { task?: string }).task = same.id; else translated.unresolved.push(`${(translated.args as { task?: string }).task}(지금 목록에 없는 항목)`);
       }
-      const entry: CallLog = { turn: t + 1, i: cursor, n: call.n, was: call.ok };
+      // 이름이 바뀐 도구는 지금 이름으로(인자 속 이름 — load_tools 의 names — 도 같이).
+      const name = renameTo.get(call.n) ?? call.n;
+      if (renameTo.size) { let text = JSON.stringify(translated.args); for (const [from, to] of renameTo) text = text.split(`"${from}"`).join(`"${to}"`); translated.args = JSON.parse(text) as unknown; }
+      const prior = log.find((l) => l.turn === t + 1 && l.i === cursor);
+      const entry: CallLog = prior ?? { turn: t + 1, i: cursor, n: call.n, was: call.ok, ...(name !== call.n ? { as: name } : {}) };
       if (translated.unresolved.length) entry.note = `못 찾은 id ${translated.unresolved.join(",").slice(0, 160)}`;
-      log.push(entry);
+      if (!prior) log.push(entry);
       const a = translated.args as { spec?: { name?: string }; name?: string };
       // 장소 하나를 짓거나 다시 짓는 호출은 그 장소 이름을 안다(소금 뽑기가 이 이름의 기록을 쓴다).
       const targetMap = (a as { patch?: { mapId?: string }; mapId?: string }).patch?.mapId ?? (a as { mapId?: string }).mapId;
       callPlaceName = call.n === "make_place" ? (a.spec?.name ?? a.name) : /^(edit_place|review_layout|dress_room)$/u.test(call.n) && targetMap ? liveProject(base).maps[targetMap]?.name : undefined;
       reseed(`t${t}|c${cursor}`);
-      msg = message([{ type: "toolCall", id: `sb-${t}-${cursor}`, name: call.n, arguments: translated.args }], "toolUse");
+      sends += 1;
+      msg = message([{ type: "toolCall", id: `sb-${t}-${cursor}-${sends}`, name, arguments: translated.args }], "toolUse");
       cursor += 1;
     }
     queueMicrotask(() => { stream.push({ type: "start", partial: msg } as never); stream.push({ type: "done", reason: msg.stopReason, message: msg } as never); });
@@ -247,7 +282,7 @@ for (const [t, turn] of spec.turns.entries()) {
   };
   const onEvent = (event: { type: string; id?: string; name?: string; ok?: boolean; summary?: string; data?: unknown; message?: string }) => {
     if (event.type === "tool_end") {
-      const m = /^sb-(\d+)-(\d+)$/u.exec(String(event.id ?? ""));
+      const m = /^sb-(\d+)-(\d+)(?:-|$)/u.exec(String(event.id ?? ""));
       const entry = m ? log.find((l) => l.turn === Number(m[1]) + 1 && l.i === Number(m[2])) : undefined;
       if (entry) {
         entry.now = event.ok !== false; entry.s = String(event.summary ?? "").replace(/\s+/gu, " ").slice(0, 200);
@@ -328,9 +363,12 @@ const result = {
     okToFail: played.filter((l) => l.was && !l.now).map((l) => `${l.turn}.${l.i} ${l.n}: ${l.s ?? ""}`.slice(0, 260)),
     failToOk: played.filter((l) => !l.was && l.now).map((l) => `${l.turn}.${l.i} ${l.n}`),
     unresolvedIds: log.filter((l) => l.note?.startsWith("못 찾은 id")).map((l) => `${l.turn}.${l.i} ${l.n}: ${l.note}`),
+    renamed: played.filter((l) => l.as).map((l) => `${l.turn}.${l.i} ${l.n}→${l.as}`),
+    resent: played.filter((l) => l.resent).map((l) => `${l.turn}.${l.i} ${l.n} ×${l.resent}${l.now ? "" : " (끝내 거절)"}`),
     needsOutside: played.filter((l) => NEEDS_OUTSIDE.test(l.n)).map((l) => `${l.turn}.${l.i} ${l.n}${l.now === l.was ? "" : l.now ? " (지금 성공)" : " (지금 실패)"}`),
   },
   salts: { recorded: Object.keys(spec.salts).length, drawn: saltLog, kept: Object.entries(spec.salts).filter(([name, salt]) => savedSalts[name] === salt).length },
+  sharedContent: sharedNote,
   counters: { random: counters.random, saltDraws: counters.saltDraws, blockedFetch: counters.blockedFetch, fetchUrls: [...counters.fetchUrls] },
   turns: turnsOut,
   trust: turnsOut.at(-1)?.trust,
