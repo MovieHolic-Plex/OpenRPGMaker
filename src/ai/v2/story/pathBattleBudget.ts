@@ -15,7 +15,7 @@
 //  - 맞추기는 내리기만: 손실·승률이 넘치면 공격·마력과 적 피해 기술 위력 15%씩, 턴이 넘치면 HP 15%씩. 원본 DB 적·기술은 두고
 //    `troop_path_*`/`enemy_path_*`/`skill_path_*` 사본을 쓴다.
 //  - 시작 소지 회복약이 보스 앞 전투 수보다 적으면 채운다.
-//  - 첫 길 전투 한 번으로 한 레벨이 오르게 시작 파티 곡선(같은 곡선 배우 전부)을 줄인다(vm5 argon: 346 받고 Lv1 그대로).
+//  - 길 위에서 가장 가벼운 전투 한 번으로 한 레벨이 오르게 시작 파티 곡선(같은 곡선 배우 전부)을 줄인다 — 길 위 전투를 다 이겨도 8레벨까지.
 import { simulateBattle } from "@/battle/simulate";
 import { ACTOR_LEVEL_MAX, normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
@@ -41,7 +41,6 @@ const MAX_FIELD_EVENTS = 4;
 const SAMPLES = 24;
 const ROUNDS = 16;
 const STAT_FLOOR = 0.5;
-const MIN_CURVE_FACTOR = 0.2;
 export const PATH_TROOP_PREFIX = "troop_path_";
 const PATH_SKILL_PREFIX = "skill_path_";
 
@@ -368,48 +367,60 @@ export function fitPathBattlesIn(project: Project): string[] {
     }
   }
 
-  // 5) 첫 길 전투 한 번으로 한 레벨 — 모자라면 시작 파티와 같은 곡선을 쓰는 배우들의 경험치 곡선을 같은 비율로 줄인다.
-  const first = battles.find((b) => b.role !== "boss");
-  if (first) notes.push(...fitFirstLevelUp(project, rename.get(first.troopId) ?? first.troopId, party));
+  // 5) 길 위에서 가장 가벼운 전투 한 번으로 한 레벨 — 모자라면 시작 파티와 같은 곡선을 쓰는 배우들의 경험치 곡선을 같은 비율로 줄인다.
+  // 맵의 이벤트 순서는 만나는 순서가 아니다(다시 놓은 적은 목록 끝에 선다) — 어느 전투를 먼저 해도 오르게 가장 작은 경험치에 맞춘다.
+  const troopIds = battles.filter((b) => b.role !== "boss").map((b) => rename.get(b.troopId) ?? b.troopId);
+  const first = troopIds.filter((id) => troopExp(project, id) > 0).sort((a, b) => troopExp(project, a) - troopExp(project, b))[0];
+  const pathExp = battles.reduce((sum, b) => sum + troopExp(project, rename.get(b.troopId) ?? b.troopId), 0);
+  if (first) notes.push(...fitFirstLevelUp(project, first, party, pathExp));
   return notes;
 }
 
-/**
- * 첫 길 전투의 경험치로 시작 레벨에서 다음 레벨이 되도록 경험치 곡선(base·extra·acceleration)을 같은 비율로 줄인다.
- * 왜(2026-10-29 vm5 argon jrpg): 기본 곡선(extra 677)은 Lv2 까지 678 인데 첫 임프 두 마리가 346 이라, 판정자가
- * 「경험치 346 을 받았는데 메뉴에는 Lv 1 그대로」라고 적었다. 레벨이 더 빨리 오르는 쪽이라 위 예산(시작 레벨로 잰다)은 그대로 성립한다.
- * 시작 파티 배우 중 맨 앞 배우와 같은 곡선을 쓰는 배우만 고친다 — 파티 밖 배우(136명 중 대부분)는 손대지 않는다(2026-11-10 부작용 13건). 되풀이 안전(이미 맞으면 그대로).
- */
-export function fitFirstLevelUp(project: Project, troopId: string, party: { ids: readonly string[]; level: number }): string[] {
-  const troop = project.database.troops.find((t) => t.id === troopId);
-  const exp = (troop?.enemyIds ?? []).reduce((sum, id) => {
+/** 무리 하나를 이기면 받는 경험치 합. */
+function troopExp(project: Project, troopId: string): number {
+  return (project.database.troops.find((t) => t.id === troopId)?.enemyIds ?? []).reduce((sum, id) => {
     const enemy = project.database.enemies.find((e) => e.id === id);
     return sum + (enemy ? Math.max(0, normalizeEnemyRecord(enemy).rewards.exp) : 0);
   }, 0);
+}
+
+/** 길 위 전투를 다 이겼을 때 오르는 레벨 수의 상한 — 곡선을 줄여도 이보다 빨리 오르게는 하지 않는다. */
+const MAX_PATH_LEVELS = 8;
+
+/**
+ * 첫 길 전투의 경험치로 시작 레벨에서 다음 레벨이 되도록 경험치 곡선(base·extra·acceleration)을 같은 비율로 줄인다.
+ * 기본 곡선(extra 677)은 Lv2 까지 678 이라 짧은 게임에서는 끝까지 Lv1 이다(경험치 677 을 받고 Lv1 로 엔딩).
+ * 줄이는 바닥은 고정 비율이 아니라 «길 위 전투(pathExp)를 다 이겨도 MAX_PATH_LEVELS 레벨까지» 다 — 첫 전투 경험치가 작아도(108/678) 맞춘다.
+ * 시작 파티 배우 중 맨 앞 배우와 같은 곡선을 쓰는 배우만 고친다(파티 밖 배우는 손대지 않는다). 되풀이 안전(이미 맞으면 그대로).
+ */
+export function fitFirstLevelUp(project: Project, troopId: string, party: { ids: readonly string[]; level: number }, pathExp = 0): string[] {
+  const exp = troopExp(project, troopId);
   const lead = project.database.actors.find((a) => a.id === party.ids[0]);
   if (!lead || exp <= 0 || party.level >= ACTOR_LEVEL_MAX) return [];
   const curve = normalizeActorRecord(lead).expCurve;
   const step = (c: ActorExperienceCurve) => totalExpForLevel(c, party.level + 1) - totalExpForLevel(c, party.level);
   const need = step(curve);
   if (need <= exp) return [];
-  // 첫 전투 경험치가 아주 작으면(곡선을 1/5 아래로 줄여야 하면) 곡선 전체가 무너진다 — 그때는 손대지 않는다.
-  if (exp / need < MIN_CURVE_FACTOR) return [];
-  let factor = exp / need;
+  const span = totalExpForLevel(curve, Math.min(ACTOR_LEVEL_MAX, party.level + MAX_PATH_LEVELS)) - totalExpForLevel(curve, party.level);
+  // 길 위 경험치를 모르는 호출은 그 전투 하나를 길로 본다 — 한 번 이기면 한 레벨.
+  const floor = span > 0 ? Math.min(1, Math.max(pathExp, exp) / span) : 1;
+  let factor = Math.max(floor, exp / need);
   let next = curve;
   for (let i = 0; i < 20; i += 1) {
     next = { base: Math.floor(curve.base * factor), extra: Math.floor(curve.extra * factor), acceleration: Math.floor(curve.acceleration * factor) };
-    if (step(next) <= exp) break;
-    factor *= 0.95;
+    if (step(next) <= exp || factor <= floor) break;
+    factor = Math.max(floor, factor * 0.95);
   }
-  if (step(next) > exp || factor < MIN_CURVE_FACTOR) return [];
   const same = (c: ActorExperienceCurve) => c.base === curve.base && c.extra === curve.extra && c.acceleration === curve.acceleration;
+  if (same(next)) return [];
   let changed = 0;
   for (const actor of project.database.actors) {
     if (!party.ids.includes(actor.id) || !same(normalizeActorRecord(actor).expCurve)) continue;
     actor.expCurve = { ...next };
     changed += 1;
   }
-  return [`경험치 곡선 extra ${curve.extra}→${next.extra}(배우 ${changed}) — 첫 길 전투 ${troopId} 경험치 ${exp} 로 Lv${party.level}→${party.level + 1}(필요 ${need}→${step(next)})`];
+  const reach = pathExp > 0 ? (() => { let lv = party.level; while (lv < ACTOR_LEVEL_MAX && totalExpForLevel(next, lv + 1) - totalExpForLevel(next, party.level) <= pathExp) lv += 1; return ` · 길 위 전투 경험치 ${pathExp} 로 Lv${lv}`; })() : "";
+  return [`경험치 곡선 extra ${curve.extra}→${next.extra}(배우 ${changed}) — 첫 길 전투 ${troopId} 경험치 ${exp} 로 Lv${party.level}→${party.level + 1}(필요 ${need}→${step(next)})${reach}`];
 }
 /** 필드 상징 적 한 판 HP 손실 상한 — 「약한」 요청 35%(Lv1 슬라임 한 마리 ≈30%), 그 밖 50%. 길 위 예산(잡몹 20%)은 이어 싸움을 전제한 끝맺음 맞추기 값이라 경고 문턱으로는 너무 엄하다. */
 const WEAK_LOSS = 0.35;

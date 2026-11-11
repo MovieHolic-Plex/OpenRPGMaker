@@ -347,7 +347,8 @@ export function ensureSupplyShop(run: BuildRun): string[] {
   const res = run.call("place_npc", {
     mapId: map.id, x: cell.x, y: cell.y, name: SUPPLY_SHOP_NAME, id: SUPPLY_SHOP_ID, movement: "fixed",
     graphic: { query: "중년 남성 주민" },
-    pages: [{ name: `${SUPPLY_SHOP_NAME} · 기본`, lines: ["먼 길 떠나기 전에 약부터 챙기게. 동굴에서 다치면 돌아올 길도 멀다네."], commands: [{ kind: "shop", shopType: "normal", itemIds: goods, allowSell: true }] }],
+    // 싸움터가 어디인지(동굴·설원·정거장) 이 단계는 모른다 — 대사에 장소 이름을 넣지 않는다.
+    pages: [{ name: `${SUPPLY_SHOP_NAME} · 기본`, lines: ["먼 길 떠나기 전에 약부터 챙기게. 다치면 돌아올 길도 멀다네."], commands: [{ kind: "shop", shopType: "normal", itemIds: goods, allowSell: true }] }],
   });
   return res.ok ? [`${map.name ?? map.id} (${cell.x},${cell.y}) ${SUPPLY_SHOP_NAME}(${goods.join("·")})`] : [];
 }

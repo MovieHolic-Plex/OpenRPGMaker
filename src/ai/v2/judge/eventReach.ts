@@ -8,6 +8,7 @@
 //  - 이름이 문(탈출 문·현관…)이면 그림 「문」 칸에 붙인다 — 그 칸이 길목을 막는 것은 잠긴 문이라 괜찮지만 다른 조사 이벤트를 잃게 하면 안 된다.
 // 옮길 때는 원래 자리에서 가장 가까운, 가구 앞(옆이 못 지나는 물건 칸) 빈 바닥을 고른다.
 import { canMove, isPassable } from "@/project/collision";
+import { labelHasWord, labelNames } from "@/project/labelWords";
 import { playerAnchors, sameMapPassages } from "@/editor/tools/transferReachability";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { tileLabel } from "../place/cells";
@@ -186,13 +187,39 @@ const ITEMS: readonly (readonly [RegExp, readonly string[], readonly string[]])[
 const NOT_OBJECT_LABEL = /바닥|벽면|천장|깔개|그림자|공허|floor|wall|ceiling|rug/iu;
 export const baseLabel = (label: string) => label.replace(/\s*\((?:-?\d+,\s*-?\d+|프레임[^)]*)\)/gu, "").trim();
 
+type NameHit = { at: number; end: number; rule: number; item: boolean };
+/**
+ * 이름 속 물건 낱말들(나온 자리 순) — 더 긴 낱말 안에 든 짧은 낱말은 버린다.
+ * 「책상 서랍의 쪽지」 의 「책」은 「책상」 안이라 책이 아니다(2026-11-11 단계×테마 표: 그 이름 밑에 책 그림을 찾다 설원 「목책」 말뚝을 깔았다).
+ */
+function nameHits(name: string): NameHit[] {
+  const all: NameHit[] = [];
+  const scan = (re: RegExp, rule: number, item: boolean) => {
+    for (const m of name.matchAll(new RegExp(re.source, `${re.flags.replace("g", "")}g`))) all.push({ at: m.index ?? 0, end: (m.index ?? 0) + m[0].length, rule, item });
+  };
+  HOSTS.forEach(([re], i) => scan(re, i, false));
+  ITEMS.forEach(([re], i) => scan(re, i, true));
+  return all.filter((h) => !all.some((o) => o !== h && o.at <= h.at && o.end >= h.end && o.end - o.at > h.end - h.at)).sort((x, y) => x.at - y.at);
+}
+/** 이 낱말이 든 이름 토막(빈칸으로 끊은 것) — 이름과 이름표가 같은 겹낱말(「보물상자」「괘종시계」)을 쓰면 그대로 맞는다. */
+const nameToken = (name: string, hit: NameHit): string => {
+  const from = name.lastIndexOf(" ", hit.at) + 1;
+  const to = name.indexOf(" ", hit.end);
+  return name.slice(from, to < 0 ? name.length : to);
+};
+
 /** 이 이름이 가리키는 물건의 이름표 낱말 목록들(앞선 것부터 시도). */
 export function hostWords(name: string): string[][] {
-  const hits: { at: number; words: readonly string[] }[] = [];
-  for (const [re, words] of HOSTS) { const m = re.exec(name); if (m) hits.push({ at: m.index, words }); }
-  hits.sort((a, b) => a.at - b.at);
-  const out = hits.map((h) => [...h.words]);
-  for (const [re, hosts] of ITEMS) if (re.test(name)) out.push(...hosts.map((h) => [h]));
+  const hits = nameHits(name);
+  const out: string[][] = [];
+  const seen = new Set<number>();
+  for (const h of hits) {
+    if (h.item || seen.has(h.rule)) continue;
+    seen.add(h.rule);
+    const whole = nameToken(name, h);
+    out.push(whole.length > h.end - h.at ? [whole, ...HOSTS[h.rule]![1]] : [...HOSTS[h.rule]![1]]);
+  }
+  ITEMS.forEach(([, hosts], i) => { if (hits.some((h) => h.item && h.rule === i)) out.push(...hosts.map((x) => [x])); });
   return out;
 }
 /** 글 속 물건 낱말(HOSTS) — 나온 자리 순. 대사가 가리키는 물건을 읽을 때 쓴다(clueObjects.ts). */
@@ -205,14 +232,23 @@ export function hostMentions(text: string): { at: number; word: string; words: r
   return out.sort((a, b) => a.at - b.at);
 }
 export const objectBaseName = (label: string) => baseLabel(label);
+/**
+ * 이 이름의 물건을 맨바닥에 그릴 때 찾을 1칸 그림 낱말. 들고 다니는 작은 물건(ITEMS)이 이름에 있으면 그것 — 여럿이면 맨 뒤 것
+ * (「책상 서랍의 쪽지」 는 쪽지다) — 없으면 가구(HOSTS) 낱말.
+ */
 export function itemTileWords(name: string): string[] {
-  for (const [re, , tiles] of ITEMS) if (re.test(name)) return [...tiles];
-  for (const [re, words] of HOSTS) if (re.test(name)) return [...words];
-  return [];
+  const hits = nameHits(name);
+  const item = hits.filter((h) => h.item).at(-1);
+  if (item) return [...ITEMS[item.rule]![2]];
+  // 가구는 전처럼 표의 앞선 줄이 이긴다.
+  const host = hits.filter((h) => !h.item).sort((x, y) => x.rule - y.rule)[0];
+  if (!host) return [];
+  const whole = nameToken(name, host);
+  return whole.length > host.end - host.at ? [whole, ...HOSTS[host.rule]![1]] : [...HOSTS[host.rule]![1]];
 }
 
 const LAYER_KEYS = ["upperOverlayTiles", "upperTiles", "lowerOverlayTiles", "lowerTiles"] as const;
-/** 이름표가 words 중 하나를 품은 물건 칸들(바닥·벽·천장 제외). */
+/** 이름표에 words 중 하나가 온전한 낱말로 든 칸들(바닥·벽·천장 제외, labelWords.ts) — 「책」이 「목책」을, 「종이」가 「안돈(종이 등잔)」을 잡지 않는다. */
 export function objectCells(project: Project, map: GameMap, words: readonly string[]): Set<number> {
   const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
   const lw = words.map((x) => x.toLowerCase());
@@ -220,7 +256,7 @@ export function objectCells(project: Project, map: GameMap, words: readonly stri
   const ok = (t: number | undefined) => {
     if (typeof t !== "number" || t < 0) return false;
     let hit = cache.get(t);
-    if (hit === undefined) { const label = baseLabel(tileLabel(project, map, t)).toLowerCase(); hit = !!label && !NOT_OBJECT_LABEL.test(label) && lw.some((x) => label.includes(x)); cache.set(t, hit); }
+    if (hit === undefined) { const label = baseLabel(tileLabel(project, map, t)).toLowerCase(); hit = !!label && !NOT_OBJECT_LABEL.test(label) && lw.some((x) => labelHasWord(label, x)); cache.set(t, hit); }
     return hit;
   };
   const out = new Set<number>();
@@ -228,13 +264,15 @@ export function objectCells(project: Project, map: GameMap, words: readonly stri
   return out;
 }
 
-/** 칩셋에서 words 낱말의 1칸 물건 그림 하나(이름표가 (0,0) 하나뿐인 것). */
+/** 칩셋이 칸 역할을 적을 때 «놓는 물건»으로 적은 역할 — 건물·벽·울타리·땅 칸은 이름이 맞아도 맨바닥에 깔 그림이 아니다. */
+const PROP_ROLES = new Set(["prop", "furniture", "decor", "decoration", "detail"]);
+/** 칩셋에서 물건 이름이 words 중 하나로 끝나는 1칸 그림 하나(이름표가 (0,0) 하나뿐인 것, labelNames — 새로 까는 그림이라 더 엄하다). 없으면 undefined. */
 export function singleTileObject(project: Project, map: GameMap, words: readonly string[]): { tile: number; label: string } | undefined {
-  const meta = (project.tilesets[map.tilesetId]?.tileMeta ?? []) as unknown as ({ label?: string } | undefined)[];
+  const meta = (project.tilesets[map.tilesetId]?.tileMeta ?? []) as unknown as ({ label?: string; role?: string } | undefined)[];
   const parts = new Map<string, { tile: number; coords: Set<string> }>();
   meta.forEach((t, i) => {
     const label = t?.label;
-    if (!label || NOT_OBJECT_LABEL.test(label) || /프레임/u.test(label)) return;
+    if (!label || NOT_OBJECT_LABEL.test(label) || /프레임/u.test(label) || (t?.role && !PROP_ROLES.has(t.role))) return;
     const base = baseLabel(label);
     const coord = /\((-?\d+,\s*-?\d+)\)/u.exec(label)?.[1]?.replace(/\s/gu, "") ?? "0,0";
     const entry = parts.get(base) ?? { tile: -1, coords: new Set<string>() };
@@ -243,7 +281,7 @@ export function singleTileObject(project: Project, map: GameMap, words: readonly
     parts.set(base, entry);
   });
   for (const word of words) {
-    for (const [base, entry] of parts) if (entry.tile >= 0 && entry.coords.size === 1 && base.includes(word)) return { tile: entry.tile, label: base };
+    for (const [base, entry] of parts) if (entry.tile >= 0 && entry.coords.size === 1 && labelNames(base, word)) return { tile: entry.tile, label: base };
   }
   return undefined;
 }

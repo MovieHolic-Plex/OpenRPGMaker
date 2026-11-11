@@ -1,4 +1,5 @@
-// 달리기 측정(2026-10-25): 조이스틱을 조금/끝까지 밀 때의 속도, 맵 탭 거리별 속도, 따로 달리기 단추 유무.
+// 달리기 측정(2026-10-25, 2026-11-11 A 누른 채 달리기): 조이스틱을 조금/끝까지 밀 때와 A 를 누른 채 밀 때의 속도, 맵 탭 거리별 속도, 따로 달리기 단추 유무.
+// 기대: 조금·끝까지 = 걷기(같은 속도), A 를 누른 채 = 달리기. 「항상 달리기」(--always-run)면 셋 다 달리기.
 // 출하 플레이어(player.html) + 휴대폰 에뮬레이션 + CDP 터치. --video 면 1배 영상(손가락 표시)을 남긴다.
 //
 //   node scripts/qa/runtime/mobile-run.probe.mjs --project /tmp/mf/demos/chrono-bell.play.json --out /tmp/mf/run/after [--video] [--always-run] [--device iphone15]
@@ -92,21 +93,31 @@ async function runDevice(id, descriptor) {
   await page.waitForFunction(() => window.__oprnDebug && document.querySelector('[data-testid="runtime-state-json"]'), null, { timeout: 360_000 });
   await sleep(3000); await settle(page);
   const cdp = await context.newCDPSession(page);
-  const touch = (type, x, y) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: type === "touchEnd" ? [] : [{ x, y, id: 1 }] });
+  // 손가락 둘(1 = 조이스틱·맵, 2 = A 단추)을 같이 다룬다 — CDP 는 매번 닿아 있는 점 전부를 받는다.
+  const fingers = new Map();
+  const touch = (type, x, y, id = 1) => {
+    if (type === "touchEnd") fingers.delete(id); else fingers.set(id, { x, y, id });
+    const points = [...fingers.values()];
+    return cdp.send("Input.dispatchTouchEvent", { type: type === "touchEnd" && points.length ? "touchMove" : type, touchPoints: points });
+  };
   const result = { runButton: !!(await rect(page, '[data-testid="touch-run"]')) };
   const base = await rect(page, ".touch-dpad-base");
   const cx = base.x + base.w / 2, cy = base.y + base.h / 2, R = base.w / 2;
   await page.evaluate(() => { window.__mfStart = performance.now(); });
-  const push = async (fraction, ms, label) => {
+  const aBtn = await rect(page, '[data-testid="touch-action-a"]');
+  result.holdRunHint = await page.evaluate(() => { const e = document.querySelector('[data-testid="touch-action-a"] .touch-action-sub'); return e && !e.hidden ? e.textContent : null; });
+  const push = async (fraction, ms, label, holdA = false) => {
     await page.evaluate(() => window.__oprnDebug.teleport("fs_hub", 30, 33)); await sleep(700);
     await touch("touchStart", cx, cy); await sleep(60);
     for (let k = 1; k <= 4; k += 1) { await touch("touchMove", cx + R * fraction * k / 4, cy); await sleep(25); }
+    if (holdA) { await touch("touchStart", aBtn.x + aBtn.w / 2, aBtn.y + aBtn.h / 2, 2); await sleep(40); }
     const run = await page.evaluate(() => document.querySelector(".touch-stick-zone")?.dataset.run === "true");
     const samples = await track(page, ms);
+    if (holdA) await touch("touchEnd", 0, 0, 2);
     await touch("touchEnd"); await sleep(900);
-    return { label, fraction, ringRun: run, ...speed(samples) };
+    return { label, fraction, holdA, runMark: run, ...speed(samples) };
   };
-  result.stick = [await push(0.4, 1400, "small push (40% of radius)"), await push(0.95, 1400, "full push (95%)")];
+  result.stick = [await push(0.4, 1400, "small push (40% of radius)"), await push(0.95, 1400, "full push (95%)"), await push(0.95, 1400, "full push + hold A", true)];
   // 맵 탭: 3칸 / 9칸 오른쪽(주인공 화면 좌표 기준).
   const tapWalk = async (tiles) => {
     await page.evaluate(() => window.__oprnDebug.teleport("fs_hub", 30, 33)); await sleep(800);
