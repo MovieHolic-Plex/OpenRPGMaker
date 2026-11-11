@@ -31,7 +31,7 @@ import { dropModelSeed } from "../../place/modelSeed";
 import { V2_MAX_REPAIR_ROUNDS } from "../../turn/session";
 import { SIZE, ROOM_DESIGN_SCHEMA, ZONE_SCHEMA, CONNECTIONS_SCHEMA, HINTS_SCHEMA, LAYOUT_SCHEMA, LAYOUT_PATCH_SCHEMA, PLACE_SPEC_SCHEMA, POINT } from "../placeSchema";
 import { OPP_SIDE, LAYOUT_BOUNCES, repairCap, HAND_LAYOUT_ROOM_TAG, text, INTERIOR_PLACE, CLEAR_DUNGEON, renderMap, recordWrite, adoptInterior, applyPatch, withSetupDefaults, placeVariety } from "../support";
-import { PAST_DESIGN_NOTE, noDesignRefusal } from "../placeMemory";
+import { PAST_DESIGN_NOTE, layoutPatchRefusal, noDesignRefusal } from "../placeMemory";
 import { onePassRefusal } from "../../place/onePass";
 import type { VerbContext } from "../context";
 
@@ -330,7 +330,7 @@ export function placeVerbs(c: VerbContext) {
           if (head && head.type === "text") { try { const j = JSON.parse(head.text) as Record<string, unknown>; res.content[0] = { type: "text", text: JSON.stringify({ note: `layoutPatch applied to your rejected (not yet built) layout for "${pending.name}" and sent as make_place.`, ...j }) }; } catch { /* 글 그대로 */ } }
           return res;
         }
-        if (!record || !layoutGiven(cur)) return text({ ok: false, summary: `layoutPatch needs a place laid from spec.layout; ${patch.mapId} was not laid that way. Send patch.set.layout with a full layout instead.` });
+        if (!record || !layoutGiven(cur)) return text({ ok: false, summary: layoutPatchRefusal(patch.mapId) });
         const ap = applyLayoutPatch(cur!, patch.layoutPatch);
         if (ap.errors.length) return text({ ok: false, summary: `Rejected: the layout patch for "${record.spec.name}" does not apply:\n- ${ap.errors.join("\n- ")}\nYou sent: ${JSON.stringify(patch.layoutPatch).slice(0, 400)}\nFixed call: edit_place again with layoutPatch entries that match the current layout (exact id and x,y of an entry), or replace the whole field.` });
         patch = { ...patch, set: { ...(patch.set ?? {}), layout: ap.layout } };
