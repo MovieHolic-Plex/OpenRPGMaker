@@ -16,8 +16,8 @@ import { normalizeGameBlueprint } from "../../../src/project/gameBlueprint";
 import type { Project } from "../../../src/project/types";
 
 const sha = (value: unknown): string => createHash("sha1").update(typeof value === "string" ? value : JSON.stringify(value)).digest("hex").slice(0, 10);
-// fp = 프로젝트 지문 — 끝맺음 단계가 실행마다 다른 id 를 만들어 달라진다(턴 구동기의 일이 아니다).
-const VOLATILE_KEYS = new Set(["ms", "at", "durationMs", "criticMs", "fp"]);
+// fp · targetFp · prints = 프로젝트·대상 지문 — 끝맺음 단계가 실행마다 다른 id 를 만들어 달라진다(턴 구동기의 일이 아니다).
+const VOLATILE_KEYS = new Set(["ms", "at", "durationMs", "criticMs", "fp", "targetFp", "prints"]);
 const mask = (text: string): string => text.replace(/\d+(?:\.\d+)?초/gu, "#초").replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gu, "#uuid");
 const stable = (value: unknown): string => mask(JSON.stringify(value, (key, v) => (VOLATILE_KEYS.has(key) ? 0 : v)) ?? "");
 
