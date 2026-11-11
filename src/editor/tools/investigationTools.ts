@@ -318,7 +318,7 @@ const placeExamineHotspots: ToolDefinition = {
       );
     }
     return {
-      summary: `${map.name}에 조사 핫스팟 ${eventIds.length}개 생성${placed.length ? `: ${placed.slice(0, 8).join(" · ")}` : ""}, ${skipped}개 스킵${invisible.length ? ` — 그중 ${invisible.length}개는 빈 바닥 위 투명(보이지 않음)` : ""}`,
+      summary: `${map.name}에 조사 핫스팟 ${eventIds.length}개 생성, ${skipped}개 스킵${invisible.length ? ` — 그중 ${invisible.length}개는 빈 바닥 위 투명(보이지 않음)` : ""}${placed.length ? ` · 놓은 곳: ${placed.slice(0, 8).join(" · ")}` : ""}`,
       data: { created: eventIds.length, skipped, eventIds },
       ...(warnings.length > 0 ? { warnings } : {}),
     };

@@ -124,7 +124,7 @@ export function checkStory(project: Project, briefText: string | undefined): Fin
     if (hidden.length > 0) {
       findings.push({
         severity: "warning", code: "story-memento-invisible",
-        message: `${map.name}: 추억의 물건 ${hidden.length}/${mementos.length}개가 빈 바닥 위 투명 이벤트입니다(${hidden.map((event) => event.name ?? event.id).join(", ")}) — 플레이어는 무엇을 조사할지 볼 수 없습니다.`,
+        message: `${map.name}: 추억의 물건 ${hidden.length}/${mementos.length}개가 빈 바닥 위 투명 이벤트입니다(${hidden.map((event) => (event.name ? `${event.name} [${event.id}]` : event.id)).join(", ")}) — 플레이어는 무엇을 조사할지 볼 수 없습니다.`,
         where: { mapId: map.id, mapName: map.name },
       });
     }
