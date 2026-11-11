@@ -4,7 +4,7 @@ import { fieldMenu } from "@/project/fieldMenu";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { buildsWholeGame } from "../request/readers";
 import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMismatch } from "./lookChecks";
-import { projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
+import { isBodyGauge, projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
 import { HIDDEN_WORDS } from "../request/asks";
 import { tagged, type Finding } from "./finding";
 import { type GameCheck, Obj, obj } from "./gameCheckReads";
@@ -83,7 +83,9 @@ export function lookChecks({ before, after, task }: GameCheck): Finding[] {
   problems.push(...lookMismatches(before, after));
   // 체력이 줄 일이 없는 게임에 체력 HUD(공포 꽃잎·하트)가 설명 없이 떠 있다(2026-10-25 심사 J67). 이번 실행이 HUD 를 바꿨을 때만.
   if (JSON.stringify(before.system.fieldHud ?? null) !== JSON.stringify(after.system.fieldHud ?? null) && after.system.fieldHud
-    && resolvedHudWidgets(after.system.fieldHud).some((widget) => widget.source === "hp") && !projectCanLoseHp(after)) {
+    // 체력 «게이지» 만 센다 — 시계·도구 칸 위젯도 기본 source 가 "hp" 라, 체력을 끈 HUD(시계만)가 이 검사에 걸렸다
+    // (2026-11-11 #4607 뒤: 바깥 장소를 까는 새 요청 17건 중 11건에 이 항목이 붙고 8건이 「막힘」으로 끝남).
+    && resolvedHudWidgets(after.system.fieldHud).some((widget) => isBodyGauge(widget) && widget.source === "hp") && !projectCanLoseHp(after)) {
     problems.push(tagged("game", "HUD", `필드 HUD(${after.system.fieldHud.theme})가 체력(꽃잎·하트)을 늘 보이는데 이 게임에는 체력이 줄 일(전투·피해 명령·인카운트)이 없다 — 플레이어에게 설명 없는 장식이다. set_field_hud{theme:'${after.system.fieldHud.theme}', vitals:false} 로 끄거나, 체력을 쓰는 게임이면 피해를 주는 장치(함정·추격자 changeActorHp)를 만들고 set_life_flower 로 꽃잎의 뜻을 보인다.`));
   }
   // 타이틀 그림 ↔ 시대(J38): 이번에 타이틀을 바꿨을 때만.
