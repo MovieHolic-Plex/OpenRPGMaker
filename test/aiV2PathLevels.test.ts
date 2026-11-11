@@ -15,8 +15,8 @@ describe("짧은 게임에서도 레벨이 오른다", () => {
     const troop = project.database.troops.find((t) => t.id === "troop_slime")!;
     const enemy = project.database.enemies.find((e) => e.id === troop.enemyIds[0])!;
     enemy.rewards = { ...enemy.rewards, exp: 108 };
-    // 길 위 경험치를 모르는 호출은 종전대로 손대지 않는다(108/678 < 1/5).
-    expect(fitFirstLevelUp(structuredClone(project), troop.id, { ids: [hero.id], level: 1 })).toEqual([]);
+    // 길 위 경험치를 모르는 호출은 그 전투 하나를 길로 본다 — 108/678 < 1/5 라 손을 떼던 자리.
+    expect(fitFirstLevelUp(structuredClone(project), troop.id, { ids: [hero.id], level: 1 })).toHaveLength(1);
     expect(fitFirstLevelUp(project, troop.id, { ids: [hero.id], level: 1 }, 785)).toHaveLength(1);
     const curve = hero.expCurve!;
     expect(totalExpForLevel(curve, 2)).toBeLessThanOrEqual(108);

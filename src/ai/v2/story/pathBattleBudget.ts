@@ -41,7 +41,6 @@ const MAX_FIELD_EVENTS = 4;
 const SAMPLES = 24;
 const ROUNDS = 16;
 const STAT_FLOOR = 0.5;
-const MIN_CURVE_FACTOR = 0.2;
 export const PATH_TROOP_PREFIX = "troop_path_";
 const PATH_SKILL_PREFIX = "skill_path_";
 
@@ -403,9 +402,8 @@ export function fitFirstLevelUp(project: Project, troopId: string, party: { ids:
   const need = step(curve);
   if (need <= exp) return [];
   const span = totalExpForLevel(curve, Math.min(ACTOR_LEVEL_MAX, party.level + MAX_PATH_LEVELS)) - totalExpForLevel(curve, party.level);
-  // 길 위 경험치를 모르는 호출은 종전대로: 곡선을 1/5 아래로 줄여야 하면 손대지 않는다.
-  if (pathExp <= 0 && exp / need < MIN_CURVE_FACTOR) return [];
-  const floor = pathExp > 0 && span > 0 ? Math.min(1, pathExp / span) : MIN_CURVE_FACTOR;
+  // 길 위 경험치를 모르는 호출은 그 전투 하나를 길로 본다 — 한 번 이기면 한 레벨.
+  const floor = span > 0 ? Math.min(1, Math.max(pathExp, exp) / span) : 1;
   let factor = Math.max(floor, exp / need);
   let next = curve;
   for (let i = 0; i < 20; i += 1) {

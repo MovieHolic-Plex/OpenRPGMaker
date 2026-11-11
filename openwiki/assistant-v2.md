@@ -278,7 +278,7 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 판정자: «EXP 677 을 얻어도 L1». 기본 곡선(extra 677)은 Lv2 까지 678 이다. 곡선 맞추기 `pathBattleBudget.fitFirstLevelUp` 은 첫 길 전투 경험치가 108 이라
 (108/678 = 0.159 < 고정 바닥 1/5) 손을 뗐고, 전투 이벤트를 다 이겨도 Lv1~2 였다.
 
-- 줄이는 바닥을 고정 비율에서 **«길 위 전투를 다 이겨도 8레벨까지»**(`MAX_PATH_LEVELS`)로 바꿨다 — 길 위 경험치 합(`pathExp`)을 넘겨받는다. 넘기지 않는 호출은 종전 그대로.
+- 줄이는 바닥을 고정 비율에서 **«길 위 전투를 다 이겨도 8레벨까지»**(`MAX_PATH_LEVELS`)로 바꿨다 — 길 위 경험치 합(`pathExp`)을 넘겨받는다. 넘기지 않는 호출은 그 전투 하나를 길로 본다(고정 바닥 `MIN_CURVE_FACTOR` 는 없앴다 — `aiV2StageWrites` 의 「fitFirstLevelUp touches only the starting party」 가 이 바닥 때문에 실패하고 있었다).
 - 맞추는 전투는 «첫 이벤트» 가 아니라 **길 위에서 경험치가 가장 작은 전투**다. 맵의 이벤트 순서는 만나는 순서가 아니라서(다시 놓은 적은 목록 끝) 보스가 «첫 전투» 로 잡히면 곡선이 덜 줄었다.
 
 재기(저장본을 끝맺음에 다시 통과시킨 뒤 길 위 전투 경험치로 오르는 레벨): fun-x1 저장본 곡선 extra 677 · 단계 전투만 Lv1 · 전부 Lv2 → 끝맺음 재생 extra 79 · Lv3 · Lv5. fun-w3 저장본 Lv1 · Lv1 → extra 79 · Lv3 · Lv4. 자동 플레이 엔딩·다시 읽기 성공.
