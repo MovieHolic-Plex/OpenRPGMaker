@@ -46,6 +46,22 @@ describe("장치 도구 — 한 호출 꼴", () => {
     expect(result.diff?.warnings ?? []).toEqual(expect.arrayContaining([expect.stringMatching(/^The time system was off/u)]));
   });
 
+  it("set_deadline_ending: 0 으로 채워 보낸 문턱은 기본 결말이다(싼 모델은 선택 칸을 0 · \"*\" 로 채운다)", () => {
+    // Break(2026-11-12 셋째 묶음 Terra, 수리 뒤 실행): tiers:[{endingId, friendshipAtLeast:0, characterId:"*"}] 를 일곱 번 보내고 일곱 번 «마지막 항목은 문턱 없이»로 거절당했다.
+    const [, ending] = job("deadline-ending-starter").reference;
+    const endingId = (ending!.args as { id: string }).id;
+    const filled = { endingId, friendshipAtLeast: 0, characterId: "*" };
+    for (const tiers of [[filled], [filled, filled]]) {
+      const { verdict } = judge("deadline-ending-starter", [ending!, { tool: "set_deadline_ending", args: { days: 3, characterId: "*", tiers } }]);
+      expect(verdict.pass, verdict.reason).toBe(true);
+    }
+    // 문턱 없는 항목 뒤에 다른 엔딩이 있으면 여전히 거절한다 — 닿지 않는 엔딩을 말없이 버리지 않는다.
+    const ctx: ToolContext = { project: buildFixture("starter") };
+    runTool(ctx, ending!.tool, ending!.args);
+    runTool(ctx, "define_ending", { id: "ending_other", name: "다른 끝" });
+    expect(runTool(ctx, "set_deadline_ending", { days: 3, tiers: [filled, { endingId: "ending_other" }] }).ok).toBe(false);
+  });
+
   it("set_deadline_ending: 켜 둔 시계는 건드리지 않고, 실패하면 시간 시스템도 켜지 않는다", () => {
     const [clock, ending, deadline] = job("deadline-ending-starter").reference;
     const ctx: ToolContext = { project: buildFixture("starter") };

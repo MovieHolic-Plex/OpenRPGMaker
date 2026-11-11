@@ -283,7 +283,9 @@ const setDeadlineEnding: ToolDefinition = {
       if (!endingId || !known.has(endingId)) {
         throw new ToolError(`tiers[${index}].endingId '${endingId}' 인 엔딩이 없습니다 — define_ending 으로 먼저 정의하세요. 있는 엔딩: ${[...known].join(", ") || "없음"}`, { code: "ending-not-found" });
       }
-      const threshold = tier.friendshipAtLeast;
+      // 0 이하의 문턱은 누구나 넘는다 — 문턱 없는 기본 결말로 읽는다. 싼 모델은 선택 칸을 0 으로 채워 보낸다
+      // (2026-11-12 셋째 묶음 Terra: tiers:[{endingId, friendshipAtLeast:0}] 를 일곱 번 보내고 «마지막 항목은 문턱 없이»로 일곱 번 거절당했다).
+      const threshold = typeof tier.friendshipAtLeast === "number" && tier.friendshipAtLeast <= 0 ? undefined : tier.friendshipAtLeast;
       if (threshold !== undefined && (typeof threshold !== "number" || !Number.isFinite(threshold))) {
         throw new ToolError(`tiers[${index}].friendshipAtLeast 는 숫자여야 합니다.`, { code: "invalid-args" });
       }
@@ -293,6 +295,9 @@ const setDeadlineEnding: ToolDefinition = {
       }
       return { endingId, threshold: threshold === undefined ? undefined : Math.trunc(threshold as number), characterId: tierCharacter };
     });
+    // 문턱 없는 항목 뒤에 같은 엔딩이 또 적혀 있으면 닿지 않는 겹침이다 — 걷어 낸다(다른 엔딩이면 아래에서 거절).
+    const firstDefault = resolved.findIndex((tier) => tier.threshold === undefined);
+    if (firstDefault >= 0 && resolved.slice(firstDefault + 1).every((tier) => tier.endingId === resolved[firstDefault]!.endingId)) resolved.length = firstDefault + 1;
     const last = resolved[resolved.length - 1]!;
     if (last.threshold !== undefined) {
       throw new ToolError("마지막 tiers 항목은 friendshipAtLeast 없이 기본 결말이어야 합니다 — 어느 문턱도 못 넘은 경우 결말이 없어 기한이 와도 게임이 끝나지 않습니다.", { code: "invalid-args" });
