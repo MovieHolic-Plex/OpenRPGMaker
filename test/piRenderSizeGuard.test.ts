@@ -28,3 +28,32 @@ describe("pi render size guard", () => {
     }
   });
 });
+
+// 늦은 그림 한 장은 턴을 끊지 않는다 — 워커가 그 그림을 이미 버렸으면(409) 그 도구만 실패하고 실행은 끝까지 간다.
+describe("a render reply the worker no longer wants", () => {
+  it("is dropped without ending the run", async () => {
+    const { runPiAgentViaCompanion } = await import("@/ai/piAgent/client");
+    const { resetHeavyWireForTests } = await import("@/ai/piAgent/heavyWire");
+    const { createBlankProject } = await import("@/project/defaults");
+    const enc = new TextEncoder();
+    const line = (value: unknown) => enc.encode(JSON.stringify(value) + "\n");
+    const project = createBlankProject();
+    const renderPosts: string[] = [];
+    const fetchImpl = (async (url: string, init?: RequestInit) => {
+      if (String(url).includes("/v1/agent/render")) { renderPosts.push(String(init?.body)); return new Response(JSON.stringify({ error: "gone" }), { status: 409 }); }
+      return new Response(new ReadableStream({ start(c) {
+        c.enqueue(line({ seq: 0, type: "render_request", renderId: "r-1", toolName: "preview_opening_reference", data: {}, project: {}, unchangedKeys: [] }));
+        setTimeout(() => { c.enqueue(line({ seq: 1, type: "done", project, stats: { ms: 1, turns: 1, toolCalls: 0, toolErrors: 0 }, changedKeys: [] })); c.close(); }, 30);
+      } }), { headers: { "X-Oprn-Run-Id": "run-1" } });
+    }) as unknown as typeof fetch;
+    const names: string[] = [];
+    const result = await runPiAgentViaCompanion({ provider: "google-antigravity", task: "t", mapIds: [], project }, {
+      fetchImpl, staleMs: 2_000, resumeDelayMs: 1, onEvent: (event) => { if (event.type === "execution_status") names.push(event.name); },
+    });
+    resetHeavyWireForTests();
+    expect(renderPosts).toHaveLength(1);
+    expect(JSON.parse(renderPosts[0]!).renderId).toBe("r-1");
+    expect(names).toContain("render.dropped");
+    expect(result.project).toBeTruthy();
+  });
+});

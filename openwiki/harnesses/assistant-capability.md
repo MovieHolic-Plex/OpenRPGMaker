@@ -803,6 +803,24 @@ blocker 8개: 가장자리까지 간 길 끝에 출구 없이 «길이 끊겼다
 - 검수자는 한 맵에 한 번만 묻는다(표를 여러 번 모으지 않는다). 같은 맵을 다시 물으면 polish 목록은 달라질 수 있다 — 전/후 비교는 blocker·major 와 종류별 합계로 한다.
 - CI: `test/mapVqa.test.ts` — 묶음·씨앗의 모양, 사실 읽기, 조리법, 검수자 답 읽기(형식이 어긋나면 답이 아니다), 집계(미검증은 깨끗한 맵이 아니다), 보정의 «잡았다» 판정, 되풀이 묶음 답 읽기, 없는 그림 장부(도구 신고 읽기·줄 묶기). 모델을 부르지 않는다.
 
+## 명세 은행 (`scripts/qa/assistant-v2/specBank.mts`, 2026-11-11) — 모델 없이 빌더만 다시 돌린다
+
+이 하네스가 남긴 판(`session/turns/*.json` · 저장본)에서 **모델이 보낸 도구 호출만** 뽑아 `harness-data/assistant-capability/spec-bank/<판>.json` 에 둔다(게임 하나 10판 · 장소 하나 39판 · 2.1MB).
+빌더·끝맺음 단계를 고친 사람은 모델을 부르지 않고 그 명세 전부를 전/후 빌더로 다시 지어 수치와 1배 그림을 견준다.
+
+```bash
+bun scripts/qa/assistant-v2/specBank.mts ab --out /tmp/bank        # 기준(origin/main) 빌더 → a · 지금 작업 폴더 빌더 → b · 대조 표 (은행 한 번 약 22분, 두 번 돈다)
+bun scripts/qa/assistant-v2/specBank.mts extract <판 폴더>…         # 새 판을 은행에 더한다 (게임 하나를 지은 판 폴더 · map-vqa 의 과제 폴더)
+bun scripts/qa/assistant-v2/specBank.mts list                      # 은행에 든 것
+```
+
+- 재생은 실제 입력창 경로가 **아니다** — 편집기·브라우저 없이 워커 실행기(`runPiAgent` + v2 턴 갈고리)에 대본을 앉힌다. 그래서 이 하네스의 합격 판정(필수 검수·화면·SQLite 재로드)을 대신하지 않는다. 은행이 답하는 것은 «같은 명세에서 빌더가 무엇을 짓는가» 하나다.
+- 표의 수는 그림을 보지 않은 것이다(화면 미검증). 그림은 `<결과>/<판>/maps/*.png` 에 남는다 — `map-vqa` 검수자에게 그 폴더를 주면 된다.
+- 새 Terra 판·측정 묶음을 돌릴 때마다 `extract` 로 은행에 더한다. 명세는 낡는다 — 도구 이름·청사진 규칙이 바뀌면 옛 판은 뒤쪽 호출이 빗나간다(표의 «그때와 같은 결과의 쓰기 호출»).
+- 뽑기는 열쇠·토큰 꼴과 이 기계의 절대 경로가 든 명세를 거절한다. 모델의 글·결과 본문·그림·지시문은 은행에 넣지 않는다.
+
+구조·신뢰 수치·이력 증명·한계는 `openwiki/assistant-v2.md` 「명세 은행」.
+
 ## 시각 검수
 
 검수 캡처와 matrix-score 그림은 편집기 전용 시작 위치 표시를 빼고 찍는다(`__oprnHideStartMarker`, `renderReviewMapPng`). 표시가 필요하면 `HARNESS_START_MARKER=1`.
