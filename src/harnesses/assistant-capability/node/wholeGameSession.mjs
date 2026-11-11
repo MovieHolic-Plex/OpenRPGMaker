@@ -238,6 +238,9 @@ try {
       pageErrors: pageErrors.slice(errorMark), toolCalls: tools.filter(t => t.type === 'tool_end'), pendingCards: pending, answer, draftReports,
       done: events.filter(e => e.type === 'done').map(e => ({ stats: e.stats, usage: e.usage })),
       statusNotes: events.filter(e => e.type === 'execution_status').map(e => `${e.name}: ${String(e.summary ?? '').slice(0, 300)}`).slice(-40),
+      // 턴 안의 시간표 — [보낸 뒤 ms, 종류, 이름]. 도구 호출 수가 적은데 턴이 길 때 어디서 시간이 갔는지(모델 대기·도구·끝맺음 단계) 가른다.
+      timeline: events.filter(e => ['tool_start', 'tool_end', 'execution_status', 'assistant', 'done'].includes(e.type) && Number.isFinite(e.at))
+        .map(e => [e.at - (sentAt || startedAt), e.type, String(e.name ?? '').slice(0, 60)]),
       advisor: events.filter(e => e.type === 'execution_status' && String(e.name).startsWith('v2.advisor')).map(e => ({ name: e.name, data: e.data })),
       // 완성 뒤 대사 윤문 고리(src/ai/piAgent/dialoguePolishHook.ts)의 실행기 기록 — 전/후 적중 수와 고친 줄 쌍.
       dialoguePolish: events.filter(e => e.type === 'execution_status' && String(e.name).startsWith('dialogue_polish')).map(e => ({ name: e.name, summary: e.summary, data: e.data })),
