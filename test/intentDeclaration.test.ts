@@ -157,6 +157,14 @@ describe("선언 → 도메인·영역 탈출", () => {
 });
 
 describe("모델에 주는 입력과 모델이 낸 것의 표현", () => {
+  it("선택 이벤트 줄은 고른 이벤트가 있을 때만 실린다 — 없으면 페이로드는 예전 그대로다", () => {
+    const without = buildIntentUserPayload(FACTS);
+    expect(without).not.toContain("선택 이벤트");
+    const withEvent = buildIntentUserPayload({ ...FACTS, selectedEvent: "마을 주민 (ev_utility_npc) 위치 (4,5)" });
+    expect(withEvent).toContain("선택 이벤트: 마을 주민 (ev_utility_npc) 위치 (4,5)");
+    expect(withEvent.replace(/\n[^\n]*선택 이벤트: [^\n]*/u, "")).toBe(without);
+  });
+
   it("페이로드는 사실만 싣는다 — 요청·현재 맵·선택 영역·맵 목록·시설 라벨·툴 목록", () => {
     const payload = buildIntentUserPayload({ ...FACTS, selection: { mapId: "map_start", x: 1, y: 2, width: 3, height: 4 } });
     expect(payload).toContain("여관 지어줘");

@@ -149,6 +149,16 @@ export function selectedEventFact(project: SelectedEventSource, mapId: string | 
   return `[선택한 이벤트] ${event.name ? `${event.name} ` : ""}(${event.id}) 위치 (${event.x},${event.y})${page} — 「이 이벤트」「이 NPC」「이 문」「현재 이벤트」는 이 이벤트다. 다른 이벤트를 고르지 말고 get_event 로 이 id 를 읽어 고친다. 요청이 말하지 않은 다른 이벤트(반대쪽 맵의 문 포함)는 덮어쓰지 않는다 — 반대쪽 출입구가 필요하면 새 이벤트를 새 id 로 만든다.`;
 }
 
+/**
+ * 분류기(`buildIntentUserPayload`)에 넘기는 짧은 사실 — `selectedEventFact` 의 본문 지시(「get_event 로 읽어 고친다…」)는 빼고
+ * `이름 (id) 위치 (x,y)` 만 남긴다. 긴 지시를 분류기에 주면 mode·tools 선언이 흔들린다(2026-11-10 ultrabrain).
+ */
+export function selectedEventBrief(selectedEvent: string | null | undefined): string | null {
+  if (!selectedEvent) return null;
+  const body = /^\[선택한 이벤트\]\s*(.+?)\s*—\s*「이 이벤트」/u.exec(selectedEvent)?.[1];
+  return body ?? null;
+}
+
 /** 평문 한 줄 → 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
 export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<PlainPiTurnClassification> {
   let plan = resolvePiRunPlan(input.autonomy);
@@ -217,6 +227,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       userText: text,
       currentMapId,
       selection,
+      selectedEvent: selectedEventBrief(input.selectedEvent),
       hasActivePlan: input.hasActivePlan,
     });
     let intentTimedOut = false;

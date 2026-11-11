@@ -10,6 +10,14 @@ name: ci-vitest-files
 #   gh workflow run ci-vitest-files --ref <브랜치> -f files="test/a.test.ts test/b.test.ts"
 #   gh run list --workflow ci-vitest-files --branch <브랜치>   →   gh run view <id> --log
 #   files 를 비우면 아무것도 돌리지 않고 실패한다(전체 스위트는 ci-full 몫).
+#
+# agent/* 브랜치에서는 vitest 가 실패해도 실행(run)을 빨갛게 만들지 않는다 (2026-11-11).
+#   왜: 최근 24시간 실패 실행 77건 중 63건이 이 워크플로를 다른 레인이 agent/* 브랜치에서 작업 도중 수동으로 돌린 것이었다.
+#   수정 중에 돌리는 도구라 빨간 결과가 정상이고, 그 실패마다 오너 메일이 한 통씩 갔다. 알림을 끄는 대신 원인을 없앤다.
+#   결과는 그대로 보인다 — 마지막 스텝이 로그 끝줄에 `RESULT: PASS n files` / `RESULT: FAIL n files (a.test.ts, ...)` 를 찍고,
+#   요약(GITHUB_STEP_SUMMARY)과 ::error:: 주석(메일이 가지 않는다)에도 같은 내용을 남긴다. 읽을 곳은 run 의 conclusion 이 아니라 이 줄이다.
+#   main·diag/*·fix/* 같은 agent/ 가 아닌 ref 는 예전처럼 vitest 실패가 곧 실행 실패다.
+#   설정 스텝(files 검사·bun·python·npm ci·playwright)의 실패는 어느 ref 에서도 실행 실패다 — continue-on-error 는 vitest 스텝에만 건다.
 
 on:
   workflow_dispatch:
@@ -56,11 +64,51 @@ jobs:
         if: contains(inputs.files, '.browser.test.ts')
         run: npx playwright install --with-deps chromium
 
+      # files 검사는 vitest 스텝과 따로 둔다 — vitest 스텝에만 continue-on-error 가 걸리므로, 빈 입력은 어느 ref 에서도 실행을 실패시켜야 한다.
+      - name: files 검사
+        env:
+          FILES: ${{ inputs.files }}
+        run: |
+          if [ -z "${FILES// /}" ]; then echo "files 가 비었다 — 전체 스위트는 ci-full 로 돌린다." >&2; exit 2; fi
+
       - name: vitest (지정 파일만)
+        id: vitest
+        # agent/* 에서만 실패를 실행 결론에 올리지 않는다(위 머리말). 그 밖의 ref 는 false 라서 예전과 같다.
+        continue-on-error: ${{ startsWith(github.ref_name, 'agent/') }}
         env:
           FILES: ${{ inputs.files }}
         run: |
           set -euo pipefail
-          if [ -z "${FILES// /}" ]; then echo "files 가 비었다 — 전체 스위트는 ci-full 로 돌린다." >&2; exit 2; fi
+          # 마지막 스텝이 실패한 파일 이름을 읽도록 로그를 남긴다. pipefail 이라 vitest 종료 코드는 그대로 전달된다.
           # shellcheck disable=SC2086 — 공백으로 나눈 목록을 인자로 펼친다.
-          node scripts/run-vitest.mjs run --configLoader bundle --reporter=verbose --maxWorkers=4 --minWorkers=1 $FILES
+          node scripts/run-vitest.mjs run --configLoader bundle --reporter=verbose --maxWorkers=4 --minWorkers=1 $FILES 2>&1 | tee "$RUNNER_TEMP/vitest.log"
+
+      # 결과 한 줄 — 로그의 마지막 줄, 요약, ::error:: 주석(실패일 때). 이 스텝 자체는 실패하지 않는다.
+      # vitest 스텝이 skipped 면 앞선 설정 스텝이 이미 실행을 실패시킨 것이므로 그 사실만 적는다.
+      - name: 결과 (RESULT)
+        if: always()
+        env:
+          FILES: ${{ inputs.files }}
+          OUTCOME: ${{ steps.vitest.outcome }}
+        run: |
+          # shellcheck disable=SC2086
+          set -- $FILES
+          total=$#
+          case "$OUTCOME" in
+            success)
+              line="RESULT: PASS ${total} files" ;;
+            failure)
+              failed=$(sed 's/\x1b\[[0-9;]*m//g' "$RUNNER_TEMP/vitest.log" 2>/dev/null \
+                | grep -oE 'FAIL +[^ >]+\.(test|spec)\.[cm]?[jt]sx?' | awk '{print $2}' | sort -u || true)
+              n=$(printf '%s' "$failed" | grep -c . || true)
+              if [ "$n" -gt 0 ]; then
+                line="RESULT: FAIL ${n} files ($(printf '%s\n' "$failed" | paste -sd, - | sed 's/,/, /g'))"
+              else
+                line="RESULT: FAIL ${total} files (실패 파일 이름을 로그에서 읽지 못했다 — 위 로그를 본다)"
+              fi ;;
+            *)
+              line="RESULT: ERROR ${total} files (vitest 스텝이 실행되지 않았다: ${OUTCOME:-없음} — 앞선 설정 스텝 실패)" ;;
+          esac
+          printf '### ci-vitest-files\n\n`%s`\n\n입력 파일 %s개: %s\n' "$line" "$total" "$FILES" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$OUTCOME" != "success" ]; then echo "::error title=ci-vitest-files::${line}"; fi
+          echo "$line"
