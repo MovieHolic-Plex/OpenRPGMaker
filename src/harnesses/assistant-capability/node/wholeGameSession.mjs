@@ -247,6 +247,8 @@ try {
       toolArgs: events.filter(e => e.type === 'tool_start').map(e => ({ name: e.name, args: e.args })),
       // 모델 호출마다의 요청 크기(지시문 글자·실은 도구 수) — 도구 이름은 첫 호출 것만 남긴다. 본문은 없다.
       prompts: events.filter(e => e.type === 'prompt_inspection' && e.data?.sizes).map((e, index) => ({ at: e.at, ...e.data.sizes, toolNames: index === 0 ? e.data.sizes.toolNames : undefined })),
+      // 없는 그림 기록(src/project/artGap.ts) — 턴 끝 요약이 싣는 읽어 낸 기록. 없는 그림 장부(mapVqa/artGaps.ts)가 글 대신 이것을 읽는다.
+      artGaps: events.filter(e => e.type === 'execution_status' && e.name === 'v2.summary').flatMap(e => Array.isArray(e.data?.artGaps) ? e.data.artGaps : []),
       // v2 의 턴 끝 판정(할 일 장부: 열림 0 · 막힘 0 이면 완료).
       v2Final: events.filter(e => e.type === 'execution_status' && e.name === 'v2.todo.final').map(e => ({ complete: e.ok === true, summary: String(e.summary ?? '').slice(0, 300) })),
       maps: Object.values(snap.project.maps).map(m => ({ id: m.id, name: m.name, size: `${m.width}x${m.height}`, events: (m.events ?? []).length })) };

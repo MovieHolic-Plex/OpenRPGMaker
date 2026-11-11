@@ -12,7 +12,7 @@ import { isDoorName, reachableCells, unreachableEvents } from "../judge/eventRea
 import { isMysteryBlueprint, isProgressWord, resolveSteps } from "./mysteryCaseRead";
 import { resolveGraphic } from "@/editor/tools/eventCompile";
 import { chestOpenCommands, chestOpenedGraphic } from "@/editor/lootFeedback";
-import type { ArtGap } from "../shared/artGap";
+import type { ArtGap } from "@/project/artGap";
 import type { BuildRun } from "../shared/types";
 
 const ALTAR = "kit:beodeul_city/bd-pick-castle-catacombs-altar-stone";
@@ -40,7 +40,7 @@ export function dressBareSealSteps(run: BuildRun, mapId: string, gaps?: ArtGap[]
     const map = project.maps[mapId]!;
     const ev = map.events.find((e) => e.id === r.ev.id);
     if (!ev || !SEAL.test(`${ev.name ?? ""} ${r.step.event}`) || !allTransparent(ev) || upperAt(map, ev.x, ev.y)) continue;
-    if (!hasAltar) { gaps?.push({ tilesetId: map.tilesetId, want: "altar/seal", thing: "봉인·제단 그림", note: `「${ev.name ?? ev.id}」`, mapId, x: ev.x, y: ev.y }); continue; }
+    if (!hasAltar) { gaps?.push({ chipset: map.tilesetId, want: "altar-seal", wanted: "봉인·제단 그림", where: `${map.name} ${ev.x},${ev.y}`, standIn: "none", by: "seal-step-art", note: `「${ev.name ?? ev.id}」` }); continue; }
     const before = new Set(unreachableEvents(project, mapId));
     const others = new Set(map.events.filter((e) => e.id !== ev.id).map((e) => e.y * map.width + e.x));
     const cands: { tx: number; ty: number; at: { x: number; y: number }; d: number }[] = [];

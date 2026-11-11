@@ -3,7 +3,7 @@ import { canMove, isPassable } from "@/project/collision";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { reachableCells, unreachableEvents } from "../judge/eventReach";
-import type { ArtGap } from "../shared/artGap";
+import type { ArtGap } from "@/project/artGap";
 import type { BuildRun } from "../shared/types";
 import { Cell, Layer, Laid, kitOf, innerOf, reband, doorPiece, free, northDoorCells } from "./exitDress";
 
@@ -70,7 +70,7 @@ export function doorFloorTransfers(run: BuildRun, mapId: string, laid?: Laid, ga
     // 가장자리 칸(방 짓기 출구·거리 끝)은 문이 아니어도 된다.
     if (ev.x === 0 || ev.y === 0 || ev.x === map.width - 1 || ev.y === map.height - 1) return;
     const destId = String(transferCmds(ev).find((t) => typeof t.cmd.mapId === "string" && t.cmd.mapId !== mapId)?.cmd.mapId ?? "");
-    gaps?.push({ tilesetId: map.tilesetId, want: "door piece", thing: "벽 문 그림", note: `「→ ${run.ctx.project.maps[destId]?.name ?? destId}」 이동 칸을 앉힐 문을 칩셋이 적어 두지 않았다`, mapId, x: ev.x, y: ev.y });
+    gaps?.push({ chipset: map.tilesetId, want: "door-piece", wanted: "벽 문 그림", where: `${map.name} ${ev.x},${ev.y}`, standIn: "none", by: "door-floor-transfers", note: `「→ ${run.ctx.project.maps[destId]?.name ?? destId}」 이동 칸을 앉힐 문을 칩셋이 적어 두지 않았다` });
   };
   for (const id of ids) {
     const project0 = run.ctx.project;

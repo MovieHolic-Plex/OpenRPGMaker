@@ -83,7 +83,7 @@ export async function runMapVqa(options: MapVqaOptions): Promise<number> {
       for (const wrong of review.art?.wrongTheme ?? []) entries.push({ source: 'theme', thing: wrong.fitting || wrong.thing, instead: wrong.thing, kind: wrong.kind, where });
     }
     const sessions = corpusSessions(options.corpus).filter(session => !options.only || results.some(review => review.group === session.group));
-    for (const session of sessions) for (const report of toolReportsOfSession(session.sessionDir)) entries.push({ source: 'tool', thing: report.thing, instead: report.instead, kind: report.kind, where: { group: session.group, label: session.label, chipset: report.chipset || chipsetOf.get(session.group) || '', theme: '', run: gameOf.get(session.group) } });
+    for (const session of sessions) for (const report of toolReportsOfSession(session.sessionDir)) entries.push({ source: 'tool', thing: report.thing, instead: report.instead, kind: report.kind, where: { group: session.group, label: session.label, chipset: report.chipset || chipsetOf.get(session.group) || '', theme: report.theme ?? '', run: gameOf.get(session.group) } });
     const cluster = await clusterThings(entries.map(entry => entry.thing), resolve(options.out, 'judge-cache'), usage);
     const rows = buildArtGaps(entries, cluster.map);
     artGaps = { schemaVersion: 1, kind: 'assistant-map-vqa-art-gaps', corpus: options.corpus, generatedAt: new Date().toISOString(), promptVersion: ART_GAPS_VERSION, clustered: cluster.clustered,

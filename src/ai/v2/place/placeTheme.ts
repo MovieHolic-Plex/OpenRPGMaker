@@ -1,24 +1,10 @@
 // 장소의 테마 — 세계 장소(구성기 맵)에 서는 적 · 그 맵의 전투 배경 · 상자 보상을 그 장소의 세계·종류에서 고른다.
-// 고를 그림이 없으면 대역을 쓰되 «없는 그림» 한 줄(ArtGap)을 남긴다 — 다른 테마의 대역이 말없이 지나가지 않게.
+// 고를 그림이 없으면 대역을 쓰되 «없는 그림» 한 줄(project/artGap 의 artGapLine)을 남긴다 — 다른 테마의 대역이 말없이 지나가지 않게.
 // 적 id 는 기본 DB 의 것이다(프로젝트 DB 에 없으면 빼고, 하나도 안 남으면 종전 고르기 + 없는 그림 줄).
 import { fitTroopCopy, type EnemyFitRole } from "@/editor/tools/bossThreatScaling";
 import type { GameMap, Project } from "@/project/types";
+import { artGapLine } from "@/project/artGap";
 import { WORLDS, worldOf, worldKind, type WorldKind, type WorldSetting } from "./world";
-
-/** 없는 그림 한 건 — 테마 · 무엇을 바랐나 · 어디 · 대신 쓴 것. 줄 모양(artGapLine)으로 missingArt 에 실리고 parseArtGap 으로 다시 읽는다. */
-export interface ArtGap {
-  readonly theme: string;
-  readonly want: "backdrop" | "foe" | "boss";
-  readonly wanted: string;
-  readonly where: string;
-  readonly standIn: string;
-}
-const ART_GAP_TAG = "[art-gap]";
-export const artGapLine = (g: ArtGap): string => `${ART_GAP_TAG} theme=${g.theme} want=${g.want} wanted=«${g.wanted}» where=«${g.where}» stand-in=${g.standIn}`;
-export function parseArtGap(line: string): ArtGap | undefined {
-  const m = /^\[art-gap\] theme=(\S+) want=(backdrop|foe|boss) wanted=«([^»]*)» where=«([^»]*)» stand-in=(.*)$/u.exec(line.trim());
-  return m ? { theme: m[1]!, want: m[2] as ArtGap["want"], wanted: m[3]!, where: m[4]!, standIn: m[5]! } : undefined;
-}
 
 const B = { forest: "battle-scenery-forest", plains: "battle-scenery-plains", cave: "battle-scenery-cave", snow: "battle-scenery-snow", desert: "battle-scenery-desert" } as const;
 

@@ -41,6 +41,17 @@ async function readError(response: Response): Promise<{ error?: string; missing?
   try { return (await response.json()) as { error?: string; missing?: string[] }; } catch { return {}; }
 }
 
+/** base64 PNG 의 IHDR 폭·높이가 한 변 상한을 넘으면 "폭×높이", 아니면 undefined (읽을 수 없는 그림은 워커가 판정한다). */
+export function pngLargerThan(base64: string, max: number): string | undefined {
+  try {
+    const head = atob(base64.slice(0, 32));
+    if (head.length < 24 || head.slice(12, 16) !== "IHDR") return undefined;
+    const u32 = (at: number) => ((head.charCodeAt(at) << 24) | (head.charCodeAt(at + 1) << 16) | (head.charCodeAt(at + 2) << 8) | head.charCodeAt(at + 3)) >>> 0;
+    const width = u32(16), height = u32(20);
+    return width > max || height > max ? `${width}×${height}` : undefined;
+  } catch { return undefined; }
+}
+
 function newRunId(): string {
   return typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
     ? crypto.randomUUID()
@@ -207,6 +218,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
             ? await (await import('../../editor/openingImageGeneration')).renderOpeningImage(draft, event.data, options.signal)
             : await (await import('../toolImageRenderer')).renderPiToolImage(draft, event.toolName, event.data);
           png = url.replace(/^data:image\/png;base64,/, '');
+          // 워커는 512×512 를 넘는 PNG 를 거절하고(409) 그 거절은 턴 전체를 끊는다 — 큰 그림은 보내지 않고 그 도구만 실패로 알린다.
+          const tooBig = pngLargerThan(png, 512);
+          if (tooBig) { issue = `render is ${tooBig} — larger than 512×512, not sent`; png = undefined; }
         }
       } catch (error) { issue = error instanceof Error ? error.message : String(error); }
       const renderBody = JSON.stringify({ renderId: event.renderId, png, still, issue });
