@@ -575,6 +575,7 @@ Terra 네 판의 화면 검수 장부 57줄 가운데 15줄이 끝맺음이 깐 
 | (회귀 2026-11-11) 검수 표본이 384×648 이 돼 모든 턴이 409 로 끝남 | `src/editor/openingAnimaticPreview.ts` · `src/ai/piAgent/client.ts` | 위 줄의 «한 줄에 한 프레임» 이 세 프레임에서 높이 648 을 냈다. 워커(`scripts/lib/piRenderBroker.ts resolvePiRender`)는 한 변 512 를 넘는 PNG 를 거절하고, 그 거절(409)은 턴 전체를 끊어 끝맺음·화면 검수·요약이 한 번도 돌지 않았다(측정 r1 의 12턴 전부). | 검수용 칸 폭을 «프레임 수 × 칸 높이 ≤ `PREVIEW_MAX`(512)» 로 줄인다(세 프레임 303×512). 그리고 클라이언트가 보내기 전에 PNG 머리(`pngLargerThan`)를 읽어 512 를 넘으면 그림 대신 `issue` 를 보낸다 — 그 도구만 실패하고 턴은 산다. `test/piRenderSizeGuard.test.ts`. |
 | (2026-11-11) 조립 뒤 24분 멈춤 — 그림·응답 하나가 턴을 붙잡음 | `src/ai/piAgent/client.ts` | 그림 응답과 단계 적용 응답은 한 줄(`checkpoints`)로 차례를 선다. 끝나지 않는 그리기나 매달린 응답 POST 하나가 뒤의 체크포인트 응답을 전부 막았고, 응답 중(`acksInFlight`)이라 워치독도 울리지 않아 워커가 체크포인트 시한(30분)까지 기다렸다(측정 r1 로컬 판: `stream.resume` 직후 `v2.assembly` 뒤 무사건 24분, 워커·편집기 둘 다 한가). 또 워커가 45초 시한으로 이미 버린 그림에 늦게 답하면 409 가 돌아와 턴 전체가 끊겼다. | ① 편집기 쪽 그리기에 시한(검수 그림 40초 · 생성 290초) — 지나면 `issue` 로 답하고 줄을 비운다. ② 그림 응답의 409 는 `render.dropped` 한 줄로 남기고 턴은 계속. ③ 응답 POST 한 번마다 시한(그림 30초 · 적용 120초, `postAck` 가 다시 보낸다). 원인이 그림인지 적용인지는 운전기 기록에 render/checkpoint 사건이 없어 가르지 못했다 — 실제 판 확인 전. |
 | (2026-11-12) 사슬 고리 번호는 고리의 것 · 깊이 관문은 이미 긴 경로에 서지 않는다 | `src/ai/v2/story/puzzle.ts` · `src/ai/v2/judge/shipChecks.ts` | Terra 측정 r1-fun(눈가림 재미 2, 첫 마을에서 막힘)의 원인 둘. ① `buildPuzzleChain` 의 고리 몫 스위치·변수(`taken_N` · `<번호>_solved_N` · `door_open_N` · `var_<사슬>_N[_wrong]`)는 호출 안의 순번으로 번호를 받았다 — 같은 이름의 사슬을 두 번에 나눠 지으면(청사진을 다시 쓰면 새 단계만 온다) 뒤 호출의 첫 고리가 앞 호출 첫 고리의 «집어 감» 을 같이 써, 앞 사람과 말하면 뒤 사람이 «받은 뒤» 대사로 넘어가 길을 여는 스위치를 켜지 않았다(저장된 판 13개 중 5개에 같은 꼴). 이제 번호는 «그 이벤트만 쓰던 번호가 있으면 그것, 없으면 게임 어디서도 안 쓰는 번호» 다 — 처음 짓는 사슬의 결과는 그대로. ② 그 다시 쓰기를 시킨 것은 `act-depth-min` 이었다: 깊이는 스위치·변수 사슬만 세어, 가운데 단계 하나가 물건으로 넘기면 7단계 경로가 3 으로 재어진다. 처방이 «청사진을 6~8단계로 다시 써라» 인 관문이므로, 청사진에 서로 다른 단계 이벤트가 `MIN_ACT_DEPTH`+1 개 이상이고 `walkBlueprint` 에 경로 막힘이 없으면 올리지 않는다(척도와 같은 값을 내는 `progressionDepth` 는 그대로). 남은 것: 청사진을 다시 쓰면 앞 경로의 사람이 고아로 남는다(13판 중 6판) — 단계가 지은 것을 단계 id 로 물려받게 하는 것은 다음 PR. 시험 `test/aiV2ChainSlots.test.ts`. |
+| (2026-11-12) 청사진을 다시 쓰면 지어 둔 것을 물려받는다 | `src/ai/v2/story/blueprintCarry.ts` · `blueprintPath.ts` · `puzzle.ts` · `src/project/gameBlueprint.ts` · `tools/verbs/blueprint.ts` | 모델이 청사진을 다시 쓰면(단계 수·장소는 그대로, 사람 이름만 바뀜 — 저장된 Terra 판 13개 중 6개) 경로 빌더는 단계 이벤트를 «그 맵의 같은 이름» 으로 찾아 새 사람을 세웠고 앞 경로의 사람은 남았다: 이야기 줄이 두 벌, 문·길은 앞 사람의 스위치를 기다림(r1-fun). 이제 단계가 제가 지은 것을 적어 둔다 — `GameBlueprintStep.built {mapId, eventId, switchId?, itemId?}`(함수만 쓴다, 모델이 보낸 값은 버린다). `write_blueprint` → `carryBuilt`: 새 단계가 앞 단계의 built 를 물려받는다(같은 이름 먼저, 그다음 같은 id), 받을 단계가 없는 것은 `retired`. `build_blueprint_path` → `settleCarriedSteps`: 물려받은 이벤트를 새 이름으로(그 이름을 부르던 잠김 글·목표 꼬리도, 조사는 받침에 맞게), 장소를 옮긴 단계·빠진 단계의 이벤트는 걷고 아무도 안 켜게 된 스위치를 기다리던 조건을 푼다 → 빌더가 **같은 이벤트·같은 스위치 id** 로 다시 짓는다(`ChainLink.reward.switchId/itemId`, 그림은 새 이름으로 다시 `relook`). 넘기는 것의 종류가 바뀐 단계(물건 → 깃발)는 `remapGives` 가 옛 것을 기다리던 조건을 새 것으로 옮긴다. `ev_chain_*`(함수가 지은 것)만 이름을 바꾸고 걷는다. 저장 모양: `built` · `retired` 는 선택 칸이라 옛 저장본은 그대로 읽힌다(`normalizeStepBuilt` — 모양이 틀리면 없는 것으로). 실측(r1-fun 을 둘째 경로 짓기까지 모델 없이 재생): 사슬 이벤트 12(단계 아닌 것 5) → 7(0) · 같이 쓰는 «집어 감» 5 → 0 · 아무도 안 켜는 스위치를 기다리는 페이지 2 → 0. 시험 `test/aiV2BlueprintCarry.test.ts`. |
 | 사람이 없다 | `src/editor/tools/blueprintOpening.ts` `standingPeople`·`castOf` | 맵 화면 배경(`map-view:`)은 타일만 그린다. 그 맵에 **새 게임부터 서 있는 사람**(`pageAtStart` 의 그림이 사람 캐릭터 칩인 이벤트 — 스위치 뒤에 나타나는 사람·몬스터·상자는 뺀다)을 제 칸에 선 한 칸으로 세운다(장면당 8명까지). 마지막 장면(시작 위치)에는 주인공. 걷는 연기는 붙이지 않는다 — 움직이는 오프닝은 `author_opening_stage` 몫이다(오너 2026-11-05) |
 | 사람이 보이는 틀 | 같은 파일 `peopledFocus` | 전경의 가운데는 볼 것이 많은 창과 사람이 선 칸들 가운데 사람이 가장 많이 보이는 쪽. 그 창이 주인공 자리(마지막 장면)와 겹치면 볼 것이 많은 창 |
 | 맨 아래 줄의 사람이 자막 띠에 가려진다 | 같은 파일 `BAND`·`shotCrop` | 배경을 무대 전체가 아니라 자막 띠 사이(384×150)에만 깐다. 띠 밑의 맵 줄은 어차피 안 보였고, 마을 맨 아래 줄에 선 사람·주인공이 띠 밑으로 들어갔다 |
@@ -1796,6 +1797,44 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   8318 중계기는 스트림에 사용량을 싣지 않고(비스트림은 prompt_tokens 1) — 토큰은 이 기록의 글자 수를 DeepSeek 실측(inferhub 는 사용량을 준다)으로 보정해 추정한다(입력 약 3.0자/토큰).
 - 비용 주의: Claude Code 의 `total_cost_usd` 는 claude-haiku-5-5 를 Opus 단가로 매긴다(실측 $2.28 = 같은 토큰 × Opus 정가). Haiku 는 토큰 × 공개 정가($0.10/$0.50)로 센다.
 - 결과 페이지 `~/claude-viz/cheap-model-check.html`.
+
+## 워커 루프에 차례 주기 — 30초 넘는 침묵 없이 (2026-11-12)
+
+**왜.** 워커는 실행 스트림에 5초마다 heartbeat 를 끼우고(`scripts/lib/piAgentStream.ts`), 편집기는 30초 동안 줄이 없으면 스트림을 끊고 이어 받는다
+(`src/ai/piAgent/client.ts` `PI_AGENT_STALE_MS`). 그런데 장소 짓기와 출구 마감은 동기 작업을 내리 돌아 그동안 heartbeat 타이머가 못 돈다.
+사막 게임(2026-11-11 `purpose-desert4`, 맵 8장)의 턴 1 호스트 로그: «event loop blocked» 69초(`build_places`) · 49초(`build_blueprint_path`) ·
+31초와 35초(출구 마감 두 번). 네 번 모두 편집기가 스트림을 끊고 이어 받았다. 그 자체는 멀쩡한 동작이지만 쓸데없는 왕복이고,
+시험 구동기에서는 이어 받기마다 연결이 하나씩 남아 턴이 멈췄다(`openwiki/harnesses/assistant-capability.md` 「실행 스트림과 연결 수」).
+감시 시간(30초)은 그대로 둔다 — 침묵을 줄이는 쪽이 맞다.
+
+**무엇.** `src/ai/v2/shared/yieldLoop.ts` `yieldToLoop()` — 타이머 한 번(밀린 heartbeat 가 먼저 돈다) + 즉시 큐 한 번(그 줄이 소켓으로 나가고,
+들어온 적용·그림 응답이 읽힌다). 긴 동기 작업 **사이**에서만 부른다. 장소 하나·단계 하나는 그대로 동기라 순서와 결과는 같다.
+
+| 부르는 곳 | 파일 |
+|---|---|
+| `build_places` 의 장소와 장소 사이, 빈 시작 맵 치우기 앞, 위험한 장소 채우기 사이 | `tools/sessionHooks.ts` `session.buildPlaces` |
+| 목적표가 짓는 방과 방 사이 | `place/programRooms.ts` `layProgramRooms`(이제 약속을 돌려준다) |
+| 출구·이동 칸 마감의 단계와 단계 사이(맵마다) | `finish/lanes/index.ts` `runLaneStages`(이제 약속을 돌려준다) |
+| 끝맺음 단계 하나가 끝날 때마다 | `finish/index.ts` `recordedRun` |
+
+출구 마감의 31~35초는 긴 단계 하나가 아니었다 — 맵마다 도는 단계 셋(`landing-pockets` · `puzzle-gates` · `guide-texts`)이 맵 8장에 각각 10초쯤(맵 한 장에 1.2~1.9초)이다.
+
+**잰 것 (모델 없음).** `bun scripts/qa/assistant-v2/loopGaps.mts <project.json | live.json> [seed]` — 저장된 게임의 청사진을 실제 동사
+(`write_blueprint` → `build_places` → `build_blueprint_path` → 끝맺음)로 다시 지으며 250ms 타이머가 늦게 돌아온 구간을 잰다.
+`purpose-desert4` 의 청사진, 같은 씨앗, 전/후를 같은 때 나란히(기계 부하 35~49):
+
+| | 전 (`d09366e18b`) | 후 |
+|---|---|---|
+| 가장 긴 막힘 | 42~47초 (`build_places`) | 12초 (`build_blueprint_path`) |
+| 30초 이상 | 2번 (`build_places` · 출구 마감 33초) | 0번 |
+| 10초 이상 | 3~4번 | 1번 |
+| 맵 8장 타일·이벤트 해시 · DB 해시 · 단계 기록 15줄 해시 | — | 전과 같다 (청사진의 `updatedAt` 만 벽시계라 다르다) |
+
+**남은 것.** `build_blueprint_path` 는 `story/blueprintPath.ts buildBlueprintPath` 동기 호출 하나다 — 위 측정에서 11~12초, 실제 판(다른 세션 여덟이 도는 기계)에서 49초였다.
+나누려면 그 함수의 단계 고리 안에서 차례를 줘야 한다(함수가 약속을 돌려주게 된다).
+
+**새 단계를 더할 때.** 단계 하나가 30초를 넘지 않게 한다. 맵마다 도는 단계는 맵 한 장에 몇 초 안이어야 한다 — `[v2-lane] <id> took Ns in total` 과
+`[pi-agent-stream] event loop blocked Ns` 줄이 호스트 로그(`HARNESS_HOST_LOG`)에 남는다. 긴 고리를 가진 빌더는 고리 안에서 `await yieldToLoop()` 를 부른다.
 
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 

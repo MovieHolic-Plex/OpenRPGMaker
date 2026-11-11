@@ -17,6 +17,7 @@ import * as registered from "./stages";
 import { recordStageWrites } from "../shared/stageWrites";
 import { createBuildRun } from "../shared/buildRun";
 import { orderedStages } from "./stageOrder";
+import { yieldToLoop } from "../shared/yieldLoop";
 
 export { lanesStamp } from "./lanesStamp";
 export type { FinishCtx, FinishPhase, FinishStage } from "./types";
@@ -24,7 +25,8 @@ export type { FinishCtx, FinishPhase, FinishStage } from "./types";
 /** 2초 넘게 걸린 단계는 이름·시간을 stderr 에 남긴다(2026-11-09 monster «terminated»: assembly:ship-defaults 414초 — 동작 불변). */
 const timedStage = async (id: string, run: () => void | Promise<void>): Promise<void> => { const t0 = Date.now(); try { await run(); } finally { const ms = Date.now() - t0; if (ms >= 2000) console.error(`[v2-stage] ${id} took ${Math.round(ms / 1000)}s`); } };
 
-const recordedRun = async (ctx: FinishCtx, stage: FinishStage): Promise<void> => { await recordStageWrites(() => ctx.env.ctx.project, ctx.session.stageWrites, () => stage.run(ctx, "")); };
+// 단계마다 끝에 루프에 차례를 준다(shared/yieldLoop.ts) — 동기 단계가 줄줄이 돌면 그 합만큼 워커가 말이 없다.
+const recordedRun = async (ctx: FinishCtx, stage: FinishStage): Promise<void> => { await recordStageWrites(() => ctx.env.ctx.project, ctx.session.stageWrites, () => stage.run(ctx, "")); await yieldToLoop(); };
 
 /** 이 실행기가 도는 묶음(마감 묶음 lane-* 은 finish/lanes/index.ts 가 돈다). */
 const PHASES: readonly FinishPhase[] = ["blueprint", "assembly", "reload"];

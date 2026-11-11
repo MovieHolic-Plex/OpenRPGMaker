@@ -370,14 +370,14 @@ export async function handleCompanionRequest(req, adapters) {
     const result = await startRelayedRun(
       body,
       (request, signal, heavy) => adapters.runAgent(provider, request, { signal, ...(heavy ? { heavy } : {}) }),
-      { heavyRefs: adapters.runAgentHeavyRefs === true },
+      { heavyRefs: adapters.runAgentHeavyRefs === true, reader: new URL(req.url ?? "", "http://companion.local").searchParams.get("reader") },
     );
     if (!result.stream) return json(result.status, result.body);
     return { status: 200, stream: true, ndjson: result.ndjson, headers: result.headers, body: null };
   }
   if (method === "GET" && path === "/v1/agent/run") {
     const query = new URL(req.url ?? "", "http://companion.local").searchParams;
-    const result = resumeRelayedRun(query.get("runId") ?? "", Number(query.get("after") ?? "0"));
+    const result = resumeRelayedRun(query.get("runId") ?? "", Number(query.get("after") ?? "0"), query.get("reader"));
     if (!result.stream) return json(result.status, result.body);
     return { status: 200, stream: true, ndjson: result.ndjson, headers: result.headers, body: null };
   }
