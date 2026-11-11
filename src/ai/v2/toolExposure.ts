@@ -15,7 +15,7 @@ import { compactCliToolList } from "@/ai/piAgent/cliContextBudget";
 import type { PiAssistantV2Env } from "./env";
 import { V2_TOOL_EN, type ToolTextEn } from "./toolTextEn";
 import { classifyRequest, describeIntent } from "./request/intent";
-import { PLACE_BUILD_VERBS } from "./prompt";
+import { PLACE_BUILD_VERBS } from "./prompt/placeSpecs";
 import { composedWorldFor } from "./request/world";
 import { leanPromptFor } from "./request/readers";
 

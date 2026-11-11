@@ -3,7 +3,7 @@ import { createBlankProject } from "@/project/defaults";
 import { normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { createV2Tools } from "@/ai/v2/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
-import { buildV2SystemPrompt } from "@/ai/v2/prompt";
+import { buildV2SystemPrompt } from "@/ai/v2/prompt/systemPrompt";
 import { countMaps } from "@/ai/v2/judge/mapCount";
 import { walkGame } from "@/ai/v2/makeGame";
 import { battleStepBypass, stepMixProblems, walkBlueprint } from "@/ai/v2/blueprint";

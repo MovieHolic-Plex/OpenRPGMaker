@@ -18,7 +18,7 @@ import { runGameCheck } from "../../../src/qa/gameCheck/index.ts";
 import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
 import type { Project } from "../../../src/project/types.ts";
 import { composePiTask } from "../../../src/ai/piAgent/executionRoute.ts";
-import { priorRequestsNote } from "../../../src/ai/v2/priorRequests.ts";
+import { priorRequestsNote } from "../../../src/ai/v2/prompt/priorRequests.ts";
 import { createHash } from "node:crypto";
 
 const argv = process.argv.slice(2);

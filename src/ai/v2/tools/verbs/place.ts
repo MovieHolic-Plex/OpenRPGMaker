@@ -1,6 +1,6 @@
 // 장소 동사 — build_places(세계 장소 한 번에) · make_place · edit_place · review_layout · find_pieces.
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
-import { interiorCatalogCard, placeSpecKindOf } from "../../prompt";
+import { interiorCatalogCard, placeSpecKindOf } from "../../prompt/placeSpecs";
 import { INTERIOR_WORDS } from "../../request/place";
 import { hasLayout } from "../../place/builders/interiorLayoutBuild";
 import { LAYOUT_FORMAT, LAYOUT_TAG, applyLayoutPatch, layoutGiven, layoutPatchIsEmpty, type LayoutPatch } from "../../place/interiorLayout";

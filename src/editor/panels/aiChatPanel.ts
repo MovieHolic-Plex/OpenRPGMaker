@@ -107,7 +107,7 @@ import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
 import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
 import { isAssistantV2Enabled } from "@/ai/v2/switch";
-import { priorRequestsNote } from "@/ai/v2/priorRequests";
+import { priorRequestsNote } from "@/ai/v2/prompt/priorRequests";
 import { classifyPlainPiTurn, clarifyFollowUpText, selectedEventFact } from "@/ai/piAgent/plainTurn";
 import { applyMonsterIntentStart, needsMonsterKitStart } from "@/project/genrePresets";
 import { resolveContextWindow } from "@/ai/contextCompaction";
