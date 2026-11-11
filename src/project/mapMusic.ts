@@ -91,7 +91,7 @@ export function resolveMapBgs(project: Pick<Project, "maps">, mapId: MapId): Map
 
 /**
  * 전투곡 해석 순서 하나: 세션 덮어쓰기(m2-027 cue battle — 보스전) → M2 시스템 슬롯 → 그 맵의 전투곡 → 프로젝트 전투곡.
- * 런타임(player/battleAudio.ts enterBattleAudio)·lint(ai/v2/audioVarietyLint.ts)·get_soundtrack 이 같이 쓴다.
+ * 런타임(player/battleAudio.ts enterBattleAudio)·lint(ai/v2/judge/audioVarietyLint.ts)·get_soundtrack 이 같이 쓴다.
  */
 export function resolveBattleBgmResourceId(
   project: Pick<Project, "system" | "maps">,

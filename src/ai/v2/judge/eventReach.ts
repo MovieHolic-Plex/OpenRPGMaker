@@ -10,11 +10,11 @@
 import { canMove, isPassable } from "@/project/collision";
 import { playerAnchors, sameMapPassages } from "@/editor/tools/transferReachability";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { PERSON_SPOT_BAD, personSpotContext, personSpotCost } from "./place/personSpot";
-import { objectAt, tileLabel } from "./place/cells";
+import { PERSON_SPOT_BAD, personSpotContext, personSpotCost } from "../place/personSpot";
+import { objectAt, tileLabel } from "../place/cells";
 import { objectBaseLabel, objectClusterAt } from "@/project/objectFootprint";
 import { eventBodyRect, eventPassageRect } from "@/project/eventFootprintQuery";
-import type { BuildRun } from "./types";
+import type { BuildRun } from "../types";
 
 type Cell = { x: number; y: number };
 const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;

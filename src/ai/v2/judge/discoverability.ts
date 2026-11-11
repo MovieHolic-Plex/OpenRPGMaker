@@ -21,7 +21,7 @@ import { mapRoute, objectiveTargetViews } from "@/player/objectiveTarget";
 import type { RuntimeEventView } from "@/project/runtimeEventState";
 import { computeReachableCells } from "@/project/lint/reachability";
 import { josa } from "@/util/josa";
-import { unreachableEvents } from "../eventReach";
+import { unreachableEvents } from "./eventReach";
 
 const OBJECTIVE_COMMAND_ID = "m2-214-ui-command";
 export const OBJECTIVE_SURFACE = "objectiveChip";

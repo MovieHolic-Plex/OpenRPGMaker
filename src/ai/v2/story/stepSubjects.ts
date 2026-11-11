@@ -9,7 +9,7 @@ import type { BuildRun } from "../types";
 import { josa } from "@/util/josa";
 import { buildPeople } from "../people";
 import { isProgressWord, resolveSteps } from "./mysteryCase";
-import { reachableCells, unreachableEvents } from "../eventReach";
+import { reachableCells, unreachableEvents } from "../judge/eventReach";
 import { isPassable } from "@/project/collision";
 
 type Obj = Record<string, unknown>;

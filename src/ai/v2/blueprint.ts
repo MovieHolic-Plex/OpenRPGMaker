@@ -7,7 +7,7 @@
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { STEP_KINDS, gameBlueprintText, normalizeGameBlueprint, type GameBlueprint, type GameBlueprintStepKind } from "@/project/gameBlueprint";
 import { walkGame } from "./makeGame";
-import { unreachableEvents } from "./eventReach";
+import { unreachableEvents } from "./judge/eventReach";
 import { isEscapeBlueprint } from "./request/scope";
 
 type Obj = Record<string, unknown>;

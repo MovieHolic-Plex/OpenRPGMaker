@@ -25,7 +25,7 @@ import { chestLoot } from "@/editor/tools/jrpgVolumeTools";
 import { terrainReachability } from "@/project/terrainReachability";
 import { dungeonArgs, enlargeBoss, planTroops } from "./dungeon";
 import { villageArgs, villageMapSize } from "./village";
-import { ensureBossRest, ensureHealingAccess } from "../../healingAccess";
+import { ensureBossRest, ensureHealingAccess } from "../../story/healingAccess";
 
 const TS = "beodeul_city";
 /** 실행기·측정 스위치: OPRN_V2_BBOX_PLACES=1 일 때만 칸 배치 경로를 쓴다. 기본은 꺼짐 — 실제 v2 경로 측정(2026-10-31)에서

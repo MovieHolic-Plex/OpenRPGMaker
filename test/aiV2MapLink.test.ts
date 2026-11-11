@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { countMaps, planLinks } from "@/ai/v2/mapCount";
-import { mapsMinBlocker } from "@/ai/v2/shipChecks";
+import { countMaps, planLinks } from "@/ai/v2/judge/mapCount";
+import { mapsMinBlocker } from "@/ai/v2/judge/shipChecks";
 import { syncGateItems } from "@/ai/v2/judge/gates";
 import { TodoStore } from "@/ai/v2/loop/todoStore";
 import { runTool } from "@/editor/tools/toolRunner";

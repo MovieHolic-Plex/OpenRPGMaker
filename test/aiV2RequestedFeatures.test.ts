@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
-import { REQUESTED_FEATURES, requestedFeatureGaps, shipBlockers } from "@/ai/v2/shipChecks";
+import { REQUESTED_FEATURES, requestedFeatureGaps, shipBlockers } from "@/ai/v2/judge/shipChecks";
 
 const want = (text: string) => REQUESTED_FEATURES.filter((f) => f.words.test(text)).map((f) => f.id);
 

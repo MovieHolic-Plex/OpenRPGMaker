@@ -7,7 +7,7 @@
 // 하나도 못 찾으면 undefined — 부르는 쪽이 예전처럼 가장자리 칸을 쓴다.
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
-import { doorArtCells, isDoorArtLabel, reachableCells } from "./eventReach";
+import { doorArtCells, isDoorArtLabel, reachableCells } from "./judge/eventReach";
 import { roadCellSet, tileLabel } from "./place/cells";
 import type { BuildRun } from "./types";
 import { pickDungeonGateSpot } from "@/editor/tools/dungeonLinkTools";

@@ -9,7 +9,7 @@ import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
 import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt.ts";
 import { WORLDS, pickWorld, type WorldSetting } from "../../../src/ai/v2/world.ts";
-import { countMaps } from "../../../src/ai/v2/mapCount.ts";
+import { countMaps } from "../../../src/ai/v2/judge/mapCount.ts";
 import { walkGame } from "../../../src/ai/v2/makeGame.ts";
 import { walkBlueprint } from "../../../src/ai/v2/blueprint.ts";
 import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
