@@ -40,6 +40,9 @@ Phaser 에 실린 텍스처와 파일이 같다는 가정이 맞는지 확인하
 - **현재 목표 대상 표시**(2026-10-29): `playSceneFieldStaging.syncObjectiveMarkers` 가 지금 목표 글(`currentObjectiveText`)의 대상
   (`objectiveTarget.objectiveTargetViews`: 꼬리 「(이름: 자리)」 이름의 이벤트 → 「(<맵> 입구: …)」면 그 맵으로 가는 문 → 글에 나온 이벤트 이름 전부(다른 나온 이름에 품긴 짧은 이름은 뺀다 — 「용의자: 마부 한스·여행자 미라·상인 도윤」이면 셋 다) → 글에 나온 다른 맵의 문)에
   금빛 빛무리·바닥 고리를 거리와 무관하게 둔다(page.glow 보다 옅게, 깊이는 그 칸 사물 줄). 목표가 바뀌면 400ms 안에 옮긴다. QA: `objectiveMarkerIds(scene)`.
+  **2026-11-12:** 목표가 대상 이벤트를 들고 왔으면(`currentObjective(ui).target` — 목표 명령의 `fields.targetMapId`·`targetEventId`) 글 찾기보다 그것이 먼저고,
+  가는 길의 출구가 잠겨 있으면 잠금을 푸는 이벤트에 선다 — 데이터 모양·저장·대비 순서는 `runtime-sessions.md` 「목표가 가리키는 이벤트」. 목표를 읽는 새 코드는 `currentObjectiveText` 가 아니라
+  `currentObjective` 로 글과 대상을 같이 받는다(대상을 버리면 표시가 다시 이름 찾기로 돌아간다).
 - **안내 표시 끄기(2026-10-30):** `system.fieldGuides: "off"`(조수 `set_project_settings({fieldGuides:"off"})`)면 `updateFieldStaging` 이 목표 빛무리·화살표, 조사 ▼ 를
   그리지 않고 남은 것을 걷는다(`clearFieldGuides`). 저자가 단 `page.glow`·`nearSparkle` 은 남는다. 장면이 스스로 길을 보여 주는 이야기 게임(마왕 편의점 「너무 친절함 … 화살표 짜증남」)용.
   `databaseRecordModel` 화이트리스트에 넣어 저장/로드 왕복에서 살아남는다. 편집기 「시스템 → 필드 안내 표시」(`fieldGuidesField`, 켜기/끄기)와

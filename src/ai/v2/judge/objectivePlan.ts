@@ -2,7 +2,7 @@
 import { childLists, type RawCommand } from "@/qa/gameCheck/walk";
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { OBJECTIVE_SURFACE, objectiveCommand, isObjectiveCommand } from "./objectiveCommand";
+import { OBJECTIVE_SURFACE, objectiveCommand, isObjectiveCommand, type ObjectiveTarget } from "./objectiveCommand";
 import { Cell, bare, whereHint, withWhere } from "./objectiveWhere";
 import { rawChild, insertAfterMilestones } from "./objectiveRoutes";
 
@@ -81,7 +81,7 @@ export function runsOnce(event: GameEvent, page: { readonly commands?: unknown; 
  * 「현재 목표」 줄을 건다. at:'start' = 시작 맵의 자동 실행(오프닝 뒤 첫 컷신) 끝에, 없으면 새 자동 실행 이벤트로.
  * eventId = 그 이벤트의 이정표(스위치 켜기·아이템 얻기) 바로 뒤에 — 이정표가 없으면 그 이벤트 첫 페이지 끝에.
  */
-export function planObjective(project: Project, input: { readonly text: string; readonly at?: string; readonly eventId?: string; readonly mapId?: string; readonly where?: string }): ObjectivePlan {
+export function planObjective(project: Project, input: { readonly text: string; readonly at?: string; readonly eventId?: string; readonly mapId?: string; readonly where?: string; readonly target?: ObjectiveTarget }): ObjectivePlan {
   const raw = input.text.trim().slice(0, 80);
   let text = raw;
   if (!text) return { ok: false, summary: "text 에 지금 할 일 한 줄을 준다(예: 「창고 상자에서 태엽 열쇠를 찾자」)", events: [] };
@@ -98,7 +98,7 @@ export function planObjective(project: Project, input: { readonly text: string; 
     const fromMap = trigger ? Object.values(project.maps).find((map) => (map.events ?? []).includes(trigger)) : undefined;
     const namesTrigger = Boolean(trigger?.name) && bare(raw).includes(bare(String(trigger!.name)));
     if (hasStart && trigger && milestone && fromMap && !namesTrigger) {
-      return planObjective(project, { text: raw, eventId: trigger.id, mapId: fromMap.id });
+      return planObjective(project, { text: raw, eventId: trigger.id, mapId: fromMap.id, ...(input.target ? { target: input.target } : {}) });
     }
   }
   if (input.at === "start" || (!input.eventId && !input.mapId)) {
@@ -201,11 +201,12 @@ export function planObjective(project: Project, input: { readonly text: string; 
     const event = structuredClone(found) as unknown as Record<string, unknown> & { pages?: Record<string, unknown>[]; commands?: RawCommand[] };
     let placed = 0;
     const lists: RawCommand[][] = event.pages?.length ? event.pages.map((page) => (page.commands as RawCommand[]) ?? []) : [event.commands ?? []];
-    for (const list of lists) placed += insertAfterMilestones(list, text);
+    // 건 쪽이 대상 이벤트를 알면(target — 이 단계를 넘기는 이벤트) 목표가 들고 다닌다. 런타임 표시는 글의 이름 찾기보다 이것을 먼저 쓴다.
+    for (const list of lists) placed += insertAfterMilestones(list, text, input.target);
     if (!placed) {
       const first = lists[0];
       if (!first) return { ok: false, summary: `${found.name ?? found.id} 에 명령 목록이 없다`, events: [] };
-      first.push(objectiveCommand(text));
+      first.push(objectiveCommand(text, input.target));
       placed = 1;
     }
     return { ok: true, summary: `다음 목표 「${text}」 — ${found.name ?? found.id}(${map.name ?? map.id}) 의 이정표 ${placed}곳 뒤에 걸었다`, events: [{ mapId: map.id, event }] };
