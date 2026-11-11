@@ -56,9 +56,24 @@ const ADVANCED_SECTIONS: readonly { readonly section: MapSection; readonly label
   { section: "atmosphere", label: "환경 효과" },
 ];
 
+// 인스펙터는 마우스가 칸을 옮길 때마다 다시 지어진다. 이름 하나를 얻으려고 음악·효과음 카탈로그 전체를 매번 다시 만들었다
+// (2026-11-08 실측, 폴른 스타 칠하기 프로파일의 0.3s). 스토어는 바뀔 때마다 새 프로젝트 객체를 넣으므로 같은 객체 안에서만 재사용한다.
+const resourceNameCache = new WeakMap<Project, Map<string, string>>();
+
 function resourceName(project: Project, kind: "music" | "sound" | "backdrop", id: string | undefined): string {
   if (!id) return "";
-  return listDatabaseResourceOptions(kind, project).find((item) => item.id === id)?.name ?? "";
+  let names = resourceNameCache.get(project);
+  if (!names) {
+    names = new Map();
+    resourceNameCache.set(project, names);
+  }
+  const key = `${kind}\u0000${id}`;
+  const cached = names.get(key);
+  if (cached !== undefined) return cached;
+  const name = listDatabaseResourceOptions(kind, project).find((item) => item.id === id)?.name ?? "";
+  // 빈 이름은 기억하지 않는다 — 전체 BGM 설치처럼 프로젝트 밖에서 곡이 생기면 다음 그리기에서 바로 보여야 한다.
+  if (name) names.set(key, name);
+  return name;
 }
 
 function bgmValue(project: Project, map: GameMap): string {
