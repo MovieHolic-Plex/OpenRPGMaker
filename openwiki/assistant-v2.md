@@ -305,6 +305,25 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 
 증거: `test/toolsReadEmptyAndBlocked.test.ts`.
 
+## 뒷문은 `create_transfer_pair` 한 번 — 막다른 거절이 그 길을 이른다 (2026-11-11, 작은 일 두 번째 재측정)
+
+두 번째 재측정(Terra, main d4a4ae29f4)은 **29/30 · «완료» 29**(앞 28/30 · 25)였고 남은 하나가 `door-backdoor-built`(「족장의 긴 집에 뒷문을 하나 만들어 줘. 그 문으로 나가면 겨울 시장으로 가게」)다.
+두 번 다 조수는 «문을 방에 먼저 내야 한다» 고 보고 막다른 길로 갔다:
+
+- 앞 측정: `place_door` — 참고문서 관문에 막혔다(#4567 로 고침). 관문을 지나도 재료 「벽 통로」 는 한 칸 타일이라 «패턴 재료 라벨이 필요» 로 거절된다(설원 실내에는 문 재료가 없다).
+- 이번 측정: `edit_place` 의 `layoutPatch` — 칸 배치로 짓지 않은 방이라 거절인데, 거절 글이 «patch.set.layout 으로 전체 배치를 보내라» 였다. 모델은 같은 호출을 다섯 번 보내고 막혔다.
+  전체 배치는 방을 통째로 다시 짓는 일이라 권할 길도 아니다.
+
+그런데 이 일은 처음부터 실려 있던 `create_transfer_pair` 한 번이면 된다 — 문을 낼 벽 칸을 주면 그 앞 걷는 칸에 출입구가 붙는다(탐침: 벽 칸 (10,1) → (11,3) ↔ 겨울 시장, 작은 일 판정기 `transferLink` 통과).
+
+고친 것(도구에서):
+- `edit_place` 의 `layoutPatch` 거절(`tools/placeMemory.ts` `layoutPatchRefusal`): 바뀐 것이 없다는 것, 전체 배치를 보내지 말라는 것, 어느 맵에서나 되는 도구 — 문·뒷문·출구는 그 맵 id 를 채운 `create_transfer_pair{a:{mapId,…}, b:{…}}` — 를 준다. `noDesignRefusal` 에도 같은 길을 더했다.
+- `place_door` 가 재료를 못 찾거나 한 칸 타일이라 거절할 때, 문 그림 없이 잇는 길(`create_transfer_pair`)을 같이 적는다.
+- v2 영어 설명: `create_transfer_pair` 는 «문·뒷문·출구·계단 — 이 한 번이면 된다(방을 다시 짓지 않고 문 타일도 필요 없다), 새 문은 벽 칸을 준다» 로 시작한다. `place_door` 는 «문 그림만 — 맵 잇기는 create_transfer_pair» 라고 적는다.
+
+남은 것: 설원 실내 같은 구성기 칩셋에는 벽에 그릴 문 그림이 없다 — 지금은 출입구가 벽 발치의 보이지 않는 칸이다. 문 그림을 같이 놓으려면 칩셋마다 문 조각을 코드가 고르는 길이 필요하다(따로 다룬다).
+golden: 117/153 이 `create_transfer_pair` · `place_door` 글만 바뀜. 시험 `test/aiV2BackDoor.test.ts`.
+
 ## 조사 지점은 `place_examine_hotspots` — 물건 이름으로 놓는다 · 글만 나오는 조사는 장면이 아니다 (2026-11-11, 작은 일 재측정)
 
 작은 일 재측정(Terra, main 84a7fa331a)에서 통과는 했지만 «완료» 로 못 끝난 두 일 — `sign-starter`(표지판을 읽으면 글) · `examine-fireplace-built`(벽난로를 조사하면 글).
@@ -540,10 +559,10 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 
 ### 도구 노출 — 처음부터 싣는 도구·필요할 때 싣는 도구·영어 사본 (2026-10-30)
 
-게임 요청 한 턴에 v2 모델이 받던 v1 도구 글이 91.8k 토큰(o200k)이었고 거의 다 한국어였다. 노출은 `src/ai/v2/toolExposure.ts` `exposeV2Tools` 한 곳이 정한다(실행기 `scripts/lib/assistantV2Runtime.ts` 가 할 일 고리 뒤에 부른다).
+게임 요청 한 턴에 v2 모델이 받던 v1 도구 글이 91.8k 토큰(o200k)이었고 거의 다 한국어였다. 노출은 `src/ai/v2/tools/toolExposure.ts` `exposeV2Tools` 한 곳이 정한다(실행기 `scripts/lib/assistantV2Runtime.ts` 가 할 일 고리 뒤에 부른다).
 - **처음부터 싣는 도구** = 이 요청 묶음(`v2ExtraToolNames`) ∩ `V2_UP_FRONT`. `V2_UP_FRONT` 는 기록된 실행(turns/*.json `toolArgs` = 모델이 직접 부른 호출)에서 세션 수 terra ≥10 또는 opus ≥20 인 도구다.
 - **필요할 때 싣는 도구** = 묶음의 나머지 + `v2ToolPool()`(모든 v2 낱말 묶음의 합). `load_tools{names}` 가 다음 호출부터 선언하고(실행기 `env.declareTool` → in-place push), 이름으로 바로 부르면 실행기 `resolveFallbackTool` → `options.v2.lazyTool` 이 그 자리에서 싣고 실행한다. 할 일 고리가 강제·우선하는 도구도 먼저 싣는다. 없는 이름은 영어 거절 글(`unknownToolText`).
-- **영어 사본**: `src/ai/v2/toolTextEn.ts`(설명 d + 파라미터 경로 p). 처음부터 싣는 도구는 덮개 없는 한국어 파라미터 설명을 걷고, 필요할 때 싣는 도구는 한국어 파라미터 설명을 남긴다. v1 레지스트리 글은 그대로다.
+- **영어 사본**: `src/ai/v2/tools/toolTextEn.ts`(설명 d + 파라미터 경로 p). 처음부터 싣는 도구는 덮개 없는 한국어 파라미터 설명을 걷고, 필요할 때 싣는 도구는 한국어 파라미터 설명을 남긴다. v1 레지스트리 글은 그대로다.
 - **같은 모양 걷기**: 설명 뺀 모양이 400자 이상인 하위 스키마가 앞(처음부터 싣는 도구)에 있으면 v1 도구는 느슨한 자리표시(«Same shape as 도구 경로»)로, v2 동사는 설명만 걷는다(동사는 광고 스키마가 곧 검증기라서). v1 도구의 실제 검증은 레지스트리 `validateArgs` 가 원래 스키마로 한다.
 - 측정 `bun scripts/qa/assistant-v2/dumpPrompt.mts`(도구 글), 기록 재생 `bun scripts/qa/assistant-v2/toolExposureReplay.mts`(닿음·인자 검증 회귀 0 이어야 한다).
 - **스크립트 묶음(`SCRIPT_TIER`, 2026-10-31 왕복 줄이기)**: 로직 낱말(레버·비밀번호·공식·할인·시간대…)이 맞으면 `author_script`·`edit_script` 둘만 처음부터 싣는다. 스크립트 켬/끔 A/B(`~/z-project/assistant-whole-game/reports/script-ab-poc.md`)에서 `get_script_api`·`check_script`·`dry_run_script` 를 처음부터 실으니 쓰기 앞뒤로 매번 불러 모델 호출 136 vs 102·비용 $41.9 vs $23.3 이었다. 이제 `author_script` 한 번이 컴파일·`explain` 저장·`examples` 실행 결과까지 돌려주고(여러 개는 `scripts:[…]`), API 요약(`scriptApiQuickRef()`, `src/project/script/dts.ts`)은 `SCRIPT_TIER` 카드에 붙는다. 나머지 일곱은 이름 호출·`load_tools`. `GAME_CARD` 스크립트 줄·v1 시스템 지시·능력 색인 정책은 같은 규칙이다(2026-11-01 강화) — 읽히는 것은 전부 이벤트 명령, 스크립트는 공식·목록 반복·순서 판정·타이머 같은 1~3줄 조각만이고 결과를 변수에 써 둘레 명령(`\V[var_id]`·분기)이 읽는다, 이벤트마다 한 번 정하고 되돌리지 않음, 기존 명령은 사용자가 시킬 때만. 정본 글은 `openwiki/script-sandbox.md` 「정책」. 확인 `bun scripts/qa/script-ab/exposure.mts`(끔: `OPRN_V2_SCRIPTS=0`).
@@ -1043,7 +1062,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 - `toolNames: ["__assistant_v2__"]` + `initialToolNames: []` → 레지스트리 도구 0개 노출. 대신 v2 동사 8개(`verbs.ts`):
   `make_place · edit_place · add_people · add_event · draw_object · place_object · inspect · ask_user`.
   맨 앞에 `todo`(할 일 목록, 아래 «할 일 고리»)가 붙고, 나머지 동사는 `withTodoLoop` 감싸개(첫 쓰기 되돌림·같은 호출 막기·실패 세기)를 거친다.
-- 동사 인자 중 감싸는 칸 하나(`make_place` 의 spec, `add_people` 의 people 등)는 `src/ai/v2/flatWrapper.ts` 가 최상위로 펴 보여 주고 실행 직전에 다시 감싼다. 예전에 감싸 보낸 호출도 통과한다. 목록과 최상위 칸이 같이 오면, 필수 칸이 찬 최상위는 한 명 더로 붙이고, 한 명짜리 목록의 빈 칸은 채우며, 필수 칸이 빈 찌꺼기는 목록 전체를 거절하지 않고 버린다. 객체 칸은 최상위 값으로 빈 자리를 채우고, 이미 감싼 값이 있으면 그 값을 남긴다.
+- 동사 인자 중 감싸는 칸 하나(`make_place` 의 spec, `add_people` 의 people 등)는 `src/ai/v2/tools/flatWrapper.ts` 가 최상위로 펴 보여 주고 실행 직전에 다시 감싼다. 예전에 감싸 보낸 호출도 통과한다. 목록과 최상위 칸이 같이 오면, 필수 칸이 찬 최상위는 한 명 더로 붙이고, 한 명짜리 목록의 빈 칸은 채우며, 필수 칸이 빈 찌꺼기는 목록 전체를 거절하지 않고 버린다. 객체 칸은 최상위 값으로 빈 자리를 채우고, 이미 감싼 값이 있으면 그 값을 남긴다.
 - 동사는 `wrapTool` 을 거친다 → 체크포인트·실시간 시공 재생(constructionLogs)·맵 소유권·맵별 대기열·사용량 집계·로컬 CLI 엔진이 v1 과 같다.
   동사 안에서 `env.checkpoint` 로 **첫 짓기를 비평 전에** 편집기에 싣는다(사용자는 비평을 기다리지 않는다).
 - `options.v2` 가 있으면 v1 의 낱말별 지시(regex system prompt)·몬스터/오프닝 제작·완료 검사·배치 품질 권고·특징 확인표가 꺼진다. 없으면 v1 은 한 줄도 달라지지 않는다.

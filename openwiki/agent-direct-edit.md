@@ -111,7 +111,7 @@ claude --mcp-config '{"mcpServers":{"oprn":{"command":"node","args":["scripts/op
 
 에이전트 모드가 게임을 지을 때 조수와 **같은 규칙**을 따른다. 원문은 `src/ai/agentRules.ts` 하나다 — 목표 줄(`set_objective`)·목표 가드 메시지 3종·완료 직전 구조 점검·`run_scene_test`·`define_ending`·todo 루프와, B+ 비교가 짚은 새 지침 셋(그려진 입구 위에 이벤트 · 조사 지점은 반드시 답한다 · 새 플레이어로 처음부터 엔딩까지 걸어 보기)이 그 파일의 상수다.
 
-- 조수 쪽(`src/ai/v2/verbs.ts` · `discoverability.ts` · `src/ai/adventureCompletion.ts` · `src/ai/v2/prompt.ts` · `toolTextEn.ts`)은 문자열을 다시 적지 않고 그 상수를 import 한다.
+- 조수 쪽(`src/ai/v2/tools/verbs.ts` · `discoverability.ts` · `src/ai/adventureCompletion.ts` · `src/ai/v2/prompt.ts` · `toolTextEn.ts`)은 문자열을 다시 적지 않고 그 상수를 import 한다.
 - 에이전트 모드는 같은 글을 **두 경로**로 준다: ACP `session/new` 의 `_meta.systemPrompt.append` 에 붙인 줄, 그리고 작업 폴더(`userData/agent-workspace`)에 쓴 `skills/oprn-game-building-rules/SKILL.md` · `.claude/skills/…/SKILL.md` · `AGENTS.md` · `CLAUDE.md`(`writeAgentRulesFiles`). 시스템 프롬프트를 무시하는 어댑터(codex-acp·opencode)도 cwd 의 `AGENTS.md` 를 읽는다.
 - 조수도 같은 글을 읽는다: `assistant-skills/oprn-game-building-rules/SKILL.md` 를 렌더해 `read_assistant_skill` 번들에 넣는다. 다시 굽기 `npm run agent-rules:skill`.
 - 표류는 `test/agentRules.test.ts` 가 막는다: 조수 소스가 같은 문자열 리터럴을 다시 담거나, 커밋된 스킬·번들이 렌더 결과와 다르면 실패한다. 실제로 스킬을 한 줄 덧붙여 CI 에서 실패하는 것을 확인하고 되돌린 커밋이 히스토리에 있다(2026-11-06).

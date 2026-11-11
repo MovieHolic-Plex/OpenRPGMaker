@@ -5,7 +5,7 @@ import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io/serialize";
 import type { Project } from "@/project/types";
 import type { ToolContext } from "@/editor/tools/types";
-import { createV2Tools } from "@/ai/v2/verbs";
+import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
 import { indexProject } from "@/ai/v2/loop/refs";
 import { loadPlaces, savePlaces, type PlaceMemory } from "@/ai/v2/tools/placeMemory";

@@ -5,7 +5,7 @@ import path from "node:path";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
 import { renderMapPng } from "../../qa-game/render.mts";
 import { getTool } from "../../../src/editor/tools/toolRegistry.ts";
-import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
+import { createV2Tools } from "../../../src/ai/v2/tools/verbs.ts";
 import { v2GateProblems } from "../../../src/ai/v2/judge/finishGate.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
 import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt/systemPrompt.ts";
