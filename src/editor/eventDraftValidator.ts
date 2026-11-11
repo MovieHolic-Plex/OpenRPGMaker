@@ -1,5 +1,6 @@
 import { actorPictureActorId } from "@/project/pictureSources";
 import { actorQueryConditionProblems } from "@/editor/panels/eventEditor/actorQueryConditionForm";
+import { sightWatcherIds, watchersHaveSelector } from "@/project/sightWatchers";
 import { isBuiltinFieldFxId } from "@/project/containerFx";
 import { commandReferenceField, m2ReferenceField, withEventDraftIssueDetails } from "./eventDraftIssueDetails";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
@@ -220,6 +221,7 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
       ...(project.factions?.defs ?? []).map((entry) => entry.id),
     ]),
     events: new Set((map?.events ?? []).map((entry) => entry.id)),
+    hostMap: map,
     eventTemplates: new Set(
       Object.values(project.maps).flatMap((projectMap) => projectMap.events.map((entry) => entry.id)),
     ),
@@ -677,6 +679,17 @@ function validateCondition(
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: { testId: `event-condition-${condition.kind}` },
+        });
+      }
+      if (condition.kind === "eventSeesPlayer" && !condition.eventId && watchersHaveSelector(condition.watchers) && mapId) {
+        const map = refs.hostMap;
+        if (map && sightWatcherIds(map.events, condition.watchers!, map.locations).length === 0) issues.push({
+          severity: "warning",
+          code: "condition.eventSeesPlayer.watchers-empty",
+          message: "시선 조건의 고르기(인물 키·이름·장소)에 맞는 이벤트가 이 맵에 없습니다 — 이 조건은 항상 «못 봄»입니다.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: { testId: "event-condition-sees-watch-name" },
         });
       }
       return;
