@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "kind": "assistant-map-vqa-calibration-seed",
+  "description": "map-vqa 검수자 보정의 씨앗. good = 사람이 만든 장소 견본(public/assets/region-references) — «막힘»이 붙으면 헛경보. decoys = 그 견본에 조리법(decoys.ts)으로 심은 결함 — 그 자리에서 major 이상으로 잡아야 한다. positives = 조수가 실제로 낸 결함이 확인된 맵을 얼린 것(positives/*.json.gz).",
+  "good": [
+    { "base": "joseon-v20" }, { "base": "joseon-cave" }, { "base": "joseon-field" }, { "base": "joseon-in-inn" }, { "base": "joseon-in-house" }, { "base": "joseon-in-throne" },
+    { "base": "jp-city-shopstreet" }, { "base": "jp-city-konbini" }, { "base": "jp-city-house" }, { "base": "jp-city-station", "map": "역사" },
+    { "base": "wz-space-library" }, { "base": "wz-space-greenhouse" }, { "base": "wz-nat-example-forest-edge" }, { "base": "modern-city" }
+  ],
+  "decoys": [
+    { "base": "joseon-in-inn", "recipe": "strip-furniture" }, { "base": "jp-city-konbini", "recipe": "strip-furniture" }, { "base": "wz-space-greenhouse", "recipe": "strip-furniture" },
+    { "base": "joseon-in-inn", "recipe": "shift-objects" }, { "base": "jp-city-konbini", "recipe": "shift-objects" }, { "base": "wz-space-library", "recipe": "shift-objects" }, { "base": "joseon-v20", "recipe": "shift-objects" },
+    { "base": "joseon-in-throne", "recipe": "stamp-6x" }, { "base": "jp-city-shopstreet", "recipe": "stamp-6x" }, { "base": "joseon-v20", "recipe": "stamp-6x" }, { "base": "wz-space-library", "recipe": "stamp-6x" },
+    { "base": "joseon-in-inn", "recipe": "wall-off" }, { "base": "jp-city-konbini", "recipe": "wall-off" }, { "base": "joseon-in-throne", "recipe": "wall-off" }, { "base": "wz-space-library", "recipe": "wall-off" },
+    { "base": "joseon-in-inn", "recipe": "locked-text-on-way" }, { "base": "jp-city-konbini", "recipe": "locked-text-on-way" }, { "base": "joseon-in-throne", "recipe": "locked-text-on-way" }, { "base": "wz-space-greenhouse", "recipe": "locked-text-on-way" },
+    { "base": "joseon-v20", "recipe": "person-on-roof" }, { "base": "modern-city", "recipe": "person-on-roof" }, { "base": "jp-city-house", "map": "1층", "recipe": "person-on-roof" }, { "base": "joseon-cave", "recipe": "person-on-roof" },
+    { "base": "wz-space-greenhouse", "recipe": "unpainted-hole" }, { "base": "joseon-v20", "recipe": "unpainted-hole" }, { "base": "jp-city-shopstreet", "recipe": "unpainted-hole" },
+    { "base": "joseon-v20", "recipe": "exit-on-bare-edge" }, { "base": "joseon-field", "recipe": "exit-on-bare-edge" }, { "base": "jp-city-shopstreet", "recipe": "exit-on-bare-edge" }, { "base": "wz-nat-example-forest-edge", "recipe": "exit-on-bare-edge" }
+  ],
+  "positives": [
+    { "id": "fun-x1-palace", "file": "positives/fun-x1-palace.json.gz", "note": "2026-11-11 게임 통판 fun-x1 «초승달 궁전»: 출구가 서·동쪽 맨모래 (0,20)/(47,20)에 있고 성문과 길은 남쪽으로 난다 · «굳게 닫힌 집 문» 글 이벤트 8개가 성문 기둥 칸에 있다(place/lockedDoors.ts)",
+      "expect": [
+        { "what": "출구가 길과 어긋남", "classes": ["exit-off-road"], "region": { "x": 0, "y": 18, "w": 48, "h": 5 } },
+        { "what": "성문의 잠긴 집 문 글", "classes": ["invisible-event-misplaced", "passage-mismatch", "enclosure-unreadable"], "region": { "x": 22, "y": 28, "w": 4, "h": 4 } }
+      ] },
+    { "id": "fun-x1-pyramid", "file": "positives/fun-x1-pyramid.json.gz", "note": "2026-11-11 fun-x1 «잠든 태양의 피라미드»: 서쪽 가장자리 (0,19)로 들어오는데 참배 길은 남쪽 가장자리로 난다 · 탑문 기둥에 «굳게 닫힌 집 문» 글",
+      "expect": [
+        { "what": "출구가 길과 어긋남", "classes": ["exit-off-road"], "region": { "x": 0, "y": 17, "w": 3, "h": 5 } },
+        { "what": "탑문의 잠긴 집 문 글", "classes": ["invisible-event-misplaced", "passage-mismatch", "enclosure-unreadable"], "region": { "x": 20, "y": 33, "w": 4, "h": 4 } }
+      ] },
+    { "id": "fun-w3-village", "file": "positives/fun-w3-village.json.gz", "note": "2026-11-10 fun-w3 «눈보라 마을»: 목책 문 기둥 칸 (21,30)(21,31)(24,30)(24,31)에 «굳게 닫힌 집 문» 글",
+      "expect": [
+        { "what": "목책 문의 잠긴 집 문 글", "classes": ["invisible-event-misplaced", "passage-mismatch", "enclosure-unreadable"], "region": { "x": 21, "y": 30, "w": 4, "h": 2 } }
+      ] }
+  ]
+}
