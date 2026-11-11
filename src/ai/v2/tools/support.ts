@@ -2,6 +2,7 @@
 import type { PiToolExecResult } from "@/ai/piAgent/toolAdapter";
 import { hasLayout } from "../place/builders/interiorLayoutBuild";
 import { layoutGiven } from "../place/interiorLayout";
+import { cleanLayoutHint } from "../place/builders/village";
 import type { PiAssistantV2Env } from "../shared/env";
 import { roomSpecOf } from "@/editor/handInterior/builder";
 import { type RecordingBuildRun } from "../shared/buildRun";
@@ -188,6 +189,45 @@ export function applyPatch(spec: PlaceSpec, patch: PlacePatch, floor = 1): Place
   const { layout: setLayout, ...setRest } = (patch.set ?? {}) as Partial<PlaceSpec>;
   const layout = layoutGiven(setLayout) ? { layout: setLayout } : {};
   return { ...spec, ...setRest, ...layout, type: spec.type, ...(zones.length ? { zones } : {}), ...(features.length ? { features } : {}), hints };
+}
+
+/**
+ * 고치기 패치에서 «보내지 않은 것»을 걷어 낸다. 엄격 스키마 모델(terra)은 edit_place 의 모든 칸을 0·빈 값·지금 값으로 채워 보낸다 —
+ * set.name:"" · set.features:[] · set.hints.layout{gather{x:0,y:0}…} · design{shape:"",areas:[],groups:[]} · variant:0 · dressing:0.
+ * 그대로 적용하면 «우물 하나 더» 가 마을 이름·자리·크기를 지운 다시 짓기가 된다(2026-11-11 map-vqa 깔기 village 재생: 「시골 마을」 38×48 → 이름 없는 50×40).
+ * 규칙: 빈 글·빈 배열·null·잎이 모두 기본값인 객체는 버리고, 지금 명세와 같은 값도 버린다(바꾸는 것이 아니다). spec = 고칠 장소의 지금 명세(없으면 빈 값만 걷는다).
+ */
+export function dropPatchFill(patch: PlacePatch, spec?: PlaceSpec): PlacePatch {
+  const empty = (v: unknown): boolean => v === null || v === undefined || v === "" || (Array.isArray(v) && !v.length);
+  const shell = (v: unknown): boolean => !!v && typeof v === "object" && !Array.isArray(v) && Object.values(v).every((l) => l === 0 || l === false || empty(l) || shell(l));
+  const same = (a: unknown, b: unknown): boolean => JSON.stringify(a) === JSON.stringify(b);
+  const out: Record<string, unknown> = { ...patch };
+  if (patch.set) {
+    const set: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(patch.set)) {
+      if (k === "hints" || empty(v) || (k === "layout" ? !layoutGiven(v) : shell(v)) || same(v, (spec as Record<string, unknown> | undefined)?.[k])) continue;
+      set[k] = v;
+    }
+    const hints: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries((patch.set.hints ?? {}) as Record<string, unknown>)) {
+      const cur = (spec?.hints as Record<string, unknown> | undefined)?.[k];
+      if (k === "layout") { const lay = cleanLayoutHint(v); if (lay && !same(lay, cur)) hints[k] = lay; continue; }
+      // 숫자 0 은 «안 정했다» 다(폭·높이·집 수·씨앗에 0 은 없다). false 는 켜 둔 것을 끄는 것일 때만 바꾸는 것이다.
+      if (empty(v) || shell(v) || same(v, cur) || v === 0 || (v === false && cur !== true)) continue;
+      hints[k] = v;
+    }
+    if (Object.keys(hints).length) set.hints = hints;
+    if (Object.keys(set).length) out.set = set; else delete out.set;
+  }
+  for (const k of ["zones", "addZones", "removeZones", "addAnchors", "addFeatures", "removeFeatures"] as const) if (empty(patch[k])) delete out[k];
+  if (patch.addAnchors) { const real = patch.addAnchors.filter((a) => typeof a?.what === "string" && a.what.trim()); if (real.length) out.addAnchors = real; else delete out.addAnchors; }
+  if (patch.design && !(patch.design as { areas?: unknown[] }).areas?.length && !(patch.design as { groups?: unknown[] }).groups?.length) delete out.design;
+  const hintNow = (k: string) => Number((spec?.hints as Record<string, unknown> | undefined)?.[k] ?? 0);
+  if (patch.variant !== undefined && patch.variant === hintNow("variant")) delete out.variant;
+  if (patch.dressing !== undefined && patch.dressing === hintNow("dressing")) delete out.dressing;
+  if (empty(patch.designZone)) delete out.designZone;
+  if (empty(patch.layoutReview)) delete out.layoutReview;
+  return out as unknown as PlacePatch;
 }
 
 /** 현대(한국·일본 도시) 장소를 처음 지은 게임 요청이면 장르 기본값(주인공 현대 칩·체력 HUD 끄기·연애 기본값)을 깔고 보고에 한 줄 남긴다. */

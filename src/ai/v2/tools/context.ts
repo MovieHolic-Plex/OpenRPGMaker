@@ -14,10 +14,12 @@ import { placeSpecCards, type PlaceSpecKind } from "../prompt/placeSpecs";
 import { leanPromptFor } from "../request/readers";
 import { createBuildRun } from "../shared/buildRun";
 import { localizeVillagePoolSpec } from "../../villageChipsetPool";
+import { layoutGiven } from "../place/interiorLayout";
 import { type WorldSetting } from "../place/world";
 import { worldForRequest } from "../request/world";
 import { isFreshProject } from "../request/scope";
 import { fixPlayerStart, type MachineCheck } from "../judge/machineChecks";
+import { roadEntranceStart } from "../place/startSpot";
 import type { CriticVerdict } from "@/ai/piAgent/featureReview";
 import type { ContentBuildResult, PlaceBuildResult, PlaceRecord, PlaceSpec } from "../shared/types";
 import { mapBundleIds } from "@/ai/piAgent/mapBundle";
@@ -85,7 +87,8 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
     let result = built;
     recordWrite(env, run, toolCallId, verb, args, result.ok, result.summary, { mapIds: result.mapIds });
     for (const m of result.missingArt) session.missingArt.add(m);
-    if (!result.ok) return text({ ok: false, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, next: "명세를 바꿔 다시 하거나(다른 type·style), 할 수 없으면 사용자에게 그대로 알린다." });
+    // 칸 배치 거절은 글에 고칠 호출이 들어 있다 — «다른 type·style» 을 이르면 모델이 배치를 버렸다.
+    if (!result.ok) return text({ ok: false, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...(layoutGiven(spec.layout) ? {} : { next: "명세를 바꿔 다시 하거나(다른 type·style), 할 수 없으면 사용자에게 그대로 알린다." }) });
     // 맵 범위가 있는 실행은 체크포인트가 범위 맵의 «트리 묶음»만 싣는다 — 트리 맨 위에 따로 생긴 새 맵(마을 옆 들판)은
     // 다음 체크포인트에서 통째로 사라졌다(2026-10-24 g3-random-field: make_place 성공 → 맵 목록에 없음 → 잇기·조우 모두 실패).
     // 새 맵을 범위 맵 아래로 옮겨 묶음에 넣는다.
@@ -106,6 +109,16 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
     {
       const fixed = fixPlayerStart(env.ctx.project, result.mapIds);
       if (fixed.note) { env.ctx.project = fixed.project; result = { ...result, warnings: [...result.warnings, fixed.note], ...(result.entrance && result.entrance.mapId === fixed.project.startMapId ? { entrance: { mapId: fixed.project.startMapId, x: fixed.project.startPos.x, y: fixed.project.startPos.y } } : {}) }; }
+    }
+    // 새 프로젝트의 첫 바깥 장소: 시작은 그 장소로 들어오는 길 끝이다(place/startSpot.ts) — 마을 도구가 고른 «가까운 트인 칸» 은 지붕 뒤일 수 있다.
+    if (freshStart && isOutdoor(spec) && result.mapIds.includes(env.ctx.project.startMapId)) {
+      const map = env.ctx.project.maps[env.ctx.project.startMapId]!;
+      const at = roadEntranceStart(env.ctx.project, map);
+      const s = env.ctx.project.startPos;
+      if (at && (at.x !== s.x || at.y !== s.y)) {
+        env.ctx.project = { ...env.ctx.project, startPos: { ...s, x: at.x, y: at.y } };
+        result = { ...result, warnings: [...result.warnings, `The game starts at (${at.x},${at.y}), on the road where it enters «${map.name}» (the start was at (${s.x},${s.y})).`], ...(result.entrance && result.entrance.mapId === map.id ? { entrance: { mapId: map.id, x: at.x, y: at.y } } : {}) };
+      }
     }
     // 바깥 마을·거리 → 던전 문은 하나, 던전이 놓인 세계 방향 가장자리의 길 칸에(dungeonGates.ts — 짓기 기본 출구·다시 짓기 재연결이 문을 둘 남겼다).
     if (builderId === "dungeon") {
@@ -150,7 +163,9 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
     }
     // 설계 실내면 할 일 확인 room_zones 와 같은 판정을 결과에 싣는다(구역 수·초점·갈 이유·반복 — loop/roomZones.ts).
     const zones = zoneStatusLines(env.ctx.project, result.mapIds, String(task ?? ""));
-    return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seen), ...(zones.length ? { zones } : {}), round: rounds, next: nextStep(seen, rounds, spec.dungeonDesign ? "dungeon" : (spec.zones ?? []).some((z) => !!z.design), repairCap(spec), result.mapIds.some((id) => hasRoomKit(env.ctx.project, id))) }, seen);
+    // 엄격 스키마가 채운 빈 dungeonDesign({rooms:[]})은 설계가 아니다 — 마을 결과에 «네 dungeonDesign 대로 지었다» 가 붙었다.
+    const designedFloor = (spec.type === "dungeon" || spec.type === "cave") && (spec.dungeonDesign?.rooms?.length ?? 0) >= 2;
+    return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seen), ...(zones.length ? { zones } : {}), round: rounds, next: nextStep(seen, rounds, designedFloor ? "dungeon" : (spec.zones ?? []).some((z) => !!z.design), repairCap(spec), result.mapIds.some((id) => hasRoomKit(env.ctx.project, id))) }, seen);
   };
   const finishContent = async (toolCallId: string, verb: string, args: unknown, result: ContentBuildResult): Promise<PiToolExecResult> => {
     recordWrite(env, run, toolCallId, verb, args, result.ok, result.summary, result.card !== undefined ? result.card : { eventIds: result.eventIds });
