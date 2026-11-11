@@ -9,6 +9,7 @@
 import type { LintIssue } from "@/project/lint/projectLint";
 import { objectClusterAt } from "@/project/objectFootprint";
 import type { GameEvent, Project } from "@/project/types";
+import { isEntranceLine } from "../place/lockedDoors";
 import { anchorsOf, blockersOf, bodyReached, reachFrom } from "./eventReach";
 
 const triggerOf = (page: { trigger?: unknown }): string =>
@@ -21,10 +22,10 @@ function hasTransfer(node: unknown): boolean {
   return Object.values(node as object).some((value) => value && typeof value === "object" && hasTransfer(value));
 }
 
-/** 조사만 하는 이벤트 — 모든 페이지가 확인 키 발동이고 이동이 없다. */
+/** 조사만 하는 이벤트 — 모든 페이지가 확인 키 발동이고 이동이 없다. 마감 단계가 건물 입구에 세운 「들어갈 수 없다」 한 줄은 조수가 지은 조사가 아니다. */
 function isExamineOnly(event: GameEvent): boolean {
   const pages = event.pages ?? [];
-  return pages.length > 0 && pages.every((page) => triggerOf(page) === "action") && !hasTransfer(pages);
+  return pages.length > 0 && !isEntranceLine(event) && pages.every((page) => triggerOf(page) === "action") && !hasTransfer(pages);
 }
 
 const moving = (event: GameEvent): boolean => (event.pages ?? []).some((page) => (page.movement?.type ?? "fixed") !== "fixed");
@@ -49,6 +50,7 @@ export function lintExamineEvents(project: Project): LintIssue[] {
     }
     const seen = new Map<string, GameEvent>();
     for (const event of map.events ?? []) {
+      if (isEntranceLine(event)) continue;
       const object = objectClusterAt(project, map, event.x, event.y);
       if (!object) continue;
       const key = `${object.label}|${Math.min(...object.cells)}`;
