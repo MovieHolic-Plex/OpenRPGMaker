@@ -1114,7 +1114,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let lastContextTrim = 0;
   let softPref: { id: string; toolName: string; reminder: string; served: number } | undefined;
   let softSeq = 0;
-  // v2 필요할 때 싣는 도구(src/ai/v2/toolExposure.ts): 강제·우선할 도구나 load_tools 가 고른 도구를 다음 호출 전에 선언한다(in-place push).
+  // v2 필요할 때 싣는 도구(src/ai/v2/tools/toolExposure.ts): 강제·우선할 도구나 load_tools 가 고른 도구를 다음 호출 전에 선언한다(in-place push).
   const ensureV2Tool = (name: string): void => {
     if (exposed.has(name)) return;
     const lazy = options.v2?.lazyTool?.(name);

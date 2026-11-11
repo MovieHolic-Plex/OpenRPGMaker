@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { createV2Tools } from "@/ai/v2/verbs";
+import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { mapViewArtProblems } from "@/ai/v2/judge/finishGate";
 import { V2Session } from "@/ai/v2/turn/session";
 import { checkImageDataUrl } from "@/ai/v2/judge/imageCheck";

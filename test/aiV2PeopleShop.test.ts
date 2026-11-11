@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, expect, it } from "vitest";
-import { createV2Tools } from "@/ai/v2/verbs";
+import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
 import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import { createBlankProject } from "@/project/defaults";
