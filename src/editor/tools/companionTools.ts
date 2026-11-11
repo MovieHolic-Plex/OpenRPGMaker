@@ -11,6 +11,8 @@
 
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { pickNpcGraphic } from "@/assets/charsetQuery";
+import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import { pageAtStart } from "@/project/eventPageNow";
 import {
   charsetFollowerGraphic,
   MAX_FOLLOWER_TRAIL_POINTS,
@@ -22,6 +24,8 @@ import { ensureNamedSwitch } from "./flagHelpers";
 import { requireMap, inMapBounds } from "./mapHelpers";
 import { resolveGraphicQuery } from "./eventCompile";
 import { resolveEventPlacement, upsertEventIntoMap } from "./eventTools";
+import { heroCharacterResourceId } from "./cutsceneCharacterLock";
+import { nested } from "./jrpgVolumeTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
@@ -129,16 +133,53 @@ function findEvent(project: Project, eventId: string, mapId: unknown): { map: Ga
   throw new ToolError(`이벤트를 찾지 못했습니다: ${eventId}. find_events 로 id 를 확인하세요.`, { code: "companion-event-missing" });
 }
 
-// RM 계열은 조건을 만족하는 **마지막** 페이지가 실행된다 — 첫 페이지에 넣으면
-// 조건 가드용 빈 페이지에 커맨드가 박혀 실행되지 않는다.
-function commandSink(event: GameEvent): Command[] {
-  const page = event.pages?.at(-1);
-  if (page) {
-    page.commands ??= [];
-    return page.commands;
+/**
+ * 명령을 붙일 페이지 — 게임을 막 시작한 상태에서 말을 걸면 도는 페이지다.
+ * 왜: 마지막 페이지에 무조건 붙이면 「보스를 잡은 뒤」 같은 조건 페이지에 들어가 말을 걸어도 안 돈다(2026-11-11 파수꾼 데릭).
+ * 시작 상태에서 맞는 페이지가 없으면(전부 조건 페이지) 마지막 페이지에 붙인다.
+ */
+function talkPage(project: Project, event: GameEvent): EventPage | undefined {
+  return pageAtStart(project, event) ?? event.pages?.at(-1);
+}
+
+/** who 가 비었는가 — 모든 칸을 채우는 모델이 보내는 빈 문자열 채움도 「안 줬다」로 읽는다. */
+function blankWho(value: unknown): boolean {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return true;
+  const record = value as Record<string, unknown>;
+  return !["actorId", "query", "textureKey"].some((key) => typeof record[key] === "string" && (record[key] as string).trim().length > 0);
+}
+
+/** 그 NPC 를 파티에 넣을 배우 — 같은 이름의 배우(시작 파티 밖)가 있으면 그것, 없으면 그 사람의 이름·걷는 그림으로 새로 만든다. */
+function actorForNpc(project: Project, event: GameEvent, page: EventPage | undefined): { actorId: string; created: boolean } {
+  const spoken = (page?.commands ?? []).find((command) => command.kind === "text" && command.speaker?.trim());
+  const name = (spoken?.kind === "text" ? spoken.speaker?.trim() : undefined) || event.name?.trim() || page?.name?.trim() || event.id;
+  const party = new Set(project.session?.partyActorIds ?? []);
+  const known = project.database.actors.find((actor) => actor.name === name && !party.has(actor.id));
+  if (known) return { actorId: known.id, created: false };
+  const sprite = page?.graphic?.sprite?.id;
+  const lead = project.database.actors.find((actor) => party.has(actor.id)) ?? project.database.actors[0];
+  const classId = lead?.classId ?? project.database.classes[0]?.id;
+  if (!sprite || !classId) {
+    throw new ToolError(`joinParty: '${event.id}' has no walking sprite (or the database has no class) to make a party actor from. Give who:{actorId} of a database actor instead (get_database_records collection:"actors").`, { code: "companion-who" });
   }
-  event.commands ??= [];
-  return event.commands;
+  const actorId = `actor_${event.id.replace(/^ev_/u, "").replace(/[^a-zA-Z0-9_]/gu, "_")}`;
+  nested(project, "upsert_actor", {
+    actor: { id: actorId, name, classId, initialLevel: lead?.initialLevel ?? 1, characterResourceId: heroCharacterResourceId(sprite), characterIndex: decodeCharsetFrameIndex(page?.graphic?.pattern ?? 0).characterIndex },
+  });
+  return { actorId, created: true };
+}
+
+/** 합류한 사람이 맵에서 떠나는 마지막 페이지를 붙이고, 그 페이지를 켜는 명령을 돌려준다. 이 이벤트가 안 쓰는 셀프 스위치를 고른다. */
+function leaveAfterJoining(project: Project, event: GameEvent, page: EventPage): Command {
+  const used = JSON.stringify(event.pages ?? []);
+  const key = (["A", "B", "C", "D"] as const).find((candidate) => !used.includes(`"key":"${candidate}"`));
+  const switchId = `sw_${event.id}_joined`;
+  if (!key) ensureNamedSwitch(project, switchId, `${event.name ?? event.id} joined the party`);
+  event.pages!.push({
+    ...structuredClone(page), id: `${event.id}_joined`, name: "joined", conditions: [key ? { kind: "selfSwitch", key, value: true } : { kind: "switch", switchId, value: true }],
+    graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", overlapForbidden: false, movement: PASSIVE, commands: [],
+  });
+  return (key ? { kind: "setSelfSwitch", key, value: true } : { kind: "setSwitch", switchId, value: true }) as Command;
 }
 
 /**
@@ -152,13 +193,13 @@ function partyJoinWarning(event: GameEvent, who: CompanionWho | undefined): stri
     (command.kind === "changeParty" && command.actorId === actorId && command.action === "add")
     || nestedCommandLists(command).some(branch => joins(branch)));
   if (joins(event.commands) || (event.pages ?? []).some(page => joins(page.commands))) return [];
-  return [`${event.id}: 동료 추종(addFollower)만 붙었습니다 — 전투 파티에는 들어가지 않습니다. 파티 합류가 목적이면 같은 페이지에 {kind:"changeParty",actorId:"${actorId}",action:"add"} 를 넣고 run_scene_test expect partyIncludes:"${actorId}" 로 확인하세요.`];
+  return [`${event.id}: only the walking follower (addFollower) was attached — '${actorId}' is NOT in the battle party. If the request is «joins the party», call add_companion again with joinParty:true, then confirm with run_scene_test expect partyIncludes:"${actorId}".`];
 }
 
 const addCompanion: ToolDefinition = {
   name: "add_companion",
   description:
-    "플레이어를 따라오는 동료를 저작한다. target.eventId 면 그 이벤트 커맨드 끝에 붙이고, target.mapId/x/y 면 새 이벤트를 만든다(trigger:\"talk\"=말 걸면 합류하고 사라짐, \"autorun\"=맵 진입 시 1회 자동 합류). who 는 {actorId} 또는 {query:\"고양이\"} 또는 {textureKey, characterIndex}. action:\"remove\" 면 동료를 해제하는 커맨드를 넣는다. 간격·인원 상한 같은 전역 규칙은 configure_companion_rules 가 담당한다. 이 도구는 걸어서 따라오는 모습(addFollower)만 만든다 — 전투 파티 합류는 changeParty {actorId,action:\"add\"} 이고, run_scene_test expect partyIncludes 로 확인한다.",
+    "플레이어를 따라오는 동료를 저작한다. target.eventId 면 그 이벤트의 「지금 말을 걸면 도는 페이지」 끝에 붙이고(조건이 아직 안 맞는 뒤 페이지에는 안 붙인다), target.mapId/x/y 면 새 이벤트를 만든다(trigger:\"talk\"=말 걸면 합류하고 사라짐, \"autorun\"=맵 진입 시 1회 자동 합류). who 는 {actorId} 또는 {query:\"고양이\"} 또는 {textureKey, characterIndex}. action:\"remove\" 면 동료를 해제하는 커맨드를 넣는다. 간격·인원 상한 같은 전역 규칙은 configure_companion_rules 가 담당한다. joinParty:true 면 전투 파티에도 넣는다(changeParty add) — 기존 NPC(target.eventId)는 합류 뒤 맵에서 떠나는 페이지가 붙고, who 를 비우면 그 NPC 의 이름·걷는 그림으로 배우를 만든다. 「말을 걸면 동료가 되어 파티에 들어온다」는 이 한 호출이다. joinParty 없이는 걸어서 따라오는 모습(addFollower)만 만든다. run_scene_test expect partyIncludes 로 확인한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -187,6 +228,7 @@ const addCompanion: ToolDefinition = {
       trigger: { type: "string", enum: ["talk", "autorun"], description: "새 이벤트를 만들 때만 쓴다. 기본 talk" },
       name: { type: "string", description: "동료 표시 이름. 생략 시 액터명/검색어" },
       hidden: { type: "boolean", description: "true 면 투명 동료(그래픽 지정 경로만)" },
+      joinParty: { type: "boolean", description: "true = also joins the battle party (changeParty add). Needs who.actorId — or, with target.eventId, leave who out to make the actor from that NPC. The existing NPC gets a final page so it leaves the map after joining." },
       all: { type: "boolean", description: "action:\"remove\" 에서 전원 해제" },
     },
     required: ["target"],
@@ -206,13 +248,27 @@ const addCompanion: ToolDefinition = {
     }
     const targetRecord = target as { eventId?: unknown; mapId?: unknown; x?: unknown; y?: unknown };
 
+    const joinParty = action === "add" && args.joinParty === true;
+    const existing = typeof targetRecord.eventId === "string" && targetRecord.eventId.trim().length > 0
+      ? findEvent(draft, targetRecord.eventId.trim(), targetRecord.mapId)
+      : undefined;
+    const sink = existing ? talkPage(draft, existing.event) : undefined;
+
     let who: CompanionWho | undefined;
     let name = "";
+    let madeActor = false;
     if (action === "add") {
-      who = resolveWho(draft, args.who);
+      if (joinParty && existing && blankWho(args.who)) {
+        const made = actorForNpc(draft, existing.event, sink);
+        who = { kind: "actor", actorId: made.actorId };
+        madeActor = made.created;
+      } else who = resolveWho(draft, args.who);
       name = companionDisplayName(draft, who, args.name);
     } else if (typeof args.name === "string") {
       name = args.name.trim();
+    }
+    if (joinParty && who?.kind !== "actor") {
+      throw new ToolError('joinParty needs a database actor: give who:{actorId} (get_database_records collection:"actors"), or use target:{eventId} of an existing NPC and leave who out — the actor is then made from that NPC.', { code: "companion-who" });
     }
 
     const command: Command = action === "add"
@@ -220,17 +276,26 @@ const addCompanion: ToolDefinition = {
       : args.all === true || name.length === 0
         ? ({ kind: "removeFollower", all: true } as Command)
         : ({ kind: "removeFollower", name } as Command);
+    const join: Command[] = joinParty && who?.kind === "actor" ? [{ kind: "changeParty", actorId: who.actorId, action: "add" } as Command] : [];
 
-    if (typeof targetRecord.eventId === "string" && targetRecord.eventId.trim().length > 0) {
-      const { map, event } = findEvent(draft, targetRecord.eventId.trim(), targetRecord.mapId);
-      commandSink(event).push(command);
-      const warnings = action === "add" ? partyJoinWarning(event, who) : [];
+    if (existing) {
+      const { map, event } = existing;
+      const pages = event.pages ?? [];
+      const commands = sink ? (sink.commands ??= []) : (event.commands ??= []);
+      commands.push(command, ...join);
+      if (joinParty && sink) commands.push(leaveAfterJoining(draft, event, sink));
+      const warnings = action === "add" && !joinParty ? partyJoinWarning(event, who) : [];
+      const where = sink
+        ? `page ${pages.indexOf(sink) + 1} of ${pages.length - (joinParty ? 1 : 0)} ('${sink.id}', the page that runs when the player talks at game start${pages.indexOf(sink) < pages.length - (joinParty ? 2 : 1) ? "; later pages run under their own conditions and do not have it" : ""})`
+        : "the event's command list";
       return {
-        summary: action === "add"
-          ? `${map.name} '${event.id}' 이벤트에 동료 '${name}' 추종 커맨드 추가`
-          : `${map.name} '${event.id}' 이벤트에 동료 해제 커맨드 추가`,
+        summary: joinParty
+          ? `${map.name} '${event.id}': talking to it now puts '${name}' (${(who as { actorId: string }).actorId}${madeActor ? ", new actor made from this NPC" : ""}) in the battle party and behind the player — added to ${where}.${sink ? ` After joining, the NPC leaves the map (last page '${event.id}_joined').` : ""}`
+          : action === "add"
+            ? `${map.name} '${event.id}': follower '${name}' added to ${where}.`
+            : `${map.name} '${event.id}': remove-follower command added to ${where}.`,
         ...(warnings.length ? { warnings } : {}),
-        data: { eventId: event.id, mapId: map.id, action, name },
+        data: { eventId: event.id, mapId: map.id, action, name, ...(sink ? { pageId: sink.id } : {}), ...(joinParty ? { actorId: (who as { actorId: string }).actorId, joinParty: true } : {}) },
       };
     }
 
@@ -278,13 +343,26 @@ const addCompanion: ToolDefinition = {
           overlapForbidden: false,
           animationType: "fixedGraphic",
           movement: PASSIVE,
-          commands: [command, { kind: "setSwitch", switchId, value: true } as Command],
+          commands: [command, ...join, { kind: "setSwitch", switchId, value: true } as Command],
         },
       ];
     } else {
       // 합류한 NPC 가 제자리에 남으면 중복 합류로 읽힌다 — 셀프 스위치 페이지로 사라지게 한다.
       const trigger: Trigger = { kind: "action" };
+      // 뒤 페이지가 이긴다 — 「합류 후」 페이지가 뒤에 있어야 합류한 사람이 사라진다(앞에 두면 조건 없는 합류 페이지에 영원히 가려졌다).
       pages = [
+        {
+          id: `${id}_page`,
+          name: eventName,
+          conditions: [],
+          graphic,
+          trigger,
+          priority: "same",
+          overlapForbidden: true,
+          animationType: "fixedGraphic",
+          movement: PASSIVE,
+          commands: [command, ...join, { kind: "setSelfSwitch", key: "A", value: true } as Command],
+        },
         {
           id: `${id}_page_joined`,
           name: `${eventName} 후`,
@@ -296,18 +374,6 @@ const addCompanion: ToolDefinition = {
           animationType: "fixedGraphic",
           movement: PASSIVE,
           commands: [],
-        },
-        {
-          id: `${id}_page`,
-          name: eventName,
-          conditions: [],
-          graphic,
-          trigger,
-          priority: "same",
-          overlapForbidden: true,
-          animationType: "fixedGraphic",
-          movement: PASSIVE,
-          commands: [command, { kind: "setSelfSwitch", key: "A", value: true } as Command],
         },
       ];
     }
@@ -322,7 +388,7 @@ const addCompanion: ToolDefinition = {
     };
     upsertEventIntoMap(map, event);
     return {
-      summary: `${map.name} (${placement.x}, ${placement.y})에 ${triggerKind === "autorun" ? "자동 합류" : "말 걸어 합류"} 동료 이벤트 '${eventName}' 배치`,
+      summary: `${map.name} (${placement.x}, ${placement.y}): placed companion event '${eventName}' — ${triggerKind === "autorun" ? "joins once on map entry" : "joins when talked to, then leaves the map"}${join.length ? "; also added to the battle party" : ""}.`,
       data: { eventId: id, mapId: map.id, x: placement.x, y: placement.y, trigger: triggerKind, action, name },
       ...(placement.adjusted
         ? { warnings: [`동료 이벤트 위치 자동 조정: (${requestedX}, ${requestedY}) → (${placement.x}, ${placement.y})`] }

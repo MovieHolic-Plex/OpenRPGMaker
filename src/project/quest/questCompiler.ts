@@ -10,6 +10,7 @@ import { resolveGraphic, type GraphicSpec } from "@/editor/tools/eventCompile";
 import { isPassable } from "@/project/collision";
 import { questPresetIssue } from './questPresets';
 import { validateQuestReferences } from './questValidation';
+import { GENERIC_GIVER, hostCommands, hostPage, prepareQuestHost, questHost, type QuestHost } from './questHost';
 import { resolveAnchorPoint } from "@/project/locationAnchors";
 import type { Command, EventPage, EventPageCondition, EventPageGraphic, GameEvent, GameMap, Project, SimpleTriggerKind } from "@/project/types";
 import {
@@ -37,11 +38,20 @@ export interface QuestCompileResult {
   readonly warnings: readonly string[];
 }
 
+export interface QuestCompileOptions {
+  /**
+   * 이 의뢰를 위해 방금 만든 NPC 라 통째로 맡아도 된다(장 구성기 author_jrpg_chapter) — 옛 배치: 조건 없는 인사를 제안 페이지에 접고 의뢰 페이지로 바꾼다.
+   * 기본(false)은 questHost 배치: 그 사람이 하던 일은 그대로 두고 의뢰 페이지만 덧붙인다.
+   */
+  readonly takeOverNpcs?: boolean;
+}
+
 // 컴파일 도중 누적되는 카운터 + 경고 채널.
 interface CompileSink {
   events: number;
   variables: number;
   warnings: string[];
+  takeOver: boolean;
 }
 
 /**
@@ -149,7 +159,7 @@ function preservePages(target: GameEvent): EventPage[] {
   return target.pages;
 }
 
-function npcTarget(project: Project, def: QuestDef, target: QuestDef['giver'], index: number, sink: CompileSink): { event: GameEvent; graphic: EventPageGraphic; name: string } {
+function npcTarget(project: Project, def: QuestDef, target: QuestDef['giver'], index: number, sink: CompileSink): { event: GameEvent; graphic: EventPageGraphic; name: string; host?: QuestHost } {
   if ('create' in target) {
     const spec = target.create, map = requireMap(project, spec.mapId), id = `ev_${def.key}_${def.steps[index].kind}${index}`;
     const graphic = npcGraphic(spec);
@@ -160,6 +170,10 @@ function npcTarget(project: Project, def: QuestDef, target: QuestDef['giver'], i
   }
   const existing = requireMap(project, target.mapId).events.find(entry => entry.id === target.eventId)!;
   preservePages(existing);
+  if (!sink.takeOver) {
+    const host = questHost(project, existing, def.key);
+    return { event: existing, graphic: host.graphic, name: host.speaker ?? existing.name ?? '인물', host };
+  }
   return { event: existing, graphic: existing.pages![0].graphic ?? { transparent: true }, name: existing.pages![0].name ?? '인물' };
 }
 
@@ -243,6 +257,13 @@ function materializeStep(
         // 기존 이벤트에 퀘스트 대화 페이지를 덧붙인다(높은 인덱스가 우선 해석됨).
         const target = targetMap.events.find((entry) => entry.id === (step.target as { eventId: string }).eventId);
         if (!target) throw new QuestCompileError(`talk 대상 이벤트가 없습니다: ${(step.target as { eventId: string }).eventId}`);
+        if (!counters.takeOver) {
+          // 그 사람 페이지 뒤에, 이 단계가 열려 있는 동안만 도는 페이지 하나 — 끝나면 그 사람 자신의 페이지(여관·상점·이야기)로 돌아간다.
+          const host = questHost(project, target, def.key);
+          const said = step.lines ? step.lines.map((line) => text(line, host.speaker)) : [text("부탁한 일을 확인했다.")];
+          target.pages!.push(hostPage(host, `${target.id}_${def.key}_talk${index}`, stepConditions(def, flags, index), hostCommands(host, [...said, ...finish(flags, index)])));
+          break;
+        }
         const graphic = target.pages?.[0]?.graphic ?? { transparent: true };
         const lines = (step.lines ?? ["부탁한 일을 확인했다."]).map((line) => text(line));
         const pages = preservePages(target);
@@ -378,8 +399,13 @@ function materializeStep(
           ], { transparent: true }, { trigger: 'playerTouch', priority: 'below' }),
           page(`${destinationId}_done`, target.name, [switchCond(stepSwitch)], [text('함께 와 주셔서 고마워요.', target.name)], target.graphic),
         ])); counters.events += 1;
-        preservePages(target.event).push(page(`${id}_join`, target.name, [...stepConditions(def, flags, index), switchCond(joined, false)], commands, target.graphic),
+        const joinConditions = [...stepConditions(def, flags, index), switchCond(joined, false)];
+        preservePages(target.event).push(target.host ? hostPage(target.host, `${id}_join`, joinConditions, hostCommands(target.host, commands, false)) : page(`${id}_join`, target.name, joinConditions, commands, target.graphic),
           page(`${id}_following`, '동행 중', [switchCond(joined)], [], { transparent: true }, { priority: 'below' }));
+        break;
+      }
+      if (target.host) {
+        target.event.pages!.push(hostPage(target.host, `${id}_active`, stepConditions(def, flags, index), hostCommands(target.host, commands)));
         break;
       }
       preservePages(target.event).push(page(`${id}_active`, target.name, stepConditions(def, flags, index), commands, target.graphic),
@@ -476,9 +502,12 @@ function buildGiverEvent(project: Project, def: QuestDef, flags: QuestFlagIds, s
   const isCreate = "create" in def.giver;
   const spec = isCreate ? (def.giver as { create: QuestNpcSpec }).create : null;
   const map = requireMap(project, isCreate ? spec!.mapId : (def.giver as { mapId: string }).mapId);
-  const graphic: EventPageGraphic = isCreate ? npcGraphic(spec!) : (findGiverGraphic(map, (def.giver as { eventId: string }).eventId) ?? { transparent: true });
-  const giverName = isCreate ? spec!.name : "의뢰인";
   const id = isCreate ? `ev_${def.key}_giver` : (def.giver as { eventId: string }).eventId;
+  const existing = isCreate ? undefined : map.events.find((entry) => entry.id === id);
+  if (!isCreate && !existing) throw new QuestCompileError(`기버 이벤트가 없습니다: ${id}`);
+  const host = existing && !sink.takeOver ? questHost(project, existing, def.key) : undefined;
+  const graphic: EventPageGraphic = isCreate ? npcGraphic(spec!) : host?.graphic ?? existing!.pages?.[0]?.graphic ?? { transparent: true };
+  const giverName = isCreate ? spec!.name : host ? host.speaker ?? existing!.name ?? GENERIC_GIVER : GENERIC_GIVER;
 
   // 턴인 조건: 모든 stepSwitch가 true → 보상 지급 + done.
   const rewardCommands: Command[] = [];
@@ -496,7 +525,8 @@ function buildGiverEvent(project: Project, def: QuestDef, flags: QuestFlagIds, s
       kind: "fork",
       condition: { kind: "switch", switchId, value: true },
       then: [inner],
-      else: [text(def.dialogue?.reminder ?? "아직 할 일이 남은 것 같군.", giverName)],
+      // 의뢰가 걸려 있는 동안에도 그 사람의 가게는 열린다(보고하는 순간만 빼고).
+      else: [text(def.dialogue?.reminder ?? "아직 할 일이 남은 것 같군.", giverName), ...structuredClone(host?.service ?? [])],
     }),
     { kind: "fork", condition: { kind: "switch", switchId: flags.done, value: false }, then: returned
       ? paid(project, `${def.key}_report`, { items: [returned] }, rewardCommands, sink) : rewardCommands } as Command
@@ -549,8 +579,20 @@ function buildGiverEvent(project: Project, def: QuestDef, flags: QuestFlagIds, s
     upsertEventIntoMap(map, giverEvent);
     return giverEvent;
   }
-  // 기존 이벤트에 페이지 병합.
-  const existing = map.events.find((entry) => entry.id === id);
+  if (host) {
+    // 그 사람 페이지는 그대로 두고 뒤에 덧붙인다: 제안(시작 전) → 진행(시작 뒤·완료 전). 완료 뒤에는 그 사람 자신의 페이지가 다시 돈다 —
+    // 완료 뒤 대사(dialogue.afterComplete)를 줬거나 다시 받을 수 있는 의뢰일 때만 완료 페이지를 둔다.
+    const mine = (suffix: string): string => `${id}_${def.key}_${suffix}`;
+    const after = def.dialogue?.afterComplete;
+    existing!.pages!.push(
+      hostPage(host, mine("offer"), [...prerequisites, switchCond(flags.started, false)], [...structuredClone(host.base.commands), ...proposal.commands]),
+      hostPage(host, mine("active"), [switchCond(flags.started), switchCond(flags.done, false)], hostCommands(host, [allDone], false)),
+      ...(after || def.repeatable ? [hostPage(host, mine("done"), [switchCond(flags.done)],
+        [...(after ? hostCommands(host, [text(after, giverName)]) : structuredClone(host.base.commands)), ...doneCommands.slice(1)])] : []),
+    );
+    return existing!;
+  }
+  // 통째로 맡는 옛 배치(takeOverNpcs): 기존 이벤트에 페이지 병합.
   if (!existing) throw new QuestCompileError(`기버 이벤트가 없습니다: ${id}`);
   // 조건 없는 기존 페이지(인사 대사)는 뒤의 조건 없는 제안·선행 미충족 페이지에 늘 가려진다 — 그 대사를 두 페이지 앞머리로 옮기고 뺀다.
   // 이 의뢰가 전에 만든 페이지(다시 컴파일)는 새 페이지로 바꾸되, 옛 제안 페이지 앞머리에 접혀 있던 인사는 되살린다.
@@ -568,9 +610,10 @@ function buildGiverEvent(project: Project, def: QuestDef, flags: QuestFlagIds, s
   return existing;
 }
 
-function findGiverGraphic(map: GameMap, eventId: string): EventPageGraphic | null {
-  const target = map.events.find((entry) => entry.id === eventId);
-  return target?.pages?.[0]?.graphic ?? null;
+/** 의뢰가 가리키는 이미 있는 이벤트들(의뢰인·단계 대상·완료 뒤 달라지는 사람). */
+function existingNpcs(project: Project, def: QuestDef): GameEvent[] {
+  const refs = [def.giver, ...def.steps.flatMap((step) => ("target" in step ? [step.target] : [])), ...(def.worldChanges ?? []).map((change) => change.target)];
+  return [...new Set(refs.flatMap((ref) => ("create" in ref ? [] : (project.maps[ref.mapId]?.events ?? []).filter((entry) => entry.id === ref.eventId))))];
 }
 
 // 게이트: 특정 단계 완료 전까지 lockedText로 막고, 완료 후 통과 가능(투명·하단).
@@ -599,7 +642,7 @@ function buildGate(project: Project, def: QuestDef, flags: QuestFlagIds, gate: Q
 }
 
 // QuestDef를 draft에 컴파일한다.
-export function compileQuest(project: Project, def: QuestDef): QuestCompileResult {
+export function compileQuest(project: Project, def: QuestDef, options: QuestCompileOptions = {}): QuestCompileResult {
   try { validateQuestReferences(project, def); } catch (cause) { throw new QuestCompileError(cause instanceof Error ? cause.message : String(cause)); }
   const presetIssue = questPresetIssue(project, def);
   if (presetIssue) throw new QuestCompileError(presetIssue);
@@ -616,7 +659,8 @@ export function compileQuest(project: Project, def: QuestDef): QuestCompileResul
   }
   let switchesRegistered = 2 + flags.stepSwitches.length;
 
-  const counters: CompileSink = { events: 0, variables: 1, warnings: [] };
+  const counters: CompileSink = { events: 0, variables: 1, warnings: [], takeOver: options.takeOverNpcs === true };
+  if (!counters.takeOver) for (const npc of existingNpcs(project, def)) { preservePages(npc); prepareQuestHost(project, npc, def.key); }
 
   // 2) 단계별 이벤트/조건 생성.
   def.steps.forEach((step, index) => materializeStep(project, def, flags, step, index, counters));
@@ -633,6 +677,13 @@ export function compileQuest(project: Project, def: QuestDef): QuestCompileResul
 
   for (const [i, change] of (def.worldChanges ?? []).entries()) {
     const target = requireMap(project, change.target.mapId).events.find(event => event.id === change.target.eventId)!;
+    if (!counters.takeOver) {
+      const host = questHost(project, target, def.key);
+      const changed = hostPage(host, `${target.id}_${def.key}_world${i}`, [switchCond(flags.done)], hostCommands(host, change.lines.map(line => text(line, host.speaker))));
+      if (change.passable) Object.assign(changed, { priority: 'below', overlapForbidden: false });
+      target.pages!.push(changed);
+      continue;
+    }
     const base = preservePages(target)[0];
     const changed = page(`${target.id}_${def.key}_world${i}`, base.name ?? '변화', [switchCond(flags.done)], change.lines.map(line => text(line)), base.graphic ?? { transparent: true }, { priority: change.passable ? 'below' : base.priority });
     target.pages!.push(changed);
