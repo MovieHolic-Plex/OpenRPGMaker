@@ -11,7 +11,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 
 1. **`openwiki/quickstart.md`** — 환경 보정(워크트리 `node_modules`/`.env.local`), **어떤 명령이 진짜 게이트인지와
    그 기준선 실측값**, 기능→진입 파일 표. 3분이면 읽는다. 이걸 건너뛰면 가짜 오류를 디버깅하게 된다.
-2. **`openwiki/INDEX.md`** — 위키 절 좌표(생성 파일, `npm run openwiki:index`). 위키는 187쪽 · 7194KB · 약 2,108,898 토큰이고
+2. **`openwiki/INDEX.md`** — 위키 절 좌표. **커밋하지 않는 생성 파일이다 — 체크아웃에 없으면 `node scripts/openwiki-index.mjs` 를 한 번 돌려 만든다**(1분 안, 패키지 불필요; `npm run wt create|adopt` 가 만들어 준다). 위키는 187쪽 · 7194KB · 약 2,108,898 토큰이고
    30쪽은 읽기 도구 상한 50KB 를 넘어 **통째로 읽으면 조용히 잘린다**. 그중 8쪽은 가장 큰 절도 상한을 넘는다. 필요한 범위만 줄 번호로 잘라 읽어라.
 
 ## 하네스 (hard rule)
@@ -314,10 +314,11 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 모든 에이전트 푸시의 행위자가 오너 계정이라, 에이전트 브랜치에서 실패한 CI 실행 하나마다 오너에게 메일이 한 통 간다.
 실패는 메일이 아니라 PR 의 CI 줄(`gh pr checks <번호>`, `oprn-ci-watch`)로 먼저 본다.
 
-1. 푸시 직전에 `oprn-push` 를 돌린다: `origin/main` 을 합친 상태에서 `node_modules` 를 연결해 `openwiki/INDEX.md` 를 다시 만들고,
-   달라졌으면 그 파일만 담은 커밋을 얹는다 (CI 는 패키지가 설치된 채로 만들어서, 맨 체크아웃의 목차는 1건 어긋난다).
+1. 푸시는 `oprn-push` 로 한다: 브랜치가 자기 커밋만 갖고 있는지 보이고 푸시한다. **`openwiki/INDEX.md` 는 커밋하지 않는다**(2026-11-11 —
+   생성 파일이라 `.gitignore` 에 있다. 전에는 PR 마다 다시 써서 main 에 문서 PR 이 들어갈 때마다 열린 PR 전부가 충돌했다).
+   그 전에 갈라진 브랜치가 그 파일을 아직 갖고 있으면 `oprn-push` 가 지우는 커밋을 얹는다. main 을 합치다 그 파일에서 충돌이 나면 `git rm openwiki/INDEX.md` 로 푼다.
 2. 스택 PR 의 밑 PR 이 스쿼시 머지되면 자기 커밋만 `git rebase --onto origin/main <옛 밑 브랜치>` 나 cherry-pick 으로 옮긴다.
-   옛 밑 커밋이 딸려 오면 목차·래칫이 줄줄이 낡는다.
+   옛 밑 커밋이 딸려 오면 래칫이 줄줄이 낡는다.
 3. 빨간 줄은 원인(`oprn-ci-watch` 가 index·css-ratchet·typecheck·vitest·other 로 가른다)을 고친 뒤에 다시 푸시한다.
    같은 원인으로 연속 푸시하지 않는다.
 

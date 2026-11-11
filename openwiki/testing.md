@@ -913,7 +913,7 @@ from shared event eligibility and player dependencies.
 
 Close owned browsers/servers and remove only owned temporary caches after verification.
 After applying documentation, the integrating lead runs `npm run openwiki:index`, then
-`npm run openwiki:index -- --check` and `npm run openwiki:verify`. Don't hand-edit INDEX.md.
+`npm run openwiki:index` (generates the git-ignored `openwiki/INDEX.md`) and `npm run openwiki:verify`. Don't hand-edit or commit INDEX.md.
 
 ## Mac onboarding Phase 1 contracts (2026-09-06)
 
@@ -973,7 +973,7 @@ Run heavyweight suites, builds and browser proofs serially. The original title-r
 
 `test/debugSession.test.ts` uses static imports for collection and synchronous operation tests. The former first-test `load()` charged every import (including unused-in-that-test scene hooks) to its 15-second operation deadline. Measured hooks loading dominated the actual fixture/operations; the new `runtimeDom` dependency also expanded the hooks' local static graph from 81 to 276 modules through the editor store. This correction separates setup from operations; it does **not** claim to reduce that graph or make imports faster. Timing evidence retains collection/import costs and all four tests/17 assertions. Do not raise timeouts, prewarm caches, or hide the two unrelated actionDebounce registry-fixture failures.
 
-Generate `openwiki/INDEX.md` **after staging the final evidence-inclusive file set**: its basename checks consume `git ls-files`, so a pre-staging check can pass while the committed index is stale. Check it again against the final committed tracked set.
+(2026-11-11: `openwiki/INDEX.md` is no longer committed — it is a generated, git-ignored file; the paragraph below is history.) Generate `openwiki/INDEX.md` **after staging the final evidence-inclusive file set**: its basename checks consume `git ls-files`, so a pre-staging check can pass while the committed index is stale. Check it again against the final committed tracked set.
 
 ### Task5 Q1 audio boundary correction (2026-09-06)
 
