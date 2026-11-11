@@ -3,21 +3,22 @@ import { canMove, isPassable } from "@/project/collision";
 import { playerAnchors } from "@/editor/tools/transferReachability";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { PERSON_SPOT_BAD, personSpotContext, personSpotCost } from "./personSpot";
+import { declaredDoorCells } from "./entrances";
 import { objectAt, tileLabel } from "./cells";
 import { objectBaseLabel, objectClusterAt } from "@/project/objectFootprint";
 import type { ArtGap } from "@/project/artGap";
 import type { BuildRun } from "../shared/types";
-import { Cell, DIRS, eventBlocks, anchorsOf, reachFrom, blockersOf, bodyReached, nextTo, reachableCells, unreachableEvents, isDoorName, doorArtCells, baseLabel, hostWords, itemTileWords, objectCells, singleTileObject, invisibleEvent } from "../judge/eventReach";
+import { Cell, DIRS, eventBlocks, anchorsOf, reachFrom, blockersOf, bodyReached, nextTo, reachableCells, unreachableEvents, isDoorName, baseLabel, hostWords, itemTileWords, objectCells, singleTileObject, invisibleEvent } from "../judge/eventReach";
 
 export interface ReachRepair { readonly moved: string[]; readonly stuck: string[] }
 
 /**
  * 이벤트들(순서 = 고리 순서)을 걸어 가 말을 걸 수 있게 고친다.
- *  1) 문 이름 이벤트는 그림 문 칸으로.
+ *  1) 문 이름 이벤트는 칩셋이 적어 둔 문 칸으로(place/entrances.ts declaredDoorCells — 건물 입구 · 방 키트 문).
  *  2) 이름이 가리키는 물건(책상·책장·벽난로·금고·그림·서랍·상자…)이 맵에 있으면 그 물건 칸 위로 — 앞(아래)에 설 칸이 있는 칸이 먼저.
  *  3) 그래도 막혔거나 길목을 막으면 가까운 닿는 빈 바닥으로(물건 옆 우선).
  *  4) 맞는 물건이 없고 그림 없는 이벤트면 그 명사의 1칸 물건 그림을 칩셋에서 골라 이벤트 칸에 깐다.
- *     칩셋에 그 낱말의 1칸 그림이 없으면 깔지 않고 noArt 에 적는다(비슷한 그림을 대신 고르지 않는다).
+ *     칩셋에 그 낱말의 1칸 그림이 없으면 깔지 않고 noArt 에 적는다(비슷한 그림을 대신 고르지 않는다). 문 이름인데 적힌 문 칸이 없는 맵도 noArt.
  * 다른 이벤트(목록 밖 포함)를 못 닿게 만드는 자리는 고르지 않는다.
  */
 export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonly string[], hostsFor?: ReadonlyMap<string, readonly (readonly string[])[]>): ReachRepair & { readonly noArt: ArtGap[] } {
@@ -57,12 +58,15 @@ export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonl
     let why = "";
     // 1) 문
     const door = isDoorName(name);
-    const doors = door ? doorArtCells(project, map) : [];
+    const doors = door ? declaredDoorCells(project, map) : [];
     if (door && doors.length) {
       if (doors.some((d) => d.x === ev.x && d.y === ev.y) && judge(here)) continue;
       target = [...doors].sort((a, b) => dist(a) - dist(b)).find((c) => usable(c) && judge(c));
       if (target) why = " 문 그림 칸";
     }
+    // 문 이름인데 이 맵에 칩셋이 적어 둔 문 칸이 하나도 없다 — 이름표가 「…문」인 그림으로 대신 앉히지 않고 적는다(걸어서 지나는 성문·목책 문이 그렇게 잡혔다).
+    if (door && !doors.length) noArt.set(id, { chipset: map.tilesetId, want: "door-piece", wanted: "벽 문 그림", where: `${map.name} ${ev.x},${ev.y}`, standIn: "none", by: "event-reach", note: `「${name || id}」 — 이 맵에 적힌 문 칸이 없다` });
+    else if (door) noArt.delete(id);
     // 2) 이름이 가리키는 물건
     let host = false;
     if (!target && !door) {
@@ -94,7 +98,8 @@ export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonl
         const i = y * w + x;
         if (!free[i] || !usable({ x, y })) continue;
         const besideThing = DIRS.some(([dx, dy]) => { const nx = x + dx, ny = y + dy; return nx >= 0 && ny >= 0 && nx < w && ny < map.height && (!isPassable(project, map, nx, ny) || objectAt(map, { x: nx, y: ny })); });
-        cands.push({ c: { x, y }, s: dist({ x, y }) + (besideThing ? 0 : 3) });
+        // 걸을 수 있어도 위에 그림이 덮인 칸(지붕 끝·차양·나무 수관 밑)은 맨 뒤로 — 거기 선 이벤트는 그림에 가려 안 보인다.
+        cands.push({ c: { x, y }, s: dist({ x, y }) + (besideThing ? 0 : 3) + (objectAt(map, { x, y }) ? 1000 : 0) });
       }
       cands.sort((a, b) => a.s - b.s);
       target = cands.slice(0, 80).find(({ c }) => judge(c))?.c;
