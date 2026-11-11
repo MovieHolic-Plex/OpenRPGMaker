@@ -34,6 +34,7 @@ import { gateKeyedEntrances, gateEntrySteps } from "./blueprintPathGates";
 import { gateBattleSteps, orderStepBattles, fitUnwinnableStepBattles } from "./blueprintPathBattles";
 import { storedStepText, modelCode, fixLookLines, tellCode, stepObjectives } from "./blueprintPathText";
 import { foeGraphic, settleStepFoesIn, themeBattleBackdropsIn } from "./stepFoes";
+import { remapGives, settleCarriedSteps } from "./blueprintCarry";
 
 /**
  * 이미 지은 청사진 단계 이벤트·퍼즐 고리 이벤트를 걸어 가 조사할 수 있는 자리로 옮긴다(내용은 그대로). 옮긴 것 목록.
@@ -204,6 +205,9 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     ending = { id, name: bp.ending.name };
   }
 
+  // 다시 쓴 청사진이면 앞 경로가 지어 둔 것부터 새 단계에 맞춘다(이름 바꾸기 · 옮긴/빠진 단계의 이벤트 걷기) — blueprintCarry.ts.
+  const carried = settleCarriedSteps(run.ctx.project);
+  for (const note of carried.notes) warnings.push(note);
   // 2) 단계 → 사슬 고리. 자리: 이름이 같은 이벤트가 있으면 그것, 없으면 그 낱말 물건 앞 빈 칸.
   const fallbackMap = project0.maps[project0.startMapId] ?? Object.values(project0.maps)[0];
   if (!fallbackMap) return fail("맵이 하나도 없다 — make_place 로 장소를 먼저 짓는다.");
@@ -237,6 +241,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     taken.set(map.id, [...avoid, where.cell]);
     return where.cell;
   };
+  /** 이 단계가 전에 지어 둔 스위치·물건 — 다시 지어도 같은 것을 쓴다(그것으로 잠가 둔 문·길이 그대로 열린다). */
+  const keptGives = (step: { built?: { switchId?: string; itemId?: string } }): { switchId?: string; itemId?: string } => ({ ...(step.built?.switchId ? { switchId: step.built.switchId } : {}), ...(step.built?.itemId ? { itemId: step.built.itemId } : {}) });
   const lastBattle = steps.reduce((hit, st, i) => (st.kind === "battle" ? i : hit), -1);
   /** 테마에 맞는 그림이 없어 대역을 쓴 것(place/placeTheme 의 없는 그림 줄) — 결과의 missingArt 에 싣는다. */
   const artGaps: string[] = [];
@@ -263,7 +269,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     // (standin magic: 마지막 장소 하나가 없을 뿐인데 교장·사서 대화까지 줍기로 덮을 뻔했다).
     // 번호·암호 단계인데 입력 없이 넘어가는 이벤트는 그대로 두지 않는다(mt3 flash: 「비밀번호 입력」이 조사만으로 엔딩).
     const bypass = existing && isCodeStep(step) ? codeStepBypass(run.ctx.project, existing) : undefined;
-    if (!text.length && existing && !bypass && (existing.pages ?? []).some((p) => (p.commands ?? []).length) && (!last || eventGives(run.ctx.project, existing).ends)) {
+    if (!text.length && existing && !bypass && !carried.renamed.has(existing.id) && (existing.pages ?? []).some((p) => (p.commands ?? []).length) && (!last || eventGives(run.ctx.project, existing).ends)) {
       const g = eventGives(run.ctx.project, existing);
       prevCondition = g.switches[0] ? [{ kind: "switch", switchId: g.switches[0], value: true }] : g.items[0] ? [{ kind: "item", itemId: g.items[0], present: true }] : undefined;
       prevGives = undefined;
@@ -278,7 +284,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     const needText = step.needs && !/^(시작|없음|none|start)$/iu.test(step.needs.trim()) ? step.needs : needs;
     const needShown = needText ? shownToken(needText) : undefined;
     const lockedDefault = needShown ? [`${needShown}${josa(needShown, "이", "가")} 있어야 할 것 같다.`] : undefined;
-    let base: Omit<ChainLink, "role"> = { mapId: map.id, ...(existing ? { eventId: existing.id } : { name: step.event, at: at! }), ...(needs ? { needs } : {}), ...(!needs && prevCondition ? { needsCondition: prevCondition } : {}), ...(personal ? { person: who, speaker: who } : {}), ...(step.kind === "find" || step.kind === "puzzle" ? { thing: true } : {}) };
+    let base: Omit<ChainLink, "role"> = { mapId: map.id, ...(existing ? { eventId: existing.id } : { name: step.event, at: at! }), ...(needs ? { needs } : {}), ...(!needs && prevCondition ? { needsCondition: prevCondition } : {}), ...(personal ? { person: who, speaker: who } : {}), ...(step.kind === "find" || step.kind === "puzzle" ? { thing: true } : {}), ...(existing && carried.renamed.has(existing.id) ? { relook: true } : {}) };
     prevCondition = undefined;
     // 번호·암호 단계(「비밀번호 입력」「숫자 자물쇠」): 모델이 code 를 안 줬어도 함수가 정답을 정하고, 앞 단계 대사에 답이 없으면
     // 그 답을 적은 단서 고리를 바로 앞에 둔다(앞 단계 결과로 열린다) — 이 단계는 그 단서를 읽어야 열리고 번호를 맞혀야 넘어간다.
@@ -348,14 +354,14 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
       links.push({ ...base, role: "ending", endingId: ending!.id, lines: endLines, ...closingNarration, ...(choice ? { choice } : {}), ...(variants.length ? { variants } : {}), ...(code ? { code, reward: { lines: [bp.ending.how] }, ...(t?.options?.length ? { options: t.options } : {}), ...(t?.wrongLines?.length ? { wrongLines: t.wrongLines } : {}) } : {}), ...(locked ? { lockedLines: locked } : {}) });
     } else if (code) {
       const locked = modelLocked ?? codeLocked ?? lockedDefault;
-      const reward = isItem(step.gives) ? { item: step.gives } : { flag: step.gives };
+      const reward = isItem(step.gives) ? { item: step.gives, ...keptGives(step) } : { flag: step.gives, ...keptGives(step) };
       links.push({ ...base, role: "code", code, ...(t?.options?.length ? { options: t.options } : {}), lines: t?.lines ?? ["번호 자물쇠다. 알아낸 번호를 맞춰 보자."], ...(locked ? { lockedLines: locked } : {}), ...(t?.wrongLines?.length ? { wrongLines: t.wrongLines } : {}), ...(t?.doneLines?.length ? { doneLines: t.doneLines } : {}), reward });
     } else {
       const item = isItem(step.gives);
       const givesShown = shownToken(step.gives);
       // 사람이 제 말로 건넨 것에는 «『…』을 알아냈다» 를 덧붙이지 않는다(대사가 그 뜻을 전한다 — 다음 할 일은 목표 줄이 알린다).
       const spoken = personal && !!t?.lines?.length && !battle;
-      const reward = item ? { item: step.gives } : { flag: step.gives, ...(spoken ? {} : { lines: [`『${givesShown}』${josa(givesShown, "을", "를")} 알아냈다.`] }) };
+      const reward = item ? { item: step.gives, ...keptGives(step) } : { flag: step.gives, ...keptGives(step), ...(spoken ? {} : { lines: [`『${givesShown}』${josa(givesShown, "을", "를")} 알아냈다.`] }) };
       const lockedPerson = personal && needShown ? [`(${who}${josa(who!, "은", "는")} 아직 할 말이 없는 듯하다. ${needShown}${josa(needShown, "이", "가")} 먼저다.)`] : undefined;
       links.push({ ...base, role: "pickup", lines, reward, ...(choice ? { choice } : {}), ...(t?.lockedLines?.length ? { lockedLines: t.lockedLines } : lockedPerson ? { lockedLines: lockedPerson } : lockedDefault ? { lockedLines: lockedDefault } : {}), ...(personal ? (t?.doneLines?.length ? { doneLines: t.doneLines } : battle ? { doneLines: [`(${who}${josa(who!, "은", "는")} 더는 덤비지 않는다.)`] } : choice ? { doneLines: [`(${who}${josa(who!, "과", "와")}는 이미 이야기를 마쳤다.)`] } : {}) : { doneLines: t?.doneLines?.length ? t.doneLines : ["더는 볼 것이 없다."] }) });
     }
@@ -380,9 +386,15 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     const ev = map?.events.find((e) => e.id === made.eventId);
     if (map && !mapFor(run.ctx.project, step.place)) step.place = map.name || map.id;
     if (ev && !sameName(String((ev as { name?: string }).name ?? ""), step.event) && ev.id !== step.event) step.event = ev.id;
+    // 이 단계가 지어 둔 것을 적는다 — 청사진을 다시 써도 같은 단계가 같은 이벤트·스위치를 물려받는다(blueprintCarry.ts).
+    const gave = built.gives?.[li];
+    // 넘기는 것이 바뀐 단계(물건 → 깃발 등): 옛 것을 기다리던 문·길의 조건을 새 것으로 옮긴다.
+    const moved = step.built ? remapGives(run.ctx.project, step.built, gave) : 0;
+    if (moved) warnings.push(`${step.id}: 넘기는 것이 바뀌어 그것을 기다리던 조건 ${moved}개를 새 것으로 옮겼다`);
+    step.built = { mapId: made.mapId, eventId: made.eventId, ...(gave?.switchId ? { switchId: gave.switchId } : {}), ...(gave?.itemId ? { itemId: gave.itemId } : {}) };
   });
   let blueprint: GameBlueprint | undefined;
-  try { blueprint = normalizeGameBlueprint({ ...bp, steps }); } catch { blueprint = undefined; }
+  try { blueprint = normalizeGameBlueprint({ ...bp, steps, retired: undefined }); } catch { blueprint = undefined; }
   if (blueprint) run.ctx.project = { ...run.ctx.project, gameBlueprint: blueprint };
   // 자물쇠 대사가 입력 전에 결과(«입력하자 열렸다»)를 말하면 정답 뒤로 옮기고, 단서 번호와 정답을 맞춘다(codeClues.ts).
   const aligned = alignCodeClues(run.ctx.project);

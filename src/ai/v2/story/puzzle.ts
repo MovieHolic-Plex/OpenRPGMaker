@@ -38,7 +38,8 @@ export interface ChainLink {
   readonly lockedLines?: readonly string[];
   readonly wrongLines?: readonly string[];
   readonly doneLines?: readonly string[];
-  readonly reward?: { readonly item?: string; readonly flag?: string; readonly lines?: readonly string[]; readonly ending?: { readonly id?: string; readonly name?: string; readonly epilogue?: string | readonly string[] } };
+  /** switchId·itemId: 이 고리가 전에 지어 둔 스위치·물건 — 주면 이름이 바뀌어도 그 id 를 그대로 쓴다(청사진 다시 쓰기, blueprintCarry.ts). */
+  readonly reward?: { readonly item?: string; readonly flag?: string; readonly switchId?: string; readonly itemId?: string; readonly lines?: readonly string[]; readonly ending?: { readonly id?: string; readonly name?: string; readonly epilogue?: string | readonly string[] } };
   readonly seal?: boolean;
   /** needs 대신 쓰는 조건 그대로(사슬 밖 이벤트가 켜는 스위치·주는 아이템). */
   readonly needsCondition?: readonly Record<string, unknown>[];
@@ -52,6 +53,8 @@ export interface ChainLink {
   readonly person?: string;
   /** 이 고리는 사물이다(청사진 단계 종류 find·puzzle) — 그림 없는 칸을 기본 주민 칩으로 세우지 않는다(이름의 머리 명사가 사물 목록에 없어도). */
   readonly thing?: boolean;
+  /** 이 이벤트는 앞 경로의 다른 사람이었다(청사진 다시 쓰기로 이름이 바뀜) — 그림을 새 이름으로 다시 고른다. */
+  readonly relook?: boolean;
   /** 이 고리 이벤트의 그림을 정해 준다(싸우는 상대의 전투 그림과 같은 종류의 필드 그림) — 그림 없는 칸일 때만 쓴다. */
   readonly graphic?: Readonly<Record<string, unknown>>;
   /** 대사의 말하는 사람 이름. 「(」로 시작하는 줄은 서술(말하는 사람 없음). */
@@ -287,6 +290,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
   let args = argsIn;
   const warnings: string[] = [];
   const eventIds: { mapId: string; eventId: string }[] = [];
+  const gives: ({ switchId?: string; itemId?: string } | undefined)[] = [];
   const fail = (summary: string): ContentBuildResult => ({ ok: false, mapIds: [args.mapId], summary, warnings, missingArt: [], calls: [] });
   if (!args.links?.length) return fail("links 가 비었다 — 단서·자물쇠·문을 순서대로 준다");
   // 조건 없는 단서 고리는 무엇에도 기대지 않으니 앞으로 모은다(r10 flash 가 자물쇠를 첫 고리로, 단서를 뒤에 줬다 — 뒤 단서 이름을 needs 로 못 찾았다).
@@ -305,8 +309,14 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
   }
   const chainKey = slug(args.name || "chain");
   const have = new Map<string, { kind: "flag"; switchId: string } | { kind: "item"; itemId: string }>();
-  const itemId = (name: string): string => {
+  const itemId = (name: string, keep?: string): string => {
     const db = run.ctx.project.database.items ?? [];
+    // 전에 지어 둔 물건이면 이름만 새 이름으로 — 같은 id 를 쓰면 그 물건으로 잠가 둔 문이 그대로 열린다.
+    const kept = keep ? db.find((it) => it.id === keep) : undefined;
+    if (kept) {
+      if (kept.name !== name && !db.some((it) => it.id !== kept.id && it.name === name)) run.call("upsert_item", { item: { id: kept.id, name } });
+      return kept.id;
+    }
     const found = db.find((it) => it.id === name || it.name === name);
     if (found) return found.id;
     const id = `item_${chainKey}_${slug(name)}`;
@@ -314,9 +324,9 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     if (!res.ok) warnings.push(`물건 ${name} 을 만들지 못했다: ${String(res.summary).slice(0, 120)}`);
     return id;
   };
-  const flag = (name: string, description: string): string => {
-    const switchId = `sw_${chainKey}_${slug(name)}`;
-    run.call("declare_story_flag", { action: "declare", id: `${chainKey}-${slug(name)}`.replace(/_/gu, "-"), kind: "switch", targetId: switchId, description });
+  const flag = (name: string, description: string, keep?: string): string => {
+    const switchId = keep && /^sw_[A-Za-z0-9_]+$/u.test(keep) ? keep : `sw_${chainKey}_${slug(name)}`;
+    run.call("declare_story_flag", { action: "declare", id: (switchId === keep ? keep.replace(/^sw_/u, "") : `${chainKey}-${slug(name)}`).replace(/_/gu, "-"), kind: "switch", targetId: switchId, description });
     return switchId;
   };
   const condFor = (need: string | undefined): Obj[] | string => {
@@ -449,7 +459,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     // 그림 없는(투명) 조사 칸은 다가가면 반짝인다 — 새 플레이어가 어디를 조사할지 보이게(2026-10-28 청사진 경로).
     // 「transparent:true」만 있는 그림도 그림 없음이다(sprite·tileId 가 없으면).
     const lookGraphic = (look.graphic as Obj | undefined) ?? {};
-    let invisible = !existing || lookGraphic.transparent === true || (!lookGraphic.sprite && !lookGraphic.appearanceId && !(typeof lookGraphic.tileId === "number" && lookGraphic.tileId > 0));
+    let invisible = !existing || link.relook === true || lookGraphic.transparent === true || (!lookGraphic.sprite && !lookGraphic.appearanceId && !(typeof lookGraphic.tileId === "number" && lookGraphic.tileId > 0));
     // 이름이 사람(직함·호칭)이면 반짝이 칸 대신 공용 캐릭터 칩을 붙인다(2026-10-28 standin joseon 「주모」「포졸」「종사관」).
     const personName = link.name ?? (existing as { name?: string } | undefined)?.name;
     // 싸우는 고리는 다시 지을 때도 상대의 그림을 다시 맞춘다(앞선 빌드가 세운 다른 그림이 남지 않게).
@@ -472,10 +482,11 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     }
     const gated = (body: Obj[], locked: string): Obj[] => (anyOf ? [{ kind: "fork", condition: { kind: "any", conditions: anyOf }, then: body, else: say(link.lockedLines ?? [locked]) }] : body);
     const pages: Obj[] = [];
+    let gave: { switchId?: string; itemId?: string } | undefined;
     const rewardCmds = (): Obj[] => {
       const out: Obj[] = [...say(link.reward?.lines)];
-      if (link.reward?.item) { const it = itemId(link.reward.item); have.set(link.reward.item, { kind: "item", itemId: it }); out.push({ kind: "changeItem", itemId: it, op: "+=", amount: 1 }); if (!link.reward.lines?.length) out.push({ kind: "text", body: `『${link.reward.item}』${josa(link.reward.item, "을/를")} 얻었다.` }); }
-      if (link.reward?.flag) { const sw = flag(link.reward.flag, `${args.name}: ${link.reward.flag}`); have.set(link.reward.flag, { kind: "flag", switchId: sw }); out.push({ kind: "setSwitch", switchId: sw, value: true }); }
+      if (link.reward?.item) { const it = itemId(link.reward.item, link.reward.itemId); gave = { ...gave, itemId: it }; have.set(link.reward.item, { kind: "item", itemId: it }); out.push({ kind: "changeItem", itemId: it, op: "+=", amount: 1 }); if (!link.reward.lines?.length) out.push({ kind: "text", body: `『${link.reward.item}』${josa(link.reward.item, "을/를")} 얻었다.` }); }
+      if (link.reward?.flag) { const sw = flag(link.reward.flag, `${args.name}: ${link.reward.flag}`, link.reward.switchId); gave = { ...gave, switchId: sw }; have.set(link.reward.flag, { kind: "flag", switchId: sw }); out.push({ kind: "setSwitch", switchId: sw, value: true }); }
       return out;
     };
     if (link.role === "clue") {
@@ -563,6 +574,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     const res = run.call("upsert_event", { mapId, replacePages: true, event: { id, ...(existing ? {} : { name: link.name ?? `${args.name} ${index + 1}`, x: link.at!.x, y: link.at!.y }), pages } });
     if (!res.ok) return fail(`${index + 1}번 고리 이벤트를 쓰지 못했다: ${String(res.summary).slice(0, 300)}`);
     eventIds.push({ mapId, eventId: id });
+    gives.push(gave);
   }
   // 걸어 가서 말을 걸 수 있는 자리인가(2026-10-28 mt2 deepseek: 모델이 준 칸의 쪽지가 한 칸 통로를 막아 자물쇠에 못 갔다).
   // 막힌 고리·길목을 막는 고리는 가까운 닿는 칸으로 옮기고, 문 이름 고리는 그림 문 칸에 붙인다. 문 막기(seal) 전에 한다.
@@ -601,5 +613,5 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
   const seals = doors.filter((d) => args.links.find((l) => (l.eventId ?? "") === d.eventId)?.seal !== false).map((d) => sealLockedRoom(run, d.mapId, d.eventId));
   for (const s of seals) if (!s.ok) warnings.push(s.summary);
   const sealNote = `${reachNotes.length ? ` ${reachNotes.join(" / ")}.` : ""}${seals.length ? ` ${seals.map((s) => s.summary).join(" / ")}` : ""}`;
-  return { ok: true, mapIds: [...new Set(eventIds.map((e) => e.mapId))], eventIds, summary: `퍼즐 사슬 「${args.name}」 ${args.links.length}고리를 지었다(${args.links.map((l) => l.role).join(" → ")}).${personNotes.length ? ` 사람 그림: ${personNotes.join(", ")}.` : ""}${sealNote}`, warnings, missingArt: [], calls: [] };
+  return { ok: true, mapIds: [...new Set(eventIds.map((e) => e.mapId))], eventIds, gives, summary: `퍼즐 사슬 「${args.name}」 ${args.links.length}고리를 지었다(${args.links.map((l) => l.role).join(" → ")}).${personNotes.length ? ` 사람 그림: ${personNotes.join(", ")}.` : ""}${sealNote}`, warnings, missingArt: [], calls: [] };
 }
