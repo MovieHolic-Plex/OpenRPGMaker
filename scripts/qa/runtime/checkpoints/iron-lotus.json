@@ -30,8 +30,8 @@
       "id": "grove-battle",
       "label": "청죽림 — 살무사 옆",
       "mapId": "il_grove",
-      "x": 43,
-      "y": 10,
+      "x": 30,
+      "y": 18,
       "facing": "up",
       "party": [
         { "actorId": "actor_hero", "level": 5 },
@@ -88,7 +88,8 @@
           "note": "보고 후 엔딩",
           "ops": [
             { "kind": "waitFor", "testid": "dialogue-box", "state": "present", "timeoutMs": 20000 },
-            { "kind": "pressUntil", "key": "Enter", "testid": "ending-screen", "state": "present", "maxPresses": 40, "timeoutMs": 1500 }
+            { "kind": "pressUntil", "key": "Enter", "testid": "ending-screen", "state": "present", "maxPresses": 40, "timeoutMs": 1500 },
+            { "kind": "hold", "dir": null, "ms": 2500 }
           ],
           "expect": { "testidPresent": ["ending-screen"] },
           "shot": true

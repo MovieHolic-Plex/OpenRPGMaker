@@ -273,6 +273,11 @@ export interface PlaySceneContext extends Phaser.Scene {
   runtimeDom: RuntimeDomOverlay;
   parallelProcesses: Map<string, ParallelProcess>;
   autoStartedKeys: Set<string>;
+  /**
+   * 자동 실행을 돌리려다 다른 이벤트가 이미 실행 중이라 미룬 상태.
+   * 디버그 순간이동은 전투·대사가 끝나는 즉시 도착 맵의 자동 이벤트를 다시 본다.
+   */
+  autoTriggerDeferred?: boolean;
   pageMoveRouteKeys: Set<string>;
   pageMoveRouteEventIds: Set<string>;
   commandMoveRouteEventIds: Set<string>;

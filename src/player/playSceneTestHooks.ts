@@ -11,6 +11,7 @@ import { applyDebugOp, applyStatePreset, type DebugOp, type StatePreset } from "
 import { startPlayerRoute } from "@/player/playerRouteState";
 import { applySetTimeStep } from "@/player/playSceneTime";
 import { placePlayerOnCurrentMap } from "@/player/playSceneMapCommands";
+import { fireAutoTriggers } from "@/player/playSceneMapRuntime";
 import type { MoveCommand } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
@@ -363,6 +364,8 @@ export function installPlaySceneTestHooks(
       if (context.player && typeof context.centerCamera === "function") {
         // 같은 맵: 스프라이트·카메라도 옮긴다(좌표만 쓰면 화면은 옛 자리를 그리고 걸음 판정만 새 칸에서 돈다).
         placePlayerOnCurrentMap(scene as unknown as PlaySceneContext, x, y);
+        // 같은 맵 순간이동은 문을 타지 않아 자동 실행이 안 돌았다. 귀환 장면은 마을 자동 이벤트다.
+        void fireAutoTriggers(scene as unknown as PlaySceneContext);
         syncRuntimeState();
         return;
       }

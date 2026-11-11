@@ -46,14 +46,22 @@ export default {
       shot: true,
     },
     {
-      id: "map",
-      note: "청죽림 — 추락한 고치가 있는 필드",
+      id: "town",
+      note: "유하진 — 여관 거리",
       ops: [
         { kind: "pressUntilJs", key: "Enter", fn: fieldReady, maxPresses: 40, settleMs: 400 },
         { kind: "pressUntilJs", key: "Escape", times: 2, fn: "() => !/건너뛰기/.test(document.body.innerText)", maxPresses: 4, settleMs: 600 },
         { kind: "pressUntilJs", key: "Escape", fn: "() => !document.querySelector(\"[data-testid='main-menu']\")", maxPresses: 2, settleMs: 300 },
-        { kind: "teleport", mapId: "il_grove", x: 43, y: 10 },
-        { kind: "waitForPosition", mapId: "il_grove", x: 43, y: 10, timeoutMs: 15000 },
+        { kind: "hold", dir: null, ms: 800 },
+      ],
+      shot: true,
+    },
+    {
+      id: "map",
+      note: "청죽림 — 흙길과 대나무",
+      ops: [
+        { kind: "teleport", mapId: "il_grove", x: 30, y: 18 },
+        { kind: "waitForPosition", mapId: "il_grove", x: 30, y: 18, timeoutMs: 15000 },
         { kind: "hold", dir: null, ms: 800 },
       ],
       shot: true,
@@ -79,6 +87,31 @@ export default {
         { kind: "pressUntil", key: "Enter", testid: "battle-scene", state: "absent", maxPresses: 8, timeoutMs: 3000 },
       ],
       shot: false,
+    },
+    {
+      id: "temple",
+      note: "운무산 사원",
+      ops: [
+        { kind: "pressUntilJs", key: "Enter", fn: fieldReady, maxPresses: 12, settleMs: 400 },
+        { kind: "teleport", mapId: "il_temple", x: 22, y: 16 },
+        { kind: "waitForPosition", mapId: "il_temple", x: 22, y: 16, timeoutMs: 15000 },
+        { kind: "hold", dir: null, ms: 800 },
+      ],
+      shot: true,
+    },
+    {
+      id: "return",
+      note: "디버그 순간이동으로 마을에 돌아오면 귀환 대사가 시작된다",
+      ops: [
+        { kind: "setSwitch", switchId: "sw_il_main_step2", value: true },
+        { kind: "setSwitch", switchId: "sw_il_main_done", value: false },
+        { kind: "teleport", mapId: "il_hub", x: 37, y: 18 },
+        { kind: "waitForPosition", mapId: "il_hub", x: 37, y: 18, timeoutMs: 15000 },
+        { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 15000 },
+        { kind: "hold", dir: null, ms: 600 },
+      ],
+      expect: { testidPresent: ["dialogue-box"] },
+      shot: true,
     },
   ],
 };

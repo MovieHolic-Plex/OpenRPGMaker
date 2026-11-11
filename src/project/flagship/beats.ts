@@ -91,8 +91,8 @@ export const IRON_LOTUS_STYLE_LOCK: FlagshipStyleLock = {
   cameraZoom: 1,
   dialogueStyle: "pixel-cinematic",
   allowedTilesetIds: ["sengoku_edo"],
-  allowedCharsetPrefixes: ["easyrpg-charset-", "tex_easyrpg_charset_"],
-  allowedPortraitPrefixes: ["easyrpg-faceset-", "shared-"],
+  allowedCharsetPrefixes: ["easyrpg-charset-", "tex_easyrpg_charset_", "oprn-charset-il"],
+  allowedPortraitPrefixes: ["easyrpg-faceset-", "shared-", "oprn-face-il"],
   bannedProperNouns: BANNED_IP_PROPER_NOUNS,
 } as const;
 
@@ -370,7 +370,7 @@ export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBe
     subtitle: "무림에 떨어진 기계 소녀 · Iron Lotus of the Jianghu",
     genreChoiceId: "adventure-jrpg",
     targetMinutes: 18,
-    mapCount: 3,
+    mapCount: 8,
     endingCount: 1,
     releaseOrder: 5,
     priorityRank: 5,

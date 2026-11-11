@@ -164,6 +164,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   declare runtimeDom: RuntimeDomOverlay;
   parallelProcesses: Map<string, ParallelProcess> = new Map();
   autoStartedKeys: Set<string> = new Set();
+  autoTriggerDeferred = false;
   pageMoveRouteKeys: Set<string> = new Set();
   pageMoveRouteEventIds: Set<string> = new Set();
   commandMoveRouteEventIds: Set<string> = new Set();
@@ -433,6 +434,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       this.input_.resetEdges();
       this.input_.clearDirectionTaps();
       return;
+    }
+    if (this.autoTriggerDeferred && !this.running) {
+      this.autoTriggerDeferred = false;
+      void this.fireAutoTriggers();
     }
     this.sunlightLayer?.sync(this.map, store.getCurrent().tilesets[this.map.tilesetId]);
     this.perfCounters.frames += 1;

@@ -16,10 +16,20 @@ import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
 import { buildJrpgChapter } from "@/editor/tools/jrpgChapterTools";
 import { pickSpot } from "@/editor/tools/jrpgVolumeTools";
+import { sharedPortraitId } from "@/assets/sharedPortraitAssets";
 import { placeFallenStarVessel } from "./fallenStarVessel";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
+import {
+  IL_BACKDROP_BAMBOO_ID,
+  IL_BACKDROP_TEMPLE_ID,
+  IL_BACKDROP_TOWN_ID,
+  IL_SEOLRIN_CHARSET_ID,
+  IL_SEOLRIN_FACE_ID,
+  installIronLotusArt,
+} from "./ironLotusArt";
 import { buildIronLotusOpening } from "./ironLotusOpening";
 import { applyIronLotusLore } from "./ironLotusLore";
+import { IL_BATTLE_FOE, IL_BATTLE_STAND, layIronLotusWorld } from "./ironLotusMaps";
 import { IL_NAMES, IL_PREFIX, IRON_LOTUS_ACT1 } from "./ironLotusStory";
 import type { FlagshipDemoBuildResult } from "./types";
 
@@ -29,7 +39,6 @@ const ENDING_ID = "end_il_act1";
 const SW_BAEK_JOINED = "sw_il_baek_joined";
 
 const CHIP = {
-  hero: ["easyrpg-charset-actor4", 7, "tex_easyrpg_charset_actor4", "charset-battler-actor4-7", "easyrpg-faceset-actor2-15"] as const,
   baek: ["easyrpg-charset-actor3", 1, "tex_easyrpg_charset_actor3", "charset-battler-actor3-1"] as const,
   cheongha: ["tex_easyrpg_charset_people5", 3] as const,
   gomo: ["tex_easyrpg_charset_people5", 6] as const,
@@ -146,10 +155,10 @@ function setupCast(project: Project): void {
   const hero = actors.find((actor) => actor.id === HERO_ID) ?? actors[0]!;
   hero.name = IL_NAMES.hero;
   hero.nickname = "중계 기체";
-  hero.characterResourceId = CHIP.hero[0];
-  hero.characterIndex = CHIP.hero[1];
-  hero.battleCharacterResourceId = CHIP.hero[3];
-  hero.faceResourceId = CHIP.hero[4];
+  hero.characterResourceId = IL_SEOLRIN_CHARSET_ID;
+  hero.characterIndex = 0;
+  delete hero.battleCharacterResourceId;
+  hero.faceResourceId = IL_SEOLRIN_FACE_ID;
   hero.initialLevel = 5;
 
   const template = actors.find((actor) => actor.id === "actor_guardian") ?? hero;
@@ -182,6 +191,17 @@ function setupCast(project: Project): void {
 
   const rename: Record<string, string> = { item_potion: "청죽 보약", item_ether: "기력 차", item_antidote: "해독 환" };
   for (const item of project.database.items) if (rename[item.id]) item.name = rename[item.id]!;
+  const skills: Record<string, [string, string]> = {
+    skill_attack: ["철권", "맨손의 타격. 설린은 이것을 미확인 타격으로 기록한다."],
+    skill_sword_slash: ["검기 해석", "검끝에 실린 내공을 읽고, 그 결을 따라 벤다."],
+    skill_focus: ["내공 해석", "상대의 기운 흐름을 분석해 자신의 출력을 올린다."],
+  };
+  for (const skill of project.database.skills) {
+    const next = skills[skill.id];
+    if (!next) continue;
+    skill.name = next[0];
+    skill.description = next[1];
+  }
 }
 
 function makeEnemy(
@@ -225,6 +245,14 @@ function setupFoes(project: Project): void {
     ["troop_il_puppet", "철 인형", ["enemy_il_puppet"]],
   ] as const) {
     execTool(project, "upsert_troop", { troop: { id, name, enemyIds: [...enemies] } });
+  }
+  const viper = project.database.troops.find((entry) => entry.id === "troop_il_viper");
+  if (viper) {
+    viper.enemyIds = ["enemy_il_viper", "enemy_il_viper"];
+    viper.members = [
+      { enemyId: "enemy_il_viper", x: 72, y: 96, hidden: false },
+      { enemyId: "enemy_il_viper", x: 156, y: 120, hidden: false },
+    ];
   }
 }
 
@@ -298,12 +326,13 @@ function adjacentReachable(seen: Set<string>, x: number, y: number): boolean {
   return [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => seen.has(cellKey(x + dx!, y + dy!)));
 }
 
-function assertPlayable(project: Project, ids: { hub: string; grove: string; temple: string }): void {
+function assertPlayable(project: Project, ids: readonly string[]): void {
   const start = project.startPos;
-  if (!start || !isPassable(project, project.maps[ids.hub]!, start.x, start.y)) {
+  const hub = project.maps[ids[0]!]!;
+  if (!start || !isPassable(project, hub, start.x, start.y)) {
     throw new Error("[iron-lotus] 시작 칸이 통행 불가");
   }
-  for (const id of [ids.hub, ids.grove, ids.temple]) {
+  for (const id of ids) {
     const map = project.maps[id]!;
     const door = map.events.find((event) => JSON.stringify(event.commands).includes("transfer") || (event.pages ?? []).some((page) => JSON.stringify(page.commands).includes("transfer")));
     const origin = door ? { x: door.x, y: door.y } : { x: Math.floor(map.width / 2), y: Math.floor(map.height / 2) };
@@ -365,6 +394,48 @@ function armBoss(map: GameMap): void {
   }
 }
 
+const FACE_OF: Readonly<Record<string, string>> = {
+  "설린": IL_SEOLRIN_FACE_ID,
+  "백리호": sharedPortraitId("shared-black-martial-expressions", "bust", "base"),
+  "장문 소청하": sharedPortraitId("shared-people1-black-wave-expressions", "bust", "base"),
+  "소청하": sharedPortraitId("shared-people1-black-wave-expressions", "bust", "base"),
+  "야율검": sharedPortraitId("shared-actor2-masked-expressions", "bust", "base"),
+  "여관 주인 고모": sharedPortraitId("shared-people1-old-woman-expressions", "bust", "base"),
+  "약재상 살구": sharedPortraitId("shared-orange-woman-expressions", "bust", "base"),
+  "꼬마 단이": sharedPortraitId("shared-people1-boy-expressions", "bust", "base"),
+  "문지기 철": sharedPortraitId("shared-helmet-guard-expressions", "bust", "base"),
+  "이야기꾼": sharedPortraitId("shared-green-scholar-expressions", "bust", "base"),
+  "흑랑": sharedPortraitId("shared-monster-beast-expressions", "bust", "base"),
+  "대나무 은자": sharedPortraitId("shared-people1-old-man-expressions", "bust", "base"),
+  "사원 지킴이": sharedPortraitId("shared-people1-bald-man-expressions", "bust", "base"),
+};
+
+function applySpeakerFaces(project: Project): void {
+  const faceOf = (cmd: Command): string => {
+    const speaker = (cmd as { speaker?: string }).speaker?.trim();
+    return speaker ? FACE_OF[speaker] ?? "" : "";
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      for (const list of eventCommandLists(event)) {
+        for (let i = 0; i < list.length; i += 1) {
+          const cmd = list[i]!;
+          if (cmd.kind !== "text") continue;
+          const want = faceOf(cmd);
+          const prev = list[i - 1] as (Command & { resourceId?: string }) | undefined;
+          if (prev?.kind === "changeFace") {
+            if ((prev.resourceId ?? "") === want) continue;
+            list[i - 1] = { ...prev, resourceId: want } as Command;
+            continue;
+          }
+          list.splice(i, 0, { kind: "changeFace", resourceId: want, position: "left", flipHorizontally: false } as Command);
+          i += 1;
+        }
+      }
+    }
+  }
+}
+
 function polishGenerics(project: Project): void {
   const swaps: Record<string, { speaker?: string; body: string }> = {
     "아직 할 일이 남은 것 같군.": { speaker: "장문 소청하", body: "아직 신호 조각이 죽림에 있다.\n서두르거라." },
@@ -398,6 +469,7 @@ function polishGenerics(project: Project): void {
 
 export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
   const project = createBlankProject();
+  installIronLotusArt(project);
   const blankIds = Object.keys(project.maps);
   project.meta.title = "강호의 철련";
   project.meta.author = "OPRN Flagship Studio";
@@ -429,6 +501,8 @@ export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
   M(ids.grove).mapRole = "field";
   M(ids.temple).mapRole = "dungeon";
   M(ids.hub).mapRole = "town";
+
+  const world = layIronLotusWorld(project, execTool, tryTool, ids);
 
   applySpeakerPrefixes(project);
   polishGenerics(project);
@@ -492,6 +566,8 @@ export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
   saveAt(ids.temple, "사원 향로 앞", "ev_il_save_temple");
 
   const groveFoes = placeFieldEnemies(project, ids.grove, ["troop_il_viper", "troop_il_scout", "troop_il_viper"]);
+  const pinned = M(ids.grove).events.find((event) => event.id.endsWith("_foe1"));
+  if (pinned) { pinned.x = IL_BATTLE_FOE.x; pinned.y = IL_BATTLE_FOE.y; }
   const templeFoes = placeFieldEnemies(project, ids.temple, ["troop_il_scout", "troop_il_viper", "troop_il_scout"]);
   if (groveFoes < 2 || templeFoes < 2) {
     throw new Error(`[iron-lotus] 보이는 적이 부족하다 grove ${groveFoes} temple ${templeFoes}`);
@@ -527,15 +603,26 @@ export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
       "설린: 기록. 추적자, 아직 전방.",
     ],
   });
+  const midboss = M(ids.grove).events.find((event) => event.id === "ev_il_midboss");
+  if (midboss) { midboss.x = M(ids.grove).width - 6; midboss.y = IL_BATTLE_STAND.y; }
 
-  const clue = M(ids.grove).events.find((event) => event.id.includes("inspect"));
-  if (clue) {
-    const vx = Math.max(0, clue.x - 1);
-    const vy = Math.max(0, clue.y - 2);
-    placeFallenStarVessel(project, M(ids.grove), vx, vy);
+  const clue = M(ids.grove).events.find((event) => event.id.includes("inspect") || event.id.includes("clue") || event.id.includes("puzzle"));
+  placeFallenStarVessel(project, M(ids.grove), clue ? Math.max(1, clue.x - 1) : 16, IL_BATTLE_STAND.y - 4);
+
+  const backdropOf = (mapId: string): string => {
+    if (mapId === ids.temple || mapId === world.nave || mapId === world.annex) return IL_BACKDROP_TEMPLE_ID;
+    if (mapId === ids.grove || mapId === world.deep) return IL_BACKDROP_BAMBOO_ID;
+    return IL_BACKDROP_TOWN_ID;
+  };
+  for (const map of Object.values(project.maps)) {
+    if (blankIds.includes(map.id) && map.id !== ids.hub) continue;
+    map.battleBackground = backdropOf(map.id);
+  }
+  for (const troop of project.database.troops) {
+    if (troop.id.startsWith("troop_il") || troop.id.startsWith(`troop_${IL_PREFIX}`)) delete troop.previewBackgroundResourceId;
   }
 
-  for (const [id, bgm] of [[ids.hub, "cc0-bgm-rtp-fld-001"], [ids.grove, "cc0-bgm-rtp-fld-002"], [ids.temple, "cc0-bgm-rtp-dng-001"]] as const) {
+  for (const [id, bgm] of [[ids.hub, "cc0-bgm-rtp-fld-001"], [ids.grove, "cc0-bgm-rtp-fld-002"], [world.deep, "cc0-bgm-rtp-fld-002"], [ids.temple, "cc0-bgm-rtp-dng-001"]] as const) {
     M(id).bgm = { mode: "custom", resourceId: bgm };
   }
 
@@ -614,13 +701,23 @@ export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
   for (const blankId of blankIds) if (blankId !== ids.hub) delete project.maps[blankId];
   project.mapTree = {
     mapId: ids.hub,
-    children: [{ mapId: ids.grove, children: [{ mapId: ids.temple, children: [] }] }],
+    children: [
+      { mapId: world.inn, children: [] },
+      { mapId: world.shop, children: [] },
+      { mapId: ids.grove, children: [{ mapId: world.deep, children: [{ mapId: ids.temple, children: [
+        { mapId: world.nave, children: [{ mapId: world.annex, children: [] }] },
+      ] }] }] },
+    ],
   };
 
   buildIronLotusOpening(project);
+  applySpeakerFaces(project);
   execTool(project, "set_title_screen", {
     title: "강호의 철련",
     logoStyle: "gold",
+    backgroundResourceId: IL_BACKDROP_TOWN_ID,
+    backgroundFit: "cover",
+    backgroundRendering: "pixelated",
     menuLabels: { newGame: "새 여정", continueGame: "이어하기", credits: "만든 사람" },
   });
   if (project.system.titleScreen) {
@@ -631,9 +728,11 @@ export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
   }
 
   applyIronLotusLore(project);
-  assertPlayable(project, ids);
-  // 로드가 기본 전투 스킨(retro2003)은 저장하지 않는다. 넣어 두면 재로드와 어긋난다.
+  assertPlayable(project, [ids.hub, ids.grove, world.deep, ids.temple, world.inn, world.shop, world.nave, world.annex]);
+  // 로드가 기본값(전투 스킨 retro2003, 칩 칸 0)은 저장하지 않는다. 넣어 두면 재로드와 어긋난다.
   delete project.system.battleUiStyle;
+  const heroOut = project.database.actors.find((actor) => actor.id === HERO_ID);
+  if (heroOut?.characterIndex === 0) delete heroOut.characterIndex;
 
   const manifest = FLAGSHIP_BEAT_MANIFESTS["iron-lotus"];
   return {

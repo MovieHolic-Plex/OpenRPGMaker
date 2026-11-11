@@ -1266,6 +1266,13 @@ export async function fireAutoTriggers(scene: PlaySceneContext): Promise<void> {
   // Map refresh can run before player.ts installs dialogue. Do not consume the
   // one-shot key before runEvent/runCommands can actually accept this event.
   if (!dialogueUi(scene) || scene.sys?.isActive() === false) return;
+  // 전투 결과나 대사가 아직 running 인 채 맵에 도착하면 자동 이벤트를 키만 먹고 버리거나
+  // 조용히 건너뛴다. 디버그 순간이동으로 마을에 돌아와 귀환 장면이 안 뜨던 경우다.
+  // 키가 소비되기 전에 미루고, 실행이 끝난 다음 프레임에 다시 본다.
+  if (scene.running) {
+    scene.autoTriggerDeferred = true;
+    return;
+  }
   const events = activeRuntimeEvents(scene, "auto");
   for (const event of events) {
     const key = `${scene.getMapId()}:${event.event.id}:${event.pageId ?? "legacy"}`;
