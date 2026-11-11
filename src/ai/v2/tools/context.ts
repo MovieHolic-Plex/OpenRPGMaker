@@ -21,7 +21,7 @@ import type { CriticVerdict } from "@/ai/piAgent/featureReview";
 import type { ContentBuildResult, PlaceBuildResult, PlaceRecord, PlaceSpec } from "../types";
 import { mapBundleIds } from "@/ai/piAgent/mapBundle";
 import { buildBlueprintPath, type PathStepText } from "../story/blueprintPath";
-import { spreadCrowdedPeople } from "../judge/eventReach";
+import { spreadCrowdedPeople } from "../place/reachRepairs";
 import { dungeonGateSpot, pickTransferSpot } from "../transferSpot";
 import { critiqueStaging } from "../judge/critic";
 import { edgeCell, isInside, isOutdoor, oppositeSide, pickDoor, villageDoors } from "../makeGame";

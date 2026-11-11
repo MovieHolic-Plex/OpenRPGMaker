@@ -12,8 +12,9 @@
 import type { GameEvent, Project } from "@/project/types";
 import type { RuntimeEventView } from "@/project/runtimeEventState";
 import { objectiveTargetViews } from "@/player/objectiveTarget";
-import { isObjectiveCommand } from "../judge/discoverability";
-import { repairEventReach, unreachableEvents } from "../judge/eventReach";
+import { isObjectiveCommand } from "../judge/objectiveCommand";
+import { unreachableEvents } from "../judge/eventReach";
+import { repairEventReach } from "../place/reachRepairs";
 import type { BuildRun } from "../types";
 
 type Obj = Record<string, unknown>;

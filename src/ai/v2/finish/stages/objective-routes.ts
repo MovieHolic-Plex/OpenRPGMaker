@@ -1,6 +1,6 @@
 // 목표 꼬리 「(<맵> 입구: 방위)」를 마지막 연결로 다시 쓴다 — 목표가 걸리는 자리에서 본 첫 출구 방위·그 뒤 대상(2026-10-29 vm2 jrpg 길 못 찾음).
 import type { FinishStage } from "../types";
-import { refreshObjectiveRoutes } from "../../judge/discoverability";
+import { refreshObjectiveRoutes } from "../../judge/objectiveRoutes";
 
 export const stage: FinishStage = {
   id: "objective-routes", phase: "assembly", order: 250,
