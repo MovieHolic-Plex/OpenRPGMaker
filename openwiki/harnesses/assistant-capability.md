@@ -511,7 +511,14 @@ npm run harness -- assistant-capability small-jobs-report --run <그 폴더> --h
 오너 2026-11-11 「JRPG 만 만들게 아니잖아」. 추리·연애·공포·농장·몬스터 수집·퍼즐·액션·경제·여러 엔딩·생존 게임이 쓰는 **장치 하나**를 일 하나로 잰다.
 어느 장치에 도구가 없고 어느 도구가 v2 에 안 실리는지는 `openwiki/assistant-v2-genre-tools.md` 의 재고 표가 적는다 — 이 묶음은 그 표의 줄을 재는 자다.
 묶음 `harness-data/assistant-capability/small-jobs-3.json`(같은 모양), 픽스처는 같은 셋(blank 3 · starter 28 · built 5), 오답 135개 · 다른 모양의 정답 21개.
-실모델 실행은 아직 없다(2026-11-11 — 묶음과 판정만 넣었다).
+
+**Terra 기준선(수리 전, main `03a604e917`, 2026-11-11)** — `~/z-project/assistant-fable-runs/smalljobs/set3-base-03a604e917/`, 쪽 `~/claude-viz/assistant-small-jobs-set3.html`:
+**통과 25/36** · 불합격 10 · 시간 초과 1 · 턴이 «완료»로 끝난 것 22 · 도구 호출 741(오류 52) · 중앙값 16호출 · 2.8분 · 입력 385k 토큰.
+통과하지 못한 11건은 두 원인이다(`causes.json`): 그 장치의 도구가 v2 에 없다 8(액션 전투 맵 · 보관 상자 · 작물 · 낚시 · 기한 엔딩 · 함정 체크포인트 · 잠긴 문 · 포획) · 장치 요청이 장소 짓기/게임 하나로 읽혔다 3(밭 · 액션 슬라임 · 꽃잎 체력 — 68호출 뒤 시간 초과, 맵 하나 삭제).
+통과한 일도 싸지 않다 — 얘기한 사람 수 엔딩 42호출 · 선물 36 · 고백 32 · 증거 내밀기 27 · 제한 시간 25(이벤트 명령 손 조립). 가족별: 추리 3/3 · 연애 4/4 · 달력 3/4 · 공포 3/5 · 농장 1/5 · 경제 2/2 · 몬스터 2/3 · 퍼즐 3/4 · 액션 0/2 · 엔딩 3/3 · 생존 1/1.
+알아 둘 것(`disclosures.json`): `accuse-ending-starter` 첫 시도는 편집기 기동에서 죽어(SQLite «database is locked», 모델 호출 0) 그 일만 한 번 다시 돌렸다 · 기계를 다른 측정과 같이 써서 시간은 길 수 있다 · 화면은 보지 않았다(화면 미검증).
+**실행하는 체크아웃의 소스를 실행 중에 고치지 않는다** — 조수 일꾼은 빌드가 아니라 소스(`scripts/oh-my-pi-worker.ts`)에서 돈다. 첫 실행은 그렇게 오염돼 버렸다(`set3-contaminated-03a604e917/NOT-A-BASELINE.md`).
+수리(`openwiki/assistant-v2-genre-tools.md` 「첫 수리」) 뒤의 같은 실행은 아직 없다.
 
 ```bash
 npm run harness -- assistant-capability small-jobs-selfcheck --set 3 --out <폴더>              # 36/36 sound 여야 한다
