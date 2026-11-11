@@ -34,7 +34,7 @@ function eventPages(draft: Project, args: Record<string, unknown>): { map: GameM
   const map = requireMap(draft, String(args.mapId ?? ""));
   const eventId = String(args.eventId ?? "");
   const event = map.events.find((entry) => entry.id === eventId)
-    ?? fail(`No event '${eventId}' on map ${map.id}. Events here: ${map.events.slice(0, 12).map((entry) => `${entry.id}(${entry.name})`).join(", ") || "none"}. Use find_events for the id.`, "event-not-found");
+    ?? fail(`No event '${eventId}' on map ${map.id} — get the id from find_events. Events here: ${map.events.slice(0, 10).map((entry) => `${entry.id}(${entry.name})`).join(", ") || "none"}.`, "event-not-found");
   const all = event.pages ?? [];
   if (!all.length) fail(`Event '${eventId}' has no pages. Write its pages with upsert_event first.`, "invalid-args");
   if (typeof args.pageIndex === "number") {
@@ -50,7 +50,8 @@ function itemOf(draft: Project, value: unknown, where: string): { id: string; na
   const key = str(value) ?? fail(`${where}: itemId is required.`, "invalid-args");
   const items = draft.database.items ?? [];
   const found = items.find((item) => item.id === key) ?? items.find((item) => item.name === key);
-  if (!found) fail(`${where}: no item '${key}'. Items: ${items.slice(0, 16).map((item) => `${item.id}(${item.name})`).join(", ") || "none"}. Create it with upsert_item first.`, "item-not-found");
+  // 고칠 길을 앞에 둔다 — 실행기가 긴 글의 끝을 자른다(목록이 길면 «먼저 만들라»가 잘려 나갔다).
+  if (!found) fail(`${where}: no item '${key}' — create it with upsert_item first, or use an existing one: ${items.slice(0, 10).map((item) => `${item.id}(${item.name})`).join(", ") || "none"}.`, "item-not-found");
   return { id: found!.id, name: found!.name };
 }
 
@@ -150,7 +151,7 @@ const setNpcAffection: ToolDefinition = {
     const friend = (value: number): Condition => ({ kind: "friendshipAtLeast", npcKey, value } as Condition);
     const endingId = confess ? str(confess.endingId) : undefined;
     if (endingId && !(draft.endings ?? []).some((ending) => ending.id === endingId)) {
-      fail(`confess.endingId '${endingId}' does not exist. Endings: ${(draft.endings ?? []).map((ending) => `${ending.id}(${ending.name})`).join(", ") || "none"}. Create it with define_ending first, or omit endingId.`, "ending-not-found");
+      fail(`confess.endingId '${endingId}' does not exist — create it with define_ending first, or omit endingId. Endings: ${(draft.endings ?? []).slice(0, 10).map((ending) => `${ending.id}(${ending.name})`).join(", ") || "none"}.`, "ending-not-found");
     }
     const switchId = confess ? str(confess.switchId) : undefined;
     if (switchId) ensureNamedSwitch(draft, switchId, `${event.name} 고백 수락`);
@@ -341,7 +342,7 @@ const setTimeLimit: ToolDefinition = {
     const timerId = args.timerId === "timer2" ? "timer2" : "timer1";
     const endingId = str(args.endingId);
     if (endingId && !(draft.endings ?? []).some((ending) => ending.id === endingId)) {
-      fail(`endingId '${endingId}' does not exist. Endings: ${(draft.endings ?? []).map((ending) => `${ending.id}(${ending.name})`).join(", ") || "none"}. Create it with define_ending first, or omit endingId for a game over.`, "ending-not-found");
+      fail(`endingId '${endingId}' does not exist — create it with define_ending first, or omit endingId for a game over. Endings: ${(draft.endings ?? []).slice(0, 10).map((ending) => `${ending.id}(${ending.name})`).join(", ") || "none"}.`, "ending-not-found");
     }
     const base = `ev_timelimit_${map.id.replace(/[^A-Za-z0-9_]/g, "_")}`;
     const running = `sw_timelimit_${map.id.replace(/[^A-Za-z0-9_]/g, "_")}`;
