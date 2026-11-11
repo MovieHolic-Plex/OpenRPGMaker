@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { createBuildRun } from "@/ai/v2/buildRun";
+import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import { buildEvent } from "@/ai/v2/story/events";
 import type { Project } from "@/project/types";
 

@@ -3,7 +3,7 @@
 //   bun scripts/qa/assistant-v2/doorwayArchCheck.mts <project.json> <맵 이름> <outPrefix> [x0,y0,x1,y1 잘라 보기]
 import fs from "node:fs";
 import { PNG } from "pngjs";
-import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
+import { createBuildRun } from "../../../src/ai/v2/shared/buildRun.ts";
 import { dressInteriorExits } from "../../../src/ai/v2/place/exitDress.ts";
 import { runAutoPlay } from "../../../src/qa/gameCheck/autoPlay.ts";
 import type { Project } from "../../../src/project/types.ts";

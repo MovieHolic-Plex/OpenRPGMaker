@@ -5,10 +5,10 @@
 // 자기 비평 두 바퀴: 지은 뒤 1배 그림 옆에 배치 상자 그림을 보여 주고 고친 배치(또는 «고칠 것 없음»)를 받는다 — 할 일 항목(관문 열쇠 place:<맵>:layout-*)이 센다.
 // 실험 근거: scripts/experiments/bbox-dungeon(Opus 판정 v2 빌더 대비 10승 2무 0패)·bbox-village(8승 6무 2패)·bbox-better(자기 비평 2바퀴 0.61→0.71).
 import type { PiToolExecResult } from "@/ai/piAgent/toolAdapter";
-import type { PiAssistantV2Env } from "../../env";
-import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../types";
+import type { PiAssistantV2Env } from "../../shared/env";
+import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 import type { Project, TilesetDef } from "@/project/types";
-import { createBuildRun } from "../../buildRun";
+import { createBuildRun } from "../../shared/buildRun";
 import { CONSTRUCTION_TOOLS_V3 } from "@/editor/tools/v3/constructionTools";
 import { SHARED_OBJECT_TOOLS } from "@/editor/tools/sharedObjectTools";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";

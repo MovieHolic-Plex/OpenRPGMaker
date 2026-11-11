@@ -7,8 +7,8 @@ import { DUNGEON_DESIGN_SCHEMA as EDITOR_DUNGEON_DESIGN_SCHEMA } from "@/editor/
 import { GRAMMAR, inferDungeonType } from "@/editor/dungeonKit/grammar";
 import type { DungeonType } from "@/editor/dungeonKit/types";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
-import { createBuildRun } from "../buildRun";
-import type { PiAssistantV2Env } from "../env";
+import { createBuildRun } from "../shared/buildRun";
+import type { PiAssistantV2Env } from "../shared/env";
 
 // v2 shows the model English descriptions (cheap models read English better, 2026-10-30). The schema object is shared with the
 // v1 author_dungeon tool (src/editor/tools/dungeonTools.ts), whose Korean text must stay as is — so v2 maps a deep copy.
@@ -56,7 +56,7 @@ function englishDescriptions(node: unknown): unknown {
     [k, k === "description" && typeof v === "string" ? DUNGEON_DESIGN_EN.get(v) ?? v : englishDescriptions(v)]));
 }
 export const DUNGEON_DESIGN_SCHEMA = englishDescriptions(EDITOR_DUNGEON_DESIGN_SCHEMA) as typeof EDITOR_DUNGEON_DESIGN_SCHEMA;
-import type { PlaceRecord } from "../types";
+import type { PlaceRecord } from "../shared/types";
 
 /** 서로 다른 뼈대의 예시 — 한 공식(덩이+호수+아래 입구)을 되풀이하지 않게 입구 쪽·연결 모양·모양·물이 모두 다르다. */
 export const DUNGEON_DESIGN_EXAMPLES: readonly { readonly name: string; readonly ko: string; readonly design: DungeonDesign }[] = [

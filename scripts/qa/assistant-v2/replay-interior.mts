@@ -8,7 +8,7 @@ import { loadHeadlessProject } from "../../../src/headless/index.ts";
 import { renderMapPng } from "../../qa-game/render.mts";
 import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
-import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
+import type { PiAssistantV2Env } from "../../../src/ai/v2/shared/env.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
 import { measureInteriorBareFloor } from "../../../src/editor/handInterior/bareFloor.ts";
 import { isPassable } from "../../../src/project/collision.ts";

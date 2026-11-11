@@ -5,7 +5,7 @@ import { isPassable } from "@/project/collision";
 import { isUntouchedMap } from "@/project/projectBlankness";
 import type { GameMap, Project } from "@/project/types";
 import { villagePoolEntryByStyle, VILLAGE_POOL_STYLE_PREFIX } from "../../../villageChipsetPool";
-import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../types";
+import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 import { onePassRefusal } from "../onePass";
 
 const CREATE_SIZE: Record<string, readonly [number, number]> = { sengoku_edo: [54, 42], desert_east: [48, 36], pirate_isles: [48, 36] };

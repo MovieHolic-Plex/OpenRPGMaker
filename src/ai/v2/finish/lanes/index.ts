@@ -1,13 +1,13 @@
 // 출구·이동 칸 마감 — 끝맺음 단계 lanes(finish/stages/lanes.ts)가 session.clearLanes 로 부른다(createV2Tools 가 건다).
 // 단계 하나 = lanes/stages/<id>.ts 하나(형은 끝맺음과 같은 FinishStage — { id, phase: "lane-project" | "lane-map", order, run }), 목록 = lanes/stages/index.ts(한 줄에 하나).
 // 순서: lane-project 단계 전부(order 순) → 맵마다(그 시점 Object.keys(maps) 순) lane-map 단계 전부(order 순).
-import type { PiAssistantV2Env } from "../../env";
+import type { PiAssistantV2Env } from "../../shared/env";
 import type { V2Session } from "../../turn/session";
-import type { RecordingBuildRun } from "../../buildRun";
+import type { RecordingBuildRun } from "../../shared/buildRun";
 import type { FinishCtx, FinishStage } from "../types";
 import { orderedStages } from "../stageOrder";
 import * as registered from "./stages";
-import { recordStageWrites } from "../../stageWrites";
+import { recordStageWrites } from "../../shared/stageWrites";
 
 /** 맵마다 합산해 2초 넘은 단계만 stderr 에 남긴다(2026-11-09 monster 조사, 동작 불변). */
 const laneMs = new Map<string, number>();

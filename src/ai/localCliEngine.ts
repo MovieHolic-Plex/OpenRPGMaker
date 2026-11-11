@@ -23,7 +23,7 @@ export interface AssistantEngineChoice {
   readonly deepModel?: string;
   readonly effort?: "low" | "medium" | "high";
   /**
-   * 팀장·워커(조수 v2 리드, src/ai/v2/split.ts). 켜면 deepModel 이 팀장으로 할 일·사양을 쓰고 단계 끝에서 검토하며,
+   * 팀장·워커(조수 v2 리드, src/ai/v2/turn/split.ts). 켜면 deepModel 이 팀장으로 할 일·사양을 쓰고 단계 끝에서 검토하며,
    * routineModel 이 워커로 짓는다(같은 CLI). deepModel 이 routineModel 과 같으면 나누지 않는다 — 설정의 「한 모델로 합치기」가 곴 끄기다.
    * 첫 실행 관문이 Claude 구독에만 켠다(planDefaults.ts). OPRN_V2_SPLIT 이 있으면 그 값이 이긴다.
    */

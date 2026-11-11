@@ -12,9 +12,9 @@ import { isPassable } from "@/project/collision";
 import { terrainReachability } from "@/project/terrainReachability";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import type { EnemyRecord, GameMap, Project } from "@/project/types";
-import { createBuildRun } from "../../buildRun";
+import { createBuildRun } from "../../shared/buildRun";
 import { carryFloorEvents, retargetIncoming } from "./dungeonRebuildCarry";
-import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../types";
+import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 
 /** v2 계획 모델에게 주는 유일한 던전 지식(≤900자). */
 export const DUNGEON_CARD =
