@@ -236,6 +236,48 @@ describe("request intent — one record, every reader agrees", () => {
   });
 });
 
+describe("linking maps that already exist is a small job", () => {
+  /** 마을(주민 하나)과 이어지지 않은 들판 — 작은 일 하네스의 starter 와 같은 모양. */
+  function twoMaps(): Project {
+    const p = createBlankProject() as Project;
+    const village = p.maps[p.startMapId]!;
+    village.name = "잿불 마을";
+    village.events = [{ id: "ev_npc", name: "촌장", x: 2, y: 2, pages: [{ id: "p1", conditions: [], trigger: { kind: "action" }, commands: [{ kind: "text", body: "어서 오게." }] }] } as never];
+    p.maps.map_field = { ...structuredClone(village), id: "map_field", name: "동쪽 들판", events: [] };
+    return p;
+  }
+  const ROUND_TRIP = "잿불 마을 동쪽 끝에서 동쪽 들판으로 넘어갈 수 있게 해 줘. 들판에서 마을로 돌아오는 길도 만들어 줘";
+
+  it("both maps named + a link word = edit with the transfer tools; the words alone still read as a place build", () => {
+    // 글만 보면 «마을 … 만들어» 가 장소 짓기 낱말에 맞는다 — 프로젝트를 같이 봐야 잇기만 하는 일인 줄 안다.
+    expect(readRequest(ROUND_TRIP).scope).toBe("place");
+    const intent = classifyRequest(ROUND_TRIP, twoMaps());
+    expect(intent).toMatchObject({ scope: "edit", editOnly: true, wholeGame: false });
+    expect(intent.why).toMatch(/links maps that already exist/u);
+    expect(intent.smallTools).toEqual(expect.arrayContaining(["create_transfer_pair", "list_map_locations"]));
+    // 「동쪽 끝에서」의 끝은 자리다 — 엔딩 도구를 끌어오지 않는다.
+    expect(intent.topics).not.toContain("ending");
+    expect(intent.smallTools).not.toContain("define_ending");
+  });
+
+  it("one map missing, a new place, or a rebuild stays a place build", () => {
+    // 같은 글이라도 들판이 없는 프로젝트에서는 들판을 지어야 한다(기억 열쇠가 맵 이름을 본다).
+    expect(classifyRequest(ROUND_TRIP, project("event")).scope).toBe("place");
+    expect(classifyRequest("잿불 마을 옆에 새 마을을 만들고 동쪽 들판과 이어 줘", twoMaps()).scope).toBe("place");
+    expect(classifyRequest("잿불 마을을 더 넓혀서 동쪽 들판까지 이어지게 만들어 줘", twoMaps()).scope).toBe("place");
+    // 잇는 낱말이 없으면 맵 이름이 둘이어도 그대로다.
+    expect(classifyRequest("잿불 마을이랑 동쪽 들판에 집을 더 지어 줘", twoMaps()).scope).toBe("place");
+  });
+
+  it("«가게 해 줘» · «가게 이어 줘» is not a shop; «가게 하나» is; «끝에 가서» is still the ending", () => {
+    expect(readRequest("족장의 긴 집에 뒷문을 하나 만들어 줘. 그 문으로 나가면 겨울 시장으로 가게 해 줘").topics).not.toContain("items");
+    expect(readRequest("이 문을 지나면 동굴로 가게 이어 줘").topics).not.toContain("items");
+    expect(readRequest("광장에 가게 하나 차려 줘").topics).toContain("items");
+    expect(readRequest("끝에 가서 촌장이 고맙다고 말하게 해 줘").topics).toContain("ending");
+    expect(readRequest("복도 맨 끝에 상자를 놓아 줘").topics).not.toContain("ending");
+  });
+});
+
 describe("request word lists — one-syllable entries match as words", () => {
   it.each([
     ["썸네일 그림 하나 골라 줘", ROMANCE_SETUP_WORDS, false],

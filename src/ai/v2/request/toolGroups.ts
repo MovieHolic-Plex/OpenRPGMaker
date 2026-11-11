@@ -117,9 +117,12 @@ const STORE_TIERS: readonly { readonly words: RegExp; readonly tools: readonly s
 ];
 
 /** 상점·값·장비를 말하는 낱말. */
-export const SHOP_WORDS = new RegExp(String.raw`상점|가게|팔게|팔기|파는|팔아|판매|구입|사는|살 수|가격|${kw("값")}|골드|${kw("돈")}|무기|갑옷|방패|장비|장신구|반지|목걸이|shop|price|equipment`, "iu");
+/** 「가게」 — 「시장으로 가게 해 줘」「동굴로 가게 이어 줘」「주워 가게 되게」의 「가게」는 상점이 아니다(「가게 하나」는 상점이다). */
+export const SHOP_NOUN = String.raw`가게(?!\s*(?:해|할\s*수|하게|하도록|돼|되[게면어도]|이어))`;
+export const SHOP_WORDS = new RegExp(String.raw`상점|${SHOP_NOUN}|팔게|팔기|파는|팔아|판매|구입|사는|살 수|가격|${kw("값")}|골드|${kw("돈")}|무기|갑옷|방패|장비|장신구|반지|목걸이|shop|price|equipment`, "iu");
 /** 엔딩·막 끝·게임 오버처럼 끝맺는 일을 말하는 낱말. */
-export const ENDING_WORK_WORDS = /엔딩|결말|끝나|끝내|끝이|끝에|마지막 날|마지막에|마지막 장면|막 끝|막이|제\s*\d+\s*막|에필로그|타이틀로|게임 오버|게임이 끝|ending|epilogue/iu;
+// 「동쪽 끝에서」「맨 끝에」의 「끝에」는 자리다 — 이야기의 끝이 아니다.
+export const ENDING_WORK_WORDS = /엔딩|결말|끝나|끝내|끝이|(?<!(?:쪽|편|맨|줄|길|복도|골목|다리|방|맵)\s?)끝에|마지막 날|마지막에|마지막 장면|막 끝|막이|제\s*\d+\s*막|에필로그|타이틀로|게임 오버|게임이 끝|ending|epilogue/iu;
 
 /**
  * 무거운 게임 도구 묶음 — 요청 낱말이 그 일을 말할 때만 싣는다.

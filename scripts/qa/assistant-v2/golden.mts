@@ -62,6 +62,19 @@ function withEvent(project: Project): Project {
   return project;
 }
 
+/** 맵 이름을 보는 분류(이미 있는 맵 둘을 잇기) — 두 맵짜리 상태에서 이 요청들만 찍는다. */
+const TWO_MAP_REQUESTS: readonly string[] = [
+  "잿불 마을 동쪽 끝에서 동쪽 들판으로 넘어갈 수 있게 해 줘. 들판에서 마을로 돌아오는 길도 만들어 줘",
+  "잿불 마을 옆에 새 마을을 만들고 동쪽 들판과 이어 줘",
+];
+function twoMaps(): Project {
+  const project = withEvent(createBlankProject());
+  const village = project.maps[project.startMapId]!;
+  village.name = "잿불 마을";
+  project.maps.map_golden_field = { ...structuredClone(village), id: "map_golden_field", name: "동쪽 들판", events: [] };
+  return project;
+}
+
 type Shot = { whole: boolean; wholeWithProject: boolean; game: boolean; sysChars: number; sys: string[]; upFront: string[]; lazy: string[] };
 
 function shoot(task: string, project: Project): Shot {
@@ -111,5 +124,6 @@ const args = process.argv.slice(2);
 if (args[0] === "--diff") process.exit(diff(args[1]!, args[2]!));
 const out: Record<string, Shot> = {};
 for (const [state, make] of Object.entries(STATES)) for (const task of REQUESTS) out[`${state} | ${task}`] = shoot(task, make());
+for (const task of TWO_MAP_REQUESTS) out[`twoMaps | ${task}`] = shoot(task, twoMaps());
 writeFileSync(args[0] ?? "/dev/stdout", JSON.stringify(out, null, 1));
 if (args[0]) console.log(`${args[0]}: ${Object.keys(out).length} 요청 × 상태`);
