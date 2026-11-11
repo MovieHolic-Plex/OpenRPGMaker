@@ -1332,6 +1332,23 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
   하네스가 먼저 「그만두기」(내용을 지우지 않는 쪽)를 누르고 보낸다. 그전에는 실행이 카드 단추를 기다리며 체크포인트 적용을 30분 잡고(`piCheckpointBroker`),
   보낸 글은 그 뒤에 갇혀 다음 턴이 0블록으로 45분 멈췄다(vm1 argon escape 003→004·jrpg 003→004 — 「모델 무응답」으로 보였던 턴의 실제 원인).
 
+## 빈 시작 맵은 첫 장소를 지으면 사라진다 — 시작 칸은 들어오는 길 위 (2026-11-11, map-vqa 깔기 24판)
+
+깔기 24판에서 야영지·알현실·숲→동굴 요청은 장소를 깐 뒤에도 빈 시드 맵(`map_blank_start`)이 게임에 남았다. `author_forest_route({fromMapId:"map_blank_start", linkFrom:true})` 는
+숲을 빈 맵에 이어 시작이 빈 풀밭에 섰고, 동굴의 바깥 문도 빈 맵으로 났다. 마을 요청은 빈 맵 위에 지어져 시작 칸이 옛 (10,8) 에서 «가장 가까운 트인 칸» (10,5) — 집 지붕 뒤 — 로 옮겨졌다.
+
+규칙:
+
+- **쓰기 하나가 끝날 때마다 빈 시드 맵을 본다**(`blankStart.ts` `retireSeedStart`, `tools/verbs.ts` 가 v2 동사와 게임 도구 뒤에 부른다). 빈 맵이 아직 빈 채이고 실제 장소가 따로 생겼으면
+  시작을 그 장소(시작 맵이 실제 장소면 그대로, 아니면 빈 맵이 이어진 맵, 그것도 없으면 첫 장소)의 걸어 닿는 칸으로 옮기고, 빈 맵으로 가는 이동 이벤트와 빈 맵을 지운다. 결과에 `[Start map] …` 한 줄이 붙는다.
+  게임 청사진의 끝맺음 단계(`retireBlankStart`)는 그대로다 — 이것은 청사진 없는 한 줄 요청에도 닿는 같은 일이다.
+- **치워진 맵 id 로 온 뒤따른 호출은 시작 맵으로 고쳐 받는다**(`loop/argGuard.ts` — `mapId`·`fromMapId`·`toMapId`, 결과에 그렇게 알린다). 모델은 앞 결과에서 본 id 를 계속 쓴다.
+- **첫 바깥 장소의 시작 칸은 그 장소로 들어오는 길 입구에서 두세 칸 안쪽이다**(`place/startSpot.ts` `roadEntranceStart` — 길 입구는 `place/roadMouths.ts`): 남·서·동·북 순서, 걸어 닿는 가장 큰 덩이 안,
+  이벤트가 없고 지붕·나무 그림 밑(`underRoof.ts` `coveredCell`)이 아닌 길 칸. 가장자리에 닿는 길이 없는 맵은 빌더가 정한 칸을 그대로 쓴다.
+- 시작 방향(«안쪽을 본다»)은 넣지 못했다 — `project.startPos` 는 `{x, y}` 뿐이고 방향 칸이 없다(스키마·플레이어 쪽 일).
+
+재생(`scripts/qa/assistant-v2/layReplay.mts`, 같은 날 네 묶음을 모두 넣은 가지): 빈 맵이 남은 요청 6 → 0(camp · field-route · throne-room · village-chief-house · village-to-field · weapon-shop), 끝에 시작이 깔린 장소의 걷는 칸(그 맵 걷는 칸의 절반 넘게 닿는다)인 요청 21 → 24/24. 마을 요청의 시작 칸 (10,5)(지붕 뒤) → (21,39)(남쪽 길). 시험 `test/aiV2SeedStart.test.ts`.
+
 ## 이벤트 자리·시작 칸 (2026-10-29 야외 자동 플레이)
 
 - **큰 몸 아래 칸 금지**(`people.ts eventBodyCells`·`resolveWhere`): 청사진 조사 칸은 1×1 보다 큰 이벤트(키운 보스 3×2 등)의 몸이 덮은 칸에 놓지 않는다. vm1 deepseek 「동굴 입구의 봉인」(10,7)·vm2 terra 「동굴의 흔적」(25,8)이 보스 몸 밑이라 자동 플레이가 조사할 이벤트를 못 찾았다.
