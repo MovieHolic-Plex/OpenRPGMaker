@@ -1,13 +1,28 @@
 // 관문 문제의 모델용 영어 글(2026-11-11 리팩토링 F4) — 모델은 영어 글(en)을 받고, 보고·장부·화면의 한국어 줄은 한 글자도 바뀌지 않는다.
+// 우리가 쓰는 글은 영어(ASCII)이고, 프로젝트의 이름은 자료라 저장된 그대로 «» 안에 id 와 같이 실린다.
 import { describe, expect, it } from "vitest";
 import { tagged, type Finding } from "@/ai/v2/judge/finding";
-import { FINDING_EN_RULES, findingEn } from "@/ai/v2/judge/findingEn";
+import { FINDING_EN_RULES, findingEn, refNames, type RefNames } from "@/ai/v2/judge/findingEn";
 import { gateProblems } from "@/ai/v2/judge/finishGate";
 import { syncGateItems } from "@/ai/v2/judge/gates";
 import { TodoStore } from "@/ai/v2/loop/todoStore";
 import { modelText, modelTextCut } from "@/ai/v2/todo/types";
+import type { Project } from "@/project/types";
 
 const NON_ASCII = /[^\x20-\x7e]/u;
+/** «…» 안(프로젝트 이름)을 뺀 나머지 — 우리가 쓴 글. */
+const ourWords = (en: string): string => en.replace(/«[^»]*»/gu, "");
+
+/** 이름표를 만드는 데 읽는 칸만 채운 프로젝트. */
+const project = (over: Partial<Record<"maps" | "database" | "switches" | "variables" | "commonEvents" | "endings" | "quests", unknown>>): Project =>
+  ({ maps: {}, database: {}, switches: [], variables: [], commonEvents: [], ...over }) as unknown as Project;
+const village = project({
+  maps: { map_grave: { id: "map_grave", name: "묘지", events: [{ id: "ev_stone", name: "낡은 비석", x: 4, y: 7 }, { id: "ev_blank", name: "", x: 1, y: 2 }] }, map_village: { id: "map_village", name: "마을", events: [] } },
+  database: { actors: [{ id: "actor_hero", name: "시온" }], troops: [{ id: "troop_wolf", name: "늑대 둘" }] },
+  switches: [{ id: "sw_seal", name: "별의 봉인: 풀림" }],
+  endings: [{ id: "ending_dawn", name: "새벽" }],
+});
+const names: RefNames = refNames(village);
 
 /** 표의 규칙 열쇠(«game:화면/shake» · «ship:bundled-picture/title») 하나로 그 규칙의 문제를 만든다. */
 function findingOf(rule: string): Finding {
@@ -46,24 +61,40 @@ describe("findingEn table", () => {
     expect(findingEn(tagged("ship", "bundled-picture", "엔딩 그림이 번들 스틸이다", { evidence: "endings[ending_a].backgroundResourceId=oprn-title-field" }))).toContain("define_ending presentation.backgroundResourceId");
   });
 
-  it("carries ids and cells instead of names, right after the first sentence: target first, then ids in the line and the evidence", () => {
-    const en = findingEn(tagged("game", "보임", "「낡은 비석」(ev_stone) 는 조사하는 이벤트인데 그림도 없고 그 칸(4,7)에 물건 타일도 없다 — 플레이어 눈에 맨땅이다.", { variant: "bare-ground", target: { mapId: "map_grave", eventId: "ev_stone" } }))!;
-    expect(en).toContain("so the player sees bare ground. Refs: map_grave ev_stone (4,7). Find an object");
-    expect(en).not.toContain("비석");
-    // 증거가 ASCII 면 통째로 실린다(수가 뜻이다).
-    expect(findingEn(tagged("ship", "maps-min", "세는 맵이 1/6장이다 — 5장 더.", { evidence: "counted=1 need=6 uncounted=2" }))).toContain("[ship maps-min] Too few counted maps. Refs: counted=1 need=6 uncounted=2. Build new places");
-    // 한국어가 섞인 증거에서는 id 만.
-    const mixed = findingEn(tagged("ship", "blueprint-event-missing", "청사진 s2 의 이벤트 「촌장」가 「마을」(map_village)에 없다", { evidence: "s2 map_village event=촌장" }))!;
-    expect(mixed).toContain("Refs: map_village.");
-    expect(NON_ASCII.test(mixed)).toBe(false);
+  it("puts the targets right after the first sentence — the project's name in «» as stored, then the id, map and cell", () => {
+    const bare = tagged("game", "보임", "「낡은 비석」(ev_stone) 는 조사하는 이벤트인데 그림도 없고 그 칸(4,7)에 물건 타일도 없다 — 플레이어 눈에 맨땅이다.", { variant: "bare-ground", target: { mapId: "map_grave", eventId: "ev_stone" } });
+    const en = findingEn(bare, names)!;
+    expect(en).toContain("so the player sees bare ground. Refs: «낡은 비석» (ev_stone @ map_grave (4,7)). Find an object");
+    expect(NON_ASCII.test(ourWords(en))).toBe(false);
+    // 이름표가 없으면 id·칸만.
+    expect(findingEn(bare)).toContain("Refs: ev_stone, map_grave, (4,7). Find an object");
+    // 증거가 ASCII 이고 수가 든 것이면 통째로 — 그 안의 id 에도 이름이 붙는다.
+    expect(findingEn(tagged("ship", "maps-min", "세는 맵이 1/6장이다 — 5장 더.", { evidence: "counted=1 need=6 uncounted=2" }), names)).toContain("[ship maps-min] Too few counted maps. Refs: counted=1 need=6 uncounted=2. Build new places");
+    expect(findingEn(tagged("ship", "ending-closure", "엔딩 「새벽」이 장면으로 맺지 않는다", { evidence: "ending_dawn: lines=1 chars=12 image=false" }), names)).toContain("Refs: «새벽» (ending_dawn): lines=1 chars=12 image=false.");
+    // 한국어가 섞인 증거에서는 id 만 — 이름은 이름표에서.
+    expect(findingEn(tagged("ship", "blueprint-event-missing", "청사진 s2 의 이벤트 「촌장」가 「마을」(map_village)에 없다", { evidence: "s2 map_village event=촌장" }), names)).toContain("Refs: «마을» (map_village).");
+    // 맵 · 기록 · 스위치도 같은 꼴, 이름이 빈 이벤트와 이름표에 없는 id 는 id 만.
+    const mixed = findingEn(tagged("game", "깃발", "켜기만 하는 스위치: sw_seal(「낡은 비석」) / ev_blank / troop_wolf / sw_gone", { variant: "unread-switch" }), names)!;
+    expect(mixed).toContain("Refs: «별의 봉인: 풀림» (sw_seal), (ev_blank @ map_grave (1,2)), «늑대 둘» (troop_wolf), sw_gone.");
     // 표의 글에 이미 든 예시 id 는 대상으로 되풀이하지 않는다.
-    expect(findingEn(tagged("game", "상태", "실제 상태를 거는 명령이 없다. {value:'state_poison'} 를 넣는다."))).not.toContain("Refs:");
+    expect(findingEn(tagged("game", "상태", "실제 상태를 거는 명령이 없다. {value:'state_poison'} 를 넣는다."), names)).not.toContain("Refs:");
+    // 자동 플레이의 막힌 단계는 id 가 아니라 이름이다.
+    expect(findingEn({ judge: "play", id: "autoplay", target: { ref: "보스 방" }, severity: "block", owner: "model", ko: "[끝까지 플레이 불가] …" })).toContain("blocked at one step. Refs: «보스 방». The player must");
+  });
+
+  it("refNames reads the current project first, then the starting save for what this turn deleted", () => {
+    const before = project({ maps: { map_grave: { id: "map_grave", name: "옛 묘지", events: [{ id: "ev_gone", name: "사라진 묘지기", x: 2, y: 3 }] } } });
+    const both = refNames(village, before);
+    expect(both.name("map_grave")).toBe("묘지");
+    expect(both.event("ev_gone")).toEqual({ name: "사라진 묘지기", mapId: "map_grave", x: 2, y: 3 });
+    expect(both.event("ev_stone", "map_village")?.mapId).toBe("map_grave");
+    expect(both.name("actor_none")).toBeUndefined();
   });
 
   it("a rule that bundles many checks names the tools its Korean line names", () => {
     const en = findingEn(tagged("ship", "romance-gap", "게임 제목이 기본값 「새 프로젝트」 그대로입니다 — set_title_screen {title} 로 이 게임의 이름을 정하세요."))!;
     expect(en).toContain("Fix that part with set_title_screen.");
-    expect(NON_ASCII.test(en)).toBe(false);
+    expect(NON_ASCII.test(ourWords(en))).toBe(false);
   });
 
   it("has no English for rules outside the table — the Korean line goes to the model as before", () => {
@@ -81,6 +112,10 @@ describe("gate items carry the English text for the model and the Korean line fo
     expect(p!.text).toBe(ko);
     expect(p!.en).toContain("[game weather] The request asks for rain");
     expect(gateProblems([tagged("game", "새 규칙", "아직 표에 없는 검사")])[0]!.en).toBeUndefined();
+    // 이름표를 주면 대상에 이름이 붙는다 — 한국어 줄은 그대로.
+    const [named] = gateProblems([tagged("ship", "map-bgm", "맵 1장(마을)이 편집기 기본 필드 곡을 튼다", { evidence: "map_village" })], names);
+    expect(named!.en).toContain("Refs: «마을» (map_village).");
+    expect(named!.text).toBe("[출하 차단 map-bgm] 맵 1장(마을)이 편집기 기본 필드 곡을 튼다");
   });
 
   it("the todo item shows English to the model and Korean in the report view", () => {

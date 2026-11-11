@@ -77,8 +77,8 @@ const MARK_EN: Record<TodoStatus, string> = { pending: "○", in_progress: "→"
 const clip = (text: string, max: number) => (text.length > max ? `${text.slice(0, max)}…` : text);
 /** 함수가 덧붙이는 묶음 이름의 영어(모델용 보기) — 조수가 지은 묶음 이름은 쓴 그대로 둔다. */
 const PHASE_EN: Readonly<Record<string, string>> = { "함수 검사": "function checks", "비평": "critique", "요청 뼈대": "request skeleton" };
-/** 관문 항목의 영어 글 상한 — 표의 글(가장 긴 것 450자) + 대상이 잘리지 않을 만큼. 영어는 같은 뜻에 글자가 더 들지만 토큰은 덜 든다. */
-const EN_MAX = 640;
+/** 관문 항목의 영어 글 상한 — 표의 글(가장 긴 것 450자) + 대상(이름·id·칸 여섯까지)이 잘리지 않을 만큼. 영어는 같은 뜻에 글자가 더 들지만 토큰은 덜 든다. */
+const EN_MAX = 800;
 const norm = (text: string) => text.toLowerCase().replace(/\s+/gu, " ").trim();
 
 /** 확인 종류 한 줄. en 이면 모델용 영어(이름·대사 낱말은 그대로). */

@@ -18,7 +18,7 @@ import { placeFixVerbs } from "./placeFix";
 import { V2_MAX_REPAIR_ROUNDS } from "../turn/session";
 import { stageOpensBattle } from "../story/stageBattle";
 import { findingKey, findingLine, tagged, type Finding } from "./finding";
-import { findingEn } from "./findingEn";
+import { findingEn, refNames, type RefNames } from "./findingEn";
 
 /** 음악 요청의 일감인 게임 검사 — 나머지(이미 있던 위협·출하 차단 등)는 음악만 바라는 요청에서 참고다. */
 const MUSIC_WORK: ReadonlySet<string> = new Set(["음악", "효과음", "실행", "부작용"]);
@@ -34,12 +34,12 @@ export interface V2GateProblem { readonly key: string; readonly text: string; re
 const gateKey = (text: string): string => text.replace(/\d+/gu, "#").replace(/\s+/gu, " ").trim().slice(0, 160);
 const textKey = (f: Finding): string => (f.judge === "play" ? `${AUTOPLAY_GATE_PREFIX}${f.target?.ref ?? ""}` : `game:${gateKey(findingLine(f))}`);
 
-/** 판정이 낸 문제들을 관문 문제로 — 열쇠는 규칙·대상(findingKey). 한 번에 같은 열쇠가 둘 이상이면 글로 갈라 하나로 뭉개지 않는다. */
-export function gateProblems(findings: readonly Finding[]): V2GateProblem[] {
+/** 판정이 낸 문제들을 관문 문제로 — 열쇠는 규칙·대상(findingKey). 한 번에 같은 열쇠가 둘 이상이면 글로 갈라 하나로 뭉개지 않는다. names = 영어 글의 대상에 붙일 프로젝트 이름표. */
+export function gateProblems(findings: readonly Finding[], names?: RefNames): V2GateProblem[] {
   const count = new Map<string, number>();
   for (const f of findings) count.set(findingKey(f), (count.get(findingKey(f)) ?? 0) + 1);
   return findings.map((f) => {
-    const en = findingEn(f);
+    const en = findingEn(f, names);
     return {
       key: count.get(findingKey(f))! > 1 ? `${findingKey(f)}:${gateKey(findingLine(f))}` : findingKey(f),
       text: findingLine(f), source: "gate" as const, finding: f, textKey: textKey(f), ...(en ? { en } : {}),
@@ -126,7 +126,7 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
   // 작은 수정·음악 요청 턴이 «게임으로 시작한 프로젝트»의 옛 맵 화면 그림 때문에 막히지 않게: 이번 턴이 게임 하나를 짓는 일(buildsWholeGame — 이어 하기 턴도)이거나 시작 저장본에는 없던 map-view 일 때만.
   if (env && (buildsWholeGame(env.ctx.project, env.request.task) || mapViewArtProblems(env.request.project, session, !!env.generateImage, env.request.task).length === 0)) game.push(...mapViewArtProblems(env.ctx.project, session, !!env.generateImage, env.request.task));
   const problems: V2GateProblem[] = [
-    ...gateProblems([...game, ...(env && !settingOnly && !storeOnly ? autoPlayFindings(env.ctx.project, env.request.task) : [])]),
+    ...gateProblems([...game, ...(env && !settingOnly && !storeOnly ? autoPlayFindings(env.ctx.project, env.request.task) : [])], env ? refNames(env.ctx.project, env.request.project) : undefined),
     // 열쇠는 맵(과 장소/컷신)마다 하나 — 고칠 때마다 문제 글이 바뀌어도 같은 항목이 다시 열려 시도 상한(3)이 센다.
     ...fixable.map((o) => ({ key: `place:${o.mapId}:${o.name.includes("컷신(") ? "stage" : "place"}`, text: `${o.name}(${o.mapId}) 고치기 — ${placeFixVerbs(session, env?.ctx.project, o.mapId)}, 컷신은 add_event: ${o.problems.slice(0, 5).join(" / ")}`,
       source: o.problems.some((p) => p.startsWith("[비평")) ? "critic" as const : "gate" as const })),

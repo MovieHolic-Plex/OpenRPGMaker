@@ -621,20 +621,23 @@ golden: 123/153 이 `furnish_outdoor_area` 글/스키마만 바뀜(실리고 빠
 **규칙.**
 
 - 영어 글은 `judge/findingEn.ts` 한 곳에 있다 — 규칙(·갈래)마다 한 줄, 151개(게임 검사 82 · 출하 차단 68 · 자동 플레이 1). 꼴: `[<묶음> <영어 이름>] 무엇이 틀렸나. Refs: <대상>. 고치는 호출.`
-  글은 ASCII 만 쓴다. 고치는 호출은 한국어 줄이 이르는 그 도구 그대로다.
-- **이름 대신 대상.** 한국어 줄 속 이름(「촌장」 · 「잿불 마을」)은 싣지 않고 id·좌표를 싣는다(`Refs: map_grave ev_stone (4,7).`): `Finding.target`, 그다음 줄과 증거 속의 프로젝트 id(`map_…` `ev_…` `sw_…` `actor_…` …)와 `(x,y)`, 최대 6개.
-  증거가 ASCII 면 통째로 싣는다(`counted=0 need=6 uncounted=1` — 수가 뜻이다). 표의 글에 이미 든 예시 id(`state_poison`)는 되풀이하지 않는다. 대상은 첫 문장 바로 뒤에 온다 — 항목 글을 앞에서 잘라 보이는 자리에서도 문제가 먼저 읽힌다. 잘라 보이는 자리(상태 카드의 Do now 120자 · Still open 50자, 「아직 막힘이 아니다」 답 80자)는 영어 글이면 상한이 1.8배다(`modelTextCut` — 216 · 90 · 144자): 영어는 같은 뜻에 글자가 더 들어, 같은 상한이면 고치는 호출이 잘린다.
+  **우리가 쓰는 글**은 ASCII 만이다. 고치는 호출은 한국어 줄이 이르는 그 도구 그대로다.
+- **대상 = «이름» + id · 맵 · 칸.** 프로젝트의 이름(「별의 봉인」 · 「잿불 마을」)은 자료다 — 저장된 그대로 `«»` 안에 싣고 바로 뒤에 id 를 적는다: 이벤트 `«별의 봉인» (ev_chain_kh3jdia_7 @ map_x (6,5))`, 맵·기록·스위치·엔딩 `«잿불 마을» (map_ember_village)`.
+  id 만 주면 모델이 그것이 누구인지 알려고 조회부터 한다 — 요청·할 일·도구 결과는 모두 이름으로 말한다(리드 결정 2026-11-11). 이름은 `refNames(지금 프로젝트, 시작 저장본)` 이 찾는다(맵 · 이벤트 · database 기록 · 스위치 · 변수 · 공통 이벤트 · 엔딩 · 퀘스트; 이번 턴에 지워진 것은 시작 저장본에서). 이름표에 없는 id 는 id 만 실린다.
+  차례는 `Finding.target`, 그다음 줄과 증거 속의 id(`map_…` `ev_…` `sw_…` `actor_…` …)와 `(x,y)`, 최대 6개. 증거가 ASCII 이고 수가 들었으면 통째로 싣는다(`counted=0 need=6 uncounted=1`, 그 안의 id 에도 이름이 붙는다 — `«봄을 기다리는 노래» (ending_8hw9rp): lines=4 …`).
+  표의 글에 이미 든 예시 id(`state_poison`)는 되풀이하지 않는다. 대상은 첫 문장 바로 뒤에 온다 — 항목 글을 앞에서 잘라 보이는 자리에서도 문제가 먼저 읽힌다. 잘라 보이는 자리(상태 카드의 Do now 120자 · Still open 50자, 「아직 막힘이 아니다」 답 80자)는 영어 글이면 상한이 1.8배다(`modelTextCut` — 216 · 90 · 144자): 영어는 같은 뜻에 글자가 더 들어, 같은 상한이면 고치는 호출이 잘린다.
+  **다음 걸음(지금은 다리다):** 줄·증거에서 id 를 정규식으로 다시 읽지 않게, 판정이 `Finding.target`/`evidence` 에 대상을 직접 싣는다 — 지금 `target` 을 다는 곳은 이벤트·맵 하나를 짚는 검사뿐이다.
 - 한 규칙이 여러 검사를 묶은 것(`romance-gap`)은 표가 고치는 도구를 알 수 없다 — 한국어 줄이 이르는 도구 이름을 그대로 싣는다(`Fix that part with set_title_screen.`).
   출하 차단의 갈래는 증거 머리에서 읽는다(`requested-feature-missing` = 「chaser: …」 · `bundled-picture` = 「titleScreen.…」/「endings[…]…」).
-- **흐름.** `finishGate.gateProblems` 가 `V2GateProblem.en = findingEn(finding)` → `gates.syncGateItems` 가 `TodoItem.en` 으로(글이 바뀌면 같이 바뀌고, 영어 글이 없어지면 지운다) → 모델에게 보이는 자리는 `modelText(item) = item.en ?? item.content`:
+- **흐름.** `finishGate.gateProblems(findings, names)` 가 `V2GateProblem.en = findingEn(finding, names)` → `gates.syncGateItems` 가 `TodoItem.en` 으로(글이 바뀌면 같이 바뀌고, 영어 글이 없어지면 지운다) → 모델에게 보이는 자리는 `modelText(item) = item.en ?? item.content`:
   재주입 글(`loop/continuation`) · `todo` 도구의 답(`loop/todoTools`) · 상태 카드의 Do now/Still open(`turn/modelHooks`) · 영어 체크리스트(`todoStore.viewEn`). 함수가 붙이는 묶음 이름도 영어다(`[function checks]` · `[critique]` · `[request skeleton]`).
 - **한국어 그대로인 것.** 항목의 `content`(보고 표 · 화면의 할 일 · `execution_status` · 저장된 `assistantTodo`)와 한국어 체크리스트(`view`). 항목 글에서 맵 id·도구 이름을 읽는 코드(`loop/nextCall` · `turn/carryOver` · `gates.namedTools`)도 `content` 를 읽는다 — 영어 글은 판정에 쓰지 않는다.
-- 표에 없는 규칙은 `en` 이 없고 한국어 줄이 전과 같이 간다. **새 검사를 더하면 표에 한 줄을 더한다** — 탐침이 소스의 `tagged("game"|"ship", …)` · 출하 차단 id 144곳을 훑어 표에 없는 규칙을 센다(지금 0), 시험은 표의 모든 글이 ASCII 인지 본다.
+- 표에 없는 규칙은 `en` 이 없고 한국어 줄이 전과 같이 간다. **새 검사를 더하면 표에 한 줄을 더한다** — 탐침이 소스의 `tagged("game"|"ship", …)` · 출하 차단 id 144곳을 훑어 표에 없는 규칙을 센다(지금 0), 시험은 표의 모든 글이 ASCII 인지, 이름이 `«»` 안에만 있는지 본다.
 - **아직 한국어로 가는 관문 글**(이 조각 밖): 장소 고치기 묶음(`place:<mapId>` — 기계 검사·비평 글을 이어 붙인 줄) · 칸 배치 문제(`placeLayoutProblems`) · 요청 뼈대 항목 · 화면 검수·검토자 항목(F5). 장면 손질 줄(`[scene …]`)은 처음부터 영어다(인용한 대사만 한국어).
 
-**증거.** golden 같다(153) · 판정 줄 덤프(3,066칸 · 1,264줄) 다른 칸 0 — 한국어 줄은 그대로다. 말뭉치 관문 문제 1,405건 모두 영어 글이 있고 ASCII 밖 글자 0, 가장 긴 것 526자(표 글 길이 중앙 251 · 최대 456).
+**증거.** golden 같다(153) · 판정 줄 덤프(3,066칸 · 1,264줄) 다른 칸 0 — 한국어 줄은 그대로다. 말뭉치 관문 문제 1,405건 모두 영어 글이 있고 `«»` 밖에 ASCII 밖 글자 0, 이름이 실린 것 %NAMED%건, 이름 없이 id 만 실린 대상 0, 가장 긴 것 %MAXLEN%자(표 글 길이 중앙 251 · 최대 456).
 turnTrace(5개 장면 · 376줄)는 79줄이 바뀐다: 모델에게 가는 줄(재주입 · 상태 카드 · `todo` 답)의 관문 항목 글이 영어가 되고 묶음 이름이 `[function checks]` 가 된 것 55줄, 그 글이 든 data 의 해시만 바뀐 상태 줄 21줄, 마지막 `todo` 줄 3줄(항목 8 · 9 · 9개에 `en` 칸이 더해지고 그 밖은 같다). small-write · question 장면은 같다.
-시험 `test/aiV2FindingEn.test.ts`. **재지 않은 것:** 실제 모델이 영어 글을 더 잘 따르는지 — 리드가 Terra 로 잰다(작은 일 30가지).
+시험 `test/aiV2FindingEn.test.ts`. **재지 않은 것:** 실제 모델이 영어 글을 더 잘 따르는지 — 리드가 Terra 로 잰다(게임 하나 전/후).
 
 ## 작은 요청의 끝맺음 — 게임을 짓는 턴에만 청사진 끝맺음을 돈다 (2026-11-11, 작은 일 기준선)
 

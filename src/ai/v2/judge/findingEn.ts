@@ -1,5 +1,7 @@
 // 관문 문제의 모델용 영어 글 — 규칙(·갈래)마다 한 줄: 무엇이 틀렸나 + 고치는 호출. 값싼 모델은 영어 피드백을 더 잘 따른다(2026-10-30 「모델에게 가는 글은 영어」).
-// 보고·장부·화면에는 한국어 줄(Finding.ko)이 그대로 실린다 — 이 표는 할 일 항목의 en 으로만 간다. 글은 ASCII 만 쓴다(이름 대신 id·좌표를 싣는다).
+// 보고·장부·화면에는 한국어 줄(Finding.ko)이 그대로 실린다 — 이 표는 할 일 항목의 en 으로만 간다. 우리가 쓰는 글은 ASCII 만이고,
+// 프로젝트의 이름(「별의 봉인」)은 자료라 저장된 그대로 «» 안에 id·칸과 같이 싣는다 — id 만 주면 모델이 누구인지 알려고 조회부터 한다.
+import type { Project } from "@/project/types";
 import type { Finding } from "./finding";
 
 /** 게임 검사 — 열쇠는 표지의 주제(와 갈래). */
@@ -163,20 +165,68 @@ const SHIP: Readonly<Record<string, string>> = {
 const PLAY = "[play autoplay] Auto-play cannot reach an ending: the route is blocked at one step. The player must be able to walk from the start to the ending. Fix the path at the blocked place (door, create_transfer_pair, walkable cells) or the event that turns on that step's switch, then finish again. If it cannot be fixed, do not report the game as complete; name the blocked place in the report.";
 
 const NON_ASCII = /[^\x20-\x7e]/u;
-/** 줄·증거에서 뽑는 대상 — 프로젝트 id(map_… · ev_… · sw_… …)와 칸 좌표. 이름(한국어) 대신 이것이 영어 글에 실린다. */
+/** 줄·증거에서 뽑는 대상 — 프로젝트 id(map_… · ev_… · sw_… …)와 칸 좌표. */
 const REF = /\b(?:map|ev|sw|var|actor|troop|enemy|skill|item|state|equip|ending|quest|class)_[A-Za-z0-9][\w-]*|\bmap-view:[\w-]+|\(\d+,\s?\d+\)/gu;
+const isId = (ref: string): boolean => !ref.startsWith("(") && !ref.startsWith("map-view:");
 const MAX_REFS = 6;
 
-function refsOf(f: Finding, body: string): string {
+/** 프로젝트의 이름표 — id 로 저장된 이름(이벤트는 맵·칸까지)을 찾는다. */
+export interface RefNames {
+  name(id: string): string | undefined;
+  event(id: string, mapId?: string): { readonly name: string; readonly mapId: string; readonly x: number; readonly y: number } | undefined;
+}
+
+/** 앞에 준 프로젝트가 이긴다 — 지금 것 다음에 시작 저장본을 주면 이번 턴에 지워진 이벤트·기록의 이름도 찾는다. */
+export function refNames(...projects: readonly Project[]): RefNames {
+  const names = new Map<string, string>();
+  const events = new Map<string, { name: string; mapId: string; x: number; y: number }[]>();
+  const put = (id: unknown, name: unknown) => { if (typeof id === "string" && typeof name === "string" && name.trim() && !names.has(id)) names.set(id, name.trim()); };
+  for (const project of projects) {
+    for (const map of Object.values(project.maps)) {
+      put(map.id, map.name);
+      for (const ev of map.events ?? []) {
+        const at = events.get(ev.id) ?? [];
+        if (!at.some((e) => e.mapId === map.id)) at.push({ name: String(ev.name ?? "").trim(), mapId: map.id, x: ev.x, y: ev.y });
+        events.set(ev.id, at);
+      }
+    }
+    for (const rows of [...Object.values(project.database), project.switches, project.variables, project.commonEvents, project.endings ?? [], project.quests ?? []]) {
+      if (Array.isArray(rows)) for (const row of rows as readonly { id?: unknown; name?: unknown; title?: unknown }[]) put(row?.id, row?.name ?? row?.title);
+    }
+  }
+  return { name: (id) => names.get(id), event: (id, mapId) => { const at = events.get(id); return at?.find((e) => e.mapId === mapId) ?? at?.[0]; } };
+}
+
+const quoted = (name: string | undefined): string => (name ? `«${name.replace(/[«»]/gu, "").slice(0, 40)}» ` : "");
+
+/** id 하나를 «이름» (id) 로 — 이벤트는 «이름» (id @ 맵 (x,y)). 이름표가 없거나 거기 없는 id 는 id 그대로. */
+function named(id: string, names: RefNames | undefined, mapId?: string): string {
+  const ev = names?.event(id, mapId);
+  if (ev) return `${quoted(ev.name)}(${id} @ ${ev.mapId} (${ev.x},${ev.y}))`;
+  const name = names?.name(id);
+  return name ? `${quoted(name)}(${id})` : id;
+}
+
+function refsOf(f: Finding, body: string, names: RefNames | undefined): string {
   const out: string[] = [];
-  const add = (ref: string | undefined) => { if (ref && !NON_ASCII.test(ref) && !out.includes(ref) && !body.includes(ref)) out.push(ref); };
-  add(f.target?.mapId); add(f.target?.eventId); add(f.target?.ref);
-  if (f.target?.x !== undefined && f.target.y !== undefined) add(`(${f.target.x},${f.target.y})`);
-  // 증거가 ASCII 면 통째로(「counted=1 need=4」 처럼 수가 뜻이다), 아니면 id·좌표만.
-  const evidence = f.evidence?.trim() ?? "";
-  if (evidence && evidence.length <= 120 && !NON_ASCII.test(evidence)) add(evidence);
-  for (const m of `${f.ko} ${evidence}`.matchAll(REF)) { if (out.length >= MAX_REFS) break; if (!out.some((o) => o.includes(m[0]))) add(m[0]); }
-  return out.slice(0, MAX_REFS).join(" ");
+  const seen = (ref: string): boolean => body.includes(ref) || out.some((o) => o.includes(ref));
+  const t = f.target, evidence = f.evidence?.trim() ?? "", text = `${f.ko} ${evidence}`;
+  // 이벤트가 어느 맵 것인지 — 대상이 말하면 그 맵, 아니면 줄에 처음 나온 맵.
+  const mapId = t?.mapId ?? [...text.matchAll(REF)].map((m) => m[0]).find((ref) => ref.startsWith("map_"));
+  const addId = (id: string | undefined) => { if (id && !NON_ASCII.test(id) && !seen(id)) out.push(named(id, names, mapId)); };
+  addId(t?.eventId); addId(t?.mapId);
+  // ref 가 id 가 아니라 이름(자동 플레이의 막힌 단계)이면 이름으로.
+  if (t?.ref && NON_ASCII.test(t.ref)) out.push(quoted(t.ref).trim()); else addId(t?.ref);
+  if (t?.x !== undefined && t.y !== undefined && !seen(`(${t.x},${t.y})`)) out.push(`(${t.x},${t.y})`);
+  // 증거가 ASCII 이고 id 말고도 뜻이 있으면(「counted=1 need=4」) 통째로 — 그 안의 id 에도 이름을 붙인다.
+  if (evidence && evidence.length <= 120 && !NON_ASCII.test(evidence) && /[A-Za-z0-9]/u.test(evidence.replace(REF, "")) && !seen(evidence)) {
+    out.push(evidence.replace(REF, (ref) => (isId(ref) && !seen(ref) ? named(ref, names, mapId) : ref)));
+  }
+  for (const m of text.matchAll(REF)) {
+    if (out.length >= MAX_REFS) break;
+    if (!seen(m[0])) out.push(isId(m[0]) ? named(m[0], names, mapId) : m[0]);
+  }
+  return out.slice(0, MAX_REFS).join(", ");
 }
 
 /** 규칙 하나가 여러 검사를 묶은 것(연애 완성도)은 표가 고치는 도구를 알 수 없다 — 한국어 줄이 이르는 도구 이름을 그대로 싣는다. */
@@ -198,12 +248,15 @@ function textOf(f: Finding): string | undefined {
   return (variant ? table[`${f.id}/${variant}`] : undefined) ?? table[f.id];
 }
 
-/** 모델이 받는 영어 글 — «[묶음 규칙] 무엇이 틀렸나. Refs: 대상. 고치는 호출.». 표에 없는 규칙은 undefined(한국어 줄이 그대로 간다). */
-export function findingEn(f: Finding): string | undefined {
+/**
+ * 모델이 받는 영어 글 — «[묶음 규칙] 무엇이 틀렸나. Refs: «이름» (id @ 맵 (x,y)), …. 고치는 호출.». 표에 없는 규칙은 undefined(한국어 줄이 그대로 간다).
+ * names 를 주면 대상 id 옆에 프로젝트의 이름을 싣는다.
+ */
+export function findingEn(f: Finding, names?: RefNames): string | undefined {
   if (f.en) return f.en;
   const text = textOf(f)?.replace("{tools}", () => namedTools(f.ko));
   if (!text) return undefined;
-  const refs = refsOf(f, text);
+  const refs = refsOf(f, text, names);
   if (!refs) return text;
   // 대상은 첫 문장(무엇이 틀렸나) 바로 뒤에 — 항목 글을 앞에서 잘라 보이는 자리(Do now 120자 · Still open 50자)에서도 문제가 먼저 읽힌다.
   const cut = text.indexOf(". ");
