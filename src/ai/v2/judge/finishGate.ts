@@ -17,7 +17,7 @@ import { V2Session } from "../turn/session";
 import { placeFixVerbs } from "./placeFix";
 import { V2_MAX_REPAIR_ROUNDS } from "../turn/session";
 import { stageOpensBattle } from "../story/stageBattle";
-import { findingLine, fromLine, tagged, type Finding } from "./finding";
+import { findingLine, tagged, type Finding } from "./finding";
 
 /** 음악 요청의 일감인 게임 검사 — 나머지(이미 있던 위협·출하 차단 등)는 음악만 바라는 요청에서 참고다. */
 const MUSIC_WORK: ReadonlySet<string> = new Set(["음악", "효과음", "실행", "부작용"]);
@@ -36,7 +36,7 @@ const gameKey = (f: Finding): string => `game:${gateKey(findingLine(f))}`;
 /** 게임 내용 검사(날씨·엔딩·상태·물건·깃발·부작용 + 전투 + 출하 차단). before = 요청 시작 저장본. */
 function gameFindings(before: Project, after: Project, task: string, writes?: StageWrites): Finding[] {
   const game: Finding[] = [];
-  try { game.push(...gameContentProblems(before, after, task).map(fromLine), ...unaskedChanges(before, after, task, writes)); } catch { game.length = 0; }
+  try { game.push(...gameContentProblems(before, after, task), ...unaskedChanges(before, after, task, writes)); } catch { game.length = 0; }
   // 끝까지 깰 수 있는 전투인가(2026-10-25 판정 J55·J4): 회복 수단 없음·시키지 않은 무작위 조우·첫 구역이 너무 센 조우.
   try { game.push(...combatProblems(before, after, task)); } catch { /* 검사 실패는 무시 */ }
   // 새로 둔 보이는 적을 시작 파티로 재기(2026-10-30 omo-fr-o: 「약한 몬스터」 숲에 승률 93% 무리를 두어 판정자가 졌다) — 청사진 길 밖 전투까지.

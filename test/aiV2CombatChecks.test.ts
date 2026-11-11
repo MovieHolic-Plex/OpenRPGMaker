@@ -7,8 +7,8 @@ import type { Project } from "@/project/types";
 import { findingLine } from "@/ai/v2/judge/finding";
 
 // 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
-const combatLines = (...args: Parameters<typeof combatProblems>): string[] => combatProblems(...args).map(findingLine);
 const weakPaidLines = (...args: Parameters<typeof weakPaidSkills>): string[] => weakPaidSkills(...args).map(findingLine);
+const combatLines = (...args: Parameters<typeof combatProblems>): string[] => combatProblems(...args).map(findingLine);
 
 const WHOLE = "견습 기사가 세 가지 시험을 통과해 기사가 되는 RPG 만들어 줘. 서임식이 엔딩.";
 
