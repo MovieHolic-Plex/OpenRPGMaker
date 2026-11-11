@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { stickRuns, stickSector, stickSectorKeys } from "@/player/touchPad";
+import { padRuns, stickSector, stickSectorKeys } from "@/player/touchPad";
 import { normalizeTouchControls, resolveTouchControls } from "@/project/touchControls";
 
 const at = (deg: number, r = 40): [number, number] => [Math.cos((deg * Math.PI) / 180) * r, Math.sin((deg * Math.PI) / 180) * r];
@@ -33,12 +33,12 @@ describe("touch stick sectors (2026-10-24 mobile feel)", () => {
   });
 });
 
-describe("stick deflection runs (2026-10-25, no separate Run button)", () => {
-  it("runs past 70% of the radius, walks again below 60%", () => {
-    expect(stickRuns(30, 58, false)).toBe(false);
-    expect(stickRuns(41, 58, false)).toBe(true);
-    expect(stickRuns(37, 58, true)).toBe(true);
-    expect(stickRuns(34, 58, true)).toBe(false);
+describe("running on touch = holding A (2026-11-11, replaces «push the stick past 70%»)", () => {
+  it("runs while A is held, and never sends the dash key under always-run (Shift would invert to walking)", () => {
+    expect(padRuns(false, false)).toBe(false);
+    expect(padRuns(true, false)).toBe(true);
+    expect(padRuns(true, true)).toBe(false);
+    expect(padRuns(false, true)).toBe(false);
   });
 });
 
