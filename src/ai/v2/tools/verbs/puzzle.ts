@@ -2,7 +2,7 @@
 import { SET_OBJECTIVE_DESCRIPTION } from "@/ai/agentRules";
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { buildPuzzleChain, sealLockedRoom, type ChainArgs } from "../../story/puzzle";
-import { planObjective } from "../../judge/discoverability";
+import { planObjective } from "../../judge/objectivePlan";
 import { text } from "../support";
 import type { VerbContext } from "../context";
 
