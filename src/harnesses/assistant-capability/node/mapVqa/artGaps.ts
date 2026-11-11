@@ -1,6 +1,6 @@
 // 없는 그림 장부(art-gaps) — 맵을 잘못 깐 결함과 따로 센다. 세 갈래를 모은다:
 //   (a) 검수자가 본 «이름은 있는데 그림에 없는 것»: 요청·이벤트 이름·빌더 이름표가 가리키는데 맵에 그려지지 않은 것(노점 없는 시장, 배 없는 항구, 맨바닥의 «책장» 이벤트)
-//   (b) 빌더·도구가 스스로 적은 것: 결과의 missingArt, «그리기 카드를 대기열에», «이름이 맞는 기물이 이미 있다 → 이것을 써라», «…쪽을 보는 그림이 없다», «그림이 없어 빠졌다», 그림을 까닭으로 막힌 할 일
+//   (b) 빌더·도구가 스스로 적은 것: 없는 그림 기록(src/project/artGap.ts — 턴 기록의 artGaps, 옛 실행은 결과 글의 `[art-gap]` 줄), 그 모양이 아닌 missingArt 글, «그리기 카드를 대기열에», «이름이 맞는 기물이 이미 있다 → 이것을 써라», «…쪽을 보는 그림이 없다», «그림이 없어 빠졌다», 그림을 까닭으로 막힌 할 일
 //   (c) 다른 주제의 대역: 사막 맵의 숲 전투 배경, 피라미드의 «광산 해골 궁수» — 문서의 사실(전투 배경 id · 싸우는 적 이름)을 검수자에게 주고 판단을 받는다
 // 결과 art-gaps.json = 칩셋 × 없는 것 × 그것을 바란 맵·실행 수 × 대신 쓰인 것, 많이 바란 순 — 그림 하네스의 그릴 차례다.
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -8,6 +8,7 @@ import { resolve } from 'node:path';
 import type { Project } from '../../../../project/types';
 import { askJudge, extractJson, type JudgeUsage } from '../visualJudge';
 import { allCommands } from '../smallJobs/checkSupport';
+import { parseArtGap, type ArtGap } from '../../../../project/artGap';
 
 export const ART_GAPS_VERSION = 'art-gaps-v1';
 export const ART_GAPS_SYSTEM = [
@@ -72,7 +73,12 @@ export async function askArtGaps(input: { cacheDir: string; usage: JudgeUsage; c
 }
 
 // ── (b) 빌더·도구가 적은 것 ───────────────────────────────────────────────
-export type ToolReport = { kind: 'missing-art' | 'card-queued' | 'stand-in-offered' | 'no-direction-art' | 'feature-dropped' | 'blocked-todo'; thing: string; instead: string; chipset: string; tool: string; text: string };
+export type ToolReport = { kind: 'art-gap' | 'missing-art' | 'card-queued' | 'stand-in-offered' | 'no-direction-art' | 'feature-dropped' | 'blocked-todo'; thing: string; instead: string; chipset: string; tool: string; text: string;
+  /** 없는 그림 기록에서 온 것만: 무엇의 자리인가(backdrop · foe · cave-mouth …)와 장소 테마. */ want?: string; theme?: string };
+/** 없는 그림 기록 하나 → 신고. 대역이 없으면(그대로 둠) instead 는 비운다. */
+export function reportOfArtGap(gap: ArtGap, tool: string): ToolReport {
+  return { kind: 'art-gap', thing: gap.wanted, instead: gap.standIn === 'none' ? '' : gap.standIn, chipset: gap.chipset ?? '', tool: gap.by ?? tool, text: `${gap.where}${gap.note ? ` · ${gap.note}` : ''}`, want: gap.want, ...(gap.theme ? { theme: gap.theme } : {}) };
+}
 /** 도구 결과 글 하나에서 «그림이 없다»는 신고를 꺼낸다. 엔딩·타이틀 그림 이야기(맵 칩셋과 무관)는 건드리지 않는다. */
 export function toolReportsIn(tool: string, text: string): ToolReport[] {
   const out: ToolReport[] = [], seen = new Set<string>();
@@ -82,8 +88,14 @@ export function toolReportsIn(tool: string, text: string): ToolReport[] {
     seen.add(key);
     out.push({ chipset: '', ...report, tool, text: text.slice(Math.max(0, at - 60), at + 200).replace(/\s+/gu, ' ') });
   };
-  for (const match of text.matchAll(/"missingArt":\s*\[([^\]]+)\]/gu)) {
-    for (const item of match[1]!.matchAll(/"((?:[^"\\]|\\.)+)"/gu)) push({ kind: 'missing-art', thing: item[1]!.replace(/\s*\(.*$/u, '').trim(), instead: /카드 대기/u.test(item[1]!) ? '없음(그리기 카드 대기)' : '' }, match.index!);
+  // 목록 안의 글은 따옴표째로 건넌다 — 기록 줄은 `[art-gap]` 로 시작해 닫는 대괄호를 품는다.
+  for (const match of text.matchAll(/"missingArt":\s*\[((?:"(?:[^"\\]|\\.)*"|[^\]"])+)\]/gu)) {
+    for (const item of match[1]!.matchAll(/"((?:[^"\\]|\\.)+)"/gu)) {
+      // 기록 모양의 줄은 글로 짐작하지 않고 그대로 읽는다(턴 기록에 artGaps 가 없던 옛 실행).
+      const gap = parseArtGap(item[1]!);
+      if (gap) { const report = reportOfArtGap(gap, tool); if (!seen.has(`art-gap|${report.thing}`)) { seen.add(`art-gap|${report.thing}`); out.push(report); } }
+      else push({ kind: 'missing-art', thing: item[1]!.replace(/\s*\(.*$/u, '').trim(), instead: /카드 대기/u.test(item[1]!) ? '없음(그리기 카드 대기)' : '' }, match.index!);
+    }
   }
   for (const match of text.matchAll(/「([^」]{1,40})」 그리기 카드를 대기열에 올렸다([^\n]{0,160})/gu)) push({ kind: 'card-queued', thing: match[1]!, instead: '없음(그리기 카드 대기)', chipset: /칩셋 ([\w-]+)/u.exec(match[2]!)?.[1] ?? '' }, match.index!);
   for (const match of text.matchAll(/「([^」]{1,40})」과\(와\) 이름이 맞는 기물이 이 칩셋에 이미 있다[^:]*:\s*([\w-]+)\(((?:[^()]|\([^()]*\)){1,60})\)/gu)) push({ kind: 'stand-in-offered', thing: match[1]!, instead: `${match[3]}(${match[2]})` }, match.index!);
@@ -103,6 +115,8 @@ export function toolReportsOfSession(sessionDir: string): ToolReport[] {
   const all = new Map<string, ToolReport>();
   for (const name of readdirSync(turns).filter(file => /^\d+\.json$/u.test(file)).sort()) {
     let turn: any; try { turn = JSON.parse(readFileSync(resolve(turns, name), 'utf8')); } catch { continue; }
+    // 턴 끝 요약의 없는 그림 기록 — 정본. 같은 것을 결과 글에서 다시 읽은 신고는 같은 열쇠라 한 번만 남는다.
+    for (const gap of (Array.isArray(turn.artGaps) ? turn.artGaps : []) as ArtGap[]) { const report = reportOfArtGap(gap, 'finish'); all.set(`${report.kind}|${report.thing}`, all.get(`${report.kind}|${report.thing}`) ?? report); }
     for (const call of turn.toolCalls ?? []) for (const report of toolReportsIn(String(call.name ?? ''), String(call.modelText ?? call.summary ?? ''))) all.set(`${report.kind}|${report.thing}`, all.get(`${report.kind}|${report.thing}`) ?? report);
   }
   return [...all.values()];

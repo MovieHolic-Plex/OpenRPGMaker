@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **193쪽 / 8368KB / 약 2,461,501 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **193쪽 / 8371KB / 약 2,462,340 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 75KB | 19KB | 489 | ~22,312 |
-| `openwiki/assistant-v2.md` | 441KB | 48KB | 1918 | ~133,774 |
+| `openwiki/assistant-v2.md` | 443KB | 48KB | 1931 | ~134,422 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,768 |
 | `openwiki/beodeul-city.md` | 240KB | 19KB | 1189 | ~73,036 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
@@ -32,7 +32,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-validation.md` | 64KB | 17KB | 419 | ~18,019 |
 | `openwiki/editor-workflows-misc.md` | 92KB | 35KB | 637 | ~25,927 |
 | `openwiki/editor-workshop.md` | 76KB | 15KB | 337 | ~22,898 |
-| `openwiki/harnesses/assistant-capability.md` | 134KB | 15KB | 915 | ~40,659 |
+| `openwiki/harnesses/assistant-capability.md` | 134KB | 15KB | 915 | ~40,784 |
 | `openwiki/harnesses/building-kit.md` | 99KB | 4KB | 984 | ~29,868 |
 | `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
 | `openwiki/harnesses/monster-collect-species.md` | 63KB | 18KB | 353 | ~19,132 |
@@ -75,7 +75,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/ai-workflow.md` | 10 | `.omo/evidence/ai-assistant-failure-modes.md`, `20260709000000_ai_activity_logs.sql`, `docs/2026-07-10-tool-calling-architecture-review.md`, `docs/tool-catalog.md`, `latest.json`, `src/ai/plannerSkip.ts`, `test/authorVillageScopeGate.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/architecture.md` | 7 | `.lazy.ts`, `.mjs`, `app.cjs`, `bridge.js`, `editor-demo-load.mjs`, `player.js`, `project.json` |
 | `openwiki/asset-store.md` | 23 | `DATA/store-uploads.json`, `OpenRPGMaker-store/scripts/storeCli.ts`, `deploy/README.md`, `installed.json`, `loading.json`, `migrations/012_games.sql`, `migrations/016_game_saves.sql`, `migrations/017_creator_voice.sql`, `packs/pNNN.json`, `preload-files.json`, `preload-sw.js`, `public/cloudsave.js`, `scripts/check-contract.mjs`, `scripts/games-host.mjs`, `src/ai/v2/musicWords.ts`, `src/ai/v2/prompt.ts`, `src/gameSaves.ts`, `src/games.ts`, `src/markdown.ts`, `src/posts.ts`, `src/web/changelog.ts`, `src/web/discoverPages.ts`, `test/changelog.test.ts` |
-| `openwiki/assistant-v2-refactor.md` | 6 | `finishAutoBuild.ts`, `loop/gates.ts`, `musicWords.ts`, `prompt.ts`, `todo/checks.ts`, `worldRequest.ts` |
+| `openwiki/assistant-v2-refactor.md` | 7 | `finishAutoBuild.ts`, `loop/gates.ts`, `musicWords.ts`, `prompt.ts`, `shared/artGap.ts`, `todo/checks.ts`, `worldRequest.ts` |
 | `openwiki/assistant-v2.md` | 16 | `assistant-whole-game/tools/hplay.mjs`, `bbox-chipsets/space.mts`, `bbox-walls-3..5/lay.mts`, `finishAutoBuild.ts`, `prompt.ts`, `refs/anchors.json`, `rooms/tasks.json`, `scene.json`, `scene_start.mts`, `suite/dungeon-design-fp.py`, `suite/ledger/handoff-study.md`, `suite/prompts.json`, `suite/rooms/runs-omo/results.json`, `tasks.v1.json`, `vqaFixBudget.ts`, `worldRequest.ts` |
 | `openwiki/atlas-biome-interior.md` | 8 | `.loop.json`, `.loop.png`, `interior-merged-palette.html`, `public/assets/atlas-biomes/jungle-chipset.png`, `public/assets/atlas-interior/dungeon-chipset.png`, `scripts/content/atlas-dungeon/split-dungeon.mjs`, `src/assets/atlasBiomeDungeonTileset.json`, `verify-shots/interior-bake-4/new-objects.png` |
 | `openwiki/authoring-play-presets.md` | 1 | `catalog-96.json` |
@@ -340,7 +340,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L377` 바로 플레이 게임 (2026-10-23)
   - `L481` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2-refactor.md` — 44KB · 230줄 · ~12,864 토큰
+### `openwiki/assistant-v2-refactor.md` — 45KB · 230줄 · ~12,930 토큰
 
 - `L6` 왜
 - `L15` 목표 구조
@@ -353,7 +353,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L215` 같이 적어 둘 수 — B7 뒤 이어 하기 턴의 화면 검수 비용
 - `L226` 알려 둘 것
 
-### `openwiki/assistant-v2.md` — 441KB · 1918줄 · ~133,774 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 443KB · 1931줄 · ~134,422 토큰 · 통째읽기 잘림
 
 - `L16` 요청 의도 — 요청을 한 번만 가른다 (2026-11-11, 리팩토링 B1)
 - `L47` 지시문·도구 예산 — 작은 일에는 그 일의 카드와 도구만 (2026-11-11, 리팩토링 B1 뒤)
@@ -380,59 +380,59 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L550` 필드 HUD 는 게임이 쓰는 것에서 정한다 — 혼자 남은 「마력」 막대 (2026-11-11)
 - `L575` 성문 기둥은 집 문이 아니다 — 눈가림 플레이가 궁전에 못 들어간 까닭 (2026-11-11)
 - `L594` 끝맺음 단계 × 칩셋 표 — 방 단계는 방에서만, 잇기 자리는 문을 지어내지 않는다 (2026-11-11)
-- `L670` 목표 화살표는 길목을 가리킨다 · 목표 꼬리는 지금 맵에서 읽는다 (2026-11-11)
-- `L717` 둘째 묶음 첫 측정에서 도구 쪽이 고친 둘 — 비울 수 없는 enum · 곁에 선 사람의 다가서기 (2026-11-11)
-- `L735` 쓰기 결과에는 도구의 알림이 가고, 옛 검사 줄은 안 간다 (2026-11-11, 작은 일 둘째 묶음 첫 측정)
-- `L754` 문 앞 칸은 길을 막지 않는다 — 집 문 여섯 가운데 하나가 맨바닥에 서던 일 (2026-11-11)
-- `L775` 깔기 요청의 거절은 다음 호출 하나를 실제 값으로 이른다 — 빈 껍데기 고침 · 빈 `mapId` · 강제는 값이 찬 호출만 (2026-11-11, map-vqa 깔기 24판)
-- `L816` 뒷문은 `create_transfer_pair` 한 번 — 막다른 거절이 그 길을 이른다 (2026-11-11, 작은 일 두 번째 재측정)
-- `L835` 한 호출로 끝나야 할 작은 일 여섯 — 그림 없는 전투 블로커 · 맨 위 깃발 · 상자 수량 · 회복 지점 · 서성이기 · 시작 상태 (2026-11-11, 작은 일 둘째 묶음 뒤)
-- `L853` 이미 있는 NPC 가 하던 일은 남는다 — `create_quest` · `add_companion` · `set_shop_stock` (2026-11-11, 작은 일 둘째 묶음 뒤)
-- `L881` 조사 지점은 `place_examine_hotspots` — 물건 이름으로 놓는다 · 글만 나오는 조사는 장면이 아니다 (2026-11-11, 작은 일 재측정)
-- `L909` 버들항 맵의 빈 땅도 읽고 채운다 — 칸 역할을 안 적는 시트 · `amount:"few"` (2026-11-11, 작은 일 재측정)
-- `L929` 바닥에 놓인 물건은 `place_chest` 의 `look:"item"` — 줍는 물건 (2026-11-11, 작은 일 재측정)
-- `L948` 참고문서 읽기는 결과에 알림이 붙어도 인정한다 — `PiTilesetReferenceGate` (2026-11-11, 작은 일 재측정)
-- `L964` 엔딩을 다시 부르면 안 보낸 칸은 그대로 — `define_ending` (2026-11-11, 작은 일 기준선)
-- `L975` 이어 하기 턴의 도구 — 게임 하나를 잇는 «계속» 은 게임 도구 묶음을 받는다 (2026-11-11)
-- `L991` 이어 하기 턴의 판정 — 게임 하나를 잇는 «계속» 은 검사에서도 게임 하나다 (2026-11-11, 리팩토링 B7)
-- `L1027` 관문 열쇠는 규칙·대상에서 — 글이 바뀌어도 같은 문제는 같은 항목 (2026-11-11, 리팩토링 F1~F3)
-- `L1048` 관문 글은 모델에게 영어로 — 보고는 한국어 그대로 (2026-11-11, 리팩토링 F4)
-- `L1074` 작은 요청의 끝맺음 — 게임을 짓는 턴에만 청사진 끝맺음을 돈다 (2026-11-11, 작은 일 기준선)
-- `L1099` 장소 설계는 턴을 넘어 남는다 — 다음 턴의 `edit_place` (2026-11-11, B4b)
-- `L1123` 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
-- `L1147` 게임 요소 — 퀘스트·아이템·전투·파티·스위치 (2026-10-24)
-  - `L1161` 도구 노출 — 처음부터 싣는 도구·필요할 때 싣는 도구·영어 사본 (2026-10-30)
-- `L1171` 새 플레이어 길잡이 — 목표 줄·보이는 이야기 이벤트 (2026-10-26, J90~J96)
-  - `L1190` 2차 (2026-10-27, J98·J101~J106 — romance-j91·toy-j91 판정)
-- `L1217` 게임 조립 기본값 — 타이틀·오프닝을 청사진에 맞춘다 (2026-10-28 스위트 조립 장부)
-- `L1255` 모델 호출 무응답 한도·고치기 차례 상한 (2026-10-29 vm1 argon)
-- `L1270` 이벤트 자리·시작 칸 (2026-10-29 야외 자동 플레이)
-- `L1275` 번호 자물쇠·빈 맵 탈출 (2026-10-29 vm3 flash escape 판정 «가짜 단서·자동 입력»·«단일 빈 맵»)
-- `L1290` 조사 자리·조사 표식 (2026-10-29 vm3 terra escape «책상 정면에서는 반응 없음·하이라이트가 흐림»)
-- `L1367` 길 찾기 2차 (2026-10-29 vm7 판정 «동굴 가는 길·나무 구멍·용사의 검·안락의자 단서»)
-- `L1392` 던전·동굴은 조수가 설계한다 (2026-10-29 맵 똑같음 조사 «동굴 28장 중 26장이 한 공식»)
-- `L1417` 던전 층·코드 지형 마을은 칸 배치(bbox)로 — 모델이 칸을 쓰고 함수는 검사·실행만 (2026-10-31)
-- `L1433` 숲길도 조수가 설계한다 (2026-10-30 씬 벤치 «opus 숲길 3판이 거의 같은 맵»)
-- `L1445` 씬 벤치 1회차 수리 (2026-10-30 sc-1030a terra · sc-1030s-b1~b4 opus)
-- `L1470` 조수 대조 1회차 — 마왕 편의점 거리 (2026-10-30 asst-parity p1-maou-opus·terra)
-- `L1484` 조수 대조 2회차 — 밤 숲 어귀 들개 추격 (2026-10-31 asst-parity p2-chase-opus·terra)
-- `L1494` 조수 대조 1회차 다시 재기 — 마왕 편의점 거리 (2026-10-31 asst-parity p1b-maou-opus, #4015·#4023 뒤)
-- `L1504` 조수 대조 4회차 — 오류 글과 일본 실내 가구 빼기 (2026-10-31 asst-parity 4)
-- `L1510` 조수 대조 5회차 — 칩 관문 읽기와 장르 기본값 부작용 (2026-10-31 asst-parity p1d-maou-terra)
-- `L1517` 조수 대조 6회차 — 안 보이는 필드 적과 이른 막힘 (2026-10-31 asst-parity p2b-chase-terra·p3-hunter-terra)
-- `L1523` 조수 대조 7회차 — Argon 2차 모델·지어낸 전투 배경 id (2026-10-31 asst-parity p2a-chase-argon)
-- `L1531` 조수 대조 8회차 — 빈 검토 바퀴·모양 오류 칸 설명·요청 대사 지키기 (2026-10-31 asst-parity p4-cell-opus)
-- `L1540` 값싼 모델(Flash·DeepSeek·Argon) 자물쇠 대조 — 인자 모양·거짓 끝·호출 기록 (2026-11-01)
-- `L1595` 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
-- `L1607` 할 일 기계 검사 — omo 고리의 「끝났나」 판정 (2026-10-30)
-- `L1652` 켜는 법
-- `L1659` 구조 — v1 실행기를 그대로 쓴다
-  - `L1677` 할 일 고리 (2026-10-30, omo 방식 — `src/ai/v2/loop/`)
-- `L1785` 빌더가 하는 것 / 못 하는 것
-- `L1844` 시험
-- `L1853` 토큰 비용 재기 (2026-11-01)
-- `L1879` 리드·워커 나누기 (2026-11-01, 기본 꺼짐 — `OPRN_V2_SPLIT`)
-- `L1904` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
+- `L683` 목표 화살표는 길목을 가리킨다 · 목표 꼬리는 지금 맵에서 읽는다 (2026-11-11)
+- `L730` 둘째 묶음 첫 측정에서 도구 쪽이 고친 둘 — 비울 수 없는 enum · 곁에 선 사람의 다가서기 (2026-11-11)
+- `L748` 쓰기 결과에는 도구의 알림이 가고, 옛 검사 줄은 안 간다 (2026-11-11, 작은 일 둘째 묶음 첫 측정)
+- `L767` 문 앞 칸은 길을 막지 않는다 — 집 문 여섯 가운데 하나가 맨바닥에 서던 일 (2026-11-11)
+- `L788` 깔기 요청의 거절은 다음 호출 하나를 실제 값으로 이른다 — 빈 껍데기 고침 · 빈 `mapId` · 강제는 값이 찬 호출만 (2026-11-11, map-vqa 깔기 24판)
+- `L829` 뒷문은 `create_transfer_pair` 한 번 — 막다른 거절이 그 길을 이른다 (2026-11-11, 작은 일 두 번째 재측정)
+- `L848` 한 호출로 끝나야 할 작은 일 여섯 — 그림 없는 전투 블로커 · 맨 위 깃발 · 상자 수량 · 회복 지점 · 서성이기 · 시작 상태 (2026-11-11, 작은 일 둘째 묶음 뒤)
+- `L866` 이미 있는 NPC 가 하던 일은 남는다 — `create_quest` · `add_companion` · `set_shop_stock` (2026-11-11, 작은 일 둘째 묶음 뒤)
+- `L894` 조사 지점은 `place_examine_hotspots` — 물건 이름으로 놓는다 · 글만 나오는 조사는 장면이 아니다 (2026-11-11, 작은 일 재측정)
+- `L922` 버들항 맵의 빈 땅도 읽고 채운다 — 칸 역할을 안 적는 시트 · `amount:"few"` (2026-11-11, 작은 일 재측정)
+- `L942` 바닥에 놓인 물건은 `place_chest` 의 `look:"item"` — 줍는 물건 (2026-11-11, 작은 일 재측정)
+- `L961` 참고문서 읽기는 결과에 알림이 붙어도 인정한다 — `PiTilesetReferenceGate` (2026-11-11, 작은 일 재측정)
+- `L977` 엔딩을 다시 부르면 안 보낸 칸은 그대로 — `define_ending` (2026-11-11, 작은 일 기준선)
+- `L988` 이어 하기 턴의 도구 — 게임 하나를 잇는 «계속» 은 게임 도구 묶음을 받는다 (2026-11-11)
+- `L1004` 이어 하기 턴의 판정 — 게임 하나를 잇는 «계속» 은 검사에서도 게임 하나다 (2026-11-11, 리팩토링 B7)
+- `L1040` 관문 열쇠는 규칙·대상에서 — 글이 바뀌어도 같은 문제는 같은 항목 (2026-11-11, 리팩토링 F1~F3)
+- `L1061` 관문 글은 모델에게 영어로 — 보고는 한국어 그대로 (2026-11-11, 리팩토링 F4)
+- `L1087` 작은 요청의 끝맺음 — 게임을 짓는 턴에만 청사진 끝맺음을 돈다 (2026-11-11, 작은 일 기준선)
+- `L1112` 장소 설계는 턴을 넘어 남는다 — 다음 턴의 `edit_place` (2026-11-11, B4b)
+- `L1136` 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
+- `L1160` 게임 요소 — 퀘스트·아이템·전투·파티·스위치 (2026-10-24)
+  - `L1174` 도구 노출 — 처음부터 싣는 도구·필요할 때 싣는 도구·영어 사본 (2026-10-30)
+- `L1184` 새 플레이어 길잡이 — 목표 줄·보이는 이야기 이벤트 (2026-10-26, J90~J96)
+  - `L1203` 2차 (2026-10-27, J98·J101~J106 — romance-j91·toy-j91 판정)
+- `L1230` 게임 조립 기본값 — 타이틀·오프닝을 청사진에 맞춘다 (2026-10-28 스위트 조립 장부)
+- `L1268` 모델 호출 무응답 한도·고치기 차례 상한 (2026-10-29 vm1 argon)
+- `L1283` 이벤트 자리·시작 칸 (2026-10-29 야외 자동 플레이)
+- `L1288` 번호 자물쇠·빈 맵 탈출 (2026-10-29 vm3 flash escape 판정 «가짜 단서·자동 입력»·«단일 빈 맵»)
+- `L1303` 조사 자리·조사 표식 (2026-10-29 vm3 terra escape «책상 정면에서는 반응 없음·하이라이트가 흐림»)
+- `L1380` 길 찾기 2차 (2026-10-29 vm7 판정 «동굴 가는 길·나무 구멍·용사의 검·안락의자 단서»)
+- `L1405` 던전·동굴은 조수가 설계한다 (2026-10-29 맵 똑같음 조사 «동굴 28장 중 26장이 한 공식»)
+- `L1430` 던전 층·코드 지형 마을은 칸 배치(bbox)로 — 모델이 칸을 쓰고 함수는 검사·실행만 (2026-10-31)
+- `L1446` 숲길도 조수가 설계한다 (2026-10-30 씬 벤치 «opus 숲길 3판이 거의 같은 맵»)
+- `L1458` 씬 벤치 1회차 수리 (2026-10-30 sc-1030a terra · sc-1030s-b1~b4 opus)
+- `L1483` 조수 대조 1회차 — 마왕 편의점 거리 (2026-10-30 asst-parity p1-maou-opus·terra)
+- `L1497` 조수 대조 2회차 — 밤 숲 어귀 들개 추격 (2026-10-31 asst-parity p2-chase-opus·terra)
+- `L1507` 조수 대조 1회차 다시 재기 — 마왕 편의점 거리 (2026-10-31 asst-parity p1b-maou-opus, #4015·#4023 뒤)
+- `L1517` 조수 대조 4회차 — 오류 글과 일본 실내 가구 빼기 (2026-10-31 asst-parity 4)
+- `L1523` 조수 대조 5회차 — 칩 관문 읽기와 장르 기본값 부작용 (2026-10-31 asst-parity p1d-maou-terra)
+- `L1530` 조수 대조 6회차 — 안 보이는 필드 적과 이른 막힘 (2026-10-31 asst-parity p2b-chase-terra·p3-hunter-terra)
+- `L1536` 조수 대조 7회차 — Argon 2차 모델·지어낸 전투 배경 id (2026-10-31 asst-parity p2a-chase-argon)
+- `L1544` 조수 대조 8회차 — 빈 검토 바퀴·모양 오류 칸 설명·요청 대사 지키기 (2026-10-31 asst-parity p4-cell-opus)
+- `L1553` 값싼 모델(Flash·DeepSeek·Argon) 자물쇠 대조 — 인자 모양·거짓 끝·호출 기록 (2026-11-01)
+- `L1608` 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
+- `L1620` 할 일 기계 검사 — omo 고리의 「끝났나」 판정 (2026-10-30)
+- `L1665` 켜는 법
+- `L1672` 구조 — v1 실행기를 그대로 쓴다
+  - `L1690` 할 일 고리 (2026-10-30, omo 방식 — `src/ai/v2/loop/`)
+- `L1798` 빌더가 하는 것 / 못 하는 것
+- `L1857` 시험
+- `L1866` 토큰 비용 재기 (2026-11-01)
+- `L1892` 리드·워커 나누기 (2026-11-01, 기본 꺼짐 — `OPRN_V2_SPLIT`)
+- `L1917` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
 ### `openwiki/atlas-biome-interior.md` — 109KB · 534줄 · ~32,768 토큰 · 통째읽기 잘림
 
@@ -1685,7 +1685,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L43` 하네스 목록
 - `L61` 다른 실행기와 공유하는 하네스 목록
 
-### `openwiki/harnesses/assistant-capability.md` — 134KB · 915줄 · ~40,659 토큰 · 통째읽기 잘림
+### `openwiki/harnesses/assistant-capability.md` — 134KB · 915줄 · ~40,784 토큰 · 통째읽기 잘림
 
 - `L7` 실행 경로
   - `L9` 여덟 장르 제작 실측 (2026-10-08)

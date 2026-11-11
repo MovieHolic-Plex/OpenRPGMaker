@@ -13,7 +13,7 @@ import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { reachableCells, unreachableEvents } from "../judge/eventReach";
 import { placementProblems } from "./placementRules";
-import type { ArtGap } from "../shared/artGap";
+import type { ArtGap } from "@/project/artGap";
 import type { BuildRun } from "../shared/types";
 
 type Cell = { x: number; y: number };
@@ -71,7 +71,7 @@ export function dressBareCaveGates(run: BuildRun, mapId: string, gaps?: ArtGap[]
     for (const p of bare) {
       const ev = map0.events.find((e) => e.id === p.eventId);
       const destId = ev ? destOf(ev, mapId) : undefined;
-      gaps?.push({ tilesetId: map0.tilesetId, want: "cave mouth", thing: "굴 입구 그림", note: `「→ ${run.ctx.project.maps[destId ?? ""]?.name ?? destId ?? p.eventId}」 던전 출입구`, mapId, x: p.at.x, y: p.at.y });
+      gaps?.push({ chipset: map0.tilesetId, want: "cave-mouth", wanted: "굴 입구 그림", where: `${map0.name} ${p.at.x},${p.at.y}`, standIn: "none", by: "cave-gates", note: `「→ ${run.ctx.project.maps[destId ?? ""]?.name ?? destId ?? p.eventId}」 던전 출입구` });
     }
     return notes;
   }
