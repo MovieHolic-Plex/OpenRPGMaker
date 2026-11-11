@@ -22,7 +22,7 @@ import { clearTargetFronts, repairEventReach } from "../../../src/ai/v2/place/re
 import { lockBareHouseDoors } from "../../../src/ai/v2/place/lockedDoors.ts";
 import { placementProblems } from "../../../src/ai/v2/place/placementRules.ts";
 import { pickTransferSpot } from "../../../src/ai/v2/place/transferSpot.ts";
-import { buildingEntrances } from "../../../src/ai/v2/place/entrances.ts";
+import { buildingEntrances, declaredDoorCells, declaredStairCells } from "../../../src/ai/v2/place/entrances.ts";
 import { renderMapPng } from "../../qa-game/render.mts";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -231,12 +231,26 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
         if (!near) rec(s, "entrance-seating", "n/a", `art: ${list} but no open spot`);
         else {
           const ev = mkEvent("ev_t_ent", "동굴 입구", near.x, near.y, [{ commands: [{ kind: "text", body: "안에서 바람이 분다." }, { kind: "setSwitch", switchId: "sw_ent", value: true }] }]);
-          const p1 = bp(withMap(P0, s.mapId, (m) => { m.events.push(ev); return m; }), M0.name, "동굴 입구", "동굴 입구를 살핀다", "동굴의 바람");
+          // 그 굴 그림이 건물 키트의 입구면(구성기 칩셋의 굴 입구) 실제 게임처럼 문 칸에 던전으로 가는 이동 이벤트를 건다 — 단계는 그 문 앞에 앉아야 한다.
+          const mouth = buildingEntrances(P0, M0).map((e) => ({ e, d: Math.abs(e.x - first.x) + Math.abs(e.y - first.y) })).filter((q) => q.d <= 6).sort((a, b) => a.d - b.d)[0]?.e;
+          let base = P0, plantedMouth = "";
+          if (mouth) {
+            const helper = mkRun(structuredClone(P0), s.mapId);
+            const dId = addHelperMap(helper, M0.tilesetId, "dungeon");
+            if (dId) {
+              const at = passableIn(helper.ctx.project, helper.ctx.project.maps[dId]);
+              base = withMap(helper.ctx.project, s.mapId, (m) => { m.events.push(mkEvent("ev_t_mouth", "", mouth.x, mouth.y, [transferPage(dId, at.x, at.y)])); return m; });
+              plantedMouth = ` · dungeon transfer on declared entrance «${mouth.kit.slice(0, 24)}» (${mouth.x},${mouth.y})`;
+            }
+          }
+          const p1 = bp(withMap(base, s.mapId, (m) => { m.events.push(ev); return m; }), M0.name, "동굴 입구", "동굴 입구를 살핀다", "동굴의 바람");
           const run = mkRun(p1, s.mapId);
           const notes = seatEntranceSteps(run, s.mapId);
           const e2 = run.ctx.project.maps[s.mapId].events.find((e: any) => e.id === ev.id);
           const moved = e2.x !== near.x || e2.y !== near.y;
-          if (!moved) rec(s, "entrance-seating", "none", `step stays at (${near.x},${near.y}), ${Math.abs(near.x - first.x) + Math.abs(near.y - first.y)} from art · art: ${list}`.slice(0, 300));
+          const atMouth = !!mouth && e2.y === mouth.front.y && Math.abs(e2.x - mouth.front.x) <= 1;
+          if (!moved) rec(s, "entrance-seating", "none", `step stays at (${near.x},${near.y}), ${Math.abs(near.x - first.x) + Math.abs(near.y - first.y)} from art${plantedMouth} · art: ${list}`.slice(0, 300));
+          else if (atMouth) rec(s, "entrance-seating", "ok", `${notes[0]} — the front of the entrance that leads into the dungeon${plantedMouth}`.slice(0, 300), savePair(`entrance__${tag}`, p1, p1.maps[s.mapId], run.ctx.project, run.ctx.project.maps[s.mapId], e2));
           else rec(s, "entrance-seating", "eye", `${notes[0]} on «${labelsAt(run.ctx.project, run.ctx.project.maps[s.mapId], e2.x, e2.y).join("/")}» · art: ${list}`.slice(0, 300), savePair(`entrance__${tag}`, p1, p1.maps[s.mapId], run.ctx.project, run.ctx.project.maps[s.mapId], e2));
         }
       }
@@ -371,7 +385,7 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
     }
     if (!pit) rec(s, "event-reach", "n/a", "no enclosed cell");
     else {
-      for (const [name, key] of [["잠든 장치", "plain"], ["책상 서랍의 쪽지", "host"]] as const) {
+      for (const [name, key] of [["잠든 장치", "plain"], ["책상 서랍의 쪽지", "host"], ["굳게 닫힌 문", "door"]] as const) {
         const ev = mkEvent(`ev_t_lost_${key}`, name, pit.x, pit.y, [{ commands: [{ kind: "text", body: "…" }, { kind: "setSwitch", switchId: "sw_l", value: true }] }]);
         const p1 = withMap(P0, s.mapId, (m) => { m.events.push(ev); return m; });
         const run = mkRun(p1, s.mapId);
@@ -380,10 +394,17 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
         const m2 = run.ctx.project.maps[s.mapId], e2 = m2.events.find((e: any) => e.id === ev.id);
         const still = unreachableEvents(run.ctx.project, s.mapId).includes(ev.id);
         const d = diffTiles(p1.maps[s.mapId], m2);
-        const stage = key === "plain" ? "event-reach" : "event-reach(host name)";
+        const stage = key === "plain" ? "event-reach" : key === "host" ? "event-reach(host name)" : "event-reach(door name)";
         const on = labelsAt(run.ctx.project, m2, e2.x, e2.y).map((l: string) => l.replace(/\s*\([^)]*\)\s*$/u, "")).join("/");
         const invisibleOnBare = fixed.noArt.length > 0;
         if (still) rec(s, stage, fixed.moved.length ? "wrong" : "none", `still unreachable · ${[...fixed.moved, ...fixed.stuck].join(" / ")}`.slice(0, 240));
+        else if (key === "door") {
+          // 문 이름 이벤트: 선언된 문 칸(건물 입구 · 방 키트 문)에 앉았는가. 문이라고 적히지 않은 그림 칸에 앉았으면 잘못.
+          const doorCells = declaredDoorCells(run.ctx.project, m2);
+          const onDoor = doorCells.some((c) => c.x === e2.x && c.y === e2.y);
+          const said = fixed.moved.some((t: string) => t.includes("문 그림 칸"));
+          rec(s, stage, said && !onDoor ? "wrong" : onDoor ? "ok" : "none", `${fixed.moved.join(" / ")} · on «${on}» · declared doors on map ${doorCells.length}${said && !onDoor ? " — seated on art that is not a declared door" : ""}`.slice(0, 300), said && !onDoor ? savePair(`reach_door__${tag}`, p1, p1.maps[s.mapId], run.ctx.project, m2, e2) : undefined);
+        }
         else rec(s, stage, d.n ? "eye" : invisibleOnBare ? "gap" : "ok", `${fixed.moved.join(" / ")} · on «${on}» · tiles stamped ${d.n}${invisibleOnBare ? ` · recorded art gap «${fixed.noArt[0].want}»` : ""}`.slice(0, 300), d.n ? savePair(`reach_${key}__${tag}`, p1, p1.maps[s.mapId], run.ctx.project, m2, e2) : undefined);
       }
     }
@@ -424,6 +445,16 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
       const offEntrance = !!at && !buildingEntrances(P0, M0).some((e) => e.x === at.x && e.y === at.y);
       const v: V = d.n || offEntrance ? "wrong" : "ok";
       rec(s, `transferSpot(${side})`, v, `${got.note} → (${got.x},${got.y})${got.doorAt ? ` doorAt(${got.doorAt.x},${got.doorAt.y})` : ""}${offEntrance ? " — not a building entrance" : ""} tiles stamped ${d.n}`.slice(0, 260), v !== "ok" ? savePair(`spot_${side}__${tag}`, P0, M0, run.ctx.project, m2, got.doorAt ?? got) : undefined);
+    }
+    // 위·아래층 장소로 가는 자리: 계단 그림 칸 — 선언된 계단(방 키트 · 칩셋 표면 계약)이어야 한다.
+    {
+      const run = mkRun(structuredClone(P0), s.mapId);
+      const got = pickTransferSpot(run, s.mapId, { side: "south", outdoor, vertical: true });
+      const stairs = declaredStairCells(P0, M0);
+      const m = /계단 그림\((\d+),(\d+)\)/u.exec(got?.note ?? "");
+      const at = m ? { x: Number(m[1]), y: Number(m[2]) } : undefined;
+      const onStairs = !!at && stairs.some((c) => c.x === at.x && c.y === at.y);
+      rec(s, "transferSpot(vertical)", at ? (onStairs ? "ok" : "wrong") : "none", `${got?.note ?? "undefined"}${at ? ` on «${labelsAt(P0, M0, at.x, at.y).join("/").slice(0, 80)}»` : ""} · declared stairs on map ${stairs.length}${at && !onStairs ? " — not a declared stair" : ""}`.slice(0, 260), at && !onStairs ? savePair(`spot_vertical__${tag}`, P0, M0, P0, M0, at) : undefined);
     }
     // 건너편을 모르거나 바깥 맵일 때는 집 문을 자리로 주지 않는다(집에 들어갔는데 다른 바깥 맵으로 나오게 된다).
     if (outdoor) {

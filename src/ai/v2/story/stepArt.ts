@@ -9,6 +9,7 @@ import { isPassable } from "@/project/collision";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
 import type { GameMap, Project } from "@/project/types";
 import { isDoorName, reachableCells, unreachableEvents } from "../judge/eventReach";
+import { buildingEntrances } from "../place/entrances";
 import { isMysteryBlueprint, isProgressWord, resolveSteps } from "./mysteryCaseRead";
 import { resolveGraphic } from "@/editor/tools/eventCompile";
 import { chestOpenCommands, chestOpenedGraphic } from "@/editor/lootFeedback";
@@ -115,8 +116,10 @@ export function openDoorSteps(project: Project): string[] {
 }
 
 /**
- * 「입구·굴·구멍」 이름의 투명 단계 칸을 맵에 그려진 굴 입구(거목 밑동 굴 문·갱구·구멍)의 «들어가는 칸»으로 옮긴다 — 그 그림 안의 걸을 수 있는 칸,
- * 좌우가 그림의 막힌 칸이면 더 좋다(문틈). 14걸음 안, 걸어 닿는 칸만, 옮긴 뒤 못 닿는 이벤트가 늘면 되돌린다.
+ * 「입구·굴·구멍」 이름의 투명 단계 칸을 맵에 그려진 굴 입구의 «들어가는 칸»으로 옮긴다. 14걸음 안, 걸어 닿는 칸만, 옮긴 뒤 못 닿는 이벤트가 늘면 되돌린다.
+ * 굴 입구는 먼저 적힌 것으로 찾는다: 건물 키트의 입구 칸(place/entrances.ts) 가운데 그 문의 이동 이벤트가 던전 맵(mapRole dungeon)으로 가는 것 — 그 문 앞 칸(막혀 있으면 문 앞의 옆 칸).
+ * 구성기 칩셋의 굴 입구(얼음 동굴·선사 동굴·보물 동굴·피라미드 입구)는 막힌 문 칸이라 아래의 그림 읽기로는 들어가는 칸이 없었다(단계×테마 표: 그림은 있는데 7장 모두 그대로).
+ * 그런 문이 없으면 이름표의 굴 그림(거목 밑동 굴 문·갱구·구멍) 안의 걸을 수 있는 칸 — 좌우가 그림의 막힌 칸이면 더 좋다(문틈).
  * 왜(2026-10-29 vm7 flash jrpg): 「동굴 입구」 단계가 숲 맵 왼쪽 위 풀밭 (6,8) 투명 칸이었고, 바로 곁 거목 밑동의 굴 문 (10,12)은
  * 판정자가 「들어갈 수 있는 입구처럼 보이는데 여러 방향에서 걷고 조사해도 반응이 없다」고 했다.
  */
@@ -130,8 +133,21 @@ export function seatEntranceSteps(run: BuildRun, mapId: string): string[] {
   const m = map0 as unknown as Record<string, ArrayLike<number> | undefined>;
   const art = (x: number, y: number) => x >= 0 && y >= 0 && x < map0.width && y < map0.height
     && ["lowerOverlayTiles", "upperTiles", "upperOverlayTiles"].some((k) => { const t = m[k]?.[y * map0.width + x]; return typeof t === "number" && t >= 0 && ENTRANCE_ART.test(String(meta[t]?.label ?? "")); });
-  const doorways: { x: number; y: number; gap: boolean }[] = [];
-  for (let y = 0; y < map0.height; y++) for (let x = 0; x < map0.width; x++) {
+  const doorways: { x: number; y: number; gap: boolean; mouth?: boolean }[] = [];
+  // 적힌 굴 입구: 던전으로 가는 이동 이벤트가 걸린 건물 입구 — 문 앞 칸, 그 칸에 이동 이벤트가 서 있으면 그 옆 칸.
+  const toDungeon = (ev: { pages?: readonly { commands?: readonly unknown[] }[] }) => (ev.pages ?? []).some((pg) => (pg.commands ?? []).some((c) => {
+    const r = c as { kind?: string; mapId?: string };
+    return r.kind === "transfer" && !!r.mapId && r.mapId !== mapId && (project0.maps[r.mapId] as unknown as { mapRole?: string } | undefined)?.mapRole === "dungeon";
+  }));
+  for (const e of buildingEntrances(project0, map0)) {
+    if (!map0.events.some((o) => ((o.x === e.x && o.y === e.y) || (o.x === e.front.x && o.y === e.front.y)) && toDungeon(o))) continue;
+    for (const [dx, mouth] of [[0, true], [-1, false], [1, false]] as const) {
+      const x = e.front.x + dx;
+      if (x >= 0 && x < map0.width && isPassable(project0, map0, x, e.front.y)) doorways.push({ x, y: e.front.y, gap: true, mouth });
+    }
+  }
+  const declared = doorways.length > 0;
+  for (let y = 0; y < map0.height && !declared; y++) for (let x = 0; x < map0.width; x++) {
     if (!art(x, y) || !isPassable(project0, map0, x, y)) continue;
     const gap = art(x - 1, y) && art(x + 1, y) && !isPassable(project0, map0, x - 1, y) && !isPassable(project0, map0, x + 1, y);
     // 그림 칸 가운데 걸을 수 있는 칸은 밑동·입구 틈이거나, 키 큰 그림의 윗부분(머리 위로 지나가는 칸)이다 — 아래 칸이 그림 밖이거나 틈일 때만 입구로 친다.
@@ -150,7 +166,7 @@ export function seatEntranceSteps(run: BuildRun, mapId: string): string[] {
     const before = new Set(unreachableEvents(project, mapId));
     const others = new Set(map.events.filter((e) => e.id !== ev.id).map((e) => `${e.x},${e.y}`));
     const cands = doorways.filter((d) => !others.has(`${d.x},${d.y}`) && Math.abs(d.x - ev.x) + Math.abs(d.y - ev.y) <= 14)
-      .sort((a, b) => Number(b.gap) - Number(a.gap) || (Math.abs(a.x - ev.x) + Math.abs(a.y - ev.y)) - (Math.abs(b.x - ev.x) + Math.abs(b.y - ev.y)));
+      .sort((a, b) => Number(b.gap) - Number(a.gap) || Number(!!b.mouth) - Number(!!a.mouth) || (Math.abs(a.x - ev.x) + Math.abs(a.y - ev.y)) - (Math.abs(b.x - ev.x) + Math.abs(b.y - ev.y)));
     for (const d of cands) {
       const snapshot = run.ctx.project;
       run.ctx.project = { ...snapshot, maps: { ...snapshot.maps, [mapId]: { ...map, events: map.events.map((e) => e.id === ev.id ? { ...e, x: d.x, y: d.y } : e) } } } as Project;
