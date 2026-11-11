@@ -117,9 +117,12 @@ export function hudPreset(theme: FieldHudConfig["theme"]): HudWidget[] {
   if (theme === "adventure") return [{ ...hp, panel: "dark", width: 120, height: 31 }, w("magic", { source: "mp", label: "마력", y: 45, width: 120, height: 25, color: "#78bddb" }), { ...toolbar, anchor: "bottom-right", width: 154, slots: 5, panel: "dark", autoAvoid: false }, w("stamina", { source: "stamina", label: "기력", shape: "ring", anchor: "bottom-left", width: 40, height: 40, color: "#a3c982", condition: "damaged" })];
   return [{ ...hp, shape: "hearts", label: "", color: "#fff8df", width: 80, height: 25 }, { ...clock, width: 60, height: 34 }, { ...toolbar, anchor: "bottom-left", width: 40, height: 34, slots: 1, autoAvoid: false }];
 }
+/** 몸 게이지(체력·마력·기력·스태미나). vitals 가 꺼지면 넷이 함께 꺼진다 — 체력만 끄면 「마력 43/43」 막대 하나가 혼자 남았다(2026-11-11 Terra 게임 fun-x1). */
+export const HUD_BODY_SOURCES: readonly HudWidget["source"][] = ["hp", "mp", "energy", "stamina"];
+export const isBodyGauge = (w: Pick<HudWidget, "kind" | "source">): boolean => w.kind === "gauge" && HUD_BODY_SOURCES.includes(w.source);
 export function resolvedHudWidgets(config: FieldHudConfig): HudWidget[] {
   if (config.widgets !== undefined) return config.widgets;
-  return hudPreset(config.theme).filter(w => (w.source !== "hp" || config.vitals) && (w.kind !== "clock" || config.clock) && (w.source !== "tools" || config.tools)).map(w => w.source === "tools" ? { ...w, hideEmpty: config.hideEmpty } : w);
+  return hudPreset(config.theme).filter(w => (!isBodyGauge(w) || config.vitals) && (w.kind !== "clock" || config.clock) && (w.source !== "tools" || config.tools)).map(w => w.source === "tools" ? { ...w, hideEmpty: config.hideEmpty } : w);
 }
 
 /** 클래식 JRPG 의 필드 HUD — 프리셋 위젯이 없는 「고전 JRPG」 테마. 저작자가 정한 fieldHud 가 없을 때만 쓴다(jrpg-real-1 J09: 기본 하트 HUD 가 지도 위쪽을 덮었다). */
@@ -139,4 +142,40 @@ export function projectCanLoseHp(p: Pick<Project, "maps" | "database">): boolean
   for(const map of Object.values(p.maps)){if((map.encounterRate??0)>0&&(map.encounterTable??[]).length>0)return true;for(const ev of map.events??[])for(const page of ev.pages??[])walk(page.commands);}
   for(const ce of (p.database as {commonEvents?:{commands?:unknown}[]}).commonEvents??[])walk(ce.commands);
   return found;
+}
+
+/** 이 게임이 실제로 쓰는 몸 게이지 — 쓰지 않는 게이지는 필드에 띄울 까닭이 없다. */
+export interface HudUse { readonly hp: boolean; readonly mp: boolean; readonly stamina: boolean }
+export function projectHudUse(p: Pick<Project, "maps" | "database" | "system">): HudUse {
+  const action = p.system.actionCombat?.enabled === true;
+  const hp = action || projectCanLoseHp(p);
+  const costsMp = (cost: unknown): boolean => typeof cost === "number" ? cost > 0 : !!cost && typeof cost === "object" && Object.values(cost as Record<string, unknown>).some((v) => typeof v === "number" && v > 0);
+  const mp = hp && ((p.database as { skills?: { mpCost?: unknown }[] }).skills ?? []).some((s) => costsMp(s.mpCost));
+  return { hp, mp, stamina: action };
+}
+/**
+ * widgets 가 그 테마 프리셋에서 몇 칸을 뺀 것뿐이면(조수가 쓰지 않는 게이지를 빼고 저장한 모양) widgets 를 떼어 프리셋 구성으로 되돌린다.
+ * 저자가 칸을 옮기거나 새로 짠 widgets 는 그대로다. 프리셋으로 되돌려야 vitals 를 다시 켜거나 전투가 생긴 뒤에 뺀 게이지가 돌아온다.
+ */
+export function asPresetHud(config: FieldHudConfig): FieldHudConfig {
+  if (config.widgets === undefined) return config;
+  const preset = new Map(hudPreset(config.theme).map((w) => [w.id, JSON.stringify({ ...w, hideEmpty: true })]));
+  if (!config.widgets.every((w) => preset.get(w.id) === JSON.stringify({ ...w, hideEmpty: true }))) return config;
+  const { widgets: _dropped, ...rest } = config;
+  return rest;
+}
+/** 고른 HUD 에서 이 게임이 쓰지 않는 몸 게이지(프리셋 구성일 때만 — 저자가 직접 짠 widgets 는 묻지 않는다). */
+export function unusedHudGauges(config: FieldHudConfig, use: HudUse): HudWidget[] {
+  if (config.widgets !== undefined) return [];
+  return resolvedHudWidgets(config).filter((w) => isBodyGauge(w) && w.enabled && ((w.source === "hp" && !use.hp) || (w.source === "mp" && !use.mp) || (w.source === "stamina" && !use.stamina)));
+}
+/** 필드에 늘 보이는 것(읽는 쪽은 조수 — 고른 테마가 실제로 무엇을 띄우는지 도구 답에 싣는다). 빈 슬롯처럼 값이 없으면 숨는 칸은 「when filled」. */
+export function hudOnScreen(config: FieldHudConfig): string[] {
+  const out = resolvedHudWidgets(config).filter((w) => w.enabled).map((w) => {
+    const what = w.kind === "gauge" ? `${w.source} gauge${w.shape === "bar" ? "" : ` (${w.shape})`}` : w.kind === "slots" ? `${w.source} slots ×${w.slots}` : w.kind === "text" ? `${w.source} text` : w.kind;
+    const when = w.condition !== "always" ? `, only when ${w.condition}` : w.kind === "slots" && w.hideEmpty ? ", only when filled" : "";
+    return `${what}${w.label ? ` «${w.label}»` : ""} at ${w.anchor}${when}`;
+  });
+  if (config.objective) out.push("objective line at top-right");
+  return out;
 }
