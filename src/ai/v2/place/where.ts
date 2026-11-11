@@ -3,7 +3,9 @@ import type { Dir, GameMap, Project } from "@/project/types";
 import { isPassable } from "@/project/collision";
 import { terrainReachability } from "@/project/terrainReachability";
 import { counterSide, exitThroats, isCounterArt, isShopkeeperName, laneCells } from "./placementRules";
-import { Cell, DIRS, eventsOf, transferCells, eventBodyCells, eventBlockers, walkReach, walkStart, dist, shortestPathCells, openness, edgeExitCells, SEAT_LABEL, STAIR_LABEL, WALL_LABEL, WINDOW_LABEL, tileLabel, layers, objectAt } from "./cells";
+import { labelHasWord } from "@/project/labelWords";
+import { Cell, DIRS, eventsOf, transferCells, eventBodyCells, eventBlockers, walkReach, walkStart, dist, shortestPathCells, openness, edgeExitCells, groundBlocks, tileLabel, layers, objectAt } from "./cells";
+import { declaredDoorCells, placeMarks } from "./entrances";
 import { roadCells } from "./surface";
 import { personSpotContext, personSpotCost } from "./personSpot";
 
@@ -71,8 +73,17 @@ const OBJECT_ALIASES: ReadonlyArray<readonly [RegExp, readonly string[]]> = [
   [/계단|stair/i, ["계단", "stair"]],
   [/탁자|테이블|식탁|table/i, ["탁자", "식탁", "테이블", "table"]],
   [/술통|barrel|keg/i, ["술통", "barrel", "keg"]],
-  [/창문|창$|window/i, ["창문", "창 ", "window"]],
+  [/창문|창$|window/i, ["창문", "창", "window"]],
 ];
+
+/**
+ * 물건 낱말 → 칩셋이 적어 둔 칸(길 = 표면 계약 · 문 = 건물 입구와 방 키트 문 · 계단 = 계단 기물과 표면 계약).
+ * 이름표에서는 겹낱말(흙길·성문·돌계단)이라 낱말로 안 잡히고, 글자로 잡으면 「신문」이 문이다. 꾸미는 말이 앞에 붙어도(「동굴로 가는 길」) 끝 낱말로 읽는다.
+ */
+const DECLARED_WORDS: ReadonlyArray<readonly [RegExp, "road" | "door" | "stairs"]> = [
+  [/(^|\s)(길|도로|골목|road|street|path)$/i, "road"], [/(^|\s)(문|대문|door)$/i, "door"], [/(^|\s)(계단|stairs?)$/i, "stairs"],
+];
+const declaredKind = (word: string): "road" | "door" | "stairs" | undefined => DECLARED_WORDS.find(([re]) => re.test(word.trim()))?.[1];
 
 function roomsOf(map: GameMap): RoomRect[] {
   const locs = (map.locations ?? []) as unknown as { name?: string; x?: number; y?: number; w?: number; h?: number; tags?: string[] }[];
@@ -136,8 +147,8 @@ function objectAliases(word: string): string[] {
   return out.length ? out : [word];
 }
 
-/** 이름표에 그 물건 낱말이 들어간 칸들의 덩이(가장 그럴듯한 하나). */
-function findObjectBox(project: Project, map: GameMap, word: string, room: RoomRect | undefined, near: Cell): { x0: number; y0: number; x1: number; y1: number; label: string } | undefined {
+/** 이름표가 그 물건을 온전한 낱말로 부르는 칸들의 덩이(가장 그럴듯한 하나) — 글자 포함으로 찾으면 「나무 옆」이 「회칠 벽(나무 격자 창)」, 「문 옆」이 「성문」이었다. */
+function findObjectBox(project: Project, map: GameMap, word: string, room: RoomRect | undefined, near: Cell, declared?: Uint8Array): { x0: number; y0: number; x1: number; y1: number; label: string } | undefined {
   const aliases = objectAliases(word).map((a) => a.toLowerCase());
   const { lower, lowerOverlay, upper, upperOverlay } = layers(map);
   const hit = new Uint8Array(map.width * map.height);
@@ -147,13 +158,13 @@ function findObjectBox(project: Project, map: GameMap, word: string, room: RoomR
     if (typeof t !== "number" || t < 0) return undefined;
     const label = tileLabel(project, map, t);
     let ok = labelCache.get(t);
-    if (ok === undefined) { ok = !!label && aliases.some((a) => label.toLowerCase().includes(a)) && !/바닥|floor/i.test(label); labelCache.set(t, ok); }
+    if (ok === undefined) { ok = !!label && aliases.some((a) => labelHasWord(label, a)) && !/바닥|floor/i.test(label); labelCache.set(t, ok); }
     return ok ? label : undefined;
   };
   for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) {
     if (room && !inRoom(room, { x, y }, 1)) continue;
     const i = y * map.width + x;
-    const label = matches(upperOverlay?.[i]) ?? matches(upper?.[i]) ?? matches(lowerOverlay?.[i]) ?? matches(lower?.[i]);
+    const label = matches(upperOverlay?.[i]) ?? matches(upper?.[i]) ?? matches(lowerOverlay?.[i]) ?? matches(lower?.[i]) ?? (declared?.[i] ? word : undefined);
     if (label) { hit[i] = 1; labels.set(i, label); }
   }
   // 8방향 덩이.
@@ -241,8 +252,8 @@ export function resolveWhere(
   const fp = opts.footprint;
   const isObject = !!fp;
   const indoor = (map as unknown as { climate?: { mode?: string } }).climate?.mode === "indoor" || roomsOf(map).length > 0;
-  const { lower } = layers(map);
-  const labelAt = (c: Cell): string => tileLabel(project, map, layers(map).upper?.[c.y * w + c.x]) || tileLabel(project, map, layers(map).upperOverlay?.[c.y * w + c.x]);
+  // 계단·앉는 가구·창이 놓인 칸 — 칩셋이 적어 둔 것과 물건 이름으로(place/entrances.ts placeMarks).
+  const marks = placeMarks(project, map);
 
   const inside = (c: Cell): boolean => c.x >= 0 && c.y >= 0 && c.x < w && c.y < map.height;
   // 사람은 차도·선로 칸과 하나뿐인 출구 길목에 서지 않는다(2026-10-25 사용자 규칙·J5). 물건(footprint)도 차도에 놓지 않는다.
@@ -324,7 +335,8 @@ export function resolveWhere(
     if (room && !inRoom(room, { x, y })) return true;
     const c = { x, y };
     if (isPassable(project, map, x, y)) return false;
-    return !objectAt(map, c) || WALL_LABEL.test(tileLabel(project, map, lower?.[y * w + x]));
+    // 벽 = 물건 없이 막힌 칸 · 바닥층이 막힌 칸(벽면에 건 그림·창) · 건물 그림 칸. 걸을 수 있는 바닥 위에 선 가구·소품은 벽이 아니다.
+    return !objectAt(map, c) || groundBlocks(project, map, c) || !!marks.buildings[y * w + x];
   };
   const wallSides = (b: Cell, room: RoomRect | undefined): Set<Side> => {
     const out = new Set<Side>();
@@ -340,9 +352,25 @@ export function resolveWhere(
   };
   const doors = [...transferList, ...(indoor ? edgeExitCells(map, reach) : [])];
   const doorDist = (b: Cell): number => Math.min(99, ...doors.map((d) => Math.min(...footCells(b).map((c) => dist(c, d)))));
-  const touchesLabel = (b: Cell, re: RegExp): boolean => footCells(b).some((c) => DIRS.some(([dx, dy]) => {
+  /** 창 곁 — 옆 칸이 창이거나, 제 줄·옆 줄에서 위로 벽 칸만 지나 세 칸 안에 창(창은 벽면 윗줄에 걸리고, 창 바로 밑은 흔히 가구다). */
+  const byWindow = (b: Cell, room: RoomRect | undefined): boolean => touches(b, marks.windows) || footCells(b).some((c) => [-1, 0, 1].some((dx) => {
+    const x = c.x + dx;
+    if (x < 0 || x >= w) return false;
+    for (let y = c.y - 1; y >= 0 && y >= c.y - 3; y--) {
+      if (marks.windows[y * w + x]) return true;
+      if (!wallish(x, y, room)) return false;
+    }
+    return false;
+  }));
+  /** 문 칸과 그 앞 depth 칸 — 칩셋이 적어 둔 문(건물 입구·방 키트 문). */
+  const doorSpots = (depth: number): Uint8Array => {
+    const mask = new Uint8Array(w * map.height);
+    for (const d of declaredDoorCells(project, map)) for (let dy = 0; dy <= depth && d.y + dy < map.height; dy++) mask[(d.y + dy) * w + d.x] = 1;
+    return mask;
+  };
+  const touches = (b: Cell, mask: Uint8Array): boolean => footCells(b).some((c) => DIRS.some(([dx, dy]) => {
     const n = { x: c.x + dx, y: c.y + dy };
-    return inside(n) && re.test(labelAt(n));
+    return inside(n) && !!mask[n.y * w + n.x];
   }));
 
   const intent = parseWhere(map, word);
@@ -363,7 +391,17 @@ export function resolveWhere(
   }
   if (intent.kind === "near" && intent.object) {
     const centre = room ? { x: room.x + room.w / 2, y: room.y + room.h / 2 } : start;
-    const box = findObjectBox(project, map, intent.object, room, centre) ?? findEventBox(map, intent.object, room, centre, opts.exceptId);
+    const declared = declaredKind(intent.object);
+    if (declared === "road") {
+      // 「길 옆」 = 길가: 길 칸에 붙은, 길이 아닌 칸. 길은 맵을 가로질러 덩이의 «옆»이 없다.
+      const roads = roadCells(project, map);
+      const roadBeside = (q: Cell): Cell | undefined => DIRS.map(([dx, dy]) => ({ x: q.x + dx, y: q.y + dy })).find((n) => inside(n) && roads.has(n.y * w + n.x));
+      const c = roads.size ? pick((q) => (roomOk(q) && !footCells(q).some((f) => roads.has(f.y * w + f.x)) && footCells(q).some(roadBeside) ? Math.abs(dist(q, centre) - 4) * 0.2 - Math.min(openness(reach, map, q), 14) * 0.05 : Infinity)) : undefined;
+      if (c) return done(c, { anchor: roadBeside(c) ?? c, how: "길가(길 칸 곁)", face: dirTowardCell(c, roadBeside(c) ?? c) });
+    }
+    // 문은 문 칸과 그 앞 칸이 한 덩이다 — 「문 옆」은 문 앞 칸의 옆이라 드나드는 칸을 막지 않는다.
+    const spots = declared === "stairs" ? marks.stairs : declared === "door" ? doorSpots(1) : undefined;
+    const box = findObjectBox(project, map, intent.object, room, centre, spots) ?? findEventBox(map, intent.object, room, centre, opts.exceptId);
     if (box) {
       const cx = (box.x0 + box.x1) / 2;
       const counterBox = isCounterArt(project, map, box.x0, box.y1);
@@ -381,7 +419,7 @@ export function resolveWhere(
         else if (rel === "back") s = fy1 >= box.y0 || gapX > 1 ? Infinity : (box.y0 - fy1 - 1) * 1.5 + Math.abs((fx0 + fx1) / 2 - cx) * 0.3;
         else s = Math.max(gapX, gapY) === 0 ? Infinity : Math.max(gapX, gapY) - 1 + (gapX && gapY ? 0.5 : 0);
         if (!Number.isFinite(s) || Math.max(gapX, gapY) > 3) return Infinity;
-        return s + (doorDist(b) < 3 ? 6 : 0) + (isObject && touchesLabel(b, SEAT_LABEL) ? 2 : 0) + (touchesLabel(b, STAIR_LABEL) ? 4 : 0);
+        return s + (doorDist(b) < 3 ? 6 : 0) + (isObject && touches(b, marks.seats) ? 2 : 0) + (touches(b, marks.stairs) ? 4 : 0);
       };
       let c = pick(score);
       // 그 쪽(옆·앞·뒤)이 벽·가구로 막혔으면 둘레 아무 쪽(근처)으로 — 부엌 화덕은 옆이 다 조리대다.
@@ -435,6 +473,9 @@ export function resolveWhere(
     }
   } else if (intent.kind === "side" || intent.kind === "wall" || intent.kind === "corner" || intent.kind === "window") {
     const want = intent.wall;
+    // 건물 벽 앞에 설 때 드나드는 문 앞 두 칸과, 바깥 맵의 가장자리 칸(화면 끝에 숨는다)은 피한다.
+    const doorway = doorSpots(2);
+    const awkward = (b: Cell): boolean => footCells(b).some((c) => !!doorway[c.y * w + c.x] || (!indoor && (c.x === 0 || c.y === 0 || c.x === w - 1 || c.y === map.height - 1)));
     const midY = room ? room.y + room.h / 2 : map.height / 2;
     const midX = room ? room.x + room.w / 2 : w / 2;
     const span = room ? Math.max(room.w, room.h) : Math.max(w, map.height);
@@ -444,18 +485,21 @@ export function resolveWhere(
       let s: number;
       if (intent.kind === "wall") s = sides.has(want!) ? 0 : Infinity;
       else if (intent.kind === "corner") s = (sides.has("west") || sides.has("east")) && (sides.has("north") || sides.has("south")) ? (sides.has("south") ? 2 : 0) : Infinity;
-      else if (intent.kind === "window") s = touchesLabel(b, WINDOW_LABEL) || footCells(b).some((f) => WINDOW_LABEL.test(labelAt({ x: f.x, y: f.y - 1 }))) ? 0 : sides.size ? 5 : Infinity;
+      else if (intent.kind === "window") s = byWindow(b, room) ? 0 : sides.size ? 5 : Infinity;
       // 한쪽: 옆벽(동·서)이 먼저, 북벽은 다음, 문이 있는 남벽은 마지막.
       else s = sides.has("west") || sides.has("east") ? 0 : sides.has("north") ? 1.5 : sides.has("south") ? 4 : Infinity;
       if (!Number.isFinite(s)) return Infinity;
       const along = intent.kind === "wall" && (want === "north" || want === "south") ? Math.abs(b.x + (fp?.w ?? 1) / 2 - midX) : Math.abs(b.y - midY);
-      return s + (doorDist(b) < 4 ? 8 : 0) + (touchesLabel(b, SEAT_LABEL) ? 3 : 0) + (touchesLabel(b, STAIR_LABEL) ? 5 : 0) + (along / span) * 2;
+      return s + (doorDist(b) < 4 ? 8 : 0) + (awkward(b) ? 8 : 0) + (touches(b, marks.seats) ? 3 : 0) + (touches(b, marks.stairs) ? 5 : 0) + (along / span) * 2;
     });
     if (c) {
       const sides = [...wallSides(c, room)].filter((s) => s !== "south" || intent.wall === "south");
-      const label = intent.kind === "wall" ? sideName[want!] : intent.kind === "corner" ? "구석" : intent.kind === "window" ? "창가" : `한쪽(${sides.map((s) => sideName[s]).join("·") || "벽"} 앞)`;
+      // 창이 없는 맵에서 「창가」는 벽 앞이다 — 창가라고 보고하지 않는다(창 없는 무덤·오아시스 물가가 「창가」로 적혔다).
+      const noWindow = intent.kind === "window" && !byWindow(c, room);
+      const label = intent.kind === "wall" ? sideName[want!] : intent.kind === "corner" ? "구석" : intent.kind === "window" && !noWindow ? "창가" : `한쪽(${sides.map((s) => sideName[s]).join("·") || "벽"} 앞)`;
       const face: Dir | undefined = sides.includes("west") ? "right" : sides.includes("east") ? "left" : sides.includes("north") ? "down" : undefined;
-      return done(c, { how: `${roomName ? `${roomName} ` : ""}${label}`, ...(face ? { face } : {}) });
+      return done(c, { how: `${roomName ? `${roomName} ` : ""}${label}`, ...(face ? { face } : {}),
+        ...(noWindow ? { note: `No window stands by a free cell ${room ? `in ${roomName}` : "on this map"} — '${word}' went to a wall at (${c.x},${c.y}) instead.`, fallback: true as const } : {}) });
     }
   } else if (intent.kind === "center" && room) {
     const centre = { x: Math.floor(room.x + room.w / 2), y: Math.floor(room.y + room.h / 2) };

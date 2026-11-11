@@ -3,6 +3,7 @@
 // 「신문」 같은 물건도 문이 된다. 키트는 어느 칸이 들어가는 문인지 스스로 적어 둔다 — 문 칸은 막힌 그림이고 바로 아래 칸이 문 앞이다.
 import { roomSpecOf } from "@/editor/handInterior/builder";
 import { isPassable } from "@/project/collision";
+import { labelHasWord, labelNames } from "@/project/labelWords";
 import { tilesetSurface } from "@/project/tilesetSurface";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 
@@ -69,7 +70,7 @@ export function buildingEntrances(project: Project, map: GameMap): Entrance[] {
 //   계단 = 방 키트의 계단 기물(stairs up·down) + 칩셋 표면 계약의 계단 칸(역할·꼬리표)
 // 이름표로 읽던 때는 「금고문」을 빼는 낱말 목록이 따로 있었고, 「지구라트(계단 신전)」「비상계단 아파트」가 계단이었다.
 
-type RoomTiles = { readonly doors: ReadonlySet<number>; readonly stairs: ReadonlySet<number> };
+type RoomTiles = { readonly doors: ReadonlySet<number>; readonly stairs: ReadonlySet<number>; readonly seats: ReadonlySet<number>; readonly windows: ReadonlySet<number> };
 const roomCache = new Map<string, RoomTiles>();
 
 function roomKitTiles(tileset: TilesetDef | undefined): RoomTiles {
@@ -77,12 +78,14 @@ function roomKitTiles(tileset: TilesetDef | undefined): RoomTiles {
   const key = `${tileset?.id}|${S ? Object.keys(S.objects).length : 0}`;
   const hit = roomCache.get(key);
   if (hit) return hit;
-  const doors = new Set<number>(), stairs = new Set<number>();
-  for (const d of Object.values(S?.objects ?? {})) {
-    const into = d.stairs ? stairs : d.kind === "door" || d.kind === "sidedoor" || d.use?.includes("travel") ? doors : undefined;
+  const doors = new Set<number>(), stairs = new Set<number>(), seats = new Set<number>(), windows = new Set<number>();
+  for (const [id, d] of Object.entries(S?.objects ?? {})) {
+    // 창 = 갈래가 window 이거나, 벽에 거는 기물인데 키트가 붙인 이름(id)이 window 인 것(「tall stained window」 — 이름표는 「큰 색유리창」 한 낱말이다).
+    const into = d.stairs ? stairs : d.kind === "door" || d.kind === "sidedoor" || d.use?.includes("travel") ? doors
+      : d.use?.includes("sit") ? seats : d.category === "window" || (d.kind === "hang" && /(^|[^a-z])window($|[^a-z])/u.test(id)) ? windows : undefined;
     if (into) for (const cell of d.cells) { const t = cell[2]; if (typeof t === "number" && t >= 0) into.add(t); }
   }
-  const out = { doors, stairs };
+  const out = { doors, stairs, seats, windows };
   if (roomCache.size > 64) roomCache.clear();
   roomCache.set(key, out);
   return out;
@@ -114,4 +117,67 @@ export function declaredStairCells(project: Project, map: GameMap): { x: number;
   const tileset = project.tilesets[map.tilesetId];
   const tiles = new Set([...roomKitTiles(tileset).stairs, ...tilesetSurface(tileset).stairs]);
   return bottomCells(map, tiles);
+}
+
+// ── 자리 고르기(place/where.ts)가 읽는 칸 — 건물 · 계단 · 앉는 가구 · 창. 이름표에 그 글자가 들었는지로 읽지 않는다:
+//   건물 = 굽기가 건물·벽·지붕이라 적은 타일(역할) + 입구를 적어 둔 구조 키트의 그림 타일 — 바깥에서 「한쪽」「벽 쪽」은 건물 벽 앞이다
+//   계단 = 위와 같다(방 키트 계단 기물 + 표면 계약의 계단 칸)
+//   앉는 가구 = 방 키트가 앉는 것이라 적은 기물(쓰임 sit) + 이름이 의자·탁자인 것(온전한 낱말 — project/labelWords.ts)
+//   창 = 방 키트의 창 기물(갈래 window · 벽걸이인데 id 가 window) + 이름이 「…창」으로 끝나는 것 + 굽기가 창이라 적은 벽 타일(꼬리표)
+// 글자로 읽던 때는 「사다리꼴 지붕」이 계단, 「정류장 지붕(기둥 + 벤치)」이 의자, 문에 난 「작은 유리창」이 창이었고 정작 「커튼 창」은 창이 아니었다.
+const SEAT_WORDS = ["의자", "걸상", "벤치", "스툴", "탁자", "식탁", "테이블", "chair", "stool", "bench", "table"] as const;
+const WINDOW_WORDS = ["창", "창문", "window"] as const;
+/** 벽 타일(역할 wall·terrain)에 굽기가 붙인 창 꼬리표 — 소품의 「창」 꼬리표는 무기 창일 수 있어 읽지 않는다(도장 「목검·창 걸이」). */
+const WINDOW_TAGS = new Set(["창", "창문", "전망창", "window", "窓"]);
+
+type NamedTiles = { readonly seats: ReadonlySet<number>; readonly windows: ReadonlySet<number>; readonly buildings: ReadonlySet<number> };
+const BUILDING_ROLES = new Set(["building", "wall", "roof"]);
+const namedCache = new Map<string, NamedTiles>();
+
+function namedTiles(tileset: TilesetDef | undefined): NamedTiles {
+  const meta = ((tileset as { tileMeta?: unknown } | undefined)?.tileMeta ?? []) as ({ label?: string; role?: string; tags?: readonly string[] } | null | undefined)[];
+  const key = `${tileset?.id}|${meta.length}|${((tileset as { structureKits?: readonly Kit[] } | undefined)?.structureKits ?? []).length}`;
+  const hit = namedCache.get(key);
+  if (hit) return hit;
+  const seats = new Set<number>(), windows = new Set<number>(), buildings = new Set<number>();
+  const ground = (tile: number): boolean => { const m = meta[tile] as { role?: string; passage?: string } | null | undefined; return !!m && (m.passage === "passable" || m.role === "terrain" || m.role === "empty"); };
+  // 구조 키트에는 가구·소품 묶음도 있다 — 들어가는 문을 적어 둔 키트가 건물이다.
+  for (const kit of ((tileset as { structureKits?: readonly Kit[] } | undefined)?.structureKits ?? []) as readonly Kit[]) {
+    if (!kit.parts?.some((part) => part.kind === "entrance")) continue;
+    for (const row of kit.rows ?? []) for (const t of [...(row.tiles ?? []), ...(row.upperTiles ?? [])]) if (typeof t === "number" && t >= 0 && !ground(t)) buildings.add(t);
+  }
+  meta.forEach((m, tile) => {
+    if (m?.role && BUILDING_ROLES.has(m.role)) buildings.add(tile);
+    if (!m?.label) return;
+    if (SEAT_WORDS.some((word) => labelHasWord(m.label!, word))) seats.add(tile);
+    if (WINDOW_WORDS.some((word) => labelNames(m.label!, word)) || ((m.role === "wall" || m.role === "terrain") && m.tags?.some((tag) => WINDOW_TAGS.has(tag)))) windows.add(tile);
+  });
+  const out = { seats, windows, buildings };
+  if (namedCache.size > 64) namedCache.clear();
+  namedCache.set(key, out);
+  return out;
+}
+
+/** 칸마다 1 — 그 칸(어느 층이든)에 건물·계단·앉는 가구·창이 놓였다. */
+export interface PlaceMarks { readonly buildings: Uint8Array; readonly stairs: Uint8Array; readonly seats: Uint8Array; readonly windows: Uint8Array }
+
+export function placeMarks(project: Project, map: GameMap): PlaceMarks {
+  const tileset = project.tilesets[map.tilesetId];
+  const kit = roomKitTiles(tileset), named = namedTiles(tileset), surfaceStairs = tilesetSurface(tileset).stairs;
+  const n = map.width * map.height;
+  const buildings = new Uint8Array(n), stairs = new Uint8Array(n), seats = new Uint8Array(n), windows = new Uint8Array(n);
+  const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
+  for (const layer of LAYERS) {
+    const tiles = m[layer];
+    if (!tiles) continue;
+    for (let i = 0; i < n; i++) {
+      const t = tiles[i];
+      if (typeof t !== "number" || t < 0) continue;
+      if (named.buildings.has(t)) buildings[i] = 1;
+      if (kit.stairs.has(t) || surfaceStairs.has(t)) stairs[i] = 1;
+      if (kit.seats.has(t) || named.seats.has(t)) seats[i] = 1;
+      if (kit.windows.has(t) || named.windows.has(t)) windows[i] = 1;
+    }
+  }
+  return { buildings, stairs, seats, windows };
 }
