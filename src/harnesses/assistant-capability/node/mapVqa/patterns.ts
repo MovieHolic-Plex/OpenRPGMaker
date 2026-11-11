@@ -32,7 +32,9 @@ export function parsePatterns(reply: string, lines: Line[]): DefectPattern[] | n
       blocker: members.filter(member => member.severity === 'blocker').length, major: members.filter(member => member.severity === 'major').length, maps: maps.length, examples: maps.slice(0, 3) });
   }
   if (seen.size !== lines.length) return null;
-  return out.sort((a, b) => b.blocker - a.blocker || b.count - a.count);
+  // 많이 되풀이되는 것이 먼저, «기타»는 맨 끝.
+  const rest = (item: DefectPattern) => Number(/^기타/u.test(item.pattern));
+  return out.sort((a, b) => rest(a) - rest(b) || b.count - a.count || b.blocker - a.blocker);
 }
 
 /** major 이상이 minCount 건 넘는 종류마다 되풀이를 묶는다. 실패한 종류는 빠진다(순위표는 그대로다). */
