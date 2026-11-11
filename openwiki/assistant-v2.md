@@ -111,6 +111,23 @@ Terra 다시 재기(main 84a7fa331a, `assistant-fable-runs/smalljobs/after-84a7f
 
 `golden.mts --diff`: 153줄 가운데 92줄(작은 일 줄 전부)의 처음 싣는 목록이 바뀌었고 지시문은 한 줄도 안 바뀌었다. 처음 싣는 도구는 `load_tools` 포함 최대 20 → 18개. `test/aiV2PromptBudget.test.ts` 가 19개(＋`todo` = 20) 상한과 위 규칙을 못박는다.
 
+## 게임 낱말이 없는 작은 일도 이벤트를 찾고 옮긴다 (2026-11-11)
+
+v1 도구 묶음(`find_events` `get_event` `patch_event_page` `move_event` …)은 요청 글에 게임 낱말이 있을 때만 만들어졌다(`verbs.ts` 가 `intent.tools.game` 을 본다).
+그래서 낱말이 안 맞은 작은 일 — 「촌장이 "배경 음악이 참 좋지?"라고 말하게 해 줘」(대사는 가려진다), 「썸네일 그림 하나 골라 줘」, 게임 하나를 잇지 않는 «계속» —
+은 처음 싣는 도구가 6개(`inspect` `add_event` `add_people` `read_specs` `ask_user` `load_tools`)였고, 이벤트를 찾거나 옮기는 도구는 이름으로 불러도 없었다.
+꾸미기 요청(「광장 빈 곳에 나무랑 벤치 좀 놓아 줘」)도 채우기 도구만 받고 `move_event` 는 없었다.
+
+이제 **지은 것을 고치는 작은 일**(`editOnly` 이고 소리만 바라는 요청이 아닌 것)은 게임 낱말이 없어도 게임 도구 묶음을 받는다 — `request/intent.ts` `classifyRequest` 가
+프로젝트를 보고 정하고 `matchToolGroups(…, { editsBuilt: true })` 로 묶음을 다시 읽는다. 처음 싣는 것은 `smallJobTools` 가 고른 것뿐이고(늘 싣는 9개 + 그 일의 도구),
+나머지는 `load_tools` 로 닿는다. 지시문에는 게임 카드의 늘 싣는 줄(2,617자)이 붙는다.
+
+그대로인 것: 장소를 짓는 요청(「작은 마을 하나 만들어 줘」 — 동사 20개), 빈 프로젝트의 «계속»(짓는 길), 소리만 바라는 요청(소리 묶음 8개).
+글만 보는 읽기 함수(`wantsGameTools(task)` · `v2ExtraToolNames(task)`)의 답도 그대로다 — 프로젝트를 같이 본 기록(`classifyRequest`)만 넓어진다.
+
+남은 것: 장소를 짓는 요청에 게임 낱말이 없으면 여전히 `move_event`·`find_events` 가 만들어지지 않는다. 그 길에는 `load_tools` 도 없다 — 풀려면 `verbs.ts` 의
+도구 만들기 조건(`gameTools || wantsMusicTools || wantsTerrainTools || wantsStoreTools`)과 `toolExposure.ts` 의 «게임 요청만 나중에 싣기» 를 같이 고쳐야 한다(요청 줄기 밖).
+
 ## 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 
 `make_place` 가 처음 지을 때 명세에 무작위 `salt` 를 넣고, 고치기(`edit_place`)는 기록된 명세의 salt 를 물려받는다(모델은 쓰지 않는다).
