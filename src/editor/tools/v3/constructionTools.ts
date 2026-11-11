@@ -662,7 +662,16 @@ const placeDoor: ToolDefinition = {
     required: ["mapId", "at", "material"],
   },
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
-    return placeOnWall("door", draft, args, DOOR_EXAMPLE);
+    try { return placeOnWall("door", draft, args, DOOR_EXAMPLE); }
+    catch (error) {
+      // 이 칩셋에 문 재료가 없거나 이름을 못 맞히면 모델은 문을 포기했다(2026-11-11 작은 일 재측정 — 설원 실내의 «벽 통로» 는 한 칸 타일이라 거절).
+      // 맵을 잇는 데는 문 그림이 꼭 필요하지 않다 — 그 길을 거절 글에 적는다.
+      if (error instanceof ToolError && (error.code === "material-not-found" || error.code === "material-needs-group")) {
+        throw new ToolError(`${error.message} 문 그림 없이 두 맵을 잇기만 하면 되는 일(뒷문·출구)은 place_door 없이 create_transfer_pair({a:{mapId,x,y}, b:{mapId,x,y}}) 한 번이면 된다 — 문을 낼 벽 칸을 주면 그 앞 걷는 칸에 출입구가 붙는다.`,
+          { code: error.code, ...(error.mapId ? { mapId: error.mapId } : {}) });
+      }
+      throw error;
+    }
   },
 };
 
