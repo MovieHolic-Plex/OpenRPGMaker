@@ -105,7 +105,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
     p: { steps: "SceneStep[]", "steps[].kind": "Step kind.", "steps[].skillId": "useFieldSkill: field skill id.", "steps[].target": "useFieldSkill: event id in front (check).", "steps[].actorId": "useFieldSkill: who uses it (omit = first who knows it)." },
   },
   create_transfer_pair: {
-    d: "Create a two-way door/stairs/teleport pair between two maps in one call: {a:{mapId,x,y}, b:{mapId,x,y}}. Put each end on a walkable cell right against a wall or map edge (no one-cell gap; one-cell-inside coordinates are pulled to the edge). With a door picture (doorAt, or x,y on a door/stairs cell) the trigger sits on the door cell. Landing cells and facing are chosen automatically. Unreachable or sealed ends fail. 'Link this map north of X' = an exit on X's north edge (small y).",
+    d: "A door, back door, exit, stairs or teleport between two maps — this one call is all it takes (no room rebuild, no door tile needed): {a:{mapId,x,y}, b:{mapId,x,y}} creates the two-way pair. For a new door in a wall give the wall cell where it should be; the end snaps to the walkable cell in front of it. Put each end on a walkable cell right against a wall or map edge (no one-cell gap; one-cell-inside coordinates are pulled to the edge). With a door picture (doorAt, or x,y on a door/stairs cell) the trigger sits on the door cell. Landing cells and facing are chosen automatically. Unreachable or sealed ends fail. 'Link this map north of X' = an exit on X's north edge (small y).",
     p: { a: "{mapId,x,y} end A (optional doorAt:{x,y})", b: "{mapId,x,y} end B (optional doorAt:{x,y})", trigger: "door (default): trigger on the door cell. front: old behaviour (cell in front) — special cases only." },
   },
   place_chest: {
@@ -288,7 +288,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   },
   store_install: { d: "Install a store product (slug) into this project — only when the user asked for that product." },
   set_game_audio: { d: "Attach real audio resources: title, opening, field, battle, victory/defeat, menu SE, per-map BGM (role:maps + mapIds), boss battles." },
-  place_door: { d: "Install a door on a wall cell (refused if the cell is not a wall). Use its transferEndpoint with create_transfer_pair." },
+  place_door: { d: "Draw a door tile on a wall cell (refused if the cell is not a wall or the chipset has no door material by that name). Only for the door picture — linking two maps is create_transfer_pair, which works without it. Use the returned transferEndpoint with create_transfer_pair." },
   set_factions: { d: "Define factions and their attitudes (-2 worst enemy … 2 ally); visible enemies of hostile factions fight each other." },
   add_battle_guest: { d: "A battle guest: on a condition (boss HP %, round, switch) an actor joins this battle only, fights automatically and leaves afterwards." },
   list_combo_techs: { d: "List combo techs (dual/triple/quad): participants, cost shares, unlock conditions, staging, whether the current party has them." },
