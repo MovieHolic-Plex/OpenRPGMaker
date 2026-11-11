@@ -82,6 +82,12 @@ export async function run(argv: string[]): Promise<number> {
     const child = spawn('bun', [resolve('src/harnesses/assistant-capability/node/smallJobsEntry.ts'), mode, ...argv.slice(1)], { stdio: 'inherit', cwd: process.cwd() });
     return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
   }
+  // 조수가 깐 맵의 적대적 시각 검수: 맵 깔기 묶음 실행(lay) · 그림 검수와 집계(review) · 검수자 보정(calibrate).
+  if (stage === 'map-vqa-lay' || stage === 'map-vqa' || stage === 'map-vqa-calibrate' || stage === 'map-vqa-hud') {
+    const mode = stage === 'map-vqa-lay' ? 'lay' : stage === 'map-vqa' ? 'review' : stage === 'map-vqa-hud' ? 'hud' : 'calibrate';
+    const child = spawn('bun', [resolve('src/harnesses/assistant-capability/node/mapVqaEntry.ts'), mode, ...argv.slice(1)], { stdio: 'inherit', cwd: process.cwd() });
+    return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
+  }
   if (stage === 'matrix-score') {
     const root = option('out');
     if (!root) throw Error('matrix-score --out <새 실행 폴더>');

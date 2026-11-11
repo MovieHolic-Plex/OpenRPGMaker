@@ -396,7 +396,8 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
   try {
     for (const side of ["south", "north"] as const) {
       const run = mkRun(structuredClone(P0), s.mapId);
-      const got = pickTransferSpot(run, s.mapId, { side, outdoor });
+      // 건너편이 방일 때(건물 입구를 써도 된다) 고르는 자리.
+      const got = pickTransferSpot(run, s.mapId, { side, outdoor, buildingDoor: true });
       const m2 = run.ctx.project.maps[s.mapId];
       const d = diffTiles(M0, m2);
       if (!got) { rec(s, `transferSpot(${side})`, "none", "undefined → caller falls back to an edge cell"); continue; }
@@ -406,6 +407,11 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
       const v: V = d.n || offEntrance ? "wrong" : "ok";
       rec(s, `transferSpot(${side})`, v, `${got.note} → (${got.x},${got.y})${got.doorAt ? ` doorAt(${got.doorAt.x},${got.doorAt.y})` : ""}${offEntrance ? " — not a building entrance" : ""} tiles stamped ${d.n}`.slice(0, 260), v !== "ok" ? savePair(`spot_${side}__${tag}`, P0, M0, run.ctx.project, m2, got.doorAt ?? got) : undefined);
     }
+    // 건너편을 모르거나 바깥 맵일 때는 집 문을 자리로 주지 않는다(집에 들어갔는데 다른 바깥 맵으로 나오게 된다).
+    if (outdoor) {
+      const plain = pickTransferSpot(mkRun(structuredClone(P0), s.mapId), s.mapId, { side: "south", outdoor });
+      rec(s, "transferSpot(outdoor↔outdoor)", plain?.doorAt ? "wrong" : plain ? "ok" : "none", plain ? `${plain.note}${plain.doorAt ? " — a building door between two outdoor maps" : ""}` : "undefined → caller falls back to an edge cell");
+    } else rec(s, "transferSpot(outdoor↔outdoor)", "n/a", "indoor");
   } catch (e) { rec(s, "transferSpot", "wrong", `threw ${(e as Error).message.slice(0, 120)}`); }
   console.error(`done ${tag}`);
 }
