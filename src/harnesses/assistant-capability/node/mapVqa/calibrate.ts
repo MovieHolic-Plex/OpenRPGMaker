@@ -8,9 +8,10 @@ import { createBlankProject } from '../../../../project/defaults';
 import type { Project } from '../../../../project/types';
 import { mapLimit, newUsage, usageLine } from '../visualJudge';
 import { loadCorpusEntry, type MapItem } from './corpus';
-import { plant, RECIPE_CLASSES, type Recipe, type Rect } from './decoys';
+import { caught, plant, RECIPE_CLASSES, type Recipe, type Rect } from './decoys';
 import { mapFacts } from './facts';
-import { loadReviewer, MAP_VQA_DATA, reviewMap, type Defect, type MapReview } from './review';
+import { reviewMap } from './review';
+import { loadReviewer, MAP_VQA_DATA } from './verdict';
 
 const REPO_ROOT = resolve(MAP_VQA_DATA, '../../..');
 type Seed = {
@@ -20,15 +21,6 @@ type Seed = {
   /** 실제로 확인된 조수 결함(얼려 둔 맵 한 장). expect 마다 그 종류 가운데 하나로, 그 자리와 겹치게 잡아야 한다. */
   positives: Array<{ id: string; file: string; note: string; expect: Array<{ classes: string[]; region: Rect; what: string }> }>;
 };
-
-const intersects = (a: Rect, b: Rect, grow = 2): boolean => a.x - grow < b.x + b.w && b.x < a.x + a.w + grow && a.y - grow < b.y + b.h && b.y < a.y + a.h + grow;
-const serious = (defect: Defect): boolean => defect.severity === 'blocker' || defect.severity === 'major';
-/** 심은 결함을 잡았나: 엄격 = major 이상 + 그 조리법의 종류 + 심은 자리와 겹침. 느슨 = major 이상 + 겹침(종류 무관). */
-export function caught(review: MapReview, classes: string[], region: Rect): { strict: boolean; loose: boolean; by: Defect | null } {
-  const near = review.defects.filter(defect => serious(defect) && intersects(defect.region, region));
-  const by = near.find(defect => classes.includes(defect.class)) ?? null;
-  return { strict: !!by, loose: near.length > 0, by: by ?? near[0] ?? null };
-}
 
 function baseItems(base: string, mapPart?: string): MapItem[] {
   const items = loadCorpusEntry(resolve(REPO_ROOT, 'public/assets/region-references', `${base}.oprn.json`));

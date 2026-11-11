@@ -1,7 +1,7 @@
 // 맵 깔기 묶음 실행기(bun) — map-vqa 의 말뭉치 B. 요청마다: 빈 프로젝트 정본 → 실제 편집기 입력창에 한 턴(wholeGameSession.mjs, v2 + 고정 모델)
 // → 저장·새 컨텍스트 재로드 → 저장 문서 전/후를 남긴다. 기계 합격은 없다(그림 검수자가 본다). 작은 일 실행기(smallJobs/run.ts)와 같은 길·같은 규칙:
 // 동시 최대 2, 되물으면 한 번만 답함, 결과가 있는 요청은 덮어쓰지 않음, 실패·시간 초과·기반 오류를 그대로 적음.
-import { spawn } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -132,7 +132,7 @@ export async function runMapLaying(options: LayOptions): Promise<number> {
   const env = { ...sessionEnv(pin.config, pinned), HARNESS_DIST_DIR: 'dist' };
   const limitMs = Math.round(Number(options.timeoutMin ?? 20) * 60_000);
   const parallel = Math.max(1, Math.min(MAX_PARALLEL, Number(options.parallel ?? MAX_PARALLEL) || MAX_PARALLEL));
-  const editorGit = (() => { try { return Bun.spawnSync(['git', 'rev-parse', '--short=10', 'HEAD'], { cwd: editorRoot }).stdout.toString().trim(); } catch { return ''; } })();
+  const editorGit = (() => { try { return execFileSync('git', ['rev-parse', '--short=10', 'HEAD'], { cwd: editorRoot, encoding: 'utf8' }).trim(); } catch { return ''; } })();
   const startedAt = new Date().toISOString(), results = new Map<string, LayResult>(), queue: LayJob[] = [];
   for (const job of jobs) {
     const dir = resolve(root, 'jobs', job.id), done = readJson(resolve(dir, 'result.json')) as LayResult | null;

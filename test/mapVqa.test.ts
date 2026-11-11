@@ -1,0 +1,130 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { describe, expect, it } from "vitest";
+import { caught, plant, RECIPE_CLASSES, type Recipe } from "@/harnesses/assistant-capability/node/mapVqa/decoys";
+import { factsText, mapFacts } from "@/harnesses/assistant-capability/node/mapVqa/facts";
+import { buildTally, loadReviewer, parseReview, type MapReview } from "@/harnesses/assistant-capability/node/mapVqa/verdict";
+import { extractJson, VISUAL_JUDGE } from "@/harnesses/assistant-capability/node/visualJudge";
+import { createBlankProject } from "@/project/defaults";
+
+// 조수가 깐 맵의 그림 검수(map-vqa)에서 모델 없이 볼 수 있는 것: 묶음·씨앗의 모양, 사실 읽기, 심은 결함의 조리법,
+// 검수자 답 읽기(형식이 어긋나면 답이 아니다), 집계(미검증은 깨끗한 맵으로 세지 않는다), 보정의 «잡았다» 판정.
+
+const DATA = resolve("harness-data/assistant-capability/map-vqa");
+const reviewer = loadReviewer();
+const review = (id: string, defects: MapReview["defects"], status: MapReview["status"] = "reviewed"): MapReview => ({
+  id, group: "A:run", label: id, context: "", map: { name: id, width: 20, height: 15, tilesetId: "t", standalone: false, walkableShare: 1, exits: 0, people: 0, invisible: 0 },
+  pictureSha256: "x", promptVersion: reviewer.version, judge: VISUAL_JUDGE, status, purpose: "", checked: {}, defects,
+});
+
+describe("map-vqa 묶음과 씨앗", () => {
+  it("맵 깔기 요청은 좌표·크기 없는 한국어 문장이고 id 가 겹치지 않는다", () => {
+    const set = JSON.parse(readFileSync(resolve(DATA, "requests.json"), "utf8"));
+    expect(set.jobs.length).toBeGreaterThanOrEqual(15);
+    expect(new Set(set.jobs.map((job: any) => job.id)).size).toBe(set.jobs.length);
+    for (const job of set.jobs) {
+      expect(job.request).toMatch(/[가-힣]/u);
+      expect(job.request).not.toMatch(/\(\s*\d+\s*,\s*\d+\s*\)|\d+\s*[x×]\s*\d+/u);
+    }
+    expect(set.jobs.filter((job: any) => job.maps === 2).length).toBeGreaterThanOrEqual(3);
+  });
+  it("보정 씨앗의 조리법은 모두 있고, 조리법이 받는 종류는 검수자의 종류 목록 안에 있다", () => {
+    const seed = JSON.parse(readFileSync(resolve(DATA, "calibration.json"), "utf8"));
+    for (const decoy of seed.decoys) expect(Object.keys(RECIPE_CLASSES)).toContain(decoy.recipe);
+    for (const classes of Object.values(RECIPE_CLASSES)) for (const id of classes) expect(Object.keys(reviewer.classes)).toContain(id);
+    for (const positive of seed.positives) for (const expectation of positive.expect) for (const id of expectation.classes) expect(Object.keys(reviewer.classes)).toContain(id);
+    // 사용자가 꼽은 종류가 목록에 다 있다.
+    for (const id of ["exit-off-road", "road-to-nowhere", "enclosure-unreadable", "passage-mismatch", "invisible-event-misplaced", "empty-expanse", "wrong-surface", "cut-off-piece", "repeated-stamp", "doorless-building", "people-placement"]) {
+      expect(Object.keys(reviewer.classes)).toContain(id);
+    }
+  });
+});
+
+describe("맵의 사실 읽기", () => {
+  const project = createBlankProject() as any;
+  const mapId = project.startMapId;
+  it("빈 맵: 모든 칸을 걷고, 네 가장자리가 출구 없이 열려 있다", () => {
+    const facts = mapFacts(project, mapId, true);
+    expect(facts.walkableShare).toBe(1);
+    expect(facts.mainAreaShare).toBe(1);
+    expect(facts.openEdges.map((run) => run.edge).sort()).toEqual(["east", "north", "south", "west"]);
+    expect(facts.openEdges.every((run) => !run.hasExit)).toBe(true);
+    expect(facts.events).toEqual([]);
+    expect(factsText(facts)).toContain("STAND-ALONE");
+  });
+  it("맨땅 가장자리에 심은 출구는 E 번호표와 가장자리 이름을 달고, 그 구간은 «출구 있음»이 된다", () => {
+    const planted = plant("exit-on-bare-edge", project, mapId, mapFacts(project, mapId, true))!;
+    expect(planted).not.toBeNull();
+    const facts = mapFacts(planted.project, mapId, false);
+    const exit = facts.events.find((event) => event.kind === "exit")!;
+    expect(exit.tag).toBe("E1");
+    expect(exit.edge).toBeDefined();
+    expect(exit.visible).toBe(false);
+    expect(facts.openEdges.filter((run) => run.hasExit).length).toBe(1);
+    expect(planted.region.w * planted.region.h).toBeLessThanOrEqual(9);
+  });
+  it("안 칠한 구멍은 그 칸들을 모든 층에서 비우고, 원본 문서는 건드리지 않는다", () => {
+    const before = JSON.stringify(project.maps[mapId].lowerTiles);
+    const planted = plant("unpainted-hole", project, mapId, mapFacts(project, mapId, true))!;
+    const map = (planted.project as any).maps[mapId], { x, y, w, h } = planted.region;
+    expect([w, h]).toEqual([6, 5]);
+    for (let cy = y; cy < y + h; cy += 1) for (let cx = x; cx < x + w; cx += 1) expect(map.lowerTiles[cy * map.width + cx]).toBe(-1);
+    expect(JSON.stringify(project.maps[mapId].lowerTiles)).toBe(before);
+  });
+  it("그 맵에 맞지 않는 조리법은 null 이다(넓게 열린 들판에는 막을 문이 없다)", () => {
+    const facts = mapFacts(project, mapId, true);
+    for (const recipe of ["wall-off", "locked-text-on-way", "person-on-roof"] as Recipe[]) expect(plant(recipe, project, mapId, facts)).toBeNull();
+  });
+});
+
+describe("검수자 답 읽기", () => {
+  const size = { width: 20, height: 15 };
+  const good = { purpose: "마을", checked: { exits: "ok" }, defects: [
+    { class: "empty-expanse", severity: "polish", region: { x: 0, y: 0, w: 5, h: 5 }, evidence: "빈 모래" },
+    { class: "exit-off-road", severity: "blocker", region: { x: 18, y: 14, w: 9, h: 9 }, evidence: "출구가 맨땅" },
+  ] };
+  it("결함을 심각한 순으로 놓고 영역을 맵 안으로 자른다", () => {
+    const parsed = parseReview(`앞말 ${JSON.stringify(good)} 뒷말`, reviewer, size)!;
+    expect(parsed.defects.map((defect) => defect.severity)).toEqual(["blocker", "polish"]);
+    expect(parsed.defects[0]!.region).toEqual({ x: 18, y: 14, w: 2, h: 1 });
+  });
+  it("없는 종류·없는 심각도·빈 근거·JSON 아님은 답이 아니다(null → 그 호출을 다시 한다)", () => {
+    const bad = (patch: Record<string, unknown>) => JSON.stringify({ ...good, defects: [{ ...good.defects[0], ...patch }] });
+    expect(parseReview(bad({ class: "made-up" }), reviewer, size)).toBeNull();
+    expect(parseReview(bad({ severity: "minor" }), reviewer, size)).toBeNull();
+    expect(parseReview(bad({ evidence: " " }), reviewer, size)).toBeNull();
+    expect(parseReview(bad({ region: { x: "a" } }), reviewer, size)).toBeNull();
+    expect(parseReview("괜찮아 보입니다.", reviewer, size)).toBeNull();
+    expect(parseReview(JSON.stringify({ purpose: "x" }), reviewer, size)).toBeNull();
+  });
+  it("결함이 없다는 답은 빈 목록이다", () => {
+    expect(parseReview('{"purpose":"방","defects":[]}', reviewer, size)!.defects).toEqual([]);
+  });
+  it("extractJson 은 글 속의 JSON 한 덩어리를 꺼낸다", () => {
+    expect(extractJson('```json\n{"a":[1,2]}\n```')).toEqual({ a: [1, 2] });
+    expect(extractJson("없음")).toBeNull();
+  });
+});
+
+describe("집계와 보정 판정", () => {
+  const blocker = { class: "passage-mismatch", severity: "blocker" as const, region: { x: 5, y: 5, w: 2, h: 2 }, evidence: "문이 막힘" };
+  const major = { class: "exit-off-road", severity: "major" as const, region: { x: 0, y: 7, w: 1, h: 1 }, evidence: "출구가 맨땅" };
+  const polish = { class: "empty-expanse", severity: "polish" as const, region: { x: 10, y: 0, w: 5, h: 5 }, evidence: "빈 곳" };
+  it("막힘이 많은 종류가 먼저 오고, 검수자가 답하지 못한 맵은 깨끗한 맵으로 세지 않는다", () => {
+    const tally = buildTally([review("a", [blocker, major]), review("b", [major, polish]), review("c", []), review("d", [], "unreviewed")], {}, reviewer);
+    expect(tally.totals).toMatchObject({ maps: 4, reviewed: 3, withBlocker: 1, withMajorOrWorse: 2, clean: 1, blocker: 1, major: 2, polish: 1 });
+    expect(tally.ranked.map((row) => row.class)).toEqual(["passage-mismatch", "exit-off-road", "empty-expanse"]);
+    expect(tally.byClass["exit-off-road"]).toEqual({ blocker: 0, major: 2, polish: 0, maps: 2 });
+    expect(tally.unreviewed.map((row) => row.id)).toEqual(["d"]);
+  });
+  it("심은 결함: major 이상 + 받는 종류 + 자리 겹침이어야 잡은 것이다", () => {
+    const planted = { x: 4, y: 4, w: 2, h: 2 };
+    expect(caught(review("a", [blocker]), ["passage-mismatch"], planted)).toMatchObject({ strict: true, loose: true });
+    // 종류가 다르면 엄격하게는 놓친 것(느슨하게만 잡음).
+    expect(caught(review("a", [blocker]), ["repeated-stamp"], planted)).toMatchObject({ strict: false, loose: true });
+    // 다듬기 등급으로만 적으면 놓친 것.
+    expect(caught(review("a", [{ ...blocker, severity: "polish" }]), ["passage-mismatch"], planted)).toMatchObject({ strict: false, loose: false });
+    // 먼 자리의 결함은 그 결함이 아니다.
+    expect(caught(review("a", [{ ...blocker, region: { x: 15, y: 12, w: 1, h: 1 } }]), ["passage-mismatch"], planted)).toMatchObject({ strict: false, loose: false });
+  });
+});

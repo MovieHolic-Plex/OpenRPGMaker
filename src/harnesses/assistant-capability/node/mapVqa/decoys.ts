@@ -3,6 +3,7 @@
 import type { Project } from '../../../../project/types';
 import { cloneDoc } from '../smallJobs/checkSupport';
 import type { MapFacts } from './facts';
+import type { Defect, MapReview } from './verdict';
 
 export type Rect = { x: number; y: number; w: number; h: number };
 export type Planted = { project: Project; region: Rect; note: string };
@@ -159,4 +160,13 @@ export function plant(recipe: Recipe, project: Project, mapId: string, facts: Ma
     case 'unpainted-hole': return unpaintedHole(project, mapId);
     case 'exit-on-bare-edge': return exitOnBareEdge(project, mapId, facts);
   }
+}
+
+const intersects = (a: Rect, b: Rect, grow = 2): boolean => a.x - grow < b.x + b.w && b.x < a.x + a.w + grow && a.y - grow < b.y + b.h && b.y < a.y + a.h + grow;
+const serious = (defect: Defect): boolean => defect.severity === 'blocker' || defect.severity === 'major';
+/** 심은 결함을 잡았나: 엄격 = major 이상 + 그 조리법의 종류 + 심은 자리와 겹침. 느슨 = major 이상 + 겹침(종류 무관). */
+export function caught(review: MapReview, classes: string[], region: Rect): { strict: boolean; loose: boolean; by: Defect | null } {
+  const near = review.defects.filter(defect => serious(defect) && intersects(defect.region, region));
+  const by = near.find(defect => classes.includes(defect.class)) ?? null;
+  return { strict: !!by, loose: near.length > 0, by: by ?? near[0] ?? null };
 }

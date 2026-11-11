@@ -121,7 +121,7 @@ export function factsText(facts: MapFacts): string {
   const flags = (event: FactEvent) => `${event.onBlocked ? ' · ON A BLOCKED CELL' : ''}${event.reachable ? '' : ' · NOT REACHABLE on foot from the main walkable area'}`;
   const lines = [
     `MAP "${facts.name}" — ${facts.width}x${facts.height} tiles, chipset ${facts.tilesetId}${facts.role ? `, role ${facts.role}` : ''}.`,
-    facts.standalone ? 'This is a STAND-ALONE single map (not linked into a game). Having no exits is NOT a defect here. Exits that do exist are still judged.' : 'This map is part of a linked game: the player arrives and leaves through the exits listed below.',
+    facts.standalone ? 'This is a STAND-ALONE single map (not linked into a game): it has no map transfers by design, and that is not a defect. Doorways, gates and roads drawn on the map are still judged, and so are any exits that do exist.' : 'This map is part of a linked game: the player arrives and leaves through the exits listed below.',
     `Walkable: ${pct(facts.walkableShare)} of cells. The largest connected walkable area holds ${pct(facts.mainAreaShare)} of the walkable cells.`,
     ...(facts.pockets.length ? [`Walkable pockets cut off from the main area: ${facts.pockets.map(pocket => `${pocket.cells} cells near (${pocket.x},${pocket.y})`).join('; ')}.`] : []),
     `Open (walkable) stretches on the map edge: ${facts.openEdges.map(run => `${run.edge} ${run.edge === 'north' || run.edge === 'south' ? 'x' : 'y'}=${run.from}${run.to !== run.from ? `..${run.to}` : ''} ${run.hasExit ? '[has exit]' : '[NO exit]'}`).join('; ') || 'none (the edge is closed all round)'}.`,

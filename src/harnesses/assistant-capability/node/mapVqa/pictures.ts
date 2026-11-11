@@ -102,11 +102,15 @@ export function markedPicture(pictures: MapPictures, map: { width: number; heigh
   const { tile } = pictures, clean = PNG.sync.read(pictures.clean);
   const canvas = new Canvas(clean.width, clean.height);
   canvas.blit({ width: clean.width, height: clean.height, data: clean.data }, 0, 0, 1);
+  const labels: string[] = [];
   for (const defect of [...defects].sort((a, b) => b.region.w * b.region.h - a.region.w * a.region.h)) {
     const x = Math.max(0, Math.min(map.width - 1, defect.region.x)), y = Math.max(0, Math.min(map.height - 1, defect.region.y));
     const w = Math.max(1, Math.min(map.width - x, defect.region.w)), h = Math.max(1, Math.min(map.height - y, defect.region.h));
     canvas.box(x * tile, y * tile, w * tile, h * tile, SEVERITY_COLOR[defect.severity], 2);
-    canvas.text(x * tile, y * tile, String(defect.index), 2, SEVERITY_COLOR[defect.severity]);
+    // 같은 자리에서 시작하는 상자의 번호는 옆으로 비켜 적는다.
+    const taken = labels.filter(label => label === `${x},${y}`).length;
+    labels.push(`${x},${y}`);
+    canvas.text(x * tile + taken * 18, y * tile, String(defect.index), 2, SEVERITY_COLOR[defect.severity]);
   }
   return canvas.png();
 }
