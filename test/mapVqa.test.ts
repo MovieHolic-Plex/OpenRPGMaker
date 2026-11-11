@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { buildArtGaps, parseArtReview, toolReportsIn } from "@/harnesses/assistant-capability/node/mapVqa/artGaps";
 import { caught, plant, RECIPE_CLASSES, type Recipe } from "@/harnesses/assistant-capability/node/mapVqa/decoys";
-import { factsText, mapFacts } from "@/harnesses/assistant-capability/node/mapVqa/facts";
+import { factsText, isBlankMap, mapFacts } from "@/harnesses/assistant-capability/node/mapVqa/facts";
 import { buildTally, loadReviewer, parseReview, type MapReview } from "@/harnesses/assistant-capability/node/mapVqa/verdict";
 import { extractJson, VISUAL_JUDGE } from "@/harnesses/assistant-capability/node/visualJudge";
 import { createBlankProject } from "@/project/defaults";
@@ -52,6 +52,11 @@ describe("맵의 사실 읽기", () => {
     expect(facts.openEdges.every((run) => !run.hasExit)).toBe(true);
     expect(facts.events).toEqual([]);
     expect(factsText(facts)).toContain("STAND-ALONE");
+  });
+  it("아무것도 그리지 않은 맵은 빈 맵이고, 한 칸이라도 다른 타일이 있으면 아니다", () => {
+    const map: any = Object.values((createBlankProject() as any).maps)[0];
+    expect(isBlankMap(map)).toBe(true);
+    expect(isBlankMap({ ...map, upperTiles: map.upperTiles.map((tile: number, index: number) => index === 7 ? 123 : tile) })).toBe(false);
   });
   it("맨땅 가장자리에 심은 출구는 E 번호표와 가장자리 이름을 달고, 그 구간은 «출구 있음»이 된다", () => {
     const planted = plant("exit-on-bare-edge", project, mapId, mapFacts(project, mapId, true))!;

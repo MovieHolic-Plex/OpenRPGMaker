@@ -34,7 +34,7 @@ export async function reviewMap(item: MapItem, options: ReviewOptions): Promise<
       parse: reply => parseReview(reply, options.reviewer, facts) });
     review = 'answer' in answer ? { ...base, status: 'reviewed', ...answer.answer, judgeKey: answer.key } : { ...base, error: answer.error, judgeKey: answer.key };
   }
-  if (options.art && !options.noReview) {
+  if (options.art && !options.noReview && !item.blank) {
     review = { ...review, art: await askArtGaps({ cacheDir: resolve(options.out, 'judge-cache'), usage: options.usage, context: item.context, factsText: text, battle: battleFacts(item.project, item.mapId), size: facts,
       images: [{ label: 'CLEAN picture at 1x (what the player sees)', png: pictures.clean }, ...details.map(detail => ({ label: detail.label, png: detail.png }))] }) };
   }

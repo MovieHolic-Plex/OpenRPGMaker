@@ -46,7 +46,9 @@ export function loadLaySet(file = REQUESTS_FILE): LaySet {
 
 /** 턴 전 문서와 다른 맵(새 맵 포함). 이름만 같은 빈 시작 맵은 뺀다. */
 export function laidMaps(before: any, after: any): LayResult['maps'] {
-  return Object.values<any>(after.maps ?? {}).filter(map => JSON.stringify(before.maps?.[map.id] ?? null) !== JSON.stringify(map))
+  // 열쇠 순서가 달라도 같은 맵은 같은 맵이다(저장소에서 다시 읽으면 순서가 바뀐다).
+  const stable = (value: any): string => JSON.stringify(value, (_key, inner) => inner && typeof inner === 'object' && !Array.isArray(inner) ? Object.fromEntries(Object.keys(inner).sort().map(key => [key, inner[key]])) : inner);
+  return Object.values<any>(after.maps ?? {}).filter(map => stable(before.maps?.[map.id] ?? null) !== stable(map))
     .map(map => ({ id: map.id, name: map.name ?? map.id, width: map.width, height: map.height, tilesetId: map.tilesetId, events: (map.events ?? []).length, isNew: !before.maps?.[map.id] }));
 }
 

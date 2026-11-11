@@ -6,6 +6,7 @@ import type { Project } from '../../../../project/types';
 import { readProjectSqlite } from '../../../../../scripts/content/read-project-sqlite.mts';
 import { addRenderAssetRoot } from '../../../../../scripts/qa-game/render.mts';
 import { allCommands } from '../smallJobs/checkSupport';
+import { isBlankMap } from './facts';
 
 export type MapItem = {
   /** 폴더 이름으로 쓰는 id(소문자·숫자·하이픈). */
@@ -17,6 +18,8 @@ export type MapItem = {
   standalone: boolean;
   /** 검수자에게 주는 한 줄 배경(요청 문장·게임 제목). */
   context: string;
+  /** 조수가 칠하지 않은 빈 맵(빈 프로젝트의 시작 맵이 그대로 남은 것). 깔기 결함은 보지만(플레이어가 거기서 시작한다) 없는 그림은 묻지 않는다. */
+  blank?: boolean;
 };
 
 const slug = (text: string): string => text.normalize('NFC').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/gu, '').toLowerCase().slice(0, 40) || 'map';
@@ -45,9 +48,13 @@ function fromLayRun(dir: string): MapItem[] {
     // 빈 프로젝트의 타일셋에는 없어 그림에 구멍이 난다(2026-11-11: 야영지 풀밭이 통째로 «안 칠한 칸»으로 그려져 가짜 blocker 가 붙었다).
     const project = readProjectSqlite(projectDir) as Project;
     for (const map of job.maps as any[]) {
-      if (!(project as any).maps[map.id]) continue;
-      out.push({ id: `lay-${job.id}--${slug(map.name)}-${String(map.id).slice(-4)}`, group: `B:${job.id}`, label: `맵 깔기 ${job.id} · ${map.name}`, project, mapId: map.id, standalone: !linked(project, map.id),
-        context: `The user asked the assistant (in Korean): «${job.request}»${job.status === 'timeout' ? ' (the assistant ran out of time; this is what was saved)' : ''}.` });
+      const saved = (project as any).maps[map.id];
+      if (!saved) continue;
+      const blank = isBlankMap(saved), isStart = (project as any).startMapId === map.id, isLinked = linked(project, map.id);
+      // 칠하지 않은 빈 맵이 시작 맵도 아니고 어디와도 이어지지 않았으면 플레이어가 볼 일이 없다 — 검수 대상이 아니다.
+      if (blank && !isStart && !isLinked) continue;
+      out.push({ id: `lay-${job.id}--${slug(map.name)}-${String(map.id).slice(-4)}`, group: `B:${job.id}`, label: `맵 깔기 ${job.id} · ${map.name}`, project, mapId: map.id, standalone: !isLinked, ...(blank ? { blank: true } : {}),
+        context: `The user asked the assistant (in Korean): «${job.request}»${job.status === 'timeout' ? ' (the assistant ran out of time; this is what was saved)' : ''}.${blank ? ' NOTE: this is the empty map the project started with. The assistant painted nothing on it but left it in the game' + (isStart ? ' as the map where the game starts.' : '.') : ''}` });
     }
   }
   return out;

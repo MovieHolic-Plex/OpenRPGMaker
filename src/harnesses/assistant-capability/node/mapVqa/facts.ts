@@ -37,6 +37,11 @@ export type MapFacts = {
   labels: Array<{ name: string; x: number; y: number; w: number; h: number }>;
 };
 
+/** 타일 층마다 값이 하나뿐인 맵 — 아무것도 그리지 않은 맵이다. */
+export function isBlankMap(map: any): boolean {
+  return ['lowerTiles', 'lowerOverlayTiles', 'upperTiles', 'upperOverlayTiles'].every(layer => new Set(map?.[layer] ?? []).size <= 1);
+}
+
 const key = (x: number, y: number) => `${x},${y}`;
 function edgeOf(x: number, y: number, width: number, height: number): FactEvent['edge'] {
   return x === 0 ? 'west' : x === width - 1 ? 'east' : y === 0 ? 'north' : y === height - 1 ? 'south' : undefined;
