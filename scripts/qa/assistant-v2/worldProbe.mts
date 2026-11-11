@@ -5,7 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
 import { renderMapPng } from "../../qa-game/render.mts";
-import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
+import { createV2Tools } from "../../../src/ai/v2/tools/verbs.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
 import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt/systemPrompt.ts";
 import { WORLDS, pickWorld, type WorldSetting } from "../../../src/ai/v2/place/world.ts";
