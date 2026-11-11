@@ -5,8 +5,8 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { isPassable } from "@/project/collision";
-import type { GameEvent, Project } from "@/project/types";
-import { doorArtCells, reachableCells } from "@/ai/v2/judge/eventReach";
+import type { GameEvent, GameMap, Project } from "@/project/types";
+import { reachableCells } from "@/ai/v2/judge/eventReach";
 import { buildingEntrances } from "@/ai/v2/place/entrances";
 import { lockBareHouseDoors } from "@/ai/v2/place/lockedDoors";
 import { VILLAGE_BUILDER } from "@/ai/v2/place/builders/village";
@@ -22,6 +22,17 @@ function desert(kind: string): { project: Project } {
   return ctx;
 }
 
+/** 이름표가 「…문」으로 끝나는 그림 칸 — 이 궁전 맵에서는 걸어서 지나는 성문 기둥뿐이다(전에는 이것을 문으로 읽었다). */
+function gatePostCells(project: Project, map: GameMap): { x: number; y: number }[] {
+  const meta = (project.tilesets[map.tilesetId]?.tileMeta ?? []) as unknown as ({ label?: string } | undefined)[];
+  const layers = [map.lowerTiles, (map as unknown as Record<string, ArrayLike<number> | undefined>).lowerOverlayTiles, map.upperTiles, (map as unknown as Record<string, ArrayLike<number> | undefined>).upperOverlayTiles];
+  const out: { x: number; y: number }[] = [];
+  for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) {
+    if (layers.some((l) => { const t = l?.[y * map.width + x]; return typeof t === "number" && t >= 0 && /문$/u.test(String(meta[t]?.label ?? "").replace(/\s*\([^)]*\)/gu, "").trim()); })) out.push({ x, y });
+  }
+  return out;
+}
+
 const triggerKinds = (ev: GameEvent) => [(ev.trigger as { kind?: string }).kind, ...(ev.pages ?? []).map((p) => (p.trigger as { kind?: string }).kind)];
 
 describe("the «cannot enter» line stands on declared building entrances only", () => {
@@ -29,7 +40,7 @@ describe("the «cannot enter» line stands on declared building entrances only",
     const ctx = desert("palace");
     const map = ctx.project.maps.map_p!;
     // 이름표로 읽은 「문」은 이 맵에서 성문뿐이고, 건물 입구와 한 칸도 겹치지 않는다.
-    const gatePosts = doorArtCells(ctx.project, map);
+    const gatePosts = gatePostCells(ctx.project, map);
     const entrances = buildingEntrances(ctx.project, map);
     expect(gatePosts.length).toBeGreaterThan(0);
     expect(entrances.length).toBeGreaterThan(0);
@@ -70,7 +81,7 @@ describe("the «cannot enter» line stands on declared building entrances only",
   it("removes the ones an earlier build left on gate posts", () => {
     const ctx = desert("palace");
     const map = ctx.project.maps.map_p!;
-    const post = doorArtCells(ctx.project, map)[0]!;
+    const post = gatePostCells(ctx.project, map)[0]!;
     const stray = { id: `ev_locked_door_${post.x}_${post.y}`, name: "굳게 닫힌 집 문", x: post.x, y: post.y, trigger: { kind: "playerTouch" }, commands: [], pages: [] } as unknown as GameEvent;
     ctx.project = { ...ctx.project, maps: { ...ctx.project.maps, map_p: { ...map, events: [...map.events, stray] } } };
     const notes = lockBareHouseDoors({ ctx } as unknown as BuildRun, "map_p");

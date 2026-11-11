@@ -10,29 +10,21 @@
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { reachableCells } from "../judge/eventReach";
-import { buildingEntrances } from "./entrances";
+import { buildingEntrances, declaredStairCells } from "./entrances";
 import { kitOf } from "./exitDress";
-import { roadCellSet, tileLabel } from "./cells";
+import { roadCellSet } from "./cells";
 import type { BuildRun, Side } from "../shared/types";
 import { pickDungeonGateSpot } from "@/editor/tools/dungeonLinkTools";
 
 type Cell = { x: number; y: number };
 interface TransferSpot { readonly x: number; readonly y: number; readonly doorAt?: Cell; readonly note: string }
 
-const LAYERS = ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"] as const;
 const VERTICAL_PLACE = /\d\s*층|지하|탑|관측|다락|옥상|위층|아래층|floor|tower|basement|attic/iu;
-const STAIRS_ART = /계단/u;
-const NOT_STAIRS_ART = /계단 단|관중석|봉인|두 계단/u;
 const sideScore = (map: GameMap, c: Cell, side: Side) => {
   const d = side === "north" ? c.y : side === "south" ? map.height - 1 - c.y : side === "west" ? c.x : map.width - 1 - c.x;
   const mid = side === "north" || side === "south" ? Math.abs(c.x - map.width / 2) : Math.abs(c.y - map.height / 2);
   return d * 4 + mid;
 };
-
-function labelsAt(project: Project, map: GameMap, x: number, y: number): string[] {
-  const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
-  return LAYERS.map((k) => tileLabel(project, map, m[k]?.[y * map.width + x])).filter(Boolean);
-}
 
 /** 이벤트가 이미 있거나 그 둘레에 이동 이벤트가 있는 칸은 쓰지 않는다. */
 function occupiedNear(map: GameMap, c: Cell, r: number): boolean {
@@ -105,12 +97,8 @@ export function pickTransferSpot(run: BuildRun, mapId: string, opts: TransferSpo
   }
   // 2) 계단(위·아래층 장소).
   if (vertical) {
-    const stairs: Cell[] = [];
-    for (let y = 0; y < map.height; y++) for (let x = 0; x < w; x++) {
-      const hit = labelsAt(project, map, x, y).some((l) => STAIRS_ART.test(l) && !NOT_STAIRS_ART.test(l));
-      const below = y + 1 < map.height && labelsAt(project, map, x, y + 1).some((l) => STAIRS_ART.test(l) && !NOT_STAIRS_ART.test(l));
-      if (hit && !below) stairs.push({ x, y });
-    }
+    // 선언된 계단 칸(방 키트의 계단 기물 · 칩셋 표면 계약의 계단) — 이름표의 「계단」 글자로 읽지 않는다(「지구라트(계단 신전)」「비상계단 아파트」).
+    const stairs: Cell[] = declaredStairCells(project, map);
     for (const s of rank(stairs)) {
       const ep = endpointFor(project, map, reach, s);
       if (!ep || occupiedNear(map, s, 1) || occupiedNear(map, ep, 0)) continue;
