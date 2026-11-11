@@ -92,12 +92,12 @@ Terra 다시 재기(main 84a7fa331a, `assistant-fable-runs/smalljobs/after-84a7f
 그래서 (`request/topics.ts` `smallJobTools`):
 
 - **상한 18개** — `load_tools` 와 `todo` 를 더해 20개.
-- **늘 싣는 것 8개**: `inspect` `find_events` `get_event` `patch_event_page` `move_event` `add_event` `add_people` `read_specs`.
+- **늘 싣는 것 9개**: `inspect` `find_events` `get_event` `patch_event_page` `move_event` `add_event` `add_people` `read_specs` `ask_user`.
 - **옮기기·지우기 낱말이 있을 때만**: `move_object` `remove_event` `restore_event` `place_object`.
 - **사건을 짤 때**: `upsert_event` `run_scene_test` 가 주제 도구보다 먼저, `add_event_page` 는 자리가 남을 때. `declare_story_flag` 는 필요할 때.
 - **주제 도구를 쓴 대로**: 아이템·열쇠 → `get_database_records` `upsert_item` · 상자 → `place_chest` `find_empty_ground` · 조사 → `list_spatial_designs` `stamp_object` `find_empty_ground` · 맵 잇기 → `create_transfer_pair` `list_map_locations` · 전투 → `upsert_troop` `simulate_battle` `get_database_records` · 이름 → `set_map_properties` `replace_text_in_project` `upsert_actor` · 제목 → `set_title_screen` `set_project_settings`.
 - **`set_shop_stock` 은 사고팔기를 말할 때만**(`JobFacets.sells`) — 「100골드를 얻게」「주워 가게 해 줘」는 상점이 아니다.
-- **`ask_user` 는 자리가 남을 때 맨 끝에.** 안 실려도 이름으로 부르면 실린다.
+- **`ask_user` 는 늘 싣는다.** 30건에서 한 번도 불리지 않았지만 「크레딧에 내 이름도 넣어 줘」처럼 물어야 풀리는 일에서 글자 상한에 밀리지 않게 늘 싣는 묶음에 둔다.
 
 증거(모델 없음 — Terra 30건의 요청을 이 트리에 넣어 처음 싣는 목록을 뽑고 그 실행이 부른 도구와 견줌, 픽스처는 근사):
 

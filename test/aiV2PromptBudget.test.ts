@@ -111,6 +111,8 @@ describe("small jobs get a small prompt and a short tool list", () => {
     expect(keeper).not.toContain("set_project_settings");
     // 「주워 가게 해 줘」의 「가게」는 상점이 아니다.
     expect(shoot("족장의 긴 집 바닥에 낡은 열쇠가 떨어져 있게 해 줘. 조사하면 주워 가게 해 줘", "oneEvent").upFront).not.toContain("set_shop_stock");
+    // 물어야 풀리는 일(「내 이름」)의 ask_user 와 말한 음악의 도구는 글자 상한에 밀리지 않는다.
+    expect(shoot("엔딩 크레딧 음악 넣고 크레딧에 내 이름도 넣어 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["ask_user", "store_find_music", "set_game_audio"]));
   });
 
   it("carries the people card for a new person and no event card for a bare move", () => {

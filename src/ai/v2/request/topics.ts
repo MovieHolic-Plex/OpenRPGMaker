@@ -75,11 +75,12 @@ export function jobFacets(topic: string): JobFacets {
 }
 
 /**
- * 작은 일에 늘 처음부터 싣는 도구 — 보고(inspect·find_events·get_event), 고치고(patch_event_page·move_event), 세운다(add_event·add_people).
- * 실측(2026-11-11 Terra 작은 일 30건): ask_user·place_object·restore_event·remove_event·declare_story_flag 는 처음부터 실렸지만 한 번도 불리지 않았고,
+ * 작은 일에 늘 처음부터 싣는 도구 — 보고(inspect·find_events·get_event), 고치고(patch_event_page·move_event), 세우고(add_event·add_people), 모르면 묻는다(ask_user).
+ * 실측(2026-11-11 Terra 작은 일 30건): place_object·restore_event·remove_event·declare_story_flag 는 처음부터 실렸지만 한 번도 불리지 않았고,
  * run_scene_test·find_empty_ground·get_database_records 는 안 실려서 load_tools 로 불러 썼다 — 그래서 앞의 것은 필요할 때로, 뒤의 것은 그 일에 처음부터.
+ * ask_user 도 30건에서 불리지 않았지만 늘 싣는다 — 「크레딧에 내 이름도 넣어 줘」처럼 물어야 풀리는 일에서 글자 상한에 밀리면 안 된다.
  */
-const SMALL_BASE: readonly string[] = ["inspect", "find_events", "get_event", "patch_event_page", "move_event", "add_event", "add_people", "read_specs"];
+const SMALL_BASE: readonly string[] = ["inspect", "find_events", "get_event", "patch_event_page", "move_event", "add_event", "add_people", "read_specs", "ask_user"];
 /** 있는 것을 옮기거나 지우는 일의 도구. */
 const SMALL_EDIT: readonly string[] = ["move_object", "remove_event", "restore_event", "place_object"];
 /** 사건을 짜는 일의 도구 — 쓰고(upsert_event) 돌려 본다(run_scene_test). 쪽 더하기는 자리가 남을 때. */
@@ -107,7 +108,7 @@ const SMALL_BY_TOPIC: Readonly<Partial<Record<GameTopic, readonly string[]>>> = 
 const SMALL_MAX = 18;
 
 /**
- * 작은 일에 처음부터 실을 도구 이름(앞이 먼저) — 늘 싣는 것, 옮기기·지우기 도구, 사건 쓰기·돌려 보기, 주제가 부른 것, 사람 도구 순. 넘치면 뒤를 자른다.
+ * 작은 일에 처음부터 실을 도구 이름(앞이 먼저) — 늘 싣는 것, 옮기기·지우기 도구, 사건 쓰기·돌려 보기, 소리 도구, 주제가 부른 것, 사람 도구 순. 넘치면 뒤를 자른다.
  * 여기 없는 도구는 필요할 때 싣는다(load_tools 설명에 이름이 뜨고, 이름으로 부르면 그 자리에서 실린다).
  */
 export function smallJobTools(topics: readonly GameTopic[], facets: JobFacets, groups: ToolGroups, audio: AudioAsk, combat: CombatAsk): readonly string[] {
@@ -120,7 +121,7 @@ export function smallJobTools(topics: readonly GameTopic[], facets: JobFacets, g
   const sound = [...(audio.music ? ["recommend_bgm", "store_find_music", "store_install", "set_game_audio"] : []), ...(audio.sound ? ["store_find_sound", "store_install", "set_game_audio"] : [])];
   const store = groups.store ? groups.extra.filter((name) => name.startsWith("store_")) : [];
   const logic = facets.logic ? SMALL_LOGIC : [];
-  // 묻기(ask_user)는 자리가 남을 때만 — 30건에서 한 번도 불리지 않았다. 이름으로 부르면 실린다.
-  const want = [...SMALL_BASE, ...(facets.edits ? SMALL_EDIT : []), ...logic.slice(0, 2), ...byTopic, ...dress, ...terrain, ...(facets.people ? SMALL_PEOPLE : []), ...logic.slice(2), ...sound, ...store, "ask_user"];
+  // 소리를 말한 요청은 소리 도구가 주제 도구보다 먼저다 — 「엔딩 크레딧 음악 넣고 …」에서 곡 찾기·걸기가 글자 상한에 밀리지 않게.
+  const want = [...SMALL_BASE, ...(facets.edits ? SMALL_EDIT : []), ...logic.slice(0, 2), ...sound, ...byTopic, ...dress, ...terrain, ...(facets.people ? SMALL_PEOPLE : []), ...logic.slice(2), ...store];
   return [...new Set(want)].slice(0, SMALL_MAX);
 }
