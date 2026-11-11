@@ -128,6 +128,29 @@ v1 도구 묶음(`find_events` `get_event` `patch_event_page` `move_event` …)�
 남은 것: 장소를 짓는 요청에 게임 낱말이 없으면 여전히 `move_event`·`find_events` 가 만들어지지 않는다. 그 길에는 `load_tools` 도 없다 — 풀려면 `verbs.ts` 의
 도구 만들기 조건(`gameTools || wantsMusicTools || wantsTerrainTools || wantsStoreTools`)과 `toolExposure.ts` 의 «게임 요청만 나중에 싣기» 를 같이 고쳐야 한다(요청 줄기 밖).
 
+## 이미 있는 맵 둘을 잇기만 하는 요청은 작은 일이다 (2026-11-11)
+
+Terra 작은 일 `door-roundtrip-starter` — 「잿불 마을 동쪽 끝에서 동쪽 들판으로 넘어갈 수 있게 해 줘. 들판에서 마을로 돌아오는 길도 만들어 줘」 — 는 장소 짓기로 갈려
+도구 47개(+`todo`)·장소 카드가 실렸다. 까닭: 「**마을**로 돌아오는 길도 **만들어**」 가 장소 짓기 낱말(`PLACE_BUILD_WORDS` — 장소 이름 뒤 열두 글자 안의 짓기 동사)에 맞는다.
+글만으로는 「마을을 만들어 줘」와 가를 수 없다 — 두 맵이 이미 있다는 것은 프로젝트가 안다.
+
+그래서 `classifyRequest` 가 장소 짓기로 읽힌 글을 프로젝트와 한 번 더 본다(`request/scope.ts` `linkedExistingMaps`):
+
+- 글에 **있는 맵 이름이 둘 이상** 나오고(띄어쓰기 무시, 두 글자 이상, 긴 이름부터 맞춘다),
+- **잇는 낱말**이 있고(`LINK_MAPS_WORDS` — 넘어갈·오갈·드나들·돌아오는 길·이어 줘·연결·통하게),
+- **새 장소·다시 짓기를 말하지 않으면**(새·새로운·다시 지어·넓혀·키워·하나 더)
+
+범위는 `edit` 이다(까닭 글 `links maps that already exist (2 named) — nothing to build`). 같은 글이라도 들판이 없는 프로젝트에서는 그대로 `place` 다 — 기억 열쇠에 맞은 맵 이름을 넣는다.
+
+같이 고친 낱말(이 일의 도구 목록을 흐리던 것):
+
+- 맵 잇기 주제(`topics.ts` `maps`)가 `LINK_MAPS_WORDS` 를 같이 본다 — `create_transfer_pair` `list_map_locations` 가 처음부터 실린다.
+- 「동쪽 **끝에**서」「맨 끝에」의 끝은 자리다 — 엔딩 낱말(`ENDING_WORK_WORDS`)에서 뺀다(「끝에 가서 …」는 그대로 엔딩).
+- 「시장으로 **가게** 해 줘」「동굴로 가게 이어 줘」의 가게는 상점이 아니다(`SHOP_NOUN`) — 아이템 주제와 `upsert_item` 을 끌어오지 않는다. 「가게 하나」는 상점이다.
+
+증거(모델 없음, 하네스의 진짜 starter 픽스처): `scope=place · 도구 47개 · 115,849자 · 지시문 34,733자` → `scope=edit · 도구 12개 · 16,181자 · 지시문 13,790자`,
+처음 싣는 목록에 `create_transfer_pair` `list_map_locations`. `golden.mts` 는 두 맵짜리 상태의 요청 둘(잇기 / 「새 마을을 만들고 … 이어 줘」)을 더 찍는다(153 → 155줄).
+
 ## 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 
 `make_place` 가 처음 지을 때 명세에 무작위 `salt` 를 넣고, 고치기(`edit_place`)는 기록된 명세의 salt 를 물려받는다(모델은 쓰지 않는다).
