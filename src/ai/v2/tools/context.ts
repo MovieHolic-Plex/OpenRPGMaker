@@ -4,7 +4,7 @@ import type { PiAssistantV2Env } from "../shared/env";
 import type { V2Session } from "../turn/session";
 import { withoutIntentNote } from "@/ai/piAgent/monsterGameRequest";
 import type { PiToolExecResult } from "@/ai/piAgent/toolAdapter";
-import { wantsWholeGame } from "../request/readers";
+import { buildsWholeGame } from "../request/readers";
 import { applyBlueprintAssembly } from "@/project/blueprintAssembly";
 import { designBlueprint, walkBlueprint } from "../story/blueprint";
 import { blueprintDesignerFromEnv } from "../shared/env";
@@ -225,7 +225,7 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
   };
   // 청사진 먼저(2026-10-28): 게임 하나를 만드는 요청이면 짓기 전에 write_blueprint 로 목표·핵심 경로·엔딩을 쓴다.
   // 설계자가 따로 정해진 실행(비교 C: Argon 설계 + Flash 실행)은 설계자가 처음에 한 번 쓰고, 실행 모델은 그 청사진대로 짓는다.
-  const needsBlueprint = wantsWholeGame(String(task ?? "")) && !env.ctx.project.gameBlueprint;
+  const needsBlueprint = buildsWholeGame(env.ctx.project, String(task ?? "")) && !env.ctx.project.gameBlueprint;
   const designer = needsBlueprint ? blueprintDesignerFromEnv() : undefined;
   const designed = designer && env.roleChat ? (() => {
     env.emit({ type: "execution_status", name: "v2.blueprint", ok: true, summary: `설계자(${designer.model})가 청사진을 쓰는 중` });
@@ -236,7 +236,7 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
     if (applied.length) env.emit({ type: "execution_status", name: "v2.assembly", ok: true, summary: `청사진 조립 기본값: ${applied.join(" · ")}` });
   };
   const blueprintGate = async (): Promise<{ ok: false; summary: string } | undefined> => {
-    if (env.ctx.project.gameBlueprint || !wantsWholeGame(String(task ?? ""))) return undefined;
+    if (env.ctx.project.gameBlueprint || !buildsWholeGame(env.ctx.project, String(task ?? ""))) return undefined;
     if (designed) {
       const result = await designed;
       if ("blueprint" in result) {

@@ -189,6 +189,12 @@ Terra 작은 일 `door-roundtrip-starter` — 「잿불 마을 동쪽 끝에서 
 나중에 닿는 일 14 · **v2 어디에도 없는 도구가 든 일 14**. 도구를 내놓거나 고치는 PR 은 그 표의 줄을 지우고 그 줄의 일로 전/후를 잰다.
 같은 쪽 끝에 **고리 설계(제안 · 구현 전)** 가 있다 — 청사진이 한 줄 경로가 아닌 게임(쌓기 · 모으기 · 버티기 · 기르기 · 추리하기)을 장르 낱말 없이 말하는 법.
 
+**첫 수리(2026-11-11)** — 그 쪽 「첫 수리」 절: 장치 도구 열다섯을 풀에 내놓고(`toolGroups.ts V2_GENRE_TOOLS`) 장치 주제(`topics.ts DEVICE_TOPICS`)가 맞으면 사건 쓰기(`upsert_event`)보다 먼저 싣는다.
+셋째 묶음의 닿기: 처음부터 다 실린 일 8 → 27 · 없는 도구가 든 일 14 → 1(몬스터 잠금) · 작은 일로 갈린 일 33 → 36. 큰 하위 스키마 넷을 걷었다(`hide`: `make_chase_scene.onTouch` · `compile_puzzle.onSolve.beats` ·
+`make_action_enemy` 의 둘 · `upsert_item.item.equipmentProfile` — 마지막 것이 main 에서 실패하던 `item-new-built` 닿기를 되돌린다, 상한 3.4만 자는 그대로).
+장치 하나를 있는 맵에 더하는 요청(「마을 빈 땅에 밭을」「들판을 액션 전투 맵으로」)과 지은 프로젝트의 「…게임으로 만들어 줘」는 작은 일이다 — 장소 낱말이 «어디에»·«무엇이 되는지» 자리에만 오고 장치 주제가 맞을 때,
+그리고 이벤트가 있는 프로젝트일 때만(`request/place.ts buildsPlaceBeyondWhere` · `scope.ts INTO_A_GAME` · `intent.ts`). 청사진 관문과 세계 고르기는 프로젝트를 같이 본 판정(`buildsWholeGame`)을 읽는다.
+
 ## 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 
 `make_place` 가 처음 지을 때 명세에 무작위 `salt` 를 넣고, 고치기(`edit_place`)는 기록된 명세의 salt 를 물려받는다(모델은 쓰지 않는다).

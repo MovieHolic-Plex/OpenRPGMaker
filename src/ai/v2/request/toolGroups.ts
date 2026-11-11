@@ -105,6 +105,15 @@ const V2_GAME_TOOLS: readonly string[] = [
  */
 const V2_POOL_ONLY: readonly string[] = ["set_session_start", "duplicate_event", "script_cutscene", "place_battle_blocker"];
 
+/**
+ * JRPG 가 아닌 게임의 장치를 짓는 도구(openwiki/assistant-v2-genre-tools.md 의 재고) — V2_POOL_ONLY 와 같이 풀에만 둔다.
+ * 작은 일 셋째 묶음(2026-11-11)의 손 풀이가 부르는데 v2 어디에서도 닿지 않던 열다섯: 함정·잠긴 문·보관 상자·밭·작물·낚시·기한 엔딩·대사 기록·액션 전투·몬스터 수집·시작 값이 있는 변수.
+ */
+const V2_GENRE_TOOLS: readonly string[] = [
+  "place_trap", "lock_door", "place_storage_chest", "create_farm_plot", "define_crop", "upsert_fish_species", "configure_fishing", "set_deadline_ending",
+  "set_dialogue_system", "set_action_combat", "make_action_enemy", "configure_monster_system", "give_starter_monsters", "place_trainer", "manage_flag_slot",
+];
+
 // tile_erase: 끝맺음 검사(gameChecks.ts «다리·출입구·방 쓰임»)가 «tile_erase 로 걷는다» 고 이르는데 v2 도구 풀에 없어 부를 수 없었다 — 이름으로 부르면 실린다.
 const V2_TERRAIN_TOOLS: readonly string[] = ["list_spatial_designs", "stamp_object", "fill_region", "tile_erase"];
 
@@ -201,6 +210,6 @@ export function storeCard(groups: ToolGroups): string {
 export function v2ToolPool(): string[] {
   return [...new Set([
     ...V2_GAME_TOOLS, ...GAME_TOOL_GROUPS.flatMap((g) => g.tools), ...FALLEN_TIERS.flatMap((t) => t.tools), ...MUSIC_TIER.tools,
-    ...V2_TERRAIN_TOOLS, ...V2_DRESS_TOOLS, ...STORE_TIERS.flatMap((t) => t.tools), "list_spatial_designs", "stamp_object", ...V2_POOL_ONLY,
+    ...V2_TERRAIN_TOOLS, ...V2_DRESS_TOOLS, ...STORE_TIERS.flatMap((t) => t.tools), "list_spatial_designs", "stamp_object", ...V2_POOL_ONLY, ...V2_GENRE_TOOLS,
   ])].filter((name) => getTool(name));
 }

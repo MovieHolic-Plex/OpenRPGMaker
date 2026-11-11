@@ -142,15 +142,88 @@
 장치 56줄 가운데 **U 29 · W 13 · N 7 · R 3**(한 줄에 둘이 겹치면 둘 다 센다 · 빈틈 없음 12줄).
 셋째 묶음의 일 36가지 가운데 빈틈이 있는 줄을 재는 것이 27가지, 지금도 닿는 길을 재는 것이 9가지다.
 
-## 다음 PR 에서 고칠 것(차례)
+## 첫 수리 — 내놓기 · 계약 넷 · 분류 셋 (2026-11-11, 재고 표는 그 전 상태다)
 
-1. **내놓기(U)** — 좁고 작은 것부터 풀과 주제 줄에: `place_trap` · `lock_door` · `place_storage_chest` · `create_farm_plot` · `define_crop` · `upsert_fish_species` · `configure_fishing` ·
-   `set_deadline_ending` · `set_dialogue_system` · `set_action_combat` · `make_action_enemy` · `configure_monster_system` · `give_starter_monsters` · `place_trainer` · `manage_flag_slot`
-   (모두 3,947자 이하 — 처음 싣는 상한 34,000자 안에서 주제가 맞을 때만 싣고 나머지는 `load_tools`). 영어 글은 `toolTextEn.ts` 에.
-2. **계약(W)** — `set_deadline_ending` 이 시간 시스템을 스스로 켠다 · `define_crop` 의 `seasons` 기본 사계절 · `make_chase_scene` 의 `onTouch`/`caughtPenalty` 를 `hide` ·
-   `compile_puzzle` 암호의 숫자 차례 섞기와 그 칸의 물건 그림 · `configure_object_behavior` 가 `pageId` 없이 지금 페이지를 고친다 · 영어 조건 글에 `timePhase` `friendshipAtLeast` `gold` `timer`.
-3. **새 도구(N)** — 원시 명령을 손으로 쓰던 것을 좁은 도구 넷으로: 호감(말 걸기 · 선물 · 문턱 대사) · 증거 내밀기 반응 · 제한 시간 · 물건 하나를 은신처/밀 수 있는 것/제작대/침대로 놓기.
-4. **분류** — 「…게임으로 만들어 줘」(장치 하나) · 「밭을 만들어 줘」 · 「…맵으로 만들고」 가 작은 일로 가게(요청 줄기와 맞춘다 — `request/` 는 그 줄기 것이다).
+재고 표의 U·W 가운데 작은 것부터 고쳤다. 표의 「v2」 칸은 고치기 전 값이고, 이 절이 지금 값이다.
+
+**모델 없이 본 닿기(셋째 묶음 36건, `classifyRequest` + `exposeV2Tools`, 몬스터 잠금 신호는 실제 세션과 같게):**
+
+| | 전(main `03a604e917`) | 후 |
+|---|---|---|
+| 손 정답 도구가 처음부터 다 실린 일 | 8 | **27** |
+| 일부는 나중에(`load_tools`) | 14 | 8 |
+| v2 어디에도 없는 도구가 든 일 | 14 | **1** (`starter-pick-blank` — 아래 「몬스터 잠금」) |
+| 작은 일(`edit`)로 갈린 일 | 33 | **36** |
+| 처음 싣는 도구 20개를 넘는 일 | 3 (58 · 26 · 50개) | 0 |
+
+나중에 닿는 8건은 큰 도구가 정답인 일이다: `define_ending`(1.2만 자 — 엔딩 넷 · 기한 엔딩의 엔딩 정의) · `set_project_settings`(1.3만 자 — 배고픔 게이지의 `fieldHud.widgets`) ·
+`upsert_event`(은신처 · 밀기의 손 풀이 한 갈래 — 그 일의 도구 `configure_object_behavior` 는 처음부터 실린다).
+앞 묶음: 첫 묶음 30건 가운데 처음 싣는 도구가 달라진 일 2(자리가 남아 `add_event_page` · `find_empty_ground` 가 더 실렸다), 둘째 묶음 35건 가운데 1(`item-new-built` — 아래). 범위가 달라진 일 0.
+
+**내놓은 도구 열다섯**(`request/toolGroups.ts V2_GENRE_TOOLS` — 풀에만 둔다: 이름 호출 · `load_tools` 로 닿고, 작은 일은 장치 주제가 맞을 때 처음부터):
+`place_trap` · `lock_door` · `place_storage_chest` · `create_farm_plot` · `define_crop` · `upsert_fish_species` · `configure_fishing` · `set_deadline_ending` · `set_dialogue_system` ·
+`set_action_combat` · `make_action_enemy` · `configure_monster_system` · `give_starter_monsters` · `place_trainer` · `manage_flag_slot`. 영어 글은 `tools/toolTextEn.ts`(한글 없음 — 한 호출의 모양 · 먼저 불러야 하는 것 · 쓰지 말아야 할 때).
+
+**장치 주제**(`request/topics.ts DEVICE_TOPICS` — 그 장치를 짓는 도구가 따로 있는 주제. 장르 이름은 들지 않고 장치 낱말만):
+`trap` · `lockDoor` · `storage` · `farm` · `fishing` · `deadline` · `readingAids` · `actionCombat` · `monsters` · `starter` · `trainer` · `codeLock` · `gauge` · `hidePush` · `chase` · `lifePetals` · `craft` · `sellPrice`.
+장치 주제의 도구는 사건 쓰기(`upsert_event`, 실린 모양 1.2만 자)보다 먼저 실린다 — 글자 상한(3.4만 자)에서 밀리면 모델은 이벤트 명령으로 손 조립한다. `time` 주제도 도구를 받는다(`configure_time_system` · `set_npc_schedule`).
+
+**큰 하위 스키마 걷기**(`hide` — 도구는 그대로 받는다): `make_chase_scene.onTouch`(9천 자, 죽이지 않는 추격자의 장면) → 실린 모양 1.1만 → 3천 자대 ·
+`compile_puzzle.onSolve.beats`(8천 자) → 9.6천 → 2천 자대 · `make_action_enemy` 의 `actionProfile.extraAttacks` · `spawn.graphic` · `upsert_item.item.equipmentProfile`(1.3천 자 — 무기 · 방어구는 `upsert_equipment`).
+`compile_puzzle` 의 영어 글은 종류를 틀리게 적고 있었다(「code-lock, push-block and more」 — 실제는 `switch-sequence` · `password` · `item-gate` · `push-switches`). 종류마다 한 호출의 모양으로 다시 썼다.
+
+**`item-new-built`(둘째 묶음, main 에서도 실패하던 닿기)** — `a56e62967a`(비울 수 없는 enum 에 `none`)가 `upsert_event` · `upsert_item` 에 47자씩 더해, 「새 아이템 … 가격은 30G」에서 `upsert_item` 이 상한 3.4만 자를 **40자** 넘겨 밀렸다
+(늘 싣는 것 9,884 + `upsert_event` 12,204 + `run_scene_test` 2,991 + `get_database_records` 892 + `upsert_troop` 3,156 = 29,127, 여기에 4,913). 상한은 그대로 두고 `upsert_item` 의 장비 칸을 걷어 3,632자로 — 여유 1,241자.
+
+**계약 넷**(도구 자신을 고쳤다 — 한 호출로 되고, 거절 대신 스스로 채우고, 알림은 영어):
+
+| 도구 | 전 | 후 |
+|---|---|---|
+| `define_crop` | `seasons` 가 없으면 새 작물 거절 | 새 작물의 기본은 사계절 |
+| `set_deadline_ending` | 시간 시스템이 꺼져 있으면 거절(`time-system-required`) | 기본 시계로 켠다(6시~새벽 2시 · 하루 끝에 저절로 잠든다) + 영어 알림 |
+| `make_action_enemy` | 적 → 트룹(`upsert_troop`) → 스폰 → 맵 옵트인(`set_action_combat`) 네 호출. 트룹이 없거나 맵이 옵트인이 아니면 거절 · 주의 글 | `spawn.troopId` 생략 = 그 적 하나짜리 트룹을 만든다 · 그 맵을 액션 전투로 켠다 + 영어 알림. 검사가 다 지난 뒤에만 쓴다 |
+| `compile_puzzle` `password` | 0 으로 시작하는 숫자 답은 선택지로 · 선택지의 **맞는 글자가 늘 첫 칸** · 그림 없는 칸이면 말없이 투명 | 숫자 1~6자리는 숫자 입력 · 보기 다섯은 같은 종류의 이어진 글자이고 맞는 자리는 답 · 자리 번호로 정한다 · 그 칸에 물건 타일이 없으면 가까이서 반짝이고 영어 알림 |
+| `configure_object_behavior` | `pageId` 필수(읽으러 한 번 더 부른다) | 생략 = 첫 페이지 |
+
+**분류 셋**(낱말 목록을 늘리지 않았다 — 문장의 꼴과 프로젝트 상태로):
+
+- 「…을/를 … **맵으로** 만들고/바꿔」 — 있는 장소가 무엇이 되는지를 말한다. 「맵」은 장소 종류가 아니라 그 장소를 다시 가리킨다(`request/place.ts BECOMES_A_MAP`).
+- 「마을 빈 땅**에** 밭을」 — 장소 낱말이 «어디에» 자리에 왔다(`AS_LOCATION`). 지을 것이 장소면(「마을에 집을 지어 줘」) 그 낱말이 따로 맞는다.
+  둘 다 **장치 주제가 맞은 요청에만** 쓴다(`intent.ts` — 장치를 짓는 도구가 따로 있을 때만 장소 짓기에서 내린다). 「여관에 침대를 더 추가해 줘」처럼 장소 동사가 맡는 일은 종전대로 장소 짓기다.
+- 「… **게임으로** 만들어 줘」 — 게임은 만든 결과다. **지은 것이 있는 프로젝트**에서는 그 게임을 고치라는 말이고(작은 일), 빈 프로젝트에서는 게임 하나다(`scope.ts INTO_A_GAME` + `intent.ts reshape`).
+  청사진을 요구하는 관문(`tools/context.ts`)과 세계 고르기(`request/world.ts`)도 프로젝트를 같이 본 판정(`buildsWholeGame`)을 읽는다 — 글만 본 판정을 쓰면 고치기 요청에 청사진을 요구한다.
+
+**몬스터 잠금은 그대로다.** `configure_monster_system` · `give_starter_monsters` · `place_trainer` 는 역방향 장르 잠금(`src/project/genreLockMonsterAssets.ts`)의 몬스터 전용 도구다 —
+몬스터 수집 게임이거나 그 요청 턴(`isMonsterRequestTurn`)에만 보인다. 「야생 몬스터를 잡을 수 있게」 · 「트레이너 … 몬스터 배틀」은 그 턴으로 읽혀 도구가 실리고,
+「박사 … 몬스터 세 마리 중에 한 마리」(`starter-pick-blank`)는 읽히지 않아 `give_starter_monsters` 가 안 보인다. 잠금의 낱말은 이 줄기에서 고치지 않았다 — 그 일은 `giveMonster` 명령으로 손 조립하거나 되물어야 한다.
+
+## 남은 것(차례)
+
+1. **새 도구(N)** — 이벤트 명령을 손으로 쓰는 장치 넷을 좁은 도구로: 호감(말 걸기 · 선물 · 문턱 대사) · 증거 내밀기 반응 · 제한 시간(「N초 안에 못 하면」) · 물건 하나를 은신처/밀 수 있는 것/제작대/침대로 **놓기**(지금은 물건 이벤트를 먼저 세우고 `configure_object_behavior`).
+2. **수치 게이지** — `set_project_settings.fieldHud.widgets`(1.3만 자 도구)를 거치지 않는 좁은 길(`set_field_hud` 에 변수 위젯, 또는 게이지 도구 하나).
+3. **영어 조건 글**(`toolTextEn.ts COND`)에 `timePhase` · `friendshipAtLeast` · `gold` · `timer` — 게임 하나 경로의 지시문과 같이 본다.
+4. 내놓지 않은 큰 묶음: 사건 통째(`author_mystery_case`) · 연애 기본값(`apply_romance_preset`) · 생활 경제(`configure_life_economy`) · 몬스터 종 · 센터 · 배지 — 고리 설계의 종류가 정해지면 그 빌더가 부른다(모델에게 4만 자 도구를 싣지 않는다).
+
+## 런타임 빈틈 — 엔진 PR 제안 둘 (제안 · 구현 전)
+
+재고의 **R** 셋 가운데 작은 둘. 하나에 PR 하나, 스키마 칸 하나씩이다. 가게 운영(손님이 와서 산다)은 작지 않아 여기 넣지 않는다.
+
+**① 재고가 한정된 상점 물건 — `ShopStockEntry.quantity?`**
+
+- 지금: `ShopStockEntry { itemId, seasons?, priceOverride?, displayTileId?, priceBySeason? }`(`src/project/types/events.ts`) — 수량 칸이 없어 「회복약은 3개까지만 판다」를 적을 수 없다.
+- 스키마: `quantity?: number`(이 상점이 파는 총 개수, 없으면 무한) · `restock?: "never" | "daily"`(없으면 never — daily 는 시간 시스템의 하루 끝에 되찬다).
+- 세션: `PlaySession.shopSold?: Record<string /* mapId:eventId */, Record<ItemId, number>>` — 세이브에 든다. `src/project/shopStock.ts` 의 진열 해석이 남은 수(`quantity − sold`)를 같이 돌려준다.
+- 런타임: 사는 길에서 남은 수를 넘겨 살 수 없고(수량 고르기의 상한), 상점 창이 「남은 N」을 보이고 0 이면 흐리게. 하루 끝(`dayTransition.ts`)에 `daily` 를 비운다.
+- 읽기 · 검증: `io/shapeCommandFields.ts`(1 이상의 정수) · 저장 · 재로드 왕복. 도구: `set_shop_stock` 의 항목에 `quantity`.
+- 검사(작은 일): 상점을 따라가 그 물건을 `quantity` 번 사면 그다음은 못 산다 · 다른 물건은 그대로.
+
+**② 쓰면 사건이 도는 아이템 — `ItemRecord.commonEventId?`**
+
+- 지금: 아이템 사용(`src/player/playerItemUse.ts useItemFromMenu`)은 HP · MP · 상태 · 기술 · 스위치(`type:"switch"` + `switchId`)만 바꾼다. 「빵을 먹으면 배고픔 +30」은 스위치 아이템 + 그 스위치를 보는 병렬 공통 이벤트로 돌아가야 한다(한 번 켜진 스위치는 다시 못 쓴다 — 소모품이 안 된다).
+- 스키마: `commonEventId?: string` — 메뉴에서 쓰면(다른 효과를 적용한 뒤) 메뉴가 닫히고 그 공통 이벤트가 한 번 돈다. 다른 효과가 없는 아이템도 이 칸이 있으면 쓸 수 있다.
+- 런타임: `useItemFromMenu` 가 `{ kind: "used", runCommonEventId }` 를 돌려주고 필드 장면이 메뉴를 닫은 뒤 인터프리터에 넣는다(스위치 아이템이 메뉴를 닫는 길과 같다). 전투 중 사용은 첫 판에서 뺀다(필드 · 메뉴만).
+- 읽기 · 검증: 없는 공통 이벤트 id 는 저장 검증에서 거절(`orphan FK` 권한표에 한 줄) · 도구: `upsert_item` 의 `item.commonEventId`.
+- 검사(작은 일): 그 아이템을 쓰면 수가 하나 줄고 공통 이벤트의 명령(변수 +30)이 돈다 · 안 쓰면 그대로.
 
 ## 고리 설계 — 청사진이 한 줄 경로가 아닌 게임을 말하는 법 (제안 · 구현 전)
 

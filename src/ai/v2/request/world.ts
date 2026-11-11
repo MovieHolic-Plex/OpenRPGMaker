@@ -3,7 +3,7 @@
 import type { Project } from "@/project/types";
 import { withoutIntentNote } from "@/ai/piAgent/monsterGameRequest";
 import { blueprintDesignerFromEnv } from "../shared/env";
-import { oneProjectGame, wantsWholeGame } from "./readers";
+import { buildsWholeGame, oneProjectGame } from "./readers";
 import { pickWorld, worldOf, type WorldSetting } from "../place/world";
 import { isComposedWorld } from "../place/world";
 
@@ -11,7 +11,8 @@ export function worldForRequest(project: Project, projectKey: string | undefined
   if (project.gameBlueprint) return worldOf(project);
   const text = String(task ?? "");
   // 청사진 설계자(OPRN_V2_BLUEPRINT_DESIGNER)가 쓰는 청사진에는 장소 목록·세계가 없다 — 세계 카드와 build_places 를 내놓으면 지을 것이 없는 반쪽이 된다.
-  if (!wantsWholeGame(text) || oneProjectGame(project, text) || blueprintDesignerFromEnv()) return undefined;
+  // 프로젝트를 같이 본 판정을 쓴다 — 지은 것이 있는 프로젝트의 «…게임으로 만들어 줘» 는 고치기라 세계를 고르지 않는다.
+  if (!buildsWholeGame(project, text) || oneProjectGame(project, text) || blueprintDesignerFromEnv()) return undefined;
   return pickWorld(project, projectKey, withoutIntentNote(text));
 }
 
