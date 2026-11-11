@@ -117,8 +117,8 @@ export function desertProgramSize(kind: DesertKind, program: SettlementProgram):
   switch (kind) {
     case "oasis": return { w: Math.max(32, 15 + perRow * SLOT), h: rows === 1 ? 24 : 31 };
     case "bazaar": return { w: Math.max(34, 17 + perRow * SLOT), h: bazaarStreetY(program) + (rows === 1 ? 10 : 17) };
-    case "caravanserai": return { w: Math.max(22, 3 * n + 2) + 10, h: 27 };
-    case "palace": return { w: 36, h: n - 1 > 2 ? 36 : 29 };
+    case "caravanserai": return { w: Math.max(22, 3 * n + 2) + 14, h: 27 };
+    case "palace": return { w: 40, h: n - 1 > 2 ? 38 : 33 };
     case "pyramid": return { w: 36, h: 26 };
   }
 }
@@ -959,9 +959,11 @@ function wallRing(b: Board, r: Rect, gateKit: "de-wall-gate" | "de-caravanserai-
 // 궁전 양옆에 회당·흰 집(신하 처소)이 마당으로 문을 낸다. 성 밖 남쪽은 진입로 + 오벨리스크 짝 + 작은 마을 줄.
 function composePalace(b: Board, rng: () => number): DesertCell {
   const { W, H } = b;
-  // 목적표: 성벽은 맵 크기를 따른다(성 밖 집 줄이 필요할 때만 그 줄만큼 남긴다).
+  // 목적표: 성벽은 맵 크기를 따른다. 성 밖에는 예전처럼 여덟 줄(오벨리스크 + 동·서로 나가는 길 두 줄 + 가장자리에서 세 줄)을 남기고, 성 밖 집 줄이 필요하면 그 줄만큼 더 남긴다
+  // — 네 줄만 남기면 오벨리스크에 막혀 나가는 길을 못 내고(출구가 길 없는 가장자리 칸에 섰다), 길이 맨 아랫줄에 붙으면 길섶 칸이 남쪽 길 입구로 읽힌다.
   const outside = !!b.budget && b.budget.total - 1 > 2;
-  const rw = Math.min(W - 6, 38), rh = Math.min(b.budget ? H - (outside ? 13 : 6) : H - 10, 30);
+  // 성벽 양옆은 다섯 칸(북쪽으로 돌아 나가는 길 두 칸 + 가장자리에서 세 칸) — 세 칸이면 그 길이 가장자리 줄에 붙어 옆 변 전체가 길 입구로 읽힌다.
+  const rw = Math.min(W - (b.budget ? 10 : 6), 38), rh = Math.min(H - (outside ? 15 : 10), 30);
   const ring = { x: Math.floor((W - rw) / 2), y: 2, w: rw, h: rh };
   const { inner, gate } = wallRing(b, ring, "de-wall-gate", rng);
   b.zone("궁정 마당", "축선 포석 길·정원·분수", inner);
@@ -1042,8 +1044,8 @@ function composePalace(b: Board, rng: () => number): DesertCell {
   b.prop(ob, ex - 2, outY + 1, 0); b.prop(ob, ex + gate.length + 1, outY + 1, 0);
   if (b.budget) {
     // 목적표: 성 밖 집 줄은 성 안에 못 놓은 건물이 남았을 때만(진입로 양옆에서 바깥으로).
-    if (b.budget.open && H - outY >= 10) {
-      const roadY = H - 3;
+    if (b.budget.open && H - outY >= 12) {
+      const roadY = H - 5;   // 골목에서 동·서로 나가는 길이 맨 아랫줄에서 세 줄 떨어지게
       const hs = programRow(b, rng, [{ x0: 2, x1: ex - 3, inner: "right" }, { x0: ex + gate.length + 3, x1: W - 2, inner: "left" }], roadY);
       const lane = rowExtent(hs, ex, ex + gate.length - 1);
       b.ground({ x: lane.x0, y: roadY, w: lane.x1 - lane.x0 + 1, h: 1 }, "r", "road");
@@ -1063,7 +1065,7 @@ function composePalace(b: Board, rng: () => number): DesertCell {
 // ───────────────────────── 대상 숙소 ─────────────────────────
 function composeCaravanserai(b: Board, rng: () => number): DesertCell {
   const { W, H } = b;
-  const rw = Math.min(W - 6, 34), rh = Math.min(H - (b.budget ? 9 : 8), 22);
+  const rw = Math.min(W - (b.budget ? 10 : 6), 34), rh = Math.min(H - (b.budget ? 9 : 8), 22);   // 목적표: 성벽 양옆 다섯 칸(궁전과 같은 까닭)
   const ring = { x: Math.floor((W - rw) / 2), y: 3, w: rw, h: rh };
   const { inner, gate } = wallRing(b, ring, "de-caravanserai-gate", rng);
   b.zone("숙소 마당", "가운데 우물 단·낙타 줄·짐 구석", inner);
@@ -1159,8 +1161,10 @@ function composePyramid(b: Board, rng: () => number): DesertCell {
   const rx = px + pk.w + 1;
   if (rx + sk.w < W - 1 && b.free({ x: rx, y: py + 4, w: sk.w, h: sk.h }, 0)) { b.stamp("de-pyramid-small", rx, py + 4, "bld"); b.zone("작은 피라미드", "곁 무덤", { x: rx, y: py + 4, w: sk.w, h: sk.h }); }
   // 무너진 신전 터 둘(참배 길 양옆 아래) — 배치는 신전마다 다르다
-  ruinedTemple(b, rng, { x: 1, y: py + pk.h, w: ax - 4, h: H - py - pk.h - 1 });
-  ruinedTemple(b, rng, { x: ax + 5, y: py + pk.h, w: W - ax - 6, h: H - py - pk.h - 1 });
+  // 목적표 판은 맵이 작아 신전 터가 가장자리에 닿기 쉽다 — 세 칸 안쪽에만 둔다(포석 바닥이 가장자리에 닿으면 길 입구로 읽히고 나가는 길이 그 위로 난다).
+  const inset = b.budget ? 3 : 1;
+  ruinedTemple(b, rng, { x: inset, y: py + pk.h, w: ax - 3 - inset, h: H - py - pk.h - inset });
+  ruinedTemple(b, rng, { x: ax + 5, y: py + pk.h, w: W - ax - 5 - inset, h: H - py - pk.h - inset });
   for (let i = 0; i < 4; i++) { const r = findOpen(b, rng, 2, 3, 1); if (r) b.prop(pick(rng, ["de-column-broken", "de-block-fallen", "de-stele"]), r.x, r.y, 0); }
   if (!b.budget) camp(b, rng, { x: 1, y: Math.round(H * 0.4), w: b.W - 2, h: H - Math.round(H * 0.4) - 1 });
   wildDesert(b, rng, 0.32);

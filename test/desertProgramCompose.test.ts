@@ -4,6 +4,7 @@ import { createBlankProject } from "@/project/defaults/blankProject";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import { buildingEntrances } from "@/ai/v2/place/entrances";
+import { edgeRoadMouths } from "@/ai/v2/place/roadMouths";
 import { DESERT_MIN_SIZE, DESERT_SETTLEMENT, desertProgramSize, type DesertKind } from "@/project/desertEastComposer";
 import { PROGRAM_ROLE_TAG, fillerOf, needTag, placeableRoles, roleTag, type SettlementProgram } from "@/project/settlementProgram";
 
@@ -53,6 +54,16 @@ describe("사막 구성기 — 목적표로 짜기", () => {
       }
     }, 60_000);
   }
+
+  it("작아진 맵에서도 주문받은 변까지 길이 나고, 그 길이 다른 변의 가장자리 줄에 붙지 않는다", () => {
+    // 길이 가장자리 줄에 붙으면 길섶 칸이 그 변의 넓은 길 입구로 읽혀 출구가 그리로 간다(목적표 궁전 첫 판: 동쪽 길을 못 냈고, 냈을 때는 남쪽 입구가 12칸이었다).
+    for (const [kind, program] of PROGRAMS) for (const side of ["east", "west", "north"] as const) {
+      const built = compose(kind, program, 2, [side]);
+      const mouths = edgeRoadMouths(built.run.ctx.project, built.map());
+      expect(mouths.filter((m) => m.side === side).length, `${kind} ${side}`).toBeGreaterThanOrEqual(1);
+      for (const m of mouths) expect(m.cells.length, `${kind} ${side}: ${m.side} 입구 폭`).toBeLessThanOrEqual(6);
+    }
+  }, 180_000);
 
   it("건물이 늘면 맵이 커지고(둘째 줄), 줄어들면 작아진다", () => {
     const big: SettlementProgram = { roles: [...["가", "나", "다"].map(home), { id: "svc:inn", role: "inn" }, { id: "svc:shop", role: "shop" }, { id: "b", role: "bath" }] };
