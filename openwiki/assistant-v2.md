@@ -517,7 +517,7 @@ golden: 117/153 이 `create_transfer_pair` · `place_door` 글만 바뀜. 시험
   거절 글이 `type` 으로 가는 길을 알려 준다. **새 도구(`set_npc_movement`) 대신 이 도구를 넓힌 까닭:** 이 도구는 이미 v2 풀·영어 글·이름표에 있어 요청 묶음을 안 건드리고 바로 닿고, 새 이름을 더하면 레지스트리·이름표·카탈로그·풀 네 곳을 고쳐야 한다.
 - **`set_session_start`**: 빈 값(`gold:0` · `inventory:{}`)은 그 칸 하나만 보냈을 때만 뜻이 있고, 빈 파티(`partyActorIds:[]`)는 언제나 무시한다 — 「회복약 3개를 갖고 시작」 한 번에 시작 소지금·파티가 지워지지 않는다(전: 파티 0명).
 - **영어 글**: `toolTextEn.ts` 에 `set_session_start` · `duplicate_event` · `script_cutscene` · `place_battle_blocker` 를 더하고 `place_chest` · `place_savepoint` · `configure_npc_patrol` · `set_map_properties` 를 고쳤다.
-  네 도구를 v2 풀에 넣는 줄은 `src/ai/v2/request/toolGroups.ts` 의 `V2_GAME_TOOLS` 다(요청 묶음 담당 몫).
+  앞의 넷은 `src/ai/v2/request/toolGroups.ts` 의 `V2_POOL_ONLY` 로 v2 풀에 들어온 도구다(위 「작은 일의 도구」 1번) — 풀에는 있었지만 영어 글이 없어 한국어 설명이 그대로 갔다.
 
 증거: `test/toolsOneCallGaps.test.ts` · `test/aiV2OneCallToolText.test.ts`. 둘째 묶음 여섯 일(`boss-line-starter` · `no-save-built` · `heal-spring-built` · `npc-wander-starter` · `npc-still-starter` · `start-items-starter`)에 한 호출 정답을 `accept` 로 더했다(판정은 그대로).
 
