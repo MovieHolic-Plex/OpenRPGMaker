@@ -220,6 +220,45 @@ export function pointLockedPagesIn(project: Project): string[] {
 }
 
 /**
+ * 잠긴 조사 대사가 실제 조건이 아닌 다른 단계를 먼저 하라고 하면 그 줄을 뺀다(앞선 빌드가 지은 것 — 지금 빌드는 조건이 바뀐 고리에 모델의 잠김 글을 쓰지 않는다).
+ * 본 것: 수호자를 쓰러뜨린 뒤에도 봉인이 「수호자의 시험을 먼저 통과해야 한다」 고 했다 — 봉인의 조건은 함수가 끼운 번호 쪽지였다.
+ * 판정: 잠김 줄이 다른 청사진 단계의 사람·사물 이름(머리 낱말)을 담고, 실제로 그 조건을 켜는 이벤트의 이름은 담지 않는다. 뺀 뒤의 안내는 pointLockedPagesIn 이 붙인다.
+ */
+export function dropWrongPrerequisiteLinesIn(project: Project): string[] {
+  type Ev = GameMap["events"][number];
+  type Cmd = { kind?: string; body?: string; switchId?: string; itemId?: string; value?: unknown };
+  const notes: string[] = [];
+  const steps = project.gameBlueprint?.steps ?? [];
+  if (!steps.length) return notes;
+  const all: { map: GameMap; ev: Ev }[] = Object.values(project.maps).flatMap((map) => (map.events ?? []).map((ev) => ({ map, ev })));
+  const named = (ev: Ev) => String((ev as { name?: string }).name ?? "").trim();
+  const flat = (text: string) => text.replace(/[\s「」『』()（）.,!?]/gu, "");
+  const head = (name: string) => flat(name.trim().split(/\s+/u).at(-1) ?? "");
+  const sets = (ev: Ev, cond: Cmd): boolean => JSON.stringify(ev.pages ?? []).includes(cond.switchId ? `"kind":"setSwitch","switchId":"${cond.switchId}","value":true` : `"itemId":"${String(cond.itemId)}"`);
+  for (const { map, ev } of all) {
+    const pages = (ev.pages ?? []) as unknown as RawPage[];
+    const lockedAt = pages.findIndex((p) => !(p.conditions ?? []).length && (p.commands ?? []).length > 0 && ((p.commands ?? []) as Cmd[]).every((c) => c.kind === "text"));
+    const open = lockedAt < 0 ? undefined : pages.find((p, i) => i > lockedAt && (p.conditions ?? []).length === 1);
+    const cond = (open?.conditions?.[0] ?? {}) as Cmd;
+    if (!open || !(cond.switchId || cond.itemId)) continue;
+    const setters = all.filter((r) => r.ev.id !== ev.id && sets(r.ev, cond));
+    if (setters.length !== 1) continue;
+    const setter = head(named(setters[0]!.ev));
+    const others = steps.map((st) => head(st.who?.trim() || st.event)).filter((h) => h.length >= 2 && h !== setter && !flat(named(setters[0]!.ev)).includes(h) && !flat(named(ev)).includes(h));
+    const commands = (pages[lockedAt]!.commands ?? []) as Cmd[];
+    const wrong = (c: Cmd) => { const body = flat(String(c.body ?? "")); return c.kind === "text" && !/^먼저「?/u.test(String(c.body ?? "").trim()) && others.some((h) => body.includes(h)) && !(setter.length >= 2 && body.includes(setter)); };
+    if (!commands.some(wrong)) continue;
+    const kept = commands.filter((c) => !wrong(c));
+    // 남는 줄이 없으면 그 조건에서 지은 한 줄을 둔다(빈 잠김 페이지는 «눌러도 아무 일 없음» 이다).
+    const next = structuredClone(pages);
+    next[lockedAt]!.commands = (kept.length ? kept : [{ kind: "text", body: "아직은 손댈 수 없다." }]) as RawPage["commands"];
+    map.events = map.events.map((e) => e.id === ev.id ? { ...e, pages: next as unknown as typeof e.pages } : e);
+    notes.push(`「${named(ev) || ev.id}」 잠김 대사에서 실제 조건(「${named(setters[0]!.ev)}」)이 아닌 단계를 말하는 줄을 뺌`);
+  }
+  return notes;
+}
+
+/**
  * 단계 순서 문 잠금 — 청사진 단계 k(맵 A) 다음 단계 k+1 이 다른 맵 B 에 있으면, A 에서 B 로 가는 문·계단을 단계 k 가 켜는(주는) 것으로 잠근다.
  * 왜(2026-10-29 vm5 deepseek jrpg): 지하 1층 계단은 「봉인된 동굴 문」 스위치로만 열려 「빛의 검」(같은 층 제단)을 뽑기 전에 지하 2층으로 내려가졌고,
  * 판정자는 2층에서 제단·옥좌를 찾다 시간이 다 갔다. 마을 서쪽 길 끝 출구도 조건 없는 첫 페이지가 옮겨 열쇠 없이 동굴에 들어가졌다

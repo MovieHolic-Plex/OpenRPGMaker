@@ -1,6 +1,6 @@
 // 출하 기본값 — 목표 줄과 입구: 입구를 그림 위로, 사라진 대상을 가리키는 목표 지우기, 낡은 목표 채우기, 시작 목표 다듬기, 체육관 도착 목표.
 import type { Project } from "@/project/types";
-import { doorCellBlocked, offArtEntrances, staleMilestoneTargets } from "../judge/discoverability";
+import { doorCellBlocked, offArtEntrances, sideQuestObjectives, staleMilestoneTargets } from "../judge/discoverability";
 import { lateStartObjective, planObjective, repeatingStartObjectives } from "../judge/objectivePlan";
 import { withWhere } from "../judge/objectiveWhere";
 import { objectiveCommand } from "../judge/objectiveCommand";
@@ -79,6 +79,23 @@ function dropVanishedTargetObjectives(project: Project): string[] {
 }
 
 /**
+ * 곁 퀘스트의 진행 페이지(수락 · 도착 칸 · 완료)에 걸린 「「X」를 찾아가자」 목표를 뗀다 — 이 파일의 fillStaleObjectives 가 예전에 건 것이다.
+ * 곁 퀘스트는 본편 「현재 목표」 줄을 바꾸지 않는다: 도착 칸을 밟자 본편 목표가 「「사미라」를 찾아가자」 로 바뀌어 화살표가 온 길을 가리켰다.
+ * 모델이 set_objective 로 직접 건 글(「찾아가자」 꼴이 아닌 것)은 그대로 둔다.
+ */
+function dropSideQuestObjectives(project: Project): string[] {
+  const out: string[] = [];
+  for (const hit of sideQuestObjectives(project)) {
+    if (!/^「[^」]+」[을를] 찾아가자/u.test(hit.message)) continue;
+    const at = hit.list.indexOf(hit.command);
+    if (at < 0) continue;
+    hit.list.splice(at, 1);
+    out.push(`곁 퀘스트 페이지(${hit.eventId})의 목표 「${hit.message.slice(0, 30)}」 뗌 — 본편 목표 줄을 덮어쓰지 않게`);
+  }
+  return out;
+}
+
+/**
  * 이야기를 한 단계 넘기면서 다음 목표를 안 바꾸는 이정표 이벤트(objectiveGaps)에 다음 목표를 건다 — 청사진 다음 단계 이벤트가 있으면 그것,
  * 없으면 이 이벤트가 켠 스위치·준 아이템을 읽는 첫 이벤트를 「찾아가자」로. 거는 자리·「어디」 힌트는 set_objective 와 같은 planObjective.
  * 다음 대상을 모르면(엔딩 정의만 읽는다) 건너뛴다.
@@ -88,6 +105,7 @@ export function fillStaleObjectives(project: Project): string[] {
   const steps = project.gameBlueprint?.steps ?? [];
   const object = (word: string): string => `${word}${hasFinal(word.replace(/[」』"”')\]\s]+$/u, "")) ? "을" : "를"}`;
   out.push(...dropVanishedTargetObjectives(project));
+  out.push(...dropSideQuestObjectives(project));
   const stepEventName = (ref: string) => Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((e) => e.id === ref || e.name === ref).map((e) => String(e.name ?? e.id))).at(0);
   for (const { event, readers } of staleMilestoneTargets(project)) {
     const k = steps.findIndex((step) => step.event === event.eventId || step.event === event.name);
