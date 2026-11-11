@@ -419,7 +419,9 @@ export function resolveWhere(
         else if (rel === "back") s = fy1 >= box.y0 || gapX > 1 ? Infinity : (box.y0 - fy1 - 1) * 1.5 + Math.abs((fx0 + fx1) / 2 - cx) * 0.3;
         else s = Math.max(gapX, gapY) === 0 ? Infinity : Math.max(gapX, gapY) - 1 + (gapX && gapY ? 0.5 : 0);
         if (!Number.isFinite(s) || Math.max(gapX, gapY) > 3) return Infinity;
-        return s + (doorDist(b) < 3 ? 6 : 0) + (isObject && touches(b, marks.seats) ? 2 : 0) + (touches(b, marks.stairs) ? 4 : 0);
+        // 문이 길로 바로 열리는 거리: 건물 벽 바로 밑 길 칸은 길 한가운데가 아니다 — 길 값 때문에 문에서 세 칸 떨어진 집 사이 틈에 섰다.
+        const shoulder = declared === "door" && !!outdoorRoads?.has(b.y * w + b.x) && b.y > 0 && !!marks.buildings[(b.y - 1) * w + b.x];
+        return s + (doorDist(b) < 3 ? 6 : 0) + (isObject && touches(b, marks.seats) ? 2 : 0) + (touches(b, marks.stairs) ? 4 : 0) - (shoulder ? 6 : 0);
       };
       let c = pick(score);
       // 그 쪽(옆·앞·뒤)이 벽·가구로 막혔으면 둘레 아무 쪽(근처)으로 — 부엌 화덕은 옆이 다 조리대다.

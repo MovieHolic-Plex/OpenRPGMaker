@@ -153,7 +153,8 @@ describe("「X 옆」 finds the thing by its name as a whole word, or by what th
     const door = resolveWhere(project, map, "문 옆");
     expect(door.fallback).toBeUndefined();
     expect(door.how).not.toContain("문루"); // 전에는 「둥근 지붕 회당(큰 돔·아치 문루)」
-    expect(Math.min(...doors.map((d) => cheb(d, door.cell)))).toBeLessThanOrEqual(4);
+    // 바자르의 문은 길로 바로 열린다 — 벽 밑 길 칸(문 앞의 옆)에 서고, 집 사이 틈(문에서 세 칸)으로 밀려나지 않는다.
+    expect(Math.min(...doors.map((d) => cheb(d, door.cell)))).toBeLessThanOrEqual(1);
     expect(doors.some((d) => d.x === door.cell.x && door.cell.y === d.y + 1)).toBe(false);
 
     const roads = roadCells(project, map);
