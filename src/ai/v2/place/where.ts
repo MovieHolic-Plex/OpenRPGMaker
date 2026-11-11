@@ -3,7 +3,8 @@ import type { Dir, GameMap, Project } from "@/project/types";
 import { isPassable } from "@/project/collision";
 import { terrainReachability } from "@/project/terrainReachability";
 import { counterSide, exitThroats, isCounterArt, isShopkeeperName, laneCells } from "./placementRules";
-import { Cell, DIRS, eventsOf, transferCells, eventBodyCells, eventBlockers, walkReach, walkStart, dist, shortestPathCells, openness, edgeExitCells, SEAT_LABEL, STAIR_LABEL, WALL_LABEL, WINDOW_LABEL, tileLabel, layers, objectAt, roadCellSet } from "./cells";
+import { Cell, DIRS, eventsOf, transferCells, eventBodyCells, eventBlockers, walkReach, walkStart, dist, shortestPathCells, openness, edgeExitCells, SEAT_LABEL, STAIR_LABEL, WALL_LABEL, WINDOW_LABEL, tileLabel, layers, objectAt } from "./cells";
+import { roadCells } from "./surface";
 import { personSpotContext, personSpotCost } from "./personSpot";
 
 export interface WhereResolution {
@@ -288,7 +289,7 @@ export function resolveWhere(
     return true;
   };
   // 바깥 맵의 사람은 길 위가 아니라 길가에 선다(2026-10-23 3차 몬스터 마을: 주민 둘이 큰길 한가운데 서서 길을 좁혔다).
-  const outdoorRoads = !fp && !indoor ? roadCellSet(project, map) : undefined;
+  const outdoorRoads = !fp && !indoor ? roadCells(project, map) : undefined;
   const roadCost = (c: Cell): number => (outdoorRoads?.has(c.y * w + c.x) ? 8 : 0);
   // 실내 사람은 문 곁·가구의 하나뿐인 접근 칸·다른 사람 바로 위아래·양탄자 가운데를 피한다(personSpotCost).
   const spotCtx = !fp && indoor ? personSpotContext(project, map, opts.exceptId) : undefined;
@@ -394,7 +395,7 @@ export function resolveWhere(
 
   if (intent.kind === "entrance") {
     // 길이 맵 밖으로 나가는 곳: 가장자리에서 걸어 닿는 길 칸(없으면 가장자리 칸) — 시작에서 가장 가까운 것.
-    const roads = roadCellSet(project, map);
+    const roads = roadCells(project, map);
     const edge = edgeExitCells(map, reach);
     const roadEdge = edge.filter((c) => roads.has(c.y * w + c.x));
     const exit = (roadEdge.length ? roadEdge : edge).sort((a, b) => dist(a, start) - dist(b, start))[0];
