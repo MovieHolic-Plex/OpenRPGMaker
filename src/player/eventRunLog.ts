@@ -22,11 +22,11 @@ type EntryBase = {
   readonly seq: number;
   /** 테스트 플레이 시작 뒤 ms(performance.now 기준). */
   readonly t: number;
-  readonly run: number;
 };
 
 export type EventRunCommandEntry = EntryBase & {
   readonly type: "command";
+  readonly run: number;
   readonly source: EventRunSource;
   readonly mapId: string;
   readonly eventId?: string;
@@ -42,6 +42,7 @@ export type EventRunCommandEntry = EntryBase & {
 
 export type EventRunBoundaryEntry = EntryBase & {
   readonly type: "runStart" | "runEnd";
+  readonly run: number;
   readonly source: EventRunSource;
   readonly mapId: string;
   readonly eventId?: string;
@@ -232,7 +233,10 @@ export function activeEventRunLog(): EventRunLog | undefined {
 
 /** qaInstrumentation 씬만 부른다(playSceneTestHooks). 반환값은 해제 함수. */
 export function installEventRunLog(log: EventRunLog = new EventRunLog()): () => void {
+  // 「다시 시작」·맵 재시작은 씬을 새로 만든다 — 켜 둔 한 단계 모드는 다음 씬으로 이어 간다.
+  const keepStepping = active?.stepState().stepping === true;
   active?.dispose();
+  if (keepStepping) log.setStepping(true);
   active = log;
   const w = typeof window === "undefined" ? undefined : window as RunLogWindow;
   if (w) w.__oprnEventRunLog = { query: (q) => log.query(q), stepState: () => log.stepState() };
