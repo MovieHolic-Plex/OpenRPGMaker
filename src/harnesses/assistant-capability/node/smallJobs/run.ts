@@ -14,7 +14,7 @@ import { readProjectSqlite } from '../../../../../scripts/content/read-project-s
 import { sharedContentFile } from '../../../../../scripts/lib/sharedContentSqlite';
 import { runCheck, type Verdict } from './checks';
 import { buildFixture } from './fixtures';
-import { loadSuite, selectJobs, type SmallJob } from './suite';
+import { loadSuite, selectJobs, suiteFile, suiteLabel, type SmallJob } from './suite';
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../..');
 const SESSION = resolve(REPO_ROOT, 'src/harnesses/assistant-capability/node/wholeGameSession.mjs');
@@ -25,7 +25,7 @@ const sleep = (ms: number) => new Promise(done => setTimeout(done, ms));
 const readJson = (file: string): any => { try { return JSON.parse(readFileSync(file, 'utf8')); } catch { return null; } };
 const writeJson = (file: string, data: unknown) => writeFileSync(file, JSON.stringify(data, null, 2));
 
-export type RunOptions = { out?: string; model?: string; only?: string; v2: boolean; parallel?: string; timeoutMin?: string; skipCompleted: boolean };
+export type RunOptions = { out?: string; model?: string; only?: string; /** 묶음 번호(1 = 처음 30가지, 2 = 둘째 묶음). */ set?: string; v2: boolean; parallel?: string; timeoutMin?: string; skipCompleted: boolean };
 export type JobStatus = 'pass' | 'fail' | 'timeout' | 'infra';
 export type JobResult = {
   id: string; family: string; fixture: string; request: string; status: JobStatus; pass: boolean;
@@ -246,7 +246,7 @@ const minutes = (ms: number) => (ms / 60_000).toFixed(1);
 function summaryMarkdown(summary: any): string {
   const c = summary.counts, m = summary.medians;
   const rows = (summary.jobs as JobResult[]).map(r => `| ${r.id} | ${r.family} | ${r.status.toUpperCase()} | ${r.complete === null ? '-' : r.complete ? '완료' : '미완료'} | ${r.toolCallCount}${r.toolErrors ? ` (✗${r.toolErrors})` : ''} | ${minutes(r.wallMs)} | ${Math.round((r.tokens.input + r.tokens.cacheRead) / 1000)}k/${(r.tokens.output / 1000).toFixed(1)}k | ${r.systemPromptChars ?? '-'} | ${r.toolsOffered ?? '-'} | ${r.reason.replace(/\|/gu, '/').slice(0, 160)} |`);
-  return `# 작은 일 30가지 — ${summary.model} · ${summary.assistantVersion}\n\n기준 main ${summary.git.mainBase || '-'} · 머리 ${summary.git.sha}(${summary.git.branch}${summary.git.dirty ? ', 작업 트리 변경 있음' : ''}) · ${summary.startedAt} ~ ${summary.finishedAt}\n\n` +
+  return `# ${summary.suiteTitle ?? '작은 일 30가지'} — ${summary.model} · ${summary.assistantVersion}\n\n기준 main ${summary.git.mainBase || '-'} · 머리 ${summary.git.sha}(${summary.git.branch}${summary.git.dirty ? ', 작업 트리 변경 있음' : ''}) · ${summary.startedAt} ~ ${summary.finishedAt}\n\n` +
     `**통과 ${c.pass}/${c.jobs}** · 불합격 ${c.fail} · 시간 초과 ${c.timeout} · 기반 오류 ${c.infra} · 턴이 «완료»로 끝난 것 ${c.complete} · 요청 밖 변경이 있었던 일 ${c.sideEdited ?? 0}\n\n` +
     `중앙값: 도구 호출 ${m.toolCalls} · 시간 ${minutes(m.wallMs)}분 · 모델 호출 ${m.modelCalls} · 입력 ${Math.round(m.inputTokens / 1000)}k 토큰 · 출력 ${(m.outputTokens / 1000).toFixed(1)}k 토큰 · 지시문 ${m.systemPromptChars}자 · 처음 실린 도구 ${m.toolsOffered}개(도구 설명 ${m.toolSchemaChars}자)\n\n` +
     `| 가족 | 통과 | 불합격 | 시간 초과 | 기반 오류 |\n|---|---|---|---|---|\n${Object.entries<any>(summary.perFamily).map(([family, n]) => `| ${family} | ${n.pass}/${n.jobs} | ${n.fail} | ${n.timeout} | ${n.infra} |`).join('\n')}\n\n` +
@@ -261,7 +261,7 @@ export function writeRunSummary(root: string, results: JobResult[], meta: Record
 }
 
 export async function runSmallJobs(options: RunOptions): Promise<number> {
-  const suite = loadSuite();
+  const file = suiteFile(options.set), suite = loadSuite(file);
   const jobs = selectJobs(suite, options.only);
   const pinName = options.model ?? 'terra-high';
   const pin = modelPin(pinName);
@@ -285,11 +285,11 @@ export async function runSmallJobs(options: RunOptions): Promise<number> {
     if (existsSync(dir)) renameSync(dir, `${dir}.aborted-${Date.now()}`);
     queue.push(job);
   }
-  console.log(`small-jobs: ${queue.length}개 실행(${results.size}개는 이미 끝남) · 모델 ${pinName} · ${options.v2 ? 'v2' : 'v1'} · 동시 ${parallel} · 일당 상한 ${limitMs / 60_000}분 → ${root}`);
+  console.log(`small-jobs(${suiteLabel(file)}): ${queue.length}개 실행(${results.size}개는 이미 끝남) · 모델 ${pinName} · ${options.v2 ? 'v2' : 'v1'} · 동시 ${parallel} · 일당 상한 ${limitMs / 60_000}분 → ${root}`);
   const writeSummary = () => {
     const ordered = jobs.map(job => results.get(job.id)).filter((result): result is JobResult => !!result);
     const first = ordered.find(result => result.model);
-    return writeRunSummary(root, ordered, { suite: 'harness-data/assistant-capability/small-jobs.json', modelPin: pinName, model: first ? `${first.provider} ${first.model} (${pin.config.reasoningEffort ?? '-'})` : `${pin.config.providerId} ${pin.config.model} (${pin.config.reasoningEffort ?? '-'})`,
+    return writeRunSummary(root, ordered, { suite: suiteLabel(file), ...(suite.title ? { suiteTitle: suite.title } : {}), modelPin: pinName, model: first ? `${first.provider} ${first.model} (${pin.config.reasoningEffort ?? '-'})` : `${pin.config.providerId} ${pin.config.model} (${pin.config.reasoningEffort ?? '-'})`,
       assistantVersion: options.v2 ? 'v2' : 'v1', timeLimitMin: limitMs / 60_000, parallel, git, startedAt, finishedAt: new Date().toISOString(), planned: jobs.length });
   };
   const worker = async () => {

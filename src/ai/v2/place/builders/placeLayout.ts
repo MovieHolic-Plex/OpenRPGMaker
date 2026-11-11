@@ -23,7 +23,8 @@ import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
 import { themedTroops } from "@/editor/tools/dungeonTools";
 import { chestLoot } from "@/editor/tools/jrpgVolumeTools";
 import { terrainReachability } from "@/project/terrainReachability";
-import { dungeonArgs, enlargeBoss, planTroops } from "./dungeon";
+import { dungeonArgs, enlargeBoss } from "./dungeon";
+import { planTroops } from "./dungeonFoes";
 import { villageArgs, villageMapSize } from "./village";
 import { ensureBossRest, ensureHealingAccess } from "../../story/healingAccess";
 
