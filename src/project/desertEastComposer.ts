@@ -81,19 +81,20 @@ const PLAIN_HOUSES = ["de-house-adobe-4", "de-house-stone-4", "de-house-plaster-
  * 사막 번들의 목적표 선언 — 어느 키트가 어느 역할의 건물이고, 안으로 들어가면 어느 방(compose_desert_east_room 의 kind)인가.
  * 살림집(home)은 방 종류가 없다: 이 번들에 살림집 실내가 없어서다(그 집 사람은 문 앞에 선다 — 읽는 쪽이 빈칸으로 적는다).
  * 대상 숙소는 방 줄 전체가 한 건물이라 역할이 무엇이든 같은 방 키트로 놓는다(composeCaravanserai).
+ * 찻집은 바자르에만 선다 — 얼굴 키트가 광장 북쪽 회당(6칸 폭)이라 집 줄의 자리 폭(5칸)에 들지 않는다. 둘째 찻집부터는 가게 키트로 줄에 선다.
  */
 export const DESERT_SETTLEMENT: SettlementDecl = {
   roles: {
     home: { ko: "집", kits: PLAIN_HOUSES, anyKit: true },
     shop: { ko: "가게", kits: ["de-house-shop"], room: "shop" },
     inn: { ko: "여관", kits: ["de-house-2f", "de-house-adobe-5"], room: "inn" },
-    teahouse: { ko: "찻집", kits: ["de-house-shop", "de-domed-hall"], room: "teahouse" },
+    teahouse: { ko: "찻집", kits: ["de-domed-hall", "de-house-shop"], room: "teahouse" },
     bath: { ko: "목욕탕", kits: ["de-house-dome-4", "de-house-dome-white"], room: "hammam" },
     throne: { ko: "궁전", kits: ["de-palace"], room: "palace_hall" },
     tomb: { ko: "피라미드 입구", kits: ["de-pyramid-door"], room: "tomb" },
   },
   kinds: {
-    oasis: { roles: ["home", "inn", "shop", "teahouse", "bath"], filler: 2 },
+    oasis: { roles: ["home", "inn", "shop", "bath"], filler: 2 },
     bazaar: { roles: ["shop", "teahouse", "home", "inn", "bath"], filler: 2 },
     caravanserai: { roles: ["inn", "home", "shop"], filler: 3 },
     palace: { roles: ["throne", "home", "bath"], filler: 1, landmark: "throne" },
