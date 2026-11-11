@@ -60,20 +60,27 @@ describe("room-kit stages run only on maps laid as rooms", () => {
 });
 
 describe("pickTransferSpot", () => {
-  it("picks a declared building entrance, never a walk-through gate, and never paints the map", () => {
+  it("offers a building entrance only when the other side is a room, and never paints the map", () => {
     const ctx = edo("castle_town", 56, 48);
+    expect(runTool(ctx, "create_map", { id: "map_o", name: "다른 거리", width: 30, height: 24, tilesetId: "sengoku_edo" }).ok).toBe(true);
+    expect(runTool(ctx, "create_map", { id: "map_r", name: "여관 방", width: 20, height: 16, tilesetId: "sengoku_edo" }).ok).toBe(true);
+    ctx.project = { ...ctx.project, maps: { ...ctx.project.maps, map_r: { ...ctx.project.maps.map_r!, climate: { mode: "indoor" } } } } as Project;
     const map = ctx.project.maps.map_e!;
     const before = tiles(map);
     const entrances = buildingEntrances(ctx.project, map);
     expect(entrances.length).toBeGreaterThan(0);
     for (const side of ["south", "north", "east", "west"] as const) {
-      const spot = pickTransferSpot(runOf(ctx), "map_e", { side, outdoor: true });
-      expect(spot).toBeDefined();
-      if (spot?.doorAt) {
-        expect(entrances.some((e) => e.x === spot.doorAt!.x && e.y === spot.doorAt!.y && e.front.x === spot.x && e.front.y === spot.y)).toBe(true);
-        expect(isPassable(ctx.project, map, spot.doorAt.x, spot.doorAt.y)).toBe(false);
+      // 건너편을 모르거나 바깥 맵이면 집 문을 쓰지 않는다 — 집에 들어갔는데 다른 바깥 맵으로 나오게 된다.
+      expect(pickTransferSpot(runOf(ctx), "map_e", { side, outdoor: true })?.doorAt).toBeUndefined();
+      expect(pickTransferSpot(runOf(ctx), "map_e", { side, outdoor: true, otherName: "다른 거리" })?.doorAt).toBeUndefined();
+      expect(pickTransferSpot(runOf(ctx), "map_e", { side, outdoor: true, otherName: "여관 방", buildingDoor: false })?.doorAt).toBeUndefined();
+      // 건너편이 방이라고 적혀 있거나 부르는 쪽이 그렇다고 하면 건물 입구(걸어서 지나는 성문이 아니다).
+      for (const spot of [pickTransferSpot(runOf(ctx), "map_e", { side, outdoor: true, otherName: "여관 방" }), pickTransferSpot(runOf(ctx), "map_e", { side, outdoor: true, buildingDoor: true })]) {
+        expect(spot?.doorAt).toBeDefined();
+        expect(entrances.some((e) => e.x === spot!.doorAt!.x && e.y === spot!.doorAt!.y && e.front.x === spot!.x && e.front.y === spot!.y)).toBe(true);
+        expect(isPassable(ctx.project, map, spot!.doorAt!.x, spot!.doorAt!.y)).toBe(false);
+        expect(isPassable(ctx.project, map, spot!.x, spot!.y)).toBe(true);
       }
-      expect(isPassable(ctx.project, map, spot!.x, spot!.y)).toBe(true);
     }
     expect(tiles(ctx.project.maps.map_e!)).toBe(before);
   }, 60_000);

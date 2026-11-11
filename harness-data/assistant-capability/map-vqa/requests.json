@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "kind": "assistant-map-laying-set",
+  "title": "맵 깔기 24가지",
+  "description": "조수가 자연어 한 문장으로 맵을 깔게 하는 고정 묶음. 좌표·평면·칩셋 이름을 주지 않는다. 한 장 21가지(종류마다 하나 — 뒤의 9가지는 그림이 없을 법한 곳을 일부러 넣었다: 편의점·광산·늪·신전·알현실·교실·선술집·대장간·농장) + 두 장이 이어져야 하는 3가지(출구·길 어긋남을 잡는다). 판정은 그림을 보는 검수자(map-vqa)가 한다 — 이 묶음에는 기계 합격이 없다. 고친 뒤 같은 묶음을 다시 돌려 전/후를 비교하므로 id·문장을 바꾸지 않는다(새 요청은 뒤에 덧붙인다).",
+  "autoAnswer": "좋아, 네가 판단해서 진행해 줘.",
+  "jobs": [
+    {
+      "id": "village",
+      "kind": "village",
+      "maps": 1,
+      "request": "작은 시골 마을 맵 하나 만들어 줘. 집 몇 채랑 우물, 밭이 있으면 좋겠어."
+    },
+    {
+      "id": "market-town",
+      "kind": "market",
+      "maps": 1,
+      "request": "상인들이 모이는 시장 마을 맵을 만들어 줘. 가운데 광장에 노점이 늘어서 있게 해 줘."
+    },
+    {
+      "id": "castle",
+      "kind": "castle",
+      "maps": 1,
+      "request": "성벽으로 둘러싸인 왕궁 맵을 만들어 줘. 성문으로 들어가서 궁전까지 길이 이어지게 해 줘."
+    },
+    {
+      "id": "camp",
+      "kind": "camp",
+      "maps": 1,
+      "request": "숲속 야영지 맵을 만들어 줘. 천막 몇 개랑 모닥불이 있게 해 줘."
+    },
+    {
+      "id": "ruins",
+      "kind": "ruins",
+      "maps": 1,
+      "request": "버려진 고대 유적 바깥 맵을 만들어 줘. 무너진 기둥이랑 유적 입구가 보이게 해 줘."
+    },
+    {
+      "id": "cave",
+      "kind": "cave",
+      "maps": 1,
+      "request": "동굴 던전 맵 하나 만들어 줘. 입구에서 안쪽 보물 방까지 길이 이어지게 해 줘."
+    },
+    {
+      "id": "prison",
+      "kind": "dungeon",
+      "maps": 1,
+      "request": "지하 감옥 던전 맵을 만들어 줘. 복도 양쪽에 감방이 늘어서 있게 해 줘."
+    },
+    {
+      "id": "weapon-shop",
+      "kind": "shop-interior",
+      "maps": 1,
+      "request": "무기 가게 실내 맵을 만들어 줘. 계산대랑 진열대가 있게 해 줘."
+    },
+    {
+      "id": "inn",
+      "kind": "inn-interior",
+      "maps": 1,
+      "request": "여관 실내 맵을 만들어 줘. 1층 식당에 탁자랑 벽난로가 있게 해 줘."
+    },
+    {
+      "id": "house",
+      "kind": "house-interior",
+      "maps": 1,
+      "request": "평범한 가정집 실내 맵을 만들어 줘. 침대랑 부엌이 있게 해 줘."
+    },
+    {
+      "id": "harbor",
+      "kind": "harbor",
+      "maps": 1,
+      "request": "배가 드나드는 항구 마을 맵을 만들어 줘. 부두랑 창고가 있게 해 줘."
+    },
+    {
+      "id": "field-route",
+      "kind": "field",
+      "maps": 1,
+      "request": "마을과 마을 사이를 잇는 들판 길 맵을 만들어 줘. 서쪽 끝에서 동쪽 끝까지 길이 이어지게 해 줘."
+    },
+    {
+      "id": "village-to-field",
+      "kind": "linked",
+      "maps": 2,
+      "request": "마을 맵이랑 그 동쪽에 붙은 들판 맵을 만들어 줘. 마을 동쪽 길로 나가면 들판으로 이어지게 해 줘."
+    },
+    {
+      "id": "village-chief-house",
+      "kind": "linked",
+      "maps": 2,
+      "request": "작은 마을 맵을 만들고, 그 마을의 촌장 집 안 맵도 만들어 줘. 촌장 집 문으로 들어가고 나올 수 있게 해 줘."
+    },
+    {
+      "id": "forest-to-cave",
+      "kind": "linked",
+      "maps": 2,
+      "request": "숲 맵이랑 그 숲 안쪽에 있는 동굴 맵을 만들어 줘. 숲의 동굴 입구로 들어가면 동굴 맵으로 이어지게 해 줘."
+    },
+    {
+      "id": "convenience-store",
+      "kind": "modern-shop-interior",
+      "maps": 1,
+      "request": "편의점 실내 맵을 만들어 줘. 진열대랑 계산대, 음료 냉장고가 있게 해 줘."
+    },
+    {
+      "id": "mine",
+      "kind": "mine",
+      "maps": 1,
+      "request": "버려진 광산 맵을 만들어 줘. 갱도에 광차 레일이랑 곡괭이 같은 채굴 도구가 보이게 해 줘."
+    },
+    {
+      "id": "swamp",
+      "kind": "swamp",
+      "maps": 1,
+      "request": "안개 낀 늪지대 맵을 만들어 줘. 물웅덩이 사이로 나무 판자 길이 이어지게 해 줘."
+    },
+    {
+      "id": "temple",
+      "kind": "temple-interior",
+      "maps": 1,
+      "request": "신전 내부 맵을 만들어 줘. 가운데에 제단이 있고 양쪽에 기둥이랑 신상이 늘어서 있게 해 줘."
+    },
+    {
+      "id": "throne-room",
+      "kind": "throne-room",
+      "maps": 1,
+      "request": "성 안의 알현실 맵을 만들어 줘. 붉은 융단 끝에 왕좌가 있게 해 줘."
+    },
+    {
+      "id": "classroom",
+      "kind": "classroom",
+      "maps": 1,
+      "request": "학교 교실 맵을 만들어 줘. 칠판이랑 교탁, 학생 책상이 줄지어 있게 해 줘."
+    },
+    {
+      "id": "tavern",
+      "kind": "tavern-interior",
+      "maps": 1,
+      "request": "모험가들이 모이는 선술집 실내 맵을 만들어 줘. 바 카운터랑 술통, 둥근 탁자가 있게 해 줘."
+    },
+    {
+      "id": "blacksmith",
+      "kind": "blacksmith",
+      "maps": 1,
+      "request": "대장간 맵을 만들어 줘. 화로랑 모루, 무기 걸이가 있게 해 줘."
+    },
+    {
+      "id": "farm",
+      "kind": "farm",
+      "maps": 1,
+      "request": "농장 맵을 만들어 줘. 밭이랑 헛간, 울타리 친 가축 우리가 있게 해 줘."
+    }
+  ]
+}

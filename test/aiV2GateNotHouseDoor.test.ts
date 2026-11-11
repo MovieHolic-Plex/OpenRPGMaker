@@ -1,47 +1,76 @@
-// 걸어서 지나는 문(성문·아치·목책 문)의 기둥은 집 문이 아니다 — 「문이 굳게 잠겨 있다」 를 세우지 않고, 전에 세운 것은 걷어 낸다.
+// 「들어갈 수 없다」 한 줄은 칩셋 키트가 적어 둔 건물 입구에만 선다 — 걸어서 지나는 문(성문·아치·목책 문)의 기둥에는 서지 않고, 전에 세운 것은 걷어 낸다.
 // 2026-11-11 Terra 게임 둘의 「굳게 닫힌 집 문」 27개가 전부 성문 기둥에 서 있었고, 눈가림 플레이어는 궁전에 들어가지 않았다.
+// 같은 날 단계×테마 표: 구성기 칩셋 바깥 맵 36장 가운데 35장에서 진짜 집 문은 하나도 반응하지 않았다(집은 키트 한 덩이라 문 이름표가 없다).
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
+import { isPassable } from "@/project/collision";
 import type { GameEvent, Project } from "@/project/types";
-import { doorArtCells, isWalkThroughDoorArt } from "@/ai/v2/judge/eventReach";
+import { doorArtCells } from "@/ai/v2/judge/eventReach";
+import { buildingEntrances } from "@/ai/v2/place/entrances";
 import { lockBareHouseDoors } from "@/ai/v2/place/lockedDoors";
 import { VILLAGE_BUILDER } from "@/ai/v2/place/builders/village";
 import type { BuildRun } from "@/ai/v2/shared/types";
 
 const locked = (project: Project, mapId: string) => project.maps[mapId]!.events.filter((e) => e.id.startsWith("ev_locked_door_"));
+const at = (cells: readonly { x: number; y: number }[], e: { x: number; y: number }) => cells.some((c) => c.x === e.x && c.y === e.y);
 
-function palace(): { project: Project } {
+function desert(kind: string): { project: Project } {
   const ctx = { project: createBlankProject() };
-  expect(runTool(ctx, "create_map", { id: "map_p", name: "궁전", width: 48, height: 40, tilesetId: "desert_east" }).ok).toBe(true);
-  expect(runTool(ctx, "compose_desert_east_map", { mapId: "map_p", kind: "palace", seed: 1 }).ok).toBe(true);
+  expect(runTool(ctx, "create_map", { id: "map_p", name: "사막", width: 48, height: 40, tilesetId: "desert_east" }).ok).toBe(true);
+  expect(runTool(ctx, "compose_desert_east_map", { mapId: "map_p", kind, seed: 1 }).ok).toBe(true);
   return ctx;
 }
 
-describe("locked house doors skip walk-through gates", () => {
-  it("puts no «locked» line on the posts of a palace gate", () => {
-    const ctx = palace();
+describe("the «cannot enter» line stands on declared building entrances only", () => {
+  it("locks the palace's buildings and leaves the gate posts alone", () => {
+    const ctx = desert("palace");
     const map = ctx.project.maps.map_p!;
-    const doors = doorArtCells(ctx.project, map);
-    expect(doors.length).toBeGreaterThan(0);
-    expect(doors.every((d) => isWalkThroughDoorArt(ctx.project, map, d))).toBe(true);
-    const notes = lockBareHouseDoors({ ctx } as unknown as BuildRun, "map_p");
-    expect(notes).toEqual([]);
-    expect(locked(ctx.project, "map_p")).toEqual([]);
-  });
+    // 이름표로 읽은 「문」은 이 맵에서 성문뿐이고, 건물 입구와 한 칸도 겹치지 않는다.
+    const gatePosts = doorArtCells(ctx.project, map);
+    const entrances = buildingEntrances(ctx.project, map);
+    expect(gatePosts.length).toBeGreaterThan(0);
+    expect(entrances.length).toBeGreaterThan(0);
+    expect(gatePosts.some((g) => at(entrances, g))).toBe(false);
+    lockBareHouseDoors({ ctx } as unknown as BuildRun, "map_p");
+    const doors = locked(ctx.project, "map_p");
+    expect(doors.length).toBe(entrances.length);
+    for (const d of doors) {
+      expect(at(entrances, d)).toBe(true);
+      expect(at(gatePosts, d)).toBe(false);
+      expect(isPassable(ctx.project, ctx.project.maps.map_p!, d.x, d.y)).toBe(false);
+    }
+  }, 60_000);
 
   it("removes the ones an earlier build left on gate posts", () => {
-    const ctx = palace();
+    const ctx = desert("palace");
     const map = ctx.project.maps.map_p!;
     const post = doorArtCells(ctx.project, map)[0]!;
     const stray = { id: `ev_locked_door_${post.x}_${post.y}`, name: "굳게 닫힌 집 문", x: post.x, y: post.y, trigger: { kind: "playerTouch" }, commands: [], pages: [] } as unknown as GameEvent;
     ctx.project = { ...ctx.project, maps: { ...ctx.project.maps, map_p: { ...map, events: [...map.events, stray] } } };
     const notes = lockBareHouseDoors({ ctx } as unknown as BuildRun, "map_p");
     expect(notes.join(" ")).toContain(`(${post.x},${post.y})`);
-    expect(locked(ctx.project, "map_p")).toEqual([]);
-  });
+    expect(locked(ctx.project, "map_p").some((e) => e.x === post.x && e.y === post.y)).toBe(false);
+  }, 60_000);
 
-  it("still locks the doors of village houses nobody can enter", () => {
+  it("skips an entrance that already leads somewhere, a map laid as a room, and names no theme", () => {
+    const ctx = desert("oasis");
+    const map = ctx.project.maps.map_p!;
+    const [first] = buildingEntrances(ctx.project, map);
+    expect(first).toBeDefined();
+    const transfer = { id: "ev_in", name: "안으로", x: first!.front.x, y: first!.front.y, trigger: { kind: "playerTouch" }, commands: [], pages: [{ id: "ev_in_p0", conditions: [], trigger: { kind: "playerTouch" }, commands: [{ kind: "transfer", mapId: "map_p", x: 1, y: 1 }] }] } as unknown as GameEvent;
+    ctx.project = { ...ctx.project, maps: { ...ctx.project.maps, map_p: { ...map, events: [...map.events, transfer] } } };
+    expect(lockBareHouseDoors({ ctx } as unknown as BuildRun, "map_p", "room")).toEqual([]);
+    expect(locked(ctx.project, "map_p")).toEqual([]);
+    lockBareHouseDoors({ ctx } as unknown as BuildRun, "map_p", "outdoor");
+    const doors = locked(ctx.project, "map_p");
+    expect(doors.length).toBeGreaterThan(0);
+    expect(doors.some((d) => d.x === first!.x && d.y === first!.y)).toBe(false);
+    // 그 맵이 무엇인지 이 단계는 모른다 — 「집」「동굴」 같은 말을 쓰지 않는다.
+    expect(JSON.stringify(doors)).not.toMatch(/집|동굴|house|cave/u);
+  }, 60_000);
+
+  it("still locks the doors of Beodeul village houses nobody can enter", () => {
     const ctx = { project: createBlankProject() };
     const run = { ctx, calls: [], call: (tool: string, args: Record<string, unknown>) => runTool(ctx, tool, args) } as unknown as BuildRun;
     const built = VILLAGE_BUILDER.build(run, { type: "village", name: "시험", theme: "plain" });
@@ -52,6 +81,7 @@ describe("locked house doors skip walk-through gates", () => {
     lockBareHouseDoors({ ctx } as unknown as BuildRun, mapId);
     const doors = locked(ctx.project, mapId);
     expect(doors.length).toBeGreaterThan(0);
-    for (const d of doors) expect(isWalkThroughDoorArt(ctx.project, ctx.project.maps[mapId]!, d)).toBe(false);
+    const entrances = buildingEntrances(ctx.project, ctx.project.maps[mapId]!);
+    for (const d of doors) expect(at(entrances, d)).toBe(true);
   }, 90_000);
 });
