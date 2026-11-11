@@ -18,6 +18,8 @@ export interface SurfaceDecl {
   readonly road: TilePick;
   /** 길에서 빼는 칸(같은 말을 쓰는 실내 바닥·소품). */
   readonly notRoad?: TilePick;
+  /** 계단 — 오르내리는 칸. 안 적으면 번들 공통 말(STAIRS)로 읽는다. 다른 꼬리표를 쓰는 번들만 적는다. */
+  readonly stairs?: TilePick;
   /** 새 길 칸을 까는 재료 — 오토타일 묶음 id 와 fill_region 에 주는 재료 말. 맵에 가장 많이 깔린 것을 쓴다. 없으면 이 칩셋의 길은 구성기만 낸다. */
   readonly lay?: readonly { readonly group: string; readonly material: string }[];
 }
@@ -26,6 +28,8 @@ export interface TilesetSurface {
   /** 번들이 선언한 칩셋인가(아니면 낱말 추정). */
   readonly declared: boolean;
   readonly road: ReadonlySet<number>;
+  /** 계단 칸 — 이름표 낱말이 아니라 굽기가 적은 역할·꼬리표(「지구라트(계단 신전)」「비상계단 아파트」는 계단이 아니다). */
+  readonly stairs: ReadonlySet<number>;
   readonly lay: readonly { readonly material: string; readonly tiles: ReadonlySet<number> }[];
 }
 
@@ -53,6 +57,7 @@ export const SURFACES: Readonly<Record<string, SurfaceDecl>> = {
   wizarding_world: { road: { tags: ["흙길", "골목"] }, lay: [{ group: "wz-nat-dirt", material: "숲길 흙" }, { group: "wz-post-snowcobble", material: "눈 덮인 자갈 골목" }] },
   joseon_baram: {
     road: { tags: ["road64", "road16", "fld_trail32", "slab_edge16", "slab", "slab_dirt"] },
+    stairs: { tags: ["in_stairs_wood_3", "in_stairs_wood_2", "in_stairs_stone_3", "in_stairs_down", "bank_stairs"] },
     lay: [
       { group: "jb_road64_autotile", material: "조선 흙길 (4변형)" }, { group: "jb_road16_autotile", material: "조선 흙길" },
       { group: "jb_slab_edge16_autotile", material: "국내성 석판 길 (오토타일)" }, { group: "jb_fld_trail32_autotile", material: "사냥터 짐승길" },
@@ -75,6 +80,9 @@ const FALLBACK: SurfaceDecl = {
   notRoad: { label: /풀|잔디|grass|물|water|강|운하|벽|wall|지붕|roof|표지|이정표/iu },
 };
 
+/** 계단의 번들 공통 말 — 굽기들이 계단 칸에 쓰는 역할·꼬리표 그대로. */
+const STAIRS: TilePick = { roles: ["stairs"], tags: ["계단", "stairs", "stair"] };
+
 type Meta = { readonly label?: string; readonly tags?: readonly string[]; readonly role?: string } | null | undefined;
 
 function picks(pick: TilePick | undefined, meta: Meta): boolean {
@@ -85,7 +93,7 @@ function picks(pick: TilePick | undefined, meta: Meta): boolean {
 }
 
 const cache = new WeakMap<object, TilesetSurface>();
-const NONE: TilesetSurface = { declared: false, road: new Set(), lay: [] };
+const NONE: TilesetSurface = { declared: false, road: new Set(), stairs: new Set(), lay: [] };
 
 /** 칩셋의 표면 — 선언(없으면 낱말 추정)을 칸 번호 집합으로 푼다. tileMeta 배열마다 한 번만 센다. */
 export function tilesetSurface(tileset: Pick<TilesetDef, "id" | "tileMeta" | "autotileGroups"> | undefined): TilesetSurface {
@@ -96,12 +104,16 @@ export function tilesetSurface(tileset: Pick<TilesetDef, "id" | "tileMeta" | "au
   const decl = SURFACES[tileset.id];
   const spec = decl ?? FALLBACK;
   const road = new Set<number>();
-  meta.forEach((m, tile) => { if (picks(spec.road, m) && !picks(spec.notRoad, m)) road.add(tile); });
+  const stairs = new Set<number>();
+  meta.forEach((m, tile) => {
+    if (picks(spec.road, m) && !picks(spec.notRoad, m)) road.add(tile);
+    if (picks(spec.stairs ?? STAIRS, m)) stairs.add(tile);
+  });
   const lay = (spec.lay ?? []).flatMap(({ group, material }) => {
     const members = tileset.autotileGroups?.find((g) => g.id === group)?.memberTileIds;
     return members?.length ? [{ material, tiles: new Set(members) }] : [];
   });
-  const surface: TilesetSurface = { declared: !!decl, road, lay };
+  const surface: TilesetSurface = { declared: !!decl, road, stairs, lay };
   cache.set(meta, surface);
   return surface;
 }
