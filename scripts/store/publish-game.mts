@@ -20,7 +20,7 @@ import { join, resolve } from "node:path";
 import type { FlagshipDemoId } from "@/project/flagship";
 import { publishStoreGame, type StoreGameMeta, type StoreGameMine, type StoreGameTransport } from "@/assetStore/gamePublish";
 import { REFMAP_CREDIT } from "@/assetStore/format";
-import { PublishError, closeSession, openSession, requireTargetBase, type Session } from "./storePublish.mts";
+import { PublishError, closeSession, openSession, pinStoreEdge, requireTargetBase, uploadWithRetry, type Session } from "./storePublish.mts";
 
 const root = resolve(import.meta.dirname, "..", "..");
 const arg = (name: string): string | undefined => { const index = process.argv.indexOf(name); return index > 0 ? process.argv[index + 1] : undefined; };
@@ -103,15 +103,18 @@ function sessionTransport(session: Session): StoreGameTransport {
       return text ? JSON.parse(text) : {};
     },
     async upload(path, bytes, headers) {
-      for (let attempt = 1; ; attempt += 1) {
-        const response = await fetch(`${session.base}${path}`, { method: "POST", headers: { ...session.headers, ...headers }, body: new Uint8Array(bytes) as unknown as BodyInit });
-        if (response.ok) return;
-        if (attempt >= 3 || response.status < 500) throw new PublishError(`파일 올리기 ${response.status}: ${(await response.text()).slice(0, 300)}`);
-      }
+      const tag = `[blob ${(headers["x-sha256"] ?? "").slice(0, 8)} ${bytes.byteLength}B]`;
+      await uploadWithRetry(
+        (signal) => fetch(`${session.base}${path}`, { method: "POST", headers: { ...session.headers, ...headers }, body: new Uint8Array(bytes) as unknown as BodyInit, signal }),
+        tag,
+        { timeoutMs: Number(process.env.PUBLISH_UPLOAD_TIMEOUT_MS) || undefined, maxAttempts: Number(process.env.PUBLISH_UPLOAD_ATTEMPTS) || undefined },
+      );
     },
   };
 }
 
+const edge = pinStoreEdge();
+if (edge) console.error(`[publish-game] STORE_EDGE_IP: ${edge}`);
 const target = arg("--target");
 const rollback = arg("--rollback");
 if (rollback) {
@@ -272,7 +275,9 @@ try {
       bump: process.argv.includes("--major") ? "major" : "minor", version: arg("--version") ?? null,
       ...(commentArg ? { comment: commentArg } : {}), post: postFromArgs(),
     }, (progress) => {
-      if (progress.phase === "upload" && (progress.done === progress.total || Date.now() - lastLine > 5000)) {
+      if (progress.phase === "upload" && progress.starting) {
+        console.error(`[publish-game] upload next ${progress.done + 1}/${progress.total}: ${progress.starting.sha256.slice(0, 8)} ${progress.starting.bytes}B ${progress.starting.path}`);
+      } else if (progress.phase === "upload" && (progress.done === progress.total || Date.now() - lastLine > 5000)) {
         lastLine = Date.now();
         console.error(`[publish-game] upload ${progress.done}/${progress.total}`);
       }
