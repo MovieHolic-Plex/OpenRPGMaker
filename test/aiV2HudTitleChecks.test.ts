@@ -4,10 +4,15 @@ import { hudIsStoryTemplate, hudTitleChoiceProblems } from "@/ai/v2/judge/hudTit
 import { STORY_SETUP_HUD, applyStorySetupDefaults } from "@/ai/v2/genreDefaults";
 import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import type { Project } from "@/project/types";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const hudTitleLines = (...args: Parameters<typeof hudTitleChoiceProblems>): string[] => hudTitleChoiceProblems(...args).map(findingLine);
+const gameLines = (...args: Parameters<typeof gameContentProblems>): string[] => gameContentProblems(...args).map(findingLine);
 
 const WHOLE = "용사가 마왕을 잡으러 가는 짧은 RPG 만들어줘";
-const hud = (p: Project) => hudTitleChoiceProblems(p).filter((m) => m.startsWith("[게임 검사 HUD 선택]"));
-const title = (p: Project) => hudTitleChoiceProblems(p).filter((m) => m.startsWith("[게임 검사 타이틀 모양]"));
+const hud = (p: Project) => hudTitleLines(p).filter((m) => m.startsWith("[게임 검사 HUD 선택]"));
+const title = (p: Project) => hudTitleLines(p).filter((m) => m.startsWith("[게임 검사 타이틀 모양]"));
 
 describe("v2 HUD / title choice check (fs-use-tools HUD)", () => {
   it("flags the HUD the story-setup template lays down, and clears when the assistant picks another", () => {
@@ -54,7 +59,7 @@ describe("v2 HUD / title choice check (fs-use-tools HUD)", () => {
     const after = createBlankProject() as Project;
     after.system.fieldHud = { ...STORY_SETUP_HUD } as never;
     const before = createBlankProject() as Project;
-    const hit = (task: string) => gameContentProblems(before, after, task).some((m) => m.startsWith("[게임 검사 HUD 선택]"));
+    const hit = (task: string) => gameLines(before, after, task).some((m) => m.startsWith("[게임 검사 HUD 선택]"));
     expect(hit(WHOLE)).toBe(true);
     expect(hit("주인공 이름을 바꿔줘")).toBe(false);
   });

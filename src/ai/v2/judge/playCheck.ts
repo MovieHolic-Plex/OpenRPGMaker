@@ -7,22 +7,19 @@
 import { runGameCheck } from "@/qa/gameCheck";
 import { whereText } from "@/qa/gameCheck/types";
 import type { Project } from "@/project/types";
+import type { Finding } from "./finding";
 
 export const AUTOPLAY_GATE_PREFIX = "game:autoplay:";
 const PLAY_CHECK_BUDGET_MS = 90_000;
 const TIMED_OUT = "자동 플레이 시간 상한 초과";
 const FAILED_RUN = /^자동 플레이\((.+?)\)가 「(.+?)」에서 실패했습니다/u;
 
-interface PlayProblem {
-  readonly key: string;
-  readonly text: string;
-}
-
-export function playProblems(project: Project): readonly PlayProblem[] {
+/** 막힌 실행·단계마다 하나 — target.ref 가 그 단계다(관문 열쇠가 된다). */
+export function playProblems(project: Project): readonly Finding[] {
   try {
     const report = runGameCheck(project, { autoPlayBudgetMs: PLAY_CHECK_BUDGET_MS });
     const seen = new Set<string>();
-    const out: PlayProblem[] = [];
+    const out: Finding[] = [];
     for (const finding of report.findings) {
       if (finding.code !== "autoplay-failed" || finding.message.includes(TIMED_OUT)) continue;
       const key = FAILED_RUN.exec(finding.message)?.[2] ?? finding.message.slice(0, 80);
@@ -30,8 +27,8 @@ export function playProblems(project: Project): readonly PlayProblem[] {
       seen.add(key);
       const where = whereText(finding.where);
       out.push({
-        key,
-        text: `[끝까지 플레이 불가] ${finding.message}${where ? ` (${where})` : ""} — 플레이어가 엔딩까지 걸어서 갈 수 있어야 «완성»이다: 막힌 곳의 길(문·길 잇기·이동 칸)이나 그 단계의 스위치를 켜는 이벤트를 고친 뒤 다시 확인한다. 고치지 못하면 «완성»이라고 쓰지 말고 막힌 곳을 보고에 적는다.`,
+        judge: "play", id: "autoplay", target: { ref: key }, severity: "block", owner: "model",
+        ko: `[끝까지 플레이 불가] ${finding.message}${where ? ` (${where})` : ""} — 플레이어가 엔딩까지 걸어서 갈 수 있어야 «완성»이다: 막힌 곳의 길(문·길 잇기·이동 칸)이나 그 단계의 스위치를 켜는 이벤트를 고친 뒤 다시 확인한다. 고치지 못하면 «완성»이라고 쓰지 말고 막힌 곳을 보고에 적는다.`,
       });
     }
     return out;
