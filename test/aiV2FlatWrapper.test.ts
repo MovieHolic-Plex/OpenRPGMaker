@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { flattenWrapperTool, flatWrapperShape } from "@/ai/v2/flatWrapper";
+import { flattenWrapperTool, flatWrapperShape } from "@/ai/v2/tools/flatWrapper";
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 
 const echo = (name: string, parameters: unknown): PiToolShape => ({

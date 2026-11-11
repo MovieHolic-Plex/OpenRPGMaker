@@ -2,7 +2,7 @@
 // (2026-11-11 — openwiki/assistant-v2.md 「이어 하기 턴의 도구」).
 import { describe, expect, it } from "vitest";
 import type { ToolContext } from "@/editor/tools/types";
-import { createV2Tools } from "@/ai/v2/verbs";
+import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
 import { classifyRequest } from "@/ai/v2/request/intent";
 import type { PiAssistantV2Env } from "@/ai/v2/shared/env";

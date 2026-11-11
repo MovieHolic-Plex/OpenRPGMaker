@@ -6,7 +6,7 @@
 // 걸어 닿는 칸이 줄면(사람이 좁은 목을 막으면) 그 자리는 쓰지 않는다.
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import type { BuildRun } from "../shared/types";
-import { resolveSteps } from "./mysteryCase";
+import { resolveSteps } from "./mysteryCaseRead";
 import { reachableCells, unreachableEvents } from "../judge/eventReach";
 import { isRoadCell } from "../place/edgeExitRoads";
 

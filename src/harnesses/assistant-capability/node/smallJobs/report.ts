@@ -4,7 +4,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { JobResult } from './run';
-import { loadSuite } from './suite';
+import { loadSuite, suiteFileOfRun } from './suite';
 
 const esc = (text: unknown): string => String(text ?? '').replace(/[&<>"]/gu, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]!));
 const minutes = (ms: number): string => (ms / 60_000).toFixed(1);
@@ -53,7 +53,7 @@ function compareHtml(before: any, after: any, families: Record<string, string>):
   const failedBefore = was.filter(result => result.status !== 'pass');
   const regressions = was.filter(result => result.status === 'pass' && nowById.get(result.id) && nowById.get(result.id)!.status !== 'pass');
   const fixed = failedBefore.filter(result => nowById.get(result.id)?.status === 'pass').length;
-  const all = `<details><summary>30가지 전부 — 앞 → 지금(결과 · 호출 · 분)</summary><table class="cmp"><thead><tr><th>일</th><th>앞</th><th>지금</th></tr></thead><tbody>${was.map(old => { const cur = nowById.get(old.id); return `<tr><td>${esc(old.id)}</td><td>${badge(old.status)} <span class="muted">${cost(old)}</span></td><td>${cur ? badge(cur.status) : '-'} <span class="muted">${cost(cur)}</span></td></tr>`; }).join('')}</tbody></table></details>`;
+  const all = `<details><summary>${was.length}가지 전부 — 앞 → 지금(결과 · 호출 · 분)</summary><table class="cmp"><thead><tr><th>일</th><th>앞</th><th>지금</th></tr></thead><tbody>${was.map(old => { const cur = nowById.get(old.id); return `<tr><td>${esc(old.id)}</td><td>${badge(old.status)} <span class="muted">${cost(old)}</span></td><td>${cur ? badge(cur.status) : '-'} <span class="muted">${cost(cur)}</span></td></tr>`; }).join('')}</tbody></table></details>`;
   return `<h2>앞 실행과 견주기 — ${bc.pass}/${bc.jobs} → ${ac.pass}/${ac.jobs}</h2><p class="meta">앞: ${esc(String(before.startedAt).slice(0, 16))} UTC, main ${esc(before.git?.mainBase || '-')} · 지금: ${esc(String(after.startedAt).slice(0, 16))} UTC, main ${esc(after.git?.mainBase || '-')} · 같은 묶음 · 같은 모델 고정 · 같은 판정. 둘 다 한 번씩 돌린 것이라 일 하나의 뒤집힘에는 모델의 흔들림이 섞여 있다.</p>${head}` +
     `<h3>가족별 · 픽스처별 <span class="muted">통과 · 호출 중앙값 · 분 중앙값</span></h3><div class="two"><table class="cmp"><thead><tr><th>가족</th><th>앞</th><th>지금</th></tr></thead><tbody>${familyRows}</tbody></table><table class="cmp"><thead><tr><th>픽스처</th><th>앞</th><th>지금</th></tr></thead><tbody>${fixtureRows}</tbody></table></div>` +
     `<h3>앞에서 통과했는데 지금 통과하지 못한 일(회귀) <span class="muted">— ${regressions.length}건</span></h3>${regressions.length ? table(regressions) : '<p>없다.</p>'}` +
@@ -64,7 +64,9 @@ export function writeSmallJobsReport(options: { run?: string; html?: string; bef
   if (!options.run) throw Error('small-jobs-report --run <실행 폴더> [--html <출력.html>] [--before <견줄 앞 실행 폴더>]');
   const run = resolve(options.run);
   const summary = JSON.parse(readFileSync(resolve(run, 'summary.json'), 'utf8'));
-  const suite = loadSuite();
+  const suite = loadSuite(suiteFileOfRun(summary)), heading = suite.title ?? '작은 일 30가지';
+  // 「다시 재기」에 적을 묶음 고르기(--set) — 첫 묶음은 적지 않는다.
+  const setArg = (/small-jobs-(\d+)\.json$/u.exec(String(summary.suite ?? ''))?.[1] ?? '').replace(/^(\d+)$/u, ' --set $1');
   const results: JobResult[] = summary.jobs;
   const causes: Array<{ title: string; why: string; jobs: string[] }> = existsSync(resolve(run, 'causes.json')) ? JSON.parse(readFileSync(resolve(run, 'causes.json'), 'utf8')) : [];
   const byId = new Map(results.map(result => [result.id, result]));
@@ -94,7 +96,7 @@ export function writeSmallJobsReport(options: { run?: string; html?: string; bef
     : notPassed.length ? `<p class="muted">원인별 묶음(causes.json)이 없다 — 통과하지 못한 일을 판정 글 그대로 싣는다.</p>${notPassed.map(result => `<div class="ex"><div>${badge(result.status)} <b>${esc(result.id)}</b> <span class="req">${esc(result.request)}</span></div><p class="why">${esc(result.reason)}</p><p class="calls">${callLine(result)}</p></div>`).join('')}` : '<p>모두 통과했다.</p>';
   const uncovered = causes.length ? notPassed.filter(result => !causes.some(cause => cause.jobs.includes(result.id))) : [];
   const tables = families.map(family => `<h3>${esc(suite.families[family])} <span class="muted">${summary.perFamily[family].pass}/${summary.perFamily[family].jobs}</span></h3><table class="jobs"><thead><tr><th>일 · 요청</th><th>결과</th><th>까닭</th><th>턴 끝</th><th>호출</th><th>분</th><th>토큰 in/out</th><th>지시문 자</th><th>도구 수</th></tr></thead><tbody>${results.filter(result => result.family === family).map(jobRow).join('')}</tbody></table>`).join('');
-  const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>작은 일 30가지 — ${esc(summary.modelPin)} · ${esc(summary.assistantVersion)}</title><style>
+  const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(heading)} — ${esc(summary.modelPin)} · ${esc(summary.assistantVersion)}</title><style>
 :root{--bg:#fbfaf7;--fg:#1d1c1a;--mut:#6b675f;--line:#e2ded5;--card:#fff;--pass:#1f7a4a;--fail:#b3261e;--timeout:#9a6200;--infra:#5f6470;--passbg:#e3f3e9;--failbg:#fbe6e4;--timeoutbg:#fbeed2;--infrabg:#e9eaee}
 @media(prefers-color-scheme:dark){:root{--bg:#16161a;--fg:#ececec;--mut:#a09d96;--line:#33333a;--card:#1e1e24;--pass:#6fd39b;--fail:#ff8a80;--timeout:#f0b455;--infra:#aab0bd;--passbg:#173524;--failbg:#40201d;--timeoutbg:#3b2d10;--infrabg:#2a2c33}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}main{max-width:1180px;margin:0 auto;padding:28px 20px 80px}
@@ -108,7 +110,7 @@ table{border-collapse:collapse;width:100%;background:var(--card);border:1px soli
 .answer{white-space:pre-wrap;font-size:12.5px;color:var(--mut);border-left:2px solid var(--line);padding-left:8px}.cause{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 16px 12px;margin:12px 0}.ex{border-top:1px dashed var(--line);padding:8px 0 2px}.ex .why{margin:4px 0;max-width:none}pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow:auto;font-size:12.5px}
 .cmp td:first-child{width:auto}.cmp{margin:8px 0}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}@media(max-width:800px){.two{grid-template-columns:1fr}}
 </style></head><body><main>
-<h1>작은 일 30가지 — 조수 ${esc(summary.assistantVersion)} · ${esc(summary.model)}</h1>
+<h1>${esc(heading)} — 조수 ${esc(summary.assistantVersion)} · ${esc(summary.model)}</h1>
 <p class="meta">기준 main ${esc(summary.git.mainBase || '-')} · 머리 ${esc(summary.git.sha)} (${esc(summary.git.branch)}${summary.git.dirty ? ' · 작업 트리 변경 있음' : ''}) · ${esc(String(summary.startedAt).slice(0, 16))} ~ ${esc(String(summary.finishedAt).slice(0, 16))} UTC · 일마다 새 픽스처 · 한 턴(되물으면 「네가 판단해서 진행해 줘」 한 번) · 상한 ${summary.timeLimitMin}분 · 판정은 저장·재로드한 문서의 기계 검사(모델 판정자 없음)</p>
 <div class="tiles">${tile(`${c.pass} / ${c.jobs}`, '통과', `불합격 ${c.fail} · 시간 초과 ${c.timeout} · 기반 오류 ${c.infra}${flipped.length ? ` · 실행 때 판정은 ${results.filter(result => ((result as any).liveVerdict?.status ?? result.status) === 'pass').length} (아래 「판정에 대해 알아 둘 것」)` : ''}`)}${tile(`${c.complete} / ${c.jobs}`, '턴이 «완료»로 끝남', '조수 자신의 턴 끝 판정')}${tile(`${c.sideEdited ?? 0} / ${c.jobs}`, '요청 밖 변경이 있었던 일', '타이틀·엔딩·자료집·다른 이벤트 내용 등')}${tile(String(m.toolCalls), '도구 호출 중앙값', `합계 ${summary.totals.toolCalls}회`)}${tile(`${minutes(m.wallMs)}분`, '걸린 시간 중앙값', `합계 ${minutes(summary.totals.wallMs)}분`)}${tile(`${kilo(m.inputTokens)} / ${kilo(m.outputTokens)}`, '토큰 in / out 중앙값 (입력은 캐시 읽기 포함)', `합계 ${kilo(summary.totals.inputTokens)} / ${kilo(summary.totals.outputTokens)}`)}${tile(Number(m.systemPromptChars).toLocaleString('en'), '지시문 글자 중앙값', '첫 모델 호출')}${tile(String(m.toolsOffered), '처음 실린 도구 수 중앙값', m.toolSchemaChars ? `도구 설명 ${Number(m.toolSchemaChars).toLocaleString('en')}자` : '')}</div>
 ${options.before ? compareHtml(JSON.parse(readFileSync(resolve(resolve(options.before), 'summary.json'), 'utf8')), summary, suite.families) : ''}
@@ -119,8 +121,8 @@ ${options.before ? compareHtml(JSON.parse(readFileSync(resolve(resolve(options.b
 ${verdictNotes}
 <h2>일마다</h2>${tables}
 <h2>다시 재기</h2><pre>npm run -s build:fast &amp;&amp; node scripts/build-electron.mjs
-npm run harness -- assistant-capability small-jobs-selfcheck            # 판정기 자기검사(모델 없음)
-npm run harness -- assistant-capability small-jobs --model ${esc(summary.modelPin)}${summary.assistantVersion === 'v2' ? ' --v2' : ''} --out &lt;새 폴더&gt; [--only id,가족]
+npm run harness -- assistant-capability small-jobs-selfcheck${setArg}            # 판정기 자기검사(모델 없음)
+npm run harness -- assistant-capability small-jobs${setArg} --model ${esc(summary.modelPin)}${summary.assistantVersion === 'v2' ? ' --v2' : ''} --out &lt;새 폴더&gt; [--only id,가족]
 npm run harness -- assistant-capability small-jobs-report --run &lt;그 폴더&gt; --html &lt;출력.html&gt;</pre>
 <p class="meta">묶음: ${esc(summary.suite)} · 픽스처: ${Object.entries(suite.fixtures).map(([id, text]) => `${esc(id)} = ${esc(text)}`).join(' / ')}</p>
 </main></body></html>`;

@@ -16,10 +16,11 @@ import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize } from
 import { codeTerrainFor, usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
 import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
 import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
-import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs } from "../../place/builders/interior";
+import { interiorBuilder } from "../../place/builders/interior";
+import { adoptExactInterior, interiorAddAnchors, interiorEditFromArgs } from "../../place/builders/interiorRebuild";
 import { interiorStampEdit, type StampEditState } from "../../place/builders/interiorEdit";
 import type { PlacePatch, PlaceRecord, PlaceSpec } from "../../shared/types";
-import { blueprintMapFor } from "../../story/blueprintPath";
+import { blueprintMapFor } from "../../story/blueprintPathNames";
 import { isPlaceholderMap } from "../../blankStart";
 import { walkGame } from "../../story/makeGame";
 import { DUNGEON_LAYOUT_SCHEMA, LAYOUT_CRITIQUE_ROUNDS, LAYOUT_REPAIRS, VILLAGE_LAYOUT_SCHEMA, attachLayoutCritique, bboxDungeonSpec, bboxPlacesOn, bboxVillageSpec, dungeonLayoutCard, hasDungeonLayout, hasVillageLayout, layoutRejectText, layoutSession, toBboxTerrain, villageLayoutCard } from "../../place/builders/placeLayout";

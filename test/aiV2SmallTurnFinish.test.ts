@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools/types";
 import type { Project } from "@/project/types";
-import { createV2Tools } from "@/ai/v2/verbs";
+import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
 import { finishBuildPending, runFinishAutoBuild } from "@/ai/v2/finish/index";
 import { indexProject } from "@/ai/v2/loop/refs";
