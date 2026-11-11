@@ -58,20 +58,23 @@ function exitCell(project: Project, map: GameMap, data: Record<string, unknown>)
   return undefined;
 }
 
-function compose(run: BuildRun, world: WorldSetting, kind: WorldKind, name: string, seed0: number, exits: PlaceSpec["exits"]): { map?: GameMap; data: Record<string, unknown>; seed: number; error?: string } {
+function compose(run: BuildRun, world: WorldSetting, kind: WorldKind, name: string, seed0: number, exits: PlaceSpec["exits"], program?: PlaceSpec["program"]): { map?: GameMap; data: Record<string, unknown>; seed: number; error?: string } {
   const composer = world.composer!, c = kind.compose!;
   const tool = c.tool ?? composer.tool;
+  // 목적표(바깥 장소, 그 종류를 선언한 세계만): 맵 크기는 종류의 고정 크기가 아니라 목적표의 건물 수에서 나오고, 구성기는 그 역할 건물과 채움 집만 놓는다.
+  const planned = program && !kind.indoor && world.program?.decl.kinds[c.value] ? program : undefined;
+  const size = planned ? world.program!.size(c.value, planned) : { w: c.size[0], h: c.size[1] };
   let mapId: string | undefined;
   let error = "";
   for (let t = 0; t < SEED_TRIES; t++) {
     const seed = (seed0 + t * 97) % 9000 + 1;
     let res;
     // 다른 맵으로 나가는 변(바깥 장소만) — exits 를 받는 구성기가 그 변까지 길을 낸다.
-    const out = exits?.length && !kind.indoor && composer.exits ? { exits } : {};
+    const out = { ...(exits?.length && !kind.indoor && composer.exits ? { exits } : {}), ...(planned ? { program: planned } : {}) };
     if (composer.newMap && !mapId) res = run.call(tool, { [composer.param]: c.value, newMap: { name }, seed, ...out });
     else {
       if (!mapId) {
-        const made = run.call("create_map", { name, width: c.size[0], height: c.size[1], tilesetId: world.tilesetId });
+        const made = run.call("create_map", { name, width: size.w, height: size.h, tilesetId: world.tilesetId });
         mapId = (made.data as { mapId?: string } | undefined)?.mapId;
         if (!made.ok || !mapId) return { data: {}, seed, error: `create_map: ${String(made.summary ?? "").slice(0, 200)}` };
       }
@@ -88,6 +91,23 @@ function compose(run: BuildRun, world: WorldSetting, kind: WorldKind, name: stri
   return { data: {}, seed: seed0, error };
 }
 
+/** 들어오는 칸: 실내는 아래 출입구 틈(구성기 exits·doors, 없으면 맨 아래 걸음 칸), 바깥은 구성기 시작 칸. */
+function entryOf(project: Project, map: GameMap, kind: WorldKind, data: Record<string, unknown>): { entry: Cell; start?: Cell } {
+  const exits = (Array.isArray(data.exits) ? data.exits : []).map(cellOf).filter((c): c is Cell => walkable(project, map, c));
+  const start = [cellOf(data.start), cellOf(data.spawn)].find((c): c is Cell => walkable(project, map, c));
+  const entry = (kind.indoor ? exits[0] ?? exitCell(project, map, data) ?? lowestWalk(project, map) : start ?? exits[0] ?? lowestWalk(project, map)) ?? { x: 0, y: 0 };
+  return { entry, ...(start ? { start } : {}) };
+}
+
+/** 목적표가 짓는 방(place/programRooms.ts) — 세계의 실내 종류 하나를 구성기로 짓고 들어오는 칸을 돌려준다. 장소 기록·시작 자리는 건드리지 않는다. */
+export function composeWorldRoom(run: BuildRun, world: WorldSetting, kind: WorldKind, name: string, seed: number): { mapId: string; entrance: Cell } | { error: string } {
+  const made = compose(run, world, kind, name, seed, undefined);
+  if (!made.map) return { error: made.error ?? "" };
+  const map = run.ctx.project.maps[made.map.id]!;
+  if (map.name !== name) run.call("set_map_properties", { mapId: map.id, name });
+  return { mapId: map.id, entrance: entryOf(run.ctx.project, run.ctx.project.maps[map.id]!, kind, made.data).entry };
+}
+
 function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBuildResult {
   const first = run.calls.length;
   const fail = (summary: string): PlaceBuildResult => ({ ok: false, mapIds: previous?.result.mapIds ?? [], summary, warnings: [], missingArt: [], calls: run.calls.slice(first) });
@@ -96,17 +116,14 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const { world, kind } = parsed;
   if (previous) return fail(onePassRefusal(spec.name));
   if (!run.ctx.project.tilesets[world.tilesetId]) return fail(`this project has no ${world.tilesetId} chipset — the ${world.name} world cannot be built here.`);
-  const made = compose(run, world, kind, spec.name, spec.salt ?? 1, spec.exits);
+  const made = compose(run, world, kind, spec.name, spec.salt ?? 1, spec.exits, spec.program);
   if (!made.map) return fail(`${world.name} ${kind.id} «${spec.name}» could not be composed: ${made.error ?? ""}`);
   const mapId = made.map.id;
   if (made.map.name !== spec.name) run.call("set_map_properties", { mapId, name: spec.name });
   // 위험한 종류는 맵 성격을 적어 둔다 — 이름에 «도시»·«마을»이 들면(「폐허 도시」) 이름 추정이 마을로 보아 보이는 적을 거절했다.
   if (kind.danger) run.call("set_map_properties", { mapId, mapRole: kind.indoor ? "dungeon" : "field" });
   const project = run.ctx.project, map = project.maps[mapId]!;
-  // 들어오는 칸: 실내는 아래 출입구 틈(구성기 exits, 없으면 맨 아래 걸음 칸), 바깥은 구성기 시작 칸.
-  const exits = (Array.isArray(made.data.exits) ? made.data.exits : []).map(cellOf).filter((c): c is Cell => walkable(project, map, c));
-  const start = [cellOf(made.data.start), cellOf(made.data.spawn)].find((c): c is Cell => walkable(project, map, c));
-  const entry = (kind.indoor ? exits[0] ?? exitCell(project, map, made.data) ?? lowestWalk(project, map) : start ?? exits[0] ?? lowestWalk(project, map)) ?? { x: 0, y: 0 };
+  const { entry, start } = entryOf(project, map, kind, made.data);
   const startMap = project.maps[project.startMapId];
   if (project.startMapId !== mapId && (!startMap || isUntouchedMap(startMap))) {
     const spot = start ?? entry;
