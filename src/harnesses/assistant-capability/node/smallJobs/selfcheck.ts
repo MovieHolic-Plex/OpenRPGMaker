@@ -6,8 +6,9 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Project } from '../../../../project/types';
 import { runCheck, type Verdict } from './checks';
+import { cloneDoc } from './checkSupport';
 import { buildFixture, type FixtureId } from './fixtures';
-import { applyCalls, loadSuite, selectJobs, type SmallJob } from './suite';
+import { applyCalls, loadSuite, selectJobs, suiteFile, suiteLabel, type SmallJob } from './suite';
 
 type Row = { id: string; family: string; fixture: string; sound: boolean; problems: string[]; untouched: string; reference: string; wrongs: Array<{ note: string; verdict: string }>; damaged: string };
 const brief = (verdict: Verdict): string => `${verdict.pass ? 'PASS' : 'FAIL'} — ${verdict.reason}`.slice(0, 260);
@@ -26,7 +27,7 @@ function vandalize(job: SmallJob, fixture: Project, reference: Project): { proje
 
 function checkJob(job: SmallJob, fixture: Project): Row {
   const problems: string[] = [];
-  const untouched = runCheck(job.check, job.allow, fixture, structuredClone(fixture));
+  const untouched = runCheck(job.check, job.allow, fixture, cloneDoc(fixture));
   if (untouched.pass) problems.push(`손대지 않은 픽스처가 합격했다: ${untouched.reason}`);
   let reference: Verdict | null = null, referenceDoc: Project | null = null;
   try {
@@ -62,24 +63,24 @@ function checkJob(job: SmallJob, fixture: Project): Row {
   return { id: job.id, family: job.family, fixture: job.fixture, sound: problems.length === 0, problems, untouched: brief(untouched), reference: reference ? brief(reference) : '적용 실패', wrongs, damaged };
 }
 
-export async function runSmallJobsSelfcheck(out: string | undefined, only: string | undefined): Promise<number> {
-  const suite = loadSuite();
+export async function runSmallJobsSelfcheck(out: string | undefined, only: string | undefined, set?: string): Promise<number> {
+  const file = suiteFile(set), suite = loadSuite(file);
   const jobs = selectJobs(suite, only);
   const fixtures = new Map<FixtureId, Project>();
   const rows = jobs.map(job => {
     if (!fixtures.has(job.fixture)) fixtures.set(job.fixture, buildFixture(job.fixture));
-    const row = checkJob(job, structuredClone(fixtures.get(job.fixture)!));
+    const row = checkJob(job, cloneDoc(fixtures.get(job.fixture)!));
     console.log(`${row.sound ? 'ok  ' : 'FAIL'} ${row.id}${row.sound ? '' : ` :: ${row.problems.join(' / ')}`}`);
     return row;
   });
   const sound = rows.filter(row => row.sound).length;
   const table = ['| 일 | 가족 | 픽스처 | 손대지 않음 | 손 정답 | 오답 | 정답+파괴 | 판정 |', '|---|---|---|---|---|---|---|---|',
     ...rows.map(row => `| ${row.id} | ${row.family} | ${row.fixture} | ${row.untouched.startsWith('FAIL') ? 'FAIL ✓' : 'PASS ✗'} | ${row.reference.startsWith('PASS') ? 'PASS ✓' : 'FAIL ✗'} | ${row.wrongs.filter(wrong => wrong.verdict.startsWith('FAIL')).length}/${row.wrongs.length} FAIL | ${row.damaged.includes('FAIL') ? 'FAIL ✓' : '✗'} | ${row.sound ? 'sound' : `**unsound** — ${row.problems.join(' / ')}`} |`)].join('\n');
-  console.log(`\nsmall-jobs selfcheck: ${sound}/${rows.length} sound`);
+  console.log(`\nsmall-jobs selfcheck(${suiteLabel(file)}): ${sound}/${rows.length} sound`);
   if (out) {
     mkdirSync(out, { recursive: true });
-    writeFileSync(resolve(out, 'selfcheck.json'), JSON.stringify({ schemaVersion: 1, kind: 'assistant-small-jobs-selfcheck', jobs: rows.length, sound, rows }, null, 2));
-    writeFileSync(resolve(out, 'SELFCHECK.md'), `# 작은 일 판정기 자기검사\n\n${sound}/${rows.length} sound — 손대지 않은 픽스처는 불합격, 손 정답(실제 도구 호출)은 합격, 오답과 「정답+시키지 않은 파괴」는 불합격이어야 한다.\n\n${table}\n`);
+    writeFileSync(resolve(out, 'selfcheck.json'), JSON.stringify({ schemaVersion: 1, kind: 'assistant-small-jobs-selfcheck', suite: suiteLabel(file), jobs: rows.length, sound, rows }, null, 2));
+    writeFileSync(resolve(out, 'SELFCHECK.md'), `# 작은 일 판정기 자기검사 — ${suiteLabel(file)}\n\n${sound}/${rows.length} sound — 손대지 않은 픽스처는 불합격, 손 정답(실제 도구 호출)은 합격, 오답과 「정답+시키지 않은 파괴」는 불합격이어야 한다.\n\n${table}\n`);
     console.log(`${resolve(out, 'SELFCHECK.md')}`);
   }
   return sound === rows.length ? 0 : 1;

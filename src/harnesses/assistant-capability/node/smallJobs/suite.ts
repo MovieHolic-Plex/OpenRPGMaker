@@ -1,14 +1,28 @@
-// 작은 일 묶음(harness-data/assistant-capability/small-jobs.json) 읽기·구조 검사·정답 적용.
-import { readFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+// 작은 일 묶음(harness-data/assistant-capability/small-jobs.json · 둘째 묶음 small-jobs-2.json) 읽기·구조 검사·정답 적용.
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runTool } from '../../../../editor/tools/toolRunner';
 import type { Project } from '../../../../project/types';
 import { CHECK_KINDS, type Allow, type CheckSpec } from './checks';
+import { cloneDoc } from './checkSupport';
 import { FIXTURE_IDS, type FixtureId } from './fixtures';
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../..');
 export const SUITE_FILE = resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs.json');
+/** `--set <번호>` 로 고르는 묶음. 1 = 처음 30가지(기준선 비교의 기준 — id·순서·판정을 바꾸지 않는다), 2 = 둘째 묶음(새 가족). */
+const SUITE_SETS: Record<string, string> = { '1': SUITE_FILE, '2': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-2.json') };
+export function suiteFile(set: string | undefined): string {
+  const file = SUITE_SETS[set ?? '1'];
+  if (!file) throw Error(`--set ${set}: 없는 묶음(있는 것: ${Object.keys(SUITE_SETS).join(', ')})`);
+  return file;
+}
+/** 실행 요약(summary.json)이 적어 둔 묶음 파일. 옛 실행(적어 두지 않음·파일 없음)은 첫 묶음이다. */
+export function suiteFileOfRun(summary: { suite?: string }): string {
+  const file = summary.suite ? resolve(REPO_ROOT, summary.suite) : SUITE_FILE;
+  return existsSync(file) ? file : SUITE_FILE;
+}
+export const suiteLabel = (file: string): string => relative(REPO_ROOT, file);
 
 export type ToolCall = { tool: string; args: Record<string, unknown> };
 export type SmallJob = {
@@ -28,12 +42,12 @@ export type SmallJob = {
   wrong: Array<{ note: string; calls: ToolCall[] }>;
   note?: string;
 };
-export type SmallJobSuite = { schemaVersion: 1; kind: 'assistant-small-jobs'; description: string; autoAnswer: string; fixtures: Record<string, string>; families: Record<string, string>; jobs: SmallJob[] };
+export type SmallJobSuite = { schemaVersion: 1; kind: 'assistant-small-jobs'; /** 보고서 머리글. 없으면 「작은 일 30가지」. */ title?: string; description: string; autoAnswer: string; fixtures: Record<string, string>; families: Record<string, string>; jobs: SmallJob[] };
 
 export function loadSuite(file = SUITE_FILE): SmallJobSuite {
   const suite = JSON.parse(readFileSync(file, 'utf8')) as SmallJobSuite;
   const problems = suiteProblems(suite);
-  if (problems.length) throw Error(`small-jobs.json 구조 문제:\n${problems.join('\n')}`);
+  if (problems.length) throw Error(`${suiteLabel(file)} 구조 문제:\n${problems.join('\n')}`);
   return suite;
 }
 
@@ -67,7 +81,7 @@ export function selectJobs(suite: SmallJobSuite, only: string | undefined): Smal
 
 /** 도구 호출 순서를 실제 편집기 도구로 적용한 문서. 한 호출이라도 거절되면 던진다(정답은 도구가 받아야 한다). */
 export function applyCalls(project: Project, calls: readonly ToolCall[]): Project {
-  const context: any = { project: structuredClone(project), currentMapId: (project as any).startMapId, assistantRun: false };
+  const context: any = { project: cloneDoc(project), currentMapId: (project as any).startMapId, assistantRun: false };
   for (const call of calls) {
     const result: any = runTool(context, call.tool, structuredClone(call.args));
     if (!result.ok) throw Error(`${call.tool} 거절: ${String(result.summary).slice(0, 300)}`);

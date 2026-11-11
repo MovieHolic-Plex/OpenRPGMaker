@@ -7,7 +7,7 @@ import { createBlankProject } from '../../../../project/defaults';
 import type { Project } from '../../../../project/types';
 import { runCheck } from './checks';
 import { decide, writeRunSummary, type JobResult } from './run';
-import { loadSuite } from './suite';
+import { loadSuite, suiteFileOfRun } from './suite';
 
 /** 타일셋 본문을 뺀 저장 문서 + 번들 타일셋 → 판정에 넣을 문서. */
 function restore(file: string): Project {
@@ -18,7 +18,7 @@ export function rescoreSmallJobs(options: { run?: string }): number {
   if (!options.run) throw Error('small-jobs-rescore --run <실행 폴더>');
   const root = resolve(options.run);
   const summary = JSON.parse(readFileSync(resolve(root, 'summary.json'), 'utf8'));
-  const jobs = new Map(loadSuite().jobs.map(job => [job.id, job]));
+  const jobs = new Map(loadSuite(suiteFileOfRun(summary)).jobs.map(job => [job.id, job]));
   let flipped = 0, skipped = 0;
   const results: JobResult[] = (summary.jobs as JobResult[]).map(live => {
     const dir = resolve(root, 'jobs', live.id), job = jobs.get(live.id);
