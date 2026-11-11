@@ -3,7 +3,7 @@ import type { FinishStage } from "../types";
 import { createBuildRun } from "../../shared/buildRun";
 import { alignClueObjects } from "../../story/clueObjects";
 import { settleFurnitureSpots } from "../../story/examineSpot";
-import { refreshRemainingClues } from "../../story/mysteryCase";
+import { refreshRemainingClues } from "../../story/mysteryClues";
 
 export const stage: FinishStage = {
   id: "furniture-spots", phase: "blueprint", order: 70,

@@ -1,5 +1,5 @@
 // 이름을 다른 파일에서 끌어오게 임포트를 고쳐 쓴다(선언을 옮긴 뒤에 돌린다).
-// usage: bun reimport.mts <repo> <fromFile> <toFile> <name> [name…]     (파일은 저장소 기준 경로, 예: src/ai/v2/verbs.ts)
+// usage: bun reimport.mts <repo> <fromFile> <toFile> <name> [name…]     (파일은 저장소 기준 경로, 예: src/ai/v2/tools/verbs.ts)
 import { readFileSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join, relative, normalize } from "node:path";

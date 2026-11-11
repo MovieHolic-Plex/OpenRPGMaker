@@ -2,7 +2,7 @@
 // 실행기(scripts/lib/assistantV2Runtime.ts)는 이것을 runPiAgent 에 끼우기만 한다. 2026-11-11 리팩토링 R3.
 import type { PiAgentRequest } from "../../piAgent/protocol";
 import type { PiAssistantV2Hooks } from "../shared/env";
-import { unknownToolText } from "../toolExposure";
+import { unknownToolText } from "../tools/toolExposure";
 import { turnAfterMain } from "./afterMain";
 import { turnAutoBuild } from "./autoBuild";
 import { createTurnContext, type TurnIo, type TurnOptions } from "./context";

@@ -67,7 +67,7 @@ export interface PiAssistantV2Env {
   /** 다음 지시 앞에서 대화 기록을 비운다(한 번). 화면 검수 고치기 차례가 긴 실행의 문맥을 다시 싣지 않게(J78). 시스템 지시는 그대로. */
   readonly freshContextNextTurn?: () => void;
   /**
-   * 도구 하나를 이 실행의 도구 목록에 더한다 — 다음 모델 호출부터 선언된다(load_tools, src/ai/v2/toolExposure.ts). 실행기가 감싸개(wrapTool)를 씌운다.
+   * 도구 하나를 이 실행의 도구 목록에 더한다 — 다음 모델 호출부터 선언된다(load_tools, src/ai/v2/tools/toolExposure.ts). 실행기가 감싸개(wrapTool)를 씌운다.
    * 없으면(시험·덤프) load_tools 는 도구 글만 돌려준다.
    */
   readonly declareTool?: (tool: PiToolShape) => void;
