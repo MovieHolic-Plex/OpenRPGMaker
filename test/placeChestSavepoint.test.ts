@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { CHEST_OPEN_SE, LOOT_GOLD_SE, LOOT_ITEM_SE } from "@/editor/lootFeedback";
 import { getTool } from "@/editor/tools";
+import { resolveCc0IconAssetUrl } from "@/assets/cc0IconAssets";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 
@@ -103,6 +104,56 @@ describe("place_chest", () => {
     const { project, mapId } = projectWithMap();
     const result = getTool("place_chest")!.run(project, { mapId, x: 3, y: 3, contents: { itemId: "item_없는것" } });
     expect(result.warnings?.some((warning) => warning.includes("item_없는것"))).toBe(true);
+  });
+});
+
+// 2026-11-11 작은 일 재측정(pickup-key-built): 「바닥에 열쇠가 떨어져 있게」 를 조수는 draw_object(공방 카드 대기) + 투명 이벤트로 만들어 칸에 보이는 것이 없었다.
+describe("place_chest look:item — 바닥에 놓인 물건", () => {
+  const eventOf = (project: Project, mapId: string, result: { data?: unknown }) =>
+    project.maps[mapId].events.find((entry) => entry.id === (result.data as { eventId: string }).eventId)!;
+
+  it("아이템 아이콘이 칸에 보이고, 주우면 한 번만 주고 그림과 막음이 사라진다", () => {
+    const { project, mapId } = projectWithMap();
+    const item = project.database.items.find((entry) => !!entry.iconResourceId && !!resolveCc0IconAssetUrl(entry.iconResourceId))!;
+    const result = getTool("place_chest")!.run(project, { mapId, x: 3, y: 3, contents: { itemId: item.id }, look: "item" });
+    expect(result.summary).toContain(item.name);
+    expect(result.summary).not.toContain("보물상자");
+    const [lying, taken] = eventOf(project, mapId, result).pages!;
+    expect(lying.conditions).toEqual([{ kind: "selfSwitch", key: "A", value: false }]);
+    expect(lying.graphic).toEqual({ sprite: { type: "bundled", id: item.iconResourceId } });
+    expect(lying.trigger).toEqual({ kind: "action" });
+    expect(lying.commands.map((command) => command.kind)).toEqual(["playAudio", "changeItem", "text", "setSelfSwitch"]);
+    expect(lying.commands.find((command) => command.kind === "changeItem")).toMatchObject({ itemId: item.id, op: "+=", amount: 1 });
+    expect((lying.commands.find((command) => command.kind === "text") as { body: string }).body).toContain("주웠다");
+    expect(taken.conditions).toEqual([{ kind: "selfSwitch", key: "A", value: true }]);
+    expect(taken.graphic).toEqual({ transparent: true });
+    expect(taken.priority).toBe("below");
+    expect(taken.commands).toEqual([]);
+  });
+
+  it("돈만 놓으면 주머니 그림이다", () => {
+    const { project, mapId } = projectWithMap();
+    const result = getTool("place_chest")!.run(project, { mapId, x: 3, y: 3, contents: { gold: 30 }, look: "item" });
+    const [lying] = eventOf(project, mapId, result).pages!;
+    expect(lying.graphic).toEqual({ sprite: { type: "bundled", id: "cc0-jetrel-coin-pouch" } });
+    expect(lying.commands.map((command) => command.kind)).toEqual(["playAudio", "changeGold", "text", "setSelfSwitch"]);
+  });
+
+  it("아이콘이 없는 물건은 주머니 그림으로 놓고 그렇게 알린다", () => {
+    const { project, mapId } = projectWithMap();
+    const item = project.database.items[0]!;
+    delete item.iconResourceId;
+    delete item.imageResourceId;
+    const result = getTool("place_chest")!.run(project, { mapId, x: 3, y: 3, contents: { itemId: item.id }, look: "item" });
+    expect(eventOf(project, mapId, result).pages![0].graphic).toEqual({ sprite: { type: "bundled", id: "cc0-jetrel-coin-pouch" } });
+    expect(result.warnings?.some((warning) => warning.includes("아이콘이 없어"))).toBe(true);
+  });
+
+  it("look 을 안 주면 보물상자 그대로다", () => {
+    const { project, mapId } = projectWithMap();
+    const result = getTool("place_chest")!.run(project, { mapId, x: 3, y: 3, contents: { gold: 30 } });
+    expect(result.summary).toContain("보물상자");
+    expect(eventOf(project, mapId, result).pages![0].commands.some((command) => command.kind === "setEventGraphicPattern")).toBe(true);
   });
 });
 
