@@ -55,7 +55,7 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 | 장소 하나(`place`) | 장소 카드 전부 + 게임 카드는 **늘 싣는 줄과 요청이 말한 주제의 줄만** | 전과 같다 |
 | 작은 일(고치기·질문·소리·게임 하나를 잇지 않는 이어 하기) | 핵심 지시 + 그 일의 카드만: 사람을 세우면 People, 사건·대사를 짜면 Events, 옮기기·지우기·질문이면 둘 다 없음. 장소 카드는 색인 한 줄(`read_specs`) | `request/topics.ts` `smallJobTools` — 늘 싣는 13개(놓기·옮기기·지우기·읽기·`ask_user`·`read_specs`) → 사건 쓰기(`upsert_event`) → 주제가 부른 것 → 사람 2개 → 나머지 사건 3개 순. **19개 + `load_tools`** 와 글자 상한(`toolExposure.ts` `SMALL_TOOL_CHARS` 34,000자 + `load_tools`)을 넘기면 뒤가 필요할 때로 밀린다 |
 
-- **주제**(`request/topics.ts` `TOPIC_WORDS` + 전투 판정, 31개): 게임 카드(`game.ts` `GAME_LINES`)의 줄마다 주제 표지가 붙었다 — `core`(늘) · `items` · `equipment` · `battle` · `gates` · `weather` · `snow` · `forest` … 작은 일과 장소 하나에는 `core` 와 걸린 주제의 줄만 싣는다. 「Fallen-Star-style jobs」 머리줄은 그 아래 줄이 하나라도 실릴 때만 붙는다.
+- **주제**(`request/topics.ts` `TOPIC_WORDS` + 전투 판정, 31개): 게임 카드(`prompt/gameCard.ts` `GAME_LINES`)의 줄마다 주제 표지가 붙었다 — `core`(늘) · `items` · `equipment` · `battle` · `gates` · `weather` · `snow` · `forest` … 작은 일과 장소 하나에는 `core` 와 걸린 주제의 줄만 싣는다. 「Fallen-Star-style jobs」 머리줄은 그 아래 줄이 하나라도 실릴 때만 붙는다.
 - **작은 일은 빈 프로젝트에서도 작은 일이다.** 전에는 빈 프로젝트의 모든 요청이 장소 카드 전부를 받았다. 이제 시킨 일이 분명하면(`…세워 줘`·`옮겨 줘`) 작은 일이고, 시킨 일 없이 묘사만 온 글(「폐업 직전 태엽 장난감 가게」 — `scope.bareDescription`)과 빈 프로젝트의 「계속」만 첫 장소를 짓는 시작으로 본다.
 - **필요할 때 싣는 것**: `write_blueprint` `build_blueprint_path` `make_place` `edit_place` `review_layout` `set_project_settings` 와 오프닝 도구는 작은 일에 처음부터 싣지 않는다. 이름은 `load_tools` 설명에 뜨고, 이름으로 부르면 그 자리에서 실린다(있는 도구는 그대로다 — 싣는 때만 바뀌었다). 엔딩·전투·상자·이어 주기처럼 요청이 주제를 말하면 그 도구(`define_ending`·`upsert_troop`·`place_chest`·`create_transfer_pair`…)는 처음부터 실린다.
 - **실내 칩셋 목록**(약 1.6만 자)은 실내 방을 짓거나 고치는 요청에만 실린다. 작은 일에는 싣지 않는다(「상점 주인」의 「상점」은 방을 짓는 말이 아니다).

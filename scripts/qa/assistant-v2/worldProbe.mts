@@ -7,7 +7,7 @@ import { createBlankProject } from "../../../src/project/defaults/blankProject.t
 import { renderMapPng } from "../../qa-game/render.mts";
 import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
-import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt.ts";
+import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt/systemPrompt.ts";
 import { WORLDS, pickWorld, type WorldSetting } from "../../../src/ai/v2/world.ts";
 import { countMaps } from "../../../src/ai/v2/mapCount.ts";
 import { walkGame } from "../../../src/ai/v2/makeGame.ts";

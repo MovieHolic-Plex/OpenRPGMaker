@@ -1,6 +1,6 @@
 // 읽기·묻기 동사 — read_specs · room_parts · inspect · restore_event · ask_user · ask_helpers.
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
-import { PLACE_SPEC_KINDS } from "../../prompt";
+import { PLACE_SPEC_KINDS } from "../../prompt/placeSpecs";
 import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
 import { createBuildRun } from "../../buildRun";
 import { builderFor } from "../../place/builders";

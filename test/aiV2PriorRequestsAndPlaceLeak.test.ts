@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { priorRequestsNote } from "@/ai/v2/priorRequests";
+import { priorRequestsNote } from "@/ai/v2/prompt/priorRequests";
 import { defaultPlaceLeaks } from "@/ai/v2/shipChecks";
 import { wantsWholeGame } from "@/ai/v2/request/readers";
 import { createBlankProject } from "@/project/defaults";

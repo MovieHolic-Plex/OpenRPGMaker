@@ -6,7 +6,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { wantsWholeGame } from "../../../src/ai/v2/request/readers.ts";
-import { priorRequestsNote } from "../../../src/ai/v2/priorRequests.ts";
+import { priorRequestsNote } from "../../../src/ai/v2/prompt/priorRequests.ts";
 import { composePiTask } from "../../../src/ai/piAgent/executionRoute.ts";
 
 const suite = process.argv[2] ?? path.join(os.homedir(), "z-project/assistant-whole-game/suite");

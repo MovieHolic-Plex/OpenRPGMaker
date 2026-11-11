@@ -51,7 +51,7 @@ describe("게임 짓기 규칙 — 단일 소스", () => {
 
   it("조수 소스는 원문을 복사하지 않고 상수를 읽는다", () => {
     const sources: readonly [string, string, string][] = [
-      ["src/ai/v2/prompt.ts", "TODO_LOOP_LINE", TODO_LOOP_LINE],
+      ["src/ai/v2/prompt/core.ts", "TODO_LOOP_LINE", TODO_LOOP_LINE],
       ["src/ai/v2/tools/verbs/puzzle.ts", "SET_OBJECTIVE_DESCRIPTION", SET_OBJECTIVE_DESCRIPTION],
       ["src/ai/v2/judge/discoverability.ts", "OBJECTIVE_MISSING_MESSAGE", OBJECTIVE_MISSING_MESSAGE],
       ["src/ai/v2/judge/discoverability.ts", "OBJECTIVE_NOT_AT_START_MESSAGE", OBJECTIVE_NOT_AT_START_MESSAGE],
