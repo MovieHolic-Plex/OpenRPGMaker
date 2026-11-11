@@ -32,6 +32,14 @@ describe("dbRecordValues 수용 기준", () => {
     expect(evaluate(project, [{ kind: "dbRecordValues", collection: "enemies", recordId, fields: { "stats.maxHp": 300 } }]).passed).toBe(true);
   });
 
+  it("모델이 보내는 문자열 값(\"300\")도 저장된 숫자 300 과 같게 본다 — 스키마가 단일 string 타입이다", () => {
+    const { project, recordId } = slimeProject();
+    project.database.enemies[0].stats.maxHp = 300;
+    expect(evaluate(project, [{ kind: "dbRecordValues", collection: "enemies", recordId, fields: { "stats.maxHp": "300" } }]).passed).toBe(true);
+    expect(evaluate(project, [{ kind: "dbRecordValues", collection: "enemies", recordId, fields: { "stats.maxHp": "301" } }]).passed).toBe(false);
+    expect(ACCEPTANCE_CRITERIA_SCHEMA.items.properties.fields.additionalProperties.type).toBe("string");
+  });
+
   it("값이 그대로면 통과하지 않는다 — 문구가 아니라 저장소를 본다", () => {
     const { project, recordId, baselineHp } = slimeProject();
     const result = evaluate(project, [{ kind: "dbRecordValues", collection: "enemies", recordId, fields: { "stats.maxHp": 300 } }]);

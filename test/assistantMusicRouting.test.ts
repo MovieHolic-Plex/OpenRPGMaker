@@ -7,6 +7,10 @@ import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { expandStoreMusicQuery } from "@/assetStore/storeMusicPick";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const gameLines = (...args: Parameters<typeof gameContentProblems>): string[] => gameContentProblems(...args).map(findingLine);
 
 const MUSIC_REQUESTS = [
   "테일즈런너처럼 신나는 거 마을에 깔아 줘",
@@ -107,8 +111,8 @@ describe("set_game_audio ending", () => {
     const cmd = (ev.pages?.[0]?.commands ?? ev.commands ?? []).find((c) => c.kind === "ending");
     expect(cmd?.presentation?.musicResourceId).toBe("end_song");
     const task = "투더문처럼 잔잔하게 엔딩곡";
-    expect(gameContentProblems(before, before, task).some((p) => p.includes("[게임 검사 음악]"))).toBe(true);
-    expect(gameContentProblems(before, ctx.project, task).some((p) => p.includes("[게임 검사 음악]"))).toBe(false);
+    expect(gameLines(before, before, task).some((p) => p.includes("[게임 검사 음악]"))).toBe(true);
+    expect(gameLines(before, ctx.project, task).some((p) => p.includes("[게임 검사 음악]"))).toBe(false);
   });
 
   it("endingIds picks endings and is rejected for other roles", () => {

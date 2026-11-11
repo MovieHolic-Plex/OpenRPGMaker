@@ -16,6 +16,10 @@ import { installedMusicSwaps, isAutoMusicChoice, storeCardFromEvent } from "@/ed
 import { storeAutoInstallEnabled } from "@/editor/assetStore/storeHint";
 import type { StoreMusicChoice } from "@/editor/tools/storeTools";
 import type { PiAgentEvent } from "@/ai/piAgent/protocol";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const gameLines = (...args: Parameters<typeof gameContentProblems>): string[] => gameContentProblems(...args).map(findingLine);
 
 const ogg = (n: number): Uint8Array => new Uint8Array([0x4f, 0x67, 0x67, 0x53, 0, 2, n, 0, 0, 0]);
 const sha = (n: number): string => n.toString(16).padStart(64, "0");
@@ -221,19 +225,19 @@ describe("v2 finish check", () => {
     ctx.project.assets.uploaded.boss_song = { id: "boss_song", name: "보스곡", kind: "music", dataUrl: "data:audio/ogg;base64,T2dnUwACAAAAAAAAAAA=", meta: {} };
     const before = structuredClone(ctx.project);
     expect(runTool(ctx, "set_game_audio", { role: "boss", resourceId: "boss_song" }, { dryRun: false }).ok).toBe(true);
-    expect(gameContentProblems(before, ctx.project, "보스전 음악 긴장감 있게 바꿔줘").join("\n")).not.toMatch(/게임 검사 전투/);
+    expect(gameLines(before, ctx.project, "보스전 음악 긴장감 있게 바꿔줘").join("\n")).not.toMatch(/게임 검사 전투/);
     // 새로 저작한 전투는 여전히 본다.
     const fresh = structuredClone(before);
     fresh.maps.m_cave!.events = [];
-    expect(gameContentProblems(fresh, ctx.project, "드래곤 보스전 만들어 줘").join("\n")).toMatch(/게임 검사 전투/);
+    expect(gameLines(fresh, ctx.project, "드래곤 보스전 만들어 줘").join("\n")).toMatch(/게임 검사 전투/);
   });
 
   it("does not ask for a playAudio event when the request was met by binding map/system music", () => {
     const before = createEmptyToolProject();
     const after = structuredClone(before);
     after.system.battleBgmResourceId = "store_x__boss";
-    expect(gameContentProblems(before, after, "보스전 음악 바꿔줘").join("\n")).not.toMatch(/게임 검사 음악/);
-    expect(gameContentProblems(before, structuredClone(before), "보스전 음악 바꿔줘").join("\n")).toMatch(/게임 검사 음악/);
+    expect(gameLines(before, after, "보스전 음악 바꿔줘").join("\n")).not.toMatch(/게임 검사 음악/);
+    expect(gameLines(before, structuredClone(before), "보스전 음악 바꿔줘").join("\n")).toMatch(/게임 검사 음악/);
   });
 });
 

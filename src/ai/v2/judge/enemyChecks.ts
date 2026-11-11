@@ -5,6 +5,7 @@
 // 도구 호출 기록이 아니라 프로젝트 데이터로만 판정한다 — 빌더 적을 upsert_enemy 로 고쳐도 통과로 센다. 전투가 없는 게임은 대상이 아니다.
 import type { Project } from "@/project/types";
 import { allCommands } from "./combatChecks";
+import { tagged, type Finding } from "./finding";
 
 const BOSS_WORDS = /boss|보스|마왕|魔王|드래곤|dragon|용왕|수문장|두목|우두머리|군주/iu;
 const isBasicAttack = (skillId: string, name: string): boolean => skillId === "skill_attack" || /_attack$/u.test(skillId) || name === "공격";
@@ -71,8 +72,8 @@ function spareSkills(project: Project, taken: ReadonlySet<string>, limit: number
  * 안내문은 적 id 와 아직 쓰이지 않은 기존 기술 후보를 보여 upsert_enemy 한 번(적마다)으로 풀리게 한다 — upsert_skill 은 새 기술이 필요할 때만.
  * 실측: 안내문이 upsert_skill 부터 시킨 판은 스키마 오류 6번에 막혔다(upsert_enemy 는 한 번도 안 불렸다).
  */
-export function enemyIdentityProblems(project: Project): string[] {
-  const problems: string[] = [];
+export function enemyIdentityProblems(project: Project): Finding[] {
+  const problems: Finding[] = [];
   const seen = new Set<string>();
   for (const [mapId, troopIds] of troopIdsByMap(project)) {
     const foes = foesOf(project, troopIds);
@@ -90,7 +91,7 @@ export function enemyIdentityProblems(project: Project): string[] {
     const flatKey = flatBosses.map(key).join(",");
     if (flatBosses.length && !seen.has(`b:${flatKey}`)) {
       seen.add(`b:${flatKey}`);
-      problems.push(`[게임 검사 적 개성] ${where} 보스 ${flatBosses.slice(0, 3).map((f) => `「${f.name}」(${key(f)})`).join(", ")} 이 그 맵 일반 적과 겹치지 않는 자기 기술이 없다(기본 공격뿐이거나 졸개와 같은 기술) — ${fix(flatBosses.slice(0, 3).map(key).join("|"), mobSkills)}.`);
+      problems.push(tagged("game", "적 개성", `${where} 보스 ${flatBosses.slice(0, 3).map((f) => `「${f.name}」(${key(f)})`).join(", ")} 이 그 맵 일반 적과 겹치지 않는 자기 기술이 없다(기본 공격뿐이거나 졸개와 같은 기술) — ${fix(flatBosses.slice(0, 3).map(key).join("|"), mobSkills)}.`));
     }
     const ownSkill = (f: Foe) => [...f.skills].some((s) => mobs.every((o) => o === f || !o.skills.has(s)));
     const lacking = mobs.length >= 2 ? mobs.filter((f) => !ownSkill(f)) : [];
@@ -99,7 +100,7 @@ export function enemyIdentityProblems(project: Project): string[] {
       const k = `m:${dup.map(key).join(",")}`;
       if (!seen.has(k)) {
         seen.add(k);
-        problems.push(`[게임 검사 적 개성] ${where} 일반 적 ${mobs.length}종 중 ${dup.map((f) => `「${f.name}」(${key(f)})`).join(", ")} 은 다른 적이 안 가진 자기 기술이 없다(기술이 같거나 다른 적의 일부뿐) — 적 종류마다 자기 기술 하나는 있어야 한다. ${fix(dup.slice(0, 2).map(key).join("|"), new Set(foes.flatMap((f) => [...f.skills])))}.`);
+        problems.push(tagged("game", "적 개성", `${where} 일반 적 ${mobs.length}종 중 ${dup.map((f) => `「${f.name}」(${key(f)})`).join(", ")} 은 다른 적이 안 가진 자기 기술이 없다(기술이 같거나 다른 적의 일부뿐) — 적 종류마다 자기 기술 하나는 있어야 한다. ${fix(dup.slice(0, 2).map(key).join("|"), new Set(foes.flatMap((f) => [...f.skills])))}.`));
       }
     }
   }

@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { battleDataEmptied, unaskedChanges } from "@/ai/v2/judge/sideEffectChecks";
 import type { Project } from "@/project/types";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const unaskedLines = (...args: Parameters<typeof unaskedChanges>): string[] => unaskedChanges(...args).map(findingLine);
 
 // 2026-10-25 장난감 가게 고치기 4턴: 「메뉴의 스킬·장비·파티도 빼 줘」에 주인공 기술·직업 전투 데이터를 비웠고, 「파티」「스킬」 낱말 면제로 못 잡았다.
 const T4 = "엔딩 카드 본문에 「노장인 제페토:」 이름표가 그대로 붙어 나와. 이름표 없이 이야기처럼 써 줘. 선택지의 「(엔딩)」 메모와 메뉴의 스킬·장비·파티도 빼 줘. 전투 없는 이야기인데 하트 체력 514/514 가 보이니 지워 줘.";
@@ -24,7 +28,7 @@ function emptied() {
 describe("menu requests never empty actor/class battle data", () => {
   it("flags the T4 case even though the request says 파티·스킬", () => {
     const { before, after } = emptied();
-    const out = unaskedChanges(before, after, T4);
+    const out = unaskedLines(before, after, T4);
     expect(out.some((l) => l.includes("전투 데이터") && l.includes("configure_field_menu"))).toBe(true);
     expect(battleDataEmptied(before, after, T4).length).toBe(2);
   });
