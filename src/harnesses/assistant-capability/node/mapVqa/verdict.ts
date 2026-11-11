@@ -35,7 +35,7 @@ export function parseReview(reply: string, reviewer: Reviewer, size: { width: nu
   const defects: Defect[] = [];
   for (const raw of data.defects) {
     const region = raw?.region ?? {};
-    if (!raw || !SEVERITIES.includes(raw.severity) || !Object.hasOwn(reviewer.classes, raw.class) || ![region.x, region.y, region.w, region.h].every(Number.isFinite) || typeof raw.evidence !== 'string' || !raw.evidence.trim()) return null;
+    if (!raw || !SEVERITIES.includes(raw.severity) || !Object.hasOwn(reviewer.classes, raw.class) || ![region.x, region.y, region.w, region.h].every(Number.isFinite) || typeof raw.evidence !== 'string' || !/[가-힣]/u.test(raw.evidence)) return null; // 근거는 한국어 한 줄이어야 한다
     const x = Math.max(0, Math.min(size.width - 1, Math.round(region.x))), y = Math.max(0, Math.min(size.height - 1, Math.round(region.y)));
     defects.push({ class: raw.class, severity: raw.severity, region: { x, y, w: Math.max(1, Math.min(size.width - x, Math.round(region.w))), h: Math.max(1, Math.min(size.height - y, Math.round(region.h))) }, evidence: raw.evidence.replace(/\s+/gu, ' ').trim().slice(0, 400) });
   }
@@ -47,21 +47,28 @@ export type Tally = ReturnType<typeof buildTally>;
 /** 종류 × 심각도 × 수 + 맵마다 목록. 같은 말뭉치를 고친 뒤 다시 돌려 이 파일끼리 비교한다. */
 export function buildTally(reviews: MapReview[], meta: Record<string, unknown>, reviewer: Reviewer) {
   const done = reviews.filter(review => review.status === 'reviewed');
-  const byClass = Object.fromEntries(Object.keys(reviewer.classes).map(id => [id, { blocker: 0, major: 0, polish: 0, maps: 0 }]));
-  for (const review of done) {
-    const seen = new Set<string>();
-    for (const defect of review.defects) { byClass[defect.class]![defect.severity] += 1; seen.add(defect.class); }
-    for (const id of seen) byClass[id]!.maps += 1;
-  }
+  const classCounts = (list: MapReview[]) => {
+    const table = Object.fromEntries(Object.keys(reviewer.classes).map(id => [id, { blocker: 0, major: 0, polish: 0, maps: 0 }]));
+    for (const review of list) {
+      const seen = new Set<string>();
+      for (const defect of review.defects) { table[defect.class]![defect.severity] += 1; seen.add(defect.class); }
+      for (const id of seen) table[id]!.maps += 1;
+    }
+    return table;
+  };
+  const byClass = classCounts(done);
   const has = (review: MapReview, severity: Severity) => review.defects.some(defect => defect.severity === severity);
   const count = (list: MapReview[]) => ({ maps: list.length, reviewed: list.filter(review => review.status === 'reviewed').length, withBlocker: list.filter(review => has(review, 'blocker')).length,
     withMajorOrWorse: list.filter(review => has(review, 'blocker') || has(review, 'major')).length, clean: list.filter(review => review.status === 'reviewed' && !has(review, 'blocker') && !has(review, 'major')).length,
     blocker: list.reduce((n, review) => n + review.defects.filter(defect => defect.severity === 'blocker').length, 0), major: list.reduce((n, review) => n + review.defects.filter(defect => defect.severity === 'major').length, 0), polish: list.reduce((n, review) => n + review.defects.filter(defect => defect.severity === 'polish').length, 0) });
   const groups = [...new Set(reviews.map(review => review.group))];
-  // 순위: blocker 많은 순 → major 많은 순 → 걸린 맵 수.
-  const ranked = Object.entries(byClass).filter(([, n]) => n.blocker + n.major + n.polish > 0).sort(([, a], [, b]) => b.blocker - a.blocker || b.major - a.major || b.maps - a.maps || b.polish - a.polish).map(([id, n]) => ({ class: id, label: reviewer.classes[id], ...n }));
+  // 말뭉치(A 게임 통판 · B 맵 깔기 · …)별 합계와 종류 표 — 고친 뒤 한쪽 말뭉치만 다시 돌려도 비교할 수 있게.
+  const corpora = [...new Set(reviews.map(review => review.group.split(':')[0]!))];
+  // 순위 점수 = 막힘 × 3 + 큰 결함(다듬기는 세지 않는다). 같으면 걸린 맵이 많은 순.
+  const ranked = Object.entries(byClass).filter(([, n]) => n.blocker + n.major + n.polish > 0).map(([id, n]) => ({ class: id, label: reviewer.classes[id], score: n.blocker * 3 + n.major, ...n }))
+    .sort((a, b) => b.score - a.score || b.maps - a.maps || b.polish - a.polish);
   return { schemaVersion: 1, kind: 'assistant-map-vqa-tally', ...meta, promptVersion: reviewer.version, judge: VISUAL_JUDGE, totals: count(reviews), unreviewed: reviews.filter(review => review.status !== 'reviewed').map(review => ({ id: review.id, error: review.error ?? '' })),
-    ranked, byClass, perGroup: Object.fromEntries(groups.map(group => [group, count(reviews.filter(review => review.group === group))])),
+    ranked, byClass, perCorpus: Object.fromEntries(corpora.map(corpus => { const list = reviews.filter(review => review.group.split(':')[0] === corpus); return [corpus, { ...count(list), byClass: classCounts(list.filter(review => review.status === 'reviewed')) }]; })), perGroup: Object.fromEntries(groups.map(group => [group, count(reviews.filter(review => review.group === group))])),
     maps: reviews.map(review => ({ id: review.id, group: review.group, label: review.label, name: review.map.name, size: `${review.map.width}x${review.map.height}`, tilesetId: review.map.tilesetId, status: review.status, pictureSha256: review.pictureSha256,
       blocker: review.defects.filter(defect => defect.severity === 'blocker').length, major: review.defects.filter(defect => defect.severity === 'major').length, polish: review.defects.filter(defect => defect.severity === 'polish').length, defects: review.defects })) };
 }

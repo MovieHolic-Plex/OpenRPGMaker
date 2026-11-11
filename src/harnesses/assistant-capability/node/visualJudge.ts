@@ -96,9 +96,10 @@ export async function askJudge<T>(ask: JudgeAsk<T>): Promise<JudgeAnswer<T>> {
   const key = sha256(JSON.stringify({ version: ask.promptVersion, system: sha256(ask.system), text: ask.text, images: ask.images.map(image => [image.label, pixelSha(image.png)]), vote: ask.vote ?? 0, judge: VISUAL_JUDGE })).slice(0, 32);
   const file = resolve(ask.cacheDir, `${key}.json`);
   if (existsSync(file)) {
+    // 캐시의 답도 지금의 읽기 규칙을 다시 거친다 — 규칙을 엄하게 고치면(예: 근거는 한국어) 옛 답은 답이 아니게 되고 다시 묻는다.
     const saved = JSON.parse(readFileSync(file, 'utf8'));
-    ask.usage.cached += 1;
-    return { answer: saved.answer as T, key, cached: true };
+    const answer = typeof saved.raw === 'string' ? ask.parse(saved.raw) : null;
+    if (answer !== null) { ask.usage.cached += 1; return { answer, key, cached: true }; }
   }
   if (process.env.OPRN_VISUAL_JUDGE_OFFLINE === '1') return { error: '검수자를 부르지 않았다(OPRN_VISUAL_JUDGE_OFFLINE)', key };
   const content = [{ type: 'text', text: ask.text }, ...ask.images.flatMap(image => [{ type: 'text', text: `${image.label}:` }, { type: 'image', source: { type: 'base64', media_type: 'image/png', data: image.png.toString('base64') } }])];

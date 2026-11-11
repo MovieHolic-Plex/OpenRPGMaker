@@ -78,17 +78,20 @@ export function mapFacts(project: Project, mapId: string, standalone: boolean): 
     const trigger = String(page?.trigger?.kind ?? event.trigger?.kind ?? 'action');
     const text = commands.find(command => command.kind === 'text' && String(command.body ?? '').trim())?.body;
     const battle = commands.some(command => command.kind === 'battleProcessing');
+    // 자동·병렬 실행 이벤트는 장면 장치다(오프닝이 주인공을 옮기는 이동 포함) — 플레이어가 밟는 출구가 아니다. 그림이 없으면 화면에도 걸음에도 안 드러난다.
+    // (2026-11-11: 시작 칸 옆의 자동 실행 이동을 출구로 적었더니 검수자가 «시작하자마자 같은 자리로 되돌리는 고리»라는 blocker 를 붙였다.)
+    const scripted = trigger === 'auto' || trigger === 'parallel';
     let kind: FactEvent['kind'];
-    if (transfer) kind = 'exit';
+    if (transfer && !scripted) kind = 'exit';
     else if (sprite && (battle || /monster|enemy|foe/iu.test(sprite))) kind = 'foe';
     else if (sprite && /object|cc0-|chest|icon/iu.test(sprite)) kind = 'object';
     else if (sprite) kind = 'person';
-    else if ((trigger === 'auto' || trigger === 'parallel') || !text) continue; // 글 없는 조용한 장치(퀘스트 도달 표시·자동 실행)는 화면에도 걸음에도 안 드러난다
+    else if (scripted || !text) continue; // 글 없는 조용한 장치(퀘스트 도달 표시)도 뺀다
     else kind = 'invisible';
     const letter = { exit: 'E', person: 'P', object: 'O', foe: 'F', invisible: 'V' }[kind];
     counters[letter] = (counters[letter] ?? 0) + 1;
     events.push({ tag: `${letter}${counters[letter]}`, kind, x: event.x, y: event.y, name: String(event.name ?? page?.name ?? '').slice(0, 30), trigger, visible: !!sprite,
-      ...(transfer ? { to: { map: String(mapNames.get(transfer.mapId) ?? transfer.mapId), x: transfer.x, y: transfer.y } } : {}),
+      ...(kind === 'exit' ? { to: { map: String(mapNames.get(transfer.mapId) ?? transfer.mapId), x: transfer.x, y: transfer.y } } : {}),
       ...(text ? { text: String(text).replace(/\s+/gu, ' ').slice(0, 60) } : {}),
       reachable: nearMain(event.x, event.y), onBlocked: blocked.has(key(event.x, event.y)), ...(edgeOf(event.x, event.y, width, height) ? { edge: edgeOf(event.x, event.y, width, height) } : {}) });
   }

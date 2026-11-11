@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "kind": "assistant-map-vqa-calibration",
   "version": "map-vqa-v2",
-  "at": "2026-11-11T07:50:39.533Z",
+  "at": "2026-11-11T08:02:21.815Z",
   "status": "calibrated",
   "missRate": 0,
   "looseMissRate": 0,
@@ -54,15 +54,15 @@
     "total": 15,
     "withBlocker": 0,
     "withMajor": 7,
-    "majorsPerMap": 1.133
+    "majorsPerMap": 1.2
   },
   "unreviewed": [],
   "judgeUsage": {
-    "calls": 3,
-    "cached": 45,
+    "calls": 6,
+    "cached": 43,
     "failures": 0,
-    "inputTokens": 16091,
-    "outputTokens": 7272
+    "inputTokens": 76628,
+    "outputTokens": 17916
   },
   "rows": [
     {
@@ -160,51 +160,62 @@
       "status": "reviewed",
       "pictureSha256": "a092815d586957cd0c0e2405f106ed7219d477161bc4b108ea7f5bc278b29980",
       "blockers": 0,
-      "majors": 1,
+      "majors": 2,
       "defects": [
         {
           "class": "passage-mismatch",
           "severity": "major",
           "region": {
+            "x": 17,
+            "y": 21,
+            "w": 8,
+            "h": 5
+          },
+          "evidence": "중앙 연못(x=17..24, y=21..25)의 물 칸들이 바둑판처럼 번갈아 걸을 수 있게 되어 있어, 플레이어가 물 위를 걸어 다닐 수 있다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
             "x": 0,
-            "y": 3,
+            "y": 4,
             "w": 48,
-            "h": 43
+            "h": 42
           },
-          "evidence": "(0..3,23), (43..46,19..30), (21..25,4), the hole inside the south loop (12..14,29..33), (41..45,35..41) and other spots are drawn as dark cave rock but are walk"
+          "evidence": "벽 너머 어두운 암반(예: x=0..3 y=22..23 서쪽 가장자리, x=10..14 y=30..33 중앙 구멍, x=31..34 y=31..37 동쪽 틈, x=43..46 y=19..23)이 군데군데 붉은 표시 없이 걸을 수 있게 되어 있다. 단단한 바위로 보이는 곳이 통행 가능 칸"
         },
         {
-          "class": "cut-off-piece",
+          "class": "passage-mismatch",
           "severity": "polish",
           "region": {
-            "x": 19,
-            "y": 31,
-            "w": 11,
-            "h": 7
+            "x": 37,
+            "y": 34,
+            "w": 3,
+            "h": 3
           },
-          "evidence": "Short wall-face stubs at (23,32..33) and (29,36..37) stick out from the curved rock edge with no connection to the walls on either side, so they look like stray"
+          "evidence": "동쪽 별실의 작은 샘(x=37..39, y=34..36)도 일부 칸만 막혀 있어 물 위로 들어갈 수 있는 칸이 섞여 있다."
         },
         {
-          "class": "empty-expanse",
+          "class": "unpainted-or-seam",
           "severity": "polish",
           "region": {
-            "x": 30,
-            "y": 0,
-            "w": 18,
-            "h": 14
+            "x": 21,
+            "y": 43,
+            "w": 6,
+            "h": 5
           },
-          "evidence": "The NE corner (30..47,0..14), the NW corner (0..12,0..17) and the SE corner (30..47,41..47) are filled only with plain dark rock texture. The 48x48 map is notic"
+          "evidence": "남쪽 입구의 갈색 흙길(x=21..26, y=43..47)이 회색 동굴 바닥과 y=43에서 일직선으로 뚝 끊겨, 경계 타일 없이 이어 붙인 것처럼 보인다."
         },
         {
           "class": "people-placement",
           "severity": "polish",
           "region": {
             "x": 17,
-            "y": 39,
-            "w": 1,
-            "h": 1
+            "y": 38,
+            "w": 2,
+            "h": 3
           },
-          "evidence": "P1 (17,39) stands pressed into the gap between the end of the wall (11..16,38..39) and the wall pillar at x=18, half-blocking the narrow way into the corridor t"
+          "evidence": "P1(17,39)이 벽 끝과 횃불(19,39) 사이 2칸 통로의 한 칸을 차지하고 있어, 서쪽 순환로로 가는 길이 1칸으로 좁아진다."
         }
       ]
     },
@@ -2434,90 +2445,90 @@
         "class": "people-placement",
         "severity": "major",
         "region": {
-          "x": 34,
+          "x": 37,
           "y": 9,
-          "w": 11,
-          "h": 43
+          "w": 1,
+          "h": 1
         },
-        "evidence": "P1 (37,9) stands on the blocked cell at the police box doorway. P2 (44,29) stands on a building facade where one building meets another. P3 (34,51) stands on the rooftop of the (32~37,50~56) building. None of the three can be reached on foot."
+        "evidence": "P1 주민이 (37,9) 파출소 건물 유리문 위, 막힌 칸에 박혀 있다. 보도에서 걸어서 닿을 수 없다."
       },
       "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 5,
+            "w": 60,
+            "h": 52
+          },
+          "evidence": "모든 건물 출입문과 (20,54) 지하철 계단 입구가 붉게 막혀 있다. 예: (12,8) 소방서 문, (14,9) 상점 문, (43,9) 주유소 사무실 문, (46,56) 시계탑 건물 정문. 그려진 문 앞으로 걸어가도 들어갈 수 없다."
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 37,
+            "y": 9,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "P1 주민이 (37,9) 파출소 건물 유리문 위, 막힌 칸에 박혀 있다. 보도에서 걸어서 닿을 수 없다."
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 44,
+            "y": 29,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "P2 주민이 (44,29) 빌딩 1층 차양과 벽 위에 서 있다. 주변이 모두 건물이라 도달할 수 없다."
+        },
         {
           "class": "people-placement",
           "severity": "major",
           "region": {
             "x": 34,
-            "y": 9,
-            "w": 11,
-            "h": 43
+            "y": 51,
+            "w": 1,
+            "h": 1
           },
-          "evidence": "P1 (37,9) stands on the blocked cell at the police box doorway. P2 (44,29) stands on a building facade where one building meets another. P3 (34,51) stands on th"
+          "evidence": "P3 주민이 (34,51) 상점 건물 옥상 위에 서 있다. 막힌 칸이라 플레이어가 말을 걸 수 없다."
         },
         {
           "class": "cut-off-piece",
           "severity": "major",
           "region": {
-            "x": 32,
+            "x": 33,
             "y": 22,
-            "w": 28,
-            "h": 15
+            "w": 21,
+            "h": 11
           },
-          "evidence": "In the block at (32~59,22~36), the roofs of the low buildings at y=29~36 cover the lower floors of the tall buildings behind them. The hospital's green cross an"
-        },
-        {
-          "class": "passage-mismatch",
-          "severity": "major",
-          "region": {
-            "x": 0,
-            "y": 3,
-            "w": 60,
-            "h": 54
-          },
-          "evidence": "Every drawn door on every building is a blocked red cell. Examples: the police box glass door at (37,9), the gas station door at (41,9), the shop doors at (15,9"
-        },
-        {
-          "class": "passage-mismatch",
-          "severity": "major",
-          "region": {
-            "x": 19,
-            "y": 54,
-            "w": 2,
-            "h": 2
-          },
-          "evidence": "The subway entrance stair with its roof, drawn at (19~20,54~55), is a blocked red cell. A stair that is plainly drawn cannot be entered."
-        },
-        {
-          "class": "road-to-nowhere",
-          "severity": "major",
-          "region": {
-            "x": 0,
-            "y": 0,
-            "w": 60,
-            "h": 60
-          },
-          "evidence": "Hedge rows are laid across the asphalt at every road end: west x=0 y=15~20 and y=41~46, east x=59 at the same rows, north y=0 x=23~28, south y=59 x=23~28. All f"
+          "evidence": "동쪽 블록에서 아래쪽 건물 지붕이 위쪽 건물 정면을 덮어 버린다. (33~37,29~30) 갈색 지붕이 유리 빌딩의 붉은 출입구를, (37~44,29~31) 크림색 건물 지붕이 회색 빌딩 1층을, (45~49,31~32) 건물이 병원 하층부를 가린다. 건물들이 반쯤 잘려 보인다."
         },
         {
           "class": "wrong-surface",
-          "severity": "polish",
+          "severity": "major",
           "region": {
             "x": 0,
             "y": 15,
             "w": 60,
             "h": 45
           },
-          "evidence": "The hedges at the road edges sit directly on the asphalt lanes and crosswalk ends, cutting the roadway off in a way no real street looks."
+          "evidence": "차도 끝 아스팔트 위에 보도용 생울타리 화분이 일렬로 놓여 도로를 막고 있다. 위치는 서쪽 (0,15~20)·(0,41~46), 동쪽 (59,15~20)·(59,41~46), 남쪽 (23~28,59)이다. 북쪽 (23~28,0)도 같다."
         },
         {
-          "class": "enclosure-unreadable",
+          "class": "other",
           "severity": "polish",
           "region": {
             "x": 0,
             "y": 0,
             "w": 15,
-            "h": 3
+            "h": 4
           },
-          "evidence": "The strip of sidewalk at (0~14,0~2) between the edge hedge and the northwest buildings looks walkable but is a 35-cell pocket the player can never reach."
+          "evidence": "좌상단 (0~14,0~3) 보도 띠는 건물 뒤와 공사 바리케이드 사이에 갇혀 있다. 걸을 수 있는 35칸이 본 보도와 이어지지 않아 들어갈 수 없는 길처럼 보인다."
         }
       ]
     },
@@ -2642,7 +2653,7 @@
           "w": 1,
           "h": 1
         },
-        "evidence": "P3 (8,19) stands on the torch-lit rock wall face of the west chamber, so the player can neither walk up to it nor talk to it."
+        "evidence": "P3(8,19)이 서쪽 곁방 위쪽 바위벽 면(횃불 옆 벽 타일) 위에 서 있어 벽에 박힌 사람처럼 보이고, 걸어서 다가갈 수도 없음"
       },
       "defects": [
         {
@@ -2654,7 +2665,7 @@
             "w": 1,
             "h": 1
           },
-          "evidence": "P3 (8,19) stands on the torch-lit rock wall face of the west chamber, so the player can neither walk up to it nor talk to it."
+          "evidence": "P3(8,19)이 서쪽 곁방 위쪽 바위벽 면(횃불 옆 벽 타일) 위에 서 있어 벽에 박힌 사람처럼 보이고, 걸어서 다가갈 수도 없음"
         },
         {
           "class": "people-placement",
@@ -2665,7 +2676,7 @@
             "w": 1,
             "h": 2
           },
-          "evidence": "P4 (42,34) and P5 (42,35) stand one above the other on blocked rock at the southeast chamber's outer edge and cannot be reached on foot."
+          "evidence": "P4(42,34)·P5(42,35)가 남동 곁방 오른쪽 벽에 위아래로 붙어 막힌 칸 위에 줄지어 서 있어 플레이어가 닿을 수 없음"
         },
         {
           "class": "passage-mismatch",
@@ -2676,40 +2687,51 @@
             "w": 7,
             "h": 5
           },
-          "evidence": "Inside the central pond (x=17..23, y=21..25), the water cells alternate walkable and blocked in a checkerboard, so the player can step onto the water."
+          "evidence": "중앙 연못(17~23,21~25)의 물 칸이 빨간 칸과 빈 칸이 바둑판처럼 섞여 있어, 수면 한가운데 일부 칸을 걸어 들어갈 수 있음"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 21,
+            "w": 5,
+            "h": 6
+          },
+          "evidence": "서쪽 곁방 왼쪽 바깥의 어둠(허공) 칸(0~4,21~26)이 걸을 수 있어, 동굴 바닥에서 검은 공간으로 걸어 나가 서쪽 맵 끝(y=23)까지 갈 수 있음"
         },
         {
           "class": "passage-mismatch",
           "severity": "polish",
           "region": {
-            "x": 0,
-            "y": 4,
-            "w": 47,
-            "h": 44
+            "x": 17,
+            "y": 28,
+            "w": 14,
+            "h": 19
           },
-          "evidence": "Void cells drawn as solid rock outside the cave are left walkable, e.g. (21,4), (23..25,4), the west edge (0..2,23), the south edge x=18..19 and x=29..30, (43,2"
+          "evidence": "남쪽 입구 양옆과 안쪽 섬(13,29·13,43·29~30,45~47 등)의 어둠 칸이 군데군데 걸을 수 있게 남아 있어, 벽 밖 허공을 밟는 칸이 생김"
         },
         {
           "class": "cut-off-piece",
           "severity": "polish",
           "region": {
-            "x": 18,
-            "y": 13,
-            "w": 5,
-            "h": 3
+            "x": 34,
+            "y": 29,
+            "w": 4,
+            "h": 5
           },
-          "evidence": "At x=18..22, y=13..15, rock wall pieces stand alone in the middle of the floor with open floor above them, so they look like walls cut out of place."
+          "evidence": "남동 곁방 안의 바위벽 기둥(34~37,29~33)이 위쪽 절벽 없이 바닥 위에 계단꼴로 홀로 서 있어 잘린 벽 조각처럼 보임"
         },
         {
           "class": "empty-expanse",
           "severity": "polish",
           "region": {
-            "x": 0,
-            "y": 0,
-            "w": 17,
-            "h": 17
+            "x": 8,
+            "y": 29,
+            "w": 3,
+            "h": 13
           },
-          "evidence": "Featureless rock void fills the top-left corner and the right side, so the cave's content takes up less than half of the 48x48 map."
+          "evidence": "서남쪽 고리 통로(8~10,29~41)는 소품도 목적지도 없이 긴 빈 바닥만 이어지는 우회로임"
         }
       ]
     },
@@ -2812,7 +2834,7 @@
           "w": 6,
           "h": 5
         },
-        "evidence": "(29~34,26~30) is unpainted checkerboard and every cell is blocked. The start cell S (31,28) sits inside it, so the player starts in an unpainted block, and the main road at y=28~29 is cut in half here."
+        "evidence": "(29..34,26..30) 칸이 회색 체크무늬 미도색에 막힌 칸이다. 동서 대로 한가운데를 끊고, 게임 시작 칸 S(31,28)가 그 안에 있다."
       },
       "defects": [
         {
@@ -2824,7 +2846,7 @@
             "w": 6,
             "h": 5
           },
-          "evidence": "(29~34,26~30) is unpainted checkerboard and every cell is blocked. The start cell S (31,28) sits inside it, so the player starts in an unpainted block, and the "
+          "evidence": "(29..34,26..30) 칸이 회색 체크무늬 미도색에 막힌 칸이다. 동서 대로 한가운데를 끊고, 게임 시작 칸 S(31,28)가 그 안에 있다."
         },
         {
           "class": "passage-mismatch",
@@ -2832,54 +2854,65 @@
           "region": {
             "x": 40,
             "y": 25,
-            "w": 5,
+            "w": 6,
             "h": 5
           },
-          "evidence": "Both wooden bridges at (40~44,25~26) and (40~44,28~29) look crossable, but their end cells are blocked. The 884 cells of the east bank, including houses, fields"
+          "evidence": "(41..44,25..26)과 (41..44,28..29)에 다리 두 개가 그려져 있다. 그런데 동쪽 884칸 구역이 본 구역과 끊겨 있어, 다리로 강을 건널 수 없다."
         },
         {
           "class": "people-placement",
-          "severity": "major",
+          "severity": "blocker",
           "region": {
-            "x": 35,
-            "y": 4,
-            "w": 25,
-            "h": 34
+            "x": 36,
+            "y": 3,
+            "w": 24,
+            "h": 35
           },
-          "evidence": "P8 (46,24), P9 (47,11), P10 (47,4), P11 (59,22), P14 (52,29) and P17 (50,37) on the east bank, and P7 (36,30) east of the hole, stand on the road but cannot be "
+          "evidence": "P7(36,30), P8(46,24), P9(47,11), P10(47,4), P11(59,22), P14(52,29), P17(50,37) 주민이 모두 걸어서 닿을 수 없는 동쪽 구역에 서 있다."
         },
         {
-          "class": "road-to-nowhere",
+          "class": "passage-mismatch",
           "severity": "major",
-          "region": {
-            "x": 23,
-            "y": 37,
-            "w": 17,
-            "h": 3
-          },
-          "evidence": "The dirt road at (23~38,37~39) runs east from below the houses and stops dead at the river at x=39 with no bridge."
-        },
-        {
-          "class": "other",
-          "severity": "polish",
           "region": {
             "x": 41,
             "y": 2,
-            "w": 2,
-            "h": 32
+            "w": 3,
+            "h": 40
           },
-          "evidence": "Several small grass strips on the river's west bank, near (42,3), (42,9), (42,21) and (42,33), are walkable pockets of about 6 cells each, cut off from everythi"
+          "evidence": "강물 x=41..43 구간에 걷기 가능 칸이 체크무늬로 섞여 있다. (42,3), (42,9), (42,21), (42,33), (40,42) 근처 6칸짜리 물 위 고립 구역이 생겨 물인데 걸을 수 있는 칸이 있다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 2,
+            "y": 42,
+            "w": 9,
+            "h": 12
+          },
+          "evidence": "연못 (2..10,42..53)의 물 칸이 빨강과 무색의 체크무늬로 섞여 있다. 물 위 일부 칸이 걸을 수 있고, (6,45) 근처는 고립 구역이다."
         },
         {
           "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 8,
+            "y": 38,
+            "w": 1,
+            "h": 5
+          },
+          "evidence": "(8,39..42)의 세로 나무 다리가 길 (8,38)에서 내려가다가 연못 물 가장자리 (8,42)에서 끝난다. 건너편 땅이 없다."
+        },
+        {
+          "class": "wrong-surface",
           "severity": "polish",
           "region": {
-            "x": 30,
-            "y": 1,
+            "x": 39,
+            "y": 31,
             "w": 3,
             "h": 3
           },
-          "evidence": "The north-south road at x=30 ends at a wooden bench at (30~32,1~2) just short of the north edge, so the road appears to end at a bench."
+          "evidence": "물레방아 (39..41,31..33)가 초가 지붕 오른쪽 끝과 강둑에 겹쳐 그려져 있고, (39,34) 근처에 9칸짜리 고립 구역이 생겼다."
         }
       ]
     },
@@ -3696,13 +3729,24 @@
               "w": 4,
               "h": 2
             },
-            "evidence": "V1~V4가 목책 문의 기둥 칸(21,30-31 / 24,30-31)에 '굳게 닫힌 집 문… 들어갈 수 없는 집이다' 문구를 띄우는데, 그곳은 집이 아닌 열린 마을 문이라 지나가는 플레이어가 잠긴 문으로 오해함"
+            "evidence": "V1~V4가 남쪽 목책 문의 기둥 칸(21,30~31)·(24,30~31)에 '문이 굳게 잠겨 있다. 들어갈 수 없는 집이다' 글로 놓였다. 여기는 집이 아니라 열린 마을 문이고, 기둥 칸인데도 걸을 수 있다."
           }
         }
       ],
       "strict": true,
       "loose": true,
       "defects": [
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 22,
+            "y": 23,
+            "w": 2,
+            "h": 13
+          },
+          "evidence": "마을 큰길(x=22..23)이 목책 문을 지나 남쪽 끝 y=35까지 이어지는데, 그 남쪽 칸(x=18..27)에는 출구가 없어 길을 따라간 플레이어가 막다른 곳에 닿는다."
+        },
         {
           "class": "exit-off-road",
           "severity": "major",
@@ -3712,40 +3756,18 @@
             "w": 2,
             "h": 3
           },
-          "evidence": "겨울 시장으로 가는 E1(45,18)은 동쪽 목책(x=43) 바깥 맨눈밭에 있고 어떤 길이나 문도 그쪽으로 나 있지 않아, 플레이어가 출구를 찾을 단서가 없음"
-        },
-        {
-          "class": "road-to-nowhere",
-          "severity": "major",
-          "region": {
-            "x": 22,
-            "y": 32,
-            "w": 2,
-            "h": 4
-          },
-          "evidence": "광장에서 남쪽 목책 문을 지나 이어진 큰길(x22..23)이 출구 없는 남쪽 가장자리(x18..27 [NO exit])에서 그대로 끝나, 길이 이끄는 곳으로 나갈 수 없음"
+          "evidence": "E1(45,18)은 동쪽 목책(x=43) 바깥의 아무 길도 없는 눈밭에 있다. 마을 안에서 그쪽으로 난 문이나 길이 없어, 북쪽 숲을 돌아가야만 찾을 수 있다."
         },
         {
           "class": "passage-mismatch",
           "severity": "major",
           "region": {
             "x": 4,
-            "y": 8,
+            "y": 10,
             "w": 38,
-            "h": 15
+            "h": 13
           },
-          "evidence": "작은 오두막(12,11)·통나무 오두막(33,11)·큰 집(6,22)·대장간(13,21)·뗏장 오두막(40,21)·계단 달린 창고(31,22)의 문이 모두 빨간 막힌 칸이고 출구도 안내 문구도 없어, 그려진 문 앞에서 아무 반응이 없음"
-        },
-        {
-          "class": "other",
-          "severity": "major",
-          "region": {
-            "x": 21,
-            "y": 33,
-            "w": 1,
-            "h": 2
-          },
-          "evidence": "E6(21,33)은 표지판이 그려진 칸 위에 놓인 같은 맵 '눈보라 마을'(22,34)로의 auto 이동이어서, 아무 의미 없는 순간이동이 자동으로 반복 발동할 수 있음"
+          "evidence": "오두막(12,11)·(34,11), 큰 통나무 집(7,22), 대장간(13,21), 다리 창고 계단(31,22), 뗏장 오두막(40,21)의 문은 그려져 있고 오솔길도 문 앞까지 이어지지만, 문 칸이 모두 빨간 칸이라 들어갈 수 없다."
         },
         {
           "class": "invisible-event-misplaced",
@@ -3756,29 +3778,18 @@
             "w": 4,
             "h": 2
           },
-          "evidence": "V1~V4가 목책 문의 기둥 칸(21,30-31 / 24,30-31)에 '굳게 닫힌 집 문… 들어갈 수 없는 집이다' 문구를 띄우는데, 그곳은 집이 아닌 열린 마을 문이라 지나가는 플레이어가 잠긴 문으로 오해함"
+          "evidence": "V1~V4가 남쪽 목책 문의 기둥 칸(21,30~31)·(24,30~31)에 '문이 굳게 잠겨 있다. 들어갈 수 없는 집이다' 글로 놓였다. 여기는 집이 아니라 열린 마을 문이고, 기둥 칸인데도 걸을 수 있다."
         },
         {
           "class": "people-placement",
           "severity": "major",
           "region": {
-            "x": 3,
+            "x": 4,
             "y": 8,
-            "w": 40,
-            "h": 22
+            "w": 38,
+            "h": 21
           },
-          "evidence": "목책 안 마을 전체(광장·집 마당)에 주민이 한 명도 없고 사람은 문 밖의 떠돌이 상인 P1(24,33)뿐이라, 마을이 텅 빈 것처럼 보임"
-        },
-        {
-          "class": "passage-mismatch",
-          "severity": "polish",
-          "region": {
-            "x": 21,
-            "y": 28,
-            "w": 4,
-            "h": 4
-          },
-          "evidence": "목책 문의 굵은 나무 기둥(x21, x24)이 단단한 벽처럼 그려져 있는데 걷기 가능한 칸이라, 기둥 속으로 걸어 들어갈 수 있음"
+          "evidence": "목책 안 마을과 광장(x=16..29, y=17..22)에 주민이 한 명도 없다. 사람은 목책 밖 길가의 상인 P1(24,33) 하나뿐이라, 연결된 마을이 텅 비어 보인다."
         },
         {
           "class": "passage-mismatch",
@@ -3789,40 +3800,29 @@
             "w": 2,
             "h": 1
           },
-          "evidence": "회관 입구 E4·E5(24..25,16)는 붉은 문이 아닌 통나무 벽·창문이 그려진 칸인데도 들어가는 출구여서, 벽에 닿아도 회관 안으로 이동함"
+          "evidence": "회관 정면의 붉은 두 짝 문은 x=22..23에만 그려져 있다. 그런데 E4(24,16)·E5(25,16)는 창문이 있는 통나무 벽 칸에도 출구로 놓였다."
         },
         {
-          "class": "cut-off-piece",
+          "class": "enclosure-unreadable",
           "severity": "polish",
           "region": {
             "x": 2,
-            "y": 8,
+            "y": 0,
             "w": 42,
-            "h": 1
+            "h": 8
           },
-          "evidence": "서쪽(x=2)·동쪽(x=43) 목책이 y=8에서 맨눈밭 위에 그냥 끊기고 북쪽 벽이 없어, 남쪽에만 문을 낸 울타리가 반쯤 열린 채로 보임"
-        },
-        {
-          "class": "other",
-          "severity": "polish",
-          "region": {
-            "x": 22,
-            "y": 32,
-            "w": 1,
-            "h": 1
-          },
-          "evidence": "'회복의 샘' O1(22,32)은 샘이 아닌 작은 파란 수정으로 그려져 있고, 2칸 폭 큰길 한가운데 문 바로 앞을 가로막고 서 있음"
+          "evidence": "목책이 서·동·남 세 면만 두르고 북쪽(y=0..7)은 숲 사이로 뚫려 있다. 남쪽 문을 지키는 울타리가 의미 없어 보인다."
         },
         {
           "class": "empty-expanse",
           "severity": "polish",
           "region": {
-            "x": 3,
-            "y": 11,
+            "x": 36,
+            "y": 12,
             "w": 7,
-            "h": 6
+            "h": 17
           },
-          "evidence": "서쪽 큰 집 위쪽 마당(x3..9,y11..17)은 썰매 하나와 눈더미 말고는 아무것도 없는 빈 눈밭이 넓게 이어짐"
+          "evidence": "동쪽 목책 안쪽 x=36..42, y=12..28은 나무 몇 그루와 바위 말고는 빈 눈밭이 넓게 이어진다."
         }
       ]
     }

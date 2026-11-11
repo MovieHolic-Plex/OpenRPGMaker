@@ -93,6 +93,7 @@ describe("검수자 답 읽기", () => {
     expect(parseReview(bad({ class: "made-up" }), reviewer, size)).toBeNull();
     expect(parseReview(bad({ severity: "minor" }), reviewer, size)).toBeNull();
     expect(parseReview(bad({ evidence: " " }), reviewer, size)).toBeNull();
+    expect(parseReview(bad({ evidence: "The door is blocked." }), reviewer, size)).toBeNull();
     expect(parseReview(bad({ region: { x: "a" } }), reviewer, size)).toBeNull();
     expect(parseReview("괜찮아 보입니다.", reviewer, size)).toBeNull();
     expect(parseReview(JSON.stringify({ purpose: "x" }), reviewer, size)).toBeNull();
@@ -114,6 +115,7 @@ describe("집계와 보정 판정", () => {
     const tally = buildTally([review("a", [blocker, major]), review("b", [major, polish]), review("c", []), review("d", [], "unreviewed")], {}, reviewer);
     expect(tally.totals).toMatchObject({ maps: 4, reviewed: 3, withBlocker: 1, withMajorOrWorse: 2, clean: 1, blocker: 1, major: 2, polish: 1 });
     expect(tally.ranked.map((row) => row.class)).toEqual(["passage-mismatch", "exit-off-road", "empty-expanse"]);
+    expect(tally.ranked.map((row) => row.score)).toEqual([3, 2, 0]);
     expect(tally.byClass["exit-off-road"]).toEqual({ blocker: 0, major: 2, polish: 0, maps: 2 });
     expect(tally.unreviewed.map((row) => row.id)).toEqual(["d"]);
   });
