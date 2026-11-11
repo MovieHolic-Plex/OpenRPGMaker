@@ -276,6 +276,8 @@ export interface ContentBuildResult {
   readonly calls: readonly BuilderCall[];
   /** 만든 이벤트 id(맵별). */
   readonly eventIds?: readonly { readonly mapId: string; readonly eventId: string }[];
+  /** eventIds 와 같은 순서 — 그 이벤트가 다음 고리에 넘기는 것(켜는 스위치·주는 물건). 사슬 빌더만 채운다(모델에게 가는 결과에는 싣지 않는다). */
+  readonly gives?: readonly ({ readonly switchId?: string; readonly itemId?: string } | undefined)[];
   /** 편집기에 띄울 카드 요청(그리기 카드 등) — 동사 결과 data 로 실려 편집기가 카드를 연다. */
   readonly card?: unknown;
 }

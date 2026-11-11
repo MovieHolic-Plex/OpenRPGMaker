@@ -35,15 +35,16 @@ export function gateSuspectObjectives(project: Project): string[] {
   for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const pg of ev.pages ?? []) walkCommands(pg.commands, (c) => { if (!gate && c.kind === "choices" && c.prompt === ACCUSE_PROMPT) gate = { mapId: map.id, ev }; });
   const gateName = gate ? nameOf(gate.ev) : "";
   let wrapped = 0;
+  const chainFor = (mapId: string, final0: Obj): Obj[] => suspects.slice().reverse().reduce<Obj[]>((acc, other) => [{
+    kind: "fork",
+    condition: { kind: "switch", switchId: other.switchId, value: false },
+    then: [objectiveCommand(withWhere(project, mapId, `${UNHEARD_OBJECTIVE} 「${other.name}」에게 말을 걸어 보자.`, other.ev.id)) as Obj],
+    else: acc,
+  }], [pendingClueChain(project, mapId, final0)]);
   for (const s of suspects) {
     const ev = (project.maps[s.mapId]?.events ?? []).find((e) => e.id === s.ev.id);
     if (!ev) continue;
-    const chain = (final0: Obj): Obj[] => suspects.slice().reverse().reduce<Obj[]>((acc, other) => [{
-      kind: "fork",
-      condition: { kind: "switch", switchId: other.switchId, value: false },
-      then: [objectiveCommand(withWhere(project, s.mapId, `${UNHEARD_OBJECTIVE} 「${other.name}」에게 말을 걸어 보자.`, other.ev.id)) as Obj],
-      else: acc,
-    }], [pendingClueChain(project, s.mapId, final0)]);
+    const chain = (final0: Obj): Obj[] => chainFor(s.mapId, final0);
     for (const pg of (ev.pages ?? []) as unknown as Obj[]) {
       const cmds = (pg.commands ?? []) as Obj[];
       const at = cmds.findIndex((c) => c.kind === "setSwitch" && c.switchId === s.switchId);
@@ -61,6 +62,19 @@ export function gateSuspectObjectives(project: Project): string[] {
       else if (gate) pg.commands = [...cmds.slice(0, at + 1), ...chain(objectiveCommand(withWhere(project, s.mapId, `용의자들의 이야기를 모두 들었다. 「${gateName}」에서 증거를 내밀어 범인을 지목하자.`, gate.ev.id)) as Obj), ...cmds.slice(at + 1)];
       else continue;
       wrapped += 1;
+    }
+  }
+  // 예전에 감싼 페이지 가운데 지금은 용의자가 아닌 사람의 것도 지금 사건으로 다시 감싼다 — 사건을 다시 세우면 용의자가 바뀌는데 옛 갈래는 그대로 남았다.
+  // 왜(2026-11-12 r1-mystery): 첫 단계 「서진」의 페이지에 옛 갈래가 남아, 단서를 다 모은 뒤 다시 말을 걸자 목표가 「「미란」을 찾아가자」로 돌아갔다.
+  const current = new Set(suspects.map((s) => `${s.mapId}:${s.ev.id}`));
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
+    if (current.has(`${map.id}:${ev.id}`)) continue;
+    for (const pg of (ev.pages ?? []) as unknown as Obj[]) {
+      const cmds = (pg.commands ?? []) as Obj[];
+      if (!cmds.some(isWrapFork)) continue;
+      const before = JSON.stringify(cmds);
+      pg.commands = cmds.flatMap((c) => (isWrapFork(c) ? chainFor(map.id, innerFinal(c)) : [c]));
+      if (JSON.stringify(pg.commands) !== before) wrapped += 1;
     }
   }
   return wrapped ? [`용의자 대화 목표 ${wrapped}곳: 다 듣기 전엔 「${UNHEARD_OBJECTIVE}」, 다 들은 뒤에만 지목`] : [];

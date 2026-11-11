@@ -5,7 +5,7 @@ import { mapRegion } from "../judge/objectiveWhere";
 import { isPassable } from "@/project/collision";
 import { tileLabel } from "../place/cells";
 import type { BuildRun } from "../shared/types";
-import { Obj, nameOf, visiblePerson, walkCommands, jo, KEY_ITEM, say, narrate, evidenceSpot, thingWords } from "./mysteryCaseRead";
+import { Obj, nameOf, visiblePerson, walkCommands, jo, KEY_ITEM, say, narrate, evidenceSpot, thingWords, resolveSteps } from "./mysteryCaseRead";
 
 /** 맵·청사진 안의 이벤트 id 참조를 바꾼다(따옴표로 감싼 정확한 id 만 — 페이지 id `…_p0` 같은 앞부분 일치는 건드리지 않는다). */
 function renameEventId(project: Project, oldId: string, newId: string): Project {
@@ -18,6 +18,80 @@ function renameEventId(project: Project, oldId: string, newId: string): Project 
   }
   const bp = project.gameBlueprint;
   return { ...project, maps, ...(bp ? { gameBlueprint: { ...bp, steps: bp.steps.map((st) => (st.event === oldId ? { ...st, event: newId } : st)) } } : {}) };
+}
+
+/** 사람이 증거 자리를 일러 주는 두 줄 — 처음 듣는 말(HINT_FIRST: 증거를 주던 자리에 들어간다)과 다시 물을 때의 말(HINT_AGAIN). */
+const HINT_FIRST = /^그러고 보니 소동 뒤에 (.+) 바닥에서 뭔가 반짝이던데… 한번 살펴보게\.$/u;
+const HINT_AGAIN = /^.+ 바닥을 살펴보게\. 범인이 흘린 게 있을지도 모르네\.$/u;
+const HINT = { test: (body: string) => HINT_FIRST.test(body) || HINT_AGAIN.test(body) };
+const hintAgain = (near: string) => `${near} 바닥을 살펴보게. 범인이 흘린 게 있을지도 모르네.`;
+
+/**
+ * 말로 건네는 증거인가 — 청사진의 말하는 단계(kind talk)가 gives 에 적은 그대로의 이름이면(「사건 의뢰」「정전 증언」) 그 사람의 말이 곧 증거다.
+ * 바닥 칸으로 옮기는 것은 세우기가 지어낸 물건(진행 낱말 대신 고른 「떨어진 은단추」, 괄호에서 뽑은 이름)뿐이다.
+ * 왜(2026-11-12 r1-mystery, 엔딩 못 봄): 첫 단계 「서진」이 주는 「사건 의뢰」가 다른 맵 건물 앞 바닥 칸이 됐다. 서진은 그 자리를 처음 한 번만 말했고
+ * 판정자는 끝까지 줍지 못했다 — 사슬은 다 켜졌는데 지목이 안 열렸다.
+ */
+function saidInTalk(project: Project, mapId: string, giver: GameEvent, name: string): boolean {
+  const steps = project.gameBlueprint?.steps;
+  if (!steps) return false;
+  return resolveSteps(project).some((r) => r.map.id === mapId && r.ev.id === giver.id && (steps[r.k] as { kind?: string } | undefined)?.kind === "talk" && String(r.step.gives ?? "").trim() === name);
+}
+
+/** 다시 묻는 페이지(증거를 일러 준 페이지가 켠 스위치로 열리는 대사 페이지)에도 자리를 일러 준다 — 증거를 아직 못 주웠을 때만. 붙였으면 true. */
+function remindOnRepeat(pages: Obj[], pi: number, who: string, near: string, itemId: string): boolean {
+  const set = new Set(((pages[pi]!.commands ?? []) as Obj[]).filter((c) => c.kind === "setSwitch" && c.value !== false).map((c) => String(c.switchId)));
+  let added = false;
+  for (const [k, pg] of pages.entries()) {
+    if (k === pi) continue;
+    const list = (pg.commands ?? []) as Obj[];
+    const opens = ((pg.conditions ?? []) as Obj[]).some((c) => c.kind === "switch" && c.value !== false && set.has(String(c.switchId)));
+    if (!opens || !list.some((c) => c.kind === "text") || JSON.stringify(list).includes(" 바닥을 살펴보게.")) continue;
+    pg.commands = [...list, { kind: "fork", condition: { kind: "item", itemId, present: false }, then: [{ kind: "text", speaker: who, body: hintAgain(near) }] }];
+    added = true;
+  }
+  return added;
+}
+
+/** 대사에서 증거 자리 귀띔 줄을 걷는다(갈래 안까지). 걷은 줄 수를 센다. 귀띔만 들어 있던 갈래(remindOnRepeat)는 갈래째 뺀다. */
+function stripHints(list: unknown, count: { n: number }): unknown {
+  if (!Array.isArray(list)) return list;
+  const isHint = (c: unknown) => (c as Obj)?.kind === "text" && HINT.test(String((c as Obj).body ?? ""));
+  const out: unknown[] = [];
+  for (const c of list) {
+    if (isHint(c)) { count.n += 1; continue; }
+    if (!c || typeof c !== "object") { out.push(c); continue; }
+    const o = { ...(c as Obj) };
+    const hintOnly = o.kind === "fork" && Array.isArray(o.then) && o.then.length > 0 && o.then.every(isHint) && !((o.else as unknown[] | undefined)?.length);
+    for (const k of ["then", "else", "commands", "branch", "otherwiseBranch", "cancelBranch"]) if (Array.isArray(o[k])) o[k] = stripHints(o[k], count);
+    if (Array.isArray(o.options)) o.options = (o.options as Obj[]).map((opt) => (Array.isArray(opt.branch) ? { ...opt, branch: stripHints(opt.branch, count) } : opt));
+    if (!hintOnly) out.push(o);
+  }
+  return out;
+}
+
+/**
+ * 이미 바닥 칸이 된 말 증거를 되돌린다(저장된 판) — 자리를 일러 주던 줄 자리에 증거를 다시 주고, 칸과 나머지 귀띔을 걷는다.
+ * 처음 귀띔 줄을 못 찾으면(모델이 대사를 고쳤다) 건드리지 않는다.
+ */
+function handBackToTalk(run: BuildRun, mapId: string, giver: GameEvent, spot: GameEvent, itemId: string, name: string): string | undefined {
+  let put = false;
+  const count = { n: 0 };
+  const pages = (structuredClone(giver.pages ?? []) as unknown as Obj[]).map((pg) => {
+    const list = ((pg.commands ?? []) as Obj[]).flatMap((c): Obj[] => {
+      if (put || c.kind !== "text" || !HINT_FIRST.test(String(c.body ?? ""))) return [c];
+      put = true;
+      return [{ kind: "changeItem", itemId, op: "+=", amount: 1 }, { kind: "text", body: `『${name}』${jo(name, "을/를")} 증거로 챙겼다.` }];
+    });
+    const rest = stripHints(list, count) as Obj[];
+    return { ...pg, commands: rest.length ? rest : say(nameOf(giver), ["이제 내가 아는 건 다 말했네."]) };
+  });
+  if (!put) return undefined;
+  const snapshot = run.ctx.project;
+  const ok = run.call("upsert_event", { mapId, replacePages: true, event: { id: giver.id, ...(nameOf(giver) ? { name: nameOf(giver) } : {}), pages } }).ok
+    && run.call("remove_event", { mapId, eventId: spot.id }).ok;
+  if (!ok) { run.ctx.project = snapshot; return undefined; }
+  return `말로 건네는 증거 『${name}』${jo(name, "은/는")} 바닥 칸(${spot.x},${spot.y}) 대신 「${nameOf(giver) || giver.id}」의 말에서 바로 얻는다`;
 }
 
 /**
@@ -35,22 +109,13 @@ export function dropDanglingEvidenceHints(run: BuildRun): string[] {
     run.ctx.project = renameEventId(run.ctx.project, ev.id, next);
     notes.push(`사람 「${nameOf(ev)}」이 증거 조사 칸 id(${ev.id})를 쥐고 있어 ${next} 로 바꿈`);
   }
-  const HINT = /^(?:그러고 보니 소동 뒤에 .+ 바닥에서 뭔가 반짝이던데… 한번 살펴보게\.|.+ 바닥을 살펴보게\. 범인이 흘린 게 있을지도 모르네\.)$/u;
   for (const [mapId, map] of Object.entries(run.ctx.project.maps)) {
     let changed = false;
     const events = (map.events ?? []).map((ev) => {
       if (!visiblePerson(ev) || evidenceSpot(map, ev.id)) return ev;
-      let dropped = 0;
-      const strip = (list: unknown): unknown => Array.isArray(list)
-        ? list.filter((c) => { const hit = (c as Obj)?.kind === "text" && HINT.test(String((c as Obj).body ?? "")); if (hit) dropped += 1; return !hit; }).map((c) => {
-          if (!c || typeof c !== "object") return c;
-          const o = { ...(c as Obj) };
-          for (const k of ["then", "else", "commands", "branch", "otherwiseBranch", "cancelBranch"]) if (Array.isArray(o[k])) o[k] = strip(o[k]);
-          if (Array.isArray(o.options)) o.options = (o.options as Obj[]).map((opt) => (Array.isArray(opt.branch) ? { ...opt, branch: strip(opt.branch) } : opt));
-          return o;
-        })
-        : list;
-      const pages = (ev.pages ?? []).map((pg) => ({ ...pg, commands: strip(pg.commands ?? []) as typeof pg.commands }));
+      const count = { n: 0 };
+      const pages = (ev.pages ?? []).map((pg) => ({ ...pg, commands: stripHints(pg.commands ?? [], count) as typeof pg.commands }));
+      const dropped = count.n;
       if (!dropped) return ev;
       changed = true;
       notes.push(`「${nameOf(ev)}」 대사에서 없는 증거 조사 칸을 가리키던 ${dropped}줄을 뺌`);
@@ -81,8 +146,22 @@ export function evidenceOnThing(run: BuildRun): string[] {
       if (!visiblePerson(giver) || /^용의자|· 탐문$/u.test(nameOf(giver))) continue;
       if ((giver.pages ?? []).some((pg) => / · (탐문|증거)$/u.test(String((pg as { name?: string }).name ?? "")))) continue;
       const spotId = `${giver.id}_evidence`;
+      const said = saidInTalk(run.ctx.project, map0.id, giver, name);
       // 그 id 를 사람이 쥐고 있으면(다시 세운 용의자) 칸이 있는 것으로 치지 않는다 — 사람 id 는 dropDanglingEvidenceHints 가 먼저 바꾼다.
-      if ((map0.events ?? []).some((e) => e.id === spotId)) continue;
+      const standing = (map0.events ?? []).find((e) => e.id === spotId);
+      if (standing) {
+        if (visiblePerson(standing) || !JSON.stringify(standing.pages ?? []).includes(`"itemId":"${itemId}"`)) continue;
+        if (said) { const back = handBackToTalk(run, map0.id, giver, standing, itemId, name); if (back) notes.push(back); continue; }
+        // 이미 지어진 판: 다시 물을 때도 자리를 일러 주게 한다(처음 한 번만 말하면 놓친 사람은 다시 들을 길이 없다).
+        const old = structuredClone(giver.pages ?? []) as unknown as Obj[];
+        const at = old.findIndex((pg) => ((pg.commands ?? []) as Obj[]).some((c) => c.kind === "text" && HINT_FIRST.test(String(c.body ?? ""))));
+        const told = at < 0 ? undefined : HINT_FIRST.exec(String(((old[at]!.commands ?? []) as Obj[]).find((c) => c.kind === "text" && HINT_FIRST.test(String(c.body ?? "")))!.body))?.[1];
+        if (told && remindOnRepeat(old, at, nameOf(giver) || "그 사람", told, itemId)
+          && run.call("upsert_event", { mapId: map0.id, replacePages: true, event: { id: giver.id, ...(nameOf(giver) ? { name: nameOf(giver) } : {}), pages: old } }).ok) notes.push(`「${nameOf(giver)}」에게 다시 물어도 증거 『${name}』 자리를 일러 준다`);
+        continue;
+      }
+      // 말로 건네는 증거는 그 말이 건넨다 — 바닥 칸으로 옮기지 않는다.
+      if (said) continue;
       const pages = structuredClone(giver.pages ?? []) as unknown as Obj[];
       const pi = pages.findIndex((pg) => ((pg.commands ?? []) as Obj[]).some((c) => c.kind === "changeItem" && c.itemId === itemId && c.op !== "-="));
       if (pi < 0) continue;
@@ -104,8 +183,9 @@ export function evidenceOnThing(run: BuildRun): string[] {
       // 다시 말을 걸면 「더는 볼 것이 없다」(조사 칸 말투) 대신 그 사람이 자리를 다시 일러 준다.
       for (const [k, pg] of pages.entries()) {
         const list = (pg.commands ?? []) as Obj[];
-        if (k !== pi && list.length && list.every((c) => c.kind === "text" && /^더는 볼 것이 없다\.?$/u.test(String(c.body ?? "")))) pg.commands = [{ kind: "text", speaker: who, body: `${near} 바닥을 살펴보게. 범인이 흘린 게 있을지도 모르네.` }];
+        if (k !== pi && list.length && list.every((c) => c.kind === "text" && /^더는 볼 것이 없다\.?$/u.test(String(c.body ?? "")))) pg.commands = [{ kind: "text", speaker: who, body: hintAgain(near) }];
       }
+      remindOnRepeat(pages, pi, who, near, itemId);
       const before = new Set(unreachableEvents(run.ctx.project, map.id));
       const snapshot = run.ctx.project;
       const base = { trigger: { kind: "action" }, priority: "below", graphic: { transparent: true }, nearSparkle: { radius: 2 }, movement: { type: "fixed", speed: 3, frequency: 3 } };
@@ -139,7 +219,7 @@ function furnitureAt(project: Project, map: GameMap, x: number, y: number): stri
 }
 
 /** 바닥 칸의 자리 말 — 곁 가구가 있으면 「가운데 카운터 옆」, 없으면 방위(「북서쪽」). evidenceOnThing 이 대사에 쓰는 말과 같은 규칙. */
-function floorPhrase(project: Project, map: GameMap, x: number, y: number): string {
+export function floorPhrase(project: Project, map: GameMap, x: number, y: number): string {
   const near = [[0, -1], [-1, 0], [1, 0], [0, 1]].map(([dx, dy]) => furnitureAt(project, map, x + dx!, y + dy!)).find(Boolean);
   return near ? `${mapRegion(map, x, y)} ${near} 옆` : mapRegion(map, x, y);
 }
@@ -186,13 +266,15 @@ function evidenceCell(run: BuildRun, map: GameMap, giver: GameEvent): { x: numbe
   const w = map.width;
   const furniture = (x: number, y: number): string => furnitureAt(project, map, x, y);
   const taken = new Set((map.events ?? []).map((e) => `${e.x},${e.y}`));
+  const markers = (map.events ?? []).filter((e) => e.id !== giver.id && !visiblePerson(e));
   const start = project.startMapId === map.id ? project.startPos : undefined;
   let best: { x: number; y: number; near?: string; score: number } | undefined;
   for (let y = 1; y < map.height - 1; y += 1) for (let x = 1; x < w - 1; x += 1) {
     const d = Math.abs(x - giver.x) + Math.abs(y - giver.y);
     if (d < 2 || d > 7 || !reach[y * w + x] || taken.has(`${x},${y}`) || (start && start.x === x && start.y === y) || !isPassable(project, map, x, y)) continue;
     const near = [[0, -1], [-1, 0], [1, 0], [0, 1]].map(([dx, dy]) => furniture(x + dx!, y + dy!)).find(Boolean);
-    const score = (near ? 0 : 20) + d;
+    // 조사 칸·문 표시가 가로로 늘어선 줄(건물 앞 「들어갈 수 없는 입구」 줄)은 맨 뒤로 — 증거 칸이 그 사이에 섞이면 못 찾는다.
+    const score = (near ? 0 : 20) + d + (markers.some((e) => e.y === y && Math.abs(e.x - x) <= 3) ? 100 : 0);
     if (!best || score < best.score || (score === best.score && (y < best.y || (y === best.y && x < best.x)))) best = { x, y, near, score };
   }
   return best ? { x: best.x, y: best.y, near: best.near } : undefined;

@@ -854,6 +854,47 @@ npm run harness -- assistant-capability review --out <실행> --case npc-line \
 
 검수는 결과 파일 해시와 각 PNG 해시에 묶인다. 결과/그림이 바뀌면 영수증이 무효가 되어 pending으로 돌아간다. 조수 ready는 지도 렌더 완료보다 빠를 수 있으므로 에디터 residentTileCells도 기다린다. `recapture`는 이전 PNG/판정을 capture-history에 보존하고 같은 저장 결과를 새 context에서 읽어 렌더 완료 후 재캡처한다. 모델 호출이나 콘텐츠 수선은 하지 않는다. 검수자 인적 진술의 진실성 자체는 파일 해시로 증명되지 않는다. 별도 검수 모델의 품질과 정상/불량 이미지 교정은 후속 범위다.
 
+## 실행 스트림과 연결 수 — 턴이 끝맺음에서 말없이 멈출 때 (2026-11-12)
+
+**증상.** 조수의 마지막 보고와 끝맺음 마감이 나온 직후 이벤트가 끊기고, 턴 상한(45분)까지 아무 일도 없다. 워커·호스트·편집기 탭 모두 한가하다.
+워커는 적용 응답을 30분 기다리다 «적용 응답을 전달하지 못했습니다(409)» 로 끝난다. 2026-11-11 이 상자의 사막 게임 네 판(`purpose-desert` 1~4)과
+`r1check-fun` 의 턴 1 이 모두 이랬다.
+
+**원인.** 구동기(`node/editorDriver.mjs`)는 `/v1/agent/run` 응답을 `response.clone()` 으로 같이 읽는다. 편집기는 워커가 30초 넘게 조용하면
+제 리더를 끊고 GET `…&runId=…&after=…` 으로 이어 받는데(`src/ai/piAgent/client.ts`), **복제한 본문은 두 가지가 다 끊겨야 연결이 닫힌다.**
+구동기의 가지가 계속 읽고 있어 이어 받기 한 번마다 연결 하나가 남았다. 브라우저는 호스트 하나에 연결을 6개까지만 연다 —
+POST 1 + 이어 받기 4 + 프로젝트 이벤트(EventSource) 1 = 6 이 되면 커밋 기록·저장·적용 응답 요청이 **보내지지도 못한 채** 줄을 선다.
+멈춘 순간의 측정(`purpose-desert4`): 마지막 체크포인트는 대기열에서 나와 적용에 들어갔고, 커밋 기록 요청이 160초째 답이 없고, 주 스레드는 한가했고
+(5초에 300프레임), 탭 → 호스트 연결이 정확히 6개였다. 호스트 로그의 «event loop blocked» 30초 이상이 판마다 네 번(69·49·31·35초 등)이고 멈춤은 네 번째 뒤다.
+
+**고친 것 (세 겹).**
+
+| 겹 | 무엇 |
+|---|---|
+| 구동기 | 실행 번호마다 지금 읽는 복제 가지 하나만 둔다. 이어 받기 요청이 나가면 같은 실행의 앞 가지를 끊고 `stream_superseded` 로 적는다(`stream_closed` 가 아니다 — 그건 «턴이 끝났다» 로 읽힌다). 실행 번호가 다른 스트림은 서로 끊지 않는다 |
+| 호스트 중계 | 편집기가 POST 와 이어 받기에 같은 읽는 이 번호(`?reader=`)를 싣고, 중계(`scripts/lib/piRunRelay.mjs`)가 같은 번호의 앞 스트림을 닫는다 — `openwiki/editor-ai-panel.md` 「실행 기록과 이어 받기」 |
+| 워커 | 장소 짓기·출구 마감 사이에 루프에 차례를 줘 30초 넘는 침묵 자체를 없앤다 — `openwiki/assistant-v2.md` 「워커 루프에 차례 주기」 |
+
+**턴 기록에서 읽는 법** (`session/turns/NNN.json`, 도는 동안은 `session/state.json`):
+
+| 칸 | 뜻 |
+|---|---|
+| `streams.open` · `resumes` | 그 턴에 열린 실행 스트림 수(POST + 이어 받기)와 그중 이어 받기 |
+| `streams.superseded` | 이어 받기에 밀려 끊긴 앞 가지. **`resumes` 와 같아야 한다** — 적으면 앞 스트림이 살아 연결을 쥐고 있다 |
+| `streams.closed` · `errors` | 끝까지 읽고 닫힌 스트림 · 오류로 끊긴 스트림 |
+| `streams.live` · `livePeak` | 아직 읽고 있는 실행 스트림(열림 − 밀려 끊김 − 닫힘 − 오류)과 턴 중 최대. 실행 하나에 1, 이어 받는 순간에만 2 다. **`livePeak` 가 이어 받기 수만큼 늘면 누수이고, 5 면 그 턴은 연결이 모자라 멈춘 것이다** |
+| `sockets.peak` · `atSettle` | 탭 → 호스트의 열린 TCP 연결 수(리눅스 `ss`; 없으면 null) — 턴 중 최대와 가라앉은 순간 |
+
+연결 수에는 쉬는 keep-alive 연결도 들어간다 — 페이지를 막 읽은 뒤나 저장이 몰린 직후에는 멀쩡한 턴에서도 6 이 흔하다(쉬는 연결은 2분쯤 뒤 닫힌다).
+그래서 판정은 `streams` 로 하고, 연결 수는 **2분 넘게 조용한데 6** 일 때만 «여섯 개가 모두 쓰이는 중» 이라는 증거다(멈춘 판에서 본 것이 이것이다).
+
+**모델 없는 재현.** `node scripts/qa/harness-stream-leak.mjs [구동기 경로] [이어 받기 수]` — 가짜 호스트가 끝나지 않는 실행 스트림을 주고, 페이지가 편집기처럼
+제 리더를 끊고 이어 받는다. 고치기 전 구동기(`git show <옛 커밋>:src/harnesses/assistant-capability/node/editorDriver.mjs > 파일`)는 이어 받기 5번 뒤
+평범한 요청이 5초 안에 답을 못 받고 서버 쪽 산 스트림이 6, 고친 뒤는 6~9ms · 산 스트림 1 · `superseded` 5.
+
+**함정.** 가로채기에서 응답 본문을 복제해 읽는 다른 스크립트(`scripts/capture/capture-terrain-*.mjs`)도 같은 모양이다 — 이어 받기가 날 만큼 긴 실행에 쓰면 같은 일이 난다.
+새로 가로채기를 쓸 때는 이어 받기 요청(`runId=` 가 붙은 GET)을 보면 앞 가지를 `cancel()` 한다.
+
 ## 산출물과 확장
 
 `qa-runs/harnesses/assistant-capability/<실행>/`에는 초기 fixture/SQLite/assets, task baseline, 실제 trace, 적용 후 결과, 재로드 영수증, runtime SUMMARY/manifest/PNG, gate 결과, 시각 검수 영수증과 종합 summary.json/SUMMARY.md/report.html을 남긴다. 큰 산출물은 gitignore이며 코드·시드·문서는 커밋 대상이다.

@@ -4061,6 +4061,16 @@ A 완료 후 B가 1,886ms 더 진행하는 동안 A는 완료·B는 진행 표�
   아무도 붙지 않은 채 5분(`RESUME_GRACE_MS`)이 지나면 실행을 멈춘다. 끝난 기록은 10분 보관, 기록 상한은 256MB 다. 헤더가 없는 옛 호스트면
   예전 방식(통째 POST, 끊기면 실패)으로 돈다. 이어 받지 못하면 「AI 작업 연결이 끊겼고 다시 이어 받지 못했습니다」.
   회귀: `test/ohMyPiRunRelay.node.test.mjs`, `test/piAgentClientResume.test.ts`, `test/piAgentCommandAndRoute.test.ts`.
+- **읽는 이 번호 — 이어 받기는 같은 읽는 이의 앞 스트림을 끝낸다 (2026-11-12):** `client.ts` 가 실행마다 읽는 이 번호를 만들어 POST 와 이어 받기 GET 에
+  `&reader=<번호>` 로 싣는다. 중계의 `tail(run, after, reader)` 는 같은 실행 · 같은 번호의 새 스트림이 열리면 앞 스트림을 닫는다(새 스트림이 이미 듣고 있어
+  `RESUME_GRACE_MS` 유예는 걸리지 않는다). 왜: 편집기는 제 리더를 끊고 이어 받지만 응답 본문을 같이 읽는 쪽이 있으면(본문을 복제하는 시험 구동기) 앞 연결이
+  실행이 끝날 때까지 남는다 — 이어 받기 네 번이면 브라우저의 호스트당 연결 6개가 차서 저장·적용 응답이 나가지 못하고 턴이 30분 멈췄다
+  (`openwiki/harnesses/assistant-capability.md` 「실행 스트림과 연결 수」).
+  **실행 번호만으로 끊지 않는다.** 같은 실행을 읽는 정당한 둘째 읽기가 있다 — 끝난 실행의 기록을 Node 에서 따로 읽는 QA 스크립트(`scripts/qa/live-*.mjs` 여섯,
+  번호 없는 GET). 그 읽기가 편집기의 스트림을 «오류 없이» 닫으면 편집기는 실행이 끝난 줄 알고 `done` 없이 턴을 끝낸다(오류 없이 닫힌 스트림 = 실행 종료).
+  편집기 안에는 둘째 읽기가 없다: 스튜디오 레인은 같은 클라이언트의 `onEvent` 를 받고, 다른 탭은 제 실행 번호를 쓴다. 번호가 없거나 모양이 틀린
+  (`[A-Za-z0-9-]{8,64}` 가 아닌) 읽기는 아무것도 끝내지 않는다. 회귀: `test/piRunRelayReaders.test.ts`(이어 받기 5번 — 매번 앞 스트림만 닫힘 ·
+  번호 없는 읽기와 다른 번호의 읽기는 그대로 · 워커 중단 0), `test/piAgentClientResume.test.ts`(POST 와 이어 받기의 번호가 같다).
 - **프리셋 첫 요청은 의도 읽기를 건너뛴다 (2026-09-27):** `classifyPlainPiTurn`(`plainTurn.ts`)은 읽기 전용 다이얼이 아니고
   `isGenrePresetBriefRequest` 이면 선언 모델을 부르지 않고 바로 제작 턴(`routineEdit:false`, 전체 도구, 팀이면 team)을 돌려준다.
   실측으로 의도 읽기는 모델 두 번에 10–24초였고, 프리셋 요청은 항상 "제작" 이라 답이 정해져 있다. 회귀: `test/plainTurnGenrePreset.test.ts`.
