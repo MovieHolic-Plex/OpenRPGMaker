@@ -1,10 +1,10 @@
 // 추격자가 있는데 숨을 곳이 0곳인 맵(2026-10-29 standin horror 「폐병원」) — 맵에 있는 옷장·사물함·침대·커튼 1~2곳을 순찰 길 가까이에서 은신처로.
-import type { LaneStage } from "../types";
+import type { FinishStage } from "../../types";
 import type { Project } from "@/project/types";
 import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots } from "@/project/chaserHiding";
 
-export const stage: LaneStage = {
-  id: "chaser-hiding", scope: "project", order: 80,
+export const stage: FinishStage = {
+  id: "chaser-hiding", phase: "lane-project", order: 80,
   run({ env, notes }) {
     for (const [mapId, map0] of Object.entries(env.ctx.project.maps)) {
       if (!chaserEvents(map0).length) continue;
