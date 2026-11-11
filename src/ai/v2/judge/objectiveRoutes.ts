@@ -135,9 +135,12 @@ export function refreshObjectiveRoutes(project: Project): number {
           const named = Object.values(project.maps).find((m) => bare(m.name ?? "") === bare(tail[1]!));
           if (!named) continue;
           const base = message.slice(0, tail.index).trimEnd();
-          // 다음 단계 이벤트가 그 입구 맵(또는 그 맵을 거쳐 가는 곳)에 있으면 그 이벤트를, 아니면 입구 맵을 가리킨다.
+          // 글이 이름을 댄 대상 · 목표를 걸 때 묶은 대상(꼬리의 이름)이 먼저다 — 함수가 단계 사이에 끼운 고리(번호 쪽지)는 청사진 단계가 아니라서,
+          // 다음 단계만 보면 「번호 쪽지를 살펴보자」 의 표시가 그다음 단계(봉인)에 섰다.
+          const bound = boundTarget(project, base, message.slice(tail.index), from, event.id);
+          // 묶은 대상이 없으면: 다음 단계 이벤트가 그 입구 맵(또는 그 맵을 거쳐 가는 곳)에 있으면 그 이벤트를, 아니면 입구 맵을 가리킨다.
           const route = next && next.map.id !== from ? mapRoute(project, from, next.map.id) : undefined;
-          const where = next && (next.map.id === from || route?.includes(named.id)) ? next.event.id : named.id;
+          const where = bound ? bound.id : next && (next.map.id === from || route?.includes(named.id)) ? next.event.id : named.id;
           const updated = withWhere(project, from, base, where, origin);
           // 옮긴 뒤 맵이 바로 그 입구 맵이면 「입구」 꼬리는 틀린 말이다 — 꼬리 없는 글(이름이 이미 글에 있으면)도 쓴다.
           if (updated !== message && (updated !== base || from === named.id)) { fields.message = updated; changed += 1; }
@@ -147,6 +150,23 @@ export function refreshObjectiveRoutes(project: Project): number {
     }
   }
   return changed;
+}
+
+/**
+ * 목표의 대상 이벤트 — 글이 «무엇을·누구에게» 로 이름을 댄 이벤트가 하나뿐이면 그것(「번호 쪽지를 살펴보자」 → 번호 쪽지),
+ * 아니면 꼬리 맨 끝이 이름을 댄 이벤트(「… → 번호 쪽지」 · 「… → 맵 · 번호 쪽지」 — 목표를 걸 때 묶은 대상). 둘 다 없으면 undefined.
+ * 「파리드가 말한 …」 처럼 지나가며 부른 이름은 대상이 아니다(을·를·에게·한테·께 가 붙은 이름만). 목표를 거는 이벤트 자신과 목표·이동 이벤트는 뺀다.
+ */
+function boundTarget(project: Project, base: string, tail: string, fromMapId: string, selfId: string): GameMap["events"][number] | undefined {
+  const events = Object.values(project.maps).flatMap((map) => (map.events ?? []).map((ev) => ({ map, ev, name: bare(String(ev.name ?? "")) })))
+    .filter((r) => r.ev.id !== selfId && !r.ev.id.startsWith("ev_objective") && !r.ev.id.startsWith("ev_gate_") && r.name.length >= 2)
+    .sort((a, b) => Number(b.map.id === fromMapId) - Number(a.map.id === fromMapId));
+  const text = bare(base);
+  const aimed = [...new Set(events.filter((r) => ["을", "를", "에게", "한테", "께"].some((p) => text.includes(`${r.name}${p}`))).map((r) => r.name))];
+  const whole = aimed.filter((n) => !aimed.some((o) => o !== n && o.includes(n)));
+  if (whole.length === 1) return events.find((r) => r.name === whole[0])!.ev;
+  const label = bare((/→\s*([^→()]+?)\s*\)\s*$/u.exec(tail)?.[1] ?? "").split("·").at(-1) ?? "");
+  return label.length >= 2 ? events.find((r) => r.name === label)?.ev : undefined;
 }
 
 /**
