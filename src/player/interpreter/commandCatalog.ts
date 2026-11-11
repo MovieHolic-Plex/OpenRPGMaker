@@ -1482,6 +1482,7 @@ function locationEvalContext(state: InterpreterState): ConditionEvalContext {
   return {
     map,
     ...(blocksSight ? { blocksSight } : {}),
+    ...(map ? { mapEvents: () => map.events } : {}),
     ...partySkillContext(state.project, state.session),
     // 걷는 NPC 의 실시간 칸은 장면 eventPositions 에 있다(eventSeesPlayer 가 읽는다).
     ...(positions ? { eventPosition: (eventId: string) => positions[eventId] } : {}),
