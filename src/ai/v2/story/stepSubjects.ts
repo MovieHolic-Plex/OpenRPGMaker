@@ -8,7 +8,7 @@ import type { GameEvent, Project } from "@/project/types";
 import type { BuildRun } from "../shared/types";
 import { josa } from "@/util/josa";
 import { buildPeople } from "../place/people";
-import { isProgressWord, resolveSteps } from "./mysteryCase";
+import { isProgressWord, resolveSteps } from "./mysteryCaseRead";
 import { reachableCells, unreachableEvents } from "../judge/eventReach";
 import { isPassable } from "@/project/collision";
 

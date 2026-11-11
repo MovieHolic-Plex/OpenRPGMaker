@@ -9,7 +9,7 @@ import { walkGame } from "@/ai/v2/story/makeGame";
 import { battleStepBypass, stepMixProblems, walkBlueprint } from "@/ai/v2/story/blueprint";
 import { foeGraphic } from "@/ai/v2/story/blueprintPath";
 import { sceneCraftFindings } from "@/ai/v2/judge/sceneCraft";
-import { isMysteryBlueprint } from "@/ai/v2/story/mysteryCase";
+import { isMysteryBlueprint } from "@/ai/v2/story/mysteryCaseRead";
 import { parseAdvisorReply } from "@/ai/v2/judge/advisor";
 import { builderFor } from "@/ai/v2/place/builders";
 import { WORLDS, parseWorldStyle, pickWorld, pickWorldDoor, repairWorldPlaces, worldById, worldCard, worldKind, worldPlaceProblems, worldPlaceSpec } from "@/ai/v2/place/world";
