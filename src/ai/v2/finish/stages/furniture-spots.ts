@@ -1,6 +1,6 @@
 // 그림 없는 조사 칸은 가구에 앉히고, 가구 위 조사는 가구 전체에서 받는다(examineSpot.settleFurnitureSpots).
 import type { FinishStage } from "../types";
-import { createBuildRun } from "../../buildRun";
+import { createBuildRun } from "../../shared/buildRun";
 import { alignClueObjects } from "../../story/clueObjects";
 import { settleFurnitureSpots } from "../../story/examineSpot";
 import { refreshRemainingClues } from "../../story/mysteryCase";

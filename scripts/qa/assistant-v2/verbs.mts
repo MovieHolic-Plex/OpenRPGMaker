@@ -9,7 +9,7 @@ import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
 import { v2GateProblems } from "../../../src/ai/v2/judge/finishGate.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
 import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt/systemPrompt.ts";
-import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
+import type { PiAssistantV2Env } from "../../../src/ai/v2/shared/env.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
 import { LOCAL_CLI_ADAPTERS, localCliBinary } from "../../lib/localCliAgent/registry.ts";
 

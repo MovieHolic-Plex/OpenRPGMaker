@@ -1,12 +1,12 @@
 // 모델 호출 앞뒤의 갈고리 — 도구 싣기·상태 카드·리드 계획·첫 호출 todo 강제·도구 호출 강제. 2026-11-11 리팩토링 R3: runAssistantV2 의 runPiAgent 호출에서 옮겼다.
 import { createV2Tools } from "../verbs";
-import type { PiAssistantV2Env } from "../env";
+import type { PiAssistantV2Env } from "../shared/env";
 import { withTodoLoop } from "../loop/todoTools";
 import { exposeV2Tools } from "../toolExposure";
 import { formatCall, nextForItem } from "../loop/nextCall";
 import { requestSkeleton, skeletonCard } from "../loop/requestSkeleton";
 import { checkLabel } from "../loop/todoStore";
-import { leadPlanMessages, planForWorker, projectDigest, toolCatalog } from "../split";
+import { leadPlanMessages, planForWorker, projectDigest, toolCatalog } from "./split";
 import type { TurnContext } from "./context";
 
 /** runPiAgent 의 v2 갈고리 가운데 모델 호출 앞뒤의 것 다섯. */

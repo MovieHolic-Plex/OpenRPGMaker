@@ -11,7 +11,7 @@
 import type { Project } from "@/project/types";
 import type { ProjectIndex } from "../loop/refs";
 import type { V2Session } from "../turn/session";
-import type { PlaceBuildResult, PlaceRecord, PlaceSpec } from "../types";
+import type { PlaceBuildResult, PlaceRecord, PlaceSpec } from "../shared/types";
 
 interface SavedPlace {
   readonly builder: string;

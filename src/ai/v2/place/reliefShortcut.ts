@@ -11,7 +11,7 @@ import { canMove, isPassable } from "@/project/collision";
 import { invalidateReliefSlopes, rampAt, rampCode, reliefLevel, type RampDir } from "@/project/relief/walk";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { reachableCells, unreachableEvents } from "../judge/eventReach";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 
 type Cell = { x: number; y: number };
 const DIRS: [number, number, RampDir][] = [[0, -1, "n"], [0, 1, "s"], [1, 0, "e"], [-1, 0, "w"]];

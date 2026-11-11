@@ -9,7 +9,7 @@
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { blockersOf, reachFrom } from "../judge/eventReach";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 
 type Cell = { x: number; y: number };
 type Obj = Record<string, unknown>;

@@ -6,9 +6,9 @@ import type { ToolContext } from "@/editor/tools/types";
 import type { Project } from "@/project/types";
 import { createV2Tools } from "@/ai/v2/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
-import { finishBuildPending, runFinishAutoBuild } from "@/ai/v2/finishAutoBuild";
+import { finishBuildPending, runFinishAutoBuild } from "@/ai/v2/finish/index";
 import { indexProject } from "@/ai/v2/loop/refs";
-import type { PiAssistantV2Env } from "@/ai/v2/env";
+import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import { buildFixture } from "@/harnesses/assistant-capability/node/smallJobs/fixtures";
 
 const SLOW = 180_000;

@@ -14,13 +14,13 @@ import { MONSTER_TOWN_CARD } from "../../../src/ai/v2/place/builders/monsterTown
 import { JOSEON_CARD } from "../../../src/ai/v2/place/builders/joseon.ts";
 import { WIZARDING_CARD } from "../../../src/ai/v2/place/builders/wizarding.ts";
 import { SCENE_CARD } from "../../../src/ai/v2/story/scene.ts";
-import { BLUEPRINT_CARD } from "../../../src/ai/v2/blueprint.ts";
-import { MAKE_GAME_CARD } from "../../../src/ai/v2/makeGame.ts";
+import { BLUEPRINT_CARD } from "../../../src/ai/v2/story/blueprint.ts";
+import { MAKE_GAME_CARD } from "../../../src/ai/v2/story/makeGame.ts";
 import { TERRAIN_CARD } from "../../../src/ai/v2/prompt/mapEditCards.ts";
 import { GAME_CARD } from "../../../src/ai/v2/prompt/gameCard.ts";
 import { MUSIC_TIER, FALLEN_TIERS } from "../../../src/ai/v2/request/toolGroups.ts";
 import { storeTierCard } from "../../../src/ai/v2/request/readers.ts";
-import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
+import type { PiAssistantV2Env } from "../../../src/ai/v2/shared/env.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
 
 const TASKS = [

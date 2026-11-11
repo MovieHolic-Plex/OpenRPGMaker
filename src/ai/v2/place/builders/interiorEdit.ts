@@ -12,7 +12,7 @@ import type { GameMap, Project } from "@/project/types";
 import { runMachineChecks } from "../../judge/machineChecks";
 import { findPart, roomSetsFor } from "./interior";
 import { handObjectKitId } from "./dressRoom";
-import type { BuildRun, PlaceBuildResult, PlaceSpec } from "../../types";
+import type { BuildRun, PlaceBuildResult, PlaceSpec } from "../../shared/types";
 
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
 type Rect = { id: string; x0: number; y0: number; x1: number; y1: number };

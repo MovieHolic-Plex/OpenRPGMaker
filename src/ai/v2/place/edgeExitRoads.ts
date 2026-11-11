@@ -7,7 +7,7 @@
 //  - 너무 멀면(24칸 넘게) 잇지 않는다(출구 그림과 맵 가장자리로만 보인다).
 import { canMove } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 
 const ROAD_LABEL = /(길|road|path).*오토타일|오토타일.*(길|road|path)/iu;
 const NOT_ROAD = /물|water|강|운하|벽|wall|지붕|roof/iu;

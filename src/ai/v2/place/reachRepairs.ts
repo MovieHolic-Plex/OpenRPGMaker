@@ -5,7 +5,7 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import { PERSON_SPOT_BAD, personSpotContext, personSpotCost } from "./personSpot";
 import { objectAt, tileLabel } from "./cells";
 import { objectBaseLabel, objectClusterAt } from "@/project/objectFootprint";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 import { Cell, DIRS, eventBlocks, anchorsOf, reachFrom, blockersOf, bodyReached, nextTo, reachableCells, unreachableEvents, isDoorName, doorArtCells, baseLabel, hostWords, itemTileWords, objectCells, singleTileObject, invisibleEvent } from "../judge/eventReach";
 
 export interface ReachRepair { readonly moved: string[]; readonly stuck: string[] }

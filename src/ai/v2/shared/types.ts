@@ -3,7 +3,7 @@
 // v2 의 한 줄: 모델은 «무엇을» 정하고(명세), 함수가 «어떻게» 짓고(결정론 빌더), 다른 눈이 1배 그림을 본다(비평가).
 // 모델은 칸 번호·평면 문자열·좌표 목록을 쓰지 않는다. 빌더가 명세를 v1 의 결정론 도구 인자로 옮겨 부른다.
 // 이 파일은 순수 타입이다 — 워커(scripts/lib/assistantV2Runtime.ts)와 테스트가 같이 읽는다.
-import type { InteriorLayout } from "./place/interiorLayout";
+import type { InteriorLayout } from "../place/interiorLayout";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import type { RoomDesign } from "@/editor/handInterior/designRoom";
 
@@ -114,7 +114,7 @@ export interface PlacePatch {
   readonly design?: RoomDesign;
   readonly designZone?: string;
   /** (칸 배치 장소) 지금 배치에 적용할 고침 — 기물 빼기/더하기·칸 통째 바꾸기(interiorLayout.applyLayoutPatch). */
-  readonly layoutPatch?: import("./place/interiorLayout").LayoutPatch;
+  readonly layoutPatch?: import("../place/interiorLayout").LayoutPatch;
   /** (칸 배치 장소) 자기 비평 한 바퀴를 «고칠 것 없음»으로 마칠 때 — 무엇을 보고 왜 괜찮은지. 다시 깔지 않는다. */
   readonly layoutReview?: string;
 }
@@ -275,3 +275,5 @@ export interface ContentBuildResult {
   /** 편집기에 띄울 카드 요청(그리기 카드 등) — 동사 결과 data 로 실려 편집기가 카드를 연다. */
   readonly card?: unknown;
 }
+
+export type Side = "north" | "south" | "east" | "west";

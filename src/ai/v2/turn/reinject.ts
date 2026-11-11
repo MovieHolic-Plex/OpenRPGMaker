@@ -1,5 +1,5 @@
 // 재주입 — 열린 항목이 있으면 숨은 지시로 같은 대화를 한 차례 더 돈다(고리 규칙이 막으면 멈춘다). 2026-11-11 리팩토링 R3: runAssistantV2 에서 옮겼다.
-import type { PiAssistantV2Env } from "../env";
+import type { PiAssistantV2Env } from "../shared/env";
 import { formatCall, nextForItem } from "../loop/nextCall";
 import { continuationPrompt, projectFingerprint, textHash, STOP_REASON_KO } from "../loop/continuation";
 import type { TodoItem } from "../todo/types";

@@ -10,7 +10,7 @@
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { unreachableEvents } from "../judge/eventReach";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 
 const SIGN = "kit:beodeul_city/bd-out-signpost";
 const ROAD = /길|포석|road|path/iu;

@@ -5,9 +5,9 @@
 //   환경 변수가 없으면 요청의 `lead`(편집기 엔진 선택의 팀장 — 첨 실행 관문이 Claude 구독에 Opus 팀장 + Haiku 워커로 켠다)를 쓴다. `off`·`0` 은 둘 다 끈다.
 //   `worker:` 칸은 받기만 한다(기록용) — 워커는 이 실행의 주 모델(편집기에서 고른 조수 모델)이다.
 // 모델에게 가는 글은 영어(사용자 지시 2026-10-30). 순수 함수만 — 호출은 실행기(scripts/lib/assistantV2Runtime.ts)가 한다.
-import type { Project } from "../../project/types";
-import { isOpenAiCompatProviderId } from "../openAiCompat.ts";
-import { parseOhMyPiProvider } from "../ohMyPiProviders.ts";
+import type { Project } from "../../../project/types";
+import { isOpenAiCompatProviderId } from "../../openAiCompat.ts";
+import { parseOhMyPiProvider } from "../../ohMyPiProviders.ts";
 
 interface SplitRole { readonly provider: string; readonly model: string; readonly effort?: "low" | "medium" | "high" }
 interface SplitConfig { readonly lead: SplitRole; readonly worker?: string; readonly raw: string }

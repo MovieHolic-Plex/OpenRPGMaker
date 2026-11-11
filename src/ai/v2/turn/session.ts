@@ -5,8 +5,8 @@ import type { MachineCheck } from "../judge/machineChecks";
 import { TodoLoop } from "../loop/continuation";
 import { HookStats } from "../loop/hookStats";
 import { TodoStore } from "../loop/todoStore";
-import type { StageWrites } from "../stageWrites";
-import type { ContentBuildResult, PlaceRecord, PlaceSpec } from "../types";
+import type { StageWrites } from "../shared/stageWrites";
+import type { ContentBuildResult, PlaceRecord, PlaceSpec } from "../shared/types";
 
 /** 한 맵의 마지막 검사 결과(기계 검사·비평·그림). */
 export interface Seen {
