@@ -466,8 +466,12 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 같은 표: 잠긴 문 맞음 3 · 말없음 36 · 잘못 1 → 맞음 41 · 0 · 0. 구성기 바깥 맵 40장의 건물 입구 277개 모두가 답하고(성문 기둥 0), 버들항 마을은 3 → 7 · 항구 4 → 7 · 늪 마을 0 → 5. 방 29장은 기록이 없어도 0(방 맵에는 건물 키트의 입구 타일이 없다).
 이름표로 걸어서 지나는 문을 가리던 `isWalkThroughDoorArt` 는 쓰는 곳이 없어져 지웠다. 그림: `~/claude-viz/stage-audit-pr2.html`.
 
+**바깥 맵끼리는 집 문으로 잇지 않는다(`pickTransferSpot` 의 `buildingDoor`).** 가장자리가 모두 막힌 바깥 맵끼리(세계 열 벌 35개 연결 가운데 3개 — 요새 ↔ 난파선 암초, 비공정 부두 ↔ 섬 사슬, 섬 사슬 ↔ 신전 섬)는
+`linkChild` 의 마지막 차례에서 `pickTransferSpot` 을 탄다. 건물 입구가 보이게 되자 그 자리가 집 문이 될 수 있었다 — 집에 들어갔는데 다른 바깥 맵으로 나오는 것은 맨바닥 이동 칸보다 나쁘다(감독 결정 2026-11-11).
+그래서 건물 입구는 **건너편이 방일 때만** 준다: 부르는 쪽이 `buildingDoor: true | false` 로 말하고, 안 주면 건너편 맵(`otherName`)이 방이라고 적혀 있을 때만(실내 기후 · 방 키트의 천장 띠) — 모르면 주지 않는다.
+구성기로 지은 방은 맵에 방이라고 적힌 것이 없어 기본값으로는 집 문을 못 받는다 — 부르는 쪽이 `buildingDoor: true` 를 줘야 한다(빌더가 집 문 목록을 돌려준 부모 맵은 이 함수를 타지 않는다).
+
 **알려진 한계.** 마법 학교·고딕 저택 칩셋은 문을 키트로 적지 않아(구조 키트에 entrance 부품 없음, 방 키트 물건 0개) 잇기 자리가 그 실내의 문 그림을 고르지 못한다 — 이름표로 읽던 때는 골랐다(2장).
-가장자리가 모두 막힌 바깥 맵끼리(하늘섬·난파선 — 세계 열 벌 35개 연결 가운데 3개)는 `linkChild` 의 마지막 차례에서 이 함수를 타므로, 이제 빈 건물 입구가 있으면 그 문이 다른 바깥 맵으로 이어진다(버들항에서는 전부터 그랬다 — 「집 문 그림이 바깥 맵 사이 문이 되지 않게 먼저 변을 다 쓴다」).
 계단은 아직 이름표(「계단」)로 읽는다.
 
 ## 목표 화살표는 길목을 가리킨다 · 목표 꼬리는 지금 맵에서 읽는다 (2026-11-11)
@@ -535,7 +539,6 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 - `judge/sceneCraft.ts`: 장면 뒤 그 사람이 제자리에서 3칸 안이면 자리 이탈이 아니다(`strayAfterScene` — 걸음과 다가서기 대상의 칸으로 어림, 가늠 못 하면 전처럼 잡는다).
 - 근거(탐침, starter 픽스처): 같은 `add_event` 한 번 → 전 `무대 검사 문제 1` + `off-post` 1건 → 후 둘 다 0, 미루의 저장 자리 (13,14) 그대로.
 
-||||||| e1d4dc675e
 ## 쓰기 결과에는 도구의 알림이 가고, 옛 검사 줄은 안 간다 (2026-11-11, 작은 일 둘째 묶음 첫 측정)
 
 둘째 묶음 첫 측정(Terra, main e298f686e5 — 28/35)의 `item-new-built` 에서 모델은 `upsert_item` 을 같은 인자로 다섯 번 불렀다. 결과마다 실린 것은
@@ -555,7 +558,6 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 **근거(모델 없는 탐침, 지어진 픽스처에서 네 번 쓰기).** 결과 글 11,600자 → 4,522자. `move_event` 2,040자 → 153자(옛 경고 8줄이 빠짐),
 `upsert_item` 3,187자 → 1,379자에 「scope …」 알림이 처음으로 실림, `create_transfer_pair` 에 「출입구 A 위치 자동 조정: (10,1) → (11,3)」 이 처음으로 실림.
 
-||||||| f476f14e6d
 ## 문 앞 칸은 길을 막지 않는다 — 집 문 여섯 가운데 하나가 맨바닥에 서던 일 (2026-11-11)
 
 `test/villageSummaryListsDoors.test.ts` 가 CI 에서 실행마다 갈렸다(씨앗 없이 마을을 짓는다). 모델 없는 탐침으로 같은 순서를 되풀이하니
@@ -614,7 +616,6 @@ golden: 117/153 이 `create_transfer_pair` · `place_door` 글만 바뀜. 시험
 
 증거: `test/toolsOneCallGaps.test.ts` · `test/aiV2OneCallToolText.test.ts`. 둘째 묶음 여섯 일(`boss-line-starter` · `no-save-built` · `heal-spring-built` · `npc-wander-starter` · `npc-still-starter` · `start-items-starter`)에 한 호출 정답을 `accept` 로 더했다(판정은 그대로).
 
-||||||| a3d74a1f4d
 ## 이미 있는 NPC 가 하던 일은 남는다 — `create_quest` · `add_companion` · `set_shop_stock` (2026-11-11, 작은 일 둘째 묶음 뒤)
 
 작은 일 둘째 묶음의 손 정답을 만들다 본 결함 셋 — 셋 다 「있던 내용을 망가뜨린다」.
@@ -643,7 +644,6 @@ golden: 117/153 이 `create_transfer_pair` · `place_door` 글만 바뀜. 시험
 증거: `test/toolsKeepNpcContent.test.ts`(픽스처 `starter`·`built`). 둘째 묶음의 `join-party-starter`·`stock-add-built`·`stock-remove-built` 에 한 호출 정답을 `accept` 로 더했다(판정은 그대로).
 남은 것: 의뢰 페이지가 본뜨는 것은 「시작 상태에서 도는 페이지」 하나다 — 그 사람에게 조건 페이지가 여럿이면 의뢰가 걸려 있는 동안 그 조건 대사는 가려진다(전과 같다).
 
-||||||| f93a342235
 ## 조사 지점은 `place_examine_hotspots` — 물건 이름으로 놓는다 · 글만 나오는 조사는 장면이 아니다 (2026-11-11, 작은 일 재측정)
 
 작은 일 재측정(Terra, main 84a7fa331a)에서 통과는 했지만 «완료» 로 못 끝난 두 일 — `sign-starter`(표지판을 읽으면 글) · `examine-fireplace-built`(벽난로를 조사하면 글).
@@ -672,7 +672,6 @@ golden: 117/153 이 `create_transfer_pair` · `place_door` 글만 바뀜. 시험
 golden: 153 가운데 117 이 `place_examine_hotspots` 글/스키마(81 은 그것만, 33 은 조사 카드 글 +23자), 표지판 요청 3줄은 처음 싣는 도구에 `place_examine_hotspots` 가 들고 `fill_region` 이 필요할 때로 물러남.
 시험 `test/aiV2ExamineSpots.test.ts`.
 
-||||||| 091e10574e
 ## 버들항 맵의 빈 땅도 읽고 채운다 — 칸 역할을 안 적는 시트 · `amount:"few"` (2026-11-11, 작은 일 재측정)
 
 작은 일 재측정(Terra, main 84a7fa331a)에서 통과했지만 «완료» 로 못 끝난 `dress-trees-starter`(「마을 빈 곳에 나무를 몇 그루 심어 줘」, 버들항 시작 판):
