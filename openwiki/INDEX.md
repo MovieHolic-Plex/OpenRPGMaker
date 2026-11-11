@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **194쪽 / 8412KB / 약 2,474,246 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **194쪽 / 8413KB / 약 2,474,546 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -32,7 +32,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-validation.md` | 64KB | 17KB | 419 | ~18,019 |
 | `openwiki/editor-workflows-misc.md` | 92KB | 35KB | 637 | ~25,927 |
 | `openwiki/editor-workshop.md` | 76KB | 15KB | 337 | ~22,898 |
-| `openwiki/harnesses/assistant-capability.md` | 151KB | 18KB | 990 | ~45,724 |
+| `openwiki/harnesses/assistant-capability.md` | 152KB | 18KB | 995 | ~46,024 |
 | `openwiki/harnesses/building-kit.md` | 99KB | 4KB | 984 | ~29,868 |
 | `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
 | `openwiki/harnesses/monster-collect-species.md` | 63KB | 18KB | 353 | ~19,132 |
@@ -112,7 +112,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/gothic-manor.md` | 1 | `dist-electron/browser-bridge.js` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/README.md` | 1 | `docs/superpowers/specs/2026-10-05-unified-harness-production.md` |
-| `openwiki/harnesses/assistant-capability.md` | 30 | `REPORT.md`, `agent-briefs.json`, `art-gaps.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `causes.json`, `disclosures.json`, `dist-electron/browser-bridge.js`, `dist/export-player/player.html`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/edit-activity/index.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `summary.live.json`, `tally.json`, `turns/NNN.json`, `visual.json` |
+| `openwiki/harnesses/assistant-capability.md` | 31 | `REPORT.md`, `agent-briefs.json`, `art-gaps.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `boxes.json`, `causes.json`, `disclosures.json`, `dist-electron/browser-bridge.js`, `dist/export-player/player.html`, `film-log.json`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `native-result.json`, `output/edit-activity/index.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `report.html`, `runtime-recheck.json`, `seed-novn.json`, `selfcheck.json`, `session/turns/NNN.json`, `summary.live.json`, `tally.json`, `turns/NNN.json`, `visual.json` |
 | `openwiki/harnesses/battle-backdrop.md` | 2 | `capture.png`, `facts.json` |
 | `openwiki/harnesses/beodeul-architecture.md` | 1 | `qa-runs/harnesses/beodeul-architecture/structural-families-review.png` |
 | `openwiki/harnesses/beodeul-building-review.md` | 19 | `.pixels.json`, `DATA/store-uploads.json`, `output/beodeul-building-review/round7-v3-gate-status.json`, `round4-mill-pass-courtyard-rejection.json`, `round7-browser-proof.json`, `round7-new-candidates.png`, `round7-save-proof.json`, `round7-v2-texture-rejection.json`, `scripts/content/prepare-beodeul-reviewed-references.mts`, `verify-shots/beodeul-building-review/round6-save-proof.json`, `verify-shots/beodeul-building-review/round6-v1-rejection.json`, `verify-shots/beodeul-building-review/round6-v2-rejection.json`, `verify-shots/beodeul-building-review/round6-v3-rejection.json`, `verify-shots/beodeul-building-review/round6-v4-rejection.json`, `verify-shots/beodeul-building-review/round6-v5-structure-rejection.json`, `verify-shots/beodeul-building-review/round6-v6-top-rejection.json`, `verify-shots/beodeul-building-review/round6-visualqa-proof.json`, `verify-shots/beodeul-building-review/round7-v1-texture-rejection.json`, `verify-shots/beodeul-building-review/round7-visualqa-proof.json` |
@@ -1704,7 +1704,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L43` 하네스 목록
 - `L61` 다른 실행기와 공유하는 하네스 목록
 
-### `openwiki/harnesses/assistant-capability.md` — 151KB · 990줄 · ~45,724 토큰 · 통째읽기 잘림
+### `openwiki/harnesses/assistant-capability.md` — 152KB · 995줄 · ~46,024 토큰 · 통째읽기 잘림
 
 - `L7` 실행 경로
   - `L9` 여덟 장르 제작 실측 (2026-10-08)
@@ -1720,30 +1720,30 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L253` 판정 — 저장 문서 전/후만 본다
   - `L308` 자기검사 (`small-jobs-selfcheck`) — 판정을 먼저 증명한다
   - `L318` 실행기 (`small-jobs`)
-  - `L344` 기준선 — 2026-11-11, main `46274bc35f`, Terra high + v2
-  - `L387` 다시 재기 — 2026-11-11, main `84a7fa331a` (B1~B5a · 예산 · 끝맺음 수정 뒤)
-  - `L418` 둘째 묶음 — 새 가족 35가지 (`--set 2`, 2026-11-11)
-  - `L509` 셋째 묶음 — JRPG 가 아닌 게임의 장치 36가지 (`--set 3`, 2026-11-11)
-- `L597` 조수가 깐 맵의 적대적 그림 검수 (`map-vqa`, 2026-11-11)
-  - `L617` 말뭉치
-  - `L631` 검수자에게 주는 것 — 그림 넷과 사실 글
-  - `L664` 종류 안의 되풀이 (`tally.json` 의 `patterns`) — 순위표의 한 줄을 «무엇을 고치면 되는가»로
-  - `L670` 없는 그림 장부 (`art-gaps.json`) — 깔기 결함과 따로 센다
-  - `L682` HUD 화면 검수 (`map-vqa-hud`) — 맵 렌더에는 HUD 가 없다
-  - `L719` 보정 (`map-vqa-calibrate`) — 숫자를 인용하기 전에
-  - `L739` 결과 — 2026-11-11
-  - `L798` 알려 둘 것
-- `L806` 시각 검수
-- `L821` 산출물과 확장
-- `L827` 최초 실측 — 2026-10-05
-- `L835` 제품 회귀와 오류 표시 controls (2026-10-05)
-- `L841` 수정 확인 — 2026-10-05
-- `L845` 월드맵 생성 MP4 증거
-  - `L865` 대사창 읽기 보조 실조수 시험 — Argon 5문장 (2026-10-17, `set_dialogue_system`)
-  - `L879` 미연시 추가 화면 실조수 시험 — Argon 5문장 (2026-10-17, `set_vn_extras`)
-- `L895` 장면 교훈 묶음 (2026-10-22)
-  - `L933` 첫 판 결과 (r2 기준선 → r3 수정 후)
-  - `L980` 루프 1 숫자 (Sonnet 5.5 high 조수 대용, 2026-10-22)
+  - `L349` 기준선 — 2026-11-11, main `46274bc35f`, Terra high + v2
+  - `L392` 다시 재기 — 2026-11-11, main `84a7fa331a` (B1~B5a · 예산 · 끝맺음 수정 뒤)
+  - `L423` 둘째 묶음 — 새 가족 35가지 (`--set 2`, 2026-11-11)
+  - `L514` 셋째 묶음 — JRPG 가 아닌 게임의 장치 36가지 (`--set 3`, 2026-11-11)
+- `L602` 조수가 깐 맵의 적대적 그림 검수 (`map-vqa`, 2026-11-11)
+  - `L622` 말뭉치
+  - `L636` 검수자에게 주는 것 — 그림 넷과 사실 글
+  - `L669` 종류 안의 되풀이 (`tally.json` 의 `patterns`) — 순위표의 한 줄을 «무엇을 고치면 되는가»로
+  - `L675` 없는 그림 장부 (`art-gaps.json`) — 깔기 결함과 따로 센다
+  - `L687` HUD 화면 검수 (`map-vqa-hud`) — 맵 렌더에는 HUD 가 없다
+  - `L724` 보정 (`map-vqa-calibrate`) — 숫자를 인용하기 전에
+  - `L744` 결과 — 2026-11-11
+  - `L803` 알려 둘 것
+- `L811` 시각 검수
+- `L826` 산출물과 확장
+- `L832` 최초 실측 — 2026-10-05
+- `L840` 제품 회귀와 오류 표시 controls (2026-10-05)
+- `L846` 수정 확인 — 2026-10-05
+- `L850` 월드맵 생성 MP4 증거
+  - `L870` 대사창 읽기 보조 실조수 시험 — Argon 5문장 (2026-10-17, `set_dialogue_system`)
+  - `L884` 미연시 추가 화면 실조수 시험 — Argon 5문장 (2026-10-17, `set_vn_extras`)
+- `L900` 장면 교훈 묶음 (2026-10-22)
+  - `L938` 첫 판 결과 (r2 기준선 → r3 수정 후)
+  - `L985` 루프 1 숫자 (Sonnet 5.5 high 조수 대용, 2026-10-22)
 
 ### `openwiki/harnesses/battle-backdrop.md` — 11KB · 83줄 · ~3,401 토큰
 
