@@ -8,7 +8,7 @@ import { carryOver } from "./carryOver";
 import type { PiAssistantV2Env } from "../shared/env";
 import { type AdvisorToolCall, type AdvisorVerdict } from "../judge/advisor";
 import { CONTINUE_WORDS, isWriteRequest } from "../request/readers";
-import { type V2ToolExposure } from "../toolExposure";
+import { type V2ToolExposure } from "../tools/toolExposure";
 import { changedSince, indexProject } from "../loop/refs";
 import { vqaEnabled } from "./support";
 import { loadPlaces } from "../tools/placeMemory";

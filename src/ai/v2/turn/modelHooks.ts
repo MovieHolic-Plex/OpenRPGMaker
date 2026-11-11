@@ -1,8 +1,8 @@
 // 모델 호출 앞뒤의 갈고리 — 도구 싣기·상태 카드·리드 계획·첫 호출 todo 강제·도구 호출 강제. 2026-11-11 리팩토링 R3: runAssistantV2 의 runPiAgent 호출에서 옮겼다.
-import { createV2Tools } from "../verbs";
+import { createV2Tools } from "../tools/verbs";
 import type { PiAssistantV2Env } from "../shared/env";
 import { withTodoLoop } from "../loop/todoTools";
-import { exposeV2Tools } from "../toolExposure";
+import { exposeV2Tools } from "../tools/toolExposure";
 import { formatCall, nextForItem } from "../loop/nextCall";
 import { requestSkeleton, skeletonCard } from "../loop/requestSkeleton";
 import { checkLabel } from "../loop/todoStore";
@@ -12,7 +12,7 @@ import type { TurnContext } from "./context";
 /** runPiAgent 의 v2 갈고리 가운데 모델 호출 앞뒤의 것 다섯. */
 export function turnModelHooks(turn: TurnContext) {
   const { session, store, state, writeRequest, toolNames } = turn;
-  // 처음부터 싣는 도구 + 필요할 때 싣는 도구(load_tools·이름 호출) — src/ai/v2/toolExposure.ts. 다음 호출 제안(nextCall)은 둘 다 부를 수 있다.
+  // 처음부터 싣는 도구 + 필요할 때 싣는 도구(load_tools·이름 호출) — src/ai/v2/tools/toolExposure.ts. 다음 호출 제안(nextCall)은 둘 다 부를 수 있다.
   const tools = (env: PiAssistantV2Env) => {
     const all = withTodoLoop(env, store, session.loop, createV2Tools(env, session), session.hooks);
     for (const t of all) toolNames.add(t.name);

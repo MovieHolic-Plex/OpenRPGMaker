@@ -3,13 +3,13 @@
 //   bun scripts/qa/assistant-v2/dumpPrompt.mts > /tmp/v2-prompt-after.txt
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
 import { getTool } from "../../../src/editor/tools/toolRegistry.ts";
-import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
+import { createV2Tools } from "../../../src/ai/v2/tools/verbs.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
 import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt/systemPrompt.ts";
 import { V2_CARDS } from "../../../src/ai/v2/prompt/placeSpecs.ts";
 import { V2_CORE_PROMPT } from "../../../src/ai/v2/prompt/core.ts";
 import { withTodoLoop } from "../../../src/ai/v2/loop/todoTools.ts";
-import { exposeV2Tools } from "../../../src/ai/v2/toolExposure.ts";
+import { exposeV2Tools } from "../../../src/ai/v2/tools/toolExposure.ts";
 import { MONSTER_TOWN_CARD } from "../../../src/ai/v2/place/builders/monsterTown.ts";
 import { JOSEON_CARD } from "../../../src/ai/v2/place/builders/joseon.ts";
 import { WIZARDING_CARD } from "../../../src/ai/v2/place/builders/wizarding.ts";
