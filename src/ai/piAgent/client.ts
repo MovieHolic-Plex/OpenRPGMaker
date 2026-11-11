@@ -67,8 +67,8 @@ function newRunId(): string {
  * (2026-10-04 실측) 새로고침 뒤 첫 턴마다 이미 가진 150MB 를 다시 gzip·업로드·해제·파싱했다: 보내기 쪽 약 5s,
  * 호스트 쪽 약 6s. 호스트가 정말 모르면 409 한 번(작은 몸통 왕복)으로 그 해시만 받는다.
  */
-async function openRun(request: PiAgentRequest, runId: string, doFetch: typeof fetch, signal: AbortSignal | undefined): Promise<Response> {
-  const url = companionAuthUrl("/v1/agent/run", request.provider);
+async function openRun(request: PiAgentRequest, runId: string, readerId: string, doFetch: typeof fetch, signal: AbortSignal | undefined): Promise<Response> {
+  const url = companionAuthUrl("/v1/agent/run", request.provider) + "&reader=" + encodeURIComponent(readerId);
   const origin = new URL(url, typeof location !== "undefined" ? location.href : "http://local").origin;
   const plan = await planHeavyWire(request);
   const post = async (body: unknown) => {
@@ -109,7 +109,10 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   const captureEpoch = inspectionEpoch();
   const doFetch = options.fetchImpl ?? fetch;
   const runId = newRunId();
-  let response = await openRun(request, runId, doFetch, options.signal);
+  // 읽는 이 번호: 이 호출이 여는 스트림(POST 와 그 뒤 이어 받기)에 같은 값을 싣는다 — 호스트가 이어 받기를 받으면 같은 번호의 앞 스트림을 끝낸다
+  // (scripts/lib/piRunRelay.mjs tail). 우리는 앞 리더를 끊고 이어 받지만, 본문을 같이 읽는 쪽이 있으면 연결이 남는다.
+  const readerId = newRunId();
+  let response = await openRun(request, runId, readerId, doFetch, options.signal);
   if (!response.ok) {
     const payload = await readError(response);
     const connection = describeCompanionFailure(response, "/v1/agent/run", typeof payload.error === "string" ? payload.error : "");
@@ -371,7 +374,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
       let resumed: Response;
       try {
         // 404 는 「호스트가 실행을 잃었다」는 정상 결과다 — 아래에서 따로 처리하므로 연결 알림을 띄우지 않는다.
-        resumed = await fetchCompanion(companionAuthUrl("/v1/agent/run", request.provider) + "&runId=" + encodeURIComponent(runId) + "&after=" + (lastSeq + 1), {
+        resumed = await fetchCompanion(companionAuthUrl("/v1/agent/run", request.provider) + "&runId=" + encodeURIComponent(runId) + "&after=" + (lastSeq + 1) + "&reader=" + encodeURIComponent(readerId), {
           method: "GET", ...(options.signal ? { signal: options.signal } : {}),
         }, { fetchImpl: doFetch, expect404: true });
       } catch (error) { dropError = error; continue; }

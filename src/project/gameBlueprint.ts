@@ -31,6 +31,20 @@ export interface GameBlueprintStepText {
   choices?: { text: string; lines?: string[]; later?: string }[];
 }
 
+/**
+ * 이 단계로 함수가 실제로 지어 둔 것(build_blueprint_path 가 적는다 — 모델은 쓰지 않는다).
+ * 청사진을 다시 써도 같은 단계는 같은 이벤트·같은 스위치를 물려받는다: 이름만 바꾼 다시 쓰기가 사람을 한 명 더 세우지 않고,
+ * 그 스위치로 잠가 둔 문·길이 아무도 켜지 않는 스위치를 기다리지 않는다.
+ */
+export interface GameBlueprintStepBuilt {
+  mapId: string;
+  eventId: string;
+  /** 이 단계의 gives 를 켜는 스위치(gives 가 깃발일 때). */
+  switchId?: string;
+  /** 이 단계의 gives 로 주는 물건(gives 가 물건일 때). */
+  itemId?: string;
+}
+
 export interface GameBlueprintStep {
   /** s1, s2 … 순서대로. */
   id: string;
@@ -52,6 +66,8 @@ export interface GameBlueprintStep {
   feeling: string;
   /** 이 단계 이벤트의 글(build_blueprint_path 가 채운다). */
   text?: GameBlueprintStepText;
+  /** 이 단계로 지어 둔 이벤트·스위치(build_blueprint_path 가 채운다). */
+  built?: GameBlueprintStepBuilt;
 }
 
 /** 이 게임의 장소 하나 — 세계(setting)의 장소 종류(kind)로 함수가 짓는다(src/ai/v2/place/world.ts). */
@@ -77,6 +93,8 @@ export interface GameBlueprint {
   /** 핵심 경로(시작 → 엔딩) 2~12단계. */
   steps: GameBlueprintStep[];
   ending: { name: string; how: string; feeling: string };
+  /** 다시 쓴 청사진에서 빠진 단계가 지어 둔 것 — 다음 경로 짓기가 걷어 낸다(그 이벤트, 그 스위치를 기다리는 조건). */
+  retired?: GameBlueprintStepBuilt[];
   /** 청사진을 쓴 요청 원문(앞부분). */
   request?: string;
   updatedAt?: string;
@@ -128,6 +146,15 @@ export function normalizeStepText(raw: unknown): GameBlueprintStepText | undefin
   return Object.keys(out).length ? out : undefined;
 }
 
+/** 단계가 지어 둔 것 — 모양이 틀리면 없는 것으로 본다(덧붙임이다, 던지지 않는다). */
+export function normalizeStepBuilt(raw: unknown): GameBlueprintStepBuilt | undefined {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return undefined;
+  const r = raw as Record<string, unknown>;
+  const id = (v: unknown): string => (typeof v === "string" && v.trim() && v.length <= 160 ? v.trim() : "");
+  const mapId = id(r.mapId), eventId = id(r.eventId), switchId = id(r.switchId), itemId = id(r.itemId);
+  return mapId && eventId ? { mapId, eventId, ...(switchId ? { switchId } : {}), ...(itemId ? { itemId } : {}) } : undefined;
+}
+
 /** 저장본·모델 입력 둘 다 이 한 곳으로 읽는다. 틀리면 무엇이 틀렸는지 한국어로 던진다. */
 export function normalizeGameBlueprint(value: unknown): GameBlueprint {
   const data = requireRecord("gameBlueprint", value);
@@ -155,6 +182,7 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
       gives: bounded(`steps[${i}].gives`, givesRaw, BLUEPRINT_LIMITS.text),
       feeling: bounded(`steps[${i}].feeling`, s.feeling, 60),
       ...(() => { const text = normalizeStepText(s.text); return text ? { text } : {}; })(),
+      ...(() => { const built = normalizeStepBuilt(s.built); return built ? { built } : {}; })(),
     };
   });
   const ending = requireRecord("gameBlueprint.ending", data.ending);
@@ -168,6 +196,7 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
     playerGoal: bounded("playerGoal", data.playerGoal, BLUEPRINT_LIMITS.goal),
     steps,
     ending: { name: bounded("ending.name", ending.name, 60), how: bounded("ending.how", ending.how, BLUEPRINT_LIMITS.text), feeling: bounded("ending.feeling", ending.feeling, 60) },
+    ...(() => { const retired = (Array.isArray(data.retired) ? data.retired : []).flatMap((raw) => { const built = normalizeStepBuilt(raw); return built ? [built] : []; }).slice(0, 40); return retired.length ? { retired } : {}; })(),
     ...(typeof data.request === "string" && data.request.trim() ? { request: data.request.trim().slice(0, BLUEPRINT_LIMITS.request) } : {}),
     ...(typeof data.updatedAt === "string" ? { updatedAt: data.updatedAt } : {}),
   };
