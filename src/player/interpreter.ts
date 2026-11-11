@@ -10,6 +10,7 @@ import type {
   Interpreter,
   InterpreterOptions,
   InterpreterState,
+  InterpreterTraceFrame,
   PendingStep,
   ResumeValue,
   StepResult,
@@ -47,6 +48,14 @@ export function createInterpreter(
   };
   let done = false;
   let pending: PendingStep | "none" = "none";
+  // 테스트 플레이 계측(eventRunLog). 내보낸 게임에서는 undefined 라 명령마다 이 검사 하나만 남는다.
+  const trace = options?.trace;
+  // 「한 단계」로 멈췄다 풀린 명령은 다시 멈추지 않고 한 번 실행한다.
+  let stepReleased = false;
+  const traceFrame = (): InterpreterTraceFrame => {
+    const top = topFrame(state.stack);
+    return { depth: state.stack.length - 1, pc: top?.pc ?? 0, top: top?.commands };
+  };
 
   function finish(): StepResult {
     done = true;
@@ -81,7 +90,20 @@ export function createInterpreter(
       // All other commands and hooks are conservative mutation boundaries. Never trust a
       // cache across user callbacks, yielded steps, or arbitrary authored command execution.
       if (state.beforeCommand || (command.kind !== "label" && command.kind !== "gotoLabel")) invalidateLabelIndexPass();
+      let afterTrace: ((after: InterpreterTraceFrame) => void) | void = undefined;
+      if (trace) {
+        const at = traceFrame();
+        // 컷신 빨리 감기 중에는 멈추지 않는다 — 건너뛰기가 명령마다 멈춤을 풀며 상한을 소진하지 않게.
+        if (!stepReleased && state.fastForwardLabel === undefined && trace.shouldPause?.(command, at)) {
+          state.instructionsExecuted -= 1;
+          pending = "debugStep";
+          return { kind: "debugStep" };
+        }
+        stepReleased = false;
+        afterTrace = trace.enter(command, at);
+      }
       const result = executeCommand(state, frame, command);
+      afterTrace?.(traceFrame());
       switch (result.kind) {
         case "continue":
           continue;
@@ -102,6 +124,12 @@ export function createInterpreter(
     },
     resume(value: ResumeValue): StepResult {
       if (done) return { kind: "done" };
+      if (pending === "debugStep") {
+        // 멈춘 명령은 아직 실행 전이다 — pc 를 옮기지 않고 그 명령부터 다시 돈다.
+        pending = "none";
+        stepReleased = true;
+        return run();
+      }
       const result = advanceResume(state, pending, value);
       if (result === "done") return finish();
       pending = "none";
