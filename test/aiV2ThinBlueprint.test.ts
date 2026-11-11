@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { createV2Tools } from "@/ai/v2/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
-import { MIN_BLUEPRINT_PLACES, MIN_BLUEPRINT_STEPS, thinBlueprintReason } from "@/ai/v2/blueprint";
+import { MIN_BLUEPRINT_PLACES, MIN_BLUEPRINT_STEPS, thinBlueprintReason } from "@/ai/v2/story/blueprint";
 import { oneProjectGame } from "@/ai/v2/request/readers";
 import type { Project } from "@/project/types";
 

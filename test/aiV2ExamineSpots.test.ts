@@ -2,11 +2,11 @@
 // 연출 비평가가 한 줄짜리 조사 글에 「두 인물이 멀다」 를 달아 고칠 수 없는 할 일이 막힘으로 닫혔다. 자리 낱말은 채워 보낸 at:{0,0} 에 밀려 버려졌다.
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
-import { createBuildRun } from "@/ai/v2/buildRun";
+import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import { resolveWhere } from "@/ai/v2/place/where";
 import { classifyRequest } from "@/ai/v2/request/intent";
 import { buildEvent } from "@/ai/v2/story/events";
-import type { EventSpec } from "@/ai/v2/types";
+import type { EventSpec } from "@/ai/v2/shared/types";
 import { buildFixture } from "@/harnesses/assistant-capability/node/smallJobs/fixtures";
 import type { GameMap, Project } from "@/project/types";
 

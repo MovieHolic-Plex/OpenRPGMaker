@@ -8,7 +8,7 @@ import { canMove, isPassable } from "@/project/collision";
 import { layerTileAt, setLayerTileAt, shadowAt, setShadowAt } from "@/project/mapLayers";
 import type { GameMap, Project } from "@/project/types";
 import { playerAnchors } from "@/editor/tools/transferReachability";
-import type { BuildRun, ContentBuildResult } from "../types";
+import type { BuildRun, ContentBuildResult } from "../shared/types";
 import { repairEventReach } from "../place/reachRepairs";
 import { dressInteriorExits } from "../place/exitDress";
 import { fixObjectSheetFacing, showExaminedThing } from "./examineArt";

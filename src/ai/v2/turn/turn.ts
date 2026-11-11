@@ -1,7 +1,7 @@
 // 한 턴의 정책을 조립한다 — 문맥(context.ts) 위에 이벤트 모으기·화면 검수·기계 확인·재주입·자동 짓기·모델 갈고리·판정자 차례·최종 보고를 얹는다.
 // 실행기(scripts/lib/assistantV2Runtime.ts)는 이것을 runPiAgent 에 끼우기만 한다. 2026-11-11 리팩토링 R3.
 import type { PiAgentRequest } from "../../piAgent/protocol";
-import type { PiAssistantV2Hooks } from "../env";
+import type { PiAssistantV2Hooks } from "../shared/env";
 import { unknownToolText } from "../toolExposure";
 import { turnAfterMain } from "./afterMain";
 import { turnAutoBuild } from "./autoBuild";

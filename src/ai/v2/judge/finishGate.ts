@@ -2,11 +2,10 @@
 // 할 일 고리(loop/gates.ts)가 이 문제들을 gate·critic 항목으로 덧붙인다. 2026-11-11 리팩토링 R2: verbs.ts 끝에 있던 것을 옮겼다.
 import { sceneCraftProblems } from "./sceneCraft";
 import { shipBlockers } from "./shipChecks";
-import { buildsWholeGame, wantsWholeGame } from "../request/readers";
-import type { PiAssistantV2Env } from "../env";
-import { type StageWrites } from "../stageWrites";
+import { asksSettingOnly, asksStoreOnly, asksToBeTold, buildsWholeGame } from "../request/readers";
+import type { PiAssistantV2Env } from "../shared/env";
+import { type StageWrites } from "../shared/stageWrites";
 import type { Project } from "@/project/types";
-import { wantsStoreTools } from "../request/readers";
 import { audioOnly } from "../request/readers";
 import { gameContentProblems } from "./gameChecks";
 import { unaskedChanges } from "./sideEffectChecks";
@@ -86,11 +85,11 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
   let game: string[] = env ? gameProblemTexts(env.request.project, env.ctx.project, env.request.task, session.stageWrites) : [];
   // 아무것도 안 바꾸고 «도구가 없다»며 끝내기(2026-10-24 g3-edit-move: 대장장이 옮기기를 묻기만 했다, g3-apple-count: 그림 카드만 남겼다).
   // 설정이 이미 기본값(켜짐)이면 set_project_settings 가 아무것도 안 바꾸는 것이 맞다(2026-10-25 데모 과업: 탭 걷기·팡파레·빠른 달려들기는 기본 켜짐).
-  const settingOnly = /휴대폰|모바일|터치|탭하면|진동|조이스틱|달리기 단추|레벨 ?업|팡파레|달려들|도움말/u.test(env?.request.task ?? "") && !/만들|두고|세워|놓아|놔|추가/u.test(env?.request.task ?? "");
+  const settingOnly = asksSettingOnly(env?.request.task ?? "");
   // 스토어 평가 읽기·답글·소식 카드는 프로젝트를 바꾸지 않는 것이 맞다(2026-10-25).
   // «내 게임 평가에 답글 달아 줘»처럼 «게임» 낱말이 섞여도 만들기·고치기 동사가 없으면 스토어 일로 본다.
-  const storeOnly = wantsStoreTools(env?.request.task ?? "") && !/만들|추가|넣어|놓아|세워|지어|고쳐|바꿔|옮겨|줄여|늘려/u.test(env?.request.task ?? "");
-  if (env && !settingOnly && !storeOnly && !/\?\s*$|알려\s*줘|뭐야|어디|있어\?|보여\s*줘|설명|정리해서|요약/u.test(env.request.task.trim())) {
+  const storeOnly = asksStoreOnly(env?.request.task ?? "");
+  if (env && !settingOnly && !storeOnly && !asksToBeTold(env.request.task)) {
     const pick = (p: typeof env.ctx.project) => JSON.stringify([p.maps, p.database, p.endings ?? null, p.commonEvents ?? null, p.switches, p.variables, p.startMapId, p.startPos ?? null, p.system ?? null, p.dialogueDesk ?? null]);
     try {
       if (pick(env.request.project) === pick(env.ctx.project)) game.push("[게임 검사 실행] 이 요청으로 맵·데이터가 하나도 바뀌지 않았다. 묻거나 «도구가 없다»·«도구 호출 횟수 초과»라고 끝내지 말고 실행한다(도구 호출 횟수 제한은 없다 — 2026-10-29 3c Argon 이 room_parts 한 번 뒤 «호출 횟수 초과»라며 짓지 않았다). 장소·방은 make_place(방은 zones[].design 을 채워서)로 짓는다. 있는 NPC·물건은 move_event·upsert_event·patch_event_page 로 고치고, 새 것은 add_people·add_event·upsert_event 로 만든다. 꼭 맞는 그림이 없으면 가장 비슷한 기존 그림·물건으로 두고 보고에 적는다(아이템·이벤트·대사는 그림과 상관없이 만든다).");
@@ -102,8 +101,8 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
     game = game.filter(isMusicWork);
     if (outside.length) env.emit({ type: "execution_status", name: "v2.music-only.notes", ok: true, summary: `음악 요청 밖 참고 ${outside.length}건 — 고치지 않음`, data: { notes: outside } });
   }
-  // 작은 수정·음악 요청 턴이 «게임으로 시작한 프로젝트»의 옛 맵 화면 그림 때문에 막히지 않게: 이 요청이 게임 전체를 짓는 말(wantsWholeGame)이거나 시작 저장본에는 없던 map-view 일 때만.
-  if (env && (wantsWholeGame(env.request.task) || mapViewArtProblems(env.request.project, session, !!env.generateImage, env.request.task).length === 0)) game.push(...mapViewArtProblems(env.ctx.project, session, !!env.generateImage, env.request.task));
+  // 작은 수정·음악 요청 턴이 «게임으로 시작한 프로젝트»의 옛 맵 화면 그림 때문에 막히지 않게: 이번 턴이 게임 하나를 짓는 일(buildsWholeGame — 이어 하기 턴도)이거나 시작 저장본에는 없던 map-view 일 때만.
+  if (env && (buildsWholeGame(env.ctx.project, env.request.task) || mapViewArtProblems(env.request.project, session, !!env.generateImage, env.request.task).length === 0)) game.push(...mapViewArtProblems(env.ctx.project, session, !!env.generateImage, env.request.task));
   const problems: V2GateProblem[] = [
     ...game.map((g) => ({ key: `game:${gateKey(g)}`, text: g, source: "gate" as const })),
     ...(env && !settingOnly && !storeOnly ? autoPlayGateProblems(env.ctx.project, env.request.task) : []),

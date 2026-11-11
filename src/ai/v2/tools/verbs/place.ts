@@ -1,6 +1,6 @@
 // 장소 동사 — build_places(세계 장소 한 번에) · make_place · edit_place · review_layout · find_pieces.
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
-import { interiorCatalogCard, placeSpecKindOf } from "../../prompt";
+import { interiorCatalogCard, placeSpecKindOf } from "../../prompt/placeSpecs";
 import { INTERIOR_WORDS } from "../../request/place";
 import { hasLayout } from "../../place/builders/interiorLayoutBuild";
 import { LAYOUT_FORMAT, LAYOUT_TAG, applyLayoutPatch, layoutGiven, layoutPatchIsEmpty, type LayoutPatch } from "../../place/interiorLayout";
@@ -10,7 +10,7 @@ import { HAND_INTERIOR_TILESET_ID, roomSpecOf } from "@/editor/handInterior/buil
 import { builderFor } from "../../place/builders";
 import { localizePlaceSpec } from "../../place/builders/modernCity";
 import { localizeCultureSpec } from "../../place/builders/joseon";
-import { isComposedWorld, parseWorldStyle, spareKind, worldKind, worldOf } from "../../world";
+import { isComposedWorld, parseWorldStyle, spareKind, worldKind, worldOf } from "../../place/world";
 import type { GameBlueprintPlace } from "@/project/gameBlueprint";
 import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize } from "../../place/builders/village";
 import { codeTerrainFor, usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
@@ -18,10 +18,10 @@ import { describeCodeTerrain } from "@/editor/tools/beodeulTerrainGen";
 import { terrainPreviewPng } from "@/editor/tools/beodeulTerrainPreview";
 import { adoptExactInterior, interiorAddAnchors, interiorBuilder, interiorEditFromArgs } from "../../place/builders/interior";
 import { interiorStampEdit, type StampEditState } from "../../place/builders/interiorEdit";
-import type { PlacePatch, PlaceRecord, PlaceSpec } from "../../types";
+import type { PlacePatch, PlaceRecord, PlaceSpec } from "../../shared/types";
 import { blueprintMapFor } from "../../story/blueprintPath";
 import { isPlaceholderMap } from "../../blankStart";
-import { walkGame } from "../../makeGame";
+import { walkGame } from "../../story/makeGame";
 import { DUNGEON_LAYOUT_SCHEMA, LAYOUT_CRITIQUE_ROUNDS, LAYOUT_REPAIRS, VILLAGE_LAYOUT_SCHEMA, attachLayoutCritique, bboxDungeonSpec, bboxPlacesOn, bboxVillageSpec, dungeonLayoutCard, hasDungeonLayout, hasVillageLayout, layoutRejectText, layoutSession, toBboxTerrain, villageLayoutCard } from "../../place/builders/placeLayout";
 import { gateFor, innerDungeonParent, innerGateSpot } from "../../place/dungeonGates";
 import { DUNGEON_PLACE_WORD, requestedDungeonSide } from "../../request/place";

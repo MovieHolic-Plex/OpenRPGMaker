@@ -1,14 +1,14 @@
 // make_game — 장소·사람·사건·퍼즐을 한 번에 받는 동사(OPRN_V2_MAKE_GAME 일 때만 싣는다).
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
-import { createBuildRun } from "../../buildRun";
+import { createBuildRun } from "../../shared/buildRun";
 import { builderFor } from "../../place/builders";
 import { localizePlaceSpec } from "../../place/builders/modernCity";
 import { localizeCultureSpec } from "../../place/builders/joseon";
 import { fixPlayerStart } from "../../judge/machineChecks";
-import type { PersonSpec, PlaceBuildResult, PlaceRecord, PlaceSpec } from "../../types";
-import { buildPeople } from "../../people";
+import type { PersonSpec, PlaceBuildResult, PlaceRecord, PlaceSpec } from "../../shared/types";
+import { buildPeople } from "../../place/people";
 import { buildEvent } from "../../story/events";
-import { eventBeats, isInside, orderPlaces, walkGame, type GameSpec } from "../../makeGame";
+import { eventBeats, isInside, orderPlaces, walkGame, type GameSpec } from "../../story/makeGame";
 import { gateFor, settleDungeonGates } from "../../place/dungeonGates";
 import { arrivalEntrance } from "../../place/dungeonParts";
 import { designMissingRooms } from "../../place/designRooms";

@@ -1,6 +1,6 @@
 // 「먼저 …」 안내가 붙은 뒤 — 그 앞의 「필요한 것이 있어야 할 것 같다」 같은 토큰 줄을 뺀다(vm4 argon 추리 재생).
 import type { FinishStage } from "../types";
-import { createBuildRun } from "../../buildRun";
+import { createBuildRun } from "../../shared/buildRun";
 import { dropTokenLines } from "../../story/stepSubjects";
 
 export const stage: FinishStage = {

@@ -4,7 +4,7 @@
 // 결함(엔딩까지 가는 길이 끊김·조건을 켜는 곳이 없음·목표를 모름)이 장르마다 되풀이됐다. 청사진은
 //  - 짓기 전에 목표·핵심 경로(장소 → 할 일 → 조건 → 다음 장소)·엔딩·장면마다 의도한 느낌을 적고,
 //  - 짓는 동안 모델 지시문 맨 위에 박혀 매 차례 대조되며,
-//  - 출하 검사가 이 경로를 데이터로 걸어 본다(src/ai/v2/blueprint.ts).
+//  - 출하 검사가 이 경로를 데이터로 걸어 본다(src/ai/v2/story/blueprint.ts).
 // 판정자(새 플레이어)는 이 문서의 playerGoal 한 줄만 받는다.
 // 프로젝트에 함께 저장된다(SQLite current_json·내보내기). 옛 프로젝트는 없음 = 옛 동작.
 import { assert, requireArray, requireRecord, requireString } from "./io/guards";
@@ -54,7 +54,7 @@ export interface GameBlueprintStep {
   text?: GameBlueprintStepText;
 }
 
-/** 이 게임의 장소 하나 — 세계(setting)의 장소 종류(kind)로 함수가 짓는다(src/ai/v2/world.ts). */
+/** 이 게임의 장소 하나 — 세계(setting)의 장소 종류(kind)로 함수가 짓는다(src/ai/v2/place/world.ts). */
 export interface GameBlueprintPlace {
   /** 맵 이름(steps[].place 가 이 이름을 가리킨다). */
   name: string;
@@ -68,7 +68,7 @@ export interface GameBlueprint {
   version: 1;
   title: string;
   genre: string;
-  /** 이 게임의 세계(칩셋 한 벌) id — 게임마다 다른 세계를 고른다(src/ai/v2/world.ts). 옛 청사진은 없음 = 장소 이름으로 추정. */
+  /** 이 게임의 세계(칩셋 한 벌) id — 게임마다 다른 세계를 고른다(src/ai/v2/place/world.ts). 옛 청사진은 없음 = 장소 이름으로 추정. */
   setting?: string;
   /** 이 게임의 장소 전부(시작 장소가 맨 앞). 옛 청사진은 없음 = steps 의 장소. */
   places?: GameBlueprintPlace[];

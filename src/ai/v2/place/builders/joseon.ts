@@ -10,7 +10,7 @@ import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { joseonDoorsOfMap } from "@/editor/tools/joseonInteriorLink";
 import { WIZARDING_WORDS } from "./wizarding";
-import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../types";
+import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 
 export const JOSEON_TILESET_ID = "joseon_baram";
 

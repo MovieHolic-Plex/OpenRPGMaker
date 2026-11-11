@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, expect, it } from "vitest";
 import { createV2Tools } from "@/ai/v2/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
-import type { PiAssistantV2Env } from "@/ai/v2/env";
+import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import { createBlankProject } from "@/project/defaults";
 
 // 2026-11-11 구조 재점검 5-1: 상점 주인 한 명에 호출 4~6번이 들었다(add_people 에 상점 칸이 없고 상점 도구는 뒤로 밀려 있었다).

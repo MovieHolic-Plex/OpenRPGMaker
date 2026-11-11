@@ -7,13 +7,12 @@
 // 하나도 못 찾으면 undefined — 부르는 쪽이 예전처럼 가장자리 칸을 쓴다.
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
-import { doorArtCells, isDoorArtLabel, reachableCells } from "./judge/eventReach";
-import { roadCellSet, tileLabel } from "./place/cells";
-import type { BuildRun } from "./types";
+import { doorArtCells, isDoorArtLabel, reachableCells } from "../judge/eventReach";
+import { roadCellSet, tileLabel } from "./cells";
+import type { BuildRun, Side } from "../shared/types";
 import { pickDungeonGateSpot } from "@/editor/tools/dungeonLinkTools";
 
 type Cell = { x: number; y: number };
-export type Side = "north" | "south" | "east" | "west";
 interface TransferSpot { readonly x: number; readonly y: number; readonly doorAt?: Cell; readonly note: string }
 
 const LAYERS = ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"] as const;

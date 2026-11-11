@@ -13,7 +13,7 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import { openStartCell } from "@/editor/tools/startOnBuiltMap";
 import { roadCutAt } from "@/editor/tools/roadCutGuard";
 import { reachableCells, unreachableEvents } from "../judge/eventReach";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 
 /** 주인공 위로 그려지는 윗층 그림이 덮은 칸인가. */
 function coveredCell(project: Project, map: GameMap, x: number, y: number): boolean {

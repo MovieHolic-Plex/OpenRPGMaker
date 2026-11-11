@@ -10,7 +10,7 @@ import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { startCell } from "../../judge/machineChecks";
 import { terrainReachability } from "@/project/terrainReachability";
-import type { BuildRun } from "../../types";
+import type { BuildRun } from "../../shared/types";
 
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
 /**

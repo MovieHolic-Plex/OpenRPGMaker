@@ -1,6 +1,6 @@
 // 청사진 경로(+ 회복 길) 자동 짓기(session.buildPath, 한 실행에 한 번).
 import type { FinishStage } from "../types";
-import { BLUEPRINT_PATH_IDS } from "../../blueprint";
+import { BLUEPRINT_PATH_IDS } from "../../story/blueprint";
 import { battleSites, healingSources } from "../../judge/combatChecks";
 
 export const stage: FinishStage = {

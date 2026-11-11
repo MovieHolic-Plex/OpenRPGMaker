@@ -1,7 +1,7 @@
 // 사람·사건 동사 — add_people · add_event · add_scene · add_boss_encounter · add_ending_scene.
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
-import type { EventSpec, PersonSpec } from "../../types";
-import { buildPeople } from "../../people";
+import type { EventSpec, PersonSpec } from "../../shared/types";
+import { buildPeople } from "../../place/people";
 import { buildEvent } from "../../story/events";
 import { buildScene, SCENE_SCHEMA, type SceneSpec } from "../../story/scene";
 import { buildBossEncounter, buildEndingScene, type BossEncounterSpec, type EndingSceneSpec } from "../../story/sceneVerbs";

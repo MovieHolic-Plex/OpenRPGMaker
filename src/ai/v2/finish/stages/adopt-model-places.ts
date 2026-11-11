@@ -4,8 +4,8 @@
 // 장소 자동 짓기가 그 장소를 «없다»고 보고 견본 거실 9×10 을 새로 지었고, 방탈출 봉인이 모델 방으로 들어가는 이동을 지워 시작이 견본 방으로 옮겨졌다.
 // 모델이 지은 방은 버리지 않는다: 아직 어느 청사진 장소도 가리키지 않는 모델 장소가 있으면(실내/바깥이 이름과 어긋나지 않는 것), 그 맵을 장소로 삼는다.
 import type { FinishStage } from "../types";
-import type { PlaceRecord } from "../../types";
-import { walkBlueprint } from "../../blueprint";
+import type { PlaceRecord } from "../../shared/types";
+import { walkBlueprint } from "../../story/blueprint";
 import { blueprintMapFor } from "../../story/blueprintPath";
 import { placeTypeFromName } from "../../place/placeGuess";
 import { isBareTileMap, isPlaceholderMap, moveBareEvents } from "../../blankStart";

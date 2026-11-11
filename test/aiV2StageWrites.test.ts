@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { unaskedChanges, battleDataEmptied } from "@/ai/v2/judge/sideEffectChecks";
-import { isStageWrite, recordStageWrites, stageWriteKey, type StageWrites } from "@/ai/v2/stageWrites";
+import { isStageWrite, recordStageWrites, stageWriteKey, type StageWrites } from "@/ai/v2/shared/stageWrites";
 import { fitFirstLevelUp } from "@/ai/v2/story/pathBattleBudget";
 import type { Project } from "@/project/types";
 

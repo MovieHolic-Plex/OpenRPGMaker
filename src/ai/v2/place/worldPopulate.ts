@@ -4,7 +4,7 @@
 import { chestLoot, pickFittedTroops, pickSpot } from "@/editor/tools/jrpgVolumeTools";
 import { isPassable } from "@/project/collision";
 import { walkStart } from "./cells";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 
 type Cell = { readonly x: number; readonly y: number };
 /** 맵 넓이에 따른 보이는 적 수 — 방 한 칸짜리 묘실은 하나, 큰 바깥 맵은 셋. */

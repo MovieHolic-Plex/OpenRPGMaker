@@ -310,8 +310,6 @@ export function vqaSummary(rounds: readonly VqaRound[]): { readonly clean: boole
   return { clean: false, text: `화면 검수 ${rounds.length}판: ${counts} — 남은 결함 ${last.defects.length}건${split}${last.problem ? ` (${last.problem})` : ""}`, leftover: last.defects };
 }
 
-/** 게임 전체를 만드는 요청인가 — 출하 검사(shipChecks.wantsWholeGame)와 같은 범위. */
-export { wantsWholeGame } from "../request/readers";
 
 /**
  * 검수자 모델 고르기 — 그림을 받는 모델 중 주 모델과 다른 계열을 먼저(역할표 src/ai/assistantRoles.ts 의 규칙과 같다).

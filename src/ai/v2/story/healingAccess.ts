@@ -11,8 +11,8 @@ import { allCommands, battleSites, healingItemIds, healingSources } from "../jud
 import { mapRegion } from "../judge/objectiveWhere";
 import { isObjectiveCommand } from "../judge/objectiveCommand";
 import { reachWithout } from "../judge/puzzleChecks";
-import type { BuildRun } from "../types";
-import { victoryGatedSwitches } from "../blueprint";
+import type { BuildRun } from "../shared/types";
+import { victoryGatedSwitches } from "./blueprint";
 
 const HEALING_SPRING_ID = "ev_heal_spring";
 const HEALING_SPRING_NAME = "회복의 샘";

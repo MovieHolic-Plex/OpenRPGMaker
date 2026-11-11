@@ -5,9 +5,9 @@
 // 단계 행동(action)이 사람과 이야기하는 일이면 그 사람(Actor 칩)으로 세우고, 단계 이름이 «시작·수집·대치» 같은 진행 낱말뿐이면
 // 행동·결과 낱말(gives·조사하는 대상)로 이름과 살펴보기 대사를 짓는다. 모델이 쓴 대사는 건드리지 않고 함수가 넣은 자리표시 줄만 바꾼다.
 import type { GameEvent, Project } from "@/project/types";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 import { josa } from "@/util/josa";
-import { buildPeople } from "../people";
+import { buildPeople } from "../place/people";
 import { isProgressWord, resolveSteps } from "./mysteryCase";
 import { reachableCells, unreachableEvents } from "../judge/eventReach";
 import { isPassable } from "@/project/collision";

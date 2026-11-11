@@ -6,9 +6,9 @@ import { applyMapLighting, litShotNote, type LitShot } from "../../src/ai/v2/jud
 import type { GameMap, Project } from "../../src/project/types.ts";
 import { runPiAgent, type RunPiAgentOptions } from "./piAgentRuntime.ts";
 import type { PiAgentDoneEvent, PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
-import { buildV2SystemPrompt } from "../../src/ai/v2/prompt.ts";
+import { buildV2SystemPrompt } from "../../src/ai/v2/prompt/systemPrompt.ts";
 import { vqaShotPlan, type VqaShot } from "../../src/ai/v2/judge/vqa.ts";
-import type { PiAssistantV2Env } from "../../src/ai/v2/env.ts";
+import type { PiAssistantV2Env } from "../../src/ai/v2/shared/env.ts";
 import { createV2Turn } from "../../src/ai/v2/turn/turn.ts";
 
 /** PNG dataURL 에 맵 조명을 입힌다. 해독·인코딩이 실패하면 undefined(원래 그림을 쓴다). */
