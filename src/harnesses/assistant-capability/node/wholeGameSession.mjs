@@ -8,7 +8,7 @@
 //
 // Usage:
 //   node src/harnesses/assistant-capability/node/wholeGameSession.mjs --project-dir <dir> --out <session dir> [--v2] [--turn-timeout-ms N] [--store-url <store> [--store-ask-first]]
-//     [--ai-config <json>] [--snapshots] [--no-live] [--deadline-ms <epoch>]   (실행 중 상한은 <out>/deadline 파일로도 준다)
+//     [--ai-config <json>] [--snapshots] [--no-live] [--host-log] [--deadline-ms <epoch>]   (실행 중 상한은 <out>/deadline 파일로도 준다)
 // Control files (written by the operator into <out>/inbox/, processed in name order):
 //   NNN.txt    -> a natural-language request typed into ai-input and sent
 //   NNN.click  -> one data-testid (first line) of a visible assistant card button to click
@@ -72,6 +72,8 @@ let state = { phase: 'startup', startedAt: new Date().toISOString(), turns: 0 };
 const writeState = extra => { state = { ...state, ...extra, updatedAt: new Date().toISOString() }; json(resolve(out, 'state.json'), state); };
 writeState({});
 
+// --host-log: 호스트·워커의 표준출력을 <out>/host.log(0600)에 남긴다(진단용). 제공자 오류 글에 자격 정보가 섞일 수 있으니 이 파일은 저장소·공개 증거에 넣지 않는다.
+if (argv.includes('--host-log') && !process.env.HARNESS_HOST_LOG) process.env.HARNESS_HOST_LOG = resolve(out, 'host.log');
 const host = await startHost(projectDir, dirname(projectDir));
 const browser = await firefox.launch({ firefoxUserPrefs: { 'network.notify.changed': false, 'network.notify.IPv6': false,
   'network.captive-portal-service.enabled': false, 'network.connectivity-service.enabled': false } });
@@ -239,8 +241,18 @@ try {
       done: events.filter(e => e.type === 'done').map(e => ({ stats: e.stats, usage: e.usage })),
       statusNotes: events.filter(e => e.type === 'execution_status').map(e => `${e.name}: ${String(e.summary ?? '').slice(0, 300)}`).slice(-40),
       // 턴 안의 시간표 — [보낸 뒤 ms, 종류, 이름]. 도구 호출 수가 적은데 턴이 길 때 어디서 시간이 갔는지(모델 대기·도구·끝맺음 단계) 가른다.
-      timeline: events.filter(e => ['tool_start', 'tool_end', 'execution_status', 'assistant', 'done'].includes(e.type) && Number.isFinite(e.at))
-        .map(e => [e.at - (sentAt || startedAt), e.type, String(e.name ?? '').slice(0, 60)]),
+      // render_request·checkpoint(워커가 편집기의 답을 기다리는 요청)는 넷째 칸에 요청 id 를, client_status(편집기가 낸 checkpoint.apply · render.dropped · stream.resume)는 읽은 시각(1초 간격)을 싣는다.
+      timeline: events.filter(e => ['tool_start', 'tool_end', 'execution_status', 'assistant', 'done', 'render_request', 'checkpoint', 'client_status'].includes(e.type) && Number.isFinite(e.at))
+        .map(e => [e.at - (sentAt || startedAt), e.type, String(e.name ?? '').slice(0, 60), ...(['render_request', 'checkpoint'].includes(e.type) ? [String(e.id ?? '')] : [])]),
+      // 워커↔편집기 주고받기 요약 — 턴이 멈췄을 때 마지막으로 기다리던 것. 마지막 체크포인트가 마지막 checkpoint.apply 보다 뒤면 답이 안 간 것이다.
+      handoffs: (() => {
+        const at = e => e.at - (sentAt || startedAt), of = (type, name) => events.filter(e => e.type === type && (name === undefined || e.name === name));
+        const checkpoints = of('checkpoint'), applies = of('client_status', 'checkpoint.apply'), renders = of('render_request');
+        return { checkpoints: checkpoints.length, checkpointApplies: applies.length, renderRequests: renders.length,
+          renderDropped: of('client_status', 'render.dropped').length, streamResumes: of('client_status', 'stream.resume').length,
+          lastCheckpoint: checkpoints.length ? { id: checkpoints.at(-1).id, at: at(checkpoints.at(-1)) } : null, lastCheckpointApplyAt: applies.length ? at(applies.at(-1)) : null,
+          lastRender: renders.length ? { id: renders.at(-1).id, toolName: renders.at(-1).name, at: at(renders.at(-1)) } : null };
+      })(),
       advisor: events.filter(e => e.type === 'execution_status' && String(e.name).startsWith('v2.advisor')).map(e => ({ name: e.name, data: e.data })),
       // 완성 뒤 대사 윤문 고리(src/ai/piAgent/dialoguePolishHook.ts)의 실행기 기록 — 전/후 적중 수와 고친 줄 쌍.
       dialoguePolish: events.filter(e => e.type === 'execution_status' && String(e.name).startsWith('dialogue_polish')).map(e => ({ name: e.name, summary: e.summary, data: e.data })),

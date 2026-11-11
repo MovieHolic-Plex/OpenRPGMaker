@@ -322,6 +322,11 @@ npm run harness -- assistant-capability small-jobs-rescore --run <그 폴더>   
 
 - 동시 실행은 **최대 2**(코드 상한 — 값싼 엔드포인트의 속도 제한). 일당 상한 10분(`--timeout-min`, 요청을 보낸 순간부터, 되물음에 답한 턴 포함).
   상한은 세션의 `<out>/deadline` 파일로 전달한다.
+- 턴 기록(`session/turns/NNN.json`)의 `timeline` 은 워커가 편집기의 답을 기다리는 요청(`render_request` · `checkpoint`, 넷째 칸 = 요청 id)과
+  편집기가 낸 상태 줄(`client_status`: `checkpoint.apply` · `render.dropped` · `stream.resume` — 스트림을 타지 않으므로 조수 감사 기록에서 1초마다 새 줄을 읽는다)을 함께 싣고,
+  `handoffs` 에 개수와 마지막 체크포인트·마지막 적용 시각·마지막 렌더 요청을 요약한다. 마지막 체크포인트가 마지막 `checkpoint.apply` 보다 뒤면 답이 가지 않은 것이다
+  (2026-11-11 — 게임 통판 `r1stall-fun` 이 워커·편집기 둘 다 노는 채 `v2.assembly` 뒤에서 24분 멈췄을 때 어느 요청이 답을 못 받았는지 기록이 없었다).
+  `--host-log` 는 호스트·워커의 표준출력을 `<out>/host.log`(0600)에 남긴다 — 제공자 오류 글에 자격 정보가 섞일 수 있어 저장소·공개 증거에 넣지 않는다.
 - 공용 라이브러리는 실행 폴더에 한 번 고정(`shared-content.sqlite`)해 모든 일이 같은 판본을 설치한다.
 - 결과 `jobs/<id>/result.json`: `status`(pass·fail·timeout·infra) · `reason` · `check`(outcome·damage·sideEdits) · `toolCalls`(이름 순서, 거절 표시) ·
   `wallMs`(보낸 뒤 가라앉기까지) · `runMs` · `modelCalls` · `tokens`(input·output·cacheRead·검토자) · `systemPromptChars` · `toolsOffered`(+이름) ·
