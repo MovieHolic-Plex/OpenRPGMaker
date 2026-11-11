@@ -33,6 +33,9 @@ export function kitAreaNote(project: Project, mapId: string | null | undefined):
     + "결과의 bareAfter(맨땅 비율)가 아직 높으면 seed 를 바꿔 한 번 더 부르거나 남은 칸만 place_props 로 다듬는다. 연못·광장을 원하면 style:pond|plaza 를 함께 준다.";
 }
 
+/** amount:"few" 의 구획 수 — «몇 그루» 는 맵을 메우는 일이 아니다. */
+const FEW_LOTS = 3;
+
 export const KIT_AREA_TOOLS: readonly ToolDefinition[] = [{
   name: "find_empty_ground",
   mode: "read",
@@ -83,6 +86,7 @@ export const KIT_AREA_TOOLS: readonly ToolDefinition[] = [{
       style: { type: "string", enum: [...STYLES], description: "auto|grove|garden|plaza|pond (기본 auto)" },
       seed: { type: "integer", description: "다른 배치를 원하면 바꾼다" },
       props: { type: "array", items: { type: "string" }, description: "Names of this chipset's outdoor props to use (find_empty_ground lists them). Omit = the chipset's trees, bushes and rocks. Only for chipsets without a built-in ground palette." },
+      amount: { type: "string", enum: ["few", "fill"], description: "few = a handful (about three small groups) for requests like «plant a few trees»; fill (default) = keep placing until the ground no longer looks bare." },
     },
     required: ["mapId"],
     additionalProperties: false,
@@ -90,13 +94,6 @@ export const KIT_AREA_TOOLS: readonly ToolDefinition[] = [{
   run(project, args) {
     const map = project.maps[String(args.mapId)];
     if (!map) throw new ToolError(`맵을 찾을 수 없습니다: ${String(args.mapId)}`, { code: "map-not-found" });
-    // 버들항(beodeul_city)은 이 도구의 지역 바닥 팔레트가 없다 — 2026-10-22 장면 교훈 시험에서 4건(성벽 마을·여관/상점·밤 마을·꾸미기)이
-    // 「알려진 지역 바닥이 아닙니다」로 2~3번씩 거부된 뒤 나무를 한 그루씩 찍다 겹침 오류를 냈다. 처음부터 맞는 도구로 보낸다.
-    if (map.tilesetId === "beodeul_city") {
-      throw new ToolError(`버들항(beodeul_city) 맵은 furnish_outdoor_area 로 꾸미지 않는다 — 풀·꽃 군락·잔돌·화단·통·장작 덧그림은 dress_beodeul_ground({mapId:"${map.id}"}) 한 번, `
-        + `나무·가로등·벤치 같은 기물은 stamp_object({mapId:"${map.id}", objectId:"kit:beodeul_city/bd-tree-…"|"kit:beodeul_city/bd-prop-…", x, y}) — 키트 id 는 list_spatial_designs({kind:"object", query:"tree"|"lamp"|"bench"}) 로 찾는다. stamp_object 가 겹친다고 하면 그 오류의 「가장 가까운 빈 바닥 자리」로 다시 찍는다.`,
-        { code: "wrong-tileset-family", mapId: map.id });
-    }
     const given = args.area as Rect | undefined;
     if (given !== undefined && ![given?.x, given?.y, given?.w, given?.h].every(Number.isInteger)) throw new ToolError("area 는 정수 {x,y,w,h} 입니다.", { code: "invalid-args", mapId: map.id });
     const region = (REGIONS as readonly string[]).includes(String(args.region)) ? args.region as Region : "all";
@@ -104,7 +101,8 @@ export const KIT_AREA_TOOLS: readonly ToolDefinition[] = [{
     const style = (STYLES as readonly string[]).includes(String(args.style)) ? args.style as Style : "auto";
     let result: ReturnType<typeof furnishOutdoorArea>;
     const props = Array.isArray(args.props) ? args.props.filter((name): name is string => typeof name === "string" && !!name.trim()) : [];
-    try { result = furnishOutdoorArea(project, map, area, style, Number.isInteger(args.seed) ? Number(args.seed) : 1, props.length ? { props } : {}); }
+    const few = args.amount === "few";
+    try { result = furnishOutdoorArea(project, map, area, style, Number.isInteger(args.seed) ? Number(args.seed) : 1, { ...(props.length ? { props } : {}), ...(few ? { maxLots: FEW_LOTS } : {}) }); }
     catch (error) { if (error instanceof FurnishError) throw new ToolError(error.message, { code: error.code, mapId: map.id }); throw error; }
     const uses = result.lots.map(l => `${l.label}(${l.x},${l.y})`).join(" · ");
     const parts = [style !== "auto" ? `${style}: 나무 ${result.trees} · 소품 ${result.smalls}${result.pathCells ? ` · 길 ${result.pathCells}칸(기존 길에 이음)` : ""}` : "", uses ? `쓰임 ${result.lots.length}곳: ${uses}` : ""].filter(Boolean).join(" / ");
@@ -112,7 +110,7 @@ export const KIT_AREA_TOOLS: readonly ToolDefinition[] = [{
     return {
       summary: `${map.name} (${area.x},${area.y}) ${area.w}×${area.h} 꾸밈(${result.ground}) — ${parts || "놓을 자리가 없었다"}, 맨땅 ${pct(result.bareBefore.bareShare)}→${pct(result.bareAfter.bareShare)} · 빈 바닥 ${result.emptyBefore}→${result.emptyAfter}칸`,
       data: { mapId: map.id, area, ...result },
-      ...(result.bareAfter.bareShare > 0.2 ? { warnings: [`맨땅이 아직 ${pct(result.bareAfter.bareShare)}다 — 터가 길·문 앞으로 막혀 있거나 바닥이 여러 가지다. seed 를 바꿔 한 번 더 부르거나 남은 칸을 place_props 로 다듬는다.`] } : {}),
+      ...(!few && result.bareAfter.bareShare > 0.2 ? { warnings: [`맨땅이 아직 ${pct(result.bareAfter.bareShare)}다 — 터가 길·문 앞으로 막혀 있거나 바닥이 여러 가지다. seed 를 바꿔 한 번 더 부르거나 남은 칸을 place_props 로 다듬는다.`] } : {}),
     };
   },
 }];

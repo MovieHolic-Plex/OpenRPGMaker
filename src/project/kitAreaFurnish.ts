@@ -478,7 +478,7 @@ export function fillAreaByUse(project: Project, map: GameMap, area: Rect, option
  * 예전 한 스타일 꾸미기(grove|garden|plaza|pond) — 명시한 스타일을 첫 구획에 쓰고, 이어서 남은 터를 쓰임으로 채운다.
  * auto 는 쓰임 채우기만.
  */
-export function furnishOutdoorArea(project: Project, map: GameMap, area: Rect, style: Style, seed: number, options: { fill?: boolean; target?: number; props?: readonly string[] } = {}) {
+export function furnishOutdoorArea(project: Project, map: GameMap, area: Rect, style: Style, seed: number, options: { fill?: boolean; target?: number; props?: readonly string[]; maxLots?: number } = {}) {
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset?.structureKits?.length) throw new FurnishError(`${map.tilesetId} 에 구조 키트가 없어 이 도구로 꾸밀 수 없습니다 — place_props·stamp_object 를 쓰세요.`, "no-kits");
   const W = map.width, H = map.height;
@@ -505,7 +505,7 @@ export function furnishOutdoorArea(project: Project, map: GameMap, area: Rect, s
   // 한 스타일 꾸미기(grove|garden|plaza|pond)는 지역 재료표가 있는 바닥에만 있다 — 그 밖의 칩셋은 쓰임 채우기만 한다.
   const legacy = style === "auto" || generic ? { trees: 0, smalls: 0, pathCells: 0, placed: [] as { name: string; x: number; y: number; w: number; h: number }[] } : furnishStyle(project, map, r, style, seed, ground);
   const filled = options.fill === false ? { lots: [] as PlacedLot[], before: measureBareGround(project, map, r), after: measureBareGround(project, map, r) }
-    : fillAreaByUse(project, map, r, { seed, ...(options.target !== undefined ? { target: options.target } : {}), ...(options.props ? { props: options.props } : {}) });
+    : fillAreaByUse(project, map, r, { seed, ...(options.target !== undefined ? { target: options.target } : {}), ...(options.props ? { props: options.props } : {}), ...(options.maxLots !== undefined ? { maxLots: options.maxLots } : {}) });
   const base = chosen ?? PALETTES[ground]!;
   return { ground, emptyBefore, emptyAfter: plainCount(project, map, r), ...legacy, lots: filled.lots, bareBefore: filled.before, bareAfter: filled.after,
     palette: { trees: available(tileset, base.trees), features: available(tileset, base.features), smalls: available(tileset, base.smalls) } };
