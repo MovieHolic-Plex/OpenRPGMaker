@@ -7,6 +7,7 @@ import { walkBlueprint } from "../story/blueprint";
 import type { TodoStore } from "../loop/todoStore";
 import { checkLabel } from "../loop/todoStore";
 import type { TodoItem } from "../todo/types";
+import { artGapText } from "@/project/artGap";
 
 const GENERIC = [
   /^\s*(i'?m )?sorry[,.!]? (but )?something went wrong/iu,
@@ -128,7 +129,7 @@ export function todoReport(input: TodoReportInput): { text: string; complete: bo
   const table = rows.length ? ["| 할 일 | 결과 | 근거(기계) |", "|---|---|---|", ...rows] : [];
   const tail = [
     ...(input.leftovers?.length ? ["남은 문제(함수 검사 기록 — 고치기 상한):", ...input.leftovers.map((l) => `- ${l.slice(0, 220)}`)] : []),
-    ...(input.missing?.length ? [`그림·부품이 없어 못 한 것: ${input.missing.join(" / ").slice(0, 400)}`] : []),
+    ...(input.missing?.length ? [`그림·부품이 없어 못 한 것: ${input.missing.map(artGapText).join(" / ").slice(0, 400)}`] : []),
     ...(input.vqa ? [input.vqa] : []),
     ...(unoffered.length ? ["화면 검수 막음(다시 찍어 볼 판이 남지 않아 이번 턴에 건네지 못함 — 다음 턴에 할 일로 건넨다):", ...unoffered.map((l) => `- ${l.slice(0, 260)}`)] : []),
     ...(input.vqaLedger?.length ? ["화면 검수 장부(할 일로 올리지 않은 남은 결함 — 완료를 막지 않음):", ...input.vqaLedger.map((l) => `- ${l.slice(0, 260)}`)] : []),
