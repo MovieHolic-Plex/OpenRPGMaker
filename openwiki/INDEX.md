@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **193쪽 / 8191KB / 약 2,408,424 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **193쪽 / 8192KB / 약 2,408,649 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 75KB | 19KB | 487 | ~22,146 |
-| `openwiki/assistant-v2.md` | 342KB | 48KB | 1262 | ~103,970 |
+| `openwiki/assistant-v2.md` | 342KB | 48KB | 1262 | ~103,972 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,766 |
 | `openwiki/beodeul-city.md` | 240KB | 19KB | 1189 | ~73,036 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
@@ -70,13 +70,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | 페이지 | 건수 | 참조 |
 |---|---|---|
 | `openwiki/PROJECT_WIKI.md` | 2 | `.part-N.css`, `src/styles/editor/core.part-1.css` |
-| `openwiki/agent-direct-edit.md` | 1 | `skills/oprn-game-building-rules/SKILL.md` |
+| `openwiki/agent-direct-edit.md` | 2 | `skills/oprn-game-building-rules/SKILL.md`, `src/ai/v2/prompt.ts` |
 | `openwiki/agent-worktrees.md` | 1 | `scripts/gen-combined-town-chipset-report.mts` |
 | `openwiki/ai-workflow.md` | 10 | `.omo/evidence/ai-assistant-failure-modes.md`, `20260709000000_ai_activity_logs.sql`, `docs/2026-07-10-tool-calling-architecture-review.md`, `docs/tool-catalog.md`, `latest.json`, `src/ai/plannerSkip.ts`, `test/authorVillageScopeGate.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
 | `openwiki/architecture.md` | 10 | `.lazy.ts`, `.mjs`, `app.cjs`, `bridge.js`, `dist-electron/main.cjs`, `dist-electron/project-core.cjs`, `dist/start-screen.html`, `editor-demo-load.mjs`, `player.js`, `project.json` |
-| `openwiki/asset-store.md` | 22 | `DATA/store-uploads.json`, `OpenRPGMaker-store/scripts/storeCli.ts`, `deploy/README.md`, `installed.json`, `loading.json`, `migrations/012_games.sql`, `migrations/016_game_saves.sql`, `migrations/017_creator_voice.sql`, `packs/pNNN.json`, `preload-files.json`, `preload-sw.js`, `public/cloudsave.js`, `scripts/check-contract.mjs`, `scripts/games-host.mjs`, `src/ai/v2/musicWords.ts`, `src/gameSaves.ts`, `src/games.ts`, `src/markdown.ts`, `src/posts.ts`, `src/web/changelog.ts`, `src/web/discoverPages.ts`, `test/changelog.test.ts` |
-| `openwiki/assistant-v2-refactor.md` | 4 | `loop/gates.ts`, `musicWords.ts`, `todo/checks.ts`, `worldRequest.ts` |
-| `openwiki/assistant-v2.md` | 14 | `assistant-whole-game/tools/hplay.mjs`, `bbox-chipsets/space.mts`, `bbox-walls-3..5/lay.mts`, `refs/anchors.json`, `rooms/tasks.json`, `scene.json`, `scene_start.mts`, `suite/dungeon-design-fp.py`, `suite/ledger/handoff-study.md`, `suite/prompts.json`, `suite/rooms/runs-omo/results.json`, `tasks.v1.json`, `vqaFixBudget.ts`, `worldRequest.ts` |
+| `openwiki/asset-store.md` | 23 | `DATA/store-uploads.json`, `OpenRPGMaker-store/scripts/storeCli.ts`, `deploy/README.md`, `installed.json`, `loading.json`, `migrations/012_games.sql`, `migrations/016_game_saves.sql`, `migrations/017_creator_voice.sql`, `packs/pNNN.json`, `preload-files.json`, `preload-sw.js`, `public/cloudsave.js`, `scripts/check-contract.mjs`, `scripts/games-host.mjs`, `src/ai/v2/musicWords.ts`, `src/ai/v2/prompt.ts`, `src/gameSaves.ts`, `src/games.ts`, `src/markdown.ts`, `src/posts.ts`, `src/web/changelog.ts`, `src/web/discoverPages.ts`, `test/changelog.test.ts` |
+| `openwiki/assistant-v2-refactor.md` | 5 | `loop/gates.ts`, `musicWords.ts`, `prompt.ts`, `todo/checks.ts`, `worldRequest.ts` |
+| `openwiki/assistant-v2.md` | 15 | `assistant-whole-game/tools/hplay.mjs`, `bbox-chipsets/space.mts`, `bbox-walls-3..5/lay.mts`, `prompt.ts`, `refs/anchors.json`, `rooms/tasks.json`, `scene.json`, `scene_start.mts`, `suite/dungeon-design-fp.py`, `suite/ledger/handoff-study.md`, `suite/prompts.json`, `suite/rooms/runs-omo/results.json`, `tasks.v1.json`, `vqaFixBudget.ts`, `worldRequest.ts` |
 | `openwiki/atlas-biome-interior.md` | 8 | `.loop.json`, `.loop.png`, `interior-merged-palette.html`, `public/assets/atlas-biomes/jungle-chipset.png`, `public/assets/atlas-interior/dungeon-chipset.png`, `scripts/content/atlas-dungeon/split-dungeon.mjs`, `src/assets/atlasBiomeDungeonTileset.json`, `verify-shots/interior-bake-4/new-objects.png` |
 | `openwiki/authoring-play-presets.md` | 1 | `catalog-96.json` |
 | `openwiki/autotiles.md` | 13 | `install-pixel-art-world-shared-host.mjs`, `pixelArtWorldAutotiles.ts`, `prepare-pixel-art-world-xp-library.mjs`, `publish-pixel-art-world-xp-library.mjs`, `reports/pr617-621-integration.md`, `src/assets/tiboRecoveredTileset.json`, `src/project/defaults/iceGrandPlain64.ts`, `src/project/defaults/tallGrassArrange.ts`, `test/iceGrandPlain64.test.ts`, `test/placeConceptRender.test.ts`, `test/villageBuilder.test.ts`, `tiboRecovery.test.ts`, `wildRouteForest.ts` |
@@ -341,7 +341,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L375` 바로 플레이 게임 (2026-10-23)
   - `L479` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2-refactor.md` — 20KB · 105줄 · ~5,845 토큰
+### `openwiki/assistant-v2-refactor.md` — 21KB · 105줄 · ~6,068 토큰
 
 - `L6` 왜
 - `L15` 목표 구조
@@ -351,7 +351,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L73` 진행표
 - `L101` 알려 둘 것
 
-### `openwiki/assistant-v2.md` — 342KB · 1262줄 · ~103,970 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 342KB · 1262줄 · ~103,972 토큰 · 통째읽기 잘림
 
 - `L16` 요청 의도 — 요청을 한 번만 가른다 (2026-11-11, 리팩토링 B1)
 - `L46` 지시문·도구 예산 — 작은 일에는 그 일의 카드와 도구만 (2026-11-11, 리팩토링 B1 뒤)
