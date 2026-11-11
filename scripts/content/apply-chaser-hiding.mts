@@ -1,4 +1,4 @@
-// 추격자 맵에 은신처 소급 적용 — 조수 끝맺음(src/ai/v2/verbs.ts clearLanes)과 같은 함수(ensureChaserHidingSpots)를 저장된 게임 폴더에 돌린다.
+// 추격자 맵에 은신처 소급 적용 — 조수 끝맺음(src/ai/v2/tools/verbs.ts clearLanes)과 같은 함수(ensureChaserHidingSpots)를 저장된 게임 폴더에 돌린다.
 //
 //   npx tsx scripts/content/apply-chaser-hiding.mts <project 폴더> [--dry]
 //

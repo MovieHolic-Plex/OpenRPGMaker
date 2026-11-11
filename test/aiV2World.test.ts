@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
-import { createV2Tools } from "@/ai/v2/verbs";
+import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
 import { buildV2SystemPrompt } from "@/ai/v2/prompt/systemPrompt";
 import { countMaps } from "@/ai/v2/judge/mapCount";
@@ -15,7 +15,7 @@ import { builderFor } from "@/ai/v2/place/builders";
 import { WORLDS, parseWorldStyle, pickWorld, pickWorldDoor, repairWorldPlaces, worldById, worldCard, worldKind, worldPlaceProblems, worldPlaceSpec } from "@/ai/v2/place/world";
 import { fitsAnyWorld } from "@/ai/v2/request/genre";
 import { worldForRequest } from "@/ai/v2/request/world";
-import { exposeV2Tools } from "@/ai/v2/toolExposure";
+import { exposeV2Tools } from "@/ai/v2/tools/toolExposure";
 import { isRegistryTool } from "@/ai/v2/loop/argGuard";
 import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import type { ToolContext } from "@/editor/tools/types";
