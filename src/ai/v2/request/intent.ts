@@ -6,10 +6,10 @@ import { combatAsk, type CombatAsk } from "./combat";
 import { HORROR_WORDS, puzzleAsk } from "./genre";
 import { ART_ASK, ENDING_WORDS } from "./asks";
 import { PLACE_BUILD_WORDS } from "./place";
-import { MAKE_GAME_WORDS, ONE_ROOM_GAME, SINGLE_PLACE, asksToChange, asksToContinue, bareDescription, isEscapeBlueprint, isFreshProject, wholeGameAsk } from "./scope";
+import { MAKE_GAME_WORDS, ONE_ROOM_GAME, SINGLE_PLACE, asksToChange, asksToContinue, bareDescription, isEscapeBlueprint, isFreshProject, linkedExistingMaps, wholeGameAsk } from "./scope";
 import { maskNames, userText } from "./text";
 import { matchToolGroups, type ToolGroups } from "./toolGroups";
-import { gameTopics, jobFacets, smallJobTools, type GameTopic, type JobFacets } from "./topics";
+import { gameTopics, jobFacets, recordTopicsNamed, smallJobTools, type GameTopic, type JobFacets } from "./topics";
 
 /**
  * 요청의 범위 — 하나만 고른다.
@@ -98,30 +98,43 @@ export function readRequest(task: string | undefined): RequestText {
  * 요청과 프로젝트를 같이 본 분류 — (요청 글, 프로젝트의 빈/청사진 상태)마다 한 번만 계산한다.
  * 작은 요청은 게임 하나로 시작한 프로젝트에서도 작은 요청이다. 「계속」「남은 거 마저」「처음에 부탁한 대로 끝까지」처럼 이어 하라는 요청만 청사진의 게임 하나 범위를 물려받는다.
  */
-export function classifyRequest(task: string | undefined, project: Pick<Project, "maps" | "endings" | "gameBlueprint">): RequestIntent {
+export function classifyRequest(task: string | undefined, project: Pick<Project, "maps" | "endings" | "gameBlueprint"> & Partial<Pick<Project, "database">>): RequestIntent {
   const text = readRequest(task);
   const blueprint = project.gameBlueprint;
   const fresh = isFreshProject(project as Project);
   const first = blueprint ? readRequest(blueprint.request ?? "") : undefined;
   const escape = blueprint ? isEscapeBlueprint(blueprint) : false;
-  const key = [task ?? "", fresh ? 1 : 0, blueprint ? `b:${blueprint.request ?? ""}` : "", escape ? 1 : 0].join("\u0000");
+  // 장소 짓기로 읽힌 글이 이미 있는 맵 둘을 잇기만 하라는 것이면 작은 일이다(맵 이름은 프로젝트마다 달라 기억 열쇠에 넣는다).
+  const linked = text.scope === "place" ? linkedExistingMaps(text.own, project) : [];
+  // 작은 일이 이름으로 부른 기록(아이템·장비·적)의 주제 — 글의 낱말로는 모르는 것을 프로젝트의 기록 이름으로 안다. 장소 짓기·게임 하나·소리만 바라는 요청은 보지 않는다.
+  const small = text.scope === "edit" || text.scope === "continue" || text.scope === "question" || linked.length > 0;
+  const named = small && !text.audio.only ? recordTopicsNamed(text.own, project.database).filter((topic) => !text.topics.includes(topic)) : [];
+  const key = [task ?? "", fresh ? 1 : 0, blueprint ? `b:${blueprint.request ?? ""}` : "", escape ? 1 : 0, linked.join("|"), named.join("|")].join("\u0000");
   return remember(INTENT_MEMO, key, () => {
     // 청사진은 게임 하나를 만들 때만 생긴다 — 첫 요청 글이 남아 있지 않은 옛 청사진도 게임 하나로 본다.
     const inherits = text.scope === "continue" && !!blueprint && (first!.scope === "wholeGame" || !blueprint.request?.trim());
     const wholeGame = text.scope === "wholeGame" || inherits;
     // 빈 프로젝트에 묘사만 온 글(「장난감 가게」)은 첫 장소를 짓는 시작이다 — 시킨 일이 분명한 작은 요청은 빈 프로젝트에서도 작은 요청이다.
     const firstPlace = fresh && text.scope === "edit" && bareDescription(text.own);
-    const scope: RequestScope = firstPlace ? "place" : text.scope;
+    const scope: RequestScope = firstPlace ? "place" : linked.length ? "edit" : text.scope;
     const why = firstPlace ? "a bare description on an empty project — start with a first place"
+      : linked.length ? `links maps that already exist (${linked.length} named) — nothing to build`
       : inherits ? `${text.why}; the blueprint's first request was a whole game` : text.scope === "continue" ? `${text.why}; no whole-game blueprint to inherit` : text.why;
+    // 빈 프로젝트의 이어 하기(「계속」)는 고칠 것이 없다 — 앞 실행이 아무것도 못 쓰고 끊긴 것이라 짓는 카드·도구를 그대로 싣는다.
+    const editOnly = !!text.own.trim() && scope !== "wholeGame" && scope !== "place" && !(fresh && scope === "continue");
+    // 게임 하나를 잇는 «계속» 은 글에 게임 낱말이 없어도 게임 도구 묶음을 받는다 — 전에는 동사 23개만 받아 엔딩·타이틀·이벤트를 고칠 도구가 없었다
+    // (출하 관문과 이어 받은 할 일은 그 도구들을 이른다).
+    // 지은 것을 고치는 작은 일도 같다 — 게임 낱말이 없는 글(「촌장이 "…"라고 말하게 해 줘」)과 게임 하나를 잇지 않는 «계속» 에
+    // find_events·get_event·patch_event_page·move_event 가 만들어지지도 않았다(도구 6개: inspect·add_event·add_people·read_specs·ask_user·load_tools).
+    const editsBuilt = editOnly && !text.audio.only;
+    const widen = !text.tools.game && (inherits || editsBuilt);
+    const tools = widen ? matchToolGroups(text.topic, { wholeGame: inherits, editsBuilt, audio: text.audio, combat: text.combat }) : text.tools;
+    const topics = named.length ? [...text.topics, ...named] : text.topics;
     return {
-      ...text, scope, why, wholeGame, fresh,
-      // 게임 하나를 잇는 «계속» 은 글에 게임 낱말이 없어도 게임 도구 묶음을 받는다 — 전에는 동사 23개만 받아 엔딩·타이틀·이벤트를 고칠 도구가 없었다
-      // (출하 관문과 이어 받은 할 일은 그 도구들을 이른다).
-      ...(inherits && !text.tools.game ? { tools: matchToolGroups(text.topic, { wholeGame: true, audio: text.audio, combat: text.combat }) } : {}),
+      ...text, scope, why, wholeGame, fresh, tools, topics,
+      ...(named.length ? { smallTools: smallJobTools(topics, text.job, tools, text.audio, text.combat) } : {}),
       oneRoom: text.oneRoom || !!first?.oneRoom || escape,
-      // 빈 프로젝트의 이어 하기(「계속」)는 고칠 것이 없다 — 앞 실행이 아무것도 못 쓰고 끊긴 것이라 짓는 카드·도구를 그대로 싣는다.
-      editOnly: !!text.own.trim() && scope !== "wholeGame" && scope !== "place" && !(fresh && scope === "continue"),
+      editOnly,
     };
   });
 }

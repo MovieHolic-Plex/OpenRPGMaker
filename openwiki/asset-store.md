@@ -291,6 +291,8 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
 | `STORE_PUBLISH_DEV_EMAIL` | 스테이징 개발 로그인 운영자 이메일(그 서버의 `STORE_ADMIN_EMAILS`) |
 | `STORE_PUBLISH_PRODUCTION_URL` | 운영(https 만) |
 | `STORE_LINK_TOKEN` | 운영 admin-link 일회용 토큰(15분·한 번). 인자로 받지 않는다 |
+| `STORE_EDGE_IP` | (선택) 스토어 호스트 이름만 이 Cloudflare 엣지 IP 로 연결한다(Host·SNI 그대로, 이 프로세스에만). DNS 가 주는 IP 중 느린 경로에서 큰 파일 POST 가 멈출 때만 쓴다. anycast 주소라 바뀔 수 있다 |
+| `PUBLISH_UPLOAD_TIMEOUT_MS` · `PUBLISH_UPLOAD_ATTEMPTS` | (선택) 파일 하나의 요청 상한(기본 120000)과 같은 파일을 보내는 최대 횟수(기본 2, 시간 초과·연결 끊김·408·5xx 만 다시). 파일마다 `[blob sha8 바이트] attempt n/N …` 줄이 남는다 |
 | `OPRN_STORE_TOKEN` | 컨셉 게시용 앱 토큰(없으면 `~/.config/oprn-store/cli.json`) |
 
 ```bash
