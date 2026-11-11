@@ -123,6 +123,44 @@ function standingPeople(before: Project, mapId: string): Map<string, string> {
   return out;
 }
 
+const STEP: Readonly<Record<string, readonly [number, number]>> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+/** 제자리에서 이만큼 안에 서 있으면 «자리를 떠난» 것이 아니다 — 찾으러 온 플레이어 눈에 바로 보인다. */
+const NEAR_POST = 3;
+/**
+ * 장면이 그 사람을 걸린 뒤 제자리에서 몇 칸 떨어져 있는지의 어림. 가늠하지 못하는 걸음(무작위·길 찾기 대상 모름)이 섞이면 undefined — 떠난 것으로 본다.
+ * 주인공 자리는 장면이 도는 곳에서 읽는다: 자동 장면은 시작 칸(시작 맵일 때), 말 걸기·밟기 장면은 그 장면의 이벤트 칸.
+ */
+function strayAfterScene(project: Project, p: ScenePage, id: string): number | undefined {
+  const map = project.maps[p.mapId];
+  const post = map?.events.find((e) => e.id === id);
+  if (!map || !post) return undefined;
+  const host = map.events.find((e) => e.id === p.eventId);
+  const hero = p.trigger === "auto" || p.trigger === "parallel"
+    ? (project.startMapId === p.mapId && project.startPos ? project.startPos : undefined)
+    : host ? { x: host.x, y: host.y } : undefined;
+  let at = { x: post.x, y: post.y };
+  for (const c of p.cmds) {
+    if (String(c.eventId ?? "") !== id) continue;
+    const moves = c.kind === "approach" ? [c] : c.kind === "moveEvent" ? ((obj(c.route)?.moves as Obj[] | undefined) ?? []) : [];
+    for (const m of moves) {
+      const kind = String(m.kind);
+      if (kind === "move") { const d = STEP[String(m.dir)]; if (!d) return undefined; at = { x: at.x + d[0], y: at.y + d[1] }; continue; }
+      if (kind === "approach") {
+        const target = String(m.target ?? "");
+        const other = map.events.find((e) => e.id === target);
+        const cell = target === "@player" || target === "player" ? hero : other ? { x: other.x, y: other.y }
+          : Number.isFinite(m.x) && Number.isFinite(m.y) ? { x: Number(m.x), y: Number(m.y) } : undefined;
+        if (!cell) return undefined;
+        at = { x: cell.x, y: cell.y };
+        continue;
+      }
+      if (/^turn|^face|^wait$/u.test(kind)) continue;
+      return undefined;
+    }
+  }
+  return Math.abs(at.x - post.x) + Math.abs(at.y - post.y);
+}
+
 /** 함수가 지은 표지 이벤트 — 같은 관문·같은 종류의 문은 칸마다 같은 글이다(gateKeyedEntrances·gateEntrySteps·잠긴 집 문·막힌 길). */
 const BUILT_SIGN_EVENT = /^ev_(?:world_)?gate_|^ev_locked_door_|^ev_dead_end_/u;
 /** 함수가 여러 자리에 같은 글로 적는 안내 줄 — 남은 단서 목록(«· 아직 …»)과 그 단계 이벤트의 자리(«「X」은 … 에 있다.»). */
@@ -199,6 +237,10 @@ export function sceneCraftFindings(before: Project, after: Project, task: string
     const vanished = new Set(p.cmds.filter((c) => c.kind === "eraseEvent" || (c.kind === "m2Command" && /sprite-look/u.test(String(c.commandId)) && String(obj(c.fields)?.opacity ?? "") === "0")).map((c) => String(c.eventId ?? obj(c.fields)?.eventId ?? "")));
     for (const [id] of walked) {
       if (vanished.has(id)) continue;
+      // 곁에 서 있던 사람이 한두 걸음 다가선 것은 자리를 떠난 것이 아니다 — 돌려보내라고 하면 «걸어왔다가 돌아가는» 장면이 되거나
+      // 모델이 그 사람의 자리를 옮긴다(2026-11-11 작은 일 둘째 묶음 walk-up-greet-starter: 요청 밖 편집으로 불합격).
+      const stray = strayAfterScene(after, p, id);
+      if (stray !== undefined && stray <= NEAR_POST) continue;
       out.push(tagged("scene", "off-post", `The cutscene ${where(p)} walks «${people.get(id)}» (${id}), who already stood on this map, and leaves them wherever the walk ended. After the scene the player goes back to talk to them at their usual spot and cannot find them. End the scene with a walk back ({do:'walk', who:'${people.get(id)}', to:<their spot word>}), or if they should stay where the scene leaves them, move their post there with move_event.`));
     }
   }

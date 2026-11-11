@@ -47,6 +47,17 @@ type Obj = Record<string, Json>;
 const isObj = (v: Json): v is Obj => !!v && typeof v === "object" && !Array.isArray(v);
 const strip = (v: Json): Json => Array.isArray(v) ? v.map(strip) : isObj(v) ? Object.fromEntries(Object.entries(v).filter(([k]) => k !== "description").map(([k, x]) => [k, strip(x)])) : v;
 
+/**
+ * 값이 하나뿐인 선택 enum 에 "none" 을 앞에 더한다. 스키마의 칸을 다 채우는 모델(GPT 계열)은 그 칸을 비울 수 없어 하나뿐인 값을 넣는다 —
+ * `upsert_item` 의 `escapeTo:["entrance"]` 가 그렇게 채워져 회복약이 탈출 로프로 저장됐다(2026-11-11 작은 일 둘째 묶음 item-new-built).
+ * "none" 은 인자 검사(`loop/argGuard` pruneDefaults)가 도구에 가기 전에 걷는다.
+ */
+function withNone(schema: Json, required: boolean): Json {
+  if (required || !isObj(schema) || !Array.isArray(schema.enum) || schema.enum.length !== 1 || typeof schema.enum[0] !== "string" || schema.enum[0] === "none") return schema;
+  const note = '"none" = leave unset.';
+  return { ...schema, enum: ["none", schema.enum[0]], description: typeof schema.description === "string" ? `${schema.description} ${note}` : note };
+}
+
 /** 파라미터 설명을 경로 규칙(toolTextEn.ts 머리)대로 바꾼다. keepKorean=false 면 영어 덮개가 없는 한국어 설명을 걷는다. */
 function translateParams(node: Json, en: ToolTextEn | undefined, keepKorean: boolean, path = ""): Json {
   if (Array.isArray(node)) return node.map((n) => translateParams(n, en, keepKorean, path));
@@ -55,7 +66,8 @@ function translateParams(node: Json, en: ToolTextEn | undefined, keepKorean: boo
   for (const [k, v] of Object.entries(node)) {
     if (k === "description") continue;
     const child = k === "properties" && isObj(v)
-      ? Object.fromEntries(Object.entries(v).filter(([pk]) => !en?.hide?.includes(path ? `${path}.${pk}` : pk)).map(([pk, pv]) => [pk, translateParams(pv, en, keepKorean, path ? `${path}.${pk}` : pk)]))
+      ? Object.fromEntries(Object.entries(v).filter(([pk]) => !en?.hide?.includes(path ? `${path}.${pk}` : pk))
+        .map(([pk, pv]) => [pk, withNone(translateParams(pv, en, keepKorean, path ? `${path}.${pk}` : pk), Array.isArray(node.required) && node.required.includes(pk))]))
       : k === "items" ? translateParams(v, en, keepKorean, `${path}[]`)
         : k === "anyOf" || k === "oneOf" || k === "allOf" ? translateParams(v, en, keepKorean, path)
           : translateParams(v, en, keepKorean, path ? `${path}.${k}` : k);
