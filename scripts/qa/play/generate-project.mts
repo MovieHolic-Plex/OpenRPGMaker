@@ -16,7 +16,7 @@ if (!gameId || !outDir) throw new Error("사용: generate-project.mts <gameId> <
 
 type Built = { project: Project; serialized?: string };
 
-async function flagship(id: "chrono-bell" | "emerald-crown" | "first-love" | "shitamachi-fourth-season"): Promise<Built> {
+async function flagship(id: "chrono-bell" | "emerald-crown" | "first-love" | "shitamachi-fourth-season" | "iron-lotus"): Promise<Built> {
   const { createFlagshipDemoProject } = await import("../../../src/project/flagship/index");
   const built = createFlagshipDemoProject(id);
   return { project: built.project, serialized: built.serialized };
@@ -36,6 +36,7 @@ const builders: Record<string, () => Promise<Built>> = {
   "astra-horizon": () => flagship("emerald-crown"),
   "first-love": () => flagship("first-love"),
   "shitamachi-fourth-season": () => flagship("shitamachi-fourth-season"),
+  "iron-lotus": () => flagship("iron-lotus"),
   "scarloxy-demo": async () => {
     const { createScarloxyDemoProject } = await import("../../../src/project/defaults/defaultProject");
     return { project: createScarloxyDemoProject() };

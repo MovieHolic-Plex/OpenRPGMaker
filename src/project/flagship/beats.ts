@@ -84,11 +84,24 @@ export const FIRST_LOVE_STYLE_LOCK: FlagshipStyleLock = {
   bannedProperNouns: BANNED_IP_PROPER_NOUNS,
 } as const;
 
+export const IRON_LOTUS_STYLE_LOCK: FlagshipStyleLock = {
+  demoId: "iron-lotus",
+  presetId: "adventure-jrpg",
+  resolution: { width: 480, height: 270 },
+  cameraZoom: 1,
+  dialogueStyle: "pixel-cinematic",
+  allowedTilesetIds: ["sengoku_edo"],
+  allowedCharsetPrefixes: ["easyrpg-charset-", "tex_easyrpg_charset_"],
+  allowedPortraitPrefixes: ["easyrpg-faceset-", "shared-"],
+  bannedProperNouns: BANNED_IP_PROPER_NOUNS,
+} as const;
+
 export const FLAGSHIP_STYLE_LOCKS: Readonly<Record<FlagshipDemoId, FlagshipStyleLock>> = {
   "chrono-bell": CHRONO_BELL_STYLE_LOCK,
   "emerald-crown": EMERALD_CROWN_STYLE_LOCK,
   "shitamachi-fourth-season": SHITAMACHI_STYLE_LOCK,
   "first-love": FIRST_LOVE_STYLE_LOCK,
+  "iron-lotus": IRON_LOTUS_STYLE_LOCK,
 } as const;
 
 export const CHRONO_BELL_BEATS: readonly FlagshipBeat[] = [
@@ -217,6 +230,49 @@ const FIRST_LOVE_BEATS: readonly FlagshipBeat[] = [
   { id: "fl-07", atMinute: 17, act: "금요일 밤", mapKey: "fl_platform_pm", sceneTitle: "막차", playerFeel: "이번엔 먼저 말할까", mechanics: ["triggerEnding", "affection"], sharedAssets: [] },
 ];
 
+export const IRON_LOTUS_BEATS: readonly FlagshipBeat[] = [
+  {
+    id: "il_beat_00_opening",
+    atMinute: 0,
+    act: "0막 · 여섯 컷 오프닝",
+    mapKey: "opening_stage_480x270",
+    sceneTitle: "추락 → 고치 → 설린의 기동 → 흑련사 포고 → 소청하 → 제목",
+    playerFeel: "밤하늘에서 은빛 고치가 청죽림에 떨어지고, 설린이 눈을 뜬다. 야율검의 포고와 장문의 한 줄 뒤에 제목이 뜬다.",
+    mechanics: ["buildIronLotusOpening", "validateOpeningAnimatic"],
+    sharedAssets: ["easyrpg-charset-actor4", "easyrpg-charset-actor3"],
+  },
+  {
+    id: "il_beat_01_town",
+    atMinute: 1,
+    act: "1막 1장 · 유하진",
+    mapKey: "il_hub",
+    sceneTitle: "흑련사의 포고와 장문 소청하의 부탁",
+    playerFeel: "객잔 마을에서 포고를 듣고, 여관에 묵고, 약방에서 보약을 산 뒤 장문에게 죽림으로 가라는 부탁을 받는다.",
+    mechanics: ["author_jrpg_chapter", "script_cutscene", "set_shop_stock", "inn", "place_savepoint"],
+    sharedAssets: ["sengoku_edo"],
+  },
+  {
+    id: "il_beat_02_grove",
+    atMinute: 6,
+    act: "1막 2장 · 청죽림",
+    mapKey: "il_grove",
+    sceneTitle: "백리호 합류 · 고치 잠금 · 흑련사 선봉",
+    playerFeel: "대숲의 보이는 적과 싸우며 백리호가 합류하고, 고치의 세 질문을 풀어 신호 조각을 얻는다. 사원으로 가는 길을 선봉이 막는다.",
+    mechanics: ["place_field_enemy", "choices", "changeParty", "place_battle_blocker"],
+    sharedAssets: ["sengoku_edo", "workshop:fallen-star-vessel"],
+  },
+  {
+    id: "il_beat_03_temple",
+    atMinute: 14,
+    act: "1막 최종장 · 운무산 사원 · 야율검",
+    mapKey: "il_temple",
+    sceneTitle: "신호 조각으로 연 사원 · 야율검과 철 인형 · 북쪽의 답",
+    playerFeel: "사원 마당의 정찰병을 지나 천기단 앞에서 야율검과 철 인형을 쓰러뜨리면 북쪽에서 답이 온다. 마을로 돌아가 보고하면 제1막이 끝난다.",
+    mechanics: ["battleProcessing", "define_ending", "triggerEnding", "lock"],
+    sharedAssets: ["easyrpg-charset-actor3", "generated-enemy-bandit-mask"],
+  },
+] as const;
+
 export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBeatManifest>> = {
   "chrono-bell": {
     id: "chrono-bell",
@@ -307,6 +363,27 @@ export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBe
     ],
     beats: FIRST_LOVE_BEATS,
     styleLock: FIRST_LOVE_STYLE_LOCK,
+  },
+  "iron-lotus": {
+    id: "iron-lotus",
+    title: "강호의 철련",
+    subtitle: "무림에 떨어진 기계 소녀 · Iron Lotus of the Jianghu",
+    genreChoiceId: "adventure-jrpg",
+    targetMinutes: 18,
+    mapCount: 3,
+    endingCount: 1,
+    releaseOrder: 5,
+    priorityRank: 5,
+    summary: "중계 기체 설린이 청죽림에 떨어진다. 객잔 마을 유하진에서 장문 소청하의 부탁을 받고, 제자 백리호와 고치의 잠금을 풀어 신호 조각을 꺼낸 뒤, 운무산 사원에서 흑련사 집사 야율검을 쓰러뜨리고 북쪽의 답을 받는다.",
+    thumb: "/assets/start/builtin/fallen-title.webp",
+    cast: [
+      { id: "actor_hero", name: "설린", role: "주인공 · 중계 기체", assetId: "easyrpg-charset-actor4" },
+      { id: "actor_il_baek", name: "백리호", role: "청죽문 제자 · 동료", assetId: "easyrpg-charset-actor3" },
+      { id: "npc_il_cheongha", name: "소청하", role: "청죽문 장문", assetId: "tex_easyrpg_charset_people5" },
+      { id: "npc_il_yayul", name: "야율검", role: "흑련사 집사 · 추적자", assetId: "tex_easyrpg_charset_actor3" },
+    ],
+    beats: IRON_LOTUS_BEATS,
+    styleLock: IRON_LOTUS_STYLE_LOCK,
   },
 } as const;
 

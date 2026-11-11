@@ -1055,6 +1055,7 @@ function sampleProjectCommands(): readonly MenuCommand[] {
     item("아스트라 호라이즌: 다우닝 시티와 여명의 날개 (기본 몬스터 수집 데모)", "menu-project-demo-emerald-crown", () => void loadFlagshipDemoInEditor("emerald-crown")),
     item("시타마치 사계절 (기본 현대 연애 데모)", "menu-project-demo-shitamachi", () => void loadFlagshipDemoInEditor("shitamachi-fourth-season")),
     item("첫사랑 (기본 오피스 로맨스 데모)", "menu-project-demo-first-love", () => void loadFlagshipDemoInEditor("first-love")),
+    item("강호의 철련 (무림에 떨어진 기계 소녀)", "menu-project-demo-iron-lotus", () => void loadFlagshipDemoInEditor("iron-lotus")),
     { kind: "separator" },
     item("Scarloxy 몬스터 초원 데모", "menu-project-scarloxy-demo", () => void newScarloxyDemoProject()),
   ];

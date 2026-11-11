@@ -55,6 +55,16 @@
       "playable": true
     },
     {
+      "id": "iron-lotus",
+      "title": "강호의 철련 (iron-lotus)",
+      "kind": "generator",
+      "startMap": "il_hub",
+      "buildTimeoutMs": 900000,
+      "note": "무림에 떨어진 기계 소녀. 제1막. 마을·죽림·사원·상점·여관·전투·보스·엔딩. 체크포인트 세트 iron-lotus. ?demo=iron-lotus.",
+      "query": { "demo": "iron-lotus" },
+      "playable": true
+    },
+    {
       "id": "scarloxy-demo",
       "title": "Scarloxy 몬스터 초원 데모",
       "kind": "generator",

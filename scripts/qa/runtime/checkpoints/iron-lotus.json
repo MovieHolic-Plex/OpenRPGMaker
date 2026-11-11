@@ -1,0 +1,99 @@
+{
+  "set": "iron-lotus",
+  "query": { "demo": "iron-lotus", "e2eVitals": "1" },
+  "projectFixture": "dist/demos/iron-lotus.play.json",
+  "viewport": { "width": 480, "height": 270 },
+  "checkpoints": [
+    {
+      "id": "town-dialogue",
+      "label": "유하진 — 포고가 곧 시작된다",
+      "mapId": "il_hub",
+      "x": 37,
+      "y": 18,
+      "facing": "up",
+      "party": [{ "actorId": "actor_hero", "level": 5 }],
+      "beats": [
+        { "id": "arrive", "note": "마을 도착", "ops": [{ "kind": "hold", "dir": null, "ms": 800 }], "shot": true },
+        {
+          "id": "dialogue",
+          "note": "포고 대사",
+          "ops": [
+            { "kind": "waitFor", "testid": "dialogue-box", "state": "present", "timeoutMs": 20000 },
+            { "kind": "hold", "dir": null, "ms": 400 }
+          ],
+          "expect": { "testidPresent": ["dialogue-box"] },
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "grove-battle",
+      "label": "청죽림 — 살무사 옆",
+      "mapId": "il_grove",
+      "x": 43,
+      "y": 10,
+      "facing": "up",
+      "party": [
+        { "actorId": "actor_hero", "level": 5 },
+        { "actorId": "actor_il_baek", "level": 5 }
+      ],
+      "beats": [
+        { "id": "map", "note": "죽림", "ops": [{ "kind": "hold", "dir": null, "ms": 800 }], "shot": true },
+        {
+          "id": "battle",
+          "note": "전투",
+          "ops": [
+            { "kind": "face", "dir": "up" },
+            { "kind": "hold", "dir": "up", "ms": 900 },
+            { "kind": "waitFor", "testid": "battle-scene", "state": "present", "timeoutMs": 15000 },
+            { "kind": "waitFor", "testid": "actor-command-attack", "state": "present", "timeoutMs": 30000 }
+          ],
+          "expect": { "testidPresent": ["battle-scene"] },
+          "shot": true
+        },
+        {
+          "id": "win",
+          "note": "승리",
+          "ops": [
+            { "kind": "battle", "fallback": "attack", "timeoutMs": 120000 },
+            { "kind": "waitFor", "testid": "battle-result-confirm", "state": "present", "timeoutMs": 20000 },
+            { "kind": "pressUntil", "key": "Enter", "testid": "battle-scene", "state": "absent", "maxPresses": 8, "timeoutMs": 3000 }
+          ],
+          "shot": false
+        }
+      ]
+    },
+    {
+      "id": "act1-ending",
+      "label": "장문 앞에서 제1막 엔딩",
+      "mapId": "il_hub",
+      "x": 37,
+      "y": 17,
+      "facing": "up",
+      "party": [
+        { "actorId": "actor_hero", "level": 6 },
+        { "actorId": "actor_il_baek", "level": 6 }
+      ],
+      "switches": {
+        "sw_il_main_started": true,
+        "sw_il_main_step0": true,
+        "sw_il_main_step1": true,
+        "sw_il_main_step2": true,
+        "sw_il_baek_joined": true,
+        "sw_il_mid_clear": true
+      },
+      "beats": [
+        {
+          "id": "ending",
+          "note": "보고 후 엔딩",
+          "ops": [
+            { "kind": "waitFor", "testid": "dialogue-box", "state": "present", "timeoutMs": 20000 },
+            { "kind": "pressUntil", "key": "Enter", "testid": "ending-screen", "state": "present", "maxPresses": 40, "timeoutMs": 1500 }
+          ],
+          "expect": { "testidPresent": ["ending-screen"] },
+          "shot": true
+        }
+      ]
+    }
+  ]
+}
