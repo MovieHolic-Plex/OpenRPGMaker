@@ -105,6 +105,7 @@ import { QUEST_TOOLS } from "./questTools";
 import { RANGE_CLASSIFY_TOOLS } from "./rangeClassifyTools";
 import { REFACTOR_TOOLS } from "./refactorTools";
 import { STORY_TOOLS } from "./storyTools";
+import { EVENT_RUN_LOG_TOOLS } from "./eventRunLogTools";
 import { STORY_ARC_TOOLS } from "./storyArcTools";
 import { QUALITY_EVALUATION_TOOLS } from "./qualityEvaluation";
 import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
@@ -445,6 +446,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(QUEST_TOOLS, "quest"),
   ...withDomain(STORY_ARC_TOOLS, "event"),
   ...withDomain(STORY_TOOLS, "quest"),
+  ...withDomain(EVENT_RUN_LOG_TOOLS, "event"),
   ...withDomain(BATTLE_TOOLS, "battle"),
   ...withDomain(COMBO_TECH_TOOLS, "battle"),
   ...withDomain(SCHEDULE_TOOLS, "database"),

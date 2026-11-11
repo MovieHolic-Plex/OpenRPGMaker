@@ -15,6 +15,8 @@ import { setEventSpritePattern } from "@/player/eventSpriteResources";
 import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
 import type { Command, CommonEvent, MoveCommand } from "@/project/types";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
+import type { InterpreterTrace } from "@/player/interpreter/types";
+import { activeEventRunLog } from "@/player/eventRunLog";
 import { commerceOverlayText } from "@/player/playSceneCommerce";
 import type { AutonomousMover, PlaySceneContext, ParallelProcess } from "@/player/playSceneTypes";
 import { assertNever } from "@/player/playSceneTypes";
@@ -132,6 +134,7 @@ function createParallelProcess(
     pageId,
     currentEventId: event.event.id,
     interpreter: createInterpreter(event.page?.commands ?? event.event.commands, scene.session, store.getCurrent(), {
+      ...parallelTrace("parallel", scene, event.event.id),
       currentEventId: event.event.id,
       getEventPositions: () => scene.eventPositions,
       isEventIdle: target => isRuntimeEventIdle(scene, target),
@@ -150,6 +153,7 @@ function createCommonParallelProcess(scene: PlaySceneContext, event: CommonEvent
   const process = {
     pageId: event.id,
     interpreter: createInterpreter(event.commands, scene.session, project, {
+      ...parallelTrace("commonParallel", scene, event.id),
       getEventPositions: () => scene.eventPositions,
       isEventIdle: target => isRuntimeEventIdle(scene, target),
       onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
@@ -159,6 +163,12 @@ function createCommonParallelProcess(scene: PlaySceneContext, event: CommonEvent
   };
   scene.parallelProcesses.set(`common:${event.id}`, process);
   return process;
+}
+
+/** 테스트 플레이 실행 기록(병렬은 기록만, 한 단계로 멈추지 않는다). 내보낸 게임에서는 빈 객체. */
+function parallelTrace(source: "parallel" | "commonParallel", scene: PlaySceneContext, eventId: string): { trace?: InterpreterTrace } {
+  const trace = activeEventRunLog()?.trace(source, scene.session, eventId);
+  return trace ? { trace } : {};
 }
 
 /** 지난 프레임에 상한으로 남긴 결과가 있으면 그것, 없으면 다음 단계. */
@@ -455,6 +465,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "teleportMenu":
     case "flashScreen":
     case "shakeScreen":
+    case "debugStep":
       return false;
     default:
       return assertNever(step);
