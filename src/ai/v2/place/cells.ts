@@ -1,6 +1,6 @@
 // 조수 v2 — 맵 칸 읽기: 이벤트가 차지한 칸, 걸어 닿는 칸, 타일 이름표, 길·물건 칸. 자리 고르기(where.ts)와 검사들이 같이 쓴다.
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { canMove, isPassable } from "@/project/collision";
+import { canMove, getTileset, isPassable, passabilityOf } from "@/project/collision";
 
 export type Cell = { x: number; y: number };
 
@@ -178,14 +178,6 @@ export function edgeExitCells(map: GameMap, reach: Uint8Array): Cell[] {
   return odd.length > 0 && odd.length < edge.length ? odd : edge;
 }
 
-export const SEAT_LABEL = /의자|스툴|걸상|벤치|chair|stool|bench|탁자|식탁|테이블|table/i;
-
-export const STAIR_LABEL = /계단|사다리|stair|ladder/i;
-
-export const WALL_LABEL = /벽|wall/i;
-
-export const WINDOW_LABEL = /창문|창틀|유리창|window/i;
-
 export function tileLabel(project: Project, map: GameMap, tile: number | undefined): string {
   if (typeof tile !== "number" || tile < 0) return "";
   const meta = (project.tilesets[map.tilesetId]?.tileMeta as unknown as ({ label?: string; tags?: readonly string[] } | undefined)[] | undefined)?.[tile];
@@ -204,6 +196,19 @@ export function objectAt(map: GameMap, c: Cell): boolean {
   const i = c.y * map.width + c.x;
   const { upper, upperOverlay } = layers(map);
   return (upper?.[i] ?? -1) >= 0 || (upperOverlay?.[i] ?? -1) >= 0;
+}
+
+/**
+ * 바닥층 그림만으로 막힌 칸인가 — 벽면·천장·물·절벽. 가구는 걸을 수 있는 바닥 위에 올린 윗층 그림이라 여기에 들지 않는다.
+ * 「물건이 있어도 벽인 칸」(벽에 건 그림·창)을 이름표의 「벽」 글자로 읽던 것을 대신한다 — 「벽돌 포장」 위의 가구, 「바닥 · 벽 밑 그늘」 위의 책장이 벽이었다.
+ */
+export function groundBlocks(project: Project, map: GameMap, c: Cell): boolean {
+  const tileset = getTileset(project, map);
+  if (!tileset) return false;
+  const i = c.y * map.width + c.x;
+  const { lower, lowerOverlay } = layers(map);
+  const pass = passabilityOf(tileset, lower?.[i] ?? -1, lowerOverlay?.[i] ?? -1, -1, -1);
+  return !pass.up && !pass.down && !pass.left && !pass.right;
 }
 
 /** 길 칸 — 판정은 칩셋 표면 선언 하나(place/surface.ts roadCells). 옛 이름으로 부르는 곳(transferSpot.ts)을 위해 남긴 이름이다. */
