@@ -139,7 +139,7 @@ const GAME_TOOL_GROUPS: readonly { readonly words: RegExp; readonly tools: reado
 const GROUPED = new Set(GAME_TOOL_GROUPS.flatMap((g) => g.tools));
 
 export interface ToolGroups {
-  /** 게임 요소 도구 묶음을 쓰는 요청이다(낱말·공포·게임 하나·조우·싸울 적). */ readonly game: boolean;
+  /** 게임 요소 도구 묶음을 쓰는 요청이다(낱말·공포·게임 하나·조우·싸울 적, 또는 지은 것을 고치는 작은 일). */ readonly game: boolean;
   /** 지은 맵에 물길·다리·작은 물건을 덧그리는 요청이다. */ readonly terrain: boolean;
   /** 휑한 야외를 소품으로 채워 달라는 요청이다. */ readonly dress: boolean;
   /** 스토어에 올린 내 게임의 평가·답글·소식 요청이다. */ readonly store: boolean;
@@ -152,11 +152,12 @@ export interface ToolGroups {
  * 한 요청의 도구 묶음 — 이름·대사를 가린 글과 이미 정한 판정(게임 하나·소리·전투)을 받는다.
  * 소리만 바라는 요청은 소리 묶음만 싣는다(「추격」「엔딩」 낱말이 게임 도구를 끌어오지 않게). 게임 요청은 조사하는 물건을 보이게 찍도록 물건 찾기·찍기를 같이 준다.
  * 사냥·경험치·싸울 적처럼 조우·전투가 있어야 되는 요청은 낱말 묶음에 안 걸려도 전투 도구를 싣는다 — 못 실으면 그 일을 이르는 검사가 풀 길 없이 막힌다.
+ * editsBuilt: 지은 것을 고치는 작은 일(intent.ts 가 프로젝트를 보고 정한다)은 게임 낱말이 없어도 게임 도구 묶음을 받는다 — 이벤트를 찾고 옮기는 도구가 여기 있다.
  */
-export function matchToolGroups(topic: string, asked: { readonly wholeGame: boolean; readonly audio: AudioAsk; readonly combat: CombatAsk }): ToolGroups {
+export function matchToolGroups(topic: string, asked: { readonly wholeGame: boolean; readonly editsBuilt?: boolean; readonly audio: AudioAsk; readonly combat: CombatAsk }): ToolGroups {
   const { audio, combat } = asked;
   const fights = combat.encounters || combat.foes;
-  const game = GAME_WORDS.test(topic) || HORROR_WORDS.test(topic) || asked.wholeGame || fights;
+  const game = GAME_WORDS.test(topic) || HORROR_WORDS.test(topic) || asked.wholeGame || fights || !!asked.editsBuilt;
   const terrain = TERRAIN_WORDS.test(topic);
   const dress = DRESS_WORDS.test(topic);
   const fallen = FALLEN_TIERS.flatMap((tier, i) => ((tier === MUSIC_TIER ? audio.music : tier.whole ? asked.wholeGame : tier.words!.test(topic)) ? [i] : []));

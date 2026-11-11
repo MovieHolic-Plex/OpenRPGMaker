@@ -79,7 +79,8 @@ const CORPUS: readonly (readonly [string, Want])[] = [
   // 작은 일 하네스 실측(2026-11-11): 집에 문을 내는 말은 그 집을 짓는 말이 아니다.
   ["족장의 긴 집에 뒷문을 하나 만들어 줘. 그 문으로 나가면 겨울 시장으로 가게 해 줘", { scope: "edit", whole: false }],
   ["독서실 실내 하나 지어 줘", { scope: "place", game: false }],
-  ["썸네일 그림 하나 골라 줘", { scope: "edit", game: false }],
+  // 지은 것을 고치는 작은 일은 게임 낱말이 없어도 게임 도구 묶음을 받는다(이벤트 찾기·옮기기가 거기 있다).
+  ["썸네일 그림 하나 골라 줘", { scope: "edit", game: true }],
   ["사냥터에서 경험치 쌓게 해 줘", { scope: "edit", encounters: true, game: true }],
   ["상자 하나 옮겨 줘", { scope: "edit", on: "built", whole: false, editOnly: true }],
   ["이 맵에 상점 주인 한 명 세워 줘.", { scope: "edit", on: "built", whole: false, editOnly: true }],
@@ -207,9 +208,9 @@ describe("request intent — one record, every reader agrees", () => {
       expect(wantsWholeGame(ask)).toBe(intent.scope === "wholeGame");
       expect(editOnlyRequest(built, ask)).toBe(intent.editOnly);
       expect(CONTINUE_WORDS.test(ask)).toBe(intent.continuation);
-      // 글만 보는 읽기 함수는 글의 기록과 같다. 프로젝트를 같이 본 기록은 게임 하나를 잇는 이어 하기에 게임 도구를 더한다.
+      // 글만 보는 읽기 함수는 글의 기록과 같다. 프로젝트를 같이 본 기록은 게임 하나를 잇는 이어 하기와 지은 것을 고치는 작은 일에 게임 도구를 더한다.
       expect(v2ExtraToolNames(ask)).toEqual([...readRequest(ask).tools.extra]);
-      if (intent.wholeGame) expect(intent.tools.game).toBe(true);
+      if (intent.wholeGame || (intent.editOnly && !intent.audio.only)) expect(intent.tools.game).toBe(true);
       else expect([...intent.tools.extra]).toEqual(v2ExtraToolNames(ask));
     }
   });

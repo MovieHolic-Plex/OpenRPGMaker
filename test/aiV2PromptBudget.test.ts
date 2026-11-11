@@ -40,7 +40,8 @@ const SMALL_JOBS: readonly (readonly [string, number])[] = [
   ["촌장한테 말 걸면 열쇠를 받게 해 줘", 15_000],
   ["슬라임 세 마리와 싸우는 전투 하나 넣어 줘", 15_000],
   ["게임 제목을 '별의 노래'로 바꿔 줘", 15_000],
-  ["광장 빈 곳에 나무랑 벤치 좀 놓아 줘", 12_000],
+  // 게임 낱말이 없는 작은 일도 게임 카드의 늘 싣는 줄(2,617자)을 받는다 — 이벤트 찾기·옮기기 도구와 함께(12,292자).
+  ["광장 빈 곳에 나무랑 벤치 좀 놓아 줘", 13_000],
   ["이 게임 뭐가 부족한지 알려 줘", 12_000],
 ];
 /** 작은 일에는 처음부터 싣지 않는 도구(필요할 때 싣는다). */
@@ -113,6 +114,24 @@ describe("small jobs get a small prompt and a short tool list", () => {
     expect(shoot("족장의 긴 집 바닥에 낡은 열쇠가 떨어져 있게 해 줘. 조사하면 주워 가게 해 줘", "oneEvent").upFront).not.toContain("set_shop_stock");
     // 물어야 풀리는 일(「내 이름」)의 ask_user 와 말한 음악의 도구는 글자 상한에 밀리지 않는다.
     expect(shoot("엔딩 크레딧 음악 넣고 크레딧에 내 이름도 넣어 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["ask_user", "store_find_music", "set_game_audio"]));
+  });
+
+  it("a small job with no game word still finds and moves events; a place build and a sound-only job are unchanged", () => {
+    // 전에는 도구 6개(inspect·add_event·add_people·read_specs·ask_user·load_tools)뿐이었다 — 이벤트 찾기·옮기기 도구가 만들어지지도 않았다.
+    const line = shoot('촌장이 "배경 음악이 참 좋지?"라고 말하게 해 줘', "oneEvent");
+    expect(line.upFront).toEqual(expect.arrayContaining(["find_events", "get_event", "patch_event_page", "move_event", "upsert_event"]));
+    for (const ask of ["계속", "썸네일 그림 하나 골라 줘", "광장 빈 곳에 나무랑 벤치 좀 놓아 줘"]) {
+      const shot = shoot(ask, "oneEvent");
+      expect(shot.upFront, ask).toEqual(expect.arrayContaining(["find_events", "move_event"]));
+      expect(shot.lazy.has("remove_event"), ask).toBe(true);
+      expect(shot.upFront.length, ask).toBeLessThanOrEqual(19);
+    }
+    expect(classifyRequest("계속", project("oneEvent")).tools.game).toBe(true);
+    // 장소를 짓는 요청·빈 프로젝트의 «계속»·소리만 바라는 요청은 그대로다.
+    expect(classifyRequest("작은 마을 하나 만들어 줘", project("oneEvent")).tools.game).toBe(false);
+    expect(classifyRequest("계속", project("blank")).tools.game).toBe(false);
+    expect(classifyRequest("마을에 잔잔한 배경 음악 깔아 줘", project("oneEvent")).tools.game).toBe(false);
+    expect(shoot("마을에 잔잔한 배경 음악 깔아 줘", "oneEvent").upFront).not.toContain("move_event");
   });
 
   it("carries the people card for a new person and no event card for a bare move", () => {
