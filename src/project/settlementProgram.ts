@@ -129,7 +129,7 @@ export const programSchema = (decl: SettlementDecl) => ({
   description: "Build by purpose (optional): only these role buildings plus a few filler houses are placed, and the map must be the size the tool reports for this program. Without it the place is composed at its full size.",
   properties: {
     roles: {
-      type: "array", maxItems: 12,
+      type: "array", maxItems: 24,
       items: {
         type: "object",
         properties: { id: { type: "string" }, role: { type: "string", enum: Object.keys(decl.roles) }, label: { type: "string" } },
