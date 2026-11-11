@@ -5,6 +5,10 @@ import { fieldMenu } from "@/project/fieldMenu";
 import { applyStorySetupDefaults } from "@/ai/v2/genreDefaults";
 import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import type { Project } from "@/project/types";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const gameLines = (...args: Parameters<typeof gameContentProblems>): string[] => gameContentProblems(...args).map(findingLine);
 
 describe("choice meta tags (J37)", () => {
   it("strips design notes but keeps prices and plain brackets", () => {
@@ -24,7 +28,7 @@ describe("choice meta tags (J37)", () => {
     const after = structuredClone(before);
     const map = after.maps[after.startMapId!]!;
     map.events.push({ id: "ev_door", name: "정문", x: 2, y: 2, pages: [{ trigger: { kind: "action" }, commands: [{ kind: "choices", options: [{ text: "혼자 도망친다 (배드 엔딩)", branch: [] }, { text: "언니를 찾는다", branch: [] }] }] }] } as never);
-    const problems = gameContentProblems(before, after, "공포 게임 만들어 줘");
+    const problems = gameLines(before, after, "공포 게임 만들어 줘");
     expect(problems.some((p) => p.includes("[게임 검사 선택지]") && p.includes("(배드 엔딩)"))).toBe(true);
   });
 });

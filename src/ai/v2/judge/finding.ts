@@ -1,10 +1,10 @@
 // 판정 결과 한 모양 — 판정자마다 다르던 «문제» 형(표지 붙은 줄 · ShipBlocker · PlayProblem · SceneCraftFinding …)을 이 하나로 모은다.
 // 2026-11-11 리팩토링 R5 뒤 절반(openwiki/assistant-v2-refactor.md): 같은 사실(무엇이 문제인가 · 누가 고치나 · 완료를 막나)을 글머리 정규식으로 다시 읽지 않게 한다.
 
-export type FindingJudge = "game" | "ship" | "combat" | "scene" | "place" | "play" | "todo" | "vqa" | "advisor" | "critic";
+/** 판정 묶음 — 보고·장부에서 한데 모이는 단위(글머리 표지가 있는 묶음은 그 표지와 같다: game = 「게임 검사」 · ship = 「출하 차단」). */
+export type FindingJudge = "game" | "ship" | "scene" | "place" | "play" | "todo" | "vqa" | "advisor" | "critic";
 
 export interface Finding {
-  /** 어느 판정자가 냈나 — 장부·보고의 묶음. */
   readonly judge: FindingJudge;
   /** 규칙 id — 글머리 표지의 주제(「음악」 · 「타이틀 모양」)나 출하 차단 id(「no-healing」). 글이 바뀌어도 같은 문제다. */
   readonly id: string;
@@ -26,11 +26,11 @@ export interface Finding {
 /** 보고·할 일에 실리는 관문 줄. */
 export const findingLine = (f: Finding): string => f.ko;
 
-const TAG = /^\[(게임 검사|출하 차단|scene) ([^\]]+)\]/u;
-const TAG_JUDGE: Readonly<Record<string, FindingJudge>> = { "게임 검사": "game", "출하 차단": "ship", scene: "scene" };
+/** 글머리 표지 낱말 — 판정 묶음마다 하나(「[게임 검사 음악] …」 · 「[출하 차단 no-healing] …」 · 「[scene thin] …」). */
+const TAG_WORD = { game: "게임 검사", ship: "출하 차단", scene: "scene" } as const;
+type TaggedJudge = keyof typeof TAG_WORD;
 
-/** 표지 붙은 관문 줄을 Finding 으로 읽는다 — 판정자가 Finding 을 바로 낼 때까지의 다리. 표지가 없는 줄은 game/untagged. */
-export function fromLine(line: string): Finding {
-  const m = TAG.exec(line);
-  return { judge: m ? TAG_JUDGE[m[1]!]! : "game", id: m ? m[2]! : "untagged", severity: "block", owner: "model", ko: line };
+/** 판정자가 문제 하나를 낸다 — 줄 글은 «[표지 id] body» 로 지금과 같다. */
+export function tagged(judge: TaggedJudge, id: string, body: string, more?: Pick<Finding, "target" | "evidence">): Finding {
+  return { judge, id, severity: "block", owner: "model", ko: `[${TAG_WORD[judge]} ${id}] ${body}`, ...more };
 }
