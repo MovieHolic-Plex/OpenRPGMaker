@@ -7,7 +7,8 @@
 //
 // 순수 모듈: 변경 요약·입력 압축·응답 해석·후속 지시문은 결정적 함수다. 모델 호출은 sideChat 하나로만 한다(워커·재생 하네스가 같이 쓴다).
 import type { Project } from "@/project/types";
-import { battleDataEmptied, placementContentProblems } from "./gameChecks";
+import { placementContentProblems } from "./gameChecks";
+import { battleDataEmptied } from "./sideEffectChecks";
 import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
 import { audioOnly, musicOnly } from "../request/readers";
 

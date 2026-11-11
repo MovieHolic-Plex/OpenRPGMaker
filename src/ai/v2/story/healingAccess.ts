@@ -8,7 +8,8 @@ import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorMode
 import { canMove, isPassableLanding } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { allCommands, battleSites, healingItemIds, healingSources } from "../judge/combatChecks";
-import { isObjectiveCommand, mapRegion } from "../judge/discoverability";
+import { mapRegion } from "../judge/objectiveWhere";
+import { isObjectiveCommand } from "../judge/objectiveCommand";
 import { reachWithout } from "../judge/puzzleChecks";
 import type { BuildRun } from "../types";
 import { victoryGatedSwitches } from "../blueprint";
