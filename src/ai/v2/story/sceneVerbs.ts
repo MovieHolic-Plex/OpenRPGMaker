@@ -18,7 +18,7 @@ import { buildPeople } from "../people";
 import { eventsOf } from "../place/cells";
 import { ensureFoeTroop, enemyArtFor } from "../place/builders/dungeon";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
-import { reachableCells } from "../eventReach";
+import { reachableCells } from "../judge/eventReach";
 import { findMapId } from "../loop/argGuard";
 import { nameScore } from "../todo/names";
 

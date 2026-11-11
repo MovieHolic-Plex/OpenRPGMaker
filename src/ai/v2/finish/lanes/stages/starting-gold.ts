@@ -1,6 +1,6 @@
 // 시작 돈(ensureStartingGold).
 import type { LaneStage } from "../types";
-import { ensureStartingGold } from "../../../healingAccess";
+import { ensureStartingGold } from "../../../story/healingAccess";
 
 export const stage: LaneStage = {
   id: "starting-gold", scope: "project", order: 50,

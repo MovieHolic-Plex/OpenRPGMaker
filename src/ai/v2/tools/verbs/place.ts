@@ -23,7 +23,7 @@ import { blueprintMapFor } from "../../story/blueprintPath";
 import { isPlaceholderMap } from "../../blankStart";
 import { walkGame } from "../../makeGame";
 import { DUNGEON_LAYOUT_SCHEMA, LAYOUT_CRITIQUE_ROUNDS, LAYOUT_REPAIRS, VILLAGE_LAYOUT_SCHEMA, attachLayoutCritique, bboxDungeonSpec, bboxPlacesOn, bboxVillageSpec, dungeonLayoutCard, hasDungeonLayout, hasVillageLayout, layoutRejectText, layoutSession, toBboxTerrain, villageLayoutCard } from "../../place/builders/placeLayout";
-import { gateFor, innerDungeonParent, innerGateSpot } from "../../dungeonGates";
+import { gateFor, innerDungeonParent, innerGateSpot } from "../../place/dungeonGates";
 import { DUNGEON_PLACE_WORD, requestedDungeonSide } from "../../request/place";
 import { DUNGEON_DESIGN_SCHEMA, arrivalEntrance, dungeonContext, dungeonParts, screenDungeonSpec } from "../../place/dungeonParts";
 import { buildsHandInterior, designMissingRooms } from "../../place/designRooms";

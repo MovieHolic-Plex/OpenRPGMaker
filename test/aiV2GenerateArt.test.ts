@@ -3,7 +3,7 @@ import { createBlankProject } from "@/project/defaults";
 import { createV2Tools } from "@/ai/v2/verbs";
 import { mapViewArtProblems } from "@/ai/v2/judge/finishGate";
 import { V2Session } from "@/ai/v2/turn/session";
-import { checkImageDataUrl } from "@/ai/v2/imageCheck";
+import { checkImageDataUrl } from "@/ai/v2/judge/imageCheck";
 import type { Project } from "@/project/types";
 
 // 오너 2026-11-09: 타이틀·엔딩 그림이 게임 속 맵 화면(map-view)이면, 그림 생성이 가능한 실행은 generate_art 를 먼저 시도해야 한다.

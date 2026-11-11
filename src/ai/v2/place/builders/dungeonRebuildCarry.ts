@@ -9,7 +9,7 @@
 //     다시 잇는 바깥 맵(relink)으로 돌아가는 이동만 든 이벤트는 싣지 않는다 — 다시 잇기가 새 짝을 만든다.
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { reachableCells } from "../../eventReach";
+import { reachableCells } from "../../judge/eventReach";
 
 type Cell = { x: number; y: number };
 

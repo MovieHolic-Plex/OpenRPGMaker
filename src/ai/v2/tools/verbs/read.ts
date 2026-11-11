@@ -4,7 +4,7 @@ import { PLACE_SPEC_KINDS } from "../../prompt";
 import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
 import { createBuildRun } from "../../buildRun";
 import { builderFor } from "../../place/builders";
-import { summarizeChecks } from "../../checks";
+import { summarizeChecks } from "../../judge/machineChecks";
 import type { PlaceSpec } from "../../types";
 import { HELPER_LIMITS, runHelperJobs, type HelperJob } from "../../helpers";
 import { restoreEventFromBefore } from "../../story/restoreEvent";

@@ -7,11 +7,11 @@
 import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { canMove, isPassableLanding } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
-import { allCommands, battleSites, healingItemIds, healingSources } from "./judge/combatChecks";
-import { isObjectiveCommand, mapRegion } from "./judge/discoverability";
-import { reachWithout } from "./judge/puzzleChecks";
-import type { BuildRun } from "./types";
-import { victoryGatedSwitches } from "./blueprint";
+import { allCommands, battleSites, healingItemIds, healingSources } from "../judge/combatChecks";
+import { isObjectiveCommand, mapRegion } from "../judge/discoverability";
+import { reachWithout } from "../judge/puzzleChecks";
+import type { BuildRun } from "../types";
+import { victoryGatedSwitches } from "../blueprint";
 
 const HEALING_SPRING_ID = "ev_heal_spring";
 const HEALING_SPRING_NAME = "회복의 샘";
