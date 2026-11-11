@@ -14,7 +14,7 @@ import { OBJECTIVE_HUD_HIDDEN_MESSAGE, OBJECTIVE_MISSING_MESSAGE, OBJECTIVE_NOT_
 import { eventBodyRect } from "@/project/eventFootprintQuery";
 import { allPages, conditionLeaves, visitPageCommands, type PageRef, type RawCommand } from "@/qa/gameCheck/walk";
 import { objectClusterAt } from "@/project/objectFootprint";
-import { isDoorArtCell } from "@/project/staging/doorCells";
+import { entranceArtCells } from "../place/entrances";
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { objectiveTargetViews } from "@/player/objectiveTarget";
@@ -316,12 +316,14 @@ interface OffArtEntrance {
 }
 
 /**
- * 그려진 입구 옆 맨바닥에 선 출입구·이야기 이벤트 — 새 플레이어는 그림(계단·스크린도어·문짝)을 누르는데 이벤트는 옆 칸이다.
+ * 그려진 입구 옆 맨바닥에 선 출입구·이야기 이벤트 — 새 플레이어는 그림(계단·문짝)을 누르는데 이벤트는 옆 칸이다.
  * romance-j91: 지하철 계단 그림 두 칸 위 보도에 역 문(J103), 열차 스크린도어 아래 칸에 하루 끝 열차 이벤트(J104).
  * 문 그림 칸에 아무 이벤트도 없을 때만 짚는다(이미 다른 이벤트가 그 문을 맡았으면 그 문이 따로 산다).
+ * 입구 그림은 칩셋이 적어 둔 것만이다(place/entrances.ts entranceArtCells) — 이름표의 「문」「구멍」「입구」 글자로 읽으면 호숫가 가문비, 얼음 구멍, 무너진 아치 조각이
+ * 입구가 되어 길 끝 출구와 이야기 이벤트가 출하 차단에 걸리고, 출하 기본값이 그 이벤트를 나무 위로 옮겼다.
  */
 /** 문 그림 덩어리(4방 이웃)에 이미 이벤트가 서 있나 — 넓은 계단 한 칸에 문이 있으면 그 덩어리는 주인이 있다. */
-function doorClusterTaken(project: Project, map: GameMap, x: number, y: number, taken: ReadonlySet<string>): boolean {
+function doorClusterTaken(map: GameMap, art: ReadonlySet<number>, x: number, y: number, taken: ReadonlySet<string>): boolean {
   const seen = new Set<string>([`${x},${y}`]);
   const queue = [{ x, y }];
   for (let i = 0; i < queue.length && queue.length <= 49; i += 1) {
@@ -330,7 +332,7 @@ function doorClusterTaken(project: Project, map: GameMap, x: number, y: number, 
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
       const next = { x: cell.x + dx, y: cell.y + dy };
       const key = `${next.x},${next.y}`;
-      if (seen.has(key) || !isDoorArtCell(project, map, next.x, next.y)) continue;
+      if (seen.has(key) || next.x < 0 || next.y < 0 || next.x >= map.width || !art.has(next.y * map.width + next.x)) continue;
       seen.add(key);
       queue.push(next);
     }
@@ -350,6 +352,9 @@ export function offArtEntrances(project: Project): OffArtEntrance[] {
   const out: OffArtEntrance[] = [];
   for (const map of Object.values(project.maps)) {
     const taken = new Set((map.events ?? []).map((event) => `${event.x},${event.y}`));
+    const art = entranceArtCells(project, map);
+    if (!art.size) continue;
+    const isArt = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < map.width && y < map.height && art.has(y * map.width + x);
     for (const event of map.events ?? []) {
       const pages = event.pages ?? [];
       const page = pages[0];
@@ -362,14 +367,14 @@ export function offArtEntrances(project: Project): OffArtEntrance[] {
       const transfers = new Set<string>();
       transferTargets(pages, transfers);
       if (transfers.size === 0 && !story.has(`${map.id}|${event.id}`)) continue;
-      if (isDoorArtCell(project, map, event.x, event.y)) continue;
+      if (isArt(event.x, event.y)) continue;
       let door: { x: number; y: number } | undefined;
       // 바로 옆(대각 포함) 또는 한 칸 바닥 건너 두 칸(열차 스크린도어 앞 승강장 칸에 선 하루 끝 이벤트, J104).
       for (const [dx, dy] of [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [1, -1], [-1, 1], [1, 1], [0, -2], [0, 2], [-2, 0], [2, 0]] as const) {
         const x = event.x + dx, y = event.y + dy;
-        if (!isDoorArtCell(project, map, x, y) || taken.has(`${x},${y}`)) continue;
-        if (doorClusterTaken(project, map, x, y, taken)) continue;
-        if ((Math.abs(dx) === 2 || Math.abs(dy) === 2) && (!isPassable(project, map, event.x + dx / 2, event.y + dy / 2) || isDoorArtCell(project, map, event.x + dx / 2, event.y + dy / 2))) continue;
+        if (!isArt(x, y) || taken.has(`${x},${y}`)) continue;
+        if (doorClusterTaken(map, art, x, y, taken)) continue;
+        if ((Math.abs(dx) === 2 || Math.abs(dy) === 2) && (!isPassable(project, map, event.x + dx / 2, event.y + dy / 2) || isArt(event.x + dx / 2, event.y + dy / 2))) continue;
         // 그림 칸으로 옮기면 앞에 설 칸이 없는 문(벽 속 석문 그림 — 아래 줄도 벽)은 이 이벤트의 입구가 아니다(vm2 deepseek jrpg 「마왕과의 결전」).
         if (!doorStandable(project, map, event, x, y)) continue;
         // 칸막이·건물 벽에 붙은 같은 문 덩어리에 이미 다른 이벤트가 있으면 이 이벤트의 문이 아니다.

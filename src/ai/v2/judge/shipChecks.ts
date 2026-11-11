@@ -17,7 +17,7 @@ import { romanceCompletionGaps } from "@/qa/gameCheck/romance";
 import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, repeatedDayDialogue, lingeringHeavyTints } from "./discoverability";
 import { fieldMenu } from "@/project/fieldMenu";
 import { FACTORY_HERO_ARMS } from "../genreDefaults";
-import { strayStepCopies, walkBlueprint } from "../story/blueprint";
+import { BLUEPRINT_PATH_IDS, strayStepCopies, walkBlueprint } from "../story/blueprint";
 import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS, planLinks } from "./mapCount";
 import { MAX_SAME_KIND, worldOf } from "../place/world";
 import { MIN_ACT_DEPTH, progressionDepth } from "./actDepth";
@@ -324,6 +324,12 @@ export function actDepthMinBlocker(project: Project, task: string): ShipBlocker[
   if (oneProjectGame(project, task)) return [];
   const depth = progressionDepth(project);
   if (depth >= MIN_ACT_DEPTH) return [];
+  // 처방이 «청사진 단계를 늘려 다시 써라» 인 관문이다 — 청사진이 이미 그만큼 길고(서로 다른 단계 이벤트 MIN+1 개 이상) 그 경로가 엔딩까지 이어져 있으면 올리지 않는다.
+  // 깊이는 스위치·변수로 이어진 사슬만 센다: 가운데 단계 하나가 물건으로 넘기면(고르기 단계의 gives 가 아이템) 7단계 경로가 깊이 3 으로 재어진다.
+  // 2026-11-12 Terra 측정 r1-fun: 7단계·7장소 경로를 다 지은 뒤 이 관문이 서서 모델이 사람 이름만 바꿔 청사진을 다시 썼고, 이야기 줄이 두 벌이 돼 첫 마을에서 막혔다(눈가림 재미 2).
+  const bp = project.gameBlueprint;
+  if (bp && new Set(bp.steps.map((step) => `${step.place}\u0000${step.event}`)).size > MIN_ACT_DEPTH
+    && !walkBlueprint(project).blockers.some((b) => BLUEPRINT_PATH_IDS.has(b.id) || b.id === "blueprint-place-missing" || b.id === "blueprint-place-unreachable")) return [];
   return [{
     id: "act-depth-min",
     message: `이야기가 이어지는 단계(진행 깊이)가 ${depth}/${MIN_ACT_DEPTH} 이다 — 청사진 단계를 늘린다. write_blueprint 로 핵심 경로를 6~8단계로 다시 쓰고(장소를 2곳 이상 나눠 둔다) build_blueprint_path 를 한 번 부른다. 새 단계의 event 는 아직 없는 새 이름으로 — 이미 있는 이벤트 이름을 쓰면 사슬이 늘지 않는다. 전투·상점이 든 단계 이벤트는 다시 지어지지 않으니 patch_event_page 로 앞 단계가 켠 스위치를 조건으로 잇는다.`,

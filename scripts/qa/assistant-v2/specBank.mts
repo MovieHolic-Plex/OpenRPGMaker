@@ -3,7 +3,8 @@
 //     고친 것을 저장본 두세 판이나 90분짜리 Terra 판으로만 확인했다. 은행은 같은 명세로 빌더만 다시 돌린다.
 //
 //   bun scripts/qa/assistant-v2/specBank.mts ab --out <결과 폴더> [--base origin/main] [--only id,id] [--jobs N]
-//        빌더를 고친 사람이 쓰는 한 줄: 기준 커밋의 빌더(<결과>/a)와 지금 작업 폴더의 빌더(<결과>/b)로 은행을 돌리고 대조를 찍는다.
+//        빌더를 고친 사람이 쓰는 한 줄: 기준 커밋의 빌더(<결과>/a)와 지금 작업 폴더의 빌더(<결과>/b)로 은행을 같이 돌리고 대조를 찍는다(<결과>/diff.json 도 남긴다).
+//        --jobs 는 한 번에 띄우는 재생의 수다(기본 4 — ab 는 두 번을 합쳐 4). 같은 기계에서 모델 판이 돌 때는 올리지 않는다.
 //   bun scripts/qa/assistant-v2/specBank.mts run --out <결과 폴더> [--at <커밋>] [--only id,id] [--jobs N] [--no-render] [--no-autoplay]
 //        은행의 명세마다 재생 → 재기. --at 을 주면 그 커밋의 빌더로 재생한다(/tmp 에 임시 작업 폴더를 만들고 끝나면 지운다). 재는 자는 늘 지금 폴더의 것.
 //   bun scripts/qa/assistant-v2/specBank.mts --diff <결과A> <결과B>        칸마다 은행 합계의 전/후와 나빠진 게임 목록
@@ -22,9 +23,10 @@ const BANK = path.join(ROOT, "harness-data/assistant-capability/spec-bank");
 const argv = process.argv.slice(2);
 const flag = (name: string): string | undefined => { const at = argv.indexOf(name); return at >= 0 ? argv[at + 1] : undefined; };
 const has = (name: string): boolean => argv.includes(name);
-const VALUE_FLAGS = ["--out", "--at", "--only", "--jobs", "--bank", "--base"];
+const VALUE_FLAGS = ["--out", "--at", "--only", "--jobs", "--bank", "--base", "--json"];
 const rest = argv.filter((a, i) => !a.startsWith("--") && !VALUE_FLAGS.includes(argv[i - 1] ?? ""));
 const bankDir = flag("--bank") ?? BANK;
+const DEFAULT_JOBS = 4;
 
 const sh = (cmd: string[], cwd = ROOT): { code: number; out: string; err: string } => { const r = Bun.spawnSync(cmd, { cwd, stdout: "pipe", stderr: "pipe" }); return { code: r.exitCode, out: r.stdout.toString(), err: r.stderr.toString() }; };
 const specFiles = (): string[] => fs.existsSync(bankDir) ? fs.readdirSync(bankDir).filter((f) => f.endsWith(".json")).sort().map((f) => path.join(bankDir, f)) : [];
@@ -88,8 +90,10 @@ async function run(): Promise<void> {
   const size = (f: string) => readSpec(f).turns.reduce((n, t) => n + t.calls.length, 0);
   const files = specFiles().filter((f) => !only || only.includes(path.basename(f, ".json"))).sort((a, b) => size(b) - size(a));
   if (!files.length) { console.error(`은행(${bankDir})에 명세가 없다`); process.exit(2); }
-  // 재생 하나가 3~4GB 를 쓴다. 기본은 코어 셋에 하나(32코어 → 10개).
-  const jobs = Number(flag("--jobs") ?? Math.max(1, Math.floor(os.cpus().length / 3)));
+  // 기본은 한 번에 4개다. 재생 하나가 코어 하나와 3~4GB 를 쓰고, 같은 기계에서 모델 판(Terra 측정·작업자 세션)이 돌 때 넓게 띄우면
+  // 그 판의 턴이 시간 제한에 걸린다(2026-11-11: 한 번에 14개로 돌린 은행이 부하 평균 50~110 을 만들었고 로컬 Terra 판 하나가 그 사이에 멈췄다).
+  // 기계가 비었을 때만 --jobs 로 올린다.
+  const jobs = Number(flag("--jobs") ?? DEFAULT_JOBS);
   const started = Date.now();
   fs.mkdirSync(out, { recursive: true });
   const head = sh(["git", "rev-parse", "--short=10", "HEAD"]).out.trim();
@@ -122,20 +126,22 @@ async function run(): Promise<void> {
     if (worktree) { sh(["git", "worktree", "remove", "--force", worktree]); fs.rmSync(worktree, { recursive: true, force: true }); sh(["git", "worktree", "prune"]); }
   }
   const replaySec = Math.round((Date.now() - started) / 1000);
-  // 재기는 재생보다 가볍다(탐침 하나씩, 1GB 안팎) — 두 배로 띄운다.
-  await measureAll(out, files.map((f) => path.basename(f, ".json")), jobs * 2);
+  await measureAll(out, files.map((f) => path.basename(f, ".json")), jobs);
   const wallSec = Math.round((Date.now() - started) / 1000);
   summarize(out, { head, ...(at ? { at: atSha, atRef: at } : {}), jobs, replaySec, wallSec, finishedAt: new Date().toISOString() });
   console.log(`\n${fs.readFileSync(path.join(out, "bank.txt"), "utf8").split("\n## 그대로 못 되살린")[0]}`);
   console.log(`끝 — 재생 ${replaySec}초 · 전체 ${wallSec}초 · 표 ${path.join(out, "bank.txt")} · 그림 ${out}/<게임>/maps/`);
 }
 
-function diff(dirA?: string, dirB?: string): number {
+function diff(dirA?: string, dirB?: string, saveTo?: string): number {
   const [a, b] = dirA && dirB ? [dirA, dirB] : argv.slice(argv.indexOf("--diff") + 1);
-  if (!a || !b) { console.error("--diff <결과A> <결과B>"); return 2; }
+  if (!a || !b) { console.error("--diff <결과A> <결과B> [--json <파일>]"); return 2; }
   const name = (dir: string) => { const f = path.join(dir, "bank.json"); const meta = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) as { at?: string; head?: string } : {}; return `${path.basename(path.resolve(dir))}@${meta.at ?? meta.head ?? "?"}`; };
   const report = diffReport(loadMetrics(a), loadMetrics(b), name(a), name(b));
   console.log(report.text);
+  // 쪽을 만드는 스크립트(prPage.py)가 읽는다 — 글을 다시 쪼개지 않게 줄마다의 값을 그대로 남긴다.
+  const json = saveTo ?? flag("--json");
+  if (json) fs.writeFileSync(json, JSON.stringify({ a: name(a), b: name(b), rows: report.rows, text: report.text }, null, 1));
   return 0;
 }
 
@@ -150,8 +156,8 @@ async function ab(): Promise<number> {
   const out = path.resolve(flag("--out") ?? "");
   if (!flag("--out")) { console.error("ab --out <결과 폴더> [--base origin/main] 가 필요하다"); return 2; }
   const base = flag("--base") ?? "origin/main";
-  // 두 번을 같이 띄우므로 한 번의 몫은 절반(코어 여섯에 하나).
-  const jobs = flag("--jobs") ?? String(Math.max(1, Math.floor(os.cpus().length / 6)));
+  // 두 번을 같이 띄운다 — --jobs 는 두 번을 합친 수다(기본 4 → 한 번에 2개씩).
+  const jobs = String(Math.max(1, Math.floor(Number(flag("--jobs") ?? DEFAULT_JOBS) / 2)));
   const pass = ["--jobs", jobs, ...(flag("--only") ? ["--only", flag("--only")!] : []), ...(has("--no-render") ? ["--no-render"] : []), ...(has("--no-autoplay") ? ["--no-autoplay"] : []), ...(flag("--bank") ? ["--bank", flag("--bank")!] : [])];
   const self = path.join(ROOT, "scripts/qa/assistant-v2/specBank.mts");
   fs.mkdirSync(out, { recursive: true });
@@ -162,7 +168,7 @@ async function ab(): Promise<number> {
     spawn(["bun", self, "run", "--out", path.join(out, "b"), ...pass], ROOT, path.join(out, "b.log"), {}, 180),
   ]);
   if (codes.some((code) => code !== 0)) { console.error(`은행 재생이 실패했다(exit ${codes.join("/")}) — ${path.join(out, "a.log")} · b.log`); return 1; }
-  const code = diff(path.join(out, "a"), path.join(out, "b"));
+  const code = diff(path.join(out, "a"), path.join(out, "b"), path.join(out, "diff.json"));
   console.log(`끝 — 전/후 전체 ${Math.round((Date.now() - started) / 1000)}초 · 그림 ${out}/{a,b}/<게임>/maps/`);
   return code;
 }
@@ -175,7 +181,7 @@ else if (command === "list") list();
 else if (command === "measure") {
   const out = path.resolve(rest[1] ?? "");
   const ids = fs.readdirSync(out).filter((d) => fs.existsSync(path.join(out, d, "project.json")));
-  await measureAll(out, ids, Number(flag("--jobs") ?? 4));
+  await measureAll(out, ids, Number(flag("--jobs") ?? DEFAULT_JOBS));
   const prior = fs.existsSync(path.join(out, "bank.json")) ? JSON.parse(fs.readFileSync(path.join(out, "bank.json"), "utf8")) as Record<string, unknown> : {};
   summarize(out, { head: prior.head, ...(prior.at ? { at: prior.at } : {}), wallSec: prior.wallSec, jobs: prior.jobs, replaySec: prior.replaySec, remeasuredAt: new Date().toISOString() });
   console.log(fs.readFileSync(path.join(out, "bank.txt"), "utf8").split("\n## 그대로 못 되살린")[0]);

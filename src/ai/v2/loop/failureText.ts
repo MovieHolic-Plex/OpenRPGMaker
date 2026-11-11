@@ -86,7 +86,6 @@ const EN_RULES: readonly Rule[] = [
   { re: /^(\S+) 의 가구 옮기기 상한\((\d+)번\)에 닿았다/u, en: (m) => `Furniture-move limit (${m[2]}) reached on ${m[1]}. Do not call move_object there again — report the remaining problems.` },
   { re: /^그렇게 놓으면 바닥 (\d+)칸에 갈 수 없게 돼 되돌렸다/u, en: (m) => `Placing it there would cut off ${m[1]} floor cells from the door, so it was reverted. Pick a cell that does not block the walkway (against a wall, out of the path).` },
   { re: /^직렬화 왕복 실패: (\S+?): 알 수 없는 trigger "([^"]+)"\. 허용: (.*)$/u, en: (m) => `Save round-trip failed: ${m[1]} has an unknown trigger "${m[2]}". Allowed: ${clip(m[3]!, 120)}` },
-  { re: /^(\S+) 빌더는 소품 하나하나·꾸밈\(dressing\)/u, en: (m) => `The ${m[1]} builder does not take individual props, dressing, daises or sarcophagi — only variant (another layout), features, size and floors can change. This rejection counted as a round. Do not try to fix majors those four cannot; report them.` },
   { re: /^(\S+) 는 v2 가 지은 기록이 없고 다시 지을 방 구성도 읽지 못했다/u, en: (m) => `${m[1]} has no v2 build record and its room layout could not be read, so edit_place cannot rebuild it. Build anew in place with make_place({spec:{…, mapId:'${m[1]}'}}), make local changes with move_event / stamp_object, or report it.` },
   { re: /^맵이 없습니다: (\S+)/u, en: (m) => `Map ${m[1]} does not exist. Use a mapId from the [Current project] list (or the result of the tool that built the place).` },
   { re: /^'([^']+)' 인자 검증 실패/u, en: (m) => `${m[1]} refused the arguments (validation failed) — check the field names and types in the schema; send only the fields you need.` },
@@ -98,8 +97,9 @@ const EN_RULES: readonly Rule[] = [
 export function englishToolMessage(message: string, code?: string): string {
   const example = /—\s*(?:다시 보낼 형식 예시|호출 예시):\s*(\{.*\})/su.exec(message)?.[1];
   const core = oneLine(withoutExample(message));
-  // 이미 영어로 쓴 거절 글(칸 배치 검사 «Rejected: … Fixed call»)은 그대로 — 장소 이름이 한글이라 «Tool said (Korean)»으로 싸이던 것.
-  if (/^(Rejected|Not built yet)\b/u.test(core)) return message.trim();
+  // 이미 영어로 쓴 거절 글은 그대로 — 장소 이름만 한글인 영어 글이 «Tool said (Korean)» 으로 싸이면 모델이 옮기지 못한 글로 읽는다.
+  const letters = core.replace(/[^\p{L}]/gu, "");
+  if (/^(Rejected|Not built yet)\b/u.test(core) || (letters.length > 0 && letters.replace(/[^ㄱ-ㆎ가-힣]/gu, "").length / letters.length < 0.3)) return message.trim();
   for (const rule of EN_RULES) {
     if (rule.code && !(code && rule.code.test(code))) continue;
     const m = rule.re.exec(core);
@@ -368,7 +368,8 @@ export function formatV2VerbFailure(tool: string, sent: unknown, failText: strin
   const core = oneLine(withoutExample(stripVerbHead(String(body.summary ?? parsed.summary))));
   const issues = parsed.issues.filter((i) => i.message.trim());
   const head = plainOrKorean(englishToolMessage(core), core);
-  const out: string[] = [`Rejected: ${tool} — ${clip(head, 560)}`];
+  // 막은 이유가 여럿인 거절(칸 배치: «3 problems»)이 첫 이유에서 잘리지 않게 넉넉히 둔다 — 잘린 판에서 모델은 하나만 고쳐 같은 거절을 다시 받았다.
+  const out: string[] = [`Rejected: ${tool} — ${clip(head, Math.max(560, budget - 500))}`];
   if (issues.length > 1 || (issues.length === 1 && oneLine(issues[0]!.message) !== core)) {
     out.push(`Blocking issues (${issues.length}):`);
     issues.slice(0, 6).forEach((i, k) => out.push(`${k + 1}. ${i.code ? `[${i.code}] ` : ""}${clip(englishToolMessage(i.message, i.code), 200)}`));

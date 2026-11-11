@@ -478,7 +478,9 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
     // 바닥 재질(다다미 통짜·외톨이 칸·재질 수), 요청 물건, 다양성·감방 앞 — interiorRoomChecks.ts
     const floorAt = (i: number): string | null => { const x = i % W, y = (i - x) / W; if (!A.isFloor(x, y)) return null; let f: string | null = null; for (const z of zones) if (z.floor && z.x0 <= x && x <= z.x1 && z.y0 <= y && y <= z.y1) f = z.floor; return f; };
     const fl = floorChecks(W, H, floorAt, roomList.map(([c, r]) => ({ id: r.id, floorCells: comps[c]!.filter((i) => A.isFloor(i % W, Math.floor(i / W))), ...(r.jo !== undefined ? { jo: r.jo } : {}) })), S);
-    const req = requiredCheck(L.required, objs.map((p) => p.id), S);
+    // 요청 물건은 기물뿐 아니라 깔개·난간·단으로도 놓인다 — «붉은 융단» 을 carpets 에 깔았는데 «rug red 를 놓지 않았다» 로 알현실이 네 번 거절됐다(2026-11-11 map-vqa 깔기 throne-room).
+    const laidIds = [...objs.map((p) => p.id), ...[L.carpets, L.rails, L.daises].flatMap((list) => (Array.isArray(list) ? list : []).map((e) => String((e as { id?: unknown })?.id ?? ""))).filter(Boolean)];
+    const req = requiredCheck(L.required, laidIds, S);
     requiredOut = req.results;
     const byRoom = new Map<string, string[]>();
     for (const p of objs) { const d = S.objects[p.id]; if (isDoorPiece(p.id) || d?.kind === "flat") continue; const id = roomIdAt(p.x, p.y + fp(p.id).h - 1) ?? roomIdAt(p.x, d?.kind === "hang" ? p.y + 2 : p.y); if (id) byRoom.set(id, [...(byRoom.get(id) ?? []), p.id]); }
@@ -488,7 +490,10 @@ export function checkWallLayout(raw: unknown, S: HandInteriorSpec, tileset: Tile
     const near = (cells: Set<number>, j: number) => { const x = j % W, y = (j - x) / W; return ([[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]] as const).some(([dx, dy]) => inMap(x + dx, y + dy) && cells.has(idx(x + dx, y + dy))); };
     let barredN = 0, openN = 0; const cellNotes: string[] = [];
     for (const [c, r] of roomList) if (isPrisonCell({ id: r.id, ...(r.purpose ? { purpose: String(r.purpose) } : {}) })) { if (barred(new Set(comps[c]!))) barredN++; else { openN++; cellNotes.push(cellFrontNote(r.id)); } }
-    soft = [...doorSoft, ...stairSoft, ...unreachedSoft, ...res.problems, ...fl.problems, ...req.problems]; notes = [...res.notes, ...fl.notes, ...vr.notes, ...cellNotes];
+    // 공간·바닥 문제(빈 바닥·성긴 방·깔개 상한·바닥 재질)는 짓기를 막지 않는다 — 깐 뒤 그림을 보며 자기 검토 바퀴에서 고친다. 막는 것은 문·계단·닿지 않는 바닥·요청 물건뿐이다.
+    // 전에는 고치기 두 번 동안 거절해, 싼 모델의 실내 첫 짓기 12번 중 10번이 거절로 시작했고 그 뒤 고치기 고리에서 장소가 서지 못한 판이 나왔다(2026-11-11 map-vqa 깔기 weapon-shop 0장).
+    const open = [...res.problems, ...fl.problems].map((p) => `open (the room is laid; fix it in a review_layout round) — ${p}`);
+    soft = [...doorSoft, ...stairSoft, ...unreachedSoft, ...req.problems]; notes = [...open, ...res.notes, ...fl.notes, ...vr.notes, ...cellNotes];
     space = { emptyPct: res.emptyPct, roomCV: res.roomCV, rooms: res.rooms, islands: fl.islands, tatamiMats: fl.tatamiMats, distinctPerRoom: vr.distinctPerRoom, repetition: vr.repetition, cellFronts: { barred: barredN, open: openN }, daises: daises.length };
   }
   const connections = doors.flatMap((d) => { const a = compRoom(d.a), b = compRoom(d.b); return a && b && a !== b ? [{ a, b, type: "door" }] : []; });

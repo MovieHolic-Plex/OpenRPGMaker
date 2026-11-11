@@ -18,6 +18,18 @@ const hud = (p: Project) => hudTitleLines(p).filter((m) => m.startsWith("[게임
 const title = (p: Project) => hudTitleLines(p).filter((m) => m.startsWith("[게임 검사 타이틀 모양]"));
 
 describe("v2 HUD / title choice (fs-use-tools HUD; 2026-11-11 the HUD is derived, not asked)", () => {
+  it("a health-off HUD that shows only the clock is not flagged as «always shows health» (2026-11-12 — the clock widget's default source is hp)", () => {
+    const before = createBlankProject() as Project;
+    const after = createBlankProject() as Project;
+    after.system.fieldHud = { ...STORY_SETUP_HUD };
+    const lines = gameLines(before, after, "숲속에 작은 마을 하나 깔아 줘");
+    expect(lines.filter((m) => m.startsWith("[게임 검사 HUD]"))).toEqual([]);
+    // 체력 게이지를 정말 켠 HUD 는 여전히 걸린다(체력이 줄 일이 없는 게임).
+    const shown = createBlankProject() as Project;
+    shown.system.fieldHud = { ...STORY_SETUP_HUD, vitals: true };
+    expect(gameLines(before, shown, "숲속에 작은 마을 하나 깔아 줘").some((m) => m.startsWith("[게임 검사 HUD]"))).toBe(true);
+  });
+
   it("no longer asks the model to pick a HUD — the template is recognised but is not a gate problem", () => {
     const p = createBlankProject() as Project;
     p.system.fieldHud = { ...STORY_SETUP_HUD } as never;

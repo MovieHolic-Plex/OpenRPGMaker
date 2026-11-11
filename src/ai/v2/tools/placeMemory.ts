@@ -12,6 +12,7 @@ import type { Project } from "@/project/types";
 import type { ProjectIndex } from "../loop/refs";
 import type { V2Session } from "../turn/session";
 import type { PlaceBuildResult, PlaceRecord, PlaceSpec } from "../shared/types";
+import { isPlaceholderMap } from "../blankStart";
 
 interface SavedPlace {
   readonly builder: string;
@@ -75,23 +76,57 @@ export function loadPlaces(memory: unknown, session: V2Session, project: Project
 /** 앞 턴의 설계에서 다시 지었을 때 결과에 붙이는 글(모델이 읽는다). */
 export const PAST_DESIGN_NOTE = "Edited from the design saved when this place was built in an earlier turn. If the place was re-laid, things put on this map after that build (objects, hand-painted tiles) are not part of the design — look at the picture and put back anything that is missing.";
 
+/** 거절 글에 넣는 맵 한 줄 — id 와 이름. */
+const mapLine = (project: Project, mapId: string): string => { const m = project.maps[mapId]; return m ? `${mapId} («${m.name ?? ""}», ${m.width}×${m.height})` : `"${mapId}"`; };
+
 /**
- * 칸 배치(spec.layout)로 짓지 않은 장소에 layoutPatch 가 왔을 때의 거절 글. 전에는 «전체 배치를 보내라» 고만 해서, 뒷문 하나 내려던 모델이
- * 같은 호출을 다섯 번 되풀이하다 막혔다(2026-11-11 작은 일 재측정 door-backdoor-built) — 전체 배치는 방을 통째로 다시 짓는 일이다.
+ * 칸 배치(spec.layout)로 짓지 않은 장소에 layoutPatch 만 왔을 때의 거절 글 — 고침이 담은 것에 맞는 다음 호출 하나를 실제 값으로 준다.
+ * 문을 내려던 고침이면 그 칸으로 create_transfer_pair(전체 배치를 보내라고 하면 방을 통째로 다시 짓는다 — 2026-11-11 작은 일 door-backdoor-built),
+ * 아니면 그 맵을 먼저 보게 한다. 전에는 되는 도구 여섯을 늘어놓아, 다음 호출 갈고리가 그중 첫 동사를 강제했다(같은 날 map-vqa 깔기 24판: 25번 거절 뒤 17번 막힘).
  */
-export function layoutPatchRefusal(mapId: string): string {
-  return `layoutPatch edits a place that was laid from a cell layout (spec.layout); ${mapId} was not, so nothing was changed. Do not send a full layout for a small change — that rebuilds the whole room. `
-    + `Use the tools that work on any map: a door, back door or exit to another map → create_transfer_pair{a:{mapId:"${mapId}", x, y}, b:{mapId:<the other map>, x, y}} (give the wall cell where the door goes; the end snaps to the walkable cell in front of it — no door tile needed); `
-    + "people and events → add_people / move_event; a drawn object → place_object; furniture already in the room → move_object. "
-    + `Only if the request asks to rebuild the room: make_place with spec.mapId="${mapId}".`;
+export function layoutPatchRefusal(project: Project, mapId: string, patch?: { readonly replace?: Readonly<Record<string, unknown>> }): string {
+  const head = `layoutPatch edits an interior that was laid from a cell layout (spec.layout); ${mapLine(project, mapId)} was not, so nothing was changed. Do not send a full layout for a small change — that rebuilds the whole room. `;
+  const door = [patch?.replace?.doors, patch?.replace?.openings].flatMap((v) => (Array.isArray(v) ? v : [])).find((d): d is { x: number; y: number } => !!d && typeof (d as { x?: unknown }).x === "number" && typeof (d as { y?: unknown }).y === "number");
+  if (door) {
+    const others = Object.values(project.maps).filter((m) => m.id !== mapId).slice(0, 6).map((m) => `${m.id} («${m.name ?? ""}»)`).join(", ");
+    return `${head}Next call for a door, back door or exit: create_transfer_pair({"a":{"mapId":"${mapId}","x":${door.x},"y":${door.y}},"b":{"mapId":<the map it leads to>,"x":<x>,"y":<y>}}) — give the wall cell where the door goes; the end snaps to the walkable cell in front of it, no door tile needed.${others ? ` Other maps: ${others}.` : ""}`;
+  }
+  return `${head}Next call: inspect({"mapId":"${mapId}"}) — it shows what stands on this map; then change one thing at a time with the verb for it (a drawn object: place_object, furniture in a room: move_object, a person or event: add_people or move_event, a door or exit to another map: create_transfer_pair with the wall cell where the door goes).`;
 }
 
-/** edit_place 가 고칠 설계를 못 찾았을 때의 거절 글 — 왜 없는지와, 그 맵에서 되는 길을 준다. */
-export function noDesignRefusal(session: V2Session, mapId: string): string {
+/**
+ * 마을·던전·거리 빌더가 받지 않는 고침(물건 하나·꾸밈 정도, 또는 보낸 칸이 모두 비었거나 지금 값과 같다)의 거절 글 — 선 맵에 그것을 놓는 다음 호출 하나를 실제 값으로 이른다.
+ * 전에는 «빌더는 소품 하나하나를 받지 않는다» 만 말해, 광장에 노점을 놓으려던 모델이 같은 고침을 되풀이했다(2026-11-11 map-vqa 깔기 market-town · farm).
+ */
+export function notRelaidRefusal(project: Project, mapId: string, builderId: string, left: number, asked: { nothing: boolean; anchor?: { what: string; near?: { x: number; y: number } } }): string {
+  const head = asked.nothing
+    ? `This edit changes nothing: every field sent is empty or equal to what ${mapLine(project, mapId)} already has, so it was not rebuilt`
+    : `A ${builderId} place is re-laid only by variant (another layout), features, size or floors — not for single props, dressing, daises or sarcophagi — so ${mapLine(project, mapId)} was not changed`;
+  const round = ` (this counted as a repair round; ${Math.max(0, left)} left). `;
+  const a = asked.anchor;
+  if (a) {
+    // draw_object 는 어느 요청에나 실리는 동사다(목록·도장 도구는 요청에 따라 없다) — 이름이 맞는 칩셋 물건이 있으면 그 id 를 돌려주고, 없으면 공방에 맡긴다.
+    const at = a.near ? `,"at":{"x":${a.near.x},"y":${a.near.y}}` : "";
+    return `${head}${round}To put «${a.what}» on the standing map — Next call: draw_object({"object":{"what":${JSON.stringify(a.what)},"mapId":"${mapId}"${at}}}) — if the chipset already has an object with that name its reply gives the id to place with place_object({"mapId":"${mapId}","objectId":<that id>${at}}); otherwise the workshop draws it.`;
+  }
+  return `${head}${round}To add or move single things on the standing map — Next call: inspect({"mapId":"${mapId}"}) — it shows what stands on this map; then one verb per thing (a drawn object: place_object, bare outdoor ground: furnish_outdoor_area, a person or event: add_people or move_event, a door or exit: create_transfer_pair).`;
+}
+
+/** 할 일 항목의 장소 종류 → make_place 의 type(들판·거리는 바깥 장소다). */
+const MAKE_TYPE: Readonly<Record<string, string>> = { village: "village", field: "village", street: "street", dungeon: "dungeon", cave: "cave", interior: "interior" };
+
+/** edit_place 가 고칠 설계를 못 찾았을 때의 거절 글 — 왜 없는지와 다음 호출 하나. */
+export function noDesignRefusal(session: V2Session, project: Project, mapId: string, openPlace?: { name: string; kind?: string }): string {
+  const map = project.maps[mapId];
+  // 빈 시작 맵(아직 아무것도 짓지 않았다): 고칠 장소가 없다 — 짓는 호출을 준다.
+  if (map && isPlaceholderMap(map)) {
+    return `edit_place changes a place that is already built, and ${mapLine(project, mapId)} is still the empty start map — no place has been built yet. Nothing was changed. `
+      + `Next call: make_place({"type":"${MAKE_TYPE[openPlace?.kind ?? ""] ?? "interior"}","name":${JSON.stringify(openPlace?.name ?? "<place name>")},"mapId":"${mapId}"}) — use the type of the place the request asks for (interior, village, dungeon, cave); it is laid on this map.`;
+  }
   const why = session.stalePlaces.has(mapId)
     ? "the map was changed outside the assistant after it was built, so the saved design no longer describes it (rebuilding would erase those changes)"
     : "it was not built by make_place, or its design was not kept";
-  return `edit_place rebuilds a place from its saved design, and ${mapId} has none — ${why}. Nothing was changed. `
-    + "For a small change, use the tools that work on any map: add_people / move_event (people, events), place_object (a drawn object), furnish_outdoor_area (fill bare outdoor ground), move_object (furniture in an interior), create_transfer_pair (a door, back door or exit to another map — give the wall cell where it goes). "
-    + `To replace the whole map with a newly designed place, call make_place with spec.mapId="${mapId}" — that discards what is on the map now, so do it only if the request asks for a rebuild.`;
+  return `edit_place rebuilds a place from its saved design, and ${mapLine(project, mapId)} has none — ${why}. Nothing was changed. `
+    + `Next call: inspect({"mapId":"${mapId}"}) — it shows what stands on this map; then change one thing at a time with the verb for it (a drawn object: place_object, bare outdoor ground: furnish_outdoor_area, furniture in a room: move_object, a person or event: add_people or move_event, a door or exit: create_transfer_pair). `
+    + `Only if the request asks to replace the whole map: make_place with spec.mapId="${mapId}" (that discards what is on the map now).`;
 }
