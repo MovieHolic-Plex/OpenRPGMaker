@@ -57,7 +57,7 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 
 - **주제**(`request/topics.ts` `TOPIC_WORDS` + 전투 판정, 31개): 게임 카드(`prompt/gameCard.ts` `GAME_LINES`)의 줄마다 주제 표지가 붙었다 — `core`(늘) · `items` · `equipment` · `battle` · `gates` · `weather` · `snow` · `forest` … 작은 일과 장소 하나에는 `core` 와 걸린 주제의 줄만 싣는다. 「Fallen-Star-style jobs」 머리줄은 그 아래 줄이 하나라도 실릴 때만 붙는다.
 - **작은 일은 빈 프로젝트에서도 작은 일이다.** 전에는 빈 프로젝트의 모든 요청이 장소 카드 전부를 받았다. 이제 시킨 일이 분명하면(`…세워 줘`·`옮겨 줘`) 작은 일이고, 시킨 일 없이 묘사만 온 글(「폐업 직전 태엽 장난감 가게」 — `scope.bareDescription`)과 빈 프로젝트의 「계속」만 첫 장소를 짓는 시작으로 본다.
-- **필요할 때 싣는 것**: `write_blueprint` `build_blueprint_path` `make_place` `edit_place` `review_layout` `set_project_settings` 와 오프닝 도구는 작은 일에 처음부터 싣지 않는다. 이름은 `load_tools` 설명에 뜨고, 이름으로 부르면 그 자리에서 실린다(있는 도구는 그대로다 — 싣는 때만 바뀌었다). 엔딩·전투·상자·이어 주기처럼 요청이 주제를 말하면 그 도구(`define_ending`·`upsert_troop`·`place_chest`·`create_transfer_pair`…)는 처음부터 실린다.
+- **필요할 때 싣는 것**: `write_blueprint` `build_blueprint_path` `make_place` `edit_place` `review_layout` 와 오프닝 도구는(`set_project_settings` 는 제목을 말한 요청에만 싣는다 — 아래 「작은 일의 처음 싣는 도구」) 작은 일에 처음부터 싣지 않는다. 이름은 `load_tools` 설명에 뜨고, 이름으로 부르면 그 자리에서 실린다(있는 도구는 그대로다 — 싣는 때만 바뀌었다). 엔딩·전투·상자·이어 주기처럼 요청이 주제를 말하면 그 도구(`define_ending`·`upsert_troop`·`place_chest`·`create_transfer_pair`…)는 처음부터 실린다.
 - **실내 칩셋 목록**(약 1.6만 자)은 실내 방을 짓거나 고치는 요청에만 실린다. 작은 일에는 싣지 않는다(「상점 주인」의 「상점」은 방을 짓는 말이 아니다).
 - **장소에 문을 내는 말은 장소 짓기가 아니다**(`place.ts` `NOT_THE_PLACE`): 「족장의 긴 집에 뒷문을 하나 만들어 줘」는 고치기다 — 전에는 장소 짓기로 갈려 도구 44개·10만 자가 실렸다.
 - **휑한 야외 채우기**: 「빈 곳에」「빈 눈밭에 나무랑 바위를 놓아 줘」「허전해」「꾸며 줘」(`toolGroups.DRESS_WORDS`)면 `find_empty_ground` · `furnish_outdoor_area` · `list_spatial_designs` · `stamp_object` 와 `DRESS_CARD` 한 줄을 싣는다. `furnish_outdoor_area` 는 게임 도구 묶음과 처음 싣는 목록(`V2_UP_FRONT`)에도 들었다.
@@ -79,6 +79,36 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 - `golden.mts --diff`(B1 기준): 게임 하나 요청은 지시문 −122자(핵심 지시 −2 · 게임 카드 −120), 도구 +1(`furnish_outdoor_area`). 장소 하나는 게임 카드가 줄었다(「여관 1층」 63,598 → 48,908). 늘어난 지시문은 「광장 빈 곳에 나무랑 벤치」 하나(+366자, `DRESS_CARD`).
 
 남은 것(다른 줄기 파일): `tools/context.ts` 의 `specShown("people")` 은 지시문에 People 카드가 이미 실린 턴(`classifyRequest(…).job.people`)에도 거짓이라 첫 `add_people` 이 카드를 한 번 더 돌려준다. `tools/verbs/place.ts` 의 실내 목록 판정은 지시문과 다른 식(낱말 또는 지금 맵의 칩셋)을 쓴다 — 한 읽기로 모으면 실내 맵에서 마을·숲을 짓는 요청의 목록 1.6만 자도 뺄 수 있다.
+
+## 작은 일의 처음 싣는 도구 — 불린 것만 남긴다 (2026-11-11, Terra 작은 일 30건 실측)
+
+Terra 다시 재기(main 84a7fa331a, `assistant-fable-runs/smalljobs/after-84a7fa331a`)에서 작은 일 열 건이 도구 21개를 처음부터 받았다 — 고른 19개 + `load_tools` + 실행기가 더하는 `todo`.
+30건의 부른 기록(`trace[].name`)과 처음 실린 목록(`toolsOfferedNames`)을 견주니 고른 것이 어긋나 있었다.
+
+| 처음 실렸지만 한 번도 안 불림 (실린 일 수) | 안 실려서 `load_tools` 로 불러 씀 (쓴 일 수 / 실린 일 수) |
+|---|---|
+| `ask_user` 30 · `place_object` 28 · `restore_event` 28 · `remove_event` 27 · `declare_story_flag` 13 · `list_endings` 4 · `upsert_actor` 3 | `run_scene_test` 14/10 · `find_empty_ground` 8/3 · `get_database_records` 10/10(넷은 나중에) · `upsert_item` 2/0 · `set_project_settings` · `set_map_properties` · `replace_text_in_project` · `list_map_locations` 3/0 |
+
+그래서 (`request/topics.ts` `smallJobTools`):
+
+- **상한 18개** — `load_tools` 와 `todo` 를 더해 20개.
+- **늘 싣는 것 8개**: `inspect` `find_events` `get_event` `patch_event_page` `move_event` `add_event` `add_people` `read_specs`.
+- **옮기기·지우기 낱말이 있을 때만**: `move_object` `remove_event` `restore_event` `place_object`.
+- **사건을 짤 때**: `upsert_event` `run_scene_test` 가 주제 도구보다 먼저, `add_event_page` 는 자리가 남을 때. `declare_story_flag` 는 필요할 때.
+- **주제 도구를 쓴 대로**: 아이템·열쇠 → `get_database_records` `upsert_item` · 상자 → `place_chest` `find_empty_ground` · 조사 → `list_spatial_designs` `stamp_object` `find_empty_ground` · 맵 잇기 → `create_transfer_pair` `list_map_locations` · 전투 → `upsert_troop` `simulate_battle` `get_database_records` · 이름 → `set_map_properties` `replace_text_in_project` `upsert_actor` · 제목 → `set_title_screen` `set_project_settings`.
+- **`set_shop_stock` 은 사고팔기를 말할 때만**(`JobFacets.sells`) — 「100골드를 얻게」「주워 가게 해 줘」는 상점이 아니다.
+- **`ask_user` 는 자리가 남을 때 맨 끝에.** 안 실려도 이름으로 부르면 실린다.
+
+증거(모델 없음 — Terra 30건의 요청을 이 트리에 넣어 처음 싣는 목록을 뽑고 그 실행이 부른 도구와 견줌, 픽스처는 근사):
+
+| | 전 | 후 |
+|---|---|---|
+| 처음 실린 도구 합(30건, `todo` 포함) | 573 | 498 |
+| 20개를 넘는 작은 일 | 10 | 0 (가장 많은 것 20) |
+| 부른 도구 159개 가운데 처음부터 실려 있던 것 | 128 | 147 |
+| 실렸지만 안 불린 것 | 387 | 293 |
+
+`golden.mts --diff`: 153줄 가운데 92줄(작은 일 줄 전부)의 처음 싣는 목록이 바뀌었고 지시문은 한 줄도 안 바뀌었다. 처음 싣는 도구는 `load_tools` 포함 최대 20 → 18개. `test/aiV2PromptBudget.test.ts` 가 19개(＋`todo` = 20) 상한과 위 규칙을 못박는다.
 
 ## 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 
