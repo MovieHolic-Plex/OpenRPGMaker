@@ -9,7 +9,7 @@ import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horro
 // 이벤트 쓰기 툴: upsert_event / place_npc / create_transfer_pair / place_battle_blocker
 //              / duplicate_event / remove_event / move_event.
 
-import { shadowedPageWarnings } from "@/project/eventPageShadow";
+import { findShadowedPages, shadowedPageWarnings } from "@/project/eventPageShadow";
 import { genreLockLimitsCharsets } from "@/project/genreLockCharsets";
 import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
@@ -1956,35 +1956,47 @@ const makeVillager: ToolDefinition = {
 const setShopStock: ToolDefinition = {
   name: "set_shop_stock",
   description:
-    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본이며, 「이 NPC 와 대화하면 상점이 열리게」 같은 요청은 이 도구 하나로 끝난다(기존 대사·이름·이동·그림은 그대로 두고 상점 명령만 붙는다 — patch_event_page 로 대사·이동을 새로 쓰지 마라). itemId 에는 아이템 id 와 착용 장비(database.equipment) id 를 모두 쓸 수 있다(무기점·방어구점). id 는 get_database_records 로 먼저 확인.",
+    "기존 이벤트의 shop 커맨드에 재고를 설정한다. stock 은 통째로 바꾸고, add 는 지금 파는 것에 더하고, remove 는 그 물건만 뺀다(나머지는 그대로). 이미 상점인 이벤트는 상점이 있던 페이지만 고친다 — 상점이 없던 페이지(의뢰 페이지 등)에는 넣지 않는다. 상점이 하나도 없으면 그 사람의 페이지마다 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본이며, 「이 NPC 와 대화하면 상점이 열리게」 같은 요청은 이 도구 하나로 끝난다(기존 대사·이름·이동·그림은 그대로 두고 상점 명령만 붙는다 — patch_event_page 로 대사·이동을 새로 쓰지 마라). itemId 에는 아이템 id 와 착용 장비(database.equipment) id 를 모두 쓸 수 있다(무기점·방어구점). id 는 get_database_records 로 먼저 확인.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
       eventId: { type: "string" },
-      stock: shopStockSchema,
+      stock: { ...shopStockSchema, description: "Whole replacement: the shop sells exactly these. ShopStockEntry[]: {itemId,seasons?,priceOverride?,priceBySeason?}. Leave out (or []) when you only add/remove." },
+      add: { ...shopStockSchema, description: "Entries to add to what the shop already sells (same shape as stock). Everything else stays." },
+      remove: { type: "array", items: { type: "string" }, description: "Item/equipment ids to stop selling. Everything else stays." },
     },
-    required: ["mapId", "eventId", "stock"],
+    required: ["mapId", "eventId"],
   },
   invalidArgsExample: {
     mapId: "map_town",
     eventId: "ev_merchant",
-    stock: [
-      { itemId: "item_spring_seed", seasons: ["spring"], priceBySeason: { spring: 18 } },
-      { itemId: "item_firewood", seasons: ["winter"], priceOverride: 30 },
-    ],
+    add: [{ itemId: "item_firewood", priceOverride: 30 }],
+    remove: ["item_spring_seed"],
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const event = map.events.find((entry) => entry.id === args.eventId);
     if (!event) throw new ToolError(`상점 재고를 설정할 이벤트를 찾을 수 없습니다: ${args.eventId}`, { code: "event-not-found", mapId: map.id });
-    const stock = parseShopStock(draft, args.stock, "stock");
-    const outcome = setShopStockOnEvent(event, stock);
+    // 모든 칸을 채우는 모델은 안 쓰는 칸에 빈 배열을 넣는다 — 빈 배열은 「안 줬다」다(stock:[] + add:[…] 가 재고를 비우지 않게).
+    const given = (value: unknown): boolean => Array.isArray(value) && value.length > 0;
+    const add = given(args.add) ? parseShopStock(draft, args.add, "add") : [];
+    const remove = given(args.remove) ? (args.remove as unknown[]).map((value, index) => stringArg(value, `remove[${index}]`)) : [];
+    const edits = add.length + remove.length > 0;
+    if (!edits && !Array.isArray(args.stock)) throw new ToolError("Give one of: stock (whole replacement), add (entries to add) or remove (item ids to stop selling).", { code: "shop-stock" });
+    const pageNumbers = (): string => (event.pages ?? []).flatMap((page, index) => (findFirstShopCommand(page.commands) ? [index + 1] : [])).join(", ");
+    const replaced = given(args.stock) || !edits ? setShopStockOnEvent(event, parseShopStock(draft, args.stock, "stock")) : undefined;
+    const edited = edits ? editShopStockOnEvent(event, add, remove) : undefined;
+    const outcome = replaced ?? edited ?? "modified";
     assertEventShape(event);
+    const sold = shopCommandsOf(event)[0];
+    const ids = sold ? (sold.stock?.map((entry) => entry.itemId) ?? sold.itemIds) : [];
+    const shopPages = shopCommandsOf(event).length;
+    const where = event.pages?.length ? `page ${pageNumbers()} of ${event.pages.length}${shopPages < event.pages.length ? "; pages without a shop were left alone" : ""}` : "event commands";
     return {
-      summary: `${map.name} 이벤트 '${event.id}' 상점 재고 ${stock.length}개 ${outcome === "added" ? "추가" : "설정"}`,
-      data: { eventId: event.id, stockCount: stock.length, outcome },
+      summary: `${map.name} '${event.id}': shop ${outcome === "added" ? "added" : "updated"} — now sells ${ids.length} (${ids.join(", ")})${add.length ? `, added ${add.map((entry) => entry.itemId).join(", ")}` : ""}${remove.length ? `, removed ${remove.join(", ")}` : ""} [${where}]`,
+      data: { eventId: event.id, stockCount: ids.length, itemIds: ids, outcome },
     };
   },
 };
@@ -2150,20 +2162,67 @@ function appendShopCommandToPages(pages: EventPage[], stock: readonly ShopStockE
   for (const page of pages) page.commands.push(shopCommandFromStock(stock));
 }
 
+/**
+ * 상점이 죽은 페이지(뒤 페이지에 늘 가려지는 페이지)에 있으면 실제로 도는 그 뒤 페이지에도 같은 상점을 둔다 —
+ * 2026-08-24: 첫 페이지에만 상점이 있고 뒤에 조건 없는 대사 페이지가 있어, 저장 문서에는 상점이 있는데 플레이에서는 안 열렸다.
+ */
+function mirrorShadowedShops(event: GameEvent): void {
+  const pages = event.pages ?? [];
+  for (const dead of findShadowedPages(pages)) {
+    const shop = findFirstShopCommand(pages[dead.index]!.commands), over = pages[dead.byIndex]!;
+    if (shop && !findFirstShopCommand(over.commands)) over.commands.push(structuredClone(shop));
+  }
+}
+
+/** 이벤트의 상점 커맨드(페이지마다 첫 것). */
+function shopCommandsOf(event: GameEvent): Extract<Command, { kind: "shop" }>[] {
+  const lists = event.pages?.length ? event.pages.map((page) => page.commands) : [event.commands];
+  return lists.flatMap((commands) => { const found = findFirstShopCommand(commands); return found ? [found] : []; });
+}
+
+/** 지금 파는 것에 더하고(add) 빼기만 한다(remove) — 나머지 재고·가격은 그대로. 상점이 없던 이벤트에 add 하면 상점이 생긴다. */
+function editShopStockOnEvent(event: GameEvent, add: readonly ShopStockEntry[], remove: readonly string[]): "added" | "modified" {
+  const shops = shopCommandsOf(event);
+  if (shops.length === 0) {
+    if (add.length === 0) throw new ToolError(`'${event.id}' has no shop command to remove items from. Use add or stock to make it a shop.`, { code: "shop-stock" });
+    return setShopStockOnEvent(event, add);
+  }
+  for (const shop of shops) {
+    const gone = new Set(remove);
+    const fresh = add.filter((entry) => !gone.has(entry.itemId));
+    // 가격·계절이 붙은 물건을 더하면 stock 표가 필요하다 — 없던 상점은 지금 itemIds 를 그대로 stock 으로 옮긴다.
+    const table = shop.stock ?? (fresh.some((entry) => Object.keys(entry).length > 1) ? shop.itemIds.map((itemId) => ({ itemId })) : undefined);
+    if (table) {
+      const kept = table.filter((entry) => !gone.has(entry.itemId) && !fresh.some((added) => added.itemId === entry.itemId));
+      shop.stock = [...kept, ...fresh];
+      shop.itemIds = uniqueStockItemIds(shop.stock);
+    } else {
+      shop.itemIds = [...new Set([...shop.itemIds.filter((itemId) => !gone.has(itemId)), ...fresh.map((entry) => entry.itemId)])];
+    }
+  }
+  mirrorShadowedShops(event);
+  return "modified";
+}
+
+/**
+ * 재고를 통째로 바꾼다. 이미 상점인 이벤트는 상점이 있던 페이지만 고친다 — 상점이 없던 페이지에는 넣지 않는다
+ * (2026-11-11: 떠돌이 상인의 의뢰 페이지 둘에 새 상점 커맨드가 생겼다). 상점이 하나도 없을 때만 페이지마다 넣는다(합류 뒤 빈 페이지 제외).
+ */
 function setShopStockOnEvent(event: GameEvent, stock: readonly ShopStockEntry[]): "added" | "modified" {
   if ((event.pages?.length ?? 0) > 0) {
-    let modified = false;
-    for (const page of event.pages ?? []) {
-      const existing = findFirstShopCommand(page.commands);
-      if (existing) {
-        existing.itemIds = uniqueStockItemIds(stock);
-        existing.stock = [...stock];
-        modified = true;
-      } else {
-        page.commands.push(shopCommandFromStock(stock));
-      }
+    const shops = shopCommandsOf(event);
+    for (const existing of shops) {
+      existing.itemIds = uniqueStockItemIds(stock);
+      existing.stock = [...stock];
     }
-    return modified ? "modified" : "added";
+    if (shops.length > 0) {
+      mirrorShadowedShops(event);
+      return "modified";
+    }
+    const vacant = (page: EventPage): boolean => page.graphic?.transparent === true && page.commands.length === 0;
+    const talkable = event.pages!.filter((page) => !vacant(page));
+    for (const page of talkable.length ? talkable : event.pages!) page.commands.push(shopCommandFromStock(stock));
+    return "added";
   }
   const existing = findFirstShopCommand(event.commands);
   if (existing) {

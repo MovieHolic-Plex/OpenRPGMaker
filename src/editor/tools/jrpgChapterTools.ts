@@ -1421,6 +1421,8 @@ export function buildJrpgChapter(
     }) : [];
     if (giver && helper && clueMap && foeMap && clueAt && bossCell && bossTroop) {
       nested(draft, "create_quest", {
+        // 이 장이 방금 세운 NPC 들이다 — 의뢰가 통째로 맡는 옛 배치를 쓴다(폴른 스타 다듬기 polishLines 가 그 페이지 순서·기본 문구에 기댄다).
+        takeOverNpcs: true,
         def: {
           key: questKey, title: q.title, summary: q.summary, order: "sequence",
           blueprint: ["talk", "inspect", "kill"],
