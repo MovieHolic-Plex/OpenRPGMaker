@@ -8,7 +8,7 @@ import { simulateBattle } from "@/battle/simulate";
 import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { classLearnedSkillIdsUpToLevel } from "@/project/sessionClass";
 import type { Project } from "@/project/types";
-import { wantsWholeGame } from "../request/readers";
+import { buildsWholeGame } from "../request/readers";
 import { asksForEncounters } from "../request/readers";
 
 type Obj = Record<string, unknown>;
@@ -193,7 +193,7 @@ export function stepsPerEncounter(rate: number): number {
  * 회복 수단 없음은 «출하 차단»급 — 고치지 못하면 «완성»이라고 쓰지 못한다.
  */
 export function combatProblems(before: Project, after: Project, task: string): string[] {
-  if (!wantsWholeGame(task) && !touchedCombat(before, after)) return [];
+  if (!buildsWholeGame(after, task) && !touchedCombat(before, after)) return [];
   const sites = battleSites(after);
   if (!sites.length) return [];
   const problems: string[] = [];

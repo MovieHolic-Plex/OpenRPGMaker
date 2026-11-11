@@ -12,6 +12,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { plugin } from "bun";
 import { createBlankProject } from "../../../src/project/defaults";
+import { normalizeGameBlueprint } from "../../../src/project/gameBlueprint";
 import type { Project } from "../../../src/project/types";
 
 const sha = (value: unknown): string => createHash("sha1").update(typeof value === "string" ? value : JSON.stringify(value)).digest("hex").slice(0, 10);
@@ -112,6 +113,18 @@ function fakeRunner(lines: string[], finalProject: { project?: Project }) {
   };
 }
 
+function withWholeGameBlueprint(project: Project): Project {
+  project.gameBlueprint = normalizeGameBlueprint({
+    title: "흔적 게임", genre: "판타지 RPG", playerGoal: "샘을 되찾자.", request: "판타지 RPG 게임 하나 만들어 줘.",
+    steps: [
+      { id: "s1", place: "시작", event: "촌장", action: "촌장에게 묻는다", gives: "실마리", needs: [], feeling: "궁금함" },
+      { id: "s2", place: "시작", event: "샘", action: "샘을 살핀다", gives: "끝", needs: ["실마리"], feeling: "안도" },
+    ],
+    ending: { name: "끝", how: "샘을 살핀다", feeling: "안도" },
+  });
+  return project;
+}
+
 async function shoot(): Promise<Record<string, string[]>> {
   // 실행기의 모델 고리(runPiAgent)만 가짜로 바꾼다 — 턴 구동기(runAssistantV2)는 저장소의 것 그대로다.
   const slot: { run?: ReturnType<typeof fakeRunner> } = {};
@@ -127,6 +140,9 @@ async function shoot(): Promise<Record<string, string[]>> {
     { name: "continue", task: "아직 다 안 된 것 같아. 처음에 부탁한 대로 끝까지 만들어 줘. 게임을 처음부터 엔딩까지 실제로 플레이할 수 있게 해 줘.", project: () => carried ?? createBlankProject() },
     { name: "small-write", task: "이 맵에 상점 주인 한 명 세워 줘.", project: () => createBlankProject() },
     { name: "question", task: "이 게임 뭐가 부족한지 알려 줘", project: () => createBlankProject() },
+    // 글에는 게임 낱말이 없는 이어 하기 — 게임 하나 청사진이 있는 프로젝트를 잇는 턴이 게임 하나를 짓는 턴으로 다뤄지나(출하 검사·화면 검수).
+    // 대본 모델은 청사진을 쓰지 않으므로 여기서 넣는다.
+    { name: "continue-short", task: "계속 해 줘", project: () => withWholeGameBlueprint(structuredClone(carried ?? createBlankProject())) },
   ];
   for (const scenario of scenarios) {
     let seed = 20261111;

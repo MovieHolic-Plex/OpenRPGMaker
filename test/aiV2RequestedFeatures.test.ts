@@ -3,8 +3,9 @@ import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { shipBlockers } from "@/ai/v2/judge/shipChecks";
 import { REQUESTED_FEATURES, requestedFeatureGaps } from "@/ai/v2/judge/requestedFeatures";
+import { requestedFeatureWord } from "@/ai/v2/request/readers";
 
-const want = (text: string) => REQUESTED_FEATURES.filter((f) => f.words.test(text)).map((f) => f.id);
+const want = (text: string) => REQUESTED_FEATURES.filter((f) => requestedFeatureWord(f.id, text) !== undefined).map((f) => f.id);
 
 describe("requested feature coverage (J71/J73)", () => {
   it("reads chaser, darkness and hiding from a horror request", () => {
