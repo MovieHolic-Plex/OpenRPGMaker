@@ -103,9 +103,29 @@ function pageVisible(project: Project, page: PageRef, map: GameMap, x: number, y
   return hasGraphic || !!raw?.glow || !!raw?.nearSparkle || smallObjectAt(project, map, x, y);
 }
 
-/** 주인공이 여는 이야기 이벤트 페이지들. */
+/**
+ * 등록된 곁 퀘스트(create_quest)의 것 — 그 퀘스트의 스위치·변수(sw_<key>_… · var_<key>_…)와 그 퀘스트의 이벤트(의뢰인 · ev_<key>_…).
+ * 퀘스트 밖 이벤트가 그 스위치를 읽으면(본편이 그 퀘스트에 걸려 있으면) 곁 퀘스트가 아니라 본편이다 — sideKey 가 그것을 가른다.
+ */
+function sideQuests(project: Project): { sideKey(key: Key, read: ReadonlyMap<Key, ReadonlySet<string>>): boolean } {
+  type Quest = { readonly key?: string; readonly giver?: { readonly eventId?: string }; readonly steps?: readonly { readonly eventId?: string; readonly target?: { readonly eventId?: string } }[] };
+  const quests = ((project as { quests?: readonly Quest[] }).quests ?? []).filter((q) => typeof q.key === "string" && q.key);
+  const questOf = (key: Key) => quests.find((q) => key.startsWith(`sw:sw_${q.key}_`) || key.startsWith(`var:var_${q.key}_`));
+  return {
+    sideKey(key, read) {
+      const quest = questOf(key);
+      if (!quest) return false;
+      // 그 퀘스트의 이벤트: 의뢰인 · 도착 칸(ev_<key>_…) · 말 걸기 단계가 얹힌 사람(steps[].target).
+      const own = (eventId: string) => eventId === quest.giver?.eventId || eventId.startsWith(`ev_${quest.key}_`) || (quest.steps ?? []).some((st) => st.eventId === eventId || st.target?.eventId === eventId);
+      return [...(read.get(key) ?? [])].every(own);
+    },
+  };
+}
+
+/** 주인공이 여는 이야기 이벤트 페이지들. 곁 퀘스트의 진행(수락 · 도착 · 완료)은 본편 이정표가 아니다 — 「현재 목표」 줄은 본편의 것이다. */
 function storyEvents(project: Project): StoryEvent[] {
   const read = readers(project);
+  const side = sideQuests(project);
   const out: StoryEvent[] = [];
   for (const page of allPages(project)) {
     if (!page.map || !page.event || !playerDriven(page)) continue;
@@ -115,7 +135,7 @@ function storyEvents(project: Project): StoryEvent[] {
       if (isObjectiveCommand(command)) setsObjective = true;
       for (const write of writesOf(command)) {
         const owners = read.get(write.key);
-        if (!owners) continue;
+        if (!owners || side.sideKey(write.key, read)) continue;
         const others = [...owners].some((owner) => owner !== page.event!.id);
         if (!others) continue;
         story = true;
@@ -139,6 +159,39 @@ function leavesMap(node: unknown, here: string): boolean {
   const r = node as Record<string, unknown>;
   if (r.kind === "transfer" && typeof r.mapId === "string" && r.mapId !== here) return true;
   return Object.values(r).some((v) => v && typeof v === "object" && leavesMap(v, here));
+}
+
+/**
+ * 곁 퀘스트 진행만 쓰는 페이지에 걸린 「현재 목표」 명령들 — 본편 목표 줄을 덮어쓴다(수락하면 「나지라」를 찾아가자, 도착 칸을 밟으면 「하산」을 찾아가자).
+ * 본편 이정표(다른 이벤트·엔딩이 읽는 스위치·아이템)를 함께 쓰는 페이지는 빼고, 명령이 든 목록과 자리를 돌려준다(떼는 쪽이 쓴다).
+ */
+export function sideQuestObjectives(project: Project): { readonly mapId: string; readonly eventId: string; readonly message: string; readonly list: RawCommand[]; readonly command: RawCommand }[] {
+  const read = readers(project);
+  const side = sideQuests(project);
+  const out: { mapId: string; eventId: string; message: string; list: RawCommand[]; command: RawCommand }[] = [];
+  for (const page of allPages(project)) {
+    if (!page.map || !page.event) continue;
+    let sideWrites = 0, mainWrites = 0;
+    visitPageCommands(page, ({ command }) => {
+      for (const write of writesOf(command)) {
+        if (side.sideKey(write.key, read)) sideWrites += 1;
+        else if (write.milestone && [...(read.get(write.key) ?? [])].some((owner) => owner !== page.event!.id)) mainWrites += 1;
+      }
+    });
+    if (!sideWrites || mainWrites) continue;
+    const walk = (list: RawCommand[]): void => {
+      for (const command of list) {
+        if (isObjectiveCommand(command)) out.push({ mapId: page.map!.id, eventId: page.event!.id, message: String((command.fields as Record<string, unknown>).message), list, command });
+        for (const value of Object.values(command)) {
+          if (!Array.isArray(value)) continue;
+          if (value.every((v) => v && typeof v === "object" && typeof (v as RawCommand).kind === "string")) walk(value as RawCommand[]);
+          else for (const option of value) { const branch = (option as { branch?: unknown } | null)?.branch; if (Array.isArray(branch)) walk(branch as RawCommand[]); }
+        }
+      }
+    };
+    walk((page.page?.commands ?? page.commands) as unknown as RawCommand[]);
+  }
+  return out;
 }
 
 /** 이야기 이벤트인데 화면에 아무것도 안 보인다(투명·그림 없음·반짝임 없음·그려진 물건 없음). */
@@ -200,13 +253,14 @@ export function objectiveGaps(project: Project): string[] {
  */
 export function staleMilestoneTargets(project: Project): { readonly event: StoryEvent; readonly readers: readonly { readonly mapId: string; readonly eventId: string; readonly name: string }[] }[] {
   const read = readers(project);
+  const side = sideQuests(project);
   const where = new Map<string, { mapId: string; name: string }>();
   // 이름 없는 이벤트는 이름을 비운다 — id(mx_map_grove_house_resident)를 목표 글에 그대로 실으면 안 된다.
   for (const map of Object.values(project.maps)) for (const event of map.events ?? []) where.set(event.id, { mapId: map.id, name: String(event.name ?? "") });
   const stale = storyEvents(project).filter((event) => event.milestone && !event.ends && !event.setsObjective);
   return stale.map((event) => {
     const keys = new Set<Key>();
-    for (const page of allPages(project)) if (page.event?.id === event.eventId && page.pageIndex === event.pageIndex) visitPageCommands(page, ({ command }) => { for (const w of writesOf(command)) if (w.milestone) keys.add(w.key); });
+    for (const page of allPages(project)) if (page.event?.id === event.eventId && page.pageIndex === event.pageIndex) visitPageCommands(page, ({ command }) => { for (const w of writesOf(command)) if (w.milestone && !side.sideKey(w.key, read)) keys.add(w.key); });
     const ids = new Set<string>();
     for (const key of keys) for (const owner of read.get(key) ?? []) if (owner && owner !== event.eventId) ids.add(owner);
     return { event, readers: [...ids].sort().flatMap((id) => { const at = where.get(id); return at ? [{ mapId: at.mapId, eventId: id, name: at.name }] : []; }) };

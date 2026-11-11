@@ -101,9 +101,9 @@ export const BUILD_BLUEPRINT_PATH_SCHEMA = {
     steps: { type: "array", description: "(optional) per-step dialogue. Empty = the function fills it from the blueprint text.", items: { type: "object", properties: {
       id: { type: "string", description: "blueprint step id (s1…)" },
       lines: { type: "array", items: { type: "string" }, description: "what is said or shown when the condition is met — for a talk/choice/battle step the person's own words (a line starting with «(» is narration)" },
-      lockedLines: { type: "array", items: { type: "string" }, description: "when the condition is not met yet (a hint of what is needed)" },
+      lockedLines: { type: "array", items: { type: "string" }, description: "when the condition is not met yet — a hint naming this step's own needs (never another step)" },
       doneLines: { type: "array", items: { type: "string" }, description: "when examined again after it is done" },
-      code: { type: "string", description: "make this step a number lock — the answer (3+ digits, written in the previous step's lines)" },
+      code: { type: "string", description: "make this step a number lock — the answer (3+ digits, written in an earlier step's lines)" },
       options: { type: "array", items: { type: "string" }, description: "make code a choice instead (include the right answer)" },
       wrongLines: { type: "array", items: { type: "string" } },
       winLines: { type: "array", items: { type: "string" }, description: "battle step: 1–2 lines after the player wins — the foe's own words, or narration wrapped in parentheses: «(The beast backs into the reeds.)»" },
@@ -278,11 +278,12 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     let clueLearn: string | undefined;
     // 모델이 code 를 안 줬어도 앞 단계·이 단계 대사(또는 그대로 둔 앞 이벤트 대사)에 번호를 적었으면 그 번호가 정답이다 — 함수가 새 번호를 정하면
     // 단서 번호가 둘이 된다(2026-10-29 vm3 flash escape: 책상 「비밀번호는 4862다」 + 함수 쪽지 「5858」).
-    const told0 = isCodeStep(step) && !t?.code ? modelCode(run, [...(k > 0 ? byId.get(steps[k - 1]!.id)?.lines ?? [] : []), ...(t?.lines ?? [])], keptBefore) : undefined;
+    const told0 = isCodeStep(step) && !t?.code ? modelCode(run, [...steps.slice(0, k).flatMap((st) => byId.get(st.id)?.lines ?? []), ...(t?.lines ?? [])], keptBefore) : undefined;
     const code = isCodeStep(step) || t?.code ? (t?.code ?? told0 ?? stepCode(`${bp.title}|${step.id}|${step.event}`)) : undefined;
     if (code) {
-      const prevLink = links.at(-1);
-      let told = prevLink && linkStep.at(-1) === k - 1 && (prevLink.lines ?? []).some((l) => l.includes(code));
+      // 앞선 고리 어느 것이든 그 대사에 번호가 있으면 이미 알려 준 것이다 — 사슬은 순서대로만 열리므로 이 단계에 닿은 플레이어는 그 대사를 지났다.
+      // 바로 앞 단계만 보면 두세 단계 앞의 기록이 알려 준 번호를 같은 방의 «번호 쪽지»로 한 번 더 읽어야 자물쇠가 열렸다.
+      let told = links.some((l) => [...(l.lines ?? []), ...(l.choice?.options ?? []).flatMap((o) => o.lines ?? [])].some((line) => line.includes(code)));
       // 앞 단계가 그대로 둔 단서 이벤트(「비밀번호 단서」를 주는 책상)면 그 대사에 번호를 적는다 — 2026-10-29 vm2 flash: 「『비밀번호 단서』를
       // 알아냈다」 뿐이라 판정자가 단서 내용을 읽을 수 없었다.
       // needs 가 단서 여럿이고 모두 그대로 둔 앞 단계면 번호를 그 순서로 나눠 적는다(2026-10-29 vm4 argon 방탈출: 「첫 번째 숫자 단서」 책상 +
@@ -327,15 +328,17 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     const foeLook = troopId ? foeGraphic(run.ctx.project, troopId) : undefined;
     if (battle) base = { ...base, battle, ...(foeLook ? { graphic: foeLook } : {}) };
     const codeLocked = clueLearn ? ["번호 자물쇠가 걸려 있다. 번호를 알아야 열 수 있을 것 같다."] : undefined;
+    // 모델의 잠김 글은 청사진의 needs 를 보고 쓴 글이다 — 함수가 단서 고리를 끼워 이 단계의 조건을 그 단서로 바꿨으면 쓰지 않는다(조건에서 지은 글만).
+    const modelLocked = clueLearn ? undefined : t?.lockedLines?.length ? t.lockedLines : undefined;
     if (last) {
       // 사람이 마지막 단계면: 대사가 없을 때 «살펴보았다»·엔딩 글을 그 사람 입으로 말하게 하지 않는다 — 할 일 한 줄 서술로 열고, 엔딩 글은 (싸움이 있으면 이긴 뒤) 서술로 붙인다.
       const endLines = t?.lines?.length ? t.lines : code ? ["번호 자물쇠다. 알아낸 번호를 맞춰 보자."] : personal ? lines : [lookLine(step.event), bp.ending.how];
       const closingNarration = personal && !t?.lines?.length && !code ? { closeLines: [`(${bp.ending.how.trim()})`] } : {};
       const lockedPerson = personal && needShown ? [`(${who}${josa(who!, "은", "는")} 아직 할 말이 없는 듯하다. ${needShown}${josa(needShown, "이", "가")} 먼저다.)`] : undefined;
-      const locked = t?.lockedLines?.length ? t.lockedLines : codeLocked ?? lockedPerson ?? lockedDefault;
+      const locked = modelLocked ?? codeLocked ?? lockedPerson ?? lockedDefault;
       links.push({ ...base, role: "ending", endingId: ending!.id, lines: endLines, ...closingNarration, ...(choice ? { choice } : {}), ...(variants.length ? { variants } : {}), ...(code ? { code, reward: { lines: [bp.ending.how] }, ...(t?.options?.length ? { options: t.options } : {}), ...(t?.wrongLines?.length ? { wrongLines: t.wrongLines } : {}) } : {}), ...(locked ? { lockedLines: locked } : {}) });
     } else if (code) {
-      const locked = t?.lockedLines?.length ? t.lockedLines : codeLocked ?? lockedDefault;
+      const locked = modelLocked ?? codeLocked ?? lockedDefault;
       const reward = isItem(step.gives) ? { item: step.gives } : { flag: step.gives };
       links.push({ ...base, role: "code", code, ...(t?.options?.length ? { options: t.options } : {}), lines: t?.lines ?? ["번호 자물쇠다. 알아낸 번호를 맞춰 보자."], ...(locked ? { lockedLines: locked } : {}), ...(t?.wrongLines?.length ? { wrongLines: t.wrongLines } : {}), ...(t?.doneLines?.length ? { doneLines: t.doneLines } : {}), reward });
     } else {
