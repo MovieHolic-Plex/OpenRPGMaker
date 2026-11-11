@@ -16,6 +16,7 @@ import { charsetFrameSource, decodeCharsetFrameIndex } from '../../src/assets/ea
 import { findCharsetAsset } from '../../src/assets/charsetCatalog.ts';
 import { generatedMonsterSpriteUrl } from '../../src/assets/generatedMonsterSprites.ts';
 import { resolveAssetResourceUrl } from '../../src/assets/generatedAssetResourceResolver.ts';
+import { resolveCc0IconAssetUrl } from "../../src/assets/cc0IconAssets.ts";
 import { drawMapTileLayer } from "../../src/editor/mapTileDraw.ts";
 import { reliefMapView } from "../../src/editor/reliefMapView.ts";
 import { sunlightField } from "../../src/project/sunlight.ts";
@@ -346,6 +347,17 @@ function drawEventCharset(context: PngContext, project: Project, event: GameMap[
     return true;
   }
   if (!spriteId) return false;
+  // 아이템 아이콘(cc0-…)을 그림으로 쓰는 이벤트(줍는 물건·세이브 수정): 런타임은 그 한 장을 16px 상자에 맞춘다(eventSpriteResources fitSize 16).
+  // 칩 칸으로 자르면 투명 구석이 잘려 아무것도 안 그려졌다(2026-11-11 작은 일 시각 칸: 열쇠·수정이 그림에 없었다).
+  const iconUrl = resolveCc0IconAssetUrl(spriteId);
+  const iconFile = iconUrl ? path.join("public", iconUrl.replace(/^\//u, "")) : "";
+  if (iconFile && fs.existsSync(iconFile)) {
+    const icon = PNG.sync.read(fs.readFileSync(iconFile));
+    const fit = size / Math.max(icon.width, icon.height);
+    const dw = Math.max(1, Math.round(icon.width * fit)), dh = Math.max(1, Math.round(icon.height * fit));
+    context.drawImage({ width: icon.width, height: icon.height, data: new Uint8Array(icon.data) }, 0, 0, icon.width, icon.height, ex + Math.round((size - dw) / 2), ey + size - dh, dw, dh);
+    return true;
+  }
   const asset = findCharsetAsset(spriteId);
   const uploaded = project.assets.uploaded[spriteId];
   const url = (asset as { url?: string } | undefined)?.url ?? (uploaded ? uploadedAssetUrl(uploaded) || refDataUrl(uploaded.ref) : null) ?? resolveAssetResourceUrl(spriteId, { project });
