@@ -22,6 +22,8 @@ const TOPIC_WORDS: readonly (readonly [GameTopic, RegExp])[] = [
   ["status", new RegExp(`${STATE_WORDS.source}|상태|화상|기절|내성|속성`, "iu")],
   ["weather", WEATHER_WORDS],
   ["staging", new RegExp(`${SHAKE_WORDS.source}|${FLASH_WORDS.source}`, "iu")],
+  // 줍는 물건도 같은 도구(place_chest look:"item")다. 조사보다 앞에 둔다 — 줍기 요청은 «조사하면» 도 말하는데, 처음 싣는 도구 수 상한에서 딱 그 일의 도구가 먼저 들어야 한다.
+  ["chest", /상자|보물|떨어져 있|떨어뜨|주[워울운]|줍[게는기다]|chest|treasure|pick(?:s|ed)?\s?up|lying on/iu],
   ["examine", /조사|살펴|비석|묘비|이동석|분수|약초|광맥|표지판|팻말|덤불|우물|망원경|examine/iu],
   ["maps", /새\s*맵|입구|출구|들어가면|나가면|이어\s*줘|이어줘|연결|문을|문으로|가게\s*이어|transfer/iu],
   ["flashback", /회상|과거\s*장면|옛날\s*장면|플래시백|flashback/iu],
@@ -38,8 +40,6 @@ const TOPIC_WORDS: readonly (readonly [GameTopic, RegExp])[] = [
   ["patrol", /순찰|돌아다|뛰어다|걸어 다|patrol/iu],
   ["door", /문을 열|문 열|성문|창고 문|뒷문|자동문|미닫이|셔터|문 효과|door/iu],
   ["removeMap", /맵[^.!?\n]{0,8}(?:지워|지우|삭제|없애)|안\s*쓰는\s*맵|중복\s*맵|remove.*map/iu],
-  // 줍는 물건도 같은 도구(place_chest look:"item")다.
-  ["chest", /상자|보물|떨어져 있|떨어뜨|주[워울운]|줍[게는기다]|chest|treasure|pick(?:s|ed)?\s?up|lying on/iu],
   ["hero", /주인공|파티|동료|직업|레벨|능력치|hero|party/iu],
   ["scene", /장면|컷신|컷씬|연출|scene|cutscene/iu],
 ];
@@ -95,7 +95,7 @@ const SMALL_BY_TOPIC: Readonly<Partial<Record<GameTopic, readonly string[]>>> = 
   maps: ["create_transfer_pair", "list_map_locations"],
   battle: ["upsert_troop", "simulate_battle", "get_database_records"],
   fieldEnemy: ["place_field_enemy", "find_empty_ground"],
-  examine: ["list_spatial_designs", "stamp_object", "find_empty_ground"],
+  examine: ["place_examine_hotspots", "list_spatial_designs", "stamp_object", "find_empty_ground"],
   ending: ["list_endings", "define_ending"],
   scene: ["add_scene"],
   hero: ["upsert_actor"],
