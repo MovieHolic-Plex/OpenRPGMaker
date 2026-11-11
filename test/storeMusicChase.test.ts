@@ -12,6 +12,10 @@ import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import type { Project } from "@/project/types";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const gameLines = (...args: Parameters<typeof gameContentProblems>): string[] => gameContentProblems(...args).map(findingLine);
 
 const sha = (n: number): string => n.toString(16).padStart(64, "0");
 const SLUG = "oprn-bgm-chase-horror-vol-1-abcd1234";
@@ -168,6 +172,6 @@ describe("set_game_audio role chase", () => {
     const before = createBlankProject();
     const after = structuredClone(before);
     after.system.battleBgmResourceId = "store_chase";
-    expect(gameContentProblems(before, after, "아오오니 느낌으로 추격 음악 넣어줘").join("\n")).toMatch(/role:'chase'/u);
+    expect(gameLines(before, after, "아오오니 느낌으로 추격 음악 넣어줘").join("\n")).toMatch(/role:'chase'/u);
   });
 });
