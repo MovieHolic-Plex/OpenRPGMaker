@@ -80,4 +80,18 @@ describe("right inspector", () => {
     expect(view.kind).toBe("event");
     expect(view.kind === "event" && view.subtitle).toBe(`이벤트 · ${event.x}, ${event.y}`);
   });
+
+  it("names a custom BGM once per project object and follows a renamed upload in the next project", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    map.bgm = { mode: "custom", resourceId: "upload-song" } as typeof map.bgm;
+    project.assets.uploaded["upload-song"] = { kind: "music", name: "Old Song" } as (typeof project.assets.uploaded)[string];
+    const state = { currentMapId: map.id, selectedEventId: null, layer: "lower" };
+    const bgmRow = (view: ReturnType<typeof buildInspectorView>) =>
+      view.kind === "map" ? view.groups.flatMap((group) => group.rows).find((row) => row.key === "bgm")?.value : undefined;
+    expect(bgmRow(buildInspectorView(project, state, null))).toBe("Old Song");
+    expect(bgmRow(buildInspectorView(project, state, { x: 1, y: 1 }))).toBe("Old Song");
+    const renamed = { ...project, assets: { ...project.assets, uploaded: { "upload-song": { kind: "music", name: "New Song" } } } } as typeof project;
+    expect(bgmRow(buildInspectorView(renamed, state, null))).toBe("New Song");
+  });
 });
