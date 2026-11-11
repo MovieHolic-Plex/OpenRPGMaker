@@ -122,35 +122,8 @@ export function unreachableEvents(project: Project, mapId: string, eventIds?: re
 
 const DOOR_NAME = /문|door|출구|현관|exit|gate/iu;
 const NOT_DOOR_NAME = /금고|창문|서랍|문서|문양|문장|주문|질문|자물쇠|문지기|문하생|천문|lock|safe|window/iu;
-// 문 그림 이름표: 괄호를 뗀 이름이 「…문」「…문 통로」「…문칸」으로 끝나야 한다 — 「천문대 둥근 지붕」「큰 굴절 망원경(… 천문대 중심)」
-// 「고문대」가 문으로 잡혀 관측실 망원경 칸을 문으로 썼다(2026-10-28 task 5 조사).
-const DOOR_ART = /(?:문|문 ?통로|문칸|door|gate)$/iu;
-const NOT_DOOR_ART = /금고|창문|창틀|문양|문장|포문|뚜껑문|수문|천문|window|safe|hatch/iu;
-/** 이름표가 문 그림인가(괄호·「버들항 · 」 같은 앞머리를 떼고 본다). */
-export const isDoorArtLabel = (label: string): boolean => {
-  const base = label.replace(/\s*\([^)]*\)/gu, "").replace(/^.*·\s*/u, "").trim();
-  return !!base && DOOR_ART.test(base) && !NOT_DOOR_ART.test(base);
-};
 /** 이름이 문인 이벤트(탈출 문·현관문) — 문 옆 자물쇠·금고문은 아니다. */
 export const isDoorName = (name: string) => DOOR_NAME.test(name) && !NOT_DOOR_NAME.test(name);
-
-/** 그림 「문」 칸들(맨 아래 줄 — 사람이 서서 여는 칸). */
-function doorArtAt(project: Project, map: GameMap): (x: number, y: number) => boolean {
-  const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
-  return (x, y) => x >= 0 && y >= 0 && x < map.width && y < map.height && ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"].some((k) => {
-    const label = tileLabel(project, map, m[k]?.[y * map.width + x]);
-    return !!label && isDoorArtLabel(label);
-  });
-}
-
-export function doorArtCells(project: Project, map: GameMap): Cell[] {
-  const hit = doorArtAt(project, map);
-  const out: Cell[] = [];
-  for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) if (hit(x, y) && !(y + 1 < map.height && hit(x, y + 1))) out.push({ x, y });
-  // 문 그림이 세로로 두 칸이면 아래 칸이 바닥 쪽이다. 아래가 통행 칸이 아니면(벽 줄에 붙은 문) 위 칸도 후보로 둔다.
-  for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) if (hit(x, y) && y + 1 < map.height && hit(x, y + 1) && !isPassable(project, map, x, y + 1)) out.push({ x, y });
-  return out;
-}
 
 // ── 이름이 가리키는 물건 ─────────────────────────────────────────────────────────
 // 2026-10-28 mt2: 「책상 서랍의 쪽지」가 빈 바닥에 떠 있고(deepseek), 「낡은 기록」은 책장 앞 맨바닥 투명 칸이었다(terra),
