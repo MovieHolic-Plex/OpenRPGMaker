@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { findNpcGraphicMatches } from "@/assets/charsetQuery";
-import { lookMismatches } from "@/ai/v2/lookChecks";
+import { lookMismatches } from "@/ai/v2/judge/lookChecks";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { createBlankProject } from "@/project/defaults";
 import { getTool } from "@/editor/tools/toolRegistry";

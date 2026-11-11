@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { measure } from "../scripts/fs-scale/score.mjs";
-import { countQuests, MIN_COUNTED_QUESTS } from "@/ai/v2/questCount";
-import { questsMinBlocker } from "@/ai/v2/shipChecks";
+import { countQuests, MIN_COUNTED_QUESTS } from "@/ai/v2/judge/questCount";
+import { questsMinBlocker } from "@/ai/v2/judge/shipChecks";
 import { splitPreexisting } from "@/ai/v2/judge/gates";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";

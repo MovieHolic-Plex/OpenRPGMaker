@@ -7,10 +7,10 @@
 // 걸어 닿는 칸)을 골라 옛 문(양쪽)을 모두 걷고 link_world_entrance 하나로 다시 잇는다. 이미 그 가장자리에 문 하나뿐이면 그대로 둔다.
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { reachableCells } from "./eventReach";
-import { roadCellSet } from "./place/cells";
-import type { BuildRun } from "./types";
-import type { Side } from "./transferSpot";
+import { reachableCells } from "../judge/eventReach";
+import { roadCellSet } from "./cells";
+import type { BuildRun } from "../types";
+import type { Side } from "../transferSpot";
 
 const OPP: Record<Side, Side> = { north: "south", south: "north", east: "west", west: "east" };
 const KO: Record<Side, string> = { north: "북", south: "남", east: "동", west: "서" };

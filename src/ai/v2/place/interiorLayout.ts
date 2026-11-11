@@ -110,7 +110,7 @@ export interface LayoutCheck {
   /** 공간 실측(방마다 빈 칸 %·가장 큰 빈 사각형·깔개 수·기물 수) — 선언에 남겨 측정에 쓴다. */
   readonly space?: { emptyPct: number; roomCV: number; rooms: Record<string, import("./interiorSpace").SpaceRoomStat>; islands?: number; tatamiMats?: number; distinctPerRoom?: number; repetition?: number; cellFronts?: { barred: number; open: number }; daises?: number };
   /** 요청 물건(layout.required) 검사 결과 — 선언에 남겨 할 일 검사 layout_built 가 읽는다. */
-  readonly required?: readonly import("../interiorRoomChecks").RequiredResult[];
+  readonly required?: readonly import("../judge/interiorRoomChecks").RequiredResult[];
 }
 
 /** 칸 배치가 실제로 왔나 — 엄격 스키마로 빈 껍데기({regions:[], outer_wall:{path:[]}})를 채워 보내는 모델이 있다. */

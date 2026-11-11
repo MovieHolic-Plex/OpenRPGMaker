@@ -19,7 +19,7 @@
  *  4. 주인 없는 그림자 정리(clearOrphanShadows), 그리고 정리 전에 걸어 닿던 이벤트가 하나라도 닿지 않게 되면 굽기를 멈춘다.
  * 2막 「통금의 밤」 광장(fs2_hub_night)은 이 맵을 복제하므로 act2Opening 앞에서 부른다.
  */
-import { unreachableEvents } from "@/ai/v2/eventReach";
+import { unreachableEvents } from "@/ai/v2/judge/eventReach";
 import type { GameMap, Project } from "@/project/types";
 import { clearOrphanShadows } from "../fallenStarMapPolish";
 

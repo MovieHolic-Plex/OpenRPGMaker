@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { measure } from "../scripts/fs-scale/score.mjs";
-import { MIN_ACT_DEPTH, progressionDepth } from "@/ai/v2/actDepth";
-import { actDepthMinBlocker } from "@/ai/v2/shipChecks";
+import { MIN_ACT_DEPTH, progressionDepth } from "@/ai/v2/judge/actDepth";
+import { actDepthMinBlocker } from "@/ai/v2/judge/shipChecks";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 

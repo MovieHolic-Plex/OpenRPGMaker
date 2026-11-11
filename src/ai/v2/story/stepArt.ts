@@ -8,7 +8,7 @@
 import { isPassable } from "@/project/collision";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
 import type { GameMap, Project } from "@/project/types";
-import { isDoorName, reachableCells, unreachableEvents } from "../eventReach";
+import { isDoorName, reachableCells, unreachableEvents } from "../judge/eventReach";
 import { isMysteryBlueprint, isProgressWord, resolveSteps } from "./mysteryCase";
 import { resolveGraphic } from "@/editor/tools/eventCompile";
 import { chestOpenCommands, chestOpenedGraphic } from "@/editor/lootFeedback";

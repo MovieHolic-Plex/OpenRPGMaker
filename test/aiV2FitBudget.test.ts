@@ -28,7 +28,7 @@ vi.mock("@/ai/v2/story/monsterRouteLevels", async (importOriginal) => {
 });
 
 import { applyShipDefaults } from "@/ai/v2/story/shipDefaults";
-import { shipBlockers } from "@/ai/v2/shipChecks";
+import { shipBlockers } from "@/ai/v2/judge/shipChecks";
 import { stage as shipDefaultsStage } from "@/ai/v2/finish/stages/ship-defaults";
 import { V2Session } from "@/ai/v2/turn/session";
 import { beginFitBudget, checkFitBudget, enterFastFit, fitIsFast, FIT_BUDGET_MS, guardFitBudget, FIT_INCOMPLETE_PREFIX, FitBudgetExceeded, fitBudgetExceeded, restoreFitState, snapshotFitState } from "@/ai/v2/story/monsterRouteLevels";

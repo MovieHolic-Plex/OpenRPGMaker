@@ -10,7 +10,7 @@
 // 어느 단계도 다른 이벤트를 못 닿게 만들지 않는다(eventReach.unreachableEvents 로 전/후 비교, 나빠지면 되돌린다).
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap } from "@/project/types";
-import { eventBlocks, isDoorName, reachableCells, unreachableEvents } from "../eventReach";
+import { eventBlocks, isDoorName, reachableCells, unreachableEvents } from "../judge/eventReach";
 import { showExaminedThing } from "./examineArt";
 import { objectAt, tileLabel } from "../place/cells";
 import type { BuildRun } from "../types";

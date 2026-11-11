@@ -13,7 +13,7 @@ import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder
 import { canMove, isPassable } from "@/project/collision";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { isDoorName, reachableCells, repairEventReach, unreachableEvents } from "../eventReach";
+import { isDoorName, reachableCells, repairEventReach, unreachableEvents } from "../judge/eventReach";
 import type { BuildRun } from "../types";
 import { CODE_STEP_WORDS } from "../blueprint";
 import { isEscapeBlueprint } from "../request/scope";

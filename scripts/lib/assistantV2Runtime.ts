@@ -2,7 +2,7 @@
 // 시스템 지시를 v2 카드로 바꾼다. v1 레지스트리 도구는 하나도 노출하지 않는다(options.toolNames 가 아무것도 고르지 않는다).
 // 켜는 곳: 편집기 ?assistant=v2 또는 localStorage oprn:assistant-v2=1 → 요청 assistantVersion:"v2" → 워커가 여기로 보낸다.
 import { PNG } from "pngjs";
-import { applyMapLighting, litShotNote, type LitShot } from "../../src/ai/v2/vqaLighting.ts";
+import { applyMapLighting, litShotNote, type LitShot } from "../../src/ai/v2/judge/vqaLighting.ts";
 import type { GameMap, Project } from "../../src/project/types.ts";
 import { runPiAgent, type RunPiAgentOptions } from "./piAgentRuntime.ts";
 import type { PiAgentDoneEvent, PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";

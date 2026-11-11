@@ -5,7 +5,7 @@
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { dungeonTheme } from "@/editor/tools/dungeonThemeTroops";
 import { fitEnemyToStartParty } from "@/editor/tools/bossThreatScaling";
-import { ensureBossRest, ensureHealingAccess } from "../../healingAccess";
+import { ensureBossRest, ensureHealingAccess } from "../../story/healingAccess";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
 import { DUNGEON_TYPES, type DungeonType } from "@/editor/dungeonKit/types";
 import { isPassable } from "@/project/collision";

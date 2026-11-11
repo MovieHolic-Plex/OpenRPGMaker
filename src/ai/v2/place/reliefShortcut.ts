@@ -10,7 +10,7 @@
 import { canMove, isPassable } from "@/project/collision";
 import { invalidateReliefSlopes, rampAt, rampCode, reliefLevel, type RampDir } from "@/project/relief/walk";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { reachableCells, unreachableEvents } from "../eventReach";
+import { reachableCells, unreachableEvents } from "../judge/eventReach";
 import type { BuildRun } from "../types";
 
 type Cell = { x: number; y: number };
