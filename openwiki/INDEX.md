@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **193쪽 / 8232KB / 약 2,420,557 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **193쪽 / 8234KB / 약 2,420,947 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1467,11 +1467,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1194` 타일 칠하기 중 UI 구독자 (2026-09-30, 렉 수정 D)
 - `L1210` 맵·레이어 전환 UI 비용 (2026-09-30, 렉 수정 I)
 
-### `openwiki/editor-preview-performance.md` — 10KB · 146줄 · ~2,678 토큰
+### `openwiki/editor-preview-performance.md` — 12KB · 167줄 · ~3,068 토큰
 
 - `L6` Native shared catalog validators (O5)
 - `L26` Parked, cached and hidden DB previews (O4/N1/N2)
 - `L76` Resource galleries and audio manager (O1/O2/O3/N3)
+- `L147` Project-size scaling: map thumbnails, hover hit-test, inspector (2026-11-08)
 
 ### `openwiki/editor-storage-chest.md` — 2KB · 17줄 · ~641 토큰
 
