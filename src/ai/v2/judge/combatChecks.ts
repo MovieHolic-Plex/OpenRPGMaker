@@ -205,7 +205,7 @@ export function combatProblems(before: Project, after: Project, task: string): F
   if (!asksForEncounters(task)) {
     const was = new Set(encounterMaps(before));
     const turnedOn = encounterMaps(after).filter((id) => !was.has(id));
-    if (turnedOn.length) problems.push(tagged("game", "조우", `요청에 무작위 조우(랜덤 인카운터)가 없는데 ${turnedOn.slice(0, 3).map((id) => `「${after.maps[id]!.name}」`).join(", ")} 에 켰다 — 시키지 않은 조우가 파티를 깎는다. set_encounter_table{mapId, entries, encounterRate:0} 으로 끄고, 싸움이 필요하면 보이는 적(place_field_enemy)이나 이벤트 전투로 둔다. 일부러 켰다면 보고에 «무작위 조우를 켰다(약 N걸음마다)»고 적는다.`));
+    if (turnedOn.length) problems.push(tagged("game", "조우", `요청에 무작위 조우(랜덤 인카운터)가 없는데 ${turnedOn.slice(0, 3).map((id) => `「${after.maps[id]!.name}」`).join(", ")} 에 켰다 — 시키지 않은 조우가 파티를 깎는다. set_encounter_table{mapId, entries, encounterRate:0} 으로 끄고, 싸움이 필요하면 보이는 적(place_field_enemy)이나 이벤트 전투로 둔다. 일부러 켰다면 보고에 «무작위 조우를 켰다(약 N걸음마다)»고 적는다.`, { variant: "unasked" }));
   }
   // 첫 전투 구역이 시작 파티에게 너무 세다(J4).
   const hard = firstAreaAttrition(after);

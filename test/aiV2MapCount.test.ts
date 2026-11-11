@@ -5,6 +5,8 @@ import { mapsMinBlocker } from "@/ai/v2/judge/shipChecks";
 import { splitPreexisting } from "@/ai/v2/judge/gates";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
+import { gateProblems } from "@/ai/v2/judge/finishGate";
+import { tagged } from "@/ai/v2/judge/finding";
 
 // 2026-11-10 오너 「맵을 가장 우선」: 끝맺음 관문이 세는 맵 6장을 강제한다(4 → 6, 한 번에 한 단계). 맵을 세는 규칙은 완성도 척도(scripts/fs-scale/score.mjs)와 같아야 하고,
 // 못 센 맵은 이유와 함께 문구에 실린다. 에이전트 세션 규칙으로 작성 시점에는 실행하지 않았다(CI 에서 돈다).
@@ -85,9 +87,8 @@ describe("maps-min 출하 차단", () => {
     expect(y!.message).toContain("지하 통로");
   });
   it("이어 하는 턴에서도 «기존 결함» 으로 면제되지 않는다(시작 저장본에 이미 있어도 이번 턴이 끝낼 일)", () => {
-    const text = "[출하 차단 maps-min] 세는 맵이 1/6장이다 — 5장 더.";
-    const problem = { key: "game:" + text.replace(/\d+/gu, "#"), text, source: "gate" as const };
-    const { current, preexisting } = splitPreexisting([problem], new Set([problem.key]), undefined, undefined);
+    const problem = gateProblems([tagged("ship", "maps-min", "세는 맵이 1/6장이다 — 5장 더.")])[0]!;
+    const { current, preexisting } = splitPreexisting([problem], new Set([problem.textKey!]), undefined, undefined);
     expect(current).toHaveLength(1);
     expect(preexisting).toHaveLength(0);
   });

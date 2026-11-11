@@ -91,7 +91,7 @@ export function enemyIdentityProblems(project: Project): Finding[] {
     const flatKey = flatBosses.map(key).join(",");
     if (flatBosses.length && !seen.has(`b:${flatKey}`)) {
       seen.add(`b:${flatKey}`);
-      problems.push(tagged("game", "적 개성", `${where} 보스 ${flatBosses.slice(0, 3).map((f) => `「${f.name}」(${key(f)})`).join(", ")} 이 그 맵 일반 적과 겹치지 않는 자기 기술이 없다(기본 공격뿐이거나 졸개와 같은 기술) — ${fix(flatBosses.slice(0, 3).map(key).join("|"), mobSkills)}.`));
+      problems.push(tagged("game", "적 개성", `${where} 보스 ${flatBosses.slice(0, 3).map((f) => `「${f.name}」(${key(f)})`).join(", ")} 이 그 맵 일반 적과 겹치지 않는 자기 기술이 없다(기본 공격뿐이거나 졸개와 같은 기술) — ${fix(flatBosses.slice(0, 3).map(key).join("|"), mobSkills)}.`, { variant: "flat-boss" }));
     }
     const ownSkill = (f: Foe) => [...f.skills].some((s) => mobs.every((o) => o === f || !o.skills.has(s)));
     const lacking = mobs.length >= 2 ? mobs.filter((f) => !ownSkill(f)) : [];
@@ -100,7 +100,7 @@ export function enemyIdentityProblems(project: Project): Finding[] {
       const k = `m:${dup.map(key).join(",")}`;
       if (!seen.has(k)) {
         seen.add(k);
-        problems.push(tagged("game", "적 개성", `${where} 일반 적 ${mobs.length}종 중 ${dup.map((f) => `「${f.name}」(${key(f)})`).join(", ")} 은 다른 적이 안 가진 자기 기술이 없다(기술이 같거나 다른 적의 일부뿐) — 적 종류마다 자기 기술 하나는 있어야 한다. ${fix(dup.slice(0, 2).map(key).join("|"), new Set(foes.flatMap((f) => [...f.skills])))}.`));
+        problems.push(tagged("game", "적 개성", `${where} 일반 적 ${mobs.length}종 중 ${dup.map((f) => `「${f.name}」(${key(f)})`).join(", ")} 은 다른 적이 안 가진 자기 기술이 없다(기술이 같거나 다른 적의 일부뿐) — 적 종류마다 자기 기술 하나는 있어야 한다. ${fix(dup.slice(0, 2).map(key).join("|"), new Set(foes.flatMap((f) => [...f.skills])))}.`, { variant: "same-mobs" }));
       }
     }
   }
