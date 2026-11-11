@@ -4,12 +4,16 @@ import { editorState } from "@/editor/editorState";
 import { setEventPageTextCommand } from "@/editor/eventPages";
 import { createBlankProject } from "@/project/defaults";
 import {
+  editorWorkingEvents,
   eventDraftDiffById,
+  findWorkingEventCoveringPoint,
   projectWithoutEventDrafts,
   projectWithPreservedEventDrafts,
 } from "@/project/eventDrafts";
 import { _resetEventDraftVaultForTest, getEventDraftVaultEntry } from "@/project/eventDraftVault";
 import { store } from "@/project/store";
+import { findEventCoveringPoint } from "@/project/eventFootprintQuery";
+import type { GameEvent } from "@/project/types";
 
 beforeEach(() => {
   _resetEventDraftVaultForTest();
@@ -213,5 +217,26 @@ describe("event draft lifecycle", () => {
       body: "still editing",
       speaker: undefined,
     });
+  });
+});
+
+describe("findWorkingEventCoveringPoint", () => {
+  it("finds the same event as the full working-copy scan, without draft metadata, and clones only the hit", () => {
+    const base = { trigger: { kind: "action" }, commands: [] } as unknown as GameEvent;
+    const plain = { ...base, id: "plain", x: 1, y: 1 } as GameEvent;
+    const big = { ...base, id: "big", x: 4, y: 4, pages: [{ id: "p", trigger: { kind: "action" }, commands: [], footprint: { width: 2, height: 2 } }] } as unknown as GameEvent;
+    const drafted = { ...base, id: "drafted", x: 7, y: 7, draft: { kind: "edit", original: { ...base, id: "drafted", x: 7, y: 7 } } } as unknown as GameEvent;
+    const events = [plain, big, drafted];
+    for (let y = 0; y < 10; y += 1) {
+      for (let x = 0; x < 10; x += 1) {
+        const expected = findEventCoveringPoint(editorWorkingEvents(events), x, y);
+        const actual = findWorkingEventCoveringPoint(events, x, y);
+        expect(actual).toEqual(expected);
+      }
+    }
+    const hit = findWorkingEventCoveringPoint(events, 7, 7);
+    expect(hit).not.toBe(drafted);
+    expect(hit && "draft" in hit).toBe(false);
+    expect(drafted.draft).toBeDefined();
   });
 });

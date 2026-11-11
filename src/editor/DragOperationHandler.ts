@@ -12,8 +12,8 @@ import { moveEvent } from "@/editor/eventActions";
 import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type TilePoint } from "@/editor/tileShapeTools";
 import { paintTilesBulk } from "@/editor/actions";
 import { worldmapAutoTile } from '@/project/worldmapAutoBrush';
-import { editorWorkingEvents } from "@/project/eventDrafts";
-import { eventBodyFitsMap, eventBodyRect, findEventCoveringPoint } from "@/project/eventFootprintQuery";
+import { editorWorkingEvents, findWorkingEventCoveringPoint } from "@/project/eventDrafts";
+import { eventBodyFitsMap, eventBodyRect } from "@/project/eventFootprintQuery";
 import { rectsOverlap } from "@/project/footprint";
 import { store } from "@/project/store";
 import type { GameEvent, MapId } from "@/project/types";
@@ -139,7 +139,7 @@ export class DragOperationHandler {
     if (!map) return;
     const point = this.deps.pointerToTile(ptr);
     if (!isInsideMapPoint(point, map)) return;
-    const existing = findEventCoveringPoint(editorWorkingEvents(map.events), point.x, point.y);
+    const existing = findWorkingEventCoveringPoint(map.events, point.x, point.y);
     if (!existing) return;
     this.eventDragCandidate = { mapId, eventId: existing.id, origin: point };
   }
