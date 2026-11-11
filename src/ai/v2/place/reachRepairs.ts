@@ -5,7 +5,7 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import { PERSON_SPOT_BAD, personSpotContext, personSpotCost } from "./personSpot";
 import { objectAt, tileLabel } from "./cells";
 import { objectBaseLabel, objectClusterAt } from "@/project/objectFootprint";
-import type { ArtGap } from "../shared/artGap";
+import type { ArtGap } from "@/project/artGap";
 import type { BuildRun } from "../shared/types";
 import { Cell, DIRS, eventBlocks, anchorsOf, reachFrom, blockersOf, bodyReached, nextTo, reachableCells, unreachableEvents, isDoorName, doorArtCells, baseLabel, hostWords, itemTileWords, objectCells, singleTileObject, invisibleEvent } from "../judge/eventReach";
 
@@ -118,7 +118,7 @@ export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonl
           run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: copy } } as Project;
           moved.push(`${name || id} (${now.x},${now.y})에 「${art.label}」 그림`);
           noArt.delete(id);
-        } else noArt.set(id, { tilesetId: cellMap.tilesetId, want: `prop: ${words[0]}`, thing: `${words[0]} 1칸 그림`, note: `「${name || id}」`, mapId, x: now.x, y: now.y });
+        } else noArt.set(id, { chipset: cellMap.tilesetId, want: "prop", wanted: `${words[0]} 1칸 그림`, where: `${cellMap.name} ${now.x},${now.y}`, standIn: "none", by: "event-reach", note: `「${name || id}」` });
       }
     }
   }
