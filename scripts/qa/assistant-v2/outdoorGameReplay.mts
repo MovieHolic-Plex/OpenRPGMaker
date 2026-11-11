@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { readProjectSqlite } from "../../content/read-project-sqlite.mts";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
-import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
+import { createV2Tools } from "../../../src/ai/v2/tools/verbs.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
 import { runFinishAutoBuild } from "../../../src/ai/v2/finish/index.ts";
 import { runGameCheck } from "../../../src/qa/gameCheck/index.ts";

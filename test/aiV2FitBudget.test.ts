@@ -15,6 +15,13 @@ vi.mock("@/ai/v2/story/monsterRouteLevels", async (importOriginal) => {
     ...real,
     // 싼 단계(관문 곡선)는 항상 끝나고 확정된다 — 첫 바퀴에서만 한 줄을 낸다.
     fitGateLevelCurve: () => (state.mode === "pass" ? [] : state.calls === 0 ? ["관문 곡선 줄"] : []),
+  };
+});
+vi.mock("@/ai/v2/story/monsterRequiredBattles", async (importOriginal) => {
+  const real = await importOriginal<typeof import("@/ai/v2/story/monsterRequiredBattles")>();
+  const { FitBudgetExceeded } = await import("@/ai/v2/story/monsterFitBudget");
+  return {
+    ...real,
     // 필수전투 단계가 시험 한가운데서 예산을 넘기는 경우: 적 레벨을 시험값으로 바꾸고 던진다.
     fitRequiredBattlesToStarters: (project: Project) => {
       state.calls += 1;
@@ -22,7 +29,7 @@ vi.mock("@/ai/v2/story/monsterRouteLevels", async (importOriginal) => {
       if (state.mode === "throw-once" && state.calls > 1) return ["필수 전투 줄"];
       project.database.enemies[0]!.level = 99;
       project.database.troops[0]!.name = "시험 중 이름";
-      throw new real.FitBudgetExceeded(61_000);
+      throw new FitBudgetExceeded(61_000);
     },
   };
 });
@@ -31,7 +38,7 @@ import { applyShipDefaults } from "@/ai/v2/story/shipDefaults";
 import { shipBlockers } from "@/ai/v2/judge/shipChecks";
 import { stage as shipDefaultsStage } from "@/ai/v2/finish/stages/ship-defaults";
 import { V2Session } from "@/ai/v2/turn/session";
-import { beginFitBudget, checkFitBudget, enterFastFit, fitIsFast, FIT_BUDGET_MS, guardFitBudget, FIT_INCOMPLETE_PREFIX, FitBudgetExceeded, fitBudgetExceeded, restoreFitState, snapshotFitState } from "@/ai/v2/story/monsterRouteLevels";
+import { beginFitBudget, checkFitBudget, enterFastFit, fitIsFast, FIT_BUDGET_MS, guardFitBudget, FIT_INCOMPLETE_PREFIX, FitBudgetExceeded, fitBudgetExceeded, restoreFitState, snapshotFitState } from "@/ai/v2/story/monsterFitBudget";
 
 const WHOLE = "몬스터 수집 모험 게임";
 function monsterish(): Project {

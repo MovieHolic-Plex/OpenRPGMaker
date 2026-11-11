@@ -7,7 +7,7 @@
 // 「아직 안 했으면(단계 마침 스위치 꺼짐)」 갈래로 하는 페이지 명령을 넣는다. 결정적·되풀이 안전(맨 앞에 같은 갈래가 있으면 다시 넣지 않는다).
 import type { FinishStage } from "../types";
 import type { GameMap, Project } from "@/project/types";
-import { resolveSteps } from "../../story/mysteryCase";
+import { resolveSteps } from "../../story/mysteryCaseRead";
 
 const ENTRY = /입구|진입|들어가|들어간|입장|entrance|enter/iu;
 type Cmd = Record<string, unknown>;
