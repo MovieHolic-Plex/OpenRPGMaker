@@ -43,7 +43,7 @@ export function shownChecks({ after, task, changed, cmds }: GameCheck): Finding[
       }
       const inStamp = ((map.structurePlacements as Obj[] | undefined) ?? []).some((sp) => x0 >= Number(sp.x) && x0 < Number(sp.x) + Number(sp.w) && y0 >= Number(sp.y) && y0 < Number(sp.y) + Number(sp.h));
       if (near || inStamp || at(map.upperTiles) > 0) continue;
-      problems.push(tagged("game", "보임", `「${ev.name}」(${ev.id}) 는 조사하는 이벤트인데 그림도 없고 그 칸(${String(raw.x)},${String(raw.y)})에 물건 타일도 없다 — 플레이어 눈에 맨땅이다. list_spatial_designs{kind:'object',query:'비석·돌·분수·나무…'} 로 물건을 찾아 stamp_object 로 그 칸 바로 위(${String(raw.x)},${Number(raw.y) - 1})나 그 칸에 찍거나, 이벤트를 이미 있는 물건 앞으로 move_event 한다.`));
+      problems.push(tagged("game", "보임", `「${ev.name}」(${ev.id}) 는 조사하는 이벤트인데 그림도 없고 그 칸(${String(raw.x)},${String(raw.y)})에 물건 타일도 없다 — 플레이어 눈에 맨땅이다. list_spatial_designs{kind:'object',query:'비석·돌·분수·나무…'} 로 물건을 찾아 stamp_object 로 그 칸 바로 위(${String(raw.x)},${Number(raw.y) - 1})나 그 칸에 찍거나, 이벤트를 이미 있는 물건 앞으로 move_event 한다.`, { target: { mapId: ev.mapId, eventId: ev.id }, variant: "bare-ground" }));
     }
   }
   // 1c2) 그림 있는 사람의 「그림 없는 기본 페이지」가 말을 한다 — 장면 전에는 빈 바닥인데 결정 키를 누르면 대사가 나온다
@@ -54,14 +54,14 @@ export function shownChecks({ after, task, changed, cmds }: GameCheck): Finding[
     if (!ev.pages.some((pg) => drawn(pg as unknown as Obj))) continue;
     const bare = ev.pages.find((pg) => { const p = pg as unknown as Obj; return !drawn(p) && obj(p.trigger)?.kind === "action" && !((p.conditions as unknown[] | undefined) ?? []).length
       && ((p.commands as Obj[] | undefined) ?? []).some((c) => c.kind === "text"); });
-    if (bare) problems.push(tagged("game", "보임", `「${ev.name}」(${ev.id}) 의 그림 없는 기본 페이지가 말을 한다 — 그 사람이 보이기 전에는 빈 바닥인데 결정 키를 누르면 대사가 나온다. 그 페이지의 대사를 비우거나(명령 없음) 보이는 페이지에만 대사를 둔다.`));
+    if (bare) problems.push(tagged("game", "보임", `「${ev.name}」(${ev.id}) 의 그림 없는 기본 페이지가 말을 한다 — 그 사람이 보이기 전에는 빈 바닥인데 결정 키를 누르면 대사가 나온다. 그 페이지의 대사를 비우거나(명령 없음) 보이는 페이지에만 대사를 둔다.`, { target: { mapId: ev.mapId, eventId: ev.id }, variant: "blank-page-talks" }));
   }
   // 1c3) 선택지 문구에 제작 메모 꼬리표 — 「(엔딩)」「(배드 엔딩)」「(+1일)」은 스포일러이자 제작 흔적이다(2026-10-25 판정 J37).
   //   런타임도 보여 줄 때 걷지만(playerChoiceText), 저작본에서 지워야 편집기·대화 기록에도 남지 않는다.
   for (const r of cmds) {
     if (r.cmd.kind !== "choices" || !Array.isArray(r.cmd.options)) continue;
     const noted = (r.cmd.options as Obj[]).map((o) => ({ text: String(o?.text ?? ""), tag: choiceMetaTag(String(o?.text ?? "")) })).filter((o) => o.tag);
-    if (noted.length) problems.push(tagged("game", "선택지", `「${r.ev.name}」(${r.ev.id}) 의 선택지에 제작 메모가 보인다: ${noted.slice(0, 3).map((o) => `「${o.text}」`).join(" · ")} — 플레이어 문구에서 ${noted.map((o) => o.tag).filter((t, i, a) => a.indexOf(t) === i).join("·")} 를 지운다(엔딩·날짜 경과는 선택 뒤 장면이 보여 준다).`));
+    if (noted.length) problems.push(tagged("game", "선택지", `「${r.ev.name}」(${r.ev.id}) 의 선택지에 제작 메모가 보인다: ${noted.slice(0, 3).map((o) => `「${o.text}」`).join(" · ")} — 플레이어 문구에서 ${noted.map((o) => o.tag).filter((t, i, a) => a.indexOf(t) === i).join("·")} 를 지운다(엔딩·날짜 경과는 선택 뒤 장면이 보여 준다).`, { target: { mapId: r.ev.mapId, eventId: r.ev.id } }));
   }
   // 1c4) 전투 없는 이야기 메뉴인데 전투를 넣었다 — 스킬·장비가 메뉴에 없어 전투 준비를 못 한다.
   {

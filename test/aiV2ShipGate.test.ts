@@ -8,6 +8,8 @@ import { bundledPictureLeft, openingMissing } from "@/ai/v2/judge/shipArtChecks"
 import { buildsWholeGame } from "@/ai/v2/request/readers";
 import { splitPreexisting } from "@/ai/v2/judge/gates";
 import type { Project } from "@/project/types";
+import { gateProblems } from "@/ai/v2/judge/finishGate";
+import { tagged } from "@/ai/v2/judge/finding";
 
 const WHOLE = "마을 하나 만들어줘. 거기서 시작하는 모험 게임으로";
 const CONTINUE = "아직 다 안 된 것 같아. 처음에 부탁한 대로 끝까지 만들어 줘. 게임을";
@@ -35,13 +37,13 @@ describe("ship gate keeps checking a continuation turn", () => {
   it("an ending that sits on the engine's default opening picture is blocked even when the start project already had it", () => {
     const p = adventure();
     const text = shipBlockers(p, WHOLE).find((b) => b.id === "ending-bg")!;
-    const problem = { key: "game:ending-bg", text: `[출하 차단 ending-bg] ${text.message}`, source: "gate" as const };
-    const baselineKeys = new Set([problem.key]);
+    const problem = gateProblems([tagged("ship", "ending-bg", text.message)])[0]!;
+    const baselineKeys = new Set([problem.textKey!]);
     const split = splitPreexisting([problem], baselineKeys, undefined, undefined);
     expect(split.current).toHaveLength(1);
     expect(split.preexisting).toHaveLength(0);
-    const other = { key: "game:scene repeat", text: "[scene repeat] 같은 줄", source: "gate" as const };
-    expect(splitPreexisting([other], new Set([other.key]), undefined, undefined).preexisting).toHaveLength(1);
+    const other = gateProblems([tagged("scene", "repeat", "같은 줄")])[0]!;
+    expect(splitPreexisting([other], new Set([other.textKey!]), undefined, undefined).preexisting).toHaveLength(1);
   });
 });
 
@@ -151,8 +153,8 @@ describe("a bundled still is not this game's picture", () => {
 
   it("is never excused as a preexisting defect on a continuation turn", () => {
     for (const id of ["bundled-picture", "ending-screen", "ending-bg", "title-image", "opening-missing"]) {
-      const problem = { key: `game:${id}`, text: `[출하 차단 ${id}] 남은 기본값`, source: "gate" as const };
-      const split = splitPreexisting([problem], new Set([problem.key]), undefined, undefined);
+      const problem = gateProblems([tagged("ship", id, "남은 기본값")])[0]!;
+      const split = splitPreexisting([problem], new Set([problem.textKey!]), undefined, undefined);
       expect(split.current, id).toHaveLength(1);
       expect(split.preexisting, id).toHaveLength(0);
     }

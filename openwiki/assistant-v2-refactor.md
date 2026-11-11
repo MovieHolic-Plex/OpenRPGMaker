@@ -157,9 +157,11 @@
 ```ts
 export interface Finding {
   /** 어느 판정자가 냈나 — 장부·보고의 묶음. */
-  readonly judge: "game" | "ship" | "combat" | "scene" | "place" | "play" | "todo" | "vqa" | "advisor" | "critic";
+  readonly judge: "game" | "ship" | "scene" | "place" | "play" | "todo" | "vqa" | "advisor" | "critic";
   /** 규칙 id — 지금의 글머리 표지/ShipBlocker.id 그대로("no-healing" · "title-style" · "weather"). 글이 바뀌어도 같은 문제다. */
   readonly id: string;
+  /** 같은 규칙 id 아래의 갈래(「화면」 의 shake · flash · letterbox) — 표지는 같아도 다른 문제다(F3). */
+  readonly variant?: string;
   /** 무엇에 대한 것인가 — 열쇠와 «어디를 고칠지»에 쓴다. */
   readonly target?: { readonly mapId?: string; readonly eventId?: string; readonly x?: number; readonly y?: number; readonly ref?: string };
   /** block = 완료를 막는다 · polish = 장부에만 · note = 보고에만. */
@@ -174,8 +176,11 @@ export interface Finding {
   readonly fix?: string;
   readonly evidence?: string;
 }
-/** 열쇠는 글이 아니라 판정자·규칙·대상에서 나온다. */
-export const findingKey = (f: Finding): string => `${f.judge}:${f.id}:${f.target?.mapId ?? ""}:${f.target?.eventId ?? f.target?.ref ?? ""}`;
+/** 열쇠는 글이 아니라 판정 묶음·규칙(·갈래)·대상에서 나온다 — 대상이 없으면 `game:음악/none-set`, 있으면 `game:보임/bare-ground:map_a:ev_1`. */
+export function findingKey(f: Finding): string {
+  const rule = `${f.judge}:${f.id}${f.variant ? `/${f.variant}` : ""}`, t = f.target;
+  return t ? `${rule}:${t.mapId ?? ""}:${t.eventId ?? t.ref ?? ""}` : rule;
+}
 ```
 
 통과/불통과 한 건을 재는 할 일 검사(`CheckResult`)는 「문제 목록」이 아니라 「이 항목이 됐나」 라서 그대로 두고, 불통과일 때만 `Finding` 으로 바꾸는 한 줄 변환을 둔다. `LintIssue` 도 그대로 둔다(편집기 형).
@@ -197,8 +202,9 @@ export const findingKey = (f: Finding): string => `${f.judge}:${f.id}:${f.target
 **순서(조각마다 PR 하나).**
 
 1. `F1`(옮기기 기준) — **끝**: `judge/finding.ts` 에 `Finding` · `findingLine` · `fromLine`(표지 `[게임 검사 <주제>]` · `[출하 차단 <id>]` · `[scene <id>]` 를 읽어 `Finding` 으로)을 넣고 `finishGate` 안쪽(`gameFindings` · `isMusicWork` · 기준선 열쇠)만 `Finding[]` 으로 — 나가는 `V2GateProblem` 은 그대로. 정한 것 둘: `ko` 는 표지까지 든 지금의 줄 그대로다(보고 글이 한 글자도 안 바뀐다 — `findingLine(f) = f.ko`), `findingKey` 는 쓰는 곳이 생기는 F3 에서 넣는다. 왕복 탐침(먼저 돌렸다): 요청 75개 × 프로젝트 쌍 6개 × 판정자 7 과 턴 흔적에서 모은 실제 줄 60개 + 소스의 표지 63개 — 왕복 다름 0 · 표지 못 읽음 0 · `isMusicWork` 다름 0 · `SHIP_DEFAULT_LEAK` 다름 0. golden · turnTrace 같다.
-2. `F2`(옮기기 기준, 판정자 하나씩): 낳는 쪽이 `Finding` 을 바로 낸다(ship → combat → game → scene/play/machine). 글과 열쇠는 `findingLine` · `gateKey` 로 그대로. golden · turnTrace 같다.
-3. `F3`(동작 변경): 열쇠를 `findingKey` 로 — 글이 바뀌어도 같은 항목(시도 상한이 제대로 센다), 「같은 글 다른 대상」 은 다른 항목. 저장된 할 일(`assistantTodo`)의 옛 열쇠는 한 번 읽어 새 열쇠로 옮긴다. turnTrace 의 바뀐 줄을 모두 설명.
+2. `F2`(옮기기 기준) — **끝**(#4593): 낳는 쪽이 `Finding[]` 을 바로 낸다 — `gameContentProblems` · `combatProblems` · `weakPaidSkills` · `battleDataEmptied` · `unaskedChanges` · `fieldBattleStrain` · `sceneCraftProblems` · `playProblems` · `mapViewArtProblems` · `titleStyleProblems`/`hudProblems` · `enemyIdentityProblems` · `lookChecks`. 줄은 도우미 하나 `tagged(judge, id, body, more?)` 가 «[표지 id] body» 로 만든다(표지 낱말은 `TAG_WORD` 한 곳). `fromLine` 다리와 `SceneCraftFinding` · `PlayProblem` 은 없앴다. 446줄이던 `gameContentProblems` 는 주제별 파일로 갈랐다: `gameAskedChecks`(요청한 효과 · 세계 · 엔딩/상태 · 전투) · `gameShownChecks`(보임 · 모습) · `gameFlagChecks`(깃발 · 셀프 스위치) · `gameStoryChecks`(이야기 · 장면) + 차례를 정하는 `gameChecks`(76줄). 판정 줄 덤프(요청 75 × 저장본 6쌍 × 판정 7 = 3,066칸 · 줄 1,264개) 다른 칸 0 · golden · turnTrace 같다.
+   **제안과 달라진 것 둘.** `ShipBlocker` 는 `shipChecks` 안쪽 꼴로 남는다(`wholeGameRekick` · `story/blueprint` · v1 런타임이 `message` 를 읽는다 — `finishGate` 가 `tagged("ship", id, …)` 로 옮긴다). `MachineCheck` 도 남는다(읽는 곳이 `tools/context.ts` · `story/events.ts` 라 이 줄기 범위 밖). 판정 묶음 `"combat"` 은 없앴다 — 전투 검사 줄의 표지가 「게임 검사」 · 「출하 차단」 이라 묶음도 그 둘이다.
+3. `F3`(동작 변경) — **끝**: 관문 열쇠 = `findingKey`. `finishGate.gateProblems(findings)` 가 `V2GateProblem { key, text, source, finding, textKey }` 를 만든다 — 한 번에 같은 열쇠가 둘 이상이면 글 열쇠를 덧붙여 하나로 뭉개지 않는다. `textKey` 는 2026-11-11 전의 글 열쇠(`game:<수 가린 글 160자>` · `game:autoplay:<ref>`)로 두 군데에만 쓴다: 시작 저장본 대조(`v2BaselineGameKeys` — 글까지 같아야 기존 결함이다, 값 그대로)와 저장된 할 일의 옛 열쇠 옮기기(`syncGateItems` 첫 고리 — 같은 문제가 지금도 있으면 `meta.key` 를 새 열쇠로 바꾼다). 한 표지 아래 여러 경우는 `variant` 로 가른다(갈래 이름 45개 — 「화면」 shake/flash/letterbox, 「엔딩」 no-trigger/no-definition/epilogue-speaker/act-end …), 이벤트·맵 하나를 짚는 검사는 `target` 을 싣는다. `gates.ts` 의 `SHIP_DEFAULT_LEAK` 은 정규식이 아니라 id 집합, 자동 플레이 가르기는 `finding.judge === "play"`. turnTrace 에서 바뀐 것은 세 장면 마지막 `todo` 줄의 `meta.*.key` 뿐이다(예 `game:[출하 차단 maps-min] 세는 맵이 #/#장이다…` → `ship:maps-min`). 자세한 계약은 `openwiki/assistant-v2.md` 「관문 열쇠는 규칙·대상에서」.
 4. `F4`(동작 변경): 모델에게 가는 관문 글을 영어(`en`)로 — 규칙마다 영어 글을 쓰고 보고는 `ko` 그대로. Terra 로 전/후를 잰다(작은 일 30가지).
 5. `F5`(동작 변경): 화면 검수·검토자 결과를 같은 장부로 — `VqaFinding` · `AdvisorNote` 를 `Finding` 으로, `turn/vqaItems` 의 겹침 판정은 `findingKey` 가 못 잡는 자유 글에만 남긴다.
 
