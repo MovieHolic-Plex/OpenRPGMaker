@@ -81,7 +81,7 @@ const SMALL_BY_TOPIC: Readonly<Partial<Record<GameTopic, readonly string[]>>> = 
   maps: ["create_transfer_pair"],
   battle: ["upsert_troop", "simulate_battle"],
   fieldEnemy: ["place_field_enemy"],
-  examine: ["list_spatial_designs", "stamp_object"],
+  examine: ["place_examine_hotspots", "list_spatial_designs", "stamp_object"],
   ending: ["list_endings", "define_ending"],
   scene: ["add_scene"],
   hero: ["upsert_actor"],

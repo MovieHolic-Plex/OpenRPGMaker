@@ -1095,6 +1095,10 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     }
   }
 
+  // 말없이 글만 나오는 조사·읽기(걷는 사람·나타나는 사람 없이 내레이션 한두 줄)는 연출한 장면이 아니다 — 무대(stage)를 싣지 않는다.
+  // 실으면 연출 비평가가 「두 인물이 멀다」「표지판이 가려진다」 로 고치기 할 일을 열고, 고칠 장면이 없어 막힘으로 닫힌다(2026-11-11 작은 일 재측정 sign·examine).
+  const plainRead = when !== "game-start" && !spec.after && !sim.walks.length && !actorIds.size
+    && spec.beats.every((b) => b.do === "say" && NARRATOR.test(String(b.who ?? "").trim()));
   const walkLine = sim.walks.map((w) => `${w.who} ${w.steps}걸음${w.onRoad ? `(길 ${w.onRoad})` : ""}→(${w.goal.x},${w.goal.y})`).join(", ");
   const bad = checks.filter((c) => !c.ok);
   const eventIds = [{ mapId, eventId: hostEventId }, ...[...actorIds.values()].map((eventId) => ({ mapId, eventId }))];
@@ -1102,13 +1106,13 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   return {
     ok: true,
     mapIds: [mapId],
-    summary: `컷신 '${cutId}' (${trigger}, 비트 ${beats.length}, ${when === "game-start" ? "한 번만" : when}${letterbox ? ", 레터박스" : ""}) 을 ${mapId} 에 만듦 — 걷기 ${walkLine || "없음"}` +
+    summary: `${plainRead ? (when === "talk" ? "조사 글" : "밟으면 나오는 글") : "컷신"} '${cutId}' (${trigger}, 비트 ${beats.length}, ${when === "game-start" ? "한 번만" : when}${letterbox ? ", 레터박스" : ""}) 을 ${mapId} 에 만듦 — 걷기 ${walkLine || "없음"}` +
       `${[...followUps].length ? ` · 컷신 뒤 대화: ${[...followUps].map(([n, l]) => `${n} «${l[0]?.slice(0, 24)}»`).join(", ")}` : ""}${probeNote}${bad.length ? ` · 무대 검사 문제 ${bad.length}` : ""}`,
     warnings,
     missingArt: [],
     calls: run.calls.slice(firstCall),
     eventIds,
-    stage: { mapId, hostEventId: cutId, frames: sim.frames, walks: sim.walks, checks, letterbox, effects, ...(hero ? { hero } : {}) },
+    ...(plainRead ? {} : { stage: { mapId, hostEventId: cutId, frames: sim.frames, walks: sim.walks, checks, letterbox, effects, ...(hero ? { hero } : {}) } }),
   };
 }
 

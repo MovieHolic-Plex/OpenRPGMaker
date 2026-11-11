@@ -12,6 +12,8 @@ export interface ToolTextEn {
   readonly d: string;
   /** 파라미터 경로 → 영어 설명. */
   readonly p?: Readonly<Record<string, string>>;
+  /** v2 에 내놓지 않는 파라미터 경로(도구는 그대로 받는다) — 그 일에 드물게 쓰는 큰 하위 스키마가 처음 싣는 도구 글자 상한을 먹지 않게. */
+  readonly hide?: readonly string[];
 }
 
 const COND = "Page condition. kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). kind=item → itemId + present(boolean). kind=selfSwitch → key + value(boolean). kind=partyKnowsSkill → skillId + present. kind=all|any → conditions[]. kind=not → condition.";
@@ -259,7 +261,12 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   remove_map: { d: "Delete a map (destructive). Transfers into it are cleaned up; the user confirms before it applies. Not the start map." },
   author_snow_route: { d: "Build 1–3 snowfield route maps (snowy pass, frost road, ice field) chained from one edge of the start map, Beodeul snow art only; ice gaps optional." },
   place_search_containers: { d: "Place several searchable barrels/chests/jars/drawers at once: search animation, loot once, 'empty' afterwards, optional owner who scolds if they see you." },
-  place_examine_hotspots: { d: "Place several examine spots at once: [{at:{x,y},name,lines?,beats?,once?,itemId?,setSwitch?,graphic?,readable?}]." },
+  place_examine_hotspots: {
+    d: "Make things examinable: the player faces the spot, presses the action key and reads lines (a sign, a fireplace, a gravestone, a bookshelf). One call places several: hotspots:[{on|at, name, lines, once?, itemId?, setSwitch?, readable?, graphic?}]. The spot sits ON the object's cell, so the object itself is what the player sees — no picture is needed there. For an object already on the map give on:'<its name>' (fireplace, signpost, well…) and the tool finds its cell; for an object you just stamped give at:{x,y} of that cell. A spot on bare ground with no graphic is invisible (the result warns). This is the tool for «examine X → text»; add_event is for staged scenes.",
+    p: { hotspots: "[{on?: object name already on this map, at?: {x,y} cell of the object, name, lines: string[], once?: true = only the first time, itemId?: give this item, setSwitch?, readable?: true = parchment page window, graphic?}] — give on or at." },
+    // 조사 뒤에 도는 컷신 비트(8천 자 스키마)는 내놓지 않는다 — 실으면 표지판 요청에서 stamp_object · list_spatial_designs 가 글자 상한 밖으로 밀린다. 연출은 add_event.
+    hide: ["hotspots[].beats"],
+  },
   replace_text_in_project: { d: "Replace text across the whole project at once (dialogue, choices, speaker names, event/map names, quests, item/enemy/skill names and descriptions)." },
   upsert_state: { d: "Create or update a status ailment (State) record: maxTurns, hpDamagePercentPerTurn, damageTypeRates." },
   author_boss_phases: { d: "Declare boss phases: each phase = 'HP ≤ x%' trigger + lines, animation, buffs, heal, hidden enemy, switch — compiled to one-time battle pages." },

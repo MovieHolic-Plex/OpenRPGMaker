@@ -13,6 +13,7 @@ import { resolveEventPlacement } from "./eventTools";
 import { splitSpeakerPrefix } from "./mysteryCaseTool";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA, CUTSCENE_BEAT_SCHEMA, GRAPHIC_SPEC_SCHEMA } from "./schemaShapes";
+import { objectCellByName } from "@/ai/v2/place/where";
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const TRANSPARENT: EventPageGraphic = { transparent: true };
@@ -177,7 +178,7 @@ function commandsForHotspot(project: Project, map: GameMap, hotspot: RecordValue
 const placeExamineHotspots: ToolDefinition = {
   name: "place_examine_hotspots",
   description:
-    "조사 핫스팟을 한 번에 여러 개 배치한다. 각 항목은 {at:{x,y},name,lines?,beats?,once?,itemId?,setSwitch?,graphic?}.  「조사」「살펴보기」 지점 요청의 정본. 이브식 갤러리 방 전체는 make_gallery_room." +
+    "조사 핫스팟을 한 번에 여러 개 배치한다. 각 항목은 {at:{x,y} 또는 on:\"물건 이름\",name,lines?,beats?,once?,itemId?,setSwitch?,graphic?}. 이미 맵에 있는 물건(벽난로·표지판·우물…)을 조사하게 하려면 on 에 그 이름을 준다 — 그 물건의 칸을 찾아 그 위에 놓는다(좌표를 몰라도 된다).  「조사」「살펴보기」 지점 요청의 정본. 이브식 갤러리 방 전체는 make_gallery_room." +
     " graphic 을 생략하면 투명 이벤트다 — 그 칸에 place_props·paint_tiles 로 물건 타일을 깔거나 이름에 맞는 graphic({query:\"…\"})을 준다. 대체 그림은 붙이지 않는다. 좌표 중복/기존 이벤트 겹침/맵 밖/개별 참조 오류는 해당 항목만 skip하고 warning으로 반환한다.",
   mode: "write",
   parameters: {
@@ -191,6 +192,7 @@ const placeExamineHotspots: ToolDefinition = {
           type: "object",
           properties: {
             at: COORD_SCHEMA,
+            on: { type: "string", description: "Name of an object already on this map (fireplace, signpost, well…). The spot goes on that object's cell — use instead of at." },
             name: { type: "string" },
             lines: { type: "array", items: { type: "string" } },
             beats: { type: "array", items: CUTSCENE_BEAT_SCHEMA },
@@ -200,7 +202,6 @@ const placeExamineHotspots: ToolDefinition = {
             setSwitch: { type: "string" },
             graphic: GRAPHIC_SPEC_SCHEMA,
           },
-          required: ["at"],
         },
       },
     },
@@ -222,12 +223,21 @@ const placeExamineHotspots: ToolDefinition = {
     const eventIds: string[] = [];
     let skipped = 0;
     const invisible: string[] = [];
+    const placed: string[] = [];
 
     hotspots.forEach((raw, index) => {
       try {
         if (!isRecord(raw)) throw new ToolError(`hotspots[${index}]는 객체여야 합니다.`, { code: "hotspot-shape" });
-        const at = pointFromRecord(raw.at, `hotspots[${index}].at`);
-        const name = cleanName(raw.name, `조사 ${index + 1}`);
+        // on(물건 이름)이 오면 그 물건의 칸이 자리다 — 선택 칸을 다 채우는 모델의 at:{0,0} 보다 앞선다.
+        const onWord = typeof raw.on === "string" ? raw.on.trim() : "";
+        const named = onWord ? objectCellByName(draft, map, onWord) : undefined;
+        const filler = isRecord(raw.at) && raw.at.x === 0 && raw.at.y === 0;
+        if (onWord && !named && (!isRecord(raw.at) || filler)) {
+          throw new ToolError(`on '${onWord}': 이 맵에서 그 이름의 물건을 찾지 못했습니다 — 물건 칸을 at:{x,y} 로 주거나, 물건이 아직 없으면 stamp_object 로 먼저 놓으세요.`, { code: "hotspot-object-not-found" });
+        }
+        const at = named ? named.cell : pointFromRecord(raw.at, `hotspots[${index}].at`);
+        const name = cleanName(raw.name, onWord || `조사 ${index + 1}`);
+        if (onWord && !named) warnings.push(`hotspots[${index}] '${name}': on '${onWord}' 물건을 못 찾아 at (${at.x}, ${at.y}) 에 놓았다`);
         if (!inMapBounds(map, at.x, at.y)) {
           skipped += 1;
           warnings.push(`hotspots[${index}] '${name}' skip: 맵 밖 좌표 (${at.x}, ${at.y})`);
@@ -273,6 +283,7 @@ const placeExamineHotspots: ToolDefinition = {
           : [page({ id: `${eventId}_page`, name, graphic, commands })];
         const event: GameEvent = {
           id: eventId,
+          name,
           x: landing.x,
           y: landing.y,
           trigger: { kind: "action" },
@@ -283,6 +294,7 @@ const placeExamineHotspots: ToolDefinition = {
         map.events.push(event);
         occupied.add(placementKey);
         eventIds.push(eventId);
+        placed.push(`${name}(${landing.x},${landing.y})${named ? ` on ${named.label}` : ""}`);
         // 그림도 없고 그 칸 윗층에 물건 타일도 없으면 플레이어 눈에는 빈 바닥이다 — 회상 스토리 도그푸딩에서
         // 메멘토 9개가 전부 이랬다(무엇을 조사할지 보이지 않아 모든 칸에서 버튼을 눌러야 한다).
         const visibleGraphic = graphic.transparent !== true && (graphic.sprite !== undefined || graphic.appearanceId !== undefined);
@@ -295,6 +307,10 @@ const placeExamineHotspots: ToolDefinition = {
       }
     });
 
+    // 하나도 못 놓았으면 실패다 — 「0개 생성」 을 성공으로 돌려주면 모델은 됐다고 읽는다.
+    if (hotspots.length > 0 && eventIds.length === 0) {
+      throw new ToolError(`조사 핫스팟을 하나도 놓지 못했습니다 — ${warnings.join(" / ").slice(0, 600)}`, { code: "hotspot-none-placed", mapId: map.id });
+    }
     if (invisible.length > 0) {
       warnings.push(
         `보이지 않는 조사 지점 ${invisible.length}개(${invisible.join(", ")}): 그림이 없고 그 칸에 물건 타일도 없어 플레이어에게는 빈 바닥이다 — `
@@ -302,7 +318,7 @@ const placeExamineHotspots: ToolDefinition = {
       );
     }
     return {
-      summary: `${map.name}에 조사 핫스팟 ${eventIds.length}개 생성, ${skipped}개 스킵${invisible.length ? ` — 그중 ${invisible.length}개는 빈 바닥 위 투명(보이지 않음)` : ""}`,
+      summary: `${map.name}에 조사 핫스팟 ${eventIds.length}개 생성${placed.length ? `: ${placed.slice(0, 8).join(" · ")}` : ""}, ${skipped}개 스킵${invisible.length ? ` — 그중 ${invisible.length}개는 빈 바닥 위 투명(보이지 않음)` : ""}`,
       data: { created: eventIds.length, skipped, eventIds },
       ...(warnings.length > 0 ? { warnings } : {}),
     };

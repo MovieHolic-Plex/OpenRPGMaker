@@ -65,6 +65,8 @@ const OBJECT_ALIASES: ReadonlyArray<readonly [RegExp, readonly string[]]> = [
   [/우물|well/i, ["우물", "well"]],
   [/분수|fountain/i, ["분수", "fountain"]],
   [/게시판|알림판|notice/i, ["게시판", "알림판", "notice"]],
+  [/표지판|팻말|이정표|안내판|sign ?post|^sign$/i, ["표지판", "팻말", "이정표", "안내판", "signpost", "sign"]],
+  [/비석|묘비|gravestone|tombstone/i, ["비석", "묘비", "gravestone", "tombstone"]],
   [/계단|stair/i, ["계단", "stair"]],
   [/탁자|테이블|식탁|table/i, ["탁자", "식탁", "테이블", "table"]],
   [/술통|barrel|keg/i, ["술통", "barrel", "keg"]],
@@ -176,6 +178,14 @@ function findObjectBox(project: Project, map: GameMap, word: string, room: RoomR
     if (!best || score > best.score) best = { x0, y0, x1, y1, label: labels.get(i) ?? word, score };
   }
   return best;
+}
+
+/** 이름으로 찾은 물건의 칸(덩이 맨 아랫줄 가운데 — 플레이어가 마주 보는 칸). 조사 지점처럼 이벤트를 물건 위에 올릴 때 쓴다. */
+export function objectCellByName(project: Project, map: GameMap, word: string): { cell: Cell; label: string } | undefined {
+  const name = word.trim();
+  if (!name) return undefined;
+  const box = findObjectBox(project, map, name, undefined, walkStart(project, map)) ?? findEventBox(map, name, undefined, walkStart(project, map), undefined);
+  return box ? { cell: { x: Math.floor((box.x0 + box.x1) / 2), y: box.y1 }, label: box.label } : undefined;
 }
 
 /** 다른 맵(또는 같은 맵 다른 칸)에서 mapId 로 오는 이동 명령의 도착 칸들. */
@@ -294,9 +304,11 @@ export function resolveWhere(
   };
   const done = (cell: Cell, extra: Omit<WhereResolution, "cell" | "cells">): WhereResolution => ({ cell, ...extra, ...(fp ? { cells: footCells(cell) } : {}) });
 
-  // 칸을 직접 줬으면 가장 가까운 쓸 수 있는 칸.
-  if (opts.at) {
-    const at = opts.at;
+  // 칸을 직접 줬으면 가장 가까운 쓸 수 있는 칸. 자리 낱말과 함께 온 (0,0) 은 정한 칸이 아니라 선택 칸을 기본값으로 채운 것이다
+  // (GPT 계열 — 「벽난로 앞」 과 at:{0,0} 이 같이 와 낱말을 버리고 맵 모서리 근처에 섰다). 모서리를 가리키려면 낱말 없이 at 만 준다.
+  const givenAt = opts.at && !(opts.at.x === 0 && opts.at.y === 0 && word?.trim()) ? opts.at : undefined;
+  if (givenAt) {
+    const at = givenAt;
     const c = pick((q) => dist(q, at));
     if (c) {
       const moved = c.x !== at.x || c.y !== at.y;
