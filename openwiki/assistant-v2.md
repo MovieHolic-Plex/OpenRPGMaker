@@ -405,6 +405,45 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 
 증거: `test/toolsReadEmptyAndBlocked.test.ts`.
 
+## 둘째 묶음 첫 측정에서 도구 쪽이 고친 둘 — 비울 수 없는 enum · 곁에 선 사람의 다가서기 (2026-11-11)
+
+둘째 묶음 첫 측정(Terra, main e298f686e5): **28/35 · «완료» 25**. 불합격 일곱 가운데 다섯은 요청 분류가 게임 도구를 주지 않은 문장(처음 실린 도구 10개 — 요청 줄기가 고친다)이고, 둘이 도구 쪽이다.
+
+**1. `item-new-built` — 회복 차가 탈출 로프로 저장됐다.** `upsert_item` 의 `escapeTo` 는 값이 `"entrance"` 하나뿐인 선택 enum 이다. 스키마의 칸을 다 채우는 모델은
+그 칸을 비울 수 없어 `"entrance"` 를 넣었다. 같은 모양이 도구 526개 가운데 9곳이다(`upsert_event … graphic.pose` · `place_npc guide` · `make_chase_scene patrol.mode` ·
+`set_lighting_volume sources[].at.kind` · `upsert_state volatileStatus` · `upsert_item_upgrade target` · `author_dungeon puzzle` 등).
+- `tools/toolExposure.ts` `withNone`: 값 하나짜리 선택 enum 은 모델에게 `["none", 값]` 으로 보인다(설명 끝에 `"none" = leave unset.`).
+- `loop/argGuard.ts` `pruneDefaults`: `"none"` 이 도구의 **진짜** enum 에 없으면 그 칸을 걷는다. 진짜 값이 none 인 칸(`scope` · 날씨)은 그대로다.
+- 근거(탐침): `escapeTo:"none"` → 걷힘 → 저장된 아이템 `type medicine` · `escapeTo` 없음. golden 117/153, 전부 위 도구 여섯의 스키마.
+
+**2. `walk-up-greet-starter` — «걸어와서 인사» 를 시켰더니 그 사람의 자리가 옮겨졌다.** 미루는 시작 칸 한 칸 옆에 서 있다. 한 걸음 다가서자
+기계 검사가 `[cutscene-walk] 3걸음 미만이라 걷는 장면으로 안 읽힌다` 를, 끝맺음의 함수 검사가 `[scene off-post] 제자리로 돌려보내거나 move_event 로 자리를 옮겨라` 를 냈다.
+모델은 미루를 두 칸 물리고(`move_event`) 돌아가는 걸음을 넣었고, 연출 비평은 «도착한 뒤 다시 걸어간다» 고 했다 — 서로 어긋나는 세 판정 사이에서 요청 밖 편집이 남았다.
+- `story/events.ts`: 맵에 이미 서 있던 사람(이나 주인공)이 다른 사람 곁으로 다가서는 걷기는 짧아도 통과다(`WalkRecord.besideAlready`). 장면에만 나오는 사람은 전처럼 3걸음.
+- `judge/sceneCraft.ts`: 장면 뒤 그 사람이 제자리에서 3칸 안이면 자리 이탈이 아니다(`strayAfterScene` — 걸음과 다가서기 대상의 칸으로 어림, 가늠 못 하면 전처럼 잡는다).
+- 근거(탐침, starter 픽스처): 같은 `add_event` 한 번 → 전 `무대 검사 문제 1` + `off-post` 1건 → 후 둘 다 0, 미루의 저장 자리 (13,14) 그대로.
+
+||||||| e1d4dc675e
+## 쓰기 결과에는 도구의 알림이 가고, 옛 검사 줄은 안 간다 (2026-11-11, 작은 일 둘째 묶음 첫 측정)
+
+둘째 묶음 첫 측정(Terra, main e298f686e5 — 28/35)의 `item-new-built` 에서 모델은 `upsert_item` 을 같은 인자로 다섯 번 불렀다. 결과마다 실린 것은
+다른 이벤트의 런타임 지원 경고 8줄뿐이었고, 도구가 남긴 「scope 가 ally 라 … 탈출 로프는 scope none 이 맞습니다」(차가 탈출 로프로 저장되고 있다는 알림)는 한 줄도 가지 않았다.
+
+**원인(구조).** 편집기 도구 러너(`toolRunner.ts`)는 쓰기 도구의 알림을 `diff.warnings` 에 담고, `issues` 에는 **프로젝트 전체 검사**를 담는다.
+모델에게 결과를 옮기는 층(`piAgent/toolAdapter.ts` `formatPiToolSuccess`)은 `result.warnings` 와 `issues` 앞 8건만 실었다. 그래서
+- 편집기 도구(v2 동사가 아닌 것 — `upsert_item` · `move_event` · `patch_event_page` · `create_transfer_pair` · `set_shop_stock` …)가 쓴 알림은 모델에게 가지 않았고,
+- 경고가 8줄 넘게 쌓인 프로젝트(지어진 게임이면 늘 그렇다)에서는 어떤 쓰기든 같은 8줄이 결과를 채웠다.
+
+**고친 것(`writeResultForModel`, 모델에게 가는 글만 — 러너 결과·편집기 화면은 그대로).**
+- `diff.warnings` 를 `warnings` 로 싣는다(12줄까지, 넘으면 남은 수).
+- `issues` 는 이 변경 전에 없던 줄만. 전 상태의 검사는 프로젝트 객체마다 한 번 재고(`WeakMap`), 쓰기 결과가 다음 호출의 «전» 이 된다.
+  글이 같은 줄의 수가 늘지 않았으면 자리만 바뀐 옛 줄로 본다(이벤트를 옮기면 그 이벤트의 경고가 좌표만 바뀌어 다시 나왔다).
+- 알림과 글이 같은 줄(장면 다듬기 줄은 양쪽에 있었다)은 알림으로 한 번만.
+
+**근거(모델 없는 탐침, 지어진 픽스처에서 네 번 쓰기).** 결과 글 11,600자 → 4,522자. `move_event` 2,040자 → 153자(옛 경고 8줄이 빠짐),
+`upsert_item` 3,187자 → 1,379자에 「scope …」 알림이 처음으로 실림, `create_transfer_pair` 에 「출입구 A 위치 자동 조정: (10,1) → (11,3)」 이 처음으로 실림.
+
+||||||| f476f14e6d
 ## 문 앞 칸은 길을 막지 않는다 — 집 문 여섯 가운데 하나가 맨바닥에 서던 일 (2026-11-11)
 
 `test/villageSummaryListsDoors.test.ts` 가 CI 에서 실행마다 갈렸다(씨앗 없이 마을을 짓는다). 모델 없는 탐침으로 같은 순서를 되풀이하니
