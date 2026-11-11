@@ -95,7 +95,7 @@ const READ_ONLY_TILE = new Set([
   "suggest_group_from_range", "list_structure_kits",
 ]);
 const READ_ONLY_EVENT = new Set([
-  "find_events", "get_event", "find_switch_usage", "find_flag_usage", "explain_event",
+  "find_events", "get_event", "find_switch_usage", "find_flag_usage", "explain_event", "read_event_run_log",
   "list_npc_graphics", "get_story_state", "list_puzzle_presets",
 ]);
 const READ_ONLY_VILLAGE = new Set([
