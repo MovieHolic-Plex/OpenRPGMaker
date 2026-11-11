@@ -1,6 +1,7 @@
 // 자동 연결(장소 잇기)의 이동 칸을 어디에 둘까 — 문 그림 없는 맵 가장자리·방 가운데에 투명 이동 칸이 생기던 것(2026-10-28 스위트
 // standin magic: 별빛 마법학교 (29,4) 방 위쪽 바닥 ↔ 관측실)을 고친다. 순서(모두 시작점·착지점에서 걸어 닿는 칸만):
 //  1) 아직 아무 데도 이어지지 않은 건물 입구 — 칩셋의 건물 키트가 문이라고 적어 둔 칸(place/entrances.ts)의 문 앞 칸 + doorAt.
+//     건너편이 방일 때만(buildingDoor) — 바깥 맵끼리는 집 문으로 잇지 않는다: 집에 들어갔는데 다른 바깥 맵으로 나오면 맨바닥 이동 칸보다 나쁘다.
 //  2) 위·아래층 장소(…층·탑·지하·관측실·다락)면 계단 그림 칸.
 //  3) 바깥 맵이면 맵 가장자리에 닿는 길 끝 칸.
 // 하나도 못 찾으면 undefined — 부르는 쪽이 걸어 닿는 칸에 이동 칸을 둔다. 문 그림을 지어내 깔지 않는다:
@@ -10,6 +11,7 @@ import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { reachableCells } from "../judge/eventReach";
 import { buildingEntrances } from "./entrances";
+import { kitOf } from "./exitDress";
 import { roadCellSet, tileLabel } from "./cells";
 import type { BuildRun, Side } from "../shared/types";
 import { pickDungeonGateSpot } from "@/editor/tools/dungeonLinkTools";
@@ -67,8 +69,25 @@ export function dungeonGateSpot(project: Project, map: GameMap, side: Side): Tra
   return at ? { x: at.x, y: at.y, note: `던전 문 자리 ${at.why}(${at.x},${at.y})` } : undefined;
 }
 
+/** 이 맵이 방이라고 적혀 있나 — 실내 기후이거나 그 칩셋 방 키트의 천장 띠가 깔려 있다. */
+const isRoomMap = (project: Project, map: GameMap): boolean =>
+  (map as unknown as { climate?: { mode?: string } }).climate?.mode === "indoor" || !!kitOf(project, map);
+
+interface TransferSpotOptions {
+  readonly side: Side;
+  readonly vertical?: boolean;
+  readonly outdoor?: boolean;
+  /** 건너편 맵의 이름 — 위·아래층 장소인지, 방인지를 읽는다. */
+  readonly otherName?: string;
+  /**
+   * 건물 입구(집 문)를 자리로 써도 되는가. 건너편이 방(실내)이면 true, 바깥 맵이면 false 를 준다.
+   * 안 주면 건너편 맵(otherName)이 방이라고 적혀 있을 때만 쓴다 — 모르면 쓰지 않는다(바깥 맵끼리 집 문으로 잇지 않는다).
+   */
+  readonly buildingDoor?: boolean;
+}
+
 /** 자동 연결 이동 칸 자리 — 맵은 바꾸지 않는다. */
-export function pickTransferSpot(run: BuildRun, mapId: string, opts: { side: Side; vertical?: boolean; outdoor?: boolean; otherName?: string }): TransferSpot | undefined {
+export function pickTransferSpot(run: BuildRun, mapId: string, opts: TransferSpotOptions): TransferSpot | undefined {
   const project = run.ctx.project;
   const map = project.maps[mapId];
   if (!map) return undefined;
@@ -77,8 +96,10 @@ export function pickTransferSpot(run: BuildRun, mapId: string, opts: { side: Sid
   const w = map.width;
   const vertical = opts.vertical ?? VERTICAL_PLACE.test(opts.otherName ?? "");
   const rank = <T extends Cell>(cs: readonly T[]): T[] => [...cs].sort((a, b) => sideScore(map, a, opts.side) - sideScore(map, b, opts.side) || a.y - b.y || a.x - b.x);
-  // 1) 비어 있는 건물 입구.
-  for (const e of rank(buildingEntrances(project, map))) {
+  const other = opts.otherName ? Object.values(project.maps).find((m) => m.id !== mapId && m.name === opts.otherName) : undefined;
+  const buildingDoor = opts.buildingDoor ?? (!!other && isRoomMap(project, other));
+  // 1) 비어 있는 건물 입구 — 건너편이 방일 때만.
+  for (const e of buildingDoor ? rank(buildingEntrances(project, map)) : []) {
     if (!reach[e.front.y * w + e.front.x] || occupiedNear(map, e, 1) || occupiedNear(map, e.front, 0)) continue;
     return { x: e.front.x, y: e.front.y, doorAt: { x: e.x, y: e.y }, note: `건물 입구 「${e.kit}」(${e.x},${e.y})` };
   }

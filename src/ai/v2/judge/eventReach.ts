@@ -142,30 +142,6 @@ function doorArtAt(project: Project, map: GameMap): (x: number, y: number) => bo
   });
 }
 
-/**
- * 이 문 그림 칸이 걸어서 지나는 문(성문·아치·목책 문)의 한 칸인가 — 이어진 문 그림 덩어리의 테두리 상자 안에 걸을 수 있는 칸이 있으면 그렇다.
- * 여러 칸짜리 성문은 기둥 칸까지 이름표가 「성문(아치 통로)」 라 문 그림으로 잡힌다. 그 기둥은 집 문이 아니다 — 사람이 그 사이로 지나간다.
- * (2026-11-11 눈가림 플레이: 궁전 성문 기둥 여덟 칸에 「문이 굳게 잠겨 있다」 가 서서 플레이어가 궁전에 들어가지 않았다.)
- */
-export function isWalkThroughDoorArt(project: Project, map: GameMap, cell: Cell): boolean {
-  const hit = doorArtAt(project, map);
-  if (!hit(cell.x, cell.y)) return false;
-  const seen = new Set<number>([cell.y * map.width + cell.x]);
-  const queue: Cell[] = [cell];
-  let x0 = cell.x, x1 = cell.x, y0 = cell.y, y1 = cell.y;
-  while (queue.length) {
-    const c = queue.pop()!;
-    x0 = Math.min(x0, c.x); x1 = Math.max(x1, c.x); y0 = Math.min(y0, c.y); y1 = Math.max(y1, c.y);
-    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
-      const nx = c.x + dx, ny = c.y + dy, key = ny * map.width + nx;
-      if (seen.has(key) || !hit(nx, ny)) continue;
-      seen.add(key); queue.push({ x: nx, y: ny });
-    }
-  }
-  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (isPassable(project, map, x, y)) return true;
-  return false;
-}
-
 export function doorArtCells(project: Project, map: GameMap): Cell[] {
   const hit = doorArtAt(project, map);
   const out: Cell[] = [];
