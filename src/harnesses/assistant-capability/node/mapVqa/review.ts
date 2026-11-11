@@ -4,7 +4,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { askJudge, mapLimit, newUsage, pixelSha, usageLine, VISUAL_JUDGE, type JudgeUsage } from '../visualJudge';
-import { loadCorpus, type MapItem } from './corpus';
+import { layJobsOf, loadCorpus, type MapItem } from './corpus';
 import { factsText, mapFacts, type MapFacts } from './facts';
 import { cleanPicture, detailPictures, FACTS_LEGEND, factsPicture, markedPicture } from './pictures';
 import { writeMapVqaPage } from './page';
@@ -57,7 +57,7 @@ export async function runMapVqa(options: MapVqaOptions): Promise<number> {
     }
   });
   const calibration = calibrationOf(reviewer.version);
-  const tally = buildTally(results, { corpus: options.corpus, generatedAt: new Date().toISOString(), calibration: calibration ? { status: calibration.status, missRate: calibration.missRate, falseAlarmRate: calibration.falseAlarmRate, planted: calibration.planted, good: calibration.good } : { status: 'uncalibrated' },
+  const tally = buildTally(results, { corpus: options.corpus, generatedAt: new Date().toISOString(), layJobs: layJobsOf(options.corpus), calibration: calibration ? { status: calibration.status, missRate: calibration.missRate, falseAlarmRate: calibration.falseAlarmRate, planted: calibration.planted, good: calibration.good } : { status: 'uncalibrated' },
     judgeUsage: { calls: usage.calls, cached: usage.cached, failures: usage.failures, inputTokens: usage.inputTokens + usage.cacheReadTokens + usage.cacheWriteTokens, outputTokens: usage.outputTokens } }, reviewer);
   writeFileSync(resolve(options.out, 'tally.json'), JSON.stringify(tally, null, 2));
   const before = options.before ? JSON.parse(readFileSync(resolve(options.before), 'utf8')) : null;
