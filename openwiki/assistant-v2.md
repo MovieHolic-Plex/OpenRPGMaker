@@ -324,10 +324,12 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 - `add_event`: 걷는 사람·나타나는 사람 없이 내레이션만 나오는 조사·읽기(`when` 이 게임 시작이 아니고 `after` 없음)는 무대를 싣지 않는다 — 연출 비평을 부르지 않고 «컷신 고치기» 할 일도 열지 않는다. 결과 글도 「컷신」 이 아니라 「조사 글」 이다.
 - 자리 낱말과 함께 온 `at (0,0)` 은 채움으로 보고 낱말로 푼다(`place/where.ts` — 사람·사건·물건 그리기가 모두 이 함수를 쓴다). 낱말 없이 `at` 만 주면 그 칸이다.
 - 물건 이름 별칭에 표지판·팻말·이정표·안내판, 비석·묘비.
+- 주제 `chest`(상자·줍기)를 `examine` 앞에 둔다 — 줍기 요청은 «조사하면» 도 말하는데, 처음 싣는 도구 수 상한(19)에서 `place_chest` 가 조사 도구 셋에 밀려 빠졌다(이 PR 의 첫 CI 에서 드러남).
+- 회상 스토리 QA(`src/qa/gameCheck/story.ts`)의 투명 메멘토 글은 이름과 id 를 같이 적는다(조사 이벤트에 이름이 생겼다).
 
 근거(모델 없는 탐침): 지은 게임 판에서 `place_examine_hotspots{on:"벽난로", at:{0,0}}` 한 번 → (8,3) 벽난로 칸, 작은 일 판정기 `textSpot` 통과. 시작 판에서 `stamp_object`(이정표) → `{on:"표지판"}` → 통과.
 없는 물건은 실패. `resolveWhere("벽난로 앞", at (0,0))` = 낱말만 준 것과 같은 칸 (8,4). `buildEvent`: 내레이션 한 줄·밟으면 내레이션은 무대 없음, 사람이 말하거나 걷는 장면은 무대 있음.
-golden: 153 가운데 117 이 `place_examine_hotspots` 글/스키마(81 은 그것만, 33 은 조사 카드 글 +152자), 표지판 요청 3줄은 처음 싣는 도구에 `place_examine_hotspots` 가 들고 `fill_region` 이 필요할 때로 물러남.
+golden: 153 가운데 117 이 `place_examine_hotspots` 글/스키마(81 은 그것만, 33 은 조사 카드 글 +23자), 표지판 요청 3줄은 처음 싣는 도구에 `place_examine_hotspots` 가 들고 `fill_region` 이 필요할 때로 물러남.
 시험 `test/aiV2ExamineSpots.test.ts`.
 
 ## 바닥에 놓인 물건은 `place_chest` 의 `look:"item"` — 줍는 물건 (2026-11-11, 작은 일 재측정)
