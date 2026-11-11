@@ -5,6 +5,7 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import { PERSON_SPOT_BAD, personSpotContext, personSpotCost } from "./personSpot";
 import { objectAt, tileLabel } from "./cells";
 import { objectBaseLabel, objectClusterAt } from "@/project/objectFootprint";
+import type { ArtGap } from "../shared/artGap";
 import type { BuildRun } from "../shared/types";
 import { Cell, DIRS, eventBlocks, anchorsOf, reachFrom, blockersOf, bodyReached, nextTo, reachableCells, unreachableEvents, isDoorName, doorArtCells, baseLabel, hostWords, itemTileWords, objectCells, singleTileObject, invisibleEvent } from "../judge/eventReach";
 
@@ -16,11 +17,13 @@ export interface ReachRepair { readonly moved: string[]; readonly stuck: string[
  *  2) 이름이 가리키는 물건(책상·책장·벽난로·금고·그림·서랍·상자…)이 맵에 있으면 그 물건 칸 위로 — 앞(아래)에 설 칸이 있는 칸이 먼저.
  *  3) 그래도 막혔거나 길목을 막으면 가까운 닿는 빈 바닥으로(물건 옆 우선).
  *  4) 맞는 물건이 없고 그림 없는 이벤트면 그 명사의 1칸 물건 그림을 칩셋에서 골라 이벤트 칸에 깐다.
+ *     칩셋에 그 낱말의 1칸 그림이 없으면 깔지 않고 noArt 에 적는다(비슷한 그림을 대신 고르지 않는다).
  * 다른 이벤트(목록 밖 포함)를 못 닿게 만드는 자리는 고르지 않는다.
  */
-export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonly string[], hostsFor?: ReadonlyMap<string, readonly (readonly string[])[]>): ReachRepair {
+export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonly string[], hostsFor?: ReadonlyMap<string, readonly (readonly string[])[]>): ReachRepair & { readonly noArt: ArtGap[] } {
   const moved: string[] = [];
   const stuck: string[] = [];
+  const noArt = new Map<string, ArtGap>();
   // 두 바퀴 — 앞 이벤트가 옮겨 가야 뒤 이벤트의 물건 앞이 열리기도 한다(deepseek: 책장 앞 일기장이 벽난로 앞 구석을 막았다).
   for (const pass of [0, 1]) for (const id of eventIds) {
     if (pass === 1) stuck.length = 0;
@@ -114,11 +117,12 @@ export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonl
           (copy.upperTiles as number[])[now.y * copy.width + now.x] = art.tile;
           run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: copy } } as Project;
           moved.push(`${name || id} (${now.x},${now.y})에 「${art.label}」 그림`);
-        }
+          noArt.delete(id);
+        } else noArt.set(id, { tilesetId: cellMap.tilesetId, want: `prop: ${words[0]}`, label: `「${name || id}」 의 ${words[0]} 그림(1칸)`, mapId, x: now.x, y: now.y });
       }
     }
   }
-  return { moved, stuck };
+  return { moved, stuck, noArt: [...noArt.values()] };
 }
 
 // ── 이동 칸 앞 비우기 ─────────────────────────────────────────────────────────────

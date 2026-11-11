@@ -12,6 +12,7 @@ import { isDoorName, reachableCells, unreachableEvents } from "../judge/eventRea
 import { isMysteryBlueprint, isProgressWord, resolveSteps } from "./mysteryCaseRead";
 import { resolveGraphic } from "@/editor/tools/eventCompile";
 import { chestOpenCommands, chestOpenedGraphic } from "@/editor/lootFeedback";
+import type { ArtGap } from "../shared/artGap";
 import type { BuildRun } from "../shared/types";
 
 const ALTAR = "kit:beodeul_city/bd-pick-castle-catacombs-altar-stone";
@@ -26,11 +27,12 @@ const upperAt = (map: GameMap, x: number, y: number) => {
   return ["upperTiles", "upperOverlayTiles"].some((k) => (m[k]?.[y * map.width + x] ?? -1) >= 0);
 };
 
-export function dressBareSealSteps(run: BuildRun, mapId: string): string[] {
+/** gaps: 제단 조각이 없는 칩셋(버들항 바깥 맵이 아닌 곳)에서 그림 없이 남은 봉인 칸을 여기에 적는다 — 말없이 지나가지 않는다. */
+export function dressBareSealSteps(run: BuildRun, mapId: string, gaps?: ArtGap[]): string[] {
   const project0 = run.ctx.project;
   const map0 = project0.maps[mapId];
-  if (!project0.gameBlueprint || !map0 || map0.tilesetId !== "beodeul_city") return [];
-  if ((map0 as unknown as { climate?: { mode?: string } }).climate?.mode === "indoor") return [];
+  if (!project0.gameBlueprint || !map0) return [];
+  const hasAltar = map0.tilesetId === "beodeul_city" && (map0 as unknown as { climate?: { mode?: string } }).climate?.mode !== "indoor";
   const notes: string[] = [];
   for (const r of resolveSteps(project0)) {
     if (r.map.id !== mapId) continue;
@@ -38,6 +40,7 @@ export function dressBareSealSteps(run: BuildRun, mapId: string): string[] {
     const map = project.maps[mapId]!;
     const ev = map.events.find((e) => e.id === r.ev.id);
     if (!ev || !SEAL.test(`${ev.name ?? ""} ${r.step.event}`) || !allTransparent(ev) || upperAt(map, ev.x, ev.y)) continue;
+    if (!hasAltar) { gaps?.push({ tilesetId: map.tilesetId, want: "altar/seal", label: `「${ev.name ?? ev.id}」 봉인·제단 그림`, mapId, x: ev.x, y: ev.y }); continue; }
     const before = new Set(unreachableEvents(project, mapId));
     const others = new Set(map.events.filter((e) => e.id !== ev.id).map((e) => e.y * map.width + e.x));
     const cands: { tx: number; ty: number; at: { x: number; y: number }; d: number }[] = [];

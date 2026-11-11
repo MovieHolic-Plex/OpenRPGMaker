@@ -13,6 +13,7 @@ import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { reachableCells, unreachableEvents } from "../judge/eventReach";
 import { placementProblems } from "./placementRules";
+import type { ArtGap } from "../shared/artGap";
 import type { BuildRun } from "../shared/types";
 
 type Cell = { x: number; y: number };
@@ -60,11 +61,20 @@ function twinLanding(project: Project, map: GameMap, twin: GameEvent): Cell | un
     .find((c) => c.x >= 0 && c.y >= 0 && c.x < map.width && c.y < map.height && !!reach?.[c.y * map.width + c.x]);
 }
 
-export function dressBareCaveGates(run: BuildRun, mapId: string): string[] {
+/** gaps: 굴 입구 조각(갱구)은 버들항 것뿐이다 — 다른 칩셋의 맨땅 던전 출입구는 여기에 적고 그대로 둔다. */
+export function dressBareCaveGates(run: BuildRun, mapId: string, gaps?: ArtGap[]): string[] {
   const notes: string[] = [];
   const map0 = run.ctx.project.maps[mapId];
-  if (!map0 || map0.tilesetId !== "beodeul_city") return notes;
+  if (!map0) return notes;
   const bare = placementProblems(run.ctx.project, map0).filter((p) => p.kind === "door-bare");
+  if (map0.tilesetId !== "beodeul_city") {
+    for (const p of bare) {
+      const ev = map0.events.find((e) => e.id === p.eventId);
+      const destId = ev ? destOf(ev, mapId) : undefined;
+      gaps?.push({ tilesetId: map0.tilesetId, want: "cave mouth", label: `「→ ${run.ctx.project.maps[destId ?? ""]?.name ?? destId ?? p.eventId}」 던전 출입구의 굴 입구 그림`, mapId, x: p.at.x, y: p.at.y });
+    }
+    return notes;
+  }
   for (const problem of bare) {
     const project0 = run.ctx.project;
     const map = project0.maps[mapId]!;
