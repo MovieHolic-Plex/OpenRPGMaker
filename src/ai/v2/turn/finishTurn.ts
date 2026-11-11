@@ -5,8 +5,8 @@ import { buildsWholeGame } from "../request/readers";
 import { todoReport } from "../judge/finalReport";
 import { vqaSummary } from "../judge/vqa";
 import { vqaLedgerLines, vqaUnofferedBlockers } from "./vqaItems";
-import { countMaps, RECOMMENDED_MAPS } from "../mapCount";
-import { countQuests, RECOMMENDED_QUESTS } from "../questCount";
+import { countMaps, RECOMMENDED_MAPS } from "../judge/mapCount";
+import { countQuests, RECOMMENDED_QUESTS } from "../judge/questCount";
 import type { TurnContext } from "./context";
 import type { turnRecheck } from "./recheck";
 

@@ -30,7 +30,7 @@ export interface WallsLayoutFields {
 export interface WallsRoomOut { id: string; x: number; y: number; w: number; h: number; cells: number; floor: string; purpose?: string; role?: string; landmark?: string; stairs?: string }
 
 import { spaceChecks } from "./interiorSpace";
-import { cellFrontNote, floorChecks, isPrisonCell, requiredCheck, varietyNotes, type RequiredEntry, type RequiredResult } from "../interiorRoomChecks";
+import { cellFrontNote, floorChecks, isPrisonCell, requiredCheck, varietyNotes, type RequiredEntry, type RequiredResult } from "../judge/interiorRoomChecks";
 
 const DOOR_PIECES = new Set(["locked door", "iron gate", "iron gate open"]);
 const WINDOW = /window|stained glass/u;

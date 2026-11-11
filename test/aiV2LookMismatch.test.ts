@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { lookMismatches, pristineFantasyHero, titleBackdropMismatch } from "@/ai/v2/lookChecks";
+import { lookMismatches, pristineFantasyHero, titleBackdropMismatch } from "@/ai/v2/judge/lookChecks";
 import { applyStorySetupDefaults } from "@/ai/v2/genreDefaults";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { findNpcGraphicMatches } from "@/assets/charsetQuery";

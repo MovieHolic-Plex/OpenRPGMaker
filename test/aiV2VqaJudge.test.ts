@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { TodoStore } from "@/ai/v2/loop/todoStore";
-import { editorDefaultsLeft } from "@/ai/v2/shipChecks";
+import { editorDefaultsLeft } from "@/ai/v2/judge/shipChecks";
 import { closeVqaUnchanged, noteVqaRound, vqaLedgerLines, vqaUnofferedBlockers, type VqaFinding } from "@/ai/v2/turn/vqaItems";
 import { reviewVqaRound, vqaClassify, vqaDefectLine, vqaFixCall, vqaSameDefect, vqaShotPlan, type VqaDefect, type VqaRound } from "@/ai/v2/judge/vqa";
 

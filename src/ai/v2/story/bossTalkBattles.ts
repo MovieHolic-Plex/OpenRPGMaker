@@ -19,7 +19,7 @@
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import type { BuildRun } from "../types";
 import { isPassable } from "@/project/collision";
-import { reachableCells } from "../eventReach";
+import { reachableCells } from "../judge/eventReach";
 
 type Obj = Record<string, unknown>;
 const nameOf = (ev: GameEvent) => String((ev as { name?: string }).name ?? "").trim();

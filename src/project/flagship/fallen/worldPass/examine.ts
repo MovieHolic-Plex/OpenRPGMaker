@@ -4,7 +4,7 @@
  * (대사 다듬기는 fs2-dialogue-r2 가 맡는다). 그 칸에 이미 이벤트가 있거나 걸을 수 있는 칸이면 굽기를 멈춘다.
  * 좌표는 굽기 산출물(play.json)의 tileMeta 라벨 + isPassable 로 고른 칸이다(world-round2.md 표).
  */
-import { anchorsOf, blockersOf, bodyReached, reachFrom } from "@/ai/v2/eventReach";
+import { anchorsOf, blockersOf, bodyReached, reachFrom } from "@/ai/v2/judge/eventReach";
 import { isPassable } from "@/project/collision";
 import { objectClusterAt } from "@/project/objectFootprint";
 import type { Project } from "@/project/types";

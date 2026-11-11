@@ -9,7 +9,7 @@ import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder
 import { measureInteriorBareFloor } from "@/editor/handInterior/bareFloor";
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
-import { runMachineChecks } from "../../checks";
+import { runMachineChecks } from "../../judge/machineChecks";
 import { findPart, roomSetsFor } from "./interior";
 import { handObjectKitId } from "./dressRoom";
 import type { BuildRun, PlaceBuildResult, PlaceSpec } from "../../types";

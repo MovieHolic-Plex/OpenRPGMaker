@@ -4,7 +4,7 @@
 // 기본 이름(주인공)·기본 얼굴·기본 음악이 그대로 남았고(공포 저택 1턴·시타마치), 엔딩은 대사 한 줄이었다.
 // 기준은 빈 프로젝트(createBlankProject) 자체다 — 그 값과 같으면 «아무도 고르지 않은» 기본값이다.
 // 순수 함수(프로젝트만 읽는다). 끝맺음 관문(v2GateProblems)이 출하 차단으로, 조언자가 막는 항목(shipBlockers)으로 같이 부른다.
-import { bossTalkWithoutBattle } from "./story/bossTalkBattles";
+import { bossTalkWithoutBattle } from "../story/bossTalkBattles";
 import { reloadProblem } from "./reloadCheck";
 import { chaserMapsWithoutHiding } from "@/project/chaserHiding";
 import { createBlankProject } from "@/project/defaults";
@@ -13,28 +13,28 @@ import { ROMANCE_TITLE_BACKGROUNDS, isRomanceTitleTarget } from "@/project/roman
 import type { Project } from "@/project/types";
 import { isBlankCanvasMap } from "@/project/tilesetBaseline";
 import { findOpeningStillMood } from "@/assets/openingStillMoods";
-import { unreachableCriticalEvents } from "./judge/puzzleChecks";
+import { unreachableCriticalEvents } from "./puzzleChecks";
 import { withoutIntentNote } from "@/ai/piAgent/monsterGameRequest";
 import { tileAt } from "@/project/collision";
 import { gameHasCombat } from "@/project/combatPresence";
 import { hiddenStairExits } from "@/project/stairs/fit";
 import { unlitDarkFinding } from "@/qa/gameCheck/visualVoid";
 import { romanceCompletionGaps } from "@/qa/gameCheck/romance";
-import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, repeatedDayDialogue, lingeringHeavyTints } from "./judge/discoverability";
+import { invisibleStoryEvents, objectiveGaps, offArtEntrances, doorCellBlocked, repeatedDayDialogue, lingeringHeavyTints } from "./discoverability";
 import { fieldMenu } from "@/project/fieldMenu";
-import { FACTORY_HERO_ARMS } from "./genreDefaults";
-import { strayStepCopies, walkBlueprint } from "./blueprint";
+import { FACTORY_HERO_ARMS } from "../genreDefaults";
+import { strayStepCopies, walkBlueprint } from "../blueprint";
 import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS, planLinks } from "./mapCount";
-import { MAX_SAME_KIND, worldOf } from "./world";
+import { MAX_SAME_KIND, worldOf } from "../world";
 import { MIN_ACT_DEPTH, progressionDepth } from "./actDepth";
 import { countQuests, MIN_COUNTED_QUESTS } from "./questCount";
 import { assemblyTimeMismatches, blankMap, blueprintStoryText } from "@/project/blueprintAssembly";
 import { openingMapViewMapId } from "@/project/openingMapView";
-import { battleSites, encounterMaps, healingSources, repeatableHealingSources } from "./judge/combatChecks";
+import { battleSites, encounterMaps, healingSources, repeatableHealingSources } from "./combatChecks";
 import { projectScriptMentionsCmdKind } from "@/project/script/effects";
-import { SINGLE_PLACE, ONE_ROOM_GAME } from "./request/scope";
-import { buildsWholeGame, oneProjectGame } from "./request/readers";
-import { requestedTitle } from "./request/title";
+import { SINGLE_PLACE, ONE_ROOM_GAME } from "../request/scope";
+import { buildsWholeGame, oneProjectGame } from "../request/readers";
+import { requestedTitle } from "../request/title";
 
 type Obj = Record<string, unknown>;
 interface ShipBlocker { readonly id: string; readonly message: string; readonly evidence: string }
