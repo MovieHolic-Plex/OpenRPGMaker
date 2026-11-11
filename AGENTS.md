@@ -147,6 +147,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - 조수 v2 (기본 꺼짐 — 모델은 명세만, 결정론 빌더가 짓고 독립 비평가가 1배 그림을 본다; `?assistant=v2`, v1 비교 결과): `openwiki/assistant-v2.md`
    - **조수 v2 리팩토링 진행 중 (2026-11-11~)** — `src/ai/v2` 를 고치기 전에 읽는다. 목표 폴더 구조, 규칙 일곱(요청 낱말 목록·새 관문·감싸개를 더하지 않는다 등), 진행표, 옮기는 PR 검증법(`golden.mts`): `openwiki/assistant-v2-refactor.md`
+   - 조수 v2 · JRPG 가 아닌 게임의 장치 (추리·연애·공포·농장·몬스터 수집·퍼즐·액션·경제·여러 엔딩·생존 — 장치마다 런타임·도구·v2 노출·작은 일 판정 재고 표, 빈틈 U/W/N/R, 셋째 묶음 `--set 3`, 청사진 고리 설계 제안): `openwiki/assistant-v2-genre-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
    - 코딩 에이전트의 스토어 제출 (`npm run -s store`, 에이전트 토큰·확인 대기·검사 목록): `openwiki/store-agent-contribution.md`
