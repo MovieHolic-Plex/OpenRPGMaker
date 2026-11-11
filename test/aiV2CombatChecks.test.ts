@@ -4,6 +4,11 @@ import { combatProblems, healingSources, stepsPerEncounter, weakPaidSkills } fro
 import { withEncountersOnlyWhenAsked } from "@/ai/v2/game";
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { Project } from "@/project/types";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const weakPaidLines = (...args: Parameters<typeof weakPaidSkills>): string[] => weakPaidSkills(...args).map(findingLine);
+const combatLines = (...args: Parameters<typeof combatProblems>): string[] => combatProblems(...args).map(findingLine);
 
 const WHOLE = "견습 기사가 세 가지 시험을 통과해 기사가 되는 RPG 만들어 줘. 서임식이 엔딩.";
 
@@ -22,7 +27,7 @@ describe("v2 combat finish checks (J55 no healing, J4 first-area attrition)", ()
   it("blocks a battle game with no way to recover HP, and clears once an inn exists", () => {
     const { before, after } = battleGame();
     expect(healingSources(after)).toEqual([]);
-    const blocked = combatProblems(before, after, WHOLE);
+    const blocked = combatLines(before, after, WHOLE);
     expect(blocked.some((p) => p.startsWith("[출하 차단 no-healing]"))).toBe(true);
 
     after.maps[after.startMapId]!.events.push({
@@ -30,7 +35,7 @@ describe("v2 combat finish checks (J55 no healing, J4 first-area attrition)", ()
       pages: [{ ...structuredClone(after.maps[after.startMapId]!.events[0]!.pages[0]!), commands: [{ kind: "recoverAll" }] }],
     } as never);
     expect(healingSources(after).length).toBeGreaterThan(0);
-    expect(combatProblems(before, after, WHOLE).some((p) => p.includes("no-healing"))).toBe(false);
+    expect(combatLines(before, after, WHOLE).some((p) => p.includes("no-healing"))).toBe(false);
   });
 
   it("flags random encounters the request never asked for, not ones it did", () => {
@@ -38,13 +43,13 @@ describe("v2 combat finish checks (J55 no healing, J4 first-area attrition)", ()
     const map = after.maps[after.startMapId]!;
     map.encounterTable = [{ troopId: "troop_slime", weight: 1 }];
     map.encounterRate = 25;
-    expect(combatProblems(before, after, WHOLE).some((p) => p.startsWith("[게임 검사 조우]"))).toBe(true);
-    expect(combatProblems(before, after, `${WHOLE} 숲에서는 랜덤으로 몬스터가 나와.`).some((p) => p.startsWith("[게임 검사 조우]"))).toBe(false);
+    expect(combatLines(before, after, WHOLE).some((p) => p.startsWith("[게임 검사 조우]"))).toBe(true);
+    expect(combatLines(before, after, `${WHOLE} 숲에서는 랜덤으로 몬스터가 나와.`).some((p) => p.startsWith("[게임 검사 조우]"))).toBe(false);
   });
 
   it("leaves small non-combat edits alone", () => {
     const { after } = battleGame();
-    expect(combatProblems(after, structuredClone(after), "촌장 대사를 바꿔 줘")).toEqual([]);
+    expect(combatLines(after, structuredClone(after), "촌장 대사를 바꿔 줘")).toEqual([]);
   });
 
   it("set_encounter_table defaults to off when the request has no encounter words", async () => {
@@ -70,8 +75,8 @@ describe("v2 combat finish checks (J55 no healing, J4 first-area attrition)", ()
     const p = createBlankProject() as Project;
     const hero = p.database.actors.find((a) => a.id === "actor_hero")!;
     hero.learnedSkills = [...hero.learnedSkills, { level: 1, skillId: "skill_sword_slash" }, { level: 1, skillId: "skill_hero_cross_slash" }];
-    expect(weakPaidSkills(p)).toEqual([]);
+    expect(weakPaidLines(p)).toEqual([]);
     p.database.skills.find((s) => s.id === "skill_hero_cross_slash")!.power = 62;
-    expect(weakPaidSkills(p).some((m) => m.includes("skill_hero_cross_slash"))).toBe(true);
+    expect(weakPaidLines(p).some((m) => m.includes("skill_hero_cross_slash"))).toBe(true);
   });
 });

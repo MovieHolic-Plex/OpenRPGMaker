@@ -211,3 +211,19 @@ export function changedRecordsJson(before: Project, after: Project): string {
   }
   return JSON.stringify(out);
 }
+
+/** 주제별 게임 검사가 같이 읽는 것 — 한 번만 계산한다: 실행이 바꾼 이벤트, 그 명령(쪽·갈래와 함께), 명령 종류. */
+export interface GameCheck {
+  readonly before: Project;
+  readonly after: Project;
+  readonly task: string;
+  readonly changed: readonly EventRef[];
+  readonly cmds: readonly ({ ev: EventRef } & ReturnType<typeof allCommands>[number])[];
+  readonly kinds: ReadonlySet<string>;
+}
+
+export function gameCheck(before: Project, after: Project, task: string): GameCheck {
+  const changed = changedEvents(before, after);
+  const cmds = changed.flatMap((ev) => allCommands(ev).map((row) => ({ ev, ...row })));
+  return { before, after, task, changed, cmds, kinds: new Set(cmds.map((r) => String(r.cmd.kind))) };
+}

@@ -3,6 +3,10 @@ import { describe, expect, it } from "vitest";
 import { endingSummaryText, splitScriptSpeaker } from "@/project/endingSummary";
 import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { createBlankProject } from "@/project/defaults";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const gameLines = (...args: Parameters<typeof gameContentProblems>): string[] => gameContentProblems(...args).map(findingLine);
 
 const TOY_SHOP_EPILOGUE = [
   { kind: "letterbox", show: true },
@@ -38,8 +42,8 @@ describe("엔딩 카드 요약", () => {
     const before = createBlankProject();
     const after = structuredClone(before);
     after.endings = [{ id: "ending_a", name: "끝", conditions: [], priority: 0, epilogue: [{ kind: "say", text: "노장인 제페토: 잘 가게." }] }];
-    expect(gameContentProblems(before, after, "엔딩 고쳐 줘").some((p) => p.includes("에필로그 대사 본문이 「이름:」"))).toBe(true);
+    expect(gameLines(before, after, "엔딩 고쳐 줘").some((p) => p.includes("에필로그 대사 본문이 「이름:」"))).toBe(true);
     after.endings = [{ id: "ending_a", name: "끝", conditions: [], priority: 0, epilogue: [{ kind: "say", speaker: "노장인 제페토", text: "잘 가게." }] }];
-    expect(gameContentProblems(before, after, "엔딩 고쳐 줘").some((p) => p.includes("에필로그 대사 본문이 「이름:」"))).toBe(false);
+    expect(gameLines(before, after, "엔딩 고쳐 줘").some((p) => p.includes("에필로그 대사 본문이 「이름:」"))).toBe(false);
   });
 });

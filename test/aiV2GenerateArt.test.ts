@@ -5,6 +5,10 @@ import { mapViewArtProblems } from "@/ai/v2/judge/finishGate";
 import { V2Session } from "@/ai/v2/turn/session";
 import { checkImageDataUrl } from "@/ai/v2/judge/imageCheck";
 import type { Project } from "@/project/types";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const mapViewArtLines = (...args: Parameters<typeof mapViewArtProblems>): string[] => mapViewArtProblems(...args).map(findingLine);
 
 // 오너 2026-11-09: 타이틀·엔딩 그림이 게임 속 맵 화면(map-view)이면, 그림 생성이 가능한 실행은 generate_art 를 먼저 시도해야 한다.
 // 시도가 오류/불가로 기록되면 그 실패가 증거라 맵 화면을 받아 준다. 이 시험은 그 «기록이 문을 연다» 와 동사가 실제로 그림을 거는 것을 단언한다.
@@ -23,30 +27,30 @@ function mapViewGame(): Project {
 
 describe("map-view title/ending needs a generation attempt first", () => {
   it("blocks a map-view title and ending when generation is available and nothing was tried", () => {
-    const out = mapViewArtProblems(mapViewGame(), new V2Session(), true, WHOLE);
+    const out = mapViewArtLines(mapViewGame(), new V2Session(), true, WHOLE);
     expect(out.length).toBe(2);
     expect(out.join("\n")).toContain("art-generation");
   });
   it("does not block when generation is not available in the run", () => {
-    expect(mapViewArtProblems(mapViewGame(), new V2Session(), false, WHOLE)).toEqual([]);
+    expect(mapViewArtLines(mapViewGame(), new V2Session(), false, WHOLE)).toEqual([]);
   });
   it("a recorded failure opens the gate; a recorded success on a still-map-view picture does not", () => {
     const failed = new V2Session();
     failed.artAttempts.set("title", { status: "failed", error: "provider 503", failures: 2 });
     failed.artAttempts.set("ending", { status: "unavailable" });
-    expect(mapViewArtProblems(mapViewGame(), failed, true, WHOLE)).toEqual([]);
+    expect(mapViewArtLines(mapViewGame(), failed, true, WHOLE)).toEqual([]);
     const ok = new V2Session();
     ok.artAttempts.set("title", { status: "ok" });
-    expect(mapViewArtProblems(mapViewGame(), ok, true, WHOLE).length).toBeGreaterThan(0);
+    expect(mapViewArtLines(mapViewGame(), ok, true, WHOLE).length).toBeGreaterThan(0);
   });
   it("one transient failure does not open the gate; it takes two failures on the same target", () => {
     const once = new V2Session();
     once.artAttempts.set("title", { status: "failed", error: "provider 503", failures: 1 });
-    expect(mapViewArtProblems(mapViewGame(), once, true, WHOLE).some((t) => t.includes("타이틀"))).toBe(true);
+    expect(mapViewArtLines(mapViewGame(), once, true, WHOLE).some((t) => t.includes("타이틀"))).toBe(true);
   });
   it("ignores requests that are not building a whole game", () => {
     const p = mapViewGame(); p.gameBlueprint = undefined;
-    expect(mapViewArtProblems(p, new V2Session(), true, "이 마을에 우물을 놓아 줘")).toEqual([]);
+    expect(mapViewArtLines(p, new V2Session(), true, "이 마을에 우물을 놓아 줘")).toEqual([]);
   });
 });
 
@@ -88,7 +92,7 @@ describe("generate_art verb", () => {
     expect(bg).toMatch(/^gen-title-/);
     expect(JSON.stringify(env.ctx.project.assets ?? env.ctx.project)).toContain(bg!);
     expect(session.artAttempts.get("title")).toMatchObject({ status: "ok" });
-    expect(mapViewArtProblems(env.ctx.project, session, true, WHOLE).filter((t) => t.includes("타이틀"))).toEqual([]);
+    expect(mapViewArtLines(env.ctx.project, session, true, WHOLE).filter((t) => t.includes("타이틀"))).toEqual([]);
   });
 });
 
@@ -130,7 +134,7 @@ describe("generate_art verb with an undecodable picture", () => {
     expect(project.system.titleScreen?.backgroundResourceId).toBe(`map-view:${project.startMapId}`);
     expect(session.artAttempts.get("title")?.status).toBe("failed");
     expect(session.artAttempts.get("title")?.failures).toBe(1);
-    expect(mapViewArtProblems(project, session, true, WHOLE).some((x) => x.includes("타이틀"))).toBe(true);
+    expect(mapViewArtLines(project, session, true, WHOLE).some((x) => x.includes("타이틀"))).toBe(true);
   });
   it("registers a complete JPEG and opens the gate for the title", async () => {
     const project = mapViewGame(); const session = new V2Session();
