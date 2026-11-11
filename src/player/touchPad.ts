@@ -56,16 +56,13 @@ export function stickDeadzone(radius: number | undefined, holding: boolean): num
 }
 
 /**
- * 조이스틱을 판 반지름의 70% 넘게 밀면 달리고, 60% 밑으로 돌아오면 다시 걷는다(2026-10-25 — 따로 달리기 단추 대신).
- * 크로노 트리거 모바일(판 끝까지 밀면 달리기)·아날로그 스틱 관례와 같다. 「항상 달리기」 옵션이 켜져 있으면 늘 달린다.
+ * 달리기 = A 를 누르고 있는 동안(2026-11-11, 오너 「모바일 조작감이 너무 안좋아 … A 를 누르고 있으면 달리게」).
+ * 전에는 조이스틱을 판 반지름 70% 밖으로 밀면 달렸다(크로노 트리거 모바일식). 엄지는 판 가장자리까지 가는 것이 보통이라 걸으려 해도 달렸고,
+ * 경계에서 걷기·달리기가 오갔다 — 그 방식은 원작 이식판에서도 불평이 많았다. 누른 채 달리기는 포켓몬(B)·GBA RPG 의 관례이고 이 판에서는
+ * B 가 취소·메뉴라 A 에 둔다. A 를 누르는 순간의 확인(말 걸기·조사)은 그대로다. 「항상 달리기」 옵션이 켜져 있으면 늘 달리므로 A 는 확인만 한다.
  */
-export const STICK_RUN_ENTER = 0.7;
-const STICK_RUN_EXIT = 0.6;
-
-/** 이 밀림(중심에서 px)이면 달리는가. radius 는 판 반지름(px). wasRunning 으로 경계 떨림을 막는다. */
-export function stickRuns(distance: number, radius: number, wasRunning: boolean): boolean {
-  if (!(radius > 0)) return false;
-  return distance >= radius * (wasRunning ? STICK_RUN_EXIT : STICK_RUN_ENTER);
+export function padRuns(aHeld: boolean, alwaysRun: boolean): boolean {
+  return aHeld && !alwaysRun;
 }
 
 function angleGap(a: number, b: number): number {
@@ -168,6 +165,10 @@ function menuLabel(): string {
   return localized("메뉴", "メニュー", "菜单", "Menu");
 }
 
+function holdRunLabel(): string {
+  return localized("꾹: 달리기", "長押し: ダッシュ", "长按: 奔跑", "hold: run");
+}
+
 function runLabel(): string {
   return localized("달리기", "ダッシュ", "奔跑", "Run");
 }
@@ -241,8 +242,21 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
   };
   const releaseDirectionKeys = (): void => {
     for (const key of DIRECTION_KEYS) setKeyHeld(key, false);
-    setKeyHeld(RUN_KEY, false);
     directionRepeat.clear();
+    syncRun();
+  };
+  // A 를 누르고 있는 동안 달리기 키(Shift)를 쥔다. 달리는 중(방향도 쥐고 있을 때)에는 손잡이가 강조색이 된다(zone[data-run]).
+  let runHeld = false;
+  let runZone: HTMLElement | null = null;
+  const syncRun = (): void => {
+    const runs = padRuns(runHeld, playerAlwaysRun());
+    if (runs !== heldKeys.has(RUN_KEY)) {
+      if (runs) haptic(6);
+      setKeyHeld(RUN_KEY, runs);
+    }
+    if (!runZone) return;
+    if (runs && DIRECTION_KEYS.some((key) => heldKeys.has(key))) runZone.dataset.run = "true";
+    else delete runZone.dataset.run;
   };
 
   // 스틱을 누르고 있는 동안 방향키를 키보드 반복처럼 다시 보낸다. 손을 가만히 두면
@@ -307,15 +321,7 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
     const held = stickSectorKeys(sector);
     for (const key of DIRECTION_KEYS) if (!held.includes(key)) setKeyHeld(key, false);
     for (const key of held) setKeyHeld(key, true);
-    // 끝까지 밀면 달린다(Shift 를 누른 것과 같다). 「항상 달리기」면 Shift 가 걷기로 뒤집으니 보내지 않는다.
-    const radius = Math.min(base.offsetWidth, base.offsetHeight) / 2;
-    const runs = sector !== null && !playerAlwaysRun() && stickRuns(distance, radius, heldKeys.has(RUN_KEY));
-    if (runs !== heldKeys.has(RUN_KEY)) {
-      if (runs) haptic(6);
-      setKeyHeld(RUN_KEY, runs);
-    }
-    if (runs) zone.dataset.run = "true";
-    else delete zone.dataset.run;
+    syncRun();
     // 이번 샘플이 반복 타이머를 켠다. 첫 샘플은 엣지 keydown 직후라 반복을 만들지 않는다.
     // 드래그 중에도 여기서 보낸다 — 프레임 펌프만 보면 pointermove 가 타이머를 먹어 반복이 사라진다.
     const heldDirections = DIRECTION_KEYS.filter((key) => heldKeys.has(key));
@@ -339,6 +345,8 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
     dataset: { testid: "touch-stick-zone" },
     children: [dpad],
   });
+  runZone = zone;
+
 
   const placeBase = (clientX: number, clientY: number): void => {
     const zoneRect = zone.getBoundingClientRect();
@@ -420,7 +428,7 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
 
   // ── 확인/취소 버튼(우하단) ──
   const releaseActionPointers: Array<() => void> = [];
-  const makeActionButton = (label: string, key: string, testid: string): HTMLElement => {
+  const makeActionButton = (label: string, key: string, testid: string, onHold?: (held: boolean) => void): HTMLElement => {
     const btn = el("button", {
       class: "touch-action-btn",
       text: label,
@@ -436,6 +444,7 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
       }
       btn.classList.remove("active");
       setKeyHeld(key, false);
+      onHold?.(false);
     };
     const press = (event: PointerEvent): void => {
       if (pointerId !== null) return;
@@ -445,6 +454,7 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
       btn.classList.add("active");
       haptic(10);
       setKeyHeld(key, true);
+      onHold?.(true);
     };
     const release = (event: PointerEvent): void => {
       if (pointerId !== event.pointerId) return;
@@ -456,6 +466,7 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
       pointerId = null;
       btn.classList.remove("active");
       setKeyHeld(key, false);
+      onHold?.(false);
     };
     btn.addEventListener("pointerdown", press, listenerOptions);
     btn.addEventListener("pointerup", release, listenerOptions);
@@ -468,7 +479,10 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
     return btn;
   };
 
-  const actionA = makeActionButton("A", "Enter", "touch-action-a");
+  const actionA = makeActionButton("A", "Enter", "touch-action-a", (held) => { runHeld = held; syncRun(); });
+  // A 밑의 작은 글 — 누른 채 달리기는 화면에 적혀 있어야 찾는다. 「항상 달리기」 가 켜져 있으면 숨긴다(누를 까닭이 없다).
+  const holdRunHint = el("span", { class: "touch-action-sub", text: holdRunLabel(), attrs: { "aria-hidden": "true" } });
+  actionA.append(holdRunHint);
   const actionB = makeActionButton("B", "Escape", "touch-action-b");
   const actions = el("div", {
     class: "touch-actions",
@@ -486,18 +500,20 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
     attrs: { type: "button", "aria-label": runLabel() },
     dataset: { testid: "touch-run" },
   });
-  const syncRun = (): void => {
+  const syncRunToggle = (): void => {
     const on = getPlayerPreferences().alwaysRun === true;
     runButton.setAttribute("aria-pressed", on ? "true" : "false");
     runButton.classList.toggle("on", on);
+    holdRunHint.hidden = on;
+    syncRun();
   };
-  syncRun();
-  window.addEventListener("oprn:player-preferences", syncRun, listenerOptions);
+  syncRunToggle();
+  window.addEventListener("oprn:player-preferences", syncRunToggle, listenerOptions);
   runButton.addEventListener("pointerdown", (event) => {
     event.preventDefault();
     updatePlayerPreferences({ alwaysRun: getPlayerPreferences().alwaysRun !== true });
     haptic(10);
-    syncRun();
+    syncRunToggle();
   }, listenerOptions);
   const runVisible = settings().runButton;
   if (!runVisible) runButton.hidden = true;
