@@ -1,13 +1,13 @@
 // 저장 → 다시 읽기(reloadCheck) — 끝맺음의 맨 마지막 관문. 빌더가 넣은 이벤트의 빠진 필드는 메우고, 그래도 안 열리면 그 필드를 조수에게 알린다(출하 검사도 project-reload-failed 로 막는다).
 import type { FinishStage } from "../types";
-import { wantsWholeGame } from "../../request/readers";
+import { buildsWholeGame } from "../../request/readers";
 import { ensureReloadable } from "../../judge/reloadCheck";
 
 export const stage: FinishStage = {
   id: "reload-check", phase: "reload", order: 900,
   run(ctx) {
     const { env } = ctx;
-    if (!(env.ctx.project.gameBlueprint || wantsWholeGame(env.request.task))) return;
+    if (!(env.ctx.project.gameBlueprint || buildsWholeGame(env.ctx.project, env.request.task))) return;
     try {
       const reload = ensureReloadable(env.ctx.project);
       if (reload.project !== env.ctx.project) env.ctx.project = reload.project;
