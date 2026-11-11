@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { titleMismatch } from "@/ai/v2/shipChecks";
+import { titleMismatch } from "@/ai/v2/judge/shipChecks";
 import { requestedTitle } from "@/ai/v2/request/title";
 import { createBlankProject } from "@/project/defaults";
 

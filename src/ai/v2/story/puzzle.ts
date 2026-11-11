@@ -9,7 +9,7 @@ import { layerTileAt, setLayerTileAt, shadowAt, setShadowAt } from "@/project/ma
 import type { GameMap, Project } from "@/project/types";
 import { playerAnchors } from "@/editor/tools/transferReachability";
 import type { BuildRun, ContentBuildResult } from "../types";
-import { repairEventReach } from "../eventReach";
+import { repairEventReach } from "../judge/eventReach";
 import { dressInteriorExits } from "../place/exitDress";
 import { fixObjectSheetFacing, showExaminedThing } from "./examineArt";
 import { examineHint, settleExamineSpot } from "./examineSpot";

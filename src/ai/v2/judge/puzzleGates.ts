@@ -13,7 +13,7 @@
 import { canMove } from "@/project/collision";
 import type { Command, Condition, GameEvent, GameMap, Project } from "@/project/types";
 import { anchorsOf, blockersOf, bodyReached, reachFrom } from "./eventReach";
-import type { BuildRun } from "./types";
+import type { BuildRun } from "../types";
 
 type Cell = { x: number; y: number };
 type Obj = Record<string, unknown>;

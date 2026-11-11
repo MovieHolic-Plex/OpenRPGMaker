@@ -17,7 +17,7 @@ import { createBlankProject } from "@/project/defaults";
 import { blueprintPlaceName, blueprintPremiseText } from "@/project/blueprintAssembly";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
-import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, emptySparkles, selfLoopTransfers, silentLockedExits, writtenStateIds } from "../shipChecks";
+import { defaultPlaceLeaks, editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, emptySparkles, selfLoopTransfers, silentLockedExits, writtenStateIds } from "../judge/shipChecks";
 import { strayStepCopies } from "../blueprint";
 import { doorCellBlocked, lateStartObjective, objectiveCommand, offArtEntrances, planObjective, repeatingStartObjectives, staleMilestoneTargets, withWhere } from "../judge/discoverability";
 import { normalizeGameOverSettings } from "@/project/cinematicSettings";

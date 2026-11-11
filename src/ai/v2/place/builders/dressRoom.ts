@@ -8,7 +8,7 @@
 import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
-import { startCell } from "../../checks";
+import { startCell } from "../../judge/machineChecks";
 import { terrainReachability } from "@/project/terrainReachability";
 import type { BuildRun } from "../../types";
 

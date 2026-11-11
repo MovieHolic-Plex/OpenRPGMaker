@@ -8,7 +8,7 @@
 // 되풀이 안전(같은 id). 새 그림은 그리지 않는다.
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap } from "@/project/types";
-import { doorArtCells, unreachableEvents } from "../eventReach";
+import { doorArtCells, unreachableEvents } from "../judge/eventReach";
 import type { BuildRun } from "../types";
 
 const LOCKED_DOOR_PREFIX = "ev_locked_door_";

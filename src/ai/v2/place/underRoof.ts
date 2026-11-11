@@ -12,7 +12,7 @@ import { eventBodyRect } from "@/project/eventFootprintQuery";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { openStartCell } from "@/editor/tools/startOnBuiltMap";
 import { roadCutAt } from "@/editor/tools/roadCutGuard";
-import { reachableCells, unreachableEvents } from "../eventReach";
+import { reachableCells, unreachableEvents } from "../judge/eventReach";
 import type { BuildRun } from "../types";
 
 /** 주인공 위로 그려지는 윗층 그림이 덮은 칸인가. */

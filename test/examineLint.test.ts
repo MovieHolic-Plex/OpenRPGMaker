@@ -1,6 +1,6 @@
 // 조사 이벤트 검사(scene-examine-*) — 2026-11-04 폴른 스타 월드 정비의 망원경·사당·수레.
 import { describe, expect, it } from "vitest";
-import { lintExamineEvents } from "@/ai/v2/examineLint";
+import { lintExamineEvents } from "@/ai/v2/judge/examineLint";
 import { isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
 import { objectClusterAt } from "@/project/objectFootprint";

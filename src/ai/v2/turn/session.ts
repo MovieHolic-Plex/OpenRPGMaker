@@ -1,7 +1,7 @@
 // 한 실행(턴)의 v2 상태 — 동사·끝맺음 단계·판정자가 함께 읽고 쓴다. 턴이 시작될 때 새로 만든다(실행기 assistantV2Runtime.ts).
 // 2026-11-11 리팩토링 R2: verbs.ts 에서 떼어 냈다 — 끝맺음 단계·레인 35파일이 이 형 하나 때문에 verbs.ts 와 서로를 끌어오고 있었다.
 import type { CriticVerdict } from "@/ai/piAgent/featureReview";
-import type { MachineCheck } from "../checks";
+import type { MachineCheck } from "../judge/machineChecks";
 import { TodoLoop } from "../loop/continuation";
 import { HookStats } from "../loop/hookStats";
 import { TodoStore } from "../loop/todoStore";

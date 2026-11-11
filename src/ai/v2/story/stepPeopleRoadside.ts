@@ -7,7 +7,7 @@
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import type { BuildRun } from "../types";
 import { resolveSteps } from "./mysteryCase";
-import { reachableCells, unreachableEvents } from "../eventReach";
+import { reachableCells, unreachableEvents } from "../judge/eventReach";
 import { isRoadCell } from "../place/edgeExitRoads";
 
 const shown = (ev: GameEvent) => (ev.pages ?? []).some((p) => { const g = (p.graphic ?? {}) as { transparent?: boolean; sprite?: unknown; appearanceId?: unknown }; return g.transparent !== true && Boolean(g.sprite || g.appearanceId); });

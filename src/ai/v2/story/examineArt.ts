@@ -11,7 +11,7 @@ import { isPassable } from "@/project/collision";
 import type { GameMap } from "@/project/types";
 import { objectEventFit } from "../place/placementRules";
 import { access, handObjectKitId } from "../place/builders/dressRoom";
-import { unreachableEvents } from "../eventReach";
+import { unreachableEvents } from "../judge/eventReach";
 import { PERSON_SPOT_BAD, personSpotContext, personSpotCost } from "../place/personSpot";
 import type { BuildRun } from "../types";
 
