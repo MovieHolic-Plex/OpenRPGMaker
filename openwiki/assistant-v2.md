@@ -171,13 +171,12 @@ Terra 작은 일 `door-roundtrip-starter` — 「잿불 마을 동쪽 끝에서 
 
 증거(모델 없음, 하네스 `buildFixture` 그대로 — 35건 × 그 픽스처):
 
-| | 전 (main) | 후 |
-|---|---|---|
-| 게임 도구 묶음을 못 받은 일 | 5 | 0 |
-| 손 풀이 도구 37개 — 처음부터 | 19 (작은 일 넷째 PR 까지 얹은 트리) | 34 |
-| 나중에(`load_tools`) | 13 | 3 |
-| 닿지 않음 | 5 | 0 |
-| 처음 싣는 수가 20을 넘는 일 | 0 | 0 (최대 19, `todo` 포함) |
+| | main (178f70ffa7) | 「있는 맵 둘 잇기」까지 | 후 |
+|---|---|---|---|
+| 손 풀이 도구 37개 — 처음부터 | 16 | 19 | 34 |
+| 나중에(`load_tools`) | 11 | 13 | 3 |
+| 닿지 않음 | 10 | 5 | 0 |
+| 처음 싣는 수가 20을 넘는 일(`todo` 포함) | 3 | 0 | 0 (최대 19) |
 
 아직 나중에 싣는 셋은 v2 에 다른 길이 처음부터 실려 있다: `random-encounter-starter` 의 `set_map_properties`(→ `set_encounter_table`), `enter-once-text-built`·`walk-up-greet-starter` 의 `script_cutscene`(→ `add_event`).
 시험 `test/aiV2SmallJobReach.test.ts` 가 35건의 «닿는다 · 20개 안» 과 열다섯 건의 «처음부터» 를 못박는다.
