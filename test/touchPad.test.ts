@@ -330,7 +330,8 @@ describe("touch pad capability and input parity", () => {
     }
     if (releaseType === "cleanup") handle.cleanup();
 
-    expect(trace.events).toEqual(["keydown:Enter", "keyup:Enter"]);
+    // A 는 확인(Enter)과 달리기(Shift)를 같이 쥔다 — 둘 다 풀려야 한다.
+    expect(trace.events).toEqual(["keydown:Enter", "keydown:Shift", "keyup:Enter", "keyup:Shift"]);
     expect(actionA.classList.contains("active")).toBe(false);
     expect(capture.release).toHaveBeenCalledWith(7);
     trace.cleanup();
@@ -354,6 +355,35 @@ describe("touch pad capability and input parity", () => {
 
     expect(trace.events).toEqual(["keydown:Escape", "keyup:Escape"]);
     trace.cleanup();
+  });
+
+  it("holding A holds the dash key; a far stick push alone does not run", async () => {
+    const { createTouchPad } = await loadTouchPad({ VITE_TOUCH_CONTROLS: "1" });
+    const host = document.createElement("div");
+    const handle = createTouchPad(host);
+    const base = host.querySelector<HTMLElement>(".touch-dpad-base");
+    const zone = host.querySelector<HTMLElement>("[data-testid='touch-stick-zone']");
+    const actionA = host.querySelector<HTMLElement>("[data-testid='touch-action-a']");
+    expect(base && zone && actionA).toBeTruthy();
+    if (!base || !zone || !actionA) return;
+    installPointerCapture(base);
+    installPointerCapture(actionA);
+    vi.spyOn(base, "getBoundingClientRect").mockReturnValue(new DOMRect(0, 0, 132, 132));
+    const trace = keyboardTrace();
+    // 판 끝까지 민다(전에는 여기서 달렸다) — 방향키만 나간다.
+    base.dispatchEvent(pointerEvent("pointerdown", { pointerId: 3, clientX: 131, clientY: 66 }));
+    expect(trace.events).toEqual(["keydown:ArrowRight"]);
+    expect(zone.dataset.run).toBeUndefined();
+    // A 를 누르면 확인(Enter)과 달리기(Shift)가 같이 눌리고, 떼면 같이 풀린다.
+    actionA.dispatchEvent(pointerEvent("pointerdown", { pointerId: 4 }));
+    expect(trace.events).toEqual(["keydown:ArrowRight", "keydown:Enter", "keydown:Shift"]);
+    expect(zone.dataset.run).toBe("true");
+    actionA.dispatchEvent(pointerEvent("pointerup", { pointerId: 4 }));
+    expect(trace.events.slice(3)).toEqual(["keyup:Enter", "keyup:Shift"]);
+    expect(zone.dataset.run).toBeUndefined();
+    expect(actionA.querySelector(".touch-action-sub")?.textContent).toBeTruthy();
+    trace.cleanup();
+    handle.cleanup();
   });
 
   it("repeats a held stick direction and does not repeat A", async () => {
@@ -387,7 +417,7 @@ describe("touch pad capability and input parity", () => {
 
       base.dispatchEvent(pointerEvent("pointerdown"));
       actionA.dispatchEvent(pointerEvent("pointerdown"));
-      expect(events.map((event) => `${event.key}:${event.repeat}`)).toEqual(["ArrowRight:false", "Enter:false"]);
+      expect(events.map((event) => `${event.key}:${event.repeat}`)).toEqual(["ArrowRight:false", "Enter:false", "Shift:false"]);
 
       const flush = (): void => {
         const callback = frames.shift();
@@ -404,6 +434,7 @@ describe("touch pad capability and input parity", () => {
       expect(events.map((event) => `${event.key}:${event.repeat}`)).toEqual([
         "ArrowRight:false",
         "Enter:false",
+        "Shift:false",
         "ArrowRight:true",
       ]);
 
