@@ -133,6 +133,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   find_events: inspect("이벤트 찾기"),
   get_event: inspect("이벤트 읽기"),
   explain_event: inspect("이벤트 설명", "question"),
+  read_event_run_log: inspect("실행 기록 읽기", "question"),
   tile_query: inspect("타일 보기", "grid"),
   query_tiles: inspect("타일 찾기", "grid"),
   get_tile_info: inspect("타일 정보", "grid"),

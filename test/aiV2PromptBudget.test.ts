@@ -40,18 +40,20 @@ const SMALL_JOBS: readonly (readonly [string, number])[] = [
   ["촌장한테 말 걸면 열쇠를 받게 해 줘", 15_000],
   ["슬라임 세 마리와 싸우는 전투 하나 넣어 줘", 15_000],
   ["게임 제목을 '별의 노래'로 바꿔 줘", 15_000],
-  ["광장 빈 곳에 나무랑 벤치 좀 놓아 줘", 12_000],
+  // 게임 낱말이 없는 작은 일도 게임 카드의 늘 싣는 줄(2,617자)을 받는다 — 이벤트 찾기·옮기기 도구와 함께(12,292자).
+  ["광장 빈 곳에 나무랑 벤치 좀 놓아 줘", 13_000],
   ["이 게임 뭐가 부족한지 알려 줘", 12_000],
 ];
 /** 작은 일에는 처음부터 싣지 않는 도구(필요할 때 싣는다). */
-const HEAVY = ["write_blueprint", "build_blueprint_path", "make_place", "edit_place", "review_layout", "set_project_settings", "set_opening", "edit_opening", "author_opening_stage", "create_opening_animatic_shot"];
+const HEAVY = ["write_blueprint", "build_blueprint_path", "make_place", "edit_place", "review_layout", "set_opening", "edit_opening", "author_opening_stage", "create_opening_animatic_shot"];
 
 describe("small jobs get a small prompt and a short tool list", () => {
   for (const state of ["blank", "oneEvent"] as const) {
     it.each(SMALL_JOBS.map(([task, max]) => [task, max] as const))(`${state} | %s ≤ %d chars`, (task, max) => {
       const shot = shoot(task, state);
       expect(shot.chars).toBeLessThanOrEqual(max);
-      expect(shot.upFront.length).toBeLessThanOrEqual(20);
+      // load_tools 포함 19개 — 실행기가 더하는 todo 한 자리까지 20개.
+      expect(shot.upFront.length).toBeLessThanOrEqual(19);
       expect(shot.toolChars).toBeLessThanOrEqual(40_000);
       expect(shot.upFront[0]).not.toBe("write_blueprint");
       for (const name of HEAVY) expect(shot.upFront).not.toContain(name);
@@ -97,6 +99,42 @@ describe("small jobs get a small prompt and a short tool list", () => {
     // 빈 프로젝트의 「계속」은 고칠 것이 없다 — 짓는 카드·도구를 그대로 싣는다.
     expect(classifyRequest("계속", project("blank"))).toMatchObject({ scope: "continue", editOnly: false });
     expect(classifyRequest("계속", project("oneEvent"))).toMatchObject({ scope: "continue", editOnly: true });
+  });
+
+  it("leaves out what small jobs never called and loads what they had to fetch (Terra small jobs, 2026-11-11)", () => {
+    const keeper = shoot("이 맵에 상점 주인 한 명 세워 줘.", "oneEvent").upFront;
+    for (const name of ["restore_event", "place_object", "remove_event", "move_object", "declare_story_flag"]) expect(keeper).not.toContain(name);
+    expect(shoot("촌장 옆에 있는 경비병을 지워 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["remove_event", "restore_event", "move_object"]));
+    expect(shoot("여기 보물상자 하나 놓고 포션 3개 넣어 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["find_empty_ground", "get_database_records"]));
+    expect(shoot("촌장한테 말 걸면 열쇠를 받게 해 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["upsert_item", "get_database_records"]));
+    // 게임 제목은 프로젝트 설정에 있다 — 제목을 말한 요청에만 싣는다.
+    expect(shoot("게임 제목을 '별의 노래'로 바꿔 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["set_title_screen", "set_project_settings"]));
+    expect(keeper).not.toContain("set_project_settings");
+    // 「주워 가게 해 줘」의 「가게」는 상점이 아니다.
+    expect(shoot("족장의 긴 집 바닥에 낡은 열쇠가 떨어져 있게 해 줘. 조사하면 주워 가게 해 줘", "oneEvent").upFront).not.toContain("set_shop_stock");
+    expect(shoot("광장에 가게 하나 차려서 포션을 사게 해 줘", "oneEvent").upFront).toContain("set_shop_stock");
+    // 물어야 풀리는 일(「내 이름」)의 ask_user 와 말한 음악의 도구는 글자 상한에 밀리지 않는다.
+    expect(shoot("엔딩 크레딧 음악 넣고 크레딧에 내 이름도 넣어 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["ask_user", "store_find_music", "set_game_audio"]));
+  });
+
+  it("a small job with no game word still finds and moves events; a place build and a sound-only job are unchanged", () => {
+    // 전에는 도구 6개(inspect·add_event·add_people·read_specs·ask_user·load_tools)뿐이었다 — 이벤트 찾기·옮기기 도구가 만들어지지도 않았다.
+    const line = shoot('촌장이 "배경 음악이 참 좋지?"라고 말하게 해 줘', "oneEvent");
+    expect(line.upFront).toEqual(expect.arrayContaining(["find_events", "get_event", "patch_event_page", "move_event", "upsert_event"]));
+    for (const ask of ["계속", "썸네일 그림 하나 골라 줘", "광장 빈 곳에 나무랑 벤치 좀 놓아 줘"]) {
+      const shot = shoot(ask, "oneEvent");
+      expect(shot.upFront, ask).toEqual(expect.arrayContaining(["find_events", "move_event"]));
+      expect(shot.lazy.has("remove_event"), ask).toBe(true);
+      expect(shot.upFront.length, ask).toBeLessThanOrEqual(19);
+    }
+    expect(classifyRequest("계속", project("oneEvent")).tools.game).toBe(true);
+    // 장소를 짓는 요청·빈 프로젝트의 «계속»·소리만 바라는 요청은 그대로다.
+    expect(classifyRequest("작은 마을 하나 만들어 줘", project("oneEvent")).tools.game).toBe(false);
+    expect(classifyRequest("계속", project("blank")).tools.game).toBe(false);
+    // 소리만 바라는 요청은 소리 묶음만 싣는다(«음악» 이 게임 낱말이어도 이벤트 도구를 내놓지 않는다).
+    const music = shoot("마을에 잔잔한 배경 음악 깔아 줘", "oneEvent");
+    expect(music.upFront).not.toContain("move_event");
+    expect(music.lazy.has("move_event")).toBe(false);
   });
 
   it("carries the people card for a new person and no event card for a bare move", () => {

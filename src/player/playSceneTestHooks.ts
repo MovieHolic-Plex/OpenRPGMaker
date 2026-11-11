@@ -22,6 +22,7 @@ import {
 } from "@/player/cloudShadows";
 import { inBounds, isPassable } from "@/project/collision";
 import { store } from "@/project/store";
+import { activeEventRunLog, installEventRunLog, type EventRunEffect } from "@/player/eventRunLog";
 import { monsterCurrentHp, monsterMaxHp } from "@/project/monsterCollection";
 import { terrainRecordAt } from "@/project/terrainAt";
 import { createSaveSnapshot, type SaveSnapshot } from "@/player/saveSlots";
@@ -321,9 +322,21 @@ export function installPlaySceneTestHooks(
     // 이것 없이는 setSwitch 로 켠 추격자 페이지가 화면에도 이동에도 나타나지 않았다(공포판 sw_0001, 2026-10-29 실측).
     if (op.kind !== "teleport") (scene as unknown as Partial<PlaySceneContext>).refreshRuntimeEntities?.();
   };
+  // 테스트 플레이 실행 기록(ED5 #1). 이 함수가 유일한 설치 문이다 — 내보낸 게임은 여기를 지나지 않는다.
+  const uninstallRunLog = installEventRunLog();
+  // 손 편집은 기록에 「debugHook」으로 남긴다 — 이벤트가 바꾼 값과 사람이 바꾼 값을 조수도 구분한다.
+  const markHandEdit = (effect: EventRunEffect): void => activeEventRunLog()?.markHandEdit(getSession().currentMapId, effect);
   w.__oprnDebug = {
-    setSwitch: (switchId, value) => applyAndSync({ kind: "setSwitch", switchId, value }),
-    setVariable: (variableId, value) => applyAndSync({ kind: "setVariable", variableId, value }),
+    setSwitch: (switchId, value) => {
+      const before = getSession().switches[switchId] === true;
+      applyAndSync({ kind: "setSwitch", switchId, value });
+      markHandEdit({ switchId, before, after: getSession().switches[switchId] === true });
+    },
+    setVariable: (variableId, value) => {
+      const before = getSession().variables[variableId] ?? 0;
+      applyAndSync({ kind: "setVariable", variableId, value });
+      markHandEdit({ variableId, before, after: getSession().variables[variableId] ?? 0 });
+    },
     giveItem: (itemId, amount) => applyAndSync({ kind: "giveItem", itemId, amount }),
     setGold: (amount) => applyAndSync({ kind: "setGold", amount }),
     heal: () => applyAndSync({ kind: "heal" }),
@@ -437,6 +450,7 @@ export function installPlaySceneTestHooks(
     // 관측 훅이 사라져 QA 가 TypeError 로 죽었다) — 내가 심은 훅일 때만 거둔다.
     if (w.__oprnHooksScene !== scene) return;
     proofController.abort();
+    uninstallRunLog();
     delete w.__oprnRunActionCombatProof;
     delete w.__oprnActionCombat;
     delete w.__oprnInput;

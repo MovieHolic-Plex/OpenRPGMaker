@@ -898,6 +898,19 @@ export function validateConditionShape(label: string, value: unknown): void {
       if (condition.requireFacing !== undefined) requireBoolean(`${label}.requireFacing`, condition.requireFacing);
       if (condition.hearRange !== undefined) requireNumber(`${label}.hearRange`, condition.hearRange);
       if (condition.value !== undefined) requireBoolean(`${label}.value`, condition.value);
+      if (condition.watchers !== undefined) {
+        const watchers = requireRecord(`${label}.watchers`, condition.watchers);
+        for (const key of ["characterId", "name", "locationId"] as const) {
+          if (watchers[key] !== undefined) requireString(`${label}.watchers.${key}`, watchers[key]);
+        }
+      }
+      if (condition.doorsBlock !== undefined) requireBoolean(`${label}.doorsBlock`, condition.doorsBlock);
+      if (condition.darkness !== undefined) {
+        const darkness = requireRecord(`${label}.darkness`, condition.darkness);
+        for (const key of ["night", "dark", "darkAmbient"] as const) {
+          if (darkness[key] !== undefined) requireNumber(`${label}.darkness.${key}`, darkness[key]);
+        }
+      }
       return;
     case "pursuitActive":
       if (condition.eventId !== undefined) requireString(`${label}.eventId`, condition.eventId);
