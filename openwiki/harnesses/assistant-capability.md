@@ -219,16 +219,19 @@ DeepSeek 추론 계열로 읽어 `low, high, max` 사다리와 `reasoning_conten
 
 - 묶음(데이터): `harness-data/assistant-capability/small-jobs.json` — 일마다 `id · family · fixture · request(비개발자가 치는 한국어) ·
   check(판정 종류 + 인자) · allow(요청이 요구하는 이동·이름 변경) · reference(손 정답 = 실제 도구 호출 순서) · wrong(그럴듯한 오답)`.
-- 코드: `src/harnesses/assistant-capability/node/smallJobs/` — `fixtures.ts`(시작 상태 셋) · `checks.ts`(판정) · `suite.ts`(읽기·정답 적용) ·
+- 코드: `src/harnesses/assistant-capability/node/smallJobs/` — `fixtures.ts`(시작 상태 셋) · `checks.ts`(첫 묶음의 판정 + damage + `runCheck`) ·
+  `checkSupport.ts`(문서 읽기·말 걸기 따라가기 `interact`·자리 판정) · `checksData.ts`/`checksPlay.ts`(둘째 묶음의 판정) · `suite.ts`(읽기·정답 적용) ·
   `selfcheck.ts` · `run.ts`(실행기) · `report.ts`(HTML) · `freezeFixture.ts`(픽스처 얼리기). 입구 `smallJobsEntry.ts`(bun).
+- **묶음은 둘이다.** `--set 1`(생략과 같다) = 이 절의 30가지(`small-jobs.json`), `--set 2` = 아래 「둘째 묶음」(`small-jobs-2.json`, 새 가족 35가지).
+  첫 묶음의 id·순서·판정은 기준선 비교의 기준이라 바꾸지 않는다. 실행 요약(`summary.json`)이 묶음 파일을 적어 두므로 보고서·재판정은 `--set` 없이 그 묶음을 읽는다.
 - 모델 고정: `--model terra-high` = `harness-data/assistant-capability/ai-configs/terra-high.json`(모든 역할을 `openai-compat:opencodex` 의
   `gpt-6.1-terra` high 로). 엔드포인트 주소·키는 저장소 밖 `OPRN_OPENAI_COMPAT_PATH`(없으면 `~/.oprn-suite/openai-compat-endpoints.json`)에서만
   읽는다. 다른 모델은 `ai-configs/` 에 파일을 더하고 그 이름을 준다.
 
 ```bash
 npm run -s build:fast && node scripts/build-electron.mjs                  # 편집기·호스트 빌드(워크트리면 VITE_CACHE_DIR 를 준다)
-npm run harness -- assistant-capability small-jobs-selfcheck [--out <폴더>] [--only id,가족]   # 모델 없음, 약 2분
-npm run harness -- assistant-capability small-jobs --model terra-high --v2 --out <새 폴더> [--only id,가족] [--skip-completed] [--timeout-min 10]
+npm run harness -- assistant-capability small-jobs-selfcheck [--set 2] [--out <폴더>] [--only id,가족]   # 모델 없음, 1~2분
+npm run harness -- assistant-capability small-jobs [--set 2] --model terra-high --v2 --out <새 폴더> [--only id,가족] [--skip-completed] [--timeout-min 10]
 npm run harness -- assistant-capability small-jobs-report --run <그 폴더> [--html <출력.html>]
 npm run harness -- assistant-capability small-jobs-rescore --run <그 폴더>   # 판정기만 고쳤을 때: 모델 없이 저장된 전/후 문서로 다시 판정
 ```
@@ -410,6 +413,97 @@ npm run harness -- assistant-capability small-jobs-rescore --run <그 폴더>   
 - 통과했지만 턴이 미완료인 것 3: `sign-starter` · `examine-fireplace-built`(조사 이벤트를 연출 비평이 인물 컷신으로 보고 「컷신 고치기」를 넣는다),
   `dress-trees-starter`(나무는 심었는데 그 전에 막힘 처리된 할 일이 남는다).
 - 예산 밖 1: `door-roundtrip-starter` 만 처음 실린 도구 48개 · 지시문 34,755자(나머지는 9~21개).
+
+### 둘째 묶음 — 새 가족 35가지 (`--set 2`, 2026-11-11)
+
+첫 30가지에 없는 일을 잰다: 게임을 만들다 보면 늘 나오는 자료집 수정·세이브 지점·파티·조건·선택지·맵 속성·한 번만 나오는 장면·의뢰·상점 물건.
+묶음 `harness-data/assistant-capability/small-jobs-2.json`(같은 모양 + `title`), 픽스처는 첫 묶음과 같은 셋(blank 4 · starter 15 · built 16).
+실모델 실행은 아직 없다(2026-11-11 — 묶음과 판정만 넣었다).
+
+```bash
+npm run harness -- assistant-capability small-jobs-selfcheck --set 2 --out <폴더>              # 35/35 sound 여야 한다(약 2분)
+npm run harness -- assistant-capability small-jobs --set 2 --model terra-high --v2 --out <새 폴더> [--only id,가족]
+npm run harness -- assistant-capability small-jobs-report --run <그 폴더> --html <출력.html>    # 묶음은 summary.json 에서 읽는다
+```
+
+| 가족 | 무엇 | 일 | 판정 종류 |
+|---|---|---|---|
+| save | 세이브·회복 지점 | 2 | `serviceSpot` |
+| itemdata | 아이템·장비 자료 | 3 | `recordFields` |
+| enemy | 적 자료·보스전 | 3 | `recordFields` · `bossFight` |
+| party | 주인공·파티 | 3 | `recordFields` · `startState` · `joinsParty` |
+| gate | 누구와 얘기한 뒤에만 | 2 | `talkGated` |
+| choice | 선택지 | 2 | `paidHeal` · `choiceBranches` |
+| behave | NPC 움직임 | 2 | `npcMovement` |
+| start | 시작 위치 | 2 | `startAt`(`allow.startPos`) |
+| screens | 타이틀·게임 오버 글자 | 2 | `projectField` |
+| mapprop | 맵 속성(날씨·어둠·저장·조우) | 4 | `mapWeather` · `mapDark` · `mapField` · `randomEncounter` |
+| tidy | 지우기·복제·일괄 바꾸기 | 3 | `eventRemoved` · `giveOnce`(첫 묶음의 것) · `textReplaced` |
+| sound | 타이틀·보스전 음악 | 2 | `projectField`(validMusic) · `battleMusic` |
+| cutscene | 들어서면 한 번 나오는 장면 | 2 | `onEnterOnce` |
+| questlog | 의뢰(퀘스트 목록) | 1 | `questFlow` |
+| stock | 상점 물건 넣고 빼기 | 2 | `shopStock` |
+
+판정은 첫 묶음과 같은 두 겹(outcome + damage)이고 도구 이름을 보지 않는다. 새로 생긴 것:
+
+- **갈림을 길마다 따라간다**(`playPaths`). 첫 묶음의 `interact` 는 선택지의 모든 갈래를 합쳤다(그대로다 — `picks` 를 주지 않으면 같은 동작).
+  「'예'를 고르면 10G 를 내고 회복, '아니오'면 그냥 끝」은 합치면 알 수 없어서, 선택지와 여관 질문(`inn` — 스스로 묻고 요금을 받고 회복한다)을
+  갈림으로 보고 모든 길을 한 번씩 밟는다. `paidHeal` 은 「정확히 그 값을 내고 회복되는 길 + 아무 일 없는 길」이 있고 「공짜 회복·돈만 받는 길」이 없는지,
+  `choiceBranches` 는 고른 글마다 그 대답만 나오는지 본다(「안 본다」는 「본다」가 아니다 — 고른 글에 든 가장 긴 이름표로 가른다).
+- **맵에 들어서 본다**(`entryRuns`). 자동·병렬 이벤트는 엔진에서 맵에 들어올 때마다 한 번 돈다(`fireAutoTriggers` — 같은 페이지는 그 방문에서 한 번).
+  그래서 「한 번만」은 셀프 스위치 같은 장치가 있어야 하고, 판정은 두 번 들어가 본다(`onEnterOnce` · `startState`). 날씨·어둠은 맵 속성(`climate` · `defaultLighting`)이든
+  들어설 때 켜는 명령(`setWeather` · `setLighting`)이든 받는다.
+- **자료집 기록은 이름으로 찾고 칸으로 본다**(`recordFields`). `expect`(값) · `scale`(전 값의 배수) · `keep`(그대로여야 하는 칸). 새 기록(`isNew`)은 전에 없던 id 여야 한다 —
+  있던 아이템의 이름을 바꾼 것은 새 아이템이 아니다. 쓰면 회복되는 약은 `type:"medicine"` + `hpRecovery`(엔진의 `itemUsage` 가 약에만 회복량을 준다).
+- **대화 순서**(`talkGated` · `questFlow`). 같은 상태로 사람들에게 차례로 말을 건다: 먼저 가면 옛 반응, 그 사람과 얘기한 뒤에 가면 새 반응. 의뢰는 퀘스트 목록(`project.quests`)에
+  새 제목이 있고 의뢰인 → 단계 대상 → 의뢰인 순서에서 보상이 정확히 한 번 나와야 한다.
+- **damage 의 예외 하나**: 시작 위치를 옮기는 일만 `allow.startPos`. 글 일괄 바꾸기(`anyEvent`)는 모든 이벤트가 대상이라 「다른 이벤트 내용 바뀜」을 세지 않는다.
+- 넣지 않은 것과 까닭: 「문을 열 때 효과음」(문 소리의 표현이 셋 — 이동 명령 앞 효과음, `transfer.door` 연출, 맵의 문 기록 `set_map_door` — 이라 결과 하나로 판정하기 어렵다),
+  「밤에는 집에 들어가 있게」(시간 시스템을 켜야 하는 `set_npc_schedule` — 한 문장 일이 아니다), 「왼쪽을 보고 서 있게」(걷기 칩은 프레임 `pattern` 과 `direction` 두 칸이 방향에 함께 관여해 저장 문서만으로 어느 쪽을 보는지 정하기 어렵다),
+  `script` 명령으로 쓴 논리(시뮬레이터가 따라가지 않는다 — 첫 묶음과 같은 한계).
+
+| # | id | 가족 | 픽스처 | 요청 | 판정(저장 문서) |
+|---|---|---|---|---|---|
+| 1 | `savepoint-blank` | save | blank | 이 맵에 세이브 포인트 하나 놓아 줘 | `serviceSpot` — 빈 맵/동쪽 들판의 새(보이는) 이벤트를 조사하면 저장 메뉴·체크포인트 — 두 번째에도 |
+| 2 | `heal-spring-built` | save | built | 겨울 시장에 회복의 샘을 하나 놓아 줘. 조사하면 파티 전원의 HP와 MP가 다 차게 해 줘 | `serviceSpot` — 겨울 시장의 새(보이는) 이벤트를 조사하면 파티 전원 회복 — 두 번째에도 |
+| 3 | `item-price-starter` | itemdata | starter | 회복약 가격을 80G로 바꿔 줘 | `recordFields` — 자료집 items 의 「회복약」: price=80 · 그대로: name, type, hpRecovery |
+| 4 | `item-new-built` | itemdata | built | '눈꽃 차'라는 새 아이템을 만들어 줘. 쓰면 HP를 50 회복하는 약이고, 가격은 30G로 해 줘 | `recordFields` — 자료집 items 의 새 「눈꽃 차」: price=30, type="medicine", hpRecovery.flat=50 |
+| 5 | `equip-attack-blank` | itemdata | blank | 철 검의 공격력을 12로 낮춰 줘 | `recordFields` — 자료집 equipment 의 「철 검」: statBonuses.attack=12 · 그대로: name, price, statBonuses.defense, statBonuses.agility |
+| 6 | `enemy-gold-starter` | enemy | starter | 슬라임을 쓰러뜨리면 15G를 얻게 해 줘 | `recordFields` — 자료집 enemies 의 「슬라임」: rewards.gold=15 · 그대로: name, stats, rewards.exp |
+| 7 | `enemy-hp-double-built` | enemy | built | 얼음의 파수꾼의 HP를 지금의 두 배로 늘려 줘 | `recordFields` — 자료집 enemies 의 「얼음의 파수꾼」: stats.maxHp = 전 값×2 · 그대로: name, stats.attack, stats.defense, rewards |
+| 8 | `boss-line-starter` | enemy | starter | 동쪽 들판에 보스로 돌 골렘을 세워 줘. 말을 걸면 "여기는 지나갈 수 없다."라고 말한 뒤에 전투가 시작되게 해 줘 | `bossFight` — 빈 맵/동쪽 들판의 새(보이는) 이벤트에 말을 걸면 「여기는 지나갈 수 없다」 뒤에 전투, 부대에 「돌 골렘」 |
+| 9 | `hero-rename-blank` | party | blank | 주인공 이름을 '리아'로 바꿔 줘 | `recordFields` — 자료집 actors 의 시작 파티 첫 배우: name="리아" · 그대로: classId, initialLevel |
+| 10 | `start-items-starter` | party | starter | 게임을 시작할 때 회복약 3개를 갖고 시작하게 해 줘 | `startState` — 새 게임의 시작 상태(또는 시작 맵의 자동 이벤트 한 번)로 회복약 정확히 3개 |
+| 11 | `join-party-starter` | party | starter | 파수꾼 데릭한테 말을 걸면 동료가 되어 파티에 들어오게 해 줘 | `joinsParty` — 그 사람에게 처음 말을 걸면 자료집에 있는(시작 파티가 아닌) 배우 하나가 파티에 더해진다(changeParty add) |
+| 12 | `gate-after-talk-starter` | gate | starter | 꼬마 미루와 먼저 얘기한 뒤에만 파수꾼 데릭이 "미루가 보냈구나. 지나가도 좋다."라고 말하게 해 줘. 그 전에는 지금 대사 그대로 둬 | `talkGated` — 먼저 말을 걸면 옛 대사 → 미루와 얘기한 뒤에는 「미루가 보냈구나. 지나가도 좋다」(미루의 원래 대사도 그대로) |
+| 13 | `shop-after-talk-built` | gate | built | 족장 이르마와 얘기하기 전에는 떠돌이 상인이 물건을 팔지 않게 해 줘. 그 전에 말을 걸면 "족장님부터 뵙고 오게."라고만 하게 해 줘 | `talkGated` — 먼저 말을 걸면 「족장님부터 뵙고 오게」만 나오고 상점이 안 열린다 → 이르마와 얘기한 뒤에는 상점이 열린다 |
+| 14 | `choice-pay-heal-starter` | choice | starter | 마을에 치유사 한 명 세워 줘. 말을 걸면 "10G에 치료해 줄까?" 하고 묻고, '예'를 고르면 10G를 내고 파티가 회복되게, '아니오'를 고르면 그냥 끝나게 해 줘 | `paidHeal` — 잿불 마을의 새 사람: 갈림(선택지·여관 질문)의 한 길은 정확히 10G 를 내고 전원 회복, 다른 길은 아무 일 없음. 공짜 회복·돈만 받는 길 없음 |
+| 15 | `choice-branches-built` | choice | built | 겨울 시장의 장터 주민한테 말을 걸면 "모피 좀 볼래요?"라고 묻고 '본다'와 '안 본다' 중에 고르게 해 줘. '본다'를 고르면 "잘 골랐어요!", '안 본다'를 고르면 "다음에 또 와요."라고 답하게 해 줘 | `choiceBranches` — 말을 걸면 「모피 좀 볼래요」를 묻고 '본다' → 「잘 골랐어요」 · '안 본다' → 「다음에 또 와요」(다른 갈래의 대답은 안 나온다) |
+| 16 | `npc-wander-starter` | behave | starter | 파수꾼 데릭이 가만히 서 있지 말고 주변을 돌아다니게 해 줘 | `npcMovement` — 처음 상태의 페이지가 제자리(fixed)가 아니다, 대사 그대로 |
+| 17 | `npc-still-starter` | behave | starter | 꼬마 미루가 돌아다니지 않고 제자리에 서 있게 해 줘 | `npcMovement` — 모든 페이지의 움직임이 제자리(fixed), 대사 그대로 |
+| 18 | `start-in-house-built` | start | built | 게임을 족장의 긴 집 안에서 시작하게 해 줘 | `startAt` — 시작 맵 = 족장의 긴 집, 걸을 수 있는 빈 칸 |
+| 19 | `start-near-npc-starter` | start | starter | 시작 위치를 여관 주인 마사 바로 앞으로 옮겨 줘 | `startAt` — 시작 맵 = 잿불 마을, 걸을 수 있는 빈 칸 · 마사에게서 1칸 안 |
+| 20 | `title-subtitle-built` | screens | built | 타이틀 화면의 부제를 '눈보라 속의 첫걸음'으로 바꿔 줘 | `projectField` — system.titleScreen.logoSubtitle = 「눈보라 속의 첫걸음」 |
+| 21 | `gameover-text-starter` | screens | starter | 게임 오버 화면에 "여기서 끝낼 수는 없다."라는 문구가 나오게 해 줘 | `projectField` — system.gameOver.message, system.gameOver.title 에 「여기서 끝낼 수는 없다」 |
+| 22 | `weather-rain-blank` | mapprop | blank | 이 맵에 비가 내리게 해 줘 | `mapWeather` — 빈 맵/동쪽 들판: 맵 기후가 rain 로 고정됐거나, 들어서면 저절로 도는 이벤트가 rain 를 켠다 |
+| 23 | `dark-cave-built` | mapprop | built | 얼음 동굴을 어둡게 해 줘 | `mapDark` — 얼음 동굴: 기본 조명(또는 들어설 때 켜는 조명)의 어둠 ≥ 0.3 |
+| 24 | `no-save-built` | mapprop | built | 서리 절벽에서는 저장을 못 하게 해 줘 | `mapField` — 서리 절벽.disableSave = true |
+| 25 | `random-encounter-starter` | mapprop | starter | 동쪽 들판을 걸어 다니면 가끔 슬라임이 튀어나와 전투가 벌어지게 해 줘 | `randomEncounter` — 빈 맵/동쪽 들판: 조우율 > 0, 나올 부대가 자료집에 있고 모든 적 이름에 「슬라임」 |
+| 26 | `remove-npc-built` | tidy | built | 겨울 시장의 시장 손님을 지워 줘 | `eventRemoved` — 그 이벤트가 없다(다른 삭제는 damage) |
+| 27 | `copy-chest-built` | tidy | built | 서리 절벽에 있는 보물상자와 똑같은 상자를 그 옆에 하나 더 놓아 줘 | `giveOnce` — 서리 절벽의 새(보이는) 이벤트가 처음에 정확히 500골드, 다시 열면 0 — 원래 상자에서 2칸 안 |
+| 28 | `replace-name-built` | tidy | built | 게임에 나오는 '이르마'라는 이름을 전부 '이르나'로 바꿔 줘 | `textReplaced` — 눈에 보이는 글(이벤트 이름·대사·선택지·안내·퀘스트)에 「이르마」가 없고 「이르나」가 그만큼 늘었다 |
+| 29 | `title-bgm-starter` | sound | starter | 타이틀 화면에 음악이 나오게 해 줘 | `projectField` — system.titleScreen.musicResourceId = 곡 목록에 있는 곡 |
+| 30 | `boss-bgm-built` | sound | built | 얼음 동굴에서 얼음의 파수꾼과 싸울 때는 보통 전투와 다른 음악이 나오게 해 줘 | `battleMusic` — 그 이벤트의 전투 바로 앞에서 전투 곡을 곡 목록의 다른 곡으로 바꾼다. 전투 상대·이긴 뒤 진행 그대로 |
+| 31 | `enter-once-text-built` | cutscene | built | 얼어붙은 호수에 처음 들어가면 "발밑의 얼음이 낮게 운다."라는 글이 나오게 해 줘. 한 번만 나오게 해 줘 | `onEnterOnce` — 얼어붙은 호수의 자동·병렬 이벤트가 처음에 「발밑의 얼음이 낮게 운다」, 다시 들어오면 안 나온다 |
+| 32 | `walk-up-greet-starter` | cutscene | starter | 게임을 시작하면 꼬마 미루가 주인공한테 걸어와서 "어서 와, 기다렸어!"라고 말하게 해 줘. 한 번만 나오게 해 줘 | `onEnterOnce` — 잿불 마을의 자동·병렬 이벤트가 처음에 「어서 와, 기다렸어」(미루를 움직인 뒤), 다시 들어오면 안 나온다 |
+| 33 | `quest-errand-starter` | questlog | starter | 꼬마 미루가 주는 의뢰를 하나 만들어 줘. 이름은 '약초 배달'이고, 여관 주인 마사에게 말을 걸면 할 일이 끝나. 그다음 미루에게 돌아가면 보상으로 50G를 받게 해 줘. 퀘스트 목록에도 뜨게 해 줘 | `questFlow` — 퀘스트 목록에 「약초 배달」 + 미루 → 마사 → 미루 순서로 말을 걸면 정확히 50G, 한 번만 |
+| 34 | `stock-add-built` | stock | built | 눈보라 마을의 떠돌이 상인이 '기록용 깃펜'도 팔게 해 줘. 지금 파는 물건은 그대로 두고 | `shopStock` — 파는 물건 = 전에 팔던 것 + 기록용 깃펜 |
+| 35 | `stock-remove-built` | stock | built | 눈보라 마을의 떠돌이 상인이 해독초는 더 이상 팔지 않게 해 줘 | `shopStock` — 파는 물건 = 전에 팔던 것 − 해독초 |
+
+자기검사 2026-11-11: 둘째 묶음 **35/35 sound**, 첫 묶음 30/30 sound. 첫 묶음의 판정이 그대로인 근거 — 같은 기준 커밋(`d4a4ae29f4`)의 자기검사 결과와
+일마다 판정 글(손대지 않음·손 정답·오답·파괴)이 30행 모두 같고, 실모델 실행 `after-84a7fa331a` 의 전/후 문서를 지금 코드로 재판정해 상태가 바뀐 일 0건(28/30 그대로).
+판정 부품을 `checkSupport.ts` 로 옮기면서 자기검사의 문서 사본이 타일셋 본문을 나눠 쓰게 했다(`cloneDoc` — 복제 1.4초 중 1.3초가 타일셋이었다. 도구 실행기는 원본 타일셋을
+제자리에서 고치지 않는다): 첫 묶음 자기검사 약 2분 → 1분. CI 는 `test/smallJobsSecondSet.test.ts` 가 같은 것(손대지 않으면 불합격 · 손 정답 합격 · 오답 불합격)을 일마다 본다.
 
 ## 시각 검수
 
