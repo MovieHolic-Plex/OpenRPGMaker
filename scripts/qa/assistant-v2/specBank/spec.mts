@@ -12,8 +12,9 @@ export interface SpecTurn {
 }
 /** 저장본의 맵 하나 요약 — 재생이 저장본을 얼마나 되살렸는지 재는 기준. tiles = 층 타일의 지문(이벤트 제외). */
 export interface RefMap { name: string; w: number; h: number; tileset: string; tiles: string; events: RefEvent[] }
-export interface RefEvent { cls: string; name: string; x: number; y: number; pages: number }
-export interface Reference { title: string; startMap: string; maps: RefMap[]; blueprint?: { title: string; setting?: string; places: number; steps: number }; quests: number; endings: number; troops: number; items: number }
+/** h = 이벤트 내용 지문(맵 id·uuid·무작위 꼬리를 가린 것) — 같은 칸에 같은 이름으로 섰을 뿐 아니라 쪽·명령까지 같은가. */
+export interface RefEvent { cls: string; name: string; x: number; y: number; pages: number; h: string }
+export interface Reference { title: string; startMap: string; maps: RefMap[]; blueprint?: { title: string; setting?: string; genre?: string; places: number; steps: number }; quests: number; endings: number; troops: number; items: number }
 export interface Spec {
   version: 1;
   id: string;
@@ -80,24 +81,32 @@ export function tilesPrint(map: Record<string, unknown>): string {
 }
 
 type AnyMap = Record<string, unknown> & { id: string; name?: string; width: number; height: number; tilesetId?: string; events?: { id: string; name?: string; x: number; y: number; pages?: unknown[] }[] };
-type AnyProject = { meta?: { title?: string }; startMapId: string; maps: Record<string, AnyMap>; gameBlueprint?: { title?: string; setting?: string; places?: unknown[]; steps?: unknown[] }; quests?: unknown[]; endings?: unknown[]; database?: { troops?: unknown[]; items?: unknown[] } };
+type AnyProject = { meta?: { title?: string }; startMapId: string; maps: Record<string, AnyMap>; gameBlueprint?: { title?: string; setting?: string; genre?: string; places?: unknown[]; steps?: unknown[] }; quests?: unknown[]; endings?: unknown[]; database?: { troops?: unknown[]; items?: unknown[] } };
+
+/** 판마다 달라지는 id(맵 id · uuid · 길목 이벤트의 무작위 꼬리 · 시각으로 지은 열쇠)를 가린다. */
+function maskIds(text: string, mapIds: readonly string[]): string {
+  let s = text;
+  for (const id of mapIds) s = s.split(id).join("<map>");
+  return s.replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gu, "<uuid>").replace(/ev_world_gate_[a-z0-9]+/gu, "ev_world_gate_<r>").replace(/v2(scene|gone)_\d+/gu, "v2$1_<t>").replace(/gen-(title|ending)-[a-z0-9]+/gu, "gen-$1-<t>");
+}
 
 /** 프로젝트 → 견줄 요약. 재생한 것과 저장본을 같은 함수로 줄인다. */
 export function referenceOf(project: unknown): Reference {
   const p = project as AnyProject;
+  const mapIds = Object.keys(p.maps);
   const maps = Object.values(p.maps).map((m) => ({
     name: m.name ?? m.id, w: m.width, h: m.height, tileset: m.tilesetId ?? "", tiles: tilesPrint(m),
-    events: (m.events ?? []).map((e) => ({ cls: eventClass(e.id, m.id), name: e.name ?? "", x: e.x, y: e.y, pages: (e.pages ?? []).length })),
+    events: (m.events ?? []).map((e) => ({ cls: eventClass(e.id, m.id), name: e.name ?? "", x: e.x, y: e.y, pages: (e.pages ?? []).length, h: sha(maskIds(JSON.stringify(e), mapIds), 10) })),
   }));
   const bp = p.gameBlueprint;
   return {
     title: p.meta?.title ?? "", startMap: p.maps[p.startMapId]?.name ?? p.startMapId, maps,
-    ...(bp ? { blueprint: { title: bp.title ?? "", ...(bp.setting ? { setting: bp.setting } : {}), places: (bp.places ?? []).length, steps: (bp.steps ?? []).length } } : {}),
+    ...(bp ? { blueprint: { title: bp.title ?? "", ...(bp.setting ? { setting: bp.setting } : {}), ...(bp.genre ? { genre: bp.genre } : {}), places: (bp.places ?? []).length, steps: (bp.steps ?? []).length } } : {}),
     quests: (p.quests ?? []).length, endings: (p.endings ?? []).length, troops: (p.database?.troops ?? []).length, items: (p.database?.items ?? []).length,
   };
 }
 
-export interface Trust { maps: { saved: number; replayed: number; named: number; sameSize: number; sameTiles: number }; events: { saved: number; replayed: number; matched: number; samePlace: number }; missingMaps: string[]; extraMaps: string[] }
+export interface Trust { maps: { saved: number; replayed: number; named: number; sameSize: number; sameTiles: number }; events: { saved: number; replayed: number; matched: number; samePlace: number; sameContent: number }; missingMaps: string[]; extraMaps: string[] }
 
 /**
  * 저장본 요약과 재생 요약을 견준다. 맵은 이름으로 짝짓고(크기·타일 지문), 이벤트는 같은 맵 안에서 갈래+이름으로 짝짓는다(같은 칸이면 samePlace).
@@ -105,7 +114,7 @@ export interface Trust { maps: { saved: number; replayed: number; named: number;
  */
 export function compareReference(saved: Reference, replayed: Reference): Trust {
   const byName = new Map(replayed.maps.map((m) => [nameKey(m.name), m]));
-  const t: Trust = { maps: { saved: saved.maps.length, replayed: replayed.maps.length, named: 0, sameSize: 0, sameTiles: 0 }, events: { saved: 0, replayed: replayed.maps.reduce((n, m) => n + m.events.length, 0), matched: 0, samePlace: 0 }, missingMaps: [], extraMaps: [] };
+  const t: Trust = { maps: { saved: saved.maps.length, replayed: replayed.maps.length, named: 0, sameSize: 0, sameTiles: 0 }, events: { saved: 0, replayed: replayed.maps.reduce((n, m) => n + m.events.length, 0), matched: 0, samePlace: 0, sameContent: 0 }, missingMaps: [], extraMaps: [] };
   const used = new Set<string>();
   for (const m of saved.maps) {
     t.events.saved += m.events.length;
@@ -123,6 +132,7 @@ export function compareReference(saved: Reference, replayed: Reference): Trust {
       hit.taken = true;
       t.events.matched += 1;
       if (same) t.events.samePlace += 1;
+      if (hit.h === e.h) t.events.sameContent += 1;
     }
   }
   t.extraMaps = replayed.maps.filter((m) => !used.has(nameKey(m.name))).map((m) => m.name);

@@ -23,7 +23,7 @@ const project = JSON.parse(fs.readFileSync(projectFile, "utf8")) as Project;
 const replay = fs.existsSync(path.join(dir, "replay.json")) ? JSON.parse(fs.readFileSync(path.join(dir, "replay.json"), "utf8")) as {
   id: string; kind?: string; request?: string; calls: { total: number; played: number; sameOutcome: number; writes: number; writesSame: number; needsOutside: string[]; unresolvedIds: string[] };
   turns: { verdictNow?: { complete: boolean; summary: string }; verdictWas?: { complete: boolean }; missingArt?: string[]; gateItems?: string[]; forced: number; error?: string }[];
-  trust?: { maps: { saved: number; sameTiles: number; named: number }; events: { saved: number; matched: number; samePlace: number } };
+  trust?: { maps: { saved: number; sameTiles: number; named: number }; events: { saved: number; matched: number; samePlace: number; sameContent: number } };
 } : undefined;
 
 const values: Record<string, Value> = {};
@@ -166,7 +166,7 @@ try {
 
 values.maps = Object.keys(project.maps).length;
 values.events = Object.values(project.maps).reduce((n, m) => n + (m.events ?? []).length, 0);
-if (replay?.trust) { values.trustMapTiles = [replay.trust.maps.sameTiles, replay.trust.maps.saved]; values.trustEvents = [replay.trust.events.matched, replay.trust.events.saved]; }
+if (replay?.trust) { values.trustMapTiles = [replay.trust.maps.sameTiles, replay.trust.maps.saved]; values.trustEvents = [replay.trust.events.matched, replay.trust.events.saved]; values.trustEventContent = [replay.trust.events.sameContent, replay.trust.events.saved]; }
 fs.writeFileSync(path.join(dir, "metrics.json"), JSON.stringify({ id: replay?.id ?? path.basename(dir), kind: replay?.kind ?? "game", values, lines, probeErrors }, null, 1));
 console.log(`${replay?.id ?? path.basename(dir)}: ${Object.keys(values).length}칸${probeErrors.length ? ` · 탐침 오류 ${probeErrors.length}: ${probeErrors.join(" | ").slice(0, 300)}` : ""}`);
 process.exit(0);

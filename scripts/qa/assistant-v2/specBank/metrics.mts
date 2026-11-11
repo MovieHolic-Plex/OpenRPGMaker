@@ -50,6 +50,7 @@ export const METRICS: readonly { key: string; label: string; better: "up" | "dow
   { key: "replaySame", label: "그때와 같은 결과의 호출", better: "none" },
   { key: "trustMapTiles", label: "저장본과 타일이 같은 맵", better: "none" },
   { key: "trustEvents", label: "저장본과 짝지은 이벤트", better: "none" },
+  { key: "trustEventContent", label: "저장본과 내용까지 같은 이벤트", better: "none" },
 ];
 
 export const show = (v: Value | undefined): string => v === undefined ? "-" : typeof v === "number" ? String(v) : `${v[0]}/${v[1]}`;

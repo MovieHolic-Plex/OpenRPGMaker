@@ -339,5 +339,5 @@ const result = {
 };
 fs.writeFileSync(path.join(outDir, "replay.json"), JSON.stringify(result, null, 1));
 const tr = result.trust;
-console.log(`${spec.id}: 호출 ${result.calls.played}/${result.calls.total} 재생 · 그때와 같은 결과 ${result.calls.sameOutcome}/${result.calls.played}(쓰기 ${result.calls.writesSame}/${result.calls.writes}) · 소금 ${result.salts.kept}/${result.salts.recorded}${tr ? ` · 맵 타일 같음 ${tr.maps.sameTiles}/${tr.maps.saved} · 이벤트 ${tr.events.matched}/${tr.events.saved}(같은 칸 ${tr.events.samePlace})` : ""} · 판정 ${turnsOut.map((x) => (x.verdictNow ? (x.verdictNow.complete ? "완료" : "미완") : "-")).join("/")} · ${Math.round(result.ms / 1000)}초`);
+console.log(`${spec.id}: 호출 ${result.calls.played}/${result.calls.total} 재생 · 그때와 같은 결과 ${result.calls.sameOutcome}/${result.calls.played}(쓰기 ${result.calls.writesSame}/${result.calls.writes}) · 소금 ${result.salts.kept}/${result.salts.recorded}${tr ? ` · 맵 타일 같음 ${tr.maps.sameTiles}/${tr.maps.saved} · 이벤트 ${tr.events.matched}/${tr.events.saved}(같은 칸 ${tr.events.samePlace} · 내용까지 같음 ${tr.events.sameContent})` : ""} · 판정 ${turnsOut.map((x) => (x.verdictNow ? (x.verdictNow.complete ? "완료" : "미완") : "-")).join("/")} · ${Math.round(result.ms / 1000)}초`);
 process.exit(0);
