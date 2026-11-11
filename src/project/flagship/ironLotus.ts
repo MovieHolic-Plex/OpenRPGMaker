@@ -17,12 +17,13 @@ import "@/editor/tools/toolRegistry";
 import { buildJrpgChapter } from "@/editor/tools/jrpgChapterTools";
 import { pickSpot } from "@/editor/tools/jrpgVolumeTools";
 import { sharedPortraitId } from "@/assets/sharedPortraitAssets";
-import { placeFallenStarVessel } from "./fallenStarVessel";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
   IL_BACKDROP_BAMBOO_ID,
   IL_BACKDROP_TEMPLE_ID,
+  IL_BACKDROP_ENDING_ID,
   IL_BACKDROP_TOWN_ID,
+  IL_SEOLRIN_BATTLER_ID,
   IL_SEOLRIN_CHARSET_ID,
   IL_SEOLRIN_FACE_ID,
   installIronLotusArt,
@@ -157,7 +158,7 @@ function setupCast(project: Project): void {
   hero.nickname = "중계 기체";
   hero.characterResourceId = IL_SEOLRIN_CHARSET_ID;
   hero.characterIndex = 0;
-  delete hero.battleCharacterResourceId;
+  hero.battleCharacterResourceId = IL_SEOLRIN_BATTLER_ID;
   hero.faceResourceId = IL_SEOLRIN_FACE_ID;
   hero.initialLevel = 5;
 
@@ -168,6 +169,7 @@ function setupCast(project: Project): void {
   baek.characterResourceId = CHIP.baek[0];
   baek.characterIndex = CHIP.baek[1];
   baek.battleCharacterResourceId = CHIP.baek[3];
+  baek.classId = hero.classId;
   baek.initialLevel = 5;
   const at = actors.findIndex((actor) => actor.id === BAEK_ID);
   if (at >= 0) actors[at] = baek; else actors.push(baek);
@@ -231,17 +233,22 @@ function makeEnemy(
 function setupFoes(project: Project): void {
   makeEnemy(project, "enemy_il_viper", "청죽 살무사", "generated-enemy-snake-viper",
     { maxHp: 90, attack: 42, defense: 16, mind: 18, agility: 30 }, { exp: 16, gold: 10 }, "normal");
-  makeEnemy(project, "enemy_il_scout", "흑련사 정찰병", "generated-enemy-bandit-mask",
-    { maxHp: 120, attack: 46, defense: 20, mind: 14, agility: 26 }, { exp: 22, gold: 16 }, "normal",
-    { characterResourceId: "easyrpg-charset-actor3", characterIndex: 2 });
-  makeEnemy(project, "enemy_il_mid", "흑련사 선봉 흑랑", "generated-enemy-wolf-dire",
+  makeEnemy(project, "enemy_il_scout", "흑련 살수", "generated-enemy-bandit-mask",
+    { maxHp: 120, attack: 46, defense: 20, mind: 14, agility: 26 }, { exp: 22, gold: 16 }, "normal");
+  makeEnemy(project, "enemy_il_bandit", "산길 노상", "generated-enemy-orc-warrior",
+    { maxHp: 110, attack: 44, defense: 18, mind: 10, agility: 22 }, { exp: 18, gold: 14 }, "normal");
+  makeEnemy(project, "enemy_il_disciple", "흑련 제자", "generated-enemy-orc-01",
+    { maxHp: 130, attack: 48, defense: 22, mind: 20, agility: 24 }, { exp: 24, gold: 16 }, "normal");
+  makeEnemy(project, "enemy_il_mid", "산짐승 흑랑", "generated-enemy-wolf-dire",
     { maxHp: 240, attack: 54, defense: 24, mind: 16, agility: 32 }, { exp: 70, gold: 48 }, "boss");
   makeEnemy(project, "enemy_il_puppet", "철 인형", "generated-enemy-slime-metal",
     { maxHp: 180, attack: 48, defense: 36, mind: 8, agility: 14 }, { exp: 40, gold: 20 }, "normal");
   for (const [id, name, enemies] of [
-    ["troop_il_viper", "청죽 살무사", ["enemy_il_viper"]],
-    ["troop_il_scout", "흑련사 정찰병", ["enemy_il_scout"]],
-    ["troop_il_mid", "흑련사 선봉", ["enemy_il_mid"]],
+    ["troop_il_viper", "청죽 살무사", ["enemy_il_viper", "enemy_il_viper"]],
+    ["troop_il_scout", "흑련 살수", ["enemy_il_scout"]],
+    ["troop_il_bandit", "산길 노상", ["enemy_il_bandit"]],
+    ["troop_il_disciple", "흑련 제자", ["enemy_il_disciple"]],
+    ["troop_il_mid", "산짐승 흑랑", ["enemy_il_mid"]],
     ["troop_il_puppet", "철 인형", ["enemy_il_puppet"]],
   ] as const) {
     execTool(project, "upsert_troop", { troop: { id, name, enemyIds: [...enemies] } });
@@ -254,12 +261,33 @@ function setupFoes(project: Project): void {
       { enemyId: "enemy_il_viper", x: 156, y: 120, hidden: false },
     ];
   }
+  const rates: Record<string, Record<string, "A" | "B" | "C" | "D" | "E">> = {
+    enemy_il_viper: { thunder: "A" },
+    enemy_il_scout: { holy: "A", fire: "C" },
+    enemy_il_bandit: { ice: "A" },
+    enemy_il_disciple: { holy: "B" },
+    enemy_il_puppet: { thunder: "A", fire: "D" },
+    enemy_il_mid: { fire: "A" },
+    enemy_il_boss: { holy: "A", thunder: "B" },
+  };
+  const lunge: Record<string, number> = { enemy_il_viper: 120, enemy_il_scout: 135, enemy_il_mid: 140, enemy_il_puppet: 80 };
+  for (const enemy of project.database.enemies) {
+    if (rates[enemy.id]) enemy.elementRates = { ...enemy.elementRates, ...rates[enemy.id] };
+    if (lunge[enemy.id]) enemy.lungeSpeedPercent = lunge[enemy.id];
+    if (enemy.id === "enemy_il_puppet" || enemy.id === "enemy_il_boss") enemy.battleScalePercent = 130;
+  }
 }
 
 function patchBoss(project: Project): void {
   makeEnemy(project, "enemy_il_boss", "야율검", "generated-enemy-bandit-mask",
     { maxHp: 420, attack: 62, defense: 28, mind: 36, agility: 34 }, { exp: 140, gold: 90 }, "boss",
     { characterResourceId: "easyrpg-charset-actor3", characterIndex: 2 });
+  const boss = project.database.enemies.find((entry) => entry.id === "enemy_il_boss");
+  if (boss) {
+    boss.elementRates = { ...boss.elementRates, holy: "A", thunder: "B" };
+    boss.battleScalePercent = 150;
+    boss.lungeSpeedPercent = 125;
+  }
   const troop = project.database.troops.find((entry) => entry.id === `troop_${IL_PREFIX}_boss`);
   if (!troop) throw new Error("[iron-lotus] 결전 트룹이 없다");
   troop.name = "야율검과 철 인형";
@@ -282,11 +310,13 @@ function placeFieldEnemies(project: Project, mapId: string, troops: readonly str
   const map = () => project.maps[mapId]!;
   let placed = 0;
   const origin = { x: Math.floor(map().width / 2), y: Math.floor(map().height / 2) };
+  const fixed = [{ x: 30, y: 17 }, { x: 22, y: 20 }, { x: 14, y: 16 }, { x: 36, y: 22 }];
   for (let n = 0; n < troops.length; n += 1) {
-    const at = pickSpot(project, map(), origin, new Set(map().events.map((event) => `${event.x},${event.y}`)), 0.35 + n * 0.2, 4);
+    const guessed = fixed[n] ?? pickSpot(project, map(), origin, new Set(map().events.map((event) => `${event.x},${event.y}`)), 0.35 + n * 0.2, 6);
+    const at = guessed && guessed.x > 4 && guessed.x < map().width - 5 ? guessed : pickSpot(project, map(), origin, new Set(), 0.5, 8);
     if (!at) continue;
     const ok = tryTool(project, "place_field_enemy", {
-      mapId, x: at.x, y: at.y, troopId: troops[n], behavior: n === 0 ? "stationary" : "patrol",
+      mapId, x: at.x, y: at.y, troopId: troops[n], behavior: n === 1 ? "chase" : n === 0 ? "stationary" : "patrol",
       patrol: { length: 3, axis: n % 2 === 0 ? "horizontal" : "vertical" },
       canEscape: true, alert: "exclamation", id: `ev_${mapId}_foe${n + 1}`,
     });
@@ -370,6 +400,26 @@ function insertJoin(_project: Project, map: GameMap): void {
     }
   }
   throw new Error("[iron-lotus] 백리호 합류를 끼울 대사를 찾지 못했다");
+}
+
+function joinOnAccept(project: Project): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      for (const list of eventCommandLists(event)) {
+        const hit = list.findIndex((cmd) => cmd.kind === "setSwitch" && (cmd as { switchId?: string }).switchId === "sw_il_main_started");
+        if (hit < 0) continue;
+        list.splice(hit + 1, 0,
+          { kind: "text", speaker: IL_NAMES.disciple, body: "동문에서 기다렸다.\n대숲의 기운은 독이 아니다. 내공이다." } as Command,
+          { kind: "text", speaker: IL_NAMES.hero, body: "기록 갱신. 현지 이름, 내공.\n임시 분류, 미확인 에너지." } as Command,
+          { kind: "text", speaker: IL_NAMES.disciple, body: "…알겠다. 기록 기계라도 같이 걷지.\n마을을 나서기 전에 뒤를 보겠다." } as Command,
+          { kind: "changeParty", actorId: BAEK_ID, action: "add" } as Command,
+          { kind: "setSwitch", switchId: SW_BAEK_JOINED, value: true } as Command,
+          { kind: "setSwitch", switchId: "sw_il_main_step0", value: true } as Command,
+        );
+        return;
+      }
+    }
+  }
 }
 
 function armBoss(map: GameMap): void {
@@ -479,6 +529,16 @@ export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
   project.system.battleBgmResourceId = "cc0-bgm-rtp-btl-001";
 
   setupCast(project);
+  execTool(project, "upsert_combo_tech", {
+    id: "skill_combo_il_iron_lotus",
+    name: "철련 합공",
+    description: "설린이 기운의 결을 읽고, 백리호가 그 결을 벤다.\n번개 피해를 두 번 준다.",
+    actorIds: [HERO_ID, BAEK_ID],
+    requires: [{ actorId: HERO_ID, skillId: "skill_focus" }, { actorId: BAEK_ID, skillId: "skill_sword_slash" }],
+    mpCosts: [{ actorId: HERO_ID, mp: 3 }, { actorId: BAEK_ID, mp: 4 }],
+    scope: "enemy", kind: "damage", statistic: "attack", power: 58, elementId: "thunder", hits: 2,
+    choreographyId: "skill_hero_cross_slash",
+  });
   setupFoes(project);
 
   const built = buildJrpgChapter(project, IRON_LOTUS_ACT1, {
@@ -517,6 +577,7 @@ export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
   setEventChip(M(ids.grove), `ev_${IL_PREFIX}_baek`, CHIP.baek[2], CHIP.baek[1]);
 
   insertJoin(project, M(ids.grove));
+  joinOnAccept(project);
   armBoss(M(ids.temple));
 
   const shop = M(ids.hub).events.find((event) => event.id === `ev_${IL_PREFIX}_salgu`);
@@ -607,7 +668,10 @@ export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
   if (midboss) { midboss.x = M(ids.grove).width - 6; midboss.y = IL_BATTLE_STAND.y; }
 
   const clue = M(ids.grove).events.find((event) => event.id.includes("inspect") || event.id.includes("clue") || event.id.includes("puzzle"));
-  placeFallenStarVessel(project, M(ids.grove), clue ? Math.max(1, clue.x - 1) : 16, IL_BATTLE_STAND.y - 4);
+  if (clue) {
+    tryTool(project, "stamp_object", { objectId: "kit:sengoku_edo/se-incense", mapId: ids.grove, x: Math.max(1, clue.x - 1), y: Math.max(1, clue.y - 2), layers: "upper", onOverlap: "nearest" });
+    tryTool(project, "stamp_object", { objectId: "kit:sengoku_edo/se-lantern-stone", mapId: ids.grove, x: clue.x + 2, y: Math.max(1, clue.y - 1), layers: "upper", onOverlap: "nearest" });
+  }
 
   const backdropOf = (mapId: string): string => {
     if (mapId === ids.temple || mapId === world.nave || mapId === world.annex) return IL_BACKDROP_TEMPLE_ID;
@@ -633,6 +697,7 @@ export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
     epilogue: [{ kind: "say", speaker: "설린", text: "북쪽 응답, 유지 중.\n집은 아직 꺼지지 않았습니다." }],
     presentation: {
       kicker: "제1막 끝",
+      backgroundResourceId: IL_BACKDROP_ENDING_ID,
       credits: [
         "설린 — 중계 기체",
         "백리호 — 청죽문 제자",
@@ -704,9 +769,12 @@ export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
     children: [
       { mapId: world.inn, children: [] },
       { mapId: world.shop, children: [] },
-      { mapId: ids.grove, children: [{ mapId: world.deep, children: [{ mapId: ids.temple, children: [
-        { mapId: world.nave, children: [{ mapId: world.annex, children: [] }] },
-      ] }] }] },
+      { mapId: ids.grove, children: [
+        { mapId: world.stream, children: [{ mapId: world.thicket, children: [{ mapId: world.glade, children: [] }] }] },
+        { mapId: world.deep, children: [{ mapId: ids.temple, children: [
+          { mapId: world.nave, children: [{ mapId: world.annex, children: [] }] },
+        ] }] },
+      ] },
     ],
   };
 
@@ -728,7 +796,7 @@ export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
   }
 
   applyIronLotusLore(project);
-  assertPlayable(project, [ids.hub, ids.grove, world.deep, ids.temple, world.inn, world.shop, world.nave, world.annex]);
+  assertPlayable(project, [ids.hub, ids.grove, world.stream, world.thicket, world.glade, world.deep, ids.temple, world.inn, world.shop, world.nave, world.annex]);
   // 로드가 기본값(전투 스킨 retro2003, 칩 칸 0)은 저장하지 않는다. 넣어 두면 재로드와 어긋난다.
   delete project.system.battleUiStyle;
   const heroOut = project.database.actors.find((actor) => actor.id === HERO_ID);

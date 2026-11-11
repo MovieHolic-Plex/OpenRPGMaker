@@ -2,6 +2,7 @@
  * 장 구성기가 깔아 둔 무가 저택·빈 칸을 걷어 내고, 청죽림·사원·마을 실내가
  * 이름과 같게 읽히도록 다시 깐다. 타일셋은 sengoku_edo 하나다.
  */
+import roomSpec from "@/assets/sengokuEdoRoomSpec.json";
 import { isPassable } from "@/project/collision";
 import type { Command, GameEvent, GameMap, Project } from "@/project/types";
 import { pickSpot } from "@/editor/tools/jrpgVolumeTools";
@@ -36,6 +37,9 @@ export type IronLotusMapIds = {
   shop: string;
   nave: string;
   annex: string;
+  stream: string;
+  thicket: string;
+  glade: string;
 };
 
 function eachCommand(event: GameEvent, visit: (cmd: Command) => void): void {
@@ -87,31 +91,67 @@ function eventsTo(map: GameMap, mapId: string): GameEvent[] {
   });
 }
 
-function paintForest(map: GameMap, pathY: number, dense: boolean): void {
+function hash01(x: number, y: number, seed: number): number {
+  let n = (x * 374761393 + y * 668265263 + seed * 1442695041) | 0;
+  n = Math.imul(n ^ (n >>> 13), 1274126177);
+  return ((n ^ (n >>> 16)) >>> 0) / 4294967296;
+}
+
+function paintForest(map: GameMap, pathY: number, dense: boolean, must: ReadonlyArray<readonly [number, number]> = []): Set<string> {
   const n = map.width * map.height;
   map.lowerTiles = new Array<number>(n);
   map.upperTiles = new Array<number>(n).fill(-1);
-  for (let y = 0; y < map.height; y += 1) {
-    for (let x = 0; x < map.width; x += 1) {
-      const onPath = Math.abs(y - pathY) <= 1 && x > 0 && x < map.width - 1;
-      const edge = x === 0 || y === 0 || x === map.width - 1 || y === map.height - 1;
-      let tile = GRASS;
-      if (onPath) tile = PATH;
-      else if (edge) tile = DARK;
-      else if ((x * 5 + y * 3) % 13 === 0) tile = FLOWER;
-      else if ((x + y * 2) % (dense ? 3 : 5) === 0) tile = DARK;
-      map.lowerTiles[y * map.width + x] = tile;
+  const pts = [
+    { x: 1, y: pathY },
+    { x: Math.floor(map.width * 0.22), y: pathY + (dense ? -4 : 3) },
+    { x: Math.floor(map.width * 0.48), y: pathY - (dense ? 2 : 1) },
+    { x: Math.floor(map.width * 0.72), y: pathY + (dense ? 3 : -2) },
+    { x: map.width - 2, y: pathY },
+  ];
+  const path = new Set<string>();
+  const paintPath = (x: number, y: number, radius: number): void => {
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        if (dx * dx + dy * dy > radius * radius + 0.2) continue;
+        const px = x + dx;
+        const py = y + dy;
+        if (px < 0 || py < 0 || px >= map.width || py >= map.height) continue;
+        path.add(`${px},${py}`);
+      }
+    }
+  };
+  for (let i = 0; i < pts.length - 1; i += 1) {
+    const a = pts[i]!;
+    const b = pts[i + 1]!;
+    const steps = Math.max(Math.abs(b.x - a.x), Math.abs(b.y - a.y), 1);
+    for (let s = 0; s <= steps; s += 1) {
+      const t = s / steps;
+      const x = Math.round(a.x + (b.x - a.x) * t);
+      const y = Math.round(a.y + (b.y - a.y) * t);
+      const breathe = 1 + (hash01(x, y, 3) > 0.62 ? 1 : 0);
+      paintPath(x, y, breathe);
     }
   }
-  map.lowerTiles[pathY * map.width] = PATH;
-  map.lowerTiles[pathY * map.width + map.width - 1] = PATH;
+  for (const [x, y] of must) paintPath(x, y, 1);
+  paintPath(1, pathY, 1);
+  paintPath(map.width - 2, pathY, 1);
+  for (let y = 0; y < map.height; y += 1) {
+    for (let x = 0; x < map.width; x += 1) {
+      const i = y * map.width + x;
+      if (path.has(`${x},${y}`)) { map.lowerTiles[i] = hash01(x, y, 9) > 0.82 ? 5 : PATH; continue; }
+      const n = hash01(x, y, dense ? 11 : 4);
+      const edge = x < 2 || y < 2 || x > map.width - 3 || y > map.height - 3;
+      map.lowerTiles[i] = edge || n > 0.86 ? DARK : n < 0.07 ? FLOWER : n < 0.14 ? 3 : GRASS;
+    }
+  }
   map.defaultLighting = {
-    ambient: dense ? 0.38 : 0.2,
-    color: dense ? "#0c2418" : "#1c3a28",
+    ambient: dense ? 0.42 : 0.18,
+    color: dense ? "#07160f" : "#163222",
     sources: [],
-    vignette: dense ? 0.28 : 0.14,
+    vignette: dense ? 0.34 : 0.16,
   };
   map.mapRole = "field";
+  return path;
 }
 
 function fillHoles(map: GameMap, tile: number): void {
@@ -131,25 +171,34 @@ function stampOne(project: Project, tryTool: Try, map: GameMap, reserved: Set<st
   return true;
 }
 
-function stampForest(project: Project, tryTool: Try, map: GameMap, pathY: number, reserved: Set<string>, dense: boolean): void {
-  // 대나무(2×3)의 발이 흙길(pathY±1)에 걸치지 않게, 길 바로 위·아래에 줄을 세운다.
-  for (let x = 2; x < map.width - 4; x += 3) {
-    stampOne(project, tryTool, map, reserved, x, pathY - 4, "se-bamboo");
-    stampOne(project, tryTool, map, reserved, x + 1, pathY + 2, "se-bamboo");
-  }
-  const step = dense ? 3 : 5;
-  for (let y = 2; y < map.height - 4; y += step) {
-    if (Math.abs(y - pathY) <= 4) continue;
-    for (let x = 2; x < map.width - 4; x += step) {
-      if ((x + y) % (dense ? 2 : 3) === 0) continue;
-      stampOne(project, tryTool, map, reserved, x, y, (x + y) % 5 === 0 ? "se-tree-pine-small" : "se-bamboo");
+function stampForest(project: Project, tryTool: Try, map: GameMap, path: Set<string>, reserved: Set<string>, dense: boolean): void {
+  const nearPath = (x: number, y: number): number => {
+    let best = 99;
+    for (let dy = -8; dy <= 8; dy += 1) {
+      for (let dx = -8; dx <= 8; dx += 1) {
+        if (path.has(`${x + dx},${y + dy}`)) best = Math.min(best, Math.abs(dx) + Math.abs(dy));
+      }
+    }
+    return best;
+  };
+  for (let y = 1; y < map.height - 4; y += 1) {
+    for (let x = 1; x < map.width - 3; x += 1) {
+      if (path.has(`${x},${y}`)) continue;
+      const n = hash01(x, y, dense ? 21 : 8);
+      const dist = nearPath(x, y);
+      const margin = 2 + (hash01(x, y, 17) > 0.7 ? 1 : 0);
+      if (dist < margin) continue;
+      if (n > (dense ? 0.28 : 0.2)) continue;
+      const kit = n < 0.18 ? "se-tree-pine-small" : n > 0.9 ? "se-tree-pine" : "se-bamboo";
+      const jx = x + (hash01(x, y, 5) > 0.5 ? 1 : 0);
+      const jy = y + (hash01(x, y, 6) > 0.66 ? 1 : 0);
+      stampOne(project, tryTool, map, reserved, jx, jy, kit === "se-tree-pine" ? "se-tree-pine-small" : kit);
     }
   }
 }
 
-function reserve(map: GameMap, pathY: number, extra: ReadonlyArray<readonly [number, number, number, number]>): Set<string> {
-  const out = new Set<string>();
-  for (let y = pathY - 1; y <= pathY + 1; y += 1) for (let x = 0; x < map.width; x += 1) out.add(`${x},${y}`);
+function reserve(map: GameMap, path: Set<string>, extra: ReadonlyArray<readonly [number, number, number, number]>): Set<string> {
+  const out = new Set<string>(path);
   for (const event of map.events) {
     for (let dy = -1; dy <= 2; dy += 1) for (let dx = -1; dx <= 2; dx += 1) out.add(`${event.x + dx},${event.y + dy}`);
   }
@@ -168,6 +217,12 @@ function moveEvent(map: GameMap, idPart: string, x: number, y: number): void {
 
 function door(map: GameMap, id: string, name: string, x: number, y: number, toMapId: string, toX: number, toY: number, direction: "up" | "down" | "left" | "right"): void {
   const command = { kind: "transfer", mapId: toMapId, x: toX, y: toY, direction, fade: "black" } as Command;
+  const index = y * map.width + x;
+  if (index >= 0 && index < map.lowerTiles.length) {
+    map.upperTiles[index] = -1;
+    const lower = map.lowerTiles[index];
+    if (lower === 0 || lower === 32 || lower === undefined) map.lowerTiles[index] = PATH;
+  }
   map.events.push({
     id,
     name,
@@ -251,6 +306,61 @@ function talker(exec: Exec, project: Project, mapId: string, x: number, y: numbe
   });
 }
 
+function carveSpur(map: GameMap, x: number, fromY: number, _x2: number, toY: number): void {
+  const y0 = Math.min(fromY, toY);
+  const y1 = Math.max(fromY, toY);
+  for (let y = y0; y <= y1; y += 1) {
+    for (let dx = -1; dx <= 1; dx += 1) {
+      const px = x + dx;
+      if (px < 0 || px >= map.width || y < 0 || y >= map.height) continue;
+      const i = y * map.width + px;
+      map.lowerTiles[i] = PATH;
+      map.upperTiles[i] = -1;
+    }
+  }
+}
+
+function laySideWood(project: Project, exec: Exec, tryTool: Try, id: string, name: string, width: number, height: number, stream: boolean): string {
+  exec(project, "create_map", {
+    id, name, width, height, tilesetId: "sengoku_edo",
+    bgm: { mode: "custom", resourceId: "cc0-bgm-rtp-fld-002" },
+  });
+  const map = project.maps[id];
+  if (!map) throw new Error(`[iron-lotus] 숲 곁길이 없다: ${id}`);
+  map.tilesetId = "sengoku_edo";
+  map.bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-fld-002" };
+  const pathY = Math.floor(height / 2);
+  const path = paintForest(map, pathY, name.includes("덤불"), [[Math.floor(width / 2), pathY]]);
+  if (stream) {
+    for (let y = pathY - 1; y <= pathY + 1; y += 1) {
+      for (let x = 2; x < width - 2; x += 1) {
+        if (Math.abs(x - Math.floor(width / 2)) <= 1) continue;
+        const i = y * width + x;
+        if (path.has(`${x},${y}`)) continue;
+        map.lowerTiles[i] = 32;
+      }
+    }
+  }
+  stampForest(project, tryTool, map, path, reserve(map, path, []), name.includes("덤불"));
+  return id;
+}
+
+type FurnCell = readonly [number, number, number, number];
+
+function placeFurn(map: GameMap, id: string, ox: number, oy: number): void {
+  const objects = (roomSpec as { objects: Record<string, { cells: FurnCell[] }> }).objects;
+  const obj = objects[id];
+  if (!obj) return;
+  for (const [dx, dy, tile] of obj.cells) {
+    const x = ox + dx;
+    const y = oy + dy;
+    if (x < 1 || y < 1 || x >= map.width - 1 || y >= map.height - 1) continue;
+    const index = y * map.width + x;
+    if (map.lowerTiles[index] === 860 || map.lowerTiles[index] === 864 || map.lowerTiles[index] === 872 || map.lowerTiles[index] === 868) continue;
+    map.upperTiles[index] = tile;
+  }
+}
+
 export function layIronLotusWorld(
   project: Project,
   exec: Exec,
@@ -261,7 +371,7 @@ export function layIronLotusWorld(
   const hub = project.maps[ids.hub]!;
   const temple = project.maps[ids.temple]!;
   const pathY = IL_GROVE_PATH_Y;
-  paintForest(grove, pathY, false);
+  const grovePath = paintForest(grove, pathY, false, [[IL_BATTLE_STAND.x, IL_BATTLE_STAND.y], [IL_BATTLE_FOE.x, IL_BATTLE_FOE.y], [7, pathY], [17, pathY]]);
   for (const event of eventsTo(grove, ids.hub)) { event.x = 1; event.y = pathY; }
   for (const event of eventsTo(grove, ids.temple)) { event.x = grove.width - 2; event.y = pathY; }
   moveEvent(grove, "baek", 7, pathY);
@@ -279,7 +389,7 @@ export function layIronLotusWorld(
   if (!deep) throw new Error("[iron-lotus] 깊은 죽림이 없다");
   deep.tilesetId = "sengoku_edo";
   deep.bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-fld-002" };
-  paintForest(deep, IL_DEEP_PATH_Y, true);
+  const deepPath = paintForest(deep, IL_DEEP_PATH_Y, true);
   const templeLanding = (() => {
     for (const event of grove.events) {
       let landing: { x: number; y: number } | undefined;
@@ -297,8 +407,23 @@ export function layIronLotusWorld(
   door(deep, "ev_il_deep_west", "청죽림 입구", 1, IL_DEEP_PATH_Y, ids.grove, grove.width - 5, pathY, "left");
   door(deep, "ev_il_deep_east", "사원으로", deep.width - 2, IL_DEEP_PATH_Y, ids.temple, templeLanding.x, templeLanding.y, "up");
 
-  stampForest(project, tryTool, grove, pathY, reserve(grove, pathY, [[14, 12, 22, 17], [28, 15, 32, 19]]), false);
-  stampForest(project, tryTool, deep, IL_DEEP_PATH_Y, reserve(deep, IL_DEEP_PATH_Y, [[16, 12, 22, 16], [26, 13, 30, 16]]), true);
+  stampForest(project, tryTool, grove, grovePath, reserve(grove, grovePath, [[14, 12, 22, 17], [28, 15, 32, 19]]), false);
+  stampForest(project, tryTool, deep, deepPath, reserve(deep, deepPath, [[16, 12, 22, 16], [26, 13, 30, 16]]), true);
+  carveSpur(grove, 16, pathY, 16, 4);
+  const streamId = laySideWood(project, exec, tryTool, "il_grove_stream", "청죽림 물길", 36, 28, true);
+  const thicketId = laySideWood(project, exec, tryTool, "il_grove_thicket", "청죽림 가시덤불", 34, 28, false);
+  const gladeId = laySideWood(project, exec, tryTool, "il_grove_glade", "별지기 빈터", 30, 24, false);
+  carveSpur(project.maps[streamId]!, 18, 14, 18, 26);
+  carveSpur(project.maps[streamId]!, 18, 14, 18, 3);
+  carveSpur(project.maps[thicketId]!, 16, 14, 16, 26);
+  carveSpur(project.maps[thicketId]!, 16, 14, 16, 3);
+  carveSpur(project.maps[gladeId]!, 15, 12, 15, 22);
+  door(grove, "ev_il_to_stream", "물길로", 16, 4, streamId, 18, 24, "up");
+  door(project.maps[streamId]!, "ev_il_stream_back", "죽림으로", 18, 26, ids.grove, 16, 6, "down");
+  door(project.maps[streamId]!, "ev_il_stream_thicket", "덤불로", 18, 3, thicketId, 16, 24, "up");
+  door(project.maps[thicketId]!, "ev_il_thicket_back", "물길로", 16, 26, streamId, 18, 5, "down");
+  door(project.maps[thicketId]!, "ev_il_thicket_glade", "빈터로", 16, 3, gladeId, 15, 20, "up");
+  door(project.maps[gladeId]!, "ev_il_glade_back", "덤불로", 15, 22, thicketId, 16, 5, "down");
 
   fillHoles(hub, COBBLE);
   fillHoles(temple, COBBLE);
@@ -309,6 +434,24 @@ export function layIronLotusWorld(
   const shop = makeRoom(project, exec, "il_shop", "살구 약방", 18, 14, WOOD, BOARD, "cc0-bgm-rtp-fld-001");
   const nave = makeRoom(project, exec, "il_nave", "운무산 본당", 24, 18, TATAMI, FUSUMA, "cc0-bgm-rtp-dng-001");
   const annex = makeRoom(project, exec, "il_annex", "운무산 누각", 18, 14, TATAMI_GOLD, FUSUMA_GOLD, "cc0-bgm-rtp-dng-001");
+  placeFurn(inn.map, "se-futon", 3, 4);
+  placeFurn(inn.map, "se-tansu", 16, 4);
+  placeFurn(inn.map, "se-zataku", 8, 8);
+  placeFurn(inn.map, "se-zabuton", 7, 10);
+  placeFurn(inn.map, "se-zabuton", 11, 10);
+  placeFurn(inn.map, "se-andon", 14, 8);
+  placeFurn(inn.map, "se-window-shoji", 4, 2);
+  placeFurn(shop.map, "se-shop-counter", 6, 6);
+  placeFurn(shop.map, "se-goods-shelf", 3, 3);
+  placeFurn(shop.map, "se-cash-box", 12, 6);
+  placeFurn(shop.map, "se-andon", 13, 4);
+  placeFurn(nave.map, "se-dais", 10, 4);
+  placeFurn(nave.map, "se-scroll", 4, 3);
+  placeFurn(nave.map, "se-kamidana", 16, 3);
+  placeFurn(nave.map, "se-taiko", 18, 8);
+  placeFurn(annex.map, "se-armor", 3, 4);
+  placeFurn(annex.map, "se-sword-rack", 8, 4);
+  placeFurn(annex.map, "se-writing-desk", 12, 6);
 
   const gomo = hub.events.find((event) => event.id.includes("gomo"));
   const salgu = hub.events.find((event) => event.id.includes("salgu"));
@@ -358,6 +501,15 @@ export function layIronLotusWorld(
     mapId: annex.map.id, x: 8, y: 5, id: "ev_il_chest_annex", name: "누각의 함",
     contents: { itemId: "item_ether", count: 1 },
   });
+  for (const [mapId, id, style] of [
+    [deepId, "ev_il_chest_deep", "jar"],
+    [nave.map.id, "ev_il_chest_nave", "chest"],
+    [annex.map.id, "ev_il_chest_annex", "drawer"],
+  ] as const) {
+    const page = project.maps[mapId]?.events.find((event) => event.id === id)?.pages?.[0];
+    if (!page || page.commands.some((cmd) => cmd.kind === "showAnimation")) continue;
+    page.commands.unshift({ kind: "showAnimation", animationId: `fx:container:${style}`, target: "player", wait: true } as Command);
+  }
 
   return {
     hub: ids.hub,
@@ -368,5 +520,8 @@ export function layIronLotusWorld(
     shop: shop.map.id,
     nave: nave.map.id,
     annex: annex.map.id,
+    stream: streamId,
+    thicket: thicketId,
+    glade: gladeId,
   };
 }

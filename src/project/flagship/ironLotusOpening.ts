@@ -62,8 +62,11 @@ export function buildIronLotusOpening(project: Project): void {
       id: "il_op_fall", ms: 7000,
       composition: {
         width: STAGE.width, height: STAGE.height, background: "#071410", letterbox: 0.1,
+        camera: { keys: { x: [{ atMs: 0, value: 200 }, { atMs: 7000, value: 280, ease: "ease-in-out" }], zoom: [{ atMs: 0, value: 1.05 }, { atMs: 7000, value: 1.18, ease: "ease-out" }] } },
         layers: [
-          plate("bamboo", IL_BACKDROP_BAMBOO_ID),
+          plate("sky", "oprn-pano-night"),
+          { id: "bamboo", kind: "image", role: "background", resourceId: IL_BACKDROP_BAMBOO_ID, sampling: "nearest", x: 0, y: 78, width: 480, height: 192, anchorX: 0, anchorY: 0, parallax: 0.35 },
+          { id: "dust", kind: "particles", role: "effect", color: "#d8ffe8", opacity: 0.45, x: 0, y: 40, width: 480, height: 180, particles: { preset: "dust", count: 28, seed: 4, speed: 8, size: 1 } },
           { id: "streak", kind: "shape", shape: "rect", role: "effect", color: "#f4fbff", x: 300, y: 36, width: 120, height: 3, rotation: 28, opacity: 0.9 },
           { id: "pod", kind: "shape", shape: "ellipse", role: "prop", color: "#e7eef4", x: 196, y: 78, width: 72, height: 22 },
           { id: "seam", kind: "glow", role: "effect", color: "#9ef0ff", x: 210, y: 78, width: 44, height: 16, glow: { inner: 0.45, pulse: { hz: 1.2, amount: 0.3, pattern: "flicker", seed: 2 } } },

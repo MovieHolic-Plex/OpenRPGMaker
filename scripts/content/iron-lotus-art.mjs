@@ -137,29 +137,151 @@ function charset() {
 }
 
 function bustCell() {
+  // 걷기 칩의 앞모습을 키운 것. 은발 단발, 눈 대신 청록 바이저, 남색 무복, 가슴의 심.
   const im = png(96, 128);
-  // 걷기 칩과 같은 실루엣: 단발, 청록 바이저, 남색 무복, 가슴의 심. 둥근 헬멧으로 그리지 않는다.
-  ellipse(im, 48, 42, 30, 32, HAIR);
-  ellipse(im, 48, 36, 24, 14, HAIR_D);
-  rect(im, 20, 34, 10, 22, HAIR);
-  rect(im, 66, 34, 10, 22, HAIR);
-  ellipse(im, 48, 50, 16, 18, SKIN);
-  rect(im, 30, 46, 36, 8, VISOR_D);
-  rect(im, 30, 47, 36, 4, VISOR);
-  rect(im, 34, 47, 8, 2, VISOR_H);
-  rect(im, 44, 58, 8, 2, SKIN_D);
-  rect(im, 16, 42, 8, 12, METAL);
-  rect(im, 18, 46, 4, 4, SEAM);
-  rect(im, 72, 42, 8, 12, METAL);
-  rect(im, 74, 46, 4, 4, SEAM);
-  rect(im, 14, 78, 68, 44, COAT);
-  rect(im, 22, 72, 52, 10, COAT_L);
-  rect(im, 26, 74, 44, 3, SEAM);
-  rect(im, 40, 92, 16, 14, COAT_D);
-  rect(im, 44, 96, 8, 8, SEAM);
-  rect(im, 8, 86, 10, 28, COAT_D);
-  rect(im, 78, 86, 10, 28, COAT_D);
+  rect(im, 28, 8, 40, 10, HAIR);
+  rect(im, 22, 16, 52, 18, HAIR);
+  rect(im, 26, 18, 44, 8, HAIR_D);
+  rect(im, 34, 30, 28, 22, SKIN);
+  rect(im, 24, 28, 8, 16, HAIR);
+  rect(im, 64, 28, 8, 16, HAIR);
+  rect(im, 32, 38, 32, 8, VISOR_D);
+  rect(im, 32, 39, 32, 4, VISOR);
+  rect(im, 36, 40, 8, 2, VISOR_H);
+  rect(im, 44, 48, 8, 2, SKIN_D);
+  rect(im, 18, 32, 6, 10, METAL);
+  rect(im, 20, 35, 3, 3, SEAM);
+  rect(im, 72, 32, 6, 10, METAL);
+  rect(im, 73, 35, 3, 3, SEAM);
+  rect(im, 40, 52, 16, 8, SKIN);
+  rect(im, 18, 64, 60, 52, COAT);
+  rect(im, 26, 60, 44, 10, COAT_L);
+  rect(im, 30, 62, 36, 3, SEAM);
+  rect(im, 40, 82, 16, 14, COAT_D);
+  rect(im, 44, 86, 8, 8, SEAM);
+  rect(im, 10, 72, 10, 28, COAT_D);
+  rect(im, 76, 72, 10, 28, COAT_D);
   return scale(im, 2);
+}
+
+/** 파티 전투 시트 48px, 왼쪽을 본다. 3열×8행. */
+function drawBattler(im, ox, oy, pose) {
+  const lean = pose === "hit" ? 1 : pose === "attack" || pose === "strike" ? -1 : 0;
+  const arm = pose === "attack" || pose === "strike" || pose === "skill" ? -4 : 0;
+  const crouch = pose === "weak" ? 1 : 0;
+  const leg = pose === "walkb" ? 1 : pose === "walkc" ? -1 : 0;
+  const at = (x, y, c) => px(im, ox + x + lean, oy + y + crouch, c);
+  const box = (x, y, w, h, c) => { for (let yy = 0; yy < h; yy += 1) for (let xx = 0; xx < w; xx += 1) at(x + xx, y + yy, c); };
+  if (pose === "dead" || pose === "dying") {
+    box(2, 16, 20, 5, COAT);
+    box(3, 14, 10, 4, HAIR);
+    box(4, 15, 8, 2, VISOR);
+    return;
+  }
+  box(7, 1, 10, 3, HAIR);
+  box(6, 3, 12, 4, HAIR);
+  box(8, 5, 8, 4, SKIN);
+  box(7, 6, 10, 2, VISOR);
+  box(5, 4, 2, 2, METAL);
+  at(5, 4, SEAM);
+  box(5, 9, 12, 8, COAT);
+  box(6, 9, 10, 1, SEAM);
+  box(9, 11, 3, 2, SEAM);
+  box(2 + Math.max(-2, arm), 10, 5, 2, COAT_L);
+  box(1 + Math.max(-2, arm), 10, 4, 1, SEAM);
+  box(7, 17, 3, 5 + (leg > 0 ? 1 : 0), BOOT);
+  box(12, 17, 3, 5 + (leg < 0 ? 1 : 0), BOOT);
+}
+
+function paintCell(im, ox, oy, draw) {
+  const tmp = png(24, 24);
+  draw(tmp);
+  for (let y = 0; y < 24; y += 1) for (let x = 0; x < 24; x += 1) {
+    const si = (y * 24 + x) * 4;
+    const c = [tmp.data[si], tmp.data[si + 1], tmp.data[si + 2], tmp.data[si + 3]];
+    if (!c[3]) continue;
+    rect(im, ox + x * 2, oy + y * 2, 2, 2, c);
+  }
+}
+
+function battlerSheet() {
+  const im = png(144, 384);
+  const poses = [
+    "idle", "attack", "hit",
+    "defend", "dead", "victory",
+    "walka", "walkb", "walkc",
+    "attack", "strike", "attack",
+    "skill", "skill", "skill",
+    "item", "weak", "evade",
+    "guard", "skill", "victory",
+    "dying", "revive", "front",
+  ];
+  poses.forEach((pose, i) => paintCell(im, (i % 3) * 48, Math.floor(i / 3) * 48, (cell) => drawBattler(cell, 0, 0, pose)));
+  return im;
+}
+
+function drawFoe(im, ox, oy, kind, pose) {
+  const lunge = pose === "attack" || pose === "move" ? 4 : pose === "hit" ? -3 : 0;
+  const at = (x, y, c) => px(im, ox + Math.round((x + lunge) * 1.35) - 6, oy + Math.round(y * 1.2) - 4, c);
+  const box = (x, y, w, h, c) => { for (let yy = 0; yy < h; yy += 1) for (let xx = 0; xx < w; xx += 1) at(x + xx, y + yy, c); };
+  if (pose === "dead") { box(8, 34, 32, 6, kind === "puppet" ? METAL : COAT_D); return; }
+  if (kind === "snake") {
+    box(18, 16, 16, 8, [40, 120, 60, 255]);
+    box(28, 14, 8, 6, [70, 160, 80, 255]);
+    box(34, 16, 3, 2, [180, 40, 40, 255]);
+    box(10, 22, 22, 6, [30, 90, 48, 255]);
+    box(8, 28, 14, 5, [24, 70, 40, 255]);
+    return;
+  }
+  if (kind === "wolf") {
+    box(10, 20, 26, 10, [28, 28, 34, 255]);
+    box(30, 16, 10, 8, [40, 40, 48, 255]);
+    box(36, 18, 4, 2, [200, 40, 40, 255]);
+    box(12, 30, 5, 8, [16, 16, 20, 255]);
+    box(28, 30, 5, 8, [16, 16, 20, 255]);
+    return;
+  }
+  if (kind === "puppet") {
+    box(16, 6, 16, 10, METAL);
+    box(18, 9, 12, 3, VISOR);
+    box(14, 16, 20, 16, [90, 98, 110, 255]);
+    box(22, 20, 4, 4, SEAM);
+    box(16, 32, 6, 8, BOOT);
+    box(26, 32, 6, 8, BOOT);
+    box(pose === "attack" ? 34 : 30, 18, 8, 3, SEAM);
+    return;
+  }
+  const robe = kind === "assassin" ? [16, 12, 22, 255] : kind === "bandit" ? [92, 48, 32, 255] : [36, 28, 64, 255];
+  const cloth = kind === "assassin" ? [8, 8, 12, 255] : [48, 32, 28, 255];
+  box(18, 4, 12, 6, cloth);
+  box(16, 8, 14, 8, SKIN);
+  if (kind === "assassin") box(16, 10, 14, 3, [20, 20, 24, 255]);
+  else box(18, 10, 8, 2, [40, 28, 24, 255]);
+  box(14, 16, 18, 16, robe);
+  box(pose === "attack" ? 32 : 28, 18, 10, 2, [210, 210, 220, 255]);
+  box(16, 32, 5, 8, BOOT);
+  box(24, 32, 5, 8, BOOT);
+}
+
+function foeSheet(kind) {
+  const cell = 48;
+  const im = png(cell * 5, cell * 4);
+  const poses = ["idle", "idle", "idle", "windup", "move", "attack", "recover", "hit", "dead", "attack", "skill", "skill", "defend", "weak", "intro", "move", "hit", "attack", "weak", "skill"];
+  poses.forEach((pose, i) => drawFoe(im, (i % 5) * cell, Math.floor(i / 5) * cell, kind, pose));
+  return im;
+}
+
+function cellCrop(sheet, col, row, cell) {
+  const out = png(cell, cell);
+  for (let y = 0; y < cell; y += 1) for (let x = 0; x < cell; x += 1) {
+    const si = ((row * cell + y) * sheet.width + col * cell + x) * 4;
+    const di = (y * cell + x) * 4;
+    out.data[di] = sheet.data[si];
+    out.data[di + 1] = sheet.data[si + 1];
+    out.data[di + 2] = sheet.data[si + 2];
+    out.data[di + 3] = sheet.data[si + 3];
+  }
+  return out;
 }
 
 function sky(im, top, bottom) {
@@ -235,6 +357,22 @@ const bustUrl = b64(bustCell());
 const bambooUrl = b64(bambooBackdrop());
 const templeUrl = b64(templeBackdrop());
 const townUrl = b64(townBackdrop());
+function endingBackdrop() {
+  const im = townBackdrop();
+  for (let i = 0; i < im.data.length; i += 4) {
+    if (im.data[i + 3] === 0) continue;
+    im.data[i] = Math.min(255, im.data[i] + 80);
+    im.data[i + 1] = Math.min(255, im.data[i + 1] + 64);
+    im.data[i + 2] = Math.min(255, im.data[i + 2] + 48);
+  }
+  return im;
+}
+const endingUrl = b64(endingBackdrop());
+const battlerUrl = b64(battlerSheet());
+const foes = ["snake", "assassin", "disciple", "bandit", "puppet", "wolf"].map((kind) => {
+  const sheet = foeSheet(kind);
+  return { kind, sheet: b64(sheet), portrait: b64(cellCrop(sheet, 0, 0, 48)) };
+});
 
 const out = `/** 기계로 찍은 설린 칩·흉상·배경. 생성기는 scripts/content/iron-lotus-art.mjs. 생성 그림 없음. */
 import type { Project, UploadedAsset } from "@/project/types";
@@ -244,12 +382,17 @@ export const IL_SEOLRIN_FACE_ID = "oprn-face-il-seolrin-bust-base";
 export const IL_BACKDROP_BAMBOO_ID = "oprn-backdrop-il-bamboo";
 export const IL_BACKDROP_TEMPLE_ID = "oprn-backdrop-il-temple";
 export const IL_BACKDROP_TOWN_ID = "oprn-backdrop-il-town";
+export const IL_BACKDROP_ENDING_ID = "oprn-backdrop-il-ending";
+export const IL_SEOLRIN_BATTLER_ID = "oprn-battle-il-seolrin";
 
 const CHARSET_URL = ${JSON.stringify(charsetUrl)};
 const FACE_URL = ${JSON.stringify(bustUrl)};
 const BAMBOO_URL = ${JSON.stringify(bambooUrl)};
 const TEMPLE_URL = ${JSON.stringify(templeUrl)};
 const TOWN_URL = ${JSON.stringify(townUrl)};
+const ENDING_URL = ${JSON.stringify(endingUrl)};
+const BATTLER_URL = ${JSON.stringify(battlerUrl)};
+const FOES = ${JSON.stringify(foes)} as readonly { kind: string; sheet: string; portrait: string }[];
 
 function put(project: Project, asset: UploadedAsset): void {
   project.assets.uploaded[asset.id] = { ...asset, meta: { ...asset.meta } };
@@ -261,6 +404,27 @@ export function installIronLotusArt(project: Project): void {
   put(project, { id: IL_BACKDROP_BAMBOO_ID, name: "청죽림 밤", kind: "backdrop", dataUrl: BAMBOO_URL, meta: { width: 320, height: 180 } });
   put(project, { id: IL_BACKDROP_TEMPLE_ID, name: "운무산 사원 밤", kind: "backdrop", dataUrl: TEMPLE_URL, meta: { width: 320, height: 180 } });
   put(project, { id: IL_BACKDROP_TOWN_ID, name: "유하진 해질녘", kind: "backdrop", dataUrl: TOWN_URL, meta: { width: 320, height: 180 } });
+  put(project, { id: IL_BACKDROP_ENDING_ID, name: "제1막 끝", kind: "backdrop", dataUrl: ENDING_URL, meta: { width: 320, height: 180 } });
+  put(project, {
+    id: IL_SEOLRIN_BATTLER_ID, name: "설린 전투", kind: "battleCharset", dataUrl: BATTLER_URL,
+    meta: { width: 144, height: 384, frameWidth: 48, frameHeight: 48, frames: 24 },
+  });
+  for (const foe of FOES) {
+    const id = ({
+      snake: "generated-enemy-snake-viper",
+      assassin: "generated-enemy-bandit-mask",
+      disciple: "generated-enemy-orc-01",
+      bandit: "generated-enemy-orc-warrior",
+      puppet: "generated-enemy-slime-metal",
+      wolf: "generated-enemy-wolf-dire",
+    } as Record<string, string>)[foe.kind]!;
+    const sheetId = \`\${id}-sheet\`;
+    put(project, { id: sheetId, name: \`\${foe.kind} 시트\`, kind: "picture", dataUrl: foe.sheet, meta: { width: 240, height: 192, frameWidth: 48, frameHeight: 48, frames: 20 } });
+    put(project, {
+      id, name: foe.kind, kind: "monster", dataUrl: foe.portrait,
+      meta: { width: 48, height: 48, pixelEnemySheet: { sheetResourceId: sheetId, cell: 48, motion: foe.kind === "snake" ? "dash" : foe.kind === "wolf" ? "dash" : foe.kind === "puppet" ? "stomp" : "shoot", idleFrameMs: 180, grid: "5x4" } },
+    });
+  }
 }
 `;
 

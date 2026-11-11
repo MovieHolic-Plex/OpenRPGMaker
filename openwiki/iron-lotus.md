@@ -14,7 +14,7 @@
 - 정본 저장: `node scripts/content/save-iron-lotus.mjs <project.json> --dir .oprn-projects/iron-lotus`
 - QA: `scripts/qa/runtime/iron-lotus.scenario.mjs`, 체크포인트 `scripts/qa/runtime/checkpoints/iron-lotus.json`
 
-맵은 번들 `sengoku_edo` 하나다. 유하진(여관 거리)과 여관·약방 실내, 청죽림과 청죽림 깊숙이, 운무산 사원과 본당·누각. 죽림은 구성기가 깐 무가 저택을 지우고 풀·흙길·대나무로 다시 깐다. `murim_wuxia` 는 사람이 고른 후보만 번들에 들어가므로 쓰지 않는다. 설린은 광대 모자가 없는 은발 기계 소녀 칩이고, 전투에서는 그 걷기 칩을 그대로 쓴다. 추락 고치는 폴른 스타 관(`fallenStarVessel`)과 같은 그림이며 죽림 길가에 둔다.
+맵은 번들 `sengoku_edo` 하나다. 유하진과 여관·약방, 청죽림(굽은 길)과 물길·가시덤불·별지기 빈터·깊숙이, 운무산 사원과 본당·누각. `murim_wuxia` 는 사람이 고르기 전이라 쓰지 않는다. 설린은 은발·청록 바이저의 기계 소녀 칩이고, 전투는 48px 포즈 시트다. 의뢰를 받으면 백리호가 따라오고, 연계기 「철련 합공」이 있다. 비교 기록은 `docs/iron-lotus/comparison.md` (그 폴더는 gitignore). 폴른 스타 1막의 그린 오프닝·큰 적 그림에는 아직 못 미친다.
 
 디버그 순간이동으로 마을에 돌아오면 귀환 자동 이벤트가 돈다. 다른 이벤트가 실행 중이면 끝난 다음 프레임에 다시 본다. 같은 맵 순간이동도 자동 실행을 돌린다.
 
