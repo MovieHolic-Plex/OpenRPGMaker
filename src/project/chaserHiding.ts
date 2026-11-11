@@ -3,12 +3,12 @@
 // 이 함수로 맵에 이미 있는 숨을 만한 가구(옷장·사물함·침대·커튼…) 1~2곳을 순찰 길 가까이에서 결정적으로 골라 interaction hiding 을 건다.
 // 새 그림은 그리지 않는다 — 맵에 그런 가구가 없으면 빈 목록과 이유를 돌려준다(출하 검사가 막는다).
 import { canMove, isPassable } from "@/project/collision";
-import { labelNames } from "@/project/labelWords";
+import { labelHasWord, labelWithoutNotes } from "@/project/labelWords";
 import { objectClusterAt } from "@/project/objectFootprint";
 import type { Dir, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 
 /**
- * 숨을 만한 가구 이름(낮을수록 먼저) — 이름표의 물건이 그 가구여야 한다(labelWords.ts: 물건 이름의 끝 낱말).
+ * 숨을 만한 가구 이름(낮을수록 먼저) — 이름표에 온전한 낱말로 있어야 한다(labelWords.ts, 괄호 속 설명은 빼고).
  * 글자 포함으로 읽던 때는 「술통 받침대」(받침대 ⊃ 침대)·선반 기계가 은신처가 됐다(2026-11-11 단계×테마 표).
  */
 const HIDE_RANKS: readonly (readonly [number, readonly string[]])[] = [
@@ -20,9 +20,16 @@ const HIDE_RANKS: readonly (readonly [number, readonly string[]])[] = [
 const NOT_HIDE = /협탁|모니터|걸대|옆|램프|시계|창|그림|액자|화분|lamp|clock|window/iu;
 
 export function hideRankForLabel(label: string): number | null {
-  if (!label || NOT_HIDE.test(label)) return null;
-  for (const [rank, words] of HIDE_RANKS) if (words.some((w) => labelNames(label, w))) return rank;
+  // 괄호 속 부품(「개인 사물함(… 이름 램프)」의 램프)으로 가구를 버리지 않는다.
+  if (!label || NOT_HIDE.test(labelWithoutNotes(label))) return null;
+  for (const [rank, words] of HIDE_RANKS) if (words.some((w) => labelHasWord(label, w))) return rank;
   return null;
+}
+
+/** 이 칩셋에 숨을 만한 가구 그림이 하나라도 있는가 — 없으면 «그림이 없다», 있으면 «이 맵에 놓이지 않았다» 다. */
+export function tilesetHasHidingFurniture(project: Project, tilesetId: string): boolean {
+  const meta = (project.tilesets[tilesetId] as { tileMeta?: readonly ({ label?: string } | undefined)[] } | undefined)?.tileMeta ?? [];
+  return meta.some((m) => !!m?.label && hideRankForLabel(m.label) !== null);
 }
 
 const STEP: Record<Dir, readonly [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };

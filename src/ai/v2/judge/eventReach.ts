@@ -8,7 +8,7 @@
 //  - 이름이 문(탈출 문·현관…)이면 그림 「문」 칸에 붙인다 — 그 칸이 길목을 막는 것은 잠긴 문이라 괜찮지만 다른 조사 이벤트를 잃게 하면 안 된다.
 // 옮길 때는 원래 자리에서 가장 가까운, 가구 앞(옆이 못 지나는 물건 칸) 빈 바닥을 고른다.
 import { canMove, isPassable } from "@/project/collision";
-import { labelNames } from "@/project/labelWords";
+import { labelHasWord, labelNames } from "@/project/labelWords";
 import { playerAnchors, sameMapPassages } from "@/editor/tools/transferReachability";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { tileLabel } from "../place/cells";
@@ -248,7 +248,7 @@ export function itemTileWords(name: string): string[] {
 }
 
 const LAYER_KEYS = ["upperOverlayTiles", "upperTiles", "lowerOverlayTiles", "lowerTiles"] as const;
-/** 이름표의 물건이 words 중 하나인 칸들(바닥·벽·천장 제외, labelWords.ts) — 「책」이 「목책」을, 「종이」가 「안돈(종이 등잔)」을 잡지 않는다. */
+/** 이름표에 words 중 하나가 온전한 낱말로 든 칸들(바닥·벽·천장 제외, labelWords.ts) — 「책」이 「목책」을, 「종이」가 「안돈(종이 등잔)」을 잡지 않는다. */
 export function objectCells(project: Project, map: GameMap, words: readonly string[]): Set<number> {
   const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
   const lw = words.map((x) => x.toLowerCase());
@@ -256,7 +256,7 @@ export function objectCells(project: Project, map: GameMap, words: readonly stri
   const ok = (t: number | undefined) => {
     if (typeof t !== "number" || t < 0) return false;
     let hit = cache.get(t);
-    if (hit === undefined) { const label = baseLabel(tileLabel(project, map, t)).toLowerCase(); hit = !!label && !NOT_OBJECT_LABEL.test(label) && lw.some((x) => labelNames(label, x)); cache.set(t, hit); }
+    if (hit === undefined) { const label = baseLabel(tileLabel(project, map, t)).toLowerCase(); hit = !!label && !NOT_OBJECT_LABEL.test(label) && lw.some((x) => labelHasWord(label, x)); cache.set(t, hit); }
     return hit;
   };
   const out = new Set<number>();
@@ -266,7 +266,7 @@ export function objectCells(project: Project, map: GameMap, words: readonly stri
 
 /** 칩셋이 칸 역할을 적을 때 «놓는 물건»으로 적은 역할 — 건물·벽·울타리·땅 칸은 이름이 맞아도 맨바닥에 깔 그림이 아니다. */
 const PROP_ROLES = new Set(["prop", "furniture", "decor", "decoration", "detail"]);
-/** 칩셋에서 그 물건이 words 중 하나인 1칸 그림 하나(이름표가 (0,0) 하나뿐인 것). 없으면 undefined — 비슷한 것을 고르지 않는다. */
+/** 칩셋에서 물건 이름이 words 중 하나로 끝나는 1칸 그림 하나(이름표가 (0,0) 하나뿐인 것, labelNames — 새로 까는 그림이라 더 엄하다). 없으면 undefined. */
 export function singleTileObject(project: Project, map: GameMap, words: readonly string[]): { tile: number; label: string } | undefined {
   const meta = (project.tilesets[map.tilesetId]?.tileMeta ?? []) as unknown as ({ label?: string; role?: string } | undefined)[];
   const parts = new Map<string, { tile: number; coords: Set<string> }>();

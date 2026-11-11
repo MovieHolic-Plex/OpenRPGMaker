@@ -390,9 +390,13 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
 
   // ── chaser-hiding (추격자가 있는 실내)
   try {
-    if (!s.indoor || !spot) rec(s, "chaser-hiding", "n/a", s.indoor ? "no open spot" : "outdoor");
+    // 추격자 자리: 트인 자리가 없으면(가구가 찬 방) 걸어 닿는 빈 칸 아무 데나.
+    const reachC = reachableCells(P0, M0);
+    let cs = spot;
+    for (let i = 0; !cs && reachC && i < w * M0.height; i++) if (reachC[i] && !M0.events.some((e: any) => e.x === i % w && e.y === Math.floor(i / w)) && !(P0.startPos.x === i % w && P0.startPos.y === Math.floor(i / w))) cs = { x: i % w, y: Math.floor(i / w) };
+    if (!s.indoor || !cs) rec(s, "chaser-hiding", "n/a", s.indoor ? "no free cell" : "outdoor");
     else {
-      const ev = mkEvent("ev_t_chaser", "쫓는 그림자", spot.x, spot.y, [{ graphic: { sprite: { id: "tex_x", frame: 0 } }, trigger: { kind: "eventTouch" }, movement: { type: "chase", speed: 3, frequency: 3 }, commands: [{ kind: "gameOver" }] }]);
+      const ev = mkEvent("ev_t_chaser", "쫓는 그림자", cs.x, cs.y, [{ graphic: { sprite: { id: "tex_x", frame: 0 } }, trigger: { kind: "eventTouch" }, movement: { type: "chase", speed: 3, frequency: 3 }, commands: [{ kind: "gameOver" }] }]);
       const p1 = withMap(P0, s.mapId, (m) => { m.events.push(ev); return m; });
       // 단계 파일을 그대로 돌린다 — 숨을 가구가 없을 때 «못 한 것» 기록(v2.art-gap)이 남는지까지 본다.
       const emitted: any[] = [];
@@ -401,7 +405,7 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
       chaserHidingStage.run({ env, session: { missingArt: new Set<string>() }, notes } as any, "");
       const hides = env.ctx.project.maps[s.mapId].events.filter((e: any) => e.id.startsWith("ev_hide_"));
       const gap = emitted.find((e) => e.name === "v2.art-gap");
-      rec(s, "chaser-hiding", hides.length ? "eye" : gap ? "gap" : "none", hides.length ? `hiding at ${notes.join(" · ")}`.slice(0, 220) : `0 hiding spots${gap ? ` · recorded art gap «${gap.data.want}»` : ""} — ${notes[0] ?? ""}`.slice(0, 220));
+      rec(s, "chaser-hiding", hides.length ? "eye" : gap ? "gap" : "none", hides.length ? `hiding at ${notes.join(" · ")}`.slice(0, 220) : `0 hiding spots${gap ? ` · recorded art gap «${gap.data.want}»` : " · chipset has hiding furniture, none laid on this map (ship gate reports it)"} — ${notes[0] ?? ""}`.slice(0, 260));
     }
   } catch (e) { rec(s, "chaser-hiding", "wrong", `threw ${(e as Error).message.slice(0, 120)}`); }
 

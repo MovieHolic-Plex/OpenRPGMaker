@@ -1,9 +1,9 @@
 // 추격자가 있는데 숨을 곳이 0곳인 맵(2026-10-29 standin horror 「폐병원」) — 맵에 있는 옷장·사물함·침대·커튼 1~2곳을 순찰 길 가까이에서 은신처로.
-// 그런 가구가 맵에 없으면 못 한 것으로 적는다(다른 물건을 대신 고르지 않는다).
+// 다른 물건을 대신 고르지 않는다. 칩셋에 그런 가구 그림이 아예 없으면 없는 그림으로 적고(v2.art-gap), 그림은 있는데 이 맵에 놓이지 않았으면 적지 않는다 — 출하 검사(chaserMapsWithoutHiding)가 조수에게 돌려준다.
 import type { FinishStage } from "../../types";
 import type { Project } from "@/project/types";
 import { recordArtGaps } from "../../../shared/artGap";
-import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots } from "@/project/chaserHiding";
+import { chaserEvents, ensureChaserHidingSpots, mapHidingEvents, markHidingSpots, tilesetHasHidingFurniture } from "@/project/chaserHiding";
 
 export const stage: FinishStage = {
   id: "chaser-hiding", phase: "lane-project", order: 80,
@@ -26,6 +26,7 @@ export const stage: FinishStage = {
         notes.push(`${map0.name}: 추격자 은신처 ${auto.placed.map((p) => `${p.label}(${p.x},${p.y})`).join(" · ")}`);
       } else if (auto.note) {
         notes.push(`${auto.note} — 은신처 0곳`);
+        if (tilesetHasHidingFurniture(env.ctx.project, map0.tilesetId)) continue;
         const chaser = chaserEvents(map0)[0]!;
         recordArtGaps({ env, session }, "chaser-hiding", [{ tilesetId: map0.tilesetId, want: "hiding furniture", thing: "숨을 가구", note: "추격자에게서 숨을 옷장·사물함·침대·커튼", mapId, x: chaser.x, y: chaser.y }]);
       }
