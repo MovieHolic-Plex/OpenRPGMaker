@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { buildArtGaps, parseArtReview, toolReportsIn } from "@/harnesses/assistant-capability/node/mapVqa/artGaps";
 import { caught, plant, RECIPE_CLASSES, type Recipe } from "@/harnesses/assistant-capability/node/mapVqa/decoys";
 import { factsText, mapFacts } from "@/harnesses/assistant-capability/node/mapVqa/facts";
 import { buildTally, loadReviewer, parseReview, type MapReview } from "@/harnesses/assistant-capability/node/mapVqa/verdict";
@@ -128,5 +129,50 @@ describe("집계와 보정 판정", () => {
     expect(caught(review("a", [{ ...blocker, severity: "polish" }]), ["passage-mismatch"], planted)).toMatchObject({ strict: false, loose: false });
     // 먼 자리의 결함은 그 결함이 아니다.
     expect(caught(review("a", [{ ...blocker, region: { x: 15, y: 12, w: 1, h: 1 } }]), ["passage-mismatch"], planted)).toMatchObject({ strict: false, loose: false });
+  });
+});
+
+describe("없는 그림 장부", () => {
+  it("도구 결과 글에서 «그림이 없다» 신고를 꺼낸다 — 엔딩 그림 이야기는 맵 그림이 아니다", () => {
+    const text = [
+      '"missingArt":["항구에 정박한 배 (카드 대기: 그림 완성·선택 전, 맵에 없음)"]',
+      "「항구에 정박한 배」 그리기 카드를 대기열에 올렸다(floor, 2×1칸 — 놓을 자리 (51,22) 칸 (51,22), 칩셋 beodeul_city). 아직 그려지지 않았고",
+      "「고대 유적 석조 입구」과(와) 이름이 맞는 기물이 이 칩셋에 이미 있다 — 새로 그리지 말고 이것을 써라: bd-mpart-ivy-arch(담쟁이 아치(정원 입구)) → stamp_object(",
+      "협탁(12,5) — N 쪽을 보는 그림이 없다(그대로 둠)",
+      "고침: 방 곁굴 의 특징 crystals 은 놓을 빈 바닥·그림이 없어 빠졌다.",
+      " ✗blocked ships 항구에 드나드는 배 표현하기 — 배 그림이 아직 공방 대기 중이라 배치할 objectId가 없고",
+      " ✓ g7 [출하 차단 ending-closure] 엔딩 「도시의 숨」이 장면으로 맺지 않는다: 마지막 그림이 없다 — presentation.backgroundResourceId",
+    ].join("\n");
+    const reports = toolReportsIn("make_place", text);
+    expect(reports.map((report) => `${report.kind}:${report.thing}`)).toEqual([
+      "missing-art:항구에 정박한 배", "card-queued:항구에 정박한 배", "stand-in-offered:고대 유적 석조 입구", "no-direction-art:협탁 (N 쪽을 보는 그림)", "feature-dropped:crystals", "blocked-todo:항구에 드나드는 배 표현하기",
+    ]);
+    expect(reports.find((report) => report.kind === "card-queued")!.chipset).toBe("beodeul_city");
+    expect(reports.find((report) => report.kind === "stand-in-offered")!.instead).toContain("bd-mpart-ivy-arch");
+    expect(toolReportsIn("todo", "엔딩 「도시의 숨」: 마지막 그림이 없다")).toEqual([]);
+  });
+  it("검수자 답: 이름은 한국어, 가리킨 곳은 request·event·label 가운데 하나여야 한다", () => {
+    const size = { width: 20, height: 15 };
+    const good = parseArtReview('{"theme":"사막 시장","missing":[{"thing":"노점","count":3,"named_by":"label","where":{"x":1,"y":2,"w":30,"h":2},"instead":"맨바닥"}],"wrong_theme":[{"thing":"battle-scenery-forest","kind":"backdrop","fitting":"사막 전투 배경","why":"숲 배경"}]}', size)!;
+    expect(good.missing[0]).toMatchObject({ thing: "노점", count: 3, namedBy: "label", instead: "맨바닥", unsure: false });
+    expect(good.wrongTheme[0]).toMatchObject({ kind: "backdrop", fitting: "사막 전투 배경" });
+    expect(parseArtReview('{"missing":[{"thing":"stall","named_by":"label"}],"wrong_theme":[]}', size)).toBeNull();
+    expect(parseArtReview('{"missing":[{"thing":"노점","named_by":"story"}],"wrong_theme":[]}', size)).toBeNull();
+    expect(parseArtReview('{"missing":[]}', size)).toBeNull();
+    expect(parseArtReview('{"missing":[],"wrong_theme":[]}', size)).toEqual({ theme: "", missing: [], wrongTheme: [] });
+  });
+  it("장부: 같은 것으로 묶인 이름은 한 줄이고, 바란 실행이 많은 것이 먼저 온다", () => {
+    const where = (group: string, label: string) => ({ group, label, chipset: "beodeul_city", theme: "" });
+    const rows = buildArtGaps([
+      { source: "reviewer", thing: "좌판", instead: "맨바닥", where: where("A:r1", "m1") },
+      { source: "reviewer", thing: "노점", instead: "맨바닥", where: where("A:r2", "m2") },
+      { source: "tool", thing: "배", instead: "없음", where: where("B:harbor", "맵 깔기 harbor") },
+      { source: "reviewer", thing: "배", instead: "", unsure: true, where: where("B:harbor", "m3") },
+      { source: "theme", thing: "사막 전투 배경", instead: "battle-scenery-forest", kind: "backdrop", where: where("A:r1", "m1") },
+    ], { 좌판: "노점" });
+    expect(rows.map((row) => [row.thing, row.runs, row.maps])).toEqual([["노점", 2, 2], ["배", 1, 2], ["사막 전투 배경", 1, 1]]);
+    expect(rows[0]).toMatchObject({ fromReviewer: 2, fromTools: 0, unsureOnly: false, instead: ["맨바닥"], names: ["좌판", "노점"] });
+    expect(rows[1]).toMatchObject({ fromReviewer: 1, fromTools: 1, unsureOnly: false });
+    expect(rows[2]).toMatchObject({ wrongTheme: 1, instead: ["battle-scenery-forest"] });
   });
 });
