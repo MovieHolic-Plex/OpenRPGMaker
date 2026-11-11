@@ -1,7 +1,7 @@
 // 조수 v2 — 실내에서 사람이 서기에 나쁜 칸의 비용(문 곁·가구의 하나뿐인 접근 칸·문틈·양탄자).
 import type { GameMap, Project } from "@/project/types";
 import { terrainReachability } from "@/project/terrainReachability";
-import { Cell, DIRS, eventsOf, hasTransfer, transferCells, walkStart, dist, edgeExitCells, WALL_LABEL, tileLabel, layers, objectAt } from "./cells";
+import { Cell, DIRS, eventsOf, hasTransfer, transferCells, walkStart, dist, edgeExitCells, groundBlocks, tileLabel, layers, objectAt } from "./cells";
 
 // ── 실내 사람 자리 비용 ──────────────────────────────────────────────────────
 // 2026-10-29 room-vig6 tavern 88: 주인·선원·일꾼 셋이 양탄자 윗머리에 위아래로 붙어 섰다(판정 「NPC 가 겹쳐 서서 카펫 시작부를 막는다」).
@@ -46,11 +46,10 @@ export function personSpotCost(project: Project, map: GameMap, c: Cell, ctx: Per
   const inside = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h;
   let cost = 0;
   if (ctx.doors.some((d) => dist(d, c) < 2)) cost += 6;
-  const { lower } = layers(map);
   for (const [dx, dy] of DIRS) {
     const nx = c.x + dx, ny = c.y + dy;
     if (!inside(nx, ny) || !objectAt(map, { x: nx, y: ny })) continue;
-    if (WALL_LABEL.test(tileLabel(project, map, lower?.[ny * w + nx]))) continue; // 벽에 건 그림·창은 앞을 막아도 쓸 수 있다
+    if (groundBlocks(project, map, { x: nx, y: ny })) continue; // 벽에 건 그림·창(바닥층이 벽인 칸)은 앞을 막아도 쓸 수 있다
     let open = 0;
     for (const [ex, ey] of DIRS) {
       const mx = nx + ex, my = ny + ey;

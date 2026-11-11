@@ -1,6 +1,7 @@
 // 걸어 닿지 못하는 자리 고치기 — 조사 이벤트를 닿는 칸 옆으로 옮기고(repairEventReach), 이동 칸 앞 길·대상 앞 칸을 비우고, 몰린 사람을 흩는다. 닿기 읽기는 judge/eventReach.ts.
 import { canMove, isPassable } from "@/project/collision";
 import { playerAnchors } from "@/editor/tools/transferReachability";
+import { labelHasWord } from "@/project/labelWords";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { PERSON_SPOT_BAD, personSpotContext, personSpotCost } from "./personSpot";
 import { declaredDoorCells } from "./entrances";
@@ -299,7 +300,9 @@ export function clearTransferLanes(run: BuildRun, mapId: string): ReachRepair {
 // 옆·뒤로 돌아가야만 말을 걸 수 있었다. 3/4 시점에서 사람은 대상의 앞(아래 칸)에서 위를 보고 말을 건다고 기대한다.
 // 규칙: 조사·대화 이벤트의 아래 칸에 못 닿는데 둘레 한 칸 안의 앉는 가구(의자·걸상·벤치) 하나를 치우면 닿게 되면 그 가구를 치운다.
 // 탁자·장식장 같은 다른 가구는 건드리지 않는다(자리가 안 열리면 그대로 둔다 — 옆·뒤로는 여전히 닿는다).
-const SEAT_LABEL = /의자|걸상|스툴|벤치|장의자|chair|stool|bench/iu;
+// 앉는 가구는 이름으로 읽는다(온전한 낱말) — 글자로 읽으면 「전차 정류장 지붕(기둥 + 벤치)」「버스 정류장(지붕 + 의자)」 이 치울 의자였다.
+const SEAT_WORDS = ["의자", "걸상", "스툴", "벤치", "장의자", "chair", "stool", "bench"] as const;
+const isSeatLabel = (label: string): boolean => SEAT_WORDS.some((word) => labelHasWord(label, word));
 
 const singleTileCache = new WeakMap<object, Set<string>>();
 
@@ -344,7 +347,7 @@ export function clearTargetFronts(run: BuildRun, mapId: string): string[] {
       const seats: { label: string; cells: number[] }[] = [];
       for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
         const cluster = objectClusterAt(project, map, front.x + dx, front.y + dy);
-        if (!cluster || !SEAT_LABEL.test(cluster.label)) continue;
+        if (!cluster || !isSeatLabel(cluster.label)) continue;
         const key = [...cluster.cells].sort((a, b) => a - b).join(",");
         if (seen.has(key)) continue;
         seen.add(key);
