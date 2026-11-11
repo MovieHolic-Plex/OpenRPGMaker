@@ -326,6 +326,9 @@ npm run harness -- assistant-capability small-jobs-rescore --run <그 폴더>   
 - 결과 `jobs/<id>/result.json`: `status`(pass·fail·timeout·infra) · `reason` · `check`(outcome·damage·sideEdits) · `toolCalls`(이름 순서, 거절 표시) ·
   `wallMs`(보낸 뒤 가라앉기까지) · `runMs` · `modelCalls` · `tokens`(input·output·cacheRead·검토자) · `systemPromptChars` · `toolsOffered`(+이름) ·
   `complete`(v2 의 `v2.todo.final`) · `persistence` · `trace`(호출 인자·모델이 받은 글 발췌) · `answer`. `before.json.gz`/`after.json.gz` 는 타일셋 본문을 뺀 저장 문서다.
+  Claude Code 고리(`local-cli`, Haiku 측정)는 `prompt_inspection` 사건이 없다 — `systemPromptChars` · `toolsOffered`(+이름) · `toolSchemaChars` 는 턴 끝 `stats.exposure` 의
+  **첫 목록**(`firstList` — 대사 다듬기 패스가 목록을 갈아 끼우기 전의 것)에서 읽는다. `costUsd`(CLI 가 보고한 환산값, 구독 한도 사용 — Pi 고리는 null) · `totalTokens`(캐시 읽기 · 쓰기 포함)도 일마다 적고 `summary.totals` 에 합친다.
+  두 고리는 풀과 첫 목록이 같은 함수(`toolExposure.ts`)지만 늦게 싣는 길이 다르다(CLI 는 목록을 얼리고 `load_tools` → `call_tool{name,args}`) — 통과 · 까닭의 갈래는 견줄 수 있고 **호출 수 · 토큰은 고리 사이에 견주지 않는다**.
 - **통과 = 판정 합격 + 저장·재로드 확인 + 시간 안**. 저장·재로드 확인 = 저장 성공 + 새 컨텍스트가 읽은 맵·자료집이 저장한 것과 같다(`rendererEqual`).
   새 컨텍스트는 부팅하며 한 번 더 저장해 저장 문서의 sha 가 달라질 수 있다(내용 변화 0 — 2026-11-11 실측). 그것은 유실이 아니고, 판정은 그 뒤의 저장 문서를 읽는다. `timeout` 은 그때까지의 저장 결과에 판정을 돌려 까닭에 적되 통과로 세지 않는다.
   `infra` 는 도구 호출 0 + 오류로 턴이 시작하지 못한 경우(모델·호스트 쪽)이고 조수의 불합격과 따로 센다. 어느 것도 다시 돌려 초록으로 바꾸지 않는다 —

@@ -2320,7 +2320,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     project: ctx.project,
     stats: { ms: Date.now() - started, turns, toolCalls, toolErrors, ...(usage ? { usage } : {}), ...(localLoop ? (() => { const local = localLoop.stats(); return { engine: local.engine, billing: local.billing, ...(local.costUsd !== undefined ? { costUsd: local.costUsd } : {}),
       exposure: { systemChars: local.weight.systemChars, toolsListed: local.weight.listCount, listChars: local.weight.listChars, listChanged: local.listChanged,
-        ...(local.weight.systemSections ? { systemSections: local.weight.systemSections } : {}), ...(local.weight.listTop ? { listTop: local.weight.listTop } : {}),
+        ...(local.weight.systemSections ? { systemSections: local.weight.systemSections } : {}), ...(local.weight.listTop ? { listTop: local.weight.listTop } : {}), ...(local.weight.firstList ? { firstList: local.weight.firstList } : {}),
         ...(local.weight.requests ? { requests: local.weight.requests } : {}), results: local.weight.results } }; })() : {}),
       ...(sideUsage.calls ? { review: { ...sideUsage, totalTokens: sideUsage.input + sideUsage.output + sideUsage.cacheRead + sideUsage.cacheWrite } } : {}),
       ...(leadUsage.calls ? { lead: { ...leadUsage, model: split?.lead.model, totalTokens: leadUsage.input + leadUsage.output + leadUsage.cacheRead + leadUsage.cacheWrite } } : {}) },
