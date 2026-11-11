@@ -158,41 +158,46 @@ function fillHoles(map: GameMap, tile: number): void {
   for (let i = 0; i < map.lowerTiles.length; i += 1) if (map.lowerTiles[i] === 0) map.lowerTiles[i] = tile;
 }
 
-function stampOne(project: Project, tryTool: Try, map: GameMap, reserved: Set<string>, x: number, y: number, kit: "se-bamboo" | "se-tree-pine-small"): boolean {
-  const w = 2;
-  const h = kit === "se-bamboo" ? 3 : 2;
-  if (x < 1 || y < 1 || x + w >= map.width || y + h >= map.height) return false;
-  for (let dy = 0; dy < h; dy += 1) for (let dx = 0; dx < w; dx += 1) if (reserved.has(`${x + dx},${y + dy}`)) return false;
-  const ok = tryTool(project, "stamp_object", {
-    objectId: `kit:sengoku_edo/${kit}`, mapId: map.id, x, y, layers: "upper", onOverlap: "nearest",
-  });
-  if (!ok) return false;
-  for (let dy = 0; dy < h; dy += 1) for (let dx = 0; dx < w; dx += 1) reserved.add(`${x + dx},${y + dy}`);
+const BAMBOO_ROWS = [[667, 668], [669, 670], [671, 672]] as const;
+const PINE_ROWS = [[641, 642], [643, 644]] as const;
+const CEDAR_ROWS = [[659, 660], [661, 662], [663, 664], [665, 666]] as const;
+
+function blitRows(map: GameMap, x: number, y: number, rows: readonly (readonly number[])[], blocked: Set<string>): boolean {
+  const h = rows.length;
+  const w = rows[0]!.length;
+  if (x < 0 || y < 0 || x + w > map.width || y + h > map.height) return false;
+  for (let dy = 0; dy < h; dy += 1) for (let dx = 0; dx < w; dx += 1) if (blocked.has(`${x + dx},${y + dy}`)) return false;
+  for (let dy = 0; dy < h; dy += 1) for (let dx = 0; dx < w; dx += 1) {
+    const tile = rows[dy]![dx]!;
+    if (tile >= 0) map.upperTiles[(y + dy) * map.width + x + dx] = tile;
+  }
+  for (let dy = 0; dy < h; dy += 1) for (let dx = 0; dx < w; dx += 1) blocked.add(`${x + dx},${y + dy}`);
   return true;
 }
 
-function stampForest(project: Project, tryTool: Try, map: GameMap, path: Set<string>, reserved: Set<string>, dense: boolean): void {
-  const nearPath = (x: number, y: number): number => {
+function stampForest(_project: Project, _tryTool: Try, map: GameMap, path: Set<string>, reserved: Set<string>, dense: boolean): void {
+  const blocked = new Set<string>([...path, ...reserved]);
+  const near = (x: number, y: number): number => {
     let best = 99;
-    for (let dy = -8; dy <= 8; dy += 1) {
-      for (let dx = -8; dx <= 8; dx += 1) {
-        if (path.has(`${x + dx},${y + dy}`)) best = Math.min(best, Math.abs(dx) + Math.abs(dy));
-      }
+    for (let dy = -6; dy <= 6; dy += 1) for (let dx = -6; dx <= 6; dx += 1) {
+      if (path.has(`${x + dx},${y + dy}`)) best = Math.min(best, Math.abs(dx) + Math.abs(dy));
     }
     return best;
   };
-  for (let y = 1; y < map.height - 4; y += 1) {
-    for (let x = 1; x < map.width - 3; x += 1) {
-      if (path.has(`${x},${y}`)) continue;
-      const n = hash01(x, y, dense ? 21 : 8);
-      const dist = nearPath(x, y);
-      const margin = 2 + (hash01(x, y, 17) > 0.7 ? 1 : 0);
-      if (dist < margin) continue;
-      if (n > (dense ? 0.28 : 0.2)) continue;
-      const kit = n < 0.18 ? "se-tree-pine-small" : n > 0.9 ? "se-tree-pine" : "se-bamboo";
-      const jx = x + (hash01(x, y, 5) > 0.5 ? 1 : 0);
-      const jy = y + (hash01(x, y, 6) > 0.66 ? 1 : 0);
-      stampOne(project, tryTool, map, reserved, jx, jy, kit === "se-tree-pine" ? "se-tree-pine-small" : kit);
+  for (let y = 0; y < map.height - 3; y += 1) {
+    for (let x = 0; x < map.width - 2; x += 1) {
+      const dist = near(x, y);
+      if (dist < 2) {
+        const n = hash01(x, y, 8);
+        if (dist === 1 && n < 0.4) map.lowerTiles[y * map.width + x] = n < 0.15 ? FLOWER : DARK;
+        continue;
+      }
+      if (y % 3 !== 0 || x % 2 !== 0) continue;
+      const clearing = hash01(Math.floor(x / 7), Math.floor(y / 5), dense ? 3 : 6) > 0.78;
+      if (clearing) continue;
+      const roll = hash01(x, y, 9);
+      const rows = roll < 0.12 ? PINE_ROWS : roll > 0.88 ? CEDAR_ROWS : BAMBOO_ROWS;
+      blitRows(map, x + (hash01(x, y, 5) > 0.5 ? 1 : 0), y, rows, blocked);
     }
   }
 }
@@ -341,7 +346,6 @@ function laySideWood(project: Project, exec: Exec, tryTool: Try, id: string, nam
       }
     }
   }
-  stampForest(project, tryTool, map, path, reserve(map, path, []), name.includes("덤불"));
   return id;
 }
 
@@ -407,8 +411,6 @@ export function layIronLotusWorld(
   door(deep, "ev_il_deep_west", "청죽림 입구", 1, IL_DEEP_PATH_Y, ids.grove, grove.width - 5, pathY, "left");
   door(deep, "ev_il_deep_east", "사원으로", deep.width - 2, IL_DEEP_PATH_Y, ids.temple, templeLanding.x, templeLanding.y, "up");
 
-  stampForest(project, tryTool, grove, grovePath, reserve(grove, grovePath, [[14, 12, 22, 17], [28, 15, 32, 19]]), false);
-  stampForest(project, tryTool, deep, deepPath, reserve(deep, deepPath, [[16, 12, 22, 16], [26, 13, 30, 16]]), true);
   carveSpur(grove, 16, pathY, 16, 4);
   const streamId = laySideWood(project, exec, tryTool, "il_grove_stream", "청죽림 물길", 36, 28, true);
   const thicketId = laySideWood(project, exec, tryTool, "il_grove_thicket", "청죽림 가시덤불", 34, 28, false);
@@ -511,6 +513,48 @@ export function layIronLotusWorld(
     page.commands.unshift({ kind: "showAnimation", animationId: `fx:container:${style}`, target: "player", wait: true } as Command);
   }
 
+  const liveInn = project.maps[inn.map.id]!;
+  const liveShop = project.maps[shop.map.id]!;
+  const liveNave = project.maps[nave.map.id]!;
+  const liveAnnex = project.maps[annex.map.id]!;
+  for (const map of [liveInn, liveShop, liveNave, liveAnnex]) {
+    for (let i = 0; i < map.upperTiles.length; i += 1) map.upperTiles[i] = -1;
+  }
+  placeFurn(liveInn, "se-futon", 3, 4);
+  placeFurn(liveInn, "se-tansu", 16, 4);
+  placeFurn(liveInn, "se-zataku", 8, 8);
+  placeFurn(liveInn, "se-zabuton", 7, 10);
+  placeFurn(liveInn, "se-zabuton", 11, 10);
+  placeFurn(liveInn, "se-andon", 14, 8);
+  placeFurn(liveInn, "se-window-shoji", 4, 2);
+  placeFurn(liveInn, "se-meal-tray", 9, 9);
+  placeFurn(liveShop, "se-shop-counter", 6, 6);
+  placeFurn(liveShop, "se-goods-shelf", 3, 3);
+  placeFurn(liveShop, "se-cash-box", 12, 6);
+  placeFurn(liveShop, "se-andon", 13, 4);
+  placeFurn(liveShop, "se-kimono-rack", 3, 8);
+  placeFurn(liveNave, "se-dais", 10, 4);
+  placeFurn(liveNave, "se-scroll", 4, 3);
+  placeFurn(liveNave, "se-kamidana", 16, 3);
+  placeFurn(liveNave, "se-taiko", 18, 8);
+  placeFurn(liveAnnex, "se-armor", 3, 4);
+  placeFurn(liveAnnex, "se-sword-rack", 8, 4);
+  placeFurn(liveAnnex, "se-writing-desk", 12, 6);
+  placeFurn(liveAnnex, "se-go-board", 6, 8);
+  // 도구가 프로젝트를 복제하면 그 전에 들고 있던 맵 객체에 찍은 나무는 버려진다. 모든 도구 뒤에 살아있는 맵에 다시 심는다.
+  for (const [id, dense] of [
+    [ids.grove, false], [deepId, true], [streamId, false], [thicketId, true], [gladeId, false],
+  ] as const) {
+    const map = project.maps[id];
+    if (!map) continue;
+    const path = new Set<string>();
+    for (let i = 0; i < map.lowerTiles.length; i += 1) {
+      const tile = map.lowerTiles[i];
+      if (tile === PATH || tile === 5) path.add(`${i % map.width},${Math.floor(i / map.width)}`);
+    }
+    for (let i = 0; i < map.upperTiles.length; i += 1) map.upperTiles[i] = -1;
+    stampForest(project, tryTool, map, path, reserve(map, path, []), dense);
+  }
   return {
     hub: ids.hub,
     grove: ids.grove,

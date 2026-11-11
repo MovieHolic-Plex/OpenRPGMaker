@@ -8,6 +8,7 @@ import { RETRO_PIXEL_FX_URLS } from "./retroPixelAnimations";
 import { EMERALD_OPENING_BACKDROP_URLS } from "./emeraldOpeningBackdrops";
 import { ASTRA_CAST_URLS, ASTRA_TITLE_ART_URLS } from "./astraCast";
 import { FALLEN_STAR_BACKDROP_URLS } from "./fallenStarOpeningBackdrops";
+import { IRON_LOTUS_PLATE_URLS } from "@/project/flagship/ironLotusPlates";
 import { FIRST_LOVE_OPENING_BACKDROP_URLS } from "./firstLoveOpeningBackdrops";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { withInlineAsset } from "./inlineAssetStore";
@@ -66,6 +67,7 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   ...ASTRA_TITLE_ART_URLS,
   // 『폴른 스타』 오프닝·타이틀 배경(게임 맵을 1:1 로 구운 그림).
   ...FALLEN_STAR_BACKDROP_URLS,
+  ...IRON_LOTUS_PLATE_URLS,
   // 『첫사랑』 오프닝 몽타주 배경(게임 맵을 1:1 로 구운 그림).
   ...FIRST_LOVE_OPENING_BACKDROP_URLS,
   hero: null,

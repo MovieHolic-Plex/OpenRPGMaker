@@ -21,9 +21,7 @@ import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
   IL_BACKDROP_BAMBOO_ID,
   IL_BACKDROP_TEMPLE_ID,
-  IL_BACKDROP_ENDING_ID,
   IL_BACKDROP_TOWN_ID,
-  IL_SEOLRIN_BATTLER_ID,
   IL_SEOLRIN_CHARSET_ID,
   IL_SEOLRIN_FACE_ID,
   installIronLotusArt,
@@ -31,6 +29,7 @@ import {
 import { buildIronLotusOpening } from "./ironLotusOpening";
 import { applyIronLotusLore } from "./ironLotusLore";
 import { IL_BATTLE_FOE, IL_BATTLE_STAND, layIronLotusWorld } from "./ironLotusMaps";
+import { IL_PLATE_TOWN_ID } from "./ironLotusPlates";
 import { IL_NAMES, IL_PREFIX, IRON_LOTUS_ACT1 } from "./ironLotusStory";
 import type { FlagshipDemoBuildResult } from "./types";
 
@@ -158,7 +157,7 @@ function setupCast(project: Project): void {
   hero.nickname = "중계 기체";
   hero.characterResourceId = IL_SEOLRIN_CHARSET_ID;
   hero.characterIndex = 0;
-  hero.battleCharacterResourceId = IL_SEOLRIN_BATTLER_ID;
+  hero.battleCharacterResourceId = "charset-battler-il-seolrin";
   hero.faceResourceId = IL_SEOLRIN_FACE_ID;
   hero.initialLevel = 5;
 
@@ -675,7 +674,7 @@ export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
 
   const backdropOf = (mapId: string): string => {
     if (mapId === ids.temple || mapId === world.nave || mapId === world.annex) return IL_BACKDROP_TEMPLE_ID;
-    if (mapId === ids.grove || mapId === world.deep) return IL_BACKDROP_BAMBOO_ID;
+    if (mapId === ids.grove || mapId === world.deep || mapId === world.stream || mapId === world.thicket || mapId === world.glade) return IL_BACKDROP_BAMBOO_ID;
     return IL_BACKDROP_TOWN_ID;
   };
   for (const map of Object.values(project.maps)) {
@@ -697,7 +696,7 @@ export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
     epilogue: [{ kind: "say", speaker: "설린", text: "북쪽 응답, 유지 중.\n집은 아직 꺼지지 않았습니다." }],
     presentation: {
       kicker: "제1막 끝",
-      backgroundResourceId: IL_BACKDROP_ENDING_ID,
+      backgroundResourceId: IL_PLATE_TOWN_ID,
       credits: [
         "설린 — 중계 기체",
         "백리호 — 청죽문 제자",
@@ -783,7 +782,7 @@ export function createIronLotusFlagshipDemo(): FlagshipDemoBuildResult {
   execTool(project, "set_title_screen", {
     title: "강호의 철련",
     logoStyle: "gold",
-    backgroundResourceId: IL_BACKDROP_TOWN_ID,
+    backgroundResourceId: IL_PLATE_TOWN_ID,
     backgroundFit: "cover",
     backgroundRendering: "pixelated",
     menuLabels: { newGame: "새 여정", continueGame: "이어하기", credits: "만든 사람" },

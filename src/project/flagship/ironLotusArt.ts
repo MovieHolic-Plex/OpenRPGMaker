@@ -33,20 +33,6 @@ export function installIronLotusArt(project: Project): void {
     id: IL_SEOLRIN_BATTLER_ID, name: "설린 전투", kind: "battleCharset", dataUrl: BATTLER_URL,
     meta: { width: 144, height: 384, frameWidth: 48, frameHeight: 48, frames: 24 },
   });
-  for (const foe of FOES) {
-    const id = ({
-      snake: "generated-enemy-snake-viper",
-      assassin: "generated-enemy-bandit-mask",
-      disciple: "generated-enemy-orc-01",
-      bandit: "generated-enemy-orc-warrior",
-      puppet: "generated-enemy-slime-metal",
-      wolf: "generated-enemy-wolf-dire",
-    } as Record<string, string>)[foe.kind]!;
-    const sheetId = `${id}-sheet`;
-    put(project, { id: sheetId, name: `${foe.kind} 시트`, kind: "picture", dataUrl: foe.sheet, meta: { width: 240, height: 192, frameWidth: 48, frameHeight: 48, frames: 20 } });
-    put(project, {
-      id, name: foe.kind, kind: "monster", dataUrl: foe.portrait,
-      meta: { width: 48, height: 48, pixelEnemySheet: { sheetResourceId: sheetId, cell: 48, motion: foe.kind === "snake" ? "dash" : foe.kind === "wolf" ? "dash" : foe.kind === "puppet" ? "stomp" : "shoot", idleFrameMs: 180, grid: "5x4" } },
-    });
-  }
+  // 적 그림은 번들 전투 시트를 쓴다. 코드로 그린 시트로 generated-enemy-* 를 덮으면 필드와 전투가 같이 망가진다.
+  void FOES;
 }

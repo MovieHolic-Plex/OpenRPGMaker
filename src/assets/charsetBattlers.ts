@@ -50,6 +50,16 @@ const CLASS_BATTLERS = [
     characterIndex: 0,
     label: "걷기 칩 전투 · 심문관 발렌(긴 푸른 머리)",
   },
+  {
+    // 은발 여검사 시트에서 파생. 같은 48px 칸·같은 포즈. 눈 자리에 청록 바이저, 붉은 목도리를 남색 깃으로.
+    // scripts/asset-gen/charset-battler/derive_seolrin.py
+    resourceId: "charset-battler-il-seolrin",
+    path: "assets/generated/charset-battlers/il-seolrin.png",
+    castPath: "assets/generated/charset-battlers/cast/silver-swordswoman.png",
+    characterResourceId: "oprn-charset-il-seolrin",
+    characterIndex: 0,
+    label: "걷기 칩 전투 · 설린(은발·청록 바이저)",
+  },
 ];
 
 /**
