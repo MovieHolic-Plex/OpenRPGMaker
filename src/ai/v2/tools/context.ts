@@ -37,6 +37,7 @@ import { zoneStatusLines } from "../loop/roomZones";
 import { stageOpensBattle } from "../story/stageBattle";
 import { V2_MAX_REPAIR_ROUNDS } from "../turn/session";
 import { hasRoomKit } from "../judge/placeFix";
+import { linkAtRoadMouths } from "../place/roadMouths";
 import { LINK_SIDES, repairCap, text, see, seenPayload, withImages, recordWrite, nextStep } from "./support";
 
 /** createV2Tools 에서 뗀 것 — task · run · poolVillage · requestWorld · freshStart · lean · epoch · specShown …. (makeVerbContext) */
@@ -295,7 +296,14 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
         } else if (isOutdoor(spec) && !!parentSpec && isOutdoor(parentSpec)) {
           // 바깥끼리는 가장자리로 잇는다 — 그 변이 막혔으면(물·절벽) 다른 변을 차례로 해 본다. 다 안 되면 아래 이동 칸(집 문 그림이 바깥 맵 사이 문이 되지 않게 먼저 변을 다 쓴다).
           const first = side ?? "north";
-          for (const dir of [first, ...LINK_SIDES.filter((d) => d !== first)]) {
+          // 길이 맵 끝에 닿는 자리끼리 먼저 — 가장자리 한가운데는 길도 문도 없는 맨땅일 때가 많다.
+          const cellOn = (entrance: PlaceBuildResult["entrance"], mapId: string) => (entrance && entrance.mapId === mapId ? { x: entrance.x, y: entrance.y } : undefined);
+          const viaRoads = linkAtRoadMouths(run, parentMap, childMap, first, {
+            parent: cellOn(parentResult?.entrance, parentMap), child: cellOn(result.entrance, childMap),
+            parentDoors: parentResult ? villageDoors(parentResult) : [], childDoors: villageDoors(result),
+          });
+          if (viaRoads?.ok) { linked = true; notes.push(viaRoads.note); }
+          for (const dir of linked ? [] : [first, ...LINK_SIDES.filter((d) => d !== first)]) {
             const r = run.call("link_maps", { from: { mapId: parentMap, exit: { side: dir } }, to: { mapId: childMap, entry: { side: oppositeSide(dir) } } });
             if (!r.ok) continue;
             linked = true; notes.push(`${pName} ${dir} 가장자리 ↔ ${cName}`);

@@ -10,6 +10,9 @@
 //   - 모든 트인 구역은 용도를 갖는다(야자 숲·천막 야영지·폐허·사구 들판·밭…). «공간이 남으면 공간이 너무 큰 것» — 최소 크기를 지킨다.
 // 순수 함수다(프로젝트를 모른다). 칸 번호는 호출자가 준 사전(palette)에서 얻는다 — 도구는 번들 정의에서, QA 스크립트는 구운 JSON 에서.
 
+import { deadAlleyMouths } from "./composerDeadAlleys";
+import { exitRoadThroughWild, type ExitSide } from "./composerExitRoads";
+
 export type DesertKind = "oasis" | "bazaar" | "palace" | "pyramid" | "caravanserai";
 
 export interface DesertKit {
@@ -39,6 +42,8 @@ export interface DesertSpec {
   readonly height: number;
   readonly kind: DesertKind;
   readonly seed?: number;
+  /** 다른 맵으로 나가는 변 — 길 그물에서 그 변의 가장자리까지 흙길을 낸다(이미 닿아 있으면 그대로). */
+  readonly exits?: readonly ExitSide[];
   /** QA 전용: 닿지 못한 문이 있어도 마지막 판을 돌려준다(notes 에 적는다). */
   readonly debugKeepUnreachable?: boolean;
 }
@@ -66,6 +71,8 @@ const BUILDING_NAME: Readonly<Record<string, string>> = {
   "de-domed-hall": "회당", "de-palace": "궁전", "de-tent-bedouin": "유목 천막", "de-tent-pavilion": "정자 천막", "de-pyramid-door": "피라미드 입구", "de-ziggurat": "지구라트",
 };
 
+/** 트인 모래에 흩어 둔 것(wildDesert·scatter) — 나가는 길이 지나면 걷어도 되는 소품. */
+const WILD_PROP = /^de-(scrub|tuft|rock-small|aloe|boulder|outcrop|acacia)/;
 type Mat = "s" | "r" | "g" | "w" | "d" | "f";
 type Use = "open" | "road" | "plaza" | "grass" | "water" | "bld" | "prop" | "wall" | "field";
 interface Rect { x: number; y: number; w: number; h: number }
@@ -197,6 +204,22 @@ class Board {
     return b;
   }
   zone(name: string, use: string, rect: Rect): void { this.zones.push({ name, use, rect }); }
+  /** 길 그물에서 그 변의 가장자리까지 흙길을 낸다 — 빈 모래를 지나고(건물·풀·물·세워 둔 물건은 돌아간다), 길과 길섶에 걸친 흩어 둔 덤불·바위는 걷는다. */
+  exitRoad(side: ExitSide): void {
+    const wild = this.props.map((p) => { const kit = WILD_PROP.test(p.kit) ? this.pal.kit(p.kit) : undefined; return kit ? { x: p.x, y: p.y, w: kit.width, h: kit.height } : undefined; });
+    const road = exitRoadThroughWild({ W: this.W, H: this.H, isRoad: (x, y) => this.u(x, y) === "road" || this.u(x, y) === "plaza", canPave: (x, y) => this.u(x, y) === "open" }, side, wild);
+    if (!road) { this.notes.push(`${side} 가장자리까지 길을 내지 못했다`); return; }
+    for (const i of road.drop) {
+      const p = wild[i]!;
+      for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) {
+        if (!this.in(x, y)) continue;
+        const k = this.k(x, y);
+        this.lower[k] = -1; this.upper[k] = -1; this.use[k] = "open"; this.reserved[k] = false;
+      }
+      this.props.splice(i, 1);
+    }
+    for (const c of road.cells) this.ground({ x: c.x, y: c.y, w: 1, h: 1 }, "r", "road");
+  }
 
   /** 접근칸에서 가장 가까운 길·광장까지 곧은 샛길(아래 → 옆). */
   connect(b: DesertBuilding, mat: Mat = "r"): void {
@@ -315,6 +338,13 @@ class Board {
     const k = this.k(x, y), lo = this.lower[k]!, up = this.upper[k]!;
     return (lo < 0 || this.pal.passable(lo)) && (up < 0 || this.pal.passable(up));
   }
+  /** 어디로도 가지 않는 골목(집 사이 틈과 그 뒤 성벽 밑 맨모래 띠)의 어귀를 항아리·상자로 막는다 — 걷는 사람이 길로 알고 들어가 막히지 않게(composerDeadAlleys.ts). */
+  closeDeadAlleys(start: DesertCell): void {
+    const mouths = deadAlleyMouths({ W: this.W, H: this.H, walk: (x, y) => this.walk(x, y), plain: (x, y) => this.use[this.k(x, y)] === "open" && !this.reserved[this.k(x, y)] }, start);
+    for (const { x, y } of mouths) {
+      if (!ALLEY_BLOCKS.some((id) => this.pal.kit(id) && this.prop(id, x, y, 0))) this.notes.push(`막다른 골목 어귀 (${x},${y})를 막지 못했다`);
+    }
+  }
   reach(from: DesertCell): Set<number> {
     const seen = new Set<number>(); if (!this.walk(from.x, from.y)) return seen;
     seen.add(this.k(from.x, from.y)); const q = [from];
@@ -337,6 +367,8 @@ const HOUSES_5 = ["de-house-adobe-5"];
 const STALLS = ["de-stall-pottery", "de-stall-spice", "de-stall-carpet", "de-stall-fruit", "de-stall-lantern"];
 const PALMS = ["de-palm-date", "de-palm-young", "de-palm-pair"];
 const DESERT_BITS = ["de-scrub", "de-tuft", "de-tuft", "de-rock-small", "de-aloe"];
+/** 막다른 골목 어귀를 막는 한 칸 소품. */
+const ALLEY_BLOCKS = ["de-jar-big", "de-crate", "de-sacks", "de-basket-spice"];
 
 /** 길(가로) 북쪽에 집 줄 — 집 아랫줄이 길 바로 위, 문 접근칸이 길. x0..x1 사이를 왼쪽부터 채운다. */
 function houseRow(b: Board, rng: () => number, x0: number, x1: number, roadY: number, pool: readonly string[], gapMin = 1, allow: readonly Use[] = ["open", "field"], jitter = true): DesertBuilding[] {
@@ -918,11 +950,13 @@ export function composeDesertEast(spec: DesertSpec, pal: DesertPalette): DesertR
     const b = new Board(spec.width, spec.height, pal, seed);
     let start: DesertCell;
     try { start = COMPOSERS[spec.kind](b, rng); } catch (e) { last = (e as Error).message; continue; }
+    for (const side of spec.exits ?? []) b.exitRoad(side);
     b.paintGround();
     // 남쪽 끝 시작 칸이 걸을 수 없으면 가까운 길 칸
     if (!b.walk(start.x, start.y)) {
       for (let d = 1; d < 6 && !b.walk(start.x, start.y); d++) for (const dx of [-d, d]) if (b.walk(start.x + dx, start.y)) { start = { x: start.x + dx, y: start.y }; break; }
     }
+    b.closeDeadAlleys(start);
     const seen = b.reach(start);
     const miss = b.buildings.flatMap((d) => d.access.filter((a) => !seen.has(b.k(a.x, a.y))).map((a) => `${d.name}(${a.x},${a.y})`));
     if (!miss.length) {

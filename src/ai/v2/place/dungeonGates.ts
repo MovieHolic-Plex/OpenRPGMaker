@@ -8,7 +8,7 @@
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { reachableCells } from "../judge/eventReach";
-import { roadCellSet } from "./cells";
+import { roadCells } from "./surface";
 import type { BuildRun } from "../shared/types";
 import type { Side } from "../shared/types";
 
@@ -48,7 +48,7 @@ function worldSideGateSpot(project: Project, map: GameMap, side: Side, ignore: R
   const reach = reachableCells(project, map);
   if (!reach) return undefined;
   const w = map.width, h = map.height;
-  const roads = roadCellSet(project, map);
+  const roads = roadCells(project, map);
   const roadPts = [...roads].map((i) => ({ x: i % w, y: Math.floor(i / w) }));
   const busy = (x: number, y: number) => (map.events ?? []).some((e) => !ignore.has(e.id) && Math.abs(e.x - x) + Math.abs(e.y - y) <= 1);
   let best: { x: number; y: number; road: boolean; edge: number; score: number } | undefined;

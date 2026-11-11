@@ -186,17 +186,10 @@ export const WALL_LABEL = /벽|wall/i;
 
 export const WINDOW_LABEL = /창문|창틀|유리창|window/i;
 
-const ROAD_LABEL = /길|도로|포석|보도|road|street|path|pavement|asphalt|cobble/i;
-
 export function tileLabel(project: Project, map: GameMap, tile: number | undefined): string {
   if (typeof tile !== "number" || tile < 0) return "";
   const meta = (project.tilesets[map.tilesetId]?.tileMeta as unknown as ({ label?: string; tags?: readonly string[] } | undefined)[] | undefined)?.[tile];
   return meta?.label ?? "";
-}
-
-function tileTags(project: Project, map: GameMap, tile: number | undefined): readonly string[] {
-  if (typeof tile !== "number" || tile < 0) return [];
-  return (project.tilesets[map.tilesetId]?.tileMeta as unknown as ({ tags?: readonly string[] } | undefined)[] | undefined)?.[tile]?.tags ?? [];
 }
 
 type Layer = ArrayLike<number> | undefined;
@@ -213,22 +206,5 @@ export function objectAt(map: GameMap, c: Cell): boolean {
   return (upper?.[i] ?? -1) >= 0 || (upperOverlay?.[i] ?? -1) >= 0;
 }
 
-/** 길(포석·도로) 칸 — 칩셋 이름표·태그로 판정. */
-export function roadCellSet(project: Project, map: GameMap): Set<number> {
-  const out = new Set<number>();
-  const { lower, lowerOverlay } = layers(map);
-  const cache = new Map<number, boolean>();
-  const isRoad = (t: number | undefined): boolean => {
-    if (typeof t !== "number" || t < 0) return false;
-    let hit = cache.get(t);
-    if (hit === undefined) {
-      const tags = tileTags(project, map, t).map((x) => x.toLowerCase());
-      const label = tileLabel(project, map, t);
-      hit = tags.includes("road") || tags.includes("street") || tags.includes("path") || tags.includes("길") || (ROAD_LABEL.test(label) && !/풀|잔디|grass/i.test(label));
-      cache.set(t, hit);
-    }
-    return hit;
-  };
-  for (let i = 0; i < map.width * map.height; i++) if (isRoad(lower?.[i]) || isRoad(lowerOverlay?.[i])) out.add(i);
-  return out;
-}
+/** 길 칸 — 판정은 칩셋 표면 선언 하나(place/surface.ts roadCells). 옛 이름으로 부르는 곳(transferSpot.ts)을 위해 남긴 이름이다. */
+export { roadCells as roadCellSet } from "./surface";

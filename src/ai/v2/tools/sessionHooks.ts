@@ -3,7 +3,7 @@ import { createBuildRun } from "../shared/buildRun";
 import { builderFor } from "../place/builders";
 import { parseWorldStyle, pickWorldDoor, worldKind, worldOf, worldPlaceSpec } from "../place/world";
 import type { GameBlueprintPlace } from "@/project/gameBlueprint";
-import type { PlaceBuildResult, PlaceRecord, PlaceSpec } from "../shared/types";
+import type { PlaceBuildResult, PlaceRecord, PlaceSpec, Side } from "../shared/types";
 import type { Project } from "@/project/types";
 import { DEAD_END_PREFIX } from "../place/deadEndRoads";
 import { blueprintMapFor } from "../story/blueprintPathNames";
@@ -12,7 +12,7 @@ import { repairEventReach } from "../place/reachRepairs";
 import { runLaneStages } from "../finish/lanes";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart } from "../blankStart";
 import { guessPlaceSpec } from "../place/placeGuess";
-import { edgeCell, isInside, villageDoors, walkGame } from "../story/makeGame";
+import { edgeCell, isInside, isOutdoor, oppositeSide, villageDoors, walkGame } from "../story/makeGame";
 import { designMissingRooms } from "../place/designRooms";
 import { LINK_SIDES, recordWrite, placeVariety } from "./support";
 import type { VerbContext } from "./context";
@@ -64,6 +64,24 @@ export function installSessionHooks(c: VerbContext) {
     const plan = [...entries.filter((e) => !kindOf(e.place)?.indoor), ...entries.filter((e) => kindOf(e.place)?.indoor)];
     const exitsFrom = new Map<string, number>();
     const sideFrom = (parentId: string) => { const n = exitsFrom.get(parentId) ?? 0; exitsFrom.set(parentId, n + 1); return listed.length ? LINK_SIDES[n % LINK_SIDES.length] : undefined; };
+    // 바깥 장소 사이의 출구 변은 짓기 전에 정한다 — 빌더가 그 변까지 길을 내고(spec.exits) 잇기가 그 길 끝에 출구를 둔다.
+    const exitSides = new Map<string, Side[]>(), sideTo = new Map<string, Side>();
+    {
+      let lastOutdoor: string | undefined;
+      for (const { name, place } of plan) {
+        const kind = kindOf(place);
+        if (!world || !kind || !isOutdoor(worldPlaceSpec(world, kind, name))) continue;
+        const from = place?.from && plan.some((e) => e.name === place.from) ? place.from : lastOutdoor;
+        lastOutdoor = name;
+        if (!from || from === name) continue;
+        // 나가는 변은 그 장소가 들어오는 변을 빼고 차례로 — 구성기 장소는 제 길 끝(남쪽)으로 들어오고, 길을 주문받은 변으로만 내는 빌더(마을)는 들어오는 변도 주문한다.
+        const enters = sideTo.has(from) ? oppositeSide(sideTo.get(from)!) : undefined;
+        const used = exitSides.get(from) ?? [];
+        const side = LINK_SIDES.find((s) => s !== enters && !used.includes(s)) ?? LINK_SIDES[used.length % LINK_SIDES.length]!;
+        exitSides.set(from, [...used, side]); sideTo.set(name, side);
+        if (!world.composer) exitSides.set(name, [oppositeSide(side)]);
+      }
+    }
     const freeDoors = (parent: Built) => {
       const used = new Set((env.ctx.project.maps[parent.mapId]?.events ?? []).map((e) => `${e.x},${e.y + 1}`));
       return villageDoors(parent.result ?? ({ state: undefined } as unknown as PlaceBuildResult)).filter((d) => !used.has(`${d.x},${d.y}`));
@@ -84,7 +102,8 @@ export function installSessionHooks(c: VerbContext) {
       if (!map) {
         const guess = world && kind ? worldPlaceSpec(world, kind, name) : guessPlaceSpec(name, env.ctx.project, bp.genre, String(task ?? ""));
         const composed = !!parseWorldStyle(guess.style);
-        const spec0: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(guess) && !composed ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}) };
+        const spec0: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(guess) && !composed ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}),
+          ...(exitSides.has(name) && !guess.exits?.length ? { exits: exitSides.get(name)! } : {}) };
         const builder = builderFor(spec0);
         if (!builder) { notes.push(`「${name}」(${spec0.type}) — 짓는 빌더가 없다`); continue; }
         // 자동으로 짓는 실내도 방은 모델이 설계한다(견본 거실 9×10 이 vm6·7·8 flash 방탈출 시작 방이 됐다) — 같은 모델에게 따로 받는다. 세계 구성기 방은 구성기가 짠다.
@@ -112,7 +131,7 @@ export function installSessionHooks(c: VerbContext) {
         }
         const record: PlaceRecord = { builder: builder.id, spec, result, rounds: 0 };
         for (const mapId of result.mapIds) session.places.set(mapId, record);
-        const link = parent.mapId && env.ctx.project.maps[parent.mapId] && parent.mapId !== first.id ? linkChild(parent.mapId, parent.spec, parent.result, spec, result, sideFrom(parent.mapId), door) : "";
+        const link = parent.mapId && env.ctx.project.maps[parent.mapId] && parent.mapId !== first.id ? linkChild(parent.mapId, parent.spec, parent.result, spec, result, sideTo.get(name) ?? sideFrom(parent.mapId), door) : "";
         notes.push(`「${name}」(${kind ? `${world!.id} ${kind.id}` : `${spec.type}${spec.style ? `·${spec.style}` : ""}`}, ${first.id}) 지음${link ? ` — ${link}` : ""}`);
         map = env.ctx.project.maps[first.id];
         prev = { mapId: first.id, spec, result };
@@ -123,7 +142,7 @@ export function installSessionHooks(c: VerbContext) {
       if (parent.mapId !== map.id && env.ctx.project.maps[parent.mapId] && walkGame(env.ctx.project, [map.id]).unreached.includes(map.id)) {
         const spec = known?.spec ?? guessPlaceSpec(map.name ?? name, env.ctx.project, bp.genre, String(task ?? ""));
         const result: PlaceBuildResult = known?.result ?? { ok: true, mapIds: [map.id], summary: "", warnings: [], missingArt: [], calls: [] };
-        notes.push(`「${map.name ?? map.id}」 잇기 — ${linkChild(parent.mapId, parent.spec, parent.result, spec, result, sideFrom(parent.mapId), door)}`);
+        notes.push(`「${map.name ?? map.id}」 잇기 — ${linkChild(parent.mapId, parent.spec, parent.result, spec, result, sideTo.get(name) ?? sideFrom(parent.mapId), door)}`);
       }
       prev = recordOf(map.id);
       if (!kind?.indoor && !(prev.spec && isInside(prev.spec))) outdoors.push(prev);
