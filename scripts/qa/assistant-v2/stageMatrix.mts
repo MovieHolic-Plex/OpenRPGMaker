@@ -1,6 +1,6 @@
 // 끝맺음 마감 단계 × 테마 표(모델 없음): 테마 맵마다(세계 열 벌의 모든 종류 + 마법 학교·일본 도시·한국 거리·조선·버들항 던전 주제)
 // 그 단계가 고치려는 상황을 심고 단계의 함수를 돌려 무엇을 했는지 적는다 — ok(맞게 함) · none(아무것도 안 함) · wrong(잘못 함) ·
-// gap(그림이 없어 못 했고 v2.art-gap 으로 적음) · eye(했고, 그림을 열어 봐야 판정) · n/a. 한 일이 있는 칸은 앞·뒤 그림을 <outDir>/pic 에 남긴다(1배로 열어 본다).
+// gap(그림이 없어 못 했고 없는 그림 기록으로 적음 — src/project/artGap.ts) · eye(했고, 그림을 열어 봐야 판정) · n/a. 한 일이 있는 칸은 앞·뒤 그림을 <outDir>/pic 에 남긴다(1배로 열어 본다).
 //   bun scripts/qa/assistant-v2/stageMatrix.mts <outDir> [테마,테마…]
 // 버들항 마을·던전은 맵 하나에 1~2분이 걸린다 — 테마를 나눠 여러 프로세스로 돌린다. 문서 openwiki/assistant-v2.md 「끝맺음 단계 × 칩셋 표」.
 import fs from "node:fs";
@@ -9,6 +9,7 @@ import { runTool } from "../../../src/editor/tools/index.ts";
 import { isPassable } from "../../../src/project/collision.ts";
 import { objectClusterAt } from "../../../src/project/objectFootprint.ts";
 import { stage as chaserHidingStage } from "../../../src/ai/v2/finish/lanes/stages/chaser-hiding.ts";
+import { artGapsIn } from "../../../src/project/artGap.ts";
 import { WORLDS, worldPlaceSpec } from "../../../src/ai/v2/place/world.ts";
 import { builderFor } from "../../../src/ai/v2/place/builders/index.ts";
 import { tileLabel } from "../../../src/ai/v2/place/cells.ts";
@@ -398,14 +399,14 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
     else {
       const ev = mkEvent("ev_t_chaser", "쫓는 그림자", cs.x, cs.y, [{ graphic: { sprite: { id: "tex_x", frame: 0 } }, trigger: { kind: "eventTouch" }, movement: { type: "chase", speed: 3, frequency: 3 }, commands: [{ kind: "gameOver" }] }]);
       const p1 = withMap(P0, s.mapId, (m) => { m.events.push(ev); return m; });
-      // 단계 파일을 그대로 돌린다 — 숨을 가구가 없을 때 «못 한 것» 기록(v2.art-gap)이 남는지까지 본다.
-      const emitted: any[] = [];
-      const env: any = { ctx: { project: p1 }, emit: (e: any) => emitted.push(e) };
+      // 단계 파일을 그대로 돌린다 — 숨을 가구가 없을 때 «못 한 것» 기록(없는 그림 기록)이 남는지까지 본다.
+      const env: any = { ctx: { project: p1 }, emit: () => undefined };
       const notes: string[] = [];
-      chaserHidingStage.run({ env, session: { missingArt: new Set<string>() }, notes } as any, "");
+      const session = { missingArt: new Set<string>() };
+      chaserHidingStage.run({ env, session, notes } as any, "");
       const hides = env.ctx.project.maps[s.mapId].events.filter((e: any) => e.id.startsWith("ev_hide_"));
-      const gap = emitted.find((e) => e.name === "v2.art-gap");
-      rec(s, "chaser-hiding", hides.length ? "eye" : gap ? "gap" : "none", hides.length ? `hiding at ${notes.join(" · ")}`.slice(0, 220) : `0 hiding spots${gap ? ` · recorded art gap «${gap.data.want}»` : " · chipset has hiding furniture, none laid on this map (ship gate reports it)"} — ${notes[0] ?? ""}`.slice(0, 260));
+      const gap = artGapsIn(session.missingArt)[0];
+      rec(s, "chaser-hiding", hides.length ? "eye" : gap ? "gap" : "none", hides.length ? `hiding at ${notes.join(" · ")}`.slice(0, 220) : `0 hiding spots${gap ? ` · recorded art gap «${gap.want}»` : " · chipset has hiding furniture, none laid on this map (ship gate reports it)"} — ${notes[0] ?? ""}`.slice(0, 260));
     }
   } catch (e) { rec(s, "chaser-hiding", "wrong", `threw ${(e as Error).message.slice(0, 120)}`); }
 

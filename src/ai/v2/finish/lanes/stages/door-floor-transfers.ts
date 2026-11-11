@@ -4,13 +4,13 @@ import type { FinishStage } from "../../types";
 import { mapLabel } from "../../types";
 import { doorFloorTransfers } from "../../../place/exitTransfers";
 import { laidOf } from "../../../place/laid";
-import { recordArtGaps, type ArtGap } from "../../../shared/artGap";
+import { recordArtGaps, type ArtGap } from "@/project/artGap";
 
 export const stage: FinishStage = {
   id: "door-floor-transfers", phase: "lane-map", order: 30,
   run({ env, session, notes, run }, mapId) {
     const gaps: ArtGap[] = [];
     for (const n of doorFloorTransfers(run, mapId, laidOf(session.placeOf(mapId)?.spec), gaps)) notes.push(`${mapLabel(env, mapId)}: ${n}`);
-    recordArtGaps({ env, session }, "door-floor-transfers", gaps);
+    recordArtGaps(session, gaps);
   },
 };

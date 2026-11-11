@@ -3,7 +3,7 @@
 import type { FinishStage } from "../../types";
 import { unreachableEvents } from "../../../judge/eventReach";
 import { repairEventReach } from "../../../place/reachRepairs";
-import { recordArtGaps } from "../../../shared/artGap";
+import { recordArtGaps } from "@/project/artGap";
 
 export const stage: FinishStage = {
   id: "event-reach", phase: "lane-map", order: 150,
@@ -19,7 +19,7 @@ export const stage: FinishStage = {
     if (lost.length) {
       const fixed = repairEventReach(run, mapId, lost);
       for (const m of fixed.moved) notes.push(`${ctx.map.name}: 닿지 못하던 ${m}`);
-      recordArtGaps(ctx, "event-reach", fixed.noArt);
+      recordArtGaps(ctx.session, fixed.noArt);
     }
   },
 };
