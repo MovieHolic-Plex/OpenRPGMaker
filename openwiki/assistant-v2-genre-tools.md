@@ -314,7 +314,7 @@ main 11/12 · #4630 11/12, 같은 한 건(나무 꾸미기 — 위 1번 「동�
 **다시 부르기**: 호감 · 내밀기는 끼운 토막의 앞뒤에 `label`(`affection:begin`/`end` · `present:begin`/`end` — 런타임에서 아무 일도 하지 않는다)을 두고, 다시 부르면 그 사이만 갈아 끼운다. 표시가 없으면 두 번째 호출이 토막을 하나 더 쌓아 말을 걸 때마다 호감이 두 번 오른다.
 
 **주제**(`request/topics.ts`): `affection`(낱말에 「선물을/할/하」 · 「고백」 추가) → `set_npc_affection` · 새 주제 `present`(내밀 · 들이밀 · 제시 · 증거 · 보여 주면) → `set_present_reactions` · 새 주제 `timeLimit`(제한 시간 · N초/분 안에 · 카운트다운) → `set_time_limit` · `gauge` → `add_hud_gauge`(+ `manage_flag_slot`). 셋 다 장치 주제(`DEVICE_TOPICS`)다.
-게임 카드(`prompt/gameCard.ts`)의 호감 · 타이머 · 내밀기 줄이 손 조립 대신 이 도구를 먼저 가리킨다(게임 하나의 지시문 +114자 · 열쇠·건네기 요청 +60자).
+게임 카드(`prompt/gameCard.ts`)의 호감 · 타이머 · 내밀기 줄이 손 조립 대신 이 도구를 먼저 가리킨다(세 줄을 줄여 써서 게임 하나의 지시문은 늘지 않는다(−7자, 열쇠·건네기 요청은 +25자) — 상한 테스트 `aiV2PromptBudget` 그대로).
 
 **잰 것(모델 없음)**: 셋째 묶음의 일곱 일(`evidence-present` · `affection-grows` · `gift-affection` · `confess-ending` · `affection-two-pages` · `time-limit` · `hunger-hud`)에 «좁은 도구 한 호출» 풀이를 다른 모양의 정답으로 더했고(21 → 28개),
 그 한 호출(고백은 엔딩 정의 + 한 호출)이 일마다의 판정을 통과한다(자기검사 36/36, `test/genreDeviceTools.test.ts`). 일곱 일 모두 그 도구가 처음부터 실린다. 닿기 합계(27 · 8 · 1)는 그대로다 — 손 정답은 여전히 `patch_event_page` 라서다.
