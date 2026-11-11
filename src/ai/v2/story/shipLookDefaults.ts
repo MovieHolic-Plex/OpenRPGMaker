@@ -8,6 +8,7 @@ import { createBlankProject } from "@/project/defaults";
 import { blueprintPremiseText } from "@/project/blueprintAssembly";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
+import { applyThemeBackdrop } from "../place/placeTheme";
 import { asPresetHud, HUD_SOURCES, normalizeFieldHud, projectCanLoseHp, projectHudUse, resolvedHudWidgets, unusedHudGauges } from "@/project/fieldHud";
 import { hudIsStoryTemplate } from "../judge/hudTitleChecks";
 
@@ -171,6 +172,9 @@ export function fillBattleBackgrounds(project: Project, evidence: string): strin
   for (const mapId of [...new Set(evidence.split(",").map((s) => s.trim()).filter(Boolean))]) {
     const map = project.maps[mapId];
     if (!map || map.battleBackground) continue;
+    // 세계 장소는 그 장소의 테마가 먼저다 — 이름 낱말로는 「잠든 태양의 피라미드」 가 사막인지 모른다(숲 배경이 됐다).
+    const themed = applyThemeBackdrop(project, mapId);
+    if (themed.note) { out.push(themed.note); continue; }
     // 맵 그래프(이동 명령 + 청사진 단계 순서)를 거꾸로 따라 가장 가까운 던전·동굴 조상 — 「마왕의 방」은 「마왕의 동굴」 안쪽이다.
     const ancestor = nearestDungeonAncestor(project, mapId);
     const sources = entranceSources(project, mapId).map((from) => project.maps[from]?.battleBackground ?? runtimeMapBackground(project, from)).filter((id): id is string => !!id);

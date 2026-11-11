@@ -141,7 +141,7 @@ export function installSessionHooks(c: VerbContext) {
       const kind = rec.builder === "world" ? worldKind(world, String((rec.result.state as { kind?: string } | undefined)?.kind ?? "")) : undefined;
       if (!kind?.danger || !env.ctx.project.maps[mapId] || session.stockedPlaces.has(mapId)) continue;
       session.stockedPlaces.add(mapId);
-      const placed = populateWorldPlace(run, mapId, rec.result.entrance, rec.spec.salt ?? 1);
+      const placed = populateWorldPlace(run, mapId, rec.result.entrance, rec.spec.salt ?? 1, (gap) => session.missingArt.add(gap));
       if (placed) notes.push(placed);
     }
     // 옮긴 조사 이벤트를 이름이 가리키는 물건(책상·쪽지…)·문 그림 칸으로 — 빈 맵에서는 물건이 없어 아무 칸이었다.
