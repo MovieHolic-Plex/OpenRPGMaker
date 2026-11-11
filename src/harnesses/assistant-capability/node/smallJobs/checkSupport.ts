@@ -1,7 +1,7 @@
 // 작은 일 판정의 공용 부품: 저장 문서 읽기, 말 걸기 한 번 따라가 보기(interact), 자리 판정.
 // 판정 종류는 checks.ts(첫 묶음) · checksData.ts(자료·설정) · checksPlay.ts(말 걸기·장면)가 이 파일의 부품으로 짠다.
 import { resolveEventPage } from '../../../../project/io';
-import { evalCondition } from '../../../../project/session';
+import { changeFriendship, evalCondition } from '../../../../project/session';
 import type { Project } from '../../../../project/types';
 import { blockedOn } from '../matrixNativeSpec';
 
@@ -96,16 +96,29 @@ export type Play = {
   picks: number[];
   /** 파티 전원 회복(recoverAll · 여관 숙박)이 있었다. */
   recovered: boolean;
+  /** 내민 아이템 id(presentItem — picks 를 준 실행에서만). */
+  presented: string[];
+  /** 받은 몬스터 종 id(giveMonster). */
+  monsters: string[];
+  /** 게임을 끝낸 명령(엔딩·게임 오버·즉사) — 처음 것. halt 를 주면 여기서 멈춘다. */
+  ended?: { kind: 'ending' | 'gameOver'; endingId?: string };
 };
 export type PlayOptions = {
   /** 갈림마다 고를 번호. 생략하면 선택지의 모든 갈래를 차례로 합친다(첫 묶음의 판정이 쓰는 방식). 여관은 0=묵는다 1=거절. */
   picks?: number[];
   /** 'victory' 면 전투를 이긴 것으로 치고 victoryBranch 를 잇는다. 생략하면 전투 뒤 분기를 따라가지 않는다. */
   battle?: 'victory';
+  /** 엔딩·게임 오버·즉사 명령에서 멈춘다(엔진과 같다). 생략하면 끝까지 돈다(앞 묶음의 판정이 쓰는 방식). */
+  halt?: boolean;
+  /** 선택지를 글로 고른다(암호 숫자 누르기) — 번호를 돌려주면 picks 보다 먼저 쓴다. */
+  choose?: (texts: string[], prompt: string) => number | undefined;
+  /** 숫자 입력(inputNumber)에 넣을 값. 생략하면 0. */
+  enter?: (command: any) => number;
 };
 export const freshSession = (inventory: Record<string, number> = {}): any => ({ switches: {}, variables: {}, selfSwitches: {}, inventory: { ...inventory }, gold: 0, partyActorIds: [], timers: {}, flags: {}, friendship: {} });
+class Jump extends Error { constructor(readonly label: string) { super(label); } }
 export function interact(event: Ev, session: any, doc?: Doc, options: PlayOptions = {}): Play {
-  const play: Play = { session, texts: [], items: {}, gold: 0, shops: [], battles: [], ran: [], prompts: [], picked: [], arity: [], picks: [], recovered: false };
+  const play: Play = { session, texts: [], items: {}, gold: 0, shops: [], battles: [], ran: [], prompts: [], picked: [], arity: [], picks: [], recovered: false, presented: [], monsters: [] };
   const page = event.pages?.length ? resolveEventPage(event as never, session) : { commands: event.commands ?? [] };
   const num = (value: unknown): number => (typeof value === 'number' ? value : NaN);
   /** 갈림 하나: 갈래 수를 적고 이번 실행이 고를 번호를 돌려준다. */
@@ -114,9 +127,13 @@ export function interact(event: Ev, session: any, doc?: Doc, options: PlayOption
     play.arity.push(count); play.picks.push(pick);
     return pick;
   };
+  /** 아이템·돈 주고받기(명령과 같은 셈). */
+  const giveItem = (itemId: string, delta: number): void => { session.inventory[itemId] = (session.inventory[itemId] ?? 0) + delta; play.items[itemId] = (play.items[itemId] ?? 0) + delta; };
+  const end = (ended: NonNullable<Play['ended']>): void => { play.ended ??= ended; };
   const run = (commands: any[] | undefined, depth: number): void => {
     if (depth > 12) return;
     for (const command of commands ?? []) {
+      if (options.halt && play.ended) return;
       if (!command || typeof command !== 'object') continue;
       play.ran.push(command);
       if (command.kind === 'text') play.texts.push(String(command.body ?? ''));
@@ -134,7 +151,7 @@ export function interact(event: Ev, session: any, doc?: Doc, options: PlayOption
       else if (command.kind === 'setVariable') {
         const held = session.variables[command.variableId] ?? 0, value = num(command.value);
         session.variables[command.variableId] = command.op === '+=' ? held + value : command.op === '-=' ? held - value : command.op === '*=' ? held * value : command.op === '/=' ? held / value : value;
-      } else if (command.kind === 'fork') run(evalCondition(session, command.condition, event.id) ? command.then : command.else, depth + 1);
+      } else if (command.kind === 'fork') run(evalCondition(session, command.condition, event as never) ? command.then : command.else, depth + 1);
       // 공통 이벤트 호출은 그 명령들을 이어서 돈다(부르는 이벤트의 셀프 스위치를 쓴다).
       else if (command.kind === 'callCommonEvent') run((doc?.commonEvents ?? []).find((common: any) => common?.id === command.commonEventId)?.commands, depth + 1);
       else if (command.kind === 'choices') {
@@ -142,7 +159,11 @@ export function interact(event: Ev, session: any, doc?: Doc, options: PlayOption
         const list: any[] = command.options ?? [];
         // 선택지는 사용자가 무엇을 고를지 모른다 — picks 가 없으면 모든 갈래를 차례로 따라가 합친다.
         if (!options.picks) for (const option of list) run(option?.branch, depth + 1);
-        else if (list.length) { const option = list[decide(list.length)]; play.picked.push(String(option?.text ?? option?.label ?? '')); run(option?.branch, depth + 1); }
+        else if (list.length) {
+          const chosen = options.choose?.(list.map(option => String(option?.text ?? option?.label ?? '')), String(command.prompt ?? ''));
+          const option = list[chosen === undefined ? decide(list.length) : Math.min(list.length - 1, Math.max(0, chosen))];
+          play.picked.push(String(option?.text ?? option?.label ?? '')); run(option?.branch, depth + 1);
+        }
       } else if (command.kind === 'recoverAll') { if (!command.actorId) play.recovered = true; }
       else if (command.kind === 'changeParty') {
         const party: string[] = session.partyActorIds ??= [];
@@ -152,10 +173,42 @@ export function interact(event: Ev, session: any, doc?: Doc, options: PlayOption
         // 여관 명령은 스스로 묻고, 묵으면 요금을 받고 전원을 회복한다.
         if (decide(2) === 0) { const price = num(command.price); if (Number.isFinite(price)) { session.gold -= price; play.gold -= price; } play.recovered = true; play.picked.push('(여관) 묵는다'); }
         else play.picked.push('(여관) 거절');
-      }
+      } else if (command.kind === 'changeFriendship') changeFriendship(session, command.npcKey, num(command.delta), event as never);
+      else if (command.kind === 'giveMonster') play.monsters.push(String(command.speciesId));
+      else if (command.kind === 'inputNumber') session.variables[command.variableId] = options.enter?.(command) ?? 0;
+      else if (command.kind === 'timer') {
+        const id = command.timerId ?? 'timer1';
+        if (command.action === 'set') session.timers[id] = num(command.seconds);
+        if (command.action === 'start') { if (Number.isFinite(num(command.seconds))) session.timers[id] = num(command.seconds); (session.timerRunning ??= {})[id] = true; }
+        if (command.action === 'stop') (session.timerRunning ??= {})[id] = false;
+      } else if (command.kind === 'triggerEnding') {
+        // 조건이 있는 엔딩은 부르는 순간에도 조건을 본다(거짓이면 다음 명령으로 넘어간다).
+        const ending = (doc?.endings ?? []).find((entry: any) => entry?.id === command.endingId);
+        if (!ending || (ending.conditions ?? []).every((condition: any) => evalCondition(session, condition, event as never))) end({ kind: 'ending', endingId: command.endingId });
+      } else if (command.kind === 'gameOver' || command.kind === 'killPlayer') end({ kind: 'gameOver' });
+      else if (command.kind === 'presentItem' && options.picks) {
+        // 가진 후보마다 한 갈래 + 닫기. 내밀 것이 없으면 묻지 않고 닫은 것으로 친다.
+        const held: string[] = (command.itemIds ?? Object.keys(session.inventory)).filter((id: string) => (session.inventory[id] ?? 0) > 0);
+        const pick = held.length ? decide(held.length + 1) : held.length;
+        if (pick >= held.length) { play.picked.push('(내밀기) 닫는다'); run(command.cancelBranch, depth + 1); continue; }
+        const itemId = held[pick]!, match = (command.options ?? []).find((option: any) => option?.itemId === itemId);
+        play.presented.push(itemId); play.picked.push(`(내밀기) ${itemId}`);
+        if (match && command.consume) giveItem(itemId, -1);
+        run(match ? match.branch : command.otherwiseBranch, depth + 1);
+      } else if (command.kind === 'gotoLabel' && options.picks) throw new Jump(String(command.name));
     }
   };
-  run(page?.commands, 0);
+  // 라벨로 되돌아가기(「아니오」면 처음 목록으로)는 맨 위 명령 줄의 그 라벨부터 다시 돈다 — 갈림을 고르는 실행에서만, 두 번까지.
+  let list: any[] = page?.commands ?? [], jumps = 0;
+  for (;;) {
+    try { run(list, 0); break; }
+    catch (error) {
+      if (!(error instanceof Jump)) throw error;
+      const at = (page?.commands ?? []).findIndex((command: any) => command?.kind === 'label' && command.name === error.label);
+      if (at < 0 || ++jumps > 2) break;
+      list = (page?.commands ?? []).slice(at);
+    }
+  }
   return play;
 }
 /** 갈림(선택지·여관)의 모든 길을 한 번씩 따라간 결과. 길마다 makeSession 으로 새 상태에서 시작한다. */

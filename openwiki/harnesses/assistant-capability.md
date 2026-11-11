@@ -220,9 +220,10 @@ DeepSeek 추론 계열로 읽어 `low, high, max` 사다리와 `reasoning_conten
 - 묶음(데이터): `harness-data/assistant-capability/small-jobs.json` — 일마다 `id · family · fixture · request(비개발자가 치는 한국어) ·
   check(판정 종류 + 인자) · allow(요청이 요구하는 이동·이름 변경) · reference(손 정답 = 실제 도구 호출 순서) · wrong(그럴듯한 오답)`.
 - 코드: `src/harnesses/assistant-capability/node/smallJobs/` — `fixtures.ts`(시작 상태 셋) · `checks.ts`(첫 묶음의 판정 + damage + `runCheck`) ·
-  `checkSupport.ts`(문서 읽기·말 걸기 따라가기 `interact`·자리 판정) · `checksData.ts`/`checksPlay.ts`(둘째 묶음의 판정) · `suite.ts`(읽기·정답 적용) ·
+  `checkSupport.ts`(문서 읽기·말 걸기 따라가기 `interact`·자리 판정) · `checksData.ts`/`checksPlay.ts`(둘째 묶음의 판정) · `checksGenre.ts`/`checksGenrePlay.ts`(셋째 묶음의 판정) · `suite.ts`(읽기·정답 적용) ·
   `selfcheck.ts` · `run.ts`(실행기) · `report.ts`(HTML) · `freezeFixture.ts`(픽스처 얼리기). 입구 `smallJobsEntry.ts`(bun).
-- **묶음은 둘이다.** `--set 1`(생략과 같다) = 이 절의 30가지(`small-jobs.json`), `--set 2` = 아래 「둘째 묶음」(`small-jobs-2.json`, 새 가족 35가지).
+- **묶음은 셋이다.** `--set 1`(생략과 같다) = 이 절의 30가지(`small-jobs.json`), `--set 2` = 아래 「둘째 묶음」(`small-jobs-2.json`, 새 가족 35가지),
+  `--set 3` = 「셋째 묶음」(`small-jobs-3.json`, JRPG 가 아닌 게임의 장치 36가지).
   첫 묶음의 id·순서·판정은 기준선 비교의 기준이라 바꾸지 않는다. 실행 요약(`summary.json`)이 묶음 파일을 적어 두므로 보고서·재판정은 `--set` 없이 그 묶음을 읽는다.
 - 모델 고정: `--model terra-high` = `harness-data/assistant-capability/ai-configs/terra-high.json`(모든 역할을 `openai-compat:opencodex` 의
   `gpt-6.1-terra` high 로). 엔드포인트 주소·키는 저장소 밖 `OPRN_OPENAI_COMPAT_PATH`(없으면 `~/.oprn-suite/openai-compat-endpoints.json`)에서만
@@ -230,8 +231,8 @@ DeepSeek 추론 계열로 읽어 `low, high, max` 사다리와 `reasoning_conten
 
 ```bash
 npm run -s build:fast && node scripts/build-electron.mjs                  # 편집기·호스트 빌드(워크트리면 VITE_CACHE_DIR 를 준다)
-npm run harness -- assistant-capability small-jobs-selfcheck [--set 2] [--out <폴더>] [--only id,가족]   # 모델 없음, 1~2분
-npm run harness -- assistant-capability small-jobs [--set 2] --model terra-high --v2 --out <새 폴더> [--only id,가족] [--skip-completed] [--timeout-min 10]
+npm run harness -- assistant-capability small-jobs-selfcheck [--set 2|3] [--out <폴더>] [--only id,가족]   # 모델 없음, 1~2분
+npm run harness -- assistant-capability small-jobs [--set 2|3] --model terra-high --v2 --out <새 폴더> [--only id,가족] [--skip-completed] [--timeout-min 10]
 npm run harness -- assistant-capability small-jobs-report --run <그 폴더> [--html <출력.html>]
 npm run harness -- assistant-capability small-jobs-rescore --run <그 폴더>   # 판정기만 고쳤을 때: 모델 없이 저장된 전/후 문서로 다시 판정
 ```
@@ -505,6 +506,94 @@ npm run harness -- assistant-capability small-jobs-report --run <그 폴더> --h
 판정 부품을 `checkSupport.ts` 로 옮기면서 자기검사의 문서 사본이 타일셋 본문을 나눠 쓰게 했다(`cloneDoc` — 복제 1.4초 중 1.3초가 타일셋이었다. 도구 실행기는 원본 타일셋을
 제자리에서 고치지 않는다): 첫 묶음 자기검사 약 2분 → 1분. CI 는 `test/smallJobsSecondSet.test.ts` 가 같은 것(손대지 않으면 불합격 · 손 정답 합격 · 오답 불합격)을 일마다 본다.
 
+### 셋째 묶음 — JRPG 가 아닌 게임의 장치 36가지 (`--set 3`, 2026-11-11)
+
+오너 2026-11-11 「JRPG 만 만들게 아니잖아」. 추리·연애·공포·농장·몬스터 수집·퍼즐·액션·경제·여러 엔딩·생존 게임이 쓰는 **장치 하나**를 일 하나로 잰다.
+어느 장치에 도구가 없고 어느 도구가 v2 에 안 실리는지는 `openwiki/assistant-v2-genre-tools.md` 의 재고 표가 적는다 — 이 묶음은 그 표의 줄을 재는 자다.
+묶음 `harness-data/assistant-capability/small-jobs-3.json`(같은 모양), 픽스처는 같은 셋(blank 3 · starter 28 · built 5), 오답 135개 · 다른 모양의 정답 21개.
+실모델 실행은 아직 없다(2026-11-11 — 묶음과 판정만 넣었다).
+
+```bash
+npm run harness -- assistant-capability small-jobs-selfcheck --set 3 --out <폴더>              # 36/36 sound 여야 한다
+npm run harness -- assistant-capability small-jobs --set 3 --model terra-high --v2 --out <새 폴더> [--only id,가족]
+npm run harness -- assistant-capability small-jobs-report --run <그 폴더> --html <출력.html>
+```
+
+| 가족 | 무엇 | 일 | 판정 종류 |
+|---|---|---|---|
+| mystery | 추리 — 증거·지목 | 3 | `presentReacts` · `choiceEndings` · `itemsGatedText` |
+| romance | 연애 — 호감·선물·고백 | 4 | `affectionLine` · `giftReacts` · `affectionEnding` |
+| calendar | 달력 — 기한·시간표·잠 | 4 | `timePhaseLine` · `deadlineEnding` · `npcSchedule` · `sleepNextDay` |
+| horror | 공포 — 숨기·추격·함정·체력 | 5 | `hidingSpot` · `chaser` · `deathTrap` · `lifeGauge` |
+| farm | 농장·생활 — 밭·작물·낚시·제작·보관 | 5 | `farmPlot` · `cropDefined` · `fishingSpot` · `craftStation` · `storageChest` |
+| economy | 경제 — 판매가·통행료 | 2 | `sellPrice` · `paidGate` |
+| monster | 몬스터 수집 — 포획·첫 몬스터·트레이너 | 3 | `projectField` · `starterPick` · `sightBattle` |
+| puzzle | 퍼즐·탈출 — 암호·밀기·잠긴 문·제한 시간 | 4 | `passwordLock` · `pushable` · `lockedTransfer` · `timeLimit` |
+| action | 액션 전투 | 2 | `actionMap` · `actionSpawn` |
+| endings | 여러 엔딩·읽는 게임 | 3 | `choiceEndings` · `flagsEnding` · `projectField` |
+| survival | 생존 — 수치 게이지 | 1 | `hudGauge` |
+
+판정은 앞 묶음과 같은 두 겹(outcome + damage)이고 도구 이름을 보지 않는다. 판정 코드는 `checksGenre.ts`(놓인 것·자료 — 15종)와 `checksGenrePlay.ts`(따라가 보는 것 — 16종)이고
+`checks.ts` 가 다섯 표를 합친다(이름이 겹치면 로드에서 던진다). 새로 생긴 것:
+
+- **따라가기가 장르 명령을 안다**(`checkSupport.ts interact`). `presentItem`(가진 후보마다 한 갈래 + 닫기, `consume` 이면 하나 준다) · `changeFriendship` · `giveMonster` · `inputNumber`(`enter` 가 준 값) ·
+  `timer`(남은 시간·도는지) · `triggerEnding`(엔딩의 조건이 참일 때만) · `gameOver`/`killPlayer` · `gotoLabel`(「아니오」면 처음부터 — 두 번까지 되돌아간다).
+  **앞 묶음의 판정은 그대로다**: 내밀기·되돌아가기는 `picks` 를 줄 때만(길마다 따라갈 때만) 갈리고, 엔딩에서 멈추는 것은 `halt` 를 줄 때만이다.
+- **호감도는 엔진과 같은 키에 쌓인다.** `changeFriendship`·`friendshipAtLeast` 의 키는 적은 `npcKey`, 없으면 그 이벤트의 `characterId` 다(이벤트 id 로 떨어지지 않는다 — 둘 다 없으면 조용히 0).
+  판정(`affectionLine`·`giftReacts`·`affectionEnding`)은 변수로 쌓든 호감도로 쌓든 받는다 — 「말을 걸 때마다 값 하나가 오르고, 문턱 전에는 옛 말·문턱 뒤에는 새 말」만 본다.
+- **엔딩까지 가 본다**(`choiceEndings`·`affectionEnding`·`deadlineEnding`·`flagsEnding`). 엔딩 이름이 자료(`project.endings`)에 있고, 그 길의 끝이 그 엔딩이며 다른 길은 그 엔딩이 아니다.
+  기한 엔딩은 `timeSystem.onDayEnd` 의 날짜·조건을, 조건으로 갈리는 엔딩은 두 상태(다 얘기함 / 하나 빠짐)를 넣어 본다.
+- **놓인 장치는 엔진이 읽는 칸으로 본다.** 은신처·밀 수 있는 것 = 페이지의 `interaction.kind` + 그 칸에 보이는 그림 + 닿는 자리, 추격자 = `movement.type:"chase"` + 닿으면 끝나는 명령(+ `armedBy`: 그 물건을 얻기 전에는 꺼져 있다),
+  함정 = 밟으면 `killPlayer`/`gameOver` + 그 맵의 체크포인트, 밭 = `map.farmableArea`(걸을 수 있는 칸), 낚시 = `system.fishing` 의 그 맵 낚시터와 어종, 액션 = `map.actionCombat` · `map.fieldSpawns`, 시야 전투 = `detectionEncounter.sight`.
+- **암호는 틀린 값으로도 눌러 본다**(`passwordLock`). 숫자 입력(`inputNumber`)이면 맞는 값과 틀린 값을 넣고, 숫자 선택지면 모든 길을 밟아 여는 길이 정확히 하나인지 본다.
+  (`compile_puzzle` 이 짓는 선택지는 맞는 숫자가 늘 첫 칸이다 — 판정은 통과시키되 재고 표에 계약 결함으로 적었다.)
+- **제한 시간**(`timeLimit`)은 타이머를 시작하는 것(들어설 때 저절로)과 0 이 되면 끝나는 것(타이머 조건의 자동·병렬 페이지)을 따로 찾고, 들어서자마자 끝나면 불합격이다.
+- 넣지 않은 것과 까닭: 「시간이 지나면 배고픔이 준다」(병렬 이벤트 + `wait` — 시뮬레이터가 시간을 흘리지 않는다), 「먹으면 배고픔이 찬다」(아이템 사용이 변수를 못 바꾼다 — 엔진에 없다),
+  「재고가 3개뿐인 물건」(`ShopStockEntry` 에 수량이 없다), 사건 통째·캠페인 통째(작은 일이 아니다 — 게임 하나 경로).
+
+| # | id | 가족 | 픽스처 | 요청 | 판정 종류 — 손 정답에 나온 판정 글 |
+|---|---|---|---|---|---|
+| 1 | `evidence-present-starter` | mystery | starter | 파수꾼 데릭에게 말을 걸면 가진 물건 중에 하나를 골라 내밀 수 있게 해 줘. '낡은 열쇠'를 내밀면 "그 열쇠… 내가 숨긴 게 맞다."라고 자백하고, 다른 물건을 내밀면 "그건 나와 상관없는 물건이야."라고 하게 해 줘. 지금 하던 말은 그대로 두고 | `presentReacts` — 파수꾼 데릭: 「낡은 열쇠」→「내가 숨긴 게 맞다」 · 「회복약」→「나와 상관없는 물건」 |
+| 2 | `accuse-ending-starter` | mystery | starter | 꼬마 미루에게 말을 걸면 "범인이 누구라고 생각해?"라고 묻고 '마사', '데릭', '모르겠다' 중에 고르게 해 줘. '데릭'을 고르면 '사건 해결'이라는 엔딩이 나오고, 나머지를 고르면 "음… 좀 더 알아보자."라고만 하게 해 줘 | `choiceEndings` — 꼬마 미루: 「데릭」→엔딩 「사건 해결」 · 「마사」→「좀 더 알아보자」 · 「모르겠다」→「좀 더 알아보자」 |
+| 3 | `clues-all-gate-starter` | mystery | starter | '피 묻은 편지', '깨진 안경', '젖은 장화'라는 증거 아이템 세 개를 만들어 줘. 세 개를 전부 갖고 있을 때만 파수꾼 데릭이 "전부 알아냈군. 내가 졌다."라고 말하게 하고, 하나라도 없으면 지금 대사 그대로 둬 | `itemsGatedText` — 파수꾼 데릭: 피 묻은 편지·깨진 안경·젖은 장화 를 다 가지면 「내가 졌다」 |
+| 4 | `affection-grows-starter` | romance | starter | 여관 주인 마사에게 말을 걸 때마다 호감도가 1씩 오르게 해 줘. 호감도가 3 이상이 되면 "오늘은 특별히 따뜻한 차를 내올게요."라는 말도 하게 해 줘. 지금 하던 말과 숙박은 그대로 두고 | `affectionLine` — 여관 주인 마사: 말을 걸 때마다 friend:masa +1 · 3 이상이면 「따뜻한 차를 내올게요」 |
+| 5 | `gift-affection-starter` | romance | starter | 여관 주인 마사에게 '회복약'을 선물할 수 있게 해 줘. 말을 걸면 선물할지 고르게 하고, 선물하면 회복약이 하나 줄고 호감도가 2 오르면서 "어머, 고마워요! 잘 쓸게요."라고 말하게 해 줘. 회복약이 없으면 선물 얘기는 나오지 않게 하고, 지금 하던 말과 숙박은 그대로 둬 | `giftReacts` — 여관 주인 마사: 「회복약」을 건네면 −1 · 호감 +2 · 「잘 쓸게요」 |
+| 6 | `confess-ending-starter` | romance | starter | 여관 주인 마사와 친해지는 이야기를 만들어 줘. 마사에게 말을 걸면 '이야기를 나눈다'와 '고백한다' 중에 고르게 하고, 이야기를 나눌 때마다 호감도가 1씩 오르게 해 줘. 호감도가 3 이상일 때 '고백한다'를 고르면 '함께 여는 여관'이라는 엔딩이 나오고, 모자라면 "아직은 마음의 준비가 안 됐어요."라고 거절하게 해 줘 | `affectionEnding` — 여관 주인 마사: 일찍 고백하면 「마음의 준비가 안 됐어요」, 3번 얘기한 뒤에는 엔딩 「함께 여는 여관」 |
+| 7 | `affection-two-pages-built` | romance | built | 겨울 시장의 모피 상인에게 말을 걸 때마다 호감도가 1씩 오르게 해 줘. 호감도가 3 이상이 되면 "자네에게는 이 목도리를 그냥 주고 싶군."이라는 말도 하게 해 줘. 지금 하는 말들은 그대로 두고 | `affectionLine` — 모피 상인: 말을 걸 때마다 friend:furrier +1 · 3 이상이면 「이 목도리를 그냥 주고 싶군」 |
+| 8 | `night-line-starter` | calendar | starter | 게임에 시간이 흐르게 하고, 밤에는 파수꾼 데릭이 "밤에는 문을 열 수 없다. 해가 뜨면 다시 와라."라고 말하게 해 줘. 낮에는 지금 대사 그대로 두고 | `timePhaseLine` — 파수꾼 데릭: night 에만 「밤에는 문을 열 수 없다」 |
+| 9 | `deadline-ending-starter` | calendar | starter | 게임에 날짜가 흐르게 하고, 3일째 하루가 끝나면 '늦어 버린 약속'이라는 배드 엔딩이 나오게 해 줘 | `deadlineEnding` — 3일째 하루가 끝나면 엔딩 「늦어 버린 약속」 |
+| 10 | `npc-night-schedule-starter` | calendar | starter | 게임에 시간이 흐르게 하고, 파수꾼 데릭이 밤에는 여관 주인 마사 옆에 가 있게 해 줘. 낮에는 지금 자리에 그대로 있게 하고 | `npcSchedule` — 파수꾼 데릭: night → (7,10), 여관 주인 마사 곁 |
+| 11 | `sleep-next-day-starter` | calendar | starter | 게임에 시간이 흐르게 하고, 여관 주인 마사에게 묵으면 다음 날 아침이 되게 해 줘 | `sleepNextDay` — 여관 주인 마사: 묵으면 다음 날 아침 |
+| 12 | `hiding-spot-starter` | horror | starter | 마을에 숨을 수 있는 큰 나무통을 하나 놓아 줘. 괴물한테 쫓길 때 그 안에 들어가 숨을 수 있게 해 줘 | `hidingSpot` — 큰 나무통 @ 잿불 마을 (9,12) |
+| 13 | `chaser-starter` | horror | starter | 동쪽 들판에 주인공을 쫓아오는 괴물을 하나 놓아 줘. 붙잡히면 게임 오버가 되게 해 줘 | `chaser` — ev_chaser_134971f4-c765-408c-9151-90f9a1c2821f @ 동쪽 들판 (14,7) — 쫓아와 닿으면 게임 오버 |
+| 14 | `chase-after-key-starter` | horror | starter | 동쪽 들판에 '낡은 열쇠'를 놓아 줘. 열쇠를 주우면 그때부터 괴물이 쫓아오게 하고, 붙잡히면 게임 오버가 되게 해 줘. 열쇠를 줍기 전에는 괴물이 쫓아오면 안 돼 | `chaser` — ev_chaser_a903fb23-44c0-4e11-a4c6-b8b64bb80032 @ 동쪽 들판 (14,7) — 낡은 열쇠에서 「낡은 열쇠」을 주운 뒤부터 쫓아온다 |
+| 15 | `trap-checkpoint-starter` | horror | starter | 동쪽 들판 한가운데에 밟으면 죽는 함정을 놓아 줘. 죽으면 동쪽 들판에 들어온 곳에서 다시 시작하게 해 줘 | `deathTrap` — ev_trap_d3f25e96-b06d-41de-a0c3-bda25ee60f0f @ 동쪽 들판 (10,7) · 들어설 때 체크포인트 |
+| 16 | `life-petals-starter` | horror | starter | 꽃잎 5장을 체력으로 쓰는 게임으로 만들어 줘. 화면에 꽃잎이 보이게 하고, 마을에 가시덤불을 하나 놓아서 조사할 때마다 꽃잎이 1장씩 줄게 해 줘. 0장이 되면 게임 오버가 되게 해 줘 | `lifeGauge` — 가시덤불 @ 잿불 마을 (9,12) — var_life_petals 5→0, 0 이면 게임 오버 |
+| 17 | `farm-plot-starter` | farm | starter | 마을 빈 땅에 밭을 6칸 만들어 줘. 괭이로 갈아서 씨앗을 심을 수 있게 해 줘 | `farmPlot` — 잿불 마을 밭 6칸 |
+| 18 | `crop-turnip-starter` | farm | starter | '순무'라는 작물을 만들어 줘. '순무 씨앗'을 심으면 3일 뒤에 '순무'를 수확할 수 있게 해 줘 | `cropDefined` — 작물 「순무」: 순무 씨앗 → 3일 → 순무 |
+| 19 | `fishing-built` | farm | built | 얼어붙은 호수에서 낚시를 할 수 있게 해 줘. '빙어'가 낚이게 해 줘 | `fishingSpot` — 낚시터 spot_ref_lake (18,5 8×4) — 빙어 |
+| 20 | `craft-station-starter` | farm | starter | 마을에 연금술사를 한 명 세워 줘. 말을 걸면 회복약 2개로 상급 회복약 1개를 만들 수 있게 해 줘 | `craftStation` — 연금술사 @ 잿불 마을 (10,12) — 제작법 recipe_ref_hi_potion |
+| 21 | `storage-chest-starter` | farm | starter | 마을에 보관 상자를 하나 놓아 줘. 가진 물건을 넣어 두었다가 나중에 다시 꺼낼 수 있게 해 줘 | `storageChest` — ev_storage_chest_e7583bc3-5796-4264-a3c4-1a8bffe6f4a1 @ 잿불 마을 (9,12) |
+| 22 | `sell-price-built` | economy | built | 회복약을 상점에 팔 때 30G를 받게 해 줘 | `sellPrice` — 「회복약」 판매가 30G |
+| 23 | `toll-gate-starter` | economy | starter | 파수꾼 데릭에게 말을 걸면 "통행료는 50G다. 내겠나?" 하고 묻게 해 줘. '낸다'를 고르면 50G를 내고 "좋다, 지나가라."라고 하고, 돈이 모자라면 "돈이 모자라군."이라고 하게 해 줘. 한 번 낸 뒤에는 다시 받지 않게 해 줘 | `paidGate` — 파수꾼 데릭: 50G 를 내면 「지나가라」, 모자라면 「돈이 모자라군」, 한 번만 받는다 |
+| 24 | `capture-on-blank` | monster | blank | 야생 몬스터와 싸울 때 몬스터를 잡을 수 있게 해 줘 | `projectField` — system.monsterCollection = true |
+| 25 | `starter-pick-blank` | monster | blank | 이 맵에 박사를 한 명 세워 줘. 말을 걸면 몬스터 세 마리 중에 한 마리를 골라서 받게 해 줘. 한 번만 받을 수 있게 해 줘 | `starterPick` — ev_starter_monsters @ 빈 맵 (8,6) — 3종 가운데 하나, 한 번만 |
+| 26 | `trainer-sight-blank` | monster | blank | 이 맵에 트레이너를 한 명 세워 줘. 눈이 마주치면 다가와서 몬스터 배틀을 걸게 해 줘 | `sightBattle` — 트레이너 @ 빈 맵 (15,7) |
+| 27 | `password-safe-starter` | puzzle | starter | 마을에 금고를 하나 놓아 줘. 조사하면 비밀번호를 묻고, '0427'을 맞게 넣으면 '낡은 열쇠'를 얻게 해 줘. 틀리면 "틀렸다."라고만 나오게 해 줘 | `passwordLock` — 금고 @ 잿불 마을 (9,12) — 「0427」로 「낡은 열쇠」, 한 번만 |
+| 28 | `push-rock-starter` | puzzle | starter | 동쪽 들판에 밀 수 있는 바위를 하나 놓아 줘 | `pushable` — 바위 @ 동쪽 들판 (10,7) |
+| 29 | `lock-door-key-built` | puzzle | built | 눈보라 마을에서 족장의 긴 집으로 들어가는 문을 잠가 줘. '낡은 열쇠'를 갖고 있을 때만 들어갈 수 있게 하고, 없으면 "문이 잠겨 있다."라고 나오게 해 줘 | `lockedTransfer` — 문 4칸: 「낡은 열쇠」이 있어야 들어간다, 없으면 「문이 잠겨 있다」 |
+| 30 | `time-limit-starter` | puzzle | starter | 동쪽 들판에 들어가면 30초 제한 시간이 시작되게 해 줘. 시간이 다 되면 게임 오버가 되게 해 줘 | `timeLimit` — 들어서면 timer1 30초 · 다 되면 게임 오버 |
+| 31 | `action-map-starter` | action | starter | 동쪽 들판에서는 실시간으로 칼을 휘둘러 싸우는 액션 전투가 되게 해 줘 | `actionMap` — 동쪽 들판: 액션 전투 |
+| 32 | `action-slimes-starter` | action | starter | 동쪽 들판을 실시간 액션 전투 맵으로 만들고, 덤벼드는 슬라임을 두 마리 풀어 줘 | `actionSpawn` — 동쪽 들판: 「슬라임」 스폰 1곳 · 동시에 2마리 |
+| 33 | `two-endings-starter` | endings | starter | 여관 주인 마사에게 말을 걸면 "이제 어떻게 할 거예요?"라고 묻고 '떠난다'와 '남는다' 중에 고르게 해 줘. '떠난다'를 고르면 '먼 길'이라는 엔딩이, '남는다'를 고르면 '마을의 불빛'이라는 엔딩이 나오게 해 줘 | `choiceEndings` — 여관 주인 마사: 「떠난다」→엔딩 「먼 길」 · 「남는다」→엔딩 「마을의 불빛」 |
+| 34 | `ending-by-talks-starter` | endings | starter | 마을에 '떠나는 길'이라는 표지판을 세워 줘. 조사했을 때 꼬마 미루, 여관 주인 마사, 파수꾼 데릭 세 사람 모두와 얘기한 뒤라면 '모두의 배웅'이라는 엔딩이, 한 명이라도 얘기하지 않았다면 '쓸쓸한 출발'이라는 엔딩이 나오게 해 줘 | `flagsEnding` — 떠나는 길 @ 잿불 마을 (12,12) — 모두와 얘기하면 「모두의 배웅」, 아니면 「쓸쓸한 출발」 |
+| 35 | `backlog-on-built` | endings | built | 지난 대사를 다시 볼 수 있게 대화 기록(백로그)을 켜 줘 | `projectField` — meta.oprnDialogueSystem.backlog.enabled = true |
+| 36 | `hunger-hud-starter` | survival | starter | '배고픔' 수치를 만들어서 화면에 게이지로 보이게 해 줘. 게임을 시작할 때 100으로 시작하게 해 줘 | `hudGauge` — HUD gauge 「배고픔」 = 100 |
+
+자기검사 2026-11-11: 셋째 묶음 **36/36 sound**. 앞 묶음의 판정이 그대로인 근거 — 따라가기를 고치기 전(`7c5f3b7b62`)과 뒤의 자기검사가 첫 묶음 30/30 · 둘째 35/35 로 같고
+일마다 판정 글이 같다(다른 것은 새로 만든 이벤트 id 의 난수뿐 — 10행). 실모델 실행 셋(`baseline-46274bc35f` 23 · `after2-d4a4ae29f4` 29 · `set2-base-e298f686e5` 28)의 전/후 문서를
+지금 코드로 재판정해 상태가 바뀐 일 0건 · 까닭 글이 바뀐 일 0건. CI 는 `test/smallJobsThirdSet.test.ts` 가 같은 것을 일마다 보고, 따라가기의 새 명령 다섯을 따로 본다.
+
 ## 조수가 깐 맵의 적대적 그림 검수 (`map-vqa`, 2026-11-11)
 
 목적: 조수가 **맵을 잘 깔게** 고치는 것이 핵심이라는 오너 판단(2026-11-11)에 따라, 조수가 깐 맵을 그림으로 보고 «플레이어가 엉성하게 깔린 맵이라고 할 까닭»을
@@ -584,7 +673,7 @@ npm run harness -- assistant-capability map-vqa-calibrate --out <결과 폴더> 
 
 - **(a) 이름은 있는데 그림에 없는 것** — 검수자에게 둘째 물음(`art-gaps-v1`, 깨끗한 그림 + 확대 그림 + 사실 글)을 한다: 요청 문장·이벤트 이름과 글·빌더 이름표가 가리키는데 맵에 그려지지 않은 것
   (노점 없는 시장, 배 없는 항구, 맨바닥의 «책장» 조사 이벤트). 그릴 수 있는 것만(물건·가구·건물·탈것·동물·지형) — 사람·추상적인 것은 뺀다. 그 자리에 대신 그려진 것도 적는다. 확신이 없으면 `unsure`.
-- **(b) 빌더·도구가 스스로 적은 것** — 턴 기록(`session/turns/*.json`)의 도구 결과 글에서: `missingArt` 목록 · «「…」 그리기 카드를 대기열에 올렸다» · «이름이 맞는 기물이 이 칩셋에 이미 있다 → 이것을 써라: …»(대역 제안) ·
+- **(b) 빌더·도구가 스스로 적은 것** — 먼저 **없는 그림 기록**(`src/project/artGap.ts`, 문서 `openwiki/assistant-v2.md` 「없는 그림 기록은 하나」): 턴 기록(`session/turns/*.json`)의 `artGaps`(턴 끝 요약이 실은 기록 — 바란 것·칩셋·테마·대역·어디)를 그대로 읽는다(`reportOfArtGap`, 종류 `art-gap`). 그 칸이 없던 옛 실행은 결과 글 `missingArt` 목록의 `[art-gap]` 줄을 같은 기록으로 읽는다. 그다음 도구 결과 글에서: 기록 모양이 아닌 `missingArt` 글 · «「…」 그리기 카드를 대기열에 올렸다» · «이름이 맞는 기물이 이 칩셋에 이미 있다 → 이것을 써라: …»(대역 제안) ·
   «…쪽을 보는 그림이 없다» · «특징 … 은 놓을 빈 바닥·그림이 없어 빠졌다» · 그림·공방을 까닭으로 막힌 할 일(`✗blocked`). 엔딩·타이틀 그림 이야기는 맵 그림이 아니라 뺀다.
 - **(c) 다른 주제의 대역** — 문서의 사실(맵의 전투 배경 id, 그 맵에서 싸우는 적 이름)을 같은 물음에 주고 검수자가 고른다: 사막 맵의 `battle-scenery-forest`, 피라미드의 «광산 해골 궁수»·«초원 슬라임». 장부 줄의 이름은 «그 맵에 맞는 것»이고 대신 쓰인 것이 대역이다.
 - 여러 검수가 다르게 적은 이름(좌판·가판대·노점)은 검수자 모델 한 번으로 같은 것끼리 묶는다(`clustered`). 그 호출이 실패하면 적힌 이름 그대로 센다.
