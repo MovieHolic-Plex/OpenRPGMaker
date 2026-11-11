@@ -65,7 +65,7 @@ describe("set_npc_affection", () => {
       runTool(ctx, "set_npc_affection", { mapId: V, eventId: "ev_nope", talkGain: 1 }),
     ];
     expect(bad.map((result) => result.ok)).toEqual([false, false, false, false]);
-    // 고칠 길을 영어로 알려 준다 — 있는 아이템 · 엔딩 목록, 먼저 부를 도구.
+    // 고칠 길(먼저 부를 도구)이 글의 앞쪽에 있다 — 실행기가 200자에서 자른다. Break(첫 판): 아이템 목록 뒤에 적어 «upsert_item 으로 먼저 만들라»가 잘려 나갔다.
     expect(bad[0]!.summary).toContain("upsert_item");
     expect(bad[2]!.summary).toContain("define_ending");
     expect(JSON.stringify(ctx.project)).toBe(before);
