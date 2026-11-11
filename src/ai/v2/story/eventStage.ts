@@ -37,6 +37,8 @@ export interface WalkRecord {
   /** 지나간 칸 중 길(포석) 칸 수. */
   readonly onRoad: number;
   readonly path: readonly Cell[];
+  /** 맵에 이미 서 있던 사람(이나 주인공)이 다른 사람 곁으로 다가선 걷기 — 곁에 있었으면 한두 걸음이 맞다. */
+  readonly besideAlready?: boolean;
 }
 
 export interface CutsceneStage {

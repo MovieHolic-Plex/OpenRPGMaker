@@ -34,6 +34,8 @@ export type StagingTarget =
 
 export type StepResult =
   | { kind: "done" }
+  /** 테스트 플레이 「한 단계」 모드가 명령 실행 전에 멈췄다. 내보낸 게임에서는 생기지 않는다. */
+  | { kind: "debugStep" }
   | import("./minigameCommands").TimedChoiceStep
   | import("./minigameCommands").QuickTimeStep
   | import("./minigameCommands").TeleportMenuStep
@@ -305,7 +307,21 @@ export interface InterpreterState {
   fastForwardLabel?: string;
 }
 
+/** 테스트 플레이 계측(src/player/eventRunLog.ts)이 보는 프레임 위치. top 은 지금 맨 위 프레임의 명령 배열. */
+export type InterpreterTraceFrame = { readonly depth: number; readonly pc: number; readonly top: readonly Command[] | undefined };
+
+/**
+ * 테스트 플레이 전용 실행 추적. 내보낸 게임은 넘기지 않는다(eventRunLog 는 qaInstrumentation 씬만 설치).
+ * enter 는 명령 실행 직전에 불리고, 돌려준 함수는 그 명령이 끝난 직후(같은 동기 구간) 불린다.
+ * shouldPause 가 true 면 인터프리터는 그 명령을 실행하지 않고 debugStep 단계를 낸다.
+ */
+export interface InterpreterTrace {
+  readonly enter: (command: Command, frame: InterpreterTraceFrame) => ((after: InterpreterTraceFrame) => void) | void;
+  readonly shouldPause?: (command: Command, frame: InterpreterTraceFrame) => boolean;
+}
+
 export interface InterpreterOptions {
+  readonly trace?: InterpreterTrace;
   readonly beforeCommand?: (command: Command) => void;
   readonly onUnverified?: (reason: string) => never;
   /** An admitted detection command list may continue after its own transfer; legacy callers still terminate. */

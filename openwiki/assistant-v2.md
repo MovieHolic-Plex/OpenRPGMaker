@@ -58,7 +58,7 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 
 - **주제**(`request/topics.ts` `TOPIC_WORDS` + 전투 판정, 31개): 게임 카드(`prompt/gameCard.ts` `GAME_LINES`)의 줄마다 주제 표지가 붙었다 — `core`(늘) · `items` · `equipment` · `battle` · `gates` · `weather` · `snow` · `forest` … 작은 일과 장소 하나에는 `core` 와 걸린 주제의 줄만 싣는다. 「Fallen-Star-style jobs」 머리줄은 그 아래 줄이 하나라도 실릴 때만 붙는다.
 - **작은 일은 빈 프로젝트에서도 작은 일이다.** 전에는 빈 프로젝트의 모든 요청이 장소 카드 전부를 받았다. 이제 시킨 일이 분명하면(`…세워 줘`·`옮겨 줘`) 작은 일이고, 시킨 일 없이 묘사만 온 글(「폐업 직전 태엽 장난감 가게」 — `scope.bareDescription`)과 빈 프로젝트의 「계속」만 첫 장소를 짓는 시작으로 본다.
-- **필요할 때 싣는 것**: `write_blueprint` `build_blueprint_path` `make_place` `edit_place` `review_layout` `set_project_settings` 와 오프닝 도구는 작은 일에 처음부터 싣지 않는다. 이름은 `load_tools` 설명에 뜨고, 이름으로 부르면 그 자리에서 실린다(있는 도구는 그대로다 — 싣는 때만 바뀌었다). 엔딩·전투·상자·이어 주기처럼 요청이 주제를 말하면 그 도구(`define_ending`·`upsert_troop`·`place_chest`·`create_transfer_pair`…)는 처음부터 실린다.
+- **필요할 때 싣는 것**: `write_blueprint` `build_blueprint_path` `make_place` `edit_place` `review_layout` 와 오프닝 도구는(`set_project_settings` 는 제목을 말한 요청에만 싣는다 — 아래 「작은 일의 처음 싣는 도구」) 작은 일에 처음부터 싣지 않는다. 이름은 `load_tools` 설명에 뜨고, 이름으로 부르면 그 자리에서 실린다(있는 도구는 그대로다 — 싣는 때만 바뀌었다). 엔딩·전투·상자·이어 주기처럼 요청이 주제를 말하면 그 도구(`define_ending`·`upsert_troop`·`place_chest`·`create_transfer_pair`…)는 처음부터 실린다.
 - **실내 칩셋 목록**(약 1.6만 자)은 실내 방을 짓거나 고치는 요청에만 실린다. 작은 일에는 싣지 않는다(「상점 주인」의 「상점」은 방을 짓는 말이 아니다).
 - **장소에 문을 내는 말은 장소 짓기가 아니다**(`place.ts` `NOT_THE_PLACE`): 「족장의 긴 집에 뒷문을 하나 만들어 줘」는 고치기다 — 전에는 장소 짓기로 갈려 도구 44개·10만 자가 실렸다.
 - **휑한 야외 채우기**: 「빈 곳에」「빈 눈밭에 나무랑 바위를 놓아 줘」「허전해」「꾸며 줘」(`toolGroups.DRESS_WORDS`)면 `find_empty_ground` · `furnish_outdoor_area` · `list_spatial_designs` · `stamp_object` 와 `DRESS_CARD` 한 줄을 싣는다. `furnish_outdoor_area` 는 게임 도구 묶음과 처음 싣는 목록(`V2_UP_FRONT`)에도 들었다.
@@ -80,6 +80,106 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 - `golden.mts --diff`(B1 기준): 게임 하나 요청은 지시문 −122자(핵심 지시 −2 · 게임 카드 −120), 도구 +1(`furnish_outdoor_area`). 장소 하나는 게임 카드가 줄었다(「여관 1층」 63,598 → 48,908). 늘어난 지시문은 「광장 빈 곳에 나무랑 벤치」 하나(+366자, `DRESS_CARD`).
 
 남은 것(다른 줄기 파일): `tools/context.ts` 의 `specShown("people")` 은 지시문에 People 카드가 이미 실린 턴(`classifyRequest(…).job.people`)에도 거짓이라 첫 `add_people` 이 카드를 한 번 더 돌려준다. `tools/verbs/place.ts` 의 실내 목록 판정은 지시문과 다른 식(낱말 또는 지금 맵의 칩셋)을 쓴다 — 한 읽기로 모으면 실내 맵에서 마을·숲을 짓는 요청의 목록 1.6만 자도 뺄 수 있다.
+
+## 작은 일의 처음 싣는 도구 — 불린 것만 남긴다 (2026-11-11, Terra 작은 일 30건 실측)
+
+Terra 다시 재기(main 84a7fa331a, `assistant-fable-runs/smalljobs/after-84a7fa331a`)에서 작은 일 열 건이 도구 21개를 처음부터 받았다 — 고른 19개 + `load_tools` + 실행기가 더하는 `todo`.
+30건의 부른 기록(`trace[].name`)과 처음 실린 목록(`toolsOfferedNames`)을 견주니 고른 것이 어긋나 있었다.
+
+| 처음 실렸지만 한 번도 안 불림 (실린 일 수) | 안 실려서 `load_tools` 로 불러 씀 (쓴 일 수 / 실린 일 수) |
+|---|---|
+| `ask_user` 30 · `place_object` 28 · `restore_event` 28 · `remove_event` 27 · `declare_story_flag` 13 · `list_endings` 4 · `upsert_actor` 3 | `run_scene_test` 14/10 · `find_empty_ground` 8/3 · `get_database_records` 10/10(넷은 나중에) · `upsert_item` 2/0 · `set_project_settings` · `set_map_properties` · `replace_text_in_project` · `list_map_locations` 3/0 |
+
+그래서 (`request/topics.ts` `smallJobTools`):
+
+- **상한 18개** — `load_tools` 와 `todo` 를 더해 20개.
+- **늘 싣는 것 9개**: `inspect` `find_events` `get_event` `patch_event_page` `move_event` `add_event` `add_people` `read_specs` `ask_user`.
+- **옮기기·지우기 낱말이 있을 때만**: `move_object` `remove_event` `restore_event` `place_object`.
+- **사건을 짤 때**: `upsert_event` `run_scene_test` 가 주제 도구보다 먼저, `add_event_page` 는 자리가 남을 때. `declare_story_flag` 는 필요할 때.
+- **주제 도구를 쓴 대로**: 아이템·열쇠 → `get_database_records` `upsert_item` · 상자 → `place_chest` `find_empty_ground` · 조사 → `place_examine_hotspots` `list_spatial_designs` `stamp_object` `find_empty_ground` · 맵 잇기 → `create_transfer_pair` `list_map_locations` · 전투 → `upsert_troop` `simulate_battle` `get_database_records` · 이름 → `set_map_properties` `replace_text_in_project` `upsert_actor` · 제목 → `set_title_screen` `set_project_settings`.
+- **`set_shop_stock` 은 사고팔기를 말할 때만**(`JobFacets.sells`) — 「100골드를 얻게」「주워 가게 해 줘」는 상점이 아니다(「가게 하나」는 상점이다).
+- **말한 소리의 도구는 주제 도구보다 먼저.** 「엔딩 크레딧 음악 넣고 크레딧에 내 이름도 넣어 줘」에서 곡 찾기·걸기(`store_find_music` `set_game_audio`)가 글자 상한에 밀리지 않는다.
+- **`ask_user` 는 늘 싣는다.** 30건에서 한 번도 불리지 않았지만 「크레딧에 내 이름도 넣어 줘」처럼 물어야 풀리는 일에서 글자 상한에 밀리지 않게 늘 싣는 묶음에 둔다.
+
+증거(모델 없음 — Terra 30건의 요청을 이 트리에 넣어 처음 싣는 목록을 뽑고 그 실행이 부른 도구와 견줌, 픽스처는 하네스의 `buildFixture` 그대로):
+
+| | 전 | 후 |
+|---|---|---|
+| 처음 실린 도구 합(30건, `todo` 포함) | 573 | 498 |
+| 20개를 넘는 작은 일 | 10 | 0 (가장 많은 것 20) |
+| 부른 도구 159개 가운데 처음부터 실려 있던 것 | 128 | 147 |
+| 실렸지만 안 불린 것 | 387 | 293 |
+
+`golden.mts --diff`: 153줄 가운데 92줄(작은 일 줄 전부)의 처음 싣는 목록이 바뀌었고 지시문은 한 줄도 안 바뀌었다. 처음 싣는 도구는 `load_tools` 포함 최대 20 → 18개. `test/aiV2PromptBudget.test.ts` 가 19개(＋`todo` = 20) 상한과 위 규칙을 못박는다.
+
+## 게임 낱말이 없는 작은 일도 이벤트를 찾고 옮긴다 (2026-11-11)
+
+v1 도구 묶음(`find_events` `get_event` `patch_event_page` `move_event` …)은 요청 글에 게임 낱말이 있을 때만 만들어졌다(`tools/verbs.ts` 가 `intent.tools.game` 을 본다).
+그래서 낱말이 안 맞은 작은 일 — 「촌장이 "배경 음악이 참 좋지?"라고 말하게 해 줘」(대사는 가려진다), 「썸네일 그림 하나 골라 줘」, 게임 하나를 잇지 않는 «계속» —
+은 처음 싣는 도구가 6개(`inspect` `add_event` `add_people` `read_specs` `ask_user` `load_tools`)였고, 이벤트를 찾거나 옮기는 도구는 이름으로 불러도 없었다.
+꾸미기 요청(「광장 빈 곳에 나무랑 벤치 좀 놓아 줘」)도 채우기 도구만 받고 `move_event` 는 없었다.
+
+이제 **지은 것을 고치는 작은 일**(`editOnly` 이고 소리만 바라는 요청이 아닌 것)은 게임 낱말이 없어도 게임 도구 묶음을 받는다 — `request/intent.ts` `classifyRequest` 가
+프로젝트를 보고 정하고 `matchToolGroups(…, { editsBuilt: true })` 로 묶음을 다시 읽는다. 처음 싣는 것은 `smallJobTools` 가 고른 것뿐이고(늘 싣는 9개 + 그 일의 도구),
+나머지는 `load_tools` 로 닿는다. 지시문에는 게임 카드의 늘 싣는 줄(2,617자)이 붙는다.
+
+그대로인 것: 장소를 짓는 요청(「작은 마을 하나 만들어 줘」 — 동사 20개), 빈 프로젝트의 «계속»(짓는 길), 소리만 바라는 요청(소리 묶음 8개).
+글만 보는 읽기 함수(`wantsGameTools(task)` · `v2ExtraToolNames(task)`)의 답도 그대로다 — 프로젝트를 같이 본 기록(`classifyRequest`)만 넓어진다.
+
+남은 것: 장소를 짓는 요청에 게임 낱말이 없으면 여전히 `move_event`·`find_events` 가 만들어지지 않는다. 그 길에는 `load_tools` 도 없다 — 풀려면 `tools/verbs.ts` 의
+도구 만들기 조건(`gameTools || wantsMusicTools || wantsTerrainTools || wantsStoreTools`)과 `tools/toolExposure.ts` 의 «게임 요청만 나중에 싣기» 를 같이 고쳐야 한다(요청 줄기 밖).
+
+## 이미 있는 맵 둘을 잇기만 하는 요청은 작은 일이다 (2026-11-11)
+
+Terra 작은 일 `door-roundtrip-starter` — 「잿불 마을 동쪽 끝에서 동쪽 들판으로 넘어갈 수 있게 해 줘. 들판에서 마을로 돌아오는 길도 만들어 줘」 — 는 장소 짓기로 갈려
+도구 47개(+`todo`)·장소 카드가 실렸다. 까닭: 「**마을**로 돌아오는 길도 **만들어**」 가 장소 짓기 낱말(`PLACE_BUILD_WORDS` — 장소 이름 뒤 열두 글자 안의 짓기 동사)에 맞는다.
+글만으로는 「마을을 만들어 줘」와 가를 수 없다 — 두 맵이 이미 있다는 것은 프로젝트가 안다.
+
+그래서 `classifyRequest` 가 장소 짓기로 읽힌 글을 프로젝트와 한 번 더 본다(`request/scope.ts` `linkedExistingMaps`):
+
+- 글에 **있는 맵 이름이 둘 이상** 나오고(띄어쓰기 무시, 두 글자 이상, 긴 이름부터 맞춘다),
+- **잇는 낱말**이 있고(`LINK_MAPS_WORDS` — 넘어갈·오갈·드나들·돌아오는 길·이어 줘·연결·통하게),
+- **새 장소·다시 짓기를 말하지 않고**(새·새로운·다시 지어·넓혀·키워·하나 더),
+- 그 맵들을 가리키는 낱말(이름의 조각 — 「마을」「들판」)을 빼면 **장소 짓기 낱말이 남지 않으면**(「… 사이에 숲길 맵을 하나 만들어서 이어 줘」는 «맵 … 만들어» 가 남아 장소 짓기 그대로)
+
+범위는 `edit` 이다(까닭 글 `links maps that already exist (2 named) — nothing to build`). 같은 글이라도 들판이 없는 프로젝트에서는 그대로 `place` 다 — 기억 열쇠에 맞은 맵 이름을 넣는다.
+
+같이 고친 낱말(이 일의 도구 목록을 흐리던 것):
+
+- 맵 잇기 주제(`topics.ts` `maps`)가 `LINK_MAPS_WORDS` 를 같이 본다 — `create_transfer_pair` `list_map_locations` 가 처음부터 실린다.
+- 「동쪽 **끝에**서」「맨 끝에」의 끝은 자리다 — 엔딩 낱말(`ENDING_WORK_WORDS`)에서 뺀다(「끝에 가서 …」는 그대로 엔딩).
+- 「시장으로 **가게** 해 줘」「동굴로 가게 이어 줘」의 가게는 상점이 아니다(`SHOP_NOUN`) — 아이템 주제와 `upsert_item` 을 끌어오지 않는다. 「가게 하나」는 상점이다.
+
+증거(모델 없음, 하네스의 진짜 starter 픽스처): `scope=place · 도구 47개 · 115,849자 · 지시문 34,733자` → `scope=edit · 도구 12개 · 16,181자 · 지시문 13,790자`,
+처음 싣는 목록에 `create_transfer_pair` `list_map_locations`. `golden.mts` 는 두 맵짜리 상태의 요청 둘(잇기 / 「새 마을을 만들고 … 이어 줘」)을 더 찍는다(153 → 155줄).
+
+## 작은 일은 그 일을 하는 도구에 늘 닿는다 — 풀·주제 줄·기록 이름 (2026-11-11, 작은 일 둘째 묶음)
+
+둘째 묶음 35건(`harness-data/assistant-capability/small-jobs-2.json`)을 모델 없이 분류해 보니 다섯 문장이 게임 도구 묶음을 받지 못했다(`tools.game=false`, `extra=0`):
+「이 맵에 세이브 포인트 하나 놓아 줘」「철 검의 공격력을 12로 낮춰 줘」「얼음의 파수꾼의 HP를 지금의 두 배로 늘려 줘」「얼음 동굴을 어둡게 해 줘」「… 해독초는 더 이상 팔지 않게 해 줘」.
+게임 낱말 표에 문장을 하나씩 더하지 않고 세 겹으로 고쳤다(모두 `request/` 안).
+
+1. **풀** — 지은 것을 고치는 작은 일은 낱말과 상관없이 게임 도구 풀 전부에 `load_tools` 로 닿는다(위 「게임 낱말이 없는 작은 일도 …」). 손 풀이가 부르는데 v2 어디에도 없던 넷을 풀에 넣었다
+   (`toolGroups.ts` `V2_POOL_ONLY`): `set_session_start` · `duplicate_event` · `script_cutscene` · `place_battle_blocker`.
+2. **주제 줄** — `topics.ts` `SMALL_BY_TOPIC` 에 그 일을 하는 도구를 한 줄씩: 저장(`place_savepoint` · `set_map_properties`) · 날씨/어둡기(`set_scene_mood`) · 시작(`set_start_position` · `set_session_start`) ·
+   게임 오버(`set_game_over`) · 의뢰(`create_quest`) · 복제(`duplicate_event`) · 보스(`place_battle_blocker`) · 장비(`upsert_equipment`) · 적(`upsert_enemy`). 「팔지 않게」도 사고팔기다(`set_shop_stock`).
+3. **기록 이름** — 낱말로는 무슨 기록인지 알 수 없는 글을 프로젝트의 기록 이름으로 안다(`recordTopicsNamed`): 글에 **아이템·장비·적 기록의 이름**이 나오면 그 주제를 더한다
+   (띄어쓰기 무시 · 두 글자 이상 · 작은 일에서만). 「얼음의 파수꾼」은 적 기록이라 `upsert_enemy`, 「해독초」는 아이템이라 `upsert_item`. 기록을 고치는 주제면 `get_database_records` 를 주제 도구보다 먼저 싣는다.
+
+싣는 차례는 `SMALL_BY_TOPIC` 의 줄 차례다: 작은 놓기·맵 도구(수백~2천 자) → 이름을 댄 기록을 고치는 도구(4천~8천 자) → 넓은 낱말로 맞는 무거운 도구.
+글자 상한에서 큰 도구 하나가 작은 도구 여럿을 밀어내지 않게 한다(실측: 「'눈꽃 차'라는 새 아이템 … 가격은 30G」에서 `author_script` 가 `upsert_item` 을 밀어냈다).
+
+증거(모델 없음, 하네스 `buildFixture` 그대로 — 35건 × 그 픽스처):
+
+| | main (178f70ffa7) | 「있는 맵 둘 잇기」까지 | 후 |
+|---|---|---|---|
+| 손 풀이 도구 37개 — 처음부터 | 16 | 19 | 34 |
+| 나중에(`load_tools`) | 11 | 13 | 3 |
+| 닿지 않음 | 10 | 5 | 0 |
+| 처음 싣는 수가 20을 넘는 일(`todo` 포함) | 3 | 0 | 0 (최대 19) |
+
+아직 나중에 싣는 셋은 v2 에 다른 길이 처음부터 실려 있다: `random-encounter-starter` 의 `set_map_properties`(→ `set_encounter_table`), `enter-once-text-built`·`walk-up-greet-starter` 의 `script_cutscene`(→ `add_event`).
+시험 `test/aiV2SmallJobReach.test.ts` 가 35건의 «닿는다 · 20개 안» 과 열다섯 건의 «처음부터» 를 못박는다.
 
 ## 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 
@@ -304,6 +404,66 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 - `withActorLookRetry`(칩 관문), `withEncountersOnlyWhenAsked`(요청에 따라 조우 끔), `withPictureSearchBudget`(그림 찾기 3번 상한).
 
 증거: `test/toolsReadEmptyAndBlocked.test.ts`.
+
+## 둘째 묶음 첫 측정에서 도구 쪽이 고친 둘 — 비울 수 없는 enum · 곁에 선 사람의 다가서기 (2026-11-11)
+
+둘째 묶음 첫 측정(Terra, main e298f686e5): **28/35 · «완료» 25**. 불합격 일곱 가운데 다섯은 요청 분류가 게임 도구를 주지 않은 문장(처음 실린 도구 10개 — 요청 줄기가 고친다)이고, 둘이 도구 쪽이다.
+
+**1. `item-new-built` — 회복 차가 탈출 로프로 저장됐다.** `upsert_item` 의 `escapeTo` 는 값이 `"entrance"` 하나뿐인 선택 enum 이다. 스키마의 칸을 다 채우는 모델은
+그 칸을 비울 수 없어 `"entrance"` 를 넣었다. 같은 모양이 도구 526개 가운데 9곳이다(`upsert_event … graphic.pose` · `place_npc guide` · `make_chase_scene patrol.mode` ·
+`set_lighting_volume sources[].at.kind` · `upsert_state volatileStatus` · `upsert_item_upgrade target` · `author_dungeon puzzle` 등).
+- `tools/toolExposure.ts` `withNone`: 값 하나짜리 선택 enum 은 모델에게 `["none", 값]` 으로 보인다(설명 끝에 `"none" = leave unset.`).
+- `loop/argGuard.ts` `pruneDefaults`: `"none"` 이 도구의 **진짜** enum 에 없으면 그 칸을 걷는다. 진짜 값이 none 인 칸(`scope` · 날씨)은 그대로다.
+- 근거(탐침): `escapeTo:"none"` → 걷힘 → 저장된 아이템 `type medicine` · `escapeTo` 없음. golden 117/153, 전부 위 도구 여섯의 스키마.
+
+**2. `walk-up-greet-starter` — «걸어와서 인사» 를 시켰더니 그 사람의 자리가 옮겨졌다.** 미루는 시작 칸 한 칸 옆에 서 있다. 한 걸음 다가서자
+기계 검사가 `[cutscene-walk] 3걸음 미만이라 걷는 장면으로 안 읽힌다` 를, 끝맺음의 함수 검사가 `[scene off-post] 제자리로 돌려보내거나 move_event 로 자리를 옮겨라` 를 냈다.
+모델은 미루를 두 칸 물리고(`move_event`) 돌아가는 걸음을 넣었고, 연출 비평은 «도착한 뒤 다시 걸어간다» 고 했다 — 서로 어긋나는 세 판정 사이에서 요청 밖 편집이 남았다.
+- `story/events.ts`: 맵에 이미 서 있던 사람(이나 주인공)이 다른 사람 곁으로 다가서는 걷기는 짧아도 통과다(`WalkRecord.besideAlready`). 장면에만 나오는 사람은 전처럼 3걸음.
+- `judge/sceneCraft.ts`: 장면 뒤 그 사람이 제자리에서 3칸 안이면 자리 이탈이 아니다(`strayAfterScene` — 걸음과 다가서기 대상의 칸으로 어림, 가늠 못 하면 전처럼 잡는다).
+- 근거(탐침, starter 픽스처): 같은 `add_event` 한 번 → 전 `무대 검사 문제 1` + `off-post` 1건 → 후 둘 다 0, 미루의 저장 자리 (13,14) 그대로.
+
+||||||| e1d4dc675e
+## 쓰기 결과에는 도구의 알림이 가고, 옛 검사 줄은 안 간다 (2026-11-11, 작은 일 둘째 묶음 첫 측정)
+
+둘째 묶음 첫 측정(Terra, main e298f686e5 — 28/35)의 `item-new-built` 에서 모델은 `upsert_item` 을 같은 인자로 다섯 번 불렀다. 결과마다 실린 것은
+다른 이벤트의 런타임 지원 경고 8줄뿐이었고, 도구가 남긴 「scope 가 ally 라 … 탈출 로프는 scope none 이 맞습니다」(차가 탈출 로프로 저장되고 있다는 알림)는 한 줄도 가지 않았다.
+
+**원인(구조).** 편집기 도구 러너(`toolRunner.ts`)는 쓰기 도구의 알림을 `diff.warnings` 에 담고, `issues` 에는 **프로젝트 전체 검사**를 담는다.
+모델에게 결과를 옮기는 층(`piAgent/toolAdapter.ts` `formatPiToolSuccess`)은 `result.warnings` 와 `issues` 앞 8건만 실었다. 그래서
+- 편집기 도구(v2 동사가 아닌 것 — `upsert_item` · `move_event` · `patch_event_page` · `create_transfer_pair` · `set_shop_stock` …)가 쓴 알림은 모델에게 가지 않았고,
+- 경고가 8줄 넘게 쌓인 프로젝트(지어진 게임이면 늘 그렇다)에서는 어떤 쓰기든 같은 8줄이 결과를 채웠다.
+
+**고친 것(`writeResultForModel`, 모델에게 가는 글만 — 러너 결과·편집기 화면은 그대로).**
+- `diff.warnings` 를 `warnings` 로 싣는다(12줄까지, 넘으면 남은 수).
+- `issues` 는 이 변경 전에 없던 줄만. 전 상태의 검사는 프로젝트 객체마다 한 번 재고(`WeakMap`), 쓰기 결과가 다음 호출의 «전» 이 된다.
+  글이 같은 줄의 수가 늘지 않았으면 자리만 바뀐 옛 줄로 본다(이벤트를 옮기면 그 이벤트의 경고가 좌표만 바뀌어 다시 나왔다).
+- 알림과 글이 같은 줄(장면 다듬기 줄은 양쪽에 있었다)은 알림으로 한 번만.
+
+**근거(모델 없는 탐침, 지어진 픽스처에서 네 번 쓰기).** 결과 글 11,600자 → 4,522자. `move_event` 2,040자 → 153자(옛 경고 8줄이 빠짐),
+`upsert_item` 3,187자 → 1,379자에 「scope …」 알림이 처음으로 실림, `create_transfer_pair` 에 「출입구 A 위치 자동 조정: (10,1) → (11,3)」 이 처음으로 실림.
+
+||||||| f476f14e6d
+## 문 앞 칸은 길을 막지 않는다 — 집 문 여섯 가운데 하나가 맨바닥에 서던 일 (2026-11-11)
+
+`test/villageSummaryListsDoors.test.ts` 가 CI 에서 실행마다 갈렸다(씨앗 없이 마을을 짓는다). 모델 없는 탐침으로 같은 순서를 되풀이하니
+마을 요약의 «집 문 앞 칸» 을 그대로 준 `create_transfer_pair` 가 **문 71개 가운데 12개**(마을 50번 가운데 첫 문 5번)에서 출입구를 문 옆 맨바닥으로 옮겼다
+(`scene-transfer-off-door`). 게임 하나를 짓는 길(`story/makeGame` `pickDoor`)도 같은 칸을 쓴다.
+
+**원인.** 문 그림 아래의 걷는 칸을 주면 트리거는 문 그림 칸(막힌 칸, 부딪혀 열린다)으로 올라가고 문앞 칸은 반대쪽에서 온 착지가 된다.
+그런데 자리 고르기(`transferEndpoint` 의 «유일한 통로» · `resolveTransferEndpoint` 의 봉쇄 판정)는 그 **올리기 전** 칸, 곧 문앞 칸을 트리거로 보고 쟀다.
+집 앞이 한 칸 길이면 «두 구역을 잇는 유일한 통로라 문을 놓으면 한쪽이 막힌다» 며 옆 칸으로 옮겼고, 옮긴 칸은 문 아래가 아니라 올라가지 못했다.
+`doorAt` 을 손으로 주어도 3개는 같은 판정에 걸려 옮겨졌다.
+
+**고친 것(도구에서, `src/editor/tools/eventTools.ts`).**
+- `create_transfer_pair` 는 문 그림 바로 아래의 걷는 칸을 받으면 그 칸을 문앞으로 읽는다(`doorAbove`) — `doorAt` 을 준 것과 같은 길로 간다.
+- `resolveTransferEndpoint` 의 봉쇄 판정은 **트리거가 실제로 서는 칸**으로 잰다(`triggerOnDoor`): 막힌 문 칸이면 걷는 칸을 차지하지 않으니 문앞이 방 바닥에 붙어 있는지만,
+  걸을 수 있는 문 칸이면 그 문 칸을 새 출입구로 놓고 잰다. `trigger:"front"` 와 문 그림이 없는 자리는 전과 같다.
+- 같은 판정을 두 번 하던 `sealAccept`(과 `accept` 인자)는 지웠다 — 안쪽 판정과 입력이 같아 한 번도 다른 답을 내지 않았다.
+- 마을 빌더(`place/builders/village.ts`)는 시작에서 걸어 닿지 않는 집(`reached:false`)의 문을 문 목록에서 빼고 그 수를 알린다.
+
+**근거.** 고정 씨앗 8개 마을의 문 71개: 그냥 부를 때 맨바닥 12 → 0, `doorAt` 을 줄 때 3 → 0(닿지 않는 문 1개는 목록에서 빠짐). 씨앗 없는 마을 40번: 5 → 0.
+시험은 씨앗을 고정했고(`salt`), 그때 다섯 문이 맨바닥에 섰던 씨앗 둘(99012 · 11630)의 모든 문을 잰다.
 
 ## 뒷문은 `create_transfer_pair` 한 번 — 막다른 거절이 그 길을 이른다 (2026-11-11, 작은 일 두 번째 재측정)
 
