@@ -38,7 +38,8 @@ const TOPIC_WORDS: readonly (readonly [GameTopic, RegExp])[] = [
   ["patrol", /순찰|돌아다|뛰어다|걸어 다|patrol/iu],
   ["door", /문을 열|문 열|성문|창고 문|뒷문|자동문|미닫이|셔터|문 효과|door/iu],
   ["removeMap", /맵[^.!?\n]{0,8}(?:지워|지우|삭제|없애)|안\s*쓰는\s*맵|중복\s*맵|remove.*map/iu],
-  ["chest", /상자|보물|chest/iu],
+  // 줍는 물건도 같은 도구(place_chest look:"item")다.
+  ["chest", /상자|보물|떨어져 있|떨어뜨|주[워울운]|줍[게는기다]|chest|treasure|pick(?:s|ed)?\s?up|lying on/iu],
   ["hero", /주인공|파티|동료|직업|레벨|능력치|hero|party/iu],
   ["scene", /장면|컷신|컷씬|연출|scene|cutscene/iu],
 ];

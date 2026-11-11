@@ -106,8 +106,8 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
     p: { a: "{mapId,x,y} end A (optional doorAt:{x,y})", b: "{mapId,x,y} end B (optional doorAt:{x,y})", trigger: "door (default): trigger on the door cell. front: old behaviour (cell in front) — special cases only." },
   },
   place_chest: {
-    d: "Place a treasure chest event: opening gives contents (item/gold) once and remembers it with self switch A. Always use this for chests that give something (not upsert_event). Decorative boxes are objects, not chests. Water cells are refused.",
-    p: { contents: "{itemId?: string, gold?: number} — at least one." },
+    d: "Place something the player takes once: a treasure chest (default), or an item lying on the ground (look:\"item\"). Examining it gives contents (item/gold) once; self switch A remembers it. look:\"item\" shows the item's own icon on the cell and the icon disappears when it is picked up — do not draw an object or use a transparent event for a pickup. Always use this for chests and pickups (not upsert_event/add_event). Decorative boxes are objects, not chests. Water cells are refused.",
+    p: { contents: "{itemId?: string, gold?: number} — at least one. The item must exist (upsert_item first).", look: "chest (default) | item = the item lies on the ground and is picked up." },
   },
   declare_story_flag: {
     d: "Give a switch or variable a story meaning. action: declare | update | rename | retire. declare without targetId picks a free slot. To fix only the description use update with id + description.",

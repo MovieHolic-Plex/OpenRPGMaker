@@ -36,6 +36,7 @@ import { validateConditionShape, validateShopStock } from "@/project/io/shapeCom
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
+import { resolveCc0IconAssetUrl } from "@/assets/cc0IconAssets";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
 import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
 import { laneCells } from "@/ai/v2/place/placementRules";
@@ -3803,13 +3804,21 @@ function assertChestDrySurface(project: Project, map: GameMap, x: number, y: num
   );
 }
 
+/** 줍는 물건에 아이콘이 없을 때·돈만 놓을 때의 그림. */
+const LYING_FALLBACK_ICON = "cc0-jetrel-coin-pouch";
+/** 칸에 그대로 보일 수 있는 아이템 아이콘(번들 한 장 그림) — 없으면 undefined. */
+function lyingItemIcon(record: { iconResourceId?: string; imageResourceId?: string } | undefined): string | undefined {
+  return [record?.iconResourceId, record?.imageResourceId].find((id): id is string => typeof id === "string" && !!resolveCc0IconAssetUrl(id));
+}
+
 // 보물상자: "상자를 열면 X 지급"을 셀프스위치 2페이지로 완결하는 프리셋.
 // (코퍼스 hidden-treasure-chest / chest-potion-reward가 "부분 가능"이던 갭 해소)
 export const placeChest: ToolDefinition = {
   name: "place_chest",
   description:
     "보물상자 이벤트를 배치한다. 조사하면 contents의 아이템/골드를 지급하고 셀프스위치 A로 개봉 상태를 기억한다(2페이지).  보물상자(열면 아이템/골드 지급, 개봉 기억)는 반드시 이 툴 — place_npc/upsert_event 로 흉내내지 말 것. 장식용 박스·나무상자는 이 툴이 아니라 place_props(material:\"나무 상자\"). 넣고 빼는 보관 상자는 place_storage_chest." +
-    "'보물상자'·'상자를 열면 ~을 주는' 요청만 이 툴. " +
+    "'보물상자'·'상자를 열면 ~을 주는' 요청, 그리고 바닥에 떨어진·놓인 물건을 줍는 요청(look:\"item\")이 이 툴. " +
+    "look:\"item\" 은 상자 없이 그 아이템의 아이콘이 칸에 보이고, 조사하면 줍고 그림이 사라진다 — 물건 그림을 따로 그리거나(draw_object) 투명 이벤트로 흉내내지 말 것. " +
     "장식용 박스·나무상자·나무박스·과일박스는 place_props(harness-combined-town-wood-box / fruit-box) — place_chest 금지. " +
     "벽 위(문·벽감)여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 물 위는 거부한다 — 지면이나 통행 가능한 다리 위 좌표를 선택하라.",
   mode: "write",
@@ -3825,6 +3834,7 @@ export const placeChest: ToolDefinition = {
         description: "{itemId?: string, gold?: number} — 최소 1개",
         properties: { itemId: { type: "string" }, gold: { type: "integer" } },
       },
+      look: { type: "string", enum: ["chest", "item"], description: "chest(기본) = 보물상자. item = 물건이 바닥에 놓여 있다 — 아이템 아이콘이 보이고, 조사하면 줍고 사라진다." },
       name: { type: "string" },
       id: { type: "string" },
     },
@@ -3835,6 +3845,8 @@ export const placeChest: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const requestedX = args.x as number;
     const requestedY = args.y as number;
+    const lying = args.look === "item";
+    const label = lying ? "바닥의 물건" : "보물상자";
     if (!inMapBounds(map, requestedX, requestedY)) {
       throw new ToolError(`상자 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "chest-out-of-bounds", mapId: map.id, x: requestedX, y: requestedY });
     }
@@ -3842,7 +3854,7 @@ export const placeChest: ToolDefinition = {
     // action 트리거 상자는 RM2K3 문 의미대로 벽 위도 허용 — 단 인접 칸에서 조사할 수 있어야 한다.
     const placement = resolveEventPlacement(draft, map, requestedX, requestedY, {
       kind: "interaction",
-      label: "보물상자",
+      label,
       code: "chest-impassable",
       replacesAutoInspect: true,
     });
@@ -3857,7 +3869,7 @@ export const placeChest: ToolDefinition = {
       throw new ToolError("contents.itemId 또는 contents.gold(양수) 중 최소 하나가 필요합니다.", { code: "chest-empty-contents" });
     }
     const warnings: string[] = [];
-    if (adjusted) warnings.push(placementAdjustedWarning("보물상자", { x: requestedX, y: requestedY }, placement));
+    if (adjusted) warnings.push(placementAdjustedWarning(label, { x: requestedX, y: requestedY }, placement));
     // 금액은 이 맵의 진행도(전투 보상·기존 상자·상점)와 견준다. 막지는 않는다 — 일부러 적은 상자도 있다.
     const basis = gold ? buildMapPlacementContext(draft, map.id)?.chestGold : undefined;
     if (gold && basis && (gold < basis.min || gold > basis.max)) {
@@ -3869,12 +3881,47 @@ export const placeChest: ToolDefinition = {
     if (itemId && !itemRecord) {
       warnings.push(`아이템 '${itemId}'가 데이터베이스(아이템·장비)에 없습니다 — upsert_item/upsert_equipment 로 먼저 만들거나 기존 id를 쓰세요`);
     }
-    const graphic = resolveGraphic({ query: "보물상자" }, { overrides: draft.charsetLabels });
-    const id = (args.id as string | undefined) ?? genId("ev_chest");
-    const name = (args.name as string | undefined) ?? "보물상자";
     const itemLabel = itemRecord?.name.trim() || itemId;
     const rewardText = [itemLabel ?? null, gold ? `${gold}G` : null].filter(Boolean).join(" · ");
     const trigger: Trigger = { kind: "action" };
+    if (lying) {
+      // 바닥에 놓인 물건: 그 아이템의 아이콘이 칸에 보인다(한 장 그림 — 런타임이 16px 로 맞춘다). 주우면 그림도 막음도 사라진다.
+      const icon = lyingItemIcon(itemRecord);
+      if (itemId && !icon) warnings.push(`'${itemLabel}' 에는 칸에 보일 아이콘이 없어 주머니 그림으로 놓았습니다 — 아이템에 iconResourceId 를 주고 다시 부르면 그 그림으로 바뀝니다`);
+      const id = (args.id as string | undefined) ?? genId("ev_pickup");
+      const name = (args.name as string | undefined) ?? itemLabel ?? "떨어진 돈";
+      const event: GameEvent = {
+        id, x, y, trigger, commands: [],
+        pages: [
+          {
+            id: `${id}_lying`, name, conditions: [{ kind: "selfSwitch", key: "A", value: false }],
+            graphic: { sprite: { type: "bundled", id: icon ?? LYING_FALLBACK_ICON } },
+            trigger, priority: "same", overlapForbidden: true, animationType: "fixedGraphic", movement: PASSIVE,
+            commands: [
+              ...lootGrantCommands({ itemId, gold }),
+              { kind: "text", body: `${/G$/u.test(rewardText) ? `${rewardText}를` : withJosa(rewardText, "을/를")} 주웠다.` },
+              { kind: "setSelfSwitch", key: "A", value: true } as Command,
+            ],
+          },
+          {
+            id: `${id}_taken`, name: `${name}(주움)`, conditions: [{ kind: "selfSwitch", key: "A", value: true }],
+            graphic: { transparent: true }, trigger, priority: "below", animationType: "fixedGraphic", movement: PASSIVE, commands: [],
+          },
+        ],
+      };
+      assertEventShape(event, warnings);
+      const displaced = displaceAutoInspectEvents(map, event);
+      if (displaced.length) warnings.push(`같은 칸의 가구 조사 이벤트 ${displaced.join(", ")} 를 바닥의 물건으로 대체했습니다.`);
+      upsertEventIntoMap(map, event);
+      return {
+        summary: `${map.name} 바닥에 '${name}' 놓음 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""} — 조사하면 ${rewardText} 줍고 사라진다`,
+        data: { eventId: id, x, y, adjusted },
+        ...(warnings.length > 0 ? { warnings } : {}),
+      };
+    }
+    const graphic = resolveGraphic({ query: "보물상자" }, { overrides: draft.charsetLabels });
+    const id = (args.id as string | undefined) ?? genId("ev_chest");
+    const name = (args.name as string | undefined) ?? "보물상자";
     const openCommands: Command[] = [
       ...chestOpenCommands(id, graphic),
       ...lootGrantCommands({ itemId, gold }),

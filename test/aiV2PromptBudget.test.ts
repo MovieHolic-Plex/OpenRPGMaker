@@ -71,6 +71,8 @@ describe("small jobs get a small prompt and a short tool list", () => {
     expect(shoot("이 맵에 상점 주인 한 명 세워 줘.", "blank").upFront).toEqual(expect.arrayContaining(["add_people", "set_shop_stock", "list_npc_graphics"]));
     expect(shoot("촌장한테 말 걸면 열쇠를 받게 해 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["upsert_event", "patch_event_page", "run_scene_test"]));
     expect(shoot("여기 보물상자 하나 놓고 포션 3개 넣어 줘", "oneEvent").upFront).toContain("place_chest");
+    // 줍는 물건도 같은 도구다(look:"item") — 그림을 그리게 하거나 투명 이벤트로 흉내 내지 않게 처음부터 싣는다.
+    expect(shoot("여기 바닥에 낡은 열쇠가 떨어져 있게 해 줘. 조사하면 주워 가게 해 줘", "oneEvent").upFront).toContain("place_chest");
     expect(shoot("슬라임 세 마리와 싸우는 전투 하나 넣어 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["upsert_troop", "simulate_battle"]));
   });
 
