@@ -11,6 +11,7 @@
 //   - 위층 칸은 한 칸에 하나뿐이다 — 키트끼리 겹치면 놓지 않는다. 발자국 + 여백을 예약한다.
 //   - 문 칸은 막힘, 바로 아래 접근칸과 그 아래 한 칸은 비우고 다진 눈길로 잇는다. 소품을 놓을 때마다 시작 칸 BFS 로 «이미 닿던 칸이 끊기지 않는지» 보고, 끊으면 되돌린다.
 // 순수 함수다(프로젝트를 모른다). 칸 번호·통행은 호출자가 준 사전(palette)에서 얻는다 — 도구(snowNorthTools.ts)는 번들 정의에서, QA 스크립트는 구운 JSON 에서.
+import { exitRoadThroughWild, type ExitSide } from "./composerExitRoads";
 
 export type SnowNorthOutdoorStyle = "village" | "lake" | "cave" | "market";
 export type SnowNorthRoomStyle = "cabin" | "longhall" | "tavern" | "sauna" | "ice-cave";
@@ -46,6 +47,8 @@ export interface SnowNorthSpec {
   readonly height: number;
   readonly style: SnowNorthStyle;
   readonly seed?: number;
+  /** 다른 맵으로 나가는 변(야외만) — 길 그물에서 그 변의 가장자리까지 다진 눈길을 낸다(이미 닿아 있으면 그대로). */
+  readonly exits?: readonly ExitSide[];
 }
 
 export interface SnowNorthResult {
@@ -105,6 +108,8 @@ function pick<T>(rng: () => number, xs: readonly T[]): T { return xs[Math.floor(
 const AUTOTILE_GROUND = new Set(["pack", "ice", "tundra", "frost", "slush", "water"]);
 const DIRS = { N: 1, E: 2, S: 4, W: 8, NE: 16, SE: 32, SW: 64, NW: 128 } as const;
 
+/** 트인 눈밭에 흩어 둔 것 — 나가는 길이 지나면 걷어도 되는 소품. */
+const WILD_PROP = /^sn-(pine|birch|bush|boulder|stump|drift)/;
 type Use = "open" | "wild" | "forest" | "path" | "plaza" | "market" | "yard" | "pen" | "shore" | "ice" | "water" | "camp" | "rock"
   | "bld" | "prop" | "fence" | "floor" | "wall" | "ceil";
 interface Rect { x: number; y: number; w: number; h: number }
@@ -304,6 +309,27 @@ class Board {
       if (!this.in(X, Y) || SOLID_USES.includes(this.use[this.k(X, Y)]!) || this.ground[this.k(X, Y)] === "water") return false;
     }
     return true;
+  }
+  /** 길 그물에서 그 변의 가장자리까지 다진 눈길(2칸 폭)을 낸다 — 빈 눈밭을 지나고(건물·울타리·얼음·물은 돌아간다), 길과 길섶에 걸친 나무·덤불·바위는 걷는다. */
+  exitRoad(side: ExitSide): void {
+    const at = (x: number, y: number) => (this.in(x, y) ? this.k(x, y) : -1);
+    const wild = this.props.map((p) => { const kit = WILD_PROP.test(p.kit) ? this.pal.kit(p.kit) : undefined; return kit ? { x: p.x, y: p.y, w: kit.width, h: kit.height } : undefined; });
+    const road = exitRoadThroughWild({
+      W: this.W, H: this.H,
+      isRoad: (x, y) => { const k = at(x, y); return k >= 0 && (this.use[k] === "path" || this.use[k] === "plaza" || this.use[k] === "market"); },
+      canPave: (x, y) => { const k = at(x, y); return k >= 0 && OPEN_USES.includes(this.use[k]!) && this.upper[k]! < 0 && this.ground[k] !== "water" && this.ground[k] !== "ice"; },
+    }, side, wild);
+    if (!road) { this.notes.push(`${side} 가장자리까지 길을 내지 못했다`); return; }
+    for (const i of road.drop) {
+      const p = wild[i]!;
+      for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) {
+        if (!this.in(x, y)) continue;
+        const k = this.k(x, y);
+        this.lowerFix[k] = -1; this.upper[k] = -1; if (this.use[k] === "prop") this.use[k] = "wild";
+      }
+      this.props.splice(i, 1);
+    }
+    for (const c of road.cells) { const k = this.k(c.x, c.y); this.ground[k] = "pack"; this.use[k] = "path"; }
   }
   /** 다진 눈 길: (x0,y0)→(x1,y1) 꺾인 선(가로 먼저 또는 세로 먼저 — 막히지 않는 쪽). 굵기 w. 건물·소품을 지나면 실패. */
   road(x0: number, y0: number, x1: number, y1: number, w = 1, g = "pack"): boolean {
@@ -1062,6 +1088,7 @@ export function composeSnowNorth(spec: SnowNorthSpec, pal: SnowNorthPalette): Sn
   else if (spec.style === "cave") start = composeCave(b, rng);
   else if (spec.style === "market") start = composeMarket(b, rng);
   else start = composeRoom(b, rng, spec.style as SnowNorthRoomStyle);
+  if (!indoor) for (const side of spec.exits ?? []) b.exitRoad(side);
   if (!indoor) b.smooth();
   const lower = b.resolve();
   const exits: SnowNorthCell[] = [];

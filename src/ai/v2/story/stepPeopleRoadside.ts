@@ -8,7 +8,7 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import type { BuildRun } from "../shared/types";
 import { resolveSteps } from "./mysteryCaseRead";
 import { reachableCells, unreachableEvents } from "../judge/eventReach";
-import { isRoadCell } from "../place/edgeExitRoads";
+import { isRoadCell } from "../place/surface";
 
 const shown = (ev: GameEvent) => (ev.pages ?? []).some((p) => { const g = (p.graphic ?? {}) as { transparent?: boolean; sprite?: unknown; appearanceId?: unknown }; return g.transparent !== true && Boolean(g.sprite || g.appearanceId); });
 const reachCount = (project: Project, map: GameMap) => { const r = reachableCells(project, map); let n = 0; if (r) for (const v of r) n += v ? 1 : 0; return n; };

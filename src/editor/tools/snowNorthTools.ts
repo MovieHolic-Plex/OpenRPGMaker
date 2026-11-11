@@ -4,6 +4,7 @@
 // 모양은 prehistoricTools 와 같다.
 import { isSnowNorthTilesetDef, SNOW_NORTH_TILESET_ID } from "@/ai/snowNorthPolicy";
 import { isPassable } from "@/project/collision";
+import { EXIT_SIDES_SCHEMA, exitSidesArg } from "@/project/composerExitRoads";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
@@ -65,6 +66,7 @@ export const COMPOSE_SNOW_NORTH_MAP_TOOL: ToolDefinition = {
       newMap: { type: "object", properties: { name: { type: "string" }, width: { type: "integer" }, height: { type: "integer" } }, required: ["name"], additionalProperties: false, description: "새 맵을 만들어 짓는다. 크기는 생략한다 — style 기본 크기가 가장 알차다(집·광장 수는 늘지 않는다). 주더라도 기본 크기 + 8 칸에서 잘린다" },
       seed: { type: "integer", minimum: 0, description: "배치 씨앗(생략 0)" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 깐다" },
+      exits: EXIT_SIDES_SCHEMA,
     },
     required: ["style"],
     additionalProperties: false,
@@ -97,7 +99,8 @@ export const COMPOSE_SNOW_NORTH_MAP_TOOL: ToolDefinition = {
     if (map.width < min.w || map.height < min.h) throw new ToolError(`맵이 작다(${map.width}×${map.height}) — ${style} 는 ${min.w}×${min.h} 이상이어야 한다. resize_map 하거나 newMap 으로 새로 만든다`, { code: "map-too-small", mapId });
     if (!created && !isUntouched(map) && args.replace !== true) throw new ToolError("이미 칠한 맵이다 — 지우고 다시 깔려면 replace:true 를 준다(이벤트는 남는다)", { code: "map-not-blank", mapId });
     let r;
-    try { r = composeSnowNorth({ width: map.width, height: map.height, style, seed }, pal); }
+    const exits = exitSidesArg(args.exits);
+    try { r = composeSnowNorth({ width: map.width, height: map.height, style, seed, ...(exits.length ? { exits } : {}) }, pal); }
     catch (e) { throw new ToolError(`북방 설원 맵을 짜지 못했다 — ${(e as Error).message}`, { code: "compose-failed", mapId }); }
 
     const next = structuredClone(draft);

@@ -4,6 +4,7 @@
 import { isDesertEastTilesetDef } from "@/ai/desertEastPolicy";
 import pieces from "@/assets/desertEastPieces.json";
 import { isPassable } from "@/project/collision";
+import { EXIT_SIDES_SCHEMA, exitSidesArg } from "@/project/composerExitRoads";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
@@ -77,6 +78,7 @@ export const COMPOSE_DESERT_EAST_MAP_TOOL: ToolDefinition = {
       kind: { type: "string", enum: KINDS, description: "oasis 오아시스 마을 | bazaar 바자르 거리 | palace 궁전 | pyramid 피라미드 유적 | caravanserai 대상 숙소" },
       seed: { type: "integer", minimum: 0, description: "배치 씨앗(생략 0)" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 깐다" },
+      exits: EXIT_SIDES_SCHEMA,
     },
     required: ["kind"],
     additionalProperties: false,
@@ -93,7 +95,8 @@ export const COMPOSE_DESERT_EAST_MAP_TOOL: ToolDefinition = {
     const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 0;
     const pal = desertPaletteFromTileset(tileset, pieces);
     let r;
-    try { r = composeDesertEast({ width: map.width, height: map.height, kind, seed }, pal); }
+    const exits = exitSidesArg(args.exits);
+    try { r = composeDesertEast({ width: map.width, height: map.height, kind, seed, ...(exits.length ? { exits } : {}) }, pal); }
     catch (e) { throw new ToolError(`${DESERT_KIND_LABEL[kind]}를 짜지 못했다 — ${(e as Error).message}. seed 를 바꿔 다시 부른다`, { code: "compose-failed", mapId }); }
     const next = structuredClone(draft);
     const target = writeLayers(next, mapId, r.lower, r.upper);
