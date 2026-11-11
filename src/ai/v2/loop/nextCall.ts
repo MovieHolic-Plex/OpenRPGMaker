@@ -15,6 +15,11 @@ export interface NextCall {
   readonly args: Obj;
   /** 왜 이 호출인가(한 줄) */
   readonly why: string;
+  /**
+   * 인자가 다 찬 «바로 그 호출» — 이것만 다음 차례에 강제한다. 자리표시(<…>)가 남았거나 거절 글에서 동사 이름만 짚은 제안은 알림 글로만 준다:
+   * 강제하면 모델이 고쳐 보낸 맞는 호출이 «pending action» 으로 실행되지 않았다(2026-11-11 map-vqa 깔기 24판: 17번, 그중 make_place 7번).
+   */
+  readonly exact?: boolean;
 }
 
 const isObj = (v: unknown): v is Obj => !!v && typeof v === "object" && !Array.isArray(v);
@@ -24,9 +29,11 @@ export function formatCall(call: NextCall): string {
   return `${call.verb}(${body.length > 420 ? `${body.slice(0, 420)}…` : body})`;
 }
 
-const mapOf = (args: Obj): string | undefined => typeof args.mapId === "string" ? args.mapId
-  : isObj(args.patch) && typeof args.patch.mapId === "string" ? args.patch.mapId
-  : isObj(args.a) && typeof args.a.mapId === "string" ? args.a.mapId : undefined;
+/** 호출이 가리킨 맵 id — 빈 글(엄격 스키마가 채운 필수 칸)은 «안 줬다» 다. */
+const mapOf = (args: Obj): string | undefined => [args.mapId, isObj(args.patch) ? args.patch.mapId : undefined, isObj(args.spec) ? args.spec.mapId : undefined, isObj(args.a) ? args.a.mapId : undefined]
+  .find((v): v is string => typeof v === "string" && v.trim() !== "");
+/** 자리표시(<…>)가 하나도 없는 호출인가. */
+export const isFilledCall = (call: NextCall): boolean => !/"<[^"<>]*>"/u.test(JSON.stringify(call.args));
 
 /** 쓰기 동사 이름이 거절 글에 들어 있나(낱말 경계). */
 const mentions = (text: string, verb: string) => new RegExp(`(^|[^a-z_])${verb}([^a-z_]|$)`, "u").test(text);
@@ -66,12 +73,12 @@ export function nextAfterFailure(tool: string, args: unknown, failure: string, p
   if (look && has("list_npc_graphics")) {
     const copy = tool === "upsert_actor" ? "that row's selectionId charset:<sheet>:<slot> as characterResourceId:'<sheet>', characterIndex:<slot>"
       : tool === "place_field_enemy" ? "that row's selectionId into graphic.selectionId" : "that row's nativeGraphic into graphic (patch_event_page set.graphic)";
-    return { verb: "list_npc_graphics", args: { query: look[1] }, why: `choose the look from the real pictures, then copy ${copy} — never type slot or pattern numbers` };
+    return { verb: "list_npc_graphics", exact: true, args: { query: look[1] }, why: `choose the look from the real pictures, then copy ${copy} — never type slot or pattern numbers` };
   }
   // 이동 칸 잇기 — 문앞이 막힘: doorAt 을 빼고 부르면 도구가 걸어 닿는 가장 가까운 칸으로 옮겨 잇는다.
   if (tool === "create_transfer_pair" && /안전한 출입구를 만들 수 없|봉쇄|겹칩니다|doorAt/u.test(body)) {
     const strip = (e: unknown) => { if (!isObj(e)) return e; const { doorAt: _d, ...rest } = e; return rest; };
-    return { verb: tool, args: { ...a, a: strip(a.a), b: strip(a.b) }, why: "the door-front cell was refused — without doorAt the tool links at the nearest walkable cell" };
+    return { verb: tool, exact: true, args: { ...a, a: strip(a.a), b: strip(a.b) }, why: "the door-front cell was refused — without doorAt the tool links at the nearest walkable cell" };
   }
   if (tool === "upsert_troop" && /최소 1마리/u.test(body)) {
     const troop = isObj(a.troop) ? a.troop : a;
@@ -83,12 +90,25 @@ export function nextAfterFailure(tool: string, args: unknown, failure: string, p
     const first = /이 맵의 이벤트:\s*([^\s,)…]+)/u.exec(body)?.[1];
     if (list || first) return { verb: "get_event", args: { mapId: mapId ?? "<mapId>", eventId: "<an id from the list below>" }, why: `that id does not exist (deleted, or rebuilt with a new id) — events on that map: ${list || first}` };
   }
-  // 칸 배치 거절: 고침은 layoutPatch(거절된 배치에도 적용된다)나 고친 배치 전체 — 글에 든 find_pieces 는 id 를 찾는 보조일 뿐이다
-  // (2026-10-31 6회차 terra-high: 다음 호출 제안이 find_pieces({}) 를 골라 빈 조회가 늘었다).
-  if (/Rejected: the (interior layout|layout patch) for/u.test(body) && has("edit_place")) {
-    return { verb: "edit_place", args: { patch: { mapId: mapId ?? "<mapId>", layoutPatch: { add_objects: [{ id: "<catalog id>", x: 0, y: 0 }] } } },
-      why: "fix every problem the rejection names with a layout patch (it also applies to a rejected, not yet built layout) or send make_place with the full corrected layout; use find_pieces(category) only to look up more ids" };
+  // 칸 배치 거절: 선 장소(칸 배치로 깐 맵)는 layoutPatch 로 고치고, 아직 서지 않은 장소는 고친 배치 전체를 같은 이름으로 다시 보낸다.
+  // 없는 맵에 edit_place({mapId:""}) 를 이르면 그 호출이 다시 거절됐다(같은 판 13요청 25번) — 글에 든 find_pieces 는 id 를 찾는 보조일 뿐이다.
+  // 거절 글은 결과 JSON 그대로 올 때가 있다(따옴표가 \\" 로 온다).
+  const laid = /Rejected: the (?:interior layout|layout patch) for \\?"([^"\\]+)/u.exec(body);
+  if (laid) {
+    const stands = !!mapId && (project.maps[mapId]?.locations ?? []).some((l) => (l.tags ?? []).includes("interior-layout"));
+    if (stands && has("edit_place")) return { verb: "edit_place", args: { patch: { mapId, layoutPatch: { add_objects: [{ id: "<catalog id>", x: "<x>", y: "<y>" }] } } },
+      why: "this place stands — fix every problem the rejection names with one layout patch (remove_objects / add_objects with exact ids and cells, or replace whole fields); find_pieces(category) only looks up more ids" };
+    if (has("make_place")) return { verb: "make_place", args: { type: "interior", name: laid[1], layout: "<the full corrected layout>" },
+      why: "this place is not built yet — send the whole layout again under the same name with every named problem fixed" };
   }
+  // 칩셋 계열 거절(도구 실행기): 이 프로젝트의 그림체가 아닌 칩셋으로 새 맵을 만들려 했다 — 빈 맵을 만들어 손으로 칠하게 하지 않고, 그 칩셋의 종류로 장소를 짓는 make_place 를 준다
+  // (2026-11-11 map-vqa 깔기 village-to-field: «create_map({})» 제안 뒤 48×36 빈 맵에 소품 12무더기만 놓였다).
+  if (/사용자 승인 없이 타일 그림체를 바꾸지 않는다/u.test(body) && has("make_place")) {
+    const name = [a.name, Array.isArray(a.names) ? a.names[0] : undefined].find((v): v is string => typeof v === "string" && v.trim() !== "");
+    return { verb: "make_place", args: { type: "<village (any outdoor place) | interior | dungeon | cave>", name: name ?? "<place name>" }, why: "this project's maps use another chipset family — make_place builds the place with that family's own pieces (no chipset to choose, no empty map to paint)" };
+  }
+  // 거절 글이 값을 채운 다음 호출을 이미 적었다(«Next call: …») — 같은 동사의 빈 뼈대를 덧붙이면 두 호출이 엇갈린다.
+  if (/(^|[^\[])Next call[^:\n]{0,60}: [a-z_]+\(/u.test(body)) return undefined;
   // 거절 글이 다른 동사를 일렀다(«stamp_object·fill_region·move_event 로 고친다»): 그중 아직 안 쓴 것 하나.
   const named = [...available].filter((v) => v !== tool && v !== "todo" && mentions(body, v)).sort((x, y) => body.indexOf(x) - body.indexOf(y));
   const fresh = named.find((v) => !used.has(v)) ?? named[0];
