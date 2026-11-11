@@ -245,6 +245,12 @@
 | 시야 트레이너 | `place_trainer` 가 처음부터 실리자 모델이 그것만 열 번 불렀고, 배우 칩으로 아홉 번 거절됐다. 얇은 몬스터 도구가 빈 프로젝트에서 처음 불리면 `toolRunner` 가 잠금을 걸고 잠금이 배우 칩을 바꾼다 | 그 호출에서 잠금이 바꾼 배우 칩(`toolRunner.ts`)과 `graphic` 을 안 줬을 때 도구가 고른 조련사 칩(`trainerTools.ts`)을 `noteToolChosenGraphic` 으로 관문에 알린다 |
 | 은신처 | 모델이 통을 사람이 선 칸 위에 찍었고 `stamp_object` 는 경고만 했다. 모델이 경고를 따라 사람을 옮겨 판정이 «시키지 않은 옮김»으로 떨어졌다 | `onOverlap:"nearest"` 는 사람이 선 칸(그림 칸 전부)도 비켜 찍고 «그 사람은 옮기지 않았다»고 알린다. 기본(`refuse`) · `replace` 는 그대로 — `sharedObjectTools.ts` |
 
+Haiku 로 같은 묶음을 다시 재자(아래 «Haiku» 절) 다섯째가 나왔다:
+
+| 일 | 실행에서 본 것 | 고친 것 |
+|---|---|---|
+| 기한 엔딩(Haiku) | `set_deadline_ending` 은 한 호출에 됐다. 그 도구의 경고(«forceSleep 을 켜거나…»)를 따라 모델이 `configure_time_system{enabled, forceSleep:true}` 를 부르자 하루 끝 연결(`onDayEnd`)이 사라졌다 — 그 도구가 안 보낸 칸을 기본값으로 되돌렸다 | 이미 켜진 시계에서는 보낸 칸만 바뀐다(배속 · 하루 끝 시각 · 계절 길이 · 강제 취침 · `onDayEnd`). 처음부터 다시 잡으려면 끄고 다시 켠다 — `timeTools.ts` |
+
 **관문도 잠금도 풀지 않았다.** 칩 관문(`src/ai/piAgent/charsetSelectionGate.ts`)은 한 줄도 바꾸지 않았다 — 모델이 보지 않은 칩을 직접 적으면 지금도 되돌린다(`test/piGateToolChosenChips.test.ts` 가 그 줄을 지킨다).
 바뀐 것은 «이 칩은 모델이 고르지 않았다»를 도구 쪽이 알리는 기존 통로(`toolChosenGraphics.ts`)를 두 곳 더 쓴 것뿐이다. 종 그림에 대한 장르 잠금의 거절(`place_trainer` 에 금지 그림을 물려받은 종을 주면)은 그대로다.
 
