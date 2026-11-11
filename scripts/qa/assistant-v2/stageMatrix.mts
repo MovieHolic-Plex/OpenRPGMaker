@@ -1,6 +1,6 @@
 // 끝맺음 마감 단계 × 테마 표(모델 없음): 테마 맵마다(세계 열 벌의 모든 종류 + 마법 학교·일본 도시·한국 거리·조선·버들항 던전 주제)
 // 그 단계가 고치려는 상황을 심고 단계의 함수를 돌려 무엇을 했는지 적는다 — ok(맞게 함) · none(아무것도 안 함) · wrong(잘못 함) ·
-// eye(했고, 그림을 열어 봐야 판정) · n/a. 한 일이 있는 칸은 앞·뒤 그림을 <outDir>/pic 에 남긴다(1배로 열어 본다).
+// gap(그림이 없어 못 했고 v2.art-gap 으로 적음) · eye(했고, 그림을 열어 봐야 판정) · n/a. 한 일이 있는 칸은 앞·뒤 그림을 <outDir>/pic 에 남긴다(1배로 열어 본다).
 //   bun scripts/qa/assistant-v2/stageMatrix.mts <outDir> [테마,테마…]
 // 버들항 마을·던전은 맵 하나에 1~2분이 걸린다 — 테마를 나눠 여러 프로세스로 돌린다. 문서 openwiki/assistant-v2.md 「끝맺음 단계 × 칩셋 표」.
 import fs from "node:fs";
@@ -8,7 +8,7 @@ import { createBlankProject } from "../../../src/project/defaults/blankProject.t
 import { runTool } from "../../../src/editor/tools/index.ts";
 import { isPassable } from "../../../src/project/collision.ts";
 import { objectClusterAt } from "../../../src/project/objectFootprint.ts";
-import { ensureChaserHidingSpots } from "../../../src/project/chaserHiding.ts";
+import { stage as chaserHidingStage } from "../../../src/ai/v2/finish/lanes/stages/chaser-hiding.ts";
 import { WORLDS, worldPlaceSpec } from "../../../src/ai/v2/place/world.ts";
 import { builderFor } from "../../../src/ai/v2/place/builders/index.ts";
 import { tileLabel } from "../../../src/ai/v2/place/cells.ts";
@@ -121,7 +121,7 @@ function diffTiles(a: any, b: any): { n: number; cells: { x: number; y: number; 
 const out = process.argv[2]!;
 const onlyTheme = process.argv[3];   // 쉼표로 나눈 테마 id(없으면 전부)
 fs.mkdirSync(`${out}/pic`, { recursive: true });
-type V = "ok" | "none" | "wrong" | "n/a" | "eye";
+type V = "ok" | "none" | "gap" | "wrong" | "n/a" | "eye";
 interface Cell { stage: string; theme: string; kind: string; v: V; detail: string; pic?: string }
 const rows: Cell[] = [];
 const rec = (s: Src, stage: string, v: V, detail: string, pic?: string) => { rows.push({ stage, theme: s.theme, kind: s.kind, v, detail, ...(pic ? { pic } : {}) }); };
@@ -176,10 +176,11 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
       const ev = mkEvent("ev_t_seal", "고대의 봉인", spot.x, spot.y, [{ commands: [{ kind: "text", body: "봉인이 풀렸다." }, { kind: "setSwitch", switchId: "sw_seal", value: true }] }]);
       const p1 = bp(withMap(P0, s.mapId, (m) => { m.events.push(ev); return m; }), M0.name, "고대의 봉인", "봉인을 푼다", "봉인 해제");
       const run = mkRun(p1, s.mapId);
-      const notes = dressBareSealSteps(run, s.mapId);
+      const gaps: any[] = [];
+      const notes = dressBareSealSteps(run, s.mapId, gaps);
       const m2 = run.ctx.project.maps[s.mapId];
       const d = diffTiles(p1.maps[s.mapId], m2);
-      if (!notes.length) rec(s, "seal-step-art", "none", `step «고대의 봉인» stays invisible on ${outdoor ? "ground" : "floor"} (tileset ${M0.tilesetId})`);
+      if (!notes.length) rec(s, "seal-step-art", gaps.length ? "gap" : "none", `${gaps.length ? `recorded art gap «${gaps[0].want}» · ` : ""}` + `step «고대의 봉인» stays invisible on ${outdoor ? "ground" : "floor"} (tileset ${M0.tilesetId})`);
       else rec(s, "seal-step-art", d.n > 0 ? "ok" : "wrong", `${notes[0]} tiles=${d.n}`, savePair(`seal__${tag}`, p1, p1.maps[s.mapId], run.ctx.project, m2, spot));
     }
   } catch (e) { rec(s, "seal-step-art", "wrong", `threw ${(e as Error).message.slice(0, 120)}`); }
@@ -200,12 +201,13 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
           p1 = withMap(p1, dId, (m) => { m.events.push(mkEvent("ev_t_back", "", land.x, Math.max(0, land.y - 1), [transferPage(s.mapId, gs.x, gs.y + 1)])); return m; });
           run.ctx.project = p1;
           const bare0 = placementProblems(p1, p1.maps[s.mapId]).filter((p: any) => p.kind === "door-bare").length;
-          const notes = dressBareCaveGates(run, s.mapId);
+          const gaps: any[] = [];
+          const notes = dressBareCaveGates(run, s.mapId, gaps);
           const m2 = run.ctx.project.maps[s.mapId];
           const bare1 = placementProblems(run.ctx.project, m2).filter((p: any) => p.kind === "door-bare").length;
           const d = diffTiles(p1.maps[s.mapId], m2);
           const acted = notes.some((n: string) => /세웠다|지우고/u.test(n));
-          if (!acted) rec(s, "cave-gates", "none", `bare cave entrance stays (door-bare flagged ${bare0}→${bare1}) ${notes[0] ?? `tileset ${M0.tilesetId} is not beodeul_city`}`.slice(0, 200));
+          if (!acted) rec(s, "cave-gates", gaps.length ? "gap" : "none", `${gaps.length ? `recorded art gap «${gaps[0].want}» · ` : ""}bare cave entrance stays (door-bare flagged ${bare0}→${bare1}) ${notes[0] ?? `tileset ${M0.tilesetId} is not beodeul_city`}`.slice(0, 200));
           else rec(s, "cave-gates", bare1 === 0 && d.n > 0 ? "ok" : "wrong", `${notes[0]} bare ${bare0}→${bare1} tiles=${d.n}`.slice(0, 220), savePair(`cave__${tag}`, p1, p1.maps[s.mapId], run.ctx.project, m2, gs));
         }
       }
@@ -250,10 +252,13 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
       const locked = m2.events.filter((e: any) => e.id.startsWith("ev_locked_door_"));
       const ents = buildingEntrances(P0, M0);
       const offEntrance = locked.filter((e: any) => !ents.some((d: any) => d.x === e.x && d.y === e.y)).length;
-      // 눌러도 아무 일도 없는 입구 — 문 칸·문 앞에 이벤트가 하나도 없다.
-      const silent = ents.filter((d: any) => !m2.events.some((e: any) => Math.abs(e.x - d.x) <= 1 && e.y >= d.y && e.y <= d.y + 1));
-      const detail = `building entrances ${ents.length} · locked ${locked.length} (off an entrance ${offEntrance}) · silent ${silent.length} · builder house doors ${s.doors.length}`;
-      if (offEntrance) rec(s, "locked-house-doors", "wrong", detail);
+      // 눌러도 아무 일도 없는 입구 — 걸어 가 설 수 있는 문인데 문 칸·문 앞에 이벤트가 하나도 없다(아무도 못 서는 문 앞은 세지 않는다).
+      const reach0 = reachableCells(P0, M0);
+      const standable = ents.filter((d: any) => !reach0 || reach0[d.front.y * w + d.front.x]);
+      const silent = standable.filter((d: any) => !m2.events.some((e: any) => Math.abs(e.x - d.x) <= 1 && e.y >= d.y && e.y <= d.y + 1));
+      const onBump = locked.filter((e: any) => (e.pages ?? []).some((p: any) => p.trigger?.kind !== "action")).length;
+      const detail = `building entrances ${ents.length} (front reachable ${standable.length}) · lines ${locked.length} (off an entrance ${offEntrance}, answering a bump ${onBump}) · silent ${silent.length} · builder house doors ${s.doors.length}`;
+      if (offEntrance || onBump) rec(s, "locked-house-doors", "wrong", detail);
       else if (silent.length) rec(s, "locked-house-doors", "none", detail);
       else if (locked.length) rec(s, "locked-house-doors", "ok", detail, savePair(`locked__${tag}`, P0, M0, run.ctx.project, m2, locked[0]));
       else rec(s, "locked-house-doors", "n/a", detail);
@@ -299,11 +304,13 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
         let p1 = withMap(run.ctx.project, s.mapId, (m) => { m.events.push(mkEvent("ev_t_floor", "", sp.x, sp.y, [transferPage(oId, land.x, land.y)])); return m; });
         p1 = withMap(p1, oId, (m) => { m.events.push(mkEvent("ev_t_fback", "", land.x, Math.max(0, land.y - 1), [transferPage(s.mapId, sp.x, sp.y + 1)])); return m; });
         run.ctx.project = p1;
-        const notes = doorFloorTransfers(run, s.mapId);
+        // 단계가 주는 것과 같게: 장소 기록의 종류(방·바깥).
+        const gaps: any[] = [];
+        const notes = doorFloorTransfers(run, s.mapId, s.indoor ? "room" : "outdoor", gaps);
         const m2 = run.ctx.project.maps[s.mapId], e2 = m2.events.find((e: any) => e.id === "ev_t_floor");
         const moved = e2.x !== sp.x || e2.y !== sp.y;
         const d = diffTiles(p1.maps[s.mapId], m2);
-        if (!moved && !d.n) rec(s, "door-floor-transfers", s.indoor ? "none" : "n/a", s.indoor ? `transparent floor transfer stays mid-floor (${kit ? `kit room: ${notes[0] ?? "no wall spot"}` : `no roomKit, tileset ${M0.tilesetId}`})` : "outdoor: not a room");
+        if (!moved && !d.n) rec(s, "door-floor-transfers", !s.indoor ? "n/a" : gaps.length ? "gap" : "none", s.indoor ? `${gaps.length ? `recorded art gap «${gaps[0].want}» · ` : ""}` + `transparent floor transfer stays mid-floor (${kit ? `kit room: ${notes[0] ?? "no wall spot"}` : `no roomKit, tileset ${M0.tilesetId}`})` : "outdoor: not a room");
         else rec(s, "door-floor-transfers", outdoor ? "wrong" : "eye", `${notes.join(" / ")} tiles=${d.n}`.slice(0, 300), savePair(`floor__${tag}`, p1, p1.maps[s.mapId], run.ctx.project, m2, e2));
       }
     }
@@ -368,27 +375,37 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
         const p1 = withMap(P0, s.mapId, (m) => { m.events.push(ev); return m; });
         const run = mkRun(p1, s.mapId);
         const lost = unreachableEvents(p1, s.mapId).filter((id: string) => id === ev.id);
-        const fixed = lost.length ? repairEventReach(run, s.mapId, lost) : { moved: [], stuck: ["not flagged unreachable"] };
+        const fixed = lost.length ? repairEventReach(run, s.mapId, lost) : { moved: [], stuck: ["not flagged unreachable"], noArt: [] };
         const m2 = run.ctx.project.maps[s.mapId], e2 = m2.events.find((e: any) => e.id === ev.id);
         const still = unreachableEvents(run.ctx.project, s.mapId).includes(ev.id);
         const d = diffTiles(p1.maps[s.mapId], m2);
         const stage = key === "plain" ? "event-reach" : "event-reach(host name)";
         const on = labelsAt(run.ctx.project, m2, e2.x, e2.y).map((l: string) => l.replace(/\s*\([^)]*\)\s*$/u, "")).join("/");
+        const invisibleOnBare = fixed.noArt.length > 0;
         if (still) rec(s, stage, fixed.moved.length ? "wrong" : "none", `still unreachable · ${[...fixed.moved, ...fixed.stuck].join(" / ")}`.slice(0, 240));
-        else rec(s, stage, d.n ? "eye" : "ok", `${fixed.moved.join(" / ")} · on «${on}» · tiles stamped ${d.n}`.slice(0, 300), d.n ? savePair(`reach_${key}__${tag}`, p1, p1.maps[s.mapId], run.ctx.project, m2, e2) : undefined);
+        else rec(s, stage, d.n ? "eye" : invisibleOnBare ? "gap" : "ok", `${fixed.moved.join(" / ")} · on «${on}» · tiles stamped ${d.n}${invisibleOnBare ? ` · recorded art gap «${fixed.noArt[0].want}»` : ""}`.slice(0, 300), d.n ? savePair(`reach_${key}__${tag}`, p1, p1.maps[s.mapId], run.ctx.project, m2, e2) : undefined);
       }
     }
   } catch (e) { rec(s, "event-reach", "wrong", `threw ${(e as Error).message.slice(0, 120)}`); }
 
   // ── chaser-hiding (추격자가 있는 실내)
   try {
-    if (!s.indoor || !spot) rec(s, "chaser-hiding", "n/a", s.indoor ? "no open spot" : "outdoor");
+    // 추격자 자리: 트인 자리가 없으면(가구가 찬 방) 걸어 닿는 빈 칸 아무 데나.
+    const reachC = reachableCells(P0, M0);
+    let cs = spot;
+    for (let i = 0; !cs && reachC && i < w * M0.height; i++) if (reachC[i] && !M0.events.some((e: any) => e.x === i % w && e.y === Math.floor(i / w)) && !(P0.startPos.x === i % w && P0.startPos.y === Math.floor(i / w))) cs = { x: i % w, y: Math.floor(i / w) };
+    if (!s.indoor || !cs) rec(s, "chaser-hiding", "n/a", s.indoor ? "no free cell" : "outdoor");
     else {
-      const ev = mkEvent("ev_t_chaser", "쫓는 그림자", spot.x, spot.y, [{ graphic: { sprite: { id: "tex_x", frame: 0 } }, trigger: { kind: "eventTouch" }, movement: { type: "chase", speed: 3, frequency: 3 }, commands: [{ kind: "gameOver" }] }]);
+      const ev = mkEvent("ev_t_chaser", "쫓는 그림자", cs.x, cs.y, [{ graphic: { sprite: { id: "tex_x", frame: 0 } }, trigger: { kind: "eventTouch" }, movement: { type: "chase", speed: 3, frequency: 3 }, commands: [{ kind: "gameOver" }] }]);
       const p1 = withMap(P0, s.mapId, (m) => { m.events.push(ev); return m; });
-      const copy = { ...p1.maps[s.mapId], events: [...p1.maps[s.mapId].events] };
-      const auto = ensureChaserHidingSpots(p1, copy);
-      rec(s, "chaser-hiding", auto.placed.length ? "eye" : "none", auto.placed.length ? `hiding at ${auto.placed.map((p: any) => `${p.label}(${p.x},${p.y})`).join(" · ")}` : `0 hiding spots — ${auto.note ?? ""}`.slice(0, 200));
+      // 단계 파일을 그대로 돌린다 — 숨을 가구가 없을 때 «못 한 것» 기록(v2.art-gap)이 남는지까지 본다.
+      const emitted: any[] = [];
+      const env: any = { ctx: { project: p1 }, emit: (e: any) => emitted.push(e) };
+      const notes: string[] = [];
+      chaserHidingStage.run({ env, session: { missingArt: new Set<string>() }, notes } as any, "");
+      const hides = env.ctx.project.maps[s.mapId].events.filter((e: any) => e.id.startsWith("ev_hide_"));
+      const gap = emitted.find((e) => e.name === "v2.art-gap");
+      rec(s, "chaser-hiding", hides.length ? "eye" : gap ? "gap" : "none", hides.length ? `hiding at ${notes.join(" · ")}`.slice(0, 220) : `0 hiding spots${gap ? ` · recorded art gap «${gap.data.want}»` : " · chipset has hiding furniture, none laid on this map (ship gate reports it)"} — ${notes[0] ?? ""}`.slice(0, 260));
     }
   } catch (e) { rec(s, "chaser-hiding", "wrong", `threw ${(e as Error).message.slice(0, 120)}`); }
 
@@ -417,10 +434,10 @@ for await (const s of sources(onlyTheme ? (t) => onlyTheme.split(",").includes(t
 }
 fs.writeFileSync(`${out}/rows${onlyTheme ? `-${onlyTheme.replace(/,/g, "_")}` : ""}.json`, JSON.stringify(rows, null, 1));
 for (const r of rows) console.log(`${r.stage.padEnd(24)} ${`${r.theme}/${r.kind}`.padEnd(30)} ${r.v.padEnd(5)} ${r.detail}`);
-// 단계 × 테마 표(맵 수): W 잘못 · N 아무것도 안 함 · E 그림을 열어 봐야 함 · R 맞음 · - 해당 없음
+// 단계 × 테마 표(맵 수): W 잘못 · N 아무것도 안 함 · G 그림이 없어 못 했고 그렇게 적음 · E 그림을 열어 봐야 함 · R 맞음 · - 해당 없음
 const themes = [...new Set(rows.map((r) => r.theme))], stages = [...new Set(rows.map((r) => r.stage))];
-const LETTER: Record<V, string> = { wrong: "W", none: "N", eye: "E", ok: "R", "n/a": "" };
-const cellOf = (stage: string, theme: string) => { const n: Record<string, number> = {}; for (const r of rows) if (r.stage === stage && r.theme === theme && LETTER[r.v]) n[LETTER[r.v]] = (n[LETTER[r.v]] ?? 0) + 1; return "WNER".split("").filter((k) => n[k]).map((k) => `${k}${n[k]}`).join("") || "-"; };
+const LETTER: Record<V, string> = { wrong: "W", none: "N", gap: "G", eye: "E", ok: "R", "n/a": "" };
+const cellOf = (stage: string, theme: string) => { const n: Record<string, number> = {}; for (const r of rows) if (r.stage === stage && r.theme === theme && LETTER[r.v]) n[LETTER[r.v]] = (n[LETTER[r.v]] ?? 0) + 1; return "WNGER".split("").filter((k) => n[k]).map((k) => `${k}${n[k]}`).join("") || "-"; };
 console.log(`\n${"".padEnd(24)} ${themes.map((t) => t.slice(0, 9).padEnd(10)).join("")}`);
 for (const s of stages) console.log(`${s.padEnd(24)} ${themes.map((t) => cellOf(s, t).padEnd(10)).join("")}`);
 const total: Record<string, number> = {}; for (const r of rows) total[r.v] = (total[r.v] ?? 0) + 1;
