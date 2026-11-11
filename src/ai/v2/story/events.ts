@@ -233,9 +233,9 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   const keyOf = (who: string): string | undefined => (isHero(who) ? PLAYER : actorIds.get(who));
   const idFor = (key: string): string => key; // "player" 또는 이벤트 id 그대로
   sim.snapshot("시작");
-  const recordWalk = (who: string, intent: string, legs: { steps: number; path: Cell[]; goal: Cell; reached: boolean }[]): WalkRecord => {
+  const recordWalk = (who: string, intent: string, legs: { steps: number; path: Cell[]; goal: Cell; reached: boolean }[], besideAlready = false): WalkRecord => {
     const path = legs.flatMap((l, i) => (i === 0 ? l.path : l.path.slice(1)));
-    const rec: WalkRecord = { who, from: path[0]!, goal: legs.at(-1)!.goal, intent, steps: legs.reduce((n, l) => n + l.steps, 0), reached: legs.every((l) => l.reached), onRoad: sim.onRoadCount(path), path };
+    const rec: WalkRecord = { who, from: path[0]!, goal: legs.at(-1)!.goal, intent, steps: legs.reduce((n, l) => n + l.steps, 0), reached: legs.every((l) => l.reached), onRoad: sim.onRoadCount(path), path, ...(besideAlready ? { besideAlready } : {}) };
     sim.walks.push(rec);
     return rec;
   };
@@ -290,7 +290,8 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
         if (targetKey && targetKey !== key) {
           const target = sim.actors.get(targetKey)!;
           const leg = sim.walk(key, target.cell, 1);
-          const rec = recordWalk(b.who, toName, [leg]);
+          // 장면에만 나오는 사람은 멀리서 들어와야 걷는 장면으로 읽힌다. 맵에 서 있던 사람은 선 자리에서 다가선다.
+          const rec = recordWalk(b.who, toName, [leg], !createdActors.has(key));
           out.push({ kind: "approach", actor: idFor(key), target: idFor(targetKey), distance: 1, wait: true });
           out.push({ kind: "faceEachOther", a: idFor(key), b: idFor(targetKey) });
           target.dir = dirTo(target.cell, sim.actors.get(key)!.cell);
@@ -568,7 +569,9 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
   // 4) 기계 검사 — 걷기마다 3칸 이상·목적지 도착, 대사는 듣는 사람 곁(2칸)에서.
   const checks: MachineCheck[] = [];
   for (const w of sim.walks) {
-    const ok = w.steps >= MIN_WALK && w.reached;
+    // 곁에 서 있던 사람이 다가서는 걷기는 짧아도 된다 — 3걸음을 채우라고 하면 모델이 그 사람의 자리를 멀리 옮겼다
+    // (2026-11-11 작은 일 둘째 묶음 walk-up-greet-starter: 한 칸 옆의 미루를 move_event 로 두 칸 물렸다).
+    const ok = w.reached && (w.steps >= MIN_WALK || !!w.besideAlready);
     checks.push({ id: "cutscene-walk", mapId, ok, at: w.goal,
       detail: `${w.who} (${w.from.x},${w.from.y})→(${w.goal.x},${w.goal.y}) ${w.steps}걸음${w.onRoad ? `(길 위 ${w.onRoad}칸)` : ""} — ${ok ? "통과" : w.reached ? `${MIN_WALK}걸음 미만이라 걷는 장면으로 안 읽힌다` : `목적지 '${w.intent}' 에 닿지 못한다`}` });
   }

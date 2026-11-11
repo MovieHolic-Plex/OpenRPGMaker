@@ -2473,17 +2473,14 @@ function transferEndpoint(
  * transferEndpoint + 도달성 보정. 맵에 이미 플레이어가 서는 칸(시작 위치·들어오는 착지점)이 있는데
  * 요청 자리가 거기서 걸어 닿지 않으면, 같은 가장자리의 가장 가까운 닿는 칸으로 옮긴다.
  * 닿는 후보가 없으면 실패한다. doorAt으로 연결한 문앞은 다른 칸으로 옮기지 않는다.
- *
- * accept 는 「이 배치로 기존 출입구가 봉쇄되지 않는가」 같은 추가 판정 — 거절하면 사유 문자열을
- * 되돌려 후보를 이어서 찾는다(2026-09-24 추격 호러 r8: 앵커 검사만으로는 못 잡은 문 봉쇄).
+ * 후보마다 「이 배치로 기존 출입구가 봉쇄되지 않는가」도 잰다(2026-09-24 추격 호러 r8: 앵커 검사만으로는 못 잡은 문 봉쇄).
  */
 export function resolveTransferEndpoint(
   project: Project,
   map: GameMap,
-  requested: { x: number; y: number; doorAt?: Point },
+  requested: { x: number; y: number; doorAt?: Point; /** 트리거를 문 그림 칸(doorAt)에 올린다 — 문앞 칸은 반대쪽에서 온 착지가 된다. */ triggerOnDoor?: boolean },
   label: "A" | "B",
   notes: string[],
-  accept?: (endpoint: { gate: Point; landing: Point }) => true | string,
 ): { gate: Point; landing: Point } | null {
   const fixed = requested.doorAt !== undefined;
   if (requested.doorAt && (!inMapBounds(map, requested.doorAt.x, requested.doorAt.y)
@@ -2503,15 +2500,23 @@ export function resolveTransferEndpoint(
     return endpoint;
   }
   const reached = (point: Point): boolean => reach !== null && reach.has(point.y * map.width + point.x);
+  // 봉쇄 판정은 트리거가 실제로 서는 칸으로 한다. 문 그림 칸에 올릴 끝은 문앞 칸(candidate.gate)이 아니라 문 칸이 트리거다 —
+  // 전에는 문앞 칸을 트리거로 보고 쟀고, 집 앞 한 칸 길(유일한 통로)에서는 「한쪽이 막힌다」며 출입구를 옆 맨바닥으로 옮겼다
+  // (2026-11-11 마을 문 앞 칸 탐침: 50번 가운데 5번, 문 28개 가운데 5개).
+  const door = requested.triggerOnDoor ? requested.doorAt : undefined;
   const rejectReason = (candidate: { gate: Point; landing: Point }): string | null => {
     if (reach && (!reached(candidate.gate) || !reached(candidate.landing))) return "reach";
+    if (door) {
+      const front = candidate.gate.y * map.width + candidate.gate.x;
+      // 막힌 문 그림 칸의 트리거는 부딪혀 열린다 — 걷는 칸을 하나도 차지하지 않으니 문앞이 방 바닥에 붙어 있기만 하면 된다.
+      if (!isPassable(project, map, door.x, door.y)) return transferGatesStayApproachable(project, map).group.has(front) ? null : '문앞 칸이 방 바닥과 갈라진 주머니 칸이다';
+      const check = transferGatesStayApproachable(project, map, door);
+      if (!check.ok) return `기존 출입구 ${check.sealed.join(', ')} 이(가) 봉쇄된다`;
+      return check.group.has(front) ? null : '문앞 칸이 방 바닥과 갈라진 주머니 칸이다';
+    }
     const check = transferGatesStayApproachable(project, map, candidate.gate);
     if (!check.ok) return `기존 출입구 ${check.sealed.join(', ')} 이(가) 봉쇄된다`;
     if (!check.group.has(candidate.landing.y * map.width + candidate.landing.x)) return '착지점이 방 바닥과 갈라진 주머니 칸이다';
-    if (accept) {
-      const verdict = accept(candidate);
-      if (verdict !== true) return verdict;
-    }
     return null;
   };
   let firstReject: string | null = null;
@@ -2950,24 +2955,25 @@ const createTransferPair: ToolDefinition = {
     const mapA = requireMap(draft, a.mapId);
     const mapB = requireMap(draft, b.mapId);
     const reachNotes: string[] = [];
-    // 봉쇄 판정: 이 배치로 기존(그리고 이번에 놓는) transfer 문이 방 바닥에 실제로 열려 있는가.
-    const sealAccept = (map: GameMap) => (candidate: { gate: Point; landing: Point }): true | string => {
-      const check = transferGatesStayApproachable(draft, map, candidate.gate);
-      if (!check.ok) return `기존 출입구 ${check.sealed.join(", ")} 이(가) 벽·가구·다른 문으로 봉쇄된다`;
-      if (!check.group.has(candidate.landing.y * map.width + candidate.landing.x)) return "착지점이 방 바닥과 갈라진 주머니 칸이다";
-      return true;
+    // 문 그림 바로 아래의 걷는 칸을 주면 그 칸이 문앞이고 트리거는 문 그림 칸에 선다 — 문 칸(doorAt)을 따로 주지 않아도 같다.
+    const doorAbove = (map: GameMap, end: typeof a): Point | null => {
+      if (!onDoor || !isPassable(draft, map, end.x, end.y) || isDoorArtCell(draft, map, end.x, end.y) || !isDoorArtCell(draft, map, end.x, end.y - 1)) return null;
+      return map.events.some((event) => event.x === end.x && event.y === end.y - 1) ? null : { x: end.x, y: end.y - 1 };
     };
     // 문 칸(doorAt)을 단 끝: doorAt 이 x,y 와 같은 칸이면 문앞만 준 것으로 읽고, 문앞이 막혀 그 자리에 못 잇으면 doorAt 없이
     // 가장 가까운 닿는 칸으로 옮겨 잇고 알린다 — 거절하면 모델이 같은 문앞으로 되풀이하다 이음이 막혔다.
     const relocated: string[] = [];
     const resolveEnd = (map: GameMap, end: typeof a, label: "A" | "B") => {
       if (end.doorAt && end.doorAt.x === end.x && end.doorAt.y === end.y) delete end.doorAt;
-      if (!end.doorAt) return resolveTransferEndpoint(draft, map, end, label, reachNotes, sealAccept(map));
-      try { return resolveTransferEndpoint(draft, map, end, label, reachNotes, sealAccept(map)); }
+      const door = end.doorAt ?? doorAbove(map, end);
+      const loose = () => resolveTransferEndpoint(draft, map, { x: end.x, y: end.y }, label, reachNotes);
+      if (!door) return loose();
+      try { return resolveTransferEndpoint(draft, map, { x: end.x, y: end.y, doorAt: door, triggerOnDoor: onDoor }, label, reachNotes); }
       catch (error) {
         if (!(error instanceof ToolError)) throw error;
-        const door = end.doorAt;
-        const moved = resolveTransferEndpoint(draft, map, { mapId: end.mapId, x: end.x, y: end.y } as typeof a, label, reachNotes, sealAccept(map));
+        const moved = loose();
+        // 문 칸을 모델이 준 것이 아니면(문 그림 아래 칸이라 읽은 것) 옮긴 까닭은 위 알림이 이미 말한다.
+        if (!end.doorAt) return moved;
         if (!moved) throw error;
         delete end.doorAt;
         relocated.push(`${label}: the door front (${end.x},${end.y}) could not take an entrance, so this end was linked at the nearest walkable cell (${moved.gate.x},${moved.gate.y}) and doorAt (${door.x},${door.y}) was not used. If a door picture belongs there, stamp one at the new cell.`);
