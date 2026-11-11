@@ -7,8 +7,9 @@ import { earnedBadgeCount } from "@/project/badgeProgress";
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import type { ActorQueryCondition, ConditionCompareOp, Dir } from "@/project/types";
 import type { GameTime } from "@/project/gameTime";
-import { SEASONS } from "@/project/gameTime";
+import { SEASONS, timePhaseFor } from "@/project/gameTime";
 import { eventSeesPlayer, type SightBlocker, type SightLocation, type SightPoint } from "@/project/conditionEventSight";
+import { sightWatcherIds, withDoorBlocker, type SightMapEvent } from "@/project/sightWatchers";
 
 /** 조건 평가에 필요한 세션 조각. PlaySession 이 구조적으로 만족한다. */
 export interface ActorQuerySession {
@@ -141,6 +142,10 @@ export interface ActorQueryOptions {
   readonly eventPosition?: (eventId: string) => SightPoint | undefined;
   /** eventSeesPlayer: 시선을 막는 칸(벽). 호출측이 sightBlockers.cachedSightBlocker 로 만든다. 생략 = 광선 검사 없음. */
   readonly blocksSight?: SightBlocker;
+  /** eventSeesPlayer watchers·doorsBlock: 현재 맵의 이벤트. 생략하면 watchers 는 아무도 못 고르고 문은 막지 않는다. */
+  readonly mapEvents?: () => readonly SightMapEvent[] | undefined;
+  /** eventSeesPlayer darkness: 조명 어둠 0..1. 생략 = 밝다. */
+  readonly ambient?: () => number | undefined;
 }
 
 /** 세션만으로 아는 스킬(프로젝트 없이): 배우가 배운 actorSkillIds 와 몬스터 파티 인스턴스의 명시 skillIds. */
@@ -202,10 +207,19 @@ export function evalActorQueryCondition(
       return false;
     }
     case "eventSeesPlayer": {
-      const live = options.eventPosition?.(condition.eventId);
-      const loc = session.eventLocations?.[condition.eventId];
-      const point: SightPoint | undefined = live ?? (loc && loc.mapId === session.currentMapId ? { x: loc.x, y: loc.y, direction: loc.direction } : undefined);
-      return eventSeesPlayer(point, { x: session.x, y: session.y }, condition, options.locations?.(), options.blocksSight) === (condition.value !== false);
+      const pointOf = (eventId: string): SightPoint | undefined => {
+        const live = options.eventPosition?.(eventId);
+        const loc = session.eventLocations?.[eventId];
+        return live ?? (loc && loc.mapId === session.currentMapId ? { x: loc.x, y: loc.y, direction: loc.direction } : undefined);
+      };
+      const locations = options.locations?.();
+      // 새 칸(watchers·doorsBlock·darkness)이 없으면 예전 경로 그대로 — eventId 하나, 벽만, 빛 무시.
+      const events = condition.watchers || condition.doorsBlock ? options.mapEvents?.() : undefined;
+      const blocks = condition.doorsBlock ? withDoorBlocker(options.blocksSight, events, pointOf) : options.blocksSight;
+      const light = condition.darkness ? { night: timePhaseFor(session.gameTime) === "night", ambient: options.ambient?.() } : undefined;
+      const ids = condition.eventId || !condition.watchers ? [condition.eventId] : sightWatcherIds(events, condition.watchers, locations, pointOf);
+      const seen = ids.some((id) => eventSeesPlayer(pointOf(id), { x: session.x, y: session.y }, condition, locations, blocks, light));
+      return seen === (condition.value !== false);
     }
     case "hiding":
       return Boolean(session.horror?.hiding) === condition.value;
