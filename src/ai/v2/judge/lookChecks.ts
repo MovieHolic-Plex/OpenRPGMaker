@@ -57,7 +57,7 @@ export function oversizedSprites(before: Project, after: Project): Finding[] {
         const ratio = drawnWidth(width, graphic) / partyWidth;
         if (ratio < 1.75) continue;
         const scaleText = (graphic as Obj).scale !== undefined ? `배율 ${String((graphic as Obj).scale)}` : `칸 ${width}px`;
-        out.push(tagged("game", "크기", `「${ev.name || ev.id}」(${map.name ?? map.id}, ${ev.id}) ${pageIndex + 1}쪽 그림이 파티 칩의 ${ratio.toFixed(1)}배로 그려진다(${scaleText}) — 확대한 칩은 도트가 뭉툭해 16px 파티 옆에서 다른 해상도로 보인다. 보스가 아니면 patch_event_page 로 graphic.scale 을 빼서(또는 1) 파티와 같은 크기로 두고, 큰 몸이 필요하면 큰 그림(3×2 몸)이 있는 보스 그림을 고른다.`));
+        out.push(tagged("game", "크기", `「${ev.name || ev.id}」(${map.name ?? map.id}, ${ev.id}) ${pageIndex + 1}쪽 그림이 파티 칩의 ${ratio.toFixed(1)}배로 그려진다(${scaleText}) — 확대한 칩은 도트가 뭉툭해 16px 파티 옆에서 다른 해상도로 보인다. 보스가 아니면 patch_event_page 로 graphic.scale 을 빼서(또는 1) 파티와 같은 크기로 두고, 큰 몸이 필요하면 큰 그림(3×2 몸)이 있는 보스 그림을 고른다.`, { target: { mapId: map.id, eventId: ev.id } }));
         break;
       }
     }
@@ -168,7 +168,7 @@ export function lookMismatches(before: Project, after: Project): Finding[] {
         const why = entry ? spriteMismatch(evName, entry) : undefined;
         if (why && !seen.has(`s:${evName}:${entry!.textureKey}#${entry!.characterIndex}`)) {
           seen.add(`s:${evName}:${entry!.textureKey}#${entry!.characterIndex}`);
-          out.push(tagged("game", "그림", `「${evName}」(${map.name ?? map.id}, ${ev.id}) 의 걷기 그림이 이름과 어긋난다: ${why}. list_npc_graphics{query:<나이·종류·옷 색 낱말 하나>} 로 appearance 가 맞는 칸을 골라 patch_event_page 로 graphic 을 바꾼다. 꼭 맞는 그림이 없으면 가장 가까운 것을 두고 generate_walk_chip(그 이벤트, 생김새 설명)으로 그 인물의 걷기 칩을 만들게 한다.`));
+          out.push(tagged("game", "그림", `「${evName}」(${map.name ?? map.id}, ${ev.id}) 의 걷기 그림이 이름과 어긋난다: ${why}. list_npc_graphics{query:<나이·종류·옷 색 낱말 하나>} 로 appearance 가 맞는 칸을 골라 patch_event_page 로 graphic 을 바꾼다. 꼭 맞는 그림이 없으면 가장 가까운 것을 두고 generate_walk_chip(그 이벤트, 생김새 설명)으로 그 인물의 걷기 칩을 만들게 한다.`, { target: { mapId: map.id, eventId: ev.id } }));
         }
         walkFaces(page.commands, (speaker, faceId) => {
           const reason = faceMismatch(speaker, faceId);
