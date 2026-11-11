@@ -305,6 +305,24 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 
 증거: `test/toolsReadEmptyAndBlocked.test.ts`.
 
+## 둘째 묶음 첫 측정에서 도구 쪽이 고친 둘 — 비울 수 없는 enum · 곁에 선 사람의 다가서기 (2026-11-11)
+
+둘째 묶음 첫 측정(Terra, main e298f686e5): **28/35 · «완료» 25**. 불합격 일곱 가운데 다섯은 요청 분류가 게임 도구를 주지 않은 문장(처음 실린 도구 10개 — 요청 줄기가 고친다)이고, 둘이 도구 쪽이다.
+
+**1. `item-new-built` — 회복 차가 탈출 로프로 저장됐다.** `upsert_item` 의 `escapeTo` 는 값이 `"entrance"` 하나뿐인 선택 enum 이다. 스키마의 칸을 다 채우는 모델은
+그 칸을 비울 수 없어 `"entrance"` 를 넣었다. 같은 모양이 도구 526개 가운데 9곳이다(`upsert_event … graphic.pose` · `place_npc guide` · `make_chase_scene patrol.mode` ·
+`set_lighting_volume sources[].at.kind` · `upsert_state volatileStatus` · `upsert_item_upgrade target` · `author_dungeon puzzle` 등).
+- `tools/toolExposure.ts` `withNone`: 값 하나짜리 선택 enum 은 모델에게 `["none", 값]` 으로 보인다(설명 끝에 `"none" = leave unset.`).
+- `loop/argGuard.ts` `pruneDefaults`: `"none"` 이 도구의 **진짜** enum 에 없으면 그 칸을 걷는다. 진짜 값이 none 인 칸(`scope` · 날씨)은 그대로다.
+- 근거(탐침): `escapeTo:"none"` → 걷힘 → 저장된 아이템 `type medicine` · `escapeTo` 없음. golden 117/153, 전부 위 도구 여섯의 스키마.
+
+**2. `walk-up-greet-starter` — «걸어와서 인사» 를 시켰더니 그 사람의 자리가 옮겨졌다.** 미루는 시작 칸 한 칸 옆에 서 있다. 한 걸음 다가서자
+기계 검사가 `[cutscene-walk] 3걸음 미만이라 걷는 장면으로 안 읽힌다` 를, 끝맺음의 함수 검사가 `[scene off-post] 제자리로 돌려보내거나 move_event 로 자리를 옮겨라` 를 냈다.
+모델은 미루를 두 칸 물리고(`move_event`) 돌아가는 걸음을 넣었고, 연출 비평은 «도착한 뒤 다시 걸어간다» 고 했다 — 서로 어긋나는 세 판정 사이에서 요청 밖 편집이 남았다.
+- `story/events.ts`: 맵에 이미 서 있던 사람(이나 주인공)이 다른 사람 곁으로 다가서는 걷기는 짧아도 통과다(`WalkRecord.besideAlready`). 장면에만 나오는 사람은 전처럼 3걸음.
+- `judge/sceneCraft.ts`: 장면 뒤 그 사람이 제자리에서 3칸 안이면 자리 이탈이 아니다(`strayAfterScene` — 걸음과 다가서기 대상의 칸으로 어림, 가늠 못 하면 전처럼 잡는다).
+- 근거(탐침, starter 픽스처): 같은 `add_event` 한 번 → 전 `무대 검사 문제 1` + `off-post` 1건 → 후 둘 다 0, 미루의 저장 자리 (13,14) 그대로.
+
 ## 뒷문은 `create_transfer_pair` 한 번 — 막다른 거절이 그 길을 이른다 (2026-11-11, 작은 일 두 번째 재측정)
 
 두 번째 재측정(Terra, main d4a4ae29f4)은 **29/30 · «완료» 29**(앞 28/30 · 25)였고 남은 하나가 `door-backdoor-built`(「족장의 긴 집에 뒷문을 하나 만들어 줘. 그 문으로 나가면 겨울 시장으로 가게」)다.
