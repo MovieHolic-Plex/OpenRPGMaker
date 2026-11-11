@@ -44,14 +44,15 @@ const SMALL_JOBS: readonly (readonly [string, number])[] = [
   ["이 게임 뭐가 부족한지 알려 줘", 12_000],
 ];
 /** 작은 일에는 처음부터 싣지 않는 도구(필요할 때 싣는다). */
-const HEAVY = ["write_blueprint", "build_blueprint_path", "make_place", "edit_place", "review_layout", "set_project_settings", "set_opening", "edit_opening", "author_opening_stage", "create_opening_animatic_shot"];
+const HEAVY = ["write_blueprint", "build_blueprint_path", "make_place", "edit_place", "review_layout", "set_opening", "edit_opening", "author_opening_stage", "create_opening_animatic_shot"];
 
 describe("small jobs get a small prompt and a short tool list", () => {
   for (const state of ["blank", "oneEvent"] as const) {
     it.each(SMALL_JOBS.map(([task, max]) => [task, max] as const))(`${state} | %s ≤ %d chars`, (task, max) => {
       const shot = shoot(task, state);
       expect(shot.chars).toBeLessThanOrEqual(max);
-      expect(shot.upFront.length).toBeLessThanOrEqual(20);
+      // load_tools 포함 19개 — 실행기가 더하는 todo 한 자리까지 20개.
+      expect(shot.upFront.length).toBeLessThanOrEqual(19);
       expect(shot.toolChars).toBeLessThanOrEqual(40_000);
       expect(shot.upFront[0]).not.toBe("write_blueprint");
       for (const name of HEAVY) expect(shot.upFront).not.toContain(name);
@@ -95,6 +96,19 @@ describe("small jobs get a small prompt and a short tool list", () => {
     // 빈 프로젝트의 「계속」은 고칠 것이 없다 — 짓는 카드·도구를 그대로 싣는다.
     expect(classifyRequest("계속", project("blank"))).toMatchObject({ scope: "continue", editOnly: false });
     expect(classifyRequest("계속", project("oneEvent"))).toMatchObject({ scope: "continue", editOnly: true });
+  });
+
+  it("leaves out what small jobs never called and loads what they had to fetch (Terra small jobs, 2026-11-11)", () => {
+    const keeper = shoot("이 맵에 상점 주인 한 명 세워 줘.", "oneEvent").upFront;
+    for (const name of ["restore_event", "place_object", "remove_event", "move_object", "declare_story_flag"]) expect(keeper).not.toContain(name);
+    expect(shoot("촌장 옆에 있는 경비병을 지워 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["remove_event", "restore_event", "move_object"]));
+    expect(shoot("여기 보물상자 하나 놓고 포션 3개 넣어 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["find_empty_ground", "get_database_records"]));
+    expect(shoot("촌장한테 말 걸면 열쇠를 받게 해 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["upsert_item", "get_database_records"]));
+    // 게임 제목은 프로젝트 설정에 있다 — 제목을 말한 요청에만 싣는다.
+    expect(shoot("게임 제목을 '별의 노래'로 바꿔 줘", "oneEvent").upFront).toEqual(expect.arrayContaining(["set_title_screen", "set_project_settings"]));
+    expect(keeper).not.toContain("set_project_settings");
+    // 「주워 가게 해 줘」의 「가게」는 상점이 아니다.
+    expect(shoot("족장의 긴 집 바닥에 낡은 열쇠가 떨어져 있게 해 줘. 조사하면 주워 가게 해 줘", "oneEvent").upFront).not.toContain("set_shop_stock");
   });
 
   it("carries the people card for a new person and no event card for a bare move", () => {

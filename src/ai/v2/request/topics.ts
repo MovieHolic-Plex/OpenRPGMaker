@@ -55,6 +55,7 @@ export function gameTopics(topic: string, combat: CombatAsk): readonly GameTopic
 const PERSON = String.raw`npc|주민|주인|상인|점원|경비|병사|촌장|손님|사람|아이|노인|동료|행인|학생|선생|직원|한\s*명|두\s*명|세\s*명|몇\s*명`;
 const ADD = String.raw`세워|세우|추가|배치|두어|둬\s*줘|놓아|넣어|만들|등장|서\s*있게`;
 const ADD_PERSON = new RegExp(`(?:${PERSON})[^.!?\\n]{0,14}(?:${ADD})`, "iu");
+const SELLS = /상점|잡화점|가게(?!\s*(?:해|하|할|돼|되))|팔게|팔기|파는|팔아|판매|구입|살\s*수|사게|\b(?:shop|sell|sells|selling)\b/iu;
 const MOVE_OR_REMOVE = /옮겨|옮기|이동시|치워|지워|지우|삭제|없애|빼\s*줘/u;
 /** 조건·대사·사건을 짜 달라는 낱말 — 이벤트 카드와 이벤트 쓰기 도구가 필요하다. */
 const LOGIC = /하면|으면|[가-힣]면\s|되게|하게|받게|주게|열리|조건|스위치|변수|퀘스트|의뢰|이벤트|대사|대화|말\s*걸|말을\s*걸|선택지|전투|싸우|잠긴|퍼즐|컷신|장면|회상|엔딩|script|event|dialogue|quest/iu;
@@ -63,49 +64,59 @@ export interface JobFacets {
   /** 사람을 새로 세워 달라고 한다(사람 카드가 필요하다). */ readonly people: boolean;
   /** 조건·대사·사건을 짜 달라고 한다(이벤트 카드·이벤트 쓰기 도구가 필요하다). */ readonly logic: boolean;
   /** 있는 것을 옮기거나 지우기만 한다(카드가 필요 없다). */ readonly moveOnly: boolean;
+  /** 있는 것을 옮기거나 지우라고 한다(다른 일과 섞여도) — 옮기기·지우기 도구를 싣는다. */ readonly edits: boolean;
+  /** 물건을 사고팔게 해 달라고 한다 — 진열 도구를 싣는다(「100골드를 얻게」「가격」만으로는 아니다). */ readonly sells: boolean;
 }
 export function jobFacets(topic: string): JobFacets {
   const people = ADD_PERSON.test(topic), logic = LOGIC.test(topic);
-  return { people, logic, moveOnly: MOVE_OR_REMOVE.test(topic) && !people && !logic && !new RegExp(ADD, "u").test(topic) };
+  const edits = MOVE_OR_REMOVE.test(topic);
+  return { people, logic, edits, sells: SELLS.test(topic), moveOnly: edits && !people && !logic && !new RegExp(ADD, "u").test(topic) };
 }
 
-/** 작은 일에 늘 처음부터 싣는 도구 — 사람·사건·물건을 놓고, 옮기고, 지우고, 고치고, 본다. */
-const SMALL_BASE: readonly string[] = ["add_people", "add_event", "place_object", "move_object", "move_event", "remove_event", "find_events", "get_event", "patch_event_page", "inspect", "restore_event", "ask_user", "read_specs"];
-/** 사건을 짜는 일의 도구 — 첫째(upsert_event)는 주제 도구보다 먼저, 나머지는 뒤에 싣는다. */
-const SMALL_LOGIC: readonly string[] = ["upsert_event", "add_event_page", "declare_story_flag", "run_scene_test"];
+/**
+ * 작은 일에 늘 처음부터 싣는 도구 — 보고(inspect·find_events·get_event), 고치고(patch_event_page·move_event), 세운다(add_event·add_people).
+ * 실측(2026-11-11 Terra 작은 일 30건): ask_user·place_object·restore_event·remove_event·declare_story_flag 는 처음부터 실렸지만 한 번도 불리지 않았고,
+ * run_scene_test·find_empty_ground·get_database_records 는 안 실려서 load_tools 로 불러 썼다 — 그래서 앞의 것은 필요할 때로, 뒤의 것은 그 일에 처음부터.
+ */
+const SMALL_BASE: readonly string[] = ["inspect", "find_events", "get_event", "patch_event_page", "move_event", "add_event", "add_people", "read_specs"];
+/** 있는 것을 옮기거나 지우는 일의 도구. */
+const SMALL_EDIT: readonly string[] = ["move_object", "remove_event", "restore_event", "place_object"];
+/** 사건을 짜는 일의 도구 — 쓰고(upsert_event) 돌려 본다(run_scene_test). 쪽 더하기는 자리가 남을 때. */
+const SMALL_LOGIC: readonly string[] = ["upsert_event", "run_scene_test", "add_event_page"];
 const SMALL_PEOPLE: readonly string[] = ["list_npc_graphics", "read_npc_layout"];
 const SMALL_BY_TOPIC: Readonly<Partial<Record<GameTopic, readonly string[]>>> = {
-  items: ["set_shop_stock", "get_database_records"],
-  chest: ["place_chest"],
-  maps: ["create_transfer_pair"],
-  battle: ["upsert_troop", "simulate_battle"],
-  fieldEnemy: ["place_field_enemy"],
-  examine: ["list_spatial_designs", "stamp_object"],
+  items: ["get_database_records", "upsert_item"],
+  gates: ["get_database_records", "upsert_item"],
+  chest: ["place_chest", "find_empty_ground"],
+  maps: ["create_transfer_pair", "list_map_locations"],
+  battle: ["upsert_troop", "simulate_battle", "get_database_records"],
+  fieldEnemy: ["place_field_enemy", "find_empty_ground"],
+  examine: ["list_spatial_designs", "stamp_object", "find_empty_ground"],
   ending: ["list_endings", "define_ending"],
   scene: ["add_scene"],
   hero: ["upsert_actor"],
-  rename: ["upsert_actor"],
-  opening: ["set_title_screen"],
+  rename: ["set_map_properties", "replace_text_in_project", "upsert_actor"],
+  opening: ["set_title_screen", "set_project_settings"],
   equipment: ["get_database_records"],
   status: ["get_database_records"],
   script: ["author_script", "edit_script"],
 };
-/** 작은 일의 처음 싣는 도구는 이 수를 넘기지 않는다(load_tools 한 자리는 따로). */
-const SMALL_MAX = 19;
+/** 작은 일의 처음 싣는 도구는 이 수를 넘기지 않는다 — load_tools 와 todo 두 자리를 더해 20개다. */
+const SMALL_MAX = 18;
 
 /**
- * 작은 일에 처음부터 실을 도구 이름(앞이 먼저) — 늘 싣는 것, 사건 쓰기, 주제가 부른 것, 사람 도구, 나머지 사건 도구 순. 넘치면 뒤를 자른다.
+ * 작은 일에 처음부터 실을 도구 이름(앞이 먼저) — 늘 싣는 것, 옮기기·지우기 도구, 사건 쓰기·돌려 보기, 주제가 부른 것, 사람 도구 순. 넘치면 뒤를 자른다.
  * 여기 없는 도구는 필요할 때 싣는다(load_tools 설명에 이름이 뜨고, 이름으로 부르면 그 자리에서 실린다).
  */
 export function smallJobTools(topics: readonly GameTopic[], facets: JobFacets, groups: ToolGroups, audio: AudioAsk, combat: CombatAsk): readonly string[] {
-  // 무작위 조우를 말했으면 조우 표가 먼저다(사건 도구에 밀려 잘리지 않게).
-  const byTopic = [...(combat.encounters ? ["set_encounter_table"] : []), ...topics.flatMap((key) => SMALL_BY_TOPIC[key] ?? [])];
-  const dress = groups.dress ? V2_DRESS_TOOLS : [];
+  // 무작위 조우를 말했으면 조우 표가, 가게를 말했으면 진열 도구가 먼저다.
+  const byTopic = [...(combat.encounters ? ["set_encounter_table"] : []), ...(facets.sells ? ["set_shop_stock"] : []), ...topics.flatMap((key) => SMALL_BY_TOPIC[key] ?? [])];
+  const dress = groups.dress ? [...V2_DRESS_TOOLS, "move_object"] : [];
   const terrain = groups.terrain ? ["list_spatial_designs", "stamp_object", "fill_region"] : [];
   const sound = [...(audio.music ? ["recommend_bgm", "store_find_music", "store_install", "set_game_audio"] : []), ...(audio.sound ? ["store_find_sound", "store_install", "set_game_audio"] : [])];
   const store = groups.store ? groups.extra.filter((name) => name.startsWith("store_")) : [];
-  // 사건 쓰기(upsert_event) 다음에 요청이 이름 댄 주제의 도구가 온다 — 수·글자 상한에 걸리면 뒤(덜 급한 것)가 필요할 때로 밀린다.
   const logic = facets.logic ? SMALL_LOGIC : [];
-  const want = [...SMALL_BASE, ...logic.slice(0, 1), ...byTopic, ...dress, ...terrain, ...(facets.people ? SMALL_PEOPLE : []), ...logic.slice(1), ...sound, ...store];
+  // 묻기(ask_user)는 자리가 남을 때만 — 30건에서 한 번도 불리지 않았다. 이름으로 부르면 실린다.
+  const want = [...SMALL_BASE, ...(facets.edits ? SMALL_EDIT : []), ...logic.slice(0, 2), ...byTopic, ...dress, ...terrain, ...(facets.people ? SMALL_PEOPLE : []), ...logic.slice(2), ...sound, ...store, "ask_user"];
   return [...new Set(want)].slice(0, SMALL_MAX);
 }
