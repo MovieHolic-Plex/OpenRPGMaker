@@ -1,8 +1,11 @@
 // 없는 그림 기록은 모양이 하나다(src/project/artGap.ts) — 끝맺음 단계 · 장소 테마 · 빌더가 같은 줄을 쓰고, 턴 끝 요약과 없는 그림 장부가 그 줄을 기록으로 읽는다.
 // 2026-11-11: 단계의 한국어 줄 + `v2.art-gap` 기록과 장소 테마의 `[art-gap]` 줄이 따로 있어 장부가 둘을 따로 읽어야 했다.
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { artGapLine, artGapsIn, artGapText, parseArtGap, recordArtGaps, type ArtGap } from "@/project/artGap";
-import { reportOfArtGap, toolReportsIn } from "@/harnesses/assistant-capability/node/mapVqa/artGaps";
+import { reportOfArtGap, toolReportsIn, toolReportsOfSession } from "@/harnesses/assistant-capability/node/mapVqa/artGaps";
 
 const tile: ArtGap = { chipset: "desert_east", want: "cave-mouth", wanted: "굴 입구 그림", where: "사막 12,10", standIn: "none", by: "cave-gates", note: "「→ 모래 굴」 던전 출입구" };
 const themed: ArtGap = { theme: "sf_station/*", want: "foe", wanted: "security robots, drones, aliens", where: "정거장", standIn: "금속 슬라임" };
@@ -51,5 +54,21 @@ describe("the missing-art ledger reads the record, not the prose", () => {
     expect(toolReportsIn("make_game", text).map((r) => `${r.kind}:${r.thing}:${r.chipset}:${r.instead}`)).toEqual([
       "art-gap:굴 입구 그림:desert_east:", "art-gap:security robots, drones, aliens::금속 슬라임", "missing-art:항구에 정박한 배::없음(그리기 카드 대기)",
     ]);
+  });
+
+  it("reads the turn record's artGaps — the same gap also quoted in a tool result counts once", () => {
+    const dir = mkdtempSync(join(tmpdir(), "art-gap-"));
+    try {
+      mkdirSync(join(dir, "turns"));
+      writeFileSync(join(dir, "turns", "001.json"), JSON.stringify({
+        artGaps: [tile, themed],
+        toolCalls: [{ name: "make_game", modelText: JSON.stringify({ ok: true, missingArt: [artGapLine(tile)] }) }],
+      }));
+      // 기록 칸이 없는 옛 턴: 결과 글의 줄에서 읽는다.
+      writeFileSync(join(dir, "turns", "002.json"), JSON.stringify({ toolCalls: [{ name: "build_places", modelText: JSON.stringify({ missingArt: [artGapLine({ ...themed, wanted: "sand wraith" })] }) }] }));
+      const reports = toolReportsOfSession(dir);
+      expect(reports.map((r) => `${r.kind}:${r.thing}`).sort()).toEqual(["art-gap:sand wraith", "art-gap:security robots, drones, aliens", "art-gap:굴 입구 그림"]);
+      expect(reports.find((r) => r.thing === "굴 입구 그림")).toMatchObject({ chipset: "desert_east", want: "cave-mouth" });
+    } finally { rmSync(dir, { recursive: true, force: true }); }
   });
 });
