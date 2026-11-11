@@ -498,7 +498,8 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
   겹낱말(「보물상자」「이층침대」)과 부분 이름(「침대 머리맡」)은 안 잡힌다 — 아무것도 안 하는 쪽을 고른다. 쓰는 곳: `objectCells` · `singleTileObject`(`judge/eventReach.ts`) · `hideRankForLabel`(`project/chaserHiding.ts`).
 - **이름 쪽(`eventReach.ts nameHits`).** 이름의 낱말 가운데 더 긴 낱말 안에 든 것은 버린다(「책상 서랍의 쪽지」 의 「책」은 책이 아니다). 작은 물건이 여럿이면 맨 뒤 것이 그 이벤트다(쪽지).
   이름과 이름표가 같은 겹낱말을 쓰면 그대로 맞는다(이름 토막 「보물상자」 ↔ 이름표 「보물상자」). 1칸 그림을 깔 때는 칩셋이 칸 역할을 적었으면 놓는 물건(prop·furniture·decor·detail)만 고른다.
-- **그림이 없어 못 한 것(`shared/artGap.ts recordArtGaps`).** 단계가 «이 칩셋에는 그 그림이 없다»며 지나갈 때 턴 기록 `v2.art-gap`(data: `stage · tilesetId · want · label · mapId · x · y`)과 보고 줄(`session.missingArt`) 하나를 남긴다. 끝내기를 막지 않고, 같은 자리는 한 번만 적는다.
+- **그림이 없어 못 한 것(`shared/artGap.ts recordArtGaps`).** 단계가 «이 칩셋에는 그 그림이 없다»며 지나갈 때 턴 기록 `v2.art-gap`(data: `stage · tilesetId · want · thing · note · mapId · x · y`)과 보고 줄(`session.missingArt`) 하나를 남긴다. 끝내기를 막지 않고, 같은 자리는 한 번만 적는다.
+  보고 줄은 그림 이름으로 시작한다(「굴 입구 그림 (cave mouth) — 칩셋 desert_east 에 없어 …」) — 없는 그림 장부(`mapVqa/artGaps.ts`)가 `missingArt` 줄의 첫 괄호 앞을 그림 이름으로 읽는다. 장부는 아직 `v2.art-gap` 기록을 직접 읽지 않는다.
   `want` 낱말: `altar/seal`(seal-step-art — 제단 조각은 버들항 것뿐) · `cave mouth`(cave-gates — 갱구 조각은 버들항 것뿐) · `hiding furniture`(chaser-hiding) · `door piece`(door-floor-transfers — 방인데 칩셋이 벽 문을 적어 두지 않음: 방 키트가 없는 구성기 방, 문 조각이 없는 마법 학교·고딕 저택) · `prop: <낱말>`(event-reach — 이름의 물건 1칸 그림이 없음).
 - **「들어갈 수 없다」 한 줄은 조사 키에(`place/lockedDoors.ts`).** 출하 플레이어에서 본 것(`npm run qa:runtime -- --scenario locked-entrance`, 픽스처 `scripts/qa/runtime/locked-entrance-fixture.mts`): 막힌 문 칸의 접촉(playerTouch) 이벤트는 문 쪽으로 밀 때마다 대사창을 띄우고 조사 키에는 답하지 않았다 — 처음 지적이 «Enter/z 를 눌러도 반응이 없다» 였다.
   이제 조사(action) 이벤트다: 밀어도 조용하고, 문을 보면 「Z 조사 · 들어갈 수 없는 입구」 안내가 뜨고, 누르면 한 줄이 나온다. 문 칸마다 하나(넓은 문은 한 칸에만 세우면 다른 칸 앞에서 답하지 않는다), 문 앞에 걸어 가 설 수 없는 칸에는 세우지 않는다.

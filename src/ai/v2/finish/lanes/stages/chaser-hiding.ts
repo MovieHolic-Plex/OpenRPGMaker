@@ -27,7 +27,7 @@ export const stage: FinishStage = {
       } else if (auto.note) {
         notes.push(`${auto.note} — 은신처 0곳`);
         const chaser = chaserEvents(map0)[0]!;
-        recordArtGaps({ env, session }, "chaser-hiding", [{ tilesetId: map0.tilesetId, want: "hiding furniture", label: "추격자에게서 숨을 가구(옷장·사물함·침대·커튼)", mapId, x: chaser.x, y: chaser.y }]);
+        recordArtGaps({ env, session }, "chaser-hiding", [{ tilesetId: map0.tilesetId, want: "hiding furniture", thing: "숨을 가구", note: "추격자에게서 숨을 옷장·사물함·침대·커튼", mapId, x: chaser.x, y: chaser.y }]);
       }
     }
   },

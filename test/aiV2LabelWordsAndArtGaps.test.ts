@@ -96,7 +96,7 @@ describe("a label is matched by the thing it names", () => {
 });
 
 describe("a stage with no art for this chipset says so", () => {
-  const gap: ArtGap = { tilesetId: "desert_east", want: "altar/seal", label: "「고대의 봉인」 봉인·제단 그림", mapId: "map_d", x: 7, y: 9 };
+  const gap: ArtGap = { tilesetId: "desert_east", want: "altar/seal", thing: "봉인·제단 그림", note: "「고대의 봉인」", mapId: "map_d", x: 7, y: 9 };
 
   it("writes one report line and one v2.art-gap record per spot, however often the stage runs", () => {
     const ctx = { project: createBlankProject() };
@@ -104,7 +104,9 @@ describe("a stage with no art for this chipset says so", () => {
     const { finish, emitted, session } = stageCtx(ctx);
     recordArtGaps(finish, "seal-step-art", [gap]);
     recordArtGaps(finish, "seal-step-art", [gap]);
-    expect([...session.missingArt]).toEqual(["사막(7,9): 「고대의 봉인」 봉인·제단 그림 — 칩셋 desert_east 에 그 그림이 없어 그대로 둠"]);
+    // 줄은 그림 이름으로 시작한다(없는 그림 장부가 첫 괄호 앞을 그림 이름으로 읽는다) — 이벤트·맵 이름으로 시작하지 않는다.
+    expect([...session.missingArt]).toEqual(["봉인·제단 그림 (altar/seal) — 칩셋 desert_east 에 없어 사막 7,9 를 그대로 둠: 「고대의 봉인」"]);
+    expect([...session.missingArt][0]!.replace(/\s*\(.*$/u, "")).toBe("봉인·제단 그림");
     expect(emitted).toHaveLength(1);
     expect(emitted[0]).toMatchObject({ name: "v2.art-gap", data: { stage: "seal-step-art", tilesetId: "desert_east", want: "altar/seal", mapId: "map_d", x: 7, y: 9 } });
   });
@@ -117,7 +119,7 @@ describe("a stage with no art for this chipset says so", () => {
     chaserHiding.run(finish, "");
     expect(ctx.project.maps.map_d!.events.some((e) => e.id.startsWith("ev_hide_"))).toBe(false);
     expect(emitted.filter((e) => e.name === "v2.art-gap")).toHaveLength(1);
-    expect(emitted[0]).toMatchObject({ data: { stage: "chaser-hiding", tilesetId: "desert_east", want: "hiding furniture", mapId: "map_d", x: 5, y: 5 } });
+    expect(emitted[0]).toMatchObject({ data: { stage: "chaser-hiding", tilesetId: "desert_east", want: "hiding furniture", thing: "숨을 가구", mapId: "map_d", x: 5, y: 5 } });
     expect(session.missingArt.size).toBe(1);
   });
 
@@ -130,7 +132,7 @@ describe("a stage with no art for this chipset says so", () => {
     const before = JSON.stringify(ctx.project.maps.map_d);
     const gaps: ArtGap[] = [];
     expect(dressBareCaveGates(runOf(ctx), "map_d", gaps)).toEqual([]);
-    expect(gaps).toMatchObject([{ tilesetId: "desert_east", want: "cave mouth", mapId: "map_d", x: 12, y: 10 }]);
+    expect(gaps).toMatchObject([{ tilesetId: "desert_east", want: "cave mouth", thing: "굴 입구 그림", mapId: "map_d", x: 12, y: 10 }]);
     expect(JSON.stringify(ctx.project.maps.map_d)).toBe(before);
   });
 
@@ -142,7 +144,7 @@ describe("a stage with no art for this chipset says so", () => {
     const before = JSON.stringify(ctx.project.maps.map_r);
     const gaps: ArtGap[] = [];
     expect(doorFloorTransfers(runOf(ctx), "map_r", "room", gaps)).toEqual([]);
-    expect(gaps).toMatchObject([{ tilesetId: "desert_east", want: "door piece", mapId: "map_r", x: 8, y: 7 }]);
+    expect(gaps).toMatchObject([{ tilesetId: "desert_east", want: "door piece", thing: "벽 문 그림", mapId: "map_r", x: 8, y: 7 }]);
     expect(JSON.stringify(ctx.project.maps.map_r)).toBe(before);
     // 바깥으로 깔린 맵은 방 단계의 일이 아니다 — 적지도 않는다.
     const outdoorGaps: ArtGap[] = [];

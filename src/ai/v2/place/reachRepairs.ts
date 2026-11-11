@@ -118,7 +118,7 @@ export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonl
           run.ctx.project = { ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: copy } } as Project;
           moved.push(`${name || id} (${now.x},${now.y})에 「${art.label}」 그림`);
           noArt.delete(id);
-        } else noArt.set(id, { tilesetId: cellMap.tilesetId, want: `prop: ${words[0]}`, label: `「${name || id}」 의 ${words[0]} 그림(1칸)`, mapId, x: now.x, y: now.y });
+        } else noArt.set(id, { tilesetId: cellMap.tilesetId, want: `prop: ${words[0]}`, thing: `${words[0]} 1칸 그림`, note: `「${name || id}」`, mapId, x: now.x, y: now.y });
       }
     }
   }

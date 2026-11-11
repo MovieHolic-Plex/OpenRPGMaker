@@ -40,7 +40,7 @@ export function dressBareSealSteps(run: BuildRun, mapId: string, gaps?: ArtGap[]
     const map = project.maps[mapId]!;
     const ev = map.events.find((e) => e.id === r.ev.id);
     if (!ev || !SEAL.test(`${ev.name ?? ""} ${r.step.event}`) || !allTransparent(ev) || upperAt(map, ev.x, ev.y)) continue;
-    if (!hasAltar) { gaps?.push({ tilesetId: map.tilesetId, want: "altar/seal", label: `「${ev.name ?? ev.id}」 봉인·제단 그림`, mapId, x: ev.x, y: ev.y }); continue; }
+    if (!hasAltar) { gaps?.push({ tilesetId: map.tilesetId, want: "altar/seal", thing: "봉인·제단 그림", note: `「${ev.name ?? ev.id}」`, mapId, x: ev.x, y: ev.y }); continue; }
     const before = new Set(unreachableEvents(project, mapId));
     const others = new Set(map.events.filter((e) => e.id !== ev.id).map((e) => e.y * map.width + e.x));
     const cands: { tx: number; ty: number; at: { x: number; y: number }; d: number }[] = [];

@@ -71,7 +71,7 @@ export function dressBareCaveGates(run: BuildRun, mapId: string, gaps?: ArtGap[]
     for (const p of bare) {
       const ev = map0.events.find((e) => e.id === p.eventId);
       const destId = ev ? destOf(ev, mapId) : undefined;
-      gaps?.push({ tilesetId: map0.tilesetId, want: "cave mouth", label: `「→ ${run.ctx.project.maps[destId ?? ""]?.name ?? destId ?? p.eventId}」 던전 출입구의 굴 입구 그림`, mapId, x: p.at.x, y: p.at.y });
+      gaps?.push({ tilesetId: map0.tilesetId, want: "cave mouth", thing: "굴 입구 그림", note: `「→ ${run.ctx.project.maps[destId ?? ""]?.name ?? destId ?? p.eventId}」 던전 출입구`, mapId, x: p.at.x, y: p.at.y });
     }
     return notes;
   }
