@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **193쪽 / 8247KB / 약 2,424,801 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **193쪽 / 8248KB / 약 2,425,187 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -30,7 +30,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
 | `openwiki/editor-pre-edit-routing.md` | 197KB | 73KB ⚠상한 초과 — 절을 더 쪼개라 | 1227 | ~57,926 |
 | `openwiki/editor-validation.md` | 64KB | 17KB | 419 | ~18,019 |
-| `openwiki/editor-workflows-misc.md` | 91KB | 33KB | 636 | ~25,541 |
+| `openwiki/editor-workflows-misc.md` | 92KB | 35KB | 637 | ~25,927 |
 | `openwiki/editor-workshop.md` | 76KB | 15KB | 337 | ~22,898 |
 | `openwiki/harnesses/assistant-capability.md` | 103KB | 15KB | 692 | ~31,327 |
 | `openwiki/harnesses/building-kit.md` | 99KB | 4KB | 984 | ~29,868 |
@@ -1504,7 +1504,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L312` 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
   - `L358` `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
 
-### `openwiki/editor-workflows-misc.md` — 91KB · 636줄 · ~25,541 토큰 · 통째읽기 잘림
+### `openwiki/editor-workflows-misc.md` — 92KB · 637줄 · ~25,927 토큰 · 통째읽기 잘림
 
 - `L9` Other Editor Workflows
   - `L11` 왼쪽 「기물」 — 바로 고르기 (2026-10-07)
@@ -1517,16 +1517,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L182` Game export delivery (2026-09-06)
   - `L294` Audio descriptions and live resource ownership
   - `L387` Genre-neutral authoring launcher and journey (2026-08-24)
-- `L445` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
-- `L474` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
-- `L502` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
-- `L516` 맵 설정 가독성·편집 연속성 (2026-09-05)
-- `L526` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
-- `L539` Authoring viewport navigation (issue 693, 2026-09-08)
-  - `L581` Common expression recovery (2026-09-17)
-  - `L601` 제작자 페이지에서 타일셋 받기 (2026-09-24)
-- `L614` 필드 키트 — 미니게임·필드 능력·순간이동·걸음 상태·클릭 이동 (명작 공백 G3, 2026-09-27)
-- `L631` 현대 연애 칩 짝 흉상·전신 (2026-10-16 · 24종 완료 2026-10-17)
+- `L446` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
+- `L475` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
+- `L503` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
+- `L517` 맵 설정 가독성·편집 연속성 (2026-09-05)
+- `L527` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
+- `L540` Authoring viewport navigation (issue 693, 2026-09-08)
+  - `L582` Common expression recovery (2026-09-17)
+  - `L602` 제작자 페이지에서 타일셋 받기 (2026-09-24)
+- `L615` 필드 키트 — 미니게임·필드 능력·순간이동·걸음 상태·클릭 이동 (명작 공백 G3, 2026-09-27)
+- `L632` 현대 연애 칩 짝 흉상·전신 (2026-10-16 · 24종 완료 2026-10-17)
 
 ### `openwiki/editor-workflows.md` — 2KB · 28줄 · ~586 토큰
 

@@ -19,6 +19,8 @@ const STOP_KINDS: ReadonlySet<string> = new Set([
 const SKIP_KINDS: ReadonlySet<string> = new Set([
   "text", "wait", "cameraControl", "flashScreen", "shakeScreen", "particleEffect", "showEmote", "showAnimation",
   "playMovie", "scrollMap", "pathfindMove", "moveEvent", "waitForAllMovement", "liftRide",
+  // 테스트 플레이 「한 단계」 멈춤 — 컷신 건너뛰기는 멈춤을 풀고 지나간다.
+  "debugStep",
 ]);
 
 export function fastForwardAction(step: FastForwardStep): FastForwardAction {
