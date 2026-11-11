@@ -7,7 +7,7 @@
 // 요청한 수만큼만 서게). 칩셋은 생성기가 장르 잠금을 걸어 몬스터 계열로 고정된다.
 import { prepareTool } from "@/editor/tools/asyncToolRunner";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../types";
+import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 
 export const MONSTER_TOWN_CARD =
   "Monster-collecting (Pokémon-like) town: make_place {type:'village', style:'monster', name:town name, theme?:'meadow'|'desert'|'snow'|'coast'|'volcano', hints?:{title:game title (invent one if the project title is still «새 프로젝트» or a test name), region:region name, professor:professor name, firstRoute:first route name, gymCount:number of gyms (default 1), townSize:small|medium|large, streets:cross|ladder (two cross streets)|loop (ring road)|jog (bent main road), pond:true|false — set these only when the request named size, streets or a pond. Otherwise leave them empty (empty = a different town each run, filled = always the same town)}}. " +

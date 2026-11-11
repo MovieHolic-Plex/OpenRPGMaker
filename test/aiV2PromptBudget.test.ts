@@ -3,8 +3,9 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
-import { buildV2SystemPrompt, V2_CORE_PROMPT } from "@/ai/v2/prompt";
-import { GAME_CARD, gameCard } from "@/ai/v2/game";
+import { buildV2SystemPrompt } from "@/ai/v2/prompt/systemPrompt";
+import { V2_CORE_PROMPT } from "@/ai/v2/prompt/core";
+import { GAME_CARD, gameCard } from "@/ai/v2/prompt/gameCard";
 import { classifyRequest } from "@/ai/v2/request/intent";
 import { exposeV2Tools } from "@/ai/v2/toolExposure";
 import { createV2Tools } from "@/ai/v2/verbs";

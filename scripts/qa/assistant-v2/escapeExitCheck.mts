@@ -5,8 +5,8 @@
 //   bun scripts/qa/assistant-v2/escapeExitCheck.mts <run-dir> [outDir]
 import fs from "node:fs";
 import path from "node:path";
-import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
-import { walkBlueprint, escapeLeaks } from "../../../src/ai/v2/blueprint.ts";
+import { createBuildRun } from "../../../src/ai/v2/shared/buildRun.ts";
+import { walkBlueprint, escapeLeaks } from "../../../src/ai/v2/story/blueprint.ts";
 import { buildBlueprintPath, sealEscapeExits } from "../../../src/ai/v2/story/blueprintPath.ts";
 import { retireBlankStart } from "../../../src/ai/v2/blankStart.ts";
 import { dressInteriorExits } from "../../../src/ai/v2/place/exitDress.ts";

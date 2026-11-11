@@ -9,7 +9,7 @@ import { createV2Tools } from "@/ai/v2/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
 import { indexProject } from "@/ai/v2/loop/refs";
 import { loadPlaces, savePlaces, type PlaceMemory } from "@/ai/v2/tools/placeMemory";
-import type { PiAssistantV2Env } from "@/ai/v2/env";
+import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 
 const SLOW = 120_000;
 type Reply = { ok?: boolean; summary?: string; warnings?: string[]; record?: { name?: string } };

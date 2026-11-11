@@ -5,11 +5,11 @@ import { readFileSync } from "node:fs";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
 import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
-import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt.ts";
+import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt/systemPrompt.ts";
 import { withTodoLoop } from "../../../src/ai/v2/loop/todoTools.ts";
 import { exposeV2Tools } from "../../../src/ai/v2/toolExposure.ts";
 import { getTool } from "../../../src/editor/tools/toolRegistry.ts";
-import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
+import type { PiAssistantV2Env } from "../../../src/ai/v2/shared/env.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
 
 const prompts = JSON.parse(readFileSync(new URL("./prompts.json", import.meta.url), "utf8")).prompts as { id: string; text: string }[];

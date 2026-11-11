@@ -19,7 +19,7 @@ export interface PiAssistantV2Env {
   readonly advisorChat?: (messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
   readonly advisorModel?: string;
   /**
-   * 리드(OPRN_V2_SPLIT 의 lead — src/ai/v2/split.ts). 있으면 계획·단계 검토를 이 모델이 하고 주 모델은 워커가 된다.
+   * 리드(OPRN_V2_SPLIT 의 lead — src/ai/v2/turn/split.ts). 있으면 계획·단계 검토를 이 모델이 하고 주 모델은 워커가 된다.
    * 사용량은 done 통계 lead 칸과 호출 기록(role:"lead")에 따로 모인다.
    */
   readonly leadChat?: (messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
@@ -113,3 +113,13 @@ export interface PiAssistantV2Hooks {
   readonly maxRounds?: number;
 }
 
+interface BlueprintDesigner { readonly provider: string; readonly model: string; readonly effort?: "low" | "medium" | "high" }
+
+/** OPRN_V2_BLUEPRINT_DESIGNER="provider|model|effort" — 시험 묶음에서만 켠다(제품 설정 칸이 아니다). */
+export function blueprintDesignerFromEnv(): BlueprintDesigner | undefined {
+  const raw = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.OPRN_V2_BLUEPRINT_DESIGNER;
+  if (!raw) return undefined;
+  const [provider, model, effort] = raw.split("|");
+  if (!provider || !model) return undefined;
+  return { provider, model, ...(effort === "low" || effort === "medium" || effort === "high" ? { effort } : {}) };
+}

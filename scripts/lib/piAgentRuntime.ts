@@ -38,7 +38,7 @@ import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { createWriterTool } from "./piWriterTool.ts";
 import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
-import { guardLeadChat, resolveSplitConfig } from "../../src/ai/v2/split.ts";
+import { guardLeadChat, resolveSplitConfig } from "../../src/ai/v2/turn/split.ts";
 import { setCutsceneArtGenerator } from '../../src/editor/tools/cutsceneArtTools';
 import { probeCutscene } from '../../src/editor/cutscenePreview/probe';
 import { cutscenePreviewImages } from '../../src/editor/tools/cutscenePreviewTools';
@@ -220,8 +220,8 @@ export interface RunPiAgentOptions {
   readonly v2?: PiAssistantV2Hooks;
 }
 
-export type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/env.ts";
-import type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/env.ts";
+export type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/shared/env.ts";
+import type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/shared/env.ts";
 import { trimContext } from "../../src/ai/v2/loop/contextTrim.ts";
 
 /** public/ 아래 정적 그림을 data URL 로 — 저장소 public/ 먼저, 빌드 dist/ 다음. 경로 밖으로 나가는 이름은 거절. */
@@ -1065,7 +1065,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       return typeof content === "string" ? content : "";
     } finally { sideUsage.ms += Date.now() - t0; }
   } : undefined;
-  // 리드(OPRN_V2_SPLIT, src/ai/v2/split.ts) — v2 에서만. 주 모델이 워커가 되고 리드는 계획·단계 검토만 한다. 사용량은 leadUsage 로 따로.
+  // 리드(OPRN_V2_SPLIT, src/ai/v2/turn/split.ts) — v2 에서만. 주 모델이 워커가 되고 리드는 계획·단계 검토만 한다. 사용량은 leadUsage 로 따로.
   // 환경 변수가 없으면 편집기 엔진 선택의 팀장(request.lead — Claude 구독 첫 실행 기본값 Opus 팀장 + Haiku 워커).
   const split = options.v2 ? resolveSplitConfig(process.env.OPRN_V2_SPLIT, request.lead) : undefined;
   const leadCli = split ? localCliIdOf(split.lead.provider) : undefined;
@@ -1100,7 +1100,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       }
     }
   } : undefined;
-  // 리드가 한 번 실패하면(모델 없음·요금제에 없는 모델·연결 오류) 이 실행 동안 끄고 워커 혼자 한다(src/ai/v2/split.ts guardLeadChat).
+  // 리드가 한 번 실패하면(모델 없음·요금제에 없는 모델·연결 오류) 이 실행 동안 끄고 워커 혼자 한다(src/ai/v2/turn/split.ts guardLeadChat).
   const leadChat = leadChatRaw ? guardLeadChat(leadChatRaw, (signal) => Boolean((signal ?? options.signal)?.aborted)) : undefined;
   // 재주입 차례·첫 요청: 다음 지시의 첫 모델 호출 하나만 도구 호출을 강제한다(아래 Agent 의 getToolChoice 가 한 번 쓰고 내린다).
   // 문자열이면 그 도구 하나(v2 첫 호출 todo init — omo first-turn), true 면 «required».

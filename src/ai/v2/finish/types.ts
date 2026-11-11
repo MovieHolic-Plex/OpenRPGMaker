@@ -1,9 +1,9 @@
 // 끝맺음 단계의 공용 형 — 단계 하나 = 파일 하나(finish/stages/<id>.ts · finish/lanes/stages/<id>.ts), 형은 FinishStage 하나다.
 // 목록은 finish/stages/index.ts 와 finish/lanes/stages/index.ts, 순서는 묶음(phase) → 각 단계의 order(finish/stageOrder.ts).
-import type { PiAssistantV2Env } from "../env";
+import type { PiAssistantV2Env } from "../shared/env";
 import type { V2Session } from "../turn/session";
-import type { BlueprintBlocker } from "../blueprint";
-import type { RecordingBuildRun } from "../buildRun";
+import type { BlueprintBlocker } from "../story/blueprint";
+import type { RecordingBuildRun } from "../shared/buildRun";
 import type { ReachRepair } from "../place/reachRepairs";
 
 /**

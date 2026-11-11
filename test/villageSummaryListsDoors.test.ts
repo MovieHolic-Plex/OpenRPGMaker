@@ -5,7 +5,7 @@ import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { VILLAGE_BUILDER } from "@/ai/v2/place/builders/village";
 import { lintScenePolish } from "@/project/lint/scenePolishLint";
-import type { BuildRun, PlaceSpec } from "@/ai/v2/types";
+import type { BuildRun, PlaceSpec } from "@/ai/v2/shared/types";
 
 describe("make_place 마을 요약의 문 앞 칸", () => {
   it("적힌 문 앞 칸으로 create_transfer_pair 하면 트리거가 문 그림에 선다", () => {

@@ -10,7 +10,7 @@ import { layerTileAt } from "@/project/mapLayers";
 import { JP_CITY_ID } from "@/project/defaults/jpCity";
 import { planJpCityStreet, type JpStreetStyle } from "@/project/jpCityStreetComposer";
 import type { GameMap, Project } from "@/project/types";
-import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../types";
+import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 
 /** v2 계획 모델에게 주는 일본 도시 지식(≤900자). */
 export const JP_CITY_CARD =

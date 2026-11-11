@@ -12,7 +12,7 @@ import type { Project } from "../../../src/project/types";
 import { createV2Tools } from "../../../src/ai/v2/verbs";
 import { V2Session } from "../../../src/ai/v2/turn/session";
 import { exposeV2Tools } from "../../../src/ai/v2/toolExposure";
-import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt";
+import { buildV2SystemPrompt } from "../../../src/ai/v2/prompt/systemPrompt";
 import { buildsWholeGame, wantsWholeGame } from "../../../src/ai/v2/request/readers";
 import { wantsGameTools } from "../../../src/ai/v2/request/readers";
 

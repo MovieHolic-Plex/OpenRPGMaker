@@ -13,7 +13,7 @@ import { objectEventFit } from "../place/placementRules";
 import { access, handObjectKitId } from "../place/builders/dressRoom";
 import { unreachableEvents } from "../judge/eventReach";
 import { PERSON_SPOT_BAD, personSpotContext, personSpotCost } from "../place/personSpot";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 
 /** 물건 낱말 → 탁상 물건(goods) 후보, 바닥 소품(objects) 후보. 앞이 먼저. */
 const THINGS: readonly [RegExp, readonly string[], readonly string[]][] = [

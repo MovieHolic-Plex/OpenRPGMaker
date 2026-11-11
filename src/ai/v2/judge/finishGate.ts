@@ -3,8 +3,8 @@
 import { sceneCraftProblems } from "./sceneCraft";
 import { shipBlockers } from "./shipChecks";
 import { asksSettingOnly, asksStoreOnly, asksToBeTold, buildsWholeGame } from "../request/readers";
-import type { PiAssistantV2Env } from "../env";
-import { type StageWrites } from "../stageWrites";
+import type { PiAssistantV2Env } from "../shared/env";
+import { type StageWrites } from "../shared/stageWrites";
 import type { Project } from "@/project/types";
 import { audioOnly } from "../request/readers";
 import { gameContentProblems } from "./gameChecks";

@@ -13,10 +13,10 @@ import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
 import { resolveWhere } from "../../../src/ai/v2/place/where.ts";
 import { findMap } from "../../../src/ai/v2/place/cells.ts";
-import { PEOPLE_CARD } from "../../../src/ai/v2/people.ts";
+import { PEOPLE_CARD } from "../../../src/ai/v2/place/people.ts";
 import { EVENT_CARD } from "../../../src/ai/v2/story/events.ts";
 import { DRAW_OBJECT_CARD } from "../../../src/ai/v2/place/drawObject.ts";
-import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
+import type { PiAssistantV2Env } from "../../../src/ai/v2/shared/env.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
 
 const OUT = process.argv[2] ?? "qa-runs/content-r2";
@@ -240,7 +240,7 @@ if (want("monster")) {
     console.log("png", `mon-${id}.png`, m.name, `${m.width}×${m.height}`);
   }
   console.log("genre", ctx.project.system.genre, "lock", ctx.project.system.genreLock?.preset, "maps", Object.keys(ctx.project.maps).length);
-  console.log("prompt cards:", (await import("../../../src/ai/v2/prompt.ts")).conditionalCards(ctx.project, townId, task).map((c) => c.slice(0, 30)));
+  console.log("prompt cards:", (await import("../../../src/ai/v2/prompt/systemPrompt.ts")).conditionalCards(ctx.project, townId, task).map((c) => c.slice(0, 30)));
 }
 
 // ── 5. 두 선택 대화 장면(cmp-romance-scene): 시작 상태는 fixture 와 같은 길(옥상 짓기 + 확정 기획 씨앗) → add_scene ──
@@ -265,7 +265,7 @@ for (const variant of ["romance", "romance-free"] as const) {
   const session = new V2Session();
   const task = "학교 옥상에서 주인공과 소꿉친구 하린이 처음으로 속마음을 이야기하는 짧은 대화 장면 만들어 줘. 선택지 두 개로 하린의 반응이 달라지게.";
   const tools = createV2Tools(makeEnv(ctx, task, log), session);
-  console.log("prompt cards:", (await import("../../../src/ai/v2/prompt.ts")).conditionalCards(ctx.project, ctx.currentMapId, task).map((c) => c.slice(0, 30)));
+  console.log("prompt cards:", (await import("../../../src/ai/v2/prompt/systemPrompt.ts")).conditionalCards(ctx.project, ctx.currentMapId, task).map((c) => c.slice(0, 30)));
   const r = await call(tools, "add_scene", { scene: {
     partner: "하린", role: "소꿉친구", looks: "여학생", where: "난간 쪽",
     opening: ["여기 바람 시원하지? 너한테 꼭 하고 싶은 말이 있어서 불렀어.", "어릴 때부터 늘 옆에 있었는데… 요즘 너를 보면 자꾸 마음이 이상해져."],

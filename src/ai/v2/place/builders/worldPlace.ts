@@ -3,8 +3,8 @@
 import { isPassable } from "@/project/collision";
 import { isUntouchedMap } from "@/project/projectBlankness";
 import type { GameMap, Project } from "@/project/types";
-import { parseWorldStyle, type WorldKind, type WorldSetting } from "../../world";
-import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../types";
+import { parseWorldStyle, type WorldKind, type WorldSetting } from "../world";
+import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 import { onePassRefusal } from "../onePass";
 
 type Cell = { readonly x: number; readonly y: number };

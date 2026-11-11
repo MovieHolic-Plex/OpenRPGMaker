@@ -3,7 +3,7 @@
 // 고치기 횟수(hints.layoutRepairsLeft)를 다 쓰면 여전히 걸리는 기물만 빼고 나머지를 깐다(무엇을 뺐는지 알린다).
 import type { HandInteriorSpec } from "@/editor/handInterior/builder";
 import { ROOM_GRAPH_TAG } from "@/editor/handInterior/designAreaRecord";
-import type { BuildRun, PlaceBuildResult, PlaceSpec } from "../../types";
+import type { BuildRun, PlaceBuildResult, PlaceSpec } from "../../shared/types";
 import { REVIEWS_TAG } from "../layoutReview";
 import { checkLayout, layoutDecl, layoutGiven, rejectionText, LAYOUT_TAG, type InteriorLayout, type LayoutCheck } from "../interiorLayout";
 

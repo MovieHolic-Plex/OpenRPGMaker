@@ -7,7 +7,7 @@
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { isPassable } from "@/project/collision";
 import type { Project } from "@/project/types";
-import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../types";
+import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 
 const MODERN_CITY_ID = "modern_city";
 

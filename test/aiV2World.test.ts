@@ -3,25 +3,25 @@ import { createBlankProject } from "@/project/defaults";
 import { normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { createV2Tools } from "@/ai/v2/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
-import { buildV2SystemPrompt } from "@/ai/v2/prompt";
+import { buildV2SystemPrompt } from "@/ai/v2/prompt/systemPrompt";
 import { countMaps } from "@/ai/v2/judge/mapCount";
-import { walkGame } from "@/ai/v2/makeGame";
-import { battleStepBypass, stepMixProblems, walkBlueprint } from "@/ai/v2/blueprint";
+import { walkGame } from "@/ai/v2/story/makeGame";
+import { battleStepBypass, stepMixProblems, walkBlueprint } from "@/ai/v2/story/blueprint";
 import { foeGraphic } from "@/ai/v2/story/blueprintPath";
 import { sceneCraftFindings } from "@/ai/v2/judge/sceneCraft";
 import { isMysteryBlueprint } from "@/ai/v2/story/mysteryCase";
 import { parseAdvisorReply } from "@/ai/v2/judge/advisor";
 import { builderFor } from "@/ai/v2/place/builders";
-import { WORLDS, parseWorldStyle, pickWorld, pickWorldDoor, repairWorldPlaces, worldById, worldCard, worldKind, worldPlaceProblems, worldPlaceSpec } from "@/ai/v2/world";
+import { WORLDS, parseWorldStyle, pickWorld, pickWorldDoor, repairWorldPlaces, worldById, worldCard, worldKind, worldPlaceProblems, worldPlaceSpec } from "@/ai/v2/place/world";
 import { fitsAnyWorld } from "@/ai/v2/request/genre";
 import { worldForRequest } from "@/ai/v2/request/world";
 import { exposeV2Tools } from "@/ai/v2/toolExposure";
 import { isRegistryTool } from "@/ai/v2/loop/argGuard";
-import type { PiAssistantV2Env } from "@/ai/v2/env";
+import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import type { ToolContext } from "@/editor/tools/types";
 
 // 2026-11-10 오너 「자꾸 '비슷한' 맵을 만들어내는 조수도 문제」: 게임 하나를 만드는 요청이 요청과 상관없이 버들항 마을 + 동굴 + 숲길 4장이었다.
-// 게임마다 세계(칩셋 한 벌)를 고르고, 장소를 그 세계의 서로 다른 종류로 build_places 가 짓는다(src/ai/v2/world.ts).
+// 게임마다 세계(칩셋 한 벌)를 고르고, 장소를 그 세계의 서로 다른 종류로 build_places 가 짓는다(src/ai/v2/place/world.ts).
 // 에이전트 세션 규칙으로 작성 시점에는 실행하지 않았다(CI 에서 돈다). 같은 흐름의 실측은 scripts/qa/assistant-v2/worldProbe.mts.
 
 const key = (n: number) => `["project","p${n}"]`;

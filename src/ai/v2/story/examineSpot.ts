@@ -13,7 +13,7 @@ import type { GameEvent, GameMap } from "@/project/types";
 import { eventBlocks, isDoorName, reachableCells, unreachableEvents } from "../judge/eventReach";
 import { showExaminedThing } from "./examineArt";
 import { objectAt, tileLabel } from "../place/cells";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 
 type Cell = { x: number; y: number };
 const WALL_LABEL = /벽|wall/iu;

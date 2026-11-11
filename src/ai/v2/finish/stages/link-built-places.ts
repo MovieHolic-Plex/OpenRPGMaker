@@ -1,7 +1,7 @@
 // 이번 실행에 지은 장소가 시작에서 닿지 않으면 요청 속 맵과 잇는다(session.linkBuiltPlaces, 한 실행에 한 번).
 // 왜·규칙은 verbs.ts session.linkBuiltPlaces 머리글(2026-10-30 씬 벤치 river-village 「지금 마을과 이어 줘」).
 import type { FinishStage } from "../types";
-import { walkBlueprint } from "../../blueprint";
+import { walkBlueprint } from "../../story/blueprint";
 
 export const stage: FinishStage = {
   id: "link-built-places", phase: "blueprint", order: 32, ownWork: true,

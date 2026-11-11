@@ -1,7 +1,7 @@
 // 조수 v2 [Current project] 맵 목록(프롬프트는 영어 — omo 줄) — 맵 id 와 칩셋 id 가 헷갈리지 않게 이름표를 붙인다.
 // 2026-10-30 실조수 e2e: 「map_blank_start 「버들 마을」 beodeul_city 20×15」에서 7번 중 5번 set_game_audio mapIds 에 beodeul_city 를 넣었다.
 import { describe, expect, it } from "vitest";
-import { projectBrief } from "@/ai/v2/prompt";
+import { projectBrief } from "@/ai/v2/prompt/projectBrief";
 import { MUSIC_TIER } from "@/ai/v2/request/toolGroups";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
