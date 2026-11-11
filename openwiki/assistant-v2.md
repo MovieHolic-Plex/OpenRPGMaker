@@ -304,6 +304,25 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 
 증거: `test/toolsReadEmptyAndBlocked.test.ts`.
 
+## 바닥에 놓인 물건은 `place_chest` 의 `look:"item"` — 줍는 물건 (2026-11-11, 작은 일 재측정)
+
+작은 일 재측정(Terra, main 84a7fa331a)의 `pickup-key-built`(「족장의 긴 집 바닥에 낡은 열쇠가 떨어져 있게 해 줘. 조사하면 주워 가게 해 줘」):
+조수는 열쇠 그림이 칩셋에 없다고 `draw_object` 를 불렀고(공방 카드 대기 — 이 턴에는 맵에 안 놓인다), 줍기는 `add_event` 로 만든 투명 이벤트였다.
+아이템은 주어지지만 칸에 보이는 것이 없었다. 「그림 대기」 로 할 일 둘이 막힘으로 닫혔다.
+
+줍는 물건을 놓는 도구가 없었던 것이 원인이다. 보물상자(`place_chest`)는 상자 그림뿐이었고, 작은 일의 처음 도구에도 「줍다·떨어져 있다」 로는 실리지 않았다.
+
+고친 것(도구에서):
+- `place_chest` 에 `look: "chest" | "item"`. `item` 은 상자 대신 **그 아이템의 아이콘**(번들 한 장 그림 — 런타임과 도구 그림이 16px 로 맞춰 그린다)을
+  칸에 놓고, 조사하면 한 번 주고(소리 → `changeItem`/`changeGold` → 「…을 주웠다.」 → 셀프스위치 A) 그림과 막음이 사라진다(둘째 쪽: 투명 · below · 명령 없음).
+  돈만 놓거나 아이템에 아이콘이 없으면 주머니 그림(`cc0-jetrel-coin-pouch`)이고, 아이콘이 없어서 그랬으면 경고로 알린다. `look` 을 안 주면 보물상자 그대로다.
+- 요청 주제 `chest` 의 낱말에 「떨어져 있 · 떨어뜨 · 주워/주울/주운 · 줍게/줍는…」 을 더했다(`request/topics.ts`) — 그런 요청에 `place_chest` 가 처음부터 실린다.
+- v2 가 읽는 영어 설명(`toolTextEn.ts`)에 `look` 과 「줍는 물건에 그림을 그리거나 투명 이벤트를 쓰지 말라」 를 적었다.
+
+근거(모델 없는 탐침, 지은 게임 판): `upsert_item`(아이콘 `cc0-jetrel-old-key`) → `place_chest{look:"item"}` 한 번 → 작은 일 판정기 `giveOnce` 통과
+(「낡은 열쇠 1, 한 번만」, 요청 밖 편집 0). 도구 그림 렌더에서 열쇠·주머니·상자가 각각 보인다. golden: 153 요청 가운데 117 이 `place_chest` 글/스키마만 바뀜(실리고 빠지는 도구 없음).
+시험 `test/placeChestSavepoint.test.ts`(look:item 4건) · `test/aiV2PromptBudget.test.ts`(줍기 요청에 `place_chest`).
+
 ## 참고문서 읽기는 결과에 알림이 붙어도 인정한다 — `PiTilesetReferenceGate` (2026-11-11, 작은 일 재측정)
 
 작은 일 재측정(Terra, main 84a7fa331a)의 `door-backdoor-built`: 모델이 `read_tileset_reference` 로 그 용도를 끝까지 읽었는데(4번, 그림 11장)
