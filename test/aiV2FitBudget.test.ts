@@ -139,13 +139,13 @@ describe("the finish stage records the cut on the session and never blocks finis
     const events: { name?: string }[] = [];
     const env = { ctx: { project: p }, request: { task: WHOLE }, emit: (e: { name?: string }) => events.push(e) } as never;
     state.mode = "throw-always"; state.calls = 0;
-    try { shipDefaultsStage.run({ env, session, assembled, done: [], walked: [] } as never); } finally { state.mode = "pass"; }
+    try { shipDefaultsStage.run({ env, session, assembled, done: [], walked: [] } as never, ""); } finally { state.mode = "pass"; }
     expect(session.fitIncomplete?.startsWith(FIT_INCOMPLETE_PREFIX)).toBe(true);
     expect(events.some((e) => e.name === "v2.fit.incomplete")).toBe(true);
     const replaced = structuredClone(p);
     expect(shipBlockers(replaced, WHOLE).map((b) => b.id)).not.toContain("fit-budget");
     expect(session.fitIncomplete?.startsWith(FIT_INCOMPLETE_PREFIX)).toBe(true);
-    shipDefaultsStage.run({ env: { ctx: { project: replaced }, request: { task: WHOLE }, emit() {} } as never, session, assembled: [], done: [], walked: [] } as never);
+    shipDefaultsStage.run({ env: { ctx: { project: replaced }, request: { task: WHOLE }, emit() {} } as never, session, assembled: [], done: [], walked: [] } as never, "");
     expect(session.fitIncomplete).toBeUndefined();
   });
 });
