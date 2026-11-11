@@ -1,127 +1,17 @@
 // 작은 일의 기계 판정. 저장 문서 전/후만 본다 — 모델 판정자 없음, 도구 이름도 안 본다.
 // 판정은 두 겹이다: outcome(요청이 말한 결과가 저장 문서에 있나) + damage(시키지 않은 파괴: 맵·이벤트 삭제, 다른 이벤트 이동,
 // 맵·게임 이름 바뀜, 시작 위치 바뀜, 허락 없는 새 맵). 둘 다 깨끗해야 통과다. 다른 이벤트의 내용 변경은 sideEdits 로 세기만 한다.
+// 이 파일 = 첫 묶음(작은 일 30가지)의 판정 종류 + damage + runCheck. 둘째 묶음의 종류는 checksData.ts · checksPlay.ts 에 있다.
 import { isDeepStrictEqual } from 'node:util';
 import { listAudioResources } from '../../../../assets/audioResourceCatalog';
-import { resolveEventPage } from '../../../../project/io';
-import { evalCondition } from '../../../../project/session';
 import type { Project } from '../../../../project/types';
-import { blockedOn, walkableFrom } from '../matrixNativeSpec';
+import { walkableFrom } from '../matrixNativeSpec';
+import { DATA_KINDS, DATA_SIDE } from './checksData';
+import { PLAY_KINDS, PLAY_SIDE } from './checksPlay';
+import { allCommands, cellFree, commandsDeep, eventOf, eventsOf, freshSession, hasSprite, includesPhrase, inRect, interact, itemIdsByName, mapName, newEvents, no, ok, pagesOf, passable, placeNote, saysFirst, squash, triggerKinds, visibleAt, where,
+  type Allow, type CheckSpec, type Doc, type Ev, type Play, type Result, type Verdict } from './checkSupport';
 
-export type CheckSpec = { kind: string } & Record<string, any>;
-export type Allow = { newMaps?: number; movedEvents?: string[]; renamedMaps?: string[]; title?: boolean; removedEvents?: string[] };
-export type Verdict = { pass: boolean; reason: string; outcome: { ok: boolean; note: string }; damage: string[]; sideEdits: string[] };
-type Doc = Record<string, any>;
-type Ev = { id: string; x: number; y: number; name?: string; pages?: any[]; [key: string]: any };
-type Result = { ok: boolean; note: string };
-const ok = (note: string): Result => ({ ok: true, note });
-const no = (note: string): Result => ({ ok: false, note });
-
-// ── 문서 읽기 ───────────────────────────────────────────────────────────────
-const eventsOf = (doc: Doc, mapId: string): Ev[] => doc.maps?.[mapId]?.events ?? [];
-const eventOf = (doc: Doc, mapId: string, eventId: string): Ev | undefined => eventsOf(doc, mapId).find(event => event.id === eventId);
-const mapName = (doc: Doc, mapId: string): string => doc.maps?.[mapId]?.name ?? mapId;
-/** 이벤트의 모든 명령(모든 페이지, 선택지·분기·반복 안까지). */
-function commandsDeep(commands: any[] | undefined, out: any[] = []): any[] {
-  for (const command of commands ?? []) {
-    if (!command || typeof command !== 'object') continue;
-    out.push(command);
-    for (const key of ['then', 'else', 'body', 'branch', 'transactionBranch', 'failedTransactionBranch', 'cancelBranch', 'victoryBranch', 'escapeBranch', 'defeatBranch', 'commands']) if (Array.isArray(command[key])) commandsDeep(command[key], out);
-    for (const option of command.options ?? []) if (Array.isArray(option?.branch)) commandsDeep(option.branch, out);
-  }
-  return out;
-}
-const pagesOf = (event: Ev): any[] => event.pages?.length ? event.pages : [{ commands: event.commands ?? [], trigger: event.trigger, conditions: [] }];
-const allCommands = (event: Ev): any[] => pagesOf(event).flatMap(page => commandsDeep(page.commands));
-/** 띄어쓰기·문장부호·따옴표를 무시한 포함 비교 — 「"어서 와!"」와 「어서 와」를 같은 말로 본다. */
-const squash = (text: unknown): string => String(text ?? '').normalize('NFC').replace(/[\s"'“”‘’「」『』.,!?~…·\-]/gu, '');
-const includesPhrase = (body: unknown, phrase: string): boolean => squash(body).includes(squash(phrase));
-const hasSprite = (event: Ev): boolean => pagesOf(event).some(page => page.graphic && !page.graphic.transparent && (page.graphic.sprite || typeof page.graphic.tile === 'number' || page.graphic.tileId !== undefined));
-const triggerKinds = (event: Ev): string[] => pagesOf(event).map(page => page.trigger?.kind ?? event.trigger?.kind ?? 'action');
-function upperTileAt(doc: Doc, mapId: string, x: number, y: number): boolean {
-  const map = doc.maps?.[mapId];
-  if (!map) return false;
-  const i = y * map.width + x;
-  return ['upperTiles', 'upperOverlayTiles', 'lowerOverlayTiles'].some(key => Array.isArray(map[key]) && (map[key][i] ?? -1) >= 0);
-}
-/** 눈에 보이는 것이 그 칸에 있나: 이벤트 그림이 있거나 그 칸에 윗층 타일이 깔려 있다. */
-/** 처음 말을 걸었을 때 그 글이 나오는가. */
-const saysFirst = (doc: Doc, event: Ev, phrase: string): boolean => interact(event, freshSession(), doc).texts.some(body => includesPhrase(body, phrase));
-const visibleAt = (doc: Doc, mapId: string, event: Ev): boolean => hasSprite(event) || upperTileAt(doc, mapId, event.x, event.y);
-const inBounds = (doc: Doc, mapId: string, x: number, y: number): boolean => { const map = doc.maps?.[mapId]; return !!map && x >= 0 && y >= 0 && x < map.width && y < map.height; };
-const cheb = (a: { x: number; y: number }, b: { x: number; y: number }): number => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
-const inRect = (rect: { x: number; y: number; w: number; h: number }, p: { x: number; y: number }): boolean => p.x >= rect.x && p.y >= rect.y && p.x < rect.x + rect.w && p.y < rect.y + rect.h;
-const blockedCache = new WeakMap<object, Map<string, Set<string>>>();
-function blocked(doc: Doc, mapId: string): Set<string> {
-  let perDoc = blockedCache.get(doc);
-  if (!perDoc) blockedCache.set(doc, perDoc = new Map());
-  let cells = perDoc.get(mapId);
-  if (!cells) perDoc.set(mapId, cells = blockedOn(structuredClone(doc) as unknown as Project, mapId));
-  return cells;
-}
-const passable = (doc: Doc, mapId: string, x: number, y: number): boolean => inBounds(doc, mapId, x, y) && !blocked(doc, mapId).has(`${x},${y}`);
-/** 그 칸에 다른 이벤트(같은 높이로 서 있는 것)가 겹치지 않는다. */
-const cellFree = (doc: Doc, mapId: string, self: Ev): boolean => !eventsOf(doc, mapId).some(other => other.id !== self.id && other.x === self.x && other.y === self.y && pagesOf(other).some(page => (page.priority ?? 'same') === 'same'));
-/** 새로 생긴 이벤트(전에 없던 id). mapId 를 주면 그 맵만. */
-function newEvents(before: Doc, after: Doc, mapId?: string): Array<{ mapId: string; event: Ev }> {
-  const out: Array<{ mapId: string; event: Ev }> = [];
-  for (const id of mapId ? [mapId] : Object.keys(after.maps ?? {})) {
-    const had = new Set(eventsOf(before, id).map(event => event.id));
-    for (const event of eventsOf(after, id)) if (!had.has(event.id)) out.push({ mapId: id, event });
-  }
-  return out;
-}
-/** 같은 이름의 아이템이 여럿일 수 있다 — 그중 어느 것이든 그 이름으로 친다. */
-const itemIdsByName = (doc: Doc, name: string): string[] => (doc.database?.items ?? []).filter((item: any) => item.name === name).map((item: any) => item.id);
-
-// ── 말 걸기 한 번을 따라가 본다 ─────────────────────────────────────────────
-// 엔진의 페이지 고르기(resolveEventPage)와 조건 평가(evalCondition)를 그대로 쓰고, 상태를 바꾸는 명령만 흉내 낸다.
-// 「한 번만 준다」「열쇠가 있을 때만 다른 글」은 명령이 있다는 것만으로는 알 수 없어서, 두 번 말을 걸어 본다.
-type Play = { session: any; texts: string[]; items: Record<string, number>; gold: number; shops: any[]; battles: any[] };
-const freshSession = (inventory: Record<string, number> = {}): any => ({ switches: {}, variables: {}, selfSwitches: {}, inventory: { ...inventory }, gold: 0, partyActorIds: [], timers: {}, flags: {}, friendship: {} });
-function interact(event: Ev, session: any, doc?: Doc): Play {
-  const play: Play = { session, texts: [], items: {}, gold: 0, shops: [], battles: [] };
-  const page = event.pages?.length ? resolveEventPage(event as never, session) : { commands: event.commands ?? [] };
-  const num = (value: unknown): number => (typeof value === 'number' ? value : NaN);
-  const run = (commands: any[] | undefined, depth: number): void => {
-    if (depth > 12) return;
-    for (const command of commands ?? []) {
-      if (!command || typeof command !== 'object') continue;
-      if (command.kind === 'text') play.texts.push(String(command.body ?? ''));
-      else if (command.kind === 'shop') play.shops.push(command);
-      else if (command.kind === 'battleProcessing') play.battles.push(command);
-      else if (command.kind === 'changeItem' || command.kind === 'changeGold') {
-        const held = command.kind === 'changeItem' ? session.inventory[command.itemId] ?? 0 : session.gold;
-        const next = command.op === '=' ? num(command.amount) : command.op === '-=' ? held - num(command.amount) : held + num(command.amount);
-        if (command.kind === 'changeItem') { session.inventory[command.itemId] = next; play.items[command.itemId] = (play.items[command.itemId] ?? 0) + (next - held); }
-        else { session.gold = next; play.gold += next - held; }
-      } else if (command.kind === 'setSelfSwitch') (session.selfSwitches[event.id] ??= {})[command.key] = command.value;
-      else if (command.kind === 'setSwitch') session.switches[command.switchId] = command.value === 'toggle' ? !session.switches[command.switchId] : command.value === true;
-      else if (command.kind === 'setVariable') {
-        const held = session.variables[command.variableId] ?? 0, value = num(command.value);
-        session.variables[command.variableId] = command.op === '+=' ? held + value : command.op === '-=' ? held - value : command.op === '*=' ? held * value : command.op === '/=' ? held / value : value;
-      } else if (command.kind === 'fork') run(evalCondition(session, command.condition, event.id) ? command.then : command.else, depth + 1);
-      // 공통 이벤트 호출은 그 명령들을 이어서 돈다(부르는 이벤트의 셀프 스위치를 쓴다).
-      else if (command.kind === 'callCommonEvent') run((doc?.commonEvents ?? []).find((common: any) => common?.id === command.commonEventId)?.commands, depth + 1);
-      // 선택지는 사용자가 무엇을 고를지 모른다 — 모든 갈래를 차례로 따라가 합친다.
-      else if (command.kind === 'choices') for (const option of command.options ?? []) run(option?.branch, depth + 1);
-    }
-  };
-  run(page?.commands, 0);
-  return play;
-}
-function placeNote(spec: CheckSpec, after: Doc, mapId: string, event: Ev): string | null {
-  if (!inBounds(after, mapId, event.x, event.y)) return `맵 밖 (${event.x},${event.y})`;
-  if (spec.nearEvent) {
-    const anchor = eventOf(after, mapId, spec.nearEvent.eventId);
-    if (!anchor) return `기준 이벤트 ${spec.nearEvent.eventId} 가 없다`;
-    const d = cheb(anchor, event);
-    if (d < 1 || d > (spec.nearEvent.max ?? 1)) return `${anchor.name ?? anchor.id}(${anchor.x},${anchor.y})에서 ${d}칸 — ${spec.nearEvent.max ?? 1}칸 안이어야 한다`;
-  }
-  if (spec.inRect && !inRect(spec.inRect, event)) return `(${event.x},${event.y})는 기대 자리 x${spec.inRect.x}~${spec.inRect.x + spec.inRect.w - 1}, y${spec.inRect.y}~${spec.inRect.y + spec.inRect.h - 1} 밖`;
-  return null;
-}
-const where = (after: Doc, mapId: string, event: Ev): string => `${mapName(after, mapId)} (${event.x},${event.y})`;
+export type { Allow, CheckSpec, Verdict } from './checkSupport';
 
 // ── 판정 종류 ───────────────────────────────────────────────────────────────
 const KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result> = {
@@ -380,7 +270,10 @@ const KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result
     return ok(`바뀐 칸 ${cells.length} · 새 소품 이벤트 ${props.length}`);
   },
 };
-export const CHECK_KINDS = Object.keys(KINDS);
+/** 모든 판정 종류: 첫 묶음(이 파일) + 둘째 묶음(자료·설정, 말 걸기·장면). 이름이 겹치면 안 된다. */
+const ALL_KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result> = { ...KINDS, ...DATA_KINDS, ...PLAY_KINDS };
+if (Object.keys(ALL_KINDS).length !== Object.keys(KINDS).length + Object.keys(DATA_KINDS).length + Object.keys(PLAY_KINDS).length) throw Error('판정 종류 이름이 겹친다');
+export const CHECK_KINDS = Object.keys(ALL_KINDS);
 
 // ── 시키지 않은 파괴 ────────────────────────────────────────────────────────
 /** 맵 밖에서 바뀐 것(타이틀·오프닝·엔딩·퀘스트·청사진·자료집·그림)을 칸 이름으로 적는다 — 요청이 스스로 요구하는 칸(expected)은 뺀다. */
@@ -416,7 +309,13 @@ const EXPECTED_SIDE: Record<string, RegExp> = {
   newNpc: /^(system\.peopleChipLock|database\.characterAppearances)$/u,
 };
 
-function damageOf(before: Doc, after: Doc, allow: Allow, kind: string, targets: ReadonlySet<string>): { damage: string[]; sideEdits: string[] } {
+/** 둘째 묶음의 종류는 요청마다 건드리는 칸이 달라서(자료집 표·설정 칸) 판정 인자에서 만든다. */
+function expectedSide(spec: CheckSpec): RegExp | undefined {
+  return EXPECTED_SIDE[spec.kind] ?? DATA_SIDE[spec.kind]?.(spec) ?? PLAY_SIDE[spec.kind];
+}
+
+function damageOf(before: Doc, after: Doc, allow: Allow, spec: CheckSpec, targets: ReadonlySet<string>): { damage: string[]; sideEdits: string[] } {
+  const kind = spec.kind;
   const damage: string[] = [], sideEdits: string[] = [];
   const beforeMaps = Object.keys(before.maps ?? {}), afterMaps = Object.keys(after.maps ?? {});
   for (const id of beforeMaps) if (!after.maps?.[id]) damage.push(`맵 「${mapName(before, id)}」 삭제`);
@@ -430,27 +329,28 @@ function damageOf(before: Doc, after: Doc, allow: Allow, kind: string, targets: 
       if (!now) { if (!(allow.removedEvents ?? []).includes(was.id)) damage.push(`${label} 삭제`); continue; }
       if ((now.x !== was.x || now.y !== was.y) && !(allow.movedEvents ?? []).includes(was.id)) damage.push(`${label} 이동 (${was.x},${was.y})→(${now.x},${now.y})`);
       // 요청이 가리킨 이벤트 자신의 내용 변경은 부수 변경이 아니다.
-      else if (!targets.has(was.id) && (!isDeepStrictEqual(was.pages, now.pages) || was.name !== now.name)) sideEdits.push(`${label} 내용 바뀜`);
+      // 프로젝트 전체의 글을 바꾸는 일(anyEvent)은 모든 이벤트가 대상이다.
+      else if (spec.anyEvent !== true && !targets.has(was.id) && (!isDeepStrictEqual(was.pages, now.pages) || was.name !== now.name)) sideEdits.push(`${label} 내용 바뀜`);
     }
   }
   if ((before.meta?.title ?? '') !== (after.meta?.title ?? '') && !allow.title) damage.push(`게임 제목 「${before.meta?.title}」 → 「${after.meta?.title}」`);
-  if (before.startMapId !== after.startMapId || !isDeepStrictEqual(before.startPos, after.startPos)) damage.push(`시작 위치 ${before.startMapId}(${before.startPos?.x},${before.startPos?.y}) → ${after.startMapId}(${after.startPos?.x},${after.startPos?.y})`);
+  if (!allow.startPos && (before.startMapId !== after.startMapId || !isDeepStrictEqual(before.startPos, after.startPos))) damage.push(`시작 위치 ${before.startMapId}(${before.startPos?.x},${before.startPos?.y}) → ${after.startMapId}(${after.startPos?.x},${after.startPos?.y})`);
   // 새로 생긴 이벤트 수(요청이 만든 것 포함)와 맵 밖 변경.
   const fresh = newEvents(before, after).length;
   // 두 맵을 잇는 일은 이동 이벤트 한 쌍이 정상이다.
   if (fresh > (kind === 'transferLink' ? 2 : 1)) sideEdits.push(`새 이벤트 ${fresh}개`);
-  sideEdits.push(...projectSideEdits(before, after, EXPECTED_SIDE[kind]));
+  sideEdits.push(...projectSideEdits(before, after, expectedSide(spec)));
   return { damage, sideEdits };
 }
 
 export function runCheck(spec: CheckSpec, allow: Allow | undefined, before: Project, after: Project): Verdict {
-  const kind = KINDS[spec.kind];
+  const kind = ALL_KINDS[spec.kind];
   if (!kind) throw Error(`없는 판정 종류: ${spec.kind}`);
   let outcome: Result;
   try { outcome = kind(spec, before as unknown as Doc, after as unknown as Doc); }
   catch (error) { outcome = no(`판정 실행 오류: ${error instanceof Error ? error.message : String(error)}`); }
   const targets = new Set([spec.eventId, ...(spec.eventIds ?? [])].filter((id): id is string => !!id));
-  const { damage, sideEdits } = damageOf(before as unknown as Doc, after as unknown as Doc, allow ?? {}, spec.kind, targets);
+  const { damage, sideEdits } = damageOf(before as unknown as Doc, after as unknown as Doc, allow ?? {}, spec, targets);
   const pass = outcome.ok && damage.length === 0;
   const reason = pass ? outcome.note : !outcome.ok ? outcome.note : `요청한 결과는 있다(${outcome.note}) — 그런데 ${damage.join(' · ')}`;
   return { pass, reason: !outcome.ok && damage.length ? `${reason} · 게다가 ${damage.join(' · ')}` : reason, outcome, damage, sideEdits };

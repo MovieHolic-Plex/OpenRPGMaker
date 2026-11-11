@@ -10,10 +10,10 @@ const flag = (name: string): boolean => process.argv.includes(`--${name}`);
 
 if (mode === 'selfcheck') {
   const { runSmallJobsSelfcheck } = await import('./smallJobs/selfcheck');
-  process.exitCode = await runSmallJobsSelfcheck(option('out') ? resolve(option('out')!) : undefined, option('only'));
+  process.exitCode = await runSmallJobsSelfcheck(option('out') ? resolve(option('out')!) : undefined, option('only'), option('set'));
 } else if (mode === 'run') {
   const { runSmallJobs } = await import('./smallJobs/run');
-  process.exitCode = await runSmallJobs({ out: option('out'), model: option('model'), only: option('only'), v2: flag('v2'), parallel: option('parallel'), timeoutMin: option('timeout-min'), skipCompleted: flag('skip-completed') });
+  process.exitCode = await runSmallJobs({ out: option('out'), model: option('model'), only: option('only'), set: option('set'), v2: flag('v2'), parallel: option('parallel'), timeoutMin: option('timeout-min'), skipCompleted: flag('skip-completed') });
 } else if (mode === 'report') {
   const { writeSmallJobsReport } = await import('./smallJobs/report');
   process.exitCode = writeSmallJobsReport({ run: option('run'), html: option('html'), before: option('before') });
