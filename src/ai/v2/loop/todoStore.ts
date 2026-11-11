@@ -2,7 +2,7 @@
 // 순수 상태만 갖는다: 항목·상태 전이·막힘 연쇄·직렬화·사람이 읽는 체크리스트. 기계 확인(runTodoCheck)은 부르는 쪽(todoVerb·runtime)이 한다.
 // 계약: 진행 중(in_progress)은 하나. 끝(completed)은 기계 확인이 통과해야 붙는다(부르는 쪽이 확인 결과를 넘긴다).
 // 출처(source): model = 조수가 적은 항목, gate = 끝맺음 관문(기계 검사·게임 검사·출하 차단), critic = 독립 비평가·검토자, vqa = 화면 검수.
-import type { CheckResult, TodoCheck, TodoItem, TodoStatus } from "../todo/types";
+import { modelText, type CheckResult, type TodoCheck, type TodoItem, type TodoStatus } from "../todo/types";
 import { refsLabel, type ProjectIndex } from "./refs";
 
 type TodoSource = TodoItem["source"];
@@ -61,6 +61,8 @@ export interface TodoInput {
   readonly check?: TodoCheck;
   readonly dependsOn?: readonly string[];
   readonly severity?: "polish";
+  /** 모델이 받는 영어 글(관문 항목). */
+  readonly en?: string;
 }
 export interface TodoPhaseInput { readonly phase: string; readonly items: readonly TodoInput[] }
 
@@ -73,6 +75,10 @@ export const isOpen = (status: TodoStatus): boolean => status === "pending" || s
 const MARK: Record<TodoStatus, string> = { pending: "○", in_progress: "→", completed: "✓", blocked: "✗막힘", dropped: "–뺌" };
 const MARK_EN: Record<TodoStatus, string> = { pending: "○", in_progress: "→", completed: "✓", blocked: "✗blocked", dropped: "–dropped" };
 const clip = (text: string, max: number) => (text.length > max ? `${text.slice(0, max)}…` : text);
+/** 함수가 덧붙이는 묶음 이름의 영어(모델용 보기) — 조수가 지은 묶음 이름은 쓴 그대로 둔다. */
+const PHASE_EN: Readonly<Record<string, string>> = { "함수 검사": "function checks", "비평": "critique", "요청 뼈대": "request skeleton" };
+/** 관문 항목의 영어 글 상한 — 표의 글(가장 긴 것 450자) + 대상이 잘리지 않을 만큼. 영어는 같은 뜻에 글자가 더 들지만 토큰은 덜 든다. */
+const EN_MAX = 640;
 const norm = (text: string) => text.toLowerCase().replace(/\s+/gu, " ").trim();
 
 /** 확인 종류 한 줄. en 이면 모델용 영어(이름·대사 낱말은 그대로). */
@@ -198,7 +204,8 @@ export class TodoStore {
     const item: TodoItem = { id, phase: clip(phase.trim() || "할 일", 40), content: clip(input.content.trim(), 220), status: "pending", attempts: 0, source,
       ...(input.check ? { check: input.check } : {}),
       ...(input.dependsOn?.length ? { dependsOn: [...input.dependsOn] } : {}),
-      ...(input.severity ? { severity: input.severity } : {}) };
+      ...(input.severity ? { severity: input.severity } : {}),
+      ...(input.en?.trim() ? { en: clip(input.en.trim(), EN_MAX) } : {}) };
     this.items.push(item);
     if (key) this.metaOf(id).key = key;
     return item;
@@ -239,7 +246,7 @@ export class TodoStore {
         // 막힘(이유를 적고 닫음)·뺌은 다시 열지 않는다 — 같은 문제가 남는 것이 당연하다(남은 문제로 보고된다).
         if (same.status === "completed") { same.attempts += 1; same.status = "pending"; delete this.metaOf(same.id).closedBy; opened.push(same); }
         // 같은 열쇠(맵마다 하나인 장소 고치기)라도 문제 글은 바뀐다 — 지금 글로 바꿔 둔다. 화면 검수 항목은 열쇠가 결함 하나라 글을 바꾸지 않는다.
-        if (isOpen(same.status) && source !== "vqa") same.content = clip(input.content.trim(), 220);
+        if (isOpen(same.status) && source !== "vqa") { same.content = clip(input.content.trim(), 220); if (input.en?.trim()) same.en = clip(input.en.trim(), EN_MAX); else delete same.en; }
         continue;
       }
       const item = this.add(phase, input, source, input.key);
@@ -382,7 +389,7 @@ export class TodoStore {
   }
 
   /**
-   * 모델이 받는 같은 체크리스트(영어). 항목 내용·막힘 이유는 쓴 글 그대로다(조수·사용자·검수가 쓴 글이라 옮기지 않는다).
+   * 모델이 받는 같은 체크리스트(영어). 항목 내용·막힘 이유는 쓴 글 그대로다(조수·사용자·검수가 쓴 글이라 옮기지 않는다) — 관문 항목만 영어 글(en)이 따로 있다.
    * 판정 글은 영어판(lastCheck.en)이 있으면 그것.
    */
   viewEn(maxItems = 40): string {
@@ -391,13 +398,13 @@ export class TodoStore {
     const lines = [`Todo ${c.done}/${c.total} done · ${c.open} open${c.blocked ? ` · ${c.blocked} blocked` : ""}${c.dropped ? ` · ${c.dropped} dropped` : ""}`];
     let phase = "";
     for (const item of this.items.slice(0, maxItems)) {
-      if (item.phase !== phase) { phase = item.phase; lines.push(`[${phase}]`); }
+      if (item.phase !== phase) { phase = item.phase; lines.push(`[${PHASE_EN[phase] ?? phase}]`); }
       const m = this.meta.get(item.id);
       const check = item.check && item.check.kind !== "none" ? ` · check: ${checkLabel(item.check, true)}${m?.lastCheck ? (m.lastCheck.pass ? " ✓" : ` ✗ ${clip(m.lastCheck.en ?? m.lastCheck.detail, 90)}`) : ""}` : "";
       const why = item.blockedReason ? ` — ${item.blockedReason}` : "";
       const bound = refsLabel(item.refs, true);
       const src = item.source === "model" ? "" : ` (${item.source === "gate" ? "function check" : item.source === "critic" ? "critic" : "screen review"})`;
-      lines.push(` ${MARK_EN[item.status]} ${item.id} ${item.content}${src}${check}${bound ? ` · ${bound}` : ""}${item.attempts ? ` · attempts ${item.attempts}` : ""}${why}`);
+      lines.push(` ${MARK_EN[item.status]} ${item.id} ${modelText(item)}${src}${check}${bound ? ` · ${bound}` : ""}${item.attempts ? ` · attempts ${item.attempts}` : ""}${why}`);
     }
     if (this.items.length > maxItems) lines.push(` …${this.items.length - maxItems} more items`);
     return lines.join("\n");

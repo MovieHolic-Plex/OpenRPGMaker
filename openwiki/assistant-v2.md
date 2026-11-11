@@ -491,6 +491,30 @@ golden: 123/153 이 `furnish_outdoor_area` 글/스키마만 바뀜(실리고 빠
 
 **증거.** golden 같다(153). turnTrace: 다섯 장면 가운데 whole-game · continue · continue-short 의 마지막 `todo` 줄 안 `meta.*.key` 만 바뀐다(8 · 9 · 9개, 예 `game:[게임 검사 실행] 이 요청으로…` → `game:실행`). 시험 `test/aiV2FindingKeys.test.ts`(열쇠 · 겹칠 때 가르기 · 글이 바뀌어도 같은 항목과 시도 수 · 옛 열쇠 옮기기 · 시작 저장본 대조는 글까지).
 
+
+## 관문 글은 모델에게 영어로 — 보고는 한국어 그대로 (2026-11-11, 리팩토링 F4)
+
+**무엇이 문제였나.** 끝맺음 관문 항목의 글은 한국어 줄이었고 할 일 항목은 220자에서 잘린다 — 긴 줄은 «무엇이 틀렸나» 만 남고 고치는 호출이 잘려 나갔다(«… 맵은 100칸 이상(실내는 10×10 이상)·타일 6종 이상·다른 맵과 다른…»).
+제작 메모가 섞인 줄도 그대로 모델에게 갔다(«… 2026-10-29 3c Argon 이 r»). 값싼 모델은 한국어 피드백을 덜 따른다(「모델에게 가는 글은 영어」 2026-10-30).
+
+**규칙.**
+
+- 영어 글은 `judge/findingEn.ts` 한 곳에 있다 — 규칙(·갈래)마다 한 줄, 151개(게임 검사 82 · 출하 차단 68 · 자동 플레이 1). 꼴: `[<묶음> <영어 이름>] 무엇이 틀렸나. Refs: <대상>. 고치는 호출.`
+  글은 ASCII 만 쓴다. 고치는 호출은 한국어 줄이 이르는 그 도구 그대로다.
+- **이름 대신 대상.** 한국어 줄 속 이름(「촌장」 · 「잿불 마을」)은 싣지 않고 id·좌표를 싣는다(`Refs: map_grave ev_stone (4,7).`): `Finding.target`, 그다음 줄과 증거 속의 프로젝트 id(`map_…` `ev_…` `sw_…` `actor_…` …)와 `(x,y)`, 최대 6개.
+  증거가 ASCII 면 통째로 싣는다(`counted=0 need=6 uncounted=1` — 수가 뜻이다). 표의 글에 이미 든 예시 id(`state_poison`)는 되풀이하지 않는다. 대상은 첫 문장 바로 뒤에 온다 — 항목 글을 앞에서 잘라 보이는 자리(Do now 120자 · Still open 50자)에서도 문제가 먼저 읽힌다.
+- 한 규칙이 여러 검사를 묶은 것(`romance-gap`)은 표가 고치는 도구를 알 수 없다 — 한국어 줄이 이르는 도구 이름을 그대로 싣는다(`Fix that part with set_title_screen.`).
+  출하 차단의 갈래는 증거 머리에서 읽는다(`requested-feature-missing` = 「chaser: …」 · `bundled-picture` = 「titleScreen.…」/「endings[…]…」).
+- **흐름.** `finishGate.gateProblems` 가 `V2GateProblem.en = findingEn(finding)` → `gates.syncGateItems` 가 `TodoItem.en` 으로(글이 바뀌면 같이 바뀌고, 영어 글이 없어지면 지운다) → 모델에게 보이는 자리는 `modelText(item) = item.en ?? item.content`:
+  재주입 글(`loop/continuation`) · `todo` 도구의 답(`loop/todoTools`) · 상태 카드의 Do now/Still open(`turn/modelHooks`) · 영어 체크리스트(`todoStore.viewEn`). 함수가 붙이는 묶음 이름도 영어다(`[function checks]` · `[critique]` · `[request skeleton]`).
+- **한국어 그대로인 것.** 항목의 `content`(보고 표 · 화면의 할 일 · `execution_status` · 저장된 `assistantTodo`)와 한국어 체크리스트(`view`). 항목 글에서 맵 id·도구 이름을 읽는 코드(`loop/nextCall` · `turn/carryOver` · `gates.namedTools`)도 `content` 를 읽는다 — 영어 글은 판정에 쓰지 않는다.
+- 표에 없는 규칙은 `en` 이 없고 한국어 줄이 전과 같이 간다. **새 검사를 더하면 표에 한 줄을 더한다** — 탐침이 소스의 `tagged("game"|"ship", …)` · 출하 차단 id 144곳을 훑어 표에 없는 규칙을 센다(지금 0), 시험은 표의 모든 글이 ASCII 인지 본다.
+- **아직 한국어로 가는 관문 글**(이 조각 밖): 장소 고치기 묶음(`place:<mapId>` — 기계 검사·비평 글을 이어 붙인 줄) · 칸 배치 문제(`placeLayoutProblems`) · 요청 뼈대 항목 · 화면 검수·검토자 항목(F5). 장면 손질 줄(`[scene …]`)은 처음부터 영어다(인용한 대사만 한국어).
+
+**증거.** golden 같다(153) · 판정 줄 덤프(3,066칸 · 1,264줄) 다른 칸 0 — 한국어 줄은 그대로다. 말뭉치 관문 문제 1,405건 모두 영어 글이 있고 ASCII 밖 글자 0, 가장 긴 것 526자(표 글 길이 중앙 251 · 최대 456).
+turnTrace(5개 장면 · 376줄)는 79줄이 바뀐다: 모델에게 가는 줄(재주입 · 상태 카드 · `todo` 답)의 관문 항목 글이 영어가 되고 묶음 이름이 `[function checks]` 가 된 것 55줄, 그 글이 든 data 의 해시만 바뀐 상태 줄 21줄, 마지막 `todo` 줄 3줄(항목 8 · 9 · 9개에 `en` 칸이 더해지고 그 밖은 같다). small-write · question 장면은 같다.
+시험 `test/aiV2FindingEn.test.ts`. **재지 않은 것:** 실제 모델이 영어 글을 더 잘 따르는지 — 리드가 Terra 로 잰다(작은 일 30가지).
+
 ## 작은 요청의 끝맺음 — 게임을 짓는 턴에만 청사진 끝맺음을 돈다 (2026-11-11, 작은 일 기준선)
 
 **무엇이 문제였나.** 청사진이 있는 프로젝트에서는 요청이 무엇이든 턴마다 청사진 끝맺음 묶음(경로·장소 자동 짓기, 출구·이동 칸 마감 `lanes`,

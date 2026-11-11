@@ -8,6 +8,7 @@ import { requestSkeleton, skeletonCard } from "../loop/requestSkeleton";
 import { checkLabel } from "../loop/todoStore";
 import { leadPlanMessages, planForWorker, projectDigest, toolCatalog } from "./split";
 import type { TurnContext } from "./context";
+import { modelText } from "../todo/types";
 
 /** runPiAgent 의 v2 갈고리 가운데 모델 호출 앞뒤의 것 다섯. */
 export function turnModelHooks(turn: TurnContext) {
@@ -35,11 +36,11 @@ export function turnModelHooks(turn: TurnContext) {
       const m = store.meta.get(cur.id);
       let call = m?.nextCall?.text;
       if (!call) { try { const nc = nextForItem(cur, env.ctx.project, toolNames); call = nc ? formatCall(nc) : undefined; } catch { call = undefined; } }
-      lines.push(`Do now: ${cur.id} «${cur.content.slice(0, 120)}»${cur.check && cur.check.kind !== "none" ? ` (check: ${checkLabel(cur.check, true)})` : ""}`);
+      lines.push(`Do now: ${cur.id} «${modelText(cur).slice(0, 120)}»${cur.check && cur.check.kind !== "none" ? ` (check: ${checkLabel(cur.check, true)})` : ""}`);
       if (call) lines.push(`Next call: ${call.slice(0, 400)}`);
       if (m?.lastCheck && !m.lastCheck.pass) lines.push(`Last check ✗: ${(m.lastCheck.en ?? m.lastCheck.detail).slice(0, 240)}`);
     }
-    const rest = store.open().filter((i) => i !== cur).slice(0, 6).map((i) => `${i.id} «${i.content.slice(0, 50)}»`);
+    const rest = store.open().filter((i) => i !== cur).slice(0, 6).map((i) => `${i.id} «${modelText(i).slice(0, 50)}»`);
     if (rest.length) lines.push(`Still open: ${rest.join(" · ")}${store.openCount() - 1 > rest.length ? " …" : ""}`);
     return lines.join("\n");
   };

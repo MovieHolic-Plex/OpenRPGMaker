@@ -18,6 +18,7 @@ import { placeFixVerbs } from "./placeFix";
 import { V2_MAX_REPAIR_ROUNDS } from "../turn/session";
 import { stageOpensBattle } from "../story/stageBattle";
 import { findingKey, findingLine, tagged, type Finding } from "./finding";
+import { findingEn } from "./findingEn";
 
 /** 음악 요청의 일감인 게임 검사 — 나머지(이미 있던 위협·출하 차단 등)는 음악만 바라는 요청에서 참고다. */
 const MUSIC_WORK: ReadonlySet<string> = new Set(["음악", "효과음", "실행", "부작용"]);
@@ -26,8 +27,9 @@ const isMusicWork = (f: Finding) => f.judge === "game" && MUSIC_WORK.has(f.id);
 /**
  * 끝맺음 관문이 짚은 문제 하나 — 할 일 고리(src/ai/v2/loop)가 gate·critic 항목으로 덧붙인다. key 가 같으면 같은 문제다.
  * finding = 판정이 낸 문제(장소 고치기 묶음에는 없다). textKey = 글로 만든 열쇠(2026-11-11 전의 열쇠) — 시작 저장본 대조와 저장된 할 일의 옛 열쇠 옮기기에 쓴다.
+ * en = 모델이 받는 영어 글(judge/findingEn.ts 표에 있는 규칙만) — text(한국어)는 보고·장부·화면에 그대로 실린다.
  */
-export interface V2GateProblem { readonly key: string; readonly text: string; readonly source: "gate" | "critic"; readonly finding?: Finding; readonly textKey?: string }
+export interface V2GateProblem { readonly key: string; readonly text: string; readonly source: "gate" | "critic"; readonly finding?: Finding; readonly textKey?: string; readonly en?: string }
 
 const gateKey = (text: string): string => text.replace(/\d+/gu, "#").replace(/\s+/gu, " ").trim().slice(0, 160);
 const textKey = (f: Finding): string => (f.judge === "play" ? `${AUTOPLAY_GATE_PREFIX}${f.target?.ref ?? ""}` : `game:${gateKey(findingLine(f))}`);
@@ -36,10 +38,13 @@ const textKey = (f: Finding): string => (f.judge === "play" ? `${AUTOPLAY_GATE_P
 export function gateProblems(findings: readonly Finding[]): V2GateProblem[] {
   const count = new Map<string, number>();
   for (const f of findings) count.set(findingKey(f), (count.get(findingKey(f)) ?? 0) + 1);
-  return findings.map((f) => ({
-    key: count.get(findingKey(f))! > 1 ? `${findingKey(f)}:${gateKey(findingLine(f))}` : findingKey(f),
-    text: findingLine(f), source: "gate" as const, finding: f, textKey: textKey(f),
-  }));
+  return findings.map((f) => {
+    const en = findingEn(f);
+    return {
+      key: count.get(findingKey(f))! > 1 ? `${findingKey(f)}:${gateKey(findingLine(f))}` : findingKey(f),
+      text: findingLine(f), source: "gate" as const, finding: f, textKey: textKey(f), ...(en ? { en } : {}),
+    };
+  });
 }
 
 /**
