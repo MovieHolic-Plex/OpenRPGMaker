@@ -1008,6 +1008,8 @@ export type ConditionEvalContext = {
   readonly eventPosition?: ActorQueryOptions["eventPosition"];
   /** 시선을 막는 칸(eventSeesPlayer). 호출측이 sightBlockers.cachedSightBlocker 로 만든다. */
   readonly blocksSight?: ActorQueryOptions["blocksSight"];
+  /** 현재 맵의 이벤트(eventSeesPlayer watchers·doorsBlock). */
+  readonly mapEvents?: ActorQueryOptions["mapEvents"];
 };
 
 /** insideLocation 의 주체: eventId 가 있으면 그 이벤트(실시간 칸 → 같은 맵 eventLocations), 없으면 주인공. */
@@ -1100,7 +1102,7 @@ export function evalCondition(
     case "newGamePlus":
     case "weekday":
     case "stringVariable":
-      return evalActorQueryCondition(session, condition, { eventId, ...context?.host }, { ...context?.calendar, ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}), ...(context?.badgeSwitchIds ? { badgeSwitchIds: context.badgeSwitchIds } : {}), ...(context?.eventPosition ? { eventPosition: context.eventPosition } : {}), ...(context?.blocksSight ? { blocksSight: context.blocksSight } : {}), locations: () => context?.map?.locations });
+      return evalActorQueryCondition(session, condition, { eventId, ...context?.host }, { ...context?.calendar, ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}), ...(context?.badgeSwitchIds ? { badgeSwitchIds: context.badgeSwitchIds } : {}), ...(context?.eventPosition ? { eventPosition: context.eventPosition } : {}), ...(context?.blocksSight ? { blocksSight: context.blocksSight } : {}), ...(context?.mapEvents ? { mapEvents: context.mapEvents } : {}), ambient: () => session.lighting?.ambient, locations: () => context?.map?.locations });
     case "run":
       return evalRoguelikeRunCondition(session, condition);
     case "difficulty":

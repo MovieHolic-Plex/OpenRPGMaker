@@ -38,6 +38,32 @@ export interface EventSightSpec {
   readonly sameRoom?: boolean;
   /** 소리로 알아차리는 거리(칸, 벽 하나당 +WALL_HEARING_PENALTY). 0·생략 = 듣지 않는다. */
   readonly hearRange?: number;
+  /**
+   * 어둠·밤에 시야를 줄인다. 생략 = 언제나 range(예전 동작).
+   * night: 게임 시계가 밤일 때의 거리. dark: 조명 어둠(ambient)이 darkAmbient(기본 0.6) 이상일 때의 거리.
+   * 둘 다 맞으면 작은 쪽. 듣기(hearRange)는 줄지 않는다 — 어두워도 소리는 들린다.
+   */
+  readonly darkness?: { readonly night?: number; readonly dark?: number; readonly darkAmbient?: number };
+}
+
+/** 시야를 줄이는 지금의 빛 조건. 호출측이 세션 시계·조명으로 넘긴다. */
+export interface SightLight {
+  readonly night?: boolean;
+  /** 조명 어둠 0..1(세션 lighting.ambient). */
+  readonly ambient?: number;
+}
+
+export const DEFAULT_DARK_AMBIENT = 0.6;
+
+/** 빛 조건을 반영한 시야 거리. darkness 가 없으면 range 그대로. */
+export function effectiveSightRange(spec: EventSightSpec, light: SightLight | undefined): number {
+  const range = Math.max(0, spec.range ?? DEFAULT_SIGHT_RANGE);
+  const dark = spec.darkness;
+  if (!dark || !light) return range;
+  let out = range;
+  if (light.night && dark.night !== undefined) out = Math.min(out, Math.max(0, dark.night));
+  if (dark.dark !== undefined && (light.ambient ?? 0) >= (dark.darkAmbient ?? DEFAULT_DARK_AMBIENT)) out = Math.min(out, Math.max(0, dark.dark));
+  return out;
 }
 
 /** 칸 (x,y) 가 시선을 막는가(벽·방 사이 막힌 칸). 맵 밖은 호출측이 참으로 답한다. */
@@ -130,8 +156,9 @@ export function eventSightOnly(
   spec: EventSightSpec,
   locations: readonly SightLocation[] | undefined,
   blocks?: SightBlocker,
+  light?: SightLight,
 ): boolean {
-  const range = Math.max(0, spec.range ?? DEFAULT_SIGHT_RANGE);
+  const range = effectiveSightRange(spec, light);
   const distance = Math.max(Math.abs(eventPoint.x - player.x), Math.abs(eventPoint.y - player.y));
   if (distance > range) return false;
   if (spec.sameRoom !== false) {
@@ -154,9 +181,10 @@ export function eventSeesPlayer(
   spec: EventSightSpec,
   locations: readonly SightLocation[] | undefined,
   blocks?: SightBlocker,
+  light?: SightLight,
 ): boolean {
   if (!eventPoint) return false;
-  if (eventSightOnly(eventPoint, player, spec, locations, blocks)) return true;
+  if (eventSightOnly(eventPoint, player, spec, locations, blocks, light)) return true;
   const hear = Math.max(0, spec.hearRange ?? 0);
   return hear > 0 && hearingDistance(eventPoint, player, blocks) <= hear;
 }
