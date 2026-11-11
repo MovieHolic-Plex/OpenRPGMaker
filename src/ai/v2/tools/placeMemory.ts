@@ -112,6 +112,22 @@ export function notRelaidRefusal(project: Project, mapId: string, builderId: str
   return `${head}${round}To add or move single things on the standing map — Next call: inspect({"mapId":"${mapId}"}) — it shows what stands on this map; then one verb per thing (a drawn object: place_object, bare outdoor ground: furnish_outdoor_area, a person or event: add_people or move_event, a door or exit: create_transfer_pair).`;
 }
 
+/**
+ * 구성기가 한 번에 깐 장소를 edit_place 로 다시 깔라는 호출의 거절 글 — 되는 도구를 늘어놓으면 다음 호출 갈고리가 그중 한 동사의 빈 뼈대를 준다.
+ * 다음 호출 하나: 지금 항목이 빌더가 덮은 방 검사면 todo done, 물건 고침이면 draw_object, 아니면 inspect.
+ */
+export function composedRefusal(project: Project, mapId: string, asked: { layout: boolean; anchor?: { what: string; near?: { x: number; y: number } }; coveredItem?: string }): string {
+  const head = `${mapLine(project, mapId)} was laid by its composer in one pass and is not re-laid — nothing was changed. `
+    + (asked.layout ? "A cell layout cannot be applied to it: the composer's chipset has its own rooms, and the layout, self-review and room-graph checks for this map are covered by the builder. " : "");
+  if (asked.coveredItem) return `${head}Next call: todo({"op":"done","task":${JSON.stringify(asked.coveredItem)}}) — its machine check passes as covered by the builder.`;
+  const a = asked.anchor;
+  if (a) {
+    const at = a.near ? `,"at":{"x":${a.near.x},"y":${a.near.y}}` : "";
+    return `${head}To put «${a.what}» on the standing map — Next call: draw_object({"object":{"what":${JSON.stringify(a.what)},"mapId":"${mapId}"${at}}}) — if the chipset already has an object with that name its reply gives the id to place; otherwise the workshop draws it.`;
+  }
+  return `${head}Next call: inspect({"mapId":"${mapId}"}) — it shows what stands on this map; then change one thing at a time with the verb for it (a drawn object: place_object, bare outdoor ground: furnish_outdoor_area, a person or event: add_people or move_event).`;
+}
+
 /** 할 일 항목의 장소 종류 → make_place 의 type(들판·거리는 바깥 장소다). */
 const MAKE_TYPE: Readonly<Record<string, string>> = { village: "village", field: "village", street: "street", dungeon: "dungeon", cave: "cave", interior: "interior" };
 

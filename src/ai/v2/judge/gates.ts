@@ -32,7 +32,11 @@ function namedTools(text: string): string[] {
   return [...new Set([...text.matchAll(/\b([a-z][a-z0-9]*(?:_[a-z0-9]+)+)\s*[{(]/gu)].map((m) => m[1]!).filter((n) => !/^(?:sw|var|ev|map|item|troop|enemy|actor|skill|state|class|armor|weapon|chest|npc|tex)_/u.test(n)))];
 }
 
-export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem[], capMapIds: ReadonlySet<string>, available?: ReadonlySet<string>): { opened: TodoItem[]; closed: TodoItem[]; capped: TodoItem[] } {
+/**
+ * addTool = 이 요청의 묶음에 없는 도구 하나를 이번 턴에 싣는다(실었으면 true, 조수 v2 에 없는 이름이면 false).
+ * loaded = 고치기 차례를 위해 실은 도구 이름, unfixable = 고치는 도구가 v2 에 없어 뺀 항목(완료를 막지 않는다 — 최종 보고에 적는다).
+ */
+export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem[], capMapIds: ReadonlySet<string>, available?: ReadonlySet<string>, addTool?: (name: string) => boolean): { opened: TodoItem[]; closed: TodoItem[]; capped: TodoItem[]; loaded: string[]; unfixable: TodoItem[] } {
   // 2026-11-11 전에 저장된 할 일은 글로 만든 열쇠를 들고 있다 — 같은 문제가 지금도 있으면 지금 열쇠로 옮긴다(막힌 채 이어 받은 항목이 새 항목으로 다시 열리지 않게).
   for (const p of problems) {
     const old = p.textKey && p.textKey !== p.key ? store.byKey(p.textKey) : undefined;
@@ -49,7 +53,7 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
     if (item.status === "blocked" && store.meta.get(item.id)?.restored) { store.drop(item, `앞 턴에서 막힘(${item.blockedReason ?? "이유 없음"}) — 이번 턴 함수 검사에는 나오지 않는다(기존 결함)`, "auto"); closed.push(item); continue; }
     if (!isOpen(item.status) && !(item.status === "completed" && store.meta.get(item.id)?.closedBy === "model")) continue;
     const mapId = key.startsWith("place:") ? key.slice(6, key.indexOf(":", 6)) : "";
-    if (mapId && capMapIds.has(mapId)) store.block(item, "장소 고치기 상한(1바퀴)에 닿음 — 남은 문제로 보고", "auto");
+    if (mapId && capMapIds.has(mapId)) store.block(item, "장소 고치기 상한에 닿음 — 남은 문제로 보고", "auto");
     else store.done(item, { pass: true, detail: "함수 검사에서 사라짐" }, "auto");
     closed.push(item);
   }
@@ -58,6 +62,20 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
     ...store.append("비평", problems.filter((p) => p.source === "critic").map((p) => ({ content: p.text, key: p.key })), "critic"),
   ];
   const capped = capReopened(store, opened, "같은 문제");
+  // 고치는 법으로 이른 도구가 이 요청의 묶음에 없으면 고치기 차례에 싣는다 — «도구가 없다» 막힘에 완료가 걸리지 않게. 조수 v2 에 없는 이름일 때만 뺀 채 보고한다.
+  const loaded: string[] = [];
+  const unfixable: TodoItem[] = [];
+  if (available) for (const item of opened) {
+    if (!isOpen(item.status)) continue;
+    const full = problems.find((p) => p.key === keyOf(store, item))?.text ?? item.content;
+    const missing = namedTools(full).filter((t) => !available.has(t));
+    if (!missing.length) continue;
+    const added = addTool ? missing.filter((t) => addTool(t)) : [];
+    loaded.push(...added.filter((t) => !loaded.includes(t)));
+    if (added.length || namedTools(full).some((t) => available.has(t))) continue;
+    store.drop(item, `고치는 도구(${missing.join(", ")})가 조수 v2 에 없다 — 이 요청에서 고칠 수 없음`, "auto");
+    unfixable.push(item);
+  }
   // 게임 검사·관문이 «이 호출이면 풀린다» 를 문구 맨 끝에 적었는데 항목 내용은 220자에서 잘린다(todoStore) —
   // 잘리지 않은 문제 글에서 꺼내 항목의 다음 호출(meta.nextCall)로 둔다. 재주입의 «Next call» 이 이 호출 그대로 나간다.
   // 출하 차단 줄은 «[출하 차단 id] 문구 고치지 못하면 …» 로 꼬리 문장이 붙는다(verbs.ts gameProblemTexts) — 호출은 문구 끝이 아니라 중간에 있으므로 끝 고정 없이 첫 «})» 까지 읽는다(JSON 안에는 «})» 가 없다).
@@ -71,15 +89,7 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
       if (args && typeof args === "object" && !Array.isArray(args)) store.meta.set(item.id, { ...(store.meta.get(item.id) ?? {}), nextCall: { verb: call[1]!, text: `${call[1]}(${call[2]})` } });
     } catch { /* 뼈대로 */ }
   }
-  // 고치는 법으로 이른 도구가 이 실행에 하나도 없으면 조수가 할 수 없다 — 돌리지 않고 막힘으로 닫는다(남은 문제로 보고된다).
-  // 2026-10-30 omo-loop-1030 ending: «configure_field_menu 로 ESC 메뉴를 기본으로» 항목을 도구 없이 세 번 돌았다.
-  if (available) for (const item of opened) {
-    if (!isOpen(item.status)) continue;
-    const full = problems.find((p) => p.key === keyOf(store, item))?.text ?? item.content;
-    const tools = namedTools(full);
-    if (tools.length && !tools.some((t) => available.has(t))) { store.block(item, `고치는 도구(${tools.join(", ")})가 이 실행의 도구 목록에 없다 — 남은 문제`, "auto"); capped.push(item); }
-  }
-  return { opened: opened.filter((i) => !capped.includes(i)), closed, capped };
+  return { opened: opened.filter((i) => !capped.includes(i) && !unfixable.includes(i)), closed, capped, loaded, unfixable };
 }
 
 /**

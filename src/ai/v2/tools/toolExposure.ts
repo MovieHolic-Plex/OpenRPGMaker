@@ -133,8 +133,8 @@ function collapseRepeats(tool: PiToolShape, seen: ShapeIndex, register = true): 
 export interface V2ToolExposure {
   /** 처음부터 싣는 도구(load_tools 포함). */
   readonly tools: PiToolShape[];
-  /** 필요할 때 싣는 도구(영어 사본·같은 모양 걷기를 마친 것) — 이름 → 도구. */
-  readonly lazy: ReadonlyMap<string, PiToolShape>;
+  /** 필요할 때 싣는 도구(영어 사본·같은 모양 걷기를 마친 것) — 이름 → 도구. 끝맺음 관문이 턴 중간에 싣는 도구도 여기에 더한다(이름 호출·load_tools 가 같은 표를 읽는다). */
+  readonly lazy: Map<string, PiToolShape>;
   /** 이 요청 묶음에 들었지만 처음부터 싣지 않은 이름(load_tools 설명의 앞쪽 목록). */
   readonly offered: readonly string[];
 }
