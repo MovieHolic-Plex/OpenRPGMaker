@@ -118,8 +118,8 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   },
   set_start_position: { d: "Set the game's start map and cell. Fails on an unwalkable cell." },
   set_field_hud: {
-    d: "Pick or turn off the always-on exploration HUD for this genre (never leave the editor default). theme: collector, classic (JRPG), horror (petal life), chase (no HUD), hearts (adventure), minimal, farm, survival, adventure, party. off:true = no HUD (most story, mystery, romance games).",
-    p: { theme: "HUD look: horror=horror, chase/story=chase, farm=farm, adventure=hearts, classic JRPG=classic, party RPG=party.", off: "true = hide the whole HUD.", vitals: "HP display.", clock: "Calendar/clock.", tools: "Tool slots.", objective: "Objective line." },
+    d: "Pick or turn off what is always drawn over the field. Pick by what the theme DRAWS, not by its name; the result's onScreen lists what the player will see, and gauges this game never changes are left out (unused). off:true = nothing but the objective line (most story, mystery, romance games). If you do not call this, the finish step picks one from what the game uses.",
+    p: { theme: "What is drawn on the field: classic = nothing (stats live in the menu) — turn-based JRPG; hearts = HP hearts + gold; horror = petal life; chase = nothing; party = party panel; collector = area name; minimal = small hearts + clock; farm = clock, gold, energy, tools; survival = tools, food, HP, stamina; adventure = HP and MP bars + 5 tool slots + stamina ring — real-time action combat only.", off: "true = hide the whole HUD (objective line stays).", vitals: "Body gauges: HP, MP, stamina, energy — false hides all of them.", clock: "Calendar/clock.", tools: "Tool slots.", objective: "Objective line." },
   },
   simulate_battle: {
     d: "Simulate a battle N times headlessly; returns win rate, average turns, potions used and remaining HP (seed = repeatable).",
