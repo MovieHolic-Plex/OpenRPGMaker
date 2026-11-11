@@ -1138,7 +1138,9 @@ function composePyramid(b: Board, rng: () => number): DesertCell {
   b.ground({ x: ax, y: dy + dk.h, w: 2, h: H - dy - dk.h }, "f", "plaza");
   b.zone("참배 길", "포석 길 · 양옆 석상 줄 · 남쪽 탑문", { x: ax - 3, y: dy + dk.h, w: 8, h: H - dy - dk.h });
   const pyl = b.kitSize("de-wall-gate");
-  const pylY = H - 1 - pyl.h;
+  // 목적표 판: 탑문이 맵의 마지막 줄에 선다 — 문 구멍이 곧 나가는 칸이다. 한 줄 띄우면 나가는 칸이 문 그림 밑 맨바닥에 놓여
+  // 새 플레이어가 그림을 누르고 길을 잃는다(출하 검사 entrance-off-art — 은행의 fun-x1·jrpg-w3 에서 4건씩).
+  const pylY = H - (b.budget ? 0 : 1) - pyl.h;
   if (b.free({ x: ax - 1, y: pylY, w: pyl.w, h: pyl.h }, 0, ["open", "plaza"])) {
     b.stamp("de-wall-gate", ax - 1, pylY, "wall");
     b.zone("탑문", "참배 길 남쪽 끝 문", { x: ax - 1, y: pylY, w: pyl.w, h: pyl.h });

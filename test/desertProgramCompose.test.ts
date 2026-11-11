@@ -6,6 +6,7 @@ import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import { buildingEntrances } from "@/ai/v2/place/entrances";
 import { edgeRoadMouths } from "@/ai/v2/place/roadMouths";
 import { DESERT_MIN_SIZE, DESERT_SETTLEMENT, desertProgramSize, type DesertKind } from "@/project/desertEastComposer";
+import { isDoorArtCell } from "@/project/staging/doorCells";
 import { PROGRAM_ROLE_TAG, fillerOf, needTag, placeableRoles, roleTag, type SettlementProgram } from "@/project/settlementProgram";
 
 type Built = { name: string; kit: string; need?: { id: string; role: string } };
@@ -64,6 +65,16 @@ describe("사막 구성기 — 목적표로 짜기", () => {
       for (const m of mouths) expect(m.cells.length, `${kind} ${side}: ${m.side} 입구 폭`).toBeLessThanOrEqual(6);
     }
   }, 180_000);
+
+  it("피라미드의 남쪽 탑문은 맵의 마지막 줄에 서서 문 구멍이 곧 나가는 칸이다(문 그림 밑 맨바닥에 출구가 놓이지 않는다)", () => {
+    // 한 줄 띄워 세우면 남쪽 출구 네 칸이 문 그림 바로 밑 맨바닥에 놓여 출하 검사 entrance-off-art 가 걸렸다(명세 은행 fun-x1·jrpg-w3).
+    for (const seed of [1, 2, 3]) {
+      const built = compose("pyramid", { roles: [{ id: "landmark", role: "tomb" }] }, seed, ["south"]);
+      const south = edgeRoadMouths(built.run.ctx.project, built.map()).filter((m) => m.side === "south");
+      expect(south, `씨앗 ${seed}`).toHaveLength(1);
+      expect(south[0]!.cells.every((c) => isDoorArtCell(built.run.ctx.project, built.map(), c.x, c.y)), `씨앗 ${seed} 남쪽 입구 칸`).toBe(true);
+    }
+  }, 60_000);
 
   it("건물이 늘면 맵이 커지고(둘째 줄), 줄어들면 작아진다", () => {
     const big: SettlementProgram = { roles: [...["가", "나", "다"].map(home), { id: "svc:inn", role: "inn" }, { id: "svc:shop", role: "shop" }, { id: "b", role: "bath" }] };
