@@ -107,11 +107,10 @@ export function toolReportsOfSession(sessionDir: string): ToolReport[] {
 }
 
 // ── 장부 ─────────────────────────────────────────────────────────────────
-export type GapSource = { group: string; label: string; chipset: string; theme: string };
+export type GapSource = { group: string; label: string; chipset: string; theme: string; /** 같은 게임의 실행들을 하나로 세는 열쇠(없으면 묶음 이름). */ run?: string };
 export type GapEntry = { source: 'reviewer' | 'tool' | 'theme'; thing: string; instead: string; unsure?: boolean; namedBy?: string; kind?: string; where: GapSource };
 export type ArtGapRow = { chipset: string; thing: string; maps: number; runs: number; fromReviewer: number; fromTools: number; wrongTheme: number; unsureOnly: boolean; instead: string[]; examples: string[]; names: string[] };
 
-const runOf = (group: string): string => group; // 묶음(A:<실행> · B:<요청>) 하나가 실행 하나다
 /** 장부 줄: (칩셋, 이름)마다 그것을 바란 맵 수·실행 수·대신 쓰인 것. canonical 은 이름 묶기 표(없으면 적힌 이름 그대로). */
 export function buildArtGaps(entries: GapEntry[], canonical: Record<string, string> = {}): ArtGapRow[] {
   const rows = new Map<string, { row: ArtGapRow; maps: Set<string>; runs: Set<string>; instead: Map<string, number>; names: Set<string>; sure: boolean }>();
@@ -119,7 +118,7 @@ export function buildArtGaps(entries: GapEntry[], canonical: Record<string, stri
     const thing = canonical[entry.thing] ?? entry.thing, chipset = entry.where.chipset || '(칩셋 모름)', key = `${chipset}|${thing}`;
     let slot = rows.get(key);
     if (!slot) rows.set(key, slot = { row: { chipset, thing, maps: 0, runs: 0, fromReviewer: 0, fromTools: 0, wrongTheme: 0, unsureOnly: false, instead: [], examples: [], names: [] }, maps: new Set(), runs: new Set(), instead: new Map(), names: new Set(), sure: false });
-    slot.maps.add(entry.where.label); slot.runs.add(runOf(entry.where.group)); slot.names.add(entry.thing);
+    slot.maps.add(entry.where.label); slot.runs.add(entry.where.run ?? entry.where.group); // 묶음(A:<실행> · B:<요청>) 하나가 실행 하나 — 같은 게임의 사본은 run 열쇠로 한 번만 slot.names.add(entry.thing);
     if (entry.source === 'reviewer') slot.row.fromReviewer += 1; else if (entry.source === 'tool') slot.row.fromTools += 1; else slot.row.wrongTheme += 1;
     if (!entry.unsure) slot.sure = true;
     if (entry.instead) slot.instead.set(entry.instead, (slot.instead.get(entry.instead) ?? 0) + 1);

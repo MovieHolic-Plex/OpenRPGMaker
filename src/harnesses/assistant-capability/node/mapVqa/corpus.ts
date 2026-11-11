@@ -22,6 +22,8 @@ export type MapItem = {
   blank?: boolean;
   /** 저장 정본 폴더(project.sqlite 가 있는 곳) — 출하 플레이어로 켤 때 쓴다. 프로젝트 JSON 견본에는 없다. */
   projectDir?: string;
+  /** 같은 게임(같은 요청·같은 제목)을 다시 돌리거나 고쳐 둔 실행 폴더는 한 게임이다 — «몇 실행이 바랐나»를 셀 때 한 번만 센다. */
+  game?: string;
 };
 
 const slug = (text: string): string => text.normalize('NFC').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/gu, '').toLowerCase().slice(0, 40) || 'map';
@@ -36,7 +38,7 @@ function fromWholeGame(dir: string): MapItem[] {
   const run = basename(dir), project = readProjectSqlite(resolve(dir, 'project')) as any;
   addRenderAssetRoot(resolve(dir, 'project/assets'));
   const prompt = (() => { try { return /prompt=(.*?)\s+started=/u.exec(readFileSync(resolve(dir, 'RUN.txt'), 'utf8'))?.[1] ?? ''; } catch { return ''; } })();
-  return Object.values<any>(project.maps).map(map => ({ id: `${slug(run)}--${slug(map.name ?? map.id)}-${String(map.id).slice(-4)}`, group: `A:${run}`, label: `${run} · ${map.name ?? map.id}`, project, mapId: map.id, standalone: !linked(project, map.id), projectDir: resolve(dir, 'project'),
+  return Object.values<any>(project.maps).map(map => ({ id: `${slug(run)}--${slug(map.name ?? map.id)}-${String(map.id).slice(-4)}`, group: `A:${run}`, label: `${run} · ${map.name ?? map.id}`, project, mapId: map.id, standalone: !linked(project, map.id), projectDir: resolve(dir, 'project'), game: `${project.meta?.title ?? ''}|${prompt}`,
     context: `Part of the game «${project.meta?.title ?? ''}» that the assistant built from the request «${prompt}».` }));
 }
 

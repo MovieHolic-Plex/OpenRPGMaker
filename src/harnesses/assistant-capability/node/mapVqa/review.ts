@@ -75,15 +75,15 @@ export async function runMapVqa(options: MapVqaOptions): Promise<number> {
   // 없는 그림 장부: 검수자가 본 것 + 도구가 적은 것 + 다른 주제의 대역.
   let artGaps: any = null;
   if (!options.noArt && !options.noReview) {
-    const entries: GapEntry[] = [], chipsetOf = new Map<string, string>();
+    const entries: GapEntry[] = [], chipsetOf = new Map<string, string>(), gameOf = new Map(items.map(item => [item.group, item.game ?? item.group]));
     for (const review of results) {
-      const where = { group: review.group, label: review.label, chipset: review.map.tilesetId, theme: review.art?.theme ?? '' };
+      const where = { group: review.group, label: review.label, chipset: review.map.tilesetId, theme: review.art?.theme ?? '', run: gameOf.get(review.group) };
       if (!chipsetOf.has(review.group) && review.map.tilesetId) chipsetOf.set(review.group, review.map.tilesetId);
       for (const missing of review.art?.missing ?? []) entries.push({ source: 'reviewer', thing: missing.thing, instead: missing.instead, unsure: missing.unsure, namedBy: missing.namedBy, where });
       for (const wrong of review.art?.wrongTheme ?? []) entries.push({ source: 'theme', thing: wrong.fitting || wrong.thing, instead: wrong.thing, kind: wrong.kind, where });
     }
     const sessions = corpusSessions(options.corpus).filter(session => !options.only || results.some(review => review.group === session.group));
-    for (const session of sessions) for (const report of toolReportsOfSession(session.sessionDir)) entries.push({ source: 'tool', thing: report.thing, instead: report.instead, kind: report.kind, where: { group: session.group, label: session.label, chipset: report.chipset || chipsetOf.get(session.group) || '', theme: '' } });
+    for (const session of sessions) for (const report of toolReportsOfSession(session.sessionDir)) entries.push({ source: 'tool', thing: report.thing, instead: report.instead, kind: report.kind, where: { group: session.group, label: session.label, chipset: report.chipset || chipsetOf.get(session.group) || '', theme: '', run: gameOf.get(session.group) } });
     const cluster = await clusterThings(entries.map(entry => entry.thing), resolve(options.out, 'judge-cache'), usage);
     const rows = buildArtGaps(entries, cluster.map);
     artGaps = { schemaVersion: 1, kind: 'assistant-map-vqa-art-gaps', corpus: options.corpus, generatedAt: new Date().toISOString(), promptVersion: ART_GAPS_VERSION, clustered: cluster.clustered,

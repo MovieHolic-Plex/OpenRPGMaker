@@ -1,0 +1,3906 @@
+{
+  "schemaVersion": 1,
+  "kind": "assistant-map-vqa-art-gaps",
+  "corpus": "whole-games:~/z-project/assistant-fable-runs,~/z-project/assistant-fable-runs/mapvqa/lay-main-0636b72004",
+  "generatedAt": "2026-11-11T10:13:36.673Z",
+  "promptVersion": "art-gaps-v1",
+  "clustered": true,
+  "note": "검수자의 이 물음(이름은 있는데 그림에 없는 것)은 따로 보정하지 않았다 — 그릴 차례를 정하는 목록이지 합격 판정이 아니다.",
+  "totals": {
+    "rows": 101,
+    "entries": 155,
+    "fromReviewer": 90,
+    "fromTools": 21,
+    "wrongTheme": 44,
+    "mapsAsked": 101,
+    "mapsUnanswered": 0
+  },
+  "rows": [
+    {
+      "chipset": "desert_east",
+      "thing": "샘",
+      "maps": 5,
+      "runs": 4,
+      "fromReviewer": 5,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "파란 수정",
+        "푸른 수정 하나 (물이 솟는 샘 대신)"
+      ],
+      "examples": [
+        "fun-x1 · 달샘 오아시스",
+        "fun-x1-gatefix · 달샘 오아시스",
+        "fun-x1-gatefix-arrow · 달샘 오아시스",
+        "jrpg-v2 · 새벽 마을"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "샘",
+      "maps": 4,
+      "runs": 4,
+      "fromReviewer": 4,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "파란 수정",
+        "맨바닥 (마른 샘 (25,26)은 신랑 기둥 옆 빈 바닥, 되살아나는 샘 (10,29)은 제단 방 출입부의 빈 바닥)",
+        "작은 파란 수정 하나"
+      ],
+      "examples": [
+        "jrpg-x1 · 잊힌 신전",
+        "맵 깔기 ruins · 고대 유적 바깥",
+        "맵 깔기 cave · 보물 동굴",
+        "맵 깔기 forest-to-cave · 빈 맵"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "미라 궁수",
+      "maps": 7,
+      "runs": 3,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 7,
+      "unsureOnly": false,
+      "instead": [
+        "광산 해골 궁수"
+      ],
+      "examples": [
+        "fun-x1 · 잠든 태양의 피라미드",
+        "fun-x1 · 별의 매장실",
+        "fun-x1-gatefix · 잠든 태양의 피라미드",
+        "fun-x1-gatefix · 별의 매장실"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "모래 슬라임",
+      "maps": 4,
+      "runs": 3,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 4,
+      "unsureOnly": false,
+      "instead": [
+        "초원 슬라임"
+      ],
+      "examples": [
+        "fun-x1 · 잠든 태양의 피라미드",
+        "fun-x1-gatefix · 잠든 태양의 피라미드",
+        "fun-x1-gatefix-arrow · 잠든 태양의 피라미드",
+        "jrpg-w3 · 잠든 태양의 피라미드"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "묘실 전투 배경",
+      "maps": 4,
+      "runs": 3,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 4,
+      "unsureOnly": false,
+      "instead": [
+        "숲 전투 배경(battle-scenery-forest)"
+      ],
+      "examples": [
+        "fun-x1 · 별의 매장실",
+        "fun-x1-gatefix · 별의 매장실",
+        "fun-x1-gatefix-arrow · 별의 매장실",
+        "jrpg-w3 · 왕의 묘실"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "피라미드 전투 배경",
+      "maps": 4,
+      "runs": 3,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 4,
+      "unsureOnly": false,
+      "instead": [
+        "숲 전투 배경(battle-scenery-forest)",
+        "숲 전투 배경"
+      ],
+      "examples": [
+        "fun-x1 · 잠든 태양의 피라미드",
+        "fun-x1-gatefix · 잠든 태양의 피라미드",
+        "fun-x1-gatefix-arrow · 잠든 태양의 피라미드",
+        "jrpg-w3 · 잠든 태양의 피라미드"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "화단",
+      "maps": 4,
+      "runs": 3,
+      "fromReviewer": 4,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "꽃 없는 풀밭과 야자수",
+        "꽃 없는 잔디밭과 야자수",
+        "꽃 없는 잔디밭과 작은 야자수"
+      ],
+      "examples": [
+        "fun-x1 · 바람 대상 숙영지",
+        "fun-x1-gatefix · 바람 대상 숙영지",
+        "fun-x1-gatefix-arrow · 바람 대상 숙영지",
+        "jrpg-w3 · 모래바람 대상단"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "기둥",
+      "maps": 3,
+      "runs": 3,
+      "fromReviewer": 1,
+      "fromTools": 2,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "뺌",
+        "멀쩡히 선 기둥들과 작은 돌 부스러기만 있음(쓰러지거나 부러진 기둥 그림 없음)"
+      ],
+      "examples": [
+        "맵 깔기 ruins · 고대 유적 바깥",
+        "fun-v2",
+        "jrpg-v2"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "나무",
+      "maps": 3,
+      "runs": 3,
+      "fromReviewer": 3,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "작은 덤불 하나와 맨 풀밭(가장 가까운 나무는 x=15 부근에 있음)",
+        "나무 그루터기 하나와 풀밭(주변에 나무가 없음)",
+        "맨 풀밭(나무가 한 그루도 없음)"
+      ],
+      "examples": [
+        "fun-v2 · 달맞이 초원",
+        "jrpg-v2 · 바람의 들판",
+        "맵 깔기 forest-to-cave · 빈 맵"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "버섯",
+      "maps": 3,
+      "runs": 3,
+      "fromReviewer": 1,
+      "fromTools": 2,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "뺌",
+        "청록색 수정 덩이와 작은 풀포기"
+      ],
+      "examples": [
+        "맵 깔기 cave · 보물 동굴",
+        "fun-v2",
+        "jrpg-v2"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "기록부",
+      "maps": 3,
+      "runs": 2,
+      "fromReviewer": 3,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "물 구유",
+        "물 여물통"
+      ],
+      "examples": [
+        "fun-x1 · 바람 대상 숙영지",
+        "fun-x1-gatefix · 바람 대상 숙영지",
+        "fun-x1-gatefix-arrow · 바람 대상 숙영지"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "쪽지",
+      "maps": 3,
+      "runs": 2,
+      "fromReviewer": 3,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "불타는 화로 기둥",
+        "횃불 기둥의 아랫부분(쪽지는 그려지지 않음)"
+      ],
+      "examples": [
+        "fun-x1 · 별의 매장실",
+        "fun-x1-gatefix · 별의 매장실",
+        "fun-x1-gatefix-arrow · 별의 매장실"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "봉인",
+      "maps": 3,
+      "runs": 2,
+      "fromReviewer": 3,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "금빛 석관(제단) 일부",
+        "금빛 제단(관 모양 받침), 별 문양 봉인인지 알 수 없음"
+      ],
+      "examples": [
+        "fun-x1 · 별의 매장실",
+        "fun-x1-gatefix · 별의 매장실",
+        "fun-x1-gatefix-arrow · 별의 매장실"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "snow_north",
+      "thing": "생선 건조대",
+      "maps": 3,
+      "runs": 2,
+      "fromReviewer": 3,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "나무 틀에 흰 줄 같은 것이 매달린 시렁과 통 두 개(말리는 생선인지 분간 어려움)",
+        "고드름 같은 줄이 늘어진 나무 건조대와 짚더미(생선이 걸려 있는지 확인 어려움)",
+        "흰 줄이 매달린 나무 틀(고드름인지 말린 생선인지 불분명)과 자루"
+      ],
+      "examples": [
+        "fun-w3 · 겨울 시장",
+        "fun-w3 · 서리 절벽",
+        "jrpg-w1 · 겨울 장터"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "동굴 입구",
+      "maps": 2,
+      "runs": 2,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "작은 회색 바위와 풀밭(물안개 동굴로 가는 출구에 동굴 입구 그림이 없음)",
+        "나무 버팀목과 등불이 달린 광산 갱도 입구"
+      ],
+      "examples": [
+        "jrpg-w2 · 속삭임 숲",
+        "맵 깔기 forest-to-cave · 빈 맵"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "snow_north",
+      "thing": "문",
+      "maps": 2,
+      "runs": 2,
+      "fromReviewer": 2,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "목책 대문 기둥과 문짝(집이 아니라 마을 대문)",
+        "목책 정문 앞 큰길(눈길 바닥). 잠긴 집이나 집 문은 그려져 있지 않음"
+      ],
+      "examples": [
+        "fun-w3 · 눈보라 마을",
+        "jrpg-w1 · 서리울 마을"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "문",
+      "maps": 2,
+      "runs": 2,
+      "fromReviewer": 2,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "궁전 남쪽 성벽의 열린 아치 성문(집 문이 아님)",
+        "남쪽 성문 양옆의 성벽과 성문 기둥(집이나 집 문은 그려져 있지 않음)"
+      ],
+      "examples": [
+        "fun-x1 · 초승달 궁전",
+        "jrpg-w3 · 황금궁 정원"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "숲 전투 배경",
+      "maps": 2,
+      "runs": 2,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 2,
+      "unsureOnly": false,
+      "instead": [
+        "동굴 전투 배경(battle-scenery-cave)"
+      ],
+      "examples": [
+        "jrpg-w2 · 속삭임 숲",
+        "jrpg-x1 · 속삭임 숲"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "신전 전투 배경",
+      "maps": 2,
+      "runs": 2,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 2,
+      "unsureOnly": false,
+      "instead": [
+        "동굴 전투 배경",
+        "동굴 전투 배경(battle-scenery-cave)"
+      ],
+      "examples": [
+        "jrpg-w2 · 잠든 신전",
+        "jrpg-x1 · 잊힌 신전"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "집",
+      "maps": 2,
+      "runs": 2,
+      "fromReviewer": 2,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "무너진 신전 터의 부서진 아치와 기둥이 있다. 다른 한 곳(x20..23 y33..36)에는 탑문 건물이 있다. 잠긴 집과 집 문은 없다.",
+        "무너진 신전 터의 부서진 아치와 기둥(집이나 문은 그려지지 않음)"
+      ],
+      "examples": [
+        "fun-x1 · 잠든 태양의 피라미드",
+        "jrpg-w3 · 잠든 태양의 피라미드"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "곡괭이",
+      "maps": 2,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 5,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "없음(그리기 카드 대기)",
+        "작업대, 나무통, 작은 상자, 회복 결정만 있음; 맵 어디에도 곡괭이·삽 같은 채굴 도구가 그려져 있지 않음",
+        "막힘(놓지 못함)"
+      ],
+      "examples": [
+        "맵 깔기 mine · 버려진 광산",
+        "맵 깔기 mine"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "배",
+      "maps": 2,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 2,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "없음(그리기 카드 대기)",
+        "부두 주변에 작은 나룻배만 있고 정박한 범선은 없음"
+      ],
+      "examples": [
+        "맵 깔기 harbor · 항구 마을",
+        "맵 깔기 harbor"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "가축",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "맵 어디에도 소·돼지·닭 같은 동물이 그려져 있지 않음"
+      ],
+      "examples": [
+        "맵 깔기 farm · 농장"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "가축 우리",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "맵에 있는 나무 울타리는 밭(작물 이랑)만 두르고 있고, 가축을 가두는 우리는 어디에도 없음"
+      ],
+      "examples": [
+        "맵 깔기 farm · 농장"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "atlas_biome_interior",
+      "thing": "감방",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "철창이나 감방 문이 없는 평범한 석조 방이 벽 틈으로 복도와 이어져 있음. 방 안에는 촛대, 항아리, 의자, 장식 패널이 있음"
+      ],
+      "examples": [
+        "맵 깔기 prison · 지하 감옥"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "atlas_biome_interior",
+      "thing": "감방 소품",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 2,
+      "unsureOnly": false,
+      "instead": [
+        "금박 장식 패널(태피스트리)",
+        "아늑한 생활 가구(둥근 의자, 장식 항아리, 촛대)"
+      ],
+      "examples": [
+        "맵 깔기 prison · 지하 감옥"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "갱도 전투 배경",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "기본 전투 배경(설정 없음)"
+      ],
+      "examples": [
+        "맵 깔기 mine · 버려진 광산"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "steampunk_city",
+      "thing": "게시판",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "맨바닥(양옆 칸에 책 더미만 있음)"
+      ],
+      "examples": [
+        "fun-w1 · 연기 공장지대"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "계단",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "맨바닥(흙길 끝)"
+      ],
+      "examples": [
+        "맵 깔기 swamp · 안개 낀 늪지대"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "modern_city",
+      "thing": "계산대",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 1,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [],
+      "examples": [
+        "맵 깔기 convenience-store"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "궁전",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "반목조 2층 민가(마을 집)"
+      ],
+      "examples": [
+        "맵 깔기 castle · 왕궁"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "기록부",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "맨바닥"
+      ],
+      "examples": [
+        "jrpg-w2 · 이끼광산"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "기록판",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "맨바닥"
+      ],
+      "examples": [
+        "jrpg-x1 · 버려진 광산"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "snow_north",
+      "thing": "꾸러미",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "사람 캐릭터 그림"
+      ],
+      "examples": [
+        "jrpg-w1 · 겨울 장터"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "atlas_biome_interior",
+      "thing": "나무 의자",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "금속 다리 빨간 바 의자"
+      ],
+      "examples": [
+        "맵 깔기 tavern · 모험가의 선술집"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "snow_north",
+      "thing": "나무 의자",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 1,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "얼음 낚시 자리(구멍·낚싯대·통 의자·물고기)(sn-fishing-spot)"
+      ],
+      "examples": [
+        "fun-w3"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "steampunk_city",
+      "thing": "냉각 회로",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "쌓인 책 더미"
+      ],
+      "examples": [
+        "fun-w1 · 발명가의 공방"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "prehistoric",
+      "thing": "늪 모기",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "동굴 박쥐"
+      ],
+      "examples": [
+        "fun-w2 · 갈대 늪"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "prehistoric",
+      "thing": "늪 슬라임",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "초원 슬라임"
+      ],
+      "examples": [
+        "fun-w2 · 갈대 늪"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "prehistoric",
+      "thing": "늪 전투 배경",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "동굴 전투 배경(battle-scenery-cave)"
+      ],
+      "examples": [
+        "fun-w2 · 갈대 늪"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "늪 전투 배경",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "기본 전투 배경(설정 없음)"
+      ],
+      "examples": [
+        "맵 깔기 swamp · 안개 낀 늪지대"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "prehistoric",
+      "thing": "늪 해골 궁수",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "광산 해골 궁수"
+      ],
+      "examples": [
+        "fun-w2 · 갈대 늪"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "던전 입구",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "맨 풀밭 숲길(입구 문이나 광산 입구 없음)"
+      ],
+      "examples": [
+        "jrpg-x1 · 속삭임 숲"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "등불",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "맨바닥(풀밭과 숲 가장자리)"
+      ],
+      "examples": [
+        "fun-v2 · 별빛 마을"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "무너진 길",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "멀쩡하게 남쪽 맵 끝까지 이어지는 흙길"
+      ],
+      "examples": [
+        "jrpg-w2 · 버들나루"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "바위",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 1,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "뺌"
+      ],
+      "examples": [
+        "맵 깔기 cave"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "반딧불",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "빛 없는 덤불과 풀밭만 있음"
+      ],
+      "examples": [
+        "fun-v2 · 반딧불 숲길"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "빛의 파편",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "보물상자"
+      ],
+      "examples": [
+        "jrpg-w2 · 물안개 동굴"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "prehistoric",
+      "thing": "뼈 표식",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "풀밭 (옆에 야자수)"
+      ],
+      "examples": [
+        "fun-w2 · 뼈바람 골짜기"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "사막 독수리",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "동굴 박쥐"
+      ],
+      "examples": [
+        "jrpg-w3 · 잠든 태양의 피라미드"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "사막 천막",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "빨강·흰 줄무늬 서커스 천막"
+      ],
+      "examples": [
+        "fun-x1 · 바람 대상 숙영지"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "prehistoric",
+      "thing": "샘",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "파란 수정"
+      ],
+      "examples": [
+        "fun-w2 · 불씨 마을"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "snow_north",
+      "thing": "샘",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "파란 수정 결정 하나"
+      ],
+      "examples": [
+        "fun-w3 · 눈보라 마을"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "snow_north",
+      "thing": "서리 슬라임",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "초원 슬라임"
+      ],
+      "examples": [
+        "fun-w3 · 서리 절벽"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "steampunk_city",
+      "thing": "설계도",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "사람 캐릭터 스프라이트"
+      ],
+      "examples": [
+        "fun-w1 · 발명가의 공방"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "성 홀 전투 배경",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "동굴 전투 배경"
+      ],
+      "examples": [
+        "jrpg-x1 · 옛 강지기의 탑"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "atlas_biome_interior",
+      "thing": "성경대",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 1,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "다른 쪽을 보는 그림 그대로"
+      ],
+      "examples": [
+        "맵 깔기 temple"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "수로 지도",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "광차(레일 위 광석 수레)"
+      ],
+      "examples": [
+        "jrpg-x1 · 버려진 광산"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "수정",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 1,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "뺌"
+      ],
+      "examples": [
+        "맵 깔기 forest-to-cave"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "수풀",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "막힘 없이 북쪽 맵 끝까지 이어지는 흙길"
+      ],
+      "examples": [
+        "jrpg-w2 · 버들나루"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "atlas_biome_interior",
+      "thing": "식탁",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "접수 카운터와 맨바닥만 있고 식사용 탁자·의자가 없음"
+      ],
+      "examples": [
+        "jrpg-x1 · 물레방아 여관"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "야영 천막",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "주황 줄무늬 시장 천막(도시 칩셋 노점 천막)"
+      ],
+      "examples": [
+        "맵 깔기 camp · 숲속 야영지"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "snow_north",
+      "thing": "얼음 정령",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "붉은 불꽃 악마 모양의 배회 적 그림(16,7)"
+      ],
+      "examples": [
+        "fun-w3 · 얼음 동굴"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "snow_north",
+      "thing": "얼음 해골 궁수",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "광산 해골 궁수"
+      ],
+      "examples": [
+        "fun-w3 · 얼음 동굴"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "왕궁 정원",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "농가 소품(허수아비, 울타리 밭, 건초더미, 짐수레)"
+      ],
+      "examples": [
+        "맵 깔기 castle · 왕궁"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "우물",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "돌계단과 길"
+      ],
+      "examples": [
+        "fun-v2 · 별빛 마을"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "유적 바깥 지형",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "실내 던전 벽과 석판 바닥으로 사방이 막힌 방"
+      ],
+      "examples": [
+        "맵 깔기 ruins · 고대 유적 바깥"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "유적 입구",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 1,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "담쟁이 아치(정원 입구)(bd-mpart-ivy-arch)"
+      ],
+      "examples": [
+        "맵 깔기 ruins"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "modern_city",
+      "thing": "음료 냉장고",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 1,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [],
+      "examples": [
+        "맵 깔기 convenience-store"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "잠든 별",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "맨바닥"
+      ],
+      "examples": [
+        "fun-v2 · 별의 동굴"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "steampunk_city",
+      "thing": "정지 장치",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "맨 금속 벽 패널"
+      ],
+      "examples": [
+        "fun-w1 · 중앙 기관실"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "제단",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "청록 수정 덩이, 마른 나무, 보물상자"
+      ],
+      "examples": [
+        "jrpg-v2 · 그림자 동굴"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "snow_north",
+      "thing": "제단",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "맨 눈밭 (옆에 가문비나무)"
+      ],
+      "examples": [
+        "jrpg-w1 · 서리 절벽"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "제단",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "왕관을 쓴 왕 캐릭터 스프라이트"
+      ],
+      "examples": [
+        "jrpg-w3 · 왕의 묘실"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "modern_city",
+      "thing": "진열대",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 1,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [],
+      "examples": [
+        "맵 깔기 convenience-store"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "차 쟁반",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 1,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "놋쟁반 찻상(de-tea-table)"
+      ],
+      "examples": [
+        "jrpg-w3"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "atlas_biome_interior",
+      "thing": "철창",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "감방과 복도 사이의 열린 돌바닥 통로(벽 틈)"
+      ],
+      "examples": [
+        "맵 깔기 prison · 지하 감옥"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "prehistoric",
+      "thing": "통나무 움집",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "이엉 움집(다른 움집과 같은 짚 지붕 원뿔 움집)"
+      ],
+      "examples": [
+        "fun-w2 · 갈대 늪"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "판자 길",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "맨 흙바닥; 판자 조각 2개(34,17·37,20 부근)만 따로 놓였고 물웅덩이 사이를 잇지 않음"
+      ],
+      "examples": [
+        "맵 깔기 swamp · 안개 낀 늪지대"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "풀밭",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "사막 모래 바닥(사바나 아카시아 나무, 마른 풀, 돌 몇 개)",
+        "사막 모래 바닥 타일(desert_east 칩셋)"
+      ],
+      "examples": [
+        "맵 깔기 village-to-field · 동쪽 들판"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "항구",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 1,
+      "wrongTheme": 0,
+      "unsureOnly": false,
+      "instead": [
+        "막힘(놓지 못함)"
+      ],
+      "examples": [
+        "맵 깔기 harbor"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "prehistoric",
+      "thing": "화산 전투 배경",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 0,
+      "fromTools": 0,
+      "wrongTheme": 1,
+      "unsureOnly": false,
+      "instead": [
+        "동굴 전투 배경"
+      ],
+      "examples": [
+        "fun-w2 · 연기 산기슭"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "atlas_biome_interior",
+      "thing": "감옥 침상",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "작은 의자와 항아리 같은 생활 소품"
+      ],
+      "examples": [
+        "맵 깔기 prison · 지하 감옥"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "steampunk_city",
+      "thing": "경보기",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "사람 캐릭터 모습"
+      ],
+      "examples": [
+        "fun-w1 · 벽돌 거리"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "atlas_biome_interior",
+      "thing": "관측 작업대",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "평범한 나무 책상과 의자, 두루마리 더미 (강 관측 도구가 없어 작업대인지 불분명)"
+      ],
+      "examples": [
+        "jrpg-x1 · 강지기의 집"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "atlas_biome_interior",
+      "thing": "기록부",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "벽 아래 맨바닥(카운터 위 종이 두 장은 장부인지 불분명)"
+      ],
+      "examples": [
+        "jrpg-x1 · 물레방아 여관"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "동굴",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "동굴이 아니라 풀밭 숲속 공터와 덤불이 그려져 있음"
+      ],
+      "examples": [
+        "jrpg-x1 · 속삭임 숲"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "snow_north",
+      "thing": "두루마리",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "둘둘 말린 물건(두루마리인지 말린 가죽인지 불분명)"
+      ],
+      "examples": [
+        "jrpg-w1 · 족장의 긴집"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "prehistoric",
+      "thing": "마을 문",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "울타리 틈과 횃불, 선돌, 해골 기둥"
+      ],
+      "examples": [
+        "fun-w2 · 불씨 마을"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "snow_north",
+      "thing": "모닥불",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "사람 캐릭터 스프라이트(꺼져가는 불씨 이벤트에 사람 그림이 쓰임)"
+      ],
+      "examples": [
+        "jrpg-w1 · 서리울 마을"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "모닥불",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "작은 돌무더기(가운데 노란 점이 있는 돌 고리, 불꽃인지 불분명)"
+      ],
+      "examples": [
+        "맵 깔기 camp · 숲속 야영지"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "물길",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "맨 흙바닥과 작은 물웅덩이 1개"
+      ],
+      "examples": [
+        "맵 깔기 swamp · 안개 낀 늪지대"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "물레방아",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "강가에 물레방아 없는 일반 목조 2층집"
+      ],
+      "examples": [
+        "jrpg-x1 · 물안개 마을"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "비문",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "정원 남쪽 끝, 성문 지붕 바로 옆의 맨 잔디(비석이나 새긴 판은 그려져 있지 않음)"
+      ],
+      "examples": [
+        "jrpg-w3 · 황금궁 정원"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "빛",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "작은 풀숲 하나만 그려져 있고 새어 나오는 빛은 없음"
+      ],
+      "examples": [
+        "fun-v2 · 별바람 공터"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "빛나는 돌",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "붉은 사람 모양 캐릭터 스프라이트"
+      ],
+      "examples": [
+        "fun-v2 · 별의 동굴"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "steampunk_city",
+      "thing": "선술집",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "간판 없는 일반 벽돌 주택(아치형 나무 문)"
+      ],
+      "examples": [
+        "fun-w1 · 운하 선착장"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "steampunk_city",
+      "thing": "압력 조절기",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "사람 모양 캐릭터 스프라이트(벽의 밸브 등불 바로 아래)"
+      ],
+      "examples": [
+        "fun-w1 · 오래된 보일러실"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "beodeul_city",
+      "thing": "창고",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "큰 나무문이 달린 반목조 집(헛간 같은 모양이라 창고인지 불분명)"
+      ],
+      "examples": [
+        "맵 깔기 harbor · 항구 마을"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "sengoku_edo",
+      "thing": "촌장 집",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "촌장 집으로 표시되거나 구별되는 건물이 없고 비슷한 초가 농가들만 있음"
+      ],
+      "examples": [
+        "맵 깔기 village-chief-house · 작은 마을"
+      ],
+      "names": []
+    },
+    {
+      "chipset": "desert_east",
+      "thing": "표식",
+      "maps": 1,
+      "runs": 1,
+      "fromReviewer": 1,
+      "fromTools": 0,
+      "wrongTheme": 0,
+      "unsureOnly": true,
+      "instead": [
+        "사람 캐릭터"
+      ],
+      "examples": [
+        "jrpg-v2 · 새벽 마을"
+      ],
+      "names": []
+    }
+  ],
+  "entries": [
+    {
+      "source": "reviewer",
+      "thing": "등불",
+      "instead": "맨바닥(풀밭과 숲 가장자리)",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-v2",
+        "label": "fun-v2 · 별빛 마을",
+        "chipset": "beodeul_city",
+        "theme": "중세풍 숲속 마을 (별빛 마을)",
+        "run": "별빛 배달부|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "우물",
+      "instead": "돌계단과 길",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-v2",
+        "label": "fun-v2 · 별빛 마을",
+        "chipset": "beodeul_city",
+        "theme": "중세풍 숲속 마을 (별빛 마을)",
+        "run": "별빛 배달부|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "빛나는 돌",
+      "instead": "붉은 사람 모양 캐릭터 스프라이트",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-v2",
+        "label": "fun-v2 · 별의 동굴",
+        "chipset": "beodeul_city",
+        "theme": "별빛이 깃든 동굴 던전(수정과 제단이 있는 지하 동굴)",
+        "run": "별빛 배달부|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "잠든 별",
+      "instead": "맨바닥",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-v2",
+        "label": "fun-v2 · 별의 동굴",
+        "chipset": "beodeul_city",
+        "theme": "별빛이 깃든 동굴 던전(수정과 제단이 있는 지하 동굴)",
+        "run": "별빛 배달부|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "나무",
+      "instead": "작은 덤불 하나와 맨 풀밭(가장 가까운 나무는 x=15 부근에 있음)",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-v2",
+        "label": "fun-v2 · 달맞이 초원",
+        "chipset": "beodeul_city",
+        "theme": "숲 가장자리의 흙길 초원 들판",
+        "run": "별빛 배달부|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "반딧불",
+      "instead": "빛 없는 덤불과 풀밭만 있음",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-v2",
+        "label": "fun-v2 · 반딧불 숲길",
+        "chipset": "beodeul_city",
+        "theme": "밤의 반딧불 숲길",
+        "run": "별빛 배달부|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "빛",
+      "instead": "작은 풀숲 하나만 그려져 있고 새어 나오는 빛은 없음",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-v2",
+        "label": "fun-v2 · 별바람 공터",
+        "chipset": "beodeul_city",
+        "theme": "밤의 숲속 공터(흙길과 나무 숲)",
+        "run": "별빛 배달부|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "경보기",
+      "instead": "사람 캐릭터 모습",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-w1",
+        "label": "fun-w1 · 벽돌 거리",
+        "chipset": "steampunk_city",
+        "theme": "증기기관 시대 벽돌 도시 거리와 시장 광장",
+        "run": "멈추지 않는 심장|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "선술집",
+      "instead": "간판 없는 일반 벽돌 주택(아치형 나무 문)",
+      "unsure": true,
+      "namedBy": "label",
+      "where": {
+        "group": "A:fun-w1",
+        "label": "fun-w1 · 운하 선착장",
+        "chipset": "steampunk_city",
+        "theme": "스팀펑크 도시의 운하 선착장(창고, 선술집, 연구소, 어시장, 비행선 정박장)",
+        "run": "멈추지 않는 심장|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "게시판",
+      "instead": "맨바닥(양옆 칸에 책 더미만 있음)",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-w1",
+        "label": "fun-w1 · 연기 공장지대",
+        "chipset": "steampunk_city",
+        "theme": "스팀펑크 공장지대와 기차역",
+        "run": "멈추지 않는 심장|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "냉각 회로",
+      "instead": "쌓인 책 더미",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-w1",
+        "label": "fun-w1 · 발명가의 공방",
+        "chipset": "steampunk_city",
+        "theme": "스팀펑크 도시의 발명가 기계 공방",
+        "run": "멈추지 않는 심장|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "설계도",
+      "instead": "사람 캐릭터 스프라이트",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-w1",
+        "label": "fun-w1 · 발명가의 공방",
+        "chipset": "steampunk_city",
+        "theme": "스팀펑크 도시의 발명가 기계 공방",
+        "run": "멈추지 않는 심장|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "압력 조절기",
+      "instead": "사람 모양 캐릭터 스프라이트(벽의 밸브 등불 바로 아래)",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-w1",
+        "label": "fun-w1 · 오래된 보일러실",
+        "chipset": "steampunk_city",
+        "theme": "스팀펑크 도시 지하의 오래된 보일러실",
+        "run": "멈추지 않는 심장|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "정지 장치",
+      "instead": "맨 금속 벽 패널",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-w1",
+        "label": "fun-w1 · 중앙 기관실",
+        "chipset": "steampunk_city",
+        "theme": "스팀펑크 도시 지하의 중앙 기관실",
+        "run": "멈추지 않는 심장|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "샘",
+      "instead": "파란 수정",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-w2",
+        "label": "fun-w2 · 불씨 마을",
+        "chipset": "prehistoric",
+        "theme": "선사시대 강가 부족 마을",
+        "run": "마지막 불씨|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "마을 문",
+      "instead": "울타리 틈과 횃불, 선돌, 해골 기둥",
+      "unsure": true,
+      "namedBy": "label",
+      "where": {
+        "group": "A:fun-w2",
+        "label": "fun-w2 · 불씨 마을",
+        "chipset": "prehistoric",
+        "theme": "선사시대 강가 부족 마을",
+        "run": "마지막 불씨|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "거대 뼈 표식",
+      "instead": "풀밭 (옆에 야자수)",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-w2",
+        "label": "fun-w2 · 뼈바람 골짜기",
+        "chipset": "prehistoric",
+        "theme": "선사시대 뼈 골짜기 (공룡 화석 발굴터와 원시 야영지)",
+        "run": "마지막 불씨|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "통나무 움집",
+      "instead": "이엉 움집(다른 움집과 같은 짚 지붕 원뿔 움집)",
+      "unsure": false,
+      "namedBy": "label",
+      "where": {
+        "group": "A:fun-w2",
+        "label": "fun-w2 · 갈대 늪",
+        "chipset": "prehistoric",
+        "theme": "선사시대 갈대 늪 (움집이 있는 늪지 섬)",
+        "run": "마지막 불씨|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "갈대와 진흙물이 있는 늪 전투 배경",
+      "instead": "동굴 전투 배경(battle-scenery-cave)",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:fun-w2",
+        "label": "fun-w2 · 갈대 늪",
+        "chipset": "prehistoric",
+        "theme": "선사시대 갈대 늪 (움집이 있는 늪지 섬)",
+        "run": "마지막 불씨|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "늪 슬라임 또는 진흙 슬라임",
+      "instead": "초원 슬라임",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-w2",
+        "label": "fun-w2 · 갈대 늪",
+        "chipset": "prehistoric",
+        "theme": "선사시대 갈대 늪 (움집이 있는 늪지 섬)",
+        "run": "마지막 불씨|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "늪 망령 궁수 또는 원시 사냥꾼 해골",
+      "instead": "광산 해골 궁수",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-w2",
+        "label": "fun-w2 · 갈대 늪",
+        "chipset": "prehistoric",
+        "theme": "선사시대 갈대 늪 (움집이 있는 늪지 섬)",
+        "run": "마지막 불씨|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "늪 모기떼 또는 늪 잠자리",
+      "instead": "동굴 박쥐",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-w2",
+        "label": "fun-w2 · 갈대 늪",
+        "chipset": "prehistoric",
+        "theme": "선사시대 갈대 늪 (움집이 있는 늪지 섬)",
+        "run": "마지막 불씨|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "화산 산기슭/용암 황무지 전투 배경",
+      "instead": "동굴 전투 배경",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:fun-w2",
+        "label": "fun-w2 · 연기 산기슭",
+        "chipset": "prehistoric",
+        "theme": "선사시대 화산 산기슭 들판(용암 지대, 죽은 숲, 동굴 입구, 사냥 야영지)",
+        "run": "마지막 불씨|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "샘",
+      "instead": "파란 수정 결정 하나",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-w3",
+        "label": "fun-w3 · 눈보라 마을",
+        "chipset": "snow_north",
+        "theme": "북방 설원의 통나무 목책 마을(바이킹풍 눈 마을)",
+        "run": "얼음 아래의 노래|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "집 문",
+      "instead": "목책 대문 기둥과 문짝(집이 아니라 마을 대문)",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-w3",
+        "label": "fun-w3 · 눈보라 마을",
+        "chipset": "snow_north",
+        "theme": "북방 설원의 통나무 목책 마을(바이킹풍 눈 마을)",
+        "run": "얼음 아래의 노래|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "생선 건조대",
+      "instead": "나무 틀에 흰 줄 같은 것이 매달린 시렁과 통 두 개(말리는 생선인지 분간 어려움)",
+      "unsure": true,
+      "namedBy": "label",
+      "where": {
+        "group": "A:fun-w3",
+        "label": "fun-w3 · 겨울 시장",
+        "chipset": "snow_north",
+        "theme": "눈 덮인 북방 겨울 시장 마을",
+        "run": "얼음 아래의 노래|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "생선 건조대",
+      "instead": "고드름 같은 줄이 늘어진 나무 건조대와 짚더미(생선이 걸려 있는지 확인 어려움)",
+      "unsure": true,
+      "namedBy": "label",
+      "where": {
+        "group": "A:fun-w3",
+        "label": "fun-w3 · 서리 절벽",
+        "chipset": "snow_north",
+        "theme": "눈 덮인 북방 절벽과 사냥꾼 야영지",
+        "run": "얼음 아래의 노래|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "눈 슬라임, 서리 슬라임 같은 설원 몬스터",
+      "instead": "초원 슬라임",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-w3",
+        "label": "fun-w3 · 서리 절벽",
+        "chipset": "snow_north",
+        "theme": "눈 덮인 북방 절벽과 사냥꾼 야영지",
+        "run": "얼음 아래의 노래|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "얼음 해골 궁수 같은 서리 언데드",
+      "instead": "광산 해골 궁수",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-w3",
+        "label": "fun-w3 · 얼음 동굴",
+        "chipset": "snow_north",
+        "theme": "얼음 동굴 던전",
+        "run": "얼음 아래의 노래|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "푸른 얼음 정령이나 서리 파수꾼 그림",
+      "instead": "붉은 불꽃 악마 모양의 배회 적 그림(16,7)",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-w3",
+        "label": "fun-w3 · 얼음 동굴",
+        "chipset": "snow_north",
+        "theme": "얼음 동굴 던전",
+        "run": "얼음 아래의 노래|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "샘",
+      "instead": "파란 수정",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-x1",
+        "label": "fun-x1 · 달샘 오아시스",
+        "chipset": "desert_east",
+        "theme": "사막 오아시스 마을",
+        "run": "달샘과 잠든 태양|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "장부",
+      "instead": "물 여물통",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-x1",
+        "label": "fun-x1 · 바람 대상 숙영지",
+        "chipset": "desert_east",
+        "theme": "사막 대상 숙영지(카라반사라이)",
+        "run": "달샘과 잠든 태양|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "화단",
+      "instead": "꽃 없는 잔디밭과 야자수",
+      "unsure": true,
+      "namedBy": "label",
+      "where": {
+        "group": "A:fun-x1",
+        "label": "fun-x1 · 바람 대상 숙영지",
+        "chipset": "desert_east",
+        "theme": "사막 대상 숙영지(카라반사라이)",
+        "run": "달샘과 잠든 태양|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "베두인 천막(검은 모직 또는 무늬 천 천막)",
+      "instead": "빨강·흰 줄무늬 서커스 천막",
+      "kind": "tile",
+      "where": {
+        "group": "A:fun-x1",
+        "label": "fun-x1 · 바람 대상 숙영지",
+        "chipset": "desert_east",
+        "theme": "사막 대상 숙영지(카라반사라이)",
+        "run": "달샘과 잠든 태양|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "닫힌 문",
+      "instead": "궁전 남쪽 성벽의 열린 아치 성문(집 문이 아님)",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-x1",
+        "label": "fun-x1 · 초승달 궁전",
+        "chipset": "desert_east",
+        "theme": "사막 오아시스 궁전과 성 밖 흰 집 마을",
+        "run": "달샘과 잠든 태양|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "집",
+      "instead": "무너진 신전 터의 부서진 아치와 기둥이 있다. 다른 한 곳(x20..23 y33..36)에는 탑문 건물이 있다. 잠긴 집과 집 문은 없다.",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-x1",
+        "label": "fun-x1 · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적지 (참배 길, 무너진 신전, 유목민 야영지)",
+        "run": "달샘과 잠든 태양|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "사막 피라미드나 모래 유적 전투 배경",
+      "instead": "숲 전투 배경",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:fun-x1",
+        "label": "fun-x1 · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적지 (참배 길, 무너진 신전, 유목민 야영지)",
+        "run": "달샘과 잠든 태양|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "미라 궁수나 피라미드 해골 궁수 같은 사막 무덤 적",
+      "instead": "광산 해골 궁수",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-x1",
+        "label": "fun-x1 · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적지 (참배 길, 무너진 신전, 유목민 야영지)",
+        "run": "달샘과 잠든 태양|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "모래 슬라임이나 사막 슬라임",
+      "instead": "초원 슬라임",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-x1",
+        "label": "fun-x1 · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적지 (참배 길, 무너진 신전, 유목민 야영지)",
+        "run": "달샘과 잠든 태양|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "쪽지",
+      "instead": "횃불 기둥의 아랫부분(쪽지는 그려지지 않음)",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-x1",
+        "label": "fun-x1 · 별의 매장실",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 지하 묘실(별의 매장실)",
+        "run": "달샘과 잠든 태양|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "봉인",
+      "instead": "금빛 제단(관 모양 받침), 별 문양 봉인인지 알 수 없음",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-x1",
+        "label": "fun-x1 · 별의 매장실",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 지하 묘실(별의 매장실)",
+        "run": "달샘과 잠든 태양|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "피라미드 묘실 내부 전투 배경(사암 벽돌, 상형문자 벽, 횃불)",
+      "instead": "숲 전투 배경(battle-scenery-forest)",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:fun-x1",
+        "label": "fun-x1 · 별의 매장실",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 지하 묘실(별의 매장실)",
+        "run": "달샘과 잠든 태양|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "미라 궁수나 묘실 수호 해골 같은 피라미드 몬스터",
+      "instead": "광산 해골 궁수",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-x1",
+        "label": "fun-x1 · 별의 매장실",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 지하 묘실(별의 매장실)",
+        "run": "달샘과 잠든 태양|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "샘",
+      "instead": "푸른 수정 하나 (물이 솟는 샘 대신)",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-x1-gatefix",
+        "label": "fun-x1-gatefix · 달샘 오아시스",
+        "chipset": "desert_east",
+        "theme": "사막 오아시스 마을",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "기록부",
+      "instead": "물 구유",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-x1-gatefix",
+        "label": "fun-x1-gatefix · 바람 대상 숙영지",
+        "chipset": "desert_east",
+        "theme": "사막 대상 숙영지(카라반사라이)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "화단",
+      "instead": "꽃 없는 풀밭과 야자수",
+      "unsure": true,
+      "namedBy": "label",
+      "where": {
+        "group": "A:fun-x1-gatefix",
+        "label": "fun-x1-gatefix · 바람 대상 숙영지",
+        "chipset": "desert_east",
+        "theme": "사막 대상 숙영지(카라반사라이)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "사막 피라미드 유적 전투 배경(모래 언덕과 피라미드)",
+      "instead": "숲 전투 배경(battle-scenery-forest)",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:fun-x1-gatefix",
+        "label": "fun-x1-gatefix · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적(대피라미드와 참배 길, 무너진 신전, 유목민 천막 야영지)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "미라 궁수나 피라미드 해골 궁수",
+      "instead": "광산 해골 궁수",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-x1-gatefix",
+        "label": "fun-x1-gatefix · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적(대피라미드와 참배 길, 무너진 신전, 유목민 천막 야영지)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "모래 슬라임",
+      "instead": "초원 슬라임",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-x1-gatefix",
+        "label": "fun-x1-gatefix · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적(대피라미드와 참배 길, 무너진 신전, 유목민 천막 야영지)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "쪽지",
+      "instead": "불타는 화로 기둥",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-x1-gatefix",
+        "label": "fun-x1-gatefix · 별의 매장실",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 내부의 별의 매장실(묘실)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "봉인",
+      "instead": "금빛 석관(제단) 일부",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-x1-gatefix",
+        "label": "fun-x1-gatefix · 별의 매장실",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 내부의 별의 매장실(묘실)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "피라미드 묘실 전투 배경",
+      "instead": "숲 전투 배경(battle-scenery-forest)",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:fun-x1-gatefix",
+        "label": "fun-x1-gatefix · 별의 매장실",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 내부의 별의 매장실(묘실)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "피라미드 해골 궁수 또는 미라 궁수",
+      "instead": "광산 해골 궁수",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-x1-gatefix",
+        "label": "fun-x1-gatefix · 별의 매장실",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 내부의 별의 매장실(묘실)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "샘",
+      "instead": "푸른 수정 하나 (물이 솟는 샘 대신)",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-x1-gatefix-arrow",
+        "label": "fun-x1-gatefix-arrow · 달샘 오아시스",
+        "chipset": "desert_east",
+        "theme": "사막 오아시스 마을",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "기록부",
+      "instead": "물 구유",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-x1-gatefix-arrow",
+        "label": "fun-x1-gatefix-arrow · 바람 대상 숙영지",
+        "chipset": "desert_east",
+        "theme": "사막 대상 숙영지(카라반사라이)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "화단",
+      "instead": "꽃 없는 풀밭과 야자수",
+      "unsure": true,
+      "namedBy": "label",
+      "where": {
+        "group": "A:fun-x1-gatefix-arrow",
+        "label": "fun-x1-gatefix-arrow · 바람 대상 숙영지",
+        "chipset": "desert_east",
+        "theme": "사막 대상 숙영지(카라반사라이)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "사막 피라미드 유적 전투 배경(모래 언덕과 피라미드)",
+      "instead": "숲 전투 배경(battle-scenery-forest)",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:fun-x1-gatefix-arrow",
+        "label": "fun-x1-gatefix-arrow · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적(대피라미드와 참배 길, 무너진 신전, 유목민 천막 야영지)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "미라 궁수나 피라미드 해골 궁수",
+      "instead": "광산 해골 궁수",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-x1-gatefix-arrow",
+        "label": "fun-x1-gatefix-arrow · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적(대피라미드와 참배 길, 무너진 신전, 유목민 천막 야영지)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "모래 슬라임",
+      "instead": "초원 슬라임",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-x1-gatefix-arrow",
+        "label": "fun-x1-gatefix-arrow · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적(대피라미드와 참배 길, 무너진 신전, 유목민 천막 야영지)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "쪽지",
+      "instead": "불타는 화로 기둥",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-x1-gatefix-arrow",
+        "label": "fun-x1-gatefix-arrow · 별의 매장실",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 내부의 별의 매장실(묘실)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "봉인",
+      "instead": "금빛 석관(제단) 일부",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:fun-x1-gatefix-arrow",
+        "label": "fun-x1-gatefix-arrow · 별의 매장실",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 내부의 별의 매장실(묘실)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "피라미드 묘실 전투 배경",
+      "instead": "숲 전투 배경(battle-scenery-forest)",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:fun-x1-gatefix-arrow",
+        "label": "fun-x1-gatefix-arrow · 별의 매장실",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 내부의 별의 매장실(묘실)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "피라미드 해골 궁수 또는 미라 궁수",
+      "instead": "광산 해골 궁수",
+      "kind": "foe",
+      "where": {
+        "group": "A:fun-x1-gatefix-arrow",
+        "label": "fun-x1-gatefix-arrow · 별의 매장실",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 내부의 별의 매장실(묘실)",
+        "run": "달샘과 잠든 태양|"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "제단",
+      "instead": "청록 수정 덩이, 마른 나무, 보물상자",
+      "unsure": false,
+      "namedBy": "label",
+      "where": {
+        "group": "A:jrpg-v2",
+        "label": "jrpg-v2 · 그림자 동굴",
+        "chipset": "beodeul_city",
+        "theme": "어두운 판타지 동굴 던전(마왕의 보스방)",
+        "run": "새벽을 되찾는 검|마을에서 시작해서 동굴 속 마왕을 쓰러뜨리는 짧은 판타지 RPG 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "샘",
+      "instead": "파란 수정",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-v2",
+        "label": "jrpg-v2 · 새벽 마을",
+        "chipset": "desert_east",
+        "theme": "사막 오아시스 마을(판타지 RPG 시작 마을)",
+        "run": "새벽을 되찾는 검|마을에서 시작해서 동굴 속 마왕을 쓰러뜨리는 짧은 판타지 RPG 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "표식",
+      "instead": "사람 캐릭터",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-v2",
+        "label": "jrpg-v2 · 새벽 마을",
+        "chipset": "desert_east",
+        "theme": "사막 오아시스 마을(판타지 RPG 시작 마을)",
+        "run": "새벽을 되찾는 검|마을에서 시작해서 동굴 속 마왕을 쓰러뜨리는 짧은 판타지 RPG 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "나무",
+      "instead": "나무 그루터기 하나와 풀밭(주변에 나무가 없음)",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-v2",
+        "label": "jrpg-v2 · 바람의 들판",
+        "chipset": "beodeul_city",
+        "theme": "마을과 숲 사이의 풀밭 들판(판타지)",
+        "run": "새벽을 되찾는 검|마을에서 시작해서 동굴 속 마왕을 쓰러뜨리는 짧은 판타지 RPG 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "집 문",
+      "instead": "목책 정문 앞 큰길(눈길 바닥). 잠긴 집이나 집 문은 그려져 있지 않음",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w1",
+        "label": "jrpg-w1 · 서리울 마을",
+        "chipset": "snow_north",
+        "theme": "눈 덮인 북방 통나무 마을(목책으로 둘러싼 바이킹풍 겨울 마을)",
+        "run": "서리 아래의 노래|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "모닥불",
+      "instead": "사람 캐릭터 스프라이트(꺼져가는 불씨 이벤트에 사람 그림이 쓰임)",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w1",
+        "label": "jrpg-w1 · 서리울 마을",
+        "chipset": "snow_north",
+        "theme": "눈 덮인 북방 통나무 마을(목책으로 둘러싼 바이킹풍 겨울 마을)",
+        "run": "서리 아래의 노래|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "꾸러미",
+      "instead": "사람 캐릭터 그림",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w1",
+        "label": "jrpg-w1 · 겨울 장터",
+        "chipset": "snow_north",
+        "theme": "눈 덮인 북방 마을의 겨울 장터",
+        "run": "서리 아래의 노래|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "생선 건조대",
+      "instead": "흰 줄이 매달린 나무 틀(고드름인지 말린 생선인지 불분명)과 자루",
+      "unsure": true,
+      "namedBy": "label",
+      "where": {
+        "group": "A:jrpg-w1",
+        "label": "jrpg-w1 · 겨울 장터",
+        "chipset": "snow_north",
+        "theme": "눈 덮인 북방 마을의 겨울 장터",
+        "run": "서리 아래의 노래|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "제단",
+      "instead": "맨 눈밭 (옆에 가문비나무)",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w1",
+        "label": "jrpg-w1 · 서리 절벽",
+        "chipset": "snow_north",
+        "theme": "눈 덮인 북방 절벽 (얼음 동굴 입구와 사냥꾼 야영지)",
+        "run": "서리 아래의 노래|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "두루마리",
+      "instead": "둘둘 말린 물건(두루마리인지 말린 가죽인지 불분명)",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w1",
+        "label": "jrpg-w1 · 족장의 긴집",
+        "chipset": "snow_north",
+        "theme": "북방 눈 지방 족장의 긴집 내부(바이킹풍 회관)",
+        "run": "서리 아래의 노래|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "수풀",
+      "instead": "막힘 없이 북쪽 맵 끝까지 이어지는 흙길",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w2",
+        "label": "jrpg-w2 · 버들나루",
+        "chipset": "beodeul_city",
+        "theme": "강가 시골 마을(판타지 중세 농촌 나루터)",
+        "run": "강의 빛을 찾아서|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "무너진 길",
+      "instead": "멀쩡하게 남쪽 맵 끝까지 이어지는 흙길",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w2",
+        "label": "jrpg-w2 · 버들나루",
+        "chipset": "beodeul_city",
+        "theme": "강가 시골 마을(판타지 중세 농촌 나루터)",
+        "run": "강의 빛을 찾아서|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "광부 기록",
+      "instead": "맨바닥",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w2",
+        "label": "jrpg-w2 · 이끼광산",
+        "chipset": "beodeul_city",
+        "theme": "이끼 낀 지하 광산 던전",
+        "run": "강의 빛을 찾아서|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "동굴 입구",
+      "instead": "작은 회색 바위와 풀밭(물안개 동굴로 가는 출구에 동굴 입구 그림이 없음)",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w2",
+        "label": "jrpg-w2 · 속삭임 숲",
+        "chipset": "beodeul_city",
+        "theme": "판타지 숲 던전(울창한 숲 속 빈터와 거대 고목)",
+        "run": "강의 빛을 찾아서|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "숲 전투 배경(나무와 풀밭이 있는 숲 속 빈터)",
+      "instead": "동굴 전투 배경(battle-scenery-cave)",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:jrpg-w2",
+        "label": "jrpg-w2 · 속삭임 숲",
+        "chipset": "beodeul_city",
+        "theme": "판타지 숲 던전(울창한 숲 속 빈터와 거대 고목)",
+        "run": "강의 빛을 찾아서|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "빛의 파편",
+      "instead": "보물상자",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w2",
+        "label": "jrpg-w2 · 물안개 동굴",
+        "chipset": "beodeul_city",
+        "theme": "물안개가 낀 지하 호수 동굴 던전",
+        "run": "강의 빛을 찾아서|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "석조 신전 내부(기둥과 제단이 있는 홀) 전투 배경",
+      "instead": "동굴 전투 배경",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:jrpg-w2",
+        "label": "jrpg-w2 · 잠든 신전",
+        "chipset": "beodeul_city",
+        "theme": "잠든 고대 신전 던전(석조 홀, 모자이크 바닥, 제단)",
+        "run": "강의 빛을 찾아서|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "샘",
+      "instead": "파란 수정",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w3",
+        "label": "jrpg-w3 · 별샘 오아시스",
+        "chipset": "desert_east",
+        "theme": "사막 오아시스 마을",
+        "run": "잠든 태양의 샘|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "화단",
+      "instead": "꽃 없는 잔디밭과 작은 야자수",
+      "unsure": true,
+      "namedBy": "label",
+      "where": {
+        "group": "A:jrpg-w3",
+        "label": "jrpg-w3 · 모래바람 대상단",
+        "chipset": "desert_east",
+        "theme": "사막 대상 숙소(카라반세라이) 마당",
+        "run": "잠든 태양의 샘|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "비문",
+      "instead": "정원 남쪽 끝, 성문 지붕 바로 옆의 맨 잔디(비석이나 새긴 판은 그려져 있지 않음)",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w3",
+        "label": "jrpg-w3 · 황금궁 정원",
+        "chipset": "desert_east",
+        "theme": "사막 황금 궁전의 성벽 안 정원과 성 밖 사암 마을",
+        "run": "잠든 태양의 샘|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "집 문",
+      "instead": "남쪽 성문 양옆의 성벽과 성문 기둥(집이나 집 문은 그려져 있지 않음)",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w3",
+        "label": "jrpg-w3 · 황금궁 정원",
+        "chipset": "desert_east",
+        "theme": "사막 황금 궁전의 성벽 안 정원과 성 밖 사암 마을",
+        "run": "잠든 태양의 샘|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "집",
+      "instead": "무너진 신전 터의 부서진 아치와 기둥(집이나 문은 그려지지 않음)",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w3",
+        "label": "jrpg-w3 · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적지(대피라미드, 참배 길, 무너진 신전, 유목 천막 야영지)",
+        "run": "잠든 태양의 샘|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "사막 피라미드나 모래 유적 전투 배경",
+      "instead": "숲 전투 배경(battle-scenery-forest)",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:jrpg-w3",
+        "label": "jrpg-w3 · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적지(대피라미드, 참배 길, 무너진 신전, 유목 천막 야영지)",
+        "run": "잠든 태양의 샘|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "모래 슬라임, 사막 전갈 같은 사막 몬스터",
+      "instead": "초원 슬라임",
+      "kind": "foe",
+      "where": {
+        "group": "A:jrpg-w3",
+        "label": "jrpg-w3 · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적지(대피라미드, 참배 길, 무너진 신전, 유목 천막 야영지)",
+        "run": "잠든 태양의 샘|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "미라 궁수, 피라미드 해골 병사",
+      "instead": "광산 해골 궁수",
+      "kind": "foe",
+      "where": {
+        "group": "A:jrpg-w3",
+        "label": "jrpg-w3 · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적지(대피라미드, 참배 길, 무너진 신전, 유목 천막 야영지)",
+        "run": "잠든 태양의 샘|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "사막 독수리, 무덤 박쥐 같은 유적 몬스터",
+      "instead": "동굴 박쥐",
+      "kind": "foe",
+      "where": {
+        "group": "A:jrpg-w3",
+        "label": "jrpg-w3 · 잠든 태양의 피라미드",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 유적지(대피라미드, 참배 길, 무너진 신전, 유목 천막 야영지)",
+        "run": "잠든 태양의 샘|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "제단",
+      "instead": "왕관을 쓴 왕 캐릭터 스프라이트",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-w3",
+        "label": "jrpg-w3 · 왕의 묘실",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 속 왕의 묘실 던전",
+        "run": "잠든 태양의 샘|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "피라미드 묘실 내부 전투 배경(사암 벽, 횃불, 석관)",
+      "instead": "숲 전투 배경(battle-scenery-forest)",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:jrpg-w3",
+        "label": "jrpg-w3 · 왕의 묘실",
+        "chipset": "desert_east",
+        "theme": "사막 피라미드 속 왕의 묘실 던전",
+        "run": "잠든 태양의 샘|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "물레방아",
+      "instead": "강가에 물레방아 없는 일반 목조 2층집",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-x1",
+        "label": "jrpg-x1 · 물안개 마을",
+        "chipset": "beodeul_city",
+        "theme": "강이 흐르는 판타지 농촌 마을",
+        "run": "마르지 않는 약속|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "수로 지도",
+      "instead": "광차(레일 위 광석 수레)",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-x1",
+        "label": "jrpg-x1 · 버려진 광산",
+        "chipset": "beodeul_city",
+        "theme": "버려진 광산 던전(갱도, 채굴장, 광차 레일)",
+        "run": "마르지 않는 약속|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "기록판",
+      "instead": "맨바닥",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-x1",
+        "label": "jrpg-x1 · 버려진 광산",
+        "chipset": "beodeul_city",
+        "theme": "버려진 광산 던전(갱도, 채굴장, 광차 레일)",
+        "run": "마르지 않는 약속|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "동굴",
+      "instead": "동굴이 아니라 풀밭 숲속 공터와 덤불이 그려져 있음",
+      "unsure": true,
+      "namedBy": "label",
+      "where": {
+        "group": "A:jrpg-x1",
+        "label": "jrpg-x1 · 속삭임 숲",
+        "chipset": "beodeul_city",
+        "theme": "판타지 숲 던전(속삭임 숲)",
+        "run": "마르지 않는 약속|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "던전 입구",
+      "instead": "맨 풀밭 숲길(입구 문이나 광산 입구 없음)",
+      "unsure": false,
+      "namedBy": "label",
+      "where": {
+        "group": "A:jrpg-x1",
+        "label": "jrpg-x1 · 속삭임 숲",
+        "chipset": "beodeul_city",
+        "theme": "판타지 숲 던전(속삭임 숲)",
+        "run": "마르지 않는 약속|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "숲 전투 배경",
+      "instead": "동굴 전투 배경(battle-scenery-cave)",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:jrpg-x1",
+        "label": "jrpg-x1 · 속삭임 숲",
+        "chipset": "beodeul_city",
+        "theme": "판타지 숲 던전(속삭임 숲)",
+        "run": "마르지 않는 약속|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "샘",
+      "instead": "맨바닥 (마른 샘 (25,26)은 신랑 기둥 옆 빈 바닥, 되살아나는 샘 (10,29)은 제단 방 출입부의 빈 바닥)",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-x1",
+        "label": "jrpg-x1 · 잊힌 신전",
+        "chipset": "beodeul_city",
+        "theme": "잊힌 고대 신전 던전(모래빛 석조 바닥, 기둥, 모자이크, 묘실)",
+        "run": "마르지 않는 약속|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "석조 신전 내부 전투 배경(기둥과 제단이 있는 신전 홀)",
+      "instead": "동굴 전투 배경(battle-scenery-cave)",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:jrpg-x1",
+        "label": "jrpg-x1 · 잊힌 신전",
+        "chipset": "beodeul_city",
+        "theme": "잊힌 고대 신전 던전(모래빛 석조 바닥, 기둥, 모자이크, 묘실)",
+        "run": "마르지 않는 약속|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "식탁",
+      "instead": "접수 카운터와 맨바닥만 있고 식사용 탁자·의자가 없음",
+      "unsure": false,
+      "namedBy": "label",
+      "where": {
+        "group": "A:jrpg-x1",
+        "label": "jrpg-x1 · 물레방아 여관",
+        "chipset": "atlas_biome_interior",
+        "theme": "판타지 강가 마을의 목조 여관 내부",
+        "run": "마르지 않는 약속|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "장부",
+      "instead": "벽 아래 맨바닥(카운터 위 종이 두 장은 장부인지 불분명)",
+      "unsure": true,
+      "namedBy": "event",
+      "where": {
+        "group": "A:jrpg-x1",
+        "label": "jrpg-x1 · 물레방아 여관",
+        "chipset": "atlas_biome_interior",
+        "theme": "판타지 강가 마을의 목조 여관 내부",
+        "run": "마르지 않는 약속|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "관측 작업대",
+      "instead": "평범한 나무 책상과 의자, 두루마리 더미 (강 관측 도구가 없어 작업대인지 불분명)",
+      "unsure": true,
+      "namedBy": "label",
+      "where": {
+        "group": "A:jrpg-x1",
+        "label": "jrpg-x1 · 강지기의 집",
+        "chipset": "atlas_biome_interior",
+        "theme": "강가 마을의 통나무 강지기 집 실내 (판타지)",
+        "run": "마르지 않는 약속|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "석조 탑 내부 또는 성 홀 전투 배경",
+      "instead": "동굴 전투 배경",
+      "kind": "backdrop",
+      "where": {
+        "group": "A:jrpg-x1",
+        "label": "jrpg-x1 · 옛 강지기의 탑",
+        "chipset": "beodeul_city",
+        "theme": "옛 석조 탑 내부 던전(강지기의 탑)",
+        "run": "마르지 않는 약속|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "궁전",
+      "instead": "반목조 2층 민가(마을 집)",
+      "unsure": false,
+      "namedBy": "request",
+      "where": {
+        "group": "B:castle",
+        "label": "맵 깔기 castle · 왕궁",
+        "chipset": "beodeul_city",
+        "theme": "성벽으로 둘러싸인 중세 왕궁",
+        "run": "B:castle"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "왕궁 정원 소품(분수, 정돈된 화단, 조각상, 깃발)",
+      "instead": "농가 소품(허수아비, 울타리 밭, 건초더미, 짐수레)",
+      "kind": "tile",
+      "where": {
+        "group": "B:castle",
+        "label": "맵 깔기 castle · 왕궁",
+        "chipset": "beodeul_city",
+        "theme": "성벽으로 둘러싸인 중세 왕궁",
+        "run": "B:castle"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "모닥불",
+      "instead": "작은 돌무더기(가운데 노란 점이 있는 돌 고리, 불꽃인지 불분명)",
+      "unsure": true,
+      "namedBy": "request",
+      "where": {
+        "group": "B:camp",
+        "label": "맵 깔기 camp · 숲속 야영지",
+        "chipset": "beodeul_city",
+        "theme": "숲속 야영지",
+        "run": "B:camp"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "숲 야영용 캔버스 천막(삼각 텐트, 갈색·녹색 천)",
+      "instead": "주황 줄무늬 시장 천막(도시 칩셋 노점 천막)",
+      "kind": "tile",
+      "where": {
+        "group": "B:camp",
+        "label": "맵 깔기 camp · 숲속 야영지",
+        "chipset": "beodeul_city",
+        "theme": "숲속 야영지",
+        "run": "B:camp"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "무너진 기둥",
+      "instead": "멀쩡히 선 기둥들과 작은 돌 부스러기만 있음(쓰러지거나 부러진 기둥 그림 없음)",
+      "unsure": true,
+      "namedBy": "request",
+      "where": {
+        "group": "B:ruins",
+        "label": "맵 깔기 ruins · 고대 유적 바깥",
+        "chipset": "beodeul_city",
+        "theme": "버려진 고대 유적 바깥(야외 폐허)",
+        "run": "B:ruins"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "샘",
+      "instead": "파란 수정",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "B:ruins",
+        "label": "맵 깔기 ruins · 고대 유적 바깥",
+        "chipset": "beodeul_city",
+        "theme": "버려진 고대 유적 바깥(야외 폐허)",
+        "run": "B:ruins"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "하늘 아래 흙·풀밭 바닥, 무너진 외벽, 덩굴 덮인 유적 바깥 지형",
+      "instead": "실내 던전 벽과 석판 바닥으로 사방이 막힌 방",
+      "kind": "tile",
+      "where": {
+        "group": "B:ruins",
+        "label": "맵 깔기 ruins · 고대 유적 바깥",
+        "chipset": "beodeul_city",
+        "theme": "버려진 고대 유적 바깥(야외 폐허)",
+        "run": "B:ruins"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "샘",
+      "instead": "작은 파란 수정 하나",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "B:cave",
+        "label": "맵 깔기 cave · 보물 동굴",
+        "chipset": "beodeul_city",
+        "theme": "동굴 던전(입구 홀에서 안쪽 보물 방까지 이어지는 바위 동굴)",
+        "run": "B:cave"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "버섯",
+      "instead": "청록색 수정 덩이와 작은 풀포기",
+      "unsure": true,
+      "namedBy": "label",
+      "where": {
+        "group": "B:cave",
+        "label": "맵 깔기 cave · 보물 동굴",
+        "chipset": "beodeul_city",
+        "theme": "동굴 던전(입구 홀에서 안쪽 보물 방까지 이어지는 바위 동굴)",
+        "run": "B:cave"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "감방",
+      "instead": "철창이나 감방 문이 없는 평범한 석조 방이 벽 틈으로 복도와 이어져 있음. 방 안에는 촛대, 항아리, 의자, 장식 패널이 있음",
+      "unsure": false,
+      "namedBy": "label",
+      "where": {
+        "group": "B:prison",
+        "label": "맵 깔기 prison · 지하 감옥",
+        "chipset": "atlas_biome_interior",
+        "theme": "지하 감옥 던전(복도 양쪽에 감방이 늘어선 석조 지하 감옥)",
+        "run": "B:prison"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "철창",
+      "instead": "감방과 복도 사이의 열린 돌바닥 통로(벽 틈)",
+      "unsure": false,
+      "namedBy": "request",
+      "where": {
+        "group": "B:prison",
+        "label": "맵 깔기 prison · 지하 감옥",
+        "chipset": "atlas_biome_interior",
+        "theme": "지하 감옥 던전(복도 양쪽에 감방이 늘어선 석조 지하 감옥)",
+        "run": "B:prison"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "감옥 침상",
+      "instead": "작은 의자와 항아리 같은 생활 소품",
+      "unsure": true,
+      "namedBy": "label",
+      "where": {
+        "group": "B:prison",
+        "label": "맵 깔기 prison · 지하 감옥",
+        "chipset": "atlas_biome_interior",
+        "theme": "지하 감옥 던전(복도 양쪽에 감방이 늘어선 석조 지하 감옥)",
+        "run": "B:prison"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "벽에 박힌 쇠사슬, 족쇄, 낡은 짚더미",
+      "instead": "금박 장식 패널(태피스트리)",
+      "kind": "tile",
+      "where": {
+        "group": "B:prison",
+        "label": "맵 깔기 prison · 지하 감옥",
+        "chipset": "atlas_biome_interior",
+        "theme": "지하 감옥 던전(복도 양쪽에 감방이 늘어선 석조 지하 감옥)",
+        "run": "B:prison"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "녹슨 양동이, 짚 깔개, 부서진 나무 침상",
+      "instead": "아늑한 생활 가구(둥근 의자, 장식 항아리, 촛대)",
+      "kind": "tile",
+      "where": {
+        "group": "B:prison",
+        "label": "맵 깔기 prison · 지하 감옥",
+        "chipset": "atlas_biome_interior",
+        "theme": "지하 감옥 던전(복도 양쪽에 감방이 늘어선 석조 지하 감옥)",
+        "run": "B:prison"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "창고",
+      "instead": "큰 나무문이 달린 반목조 집(헛간 같은 모양이라 창고인지 불분명)",
+      "unsure": true,
+      "namedBy": "request",
+      "where": {
+        "group": "B:harbor",
+        "label": "맵 깔기 harbor · 항구 마을",
+        "chipset": "beodeul_city",
+        "theme": "중세 유럽풍 항구 마을(호숫가·바닷가 부두)",
+        "run": "B:harbor"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "큰 배",
+      "instead": "부두 주변에 작은 나룻배만 있고 정박한 범선은 없음",
+      "unsure": true,
+      "namedBy": "request",
+      "where": {
+        "group": "B:harbor",
+        "label": "맵 깔기 harbor · 항구 마을",
+        "chipset": "beodeul_city",
+        "theme": "중세 유럽풍 항구 마을(호숫가·바닷가 부두)",
+        "run": "B:harbor"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "풀밭",
+      "instead": "사막 모래 바닥(사바나 아카시아 나무, 마른 풀, 돌 몇 개)",
+      "unsure": false,
+      "namedBy": "request",
+      "where": {
+        "group": "B:village-to-field",
+        "label": "맵 깔기 village-to-field · 동쪽 들판",
+        "chipset": "desert_east",
+        "theme": "마을 동쪽에 붙은 들판(풀밭 초원)",
+        "run": "B:village-to-field"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "초록 풀밭 바닥 타일, 들꽃, 활엽수",
+      "instead": "사막 모래 바닥 타일(desert_east 칩셋)",
+      "kind": "tile",
+      "where": {
+        "group": "B:village-to-field",
+        "label": "맵 깔기 village-to-field · 동쪽 들판",
+        "chipset": "desert_east",
+        "theme": "마을 동쪽에 붙은 들판(풀밭 초원)",
+        "run": "B:village-to-field"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "촌장 집",
+      "instead": "촌장 집으로 표시되거나 구별되는 건물이 없고 비슷한 초가 농가들만 있음",
+      "unsure": true,
+      "namedBy": "request",
+      "where": {
+        "group": "B:village-chief-house",
+        "label": "맵 깔기 village-chief-house · 작은 마을",
+        "chipset": "sengoku_edo",
+        "theme": "에도 시대 일본풍 작은 농촌 마을(초가 농가, 논밭, 강과 다리)",
+        "run": "B:village-chief-house"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "나무",
+      "instead": "맨 풀밭(나무가 한 그루도 없음)",
+      "unsure": false,
+      "namedBy": "request",
+      "where": {
+        "group": "B:forest-to-cave",
+        "label": "맵 깔기 forest-to-cave · 빈 맵",
+        "chipset": "beodeul_city",
+        "theme": "숲 안쪽의 동굴 입구 앞 공터",
+        "run": "B:forest-to-cave"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "샘",
+      "instead": "파란 수정",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "B:forest-to-cave",
+        "label": "맵 깔기 forest-to-cave · 빈 맵",
+        "chipset": "beodeul_city",
+        "theme": "숲 안쪽의 동굴 입구 앞 공터",
+        "run": "B:forest-to-cave"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "바위 언덕에 뚫린 자연 동굴 입구",
+      "instead": "나무 버팀목과 등불이 달린 광산 갱도 입구",
+      "kind": "tile",
+      "where": {
+        "group": "B:forest-to-cave",
+        "label": "맵 깔기 forest-to-cave · 빈 맵",
+        "chipset": "beodeul_city",
+        "theme": "숲 안쪽의 동굴 입구 앞 공터",
+        "run": "B:forest-to-cave"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "곡괭이",
+      "instead": "작업대, 나무통, 작은 상자, 회복 결정만 있음; 맵 어디에도 곡괭이·삽 같은 채굴 도구가 그려져 있지 않음",
+      "unsure": false,
+      "namedBy": "request",
+      "where": {
+        "group": "B:mine",
+        "label": "맵 깔기 mine · 버려진 광산",
+        "chipset": "beodeul_city",
+        "theme": "버려진 지하 광산 던전(갱도, 광맥, 광차 레일)",
+        "run": "B:mine"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "어두운 갱도 전투 배경(나무 버팀목과 광맥이 보이는 동굴)",
+      "instead": "기본 전투 배경(설정 없음)",
+      "kind": "backdrop",
+      "where": {
+        "group": "B:mine",
+        "label": "맵 깔기 mine · 버려진 광산",
+        "chipset": "beodeul_city",
+        "theme": "버려진 지하 광산 던전(갱도, 광맥, 광차 레일)",
+        "run": "B:mine"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "판자 길",
+      "instead": "맨 흙바닥; 판자 조각 2개(34,17·37,20 부근)만 따로 놓였고 물웅덩이 사이를 잇지 않음",
+      "unsure": false,
+      "namedBy": "request",
+      "where": {
+        "group": "B:swamp",
+        "label": "맵 깔기 swamp · 안개 낀 늪지대",
+        "chipset": "beodeul_city",
+        "theme": "안개 낀 숲속 늪지대 던전(물웅덩이와 판자 길)",
+        "run": "B:swamp"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "계단",
+      "instead": "맨바닥(흙길 끝)",
+      "unsure": false,
+      "namedBy": "event",
+      "where": {
+        "group": "B:swamp",
+        "label": "맵 깔기 swamp · 안개 낀 늪지대",
+        "chipset": "beodeul_city",
+        "theme": "안개 낀 숲속 늪지대 던전(물웅덩이와 판자 길)",
+        "run": "B:swamp"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "물길",
+      "instead": "맨 흙바닥과 작은 물웅덩이 1개",
+      "unsure": true,
+      "namedBy": "label",
+      "where": {
+        "group": "B:swamp",
+        "label": "맵 깔기 swamp · 안개 낀 늪지대",
+        "chipset": "beodeul_city",
+        "theme": "안개 낀 숲속 늪지대 던전(물웅덩이와 판자 길)",
+        "run": "B:swamp"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "늪지대 전투 배경",
+      "instead": "기본 전투 배경(설정 없음)",
+      "kind": "backdrop",
+      "where": {
+        "group": "B:swamp",
+        "label": "맵 깔기 swamp · 안개 낀 늪지대",
+        "chipset": "beodeul_city",
+        "theme": "안개 낀 숲속 늪지대 던전(물웅덩이와 판자 길)",
+        "run": "B:swamp"
+      }
+    },
+    {
+      "source": "theme",
+      "thing": "나무 둥근 의자",
+      "instead": "금속 다리 빨간 바 의자",
+      "kind": "tile",
+      "where": {
+        "group": "B:tavern",
+        "label": "맵 깔기 tavern · 모험가의 선술집",
+        "chipset": "atlas_biome_interior",
+        "theme": "중세 판타지 선술집 실내",
+        "run": "B:tavern"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "가축 우리",
+      "instead": "맵에 있는 나무 울타리는 밭(작물 이랑)만 두르고 있고, 가축을 가두는 우리는 어디에도 없음",
+      "unsure": false,
+      "namedBy": "request",
+      "where": {
+        "group": "B:farm",
+        "label": "맵 깔기 farm · 농장",
+        "chipset": "beodeul_city",
+        "theme": "중세풍 시골 농장(밭, 헛간, 가축 우리가 있는 농촌 마을)",
+        "run": "B:farm"
+      }
+    },
+    {
+      "source": "reviewer",
+      "thing": "가축",
+      "instead": "맵 어디에도 소·돼지·닭 같은 동물이 그려져 있지 않음",
+      "unsure": false,
+      "namedBy": "request",
+      "where": {
+        "group": "B:farm",
+        "label": "맵 깔기 farm · 농장",
+        "chipset": "beodeul_city",
+        "theme": "중세풍 시골 농장(밭, 헛간, 가축 우리가 있는 농촌 마을)",
+        "run": "B:farm"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "mushrooms",
+      "instead": "뺌",
+      "kind": "feature-dropped",
+      "where": {
+        "group": "A:fun-v2",
+        "label": "fun-v2",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "별빛 배달부|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "pillars",
+      "instead": "뺌",
+      "kind": "feature-dropped",
+      "where": {
+        "group": "A:fun-v2",
+        "label": "fun-v2",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "별빛 배달부|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "나무 의자",
+      "instead": "얼음 낚시 자리(구멍·낚싯대·통 의자·물고기)(sn-fishing-spot)",
+      "kind": "stand-in-offered",
+      "where": {
+        "group": "A:fun-w3",
+        "label": "fun-w3",
+        "chipset": "snow_north",
+        "theme": "",
+        "run": "얼음 아래의 노래|재밌는 게임 만들어 줘."
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "mushrooms",
+      "instead": "뺌",
+      "kind": "feature-dropped",
+      "where": {
+        "group": "A:jrpg-v2",
+        "label": "jrpg-v2",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "새벽을 되찾는 검|마을에서 시작해서 동굴 속 마왕을 쓰러뜨리는 짧은 판타지 RPG 만들어 줘."
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "pillars",
+      "instead": "뺌",
+      "kind": "feature-dropped",
+      "where": {
+        "group": "A:jrpg-v2",
+        "label": "jrpg-v2",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "새벽을 되찾는 검|마을에서 시작해서 동굴 속 마왕을 쓰러뜨리는 짧은 판타지 RPG 만들어 줘."
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "차 쟁반",
+      "instead": "놋쟁반 찻상(de-tea-table)",
+      "kind": "stand-in-offered",
+      "where": {
+        "group": "A:jrpg-w3",
+        "label": "jrpg-w3",
+        "chipset": "desert_east",
+        "theme": "",
+        "run": "잠든 태양의 샘|판타지 RPG 게임 하나 만들어 줘."
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "무너진 고대 유적 입구",
+      "instead": "담쟁이 아치(정원 입구)(bd-mpart-ivy-arch)",
+      "kind": "stand-in-offered",
+      "where": {
+        "group": "B:ruins",
+        "label": "맵 깔기 ruins",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "B:ruins"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "boulders",
+      "instead": "뺌",
+      "kind": "feature-dropped",
+      "where": {
+        "group": "B:cave",
+        "label": "맵 깔기 cave",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "B:cave"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "배",
+      "instead": "없음(그리기 카드 대기)",
+      "kind": "missing-art",
+      "where": {
+        "group": "B:harbor",
+        "label": "맵 깔기 harbor",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "B:harbor"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "배",
+      "instead": "없음(그리기 카드 대기)",
+      "kind": "card-queued",
+      "where": {
+        "group": "B:harbor",
+        "label": "맵 깔기 harbor",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "B:harbor"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "항구에 부두와 배가 보이도록 만들기",
+      "instead": "막힘(놓지 못함)",
+      "kind": "blocked-todo",
+      "where": {
+        "group": "B:harbor",
+        "label": "맵 깔기 harbor",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "B:harbor"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "crystals",
+      "instead": "뺌",
+      "kind": "feature-dropped",
+      "where": {
+        "group": "B:forest-to-cave",
+        "label": "맵 깔기 forest-to-cave",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "B:forest-to-cave"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "진열대",
+      "instead": "",
+      "kind": "missing-art",
+      "where": {
+        "group": "B:convenience-store",
+        "label": "맵 깔기 convenience-store",
+        "chipset": "modern_city",
+        "theme": "",
+        "run": "B:convenience-store"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "계산대",
+      "instead": "",
+      "kind": "missing-art",
+      "where": {
+        "group": "B:convenience-store",
+        "label": "맵 깔기 convenience-store",
+        "chipset": "modern_city",
+        "theme": "",
+        "run": "B:convenience-store"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "음료 냉장고",
+      "instead": "",
+      "kind": "missing-art",
+      "where": {
+        "group": "B:convenience-store",
+        "label": "맵 깔기 convenience-store",
+        "chipset": "modern_city",
+        "theme": "",
+        "run": "B:convenience-store"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "곡괭이",
+      "instead": "없음(그리기 카드 대기)",
+      "kind": "missing-art",
+      "where": {
+        "group": "B:mine",
+        "label": "맵 깔기 mine",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "B:mine"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "곡괭이",
+      "instead": "없음(그리기 카드 대기)",
+      "kind": "card-queued",
+      "where": {
+        "group": "B:mine",
+        "label": "맵 깔기 mine",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "B:mine"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "채굴용 곡괭이",
+      "instead": "없음(그리기 카드 대기)",
+      "kind": "missing-art",
+      "where": {
+        "group": "B:mine",
+        "label": "맵 깔기 mine",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "B:mine"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "채굴용 곡괭이",
+      "instead": "없음(그리기 카드 대기)",
+      "kind": "card-queued",
+      "where": {
+        "group": "B:mine",
+        "label": "맵 깔기 mine",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "B:mine"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "곡괭이 같은 채굴 도구를 배치하기",
+      "instead": "막힘(놓지 못함)",
+      "kind": "blocked-todo",
+      "where": {
+        "group": "B:mine",
+        "label": "맵 깔기 mine",
+        "chipset": "beodeul_city",
+        "theme": "",
+        "run": "B:mine"
+      }
+    },
+    {
+      "source": "tool",
+      "thing": "성경대 (S 쪽을 보는 그림)",
+      "instead": "다른 쪽을 보는 그림 그대로",
+      "kind": "no-direction-art",
+      "where": {
+        "group": "B:temple",
+        "label": "맵 깔기 temple",
+        "chipset": "atlas_biome_interior",
+        "theme": "",
+        "run": "B:temple"
+      }
+    }
+  ]
+}

@@ -21,7 +21,7 @@ const SYSTEM = [
   'Look only at what is overlaid on the game view: gauges/bars, numbers, hearts, tool or item slots, rings, clocks, gold, the objective line or chip (usually top-right), and any label. Do NOT review the map itself (tiles, buildings, roads) — another reviewer does that.',
   '',
   'Report a defect only when you can point at it on the screenshot. Classes:',
-  '- "unused-gauge": a gauge, bar or number for a stat this game never changes. Use the FACTS line "What this game actually uses": e.g. an MP bar «마력 43/43» when no skill costs MP, an HP bar when nothing can hurt the hero, a stamina ring without action combat. A lone gauge left over after the others were hidden is the typical case.',
+  '- "unused-gauge": a gauge, bar or number for a stat this game never changes. Use the FACTS line "What this game actually uses": e.g. an MP bar «마력 43/43» when no skill costs MP, an HP bar when nothing can hurt the hero, a stamina ring without action combat, a clock or calendar when FACTS say no time system is set. A lone gauge left over after the others were hidden is the typical case.',
   '- "wrong-genre-hud": HUD pieces from another kind of game: action-game pieces (tool/weapon slots, stamina ring, hearts as life) on a turn-based or story game, a farm clock/energy bar on a dungeon crawler, and so on. Use the FACTS line about combat.',
   '- "unreadable": HUD text or numbers that are hard to read where they sit (light text on bright sand/snow, no backing panel, tiny text, text cut by the screen edge).',
   '- "covers-play": a HUD piece or the objective chip sits on top of the hero or of the thing the player must look at or walk to.',
@@ -52,6 +52,7 @@ export function hudFacts(project: Project): { config: unknown; onScreen: string[
     `What that setting puts on the field screen: ${onScreen.join('; ') || 'nothing'}.`,
     `What this game actually uses: HP can go down: ${use.hp ? 'yes' : 'NO'} · some skill costs MP: ${use.mp ? 'yes' : 'NO'} · stamina (action combat): ${use.stamina ? 'yes' : 'NO'}.`,
     `Combat: ${actionCombat ? 'real-time ACTION combat on the field' : battles ? 'TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing)' : 'NO battles at all (a story / exploration game)'}.`,
+    `Game time: ${doc.system?.timeSystem ? 'a time system is set (hours and days pass)' : 'NO time system is set'}${Object.values<any>(doc.maps ?? {}).some(map => (map.events ?? []).some((event: any) => allCommands(event).some(command => command.kind === 'advanceTime' || command.kind === 'setTime'))) ? '; an event changes the time' : '; no event changes the time'}.`,
     ...(unused.length ? [`Model-free check: the setting shows a gauge for ${unused.join(', ')}, which this game never changes.`] : []),
   ].join('\n');
   return { config, onScreen, use, actionCombat, unused, text };
