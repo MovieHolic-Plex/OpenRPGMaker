@@ -44,9 +44,9 @@ export async function reviewMap(item: MapItem, options: ReviewOptions): Promise<
   return { review, facts };
 }
 
-export type MapVqaOptions = { out?: string; corpus?: string; only?: string; noReview?: boolean; /** 없는 그림 장부를 만들지 않는다(둘째 물음 생략). */ noArt?: boolean; html?: string; before?: string; concurrency?: string };
+export type MapVqaOptions = { out?: string; corpus?: string; only?: string; noReview?: boolean; /** 없는 그림 장부를 만들지 않는다(둘째 물음 생략). */ noArt?: boolean; html?: string; before?: string; /** 앞 맵 깔기 실행의 tally.json — 요청마다 앞/지금을 나란히. */ beforeLay?: string; concurrency?: string };
 export async function runMapVqa(options: MapVqaOptions): Promise<number> {
-  if (!options.out || !options.corpus) throw Error('map-vqa --corpus <실행 폴더[,폴더…] | whole-games:<상위 폴더>> --out <결과 폴더> [--only 글자] [--no-review] [--html <출력.html>] [--before <앞 tally.json>]');
+  if (!options.out || !options.corpus) throw Error('map-vqa --corpus <실행 폴더[,폴더…] | whole-games:<상위 폴더>> --out <결과 폴더> [--only 글자] [--no-review] [--html <출력.html>] [--before <앞 tally.json>] [--before-lay <앞 맵 깔기 tally.json>]');
   const reviewer = loadReviewer(), usage = newUsage();
   let items = loadCorpus(options.corpus);
   if (options.only) { const needles = options.only.split(',').map(part => part.trim()).filter(Boolean); items = items.filter(item => needles.some(needle => item.id.includes(needle) || item.group.includes(needle))); }
@@ -92,7 +92,8 @@ export async function runMapVqa(options: MapVqaOptions): Promise<number> {
     writeFileSync(resolve(options.out, 'tally.json'), JSON.stringify(tally, null, 2));
   }
   const before = options.before ? JSON.parse(readFileSync(resolve(options.before), 'utf8')) : null;
-  const html = writeMapVqaPage({ out: options.out, tally, reviewer, before, html: options.html, artGaps, reviews: results });
+  const beforeLay = options.beforeLay ? JSON.parse(readFileSync(resolve(options.beforeLay), 'utf8')) : null;
+  const html = writeMapVqaPage({ out: options.out, tally, reviewer, before, beforeLay, html: options.html, artGaps, reviews: results });
   const t = tally.totals;
   console.log(`\nmap-vqa: 맵 ${t.maps}장(검수 ${t.reviewed}) · blocker 가 있는 맵 ${t.withBlocker} · major 이상이 있는 맵 ${t.withMajorOrWorse} · 깨끗한 맵 ${t.clean} · 결함 blocker ${t.blocker} / major ${t.major} / polish ${t.polish}`);
   if (artGaps) console.log(`없는 그림 장부: ${artGaps.totals.rows}줄(검수자 ${artGaps.totals.fromReviewer} · 도구 신고 ${artGaps.totals.fromTools} · 다른 주제 대역 ${artGaps.totals.wrongTheme}) → ${resolve(options.out, 'art-gaps.json')}`);
