@@ -115,3 +115,25 @@ export function declaredStairCells(project: Project, map: GameMap): { x: number;
   const tiles = new Set([...roomKitTiles(tileset).stairs, ...tilesetSurface(tileset).stairs]);
   return bottomCells(map, tiles);
 }
+
+/**
+ * 드나드는 그림이 놓인 칸(칸 번호 y*w+x) — 건물 키트의 입구 그림 · 방 키트의 문·계단 기물 · 표면 계약의 계단. 어느 층이든.
+ * 「입구 그림 옆 맨바닥에 선 이벤트」 출하 검사(judge/discoverability.ts offArtEntrances)가 읽는다 — 이름표 낱말로 읽으면 「가문비」「얼음 구멍」「무너진 아치 문」과
+ * 설명에 「양개문」이 든 건물의 모든 칸이 입구 그림이었다.
+ */
+export function entranceArtCells(project: Project, map: GameMap): Set<number> {
+  const tileset = project.tilesets[map.tilesetId];
+  const kit = entranceTiles(tileset), room = roomKitTiles(tileset), stairs = tilesetSurface(tileset).stairs;
+  const out = new Set<number>();
+  if (!kit.size && !room.doors.size && !room.stairs.size && !stairs.size) return out;
+  const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
+  for (const layer of LAYERS) {
+    const tiles = m[layer];
+    if (!tiles) continue;
+    for (let i = 0; i < map.width * map.height; i++) {
+      const t = tiles[i];
+      if (typeof t === "number" && t >= 0 && (kit.has(t) || room.doors.has(t) || room.stairs.has(t) || stairs.has(t))) out.add(i);
+    }
+  }
+  return out;
+}
