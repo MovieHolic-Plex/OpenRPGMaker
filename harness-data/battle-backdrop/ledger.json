@@ -7453,6 +7453,698 @@
      "reloaded": true
     }
    ]
+  },
+  "theme-tomb": {
+   "id": "theme-tomb",
+   "createdAt": "2026-11-11T12:21:57Z",
+   "project": {
+    "file": "qa-runs/harnesses/battle-backdrop/_places/tomb.project.json",
+    "sha256": "aa5957845357e8977c61eb0a57a8d905be35cf28a4ca17cbd524e7c542a34af4",
+    "title": "새 프로젝트"
+   },
+   "assetsRoot": "/home/main/z-project/rpg-zzu-assistant-fable-av2-art",
+   "mapId": "map_55cb76df-1b9f-4f55-b870-216aca06a5cc",
+   "window": {
+    "x": 0,
+    "y": 0,
+    "w": 13,
+    "h": 16
+   },
+   "captureSha256": "8060cafdbb6b453990b4db3037be9b07f0e227cb1c8d465e9e840cc916b12209",
+   "referenceSha256": "3d308ba86c80c22a5dc8b14c0af9560ce25491ff8ec18f62e26d0a903818796f",
+   "facts": {
+    "mapId": "map_55cb76df-1b9f-4f55-b870-216aca06a5cc",
+    "mapName": "묘실",
+    "tilesetName": "사막·동양풍 (손 도트)",
+    "indoor": true,
+    "timeOfDay": "day",
+    "timeCertain": false,
+    "light": "bright",
+    "evidence": [
+     "맵 기본 조명 없음(ambient 0)",
+     "시간 낱말 없음 · 실내 → 시간은 정하지 않고 조명만 맞춘다",
+     "--indoor 로 지정"
+    ],
+    "placeWords": [
+     "묘실",
+     "피라미드 묘실(통로 포함)"
+    ],
+    "captureLuma": 0.305,
+    "palette": [
+     "#140c0a",
+     "#141a3c",
+     "#2a2220",
+     "#2a1a14",
+     "#1f2c64",
+     "#44372f",
+     "#4a2e22",
+     "#4366b8",
+     "#2c4490",
+     "#5a321d",
+     "#5a3a24",
+     "#1b7e7a",
+     "#135a5c",
+     "#6e4430",
+     "#5f4e42",
+     "#96603c",
+     "#7a4e14",
+     "#85222a",
+     "#b77e4c",
+     "#b05a14",
+     "#e3b77e",
+     "#d9a478",
+     "#cf9a62",
+     "#ecd062"
+    ],
+    "note": "A sealed sandstone burial chamber inside a pyramid: block walls, pillars, a sarcophagus and urns against the back wall, torch light."
+   },
+   "candidates": [
+    {
+     "letter": "A",
+     "promptSha256": "c953a896f5c5968c040be23b6072029b81475ac6b47bc84888479c4a3106972d",
+     "rawSha256": "450baca589d7ed36695c7d5cf29a3594229a4d3ce6cdacf80bc2d5544975b544",
+     "nativePixelSha256": "f421c30b7d9a1f364ea13c8765effc31c6e32f0a0703b1c314cb7c129b1178cf",
+     "storedPixelSha256": "952c675794b0aa390dfeff547c19501373c27a9a34ce20b4e244f8a903e2c56e",
+     "colors": 25,
+     "palette": [
+      "#2a2220",
+      "#2a1a14",
+      "#4a2e22",
+      "#2c4490",
+      "#5a321d",
+      "#5a3a24",
+      "#1b7e7a",
+      "#6e4430",
+      "#5f4e42",
+      "#96603c",
+      "#7a4e14",
+      "#b77e4c",
+      "#b05a14",
+      "#e3b77e",
+      "#d9a478",
+      "#cf9a62",
+      "#ecd062",
+      "#353f57",
+      "#9e432d",
+      "#506f9a",
+      "#72707e",
+      "#e3a434",
+      "#d65e1c",
+      "#eaaf38",
+      "#f3daa3"
+     ],
+     "extras": [
+      "#353f57",
+      "#9e432d",
+      "#506f9a",
+      "#72707e",
+      "#e3a434",
+      "#d65e1c",
+      "#eaaf38",
+      "#f3daa3"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "25",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.222 / 위 0.568",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.46 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "f421c30b7d9a1f364ea13c8765effc31c6e32f0a0703b1c314cb7c129b1178cf",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "unclear",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "The candidate shows the same tomb chamber in side view, with frieze, statues, torch pillars, chests, urns and a sarcophagus along the back wall. The lower half is open plank floor. The statues are decorative props, not characters, and the frieze is ornamental pattern, not readable text."
+      },
+      "findings": [],
+      "at": "2026-11-11T12:24:04Z"
+     }
+    },
+    {
+     "letter": "B",
+     "promptSha256": "28dcd6b9184b549782828bd9f13641ad529c1bffd5ad95b795ff5b2845f2bf9f",
+     "rawSha256": "096c398961f739bab9687bf3f6831952edf595767aa0f8a2ff09bc12090cab78",
+     "nativePixelSha256": "2d46f6bd32557e846c86094258ec6577af834187ab6570f0dc9f7469852efc3d",
+     "storedPixelSha256": "ac5e4e2f1b8e884c8c6d2012dec8b5bb0e24db372660b4e2ffe42e22e91fe36a",
+     "colors": 30,
+     "palette": [
+      "#2a2220",
+      "#2a1a14",
+      "#1f2c64",
+      "#44372f",
+      "#4a2e22",
+      "#4366b8",
+      "#2c4490",
+      "#5a321d",
+      "#5a3a24",
+      "#1b7e7a",
+      "#135a5c",
+      "#6e4430",
+      "#5f4e42",
+      "#96603c",
+      "#7a4e14",
+      "#85222a",
+      "#b77e4c",
+      "#b05a14",
+      "#e3b77e",
+      "#d9a478",
+      "#cf9a62",
+      "#ecd062",
+      "#9d4619",
+      "#438e67",
+      "#676d53",
+      "#1f9988",
+      "#25948f",
+      "#eed49c",
+      "#dfaa3c",
+      "#f0d8a2"
+     ],
+     "extras": [
+      "#9d4619",
+      "#438e67",
+      "#676d53",
+      "#1f9988",
+      "#25948f",
+      "#eed49c",
+      "#dfaa3c",
+      "#f0d8a2"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "30",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.260 / 위 0.620",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.42 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "2d46f6bd32557e846c86094258ec6577af834187ab6570f0dc9f7469852efc3d",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "unclear",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "The wall matches the tomb's frieze, chests, urns, torches and animal statues, which are decor and not live characters. The lower floor is clear but is a blotchy orange fill that doesn't match the brick floor in the reference."
+      },
+      "findings": [],
+      "at": "2026-11-11T12:24:02Z"
+     }
+    },
+    {
+     "letter": "C",
+     "promptSha256": "150752c0dc5cc538f63cc14482ea4cfeaf742f2cbb2a929db73ace99d6d9fb32",
+     "rawSha256": "6aa1c2e21005598dfc97289d965819e6031e7c5416995ad546b0c00e4cc3222f",
+     "nativePixelSha256": "b71ad85364e252fa5a42424b4262a2d9380f42772354b9b2d53a6cc9d9602875",
+     "storedPixelSha256": "42311281452ea68abe8cd94d6b25fed2fdadad3874c818121dd162671320b9e7",
+     "colors": 28,
+     "palette": [
+      "#2a2220",
+      "#2a1a14",
+      "#1f2c64",
+      "#44372f",
+      "#4a2e22",
+      "#4366b8",
+      "#2c4490",
+      "#5a321d",
+      "#5a3a24",
+      "#1b7e7a",
+      "#6e4430",
+      "#96603c",
+      "#7a4e14",
+      "#85222a",
+      "#b77e4c",
+      "#b05a14",
+      "#e3b77e",
+      "#d9a478",
+      "#cf9a62",
+      "#ecd062",
+      "#64171b",
+      "#b13e1b",
+      "#139c91",
+      "#cb6621",
+      "#18a798",
+      "#ae9279",
+      "#f2dab1",
+      "#f1dcb9"
+     ],
+     "extras": [
+      "#64171b",
+      "#b13e1b",
+      "#139c91",
+      "#cb6621",
+      "#18a798",
+      "#ae9279",
+      "#f2dab1",
+      "#f1dcb9"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "28",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.003 / 위 0.571",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.41 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "b71ad85364e252fa5a42424b4262a2d9380f42772354b9b2d53a6cc9d9602875",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "unclear",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Tomb wall with frieze, wall torches, chests, urns, sarcophagus and lion statues (props, not creatures) above a clear plain floor; matches the map's furnishings."
+      },
+      "findings": [],
+      "at": "2026-11-11T12:24:01Z"
+     }
+    },
+    {
+     "letter": "D",
+     "promptSha256": "0ab2952eccc1c3f3983d7d48cf1d6c9a14ded6ea4e235373c3fb7d26c721cc63",
+     "rawSha256": "3add9d89eadd4a1b9a81ce409c01e6097222837139de39f7c24bb03c47820bd5",
+     "nativePixelSha256": "094fe8e26b3cdbc42c7f4ac2142879f85d997b79c8071b253731c714118ecb15",
+     "storedPixelSha256": "a3da63377476df60fd27b0137f4e6adee7f53b2dd8277e39c4938d3ad0866327",
+     "colors": 29,
+     "palette": [
+      "#2a2220",
+      "#2a1a14",
+      "#1f2c64",
+      "#44372f",
+      "#4a2e22",
+      "#4366b8",
+      "#2c4490",
+      "#5a321d",
+      "#5a3a24",
+      "#1b7e7a",
+      "#135a5c",
+      "#6e4430",
+      "#5f4e42",
+      "#96603c",
+      "#7a4e14",
+      "#85222a",
+      "#b77e4c",
+      "#b05a14",
+      "#e3b77e",
+      "#d9a478",
+      "#cf9a62",
+      "#ecd062",
+      "#953823",
+      "#a83f24",
+      "#13a192",
+      "#549b77",
+      "#16af98",
+      "#dbaf36",
+      "#efe0b1"
+     ],
+     "extras": [
+      "#953823",
+      "#a83f24",
+      "#13a192",
+      "#549b77",
+      "#16af98",
+      "#dbaf36",
+      "#efe0b1"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": false,
+       "value": "아래 0.248 / 위 0.645",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.45 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     },
+     "judge": {
+      "by": "claude:sonnet",
+      "nativePixelSha256": "094fe8e26b3cdbc42c7f4ac2142879f85d997b79c8071b253731c714118ecb15",
+      "verdict": {
+       "characters": false,
+       "text": false,
+       "time": "unclear",
+       "samePlace": true,
+       "sideView": true,
+       "groundClear": true,
+       "pixelArt": true,
+       "notes": "Egyptian-style tomb wall with pillars, braziers, chests and a sarcophagus matches the map's props, and the lower half is open mottled floor; the carved pillar capitals are decoration, not creatures."
+      },
+      "findings": [],
+      "at": "2026-11-11T12:24:00Z"
+     }
+    },
+    {
+     "letter": "E",
+     "promptSha256": "1337fe8561fdb713bb973bc23e599c6508dd599fe7f987ba70074eff173e7cbe",
+     "rawSha256": "89a434a63838f0e9f8c99a9cfbea5e3d479cd7b939bfba4e5ca22bbbeef9d48c",
+     "nativePixelSha256": "81bfcd1f53922c2ed8e56c10bf010c548e153307cdf876e8aeda5a05fcbc7bee",
+     "storedPixelSha256": "ee7c456d49963511d31159d726e8445de50e3bd72450e3071cea83a17265fa55",
+     "colors": 26,
+     "palette": [
+      "#2a2220",
+      "#1f2c64",
+      "#44372f",
+      "#4a2e22",
+      "#5a321d",
+      "#5a3a24",
+      "#1b7e7a",
+      "#135a5c",
+      "#6e4430",
+      "#5f4e42",
+      "#96603c",
+      "#7a4e14",
+      "#b77e4c",
+      "#b05a14",
+      "#e3b77e",
+      "#d9a478",
+      "#cf9a62",
+      "#ecd062",
+      "#256a51",
+      "#414e78",
+      "#4c695c",
+      "#847b42",
+      "#17967e",
+      "#d68124",
+      "#ebd8a0",
+      "#f1e6be"
+     ],
+     "extras": [
+      "#256a51",
+      "#414e78",
+      "#4c695c",
+      "#847b42",
+      "#17967e",
+      "#d68124",
+      "#ebd8a0",
+      "#f1e6be"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "26",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.187 / 위 0.616",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.41 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "F",
+     "promptSha256": "c953a896f5c5968c040be23b6072029b81475ac6b47bc84888479c4a3106972d",
+     "rawSha256": "ad20df64293a985dbc5382fdd19011daa96a7c0eac02d69cb86cd42cb38f7de2",
+     "nativePixelSha256": "de438c53d5766f9a7dfbfb991686daa1be25c9ce1f4c9be46787aefe42a55f52",
+     "storedPixelSha256": "6ead0534c09c7a9d257f5d54ea8a5691ed79a4b5dbbee29af4a3527fef47401b",
+     "colors": 29,
+     "palette": [
+      "#2a2220",
+      "#2a1a14",
+      "#1f2c64",
+      "#44372f",
+      "#4a2e22",
+      "#4366b8",
+      "#2c4490",
+      "#5a321d",
+      "#5a3a24",
+      "#1b7e7a",
+      "#135a5c",
+      "#6e4430",
+      "#5f4e42",
+      "#96603c",
+      "#7a4e14",
+      "#85222a",
+      "#b77e4c",
+      "#b05a14",
+      "#e3b77e",
+      "#d9a478",
+      "#cf9a62",
+      "#964118",
+      "#964019",
+      "#199290",
+      "#9c461b",
+      "#109e9e",
+      "#179796",
+      "#e6aa32",
+      "#eed1a1"
+     ],
+     "extras": [
+      "#964118",
+      "#964019",
+      "#199290",
+      "#9c461b",
+      "#109e9e",
+      "#179796",
+      "#e6aa32",
+      "#eed1a1"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.000 / 위 0.605",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.47 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "G",
+     "promptSha256": "28dcd6b9184b549782828bd9f13641ad529c1bffd5ad95b795ff5b2845f2bf9f",
+     "rawSha256": "cae978e3d923a0b9ed706484361cdc3ba1c3cb9753a949b7492a64ac769b7a12",
+     "nativePixelSha256": "57787101cedcd2784c7e371f3b0587b5819e6500d06ae7ac00959efde2f03a11",
+     "storedPixelSha256": "575f859dd90a9be8983ba16286a3b61917edb1f6d5d964a050871b9a08d9c181",
+     "colors": 29,
+     "palette": [
+      "#141a3c",
+      "#2a2220",
+      "#2a1a14",
+      "#1f2c64",
+      "#4a2e22",
+      "#4366b8",
+      "#2c4490",
+      "#5a321d",
+      "#5a3a24",
+      "#1b7e7a",
+      "#135a5c",
+      "#6e4430",
+      "#96603c",
+      "#7a4e14",
+      "#85222a",
+      "#b77e4c",
+      "#b05a14",
+      "#e3b77e",
+      "#d9a478",
+      "#cf9a62",
+      "#ecd062",
+      "#36486d",
+      "#98785e",
+      "#34a393",
+      "#c58b1c",
+      "#e1a428",
+      "#fb8a22",
+      "#f9d09c",
+      "#fcf4c6"
+     ],
+     "extras": [
+      "#36486d",
+      "#98785e",
+      "#34a393",
+      "#c58b1c",
+      "#e1a428",
+      "#fb8a22",
+      "#f9d09c",
+      "#fcf4c6"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "29",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.035 / 위 0.601",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.40 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    },
+    {
+     "letter": "H",
+     "promptSha256": "150752c0dc5cc538f63cc14482ea4cfeaf742f2cbb2a929db73ace99d6d9fb32",
+     "rawSha256": "54b5ce7d509cab6f97363ea3086be32f963b223b6e8eed56290fb5468f435f4e",
+     "nativePixelSha256": "2b0dbc2209bfb7e415b7fdf1901a79f7d5fc732b822921e5ce6cc7e558400e99",
+     "storedPixelSha256": "755a241747244edb0e6b1545694c4b1c549864f47ab082d194c3149f8be3f4e7",
+     "colors": 30,
+     "palette": [
+      "#141a3c",
+      "#2a2220",
+      "#2a1a14",
+      "#1f2c64",
+      "#44372f",
+      "#4a2e22",
+      "#4366b8",
+      "#2c4490",
+      "#5a321d",
+      "#5a3a24",
+      "#1b7e7a",
+      "#135a5c",
+      "#6e4430",
+      "#96603c",
+      "#7a4e14",
+      "#85222a",
+      "#b77e4c",
+      "#b05a14",
+      "#e3b77e",
+      "#d9a478",
+      "#cf9a62",
+      "#ecd062",
+      "#98351e",
+      "#99331e",
+      "#ac371e",
+      "#1fae7c",
+      "#ba3d20",
+      "#e1a21e",
+      "#e29c1a",
+      "#f3e1b7"
+     ],
+     "extras": [
+      "#98351e",
+      "#99331e",
+      "#ac371e",
+      "#1fae7c",
+      "#ba3d20",
+      "#e1a21e",
+      "#e29c1a",
+      "#f3e1b7"
+     ],
+     "machine": {
+      "size": {
+       "ok": true,
+       "value": "320×180",
+       "rule": "정확히 320×180 (저장 2배)"
+      },
+      "colors": {
+       "ok": true,
+       "value": "30",
+       "rule": "색 8~32개"
+      },
+      "groundClear": {
+       "ok": true,
+       "value": "아래 0.004 / 위 0.663",
+       "rule": "아래 45% 무늬 밀도 ≤0.22, 위쪽×1.3+0.03 이하(번들 배경 8장 모두 통과)"
+      },
+      "lightMatch": {
+       "ok": true,
+       "value": "전체 밝기 0.45 (캡처 0.30)",
+       "rule": "밝은 장면: 캡처와 밝기 차 ≤0.25, 0.18 이상"
+      }
+     }
+    }
+   ]
   }
  }
 }
