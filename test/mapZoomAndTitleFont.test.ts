@@ -5,6 +5,10 @@ import { createBlankProject } from "@/project/defaults";
 import { resolveMapCameraZoom } from "@/project/cameraZoom";
 import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import type { GameEvent } from "@/project/types";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const gameLines = (...args: Parameters<typeof gameContentProblems>): string[] => gameContentProblems(...args).map(findingLine);
 
 describe("맵 카메라 배율", () => {
   it("set_map_properties zoom 이 맵에 남고 런타임 배율이 그것을 먼저 본다", () => {
@@ -22,7 +26,7 @@ describe("맵 카메라 배율", () => {
     const before = createBlankProject();
     const after = structuredClone(before);
     after.maps[after.startMapId]!.events.push({ id: "ev_zoom", name: "줌", x: 0, y: 0, pages: [{ conditions: [], trigger: { kind: "auto" }, commands: [{ kind: "m2Command", commandId: "m2-201-camera-control", fields: { mode: "follow", zoom: "2" } }, { kind: "eraseEvent" }] }] } as unknown as GameEvent);
-    expect(gameContentProblems(before, after, "이 방은 가까이 보이게").join(" ")).toContain("set_map_properties");
+    expect(gameLines(before, after, "이 방은 가까이 보이게").join(" ")).toContain("set_map_properties");
   });
 });
 

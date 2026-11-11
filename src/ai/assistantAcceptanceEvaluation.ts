@@ -193,7 +193,9 @@ export function evaluateAcceptanceCriterion(criterion: AcceptanceCriterion, inpu
       for (const [path, expectedValue] of Object.entries(criterion.fields)) {
         const actual = readPath(record, path);
         observed[path] = actual ?? null;
-        if (actual !== expectedValue) passed = false;
+        // 스키마는 값을 문자열로만 받는다(Gemini 400 방지) — 저장된 숫자·불과는 문자열 표기로 비교한다.
+        const stored = typeof actual === "string" || typeof actual === "number" || typeof actual === "boolean";
+        if (!stored || String(actual) !== String(expectedValue)) passed = false;
       }
       return { expected, observed: JSON.stringify({ matches, ...observed }), passed };
     }

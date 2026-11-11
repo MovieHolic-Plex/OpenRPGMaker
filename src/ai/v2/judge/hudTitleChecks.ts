@@ -7,6 +7,7 @@
 // 순수 함수(프로젝트만 읽는다) — gameContentProblems 가 게임을 만드는 요청에서만 부른다.
 import type { Project } from "@/project/types";
 import { STORY_SETUP_HUD } from "../genreDefaults";
+import { tagged, type Finding } from "./finding";
 
 type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => !!v && typeof v === "object" && !Array.isArray(v);
@@ -20,14 +21,14 @@ export function hudIsStoryTemplate(project: Project): boolean {
   return [...keys].every((k) => k === "widgets" ? !Array.isArray(hud[k]) || (hud[k] as unknown[]).length === 0 : JSON.stringify(hud[k]) === JSON.stringify(rest[k]));
 }
 
-export function hudTitleChoiceProblems(project: Project): string[] {
-  const problems: string[] = [];
+export function hudTitleChoiceProblems(project: Project): Finding[] {
+  const problems: Finding[] = [];
   if (hudIsStoryTemplate(project)) {
-    problems.push("[게임 검사 HUD 선택] 필드 HUD 가 이야기 기본 템플릿(minimal·체력 끔·시계 켬) 그대로다 — 이 게임의 분위기로 골랐다고 볼 수 없다. set_field_hud{theme} 로 이 이야기에 맞는 테마(공포 horror·고전 전투 classic·하트 모험 hearts·수집 collector·추격 chase …)를 고르거나, 체력이 줄지 않는 게임이면 {off:true} 로 끈다. 시계가 필요 없으면 clock:false.");
+    problems.push(tagged("game", "HUD 선택", "필드 HUD 가 이야기 기본 템플릿(minimal·체력 끔·시계 켬) 그대로다 — 이 게임의 분위기로 골랐다고 볼 수 없다. set_field_hud{theme} 로 이 이야기에 맞는 테마(공포 horror·고전 전투 classic·하트 모험 hearts·수집 collector·추격 chase …)를 고르거나, 체력이 줄지 않는 게임이면 {off:true} 로 끈다. 시계가 필요 없으면 clock:false."));
   }
   const title = (project.system.titleScreen ?? {}) as Obj;
   if (title.logoStyle === undefined && title.menuStyle === undefined) {
-    problems.push("[게임 검사 타이틀 모양] 타이틀 화면의 글자 질감(logoStyle)과 메뉴 스타일(menuStyle)이 둘 다 비어 있다 — 어느 게임이나 같은 글꼴·같은 창 모양이다. set_title_screen{logoStyle:'gold'|'metal'|'stone'|'glow'|'plain', menuStyle:'window'|'plain', logoSubtitle} 로 이 이야기에 맞는 모양을 고른다(예: 마왕·성 = stone/metal, 밤·공포 = glow, 일상 = plain).");
+    problems.push(tagged("game", "타이틀 모양", "타이틀 화면의 글자 질감(logoStyle)과 메뉴 스타일(menuStyle)이 둘 다 비어 있다 — 어느 게임이나 같은 글꼴·같은 창 모양이다. set_title_screen{logoStyle:'gold'|'metal'|'stone'|'glow'|'plain', menuStyle:'window'|'plain', logoSubtitle} 로 이 이야기에 맞는 모양을 고른다(예: 마왕·성 = stone/metal, 밤·공포 = glow, 일상 = plain)."));
   }
   return problems;
 }

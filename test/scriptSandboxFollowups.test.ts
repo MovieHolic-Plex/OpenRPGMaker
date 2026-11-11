@@ -8,6 +8,10 @@ import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { runTodoCheck } from "@/ai/v2/judge/todoChecks";
 import { buildGameApiDts, scriptApiCheatSheet } from "@/project/script/dts";
 import type { Command, GameEvent, Project } from "@/project/types";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const gameLines = (...args: Parameters<typeof gameContentProblems>): string[] => gameContentProblems(...args).map(findingLine);
 
 function withScriptEvent(project: Project, source: string, name = "레버"): Project {
   const p = structuredClone(project);
@@ -26,12 +30,12 @@ describe("script follow-ups from the live assistant run", () => {
 
   it("a script that calls game.shake satisfies the shake check", () => {
     const after = withScriptEvent(before, "await game.shake(6, 40);");
-    expect(gameContentProblems(before, after, shakeTask).some((p) => p.includes("흔들림"))).toBe(false);
+    expect(gameLines(before, after, shakeTask).some((p) => p.includes("흔들림"))).toBe(false);
   });
 
   it("a script without a shake still gets the shake check", () => {
     const after = withScriptEvent(before, "await game.showMessage('clunk');");
-    expect(gameContentProblems(before, after, shakeTask).some((p) => p.includes("흔들림"))).toBe(true);
+    expect(gameLines(before, after, shakeTask).some((p) => p.includes("흔들림"))).toBe(true);
   });
 
   it("the cheat sheet lists helper types, so field names are not guessed", () => {
