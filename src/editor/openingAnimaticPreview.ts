@@ -64,6 +64,9 @@ export async function renderOpeningAnimaticPreview(project: Project, data: unkno
   return (await renderOpeningAnimaticPreviewDetailed(project, data, signal)).dataUrl;
 }
 
+/** 워커가 받는 그림의 한 변 상한(scripts/lib/piRenderBroker.ts resolvePiRender 와 같은 수). */
+export const PREVIEW_MAX = 512;
+
 export type AnimaticPreviewResult = { readonly dataUrl: string; readonly measurements: AnimaticFrameMeasurement[]; readonly shotId: string };
 
 /** 미리보기 그림과 같은 프레임에서 잰 수치를 함께 돌려준다 — 조수의 완료 검토가 숫자로 판단하게. */
@@ -79,14 +82,16 @@ export async function renderOpeningAnimaticPreviewDetailed(project: Project, dat
   const stage = scene.composition.pixelGrid ?? scene.composition;
   // 검수용(bare)은 한 줄에 한 프레임 — 2×2 틀에 세 프레임을 넣으면 남는 칸을 검수자가 「빈 남색 장면」으로 읽는다. 도트 무대는 격자 크기 그대로 보낸다.
   const columns = bare || times.length === 1 ? 1 : 2, rows = Math.ceil(times.length / columns);
-  const tileWidth = bare ? Math.min(512, stage.width) : 512 / columns;
+  // 워커는 512×512 를 넘는 그림을 거절하고(resolvePiRender) 그 거절이 턴을 끊는다 — 세 프레임을 무대 크기 그대로 쌓으면 384×648 이 됐다(2026-11-11, 모든 턴이 409 로 끝남).
+  // 검수용 칸 폭은 「프레임 수 × 칸 높이 ≤ 512」 가 되게 줄인다.
+  const tileWidth = bare ? Math.min(PREVIEW_MAX, stage.width, Math.floor(PREVIEW_MAX / rows * stage.width / stage.height)) : 512 / columns;
   const tileHeight = bare ? tileWidth * stage.height / stage.width : Math.min(480 / rows, tileWidth * stage.height / stage.width);
   // 도트 무대는 격자보다 작은 캔버스에 그리면 가운데만 남는다(drawAnimaticFrame 은 정수 배로만 키운다) — 레터박스 자막과 장면 가장자리가 잘려 나갔다.
   // 무대 크기로 그린 뒤 칸에 맞춰 줄인다.
   const fit = Math.min(tileWidth / stage.width, tileHeight / stage.height), draw = scene.composition.pixelGrid ? Math.max(1, Math.floor(fit)) : fit;
   frame.width = Math.max(1, Math.round(stage.width * draw)); frame.height = Math.max(1, Math.round(stage.height * draw));
   const shown = Math.min(1, tileWidth / frame.width, tileHeight / frame.height), shownWidth = frame.width * shown, shownHeight = frame.height * shown;
-  canvas.width = bare ? Math.ceil(tileWidth) : 512; canvas.height = Math.ceil(rows * (tileHeight + band));
+  canvas.width = bare ? Math.ceil(tileWidth) : 512; canvas.height = Math.min(PREVIEW_MAX, Math.ceil(rows * (tileHeight + band)));
   const ctx = canvas.getContext('2d')!; ctx.fillStyle = '#121820'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.font = '12px sans-serif';
   for (const [i, t] of times.entries()) { signal.throwIfAborted(); drawAnimaticFrame(frame, scene.composition, images, t, { durationMs: scene.durationMs }); const x = i % columns * tileWidth, y = Math.floor(i / columns) * (tileHeight + band); ctx.drawImage(frame, x + (tileWidth - shownWidth) / 2, y + (tileHeight - shownHeight) / 2, shownWidth, shownHeight); if (!bare) { ctx.fillStyle = '#ffffff'; ctx.fillText(`${scene.id}  ${t}ms`, x + 4, y + tileHeight + 12); } }
   return { dataUrl: canvas.toDataURL('image/png'), measurements: measureAnimaticFrames(scene.composition, images, scene.durationMs, times), shotId: scene.id };
