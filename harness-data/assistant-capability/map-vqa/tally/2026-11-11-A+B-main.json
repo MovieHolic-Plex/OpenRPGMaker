@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "kind": "assistant-map-vqa-tally",
   "corpus": "whole-games:~/z-project/assistant-fable-runs,~/z-project/assistant-fable-runs/mapvqa/lay-main-0636b72004",
-  "generatedAt": "2026-11-11T10:13:36.271Z",
+  "generatedAt": "2026-11-11T10:25:36.804Z",
   "layJobs": [
     {
       "id": "village",

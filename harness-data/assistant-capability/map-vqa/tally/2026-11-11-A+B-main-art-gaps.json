@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "kind": "assistant-map-vqa-art-gaps",
   "corpus": "whole-games:~/z-project/assistant-fable-runs,~/z-project/assistant-fable-runs/mapvqa/lay-main-0636b72004",
-  "generatedAt": "2026-11-11T10:13:36.673Z",
+  "generatedAt": "2026-11-11T10:25:37.236Z",
   "promptVersion": "art-gaps-v1",
   "clustered": true,
   "note": "검수자의 이 물음(이름은 있는데 그림에 없는 것)은 따로 보정하지 않았다 — 그릴 차례를 정하는 목록이지 합격 판정이 아니다.",
@@ -35,7 +35,9 @@
         "fun-x1-gatefix-arrow · 달샘 오아시스",
         "jrpg-v2 · 새벽 마을"
       ],
-      "names": []
+      "names": [
+        "샘"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -57,7 +59,9 @@
         "맵 깔기 cave · 보물 동굴",
         "맵 깔기 forest-to-cave · 빈 맵"
       ],
-      "names": []
+      "names": [
+        "샘"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -77,7 +81,13 @@
         "fun-x1-gatefix · 잠든 태양의 피라미드",
         "fun-x1-gatefix · 별의 매장실"
       ],
-      "names": []
+      "names": [
+        "미라 궁수나 피라미드 해골 궁수 같은 사막 무덤 적",
+        "미라 궁수나 묘실 수호 해골 같은 피라미드 몬스터",
+        "미라 궁수나 피라미드 해골 궁수",
+        "피라미드 해골 궁수 또는 미라 궁수",
+        "미라 궁수, 피라미드 해골 병사"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -97,7 +107,11 @@
         "fun-x1-gatefix-arrow · 잠든 태양의 피라미드",
         "jrpg-w3 · 잠든 태양의 피라미드"
       ],
-      "names": []
+      "names": [
+        "모래 슬라임이나 사막 슬라임",
+        "모래 슬라임",
+        "모래 슬라임, 사막 전갈 같은 사막 몬스터"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -117,7 +131,11 @@
         "fun-x1-gatefix-arrow · 별의 매장실",
         "jrpg-w3 · 왕의 묘실"
       ],
-      "names": []
+      "names": [
+        "피라미드 묘실 내부 전투 배경(사암 벽돌, 상형문자 벽, 횃불)",
+        "피라미드 묘실 전투 배경",
+        "피라미드 묘실 내부 전투 배경(사암 벽, 횃불, 석관)"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -138,7 +156,10 @@
         "fun-x1-gatefix-arrow · 잠든 태양의 피라미드",
         "jrpg-w3 · 잠든 태양의 피라미드"
       ],
-      "names": []
+      "names": [
+        "사막 피라미드나 모래 유적 전투 배경",
+        "사막 피라미드 유적 전투 배경(모래 언덕과 피라미드)"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -160,7 +181,9 @@
         "fun-x1-gatefix-arrow · 바람 대상 숙영지",
         "jrpg-w3 · 모래바람 대상단"
       ],
-      "names": []
+      "names": [
+        "화단"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -180,7 +203,10 @@
         "fun-v2",
         "jrpg-v2"
       ],
-      "names": []
+      "names": [
+        "무너진 기둥",
+        "pillars"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -201,7 +227,9 @@
         "jrpg-v2 · 바람의 들판",
         "맵 깔기 forest-to-cave · 빈 맵"
       ],
-      "names": []
+      "names": [
+        "나무"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -221,7 +249,10 @@
         "fun-v2",
         "jrpg-v2"
       ],
-      "names": []
+      "names": [
+        "버섯",
+        "mushrooms"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -241,7 +272,10 @@
         "fun-x1-gatefix · 바람 대상 숙영지",
         "fun-x1-gatefix-arrow · 바람 대상 숙영지"
       ],
-      "names": []
+      "names": [
+        "장부",
+        "기록부"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -261,7 +295,9 @@
         "fun-x1-gatefix · 별의 매장실",
         "fun-x1-gatefix-arrow · 별의 매장실"
       ],
-      "names": []
+      "names": [
+        "쪽지"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -281,7 +317,9 @@
         "fun-x1-gatefix · 별의 매장실",
         "fun-x1-gatefix-arrow · 별의 매장실"
       ],
-      "names": []
+      "names": [
+        "봉인"
+      ]
     },
     {
       "chipset": "snow_north",
@@ -302,7 +340,9 @@
         "fun-w3 · 서리 절벽",
         "jrpg-w1 · 겨울 장터"
       ],
-      "names": []
+      "names": [
+        "생선 건조대"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -321,7 +361,10 @@
         "jrpg-w2 · 속삭임 숲",
         "맵 깔기 forest-to-cave · 빈 맵"
       ],
-      "names": []
+      "names": [
+        "동굴 입구",
+        "바위 언덕에 뚫린 자연 동굴 입구"
+      ]
     },
     {
       "chipset": "snow_north",
@@ -340,7 +383,9 @@
         "fun-w3 · 눈보라 마을",
         "jrpg-w1 · 서리울 마을"
       ],
-      "names": []
+      "names": [
+        "집 문"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -359,7 +404,10 @@
         "fun-x1 · 초승달 궁전",
         "jrpg-w3 · 황금궁 정원"
       ],
-      "names": []
+      "names": [
+        "닫힌 문",
+        "집 문"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -377,7 +425,10 @@
         "jrpg-w2 · 속삭임 숲",
         "jrpg-x1 · 속삭임 숲"
       ],
-      "names": []
+      "names": [
+        "숲 전투 배경(나무와 풀밭이 있는 숲 속 빈터)",
+        "숲 전투 배경"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -396,7 +447,10 @@
         "jrpg-w2 · 잠든 신전",
         "jrpg-x1 · 잊힌 신전"
       ],
-      "names": []
+      "names": [
+        "석조 신전 내부(기둥과 제단이 있는 홀) 전투 배경",
+        "석조 신전 내부 전투 배경(기둥과 제단이 있는 신전 홀)"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -415,7 +469,9 @@
         "fun-x1 · 잠든 태양의 피라미드",
         "jrpg-w3 · 잠든 태양의 피라미드"
       ],
-      "names": []
+      "names": [
+        "집"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -435,7 +491,11 @@
         "맵 깔기 mine · 버려진 광산",
         "맵 깔기 mine"
       ],
-      "names": []
+      "names": [
+        "곡괭이",
+        "채굴용 곡괭이",
+        "곡괭이 같은 채굴 도구를 배치하기"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -454,7 +514,10 @@
         "맵 깔기 harbor · 항구 마을",
         "맵 깔기 harbor"
       ],
-      "names": []
+      "names": [
+        "큰 배",
+        "배"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -471,7 +534,9 @@
       "examples": [
         "맵 깔기 farm · 농장"
       ],
-      "names": []
+      "names": [
+        "가축"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -488,7 +553,9 @@
       "examples": [
         "맵 깔기 farm · 농장"
       ],
-      "names": []
+      "names": [
+        "가축 우리"
+      ]
     },
     {
       "chipset": "atlas_biome_interior",
@@ -505,7 +572,9 @@
       "examples": [
         "맵 깔기 prison · 지하 감옥"
       ],
-      "names": []
+      "names": [
+        "감방"
+      ]
     },
     {
       "chipset": "atlas_biome_interior",
@@ -523,7 +592,10 @@
       "examples": [
         "맵 깔기 prison · 지하 감옥"
       ],
-      "names": []
+      "names": [
+        "벽에 박힌 쇠사슬, 족쇄, 낡은 짚더미",
+        "녹슨 양동이, 짚 깔개, 부서진 나무 침상"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -540,7 +612,9 @@
       "examples": [
         "맵 깔기 mine · 버려진 광산"
       ],
-      "names": []
+      "names": [
+        "어두운 갱도 전투 배경(나무 버팀목과 광맥이 보이는 동굴)"
+      ]
     },
     {
       "chipset": "steampunk_city",
@@ -557,7 +631,9 @@
       "examples": [
         "fun-w1 · 연기 공장지대"
       ],
-      "names": []
+      "names": [
+        "게시판"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -574,7 +650,9 @@
       "examples": [
         "맵 깔기 swamp · 안개 낀 늪지대"
       ],
-      "names": []
+      "names": [
+        "계단"
+      ]
     },
     {
       "chipset": "modern_city",
@@ -589,7 +667,9 @@
       "examples": [
         "맵 깔기 convenience-store"
       ],
-      "names": []
+      "names": [
+        "계산대"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -606,7 +686,9 @@
       "examples": [
         "맵 깔기 castle · 왕궁"
       ],
-      "names": []
+      "names": [
+        "궁전"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -623,7 +705,9 @@
       "examples": [
         "jrpg-w2 · 이끼광산"
       ],
-      "names": []
+      "names": [
+        "광부 기록"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -640,7 +724,9 @@
       "examples": [
         "jrpg-x1 · 버려진 광산"
       ],
-      "names": []
+      "names": [
+        "기록판"
+      ]
     },
     {
       "chipset": "snow_north",
@@ -657,7 +743,9 @@
       "examples": [
         "jrpg-w1 · 겨울 장터"
       ],
-      "names": []
+      "names": [
+        "꾸러미"
+      ]
     },
     {
       "chipset": "atlas_biome_interior",
@@ -674,7 +762,9 @@
       "examples": [
         "맵 깔기 tavern · 모험가의 선술집"
       ],
-      "names": []
+      "names": [
+        "나무 둥근 의자"
+      ]
     },
     {
       "chipset": "snow_north",
@@ -691,7 +781,9 @@
       "examples": [
         "fun-w3"
       ],
-      "names": []
+      "names": [
+        "나무 의자"
+      ]
     },
     {
       "chipset": "steampunk_city",
@@ -708,7 +800,9 @@
       "examples": [
         "fun-w1 · 발명가의 공방"
       ],
-      "names": []
+      "names": [
+        "냉각 회로"
+      ]
     },
     {
       "chipset": "prehistoric",
@@ -725,7 +819,9 @@
       "examples": [
         "fun-w2 · 갈대 늪"
       ],
-      "names": []
+      "names": [
+        "늪 모기떼 또는 늪 잠자리"
+      ]
     },
     {
       "chipset": "prehistoric",
@@ -742,7 +838,9 @@
       "examples": [
         "fun-w2 · 갈대 늪"
       ],
-      "names": []
+      "names": [
+        "늪 슬라임 또는 진흙 슬라임"
+      ]
     },
     {
       "chipset": "prehistoric",
@@ -759,7 +857,9 @@
       "examples": [
         "fun-w2 · 갈대 늪"
       ],
-      "names": []
+      "names": [
+        "갈대와 진흙물이 있는 늪 전투 배경"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -776,7 +876,9 @@
       "examples": [
         "맵 깔기 swamp · 안개 낀 늪지대"
       ],
-      "names": []
+      "names": [
+        "늪지대 전투 배경"
+      ]
     },
     {
       "chipset": "prehistoric",
@@ -793,7 +895,9 @@
       "examples": [
         "fun-w2 · 갈대 늪"
       ],
-      "names": []
+      "names": [
+        "늪 망령 궁수 또는 원시 사냥꾼 해골"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -810,7 +914,9 @@
       "examples": [
         "jrpg-x1 · 속삭임 숲"
       ],
-      "names": []
+      "names": [
+        "던전 입구"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -827,7 +933,9 @@
       "examples": [
         "fun-v2 · 별빛 마을"
       ],
-      "names": []
+      "names": [
+        "등불"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -844,7 +952,9 @@
       "examples": [
         "jrpg-w2 · 버들나루"
       ],
-      "names": []
+      "names": [
+        "무너진 길"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -861,7 +971,9 @@
       "examples": [
         "맵 깔기 cave"
       ],
-      "names": []
+      "names": [
+        "boulders"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -878,7 +990,9 @@
       "examples": [
         "fun-v2 · 반딧불 숲길"
       ],
-      "names": []
+      "names": [
+        "반딧불"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -895,7 +1009,9 @@
       "examples": [
         "jrpg-w2 · 물안개 동굴"
       ],
-      "names": []
+      "names": [
+        "빛의 파편"
+      ]
     },
     {
       "chipset": "prehistoric",
@@ -912,7 +1028,9 @@
       "examples": [
         "fun-w2 · 뼈바람 골짜기"
       ],
-      "names": []
+      "names": [
+        "거대 뼈 표식"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -929,7 +1047,9 @@
       "examples": [
         "jrpg-w3 · 잠든 태양의 피라미드"
       ],
-      "names": []
+      "names": [
+        "사막 독수리, 무덤 박쥐 같은 유적 몬스터"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -946,7 +1066,9 @@
       "examples": [
         "fun-x1 · 바람 대상 숙영지"
       ],
-      "names": []
+      "names": [
+        "베두인 천막(검은 모직 또는 무늬 천 천막)"
+      ]
     },
     {
       "chipset": "prehistoric",
@@ -963,7 +1085,9 @@
       "examples": [
         "fun-w2 · 불씨 마을"
       ],
-      "names": []
+      "names": [
+        "샘"
+      ]
     },
     {
       "chipset": "snow_north",
@@ -980,7 +1104,9 @@
       "examples": [
         "fun-w3 · 눈보라 마을"
       ],
-      "names": []
+      "names": [
+        "샘"
+      ]
     },
     {
       "chipset": "snow_north",
@@ -997,7 +1123,9 @@
       "examples": [
         "fun-w3 · 서리 절벽"
       ],
-      "names": []
+      "names": [
+        "눈 슬라임, 서리 슬라임 같은 설원 몬스터"
+      ]
     },
     {
       "chipset": "steampunk_city",
@@ -1014,7 +1142,9 @@
       "examples": [
         "fun-w1 · 발명가의 공방"
       ],
-      "names": []
+      "names": [
+        "설계도"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1031,7 +1161,9 @@
       "examples": [
         "jrpg-x1 · 옛 강지기의 탑"
       ],
-      "names": []
+      "names": [
+        "석조 탑 내부 또는 성 홀 전투 배경"
+      ]
     },
     {
       "chipset": "atlas_biome_interior",
@@ -1048,7 +1180,9 @@
       "examples": [
         "맵 깔기 temple"
       ],
-      "names": []
+      "names": [
+        "성경대 (S 쪽을 보는 그림)"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1065,7 +1199,9 @@
       "examples": [
         "jrpg-x1 · 버려진 광산"
       ],
-      "names": []
+      "names": [
+        "수로 지도"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1082,7 +1218,9 @@
       "examples": [
         "맵 깔기 forest-to-cave"
       ],
-      "names": []
+      "names": [
+        "crystals"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1099,7 +1237,9 @@
       "examples": [
         "jrpg-w2 · 버들나루"
       ],
-      "names": []
+      "names": [
+        "수풀"
+      ]
     },
     {
       "chipset": "atlas_biome_interior",
@@ -1116,7 +1256,9 @@
       "examples": [
         "jrpg-x1 · 물레방아 여관"
       ],
-      "names": []
+      "names": [
+        "식탁"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1133,7 +1275,9 @@
       "examples": [
         "맵 깔기 camp · 숲속 야영지"
       ],
-      "names": []
+      "names": [
+        "숲 야영용 캔버스 천막(삼각 텐트, 갈색·녹색 천)"
+      ]
     },
     {
       "chipset": "snow_north",
@@ -1150,7 +1294,9 @@
       "examples": [
         "fun-w3 · 얼음 동굴"
       ],
-      "names": []
+      "names": [
+        "푸른 얼음 정령이나 서리 파수꾼 그림"
+      ]
     },
     {
       "chipset": "snow_north",
@@ -1167,7 +1313,9 @@
       "examples": [
         "fun-w3 · 얼음 동굴"
       ],
-      "names": []
+      "names": [
+        "얼음 해골 궁수 같은 서리 언데드"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1184,7 +1332,9 @@
       "examples": [
         "맵 깔기 castle · 왕궁"
       ],
-      "names": []
+      "names": [
+        "왕궁 정원 소품(분수, 정돈된 화단, 조각상, 깃발)"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1201,7 +1351,9 @@
       "examples": [
         "fun-v2 · 별빛 마을"
       ],
-      "names": []
+      "names": [
+        "우물"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1218,7 +1370,9 @@
       "examples": [
         "맵 깔기 ruins · 고대 유적 바깥"
       ],
-      "names": []
+      "names": [
+        "하늘 아래 흙·풀밭 바닥, 무너진 외벽, 덩굴 덮인 유적 바깥 지형"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1235,7 +1389,9 @@
       "examples": [
         "맵 깔기 ruins"
       ],
-      "names": []
+      "names": [
+        "무너진 고대 유적 입구"
+      ]
     },
     {
       "chipset": "modern_city",
@@ -1250,7 +1406,9 @@
       "examples": [
         "맵 깔기 convenience-store"
       ],
-      "names": []
+      "names": [
+        "음료 냉장고"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1267,7 +1425,9 @@
       "examples": [
         "fun-v2 · 별의 동굴"
       ],
-      "names": []
+      "names": [
+        "잠든 별"
+      ]
     },
     {
       "chipset": "steampunk_city",
@@ -1284,7 +1444,9 @@
       "examples": [
         "fun-w1 · 중앙 기관실"
       ],
-      "names": []
+      "names": [
+        "정지 장치"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1301,7 +1463,9 @@
       "examples": [
         "jrpg-v2 · 그림자 동굴"
       ],
-      "names": []
+      "names": [
+        "제단"
+      ]
     },
     {
       "chipset": "snow_north",
@@ -1318,7 +1482,9 @@
       "examples": [
         "jrpg-w1 · 서리 절벽"
       ],
-      "names": []
+      "names": [
+        "제단"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -1335,7 +1501,9 @@
       "examples": [
         "jrpg-w3 · 왕의 묘실"
       ],
-      "names": []
+      "names": [
+        "제단"
+      ]
     },
     {
       "chipset": "modern_city",
@@ -1350,7 +1518,9 @@
       "examples": [
         "맵 깔기 convenience-store"
       ],
-      "names": []
+      "names": [
+        "진열대"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -1367,7 +1537,9 @@
       "examples": [
         "jrpg-w3"
       ],
-      "names": []
+      "names": [
+        "차 쟁반"
+      ]
     },
     {
       "chipset": "atlas_biome_interior",
@@ -1384,7 +1556,9 @@
       "examples": [
         "맵 깔기 prison · 지하 감옥"
       ],
-      "names": []
+      "names": [
+        "철창"
+      ]
     },
     {
       "chipset": "prehistoric",
@@ -1401,7 +1575,9 @@
       "examples": [
         "fun-w2 · 갈대 늪"
       ],
-      "names": []
+      "names": [
+        "통나무 움집"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1418,7 +1594,9 @@
       "examples": [
         "맵 깔기 swamp · 안개 낀 늪지대"
       ],
-      "names": []
+      "names": [
+        "판자 길"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -1436,7 +1614,10 @@
       "examples": [
         "맵 깔기 village-to-field · 동쪽 들판"
       ],
-      "names": []
+      "names": [
+        "풀밭",
+        "초록 풀밭 바닥 타일, 들꽃, 활엽수"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1453,7 +1634,9 @@
       "examples": [
         "맵 깔기 harbor"
       ],
-      "names": []
+      "names": [
+        "항구에 부두와 배가 보이도록 만들기"
+      ]
     },
     {
       "chipset": "prehistoric",
@@ -1470,7 +1653,9 @@
       "examples": [
         "fun-w2 · 연기 산기슭"
       ],
-      "names": []
+      "names": [
+        "화산 산기슭/용암 황무지 전투 배경"
+      ]
     },
     {
       "chipset": "atlas_biome_interior",
@@ -1487,7 +1672,9 @@
       "examples": [
         "맵 깔기 prison · 지하 감옥"
       ],
-      "names": []
+      "names": [
+        "감옥 침상"
+      ]
     },
     {
       "chipset": "steampunk_city",
@@ -1504,7 +1691,9 @@
       "examples": [
         "fun-w1 · 벽돌 거리"
       ],
-      "names": []
+      "names": [
+        "경보기"
+      ]
     },
     {
       "chipset": "atlas_biome_interior",
@@ -1521,7 +1710,9 @@
       "examples": [
         "jrpg-x1 · 강지기의 집"
       ],
-      "names": []
+      "names": [
+        "관측 작업대"
+      ]
     },
     {
       "chipset": "atlas_biome_interior",
@@ -1538,7 +1729,9 @@
       "examples": [
         "jrpg-x1 · 물레방아 여관"
       ],
-      "names": []
+      "names": [
+        "장부"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1555,7 +1748,9 @@
       "examples": [
         "jrpg-x1 · 속삭임 숲"
       ],
-      "names": []
+      "names": [
+        "동굴"
+      ]
     },
     {
       "chipset": "snow_north",
@@ -1572,7 +1767,9 @@
       "examples": [
         "jrpg-w1 · 족장의 긴집"
       ],
-      "names": []
+      "names": [
+        "두루마리"
+      ]
     },
     {
       "chipset": "prehistoric",
@@ -1589,7 +1786,9 @@
       "examples": [
         "fun-w2 · 불씨 마을"
       ],
-      "names": []
+      "names": [
+        "마을 문"
+      ]
     },
     {
       "chipset": "snow_north",
@@ -1606,7 +1805,9 @@
       "examples": [
         "jrpg-w1 · 서리울 마을"
       ],
-      "names": []
+      "names": [
+        "모닥불"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1623,7 +1824,9 @@
       "examples": [
         "맵 깔기 camp · 숲속 야영지"
       ],
-      "names": []
+      "names": [
+        "모닥불"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1640,7 +1843,9 @@
       "examples": [
         "맵 깔기 swamp · 안개 낀 늪지대"
       ],
-      "names": []
+      "names": [
+        "물길"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1657,7 +1862,9 @@
       "examples": [
         "jrpg-x1 · 물안개 마을"
       ],
-      "names": []
+      "names": [
+        "물레방아"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -1674,7 +1881,9 @@
       "examples": [
         "jrpg-w3 · 황금궁 정원"
       ],
-      "names": []
+      "names": [
+        "비문"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1691,7 +1900,9 @@
       "examples": [
         "fun-v2 · 별바람 공터"
       ],
-      "names": []
+      "names": [
+        "빛"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1708,7 +1919,9 @@
       "examples": [
         "fun-v2 · 별의 동굴"
       ],
-      "names": []
+      "names": [
+        "빛나는 돌"
+      ]
     },
     {
       "chipset": "steampunk_city",
@@ -1725,7 +1938,9 @@
       "examples": [
         "fun-w1 · 운하 선착장"
       ],
-      "names": []
+      "names": [
+        "선술집"
+      ]
     },
     {
       "chipset": "steampunk_city",
@@ -1742,7 +1957,9 @@
       "examples": [
         "fun-w1 · 오래된 보일러실"
       ],
-      "names": []
+      "names": [
+        "압력 조절기"
+      ]
     },
     {
       "chipset": "beodeul_city",
@@ -1759,7 +1976,9 @@
       "examples": [
         "맵 깔기 harbor · 항구 마을"
       ],
-      "names": []
+      "names": [
+        "창고"
+      ]
     },
     {
       "chipset": "sengoku_edo",
@@ -1776,7 +1995,9 @@
       "examples": [
         "맵 깔기 village-chief-house · 작은 마을"
       ],
-      "names": []
+      "names": [
+        "촌장 집"
+      ]
     },
     {
       "chipset": "desert_east",
@@ -1793,7 +2014,9 @@
       "examples": [
         "jrpg-v2 · 새벽 마을"
       ],
-      "names": []
+      "names": [
+        "표식"
+      ]
     }
   ],
   "entries": [

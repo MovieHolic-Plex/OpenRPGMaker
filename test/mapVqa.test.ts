@@ -182,6 +182,14 @@ describe("없는 그림 장부", () => {
     expect(rows[1]).toMatchObject({ fromReviewer: 1, fromTools: 1, unsureOnly: false });
     expect(rows[2]).toMatchObject({ wrongTheme: 1, instead: ["battle-scenery-forest"] });
   });
+  it("장부: 같은 게임의 사본 실행(run 열쇠가 같다)은 한 실행으로 센다", () => {
+    const where = (group: string, label: string) => ({ group, label, chipset: "desert_east", theme: "", run: "사막 게임|같은 요청" });
+    const rows = buildArtGaps([
+      { source: "reviewer", thing: "샘", instead: "파란 수정", where: where("A:x1", "x1 · 오아시스") },
+      { source: "reviewer", thing: "샘", instead: "파란 수정", where: where("A:x1-copy", "x1-copy · 오아시스") },
+    ]);
+    expect(rows.map((row) => [row.thing, row.runs, row.maps])).toEqual([["샘", 1, 2]]);
+  });
 });
 
 describe("종류 안의 되풀이 묶기", () => {

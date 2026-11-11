@@ -118,7 +118,7 @@ export function buildArtGaps(entries: GapEntry[], canonical: Record<string, stri
     const thing = canonical[entry.thing] ?? entry.thing, chipset = entry.where.chipset || '(칩셋 모름)', key = `${chipset}|${thing}`;
     let slot = rows.get(key);
     if (!slot) rows.set(key, slot = { row: { chipset, thing, maps: 0, runs: 0, fromReviewer: 0, fromTools: 0, wrongTheme: 0, unsureOnly: false, instead: [], examples: [], names: [] }, maps: new Set(), runs: new Set(), instead: new Map(), names: new Set(), sure: false });
-    slot.maps.add(entry.where.label); slot.runs.add(entry.where.run ?? entry.where.group); // 묶음(A:<실행> · B:<요청>) 하나가 실행 하나 — 같은 게임의 사본은 run 열쇠로 한 번만 slot.names.add(entry.thing);
+    slot.maps.add(entry.where.label); slot.runs.add(entry.where.run ?? entry.where.group); slot.names.add(entry.thing); // 묶음(A:<실행> · B:<요청>) 하나가 실행 하나 — 같은 게임의 사본은 run 열쇠로 한 번만
     if (entry.source === 'reviewer') slot.row.fromReviewer += 1; else if (entry.source === 'tool') slot.row.fromTools += 1; else slot.row.wrongTheme += 1;
     if (!entry.unsure) slot.sure = true;
     if (entry.instead) slot.instead.set(entry.instead, (slot.instead.get(entry.instead) ?? 0) + 1);
