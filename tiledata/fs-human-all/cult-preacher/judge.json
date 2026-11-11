@@ -1,0 +1,11 @@
+{
+ "pass": true,
+ "wolfLevel": 4,
+ "score": 4,
+ "failed": [],
+ "reason": "This is real low-res pixel art at about the wolves' level: hard shading bands, a limited orange/ochre/brass palette, a dark outline that varies in weight, and a clear silhouette of a bald, bearded preacher with a black ash-star tabard and a brass eye-sun staff, all facing right, though the hands are small blobs and the texture is slightly less dense than the wolves'. The three idle cells differ visibly, the attack thrusts the flaming staff to the right and differs from the hit cell, the hit cell leans back to the left, the dead cell lies flat, and nothing is cut off or fringed.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

@@ -1,0 +1,11 @@
+{
+ "pass": true,
+ "wolfLevel": 4,
+ "score": 4,
+ "failed": [],
+ "reason": "The candidate looks like real low-res pixel art, close to the wolves' level: limited crimson/white/steel palette, hard shading bands, an uneven dark outline, and a clear stocky silhouette with a white-crested great-helm, a large white tower shield with a crimson chevron and gold trim, and a raised mace. It faces right; idle_a, idle_b and idle_c differ, the attack is a forward shield-lunge to the right, the hit leans back to the left, and the dead frame lies flat. Two minor weaknesses: the mace is small and stays drawn back during the attack, and the internal texture is a bit less dense than the wolves' fur.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

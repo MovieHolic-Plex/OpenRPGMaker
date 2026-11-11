@@ -81,6 +81,11 @@ export function installMonsterArt16For(project: Project, resourceIds: ReadonlySe
  */
 const FS_HUMAN_ART_16: readonly { readonly from: string; readonly to: string }[] = [
   { from: "charset-battler-actor1-2", to: "generated-enemy-inq-soldier" },
+  { from: "charset-battler-people2-2", to: "generated-enemy-cult-preacher" },
+  { from: "charset-battler-actor3-0-samurai", to: "generated-enemy-inq-shield" },
+  { from: "charset-battler-actor1-3", to: "generated-enemy-sarah" },
+  { from: "charset-battler-people3-7", to: "generated-enemy-inq-spearman" },
+  { from: "charset-battler-actor3-1", to: "generated-enemy-flagellant" },
 ];
 
 export function applyFallenMonsterArt16(project: Project): void {

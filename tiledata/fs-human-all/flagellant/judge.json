@@ -1,0 +1,11 @@
+{
+ "pass": true,
+ "wolfLevel": 4,
+ "score": 4,
+ "failed": [],
+ "reason": "This is real low-res pixel art at roughly the wolves' level: it has a limited beige, brown, faded red and iron palette, hard shading bands, an uneven dark outline and a clear hooded-zealot silhouette with the flail held to the right and a sickle on the left, though a few stray cyan pixels near the hood and hands make it a little noisier than the wolves. The motion works: it faces right, the idle frames differ, the attack is a clear forward lunge with the flail, the hit leans back to the left, the dead frame lies flat, and nothing is cut off at the cell edges.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}
