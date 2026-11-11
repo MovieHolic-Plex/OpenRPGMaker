@@ -85,6 +85,7 @@ const SMALL_EDIT: readonly string[] = ["move_object", "remove_event", "restore_e
 /** 사건을 짜는 일의 도구 — 쓰고(upsert_event) 돌려 본다(run_scene_test). 쪽 더하기는 자리가 남을 때. */
 const SMALL_LOGIC: readonly string[] = ["upsert_event", "run_scene_test", "add_event_page"];
 const SMALL_PEOPLE: readonly string[] = ["list_npc_graphics", "read_npc_layout"];
+/** 주제가 부르는 도구 — 첫째가 그 일을 하는 도구, 나머지는 받침(읽기·자리 찾기). */
 const SMALL_BY_TOPIC: Readonly<Partial<Record<GameTopic, readonly string[]>>> = {
   items: ["get_database_records", "upsert_item"],
   gates: ["get_database_records", "upsert_item"],
@@ -111,7 +112,9 @@ const SMALL_MAX = 18;
  */
 export function smallJobTools(topics: readonly GameTopic[], facets: JobFacets, groups: ToolGroups, audio: AudioAsk, combat: CombatAsk): readonly string[] {
   // 무작위 조우를 말했으면 조우 표가, 가게를 말했으면 진열 도구가 먼저다.
-  const byTopic = [...(combat.encounters ? ["set_encounter_table"] : []), ...(facets.sells ? ["set_shop_stock"] : []), ...topics.flatMap((key) => SMALL_BY_TOPIC[key] ?? [])];
+  // 주제마다 첫 도구(그 일을 하는 도구)를 먼저 모으고 받침 도구는 그 뒤에 — 주제가 여럿이어도 상자의 place_chest 가 다른 주제의 받침 도구에 밀리지 않는다.
+  const lists = topics.map((key) => SMALL_BY_TOPIC[key] ?? []);
+  const byTopic = [...(combat.encounters ? ["set_encounter_table"] : []), ...(facets.sells ? ["set_shop_stock"] : []), ...lists.flatMap((list) => list.slice(0, 1)), ...lists.flatMap((list) => list.slice(1))];
   const dress = groups.dress ? [...V2_DRESS_TOOLS, "move_object"] : [];
   const terrain = groups.terrain ? ["list_spatial_designs", "stamp_object", "fill_region"] : [];
   const sound = [...(audio.music ? ["recommend_bgm", "store_find_music", "store_install", "set_game_audio"] : []), ...(audio.sound ? ["store_find_sound", "store_install", "set_game_audio"] : [])];
