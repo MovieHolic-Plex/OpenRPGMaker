@@ -131,8 +131,10 @@ describe("small jobs get a small prompt and a short tool list", () => {
     // 장소를 짓는 요청·빈 프로젝트의 «계속»·소리만 바라는 요청은 그대로다.
     expect(classifyRequest("작은 마을 하나 만들어 줘", project("oneEvent")).tools.game).toBe(false);
     expect(classifyRequest("계속", project("blank")).tools.game).toBe(false);
-    expect(classifyRequest("마을에 잔잔한 배경 음악 깔아 줘", project("oneEvent")).tools.game).toBe(false);
-    expect(shoot("마을에 잔잔한 배경 음악 깔아 줘", "oneEvent").upFront).not.toContain("move_event");
+    // 소리만 바라는 요청은 소리 묶음만 싣는다(«음악» 이 게임 낱말이어도 이벤트 도구를 내놓지 않는다).
+    const music = shoot("마을에 잔잔한 배경 음악 깔아 줘", "oneEvent");
+    expect(music.upFront).not.toContain("move_event");
+    expect(music.lazy.has("move_event")).toBe(false);
   });
 
   it("carries the people card for a new person and no event card for a bare move", () => {
