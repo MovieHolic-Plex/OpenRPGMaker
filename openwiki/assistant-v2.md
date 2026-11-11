@@ -95,7 +95,7 @@ Terra 다시 재기(main 84a7fa331a, `assistant-fable-runs/smalljobs/after-84a7f
 - **늘 싣는 것 9개**: `inspect` `find_events` `get_event` `patch_event_page` `move_event` `add_event` `add_people` `read_specs` `ask_user`.
 - **옮기기·지우기 낱말이 있을 때만**: `move_object` `remove_event` `restore_event` `place_object`.
 - **사건을 짤 때**: `upsert_event` `run_scene_test` 가 주제 도구보다 먼저, `add_event_page` 는 자리가 남을 때. `declare_story_flag` 는 필요할 때.
-- **주제 도구를 쓴 대로**: 아이템·열쇠 → `get_database_records` `upsert_item` · 상자 → `place_chest` `find_empty_ground` · 조사 → `list_spatial_designs` `stamp_object` `find_empty_ground` · 맵 잇기 → `create_transfer_pair` `list_map_locations` · 전투 → `upsert_troop` `simulate_battle` `get_database_records` · 이름 → `set_map_properties` `replace_text_in_project` `upsert_actor` · 제목 → `set_title_screen` `set_project_settings`.
+- **주제 도구를 쓴 대로**: 아이템·열쇠 → `get_database_records` `upsert_item` · 상자 → `place_chest` `find_empty_ground` · 조사 → `place_examine_hotspots` `list_spatial_designs` `stamp_object` `find_empty_ground` · 맵 잇기 → `create_transfer_pair` `list_map_locations` · 전투 → `upsert_troop` `simulate_battle` `get_database_records` · 이름 → `set_map_properties` `replace_text_in_project` `upsert_actor` · 제목 → `set_title_screen` `set_project_settings`.
 - **`set_shop_stock` 은 사고팔기를 말할 때만**(`JobFacets.sells`) — 「100골드를 얻게」「주워 가게 해 줘」는 상점이 아니다(「가게 하나」는 상점이다).
 - **말한 소리의 도구는 주제 도구보다 먼저.** 「엔딩 크레딧 음악 넣고 크레딧에 내 이름도 넣어 줘」에서 곡 찾기·걸기(`store_find_music` `set_game_audio`)가 글자 상한에 밀리지 않는다.
 - **`ask_user` 는 늘 싣는다.** 30건에서 한 번도 불리지 않았지만 「크레딧에 내 이름도 넣어 줘」처럼 물어야 풀리는 일에서 글자 상한에 밀리지 않게 늘 싣는 묶음에 둔다.
@@ -374,6 +374,55 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 - `withActorLookRetry`(칩 관문), `withEncountersOnlyWhenAsked`(요청에 따라 조우 끔), `withPictureSearchBudget`(그림 찾기 3번 상한).
 
 증거: `test/toolsReadEmptyAndBlocked.test.ts`.
+
+## 조사 지점은 `place_examine_hotspots` — 물건 이름으로 놓는다 · 글만 나오는 조사는 장면이 아니다 (2026-11-11, 작은 일 재측정)
+
+작은 일 재측정(Terra, main 84a7fa331a)에서 통과는 했지만 «완료» 로 못 끝난 두 일 — `sign-starter`(표지판을 읽으면 글) · `examine-fireplace-built`(벽난로를 조사하면 글).
+둘 다 조수가 컷신 동사 `add_event` 로 한 줄짜리 조사 글을 만들었고, 세 가지가 겹쳤다.
+
+1. **조사 지점 도구가 작은 일에 실리지 않았다.** 정본 도구 `place_examine_hotspots` 는 게임 하나를 만드는 턴에만 실렸다. 작은 일의 `examine` 주제는 `list_spatial_designs` · `stamp_object` 만 불렀다.
+2. **연출 비평가가 조사 글을 장면으로 봤다.** `add_event` 결과는 늘 무대(stage)를 실어 비평가를 불렀다. 한 줄 내레이션에 「두 인물이 7칸 떨어져 있다」「표지판이 주인공에 가려진다」 가 달려
+   «컷신 고치기» 할 일이 열렸고, 고칠 장면이 없어 막힘으로 닫혔다(그래서 «완료 아님»). 고치려다 주인공이 걸어 나가는 비트까지 붙었다.
+3. **자리 낱말이 채움 좌표에 밀렸다.** GPT 계열은 선택 칸을 기본값으로 채운다 — `where:"벽난로 앞"` 과 `at:{x:0,y:0}` 이 같이 오면 낱말을 버리고 (0,0) 근처 (1,6) 에 놓았다. 모델은 `move_event` 를 세 번 불러 옮겼다.
+
+고친 것(도구에서):
+- `place_examine_hotspots` 의 항목에 `on:"물건 이름"`. 이 맵에 이미 있는 물건(벽난로·표지판·우물…)을 이름표로 찾아 **그 물건의 칸**(덩이 맨 아랫줄 가운데)에 놓는다 — 좌표를 몰라도 된다.
+  `on` 은 채워 보낸 `at:{0,0}` 보다 앞선다. 못 찾으면 그 이유와 다음 길(`at` 또는 `stamp_object` 먼저)을 준다. 이벤트에 이름을 단다(할 일 확인이 이름으로 묶는다). 결과 글에 놓은 칸을 적는다.
+  **하나도 못 놓았으면 실패로 돌려준다** — 전에는 「0개 생성, 1개 스킵」 이 성공이었다.
+- 작은 일의 `examine` 주제가 `place_examine_hotspots` 를 먼저 싣는다(`request/topics.ts`). 조사 카드도 이 도구를 말한다. v2 영어 설명을 다시 썼다.
+- v2 에 내놓는 도구 글에서 드물게 쓰는 큰 하위 스키마를 가릴 수 있다(`toolTextEn.ts` 의 `hide`) — 조사 뒤 컷신 비트(`hotspots[].beats`, 8천 자)를 가렸다. 가리지 않으면 표지판 요청에서
+  `stamp_object` · `list_spatial_designs` 가 처음 싣는 도구 글자 상한(3.4만 자) 밖으로 밀렸다. 도구는 그 칸을 그대로 받는다.
+- `add_event`: 걷는 사람·나타나는 사람 없이 내레이션만 나오는 조사·읽기(`when` 이 게임 시작이 아니고 `after` 없음)는 무대를 싣지 않는다 — 연출 비평을 부르지 않고 «컷신 고치기» 할 일도 열지 않는다. 결과 글도 「컷신」 이 아니라 「조사 글」 이다.
+- 자리 낱말과 함께 온 `at (0,0)` 은 채움으로 보고 낱말로 푼다(`place/where.ts` — 사람·사건·물건 그리기가 모두 이 함수를 쓴다). 낱말 없이 `at` 만 주면 그 칸이다.
+- 물건 이름 별칭에 표지판·팻말·이정표·안내판, 비석·묘비.
+- 주제 `chest`(상자·줍기)를 `examine` 앞에 둔다 — 줍기 요청은 «조사하면» 도 말하는데, 처음 싣는 도구 수 상한(19)에서 `place_chest` 가 조사 도구 셋에 밀려 빠졌다(이 PR 의 첫 CI 에서 드러남).
+- 회상 스토리 QA(`src/qa/gameCheck/story.ts`)의 투명 메멘토 글은 이름과 id 를 같이 적는다(조사 이벤트에 이름이 생겼다).
+
+근거(모델 없는 탐침): 지은 게임 판에서 `place_examine_hotspots{on:"벽난로", at:{0,0}}` 한 번 → (8,3) 벽난로 칸, 작은 일 판정기 `textSpot` 통과. 시작 판에서 `stamp_object`(이정표) → `{on:"표지판"}` → 통과.
+없는 물건은 실패. `resolveWhere("벽난로 앞", at (0,0))` = 낱말만 준 것과 같은 칸 (8,4). `buildEvent`: 내레이션 한 줄·밟으면 내레이션은 무대 없음, 사람이 말하거나 걷는 장면은 무대 있음.
+golden: 153 가운데 117 이 `place_examine_hotspots` 글/스키마(81 은 그것만, 33 은 조사 카드 글 +23자), 표지판 요청 3줄은 처음 싣는 도구에 `place_examine_hotspots` 가 들고 `fill_region` 이 필요할 때로 물러남.
+시험 `test/aiV2ExamineSpots.test.ts`.
+
+||||||| 091e10574e
+## 버들항 맵의 빈 땅도 읽고 채운다 — 칸 역할을 안 적는 시트 · `amount:"few"` (2026-11-11, 작은 일 재측정)
+
+작은 일 재측정(Terra, main 84a7fa331a)에서 통과했지만 «완료» 로 못 끝난 `dress-trees-starter`(「마을 빈 곳에 나무를 몇 그루 심어 줘」, 버들항 시작 판):
+`find_empty_ground` 는 풀밭 432칸 마을을 「맨땅 0% · 빈 터 없음」 으로 읽었고, `furnish_outdoor_area` 는 버들항 맵을 거절하면서 없는 키트 이름(`kit:beodeul_city/bd-tree-…`)을 댔다.
+조수는 그 자리표시 이름을 그대로 찍다 실패하고, 할 일을 막힘으로 닫은 뒤 나무 셋을 맵 모서리 (0,0) · (3,0) 에 찍었다.
+
+원인: B3b 의 칸 판독(`src/project/openGround.ts`)은 칸 역할(`role: "terrain"`)로 땅을 읽는데, 버들항 시트(`beodeul_city`, 3.8만 칸)는 칸 역할을 하나도 적지 않는다 — 땅은 꼬리표(`grass` · `sand`)와 통행(`passable`)으로만 안다.
+
+고친 것(도구에서):
+- 칸 역할이 없는 칸은 **걸을 수 있고 땅 꼬리표(grass·풀밭·sand·모래·dirt·흙·snow·눈밭)가 있으면** 빈 야외 땅이다. 길·물·실내 꼬리표와 「…길」 이름표는 전처럼 뺀다.
+- `furnish_outdoor_area` 의 버들항 거절을 걷었다 — 다른 칩셋과 같은 길(그 칩셋의 야외 소품)로 채운다.
+- 기본 소품은 **어디에나 어울리는 자연물만**: 한 장소·던전 주제에 딸린 키트(꼬리표에 장소·던전·주제 — 사막 마을의 대추야자, 설원 소나무, 숲 던전의 룬 선돌)는 이름을 대지 않으면 고르지 않는다.
+  영어 꼬리표는 앞뒤가 글자가 아닐 때만 맞춘다 — `prop-street` 의 «tree» 때문에 현대 도시의 가로등·신호등·자판기·정류장 111개가 «나무» 로 뿌려지고 있었다(`fld_rock_s_a` 같은 밑줄 이름은 된다).
+- `props` 를 이름 일부로 줄 때: 낱말로 든 키트가 먼저(«나무» 는 「버들항 나무」 이지 「통나무」·「나무 벤치」 가 아니다), 그 안에서 어디에나 어울리는 자연물 → 자연물 → 전부 순.
+- `amount: "few" | "fill"`. `few` 는 세 구획까지만 놓는다(«몇 그루» 는 맵을 메우는 일이 아니다). 기본은 전처럼 맨땅 비율이 내려갈 때까지.
+
+근거(모델 없는 탐침, 버들항 시작 판): `find_empty_ground` 맨땅 0% → 94%, 빈 터 4곳과 소품 이름. `furnish_outdoor_area{props:["나무"], amount:"few"}` → 구획 3곳·34칸, 놓인 것은 전부 「버들항 나무 …」, 작은 일 판정기 `dressed` 통과.
+`amount` 없이 부르면 12구획, 맨땅 94% → 19%. 구조 키트가 있는 칩셋 42개 가운데 기본 소품이 달라진 것은 넷(버들항 · 현대 도시 · 조선: 묘비·맷돌이 빠지고 통나무 둘이 듦 · 일본 도시: 깃발 기둥·나무 상자가 빠짐), 지은 게임 판 맵들의 땅 판독은 그대로.
+golden: 123/153 이 `furnish_outdoor_area` 글/스키마만 바뀜(실리고 빠지는 도구 없음). 시험 `test/openGroundFill.test.ts`.
 
 ## 바닥에 놓인 물건은 `place_chest` 의 `look:"item"` — 줍는 물건 (2026-11-11, 작은 일 재측정)
 
