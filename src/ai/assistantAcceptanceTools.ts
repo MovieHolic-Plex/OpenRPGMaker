@@ -30,8 +30,8 @@ export const ACCEPTANCE_CRITERIA_SCHEMA = { type: "array", minItems: 1, items: {
     collection: { type: "string", enum: [...DB_COLLECTIONS], description: "Required for dbRecordValues: the database collection holding the record." },
     recordId: { type: "string", description: "For dbRecordValues: exact existing record ID in that collection. Use this when the ID is known; otherwise use recordName." },
     recordName: { type: "string", description: "For dbRecordValues: the record's exact displayed name, used when the request names the record but the ID is not yet known. Evaluation requires exactly one match in that collection; ambiguous names fail. Never invent an ID." },
-    fields: { type: "object", additionalProperties: { type: ["string", "number", "boolean"] },
-      description: `Required for dbRecordValues: dotted field path → exact stored value (e.g. {"stats.maxHp": 300}). Proves stored field values, never runtime combat behavior. ${JSON.stringify(ACCEPTANCE_EXAMPLES.dbRecordValues)}` },
+    fields: { type: "object", additionalProperties: { type: "string" },
+      description: `Required for dbRecordValues: dotted field path → exact stored value, always written as a string: numbers and booleans too (e.g. {"stats.maxHp": "300"}). Proves stored field values, never runtime combat behavior. ${JSON.stringify(ACCEPTANCE_EXAMPLES.dbRecordValues)}` },
     scope: { type: "string", enum: ["project", "authored"] },
     allowedChanges: { type: "array", items: { type: "object", properties: {
       kind: { type: "string", enum: ["projectTitle", "itemName", "itemPrice", "itemAddition"] }, itemId: { type: "string" },
