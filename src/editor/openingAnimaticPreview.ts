@@ -76,13 +76,19 @@ export async function renderOpeningAnimaticPreviewDetailed(project: Project, dat
   const times = request.atMs as number[];
   if (!Array.isArray(times) || !times.length || times.length > 4 || times.some(t => !Number.isSafeInteger(t) || t < 0 || t > scene.durationMs)) throw Error('프레임 시간은 샷 안의1~4개 정수입니다.');
   const images = await loadAnimaticImages(project, scene.composition, signal), canvas = document.createElement('canvas'), frame = document.createElement('canvas');
-  const columns = times.length === 1 ? 1 : 2, rows = Math.ceil(times.length / columns), tileWidth = 512 / columns;
-  const tileHeight = Math.min(480 / rows, tileWidth * scene.composition.height / scene.composition.width);
-  const scale = Math.min(tileWidth / scene.composition.width, tileHeight / scene.composition.height);
-  frame.width = Math.max(1, Math.round(scene.composition.width * scale)); frame.height = Math.max(1, Math.round(scene.composition.height * scale));
-  canvas.width = 512; canvas.height = Math.ceil(rows * (tileHeight + band));
+  const stage = scene.composition.pixelGrid ?? scene.composition;
+  // 검수용(bare)은 한 줄에 한 프레임 — 2×2 틀에 세 프레임을 넣으면 남는 칸을 검수자가 「빈 남색 장면」으로 읽는다. 도트 무대는 격자 크기 그대로 보낸다.
+  const columns = bare || times.length === 1 ? 1 : 2, rows = Math.ceil(times.length / columns);
+  const tileWidth = bare ? Math.min(512, stage.width) : 512 / columns;
+  const tileHeight = bare ? tileWidth * stage.height / stage.width : Math.min(480 / rows, tileWidth * stage.height / stage.width);
+  // 도트 무대는 격자보다 작은 캔버스에 그리면 가운데만 남는다(drawAnimaticFrame 은 정수 배로만 키운다) — 레터박스 자막과 장면 가장자리가 잘려 나갔다.
+  // 무대 크기로 그린 뒤 칸에 맞춰 줄인다.
+  const fit = Math.min(tileWidth / stage.width, tileHeight / stage.height), draw = scene.composition.pixelGrid ? Math.max(1, Math.floor(fit)) : fit;
+  frame.width = Math.max(1, Math.round(stage.width * draw)); frame.height = Math.max(1, Math.round(stage.height * draw));
+  const shown = Math.min(1, tileWidth / frame.width, tileHeight / frame.height), shownWidth = frame.width * shown, shownHeight = frame.height * shown;
+  canvas.width = bare ? Math.ceil(tileWidth) : 512; canvas.height = Math.ceil(rows * (tileHeight + band));
   const ctx = canvas.getContext('2d')!; ctx.fillStyle = '#121820'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.font = '12px sans-serif';
-  for (const [i, t] of times.entries()) { signal.throwIfAborted(); drawAnimaticFrame(frame, scene.composition, images, t, { durationMs: scene.durationMs }); const x = i % columns * tileWidth, y = Math.floor(i / columns) * (tileHeight + band); ctx.drawImage(frame, x + (tileWidth - frame.width) / 2, y + (tileHeight - frame.height) / 2); if (!bare) { ctx.fillStyle = '#ffffff'; ctx.fillText(`${scene.id}  ${t}ms`, x + 4, y + tileHeight + 12); } }
+  for (const [i, t] of times.entries()) { signal.throwIfAborted(); drawAnimaticFrame(frame, scene.composition, images, t, { durationMs: scene.durationMs }); const x = i % columns * tileWidth, y = Math.floor(i / columns) * (tileHeight + band); ctx.drawImage(frame, x + (tileWidth - shownWidth) / 2, y + (tileHeight - shownHeight) / 2, shownWidth, shownHeight); if (!bare) { ctx.fillStyle = '#ffffff'; ctx.fillText(`${scene.id}  ${t}ms`, x + 4, y + tileHeight + 12); } }
   return { dataUrl: canvas.toDataURL('image/png'), measurements: measureAnimaticFrames(scene.composition, images, scene.durationMs, times), shotId: scene.id };
 }
 

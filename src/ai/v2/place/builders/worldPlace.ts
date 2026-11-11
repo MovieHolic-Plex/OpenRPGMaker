@@ -58,7 +58,7 @@ function exitCell(project: Project, map: GameMap, data: Record<string, unknown>)
   return undefined;
 }
 
-function compose(run: BuildRun, world: WorldSetting, kind: WorldKind, name: string, seed0: number): { map?: GameMap; data: Record<string, unknown>; seed: number; error?: string } {
+function compose(run: BuildRun, world: WorldSetting, kind: WorldKind, name: string, seed0: number, exits: PlaceSpec["exits"]): { map?: GameMap; data: Record<string, unknown>; seed: number; error?: string } {
   const composer = world.composer!, c = kind.compose!;
   const tool = c.tool ?? composer.tool;
   let mapId: string | undefined;
@@ -66,14 +66,16 @@ function compose(run: BuildRun, world: WorldSetting, kind: WorldKind, name: stri
   for (let t = 0; t < SEED_TRIES; t++) {
     const seed = (seed0 + t * 97) % 9000 + 1;
     let res;
-    if (composer.newMap && !mapId) res = run.call(tool, { [composer.param]: c.value, newMap: { name }, seed });
+    // 다른 맵으로 나가는 변(바깥 장소만) — exits 를 받는 구성기가 그 변까지 길을 낸다.
+    const out = exits?.length && !kind.indoor && composer.exits ? { exits } : {};
+    if (composer.newMap && !mapId) res = run.call(tool, { [composer.param]: c.value, newMap: { name }, seed, ...out });
     else {
       if (!mapId) {
         const made = run.call("create_map", { name, width: c.size[0], height: c.size[1], tilesetId: world.tilesetId });
         mapId = (made.data as { mapId?: string } | undefined)?.mapId;
         if (!made.ok || !mapId) return { data: {}, seed, error: `create_map: ${String(made.summary ?? "").slice(0, 200)}` };
       }
-      res = run.call(tool, { mapId, [composer.param]: c.value, seed, ...(t > 0 ? { replace: true } : {}) });
+      res = run.call(tool, { mapId, [composer.param]: c.value, seed, ...(t > 0 ? { replace: true } : {}), ...out });
     }
     const data = (res.data ?? {}) as Record<string, unknown>;
     const builtId = (data.mapId as string | undefined) ?? mapId;
@@ -94,7 +96,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const { world, kind } = parsed;
   if (previous) return fail(onePassRefusal(spec.name));
   if (!run.ctx.project.tilesets[world.tilesetId]) return fail(`this project has no ${world.tilesetId} chipset — the ${world.name} world cannot be built here.`);
-  const made = compose(run, world, kind, spec.name, spec.salt ?? 1);
+  const made = compose(run, world, kind, spec.name, spec.salt ?? 1, spec.exits);
   if (!made.map) return fail(`${world.name} ${kind.id} «${spec.name}» could not be composed: ${made.error ?? ""}`);
   const mapId = made.map.id;
   if (made.map.name !== spec.name) run.call("set_map_properties", { mapId, name: spec.name });
