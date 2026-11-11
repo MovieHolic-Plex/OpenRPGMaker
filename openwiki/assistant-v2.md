@@ -114,7 +114,7 @@ Terra 다시 재기(main 84a7fa331a, `assistant-fable-runs/smalljobs/after-84a7f
 
 ## 게임 낱말이 없는 작은 일도 이벤트를 찾고 옮긴다 (2026-11-11)
 
-v1 도구 묶음(`find_events` `get_event` `patch_event_page` `move_event` …)은 요청 글에 게임 낱말이 있을 때만 만들어졌다(`verbs.ts` 가 `intent.tools.game` 을 본다).
+v1 도구 묶음(`find_events` `get_event` `patch_event_page` `move_event` …)은 요청 글에 게임 낱말이 있을 때만 만들어졌다(`tools/verbs.ts` 가 `intent.tools.game` 을 본다).
 그래서 낱말이 안 맞은 작은 일 — 「촌장이 "배경 음악이 참 좋지?"라고 말하게 해 줘」(대사는 가려진다), 「썸네일 그림 하나 골라 줘」, 게임 하나를 잇지 않는 «계속» —
 은 처음 싣는 도구가 6개(`inspect` `add_event` `add_people` `read_specs` `ask_user` `load_tools`)였고, 이벤트를 찾거나 옮기는 도구는 이름으로 불러도 없었다.
 꾸미기 요청(「광장 빈 곳에 나무랑 벤치 좀 놓아 줘」)도 채우기 도구만 받고 `move_event` 는 없었다.
@@ -126,8 +126,8 @@ v1 도구 묶음(`find_events` `get_event` `patch_event_page` `move_event` …)�
 그대로인 것: 장소를 짓는 요청(「작은 마을 하나 만들어 줘」 — 동사 20개), 빈 프로젝트의 «계속»(짓는 길), 소리만 바라는 요청(소리 묶음 8개).
 글만 보는 읽기 함수(`wantsGameTools(task)` · `v2ExtraToolNames(task)`)의 답도 그대로다 — 프로젝트를 같이 본 기록(`classifyRequest`)만 넓어진다.
 
-남은 것: 장소를 짓는 요청에 게임 낱말이 없으면 여전히 `move_event`·`find_events` 가 만들어지지 않는다. 그 길에는 `load_tools` 도 없다 — 풀려면 `verbs.ts` 의
-도구 만들기 조건(`gameTools || wantsMusicTools || wantsTerrainTools || wantsStoreTools`)과 `toolExposure.ts` 의 «게임 요청만 나중에 싣기» 를 같이 고쳐야 한다(요청 줄기 밖).
+남은 것: 장소를 짓는 요청에 게임 낱말이 없으면 여전히 `move_event`·`find_events` 가 만들어지지 않는다. 그 길에는 `load_tools` 도 없다 — 풀려면 `tools/verbs.ts` 의
+도구 만들기 조건(`gameTools || wantsMusicTools || wantsTerrainTools || wantsStoreTools`)과 `tools/toolExposure.ts` 의 «게임 요청만 나중에 싣기» 를 같이 고쳐야 한다(요청 줄기 밖).
 
 ## 이미 있는 맵 둘을 잇기만 하는 요청은 작은 일이다 (2026-11-11)
 
@@ -641,10 +641,10 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 
 ### 도구 노출 — 처음부터 싣는 도구·필요할 때 싣는 도구·영어 사본 (2026-10-30)
 
-게임 요청 한 턴에 v2 모델이 받던 v1 도구 글이 91.8k 토큰(o200k)이었고 거의 다 한국어였다. 노출은 `src/ai/v2/toolExposure.ts` `exposeV2Tools` 한 곳이 정한다(실행기 `scripts/lib/assistantV2Runtime.ts` 가 할 일 고리 뒤에 부른다).
+게임 요청 한 턴에 v2 모델이 받던 v1 도구 글이 91.8k 토큰(o200k)이었고 거의 다 한국어였다. 노출은 `src/ai/v2/tools/toolExposure.ts` `exposeV2Tools` 한 곳이 정한다(실행기 `scripts/lib/assistantV2Runtime.ts` 가 할 일 고리 뒤에 부른다).
 - **처음부터 싣는 도구** = 이 요청 묶음(`v2ExtraToolNames`) ∩ `V2_UP_FRONT`. `V2_UP_FRONT` 는 기록된 실행(turns/*.json `toolArgs` = 모델이 직접 부른 호출)에서 세션 수 terra ≥10 또는 opus ≥20 인 도구다.
 - **필요할 때 싣는 도구** = 묶음의 나머지 + `v2ToolPool()`(모든 v2 낱말 묶음의 합). `load_tools{names}` 가 다음 호출부터 선언하고(실행기 `env.declareTool` → in-place push), 이름으로 바로 부르면 실행기 `resolveFallbackTool` → `options.v2.lazyTool` 이 그 자리에서 싣고 실행한다. 할 일 고리가 강제·우선하는 도구도 먼저 싣는다. 없는 이름은 영어 거절 글(`unknownToolText`).
-- **영어 사본**: `src/ai/v2/toolTextEn.ts`(설명 d + 파라미터 경로 p). 처음부터 싣는 도구는 덮개 없는 한국어 파라미터 설명을 걷고, 필요할 때 싣는 도구는 한국어 파라미터 설명을 남긴다. v1 레지스트리 글은 그대로다.
+- **영어 사본**: `src/ai/v2/tools/toolTextEn.ts`(설명 d + 파라미터 경로 p). 처음부터 싣는 도구는 덮개 없는 한국어 파라미터 설명을 걷고, 필요할 때 싣는 도구는 한국어 파라미터 설명을 남긴다. v1 레지스트리 글은 그대로다.
 - **같은 모양 걷기**: 설명 뺀 모양이 400자 이상인 하위 스키마가 앞(처음부터 싣는 도구)에 있으면 v1 도구는 느슨한 자리표시(«Same shape as 도구 경로»)로, v2 동사는 설명만 걷는다(동사는 광고 스키마가 곧 검증기라서). v1 도구의 실제 검증은 레지스트리 `validateArgs` 가 원래 스키마로 한다.
 - 측정 `bun scripts/qa/assistant-v2/dumpPrompt.mts`(도구 글), 기록 재생 `bun scripts/qa/assistant-v2/toolExposureReplay.mts`(닿음·인자 검증 회귀 0 이어야 한다).
 - **스크립트 묶음(`SCRIPT_TIER`, 2026-10-31 왕복 줄이기)**: 로직 낱말(레버·비밀번호·공식·할인·시간대…)이 맞으면 `author_script`·`edit_script` 둘만 처음부터 싣는다. 스크립트 켬/끔 A/B(`~/z-project/assistant-whole-game/reports/script-ab-poc.md`)에서 `get_script_api`·`check_script`·`dry_run_script` 를 처음부터 실으니 쓰기 앞뒤로 매번 불러 모델 호출 136 vs 102·비용 $41.9 vs $23.3 이었다. 이제 `author_script` 한 번이 컴파일·`explain` 저장·`examples` 실행 결과까지 돌려주고(여러 개는 `scripts:[…]`), API 요약(`scriptApiQuickRef()`, `src/project/script/dts.ts`)은 `SCRIPT_TIER` 카드에 붙는다. 나머지 일곱은 이름 호출·`load_tools`. `GAME_CARD` 스크립트 줄·v1 시스템 지시·능력 색인 정책은 같은 규칙이다(2026-11-01 강화) — 읽히는 것은 전부 이벤트 명령, 스크립트는 공식·목록 반복·순서 판정·타이머 같은 1~3줄 조각만이고 결과를 변수에 써 둘레 명령(`\V[var_id]`·분기)이 읽는다, 이벤트마다 한 번 정하고 되돌리지 않음, 기존 명령은 사용자가 시킬 때만. 정본 글은 `openwiki/script-sandbox.md` 「정책」. 확인 `bun scripts/qa/script-ab/exposure.mts`(끔: `OPRN_V2_SCRIPTS=0`).
@@ -1144,7 +1144,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 - `toolNames: ["__assistant_v2__"]` + `initialToolNames: []` → 레지스트리 도구 0개 노출. 대신 v2 동사 8개(`verbs.ts`):
   `make_place · edit_place · add_people · add_event · draw_object · place_object · inspect · ask_user`.
   맨 앞에 `todo`(할 일 목록, 아래 «할 일 고리»)가 붙고, 나머지 동사는 `withTodoLoop` 감싸개(첫 쓰기 되돌림·같은 호출 막기·실패 세기)를 거친다.
-- 동사 인자 중 감싸는 칸 하나(`make_place` 의 spec, `add_people` 의 people 등)는 `src/ai/v2/flatWrapper.ts` 가 최상위로 펴 보여 주고 실행 직전에 다시 감싼다. 예전에 감싸 보낸 호출도 통과한다. 목록과 최상위 칸이 같이 오면, 필수 칸이 찬 최상위는 한 명 더로 붙이고, 한 명짜리 목록의 빈 칸은 채우며, 필수 칸이 빈 찌꺼기는 목록 전체를 거절하지 않고 버린다. 객체 칸은 최상위 값으로 빈 자리를 채우고, 이미 감싼 값이 있으면 그 값을 남긴다.
+- 동사 인자 중 감싸는 칸 하나(`make_place` 의 spec, `add_people` 의 people 등)는 `src/ai/v2/tools/flatWrapper.ts` 가 최상위로 펴 보여 주고 실행 직전에 다시 감싼다. 예전에 감싸 보낸 호출도 통과한다. 목록과 최상위 칸이 같이 오면, 필수 칸이 찬 최상위는 한 명 더로 붙이고, 한 명짜리 목록의 빈 칸은 채우며, 필수 칸이 빈 찌꺼기는 목록 전체를 거절하지 않고 버린다. 객체 칸은 최상위 값으로 빈 자리를 채우고, 이미 감싼 값이 있으면 그 값을 남긴다.
 - 동사는 `wrapTool` 을 거친다 → 체크포인트·실시간 시공 재생(constructionLogs)·맵 소유권·맵별 대기열·사용량 집계·로컬 CLI 엔진이 v1 과 같다.
   동사 안에서 `env.checkpoint` 로 **첫 짓기를 비평 전에** 편집기에 싣는다(사용자는 비평을 기다리지 않는다).
 - `options.v2` 가 있으면 v1 의 낱말별 지시(regex system prompt)·몬스터/오프닝 제작·완료 검사·배치 품질 권고·특징 확인표가 꺼진다. 없으면 v1 은 한 줄도 달라지지 않는다.

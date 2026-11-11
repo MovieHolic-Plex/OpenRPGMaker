@@ -1,4 +1,4 @@
-// 기록된 모델 호출(turns/*.json toolArgs — 모델이 직접 부른 것)을 새 v2 도구 노출(src/ai/v2/toolExposure.ts)에 다시 대 본다.
+// 기록된 모델 호출(turns/*.json toolArgs — 모델이 직접 부른 것)을 새 v2 도구 노출(src/ai/v2/tools/toolExposure.ts)에 다시 대 본다.
 //   bun scripts/qa/assistant-v2/toolExposureReplay.mts [runRoot …]   (기본: ~/z-project/assistant-whole-game/suite 의 scenes/runs · scenes-duel · runs)
 // 세는 것:
 //   - 호출마다: 처음부터 실림 / 필요할 때 실림(load_tools·이름 호출로 닿음) / 닿지 않음. «닿지 않음» 중 예전 노출에선 닿던 것 = 회귀(0 이어야 한다).
@@ -8,10 +8,10 @@ import { join } from "node:path";
 import { homedir } from "node:os";
 import { validateToolArguments } from "@oh-my-pi/pi-ai";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
-import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
+import { createV2Tools } from "../../../src/ai/v2/tools/verbs.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
 import { withTodoLoop } from "../../../src/ai/v2/loop/todoTools.ts";
-import { exposeV2Tools } from "../../../src/ai/v2/toolExposure.ts";
+import { exposeV2Tools } from "../../../src/ai/v2/tools/toolExposure.ts";
 import { v2ExtraToolNames, wantsGameTools } from "../../../src/ai/v2/request/readers.ts";
 import { musicOnly } from "../../../src/ai/v2/request/readers.ts";
 import type { PiAssistantV2Env } from "../../../src/ai/v2/shared/env.ts";

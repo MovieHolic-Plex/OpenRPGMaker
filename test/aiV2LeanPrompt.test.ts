@@ -3,9 +3,9 @@ import { createBlankProject } from "@/project/defaults/blankProject";
 import { buildV2SystemPrompt } from "@/ai/v2/prompt/systemPrompt";
 import { PLACE_SPEC_INDEX, placeSpecCards, placeSpecKindOf } from "@/ai/v2/prompt/placeSpecs";
 import { editOnlyRequest } from "@/ai/v2/request/readers";
-import { exposeV2Tools } from "@/ai/v2/toolExposure";
+import { exposeV2Tools } from "@/ai/v2/tools/toolExposure";
 import { INTERIOR_CARD } from "@/ai/v2/place/builders/interior";
-import { createV2Tools } from "@/ai/v2/verbs";
+import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
 
 const task = "이제 이 서재에 방탈출 규칙을 넣어 줘. 자물쇠에 4자리 비밀번호를 넣어.";

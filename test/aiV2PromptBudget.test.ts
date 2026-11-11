@@ -7,8 +7,8 @@ import { buildV2SystemPrompt } from "@/ai/v2/prompt/systemPrompt";
 import { V2_CORE_PROMPT } from "@/ai/v2/prompt/core";
 import { GAME_CARD, gameCard } from "@/ai/v2/prompt/gameCard";
 import { classifyRequest } from "@/ai/v2/request/intent";
-import { exposeV2Tools } from "@/ai/v2/toolExposure";
-import { createV2Tools } from "@/ai/v2/verbs";
+import { exposeV2Tools } from "@/ai/v2/tools/toolExposure";
+import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
 
 type State = "blank" | "oneEvent";

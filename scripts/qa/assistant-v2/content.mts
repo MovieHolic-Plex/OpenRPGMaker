@@ -9,7 +9,7 @@ import { PNG } from "pngjs";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
 import { renderMapPng } from "../../qa-game/render.mts";
 import { getTool } from "../../../src/editor/tools/toolRegistry.ts";
-import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
+import { createV2Tools } from "../../../src/ai/v2/tools/verbs.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
 import { resolveWhere } from "../../../src/ai/v2/place/where.ts";
 import { findMap } from "../../../src/ai/v2/place/cells.ts";

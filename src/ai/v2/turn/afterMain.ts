@@ -2,7 +2,7 @@
 import { V2_MAX_REPAIR_ROUNDS } from "./session";
 import { v2BaselineGameKeys, v2GateProblems } from "../judge/finishGate";
 import { alignCodeClues } from "../story/codeClues";
-import { realignEvidencePlaces } from "../story/mysteryCase";
+import { realignEvidencePlaces } from "../story/mysteryEvidencePlaces";
 import { reviewKey } from "./carryOver";
 import type { PiAssistantV2Env } from "../shared/env";
 import { adviseTurn, scopeAdviceToRequest, advisorSummary, compactToolLog } from "../judge/advisor";

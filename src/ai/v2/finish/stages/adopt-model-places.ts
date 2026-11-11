@@ -6,7 +6,7 @@
 import type { FinishStage } from "../types";
 import type { PlaceRecord } from "../../shared/types";
 import { walkBlueprint } from "../../story/blueprint";
-import { blueprintMapFor } from "../../story/blueprintPath";
+import { blueprintMapFor } from "../../story/blueprintPathNames";
 import { placeTypeFromName } from "../../place/placeGuess";
 import { isBareTileMap, isPlaceholderMap, moveBareEvents } from "../../blankStart";
 import type { GameMap } from "@/project/types";
