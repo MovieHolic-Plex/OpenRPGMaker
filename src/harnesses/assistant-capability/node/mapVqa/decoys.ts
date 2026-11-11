@@ -72,7 +72,7 @@ function stampSix(project: Project, mapId: string): Planted | null {
   map.events = (map.events ?? []).filter((event: any) => !(event.y >= rowY && event.y < rowY + size));
   return { project: copy, region: { x: 0, y: rowY, w: Math.min(map.width, 5 * span + size), h: size }, note: `(${best.x},${best.y}) 의 ${size}×${size} 조각을 y=${rowY} 줄에 6번 찍었다` };
 }
-/** 가장자리의 열린 구간(문·성문·길 끝)을 옆의 막힌 칸 그림으로 덮어 막는다 — 안쪽 두 줄까지. */
+/** 가장자리의 열린 구간(문·성문·길 끝)을 옆의 막힌 칸 그림으로 덮어 막는다 — 문 그림까지 지워지게 안쪽 네 줄까지. */
 function wallOff(project: Project, mapId: string, facts: MapFacts): Planted | null {
   const runs = facts.openEdges.filter(run => run.to - run.from + 1 <= 8);
   if (!runs.length || runs.length !== facts.openEdges.length) return null; // 넓게 열린 가장자리(들판)는 막을 문이 아니다
@@ -82,14 +82,17 @@ function wallOff(project: Project, mapId: string, facts: MapFacts): Planted | nu
     const along = run.edge === 'north' || run.edge === 'south';
     const inward: [number, number] = run.edge === 'north' ? [0, 1] : run.edge === 'south' ? [0, -1] : run.edge === 'west' ? [1, 0] : [-1, 0];
     const edgeCell = (i: number): [number, number] => along ? [i, run.edge === 'north' ? 0 : map.height - 1] : [run.edge === 'west' ? 0 : map.width - 1, i];
-    // 구간 바로 옆의 막힌 가장자리 칸을 벽 견본으로 쓴다.
-    const sample = [run.from - 1, run.to + 1].map(edgeCell).find(([x, y]) => inside(map, x, y) && facts.blocked.has(`${x},${y}`));
-    if (!sample) return null;
-    for (let i = run.from; i <= run.to; i += 1) for (let depth = 0; depth < 2; depth += 1) {
-      const [ex, ey] = edgeCell(i), x = ex + inward[0] * depth, y = ey + inward[1] * depth;
-      copyCell(map, sample[0] + inward[0] * depth, sample[1] + inward[1] * depth, x, y, source);
-      touched.push([x, y]);
+    // 가장자리에서 안쪽으로 네 줄까지: 줄마다 그 구간 바로 옆의 막힌 칸(벽·빈 곳)을 견본으로 덮는다. 옆이 열려 있으면 방 안에 닿은 것이라 멈춘다 —
+    // 문턱만 지우고 문 그림은 남기면 «문을 막았다»가 그림에 안 보인다(2026-11-11 보정 v1·v2 에서 주막 문이 그대로 남았다).
+    let walled = 0;
+    for (let depth = 0; depth < 4; depth += 1) {
+      const row = (i: number): [number, number] => { const [ex, ey] = edgeCell(i); return [ex + inward[0] * depth, ey + inward[1] * depth]; };
+      const sample = [run.from - 1, run.to + 1].map(row).find(([x, y]) => inside(map, x, y) && facts.blocked.has(`${x},${y}`));
+      if (!sample) break;
+      for (let i = run.from; i <= run.to; i += 1) { const [x, y] = row(i); copyCell(map, sample[0], sample[1], x, y, source); touched.push([x, y]); }
+      walled += 1;
     }
+    if (!walled) return null;
   }
   map.events = (map.events ?? []).filter((event: any) => !touched.some(([x, y]) => event.x === x && event.y === y));
   const xs = touched.map(cell => cell[0]), ys = touched.map(cell => cell[1]);
