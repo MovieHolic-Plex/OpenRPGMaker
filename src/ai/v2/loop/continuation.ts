@@ -5,7 +5,7 @@
 //   - 서명(열린 수/전체 수 · 프로젝트 지문 · 보고 해시)이 앞 재주입과 같으면(stale)
 //   - 사용자에게 물으며 멈춘 실행(ask_user)은 다시 돌리지 않는다
 import { checkLabel, type TodoStore } from "./todoStore";
-import type { TodoItem } from "../todo/types";
+import { modelText, type TodoItem } from "../todo/types";
 
 const LOOP_CONTINUATION_CAP = 8;
 const LOOP_NO_PROGRESS_LIMIT = 2;
@@ -90,9 +90,9 @@ export const STOP_REASON_KO: Record<Exclude<LoopDecision, { kind: "continue" }>[
 
 const failingLine = (store: TodoStore, item: TodoItem): string | undefined => {
   const m = store.meta.get(item.id);
-  if (m?.lastCheck && !m.lastCheck.pass) return `- ${item.id} «${item.content}» machine check ✗ — ${m.lastCheck.en ?? m.lastCheck.detail}${m.lastCheck.detail.startsWith("모호함") ? ` → bind it with todo(op:"bind", task:"${item.id}", mapId|eventId|itemId|troopId:<candidate id>)` : ""}`;
+  if (m?.lastCheck && !m.lastCheck.pass) return `- ${item.id} «${modelText(item)}» machine check ✗ — ${m.lastCheck.en ?? m.lastCheck.detail}${m.lastCheck.detail.startsWith("모호함") ? ` → bind it with todo(op:"bind", task:"${item.id}", mapId|eventId|itemId|troopId:<candidate id>)` : ""}`;
   // 앞 턴에서 이어 받은 항목은 그때 부른 동사를 같이 보인다 — 같은 길을 다시 걷지 않게.
-  if (m?.lastFail) return `- ${item.id} «${item.content}» last failure — ${m.lastFailEn ?? m.lastFail}${m.restored && m.tried?.length ? ` (already tried in an earlier turn: ${m.tried.join(", ")})` : ""}`;
+  if (m?.lastFail) return `- ${item.id} «${modelText(item)}» last failure — ${m.lastFailEn ?? m.lastFail}${m.restored && m.tried?.length ? ` (already tried in an earlier turn: ${m.tried.join(", ")})` : ""}`;
   return undefined;
 };
 
@@ -104,7 +104,7 @@ export function continuationPrompt(store: TodoStore, opts: { readonly brief?: st
   return [
     ...(opts.brief ? [opts.brief, ""] : []),
     ...(opts.batchNote ? [opts.batchNote] : []),
-    `[Todo loop] open items ${c.open}/${c.total}${next ? ` — Do now: ${next.id} «${next.content}»${next.check && next.check.kind !== "none" ? ` (machine check: ${checkLabel(next.check, true)})` : ""}` : ""}.`,
+    `[Todo loop] open items ${c.open}/${c.total}${next ? ` — Do now: ${next.id} «${modelText(next)}»${next.check && next.check.kind !== "none" ? ` (machine check: ${checkLabel(next.check, true)})` : ""}` : ""}.`,
     // H7: 「지금 할 것」 바로 뒤에 그 항목의 다음 호출 한 개(동사+채운 인자 뼈대) — 추상 지시 대신 바로 부를 모양.
     ...(next && opts.nextCallFor ? (() => { const call = opts.nextCallFor!(next); return call ? [`Next call: ${call}`] : []; })() : []),
     "Continue with real tool calls, or if you cannot, mark it with todo(op:\"block\", task:<id>, reason:<one-line reason>) and go to the next item. Do not restate the plan. Mark finished items with todo(op:\"done\") — done re-runs the machine check. Marking an item completed while its machine check is ✗ is a false completion.",

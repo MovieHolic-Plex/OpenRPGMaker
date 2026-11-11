@@ -49,6 +49,8 @@ export interface TodoItem {
   id: string;
   phase: string;
   content: string;
+  /** 모델이 받는 글(영어) — 끝맺음 관문 항목만. 보고·화면·기록에는 content(한국어)가 실린다. */
+  en?: string;
   status: TodoStatus;
   check?: TodoCheck;
   dependsOn?: string[];
@@ -213,3 +215,9 @@ export function parseTodoCheck(raw: unknown): TodoCheck | { error: string } {
   const fresh = bool("fresh");
   return body.kind === "none" ? body : { ...body, fresh: fresh ?? true };
 }
+
+/** 모델에게 보이는 항목 글 — 영어 글이 있으면 그것, 없으면 쓴 글 그대로. */
+export const modelText = (item: TodoItem): string => item.en ?? item.content;
+
+/** 모델에게 보이는 항목 글을 앞에서 자른다 — 영어 글은 같은 뜻에 글자가 더 들어 상한을 1.8배로 둔다(토큰은 한국어 상한과 비슷하다). */
+export const modelTextCut = (item: TodoItem, max: number): string => modelText(item).slice(0, item.en ? Math.round(max * 1.8) : max);
