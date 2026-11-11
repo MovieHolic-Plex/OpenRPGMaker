@@ -48,9 +48,7 @@ import { usesRelationshipMenu } from "../relationshipMenu";
 import { checkSceneStaging } from "./sceneStagingLint";
 import { checkSeatedPose } from "./seatedPoseLint";
 import { checkStairEntrances } from "./stairEntranceLint";
-import { cellIs, doorCacheKey, isDoorArtCell, LAYERS, type TileMetaLike } from "../staging/doorCells";
-
-export { isDoorArtCell };
+import { cellIs, doorCacheKey, LAYERS, type TileMetaLike } from "../staging/doorCells";
 
 type Cell = { x: number; y: number };
 

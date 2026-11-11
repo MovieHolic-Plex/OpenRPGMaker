@@ -10,7 +10,7 @@
  */
 import type { GameMap, MapId, MapNamedLocation, Project } from "@/project/types";
 import { linkMapsInDraft, type LinkResult } from "./worldGraphTools";
-import { isDoorArtCell } from "@/project/staging/doorCells";
+import { isEntranceArt } from "@/ai/v2/place/entrances";
 import { isPassable } from "@/project/collision";
 import { reliefLevel } from "@/project/relief/walk";
 import { protectedHouseCells } from "./houseProtection";
@@ -364,7 +364,7 @@ export function pickDungeonGateSpot(draft: Project, map: GameMap, score: (c: Pt)
 export function caveMouth(draft: Project, map: GameMap, gate: Pt): string | undefined {
   const role = (map as unknown as { mapRole?: string }).mapRole;
   if (map.tilesetId !== "beodeul_city" || role === "dungeon" || role === "interior" || map.climate?.mode === "indoor") return undefined;
-  if ([0, -1].some((dy) => isDoorArtCell(draft, map, gate.x, gate.y + dy))) return undefined;
+  if ([0, -1].some((dy) => isEntranceArt(draft, map, gate.x, gate.y + dy))) return undefined;
   // 갱구 자리가 밭·울타리·나무·집·길·완성된 집 보호 칸을 덮으면 찍지 않는다(덮으면 밭 한가운데 굴이 박히거나 커밋이 통째로 거절된다).
   if (!caveMouthSpotClear(draft, map, gate)) return undefined;
   const tool = SHARED_OBJECT_TOOLS.find((t) => t.name === "stamp_object");
