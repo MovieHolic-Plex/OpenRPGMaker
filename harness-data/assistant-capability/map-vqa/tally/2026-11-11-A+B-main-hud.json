@@ -1,0 +1,2555 @@
+{
+  "schemaVersion": 1,
+  "kind": "assistant-hud-vqa",
+  "promptVersion": "hud-vqa-v1",
+  "judge": {
+    "provider": "claude-cli",
+    "model": "claude-opus-5-5",
+    "effort": "medium"
+  },
+  "calibration": {
+    "status": "uncalibrated",
+    "note": "이 HUD 검수자는 심은 결함으로 재지 않았다 — 숫자는 보정 전이다."
+  },
+  "corpus": "whole-games:~/z-project/assistant-fable-runs,~/z-project/assistant-fable-runs/mapvqa/lay-main-0636b72004",
+  "generatedAt": "2026-11-11T10:10:05.196Z",
+  "playerRoot": "~/z-project/rpg-zzu-assistant-fable-av2-whole",
+  "page": "assistant-hud-vqa.html",
+  "judgeUsage": {
+    "calls": 98,
+    "cached": 0,
+    "failures": 0,
+    "inputTokens": 259886,
+    "outputTokens": 55853
+  },
+  "totals": {
+    "games": 31,
+    "shots": 98,
+    "reviewed": 98,
+    "unreviewed": 0,
+    "shotsWithMajor": 30,
+    "gamesWithMajor": 8,
+    "major": 31,
+    "polish": 84
+  },
+  "ranked": [
+    {
+      "class": "unreadable",
+      "label": "밝은 바닥·복잡한 그림 위라 읽기 어려운 글·숫자",
+      "major": 14,
+      "polish": 27,
+      "shots": 40,
+      "games": 8
+    },
+    {
+      "class": "unused-gauge",
+      "label": "게임이 쓰지 않는 수치의 게이지(전투·소모가 없는데 뜬 체력·마력·기력 막대)",
+      "major": 12,
+      "polish": 1,
+      "shots": 12,
+      "games": 2
+    },
+    {
+      "class": "other",
+      "label": "그 밖의 HUD 결함",
+      "major": 4,
+      "polish": 39,
+      "shots": 38,
+      "games": 7
+    },
+    {
+      "class": "covers-play",
+      "label": "HUD·목표 줄이 주인공이나 봐야 할 것을 가림",
+      "major": 1,
+      "polish": 16,
+      "shots": 15,
+      "games": 10
+    },
+    {
+      "class": "objective-text",
+      "label": "목표 글이 어색하게 줄바꿈·잘림 / 이미 와 있는 곳으로 가라고 함",
+      "major": 0,
+      "polish": 1,
+      "shots": 1,
+      "games": 1
+    }
+  ],
+  "byClass": {
+    "unused-gauge": {
+      "label": "게임이 쓰지 않는 수치의 게이지(전투·소모가 없는데 뜬 체력·마력·기력 막대)",
+      "major": 12,
+      "polish": 1,
+      "shots": 12,
+      "games": 2
+    },
+    "wrong-genre-hud": {
+      "label": "장르가 다른 HUD(턴제 게임의 액션 HUD: 도구 슬롯·스태미나 고리·하트)",
+      "major": 0,
+      "polish": 0,
+      "shots": 0,
+      "games": 0
+    },
+    "unreadable": {
+      "label": "밝은 바닥·복잡한 그림 위라 읽기 어려운 글·숫자",
+      "major": 14,
+      "polish": 27,
+      "shots": 40,
+      "games": 8
+    },
+    "covers-play": {
+      "label": "HUD·목표 줄이 주인공이나 봐야 할 것을 가림",
+      "major": 1,
+      "polish": 16,
+      "shots": 15,
+      "games": 10
+    },
+    "objective-text": {
+      "label": "목표 글이 어색하게 줄바꿈·잘림 / 이미 와 있는 곳으로 가라고 함",
+      "major": 0,
+      "polish": 1,
+      "shots": 1,
+      "games": 1
+    },
+    "other": {
+      "label": "그 밖의 HUD 결함",
+      "major": 4,
+      "polish": 39,
+      "shots": 38,
+      "games": 7
+    }
+  },
+  "perGame": [
+    {
+      "group": "A:fun-v2",
+      "label": "fun-v2",
+      "shots": 6,
+      "reviewed": 6,
+      "major": 2,
+      "polish": 11,
+      "classes": [
+        "covers-play",
+        "other"
+      ],
+      "modelFreeUnusedGauges": [
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:fun-w1",
+      "label": "fun-w1",
+      "shots": 6,
+      "reviewed": 6,
+      "major": 6,
+      "polish": 7,
+      "classes": [
+        "unused-gauge"
+      ],
+      "modelFreeUnusedGauges": [
+        "mp",
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:fun-w2",
+      "label": "fun-w2",
+      "shots": 7,
+      "reviewed": 7,
+      "major": 3,
+      "polish": 12,
+      "classes": [
+        "unreadable",
+        "other"
+      ],
+      "modelFreeUnusedGauges": [
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:fun-w3",
+      "label": "fun-w3",
+      "shots": 6,
+      "reviewed": 6,
+      "major": 6,
+      "polish": 7,
+      "classes": [
+        "unreadable",
+        "other"
+      ],
+      "modelFreeUnusedGauges": [
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:fun-x1",
+      "label": "fun-x1",
+      "shots": 6,
+      "reviewed": 6,
+      "major": 2,
+      "polish": 12,
+      "classes": [
+        "unreadable"
+      ],
+      "modelFreeUnusedGauges": [
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:fun-x1-gatefix",
+      "label": "fun-x1-gatefix",
+      "shots": 6,
+      "reviewed": 6,
+      "major": 2,
+      "polish": 11,
+      "classes": [
+        "unreadable"
+      ],
+      "modelFreeUnusedGauges": [
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:fun-x1-gatefix-arrow",
+      "label": "fun-x1-gatefix-arrow",
+      "shots": 6,
+      "reviewed": 6,
+      "major": 4,
+      "polish": 11,
+      "classes": [
+        "unreadable"
+      ],
+      "modelFreeUnusedGauges": [
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:jrpg-v2",
+      "label": "jrpg-v2",
+      "shots": 6,
+      "reviewed": 6,
+      "major": 0,
+      "polish": 1,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "A:jrpg-w1",
+      "label": "jrpg-w1",
+      "shots": 6,
+      "reviewed": 6,
+      "major": 6,
+      "polish": 8,
+      "classes": [
+        "unused-gauge"
+      ],
+      "modelFreeUnusedGauges": [
+        "mp",
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:jrpg-w2",
+      "label": "jrpg-w2",
+      "shots": 6,
+      "reviewed": 6,
+      "major": 0,
+      "polish": 1,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "A:jrpg-w3",
+      "label": "jrpg-w3",
+      "shots": 7,
+      "reviewed": 7,
+      "major": 0,
+      "polish": 2,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "A:jrpg-x1",
+      "label": "jrpg-x1",
+      "shots": 8,
+      "reviewed": 8,
+      "major": 0,
+      "polish": 1,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:village",
+      "label": "맵 깔기 village",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:market-town",
+      "label": "맵 깔기 market-town",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:castle",
+      "label": "맵 깔기 castle",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:camp",
+      "label": "맵 깔기 camp",
+      "shots": 0,
+      "reviewed": 0,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": [],
+      "skipped": "조수가 HUD 를 설정하지 않은 요청(빈 프로젝트의 기본 HUD)"
+    },
+    {
+      "group": "B:ruins",
+      "label": "맵 깔기 ruins",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:cave",
+      "label": "맵 깔기 cave",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:prison",
+      "label": "맵 깔기 prison",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:inn",
+      "label": "맵 깔기 inn",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:house",
+      "label": "맵 깔기 house",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:harbor",
+      "label": "맵 깔기 harbor",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:field-route",
+      "label": "맵 깔기 field-route",
+      "shots": 0,
+      "reviewed": 0,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": [],
+      "skipped": "조수가 HUD 를 설정하지 않은 요청(빈 프로젝트의 기본 HUD)"
+    },
+    {
+      "group": "B:village-to-field",
+      "label": "맵 깔기 village-to-field",
+      "shots": 2,
+      "reviewed": 2,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:village-chief-house",
+      "label": "맵 깔기 village-chief-house",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:forest-to-cave",
+      "label": "맵 깔기 forest-to-cave",
+      "shots": 3,
+      "reviewed": 3,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:convenience-store",
+      "label": "맵 깔기 convenience-store",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:mine",
+      "label": "맵 깔기 mine",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:swamp",
+      "label": "맵 깔기 swamp",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:temple",
+      "label": "맵 깔기 temple",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:throne-room",
+      "label": "맵 깔기 throne-room",
+      "shots": 0,
+      "reviewed": 0,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": [],
+      "skipped": "조수가 HUD 를 설정하지 않은 요청(빈 프로젝트의 기본 HUD)"
+    },
+    {
+      "group": "B:classroom",
+      "label": "맵 깔기 classroom",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:tavern",
+      "label": "맵 깔기 tavern",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    },
+    {
+      "group": "B:blacksmith",
+      "label": "맵 깔기 blacksmith",
+      "shots": 0,
+      "reviewed": 0,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": [],
+      "skipped": "조수가 HUD 를 설정하지 않은 요청(빈 프로젝트의 기본 HUD)"
+    },
+    {
+      "group": "B:farm",
+      "label": "맵 깔기 farm",
+      "shots": 1,
+      "reviewed": 1,
+      "major": 0,
+      "polish": 0,
+      "classes": [],
+      "modelFreeUnusedGauges": []
+    }
+  ],
+  "shots": [
+    {
+      "id": "fun-v2--별빛-마을-tart",
+      "group": "A:fun-v2",
+      "label": "fun-v2 · 별빛 마을",
+      "mapName": "별빛 마을",
+      "start": true,
+      "chip": "별빛 마을의 꺼진 등불을 조사하자",
+      "screen": "좌상단에 배경 패널 없이 «마력» 라벨과 하늘색 막대, 그 아래 «43 / 43» 숫자가 숲 위에 떠 있고, 우상단 어두운 둥근 칩에 목표 줄 «별빛 마을의 꺼진 등불을 조사하자»가 한 줄로 표시됨. 좌하단 기력 링과 시계는 화면에 보이지 않음.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 «마력» 라벨과 «43 / 43» 숫자가 작은 회색·흰색 글자인데 받침 패널이 없어 짙고 복잡한 숲 타일 위에서 눈에 잘 띄지 않음"
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-v2/fun-v2--별빛-마을-tart.png"
+    },
+    {
+      "id": "fun-v2--별의-동굴-2670",
+      "group": "A:fun-v2",
+      "label": "fun-v2 · 별의 동굴",
+      "mapName": "별의 동굴",
+      "start": false,
+      "chip": "별빛 마을의 꺼진 등불을 조사하자",
+      "screen": "좌상단에 「마력」 라벨과 하늘색 가로 막대, 그 아래 「43 / 43」 숫자가 있고, 우상단 어두운 칩에 목표 줄 「별빛 마을의 꺼진 등불을 조사하자」가 한 줄로 떠 있음. 좌하단 기력 링과 시계는 화면에 보이지 않음.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 「마력」 라벨이 받침 패널 없이 밝은 흙길 위에 작은 연한 글씨로 떠 있어 바탕과 잘 구분되지 않음(아래 「43 / 43」에만 어두운 받침이 있음)."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "이 게임은 HP가 줄어드는데도 HP 게이지는 없고 좌상단에 「마력」 막대 하나만 길게 떠 있어, 체력 표시가 빠진 채 MP만 남은 미완성 HUD로 보임."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-v2/fun-v2--별의-동굴-2670.png"
+    },
+    {
+      "id": "fun-v2--달맞이-초원-st_1",
+      "group": "A:fun-v2",
+      "label": "fun-v2 · 달맞이 초원",
+      "mapName": "달맞이 초원",
+      "start": false,
+      "chip": "별빛 마을의 꺼진 등불을 조사하자",
+      "screen": "좌상단에 「마력」 라벨과 하늘색 가로 게이지, 그 아래 「43 / 43」 숫자가 있고, 우상단 어두운 칩에 목표 줄 「별빛 마을의 꺼진 등불을 조사하자」가 한 줄로 떠 있다. 기력 링과 시계는 화면에 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 게이지 위의 「마력」 라벨은 작은 흰 글자인데 받침 패널이 없다. 초록 풀과 갈색 흙길 무늬 위에 바로 얹혀 있어 눈에 잘 띄지 않는다(아래 숫자 「43 / 43」에는 어두운 받침이 있어 서로 일관되지 않는다)."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "좌상단에 「마력 43/43」 게이지만 홀로 떠 있고, 체력(HP)은 줄어드는 게임인데도 HP 표시가 없다. 바이탈 묶음 중 마력 바만 남은 듯한 어색한 구성이다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-v2/fun-v2--달맞이-초원-st_1.png"
+    },
+    {
+      "id": "fun-v2--속삭임-숲-st_2",
+      "group": "A:fun-v2",
+      "label": "fun-v2 · 속삭임 숲",
+      "mapName": "속삭임 숲",
+      "start": false,
+      "chip": "별빛 마을의 꺼진 등불을 조사하자",
+      "screen": "좌측 상단보다 조금 아래(y≈140~210)에 작은 회색 글자 「마력」, 화면 절반 가까이 뻗은 파란 막대, 그 아래 어두운 칸에 「43 / 43」이 있다. 우측 상단 어두운 칩에는 목표 줄 「별빛 마을의 꺼진 등불을 조사하자」가 한 줄로 떠 있다. 화면 왼쪽 가장자리에는 노란 역삼각형 표식 3개와 흰 빛 번짐이 세로로 놓여 있다. 시계·기력 링·도구 칸은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "covers-play",
+          "severity": "major",
+          "evidence": "마력 게이지 막대와 「43 / 43」 칸, 그리고 그 옆 노란 역삼각형이 왼쪽의 갈색 머리 NPC 머리 바로 위에 겹쳐 있어 캐릭터가 가려진다. 게이지가 화면 맨 위가 아닌 맵 안쪽(y≈160~210)에 내려와 있다."
+        },
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "「마력」 라벨은 받침 패널 없이 작은 회색 글자로 초록 잔디와 나무 위에 바로 찍혀 있어 잘 읽히지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "HP는 깎이는 게임인데 HP 게이지는 없고 「마력 43/43」 막대만 홀로 떠 있다. 막대도 화면 폭의 약 1/3(x≈40~380)까지 과하게 길게 뻗어 미완성처럼 보인다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "화면 왼쪽 가장자리(x≈22, y≈175·318·365)에 의미를 알 수 없는 노란 역삼각형 3개와 흰 빛 번짐이 세로로 붙어 있다. 주인공(파란 머리) 바로 옆이라 남은 HUD 조각처럼 보인다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-v2/fun-v2--속삭임-숲-st_2.png"
+    },
+    {
+      "id": "fun-v2--반딧불-숲길-st_3",
+      "group": "A:fun-v2",
+      "label": "fun-v2 · 반딧불 숲길",
+      "mapName": "반딧불 숲길",
+      "start": false,
+      "chip": "별빛 마을의 꺼진 등불을 조사하자",
+      "screen": "좌상단에 «마력» 라벨과 파란 가로 게이지, 그 아래 «43 / 43» 숫자 칩이 있고, 우상단 어두운 칩에 목표 줄 «별빛 마을의 꺼진 등불을 조사하자»가 한 줄로 떠 있음. 좌하단 기력 링과 시계는 화면에 보이지 않음. 대화창 없이 필드 화면임.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 «마력» 라벨이 배경 패널 없이 작은 흰 글씨로 녹색 숲 타일 위에 놓여 있어 나무·풀 무늬에 묻혀 잘 읽히지 않음."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "좌상단에 «마력» 게이지(«43 / 43»)만 혼자 떠 있고, 실제로 깎이는 HP 게이지는 없음. 짝 없이 남은 게이지처럼 보여 HUD 구성이 어색함."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-v2/fun-v2--반딧불-숲길-st_3.png"
+    },
+    {
+      "id": "fun-v2--별바람-공터-st_4",
+      "group": "A:fun-v2",
+      "label": "fun-v2 · 별바람 공터",
+      "mapName": "별바람 공터",
+      "start": false,
+      "chip": "별빛 마을의 꺼진 등불을 조사하자",
+      "screen": "필드 화면(안개 낀 숲 공터). 왼쪽 위에 라벨 «마력», 하늘색 가로 막대, 그 아래 작은 칸에 «43 / 43»이 있는 마력 게이지가 떠 있다. 오른쪽 위 어두운 칩에는 목표 «별빛 마을의 꺼진 등불을 조사하자»가 한 줄로 떠 있다. 왼쪽 아래 기력 링과 시계는 보이지 않는다.",
+      "defects": [
+        {
+          "class": "other",
+          "severity": "major",
+          "evidence": "왼쪽 위에 «마력 43/43» 게이지만 홀로 떠 있고 HP 게이지는 없다. 이 게임은 HP가 줄어드는데도 체력은 보이지 않고 마력만 보여서, 다른 게이지를 숨긴 뒤 하나만 남은 미완성 HUD처럼 보인다."
+        },
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "왼쪽 위 라벨 «마력»은 작은 흰 글자인데 배경 패널 없이 나무와 풀 위에 그대로 얹혀 있다. 막대도 테두리나 패널 없이 맵 위에 떠 있어 눈에 잘 띄지 않는다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-v2/fun-v2--별바람-공터-st_4.png"
+    },
+    {
+      "id": "fun-w1--벽돌-거리-3f1e",
+      "group": "A:fun-w1",
+      "label": "fun-w1 · 벽돌 거리",
+      "mapName": "벽돌 거리",
+      "start": true,
+      "chip": "벽돌 거리에서 울리는 경보를 조사하자",
+      "screen": "좌상단에 «마력» 라벨과 하늘색 가로 게이지, 그 아래 «43 / 43» 숫자가 떠 있고, 우상단 어두운 패널에 목표 줄 «벽돌 거리에서 울리는 / 경보를 조사하자»가 두 줄로 떠 있다. 좌하단 기력 링은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unused-gauge",
+          "severity": "major",
+          "evidence": "좌상단 «마력» 게이지와 «43 / 43»은 MP를 쓰는 스킬도 전투도 없는 게임에서 절대 변하지 않는 수치이고, 다른 게이지가 숨겨진 뒤 홀로 남은 게이지라 미완성처럼 보인다."
+        },
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 «마력» 라벨이 배경 패널 없이 나무 줄기와 회색 돌담 위에 얇은 글씨로 얹혀 있어 잘 보이지 않는다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w1/fun-w1--벽돌-거리-3f1e.png"
+    },
+    {
+      "id": "fun-w1--운하-선착장-dde6",
+      "group": "A:fun-w1",
+      "label": "fun-w1 · 운하 선착장",
+      "mapName": "운하 선착장",
+      "start": false,
+      "chip": "벽돌 거리에서 울리는 경보를 조사하자",
+      "screen": "좌측 상단에 「마력」 라벨, 하늘색 가로 게이지, 「43 / 43」 숫자가 떠 있다. 우측 상단의 어두운 패널에는 목표 「벽돌 거리에서 울리는 / 경보를 조사하자」가 두 줄로 표시된다. 왼쪽 가장자리 주인공 발밑(약 x25, y380)에는 희미한 점선 고리가 보인다.",
+      "defects": [
+        {
+          "class": "unused-gauge",
+          "severity": "major",
+          "evidence": "좌측 상단의 「마력」 게이지와 「43 / 43」이 크게 떠 있다. 이 게임은 전투가 없고 마력을 쓰는 스킬도 없어 값이 절대 변하지 않는다. 다른 게이지가 숨겨진 뒤 홀로 남은 무의미한 게이지다."
+        },
+        {
+          "class": "unused-gauge",
+          "severity": "polish",
+          "evidence": "화면 왼쪽 주인공 발밑(약 x25, y380)에 희미한 점선 고리가 있다. 기력 링으로 보이는데, 액션 전투가 없는 이 게임에서는 쓰이지 않는다. 반쯤 투명하게 남아 있어 무엇인지 알기 어렵다."
+        },
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌측 상단 「마력」 라벨이 아주 작고 어두운 글씨다. 받침 패널 없이 회색 돌벽 위에 바로 놓여 있어 거의 읽히지 않는다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w1/fun-w1--운하-선착장-dde6.png"
+    },
+    {
+      "id": "fun-w1--연기-공장지대-3549",
+      "group": "A:fun-w1",
+      "label": "fun-w1 · 연기 공장지대",
+      "mapName": "연기 공장지대",
+      "start": false,
+      "chip": "벽돌 거리에서 울리는 경보를 조사하자",
+      "screen": "좌상단에 «마력» 라벨과 하늘색 가로 게이지, 그 아래 «43 / 43» 숫자가 떠 있고, 우상단 어두운 칩에 목표 줄 «벽돌 거리에서 울리는 / 경보를 조사하자»가 두 줄로 표시된 필드 화면입니다(좌하단 기력 링은 보이지 않음).",
+      "defects": [
+        {
+          "class": "unused-gauge",
+          "severity": "major",
+          "evidence": "좌상단 «마력» 게이지와 «43 / 43» 숫자가 표시되지만, 이 게임에는 MP를 쓰는 스킬도 전투도 없습니다. 값이 절대 변하지 않는 게이지 하나만 홀로 남아 미완성처럼 보입니다."
+        },
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 «마력» 라벨이 받침 패널 없이 작은 밝은 회색 글자로 회색 돌벽 위에 바로 놓여 있어 배경에 묻혀 잘 읽히지 않습니다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w1/fun-w1--연기-공장지대-3549.png"
+    },
+    {
+      "id": "fun-w1--발명가의-공방-6f8b",
+      "group": "A:fun-w1",
+      "label": "fun-w1 · 발명가의 공방",
+      "mapName": "발명가의 공방",
+      "start": false,
+      "chip": "벽돌 거리에서 울리는 경보를 조사하자",
+      "screen": "좌상단에 «마력» 라벨과 하늘색 가로 게이지, 그 아래 «43 / 43» 숫자가 떠 있고, 우상단에는 어두운 패널에 목표 줄 «벽돌 거리에서 울리는 경보를 조사하자»가 한 줄로 표시됨. 좌하단 기력 링은 보이지 않음.",
+      "defects": [
+        {
+          "class": "unused-gauge",
+          "severity": "major",
+          "evidence": "좌상단의 «마력» 게이지와 «43 / 43» 숫자: 이 게임은 전투가 없고 MP를 쓰는 스킬도 없어 값이 절대 변하지 않는데, 다른 게이지가 숨겨진 뒤 혼자 남은 게이지로 화면에 표시됨"
+        },
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "좌상단 «마력» 게이지 막대와 «43 / 43» 숫자가 방 안쪽까지 걸쳐 벽돌 벽의 창문, 공구 선반, 램프·화로 윗부분을 가림"
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w1/fun-w1--발명가의-공방-6f8b.png"
+    },
+    {
+      "id": "fun-w1--오래된-보일러실-54eb",
+      "group": "A:fun-w1",
+      "label": "fun-w1 · 오래된 보일러실",
+      "mapName": "오래된 보일러실",
+      "start": false,
+      "chip": "벽돌 거리에서 울리는 경보를 조사하자",
+      "screen": "현장 화면(대화창 없음): 좌상단에 «마력» 라벨과 하늘색 가로 게이지, 그 아래 «43 / 43» 숫자가 있고, 우상단 어두운 칩에 목표 줄 «벽돌 거리에서 울리는 경보를 조사하자»가 한 줄로 떠 있다. 좌하단 기력 링은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unused-gauge",
+          "severity": "major",
+          "evidence": "좌상단 «마력» 게이지와 «43 / 43»이 혼자 남아 있지만, 이 게임은 전투가 없고 MP를 쓰는 기술도 없어 값이 영원히 가득 찬 채로 의미 없이 표시된다."
+        },
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "좌상단 «마력» 게이지 막대가 방 윗벽 벽돌과 벽에 걸린 장식(왼쪽 끝 액자·파이프 부근)을 가로로 덮어, 벽면 일부가 HUD에 가려진다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w1/fun-w1--오래된-보일러실-54eb.png"
+    },
+    {
+      "id": "fun-w1--중앙-기관실-e188",
+      "group": "A:fun-w1",
+      "label": "fun-w1 · 중앙 기관실",
+      "mapName": "중앙 기관실",
+      "start": false,
+      "chip": "벽돌 거리에서 울리는 경보를 조사하자",
+      "screen": "좌상단에 「마력」 라벨과 하늘색 막대, 그 아래 「43 / 43」 숫자가 떠 있고, 우상단 어두운 칩에 목표 줄 「벽돌 거리에서 울리는 경보를 조사하자」가 한 줄로 표시됨. 좌하단 기력 링은 보이지 않음.",
+      "defects": [
+        {
+          "class": "unused-gauge",
+          "severity": "major",
+          "evidence": "좌상단 「마력」 게이지와 「43 / 43」은 MP를 쓰는 스킬도 전투도 없는 게임에서 절대 변하지 않는 수치이며, 다른 게이지가 숨겨진 뒤 홀로 남은 게이지임"
+        },
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "좌상단 「마력」 막대가 x≈40~380 범위로 맵 위쪽 벽의 배관과 왼쪽 기계 위를 가로질러 덮고 있으며, 빨간 머리 NPC 머리 바로 위까지 내려와 있음"
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w1/fun-w1--중앙-기관실-e188.png"
+    },
+    {
+      "id": "fun-w2--불씨-마을-e329",
+      "group": "A:fun-w2",
+      "label": "fun-w2 · 불씨 마을",
+      "mapName": "불씨 마을",
+      "start": true,
+      "chip": "불씨 마을에서 족장 바라를 만나 불이 꺼진 까닭을 듣자.",
+      "screen": "좌상단에 패널 없이 '마력' 글자와 하늘색 긴 막대, 그 아래 '43 / 43' 숫자가 떠 있고, 우상단 어두운 칩에 목표 줄 '불씨 마을에서 족장 바라를 / 만나 불이 꺼진 까닭을 듣자.'가 두 줄로 표시된 시작 필드 화면",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "major",
+          "evidence": "좌상단 '마력' 라벨이 받침 패널 없이 작은 글씨로 맵 위의 항아리 스프라이트와 겹쳐 있어 글자가 잘 읽히지 않고, 막대도 흙길·잔디 위에 그대로 걸쳐 있음"
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "좌상단에 '마력 43/43' 게이지만 홀로 떠 있고, 실제로 깎이는 체력 게이지는 없어 HUD가 반쯤 빠진 것처럼 보임"
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w2/fun-w2--불씨-마을-e329.png"
+    },
+    {
+      "id": "fun-w2--뼈바람-골짜기-c348",
+      "group": "A:fun-w2",
+      "label": "fun-w2 · 뼈바람 골짜기",
+      "mapName": "뼈바람 골짜기",
+      "start": false,
+      "chip": "불씨 마을에서 족장 바라를 만나 불이 꺼진 까닭을 듣자.",
+      "screen": "좌상단에 «마력» 라벨과 하늘색 가로 게이지, 그 아래 «43 / 43» 숫자가 떠 있고, 우상단 남색 패널에 목표 줄 «불씨 마을에서 족장 바라를 / 만나 불이 꺼진 까닭을 듣자.»가 두 줄로 표시됨. 기력 링·시계·도구 칸은 보이지 않음.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 «마력» 라벨이 받침 패널 없이 작은 회색 글씨로 이끼 낀 바위 타일 위에 바로 얹혀 있어 배경과 대비가 낮고 잘 안 읽힘."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "이 게임은 HP가 깎이는데도 화면에는 HP 게이지 없이 «마력 43 / 43» 게이지 하나만 떠 있어, 다른 게이지를 숨긴 뒤 하나만 남은 것처럼 어색하게 보임."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w2/fun-w2--뼈바람-골짜기-c348.png"
+    },
+    {
+      "id": "fun-w2--갈대-늪-e07b",
+      "group": "A:fun-w2",
+      "label": "fun-w2 · 갈대 늪",
+      "mapName": "갈대 늪",
+      "start": false,
+      "chip": "불씨 마을에서 족장 바라를 만나 불이 꺼진 까닭을 듣자.",
+      "screen": "좌상단에 목표 칩 «불씨 마을에서 족장 바라를 / 만나 불이 꺼진 까닭을 듣자.»(두 줄)가 있고, 그 아래에 «마력» 라벨, 하늘색 가로 게이지, 수치 «43 / 43»가 있다. 좌하단 기력 링은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "좌상단에 마력 게이지 «마력 43/43»만 홀로 떠 있고 HP 게이지는 없다. 이 게임은 HP가 깎이는데 마력만 보이는 것은 다른 게이지를 숨기고 남은 반쪽 HUD처럼 보인다."
+        },
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "게이지 위 라벨 «마력»이 배경 패널 없이 작은 회색 글자로 갈색 흙 지형 위에 바로 놓여 있어 대비가 낮고 읽기 어렵다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w2/fun-w2--갈대-늪-e07b.png"
+    },
+    {
+      "id": "fun-w2--연기-산기슭-82e7",
+      "group": "A:fun-w2",
+      "label": "fun-w2 · 연기 산기슭",
+      "mapName": "연기 산기슭",
+      "start": false,
+      "chip": "불씨 마을에서 족장 바라를 만나 불이 꺼진 까닭을 듣자.",
+      "screen": "좌상단에 어두운 반투명 패널의 목표 줄 «불씨 마을에서 족장 바라를 / 만나 불이 꺼진 까닭을 듣자.»(두 줄)가 있다. 그 아래에 회색 라벨 «마력», 하늘색 가로 막대, 숫자 «43 / 43»이 있다. 좌하단 기력 링은 보이지 않고, 주인공은 왼쪽 가장자리(약 y=320)에 서 있다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 게이지 라벨 «마력»이 받침 패널 없이 회색 자갈 바닥 위에 어두운 회색 작은 글씨로 찍혀 있어, 배경과 거의 구분되지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "이 게임은 HP가 실제로 줄어드는데 HP 게이지는 숨겨져 있다. 좌상단에는 «마력 43/43» 막대만 혼자 떠 있어 생명 표시 없이 마력만 보이는 어색한 구성이다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w2/fun-w2--연기-산기슭-82e7.png"
+    },
+    {
+      "id": "fun-w2--족장의-움막-9f38",
+      "group": "A:fun-w2",
+      "label": "fun-w2 · 족장의 움막",
+      "mapName": "족장의 움막",
+      "start": false,
+      "chip": "불씨 마을에서 족장 바라를 만나 불이 꺼진 까닭을 듣자.",
+      "screen": "좌상단에 어두운 패널의 목표 줄 «불씨 마을에서 족장 바라를 / 만나 불이 꺼진 까닭을 듣자.»(2줄)이 있고, 그 아래에 «마력» 라벨, 하늘색 가로 게이지, «43 / 43» 숫자가 떠 있음. 좌하단 기력 링은 보이지 않고, 우상단은 비어 있음.",
+      "defects": [
+        {
+          "class": "other",
+          "severity": "major",
+          "evidence": "좌상단에 «마력 43 / 43» 게이지 하나만 홀로 표시되고 체력 게이지는 없음. 이 게임은 HP가 줄어드는데도 HP는 안 보이고 MP만 보여, 남은 게이지만 덩그러니 남은 미완성 HUD처럼 보임."
+        },
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "«마력» 게이지 막대(가로 약 40~380px, y≈170)가 배경 패널 없이 움막 안쪽 벽과 벽 장식(뿔 장식, 걸린 가면 쪽) 위를 가로질러 덮고 있음."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w2/fun-w2--족장의-움막-9f38.png"
+    },
+    {
+      "id": "fun-w2--무당의-움막-f0db",
+      "group": "A:fun-w2",
+      "label": "fun-w2 · 무당의 움막",
+      "mapName": "무당의 움막",
+      "start": false,
+      "chip": "불씨 마을에서 족장 바라를 만나 불이 꺼진 까닭을 듣자.",
+      "screen": "좌상단에 «마력» 라벨과 하늘색 게이지, 그 아래 «43 / 43» 숫자가 떠 있고, 우상단 남색 칩에 목표 줄 «불씨 마을에서 족장 바라를 만나 불이 꺼진 까닭을 듣자.»가 한 줄로 표시됨. 기력 링은 보이지 않음.",
+      "defects": [
+        {
+          "class": "other",
+          "severity": "major",
+          "evidence": "좌상단 «마력» 게이지만 홀로 표시되고 HP 게이지는 없음. 이 게임은 HP가 실제로 깎이는데도 생명력은 보이지 않고 마력 «43 / 43»만 남아 있어 남은 체력을 알 수 없고, 다른 게이지를 숨기다 남은 것처럼 어색해 보임."
+        },
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "«마력» 게이지 바(x≈40~380, y≈160~180)가 맵 왼쪽 영역 안까지 길게 뻗어 움막 뒷벽과 벽에 걸린 장식(x≈280 부근)의 일부를 가림."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w2/fun-w2--무당의-움막-f0db.png"
+    },
+    {
+      "id": "fun-w2--그림-동굴-4178",
+      "group": "A:fun-w2",
+      "label": "fun-w2 · 그림 동굴",
+      "mapName": "그림 동굴",
+      "start": false,
+      "chip": "불씨 마을에서 족장 바라를 만나 불이 꺼진 까닭을 듣자.",
+      "screen": "좌상단에 패널 없이 「마력」 라벨과 긴 하늘색 막대, 그 아래 「43 / 43」 숫자가 있고, 우상단 남색 칩에 목표 줄 「불씨 마을에서 족장 바라를 만나 불이 꺼진 까닭을 듣자.」가 한 줄로 떠 있다. 좌하단에 기력 링은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 「마력」 라벨이 배경 패널 없이 작은 회색 글자로 돌벽 무늬 위에 떠 있어 잘 읽히지 않는다."
+        },
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "좌상단 마력 막대가 화면 폭의 1/3쯤 되는 길이로 동굴 윗벽을 가로지르며, 이 맵의 볼거리인 벽화(주황색 그림)를 덮고 있다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "이 게임은 HP가 줄어드는데도 HP 게이지는 없고 「마력 43/43」 막대만 홀로 남아 있어, 체력 대신 마력만 보여 주는 어색한 구성이다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w2/fun-w2--그림-동굴-4178.png"
+    },
+    {
+      "id": "fun-w3--눈보라-마을-705d",
+      "group": "A:fun-w3",
+      "label": "fun-w3 · 눈보라 마을",
+      "mapName": "눈보라 마을",
+      "start": true,
+      "chip": "족장의 긴 집에서 이르마를 만나자. 회복의 샘은 마을 남쪽에 있다. (족장의 긴 집 입구: 가운데 → 이르마)",
+      "screen": "왼쪽 위에 패널 안의 「체력」 게이지(514 / 514)가 있고, 그 아래 패널 밖 눈 바닥 위에 「마력」 게이지(43 / 43)가 떠 있습니다. 오른쪽 위에는 어두운 패널에 목표 줄 「족장의 긴 집에서 이르마를 만나자. / 회복의 샘은 마을 남쪽에 있다. / (족장의 긴 집 입구: 가운데 → 이르마)」가 있습니다. 기력 링은 화면에 보이지 않습니다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "major",
+          "evidence": "왼쪽 위 「마력」 라벨이 배경 패널 없이 하얀 눈 바닥 위에 연회색 글씨로 놓여 있어 거의 읽히지 않습니다. 하늘색 게이지 막대도 눈 색과 대비가 약합니다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "「체력」은 테두리 있는 어두운 패널 안에 있는데, 「마력」 게이지와 「43 / 43」은 패널 밖에 따로 떠 있어 HUD가 짜다 만 것처럼 보입니다. 마력 막대의 오른쪽 끝은 표지판에 닿아 있습니다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w3/fun-w3--눈보라-마을-705d.png"
+    },
+    {
+      "id": "fun-w3--겨울-시장-0b4c",
+      "group": "A:fun-w3",
+      "label": "fun-w3 · 겨울 시장",
+      "mapName": "겨울 시장",
+      "start": false,
+      "chip": "족장의 긴 집에서 이르마를 만나자. 회복의 샘은 마을 남쪽에 있다. (족장의 긴 집 입구: 가운데 → 이르마)",
+      "screen": "좌상단에 테두리 패널 안의 「체력」 게이지(514 / 514), 그 아래 패널 없이 떠 있는 「마력」 게이지(43 / 43), 우상단 어두운 칩 안에 목표 줄 세 줄 「족장의 긴 집에서 이르마를 만나자. / 회복의 샘은 마을 남쪽에 있다. / (족장의 긴 집 입구: 가운데 → 이르마)」가 떠 있고, 설정상의 좌하단 기력 링은 화면에 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "major",
+          "evidence": "좌상단 「마력」 라벨이 배경 패널 없이 흰 눈 바닥 위에 연한 글자로 놓여 있어 거의 읽히지 않는다(바로 위 「체력」은 어두운 패널 안에 있음)."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "「체력」은 테두리 있는 패널 안에 있는데 「마력」 바와 「43 / 43」은 패널 밖에 따로 떠 있어 두 게이지의 틀이 맞지 않는다. 미완성처럼 보이고, 마력 바 왼쪽 끝(x≈210)은 횃불 기둥과 겹쳐 있다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w3/fun-w3--겨울-시장-0b4c.png"
+    },
+    {
+      "id": "fun-w3--얼어붙은-호수-d6b3",
+      "group": "A:fun-w3",
+      "label": "fun-w3 · 얼어붙은 호수",
+      "mapName": "얼어붙은 호수",
+      "start": false,
+      "chip": "족장의 긴 집에서 이르마를 만나자. 회복의 샘은 마을 남쪽에 있다. (족장의 긴 집 입구: 가운데 → 이르마)",
+      "screen": "좌상단에 어두운 패널 안의 체력 게이지 «체력 514 / 514», 그 아래 패널 없이 마력 게이지 «마력»과 «43 / 43», 우상단 어두운 칩에 목표 세 줄 «족장의 긴 집에서 이르마를 만나자. / 회복의 샘은 마을 남쪽에 있다. / (족장의 긴 집 입구: 가운데 → 이르마)». 좌하단 기력 링은 화면에 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "major",
+          "evidence": "좌상단 체력 패널 바로 아래의 «마력» 라벨이 배경 패널 없이 흰 눈과 눈 덮인 나무 위에 연한 글자로 떠 있어 거의 읽히지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "«체력» 게이지는 어두운 테두리 패널 안에 있는데 바로 아래 «마력» 게이지와 «43 / 43»은 패널 밖에 따로 떠 있어 두 게이지의 스타일이 맞지 않고 미완성처럼 보인다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w3/fun-w3--얼어붙은-호수-d6b3.png"
+    },
+    {
+      "id": "fun-w3--서리-절벽-304a",
+      "group": "A:fun-w3",
+      "label": "fun-w3 · 서리 절벽",
+      "mapName": "서리 절벽",
+      "start": false,
+      "chip": "족장의 긴 집에서 이르마를 만나자. 회복의 샘은 마을 남쪽에 있다. (족장의 긴 집 입구: 가운데 → 이르마)",
+      "screen": "좌상단에 배경 패널 안의 «체력» 게이지(514 / 514)가 있고, 그 아래 패널 밖 눈 바닥 위에 «마력» 라벨, 하늘색 막대, 작은 «43 / 43» 표기가 떠 있음. 우상단 어두운 칩에는 목표 «족장의 긴 집에서 이르마를 만나자. / 회복의 샘은 마을 남쪽에 있다. / (족장의 긴 집 입구: 가운데 → 이르마)»가 세 줄로 표시됨. 좌하단 기력 링은 화면에 보이지 않음",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "major",
+          "evidence": "좌상단 체력 패널 바로 아래의 «마력» 라벨이 배경 패널 없이 흰 눈 바닥 위에 연한 글씨로 놓여 있어 거의 읽히지 않음"
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "«체력»은 테두리 있는 패널 안에 있는데, «마력» 게이지는 패널 밖으로 빠져 눈 위에 떠 있고 «43 / 43»만 작은 조각 배경을 가짐. 두 게이지의 디자인이 서로 맞지 않아 레이아웃이 깨진 것처럼 보임"
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w3/fun-w3--서리-절벽-304a.png"
+    },
+    {
+      "id": "fun-w3--족장의-긴-집-00cb",
+      "group": "A:fun-w3",
+      "label": "fun-w3 · 족장의 긴 집",
+      "mapName": "족장의 긴 집",
+      "start": false,
+      "chip": "족장의 긴 집에서 이르마를 만나자. 회복의 샘은 마을 남쪽에 있다. (이르마)",
+      "screen": "좌상단에 테두리 패널 안의 「체력」 빨간 게이지와 「514 / 514」가 있고, 그 바로 아래에 패널 없이 「마력」 하늘색 게이지와 「43 / 43」이 맵 위에 그대로 떠 있다. 우하단에는 대화창처럼 보이는 어두운 상자에 목표 줄 「족장의 긴 집에서 이르마를 / 만나자. 회복의 샘은 마을 / 남쪽에 있다. (이르마)」가 세 줄로 떠 있다. 좌하단 기력 링은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "major",
+          "evidence": "좌상단 「마력」 라벨과 「43 / 43」 숫자에 받침 패널이 없다. 어두운 나무 벽, 보라·초록 깃발, 선반 그림 위에 작은 글자가 그대로 얹혀 있어 배경과 섞이고 잘 읽히지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "major",
+          "evidence": "「체력」은 테두리 패널 안에 있는데 바로 아래 「마력」 게이지만 패널 밖으로 삐져나와 있다. 두 게이지의 스타일이 맞지 않아 레이아웃이 깨진 것처럼 보이고, 마력 바가 방 왼쪽 위 선반과 깃발 그림을 가로질러 가린다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "목표 줄이 우상단 칩이 아니라 우하단의 대화창 모양 상자에 있다. 끝에 「(이르마)」가 화자 표시처럼 붙어 있어 NPC 대사창으로 오인되기 쉽다. 상자 바로 위에는 보물상자가 걸쳐 있어 방 우하단 구석을 가린다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w3/fun-w3--족장의-긴-집-00cb.png"
+    },
+    {
+      "id": "fun-w3--얼음-동굴-c7e7",
+      "group": "A:fun-w3",
+      "label": "fun-w3 · 얼음 동굴",
+      "mapName": "얼음 동굴",
+      "start": false,
+      "chip": "족장의 긴 집에서 이르마를 만나자. 회복의 샘은 마을 남쪽에 있다. (족장의 긴 집 입구: 가운데 → 이르마)",
+      "screen": "좌상단에 패널 안 「체력」 게이지(514 / 514)가 있고, 그 아래 패널 없이 「마력」 게이지(43 / 43)가 동굴 얼음 벽 위에 떠 있음. 우상단 어두운 칩에 목표 3줄 「족장의 긴 집에서 이르마를 만나자. / 회복의 샘은 마을 남쪽에 있다. / (족장의 긴 집 입구: 가운데 → 이르마)」가 있고, 좌하단 기력 링은 보이지 않음",
+      "defects": [
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "「체력」은 테두리 패널 안에 있는데, 바로 아래 「마력」 라벨·바·「43 / 43」은 패널 없이 맨바닥에 놓여 있어 두 게이지의 양식이 어긋남. 마력 바는 동굴 윗벽 얼음 타일 위에 겹쳐 그려져 있어 맵의 일부처럼 보임"
+        },
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "「마력」 라벨이 배경 판 없이 어두운 남색 바탕 위의 작은 회색 글자로 적혀 있어 잘 보이지 않음. 연한 하늘색 마력 바도 얼음 벽 색과 비슷해 경계가 흐림"
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-w3/fun-w3--얼음-동굴-c7e7.png"
+    },
+    {
+      "id": "fun-x1--달샘-오아시스-e3e7",
+      "group": "A:fun-x1",
+      "label": "fun-x1 · 달샘 오아시스",
+      "mapName": "달샘 오아시스",
+      "start": true,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "좌상단에 «마력» 라벨과 하늘색 가로 막대, 그 아래 «43 / 43» 숫자가 있고, 우상단 어두운 패널에 목표 줄 «달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.»가 두 줄로 떠 있음. 좌하단 기력 링은 화면에 보이지 않음.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 «마력» 라벨이 받침 패널 없이 밝은 모래 바닥 위에 작고 옅은 회색 글씨로 놓여 있어 배경에 묻혀 잘 읽히지 않음."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "좌상단에 «마력 43 / 43» 막대만 혼자 떠 있음. 이 게임은 HP가 실제로 깎이는데 HP 게이지는 없음. 설정도 vitals:false인데 마력만 남은 것이라, 다른 게이지를 숨기면서 하나만 빠뜨린 것처럼 보임."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1/fun-x1--달샘-오아시스-e3e7.png"
+    },
+    {
+      "id": "fun-x1--황금-모래-시장-6eaf",
+      "group": "A:fun-x1",
+      "label": "fun-x1 · 황금 모래 시장",
+      "mapName": "황금 모래 시장",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "왼쪽 위에 «마력» 라벨과 하늘색 가로 게이지, 그 아래 «43 / 43» 숫자가 떠 있고, 오른쪽 위 어두운 칩에 목표 줄 «달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.»가 두 줄로 떠 있다. 왼쪽 아래 기력 링은 화면에 없다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "왼쪽 위 «마력» 라벨이 받침 패널 없이 밝은 사암 벽돌 위에 작고 옅은 글자로 떠 있어 배경에 묻혀 잘 안 읽힌다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "왼쪽 위에 마력 게이지 «43 / 43»만 홀로 떠 있고 HP 게이지가 없다. HP가 깎이는 게임인데 체력은 안 보이고 마력만 보여 다른 게이지를 숨긴 뒤 남은 조각처럼 보인다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1/fun-x1--황금-모래-시장-6eaf.png"
+    },
+    {
+      "id": "fun-x1--바람-대상-숙영지-f1e0",
+      "group": "A:fun-x1",
+      "label": "fun-x1 · 바람 대상 숙영지",
+      "mapName": "바람 대상 숙영지",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "좌상단에 «마력» 라벨과 하늘색 가로 게이지, 그 아래 어두운 칩에 «43 / 43»이 있다. 우상단 어두운 패널에는 목표 줄 «달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.»가 두 줄로 떠 있다. 좌하단에 기력 링은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "major",
+          "evidence": "좌상단 게이지 위 «마력» 라벨이 받침 패널 없이 연한 회백색 작은 글자로 밝은 모래 바닥 위에 놓여 거의 읽히지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "좌상단에 마력 게이지 «43 / 43»만 홀로 떠 있고, 이 게임에서 줄어드는 HP 게이지는 없다. 남은 게이지 하나만 덩그러니 남은 어색한 구성이다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1/fun-x1--바람-대상-숙영지-f1e0.png"
+    },
+    {
+      "id": "fun-x1--초승달-궁전-affe",
+      "group": "A:fun-x1",
+      "label": "fun-x1 · 초승달 궁전",
+      "mapName": "초승달 궁전",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "좌상단 모래 위에 «마력» 라벨과 하늘색 가로 막대, 그 아래 «43 / 43» 숫자 상자가 있고, 우상단 어두운 칩에 목표 줄 «달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.»가 두 줄로 떠 있다. 좌하단 기력 링은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "major",
+          "evidence": "좌상단 «마력» 라벨이 받침 패널 없이 밝은 회색 글씨로 밝은 모래 바닥 위에 놓여 있어 거의 보이지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "«마력» 게이지 막대가 모래에서 시작해 오른쪽으로 길게 뻗어 성벽 길과 야자수 줄기 밑동 위를 가로지른다. 그래서 HUD가 지형 위에 어색하게 걸쳐 보인다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "HP도 깎이는 게임인데 체력 게이지는 없고 «마력 43/43» 게이지 하나만 홀로 떠 있다. 그래서 반쯤 남은 HUD처럼 보인다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1/fun-x1--초승달-궁전-affe.png"
+    },
+    {
+      "id": "fun-x1--잠든-태양의-피라미드-0c40",
+      "group": "A:fun-x1",
+      "label": "fun-x1 · 잠든 태양의 피라미드",
+      "mapName": "잠든 태양의 피라미드",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "필드 화면: 좌상단에 «마력» 라벨과 하늘색 가로 게이지, 그 아래 «43 / 43» 숫자. 우상단에 어두운 패널의 목표 줄 «달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.»가 두 줄로 떠 있음. 좌하단 기력 링은 보이지 않음.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 게이지 위 «마력» 라벨이 받침 패널 없이 밝은 모래색 바닥 위에 연한 회색 작은 글씨로 떠 있어 배경에 묻혀 잘 안 읽힘."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "이 게임은 HP가 실제로 깎이는데 좌상단에는 «마력» 게이지와 «43 / 43»만 홀로 있고 HP 게이지는 없음. 마력만 남은 바이탈 표시가 반쯤 빠진 HUD처럼 보임."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1/fun-x1--잠든-태양의-피라미드-0c40.png"
+    },
+    {
+      "id": "fun-x1--별의-매장실-de17",
+      "group": "A:fun-x1",
+      "label": "fun-x1 · 별의 매장실",
+      "mapName": "별의 매장실",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "좌상단에 «마력» 라벨과 하늘색 막대 게이지, 그 아래 «43 / 43» 숫자가 있고, 우상단 어두운 패널에 목표 줄 «달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.»가 두 줄로 떠 있음. 좌하단 기력 링은 보이지 않고, 주인공은 화면 하단 통로에 서 있음.",
+      "defects": [
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "좌상단 «마력» 게이지 막대(x≈40~380)가 방 안쪽까지 길게 뻗어, 좌측 석상 받침과 첫 줄 바닥 타일 위에 겹쳐 그려짐."
+        },
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "우상단 목표 패널 아랫부분이 방 오른쪽 위 노란 상자와 석상 머리 윗부분을 가려, 조사할 수도 있는 오브젝트가 잘려 보임."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "이 게임은 HP가 깎이는데도 HP 게이지 없이 «마력 43/43» 막대 하나만 홀로 떠 있어, 다른 게이지를 숨기고 남은 것처럼 어색해 보임."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1/fun-x1--별의-매장실-de17.png"
+    },
+    {
+      "id": "fun-x1-gatefix--달샘-오아시스-e3e7",
+      "group": "A:fun-x1-gatefix",
+      "label": "fun-x1-gatefix · 달샘 오아시스",
+      "mapName": "달샘 오아시스",
+      "start": true,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "좌상단에 '마력' 라벨과 하늘색 가로 게이지, 그 아래 어두운 칸에 '43 / 43'이 있고, 우상단 어두운 칩에 목표 줄 '달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.'가 두 줄로 떠 있다. 좌하단 기력 링은 화면에 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 게이지 위 '마력' 라벨이 연회색 작은 글씨인데 받침 패널 없이 밝은 모래 바닥 위에 바로 놓여 있어 잘 보이지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "좌상단에 '마력 43 / 43' 게이지만 홀로 길게 떠 있다. 이 게임은 HP도 깎이는데 HP 바는 숨겨져 있어, 마력만 남은 게이지가 정리 중에 남겨진 것처럼 어색해 보인다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1-gatefix/fun-x1-gatefix--달샘-오아시스-e3e7.png"
+    },
+    {
+      "id": "fun-x1-gatefix--황금-모래-시장-6eaf",
+      "group": "A:fun-x1-gatefix",
+      "label": "fun-x1-gatefix · 황금 모래 시장",
+      "mapName": "황금 모래 시장",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "좌상단에 작은 회색 글씨 «마력» 라벨과 하늘색 긴 막대, 그 아래 어두운 배경의 «43 / 43» 숫자가 있다. 우상단에는 어두운 칩 안에 목표 줄 «달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.»가 두 줄로 떠 있다. 좌하단 기력 링은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 «마력» 라벨이 배경 패널 없이 작고 옅은 회색 글씨로 황토색 벽돌 위에 바로 놓여 있어 벽 무늬에 묻혀 잘 읽히지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "좌상단에 «마력» 막대와 «43 / 43»만 홀로 떠 있다. 이 게임은 체력이 깎이는데도 체력 게이지는 숨겨져 있어, 마력만 남은 채 다른 게이지가 빠진 듯 어색하게 보인다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1-gatefix/fun-x1-gatefix--황금-모래-시장-6eaf.png"
+    },
+    {
+      "id": "fun-x1-gatefix--바람-대상-숙영지-f1e0",
+      "group": "A:fun-x1-gatefix",
+      "label": "fun-x1-gatefix · 바람 대상 숙영지",
+      "mapName": "바람 대상 숙영지",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "좌상단에 «마력» 라벨과 하늘색 게이지, 그 아래 어두운 칩에 «43 / 43»이 있다. 우상단에는 어두운 패널에 목표 줄 «달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.»가 두 줄로 떠 있다. 좌하단 기력 링은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "major",
+          "evidence": "좌상단 게이지 위의 «마력» 라벨이 작고 옅은 회색 글자인데 배경 패널 없이 밝은 모래 바닥 위에 얹혀 있어 거의 읽히지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "좌상단에 «마력» 게이지만 홀로 떠 있고 HP 게이지는 없다. 이 게임은 HP도 깎이는데 마력만 보여 주어, 나머지가 숨겨진 뒤 남은 반쪽 HUD처럼 보인다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1-gatefix/fun-x1-gatefix--바람-대상-숙영지-f1e0.png"
+    },
+    {
+      "id": "fun-x1-gatefix--초승달-궁전-affe",
+      "group": "A:fun-x1-gatefix",
+      "label": "fun-x1-gatefix · 초승달 궁전",
+      "mapName": "초승달 궁전",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "왼쪽 위에 라벨 «마력»과 하늘색 가로 게이지, 그 아래 어두운 칸 안의 숫자 «43 / 43»이 떠 있다. 오른쪽 위에는 어두운 칩 안에 두 줄로 «달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.»라는 목표 줄이 있다. 왼쪽 아래에는 기력 링이 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "major",
+          "evidence": "왼쪽 위 라벨 «마력»이 받침 패널 없이 연한 회색 글자로 밝은 모래 바닥 위에 바로 놓여 있어 거의 보이지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "«마력» 게이지 막대가 모래밭에서 돌길을 가로질러 야자수 줄기(x≈378)까지 뻗어 지형과 겹친다. 아래 숫자 «43 / 43» 칸 옆에도 덤불이 겹쳐 있어 HUD가 맵에 엉겨 보인다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "HP가 줄어드는 게임인데 체력 게이지는 없고 «마력» 게이지만 홀로 떠 있어 남은 조각처럼 어색하다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1-gatefix/fun-x1-gatefix--초승달-궁전-affe.png"
+    },
+    {
+      "id": "fun-x1-gatefix--잠든-태양의-피라미드-0c40",
+      "group": "A:fun-x1-gatefix",
+      "label": "fun-x1-gatefix · 잠든 태양의 피라미드",
+      "mapName": "잠든 태양의 피라미드",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "좌측 상단에 「마력」 라벨과 하늘색 게이지, 그 아래 「43 / 43」 수치가 있고, 우측 상단 어두운 패널에 목표 줄 「달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.」가 두 줄로 떠 있음. 좌측 하단 기력 링은 보이지 않음.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌측 상단 게이지 위 「마력」 라벨이 받침 패널 없이 밝은 모래 바닥 위에 연회색 작은 글씨로 놓여 있어 잘 읽히지 않음"
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "HP는 줄어드는 게임인데 체력 게이지는 없고 좌측 상단에 「마력 43 / 43」 게이지만 홀로 떠 있어, 다른 게이지를 숨기고 남은 것처럼 어색해 보임"
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1-gatefix/fun-x1-gatefix--잠든-태양의-피라미드-0c40.png"
+    },
+    {
+      "id": "fun-x1-gatefix--별의-매장실-de17",
+      "group": "A:fun-x1-gatefix",
+      "label": "fun-x1-gatefix · 별의 매장실",
+      "mapName": "별의 매장실",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "좌상단에 «마력» 라벨과 하늘색 가로 막대, 그 아래 «43 / 43» 숫자가 있고, 우상단 어두운 둥근 패널에 «달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.»가 두 줄로 떠 있다. 기력 링은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "좌상단 «마력» 막대가 x≈40~380까지 길게 뻗어 매장실 왼쪽 벽을 넘고, 방 안 왼쪽 위 석상 받침과 바닥 타일 위를 가로질러 덮는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "이 게임은 HP가 줄어드는데도 체력 게이지는 없고 «마력 43/43» 게이지 하나만 좌상단에 덩그러니 남아 있어 HUD 구성이 어색해 보인다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1-gatefix/fun-x1-gatefix--별의-매장실-de17.png"
+    },
+    {
+      "id": "fun-x1-gatefix-arrow--달샘-오아시스-e3e7",
+      "group": "A:fun-x1-gatefix-arrow",
+      "label": "fun-x1-gatefix-arrow · 달샘 오아시스",
+      "mapName": "달샘 오아시스",
+      "start": true,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "좌측 상단에 패널 없이 '마력' 라벨, 가로로 긴 하늘색 게이지, 숫자 '43 / 43'이 떠 있고, 우측 상단에는 어두운 패널 안에 두 줄 목표 '달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.'가 있다. 기력 링은 화면에 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌측 상단 '마력' 라벨이 받침 패널 없이 밝은 모래 바닥 위에 작고 옅은 회색 글자로 놓여 있어 배경에 묻혀 잘 읽히지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "HP는 줄어들 수 있는데 좌측 상단에는 '마력 43 / 43' 게이지만 홀로 떠 있다. 체력 표시 없이 마력만 남아 있어 다른 게이지를 숨기고 남은 반쪽 HUD처럼 보인다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1-gatefix-arrow/fun-x1-gatefix-arrow--달샘-오아시스-e3e7.png"
+    },
+    {
+      "id": "fun-x1-gatefix-arrow--황금-모래-시장-6eaf",
+      "group": "A:fun-x1-gatefix-arrow",
+      "label": "fun-x1-gatefix-arrow · 황금 모래 시장",
+      "mapName": "황금 모래 시장",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "좌상단에 «마력» 라벨과 하늘색 긴 막대, 그 아래 «43 / 43» 숫자가 있고, 우상단 어두운 칩에 목표 줄 «달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.»가 두 줄로 떠 있다. 기력 고리는 화면에 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "major",
+          "evidence": "좌상단 «마력» 라벨이 받침 패널 없이 연한 회백색 작은 글씨로 황토색 벽돌 위에 놓여 배경에 거의 묻혀 읽기 어렵다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "좌상단에 «마력 43/43» 막대만 단독으로 떠 있고 HP 게이지는 없다. 이 게임은 HP가 깎이는데도 생명 수치 없이 마력 막대만 남아 있어 다른 게이지를 숨긴 뒤 하나만 남은 듯 어색하게 보인다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "«마력» 막대가 패널 없이 화면 폭의 약 40%까지 가늘고 길게 벽돌 벽 위를 가로지르고, 숫자 «43 / 43»만 별도의 작은 어두운 상자에 들어 있어 HUD 요소끼리 스타일이 맞지 않는다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1-gatefix-arrow/fun-x1-gatefix-arrow--황금-모래-시장-6eaf.png"
+    },
+    {
+      "id": "fun-x1-gatefix-arrow--바람-대상-숙영지-f1e0",
+      "group": "A:fun-x1-gatefix-arrow",
+      "label": "fun-x1-gatefix-arrow · 바람 대상 숙영지",
+      "mapName": "바람 대상 숙영지",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "좌상단에 반투명 배경 없이 「마력」 라벨, 하늘색 가로 막대, 어두운 칩 안의 「43 / 43」 숫자가 떠 있다. 우상단 어두운 칩에는 목표 줄 「달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.」가 두 줄로 표시된다. 좌하단 기력 링은 보이지 않고, 주인공은 화면 왼쪽 가장자리(약 x20, y320)에 서 있다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "major",
+          "evidence": "좌상단 「마력」 라벨이 배경 패널 없이 밝은 모래 바닥 위에 연회색 작은 글씨로 놓여 있어 거의 보이지 않는다."
+        },
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "「마력」 막대는 테두리 없는 연한 하늘색이라 밝은 모래와 성벽 위에서 대비가 약하다. 막대가 x40~380까지 길게 뻗어 왼쪽 성벽을 가로지르기 때문에 게이지 경계가 잘 구분되지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "이 게임은 HP가 줄어드는데도 좌상단에는 「마력 43/43」 게이지 하나만 남아 있고 HP 게이지가 없다. 그래서 다른 게이지를 숨긴 뒤 하나만 덩그러니 남은 것처럼 보인다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1-gatefix-arrow/fun-x1-gatefix-arrow--바람-대상-숙영지-f1e0.png"
+    },
+    {
+      "id": "fun-x1-gatefix-arrow--초승달-궁전-affe",
+      "group": "A:fun-x1-gatefix-arrow",
+      "label": "fun-x1-gatefix-arrow · 초승달 궁전",
+      "mapName": "초승달 궁전",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "좌상단에 «마력» 라벨과 하늘색 막대, 그 아래 «43 / 43» 숫자가 있고, 우상단 어두운 칩에 목표 줄 «달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.»가 두 줄로 떠 있다. 좌하단 기력 링은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "major",
+          "evidence": "좌상단 «마력» 라벨이 받침 패널 없이 밝은 모래 바닥 위에 연한 글씨로 놓여 있어 배경에 묻혀 거의 읽히지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "«마력» 막대가 모래밭에서 시작해 성벽 길을 가로질러 야자수 줄기 바로 앞까지 뻗어 있어 막대가 지형 위에 떠 있는 것처럼 보인다. «43 / 43» 숫자 받침 오른쪽 끝도 덤불 스프라이트와 겹친다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1-gatefix-arrow/fun-x1-gatefix-arrow--초승달-궁전-affe.png"
+    },
+    {
+      "id": "fun-x1-gatefix-arrow--잠든-태양의-피라미드-0c40",
+      "group": "A:fun-x1-gatefix-arrow",
+      "label": "fun-x1-gatefix-arrow · 잠든 태양의 피라미드",
+      "mapName": "잠든 태양의 피라미드",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "왼쪽 위에 «마력» 라벨과 하늘색 막대, 그 아래 «43 / 43» 숫자가 있고, 오른쪽 위 어두운 칩에 목표 «달샘 오아시스의 나지라에게 / 샘에 무슨 일이 생겼는지 묻자.»가 두 줄로 떠 있다. 왼쪽 아래의 기력 링은 화면에 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unreadable",
+          "severity": "major",
+          "evidence": "왼쪽 위 막대 위의 «마력» 라벨이 받침 패널 없이 밝은 모래 바탕에 작고 옅은 글씨로 놓여 있어 거의 읽히지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "이 게임은 HP가 깎이는데 HP 게이지는 숨겨져 있고, 왼쪽 위에는 «마력 43 / 43» 막대 하나만 남아 있어 덩그러니 남은 게이지처럼 보인다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1-gatefix-arrow/fun-x1-gatefix-arrow--잠든-태양의-피라미드-0c40.png"
+    },
+    {
+      "id": "fun-x1-gatefix-arrow--별의-매장실-de17",
+      "group": "A:fun-x1-gatefix-arrow",
+      "label": "fun-x1-gatefix-arrow · 별의 매장실",
+      "mapName": "별의 매장실",
+      "start": false,
+      "chip": "달샘 오아시스의 나지라에게 샘에 무슨 일이 생겼는지 묻자.",
+      "screen": "필드 화면(대화창 아님): 왼쪽 위에 배경 없는 «마력» 글자, 가로로 긴 하늘색 게이지, 그 아래 «43 / 43» 숫자가 있음. 오른쪽 위 어두운 패널에 목표 줄 «달샘 오아시스의 / 나지라에게 샘에 무슨 / 일이 생겼는지 묻자.»가 3줄로 떠 있음. 왼쪽 아래 기력 링은 보이지 않음.",
+      "defects": [
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "왼쪽 위 «마력» 게이지(약 x40~380, y160~180)가 매장실 왼쪽 벽을 넘어 방 안 바닥까지 가로질러 뻗어 있음. 왼쪽 위 석상과 화로 기둥 사이 바닥 타일을 가림."
+        },
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "오른쪽 위 목표 패널이 매장실 오른쪽 윗부분 벽장식과 상자 일부를 덮음. 오른쪽 위 석상·항아리(약 x700~745, y100~180)도 패널 아래로 반쯤 가려짐."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "HP가 줄어드는 게임인데 왼쪽 위에는 «마력 43/43» 게이지 하나만 있고 HP 표시는 없음. 체력 대신 마력만 보여 주는 어색한 구성임."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_fun-x1-gatefix-arrow/fun-x1-gatefix-arrow--별의-매장실-de17.png"
+    },
+    {
+      "id": "jrpg-v2--새벽-마을-25fb",
+      "group": "A:jrpg-v2",
+      "label": "jrpg-v2 · 새벽 마을",
+      "mapName": "새벽 마을",
+      "start": true,
+      "chip": "새벽 마을에서 마을의 경고를 살펴보자.",
+      "screen": "필드 화면이며, 오른쪽 위 어두운 남색 반투명 패널에 목표 줄 «새벽 마을에서 마을의 / 경고를 살펴보자.»가 두 줄로 떠 있다. HP·MP 게이지, 시계, 도구 슬롯 같은 다른 HUD 요소는 보이지 않는다.",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-v2/jrpg-v2--새벽-마을-25fb.png"
+    },
+    {
+      "id": "jrpg-v2--그림자-동굴-tart",
+      "group": "A:jrpg-v2",
+      "label": "jrpg-v2 · 그림자 동굴",
+      "mapName": "그림자 동굴",
+      "start": false,
+      "chip": "새벽 마을에서 마을의 경고를 살펴보자.",
+      "screen": "화면 오른쪽 위 어두운 남색 패널에 목표 줄 «새벽 마을에서 마을의 / 경고를 살펴보자.»가 두 줄로 떠 있고, 그 밖의 게이지·시계·도구 칸은 보이지 않는 열린 필드 화면",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-v2/jrpg-v2--그림자-동굴-tart.png"
+    },
+    {
+      "id": "jrpg-v2--바람의-들판-st_1",
+      "group": "A:jrpg-v2",
+      "label": "jrpg-v2 · 바람의 들판",
+      "mapName": "바람의 들판",
+      "start": false,
+      "chip": "새벽 마을에서 마을의 경고를 살펴보자.",
+      "screen": "오른쪽 위에 어두운 반투명 패널의 목표 줄 «새벽 마을에서 마을의 / 경고를 살펴보자.»가 두 줄로 떠 있고, 그 밖에 게이지·시계·도구 슬롯 등 다른 HUD 요소는 보이지 않음 (왼쪽 가장자리의 노란 화살표는 맵 이동 표시로 보임)",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-v2/jrpg-v2--바람의-들판-st_1.png"
+    },
+    {
+      "id": "jrpg-v2--별빛-숲길-st_2",
+      "group": "A:jrpg-v2",
+      "label": "jrpg-v2 · 별빛 숲길",
+      "mapName": "별빛 숲길",
+      "start": false,
+      "chip": "새벽 마을에서 마을의 경고를 살펴보자.",
+      "screen": "우측 상단 어두운 반투명 패널에 목표 줄 «새벽 마을에서 마을의 / 경고를 살펴보자.»가 두 줄로 떠 있고, 그 밖의 게이지·시계·도구 칸 등 HUD 요소는 보이지 않음",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-v2/jrpg-v2--별빛-숲길-st_2.png"
+    },
+    {
+      "id": "jrpg-v2--고요한-숲-st_3",
+      "group": "A:jrpg-v2",
+      "label": "jrpg-v2 · 고요한 숲",
+      "mapName": "고요한 숲",
+      "start": false,
+      "chip": "새벽 마을에서 마을의 경고를 살펴보자.",
+      "screen": "우측 상단에 남색 반투명 패널의 목표 줄 «새벽 마을에서 마을의 / 경고를 살펴보자.»가 두 줄로 떠 있고, 그 밖에 게이지·도구 슬롯·시계 등 다른 HUD 요소는 보이지 않음(왼쪽 가장자리의 노란 삼각형 두 개는 맵 출구 표식으로 보임).",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-v2/jrpg-v2--고요한-숲-st_3.png"
+    },
+    {
+      "id": "jrpg-v2--잊힌-공터-st_4",
+      "group": "A:jrpg-v2",
+      "label": "jrpg-v2 · 잊힌 공터",
+      "mapName": "잊힌 공터",
+      "start": false,
+      "chip": "새벽 마을에서 마을의 경고를 살펴보자.",
+      "screen": "필드 화면. 우측 상단 어두운 반투명 칩에 목표 줄 «새벽 마을에서 마을의 / 경고를 살펴보자.»가 두 줄로 떠 있음. HP·MP 게이지, 시계, 도구 슬롯 등 다른 HUD는 보이지 않음. 좌측 노란 삼각형은 맵 이동 표시로 보임.",
+      "defects": [
+        {
+          "class": "objective-text",
+          "severity": "polish",
+          "evidence": "우측 상단 목표 칩에서 «새벽 마을에서 마을의» 뒤 오른쪽에 칩 폭의 약 3분의 1이 비어 있는데도 «경고를»이 다음 줄로 넘어가, 줄바꿈 폭이 칩보다 좁게 잡힌 듯 어색함"
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-v2/jrpg-v2--잊힌-공터-st_4.png"
+    },
+    {
+      "id": "jrpg-w1--서리울-마을-2292",
+      "group": "A:jrpg-w1",
+      "label": "jrpg-w1 · 서리울 마을",
+      "mapName": "서리울 마을",
+      "start": true,
+      "chip": "서리울 마을 남쪽 화로의 꺼져가는 불씨를 살피자.",
+      "screen": "좌상단에 '마력' 라벨과 가로 하늘색 게이지, 그 아래 '43 / 43' 숫자가 떠 있고, 우상단 어두운 칩에 목표 줄 '서리울 마을 남쪽 화로의 / 꺼져가는 불씨를 살피자.'가 두 줄로 표시된 필드 화면이며, 좌하단 기력 링은 보이지 않음",
+      "defects": [
+        {
+          "class": "unused-gauge",
+          "severity": "major",
+          "evidence": "좌상단의 '마력' 게이지와 '43 / 43' 숫자: 이 게임은 전투가 없고 마력을 쓰는 스킬도 없어 값이 절대 변하지 않는데, 다른 게이지가 숨겨진 뒤 이 마력 게이지만 홀로 남아 화면 상단을 크게 차지함"
+        },
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 게이지 위 '마력' 라벨이 받침 패널 없이 연한 회색 글자로 눈 덮인 밝은 배경 위에 놓여 있어 거의 읽히지 않음"
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "좌상단 마력 게이지 막대의 오른쪽 끝(약 x=380)이 맵의 빨간 표지판 기둥에 닿아 겹쳐 보임"
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w1/jrpg-w1--서리울-마을-2292.png"
+    },
+    {
+      "id": "jrpg-w1--겨울-장터-26d9",
+      "group": "A:jrpg-w1",
+      "label": "jrpg-w1 · 겨울 장터",
+      "mapName": "겨울 장터",
+      "start": false,
+      "chip": "서리울 마을 남쪽 화로의 꺼져가는 불씨를 살피자.",
+      "screen": "좌상단에 '마력' 라벨과 하늘색 가로 게이지, 그 아래 '43 / 43' 숫자가 떠 있고, 우상단 어두운 칩에 목표 '서리울 마을 남쪽 화로의 / 꺼져가는 불씨를 살피자.'가 두 줄로 표시됨. 좌하단 기력 링은 보이지 않음.",
+      "defects": [
+        {
+          "class": "unused-gauge",
+          "severity": "major",
+          "evidence": "좌상단 '마력' 게이지와 '43 / 43'이 표시되지만, 이 게임은 MP를 쓰는 스킬도 전투도 없어 이 값이 절대 변하지 않는 혼자 남은 게이지임."
+        },
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 '마력' 라벨이 받침 패널 없이 연한 글씨로 하얀 눈 바닥 위에 놓여 거의 보이지 않음."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w1/jrpg-w1--겨울-장터-26d9.png"
+    },
+    {
+      "id": "jrpg-w1--얼어붙은-호수-6f1f",
+      "group": "A:jrpg-w1",
+      "label": "jrpg-w1 · 얼어붙은 호수",
+      "mapName": "얼어붙은 호수",
+      "start": false,
+      "chip": "서리울 마을 남쪽 화로의 꺼져가는 불씨를 살피자.",
+      "screen": "좌상단에 «마력» 라벨과 하늘색 가로 게이지, 그 아래 «43 / 43» 숫자가 떠 있고, 우상단 어두운 칩에 목표 줄 «서리울 마을 남쪽 화로의 / 꺼져가는 불씨를 살피자.»가 두 줄로 표시됨. 좌하단 기력 링은 보이지 않음.",
+      "defects": [
+        {
+          "class": "unused-gauge",
+          "severity": "major",
+          "evidence": "좌상단의 «마력» 게이지와 «43 / 43»: 이 게임에는 MP를 쓰는 스킬도 전투도 없는데, 다른 게이지가 숨겨진 채 마력 바 하나만 남아 있음"
+        },
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 «마력» 라벨: 배경 패널 없이 밝은 흰 글자가 눈 덮인 땅 위에 바로 놓여 거의 보이지 않음"
+        },
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "우상단 목표 칩이 호수 위 건물의 지붕과 윗부분, 그리고 그 왼쪽의 어두운 얼음 구멍 위쪽을 가리고 있음"
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w1/jrpg-w1--얼어붙은-호수-6f1f.png"
+    },
+    {
+      "id": "jrpg-w1--서리-절벽-cc29",
+      "group": "A:jrpg-w1",
+      "label": "jrpg-w1 · 서리 절벽",
+      "mapName": "서리 절벽",
+      "start": false,
+      "chip": "서리울 마을 남쪽 화로의 꺼져가는 불씨를 살피자.",
+      "screen": "좌상단에 '마력' 라벨과 하늘색 가로 게이지, 그 아래 '43 / 43' 숫자 칩이 떠 있다. 우상단 어두운 칩에는 목표 줄 '서리울 마을 남쪽 화로의 / 꺼져가는 불씨를 살피자.'가 두 줄로 표시된다. 좌하단 기력 링은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "unused-gauge",
+          "severity": "major",
+          "evidence": "좌상단 '마력' 게이지와 '43 / 43'이 표시되지만, 이 게임은 MP를 쓰는 스킬도 전투도 없어 값이 영원히 가득 찬 채 변하지 않는다. 다른 게이지가 숨겨진 뒤 홀로 남은 게이지다."
+        },
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 '마력' 라벨이 받침 패널 없이 연한 글씨로 눈 덮인 바위 무더기 위에 바로 놓여 있어 배경에 묻혀 거의 읽히지 않는다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w1/jrpg-w1--서리-절벽-cc29.png"
+    },
+    {
+      "id": "jrpg-w1--족장의-긴집-b582",
+      "group": "A:jrpg-w1",
+      "label": "jrpg-w1 · 족장의 긴집",
+      "mapName": "족장의 긴집",
+      "start": false,
+      "chip": "서리울 마을 남쪽 화로의 꺼져가는 불씨를 살피자.",
+      "screen": "좌상단에 「마력」 라벨과 하늘색 가로 게이지, 그 아래 「43 / 43」 숫자가 떠 있고, 우상단 어두운 패널에 목표 줄 「서리울 마을 남쪽 화로의 / 꺼져가는 불씨를 살피자.」가 두 줄로 표시됨. 좌하단 기력 링은 보이지 않음.",
+      "defects": [
+        {
+          "class": "unused-gauge",
+          "severity": "major",
+          "evidence": "좌상단 「마력」 게이지와 「43 / 43」은 이 게임의 어떤 스킬도 MP를 쓰지 않고 전투도 없어 절대 변하지 않는 수치. 다른 게이지를 숨긴 뒤 혼자 남은 마력 바가 미완성처럼 보임."
+        },
+        {
+          "class": "unreadable",
+          "severity": "polish",
+          "evidence": "좌상단 「마력」 라벨과 「43 / 43」 숫자가 배경 패널 없이 갈색 나무벽과 선반 위에 작은 회색·흰색 글씨로 얹혀 있어 대비가 약하고, 게이지 바가 선반·깃발·방패 장식 위를 그대로 가로지름."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w1/jrpg-w1--족장의-긴집-b582.png"
+    },
+    {
+      "id": "jrpg-w1--잠든-얼음-동굴-1d36",
+      "group": "A:jrpg-w1",
+      "label": "jrpg-w1 · 잠든 얼음 동굴",
+      "mapName": "잠든 얼음 동굴",
+      "start": false,
+      "chip": "서리울 마을 남쪽 화로의 꺼져가는 불씨를 살피자.",
+      "screen": "좌측 상단에 「마력」 라벨과 하늘색 게이지 막대, 그 아래 「43 / 43」 숫자가 있고, 우측 상단 어두운 칩에 목표 줄 「서리울 마을 남쪽 화로의 / 꺼져가는 불씨를 살피자.」가 두 줄로 떠 있음. 좌측 하단의 기력 링은 보이지 않음.",
+      "defects": [
+        {
+          "class": "unused-gauge",
+          "severity": "major",
+          "evidence": "좌측 상단의 「마력」 게이지와 「43 / 43」: 이 게임은 전투가 없고 MP를 쓰는 스킬도 없어 값이 바뀌지 않는데, 다른 게이지는 숨겨지고 이것만 홀로 남아 있음"
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "evidence": "좌측 상단의 「마력」 게이지 막대와 「43 / 43」 숫자판이 동굴 위쪽 얼음벽 타일과 바닥 경계 위에 겹쳐 있어, 맵 테두리를 가리고 어수선해 보임"
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w1/jrpg-w1--잠든-얼음-동굴-1d36.png"
+    },
+    {
+      "id": "jrpg-w2--버들나루-tart",
+      "group": "A:jrpg-w2",
+      "label": "jrpg-w2 · 버들나루",
+      "mapName": "버들나루",
+      "start": true,
+      "chip": "버들나루의 촌장 다온에게 강이 마른 이유를 묻자.",
+      "screen": "필드 화면(버들나루)이며 오른쪽 위 어두운 반투명 칩에 목표 줄 «버들나루의 촌장 다온에게 강이 마른 이유를 묻자.»가 한 줄로 떠 있음. HP·MP 게이지, 시계, 도구 슬롯은 보이지 않고 주인공 아래 풀밭에 노란 화살표 표식 하나가 있음.",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w2/jrpg-w2--버들나루-tart.png"
+    },
+    {
+      "id": "jrpg-w2--갈대항구-6807",
+      "group": "A:jrpg-w2",
+      "label": "jrpg-w2 · 갈대항구",
+      "mapName": "갈대항구",
+      "start": false,
+      "chip": "버들나루의 촌장 다온에게 강이 마른 이유를 묻자.",
+      "screen": "우측 상단에 어두운 반투명 패널의 목표 줄 «버들나루의 촌장 다온에게 강이 마른 이유를 묻자.» 하나만 떠 있고, 게이지·시계·도구 슬롯 등 다른 HUD 요소는 보이지 않음. 주인공은 화면 왼쪽 가장자리 길 위에 있음.",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w2/jrpg-w2--갈대항구-6807.png"
+    },
+    {
+      "id": "jrpg-w2--이끼광산-3cc6",
+      "group": "A:jrpg-w2",
+      "label": "jrpg-w2 · 이끼광산",
+      "mapName": "이끼광산",
+      "start": false,
+      "chip": "버들나루의 촌장 다온에게 강이 마른 이유를 묻자.",
+      "screen": "우측 상단에 어두운 반투명 패널의 목표 줄 «버들나루의 촌장 다온에게 강이 마른 이유를 묻자.» 하나만 떠 있고, 게이지·시계·도구 슬롯 등 다른 HUD 요소는 없음",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w2/jrpg-w2--이끼광산-3cc6.png"
+    },
+    {
+      "id": "jrpg-w2--속삭임-숲-9bcf",
+      "group": "A:jrpg-w2",
+      "label": "jrpg-w2 · 속삭임 숲",
+      "mapName": "속삭임 숲",
+      "start": false,
+      "chip": "버들나루의 촌장 다온에게 강이 마른 이유를 묻자.",
+      "screen": "필드 화면이며, 우측 상단 어두운 반투명 칩에 목표 줄 «버들나루의 촌장 다온에게 강이 마른 이유를 묻자.»가 한 줄로 떠 있다. HP·MP 게이지, 시계, 도구 슬롯은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "우측 상단 목표 칩의 아래 가장자리(약 x800~830, y65~80)가 숲 바닥의 빨간 버섯 스프라이트 윗부분을 가려, 버섯이 칩 밑에 잘린 채로 보인다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w2/jrpg-w2--속삭임-숲-9bcf.png"
+    },
+    {
+      "id": "jrpg-w2--물안개-동굴-df6d",
+      "group": "A:jrpg-w2",
+      "label": "jrpg-w2 · 물안개 동굴",
+      "mapName": "물안개 동굴",
+      "start": false,
+      "chip": "버들나루의 촌장 다온에게 강이 마른 이유를 묻자.",
+      "screen": "우측 상단에 어두운 반투명 패널로 된 목표 줄 «버들나루의 촌장 다온에게 강이 마른 이유를 묻자.»가 한 줄로 떠 있고, 그 밖의 게이지·시계·도구 칸 등 다른 HUD 요소는 보이지 않는 동굴 필드 화면",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w2/jrpg-w2--물안개-동굴-df6d.png"
+    },
+    {
+      "id": "jrpg-w2--잠든-신전-6358",
+      "group": "A:jrpg-w2",
+      "label": "jrpg-w2 · 잠든 신전",
+      "mapName": "잠든 신전",
+      "start": false,
+      "chip": "버들나루의 촌장 다온에게 강이 마른 이유를 묻자.",
+      "screen": "우측 상단에 어두운 반투명 패널로 목표 줄 «버들나루의 촌장 다온에게 강이 마른 이유를 묻자.»가 한 줄로 떠 있고, 그 외 게이지·시계·도구 슬롯 등 다른 HUD 요소는 보이지 않음",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w2/jrpg-w2--잠든-신전-6358.png"
+    },
+    {
+      "id": "jrpg-w3--별샘-오아시스-3698",
+      "group": "A:jrpg-w3",
+      "label": "jrpg-w3 · 별샘 오아시스",
+      "mapName": "별샘 오아시스",
+      "start": true,
+      "chip": "별샘 오아시스에서 나디아의 부탁을 듣자",
+      "screen": "우측 상단에 어두운 반투명 패널의 목표 칩 하나만 떠 있음: «별샘 오아시스에서 / 나디아의 부탁을 듣자» (두 줄). 체력·마력 게이지, 시계, 도구 슬롯은 보이지 않음. 주인공은 화면 하단 중앙에 있고, 머리 위에 노란 마커가 뜬 NPC가 옆에 서 있음.",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w3/jrpg-w3--별샘-오아시스-3698.png"
+    },
+    {
+      "id": "jrpg-w3--달빛-바자르-8d90",
+      "group": "A:jrpg-w3",
+      "label": "jrpg-w3 · 달빛 바자르",
+      "mapName": "달빛 바자르",
+      "start": false,
+      "chip": "별샘 오아시스에서 나디아의 부탁을 듣자",
+      "screen": "필드 화면: 오른쪽 위에 어두운 반투명 테두리 칩으로 목표 줄 «별샘 오아시스에서 / 나디아의 부탁을 듣자»가 두 줄로 떠 있고, 게이지·시계·도구 칸 등 다른 HUD는 보이지 않음. 주인공은 왼쪽 가장자리에 노란 화살표 표시와 함께 서 있음",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w3/jrpg-w3--달빛-바자르-8d90.png"
+    },
+    {
+      "id": "jrpg-w3--모래바람-대상단-3fd6",
+      "group": "A:jrpg-w3",
+      "label": "jrpg-w3 · 모래바람 대상단",
+      "mapName": "모래바람 대상단",
+      "start": false,
+      "chip": "별샘 오아시스에서 나디아의 부탁을 듣자",
+      "screen": "필드 화면: 오른쪽 위에 어두운 반투명 패널로 된 목표 칩 하나만 떠 있다. 두 줄로 «별샘 오아시스에서 / 나디아의 부탁을 듣자»라고 적혀 있고, HP·MP 게이지, 시계, 도구 슬롯은 보이지 않는다.",
+      "defects": [
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "오른쪽 위 목표 칩(약 x565~945, y12~100)이 맵의 구조물을 가리고 있다. 칩 아래로 회색 석조 구조물의 밑단(약 x585~670, y100~112)만 삐져나와 있고, 왼쪽 물통의 오른쪽 끝도 칩 가장자리에 걸려 잘려 보인다."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w3/jrpg-w3--모래바람-대상단-3fd6.png"
+    },
+    {
+      "id": "jrpg-w3--황금궁-정원-4782",
+      "group": "A:jrpg-w3",
+      "label": "jrpg-w3 · 황금궁 정원",
+      "mapName": "황금궁 정원",
+      "start": false,
+      "chip": "별샘 오아시스에서 나디아의 부탁을 듣자",
+      "screen": "화면 오른쪽 위에 어두운 남색 반투명 패널의 목표 줄 하나만 떠 있음: 「별샘 오아시스에서 / 나디아의 부탁을 듣자」(두 줄). 게이지·시계·도구 슬롯 등 다른 HUD 요소는 보이지 않음.",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w3/jrpg-w3--황금궁-정원-4782.png"
+    },
+    {
+      "id": "jrpg-w3--잠든-태양의-피라미드-02ea",
+      "group": "A:jrpg-w3",
+      "label": "jrpg-w3 · 잠든 태양의 피라미드",
+      "mapName": "잠든 태양의 피라미드",
+      "start": false,
+      "chip": "별샘 오아시스에서 나디아의 부탁을 듣자",
+      "screen": "좌측 상단에 어두운 반투명 패널로 목표 줄 «별샘 오아시스에서 / 나디아의 부탁을 듣자»가 두 줄로 떠 있고, 그 밖의 게이지·숫자·시계·도구 슬롯은 보이지 않음",
+      "defects": [
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "좌측 상단 목표 패널 «별샘 오아시스에서 나디아의 부탁을 듣자»가 맵 이름이기도 한 피라미드 구조물의 윗부분(계단식 꼭대기)을 가려, 이 지역의 랜드마크 일부가 보이지 않음"
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w3/jrpg-w3--잠든-태양의-피라미드-02ea.png"
+    },
+    {
+      "id": "jrpg-w3--왕의-묘실-bdf5",
+      "group": "A:jrpg-w3",
+      "label": "jrpg-w3 · 왕의 묘실",
+      "mapName": "왕의 묘실",
+      "start": false,
+      "chip": "별샘 오아시스에서 나디아의 부탁을 듣자",
+      "screen": "우측 상단에 어두운 반투명 패널의 목표 칩 «별샘 오아시스에서 / 나디아의 부탁을 듣자»(두 줄)만 떠 있고, HP·MP 게이지, 시계, 도구 슬롯 등 다른 HUD는 보이지 않음.",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w3/jrpg-w3--왕의-묘실-bdf5.png"
+    },
+    {
+      "id": "jrpg-w3--모래찻집-3f84",
+      "group": "A:jrpg-w3",
+      "label": "jrpg-w3 · 모래찻집",
+      "mapName": "모래찻집",
+      "start": false,
+      "chip": "별샘 오아시스에서 나디아의 부탁을 듣자",
+      "screen": "오른쪽 위 어두운 남색 둥근 패널에 목표 줄 «별샘 오아시스에서 / 나디아의 부탁을 듣자»가 두 줄로 떠 있음. 그 밖의 게이지·시계·도구 슬롯은 보이지 않음.",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-w3/jrpg-w3--모래찻집-3f84.png"
+    },
+    {
+      "id": "jrpg-x1--물안개-마을-tart",
+      "group": "A:jrpg-x1",
+      "label": "jrpg-x1 · 물안개 마을",
+      "mapName": "물안개 마을",
+      "start": true,
+      "chip": "물안개 마을의 촌장 다온에게 강이 마른 이유를 듣자.",
+      "screen": "좌측 상단에 반투명 남색 패널로 목표 줄 «물안개 마을의 촌장 다온에게 / 강이 마른 이유를 듣자.»가 두 줄로 떠 있음. 그 밖의 게이지·시계·도구 슬롯은 보이지 않고, 인물 위에 노란 표식이 있음.",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-x1/jrpg-x1--물안개-마을-tart.png"
+    },
+    {
+      "id": "jrpg-x1--버려진-광산-5624",
+      "group": "A:jrpg-x1",
+      "label": "jrpg-x1 · 버려진 광산",
+      "mapName": "버려진 광산",
+      "start": false,
+      "chip": "물안개 마을의 촌장 다온에게 강이 마른 이유를 듣자.",
+      "screen": "우측 상단의 어두운 반투명 패널에 목표 줄 «물안개 마을의 촌장 다온에게 / 강이 마른 이유를 듣자.»가 두 줄로 떠 있고, 그 밖에 HP·MP 게이지, 시계, 도구 슬롯 같은 HUD는 보이지 않는다.",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-x1/jrpg-x1--버려진-광산-5624.png"
+    },
+    {
+      "id": "jrpg-x1--속삭임-숲-ecec",
+      "group": "A:jrpg-x1",
+      "label": "jrpg-x1 · 속삭임 숲",
+      "mapName": "속삭임 숲",
+      "start": false,
+      "chip": "물안개 마을의 촌장 다온에게 강이 마른 이유를 듣자.",
+      "screen": "오른쪽 위에 어두운 반투명 패널 하나만 떠 있고, 그 안에 목표 줄 «물안개 마을의 촌장 다온에게 / 강이 마른 이유를 듣자.»가 두 줄로 적혀 있음. HP·MP 게이지, 시계, 도구 칸, 스태미나 링은 보이지 않음.",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-x1/jrpg-x1--속삭임-숲-ecec.png"
+    },
+    {
+      "id": "jrpg-x1--잊힌-신전-b3d3",
+      "group": "A:jrpg-x1",
+      "label": "jrpg-x1 · 잊힌 신전",
+      "mapName": "잊힌 신전",
+      "start": false,
+      "chip": "물안개 마을의 촌장 다온에게 강이 마른 이유를 듣자.",
+      "screen": "오른쪽 위에 어두운 반투명 패널의 목표 줄 «물안개 마을의 촌장 다온에게 / 강이 마른 이유를 듣자.»가 두 줄로 떠 있고, 그 밖에 게이지·시계·도구 칸 같은 HUD는 보이지 않는다(필드 화면, 대화창 없음).",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-x1/jrpg-x1--잊힌-신전-b3d3.png"
+    },
+    {
+      "id": "jrpg-x1--물레방아-여관-m2e8",
+      "group": "A:jrpg-x1",
+      "label": "jrpg-x1 · 물레방아 여관",
+      "mapName": "물레방아 여관",
+      "start": false,
+      "chip": "물안개 마을의 촌장 다온에게 강이 마른 이유를 듣자.",
+      "screen": "필드(물레방아 여관 실내) 화면, 오른쪽 위 어두운 반투명 패널에 목표 줄 «물안개 마을의 촌장 다온에게 / 강이 마른 이유를 듣자.»가 두 줄로 떠 있고, 그 외 게이지·시계·도구 칸은 보이지 않음",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-x1/jrpg-x1--물레방아-여관-m2e8.png"
+    },
+    {
+      "id": "jrpg-x1--강지기의-집-oswj",
+      "group": "A:jrpg-x1",
+      "label": "jrpg-x1 · 강지기의 집",
+      "mapName": "강지기의 집",
+      "start": false,
+      "chip": "물안개 마을의 촌장 다온에게 강이 마른 이유를 듣자.",
+      "screen": "우측 상단에 어두운 남색 반투명 패널의 목표 줄 하나만 떠 있음: 1행 «물안개 마을의 촌장 다온에게», 2행 «강이 마른 이유를 듣자.» — 게이지·시계·도구 슬롯 등 다른 HUD는 보이지 않음",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-x1/jrpg-x1--강지기의-집-oswj.png"
+    },
+    {
+      "id": "jrpg-x1--물비늘-동굴-f010",
+      "group": "A:jrpg-x1",
+      "label": "jrpg-x1 · 물비늘 동굴",
+      "mapName": "물비늘 동굴",
+      "start": false,
+      "chip": "물안개 마을의 촌장 다온에게 강이 마른 이유를 듣자.",
+      "screen": "화면 왼쪽 위에 어두운 남색 반투명 패널로 목표 줄 «물안개 마을의 촌장 다온에게 / 강이 마른 이유를 듣자.»가 두 줄로 떠 있고, 그 밖에 HP·MP 게이지, 시계, 도구 슬롯 같은 다른 HUD 요소는 없다.",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-x1/jrpg-x1--물비늘-동굴-f010.png"
+    },
+    {
+      "id": "jrpg-x1--옛-강지기의-탑-c96b",
+      "group": "A:jrpg-x1",
+      "label": "jrpg-x1 · 옛 강지기의 탑",
+      "mapName": "옛 강지기의 탑",
+      "start": false,
+      "chip": "물안개 마을의 촌장 다온에게 강이 마른 이유를 듣자.",
+      "screen": "필드 화면이며, 오른쪽 위 어두운 반투명 칩에 목표 줄 «물안개 마을의 촌장 다온에게 / 강이 마른 이유를 듣자.»가 두 줄로 떠 있음. 그 밖의 게이지·시계·도구 슬롯·골드 표시는 보이지 않음.",
+      "defects": [
+        {
+          "class": "covers-play",
+          "severity": "polish",
+          "evidence": "오른쪽 위 목표 칩(약 x565~945, y12~100)이 화면 맨 위 붉은 융단/통로(약 x535~665)의 오른쪽 절반을 덮고 있음. 이곳은 플레이어가 향할 수 있는 출구로 보이는데 칩에 가려 잘 보이지 않음."
+        }
+      ],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/A_jrpg-x1/jrpg-x1--옛-강지기의-탑-c96b.png"
+    },
+    {
+      "id": "lay-village--시골-마을-tart",
+      "group": "B:village",
+      "label": "맵 깔기 village · 시골 마을",
+      "mapName": "시골 마을",
+      "start": true,
+      "chip": null,
+      "screen": "필드 화면에 HUD 요소가 전혀 보이지 않음: 게이지·숫자·시계·도구 슬롯·목표 줄 모두 없음 (설정은 clock:true지만 화면에 시계 없음, 목표 줄 텍스트도 없음)",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_village/lay-village--시골-마을-tart.png"
+    },
+    {
+      "id": "lay-market-town--시장-마을-tart",
+      "group": "B:market-town",
+      "label": "맵 깔기 market-town · 시장 마을",
+      "mapName": "시장 마을",
+      "start": true,
+      "chip": null,
+      "screen": "화면에 HUD 요소가 전혀 없음: 게이지·시계·도구 슬롯·목표 줄(우측 상단 포함) 모두 표시되지 않고, 숲과 수풀 사이 들판에 선 주인공과 오른쪽의 노인 NPC, 목조 집만 보임",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_market-town/lay-market-town--시장-마을-tart.png"
+    },
+    {
+      "id": "lay-castle--왕궁-tart",
+      "group": "B:castle",
+      "label": "맵 깔기 castle · 왕궁",
+      "mapName": "왕궁",
+      "start": true,
+      "chip": null,
+      "screen": "필드 화면 «왕궁»: 성벽 아래 길 위에 주인공이 서 있고, 게이지·시계·도구 칸·목표 줄 등 HUD 요소는 화면 어디에도 표시되어 있지 않음",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_castle/lay-castle--왕궁-tart.png"
+    },
+    {
+      "id": "lay-ruins--고대-유적-바깥-tart",
+      "group": "B:ruins",
+      "label": "맵 깔기 ruins · 고대 유적 바깥",
+      "mapName": "고대 유적 바깥",
+      "start": true,
+      "chip": null,
+      "screen": "필드 화면(고대 유적 바깥)에 HUD 요소가 전혀 보이지 않음: 게이지·시계·도구 슬롯·우상단 목표 줄 모두 없음. 주인공 머리 위 노란 삼각 표시와 크리스탈 빛 효과만 있음.",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_ruins/lay-ruins--고대-유적-바깥-tart.png"
+    },
+    {
+      "id": "lay-cave--보물-동굴-tart",
+      "group": "B:cave",
+      "label": "맵 깔기 cave · 보물 동굴",
+      "mapName": "보물 동굴",
+      "start": true,
+      "chip": null,
+      "screen": "동굴 맵 위에 주인공(파란 머리, 초록 옷)이 서 있고 오른쪽에 빛나는 크리스털이 있음. 게이지·시계·도구 칸·목표 줄 등 HUD 요소는 화면 어디에도 표시되지 않음(우상단 목표 칩도 없음)",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_cave/lay-cave--보물-동굴-tart.png"
+    },
+    {
+      "id": "lay-prison--지하-감옥-tart",
+      "group": "B:prison",
+      "label": "맵 깔기 prison · 지하 감옥",
+      "mapName": "지하 감옥",
+      "start": true,
+      "chip": null,
+      "screen": "지하 감옥 맵 위에 HUD가 전혀 보이지 않음: 게이지·숫자·시계·도구 슬롯이 없고, 오른쪽 위에도 목표 줄이나 칩이 없음. 주인공은 화면 아래 가운데 통로에 서 있음.",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_prison/lay-prison--지하-감옥-tart.png"
+    },
+    {
+      "id": "lay-inn--여관-tart",
+      "group": "B:inn",
+      "label": "맵 깔기 inn · 여관",
+      "mapName": "여관",
+      "start": true,
+      "chip": null,
+      "screen": "HUD가 전혀 표시되지 않음: 게이지·시계·도구 칸·목표 줄 모두 없고, 여관 실내 맵과 아래쪽 입구 통로에 선 주인공만 보임",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_inn/lay-inn--여관-tart.png"
+    },
+    {
+      "id": "lay-house--가정집-tart",
+      "group": "B:house",
+      "label": "맵 깔기 house · 가정집",
+      "mapName": "가정집",
+      "start": true,
+      "chip": null,
+      "screen": "가정집 실내 필드 화면이며, HUD 요소(게이지·시계·도구 슬롯·목표 줄)는 화면 어디에도 보이지 않는다. 주인공은 아래쪽 문 통로에 서 있다.",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_house/lay-house--가정집-tart.png"
+    },
+    {
+      "id": "lay-harbor--항구-마을-tart",
+      "group": "B:harbor",
+      "label": "맵 깔기 harbor · 항구 마을",
+      "mapName": "항구 마을",
+      "start": true,
+      "chip": null,
+      "screen": "필드 화면에 HUD 요소가 전혀 없음: 게이지·숫자·시계·도구 칸·우측 상단 목표 줄 모두 표시되지 않고, 숲속 흙길 위의 주인공만 보임",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_harbor/lay-harbor--항구-마을-tart.png"
+    },
+    {
+      "id": "lay-village-to-field--마을-99e4",
+      "group": "B:village-to-field",
+      "label": "맵 깔기 village-to-field · 마을",
+      "mapName": "마을",
+      "start": true,
+      "chip": null,
+      "screen": "필드 화면에 HUD 요소가 전혀 보이지 않음: 게이지·시계·도구 칸·목표 줄 모두 없고 사막 마을 맵과 화면 아래쪽 가운데의 주인공만 보임",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_village-to-field/lay-village-to-field--마을-99e4.png"
+    },
+    {
+      "id": "lay-village-to-field--동쪽-들판-de41",
+      "group": "B:village-to-field",
+      "label": "맵 깔기 village-to-field · 동쪽 들판",
+      "mapName": "동쪽 들판",
+      "start": false,
+      "chip": null,
+      "screen": "동쪽 들판(모래 바닥, 아카시아 나무·풀·돌)에서 주인공이 왼쪽 가장자리(약 x=20, y=320)에 서 있다. 화면에는 게이지·숫자·시계·도구 칸·목표 줄 등 HUD 요소가 하나도 떠 있지 않다(목표 줄 텍스트가 없어 hideEmpty로 숨겨진 것으로 보이고, 저장된 설정의 clock:true에도 불구하고 시계는 표시되지 않음).",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_village-to-field/lay-village-to-field--동쪽-들판-de41.png"
+    },
+    {
+      "id": "lay-village-chief-house--작은-마을-fe85",
+      "group": "B:village-chief-house",
+      "label": "맵 깔기 village-chief-house · 작은 마을",
+      "mapName": "작은 마을",
+      "start": true,
+      "chip": null,
+      "screen": "HUD 오버레이가 전혀 없음: 게이지·숫자·시계·도구 슬롯이 없고, 우상단 목표 줄도 표시되지 않음. 강·붉은 다리·초가집이 있는 필드 맵 아래쪽 흙길 위에 주인공만 서 있음",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_village-chief-house/lay-village-chief-house--작은-마을-fe85.png"
+    },
+    {
+      "id": "lay-forest-to-cave--빈-맵-tart",
+      "group": "B:forest-to-cave",
+      "label": "맵 깔기 forest-to-cave · 빈 맵",
+      "mapName": "빈 맵",
+      "start": true,
+      "chip": null,
+      "screen": "필드 화면(풀밭, 동굴 입구, 주인공, 반짝이는 결정)만 보이고 HUD 요소는 없음: 게이지·숫자·시계·도구 슬롯·목표 줄 모두 화면에 표시되지 않음",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_forest-to-cave/lay-forest-to-cave--빈-맵-tart.png"
+    },
+    {
+      "id": "lay-forest-to-cave--숲-th_1",
+      "group": "B:forest-to-cave",
+      "label": "맵 깔기 forest-to-cave · 숲",
+      "mapName": "숲",
+      "start": false,
+      "chip": null,
+      "screen": "숲 맵 필드 화면. 주인공은 아래쪽 가운데 흙길 위에 서 있다. 화면 어디에도 HUD가 보이지 않는다(게이지·숫자·시계·도구 슬롯 없음, 오른쪽 위 목표 줄·칩도 없음).",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_forest-to-cave/lay-forest-to-cave--숲-th_1.png"
+    },
+    {
+      "id": "lay-forest-to-cave--동굴-f5e5",
+      "group": "B:forest-to-cave",
+      "label": "맵 깔기 forest-to-cave · 동굴",
+      "mapName": "동굴",
+      "start": false,
+      "chip": null,
+      "screen": "동굴 맵 위에 주인공만 보이고, 게이지·시계·도구 칸·목표 줄 등 HUD 요소는 화면 어디에도 떠 있지 않음(우측 상단에도 목표 줄 없음)",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_forest-to-cave/lay-forest-to-cave--동굴-f5e5.png"
+    },
+    {
+      "id": "lay-convenience-store--편의점-tart",
+      "group": "B:convenience-store",
+      "label": "맵 깔기 convenience-store · 편의점",
+      "mapName": "편의점",
+      "start": true,
+      "chip": null,
+      "screen": "편의점 맵 위에 주인공(아래쪽 입구 근처)과 계산대 옆 점원 NPC만 보이고, 게이지·시계·목표 줄 등 HUD 요소는 화면에 전혀 떠 있지 않음",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_convenience-store/lay-convenience-store--편의점-tart.png"
+    },
+    {
+      "id": "lay-mine--버려진-광산-tart",
+      "group": "B:mine",
+      "label": "맵 깔기 mine · 버려진 광산",
+      "mapName": "버려진 광산",
+      "start": true,
+      "chip": null,
+      "screen": "필드 화면(버려진 광산)에 HUD가 전혀 보이지 않음: 게이지·숫자·시계·도구 슬롯이 없고, 우측 상단에도 목표 줄이나 칩이 없음(목표 텍스트 없음, hideEmpty로 숨겨진 것으로 보임)",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_mine/lay-mine--버려진-광산-tart.png"
+    },
+    {
+      "id": "lay-swamp--안개-낀-늪지대-tart",
+      "group": "B:swamp",
+      "label": "맵 깔기 swamp · 안개 낀 늪지대",
+      "mapName": "안개 낀 늪지대",
+      "start": true,
+      "chip": null,
+      "screen": "안개 낀 늪지대 필드에서 주인공이 화면 아래 중앙 길목에 서 있고, 게이지·시계·도구 칸·목표 줄 등 HUD 요소는 화면에 하나도 표시되어 있지 않음(우측 상단 목표 줄도 없음)",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_swamp/lay-swamp--안개-낀-늪지대-tart.png"
+    },
+    {
+      "id": "lay-temple--신전-내부-tart",
+      "group": "B:temple",
+      "label": "맵 깔기 temple · 신전 내부",
+      "mapName": "신전 내부",
+      "start": true,
+      "chip": null,
+      "screen": "신전 내부 필드 화면에 HUD 요소가 전혀 보이지 않음: 게이지·시계·도구 슬롯·목표 줄(우상단 포함) 모두 없이 맵과 아래쪽 입구의 주인공만 표시됨",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_temple/lay-temple--신전-내부-tart.png"
+    },
+    {
+      "id": "lay-classroom--학교-교실-tart",
+      "group": "B:classroom",
+      "label": "맵 깔기 classroom · 학교 교실",
+      "mapName": "학교 교실",
+      "start": true,
+      "chip": null,
+      "screen": "교실 맵 위에 주인공만 오른쪽 아래 출입구 쪽에 서 있으며, 게이지·시계·도구 칸·목표 줄 등 HUD 요소는 화면 어디에도 표시되어 있지 않음(목표 줄 텍스트 없음)",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_classroom/lay-classroom--학교-교실-tart.png"
+    },
+    {
+      "id": "lay-tavern--모험가의-선술집-tart",
+      "group": "B:tavern",
+      "label": "맵 깔기 tavern · 모험가의 선술집",
+      "mapName": "모험가의 선술집",
+      "start": true,
+      "chip": null,
+      "screen": "선술집 실내 필드 화면, 주인공이 아래쪽 입구 통로에 서 있음. 화면 위에 게이지·숫자·시계·도구 슬롯·목표 줄 등 HUD 요소가 하나도 표시되어 있지 않음(오른쪽 위 목표 칩도 없음).",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_tavern/lay-tavern--모험가의-선술집-tart.png"
+    },
+    {
+      "id": "lay-farm--농장-tart",
+      "group": "B:farm",
+      "label": "맵 깔기 farm · 농장",
+      "mapName": "농장",
+      "start": true,
+      "chip": null,
+      "screen": "농장 필드 화면: 파란 머리 주인공이 집 앞 풀밭에 서 있고, 게이지·시계·도구 칸·목표 줄 등 HUD 요소가 화면 어디에도 표시되어 있지 않음",
+      "defects": [],
+      "status": "reviewed",
+      "file": "~/z-project/assistant-fable-runs/mapvqa/review-A-v2/hud/B_farm/lay-farm--농장-tart.png"
+    }
+  ],
+  "games": [
+    {
+      "group": "A:fun-v2",
+      "label": "fun-v2",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"adventure\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: mp gauge «마력» at top-left; stamina gauge (ring) «기력» at bottom-left; objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.\nModel-free check: the setting shows a gauge for stamina, which this game never changes.",
+      "unused": [
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:fun-w1",
+      "label": "fun-w1",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"adventure\",\"menuStyle\":\"project\",\"vitals\":false,\"clock\":false,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: mp gauge «마력» at top-left; stamina gauge (ring) «기력» at bottom-left; objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.\nModel-free check: the setting shows a gauge for mp, stamina, which this game never changes.",
+      "unused": [
+        "mp",
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:fun-w2",
+      "label": "fun-w2",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"adventure\",\"vitals\":false,\"clock\":false,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: mp gauge «마력» at top-left; stamina gauge (ring) «기력» at bottom-left; objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.\nModel-free check: the setting shows a gauge for stamina, which this game never changes.",
+      "unused": [
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:fun-w3",
+      "label": "fun-w3",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"adventure\",\"vitals\":true,\"clock\":false,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: hp gauge «체력» at top-left; mp gauge «마력» at top-left; stamina gauge (ring) «기력» at bottom-left; objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.\nModel-free check: the setting shows a gauge for stamina, which this game never changes.",
+      "unused": [
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:fun-x1",
+      "label": "fun-x1",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"adventure\",\"vitals\":false,\"clock\":false,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: mp gauge «마력» at top-left; stamina gauge (ring) «기력» at bottom-left; objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.\nModel-free check: the setting shows a gauge for stamina, which this game never changes.",
+      "unused": [
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:fun-x1-gatefix",
+      "label": "fun-x1-gatefix",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"adventure\",\"vitals\":false,\"clock\":false,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: mp gauge «마력» at top-left; stamina gauge (ring) «기력» at bottom-left; objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.\nModel-free check: the setting shows a gauge for stamina, which this game never changes.",
+      "unused": [
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:fun-x1-gatefix-arrow",
+      "label": "fun-x1-gatefix-arrow",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"adventure\",\"vitals\":false,\"clock\":false,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: mp gauge «마력» at top-left; stamina gauge (ring) «기력» at bottom-left; objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.\nModel-free check: the setting shows a gauge for stamina, which this game never changes.",
+      "unused": [
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:jrpg-v2",
+      "label": "jrpg-v2",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"classic\",\"vitals\":true,\"clock\":false,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "A:jrpg-w1",
+      "label": "jrpg-w1",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"adventure\",\"menuStyle\":\"project\",\"vitals\":false,\"clock\":false,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: mp gauge «마력» at top-left; stamina gauge (ring) «기력» at bottom-left; objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.\nModel-free check: the setting shows a gauge for mp, stamina, which this game never changes.",
+      "unused": [
+        "mp",
+        "stamina"
+      ]
+    },
+    {
+      "group": "A:jrpg-w2",
+      "label": "jrpg-w2",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"classic\",\"vitals\":true,\"clock\":false,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "A:jrpg-w3",
+      "label": "jrpg-w3",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"classic\",\"vitals\":true,\"clock\":false,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "A:jrpg-x1",
+      "label": "jrpg-x1",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"classic\",\"vitals\":true,\"clock\":false,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:village",
+      "label": "맵 깔기 village",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:market-town",
+      "label": "맵 깔기 market-town",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:castle",
+      "label": "맵 깔기 castle",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:camp",
+      "label": "맵 깔기 camp",
+      "factsText": "Saved HUD setting (project.system.fieldHud): none saved (the runtime default is used).\nWhat that setting puts on the field screen: nothing.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": [],
+      "skipped": "조수가 HUD 를 설정하지 않은 요청(빈 프로젝트의 기본 HUD)"
+    },
+    {
+      "group": "B:ruins",
+      "label": "맵 깔기 ruins",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:cave",
+      "label": "맵 깔기 cave",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:prison",
+      "label": "맵 깔기 prison",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:inn",
+      "label": "맵 깔기 inn",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:house",
+      "label": "맵 깔기 house",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:harbor",
+      "label": "맵 깔기 harbor",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:field-route",
+      "label": "맵 깔기 field-route",
+      "factsText": "Saved HUD setting (project.system.fieldHud): none saved (the runtime default is used).\nWhat that setting puts on the field screen: nothing.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": [],
+      "skipped": "조수가 HUD 를 설정하지 않은 요청(빈 프로젝트의 기본 HUD)"
+    },
+    {
+      "group": "B:village-to-field",
+      "label": "맵 깔기 village-to-field",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:village-chief-house",
+      "label": "맵 깔기 village-chief-house",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:forest-to-cave",
+      "label": "맵 깔기 forest-to-cave",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:convenience-store",
+      "label": "맵 깔기 convenience-store",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:mine",
+      "label": "맵 깔기 mine",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:swamp",
+      "label": "맵 깔기 swamp",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: yes · some skill costs MP: yes · stamina (action combat): NO.\nCombat: TURN-BASED battles on a separate battle screen (the field itself has no action combat, no tools to swing).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:temple",
+      "label": "맵 깔기 temple",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:throne-room",
+      "label": "맵 깔기 throne-room",
+      "factsText": "Saved HUD setting (project.system.fieldHud): none saved (the runtime default is used).\nWhat that setting puts on the field screen: nothing.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": [],
+      "skipped": "조수가 HUD 를 설정하지 않은 요청(빈 프로젝트의 기본 HUD)"
+    },
+    {
+      "group": "B:classroom",
+      "label": "맵 깔기 classroom",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:tavern",
+      "label": "맵 깔기 tavern",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    },
+    {
+      "group": "B:blacksmith",
+      "label": "맵 깔기 blacksmith",
+      "factsText": "Saved HUD setting (project.system.fieldHud): none saved (the runtime default is used).\nWhat that setting puts on the field screen: nothing.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": [],
+      "skipped": "조수가 HUD 를 설정하지 않은 요청(빈 프로젝트의 기본 HUD)"
+    },
+    {
+      "group": "B:farm",
+      "label": "맵 깔기 farm",
+      "factsText": "Saved HUD setting (project.system.fieldHud): {\"theme\":\"minimal\",\"vitals\":false,\"clock\":true,\"tools\":false,\"objective\":true,\"hideEmpty\":true}.\nWhat that setting puts on the field screen: objective line at top-right.\nWhat this game actually uses: HP can go down: NO · some skill costs MP: NO · stamina (action combat): NO.\nCombat: NO battles at all (a story / exploration game).\nGame time: NO time system is set; no event changes the time.",
+      "unused": []
+    }
+  ]
+}

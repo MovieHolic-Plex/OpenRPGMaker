@@ -1,0 +1,2036 @@
+{
+  "schemaVersion": 1,
+  "kind": "assistant-map-vqa-tally",
+  "corpus": "~/z-project/assistant-fable-runs/mapvqa/lay-base-f978629cfc",
+  "generatedAt": "2026-11-11T08:57:43.223Z",
+  "layJobs": [
+    {
+      "id": "village",
+      "request": "작은 시골 마을 맵 하나 만들어 줘. 집 몇 채랑 우물, 밭이 있으면 좋겠어.",
+      "status": "laid",
+      "complete": false,
+      "maps": 1,
+      "wantedMaps": 1,
+      "toolCalls": 13,
+      "toolErrors": 0,
+      "minutes": 4.8
+    },
+    {
+      "id": "market-town",
+      "request": "상인들이 모이는 시장 마을 맵을 만들어 줘. 가운데 광장에 노점이 늘어서 있게 해 줘.",
+      "status": "laid",
+      "complete": true,
+      "maps": 1,
+      "wantedMaps": 1,
+      "toolCalls": 4,
+      "toolErrors": 0,
+      "minutes": 2.2
+    },
+    {
+      "id": "castle",
+      "request": "성벽으로 둘러싸인 왕궁 맵을 만들어 줘. 성문으로 들어가서 궁전까지 길이 이어지게 해 줘.",
+      "status": "laid",
+      "complete": false,
+      "maps": 1,
+      "wantedMaps": 1,
+      "toolCalls": 13,
+      "toolErrors": 7,
+      "minutes": 5.1
+    },
+    {
+      "id": "camp",
+      "request": "숲속 야영지 맵을 만들어 줘. 천막 몇 개랑 모닥불이 있게 해 줘.",
+      "status": "laid",
+      "complete": true,
+      "maps": 2,
+      "wantedMaps": 1,
+      "toolCalls": 13,
+      "toolErrors": 0,
+      "minutes": 3.6
+    },
+    {
+      "id": "ruins",
+      "request": "버려진 고대 유적 바깥 맵을 만들어 줘. 무너진 기둥이랑 유적 입구가 보이게 해 줘.",
+      "status": "laid",
+      "complete": false,
+      "maps": 1,
+      "wantedMaps": 1,
+      "toolCalls": 15,
+      "toolErrors": 8,
+      "minutes": 6.4
+    },
+    {
+      "id": "cave",
+      "request": "동굴 던전 맵 하나 만들어 줘. 입구에서 안쪽 보물 방까지 길이 이어지게 해 줘.",
+      "status": "laid",
+      "complete": true,
+      "maps": 1,
+      "wantedMaps": 1,
+      "toolCalls": 10,
+      "toolErrors": 0,
+      "minutes": 4.2
+    },
+    {
+      "id": "prison",
+      "request": "지하 감옥 던전 맵을 만들어 줘. 복도 양쪽에 감방이 늘어서 있게 해 줘.",
+      "status": "laid",
+      "complete": false,
+      "maps": 1,
+      "wantedMaps": 1,
+      "toolCalls": 14,
+      "toolErrors": 8,
+      "minutes": 9.5
+    },
+    {
+      "id": "weapon-shop",
+      "request": "무기 가게 실내 맵을 만들어 줘. 계산대랑 진열대가 있게 해 줘.",
+      "status": "nothing",
+      "complete": false,
+      "maps": 0,
+      "wantedMaps": 1,
+      "toolCalls": 11,
+      "toolErrors": 10,
+      "minutes": 4.8
+    },
+    {
+      "id": "inn",
+      "request": "여관 실내 맵을 만들어 줘. 1층 식당에 탁자랑 벽난로가 있게 해 줘.",
+      "status": "laid",
+      "complete": false,
+      "maps": 1,
+      "wantedMaps": 1,
+      "toolCalls": 16,
+      "toolErrors": 10,
+      "minutes": 9.3
+    },
+    {
+      "id": "house",
+      "request": "평범한 가정집 실내 맵을 만들어 줘. 침대랑 부엌이 있게 해 줘.",
+      "status": "laid",
+      "complete": false,
+      "maps": 1,
+      "wantedMaps": 1,
+      "toolCalls": 17,
+      "toolErrors": 8,
+      "minutes": 9.4
+    },
+    {
+      "id": "harbor",
+      "request": "배가 드나드는 항구 마을 맵을 만들어 줘. 부두랑 창고가 있게 해 줘.",
+      "status": "laid",
+      "complete": false,
+      "maps": 1,
+      "wantedMaps": 1,
+      "toolCalls": 13,
+      "toolErrors": 4,
+      "minutes": 5.1
+    },
+    {
+      "id": "field-route",
+      "request": "마을과 마을 사이를 잇는 들판 길 맵을 만들어 줘. 서쪽 끝에서 동쪽 끝까지 길이 이어지게 해 줘.",
+      "status": "laid",
+      "complete": false,
+      "maps": 2,
+      "wantedMaps": 1,
+      "toolCalls": 13,
+      "toolErrors": 3,
+      "minutes": 3.2
+    },
+    {
+      "id": "village-to-field",
+      "request": "마을 맵이랑 그 동쪽에 붙은 들판 맵을 만들어 줘. 마을 동쪽 길로 나가면 들판으로 이어지게 해 줘.",
+      "status": "laid",
+      "complete": true,
+      "maps": 2,
+      "wantedMaps": 2,
+      "toolCalls": 5,
+      "toolErrors": 0,
+      "minutes": 2.5
+    },
+    {
+      "id": "village-chief-house",
+      "request": "작은 마을 맵을 만들고, 그 마을의 촌장 집 안 맵도 만들어 줘. 촌장 집 문으로 들어가고 나올 수 있게 해 줘.",
+      "status": "laid",
+      "complete": false,
+      "maps": 1,
+      "wantedMaps": 2,
+      "toolCalls": 7,
+      "toolErrors": 5,
+      "minutes": 2.8
+    },
+    {
+      "id": "forest-to-cave",
+      "request": "숲 맵이랑 그 숲 안쪽에 있는 동굴 맵을 만들어 줘. 숲의 동굴 입구로 들어가면 동굴 맵으로 이어지게 해 줘.",
+      "status": "laid",
+      "complete": true,
+      "maps": 3,
+      "wantedMaps": 2,
+      "toolCalls": 14,
+      "toolErrors": 0,
+      "minutes": 4.5
+    }
+  ],
+  "calibration": {
+    "status": "calibrated",
+    "missRate": 0,
+    "falseAlarmRate": 0,
+    "planted": {
+      "total": 33,
+      "missed": 0,
+      "missedLoose": 0,
+      "byRecipe": {
+        "strip-furniture": {
+          "total": 3,
+          "caught": 3
+        },
+        "shift-objects": {
+          "total": 4,
+          "caught": 4
+        },
+        "stamp-6x": {
+          "total": 4,
+          "caught": 4
+        },
+        "wall-off": {
+          "total": 4,
+          "caught": 4
+        },
+        "locked-text-on-way": {
+          "total": 4,
+          "caught": 4
+        },
+        "person-on-roof": {
+          "total": 4,
+          "caught": 4
+        },
+        "unpainted-hole": {
+          "total": 3,
+          "caught": 3
+        },
+        "exit-on-bare-edge": {
+          "total": 4,
+          "caught": 4
+        },
+        "positive": {
+          "total": 3,
+          "caught": 3
+        }
+      }
+    },
+    "good": {
+      "total": 15,
+      "withBlocker": 0,
+      "withMajor": 7,
+      "majorsPerMap": 1.2
+    }
+  },
+  "judgeUsage": {
+    "calls": 2,
+    "cached": 36,
+    "failures": 0,
+    "inputTokens": 4376,
+    "outputTokens": 1568
+  },
+  "promptVersion": "map-vqa-v2",
+  "judge": {
+    "provider": "claude-cli",
+    "model": "claude-opus-5-5",
+    "effort": "medium"
+  },
+  "totals": {
+    "maps": 18,
+    "reviewed": 18,
+    "withBlocker": 3,
+    "withMajorOrWorse": 17,
+    "clean": 1,
+    "blocker": 3,
+    "major": 44,
+    "polish": 39
+  },
+  "unreviewed": [],
+  "ranked": [
+    {
+      "class": "passage-mismatch",
+      "label": "보이는 것과 통행이 다름(막혀 보이는 통로·걸어지는 벽)",
+      "score": 17,
+      "blocker": 1,
+      "major": 14,
+      "polish": 2,
+      "maps": 9
+    },
+    {
+      "class": "empty-expanse",
+      "label": "텅 빈 넓은 곳·쓸데없이 큰 맵",
+      "score": 10,
+      "blocker": 1,
+      "major": 7,
+      "polish": 7,
+      "maps": 14
+    },
+    {
+      "class": "exit-off-road",
+      "label": "출구가 길·문과 어긋남",
+      "score": 9,
+      "blocker": 1,
+      "major": 6,
+      "polish": 0,
+      "maps": 5
+    },
+    {
+      "class": "other",
+      "label": "그 밖",
+      "score": 7,
+      "blocker": 0,
+      "major": 7,
+      "polish": 7,
+      "maps": 12
+    },
+    {
+      "class": "road-to-nowhere",
+      "label": "어디로도 안 가는 길",
+      "score": 6,
+      "blocker": 0,
+      "major": 6,
+      "polish": 3,
+      "maps": 6
+    },
+    {
+      "class": "people-placement",
+      "label": "사람 배치",
+      "score": 2,
+      "blocker": 0,
+      "major": 2,
+      "polish": 1,
+      "maps": 3
+    },
+    {
+      "class": "repeated-stamp",
+      "label": "같은 도장 반복",
+      "score": 1,
+      "blocker": 0,
+      "major": 1,
+      "polish": 5,
+      "maps": 5
+    },
+    {
+      "class": "cut-off-piece",
+      "label": "잘린 조각·반쪽",
+      "score": 1,
+      "blocker": 0,
+      "major": 1,
+      "polish": 2,
+      "maps": 3
+    },
+    {
+      "class": "unpainted-or-seam",
+      "label": "안 칠한 칸·이음매 깨짐",
+      "score": 0,
+      "blocker": 0,
+      "major": 0,
+      "polish": 6,
+      "maps": 5
+    },
+    {
+      "class": "wrong-surface",
+      "label": "물건이 엉뚱한 바닥 위에",
+      "score": 0,
+      "blocker": 0,
+      "major": 0,
+      "polish": 4,
+      "maps": 4
+    },
+    {
+      "class": "enclosure-unreadable",
+      "label": "울타리·성벽의 입구를 읽을 수 없음",
+      "score": 0,
+      "blocker": 0,
+      "major": 0,
+      "polish": 1,
+      "maps": 1
+    },
+    {
+      "class": "style-mix",
+      "label": "화풍·칩셋 섞임",
+      "score": 0,
+      "blocker": 0,
+      "major": 0,
+      "polish": 1,
+      "maps": 1
+    }
+  ],
+  "byClass": {
+    "exit-off-road": {
+      "blocker": 1,
+      "major": 6,
+      "polish": 0,
+      "maps": 5
+    },
+    "road-to-nowhere": {
+      "blocker": 0,
+      "major": 6,
+      "polish": 3,
+      "maps": 6
+    },
+    "enclosure-unreadable": {
+      "blocker": 0,
+      "major": 0,
+      "polish": 1,
+      "maps": 1
+    },
+    "passage-mismatch": {
+      "blocker": 1,
+      "major": 14,
+      "polish": 2,
+      "maps": 9
+    },
+    "invisible-event-misplaced": {
+      "blocker": 0,
+      "major": 0,
+      "polish": 0,
+      "maps": 0
+    },
+    "empty-expanse": {
+      "blocker": 1,
+      "major": 7,
+      "polish": 7,
+      "maps": 14
+    },
+    "wrong-surface": {
+      "blocker": 0,
+      "major": 0,
+      "polish": 4,
+      "maps": 4
+    },
+    "cut-off-piece": {
+      "blocker": 0,
+      "major": 1,
+      "polish": 2,
+      "maps": 3
+    },
+    "repeated-stamp": {
+      "blocker": 0,
+      "major": 1,
+      "polish": 5,
+      "maps": 5
+    },
+    "doorless-building": {
+      "blocker": 0,
+      "major": 0,
+      "polish": 0,
+      "maps": 0
+    },
+    "people-placement": {
+      "blocker": 0,
+      "major": 2,
+      "polish": 1,
+      "maps": 3
+    },
+    "unpainted-or-seam": {
+      "blocker": 0,
+      "major": 0,
+      "polish": 6,
+      "maps": 5
+    },
+    "style-mix": {
+      "blocker": 0,
+      "major": 0,
+      "polish": 1,
+      "maps": 1
+    },
+    "other": {
+      "blocker": 0,
+      "major": 7,
+      "polish": 7,
+      "maps": 12
+    }
+  },
+  "perCorpus": {
+    "B": {
+      "maps": 18,
+      "reviewed": 18,
+      "withBlocker": 3,
+      "withMajorOrWorse": 17,
+      "clean": 1,
+      "blocker": 3,
+      "major": 44,
+      "polish": 39,
+      "byClass": {
+        "exit-off-road": {
+          "blocker": 1,
+          "major": 6,
+          "polish": 0,
+          "maps": 5
+        },
+        "road-to-nowhere": {
+          "blocker": 0,
+          "major": 6,
+          "polish": 3,
+          "maps": 6
+        },
+        "enclosure-unreadable": {
+          "blocker": 0,
+          "major": 0,
+          "polish": 1,
+          "maps": 1
+        },
+        "passage-mismatch": {
+          "blocker": 1,
+          "major": 14,
+          "polish": 2,
+          "maps": 9
+        },
+        "invisible-event-misplaced": {
+          "blocker": 0,
+          "major": 0,
+          "polish": 0,
+          "maps": 0
+        },
+        "empty-expanse": {
+          "blocker": 1,
+          "major": 7,
+          "polish": 7,
+          "maps": 14
+        },
+        "wrong-surface": {
+          "blocker": 0,
+          "major": 0,
+          "polish": 4,
+          "maps": 4
+        },
+        "cut-off-piece": {
+          "blocker": 0,
+          "major": 1,
+          "polish": 2,
+          "maps": 3
+        },
+        "repeated-stamp": {
+          "blocker": 0,
+          "major": 1,
+          "polish": 5,
+          "maps": 5
+        },
+        "doorless-building": {
+          "blocker": 0,
+          "major": 0,
+          "polish": 0,
+          "maps": 0
+        },
+        "people-placement": {
+          "blocker": 0,
+          "major": 2,
+          "polish": 1,
+          "maps": 3
+        },
+        "unpainted-or-seam": {
+          "blocker": 0,
+          "major": 0,
+          "polish": 6,
+          "maps": 5
+        },
+        "style-mix": {
+          "blocker": 0,
+          "major": 0,
+          "polish": 1,
+          "maps": 1
+        },
+        "other": {
+          "blocker": 0,
+          "major": 7,
+          "polish": 7,
+          "maps": 12
+        }
+      }
+    }
+  },
+  "perGroup": {
+    "B:village": {
+      "maps": 1,
+      "reviewed": 1,
+      "withBlocker": 0,
+      "withMajorOrWorse": 1,
+      "clean": 0,
+      "blocker": 0,
+      "major": 4,
+      "polish": 4
+    },
+    "B:market-town": {
+      "maps": 1,
+      "reviewed": 1,
+      "withBlocker": 0,
+      "withMajorOrWorse": 1,
+      "clean": 0,
+      "blocker": 0,
+      "major": 5,
+      "polish": 1
+    },
+    "B:castle": {
+      "maps": 1,
+      "reviewed": 1,
+      "withBlocker": 0,
+      "withMajorOrWorse": 1,
+      "clean": 0,
+      "blocker": 0,
+      "major": 2,
+      "polish": 2
+    },
+    "B:camp": {
+      "maps": 2,
+      "reviewed": 2,
+      "withBlocker": 1,
+      "withMajorOrWorse": 2,
+      "clean": 0,
+      "blocker": 1,
+      "major": 6,
+      "polish": 3
+    },
+    "B:ruins": {
+      "maps": 1,
+      "reviewed": 1,
+      "withBlocker": 0,
+      "withMajorOrWorse": 1,
+      "clean": 0,
+      "blocker": 0,
+      "major": 3,
+      "polish": 2
+    },
+    "B:cave": {
+      "maps": 1,
+      "reviewed": 1,
+      "withBlocker": 0,
+      "withMajorOrWorse": 1,
+      "clean": 0,
+      "blocker": 0,
+      "major": 1,
+      "polish": 4
+    },
+    "B:prison": {
+      "maps": 1,
+      "reviewed": 1,
+      "withBlocker": 0,
+      "withMajorOrWorse": 1,
+      "clean": 0,
+      "blocker": 0,
+      "major": 2,
+      "polish": 2
+    },
+    "B:inn": {
+      "maps": 1,
+      "reviewed": 1,
+      "withBlocker": 0,
+      "withMajorOrWorse": 1,
+      "clean": 0,
+      "blocker": 0,
+      "major": 1,
+      "polish": 3
+    },
+    "B:house": {
+      "maps": 1,
+      "reviewed": 1,
+      "withBlocker": 0,
+      "withMajorOrWorse": 0,
+      "clean": 1,
+      "blocker": 0,
+      "major": 0,
+      "polish": 2
+    },
+    "B:harbor": {
+      "maps": 1,
+      "reviewed": 1,
+      "withBlocker": 0,
+      "withMajorOrWorse": 1,
+      "clean": 0,
+      "blocker": 0,
+      "major": 1,
+      "polish": 3
+    },
+    "B:field-route": {
+      "maps": 1,
+      "reviewed": 1,
+      "withBlocker": 0,
+      "withMajorOrWorse": 1,
+      "clean": 0,
+      "blocker": 0,
+      "major": 2,
+      "polish": 1
+    },
+    "B:village-to-field": {
+      "maps": 2,
+      "reviewed": 2,
+      "withBlocker": 0,
+      "withMajorOrWorse": 2,
+      "clean": 0,
+      "blocker": 0,
+      "major": 8,
+      "polish": 5
+    },
+    "B:village-chief-house": {
+      "maps": 1,
+      "reviewed": 1,
+      "withBlocker": 1,
+      "withMajorOrWorse": 1,
+      "clean": 0,
+      "blocker": 1,
+      "major": 1,
+      "polish": 2
+    },
+    "B:forest-to-cave": {
+      "maps": 3,
+      "reviewed": 3,
+      "withBlocker": 1,
+      "withMajorOrWorse": 3,
+      "clean": 0,
+      "blocker": 1,
+      "major": 8,
+      "polish": 5
+    }
+  },
+  "maps": [
+    {
+      "id": "lay-village--시골-마을-tart",
+      "group": "B:village",
+      "label": "맵 깔기 village · 시골 마을",
+      "name": "시골 마을",
+      "size": "38x48",
+      "tilesetId": "beodeul_city",
+      "status": "reviewed",
+      "pictureSha256": "fe620c1e2c530a867dca1b8da9dd68de5e96a4ea652f23309ee6f60eecfcddee",
+      "blocker": 0,
+      "major": 4,
+      "polish": 4,
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 12,
+            "y": 7,
+            "w": 13,
+            "h": 3
+          },
+          "evidence": "북쪽 저택 문(14,8) 앞 y=8 줄과 문으로 이어지는 돌길 x=14..21,y=9, 도로 끝 x=24,y=7..8이 모두 빨간색이라 계단을 올라와 길을 따라가도 저택 문 앞에 설 수 없음"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 19,
+            "y": 29,
+            "w": 2,
+            "h": 2
+          },
+          "evidence": "폭 2칸 중앙 도로(x=19..20) 한가운데 y=29..30에 지붕 달린 우물이 놓여 막힘 처리되어, 도로가 통째로 끊겨 옆 풀밭으로 돌아가야 함"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 17,
+            "y": 33,
+            "w": 4,
+            "h": 2
+          },
+          "evidence": "두 번째 우물과 물통(x=17..20,y=33..34)이 도로 x=19..20 위까지 걸쳐 막힘 처리되어, 같은 도로가 몇 칸 아래에서 다시 막힘"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 1,
+            "y": 10,
+            "w": 36,
+            "h": 4
+          },
+          "evidence": "절벽 띠(y=10..13)의 흙 절벽 면 여러 곳(x=6..17 부근, 동쪽 x=28..37 부근)이 붉게 칠해지지 않아 걸을 수 있음. 계단(x=22..23)을 쓰지 않고 절벽을 그냥 넘어갈 수 있음"
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 14,
+            "w": 38,
+            "h": 32
+          },
+          "evidence": "같은 사이프러스 나무와 둥근 덤불 도장이 마을 전역에 거의 같은 간격으로 수십 번 반복되어 인공적으로 보임"
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 17,
+            "y": 29,
+            "w": 4,
+            "h": 6
+          },
+          "evidence": "우물 두 개(19,29 / 17,33)가 다섯 칸 거리에 나란히 놓여 있어 같은 소품을 중복으로 찍은 것처럼 보임"
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "polish",
+          "region": {
+            "x": 22,
+            "y": 7,
+            "w": 3,
+            "h": 2
+          },
+          "evidence": "북쪽 돌길이 저택 쪽 분기보다 위로 x=22..24,y=7까지 뻗었다가 풀밭에서 그냥 끝남"
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 2,
+            "y": 43,
+            "w": 3,
+            "h": 2
+          },
+          "evidence": "(3,44) 부근 6칸이 숲과 울타리에 갇혀 본 영역에서 끊긴 섬처럼 남아 있음"
+        }
+      ]
+    },
+    {
+      "id": "lay-market-town--시장-마을-tart",
+      "group": "B:market-town",
+      "label": "맵 깔기 market-town · 시장 마을",
+      "name": "시장 마을",
+      "size": "38x48",
+      "tilesetId": "beodeul_city",
+      "status": "reviewed",
+      "pictureSha256": "79ff7f500ed4d10d0fe0800151c68ef882d2ecf3a2f432ce6b732bcce29f4b36",
+      "blocker": 0,
+      "major": 5,
+      "polish": 1,
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 3,
+            "y": 1,
+            "w": 10,
+            "h": 6
+          },
+          "evidence": "(3..12,1..6)의 지붕·벽·원형 탑 몸체가 붉은 표시 없이 걸을 수 있고, 시작 지점(10,5)이 탑 벽 위에 놓여 플레이어가 벽 속에서 시작한다"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 5,
+            "y": 7,
+            "w": 12,
+            "h": 2
+          },
+          "evidence": "좌상단 집 앞 돌길 (5..12,8)과 (16,6) 길 모퉁이가 붉게 막혀 있어, 그려진 길을 따라 집 문(5,7)까지 걸어갈 수 없다"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 10,
+            "w": 37,
+            "h": 4
+          },
+          "evidence": "y=10..13의 흙 절벽면 상당수(0..1,11, 5..14,11..13, 23..35,11)가 걸을 수 있어, 계단(16..17,11..12)이 아니어도 절벽을 그냥 통과한다"
+        },
+        {
+          "class": "other",
+          "severity": "major",
+          "region": {
+            "x": 16,
+            "y": 26,
+            "w": 8,
+            "h": 6
+          },
+          "evidence": "광장(16..23,26..31)은 맵 크기에 비해 작고, 노점은 왼쪽 수레 2개와 우물뿐이라 '노점이 늘어선 시장 광장'으로 읽히지 않는다"
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "major",
+          "region": {
+            "x": 19,
+            "y": 0,
+            "w": 19,
+            "h": 10
+          },
+          "evidence": "절벽 위 북동쪽(19..37,0..9)에는 같은 덤불과 상자 2개만 흩어져 있고, 동쪽 가장자리도 사이프러스만 반복되어 넓은 공간이 비어 있다"
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "polish",
+          "region": {
+            "x": 12,
+            "y": 41,
+            "w": 2,
+            "h": 3
+          },
+          "evidence": "좌하단 집의 짧은 길(12..13,41..43)이 문(10,42)이나 옆문이 아닌 벽 모서리에 닿아 끝난다"
+        }
+      ]
+    },
+    {
+      "id": "lay-castle--왕궁-tart",
+      "group": "B:castle",
+      "label": "맵 깔기 castle · 왕궁",
+      "name": "왕궁",
+      "size": "42x34",
+      "tilesetId": "beodeul_city",
+      "status": "reviewed",
+      "pictureSha256": "198c870d46eb925bc7bf2e727e45ea9d15342761bb66d49c6dfaa5fd42cb9211",
+      "blocker": 0,
+      "major": 2,
+      "polish": 2,
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 42,
+            "h": 28
+          },
+          "evidence": "성벽 윗길(서쪽 x=1~3, 북쪽 y=2~3, 동쪽 x=38~40, 남쪽 y=26의 x=4~16·x=22~32)이 붉은 칠 없이 걸을 수 있고 안쪽 풀밭·장터와 바깥 풀밭(x=0, y=0~1)에 바로 맞닿아 있어, 계단이나 성문 없이 성벽에 올라 넘나들 수 있음. 성벽이 경계 구실을 하지 못함"
+        },
+        {
+          "class": "other",
+          "severity": "major",
+          "region": {
+            "x": 4,
+            "y": 9,
+            "w": 33,
+            "h": 13
+          },
+          "evidence": "요청은 왕궁이지만 성문에서 이어진 길 끝에는 목조 민가(4~9,11~20), 연립 주택(12~21,10~19), 작은 벽돌집 2채만 있고 궁전으로 읽히는 건물이 하나도 없음"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "polish",
+          "region": {
+            "x": 18,
+            "y": 25,
+            "w": 3,
+            "h": 5
+          },
+          "evidence": "성문 통로가 문루 꼭대기(나무 들보가 그려진 y=26)와 문장 방패가 걸린 성벽 면(y=27~28)을 그대로 지나가게 되어 있어, 아치(y=29) 아래로 들어가는 것이 아니라 성벽 위를 걸어 넘는 모양이 됨"
+        },
+        {
+          "class": "people-placement",
+          "severity": "polish",
+          "region": {
+            "x": 5,
+            "y": 9,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "'문지기' P1이 성문(18~20,25~33)에서 멀리 떨어진 북서쪽 풀밭(5,9) 한가운데에 서 있어 무엇을 지키는지 알 수 없음"
+        }
+      ]
+    },
+    {
+      "id": "lay-camp--빈-맵-tart",
+      "group": "B:camp",
+      "label": "맵 깔기 camp · 빈 맵",
+      "name": "빈 맵",
+      "size": "20x15",
+      "tilesetId": "beodeul_city",
+      "status": "reviewed",
+      "pictureSha256": "665894bcc3bef6b6bcf2234092f21e2b9da455f507cbafb6df4fc86fca9532ba",
+      "blocker": 1,
+      "major": 3,
+      "polish": 0,
+      "defects": [
+        {
+          "class": "empty-expanse",
+          "severity": "blocker",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 15
+          },
+          "evidence": "게임이 시작되는 맵인데 (0,0)~(19,14) 300칸 전체가 같은 잔디 타일 하나뿐이고 나무·길·소품이 하나도 없어, 플레이어가 첫 화면부터 미완성 맵으로 읽는다."
+        },
+        {
+          "class": "exit-off-road",
+          "severity": "major",
+          "region": {
+            "x": 10,
+            "y": 0,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "유일한 출구 E1(10,0)이 북쪽 가장자리의 맨 잔디 위에 있고 그 칸으로 가는 길·문·틈이 전혀 그려져 있지 않아, 시작점 (10,8)에 선 플레이어는 어디로 가야 하는지 알 수 없다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 15
+          },
+          "evidence": "남쪽(x=0..19)·서쪽(y=0..14)·동쪽(y=0..14) 가장자리가 막힘 없이 열린 잔디인데 출구가 없어, 플레이어가 그쪽으로 걸어가면 보이지 않는 벽에 부딪힌다."
+        },
+        {
+          "class": "other",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 15
+          },
+          "evidence": "맵 이름이 '빈 맵' 그대로이고 숲 나무·천막·모닥불이 하나도 그려져 있지 않은데, 게임 시작 지점 S(10,8)이 이 맵에 놓여 있어 플레이어가 아무것도 없는 들판에서 게임을 시작한다."
+        }
+      ]
+    },
+    {
+      "id": "lay-camp--숲속-야영지-th_1",
+      "group": "B:camp",
+      "label": "맵 깔기 camp · 숲속 야영지",
+      "name": "숲속 야영지",
+      "size": "32x40",
+      "tilesetId": "beodeul_city",
+      "status": "reviewed",
+      "pictureSha256": "ecd72d9ef63573d572623fbcde496e3c705de8d8e4ead996194d6f6e82322f90",
+      "blocker": 0,
+      "major": 3,
+      "polish": 3,
+      "defects": [
+        {
+          "class": "empty-expanse",
+          "severity": "major",
+          "region": {
+            "x": 3,
+            "y": 18,
+            "w": 20,
+            "h": 22
+          },
+          "evidence": "맵 남쪽 절반(y=18..39)은 지그재그 흙길과 풀밭, 덤불뿐이고 야영지 요소가 전혀 없다. 출구에서 천막까지 의미 없는 긴 걸음이 이어진다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 25,
+            "y": 15,
+            "w": 3,
+            "h": 2
+          },
+          "evidence": "삼각 천막(25..27,15..16)에 어두운 입구가 뚜렷이 그려져 있어 들어갈 수 있어 보이지만, 전부 빨간 막힘 칸이고 출구도 없다."
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 10,
+            "y": 8,
+            "w": 18,
+            "h": 10
+          },
+          "evidence": "연결된 맵의 야영지인데 천막 두 개와 모닥불(18,15) 주변에 사람이 한 명도 없어, 사람이 머무는 야영지로 읽히지 않는다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 25,
+            "y": 0,
+            "w": 3,
+            "h": 2
+          },
+          "evidence": "북쪽 가장자리 (25..27,0..1)에 숲 사이로 풀밭 틈이 열려 있어 길처럼 보이지만, 본 구역과 이어지지 않은 고립 칸이고 출구도 없다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 32,
+            "h": 36
+          },
+          "evidence": "북쪽 x=15·17·30, 서쪽 (0,6), 동쪽 (31,35)에 나무 사이로 걸을 수 있는 한 칸짜리 풀 틈이 가장자리에 있지만 모두 출구가 없다."
+        },
+        {
+          "class": "style-mix",
+          "severity": "polish",
+          "region": {
+            "x": 11,
+            "y": 9,
+            "w": 2,
+            "h": 2
+          },
+          "evidence": "(11..12,9..10)의 주황 줄무늬 천막은 시장 노점 차양 같은 모양이다. 옆의 캠핑용 삼각 천막과 양식이 달라 야영 천막으로 어색하게 읽힌다."
+        }
+      ]
+    },
+    {
+      "id": "lay-ruins--고대-유적-바깥-tart",
+      "group": "B:ruins",
+      "label": "맵 깔기 ruins · 고대 유적 바깥",
+      "name": "고대 유적 바깥",
+      "size": "32x44",
+      "tilesetId": "beodeul_city",
+      "status": "reviewed",
+      "pictureSha256": "7c1e892c291b62726f77bd3ff6b3bd90802c76f67e3d620175c878a6b0aefee7",
+      "blocker": 0,
+      "major": 3,
+      "polish": 2,
+      "defects": [
+        {
+          "class": "other",
+          "severity": "major",
+          "region": {
+            "x": 1,
+            "y": 2,
+            "w": 30,
+            "h": 41
+          },
+          "evidence": "요청은 유적 '바깥'인데 맵 전체가 벽돌 벽과 타일 바닥, 검은 공백으로 된 실내 던전 방이다. 하늘, 풀, 지면 같은 야외 요소가 없고, 기둥 (2,12)(4,12)(14,12)(16,12)(2,22)(13,22)(5,39)(11,39) 등도 모두 멀쩡히 서 있어 '무너진 기둥'으로 읽히지 않는다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 7,
+            "y": 3,
+            "w": 4,
+            "h": 3
+          },
+          "evidence": "보스방 북벽 (7..10,3..5)에 덩굴 아치가 문처럼 그려져 있다. 그러나 아치 안쪽은 벽돌이고 칸이 모두 막혀 있어, 플레이어가 유적 입구로 읽고 다가가도 지나갈 수 없다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "major",
+          "region": {
+            "x": 19,
+            "y": 0,
+            "w": 13,
+            "h": 20
+          },
+          "evidence": "오른쪽 위 x19..31 y0..19와 오른쪽 아래 x14..31 y32..43이 아무것도 없는 검은 공백이다. 32x44 맵의 약 3분의 1이 쓰이지 않아 맵이 내용보다 훨씬 크다."
+        },
+        {
+          "class": "wrong-surface",
+          "severity": "polish",
+          "region": {
+            "x": 19,
+            "y": 29,
+            "w": 3,
+            "h": 2
+          },
+          "evidence": "묘실 (19..20,30)의 해골 더미가 (20..21,29..30)의 십자 석판 위에 겹쳐 그려져, 두 소품이 한 자리에 포개져 보인다."
+        },
+        {
+          "class": "unpainted-or-seam",
+          "severity": "polish",
+          "region": {
+            "x": 2,
+            "y": 30,
+            "w": 2,
+            "h": 2
+          },
+          "evidence": "입구 홀 왼쪽 위 (2..3,30..31)에서 벽 윤곽이 한 칸 튀어나온 계단형 노치로 끊겨, 벽 테두리 이음이 어색하다."
+        }
+      ]
+    },
+    {
+      "id": "lay-cave--동굴-던전-tart",
+      "group": "B:cave",
+      "label": "맵 깔기 cave · 동굴 던전",
+      "name": "동굴 던전",
+      "size": "46x48",
+      "tilesetId": "beodeul_city",
+      "status": "reviewed",
+      "pictureSha256": "ade582b9de806fd4af58bffa73549566679af8f4861b02dc481c41a3aac878fa",
+      "blocker": 0,
+      "major": 1,
+      "polish": 4,
+      "defects": [
+        {
+          "class": "empty-expanse",
+          "severity": "major",
+          "region": {
+            "x": 17,
+            "y": 35,
+            "w": 19,
+            "h": 13
+          },
+          "evidence": "맵의 4분의 3이 그림 없는 암반 채움이다. 특히 x17~35 y35~47과 x0~8 y17~38은 아무 내용 없이 같은 바위 무늬만 넓게 깔려 있어 맵이 내용보다 훨씬 크게 보인다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 35,
+            "y": 33,
+            "w": 9,
+            "h": 8
+          },
+          "evidence": "석순 회랑 남쪽 끝 x35~43 y33~40은 석순과 기둥만 흩어진 막다른 공간이다. 상자나 이벤트가 없어 걸어 들어간 보람이 없다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "polish",
+          "region": {
+            "x": 33,
+            "y": 13,
+            "w": 1,
+            "h": 2
+          },
+          "evidence": "(33,14)의 쉼터 결정 받침대는 단단한 오브젝트로 그려져 있지만 걸을 수 있는 칸이라 플레이어가 결정 위로 지나간다."
+        },
+        {
+          "class": "wrong-surface",
+          "severity": "polish",
+          "region": {
+            "x": 8,
+            "y": 7,
+            "w": 3,
+            "h": 3
+          },
+          "evidence": "보스방 서쪽 모서리 (8,8~9)의 석상과 (9~10,7~8)의 기둥이 벽면 타일 위에 겹쳐 그려져 있다. 바닥이 아닌 벽에 박힌 것처럼 보인다."
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "polish",
+          "region": {
+            "x": 35,
+            "y": 21,
+            "w": 1,
+            "h": 2
+          },
+          "evidence": "북쪽 세로 통로 서편 (35,21~22)에 위아래 연결 없는 짧은 벽면 조각이 떠 있다. 주변 암반 가장자리와 이어지지 않는다."
+        }
+      ]
+    },
+    {
+      "id": "lay-prison--지하-감옥-tart",
+      "group": "B:prison",
+      "label": "맵 깔기 prison · 지하 감옥",
+      "name": "지하 감옥",
+      "size": "19x17",
+      "tilesetId": "atlas_biome_interior",
+      "status": "reviewed",
+      "pictureSha256": "0197365d639b51889c6045224684866fcbc9ff612347a3c6e3b225c45b2e7c77",
+      "blocker": 0,
+      "major": 2,
+      "polish": 2,
+      "defects": [
+        {
+          "class": "other",
+          "severity": "major",
+          "region": {
+            "x": 6,
+            "y": 4,
+            "w": 7,
+            "h": 11
+          },
+          "evidence": "x6과 x12의 y4..6, y12..14에 3칸 너비로 뻥 뚫린 개구부만 있고 창살, 철문, 자물쇠 같은 감옥 요소가 하나도 그려져 있지 않다. 그래서 '복도 양쪽 감방'이 아니라 넓은 홀에 붙은 트인 방 네 개로 읽힌다."
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "major",
+          "region": {
+            "x": 1,
+            "y": 1,
+            "w": 17,
+            "h": 15
+          },
+          "evidence": "네 감방(x1..5와 x13..17, y1..7과 y9..15)이 모두 같은 자리에 같은 금색 진열장(x2 또는 x14, y3..5)과 양동이(x4 또는 x16, y4)를 놓은 똑같은 복사본이라, 한눈에 찍어낸 배치로 보인다."
+        },
+        {
+          "class": "wrong-surface",
+          "severity": "polish",
+          "region": {
+            "x": 2,
+            "y": 3,
+            "w": 15,
+            "h": 10
+          },
+          "evidence": "감방마다 놓인 큰 소품이 금색 문양 천을 끼운 장식 진열장 또는 서가처럼 그려져 있다. 짚더미, 쇠사슬, 침상 같은 감방 소품이 아니라 서재나 전시실 가구로 보여 감옥 분위기와 어긋난다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 7,
+            "y": 4,
+            "w": 5,
+            "h": 12
+          },
+          "evidence": "복도 x7..11, y4..15의 60칸과 각 감방의 y5..7, y13..15 바닥에 아무것도 없는 돌바닥만 깔려 있다. 남쪽 입구에서 북쪽 화로까지 소품 하나 없이 걷게 된다."
+        }
+      ]
+    },
+    {
+      "id": "lay-inn--여관-tart",
+      "group": "B:inn",
+      "label": "맵 깔기 inn · 여관",
+      "name": "여관",
+      "size": "19x13",
+      "tilesetId": "atlas_biome_interior",
+      "status": "reviewed",
+      "pictureSha256": "5636e7abec09954c75f8a8a921e249ccafb376eb0d5b76e2f0925170d9ea4c8a",
+      "blocker": 0,
+      "major": 1,
+      "polish": 3,
+      "defects": [
+        {
+          "class": "other",
+          "severity": "major",
+          "region": {
+            "x": 1,
+            "y": 1,
+            "w": 17,
+            "h": 11
+          },
+          "evidence": "'1층 식당'이라고 했으니 위층이 있어야 하는데, 맵 어디에도 계단이 그려져 있지 않다. 객실도 없어서 플레이어가 여관이 아니라 식당 한 채로 읽는다."
+        },
+        {
+          "class": "unpainted-or-seam",
+          "severity": "polish",
+          "region": {
+            "x": 12,
+            "y": 8,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "식당과 부엌 사이 통로 x=12,y=8의 윗변에 벽 테두리 선이 가로로 그어져 있다. 그 칸은 걸을 수 있는데도 통로가 중간에서 끊겨 두 갈래처럼 보인다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 4,
+            "y": 9,
+            "w": 8,
+            "h": 3
+          },
+          "evidence": "식당 아래쪽 x=4..11,y=9..11은 상자 하나만 있는 빈 나무 바닥이다. 탁자 오른쪽 x=9..11,y=4..8도 비어 있어서 방이 휑해 보인다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 1,
+            "y": 6,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "x=1,y=6의 빨간 안락의자는 왼쪽 벽에 붙어 아무것도 없는 쪽을 향해 혼자 놓여 있다. 벽난로 앞 의자 x=5,y=4와도 짝이 맞지 않아 아무렇게나 놓은 소품처럼 보인다."
+        }
+      ]
+    },
+    {
+      "id": "lay-house--가정집-tart",
+      "group": "B:house",
+      "label": "맵 깔기 house · 가정집",
+      "name": "가정집",
+      "size": "15x12",
+      "tilesetId": "atlas_biome_interior",
+      "status": "reviewed",
+      "pictureSha256": "19932e3816810460c0b3b2e1699233ffa65ff8e0fa1bdbc3b60b7124e28c6278",
+      "blocker": 0,
+      "major": 0,
+      "polish": 2,
+      "defects": [
+        {
+          "class": "unpainted-or-seam",
+          "severity": "polish",
+          "region": {
+            "x": 8,
+            "y": 6,
+            "w": 1,
+            "h": 3
+          },
+          "evidence": "칸막이벽 틈 x8 y6에는 부엌 타일이 문턱처럼 혀 모양으로 삐져나와 있고, x8 y8에는 짙은 마루 띠가 따로 박혀 있어 바닥 이음매가 어긋나 보인다"
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 3,
+            "y": 8,
+            "w": 5,
+            "h": 3
+          },
+          "evidence": "거실 하단 x3~7 y8~10은 아무 소품 없이 맨 마루 바닥만 넓게 남아 있어 방이 휑하게 읽힌다"
+        }
+      ]
+    },
+    {
+      "id": "lay-harbor--항구-마을-tart",
+      "group": "B:harbor",
+      "label": "맵 깔기 harbor · 항구 마을",
+      "name": "항구 마을",
+      "size": "84x38",
+      "tilesetId": "beodeul_city",
+      "status": "reviewed",
+      "pictureSha256": "f6c68ee605c18dd5652c2111793bb321e2d9cd236eb0c6057956eabfa3c70bf2",
+      "blocker": 0,
+      "major": 1,
+      "polish": 3,
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 47,
+            "y": 31,
+            "w": 11,
+            "h": 2
+          },
+          "evidence": "세로 부두(51-52,22-31) 끝과 가로 선착장(47-57,33-35) 사이 y=32 줄은 물로 그려져 끊겨 보인다. 그런데 선착장이 고립 구역으로 잡히지 않아 물 위를 걸어 건너가게 된다."
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "polish",
+          "region": {
+            "x": 82,
+            "y": 25,
+            "w": 2,
+            "h": 7
+          },
+          "evidence": "동쪽 끝(82-83,25-31)에 바다 건너 풀밭 조각이 맵 가장자리에서 잘린 채 덩그러니 붙어 있다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 60,
+            "y": 25,
+            "w": 19,
+            "h": 3
+          },
+          "evidence": "동쪽 섬 물가 (61,26)과 (78,25)에 회색 석재 사각 타일이 하나씩 박혀 있다. 해안선과 어울리지 않는 어긋난 조각처럼 보인다."
+        },
+        {
+          "class": "enclosure-unreadable",
+          "severity": "polish",
+          "region": {
+            "x": 74,
+            "y": 8,
+            "w": 8,
+            "h": 3
+          },
+          "evidence": "북동쪽 숲 속 (75,9)와 (80,9) 근처에 7칸과 8칸짜리 빈 풀밭이 나무에 막혀 있다. 보이는데 들어갈 길이 없다."
+        }
+      ]
+    },
+    {
+      "id": "lay-field-route--마을-사이-들판-길-road",
+      "group": "B:field-route",
+      "label": "맵 깔기 field-route · 마을 사이 들판 길",
+      "name": "마을 사이 들판 길",
+      "size": "60x40",
+      "tilesetId": "beodeul_city",
+      "status": "reviewed",
+      "pictureSha256": "2c972b77e9bc5db10ab163c710e09ee4e163fcf011476c6eba82515863820e14",
+      "blocker": 0,
+      "major": 2,
+      "polish": 1,
+      "defects": [
+        {
+          "class": "other",
+          "severity": "major",
+          "region": {
+            "x": 28,
+            "y": 0,
+            "w": 16,
+            "h": 40
+          },
+          "evidence": "요청은 서쪽 끝에서 동쪽 끝까지 이어지는 길인데, 실제 흙길은 (29~31,0)에서 (30~31,39)까지 북남으로만 뻗어 있고 서쪽(x=0)·동쪽(x=59) 가장자리는 전부 숲으로 막혀 있어 동서 연결이 없음"
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 60,
+            "h": 40
+          },
+          "evidence": "좌측 x=0..27 전체와 우측 x=44..59 전체가 아무 지형 변화도 없는 빽빽한 숲 타일로만 채워져 맵의 약 90%가 갈 수 없는 배경이고, 실제 내용은 가운데 폭 15칸 정도의 길뿐임"
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 28,
+            "h": 40
+          },
+          "evidence": "좌우 숲 영역에서 같은 활엽수·침엽수 묶음 무늬가 일정한 간격의 격자로 반복되어, 확대해 보면 도장 찍은 듯한 패턴이 드러남"
+        }
+      ]
+    },
+    {
+      "id": "lay-village-to-field--마을-tart",
+      "group": "B:village-to-field",
+      "label": "맵 깔기 village-to-field · 마을",
+      "name": "마을",
+      "size": "42x42",
+      "tilesetId": "beodeul_city",
+      "status": "reviewed",
+      "pictureSha256": "b1b0b9a09965bcd186ab4eb9124cf8383115d3bc094fad38799a31e9b8272e87",
+      "blocker": 0,
+      "major": 5,
+      "polish": 2,
+      "defects": [
+        {
+          "class": "exit-off-road",
+          "severity": "major",
+          "region": {
+            "x": 39,
+            "y": 21,
+            "w": 3,
+            "h": 4
+          },
+          "evidence": "동쪽 큰길은 y=23..24에서 맵 동쪽 끝(41,23..24)에 닿는데, 들판으로 가는 출구 E1은 길에서 벗어난 풀밭 (41,21)에 있다. 길을 따라 걸어간 플레이어는 출구를 밟지 못한다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 5,
+            "y": 6,
+            "w": 27,
+            "h": 31
+          },
+          "evidence": "(11,6), (5,21), (12,21), (30,20), (7,34), (17,36), (31,32)의 집 문이 모두 빨간 막힘 칸이고 이동 이벤트도 없다. 길이 문 앞까지 이어지는데 어느 집에도 들어갈 수 없다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 11,
+            "y": 6,
+            "w": 8,
+            "h": 2
+          },
+          "evidence": "북서 주택 앞 회색 돌길 (11..18,7)이 빨간 막힘 칸이다. 도로처럼 보이는데 걸을 수 없어서, 북쪽 길이 집 앞에서 끊긴다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 5,
+            "y": 9,
+            "w": 20,
+            "h": 3
+          },
+          "evidence": "서쪽 흙 절벽면 (5..13,10..11)과 (19..20,11), (23..24,11) 일부가 막혀 있지 않아 절벽 위를 걸어 다닐 수 있다. 시작 지점 S (10,10)도 절벽면 위에 놓여 있다."
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 42,
+            "h": 42
+          },
+          "evidence": "광장·우물·상점 좌판·민가가 있는 연결된 마을인데 NPC가 한 명도 없어서 빈 세트장처럼 보인다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 4
+          },
+          "evidence": "(1,6) 부근 숲과 절벽 사이에 14칸짜리 걸을 수 있는 풀밭이 본 구역과 끊겨 있다. 보이기는 하지만 갈 수 없는 공간이다."
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 12,
+            "w": 42,
+            "h": 30
+          },
+          "evidence": "같은 모양의 둥근 덤불 스탬프가 빈 풀밭 전역에 수십 개 비슷한 간격으로 반복 배치되어 있다."
+        }
+      ]
+    },
+    {
+      "id": "lay-village-to-field--동쪽-들판-st_1",
+      "group": "B:village-to-field",
+      "label": "맵 깔기 village-to-field · 동쪽 들판",
+      "name": "동쪽 들판",
+      "size": "40x32",
+      "tilesetId": "beodeul_city",
+      "status": "reviewed",
+      "pictureSha256": "070c34b8fb29da7d7866e14b2a47d8c3a4dcd4b91ff0d20a3a4c898639da9a48",
+      "blocker": 0,
+      "major": 3,
+      "polish": 3,
+      "defects": [
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 20,
+            "y": 18,
+            "w": 15,
+            "h": 5
+          },
+          "evidence": "서쪽에서 이어진 주 흙길이 x=25..34, y=19..22에서 네모난 덩어리로 넓어진 뒤 (34,20) 근처 잔디 위에서 뚝 끊긴다. 동쪽으로 계속 갈 것처럼 보이지만 이어지는 출구도 목적지도 없다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 13,
+            "y": 5,
+            "w": 5,
+            "h": 9
+          },
+          "evidence": "북쪽 갈래 흙길이 (16,5) 잔디 한가운데서 끝난다. 그 위쪽은 숲이고 출구가 없어 막다른 길이다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 24,
+            "y": 12,
+            "w": 5,
+            "h": 7
+          },
+          "evidence": "(26..28,12..14)로 올라가는 흙길 갈래가 북쪽 숲 앞에서 그대로 끊긴다. 갈 곳도 출구도 없다."
+        },
+        {
+          "class": "unpainted-or-seam",
+          "severity": "polish",
+          "region": {
+            "x": 32,
+            "y": 0,
+            "w": 3,
+            "h": 2
+          },
+          "evidence": "북쪽 끝 (32..34,0..1)에 밝은 잔디 공터가 숲 사이에 덩그러니 그려져 있다. 본 구역과 끊긴 고립 칸이라 들어갈 수도 없고 출구도 아니다."
+        },
+        {
+          "class": "unpainted-or-seam",
+          "severity": "polish",
+          "region": {
+            "x": 15,
+            "y": 0,
+            "w": 16,
+            "h": 1
+          },
+          "evidence": "북쪽 가장자리 (15,0), (17,0), (25,0), (30,0)과 숲 속 (25,10)에 잔디 한 칸짜리 구멍이 나 있다. 숲 사이 틈이나 샛길처럼 보이지만 아무 데도 이어지지 않는다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 5,
+            "y": 2,
+            "w": 10,
+            "h": 10
+          },
+          "evidence": "서쪽 북부 초원 (5..14,2..11)은 넓은데 돌 두 무더기와 덤불 몇 개뿐이다. 길과도 상관없이 빈 공간이다."
+        }
+      ]
+    },
+    {
+      "id": "lay-village-chief-house--작은-마을-e5cf",
+      "group": "B:village-chief-house",
+      "label": "맵 깔기 village-chief-house · 작은 마을",
+      "name": "작은 마을",
+      "size": "48x36",
+      "tilesetId": "desert_east",
+      "status": "reviewed",
+      "pictureSha256": "e692257a68c7ac92e0c25882857c3b2658bb3ac2164b6fbbb15da7956e0e30fc",
+      "blocker": 1,
+      "major": 1,
+      "polish": 2,
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "blocker",
+          "region": {
+            "x": 3,
+            "y": 5,
+            "w": 42,
+            "h": 28
+          },
+          "evidence": "(10,21), (14,6), (36,21), (38,32) 등 모든 집의 아치형 문 칸이 빨강(막힘)이라, 문 앞 길까지 걸어가도 어느 집(촌장 집 포함)에도 들어갈 수 없다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 9,
+            "y": 8,
+            "w": 2,
+            "h": 8
+          },
+          "evidence": "북쪽 큰길에서 과수원 사이로 내려오는 흙길 x9..10 y8..15가 2층 집(x8..11 y16) 지붕과 뒷벽에 막혀 끝나 버려 갈 곳이 없다."
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 3,
+            "y": 27,
+            "w": 42,
+            "h": 6
+          },
+          "evidence": "y27..32의 남쪽 줄에 비슷한 크기의 상자형 집 9채가 같은 높이로 빈틈없이 일렬로 찍혀 있고, 북쪽 줄 y1..6과 중간 줄 y17..21도 같은 패턴이라 단조롭다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 38,
+            "y": 10,
+            "w": 10,
+            "h": 7
+          },
+          "evidence": "과수원 동쪽 x38..47 y10..16은 돌멩이 두세 개 외에 아무것도 없는 맨 모래라 마을 가장자리가 비어 보인다."
+        }
+      ]
+    },
+    {
+      "id": "lay-forest-to-cave--빈-맵-tart",
+      "group": "B:forest-to-cave",
+      "label": "맵 깔기 forest-to-cave · 빈 맵",
+      "name": "빈 맵",
+      "size": "20x15",
+      "tilesetId": "beodeul_city",
+      "status": "reviewed",
+      "pictureSha256": "d1e4ec6e9ef640bbb0405da57ef82a7b50b3755ada54b50fdf3439ac5b26feca",
+      "blocker": 0,
+      "major": 4,
+      "polish": 0,
+      "defects": [
+        {
+          "class": "empty-expanse",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 20,
+            "h": 15
+          },
+          "evidence": "20x15 전체가 같은 잔디 타일로만 칠해져 있고 나무·덤불·길이 하나도 없어 '숲'으로 읽히지 않음. 동굴 입구(8..10,3..5)와 샘(12,7)을 빼면 맵 대부분이 빈 들판임."
+        },
+        {
+          "class": "exit-off-road",
+          "severity": "major",
+          "region": {
+            "x": 9,
+            "y": 6,
+            "w": 2,
+            "h": 1
+          },
+          "evidence": "동굴 입구 그림은 x=8..10이고 어두운 개구부의 중앙은 x=9인데, E2는 (10,6) 오른쪽 기둥 아래에 있음. 개구부 정면 (9,6)에 서서 위로 걸어도 막혀서 들어가지지 않음."
+        },
+        {
+          "class": "exit-off-road",
+          "severity": "major",
+          "region": {
+            "x": 10,
+            "y": 0,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "북쪽 출구 E1(10,0)이 길이나 숲 틈 없이 맨 잔디 한가운데에 있음. 북쪽 가장자리 전체가 똑같이 열려 있어 플레이어가 그 한 칸을 알아볼 단서가 없음."
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "major",
+          "region": {
+            "x": 8,
+            "y": 3,
+            "w": 3,
+            "h": 3
+          },
+          "evidence": "동굴 입구(8..10,3..5)가 절벽이나 바위산 없이 평평한 잔디 위에 상자처럼 홀로 놓여 있어, 동굴이 아니라 떼어다 붙인 조각으로 보임."
+        }
+      ]
+    },
+    {
+      "id": "lay-forest-to-cave--숲-th_1",
+      "group": "B:forest-to-cave",
+      "label": "맵 깔기 forest-to-cave · 숲",
+      "name": "숲",
+      "size": "32x40",
+      "tilesetId": "beodeul_city",
+      "status": "reviewed",
+      "pictureSha256": "09335fdfb50253d6f9f789d86cc6ccb81df18e3089daa681d500a55df0bdf69b",
+      "blocker": 0,
+      "major": 2,
+      "polish": 4,
+      "defects": [
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 20,
+            "y": 6,
+            "w": 3,
+            "h": 6
+          },
+          "evidence": "동굴로 이어지는 흙길(x=20..22)이 동굴 입구(24,11) 옆을 지나 y=6까지 더 올라가다가 풀밭 한가운데서 끊겨, 길이 동굴이 아닌 북쪽 어딘가로 이어지는 것처럼 읽힌다"
+        },
+        {
+          "class": "exit-off-road",
+          "severity": "major",
+          "region": {
+            "x": 13,
+            "y": 38,
+            "w": 5,
+            "h": 2
+          },
+          "evidence": "남쪽 가장자리의 열린 칸 x=13..17 중 출구는 (15,39) 한 칸뿐이다. 흙길이 닿는 (16,39)나 옆 풀칸으로 내려가면 맵을 나가지 못하고 가장자리에 막힌다"
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "polish",
+          "region": {
+            "x": 4,
+            "y": 13,
+            "w": 10,
+            "h": 12
+          },
+          "evidence": "서쪽 갈래길 두 개((11,13)~(13,16) 부근과 (4,23)~(6,25) 부근)가 공터에서 아무것도 없이 끝나는 막다른 흙길이다"
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 22,
+            "y": 8,
+            "w": 5,
+            "h": 4
+          },
+          "evidence": "동굴 입구가 절벽이나 암벽 없이 평평한 풀밭 위에 홀로 선 돌무더기로 그려져 있어, 동굴보다는 작은 돌집처럼 보인다"
+        },
+        {
+          "class": "unpainted-or-seam",
+          "severity": "polish",
+          "region": {
+            "x": 30,
+            "y": 37,
+            "w": 2,
+            "h": 3
+          },
+          "evidence": "남동쪽 모서리 (30..31,38..39)에 길과 이어지지 않는 밝은 공터 풀 조각이 숲 속에 홀로 칠해져 있고, 출구 없는 열린 가장자리로 남아 있다"
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 19,
+            "y": 20,
+            "w": 13,
+            "h": 20
+          },
+          "evidence": "남동쪽 x=19..31, y=20..39 전체가 같은 나무로만 빽빽하게 채워진 통행 불가 구역이라 지도 크기에 비해 실제로 쓰는 공간이 좁다"
+        }
+      ]
+    },
+    {
+      "id": "lay-forest-to-cave--동굴-2849",
+      "group": "B:forest-to-cave",
+      "label": "맵 깔기 forest-to-cave · 동굴",
+      "name": "동굴",
+      "size": "44x50",
+      "tilesetId": "beodeul_city",
+      "status": "reviewed",
+      "pictureSha256": "f2560356aac733fc56b7f20526b8db139de6cf56a0f8c08321c60cfff42f7163",
+      "blocker": 1,
+      "major": 2,
+      "polish": 1,
+      "defects": [
+        {
+          "class": "exit-off-road",
+          "severity": "blocker",
+          "region": {
+            "x": 11,
+            "y": 37,
+            "w": 1,
+            "h": 2
+          },
+          "evidence": "(11,37~38)에 동굴 밖으로 나가는 계단이 뚜렷하게 그려져 있지만, 그 칸의 E1은 '숲'이 아니라 '빈 맵'으로 이동해서 계단으로 나가면 엉뚱한 빈 맵에 떨어진다"
+        },
+        {
+          "class": "exit-off-road",
+          "severity": "major",
+          "region": {
+            "x": 10,
+            "y": 39,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "숲으로 돌아가는 E2(10,39)는 계단 왼쪽 아래 아무것도 없는 동굴 바닥에 투명하게 놓여 있어서, 계단을 두고 이 칸을 밟아야 나간다는 것을 플레이어가 알 수 없다"
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "major",
+          "region": {
+            "x": 19,
+            "y": 33,
+            "w": 25,
+            "h": 17
+          },
+          "evidence": "맵의 남동쪽 x19~43, y33~49 전체와 북서쪽 x0~20, y0~19가 아무 내용 없는 암반 채움이다. 걸을 수 있는 칸이 20%뿐이라 맵 크기가 내용에 비해 지나치게 크다"
+        },
+        {
+          "class": "wrong-surface",
+          "severity": "polish",
+          "region": {
+            "x": 6,
+            "y": 40,
+            "w": 1,
+            "h": 2
+          },
+          "evidence": "입구 홀 서쪽 (6,40~41)의 돌기둥이 동굴 벽 모서리에 반쯤 걸쳐 있어 벽과 겹쳐 보인다"
+        }
+      ]
+    }
+  ],
+  "patterns": {
+    "promptVersion": "map-vqa-patterns-v1",
+    "note": "같은 원인끼리 묶은 것(major 이상만). 묶음은 보정하지 않았다 — 고칠 거리의 실마리다.",
+    "byClass": {
+      "passage-mismatch": [
+        {
+          "pattern": "그려진 집 문 칸이 막힘이고 이동 이벤트도 없어 문 앞까지 와도 들어갈 수 없음",
+          "fixHint": "문 타일을 깔면 해당 칸을 통행 가능으로 두고 실내 이동 이벤트를 자동 생성하거나, 들어갈 수 없는 문은 그리지 않기",
+          "count": 2,
+          "blocker": 1,
+          "major": 1,
+          "maps": 2,
+          "examples": [
+            "맵 깔기 village-to-field · 마을",
+            "맵 깔기 village-chief-house · 작은 마을"
+          ]
+        },
+        {
+          "pattern": "집·저택 앞 돌길과 문 앞 칸이 막힘(빨강)으로 칠해져 그려진 길을 따라 문까지 갈 수 없음",
+          "fixHint": "도로·돌길 타일과 문 앞 칸은 통행 가능으로 강제하고, 길 경로가 문까지 이어지는지 통행 검사로 확인",
+          "count": 3,
+          "blocker": 0,
+          "major": 3,
+          "maps": 3,
+          "examples": [
+            "맵 깔기 village · 시골 마을",
+            "맵 깔기 market-town · 시장 마을",
+            "맵 깔기 village-to-field · 마을"
+          ]
+        },
+        {
+          "pattern": "절벽면·성벽 윗길이 막힘 칠 없이 걸을 수 있어 계단·성문 없이 경계를 넘나듦",
+          "fixHint": "절벽면·성벽 타일 전체를 자동으로 막힘 처리하고, 계단·성문만 통로로 남기는 통행 검사 추가",
+          "count": 3,
+          "blocker": 0,
+          "major": 3,
+          "maps": 3,
+          "examples": [
+            "맵 깔기 village · 시골 마을",
+            "맵 깔기 market-town · 시장 마을",
+            "맵 깔기 castle · 왕궁"
+          ]
+        },
+        {
+          "pattern": "우물·물통 같은 막힘 오브젝트가 도로 폭 전체 위에 놓여 길이 끊김",
+          "fixHint": "막힘 오브젝트 배치 시 도로 칸과 겹치지 않게 하거나 도로 옆으로 밀어 통행로를 유지",
+          "count": 2,
+          "blocker": 0,
+          "major": 2,
+          "maps": 1,
+          "examples": [
+            "맵 깔기 village · 시골 마을"
+          ]
+        },
+        {
+          "pattern": "건물 지붕·벽·탑 몸체가 통행 가능으로 남고 시작 지점까지 벽이나 절벽면 위에 놓임",
+          "fixHint": "건물·벽·절벽 타일을 막힘으로 칠하고, 시작 지점이 통행 가능한 바닥 칸인지 검증",
+          "count": 2,
+          "blocker": 0,
+          "major": 2,
+          "maps": 2,
+          "examples": [
+            "맵 깔기 market-town · 시장 마을",
+            "맵 깔기 village-to-field · 마을"
+          ]
+        },
+        {
+          "pattern": "입구처럼 그려진 천막 입구·덩굴 아치가 실제로는 막힘이고 출구나 이벤트도 없음",
+          "fixHint": "들어갈 수 있어 보이는 입구 그래픽은 통행 가능 칸과 이벤트를 함께 두거나, 닫힌 형태의 그래픽으로 바꾸기",
+          "count": 2,
+          "blocker": 0,
+          "major": 2,
+          "maps": 2,
+          "examples": [
+            "맵 깔기 camp · 숲속 야영지",
+            "맵 깔기 ruins · 고대 유적 바깥"
+          ]
+        },
+        {
+          "pattern": "기타",
+          "fixHint": "물로 그려진 칸은 막힘 처리하고 부두와 선착장이 실제 판자 타일로 연결되도록 깔기",
+          "count": 1,
+          "blocker": 0,
+          "major": 1,
+          "maps": 1,
+          "examples": [
+            "맵 깔기 harbor · 항구 마을"
+          ]
+        }
+      ],
+      "empty-expanse": [
+        {
+          "pattern": "맵 전체를 기본 잔디 타일 하나로만 칠하고 나무·길·덤불·소품을 전혀 올리지 않아 미완성 빈 맵으로 보임",
+          "fixHint": "기본 바닥 채우기 뒤에 장식·지형 레이어를 깔지 않으면 완료 처리하지 말고, 단일 타일 비율이 임계치를 넘으면 빌더가 경고·거부해야 함",
+          "count": 2,
+          "blocker": 1,
+          "major": 1,
+          "maps": 2,
+          "examples": [
+            "맵 깔기 camp · 빈 맵",
+            "맵 깔기 forest-to-cave · 빈 맵"
+          ]
+        },
+        {
+          "pattern": "맵 크기를 내용보다 훨씬 크게 잡고 남는 영역을 검은 공백·암반·빽빽한 숲 같은 통행 불가 채움으로 넓게 메워 걸을 수 있는 영역이 극히 일부뿐임",
+          "fixHint": "내용(통행 가능 영역) 경계에 맞춰 맵 크기를 잘라내거나 처음부터 작게 잡고, 통행 불가 채움 비율 상한을 도구에서 검사해야 함",
+          "count": 4,
+          "blocker": 0,
+          "major": 4,
+          "maps": 4,
+          "examples": [
+            "맵 깔기 ruins · 고대 유적 바깥",
+            "맵 깔기 cave · 동굴 던전",
+            "맵 깔기 field-route · 마을 사이 들판 길"
+          ]
+        },
+        {
+          "pattern": "걸을 수 있는 넓은 구역에 같은 덤불·나무·상자만 드문드문 반복되거나 길과 풀만 있어 테마 요소 없이 텅 빈 긴 이동 구간이 생김",
+          "fixHint": "걸을 수 있는 구역을 일정 크기 칸 단위로 나눠 각 구역에 테마 소품·랜드마크를 배치하도록 하고, 의미 없는 긴 통로는 줄이도록 빌더가 밀도를 검사해야 함",
+          "count": 2,
+          "blocker": 0,
+          "major": 2,
+          "maps": 2,
+          "examples": [
+            "맵 깔기 market-town · 시장 마을",
+            "맵 깔기 camp · 숲속 야영지"
+          ]
+        }
+      ]
+    }
+  }
+}

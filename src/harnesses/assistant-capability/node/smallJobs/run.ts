@@ -57,12 +57,12 @@ export type JobResult = {
   startedAt: string; finishedAt: string;
 };
 
-function modelPin(name: string): { file: string; config: any } {
+export function modelPin(name: string): { file: string; config: any } {
   const file = resolve(REPO_ROOT, 'harness-data/assistant-capability/ai-configs', `${name}.json`);
   if (!existsSync(file)) throw Error(`--model ${name}: ${file} 가 없다(ai-configs 의 파일 이름으로 고른다)`);
   return { file, config: JSON.parse(readFileSync(file, 'utf8')) };
 }
-function sessionEnv(config: any, pinned: string): NodeJS.ProcessEnv {
+export function sessionEnv(config: any, pinned: string): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = { ...process.env, OPRN_TURN_DIAG: '1', OPRN_SHARED_CONTENT_SQLITE: pinned };
   if (!env.HARNESS_DIST_DIR && existsSync(resolve(REPO_ROOT, 'dist/index.html'))) env.HARNESS_DIST_DIR = 'dist';
   if (String(config.providerId ?? '').startsWith('openai-compat:') && !env.OPRN_OPENAI_COMPAT_PATH) {
@@ -76,18 +76,18 @@ function sessionEnv(config: any, pinned: string): NodeJS.ProcessEnv {
   return env;
 }
 /** 저장 문서에서 타일셋 본문을 뺀 사본(오프라인 재판정용, gz 수백 KB). 타일셋은 번들에서 다시 얻는다. */
-function keepSlim(file: string, project: Project): void {
+export function keepSlim(file: string, project: Project): void {
   const { tilesets: _tilesets, ...rest } = project as any;
   writeFileSync(file, gzipSync(JSON.stringify(rest), { level: 6 }));
 }
-function gitInfo(): { sha: string; branch: string; dirty: boolean; mainBase: string } {
+export function gitInfo(): { sha: string; branch: string; dirty: boolean; mainBase: string } {
   const git = (...args: string[]) => { try { return execFileSync('git', args, { cwd: REPO_ROOT, encoding: 'utf8' }).trim(); } catch { return ''; } };
   // mainBase = 이 체크아웃이 올라탄 main 커밋(측정 브랜치의 머리가 아니라 조수 코드의 기준을 말한다).
   return { sha: git('rev-parse', '--short=10', 'HEAD'), branch: git('rev-parse', '--abbrev-ref', 'HEAD'), dirty: git('status', '--porcelain', '--', 'src', 'scripts', 'electron').length > 0,
     mainBase: git('merge-base', 'HEAD', 'origin/main').slice(0, 10) };
 }
 
-async function waitFor(test: () => boolean, limitMs: number, alive: () => boolean): Promise<'ok' | 'limit' | 'exited'> {
+export async function waitFor(test: () => boolean, limitMs: number, alive: () => boolean): Promise<'ok' | 'limit' | 'exited'> {
   const until = Date.now() + limitMs;
   for (;;) {
     if (test()) return 'ok';
@@ -202,7 +202,7 @@ export function decide(input: { check: Verdict; turnOutcomes: string[]; waitedLi
 }
 
 /** 턴 기록(wholeGameSession 의 turns/NNN.json)에서 숫자와 발췌를 뽑는다. */
-function collect(turns: any[]): Partial<JobResult> {
+export function collect(turns: any[]): Partial<JobResult> {
   const calls = turns.flatMap(turn => (turn.toolCalls ?? []).map((call: any) => ({ name: String(call.name), ok: call.ok !== false, result: String(call.modelText ?? call.summary ?? '') })));
   const args = turns.flatMap(turn => turn.toolArgs ?? []);
   const done = turns.flatMap(turn => turn.done ?? []).map((entry: any) => entry.stats ?? {});
