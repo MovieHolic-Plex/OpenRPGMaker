@@ -5,7 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
-import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
+import { createBuildRun } from "../../../src/ai/v2/shared/buildRun.ts";
 import { builderFor } from "../../../src/ai/v2/place/builders/index.ts";
 import { guessPlaceSpec } from "../../../src/ai/v2/place/placeGuess.ts";
 import { measureInteriorBareFloor } from "../../../src/editor/handInterior/bareFloor.ts";

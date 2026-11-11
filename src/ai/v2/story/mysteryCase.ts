@@ -10,17 +10,17 @@
 // 모델이 이미 지은 사건(presentItem·author_mystery_case 이벤트·사람이 하는 범인 고르기)이면 사건은 그대로 두고 소품만 세운다.
 import type { Command, GameEvent, GameMap, Project } from "@/project/types";
 import { withJosa } from "@/util/josa";
-import { eventGives } from "../blueprint";
+import { eventGives } from "./blueprint";
 import { showExaminedThing } from "./examineArt";
 import { settleExamineSpot } from "./examineSpot";
 import { reachableCells, unreachableEvents } from "../judge/eventReach";
 import { mapRegion, withWhere } from "../judge/objectiveWhere";
 import { isObjectiveCommand, objectiveCommand } from "../judge/objectiveCommand";
 import { isPassable } from "@/project/collision";
-import { buildPeople } from "../people";
+import { buildPeople } from "../place/people";
 import { tileLabel } from "../place/cells";
 import { shownToken } from "./codeClues";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 
 /** 추리 청사진 낱말(요청·목표·단계·엔딩 어디든). 「도난」만으로는 추리로 보지 않는다(심부름 RPG). */
 const MYSTERY_WORDS = /추리|범인|탐정|미스터리|용의자|진범|whodunit|mystery|detective|culprit/iu;

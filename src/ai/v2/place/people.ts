@@ -12,10 +12,10 @@ import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp"
 import { activeMonsterTurn } from "@/project/genreLockMonsterAssets";
 import { monsterAssetCatalogFilters } from "@/project/genreLockMonsterAssetsDiff";
 import { genreLockCharsetCatalogFilter } from "@/project/genreLockCharsets";
-import type { BuildRun, ContentBuildResult, PersonSpec } from "./types";
-import { exitThroats, laneCells, wanderReach } from "./place/placementRules";
-import { Cell, findMap, eventsOf, eventBlockers, walkStart, keepsMapConnected } from "./place/cells";
-import { resolveWhere } from "./place/where";
+import type { BuildRun, ContentBuildResult, PersonSpec } from "../shared/types";
+import { exitThroats, laneCells, wanderReach } from "./placementRules";
+import { Cell, findMap, eventsOf, eventBlockers, walkStart, keepsMapConnected } from "./cells";
+import { resolveWhere } from "./where";
 
 export const PEOPLE_CARD =
   "People spec: {role,name?,where?,at?,looks?,firstTalk?,laterTalk?,movement?,sells?,mapId?}. " +

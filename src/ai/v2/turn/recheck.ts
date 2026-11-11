@@ -2,7 +2,7 @@
 import { saveVqaBook } from "./vqaItems";
 import { stampTargets } from "./carryOver";
 import { savePlaces } from "../tools/placeMemory";
-import type { PiAssistantV2Env } from "../env";
+import type { PiAssistantV2Env } from "../shared/env";
 import { TODO_MAX_ATTEMPTS, isOpen } from "../loop/todoStore";
 import { changedSince, checkItem, indexProject } from "../loop/refs";
 import type { TodoItem } from "../todo/types";

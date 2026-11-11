@@ -1,7 +1,7 @@
 // 조수 v2 독립 비평가 — 요청 원문과 1배 그림만 본다(짓기 이유·명세·앞선 점수는 모른다). major 를 칸 좌표와 함께 돌려준다.
 // 실내는 v1 의 보정된 루브릭(featureReview.ts, 축 1·2·6)을 그대로 쓰고, 바깥·던전은 장르 관례만 바꾼 같은 루브릭이다.
 import { featureCriticPrompt, parseFeatureCritic, type CriticVerdict } from "@/ai/piAgent/featureReview";
-import type { PlaceType } from "../types";
+import type { PlaceType } from "../shared/types";
 
 const OUTDOOR_CONVENTIONS: Record<string, string> = {
   village: "Genre conventions (do NOT count as majors): an outdoor village map is meant to fill the whole frame with ground; trees, bushes and grass between houses are scenery, not void; roads may run off the map edges (that is how the player leaves); fenced fields and roofs are not walkable and that is fine.",

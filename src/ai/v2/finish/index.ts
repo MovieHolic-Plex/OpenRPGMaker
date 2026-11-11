@@ -4,18 +4,18 @@
 //   assembly(게임 전체 요청일 때): 조립 기본값(타이틀·오프닝) → 출하 기본값 → 단계 순서·전투 맞춤 → 목표·출구 다듬기
 //   reload(맨 끝): 저장 → 다시 읽기 관문
 // 재생 스크립트(scripts/qa/assistant-v2/finishReplay.mts)도 이 함수를 불러, 실제 실행기와 같은 순서를 지나는지 따로 맞추지 않아도 된다.
-import { worldOf } from "../world";
-import type { PiAssistantV2Env } from "../env";
+import { worldOf } from "../place/world";
+import type { PiAssistantV2Env } from "../shared/env";
 import type { V2Session } from "../turn/session";
-import { BLUEPRINT_PATH_IDS, walkBlueprint } from "../blueprint";
+import { BLUEPRINT_PATH_IDS, walkBlueprint } from "../story/blueprint";
 import { battleSites, healingSources } from "../judge/combatChecks";
 import { buildsWholeGame } from "../request/readers";
 import { classifyRequest } from "../request/intent";
 import { lanesStale } from "./lanesStamp";
 import type { FinishCtx, FinishPhase, FinishStage } from "./types";
 import * as registered from "./stages";
-import { recordStageWrites } from "../stageWrites";
-import { createBuildRun } from "../buildRun";
+import { recordStageWrites } from "../shared/stageWrites";
+import { createBuildRun } from "../shared/buildRun";
 import { orderedStages } from "./stageOrder";
 
 export { lanesStamp } from "./lanesStamp";

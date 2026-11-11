@@ -19,7 +19,7 @@ import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
 import { editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, emptySparkles, selfLoopTransfers, silentLockedExits, writtenStateIds } from "../judge/shipChecks";
 import { defaultPlaceLeaks } from "../judge/shipArtChecks";
-import { strayStepCopies } from "../blueprint";
+import { strayStepCopies } from "./blueprint";
 import { doorCellBlocked, offArtEntrances, staleMilestoneTargets } from "../judge/discoverability";
 import { lateStartObjective, planObjective, repeatingStartObjectives } from "../judge/objectivePlan";
 import { withWhere } from "../judge/objectiveWhere";

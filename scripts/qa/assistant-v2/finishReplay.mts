@@ -4,18 +4,18 @@
 //   bun scripts/qa/assistant-v2/finishReplay.mts <run-dir>... [--out <dir>] [--followup <마지막 차례 글>]
 // --followup 을 주면 끝맺음이 도는 마지막 차례처럼 그 글 + 첫 요청 메모(composePiTask·priorRequestsNote — 편집기와 같은 합치기)를 요청 글로 쓴다.
 // 주지 않으면 첫 요청 글(steps.log 의 001)만 — 「RPG 만들어 줘」처럼 «게임» 낱말이 없는 첫 요청은 출하 검사·조립이 돌지 않는다.
-import { stepSkipSetters, stepSkipShortcuts } from "../../../src/ai/v2/stepSkip";
+import { stepSkipSetters, stepSkipShortcuts } from "../../../src/ai/v2/finish/stepSkip";
 import fs from "node:fs";
 import path from "node:path";
 import { readProjectSqlite } from "../../content/read-project-sqlite.mts";
 import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
-import { walkBlueprint } from "../../../src/ai/v2/blueprint.ts";
-import { runFinishAutoBuild } from "../../../src/ai/v2/finishAutoBuild.ts";
+import { walkBlueprint } from "../../../src/ai/v2/story/blueprint.ts";
+import { runFinishAutoBuild } from "../../../src/ai/v2/finish/index.ts";
 import { shipBlockers } from "../../../src/ai/v2/judge/shipChecks.ts";
 import { deserialize } from "../../../src/project/io/serialize.ts";
 import { runGameCheck } from "../../../src/qa/gameCheck/index.ts";
-import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
+import type { PiAssistantV2Env } from "../../../src/ai/v2/shared/env.ts";
 import type { Project } from "../../../src/project/types.ts";
 import { composePiTask } from "../../../src/ai/piAgent/executionRoute.ts";
 import { priorRequestsNote } from "../../../src/ai/v2/prompt/priorRequests.ts";

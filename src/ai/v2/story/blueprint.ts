@@ -7,8 +7,9 @@
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { STEP_KINDS, gameBlueprintText, normalizeGameBlueprint, type GameBlueprint, type GameBlueprintStepKind } from "@/project/gameBlueprint";
 import { walkGame } from "./makeGame";
-import { unreachableEvents } from "./judge/eventReach";
-import { isEscapeBlueprint } from "./request/scope";
+import { unreachableEvents } from "../judge/eventReach";
+import { isEscapeBlueprint } from "../request/scope";
+import { CODE_STEP_WORDS } from "../shared/stepWords";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -204,8 +205,6 @@ const hasCommands = (page: Obj) => Array.isArray(page.commands) && page.commands
 // 왜(2026-10-28 mt3 flash 방탈출): 청사진 s2 「비밀번호 입력 — 숫자 자물쇠를 풀고 탈출」인데 경로 빌더가 그 단계를 줍기·엔딩 고리로
 // 지어, 열쇠만 들고 조사하면 번호 입력 없이 엔딩이 나왔다(판정 「퍼즐을 풀었다는 느낌이 없다」). 조건 사슬은 이어져 있어 기존 걷기가 못 봤다.
 
-/** 번호·암호를 맞히는 행동 낱말. */
-export const CODE_STEP_WORDS = /비밀\s*번호|암호|패스\s*워드|숫자\s*자물쇠|번호\s*자물쇠|다이얼|키\s*패드|번호를?\s*(맞|입력|누르|돌리)|password|passcode|pin\s*code|combination|keypad/iu;
 /** 번호를 «주는» 단계(단서)의 gives 낱말 — 이런 단계는 맞히는 단계가 아니다. */
 const CODE_GIVES = /비밀\s*번호|암호|번호|단서|쪽지|힌트|password|code|clue|hint|note/iu;
 /** 청사진 단계가 번호·암호를 맞히는 단계인가(이벤트 이름·행동에 그 낱말이 있고, gives 가 번호·단서 자체가 아니다). */
@@ -526,16 +525,6 @@ export function walkBlueprint(project: Project): BlueprintWalk {
 }
 
 // ── 설계자(다른 모델)가 청사진을 쓰는 길 — 비교 C(Argon 설계 + Flash 실행) ──────────────────────
-
-interface BlueprintDesigner { readonly provider: string; readonly model: string; readonly effort?: "low" | "medium" | "high" }
-/** OPRN_V2_BLUEPRINT_DESIGNER="provider|model|effort" — 시험 묶음에서만 켠다(제품 설정 칸이 아니다). */
-export function blueprintDesignerFromEnv(): BlueprintDesigner | undefined {
-  const raw = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.OPRN_V2_BLUEPRINT_DESIGNER;
-  if (!raw) return undefined;
-  const [provider, model, effort] = raw.split("|");
-  if (!provider || !model) return undefined;
-  return { provider, model, ...(effort === "low" || effort === "medium" || effort === "high" ? { effort } : {}) };
-}
 
 /** 설계자에게 청사진 JSON 하나를 받아 온다. 한 번 틀리면 틀린 이유를 그대로 붙여 한 번 더. */
 export async function designBlueprint(chat: (messages: readonly unknown[], signal?: AbortSignal) => Promise<string>, task: string, brief: string, signal?: AbortSignal): Promise<{ blueprint: GameBlueprint } | { error: string }> {

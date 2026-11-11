@@ -11,7 +11,7 @@ import { createBlankProject } from "../../src/project/defaults.ts";
 import { villageArgs } from "../../src/ai/v2/place/builders/village.ts";
 import { isPassable } from "../../src/project/collision.ts";
 import type { Project } from "../../src/project/types.ts";
-import type { PlaceSpec } from "../../src/ai/v2/types.ts";
+import type { PlaceSpec } from "../../src/ai/v2/shared/types.ts";
 
 const arg = (n: string, d: string) => { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] ?? d : d; };
 const OUT = arg("out", "/tmp/vh/var");

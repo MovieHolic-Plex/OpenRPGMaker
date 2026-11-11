@@ -10,8 +10,8 @@ import path from "node:path";
 import { readProjectSqlite } from "../../content/read-project-sqlite.mts";
 import { createV2Tools } from "../../../src/ai/v2/verbs.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";
-import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
-import type { PiAssistantV2Env } from "../../../src/ai/v2/env.ts";
+import { createBuildRun } from "../../../src/ai/v2/shared/buildRun.ts";
+import type { PiAssistantV2Env } from "../../../src/ai/v2/shared/env.ts";
 import type { Project } from "../../../src/project/types.ts";
 
 const argv = process.argv.slice(2);

@@ -3,7 +3,7 @@
 //   bun scripts/qa/assistant-v2/exitDoorCheck.mts <run-dir> <mapId> [outDir]
 import fs from "node:fs";
 import path from "node:path";
-import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
+import { createBuildRun } from "../../../src/ai/v2/shared/buildRun.ts";
 import { dressInteriorExits } from "../../../src/ai/v2/place/exitDress.ts";
 import type { Project } from "../../../src/project/types.ts";
 import { layerTileAt, setLayerTileAt } from "../../../src/project/mapLayers.ts";

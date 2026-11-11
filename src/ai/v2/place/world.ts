@@ -21,8 +21,8 @@ import { describesSkyIsland } from "@/ai/skyIslandPolicy";
 import { describesSnowNorth } from "@/ai/snowNorthPolicy";
 import { describesSteampunk } from "@/ai/steampunkCityPolicy";
 import { hasThemeWord, projectKeyHash } from "@/ai/villageChipsetPool";
-import type { PlaceSpec } from "./types";
-import { WASTELAND_WORDS, BEODEUL_WORDS, FANTASY_WORDS, fitsAnyWorld } from "./request/genre";
+import type { PlaceSpec } from "../shared/types";
+import { WASTELAND_WORDS, BEODEUL_WORDS, FANTASY_WORDS, fitsAnyWorld } from "../request/genre";
 
 /** 구성기 호출 하나로 짓는 종류 — 맵 크기는 구성기가 받는 크기(실내는 방 크기 그대로). */
 interface ComposedKind {

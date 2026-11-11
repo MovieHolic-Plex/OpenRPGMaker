@@ -5,7 +5,7 @@
 // 성공을 꾸미지 않는다: «카드를 띄웠다 / 기물은 아직 안 놓였다» 를 summary 와 missingArt 에 그대로 적는다.
 import { resolveWhere, type Footprint } from "./where";
 import { findMap } from "./cells";
-import type { BuildRun, ContentBuildResult, ObjectSpec } from "../types";
+import type { BuildRun, ContentBuildResult, ObjectSpec } from "../shared/types";
 
 export const DRAW_OBJECT_CARD =
   "Missing object (draw_object) spec: {what,description?,where?,at?,mapId?}. what = the object's name as one noun phrase (brass clockwork globe, wooden beehive). " +

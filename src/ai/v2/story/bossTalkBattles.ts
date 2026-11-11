@@ -17,7 +17,7 @@
 // 게임 오버 정의(`go_back_<맵 id>`, 기본 설정 사본)를 만들고, 전투를 지면 그 게임 오버로 가게 한다(canLose:true + 패배 갈래 gameOver{gameOverId}).
 // 돌아오기는 파티를 다 회복시킨다(defeatRecovery). 시작 맵의 전투·이미 패배 갈래가 있는 전투는 건드리지 않는다.
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 import { isPassable } from "@/project/collision";
 import { reachableCells } from "../judge/eventReach";
 

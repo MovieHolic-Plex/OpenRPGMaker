@@ -1,5 +1,5 @@
 // 장소 짓기 동사(make_place·edit_place·review_layout)의 인자 스키마 — 방 설계·구역·힌트·칸 배치·칸 배치 고침.
-import type { PlaceType } from "../types";
+import type { PlaceType } from "../shared/types";
 import { DUNGEON_LAYOUT_SCHEMA, VILLAGE_LAYOUT_SCHEMA, bboxPlacesOn } from "../place/builders/placeLayout";
 import { DUNGEON_DESIGN_SCHEMA } from "../place/dungeonParts";
 

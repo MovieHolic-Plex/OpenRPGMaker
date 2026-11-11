@@ -9,8 +9,8 @@ import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { reachableCells } from "../judge/eventReach";
 import { roadCellSet } from "./cells";
-import type { BuildRun } from "../types";
-import type { Side } from "../transferSpot";
+import type { BuildRun } from "../shared/types";
+import type { Side } from "../shared/types";
 
 const OPP: Record<Side, Side> = { north: "south", south: "north", east: "west", west: "east" };
 const KO: Record<Side, string> = { north: "북", south: "남", east: "동", west: "서" };
