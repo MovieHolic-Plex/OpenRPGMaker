@@ -265,6 +265,8 @@ describe("linking maps that already exist is a small job", () => {
     expect(classifyRequest(ROUND_TRIP, project("event")).scope).toBe("place");
     expect(classifyRequest("잿불 마을 옆에 새 마을을 만들고 동쪽 들판과 이어 줘", twoMaps()).scope).toBe("place");
     expect(classifyRequest("잿불 마을을 더 넓혀서 동쪽 들판까지 이어지게 만들어 줘", twoMaps()).scope).toBe("place");
+    // 두 맵 말고 다른 장소를 지으라는 말이 남으면 그대로다.
+    expect(classifyRequest("잿불 마을과 동쪽 들판 사이에 숲길 맵을 하나 만들어서 이어 줘", twoMaps()).scope).toBe("place");
     // 잇는 낱말이 없으면 맵 이름이 둘이어도 그대로다.
     expect(classifyRequest("잿불 마을이랑 동쪽 들판에 집을 더 지어 줘", twoMaps()).scope).toBe("place");
   });
