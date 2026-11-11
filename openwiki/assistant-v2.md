@@ -711,7 +711,9 @@ fun-w3 · jrpg-w1 「얼어붙은 호수」의 이야기 이벤트와 길 끝 �
 - 이제 입구 그림은 `place/entrances.ts entranceArtCells(project, map)` 하나다: 건물 키트의 입구 그림 칸 · 방 키트의 문·계단 기물(`kind door · sidedoor`, 쓰임 `travel`, `stairs`) · 표면 계약의 계단. 검사와 출하 기본값이 같이 바뀐다(기본값은 검사 결과를 읽는다).
 - 표의 새 줄 `entrance-off-art`: 맵마다 투명 출입 이벤트를 가) 적힌 입구 그림 곁, 나) 글자로만 입구인 그림 곁(적힌 입구에서 세 칸 넘게 떨어진 곳)에 심고 검사를 돌린다. `OFFART_IMPL=<옛 discoverability.ts>` 로 옛 검사를 같은 심기로 잰다.
   86장: 나) 짚음 153/153 → 0/153 · 가) 짚음 135/136 → 135/136(그대로). 줄 판정 잘못 44 · 맞음 12 → 잘못 0 · 맞음 55 · 안 함 1. 다른 줄 1458칸은 그대로.
-- 은행의 세 판(main 의 빌더로 다시 지은 `project.json` 에 옛 검사 / 새 검사): 짚음 1 · 1 · 3 → 0 · 0 · 0, 출하 차단 1 · 1 · 3 → 0 · 0 · 0. 그림: `~/claude-viz/stage-audit-pr6.html`.
+- 은행 전/후(`specBank.mts ab`, 49판): 게임 열 판의 출하 차단 — 옛 검사·main 빌더 13(`entrance-off-art` 5: fun-w3 1 · jrpg-w1 1 · jrpg-w3 3) → 새 검사·이 빌더 8(그 세 판은 0).
+  은행의 자는 늘 지금 폴더의 것이라 표의 「출하 차단」 칸은 8 → 8 로 찍힌다 — 옛 검사는 옛 `shipChecks` 사본으로 main 빌더 결과에 따로 쟀다.
+  빌더 쪽에서 바뀐 칸: 출구가 길 위 40/43 → 42/43 · 가장자리 출구가 길 폭 전체 37/43 → 40/43 · 끝맺음 관문이 짚은 문제 192 → 184 — 옛 출하 기본값이 길 끝 출구를 나무 쪽으로 옮겨 길에서 벗어나게 하던 것이 없어졌다. 그림: `~/claude-viz/stage-audit-pr6.html`.
 - 알려진 한계(짚지 않게 된 진짜 입구 — 칩셋이 적지 않은 것): 버들항 숲 던전의 「거목(밑동 굴 문)」, 조선 실내의 「in doorway · in exit door」와 성문·대문, 마법 학교·고딕 저택의 문 그림,
   한국 도시의 「스크린도어」(쓰임이 `block`)·「전동차 양문형 출입문」. 키트가 입구(구조 키트 `entrance` 부품)나 문(방 키트 `kind door` · 쓰임 `travel`)으로 적으면 이 검사가 읽는다(굽기·빌더 쪽 일).
 - `isDoorArtCell`(글자 읽기)은 그대로 남아 있다 — 쓰는 곳: `create_transfer_pair` 의 문 칸 맞추기(`editor/tools/eventTools.ts`), `handInteriorTools` · `dungeonLinkTools`, 런타임 문 소리(`player/playSceneDoorway.ts`), 장면 검사(`scenePolishLint`), `place/placementRules.ts` 의 맨땅 던전 입구 판정. 같은 뿌리지만 이 PR 은 출하 검사만 바꿨다.
@@ -829,6 +831,47 @@ fun-w3 · jrpg-w1 「얼어붙은 호수」의 이야기 이벤트와 길 끝 �
 **근거.** 고정 씨앗 8개 마을의 문 71개: 그냥 부를 때 맨바닥 12 → 0, `doorAt` 을 줄 때 3 → 0(닿지 않는 문 1개는 목록에서 빠짐). 씨앗 없는 마을 40번: 5 → 0.
 시험은 씨앗을 고정했고(`salt`), 그때 다섯 문이 맨바닥에 섰던 씨앗 둘(99012 · 11630)의 모든 문을 잰다.
 
+## 깔기 요청의 거절은 다음 호출 하나를 실제 값으로 이른다 — 빈 껍데기 고침 · 빈 `mapId` · 강제는 값이 찬 호출만 (2026-11-11, map-vqa 깔기 24판)
+
+「이 장소를 깔아 줘」 한 줄 요청 24가지(Terra high, `lay-main-0636b72004`)에서 장소는 23곳 깔렸는데 «완료» 는 8곳이었다. 턴 기록의 거절 68번(장소 호출 55번)과
+«pending action» 막힘 17번을 읽으면 원인은 모델이 아니라 도구 계약 넷이다.
+
+| 원인 | 기록의 첫 사례 | 고친 곳 |
+|---|---|---|
+| 엄격 스키마가 채운 빈 `layoutPatch`(`replace:{map:{w:0,h:0}, landmark:{id:""}, walls:[], …}`)를 진짜 고침으로 읽었다 — `edit_place` 거절 26번 | village #5 `edit_place({patch:{mapId:"map_blank_start", addAnchors:[{what:"우물"…}], layoutPatch:{…빈 껍데기}}})` → «layoutPatch edits a place that was laid from a cell layout…» | `place/interiorLayout.ts` `replaceEntries`(껍데기는 안 보낸 것) · `tools/support.ts` `dropPatchFill`(빈 글·0·지금과 같은 값) |
+| 빈 `mapId:""` 를 값으로 썼다 — 거절된 배치(`pendingLayouts`)를 못 찾고, 다음 호출 줄에 `mapId:""` 가 실렸다 | weapon-shop #2 → `[Next call] create_transfer_pair({"a":{"mapId":"",…` | `tools/verbs/place.ts`(`patch.mapId \|\| …`, make_place 의 없는 맵 id 는 안 준 것) · `loop/nextCall.ts` `mapOf` |
+| 거절 글에서 동사 이름만 짚은 제안을 다음 차례에 강제했다 — 모델이 고쳐 보낸 맞는 호출이 실행되지 않았다(17번, 그중 `make_place` 7번) | village #6 `find_empty_ground` → «Not executed: call the `create_transfer_pair` tool to resolve the pending action» | `loop/nextCall.ts` `NextCall.exact` · `loop/todoTools.ts` `prefer`(값이 다 찬 호출만 강제) |
+| 거절 글이 길을 막았다: 칸 배치 거절은 «3 problems» 중 첫 줄에서 잘리고 `Next: change the spec (another type or style)` 가 붙었다 · 받지 않는 고침은 «빌더는 소품 하나하나를 받지 않는다» 뿐 · `draw_object` 는 요청에 없는 `stamp_object` 를 일렀다 | weapon-shop #1 · market-town #4 · ruins #8 | `place/interiorLayout.ts` `rejectionText`(다시 보낼 것이 맨 앞) · `loop/failureText.ts`(머리글 상한 900자) · `tools/placeMemory.ts` `notRelaidRefusal` · `place/drawObject.ts`(`place_object` 를 실제 id·칸으로) |
+
+규칙:
+
+- **거절하는 도구는 가장 가까운 맞는 일을 스스로 하거나, 값이 찬 다음 호출 하나를 이른다.** `mapId:""` · 같은 관문이 다시 막을 호출 · 이 요청에 실리지 않은 도구를 이르지 않는다.
+  거절 글이 `Next call: 동사({…})` 를 이미 적었으면 고리(`nextAfterFailure`)는 뼈대를 덧붙이지 않는다.
+- **빈 값은 «안 보냈다» 다.** `edit_place` 패치의 빈 글·빈 배열·0·모든 잎이 기본값인 객체·지금 명세와 같은 값은 걷어 낸다(`false` 는 켜 둔 것을 끌 때만 고침이다).
+  걷어 낸 뒤 남는 것이 없으면 «바뀌는 것이 없다» 와 `inspect` 를, 물건 하나(`addAnchors`)가 남으면 그 물건을 놓는 `draw_object` 호출을 맵 id·칸과 함께 이른다.
+- **아직 서지 않은 장소에 온 `edit_place` 는 `make_place` 로 보낸다:** 거절된 배치에 `layoutPatch` 를 입혀서, 또는 `set.layout`·`replace` 로 온 배치 전체로. 빈 시작 맵이면 그 맵 위에 짓는다.
+  같은 이름의 방을 `mapId:""` 로 다시 보내면 그 맵에서 다시 짓는다(맵이 늘지 않는다 — 재생에서 «무기 가게» 가 다섯 장이 됐었다).
+- **강제(`preferToolNextTurn`)는 인자가 다 찬 호출에만.** 자리표시(`<…>`)가 남은 제안은 결과 글의 알림으로만 간다.
+
+모델 없는 재생(`scripts/qa/assistant-v2/layReplay.mts` — 기록의 호출을 같은 순서로 지금 도구 층에 넣는다)으로 잰 전/후는 아래 「재생 수치」 표,
+이른 호출을 실제로 불러 보는 탐침은 `scripts/qa/assistant-v2/refusalNextCalls.mts`(여섯 흐름 — 이 묶음만 있는 가지에서는 `--only 1,2,3,6`). 시험 `test/aiV2LayRefusals.test.ts` · `test/aiV2BackDoor.test.ts`.
+
+재생 수치(같은 기록 24요청 · 같은 재생기 · 무작위 씨앗 고정). «네 묶음» = 이 절과 같은 날의 세 절(공간 검사 · 빈 시작 맵 · 세계 종류)까지 모두 넣은 가지.
+
+| | 그 판의 기록 | 재생: main `d643c9b7b6` | 재생: 네 묶음 |
+|---|---|---|---|
+| 장소 호출 거절(`make_place`·`edit_place`·`review_layout`·`author_forest_route`·`create_map`) | 55 | 51 | **18** |
+| 모든 거절(`todo` 제외) | 68 | 73 | **34** |
+| «pending action» 에 막힌 호출 | 17 | 18 | **0** |
+| 처음 세 번의 장소 호출 안에 깔리고 시작이 그 장소의 걷는 칸 | — | 20/24 | **23/24** |
+| 끝에 깔리고 시작이 그 장소의 걷는 칸 | — | 21/24 | **24/24** |
+| 빈 시작 맵이 남은 요청 | — | 6 | **0** |
+
+세 번 안에 못 깔린 하나는 prison(첫 배치의 기물이 벽 칸에 걸친 진짜 오류 — 넷째 호출에 깔린다). 남은 장소 호출 거절 18: 진짜 배치 오류 5 · 고치기 상한 3 ·
+받지 않는 고침(이제 다음 호출을 이른다) 3 · 한 번에 깐 장소·집이 선 마을을 다시 지으려던 호출 4 · 재생의 한계 3(village-to-field — 풀 칩셋이 기록과 달라 뒤 호출이 맞지 않는다).
+재생은 기록의 호출을 그대로 넣는 것이라, 고친 뒤 모델이 실제로 덜 부르게 될 호출까지 센다 — 실제 «완료» 율은 Terra 재측정으로 잰다.
+
+
 ## 뒷문은 `create_transfer_pair` 한 번 — 막다른 거절이 그 길을 이른다 (2026-11-11, 작은 일 두 번째 재측정)
 
 두 번째 재측정(Terra, main d4a4ae29f4)은 **29/30 · «완료» 29**(앞 28/30 · 25)였고 남은 하나가 `door-backdoor-built`(「족장의 긴 집에 뒷문을 하나 만들어 줘. 그 문으로 나가면 겨울 시장으로 가게」)다.
@@ -921,6 +964,25 @@ golden: 117/153 이 `create_transfer_pair` · `place_door` 글만 바뀜. 시험
 없는 물건은 실패. `resolveWhere("벽난로 앞", at (0,0))` = 낱말만 준 것과 같은 칸 (8,4). `buildEvent`: 내레이션 한 줄·밟으면 내레이션은 무대 없음, 사람이 말하거나 걷는 장면은 무대 있음.
 golden: 153 가운데 117 이 `place_examine_hotspots` 글/스키마(81 은 그것만, 33 은 조사 카드 글 +23자), 표지판 요청 3줄은 처음 싣는 도구에 `place_examine_hotspots` 가 들고 `fill_region` 이 필요할 때로 물러남.
 시험 `test/aiV2ExamineSpots.test.ts`.
+
+## 풀 칩셋 마을 뒤의 장소는 그 세계의 종류로 짓는다 · 빈 땅 채우기는 터 넓이만큼 (2026-11-11, map-vqa 깔기 24판)
+
+낱말 없는 «마을» 은 칩셋 풀(`villageChipsetPool` — 해적 군도·사막·설원…)로 깔린다. 그 뒤의 둘째 장소가 깔기 24판에서 서지 못했다.
+
+- village-chief-house: 풀 마을 뒤 «촌장 집» `make_place({type:"interior", layout:…})` → 손 도트 실내 v5 는 다른 칩셋 계열이라 도구 실행기가 거절(«사용자 승인 없이 타일 그림체를 바꾸지 않는다») — 촌장 집은 끝내 없었다.
+- village-to-field: «동쪽 들판» `author_forest_route`(버들항) → 같은 거절 → 다음 호출 줄이 `create_map({})` → 48×36 단색 맵에 `furnish_outdoor_area` 가 왼쪽 위 26×20 에만 12무더기(«맨땅 100%→81%»).
+
+규칙:
+
+- **청사진이 없어도, 프로젝트의 맵이 구성기 세계의 칩셋이면 `make_place` 는 그 세계의 종류로 짓는다**(`tools/verbs/place.ts` — `pickWorld`·`worldPlaceSpec`). 종류는 이름·테마가 짚은 것,
+  실내면 가장 작은 방(오두막·선실), 바깥이면 덜 쓴 종류. 결과에 무엇으로 지었는지와 다른 종류의 `style:"world:<세계>:<종류>"` 를 적는다. 모델이 보낸 손 도트 칸 배치는 쓰지 않는다고 알린다
+  (그 세계의 종류로 이미 선 장소에 배치가 또 오면 선 맵을 돌려준다 — 다른 칩셋으로 다시 짓지 않는다).
+- **칩셋 계열 거절 뒤의 다음 호출은 `make_place`** 다(`loop/nextCall.ts`). 빈 맵을 만들어 손으로 칠하게 하지 않는다.
+- **`furnish_outdoor_area` 의 채우기 구획 수는 터 넓이를 따른다**(`src/editor/tools/kitAreaTools.ts` — 구획 5×4 + 둘레 ≈ 42칸마다 하나, 최소 12). 48×36 빈 들판: 12구획(왼쪽 위) → 42구획(맵 전체, 맨땅 100%→28%). `amount:"few"` 는 그대로 세 무더기.
+
+남은 것(그림): 해적 군도·사막 세계에는 «들판» 종류가 없어 «동쪽 들판» 은 해변·항구 종류로 선다. 전국·SF 정거장·폐허 세계에는 실내 종류가 없다.
+
+재생(`layReplay.mts`): village-chief-house 는 «촌장 집»(오두막 14×12)이 서고, 탐침 `refusalNextCalls.mts` ④ 가 계열 거절 → `make_place` → 같은 칩셋의 장소를 확인한다. 시험 `test/aiV2WorldRoutedPlace.test.ts`.
 
 ## 버들항 맵의 빈 땅도 읽고 채운다 — 칸 역할을 안 적는 시트 · `amount:"few"` (2026-11-11, 작은 일 재측정)
 
@@ -1136,6 +1198,28 @@ turnTrace(5개 장면 · 376줄)는 79줄이 바뀐다: 모델에게 가는 줄(
 마을·동굴·실내 세 곳의 기억은 2,889자이고 저장본 왕복 뒤에도 지문이 같다(되살림 3 · 버림 0). 벽 한 칸을 손으로 바꾸면 그 장소만 버린다.
 시험 `test/aiV2PlaceMemory.test.ts`. Terra 로 잰 값은 아직 없다.
 
+## 실내 공간 검사는 짓기를 막지 않는다 — 성긴 방 문턱은 손으로 지은 방 실측에서 (2026-11-11, map-vqa 깔기 24판)
+
+깔기 24판의 실내 요청 10가지에서 `make_place` 의 첫 거절은 모두 공간 검사였다(예: weapon-shop #1 «room "storage" is under-furnished: 3 standing pieces on 45 floor cells
+(0.07 per cell; furnished rooms here have at least 0.18)»). 문턱 0.18 은 근거가 없었다.
+
+| 방 바닥 칸 | 손으로 지은 방(견본 87개, 복도 제외) 가운데값 · 아래 4분위 | 0.18 에 못 미치는 견본 | 새 문턱 |
+|---|---|---|---|
+| 30~59 | 0.19 · 0.13 | 48% | 0.12 |
+| 60~99 | 0.13 · 0.07 | 68% | 0.08 |
+| 100 이상 | 0.10 · 0.06 | 86% | 0.06 |
+
+모델이 보낸 방은 0.05~0.18(가운데값 0.11~0.12) — 작가가 지은 방의 절반 이상이 같은 규칙에 걸린다.
+
+규칙:
+
+- **공간 검사(성긴 방 · 빈 바닥 덩이 · 큰 홀의 빈 가운데)는 알림이다.** 배치는 깔고, 결과에 `open (the room is laid; fix it in a review_layout round) — …` 로 남긴다. 모델은 자기 검토(`review_layout`) 바퀴에서 채운다.
+  짓기를 막는 것은 깔 수 없는 것뿐이다(없는 기물 id · 겹침 · 벽 속 칸 · 닿지 않는 방).
+- **문턱은 방 크기를 따른다**(`place/interiorSpace.ts` `minDensityFor`: 0.12 / 0.08 / 0.06). 큰 방일수록 성기게 지어도 방으로 읽힌다.
+- **깔개·난간·단상도 요청한 물건이다.** `required` 가 짚은 id 가 `carpets`·`rails`·`daises` 에 있으면 놓인 것으로 센다(throne-room: 깔개를 깔고도 «붉은 융단이 없다» 로 거절됐다).
+
+재생(`scripts/qa/assistant-v2/layReplay.mts`, 같은 날 네 묶음을 모두 넣은 가지): 실내 10요청의 장소 호출 거절 28 → 5(그 판의 기록 32), 처음 세 번의 장소 호출 안에 깔린 요청 7 → 9. 시험 `test/aiV2InteriorSpaceAdvisory.test.ts`.
+
 ## 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
 
 감사(`~/claude-viz/map-sameness-1029.html`, 묶음 vm1~vm8): 여관 1층 23개 중 13개가 같은 16×14 선술집 홀(「여관」 낱말 → 장소 견본 tavern, 뒤집기·손님 자리 네 판),
@@ -1282,6 +1366,23 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - **결정 카드와 글 답**(`src/harnesses/assistant-capability/node/wholeGameSession.mjs`): 맵 소실 확인 같은 결정 카드는 글로 답할 수 없다. 카드가 열린 채 `.txt` 가 오면
   하네스가 먼저 「그만두기」(내용을 지우지 않는 쪽)를 누르고 보낸다. 그전에는 실행이 카드 단추를 기다리며 체크포인트 적용을 30분 잡고(`piCheckpointBroker`),
   보낸 글은 그 뒤에 갇혀 다음 턴이 0블록으로 45분 멈췄다(vm1 argon escape 003→004·jrpg 003→004 — 「모델 무응답」으로 보였던 턴의 실제 원인).
+
+## 빈 시작 맵은 첫 장소를 지으면 사라진다 — 시작 칸은 들어오는 길 위 (2026-11-11, map-vqa 깔기 24판)
+
+깔기 24판에서 야영지·알현실·숲→동굴 요청은 장소를 깐 뒤에도 빈 시드 맵(`map_blank_start`)이 게임에 남았다. `author_forest_route({fromMapId:"map_blank_start", linkFrom:true})` 는
+숲을 빈 맵에 이어 시작이 빈 풀밭에 섰고, 동굴의 바깥 문도 빈 맵으로 났다. 마을 요청은 빈 맵 위에 지어져 시작 칸이 옛 (10,8) 에서 «가장 가까운 트인 칸» (10,5) — 집 지붕 뒤 — 로 옮겨졌다.
+
+규칙:
+
+- **쓰기 하나가 끝날 때마다 빈 시드 맵을 본다**(`blankStart.ts` `retireSeedStart`, `tools/verbs.ts` 가 v2 동사와 게임 도구 뒤에 부른다). 빈 맵이 아직 빈 채이고 실제 장소가 따로 생겼으면
+  시작을 그 장소(시작 맵이 실제 장소면 그대로, 아니면 빈 맵이 이어진 맵, 그것도 없으면 첫 장소)의 걸어 닿는 칸으로 옮기고, 빈 맵으로 가는 이동 이벤트와 빈 맵을 지운다. 결과에 `[Start map] …` 한 줄이 붙는다.
+  게임 청사진의 끝맺음 단계(`retireBlankStart`)는 그대로다 — 이것은 청사진 없는 한 줄 요청에도 닿는 같은 일이다.
+- **치워진 맵 id 로 온 뒤따른 호출은 시작 맵으로 고쳐 받는다**(`loop/argGuard.ts` — `mapId`·`fromMapId`·`toMapId`, 결과에 그렇게 알린다). 모델은 앞 결과에서 본 id 를 계속 쓴다.
+- **첫 바깥 장소의 시작 칸은 그 장소로 들어오는 길 입구에서 두세 칸 안쪽이다**(`place/startSpot.ts` `roadEntranceStart` — 길 입구는 `place/roadMouths.ts`): 남·서·동·북 순서, 걸어 닿는 가장 큰 덩이 안,
+  이벤트가 없고 지붕·나무 그림 밑(`underRoof.ts` `coveredCell`)이 아닌 길 칸. 가장자리에 닿는 길이 없는 맵은 빌더가 정한 칸을 그대로 쓴다.
+- 시작 방향(«안쪽을 본다»)은 넣지 못했다 — `project.startPos` 는 `{x, y}` 뿐이고 방향 칸이 없다(스키마·플레이어 쪽 일).
+
+재생(`scripts/qa/assistant-v2/layReplay.mts`, 같은 날 네 묶음을 모두 넣은 가지): 빈 맵이 남은 요청 6 → 0(camp · field-route · throne-room · village-chief-house · village-to-field · weapon-shop), 끝에 시작이 깔린 장소의 걷는 칸(그 맵 걷는 칸의 절반 넘게 닿는다)인 요청 21 → 24/24. 마을 요청의 시작 칸 (10,5)(지붕 뒤) → (21,39)(남쪽 길). 시험 `test/aiV2SeedStart.test.ts`.
 
 ## 이벤트 자리·시작 칸 (2026-10-29 야외 자동 플레이)
 
@@ -1870,7 +1971,9 @@ bun scripts/qa/assistant-v2/specBank.mts ab --out /tmp/bank            # 기준(
 # 나눠서: run --at origin/main --out A · run --out B · --diff A B   (몇 판만: --only fun-x1,lay-main-village)
 ```
 
-은행 전체(게임 하나 10판 + 장소 하나 39판) 한 번이 **21분 35초**(1,295초 — 재생 1,136초 + 재기; 2026-11-11, 32코어, 전·후 두 번을 같이 돌려 한 번에 6개씩, 다른 작업자들이 같은 기계를 쓰던 때라 부하 평균 50~110). `ab` 한 줄이 바로 그 꼴(두 번을 같이)이라 한 줄의 시간도 이쯤이다. 가장 긴 판은 `jrpg-x1` 922초이고 은행 시간은 그 판이 정한다. 그 부하에서 게임 판 하나는 4~16분, 장소 판 하나는 15~60초였다(장소 둘만 `ab` 로 돌리면 91초). 판마다 따로 띄운다 — `run` 은 기본 코어 셋에 하나, `ab` 는 두 번을 같이 띄우므로 한 번에 코어 여섯에 하나(`--jobs` 로 바꾼다 · 재생 하나에 3~4GB). `ab` 의 진행 줄은 `<결과>/a.log`·`b.log` 에 쌓인다.
+**한 번에 4개까지(hard rule, 2026-11-11).** `--jobs` 기본은 4 다(`run` 은 4개, `ab` 는 전·후를 합쳐 4개 — 한 번에 2개씩). 재생 하나가 코어 하나와 3~4GB 를 쓰고, 같은 기계에서 모델 판(Terra 측정 묶음·작업자의 로컬 Terra 요청)이 돌 때 은행을 넓게 띄우면 그 판의 턴이 시간 제한에 걸린다 — 이 은행을 처음 만든 날 한 번에 12~14개로 돌려 부하 평균 50~110 을 만들었고, 그 사이 로컬 Terra 판 하나(`r1-fun`)가 멈췄다(멈춤 자체는 편집기↔워커의 끝없는 기다림이라는 제품 결함이었고 #4627 이 고쳤지만, 부하가 그 결함을 더 잘 밟게 한다). **모델 판이 도는 동안에는 4개보다 넓게 돌리지 않고, 로컬 Terra 판이 도는 중이면 리드에게 묻는다.** 기계가 비었을 때만 `--jobs` 로 올린다.
+
+잰 시간(32코어, 2026-11-11 — 모두 다른 작업자들이 기계를 쓰던 때): 은행 전체(게임 하나 10판 + 장소 하나 39판)를 전·후 같이, 한 번에 6~7개씩(합쳐 12~14개) 돌려 **18분 31초 ~ 21분 35초**(1,111초 · 1,295초 — 재생 920~1,136초 + 재기). 가장 긴 판은 `jrpg-x1` 870~920초, 게임 판 하나 4~16분, 장소 판 하나 15~60초, 장소 둘만 `ab` 로 91초. **기본 4개로는 아직 재지 않았다** — 재생 시간의 합이 한 번에 약 5,700초이니 `run` 한 번이 30분 안팎, `ab` 한 줄이 한 시간 안팎일 것이다(추정). 급하면 `--only` 로 고친 것이 닿는 판만 돈다(사막 세계면 `fun-x1,jrpg-w3,jrpg-v2`). `ab` 의 진행 줄은 `<결과>/a.log`·`b.log` 에, 대조는 `<결과>/diff.json` 에도 남는다.
 `--at <커밋>` 은 그 커밋의 작업 폴더를 `/tmp/spec-bank-<커밋>-<pid>` 에 만들어(패키지는 이 폴더의 것을 잇는다) 그 빌더로 재생하고 끝나면 지운다 — 작업 폴더를 건드리지 않는다.
 재는 자(탐침)는 늘 지금 폴더의 것이라 옛 빌더로 지은 게임도 같은 자로 잰다. 결과 폴더: `<게임>/project.json · replay.json · metrics.json · maps/*.png`, `bank.txt`(게임마다 표 하나 + 은행 합계), `bank.json`. 결과 폴더는 은행 한 번에 약 4.3GB 다(판마다 `project.json` 92MB — 칩셋이 든 프로젝트 전체) — `ab` 한 번이 8.6GB 이니 `/tmp` 에 두고 보고 나면 지운다.
 
@@ -1918,11 +2021,11 @@ bun scripts/qa/assistant-v2/specBank.mts ab --out /tmp/bank            # 기준(
 | 틀린 선행 조건의 잠김 글 · 목표 글 ≠ 대상 · 곁 퀘스트 목표 · 이긴 뒤 남는 적 · 필드≠전투 그림 · 주제 밖 배경 · 재료 상자 · 길 몫 · 들를 곳 하나당 걷는 칸 | `storyCoherenceProbe.mts facts`·`pacing` |
 | 화살표 첫 걸음·벽·가로지름·걸어서 못 닿음 | `objectiveArrowProbe.mts after` |
 | HUD 의 안 쓰는 게이지 · 필드에 뜨는 것 | `project/fieldHud.ts` |
-| (자리) 역할 있는 건물·사람·길 몫 | 빌더 쪽 `purposeProbe.mts` 가 들어오면 읽는다 — 지금은 없으면 건너뛴다 |
+| 바깥 맵의 건물 · 들어가지는 건물 · 역할 있는 건물(들어감·문 앞 사람) · 채움 건물 · 바깥 맵의 사람 · 길 몫(길 칸/걷는 칸) · 바깥 맵 넓이 | 빌더 쪽 `purposeProbe.mts --json`(PR #4617 이 들인다 — 그 파일이 없는 작업 폴더에서는 이 일곱 칸을 건너뛴다). 맵마다의 줄은 `metrics.json` 의 `lines.purpose` |
 
 모든 맵의 1배 그림은 `<결과>/<게임>/maps/` 에 남는다(그 커밋의 칩셋 그림으로 찍는다) — 적대적 검수자에게 그 폴더를 준다. **표의 수는 그림을 보지 않은 것이다(화면 미검증).**
 
-**대조(`--diff A B`).** 칸마다 은행 합계의 전/후와 좋아짐/나빠짐, 그 칸이 나빠진 게임을 `게임(전→후)` 로 적는다. 비율 칸은 분자/분모로 견준다.
+**대조(`--diff A B [--json 파일]`).** 칸마다 은행 합계의 전/후와 좋아짐/나빠짐, 그 칸이 나빠진 게임을 `게임(전→후)` 로 적는다. 비율 칸은 **수와 비율을 같이** 적고(`108/263(41.1%)`) 비율로 견주되, **분모만 줄거나 늘어서 비율이 움직인 줄은 나빠짐·좋아짐이 아니다** — 나빠짐 = 비율이 나빠졌고 나쁜 쪽의 수(작을수록 좋은 칸은 분자, 클수록 좋은 칸은 분모−분자)가 늘었다 · 좋아짐 = 비율이 좋아졌고 나쁜 쪽의 수가 줄었거나 좋은 쪽의 수가 늘었다 · 0.1%p 안의 움직임은 같은 것. 그런 줄은 `(분모만 바뀜)` 으로 찍는다(#4617 대조에서 건물이 346 → 232 로 줄자 «눌러도 반응 없는 입구 110/379 → 108/263» 이 수는 줄었는데 나빠짐으로 찍혔었다). 한쪽에 분모가 없으면 수로만 견준다. `출하 차단` 줄은 `metrics.json` 의 `lines.shipBlockers` 에 검사 글과 근거(맵·이벤트·칸)까지 남는다. 판정 규칙의 CI: `test/aiV2SpecBankDiff.test.ts`.
 
 **신뢰 수치 — 그때 그 커밋으로 재생하면 저장본이 되살아나는가.** 판마다 «그 판을 지은 커밋»으로 재생해 저장본과 견줬다(맵은 이름으로 짝지어 층 타일 지문, 이벤트는 갈래·이름·칸과 id 를 가린 내용 지문).
 
@@ -1999,6 +2102,14 @@ bun scripts/qa/assistant-v2/specBank.mts ab --out /tmp/bank            # 기준(
 - 은행의 게임 열 판은 요청 두 가지(「재밌는 게임」·「판타지 RPG」)뿐이다 — 장르 폭은 측정 묶음 `r1-*` 을 뽑아 넣어야 넓어진다.
 
 **그대로 못 되살린 것의 수**(`c2d6d02aff` 재생, 호출 2,871개): 재생하지 못한 호출 8(`fun-w3` 4 · `jrpg-v2` 4 — 대본이 남았는데 턴이 끝났다) · 지금 재생본에서 못 찾은 id 를 쓴 호출 826(빌더가 달라져 그 이벤트가 없거나, 판정자가 덧붙였던 할 일 항목) · 모델·그림이 있어야 하는 호출 32(`generate_art` 21 · `draw_object` 9 · `recommend_bgm` 2) · 판정자가 다시 연 자리에서 대본을 이어 붙인 것 38 · 이름이 바뀐 도구 6 · 다시 보낸 청사진 4판(`fun-v2`·`fun-w1`·`jrpg-v2`·`jrpg-w1`). 판마다의 수는 결과 폴더 `bank.txt` 의 「그대로 못 되살린 호출」 절과 `<판>/replay.json` 의 `calls` 에 있다.
+
+**PR 하나의 전/후 쪽 · 남은 사례 쪽**(Python + Pillow, 자체 완결 HTML — 그림은 data URI):
+
+- `python3 scripts/qa/assistant-v2/specBank/prPage.py <ab 결과 폴더> <out.html> <제목> "판:맵,판:맵"  [메모.html]` — 바뀐 판과 그 판의 칸(목적 탐침의 맵마다 줄 포함) · 1배 맵 짝 · 은행 전체 대조. 맵 짝은 **직접 본 것만** 넣는다.
+- `python3 scripts/qa/assistant-v2/specBank/cases.py <결과 폴더> <out.html> <라벨> [판,판…]` — 그 빌더로 지은 은행에서 `entrance-off-art` 출하 차단과 길 밖·폭 부족 출구를 판 · 맵 · 칸 · 검사 글 · 1배 자른 그림(빨강 = 이벤트·출구 칸, 하늘색 = 검사가 말한 입구 그림 칸)으로 낸다. 길이 아예 없는 맵의 출구는 따로 표시한다. 단계 주인에게 넘길 목록이다.
+
+**첫 사용 — PR #4617 «맵은 목적으로 깐다»(사막 번들), 2026-11-11.** 전 = main `2c58c6f593`, 후 = 그 main 에 PR 머리 `2d752ca286` 을 합친 나무. 49판 가운데 **사막 세계 세 판만** 바뀌었다(나머지 46판은 모든 칸이 같다 — 다른 세계를 건드리지 않았다는 증거). `fun-x1`: 바깥 건물 58 → 14 · 들어가지는 건물 1/58 → 4/14 · 역할 있는 건물 1/58 → 6/14 · 길 몫 6.9% → 8.2% · 바깥 넓이 8,252 → 4,662칸. `jrpg-w3`: 55 → 16 · 2/55 → 5/16 · 2/55 → 8/16 · 7.1% → 9.0% · 8,252 → 4,962칸. 출구는 그대로 40/43.
+대조가 짚은 것 가운데 빌더 몫은 하나였다 — 두 판의 「잠든 태양의 피라미드」 아래 성문 밑 출구 4칸이 `entrance-off-art`(출구는 맵 마지막 줄, 검사가 본 문 그림은 바로 위 줄). 나머지 나빠짐(`quests-min` · 관문 항목)은 **명세가 낡아서** 생긴 것이었다: 그때 모델이 큰 맵의 좌표로 보낸 호출(`create_quest` (45,26) · `author_opening_stage` (19,35) · `set_start_position` (19,34))이 작아진 맵 밖이라 거절됐다. **맵 크기를 바꾸는 빌더 변경에서는 은행의 «나빠짐» 가운데 좌표를 품은 호출의 실패를 먼저 가른다**(`replay.json` 의 `calls.okToFail` — 전에는 성공, 후에는 실패한 호출) — 그 부분은 실제 모델 판이 답한다.
 
 **보고 쪽.** `bun scripts/qa/assistant-v2/specBank/page.mts --out <html> --before <결과A> --after <결과B> [--trust <지은 커밋 재생 결과>…] [--pairs "판:맵 이름,…"]` 가 은행에 든 것 · 신뢰 수치 · 전/후 표 · 나빠진 판 · 1배 맵 짝을 한 장(자체 완결 HTML)으로 만든다.
 

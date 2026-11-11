@@ -16,7 +16,7 @@ import { HookStats } from "./hookStats";
 import { isRegistryTool, preCheck, retryCandidates } from "./argGuard";
 import { correctionFor, englishFailureLine, englishVerbFailureHead, formatV2Failure, formatV2VerbFailure } from "./failureText";
 import { covers, requestSkeleton, type SkeletonElement } from "./requestSkeleton";
-import { formatCall, MISSING_HIGH_VERB, VERB_SCOPE, nextAfterFailure, nextForItem, scopeRedirect, skeletonFor, strategyAfterRepeat, type NextCall } from "./nextCall";
+import { formatCall, isFilledCall, MISSING_HIGH_VERB, VERB_SCOPE, nextAfterFailure, nextForItem, scopeRedirect, skeletonFor, strategyAfterRepeat, type NextCall } from "./nextCall";
 import { isWriteRequest } from "../request/readers";
 
 const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
@@ -376,7 +376,8 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
   };
   const prefer = (nc: NextCall, line: string) => {
     remember(nc);
-    if (!env.preferToolNextTurn) return;
+    // 인자가 다 찬 호출만 강제한다(NextCall.exact) — 나머지는 결과 글의 알림으로 충분하다.
+    if (!env.preferToolNextTurn || !nc.exact) return;
     env.preferToolNextTurn(nc.verb, line);
     pendingPrefer = nc.verb;
     hooks.fire("prefer", `다음 차례 ${nc.verb} 우선`, { verb: nc.verb });
@@ -447,7 +448,7 @@ export function withTodoLoop(env: PiAssistantV2Env, store: TodoStore, loop: Todo
           if (redirect) {
             store.meta.set(bindTo.id, { ...meta, scoped: true, nextCall: { verb: redirect.verb, text: formatCall(redirect) } });
             hooks.fire("scope", `${bindTo.id} ${kind}: ${tool.name} → ${redirect.verb}`, { item: bindTo.id, kind, tool: tool.name, to: redirect.verb });
-            prefer(redirect, `${bindTo.id} is built with ${redirect.verb}`);
+            prefer(isFilledCall(redirect) ? { ...redirect, exact: true } : redirect, `${bindTo.id} is built with ${redirect.verb}`);
             const summary = `[Verb scope — not run (not a failure)] ${bindTo.id} «${bindTo.content.slice(0, 60)}» (${checkLabel(bindTo.check, true)}) is built with one high-level verb call, not piece by piece with the low-level tool ${tool.name} — Next call: ${formatCall(redirect)}. If you really need ${tool.name}, repeat the same call and it will run.`;
             if (isRegistryTool(tool.name)) env.record({ toolCallId: id, name: tool.name, args: params, result: { ok: true, summary: summary.slice(0, 400), notFailure: true } as never }); // 실패 아님 — tool_end 를 FAIL 로 남기지 않는다
             return text({ ok: false, notFailure: true, summary });

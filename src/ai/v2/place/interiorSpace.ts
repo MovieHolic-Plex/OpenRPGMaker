@@ -1,5 +1,6 @@
 // 실내 칸 배치(벽 우선 형식)의 공간 검사 — 방마다 빈 바닥·큰 빈 사각형·복도 폭·큰 방 채움·깔개 상한·방 크기 위계.
 // 함수는 재고 이름만 붙인다: 가구를 옮기거나 더하지 않는다. 고칠 말(영어)에는 실패한 수와 두 길(줄이기 · 채우기)과 가능하면 Fixed call 을 준다.
+// 이 검사는 짓기를 막지 않는다(2026-11-11): 배치는 그대로 깔고, 문제는 결과의 warnings 에 «open» 으로 실어 자기 검토(review_layout) 바퀴에서 고친다 — interiorWalls.ts.
 //
 // 왜(2026-10-31): 5회차 측정에서 terra-high 실내는 기물 12~24개(opus 49~85)로 판정자가 «빈 바닥»을 들었다. bbox 실험 두 줄기가 이미
 // 고치는 검사를 찾았다 — agent/bbox-walls (scripts/experiments/bbox-walls-3..5/lay.mts: 문과 문을 잇는 통로 3칸 폭은 빈 칸에서 뺀다,
@@ -35,8 +36,13 @@ interface SpaceInput {
 export interface SpaceRoomStat { floor: number; empty: number; emptyPct: number; rect: [number, number, number, number] | null; rugs: number; fillPct: number; farPct: number; pieces: number }
 interface SpaceResult { readonly problems: string[]; readonly notes: string[]; readonly rooms: Record<string, SpaceRoomStat>; readonly emptyPct: number; readonly roomCV: number }
 
-/** 문턱 — 기준 방 실측 바로 위(위 주석). */
-export const SPACE = { minDensity: 0.18, densityMinFloor: 30, roomEmptyPct: 25, roomEmptyMinFloor: 30, rectMinSide: 3, rectArea: 12, corridorEmptyPct: 30, bigHall: 80, hallFillPct: 20, hallFarPct: 10, rugBigRoom: 150 } as const;
+/**
+ * 문턱 — 기준 방 실측 바로 위(위 주석). 기물 밀도는 방 크기마다 다르다: 손으로 지은 기준 방(interior*RoomTemplates.json, v5 기물만·복도 빼고 87방)의
+ * 서는 기물/바닥 칸 아래 사분위가 30~59칸 0.13 · 60~99칸 0.07 · 100칸 이상 0.06 이다. 전에는 크기와 상관없이 0.18 이라 기준 방의 59%(100칸 이상은 86%)가
+ * 걸렸고, terra 가 보낸 방(0.05~0.18, 가운데 0.11)은 12번 중 10번 첫 짓기에서 거절됐다(2026-11-11 map-vqa 깔기, openwiki/assistant-v2.md).
+ */
+const minDensityFor = (floor: number): number => floor >= 100 ? 0.06 : floor >= 60 ? 0.08 : 0.12;
+export const SPACE = { densityMinFloor: 30, roomEmptyPct: 25, roomEmptyMinFloor: 30, rectMinSide: 3, rectArea: 12, corridorEmptyPct: 30, bigHall: 80, hallFillPct: 20, hallFarPct: 10, rugBigRoom: 150 } as const;
 
 const N4: readonly (readonly [number, number])[] = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 const IDEAS: readonly [RegExp, string][] = [
@@ -127,9 +133,10 @@ export function spaceChecks(inp: SpaceInput): SpaceResult {
     // 기물 밀도: 서는 기물 수 / 바닥 칸. 흩어 놓은 기물 하나하나가 둘레 8칸을 «쓰는 칸»으로 만들어 빈 칸 검사는 성긴 방도 통과시켰다
     // (6회차 terra-high 여관 홀 15개/121칸 = 0.12 — 빈 칸 5%). 6회차 opus 방(Opus 판정에서 기준 방을 11/13 이긴 쪽)은 방마다 0.19~0.35.
     const dens = pieces / Math.max(1, fl.length);
-    if (!isCorridor(r) && fl.length >= SPACE.densityMinFloor && dens < SPACE.minDensity) {
-      const more = Math.ceil(SPACE.minDensity * fl.length) - pieces;
-      problems.push(`room "${r.id}" is under-furnished: ${pieces} standing pieces on ${fl.length} floor cells (${dens.toFixed(2)} per cell; furnished rooms here have at least ${SPACE.minDensity}). Add at least ${more} more standing pieces that serve the room (${what}) — not scattered one by one but as groups that belong together, e.g. ${ideasFor(`${r.id} ${r.purpose ?? ""}`.toLowerCase())}; find_pieces(category) lists every piece of a category. Or make the room smaller (move ${wallsTxt}) so its pieces fill it. Rugs, decals and wall-mounted pieces do not count.`);
+    const minDensity = minDensityFor(fl.length);
+    if (!isCorridor(r) && fl.length >= SPACE.densityMinFloor && dens < minDensity) {
+      const more = Math.ceil(minDensity * fl.length) - pieces;
+      problems.push(`room "${r.id}" is under-furnished: ${pieces} standing pieces on ${fl.length} floor cells (${dens.toFixed(2)} per cell; hand-built rooms of this size have at least ${minDensity}). Add at least ${more} more standing pieces that serve the room (${what}) — not scattered one by one but as groups that belong together, e.g. ${ideasFor(`${r.id} ${r.purpose ?? ""}`.toLowerCase())}; find_pieces(category) lists every piece of a category. Or make the room smaller (move ${wallsTxt}) so its pieces fill it. Rugs, decals and wall-mounted pieces do not count.`);
     }
     const cap = fl.length >= SPACE.rugBigRoom ? 2 : 1;
     if (rugs > cap) problems.push(`room "${r.id}" has ${rugs} rugs (carpets + round rug/runner) — at most ${cap} in a room of ${fl.length} floor cells. Remove ${rugs - cap}; vary the look with the room's floor instead (give rooms different floor ids). Rugs never count as furnishing.`);
