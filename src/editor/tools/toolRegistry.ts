@@ -85,6 +85,7 @@ import { STAGE_PERFORMANCE_TOOLS } from "./stagePerformanceTools";
 import { MECH_CHARSET_TOOLS } from "./mechCharsetTools";
 import { PIXEL_ART_TOOLS } from "./pixelArtTools";
 import { LIFE_FLOWER_TOOLS } from "./lifeFlowerTools";
+import { GENRE_DEVICE_TOOLS } from "./genreDeviceTools";
 import { LIGHTING_TOOLS } from "./lightingTools";
 import { ACTION_TOOLS } from "./actionTools";
 import { PROJECT_WIKI_TOOLS } from "./projectWikiTools";
@@ -411,6 +412,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // 스크립트 → 일반 명령(명령으로 풀기) — 동작이 같을 때만(src/editor/script/scriptToEvent.ts).
   ...withDomain(SCRIPT_UNWRAP_TOOLS, "event"),
   ...withDomain(LIFE_FLOWER_TOOLS, "event"),
+  // 호감 · 가진 물건 내밀기 · 제한 시간 · 화면 게이지 — 이벤트 명령을 손으로 조립하던 장치 넷(openwiki/assistant-v2-genre-tools.md).
+  ...withDomain(GENRE_DEVICE_TOOLS, "event"),
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),
   ...withDomain(DB_TOOLS, "database"),

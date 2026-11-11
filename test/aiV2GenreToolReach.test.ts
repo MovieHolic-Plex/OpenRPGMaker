@@ -26,9 +26,11 @@ function offer(fixture: FixtureId, task: string) {
 }
 
 const GENRE_TOOLS = ["place_trap", "lock_door", "place_storage_chest", "create_farm_plot", "define_crop", "upsert_fish_species", "configure_fishing", "set_deadline_ending",
-  "set_dialogue_system", "set_action_combat", "make_action_enemy", "configure_monster_system", "give_starter_monsters", "place_trainer", "manage_flag_slot"] as const;
+  "set_dialogue_system", "set_action_combat", "make_action_enemy", "configure_monster_system", "give_starter_monsters", "place_trainer", "manage_flag_slot",
+  // 이벤트 명령을 손으로 조립하던 장치의 좁은 도구 넷(src/editor/tools/genreDeviceTools.ts).
+  "set_npc_affection", "set_present_reactions", "set_time_limit", "add_hud_gauge"] as const;
 
-describe("장치 도구 열다섯 — 풀에 있고 영어 글이 있다", () => {
+describe("장치 도구 — 풀에 있고 영어 글이 있다", () => {
   it("v2 풀에 든다", () => {
     expect(GENRE_TOOLS.filter((name) => !v2ToolPool().includes(name))).toEqual([]);
   });
@@ -66,7 +68,13 @@ describe("그 장치를 짓는 도구를 처음부터 싣는다", () => {
     ["action-slimes-starter", ["make_action_enemy", "set_action_combat"]],
     ["capture-on-blank", ["configure_monster_system"]],
     ["trainer-sight-blank", ["place_trainer"]],
-    ["hunger-hud-starter", ["manage_flag_slot"]],
+    ["hunger-hud-starter", ["add_hud_gauge", "manage_flag_slot"]],
+    ["evidence-present-starter", ["set_present_reactions"]],
+    ["affection-grows-starter", ["set_npc_affection"]],
+    ["gift-affection-starter", ["set_npc_affection"]],
+    ["confess-ending-starter", ["set_npc_affection"]],
+    ["affection-two-pages-built", ["set_npc_affection"]],
+    ["time-limit-starter", ["set_time_limit"]],
     ["hiding-spot-starter", ["configure_object_behavior"]],
     ["push-rock-starter", ["configure_object_behavior"]],
     ["chaser-starter", ["make_chase_scene"]],

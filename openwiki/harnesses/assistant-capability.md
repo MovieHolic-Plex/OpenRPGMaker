@@ -514,7 +514,7 @@ npm run harness -- assistant-capability small-jobs-report --run <그 폴더> --h
 
 오너 2026-11-11 「JRPG 만 만들게 아니잖아」. 추리·연애·공포·농장·몬스터 수집·퍼즐·액션·경제·여러 엔딩·생존 게임이 쓰는 **장치 하나**를 일 하나로 잰다.
 어느 장치에 도구가 없고 어느 도구가 v2 에 안 실리는지는 `openwiki/assistant-v2-genre-tools.md` 의 재고 표가 적는다 — 이 묶음은 그 표의 줄을 재는 자다.
-묶음 `harness-data/assistant-capability/small-jobs-3.json`(같은 모양), 픽스처는 같은 셋(blank 3 · starter 28 · built 5), 오답 135개 · 다른 모양의 정답 21개.
+묶음 `harness-data/assistant-capability/small-jobs-3.json`(같은 모양), 픽스처는 같은 셋(blank 3 · starter 28 · built 5), 오답 135개 · 다른 모양의 정답 28개(일곱은 좁은 도구 한 호출 — `set_npc_affection` · `set_present_reactions` · `set_time_limit` · `add_hud_gauge`).
 
 **Terra 기준선(수리 전, main `03a604e917`, 2026-11-11)** — `~/z-project/assistant-fable-runs/smalljobs/set3-base-03a604e917/`, 쪽 `~/claude-viz/assistant-small-jobs-set3.html`:
 **통과 25/36** · 불합격 10 · 시간 초과 1 · 턴이 «완료»로 끝난 것 22 · 도구 호출 741(오류 52) · 중앙값 16호출 · 2.8분 · 입력 385k 토큰.

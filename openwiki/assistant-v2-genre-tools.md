@@ -299,12 +299,34 @@ main 11/12 · #4630 11/12, 같은 한 건(나무 꾸미기 — 위 1번 「동�
 - 보관 상자는 첫 실행에서 요청이 입력창에 남은 채 보내지지 않았다(모델 호출 0 — 하네스 쪽 깨짐). 그 일만 다시 돌렸고 첫 기록은 `jobs/storage-chest-starter.broken-unsent-1` 에 남겼다.
 - 「동쪽 들판」 세 일(암호 금고 · 꽃잎 체력 · 엔딩 표지판)과 첫째 묶음의 나무 꾸미기는 #4648 이 main 에 들어간 뒤 그 넷만 다시 잰다.
 
+## 둘째 수리 — 좁은 도구 넷 (2026-11-12)
+
+기준선에서 통과는 했지만 이벤트 명령을 손으로 조립하던 장치(선물 36호출 · 고백 32 · 증거 내밀기 27 · 제한 시간 25)를 **한 호출**로. 런타임은 그대로다 — 조립만 도구가 맡는다.
+`src/editor/tools/genreDeviceTools.ts`(등록 `toolRegistry.ts GENRE_DEVICE_TOOLS`, v2 풀 `V2_GENRE_TOOLS`, 영어 글 `toolTextEn.ts`). 실패 · 알림 글은 영어다.
+
+| 도구 | 한 호출 | 짓는 것 | 지키는 것 |
+|---|---|---|---|
+| `set_npc_affection` | `{mapId, eventId, talkGain?, gifts?, milestones?, confess?}` | `changeFriendship` · 가진 아이템일 때만 뜨는 「선물한다 / 그만둔다」 · 문턱 대사(`friendshipAtLeast`, 넘은 것 가운데 가장 높은 하나) · 「이야기를 나눈다 / 고백한다」(문턱 전 거절, 넘으면 대사 · 스위치 · 엔딩) | 있던 대사 · 숙박 · 상점은 뒤에 그대로. **말을 걸어 도는 페이지 전부**에 끼운다(진행으로 페이지가 바뀌는 사람도 같다 — `affection-two-pages-built` 의 오답이 «첫 페이지만»이었다). 아이템은 id 나 이름. 호감 열쇠(`npcKey`)를 돌려준다 |
+| `set_present_reactions` | `{mapId, eventId, reactions:[{itemId, lines, switchId?, consume?}], otherLines}` | 평소 말 뒤의 `presentItem` — 맞는 물건이면 그 대사(와 스위치), 다른 물건이면 `otherLines`, 없거나 닫으면 아무 일 없음 | 있던 대사 그대로 · 스위치는 등록한다 |
+| `set_time_limit` | `{mapId, seconds, endingId?, stopSwitchId?}` | 보이지 않는 이벤트 둘: 들어서면 타이머를 맞추고 시작(한 번) · 남은 시간 0 이면 게임 오버나 엔딩 · 멈춤 스위치가 켜지면 타이머 정지 | 같은 맵에 다시 부르면 새로 짓는다 · 두 이벤트는 빈 칸에 따로 선다. 무너지는 바닥 탈출은 `make_timed_escape`, 날짜 기한은 `set_deadline_ending` |
+| `add_hud_gauge` | `{label, initial, max}` | 변수(시작 값) + 변수에 묶인 HUD 위젯 하나 | **지금 화면에 뜨는 HUD 는 그대로**(프리셋 위젯을 풀어 적고 그 뒤에 더한다 — `widgets:[게이지]` 로만 쓰면 체력 · 시계 · 도구가 사라진다) · 같은 모서리의 것 아래에 놓는다 · 같은 이름/변수로 다시 부르면 그 게이지를 고친다 |
+
+**다시 부르기**: 호감 · 내밀기는 끼운 토막의 앞뒤에 `label`(`affection:begin`/`end` · `present:begin`/`end` — 런타임에서 아무 일도 하지 않는다)을 두고, 다시 부르면 그 사이만 갈아 끼운다. 표시가 없으면 두 번째 호출이 토막을 하나 더 쌓아 말을 걸 때마다 호감이 두 번 오른다.
+
+**주제**(`request/topics.ts`): `affection`(낱말에 「선물을/할/하」 · 「고백」 추가) → `set_npc_affection` · 새 주제 `present`(내밀 · 들이밀 · 제시 · 증거 · 보여 주면) → `set_present_reactions` · 새 주제 `timeLimit`(제한 시간 · N초/분 안에 · 카운트다운) → `set_time_limit` · `gauge` → `add_hud_gauge`(+ `manage_flag_slot`). 셋 다 장치 주제(`DEVICE_TOPICS`)다.
+게임 카드(`prompt/gameCard.ts`)의 호감 · 타이머 · 내밀기 줄이 손 조립 대신 이 도구를 먼저 가리킨다(게임 하나의 지시문 +114자 · 열쇠·건네기 요청 +60자).
+
+**잰 것(모델 없음)**: 셋째 묶음의 일곱 일(`evidence-present` · `affection-grows` · `gift-affection` · `confess-ending` · `affection-two-pages` · `time-limit` · `hunger-hud`)에 «좁은 도구 한 호출» 풀이를 다른 모양의 정답으로 더했고(21 → 28개),
+그 한 호출(고백은 엔딩 정의 + 한 호출)이 일마다의 판정을 통과한다(자기검사 36/36, `test/genreDeviceTools.test.ts`). 일곱 일 모두 그 도구가 처음부터 실린다. 닿기 합계(27 · 8 · 1)는 그대로다 — 손 정답은 여전히 `patch_event_page` 라서다.
+실모델로는 아직 재지 않았다 — 호출 수가 주는지는 다음 Terra 실행이 말한다.
+
 ## 남은 것(차례)
 
-1. **새 도구(N)** — 이벤트 명령을 손으로 쓰는 장치 넷을 좁은 도구로: 호감(말 걸기 · 선물 · 문턱 대사) · 증거 내밀기 반응 · 제한 시간(「N초 안에 못 하면」) · 물건 하나를 은신처/밀 수 있는 것/제작대/침대로 **놓기**(지금은 물건 이벤트를 먼저 세우고 `configure_object_behavior`).
-2. **수치 게이지** — `set_project_settings.fieldHud.widgets`(1.3만 자 도구)를 거치지 않는 좁은 길(`set_field_hud` 에 변수 위젯, 또는 게이지 도구 하나).
+1. **물건 하나를 은신처 / 밀 수 있는 것 / 제작대 / 침대로 놓기** — 지금은 물건 이벤트를 먼저 세우고 `configure_object_behavior`(기준선에서 은신처 11호출 · 밀기 15 · 제작대 13으로 통과).
+2. **얘기한 사람 수 · 고른 것으로 갈리는 엔딩**(기준선 42 · 32호출) — 고리 설계의 `endings[]` 가 맡는다. 좁은 도구로 먼저 낼지는 `endings[]` PR 에서 정한다.
 3. **영어 조건 글**(`toolTextEn.ts COND`)에 `timePhase` · `friendshipAtLeast` · `gold` · `timer` — 게임 하나 경로의 지시문과 같이 본다.
 4. 내놓지 않은 큰 묶음: 사건 통째(`author_mystery_case`) · 연애 기본값(`apply_romance_preset`) · 생활 경제(`configure_life_economy`) · 몬스터 종 · 센터 · 배지 — 고리 설계의 종류가 정해지면 그 빌더가 부른다(모델에게 4만 자 도구를 싣지 않는다).
+5. **「박사 … 몬스터 세 마리 중에 한 마리」**(`starter-pick-blank`) — 몬스터 잠금이 `give_starter_monsters` 를 가린다. 기준선에서는 손 조립으로 통과했다(14호출).
 
 ## 런타임 빈틈 — 엔진 PR 제안 둘 (제안 · 구현 전)
 

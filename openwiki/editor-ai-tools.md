@@ -4110,6 +4110,16 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 측정: 고정 프롬프트 스위트(저장소 밖 `~/z-project/assistant-whole-game/suite/`)의 판정자는 `playerGoal` 한 줄만 받는다. 엔딩 여부는 판정자의 말이 아니라 플레이어 클리어 기록(`:clear-record:v1`)으로 센다.
 - `upsert_troop.duel` — 결투 규칙 `{yieldAtPercent, playerYieldAtPercent, forfeit, roundLimit, noItems}`(고정 속성, 모두 선택). `clearFields:["duel"]` 로 지운다. 의미는 `runtime-battle.md` 「결투 규칙」.
 
+## 장치 도구 넷 — 호감 · 내밀기 · 제한 시간 · 게이지 (2026-11-12)
+
+`src/editor/tools/genreDeviceTools.ts`. 이벤트 명령을 손으로 조립하던 장치를 한 호출로 짓는다(런타임은 그대로 — `changeFriendship` · `friendshipAtLeast` · `presentItem` · `timer` · `fieldHud` 변수 위젯).
+실패 · 알림 글은 영어다(조수 v2 가 읽는다). 자세한 계약 · 측정은 `openwiki/assistant-v2-genre-tools.md` 「둘째 수리」.
+
+- `set_npc_affection{mapId, eventId, talkGain?, gifts?, milestones?, confess?, npcKey?, pageIndex?}` — 있는 NPC 의 말 거는 페이지 전부(또는 `pageIndex` 하나)의 **앞**에 호감 토막을 끼운다. 다시 부르면 그 토막만 갈아 끼운다(`label affection:begin/end`). 없는 아이템 · 엔딩은 거절(목록을 알려 준다).
+- `set_present_reactions{mapId, eventId, reactions, otherLines?, onlyListed?, position?}` — 평소 말 **뒤**(기본)에 `presentItem` 하나. `label present:begin/end`.
+- `set_time_limit{mapId, seconds, endingId?, expireLines?, startLines?, stopSwitchId?, timerId?}` — 이벤트 `ev_timelimit_<맵>_start`(자동, 한 번) · `_end`(병렬: 남은 시간 0 → 게임 오버/엔딩, 멈춤 스위치 → 타이머 정지), 스위치 `sw_timelimit_<맵>`.
+- `add_hud_gauge{label, initial?, max?, variableId?, shape?, anchor?, color?}` — 변수 + 위젯 `gauge-<변수 id>`. 화면에 뜨던 HUD(`resolvedHudWidgets(effectiveFieldHud)`)를 풀어 적고 그 뒤에 더한다.
+
 ## 일정표 도구 (upsert_schedule)
 
 `list_schedules`/`upsert_schedule`(`src/editor/tools/scheduleTools.ts`)이 주간 일정표(`database.schedules`)를 저작한다. 명령 `planSchedule`/`runSchedule` 은 조수 이벤트 스키마에 포함. 계약·한계는 `openwiki/schedule-planner.md`.
