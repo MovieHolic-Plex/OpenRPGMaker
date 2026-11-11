@@ -771,6 +771,47 @@ Terra 세 판의 저장본에서 다시 깐 결과: 사막 fun-x1 장면 4·자�
 **근거.** 고정 씨앗 8개 마을의 문 71개: 그냥 부를 때 맨바닥 12 → 0, `doorAt` 을 줄 때 3 → 0(닿지 않는 문 1개는 목록에서 빠짐). 씨앗 없는 마을 40번: 5 → 0.
 시험은 씨앗을 고정했고(`salt`), 그때 다섯 문이 맨바닥에 섰던 씨앗 둘(99012 · 11630)의 모든 문을 잰다.
 
+## 깔기 요청의 거절은 다음 호출 하나를 실제 값으로 이른다 — 빈 껍데기 고침 · 빈 `mapId` · 강제는 값이 찬 호출만 (2026-11-11, map-vqa 깔기 24판)
+
+「이 장소를 깔아 줘」 한 줄 요청 24가지(Terra high, `lay-main-0636b72004`)에서 장소는 23곳 깔렸는데 «완료» 는 8곳이었다. 턴 기록의 거절 68번(장소 호출 55번)과
+«pending action» 막힘 17번을 읽으면 원인은 모델이 아니라 도구 계약 넷이다.
+
+| 원인 | 기록의 첫 사례 | 고친 곳 |
+|---|---|---|
+| 엄격 스키마가 채운 빈 `layoutPatch`(`replace:{map:{w:0,h:0}, landmark:{id:""}, walls:[], …}`)를 진짜 고침으로 읽었다 — `edit_place` 거절 26번 | village #5 `edit_place({patch:{mapId:"map_blank_start", addAnchors:[{what:"우물"…}], layoutPatch:{…빈 껍데기}}})` → «layoutPatch edits a place that was laid from a cell layout…» | `place/interiorLayout.ts` `replaceEntries`(껍데기는 안 보낸 것) · `tools/support.ts` `dropPatchFill`(빈 글·0·지금과 같은 값) |
+| 빈 `mapId:""` 를 값으로 썼다 — 거절된 배치(`pendingLayouts`)를 못 찾고, 다음 호출 줄에 `mapId:""` 가 실렸다 | weapon-shop #2 → `[Next call] create_transfer_pair({"a":{"mapId":"",…` | `tools/verbs/place.ts`(`patch.mapId \|\| …`, make_place 의 없는 맵 id 는 안 준 것) · `loop/nextCall.ts` `mapOf` |
+| 거절 글에서 동사 이름만 짚은 제안을 다음 차례에 강제했다 — 모델이 고쳐 보낸 맞는 호출이 실행되지 않았다(17번, 그중 `make_place` 7번) | village #6 `find_empty_ground` → «Not executed: call the `create_transfer_pair` tool to resolve the pending action» | `loop/nextCall.ts` `NextCall.exact` · `loop/todoTools.ts` `prefer`(값이 다 찬 호출만 강제) |
+| 거절 글이 길을 막았다: 칸 배치 거절은 «3 problems» 중 첫 줄에서 잘리고 `Next: change the spec (another type or style)` 가 붙었다 · 받지 않는 고침은 «빌더는 소품 하나하나를 받지 않는다» 뿐 · `draw_object` 는 요청에 없는 `stamp_object` 를 일렀다 | weapon-shop #1 · market-town #4 · ruins #8 | `place/interiorLayout.ts` `rejectionText`(다시 보낼 것이 맨 앞) · `loop/failureText.ts`(머리글 상한 900자) · `tools/placeMemory.ts` `notRelaidRefusal` · `place/drawObject.ts`(`place_object` 를 실제 id·칸으로) |
+
+규칙:
+
+- **거절하는 도구는 가장 가까운 맞는 일을 스스로 하거나, 값이 찬 다음 호출 하나를 이른다.** `mapId:""` · 같은 관문이 다시 막을 호출 · 이 요청에 실리지 않은 도구를 이르지 않는다.
+  거절 글이 `Next call: 동사({…})` 를 이미 적었으면 고리(`nextAfterFailure`)는 뼈대를 덧붙이지 않는다.
+- **빈 값은 «안 보냈다» 다.** `edit_place` 패치의 빈 글·빈 배열·0·모든 잎이 기본값인 객체·지금 명세와 같은 값은 걷어 낸다(`false` 는 켜 둔 것을 끌 때만 고침이다).
+  걷어 낸 뒤 남는 것이 없으면 «바뀌는 것이 없다» 와 `inspect` 를, 물건 하나(`addAnchors`)가 남으면 그 물건을 놓는 `draw_object` 호출을 맵 id·칸과 함께 이른다.
+- **아직 서지 않은 장소에 온 `edit_place` 는 `make_place` 로 보낸다:** 거절된 배치에 `layoutPatch` 를 입혀서, 또는 `set.layout`·`replace` 로 온 배치 전체로. 빈 시작 맵이면 그 맵 위에 짓는다.
+  같은 이름의 방을 `mapId:""` 로 다시 보내면 그 맵에서 다시 짓는다(맵이 늘지 않는다 — 재생에서 «무기 가게» 가 다섯 장이 됐었다).
+- **강제(`preferToolNextTurn`)는 인자가 다 찬 호출에만.** 자리표시(`<…>`)가 남은 제안은 결과 글의 알림으로만 간다.
+
+모델 없는 재생(`scripts/qa/assistant-v2/layReplay.mts` — 기록의 호출을 같은 순서로 지금 도구 층에 넣는다)으로 잰 전/후는 아래 「재생 수치」 표,
+이른 호출을 실제로 불러 보는 탐침은 `scripts/qa/assistant-v2/refusalNextCalls.mts`(여섯 흐름 — 이 묶음만 있는 가지에서는 `--only 1,2,3,6`). 시험 `test/aiV2LayRefusals.test.ts` · `test/aiV2BackDoor.test.ts`.
+
+재생 수치(같은 기록 24요청 · 같은 재생기 · 무작위 씨앗 고정). «네 묶음» = 이 절과 같은 날의 세 절(공간 검사 · 빈 시작 맵 · 세계 종류)까지 모두 넣은 가지.
+
+| | 그 판의 기록 | 재생: main `d643c9b7b6` | 재생: 네 묶음 |
+|---|---|---|---|
+| 장소 호출 거절(`make_place`·`edit_place`·`review_layout`·`author_forest_route`·`create_map`) | 55 | 51 | **18** |
+| 모든 거절(`todo` 제외) | 68 | 73 | **34** |
+| «pending action» 에 막힌 호출 | 17 | 18 | **0** |
+| 처음 세 번의 장소 호출 안에 깔리고 시작이 그 장소의 걷는 칸 | — | 20/24 | **23/24** |
+| 끝에 깔리고 시작이 그 장소의 걷는 칸 | — | 21/24 | **24/24** |
+| 빈 시작 맵이 남은 요청 | — | 6 | **0** |
+
+세 번 안에 못 깔린 하나는 prison(첫 배치의 기물이 벽 칸에 걸친 진짜 오류 — 넷째 호출에 깔린다). 남은 장소 호출 거절 18: 진짜 배치 오류 5 · 고치기 상한 3 ·
+받지 않는 고침(이제 다음 호출을 이른다) 3 · 한 번에 깐 장소·집이 선 마을을 다시 지으려던 호출 4 · 재생의 한계 3(village-to-field — 풀 칩셋이 기록과 달라 뒤 호출이 맞지 않는다).
+재생은 기록의 호출을 그대로 넣는 것이라, 고친 뒤 모델이 실제로 덜 부르게 될 호출까지 센다 — 실제 «완료» 율은 Terra 재측정으로 잰다.
+
+
 ## 뒷문은 `create_transfer_pair` 한 번 — 막다른 거절이 그 길을 이른다 (2026-11-11, 작은 일 두 번째 재측정)
 
 두 번째 재측정(Terra, main d4a4ae29f4)은 **29/30 · «완료» 29**(앞 28/30 · 25)였고 남은 하나가 `door-backdoor-built`(「족장의 긴 집에 뒷문을 하나 만들어 줘. 그 문으로 나가면 겨울 시장으로 가게」)다.
