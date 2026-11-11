@@ -108,22 +108,34 @@ export function objectiveTargetViews(project: Pick<Project, "maps">, map: GameMa
     return new Set((exactMaps.length || key.length < 2 ? exactMaps : others.filter((other) => bare(other.name ?? "").includes(key))).map((other) => other.id));
   };
   if (tail) {
+    // 꼬리는 목표가 걸린 맵에서 본 길이다: 「(<첫 맵> 입구: 자리 → <거쳐 가는 맵>에서 자리 → <끝 맵> · <대상>)」. 어느 맵에서 읽든 «끝»을 먼저 본다 —
+    // 끝 맵에 들어섰으면 그 대상 이벤트, 아직이면 끝 맵으로 가는 첫 출구. 첫 마디(「<첫 맵> 입구」)부터 보면 끝 맵 안에서 온 길로 되돌아가는 문을 짚는다
+    // (2026-11-12 r1 여섯 판: 전당 안에서 화살표가 마을로 나가는 문을 가리켜 마을↔전당을 맴돌았다).
     const entrance = /^(.+?)\s*입구$/u.exec(tail)?.[1];
-    if (entrance) {
-      const doors = firstExitsTo(project, map, doorCandidates, mapsNamed(entrance));
+    // 「→」 뒤는 그 뒤에 찾을 대상이다. 거쳐 가는 맵의 방위 마디가 낄 수 있어 첫 「→」 뒤를 모두 본다(뒤 마디가 먼저).
+    const after = tailMatch?.[2]?.split("→").slice(1).join("·");
+    const parts = (after ?? "").split("·").map((part) => part.trim()).filter(Boolean).reverse();
+    const hereKey = bare(map.name ?? "");
+    // 끝 맵 = 꼬리에 이름이 그대로 나온 맵 가운데 맨 뒤 것, 없으면 「입구」 맵. 대상 이름(「마왕」)이 맵 이름(「마왕의 방」)의 일부여도 맵으로 읽지 않는다.
+    const exactMaps = (name: string): string[] => { const key = bare(name); return key.length >= 2 ? Object.values(project.maps).filter((other) => bare(other.name ?? "") === key).map((other) => other.id) : []; };
+    const endPart = parts.find((part) => exactMaps(part).length > 0);
+    const endIds = new Set(endPart ? exactMaps(endPart) : entrance ? (bare(entrance) === hereKey ? [map.id] : [...mapsNamed(entrance)]) : []);
+    const arrived = endIds.has(map.id);
+    if (endIds.size && !arrived) {
+      const doors = firstExitsTo(project, map, doorCandidates, endIds);
       if (doors.length) return doors;
     }
-    // 「(숲 입구: 북동쪽 → 숲 통과)」·「(마을 입구: 남쪽 → 마왕의 동굴 · 마왕 처치)」 — 「→」 뒤는 그 뒤에 찾을 대상이다.
-    // 그 맵에 들어선 뒤(입구 맵 = 지금 맵)에는 이 맵의 그 이벤트를, 아직 가는 길이면 목적지 맵으로 가는 첫 출구를 가리킨다.
-    // 「(로비 입구: 남쪽 → 로비에서 서쪽 → 뒤뜰 · 단서 발견)」 — 거쳐 가는 맵의 방위 마디가 낄 수 있어 첫 「→」 뒤를 모두 본다(뒤 마디가 먼저).
-    const after = tailMatch?.[2]?.split("→").slice(1).join("·");
-    if (after) {
-      const parts = after.split("·").map((part) => part.trim()).filter(Boolean);
-      for (const part of [...parts].reverse()) {
-        const named = candidates.filter((view) => bare(view.event.name ?? "") === bare(part));
-        if (named.length) return named;
+    for (const part of parts) {
+      const named = candidates.filter((view) => bare(view.event.name ?? "") === bare(part));
+      if (named.length) return named;
+    }
+    // 끝 맵으로 가는 길을 못 찾았을 때만 옛 순서로 — 「입구」 맵의 문, 꼬리에 이름 일부가 나온 맵의 문.
+    if (!arrived) {
+      if (entrance) {
+        const doors = firstExitsTo(project, map, doorCandidates, mapsNamed(entrance));
+        if (doors.length) return doors;
       }
-      for (const part of [...parts].reverse()) {
+      for (const part of parts) {
         const ids = mapsNamed(part);
         if (!ids.size) continue;
         const doors = firstExitsTo(project, map, doorCandidates, ids);
@@ -154,8 +166,13 @@ export function objectiveTextOnMap(map: Pick<GameMap, "name" | "events">, text: 
   const eventNames = new Set((map.events ?? []).map((event) => bare(event.name ?? "")));
   const parts = tail[2]!.split(/\s+\/\s+/u).map((part) => {
     const head = /^(.+?)\s*입구:[^→]*(?:→\s*(.*))?$/su.exec(part);
+    if (!head) return part;
+    // 끝 맵(꼬리 맨 뒤 「<맵> · <대상>」 의 맵)에 들어섰으면 온 길은 지나간 말이다 — 대상만 남긴다(2026-11-12 r1-snow 눈가림 플레이:
+    // 전당 안에서 목표창이 「눈울타리 마을 입구: 서쪽 끝 …」 을 다시 보여 줬다).
+    const last = (head[2] ?? "").split("→").at(-1)!.split("·").map((piece) => piece.trim()).filter(Boolean);
+    if (last.length > 1 && bare(last[0]!) === here && bare(head[1]!) !== here) return last.slice(1).join(" · ");
     // 「동굴 입구」 가 이 맵의 이벤트 이름이면 맵 입구 마디가 아니다(「(동굴 입구: 북쪽)」 = 이름: 자리).
-    if (!head || bare(head[1]!) !== here || eventNames.has(bare(`${head[1]!}입구`))) return part;
+    if (bare(head[1]!) !== here || eventNames.has(bare(`${head[1]!}입구`))) return part;
     const rest = (head[2] ?? "").trim();
     // 거쳐 가는 맵: 「<이 맵>에서 <자리> → <다음 맵> · <대상>」 → 「<다음 맵> 입구: <자리> → <대상>」.
     const via = /^(.+?)에서\s+(.+?)\s*→\s*([^·→]+?)(?:\s*·\s*(.+))?$/su.exec(rest);
