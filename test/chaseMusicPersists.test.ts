@@ -12,6 +12,10 @@ import { v2ExtraToolNames } from "@/ai/v2/request/readers";
 import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { scopeAdviceToRequest, type AdvisorVerdict } from "@/ai/v2/judge/advisor";
 import type { GameMap, Project } from "@/project/types";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const gameLines = (...args: Parameters<typeof gameContentProblems>): string[] => gameContentProblems(...args).map(findingLine);
 
 function chaseProject() {
   const ctx = { project: createBlankProject() };
@@ -111,14 +115,14 @@ describe("ending finish-check looks at the whole project", () => {
     const before = withBossEnding();
     const after = structuredClone(before);
     after.endings![0]!.presentation = { ...(after.endings![0]!.presentation ?? {}), musicResourceId: "song" };
-    expect(gameContentProblems(before, after, "투더문처럼 잔잔하게 엔딩곡").join("\n")).not.toMatch(/triggerEnding 명령이 없다/u);
+    expect(gameLines(before, after, "투더문처럼 잔잔하게 엔딩곡").join("\n")).not.toMatch(/triggerEnding 명령이 없다/u);
   });
 
   it("counts an existing triggerEnding elsewhere in the project for an ending request", () => {
     const before = withBossEnding();
     const after = structuredClone(before);
-    expect(gameContentProblems(before, after, "엔딩 장면 다듬어 줘").join("\n")).not.toMatch(/triggerEnding 명령이 없다/u);
+    expect(gameLines(before, after, "엔딩 장면 다듬어 줘").join("\n")).not.toMatch(/triggerEnding 명령이 없다/u);
     const empty = createBlankProject();
-    expect(gameContentProblems(empty, structuredClone(empty), "엔딩 장면 다듬어 줘").join("\n")).toMatch(/triggerEnding 명령이 없다/u);
+    expect(gameLines(empty, structuredClone(empty), "엔딩 장면 다듬어 줘").join("\n")).toMatch(/triggerEnding 명령이 없다/u);
   });
 });

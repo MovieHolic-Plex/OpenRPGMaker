@@ -5,6 +5,7 @@ import { FACTORY_HERO_ARMS } from "../genreDefaults";
 import { isStageWrite, type StageWrites } from "../shared/stageWrites";
 import { Obj } from "./gameCheckReads";
 import { asksBattleDataRemoval, asksDataChange, asksLookChange, asksRemoval } from "../request/readers";
+import { tagged, type Finding } from "./finding";
 
 /** 장비 칸에서 사라진 것이 모두 공장 기본 장비인가. */
 function onlyFactoryGearRemoved(before: unknown, after: unknown): boolean {
@@ -26,9 +27,9 @@ const BATTLE_DATA: Record<"actors" | "classes", readonly string[]> = {
 };
 
 /** 배우·직업의 전투 데이터가 줄었다(요청이 메뉴·화면이 아니라 그 데이터를 지우라고 했을 때만 정상). */
-export function battleDataEmptied(before: Project, after: Project, task: string, writes?: StageWrites): string[] {
+export function battleDataEmptied(before: Project, after: Project, task: string, writes?: StageWrites): Finding[] {
   if (asksBattleDataRemoval(task)) return [];
-  const out: string[] = [];
+  const out: Finding[] = [];
   for (const section of ["actors", "classes"] as const) {
     const old = new Map(((before.database as unknown as Obj)[section] as Obj[] | undefined ?? []).map((r) => [String(r.id), r]));
     for (const r of ((after.database as unknown as Obj)[section] as Obj[] | undefined) ?? []) {
@@ -39,16 +40,16 @@ export function battleDataEmptied(before: Project, after: Project, task: string,
         .filter((k) => !(section === "actors" && k === "initialEquipment" && !gameHasCombat(after) && onlyFactoryGearRemoved(prev[k], r[k])))
         .filter((k) => !isStageWrite(writes, section, r, k));
       if (!lost.length) continue;
-      out.push(`[게임 검사 부작용] 기존 ${section === "actors" ? "배우" : "직업"} 「${String(r.name ?? r.id)}」의 전투 데이터(${lost.join(",")})를 비웠다 — 요청은 그 데이터를 지우라는 것이 아니다. 메뉴·화면에서 숨기는 것은 데이터 지우기가 아니다: 원래 값으로 되돌리고(${section === "actors" ? "upsert_actor" : "upsert_class"}), 메뉴 항목은 configure_field_menu{preset:'story'} 로, 체력 표시는 set_field_hud{off:true} 로 뺀다.`);
+      out.push(tagged("game", "부작용", `기존 ${section === "actors" ? "배우" : "직업"} 「${String(r.name ?? r.id)}」의 전투 데이터(${lost.join(",")})를 비웠다 — 요청은 그 데이터를 지우라는 것이 아니다. 메뉴·화면에서 숨기는 것은 데이터 지우기가 아니다: 원래 값으로 되돌리고(${section === "actors" ? "upsert_actor" : "upsert_class"}), 메뉴 항목은 configure_field_menu{preset:'story'} 로, 체력 표시는 set_field_hud{off:true} 로 뺀다.`));
     }
   }
   return out;
 }
 
 /** 요청과 상관없이 바뀌면 안 되는 것 — 기존 NPC 의 그림·이름이 요청 없이 바뀌었는지(고치기 요청에서 흔한 부작용). */
-export function unaskedChanges(before: Project, after: Project, task: string, writes?: StageWrites): string[] {
+export function unaskedChanges(before: Project, after: Project, task: string, writes?: StageWrites): Finding[] {
   const artAsk = asksLookChange(task);
-  const out: string[] = [];
+  const out: Finding[] = [];
   if (!artAsk) for (const map of Object.values(before.maps)) {
     const now = after.maps[map.id];
     if (!now) continue;
@@ -57,7 +58,7 @@ export function unaskedChanges(before: Project, after: Project, task: string, wr
       if (!cur) continue;
       const g0 = JSON.stringify(ev.pages?.[0]?.graphic ?? null), g1 = JSON.stringify(cur.pages?.[0]?.graphic ?? null);
       const f0 = JSON.stringify((ev.pages?.[0] as unknown as Obj | undefined)?.face ?? null), f1 = JSON.stringify((cur.pages?.[0] as unknown as Obj | undefined)?.face ?? null);
-      if (g0 !== "null" && (g0 !== g1 || f0 !== f1)) out.push(`[게임 검사 부작용] 기존 「${ev.name || ev.id}」의 그림·얼굴이 요청 없이 바뀌었다 — 원래 graphic·face 를 그대로 둔다.`);
+      if (g0 !== "null" && (g0 !== g1 || f0 !== f1)) out.push(tagged("game", "부작용", `기존 「${ev.name || ev.id}」의 그림·얼굴이 요청 없이 바뀌었다 — 원래 graphic·face 를 그대로 둔다.`));
     }
   }
   // 요청 없이 지운 이야기 이벤트(2026-10-25 G31: 회상을 넣어 달라는 요청에 하나뿐인 오프닝 컷신 ev_v2cut_start 를 지우고 보고도 안 했다).
@@ -72,7 +73,7 @@ export function unaskedChanges(before: Project, after: Project, task: string, wr
         const size = (ev.pages ?? []).reduce((n, pg) => n + (pg.commands?.length ?? 0), 0);
         const auto = (ev.pages ?? []).some((pg) => ["auto", "parallel"].includes(String((pg.trigger as { kind?: string } | undefined)?.kind ?? "")));
         if (size < 3) continue;
-        out.push(`[게임 검사 부작용] 요청에 없는데 기존 이벤트 「${ev.name || ev.id}」(${ev.id}${auto ? ", 자동 실행 컷신" : ""}, 명령 ${size}개)를 지웠다 — 그 장면·대사가 게임에서 사라진다. 요청과 상관없으면 restore_event{eventId:"${ev.id}"} 로 요청 전 그대로 되살리고(기억으로 다시 쓰지 않는다), 일부러 대신했으면 보고에 무엇을 왜 지웠는지 적는다.`);
+        out.push(tagged("game", "부작용", `요청에 없는데 기존 이벤트 「${ev.name || ev.id}」(${ev.id}${auto ? ", 자동 실행 컷신" : ""}, 명령 ${size}개)를 지웠다 — 그 장면·대사가 게임에서 사라진다. 요청과 상관없으면 restore_event{eventId:"${ev.id}"} 로 요청 전 그대로 되살리고(기억으로 다시 쓰지 않는다), 일부러 대신했으면 보고에 무엇을 왜 지웠는지 적는다.`));
       }
     }
   }
@@ -95,7 +96,7 @@ export function unaskedChanges(before: Project, after: Project, task: string, wr
       if (asksDataChange(section, task)) continue;
       const keys = Object.keys({ ...prev, ...r }).filter((k) => JSON.stringify(prev[k]) !== JSON.stringify(r[k]) && !isStageWrite(writes, section, r, k));
       if (!keys.length) continue;
-      out.push(`[게임 검사 부작용] 요청에 없는 기존 ${section} 「${name || String(r.id)}」 를 바꿨다(${keys.slice(0, 4).join(",")}) — 게임 전체 값이 바뀐다. 요청과 상관없는 변경이면 되돌리고, 요청을 이루려고 바꾼 것이면 그대로 두고 보고에 무엇을 왜 바꿨는지 적는다(요청을 이룬 변경을 되돌리지 않는다).`);
+      out.push(tagged("game", "부작용", `요청에 없는 기존 ${section} 「${name || String(r.id)}」 를 바꿨다(${keys.slice(0, 4).join(",")}) — 게임 전체 값이 바뀐다. 요청과 상관없는 변경이면 되돌리고, 요청을 이루려고 바꾼 것이면 그대로 두고 보고에 무엇을 왜 바꿨는지 적는다(요청을 이룬 변경을 되돌리지 않는다).`));
     }
   }
   return out.slice(0, 6);

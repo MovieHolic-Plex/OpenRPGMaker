@@ -4,6 +4,10 @@ import { getTool } from "@/editor/tools/toolRegistry";
 import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { projectCanLoseHp } from "@/project/fieldHud";
 import type { GameEvent, Project } from "@/project/types";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const gameLines = (...args: Parameters<typeof gameContentProblems>): string[] => gameContentProblems(...args).map(findingLine);
 
 // 2026-10-25 심사 J67: 피해가 없는 공포 탐험에 set_field_hud{theme:'horror'} 가 꽃잎 생명(체력)을 말없이 켰다.
 function withTrap(project: Project): Project {
@@ -34,6 +38,6 @@ describe("horror life HUD only when HP can drop (J67)", () => {
     const before = createBlankProject() as Project;
     const after = structuredClone(before);
     after.system.fieldHud = { theme: "horror", vitals: true, clock: false, tools: false, objective: false, hideEmpty: true };
-    expect(gameContentProblems(before, after, "공포 탐험 게임").some((line) => line.includes("[게임 검사 HUD]"))).toBe(true);
+    expect(gameLines(before, after, "공포 탐험 게임").some((line) => line.includes("[게임 검사 HUD]"))).toBe(true);
   });
 });

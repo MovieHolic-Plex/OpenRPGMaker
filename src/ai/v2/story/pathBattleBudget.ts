@@ -29,6 +29,7 @@ import { healingItemIds } from "../judge/combatChecks";
 import { startHealingItem } from "./healingAccess";
 import { buildsWholeGame } from "../request/readers";
 import { WEAK_FOE_ASK } from "../request/combat";
+import { tagged, type Finding } from "../judge/finding";
 
 type Obj = Record<string, unknown>;
 type Role = "field" | "gate" | "boss";
@@ -422,7 +423,7 @@ const FIELD_LOSS = 0.5;
  * 숲 말벌 무리는 모의 승률은 24/24 였지만 손실 73% — 이어 싸운 판정자가 졌다.
  * 고치기 안내는 같은 모의로 통과하는 기존 무리(적 HP 합이 작은 순 6개까지)를 이른다. 프로젝트는 바꾸지 않는다(사본·맞춤은 끝맺음 path-battles 몫).
  */
-export function fieldBattleStrain(before: Project, after: Project, task: string): string[] {
+export function fieldBattleStrain(before: Project, after: Project, task: string): Finding[] {
   if (after.system.battleParty === "monsters" || after.system.monsterBattleParty === true) return [];
   const party = partyOf(after);
   if (!party) return [];
@@ -473,5 +474,5 @@ export function fieldBattleStrain(before: Project, after: Project, task: string)
     .filter((t) => { const m = measure(t.id); return m.win >= 1 && m.loss >= 0.03 && m.loss <= WEAK_LOSS; }).map((t) => `${t.id}(${t.name ?? ""}, 손실 ${pct(measure(t.id).loss)})`);
   const fix = ` 필드 적의 troopId 를 시작 파티가 이기는 무리로 바꾸거나(${easy.length ? `예: ${easy.join(", ")}` : "upsert_troop 으로 적 한두 마리 무리를 만들고 simulate_battle 로 승률 100%·손실 35% 이하 확인"}) 수를 줄인다 — 이야기상 강한 적이면 회복 지점을 앞에 두고 보고에 적는다.`;
   // 맵마다 한 문제(이벤트 id 를 실어 기존 결함 가르기·관문 항목 열쇠가 맵 단위로 선다).
-  return perMap.map((m) => `[게임 검사 전투 세기] ${m.lines.join(" / ")} (이벤트 ${m.ids.join(", ")}).${fix}`);
+  return perMap.map((m) => tagged("game", "전투 세기", `${m.lines.join(" / ")} (이벤트 ${m.ids.join(", ")}).${fix}`));
 }
