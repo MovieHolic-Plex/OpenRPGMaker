@@ -8,6 +8,9 @@ import type { Project } from "@/project/types";
 import { DEAD_END_PREFIX } from "../place/deadEndRoads";
 import { blueprintMapFor } from "../story/blueprintPathNames";
 import { populateWorldPlace } from "../place/worldPopulate";
+import { planPrograms, programGaps, roleDoors } from "../place/program";
+import { layProgramRooms } from "../place/programRooms";
+import { recordArtGaps } from "@/project/artGap";
 import { repairEventReach } from "../place/reachRepairs";
 import { runLaneStages } from "../finish/lanes";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart } from "../blankStart";
@@ -82,8 +85,13 @@ export function installSessionHooks(c: VerbContext) {
         if (!world.composer) exitSides.set(name, [oppositeSide(side)]);
       }
     }
+    // 목적표(place/program.ts): 장소마다 역할 건물을 청사진에서 정한다 — 구성기는 그 건물과 채움 집만 놓고, 청사진이 적은 방은 제 역할 건물에 달린다.
+    const programs = world ? planPrograms(env.ctx.project, world) : undefined;
     const freeDoors = (parent: Built) => {
-      const used = new Set((env.ctx.project.maps[parent.mapId]?.events ?? []).map((e) => `${e.x},${e.y + 1}`));
+      const pm = env.ctx.project.maps[parent.mapId];
+      const used = new Set((pm?.events ?? []).map((e) => `${e.x},${e.y + 1}`));
+      // 역할 건물의 문은 그 역할의 방 몫이다 — 다른 방이 문 낱말로 가져가지 않는다.
+      if (pm) for (const d of roleDoors(env.ctx.project, pm)) used.add(`${d.front.x},${d.front.y}`);
       return villageDoors(parent.result ?? ({ state: undefined } as unknown as PlaceBuildResult)).filter((d) => !used.has(`${d.x},${d.y}`));
     };
     const outdoors: Built[] = [];
@@ -96,14 +104,19 @@ export function installSessionHooks(c: VerbContext) {
       const doorHost = !kind?.indoor ? undefined
         : kind.door ? [...outdoors].reverse().find((o) => freeDoors(o).some((d) => kind.door!.test(d.kit ?? "")))
         : [...outdoors].reverse().find((o) => freeDoors(o).length > 0);
-      const parent: Built = fromMap ? recordOf(fromMap.id) : doorHost ?? (world && kind ? outdoors.at(-1) : undefined) ?? prev;
-      const door = world && kind?.indoor ? pickWorldDoor(world, kind, freeDoors(parent)) : undefined;
+      // 목적표가 이 방의 건물을 정했으면 그 장소의 그 문(역할 건물)에 단다.
+      const planned = place && kind?.indoor ? programs?.rooms.get(place.name) : undefined;
+      const hostMap = planned ? mapOf(planned.host, true) : undefined;
+      const roleDoor = hostMap ? roleDoors(env.ctx.project, hostMap).find((d) => d.need === planned!.needId) : undefined;
+      const parent: Built = roleDoor ? recordOf(hostMap!.id) : fromMap ? recordOf(fromMap.id) : doorHost ?? (world && kind ? outdoors.at(-1) : undefined) ?? prev;
+      const door = roleDoor ? { x: roleDoor.front.x, y: roleDoor.front.y, kit: roleDoor.kit } : world && kind?.indoor ? pickWorldDoor(world, kind, freeDoors(parent)) : undefined;
       let map = mapOf(name, !!place);
       if (!map) {
         const guess = world && kind ? worldPlaceSpec(world, kind, name) : guessPlaceSpec(name, env.ctx.project, bp.genre, String(task ?? ""));
         const composed = !!parseWorldStyle(guess.style);
         const spec0: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(guess) && !composed ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}),
-          ...(exitSides.has(name) && !guess.exits?.length ? { exits: exitSides.get(name)! } : {}) };
+          ...(exitSides.has(name) && !guess.exits?.length ? { exits: exitSides.get(name)! } : {}),
+          ...(composed && programs?.places.has(name) ? { program: programs.places.get(name)!.program } : {}) };
         const builder = builderFor(spec0);
         if (!builder) { notes.push(`「${name}」(${spec0.type}) — 짓는 빌더가 없다`); continue; }
         // 자동으로 짓는 실내도 방은 모델이 설계한다(견본 거실 9×10 이 vm6·7·8 flash 방탈출 시작 방이 됐다) — 같은 모델에게 따로 받는다. 세계 구성기 방은 구성기가 짠다.
@@ -146,6 +159,21 @@ export function installSessionHooks(c: VerbContext) {
       }
       prev = recordOf(map.id);
       if (!kind?.indoor && !(prev.spec && isInside(prev.spec))) outdoors.push(prev);
+    }
+    // 역할 건물 가운데 청사진이 방을 적지 않은 것(가게·여관…)은 빌더가 방을 지어 그 문에 잇는다 — 세지 않는 방이다(place/programMark.ts).
+    if (world && programs) {
+      notes.push(...layProgramRooms(run, world, (parentMapId, name, roomMapId, entrance, door) =>
+        linkChild(parentMapId, undefined, undefined, { type: "interior", name }, { ok: true, mapIds: [roomMapId], entrance: { mapId: roomMapId, ...entrance }, summary: "", warnings: [], missingArt: [], calls: [] }, undefined, door)));
+      // 빈칸은 덮지 않고 적는다: 실내 종류가 없는 역할(사막의 살림집)은 없는 그림 장부에, 나머지(못 놓은 역할·집 상한)는 턴 기록에.
+      const gaps = programGaps(env.ctx.project);
+      const decl = world.program!.decl;
+      recordArtGaps(session, gaps.filter((g) => g.kind === "no-room-kind" && g.at).map((g) => ({
+        theme: `${world.id}/${g.role}`, chipset: world.tilesetId, want: "room-kind", wanted: `${decl.roles[g.role]?.ko ?? g.role} 실내`,
+        where: `${g.place} ${g.at!.x},${g.at!.y}`, standIn: "none", by: "program-rooms", note: g.detail,
+      })));
+      const rest = gaps.filter((g) => g.kind !== "no-room-kind");
+      if (rest.length) env.emit({ type: "execution_status", name: "v2.program-gap", ok: false, summary: `목적표 빈칸 ${rest.length}건: ${rest.map((g) => g.detail).join(" / ").slice(0, 600)}`, data: { gaps: rest } });
+      if (gaps.length) notes.push(`목적표 빈칸 ${gaps.length}건 — ${gaps.map((g) => g.detail).join(" / ").slice(0, 400)}`);
     }
     for (const n of retireBlankStart(run)) notes.push(n);
     // 게임은 목록의 첫 장소에서 시작한다 — 바깥 장소를 먼저 지어 시작이 다른 장소에 가 있으면 첫 장소로 옮긴다(이번에 지은 세계 장소일 때만).

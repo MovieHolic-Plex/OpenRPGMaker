@@ -3,14 +3,20 @@
 // 왜(2026-10-29 vm1 flash jrpg 판정 「전투 못 이김」): 던전 빌더가 적·보스를 두었는데 여관·상점·회복약·회복 기술이 하나도 없었다.
 // 끝맺음 관문은 「회복 수단 없음」을 글로 짚었지만 Flash 는 고치지 않았고, 판정자는 임프 전투 두 번에 깎인 HP 로 보스 앞에 섰다.
 // 이제 전투를 짓는 빌더(던전)와 청사진 경로 짓기가 끝에 이 함수를 부른다. 회복 길이 이미 하나라도 있으면 아무것도 하지 않는다.
+// 쉴 곳·가게가 필요한가는 place/program.ts serviceNeeds 하나가 정한다(2026-11-11 목적표). 목적표가 여관·가게 건물을 세운 게임은 그 방 안에 주인을 세우고,
+// 그런 건물이 없는 게임(선언이 없는 세계·예전 길)만 예전처럼 시작 맵에 샘·떠돌이 상인을 둔다.
 // 목표 줄도 샘 자리를 가리킨다(시작 맵에서 걸리는 목표 글 끝 괄호에 「회복의 샘: <맵> <방위>」).
 import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import { canMove, isPassableLanding } from "@/project/collision";
+import { pickSpot } from "@/editor/tools/jrpgVolumeTools";
+import { REST_ROLE, SUPPLY_ROLE } from "@/project/settlementProgram";
 import type { GameMap, Project } from "@/project/types";
-import { allCommands, battleSites, healingItemIds, healingSources } from "../judge/combatChecks";
+import { allCommands, battleSites, healingItemIds } from "../judge/combatChecks";
 import { mapRegion } from "../judge/objectiveWhere";
 import { isObjectiveCommand } from "../judge/objectiveCommand";
 import { reachWithout } from "../judge/puzzleChecks";
+import { serviceNeeds, serviceRoom } from "../place/program";
+import { incomingLandings } from "../place/where";
 import type { BuildRun } from "../shared/types";
 import { victoryGatedSwitches } from "./blueprint";
 
@@ -68,7 +74,7 @@ function springCell(project: Project, map: GameMap, accept: (cell: { x: number; 
 
 /** 목표 글 끝에 샘 자리를 붙인다 — 괄호가 있으면 그 안에 「/」로, 없으면 새 괄호로. */
 function withSpringHint(message: string, hint: string): string {
-  if (message.includes(HEALING_SPRING_NAME)) return message;
+  if (message.includes(hint.split(":")[0]!)) return message;
   return /\)\s*$/u.test(message) ? message.replace(/\)\s*$/u, ` / ${hint})`) : `${message} (${hint})`;
 }
 
@@ -123,11 +129,13 @@ function hintObjectives(run: BuildRun, map: GameMap, hint: string): number {
  */
 export function ensureHealingAccess(run: BuildRun): string[] {
   const notes: string[] = [];
+  // 목적표의 여관이 있으면 그 안에 주인을 세운다(먼저 — 그러면 아래 «회복 길 없음»이 풀려 샘을 두지 않는다).
+  notes.push(...keepInn(run));
   const project = run.ctx.project;
   if (!battleSites(project).length) return notes;
   const map = project.maps[project.startMapId];
   if (!map) return notes;
-  if (!healingSources(project).length) {
+  if (serviceNeeds(project, "built").rest) {
     const potion = startHealingItem(project);
     if (potion) {
       const inventory = { ...(project.session.inventory ?? {}) };
@@ -146,7 +154,36 @@ export function ensureHealingAccess(run: BuildRun): string[] {
     const hinted = hintObjectives(run, live, `${HEALING_SPRING_NAME}: ${live.name ?? live.id} ${mapRegion(live, spring.x, spring.y)}`);
     if (hinted) notes.push(`목표 줄 ${hinted}곳에 샘 자리`);
   }
+  // 목적표의 여관은 시작 맵이 아닌 장소에 있을 수 있다 — 싸우러 가는 목표 줄이 여관이 있는 장소를 가리키게 한다.
+  const inn = serviceRoom(run.ctx.project, REST_ROLE);
+  const innHost = inn ? run.ctx.project.maps[inn.hostMapId] : undefined;
+  if (live && innHost && mapHasFullRecovery(run.ctx.project.maps[inn!.mapId]!)) {
+    const hinted = hintObjectives(run, live, `여관: ${innHost.name ?? innHost.id}`);
+    if (hinted) notes.push(`목표 줄 ${hinted}곳에 여관 자리`);
+  }
   return notes;
+}
+
+/** 목적표가 지은 방 안, 들어온 칸에서 안쪽으로 걸어 들어간 자리(길을 막지 않는 칸). */
+function keeperCell(project: Project, room: GameMap): { x: number; y: number } | undefined {
+  const landing = incomingLandings(project, room.id).find((c) => isPassableLanding(project, room, c.x, c.y));
+  return landing ? pickSpot(project, room, landing, new Set(), 0.7, 3) : undefined;
+}
+
+/** 목적표의 여관(place/program.ts) 안에 여관 주인 — 말을 걸면 전원 회복(값 없음: 시작 맵의 샘과 같은 안전망이다). 결정적·되풀이 안전. */
+function keepInn(run: BuildRun): string[] {
+  const project = run.ctx.project;
+  const inn = serviceRoom(project, REST_ROLE);
+  const room = inn ? project.maps[inn.mapId] : undefined;
+  if (!inn || !room || mapHasFullRecovery(room)) return [];
+  const cell = keeperCell(project, room);
+  if (!cell) return [];
+  const res = run.call("place_npc", {
+    mapId: room.id, x: cell.x, y: cell.y, name: "여관 주인", id: `ev_${room.id}_innkeeper`, movement: "fixed",
+    graphic: { query: "중년 여성 주민" },
+    pages: [{ name: "여관 주인 · 기본", lines: ["먼 길 오셨군요. 방은 비어 있으니 쉬다 가세요."], commands: [{ kind: "recoverAll" }, { kind: "text", body: "푹 쉬었다. 기운이 돌아왔다." }] }],
+  });
+  return res.ok ? [`${room.name ?? room.id} (${cell.x},${cell.y}) 여관 주인(전원 회복)`] : [];
 }
 
 /** 보스(승리로 길을 여는 전투) 이벤트 — 이름 끝 _boss 이거나 승리 갈래에서만 켜는 스위치를 켠다. */
@@ -230,18 +267,6 @@ export function ensureBossRest(run: BuildRun): string[] {
 const SUPPLY_SHOP_ID = "ev_supply_shop";
 const SUPPLY_SHOP_NAME = "떠돌이 상인";
 
-/** 전투로 돈을 벌거나(적 보상·상자·이벤트 돈) 시작 돈이 있는가. */
-function goldObtainable(project: Project): boolean {
-  if ((project.session.gold ?? 0) > 0) return true;
-  const commands = allCommands(project);
-  if (commands.some((r) => r.cmd.kind === "changeGold" && r.cmd.op !== "-=")) return true;
-  const fought = new Set(commands.filter((r) => r.cmd.kind === "battleProcessing").map((r) => String(r.cmd.troopId)));
-  for (const m of Object.values(project.maps)) for (const e of m.encounterTable ?? []) fought.add(String((e as { troopId?: string }).troopId));
-  for (const m of Object.values(project.maps)) for (const id of m.troopIds ?? []) fought.add(String(id));
-  const enemies = new Set(project.database.troops.filter((t) => fought.has(t.id)).flatMap((t) => t.enemyIds ?? []));
-  return project.database.enemies.some((e) => enemies.has(e.id) && (e.rewards?.gold ?? 0) > 0);
-}
-
 /**
  * 떠돌이 상인이 팔 물건 — 이름이 「…약」·potion 인 HP 회복약 가운데 싼 둘, 적 기술이 거는 전투 뒤에도 남는 상태(독 등)를 푸는 가장 싼 약 하나.
  * 값이 있는(파는 물건인) 1000 이하 약만. 결정적(값·id 순).
@@ -279,8 +304,21 @@ function supplyGoods(project: Project): string[] {
  */
 export function ensureSupplyShop(run: BuildRun): string[] {
   const project = run.ctx.project;
-  if (!battleSites(project).length || !goldObtainable(project)) return [];
-  if (allCommands(project).some((r) => r.cmd.kind === "shop")) return [];
+  // 목적표의 가게가 있으면 그 안에 주인을 세운다 — 가게를 둘지는 목적표가 이미 정했다(place/program.ts serviceNeeds "plan").
+  const shop = serviceRoom(project, SUPPLY_ROLE);
+  if (shop) {
+    const room = project.maps[shop.mapId]!;
+    if (allCommands(project).some((r) => r.mapId === room.id && r.cmd.kind === "shop")) return [];
+    const goods = supplyGoods(project), cell = goods.length ? keeperCell(project, room) : undefined;
+    if (!cell) return [];
+    const res = run.call("place_npc", {
+      mapId: room.id, x: cell.x, y: cell.y, name: "가게 주인", id: `ev_${room.id}_shopkeeper`, movement: "fixed",
+      graphic: { query: "중년 남성 주민" },
+      pages: [{ name: "가게 주인 · 기본", lines: ["어서 오게. 먼 길 떠나기 전에 약부터 챙기게."], commands: [{ kind: "shop", shopType: "normal", itemIds: goods, allowSell: true }] }],
+    });
+    return res.ok ? [`${room.name ?? room.id} (${cell.x},${cell.y}) 가게 주인(${goods.join("·")})`] : [];
+  }
+  if (!serviceNeeds(project, "built").supply) return [];
   const map = project.maps[project.startMapId];
   if (!map || map.events.some((e) => e.id === SUPPLY_SHOP_ID)) return [];
   const goods = supplyGoods(project);
@@ -326,12 +364,14 @@ export function ensureStartingGold(run: BuildRun): string[] {
   const map = project.maps[project.startMapId];
   if (!map) return [];
   const ids = new Set<string>();
-  for (const ev of map.events ?? []) for (const p of ev.pages ?? []) for (const c of (p.commands ?? []) as unknown as Record<string, unknown>[]) {
+  // 시작 맵의 상점과, 목적표가 세운 가게(시작 맵이 아닌 장소의 가게 안일 수 있다).
+  const shopRoom = serviceRoom(project, SUPPLY_ROLE);
+  for (const m of [map, ...(shopRoom && project.maps[shopRoom.mapId] ? [project.maps[shopRoom.mapId]!] : [])]) for (const ev of m.events ?? []) for (const p of ev.pages ?? []) for (const c of (p.commands ?? []) as unknown as Record<string, unknown>[]) {
     if (c.kind === "shop" && Array.isArray(c.itemIds)) for (const id of c.itemIds) ids.add(String(id));
   }
   const prices = project.database.items.filter((i) => ids.has(i.id) && (i.price ?? 0) > 0 && (healingItemIds(project).has(i.id) || i.type === "medicine")).map((i) => i.price ?? 0).sort((a, b) => a - b);
   if (!prices.length) return [];
   const want = Math.min(300, Math.max(100, Math.ceil(((prices[0] ?? 0) * 2) / 10) * 10));
   run.ctx.project = { ...project, session: { ...project.session, gold: want } };
-  return [`시작 돈 0G → ${want}G (시작 맵 상점의 가장 싼 약 ${prices[0]}G 둘 값)`];
+  return [`시작 돈 0G → ${want}G (상점의 가장 싼 약 ${prices[0]}G 둘 값)`];
 }
