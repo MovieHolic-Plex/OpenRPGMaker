@@ -114,7 +114,7 @@ Terra 다시 재기(main 84a7fa331a, `assistant-fable-runs/smalljobs/after-84a7f
 
 ## 게임 낱말이 없는 작은 일도 이벤트를 찾고 옮긴다 (2026-11-11)
 
-v1 도구 묶음(`find_events` `get_event` `patch_event_page` `move_event` …)은 요청 글에 게임 낱말이 있을 때만 만들어졌다(`verbs.ts` 가 `intent.tools.game` 을 본다).
+v1 도구 묶음(`find_events` `get_event` `patch_event_page` `move_event` …)은 요청 글에 게임 낱말이 있을 때만 만들어졌다(`tools/verbs.ts` 가 `intent.tools.game` 을 본다).
 그래서 낱말이 안 맞은 작은 일 — 「촌장이 "배경 음악이 참 좋지?"라고 말하게 해 줘」(대사는 가려진다), 「썸네일 그림 하나 골라 줘」, 게임 하나를 잇지 않는 «계속» —
 은 처음 싣는 도구가 6개(`inspect` `add_event` `add_people` `read_specs` `ask_user` `load_tools`)였고, 이벤트를 찾거나 옮기는 도구는 이름으로 불러도 없었다.
 꾸미기 요청(「광장 빈 곳에 나무랑 벤치 좀 놓아 줘」)도 채우기 도구만 받고 `move_event` 는 없었다.
@@ -126,8 +126,8 @@ v1 도구 묶음(`find_events` `get_event` `patch_event_page` `move_event` …)�
 그대로인 것: 장소를 짓는 요청(「작은 마을 하나 만들어 줘」 — 동사 20개), 빈 프로젝트의 «계속»(짓는 길), 소리만 바라는 요청(소리 묶음 8개).
 글만 보는 읽기 함수(`wantsGameTools(task)` · `v2ExtraToolNames(task)`)의 답도 그대로다 — 프로젝트를 같이 본 기록(`classifyRequest`)만 넓어진다.
 
-남은 것: 장소를 짓는 요청에 게임 낱말이 없으면 여전히 `move_event`·`find_events` 가 만들어지지 않는다. 그 길에는 `load_tools` 도 없다 — 풀려면 `verbs.ts` 의
-도구 만들기 조건(`gameTools || wantsMusicTools || wantsTerrainTools || wantsStoreTools`)과 `toolExposure.ts` 의 «게임 요청만 나중에 싣기» 를 같이 고쳐야 한다(요청 줄기 밖).
+남은 것: 장소를 짓는 요청에 게임 낱말이 없으면 여전히 `move_event`·`find_events` 가 만들어지지 않는다. 그 길에는 `load_tools` 도 없다 — 풀려면 `tools/verbs.ts` 의
+도구 만들기 조건(`gameTools || wantsMusicTools || wantsTerrainTools || wantsStoreTools`)과 `tools/toolExposure.ts` 의 «게임 요청만 나중에 싣기» 를 같이 고쳐야 한다(요청 줄기 밖).
 
 ## 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 
