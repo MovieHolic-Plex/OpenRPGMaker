@@ -7,7 +7,7 @@ import type { PiToolExecResult } from "@/ai/piAgent/toolAdapter";
 import { wantsWholeGame } from "../request/readers";
 import { applyBlueprintAssembly } from "@/project/blueprintAssembly";
 import { blueprintDesignerFromEnv, designBlueprint, walkBlueprint } from "../blueprint";
-import { placeSpecCards, projectBrief, type PlaceSpecKind } from "../prompt";
+import { placeSpecCards, projectBrief, smallJobCardKinds, type PlaceSpecKind } from "../prompt";
 import { leanPromptFor } from "../request/readers";
 import { createBuildRun } from "../buildRun";
 import { localizeVillagePoolSpec } from "../../villageChipsetPool";
@@ -48,7 +48,9 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
   const lean = leanPromptFor(env.ctx.project, String(task ?? ""));
   const epoch = () => env.contextEpoch?.() ?? 0;
   // 실행기(대화 번호를 주는 env)에서만 막는다 — 모델 없는 시험·덤프 도구는 예전처럼 바로 짓는다.
-  const specShown = (kind: PlaceSpecKind) => !lean || !env.contextEpoch || session.specsShown.get(kind) === epoch();
+  // 지시문이 이미 실은 카드(작은 일의 사람 카드)는 준 것으로 센다 — 전에는 «상점 주인 세워 줘» 의 첫 add_people 이 같은 카드를 돌려주느라 한 번을 버렸다.
+  const inPrompt = new Set<PlaceSpecKind>(lean ? smallJobCardKinds(env.ctx.project, String(task ?? "")) : []);
+  const specShown = (kind: PlaceSpecKind) => !lean || !env.contextEpoch || inPrompt.has(kind) || session.specsShown.get(kind) === epoch();
   const showSpecs = (kinds: readonly PlaceSpecKind[]): string => {
     for (const kind of kinds) session.specsShown.set(kind, epoch());
     return kinds.flatMap((kind) => placeSpecCards(kind, env.ctx.project, env.ctx.currentMapId, String(task ?? ""))).join("\n\n");

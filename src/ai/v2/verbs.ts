@@ -3,10 +3,11 @@
 import { flattenWrapperTool } from "./flatWrapper";
 import type { PiToolShape, PiToolExecResult } from "@/ai/piAgent/toolAdapter";
 import { buildsWholeGame } from "./request/readers";
+import { classifyRequest, readRequest } from "./request/intent";
 import { blueprintProgressNote } from "./blueprint";
 import type { PiAssistantV2Env } from "./env";
 import { createGameTools } from "./game";
-import { wantsGameTools, wantsMusicTools, wantsStoreTools } from "./request/readers";
+import { wantsMusicTools, wantsStoreTools } from "./request/readers";
 import { wantsPuzzle } from "./request/readers";
 import { wantsTerrainTools } from "./request/readers";
 import { audioOnly } from "./request/readers";
@@ -60,7 +61,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
-  const verbs = [writeBlueprint, ...(lean ? [readSpecs] : []), ...(requestWorld() ? [buildWorld] : []), buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, reviewLayout, findPiecesVerb, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, ...(buildsWholeGame(env.ctx.project, String(task ?? "")) ? [generateArtVerb] : []), placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
+  const verbs = [writeBlueprint, ...(lean ? [readSpecs] : []), ...(requestWorld() ? [buildWorld] : []), buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, reviewLayout, findPiecesVerb, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, ...(buildsWholeGame(env.ctx.project, String(task ?? "")) || readRequest(String(task ?? "")).art ? [generateArtVerb] : []), placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
     // 음악만 바라는 요청은 맵·이벤트를 쓰는 동사를 싣지 않는다 — 보기·묻기만(2026-10-30 r12: 추격 음악 요청에 상자를 찍었다).
     .filter((tool) => !audioOnly(String(task ?? "")) || MUSIC_ONLY_VERBS.has(tool.name))
     .map((tool) => guard(flattenWrapperTool(tool)));
@@ -79,8 +80,10 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     : undefined };
   // 설명 걷기·영어 사본·필요할 때 싣기는 노출 단계(toolExposure.ts exposeV2Tools)가 한다 — 처음부터 싣는 도구만 기준으로 걷어야
   // 나중에 싣는 도구를 가리키는 «같은 모양» 표시가 생기지 않는다. 게임 요청은 v2 도구 묶음 전부(v2ToolPool)를 같은 감싸개로 만들어 둔다.
-  const pool = wantsGameTools(t) && !audioOnly(t);
-  return wantsGameTools(t) || wantsMusicTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? [...verbs, ...createGameTools(gameEnv, t, { pool }).map((tool) => escalate(flattenWrapperTool(tool, gameEnv.record)))] : verbs;
+  // 게임 도구 묶음은 요청 글과 프로젝트를 같이 본 기록에서 읽는다(게임 하나를 잇는 «계속» 도 받는다).
+  const gameTools = classifyRequest(t, env.ctx.project).tools.game;
+  const pool = gameTools && !audioOnly(t);
+  return gameTools || wantsMusicTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? [...verbs, ...createGameTools(gameEnv, t, { pool }).map((tool) => escalate(flattenWrapperTool(tool, gameEnv.record)))] : verbs;
 }
 
 /** 음악만 바라는 요청에 남기는 v2 동사 — 맵 보기·사용자에게 묻기. 곡 걸기는 음악 묶음(set_game_audio)이 한다. */
