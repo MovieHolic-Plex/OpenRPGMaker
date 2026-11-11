@@ -7,6 +7,7 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import { blueprintMapFor } from "./story/blueprintPathNames";
 import { resolveWhere } from "./place/where";
 import type { BuildRun } from "./shared/types";
+import { SEED_START_MAP_ID } from "@/editor/tools/startOnBuiltMap";
 
 type Transfer = { mapId: string; x: number; y: number };
 
@@ -163,6 +164,43 @@ export function retireBlankStart(run: BuildRun): string[] {
     notes.push(removed.ok ? `쓰지 않는 빈 맵 「${blank.name}」(${blank.id}) 지움` : `빈 맵 「${blank.name}」 지우기 실패(${String(removed.summary).slice(0, 120)})`);
   }
   return notes;
+}
+
+/**
+ * 청사진 없는 «이 장소 깔아 줘» 요청의 빈 시작 맵 치우기 — 새 프로젝트의 자리표시 시작 맵(map_blank_start, 아직 잔디 한 장)과 따로 실제 장소가 생겼으면
+ * 시작을 그 장소의 들어오는 칸으로 옮기고, 빈 맵으로 오가던 이동을 지우고, 빈 맵을 지운다. 돌려주는 to = 빈 맵 대신 쓸 맵 id.
+ * 왜(2026-11-11 map-vqa 깔기 24판): 숲길 도구가 빈 맵 북쪽 가장자리에 숲을 이어 야영지 게임이 빈 풀밭에서 시작했고(camp), 동굴 계단이 빈 맵으로 나왔다(forest-to-cave).
+ * 청사진 게임은 끝맺음(retireBlankStart)이 같은 일을 한다 — 청사진이 없으면 그 단계가 돌지 않는다.
+ */
+export function retireSeedStart(run: BuildRun): { notes: string[]; to?: string } {
+  const notes: string[] = [];
+  const project = run.ctx.project;
+  const seed = project.maps[SEED_START_MAP_ID];
+  if (!seed || !isPlaceholderMap(seed)) return { notes };
+  const real = Object.values(project.maps).filter((m) => m.id !== seed.id && !isBareTileMap(m));
+  if (!real.length) return { notes };
+  // 옮길 곳: 이미 시작 맵이 실제 장소면 그곳, 빈 맵이 이동으로 이어진 장소, 없으면 처음 생긴 장소.
+  const landing = seed.events.flatMap((e) => transfersOf(e.pages)).find((t) => real.some((m) => m.id === t.mapId));
+  const target = real.find((m) => m.id === project.startMapId) ?? real.find((m) => m.id === landing?.mapId) ?? real[0]!;
+  if (project.startMapId === seed.id) {
+    const from = landing && landing.mapId === target.id ? { x: landing.x, y: landing.y } : { x: Math.floor(target.width / 2), y: target.height - 2 };
+    const at = startCell(project, target, from);
+    if (!at) return { notes };
+    const moved = run.call("set_start_position", { mapId: target.id, x: at.x, y: at.y });
+    if (!moved.ok) return { notes };
+    notes.push(`the game now starts on «${target.name}» (${target.id}) at (${at.x},${at.y})`);
+  }
+  for (const m of Object.values(run.ctx.project.maps)) {
+    if (m.id === seed.id) continue;
+    for (const e of m.events) if (transfersOf(e.pages).some((t) => t.mapId === seed.id)) run.call("remove_event", { mapId: m.id, eventId: e.id });
+  }
+  const viewRef = `map-view:${seed.id}`;
+  const sys = JSON.stringify(run.ctx.project.system ?? {});
+  if (sys.includes(`"${viewRef}"`)) run.ctx.project = { ...run.ctx.project, system: JSON.parse(sys.split(`"${viewRef}"`).join(`"map-view:${target.id}"`)) };
+  const removed = run.call("remove_map", { mapId: seed.id });
+  if (!removed.ok) return { notes, to: target.id };
+  notes.push(`the empty start map ${seed.id} was removed (it was only the new-project placeholder) — use ${target.id} from now on`);
+  return { notes, to: target.id };
 }
 
 /**

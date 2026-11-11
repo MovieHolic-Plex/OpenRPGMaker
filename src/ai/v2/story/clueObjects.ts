@@ -17,7 +17,8 @@
 // 지금 청사진 단계가 아니고 주는 것을 아무도 받지 않는(엔딩·이동·전투도 없는) 이벤트를 걷어 낸다.
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
-import { doorArtCells, hostMentions, isDoorName, objectBaseName, objectCells, unreachableEvents } from "../judge/eventReach";
+import { declaredDoorCells } from "../place/entrances";
+import { hostMentions, isDoorName, objectBaseName, objectCells, unreachableEvents } from "../judge/eventReach";
 import { repairEventReach } from "../place/reachRepairs";
 import { staleBody } from "./examineSpot";
 import { objectAt, tileLabel } from "../place/cells";
@@ -180,7 +181,7 @@ export function alignClueObjects(run: BuildRun, mapId: string): string[] {
   // 문 — 맨바닥 가운데 선 「굳게 닫힌 철문」이 책장 앞을 막으면 책장 이벤트가 책장으로 못 간다(vm5 argon 방탈출). 문 이름 조사 칸을 먼저 문 그림 칸으로.
   {
     const project = run.ctx.project, map = project.maps[mapId]!;
-    const doors = doorArtCells(project, map);
+    const doors = declaredDoorCells(project, map);
     const doorCells = new Set(doors.map((d) => d.y * map.width + d.x));
     for (const ev of map.events) {
       if (!isDoorName(nameOf(ev)) || sprited(ev) || JSON.stringify(ev.pages ?? []).includes("\"transfer\"") || !doors.length || onCells(map, ev, doorCells)) continue;

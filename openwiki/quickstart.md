@@ -180,7 +180,7 @@ Git에는 카탈로그·검색어·해시만, 그림은 `stills-v1` Release에 �
 
 ## 4. 위키를 읽는 법
 
-- 목차·크기·절 좌표: `openwiki/INDEX.md` (`npm run openwiki:index` 로 재생성, `--check` 로 최신 여부 검사).
+- 목차·크기·절 좌표: `openwiki/INDEX.md` — 커밋하지 않는 생성 파일이다(2026-11-11). 없으면 `node scripts/openwiki-index.mjs`(= `npm run openwiki:index`, 1분 안 · 패키지 불필요)로 만든다.
 - 소유 경계·사전 읽기 순서·데스크톱 UI 진상: `openwiki/PROJECT_WIKI.md` — 이 장의 모판이 되는 페이지다.
 - 영역 진입 전 함정 목록: `openwiki/editor-pre-edit-routing.md`, `openwiki/runtime-pre-edit-routing.md`.
 - 검증·증거 규약: `openwiki/testing.md`. 병렬 에이전트·워크트리: `openwiki/agent-worktrees.md`.
