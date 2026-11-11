@@ -11,12 +11,17 @@ import type { GameMap, Project } from "@/project/types";
 const mapNamed = (project: Project, name: string): GameMap => Object.values(project.maps).find((map) => map?.name === name)!;
 
 describe("뒷문 — 막다른 거절이 한 번에 되는 길을 이른다", () => {
-  it("layoutPatch 거절은 전체 배치를 권하지 않고 create_transfer_pair 를 그 맵 id 와 함께 준다", () => {
-    const text = layoutPatchRefusal("map_hall");
-    expect(text).toContain('create_transfer_pair{a:{mapId:"map_hall"');
+  it("layoutPatch 거절은 전체 배치를 권하지 않고 create_transfer_pair 를 그 맵 id 와 문 칸으로 준다", () => {
+    const project = buildFixture("built");
+    const hall = mapNamed(project, "족장의 긴 집");
+    const text = layoutPatchRefusal(project, hall.id, { replace: { doors: [{ wall: "outer", x: 12, y: 1 }] } });
+    expect(text).toContain(`create_transfer_pair({"a":{"mapId":"${hall.id}","x":12,"y":1}`);
     expect(text).toContain("nothing was changed");
     expect(text).not.toMatch(/Send patch\.set\.layout/u);
-    expect(noDesignRefusal(new V2Session(), "map_hall")).toContain("create_transfer_pair");
+    expect(text).not.toContain('mapId":""');
+    // 문이 아닌 고침은 그 맵을 먼저 보게 한다 — 다음 호출은 하나, 실제 맵 id 로.
+    expect(layoutPatchRefusal(project, hall.id, { replace: {} })).toContain(`Next call: inspect({"mapId":"${hall.id}"})`);
+    expect(noDesignRefusal(new V2Session(), project, hall.id)).toContain("create_transfer_pair");
   });
 
   it("place_door 가 재료를 못 맞히면 문 그림 없이 잇는 길을 같이 적는다", () => {

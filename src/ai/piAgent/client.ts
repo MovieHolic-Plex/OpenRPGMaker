@@ -161,6 +161,11 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
       options.signal?.throwIfAborted();
     }
   };
+  /** 응답 POST 한 번의 시한. 연결이 끊긴 채 매달린 POST 는 줄 전체(뒤의 적용·그림 응답)를 막고, 응답 중이라 워치독도 울리지 않는다 — 시한이 지나면 postAck 가 다시 보낸다. */
+  const ackSignal = (ms: number): AbortSignal => {
+    const limit = AbortSignal.timeout(ms);
+    return options.signal ? AbortSignal.any([options.signal, limit]) : limit;
+  };
   const trackAck = (work: () => Promise<void>) => async () => {
     acksInFlight += 1;
     try { await work(); } finally { acksInFlight -= 1; lastLineAt = Date.now(); }
@@ -177,6 +182,11 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     if (event.type !== "render_request") return false;
     checkpoints = checkpoints.then(trackAck(async () => {
       let png: string | undefined, issue: string | undefined, still: import("../../editor/openingImageGeneration").CinematicStillResult | undefined;
+      // 그림 한 장은 턴을 붙잡지 못한다. 그림 응답과 단계 적용은 한 줄(checkpoints)로 차례를 서므로, 끝나지 않는 그리기 하나가
+      // 뒤의 적용 응답을 전부 막았다 — 워커는 45초 뒤 그 그림을 포기하고 다음 체크포인트를 보냈지만 답이 오지 않아
+      // 30분 시한까지 멈췄다(2026-11-11 측정 r1: 조립 뒤 24분 무사건, 워커·편집기 둘 다 한가). 워커 시한보다 먼저 손을 뗀다.
+      const renderLimitMs = event.toolName === 'generate_opening_image' ? 290_000 : 40_000;
+      const drawing = (async () => {
       try {
         options.signal?.throwIfAborted();
         const draft = restoreCheckpointProject(request.project, event.project, event.unchangedKeys, event.unchangedTilesetIds);
@@ -223,12 +233,21 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           if (tooBig) { issue = `render is ${tooBig} — larger than 512×512, not sent`; png = undefined; }
         }
       } catch (error) { issue = error instanceof Error ? error.message : String(error); }
-      const renderBody = JSON.stringify({ renderId: event.renderId, png, still, issue });
+      })();
+      let limit: ReturnType<typeof setTimeout> | undefined;
+      const gaveUp = await Promise.race([drawing.then(() => false), new Promise<boolean>((resolve) => { limit = setTimeout(() => resolve(true), renderLimitMs); })]);
+      clearTimeout(limit);
+      const renderBody = JSON.stringify(gaveUp
+        ? { renderId: event.renderId, issue: `render did not finish in the editor within ${Math.round(renderLimitMs / 1000)}s` }
+        : { renderId: event.renderId, png, still, issue });
       const ack = await postAck(() => fetchCompanion(companionAuthUrl("/v1/agent/render", request.provider), {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: renderBody,
-        ...(options.signal ? { signal: options.signal } : {}),
+        signal: ackSignal(30_000),
       }, { fetchImpl: doFetch }));
+      // 409 = 워커가 그 그림을 이미 버렸다(45초 시한이 먼저 지났거나 그림을 받아들이지 않았다). 그 도구는 워커 쪽에서 실패로 끝났고
+      // 턴은 계속 간다 — 늦은 그림 한 장이 턴 전체를 끊지 않는다(부하 걸린 머신에서 그리기가 45초를 넘으면 턴이 죽었다).
+      if (ack.status === 409) { options.onEvent?.({ type: "execution_status", name: "render.dropped", ok: false, summary: "그림 응답을 워커가 받지 않았다(시한 지남)", data: { renderId: event.renderId, toolName: event.toolName } }); return; }
       if (!ack.ok) throw new PiAgentClientError(`맵 이미지 응답을 전달하지 못했습니다(${ack.status}).`, ack.status);
     })).catch(error => { checkpointError = error; cancelAfterAckFailure(); abortStream(); });
     return true;
@@ -270,7 +289,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           method: "POST",
           ...ackWire,
           headers: ackWire.headers,
-          ...(options.signal ? { signal: options.signal } : {}),
+          signal: ackSignal(120_000),
         }, { fetchImpl: doFetch }));
         if (!ack.ok) throw new PiAgentClientError(stale ? `적용 응답을 전달하지 못했습니다(${ack.status}) — 워커 연결이 먼저 끊겼습니다.` : `적용 응답을 전달하지 못했습니다(${ack.status}).`, ack.status);
       })).catch(error => { checkpointError = error; cancelAfterAckFailure(); abortStream(); });

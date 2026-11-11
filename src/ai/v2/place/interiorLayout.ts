@@ -78,7 +78,7 @@ export const LAYOUT_GRID_RULES = [
   "objects: floor pieces, x,y = top-left of the footprint, optional repeat {count,dx,dy}. Footprints must not overlap and must be on floor cells (not face rows). Keep every doorway and the cells in front of it free so every room and the landmark are reachable from the entrance. Tall art draws upward; keep that space free of other tall pieces. Carpets and decals are walkable.",
   "landmark: the one big piece the place is built around, written once (it may also appear in objects/wall_items at the same x,y — counted once).",
   "Stairs up (su) are a KIT 3 wide x 3 tall: they cover the 2 face rows of a NORTH wall plus the first floor row under it. Put them in wall_items with that wall, x,y = the LEFT cell of the floor row (y = wall row + 3); all 3 columns must be under one straight stretch of that wall (no door or corner), and the 3 cells south of them (y+1) must stay free floor — that is where the player walks in. Stairs down (sd) are a hole in the floor (WxH as listed) entered from the south: keep the row under them free. A room with \"stairs\": \"up\"|\"down\" must contain those stairs.",
-  "Size each room to its content. Empty floor = a floor cell with nothing on it or next to it (wall, face, furniture). A room is rejected when it has an empty area of 3x4 or more off its door-to-door walkways, or more than 25% of its floor is empty; a hall of 80+ floor cells needs 20% of the floor off its walkways furnished. Every room of 30+ floor cells (corridors aside) needs at least 0.18 standing pieces per floor cell (a 120-cell hall: 22+ pieces), set as groups that serve the room. Walkways (shortest paths between doors, entrance and stair entries, 3 cells wide) are never counted as empty. Rugs, carpets and decals do not count as furnishing; at most 1 rug per room (2 in a room of 150+ floor cells). Fix an empty room by moving its walls in or by adding a purposeful group of standing pieces.",
+  "Size each room to its content. Empty floor = a floor cell with nothing on it or next to it (wall, face, furniture). Laid, but listed as open work for your review_layout rounds: an empty area of 3x4 or more off the door-to-door walkways, over 25% of a room's floor empty, a hall of 80+ floor cells with under 20% of its off-walkway floor furnished, a room of 30+ floor cells (corridors aside) under 0.12 standing pieces per floor cell (0.08 from 60 cells, 0.06 from 100). Walkways (shortest paths between doors, entrance and stair entries, 3 cells wide) are never counted as empty. Rugs, carpets and decals do not count as furnishing; at most 1 rug per room (2 in a room of 150+ floor cells). Fix an empty room by moving its walls in or by adding a purposeful group of standing pieces.",
   "Size rooms by importance: main hall > dining or drawing room > bedrooms > closets and storage. Rooms of the same size side by side should be truly repeated rooms (guest rooms, cells — mark them \"repeat\": true).",
   "Shape important rooms by their use where it serves (not every room; storage and cells stay simple): an alcove or niche = a short wall with \"stub\": true that pinches a recess off the room (a bed alcove, a reading nook, a shrine niche); columns = column pieces in a row, or a pair framing an entrance; a half-wall = a \"fence\" or \"altar rail\" rail that divides without closing (a bar corner, a gallery edge); a raised dais = \"daises\" (a stage for the high table, a throne, a teacher's desk) — walkable, furniture may stand on it.",
   "Floors: each room has one \"floor\". floor_zones lays a second floor inside ONE room where its use changes (an entry floor, kitchen tiles, a wet area) — a real area, never a single cell; at most one per room. Tatami: give that room \"jo\": N (number of mats); code lays whole 1x2-cell mats along the walls, so its tatami floor (below the face rows) must be an even rectangle of 2N cells — 6 jo = 4x3, 8 jo = 4x4, 12 jo = 4x6 or 6x4.",
@@ -238,15 +238,17 @@ export function checkLayout(raw: unknown, S: HandInteriorSpec, tileset: TilesetD
   return { errors, warnings, badObjects, input, built, objects: objs, sources: srcList };
 }
 
-/** 거절 글: Rejected / You sent / Fixed call (영어). */
+/**
+ * 거절 글(영어): 몇 가지가 막았나 → 무엇을 다시 보내나 → 막은 것 전부 → 보낸 것.
+ * 고칠 호출이 맨 앞이다 — 동사 거절 틀(failureText)이 한 줄로 접어 뒤를 자르므로, 뒤에 두면 모델은 «3 problems» 중 하나와 엉뚱한 다음 호출만 봤다(2026-11-11 깔기 24판).
+ */
 export function rejectionText(name: string, check: LayoutCheck, sent: unknown, left: number): string {
-  const sentText = JSON.stringify(sent ?? {}).slice(0, 500);
+  const sentText = JSON.stringify(sent ?? {}).slice(0, 300);
   const all = [...check.errors, ...(check.soft ?? [])];
-  return [`Rejected: the interior layout for "${name}" cannot be laid as written (${all.length} problem${all.length === 1 ? "" : "s"}):`,
+  return [`Rejected: the interior layout for "${name}" cannot be laid as written (${all.length} problem${all.length === 1 ? "" : "s"}). Send make_place again with the same name and the whole corrected layout, changing only what the problems name (edit_place with patch.layoutPatch holding just the changes also works — it patches this rejected layout and sends it again). ${left > 0 ? `${left} repair${left === 1 ? "" : "s"} left; after that, pieces that still fail are left out and the rest is laid.` : "This was the last repair: next time the pieces that still fail are left out and the rest is laid."}`,
     ...all.slice(0, 30).map((e) => `- ${e}`),
     ...(check.warnings.length ? ["Warnings (fix if you can):", ...check.warnings.slice(0, 8).map((w) => `- ${w}`)] : []),
-    `You sent: ${sentText}${sentText.length >= 500 ? "…" : ""}`,
-    `Fixed call: make_place again with the same name and the full corrected spec.layout (or edit_place({patch:{mapId, layoutPatch}}) with just the changes — it patches this rejected layout and sends it again) — change only what the problems name (move or drop the listed pieces, close or extend the named walls, carve the missing doors, shrink or furnish the empty rooms). ${left > 0 ? `${left} repair${left === 1 ? "" : "s"} left; after that, pieces that still fail are left out, the rest is laid and space problems stay as warnings.` : "This was the last repair: next time the pieces that still fail are left out and the rest is laid."}`].join("\n");
+    `You sent: ${sentText}${sentText.length >= 300 ? "…" : ""}`].join("\n");
 }
 
 /** 지은 뒤 남기는 선언(맵 위치 note) — 할 일 검사 layout_built 가 읽는다. 좌표는 지은 맵 좌표. */
@@ -288,11 +290,36 @@ export interface LayoutPatch {
   readonly replace?: Readonly<Record<string, unknown>>;
 }
 const REPLACEABLE = new Set(["map", "landmark", "outer_wall", "walls", "doors", "entrance", "rooms", "wall_items", "objects", "carpets", "rails", "regions", "openings", "daises", "floor_zones", "required"]);
+/**
+ * replace 에서 실제로 바꾸는 칸. 엄격 스키마 모델은 모든 칸을 0·빈 값으로 채워 보낸다 — 그 껍데기는 «보내지 않았다» 다:
+ * map{w:0} · landmark{id:""} · outer_wall{path:[]} · entrance{x:0,y:0} · 빈 배열. 빈 walls·doors·carpets 는 방을 다시 나눈 고침(rooms 도 같이 옴)에서만
+ * «전부 뺀다» 로 읽는다 — 껍데기의 walls:[] 를 그대로 적용해 칸막이·문이 사라지고 «두 방이 한 공간» 거절이 났다(2026-11-11 map-vqa 깔기 inn·prison).
+ */
+function replaceEntries(replace: LayoutPatch["replace"]): [string, unknown][] {
+  const all = Object.entries(replace ?? {});
+  const replan = all.some(([k, v]) => k === "rooms" && Array.isArray(v) && v.length > 0);
+  return all.filter(([k, v]) => {
+    if (v === null || v === undefined) return false;
+    if (Array.isArray(v)) return v.length > 0 || (replan && (k === "walls" || k === "doors" || k === "carpets"));
+    if (typeof v !== "object") return true;
+    if (!Object.keys(v as object).length) return false;
+    if (k === "map") return (v as { w?: number }).w! > 0;
+    if (k === "landmark") return !!(v as { id?: string }).id;
+    if (k === "outer_wall") return !!(v as { path?: unknown[] }).path?.length;
+    if (k === "entrance") return !!(v as { y?: number }).y;
+    return true;
+  });
+}
 export function layoutPatchIsEmpty(p: LayoutPatch | undefined): boolean {
   if (!p) return true;
   const real = (v: unknown) => Array.isArray(v) ? v.some((o) => o && typeof o === "object" && typeof (o as { id?: unknown }).id === "string" && (o as { id: string }).id !== "") : false;
-  const rep = Object.entries(p.replace ?? {}).filter(([k, v]) => REPLACEABLE.has(k) && v !== null && v !== undefined && !(Array.isArray(v) && !v.length) && !(typeof v === "object" && !Array.isArray(v) && !Object.keys(v as object).length));
-  return !real(p.remove_objects) && !real(p.add_objects) && !real(p.remove_wall_items) && !real(p.add_wall_items) && !rep.length;
+  return !real(p.remove_objects) && !real(p.add_objects) && !real(p.remove_wall_items) && !real(p.add_wall_items) && !replaceEntries(p.replace).some(([k]) => REPLACEABLE.has(k));
+}
+/** 고침이 배치 전체를 새로 보냈나(replace 에 맵 크기·바깥 벽·방이 다 있다) — 아직 짓지 않은 장소면 그것이 곧 새 배치다. */
+export function patchedWholeLayout(p: LayoutPatch | undefined): InteriorLayout | undefined {
+  const keys = new Set(replaceEntries(p?.replace).map(([k]) => k));
+  if (!p || !keys.has("map") || !keys.has("outer_wall") || !(keys.has("rooms") || keys.has("regions"))) return undefined;
+  return applyLayoutPatch({} as InteriorLayout, p).layout;
 }
 export function applyLayoutPatch(L: InteriorLayout, p: LayoutPatch): { layout: InteriorLayout; errors: string[] } {
   const errors: string[] = [];
@@ -306,22 +333,15 @@ export function applyLayoutPatch(L: InteriorLayout, p: LayoutPatch): { layout: I
       else if (key === "objects" && L.landmark && L.landmark.id === r.id && L.landmark.x === r.x && L.landmark.y === r.y) errors.push(`remove_objects: "${r.id}" at (${r.x},${r.y}) is the landmark — move it with replace.landmark instead.`);
       else errors.push(`remove_${key}: no entry "${r.id}" at (${r.x},${r.y}) in "${key}" — use the exact id and x,y of an entry in the current layout.`);
     }
-    for (const a of add ?? []) if (a && typeof a.id === "string" && a.id !== "") list.push(a);
+    // 같은 것(id·칸)이 이미 있으면 더하지 않는다 — 새 기물을 replace.objects 와 add_objects 양쪽에 적어 보내 «두 기물이 겹친다» 거절이 났다(같은 판 house·prison).
+    for (const a of add ?? []) if (a && typeof a.id === "string" && a.id !== "" && !list.some((o) => o.id === a.id && o.x === a.x && o.y === a.y)) list.push(a);
     out[key] = list;
   };
   // replace 먼저, 그다음 빼기/더하기 — 엄격 스키마 모델은 replace 의 모든 칸을 지금 값 그대로 채워 보낸다(5회차 terra: replace.objects 가 add_objects 를 지웠다).
-  for (const [k, v] of Object.entries(p.replace ?? {})) {
-    if (v === null || v === undefined || (Array.isArray(v) && !v.length && k !== "walls" && k !== "doors" && k !== "carpets")) continue;
-    if (typeof v === "object" && !Array.isArray(v) && !Object.keys(v as object).length) continue;
-    // 빈 껍데기(엄격 스키마의 0·빈 값): map{w:0}·landmark{id:""}·outer_wall{path:[]}·entrance{x:0,y:0} 는 «바꾸지 않는다».
-    if (k === "map" && !((v as { w?: number }).w! > 0)) continue;
-    if ((k === "landmark") && !(v as { id?: string }).id) continue;
-    if (k === "outer_wall" && !((v as { path?: unknown[] }).path?.length)) continue;
-    if (k === "entrance" && !(v as { y?: number }).y) continue;
+  for (const [k, v] of replaceEntries(p.replace)) {
     if (REPLACEABLE.has(k)) out[k] = v; else errors.push(`replace: unknown field "${k}".`);
   }
   take("objects", p.remove_objects, p.add_objects);
   if (p.remove_wall_items?.length || p.add_wall_items?.length) take("wall_items", p.remove_wall_items, p.add_wall_items);
   return { layout: out as unknown as InteriorLayout, errors };
 }
-

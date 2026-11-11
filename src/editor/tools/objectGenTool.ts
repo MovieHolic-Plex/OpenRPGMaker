@@ -68,7 +68,7 @@ const squash = (text: string): string => text.replace(/[\s·,/()]+/gu, "").toLow
 type Existing = { readonly id: string; readonly name: string; readonly how: string };
 
 /** 이름이 맞는 이미 있는 기물 — 칩셋 구조 킷(어떤 출처든)과 손 도트 실내 가구. 이름 전체 또는 끝 낱말(2글자 이상)이 들어 있으면 맞다. */
-function existingMatches(project: Project, tileset: TilesetDef, title: string): Existing[] {
+export function existingMatches(project: Project, tileset: TilesetDef, title: string): Existing[] {
   const full = squash(title);
   const head = words(title).at(-1) ?? "";
   const needles = [full, ...(head.length >= 2 && squash(head) !== full ? [squash(head)] : [])].filter((needle) => needle.length >= 2);
