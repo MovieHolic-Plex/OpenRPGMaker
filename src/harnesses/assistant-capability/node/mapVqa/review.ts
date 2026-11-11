@@ -1,7 +1,7 @@
 // 조수가 깐 맵의 적대적 시각 검수(map-vqa). 맵마다: 깨끗한 1배 그림 + 확대 그림 + 사실 표시 그림 + 사실 글 → Opus 5.5 검수자 → 결함 목록
 // (종류 · 심각도 · 칸 영역 · 근거 한 줄). 판정은 그림 화소 해시와 지시문 판에 묶인다. 검수자가 답하지 못한 맵은 «미검증»이고 집계에서 합격으로 세지 않는다.
 // 결과: <out>/maps/<id>/{clean,facts,marked}.png · review.json, <out>/tally.json(종류 × 심각도 × 수, 맵마다 목록), <out>/page.html.
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { askJudge, mapLimit, newUsage, pixelSha, usageLine, VISUAL_JUDGE, type JudgeUsage } from '../visualJudge';
 import { classPatterns, PATTERNS_VERSION } from './patterns';
@@ -65,6 +65,9 @@ export async function runMapVqa(options: MapVqaOptions): Promise<number> {
   const calibration = calibrationOf(reviewer.version);
   const tally = buildTally(results, { corpus: options.corpus, generatedAt: new Date().toISOString(), layJobs: layJobsOf(options.corpus), calibration: calibration ? { status: calibration.status, missRate: calibration.missRate, falseAlarmRate: calibration.falseAlarmRate, planted: calibration.planted, good: calibration.good } : { status: 'uncalibrated' },
     judgeUsage: { calls: usage.calls, cached: usage.cached, failures: usage.failures, inputTokens: usage.inputTokens + usage.cacheReadTokens + usage.cacheWriteTokens, outputTokens: usage.outputTokens } }, reviewer);
+  // HUD 검수(map-vqa-hud 가 같은 결과 폴더에 남긴 hud.json)가 있으면 그 집계를 따로 한 묶음으로 싣는다 — 맵 깔기 결함과 섞어 세지 않는다.
+  const hudFile = resolve(options.out, 'hud.json');
+  if (existsSync(hudFile)) { const hud = JSON.parse(readFileSync(hudFile, 'utf8')); (tally as any).hud = { promptVersion: hud.promptVersion, calibration: hud.calibration, generatedAt: hud.generatedAt, page: hud.page ?? null, totals: hud.totals, ranked: hud.ranked, perGame: hud.perGame }; }
   // 종류 안의 되풀이(같은 원인끼리) — 순위표의 한 줄을 «무엇을 고치면 되는가»로 내린다. 묶기는 검수자 모델, 세기는 코드. 따로 보정하지 않았다.
   if (!options.noReview) (tally as any).patterns = { promptVersion: PATTERNS_VERSION, note: '같은 원인끼리 묶은 것(major 이상만). 묶음은 보정하지 않았다 — 고칠 거리의 실마리다.', byClass: await classPatterns(results, reviewer, resolve(options.out, 'judge-cache'), usage) };
   (tally as any).judgeUsage = { calls: usage.calls, cached: usage.cached, failures: usage.failures, inputTokens: usage.inputTokens + usage.cacheReadTokens + usage.cacheWriteTokens, outputTokens: usage.outputTokens };

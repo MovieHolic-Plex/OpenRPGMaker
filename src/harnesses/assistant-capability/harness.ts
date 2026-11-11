@@ -44,6 +44,7 @@ export const ASSISTANT_CAPABILITY_HARNESS = defineHarness({
     { id: 'map-vqa-lay', title: '맵 깔기 묶음 실제 수행(모델 고정)', summary: '조수에게 자연어 한 문장으로 맵을 깔게 하는 고정 묶음(map-vqa/requests.json: 한 장 21 + 이어지는 두 장 3)을 실제 입력창 한 턴으로 돌리고(--model terra-high --v2) 저장 문서를 남긴다. 기계 합격은 없다 — map-vqa 가 그림을 본다. 동시 최대 2.' },
     { id: 'map-vqa', title: '조수가 깐 맵의 적대적 그림 검수', summary: '게임 통판·맵 깔기 실행 폴더의 맵마다 깨끗한 1배 그림 + 확대 그림 + 사실 표시 그림(걷는 칸·출구·사람)을 Opus 5.5 검수자에게 보이고 결함(종류·심각도·칸 영역·근거)을 받는다. tally.json(종류 × 심각도 × 수)과 결함을 그림에 표시한 한 장을 쓴다. 판정은 그림 해시에 묶이고 검수자가 답하지 못한 맵은 미검증이다.' },
     { id: 'map-vqa-calibrate', title: '맵 검수자 보정', summary: '사람이 만든 좋은 맵에 일부러 심은 결함(문 막기·맨땅 출구·가구 층 지우기·물체 밀기·6번 도장 등)과 실제로 확인된 조수 결함을 검수자가 그 자리에서 잡는지, 좋은 맵 원본에 «막힘»을 잘못 붙이지 않는지 잰다. 놓치면 기준을 낮추지 않고 지시문을 고쳐 판을 올린다.' },
+    { id: 'map-vqa-hud', title: '조수가 만든 게임의 HUD 화면 검수', summary: '게임을 출하 플레이어로 켜서 맵마다 필드 화면(HUD · 목표 줄 · 주인공)을 찍고, 저장된 HUD 설정·게임이 실제로 쓰는 게이지 같은 사실과 함께 Opus 5.5 검수자에게 보인다(안 쓰는 게이지 · 장르가 다른 HUD · 안 읽히는 글 · 주인공을 가림 · 목표 글). hud.json 과 한 장을 내고 map-vqa 의 tally 에 따로 한 묶음으로 실린다. 보정 전이다.' },
     { id: 'matrix-score', title: '작은 명령 50개 모델 품질 점수', summary: '실제 모델의 자연어 해석·도구 판단과 전후 화면 쌍의 시각 품질을 50개 모두 채점한다. 모델 호출 누락은 정적 점수로 대체하지 않는다.' },
   ],
   entrypoints: { cli: true, editorUi: false, assistantTool: false },

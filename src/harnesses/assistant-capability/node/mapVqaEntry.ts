@@ -14,6 +14,9 @@ if (mode === 'lay') {
 } else if (mode === 'review') {
   const { runMapVqa } = await import('./mapVqa/review');
   process.exitCode = await runMapVqa({ out: option('out') ? resolve(option('out')!) : undefined, corpus: option('corpus'), only: option('only'), noReview: flag('no-review'), noArt: flag('no-art'), html: option('html'), before: option('before'), beforeLay: option('before-lay'), concurrency: option('concurrency') });
+} else if (mode === 'hud') {
+  const { runHudVqa } = await import('./mapVqa/hud');
+  process.exitCode = await runHudVqa({ out: option('out') ? resolve(option('out')!) : undefined, corpus: option('corpus'), only: option('only'), html: option('html'), playerRoot: option('player-root'), noReview: flag('no-review'), concurrency: option('concurrency') });
 } else if (mode === 'calibrate') {
   const { runMapVqaCalibration } = await import('./mapVqa/calibrate');
   process.exitCode = await runMapVqaCalibration({ out: option('out') ? resolve(option('out')!) : undefined, only: option('only'), noReview: flag('no-review'), concurrency: option('concurrency') });
@@ -21,5 +24,5 @@ if (mode === 'lay') {
   const { freezePositive } = await import('./mapVqa/calibrate');
   process.exitCode = freezePositive({ run: option('run'), map: option('map'), id: option('id') });
 } else {
-  throw new Error('mapVqaEntry: lay | review | calibrate | freeze');
+  throw new Error('mapVqaEntry: lay | review | hud | calibrate | freeze');
 }

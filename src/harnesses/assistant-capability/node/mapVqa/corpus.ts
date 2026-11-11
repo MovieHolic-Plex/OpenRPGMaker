@@ -20,6 +20,8 @@ export type MapItem = {
   context: string;
   /** 조수가 칠하지 않은 빈 맵(빈 프로젝트의 시작 맵이 그대로 남은 것). 깔기 결함은 보지만(플레이어가 거기서 시작한다) 없는 그림은 묻지 않는다. */
   blank?: boolean;
+  /** 저장 정본 폴더(project.sqlite 가 있는 곳) — 출하 플레이어로 켤 때 쓴다. 프로젝트 JSON 견본에는 없다. */
+  projectDir?: string;
 };
 
 const slug = (text: string): string => text.normalize('NFC').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/gu, '').toLowerCase().slice(0, 40) || 'map';
@@ -34,7 +36,7 @@ function fromWholeGame(dir: string): MapItem[] {
   const run = basename(dir), project = readProjectSqlite(resolve(dir, 'project')) as any;
   addRenderAssetRoot(resolve(dir, 'project/assets'));
   const prompt = (() => { try { return /prompt=(.*?)\s+started=/u.exec(readFileSync(resolve(dir, 'RUN.txt'), 'utf8'))?.[1] ?? ''; } catch { return ''; } })();
-  return Object.values<any>(project.maps).map(map => ({ id: `${slug(run)}--${slug(map.name ?? map.id)}-${String(map.id).slice(-4)}`, group: `A:${run}`, label: `${run} · ${map.name ?? map.id}`, project, mapId: map.id, standalone: !linked(project, map.id),
+  return Object.values<any>(project.maps).map(map => ({ id: `${slug(run)}--${slug(map.name ?? map.id)}-${String(map.id).slice(-4)}`, group: `A:${run}`, label: `${run} · ${map.name ?? map.id}`, project, mapId: map.id, standalone: !linked(project, map.id), projectDir: resolve(dir, 'project'),
     context: `Part of the game «${project.meta?.title ?? ''}» that the assistant built from the request «${prompt}».` }));
 }
 
@@ -53,7 +55,7 @@ function fromLayRun(dir: string): MapItem[] {
       const blank = isBlankMap(saved), isStart = (project as any).startMapId === map.id, isLinked = linked(project, map.id);
       // 칠하지 않은 빈 맵이 시작 맵도 아니고 어디와도 이어지지 않았으면 플레이어가 볼 일이 없다 — 검수 대상이 아니다.
       if (blank && !isStart && !isLinked) continue;
-      out.push({ id: `lay-${job.id}--${slug(map.name)}-${String(map.id).slice(-4)}`, group: `B:${job.id}`, label: `맵 깔기 ${job.id} · ${map.name}`, project, mapId: map.id, standalone: !isLinked, ...(blank ? { blank: true } : {}),
+      out.push({ id: `lay-${job.id}--${slug(map.name)}-${String(map.id).slice(-4)}`, group: `B:${job.id}`, label: `맵 깔기 ${job.id} · ${map.name}`, project, mapId: map.id, standalone: !isLinked, projectDir, ...(blank ? { blank: true } : {}),
         context: `The user asked the assistant (in Korean): «${job.request}»${job.status === 'timeout' ? ' (the assistant ran out of time; this is what was saved)' : ''}.${blank ? ' NOTE: this is the empty map the project started with. The assistant painted nothing on it but left it in the game' + (isStart ? ' as the map where the game starts.' : '.') : ''}` });
     }
   }

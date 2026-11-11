@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { buildArtGaps, parseArtReview, toolReportsIn } from "@/harnesses/assistant-capability/node/mapVqa/artGaps";
 import { caught, plant, RECIPE_CLASSES, type Recipe } from "@/harnesses/assistant-capability/node/mapVqa/decoys";
 import { factsText, isBlankMap, mapFacts } from "@/harnesses/assistant-capability/node/mapVqa/facts";
+import { buildHudTally, parseHudReview, type HudShot } from "@/harnesses/assistant-capability/node/mapVqa/hudVerdict";
 import { parsePatterns } from "@/harnesses/assistant-capability/node/mapVqa/patterns";
 import { buildTally, loadReviewer, parseReview, type MapReview } from "@/harnesses/assistant-capability/node/mapVqa/verdict";
 import { extractJson, VISUAL_JUDGE } from "@/harnesses/assistant-capability/node/visualJudge";
@@ -198,5 +199,28 @@ describe("종류 안의 되풀이 묶기", () => {
     expect(parsePatterns(JSON.stringify({ groups: [{ pattern: "막힌 문", ids: [1, 2, 3] }, { pattern: "걸어지는 물", ids: [3] }] }), lines)).toBeNull();
     expect(parsePatterns(JSON.stringify({ groups: [{ pattern: "막힌 문", ids: [1, 2, 3, 4] }] }), lines)).toBeNull();
     expect(parsePatterns(JSON.stringify({ groups: [{ pattern: "blocked door", ids: [1, 2, 3] }] }), lines)).toBeNull();
+  });
+});
+
+describe("HUD 화면 검수(답 읽기와 집계)", () => {
+  it("검수자 답: 큰 결함이 먼저 오고, 없는 종류·blocker·한국어 아닌 근거·screen 없음은 답이 아니다", () => {
+    const ok = parseHudReview('{"screen":"왼쪽 위 마력 막대, 오른쪽 위 목표 줄","defects":[{"class":"objective-text","severity":"polish","evidence":"목표 글이 두 줄로 어색하게 끊긴다"},{"class":"unused-gauge","severity":"major","evidence":"«마력 43/43» 막대가 혼자 떠 있다"}]}');
+    expect(ok?.defects.map(defect => [defect.class, defect.severity])).toEqual([["unused-gauge", "major"], ["objective-text", "polish"]]);
+    expect(parseHudReview('{"screen":"x","defects":[{"class":"nope","severity":"major","evidence":"한글"}]}')).toBeNull();
+    expect(parseHudReview('{"screen":"x","defects":[{"class":"other","severity":"blocker","evidence":"한글"}]}')).toBeNull();
+    expect(parseHudReview('{"screen":"x","defects":[{"class":"other","severity":"major","evidence":"english only"}]}')).toBeNull();
+    expect(parseHudReview('{"defects":[]}')).toBeNull();
+  });
+  it("집계: 검수 못 한 화면은 세지 않고, 건너뛴 게임은 게임 수에 안 들며, 보정 전이라고 적는다", () => {
+    const shot = (id: string, group: string, status: HudShot["status"], defects: HudShot["defects"]): HudShot => ({ id, group, label: `${group} · ${id}`, mapName: id, start: false, file: "", chip: null, status, screen: "", defects });
+    const tally = buildHudTally([
+      shot("a", "A:g1", "reviewed", [{ class: "unused-gauge", severity: "major", evidence: "마력" }]),
+      shot("b", "A:g1", "reviewed", [{ class: "unused-gauge", severity: "major", evidence: "마력" }, { class: "unreadable", severity: "polish", evidence: "글" }]),
+      shot("c", "A:g2", "reviewed", []),
+      shot("d", "A:g2", "unreviewed", []),
+    ], [{ group: "A:g1", label: "g1", factsText: "", unused: ["mp"] }, { group: "A:g2", label: "g2", factsText: "", unused: [] }, { group: "B:x", label: "x", factsText: "", unused: [], skipped: "건너뜀" }], {});
+    expect(tally.totals).toMatchObject({ games: 2, shots: 4, reviewed: 3, unreviewed: 1, shotsWithMajor: 2, gamesWithMajor: 1, major: 2, polish: 1 });
+    expect(tally.ranked.map(row => [row.class, row.major, row.polish, row.shots, row.games])).toEqual([["unused-gauge", 2, 0, 2, 1], ["unreadable", 0, 1, 1, 1]]);
+    expect(tally.calibration.status).toBe("uncalibrated");
   });
 });
