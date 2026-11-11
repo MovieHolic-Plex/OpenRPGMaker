@@ -5,6 +5,7 @@
 // 성공을 꾸미지 않는다: «카드를 띄웠다 / 기물은 아직 안 놓였다» 를 summary 와 missingArt 에 그대로 적는다.
 import { resolveWhere, type Footprint } from "./where";
 import { findMap } from "./cells";
+import { existingMatches } from "@/editor/tools/objectGenTool";
 import type { BuildRun, ContentBuildResult, ObjectSpec } from "../shared/types";
 
 export const DRAW_OBJECT_CARD =
@@ -107,6 +108,18 @@ export function drawObject(run: BuildRun, spec: ObjectSpec): DrawObjectResult {
 
   if (!res.ok) {
     const exists = /이미 있다/.test(String(res.summary));
+    // 이미 있는 칩셋 킷이면 그것을 놓는 호출을 실제 값으로 이른다 — 도구 글의 stamp_object 는 작은 요청에 실리지 않아, 이른 호출이 다시 막혔다.
+    const tileset = run.ctx.project.tilesets[map.tilesetId];
+    const kits = exists && tileset ? existingMatches(run.ctx.project, tileset, what).filter((row) => !(spec.notThese ?? []).includes(row.id) && (tileset.structureKits ?? []).some((kit) => kit.id === row.id)) : [];
+    if (kits.length) {
+      const at = spot ? `,"at":{"x":${spot.cell.x},"y":${spot.cell.y}}` : "";
+      return {
+        ok: false, mapIds: [mapId], warnings, missingArt: [], calls: run.calls.slice(firstCall),
+        summary: `Not drawn — this chipset already has ${kits.length === 1 ? "an object" : `${kits.length} objects`} whose name matches «${what}». `
+          + `Next call: place_object({"mapId":"${mapId}","objectId":"${kits[0]!.id}"${at}}) — it stamps that object (on nearby free ground if the cell is taken). `
+          + `Matches: ${kits.slice(0, 5).map((row) => `${row.id} (${row.name})`).join(" · ")}. If none of these is the thing you mean, call draw_object again with notThese:[${kits.map((row) => `"${row.id}"`).join(",")}].`,
+      };
+    }
     return {
       ok: false, mapIds: [mapId], warnings, missingArt: [],
       summary: exists
