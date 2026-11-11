@@ -99,6 +99,12 @@ const V2_GAME_TOOLS: readonly string[] = [
   "remove_map",
 ];
 
+/**
+ * 어느 묶음에도 없지만 풀에는 두는 도구 — 이름으로 부르면(또는 load_tools 로) 실리고, 작은 일은 주제가 맞을 때 처음부터 싣는다(topics.ts).
+ * 작은 일 둘째 묶음(2026-11-11)의 손 풀이가 부르는데 v2 어디에서도 닿지 않던 넷: 시작 소지품·이벤트 복제·컷신 각본·길을 막고 싸우는 적.
+ */
+const V2_POOL_ONLY: readonly string[] = ["set_session_start", "duplicate_event", "script_cutscene", "place_battle_blocker"];
+
 // tile_erase: 끝맺음 검사(gameChecks.ts «다리·출입구·방 쓰임»)가 «tile_erase 로 걷는다» 고 이르는데 v2 도구 풀에 없어 부를 수 없었다 — 이름으로 부르면 실린다.
 const V2_TERRAIN_TOOLS: readonly string[] = ["list_spatial_designs", "stamp_object", "fill_region", "tile_erase"];
 
@@ -117,9 +123,15 @@ const STORE_TIERS: readonly { readonly words: RegExp; readonly tools: readonly s
 ];
 
 /** 상점·값·장비를 말하는 낱말. */
-export const SHOP_WORDS = new RegExp(String.raw`상점|가게|팔게|팔기|파는|팔아|판매|구입|사는|살 수|가격|${kw("값")}|골드|${kw("돈")}|무기|갑옷|방패|장비|장신구|반지|목걸이|shop|price|equipment`, "iu");
+/** 「가게」 — 「시장으로 가게 해 줘」「동굴로 가게 이어 줘」「주워 가게 되게」의 「가게」는 상점이 아니다(「가게 하나」는 상점이다). */
+export const SHOP_NOUN = String.raw`가게(?!\s*(?:해|할\s*수|하게|하도록|돼|되[게면어도]|이어))`;
+export const SHOP_WORDS = new RegExp(String.raw`상점|${SHOP_NOUN}|팔게|팔기|파는|팔아|판매|구입|사는|살 수|가격|${kw("값")}|골드|${kw("돈")}|무기|갑옷|방패|장비|장신구|반지|목걸이|shop|price|equipment`, "iu");
 /** 엔딩·막 끝·게임 오버처럼 끝맺는 일을 말하는 낱말. */
-export const ENDING_WORK_WORDS = /엔딩|결말|끝나|끝내|끝이|끝에|마지막 날|마지막에|마지막 장면|막 끝|막이|제\s*\d+\s*막|에필로그|타이틀로|게임 오버|게임이 끝|ending|epilogue/iu;
+// 「동쪽 끝에서」「맨 끝에」의 「끝에」는 자리다 — 이야기의 끝이 아니다.
+export const ENDING_WORK_WORDS = /엔딩|결말|끝나|끝내|끝이|(?<!(?:쪽|편|맨|줄|길|복도|골목|다리|방|맵)\s?)끝에|마지막 날|마지막에|마지막 장면|막 끝|막이|제\s*\d+\s*막|에필로그|타이틀로|게임 오버|게임이 끝|ending|epilogue/iu;
+
+/** 의뢰·심부름·모아 오기처럼 퀘스트를 말하는 낱말. */
+export const QUEST_WORDS = /퀘스트|의뢰|심부름|부탁|임무|보상|일지|할 일|모으|모아|모았|수집|가져가|가져오|가져다|찾아 ?(주|오|와)|구해 ?(오|와)|quest/iu;
 
 /**
  * 무거운 게임 도구 묶음 — 요청 낱말이 그 일을 말할 때만 싣는다.
@@ -133,13 +145,13 @@ const GAME_TOOL_GROUPS: readonly { readonly words: RegExp; readonly tools: reado
     tools: ["upsert_class", "upsert_skill", "upsert_enemy", "upsert_troop", "upsert_troop_battle_page", "set_encounter_table", "place_field_enemy", "upsert_equipment", "simulate_battle"] },
   { words: SHOP_WORDS, tools: ["upsert_equipment"] },
   { words: ENDING_WORK_WORDS, tools: ["list_endings", "define_ending"] },
-  { words: /퀘스트|의뢰|심부름|부탁|임무|보상|일지|할 일|모으|모아|모았|수집|가져가|가져오|가져다|찾아 ?(주|오|와)|구해 ?(오|와)|quest/iu, tools: ["create_quest"] },
+  { words: QUEST_WORDS, tools: ["create_quest"] },
 ];
 
 const GROUPED = new Set(GAME_TOOL_GROUPS.flatMap((g) => g.tools));
 
 export interface ToolGroups {
-  /** 게임 요소 도구 묶음을 쓰는 요청이다(낱말·공포·게임 하나·조우·싸울 적). */ readonly game: boolean;
+  /** 게임 요소 도구 묶음을 쓰는 요청이다(낱말·공포·게임 하나·조우·싸울 적, 또는 지은 것을 고치는 작은 일). */ readonly game: boolean;
   /** 지은 맵에 물길·다리·작은 물건을 덧그리는 요청이다. */ readonly terrain: boolean;
   /** 휑한 야외를 소품으로 채워 달라는 요청이다. */ readonly dress: boolean;
   /** 스토어에 올린 내 게임의 평가·답글·소식 요청이다. */ readonly store: boolean;
@@ -152,11 +164,12 @@ export interface ToolGroups {
  * 한 요청의 도구 묶음 — 이름·대사를 가린 글과 이미 정한 판정(게임 하나·소리·전투)을 받는다.
  * 소리만 바라는 요청은 소리 묶음만 싣는다(「추격」「엔딩」 낱말이 게임 도구를 끌어오지 않게). 게임 요청은 조사하는 물건을 보이게 찍도록 물건 찾기·찍기를 같이 준다.
  * 사냥·경험치·싸울 적처럼 조우·전투가 있어야 되는 요청은 낱말 묶음에 안 걸려도 전투 도구를 싣는다 — 못 실으면 그 일을 이르는 검사가 풀 길 없이 막힌다.
+ * editsBuilt: 지은 것을 고치는 작은 일(intent.ts 가 프로젝트를 보고 정한다)은 게임 낱말이 없어도 게임 도구 묶음을 받는다 — 이벤트를 찾고 옮기는 도구가 여기 있다.
  */
-export function matchToolGroups(topic: string, asked: { readonly wholeGame: boolean; readonly audio: AudioAsk; readonly combat: CombatAsk }): ToolGroups {
+export function matchToolGroups(topic: string, asked: { readonly wholeGame: boolean; readonly editsBuilt?: boolean; readonly audio: AudioAsk; readonly combat: CombatAsk }): ToolGroups {
   const { audio, combat } = asked;
   const fights = combat.encounters || combat.foes;
-  const game = GAME_WORDS.test(topic) || HORROR_WORDS.test(topic) || asked.wholeGame || fights;
+  const game = GAME_WORDS.test(topic) || HORROR_WORDS.test(topic) || asked.wholeGame || fights || !!asked.editsBuilt;
   const terrain = TERRAIN_WORDS.test(topic);
   const dress = DRESS_WORDS.test(topic);
   const fallen = FALLEN_TIERS.flatMap((tier, i) => ((tier === MUSIC_TIER ? audio.music : tier.whole ? asked.wholeGame : tier.words!.test(topic)) ? [i] : []));
@@ -188,6 +201,6 @@ export function storeCard(groups: ToolGroups): string {
 export function v2ToolPool(): string[] {
   return [...new Set([
     ...V2_GAME_TOOLS, ...GAME_TOOL_GROUPS.flatMap((g) => g.tools), ...FALLEN_TIERS.flatMap((t) => t.tools), ...MUSIC_TIER.tools,
-    ...V2_TERRAIN_TOOLS, ...V2_DRESS_TOOLS, ...STORE_TIERS.flatMap((t) => t.tools), "list_spatial_designs", "stamp_object",
+    ...V2_TERRAIN_TOOLS, ...V2_DRESS_TOOLS, ...STORE_TIERS.flatMap((t) => t.tools), "list_spatial_designs", "stamp_object", ...V2_POOL_ONLY,
   ])].filter((name) => getTool(name));
 }
