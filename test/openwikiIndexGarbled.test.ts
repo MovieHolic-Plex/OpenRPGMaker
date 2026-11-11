@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,7 +23,9 @@ describe("openwiki mojibake index", () => {
     ])).toEqual([1, 2]);
   });
 
-  it("lists the same broken lines the committed index lists", () => {
+  it("lists the same broken lines the generated index lists", () => {
+    // 색인은 커밋하지 않는 생성 파일이다(2026-11-11) — 여기서 만들어 읽는다.
+    execFileSync(process.execPath, ["scripts/openwiki-index.mjs"], { cwd: ROOT, stdio: "ignore" });
     const expected = new Map<string, { count: number; sample: number[] }>();
     for (const rel of wikiMarkdownRels()) {
       const lines = readFileSync(join(ROOT, rel), "utf8").split("\n");
