@@ -1,7 +1,7 @@
 /**
  * npm run harness -- battle-backdrop <단계> [옵션]
  *
- *   capture  --project <project.json|프로젝트 폴더> (--map <id> | --troop <id>) [--cell x,y] [--window WxH] [--assets-root <체크아웃>] [--run <이름>] [--note "<지시>"]
+ *   capture  --project <project.json|프로젝트 폴더> (--map <id> | --troop <id>) [--cell x,y] [--window WxH] [--assets-root <체크아웃>] [--run <이름>] [--note "<지시>"] [--indoor|--outdoor]
  *   produce  <판> [--n 4] [--par 4]            생성기(god-tibo-imagen)에 캡처를 참고 그림으로 주고 후보 N장 → 바로 도트화
  *   pixelize <판> [글자…]                       원본 → 320×180 도트(맵 팔레트+덧색, 디더링·중간색 없음) + 640×360 저장본
  *   check    <판> [--judge claude:sonnet|agy:<모델>|none]   크기·색 수·아래 띠·밝기 + 그림 판정자(인물·글자·시간·시점). 통과 ≠ 합격
@@ -11,12 +11,14 @@
  *   pick     <판> --best --by <근거>             Opus 검수를 통과한 후보 중 최고점을 고른다(2026-11-04 오너 「이제 사람이 고르지 않아. AI 가 해야함」)
  *   build    <판> --project <project.json|폴더> [--target troop:<id>|map:<id>] [--out <새 json>] [--in-place] [--leave-field-mode]
  *   build    <판> --emit <폴더> [--target troop:<id>|map:<id>]   (프로젝트 없이 upsert_resource 인자 JSON + PNG 만)
+ *   build    <판> --bundle <키> --ko "<이름>" --en "<name>"       공용 번들의 장소 그림 battle-scenery-<키> 로 싣는다(Opus 검수로 고른 판만)
  *   status   [<판>]
  *
  * 공용 핵심(프롬프트·팔레트·도트화·검사)은 src/editor/battleBackdropCore.ts — 편집기 조수 도구와 같은 코드다.
  */
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
+import zlib from "node:zlib";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -93,6 +95,35 @@ function encodePng(img: Rgba): Buffer {
   return PNG.sync.write(png);
 }
 function writePng(file: string, img: Rgba): void { fs.writeFileSync(file, encodePng(img)); }
+/**
+ * 팔레트(색인) PNG — 번들에 싣는 그림용. 도트화한 그림은 32색 이하라 RGBA 보다 3~4배 작다(묘실 38KB → 10KB, 번들 겹 배경 미리보기와 같은 크기대).
+ * 불투명 256색 이하가 아니면 null(부르는 쪽이 RGBA 로 쓴다). 화소는 그대로다 — 쓴 뒤 다시 읽어 화소 해시를 견준다.
+ */
+function encodeIndexedPng(img: Rgba): Buffer | null {
+  const index = new Map<number, number>();
+  const rows = Buffer.alloc((img.width + 1) * img.height);
+  for (let y = 0; y < img.height; y += 1) for (let x = 0; x < img.width; x += 1) {
+    const i = (y * img.width + x) * 4;
+    if (img.data[i + 3] !== 255) return null;
+    const key = (img.data[i]! << 16) | (img.data[i + 1]! << 8) | img.data[i + 2]!;
+    let at = index.get(key);
+    if (at === undefined) { if (index.size >= 256) return null; at = index.size; index.set(key, at); }
+    rows[y * (img.width + 1) + 1 + x] = at;
+  }
+  const chunk = (type: string, body: Buffer): Buffer => {
+    const head = Buffer.alloc(8);
+    head.writeUInt32BE(body.length, 0); head.write(type, 4, "latin1");
+    const crc = Buffer.alloc(4);
+    crc.writeUInt32BE(zlib.crc32(Buffer.concat([head.subarray(4), body])) >>> 0, 0);
+    return Buffer.concat([head, body, crc]);
+  };
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(img.width, 0); ihdr.writeUInt32BE(img.height, 4);
+  ihdr[8] = 8; ihdr[9] = 3;
+  const plte = Buffer.alloc(index.size * 3);
+  for (const [key, at] of index) { plte[at * 3] = key >> 16; plte[at * 3 + 1] = (key >> 8) & 255; plte[at * 3 + 2] = key & 255; }
+  return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk("IHDR", ihdr), chunk("PLTE", plte), chunk("IDAT", zlib.deflateSync(rows, { level: 9 })), chunk("IEND", Buffer.alloc(0))]);
+}
 /** 화소 해시 — 같은 그림이면 PNG 인코딩이 달라도 같다(object-gate 와 같은 생각). */
 const pixelSha = (img: Rgba) => sha(Buffer.concat([Buffer.from(`${img.width}x${img.height}:`), Buffer.from(img.data)]));
 
@@ -100,7 +131,7 @@ function opt(argv: string[], name: string): string | undefined {
   const i = argv.indexOf(`--${name}`);
   return i >= 0 && i + 1 < argv.length ? argv[i + 1] : undefined;
 }
-const positional = (argv: string[]) => argv.filter((v, i) => !v.startsWith("--") && !(i > 0 && argv[i - 1]!.startsWith("--") && !["--in-place", "--leave-field-mode", "--best"].includes(argv[i - 1]!)));
+const positional = (argv: string[]) => argv.filter((v, i) => !v.startsWith("--") && !(i > 0 && argv[i - 1]!.startsWith("--") && !["--in-place", "--leave-field-mode", "--best", "--indoor", "--outdoor"].includes(argv[i - 1]!)));
 const runDir = (id: string) => path.join(RUNS, id);
 function getRun(ledger: Ledger, id: string | undefined): Run {
   if (!id || !ledger.runs[id]) throw new Error(`판이 없다: ${id ?? "(없음)"} — 있는 판: ${Object.keys(ledger.runs).join(", ") || "없음"}`);
@@ -186,13 +217,15 @@ async function capture(argv: string[]): Promise<number> {
   const k = Math.max(1, Math.round(1280 / ref169.width));
   const reference = scaleNearest(ref169, k);
 
-  const indoor = map.climate?.mode === "indoor" || /실내|indoor|interior/iu.test(`${tileset?.name ?? ""}`);
+  // 구성기 세계의 방(묘실·보일러실 …)은 야외 칩셋 한 장에 깔리고 기후 표시도 없다 — 부르는 쪽이 --indoor/--outdoor 로 알려 준다.
+  const indoorFlag = argv.includes("--indoor") ? true : argv.includes("--outdoor") ? false : undefined;
+  const indoor = indoorFlag ?? (map.climate?.mode === "indoor" || /실내|indoor|interior/iu.test(`${tileset?.name ?? ""}`));
   const locNames = (map.locations ?? []).map((l: AnyProject) => l?.name).filter((n: unknown): n is string => typeof n === "string");
   const troop = troopId ? (project.database?.troops ?? []).find((t: AnyProject) => t.id === troopId) : undefined;
   const tl = inferTimeAndLight({ lighting: map.defaultLighting, texts: [...texts, map.name ?? ""], indoor });
   const facts: BackdropFacts = {
     mapId, mapName: String(map.name ?? mapId), tilesetName: String(tileset?.name ?? map.tilesetId), indoor,
-    timeOfDay: tl.time, timeCertain: tl.certain, light: tl.light, evidence: tl.evidence,
+    timeOfDay: tl.time, timeCertain: tl.certain, light: tl.light, evidence: [...tl.evidence, ...(indoorFlag === undefined ? [] : [`--${indoorFlag ? "indoor" : "outdoor"} 로 지정`])],
     placeWords: [String(map.name ?? ""), ...locNames, ...(troop?.name ? [String(troop.name)] : [])].filter(Boolean),
     captureLuma: Number(meanLuma(cap).toFixed(3)),
     palette: mapPalette(cap).map((c) => "#" + c.map((v) => v.toString(16).padStart(2, "0")).join("")),
@@ -547,6 +580,8 @@ async function build(argv: string[]): Promise<number> {
     id: resourceId, name: `전투 배경 · ${run.facts.mapName}`, kind: "backdrop" as const,
     dataUrl: `data:image/png;base64,${png.toString("base64")}`,
   };
+  const bundleKey = opt(argv, "bundle");
+  if (bundleKey) return bundleStill(ledger, run, stored, bundleKey, argv);
   const emitDir = opt(argv, "emit");
   if (emitDir) {
     // 프로젝트 없이 자원 파일만 낸다 — 코드로 프로젝트를 짓는 빌더(플래그십 데모 등)가 커밋해 두고
@@ -621,6 +656,42 @@ async function build(argv: string[]): Promise<number> {
   writeJson(LEDGER, ledger);
   console.log(JSON.stringify({ resourceId, target, into, reloaded, warnings: warn }));
   return reloaded ? 0 : 1;
+}
+
+// ---------- build --bundle (공용 번들의 장소 그림) ----------
+
+const STILLS_JSON = path.join(ROOT, "src/assets/battleSceneryStills.json");
+const SCENERY_DIR = path.join(ROOT, "public/assets/generated/battle-scenery");
+type StillRecord = { key: string; ko: string; en: string; run: string; pixelSha256: string; nativePixelSha256: string; score: number; batch: string; by: string; place: string };
+
+/**
+ * 고른 그림을 공용 번들의 장소 그림 `battle-scenery-<키>` 로 싣는다 — 겹 배경 다섯과 같은 자리(public/assets/generated/battle-scenery/<키>/preview.png)와
+ * 같은 id 틀이라 프로젝트마다 자원을 넣지 않아도 새·기존 프로젝트가 모두 푼다(src/assets/battleSceneryCatalog.ts BATTLE_SCENERY_STILLS).
+ * 번들에는 Opus 검수로 고른(pick --best) 그림만, 그 판정이 지금 화소에도 효력이 있을 때만 싣는다. 사람이 글자로 고른 판은 프로젝트 설치(--project)만 된다.
+ */
+function bundleStill(ledger: Ledger, run: Run, stored: Rgba, key: string, argv: string[]): number {
+  const ko = opt(argv, "ko"), en = opt(argv, "en");
+  if (!/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/u.test(key)) throw new Error(`--bundle 키는 소문자·숫자·하이픈이다: ${key}`);
+  if (!ko || !en) throw new Error("--bundle 에는 --ko <이름> --en <name> 이 필요하다(고르기 목록·도구 설명에 보인다)");
+  if (fs.existsSync(path.join(SCENERY_DIR, key, "sky.png"))) throw new Error(`${key} 는 겹 배경 종류다 — 다른 키를 쓴다`);
+  const pick = run.pick!;
+  const pass = currentPasses(run).find((p) => p.letter === pick.letter && p.pixelSha256 === pick.nativePixelSha256);
+  if (!pick.batch || pick.score === undefined || !pass) throw new Error(`판 ${run.id}: 번들에는 Opus 검수로 고른 그림만 싣는다 — review 뒤 pick --best 로 고른다`);
+  if (stored.width !== BACKDROP_NATIVE_WIDTH * BACKDROP_STORE_SCALE || stored.height !== BACKDROP_NATIVE_HEIGHT * BACKDROP_STORE_SCALE) throw new Error(`저장본 크기 ${stored.width}×${stored.height} 가 번들 규격(640×360)이 아니다`);
+  const file = path.join(SCENERY_DIR, key, "preview.png");
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, encodeIndexedPng(stored) ?? encodePng(stored));
+  const reloaded = pixelSha(readPng(file)) === pick.storedPixelSha256;
+  if (!reloaded) throw new Error(`${file}: 쓴 그림의 화소가 고른 그림과 다르다`);
+  const doc = JSON.parse(fs.readFileSync(STILLS_JSON, "utf8")) as { version: 1; about: string; stills: StillRecord[] };
+  const record: StillRecord = { key, ko, en, run: run.id, pixelSha256: pick.storedPixelSha256, nativePixelSha256: pick.nativePixelSha256, score: pick.score, batch: pick.batch, by: pick.by, place: run.facts.mapName };
+  doc.stills = [...doc.stills.filter((s) => s.key !== key), record].sort((a, b) => a.key.localeCompare(b.key));
+  writeJson(STILLS_JSON, doc);
+  const resourceId = `battle-scenery-${key}`;
+  (run.builds ??= []).push({ at: now(), target: `bundle:${key}`, resourceId, storedPixelSha256: pick.storedPixelSha256, into: path.relative(ROOT, file), reloaded });
+  writeJson(LEDGER, ledger);
+  console.log(JSON.stringify({ resourceId, target: `bundle:${key}`, into: path.relative(ROOT, file), bytes: fs.statSync(file).size, score: pick.score, reloaded }));
+  return 0;
 }
 
 function status(argv: string[]): number {

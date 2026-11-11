@@ -15,6 +15,7 @@ import {
 import { AUTHORABLE_FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { GENERATED_EFFECT_SHEET_ASSETS } from "@/assets/generatedEffectSheets";
 import { charsetBattler } from "@/assets/charsetBattlers";
+import { battleSceneryStill } from "@/assets/battleSceneryCatalog";
 import { partyPixelLabel, partyPixelSheet } from "@/assets/partyPixelSheets";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { listMonsterResources } from "@/assets/monsterResourceCatalog";
@@ -184,7 +185,7 @@ export function listDatabaseResourceOptions(
   }
   for (const id of builtinGeneratedResourceIds()) {
     if (RETIRED_PICKER_IDS.has(id)) continue;
-    if (matchesGeneratedKind(kind, undefined, id)) add(id, charsetBattler(id)?.label ?? findSharedPortrait(id)?.name ?? (partyPixelSheet(id) ? partyPixelLabel(partyPixelSheet(id)!) : `${prettyId(id)} <생성>`));
+    if (matchesGeneratedKind(kind, undefined, id)) add(id, charsetBattler(id)?.label ?? findSharedPortrait(id)?.name ?? (battleSceneryStill(id) ? `전투 배경 · ${battleSceneryStill(id)!.ko} <장소 그림>` : undefined) ?? (partyPixelSheet(id) ? partyPixelLabel(partyPixelSheet(id)!) : `${prettyId(id)} <생성>`));
   }
   for (const [id, uploaded] of Object.entries(project.assets.uploaded ?? {})) {
     if (uploadedMatchesKind(kind, uploaded.kind, id)) {

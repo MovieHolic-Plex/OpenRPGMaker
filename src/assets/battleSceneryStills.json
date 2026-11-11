@@ -1,0 +1,5 @@
+{
+ "version": 1,
+ "about": "한 장짜리 번들 전투 배경(장소 그림) 목록. `npm run harness -- battle-backdrop build <판> --bundle <키> --ko … --en …` 가 쓴다 — 손으로 고치지 않는다. 그림은 public/assets/generated/battle-scenery/<키>/preview.png (640×360 = 320×180 격자 2배), pixelSha256 은 그 그림의 화소 해시, 판·검수 기록은 harness-data/battle-backdrop/ledger.json.",
+ "stills": []
+}

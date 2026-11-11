@@ -3,7 +3,7 @@ import { PIXEL_ENEMY_PORTRAIT_URLS } from "./pixelEnemyPortraits";
 import { pixelEnemySheet } from "./pixelEnemySheets";
 import { CHARSET_BATTLERS } from "./charsetBattlers";
 import { PARTY_PIXEL_SHEETS } from "./partyPixelSheets";
-import { BATTLE_SCENERY_CATALOG } from "./battleSceneryCatalog";
+import { BATTLE_SCENERY_CATALOG, BATTLE_SCENERY_STILLS } from "./battleSceneryCatalog";
 import { RETRO_PIXEL_FX_URLS } from "./retroPixelAnimations";
 import { EMERALD_OPENING_BACKDROP_URLS } from "./emeraldOpeningBackdrops";
 import { ASTRA_CAST_URLS, ASTRA_TITLE_ART_URLS } from "./astraCast";
@@ -57,6 +57,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   // 미설치 팩도 id 는 유지한다. 파일 실패는 전투 배경의 네 장 로드 가드가 처리한다.
   // 단일 그림으로 풀 때는 네 겹을 합친 미리보기 한 장이다(예전엔 땅 겹만이라 썸네일·몬스터 대치에서 하늘이 비었다).
   ...Object.fromEntries(BATTLE_SCENERY_CATALOG.map((entry) => [entry.resourceId, `/${entry.preview}`])),
+  // 장소 그림(한 장짜리 번들 전투 배경, battle-backdrop 하네스 build --bundle). 여기 실려야 검증·고르기 목록·내보내기가 알아본다.
+  ...Object.fromEntries(BATTLE_SCENERY_STILLS.map((still) => [still.resourceId, `/${still.image}`])),
   // 도트 측면 전투의 도트 효과 시트(anim_px_* 레코드가 쓴다).
   ...RETRO_PIXEL_FX_URLS,
   // 몬스터 수집 오프닝 애니메틱의 맵 배경(별빛섬 맵을 1:1 로 구운 그림).
