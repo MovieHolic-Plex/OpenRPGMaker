@@ -153,6 +153,35 @@ Terra 작은 일 `door-roundtrip-starter` — 「잿불 마을 동쪽 끝에서 
 증거(모델 없음, 하네스의 진짜 starter 픽스처): `scope=place · 도구 47개 · 115,849자 · 지시문 34,733자` → `scope=edit · 도구 12개 · 16,181자 · 지시문 13,790자`,
 처음 싣는 목록에 `create_transfer_pair` `list_map_locations`. `golden.mts` 는 두 맵짜리 상태의 요청 둘(잇기 / 「새 마을을 만들고 … 이어 줘」)을 더 찍는다(153 → 155줄).
 
+## 작은 일은 그 일을 하는 도구에 늘 닿는다 — 풀·주제 줄·기록 이름 (2026-11-11, 작은 일 둘째 묶음)
+
+둘째 묶음 35건(`harness-data/assistant-capability/small-jobs-2.json`)을 모델 없이 분류해 보니 다섯 문장이 게임 도구 묶음을 받지 못했다(`tools.game=false`, `extra=0`):
+「이 맵에 세이브 포인트 하나 놓아 줘」「철 검의 공격력을 12로 낮춰 줘」「얼음의 파수꾼의 HP를 지금의 두 배로 늘려 줘」「얼음 동굴을 어둡게 해 줘」「… 해독초는 더 이상 팔지 않게 해 줘」.
+게임 낱말 표에 문장을 하나씩 더하지 않고 세 겹으로 고쳤다(모두 `request/` 안).
+
+1. **풀** — 지은 것을 고치는 작은 일은 낱말과 상관없이 게임 도구 풀 전부에 `load_tools` 로 닿는다(위 「게임 낱말이 없는 작은 일도 …」). 손 풀이가 부르는데 v2 어디에도 없던 넷을 풀에 넣었다
+   (`toolGroups.ts` `V2_POOL_ONLY`): `set_session_start` · `duplicate_event` · `script_cutscene` · `place_battle_blocker`.
+2. **주제 줄** — `topics.ts` `SMALL_BY_TOPIC` 에 그 일을 하는 도구를 한 줄씩: 저장(`place_savepoint` · `set_map_properties`) · 날씨/어둡기(`set_scene_mood`) · 시작(`set_start_position` · `set_session_start`) ·
+   게임 오버(`set_game_over`) · 의뢰(`create_quest`) · 복제(`duplicate_event`) · 보스(`place_battle_blocker`) · 장비(`upsert_equipment`) · 적(`upsert_enemy`). 「팔지 않게」도 사고팔기다(`set_shop_stock`).
+3. **기록 이름** — 낱말로는 무슨 기록인지 알 수 없는 글을 프로젝트의 기록 이름으로 안다(`recordTopicsNamed`): 글에 **아이템·장비·적 기록의 이름**이 나오면 그 주제를 더한다
+   (띄어쓰기 무시 · 두 글자 이상 · 작은 일에서만). 「얼음의 파수꾼」은 적 기록이라 `upsert_enemy`, 「해독초」는 아이템이라 `upsert_item`. 기록을 고치는 주제면 `get_database_records` 를 주제 도구보다 먼저 싣는다.
+
+싣는 차례는 `SMALL_BY_TOPIC` 의 줄 차례다: 작은 놓기·맵 도구(수백~2천 자) → 이름을 댄 기록을 고치는 도구(4천~8천 자) → 넓은 낱말로 맞는 무거운 도구.
+글자 상한에서 큰 도구 하나가 작은 도구 여럿을 밀어내지 않게 한다(실측: 「'눈꽃 차'라는 새 아이템 … 가격은 30G」에서 `author_script` 가 `upsert_item` 을 밀어냈다).
+
+증거(모델 없음, 하네스 `buildFixture` 그대로 — 35건 × 그 픽스처):
+
+| | 전 (main) | 후 |
+|---|---|---|
+| 게임 도구 묶음을 못 받은 일 | 5 | 0 |
+| 손 풀이 도구 37개 — 처음부터 | 19 (작은 일 넷째 PR 까지 얹은 트리) | 34 |
+| 나중에(`load_tools`) | 13 | 3 |
+| 닿지 않음 | 5 | 0 |
+| 처음 싣는 수가 20을 넘는 일 | 0 | 0 (최대 19, `todo` 포함) |
+
+아직 나중에 싣는 셋은 v2 에 다른 길이 처음부터 실려 있다: `random-encounter-starter` 의 `set_map_properties`(→ `set_encounter_table`), `enter-once-text-built`·`walk-up-greet-starter` 의 `script_cutscene`(→ `add_event`).
+시험 `test/aiV2SmallJobReach.test.ts` 가 35건의 «닿는다 · 20개 안» 과 열다섯 건의 «처음부터» 를 못박는다.
+
 ## 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 
 `make_place` 가 처음 지을 때 명세에 무작위 `salt` 를 넣고, 고치기(`edit_place`)는 기록된 명세의 salt 를 물려받는다(모델은 쓰지 않는다).
