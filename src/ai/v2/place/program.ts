@@ -20,7 +20,7 @@ export const HOME_CAP = 3;
 /** 종류의 얼굴 건물(궁전·피라미드 입구)이 맡는 역할의 id. */
 const LANDMARK_ID = "landmark";
 
-/** 목적표가 드러낸 빈칸 — 덮지 않고 적는다. 실내 종류가 없는 역할(no-room-kind)은 없는 그림 장부(shared/artGap.ts v2.art-gap)에도 실린다 — 짓는 쪽이 at 을 붙여 넘긴다. */
+/** 목적표가 드러낸 빈칸 — 덮지 않고 적는다. 실내 종류가 없는 역할(no-room-kind)은 없는 그림 장부(src/project/artGap.ts, want room-kind)에도 실린다 — 짓는 쪽이 at 을 붙여 넘긴다. */
 export interface ProgramGap {
   /** no-room-kind 그 역할의 실내 종류가 이 번들에 없다 · unplaced 역할 건물을 놓지 못했다 · home-cap 집 상한을 넘은 사람 · no-host 그 역할을 둘 수 있는 장소가 없다. */
   readonly kind: "no-room-kind" | "unplaced" | "home-cap" | "no-host";

@@ -10,7 +10,7 @@ import { blueprintMapFor } from "../story/blueprintPathNames";
 import { populateWorldPlace } from "../place/worldPopulate";
 import { planPrograms, programGaps, roleDoors } from "../place/program";
 import { layProgramRooms } from "../place/programRooms";
-import { recordArtGaps } from "../shared/artGap";
+import { recordArtGaps } from "@/project/artGap";
 import { repairEventReach } from "../place/reachRepairs";
 import { runLaneStages } from "../finish/lanes";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart } from "../blankStart";
@@ -167,8 +167,9 @@ export function installSessionHooks(c: VerbContext) {
       // 빈칸은 덮지 않고 적는다: 실내 종류가 없는 역할(사막의 살림집)은 없는 그림 장부에, 나머지(못 놓은 역할·집 상한)는 턴 기록에.
       const gaps = programGaps(env.ctx.project);
       const decl = world.program!.decl;
-      recordArtGaps({ env, session }, "program-rooms", gaps.filter((g) => g.kind === "no-room-kind" && g.at).map((g) => ({
-        tilesetId: world.tilesetId, want: `room kind: ${g.role} interior`, thing: `${decl.roles[g.role]?.ko ?? g.role} 실내`, note: g.detail, ...g.at!,
+      recordArtGaps(session, gaps.filter((g) => g.kind === "no-room-kind" && g.at).map((g) => ({
+        theme: `${world.id}/${g.role}`, chipset: world.tilesetId, want: "room-kind", wanted: `${decl.roles[g.role]?.ko ?? g.role} 실내`,
+        where: `${g.place} ${g.at!.x},${g.at!.y}`, standIn: "none", by: "program-rooms", note: g.detail,
       })));
       const rest = gaps.filter((g) => g.kind !== "no-room-kind");
       if (rest.length) env.emit({ type: "execution_status", name: "v2.program-gap", ok: false, summary: `목적표 빈칸 ${rest.length}건: ${rest.map((g) => g.detail).join(" / ").slice(0, 600)}`, data: { gaps: rest } });

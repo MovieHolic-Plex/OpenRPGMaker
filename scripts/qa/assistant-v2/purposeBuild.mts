@@ -61,7 +61,7 @@ async function build(name: string, worldId: string, bp: Bp, text: Record<string,
   const session = new V2Session();
   const env: PiAssistantV2Env = {
     ctx, request: { task, provider: "local-cli:claude", mapIds: [], project, projectKey: `["project","purpose-${name}"]` } as never,
-    emit: (e: unknown) => { const ev = e as { name?: string; summary?: string }; if (ev.name === "v2.program-gap" || ev.name === "v2.art-gap") console.log(`   ${ev.name}: ${String(ev.summary).slice(0, 300)}`); }, record: () => {},
+    emit: (e: unknown) => { const ev = e as { name?: string; summary?: string }; if (ev.name === "v2.program-gap") console.log(`   ${ev.name}: ${String(ev.summary).slice(0, 300)}`); }, record: () => {},
     sideChat: async () => JSON.stringify({ imagesSeen: 0, axes: {}, score: 7, majors: [] }),
     render: async () => "", checkpoint: async () => {},
   } as never;
@@ -78,6 +78,7 @@ async function build(name: string, worldId: string, bp: Bp, text: Record<string,
   const pathRes = await call("build_blueprint_path", text.length ? { steps: text } : {});
   const lanes = session.clearLanes ? await session.clearLanes() : [];
   const p = ctx.project;
+  for (const line of session.missingArt) console.log(`   ${line.slice(0, 300)}`);
   console.log(`== ${name} (${worldId}) blueprint=${wrote.ok} build_places=${built.ok} path=${pathRes.ok} maps ${Object.keys(p.maps).length} lanes ${lanes.length}`);
   if (!wrote.ok) console.log(`   blueprint: ${String(wrote.summary).slice(0, 500)}`);
   if (!built.ok) console.log(`   build_places: ${String(built.summary).slice(0, 700)}`);
