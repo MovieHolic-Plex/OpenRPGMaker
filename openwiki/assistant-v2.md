@@ -405,6 +405,26 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 
 증거: `test/toolsReadEmptyAndBlocked.test.ts`.
 
+## 쓰기 결과에는 도구의 알림이 가고, 옛 검사 줄은 안 간다 (2026-11-11, 작은 일 둘째 묶음 첫 측정)
+
+둘째 묶음 첫 측정(Terra, main e298f686e5 — 28/35)의 `item-new-built` 에서 모델은 `upsert_item` 을 같은 인자로 다섯 번 불렀다. 결과마다 실린 것은
+다른 이벤트의 런타임 지원 경고 8줄뿐이었고, 도구가 남긴 「scope 가 ally 라 … 탈출 로프는 scope none 이 맞습니다」(차가 탈출 로프로 저장되고 있다는 알림)는 한 줄도 가지 않았다.
+
+**원인(구조).** 편집기 도구 러너(`toolRunner.ts`)는 쓰기 도구의 알림을 `diff.warnings` 에 담고, `issues` 에는 **프로젝트 전체 검사**를 담는다.
+모델에게 결과를 옮기는 층(`piAgent/toolAdapter.ts` `formatPiToolSuccess`)은 `result.warnings` 와 `issues` 앞 8건만 실었다. 그래서
+- 편집기 도구(v2 동사가 아닌 것 — `upsert_item` · `move_event` · `patch_event_page` · `create_transfer_pair` · `set_shop_stock` …)가 쓴 알림은 모델에게 가지 않았고,
+- 경고가 8줄 넘게 쌓인 프로젝트(지어진 게임이면 늘 그렇다)에서는 어떤 쓰기든 같은 8줄이 결과를 채웠다.
+
+**고친 것(`writeResultForModel`, 모델에게 가는 글만 — 러너 결과·편집기 화면은 그대로).**
+- `diff.warnings` 를 `warnings` 로 싣는다(12줄까지, 넘으면 남은 수).
+- `issues` 는 이 변경 전에 없던 줄만. 전 상태의 검사는 프로젝트 객체마다 한 번 재고(`WeakMap`), 쓰기 결과가 다음 호출의 «전» 이 된다.
+  글이 같은 줄의 수가 늘지 않았으면 자리만 바뀐 옛 줄로 본다(이벤트를 옮기면 그 이벤트의 경고가 좌표만 바뀌어 다시 나왔다).
+- 알림과 글이 같은 줄(장면 다듬기 줄은 양쪽에 있었다)은 알림으로 한 번만.
+
+**근거(모델 없는 탐침, 지어진 픽스처에서 네 번 쓰기).** 결과 글 11,600자 → 4,522자. `move_event` 2,040자 → 153자(옛 경고 8줄이 빠짐),
+`upsert_item` 3,187자 → 1,379자에 「scope …」 알림이 처음으로 실림, `create_transfer_pair` 에 「출입구 A 위치 자동 조정: (10,1) → (11,3)」 이 처음으로 실림.
+
+||||||| f476f14e6d
 ## 문 앞 칸은 길을 막지 않는다 — 집 문 여섯 가운데 하나가 맨바닥에 서던 일 (2026-11-11)
 
 `test/villageSummaryListsDoors.test.ts` 가 CI 에서 실행마다 갈렸다(씨앗 없이 마을을 짓는다). 모델 없는 탐침으로 같은 순서를 되풀이하니

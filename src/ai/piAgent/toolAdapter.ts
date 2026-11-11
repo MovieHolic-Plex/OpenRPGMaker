@@ -33,6 +33,7 @@ import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import type { chatCompletion } from "@/ai/llmClient";
 import { synthesizeToolConstructionLogs, withConstructionLog, type ConstructionLog } from "@/editor/tools/constructionLog";
 import type { Project } from "@/project/types";
+import { projectLint } from "@/project/lint/projectLint";
 import { mapBundleMapSpill } from "./mapBundle";
 
 export interface PiToolTextContent {
@@ -134,6 +135,56 @@ export function selectPiToolDefinitions(
     seen.add(tool.name);
     return true;
   });
+}
+
+type Issue = NonNullable<ToolResult["issues"]>[number];
+/** 자리를 뺀 열쇠 — 이벤트를 옮기면 그 이벤트의 옛 검사 줄이 좌표만 바뀌어 다시 나온다. */
+const looseKey = (issue: Issue): string => `${issue.code}|${issue.mapId ?? ""}|${issue.eventId ?? ""}|${issue.message}`;
+const issueKey = (issue: Issue): string => `${looseKey(issue)}|${issue.x ?? ""},${issue.y ?? ""}`;
+interface KnownIssues { readonly exact: ReadonlySet<string>; readonly loose: ReadonlyMap<string, number> }
+function knownOf(issues: readonly Issue[]): KnownIssues {
+  const loose = new Map<string, number>();
+  for (const issue of issues) loose.set(looseKey(issue), (loose.get(looseKey(issue)) ?? 0) + 1);
+  return { exact: new Set(issues.map(issueKey)), loose };
+}
+/** 프로젝트 객체마다, 그 상태에 있던 검사 줄. 쓰기 결과가 다음 호출의 «전» 이 된다. */
+const KNOWN_ISSUES = new WeakMap<Project, KnownIssues>();
+const MAX_WARNINGS = 12;
+
+/**
+ * 쓰기 도구의 성공 결과를 모델이 읽을 모양으로 고친다.
+ *  - 도구가 이 변경에 남긴 알림(diff.warnings — 자리 자동 조정·기본 그림 붙임·「이 칸은 …가 맞습니다」)을 warnings 로 싣는다.
+ *    러너는 쓰기 알림을 diff 에만 담는데 이 층은 result.warnings 만 실어, 도구가 쓴 알림이 모델에게 한 줄도 가지 않았다.
+ *  - 이 변경 전부터 있던 프로젝트 검사 줄은 뺀다. 러너의 issues 는 프로젝트 전체 검사라, 지어진 게임에서는 어떤 쓰기든
+ *    같은 8줄(다른 이벤트의 런타임 지원 경고 등)이 결과를 채웠다(2026-11-11 작은 일 둘째 묶음: upsert_item 다섯 번에 같은 8줄).
+ *    같은 글의 줄 수가 늘지 않았으면 자리만 바뀐 옛 줄로 본다.
+ */
+export function writeResultForModel(result: ToolResult, before: Project, after: Project): ToolResult {
+  if (!result.ok) return result;
+  let known = KNOWN_ISSUES.get(before);
+  if (!known) {
+    // 클러스터 규칙은 타일이 바뀐 맵에서만 다시 도니(러너) 전 상태에서는 돌리지 않는다 — 그 줄은 이번 변경이 건드린 맵의 것이다.
+    try { known = knownOf(projectLint(before, { skipRoundtrip: true, clusterMapIds: [] })); }
+    catch { known = knownOf([]); }
+    KNOWN_ISSUES.set(before, known);
+  }
+  const all = result.issues ?? [];
+  const told = new Set(result.diff?.warnings ?? []);
+  // 글이 같은 옛 줄의 남은 수 — 자리까지 같은 줄이 먼저 쓴다.
+  const left = new Map(known.loose);
+  for (const issue of all) if (known.exact.has(issueKey(issue))) left.set(looseKey(issue), (left.get(looseKey(issue)) ?? 0) - 1);
+  const fresh: Issue[] = [];
+  for (const issue of all) {
+    if (known.exact.has(issueKey(issue))) continue;
+    const spare = left.get(looseKey(issue)) ?? 0;
+    if (spare > 0) { left.set(looseKey(issue), spare - 1); continue; }
+    if (!told.has(issue.message)) fresh.push(issue);
+  }
+  if (after !== before) KNOWN_ISSUES.set(after, knownOf(all));
+  const notes = [...new Set([...(result.warnings ?? []), ...(result.diff?.warnings ?? [])])];
+  const warnings = notes.length > MAX_WARNINGS ? [...notes.slice(0, MAX_WARNINGS), `(+${notes.length - MAX_WARNINGS} more notes not shown)`] : notes;
+  const { issues: _all, warnings: _own, ...rest } = result;
+  return { ...rest, ...(warnings.length ? { warnings } : {}), ...(fresh.length ? { issues: fresh } : {}) };
 }
 
 function truncateJson(value: unknown, maxChars: number): { text: string; truncated: boolean } {
@@ -329,7 +380,8 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
         ...(result.ok && constructionLogs.length ? { constructionLogs } : {}) });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
       const expandedRead = ['read_tileset_reference', 'read_worldmap_structure_reference', 'list_npc_graphics'].includes(tool.name) || tool.name === 'list_resources' && args.kind === 'charset';
-      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, expandedRead ? Math.max(maxDataChars, REFERENCE_MAX_DATA_CHARS) : maxDataChars) }];
+      const shown = tool.mode === "write" ? writeResultForModel(result, beforeProject, ctx.project) : result;
+      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(shown, expandedRead ? Math.max(maxDataChars, REFERENCE_MAX_DATA_CHARS) : maxDataChars) }];
       if (tool.name === "read_tileset_reference") {
         for (const image of await referenceGate.read(ctx.project, result)) {
           const comma = image.dataUrl.indexOf(",");
