@@ -78,6 +78,8 @@ export interface PlaceSpec {
   readonly entrance?: string;
   /** 나가는 쪽. 실내는 기본 south. */
   readonly exits?: readonly ("south" | "north" | "east" | "west")[];
+  /** (세계 장소) 목적표 — build_places 가 청사진에서 정해 넣는다(place/program.ts), 모델은 쓰지 않는다. 구성기가 이 역할 건물과 채움 집만 놓고 맵 크기도 여기서 나온다. */
+  readonly program?: import("@/project/settlementProgram").SettlementProgram;
   /** 이미 있는 맵을 그 자리에서 다시 지을 때(고치기·「이 방을」). 생략하면 빌더가 정한다(빈 시작 맵이면 그 맵). */
   readonly mapId?: string;
   /** 카드가 알려 준 빌더 손잡이(물·지붕·형태 등). 모르는 키는 빌더가 무시하고 경고한다. 씨앗(seed)은 모델이 쓰지 않는다 — make_place 가 버리고 요청·게임 열쇠로 정한다. */

@@ -13,6 +13,8 @@ import type { GameBlueprint, GameBlueprintPlace } from "@/project/gameBlueprint"
 import type { Project } from "@/project/types";
 import { isLivedMap } from "@/editor/tools/livedMap";
 import { describesDesertEast } from "@/ai/desertEastPolicy";
+import { DESERT_SETTLEMENT, desertProgramSize, type DesertKind } from "@/project/desertEastComposer";
+import type { SettlementDecl, SettlementProgram } from "@/project/settlementProgram";
 import { describesPiratePlace } from "@/ai/pirateIslesPolicy";
 import { describesPrehistoric } from "@/ai/prehistoricPolicy";
 import { describesSengoku } from "@/ai/sengokuEdoPolicy";
@@ -64,6 +66,16 @@ export interface WorldSetting {
   /** 이 세계의 구성기(종류마다 value 만 다르다). newMap = 구성기가 칩셋·크기를 맞춘 새 맵을 스스로 만든다. */
   /** exits: 그 구성 도구가 `exits`(다른 맵으로 나가는 변까지 길 내기)를 받는가. */
   readonly composer?: { readonly tool: string; readonly param: "style" | "kind"; readonly newMap?: true; readonly exits?: true };
+  /**
+   * 목적표로 짓는 세계(place/program.ts): 번들의 선언(역할·키트·방), 목적표가 정하는 맵 크기, 그리고 모델 카드에 없는 실내 종류의 방 크기
+   * (가게 10×8 은 세는 맵이 못 되어 kinds 에 없지만 목적표가 짓는 가게 안은 이 크기로 짓는다). 없으면 그 세계는 예전처럼 고정 크기로 짓는다.
+   */
+  readonly program?: {
+    readonly decl: SettlementDecl;
+    readonly size: (kindValue: string, program: SettlementProgram) => { readonly w: number; readonly h: number };
+    readonly roomTool?: string;
+    readonly rooms?: Readonly<Record<string, readonly [number, number]>>;
+  };
   readonly kinds: readonly WorldKind[];
 }
 
@@ -113,6 +125,7 @@ export const WORLDS: readonly WorldSetting[] = [
     id: "desert_east", tilesetId: "desert_east", name: "Desert of the East", ko: "사막 동방", pool: "fantasy", named: (t) => describesDesertEast(t),
     pitch: "Oasis towns, bazaars and a sultan's palace on the sand, with pyramids and sealed tombs beyond; caravans, bargains, curses.",
     composer: { tool: "compose_desert_east_map", param: "kind", exits: true },
+    program: { decl: DESERT_SETTLEMENT, size: (kind, program) => desertProgramSize(kind as DesertKind, program), roomTool: "compose_desert_east_room", rooms: { shop: [10, 8] } },
     kinds: [
       out("oasis", "오아시스 마을", "adobe village around an oasis pond", [44, 36]),
       out("bazaar", "바자르", "crowded market street of stalls", [46, 34]),
