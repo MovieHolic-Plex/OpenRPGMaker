@@ -142,6 +142,30 @@ export function objectiveTargetViews(project: Pick<Project, "maps">, map: GameMa
   return named.size ? firstExitsTo(project, map, doorCandidates, named) : [];
 }
 
+/**
+ * 지금 맵에서 읽는 목표 글. 꼬리 「(<맵> 입구: <자리> → <대상>)」 의 자리는 목표가 걸린 맵에서 본 첫 출구다 — 그 맵에 들어선 뒤에도
+ * 같은 글이 떠 있으면 「초승달 궁전 입구: 동쪽 끝 가운데」 가 궁전 안에서 «동쪽 끝으로 가라»로 읽힌다(2026-11-11 fun-x1 눈가림 플레이:
+ * 궁전 동쪽 끝에서 10분). 들어선 맵의 「입구」 마디는 빼고 그 뒤(대상, 또는 다음 맵 입구)만 보인다. 대상 찾기(objectiveTargetViews)는 원문을 쓴다.
+ */
+export function objectiveTextOnMap(map: Pick<GameMap, "name" | "events">, text: string): string {
+  const tail = /^(.*?)\s*\(([^()]*)\)\s*$/su.exec(text);
+  const here = bare(map.name ?? "");
+  if (!tail || !here) return text;
+  const eventNames = new Set((map.events ?? []).map((event) => bare(event.name ?? "")));
+  const parts = tail[2]!.split(/\s+\/\s+/u).map((part) => {
+    const head = /^(.+?)\s*입구:[^→]*(?:→\s*(.*))?$/su.exec(part);
+    // 「동굴 입구」 가 이 맵의 이벤트 이름이면 맵 입구 마디가 아니다(「(동굴 입구: 북쪽)」 = 이름: 자리).
+    if (!head || bare(head[1]!) !== here || eventNames.has(bare(`${head[1]!}입구`))) return part;
+    const rest = (head[2] ?? "").trim();
+    // 거쳐 가는 맵: 「<이 맵>에서 <자리> → <다음 맵> · <대상>」 → 「<다음 맵> 입구: <자리> → <대상>」.
+    const via = /^(.+?)에서\s+(.+?)\s*→\s*([^·→]+?)(?:\s*·\s*(.+))?$/su.exec(rest);
+    if (via && bare(via[1]!) === here) return `${via[3]!.trim()} 입구: ${via[2]!.trim()}${via[4] ? ` → ${via[4].trim()}` : ""}`;
+    return rest;
+  }).filter(Boolean);
+  const body = tail[1]!.trimEnd();
+  return parts.length ? `${body} (${parts.join(" / ")})` : body;
+}
+
 const GENERIC_NAME = /^(?:ev[_-]|event|이벤트|npc\b|조사\s*지점$|조사$|단서$|지점$)/iu;
 
 /** 「Z 조사 · 책장」의 이름 부분 — 이벤트 이름(사람이 읽는 이름이면), 문이면 가는 맵 이름, 없으면 그 칸 가구 이름표. */

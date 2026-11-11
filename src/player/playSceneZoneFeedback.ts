@@ -5,7 +5,7 @@ import type { RuntimeEventView } from "@/project/runtimeEventState"
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { footprintBounds, footprintContains } from "@/project/footprint";
 import { objectClusterAt } from "@/project/objectFootprint";
-import { promptTargetName } from "@/player/objectiveTarget";
+import { objectiveTextOnMap, promptTargetName } from "@/player/objectiveTarget";
 import { mapTileSize } from "@/project/tileGeometry";
 import { runtimePixelDensity } from "@/player/runtimeViewScale";
 import type { GameMap } from "@/project/types";
@@ -106,6 +106,8 @@ export type PlaySceneZoneFeedback = {
   promptPlace?: { atMs: number; text: string; x: number; y: number };
   /** 첫 조작·목표 변경 때 가운데에 잠깐 뜨는 목표 카드(objectiveCard.ts). */
   card?: ObjectiveCard | null;
+  /** 지금 맵에서 읽는 목표 글(objectiveTextOnMap) — 글·맵이 같으면 다시 만들지 않는다. */
+  objectiveOnMap?: { readonly raw: string; readonly mapId: string; readonly shown: string };
 };
 
 const OBJECTIVE_PLACE_MS = 300;
@@ -161,10 +163,12 @@ export function syncPlaySceneZoneFeedback(
     transientToast: farmMessages.get(scene)?.message ?? null,
   });
   feedback.model = update.model;
-  feedback.dom?.render(update.view, update.effects);
+  // 목표 꼬리의 「<맵> 입구: <자리>」 는 그 맵에 들어선 뒤에는 틀린 말이다 — 지금 맵에서 읽는 글로 보인다(objectiveTextOnMap).
+  const view = objectiveViewOnMap(scene, feedback, update.view);
+  feedback.dom?.render(view, update.effects);
   // 안내를 먼저 놓는다 — 목표 창은 안내(다른 HUD)를 피해 자리를 고른다.
-  if (host && feedback.dom && update.view.prompt && !update.view.suppressed) placePrompt(scene, feedback, host, update.view.prompt);
-  if (host && feedback.dom && update.view.objective && !update.view.suppressed) placeObjective(scene, feedback, host, update.view.objective);
+  if (host && feedback.dom && view.prompt && !view.suppressed) placePrompt(scene, feedback, host, view.prompt);
+  if (host && feedback.dom && view.objective && !view.suppressed) placeObjective(scene, feedback, host, view.objective);
   // 이벤트가 메뉴를 잠근 동안(기본, @/player/eventMenuLock) 터치 「메뉴」 단추를 숨긴다 — 눌러도 열리지 않는 단추를 보이지 않게.
   // 키보드 X·Esc 는 player.ts 가 같은 규칙으로 막는다. 매 프레임 불러 이어지는 이벤트 사이 틈 보정도 여기서 센다.
   const menuLocked = eventMenuLocked(scene.running, scene.session, performance.now());
@@ -177,8 +181,18 @@ export function syncPlaySceneZoneFeedback(
     // 로딩 막이 걷히고 이벤트(도입 연출)가 끝나 실제로 움직일 수 있는 첫 순간부터 센다.
     const controllable = !suppressed && !scene.running && !menuLocked && !document.querySelector("[data-testid='play-loading-overlay']");
     // 벽시계로 센다 — 게임 시간(elapsedMs)은 느린 기계에서 프레임 델타 상한 때문에 늘어져 2.8초 카드가 6초 떠 있었다.
-    syncObjectiveCard(feedback.card ??= createObjectiveCard(), host, scene.session, update.view.objective, controllable, performance.now());
+    syncObjectiveCard(feedback.card ??= createObjectiveCard(), host, scene.session, view.objective, controllable, performance.now());
   }
+}
+
+function objectiveViewOnMap(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedback, view: ZoneFeedbackView): ZoneFeedbackView {
+  const map = scene.map;
+  if (!map || !view.objective) return view;
+  let seen = feedback.objectiveOnMap;
+  if (!seen || seen.raw !== view.objective || seen.mapId !== map.id) {
+    seen = feedback.objectiveOnMap = { raw: view.objective, mapId: map.id, shown: objectiveTextOnMap(map, view.objective) };
+  }
+  return seen.shown === view.objective ? view : { ...view, objective: seen.shown };
 }
 
 function placePrompt(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedback, host: HTMLElement, text: string): void {
