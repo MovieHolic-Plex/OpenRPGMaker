@@ -291,7 +291,7 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 - **장소 테마 표**(`place/placeTheme.ts`): 구성기 세계 아홉(snow_north · desert_east · pirate_isles · sky_island · steampunk_city · prehistoric · sengoku_edo · sf_station · wasteland)마다 바탕 + 실내 + 종류별(묘실·얼음 동굴·난파선·화산…)로 전투 배경 · 길 적 · 보스를 적는다. 맵의 테마 = 청사진 세계 + 청사진 장소 목록의 종류(`placeThemeOf`). 버들항(표에 없는 세계)은 종전 길.
 - **길 적**(`themeFieldTroops`): 테마의 적 하나짜리 무리(`troop_theme_<적>`)를 시작 파티에 맞춘 사본으로 세운다. **보스**(`themeBossTroop`): 상대 이름과 낱말이 겹치는 테마 적, 없으면 단계마다 돌려 고른다 — `blueprintPath.foeTroop` 이 먼저 묻는다.
 - **전투 배경**(`applyThemeBackdrop`): 겹 배경은 숲·평원·동굴·눈·사막 다섯뿐이다. 맞는 것이 있으면 적고, 없으면 대역을 적되 없는 그림 줄을 남긴다. 저작한 배경은 그대로(기본값 숲만 저작으로 치지 않는다). `shipLookDefaults.fillBattleBackgrounds` 도 테마를 먼저 묻는다.
-- **없는 그림 줄**(`ArtGap` · `artGapLine` · `parseArtGap`): `[art-gap] theme=desert_east/tomb want=backdrop wanted=«stone burial chamber» where=«별의 매장실» stand-in=battle-scenery-cave`. `want` 는 backdrop·foe·boss. `session.missingArt`(턴 기록 `missingArt`)에 실린다 — 그림 부족 장부는 `parseArtGap` 으로 테마·바란 것·어디·대역을 센다. 새 그림은 그리지 않는다.
+- **없는 그림 줄**: 모양은 하나다 — `src/project/artGap.ts`(아래 「없는 그림 기록은 하나」). 테마 쪽은 `[art-gap] theme=desert_east/tomb want=backdrop wanted=«stone burial chamber» where=«별의 매장실» stand-in=«battle-scenery-cave»`, `want` 는 backdrop·foe·boss. 새 그림은 그리지 않는다.
 - **상자**(`usableLoot`): 전투 중에도 쓰는 회복약(값 40~400)이나 돈. 제작 재료는 주지 않는다.
 - **보이는 적은 걷는다**(`populateWorldPlace`): 두 칸 왕복이 안 되면 다른 축, 그다음 한 칸 왕복을 해 본 뒤에만 서 있는 적으로 둔다 — 좁은 방에서 «조사하니 전투» 가 되던 자리.
 - **싸우는 단계의 상대**(`story/stepFoes.ts`): 서 있는 그림 = 전투 그림(생성 도트가 있으면 그대로, 없을 때만 걷기 칩). 몬스터 그림으로 선 상대는 이긴 뒤 페이지가 투명·아래 통행·명령 없음(`puzzle.ts` `battle.leaves`). 사람 칩으로 선 상대는 남아 뒷말을 한다.
@@ -644,9 +644,8 @@ Terra 세 판의 저장본에서 다시 깐 결과: 사막 fun-x1 장면 4·자�
     끝 낱말 하나로 둘 다 하던 판은 버들항 실내에서 침대·화분·책장 75종을 못 찾았다(202 → 127, 온전한 낱말은 184) — 그래서 나눴다.
 - **이름 쪽(`eventReach.ts nameHits`).** 이름의 낱말 가운데 더 긴 낱말 안에 든 것은 버린다(「책상 서랍의 쪽지」 의 「책」은 책이 아니다). 작은 물건이 여럿이면 맨 뒤 것이 그 이벤트다(쪽지).
   이름과 이름표가 같은 겹낱말을 쓰면 그대로 맞는다(이름 토막 「보물상자」 ↔ 이름표 「보물상자」). 1칸 그림을 깔 때는 칩셋이 칸 역할을 적었으면 놓는 물건(prop·furniture·decor·detail)만 고른다.
-- **그림이 없어 못 한 것(`shared/artGap.ts recordArtGaps`).** 단계가 «이 칩셋에는 그 그림이 없다»며 지나갈 때 턴 기록 `v2.art-gap`(data: `stage · tilesetId · want · thing · note · mapId · x · y`)과 보고 줄(`session.missingArt`) 하나를 남긴다. 끝내기를 막지 않고, 같은 자리는 한 번만 적는다.
-  보고 줄은 그림 이름으로 시작한다(「굴 입구 그림 (cave mouth) — 칩셋 desert_east 에 없어 …」) — 없는 그림 장부(`mapVqa/artGaps.ts`)가 `missingArt` 줄의 첫 괄호 앞을 그림 이름으로 읽는다. 장부는 아직 `v2.art-gap` 기록을 직접 읽지 않는다.
-  `want` 낱말: `altar/seal`(seal-step-art — 제단 조각은 버들항 것뿐) · `cave mouth`(cave-gates — 갱구 조각은 버들항 것뿐) · `hiding furniture`(chaser-hiding — 칩셋에 옷장·사물함·침대·커튼 그림이 하나도 없을 때만. 그림은 있는데 이 맵에 놓이지 않은 방은 없는 그림이 아니라 적지 않는다: 출하 검사 `chaserMapsWithoutHiding` 이 조수에게 돌려준다) · `door piece`(door-floor-transfers — 방인데 칩셋이 벽 문을 적어 두지 않음: 방 키트가 없는 구성기 방, 문 조각이 없는 마법 학교·고딕 저택) · `prop: <낱말>`(event-reach — 이름의 물건 1칸 그림이 없음).
+- **그림이 없어 못 한 것(`src/project/artGap.ts recordArtGaps`).** 단계가 «이 칩셋에는 그 그림이 없다»며 지나갈 때 없는 그림 기록 하나를 남긴다(모양·가는 길은 아래 「없는 그림 기록은 하나」). 끝내기를 막지 않고, 같은 자리는 한 번만 적는다.
+  `want` 낱말: `altar-seal`(seal-step-art — 제단 조각은 버들항 것뿐) · `cave-mouth`(cave-gates — 갱구 조각은 버들항 것뿐) · `hiding-furniture`(chaser-hiding — 칩셋에 옷장·사물함·침대·커튼 그림이 하나도 없을 때만. 그림은 있는데 이 맵에 놓이지 않은 방은 없는 그림이 아니라 적지 않는다: 출하 검사 `chaserMapsWithoutHiding` 이 조수에게 돌려준다) · `door-piece`(door-floor-transfers — 방인데 칩셋이 벽 문을 적어 두지 않음: 방 키트가 없는 구성기 방, 문 조각이 없는 마법 학교·고딕 저택) · `prop`(event-reach — 이름의 물건 1칸 그림이 없음, `wanted` 가 「서류 1칸 그림」).
 - **「들어갈 수 없다」 한 줄은 조사 키에(`place/lockedDoors.ts`).** 출하 플레이어에서 본 것(`npm run qa:runtime -- --scenario locked-entrance`, 픽스처 `scripts/qa/runtime/locked-entrance-fixture.mts`): 막힌 문 칸의 접촉(playerTouch) 이벤트는 문 쪽으로 밀 때마다 대사창을 띄우고 조사 키에는 답하지 않았다 — 처음 지적이 «Enter/z 를 눌러도 반응이 없다» 였다.
   이제 조사(action) 이벤트다: 밀어도 조용하고, 문을 보면 「Z 조사 · 들어갈 수 없는 입구」 안내가 뜨고, 누르면 한 줄이 나온다. 문 칸마다 하나(넓은 문은 한 칸에만 세우면 다른 칸 앞에서 답하지 않는다), 문 앞에 걸어 가 설 수 없는 칸에는 세우지 않는다.
   세울 칸의 목록이 정본이라 다시 돌리면 접촉으로 세운 옛 줄은 조사 키로 바뀌고, 이제 들어갈 수 있게 된 문(문 앞에 이동 칸이 생김)의 줄은 걷힌다. 조수·사람이 고친 줄(대사 한 줄이 아닌 것 — 열쇠가 있으면 열리는 문)은 그대로 둔다. 조사 검사(`judge/examineLint.ts`)는 이 줄을 조수가 지은 조사로 세지 않는다.
@@ -658,6 +657,20 @@ Terra 세 판의 저장본에서 다시 깐 결과: 사막 fun-x1 장면 4·자�
 그림은 있는데 방에 놓이지 않은 16곳(버들항 집·여관·가게, 일본 가정집, 스팀펑크 여관·선술집·공방 …)은 출하 검사가 돌려준다. 표가 추격자를 못 세우던 가구 찬 방 8곳도 이제 잰다(25 → 33곳).
 봉인 제단 66장 · 굴 입구 41장 · 방의 벽 문 25장: 말없이 지나감 → 전부 적힘(G). 잠긴 문: 구성기 바깥 맵 40장의 입구 칸 277 가운데 문 앞에 설 수 있는 276칸 모두 조사 키에 답하고, 부딪힘에 답하는 줄 0.
 그림: `~/claude-viz/stage-audit-pr3.html`.
+
+**없는 그림 기록은 하나 (2026-11-11, 4차).** 같은 날 기록이 두 모양으로 생겼다 — 끝맺음 단계의 `v2.art-gap` 기록 + 한국어 줄, 장소 테마(#4612)의 `[art-gap]` 줄. 장부가 둘을 따로 읽어야 했고 턴 기록에는 글만 남았다.
+이제 `src/project/artGap.ts` 하나다(조수와 하네스의 장부가 함께 읽는 약속이라 `src/ai/v2` 밖에 둔다 — 다른 것을 끌어오지 않는다).
+
+| 무엇 | 모양 |
+|---|---|
+| 기록 `ArtGap` | `theme?`(장소 테마 — 전투 배경·적) · `chipset?`(맵 칩셋 — 타일·기물) · `want`(빈칸 없는 영어 열쇠) · `wanted`(바란 그림 이름, 같은 것은 늘 같은 이름) · `where`(「장소 이름 x,y」) · `standIn`(대신 쓴 것, 그대로 뒀으면 `none`) · `by?`(적은 단계·빌더) · `note?` |
+| 줄 `artGapLine(gap)` | `[art-gap] theme=… chipset=… want=… wanted=«…» where=«…» stand-in=«…» by=… note=«…»` — 아는 것만 적는다. `parseArtGap(line)` 이 같은 기록으로 되읽는다(대역을 꺾쇠 없이 줄 끝까지 적던 #4612 의 줄도 읽는다) |
+| 적기 | 세션이 손에 있으면 `recordArtGaps(session, gaps)`. 결과만 돌려주는 빌더·조립은 결과의 `missingArt` 에 `artGapLine(gap)` 을 싣는다(도구 층이 세션으로 옮긴다) — 어느 쪽이든 같은 줄이 `session.missingArt` 에 한 번 남는다 |
+| 읽기 | 턴 끝 요약 `v2.summary` 의 `data.artGaps`(`artGapsIn(session.missingArt)` — `turn/finishTurn.ts`) → 하네스 턴 기록의 `artGaps`(`wholeGameSession.mjs`) → 없는 그림 장부(`mapVqa/artGaps.ts reportOfArtGap`: 이름 = `wanted`, 칩셋·테마·대역 그대로). 최종 보고의 「그림·부품이 없어 못 한 것」은 `artGapText` 로 풀어 쓴다(「굴 입구 그림(사막 12,10)」) |
+
+`want` 열쇠(지금 쓰는 것): 테마 `backdrop` · `foe` · `boss`, 칩셋 `altar-seal` · `cave-mouth` · `hiding-furniture` · `door-piece` · `prop`. 새 열쇠는 그 일을 하는 쪽이 빈칸 없는 영어로 짓는다(방 종류가 없는 역할 · 그림 없는 장치 …).
+단계마다 내던 `v2.art-gap` 기록은 없앴다(요약 한 번이 정본). 기록 모양이 아닌 `missingArt` 글(빌더의 «놓을 빈 자리가 없다», 그리기 카드 대기)은 종전대로 글로 남고 장부도 종전대로 읽는다.
+장부가 결과 글에서 `missingArt` 목록을 꺼내던 식은 첫 `]` 에서 끊겼다 — `[art-gap]` 줄이 든 목록은 통째로 빠졌다(#4612 의 줄이 장부에 안 잡히던 까닭). 따옴표째로 건너게 고쳤다.
 
 **바깥 맵끼리는 집 문으로 잇지 않는다(`pickTransferSpot` 의 `buildingDoor`).** 가장자리가 모두 막힌 바깥 맵끼리(세계 열 벌 35개 연결 가운데 3개 — 요새 ↔ 난파선 암초, 비공정 부두 ↔ 섬 사슬, 섬 사슬 ↔ 신전 섬)는
 `linkChild` 의 마지막 차례에서 `pickTransferSpot` 을 탄다. 건물 입구가 보이게 되자 그 자리가 집 문이 될 수 있었다 — 집에 들어갔는데 다른 바깥 맵으로 나오는 것은 맨바닥 이동 칸보다 나쁘다(감독 결정 2026-11-11).
