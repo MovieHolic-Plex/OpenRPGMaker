@@ -521,6 +521,36 @@ golden: 117/153 이 `create_transfer_pair` · `place_door` 글만 바뀜. 시험
 
 증거: `test/toolsOneCallGaps.test.ts` · `test/aiV2OneCallToolText.test.ts`. 둘째 묶음 여섯 일(`boss-line-starter` · `no-save-built` · `heal-spring-built` · `npc-wander-starter` · `npc-still-starter` · `start-items-starter`)에 한 호출 정답을 `accept` 로 더했다(판정은 그대로).
 
+||||||| a3d74a1f4d
+## 이미 있는 NPC 가 하던 일은 남는다 — `create_quest` · `add_companion` · `set_shop_stock` (2026-11-11, 작은 일 둘째 묶음 뒤)
+
+작은 일 둘째 묶음의 손 정답을 만들다 본 결함 셋 — 셋 다 「있던 내용을 망가뜨린다」.
+
+1. **`create_quest` 가 기존 NPC 를 통째로 맡았다.** 「약초 배달」 뒤 여관 주인은 여관 없이 「고맙네.」만 말했고, 의뢰인의 화자는 「의뢰인」, 완료 뒤 대사는 「자네 덕분에 살았어」, 움직임은 fixed 가 됐다.
+   같은 사람에게 의뢰를 하나 더 얹으면 앞 의뢰의 페이지가 지워졌다(페이지 id 에 의뢰 키가 없어 「다시 컴파일」로 읽었다 — `built` 의 떠돌이 상인은 의뢰 셋 가운데 마지막 것만 받을 수 있었다).
+2. **`add_companion{target:{eventId}}` 가 마지막 페이지에 붙였다.** 조건이 아직 안 맞는 페이지(「보스를 잡은 뒤」)라 말을 걸어도 안 돌았다. 파티에 넣는 길도 없었다(`addFollower` 뿐).
+3. **`set_shop_stock` 이 재고를 통째로만 바꾸고, 상점이 없던 페이지(의뢰 페이지)마다 새 상점을 넣었다.**
+
+고친 것(도구에서):
+- **의뢰는 그 사람 페이지 뒤에 덧붙는다** (`src/project/quest/questHost.ts`). 그 사람 페이지는 한 글자도 안 바꾼다. 의뢰 페이지는 「지금 도는 그 사람 페이지」(`pageAtStart`)를 본떠 그림·움직임·몸 크기를 물려받고,
+  화자는 그 사람 대사의 화자, 얼굴 명령도 그대로 앞에 둔다. 조건은 걸려 있는 동안만 맞는다 — 제안 `[시작 전]`, 진행 `[시작 뒤·완료 전]`, 대화 단계 `[그 단계가 열린 동안]`. 끝나면 그 사람 자신의 페이지가 다시 돈다
+  (완료 페이지는 `dialogue.afterComplete` 를 줬거나 다시 받는 의뢰일 때만). 그 사람의 가게 일(`shop`·`inn`·`openCraftShop`)은 제안·진행(할 일이 남았을 때)·대화 단계·완료 페이지 끝에 이어진다.
+  페이지 id 는 `<이벤트>_<의뢰 키>_offer|active|done|talkN…` — 한 사람이 의뢰를 여럿 준다(나중에 얹은 것부터 받는다).
+- **옛 배치를 만나면 고친다.** 키 없는 `<이벤트>_offer|_active|_done` 이 있는 사람에게 의뢰를 얹으면: 제안 페이지 앞머리에 접혀 있던 인사(상점 포함)를 `<이벤트>_base` 페이지로 되살리고,
+  옛 의뢰 페이지는 키가 든 id·걸려 있는 동안만 맞는 조건으로 바꾸고, 진행·완료 페이지에도 가게 일을 잇고, 화자 「의뢰인」을 그 사람 이름으로 바꾼다.
+- **장 구성기는 옛 배치 그대로다.** `author_jrpg_chapter` 는 방금 자기가 세운 NPC 에 의뢰를 얹고, 폴른 스타 다듬기(`chronoBell.ts` `polishLines`)가 그 페이지 순서·기본 문구에 기댄다 —
+  스키마에 없는 내부 인자 `takeOverNpcs:true` 로 옛 배치를 쓴다(`compileQuest(…, { takeOverNpcs })`). 모델에게는 안 보인다.
+- **`add_companion`**: `target.eventId` 는 게임을 막 시작한 상태에서 말을 걸면 도는 페이지(`src/project/eventPageNow.ts` `pageAtStart`)에 붙인다. 답에 몇 번째 페이지인지 적는다.
+  `joinParty:true` 는 `changeParty add` 도 넣고, 기존 NPC 에는 합류 뒤 떠나는 마지막 페이지(이 이벤트가 안 쓰는 셀프 스위치)를 붙인다. `who` 를 비우면(빈 문자열 채움 포함) 그 사람의 이름·걷는 그림으로 배우를 만든다.
+  «말을 걸면 동료가 되어 파티에 들어오게» 는 한 호출이다. 새로 세우는 합류 이벤트의 「합류 후」 페이지가 앞에 있어 영원히 가려지던 것도 고쳤다(뒤로 옮김).
+- **`set_shop_stock`**: `add:[{itemId,…}]` 는 지금 파는 것에 더하고 `remove:[id]` 는 그것만 뺀다. `stock` 은 전처럼 통째로 바꾼다. 빈 배열은 안 준 것이다(`stock:[]` + `add` 가 재고를 비우지 않는다).
+  이미 상점인 이벤트는 상점이 있던 페이지만 고친다. 상점이 죽은 페이지(뒤 페이지에 늘 가려짐)에만 있으면 실제로 도는 그 페이지에도 둔다(2026-08-24 결함 유지). 상점이 하나도 없던 사람은 말할 수 있는 페이지마다 생긴다.
+- 세 도구의 새 거절·결과 글은 영어다. `toolTextEn.ts` 의 세 항목을 고쳤다.
+
+증거: `test/toolsKeepNpcContent.test.ts`(픽스처 `starter`·`built`). 둘째 묶음의 `join-party-starter`·`stock-add-built`·`stock-remove-built` 에 한 호출 정답을 `accept` 로 더했다(판정은 그대로).
+남은 것: 의뢰 페이지가 본뜨는 것은 「시작 상태에서 도는 페이지」 하나다 — 그 사람에게 조건 페이지가 여럿이면 의뢰가 걸려 있는 동안 그 조건 대사는 가려진다(전과 같다).
+
+||||||| f93a342235
 ## 조사 지점은 `place_examine_hotspots` — 물건 이름으로 놓는다 · 글만 나오는 조사는 장면이 아니다 (2026-11-11, 작은 일 재측정)
 
 작은 일 재측정(Terra, main 84a7fa331a)에서 통과는 했지만 «완료» 로 못 끝난 두 일 — `sign-starter`(표지판을 읽으면 글) · `examine-fireplace-built`(벽난로를 조사하면 글).
