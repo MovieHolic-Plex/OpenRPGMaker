@@ -4,6 +4,7 @@ import { SHAKE_WORDS, FLASH_WORDS, WEATHER_WORDS } from "./asks";
 import type { AudioAsk } from "./audio";
 import { STATE_WORDS, type CombatAsk } from "./combat";
 import { kw, kwEnd } from "./text";
+import { LINK_MAPS_WORDS } from "./scope";
 import { ENDING_WORK_WORDS, SCRIPT_TIER, SHOP_WORDS, V2_DRESS_TOOLS, type ToolGroups } from "./toolGroups";
 
 /** 게임 카드 줄의 주제. */
@@ -23,7 +24,7 @@ const TOPIC_WORDS: readonly (readonly [GameTopic, RegExp])[] = [
   ["weather", WEATHER_WORDS],
   ["staging", new RegExp(`${SHAKE_WORDS.source}|${FLASH_WORDS.source}`, "iu")],
   ["examine", /조사|살펴|비석|묘비|이동석|분수|약초|광맥|표지판|팻말|덤불|우물|망원경|examine/iu],
-  ["maps", /새\s*맵|입구|출구|들어가면|나가면|이어\s*줘|이어줘|연결|문을|문으로|가게\s*이어|transfer/iu],
+  ["maps", new RegExp(`새\\s*맵|입구|출구|들어가면|나가면|문을|문으로|가게\\s*이어|transfer|${LINK_MAPS_WORDS.source}`, "iu")],
   ["flashback", /회상|과거\s*장면|옛날\s*장면|플래시백|flashback/iu],
   ["feelings", /표정|웃으|걱정|화난|놀란|감정|느낌표|따라오|따라와|동료가\s*되|합류/iu],
   ["ending", ENDING_WORK_WORDS],

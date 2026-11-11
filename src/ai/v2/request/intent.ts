@@ -6,7 +6,7 @@ import { combatAsk, type CombatAsk } from "./combat";
 import { HORROR_WORDS, puzzleAsk } from "./genre";
 import { ART_ASK, ENDING_WORDS } from "./asks";
 import { PLACE_BUILD_WORDS } from "./place";
-import { MAKE_GAME_WORDS, ONE_ROOM_GAME, SINGLE_PLACE, asksToChange, asksToContinue, bareDescription, isEscapeBlueprint, isFreshProject, wholeGameAsk } from "./scope";
+import { MAKE_GAME_WORDS, ONE_ROOM_GAME, SINGLE_PLACE, asksToChange, asksToContinue, bareDescription, isEscapeBlueprint, isFreshProject, linkedExistingMaps, wholeGameAsk } from "./scope";
 import { maskNames, userText } from "./text";
 import { matchToolGroups, type ToolGroups } from "./toolGroups";
 import { gameTopics, jobFacets, smallJobTools, type GameTopic, type JobFacets } from "./topics";
@@ -104,15 +104,18 @@ export function classifyRequest(task: string | undefined, project: Pick<Project,
   const fresh = isFreshProject(project as Project);
   const first = blueprint ? readRequest(blueprint.request ?? "") : undefined;
   const escape = blueprint ? isEscapeBlueprint(blueprint) : false;
-  const key = [task ?? "", fresh ? 1 : 0, blueprint ? `b:${blueprint.request ?? ""}` : "", escape ? 1 : 0].join("\u0000");
+  // 장소 짓기로 읽힌 글이 이미 있는 맵 둘을 잇기만 하라는 것이면 작은 일이다(맵 이름은 프로젝트마다 달라 기억 열쇠에 넣는다).
+  const linked = text.scope === "place" ? linkedExistingMaps(text.own, project) : [];
+  const key = [task ?? "", fresh ? 1 : 0, blueprint ? `b:${blueprint.request ?? ""}` : "", escape ? 1 : 0, linked.join("|")].join("\u0000");
   return remember(INTENT_MEMO, key, () => {
     // 청사진은 게임 하나를 만들 때만 생긴다 — 첫 요청 글이 남아 있지 않은 옛 청사진도 게임 하나로 본다.
     const inherits = text.scope === "continue" && !!blueprint && (first!.scope === "wholeGame" || !blueprint.request?.trim());
     const wholeGame = text.scope === "wholeGame" || inherits;
     // 빈 프로젝트에 묘사만 온 글(「장난감 가게」)은 첫 장소를 짓는 시작이다 — 시킨 일이 분명한 작은 요청은 빈 프로젝트에서도 작은 요청이다.
     const firstPlace = fresh && text.scope === "edit" && bareDescription(text.own);
-    const scope: RequestScope = firstPlace ? "place" : text.scope;
+    const scope: RequestScope = firstPlace ? "place" : linked.length ? "edit" : text.scope;
     const why = firstPlace ? "a bare description on an empty project — start with a first place"
+      : linked.length ? `links maps that already exist (${linked.length} named) — nothing to build`
       : inherits ? `${text.why}; the blueprint's first request was a whole game` : text.scope === "continue" ? `${text.why}; no whole-game blueprint to inherit` : text.why;
     // 빈 프로젝트의 이어 하기(「계속」)는 고칠 것이 없다 — 앞 실행이 아무것도 못 쓰고 끊긴 것이라 짓는 카드·도구를 그대로 싣는다.
     const editOnly = !!text.own.trim() && scope !== "wholeGame" && scope !== "place" && !(fresh && scope === "continue");
