@@ -1,5 +1,6 @@
 import { commitEventDraftAuthoredWrites, eventDraftAuthoredDiff } from "./eventDraftAuthored";
 import { cloneProjectSharingReferenceDocuments, cloneProjectSharingSharedDictionaries } from "./projectClone";
+import { findEventCoveringPoint } from "./eventFootprintQuery";
 import type { GameEvent, GameMap, MapId, PersistedGameEvent, Project } from "@/project/types";
 
 export type EventDiffKind = "created" | "updated";
@@ -59,6 +60,16 @@ export function committedEvents(events: readonly GameEvent[]): GameEvent[] {
  */
 export function editorWorkingEvents(events: readonly GameEvent[]): GameEvent[] {
   return events.map((event) => eventWithoutDraft(event));
+}
+
+/**
+ * `findEventCoveringPoint(editorWorkingEvents(events), x, y)` 와 같은 결과를, 맞은 이벤트 하나만 복제해서 낸다.
+ * 칸 판정은 초안 메타데이터를 읽지 않으므로 원본으로 판정해도 같은 이벤트가 걸린다. 마우스 이동마다 맵의 모든
+ * 이벤트를 structuredClone 하던 것이 큰 맵에서 칠하기 프레임을 잡아먹었다(2026-11-08 실측, 폴른 스타 45맵).
+ */
+export function findWorkingEventCoveringPoint(events: readonly GameEvent[], x: number, y: number): GameEvent | undefined {
+  const hit = findEventCoveringPoint(events, x, y);
+  return hit ? eventWithoutDraft(hit) : undefined;
 }
 
 export function mapWithCommittedEvents(map: GameMap): GameMap {

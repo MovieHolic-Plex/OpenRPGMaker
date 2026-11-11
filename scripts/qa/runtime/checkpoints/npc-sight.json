@@ -1,0 +1,49 @@
+{
+  "set": "npc-sight",
+  "note": "시선 조건 상자 시연(npc-sight-fixture.mts). 경비는 y23 에서 아래(기본 방향)를 본다. 주인공은 상자 바로 위 칸에서 아래를 본다.",
+  "viewport": {
+    "width": 960,
+    "height": 540
+  },
+  "checkpoints": [
+    {
+      "id": "in-sight",
+      "label": "보는 앞 — 4칸, 트인 시야",
+      "x": 2,
+      "y": 27,
+      "facing": "down",
+      "gold": 0
+    },
+    {
+      "id": "behind-wall",
+      "label": "벽 뒤 — y24 벽 칸이 시선을 끊음",
+      "x": 5,
+      "y": 27,
+      "facing": "down",
+      "gold": 0
+    },
+    {
+      "id": "in-dark",
+      "label": "어둠 — 조명 어둠 0.85, 4칸",
+      "x": 8,
+      "y": 27,
+      "facing": "down",
+      "gold": 0,
+      "sessionPatch": {
+        "lighting": {
+          "ambient": 0.85,
+          "color": "#0a0a1a",
+          "sources": []
+        }
+      }
+    },
+    {
+      "id": "out-of-range",
+      "label": "사거리 밖 — 7칸",
+      "x": 11,
+      "y": 30,
+      "facing": "down",
+      "gold": 0
+    }
+  ]
+}

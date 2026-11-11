@@ -143,3 +143,24 @@ and effective inspector metadata. These are source guarantees/recipes, not measu
 latency or CPU improvements.
 
 Charset visibility uses the character strip bounds, rather than the card header. A title peeking into the viewport must not start the eight canvases still below its edge. Native normal-motion evidence is in `verify-shots/editor-ux-fixes-round2-20261004/extras-motion/`.
+
+## Project-size scaling: map thumbnails, hover hit-test, inspector (2026-11-08)
+
+Measured with `oprn-serve` (SQLite host) + Playwright Chromium against Fallen Star (45 maps) and
+synthetic 2x/4x copies (90/180 maps). Full tables: http://mdc-server:18301/editor-perf.html.
+
+- `mapThumbnail.ts` kept 120 entries FIFO. One map-list render asks for more thumbnails than that once a
+  project passes ~120 maps, so every map switch re-rasterized ~60 thumbnails tile by tile
+  (180 maps: `renderStage` 7.7s of 15.9s CPU across 8 switches). The cache is now LRU with a pixel budget
+  (4M backing pixels, ~830 row thumbnails, ~16MB). `test/mapThumbnailCache.test.ts` pins "second render of
+  200 maps draws nothing".
+- Hover/click hit-tests used `findEventCoveringPoint(editorWorkingEvents(map.events), x, y)`, which
+  `structuredClone`s every event on every pointer move. `findWorkingEventCoveringPoint` tests the raw
+  events (the footprint ignores draft metadata) and strips the draft from the hit only.
+- `rightInspector.ts` resolved the BGM name through the whole music catalog on every cursor-cell repaint;
+  non-empty names are now memoized per project object (the store replaces the object on change).
+
+Not changed (ranked on the page): the boot-time `projectWithoutEventDrafts` structuredClone of the whole
+project for the save baseline, the idle-time content-digest prewarm, a ~0.5-0.8GB renderer heap / 1.0-1.4GB
+host RSS floor that a blank project already reaches, and installer size (~1.1-1.25GB, mostly bundled
+portraits/facesets/region-reference maps).

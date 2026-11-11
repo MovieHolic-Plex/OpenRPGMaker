@@ -40,6 +40,8 @@ export type EventPageLocationContext = {
   readonly eventPosition?: ActorQueryOptions["eventPosition"];
   /** 시선을 막는 칸(eventSeesPlayer). 생략 = 광선 검사 없음. */
   readonly blocksSight?: ActorQueryOptions["blocksSight"];
+  /** 현재 맵의 이벤트(eventSeesPlayer watchers·doorsBlock). 생략 = 고르기는 아무도 아니고 문은 막지 않는다. */
+  readonly mapEvents?: ActorQueryOptions["mapEvents"];
 };
 
 /** 페이지 세션(부분)을 조건 조회 세션으로 비춘다. 없는 칸은 비어 있는 것으로 본다. */
@@ -142,7 +144,7 @@ function evalPageCondition(
     case "newGamePlus":
     case "weekday":
     case "stringVariable":
-      return evalActorQueryCondition(pageQuerySession(session), condition, { eventId: event.id, x: context?.host?.x, y: context?.host?.y, direction: context?.host?.direction }, { ...context?.calendar, ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}), ...(context?.badgeSwitchIds ? { badgeSwitchIds: context.badgeSwitchIds } : {}), ...(context?.eventPosition ? { eventPosition: context.eventPosition } : {}), ...(context?.blocksSight ? { blocksSight: context.blocksSight } : {}), locations: () => context?.locations });
+      return evalActorQueryCondition(pageQuerySession(session), condition, { eventId: event.id, x: context?.host?.x, y: context?.host?.y, direction: context?.host?.direction }, { ...context?.calendar, ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}), ...(context?.badgeSwitchIds ? { badgeSwitchIds: context.badgeSwitchIds } : {}), ...(context?.eventPosition ? { eventPosition: context.eventPosition } : {}), ...(context?.blocksSight ? { blocksSight: context.blocksSight } : {}), ...(context?.mapEvents ? { mapEvents: context.mapEvents } : {}), ambient: () => (session as { lighting?: { ambient?: number } }).lighting?.ambient, locations: () => context?.locations });
     case "difficulty":
       return session.difficultyId !== undefined && session.difficultyId === condition.difficultyId;
     case "itemUsed":
