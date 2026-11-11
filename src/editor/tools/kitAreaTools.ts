@@ -102,7 +102,9 @@ export const KIT_AREA_TOOLS: readonly ToolDefinition[] = [{
     let result: ReturnType<typeof furnishOutdoorArea>;
     const props = Array.isArray(args.props) ? args.props.filter((name): name is string => typeof name === "string" && !!name.trim()) : [];
     const few = args.amount === "few";
-    try { result = furnishOutdoorArea(project, map, area, style, Number.isInteger(args.seed) ? Number(args.seed) : 1, { ...(props.length ? { props } : {}), ...(few ? { maxLots: FEW_LOTS } : {}) }); }
+    // 채우기의 구획 수는 터 넓이를 따른다(구획 5×4 + 둘레 한 칸 ≈ 42칸) — 고정 12구획은 48×36 빈 들판의 왼쪽 위 26×20 만 채우고 멈췄다(2026-11-11 map-vqa 깔기 village-to-field).
+    const lots = few ? FEW_LOTS : Math.max(12, Math.ceil((area.w * area.h) / 42));
+    try { result = furnishOutdoorArea(project, map, area, style, Number.isInteger(args.seed) ? Number(args.seed) : 1, { ...(props.length ? { props } : {}), maxLots: lots }); }
     catch (error) { if (error instanceof FurnishError) throw new ToolError(error.message, { code: error.code, mapId: map.id }); throw error; }
     const uses = result.lots.map(l => `${l.label}(${l.x},${l.y})`).join(" · ");
     const parts = [style !== "auto" ? `${style}: 나무 ${result.trees} · 소품 ${result.smalls}${result.pathCells ? ` · 길 ${result.pathCells}칸(기존 길에 이음)` : ""}` : "", uses ? `쓰임 ${result.lots.length}곳: ${uses}` : ""].filter(Boolean).join(" / ");

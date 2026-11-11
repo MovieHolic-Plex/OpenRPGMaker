@@ -949,6 +949,25 @@ golden: 117/153 이 `create_transfer_pair` · `place_door` 글만 바뀜. 시험
 golden: 153 가운데 117 이 `place_examine_hotspots` 글/스키마(81 은 그것만, 33 은 조사 카드 글 +23자), 표지판 요청 3줄은 처음 싣는 도구에 `place_examine_hotspots` 가 들고 `fill_region` 이 필요할 때로 물러남.
 시험 `test/aiV2ExamineSpots.test.ts`.
 
+## 풀 칩셋 마을 뒤의 장소는 그 세계의 종류로 짓는다 · 빈 땅 채우기는 터 넓이만큼 (2026-11-11, map-vqa 깔기 24판)
+
+낱말 없는 «마을» 은 칩셋 풀(`villageChipsetPool` — 해적 군도·사막·설원…)로 깔린다. 그 뒤의 둘째 장소가 깔기 24판에서 서지 못했다.
+
+- village-chief-house: 풀 마을 뒤 «촌장 집» `make_place({type:"interior", layout:…})` → 손 도트 실내 v5 는 다른 칩셋 계열이라 도구 실행기가 거절(«사용자 승인 없이 타일 그림체를 바꾸지 않는다») — 촌장 집은 끝내 없었다.
+- village-to-field: «동쪽 들판» `author_forest_route`(버들항) → 같은 거절 → 다음 호출 줄이 `create_map({})` → 48×36 단색 맵에 `furnish_outdoor_area` 가 왼쪽 위 26×20 에만 12무더기(«맨땅 100%→81%»).
+
+규칙:
+
+- **청사진이 없어도, 프로젝트의 맵이 구성기 세계의 칩셋이면 `make_place` 는 그 세계의 종류로 짓는다**(`tools/verbs/place.ts` — `pickWorld`·`worldPlaceSpec`). 종류는 이름·테마가 짚은 것,
+  실내면 가장 작은 방(오두막·선실), 바깥이면 덜 쓴 종류. 결과에 무엇으로 지었는지와 다른 종류의 `style:"world:<세계>:<종류>"` 를 적는다. 모델이 보낸 손 도트 칸 배치는 쓰지 않는다고 알린다
+  (그 세계의 종류로 이미 선 장소에 배치가 또 오면 선 맵을 돌려준다 — 다른 칩셋으로 다시 짓지 않는다).
+- **칩셋 계열 거절 뒤의 다음 호출은 `make_place`** 다(`loop/nextCall.ts`). 빈 맵을 만들어 손으로 칠하게 하지 않는다.
+- **`furnish_outdoor_area` 의 채우기 구획 수는 터 넓이를 따른다**(`src/editor/tools/kitAreaTools.ts` — 구획 5×4 + 둘레 ≈ 42칸마다 하나, 최소 12). 48×36 빈 들판: 12구획(왼쪽 위) → 42구획(맵 전체, 맨땅 100%→28%). `amount:"few"` 는 그대로 세 무더기.
+
+남은 것(그림): 해적 군도·사막 세계에는 «들판» 종류가 없어 «동쪽 들판» 은 해변·항구 종류로 선다. 전국·SF 정거장·폐허 세계에는 실내 종류가 없다.
+
+재생(`layReplay.mts`): village-chief-house 는 «촌장 집»(오두막 14×12)이 서고, 탐침 `refusalNextCalls.mts` ④ 가 계열 거절 → `make_place` → 같은 칩셋의 장소를 확인한다. 시험 `test/aiV2WorldRoutedPlace.test.ts`.
+
 ## 버들항 맵의 빈 땅도 읽고 채운다 — 칸 역할을 안 적는 시트 · `amount:"few"` (2026-11-11, 작은 일 재측정)
 
 작은 일 재측정(Terra, main 84a7fa331a)에서 통과했지만 «완료» 로 못 끝난 `dress-trees-starter`(「마을 빈 곳에 나무를 몇 그루 심어 줘」, 버들항 시작 판):

@@ -10,7 +10,7 @@ import { HAND_INTERIOR_TILESET_ID, roomSpecOf } from "@/editor/handInterior/buil
 import { builderFor } from "../../place/builders";
 import { localizePlaceSpec } from "../../place/builders/modernCity";
 import { localizeCultureSpec } from "../../place/builders/joseon";
-import { isComposedWorld, parseWorldStyle, spareKind, worldKind, worldOf } from "../../place/world";
+import { isComposedWorld, parseWorldStyle, pickWorld, spareKind, worldKind, worldOf, worldPlaceSpec } from "../../place/world";
 import type { GameBlueprintPlace } from "@/project/gameBlueprint";
 import { villageLayoutGuide, cleanLayoutHint, villageArgs, villageMapSize } from "../../place/builders/village";
 import { codeTerrainFor, usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
@@ -106,6 +106,35 @@ export function placeVerbs(c: VerbContext) {
           if (blueprintMapFor(env.ctx.project, asked.name) && !(env.ctx.project.gameBlueprint?.places ?? []).some((pl) => pl.name === asked.name)) return text({ ok: false, summary: `«${asked.name}» already stands and this world's maps are laid by composers in one pass — it is not rebuilt. Add another place with build_places{add:[{name, kind}]}.` });
           const indoor = asked.type === "interior" || asked.type === "house";
           return buildWorldPlaces(id, "make_place", params, [{ name: asked.name, indoor, danger: asked.type === "dungeon" || asked.type === "cave" }]);
+        }
+      }
+      // 청사진 없이도: 손댄 맵이 구성기 세계의 칩셋이면(낱말 없는 마을이 칩셋 풀에서 그 세계로 지어졌다) 뒤이은 새 장소는 그 세계의 종류로 짓는다.
+      // 손 도트 실내·버들항 숲길은 다른 칩셋 계열이라 도구 실행기가 거절한다(2026-11-11 map-vqa 깔기 village-chief-house: 풀 마을 뒤 «촌장 집» 실내가 끝내 서지 못했다).
+      {
+        const asked = (params as { spec?: Partial<PlaceSpec> })?.spec;
+        const world = asked?.name && !env.ctx.project.gameBlueprint && !parseWorldStyle(asked.style) && !String(asked.style ?? "").startsWith("pool:") ? pickWorld(env.ctx.project, undefined, "") : undefined;
+        // 그 세계의 종류로 이미 선 장소에 손 도트 칸 배치가 또 오면 다른 칩셋으로 다시 짓지 않는다(계열 거절) — 선 맵을 돌려주고 배치를 쓰지 않았다고 알린다.
+        const stands = world && asked?.name ? blueprintMapFor(env.ctx.project, asked.name) : undefined;
+        const standsAs = stands ? parseWorldStyle(session.placeOf(stands.id)?.spec.style) : undefined;
+        if (stands && standsAs && layoutGiven(asked?.layout)) return text({ ok: true, mapIds: [stands.id], summary: `«${stands.name}» already stands as the «${standsAs.kind.id}» kind of ${standsAs.world.name} (${stands.id}, ${stands.width}×${stands.height}). The cell layout you sent was not used: this project's maps use that chipset and cell layouts belong to another one. Put single things in it with place_object, add_people or move_event.` });
+        if (world && asked?.name && !blueprintMapFor(env.ctx.project, asked.name) && !(asked.mapId && env.ctx.project.maps[asked.mapId])) {
+          const want = { indoor: asked.type === "interior" || asked.type === "house", danger: asked.type === "dungeon" || asked.type === "cave" };
+          // 종류: 장소 이름·테마가 그 세계 종류의 이름을 말하면 그것, 실내면 가장 작은 방(오두막·선실 — 누구의 집·가게로도 읽힌다), 아니면 덜 쓴 종류.
+          const said = `${asked.name} ${asked.theme ?? ""}`.toLowerCase();
+          const fits = world.kinds.filter((k) => !!k.indoor === want.indoor && !!k.danger === want.danger);
+          const named = fits.find((k) => said.includes(k.id.replace(/-/gu, " ")) || k.ko.split(/\s+/u).some((w) => w.length >= 2 && said.includes(w)));
+          const area = (k: (typeof fits)[number]) => (k.compose?.size[0] ?? 99) * (k.compose?.size[1] ?? 99);
+          const kind = named ?? (want.indoor && fits.length ? [...fits].sort((x, y) => area(x) - area(y))[0]! : spareKind(world, [...session.places.values()].flatMap((r) => parseWorldStyle(r.spec.style)?.kind.id ?? []), want));
+          const others = fits.filter((k) => k !== kind).map((k) => `"world:${world.id}:${k.id}" (${k.about})`).join(", ");
+          const spec: PlaceSpec = { ...worldPlaceSpec(world, kind, asked.name), salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) };
+          const builder = builderFor(spec);
+          if (builder) {
+            env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${builder.id} — ${world.id}:${kind.id})` });
+            await builder.prepare?.(spec);
+            const built = builder.build(run, spec);
+            const note = `«${asked.name}» was built as the «${kind.id}» kind of ${world.name} (${kind.about}): this project's maps use that chipset, so other chipsets and your own cell layout are not mixed in.${others ? ` For another kind, call make_place again with the same name and style ${others}.` : ""} Link it with create_transfer_pair.`;
+            return finishPlace(id, "make_place", params, spec, builder.id, withSetupDefaults({ ...built, warnings: [note, ...built.warnings] }, builder.id, run.ctx.project, String(task ?? ""), freshStart, session.stageWrites), 0);
+          }
         }
       }
       const specFirst = specGate("make_place", placeSpecKindOf((params as { spec?: PlaceSpec })?.spec?.type));
