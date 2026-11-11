@@ -4,6 +4,8 @@
 //   그 밖의 칩셋(설원·사막·스팀펑크…)으로 지은 야외 맵 13장이 전부 「맨땅 0% · 빈 터 없음」이었다(2026-11-11 구조 재점검 3-1).
 // 무엇을: 이름표가 아니라 칸 정보로 읽는다 — 걸을 수 있는 지형 칸이고, 실내 바닥·길·물이 아닌 칸이 빈 야외 땅이다.
 //   놓을 것은 그 칩셋의 구조 키트 가운데 야외 소품(role prop)에서 고른다.
+//   칸 역할(role)을 안 적는 시트(버들항 beodeul_city — 3.8만 칸 전부 role 없음)는 땅 꼬리표(grass·sand)와 통행(passable)으로 읽는다.
+//   2026-11-11 작은 일 재측정: 버들항 마을(풀밭 432칸)이 「맨땅 0%」 로 읽혀 조수가 나무를 맵 모서리 (0,0) 에 찍었다.
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 
@@ -21,16 +23,21 @@ const NOT_GROUND_TAGS = new Set([
 /** 꼬리표가 성긴 오토타일 칸은 이름표 끝말로 한 번 더 거른다(「다진 눈길 (모양 255)」·「얼어붙은 호수·강 속 변형」). */
 const NOT_GROUND_LABEL = /길(?![가-힣])|호수|얼어붙은|얼음|물가|용암|늪/u;
 const INDOOR = /실내|interior|indoor/iu;
-/** 나무·덤불·바위처럼 맨땅에 흩어 두는 자연 소품(키트 tags 로 가른다). */
-const NATURE = /나무|숲|덤불|풀|꽃|바위|돌|선인장|야자|고사리|버섯|수정|그루터기|tree|bush|shrub|rock|stone|flower|grass|cactus|palm|fern|mushroom|stump/iu;
+/** 칸 역할을 안 적는 시트에서 «땅» 을 뜻하는 꼬리표. */
+const GROUND_TAGS = new Set(["grass", "풀밭", "sand", "모래", "dirt", "흙", "snow", "눈밭"]);
+/** 나무·덤불·바위처럼 맨땅에 흩어 두는 자연 소품(키트 tags 로 가른다). 영어 낱말은 앞뒤가 글자가 아닐 때만(fld_rock_s 는 된다) — «prop-street» 의 tree 가 가로등·신호등·자판기를 나무로 만들었다. */
+const NATURE = /나무|숲|덤불|풀|꽃|바위|돌|선인장|야자|고사리|버섯|수정|그루터기|(?<![a-z])(?:trees?|bush(?:es)?|shrubs?|rocks?|boulders?|stones?|flowers?|grass|cactus|palms?|ferns?|mushrooms?|stumps?|logs?)(?![a-z])/iu;
+/** 어느 한 장소·던전 주제에 딸린 소품(사막 마을의 대추야자, 숲 던전의 룬 선돌) — 이름을 대지 않으면 고르지 않는다. */
+const THEMED = /장소|던전|dungeon|주제/iu;
 
 type Meta = { label?: string; role?: string; passage?: string; tags?: readonly string[] };
 
 /** 빈 야외 땅이 될 수 있는 타일인가(걸을 수 있는 지형 칸, 실내 바닥·길·물이 아니다). */
 function openGroundTile(tileset: TilesetDef, tile: number): boolean {
   const meta = tileset.tileMeta?.[tile] as Meta | undefined;
-  if (!meta || meta.role !== "terrain") return false;
+  if (!meta) return false;
   const tags = meta.tags ?? [];
+  if (meta.role === undefined ? meta.passage !== "passable" || !tags.some((tag) => GROUND_TAGS.has(tag)) : meta.role !== "terrain") return false;
   return !tags.some((tag) => INDOOR.test(tag) || NOT_GROUND_TAGS.has(tag)) && !NOT_GROUND_LABEL.test(meta.label ?? "");
 }
 
@@ -74,16 +81,25 @@ export function openGroundProps(tileset: TilesetDef, wanted?: readonly string[])
     if (kit.width > 3 || kit.height > 4) return false;
     return kit.rows.some((row) => (row.upperTiles ?? []).some((tile) => tile >= 0));
   });
-  const nature = (kit: (typeof kits)[number]) => NATURE.test(((kit.ai as { tags?: readonly string[] } | undefined)?.tags ?? []).join(" "));
+  const tagsOf = (kit: (typeof kits)[number]) => ((kit.ai as { tags?: readonly string[] } | undefined)?.tags ?? []).join(" ");
+  const nature = (kit: (typeof kits)[number]) => NATURE.test(tagsOf(kit));
   const all = kits.map((kit) => kit.name);
   const unknown: string[] = [];
-  let chosen = kits.filter(nature);
+  // 기본 고르기는 어디에나 어울리는 자연 소품만 — 한 장소에 딸린 것까지 섞으면 풀밭 마을에 대추야자와 설원 소나무가 같이 선다. 전부가 딸린 것이면 그대로 쓴다.
+  const plain = kits.filter((kit) => nature(kit) && !THEMED.test(tagsOf(kit)));
+  let chosen = plain.length ? plain : kits.filter(nature);
   if (wanted?.length) {
     chosen = [];
     for (const want of wanted) {
       const key = want.trim().toLowerCase();
       const hit = kits.filter((kit) => kit.id.toLowerCase() === key || kit.name.toLowerCase() === key);
-      const found = hit.length ? hit : kits.filter((kit) => key.length >= 2 && kit.name.toLowerCase().includes(key));
+      // 이름 일부로 찾을 때는 어디에나 어울리는 자연 소품이 먼저다 — «나무» 가 대추야자·설원 소나무·나무 벤치까지 부르지 않게. 없으면 자연 소품, 그것도 없으면 이름이 맞는 것 전부.
+      const named = hit.length ? [] : kits.filter((kit) => key.length >= 2 && kit.name.toLowerCase().includes(key));
+      // 낱말로 든 것이 먼저다(«나무» 는 「버들항 나무」 이지 「통나무」 가 아니다).
+      const asWord = named.filter((kit) => kit.name.toLowerCase().split(/[\s·:,()]+/u).includes(key));
+      const partial = asWord.length ? asWord : named;
+      const tiers = [partial.filter((kit) => plain.includes(kit)), partial.filter(nature), partial];
+      const found = hit.length ? hit : tiers.find((tier) => tier.length) ?? [];
       if (!found.length) unknown.push(want);
       for (const kit of found) if (!chosen.includes(kit)) chosen.push(kit);
     }
