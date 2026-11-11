@@ -15,6 +15,7 @@ import { el } from "@/util/dom";
 import { upsertPreset, type StatePreset } from "@/testing/debugSession";
 import type { RuntimeDebugHook } from "@/player/playSceneTestHooks";
 import { STORAGE_PREFIX } from "@/util/appStorage";
+import { renderRunLogSection } from "@/player/runtimeDebugRunLog";
 
 // 패널 확장 상태 저장 키. 접두사는 STORAGE_PREFIX(=`oprn:`)를 쓴다 —
 // 구 접두사 `rpg-zzu:` 로 직접 쓰면 부팅 시 migrateLegacyStorageKeys 가 새 접두사로
@@ -475,6 +476,7 @@ export function renderRuntimeDebugPanel(): HTMLElement {
       presetList,
       readButton,
       dumpDetails,
+      renderRunLogSection(),
     ],
   }) as HTMLDetailsElement;
   details.open = readExpanded();

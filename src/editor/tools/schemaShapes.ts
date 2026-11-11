@@ -79,6 +79,23 @@ export const CONDITION_SCHEMA: JsonSchema = {
     result: { type: "string", enum: ["victory", "defeat", "escape"] },
     key: { type: "string", enum: ["A", "B", "C", "D"], description: "selfSwitch 키" },
     npcKey: { type: "string", description: "friendshipAtLeast 대상. 비우면 이 이벤트 characterId" },
+    eventId: { type: "string", description: "eventSeesPlayer: 보는 이벤트 id. 경비·집주인이 여럿이면 빈 문자열로 두고 watchers 로 고른다." },
+    range: { type: "integer", description: "eventSeesPlayer: 시야 칸 수(기본 5). 벽과 다른 방은 늘 막는다(sameRoom:false 면 벽·방 무시)." },
+    watchers: {
+      type: "object",
+      description: 'eventSeesPlayer: eventId 대신 «이 맵에서 맞는 누구든». 예 {kind:"eventSeesPlayer",eventId:"",watchers:{name:"경비"},range:6} = 이름에 «경비»가 든 이벤트 중 하나라도 보면 참. 주어진 칸을 모두 만족해야 한다.',
+      properties: {
+        characterId: { type: "string", description: "이벤트 characterId" },
+        name: { type: "string", description: "이벤트 이름에 든 낱말(예: 경비)" },
+        locationId: { type: "string", description: "이 명명 로케이션 안에 선 이벤트" },
+      },
+    },
+    doorsBlock: { type: "boolean", description: "eventSeesPlayer: true 면 문 이벤트 칸도 시선을 막는다(닫힌 문). 생략 = 문은 막지 않는다." },
+    darkness: {
+      type: "object",
+      description: "eventSeesPlayer: 밤·어둠에 줄어드는 시야. night = 밤 시간대 거리, dark = 조명 어둠(ambient)이 darkAmbient(기본 0.6) 이상일 때 거리.",
+      properties: { night: { type: "integer" }, dark: { type: "integer" }, darkAmbient: { type: "number" } },
+    },
   },
   required: ["kind"],
   additionalProperties: true,

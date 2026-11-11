@@ -2,8 +2,9 @@
 // 조건 폼(conditionForm)·페이지 고급 조건·요약 문장·미리보기가 같은 목록과 문장을 쓴다.
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
-import type { ActorQueryCondition, Condition, ConditionCompareOp, Dir } from "@/project/types";
+import type { ActorQueryCondition, Condition, ConditionCompareOp, Dir, EventSightWatchers } from "@/project/types";
 import { ACTOR_QUERY_CONDITION_KINDS, WEEKDAY_LABELS } from "@/project/conditionActorQueries";
+import { watchersHaveSelector } from "@/project/sightWatchers";
 
 export const ACTOR_QUERY_CONDITION_MODE_OPTIONS = [
   { value: "actorStat", label: "배우 수치(레벨·HP·MP)" },
@@ -145,8 +146,15 @@ export function actorQueryConditionSummary(condition: ActorQueryCondition): stri
       return RELATIONS.find((r) => r.value === condition.relation)?.label ?? condition.relation;
     case "hiding":
       return condition.value ? "주인공이 숨어 있음" : "주인공이 숨지 않음";
-    case "eventSeesPlayer":
-      return `${condition.eventId || "이벤트"}이(가) 주인공을 ${condition.value === false ? "못 봄" : "봄"} (${condition.range ?? 5}칸)`;
+    case "eventSeesPlayer": {
+      const who = condition.eventId || sightWatchersLabel(condition.watchers) || "이벤트";
+      const extra = [
+        ...(condition.doorsBlock ? ["문은 막힘"] : []),
+        ...(condition.darkness?.night !== undefined ? [`밤 ${condition.darkness.night}칸`] : []),
+        ...(condition.darkness?.dark !== undefined ? [`어둠 ${condition.darkness.dark}칸`] : []),
+      ];
+      return `${who}이(가) 주인공을 ${condition.value === false ? "못 봄" : "봄"} (${condition.range ?? 5}칸${extra.length ? ` · ${extra.join(" · ")}` : ""})`;
+    }
     case "pursuitActive":
       return `${condition.eventId ? condition.eventId : "추격자"} ${condition.value ? "추격 중" : "추격 안 함"}`;
     case "clearCount":
@@ -185,7 +193,7 @@ export function actorQueryConditionHint(kind: ActorQueryCondition["kind"]): stri
     case "hiding":
       return "주인공이 숨는 장소에 들어가 있는지 검사합니다.";
     case "eventSeesPlayer":
-      return "이벤트(집주인·경비)가 지금 주인공을 볼 수 있는지 봅니다. 같은 방(맵 장소 사각형) 안에서, 바라보는 쪽 앞 시야 범위 이내일 때 참. 방 밖이면 거짓. 훔쳐보기·들키기 판정에 씁니다.";
+      return "이벤트(집주인·경비)가 지금 주인공을 볼 수 있는지 봅니다. 같은 방(맵 장소 사각형) 안에서, 바라보는 쪽 앞 시야 범위 이내일 때 참. 방 밖·벽 너머면 거짓. 훔쳐보기·들키기 판정에 씁니다. id 대신 인물 키·이름 낱말·장소로 «그 중 누구든»을 고를 수 있고, 닫힌 문·밤·어둠에 시야를 줄일 수 있습니다(비워 두면 그대로).";
     case "pursuitActive":
       return "추격자가 지금 쫓는 중인지 봅니다. 이벤트 id 를 비우면 누구든.";
     case "clearCount":
@@ -221,6 +229,19 @@ function text(value: string, testid: string, on: (value: string) => void, placeh
 function bool(value: boolean, yes: string, no: string, testid: string, on: (value: boolean) => void): HTMLSelectElement {
   return sel([{ value: "true", label: yes }, { value: "false", label: no }] as const, value ? "true" : "false", testid, (v) => on(v === "true"));
 }
+function optNum(value: number | undefined, testid: string, on: (value: number | undefined) => void): HTMLInputElement {
+  const input = el("input", { attrs: { type: "number", placeholder: "그대로" }, value: value === undefined ? "" : String(value), dataset: { testid } }) as HTMLInputElement;
+  input.addEventListener("change", () => on(input.value.trim() === "" ? undefined : Math.max(0, Number.parseInt(input.value, 10) || 0)));
+  return input;
+}
+function sightWatchersLabel(watchers: EventSightWatchers | undefined): string {
+  const parts = [
+    ...(watchers?.name ? [`«${watchers.name}»`] : []),
+    ...(watchers?.characterId ? [watchers.characterId] : []),
+    ...(watchers?.locationId ? [`${watchers.locationId} 안`] : []),
+  ];
+  return parts.length ? `누구든(${parts.join(" · ")})` : "";
+}
 function row(label: string, control: HTMLElement): HTMLElement {
   return el("label", { class: "inline-field event-condition-field", children: [el("span", { class: "event-condition-field-label", text: label }), control] });
 }
@@ -232,6 +253,19 @@ function actorOptions(extra: readonly { value: string; label: string }[]): { val
 export function renderActorQueryCondition(condition: ActorQueryCondition, onChange: (next: Condition) => void): HTMLElement {
   const box = el("div", { class: "event-condition-detail", dataset: { testid: `event-condition-${condition.kind}` } });
   const set = (patch: Partial<ActorQueryCondition>): void => onChange({ ...condition, ...patch } as ActorQueryCondition);
+  // 시선 조건의 선택 칸: 다 비면 칸 자체를 빼서 저장본이 예전 모양 그대로 남는다.
+  const setWatchers = (patch: Partial<EventSightWatchers>): void => {
+    if (condition.kind !== "eventSeesPlayer") return;
+    const next = Object.fromEntries(Object.entries({ ...condition.watchers, ...patch }).filter(([, v]) => typeof v === "string" && v.trim()));
+    const { watchers: _old, ...rest } = condition;
+    onChange(Object.keys(next).length ? { ...rest, watchers: next } : rest);
+  };
+  const setDarkness = (patch: { night?: number; dark?: number }): void => {
+    if (condition.kind !== "eventSeesPlayer") return;
+    const next = Object.fromEntries(Object.entries({ ...condition.darkness, ...patch }).filter(([, v]) => v !== undefined));
+    const { darkness: _old, ...rest } = condition;
+    onChange(Object.keys(next).length ? { ...rest, darkness: next } : rest);
+  };
   switch (condition.kind) {
     case "actorStat":
       box.append(
@@ -286,8 +320,14 @@ export function renderActorQueryCondition(condition: ActorQueryCondition, onChan
       break;
     case "eventSeesPlayer":
       box.append(
-        row("보는 이벤트 id", text(condition.eventId, "event-condition-sees-event", (eventId) => set({ eventId }), "예: ev_owner")),
+        row("보는 이벤트 id", text(condition.eventId, "event-condition-sees-event", (eventId) => set({ eventId }), "예: ev_owner — 비우면 아래 고르기")),
+        row("또는 인물 키", text(condition.watchers?.characterId ?? "", "event-condition-sees-watch-character", (characterId) => setWatchers({ characterId }), "characterId")),
+        row("또는 이름에", text(condition.watchers?.name ?? "", "event-condition-sees-watch-name", (name) => setWatchers({ name }), "예: 경비")),
+        row("또는 장소 안", text(condition.watchers?.locationId ?? "", "event-condition-sees-watch-location", (locationId) => setWatchers({ locationId }), "로케이션 id")),
         row("거리(칸)", num(condition.range ?? 5, "event-condition-sees-range", (range) => set({ range }))),
+        row("닫힌 문", bool(condition.doorsBlock === true, "시선을 막음", "막지 않음", "event-condition-sees-doors", (doorsBlock) => set({ doorsBlock: doorsBlock || undefined }))),
+        row("밤 거리(칸)", optNum(condition.darkness?.night, "event-condition-sees-night", (night) => setDarkness({ night }))),
+        row("어둠 거리(칸)", optNum(condition.darkness?.dark, "event-condition-sees-dark", (dark) => setDarkness({ dark }))),
         row("판정", bool(condition.value !== false, "보임", "안 보임", "event-condition-sees-value", (value) => set({ value }))),
       );
       break;
@@ -356,7 +396,7 @@ export function actorQueryConditionProblems(
       if (!condition.stringVariableId) problems.push("문자열 변수 id 가 비어 있음");
       break;
     case "eventSeesPlayer":
-      if (!condition.eventId) problems.push("보는 이벤트 id 가 비어 있음");
+      if (!condition.eventId && !watchersHaveSelector(condition.watchers)) problems.push("보는 이벤트 id 도 고르기(인물 키·이름·장소)도 비어 있음");
       break;
     case "weekday":
       if (condition.weekdays.length === 0) problems.push("요일을 하나 이상 고르세요");
