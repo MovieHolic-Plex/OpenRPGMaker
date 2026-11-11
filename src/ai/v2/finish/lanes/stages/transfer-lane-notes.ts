@@ -1,8 +1,8 @@
 // transfer-lanes 가 옮긴 것·못 옮긴 것을 맵 끝에 적는다.
-import type { LaneStage } from "../types";
+import type { FinishStage } from "../../types";
 
-export const stage: LaneStage = {
-  id: "transfer-lane-notes", scope: "map", order: 160,
+export const stage: FinishStage = {
+  id: "transfer-lane-notes", phase: "lane-map", order: 160,
   run(ctx) {
     const { notes } = ctx;
     const r = ctx.map.lanes;

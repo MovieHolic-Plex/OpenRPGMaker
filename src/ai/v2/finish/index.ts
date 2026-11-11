@@ -15,6 +15,8 @@ import { lanesStale } from "./lanesStamp";
 import type { FinishCtx, FinishPhase, FinishStage } from "./types";
 import * as registered from "./stages";
 import { recordStageWrites } from "../stageWrites";
+import { createBuildRun } from "../buildRun";
+import { orderedStages } from "./stageOrder";
 
 export { lanesStamp } from "./lanesStamp";
 export type { FinishCtx, FinishPhase, FinishStage } from "./types";
@@ -22,25 +24,12 @@ export type { FinishCtx, FinishPhase, FinishStage } from "./types";
 /** 2초 넘게 걸린 단계는 이름·시간을 stderr 에 남긴다(2026-11-09 monster «terminated»: assembly:ship-defaults 414초 — 동작 불변). */
 const timedStage = async (id: string, run: () => void | Promise<void>): Promise<void> => { const t0 = Date.now(); try { await run(); } finally { const ms = Date.now() - t0; if (ms >= 2000) console.error(`[v2-stage] ${id} took ${Math.round(ms / 1000)}s`); } };
 
-const recordedRun = async (ctx: FinishCtx, stage: FinishStage): Promise<void> => { await recordStageWrites(() => ctx.env.ctx.project, ctx.session.stageWrites, () => stage.run(ctx)); };
+const recordedRun = async (ctx: FinishCtx, stage: FinishStage): Promise<void> => { await recordStageWrites(() => ctx.env.ctx.project, ctx.session.stageWrites, () => stage.run(ctx, "")); };
 
+/** 이 실행기가 도는 묶음(마감 묶음 lane-* 은 finish/lanes/index.ts 가 돈다). */
 const PHASES: readonly FinishPhase[] = ["blueprint", "assembly", "reload"];
 
-/** 묶음 → order 순 단계 목록. 같은 묶음 안 order 가 겹치거나 reload 가 맨 끝이 아니면 모듈을 읽을 때 던진다(순서가 import 순서에 기대지 않게). */
-function orderedFinishStages(stages: readonly FinishStage[] = Object.values(registered)): FinishStage[] {
-  const out: FinishStage[] = [];
-  for (const phase of PHASES) {
-    const list = stages.filter((s) => s.phase === phase).sort((a, b) => a.order - b.order);
-    for (let i = 1; i < list.length; i++) if (list[i]!.order === list[i - 1]!.order) throw new Error(`끝맺음 단계 order 겹침: ${phase} ${list[i - 1]!.id}·${list[i]!.id} = ${list[i]!.order}`);
-    out.push(...list);
-  }
-  const ids = new Set<string>();
-  for (const s of out) { if (ids.has(s.id)) throw new Error(`끝맺음 단계 id 겹침: ${s.id}`); ids.add(s.id); }
-  if (out.length !== stages.length) throw new Error("끝맺음 단계 phase 가 알 수 없는 값이다");
-  return out;
-}
-
-const FINISH_STAGES: readonly FinishStage[] = orderedFinishStages();
+const FINISH_STAGES: readonly FinishStage[] = orderedStages(Object.values(registered), PHASES);
 
 /**
  * 이번 턴이 청사진의 게임을 짓는 일인가 — 게임 하나(또는 그 이어 하기)·맵 여러 장과 이야기를 맡긴 요청이거나, 이번 턴에 청사진을 쓰거나 고쳤다.
@@ -59,7 +48,7 @@ function blueprintTurn(env: PiAssistantV2Env): boolean {
 /** 청사진 자동 짓기(한 실행에 한 번씩 — 세션 깃발). 무엇을 지었는지 조수에게 줄 글(없으면 undefined). */
 export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Session): Promise<string | undefined> {
   if (lanesStale(env, session)) { session.autoLanesDone = false; session.lanesReruns++; }
-  const ctx: FinishCtx = { env, session, done: [], assembled: [], walked: [] };
+  const ctx: FinishCtx = { env, session, done: [], assembled: [], walked: [], run: createBuildRun(env.ctx), notes: [], map: {} };
   const phase = (p: FinishPhase) => FINISH_STAGES.filter((s) => s.phase === p);
   if (env.ctx.project.gameBlueprint) {
     const whole = blueprintTurn(env);
