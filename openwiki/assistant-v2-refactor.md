@@ -81,7 +81,7 @@
 | R2c | `createV2Tools` 쪼개기: 공유 지역 상태 → `tools/context.ts`(`makeVerbContext` · 형 `VerbContext`), 동사 공장 → `tools/verbs/{blueprint,place,people,puzzle,art,objects,makeGame,read}.ts`, 세션에 거는 끝맺음 함수 → `tools/sessionHooks.ts`, 밑받침 → `tools/support.ts`. `verbs.ts` 는 131줄(묶기만) | 끝 |
 | R3 | `turn/`: 실행기 스크립트(`scripts/lib/assistantV2Runtime.ts` 571 → 74줄, 그림 찍기와 `runPiAgent` 끼우기만 남음)의 턴 정책을 `src/ai/v2/turn` 으로 — 지역 `let` 24개는 `context.ts` 의 상태 객체 하나로, 나머지는 `events`(이벤트 모으기) · `modelHooks`(도구 싣기·상태 카드·리드 계획) · `recheck`(기계 확인·기억 싣기) · `reinject`(재주입) · `autoBuild`(끝맺음 자동 짓기) · `vqaRound`(화면 검수 한 판) · `afterMain`(판정자 차례) · `finishTurn`(최종 보고) · `support`(스위치·시간 재기) · `turn.ts`(조립). 문장 순서 그대로, 파일마다 200줄 아래 | 끝 (#4557) |
 | R4 | `request/`: 요청 글(과 프로젝트)을 가르는 최상위 선언을 `request/` 아홉 파일로(동작 그대로) — `scope`(게임 하나·한 곳·고치기·이어 하기·쓰기 요청) · `audio`(옛 `musicWords.ts`) · `combat` · `place` · `genre` · `asks`(날씨·흔들림·엔딩·장면…) · `title` · `toolGroups`(낱말 → 도구 묶음, 옛 `game.ts` 의 묶음들) · `world`(옛 `worldRequest.ts`). `shipChecks.ts` 에는 `REQUESTED_FEATURES`(낱말+프로젝트 검사+고칠 글이 한 표) 만 남았다. 함수 본문 안의 익명 정규식(`gameChecks.ts` 약 25곳, `finishGate.ts` 2곳, `verbs.ts` 1곳)은 본문을 건드리지 않아 그대로다 | 끝 |
-| R5 | `judge/`: 검사들을 한 폴더로, 그 뒤 한 결과 형식으로. **옮기기 끝**(`mvfile.mts`, 본문 그대로): `vqa` `advisor` `finalReport` `sceneCraft` `gameChecks` `combatChecks` `discoverability` `playCheck` `hudTitleChecks` `puzzleChecks` → `judge/` 같은 이름, `loop/gates.ts` → `judge/gates.ts`, `todo/checks.ts` → `judge/todoChecks.ts`. `shipChecks.ts` 는 남았다(요청 분류와 얽힌 표 — B1 뒤). 한 결과 형식(코드·대상·고칠 호출)과 600줄 넘는 셋(`gameChecks` `discoverability` `todoChecks`) 쪼개기는 아직. **R5b(옮기기만, 19파일)**: 평면에 남아 있던 검사 16개 → `judge/`(`shipChecks` `lookChecks` `enemyChecks` `interiorRoomChecks` `puzzleGates` `audioVarietyLint` `examineLint` `eventReach` `actDepth` `mapCount` `questCount` `reloadCheck` `imageCheck` `vqaLighting` `critic`, `checks.ts` 는 이름을 `judge/machineChecks.ts` 로). 검사가 아닌 셋은 제자리로 — `dungeonGates`(바깥 → 던전 문 자리를 정해 놓는다) · `caveGates`(맨땅 동굴 출입구에 갱구 그림을 세운다) → `place/`, `healingAccess`(회복의 샘·회복약·보급 상점·시작 돈을 넣는다) → `story/`. **R5c(쪼개기, `movedecls.mts`)**: 600줄 넘던 다섯을 내용 이름으로 — `todoChecks` 1,142 → `todoChecks`(판정 입구·종류별 검사 425) · `todoCheckFacts`(같이 쓰는 읽기 416) · `todoRoomChecks`(실내 방 검사 370); `discoverability` 1,083 → `discoverability`(이야기 이벤트가 보이나·목표 빈틈·문·날짜·색조 434) · `objectiveCommand` 17 · `objectiveWhere`(목표 꼬리의 「어디」 246) · `objectiveRoutes`(꼬리 다시 맞추기 197) · `objectivePlan`(set_objective 계획 214); `gameChecks` 1,053 → `gameChecks`(`gameContentProblems` 한 함수 446줄 + 놓기 검사, 517) · `gameCheckReads` 213 · `storyFlowChecks` 229 · `sideEffectChecks` 107; `shipChecks` 766 → `shipChecks` 397 · `shipCheckReads` 33 · `shipArtChecks` 191 · `requestedFeatures` 72 · `wholeGameRekick` 106; `eventReach` 696 → `judge/eventReach`(닿기 읽기 253) · `place/reachRepairs`(닿게 고치기 454 — 판정이 아니라 놓기다). 본문에서 바뀐 것은 한 곳: 할 일 검사의 판정 글 언어 깃발 대입 두 줄을 `setEnglish()` 로(다른 파일의 `let` 은 대입할 수 없다). `judge/` 에 600줄 넘는 파일 없음 | 옮기기 끝 (#4559 · R5b · R5c) |
+| R5 | `judge/`: 검사들을 한 폴더로, 그 뒤 한 결과 형식으로. **옮기기 끝**(`mvfile.mts`, 본문 그대로): `vqa` `advisor` `finalReport` `sceneCraft` `gameChecks` `combatChecks` `discoverability` `playCheck` `hudTitleChecks` `puzzleChecks` → `judge/` 같은 이름, `loop/gates.ts` → `judge/gates.ts`, `todo/checks.ts` → `judge/todoChecks.ts`. `shipChecks.ts` 는 남았다(요청 분류와 얽힌 표 — B1 뒤). 한 결과 형식(코드·대상·고칠 호출)과 600줄 넘는 셋(`gameChecks` `discoverability` `todoChecks`) 쪼개기는 아직. **R5b(옮기기만, 19파일)**: 평면에 남아 있던 검사 16개 → `judge/`(`shipChecks` `lookChecks` `enemyChecks` `interiorRoomChecks` `puzzleGates` `audioVarietyLint` `examineLint` `eventReach` `actDepth` `mapCount` `questCount` `reloadCheck` `imageCheck` `vqaLighting` `critic`, `checks.ts` 는 이름을 `judge/machineChecks.ts` 로). 검사가 아닌 셋은 제자리로 — `dungeonGates`(바깥 → 던전 문 자리를 정해 놓는다) · `caveGates`(맨땅 동굴 출입구에 갱구 그림을 세운다) → `place/`, `healingAccess`(회복의 샘·회복약·보급 상점·시작 돈을 넣는다) → `story/`. **R5c(쪼개기, `movedecls.mts`)**: 600줄 넘던 다섯을 내용 이름으로 — `todoChecks` 1,142 → `todoChecks`(판정 입구·종류별 검사 425) · `todoCheckFacts`(같이 쓰는 읽기 416) · `todoRoomChecks`(실내 방 검사 370); `discoverability` 1,083 → `discoverability`(이야기 이벤트가 보이나·목표 빈틈·문·날짜·색조 434) · `objectiveCommand` 17 · `objectiveWhere`(목표 꼬리의 「어디」 246) · `objectiveRoutes`(꼬리 다시 맞추기 197) · `objectivePlan`(set_objective 계획 214); `gameChecks` 1,053 → `gameChecks`(`gameContentProblems` 한 함수 446줄 + 놓기 검사, 517) · `gameCheckReads` 213 · `storyFlowChecks` 229 · `sideEffectChecks` 107; `shipChecks` 766 → `shipChecks` 397 · `shipCheckReads` 33 · `shipArtChecks` 191 · `requestedFeatures` 72 · `wholeGameRekick` 106; `eventReach` 696 → `judge/eventReach`(닿기 읽기 253) · `place/reachRepairs`(닿게 고치기 454 — 판정이 아니라 놓기다). 본문에서 바뀐 것은 한 곳: 할 일 검사의 판정 글 언어 깃발 대입 두 줄을 `setEnglish()` 로(다른 파일의 `let` 은 대입할 수 없다). `judge/` 에 600줄 넘는 파일 없음. **한 결과 형식은 제안만 있다** — 아래 「R5 뒤 절반」(구현 전) | 옮기기 끝 (#4559 · #4569 R5b · #4574 R5c) · 결과 형식은 제안 |
 | R6 | `finish/` 와 `lanes/` 를 한 줄로. **R6a(옮기기만)**: `lanes/**` 34파일 → `finish/lanes/**`(`mvfile.mts`, 임포트 31파일). **R6b(형 하나)**: `LaneStage`·`LaneCtx`·`LaneScope` 를 없애고 마감 단계 32개도 `FinishStage` 다 — `phase` 가 `blueprint`·`assembly`·`reload`(끝맺음 실행기)와 `lane-project`·`lane-map`(마감 실행기) 다섯, 문맥은 `FinishCtx` 하나, 순서 세우기는 `finish/stageOrder.ts orderedStages` 하나(둘이던 복사본). 실행기 둘과 도는 순서·조건은 그대로(`session.clearLanes` 갈고리도 그대로) — 마감을 끝맺음 실행기 안으로 넣는 일은 `tools/sessionHooks.ts` 의 기록·체크포인트 자리를 바꾸는 동작 변경이라 하지 않았다 | R6a · R6b 끝 |
 | R7 | `place/` `story/` `shared/`: 남은 평면 파일 정리, 600줄 넘는 파일 쪼개기 | 진행 중 — `place/` (#4553) · `story/` (#4555) · 평면 13 → `shared/` `place/` `story/` `turn/` `finish/` (#4571) · `place/` 큰 파일 셋 쪼개기 (#4582) · `story/` 큰 파일 셋(`blueprint` `shipDefaults` `monsterRouteLevels`) 쪼개기 (#4583) · `story/` 큰 파일 둘(`blueprintPath` `mysteryCase`) 쪼개기 (#4584) · 도구 겉면 넷 → `tools/` (#4585) · `story/events.ts` 에서 무대 · 걷기 · 사람 도우미 떼기 (#4586). 내역은 아래 「R7 내역」. 남음: `story/events.ts` 의 `buildEvent`(한 함수 679줄 — 아래 내역) |
 | R8 | `prompt/`: 흩어진 카드 모으기 | 진행 중 — **요청 줄기 몫 끝(옮기기만):** `prompt.ts` → `prompt/systemPrompt.ts`(조립만) + `core.ts`(핵심 지시) · `placeSpecs.ts`(장소 카드 묶음·색인 줄·실내 목록) · `projectBrief.ts`; `game.ts` 의 카드 → `prompt/gameCard.ts`(게임 카드) · `mapEditCards.ts`(덧그리기·채우기); `forestBrief.ts` · `priorRequests.ts` → `prompt/`. `game.ts` 에는 감싸개만 남았다. 남은 것: `blankStart.ts`(빈 시작 맵 치우기 — 장소 정리라 `place/`) · `genreDefaults.ts`(장르 기본값 깔기 — `story/shipDefaults.ts` 옆)은 카드도 요청 읽기도 아니라 그대로 뒀다. `PEOPLE_CARD` `BLUEPRINT_CARD` `MAKE_GAME_CARD` `EVENT_CARD` 와 `place/builders/*_CARD` 는 그 파일을 옮기는 줄기가 끝난 뒤에 모은다 |
@@ -97,7 +97,7 @@
 | B4 | 턴 사이 기억: 막힌 항목은 막힌 채로(시도·마지막 실패·부른 동사·막힌 이유), 대상 지문이 바뀌었거나 요청이 짚은 것만 다시 연다. 화면 검수 장부를 `assistantTodo.memory.vqa` 로 이어 받는다. 검토자·리드 항목 열쇠를 지적 글로. 새 파일 `turn/carryOver.ts`. 규칙은 `assistant-v2.md` 「턴 사이 기억」 — 끝 (#4550). **B4b**: 장소 설계도 턴을 넘긴다 — `tools/placeMemory.ts`(`assistantTodo.memory.places`, 맵 지문이 그대로일 때만 `session.pastPlaces` 로 되살림), 다음 턴의 `edit_place` · `move_object` · `review_layout` 이 그 설계에서 고친다. 설계 없는 맵·한 번에 짜는 장소(`onePass`)의 거절 글은 이유와 그 맵에서 되는 도구를 이른다. 규칙은 `assistant-v2.md` 「장소 설계는 턴을 넘어 남는다」 |
 | B5 | 감싸개 여섯 겹을 도구 안으로. **B5a 끝**: 트룹의 빈 members · 필드 적의 patrol/graphic · 이동 쌍의 doorAt(같은 칸·막힌 문앞)을 도구가 스스로 읽는다 — `withSchemaFillCleanup` 은 아이템 한 규칙만 남겼다. 남은 것(B5b): 이동 쌍 뒤 단계 재시도 · 칩 관문 · 조우 · 그림 찾기 상한 |
 | B6 | 작은 일 하네스를 v2 + Terra 로 돌리기, 오분류 요청 모음을 CI 에 — **재는 쪽은 있음**: 작은 일 30가지 묶음·판정 자기검사·실행기·보고서(`npm run harness -- assistant-capability small-jobs --model terra-high --v2`, 문서 `openwiki/harnesses/assistant-capability.md` 「작은 일 30가지」). 이후 도구·분류 수정은 이 표로 전/후를 잰다. 기준선(2026-11-11, main `46274bc35f`): 통과 23/30 · 호출 중앙값 18 · 3.5분 — 불합격 원인 넷(마무리 단계 `clear_transfer_lanes` 가 사람을 옮김 2, 눈 칩셋 `find_empty_ground` 0% 2, 고른 도구 묶음에 도구 없음 2, 할 일 확인이 요청보다 좁음 1)과 만든 게임의 타이틀·엔딩 재작업 비용은 그 문서 「기준선」. 오분류 모음의 CI 연결은 아직 |
-| B7 | 판정 코드 안의 요청 읽기를 `request/` 로: 글만 보던 `wantsWholeGame(task)` 여덟 곳(`gameChecks` ×3 · `combatChecks` · `pathBattleBudget` · `finishGate` · `turn/support vqaEnabled` · `reload-check`)이 `buildsWholeGame(project, task)` 를 묻고, `gameChecks`(과 거기서 갈라진 `storyFlowChecks` · `sideEffectChecks`) · `finishGate` 의 익명 정규식과 `REQUESTED_FEATURES` 의 낱말이 `request/readers.ts` 의 읽는 함수가 됐다(낱말 그대로 — 2,790줄 × 32개 맞댐 0). 바뀌는 동작은 하나: 게임 하나 청사진을 잇는 「계속」 턴이 검사·화면 검수에서도 게임 하나다. 규칙·근거는 `assistant-v2.md` 「이어 하기 턴의 판정」. 남은 것: `tools/context.ts` 의 청사진 재촉 두 곳 |
+| B7 | 판정 코드 안의 요청 읽기를 `request/` 로: 글만 보던 `wantsWholeGame(task)` 여덟 곳(`gameChecks` ×3 · `combatChecks` · `pathBattleBudget` · `finishGate` · `turn/support vqaEnabled` · `reload-check`)이 `buildsWholeGame(project, task)` 를 묻고, `gameChecks`(과 거기서 갈라진 `storyFlowChecks` · `sideEffectChecks`) · `finishGate` 의 익명 정규식과 `REQUESTED_FEATURES` 의 낱말이 `request/readers.ts` 의 읽는 함수가 됐다(낱말 그대로 — 2,790줄 × 32개 맞댐 0). 바뀌는 동작은 하나: 게임 하나 청사진을 잇는 「계속」 턴이 검사·화면 검수에서도 게임 하나다. 규칙·근거는 `assistant-v2.md` 「이어 하기 턴의 판정」. 남은 것: `tools/context.ts` 의 청사진 재촉 두 곳. 끝 (#4577) — 이어 하기 턴의 화면 검수 비용(보통 1번 · 많아야 5번)은 아래 「R5 뒤 절반」 끝 |
 
 ### R7 내역 (옮기기만 — 본문 그대로)
 
@@ -129,6 +129,91 @@
   - request→place: `request/world.ts` → `place/world`. 그 파일의 두 함수(`worldForRequest` · `composedWorldFor`)가 세계 표를 읽는다 — 둘을 `place/world.ts` 로 옮기면 풀린다.
   - shared→place: `shared/types.ts` → `place/interiorLayout`(형 `InteriorLayout` · `LayoutPatch`). 형 사슬이 `interiorWalls` · `interiorRoomChecks` 로 이어진다.
   - place→judge · story→judge: `judge/` 에 있는 «읽기 도우미»를 짓는 쪽이 끌어온다 — `judge/eventReach`(place 11파일 · story 12파일), `judge/objectiveCommand` `objectiveWhere` `objectivePlan`(story 의 `blueprintPath*` `mystery*` `guideTexts` `objectiveTargets` `ship*Defaults` `healingAccess`), 그 밖에 `interiorWalls` → `judge/interiorRoomChecks`, `events` `eventStage` → `judge/machineChecks`, `shipDefaults` → `judge/shipChecks` `shipArtChecks` `discoverability`, `pathBattleBudget` `healingAccess` → `judge/combatChecks`. story→loop/todo: `sceneVerbs` → `loop/argGuard` `todo/names`. 이 때문에 폴더로 보면 place · story 가 judge(↔loop↔turn)와 순환한다 — `eventReach` · `objective*` 같은 읽기 도우미를 `shared/` 로 내리는 조각에서 푼다(judge 줄기의 파일이라 여기서는 옮기지 않았다).
+
+## R5 뒤 절반 — 판정 결과 형식 하나 (승인 2026-11-11)
+
+리드 승인 뒤 F1 → F4 순서로 넣는다(F5 는 F4 보고 뒤에). 진행은 아래 「순서」 에 적는다.
+
+**지금 있는 모양(판정이 «문제»를 돌려주는 형).** `judge/` 43파일의 내보낸 함수 195개 가운데 판정 결과를 내는 것은 아래 열한 가지 모양이다.
+
+| 모양 | 누가 낸다 | 누가 읽는다 | 무엇이 없는가 |
+|---|---|---|---|
+| `string[]` — 글머리 표지 `[게임 검사 <주제>]` · `[출하 차단 <id>]` 가 붙은 한국어 줄 (표지가 든 줄 91곳: `gameChecks` 64 · `lookChecks` 5 · `finishGate` 5 · `sideEffectChecks` 4 · `combatChecks` 4 · `pathBattleBudget` 3 · `hudTitleChecks` 2 · `enemyChecks` 2 · `gates` 2) | `gameContentProblems` · `combatProblems` · `unaskedChanges` · `fieldBattleStrain` · `sceneCraftProblems` · `mapViewArtProblems` 등(`string[]` 을 내는 함수 40개 가운데 문제 줄을 내는 것) | `finishGate.gameProblemTexts` 가 한 배열로 잇는다 | 규칙 id · 대상(맵/이벤트) · 막는 정도 · 모델용 영어 글. 열쇠는 글에서 숫자만 지운 앞 160자(`gateKey`)라 글이 바뀌면 다른 문제가 된다 |
+| `ShipBlocker { id, message, evidence }` | `shipChecks` · `shipArtChecks` · `requestedFeatures` 16개 함수 | `finishGate` 가 `[출하 차단 ${id}] ${message} …` 줄로 다시 풀어 쓴다 | 대상 · 영어 글 |
+| `V2GateProblem { key, text, source: "gate"｜"critic" }` | `finishGate.v2GateProblems` · `autoPlayGateProblems` · `placeLayoutProblems` | `judge/gates.ts`(할 일 항목으로 · 기존 결함 가르기) · `turn/afterMain` | 규칙 id 가 없어 `gates.ts` 가 `SHIP_DEFAULT_LEAK` 정규식으로, `finishGate` 가 `isMusicWork` 정규식으로 글머리를 다시 읽는다 |
+| `PlayProblem { key, text }` | `playCheck.playProblems` | `autoPlayGateProblems` | 위와 같다 |
+| `SceneCraftFinding { id, text }` | `sceneCraft.sceneCraftFindings` | `sceneCraftProblems`(줄로 풀어 쓴다) | 대상 |
+| `MachineCheck { id, mapId, ok, detail, at? }` | `machineChecks.runMachineChecks`(장소마다) | `turn/session` 의 장소 문제 줄 · `tools/context` · `story/events` | 막는 정도 · 영어 글 |
+| `CheckResult { pass, detail, en?, evidence? }` | `todoChecks` · `todoRoomChecks` 6개 | `loop/todoStore` · `todoTools` · `refs` | 규칙 id |
+| `LintIssue`(편집기 형) | `audioVarietyLint` · `examineLint` | 편집기 조회 도구(`src/editor/tools/queryTools.ts` — `src/ai/v2` 안에서는 부르지 않는다) | — (편집기와 같이 쓰는 형이라 그대로 둔다) |
+| `VqaDefect { where, what, severity: "blocker"｜"polish", target? }` + `VqaDefectClass { fixable, kind, why }` | `vqa.reviewVqaRound` · `vqaClassify` | `turn/vqaRound` · `turn/vqaItems`(`VqaFinding`) | 규칙 id(자유 글이라 겹침을 `vqaSameDefect` 가 잰다) |
+| `AdvisorNote { level, claim?, what, evidence }` | `advisor.adviseTurn` | `turn/afterMain` → 할 일 항목 `c<n>` | 대상 |
+| `string ｜ undefined` · 수 세기 결과 | `reloadProblem` · `startObjectiveReachGap` · `thinGameSign` · `countMaps` · `countQuests` | `shipChecks` · `discoverability` · `wholeGameRekick` · `turn/finishTurn` | 전부 |
+
+같은 사실(「이것이 문제다 · 누가 고치나 · 완료를 막나」)을 모양마다 다른 자리에서 다시 읽는다 — 글머리 정규식 세 곳(`finishGate` 의 `isMusicWork` · `startsWith("[비평")`, `gates.ts` 의 `SHIP_DEFAULT_LEAK`), 글로 만든 열쇠, `ShipBlocker` → 줄 → `V2GateProblem` 두 번 옮겨 쓰기, 모델에게 가는 한국어 줄(할 일 검사만 `en` 이 있다).
+
+**한 모양.** `judge/finding.ts`
+
+```ts
+export interface Finding {
+  /** 어느 판정자가 냈나 — 장부·보고의 묶음. */
+  readonly judge: "game" | "ship" | "combat" | "scene" | "place" | "play" | "todo" | "vqa" | "advisor" | "critic";
+  /** 규칙 id — 지금의 글머리 표지/ShipBlocker.id 그대로("no-healing" · "title-style" · "weather"). 글이 바뀌어도 같은 문제다. */
+  readonly id: string;
+  /** 무엇에 대한 것인가 — 열쇠와 «어디를 고칠지»에 쓴다. */
+  readonly target?: { readonly mapId?: string; readonly eventId?: string; readonly x?: number; readonly y?: number; readonly ref?: string };
+  /** block = 완료를 막는다 · polish = 장부에만 · note = 보고에만. */
+  readonly severity: "block" | "polish" | "note";
+  /** 누가 고칠 수 있나 — model(할 일로 건넨다) · builder(끝맺음 단계 몫) · outside(런타임·그림, 모델에게 넘기지 않는다). */
+  readonly owner: "model" | "builder" | "outside";
+  /** 보고·장부에 실리는 줄 — 글머리 표지까지 든 지금의 관문 줄 그대로다. */
+  readonly ko: string;
+  /** 모델이 받는 글(영어). 없으면 ko — 옮기는 동안만. */
+  readonly en?: string;
+  /** 고치는 호출(동사 뼈대)을 알면. */
+  readonly fix?: string;
+  readonly evidence?: string;
+}
+/** 열쇠는 글이 아니라 판정자·규칙·대상에서 나온다. */
+export const findingKey = (f: Finding): string => `${f.judge}:${f.id}:${f.target?.mapId ?? ""}:${f.target?.eventId ?? f.target?.ref ?? ""}`;
+```
+
+통과/불통과 한 건을 재는 할 일 검사(`CheckResult`)는 「문제 목록」이 아니라 「이 항목이 됐나」 라서 그대로 두고, 불통과일 때만 `Finding` 으로 바꾸는 한 줄 변환을 둔다. `LintIssue` 도 그대로 둔다(편집기 형).
+
+**바뀌는 호출자.**
+
+| 자리 | 지금 | 뒤 |
+|---|---|---|
+| `judge/finishGate` `gameProblemTexts` · `v2GateProblems` · `v2BaselineGameKeys` | 줄 배열을 잇고 `gateKey(글)` | `Finding[]` 을 잇고 `findingKey` — `V2GateProblem` · `PlayProblem` · `ShipBlocker` 는 없어진다 |
+| `judge/finishGate` `isMusicWork` · `startsWith("[비평")`, `judge/gates.ts` `SHIP_DEFAULT_LEAK` | 글머리 정규식 | `finding.id` · `finding.judge` 를 읽는다 |
+| `judge/gates.ts` `syncGateItems` · `splitPreexisting`, `turn/afterMain` | `{key,text,source}` | `Finding` (항목 글 = `en ?? ko`, 보고 글 = `ko`) |
+| `judge/shipChecks` · `shipArtChecks` · `requestedFeatures` (16) | `ShipBlocker[]` | `Finding[]` (`judge:"ship"`, id 그대로) |
+| `judge/gameChecks`(과 거기서 부르는 `storyFlowChecks` · `puzzleChecks` · `discoverability` — 표지 없는 글을 돌려주고 `gameChecks` 가 표지를 붙인다) · `sideEffectChecks` · `combatChecks` · `lookChecks` · `hudTitleChecks` · `enemyChecks` · `story/pathBattleBudget` (표지 91곳) | `problems.push("[게임 검사 주제] …")` | `problems.push(found("game", "주제-id", 글, 대상))` — 도우미 하나 |
+| `judge/sceneCraft` · `playCheck` · `machineChecks` | 제 모양 | `Finding[]` |
+| `turn/vqaItems`(`VqaFinding`) · `turn/vqaRound` · `judge/advisor` · `turn/afterMain` | 제 모양 + 겹침 판정 | `Finding`(`judge:"vqa"｜"advisor"`, `severity` · `owner` 는 `vqaClassify` 가 채운다). 장부(`assistantTodo.memory.vqa`)는 열쇠만 바뀐다 |
+| `judge/finalReport` · `turn/finishTurn` | 줄을 그대로 싣는다 | `ko` 를 싣는다 — 보고 글은 한 글자도 안 바뀐다 |
+| 시험 | `startsWith("[출하 차단 no-healing]")` 같은 글 맞춤 | `id` 맞춤(옮기는 동안은 줄 변환 `findingLine(f)` 으로 그대로 통과) |
+
+**순서(조각마다 PR 하나).**
+
+1. `F1`(옮기기 기준) — **끝**: `judge/finding.ts` 에 `Finding` · `findingLine` · `fromLine`(표지 `[게임 검사 <주제>]` · `[출하 차단 <id>]` · `[scene <id>]` 를 읽어 `Finding` 으로)을 넣고 `finishGate` 안쪽(`gameFindings` · `isMusicWork` · 기준선 열쇠)만 `Finding[]` 으로 — 나가는 `V2GateProblem` 은 그대로. 정한 것 둘: `ko` 는 표지까지 든 지금의 줄 그대로다(보고 글이 한 글자도 안 바뀐다 — `findingLine(f) = f.ko`), `findingKey` 는 쓰는 곳이 생기는 F3 에서 넣는다. 왕복 탐침(먼저 돌렸다): 요청 75개 × 프로젝트 쌍 6개 × 판정자 7 과 턴 흔적에서 모은 실제 줄 60개 + 소스의 표지 63개 — 왕복 다름 0 · 표지 못 읽음 0 · `isMusicWork` 다름 0 · `SHIP_DEFAULT_LEAK` 다름 0. golden · turnTrace 같다.
+2. `F2`(옮기기 기준, 판정자 하나씩): 낳는 쪽이 `Finding` 을 바로 낸다(ship → combat → game → scene/play/machine). 글과 열쇠는 `findingLine` · `gateKey` 로 그대로. golden · turnTrace 같다.
+3. `F3`(동작 변경): 열쇠를 `findingKey` 로 — 글이 바뀌어도 같은 항목(시도 상한이 제대로 센다), 「같은 글 다른 대상」 은 다른 항목. 저장된 할 일(`assistantTodo`)의 옛 열쇠는 한 번 읽어 새 열쇠로 옮긴다. turnTrace 의 바뀐 줄을 모두 설명.
+4. `F4`(동작 변경): 모델에게 가는 관문 글을 영어(`en`)로 — 규칙마다 영어 글을 쓰고 보고는 `ko` 그대로. Terra 로 전/후를 잰다(작은 일 30가지).
+5. `F5`(동작 변경): 화면 검수·검토자 결과를 같은 장부로 — `VqaFinding` · `AdvisorNote` 를 `Finding` 으로, `turn/vqaItems` 의 겹침 판정은 `findingKey` 가 못 잡는 자유 글에만 남긴다.
+
+**위험.** (1) 표지 91곳을 손으로 옮기면 글이 달라질 수 있다 — `fromLine`/`findingLine` 왕복이 같은지 재는 탐침을 먼저 둔다(요청 말뭉치 × 지은 게임 픽스처). (2) 열쇠가 바뀌면 이어 하기 턴의 «막힌 채로» 기억이 한 번 풀릴 수 있다 — 3번에서 옛 열쇠를 읽는 변환과 시험을 같이 넣는다. (3) `gameContentProblems` 는 아직 446줄 한 함수다 — 2번에서 주제별 함수로 가르며 옮긴다.
+
+### 같이 적어 둘 수 — B7 뒤 이어 하기 턴의 화면 검수 비용
+
+B7(#4577) 전에는 게임 하나 청사진을 잇는 「계속」 턴이 화면 검수자를 **0번** 불렀다. 지금은(`turn/vqaRound.ts` · `judge/vqa.ts` · `turn/vqaItems.ts`):
+
+- **보통 1번, 많아야 5번.** 한 판 = 그림 찍기(많아야 10장) + 검수자 호출 1번. 건넬 결함이 없으면 1판에서 끝난다(턴 흔적 `continue-short`: 「화면 검수 1판 뒤 끝」).
+  결함을 모델에게 건네면 고친 뒤 다시 찍는다 — 다듬기만 남으면 3판(`VQA_MAX_ROUNDS`), 막음이 남으면 5판(`VQA_ROUND_CAP` = 3 + 2)에서 멈춘다. 판이 하나 늘 때마다 주 모델의 고치기 차례도 하나 는다.
+- **0번인 경우:** 앞 턴의 마지막 검수 뒤로 프로젝트가 그대로면(지문 같음) 다시 찍지 않고 건너뛴다.
+- 검수자가 답하지 못하면(호출 실패 · 빈 답) 같은 그림을 다음 후보에게 넘겨 그 판의 호출이 후보 수만큼 는다(정상 경로에서는 판당 1번).
+
+상한을 둔다면 고칠 자리는 한 곳이다 — `turn/vqaItems.ts` 의 `cap`(지금은 게임 하나 요청과 이어 하기 턴이 같은 값). 이어 하기 턴만 1판으로 묶으려면 `noteVqaRound` 에 요청 의도의 `continuation` 을 넘겨 그 자리에서 읽으면 된다(지금은 넘기지 않는다). Terra 게임 하나 판을 재고 정한다.
 
 ## 알려 둘 것
 

@@ -70,6 +70,25 @@ describe('assistant playable-pattern manuals', () => {
     expect(runTool(context, read.name, {}).ok).toBe(false);
   });
 
+  it('names real preset ids when a category or a made-up id is read, without reading on the model\'s behalf', () => {
+    const context = { project: createEmptyToolProject() };
+    const realIds = new Set(AUTHORING_PRESETS.map(preset => preset.id));
+    const idsIn = (message: string) => message.split(/[\s,.:「」()]+/).filter(token => realIds.has(token));
+    const asCategory = runTool(context, read.name, { presetId: 'combat' });
+    expect(asCategory.ok).toBe(false);
+    expect(asCategory.issues?.[0]?.code).toBe('preset-not-found');
+    const categoryIds = idsIn(asCategory.issues?.[0]?.message ?? '');
+    expect(categoryIds.length).toBeGreaterThan(0);
+    for (const id of categoryIds) expect(authoringPresetById(id)?.category).toBe('combat');
+    const invented = runTool(context, read.name, { presetId: 'combat-encounter' });
+    expect(invented.ok).toBe(false);
+    expect(invented.data).toBeUndefined();
+    for (const id of idsIn(invented.issues?.[0]?.message ?? '')) expect(realIds.has(id)).toBe(true);
+    const nothing = runTool(context, read.name, { presetId: 'zzzz-not-a-thing' });
+    expect(nothing.ok).toBe(false);
+    expect(nothing.issues?.[0]?.code).toBe('preset-not-found');
+  });
+
   it('reads fresh originals without sharing mutable catalog or project arrays', () => {
     const project = createEmptyToolProject();
     project.system.sellPrices = [{ itemId: 'marker', price: 123 }];

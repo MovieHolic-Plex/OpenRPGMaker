@@ -53,6 +53,8 @@ export interface BuildIntentFactsInput {
   readonly userText: string;
   readonly currentMapId: string | null | undefined;
   readonly selection: IntentSelectionFact | null | undefined;
+  /** 고른 이벤트의 짧은 사실 한 줄(`이름 (id) 위치 (x,y)`). 없으면 출력은 그대로다. */
+  readonly selectedEvent?: string | null;
   readonly hasActivePlan: boolean;
   readonly unresolvedFunctional?: IntentFacts["unresolvedFunctional"];
 }
@@ -64,6 +66,7 @@ export function buildIntentFacts(input: BuildIntentFactsInput): IntentFacts {
     userText: input.userText,
     currentMap: currentMap ? { id: currentMap.id, name: currentMap.name } : null,
     selection: input.selection ?? null,
+    ...(input.selectedEvent ? { selectedEvent: input.selectedEvent } : {}),
     maps: Object.values(input.project.maps).map((map) => ({ id: map.id, name: map.name })),
     untouchedMapIds: Object.values(input.project.maps).filter((map) => isUntouchedMap(map)).map((map) => map.id),
     facilityLabels: [...listLiveConceptFacilityLabels(input.project)],
@@ -264,7 +267,7 @@ function cacheKey(facts: IntentFacts): string {
   const selection = facts.selection
     ? `${facts.selection.mapId}:${facts.selection.x},${facts.selection.y},${facts.selection.width},${facts.selection.height}`
     : "-";
-  return `${facts.userText.trim()}|${facts.currentMap?.id ?? "-"}|${selection}|${facts.hasActivePlan ? "plan" : "noplan"}|${facts.wikiContext ?? ""}|${JSON.stringify(facts.actualStart)}|${JSON.stringify(facts.maps)}|${JSON.stringify(facts.unresolvedFunctional)}`;
+  return `${facts.userText.trim()}|${facts.currentMap?.id ?? "-"}|${selection}|${facts.selectedEvent ?? "-"}|${facts.hasActivePlan ? "plan" : "noplan"}|${facts.wikiContext ?? ""}|${JSON.stringify(facts.actualStart)}|${JSON.stringify(facts.maps)}|${JSON.stringify(facts.unresolvedFunctional)}`;
 }
 
 export async function declareIntentCached(
