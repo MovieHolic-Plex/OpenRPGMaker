@@ -8,7 +8,7 @@ import type { Project } from "@/project/types";
 import { DEAD_END_PREFIX } from "../place/deadEndRoads";
 import { blueprintMapFor } from "../story/blueprintPath";
 import { populateWorldPlace } from "../place/worldPopulate";
-import { repairEventReach } from "../judge/eventReach";
+import { repairEventReach } from "../place/reachRepairs";
 import { runLaneStages } from "../finish/lanes";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart } from "../blankStart";
 import { guessPlaceSpec } from "../place/placeGuess";
