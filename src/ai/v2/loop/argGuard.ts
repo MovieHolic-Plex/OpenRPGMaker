@@ -16,6 +16,7 @@ import { isPassable } from "@/project/collision";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { protectedHouseCells } from "@/editor/tools/houseProtection";
 import { resolveObject } from "@/editor/tools/sharedObjectTools";
+import { SEED_START_MAP_ID } from "@/editor/tools/startOnBuiltMap";
 import { nameScore } from "../todo/names";
 
 type Obj = Record<string, unknown>;
@@ -357,6 +358,14 @@ export function preCheck(toolName: string, schema: unknown, rawArgs: unknown, pr
   if (isRegistryTool(toolName)) {
     const pruned = pruneDefaults(schema as Schema, args, getTool(toolName)?.parameters as Schema | undefined);
     if (pruned.removed.length) { args = pruned.value as Obj; notes.push(`dropped empty/default optional fields: ${pruned.removed.slice(0, 8).join(", ")}${pruned.removed.length > 8 ? ` +${pruned.removed.length - 8} more` : ""}`); }
+  }
+  // 치워진 빈 시작 맵(blankStart.ts retireSeedStart)의 id 를 아직 쓰는 호출은 지금 시작 맵으로 보낸다 — 조수는 첫 지시문에서 본 그 id 를 계속 쓴다.
+  if (!project.maps[SEED_START_MAP_ID] && project.maps[project.startMapId]) {
+    let hit = false;
+    const swap = (o: Obj): Obj => { const out: Obj = { ...o }; for (const k of ["mapId", "fromMapId", "toMapId"]) if (out[k] === SEED_START_MAP_ID) { out[k] = project.startMapId; hit = true; } return out; };
+    let next = swap(args);
+    for (const k of ["patch", "a", "b", "spec", "event", "from", "to"]) if (isObj(next[k])) next = { ...next, [k]: swap(next[k] as Obj) };
+    if (hit) { args = next; notes.push(`${SEED_START_MAP_ID} (the empty start map) was removed when the first place was built — used ${project.startMapId} («${project.maps[project.startMapId]!.name ?? ""}») instead`); }
   }
   for (const rule of PRE_RULES) {
     if (!rule.tool.test(toolName)) continue;

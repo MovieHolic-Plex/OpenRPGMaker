@@ -99,6 +99,8 @@ export function toolReportsIn(tool: string, text: string): ToolReport[] {
   }
   for (const match of text.matchAll(/「([^」]{1,40})」 그리기 카드를 대기열에 올렸다([^\n]{0,160})/gu)) push({ kind: 'card-queued', thing: match[1]!, instead: '없음(그리기 카드 대기)', chipset: /칩셋 ([\w-]+)/u.exec(match[2]!)?.[1] ?? '' }, match.index!);
   for (const match of text.matchAll(/「([^」]{1,40})」과\(와\) 이름이 맞는 기물이 이 칩셋에 이미 있다[^:]*:\s*([\w-]+)\(((?:[^()]|\([^()]*\)){1,60})\)/gu)) push({ kind: 'stand-in-offered', thing: match[1]!, instead: `${match[3]}(${match[2]})` }, match.index!);
+  // 같은 신고의 v2 동사 글(draw_object — place/drawObject.ts): 이름이 맞는 칩셋 킷을 놓는 호출을 이른다.
+  for (const match of text.matchAll(/whose name matches «([^»]{1,40})»\. Next call: place_object\(\{[^)]*?objectId\\?":\\?"([\w-]+)/gu)) push({ kind: 'stand-in-offered', thing: match[1]!, instead: match[2]! }, match.index!);
   for (const match of text.matchAll(/([가-힣A-Za-z ]{1,24})\(\d+,\d+\) — ([NSEW]) 쪽을 보는 그림이 없다/gu)) push({ kind: 'no-direction-art', thing: `${match[1]!.trim()} (${match[2]} 쪽을 보는 그림)`, instead: '다른 쪽을 보는 그림 그대로' }, match.index!);
   for (const match of text.matchAll(/특징 ([\w가-힣-]{1,30}) 은 놓을 빈 바닥·그림이 없어 빠졌다/gu)) push({ kind: 'feature-dropped', thing: match[1]!, instead: '뺌' }, match.index!);
   for (const match of text.matchAll(/✗blocked \S+ ([^\n—]{2,80}) — ([^\n"]{0,200})/gu)) {

@@ -869,6 +869,47 @@ Terra 세 판의 저장본에서 다시 깐 결과: 사막 fun-x1 장면 4·자�
 **근거.** 고정 씨앗 8개 마을의 문 71개: 그냥 부를 때 맨바닥 12 → 0, `doorAt` 을 줄 때 3 → 0(닿지 않는 문 1개는 목록에서 빠짐). 씨앗 없는 마을 40번: 5 → 0.
 시험은 씨앗을 고정했고(`salt`), 그때 다섯 문이 맨바닥에 섰던 씨앗 둘(99012 · 11630)의 모든 문을 잰다.
 
+## 깔기 요청의 거절은 다음 호출 하나를 실제 값으로 이른다 — 빈 껍데기 고침 · 빈 `mapId` · 강제는 값이 찬 호출만 (2026-11-11, map-vqa 깔기 24판)
+
+「이 장소를 깔아 줘」 한 줄 요청 24가지(Terra high, `lay-main-0636b72004`)에서 장소는 23곳 깔렸는데 «완료» 는 8곳이었다. 턴 기록의 거절 68번(장소 호출 55번)과
+«pending action» 막힘 17번을 읽으면 원인은 모델이 아니라 도구 계약 넷이다.
+
+| 원인 | 기록의 첫 사례 | 고친 곳 |
+|---|---|---|
+| 엄격 스키마가 채운 빈 `layoutPatch`(`replace:{map:{w:0,h:0}, landmark:{id:""}, walls:[], …}`)를 진짜 고침으로 읽었다 — `edit_place` 거절 26번 | village #5 `edit_place({patch:{mapId:"map_blank_start", addAnchors:[{what:"우물"…}], layoutPatch:{…빈 껍데기}}})` → «layoutPatch edits a place that was laid from a cell layout…» | `place/interiorLayout.ts` `replaceEntries`(껍데기는 안 보낸 것) · `tools/support.ts` `dropPatchFill`(빈 글·0·지금과 같은 값) |
+| 빈 `mapId:""` 를 값으로 썼다 — 거절된 배치(`pendingLayouts`)를 못 찾고, 다음 호출 줄에 `mapId:""` 가 실렸다 | weapon-shop #2 → `[Next call] create_transfer_pair({"a":{"mapId":"",…` | `tools/verbs/place.ts`(`patch.mapId \|\| …`, make_place 의 없는 맵 id 는 안 준 것) · `loop/nextCall.ts` `mapOf` |
+| 거절 글에서 동사 이름만 짚은 제안을 다음 차례에 강제했다 — 모델이 고쳐 보낸 맞는 호출이 실행되지 않았다(17번, 그중 `make_place` 7번) | village #6 `find_empty_ground` → «Not executed: call the `create_transfer_pair` tool to resolve the pending action» | `loop/nextCall.ts` `NextCall.exact` · `loop/todoTools.ts` `prefer`(값이 다 찬 호출만 강제) |
+| 거절 글이 길을 막았다: 칸 배치 거절은 «3 problems» 중 첫 줄에서 잘리고 `Next: change the spec (another type or style)` 가 붙었다 · 받지 않는 고침은 «빌더는 소품 하나하나를 받지 않는다» 뿐 · `draw_object` 는 요청에 없는 `stamp_object` 를 일렀다 | weapon-shop #1 · market-town #4 · ruins #8 | `place/interiorLayout.ts` `rejectionText`(다시 보낼 것이 맨 앞) · `loop/failureText.ts`(머리글 상한 900자) · `tools/placeMemory.ts` `notRelaidRefusal` · `place/drawObject.ts`(`place_object` 를 실제 id·칸으로) |
+
+규칙:
+
+- **거절하는 도구는 가장 가까운 맞는 일을 스스로 하거나, 값이 찬 다음 호출 하나를 이른다.** `mapId:""` · 같은 관문이 다시 막을 호출 · 이 요청에 실리지 않은 도구를 이르지 않는다.
+  거절 글이 `Next call: 동사({…})` 를 이미 적었으면 고리(`nextAfterFailure`)는 뼈대를 덧붙이지 않는다.
+- **빈 값은 «안 보냈다» 다.** `edit_place` 패치의 빈 글·빈 배열·0·모든 잎이 기본값인 객체·지금 명세와 같은 값은 걷어 낸다(`false` 는 켜 둔 것을 끌 때만 고침이다).
+  걷어 낸 뒤 남는 것이 없으면 «바뀌는 것이 없다» 와 `inspect` 를, 물건 하나(`addAnchors`)가 남으면 그 물건을 놓는 `draw_object` 호출을 맵 id·칸과 함께 이른다.
+- **아직 서지 않은 장소에 온 `edit_place` 는 `make_place` 로 보낸다:** 거절된 배치에 `layoutPatch` 를 입혀서, 또는 `set.layout`·`replace` 로 온 배치 전체로. 빈 시작 맵이면 그 맵 위에 짓는다.
+  같은 이름의 방을 `mapId:""` 로 다시 보내면 그 맵에서 다시 짓는다(맵이 늘지 않는다 — 재생에서 «무기 가게» 가 다섯 장이 됐었다).
+- **강제(`preferToolNextTurn`)는 인자가 다 찬 호출에만.** 자리표시(`<…>`)가 남은 제안은 결과 글의 알림으로만 간다.
+
+모델 없는 재생(`scripts/qa/assistant-v2/layReplay.mts` — 기록의 호출을 같은 순서로 지금 도구 층에 넣는다)으로 잰 전/후는 아래 「재생 수치」 표,
+이른 호출을 실제로 불러 보는 탐침은 `scripts/qa/assistant-v2/refusalNextCalls.mts`(여섯 흐름 — 이 묶음만 있는 가지에서는 `--only 1,2,3,6`). 시험 `test/aiV2LayRefusals.test.ts` · `test/aiV2BackDoor.test.ts`.
+
+재생 수치(같은 기록 24요청 · 같은 재생기 · 무작위 씨앗 고정). «네 묶음» = 이 절과 같은 날의 세 절(공간 검사 · 빈 시작 맵 · 세계 종류)까지 모두 넣은 가지.
+
+| | 그 판의 기록 | 재생: main `d643c9b7b6` | 재생: 네 묶음 |
+|---|---|---|---|
+| 장소 호출 거절(`make_place`·`edit_place`·`review_layout`·`author_forest_route`·`create_map`) | 55 | 51 | **18** |
+| 모든 거절(`todo` 제외) | 68 | 73 | **34** |
+| «pending action» 에 막힌 호출 | 17 | 18 | **0** |
+| 처음 세 번의 장소 호출 안에 깔리고 시작이 그 장소의 걷는 칸 | — | 20/24 | **23/24** |
+| 끝에 깔리고 시작이 그 장소의 걷는 칸 | — | 21/24 | **24/24** |
+| 빈 시작 맵이 남은 요청 | — | 6 | **0** |
+
+세 번 안에 못 깔린 하나는 prison(첫 배치의 기물이 벽 칸에 걸친 진짜 오류 — 넷째 호출에 깔린다). 남은 장소 호출 거절 18: 진짜 배치 오류 5 · 고치기 상한 3 ·
+받지 않는 고침(이제 다음 호출을 이른다) 3 · 한 번에 깐 장소·집이 선 마을을 다시 지으려던 호출 4 · 재생의 한계 3(village-to-field — 풀 칩셋이 기록과 달라 뒤 호출이 맞지 않는다).
+재생은 기록의 호출을 그대로 넣는 것이라, 고친 뒤 모델이 실제로 덜 부르게 될 호출까지 센다 — 실제 «완료» 율은 Terra 재측정으로 잰다.
+
+
 ## 뒷문은 `create_transfer_pair` 한 번 — 막다른 거절이 그 길을 이른다 (2026-11-11, 작은 일 두 번째 재측정)
 
 두 번째 재측정(Terra, main d4a4ae29f4)은 **29/30 · «완료» 29**(앞 28/30 · 25)였고 남은 하나가 `door-backdoor-built`(「족장의 긴 집에 뒷문을 하나 만들어 줘. 그 문으로 나가면 겨울 시장으로 가게」)다.
@@ -961,6 +1002,25 @@ golden: 117/153 이 `create_transfer_pair` · `place_door` 글만 바뀜. 시험
 없는 물건은 실패. `resolveWhere("벽난로 앞", at (0,0))` = 낱말만 준 것과 같은 칸 (8,4). `buildEvent`: 내레이션 한 줄·밟으면 내레이션은 무대 없음, 사람이 말하거나 걷는 장면은 무대 있음.
 golden: 153 가운데 117 이 `place_examine_hotspots` 글/스키마(81 은 그것만, 33 은 조사 카드 글 +23자), 표지판 요청 3줄은 처음 싣는 도구에 `place_examine_hotspots` 가 들고 `fill_region` 이 필요할 때로 물러남.
 시험 `test/aiV2ExamineSpots.test.ts`.
+
+## 풀 칩셋 마을 뒤의 장소는 그 세계의 종류로 짓는다 · 빈 땅 채우기는 터 넓이만큼 (2026-11-11, map-vqa 깔기 24판)
+
+낱말 없는 «마을» 은 칩셋 풀(`villageChipsetPool` — 해적 군도·사막·설원…)로 깔린다. 그 뒤의 둘째 장소가 깔기 24판에서 서지 못했다.
+
+- village-chief-house: 풀 마을 뒤 «촌장 집» `make_place({type:"interior", layout:…})` → 손 도트 실내 v5 는 다른 칩셋 계열이라 도구 실행기가 거절(«사용자 승인 없이 타일 그림체를 바꾸지 않는다») — 촌장 집은 끝내 없었다.
+- village-to-field: «동쪽 들판» `author_forest_route`(버들항) → 같은 거절 → 다음 호출 줄이 `create_map({})` → 48×36 단색 맵에 `furnish_outdoor_area` 가 왼쪽 위 26×20 에만 12무더기(«맨땅 100%→81%»).
+
+규칙:
+
+- **청사진이 없어도, 프로젝트의 맵이 구성기 세계의 칩셋이면 `make_place` 는 그 세계의 종류로 짓는다**(`tools/verbs/place.ts` — `pickWorld`·`worldPlaceSpec`). 종류는 이름·테마가 짚은 것,
+  실내면 가장 작은 방(오두막·선실), 바깥이면 덜 쓴 종류. 결과에 무엇으로 지었는지와 다른 종류의 `style:"world:<세계>:<종류>"` 를 적는다. 모델이 보낸 손 도트 칸 배치는 쓰지 않는다고 알린다
+  (그 세계의 종류로 이미 선 장소에 배치가 또 오면 선 맵을 돌려준다 — 다른 칩셋으로 다시 짓지 않는다).
+- **칩셋 계열 거절 뒤의 다음 호출은 `make_place`** 다(`loop/nextCall.ts`). 빈 맵을 만들어 손으로 칠하게 하지 않는다.
+- **`furnish_outdoor_area` 의 채우기 구획 수는 터 넓이를 따른다**(`src/editor/tools/kitAreaTools.ts` — 구획 5×4 + 둘레 ≈ 42칸마다 하나, 최소 12). 48×36 빈 들판: 12구획(왼쪽 위) → 42구획(맵 전체, 맨땅 100%→28%). `amount:"few"` 는 그대로 세 무더기.
+
+남은 것(그림): 해적 군도·사막 세계에는 «들판» 종류가 없어 «동쪽 들판» 은 해변·항구 종류로 선다. 전국·SF 정거장·폐허 세계에는 실내 종류가 없다.
+
+재생(`layReplay.mts`): village-chief-house 는 «촌장 집»(오두막 14×12)이 서고, 탐침 `refusalNextCalls.mts` ④ 가 계열 거절 → `make_place` → 같은 칩셋의 장소를 확인한다. 시험 `test/aiV2WorldRoutedPlace.test.ts`.
 
 ## 버들항 맵의 빈 땅도 읽고 채운다 — 칸 역할을 안 적는 시트 · `amount:"few"` (2026-11-11, 작은 일 재측정)
 
@@ -1176,6 +1236,28 @@ turnTrace(5개 장면 · 376줄)는 79줄이 바뀐다: 모델에게 가는 줄(
 마을·동굴·실내 세 곳의 기억은 2,889자이고 저장본 왕복 뒤에도 지문이 같다(되살림 3 · 버림 0). 벽 한 칸을 손으로 바꾸면 그 장소만 버린다.
 시험 `test/aiV2PlaceMemory.test.ts`. Terra 로 잰 값은 아직 없다.
 
+## 실내 공간 검사는 짓기를 막지 않는다 — 성긴 방 문턱은 손으로 지은 방 실측에서 (2026-11-11, map-vqa 깔기 24판)
+
+깔기 24판의 실내 요청 10가지에서 `make_place` 의 첫 거절은 모두 공간 검사였다(예: weapon-shop #1 «room "storage" is under-furnished: 3 standing pieces on 45 floor cells
+(0.07 per cell; furnished rooms here have at least 0.18)»). 문턱 0.18 은 근거가 없었다.
+
+| 방 바닥 칸 | 손으로 지은 방(견본 87개, 복도 제외) 가운데값 · 아래 4분위 | 0.18 에 못 미치는 견본 | 새 문턱 |
+|---|---|---|---|
+| 30~59 | 0.19 · 0.13 | 48% | 0.12 |
+| 60~99 | 0.13 · 0.07 | 68% | 0.08 |
+| 100 이상 | 0.10 · 0.06 | 86% | 0.06 |
+
+모델이 보낸 방은 0.05~0.18(가운데값 0.11~0.12) — 작가가 지은 방의 절반 이상이 같은 규칙에 걸린다.
+
+규칙:
+
+- **공간 검사(성긴 방 · 빈 바닥 덩이 · 큰 홀의 빈 가운데)는 알림이다.** 배치는 깔고, 결과에 `open (the room is laid; fix it in a review_layout round) — …` 로 남긴다. 모델은 자기 검토(`review_layout`) 바퀴에서 채운다.
+  짓기를 막는 것은 깔 수 없는 것뿐이다(없는 기물 id · 겹침 · 벽 속 칸 · 닿지 않는 방).
+- **문턱은 방 크기를 따른다**(`place/interiorSpace.ts` `minDensityFor`: 0.12 / 0.08 / 0.06). 큰 방일수록 성기게 지어도 방으로 읽힌다.
+- **깔개·난간·단상도 요청한 물건이다.** `required` 가 짚은 id 가 `carpets`·`rails`·`daises` 에 있으면 놓인 것으로 센다(throne-room: 깔개를 깔고도 «붉은 융단이 없다» 로 거절됐다).
+
+재생(`scripts/qa/assistant-v2/layReplay.mts`, 같은 날 네 묶음을 모두 넣은 가지): 실내 10요청의 장소 호출 거절 28 → 5(그 판의 기록 32), 처음 세 번의 장소 호출 안에 깔린 요청 7 → 9. 시험 `test/aiV2InteriorSpaceAdvisory.test.ts`.
+
 ## 방은 모델이 설계한다 — 견본을 깔지 않는다 (2026-10-29 맵 같음 감사)
 
 감사(`~/claude-viz/map-sameness-1029.html`, 묶음 vm1~vm8): 여관 1층 23개 중 13개가 같은 16×14 선술집 홀(「여관」 낱말 → 장소 견본 tavern, 뒤집기·손님 자리 네 판),
@@ -1322,6 +1404,23 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - **결정 카드와 글 답**(`src/harnesses/assistant-capability/node/wholeGameSession.mjs`): 맵 소실 확인 같은 결정 카드는 글로 답할 수 없다. 카드가 열린 채 `.txt` 가 오면
   하네스가 먼저 「그만두기」(내용을 지우지 않는 쪽)를 누르고 보낸다. 그전에는 실행이 카드 단추를 기다리며 체크포인트 적용을 30분 잡고(`piCheckpointBroker`),
   보낸 글은 그 뒤에 갇혀 다음 턴이 0블록으로 45분 멈췄다(vm1 argon escape 003→004·jrpg 003→004 — 「모델 무응답」으로 보였던 턴의 실제 원인).
+
+## 빈 시작 맵은 첫 장소를 지으면 사라진다 — 시작 칸은 들어오는 길 위 (2026-11-11, map-vqa 깔기 24판)
+
+깔기 24판에서 야영지·알현실·숲→동굴 요청은 장소를 깐 뒤에도 빈 시드 맵(`map_blank_start`)이 게임에 남았다. `author_forest_route({fromMapId:"map_blank_start", linkFrom:true})` 는
+숲을 빈 맵에 이어 시작이 빈 풀밭에 섰고, 동굴의 바깥 문도 빈 맵으로 났다. 마을 요청은 빈 맵 위에 지어져 시작 칸이 옛 (10,8) 에서 «가장 가까운 트인 칸» (10,5) — 집 지붕 뒤 — 로 옮겨졌다.
+
+규칙:
+
+- **쓰기 하나가 끝날 때마다 빈 시드 맵을 본다**(`blankStart.ts` `retireSeedStart`, `tools/verbs.ts` 가 v2 동사와 게임 도구 뒤에 부른다). 빈 맵이 아직 빈 채이고 실제 장소가 따로 생겼으면
+  시작을 그 장소(시작 맵이 실제 장소면 그대로, 아니면 빈 맵이 이어진 맵, 그것도 없으면 첫 장소)의 걸어 닿는 칸으로 옮기고, 빈 맵으로 가는 이동 이벤트와 빈 맵을 지운다. 결과에 `[Start map] …` 한 줄이 붙는다.
+  게임 청사진의 끝맺음 단계(`retireBlankStart`)는 그대로다 — 이것은 청사진 없는 한 줄 요청에도 닿는 같은 일이다.
+- **치워진 맵 id 로 온 뒤따른 호출은 시작 맵으로 고쳐 받는다**(`loop/argGuard.ts` — `mapId`·`fromMapId`·`toMapId`, 결과에 그렇게 알린다). 모델은 앞 결과에서 본 id 를 계속 쓴다.
+- **첫 바깥 장소의 시작 칸은 그 장소로 들어오는 길 입구에서 두세 칸 안쪽이다**(`place/startSpot.ts` `roadEntranceStart` — 길 입구는 `place/roadMouths.ts`): 남·서·동·북 순서, 걸어 닿는 가장 큰 덩이 안,
+  이벤트가 없고 지붕·나무 그림 밑(`underRoof.ts` `coveredCell`)이 아닌 길 칸. 가장자리에 닿는 길이 없는 맵은 빌더가 정한 칸을 그대로 쓴다.
+- 시작 방향(«안쪽을 본다»)은 넣지 못했다 — `project.startPos` 는 `{x, y}` 뿐이고 방향 칸이 없다(스키마·플레이어 쪽 일).
+
+재생(`scripts/qa/assistant-v2/layReplay.mts`, 같은 날 네 묶음을 모두 넣은 가지): 빈 맵이 남은 요청 6 → 0(camp · field-route · throne-room · village-chief-house · village-to-field · weapon-shop), 끝에 시작이 깔린 장소의 걷는 칸(그 맵 걷는 칸의 절반 넘게 닿는다)인 요청 21 → 24/24. 마을 요청의 시작 칸 (10,5)(지붕 뒤) → (21,39)(남쪽 길). 시험 `test/aiV2SeedStart.test.ts`.
 
 ## 이벤트 자리·시작 칸 (2026-10-29 야외 자동 플레이)
 
