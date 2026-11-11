@@ -70,7 +70,7 @@ try {
   if (autoplay && run) { values.autoplayEnding = [run.ok && run.endingReached ? 1 : 0, 1]; if (!run.ok) lines.autoplay = [`${run.failure?.goal ?? ""}: ${run.failure?.detail.slice(0, 240) ?? ""}`]; }
 } catch (error) { probeErrors.push(`runGameCheck: ${(error as Error).message.slice(0, 200)}`); }
 try { const bp = walkBlueprint(project).blockers; values.blueprintBlockers = bp.length; lines.blueprintBlockers = bp.map((b) => `${b.id}`); } catch (error) { probeErrors.push(`walkBlueprint: ${(error as Error).message.slice(0, 200)}`); }
-try { const ship = shipBlockers(project, task); values.shipBlockers = ship.length; lines.shipBlockers = ship.map((b) => `${b.id}`); } catch (error) { probeErrors.push(`shipBlockers: ${(error as Error).message.slice(0, 200)}`); }
+try { const ship = shipBlockers(project, task); values.shipBlockers = ship.length; lines.shipBlockers = ship.map((b) => `${b.id} — ${String(b.message ?? "").replace(/\s+/gu, " ").slice(0, 200)}${(b as { evidence?: string }).evidence ? ` [${(b as { evidence?: string }).evidence}]` : ""}`); } catch (error) { probeErrors.push(`shipBlockers: ${(error as Error).message.slice(0, 200)}`); }
 
 // ── 출구·길 (exitProbe) ───────────────────────────────────────────────────────────────────────────────────────
 {
@@ -112,13 +112,23 @@ try { const ship = shipBlockers(project, task); values.shipBlockers = ship.lengt
   values.lockedOnEntrance = [lockedRight, locked];
   values.lockedOffEntrance = locked - lockedRight;
 }
-// 빌더 쪽 목적 탐침(건물·들어감·문 앞 사람·길 몫)이 들어오면 여기서 읽는다.
+// 빌더 쪽 목적 탐침(purposeProbe.mts — 바깥 맵의 건물·들어감·문 앞 사람·채움·길 몫). 그 탐침이 없는 폴더에서는 건너뛴다.
 {
   const out = path.join(dir, "purpose.json");
   if (fs.existsSync(path.join(PROBES, "purposeProbe.mts"))) probe("purposeProbe.mts", [`game=${projectFile}`, "--json", out]);
   if (fs.existsSync(out)) {
-    const t = (JSON.parse(fs.readFileSync(out, "utf8")) as { runs: Record<string, { total: Record<string, number> }> }).runs.game?.total;
-    if (t) { values.purposeRoleBuildings = [t.role ?? 0, t.buildings ?? 0]; values.purposePeople = t.people ?? 0; values.purposeRoute = [t.route ?? 0, t.walkable ?? 0]; }
+    const run = (JSON.parse(fs.readFileSync(out, "utf8")) as { runs: Record<string, { total: Record<string, number>; maps: Record<string, number | string>[] }> }).runs.game;
+    const t = run?.total;
+    if (t) {
+      values.purposeBuildings = t.buildings ?? 0;
+      values.purposeEnterable = [t.enterable ?? 0, t.buildings ?? 0];
+      values.purposeRoleBuildings = [t.role ?? 0, t.buildings ?? 0];
+      values.purposeFiller = [t.filler ?? 0, t.buildings ?? 0];
+      values.purposePeople = t.people ?? 0;
+      values.purposeRoute = [t.route ?? 0, t.walkable ?? 0];
+      values.purposeArea = t.area ?? 0;
+      lines.purpose = (run.maps ?? []).map((m) => `${m.name} ${m.w}×${m.h} 건물 ${m.buildings} = 들어감 ${m.enterable} + 문 앞 사람 ${m.atDoor} + 채움 ${m.filler} · 사람 ${m.people} · 걷는 칸 ${m.walkable} · 길 ${m.route}칸(${m.routePct}%) · 길 곁 ${m.nearPct}%`);
+    }
   }
 }
 

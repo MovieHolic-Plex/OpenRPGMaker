@@ -809,7 +809,7 @@ blocker 8개: 가장자리까지 간 길 끝에 출구 없이 «길이 끊겼다
 빌더·끝맺음 단계를 고친 사람은 모델을 부르지 않고 그 명세 전부를 전/후 빌더로 다시 지어 수치와 1배 그림을 견준다.
 
 ```bash
-bun scripts/qa/assistant-v2/specBank.mts ab --out /tmp/bank        # 기준(origin/main) 빌더 → a · 지금 작업 폴더 빌더 → b · 대조 표 (은행 한 번 약 22분, 두 번 돈다)
+bun scripts/qa/assistant-v2/specBank.mts ab --out /tmp/bank        # 기준(origin/main) 빌더 → a · 지금 작업 폴더 빌더 → b · 대조 표 (기본 한 번에 4개 — 모델 판이 도는 기계에서는 더 넓게 돌리지 않는다)
 bun scripts/qa/assistant-v2/specBank.mts extract <판 폴더>…         # 새 판을 은행에 더한다 (게임 하나를 지은 판 폴더 · map-vqa 의 과제 폴더)
 bun scripts/qa/assistant-v2/specBank.mts list                      # 은행에 든 것
 ```
