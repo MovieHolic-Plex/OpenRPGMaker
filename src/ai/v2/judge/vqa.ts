@@ -339,6 +339,11 @@ function vqaVisionModel(pick: { readonly provider: string; readonly model: strin
 export const vqaReviewerLabel = (pick: VqaReviewerPick): string =>
   `${pick.provider}/${pick.effort === "high" && pick.model === "gemini-4-argon" ? "gemini-4-argon-high" : pick.model}${pick.sameAsMain ? " 「같은 계열 검수」(다른 계열 검수자가 답하지 못함 — 약한 증거)" : ""}`;
 
+/** 로컬 CLI 의 검수용 모델 — 계열마다 하나. 다른 계열이면 독립 검수자로, 같은 계열이면 «자기 자신» 앞의 마지막 후보로 쓴다. */
+const LOCAL_CLI_REVIEWERS: readonly { readonly provider: string; readonly model: string }[] = [
+  { provider: "local-cli:claude", model: "claude-sonnet-5-5" }, { provider: "local-cli:codex", model: "gpt-6.1-sol" }, { provider: "local-cli:gemini", model: "gemini-4-argon" },
+];
+
 interface VqaReviewerInput {
   readonly main: { readonly provider: string; readonly model: string };
   readonly vision?: { readonly provider: string; readonly model: string };
@@ -369,11 +374,17 @@ export function vqaReviewerCandidates(input: VqaReviewerInput): VqaReviewerPick[
     if (input.keyed.has(d.provider) && differs(d.provider)) add(d, false);
   }
   // 키 있는 다른 계열 계정이 없거나 답하지 못하면 로컬 CLI. 설치돼 있지 않으면 호출이 실패해 다음 후보로 넘어간다.
-  for (const d of [{ provider: "local-cli:claude", model: "claude-sonnet-5-5" }, { provider: "local-cli:codex", model: "gpt-6.1-sol" }, { provider: "local-cli:gemini", model: "gemini-4-argon" }]) {
+  for (const d of LOCAL_CLI_REVIEWERS) {
     if (differs(d.provider)) add(d, false);
   }
   if (input.vision && usable(input.vision.provider) && !differs(input.vision.provider)) add(input.vision, true);
   if (input.advisor && usable(input.advisor.provider) && seesImages(input.advisor.provider) && !differs(input.advisor.provider)) add(input.advisor, true);
+  // 같은 계열이라도 «자기 자신» 보다는 그 계열의 검수용 모델이 먼저다 — 지은 모델이 제 화면을 보는 것은 맨 마지막이다.
+  // 2026-11-12 측정(Haiku 5.5 실행, GPT 할당량 없음·Gemini CLI 는 그림을 못 봄): 다른 계열이 모두 답하지 못하자 Haiku 가 제 화면을 검수했다 —
+  // 같은 계열의 Sonnet 은 후보에 없었다(로컬 CLI 목록은 «다른 계열» 일 때만 들어갔다). 표시는 그대로 «같은 계열 검수»(약한 증거)다.
+  for (const d of LOCAL_CLI_REVIEWERS) {
+    if (!differs(d.provider) && input.familyOf(d.provider) === mainFamily && d.model !== input.main.model) add(d, true);
+  }
   add(input.main, true);
   return out;
 }
