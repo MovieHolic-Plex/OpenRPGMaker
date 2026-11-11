@@ -1,7 +1,7 @@
 // 가구·벽 밑에 묻힌 이동 칸은 같은 곳으로 가는 문이 따로 있으면 지운다(2026-10-29 vm4 argon 추리).
 import type { FinishStage } from "../../types";
 import { mapLabel } from "../../types";
-import { dropBuriedTransfers } from "../../../place/exitDress";
+import { dropBuriedTransfers } from "../../../place/exitTransfers";
 
 export const stage: FinishStage = {
   id: "buried-transfers", phase: "lane-map", order: 20,
