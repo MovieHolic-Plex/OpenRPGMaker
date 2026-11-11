@@ -550,6 +550,54 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 남은 것: 설원 실내 같은 구성기 칩셋에는 벽에 그릴 문 그림이 없다 — 지금은 출입구가 벽 발치의 보이지 않는 칸이다. 문 그림을 같이 놓으려면 칩셋마다 문 조각을 코드가 고르는 길이 필요하다(따로 다룬다).
 golden: 117/153 이 `create_transfer_pair` · `place_door` 글만 바뀜. 시험 `test/aiV2BackDoor.test.ts`.
 
+## 한 호출로 끝나야 할 작은 일 여섯 — 그림 없는 전투 블로커 · 맨 위 깃발 · 상자 수량 · 회복 지점 · 서성이기 · 시작 상태 (2026-11-11, 작은 일 둘째 묶음 뒤)
+
+둘째 묶음의 손 정답이 저수준 `upsert_event`/`patch_event_page` 를 써야 했거나, 도구가 거절해 한 번 더 불러야 했던 것들. 도구에서 고쳤다.
+
+- **`place_battle_blocker`**: `graphic` 없이 부르면 부대 선두 적 이름으로 걷기 칩을 찾고, 맞는 칩이 없으면 거절하지 않고 어느 종으로도 안 읽히는 「검은 두건 괴물」 칩(`tex_easyrpg_charset_monster3` #2)으로 세운 뒤
+  어느 칩인지와 바꾸는 법을 답에 적는다(전: 「동굴 박쥐」 부대는 `graphic` 없이는 놓을 수 없었다). 빈 칸만 채운 `graphic` 은 안 준 것이다(전: 투명 블로커). 슬라임·주민으로 세우지 않는다는 2026-09-27 규칙은 그대로다.
+- **`set_map_properties`**: 제한 깃발을 맨 위에 준 것(`disableSave:true`)도 받는다 — 그 깃발 하나만 바꾼다. 스키마에는 올리지 않았다(모든 칸을 채우는 모델이 `false` 를 채워 켜 둔 제한을 끄지 않게).
+  바꿀 것이 없을 때의 거절 글은 받은 키와 맞는 모양(`flags:{disableSave:true}`)을 적는다.
+- **`place_chest`**: `contents.count`(기본 1, 0·빈 칸은 1). 「포션 3개가 든 상자」가 한 호출이다.
+- **`place_savepoint{mode:"heal"}`**: 저장·체크포인트 없이 파티 전원 회복만 하는 자리(«회복의 샘»). 기본(`both`)·`heal:true`(회복하고 저장)는 전과 같다.
+- **`configure_npc_patrol{type:"random"|"fixed"}`**: 서성이기·제자리는 어느 NPC 에나 — 그 사람을 보이는 모든 페이지의 움직임만 바꾸고 대사·조건·자리는 그대로다. 순찰 경로(`directions`)의 보호 검사(단일 대사 페이지)는 그대로이고,
+  거절 글이 `type` 으로 가는 길을 알려 준다. **새 도구(`set_npc_movement`) 대신 이 도구를 넓힌 까닭:** 이 도구는 이미 v2 풀·영어 글·이름표에 있어 요청 묶음을 안 건드리고 바로 닿고, 새 이름을 더하면 레지스트리·이름표·카탈로그·풀 네 곳을 고쳐야 한다.
+- **`set_session_start`**: 빈 값(`gold:0` · `inventory:{}`)은 그 칸 하나만 보냈을 때만 뜻이 있고, 빈 파티(`partyActorIds:[]`)는 언제나 무시한다 — 「회복약 3개를 갖고 시작」 한 번에 시작 소지금·파티가 지워지지 않는다(전: 파티 0명).
+- **영어 글**: `toolTextEn.ts` 에 `set_session_start` · `duplicate_event` · `script_cutscene` · `place_battle_blocker` 를 더하고 `place_chest` · `place_savepoint` · `configure_npc_patrol` · `set_map_properties` 를 고쳤다.
+  앞의 넷은 `src/ai/v2/request/toolGroups.ts` 의 `V2_POOL_ONLY` 로 v2 풀에 들어온 도구다(위 「작은 일의 도구」 1번) — 풀에는 있었지만 영어 글이 없어 한국어 설명이 그대로 갔다.
+
+증거: `test/toolsOneCallGaps.test.ts` · `test/aiV2OneCallToolText.test.ts`. 둘째 묶음 여섯 일(`boss-line-starter` · `no-save-built` · `heal-spring-built` · `npc-wander-starter` · `npc-still-starter` · `start-items-starter`)에 한 호출 정답을 `accept` 로 더했다(판정은 그대로).
+
+||||||| a3d74a1f4d
+## 이미 있는 NPC 가 하던 일은 남는다 — `create_quest` · `add_companion` · `set_shop_stock` (2026-11-11, 작은 일 둘째 묶음 뒤)
+
+작은 일 둘째 묶음의 손 정답을 만들다 본 결함 셋 — 셋 다 「있던 내용을 망가뜨린다」.
+
+1. **`create_quest` 가 기존 NPC 를 통째로 맡았다.** 「약초 배달」 뒤 여관 주인은 여관 없이 「고맙네.」만 말했고, 의뢰인의 화자는 「의뢰인」, 완료 뒤 대사는 「자네 덕분에 살았어」, 움직임은 fixed 가 됐다.
+   같은 사람에게 의뢰를 하나 더 얹으면 앞 의뢰의 페이지가 지워졌다(페이지 id 에 의뢰 키가 없어 「다시 컴파일」로 읽었다 — `built` 의 떠돌이 상인은 의뢰 셋 가운데 마지막 것만 받을 수 있었다).
+2. **`add_companion{target:{eventId}}` 가 마지막 페이지에 붙였다.** 조건이 아직 안 맞는 페이지(「보스를 잡은 뒤」)라 말을 걸어도 안 돌았다. 파티에 넣는 길도 없었다(`addFollower` 뿐).
+3. **`set_shop_stock` 이 재고를 통째로만 바꾸고, 상점이 없던 페이지(의뢰 페이지)마다 새 상점을 넣었다.**
+
+고친 것(도구에서):
+- **의뢰는 그 사람 페이지 뒤에 덧붙는다** (`src/project/quest/questHost.ts`). 그 사람 페이지는 한 글자도 안 바꾼다. 의뢰 페이지는 「지금 도는 그 사람 페이지」(`pageAtStart`)를 본떠 그림·움직임·몸 크기를 물려받고,
+  화자는 그 사람 대사의 화자, 얼굴 명령도 그대로 앞에 둔다. 조건은 걸려 있는 동안만 맞는다 — 제안 `[시작 전]`, 진행 `[시작 뒤·완료 전]`, 대화 단계 `[그 단계가 열린 동안]`. 끝나면 그 사람 자신의 페이지가 다시 돈다
+  (완료 페이지는 `dialogue.afterComplete` 를 줬거나 다시 받는 의뢰일 때만). 그 사람의 가게 일(`shop`·`inn`·`openCraftShop`)은 제안·진행(할 일이 남았을 때)·대화 단계·완료 페이지 끝에 이어진다.
+  페이지 id 는 `<이벤트>_<의뢰 키>_offer|active|done|talkN…` — 한 사람이 의뢰를 여럿 준다(나중에 얹은 것부터 받는다).
+- **옛 배치를 만나면 고친다.** 키 없는 `<이벤트>_offer|_active|_done` 이 있는 사람에게 의뢰를 얹으면: 제안 페이지 앞머리에 접혀 있던 인사(상점 포함)를 `<이벤트>_base` 페이지로 되살리고,
+  옛 의뢰 페이지는 키가 든 id·걸려 있는 동안만 맞는 조건으로 바꾸고, 진행·완료 페이지에도 가게 일을 잇고, 화자 「의뢰인」을 그 사람 이름으로 바꾼다.
+- **장 구성기는 옛 배치 그대로다.** `author_jrpg_chapter` 는 방금 자기가 세운 NPC 에 의뢰를 얹고, 폴른 스타 다듬기(`chronoBell.ts` `polishLines`)가 그 페이지 순서·기본 문구에 기댄다 —
+  스키마에 없는 내부 인자 `takeOverNpcs:true` 로 옛 배치를 쓴다(`compileQuest(…, { takeOverNpcs })`). 모델에게는 안 보인다.
+- **`add_companion`**: `target.eventId` 는 게임을 막 시작한 상태에서 말을 걸면 도는 페이지(`src/project/eventPageNow.ts` `pageAtStart`)에 붙인다. 답에 몇 번째 페이지인지 적는다.
+  `joinParty:true` 는 `changeParty add` 도 넣고, 기존 NPC 에는 합류 뒤 떠나는 마지막 페이지(이 이벤트가 안 쓰는 셀프 스위치)를 붙인다. `who` 를 비우면(빈 문자열 채움 포함) 그 사람의 이름·걷는 그림으로 배우를 만든다.
+  «말을 걸면 동료가 되어 파티에 들어오게» 는 한 호출이다. 새로 세우는 합류 이벤트의 「합류 후」 페이지가 앞에 있어 영원히 가려지던 것도 고쳤다(뒤로 옮김).
+- **`set_shop_stock`**: `add:[{itemId,…}]` 는 지금 파는 것에 더하고 `remove:[id]` 는 그것만 뺀다. `stock` 은 전처럼 통째로 바꾼다. 빈 배열은 안 준 것이다(`stock:[]` + `add` 가 재고를 비우지 않는다).
+  이미 상점인 이벤트는 상점이 있던 페이지만 고친다. 상점이 죽은 페이지(뒤 페이지에 늘 가려짐)에만 있으면 실제로 도는 그 페이지에도 둔다(2026-08-24 결함 유지). 상점이 하나도 없던 사람은 말할 수 있는 페이지마다 생긴다.
+- 세 도구의 새 거절·결과 글은 영어다. `toolTextEn.ts` 의 세 항목을 고쳤다.
+
+증거: `test/toolsKeepNpcContent.test.ts`(픽스처 `starter`·`built`). 둘째 묶음의 `join-party-starter`·`stock-add-built`·`stock-remove-built` 에 한 호출 정답을 `accept` 로 더했다(판정은 그대로).
+남은 것: 의뢰 페이지가 본뜨는 것은 「시작 상태에서 도는 페이지」 하나다 — 그 사람에게 조건 페이지가 여럿이면 의뢰가 걸려 있는 동안 그 조건 대사는 가려진다(전과 같다).
+
+||||||| f93a342235
 ## 조사 지점은 `place_examine_hotspots` — 물건 이름으로 놓는다 · 글만 나오는 조사는 장면이 아니다 (2026-11-11, 작은 일 재측정)
 
 작은 일 재측정(Terra, main 84a7fa331a)에서 통과는 했지만 «완료» 로 못 끝난 두 일 — `sign-starter`(표지판을 읽으면 글) · `examine-fireplace-built`(벽난로를 조사하면 글).
@@ -716,6 +764,33 @@ golden: 123/153 이 `furnish_outdoor_area` 글/스키마만 바뀜(실리고 빠
 **한계.** 한 규칙·갈래 아래 대상 없는 문제가 턴 사이에 한 개 ↔ 여러 개로 바뀌면 열쇠가 `rule` ↔ `rule:<글>` 로 바뀌어 그 항목은 새로 센다. 대상을 실을 수 있는 검사는 `target` 을 주는 것이 답이다.
 
 **증거.** golden 같다(153). turnTrace: 다섯 장면 가운데 whole-game · continue · continue-short 의 마지막 `todo` 줄 안 `meta.*.key` 만 바뀐다(8 · 9 · 9개, 예 `game:[게임 검사 실행] 이 요청으로…` → `game:실행`). 시험 `test/aiV2FindingKeys.test.ts`(열쇠 · 겹칠 때 가르기 · 글이 바뀌어도 같은 항목과 시도 수 · 옛 열쇠 옮기기 · 시작 저장본 대조는 글까지).
+
+
+## 관문 글은 모델에게 영어로 — 보고는 한국어 그대로 (2026-11-11, 리팩토링 F4)
+
+**무엇이 문제였나.** 끝맺음 관문 항목의 글은 한국어 줄이었고 할 일 항목은 220자에서 잘린다 — 긴 줄은 «무엇이 틀렸나» 만 남고 고치는 호출이 잘려 나갔다(«… 맵은 100칸 이상(실내는 10×10 이상)·타일 6종 이상·다른 맵과 다른…»).
+제작 메모가 섞인 줄도 그대로 모델에게 갔다(«… 2026-10-29 3c Argon 이 r»). 값싼 모델은 한국어 피드백을 덜 따른다(「모델에게 가는 글은 영어」 2026-10-30).
+
+**규칙.**
+
+- 영어 글은 `judge/findingEn.ts` 한 곳에 있다 — 규칙(·갈래)마다 한 줄, 151개(게임 검사 82 · 출하 차단 68 · 자동 플레이 1). 꼴: `[<묶음> <영어 이름>] 무엇이 틀렸나. Refs: <대상>. 고치는 호출.`
+  **우리가 쓰는 글**은 ASCII 만이다. 고치는 호출은 한국어 줄이 이르는 그 도구 그대로다.
+- **대상 = «이름» + id · 맵 · 칸.** 프로젝트의 이름(「별의 봉인」 · 「잿불 마을」)은 자료다 — 저장된 그대로 `«»` 안에 싣고 바로 뒤에 id 를 적는다: 이벤트 `«별의 봉인» (ev_chain_kh3jdia_7 @ map_x (6,5))`, 맵·기록·스위치·엔딩 `«잿불 마을» (map_ember_village)`.
+  id 만 주면 모델이 그것이 누구인지 알려고 조회부터 한다 — 요청·할 일·도구 결과는 모두 이름으로 말한다(리드 결정 2026-11-11). 이름은 `refNames(지금 프로젝트, 시작 저장본)` 이 찾는다(맵 · 이벤트 · database 기록 · 스위치 · 변수 · 공통 이벤트 · 엔딩 · 퀘스트; 이번 턴에 지워진 것은 시작 저장본에서). 이름표에 없는 id 는 id 만 실린다.
+  차례는 `Finding.target`, 그다음 줄과 증거 속의 id(`map_…` `ev_…` `sw_…` `actor_…` …)와 `(x,y)`, 최대 6개. 증거가 ASCII 이고 수가 들었으면 통째로 싣는다(`counted=0 need=6 uncounted=1`, 그 안의 id 에도 이름이 붙는다 — `«봄을 기다리는 노래» (ending_8hw9rp): lines=4 …`).
+  표의 글에 이미 든 예시 id(`state_poison`)는 되풀이하지 않는다. 대상은 첫 문장 바로 뒤에 온다 — 항목 글을 앞에서 잘라 보이는 자리에서도 문제가 먼저 읽힌다. 잘라 보이는 자리(상태 카드의 Do now 120자 · Still open 50자, 「아직 막힘이 아니다」 답 80자)는 영어 글이면 상한이 1.8배다(`modelTextCut` — 216 · 90 · 144자): 영어는 같은 뜻에 글자가 더 들어, 같은 상한이면 고치는 호출이 잘린다.
+  **다음 걸음(지금은 다리다):** 줄·증거에서 id 를 정규식으로 다시 읽지 않게, 판정이 `Finding.target`/`evidence` 에 대상을 직접 싣는다 — 지금 `target` 을 다는 곳은 이벤트·맵 하나를 짚는 검사뿐이다.
+- 한 규칙이 여러 검사를 묶은 것(`romance-gap`)은 표가 고치는 도구를 알 수 없다 — 한국어 줄이 이르는 도구 이름을 그대로 싣는다(`Fix that part with set_title_screen.`).
+  출하 차단의 갈래는 증거 머리에서 읽는다(`requested-feature-missing` = 「chaser: …」 · `bundled-picture` = 「titleScreen.…」/「endings[…]…」).
+- **흐름.** `finishGate.gateProblems(findings, names)` 가 `V2GateProblem.en = findingEn(finding, names)` → `gates.syncGateItems` 가 `TodoItem.en` 으로(글이 바뀌면 같이 바뀌고, 영어 글이 없어지면 지운다) → 모델에게 보이는 자리는 `modelText(item) = item.en ?? item.content`:
+  재주입 글(`loop/continuation`) · `todo` 도구의 답(`loop/todoTools`) · 상태 카드의 Do now/Still open(`turn/modelHooks`) · 영어 체크리스트(`todoStore.viewEn`). 함수가 붙이는 묶음 이름도 영어다(`[function checks]` · `[critique]` · `[request skeleton]`).
+- **한국어 그대로인 것.** 항목의 `content`(보고 표 · 화면의 할 일 · `execution_status` · 저장된 `assistantTodo`)와 한국어 체크리스트(`view`). 항목 글에서 맵 id·도구 이름을 읽는 코드(`loop/nextCall` · `turn/carryOver` · `gates.namedTools`)도 `content` 를 읽는다 — 영어 글은 판정에 쓰지 않는다.
+- 표에 없는 규칙은 `en` 이 없고 한국어 줄이 전과 같이 간다. **새 검사를 더하면 표에 한 줄을 더한다** — 탐침이 소스의 `tagged("game"|"ship", …)` · 출하 차단 id 144곳을 훑어 표에 없는 규칙을 센다(지금 0), 시험은 표의 모든 글이 ASCII 인지, 이름이 `«»` 안에만 있는지 본다.
+- **아직 한국어로 가는 관문 글**(이 조각 밖): 장소 고치기 묶음(`place:<mapId>` — 기계 검사·비평 글을 이어 붙인 줄) · 칸 배치 문제(`placeLayoutProblems`) · 요청 뼈대 항목 · 화면 검수·검토자 항목(F5). 장면 손질 줄(`[scene …]`)은 처음부터 영어다(인용한 대사만 한국어).
+
+**증거.** golden 같다(153) · 판정 줄 덤프(3,066칸 · 1,264줄) 다른 칸 0 — 한국어 줄은 그대로다. 말뭉치 관문 문제 1,405건 모두 영어 글이 있고 `«»` 밖에 ASCII 밖 글자 0, 이름이 실린 것 565건, 이름 없이 id 만 실린 대상 0, 가장 긴 것 642자(표 글 길이 중앙 251 · 최대 456).
+turnTrace(5개 장면 · 376줄)는 79줄이 바뀐다: 모델에게 가는 줄(재주입 · 상태 카드 · `todo` 답)의 관문 항목 글이 영어가 되고 묶음 이름이 `[function checks]` 가 된 것 55줄, 그 글이 든 data 의 해시만 바뀐 상태 줄 21줄, 마지막 `todo` 줄 3줄(항목 8 · 9 · 9개에 `en` 칸이 더해지고 그 밖은 같다). small-write · question 장면은 같다.
+시험 `test/aiV2FindingEn.test.ts`. **재지 않은 것:** 실제 모델이 영어 글을 더 잘 따르는지 — 리드가 Terra 로 잰다(게임 하나 전/후).
 
 ## 작은 요청의 끝맺음 — 게임을 짓는 턴에만 청사진 끝맺음을 돈다 (2026-11-11, 작은 일 기준선)
 

@@ -58,7 +58,7 @@ const createQuestFlags: ToolDefinition = {
 
 const createQuest: ToolDefinition = {
   name: "create_quest",
-  description: "선언적 QuestDef로 플레이 가능한 퀘스트 이벤트·진행 플래그·목표 메타를 만든다. 27종 프리셋과 custom 조합을 지원. 목표 9종: talk,collect,kill,reach,inspect,deliver,choice,escort,craft. 여러 단계 프리셋은 order:sequence 필수. deliver는 실제 수량을 확인하고 소비, choice는 cost/troopId/effects와 오답(completes:false), escort는 실제 동행 후 destination 도착, craft는 실제 recipeId 성공만 완료한다. repeatable은 완료 후 재수락, requiresQuestKeys는 선행 의뢰, worldChanges는 보고 후 기존 NPC 대사 변화. def.dialogue/step.label로 이야기와 목표를 저작. 프리셋별 구조는 요청의 blueprint와 스키마를 지켜라. 생성 후 같은 ID로 define_quest를 호출하지 마세요. define_quest는 그래프 메타용. 실제 자동 완주 증거 없이는 검증 완료라고 보고하지 마세요.",
+  description: "선언적 QuestDef로 플레이 가능한 퀘스트 이벤트·진행 플래그·목표 메타를 만든다. 27종 프리셋과 custom 조합을 지원. 목표 9종: talk,collect,kill,reach,inspect,deliver,choice,escort,craft. 여러 단계 프리셋은 order:sequence 필수. deliver는 실제 수량을 확인하고 소비, choice는 cost/troopId/effects와 오답(completes:false), escort는 실제 동행 후 destination 도착, craft는 실제 recipeId 성공만 완료한다. repeatable은 완료 후 재수락, requiresQuestKeys는 선행 의뢰, worldChanges는 보고 후 기존 NPC 대사 변화. 기존 NPC(eventId)를 의뢰인·대상으로 쓰면 그 사람이 하던 일(대사·상점·여관·화자 이름·움직임)은 그대로 두고 의뢰 페이지만 뒤에 덧붙인다 — 의뢰가 끝나면 그 사람 대사로 돌아간다(dialogue.afterComplete 를 주면 그 대사). 한 사람이 의뢰를 여럿 줄 수 있다. def.dialogue/step.label로 이야기와 목표를 저작. 프리셋별 구조는 요청의 blueprint와 스키마를 지켜라. 생성 후 같은 ID로 define_quest를 호출하지 마세요. define_quest는 그래프 메타용. 실제 자동 완주 증거 없이는 검증 완료라고 보고하지 마세요.",
   mode: "write",
   // 처치(kill) 목표의 필드 적 그림은 퀘스트 컴파일러가 무리(troop)에서 스스로 고른다 — 모델이 칩을 고르지 않았으니 그림 선택 관문 대상이 아니다
   // (2026-10-24 g3-kill-slimes·g2-wolf-bounty: 「슬라임」 칩으로 거절됐다). 목표에 graphic 을 직접 주면 관문을 그대로 받는다.
@@ -76,7 +76,8 @@ const createQuest: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const def = parseQuestDef(args.def);
     try {
-      const result = compileQuest(draft, def);
+      // takeOverNpcs 는 스키마에 없는 내부 인자 — 장 구성기가 방금 만든 NPC 를 통째로 맡길 때만 넘긴다(모델에게는 안 보인다).
+      const result = compileQuest(draft, def, { takeOverNpcs: args.takeOverNpcs === true });
       return {
         summary: `퀘스트 '${def.title}' 컴파일 — 이벤트 ${result.eventsCreated}개, 단계 ${def.steps.length}개`,
         data: { questId: def.key, kind: "steps", stepCount: def.steps.length, flags: result.flags, eventsCreated: result.eventsCreated },
