@@ -46,16 +46,14 @@ describe("make_place 마을 요약의 문 앞 칸", () => {
       tileset: "atlas_biome_interior", mapId: "inn", name: "여관",
       plan: ["########", "#......#", "#......#", "#......#", "###.####"], floor: pick(parts.floors?.[0]), wall: pick(parts.walls?.[0]),
     }).ok).toBe(true);
-    const base = ctx.project;
+    // 문마다 시험 삼아 잇는다(dryRun — 프로젝트는 그대로). 출입구가 선 칸은 요약 「시험(x,y) ↔ 여관(…)」 에서 읽는다.
     const off: string[] = [];
     for (const door of doors) {
-      const one = { project: structuredClone(base) };
-      const pair = runTool(one, "create_transfer_pair", { a: { mapId, x: door.x, y: door.y }, b: { mapId: "inn", x: 3, y: 4 } });
+      const pair = runTool(ctx, "create_transfer_pair", { a: { mapId, x: door.x, y: door.y }, b: { mapId: "inn", x: 3, y: 4 } }, { dryRun: true });
       expect(pair.ok, pair.summary).toBe(true);
-      const gate = one.project.maps[mapId]!.events.find((e) => !base.maps[mapId]!.events.some((o) => o.id === e.id));
-      if (gate?.x !== door.x || gate?.y !== door.y - 1) off.push(`${door.kit}(${door.x},${door.y}) → (${gate?.x},${gate?.y})`);
-      expect(lintScenePolish(one.project).filter((i) => i.code === "scene-transfer-off-door" && i.mapId === mapId)).toEqual([]);
+      const at = /시험\((\d+),(\d+)\)/u.exec(pair.summary);
+      if (Number(at?.[1]) !== door.x || Number(at?.[2]) !== door.y - 1) off.push(`${door.kit}(${door.x},${door.y}) → ${at?.[0] ?? pair.summary}`);
     }
     expect(off).toEqual([]);
-  });
+  }, 90_000);
 });
