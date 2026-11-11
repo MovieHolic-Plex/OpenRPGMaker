@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **193쪽 / 8198KB / 약 2,410,436 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **193쪽 / 8214KB / 약 2,415,241 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -32,7 +32,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-validation.md` | 64KB | 17KB | 419 | ~18,019 |
 | `openwiki/editor-workflows-misc.md` | 91KB | 33KB | 636 | ~25,541 |
 | `openwiki/editor-workshop.md` | 76KB | 15KB | 337 | ~22,898 |
-| `openwiki/harnesses/assistant-capability.md` | 87KB | 10KB | 598 | ~26,579 |
+| `openwiki/harnesses/assistant-capability.md` | 103KB | 15KB | 692 | ~31,327 |
 | `openwiki/harnesses/building-kit.md` | 99KB | 4KB | 984 | ~29,868 |
 | `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
 | `openwiki/harnesses/monster-collect-species.md` | 63KB | 18KB | 353 | ~19,132 |
@@ -341,7 +341,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L375` 바로 플레이 게임 (2026-10-23)
   - `L479` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2-refactor.md` — 23KB · 122줄 · ~6,686 토큰
+### `openwiki/assistant-v2-refactor.md` — 23KB · 122줄 · ~6,743 토큰
 
 - `L6` 왜
 - `L15` 목표 구조
@@ -1661,7 +1661,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L43` 하네스 목록
 - `L61` 다른 실행기와 공유하는 하네스 목록
 
-### `openwiki/harnesses/assistant-capability.md` — 87KB · 598줄 · ~26,579 토큰 · 통째읽기 잘림
+### `openwiki/harnesses/assistant-capability.md` — 103KB · 692줄 · ~31,327 토큰 · 통째읽기 잘림
 
 - `L7` 실행 경로
   - `L9` 여덟 장르 제작 실측 (2026-10-08)
@@ -1673,23 +1673,24 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L146` InferHub DeepSeek V4.1 Flash 고정
   - `L190` 500 실측 재채점 (2026-10-23)
 - `L213` 작은 일 30가지 — 값싼 모델 + v2 를 일 단위로 재기 (2026-11-11)
-  - `L236` 시작 상태(픽스처) — 일마다 새로 만든다
-  - `L249` 판정 — 저장 문서 전/후만 본다
-  - `L304` 자기검사 (`small-jobs-selfcheck`) — 판정을 먼저 증명한다
-  - `L314` 실행기 (`small-jobs`)
-  - `L340` 기준선 — 2026-11-11, main `46274bc35f`, Terra high + v2
-  - `L383` 다시 재기 — 2026-11-11, main `84a7fa331a` (B1~B5a · 예산 · 끝맺음 수정 뒤)
-- `L414` 시각 검수
-- `L429` 산출물과 확장
-- `L435` 최초 실측 — 2026-10-05
-- `L443` 제품 회귀와 오류 표시 controls (2026-10-05)
-- `L449` 수정 확인 — 2026-10-05
-- `L453` 월드맵 생성 MP4 증거
-  - `L473` 대사창 읽기 보조 실조수 시험 — Argon 5문장 (2026-10-17, `set_dialogue_system`)
-  - `L487` 미연시 추가 화면 실조수 시험 — Argon 5문장 (2026-10-17, `set_vn_extras`)
-- `L503` 장면 교훈 묶음 (2026-10-22)
-  - `L541` 첫 판 결과 (r2 기준선 → r3 수정 후)
-  - `L588` 루프 1 숫자 (Sonnet 5.5 high 조수 대용, 2026-10-22)
+  - `L239` 시작 상태(픽스처) — 일마다 새로 만든다
+  - `L252` 판정 — 저장 문서 전/후만 본다
+  - `L307` 자기검사 (`small-jobs-selfcheck`) — 판정을 먼저 증명한다
+  - `L317` 실행기 (`small-jobs`)
+  - `L343` 기준선 — 2026-11-11, main `46274bc35f`, Terra high + v2
+  - `L386` 다시 재기 — 2026-11-11, main `84a7fa331a` (B1~B5a · 예산 · 끝맺음 수정 뒤)
+  - `L417` 둘째 묶음 — 새 가족 35가지 (`--set 2`, 2026-11-11)
+- `L508` 시각 검수
+- `L523` 산출물과 확장
+- `L529` 최초 실측 — 2026-10-05
+- `L537` 제품 회귀와 오류 표시 controls (2026-10-05)
+- `L543` 수정 확인 — 2026-10-05
+- `L547` 월드맵 생성 MP4 증거
+  - `L567` 대사창 읽기 보조 실조수 시험 — Argon 5문장 (2026-10-17, `set_dialogue_system`)
+  - `L581` 미연시 추가 화면 실조수 시험 — Argon 5문장 (2026-10-17, `set_vn_extras`)
+- `L597` 장면 교훈 묶음 (2026-10-22)
+  - `L635` 첫 판 결과 (r2 기준선 → r3 수정 후)
+  - `L682` 루프 1 숫자 (Sonnet 5.5 high 조수 대용, 2026-10-22)
 
 ### `openwiki/harnesses/battle-backdrop.md` — 11KB · 83줄 · ~3,401 토큰
 
