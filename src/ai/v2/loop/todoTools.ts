@@ -8,7 +8,7 @@
 //       · 성공한 쓰기 전후 차이(맵·이벤트·아이템·적 그룹 id)를 진행 중 항목(또는 인자 todoId 의 항목) refs 에 묶는다(refs.ts)
 import type { PiToolExecResult, PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { PiAssistantV2Env } from "../shared/env";
-import { modelText, parseTodoCheck, TODO_CHECK_SCHEMA, type CheckResult, type TodoCheck, type TodoItem } from "../todo/types";
+import { modelText, modelTextCut, parseTodoCheck, TODO_CHECK_SCHEMA, type CheckResult, type TodoCheck, type TodoItem } from "../todo/types";
 import { checkLabel, isOpen, TODO_MAX_ATTEMPTS, type TodoInput, type TodoPhaseInput, type TodoStore } from "./todoStore";
 import { callKey, effectFingerprint, maskVolatile, type TodoLoop } from "./continuation";
 import { bindRefs, changedSince, checkItem, indexProject, isAmbiguous, refsFromDiff, refsLabel } from "./refs";
@@ -288,7 +288,7 @@ function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: TodoTool
               try { nc = nextForItem(item, env.ctx.project, verbNames); } catch { nc = undefined; }
               if (nc) store.meta.set(item.id, { ...meta, blockBounced: true, nextCall: { verb: nc.verb, text: formatCall(nc) } });
               env.emit({ type: "execution_status", name: "v2.todo.block_bounce", ok: false, summary: `할 일 ${item.id} 막힘 되돌림 — 거절된 호출 없이 막힘 요청${nc ? ` → ${nc.verb}` : ""}` });
-              result = done(`Not blocked yet — no tool has refused ${item.id} «${modelText(item).slice(0, 80)}». Block is for when a tool refused the work (quote the refusal) or the needed art is still missing after searching with other words. ${nc ? `Next call: ${formatCall(nc)}. ` : ""}Verbs that usually do it: set_start_position (start spot) · list_spatial_designs then stamp_object, and upsert_event with an action trigger on that cell (an examinable board, sign, coffin or corpse) · upsert_event pages with switch/variable conditions (a line only after the player heard X; count a clue only once) · upsert_common_event (open something when a count reaches N). Call load_tools first if a verb is not in your list. If the attempt is refused, send todo block again with the refusal — the second block is accepted.`, false);
+              result = done(`Not blocked yet — no tool has refused ${item.id} «${modelTextCut(item, 80)}». Block is for when a tool refused the work (quote the refusal) or the needed art is still missing after searching with other words. ${nc ? `Next call: ${formatCall(nc)}. ` : ""}Verbs that usually do it: set_start_position (start spot) · list_spatial_designs then stamp_object, and upsert_event with an action trigger on that cell (an examinable board, sign, coffin or corpse) · upsert_event pages with switch/variable conditions (a line only after the player heard X; count a clue only once) · upsert_common_event (open something when a count reaches N). Call load_tools first if a verb is not in your list. If the attempt is refused, send todo block again with the refusal — the second block is accepted.`, false);
               break;
             }
             const cascaded = store.block(item, reason, "model");

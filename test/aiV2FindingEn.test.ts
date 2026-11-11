@@ -5,7 +5,7 @@ import { FINDING_EN_RULES, findingEn } from "@/ai/v2/judge/findingEn";
 import { gateProblems } from "@/ai/v2/judge/finishGate";
 import { syncGateItems } from "@/ai/v2/judge/gates";
 import { TodoStore } from "@/ai/v2/loop/todoStore";
-import { modelText } from "@/ai/v2/todo/types";
+import { modelText, modelTextCut } from "@/ai/v2/todo/types";
 
 const NON_ASCII = /[^\x20-\x7e]/u;
 
@@ -93,6 +93,14 @@ describe("gate items carry the English text for the model and the Korean line fo
     expect(store.viewEn(10)).not.toContain("게임 검사");
     expect(store.view(10)).toContain("[게임 검사 날씨]");
     expect(store.view(10)).not.toContain("[game weather]");
+  });
+
+  it("cuts English item text at 1.8 times the Korean limit, so a cut view still reaches the fixing call", () => {
+    const store = new TodoStore();
+    const [gate, plain] = syncGateItems(store, [...gateProblems([tagged("ship", "maps-min", "세는 맵이 0/6장이다 — 6장 더.", { evidence: "counted=0 need=6 uncounted=1" })]), { key: "place:map_a:place", text: "가".repeat(300), source: "gate" as const }], new Set()).opened;
+    expect(modelTextCut(gate!, 120)).toHaveLength(216);
+    expect(modelTextCut(gate!, 120)).toContain("Build new places with make_place{spec:");
+    expect(modelTextCut(plain!, 120)).toHaveLength(120);
   });
 
   it("an item without English falls back to its content, and a gate problem that loses its English drops the old one", () => {
