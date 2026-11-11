@@ -23,6 +23,7 @@ import { text, recorded, PATH_LOW_LEVEL, BLUEPRINT_PROGRESS_VERBS } from "./supp
 import { makeVerbContext } from "./context";
 import { blueprintVerbs } from "./verbs/blueprint";
 import { installSessionHooks } from "./sessionHooks";
+import { retireSeedStart } from "../blankStart";
 import { placeVerbs } from "./verbs/place";
 import { peopleVerbs } from "./verbs/people";
 import { puzzleVerbs } from "./verbs/puzzle";
@@ -51,6 +52,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     catch (error) { result = text({ ok: false, summary: `${tool.name} 실패: ${error instanceof Error ? error.message : String(error)}` }); }
     // 짓는 단계마다 청사진과 대조한 진행을 덧붙인다(2026-10-28) — 모델이 어느 항목을 구현했고 무엇이 남았는지 매번 본다.
     if (BLUEPRINT_PROGRESS_VERBS.has(tool.name)) { const note = blueprintProgressNote(env.ctx.project); if (note) result = { ...result, content: [...result.content, { type: "text", text: note }] }; }
+    result = await settleSeedStart(result);
     if (!recorded.get(env)?.has(id)) {
       const first = result.content.find((c) => c.type === "text") as { text: string } | undefined;
       let parsed: { ok?: boolean; summary?: string; notFailure?: boolean } = {};
@@ -61,6 +63,18 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     }
     return result;
   } });
+  // 빈 시작 맵 치우기(blankStart.ts retireSeedStart): 쓰기 하나가 끝날 때마다 본다 — 실제 장소가 따로 생겼으면 시작을 그리로 옮기고 빈 맵을 지운다.
+  // 지금 보는 맵이 그 빈 맵이었으면 새 장소로 바꾼다(다음 짓기가 빈 맵이 아니라 그 장소와 이어지게).
+  const settleSeedStart = async (result: PiToolExecResult): Promise<PiToolExecResult> => {
+    let settled: ReturnType<typeof retireSeedStart>;
+    try { settled = retireSeedStart(c.run); } catch { return result; }
+    if (!settled.notes.length) return result;
+    if (settled.to && !env.ctx.project.maps[env.ctx.currentMapId ?? ""]) (env.ctx as { currentMapId?: string }).currentMapId = settled.to;
+    env.emit({ type: "execution_status", name: "v2.seed_start", ok: true, summary: `빈 시작 맵 정리: ${settled.notes.join(" · ")}` });
+    await env.checkpoint("retire_seed_start");
+    return { ...result, content: [...result.content, { type: "text", text: `[Start map] ${settled.notes.join("; ")}.` }] };
+  };
+  const afterWrite = (tool: PiToolShape): PiToolShape => ({ ...tool, async execute(id, params, signal) { return settleSeedStart(await tool.execute(id, params, signal)); } });
   const verbs = [writeBlueprint, ...(lean ? [readSpecs] : []), ...(requestWorld() ? [buildWorld] : []), buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, reviewLayout, findPiecesVerb, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, ...(buildsWholeGame(env.ctx.project, String(task ?? "")) || readRequest(String(task ?? "")).art ? [generateArtVerb] : []), placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
     // 음악만 바라는 요청은 맵·이벤트를 쓰는 동사를 싣지 않는다 — 보기·묻기만(2026-10-30 r12: 추격 음악 요청에 상자를 찍었다).
     .filter((tool) => !audioOnly(String(task ?? "")) || MUSIC_ONLY_VERBS.has(tool.name))
@@ -83,7 +97,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   // 게임 도구 묶음은 요청 글과 프로젝트를 같이 본 기록에서 읽는다(게임 하나를 잇는 «계속» 도 받는다).
   const gameTools = classifyRequest(t, env.ctx.project).tools.game;
   const pool = gameTools && !audioOnly(t);
-  return gameTools || wantsMusicTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? [...verbs, ...createGameTools(gameEnv, t, { pool }).map((tool) => escalate(flattenWrapperTool(tool, gameEnv.record)))] : verbs;
+  return gameTools || wantsMusicTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? [...verbs, ...createGameTools(gameEnv, t, { pool }).map((tool) => afterWrite(escalate(flattenWrapperTool(tool, gameEnv.record))))] : verbs;
 }
 
 /** 음악만 바라는 요청에 남기는 v2 동사 — 맵 보기·사용자에게 묻기. 곡 걸기는 음악 묶음(set_game_audio)이 한다. */
