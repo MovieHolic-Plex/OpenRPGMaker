@@ -1763,6 +1763,44 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 - 비용 주의: Claude Code 의 `total_cost_usd` 는 claude-haiku-5-5 를 Opus 단가로 매긴다(실측 $2.28 = 같은 토큰 × Opus 정가). Haiku 는 토큰 × 공개 정가($0.10/$0.50)로 센다.
 - 결과 페이지 `~/claude-viz/cheap-model-check.html`.
 
+## 워커 루프에 차례 주기 — 30초 넘는 침묵 없이 (2026-11-12)
+
+**왜.** 워커는 실행 스트림에 5초마다 heartbeat 를 끼우고(`scripts/lib/piAgentStream.ts`), 편집기는 30초 동안 줄이 없으면 스트림을 끊고 이어 받는다
+(`src/ai/piAgent/client.ts` `PI_AGENT_STALE_MS`). 그런데 장소 짓기와 출구 마감은 동기 작업을 내리 돌아 그동안 heartbeat 타이머가 못 돈다.
+사막 게임(2026-11-11 `purpose-desert4`, 맵 8장)의 턴 1 호스트 로그: «event loop blocked» 69초(`build_places`) · 49초(`build_blueprint_path`) ·
+31초와 35초(출구 마감 두 번). 네 번 모두 편집기가 스트림을 끊고 이어 받았다. 그 자체는 멀쩡한 동작이지만 쓸데없는 왕복이고,
+시험 구동기에서는 이어 받기마다 연결이 하나씩 남아 턴이 멈췄다(`openwiki/harnesses/assistant-capability.md` 「실행 스트림과 연결 수」).
+감시 시간(30초)은 그대로 둔다 — 침묵을 줄이는 쪽이 맞다.
+
+**무엇.** `src/ai/v2/shared/yieldLoop.ts` `yieldToLoop()` — 타이머 한 번(밀린 heartbeat 가 먼저 돈다) + 즉시 큐 한 번(그 줄이 소켓으로 나가고,
+들어온 적용·그림 응답이 읽힌다). 긴 동기 작업 **사이**에서만 부른다. 장소 하나·단계 하나는 그대로 동기라 순서와 결과는 같다.
+
+| 부르는 곳 | 파일 |
+|---|---|
+| `build_places` 의 장소와 장소 사이, 빈 시작 맵 치우기 앞, 위험한 장소 채우기 사이 | `tools/sessionHooks.ts` `session.buildPlaces` |
+| 목적표가 짓는 방과 방 사이 | `place/programRooms.ts` `layProgramRooms`(이제 약속을 돌려준다) |
+| 출구·이동 칸 마감의 단계와 단계 사이(맵마다) | `finish/lanes/index.ts` `runLaneStages`(이제 약속을 돌려준다) |
+| 끝맺음 단계 하나가 끝날 때마다 | `finish/index.ts` `recordedRun` |
+
+출구 마감의 31~35초는 긴 단계 하나가 아니었다 — 맵마다 도는 단계 셋(`landing-pockets` · `puzzle-gates` · `guide-texts`)이 맵 8장에 각각 10초쯤(맵 한 장에 1.2~1.9초)이다.
+
+**잰 것 (모델 없음).** `bun scripts/qa/assistant-v2/loopGaps.mts <project.json | live.json> [seed]` — 저장된 게임의 청사진을 실제 동사
+(`write_blueprint` → `build_places` → `build_blueprint_path` → 끝맺음)로 다시 지으며 250ms 타이머가 늦게 돌아온 구간을 잰다.
+`purpose-desert4` 의 청사진, 같은 씨앗, 전/후를 같은 때 나란히(기계 부하 35~49):
+
+| | 전 (`d09366e18b`) | 후 |
+|---|---|---|
+| 가장 긴 막힘 | 42~47초 (`build_places`) | 12초 (`build_blueprint_path`) |
+| 30초 이상 | 2번 (`build_places` · 출구 마감 33초) | 0번 |
+| 10초 이상 | 3~4번 | 1번 |
+| 맵 8장 타일·이벤트 해시 · DB 해시 · 단계 기록 15줄 해시 | — | 전과 같다 (청사진의 `updatedAt` 만 벽시계라 다르다) |
+
+**남은 것.** `build_blueprint_path` 는 `story/blueprintPath.ts buildBlueprintPath` 동기 호출 하나다 — 위 측정에서 11~12초, 실제 판(다른 세션 여덟이 도는 기계)에서 49초였다.
+나누려면 그 함수의 단계 고리 안에서 차례를 줘야 한다(함수가 약속을 돌려주게 된다).
+
+**새 단계를 더할 때.** 단계 하나가 30초를 넘지 않게 한다. 맵마다 도는 단계는 맵 한 장에 몇 초 안이어야 한다 — `[v2-lane] <id> took Ns in total` 과
+`[pi-agent-stream] event loop blocked Ns` 줄이 호스트 로그(`HARNESS_HOST_LOG`)에 남는다. 긴 고리를 가진 빌더는 고리 안에서 `await yieldToLoop()` 를 부른다.
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).

@@ -105,8 +105,9 @@ async function save() {
   return page.getByTestId('toolbar-save').getAttribute('data-autosave-kind');
 }
 const busy = () => page.evaluate(() => Boolean(window.__oprnAiBridge?.status().turnBusy)).catch(() => true);
-// 편집기 탭 → 호스트의 열린 TCP 연결 수(리눅스 ss; 없으면 null). 브라우저는 호스트 하나에 6개까지만 연다 — 6이면 다음 저장·적용 응답이 줄을 서서
-// 턴이 말없이 멈춘다(2026-11-11: 이어 받기마다 스트림 연결이 하나씩 남던 턴 1 멈춤). 턴 기록·state.json 에 남겨 멈춤을 계측 없이 읽는다.
+// 편집기 탭 → 호스트의 열린 TCP 연결 수(리눅스 ss; 없으면 null). 브라우저는 호스트 하나에 6개까지만 연다 — 여섯이 모두 쓰이는 중이면 다음 저장·적용
+// 응답이 줄을 서서 턴이 말없이 멈춘다(2026-11-11: 이어 받기마다 스트림 연결이 하나씩 남던 턴 1 멈춤). 턴 기록·state.json 에 남겨 멈춤을 계측 없이 읽는다.
+// 쉬는 keep-alive 연결도 세므로(페이지를 막 읽은 뒤에는 6이 흔하다) 판정은 streams.live 로 하고, 이 수는 «2분 넘게 조용한데 6» 일 때만 증거다.
 const hostPort = () => new URL(host.url).port;
 function hostSockets() {
   try {
@@ -116,6 +117,16 @@ function hostSockets() {
 }
 let socketPeak = null;
 const sampleSockets = () => { const n = hostSockets(); if (n !== null) socketPeak = Math.max(socketPeak ?? 0, n); return n; };
+// 실행 스트림 수: 열림(POST + 이어 받기) · 이어 받기 · 이어 받기에 밀려 끊긴 앞 가지 · 닫힘 · 오류 · 아직 읽고 있는 것(live).
+// live 는 실행 하나에 1이어야 한다(턴이 끝나면 0). 이어 받을 때마다 늘면 앞 스트림이 연결을 쥔 채 남는 것이다 — 5면 호스트당 연결 상한에 닿는다.
+function streamCounts(events) {
+  const agent = events.filter(e => e.type === 'stream_open' && e.endpoint === 'agent');
+  const count = type => events.filter(e => e.type === type).length;
+  const chat = events.filter(e => e.type === 'stream_open' && e.endpoint === 'chat').length;
+  const open = agent.length, superseded = count('stream_superseded'), closed = Math.max(0, count('stream_closed') - chat), errors = count('stream_error');
+  return { open, resumes: agent.filter(e => e.resume).length, superseded, closed, errors, live: Math.max(0, open - superseded - closed - errors) };
+}
+let livePeak = 0;
 async function cards(selector = CARD_SELECTOR) {
   return page.evaluate(selector => [...document.querySelectorAll(selector)].filter(node => node.offsetParent !== null).map(node => ({
     testid: node.dataset.testid, text: node.innerText.slice(0, 1500),
@@ -137,10 +148,10 @@ async function waitSettle(mark, startedAt, graceMs = 20000) {
         await sleep(5000);
         if (await open() && await busy()) return 'awaiting-answer';
       }
-      const count = type => value.events.filter(e => e.type === type).length;
+      const streams = streamCounts(value.events);
+      livePeak = Math.max(livePeak, streams.live);
       writeState({ phase: 'turn', elapsedMs: Date.now() - startedAt, events: value.events.length,
-        lastTool: value.events.filter(e => e.type === 'tool_start').at(-1)?.name ?? null,
-        streams: { open: value.events.filter(e => e.type === 'stream_open' && e.endpoint === 'agent').length, superseded: count('stream_superseded'), closed: count('stream_closed') }, hostSockets: sampleSockets() });
+        lastTool: value.events.filter(e => e.type === 'tool_start').at(-1)?.name ?? null, streams, hostSockets: sampleSockets() });
     }
     await sleep(3000);
   }
@@ -176,7 +187,7 @@ try {
     renameSync(resolve(out, 'inbox', next), resolve(out, 'done', next));
     const startedAt = Date.now(), requestMark = requests.length, errorMark = pageErrors.length;
     let sentAt = 0;
-    socketPeak = null;
+    socketPeak = null; livePeak = 0;
     if (kind === 'stop') {
       const receipt = await persistenceCheck(`final-${step}`);
       await editor.context.close();
@@ -254,11 +265,9 @@ try {
       requests: requests.slice(requestMark), errors: events.filter(e => ['error', 'stream_error'].includes(e.type)).map(e => e.message),
       pageErrors: pageErrors.slice(errorMark), toolCalls: tools.filter(t => t.type === 'tool_end'), pendingCards: pending, answer, draftReports,
       done: events.filter(e => e.type === 'done').map(e => ({ stats: e.stats, usage: e.usage })),
-      // 실행 스트림: 열림(POST 1 + 이어 받기) · 이어 받기에 밀려 끊긴 앞 가지 · 닫힘 · 오류, 그리고 탭 → 호스트 연결 수(턴 중 최대 · 가라앉은 순간).
-      // 이어 받기가 있었는데 superseded 가 0 이면 앞 스트림이 살아 연결을 쥐고 있다 — sockets.peak 가 6이면 그 턴은 연결이 모자라 멈춘 것이다.
-      streams: { open: events.filter(e => e.type === 'stream_open' && e.endpoint === 'agent').length, resumes: events.filter(e => e.type === 'stream_open' && e.resume).length,
-        superseded: events.filter(e => e.type === 'stream_superseded').length, closed: events.filter(e => e.type === 'stream_closed').length,
-        errors: events.filter(e => e.type === 'stream_error').length },
+      // 실행 스트림(streamCounts)과 탭 → 호스트 연결 수(턴 중 최대 · 가라앉은 순간). 이어 받기가 있었는데 superseded 가 그보다 적거나 livePeak 가 2를 넘으면
+      // 앞 스트림이 살아 연결을 쥐고 있다 — livePeak 5 면 그 턴은 연결이 모자라 멈춘 것이다.
+      streams: { ...streamCounts(events), livePeak: Math.max(livePeak, streamCounts(events).live) },
       sockets: { peak: socketPeak, atSettle: socketsAtSettle },
       statusNotes: events.filter(e => e.type === 'execution_status').map(e => `${e.name}: ${String(e.summary ?? '').slice(0, 300)}`).slice(-40),
       // 턴 안의 시간표 — [보낸 뒤 ms, 종류, 이름]. 도구 호출 수가 적은데 턴이 길 때 어디서 시간이 갔는지(모델 대기·도구·끝맺음 단계) 가른다.
