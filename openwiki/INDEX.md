@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **193쪽 / 8182KB / 약 2,405,705 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **193쪽 / 8183KB / 약 2,405,972 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 75KB | 19KB | 487 | ~22,146 |
-| `openwiki/assistant-v2.md` | 334KB | 48KB | 1213 | ~101,576 |
+| `openwiki/assistant-v2.md` | 335KB | 48KB | 1213 | ~101,678 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,766 |
 | `openwiki/beodeul-city.md` | 240KB | 19KB | 1189 | ~73,036 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
@@ -341,7 +341,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L375` 바로 플레이 게임 (2026-10-23)
   - `L479` 조수와 평가 (2026-10-25)
 
-### `openwiki/assistant-v2-refactor.md` — 19KB · 105줄 · ~5,680 토큰
+### `openwiki/assistant-v2-refactor.md` — 20KB · 105줄 · ~5,845 토큰
 
 - `L6` 왜
 - `L15` 목표 구조
@@ -351,7 +351,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L73` 진행표
 - `L101` 알려 둘 것
 
-### `openwiki/assistant-v2.md` — 334KB · 1213줄 · ~101,576 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 335KB · 1213줄 · ~101,678 토큰 · 통째읽기 잘림
 
 - `L16` 요청 의도 — 요청을 한 번만 가른다 (2026-11-11, 리팩토링 B1)
 - `L46` 지시문·도구 예산 — 작은 일에는 그 일의 카드와 도구만 (2026-11-11, 리팩토링 B1 뒤)
