@@ -10,7 +10,6 @@ import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { blockersOf, reachFrom } from "../judge/eventReach";
 import type { BuildRun } from "../shared/types";
-import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 
 type Cell = { x: number; y: number };
 type Obj = Record<string, unknown>;
@@ -83,9 +82,7 @@ function fixLandingPockets(project: Project, mapId: string): string[] {
 
 /** 끝맺음 lanes 용: 사본에서 고쳐 바뀌었으면 바꿔 넣는다. */
 export function checkLandingPockets(run: BuildRun, mapId: string): string[] {
-  // 타일셋·업로드 자산은 원본을 가리키는 사본(projectClone.ts) — 여기서는 맵의 이벤트만 고친다. 통째 structuredClone 은 맵 한 장에 1.3~1.9초였고
-  // 맵마다 세 단계가 불러 출구 마감이 30초 넘게 워커 루프를 막았다(2026-11-12 CPU 프로파일: 마감 48초 중 47초가 이 세 사본).
-  const next = cloneProjectSharingSharedDictionaries(run.ctx.project);
+  const next = structuredClone(run.ctx.project) as Project;
   const notes = fixLandingPockets(next, mapId);
   if (notes.length) run.ctx.project = next;
   return notes;
