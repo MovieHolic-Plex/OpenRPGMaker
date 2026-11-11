@@ -54,7 +54,7 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
     closed.push(item);
   }
   const opened = [
-    ...store.append("함수 검사", problems.filter((p) => p.source === "gate").map((p) => ({ content: p.text, key: p.key })), "gate"),
+    ...store.append("함수 검사", problems.filter((p) => p.source === "gate").map((p) => ({ content: p.text, key: p.key, ...(p.en ? { en: p.en } : {}) })), "gate"),
     ...store.append("비평", problems.filter((p) => p.source === "critic").map((p) => ({ content: p.text, key: p.key })), "critic"),
   ];
   const capped = capReopened(store, opened, "같은 문제");
