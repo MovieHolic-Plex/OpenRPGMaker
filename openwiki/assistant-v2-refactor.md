@@ -45,7 +45,7 @@
 
 1. `bun scripts/qa/assistant-v2/golden.mts <out.json>` 을 앞·뒤로 찍어 `--diff` 가 「같다 (126 요청)」 — 요청 42개 × 프로젝트 상태 3개의 지시문 블록·처음 싣는 도구·나중 싣는 도구가 한 글자도 안 바뀌었다.
 2. 바꾼 파일 범위 `tsc`.
-3. `gh workflow run ci-vitest-files --ref <브랜치> -f files="<test/aiV2*.test.ts …>"` — GitHub 러너에서 v2 테스트 45파일. 실패는 main 의 최신 ci-full 과 이름으로 대조해 새 실패 0(2026-11-10 기준 기존 실패 10건/7파일). ci-fast 는 v2 테스트를 돌리지 않는다.
+3. `gh workflow run ci-vitest-files --ref <브랜치> -f files="<test/aiV2*.test.ts …>"` — GitHub 러너에서 v2 테스트 45파일. agent/* 브랜치에서는 실패해도 run 이 초록이다(2026-11-11, 오너 메일 차단) — run conclusion 이 아니라 로그 마지막 줄 `RESULT: PASS|FAIL n files (…)` 를 읽는다. 실패는 main 의 최신 ci-full 과 이름으로 대조해 새 실패 0(2026-11-10 기준 기존 실패 10건/7파일). ci-fast 는 v2 테스트를 돌리지 않는다.
 
 장소·경로 빌더를 옮긴 조각은 `bun scripts/qa/assistant-v2/worldProbe.mts <out>` 도 앞·뒤로 돌린다.
 
