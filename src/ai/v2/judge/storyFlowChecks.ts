@@ -1,4 +1,5 @@
 // 이야기 흐름 결함 찾기 — 끊긴 연결(켜는 곳 없는 조건), 바로 끝나는 엔딩, 건너뛸 수 있는·죽은 단서, 느린·사라지는 추격자, 복사한 맵, 날마다 같은 사람.
+import { asksPerDay } from "../request/readers";
 import type { Project } from "@/project/types";
 import { chaseCellMs } from "@/project/chaseTempo";
 import { PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
@@ -186,7 +187,7 @@ export function duplicateMaps(before: Project, after: Project): string[] {
 
 /** 날마다 달라지는 대사: 요청이 부른 사람마다 날짜 변수(호감 변수 말고) 값이 셋 이상 갈리는지(2026-10-25 G13: 서연은 7일 치, 지훈은 그대로). */
 export function flatPerDayPeople(project: Project, task: string): string[] {
-  if (!/날마다|매일|하루하루|하루마다|일차마다|날짜마다|요일마다|날이 바뀔 때마다|\d+\s*일차|each day|every day|per day/iu.test(task)) return [];
+  if (!asksPerDay(task)) return [];
   const people = new Map<string, { values: Set<string>; ids: string[] }>();
   for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
     const pages = (ev.pages ?? []) as unknown as Obj[];
