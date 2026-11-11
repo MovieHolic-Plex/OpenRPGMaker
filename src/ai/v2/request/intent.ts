@@ -9,7 +9,7 @@ import { PLACE_BUILD_WORDS } from "./place";
 import { MAKE_GAME_WORDS, ONE_ROOM_GAME, SINGLE_PLACE, asksToChange, asksToContinue, bareDescription, isEscapeBlueprint, isFreshProject, linkedExistingMaps, wholeGameAsk } from "./scope";
 import { maskNames, userText } from "./text";
 import { matchToolGroups, type ToolGroups } from "./toolGroups";
-import { gameTopics, jobFacets, smallJobTools, type GameTopic, type JobFacets } from "./topics";
+import { gameTopics, jobFacets, recordTopicsNamed, smallJobTools, type GameTopic, type JobFacets } from "./topics";
 
 /**
  * 요청의 범위 — 하나만 고른다.
@@ -98,7 +98,7 @@ export function readRequest(task: string | undefined): RequestText {
  * 요청과 프로젝트를 같이 본 분류 — (요청 글, 프로젝트의 빈/청사진 상태)마다 한 번만 계산한다.
  * 작은 요청은 게임 하나로 시작한 프로젝트에서도 작은 요청이다. 「계속」「남은 거 마저」「처음에 부탁한 대로 끝까지」처럼 이어 하라는 요청만 청사진의 게임 하나 범위를 물려받는다.
  */
-export function classifyRequest(task: string | undefined, project: Pick<Project, "maps" | "endings" | "gameBlueprint">): RequestIntent {
+export function classifyRequest(task: string | undefined, project: Pick<Project, "maps" | "endings" | "gameBlueprint"> & Partial<Pick<Project, "database">>): RequestIntent {
   const text = readRequest(task);
   const blueprint = project.gameBlueprint;
   const fresh = isFreshProject(project as Project);
@@ -106,7 +106,10 @@ export function classifyRequest(task: string | undefined, project: Pick<Project,
   const escape = blueprint ? isEscapeBlueprint(blueprint) : false;
   // 장소 짓기로 읽힌 글이 이미 있는 맵 둘을 잇기만 하라는 것이면 작은 일이다(맵 이름은 프로젝트마다 달라 기억 열쇠에 넣는다).
   const linked = text.scope === "place" ? linkedExistingMaps(text.own, project) : [];
-  const key = [task ?? "", fresh ? 1 : 0, blueprint ? `b:${blueprint.request ?? ""}` : "", escape ? 1 : 0, linked.join("|")].join("\u0000");
+  // 작은 일이 이름으로 부른 기록(아이템·장비·적)의 주제 — 글의 낱말로는 모르는 것을 프로젝트의 기록 이름으로 안다. 장소 짓기·게임 하나·소리만 바라는 요청은 보지 않는다.
+  const small = text.scope === "edit" || text.scope === "continue" || text.scope === "question" || linked.length > 0;
+  const named = small && !text.audio.only ? recordTopicsNamed(text.own, project.database).filter((topic) => !text.topics.includes(topic)) : [];
+  const key = [task ?? "", fresh ? 1 : 0, blueprint ? `b:${blueprint.request ?? ""}` : "", escape ? 1 : 0, linked.join("|"), named.join("|")].join("\u0000");
   return remember(INTENT_MEMO, key, () => {
     // 청사진은 게임 하나를 만들 때만 생긴다 — 첫 요청 글이 남아 있지 않은 옛 청사진도 게임 하나로 본다.
     const inherits = text.scope === "continue" && !!blueprint && (first!.scope === "wholeGame" || !blueprint.request?.trim());
@@ -125,9 +128,11 @@ export function classifyRequest(task: string | undefined, project: Pick<Project,
     // find_events·get_event·patch_event_page·move_event 가 만들어지지도 않았다(도구 6개: inspect·add_event·add_people·read_specs·ask_user·load_tools).
     const editsBuilt = editOnly && !text.audio.only;
     const widen = !text.tools.game && (inherits || editsBuilt);
+    const tools = widen ? matchToolGroups(text.topic, { wholeGame: inherits, editsBuilt, audio: text.audio, combat: text.combat }) : text.tools;
+    const topics = named.length ? [...text.topics, ...named] : text.topics;
     return {
-      ...text, scope, why, wholeGame, fresh,
-      ...(widen ? { tools: matchToolGroups(text.topic, { wholeGame: inherits, editsBuilt, audio: text.audio, combat: text.combat }) } : {}),
+      ...text, scope, why, wholeGame, fresh, tools, topics,
+      ...(named.length ? { smallTools: smallJobTools(topics, text.job, tools, text.audio, text.combat) } : {}),
       oneRoom: text.oneRoom || !!first?.oneRoom || escape,
       editOnly,
     };

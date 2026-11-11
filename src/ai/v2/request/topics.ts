@@ -5,12 +5,13 @@ import type { AudioAsk } from "./audio";
 import { STATE_WORDS, type CombatAsk } from "./combat";
 import { kw, kwEnd } from "./text";
 import { LINK_MAPS_WORDS } from "./scope";
-import { ENDING_WORK_WORDS, SCRIPT_TIER, SHOP_NOUN, SHOP_WORDS, V2_DRESS_TOOLS, type ToolGroups } from "./toolGroups";
+import { ENDING_WORK_WORDS, QUEST_WORDS, SCRIPT_TIER, SHOP_NOUN, SHOP_WORDS, V2_DRESS_TOOLS, type ToolGroups } from "./toolGroups";
 
 /** 게임 카드 줄의 주제. */
 export type GameTopic =
   | "script" | "items" | "equipment" | "affection" | "time" | "rename" | "gates" | "status" | "weather" | "staging" | "examine" | "maps" | "battle" | "boss"
-  | "flashback" | "feelings" | "ending" | "snow" | "forest" | "search" | "fieldEnemy" | "replace" | "opening" | "readable" | "vanish" | "patrol" | "door" | "removeMap" | "chest" | "hero" | "scene";
+  | "flashback" | "feelings" | "ending" | "snow" | "forest" | "search" | "fieldEnemy" | "replace" | "opening" | "readable" | "vanish" | "patrol" | "door" | "removeMap" | "chest" | "hero" | "scene"
+  | "enemy" | "save" | "light" | "start" | "gameOver" | "quest" | "copy";
 
 const TOPIC_WORDS: readonly (readonly [GameTopic, RegExp])[] = [
   ["script", SCRIPT_TIER.words],
@@ -43,7 +44,27 @@ const TOPIC_WORDS: readonly (readonly [GameTopic, RegExp])[] = [
   ["removeMap", /맵[^.!?\n]{0,8}(?:지워|지우|삭제|없애)|안\s*쓰는\s*맵|중복\s*맵|remove.*map/iu],
   ["hero", /주인공|파티|동료|직업|레벨|능력치|hero|party/iu],
   ["scene", /장면|컷신|컷씬|연출|scene|cutscene/iu],
+  // 아래는 게임 카드 줄이 없는 주제 — 작은 일에 그 일을 하는 도구를 처음부터 싣는 데만 쓴다.
+  ["enemy", /쓰러뜨리|처치하|물리치면|전리품|드롭|enemy|monster/iu],
+  ["save", /세이브|저장|save\s?point/iu],
+  ["light", /어둡|어두운|밝게|밝혀|캄캄|컴컴|조명|\b(?:dark|dim|bright)/iu],
+  ["start", /시작\s*(?:위치|지점|자리|장소|맵)|시작하게|시작할\s*때|start(?:ing)?\s+(?:position|point|map|items?|gold)/iu],
+  ["gameOver", /게임\s*오버|game\s*over/iu],
+  ["quest", QUEST_WORDS],
+  ["copy", /똑같은|복사|복제|\b(?:copy|duplicate)/iu],
 ];
+
+/** 데이터베이스 기록 종류 → 그 기록을 고치는 주제. */
+const RECORD_TOPICS: readonly (readonly ["items" | "equipment" | "enemies", GameTopic])[] = [["items", "items"], ["equipment", "equipment"], ["enemies", "enemy"]];
+/**
+ * 요청 글이 이름으로 부른 기록의 주제 — 「철 검의 공격력을 12로」의 철 검(장비), 「얼음의 파수꾼의 HP를 두 배로」의 얼음의 파수꾼(적), 「해독초는 팔지 않게」의 해독초(아이템).
+ * 낱말로는 무슨 기록인지 알 수 없는 글도 프로젝트의 기록 이름으로는 안다(띄어쓰기 무시, 두 글자 이상).
+ */
+export function recordTopicsNamed(own: string, database: Partial<Record<"items" | "equipment" | "enemies", readonly { readonly name?: string }[]>> | undefined): readonly GameTopic[] {
+  if (!database) return [];
+  const flat = own.replace(/\s+/gu, "");
+  return RECORD_TOPICS.filter(([kind]) => (database[kind] ?? []).some((record) => { const name = (record.name ?? "").replace(/\s+/gu, ""); return name.length >= 2 && flat.includes(name); })).map(([, topic]) => topic);
+}
 
 /** 한 요청의 주제 — 이름·대사를 가린 글과 이미 정한 전투 판정을 받는다. */
 export function gameTopics(topic: string, combat: CombatAsk): readonly GameTopic[] {
@@ -57,7 +78,7 @@ export function gameTopics(topic: string, combat: CombatAsk): readonly GameTopic
 const PERSON = String.raw`npc|주민|주인|상인|점원|경비|병사|촌장|손님|사람|아이|노인|동료|행인|학생|선생|직원|한\s*명|두\s*명|세\s*명|몇\s*명`;
 const ADD = String.raw`세워|세우|추가|배치|두어|둬\s*줘|놓아|넣어|만들|등장|서\s*있게`;
 const ADD_PERSON = new RegExp(`(?:${PERSON})[^.!?\\n]{0,14}(?:${ADD})`, "iu");
-const SELLS = new RegExp(String.raw`상점|잡화점|${SHOP_NOUN}|팔게|팔기|파는|팔아|판매|구입|살\s*수|사게|\b(?:shop|sell|sells|selling)\b`, "iu");
+const SELLS = new RegExp(String.raw`상점|잡화점|${SHOP_NOUN}|팔게|팔기|팔지|파는|팔아|판매|구입|살\s*수|사게|\b(?:shop|sell|sells|selling)\b`, "iu");
 const MOVE_OR_REMOVE = /옮겨|옮기|이동시|치워|지워|지우|삭제|없애|빼\s*줘/u;
 /** 조건·대사·사건을 짜 달라는 낱말 — 이벤트 카드와 이벤트 쓰기 도구가 필요하다. */
 const LOGIC = /하면|으면|[가-힣]면\s|되게|하게|받게|주게|열리|조건|스위치|변수|퀘스트|의뢰|이벤트|대사|대화|말\s*걸|말을\s*걸|선택지|전투|싸우|잠긴|퍼즐|컷신|장면|회상|엔딩|script|event|dialogue|quest/iu;
@@ -87,24 +108,39 @@ const SMALL_EDIT: readonly string[] = ["move_object", "remove_event", "restore_e
 /** 사건을 짜는 일의 도구 — 쓰고(upsert_event) 돌려 본다(run_scene_test). 쪽 더하기는 자리가 남을 때. */
 const SMALL_LOGIC: readonly string[] = ["upsert_event", "run_scene_test", "add_event_page"];
 const SMALL_PEOPLE: readonly string[] = ["list_npc_graphics", "read_npc_layout"];
-/** 주제가 부르는 도구 — 첫째가 그 일을 하는 도구, 나머지는 받침(읽기·자리 찾기). */
+/**
+ * 주제가 부르는 도구 — 첫째가 그 일을 하는 도구, 나머지는 받침(읽기·자리 찾기).
+ * 줄의 차례가 싣는 차례다: 작은 놓기·맵 도구(수백~2천 자)가 먼저, 이름을 댄 기록을 고치는 도구(4천~8천 자)가 다음, 넓은 낱말로 맞는 무거운 도구가 마지막.
+ * 글자 상한에서 큰 도구 하나가 작은 도구 여럿을 밀어내지 않게 한다(실측: 「새 아이템 … 가격은 30G」에서 author_script 가 upsert_item 을 밀어냈다).
+ */
 const SMALL_BY_TOPIC: Readonly<Partial<Record<GameTopic, readonly string[]>>> = {
-  items: ["get_database_records", "upsert_item"],
-  gates: ["get_database_records", "upsert_item"],
+  start: ["set_start_position", "set_session_start"],
+  copy: ["duplicate_event"],
+  gameOver: ["set_game_over"],
   chest: ["place_chest", "find_empty_ground"],
+  save: ["place_savepoint", "set_map_properties"],
   maps: ["create_transfer_pair", "list_map_locations"],
-  battle: ["upsert_troop", "simulate_battle", "get_database_records"],
-  fieldEnemy: ["place_field_enemy", "find_empty_ground"],
+  weather: ["set_scene_mood"],
+  light: ["set_scene_mood"],
+  boss: ["place_battle_blocker"],
   examine: ["place_examine_hotspots", "list_spatial_designs", "stamp_object", "find_empty_ground"],
-  ending: ["list_endings", "define_ending"],
   scene: ["add_scene"],
+  ending: ["list_endings", "define_ending"],
+  battle: ["upsert_troop", "simulate_battle"],
+  equipment: ["upsert_equipment"],
+  enemy: ["upsert_enemy"],
+  quest: ["create_quest"],
+  items: ["upsert_item"],
+  gates: ["upsert_item"],
   hero: ["upsert_actor"],
-  rename: ["set_map_properties", "replace_text_in_project", "upsert_actor"],
+  fieldEnemy: ["place_field_enemy", "find_empty_ground"],
   opening: ["set_title_screen", "set_project_settings"],
-  equipment: ["get_database_records"],
-  status: ["get_database_records"],
+  rename: ["set_map_properties", "replace_text_in_project", "upsert_actor"],
   script: ["author_script", "edit_script"],
 };
+const SMALL_TOPIC_ORDER = Object.keys(SMALL_BY_TOPIC) as GameTopic[];
+/** 기록을 고치는 주제 — 기록 읽기(get_database_records, 작다)를 주제 도구보다 먼저 싣는다. */
+const RECORD_WORK: ReadonlySet<GameTopic> = new Set(["items", "gates", "equipment", "enemy", "battle", "status", "hero"]);
 /** 작은 일의 처음 싣는 도구는 이 수를 넘기지 않는다 — load_tools 와 todo 두 자리를 더해 20개다. */
 const SMALL_MAX = 18;
 
@@ -115,7 +151,7 @@ const SMALL_MAX = 18;
 export function smallJobTools(topics: readonly GameTopic[], facets: JobFacets, groups: ToolGroups, audio: AudioAsk, combat: CombatAsk): readonly string[] {
   // 무작위 조우를 말했으면 조우 표가, 가게를 말했으면 진열 도구가 먼저다.
   // 주제마다 첫 도구(그 일을 하는 도구)를 먼저 모으고 받침 도구는 그 뒤에 — 주제가 여럿이어도 상자의 place_chest 가 다른 주제의 받침 도구에 밀리지 않는다.
-  const lists = topics.map((key) => SMALL_BY_TOPIC[key] ?? []);
+  const lists = SMALL_TOPIC_ORDER.filter((key) => topics.includes(key)).map((key) => SMALL_BY_TOPIC[key]!);
   const byTopic = [...(combat.encounters ? ["set_encounter_table"] : []), ...(facets.sells ? ["set_shop_stock"] : []), ...lists.flatMap((list) => list.slice(0, 1)), ...lists.flatMap((list) => list.slice(1))];
   const dress = groups.dress ? [...V2_DRESS_TOOLS, "move_object"] : [];
   const terrain = groups.terrain ? ["list_spatial_designs", "stamp_object", "fill_region"] : [];
@@ -123,6 +159,7 @@ export function smallJobTools(topics: readonly GameTopic[], facets: JobFacets, g
   const store = groups.store ? groups.extra.filter((name) => name.startsWith("store_")) : [];
   const logic = facets.logic ? SMALL_LOGIC : [];
   // 소리를 말한 요청은 소리 도구가 주제 도구보다 먼저다 — 「엔딩 크레딧 음악 넣고 …」에서 곡 찾기·걸기가 글자 상한에 밀리지 않게.
-  const want = [...SMALL_BASE, ...(facets.edits ? SMALL_EDIT : []), ...logic.slice(0, 2), ...sound, ...byTopic, ...dress, ...terrain, ...(facets.people ? SMALL_PEOPLE : []), ...logic.slice(2), ...store];
+  const records = topics.some((key) => RECORD_WORK.has(key)) ? ["get_database_records"] : [];
+  const want = [...SMALL_BASE, ...(facets.edits ? SMALL_EDIT : []), ...logic.slice(0, 2), ...sound, ...records, ...byTopic, ...dress, ...terrain, ...(facets.people ? SMALL_PEOPLE : []), ...logic.slice(2), ...store];
   return [...new Set(want)].slice(0, SMALL_MAX);
 }

@@ -99,6 +99,12 @@ const V2_GAME_TOOLS: readonly string[] = [
   "remove_map",
 ];
 
+/**
+ * 어느 묶음에도 없지만 풀에는 두는 도구 — 이름으로 부르면(또는 load_tools 로) 실리고, 작은 일은 주제가 맞을 때 처음부터 싣는다(topics.ts).
+ * 작은 일 둘째 묶음(2026-11-11)의 손 풀이가 부르는데 v2 어디에서도 닿지 않던 넷: 시작 소지품·이벤트 복제·컷신 각본·길을 막고 싸우는 적.
+ */
+const V2_POOL_ONLY: readonly string[] = ["set_session_start", "duplicate_event", "script_cutscene", "place_battle_blocker"];
+
 // tile_erase: 끝맺음 검사(gameChecks.ts «다리·출입구·방 쓰임»)가 «tile_erase 로 걷는다» 고 이르는데 v2 도구 풀에 없어 부를 수 없었다 — 이름으로 부르면 실린다.
 const V2_TERRAIN_TOOLS: readonly string[] = ["list_spatial_designs", "stamp_object", "fill_region", "tile_erase"];
 
@@ -124,6 +130,9 @@ export const SHOP_WORDS = new RegExp(String.raw`상점|${SHOP_NOUN}|팔게|팔�
 // 「동쪽 끝에서」「맨 끝에」의 「끝에」는 자리다 — 이야기의 끝이 아니다.
 export const ENDING_WORK_WORDS = /엔딩|결말|끝나|끝내|끝이|(?<!(?:쪽|편|맨|줄|길|복도|골목|다리|방|맵)\s?)끝에|마지막 날|마지막에|마지막 장면|막 끝|막이|제\s*\d+\s*막|에필로그|타이틀로|게임 오버|게임이 끝|ending|epilogue/iu;
 
+/** 의뢰·심부름·모아 오기처럼 퀘스트를 말하는 낱말. */
+export const QUEST_WORDS = /퀘스트|의뢰|심부름|부탁|임무|보상|일지|할 일|모으|모아|모았|수집|가져가|가져오|가져다|찾아 ?(주|오|와)|구해 ?(오|와)|quest/iu;
+
 /**
  * 무거운 게임 도구 묶음 — 요청 낱말이 그 일을 말할 때만 싣는다.
  * 왜 (2026-10-25 조수 단독 게임 G12/G14 후속): 연애 게임 「서연 대사를 날마다 다르게」 한 턴에 도구 56개 스키마가 21만 자였고, 그중
@@ -136,7 +145,7 @@ const GAME_TOOL_GROUPS: readonly { readonly words: RegExp; readonly tools: reado
     tools: ["upsert_class", "upsert_skill", "upsert_enemy", "upsert_troop", "upsert_troop_battle_page", "set_encounter_table", "place_field_enemy", "upsert_equipment", "simulate_battle"] },
   { words: SHOP_WORDS, tools: ["upsert_equipment"] },
   { words: ENDING_WORK_WORDS, tools: ["list_endings", "define_ending"] },
-  { words: /퀘스트|의뢰|심부름|부탁|임무|보상|일지|할 일|모으|모아|모았|수집|가져가|가져오|가져다|찾아 ?(주|오|와)|구해 ?(오|와)|quest/iu, tools: ["create_quest"] },
+  { words: QUEST_WORDS, tools: ["create_quest"] },
 ];
 
 const GROUPED = new Set(GAME_TOOL_GROUPS.flatMap((g) => g.tools));
@@ -192,6 +201,6 @@ export function storeCard(groups: ToolGroups): string {
 export function v2ToolPool(): string[] {
   return [...new Set([
     ...V2_GAME_TOOLS, ...GAME_TOOL_GROUPS.flatMap((g) => g.tools), ...FALLEN_TIERS.flatMap((t) => t.tools), ...MUSIC_TIER.tools,
-    ...V2_TERRAIN_TOOLS, ...V2_DRESS_TOOLS, ...STORE_TIERS.flatMap((t) => t.tools), "list_spatial_designs", "stamp_object",
+    ...V2_TERRAIN_TOOLS, ...V2_DRESS_TOOLS, ...STORE_TIERS.flatMap((t) => t.tools), "list_spatial_designs", "stamp_object", ...V2_POOL_ONLY,
   ])].filter((name) => getTool(name));
 }
