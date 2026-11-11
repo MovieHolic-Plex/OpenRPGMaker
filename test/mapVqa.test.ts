@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { buildArtGaps, parseArtReview, toolReportsIn } from "@/harnesses/assistant-capability/node/mapVqa/artGaps";
 import { caught, plant, RECIPE_CLASSES, type Recipe } from "@/harnesses/assistant-capability/node/mapVqa/decoys";
 import { factsText, isBlankMap, mapFacts } from "@/harnesses/assistant-capability/node/mapVqa/facts";
+import { parsePatterns } from "@/harnesses/assistant-capability/node/mapVqa/patterns";
 import { buildTally, loadReviewer, parseReview, type MapReview } from "@/harnesses/assistant-capability/node/mapVqa/verdict";
 import { extractJson, VISUAL_JUDGE } from "@/harnesses/assistant-capability/node/visualJudge";
 import { createBlankProject } from "@/project/defaults";
@@ -179,5 +180,23 @@ describe("없는 그림 장부", () => {
     expect(rows[0]).toMatchObject({ fromReviewer: 2, fromTools: 0, unsureOnly: false, instead: ["맨바닥"], names: ["좌판", "노점"] });
     expect(rows[1]).toMatchObject({ fromReviewer: 1, fromTools: 1, unsureOnly: false });
     expect(rows[2]).toMatchObject({ wrongTheme: 1, instead: ["battle-scenery-forest"] });
+  });
+});
+
+describe("종류 안의 되풀이 묶기", () => {
+  const lines = [
+    { id: 1, label: "마을", severity: "major", evidence: "문이 막혔다" },
+    { id: 2, label: "마을", severity: "blocker", evidence: "문이 막혔다" },
+    { id: 3, label: "항구", severity: "major", evidence: "물이 걸어진다" },
+  ];
+  it("모든 줄이 정확히 한 묶음에 들어야 답이고, 건수·맵 수는 배정에서 센다", () => {
+    const groups = parsePatterns(JSON.stringify({ groups: [{ pattern: "걸어지는 물", fix_hint: "물 칸을 막는다", ids: [3] }, { pattern: "막힌 문", fix_hint: "문 칸을 연다", ids: [1, 2] }] }), lines)!;
+    expect(groups.map(group => [group.pattern, group.count, group.blocker, group.maps])).toEqual([["막힌 문", 2, 1, 1], ["걸어지는 물", 1, 0, 1]]);
+  });
+  it("빠진 줄 · 두 번 든 줄 · 없는 번호 · 한국어가 아닌 이름은 답이 아니다", () => {
+    expect(parsePatterns(JSON.stringify({ groups: [{ pattern: "막힌 문", ids: [1, 2] }] }), lines)).toBeNull();
+    expect(parsePatterns(JSON.stringify({ groups: [{ pattern: "막힌 문", ids: [1, 2, 3] }, { pattern: "걸어지는 물", ids: [3] }] }), lines)).toBeNull();
+    expect(parsePatterns(JSON.stringify({ groups: [{ pattern: "막힌 문", ids: [1, 2, 3, 4] }] }), lines)).toBeNull();
+    expect(parsePatterns(JSON.stringify({ groups: [{ pattern: "blocked door", ids: [1, 2, 3] }] }), lines)).toBeNull();
   });
 });

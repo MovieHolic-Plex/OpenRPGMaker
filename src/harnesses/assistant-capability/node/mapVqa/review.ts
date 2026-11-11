@@ -4,6 +4,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { askJudge, mapLimit, newUsage, pixelSha, usageLine, VISUAL_JUDGE, type JudgeUsage } from '../visualJudge';
+import { classPatterns, PATTERNS_VERSION } from './patterns';
 import { askArtGaps, battleFacts, buildArtGaps, clusterThings, toolReportsOfSession, ART_GAPS_VERSION, type GapEntry } from './artGaps';
 import { corpusSessions, layJobsOf, loadCorpus, type MapItem } from './corpus';
 import { factsText, mapFacts, type MapFacts } from './facts';
@@ -64,6 +65,9 @@ export async function runMapVqa(options: MapVqaOptions): Promise<number> {
   const calibration = calibrationOf(reviewer.version);
   const tally = buildTally(results, { corpus: options.corpus, generatedAt: new Date().toISOString(), layJobs: layJobsOf(options.corpus), calibration: calibration ? { status: calibration.status, missRate: calibration.missRate, falseAlarmRate: calibration.falseAlarmRate, planted: calibration.planted, good: calibration.good } : { status: 'uncalibrated' },
     judgeUsage: { calls: usage.calls, cached: usage.cached, failures: usage.failures, inputTokens: usage.inputTokens + usage.cacheReadTokens + usage.cacheWriteTokens, outputTokens: usage.outputTokens } }, reviewer);
+  // 종류 안의 되풀이(같은 원인끼리) — 순위표의 한 줄을 «무엇을 고치면 되는가»로 내린다. 묶기는 검수자 모델, 세기는 코드. 따로 보정하지 않았다.
+  if (!options.noReview) (tally as any).patterns = { promptVersion: PATTERNS_VERSION, note: '같은 원인끼리 묶은 것(major 이상만). 묶음은 보정하지 않았다 — 고칠 거리의 실마리다.', byClass: await classPatterns(results, reviewer, resolve(options.out, 'judge-cache'), usage) };
+  (tally as any).judgeUsage = { calls: usage.calls, cached: usage.cached, failures: usage.failures, inputTokens: usage.inputTokens + usage.cacheReadTokens + usage.cacheWriteTokens, outputTokens: usage.outputTokens };
   writeFileSync(resolve(options.out, 'tally.json'), JSON.stringify(tally, null, 2));
   // 없는 그림 장부: 검수자가 본 것 + 도구가 적은 것 + 다른 주제의 대역.
   let artGaps: any = null;
@@ -84,6 +88,8 @@ export async function runMapVqa(options: MapVqaOptions): Promise<number> {
       totals: { rows: rows.length, entries: entries.length, fromReviewer: entries.filter(entry => entry.source === 'reviewer').length, fromTools: entries.filter(entry => entry.source === 'tool').length, wrongTheme: entries.filter(entry => entry.source === 'theme').length, mapsAsked: results.filter(review => review.art?.status === 'reviewed').length, mapsUnanswered: results.filter(review => review.art?.status === 'unreviewed').length },
       rows, entries };
     writeFileSync(resolve(options.out, 'art-gaps.json'), JSON.stringify(artGaps, null, 2));
+    (tally as any).judgeUsage = { calls: usage.calls, cached: usage.cached, failures: usage.failures, inputTokens: usage.inputTokens + usage.cacheReadTokens + usage.cacheWriteTokens, outputTokens: usage.outputTokens };
+    writeFileSync(resolve(options.out, 'tally.json'), JSON.stringify(tally, null, 2));
   }
   const before = options.before ? JSON.parse(readFileSync(resolve(options.before), 'utf8')) : null;
   const html = writeMapVqaPage({ out: options.out, tally, reviewer, before, html: options.html, artGaps, reviews: results });
