@@ -14,7 +14,7 @@ import { landmarkWord, bearingWord } from "../judge/objectiveWhere";
 import { isObjectiveCommand } from "../judge/objectiveCommand";
 import { tileLabel } from "../place/cells";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 
 type Obj = Record<string, unknown>;
 const LAYERS = ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"] as const;

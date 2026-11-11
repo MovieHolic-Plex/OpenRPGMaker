@@ -20,8 +20,8 @@ import { normalizeGameBlueprint, normalizeStepText, type GameBlueprint } from "@
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
 import { incomingLandings, resolveWhere } from "../place/where";
 import { walkStart } from "../place/cells";
-import type { BuildRun, ContentBuildResult } from "../types";
-import { BLUEPRINT_PATH_IDS, battleStepBypass, codeStepBypass, escapeLeaks, eventGives, isBattleStep, isCodeStep, victoryGatedSwitches, walkBlueprint } from "../blueprint";
+import type { BuildRun, ContentBuildResult } from "../shared/types";
+import { BLUEPRINT_PATH_IDS, battleStepBypass, codeStepBypass, escapeLeaks, eventGives, isBattleStep, isCodeStep, victoryGatedSwitches, walkBlueprint } from "./blueprint";
 import { pickFittedTroops, pickSpot } from "@/editor/tools/jrpgVolumeTools";
 import { FITTED_TROOP_PREFIX, fitTroopCopy } from "@/editor/tools/bossThreatScaling";
 import { simulateBattle } from "@/battle/simulate";

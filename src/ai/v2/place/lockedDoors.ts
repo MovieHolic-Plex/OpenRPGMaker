@@ -9,7 +9,7 @@
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap } from "@/project/types";
 import { doorArtCells, unreachableEvents } from "../judge/eventReach";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 
 const LOCKED_DOOR_PREFIX = "ev_locked_door_";
 const LINE = "문이 굳게 잠겨 있다. 들어갈 수 없는 집이다.";

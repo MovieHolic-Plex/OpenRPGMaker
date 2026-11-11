@@ -1,6 +1,6 @@
 // 청사진 장소가 없거나 닿지 않으면 장소를 짓는다(session.buildPlaces, 한 실행에 한 번).
 import type { FinishStage } from "../types";
-import { walkBlueprint } from "../../blueprint";
+import { walkBlueprint } from "../../story/blueprint";
 
 export const stage: FinishStage = {
   id: "auto-places", phase: "blueprint", order: 30,

@@ -3,7 +3,7 @@
 //   bun scripts/qa/assistant-v2/examineSpotCheck.mts <run-dir> <mapId> [outDir]
 import fs from "node:fs";
 import path from "node:path";
-import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
+import { createBuildRun } from "../../../src/ai/v2/shared/buildRun.ts";
 import { examineHint, settleExamineSpot } from "../../../src/ai/v2/story/examineSpot.ts";
 import { eventBlocks } from "../../../src/ai/v2/judge/eventReach.ts";
 import { isPassable } from "../../../src/project/collision.ts";

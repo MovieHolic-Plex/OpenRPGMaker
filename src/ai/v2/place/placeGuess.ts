@@ -4,7 +4,7 @@
 // 이름 낱말로 종류를 정하고(서재·여관·교실 → 실내, 동굴 → 동굴, 마을·저잣거리 → 마을…), 모르면 장르 기본.
 // 화풍(style)은 이 게임에 이미 있는 같은 종류 맵의 칩셋에서 물려받는다 — 칩셋 계열을 섞지 않는다.
 import type { Project } from "@/project/types";
-import type { PlaceSpec, PlaceType } from "../types";
+import type { PlaceSpec, PlaceType } from "../shared/types";
 
 const INTERIOR = /실$|방$|관측실|서재|교실|강의실|도서관|서고|여관|주막|객잔|가게|상점|잡화점|대장간|식당|부엌|주방|창고|사무실|침실|거실|기숙사|학교|학당|교회|성당|예배당|포도청|관청|관아|저택|대저택|집$|집 안|오두막|공방|연구소|연구실|실험실|술집|선술집|주점|홀$|복도|왕좌|알현|성 안|궁$|궁전|병원|의원|약방|카페|찻집|빵집|역사$|박물관|미술관|study|library|inn|tavern|shop|room|hall|house|manor|lab|office|church|chapel|school|classroom/iu;
 const CAVE = /동굴|굴$|광산|광맥|cave|mine|grotto/iu;

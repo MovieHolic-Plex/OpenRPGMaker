@@ -5,7 +5,7 @@ import type { ToolContext } from "@/editor/tools/types";
 import { createV2Tools } from "@/ai/v2/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
 import { classifyRequest } from "@/ai/v2/request/intent";
-import type { PiAssistantV2Env } from "@/ai/v2/env";
+import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import { buildFixture, type FixtureId } from "@/harnesses/assistant-capability/node/smallJobs/fixtures";
 
 function tools(fixture: FixtureId, task: string) {

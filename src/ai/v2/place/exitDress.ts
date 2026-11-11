@@ -15,8 +15,8 @@ import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { isDoorName, reachableCells, unreachableEvents } from "../judge/eventReach";
 import { repairEventReach } from "./reachRepairs";
-import type { BuildRun } from "../types";
-import { CODE_STEP_WORDS } from "../blueprint";
+import type { BuildRun } from "../shared/types";
+import { CODE_STEP_WORDS } from "../shared/stepWords";
 import { isEscapeBlueprint } from "../request/scope";
 
 type Cell = { x: number; y: number };

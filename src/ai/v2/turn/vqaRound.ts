@@ -2,7 +2,7 @@
 import { reviewVqaRound, vqaReviewerCandidates, vqaClean, vqaFixBrief, vqaReviewerLabel, VQA_MAX_ROUNDS, VQA_ROUND_CAP, vqaBlockers, vqaLedgerLine, type VqaRound } from "../judge/vqa";
 import { closeVqaUnchanged, handCarriedBlockers, noteVqaRound } from "./vqaItems";
 import { familyOfProviderId } from "../../assistantRoles";
-import type { PiAssistantV2Env } from "../env";
+import type { PiAssistantV2Env } from "../shared/env";
 import { projectFingerprint } from "../loop/continuation";
 import type { TodoItem } from "../todo/types";
 import type { TurnContext } from "./context";

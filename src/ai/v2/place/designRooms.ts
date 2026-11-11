@@ -8,8 +8,8 @@
 // 여기서 하는 일: 설계가 빈 구역(위층 포함, keep 으로 원래 방을 지키는 구역은 빼고)을 모아 room_parts 재료와 함께 한 번 묻고,
 // 받은 design 을 구역에 넣어 돌려준다. 함수는 설계 내용(모양·크기·가구)을 고르지 않는다. 두 번 다 못 받으면 명세를 그대로 돌려주고
 // 그 사실을 알린다(빌더가 예전 길로 짓는다 — 보고에 «모델 설계 없음»으로 남는다).
-import type { PiAssistantV2Env } from "../env";
-import type { PlaceSpec, ZoneSpec } from "../types";
+import type { PiAssistantV2Env } from "../shared/env";
+import type { PlaceSpec, ZoneSpec } from "../shared/types";
 import type { Project } from "@/project/types";
 import type { RoomDesign } from "@/editor/handInterior/designRoom";
 import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";

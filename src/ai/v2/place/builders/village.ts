@@ -3,10 +3,10 @@
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
-import { createBuildRun } from "../../buildRun";
+import { createBuildRun } from "../../shared/buildRun";
 import { isPassable } from "@/project/collision";
 import { eventsOf, roadCellSet, tileLabel } from "../cells";
-import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../types";
+import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 
 /** v2 계획 모델에게 주는 유일한 마을 지식(≤900자). */
 export const VILLAGE_CARD =

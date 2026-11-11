@@ -1,8 +1,8 @@
-// 단계 건너뛰는 지름길 전수 검사(src/ai/v2/stepSkip.ts).
+// 단계 건너뛰는 지름길 전수 검사(src/ai/v2/finish/stepSkip.ts).
 //   bun scripts/qa/assistant-v2/stepSkipCheck.mts <project.json|player.json> [...]
 // 한 줄에 한 판: 지름길 수와 「단계 k 맵 ← 출발 맵 (x,y)」.
 import fs from "node:fs";
-import { stepSkipSetters, stepSkipShortcuts } from "../../../src/ai/v2/stepSkip";
+import { stepSkipSetters, stepSkipShortcuts } from "../../../src/ai/v2/finish/stepSkip";
 
 let bad = 0;
 for (const file of process.argv.slice(2)) {

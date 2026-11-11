@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { guardLeadChat, leadForRequest, leadPlanMessages, parseLeadReview, parseSplitConfig, parseSplitRole, planForWorker, resolveSplitConfig, toolCatalog } from "../src/ai/v2/split";
+import { guardLeadChat, leadForRequest, leadPlanMessages, parseLeadReview, parseSplitConfig, parseSplitRole, planForWorker, resolveSplitConfig, toolCatalog } from "../src/ai/v2/turn/split";
 
 describe("assistant v2 lead/worker split", () => {
   it("reads the lead from OPRN_V2_SPLIT (local CLI and account/model forms)", () => {

@@ -5,7 +5,7 @@ import { V2Session } from "./session";
 import { type VqaReviewerPick, type VqaRound, type VqaShot } from "../judge/vqa";
 import { loadVqaBook } from "./vqaItems";
 import { carryOver } from "./carryOver";
-import type { PiAssistantV2Env } from "../env";
+import type { PiAssistantV2Env } from "../shared/env";
 import { type AdvisorToolCall, type AdvisorVerdict } from "../judge/advisor";
 import { CONTINUE_WORDS, isWriteRequest } from "../request/readers";
 import { type V2ToolExposure } from "../toolExposure";
@@ -90,7 +90,7 @@ export function createTurnContext(request: PiAgentRequest, options: TurnOptions,
   // 청사진 자동 짓기(장소 → 경로 → 출구·이동 칸 마감 → 조립 기본값). 한 실행에 한 번씩(세션 깃발) + 늦게 생긴 청사진.
   /** 함수 마감(autoBuild)만 건드린 기존 이벤트 — 「mapId:eventId」 → 마감 직후 지문. 관문 문제가 이런 이벤트만 짚으면 요청 밖 기존 결함이다. */
   const autoTouched = new Map<string, string>();
-  // 리드·워커 나누기(OPRN_V2_SPLIT, src/ai/v2/split.ts) — 리드 계획 글과 검토 상태.
+  // 리드·워커 나누기(OPRN_V2_SPLIT, src/ai/v2/turn/split.ts) — 리드 계획 글과 검토 상태.
   const leadItems = new Set<string>();
   return { request, options, io, session, store, started, state, preexisting, calls, argsById, vqaRounds, vqaBook, carriedVqaFp, autoNotes, advisorItems, writeRequest, toolNames, autoTouched, leadItems };
 }

@@ -1,6 +1,6 @@
 // 끝맺음 자동 짓기를 부르고, 그 마감만 건드린 기존 이벤트를 적어 둔다(관문이 기존 결함을 가를 때 쓴다). 2026-11-11 리팩토링 R3: runAssistantV2 에서 옮겼다.
-import { finishBuildPending, runFinishAutoBuild } from "../finishAutoBuild";
-import type { PiAssistantV2Env } from "../env";
+import { finishBuildPending, runFinishAutoBuild } from "../finish/index";
+import type { PiAssistantV2Env } from "../shared/env";
 import { indexProject } from "../loop/refs";
 import type { TurnContext } from "./context";
 

@@ -13,7 +13,7 @@ import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { reachableCells, unreachableEvents } from "../judge/eventReach";
 import { placementProblems } from "./placementRules";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 
 type Cell = { x: number; y: number };
 

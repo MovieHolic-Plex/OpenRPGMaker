@@ -4,8 +4,8 @@
 // run-dir = ~/z-project/assistant-whole-game/suite/runs/<묶음>/<모델>/<장르> (play/player.json · session/snapshots/003-before.json · session/turns/003.json)
 import fs from "node:fs";
 import path from "node:path";
-import { createBuildRun } from "../../../src/ai/v2/buildRun.ts";
-import { walkBlueprint } from "../../../src/ai/v2/blueprint.ts";
+import { createBuildRun } from "../../../src/ai/v2/shared/buildRun.ts";
+import { walkBlueprint } from "../../../src/ai/v2/story/blueprint.ts";
 import { buildBlueprintPath, type PathStepText } from "../../../src/ai/v2/story/blueprintPath.ts";
 import { runAutoPlay } from "../../../src/qa/gameCheck/autoPlay.ts";
 import type { Project } from "../../../src/project/types.ts";
