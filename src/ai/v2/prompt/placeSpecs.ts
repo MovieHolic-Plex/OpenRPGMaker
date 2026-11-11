@@ -7,7 +7,7 @@ import { VILLAGE_CARD } from "../place/builders/village";
 import { DUNGEON_CARD } from "../place/builders/dungeon";
 import { JP_CITY_CARD } from "../place/builders/jpCity";
 import { MODERN_KR_CARD } from "../place/builders/modernCity";
-import { PEOPLE_CARD } from "../people";
+import { PEOPLE_CARD } from "../place/people";
 import { EVENT_CARD } from "../story/events";
 import { DRAW_OBJECT_CARD } from "../place/drawObject";
 

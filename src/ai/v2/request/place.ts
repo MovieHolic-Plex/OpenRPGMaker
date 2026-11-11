@@ -1,6 +1,6 @@
 // 장소 요청 낱말 — 장소를 짓는 말, 실내, 덧그릴 지형, 작은 방, 들어가는 장소(동굴·던전).
-import type { PlaceSpec } from "../types";
-import type { Side } from "../transferSpot";
+import type { PlaceSpec } from "../shared/types";
+import type { Side } from "../shared/types";
 import { kw, kwEnd } from "./text";
 
 /** 한 글자 장소 낱말은 낱말 끝으로만 맞춘다(「성격」「방법」「집사」「산책」은 장소가 아니다). 붙여 쓰는 장소 이름은 따로 든다. */

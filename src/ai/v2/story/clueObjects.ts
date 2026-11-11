@@ -21,7 +21,7 @@ import { doorArtCells, hostMentions, isDoorName, objectBaseName, objectCells, un
 import { repairEventReach } from "../place/reachRepairs";
 import { staleBody } from "./examineSpot";
 import { objectAt, tileLabel } from "../place/cells";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 
 type Cmd = Record<string, unknown> & { kind?: string };
 

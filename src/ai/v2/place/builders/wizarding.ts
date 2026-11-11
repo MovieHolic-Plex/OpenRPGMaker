@@ -8,7 +8,7 @@
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { prepareTool } from "@/editor/tools/asyncToolRunner";
 import { WIZARDING_SPACE_SPEC } from "@/editor/wizarding/builder";
-import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec, ZoneSpec } from "../../types";
+import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec, ZoneSpec } from "../../shared/types";
 import { stableHash } from "./joseon";
 
 /** 마법 학교 낱말 — 요청 원문·명세에 있으면 이 빌더가 맡는다(마법사의 탑·연금술 공방 같은 일반 판타지는 아니다). */

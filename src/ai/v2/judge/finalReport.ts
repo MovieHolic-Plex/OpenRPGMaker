@@ -3,7 +3,7 @@
 // 돌려주고, 그 글이 사용자에게 보이는 최종 답이 됐다(바로 앞에는 정직한 «최종 보고(앞 보고를 고침)»가 있었다).
 // → 이런 글은 보고가 아니다: 대화창으로 보내지 않고, 앞의 정직한 보고를 마지막 답으로 둔다. 앞 보고가 없으면 함수가 조립한 보고를 쓴다.
 import type { Project } from "@/project/types";
-import { walkBlueprint } from "../blueprint";
+import { walkBlueprint } from "../story/blueprint";
 import type { TodoStore } from "../loop/todoStore";
 import { checkLabel } from "../loop/todoStore";
 import type { TodoItem } from "../todo/types";

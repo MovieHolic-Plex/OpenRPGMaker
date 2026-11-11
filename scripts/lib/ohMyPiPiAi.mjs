@@ -329,7 +329,7 @@ export async function createOhMyPiAdapters() {
     /** runAgent 가 options.heavy(해시·글)를 받아 워커까지 해시째 넘긴다 — 중계가 프로젝트를 되살리지 않는다. */
     runAgentHeavyRefs: true,
     async runAgent(provider, body, options = {}) {
-      // 요청이 실어 온 v2 팀장(body.lead, src/ai/v2/split.ts resolveSplitConfig) — OPRN_V2_SPLIT 이 비었을 때만 쓰이고, 로컬 CLI 팀장은 키가 없다.
+      // 요청이 실어 온 v2 팀장(body.lead, src/ai/v2/turn/split.ts resolveSplitConfig) — OPRN_V2_SPLIT 이 비었을 때만 쓰이고, 로컬 CLI 팀장은 키가 없다.
       const requestLead = body.assistantVersion === "v2" && !String(process.env.OPRN_V2_SPLIT ?? "").trim() && typeof body.lead?.provider === "string" && !body.lead.provider.startsWith("local-cli:") ? body.lead : undefined;
       // 이 실행이 쓸 수 있는 모든 (제공자, 모델) 쌍 — 기본 모델과 역할 넷, 팀장. 하나라도 막히면 모델·워커를 부르기 전에 끝낸다.
       assertOpenAiCompatModelsAllowed([
@@ -342,7 +342,7 @@ export async function createOhMyPiAdapters() {
       const apiKey = String(provider).startsWith("local-cli:") ? undefined : await resolveRequestApiKey(provider);
       const providerApiKeys = { [provider]: apiKey };
       // 사용자 지정 엔드포인트: 역할 넷 중 하나라도 쓰면 주소·헤더를 워커에 싣는다(없는 엔드포인트는 여기서 404 로 끝낸다).
-      // 리드(OPRN_V2_SPLIT, src/ai/v2/split.ts — v2 만): 계정 모델 리드면 그 엔드포인트·키도 싣는다. 로컬 CLI 리드는 키가 없다.
+      // 리드(OPRN_V2_SPLIT, src/ai/v2/turn/split.ts — v2 만): 계정 모델 리드면 그 엔드포인트·키도 싣는다. 로컬 CLI 리드는 키가 없다.
       const leadProvider = body.assistantVersion === "v2" ? splitLeadProvider(process.env.OPRN_V2_SPLIT) : undefined;
       const compat = await resolveOpenAiCompatRun([
         provider,

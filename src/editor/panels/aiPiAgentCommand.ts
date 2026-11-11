@@ -61,7 +61,7 @@ import { mapRunScope, independentMapRunRoots, settleMapRuns } from "@/ai/piAgent
 import { editorAiMapRuns } from "@/ai/piAgent/editorMapRunLocks";
 import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
 import { composePiTask } from "@/ai/piAgent/executionRoute";
-import { isAssistantV2Enabled } from "@/ai/v2/switch";
+import { isAssistantV2Enabled } from "@/ai/v2/shared/switch";
 import { buildPiRunRequest, buildUltrabrainPlanRequest, needsUltrabrainPlanTurn, prefersCallerThinking, withUltrabrainPlan } from "@/ai/piAgent/plainTurn";
 import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";

@@ -15,7 +15,7 @@ import { objectiveTargetViews } from "@/player/objectiveTarget";
 import { isObjectiveCommand } from "../judge/objectiveCommand";
 import { unreachableEvents } from "../judge/eventReach";
 import { repairEventReach } from "../place/reachRepairs";
-import type { BuildRun } from "../types";
+import type { BuildRun } from "../shared/types";
 
 type Obj = Record<string, unknown>;
 

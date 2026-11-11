@@ -5,7 +5,7 @@
 // 그대로 내놓는다(스키마·검증·저장 계약이 v1 과 같다). 요청에 게임 낱말이 있을 때만 싣는다 — 맵 요청의 첫 턴을 무겁게 하지 않는다.
 import { createPiToolset, type PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { getTool } from "@/editor/tools/toolRegistry";
-import type { PiAssistantV2Env } from "./env";
+import type { PiAssistantV2Env } from "./shared/env";
 import { asksForEncounters } from "./request/readers";
 import { englishToolMessage, parseFailure } from "./loop/failureText";
 import { withForestRouteBrief } from "./prompt/forestBrief";

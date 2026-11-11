@@ -2,7 +2,7 @@
 import type { Project } from "@/project/types";
 import { gameHasCombat } from "@/project/combatPresence";
 import { FACTORY_HERO_ARMS } from "../genreDefaults";
-import { isStageWrite, type StageWrites } from "../stageWrites";
+import { isStageWrite, type StageWrites } from "../shared/stageWrites";
 import { Obj } from "./gameCheckReads";
 
 /** 장비 칸에서 사라진 것이 모두 공장 기본 장비인가. */
