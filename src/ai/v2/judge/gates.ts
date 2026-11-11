@@ -33,10 +33,10 @@ function namedTools(text: string): string[] {
 }
 
 /**
- * addTool = 이 요청의 묶음에 없는 도구 하나를 이번 턴에 싣는다(실었으면 true, 조수 v2 에 없는 이름이면 false).
- * loaded = 고치기 차례를 위해 실은 도구 이름, unfixable = 고치는 도구가 v2 에 없어 뺀 항목(완료를 막지 않는다 — 최종 보고에 적는다).
+ * addTool = 관문 글이 이른 도구 하나를 모델의 도구 목록에 올린다: "loaded" = 지금 올렸다(묶음 밖 도구·아직 안 실은 도구), "ready" = 이미 목록에 있다, undefined = 조수 v2 에 없는 이름.
+ * loaded = 고치기 차례를 위해 올린 도구 이름, unfixable = 고치는 도구가 v2 에 없어 뺀 항목(완료를 막지 않는다 — 최종 보고에 적는다).
  */
-export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem[], capMapIds: ReadonlySet<string>, available?: ReadonlySet<string>, addTool?: (name: string) => boolean): { opened: TodoItem[]; closed: TodoItem[]; capped: TodoItem[]; loaded: string[]; unfixable: TodoItem[] } {
+export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem[], capMapIds: ReadonlySet<string>, available?: ReadonlySet<string>, addTool?: (name: string) => "loaded" | "ready" | undefined): { opened: TodoItem[]; closed: TodoItem[]; capped: TodoItem[]; loaded: string[]; unfixable: TodoItem[] } {
   // 2026-11-11 전에 저장된 할 일은 글로 만든 열쇠를 들고 있다 — 같은 문제가 지금도 있으면 지금 열쇠로 옮긴다(막힌 채 이어 받은 항목이 새 항목으로 다시 열리지 않게).
   for (const p of problems) {
     const old = p.textKey && p.textKey !== p.key ? store.byKey(p.textKey) : undefined;
@@ -68,12 +68,12 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
   if (available) for (const item of opened) {
     if (!isOpen(item.status)) continue;
     const full = problems.find((p) => p.key === keyOf(store, item))?.text ?? item.content;
-    const missing = namedTools(full).filter((t) => !available.has(t));
-    if (!missing.length) continue;
-    const added = addTool ? missing.filter((t) => addTool(t)) : [];
-    loaded.push(...added.filter((t) => !loaded.includes(t)));
-    if (added.length || namedTools(full).some((t) => available.has(t))) continue;
-    store.drop(item, `고치는 도구(${missing.join(", ")})가 조수 v2 에 없다 — 이 요청에서 고칠 수 없음`, "auto");
+    const named = namedTools(full);
+    if (!named.length) continue;
+    const state = named.map((t) => addTool?.(t) ?? (available.has(t) ? "ready" as const : undefined));
+    loaded.push(...named.filter((t, k) => state[k] === "loaded" && !loaded.includes(t)));
+    if (state.some((s) => s)) continue;
+    store.drop(item, `고치는 도구(${named.join(", ")})가 조수 v2 에 없다 — 이 요청에서 고칠 수 없음`, "auto");
     unfixable.push(item);
   }
   // 게임 검사·관문이 «이 호출이면 풀린다» 를 문구 맨 끝에 적었는데 항목 내용은 220자에서 잘린다(todoStore) —

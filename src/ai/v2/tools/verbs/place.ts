@@ -36,6 +36,7 @@ import { PAST_DESIGN_NOTE, composedRefusal, layoutPatchRefusal, noDesignRefusal,
 import { runTodoItemCheck } from "../../judge/todoChecks";
 import { COVERABLE } from "../../loop/builderCover";
 import { linkWorldRoom } from "../worldRoomLink";
+import { recordArtGaps } from "@/project/artGap";
 import type { VerbContext } from "../context";
 
 /** createV2Tools 에서 뗀 것 — buildWorldPlaces · buildWorld · makePlace · editPlace · reviewLayout · findPiecesVerb. (placeVerbs) */
@@ -125,6 +126,12 @@ export function placeVerbs(c: VerbContext) {
           const said = `${asked.name} ${asked.theme ?? ""}`.toLowerCase();
           const fits = world.kinds.filter((k) => !!k.indoor === want.indoor && !!k.danger === want.danger);
           const named = fits.find((k) => said.includes(k.id.replace(/-/gu, " ")) || k.ko.split(/\s+/u).some((w) => w.length >= 2 && said.includes(w)));
+          // 실내 종류가 없는 세계(전국·SF 정거장)의 실내 요청을 바깥 종류로 짓지 않는다 — «촌장 집» 이 농촌 마을 한 장으로 서고 장소 확인은 ✓ 였다.
+          if (want.indoor && !fits.length) {
+            recordArtGaps(session, [{ chipset: world.tilesetId, want: "indoor-kind", wanted: "실내 종류", where: asked.name, standIn: "none", by: "make_place" }]);
+            const cur = session.todo.current();
+            return text({ ok: false, summary: `«${asked.name}» was not built: ${world.name} has no indoor place kind yet (its kinds are all outdoor: ${world.kinds.map((k) => k.id).join(", ")}), and this project's maps use that chipset — a room from another chipset is not mixed in. It is recorded as missing art for the report.${cur ? ` Next call: todo({"op":"block","task":${JSON.stringify(cur.id)},"reason":"${world.name} has no indoor place kind, so this room cannot be built in the project's chipset"})` : ""}` });
+          }
           const area = (k: (typeof fits)[number]) => (k.compose?.size[0] ?? 99) * (k.compose?.size[1] ?? 99);
           const kind = named ?? (want.indoor && fits.length ? [...fits].sort((x, y) => area(x) - area(y))[0]! : spareKind(world, [...session.places.values()].flatMap((r) => parseWorldStyle(r.spec.style)?.kind.id ?? []), want));
           const others = fits.filter((k) => k !== kind).map((k) => `"world:${world.id}:${k.id}" (${k.about})`).join(", ");

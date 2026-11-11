@@ -23,16 +23,23 @@ import type { turnVqa } from "./vqaRound";
 /** afterMain = 모델이 멈출 때마다 한 번. 돌려주는 글이 있으면 그 글로 같은 대화를 한 차례 더 돌고, 없으면 턴이 끝난다. */
 export function turnAfterMain(turn: TurnContext & Pick<ReturnType<typeof turnRecheck>, "refreshChecks" | "stamp"> & Pick<ReturnType<typeof turnReinject>, "reinject" | "newBatch"> & Pick<ReturnType<typeof turnAutoBuild>, "autoBuild" | "lateBuildPending"> & Pick<ReturnType<typeof turnVqa>, "vqaStep">) {
   const { session, store, state, preexisting, calls, vqaRounds, autoNotes, advisorItems, writeRequest, toolNames, autoTouched, leadItems, vqaStep, refreshChecks, stamp, reinject, newBatch, autoBuild, lateBuildPending } = turn;
-  // 끝맺음 관문이 고치는 법으로 이른 도구가 이 요청의 묶음에 없으면 지금 싣는다 — 이름 호출·load_tools 가 읽는 표에 넣고, 실행기가 받으면 도구 목록에도 올린다.
-  const addRepairTool = (env: PiAssistantV2Env, name: string): boolean => {
-    if (toolNames.has(name)) return true;
-    const made = session.repairTool?.(name);
-    if (!made || !session.loop.wrapLate || !state.exposure) return false;
-    const tool = englishToolCopy(session.loop.wrapLate(made), false);
-    toolNames.add(name);
-    state.exposure.lazy.set(name, tool);
+  // 끝맺음 관문이 고치는 법으로 이른 도구를 모델의 도구 목록에 올린다 — 묶음 밖 도구는 만들어 넣고, 묶음에 있지만 아직 안 실은 도구는 선언한다(모델은 목록에 없는 도구를 «없다» 고 읽었다).
+  const shown = new Set<string>();
+  const addRepairTool = (env: PiAssistantV2Env, name: string): "loaded" | "ready" | undefined => {
+    const exposure = state.exposure;
+    if (!exposure) return toolNames.has(name) ? "ready" : undefined;
+    if (shown.has(name) || exposure.tools.some((t) => t.name === name)) return "ready";
+    let tool = exposure.lazy.get(name);
+    if (!tool) {
+      const made = session.repairTool?.(name);
+      if (!made || !session.loop.wrapLate) return undefined;
+      tool = englishToolCopy(session.loop.wrapLate(made), false);
+      toolNames.add(name);
+      exposure.lazy.set(name, tool);
+    }
+    shown.add(name);
     env.declareTool?.(tool);
-    return true;
+    return "loaded";
   };
   const afterMain = async (env: PiAssistantV2Env) => {
     state.liveEnv = env;
@@ -128,7 +135,7 @@ export function turnAfterMain(turn: TurnContext & Pick<ReturnType<typeof turnRec
       }
       if (synced.opened.length) {
         env.emit({ type: "execution_status", name: "v2.gate.items", ok: false, summary: `끝맺음 관문이 짚은 것 ${synced.opened.length}건을 할 일에 덧붙임`, data: { items: synced.opened.map((i) => ({ id: i.id, source: i.source, content: i.content })) } });
-        const toolNote = synced.loaded.length ? ` The tool(s) these fixes need were added for you: ${synced.loaded.join(", ")} — ${env.declareTool ? "they are in your tool list from your next call" : `get their parameters with load_tools({"names":${JSON.stringify(synced.loaded)}})`}.` : "";
+        const toolNote = synced.loaded.length ? ` The tool(s) these fixes need were added for you: ${synced.loaded.join(", ")} — ${env.declareTool && env.lazyToolsVia !== "call_tool" ? "they are in your tool list from your next call" : `get their parameters with load_tools({"names":${JSON.stringify(synced.loaded)}})`}.` : "";
         const prompt = newBatch(env, synced.opened, `[Finish gate — added ${synced.opened.length} problem(s) found by function checks and critics to the todo list. Fix each and call done, or block(reason) if you cannot.${toolNote}]`);
         if (prompt) return prompt;
         return undefined;

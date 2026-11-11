@@ -125,7 +125,8 @@ export function composedRefusal(project: Project, mapId: string, asked: { layout
     const at = a.near ? `,"at":{"x":${a.near.x},"y":${a.near.y}}` : "";
     return `${head}To put «${a.what}» on the standing map — Next call: draw_object({"object":{"what":${JSON.stringify(a.what)},"mapId":"${mapId}"${at}}}) — if the chipset already has an object with that name its reply gives the id to place; otherwise the workshop draws it.`;
   }
-  return `${head}Next call: inspect({"mapId":"${mapId}"}) — it shows what stands on this map; then change one thing at a time with the verb for it (a drawn object: place_object, bare outdoor ground: furnish_outdoor_area, a person or event: add_people or move_event).`;
+  // 칸 배치로 온 호출에는 다른 동사를 늘어놓지 않는다 — 막힘 되돌림이 그 이름을 «아직 안 써 본 길» 로 읽어 배치 항목을 사람 놓기로 돌렸다.
+  return `${head}Next call: inspect({"mapId":"${mapId}"}) — it shows what stands on this map${asked.layout ? "." : "; then change one thing at a time with the verb for it (a drawn object: place_object, bare outdoor ground: furnish_outdoor_area, a person or event: add_people or move_event)."}`;
 }
 
 /** 할 일 항목의 장소 종류 → make_place 의 type(들판·거리는 바깥 장소다). */

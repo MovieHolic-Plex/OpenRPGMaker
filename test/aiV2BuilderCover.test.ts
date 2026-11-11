@@ -19,6 +19,7 @@ import { syncGateItems } from "@/ai/v2/judge/gates";
 import { TodoStore } from "@/ai/v2/loop/todoStore";
 import { todoReport } from "@/ai/v2/judge/finalReport";
 import type { PlaceSpec } from "@/ai/v2/shared/types";
+import { pickVillageChipset } from "@/ai/villageChipsetPool";
 
 const SLOW = 120_000;
 
@@ -31,11 +32,11 @@ function fakePicture(map: { width: number; height: number; lowerTiles?: unknown;
   return `data:image/png;base64,${head.toString("base64")}${Buffer.from(String(h)).toString("base64")}`;
 }
 
-function turn(task: string, critic: (calls: number) => unknown = () => ({ imagesSeen: 1, score: 7, majors: [] })) {
+function turn(task: string, critic: (calls: number) => unknown = () => ({ imagesSeen: 1, score: 7, majors: [] }), projectKey?: string) {
   const project = createBlankProject();
   const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
   let criticCalls = 0;
-  const env = { ctx, request: { task, provider: "local-cli:claude", mapIds: [], project } as never, emit: () => {}, record: () => {}, checkpoint: async () => {},
+  const env = { ctx, request: { task, provider: "local-cli:claude", mapIds: [], project, ...(projectKey ? { projectKey } : {}) } as never, emit: () => {}, record: () => {}, checkpoint: async () => {},
     sideChat: async () => JSON.stringify(critic(++criticCalls)),
     render: async (mapId: string) => fakePicture(ctx.project.maps[mapId]!),
     preferToolNextTurn: () => {}, clearToolPreference: () => {} } as unknown as PiAssistantV2Env;
@@ -107,6 +108,31 @@ describe("풀 칩셋 마을 뒤의 실내는 make_place 가 집 문에 잇고, �
   }, SLOW);
 });
 
+describe("실내 종류가 없는 세계의 실내 요청은 바깥 종류로 짓지 않는다", () => {
+  it("전국·에도 마을 뒤의 «촌장 집»: 짓지 않고 까닭과 없는 그림 기록을 남긴다(농촌 마을 한 장이 «촌장 집» 으로 서지 않는다)", async () => {
+    // 칩셋 풀은 프로젝트 열쇠로 고른다 — 전국·에도가 뽑히는 열쇠를 찾아 그 프로젝트로 돈다.
+    const task = "작은 마을이랑 촌장 집 안을 만들어 줘.";
+    const key = Array.from({ length: 400 }, (_, k) => `key-${k}`).find((k) => pickVillageChipset(createBlankProject(), k, task)?.entry.tilesetId === "sengoku_edo");
+    expect(key, "전국·에도가 뽑히는 열쇠").toBeTruthy();
+    const t = turn(task, undefined, key);
+    await t.call("todo", { op: "init", list: [{ phase: "장소", items: [
+      { content: "마을 만들기", id: "v", check: { kind: "place", name: "새벽 마을", placeKind: "village", fresh: true } },
+      { content: "촌장 집 만들기", id: "house", check: { kind: "place", name: "촌장 집", placeKind: "interior", fresh: true } }] }] });
+    const made = await t.call("make_place", { type: "village", name: "새벽 마을", size: "small" });
+    expect(Object.values(t.ctx.project.maps).find((m) => m.name === "새벽 마을")?.tilesetId).toBe("sengoku_edo");
+    expect(made.ok, made.body.slice(0, 600)).toBe(true);
+    const before = Object.keys(t.ctx.project.maps).length;
+    const home = await t.call("make_place", { type: "interior", name: "촌장 집", mapId: "" });
+    expect(home.ok).toBe(false);
+    expect(home.body).toMatch(/has no indoor place kind/u);
+    expect(home.body).toContain('todo({"op":"block","task":"house"');
+    expect(Object.keys(t.ctx.project.maps).length).toBe(before);
+    expect([...t.session.missingArt].some((line) => line.includes("indoor-kind") && line.includes("sengoku_edo"))).toBe(true);
+    const blocked = await t.call("todo", { op: "block", task: "house", reason: "Sengoku · Edo Japan has no indoor place kind" });
+    expect(blocked.ok, blocked.body.slice(0, 300)).toBe(true);
+  }, SLOW);
+});
+
 describe("거절 글이 준 호출을 그대로 꺼낸다", () => {
   it("인자가 다 찬 호출은 그대로, 자리표시가 섞인 호출은 건너뛴다", () => {
     const text = 'Not drawn — this chipset already has an object. Next call: place_object({"mapId":"map_a","objectId":"bd-garden-gate","at":{"x":21,"y":13}}) — it stamps that object.';
@@ -160,7 +186,7 @@ describe("끝맺음 관문이 고치는 법으로 이른 도구는 고치기 차
   it("이 요청의 묶음에 없는 도구: 싣고 항목은 열린 채로 건넨다(막지 않는다)", () => {
     const store = new TodoStore();
     const available = new Set(["inspect"]);
-    const sync = syncGateItems(store, [{ key: "game:HUD", text: hud, source: "gate" }], new Set(), available, (name) => { if (name !== "set_field_hud") return false; available.add(name); return true; });
+    const sync = syncGateItems(store, [{ key: "game:HUD", text: hud, source: "gate" }], new Set(), available, (name) => { if (name !== "set_field_hud") return undefined; available.add(name); return "loaded"; });
     expect(sync.loaded).toEqual(["set_field_hud"]);
     expect(sync.unfixable).toEqual([]);
     expect(sync.opened).toHaveLength(1);
@@ -169,12 +195,22 @@ describe("끝맺음 관문이 고치는 법으로 이른 도구는 고치기 차
 
   it("조수 v2 에 없는 도구: 막힘이 아니라 뺀 채 보고한다 — 완료를 막지 않는다", () => {
     const store = new TodoStore();
-    const sync = syncGateItems(store, [{ key: "game:x", text: "[게임 검사 x] 무언가 어긋났다 — no_such_tool{fix:true} 로 고친다.", source: "gate" }], new Set(), new Set(["inspect"]), () => false);
+    const sync = syncGateItems(store, [{ key: "game:x", text: "[게임 검사 x] 무언가 어긋났다 — no_such_tool{fix:true} 로 고친다.", source: "gate" }], new Set(), new Set(["inspect"]), () => undefined);
     expect(sync.opened).toEqual([]);
     expect(sync.unfixable).toHaveLength(1);
     expect(store.items[0]!.status).toBe("dropped");
     expect(store.items[0]!.blockedReason).toContain("조수 v2 에 없다");
     expect(todoReport({ store, draft: "" }).complete).toBe(true);
+  });
+
+  it("이미 목록에 있는 도구는 다시 싣지 않고, 묶음에 있지만 아직 안 실은 도구는 올린다", () => {
+    const text = "[게임 검사 이동] 새 맵으로 들어가는 문이 없다 — create_transfer_pair{a:{mapId:'m1'}} 로 잇는다.";
+    const ready = syncGateItems(new TodoStore(), [{ key: "game:link", text, source: "gate" }], new Set(), new Set(["create_transfer_pair"]), () => "ready");
+    expect(ready.loaded).toEqual([]);
+    expect(ready.opened).toHaveLength(1);
+    const lazy = syncGateItems(new TodoStore(), [{ key: "game:link", text, source: "gate" }], new Set(), new Set(["create_transfer_pair"]), () => "loaded");
+    expect(lazy.loaded).toEqual(["create_transfer_pair"]);
+    expect(lazy.unfixable).toEqual([]);
   });
 
   it("실제 턴: 장소만 짓는 요청의 도구 묶음에 없는 set_field_hud 를 고리로 감싸 만들어 준다", async () => {
