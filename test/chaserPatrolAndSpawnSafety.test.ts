@@ -8,6 +8,10 @@ import { createBlankProject } from "@/project/defaults";
 import { startChaseSpawnGrace, tickChaseSpawnGrace } from "@/player/chaseSpawnGrace";
 import { movementKeyProblems } from "@/editor/tools/eventPageKeys";
 import type { GameEvent, Project } from "@/project/types";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const gameLines = (...args: Parameters<typeof gameContentProblems>): string[] => gameContentProblems(...args).map(findingLine);
 
 function fixture(): { project: Project; mapId: string } {
   const project = createBlankProject();
@@ -94,11 +98,11 @@ describe("시작·체크포인트 안전(J61)", () => {
     const made = getTool("make_chase_scene")!.run(after, { mapId, chaser: { at: { x: 12, y: 10 }, sightRange: 5 } });
     const at = chaser(after, mapId, (made.data as { eventId: string }).eventId);
     after.startPos = { x: at.x - 2, y: at.y };
-    expect(gameContentProblems(before, after, "추격자를 둬").join(" ")).toContain("시작 위치");
+    expect(gameLines(before, after, "추격자를 둬").join(" ")).toContain("시작 위치");
 
     const talky = structuredClone(before);
     talky.maps[mapId]!.events.push({ id: "ev_guard", name: "경비", x: 5, y: 5, pages: [{ conditions: [], trigger: "action", commands: [{ kind: "text", body: "!" }] }] } as unknown as GameEvent);
-    expect(gameContentProblems(before, talky, "경비가 시야에 들면 「!」 하고 쫓아오게").join(" ")).toContain("쫓는 움직임");
+    expect(gameLines(before, talky, "경비가 시야에 들면 「!」 하고 쫓아오게").join(" ")).toContain("쫓는 움직임");
   });
 });
 

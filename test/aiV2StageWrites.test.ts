@@ -4,6 +4,10 @@ import { unaskedChanges, battleDataEmptied } from "@/ai/v2/judge/sideEffectCheck
 import { isStageWrite, recordStageWrites, stageWriteKey, type StageWrites } from "@/ai/v2/shared/stageWrites";
 import { fitFirstLevelUp } from "@/ai/v2/story/pathBattleBudget";
 import type { Project } from "@/project/types";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const unaskedLines = (...args: Parameters<typeof unaskedChanges>): string[] => unaskedChanges(...args).map(findingLine);
 
 // 2026-11-10 treasure 두 판(80분 측정): 끝맺음 단계가 쓴 값(경험치 곡선·주인공 이름·적 체력)을 관문이 «요청에 없는 기존 데이터를 바꿨다» 로 짚어
 // 모델이 옛 값을 몰라 13건을 «막힘» 으로 닫았다. 단계가 쓴 칸은 기록해 관문에서 빼고, 모델이 그 뒤에 다른 값으로 바꾼 칸은 다시 짚는다.
@@ -20,7 +24,7 @@ describe("finish-stage writes are recorded and excluded from the side-effect gat
   it("flags an unrecorded change to an existing actor (the old behaviour)", () => {
     const { before, after } = pair();
     after.database.actors[0]!.expCurve = { base: 0, extra: 229, acceleration: 13 };
-    expect(unaskedChanges(before, after, TASK).some((line) => line.includes("[게임 검사 부작용]") && line.includes("expCurve"))).toBe(true);
+    expect(unaskedLines(before, after, TASK).some((line) => line.includes("[게임 검사 부작용]") && line.includes("expCurve"))).toBe(true);
   });
 
   it("does not flag a change that a recorded stage wrote", () => {
@@ -28,7 +32,7 @@ describe("finish-stage writes are recorded and excluded from the side-effect gat
     const writes: StageWrites = new Map();
     recordStageWrites(after, writes, () => { after.database.actors[0]!.expCurve = { base: 0, extra: 229, acceleration: 13 }; });
     expect(writes.has(stageWriteKey("actors", after.database.actors[0]!.id, "expCurve"))).toBe(true);
-    expect(unaskedChanges(before, after, TASK, writes)).toEqual([]);
+    expect(unaskedLines(before, after, TASK, writes)).toEqual([]);
   });
 
   it("flags the key again when the model changes it to another value after the stage", () => {
@@ -38,7 +42,7 @@ describe("finish-stage writes are recorded and excluded from the side-effect gat
     recordStageWrites(after, writes, () => { hero.name = "도윤"; });
     hero.name = "다른 이름";
     expect(isStageWrite(writes, "actors", hero as never, "name")).toBe(false);
-    expect(unaskedChanges(before, after, TASK, writes).some((line) => line.includes("name"))).toBe(true);
+    expect(unaskedLines(before, after, TASK, writes).some((line) => line.includes("name"))).toBe(true);
   });
 
   it("keeps the last value when a stage writes the same key twice", () => {

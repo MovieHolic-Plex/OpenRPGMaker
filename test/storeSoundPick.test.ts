@@ -16,6 +16,10 @@ import { v2ExtraToolNames } from "@/ai/v2/request/readers";
 import { audioOnly, musicAsked, soundOnly, wantsMusic, wantsSound } from "@/ai/v2/request/readers";
 import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { projectSeCue } from "@/project/seCues";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const gameLines = (...args: Parameters<typeof gameContentProblems>): string[] => gameContentProblems(...args).map(findingLine);
 
 const RETRO = retroManifest as unknown as StorePackManifest;
 const MODERN = modernManifest as unknown as StorePackManifest;
@@ -204,9 +208,9 @@ describe("효과음 낱말 길", () => {
   it("끝맺음 검사: 효과음 요청에 자리 표가 그대로면 짚는다", () => {
     const before = createEmptyToolProject();
     const after = structuredClone(before);
-    expect(gameContentProblems(before, after, "타격음 더 묵직하게").some((p) => p.startsWith("[게임 검사 효과음]"))).toBe(true);
+    expect(gameLines(before, after, "타격음 더 묵직하게").some((p) => p.startsWith("[게임 검사 효과음]"))).toBe(true);
     after.system.seCues = { damage: "snd_hit" };
-    expect(gameContentProblems(before, after, "타격음 더 묵직하게").some((p) => p.startsWith("[게임 검사 효과음]"))).toBe(false);
-    expect(gameContentProblems(before, after, "사운드 이펙트 현대적으로").some((p) => p.startsWith("[게임 검사 음악]"))).toBe(false);
+    expect(gameLines(before, after, "타격음 더 묵직하게").some((p) => p.startsWith("[게임 검사 효과음]"))).toBe(false);
+    expect(gameLines(before, after, "사운드 이펙트 현대적으로").some((p) => p.startsWith("[게임 검사 음악]"))).toBe(false);
   });
 });
