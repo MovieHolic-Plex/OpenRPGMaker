@@ -49,6 +49,8 @@
 
 장소·경로 빌더를 옮긴 조각은 `bun scripts/qa/assistant-v2/worldProbe.mts <out>` 도 앞·뒤로 돌린다.
 
+빌더·끝맺음 단계의 **동작을 바꾸는** PR 은 `bun scripts/qa/assistant-v2/specBank.mts ab --out <폴더>` 로 저장된 판의 명세를 전/후 빌더로 다시 지어 수치·그림을 견준다(모델 없음 — `openwiki/assistant-v2.md` 「명세 은행」). 옮기기만 하는 조각은 대조 표의 모든 칸이 같아야 한다.
+
 턴 구동기(`turn/` · `loop/` · 판정자 차례)를 옮긴 조각은 `bun scripts/qa/assistant-v2/turnTrace.mts <out.json>` 도 앞·뒤로 찍어 `--diff` 가 「같다 (4개 장면)」 — 모델·검토자·화면 검수자를 대본으로 바꿔 `runAssistantV2` 를 네 요청(게임 전체 · «계속» · 작은 쓰기 · 질문)으로 돌리고 실행 상태·재주입 글·상태 카드·최종 보고·저장된 할 일을 찍는다. `golden.mts` 는 지시문과 도구 목록만 보므로 판정자 차례가 바뀐 것은 이것만 잡는다(`advisorRuns < 2` 를 `< 1` 로 바꾸면 네 장면 모두 「다르다」).
 
 ## 옮기는 도구 (`scripts/qa/assistant-v2/refactor/`)
@@ -98,7 +100,7 @@
 | B5 | 감싸개 여섯 겹을 도구 안으로. **B5a 끝**: 트룹의 빈 members · 필드 적의 patrol/graphic · 이동 쌍의 doorAt(같은 칸·막힌 문앞)을 도구가 스스로 읽는다 — `withSchemaFillCleanup` 은 아이템 한 규칙만 남겼다. 남은 것(B5b): 이동 쌍 뒤 단계 재시도 · 칩 관문 · 조우 · 그림 찾기 상한 |
 | B6 | 작은 일 하네스를 v2 + Terra 로 돌리기, 오분류 요청 모음을 CI 에 — **재는 쪽은 있음**: 작은 일 30가지 묶음·판정 자기검사·실행기·보고서(`npm run harness -- assistant-capability small-jobs --model terra-high --v2`, 문서 `openwiki/harnesses/assistant-capability.md` 「작은 일 30가지」). 이후 도구·분류 수정은 이 표로 전/후를 잰다. 기준선(2026-11-11, main `46274bc35f`): 통과 23/30 · 호출 중앙값 18 · 3.5분 — 불합격 원인 넷(마무리 단계 `clear_transfer_lanes` 가 사람을 옮김 2, 눈 칩셋 `find_empty_ground` 0% 2, 고른 도구 묶음에 도구 없음 2, 할 일 확인이 요청보다 좁음 1)과 만든 게임의 타이틀·엔딩 재작업 비용은 그 문서 「기준선」. 오분류 모음의 CI 연결은 아직 |
 | B7 | 판정 코드 안의 요청 읽기를 `request/` 로: 글만 보던 `wantsWholeGame(task)` 여덟 곳(`gameChecks` ×3 · `combatChecks` · `pathBattleBudget` · `finishGate` · `turn/support vqaEnabled` · `reload-check`)이 `buildsWholeGame(project, task)` 를 묻고, `gameChecks`(과 거기서 갈라진 `storyFlowChecks` · `sideEffectChecks`) · `finishGate` 의 익명 정규식과 `REQUESTED_FEATURES` 의 낱말이 `request/readers.ts` 의 읽는 함수가 됐다(낱말 그대로 — 2,790줄 × 32개 맞댐 0). 바뀌는 동작은 하나: 게임 하나 청사진을 잇는 「계속」 턴이 검사·화면 검수에서도 게임 하나다. 규칙·근거는 `assistant-v2.md` 「이어 하기 턴의 판정」. 남은 것: `tools/context.ts` 의 청사진 재촉 두 곳. 끝 (#4577) — 이어 하기 턴의 화면 검수 비용(보통 1번 · 많아야 5번)은 아래 「R5 뒤 절반」 끝 |
-| B8 | 마감 단계를 칩셋마다 잰다(`scripts/qa/assistant-v2/stageMatrix.mts`, 단계 × 테마 86장) — 이름표 정규식으로 읽던 것을 칩셋이 적어 둔 것으로. **1차**: 건물 입구 `place/entrances.ts`(구조 키트 entrance 부품), 방 단계는 방으로 깔린 맵에만(`place/laid.ts` · `exitDress.ts kitOf`), `pickTransferSpot` 은 문 그림을 깔지 않는다. 표의 잘못 67 → 20. **2차**: 「들어갈 수 없다」 한 줄을 건물 입구에(`place/lockedDoors.ts`) — 말없는 집 문 36 → 0. **3차**: 이름표를 낱말로(`src/project/labelWords.ts` — 있는 물건 찾기는 온전한 낱말, 새로 깔 그림은 물건 이름의 끝 낱말) · 그림이 없어 못 한 것 기록(`shared/artGap.ts`, `v2.art-gap`) · 한 줄은 조사 키에 — 잘못 19 → 1(`assistant-v2.md` 「끝맺음 단계 × 칩셋 표」) **4차**: 없는 그림 기록을 하나로(`src/project/artGap.ts` — 단계의 `v2.art-gap` 과 장소 테마의 `[art-gap]` 줄을 한 모양·한 함수로, 턴 끝 요약 `data.artGaps` → 하네스 턴 기록 → 장부) |
+| B8 | 마감 단계를 칩셋마다 잰다(`scripts/qa/assistant-v2/stageMatrix.mts`, 단계 × 테마 86장) — 이름표 정규식으로 읽던 것을 칩셋이 적어 둔 것으로. **1차**: 건물 입구 `place/entrances.ts`(구조 키트 entrance 부품), 방 단계는 방으로 깔린 맵에만(`place/laid.ts` · `exitDress.ts kitOf`), `pickTransferSpot` 은 문 그림을 깔지 않는다. 표의 잘못 67 → 20. **2차**: 「들어갈 수 없다」 한 줄을 건물 입구에(`place/lockedDoors.ts`) — 말없는 집 문 36 → 0. **3차**: 이름표를 낱말로(`src/project/labelWords.ts` — 있는 물건 찾기는 온전한 낱말, 새로 깔 그림은 물건 이름의 끝 낱말) · 그림이 없어 못 한 것 기록(`shared/artGap.ts`, `v2.art-gap`) · 한 줄은 조사 키에 — 잘못 19 → 1(`assistant-v2.md` 「끝맺음 단계 × 칩셋 표」) **4차**: 없는 그림 기록을 하나로(`src/project/artGap.ts` — 단계의 `v2.art-gap` 과 장소 테마의 `[art-gap]` 줄을 한 모양·한 함수로, 턴 끝 요약 `data.artGaps` → 하네스 턴 기록 → 장부) **5차**: 문·계단·굴 입구도 적힌 것으로(`place/entrances.ts declaredDoorCells · declaredStairCells`, 표면 계약 `stairs`) · 옮긴 이벤트를 그림 밑에 세우지 않는다 — 잘못 11 → 0 |
 
 ### R7 내역 (옮기기만 — 본문 그대로)
 

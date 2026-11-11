@@ -127,6 +127,16 @@ function provision(path, { force = false } = {}) {
     const why = assigned.reason === "missing" ? "없어서" : assigned.reason === "duplicate" ? `${assigned.previous} 를 ${shown || "다른 체크아웃"} 이 쥐고 있어` : `${assigned.previous} 가 예약 포트라`;
     applied.push(`DEV_SERVER_PORT=${port} (${why} 배정)`);
   }
+  // 위키 목차(openwiki/INDEX.md)는 커밋하지 않는 생성 파일이다 — 새 체크아웃에는 없다. 에이전트가 처음 읽는 파일이라 여기서 만들어 둔다.
+  const indexScript = join(path, "scripts", "openwiki-index.mjs");
+  if (!existsSync(join(path, "openwiki", "INDEX.md")) && existsSync(indexScript)) {
+    try {
+      execFileSync(process.execPath, [indexScript], { cwd: path, stdio: "ignore" });
+      applied.push("openwiki/INDEX.md 생성");
+    } catch {
+      applied.push("openwiki/INDEX.md 생성 실패(node scripts/openwiki-index.mjs 를 직접 돌린다)");
+    }
+  }
   return { port, applied };
 }
 
