@@ -281,6 +281,34 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 - **Terra 판의 «후»는 재지 않았다** — 모델을 다시 돌려야 한다(리드 몫). 기준선: fun-x1 출구 8 가운데 길 위 2·길 폭 전체 0·도착 안쪽 0, fun-w3 6 가운데 0, jrpg-w3 8 가운데 2.
 - `transferSpot.ts` 의 가장자리 갈래(`roadEndSpot`)와 `edgeCell` 은 길 자리가 양쪽 다 없을 때의 마지막 길로 남아 있다.
 
+## 맵 위의 적·전투 배경·상자는 그 장소의 테마에서 — 없는 그림은 줄로 남긴다 (2026-11-11 눈가림 플레이 fun-x1-gatefix · fun-w3)
+
+눈가림 판정자가 적은 것: 사막 피라미드에서 숲 전투 배경, 적 «광산 해골 궁수», 상자 «슬라임 젤리»; 매장실의 해골이 «조사하는 순간 전투로 바뀐다»;
+이긴 보스가 맵에 그대로 서 있고, 서 있던 붉은 드래곤이 전투에서는 황토색 드래곤.
+
+만든 호출(fun-x1 턴 001 #2): `build_places{}` → 「잠든 태양의 피라미드 보이는 적 3 · 보물상자 1 / 별의 매장실 보이는 적 1 · 보물상자 1」. `place/worldPopulate.ts` 가 기본 DB 무리 일곱 중 약한 셋(슬라임·초원 슬라임·광산 해골 궁수)과 가장 싼 물건(슬라임 젤리·기록용 깃펜)을 어느 세계에나 놓았고, 전투 배경은 맵 이름 규칙에서 떨어져 기본값 숲이었다. 보스는 #8 `build_blueprint_path` 의 s5 — `story/puzzle.ts` 의 «한 뒤» 페이지가 같은 그림을 다시 썼고, `foeGraphic` 이 전투 그림 `generated-enemy-dragon-01`(황토빛 드래곤)을 «같은 종류» 걷기 칩(붉은 드래곤)으로 바꿨다.
+
+- **장소 테마 표**(`place/placeTheme.ts`): 구성기 세계 아홉(snow_north · desert_east · pirate_isles · sky_island · steampunk_city · prehistoric · sengoku_edo · sf_station · wasteland)마다 바탕 + 실내 + 종류별(묘실·얼음 동굴·난파선·화산…)로 전투 배경 · 길 적 · 보스를 적는다. 맵의 테마 = 청사진 세계 + 청사진 장소 목록의 종류(`placeThemeOf`). 버들항(표에 없는 세계)은 종전 길.
+- **길 적**(`themeFieldTroops`): 테마의 적 하나짜리 무리(`troop_theme_<적>`)를 시작 파티에 맞춘 사본으로 세운다. **보스**(`themeBossTroop`): 상대 이름과 낱말이 겹치는 테마 적, 없으면 단계마다 돌려 고른다 — `blueprintPath.foeTroop` 이 먼저 묻는다.
+- **전투 배경**(`applyThemeBackdrop`): 겹 배경은 숲·평원·동굴·눈·사막 다섯뿐이다. 맞는 것이 있으면 적고, 없으면 대역을 적되 없는 그림 줄을 남긴다. 저작한 배경은 그대로(기본값 숲만 저작으로 치지 않는다). `shipLookDefaults.fillBattleBackgrounds` 도 테마를 먼저 묻는다.
+- **없는 그림 줄**(`ArtGap` · `artGapLine` · `parseArtGap`): `[art-gap] theme=desert_east/tomb want=backdrop wanted=«stone burial chamber» where=«별의 매장실» stand-in=battle-scenery-cave`. `want` 는 backdrop·foe·boss. `session.missingArt`(턴 기록 `missingArt`)에 실린다 — 그림 부족 장부는 `parseArtGap` 으로 테마·바란 것·어디·대역을 센다. 새 그림은 그리지 않는다.
+- **상자**(`usableLoot`): 전투 중에도 쓰는 회복약(값 40~400)이나 돈. 제작 재료는 주지 않는다.
+- **보이는 적은 걷는다**(`populateWorldPlace`): 두 칸 왕복이 안 되면 다른 축, 그다음 한 칸 왕복을 해 본 뒤에만 서 있는 적으로 둔다 — 좁은 방에서 «조사하니 전투» 가 되던 자리.
+- **싸우는 단계의 상대**(`story/stepFoes.ts`): 서 있는 그림 = 전투 그림(생성 도트가 있으면 그대로, 없을 때만 걷기 칩). 몬스터 그림으로 선 상대는 이긴 뒤 페이지가 투명·아래 통행·명령 없음(`puzzle.ts` `battle.leaves`). 사람 칩으로 선 상대는 남아 뒷말을 한다.
+- **옛 판 고치기**(끝맺음 `finish/stages/step-foes.ts`, 조립 order 135 — 길 위 전투 맞추기 앞): `settleStepFoesIn`(그림·걷힘) → `restockOffThemePlaces`(앞장선 적 그림이 테마 밖인 보이는 적·제작 재료 상자를 걷고 다시 놓는다) → `themeBattleBackdropsIn`.
+
+재기(모델 없음, `storyCoherenceProbe.mts facts`):
+
+| | 이기고도 남는 상대 | 필드≠전투 그림 | 테마 밖 숲 배경 | 제작 재료 상자 |
+|---|---|---|---|---|
+| fun-x1 저장본 → 끝맺음 재생 | 1 → 0 | 1 → 0 | 2/2 → 0 | 2 → 0 |
+| fun-w3 저장본 → 끝맺음 재생 | 1 → 0 | 1 → 0 | 0 → 0 | 1 → 0 |
+| fun-x1 첫 턴을 빈 프로젝트에 다시 지음(main → 지금) | 1 → 0 | 1 → 0 | 2 → 0 | 2 → 0 |
+
+재생 뒤 fun-x1: 피라미드 사막 배경 · 모래 지렁이·독사·뿔 딱정벌레 / 매장실 동굴 배경(대역, 없는 그림 줄 1) · 미라. fun-w3: 서리 절벽 눈 배경 · 산양·다이어 울프 / 얼음 동굴 · 수정 골렘.
+다시 지은 판의 «모래 수호자» 는 미라 그림으로 서고 싸운다(옛 저장본의 수호자는 드래곤 사본 그대로 — 그림만 전투 그림과 같아진다). 자동 플레이 엔딩·다시 읽기 성공. **화면 미검증** — 그림은 사람·판정자가 본다.
+남은 것: 테마 표의 적은 기본 DB 106종에서 고른 것이라 SF·전국 일본·선사는 전부 대역이다(없는 그림 줄이 남는다). 시험 `test/aiV2PlaceTheme.test.ts`.
+
 ## 단계 종류 — 사람·싸움·퍼즐·고르기를 청사진이 정하고 함수가 짓는다 (2026-11-10)
 
 **문제(오너 2026-11-10 「재미도 재민데」).** Terra 38판 눈가림 판정(Opus) 재미 2.79/10 — 선택 0.26/3 · 다시 하기 0.16 · 보상 0.88 · 성장 1.03 · 인물 1.08 · 퍼즐 1.14.

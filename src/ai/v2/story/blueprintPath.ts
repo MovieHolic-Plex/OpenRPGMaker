@@ -12,13 +12,11 @@
 // 지은 뒤 청사진의 place·event 를 실제 맵·이벤트 이름에 맞춰 둔다(출하 검사 walkBlueprint 가 같은 이름으로 걷는다).
 import { alignCodeClues, digitWord, shownToken } from "./codeClues";
 import { isPassable } from "@/project/collision";
-import { charsetFrameIndex } from "@/assets/easyrpgRtp";
-import { isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
-import { fieldGraphicForBattler } from "@/editor/tools/fieldEnemyGraphics";
 import type { GameMap, Project } from "@/project/types";
 import { normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
 import { incomingLandings, resolveWhere } from "../place/where";
+import { applyThemeBackdrop, themeBossTroop } from "../place/placeTheme";
 import { walkStart } from "../place/cells";
 import type { BuildRun, ContentBuildResult } from "../shared/types";
 import { BLUEPRINT_PATH_IDS, codeStepBypass, escapeLeaks, eventGives, isCodeStep, walkBlueprint } from "./blueprint";
@@ -34,6 +32,7 @@ import { PathStepText, norm, sameName, mapFor, isItem, josa, lookLine } from "./
 import { gateKeyedEntrances, gateEntrySteps } from "./blueprintPathGates";
 import { gateBattleSteps, orderStepBattles, fitUnwinnableStepBattles } from "./blueprintPathBattles";
 import { storedStepText, modelCode, fixLookLines, tellCode, stepObjectives } from "./blueprintPathText";
+import { foeGraphic, settleStepFoesIn, themeBattleBackdropsIn } from "./stepFoes";
 
 /**
  * 이미 지은 청사진 단계 이벤트·퍼즐 고리 이벤트를 걸어 가 조사할 수 있는 자리로 옮긴다(내용은 그대로). 옮긴 것 목록.
@@ -106,7 +105,7 @@ export const BUILD_BLUEPRINT_PATH_SCHEMA = {
       code: { type: "string", description: "make this step a number lock — the answer (3+ digits, written in an earlier step's lines)" },
       options: { type: "array", items: { type: "string" }, description: "make code a choice instead (include the right answer)" },
       wrongLines: { type: "array", items: { type: "string" } },
-      winLines: { type: "array", items: { type: "string" }, description: "battle step: 1–2 lines after the player wins — the foe's own words, or narration wrapped in parentheses: «(The beast backs into the reeds.)»" },
+      winLines: { type: "array", items: { type: "string" }, description: "battle step: 1–2 lines after the player wins — the foe's own words, or narration wrapped in parentheses: «(The beast backs into the reeds.)». A foe drawn as a monster leaves the map after the win, so its doneLines are not shown" },
       choices: { type: "array", description: "choice step: the 2–3 options the player picks from", items: { type: "object", properties: {
         text: { type: "string", description: "the option as the player reads it" },
         lines: { type: "array", items: { type: "string" }, description: "what the person answers when this is picked" },
@@ -155,10 +154,13 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   try { extra.push(...gateBattleSteps(run)); } catch { /* 전투 잠금 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...orderStepBattles(run)); } catch { /* 순서 보호 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...fitUnwinnableStepBattles(run)); } catch { /* 맞추기 실패는 경로를 깨지 않는다 */ }
+  const gaps: string[] = [];
+  try { extra.push(...settleStepFoesIn(run.ctx.project)); const bg = themeBattleBackdropsIn(run.ctx.project); extra.push(...bg.notes); gaps.push(...bg.gaps); } catch { /* 상대 그림·배경 맞추기 실패는 경로를 깨지 않는다 */ }
   try { const heal = ensureHealingAccess(run); if (heal.length) extra.push(`회복 길을 넣었다: ${heal.join(", ")}`); } catch { /* 회복 넣기 실패는 경로를 깨지 않는다 */ }
   try { const shop = ensureSupplyShop(run); if (shop.length) extra.push(`상점을 넣었다: ${shop.join(", ")}`); } catch { /* 상점 넣기 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...stageMysteryCase(run)); } catch { /* 추리 사건 세우기 실패는 경로를 깨지 않는다 */ }
-  return extra.length ? { ...result, summary: `${result.summary} ${extra.join(". ")}.` } : result;
+  const missingArt = [...new Set([...result.missingArt, ...gaps])];
+  return extra.length ? { ...result, missingArt, summary: `${result.summary} ${extra.join(". ")}.` } : { ...result, missingArt };
 }
 
 function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = []): BlueprintPathResult {
@@ -233,6 +235,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     return where.cell;
   };
   const lastBattle = steps.reduce((hit, st, i) => (st.kind === "battle" ? i : hit), -1);
+  /** 테마에 맞는 그림이 없어 대역을 쓴 것(place/placeTheme 의 없는 그림 줄) — 결과의 missingArt 에 싣는다. */
+  const artGaps: string[] = [];
   const kept: string[] = [];
   // 바로 앞 단계가 모델(또는 앞선 빌드)이 지은 이벤트 그대로면 — 번호 단계의 답을 그 이벤트 대사에 적는다(따로 쪽지를 세우지 않는다).
   let prevKept: { mapId: string; eventId: string; gives: string; event: string } | undefined;
@@ -323,10 +327,12 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     const choice = options.length >= 2 ? { options: options.map((o, i) => ({ text: o.text.trim(), ...(o.lines?.length ? { lines: o.lines } : {}), flag: `${step.id} 선택 ${i + 1}` })) } : undefined;
     if (choice) for (const [i, o] of options.entries()) if (o.later?.trim()) variants.push({ needs: `${step.id} 선택 ${i + 1}`, lines: [o.later.trim()] });
     // 싸우기(battle): 대사 뒤 그 상대와 싸워 이겨야 보상·엔딩이 이어진다 — 마지막 싸움은 보스, 앞 싸움은 중간 보스 세기.
-    const troopId = step.kind === "battle" && !code ? foeTroop(run.ctx.project, step.id, who, k === lastBattle) : undefined;
+    const troopId = step.kind === "battle" && !code ? foeTroop(run.ctx.project, step.id, who, k === lastBattle, map.id, k, artGaps) : undefined;
+    if (troopId) { const bg = applyThemeBackdrop(run.ctx.project, map.id); if (bg.gap) artGaps.push(bg.gap); }
     const battle = troopId ? { troopId, winLines: t?.winLines?.length ? t.winLines : [`(${who ?? step.event}${josa(who ?? step.event, "을", "를")} 쓰러뜨렸다.)`] } : undefined;
     const foeLook = troopId ? foeGraphic(run.ctx.project, troopId) : undefined;
-    if (battle) base = { ...base, battle, ...(foeLook ? { graphic: foeLook } : {}) };
+    // 몬스터 그림으로 선 상대는 이기면 맵에서 사라진다 — 사람 칩으로 선 상대(그림을 못 찾은 사람)는 남아 뒷말을 한다.
+    if (battle) base = { ...base, battle: { ...battle, ...(foeLook ? { leaves: true } : {}) }, ...(foeLook ? { graphic: foeLook } : {}) };
     const codeLocked = clueLearn ? ["번호 자물쇠가 걸려 있다. 번호를 알아야 열 수 있을 것 같다."] : undefined;
     // 모델의 잠김 글은 청사진의 needs 를 보고 쓴 글이다 — 함수가 단서 고리를 끼워 이 단계의 조건을 그 단서로 바꿨으면 쓰지 않는다(조건에서 지은 글만).
     const modelLocked = clueLearn ? undefined : t?.lockedLines?.length ? t.lockedLines : undefined;
@@ -380,16 +386,19 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   run.ctx.project = aligned.project;
   const objectiveNotes = stepObjectives(run, steps, links.map((l, li) => ({ step: linkStep[li]!, name: l.name ?? "", made: eventIds[li] })));
   const roles = links.map((l, i) => `${linkStep[i]! < 0 ? `(단서) ${l.name}` : `${steps[linkStep[i]!]!.id} ${steps[linkStep[i]!]!.event}`}(${l.role}${l.code ? ` 번호 ${l.code}` : ""}${l.needs ? ` ← ${l.needs}` : l.needsCondition ? " ← 앞 단계 이벤트가 켜는 것" : ""})`).join(" → ");
-  return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}${objectiveNotes.length ? ` 목표 줄: ${objectiveNotes.join(" / ")}` : ""}` };
+  return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], missingArt: [...new Set([...built.missingArt, ...artGaps])], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}${objectiveNotes.length ? ` 목표 줄: ${objectiveNotes.join(" / ")}` : ""}` };
 }
 
 /**
  * 싸우는 단계의 상대 무리 — 시작 파티에 맞춘 보스(마지막 싸움)·중간 보스 사본. 상대 이름(who)이 있으면 그 이름을 단 사본을 단계마다 하나 둔다
  * (원본 DB 적은 그대로, 다시 지으면 같은 사본을 고쳐 쓴다). 전투 화면의 적 이름이 청사진의 그 사람이 된다.
  */
-function foeTroop(project: Project, stepId: string, who: string | undefined, final: boolean): string | undefined {
-  const picked = pickFittedTroops(project, undefined);
-  const baseId = (final ? picked.boss : picked.midBoss) ?? picked.boss ?? picked.midBoss ?? picked.field.at(-1);
+function foeTroop(project: Project, stepId: string, who: string | undefined, final: boolean, mapId: string, salt: number, gaps: string[]): string | undefined {
+  // 그 장소의 테마에 맞는 상대가 먼저다(사막 유적의 수호자가 늘 «붉은 드래곤» 사본이었다) — 테마가 없는 맵(버들항)만 종전대로 DB 에서 가장 센 무리.
+  const themed = themeBossTroop(project, mapId, who, final, salt);
+  if (themed.gap) gaps.push(themed.gap);
+  const picked = themed.troopId ? undefined : pickFittedTroops(project, undefined);
+  const baseId = themed.troopId ?? (final ? picked!.boss : picked!.midBoss) ?? picked!.boss ?? picked!.midBoss ?? picked!.field.at(-1);
   const name = who?.trim();
   const source = project.database.troops.find((t) => t.id === baseId);
   if (!baseId || !source || !name) return baseId;
@@ -412,19 +421,4 @@ function foeTroop(project: Project, stepId: string, who: string | undefined, fin
   put(project.database.enemies as { id: string }[], enemy);
   put(project.database.troops as { id: string }[], troop);
   return id;
-}
-
-/**
- * 싸우는 상대가 맵에 서는 모습 — 그 무리 앞장선 적의 전투 그림과 같은 종류의 필드 그림(보이는 적 place_field_enemy 와 같은 규칙:
- * 대응하는 걷기 칩, 없으면 전투 도트 그림 그대로). 그런 그림이 없으면 undefined(사람 칩으로 선다).
- * 왜(2026-11-10 Terra fun-w2): «늪의 송곳니»(짐승)·«재의 수호자» 가 「중년 남성 주민」 칩으로 서 있었다.
- */
-export function foeGraphic(project: Project, troopId: string): Record<string, unknown> | undefined {
-  const troop = project.database.troops.find((t) => t.id === troopId);
-  const leadId = troop?.members?.length ? troop.members[0]!.enemyId : troop?.enemyIds?.[0];
-  const sprite = (project.database.enemies.find((e) => e.id === leadId) as { monsterResourceId?: string } | undefined)?.monsterResourceId;
-  if (!sprite) return undefined;
-  const cell = fieldGraphicForBattler(sprite);
-  if (cell) return { sprite: { type: "bundled", id: cell.textureKey }, direction: "down", pattern: charsetFrameIndex({ characterIndex: cell.characterIndex, direction: "down", pattern: 1 }) };
-  return isGeneratedMonsterSprite(sprite) ? { sprite: { type: "bundled", id: sprite }, direction: "down", pattern: 0 } : undefined;
 }
