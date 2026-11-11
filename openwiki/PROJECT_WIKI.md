@@ -149,7 +149,7 @@ For each project that uses this pattern, keep:
 - `AGENTS.md` at repo root: tells AI systems where the local wiki lives and what to read first.
 - `openwiki/PROJECT_WIKI.md`: project-specific AI entry point.
 - `openwiki/quickstart.md`: 에이전트의 첫 10분 — 환경·게이트 기준선·기능→파일 라우터.
-- `openwiki/INDEX.md`: 생성 항해 색인(`npm run openwiki:index`) — 포기하지 말고 재생성해라.
+- `openwiki/INDEX.md`: 생성 항해 색인(`npm run openwiki:index`) — 커밋하지 않는다(.gitignore, 2026-11-11). 체크아웃에 없으면 만들어 읽어라.
 - `openwiki/architecture.md`: ownership boundaries and boot/runtime structure.
 - `openwiki/editor-workflows.md`: slim index to editor topic pages.
 - `openwiki/runtime-and-data.md`: slim index to runtime topic pages.
