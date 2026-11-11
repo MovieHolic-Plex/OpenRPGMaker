@@ -2435,6 +2435,16 @@ const setMapProperties: ToolDefinition = {
         saveWarnings.push(`${map.name} 에는 저장 메뉴를 여는 이벤트가 있는데 저장 금지를 켰습니다 — 그 이벤트(일기장·세이브 포인트)도 저장할 수 없게 됩니다. 메뉴 저장만 막으려면 이 맵은 저장 금지를 끄세요.`);
       }
     }
+    // 제한 깃발을 맨 위에 준 것도 받는다(disableSave:true) — 그 깃발 하나만 바꾼다. 전에는 「바꿀 맵 속성이 없습니다」로 거절했다(2026-11-11).
+    // 스키마에는 올리지 않는다: 모든 칸을 채우는 모델이 false 를 채워 보내 켜 둔 제한을 끄지 않게.
+    const flatFlags = (["disableSave", "disableTeleport", "disableEscape"] as const).filter((key) => typeof args[key] === "boolean");
+    for (const key of flatFlags) {
+      if (args[key] === true) map[key] = true; else delete map[key];
+      changed.push(`${key}=${args[key] === true}`);
+    }
+    if (flatFlags.includes("disableSave") && map.disableSave && JSON.stringify(map.events).includes('"kind":"openSaveMenu"')) {
+      saveWarnings.push(`${map.name} has an event that opens the save menu, and saving is now disabled on this map — that event cannot save either.`);
+    }
     if (typeof args.characterScale === "number" && Number.isFinite(args.characterScale)) {
       if (args.characterScale >= 1) {
         delete map.characterScale;
@@ -2504,7 +2514,10 @@ const setMapProperties: ToolDefinition = {
       };
       changed.push(`구름 그림자=${map.cloudShadows.enabled ? "켬" : "끔"}`);
     }
-    if (changed.length === 0) throw new ToolError("바꿀 맵 속성이 없습니다.", { code: "invalid-args", mapId: map.id });
+    if (changed.length === 0) {
+      const sent = Object.keys(args).filter((key) => key !== "mapId");
+      throw new ToolError(`Nothing to change on ${map.id}${sent.length ? ` — not a map property this tool sets: ${sent.join(", ")}` : ""}. Shapes: name:"…" · bgm:{…} · flags:{disableSave:true, disableTeleport:true, disableEscape:true} (or disableSave:true at the top level) · encounterRate · zoom · loop · background:{…}.`, { code: "invalid-args", mapId: map.id });
+    }
     return { summary: `${map.name} 속성 변경 — ${changed.join(", ")}`, data: { mapId: map.id }, ...(loopWarnings.length || saveWarnings.length || backgroundWarnings.length || zoomWarnings.length ? { warnings: [...zoomWarnings, ...backgroundWarnings, ...loopWarnings, ...saveWarnings] } : {}) };
   },
 };

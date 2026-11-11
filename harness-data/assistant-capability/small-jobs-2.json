@@ -208,6 +208,21 @@
    ],
    "accept": [
     {
+     "note": "한 호출: place_savepoint mode:'heal' — 회복만 하고 저장은 안 한다",
+     "calls": [
+      {
+       "tool": "place_savepoint",
+       "args": {
+        "mapId": "map_5eec6ba0-1ac1-48ab-9d7f-db5032670b4c",
+        "x": 20,
+        "y": 23,
+        "mode": "heal",
+        "name": "회복의 샘"
+       }
+      }
+     ]
+    },
+    {
      "note": "회복하고 기록도 하는 세이브 포인트(place_savepoint heal)",
      "calls": [
       {
@@ -942,6 +957,23 @@
    ],
    "accept": [
     {
+     "note": "한 호출: place_battle_blocker — graphic 없이(도구가 걷기 칩을 고른다)",
+     "calls": [
+      {
+       "tool": "place_battle_blocker",
+       "args": {
+        "mapId": "map_blank_start",
+        "x": 10,
+        "y": 7,
+        "troopId": "troop_golem_guard",
+        "intro": [
+         "여기는 지나갈 수 없다."
+        ]
+       }
+      }
+     ]
+    },
+    {
      "note": "손으로 쓴 이벤트(대사 → 전투)",
      "calls": [
       {
@@ -1308,6 +1340,21 @@
     }
    ],
    "accept": [
+    {
+     "note": "한 호출 + 빈 칸 채움(gold:0 · partyActorIds:[])",
+     "calls": [
+      {
+       "tool": "set_session_start",
+       "args": {
+        "gold": 0,
+        "inventory": {
+         "item_potion": 3
+        },
+        "partyActorIds": []
+       }
+      }
+     ]
+    },
     {
      "note": "시작 맵의 자동 이벤트가 한 번만 준다",
      "calls": [
@@ -3288,6 +3335,19 @@
    ],
    "accept": [
     {
+     "note": "한 호출: configure_npc_patrol type:'random'",
+     "calls": [
+      {
+       "tool": "configure_npc_patrol",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_guard",
+        "type": "random"
+       }
+      }
+     ]
+    },
+    {
      "note": "모든 페이지를 돌아다니게",
      "calls": [
       {
@@ -3449,6 +3509,21 @@
        }
       }
      }
+    }
+   ],
+   "accept": [
+    {
+     "note": "한 호출: configure_npc_patrol type:'fixed'",
+     "calls": [
+      {
+       "tool": "configure_npc_patrol",
+       "args": {
+        "mapId": "map_ember_village",
+        "eventId": "ev_ember_child",
+        "type": "fixed"
+       }
+      }
+     ]
     }
    ],
    "wrong": [
@@ -3956,6 +4031,20 @@
        "disableSave": true
       }
      }
+    }
+   ],
+   "accept": [
+    {
+     "note": "깃발을 맨 위에 준다(disableSave:true)",
+     "calls": [
+      {
+       "tool": "set_map_properties",
+       "args": {
+        "mapId": "map_638339b3-341f-4d31-93bd-ccc90a33304a",
+        "disableSave": true
+       }
+      }
+     ]
     }
    ],
    "wrong": [
