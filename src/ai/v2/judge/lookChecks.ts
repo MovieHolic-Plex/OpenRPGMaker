@@ -13,6 +13,7 @@ import { OPRN_PANORAMA_ASSETS } from "@/assets/oprnPanoramas";
 import { sharedCharacterSemantics } from "@/project/sharedCharacters";
 import { normalizeCharacterScale } from "@/project/footprint";
 import type { EventPageGraphic, Project } from "@/project/types";
+import { tagged, type Finding } from "./finding";
 
 type Obj = Record<string, unknown>;
 
@@ -39,12 +40,12 @@ function drawnWidth(frameWidth: number, graphic: Pick<EventPageGraphic, "scale">
  * 파티보다 훨씬 크게 그려지는 칩(J23). 보스가 아닌 이벤트가 파티 칩의 1.75배 이상이면 짚는다 — 확대한 24px 칩은 도트가 뭉툭해
  * 같은 화면의 파티와 다른 해상도로 보인다. 이번에 새로 만들거나 바꾼 이벤트만 본다.
  */
-export function oversizedSprites(before: Project, after: Project): string[] {
+export function oversizedSprites(before: Project, after: Project): Finding[] {
   const hero = after.database.actors.find((a) => a.id === (after.system.startActorIds?.[0] ?? "actor_hero")) ?? after.database.actors[0];
   const partyWidth = frameWidthOf(after, hero?.characterResourceId) ?? CHARSET_FRAME_WIDTH;
   const old = new Map<string, string>();
   for (const map of Object.values(before.maps)) for (const ev of map.events ?? []) old.set(`${map.id}/${ev.id}`, JSON.stringify(ev.pages ?? []));
-  const out: string[] = [];
+  const out: Finding[] = [];
   for (const map of Object.values(after.maps)) {
     for (const ev of map.events ?? []) {
       if (old.get(`${map.id}/${ev.id}`) === JSON.stringify(ev.pages ?? [])) continue;
@@ -56,7 +57,7 @@ export function oversizedSprites(before: Project, after: Project): string[] {
         const ratio = drawnWidth(width, graphic) / partyWidth;
         if (ratio < 1.75) continue;
         const scaleText = (graphic as Obj).scale !== undefined ? `배율 ${String((graphic as Obj).scale)}` : `칸 ${width}px`;
-        out.push(`[게임 검사 크기] 「${ev.name || ev.id}」(${map.name ?? map.id}, ${ev.id}) ${pageIndex + 1}쪽 그림이 파티 칩의 ${ratio.toFixed(1)}배로 그려진다(${scaleText}) — 확대한 칩은 도트가 뭉툭해 16px 파티 옆에서 다른 해상도로 보인다. 보스가 아니면 patch_event_page 로 graphic.scale 을 빼서(또는 1) 파티와 같은 크기로 두고, 큰 몸이 필요하면 큰 그림(3×2 몸)이 있는 보스 그림을 고른다.`);
+        out.push(tagged("game", "크기", `「${ev.name || ev.id}」(${map.name ?? map.id}, ${ev.id}) ${pageIndex + 1}쪽 그림이 파티 칩의 ${ratio.toFixed(1)}배로 그려진다(${scaleText}) — 확대한 칩은 도트가 뭉툭해 16px 파티 옆에서 다른 해상도로 보인다. 보스가 아니면 patch_event_page 로 graphic.scale 을 빼서(또는 1) 파티와 같은 크기로 두고, 큰 몸이 필요하면 큰 그림(3×2 몸)이 있는 보스 그림을 고른다.`));
         break;
       }
     }
@@ -153,10 +154,10 @@ function walkFaces(commands: unknown, visit: (speaker: string, faceId: string) =
  * 고른 얼굴·걷기 칩이 그 인물의 이름과 어긋난다(J35·J30·J41): 「젊은」 인물에 노인 얼굴, 인형·태엽 병정에 사람 얼굴,
  * 「하얀 드레스」 여자에 분홍 드레스 칩. 이름에 나이·종류·옷 색 낱말이 있을 때만 본다. 이번에 만들거나 바꾼 이벤트만.
  */
-export function lookMismatches(before: Project, after: Project): string[] {
+export function lookMismatches(before: Project, after: Project): Finding[] {
   const old = new Map<string, string>();
   for (const map of Object.values(before.maps)) for (const ev of map.events ?? []) old.set(`${map.id}/${ev.id}`, JSON.stringify(ev.pages ?? []));
-  const out: string[] = [];
+  const out: Finding[] = [];
   const seen = new Set<string>();
   for (const map of Object.values(after.maps)) {
     for (const ev of map.events ?? []) {
@@ -167,13 +168,13 @@ export function lookMismatches(before: Project, after: Project): string[] {
         const why = entry ? spriteMismatch(evName, entry) : undefined;
         if (why && !seen.has(`s:${evName}:${entry!.textureKey}#${entry!.characterIndex}`)) {
           seen.add(`s:${evName}:${entry!.textureKey}#${entry!.characterIndex}`);
-          out.push(`[게임 검사 그림] 「${evName}」(${map.name ?? map.id}, ${ev.id}) 의 걷기 그림이 이름과 어긋난다: ${why}. list_npc_graphics{query:<나이·종류·옷 색 낱말 하나>} 로 appearance 가 맞는 칸을 골라 patch_event_page 로 graphic 을 바꾼다. 꼭 맞는 그림이 없으면 가장 가까운 것을 두고 generate_walk_chip(그 이벤트, 생김새 설명)으로 그 인물의 걷기 칩을 만들게 한다.`);
+          out.push(tagged("game", "그림", `「${evName}」(${map.name ?? map.id}, ${ev.id}) 의 걷기 그림이 이름과 어긋난다: ${why}. list_npc_graphics{query:<나이·종류·옷 색 낱말 하나>} 로 appearance 가 맞는 칸을 골라 patch_event_page 로 graphic 을 바꾼다. 꼭 맞는 그림이 없으면 가장 가까운 것을 두고 generate_walk_chip(그 이벤트, 생김새 설명)으로 그 인물의 걷기 칩을 만들게 한다.`));
         }
         walkFaces(page.commands, (speaker, faceId) => {
           const reason = faceMismatch(speaker, faceId);
           if (!reason || seen.has(`f:${speaker}:${faceId}`)) return;
           seen.add(`f:${speaker}:${faceId}`);
-          out.push(`[게임 검사 얼굴] 「${speaker}」의 대사 얼굴(${faceId})이 이름과 어긋난다: ${reason}. list_resources{kind:'faceset', query:<나이·종류 낱말>} 의 description(그림: …)을 보고 맞는 얼굴로 changeFace 를 바꾸고, 맞는 얼굴이 없으면(인형·기계·유령 등) 그 대사 앞의 changeFace 를 resourceId:'' 로 비운다 — 다른 인물의 얼굴을 빌리지 않는다.`);
+          out.push(tagged("game", "얼굴", `「${speaker}」의 대사 얼굴(${faceId})이 이름과 어긋난다: ${reason}. list_resources{kind:'faceset', query:<나이·종류 낱말>} 의 description(그림: …)을 보고 맞는 얼굴로 changeFace 를 바꾸고, 맞는 얼굴이 없으면(인형·기계·유령 등) 그 대사 앞의 changeFace 를 resourceId:'' 로 비운다 — 다른 인물의 얼굴을 빌리지 않는다.`));
         });
       }
     }
@@ -197,14 +198,14 @@ const MODERN = /현대|서울|도쿄|지하철|학교|대학|회사|카페|편�
  * 타이틀 배경이 게임과 다른 시대다(J38): 동화 공방 이야기에 현대 고층 도시 노을. 노을 세트는 하늘·해·구름·«먼 도시 실루엣» 세 겹이라
  * 이름(「노을」)만 보면 현대 도시인 줄 모른다. 판타지·동화·사극 게임에서 도시 실루엣·빌딩 층이 타이틀에 깔렸으면 짚는다.
  */
-export function titleBackdropMismatch(project: Project, task: string): string[] {
+export function titleBackdropMismatch(project: Project, task: string): Finding[] {
   const title = (project.system.titleScreen ?? {}) as { backgroundResourceId?: string; backgroundLayers?: { resourceId?: string }[]; title?: string };
   const ids = [title.backgroundResourceId, ...(title.backgroundLayers ?? []).map((layer) => layer.resourceId)].filter((id): id is string => typeof id === "string" && !!id);
   const modern = ids.filter(modernBackdrop);
   if (!modern.length) return [];
   const story = `${task} ${title.title ?? ""} ${project.meta.title ?? ""} ${Object.values(project.maps).map((m) => m.name ?? "").join(" ")}`;
   if (!PREMODERN.test(story) || MODERN.test(story)) return [];
-  return [`[게임 검사 타이틀] 타이틀 배경(${[...new Set(modern)].join(", ")})에 현대 도시 실루엣·빌딩이 보이는데 이 게임은 현대가 아니다(${PREMODERN.exec(story)?.[0]}). list_resources{kind:'backdrop', query:<장소·분위기 낱말>} 의 description(그림: …)을 읽고 이 이야기의 장소에 맞는 그림으로 set_title_screen{backgroundResourceId, backgroundLayers:[]} 를 다시 하고, 맞는 그림이 없으면 도시가 안 보이는 하늘·밤하늘(oprn-pano-night 등)만 두고 보고에 적는다.`];
+  return [tagged("game", "타이틀", `타이틀 배경(${[...new Set(modern)].join(", ")})에 현대 도시 실루엣·빌딩이 보이는데 이 게임은 현대가 아니다(${PREMODERN.exec(story)?.[0]}). list_resources{kind:'backdrop', query:<장소·분위기 낱말>} 의 description(그림: …)을 읽고 이 이야기의 장소에 맞는 그림으로 set_title_screen{backgroundResourceId, backgroundLayers:[]} 를 다시 하고, 맞는 그림이 없으면 도시가 안 보이는 하늘·밤하늘(oprn-pano-night 등)만 두고 보고에 적는다.`)];
 }
 
 // ───────────────────────── 주인공 모습 ↔ 장르 ─────────────────────────
@@ -214,7 +215,7 @@ export function titleBackdropMismatch(project: Project, task: string): string[] 
  * 출하 검사(shipChecks hero-look)는 «게임을 만들어 줘» 요청에만 돈다 — 이 검사는 이미 지은 게임을 고치는 요청에서도, 맵이 현대 칩셋이거나
  * 요청·제목이 현대·이야기 쪽이면 짚는다. 고칠 때 이름표가 아니라 그림 설명(list_npc_graphics 의 appearance)으로 고른다.
  */
-export function pristineFantasyHero(project: Project, task: string): string[] {
+export function pristineFantasyHero(project: Project, task: string): Finding[] {
   const hero = project.database.actors.find((a) => a.id === "actor_hero") ?? project.database.actors[0];
   if (!hero || (hero.characterResourceId !== undefined && hero.characterResourceId !== "easyrpg-charset-actor1") || (hero.characterIndex ?? 0) !== 0) return [];
   const modernMaps = Object.values(project.maps).filter((map) => {
@@ -225,5 +226,5 @@ export function pristineFantasyHero(project: Project, task: string): string[] {
   const nonFantasy = modernMaps.length > 0 || MODERN.test(story) || /연애|공포|호러|회상|추리|일상|장난감|태엽|동화|romance|horror|mystery/iu.test(story);
   if (!nonFantasy || /용사|모험|검사|기사|전사|영웅|퀘스트|마왕|rpg|hero|adventure|quest|knight/iu.test(story)) return [];
   const where = modernMaps.length ? `현대 맵 ${modernMaps.slice(0, 2).map((m) => m.name).join("·")}` : "이 이야기";
-  return [`[게임 검사 주인공] 주인공(${hero.name}, ${hero.id})이 편집기 기본 판타지 검사 칩(easyrpg-charset-actor1 0번: 두건·망토, 검·방패 장비)이다 — ${where}에 맞지 않는다. list_npc_graphics{query:<주인공의 나이·성별·차림 낱말>} 의 appearance 를 읽고 맞는 칸으로 upsert_actor{id:'${hero.id}', characterResourceId, characterIndex, faceResourceId(그 칸의 face, 없으면 비움)} 하고, 전투가 없으면 initialEquipment 의 weapon·shield 를 비운다.`];
+  return [tagged("game", "주인공", `주인공(${hero.name}, ${hero.id})이 편집기 기본 판타지 검사 칩(easyrpg-charset-actor1 0번: 두건·망토, 검·방패 장비)이다 — ${where}에 맞지 않는다. list_npc_graphics{query:<주인공의 나이·성별·차림 낱말>} 의 appearance 를 읽고 맞는 칸으로 upsert_actor{id:'${hero.id}', characterResourceId, characterIndex, faceResourceId(그 칸의 face, 없으면 비움)} 하고, 전투가 없으면 initialEquipment 의 weapon·shield 를 비운다.`)];
 }

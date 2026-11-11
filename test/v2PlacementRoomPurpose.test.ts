@@ -6,6 +6,10 @@ import { counterSide, laneCells, objectEventFit, placementProblems } from "@/ai/
 import { offPurposeProps, purposeOf, purposeSwap } from "@/ai/v2/place/roomPurpose";
 import { placementContentProblems } from "@/ai/v2/judge/gameChecks";
 import { roomSetsFor } from "@/ai/v2/place/builders/interiorFill";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const placementLines = (...args: Parameters<typeof placementContentProblems>): string[] => placementContentProblems(...args).map(findingLine);
 
 const COUNTER = 30001, LANE = 30002, WARDROBE = 30003, CHEST = 30004, ARMCHAIR = 30005;
 
@@ -97,8 +101,8 @@ describe("v2 사람·조사 이벤트 자리", () => {
     map.events = [gate];
     const before = structuredClone(project);
     project.maps[map.id]!.events.push(person("ev_farmer", "농부", map.width - 2, 7, "random"));
-    const problems = placementContentProblems(before, project);
+    const problems = placementLines(before, project);
     expect(problems.some((p) => p.startsWith("[게임 검사 길막]") && p.includes("농부"))).toBe(true);
-    expect(placementContentProblems(project, project)).toEqual([]);
+    expect(placementLines(project, project)).toEqual([]);
   });
 });

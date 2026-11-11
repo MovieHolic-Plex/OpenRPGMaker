@@ -4,6 +4,11 @@ import { enemyIdentityProblems } from "@/ai/v2/judge/enemyChecks";
 import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { v2ExtraToolNames } from "@/ai/v2/request/readers";
 import type { Project } from "@/project/types";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const enemyLines = (...args: Parameters<typeof enemyIdentityProblems>): string[] => enemyIdentityProblems(...args).map(findingLine);
+const gameLines = (...args: Parameters<typeof gameContentProblems>): string[] => gameContentProblems(...args).map(findingLine);
 
 const WHOLE = "용사가 마왕을 잡으러 가는 짧은 RPG 만들어줘";
 
@@ -27,24 +32,24 @@ function battleProject(foes: Record<string, string[]>, boss?: { name: string; sk
 
 describe("v2 enemy identity check (fs-use-tools E1)", () => {
   it("passes a game with no battles at all", () => {
-    expect(enemyIdentityProblems(createBlankProject() as Project)).toEqual([]);
+    expect(enemyLines(createBlankProject() as Project)).toEqual([]);
   });
 
   it("flags several ordinary foes whose skills are all the same, and clears once one differs", () => {
     const flat = battleProject({ 해골: ["맹독 이빨", "뼈 저주"], 갑옷: ["맹독 이빨", "뼈 저주"] });
-    expect(enemyIdentityProblems(flat).filter((m) => m.includes("자기 기술이 없다"))).toHaveLength(1);
+    expect(enemyLines(flat).filter((m) => m.includes("자기 기술이 없다"))).toHaveLength(1);
     const varied = battleProject({ 해골: ["맹독 이빨", "뼈 저주"], 갑옷: ["방패 밀치기"] });
-    expect(enemyIdentityProblems(varied)).toEqual([]);
+    expect(enemyLines(varied)).toEqual([]);
   });
 
   it("does not fire for a single ordinary foe kind", () => {
-    expect(enemyIdentityProblems(battleProject({ 슬라임: [] }))).toEqual([]);
+    expect(enemyLines(battleProject({ 슬라임: [] }))).toEqual([]);
   });
 
   it("flags a boss that only has the basic attack, and clears once it has its own skill", () => {
     const flat = battleProject({}, { name: "마왕", skills: [] });
-    expect(enemyIdentityProblems(flat).filter((m) => m.includes("자기 기술이 없다"))).toHaveLength(1);
-    expect(enemyIdentityProblems(battleProject({}, { name: "마왕", skills: ["암흑 파동"] }))).toEqual([]);
+    expect(enemyLines(flat).filter((m) => m.includes("자기 기술이 없다"))).toHaveLength(1);
+    expect(enemyLines(battleProject({}, { name: "마왕", skills: ["암흑 파동"] }))).toEqual([]);
   });
 
   it("checks each map on its own: a varied forest does not hide a demon castle whose foes share one skill set", () => {
@@ -54,21 +59,21 @@ describe("v2 enemy identity check (fs-use-tools E1)", () => {
     castle.id = "map_castle"; castle.name = "마왕성"; castle.events = [demonA!, demonB!];
     p.maps[p.startMapId]!.events = p.maps[p.startMapId]!.events.filter((e) => [forestA, forestB].includes(e));
     p.maps.map_castle = castle;
-    const msgs = enemyIdentityProblems(p);
+    const msgs = enemyLines(p);
     expect(msgs).toHaveLength(1);
     expect(msgs[0]).toContain("마왕성");
     expect(msgs[0]).toContain("임프");
   });
 
   it("flags a boss whose skills are all shared with the foes of its map, and clears once it owns one", () => {
-    expect(enemyIdentityProblems(battleProject({ 해골: ["검격"], 갑옷: ["방패 밀치기"] }, { name: "마왕", skills: ["검격"] })).some((m) => m.includes("보스"))).toBe(true);
-    expect(enemyIdentityProblems(battleProject({ 해골: ["검격"], 갑옷: ["방패 밀치기"] }, { name: "마왕", skills: ["검격", "암흑 파동"] }))).toEqual([]);
+    expect(enemyLines(battleProject({ 해골: ["검격"], 갑옷: ["방패 밀치기"] }, { name: "마왕", skills: ["검격"] })).some((m) => m.includes("보스"))).toBe(true);
+    expect(enemyLines(battleProject({ 해골: ["검격"], 갑옷: ["방패 밀치기"] }, { name: "마왕", skills: ["검격", "암흑 파동"] }))).toEqual([]);
   });
 
   it("tells the model to fix it with upsert_enemy and names unused skills as candidates", () => {
     const p = battleProject({ 해골: ["맹독 이빨"], 갑옷: ["맹독 이빨"] });
     p.database.skills.push({ ...structuredClone(p.database.skills[0]!), id: "skill_spare_bolt", name: "여분 마법탄", scope: "enemy", power: 40 } as never);
-    const msg = enemyIdentityProblems(p)[0] ?? "";
+    const msg = enemyLines(p)[0] ?? "";
     expect(msg).toContain("upsert_enemy");
     expect(msg).toContain("skill_spare_bolt");
   });
@@ -76,8 +81,8 @@ describe("v2 enemy identity check (fs-use-tools E1)", () => {
   it("reaches the finish gate only for a whole-game request", () => {
     const after = battleProject({}, { name: "마왕", skills: [] });
     const before = createBlankProject() as Project;
-    expect(gameContentProblems(before, after, WHOLE).some((m) => m.startsWith("[게임 검사 적 개성]"))).toBe(true);
-    expect(gameContentProblems(before, after, "촌장 대사를 바꿔 줘").some((m) => m.startsWith("[게임 검사 적 개성]"))).toBe(false);
+    expect(gameLines(before, after, WHOLE).some((m) => m.startsWith("[게임 검사 적 개성]"))).toBe(true);
+    expect(gameLines(before, after, "촌장 대사를 바꿔 줘").some((m) => m.startsWith("[게임 검사 적 개성]"))).toBe(false);
   });
 });
 
