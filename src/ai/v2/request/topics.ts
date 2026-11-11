@@ -57,7 +57,8 @@ export function gameTopics(topic: string, combat: CombatAsk): readonly GameTopic
 const PERSON = String.raw`npc|주민|주인|상인|점원|경비|병사|촌장|손님|사람|아이|노인|동료|행인|학생|선생|직원|한\s*명|두\s*명|세\s*명|몇\s*명`;
 const ADD = String.raw`세워|세우|추가|배치|두어|둬\s*줘|놓아|넣어|만들|등장|서\s*있게`;
 const ADD_PERSON = new RegExp(`(?:${PERSON})[^.!?\\n]{0,14}(?:${ADD})`, "iu");
-const SELLS = /상점|잡화점|가게(?!\s*(?:해|하|할|돼|되))|팔게|팔기|파는|팔아|판매|구입|살\s*수|사게|\b(?:shop|sell|sells|selling)\b/iu;
+// 「주워 가게 해 줘」「시장으로 가게 되게」의 「가게」는 상점이 아니다 — 「가게 하나」는 상점이다.
+const SELLS = /상점|잡화점|가게(?!\s*(?:해|할\s*수|하게|하도록|돼|되[게면어도]))|팔게|팔기|파는|팔아|판매|구입|살\s*수|사게|\b(?:shop|sell|sells|selling)\b/iu;
 const MOVE_OR_REMOVE = /옮겨|옮기|이동시|치워|지워|지우|삭제|없애|빼\s*줘/u;
 /** 조건·대사·사건을 짜 달라는 낱말 — 이벤트 카드와 이벤트 쓰기 도구가 필요하다. */
 const LOGIC = /하면|으면|[가-힣]면\s|되게|하게|받게|주게|열리|조건|스위치|변수|퀘스트|의뢰|이벤트|대사|대화|말\s*걸|말을\s*걸|선택지|전투|싸우|잠긴|퍼즐|컷신|장면|회상|엔딩|script|event|dialogue|quest/iu;
