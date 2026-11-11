@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **194쪽 / 8408KB / 약 2,472,986 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **194쪽 / 8432KB / 약 2,480,122 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/asset-store.md` | 75KB | 19KB | 489 | ~22,312 |
-| `openwiki/assistant-v2.md` | 438KB | 48KB | 1898 | ~133,132 |
+| `openwiki/assistant-v2.md` | 460KB | 48KB | 2044 | ~139,556 |
 | `openwiki/atlas-biome-interior.md` | 109KB | 21KB | 534 | ~32,768 |
 | `openwiki/beodeul-city.md` | 240KB | 19KB | 1189 | ~73,036 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
@@ -32,7 +32,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-validation.md` | 64KB | 17KB | 419 | ~18,019 |
 | `openwiki/editor-workflows-misc.md` | 92KB | 35KB | 637 | ~25,927 |
 | `openwiki/editor-workshop.md` | 76KB | 15KB | 337 | ~22,898 |
-| `openwiki/harnesses/assistant-capability.md` | 151KB | 18KB | 990 | ~45,724 |
+| `openwiki/harnesses/assistant-capability.md` | 153KB | 18KB | 1008 | ~46,331 |
 | `openwiki/harnesses/building-kit.md` | 99KB | 4KB | 984 | ~29,868 |
 | `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
 | `openwiki/harnesses/monster-collect-species.md` | 63KB | 18KB | 353 | ~19,132 |
@@ -76,7 +76,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/architecture.md` | 10 | `.lazy.ts`, `.mjs`, `app.cjs`, `bridge.js`, `dist-electron/main.cjs`, `dist-electron/project-core.cjs`, `dist/start-screen.html`, `editor-demo-load.mjs`, `player.js`, `project.json` |
 | `openwiki/asset-store.md` | 23 | `DATA/store-uploads.json`, `OpenRPGMaker-store/scripts/storeCli.ts`, `deploy/README.md`, `installed.json`, `loading.json`, `migrations/012_games.sql`, `migrations/016_game_saves.sql`, `migrations/017_creator_voice.sql`, `packs/pNNN.json`, `preload-files.json`, `preload-sw.js`, `public/cloudsave.js`, `scripts/check-contract.mjs`, `scripts/games-host.mjs`, `src/ai/v2/musicWords.ts`, `src/ai/v2/prompt.ts`, `src/gameSaves.ts`, `src/games.ts`, `src/markdown.ts`, `src/posts.ts`, `src/web/changelog.ts`, `src/web/discoverPages.ts`, `test/changelog.test.ts` |
 | `openwiki/assistant-v2-refactor.md` | 7 | `finishAutoBuild.ts`, `loop/gates.ts`, `musicWords.ts`, `prompt.ts`, `shared/artGap.ts`, `todo/checks.ts`, `worldRequest.ts` |
-| `openwiki/assistant-v2.md` | 16 | `assistant-whole-game/tools/hplay.mjs`, `bbox-chipsets/space.mts`, `bbox-walls-3..5/lay.mts`, `finishAutoBuild.ts`, `prompt.ts`, `refs/anchors.json`, `rooms/tasks.json`, `scene.json`, `scene_start.mts`, `suite/dungeon-design-fp.py`, `suite/ledger/handoff-study.md`, `suite/prompts.json`, `suite/rooms/runs-omo/results.json`, `tasks.v1.json`, `vqaFixBudget.ts`, `worldRequest.ts` |
+| `openwiki/assistant-v2.md` | 20 | `assistant-whole-game/tools/hplay.mjs`, `bbox-chipsets/space.mts`, `bbox-walls-3..5/lay.mts`, `finishAutoBuild.ts`, `project.json`, `prompt.ts`, `purposeProbe.mts`, `refs/anchors.json`, `replay.json`, `rooms/tasks.json`, `scene.json`, `scene_start.mts`, `session/turns/NNN.json`, `suite/dungeon-design-fp.py`, `suite/ledger/handoff-study.md`, `suite/prompts.json`, `suite/rooms/runs-omo/results.json`, `tasks.v1.json`, `vqaFixBudget.ts`, `worldRequest.ts` |
 | `openwiki/atlas-biome-interior.md` | 8 | `.loop.json`, `.loop.png`, `interior-merged-palette.html`, `public/assets/atlas-biomes/jungle-chipset.png`, `public/assets/atlas-interior/dungeon-chipset.png`, `scripts/content/atlas-dungeon/split-dungeon.mjs`, `src/assets/atlasBiomeDungeonTileset.json`, `verify-shots/interior-bake-4/new-objects.png` |
 | `openwiki/authoring-play-presets.md` | 1 | `catalog-96.json` |
 | `openwiki/autotiles.md` | 13 | `install-pixel-art-world-shared-host.mjs`, `pixelArtWorldAutotiles.ts`, `prepare-pixel-art-world-xp-library.mjs`, `publish-pixel-art-world-xp-library.mjs`, `reports/pr617-621-integration.md`, `src/assets/tiboRecoveredTileset.json`, `src/project/defaults/iceGrandPlain64.ts`, `src/project/defaults/tallGrassArrange.ts`, `test/iceGrandPlain64.test.ts`, `test/placeConceptRender.test.ts`, `test/villageBuilder.test.ts`, `tiboRecovery.test.ts`, `wildRouteForest.ts` |
@@ -359,20 +359,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L145` 다음 PR 에서 고칠 것(차례)
 - `L155` 고리 설계 — 청사진이 한 줄 경로가 아닌 게임을 말하는 법 (제안 · 구현 전)
 
-### `openwiki/assistant-v2-refactor.md` — 44KB · 229줄 · ~12,761 토큰
+### `openwiki/assistant-v2-refactor.md` — 44KB · 231줄 · ~12,866 토큰
 
 - `L6` 왜
 - `L15` 목표 구조
 - `L32` 규칙 (리팩토링 중에도, 끝난 뒤에도)
 - `L42` 한 조각을 검증하는 법
-- `L54` 옮기는 도구 (`scripts/qa/assistant-v2/refactor/`)
-- `L73` 진행표
-  - `L103` R7 내역 (옮기기만 — 본문 그대로)
-- `L134` R5 뒤 절반 — 판정 결과 형식 하나 (승인 2026-11-11)
-  - `L214` 같이 적어 둘 수 — B7 뒤 이어 하기 턴의 화면 검수 비용
-- `L225` 알려 둘 것
+- `L56` 옮기는 도구 (`scripts/qa/assistant-v2/refactor/`)
+- `L75` 진행표
+  - `L105` R7 내역 (옮기기만 — 본문 그대로)
+- `L136` R5 뒤 절반 — 판정 결과 형식 하나 (승인 2026-11-11)
+  - `L216` 같이 적어 둘 수 — B7 뒤 이어 하기 턴의 화면 검수 비용
+- `L227` 알려 둘 것
 
-### `openwiki/assistant-v2.md` — 438KB · 1898줄 · ~133,132 토큰 · 통째읽기 잘림
+### `openwiki/assistant-v2.md` — 460KB · 2044줄 · ~139,556 토큰 · 통째읽기 잘림
 
 - `L16` 요청 의도 — 요청을 한 번만 가른다 (2026-11-11, 리팩토링 B1)
 - `L47` 지시문·도구 예산 — 작은 일에는 그 일의 카드와 도구만 (2026-11-11, 리팩토링 B1 뒤)
@@ -448,10 +448,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1639` 구조 — v1 실행기를 그대로 쓴다
   - `L1657` 할 일 고리 (2026-10-30, omo 방식 — `src/ai/v2/loop/`)
 - `L1765` 빌더가 하는 것 / 못 하는 것
-- `L1824` 시험
-- `L1833` 토큰 비용 재기 (2026-11-01)
-- `L1859` 리드·워커 나누기 (2026-11-01, 기본 꺼짐 — `OPRN_V2_SPLIT`)
-- `L1884` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
+- `L1824` 명세 은행 — 모델 없이 빌더만 다시 돌려 전/후를 잰다 (2026-11-11)
+- `L1969` 시험
+- `L1979` 토큰 비용 재기 (2026-11-01)
+- `L2005` 리드·워커 나누기 (2026-11-01, 기본 꺼짐 — `OPRN_V2_SPLIT`)
+- `L2030` v1 비교 결과 (2026-10-23, 코드 e06766bd8d)
 
 ### `openwiki/atlas-biome-interior.md` — 109KB · 534줄 · ~32,768 토큰 · 통째읽기 잘림
 
@@ -1704,7 +1705,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L43` 하네스 목록
 - `L61` 다른 실행기와 공유하는 하네스 목록
 
-### `openwiki/harnesses/assistant-capability.md` — 151KB · 990줄 · ~45,724 토큰 · 통째읽기 잘림
+### `openwiki/harnesses/assistant-capability.md` — 153KB · 1008줄 · ~46,331 토큰 · 통째읽기 잘림
 
 - `L7` 실행 경로
   - `L9` 여덟 장르 제작 실측 (2026-10-08)
@@ -1733,17 +1734,18 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L719` 보정 (`map-vqa-calibrate`) — 숫자를 인용하기 전에
   - `L739` 결과 — 2026-11-11
   - `L798` 알려 둘 것
-- `L806` 시각 검수
-- `L821` 산출물과 확장
-- `L827` 최초 실측 — 2026-10-05
-- `L835` 제품 회귀와 오류 표시 controls (2026-10-05)
-- `L841` 수정 확인 — 2026-10-05
-- `L845` 월드맵 생성 MP4 증거
-  - `L865` 대사창 읽기 보조 실조수 시험 — Argon 5문장 (2026-10-17, `set_dialogue_system`)
-  - `L879` 미연시 추가 화면 실조수 시험 — Argon 5문장 (2026-10-17, `set_vn_extras`)
-- `L895` 장면 교훈 묶음 (2026-10-22)
-  - `L933` 첫 판 결과 (r2 기준선 → r3 수정 후)
-  - `L980` 루프 1 숫자 (Sonnet 5.5 high 조수 대용, 2026-10-22)
+- `L806` 명세 은행 (`scripts/qa/assistant-v2/specBank.mts`, 2026-11-11) — 모델 없이 빌더만 다시 돌린다
+- `L824` 시각 검수
+- `L839` 산출물과 확장
+- `L845` 최초 실측 — 2026-10-05
+- `L853` 제품 회귀와 오류 표시 controls (2026-10-05)
+- `L859` 수정 확인 — 2026-10-05
+- `L863` 월드맵 생성 MP4 증거
+  - `L883` 대사창 읽기 보조 실조수 시험 — Argon 5문장 (2026-10-17, `set_dialogue_system`)
+  - `L897` 미연시 추가 화면 실조수 시험 — Argon 5문장 (2026-10-17, `set_vn_extras`)
+- `L913` 장면 교훈 묶음 (2026-10-22)
+  - `L951` 첫 판 결과 (r2 기준선 → r3 수정 후)
+  - `L998` 루프 1 숫자 (Sonnet 5.5 high 조수 대용, 2026-10-22)
 
 ### `openwiki/harnesses/battle-backdrop.md` — 11KB · 83줄 · ~3,401 토큰
 
