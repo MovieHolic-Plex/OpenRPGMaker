@@ -3,20 +3,25 @@
 // 이 함수로 맵에 이미 있는 숨을 만한 가구(옷장·사물함·침대·커튼…) 1~2곳을 순찰 길 가까이에서 결정적으로 골라 interaction hiding 을 건다.
 // 새 그림은 그리지 않는다 — 맵에 그런 가구가 없으면 빈 목록과 이유를 돌려준다(출하 검사가 막는다).
 import { canMove, isPassable } from "@/project/collision";
+import { labelNames } from "@/project/labelWords";
 import { objectClusterAt } from "@/project/objectFootprint";
 import type { Dir, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 
-/** 숨을 만한 가구 이름(낮을수록 먼저). 침대 «옆 협탁»·모니터처럼 이름에 침대가 들어간 딴 물건은 뺀다. */
-const HIDE_RANKS: readonly (readonly [number, RegExp])[] = [
-  [0, /옷장|장롱|사물함|락커|로커|캐비닛|캐비넷|청소\s*도구함|도구함|수납장|붙박이장|벽장|locker|wardrobe|closet|cabinet/iu],
-  [1, /침대|병상|이송\s*침대|bed\b/iu],
-  [2, /커튼|책상|교탁|curtain|desk/iu],
+/**
+ * 숨을 만한 가구 이름(낮을수록 먼저) — 이름표의 물건이 그 가구여야 한다(labelWords.ts: 물건 이름의 끝 낱말).
+ * 글자 포함으로 읽던 때는 「술통 받침대」(받침대 ⊃ 침대)·선반 기계가 은신처가 됐다(2026-11-11 단계×테마 표).
+ */
+const HIDE_RANKS: readonly (readonly [number, readonly string[]])[] = [
+  [0, ["옷장", "장롱", "사물함", "락커", "로커", "캐비닛", "캐비넷", "도구함", "수납장", "붙박이장", "벽장", "locker", "wardrobe", "closet", "cabinet"]],
+  [1, ["침대", "병상", "bed"]],
+  [2, ["커튼", "책상", "교탁", "curtain", "desk"]],
 ];
+/** 침대 «옆 협탁»·모니터처럼 가구 이름이 든 딴 물건. */
 const NOT_HIDE = /협탁|모니터|걸대|옆|램프|시계|창|그림|액자|화분|lamp|clock|window/iu;
 
 export function hideRankForLabel(label: string): number | null {
   if (!label || NOT_HIDE.test(label)) return null;
-  for (const [rank, re] of HIDE_RANKS) if (re.test(label)) return rank;
+  for (const [rank, words] of HIDE_RANKS) if (words.some((w) => labelNames(label, w))) return rank;
   return null;
 }
 
