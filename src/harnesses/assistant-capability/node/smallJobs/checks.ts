@@ -1,12 +1,14 @@
 // 작은 일의 기계 판정. 저장 문서 전/후만 본다 — 모델 판정자 없음, 도구 이름도 안 본다.
 // 판정은 두 겹이다: outcome(요청이 말한 결과가 저장 문서에 있나) + damage(시키지 않은 파괴: 맵·이벤트 삭제, 다른 이벤트 이동,
 // 맵·게임 이름 바뀜, 시작 위치 바뀜, 허락 없는 새 맵). 둘 다 깨끗해야 통과다. 다른 이벤트의 내용 변경은 sideEdits 로 세기만 한다.
-// 이 파일 = 첫 묶음(작은 일 30가지)의 판정 종류 + damage + runCheck. 둘째 묶음의 종류는 checksData.ts · checksPlay.ts 에 있다.
+// 이 파일 = 첫 묶음(작은 일 30가지)의 판정 종류 + damage + runCheck. 둘째 묶음의 종류는 checksData.ts · checksPlay.ts, 셋째 묶음(장르 장치)은 checksGenre.ts · checksGenrePlay.ts 에 있다.
 import { isDeepStrictEqual } from 'node:util';
 import { listAudioResources } from '../../../../assets/audioResourceCatalog';
 import type { Project } from '../../../../project/types';
 import { walkableFrom } from '../matrixNativeSpec';
 import { DATA_KINDS, DATA_SIDE } from './checksData';
+import { GENRE_KINDS, GENRE_SIDE } from './checksGenre';
+import { GENRE_PLAY_KINDS, GENRE_PLAY_SIDE } from './checksGenrePlay';
 import { PLAY_KINDS, PLAY_SIDE } from './checksPlay';
 import { allCommands, cellFree, commandsDeep, eventOf, eventsOf, freshSession, hasSprite, includesPhrase, inRect, interact, itemIdsByName, mapName, newEvents, no, ok, pagesOf, passable, placeNote, saysFirst, squash, triggerKinds, visibleAt, where,
   type Allow, type CheckSpec, type Doc, type Ev, type Play, type Result, type Verdict } from './checkSupport';
@@ -270,9 +272,10 @@ const KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result
     return ok(`바뀐 칸 ${cells.length} · 새 소품 이벤트 ${props.length}`);
   },
 };
-/** 모든 판정 종류: 첫 묶음(이 파일) + 둘째 묶음(자료·설정, 말 걸기·장면). 이름이 겹치면 안 된다. */
-const ALL_KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result> = { ...KINDS, ...DATA_KINDS, ...PLAY_KINDS };
-if (Object.keys(ALL_KINDS).length !== Object.keys(KINDS).length + Object.keys(DATA_KINDS).length + Object.keys(PLAY_KINDS).length) throw Error('판정 종류 이름이 겹친다');
+/** 모든 판정 종류: 첫 묶음(이 파일) + 둘째 묶음(자료·설정, 말 걸기·장면) + 셋째 묶음(장르 장치). 이름이 겹치면 안 된다. */
+const KIND_SETS = [KINDS, DATA_KINDS, PLAY_KINDS, GENRE_KINDS, GENRE_PLAY_KINDS];
+const ALL_KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result> = Object.assign({}, ...KIND_SETS);
+if (Object.keys(ALL_KINDS).length !== KIND_SETS.reduce((sum, kinds) => sum + Object.keys(kinds).length, 0)) throw Error('판정 종류 이름이 겹친다');
 export const CHECK_KINDS = Object.keys(ALL_KINDS);
 
 // ── 시키지 않은 파괴 ────────────────────────────────────────────────────────
@@ -311,7 +314,7 @@ const EXPECTED_SIDE: Record<string, RegExp> = {
 
 /** 둘째 묶음의 종류는 요청마다 건드리는 칸이 달라서(자료집 표·설정 칸) 판정 인자에서 만든다. */
 function expectedSide(spec: CheckSpec): RegExp | undefined {
-  return EXPECTED_SIDE[spec.kind] ?? DATA_SIDE[spec.kind]?.(spec) ?? PLAY_SIDE[spec.kind];
+  return EXPECTED_SIDE[spec.kind] ?? DATA_SIDE[spec.kind]?.(spec) ?? PLAY_SIDE[spec.kind] ?? GENRE_SIDE[spec.kind] ?? GENRE_PLAY_SIDE[spec.kind];
 }
 
 function damageOf(before: Doc, after: Doc, allow: Allow, spec: CheckSpec, targets: ReadonlySet<string>): { damage: string[]; sideEdits: string[] } {

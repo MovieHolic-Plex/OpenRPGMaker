@@ -181,6 +181,14 @@ Terra 작은 일 `door-roundtrip-starter` — 「잿불 마을 동쪽 끝에서 
 아직 나중에 싣는 셋은 v2 에 다른 길이 처음부터 실려 있다: `random-encounter-starter` 의 `set_map_properties`(→ `set_encounter_table`), `enter-once-text-built`·`walk-up-greet-starter` 의 `script_cutscene`(→ `add_event`).
 시험 `test/aiV2SmallJobReach.test.ts` 가 35건의 «닿는다 · 20개 안» 과 열다섯 건의 «처음부터» 를 못박는다.
 
+## JRPG 가 아닌 게임의 장치 — 재고와 셋째 묶음 (2026-11-11)
+
+추리·연애·공포·농장·몬스터 수집·퍼즐·액션·경제·여러 엔딩·생존 게임이 쓰는 장치마다 「런타임이 하는가 · 편집기 도구가 있는가 · v2 가 내놓는가 · 작은 일로 재는가」를
+한 표로 적었다: **`openwiki/assistant-v2-genre-tools.md`**. 장치 56줄 가운데 내놓지 않은 도구(U) 29 · 싼 모델에게 넓거나 깨지기 쉬운 계약(W) 13 · 도구가 없는 것(N) 7 · 런타임에 없는 것(R) 3.
+재는 묶음은 `small-jobs-3.json`(`--set 3`, 36가지 — `openwiki/harnesses/assistant-capability.md` 「셋째 묶음」). 모델 없이 본 출발점: 손 정답의 도구가 처음부터 다 실린 일 8 ·
+나중에 닿는 일 14 · **v2 어디에도 없는 도구가 든 일 14**. 도구를 내놓거나 고치는 PR 은 그 표의 줄을 지우고 그 줄의 일로 전/후를 잰다.
+같은 쪽 끝에 **고리 설계(제안 · 구현 전)** 가 있다 — 청사진이 한 줄 경로가 아닌 게임(쌓기 · 모으기 · 버티기 · 기르기 · 추리하기)을 장르 낱말 없이 말하는 법.
+
 ## 다양성 — 같은 요청이 같은 맵이 되지 않게 (2026-10-23)
 
 `make_place` 가 처음 지을 때 명세에 무작위 `salt` 를 넣고, 고치기(`edit_place`)는 기록된 명세의 salt 를 물려받는다(모델은 쓰지 않는다).
