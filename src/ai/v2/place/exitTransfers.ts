@@ -4,7 +4,7 @@ import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { reachableCells, unreachableEvents } from "../judge/eventReach";
 import type { BuildRun } from "../shared/types";
-import { Cell, Layer, kitOf, innerOf, reband, doorPiece, free, northDoorCells } from "./exitDress";
+import { Cell, Layer, Laid, kitOf, innerOf, reband, doorPiece, free, northDoorCells } from "./exitDress";
 
 // ── 바닥 한가운데 이동 칸 → 벽에 난 문 ─────────────────────────────────────────
 // 2026-10-29 vm3 deepseek 탈출 판정(major): 「방 이동은 바닥의 희미한 빛 위를 걷는 방식이라 출입구인지 알기 어렵다」 — 현관 홀 남쪽 바닥
@@ -55,7 +55,7 @@ export function dropBuriedTransfers(run: BuildRun, mapId: string): string[] {
   return notes;
 }
 
-export function doorFloorTransfers(run: BuildRun, mapId: string): string[] {
+export function doorFloorTransfers(run: BuildRun, mapId: string, laid?: Laid): string[] {
   const notes: string[] = [];
   const first = run.ctx.project.maps[mapId];
   if (!first) return notes;
@@ -63,7 +63,7 @@ export function doorFloorTransfers(run: BuildRun, mapId: string): string[] {
   for (const id of ids) {
     const project0 = run.ctx.project;
     const map0 = project0.maps[mapId]!;
-    const k = kitOf(project0, map0);
+    const k = kitOf(project0, map0, laid);
     if (!k) return notes;
     const ev = map0.events.find((e) => e.id === id);
     if (!ev) continue;

@@ -14,7 +14,7 @@ import { fitGateLevelCurve, fitRouteLevelsToGates } from "./monsterRouteLevels";
 import { fitRequiredBattlesToStarters } from "./monsterRequiredBattles";
 import { equipMonsterCampaign } from "./monsterCampaignGifts";
 import { beginFitBudget, enterFastFit, FitBudgetExceeded, restoreFitState, snapshotFitState } from "./monsterFitBudget";
-import { Obj, fillFieldHud, premiseOf, fillBattleBgm, fillBattleBackgrounds, fillPartyLooks, fillPartyNames, fillWindowLook } from "./shipLookDefaults";
+import { Obj, reconcileFieldHud, premiseOf, fillBattleBgm, fillBattleBackgrounds, fillPartyLooks, fillPartyNames, fillWindowLook } from "./shipLookDefaults";
 import { moveEntrancesOntoArt, fillStaleObjectives, moveRepeatingStartObjective, pullBackStartObjective, fillGymArrivalObjectives, hasFinal } from "./shipObjectiveDefaults";
 
 /** 출하 기본값을 채운다. 바꾼 항목 설명을 돌려준다(없으면 빈 배열). task 는 실행 지시문(앞선 요청 메모 포함). */
@@ -97,7 +97,7 @@ export function applyLookDefaults(project: Project, story = ""): string[] {
   if (left.has("game-over")) applied.push(...fillGameOver(project, story));
   applied.push(...keepProgressOnDefeat(project));
   if (left.has("combat-leftovers")) applied.push(...clearCombatLeftovers(project));
-  if (left.has("hud")) applied.push(...fillFieldHud(project, story));
+  applied.push(...reconcileFieldHud(project, story));
   // 제목 그림·엔딩 그림은 함수가 번들 스틸로 대신 깔지 않는다 — 출하 검사(title-image·ending-bg·ending-screen)가 막고 모델이 그림 단계에서 고르거나 만든다.
   return applied;
 }

@@ -36,9 +36,20 @@ interface Kit {
   readonly ceil: readonly number[];
   readonly corners?: Readonly<Record<string, number>>;
   readonly faces: Set<number>;
+  /** 방으로 깔렸다고 적힌 맵인가(장소 기록·실내 기후). 아니면 천장 띠만 보고 방으로 본 것이다. */
+  readonly declared: boolean;
 }
 
-export function kitOf(project: Project, map: GameMap): Kit | undefined {
+/** 맵을 깔 때 적힌 종류 — 장소 기록(PlaceSpec)에서 온다. */
+export type Laid = "room" | "outdoor";
+
+/**
+ * 방 키트가 있는 칩셋으로, 방으로 깔린 맵일 때만 그 키트. 방인지는 깔 때 적힌 것을 먼저 본다 — 장소 기록의 종류(laid), 맵의 실내 기후 —
+ * 둘 다 없을 때만 그 키트의 천장 띠가 맵에 깔려 있는지로 본다. 방 키트가 있는 칩셋의 바깥 거리(일본 도시·에도·마법 학교)는 방이 아니다:
+ * 거리의 남쪽 줄 전체를 «막다른 남쪽 출구»로 읽어 벽으로 메웠다.
+ */
+export function kitOf(project: Project, map: GameMap, laid?: Laid): Kit | undefined {
+  if (laid === "outdoor") return undefined;
   const S = roomSpecOf(project.tilesets[map.tilesetId]);
   if (!S) return undefined;
   const band = new Set<number>();
@@ -53,9 +64,11 @@ export function kitOf(project: Project, map: GameMap): Kit | undefined {
     for (const t of lower) if (set.has(t)) n++;
     if (n > hits) { hits = n; best = name; }
   }
+  const indoor = (map as unknown as { climate?: { mode?: string } }).climate?.mode === "indoor";
+  if (laid !== "room" && !indoor && hits <= 0) return undefined;
   const faces = new Set<number>();
   for (const w of Object.values(S.walls)) for (const t of w.tiles) faces.add(t);
-  return { S, band, ceil: S.ceilings[best] ?? [], ...(S.ceilingCorners?.[best] ? { corners: S.ceilingCorners[best] } : {}), faces };
+  return { S, band, ceil: S.ceilings[best] ?? [], ...(S.ceilingCorners?.[best] ? { corners: S.ceilingCorners[best] } : {}), faces, declared: laid === "room" || indoor };
 }
 
 /** 천장 띠·공허가 아닌 칸 = 방 안(바닥·벽면·모르는 칸). */
@@ -272,12 +285,12 @@ function clearDecoyDoorArt(project: Project, map: GameMap, k: Kit): string[] {
 }
 
 /** 맵 하나의 출구·공허 마감. 실내 방 짓기 칩셋(roomKit)이 아닌 맵은 건드리지 않는다. */
-export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResult {
+export function dressInteriorExits(run: BuildRun, mapId: string, laid?: Laid): ExitDressResult {
   const notes: string[] = [];
   const project0 = run.ctx.project;
   const map0 = project0.maps[mapId];
   if (!map0) return { notes };
-  const k = kitOf(project0, map0);
+  const k = kitOf(project0, map0, laid);
   if (!k) return { notes };
   const map = structuredClone(map0);
   let changed = false;
@@ -316,7 +329,11 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
   // 틈 위의 조용한 이벤트(시작 목표 같은 자동 실행)와 시작 칸은 메울 때 가장 가까운 걷는 칸으로 옮긴다 — 막는 것은 말을 거는·옮기는 이벤트뿐.
   // 왜(2026-10-29 vm5 argon·flash 추리): 빈 시작 맵 남쪽 틈 (8,13)·(7,13)에 시작 칸과 「시작 목표」가 있어 틈을 못 메웠고, 판정자는
   // 아래로 이어진 통로를 출구로 보고 30분을 헤맸다(argon blocker 「남쪽 출구를 열 방법이 없다」).
-  const closable = gaps.every((g) => !events.some((e) => e.x === g.x && e.y === g.y && !silent(e)));
+  // 틈은 벽에 난 좁은 목(3칸 이하, 붙어 있음)만 — 남쪽 줄이 넓게 트인 맵은 틈이 아니다. 넓은 줄을 메우면 맵 한 줄을 통째로 다시 칠하게 된다.
+  const narrow = gaps.length > 0 && gaps.length <= 3 && gaps.every((g, i) => i === 0 || g.x === gaps[i - 1]!.x + 1);
+  // 방이라고 적히지 않은 맵(천장 띠만 보고 방으로 본 맵)에서는 시작 칸을 옮기면서까지 메우지 않는다.
+  const startOnGap = !!start && gaps.some((g) => g.x === start.x && g.y === start.y);
+  const closable = narrow && (k.declared || !startOnGap) && gaps.every((g) => !events.some((e) => e.x === g.x && e.y === g.y && !silent(e)));
   let movedStart: Cell | undefined;
   const withStart = (project: Project): Project => movedStart ? { ...project, startPos: movedStart } as Project : project;
   /** 막다른 남쪽 틈을 메운다: 틈 칸과 그 바로 위 칸에 걸친 그림(모델이 틈에 세운 문 등)을 걷고, 틈을 공허로 바꾼 뒤 둘레 띠를 다시 칠한다. */
@@ -499,8 +516,9 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
       if (south) return { notes: [...notes, ...south] };
     }
     if (!at && !keepArt) notes.push(!piece ? "이 칩셋에 벽에 세울 문 그림이 없다" : `문 「${door.name ?? door.id}」: 북벽 발치에 문 그림을 세울 자리가 없다(가구·다른 이벤트로 가는 길)`);
-    if (dead && !at && !keepArt && !closable) notes.push("남쪽 틈 위에 이벤트·시작 칸이 있어 틈은 그대로 둠");
-    if (dead && (at || keepArt || closable)) closeGaps();
+    if (dead && !narrow) notes.push(`남쪽 줄이 ${gaps.length}칸 트여 있어 벽으로 메우지 않음(좁은 틈만 메운다)`);
+    else if (dead && !at && !keepArt && !closable) notes.push("남쪽 틈 위에 이벤트·시작 칸이 있어 틈은 그대로 둠");
+    if (dead && narrow && (k.declared || !startOnGap) && (at || keepArt || closable)) closeGaps();
     if (at && piece) {
       const mapBeforeDoor = structuredClone(map);
       // 벽이 아닌 자리에 선 옛 문 그림(바닥 가운데 «잠긴 나무 문»)은 걷는다 — 문이 둘로 보이지 않게.
@@ -569,9 +587,7 @@ export function dressInteriorExits(run: BuildRun, mapId: string): ExitDressResul
   }
   // 문 노릇 이벤트가 없어도 아무 데로도 이어지지 않는 틈은 메운다(2026-10-29 standin memory 할머니 집: 엔딩 장치를 문으로 쓰지 않게 하자
   // 남쪽 틈이 어둠으로 뻗은 막다른 통로로 남았다).
-  // 틈은 벽에 난 좁은 목(3칸 이하, 붙어 있음)만 — 남쪽 줄 전체가 바닥인 바깥 거리(standin errand «동네 거리»)는 틈이 아니다.
-  const narrow = gaps.length > 0 && gaps.length <= 3 && gaps.every((g, i) => i === 0 || g.x === gaps[i - 1]!.x + 1);
-  if (dead && !door && closable && narrow) closeGaps();
+  if (dead && !door && closable) closeGaps();
   if (changed) run.ctx.project = withStart({ ...run.ctx.project, maps: { ...run.ctx.project.maps, [mapId]: map } } as Project);
   return { notes };
 }

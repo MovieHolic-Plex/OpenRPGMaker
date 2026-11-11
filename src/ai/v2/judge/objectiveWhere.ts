@@ -86,10 +86,36 @@ export function landmarkWord(project: Project, map: GameMap, x: number, y: numbe
   return dist(best) <= 2 ? `${label} 옆` : `${label} ${bearingWord(best, { x, y })}`;
 }
 
-/** 출구 자리 말 — 2칸 안이면 「바로 옆」, 아니면 맵에 붙박인 말(placeWord). */
-function exitWord(map: GameMap, origin: Cell | undefined, gate: Cell): string {
+/**
+ * 출구 자리 말 — 2칸 안이면 「바로 옆」, 아니면 맵에 붙박인 말(placeWord).
+ * frame: 「이 맵 동쪽 끝 가운데」 처럼 어느 맵의 자리인지 적는다 — 「초승달 궁전 입구: 동쪽 끝 가운데」 는 «궁전의 동쪽 끝»으로도 읽혔다(2026-11-11 fun-x1).
+ * 가장자리가 아닌 문은 들어서는 쪽도 적는다(「이 맵 북쪽 · 남쪽에서 들어간다」) — 맵 북쪽에 선 피라미드의 남쪽 문을 「북쪽」 한 낱말로는 못 찾았다.
+ */
+function exitWord(map: GameMap, origin: Cell | undefined, gate: Cell, frame?: { readonly hop: GameMap }): string {
   if (origin && Math.abs(gate.x - origin.x) + Math.abs(gate.y - origin.y) <= 2) return "바로 옆";
-  return placeWord(map, gate.x, gate.y);
+  const word = placeWord(map, gate.x, gate.y);
+  if (!frame) return word;
+  const inner = gate.x > 1 && gate.y > 1 && gate.x < map.width - 2 && gate.y < map.height - 2;
+  const side = inner ? approachSide(map, gate, frame.hop) : undefined;
+  return `이 맵 ${word}${side ? ` · ${side}에서 들어간다` : ""}`;
+}
+
+/** 문 앞 칸이 문의 어느 쪽인가 — 건너편 맵(hop)에서 돌아올 때 내려서는 칸이 문 바로 옆이면 그쪽이 문 앞이다. */
+function approachSide(map: GameMap, gate: Cell, hop: GameMap): string | undefined {
+  let side: string | undefined;
+  const find = (value: unknown): void => {
+    if (side || !value || typeof value !== "object") return;
+    if (Array.isArray(value)) { value.forEach(find); return; }
+    const r = value as Record<string, unknown>;
+    if (r.kind === "transfer" && r.mapId === map.id && typeof r.x === "number" && typeof r.y === "number") {
+      const dx = r.x - gate.x, dy = r.y - gate.y;
+      if (Math.abs(dx) + Math.abs(dy) === 1) side = dy > 0 ? "남쪽" : dy < 0 ? "북쪽" : dx > 0 ? "동쪽" : "서쪽";
+      return;
+    }
+    Object.values(r).forEach(find);
+  };
+  for (const event of hop.events ?? []) find(event.pages ?? []);
+  return side;
 }
 
 /** from 맵에서 to 맵으로 바로 가는 문(옮기기 이벤트) 자리들. */
@@ -164,7 +190,7 @@ export function whereHint(project: Project, fromMapId: string, target: { mapId: 
   const gates = gatesTo(from, hop.id);
   if (gates.length === 0) return undefined;
   const near = origin ? [...gates].sort((a, b) => Math.abs(a.x - origin.x) + Math.abs(a.y - origin.y) - (Math.abs(b.x - origin.x) + Math.abs(b.y - origin.y)))[0]! : undefined;
-  const dir0 = near ? exitWord(from, origin, near) : [...new Set(gates.map((gate) => placeWord(from, gate.x, gate.y)))].slice(0, 2).join("·");
+  const dir0 = near ? exitWord(from, origin, near, { hop }) : [...new Set(gates.map((gate) => placeWord(from, gate.x, gate.y)))].slice(0, 2).join("·");
   const dir = `${dir0}${siblingOrdinal(project, from, near ?? gates[0]!, hop.id)}`;
   const label = target.label?.trim();
   if (hop.id === to.id) return `${to.name ?? to.id} 입구: ${dir}${label ? ` → ${label}` : ""}`;
