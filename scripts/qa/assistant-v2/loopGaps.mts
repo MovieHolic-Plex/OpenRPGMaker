@@ -35,8 +35,10 @@ const env = { ctx, request: { task, provider: "local-cli:claude", mapIds: [], pr
   sideChat: async () => JSON.stringify({ imagesSeen: 0, axes: {}, score: 7, majors: [] }), render: async () => "",
   checkpoint: async (name: string) => { stamps.push(`checkpoint:${name}`); await new Promise((r) => setTimeout(r, 0)); } } as any;
 const tools = createV2Tools(env, session);
-const call = async (tool: string, args: unknown) => { phase = tool; const t0 = realNow(); const t = tools.find((x: any) => x.name === tool); const res = await t.execute(`c-${tool}`, args);
-  const body = res.content.find((c: any) => c.type === "text")?.text ?? "{}"; let ok: unknown; try { ok = JSON.parse(body).ok; } catch { ok = body.slice(0, 80); }
+const call = async (tool: string, args: unknown) => { phase = tool; const t0 = realNow(); const t = tools.find((x: any) => x.name === tool);
+  if (!t) throw new Error(`no tool ${tool}`);
+  const res = await t.execute(`c-${tool}`, args);
+  const body = (res.content as { type: string; text?: string }[]).find((c) => c.type === "text")?.text ?? "{}"; let ok: unknown; try { ok = JSON.parse(body).ok; } catch { ok = body.slice(0, 80); }
   console.log(`== ${tool} ok=${ok} ${((realNow() - t0) / 1000).toFixed(1)}s`); await new Promise((r) => setTimeout(r, 300)); };
 await call("write_blueprint", { title: bp.title, genre: bp.genre, playerGoal: bp.playerGoal, places: bp.places, steps, ending: bp.ending, ...(bp.setting ? { setting: bp.setting } : {}) });
 await call("build_places", {});

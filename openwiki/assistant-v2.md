@@ -1812,6 +1812,14 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 
 출구 마감의 31~35초는 긴 단계 하나가 아니었다 — 맵마다 도는 단계 셋(`landing-pockets` · `puzzle-gates` · `guide-texts`)이 맵 8장에 각각 10초쯤(맵 한 장에 1.2~1.9초)이다.
 
+**그 셋은 프로젝트를 통째로 복사하고 있었다.** CPU 프로파일(`bun --cpu-prof-md scripts/qa/assistant-v2/loopGaps.mts …`, 전체 145초): `structuredClone` 이 자기 시간의 69.5%,
+출구 마감 48초 가운데 47초가 `checkLandingPockets` · `checkGuideTexts` · `checkPuzzleGates` 의 `structuredClone(run.ctx.project)` 한 줄씩이다 —
+«사본에서 고쳐 보고 바뀌었으면 갈아 끼운다»를 타일셋·업로드 자산(프로젝트의 거의 전부)까지 복사해서 했다. 셋 다 맵의 이벤트만 고치므로
+`cloneProjectSharingSharedDictionaries`(`src/project/projectClone.ts` — 타일셋·업로드 자산 항목은 원본을 가리킨다, 빌더의 시험 짓기가 이미 쓰는 사본)로 바꿨다.
+같은 측정에서 끝맺음 전체가 61.9초 → 23.1초, 맵 8장·DB·단계 기록 해시는 같다.
+새 단계에서 «사본에서 고쳐 보기»가 필요하면 `structuredClone(project)` 를 쓰지 않는다. 같은 모양이 아직 남은 곳(이번에 안 건드림):
+`story/codeClues.ts`(세 곳, 1.6초) · `place/reliefShortcut.ts` · `place/caveGates.ts`(두 곳) · `judge/reloadCheck.ts`(끝맺음마다 3초) · `src/project/mapDeletion.ts planMapDeletions`(6초).
+
 **잰 것 (모델 없음).** `bun scripts/qa/assistant-v2/loopGaps.mts <project.json | live.json> [seed]` — 저장된 게임의 청사진을 실제 동사
 (`write_blueprint` → `build_places` → `build_blueprint_path` → 끝맺음)로 다시 지으며 250ms 타이머가 늦게 돌아온 구간을 잰다.
 `purpose-desert4` 의 청사진, 같은 씨앗, 전/후를 같은 때 나란히(기계 부하 35~49):
