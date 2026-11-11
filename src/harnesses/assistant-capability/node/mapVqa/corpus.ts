@@ -101,3 +101,28 @@ export function layJobsOf(spec: string): Array<{ id: string; request: string; st
   }
   return out;
 }
+
+/** 말뭉치의 실행마다 턴 기록 폴더(도구가 적은 «그림이 없다» 신고를 읽는 곳). 맵을 하나도 못 깐 요청도 들어간다. */
+export function corpusSessions(spec: string): Array<{ group: string; label: string; sessionDir: string }> {
+  const out: Array<{ group: string; label: string; sessionDir: string }> = [];
+  const wholeGame = (dir: string) => { if (existsSync(resolve(dir, 'session/turns'))) out.push({ group: `A:${basename(dir)}`, label: basename(dir), sessionDir: resolve(dir, 'session') }); };
+  for (const entry of spec.split(',').map(part => part.trim()).filter(Boolean)) {
+    if (entry.startsWith('whole-games:')) {
+      const parent = resolve(entry.slice('whole-games:'.length));
+      for (const name of readdirSync(parent).sort()) {
+        const dir = resolve(parent, name);
+        if (!existsSync(resolve(dir, 'project/project.sqlite'))) continue;
+        try { if (/ver=v1\b/u.test(readFileSync(resolve(dir, 'RUN.txt'), 'utf8'))) continue; } catch { /* 넣는다 */ }
+        wholeGame(dir);
+      }
+      continue;
+    }
+    const path = resolve(entry);
+    if (existsSync(resolve(path, 'project/project.sqlite'))) wholeGame(path);
+    else if (existsSync(resolve(path, 'summary.json'))) {
+      const summary = JSON.parse(readFileSync(resolve(path, 'summary.json'), 'utf8'));
+      if (summary.kind === 'assistant-map-laying-run') for (const job of summary.jobs as any[]) out.push({ group: `B:${job.id}`, label: `맵 깔기 ${job.id}`, sessionDir: resolve(path, 'jobs', job.id, 'session') });
+    }
+  }
+  return out;
+}

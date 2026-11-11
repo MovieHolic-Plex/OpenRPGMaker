@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { extractJson, VISUAL_JUDGE } from '../visualJudge';
+import type { ArtReview } from './artGaps';
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../..');
 export const MAP_VQA_DATA = resolve(REPO_ROOT, 'harness-data/assistant-capability/map-vqa');
@@ -20,6 +21,8 @@ export type MapReview = {
   /** unreviewed 의 까닭(검수자 실패·--no-review). */
   error?: string;
   purpose: string; checked: Record<string, string>; defects: Defect[]; judgeKey?: string;
+  /** 없는 그림 장부용 둘째 물음(artGaps.ts)의 답. 묻지 않았으면 없다. */
+  art?: ArtReview;
 };
 export type Reviewer = { version: string; system: string; classes: Record<string, string> };
 
