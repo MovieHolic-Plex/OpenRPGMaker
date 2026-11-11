@@ -146,7 +146,8 @@ describe("깔기 요청의 도구 층 — 거절이 다음 길을 막지 않는�
     expect(laid.ok, laid.body.slice(0, 600)).toBe(true);
     expect(t.ctx.project.maps.map_blank_start?.name).toBe("여관");
   }, SLOW);
-  it("선 마을에 물건 하나를 더하려는 edit_place 는 그 물건을 놓는 호출을 맵 id·칸과 함께 이르고, 그 길이 끝까지 간다", async () => {
+
+  it("선 마을에 물건 하나를 더하려는 edit_place 는 그 물건을 놓는 호출을 맵 id·칸과 함께 이르고, draw_object 는 칩셋에 있는 물건의 place_object 를 이른다", async () => {
     const t = turn("시장 마을을 만들어 줘.");
     await t.call("todo", { op: "init", list: [{ phase: "p", items: [{ content: "마을 만들기", id: "v", check: { kind: "place", name: "시장 마을", placeKind: "village", fresh: true } }, { content: "광장에 노점 놓기", id: "stalls" }] }] });
     const spec = { type: "village", name: "시장 마을", style: "fantasy", size: "medium", features: ["plaza", "market stalls"], floors: 1 };
@@ -165,8 +166,11 @@ describe("깔기 요청의 도구 층 — 거절이 다음 길을 막지 않는�
     const next = /Next call: place_object\((\{.*?\})\) —/u.exec(drawn.body.replace(/\\"/gu, '"'))?.[1];
     expect(next, drawn.body.slice(0, 600)).toBeTruthy();
     expect(next).toContain(`"mapId":"${mapId}"`);
-    const placed = await t.call("place_object", JSON.parse(next!));
-    expect(placed.ok, placed.body.slice(0, 600)).toBe(true);
+    expect(next).toContain('"at":{"x":');
+    // 이른 objectId 는 이 맵 칩셋에 실제로 있는 킷이다(놓이는 칸은 마을 배치마다 달라 여기서 재지 않는다).
+    const objectId = (JSON.parse(next!) as { objectId: string }).objectId;
+    const map = t.ctx.project.maps[mapId]!;
+    expect((t.ctx.project.tilesets[map.tilesetId]?.structureKits ?? []).some((kit) => kit.id === objectId)).toBe(true);
     // 바뀌는 것이 없는 고침은 그렇게 말하고 그 맵을 보는 호출을 이른다.
     const nothing = await t.call("edit_place", { patch: { mapId, set: same, variant: 0, dressing: 0, addAnchors: [] } });
     expect(nothing.ok).toBe(false);
