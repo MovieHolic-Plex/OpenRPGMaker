@@ -5,6 +5,7 @@
 // 순회 순서가 척도(도달한 순서)와 달라, 배치가 같은 맵이 여럿이면 어느 id 를 세는지는 다를 수 있다 — 세는 개수는 같다(관문은 개수만 쓴다).
 import type { GameMap, Project } from "@/project/types";
 import { isPassableLanding } from "@/project/collision";
+import { isProgramRoom } from "../place/programMark";
 
 /** score.mjs MIN_TILE_KINDS · MIN_MAP_CELLS 와 같은 숫자. */
 export const MIN_TILE_KINDS = 6;
@@ -16,7 +17,7 @@ export const RECOMMENDED_MAPS = 15;
 
 type Obj = Record<string, unknown>;
 
-type UncountedReason = "unreachable" | "small" | "few-tiles" | "no-event" | "copy";
+type UncountedReason = "unreachable" | "program-room" | "small" | "few-tiles" | "no-event" | "copy";
 interface MapCountResult {
   readonly counted: readonly string[];
   readonly uncounted: readonly { readonly id: string; readonly name: string; readonly reason: UncountedReason; readonly detail: string }[];
@@ -84,6 +85,8 @@ export function countMaps(project: Project): MapCountResult {
   for (const [id, map] of Object.entries(maps)) {
     if (!map || typeof map !== "object") continue; // 깨진 항목은 세지도 이유로 적지도 않는다
     if (!reached.has(id)) { uncounted.push({ id, name: nameOf(id), reason: "unreachable", detail: "시작 맵에서 문(transfer)으로 닿지 않는다" }); continue; }
+    // 목적표가 지은 방(가게·여관 안)은 빌더의 방이다 — 청사진의 장소가 아니라서 세지 않는다(척도에는 없는 규칙: 조수가 스스로 덜 센다).
+    if (isProgramRoom(project, id)) { uncounted.push({ id, name: nameOf(id), reason: "program-room", detail: "목적표가 지은 방(빌더의 방 — 세지 않는다)" }); continue; }
     const cells = Number(map.width) * Number(map.height);
     if (!(cells >= MIN_MAP_CELLS)) { uncounted.push({ id, name: nameOf(id), reason: "small", detail: `넓이 ${Number.isFinite(cells) ? cells : 0}칸<${MIN_MAP_CELLS}` }); continue; }
     const kinds = tileKinds(map).size;

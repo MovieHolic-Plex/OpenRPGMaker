@@ -15,6 +15,7 @@ import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
+import { programAnchor } from "../place/program";
 import { incomingLandings, resolveWhere } from "../place/where";
 import { applyThemeBackdrop, themeBossTroop } from "../place/placeTheme";
 import { walkStart } from "../place/cells";
@@ -221,10 +222,12 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
    * 고리 하나가 설 칸. 낱말(«책상 앞»)이 그 맵의 물건을 가리키면 그 앞. 종류를 적은 청사진에서 낱말이 없거나(사람) 못 찾았으면
    * 들어온 칸에서 rank(0 가까움 ~ 1 가장 먼 곳)쯤의 길을 막지 않는 칸 — 못 찾은 낱말의 기본 자리는 맵 가장자리 구석이었다.
    */
-  const spotFor = (map: GameMap, word: string | undefined, kinded: boolean, rank: number): { x: number; y: number } => {
+  const spotFor = (map: GameMap, word: string | undefined, kinded: boolean, rank: number, who?: string): { x: number; y: number } => {
     const project = run.ctx.project;
     const avoid = [...(taken.get(map.id) ?? [])];
-    let where = word ? resolveWhere(project, map, word, { avoid, role: "event" }) : undefined;
+    // 사람은 제 역할 건물(목적표의 집·얼굴 건물) 문 옆에 선다 — 없으면 아래 예전 자리 고르기.
+    const home = programAnchor(project, map, who, avoid);
+    let where = home ? resolveWhere(project, map, undefined, { avoid, role: "event", at: home, roadOk: true }) : word ? resolveWhere(project, map, word, { avoid, role: "event" }) : undefined;
     if (kinded && (!where || where.note)) {
       const landing = incomingLandings(project, map.id).find((c) => isPassable(project, map, c.x, c.y));
       const hint = pickSpot(project, map, landing ?? walkStart(project, map), new Set(avoid.map((c) => `${c.x},${c.y}`)), rank, 3);
@@ -254,7 +257,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     // 사람 단계(종류를 적은 청사진만): talk·choice 는 맵 가운데쯤, battle 은 들어온 곳에서 가장 먼 안쪽에 선다 — 이름으로 물건을 찾는 조사 자리와 다르다.
     const who = step.who?.trim() || undefined;
     const personal = !!who && (step.kind === "talk" || step.kind === "choice" || step.kind === "battle");
-    const at = existing ? undefined : spotFor(map, personal ? undefined : `${step.event} 앞`, !!step.kind, step.kind === "battle" ? 0.92 : personal ? 0.45 : 0.3 + 0.13 * (k % 5));
+    const at = existing ? undefined : spotFor(map, personal ? undefined : `${step.event} 앞`, !!step.kind, step.kind === "battle" ? 0.92 : personal ? 0.45 : 0.3 + 0.13 * (k % 5), personal && step.kind !== "battle" ? who : undefined);
     const t = byId.get(step.id);
     // 대사를 주지 않았으면 모델이 지은 단계 이벤트(명령이 있고, 마지막이면 엔딩을 부르는 것)는 그대로 둔다 — 빠진 단계만 짓는다
     // (standin magic: 마지막 장소 하나가 없을 뿐인데 교장·사서 대화까지 줍기로 덮을 뻔했다).

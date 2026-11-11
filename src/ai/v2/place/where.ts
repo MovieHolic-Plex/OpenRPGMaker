@@ -223,7 +223,7 @@ export function resolveWhere(
   project: Project,
   map: GameMap,
   word: string | undefined,
-  opts: { at?: Cell; avoid?: readonly Cell[]; keepFree?: readonly Cell[]; footprint?: Footprint; role?: string; exceptId?: string } = {},
+  opts: { at?: Cell; avoid?: readonly Cell[]; keepFree?: readonly Cell[]; footprint?: Footprint; role?: string; exceptId?: string; /** at 이 길 위여도 그대로 쓴다 — 부른 쪽이 정한 자리다(제 집 문 옆: place/program.ts programAnchor 가 길을 끊지 않는 칸만 준다). */ roadOk?: boolean } = {},
 ): WhereResolution {
   const w = map.width;
   const start = walkStart(project, map);
@@ -290,7 +290,7 @@ export function resolveWhere(
   };
   // 바깥 맵의 사람은 길 위가 아니라 길가에 선다(2026-10-23 3차 몬스터 마을: 주민 둘이 큰길 한가운데 서서 길을 좁혔다).
   const outdoorRoads = !fp && !indoor ? roadCells(project, map) : undefined;
-  const roadCost = (c: Cell): number => (outdoorRoads?.has(c.y * w + c.x) ? 8 : 0);
+  const roadCost = (c: Cell): number => (!opts.roadOk && outdoorRoads?.has(c.y * w + c.x) ? 8 : 0);
   // 실내 사람은 문 곁·가구의 하나뿐인 접근 칸·다른 사람 바로 위아래·양탄자 가운데를 피한다(personSpotCost).
   const spotCtx = !fp && indoor ? personSpotContext(project, map, opts.exceptId) : undefined;
   const spotCost = (c: Cell): number => (spotCtx ? personSpotCost(project, map, c, spotCtx) : 0);
