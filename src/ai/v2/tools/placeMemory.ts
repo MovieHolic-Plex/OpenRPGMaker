@@ -75,12 +75,23 @@ export function loadPlaces(memory: unknown, session: V2Session, project: Project
 /** 앞 턴의 설계에서 다시 지었을 때 결과에 붙이는 글(모델이 읽는다). */
 export const PAST_DESIGN_NOTE = "Edited from the design saved when this place was built in an earlier turn. If the place was re-laid, things put on this map after that build (objects, hand-painted tiles) are not part of the design — look at the picture and put back anything that is missing.";
 
+/**
+ * 칸 배치(spec.layout)로 짓지 않은 장소에 layoutPatch 가 왔을 때의 거절 글. 전에는 «전체 배치를 보내라» 고만 해서, 뒷문 하나 내려던 모델이
+ * 같은 호출을 다섯 번 되풀이하다 막혔다(2026-11-11 작은 일 재측정 door-backdoor-built) — 전체 배치는 방을 통째로 다시 짓는 일이다.
+ */
+export function layoutPatchRefusal(mapId: string): string {
+  return `layoutPatch edits a place that was laid from a cell layout (spec.layout); ${mapId} was not, so nothing was changed. Do not send a full layout for a small change — that rebuilds the whole room. `
+    + `Use the tools that work on any map: a door, back door or exit to another map → create_transfer_pair{a:{mapId:"${mapId}", x, y}, b:{mapId:<the other map>, x, y}} (give the wall cell where the door goes; the end snaps to the walkable cell in front of it — no door tile needed); `
+    + "people and events → add_people / move_event; a drawn object → place_object; furniture already in the room → move_object. "
+    + `Only if the request asks to rebuild the room: make_place with spec.mapId="${mapId}".`;
+}
+
 /** edit_place 가 고칠 설계를 못 찾았을 때의 거절 글 — 왜 없는지와, 그 맵에서 되는 길을 준다. */
 export function noDesignRefusal(session: V2Session, mapId: string): string {
   const why = session.stalePlaces.has(mapId)
     ? "the map was changed outside the assistant after it was built, so the saved design no longer describes it (rebuilding would erase those changes)"
     : "it was not built by make_place, or its design was not kept";
   return `edit_place rebuilds a place from its saved design, and ${mapId} has none — ${why}. Nothing was changed. `
-    + "For a small change, use the tools that work on any map: add_people / move_event (people, events), place_object (a drawn object), furnish_outdoor_area (fill bare outdoor ground), move_object (furniture in an interior). "
+    + "For a small change, use the tools that work on any map: add_people / move_event (people, events), place_object (a drawn object), furnish_outdoor_area (fill bare outdoor ground), move_object (furniture in an interior), create_transfer_pair (a door, back door or exit to another map — give the wall cell where it goes). "
     + `To replace the whole map with a newly designed place, call make_place with spec.mapId="${mapId}" — that discards what is on the map now, so do it only if the request asks for a rebuild.`;
 }

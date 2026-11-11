@@ -377,6 +377,25 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 
 증거: `test/toolsReadEmptyAndBlocked.test.ts`.
 
+## 뒷문은 `create_transfer_pair` 한 번 — 막다른 거절이 그 길을 이른다 (2026-11-11, 작은 일 두 번째 재측정)
+
+두 번째 재측정(Terra, main d4a4ae29f4)은 **29/30 · «완료» 29**(앞 28/30 · 25)였고 남은 하나가 `door-backdoor-built`(「족장의 긴 집에 뒷문을 하나 만들어 줘. 그 문으로 나가면 겨울 시장으로 가게」)다.
+두 번 다 조수는 «문을 방에 먼저 내야 한다» 고 보고 막다른 길로 갔다:
+
+- 앞 측정: `place_door` — 참고문서 관문에 막혔다(#4567 로 고침). 관문을 지나도 재료 「벽 통로」 는 한 칸 타일이라 «패턴 재료 라벨이 필요» 로 거절된다(설원 실내에는 문 재료가 없다).
+- 이번 측정: `edit_place` 의 `layoutPatch` — 칸 배치로 짓지 않은 방이라 거절인데, 거절 글이 «patch.set.layout 으로 전체 배치를 보내라» 였다. 모델은 같은 호출을 다섯 번 보내고 막혔다.
+  전체 배치는 방을 통째로 다시 짓는 일이라 권할 길도 아니다.
+
+그런데 이 일은 처음부터 실려 있던 `create_transfer_pair` 한 번이면 된다 — 문을 낼 벽 칸을 주면 그 앞 걷는 칸에 출입구가 붙는다(탐침: 벽 칸 (10,1) → (11,3) ↔ 겨울 시장, 작은 일 판정기 `transferLink` 통과).
+
+고친 것(도구에서):
+- `edit_place` 의 `layoutPatch` 거절(`tools/placeMemory.ts` `layoutPatchRefusal`): 바뀐 것이 없다는 것, 전체 배치를 보내지 말라는 것, 어느 맵에서나 되는 도구 — 문·뒷문·출구는 그 맵 id 를 채운 `create_transfer_pair{a:{mapId,…}, b:{…}}` — 를 준다. `noDesignRefusal` 에도 같은 길을 더했다.
+- `place_door` 가 재료를 못 찾거나 한 칸 타일이라 거절할 때, 문 그림 없이 잇는 길(`create_transfer_pair`)을 같이 적는다.
+- v2 영어 설명: `create_transfer_pair` 는 «문·뒷문·출구·계단 — 이 한 번이면 된다(방을 다시 짓지 않고 문 타일도 필요 없다), 새 문은 벽 칸을 준다» 로 시작한다. `place_door` 는 «문 그림만 — 맵 잇기는 create_transfer_pair» 라고 적는다.
+
+남은 것: 설원 실내 같은 구성기 칩셋에는 벽에 그릴 문 그림이 없다 — 지금은 출입구가 벽 발치의 보이지 않는 칸이다. 문 그림을 같이 놓으려면 칩셋마다 문 조각을 코드가 고르는 길이 필요하다(따로 다룬다).
+golden: 117/153 이 `create_transfer_pair` · `place_door` 글만 바뀜. 시험 `test/aiV2BackDoor.test.ts`.
+
 ## 조사 지점은 `place_examine_hotspots` — 물건 이름으로 놓는다 · 글만 나오는 조사는 장면이 아니다 (2026-11-11, 작은 일 재측정)
 
 작은 일 재측정(Terra, main 84a7fa331a)에서 통과는 했지만 «완료» 로 못 끝난 두 일 — `sign-starter`(표지판을 읽으면 글) · `examine-fireplace-built`(벽난로를 조사하면 글).
