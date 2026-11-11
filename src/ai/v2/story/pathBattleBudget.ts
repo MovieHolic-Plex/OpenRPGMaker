@@ -26,7 +26,7 @@ import { mapRoute } from "@/player/objectiveTarget";
 import type { ActorExperienceCurve, EnemyRecord, GameMap, Project, SkillRecord } from "@/project/types";
 import { blueprintMapFor } from "./blueprintPath";
 import { healingItemIds } from "../judge/combatChecks";
-import { startHealingItem } from "../healingAccess";
+import { startHealingItem } from "./healingAccess";
 import { wantsWholeGame } from "../request/readers";
 import { WEAK_FOE_ASK } from "../request/combat";
 

@@ -1,6 +1,6 @@
 // 전투 음악·효과음 다양성 검사(audio-*) — 2026-11-04 폴른 스타: 전투 76개 중 75개가 한 곡, 효과음 하나가 받기·장비·합류·움직임에.
 import { describe, expect, it } from "vitest";
-import { lintAudioVariety } from "@/ai/v2/audioVarietyLint";
+import { lintAudioVariety } from "@/ai/v2/judge/audioVarietyLint";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EnemyRecord, GameEvent, Project, TroopRecord } from "@/project/types";
 

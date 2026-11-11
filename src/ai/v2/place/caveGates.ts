@@ -11,9 +11,9 @@
 import { caveMouth, caveMouthSpotClear } from "@/editor/tools/dungeonLinkTools";
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { reachableCells, unreachableEvents } from "./eventReach";
-import { placementProblems } from "./place/placementRules";
-import type { BuildRun } from "./types";
+import { reachableCells, unreachableEvents } from "../judge/eventReach";
+import { placementProblems } from "./placementRules";
+import type { BuildRun } from "../types";
 
 type Cell = { x: number; y: number };
 

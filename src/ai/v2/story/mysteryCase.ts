@@ -13,7 +13,7 @@ import { withJosa } from "@/util/josa";
 import { eventGives } from "../blueprint";
 import { showExaminedThing } from "./examineArt";
 import { settleExamineSpot } from "./examineSpot";
-import { reachableCells, unreachableEvents } from "../eventReach";
+import { reachableCells, unreachableEvents } from "../judge/eventReach";
 import { isObjectiveCommand, mapRegion, objectiveCommand, withWhere } from "../judge/discoverability";
 import { isPassable } from "@/project/collision";
 import { buildPeople } from "../people";

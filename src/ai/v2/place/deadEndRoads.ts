@@ -9,7 +9,7 @@
 // 세운 뒤 못 닿는 이벤트가 늘면 그 묶음은 되돌린다. 새 그림은 그리지 않는다. 되풀이 안전(같은 id).
 import { isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { unreachableEvents } from "../eventReach";
+import { unreachableEvents } from "../judge/eventReach";
 import type { BuildRun } from "../types";
 
 const SIGN = "kit:beodeul_city/bd-out-signpost";

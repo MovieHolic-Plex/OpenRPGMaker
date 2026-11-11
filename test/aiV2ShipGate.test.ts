@@ -3,7 +3,7 @@ import { createBlankProject } from "@/project/defaults";
 import { blankMap } from "@/project/blueprintAssembly";
 import { factoryArtResourceIds } from "@/project/defaultLeaks";
 import { applyShipDefaults } from "@/ai/v2/story/shipDefaults";
-import { bundledPictureLeft, openingMissing, shipBlockers } from "@/ai/v2/shipChecks";
+import { bundledPictureLeft, openingMissing, shipBlockers } from "@/ai/v2/judge/shipChecks";
 import { buildsWholeGame } from "@/ai/v2/request/readers";
 import { splitPreexisting } from "@/ai/v2/judge/gates";
 import type { Project } from "@/project/types";

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { oversizedSprites } from "@/ai/v2/lookChecks";
+import { oversizedSprites } from "@/ai/v2/judge/lookChecks";
 import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import type { GameEvent, Project } from "@/project/types";
 

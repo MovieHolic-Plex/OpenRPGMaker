@@ -4,7 +4,7 @@
 // (해골 기사·살아있는 갑옷이 둘 다 「맹독 이빨」뿐, 보스에 기본 공격만). upsert_enemy·upsert_skill 을 쓰는 판이 0이었다.
 // 도구 호출 기록이 아니라 프로젝트 데이터로만 판정한다 — 빌더 적을 upsert_enemy 로 고쳐도 통과로 센다. 전투가 없는 게임은 대상이 아니다.
 import type { Project } from "@/project/types";
-import { allCommands } from "./judge/combatChecks";
+import { allCommands } from "./combatChecks";
 
 const BOSS_WORDS = /boss|보스|마왕|魔王|드래곤|dragon|용왕|수문장|두목|우두머리|군주/iu;
 const isBasicAttack = (skillId: string, name: string): boolean => skillId === "skill_attack" || /_attack$/u.test(skillId) || name === "공격";

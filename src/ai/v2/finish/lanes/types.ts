@@ -2,7 +2,7 @@
 import type { PiAssistantV2Env } from "../../env";
 import type { V2Session } from "../../turn/session";
 import type { RecordingBuildRun } from "../../buildRun";
-import type { ReachRepair } from "../../eventReach";
+import type { ReachRepair } from "../../judge/eventReach";
 
 export interface LaneCtx {
   readonly env: PiAssistantV2Env;

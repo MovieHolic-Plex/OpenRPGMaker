@@ -1,6 +1,6 @@
 // 그림 동사 — generate_art(타이틀·엔딩 그림) · draw_object(없는 기물 그리기 카드).
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
-import { checkImageDataUrl } from "../../imageCheck";
+import { checkImageDataUrl } from "../../judge/imageCheck";
 import type { ObjectSpec } from "../../types";
 import { drawObject } from "../../place/drawObject";
 import { rememberObjectPlan, type DrawObjectResult } from "../../place/drawObject";

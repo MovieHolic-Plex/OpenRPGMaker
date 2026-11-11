@@ -237,7 +237,7 @@ function clamp(min: number, max: number, value: number): number {
 
 /**
  * 빛 곡선 [반지름 비율, 가운데 대비 세기] — 가운데 1, 반지름 절반에서 약 0.45, 끝에서 0. 게임 마스크(player/lighting.ts)의
- * 걷어 내기·빛 색, 화면 검수 그림(ai/v2/vqaLighting.ts)이 같이 쓴다. 예전 곡선(0.7 까지 65% 유지 후 급락)은 반지름 끝까지 거의 다
+ * 걷어 내기·빛 색, 화면 검수 그림(ai/v2/judge/vqaLighting.ts)이 같이 쓴다. 예전 곡선(0.7 까지 65% 유지 후 급락)은 반지름 끝까지 거의 다
  * 걷어 내 흰 눈·얼음 위 등불마다 테두리 선명한 하얀 원판이 떴다(폴른 스타 서리나루, 2026-10-31).
  */
 export const LIGHT_FALLOFF: readonly (readonly [number, number])[] = [[0, 1], [0.25, 0.8], [0.5, 0.45], [0.75, 0.15], [1, 0]];

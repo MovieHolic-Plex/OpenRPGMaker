@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { editorDefaultsLeft } from "@/ai/v2/shipChecks";
+import { editorDefaultsLeft } from "@/ai/v2/judge/shipChecks";
 import { applyLookDefaults } from "@/ai/v2/story/shipDefaults";
 import type { Project } from "@/project/types";
 

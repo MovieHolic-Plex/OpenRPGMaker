@@ -8,7 +8,7 @@
 // 칸을 먼저, 없으면 원래 칸에서 가장 가까운 칸. 같은 칸으로 오던 이동 명령을 모두 고친다. 새 그림은 없다.
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
-import { blockersOf, reachFrom } from "../eventReach";
+import { blockersOf, reachFrom } from "../judge/eventReach";
 import type { BuildRun } from "../types";
 
 type Cell = { x: number; y: number };
