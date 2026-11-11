@@ -55,7 +55,7 @@ function translateParams(node: Json, en: ToolTextEn | undefined, keepKorean: boo
   for (const [k, v] of Object.entries(node)) {
     if (k === "description") continue;
     const child = k === "properties" && isObj(v)
-      ? Object.fromEntries(Object.entries(v).map(([pk, pv]) => [pk, translateParams(pv, en, keepKorean, path ? `${path}.${pk}` : pk)]))
+      ? Object.fromEntries(Object.entries(v).filter(([pk]) => !en?.hide?.includes(path ? `${path}.${pk}` : pk)).map(([pk, pv]) => [pk, translateParams(pv, en, keepKorean, path ? `${path}.${pk}` : pk)]))
       : k === "items" ? translateParams(v, en, keepKorean, `${path}[]`)
         : k === "anyOf" || k === "oneOf" || k === "allOf" ? translateParams(v, en, keepKorean, path)
           : translateParams(v, en, keepKorean, path ? `${path}.${k}` : k);
