@@ -15,7 +15,7 @@ import type { RoomDesign } from "@/editor/handInterior/designRoom";
 import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";
 
 const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";
-import { interiorTilesetOf } from "./builders/interior";
+import { interiorTilesetOf } from "./builders/interiorKind";
 import { roomParts } from "./roomParts";
 import { ROOM_IDEA_RULE, roomIdeasFor } from "./roomIdeas";
 import { AREA_MAX, AREA_MIN } from "./designAreas";

@@ -9,7 +9,7 @@ import { isPassable } from "@/project/collision";
 import { objectClusterAt } from "@/project/objectFootprint";
 import type { GameMap, Project } from "@/project/types";
 import { access } from "./dressRoom";
-import type { ObjectEdit } from "./interior";
+import type { ObjectEdit } from "./interiorRebuild";
 
 interface TileMoveResult { readonly ok: boolean; readonly project: Project; readonly done: readonly string[]; readonly refused: readonly string[] }
 
