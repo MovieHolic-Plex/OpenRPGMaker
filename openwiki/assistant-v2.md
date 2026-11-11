@@ -405,6 +405,31 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 
 증거: `test/toolsReadEmptyAndBlocked.test.ts`.
 
+## 필드 HUD 는 게임이 쓰는 것에서 정한다 — 혼자 남은 「마력」 막대 (2026-11-11)
+
+**본 것(오너: 「HUD 를 조수가 제대로 설정을 못하는거같다」).** Terra 게임 `fun-x1` 의 필드에는 왼쪽 위에 「마력 43 / 43」 막대 하나만 떠 있었다(체력은 없음, 이름표는 모래 위에서 안 읽힘).
+저장값은 `{theme:"adventure", vitals:false}`. `fun-w3` 도 `adventure`(체력·마력 막대 + 도구 5칸 + 스태미나) — 둘 다 턴제 JRPG 인데 실시간 액션용 테마다.
+
+**어떻게 그렇게 됐나.**
+1. 템플릿이 이야기 기본 HUD 를 깔고, «HUD 선택» 관문이 「템플릿 그대로다 — set_field_hud{theme} 로 고르라」 고 모델에게 시켰다. 도구 글은 테마를 이름으로만 일렀고
+   (`adventure=hearts` 같은 틀린 줄도 있었다) 답에는 필드에 무엇이 뜨는지가 없었다. Terra 는 모험 게임이니 `adventure` 를 골랐다.
+2. `vitals:false` 는 체력 게이지만 걸렀다(`resolvedHudWidgets` 가 `source === "hp"` 만 봄) — 마력·스태미나는 남는다.
+3. 검수는 맵 그림만 봐서 필드 HUD 를 본 눈이 없었다.
+
+**고친 것.**
+- `project/fieldHud.ts`: `vitals` 는 몸 게이지 넷(체력·마력·기력·스태미나)을 같이 끈다. `projectHudUse`(체력이 줄 일·마력 드는 기술·액션 전투가 있는가),
+  `unusedHudGauges`, `hudOnScreen`(필드에 실제로 뜨는 것), `asPresetHud`(프리셋에서 몇 칸 뺀 구성을 프리셋으로 되돌림).
+- `set_field_hud`: 고른 테마의 게이지 가운데 이 게임이 쓰지 않는 것은 빼고 저장하고, 답에 `onScreen`·`unused` 를 싣는다(명시한 `vitals:true` 는 그대로).
+  테마 설명은 «무엇이 뜨는가» 로 다시 썼다(`toolTextEn.ts` 도).
+- 끝맺음 `reconcileFieldHud`(story/shipLookDefaults.ts, `applyLookDefaults` 가 늘 부른다): 안 골랐거나 템플릿 그대로면 함수가 고르고(체력이 줄 일이 없으면 목표 줄만,
+  공포는 꽃잎, 싸우는 판타지는 classic, 그 밖은 hearts), 턴제 게임에 고른 `adventure`(실시간 액션용)는 그 값으로 바꾸고, 고른 테마에서 안 쓰는 게이지를 뺀다. 전투·기술이 뒤에 생기면 뺀 게이지가 돌아온다. 저자가 짠 widgets 는 안 건드린다.
+- «HUD 선택» 관문은 지웠다(관문 하나 줄임) — 모델에게 고르라고 시키는 대신 함수가 게임에서 읽는다. 타이틀 모양 관문은 그대로.
+- 런타임 CSS: 판 없는 위젯의 이름표에도 숫자와 같은 어두운 판(밝은 땅 위에서 안 읽혔다).
+
+**확인(모델 없음).** `fun-x1` 저장본: 필드에 뜨는 것 「마력 막대 + 목표 줄」 → 「목표 줄」. `fun-w3`: 체력·마력·(다쳤을 때) 스태미나 고리 → 체력·마력.
+빈 프로젝트에서 `set_field_hud{theme:"adventure"}` → 「쓰지 않는 게이지는 뺐다: 체력, 마력, 기력」. 시험 `test/aiV2HudTitleChecks.test.ts`.
+**남은 것.** 화면 검수가 필드 화면(HUD 포함)을 보게 하는 것 — 게임 하나 화면 감사에 플레이어 캡처를 넣는다. `classic` 을 고르면 목표 줄 기본값이 꺼진다(목표 글이 있으면 끝맺음이 켠다).
+
 ## 성문 기둥은 집 문이 아니다 — 눈가림 플레이가 궁전에 못 들어간 까닭 (2026-11-11)
 
 **본 것.** Terra 게임 하나 판 `fun-x1` 은 첫 턴이 «완료» 24/24 였는데, 눈가림 Opus 플레이어(`fun-judge.sh`)는 셋째 지역 「초승달 궁전」 에서

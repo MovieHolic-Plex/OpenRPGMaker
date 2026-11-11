@@ -23,9 +23,8 @@ export function hudIsStoryTemplate(project: Project): boolean {
 
 export function hudTitleChoiceProblems(project: Project): Finding[] {
   const problems: Finding[] = [];
-  if (hudIsStoryTemplate(project)) {
-    problems.push(tagged("game", "HUD 선택", "필드 HUD 가 이야기 기본 템플릿(minimal·체력 끔·시계 켬) 그대로다 — 이 게임의 분위기로 골랐다고 볼 수 없다. set_field_hud{theme} 로 이 이야기에 맞는 테마(공포 horror·고전 전투 classic·하트 모험 hearts·수집 collector·추격 chase …)를 고르거나, 체력이 줄지 않는 게임이면 {off:true} 로 끈다. 시계가 필요 없으면 clock:false."));
-  }
+  // 필드 HUD 는 묻지 않는다 — 템플릿 그대로면 끝맺음(reconcileFieldHud)이 이 게임이 쓰는 것으로 고른다. 모델에게 시키면 테마가 무엇을 띄우는지 모른 채
+  // 이름으로 골랐다(2026-11-11: 턴제 JRPG 두 판 모두 실시간 액션용 adventure).
   const title = (project.system.titleScreen ?? {}) as Obj;
   if (title.logoStyle === undefined && title.menuStyle === undefined) {
     problems.push(tagged("game", "타이틀 모양", "타이틀 화면의 글자 질감(logoStyle)과 메뉴 스타일(menuStyle)이 둘 다 비어 있다 — 어느 게임이나 같은 글꼴·같은 창 모양이다. set_title_screen{logoStyle:'gold'|'metal'|'stone'|'glow'|'plain', menuStyle:'window'|'plain', logoSubtitle} 로 이 이야기에 맞는 모양을 고른다(예: 마왕·성 = stone/metal, 밤·공포 = glow, 일상 = plain)."));

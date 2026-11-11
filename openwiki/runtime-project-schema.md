@@ -1631,7 +1631,7 @@ may coexist with audible atmosphere. Existing ten preset IDs remain valid catalo
 
 `system.fieldHud?: FieldHudConfig`의 `widgets?: HudWidget[]`가 데이터 기반 HUD 구성이다. `widgets` 생략은 theme 프리셋을 계산하고 `[]`는 의도적으로 비운 HUD다. 기존 theme/vitals/clock/tools/objective/hideEmpty 필드도 읽는다. 미설정 문서는 저장 바이트에 필드를 추가하지 않고 런타임에서 minimal을 사용한다. DB에서 legacy를 선택하면 이전 HUD로 돌아간다. 스키마 버전 증가는 없다.
 
-`project/fieldHud.ts`는 프리셋과 정규화를 소유한다. 요소는 gauge/clock/slots/text/party/timers/image, 게이지 표현은 bar/vertical/hearts/ring/number다. source/actorId/variableId/maxVariableId/timerId/itemIds가 데이터 연결이고 resourceId는 기존 리소스 ID다. 문자열 표현식이나 사용자 CSS를 실행하지 않는다. IO의 `shapeFieldHud`가 24개 제한, 중복 ID, enum, 유한 정수/범위, hex 색을 검증하며 `references`가 저작된 배우·변수·스위치·아이템·이미지 참조를 검사한다.
+`project/fieldHud.ts`는 프리셋과 정규화를 소유한다. `vitals:false`는 프리셋의 몸 게이지 넷(체력·마력·기력·스태미나)을 함께 끈다(2026-11-11 — 전에는 체력만 걸러 「마력」 막대가 혼자 남았다; 직접 짠 `widgets`에는 영향 없음). `projectHudUse`·`unusedHudGauges`·`hudOnScreen`·`asPresetHud`는 조수가 «게임이 쓰는 게이지만 띄우기»에 쓴다. 요소는 gauge/clock/slots/text/party/timers/image, 게이지 표현은 bar/vertical/hearts/ring/number다. source/actorId/variableId/maxVariableId/timerId/itemIds가 데이터 연결이고 resourceId는 기존 리소스 ID다. 문자열 표현식이나 사용자 CSS를 실행하지 않는다. IO의 `shapeFieldHud`가 24개 제한, 중복 ID, enum, 유한 정수/범위, hex 색을 검증하며 `references`가 저작된 배우·변수·스위치·아이템·이미지 참조를 검사한다.
 
 `FieldHud`는 HandSlotChip과 수명을 공유한다. `fieldHudData`는 세션만 읽고 `fieldHudRender`는 DOM만 그린다. 액션 스태미나와 플레이어 화면 좌표는 PlayScene의 실제 상태를 전달한다. 조건은 항상/최댓값 미만/25% 이하/양수/액션 맵/스위치/값 변경 후 3초다. 자동 회피 요소는 플레이어가 접근하면 위·아래를 바꾸고 고정 패널과의 겹침을 피한다. 사용자 배치는 뷰포트 경계에 제한한다.
 

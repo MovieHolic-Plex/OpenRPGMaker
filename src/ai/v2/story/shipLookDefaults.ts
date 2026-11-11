@@ -8,7 +8,8 @@ import { createBlankProject } from "@/project/defaults";
 import { blueprintPremiseText } from "@/project/blueprintAssembly";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import type { Project } from "@/project/types";
-import { normalizeFieldHud, projectCanLoseHp } from "@/project/fieldHud";
+import { asPresetHud, HUD_SOURCES, normalizeFieldHud, projectCanLoseHp, projectHudUse, resolvedHudWidgets, unusedHudGauges } from "@/project/fieldHud";
+import { hudIsStoryTemplate } from "../judge/hudTitleChecks";
 
 export type Obj = Record<string, unknown>;
 
@@ -35,6 +36,34 @@ export function fillFieldHud(project: Project, story: string): string[] {
   delete next.widgets;
   project.system.fieldHud = next;
   return [`필드 HUD → ${theme}`];
+}
+
+/**
+ * 필드 HUD 를 이 게임이 실제로 쓰는 것에 맞춘다 — 끝맺음마다 돈다(같은 게임에 두 번 돌아도 같은 결과).
+ *  - 아무도 안 골랐거나 이야기 기본 템플릿 그대로면 fillFieldHud 가 고른다. 전에는 «HUD 선택» 관문이 모델에게 고르라고 시켰는데, 모델은 테마가 무엇을
+ *    띄우는지 모른 채 이름으로 골랐다(2026-11-11 Terra 두 판 모두 adventure = 체력·마력 막대 + 도구 5칸 + 스태미나, 실시간 액션용).
+ *  - 고른 테마가 띄우는 몸 게이지 가운데 이 게임이 쓰지 않는 것(체력이 줄 일이 없는데 체력, 마력 드는 기술이 없는데 마력, 액션 전투가 아닌데 스태미나)은 뺀다.
+ *    그 판은 체력만 꺼서 「마력 43/43」 막대 하나가 모래 위에 혼자 떠 있었다.
+ *  - 저자가 직접 짠 widgets(꽃잎 생명·호감 게이지)는 건드리지 않는다. 전에 뺀 게이지는 전투·기술이 생기면 돌아온다(asPresetHud).
+ */
+export function reconcileFieldHud(project: Project, story: string): string[] {
+  if (project.system.fieldHud === undefined || hudIsStoryTemplate(project)) return fillFieldHud(project, story);
+  const hud = asPresetHud(project.system.fieldHud);
+  if (hud.widgets !== undefined) return [];
+  // adventure 는 실시간 액션 전투의 HUD 다(체력·마력 막대 + 도구 5칸 + 스태미나 — 화면 왼쪽 위 3분의 1). 턴제 게임에 고른 것은 이름으로 고른 것이라
+  // 함수가 고르는 값으로 바꾼다. 몸 게이지를 끄기로 한 것은 지킨다.
+  if (hud.theme === "adventure" && project.system.actionCombat?.enabled !== true) {
+    const notes = fillFieldHud(project, story);
+    if (!hud.vitals && project.system.fieldHud) project.system.fieldHud = { ...project.system.fieldHud, vitals: false };
+    return [`필드 HUD adventure(실시간 액션용)는 턴제 게임에 맞지 않아 바꿨다 — ${notes.join(" ")}`];
+  }
+  const shown = (config: typeof hud) => resolvedHudWidgets(config).map((w) => w.id).join(",");
+  const unused = unusedHudGauges(hud, projectHudUse(project));
+  const drop = new Set(unused.map((w) => w.id));
+  const next = unused.length ? { ...hud, widgets: resolvedHudWidgets(hud).filter((w) => !drop.has(w.id)) } : hud;
+  if (shown(next) === shown(project.system.fieldHud)) return [];
+  project.system.fieldHud = next;
+  return unused.length ? [`필드 HUD(${hud.theme})에서 이 게임이 쓰지 않는 게이지를 뺐다: ${unused.map((w) => w.label || HUD_SOURCES[w.source]).join(", ")}`] : [`필드 HUD(${hud.theme})에 전에 뺀 게이지를 되돌렸다(이제 쓰인다)`];
 }
 
 // ── 전투 곡 ─────────────────────────────────────────────────────────────
