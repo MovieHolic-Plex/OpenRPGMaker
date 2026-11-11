@@ -159,6 +159,8 @@ UI 저장 성공 문구는 원격 저장 영수증이 아니다. 원격 완료�
 `onPayload`로 최종 제공자 요청을 관찰하고 성공한 assistant `message_end`에서만 읽기 증거를 적립한다.
 Responses/Chat Completions/Anthropic/Gemini의 실제 tool result와 image 구조를 확인한다.
 텍스트 잘림, 이미지 미지원/누락, 제공자 오류, 같은 응답의 조회+쓰기는 통과하지 않는다.
+도구 결과에 다른 글이 붙어도(v2 인자 고침의 «Fixed: …» 알림 조각·줄) 결과 JSON 만 떼어 대조한다 — 글 조각을 이어 붙여 읽던 때는
+알림 하나에 읽기 전부가 인정되지 않아 `place_door` 가 읽은 뒤에도 거절됐다(2026-11-11, `openwiki/assistant-v2.md` 「참고문서 읽기는 결과에 알림이 붙어도 인정한다」).
 내용 revision에는 그림 바이트도 들어가므로 수정하면 이전 읽기 증거는 무효다.
 레거시 AssistantSession도 정확한 본문 전달과 imageDelivery 영수증을 사용한다.
 
