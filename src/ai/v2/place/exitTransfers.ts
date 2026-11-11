@@ -3,6 +3,7 @@ import { canMove, isPassable } from "@/project/collision";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { reachableCells, unreachableEvents } from "../judge/eventReach";
+import type { ArtGap } from "../shared/artGap";
 import type { BuildRun } from "../shared/types";
 import { Cell, Layer, Laid, kitOf, innerOf, reband, doorPiece, free, northDoorCells } from "./exitDress";
 
@@ -55,16 +56,30 @@ export function dropBuriedTransfers(run: BuildRun, mapId: string): string[] {
   return notes;
 }
 
-export function doorFloorTransfers(run: BuildRun, mapId: string, laid?: Laid): string[] {
+/**
+ * gaps: 방인데 이동 칸을 앉힐 문을 칩셋이 적어 두지 않은 곳 — 방 키트가 없거나(구성기 방) 키트에 벽 문 조각이 없다(마법 학교·고딕 저택).
+ * 그 방의 바닥 한가운데 이동 칸은 그대로 두고 여기에 적는다(문 그림을 이름표로 찾아 깔지 않는다).
+ */
+export function doorFloorTransfers(run: BuildRun, mapId: string, laid?: Laid, gaps?: ArtGap[]): string[] {
   const notes: string[] = [];
   const first = run.ctx.project.maps[mapId];
   if (!first) return notes;
   const ids = (first.events ?? []).filter((e) => touchTrigger(e) && transparentEvent(e) && transferCmds(e).some((t) => typeof t.cmd.mapId === "string" && t.cmd.mapId !== mapId)).map((e) => e.id);
+  const room = laid === "room" || (laid !== "outdoor" && (first as unknown as { climate?: { mode?: string } }).climate?.mode === "indoor");
+  const noDoor = (map: GameMap, ev: GameEvent) => {
+    // 가장자리 칸(방 짓기 출구·거리 끝)은 문이 아니어도 된다.
+    if (ev.x === 0 || ev.y === 0 || ev.x === map.width - 1 || ev.y === map.height - 1) return;
+    const destId = String(transferCmds(ev).find((t) => typeof t.cmd.mapId === "string" && t.cmd.mapId !== mapId)?.cmd.mapId ?? "");
+    gaps?.push({ tilesetId: map.tilesetId, want: "door piece", thing: "벽 문 그림", note: `「→ ${run.ctx.project.maps[destId]?.name ?? destId}」 이동 칸을 앉힐 문을 칩셋이 적어 두지 않았다`, mapId, x: ev.x, y: ev.y });
+  };
   for (const id of ids) {
     const project0 = run.ctx.project;
     const map0 = project0.maps[mapId]!;
     const k = kitOf(project0, map0, laid);
-    if (!k) return notes;
+    if (!k) {
+      if (room) for (const e of map0.events.filter((e) => ids.includes(e.id))) noDoor(map0, e);
+      return notes;
+    }
     const ev = map0.events.find((e) => e.id === id);
     if (!ev) continue;
     const w = map0.width, H = map0.height;
@@ -193,6 +208,7 @@ export function doorFloorTransfers(run: BuildRun, mapId: string, laid?: Laid): s
       break;
     }
     if (!done && plans.length) notes.push(`이동 칸 (${ev.x},${ev.y}): 문을 낼 벽 자리가 길을 막아 그대로 둠`);
+    if (!done && !piece) noDoor(map0, ev);
   }
   return notes;
 }

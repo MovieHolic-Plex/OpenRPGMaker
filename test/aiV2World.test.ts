@@ -7,7 +7,7 @@ import { buildV2SystemPrompt } from "@/ai/v2/prompt/systemPrompt";
 import { countMaps } from "@/ai/v2/judge/mapCount";
 import { walkGame } from "@/ai/v2/story/makeGame";
 import { battleStepBypass, stepMixProblems, walkBlueprint } from "@/ai/v2/story/blueprint";
-import { foeGraphic } from "@/ai/v2/story/blueprintPath";
+import { foeGraphic } from "@/ai/v2/story/stepFoes";
 import { sceneCraftFindings } from "@/ai/v2/judge/sceneCraft";
 import { isMysteryBlueprint } from "@/ai/v2/story/mysteryCaseRead";
 import { parseAdvisorReply } from "@/ai/v2/judge/advisor";

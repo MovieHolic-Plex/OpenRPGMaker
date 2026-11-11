@@ -58,4 +58,16 @@ describe("scene-examine-*", () => {
     map.events.push(examine("ex_first", 5, 5), examine("ex_second", 5, 5));
     expect(codes(project)).toContain("scene-examine-duplicate:ex_second");
   });
+
+  it("마감 단계가 건물 입구에 세운 「들어갈 수 없다」 한 줄은 조수가 지은 조사로 세지 않는다", () => {
+    // 같은 건물의 간판 조사와 «한 물건에 이야기 둘»이 되거나, 문 앞이 막힌 집에서 «닿지 못한다»가 되면 조수가 고칠 수 없는 줄이 생긴다.
+    const { project, map, object, wall } = fixture();
+    const upper = (map as unknown as { upperTiles: number[] }).upperTiles;
+    upper[5 * map.width + 5] = object;
+    map.events.push(examine("ex_sign", 5, 5), examine("ev_locked_door_5_5", 5, 5));
+    expect(codes(project)).toEqual([]);
+    for (const [x, y] of [[4, 5], [6, 5], [5, 4], [5, 6]] as const) upper[y * map.width + x] = wall;
+    map.events = [examine("ev_locked_door_5_5", 5, 5)];
+    expect(codes(project)).toEqual([]);
+  });
 });
