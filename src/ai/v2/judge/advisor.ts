@@ -361,7 +361,7 @@ function advisorPrompt(input: AdvisorInput): string {
 const PLACEHOLDER_NAME = /[「«"'“]?(?:빈 ?맵|blank (?:start )?map)[」»"'”]?/giu;
 /** 삭제 메모가 자리표시 시작 맵만 말하나 — 맵 id 가 있거나, 그 이름과 «맵·시작·삭제» 같은 낱말을 빼면 남는 글이 없을 때만(「빈 맵에 있던 촌장 삭제」는 아니다). */
 const isPlaceholderRemoval = (what: string): boolean => /map_blank_start/u.test(what)
-  || (what.search(PLACEHOLDER_NAME) >= 0 && !what.replace(PLACEHOLDER_NAME, "").replace(/자리표시|시작|맵|삭제|제거|지움|지웠다|됨|placeholder|start|map|the|deleted|removed|was|\(|\)/giu, "").replace(/[^\p{L}\p{N}]+/gu, ""));
+  || (what.search(PLACEHOLDER_NAME) >= 0 && !what.replace(PLACEHOLDER_NAME, "").replace(/자리표시|시작|기존|원래|맵|삭제|제거|지움|지웠다|됨|placeholder|existing|original|start|map|the|deleted|removed|was|\(|\)/giu, "").replace(/[^\p{L}\p{N}]+/gu, ""));
 
 /**
  * 응답을 메모로 바꾼다. 등급은 모델이 아니라 여기서 정한다 — 모델에게 「막음/우려」를 고르게 하면(2026-10-25 재생 1판) 시키지 않은 삭제와

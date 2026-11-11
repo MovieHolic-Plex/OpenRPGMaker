@@ -1207,6 +1207,7 @@ golden: 153 가운데 117 이 `place_examine_hotspots` 글/스키마(81 은 그�
 - **막힘 되돌림은 그 항목의 거절만 본다**(`loop/todoTools.ts` — 실패 기록에 항목 id). 다른 항목에서 난 거절 하나가 막힘 다섯을 되돌렸었다. 되돌릴 때 이르는 호출은 거절 글이 적은 호출 그대로(`nextCall.ts callInText`).
 - **고치기 상한은 한 곳에서 읽는다**(`repairCapOf`): 칸 배치 장소 12, 그 밖 3.
 - `place_object` 는 막힌 칸에서 5칸 안의 빈 칸을 찾는다(전 3칸).
+- 독립 검토자의 «기존 빈 맵 삭제» 도 자리표시 시작 맵 은퇴로 읽는다(`judge/advisor.ts isPlaceholderRemoval` — «기존·원래» 를 낱말로). 마을 빌더가 고침을 새 id(`map_blank_start_r2`)로 다시 지은 판에서 검토자가 이것을 막음으로 올려, 조수가 `create_map` 으로 빈 맵을 되살렸다.
 
 비평가의 지적이 사실인가(1배 그림을 직접 봄, 완료를 비평 항목이 막은 15요청): **거짓·낡음 3**(village 우물 · market-town 노점 · harbor 배와 부두 — 고친 뒤 다시 안 봄),
 **사실이고 모델이 가진 도구로 고칠 수 있음 7**(convenience-store · house · weapon-shop · village-chief-house · prison · blacksmith · tavern — 빈 바닥·성긴 방. 고침이 거절되거나 되돌려졌다),
