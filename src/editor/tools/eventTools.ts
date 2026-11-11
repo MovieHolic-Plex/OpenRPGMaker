@@ -1,3 +1,4 @@
+import { isRoadCell } from "@/ai/v2/place/surface";
 import { jsonEqual } from "@/util/structuralJson";
 import { fixActorPartyConditions } from "@/project/eventCommands/commandFieldAliases";
 import { fitStairTransfers, stairPairMismatch } from "@/project/stairs/fit";
@@ -2449,10 +2450,17 @@ function transferEndpoint(
   const snapBlocked = cleanSnap.x !== origin.x || cleanSnap.y !== origin.y;
   const isFlushGate = (x: number, y: number): boolean => isFlushPassable(project, map, x, y);
   const landingFree = (gate: Point): Point | null => {
-    return [
+    // 맵 가장자리의 출입구는 맵 안쪽 칸이 먼저다 — 가장자리 줄의 옆 칸은 들어온 사람이 맵 끝에 서고, 길 폭만큼 넓힌 출구와 겹친다.
+    const inward = gate.x === 0 ? [{ x: 1, y: gate.y }] : gate.x === map.width - 1 ? [{ x: gate.x - 1, y: gate.y }]
+      : gate.y === 0 ? [{ x: gate.x, y: 1 }] : gate.y === map.height - 1 ? [{ x: gate.x, y: gate.y - 1 }] : [];
+    const around = [
       { x: gate.x, y: gate.y + 1 }, { x: gate.x, y: gate.y - 1 },
       { x: gate.x + 1, y: gate.y }, { x: gate.x - 1, y: gate.y },
-    ].find((landing) => inMapBounds(map, landing.x, landing.y)
+    ];
+    // 길 위의 출입구로 들어온 사람은 길 위에 선다(길 끝 출구 곁 풀밭이 아니라 걸어 들어갈 길 칸).
+    const roadFirst = isRoadCell(project, map, gate.x, gate.y)
+      ? [...around.filter((c) => isRoadCell(project, map, c.x, c.y)), ...around.filter((c) => !isRoadCell(project, map, c.x, c.y))] : around;
+    return [...inward, ...roadFirst].find((landing) => inMapBounds(map, landing.x, landing.y)
       && !occupied.has(`${landing.x},${landing.y}`)
       && canMove(project, map, landing.x, landing.y, gate.x, gate.y)
       && canMove(project, map, gate.x, gate.y, landing.x, landing.y)) ?? null;
@@ -2537,11 +2545,11 @@ function transferEndpoint(
 export function resolveTransferEndpoint(
   project: Project,
   map: GameMap,
-  requested: { x: number; y: number; doorAt?: Point; /** 트리거를 문 그림 칸(doorAt)에 올린다 — 문앞 칸은 반대쪽에서 온 착지가 된다. */ triggerOnDoor?: boolean },
+  requested: { x: number; y: number; doorAt?: Point; /** 트리거를 문 그림 칸(doorAt)에 올린다 — 문앞 칸은 반대쪽에서 온 착지가 된다. */ triggerOnDoor?: boolean; /** x,y 를 그대로 출입구 칸으로 쓴다(벽 쪽으로 당기거나 옆 칸으로 옮기지 않는다 — 길 끝 출구). */ exact?: boolean },
   label: "A" | "B",
   notes: string[],
 ): { gate: Point; landing: Point } | null {
-  const fixed = requested.doorAt !== undefined;
+  const fixed = requested.doorAt !== undefined || requested.exact === true;
   if (requested.doorAt && (!inMapBounds(map, requested.doorAt.x, requested.doorAt.y)
     || requested.x !== requested.doorAt.x || requested.y !== requested.doorAt.y + 1)) {
     // 실측(2026-10-22 여관·상점 문): 조수가 x,y 와 doorAt 에 같은 칸을 넣어 두 번 거부됐다 — 받은 값과 고친 두 가지 모양을 그대로 보여 준다.
