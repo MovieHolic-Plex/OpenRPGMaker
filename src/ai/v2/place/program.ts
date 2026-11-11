@@ -20,7 +20,7 @@ export const HOME_CAP = 3;
 /** 종류의 얼굴 건물(궁전·피라미드 입구)이 맡는 역할의 id. */
 const LANDMARK_ID = "landmark";
 
-/** 목적표가 드러낸 빈칸 — 덮지 않고 적는다. TODO(v2.art-gap): 단계 감사의 art-gap 기록이 main 에 들어오면 같은 모양으로 그 장부에 싣는다. */
+/** 목적표가 드러낸 빈칸 — 덮지 않고 적는다. 실내 종류가 없는 역할(no-room-kind)은 없는 그림 장부(shared/artGap.ts v2.art-gap)에도 실린다 — 짓는 쪽이 at 을 붙여 넘긴다. */
 export interface ProgramGap {
   /** no-room-kind 그 역할의 실내 종류가 이 번들에 없다 · unplaced 역할 건물을 놓지 못했다 · home-cap 집 상한을 넘은 사람 · no-host 그 역할을 둘 수 있는 장소가 없다. */
   readonly kind: "no-room-kind" | "unplaced" | "home-cap" | "no-host";
@@ -29,6 +29,8 @@ export interface ProgramGap {
   readonly role: string;
   readonly need?: string;
   readonly detail: string;
+  /** 그 건물의 문 칸(지은 뒤의 빈칸만). */
+  readonly at?: { readonly mapId: string; readonly x: number; readonly y: number };
 }
 
 export interface PlacePlan {
@@ -266,7 +268,7 @@ export function programGaps(project: Project): ProgramGap[] {
       const door = doors.find((d) => d.need === need.id);
       const ko = need.label ?? decl.roles[need.role]?.ko ?? need.role;
       if (!door) gaps.push({ kind: "unplaced", world: world.id, place: name, role: need.role, need: need.id, detail: `「${ko}」 건물을 「${name}」에 놓지 못했다` });
-      else if (!decl.roles[need.role]?.room) gaps.push({ kind: "no-room-kind", world: world.id, place: name, role: need.role, need: need.id, detail: `「${ko}」 — ${world.ko} 번들에 「${decl.roles[need.role]?.ko ?? need.role}」 실내 종류가 없어 들어갈 수 없다(사람이 문 앞에 선다)` });
+      else if (!decl.roles[need.role]?.room) gaps.push({ kind: "no-room-kind", world: world.id, place: name, role: need.role, need: need.id, at: { mapId: map.id, x: door.door.x, y: door.door.y }, detail: `「${ko}」 — ${world.ko} 번들에 「${decl.roles[need.role]?.ko ?? need.role}」 실내 종류가 없어 들어갈 수 없다(사람이 문 앞에 선다)` });
     }
   }
   return gaps;

@@ -61,7 +61,7 @@ async function build(name: string, worldId: string, bp: Bp, text: Record<string,
   const session = new V2Session();
   const env: PiAssistantV2Env = {
     ctx, request: { task, provider: "local-cli:claude", mapIds: [], project, projectKey: `["project","purpose-${name}"]` } as never,
-    emit: (e: unknown) => { const ev = e as { name?: string; summary?: string }; if (ev.name === "v2.program-gap") console.log(`   gap: ${String(ev.summary).slice(0, 500)}`); }, record: () => {},
+    emit: (e: unknown) => { const ev = e as { name?: string; summary?: string }; if (ev.name === "v2.program-gap" || ev.name === "v2.art-gap") console.log(`   ${ev.name}: ${String(ev.summary).slice(0, 300)}`); }, record: () => {},
     sideChat: async () => JSON.stringify({ imagesSeen: 0, axes: {}, score: 7, majors: [] }),
     render: async () => "", checkpoint: async () => {},
   } as never;

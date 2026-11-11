@@ -10,6 +10,7 @@ import { blueprintMapFor } from "../story/blueprintPathNames";
 import { populateWorldPlace } from "../place/worldPopulate";
 import { planPrograms, programGaps, roleDoors } from "../place/program";
 import { layProgramRooms } from "../place/programRooms";
+import { recordArtGaps } from "../shared/artGap";
 import { repairEventReach } from "../place/reachRepairs";
 import { runLaneStages } from "../finish/lanes";
 import { isPlaceholderMap, moveBareEvents, retireBlankStart } from "../blankStart";
@@ -163,11 +164,15 @@ export function installSessionHooks(c: VerbContext) {
     if (world && programs) {
       notes.push(...layProgramRooms(run, world, (parentMapId, name, roomMapId, entrance, door) =>
         linkChild(parentMapId, undefined, undefined, { type: "interior", name }, { ok: true, mapIds: [roomMapId], entrance: { mapId: roomMapId, ...entrance }, summary: "", warnings: [], missingArt: [], calls: [] }, undefined, door)));
+      // 빈칸은 덮지 않고 적는다: 실내 종류가 없는 역할(사막의 살림집)은 없는 그림 장부에, 나머지(못 놓은 역할·집 상한)는 턴 기록에.
       const gaps = programGaps(env.ctx.project);
-      if (gaps.length) {
-        env.emit({ type: "execution_status", name: "v2.program-gap", ok: false, summary: `목적표 빈칸 ${gaps.length}건: ${gaps.map((g) => g.detail).join(" / ").slice(0, 600)}`, data: { gaps } });
-        notes.push(`목적표 빈칸 ${gaps.length}건 — ${gaps.map((g) => g.detail).join(" / ").slice(0, 400)}`);
-      }
+      const decl = world.program!.decl;
+      recordArtGaps({ env, session }, "program-rooms", gaps.filter((g) => g.kind === "no-room-kind" && g.at).map((g) => ({
+        tilesetId: world.tilesetId, want: `room kind: ${g.role} interior`, thing: `${decl.roles[g.role]?.ko ?? g.role} 실내`, note: g.detail, ...g.at!,
+      })));
+      const rest = gaps.filter((g) => g.kind !== "no-room-kind");
+      if (rest.length) env.emit({ type: "execution_status", name: "v2.program-gap", ok: false, summary: `목적표 빈칸 ${rest.length}건: ${rest.map((g) => g.detail).join(" / ").slice(0, 600)}`, data: { gaps: rest } });
+      if (gaps.length) notes.push(`목적표 빈칸 ${gaps.length}건 — ${gaps.map((g) => g.detail).join(" / ").slice(0, 400)}`);
     }
     for (const n of retireBlankStart(run)) notes.push(n);
     // 게임은 목록의 첫 장소에서 시작한다 — 바깥 장소를 먼저 지어 시작이 다른 장소에 가 있으면 첫 장소로 옮긴다(이번에 지은 세계 장소일 때만).
