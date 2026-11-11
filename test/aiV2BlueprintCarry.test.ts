@@ -83,7 +83,7 @@ describe("settleCarriedSteps — 경로를 짓기 직전에 물려받은 것을 
     const settled = settleCarriedSteps(ctx.project);
     expect([...settled.renamed]).toEqual([prior.steps[0]!.built!.eventId]);
     expect(events().map((e) => (e as { name?: string }).name)).toEqual(["샘지기 아말", "라일라", "수호자", "찻집 문"]);
-    expect(events().find((e) => e.id === "ev_door")!.pages.map((p) => (p.conditions ?? []).length)).toEqual([0, 0]);
+    expect((events().find((e) => e.id === "ev_door")!.pages ?? []).map((p) => (p.conditions ?? []).length)).toEqual([0, 0]);
     expect(ctx.project.gameBlueprint!.retired).toBeUndefined();
     // 다시 불러도 같다.
     expect([...settleCarriedSteps(ctx.project).renamed]).toEqual([]);
