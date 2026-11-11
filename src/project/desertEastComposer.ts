@@ -12,6 +12,7 @@
 
 import { deadAlleyMouths } from "./composerDeadAlleys";
 import { exitRoadThroughWild, type ExitSide } from "./composerExitRoads";
+import { BuildingBudget, fillerOf, placeableRoles, type RoleNeed, type SettlementDecl, type SettlementProgram } from "./settlementProgram";
 
 export type DesertKind = "oasis" | "bazaar" | "palace" | "pyramid" | "caravanserai";
 
@@ -34,7 +35,11 @@ export interface DesertPalette {
 }
 
 export interface DesertCell { readonly x: number; readonly y: number }
-export interface DesertBuilding { readonly name: string; readonly kit: string; readonly rect: { x: number; y: number; w: number; h: number }; readonly doors: DesertCell[]; readonly access: DesertCell[] }
+export interface DesertBuilding {
+  readonly name: string; readonly kit: string; readonly rect: { x: number; y: number; w: number; h: number }; readonly doors: DesertCell[]; readonly access: DesertCell[];
+  /** 목적표로 짰을 때 이 건물이 맡은 역할. 없으면 채움 집(목적표 없이 짠 판은 모두 없다). */
+  readonly need?: RoleNeed;
+}
 export interface DesertZone { readonly name: string; readonly use: string; readonly rect: { x: number; y: number; w: number; h: number } }
 
 export interface DesertSpec {
@@ -44,6 +49,8 @@ export interface DesertSpec {
   readonly seed?: number;
   /** 다른 맵으로 나가는 변 — 길 그물에서 그 변의 가장자리까지 흙길을 낸다(이미 닿아 있으면 그대로). */
   readonly exits?: readonly ExitSide[];
+  /** 목적표(settlementProgram.ts) — 주면 역할 건물과 채움 집만 놓고, 맵 크기는 desertProgramSize 가 정한 크기 이상이어야 한다. */
+  readonly program?: SettlementProgram;
   /** QA 전용: 닿지 못한 문이 있어도 마지막 판을 돌려준다(notes 에 적는다). */
   readonly debugKeepUnreachable?: boolean;
 }
@@ -56,6 +63,8 @@ export interface DesertResult {
   readonly start: DesertCell;
   readonly props: { kit: string; x: number; y: number }[];
   readonly notes: string[];
+  /** 목적표의 역할 가운데 놓지 못한 것(이 종류에 선언되지 않은 역할은 처음부터 빠진다). */
+  readonly unplaced?: readonly RoleNeed[];
 }
 
 export const DESERT_MIN_SIZE: Readonly<Record<DesertKind, { w: number; h: number }>> = {
@@ -64,6 +73,56 @@ export const DESERT_MIN_SIZE: Readonly<Record<DesertKind, { w: number; h: number
 export const DESERT_KIND_LABEL: Readonly<Record<DesertKind, string>> = {
   oasis: "오아시스 마을", bazaar: "바자르 시장 거리", palace: "궁전과 궁정 마당", pyramid: "피라미드 유적", caravanserai: "대상 숙소(카라반사라이)",
 };
+
+/** 채움 집·살림집 키트(가게·2층·돔처럼 역할이 생김새로 읽히는 키트는 뺀다 — 가게처럼 생긴 집은 언제나 가게다). */
+const PLAIN_HOUSES = ["de-house-adobe-4", "de-house-stone-4", "de-house-plaster-4", "de-house-windtower", "de-house-adobe-3"];
+
+/**
+ * 사막 번들의 목적표 선언 — 어느 키트가 어느 역할의 건물이고, 안으로 들어가면 어느 방(compose_desert_east_room 의 kind)인가.
+ * 살림집(home)은 방 종류가 없다: 이 번들에 살림집 실내가 없어서다(그 집 사람은 문 앞에 선다 — 읽는 쪽이 빈칸으로 적는다).
+ * 대상 숙소는 방 줄 전체가 한 건물이라 역할이 무엇이든 같은 방 키트로 놓는다(composeCaravanserai).
+ */
+export const DESERT_SETTLEMENT: SettlementDecl = {
+  roles: {
+    home: { ko: "집", kits: PLAIN_HOUSES, anyKit: true },
+    shop: { ko: "가게", kits: ["de-house-shop"], room: "shop" },
+    inn: { ko: "여관", kits: ["de-house-2f", "de-house-adobe-5"], room: "inn" },
+    teahouse: { ko: "찻집", kits: ["de-house-shop", "de-domed-hall"], room: "teahouse" },
+    bath: { ko: "목욕탕", kits: ["de-house-dome-4", "de-house-dome-white"], room: "hammam" },
+    throne: { ko: "궁전", kits: ["de-palace"], room: "palace_hall" },
+    tomb: { ko: "피라미드 입구", kits: ["de-pyramid-door"], room: "tomb" },
+  },
+  kinds: {
+    oasis: { roles: ["home", "inn", "shop", "teahouse", "bath"], filler: 2 },
+    bazaar: { roles: ["shop", "teahouse", "home", "inn", "bath"], filler: 2 },
+    caravanserai: { roles: ["inn", "home", "shop"], filler: 3 },
+    palace: { roles: ["throne", "home", "bath"], filler: 1, landmark: "throne" },
+    pyramid: { roles: ["tomb"], filler: 0, landmark: "tomb" },
+  },
+};
+
+/** 집 한 채의 자리 폭(키트 최대 4칸 + 틈 1칸) — 역할의 첫 키트와 채움 집은 모두 4칸 이하다. */
+const SLOT = 5;
+/** 한 줄에 세우는 건물 수의 상한 — 넘으면 남쪽 골목에 둘째 줄을 낸다. */
+const ROW_MAX = 5;
+
+/**
+ * 목적표가 정하는 맵 크기 — 건물 수(역할 + 채움)에서 나온다. 못·광장·성벽·피라미드처럼 그 종류를 이루는 것은 그대로 두고,
+ * 집 줄의 길이와 줄 수, 성벽 안쪽 폭만 건물 수를 따른다.
+ */
+export function desertProgramSize(kind: DesertKind, program: SettlementProgram): { w: number; h: number } {
+  const n = placeableRoles(DESERT_SETTLEMENT, kind, program).length + fillerOf(DESERT_SETTLEMENT, kind, program);
+  const rows = n <= ROW_MAX ? 1 : 2, perRow = Math.ceil(n / rows);
+  switch (kind) {
+    case "oasis": return { w: Math.max(32, 15 + perRow * SLOT), h: rows === 1 ? 24 : 31 };
+    case "bazaar": return { w: Math.max(34, 17 + perRow * SLOT), h: bazaarStreetY(program) + (rows === 1 ? 10 : 17) };
+    case "caravanserai": return { w: Math.max(22, 3 * n + 2) + 10, h: 27 };
+    case "palace": return { w: 36, h: n - 1 > 2 ? 36 : 29 };
+    case "pyramid": return { w: 36, h: 26 };
+  }
+}
+/** 바자르 큰길 윗줄 — 찻집이 회당(광장 북쪽 6줄)을 쓰면 그만큼 내려간다. */
+const bazaarStreetY = (program: SettlementProgram): number => (program.roles.some((need) => need.role === "teahouse") ? 13 : 8);
 
 const BUILDING_NAME: Readonly<Record<string, string>> = {
   "de-house-adobe-3": "흙집", "de-house-adobe-4": "흙집", "de-house-adobe-5": "큰 흙집", "de-house-stone-4": "사암 집", "de-house-plaster-4": "흰 집",
@@ -105,6 +164,10 @@ class Board {
   readonly zones: DesertZone[] = [];
   readonly props: { kit: string; x: number; y: number }[] = [];
   readonly notes: string[] = [];
+  /** 목적표로 짤 때의 건물 예산. */
+  budget?: BuildingBudget;
+  /** 다른 맵으로 나가는 변 — 목적표 판은 큰길을 그 변까지 곧게 뻗는다(큰길 곁에 나가는 길이 따로 붙어 출구가 넓어지지 않게). */
+  exits: readonly ExitSide[] = [];
   constructor(readonly W: number, readonly H: number, readonly pal: DesertPalette, readonly seed: number) {
     this.lower = new Array(W * H).fill(-1);
     this.upper = new Array(W * H).fill(-1);
@@ -193,13 +256,14 @@ class Board {
     return true;
   }
   /** 건물 하나: 찍고, 문 칸·접근칸(문 바로 아래)을 기록, 접근칸과 그 아래 한 칸은 예약. */
-  building(kitId: string, x: number, y: number): DesertBuilding {
+  building(kitId: string, x: number, y: number, need?: RoleNeed): DesertBuilding {
     const kit = this.stamp(kitId, x, y, "bld");
     const d = kit.door;
     const doors = d ? Array.from({ length: d.w }, (_, i) => ({ x: x + d.dx + i, y: y + kit.height - 1 })) : [];
     const access = doors.map((c) => ({ x: c.x, y: c.y + 1 }));
     for (const a of access) this.reserve({ x: a.x, y: a.y, w: 1, h: 2 });
-    const b = { name: BUILDING_NAME[kitId] ?? kitId.replace(/^de-/, ""), kit: kitId, rect: { x, y, w: kit.width, h: kit.height }, doors, access };
+    const name = need ? need.label ?? DESERT_SETTLEMENT.roles[need.role]?.ko ?? need.role : BUILDING_NAME[kitId] ?? kitId.replace(/^de-/, "");
+    const b = { name, kit: kitId, rect: { x, y, w: kit.width, h: kit.height }, doors, access, ...(need ? { need } : {}) };
     this.buildings.push(b);
     return b;
   }
@@ -387,6 +451,48 @@ function houseRow(b: Board, rng: () => number, x0: number, x1: number, roadY: nu
     } else x += 1;
   }
   return out;
+}
+
+/**
+ * 목적표 줄 — 길(가로) 북쪽 한 줄을 안쪽(광장·입구 쪽)부터 바깥으로, 구간들을 번갈아 채운다. 역할 건물이 먼저 안쪽에 서고 채움 집이 그 바깥에 선다.
+ * 예산이 닫히면 거기서 끝난다(줄을 끝까지 채우지 않는다). 집은 길에서 한 줄 물러 선다 — 문 앞 한 줄이 그 집 앞마당이고(문에서 길까지는 pavePaths 가 잇는다),
+ * 그 집 사람은 길 위가 아니라 앞마당에 선다.
+ */
+function programRow(b: Board, rng: () => number, spans: readonly { x0: number; x1: number; inner: "left" | "right" }[], roadY: number, allow: readonly Use[] = ["open", "field"]): DesertBuilding[] {
+  const budget = b.budget!;
+  const out: DesertBuilding[] = [];
+  const cur = spans.map((sp) => (sp.inner === "left" ? sp.x0 : sp.x1));
+  const live = spans.map((sp) => sp.x1 - sp.x0 >= 3);
+  while (budget.open && live.some(Boolean)) {
+    for (let i = 0; i < spans.length && budget.open; i++) {
+      if (!live[i]) continue;
+      const sp = spans[i]!;
+      const at = (id: string): Rect => { const { w, h } = b.kitSize(id); return { x: sp.inner === "left" ? cur[i]! : cur[i]! - w, y: roadY - 1 - h, w, h }; };
+      const fits = (id: string): boolean => { if (!b.pal.kit(id)) return false; const r = at(id); return r.x >= sp.x0 && r.x + r.w <= sp.x1 && r.y >= 1 && b.free(r, 0, allow); };
+      const got = budget.next(fits, PLAIN_HOUSES, (kits) => pick(rng, kits));
+      if (!got) {
+        cur[i]! += sp.inner === "left" ? 1 : -1;
+        if (sp.inner === "left" ? cur[i]! > sp.x1 - 3 : cur[i]! < sp.x0 + 3) live[i] = false;
+        continue;
+      }
+      const r = at(got.kit);
+      out.push(b.building(got.kit, r.x, r.y, got.need));
+      cur[i] = sp.inner === "left" ? r.x + r.w + 1 : r.x - 1;
+    }
+  }
+  return out;
+}
+/** 앞마당을 지나 문에서 길까지 샛길 — 길을 낸 뒤에 부른다. */
+function pavePaths(b: Board, houses: readonly DesertBuilding[], mat: Mat = "r"): void {
+  for (const h of houses) b.connect(h, mat);
+}
+/** 집들의 가로 범위(왼쪽 끝 − 1 … 오른쪽 끝) — 길을 집이 선 데까지만 낸다. */
+function rowExtent(houses: readonly DesertBuilding[], x0: number, x1: number): { x0: number; x1: number } {
+  return houses.reduce((acc, h) => ({ x0: Math.min(acc.x0, h.rect.x - 1), x1: Math.max(acc.x1, h.rect.x + h.rect.w) }), { x0, x1 });
+}
+/** 큰길의 가로 범위 — 동·서로 나가는 변이 있으면 그 가장자리까지. */
+function toExits(b: Board, r: { x0: number; x1: number }): { x0: number; x1: number } {
+  return { x0: b.exits.includes("west") ? 0 : r.x0, x1: b.exits.includes("east") ? b.W - 1 : r.x1 };
 }
 
 /** 집 사이 틈·문 곁에 생활 소품(항아리·자루·궤짝) — 문 접근칸은 피한다. */
@@ -723,6 +829,105 @@ function composeBazaar(b: Board, rng: () => number): DesertCell {
   return { x: entryX, y: H - 1 };
 }
 
+// ───────────────────────── 목적표로 짜는 오아시스·바자르 ─────────────────────────
+// 못·광장·큰길·남쪽 입구는 그대로, 집 줄만 목적표의 건물 수만큼. 못 북쪽 언덕 줄·마을 밖 야영지·과수원(남는 땅을 메우던 것)은 없다 — 맵이 그만큼 작다.
+function composeOasisProgram(b: Board, rng: () => number): DesertCell {
+  const { W, H } = b, budget = b.budget!;
+  const rows = budget.total <= ROW_MAX ? 1 : 2, north = Math.ceil(budget.total / rows), left = Math.ceil(north / 2);
+  const ox = Math.max(0, Math.floor((W - (15 + north * SLOT)) / 2));
+  const cx = ox + Math.max(10, left * SLOT + 7), cy = 8, rx = 5, ry = 3.4;
+  const pool = oasisPool(b, cx, cy, rx, ry, 2.6);
+  b.zone("오아시스 못", "물·야자 숲", pool.grass);
+  const mainY = 18, entryX = cx;
+  const plaza = { x: cx - 4, y: 13, w: 9, h: mainY - 13 };
+  b.ground(plaza, "f", "plaza");
+  b.zone("마을 광장", "우물·노점", plaza);
+  const wx = plaza.x + 3, wy = plaza.y + 1;
+  b.prop("de-well", wx, wy, 0, ["plaza"]);
+  b.prop("de-bench-stone", wx - 3, wy + 1, 0, ["plaza"]); b.prop("de-bench-stone", wx + 3, wy + 1, 0, ["plaza"]);
+  b.prop("de-jars-rack", wx + 3, wy - 1, 0, ["plaza"]) || b.prop("de-jars-rack", wx - 3, wy - 1, 0, ["plaza"]);
+  // 큰길 북쪽 줄: 광장 양옆에서 바깥으로(못가 풀 띠 끝자락에는 걸쳐도 된다)
+  const northRow = programRow(b, rng, [{ x0: ox + 3, x1: plaza.x - 1, inner: "right" }, { x0: plaza.x + plaza.w + 1, x1: W - 3, inner: "left" }], mainY, ["open", "field", "grass"]);
+  const main = toExits(b, rowExtent(northRow, plaza.x - 1, plaza.x + plaza.w));
+  b.ground({ x: main.x0, y: mainY, w: main.x1 - main.x0 + 1, h: 2 }, "r", "road");
+  b.ground({ x: entryX, y: mainY, w: 2, h: H - mainY }, "r", "road");
+  pavePaths(b, northRow);
+  doorDressing(b, rng, northRow, mainY - 1);
+  // 남는 건물은 남쪽 골목 줄(입구 길 양옆에서 바깥으로)
+  if (budget.open) {
+    const laneY = H - 3;
+    const south = programRow(b, rng, [{ x0: 3, x1: entryX - 1, inner: "right" }, { x0: entryX + 3, x1: W - 3, inner: "left" }], laneY);
+    const lane = rowExtent(south, entryX, entryX + 1);
+    b.ground({ x: lane.x0, y: laneY, w: lane.x1 - lane.x0 + 1, h: 1 }, "r", "road");
+    pavePaths(b, south);
+    doorDressing(b, rng, south, laneY - 1);
+  }
+  oasisPlants(b, rng, pool.grass, 5 + Math.floor(rng() * 2));
+  const rest = [entryX + 3, entryX - 7].map((x) => ({ x, y: mainY + 2, w: 5, h: 3 })).find((r) => b.free(r, 0));
+  if (rest) {
+    b.prop("de-camel-rest", rest.x, rest.y + 1, 0); b.prop("de-camel", rest.x + 2, rest.y, 0); b.prop("de-trough", rest.x + 2, rest.y + 2, 0); b.prop("de-hitch-post", rest.x + 4, rest.y + 1, 0);
+    b.zone("낙타 쉼터", "물통·말뚝·낙타", rest);
+  }
+  shaduf: for (let y = pool.grass.y; y < pool.grass.y + pool.grass.h; y++) for (let x = pool.grass.x; x < pool.grass.x + pool.grass.w; x++) {
+    const wet = b.u(x - 1, y + 2) === "water" || b.u(x + 2, y + 2) === "water";
+    if (wet && b.prop("de-shaduf", x, y, 0, ["grass"])) break shaduf;
+  }
+  lanternLine(b, main.x0 + 1, main.x1 - 1, mainY, 8);
+  wildDesert(b, rng, 0.42);
+  return { x: entryX, y: H - 1 };
+}
+
+// 포석 큰길·분수 광장·큰길 남쪽 좌판 한 줄은 그대로, 큰길 북쪽 줄은 목적표의 건물만(노점은 좌판 줄에 선다). 찻집이 있으면 광장 북쪽 회당이 찻집이다.
+function composeBazaarProgram(b: Board, rng: () => number): DesertCell {
+  const { W, H } = b, budget = b.budget!;
+  const hall = budget.wants("teahouse") && b.pal.kit("de-domed-hall") ? budget.next((id) => id === "de-domed-hall", [], (kits) => kits[0]!, ["teahouse"]) : undefined;
+  const sy = hall ? 13 : 8;
+  const rows = budget.total <= ROW_MAX ? 1 : 2, north = Math.ceil(budget.total / rows), left = Math.ceil(north / 2);
+  const ox = Math.max(0, Math.floor((W - (17 + north * SLOT)) / 2));
+  const px = ox + 3 + left * SLOT;
+  const plaza = { x: px, y: sy - 5, w: 11, h: 5 };
+  b.ground(plaza, "f", "plaza");
+  b.zone("분수 광장", hall ? "분수·회당 정문" : "분수", plaza);
+  if (hall) { const hy = plaza.y - b.kitSize(hall.kit).h; b.building(hall.kit, px + 2, hy, hall.need); if (b.pal.kit("de-minaret")) b.prop("de-minaret", px + 9, hy - 1, 0, ["open"]); }
+  b.prop("de-fountain", px + 4, sy - 3, 0, ["plaza"]);
+  b.prop("de-bench-stone", px, sy - 2, 0, ["plaza"]);
+  b.prop("de-bench-stone", px + 9, sy - 2, 0, ["plaza"]);
+  const northRow = programRow(b, rng, [{ x0: 2, x1: px - 1, inner: "right" }, { x0: px + 12, x1: W - 2, inner: "left" }], sy, ["open"]);
+  const st = rowExtent(northRow, px - 1, px + 11);
+  // 포석 큰길만 나가는 변까지 뻗는다 — 좌판 마당은 집 줄 폭 안에 둔다(가장자리에 닿으면 출구가 그만큼 넓어진다).
+  const street = toExits(b, st);
+  b.ground({ x: street.x0, y: sy, w: street.x1 - street.x0 + 1, h: 3 }, "f", "plaza");
+  b.zone("바자르 큰길", "가게가 늘어선 포석 거리", { x: street.x0, y: sy, w: street.x1 - street.x0 + 1, h: 3 });
+  pavePaths(b, northRow, "f");
+  doorDressing(b, rng, northRow, sy - 1);
+  // 큰길 남쪽: 좌판 한 줄(다진 흙 마당) — 입구 길은 비운다
+  const my = sy + 4, entryX = px + 5;
+  const market = { x: st.x0, y: my - 1, w: st.x1 - st.x0 + 1, h: 4 };
+  b.ground(market, "r", "road");
+  b.ground(market, "r", "open");
+  b.zone("바닥 장터", "좌판 한 줄", { ...market, y: my, h: 2 });
+  let prev = "";
+  for (let x = st.x0 + 1; x + 2 <= st.x1; x += 3) {
+    if (x <= entryX + 2 && x + 3 >= entryX) continue;
+    const id = pick(rng, STALLS.filter((s) => s !== prev && b.pal.kit(s)));
+    if (b.prop(id, x, my, 0)) prev = id;
+  }
+  for (let y = market.y; y < market.y + market.h; y++) for (let x = market.x; x < market.x + market.w; x++) if (b.use[b.k(x, y)] === "open") b.use[b.k(x, y)] = "road";
+  b.ground({ x: entryX, y: sy + 3, w: 2, h: H - sy - 3 }, "r", "road");
+  if (budget.open) {
+    const laneY = H - 3;
+    const south = programRow(b, rng, [{ x0: 2, x1: entryX - 1, inner: "right" }, { x0: entryX + 3, x1: W - 2, inner: "left" }], laneY);
+    const lane = rowExtent(south, entryX, entryX + 1);
+    b.ground({ x: lane.x0, y: laneY, w: lane.x1 - lane.x0 + 1, h: 1 }, "r", "road");
+    pavePaths(b, south);
+    doorDressing(b, rng, south, laneY - 1);
+  }
+  b.prop("de-cart-camel", st.x1 - 4, my + 3, 0) || b.prop("de-camel", st.x1 - 2, my + 3, 0);
+  lanternLine(b, st.x0 + 2, st.x1 - 2, sy, 7);
+  wildDesert(b, rng, 0.3);
+  return { x: entryX, y: H - 1 };
+}
+
 // ───────────────────────── 성벽 둘레(궁전·대상 숙소) ─────────────────────────
 /** 사각 성벽: 바깥 사각 r(칸). 북·남 벽 = wall-h(3줄), 동·서 = wall-v(폭 2), 모서리 = wall-tower(2×4), 남쪽 가운데 = gateKit. 안쪽 사각을 돌려준다. */
 function wallRing(b: Board, r: Rect, gateKit: "de-wall-gate" | "de-caravanserai-gate", rng: () => number): { inner: Rect; gate: DesertCell[] } {
@@ -753,7 +958,9 @@ function wallRing(b: Board, r: Rect, gateKit: "de-wall-gate" | "de-caravanserai-
 // 궁전 양옆에 회당·흰 집(신하 처소)이 마당으로 문을 낸다. 성 밖 남쪽은 진입로 + 오벨리스크 짝 + 작은 마을 줄.
 function composePalace(b: Board, rng: () => number): DesertCell {
   const { W, H } = b;
-  const rw = Math.min(W - 6, 38), rh = Math.min(H - 10, 30);
+  // 목적표: 성벽은 맵 크기를 따른다(성 밖 집 줄이 필요할 때만 그 줄만큼 남긴다).
+  const outside = !!b.budget && b.budget.total - 1 > 2;
+  const rw = Math.min(W - 6, 38), rh = Math.min(b.budget ? H - (outside ? 13 : 6) : H - 10, 30);
   const ring = { x: Math.floor((W - rw) / 2), y: 2, w: rw, h: rh };
   const { inner, gate } = wallRing(b, ring, "de-wall-gate", rng);
   b.zone("궁정 마당", "축선 포석 길·정원·분수", inner);
@@ -762,7 +969,7 @@ function composePalace(b: Board, rng: () => number): DesertCell {
   // 궁전 앞 단(포석, 궁전 폭 + 2) 3줄
   const ay = pyy + pk.h;
   b.ground({ x: inner.x, y: ay, w: inner.w, h: 3 }, "f", "plaza");   // 앞 단은 마당 폭 끝까지(적대 검수: 단이 허공에 끊겼다)
-  const pal = b.building("de-palace", pxx, pyy);
+  const pal = b.building("de-palace", pxx, pyy, b.budget?.claim(["throne"]));
   const dx0 = pal.access[0]!.x;
   // 축선 길: 궁전 문 → 성문(폭 = 성문 통로 폭)
   const g0 = gate[0]!;
@@ -778,14 +985,20 @@ function composePalace(b: Board, rng: () => number): DesertCell {
   const sideL = { x0: inner.x + 1, x1: pxx - 3 }, sideR = { x0: pxx + pk.w + 3, x1: inner.x + inner.w - 1 };
   for (const sd of [sideL, sideR]) {
     if (sd.x1 - sd.x0 < 3) continue;
-    const pool = sd.x1 - sd.x0 >= 6 ? ["de-domed-hall", "de-house-plaster-4", "de-house-dome-white"] : ["de-house-dome-white", "de-house-plaster-4"];
-    for (const id of pool) {
+    const spot = (id: string): Rect | undefined => {
       const { w, h } = b.kitSize(id);
-      if (sd.x1 - sd.x0 < w) continue;
-      const x = sd === sideL ? sd.x0 : sd.x1 - w;
-      const y = ay - h + 1 + 0;
-      if (y < inner.y || !b.free({ x, y, w, h }, 0)) continue;
-      const bd = b.building(id, x, y);
+      const r = { x: sd === sideL ? sd.x0 : sd.x1 - w, y: ay - h + 1, w, h };
+      // 목적표 판은 처소 아랫줄이 앞 단(포석) 첫 줄에 걸친다 — 예전 판정(빈 모래만)으로는 처소가 한 채도 서지 못했다.
+      return sd.x1 - sd.x0 < w || r.y < inner.y || !b.free(r, 0, b.budget ? ["open", "plaza"] : ["open"]) ? undefined : r;
+    };
+    // 목적표: 처소 한 채는 예산이 준다(역할 건물 먼저, 없으면 채움 집 — 흰 집·흰 돔 집을 먼저 고른다).
+    const COURT = ["de-house-plaster-4", "de-house-dome-white"];
+    const got = b.budget?.next((id) => !!b.pal.kit(id) && !!spot(id), COURT, (kits) => kits.find((id) => COURT.includes(id)) ?? kits[0]!);
+    const pool = b.budget ? (got ? [got.kit] : []) : sd.x1 - sd.x0 >= 6 ? ["de-domed-hall", "de-house-plaster-4", "de-house-dome-white"] : ["de-house-dome-white", "de-house-plaster-4"];
+    for (const id of pool) {
+      const r = spot(id);
+      if (!r) continue;
+      const bd = b.building(id, r.x, r.y, got?.need);
       b.ground({ x: Math.min(bd.access[0]!.x, sd === sideL ? sd.x1 : sd.x0), y: ay + 1, w: Math.abs((sd === sideL ? pxx - 2 : sd.x0) - bd.access[0]!.x) + bd.access.length + 1, h: 1 }, "f", "plaza");
       b.connect(bd, "f");
       break;
@@ -826,7 +1039,17 @@ function composePalace(b: Board, rng: () => number): DesertCell {
   b.ground({ x: ex, y: outY, w: gate.length, h: H - outY }, "f", "plaza");
   const ob = b.pal.kit("de-obelisk") ? "de-obelisk" : "de-stele";   // 관문 미통과로 오벨리스크가 시트에 없으면 비석
   b.prop(ob, ex - 2, outY + 1, 0); b.prop(ob, ex + gate.length + 1, outY + 1, 0);
-  if (H - outY >= 8) {
+  if (b.budget) {
+    // 목적표: 성 밖 집 줄은 성 안에 못 놓은 건물이 남았을 때만(진입로 양옆에서 바깥으로).
+    if (b.budget.open && H - outY >= 10) {
+      const roadY = H - 3;
+      const hs = programRow(b, rng, [{ x0: 2, x1: ex - 3, inner: "right" }, { x0: ex + gate.length + 3, x1: W - 2, inner: "left" }], roadY);
+      const lane = rowExtent(hs, ex, ex + gate.length - 1);
+      b.ground({ x: lane.x0, y: roadY, w: lane.x1 - lane.x0 + 1, h: 1 }, "r", "road");
+      pavePaths(b, hs);
+      doorDressing(b, rng, hs, roadY - 1);
+    }
+  } else if (H - outY >= 8) {
     const roadY = H - 3;
     b.ground({ x: 2, y: roadY, w: W - 4, h: 1 }, "r", "road");
     const hs = [...houseRow(b, rng, 2, ex - 3, roadY, [...HOUSES_3, ...HOUSES_4]), ...houseRow(b, rng, ex + gate.length + 3, W - 2, roadY, [...HOUSES_3, ...HOUSES_4])];
@@ -839,7 +1062,7 @@ function composePalace(b: Board, rng: () => number): DesertCell {
 // ───────────────────────── 대상 숙소 ─────────────────────────
 function composeCaravanserai(b: Board, rng: () => number): DesertCell {
   const { W, H } = b;
-  const rw = Math.min(W - 6, 34), rh = Math.min(H - 8, 22);
+  const rw = Math.min(W - 6, 34), rh = Math.min(H - (b.budget ? 9 : 8), 22);
   const ring = { x: Math.floor((W - rw) / 2), y: 3, w: rw, h: rh };
   const { inner, gate } = wallRing(b, ring, "de-caravanserai-gate", rng);
   b.zone("숙소 마당", "가운데 우물 단·낙타 줄·짐 구석", inner);
@@ -847,7 +1070,15 @@ function composeCaravanserai(b: Board, rng: () => number): DesertCell {
   const roomY = inner.y + 4;
   b.ground({ x: inner.x, y: roomY, w: inner.w, h: 1 }, "r", "road");
   // 방 줄은 같은 방을 틈 없이(대상 숙소 회랑은 한 건물이다 — 적대 검수: 집 모음처럼 보였다)
-  houseRow(b, rng, inner.x, inner.x + inner.w, roomY, ["de-house-adobe-3"], 0, ["road", "open"], false);
+  if (b.budget) {
+    // 목적표: 방 수 = 역할 + 채움. 방 줄 가운데에 모으고 역할 방이 한가운데에 선다.
+    const needs: (RoleNeed | undefined)[] = [];
+    for (let need = b.budget.claim(); need; need = b.budget.claim()) needs.push(need);
+    for (let side = 0; b.budget.fill(); side++) { if (side % 2) needs.push(undefined); else needs.unshift(undefined); }
+    const rooms = needs.slice(0, Math.floor(inner.w / 3));
+    const x0 = inner.x + Math.floor((inner.w - rooms.length * 3) / 2);
+    rooms.forEach((need, i) => b.building("de-house-adobe-3", x0 + i * 3, roomY - 4, need));
+  } else houseRow(b, rng, inner.x, inner.x + inner.w, roomY, ["de-house-adobe-3"], 0, ["road", "open"], false);
   const g0 = gate[0]!;
   const cx = g0.x + Math.floor(gate.length / 2);
   // 성문 → 가운데 단 → 방 회랑 길(다진 흙)
@@ -869,7 +1100,7 @@ function composeCaravanserai(b: Board, rng: () => number): DesertCell {
   // 동쪽: 짐 구석(수레·궤짝·자루·항아리) + 정자 천막
   const ex = inner.x + inner.w - 9, ey = roomY + 2;
   b.zone("짐 구석", "대상 수레·궤짝·자루", { x: ex, y: ey, w: 8, h: inner.y + inner.h - ey });
-  b.prop("de-tent-pavilion", ex + 4, ey, 0);
+  if (!b.budget) b.prop("de-tent-pavilion", ex + 4, ey, 0);   // 천막도 입구가 있는 건물이다 — 목적표 판에는 역할 없는 건물을 세우지 않는다
   b.prop("de-cart-camel", ex, ey + 1, 0);
   b.prop("de-crates-stack", ex, ey + 4, 0); b.prop("de-sacks", ex + 2, ey + 5, 0); b.prop("de-jars-group", ex + 4, ey + 5, 0); b.prop("de-carpet-rolls", ex + 6, ey + 5, 0);
   b.prop("de-handcart", ex + 5, ey + 4, 0);
@@ -880,7 +1111,8 @@ function composeCaravanserai(b: Board, rng: () => number): DesertCell {
   b.scatter(inner, 5, ["de-tuft", "de-rock-small"], rng, 3);
   // 성 밖: 성문 → 남쪽 끝 길 + 대상 행렬 대기(낙타·수레)
   b.ground({ x: g0.x, y: ring.y + ring.h, w: gate.length, h: H - ring.y - ring.h }, "r", "road");
-  b.prop("de-camel", g0.x + gate.length + 2, ring.y + ring.h + 1, 0); b.prop("de-signpost", g0.x - 2, ring.y + ring.h + 1, 0);
+  // 목적표 판은 성 밖이 좁다 — 낙타·표지판을 세우면 동·서로 나가는 길이 맵 아래 가장자리에 붙어 간다.
+  if (!b.budget) { b.prop("de-camel", g0.x + gate.length + 2, ring.y + ring.h + 1, 0); b.prop("de-signpost", g0.x - 2, ring.y + ring.h + 1, 0); }
   wildDesert(b, rng, 0.4);
   return { x: g0.x, y: H - 1 };
 }
@@ -897,7 +1129,7 @@ function composePyramid(b: Board, rng: () => number): DesertCell {
   b.zone("대피라미드", "유적 중심 · 남쪽 입구로 내부", { x: px, y: py, w: pk.w, h: pk.h });
   const dk = b.kitSize("de-pyramid-door");
   const dx = px + Math.floor((base - dk.w) / 2), dy = py + pk.h - dk.h + 1;
-  const door = b.building("de-pyramid-door", dx, dy);
+  const door = b.building("de-pyramid-door", dx, dy, b.budget?.claim(["tomb"]));
   // 참배 길: 입구 → 남쪽 끝(포석 2줄), 끝에 탑문(성문 키트), 양옆 석상 짝(4칸 간격)
   const ax = door.access[0]!.x;
   b.ground({ x: ax, y: dy + dk.h, w: 2, h: H - dy - dk.h }, "f", "plaza");
@@ -929,7 +1161,7 @@ function composePyramid(b: Board, rng: () => number): DesertCell {
   ruinedTemple(b, rng, { x: 1, y: py + pk.h, w: ax - 4, h: H - py - pk.h - 1 });
   ruinedTemple(b, rng, { x: ax + 5, y: py + pk.h, w: W - ax - 6, h: H - py - pk.h - 1 });
   for (let i = 0; i < 4; i++) { const r = findOpen(b, rng, 2, 3, 1); if (r) b.prop(pick(rng, ["de-column-broken", "de-block-fallen", "de-stele"]), r.x, r.y, 0); }
-  camp(b, rng, { x: 1, y: Math.round(H * 0.4), w: b.W - 2, h: H - Math.round(H * 0.4) - 1 });
+  if (!b.budget) camp(b, rng, { x: 1, y: Math.round(H * 0.4), w: b.W - 2, h: H - Math.round(H * 0.4) - 1 });
   wildDesert(b, rng, 0.32);
   return { x: ax, y: H - 1 };
 }
@@ -937,10 +1169,12 @@ function composePyramid(b: Board, rng: () => number): DesertCell {
 const COMPOSERS: Readonly<Record<DesertKind, (b: Board, rng: () => number) => DesertCell>> = {
   oasis: composeOasis, bazaar: composeBazaar, palace: composePalace, pyramid: composePyramid, caravanserai: composeCaravanserai,
 };
+/** 목적표로 짤 때 — 오아시스·바자르는 집 줄 배치가 달라 따로 짜고, 성벽·피라미드 종류는 같은 판에서 예산만 읽는다. */
+const PROGRAM_COMPOSERS: typeof COMPOSERS = { ...COMPOSERS, oasis: composeOasisProgram, bazaar: composeBazaarProgram };
 
 /** 한 장 짜기. 시작 칸에서 모든 문 접근칸에 닿지 못하면 씨앗을 바꿔 다시(최대 6번) — 그래도 안 되면 던진다. */
 export function composeDesertEast(spec: DesertSpec, pal: DesertPalette): DesertResult {
-  const min = DESERT_MIN_SIZE[spec.kind];
+  const min = spec.program ? desertProgramSize(spec.kind, spec.program) : DESERT_MIN_SIZE[spec.kind];
   if (spec.width < min.w || spec.height < min.h) throw new Error(`${DESERT_KIND_LABEL[spec.kind]} 는 ${min.w}×${min.h} 이상이어야 한다(지금 ${spec.width}×${spec.height})`);
   const base = spec.seed ?? 0;
   let last = "";
@@ -949,7 +1183,8 @@ export function composeDesertEast(spec: DesertSpec, pal: DesertPalette): DesertR
     const rng = mulberry(seed);
     const b = new Board(spec.width, spec.height, pal, seed);
     let start: DesertCell;
-    try { start = COMPOSERS[spec.kind](b, rng); } catch (e) { last = (e as Error).message; continue; }
+    if (spec.program) { b.budget = new BuildingBudget(DESERT_SETTLEMENT, spec.kind, spec.program); b.exits = spec.exits ?? []; }
+    try { start = (spec.program ? PROGRAM_COMPOSERS : COMPOSERS)[spec.kind](b, rng); } catch (e) { last = (e as Error).message; continue; }
     for (const side of spec.exits ?? []) b.exitRoad(side);
     b.paintGround();
     // 남쪽 끝 시작 칸이 걸을 수 없으면 가까운 길 칸
@@ -961,7 +1196,7 @@ export function composeDesertEast(spec: DesertSpec, pal: DesertPalette): DesertR
     const miss = b.buildings.flatMap((d) => d.access.filter((a) => !seen.has(b.k(a.x, a.y))).map((a) => `${d.name}(${a.x},${a.y})`));
     if (!miss.length) {
       if (attempt) b.notes.push(`씨앗 ${attempt}번 다시 짬(앞 판은 ${last})`);
-      return { lower: b.lower, upper: b.upper, buildings: b.buildings, zones: b.zones, start, props: b.props, notes: b.notes };
+      return { lower: b.lower, upper: b.upper, buildings: b.buildings, zones: b.zones, start, props: b.props, notes: b.notes, ...(b.budget ? { unplaced: [...b.budget.unplaced()] } : {}) };
     }
     last = `닿지 못한 문 ${miss.slice(0, 3).join(", ")}`;
     if (spec.debugKeepUnreachable && attempt === 5) { b.notes.push(last); return { lower: b.lower, upper: b.upper, buildings: b.buildings, zones: b.zones, start, props: b.props, notes: b.notes }; }
