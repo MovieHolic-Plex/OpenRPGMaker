@@ -23,12 +23,12 @@ export function effectChecks({ before, after, task, cmds, kinds }: GameCheck): F
   // a lever script with `await game.shake(6, 40)` was reported as «no shake command».
   const scriptSource = cmds.filter((r) => r.cmd.kind === "script").map((r) => String(r.cmd.source ?? "")).join("\n");
   const scriptCalls = (re: RegExp) => re.test(scriptSource);
-  if (SHAKE_WORDS.test(task) && !m2Has(/m2-048/u) && !scriptCalls(/\bgame\.shake\s*\(|m2-048/u)) problems.push(tagged("game", "화면", "요청에 흔들림·지진이 있는데 실제 화면 흔들기 명령이 없다(카메라 이동은 흔들림이 아니다). add_event 의 shake 비트({do:'shake',strength:'strong',axis:'vertical'})로 넣는다."));
-  if (FLASH_WORDS.test(task) && !m2Has(/m2-047/u) && !scriptCalls(/\bgame\.flash\s*\(|m2-047/u) && !cmds.some((r) => r.cmd.kind === "setWeather" && r.cmd.weather === "storm")) problems.push(tagged("game", "화면", "요청에 번쩍임·번개가 있는데 실제 화면 번쩍 명령이 없다(페이드 아웃은 번쩍이 아니다). add_event 의 flash 비트({do:'flash',color:'white'})로 넣는다."));
+  if (SHAKE_WORDS.test(task) && !m2Has(/m2-048/u) && !scriptCalls(/\bgame\.shake\s*\(|m2-048/u)) problems.push(tagged("game", "화면", "요청에 흔들림·지진이 있는데 실제 화면 흔들기 명령이 없다(카메라 이동은 흔들림이 아니다). add_event 의 shake 비트({do:'shake',strength:'strong',axis:'vertical'})로 넣는다.", { variant: "shake" }));
+  if (FLASH_WORDS.test(task) && !m2Has(/m2-047/u) && !scriptCalls(/\bgame\.flash\s*\(|m2-047/u) && !cmds.some((r) => r.cmd.kind === "setWeather" && r.cmd.weather === "storm")) problems.push(tagged("game", "화면", "요청에 번쩍임·번개가 있는데 실제 화면 번쩍 명령이 없다(페이드 아웃은 번쩍이 아니다). add_event 의 flash 비트({do:'flash',color:'white'})로 넣는다.", { variant: "flash" }));
   if (soundOnly(task) && !seBindingsChanged(before, after) && !kinds.has("playAudio") && !scriptCalls(/\bgame\.playSe\s*\(/u)) problems.push(tagged("game", "효과음", "요청에 효과음이 있는데 어느 자리에도 소리를 걸지 않았다. 화풍 통째로는 set_game_audio{role:'sfx-style', style}, 자리 하나는 store_find_sound → store_install → set_game_audio{role:'se', cue, resourceId}(프로젝트에 있는 소리면 list_resources{kind:'se'} 로 골라 바로 role:'se')."));
-  if (musicAsked(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu) && !scriptCalls(/\bgame\.(playBgm|stopBgm)\s*\(/u)) problems.push(tagged("game", "음악", "요청에 음악·BGM 이 있는데 어느 자리에도 곡을 걸지 않았다. 맵·전투·보스·승리·타이틀·엔딩 곡은 set_game_audio 로 건다(맞는 곡이 프로젝트에 없으면 store_find_music → 묻지 말고 store_install 로 넣은 뒤). 장면 도중 잠깐 바뀌는 곡만 add_event 의 music 비트({do:'music',action:'bgm',query:'festival'})."));
+  if (musicAsked(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu) && !scriptCalls(/\bgame\.(playBgm|stopBgm)\s*\(/u)) problems.push(tagged("game", "음악", "요청에 음악·BGM 이 있는데 어느 자리에도 곡을 걸지 않았다. 맵·전투·보스·승리·타이틀·엔딩 곡은 set_game_audio 로 건다(맞는 곡이 프로젝트에 없으면 store_find_music → 묻지 말고 store_install 로 넣은 뒤). 장면 도중 잠깐 바뀌는 곡만 add_event 의 music 비트({do:'music',action:'bgm',query:'festival'}).", { variant: "none-set" }));
   // 추격 음악은 추격자가 나타날 때의 곡이다 — 전투 곡이 아니다(2026-10-30 실조수 e2e: 「아오오니 느낌으로 추격 음악」이 모든 전투에 걸렸다).
-  if (musicAsked(task) && asksChaseNotBattleMusic(task) && (before.system.battleBgmResourceId ?? null) !== (after.system.battleBgmResourceId ?? null)) problems.push(tagged("game", "음악", "추격 음악을 모든 전투 곡(battle-default)에 걸었다. 추격 곡은 set_game_audio role:'chase'(+mapIds)로 추격자가 나타날 때 바꾸고 끝나면 되돌린다 — 전투 곡은 원래대로 돌려놓는다(추격자가 없으면 곡만 넣어 두고 보고에 적는다)."));
+  if (musicAsked(task) && asksChaseNotBattleMusic(task) && (before.system.battleBgmResourceId ?? null) !== (after.system.battleBgmResourceId ?? null)) problems.push(tagged("game", "음악", "추격 음악을 모든 전투 곡(battle-default)에 걸었다. 추격 곡은 set_game_audio role:'chase'(+mapIds)로 추격자가 나타날 때 바꾸고 끝나면 되돌린다 — 전투 곡은 원래대로 돌려놓는다(추격자가 없으면 곡만 넣어 두고 보고에 적는다).", { variant: "chase-on-battle" }));
   return problems;
 }
 
@@ -73,7 +73,7 @@ export function worldChecks({ before, after, task, changed, kinds }: GameCheck):
         for (const d of doors) { const g = groups.find((gr) => gr.some((o) => Math.abs(o.x - d.x) + Math.abs(o.y - d.y) <= 2)); if (g) g.push(d); else groups.push([d]); }
         if (groups.length < 2) continue;
         const where = groups.map((g) => `(${g[0]!.x},${g[0]!.y}) ${g[0]!.id}`).join(" · ");
-        problems.push(tagged("game", "이동", `${map.name ?? map.id} 에서 「${after.maps[to]?.name ?? to}」로 가는 문이 ${groups.length}곳 따로 있다: ${where} — 짓기 도구가 이미 이은 문과 새로 단 문이 겹쳤다. 요청한 자리(가장자리 길 끝·문) 하나만 남기고 나머지는 remove_event 로 지운다(반대쪽 맵의 짝 문도).`));
+        problems.push(tagged("game", "이동", `${map.name ?? map.id} 에서 「${after.maps[to]?.name ?? to}」로 가는 문이 ${groups.length}곳 따로 있다: ${where} — 짓기 도구가 이미 이은 문과 새로 단 문이 겹쳤다. 요청한 자리(가장자리 길 끝·문) 하나만 남기고 나머지는 remove_event 로 지운다(반대쪽 맵의 짝 문도).`, { target: { mapId: map.id, ref: to }, variant: "duplicate-doors" }));
       }
     }
   }
@@ -89,7 +89,7 @@ export function worldChecks({ before, after, task, changed, kinds }: GameCheck):
       const rest = after as unknown as Obj;
       for (const id of newMaps) {
         const others = JSON.stringify({ maps: Object.values(after.maps).filter((m) => m.id !== id).map((m) => m.events), common: after.commonEvents, conn: rest.mapConnections ?? rest.connections ?? null, world: rest.worldmap ?? null });
-        if (!others.includes(`"${id}"`)) problems.push(tagged("game", "이동", `새 맵 「${after.maps[id]!.name ?? id}」(${id}) 로 들어가는 문·이동이 어느 맵에도 없다 — 플레이어가 갈 수 없다. create_transfer_pair 로 문(집 문·마을 가장자리)과 잇는다.`));
+        if (!others.includes(`"${id}"`)) problems.push(tagged("game", "이동", `새 맵 「${after.maps[id]!.name ?? id}」(${id}) 로 들어가는 문·이동이 어느 맵에도 없다 — 플레이어가 갈 수 없다. create_transfer_pair 로 문(집 문·마을 가장자리)과 잇는다.`, { target: { mapId: id }, variant: "no-way-in" }));
       }
     }
   }
@@ -105,21 +105,21 @@ export function worldChecks({ before, after, task, changed, kinds }: GameCheck):
       if (rows.some((r) => (r.cmd.kind === "changeGold" || r.cmd.kind === "changeItem") && (r.cmd.op === "-=" || Number(r.cmd.amount) < 0)) || rows.some((r) => r.cmd.kind === "shop" || r.cmd.kind === "inn")) return;
       const setsFlag = rows.some((r) => ["setSelfSwitch", "setSwitch", "setVariable", "removeEvent", "eraseEvent"].includes(String(r.cmd.kind)) || (r.cmd.kind === "m2Command" && /erase|remove/iu.test(String(r.cmd.commandId))));
       const ungated = grants.filter((g) => !g.guards.length);
-      if (!setsFlag && ungated.length) problems.push(tagged("game", "반복", `「${ev.name}」(${ev.id}) 페이지 ${pi + 1}: ${ungated.map((g) => String(g.cmd.kind)).slice(0, 3).join("·")} 를 주는데 스위치·셀프 스위치를 안 켜서 말 걸 때마다 또 준다 — 한 번만이면 셀프 스위치를 켜고 그 조건의 「이미 받았다」 페이지를 둔다.`));
+      if (!setsFlag && ungated.length) problems.push(tagged("game", "반복", `「${ev.name}」(${ev.id}) 페이지 ${pi + 1}: ${ungated.map((g) => String(g.cmd.kind)).slice(0, 3).join("·")} 를 주는데 스위치·셀프 스위치를 안 켜서 말 걸 때마다 또 준다 — 한 번만이면 셀프 스위치를 켜고 그 조건의 「이미 받았다」 페이지를 둔다.`, { target: { mapId: ev.mapId, eventId: ev.id } }));
     });
   }
   // 1h) 무작위 조우: 「랜덤 인카운터·풀숲에서 마주치는」 요청인데 조우표가 안 바뀌었다(보이는 적 이벤트만 놓았다).
   if (namesRandomEncounters(task)) {
     const enc = (m: unknown) => { const o = m as Obj | undefined; const v = o?.encounterTable ?? o?.encounters ?? o?.encounter; return Array.isArray(v) && v.length ? JSON.stringify(v) : ""; };
     const changedEnc = Object.values(after.maps).some((m) => enc(m) && enc(m) !== enc(before.maps[m.id]));
-    if (!changedEnc) problems.push(tagged("game", "조우", "요청에 무작위 조우가 있는데 어느 맵의 조우표도 바뀌지 않았다 — set_encounter_table 로 그 맵에 적 그룹·빈도를 단다(보이는 적 이벤트는 무작위 조우가 아니다)."));
+    if (!changedEnc) problems.push(tagged("game", "조우", "요청에 무작위 조우가 있는데 어느 맵의 조우표도 바뀌지 않았다 — set_encounter_table 로 그 맵에 적 그룹·빈도를 단다(보이는 적 이벤트는 무작위 조우가 아니다).", { variant: "table-unchanged" }));
   }
   // 1i) 싸울 몬스터: 「약한 몬스터가 있게·적과 싸우는」 요청인데 이번에 바뀐 이벤트에 전투가 없고 켜진 조우도 바뀌지 않았다
   // (2026-10-31 sc-1031-b4 terra 숲길 3판 «몬스터·조우 없음» — 할 일 고리는 모델이 전투 항목을 적을 때만 이것을 본다).
   if (FOE_ASK.test(task) && !kinds.has("battleProcessing")) {
     const enc = (m: unknown) => { const o = m as Obj | undefined; return Number(o?.encounterRate ?? 0) > 0 && Array.isArray(o?.encounterTable) && (o!.encounterTable as unknown[]).length ? JSON.stringify([o!.encounterTable, o!.encounterRate]) : ""; };
     const encOn = Object.values(after.maps).some((m) => enc(m) && enc(m) !== enc(before.maps[m.id]));
-    if (!encOn) problems.push(tagged("game", "전투", "요청에 싸울 몬스터·적이 있는데 이번에 단 전투(battleProcessing)도 켠 조우도 없다 — upsert_enemy·upsert_troop 로 적을 만들고 place_field_enemy 로 그 맵에 둔다(author_forest_route 결과 data.maps[i].enemySpots 가 적 자리, clearing·deadEnds·출입구 칸에 겹치지 않게)."));
+    if (!encOn) problems.push(tagged("game", "전투", "요청에 싸울 몬스터·적이 있는데 이번에 단 전투(battleProcessing)도 켠 조우도 없다 — upsert_enemy·upsert_troop 로 적을 만들고 place_field_enemy 로 그 맵에 둔다(author_forest_route 결과 data.maps[i].enemySpots 가 적 자리, clearing·deadEnds·출입구 칸에 겹치지 않게).", { variant: "none" }));
   }
   // 1j) 적 개성(2026-11-09 fs-use-tools E1): 게임을 만드는 요청에서 보스가 기본 공격뿐이거나 일반 적 기술이 전부 같다.
   if (buildsWholeGame(after, task)) problems.push(...enemyIdentityProblems(after));
@@ -136,8 +136,8 @@ export function endingStateChecks({ before, after, task, cmds, kinds }: GameChec
   // 이미 있던 보스 이벤트의 triggerEnding 도 엔딩이다(2026-10-30 r11: 바꾼 이벤트만 봐서 «triggerEnding 이 없다»고 거짓으로 막았다).
   if (ENDING_WORDS.test(task) && !musicOnly(task)) {
     const newEndings = (after.endings ?? []).filter((e) => !(before.endings ?? []).some((b) => b.id === e.id && JSON.stringify(b) === JSON.stringify(e)));
-    if (!kinds.has("triggerEnding") && !projectHasCommand(after, "triggerEnding")) problems.push(tagged("game", "엔딩", `요청에 엔딩이 있는데 triggerEnding 명령이 없다${kinds.has("returnToTitle") ? "(내레이션+타이틀로 돌아가기는 엔딩이 아니다)" : ""}. define_ending 으로 엔딩을 정의하고 갈래에 {kind:'triggerEnding',endingId} 를 넣는다.`));
-    else if (!newEndings.length && !(after.endings ?? []).length) problems.push(tagged("game", "엔딩", "triggerEnding 은 있는데 정의된 엔딩(define_ending)이 없다."));
+    if (!kinds.has("triggerEnding") && !projectHasCommand(after, "triggerEnding")) problems.push(tagged("game", "엔딩", `요청에 엔딩이 있는데 triggerEnding 명령이 없다${kinds.has("returnToTitle") ? "(내레이션+타이틀로 돌아가기는 엔딩이 아니다)" : ""}. define_ending 으로 엔딩을 정의하고 갈래에 {kind:'triggerEnding',endingId} 를 넣는다.`, { variant: "no-trigger" }));
+    else if (!newEndings.length && !(after.endings ?? []).length) problems.push(tagged("game", "엔딩", "triggerEnding 은 있는데 정의된 엔딩(define_ending)이 없다.", { variant: "no-definition" }));
   }
   // 2b) 엔딩 카드 요약은 내레이션이다: 에필로그 대사 본문 앞에 「이름:」을 직접 쓰면 카드에 대본 머리말이 그대로 샌다
   //     (장난감 가게 「노장인 제페토: …」, 2026-10-25 심판 J36). 말한 사람은 speaker 칸에 두면 카드가 「」 인용으로 보인다.
@@ -149,7 +149,7 @@ export function endingStateChecks({ before, after, task, cmds, kinds }: GameChec
       const split = text ? splitScriptSpeaker(text) : { text };
       return split.speaker ? [`「${text.slice(0, 24)}…」`] : [];
     });
-    if (leaks.length) problems.push(tagged("game", "엔딩", `엔딩 「${ending.name}」(${ending.id}) 에필로그 대사 본문이 「이름:」으로 시작한다: ${leaks.slice(0, 2).join(" · ")} — 엔딩 카드에 대본 머리말이 그대로 보인다. 이름은 본문에서 빼고 say 비트의 speaker 에 둔다(카드는 「」 인용으로 보인다). 장면 설명은 context:'narration' 으로.`));
+    if (leaks.length) problems.push(tagged("game", "엔딩", `엔딩 「${ending.name}」(${ending.id}) 에필로그 대사 본문이 「이름:」으로 시작한다: ${leaks.slice(0, 2).join(" · ")} — 엔딩 카드에 대본 머리말이 그대로 보인다. 이름은 본문에서 빼고 say 비트의 speaker 에 둔다(카드는 「」 인용으로 보인다). 장면 설명은 context:'narration' 으로.`, { variant: "epilogue-speaker", target: { ref: ending.id } }));
   }
   // 3) 상태 이상: 실제 상태 걸기(m2-019-change-state add) 또는 상태를 거는 데이터(아이템·기술·적의 stateEffects).
   if (STATE_WORDS.test(task)) {
@@ -166,7 +166,7 @@ export function endingStateChecks({ before, after, task, cmds, kinds }: GameChec
     if (r.cmd.kind !== "presentItem") continue;
     const wanted = new Set<string>([...((r.cmd.itemIds as string[] | undefined) ?? []), ...(((r.cmd.options as Obj[] | undefined) ?? []).map((o) => String(o.itemId)))]);
     const guarded = [...flatConditions(r.page.conditions), ...r.guards.flatMap((g) => flatConditions(g))].some((c) => c.kind === "item" && c.present !== false && (!wanted.size || wanted.has(String(c.itemId))));
-    if (!guarded) problems.push(tagged("game", "물건", `「${r.ev.name}」(${r.ev.id}) 페이지 ${r.pageIndex + 1}: 물건 고르기 창(presentItem)이 그 물건이 없을 때도 뜬다. 그 페이지 조건에 {kind:'item',itemId,present:true} 를 걸고, 물건이 없을 때는 평소 대사 페이지가 나오게 한다.`));
+    if (!guarded) problems.push(tagged("game", "물건", `「${r.ev.name}」(${r.ev.id}) 페이지 ${r.pageIndex + 1}: 물건 고르기 창(presentItem)이 그 물건이 없을 때도 뜬다. 그 페이지 조건에 {kind:'item',itemId,present:true} 를 걸고, 물건이 없을 때는 평소 대사 페이지가 나오게 한다.`, { target: { mapId: r.ev.mapId, eventId: r.ev.id } }));
   }
   return problems;
 }
@@ -190,7 +190,7 @@ export function battleChecks({ before, after, task, cmds }: GameCheck): Finding[
       if (!after.database.troops.some((t) => t.id === c.troopId) || !party.length) continue;
       try {
         const sim = simulateBattle({ project: after, troopId: c.troopId, heroLevel: level, n: 20, seed: 7, useSkills: true });
-        if (sim.winRate === 0) problems.push(tagged("game", "전투", `${r.ev.id} 가 여는 전투(${c.troopId})를 시작 파티(Lv${level})로 모의 20판 해 보니 한 번도 못 이긴다 — 플레이어가 그 전에 레벨을 올릴 길이 없으면 게임이 막힌다. upsert_enemy 로 HP·공격을 낮추거나(simulate_battle 로 승률 40~80% 확인), 지는 이야기 전투면 canLose:true.`));
+        if (sim.winRate === 0) problems.push(tagged("game", "전투", `${r.ev.id} 가 여는 전투(${c.troopId})를 시작 파티(Lv${level})로 모의 20판 해 보니 한 번도 못 이긴다 — 플레이어가 그 전에 레벨을 올릴 길이 없으면 게임이 막힌다. upsert_enemy 로 HP·공격을 낮추거나(simulate_battle 로 승률 40~80% 확인), 지는 이야기 전투면 canLose:true.`, { variant: "unwinnable", target: { mapId: r.ev.mapId, eventId: r.ev.id } }));
       } catch { /* 모의 실패는 넘어간다 */ }
     }
   }

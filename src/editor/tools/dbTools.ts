@@ -2771,7 +2771,7 @@ const upsertCommonEvent: ToolDefinition = {
 
 const setSessionStart: ToolDefinition = {
   name: "set_session_start",
-  description: "게임 시작 상태(골드/인벤토리/파티)를 설정한다.",
+  description: "게임 시작 상태(골드/인벤토리/파티)를 설정한다. 보낸 칸만 바뀐다. inventory 는 시작 소지품 전체를 바꾼다(남길 물건도 함께 적는다). 「시작할 때 ○○를 갖고 시작」은 이 도구 한 번이다 — 자동 이벤트로 주지 않는다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2786,14 +2786,27 @@ const setSessionStart: ToolDefinition = {
     },
   },
   run(draft, args): ToolExecResult {
-    if (typeof args.gold === "number") draft.session.gold = Math.max(0, Math.trunc(args.gold));
-    if (args.inventory && typeof args.inventory === "object") {
-      draft.session.inventory = { ...(args.inventory as Record<string, number>) };
+    // 모든 칸을 채우는 모델은 안 쓰는 칸에 gold:0 · inventory:{} · partyActorIds:[] 를 넣는다 — 그대로 받으면 「회복약 3개를 갖고 시작」 한 번에 시작 소지금·파티가 지워진다.
+    // 빈 값은 그 칸 하나만 보냈을 때만 뜻이 있다(소지금 0 · 빈 가방). 빈 파티는 언제나 안 준 것이다(시작 파티가 없으면 게임이 안 돈다).
+    const inventory = args.inventory && typeof args.inventory === "object" && !Array.isArray(args.inventory) ? (args.inventory as Record<string, number>) : undefined;
+    const party = Array.isArray(args.partyActorIds) && args.partyActorIds.length > 0 ? (args.partyActorIds as string[]) : undefined;
+    const sent = [typeof args.gold === "number", inventory !== undefined, party !== undefined].filter(Boolean).length;
+    const ignored: string[] = [];
+    if (typeof args.gold === "number") {
+      if (args.gold === 0 && sent > 1) ignored.push("gold:0");
+      else draft.session.gold = Math.max(0, Math.trunc(args.gold));
     }
-    if (Array.isArray(args.partyActorIds)) {
-      draft.session.partyActorIds = [...(args.partyActorIds as string[])];
+    if (inventory) {
+      if (Object.keys(inventory).length === 0 && sent > 1) ignored.push("inventory:{}");
+      else draft.session.inventory = { ...inventory };
     }
-    return { summary: `시작 상태 설정(gold=${draft.session.gold ?? 0}, party=${draft.session.partyActorIds.length}명)` };
+    if (party) draft.session.partyActorIds = [...party];
+    if (Array.isArray(args.partyActorIds) && !party) ignored.push("partyActorIds:[]");
+    const held = Object.entries(draft.session.inventory ?? {}).map(([itemId, count]) => `${itemId}×${count}`).join(", ") || "none";
+    return {
+      summary: `Game start state: gold ${draft.session.gold ?? 0}, items ${held}, party ${draft.session.partyActorIds.join(", ") || "none"}.`,
+      ...(ignored.length ? { warnings: [`Ignored as unfilled defaults: ${ignored.join(", ")} — an empty value counts only when it is the only field sent (an empty party never does).`] } : {}),
+    };
   },
 };
 

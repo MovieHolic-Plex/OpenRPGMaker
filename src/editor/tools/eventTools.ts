@@ -9,7 +9,7 @@ import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horro
 // 이벤트 쓰기 툴: upsert_event / place_npc / create_transfer_pair / place_battle_blocker
 //              / duplicate_event / remove_event / move_event.
 
-import { shadowedPageWarnings } from "@/project/eventPageShadow";
+import { findShadowedPages, shadowedPageWarnings } from "@/project/eventPageShadow";
 import { genreLockLimitsCharsets } from "@/project/genreLockCharsets";
 import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
@@ -61,6 +61,7 @@ import {
   charsetGraphic,
   compileSimplePages,
   crystalGraphic,
+  graphicSpecArg,
   resolveGraphic,
   resolveGraphicQuery,
   usedCharsetGraphicKeysOnMap,
@@ -1956,35 +1957,47 @@ const makeVillager: ToolDefinition = {
 const setShopStock: ToolDefinition = {
   name: "set_shop_stock",
   description:
-    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본이며, 「이 NPC 와 대화하면 상점이 열리게」 같은 요청은 이 도구 하나로 끝난다(기존 대사·이름·이동·그림은 그대로 두고 상점 명령만 붙는다 — patch_event_page 로 대사·이동을 새로 쓰지 마라). itemId 에는 아이템 id 와 착용 장비(database.equipment) id 를 모두 쓸 수 있다(무기점·방어구점). id 는 get_database_records 로 먼저 확인.",
+    "기존 이벤트의 shop 커맨드에 재고를 설정한다. stock 은 통째로 바꾸고, add 는 지금 파는 것에 더하고, remove 는 그 물건만 뺀다(나머지는 그대로). 이미 상점인 이벤트는 상점이 있던 페이지만 고친다 — 상점이 없던 페이지(의뢰 페이지 등)에는 넣지 않는다. 상점이 하나도 없으면 그 사람의 페이지마다 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본이며, 「이 NPC 와 대화하면 상점이 열리게」 같은 요청은 이 도구 하나로 끝난다(기존 대사·이름·이동·그림은 그대로 두고 상점 명령만 붙는다 — patch_event_page 로 대사·이동을 새로 쓰지 마라). itemId 에는 아이템 id 와 착용 장비(database.equipment) id 를 모두 쓸 수 있다(무기점·방어구점). id 는 get_database_records 로 먼저 확인.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
       eventId: { type: "string" },
-      stock: shopStockSchema,
+      stock: { ...shopStockSchema, description: "Whole replacement: the shop sells exactly these. ShopStockEntry[]: {itemId,seasons?,priceOverride?,priceBySeason?}. Leave out (or []) when you only add/remove." },
+      add: { ...shopStockSchema, description: "Entries to add to what the shop already sells (same shape as stock). Everything else stays." },
+      remove: { type: "array", items: { type: "string" }, description: "Item/equipment ids to stop selling. Everything else stays." },
     },
-    required: ["mapId", "eventId", "stock"],
+    required: ["mapId", "eventId"],
   },
   invalidArgsExample: {
     mapId: "map_town",
     eventId: "ev_merchant",
-    stock: [
-      { itemId: "item_spring_seed", seasons: ["spring"], priceBySeason: { spring: 18 } },
-      { itemId: "item_firewood", seasons: ["winter"], priceOverride: 30 },
-    ],
+    add: [{ itemId: "item_firewood", priceOverride: 30 }],
+    remove: ["item_spring_seed"],
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const event = map.events.find((entry) => entry.id === args.eventId);
     if (!event) throw new ToolError(`상점 재고를 설정할 이벤트를 찾을 수 없습니다: ${args.eventId}`, { code: "event-not-found", mapId: map.id });
-    const stock = parseShopStock(draft, args.stock, "stock");
-    const outcome = setShopStockOnEvent(event, stock);
+    // 모든 칸을 채우는 모델은 안 쓰는 칸에 빈 배열을 넣는다 — 빈 배열은 「안 줬다」다(stock:[] + add:[…] 가 재고를 비우지 않게).
+    const given = (value: unknown): boolean => Array.isArray(value) && value.length > 0;
+    const add = given(args.add) ? parseShopStock(draft, args.add, "add") : [];
+    const remove = given(args.remove) ? (args.remove as unknown[]).map((value, index) => stringArg(value, `remove[${index}]`)) : [];
+    const edits = add.length + remove.length > 0;
+    if (!edits && !Array.isArray(args.stock)) throw new ToolError("Give one of: stock (whole replacement), add (entries to add) or remove (item ids to stop selling).", { code: "shop-stock" });
+    const pageNumbers = (): string => (event.pages ?? []).flatMap((page, index) => (findFirstShopCommand(page.commands) ? [index + 1] : [])).join(", ");
+    const replaced = given(args.stock) || !edits ? setShopStockOnEvent(event, parseShopStock(draft, args.stock, "stock")) : undefined;
+    const edited = edits ? editShopStockOnEvent(event, add, remove) : undefined;
+    const outcome = replaced ?? edited ?? "modified";
     assertEventShape(event);
+    const sold = shopCommandsOf(event)[0];
+    const ids = sold ? (sold.stock?.map((entry) => entry.itemId) ?? sold.itemIds) : [];
+    const shopPages = shopCommandsOf(event).length;
+    const where = event.pages?.length ? `page ${pageNumbers()} of ${event.pages.length}${shopPages < event.pages.length ? "; pages without a shop were left alone" : ""}` : "event commands";
     return {
-      summary: `${map.name} 이벤트 '${event.id}' 상점 재고 ${stock.length}개 ${outcome === "added" ? "추가" : "설정"}`,
-      data: { eventId: event.id, stockCount: stock.length, outcome },
+      summary: `${map.name} '${event.id}': shop ${outcome === "added" ? "added" : "updated"} — now sells ${ids.length} (${ids.join(", ")})${add.length ? `, added ${add.map((entry) => entry.itemId).join(", ")}` : ""}${remove.length ? `, removed ${remove.join(", ")}` : ""} [${where}]`,
+      data: { eventId: event.id, stockCount: ids.length, itemIds: ids, outcome },
     };
   },
 };
@@ -2150,20 +2163,67 @@ function appendShopCommandToPages(pages: EventPage[], stock: readonly ShopStockE
   for (const page of pages) page.commands.push(shopCommandFromStock(stock));
 }
 
+/**
+ * 상점이 죽은 페이지(뒤 페이지에 늘 가려지는 페이지)에 있으면 실제로 도는 그 뒤 페이지에도 같은 상점을 둔다 —
+ * 2026-08-24: 첫 페이지에만 상점이 있고 뒤에 조건 없는 대사 페이지가 있어, 저장 문서에는 상점이 있는데 플레이에서는 안 열렸다.
+ */
+function mirrorShadowedShops(event: GameEvent): void {
+  const pages = event.pages ?? [];
+  for (const dead of findShadowedPages(pages)) {
+    const shop = findFirstShopCommand(pages[dead.index]!.commands), over = pages[dead.byIndex]!;
+    if (shop && !findFirstShopCommand(over.commands)) over.commands.push(structuredClone(shop));
+  }
+}
+
+/** 이벤트의 상점 커맨드(페이지마다 첫 것). */
+function shopCommandsOf(event: GameEvent): Extract<Command, { kind: "shop" }>[] {
+  const lists = event.pages?.length ? event.pages.map((page) => page.commands) : [event.commands];
+  return lists.flatMap((commands) => { const found = findFirstShopCommand(commands); return found ? [found] : []; });
+}
+
+/** 지금 파는 것에 더하고(add) 빼기만 한다(remove) — 나머지 재고·가격은 그대로. 상점이 없던 이벤트에 add 하면 상점이 생긴다. */
+function editShopStockOnEvent(event: GameEvent, add: readonly ShopStockEntry[], remove: readonly string[]): "added" | "modified" {
+  const shops = shopCommandsOf(event);
+  if (shops.length === 0) {
+    if (add.length === 0) throw new ToolError(`'${event.id}' has no shop command to remove items from. Use add or stock to make it a shop.`, { code: "shop-stock" });
+    return setShopStockOnEvent(event, add);
+  }
+  for (const shop of shops) {
+    const gone = new Set(remove);
+    const fresh = add.filter((entry) => !gone.has(entry.itemId));
+    // 가격·계절이 붙은 물건을 더하면 stock 표가 필요하다 — 없던 상점은 지금 itemIds 를 그대로 stock 으로 옮긴다.
+    const table = shop.stock ?? (fresh.some((entry) => Object.keys(entry).length > 1) ? shop.itemIds.map((itemId) => ({ itemId })) : undefined);
+    if (table) {
+      const kept = table.filter((entry) => !gone.has(entry.itemId) && !fresh.some((added) => added.itemId === entry.itemId));
+      shop.stock = [...kept, ...fresh];
+      shop.itemIds = uniqueStockItemIds(shop.stock);
+    } else {
+      shop.itemIds = [...new Set([...shop.itemIds.filter((itemId) => !gone.has(itemId)), ...fresh.map((entry) => entry.itemId)])];
+    }
+  }
+  mirrorShadowedShops(event);
+  return "modified";
+}
+
+/**
+ * 재고를 통째로 바꾼다. 이미 상점인 이벤트는 상점이 있던 페이지만 고친다 — 상점이 없던 페이지에는 넣지 않는다
+ * (2026-11-11: 떠돌이 상인의 의뢰 페이지 둘에 새 상점 커맨드가 생겼다). 상점이 하나도 없을 때만 페이지마다 넣는다(합류 뒤 빈 페이지 제외).
+ */
 function setShopStockOnEvent(event: GameEvent, stock: readonly ShopStockEntry[]): "added" | "modified" {
   if ((event.pages?.length ?? 0) > 0) {
-    let modified = false;
-    for (const page of event.pages ?? []) {
-      const existing = findFirstShopCommand(page.commands);
-      if (existing) {
-        existing.itemIds = uniqueStockItemIds(stock);
-        existing.stock = [...stock];
-        modified = true;
-      } else {
-        page.commands.push(shopCommandFromStock(stock));
-      }
+    const shops = shopCommandsOf(event);
+    for (const existing of shops) {
+      existing.itemIds = uniqueStockItemIds(stock);
+      existing.stock = [...stock];
     }
-    return modified ? "modified" : "added";
+    if (shops.length > 0) {
+      mirrorShadowedShops(event);
+      return "modified";
+    }
+    const vacant = (page: EventPage): boolean => page.graphic?.transparent === true && page.commands.length === 0;
+    const talkable = event.pages!.filter((page) => !vacant(page));
+    for (const page of talkable.length ? talkable : event.pages!) page.commands.push(shopCommandFromStock(stock));
+    return "added";
   }
   const existing = findFirstShopCommand(event.commands);
   if (existing) {
@@ -3106,9 +3166,12 @@ const createTransferPair: ToolDefinition = {
   },
 };
 
+/** 이름에 맞는 걷기 칩이 없는 적을 세울 때 쓰는 칩 라벨 — 어느 종으로도 읽히지 않는 검은 두건 괴물(슬라임·주민으로 세우지 않는다). */
+const GENERIC_BLOCKER_CHIP = "검은 두건 괴물";
+
 const placeBattleBlocker: ToolDefinition = {
   name: "place_battle_blocker",
-  description: `필드 몬스터/전투 블로커를 배치한다(전투→승리 시 스위치+이벤트 소거→투명 페이지). clearSwitchId로 재전투를 막는다. 몬스터는 캐릭터형이므로 반드시 통행 가능 칸에 서야 한다 — ${PLACEMENT_AUTOLAND_HINT} 길을 지키는 몬스터 요청의 정본. 무리 인카운터는 set_encounter_table.`,
+  description: `필드 몬스터/전투 블로커를 배치한다(전투→승리 시 스위치+이벤트 소거→투명 페이지). clearSwitchId로 재전투를 막는다. 몬스터는 캐릭터형이므로 반드시 통행 가능 칸에 서야 한다 — ${PLACEMENT_AUTOLAND_HINT} 길을 지키는 몬스터 요청의 정본. graphic 을 생략하면 부대 선두 적 이름으로 걷기 칩을 찾고, 맞는 칩이 없으면 「검은 두건 괴물」 칩으로 세우고 답에 적는다. 무리 인카운터는 set_encounter_table.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -3151,12 +3214,20 @@ const placeBattleBlocker: ToolDefinition = {
     const victory = (args.victory as string[] | undefined) ?? ["길이 열렸다."];
     const victoryItems = (args.victoryItems as Array<{ itemId: string; amount: number }> | undefined) ?? [];
     // graphic 생략 시 부대와 무관한 「monster」 첫 칸(슬라임)을 쓰지 않고 부대 선두 적의 이름으로 찾는다
-    // (2026-09-27 전수 조사: 용 부대가 슬라임으로 서 있었다). 이름으로도 못 찾으면 거절한다.
+    // (2026-09-27 전수 조사: 용 부대가 슬라임으로 서 있었다). 이름에 맞는 칩이 없으면 거절하지 않고 어느 종으로도 안 읽히는
+    // 「검은 두건 괴물」 칩으로 세우고 그 사실을 답에 적는다(2026-11-11: 「동굴 박쥐」 부대는 graphic 없이는 놓을 수 없었다).
+    // 빈 칸만 채운 graphic 은 안 준 것이다(resolveGraphic 은 그것을 투명으로 읽는다).
     const troop = draft.database.troops.find((entry) => entry.id === troopId)!;
     const leadEnemy = draft.database.enemies.find((entry) => entry.id === troop.enemyIds[0]);
-    const blockerSpec: GraphicSpec = (args.graphic as GraphicSpec | undefined)
-      ?? { query: leadEnemy?.name?.trim() || troop.name?.trim() || "monster" };
-    const graphic = resolveGraphic(blockerSpec, { overrides: draft.charsetLabels });
+    const givenGraphic = graphicSpecArg(args.graphic);
+    const nameQuery = leadEnemy?.name?.trim() || troop.name?.trim() || "monster";
+    const pick = { overrides: draft.charsetLabels };
+    const named = givenGraphic ? undefined : pickNpcGraphic(nameQuery, { ...pick, sampleTopK: 1 });
+    // 칩 잠금(장르·사람 칩 계열)에 걸려 그 칩이 없으면 비슷한 다른 칩으로 넘어가지 않는다 — 전처럼 거절한다.
+    const found = givenGraphic || named ? undefined : pickNpcGraphic(GENERIC_BLOCKER_CHIP, { ...pick, sampleTopK: 1 });
+    const generic = found?.label === GENERIC_BLOCKER_CHIP ? found : undefined;
+    const blockerSpec: GraphicSpec = givenGraphic ?? (generic ? { textureKey: generic.textureKey, characterIndex: generic.characterIndex } : { query: nameQuery });
+    const graphic = resolveGraphic(blockerSpec, pick);
     const event = buildFieldMonsterEvent({
       eventId: id,
       x,
@@ -3174,7 +3245,9 @@ const placeBattleBlocker: ToolDefinition = {
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     const warnings = [
-      ...(args.graphic === undefined ? [`graphic 생략 → 부대 선두 적 이름 query:"${"query" in blockerSpec ? blockerSpec.query : ""}" 로 찾음`] : []),
+      ...(givenGraphic ? [] : generic
+        ? [`No walking chip is named like "${nameQuery}", so the blocker stands as the generic hooded-monster chip (${generic.textureKey} #${generic.characterIndex} '${generic.label}'). For another look call again with the same id and graphic:{textureKey, characterIndex} (list_resources kind:"charset").`]
+        : [`graphic 생략 → 부대 선두 적 이름 query:"${nameQuery}" 로 찾음`]),
       ...(args.fightMovement === "random" ? ["전투 페이지 이동 → random(배회): 순찰형 몬스터"] : []),
       ...(adjusted ? [placementAdjustedWarning(`전투 블로커 '${troopId}'`, { x: requestedX, y: requestedY }, { x, y })] : []),
     ];
@@ -3822,7 +3895,7 @@ function lyingItemIcon(record: { iconResourceId?: string; imageResourceId?: stri
 export const placeChest: ToolDefinition = {
   name: "place_chest",
   description:
-    "보물상자 이벤트를 배치한다. 조사하면 contents의 아이템/골드를 지급하고 셀프스위치 A로 개봉 상태를 기억한다(2페이지).  보물상자(열면 아이템/골드 지급, 개봉 기억)는 반드시 이 툴 — place_npc/upsert_event 로 흉내내지 말 것. 장식용 박스·나무상자는 이 툴이 아니라 place_props(material:\"나무 상자\"). 넣고 빼는 보관 상자는 place_storage_chest." +
+    "보물상자 이벤트를 배치한다. 조사하면 contents의 아이템(contents.count 개, 기본 1)/골드를 지급하고 셀프스위치 A로 개봉 상태를 기억한다(2페이지).  보물상자(열면 아이템/골드 지급, 개봉 기억)는 반드시 이 툴 — place_npc/upsert_event 로 흉내내지 말 것. 장식용 박스·나무상자는 이 툴이 아니라 place_props(material:\"나무 상자\"). 넣고 빼는 보관 상자는 place_storage_chest." +
     "'보물상자'·'상자를 열면 ~을 주는' 요청, 그리고 바닥에 떨어진·놓인 물건을 줍는 요청(look:\"item\")이 이 툴. " +
     "look:\"item\" 은 상자 없이 그 아이템의 아이콘이 칸에 보이고, 조사하면 줍고 그림이 사라진다 — 물건 그림을 따로 그리거나(draw_object) 투명 이벤트로 흉내내지 말 것. " +
     "장식용 박스·나무상자·나무박스·과일박스는 place_props(harness-combined-town-wood-box / fruit-box) — place_chest 금지. " +
@@ -3837,8 +3910,8 @@ export const placeChest: ToolDefinition = {
       y: { type: "integer" },
       contents: {
         type: "object",
-        description: "{itemId?: string, gold?: number} — 최소 1개",
-        properties: { itemId: { type: "string" }, gold: { type: "integer" } },
+        description: "{itemId?: string, count?: number, gold?: number} — itemId 또는 gold 중 최소 1개",
+        properties: { itemId: { type: "string" }, count: { type: "integer", description: "How many of itemId the chest gives (default 1)." }, gold: { type: "integer" } },
       },
       look: { type: "string", enum: ["chest", "item"], description: "chest(기본) = 보물상자. item = 물건이 바닥에 놓여 있다 — 아이템 아이콘이 보이고, 조사하면 줍고 사라진다." },
       name: { type: "string" },
@@ -3846,7 +3919,7 @@ export const placeChest: ToolDefinition = {
     },
     required: ["mapId", "x", "y", "contents"],
   },
-  invalidArgsExample: { mapId: "map_1", x: 5, y: 5, contents: { itemId: "item_potion", gold: 50 } },
+  invalidArgsExample: { mapId: "map_1", x: 5, y: 5, contents: { itemId: "item_potion", count: 3, gold: 50 } },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const requestedX = args.x as number;
@@ -3866,8 +3939,10 @@ export const placeChest: ToolDefinition = {
     });
     const { x, y, adjusted } = placement;
     assertChestDrySurface(draft, map, x, y);
-    const contents = (args.contents ?? {}) as { itemId?: unknown; gold?: unknown };
+    const contents = (args.contents ?? {}) as { itemId?: unknown; count?: unknown; gold?: unknown };
     const itemId = typeof contents.itemId === "string" && contents.itemId.length > 0 ? contents.itemId : undefined;
+    // 수량: 0·음수·빈 칸은 안 준 것(1개). 한 상자에 99개까지.
+    const itemAmount = typeof contents.count === "number" && Number.isFinite(contents.count) && contents.count >= 1 ? Math.min(99, Math.floor(contents.count)) : 1;
     const gold = typeof contents.gold === "number" && Number.isFinite(contents.gold) && contents.gold > 0
       ? Math.floor(contents.gold)
       : undefined;
@@ -3888,7 +3963,7 @@ export const placeChest: ToolDefinition = {
       warnings.push(`아이템 '${itemId}'가 데이터베이스(아이템·장비)에 없습니다 — upsert_item/upsert_equipment 로 먼저 만들거나 기존 id를 쓰세요`);
     }
     const itemLabel = itemRecord?.name.trim() || itemId;
-    const rewardText = [itemLabel ?? null, gold ? `${gold}G` : null].filter(Boolean).join(" · ");
+    const rewardText = [itemLabel ? (itemAmount > 1 ? `${itemLabel} ${itemAmount}개` : itemLabel) : null, gold ? `${gold}G` : null].filter(Boolean).join(" · ");
     const trigger: Trigger = { kind: "action" };
     if (lying) {
       // 바닥에 놓인 물건: 그 아이템의 아이콘이 칸에 보인다(한 장 그림 — 런타임이 16px 로 맞춘다). 주우면 그림도 막음도 사라진다.
@@ -3904,7 +3979,7 @@ export const placeChest: ToolDefinition = {
             graphic: { sprite: { type: "bundled", id: icon ?? LYING_FALLBACK_ICON } },
             trigger, priority: "same", overlapForbidden: true, animationType: "fixedGraphic", movement: PASSIVE,
             commands: [
-              ...lootGrantCommands({ itemId, gold }),
+              ...lootGrantCommands({ itemId, gold, ...(itemAmount > 1 ? { itemAmount } : {}) }),
               { kind: "text", body: `${/G$/u.test(rewardText) ? `${rewardText}를` : withJosa(rewardText, "을/를")} 주웠다.` },
               { kind: "setSelfSwitch", key: "A", value: true } as Command,
             ],
@@ -3930,7 +4005,7 @@ export const placeChest: ToolDefinition = {
     const name = (args.name as string | undefined) ?? "보물상자";
     const openCommands: Command[] = [
       ...chestOpenCommands(id, graphic),
-      ...lootGrantCommands({ itemId, gold }),
+      ...lootGrantCommands({ itemId, gold, ...(itemAmount > 1 ? { itemAmount } : {}) }),
       { kind: "text", body: `보물상자를 열었다! ${/G$/u.test(rewardText) ? `${rewardText}를` : withJosa(rewardText, "을/를")} 손에 넣었다.` },
       { kind: "setSelfSwitch", key: "A", value: true } as Command,
     ];
@@ -4074,7 +4149,7 @@ const placeStorageChest: ToolDefinition = {
 
 const placeSavepoint: ToolDefinition = {
   name: "place_savepoint",
-  description: "세이브 포인트 이벤트를 배치한다(크리스탈 외형, 기본으로 늘 빛남 — glow). 조사하면 mode 에 따라 동작한다 — both(기본): 사망 재시도용 체크포인트를 기록하고 **저장 칸 메뉴(openSaveMenu)** 도 연다(크로노 트리거식: 크리스탈에서 3칸 중 골라 저장) · slot: 저장 칸 메뉴만 · checkpoint: 체크포인트만(저장 칸 안 염, 새로고침하면 사라진다 — 호러·사망 재시도용). 플레이어가 새로고침 뒤에도 이어 하려면 slot 이나 both 다. 맵이 저장 금지(set_map_properties disableSave)면 경고한다. 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 세이브 포인트는 반드시 이 툴 — place_npc/upsert_event 흉내 금지.",
+  description: "세이브 포인트 이벤트를 배치한다(크리스탈 외형, 기본으로 늘 빛남 — glow). 조사하면 mode 에 따라 동작한다 — both(기본): 사망 재시도용 체크포인트를 기록하고 **저장 칸 메뉴(openSaveMenu)** 도 연다(크로노 트리거식: 크리스탈에서 3칸 중 골라 저장) · slot: 저장 칸 메뉴만 · checkpoint: 체크포인트만(저장 칸 안 염, 새로고침하면 사라진다 — 호러·사망 재시도용) · heal: 저장 없이 파티 전원 회복만 하는 자리(회복의 샘). 플레이어가 새로고침 뒤에도 이어 하려면 slot 이나 both 다. 맵이 저장 금지(set_map_properties disableSave)면 경고한다. 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 세이브 포인트는 반드시 이 툴 — place_npc/upsert_event 흉내 금지.",
   mode: "write",
   choosesOwnGraphic: true,
   parameters: {
@@ -4086,7 +4161,7 @@ const placeSavepoint: ToolDefinition = {
       name: { type: "string" },
       id: { type: "string" },
       heal: { type: "boolean", description: "true 면 저장 전에 파티 전원 회복(recoverAll). 기본 false — 크로노 트리거의 세이브 포인트는 회복하지 않는다." },
-      mode: { type: "string", enum: ["both", "slot", "checkpoint"], description: "both(기본): 체크포인트 + 저장 칸 메뉴 · slot: 저장 칸 메뉴만 · checkpoint: 사망 재시도용 메모리 체크포인트만" },
+      mode: { type: "string", enum: ["both", "slot", "checkpoint", "heal"], description: "both (default): retry checkpoint + save-slot menu · slot: save-slot menu only · checkpoint: retry checkpoint only · heal: a healing spot — examining it fully heals the party and does NOT save (a «healing spring»)." },
       prompt: { type: "string", description: "조사하면 먼저 묻는 말(예: 「기록하시겠습니까?」). 주면 예/아니오 선택지가 뜨고 「예」일 때만 저장 칸을 연다." },
       glow: { type: "boolean", description: "true(기본) 면 세이브 포인트가 늘 빛난다 — 숨 쉬듯 커졌다 작아지는 빛무리·둘레 반짝임·위로 오르는 빛 알갱이·퍼지는 고리(page.glow). 화면 끝에서도 보인다. false 면 끔" },
       glowColor: { type: "string", description: "빛 색 #rrggbb(기본 푸른 별빛 #8fd8ff)" },
@@ -4125,18 +4200,20 @@ const placeSavepoint: ToolDefinition = {
         requestedY = maxY;
       }
     }
-    const heal = args.heal === true;
+    // heal = 회복만 하는 자리 — 저장·체크포인트 없음.
     const saveMode = args.mode === undefined ? "both" : args.mode;
-    if (saveMode !== "both" && saveMode !== "slot" && saveMode !== "checkpoint") {
-      throw new ToolError(`mode 는 both | slot | checkpoint 중 하나여야 합니다(받은 값: ${JSON.stringify(args.mode)}).`, { code: "invalid-args", mapId: map.id });
+    if (saveMode !== "both" && saveMode !== "slot" && saveMode !== "checkpoint" && saveMode !== "heal") {
+      throw new ToolError(`mode must be one of both | slot | checkpoint | heal (got ${JSON.stringify(args.mode)}).`, { code: "invalid-args", mapId: map.id });
     }
+    const healOnly = saveMode === "heal";
+    const heal = args.heal === true || healOnly;
     if (!inMapBounds(map, requestedX, requestedY)) {
       throw new ToolError(`세이브 포인트 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "savepoint-out-of-bounds", mapId: map.id, x: requestedX, y: requestedY });
     }
     // priority "below" 이지만 트리거는 action — 밟는 이벤트가 아니므로 interaction 규칙을 쓴다.
     const placement = resolveEventPlacement(draft, map, requestedX, requestedY, {
       kind: "interaction",
-      label: "세이브 포인트",
+      label: healOnly ? "회복 지점" : "세이브 포인트",
       code: "savepoint-impassable",
       replacesAutoInspect: true,
     });
@@ -4148,12 +4225,14 @@ const placeSavepoint: ToolDefinition = {
       // 걷기 칩에는 수정이 없다 — 「크리스탈」 검색이 물건 2 의 회색 바위(6번)를 골랐다(2026-11-07). 번들 수정 그림을 쓴다.
       : crystalGraphic();
     const id = (args.id as string | undefined) ?? genId("ev_save");
-    const name = (args.name as string | undefined) ?? "세이브 포인트";
+    const name = (typeof args.name === "string" && args.name.trim() ? args.name.trim() : undefined) ?? (healOnly ? "회복 지점" : "세이브 포인트");
     const trigger: Trigger = { kind: "action" };
     const event: GameEvent = {
       id,
       x,
       y,
+      // 이벤트 이름 — 회복 지점은 맵 읽기·할 일 확인이 이름으로 알아본다.
+      ...(healOnly ? { name } : {}),
       trigger,
       commands: [],
       pages: [
@@ -4174,7 +4253,7 @@ const placeSavepoint: ToolDefinition = {
             // 오브젝트 그림이면 빛은 그림 가운데 — 이벤트는 맨 아래 줄 가운데에 있다.
             ...(objectFootprint ? { offsetX: objectFootprint.x + (objectFootprint.w - 1) / 2 - x, offsetY: objectFootprint.y + (objectFootprint.h - 1) / 2 - y } : {}),
           } } : {}),
-          commands: [
+          commands: healOnly ? [{ kind: "recoverAll" } as Command, { kind: "text", body: "기운이 돌아왔다." } as Command] : [
             ...(heal ? [{ kind: "recoverAll" } as Command] : []),
             ...(saveMode !== "slot" ? [{ kind: "checkpointSave", label: "savepoint" } as Command] : []),
             ...(prompt && saveMode !== "checkpoint"
@@ -4195,8 +4274,15 @@ const placeSavepoint: ToolDefinition = {
     upsertEventIntoMap(map, event);
     const saveWarnings = [
       ...(adjusted ? [placementAdjustedWarning("세이브 포인트", { x: requestedX, y: requestedY }, placement)] : []),
-      ...(map.disableSave && saveMode !== "checkpoint" ? [`${map.name} 은(는) 저장 금지 맵이라 저장 칸 메뉴에서 저장할 수 없습니다 — 저장 장소라면 set_map_properties 로 이 맵의 저장 금지를 끄세요.`] : []),
+      ...(map.disableSave && saveMode !== "checkpoint" && !healOnly ? [`${map.name} 은(는) 저장 금지 맵이라 저장 칸 메뉴에서 저장할 수 없습니다 — 저장 장소라면 set_map_properties 로 이 맵의 저장 금지를 끄세요.`] : []),
     ];
+    if (healOnly) {
+      return {
+        summary: `${map.name}: healing spot '${name}' placed at (${x}, ${y})${objectFootprint ? ` · picture ${String(args.objectId)}` : ""} — examining it fully heals the party; it does not save${adjusted ? ` — moved from the requested (${requestedX}, ${requestedY})` : ""}`,
+        data: { eventId: id, x, y, adjusted, heal, mode: saveMode, ...(objectFootprint ? { object: { id: args.objectId, ...objectFootprint } } : {}) },
+        ...(saveWarnings.length > 0 ? { warnings: saveWarnings } : {}),
+      };
+    }
     return {
       summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y})${objectFootprint ? ` · 그림 ${String(args.objectId)}` : ""} — ${saveMode === "slot" ? "저장 칸 메뉴" : saveMode === "checkpoint" ? "체크포인트(저장 칸 안 염)" : "체크포인트 + 저장 칸 메뉴"}${heal ? " · 전원 회복 포함" : ""}${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
       data: { eventId: id, x, y, adjusted, heal, mode: saveMode, ...(objectFootprint ? { object: { id: args.objectId, ...objectFootprint } } : {}) },

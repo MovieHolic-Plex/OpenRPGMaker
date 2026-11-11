@@ -5,6 +5,8 @@ import { questsMinBlocker } from "@/ai/v2/judge/shipChecks";
 import { splitPreexisting } from "@/ai/v2/judge/gates";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
+import { gateProblems } from "@/ai/v2/judge/finishGate";
+import { tagged } from "@/ai/v2/judge/finding";
 
 // 2026-11-10 리드: 맵 다음은 퀘스트 — 끝맺음 관문이 세는 퀘스트 3개를 강제한다. 세는 규칙은 완성도 척도(scripts/fs-scale/score.mjs questFacts)와 같아야 한다.
 // 에이전트 세션 규칙으로 작성 시점에는 실행하지 않았다(CI 에서 돈다).
@@ -72,9 +74,8 @@ describe("quests-min 출하 차단", () => {
     expect(y!.message).toContain("지하 통로");
   });
   it("이어 하는 턴에서도 «기존 결함» 으로 면제되지 않는다", () => {
-    const text = "[출하 차단 quests-min] 세는 퀘스트가 0/3개다 — 3개 더.";
-    const problem = { key: "game:" + text.replace(/\d+/gu, "#"), text, source: "gate" as const };
-    const { current, preexisting } = splitPreexisting([problem], new Set([problem.key]), undefined, undefined);
+    const problem = gateProblems([tagged("ship", "quests-min", "세는 퀘스트가 0/3개다 — 3개 더.")])[0]!;
+    const { current, preexisting } = splitPreexisting([problem], new Set([problem.textKey!]), undefined, undefined);
     expect(current).toHaveLength(1);
     expect(preexisting).toHaveLength(0);
   });
