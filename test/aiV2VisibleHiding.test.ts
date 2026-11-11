@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
-import { hidingSpots, requestedFeatureGaps } from "@/ai/v2/judge/shipChecks";
+import { hidingSpots, requestedFeatureGaps } from "@/ai/v2/judge/requestedFeatures";
 
 const task = "학교 공포 게임 만들어 줘. 사물함에 숨을 수 있게.";
 const withHiding = (graphic: Record<string, unknown>): Project => {

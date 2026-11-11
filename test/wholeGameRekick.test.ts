@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { thinGameSign, unbuiltGameSigns, wholeGameRekickPrompt, widenGamePrompt } from "@/ai/v2/judge/shipChecks";
+import { thinGameSign, unbuiltGameSigns, wholeGameRekickPrompt, widenGamePrompt } from "@/ai/v2/judge/wholeGameRekick";
 import { wantsWholeGame } from "@/ai/v2/request/readers";
 import { INTENT_NOTE_BOUNDARY } from "@/ai/piAgent/monsterGameRequest";
 import type { Project } from "@/project/types";
