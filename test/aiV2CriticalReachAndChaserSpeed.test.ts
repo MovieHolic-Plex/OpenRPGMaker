@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { slowChasers } from "../src/ai/v2/judge/gameChecks";
+import { slowChasers } from "../src/ai/v2/judge/storyFlowChecks";
 import type { Project } from "../src/project/types";
 
 const chaserProject = (movement: Record<string, unknown>): Project => ({
