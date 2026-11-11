@@ -2,6 +2,7 @@
 // 여기 규칙은 글 한 줄을 보고 참·거짓만 낸다. 한 요청의 결정은 intent.ts 가 한 번 모으고, 다른 파일은 readers.ts 로 읽는다.
 import type { Project } from "@/project/types";
 import { type GameBlueprint } from "@/project/gameBlueprint";
+import { PLACE_BUILD_WORDS } from "./place";
 
 const GAME = "게임|game|RPG|알피지";
 const MAKE = String.raw`만들|지어|짜\s*줘|완성|제작|개발|build|make|create`;
@@ -75,6 +76,32 @@ export const MAKE_GAME_WORDS = /게임\s*(하나|한\s*판|을|를)?\s*(만들|�
 /** 빈 프로젝트(이벤트·엔딩 없음)인가 — 첫 장소를 짓는 요청을 게임 시작으로 본다. */
 export function isFreshProject(project: Project): boolean {
   return (project.endings ?? []).length === 0 && Object.values(project.maps).every((map) => (map.events ?? []).length === 0);
+}
+
+/** 맵과 맵을 오가게 해 달라는 말 — 「넘어갈 수 있게」「오갈 수 있게」「돌아오는 길」「이어 줘」. */
+export const LINK_MAPS_WORDS = /넘어갈|넘어가게|넘어올|오갈|오가게|오고\s*갈|드나들|건너갈|건너가게|돌아오는\s*길|돌아가는\s*길|돌아올\s*수|돌아갈\s*수|이어\s*줘|이어줘|이어지게|연결|통하게|\b(?:link|connect)\b/iu;
+/** 새 장소를 짓거나 있는 장소를 다시 짓는 말 — 이 말이 있으면 잇기만 하는 요청이 아니다. */
+const NEW_PLACE_WORDS = /(?<![가-힣])새(?:로운|로)?\s|다시\s*(?:짓|지어|만들|그려)|넓혀|넓히|키워|늘려|하나\s*더|\b(?:new|rebuild|expand)\b/iu;
+/** 요청 글에 이름이 나온 맵 이름(띄어쓰기 무시, 두 글자 이상) — 긴 이름부터 맞춰 「마을」이 「잿불 마을」 안에서 한 번 더 세어지지 않게 한다. */
+function mapsNamedIn(own: string, project: Pick<Project, "maps">): string[] {
+  let flat = own.replace(/\s+/gu, "");
+  const names = [...new Set(Object.values(project.maps).map((map) => (map.name ?? "").trim()))].filter((name) => name.replace(/\s+/gu, "").length >= 2).sort((x, y) => y.length - x.length);
+  return names.filter((name) => { const key = name.replace(/\s+/gu, ""); const hit = flat.includes(key); if (hit) flat = flat.split(key).join(" "); return hit; });
+}
+/**
+ * 이미 있는 맵 둘을 잇기만 하라는 요청인가 — 글에 있는 맵 이름이 둘 이상이고, 잇는 낱말이 있고, 새 장소·다시 짓기를 말하지 않고,
+ * 그 맵들을 가리키는 낱말(이름의 조각 — 「마을」「들판」)을 빼면 장소 짓기 낱말이 남지 않는다. 맞으면 그 이름들을 돌려준다.
+ * 왜: 「잿불 마을 … 동쪽 들판으로 넘어갈 수 있게 해 줘. 들판에서 마을로 돌아오는 길도 만들어 줘」의 «마을 … 만들어» 가 장소 짓기 낱말에 맞아
+ * 도구 48개·장소 카드가 실렸다 — 할 일은 create_transfer_pair 한 번이다(2026-11-11 Terra 작은 일 door-roundtrip-starter).
+ * 「… 사이에 숲길 맵을 하나 만들어서 이어 줘」는 이름을 빼도 «맵 … 만들어» 가 남아 장소 짓기 그대로다.
+ */
+export function linkedExistingMaps(own: string, project: Pick<Project, "maps">): readonly string[] {
+  if (!LINK_MAPS_WORDS.test(own) || NEW_PLACE_WORDS.test(own)) return [];
+  const named = mapsNamedIn(own, project);
+  if (named.length < 2) return [];
+  const pieces = [...new Set(named.flatMap((name) => name.split(/\s+/u)))].filter((piece) => piece.length >= 2).sort((x, y) => y.length - x.length);
+  const rest = pieces.reduce((text, piece) => text.split(piece).join(" "), own);
+  return PLACE_BUILD_WORDS.test(rest) ? [] : named;
 }
 
 const WRITE_VERB = /넣어\s*줘|만들어|추가해|바꿔\s*줘|고쳐\s*줘|놓아\s*줘|지어\s*줘|깔아\s*줘|붙여\s*줘|구현해|짜\s*줘|세워\s*줘|그려\s*줘/u;

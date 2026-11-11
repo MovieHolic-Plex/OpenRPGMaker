@@ -33,7 +33,12 @@ export type MapThumbnailOptions = {
 const MAX_PARALLEL = 3;
 /** 중간 렌더 긴 변 상한 — 100×100 맵을 원본 배율로 그리면 1600px 캔버스가 된다. */
 const STAGE_MAX_EDGE = 512;
-const CACHE_LIMIT = 120;
+/**
+ * 캐시 예산(백킹 화소 수). 예전엔 항목 120개를 넣은 순서대로 버렸다 — 맵이 120개를 넘는 프로젝트는 맵을 옮길
+ * 때마다 방금 버린 썸네일을 타일 단위로 다시 그렸다(2026-11-08 실측, 180맵: 전환마다 60장 재렌더, 전환 p50 2.1s).
+ * 행 썸네일 한 장은 80×60 = 4,800화소라 이 예산은 행 썸네일 약 830장(약 16MB)이다.
+ */
+const CACHE_PIXEL_BUDGET = 4_000_000;
 
 const renderedCache = new Map<string, HTMLCanvasElement>();
 const mapContentHashes = new WeakMap<GameMap, number>();
@@ -65,6 +70,9 @@ export function createMapThumbnail(mapId: MapId, options: MapThumbnailOptions = 
   const key = thumbnailKey(mapId, map, width, height);
   const cached = renderedCache.get(key);
   if (cached) {
+    // 최근 쓴 것을 뒤로 보낸다(LRU) — 화면에 보이는 썸네일이 먼저 버려지지 않게.
+    renderedCache.delete(key);
+    renderedCache.set(key, cached);
     blit(canvas, cached, "map");
     return canvas;
   }
@@ -244,10 +252,14 @@ function hash(text: string): number {
 }
 
 function evictOverflow(): void {
-  while (renderedCache.size > CACHE_LIMIT) {
-    const oldest = renderedCache.keys().next();
+  let pixels = 0;
+  for (const stage of renderedCache.values()) pixels += stage.width * stage.height;
+  while (pixels > CACHE_PIXEL_BUDGET && renderedCache.size > 1) {
+    const oldest = renderedCache.entries().next();
     if (oldest.done) return;
-    renderedCache.delete(oldest.value);
+    const [key, stage] = oldest.value;
+    pixels -= stage.width * stage.height;
+    renderedCache.delete(key);
   }
 }
 
