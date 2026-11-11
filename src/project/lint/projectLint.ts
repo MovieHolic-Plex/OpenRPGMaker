@@ -61,7 +61,8 @@ import { isQuestGraphDef } from "../quest/questDef";
 import { lintQuestGraph } from "../quest/questGraph";
 import { storyFlagForTarget, storyFlagListLabel, storyFlagTargetKey } from "../storyFlags";
 import { buildStoryFlagUsageIndex, declaredStoryFlagTargets, usageBucketFor } from "../storyFlagUsage";
-import type { Command, GameEvent, GameMap, LintSeverity, Project, Trigger } from "../types";
+import type { Command, Condition, GameEvent, GameMap, LintSeverity, Project, Trigger } from "../types";
+import { sightWatcherIds } from "@/project/sightWatchers";
 import { lintWorldGraph } from "../worldGraph";
 import { forEachProjectScript, scriptCommandEffects } from "../script/effects";
 import type { ScriptRefKind } from "../script/types";
@@ -125,6 +126,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkShopIntegrity(project, issues);
   checkPresentItemIntegrity(project, issues);
   checkCraftShopIntegrity(project, issues);
+  checkSightWatchers(project, issues);
   checkMapNamedLocations(project, issues);
   checkCampusDoors(project, issues);
   return issues;
@@ -1021,6 +1023,40 @@ function checkCraftShopIntegrity(project: Project, issues: LintIssue[]): void {
     }
   }
   for (const commonEvent of project.commonEvents) visitCommands(commonEvent.commands, (command) => inspect(command, { eventId: commonEvent.id }));
+}
+
+// 시선 조건(eventSeesPlayer): «누가 보나»가 이 맵에서 아무도 아니면 조건은 늘 «못 본다»다 — 들키지 않는 도둑질이 조용히 생긴다.
+// eventId 가 이 맵에 없는 이벤트면 같은 경고. 공통 이벤트는 어느 맵에서 돌지 몰라 보지 않는다.
+function checkSightWatchers(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      const report = (condition: Condition): void => {
+        if (condition.kind === "all" || condition.kind === "any") { condition.conditions.forEach(report); return; }
+        if (condition.kind === "not") { report(condition.condition); return; }
+        if (condition.kind !== "eventSeesPlayer") return;
+        const where = { mapId: map.id, eventId: event.id };
+        if (condition.eventId) {
+          if (!map.events.some((other) => other.id === condition.eventId)) {
+            issues.push({ severity: "warning", code: "eventSeesPlayer.watcher-missing", message: `${event.id}: 시선 조건의 보는 이벤트 ${condition.eventId} 이(가) 이 맵에 없다 — 늘 못 본다.`, ...where });
+          }
+          return;
+        }
+        if (sightWatcherIds(map.events, condition.watchers ?? {}, map.locations).length === 0) {
+          issues.push({ severity: "warning", code: "eventSeesPlayer.watchers-empty", message: `${event.id}: 시선 조건의 고르기(${JSON.stringify(condition.watchers ?? {})})에 맞는 이벤트가 이 맵에 없다 — 늘 못 본다.`, ...where });
+        }
+      };
+      const visit = (command: Command): void => {
+        if (command.kind === "fork") report(command.condition);
+        if (command.kind === "choices") for (const option of command.options ?? []) { if (option.showWhen) report(option.showWhen); if (option.enableWhen) report(option.enableWhen); }
+      };
+      if (event.condition) report(event.condition);
+      visitCommands(event.commands, visit);
+      for (const page of event.pages ?? []) {
+        for (const condition of page.conditions ?? []) report(condition);
+        visitCommands(page.commands, visit);
+      }
+    }
+  }
 }
 
 // 아이템 제시: 없는 아이템은 참조 검증(checkReferences)이 잡는다. 여기서는 저작 실수 둘 —

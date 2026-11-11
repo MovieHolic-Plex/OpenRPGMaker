@@ -56,6 +56,7 @@ test("a normal export boot ships no debug globals, hooks, or hidden state mirror
   const observed = await page.evaluate(() => ({
     globals: [
       "__oprnDebug",
+      "__oprnEventRunLog",
       "__oprnInput",
       "__oprnPlayerSprite",
       "__oprnCharacterSprites",
@@ -94,4 +95,8 @@ test("an explicit QA boot retains the read and mutate capability the harness nee
   );
 
   await expect(page.getByTestId("runtime-state-json")).toHaveCount(1);
+  // The same QA boot installs the event run log, and a debug-hook edit is marked as a hand edit.
+  const handEdits = await page.evaluate((id) => window.__oprnEventRunLog?.query({ type: "handEdit" }).entries
+    .filter((entry) => entry.type === "handEdit" && "switchId" in entry.effect && entry.effect.switchId === id).length ?? -1, switchId);
+  expect(handEdits).toBe(1);
 });

@@ -146,8 +146,17 @@ export type ActorQueryCondition =
    * requireFacing = 이벤트가 바라보는 정면 90° 안일 때만(기본 켜짐; 끄면 「가까이 있다」 소리 판정에 쓴다).
    * value=false 면 「못 본다」. 위치를 모르는 이벤트는 못 본다. 벽(시선 광선)은 늘 막는다 — 다른 방·벽 너머는 못 본다.
    * hearRange = 소리로 알아차리는 거리(칸; 벽 하나당 +3). 상자 부수기처럼 시끄러운 행동에만. 생략·0 = 듣지 않는다.
+   * 아래 세 칸은 모두 선택이고, 생략하면 위 동작 그대로다.
+   * watchers = eventId 대신 «이 맵에서 조건에 맞는 누구든»(eventId 가 비었을 때만 쓴다). characterId = 이벤트 characterId,
+   *   name = 이벤트 이름에 이 낱말이 들어 있음(예: «경비»), locationId = 그 명명 로케이션 안에 선 이벤트. 주어진 것을 모두 만족해야 한다.
+   *   보는 쪽(value 생략·true) = 하나라도 보면 참, 못 보는 쪽(value:false) = 아무도 못 볼 때 참.
+   * doorsBlock = 켜면 문 이벤트(장소 이동·맵 이벤트 호출을 가진 이벤트)가 선 칸도 시선을 막는다(닫힌 문). 생략 = 문은 막지 않는다.
+   * darkness = 밤(night)·어두운 조명(dark, 조명 어둠이 darkAmbient 기본 0.6 이상)일 때 시야 거리. 듣기는 줄지 않는다.
    */
-  | { kind: "eventSeesPlayer"; eventId: string; range?: number; sameRoom?: boolean; requireFacing?: boolean; hearRange?: number; value?: boolean }
+  | {
+      kind: "eventSeesPlayer"; eventId: string; range?: number; sameRoom?: boolean; requireFacing?: boolean; hearRange?: number; value?: boolean;
+      watchers?: EventSightWatchers; doorsBlock?: boolean; darkness?: { night?: number; dark?: number; darkAmbient?: number };
+    }
   /** 이 기기에서 엔딩을 본 횟수(서로 다른 엔딩 수가 아니라 클리어 횟수). */
   | { kind: "clearCount"; op: ConditionCompareOp; value: number }
   | { kind: "endingSeen"; endingId: string; value: boolean }
@@ -155,6 +164,13 @@ export type ActorQueryCondition =
   /** 게임 달력 요일. 0=일 … 6=토. 시계가 없으면 거짓. */
   | { kind: "weekday"; weekdays: number[] }
   | { kind: "stringVariable"; stringVariableId: string; op: "==" | "!=" | "contains" | "empty"; value: string };
+
+/** 시선 조건의 «누가 보나» 고르기 — 주어진 칸을 모두 만족하는 이 맵의 이벤트. */
+export interface EventSightWatchers {
+  characterId?: string;
+  name?: string;
+  locationId?: string;
+}
 
 export interface ConditionV1 {
   kind: "flag";
