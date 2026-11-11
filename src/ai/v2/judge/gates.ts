@@ -1,13 +1,15 @@
 // 관문·비평·화면 검수가 짚은 것을 할 일 항목으로 맞춘다(옛 «한 바퀴 더» 글 대신 — 2026-10-30 omo 고리).
 // 같은 문제(열쇠)는 새 항목을 만들지 않고, 닫힌 항목이면 다시 연다(시도 +1). 사라진 문제의 항목은 함수가 닫는다.
 import type { V2GateProblem } from "./finishGate";
-import { AUTOPLAY_GATE_PREFIX } from "./playCheck";
 import { TODO_MAX_ATTEMPTS, isOpen, type TodoStore } from "../loop/todoStore";
 import type { TodoItem } from "../todo/types";
 import type { ProjectIndex } from "../loop/refs";
 
 /** 출하 차단 중 «편집기 기본값이 남았다» 계열(shipChecks EDITOR_DEFAULT_INVENTORY 의 그림·오프닝·제목) — 앞 턴 결과라는 이유로 면제하지 않는다. */
-const SHIP_DEFAULT_LEAK = /^\[출하 차단 (?:ending-bg|ending-screen|title-image|title-name|bundled-picture|art-generation|opening|opening-music|opening-missing|maps-min|quests-min|act-depth-min)\]/u;
+const SHIP_DEFAULT_LEAK: ReadonlySet<string> = new Set(["ending-bg", "ending-screen", "title-image", "title-name", "bundled-picture", "art-generation", "opening", "opening-music", "opening-missing", "maps-min", "quests-min", "act-depth-min"]);
+
+/** 관문이 낸 항목의 열쇠인가 — 판정 묶음(game·ship·scene·play)이나 장소 고치기(place). 검토자(adv·lead)·화면 검수(vqa) 열쇠는 아니다. */
+const isGateKey = (key: string): boolean => /^(?:game|ship|scene|play|place):/u.test(key);
 
 const keyOf = (store: TodoStore, item: TodoItem): string | undefined => store.meta.get(item.id)?.key;
 
@@ -31,12 +33,17 @@ function namedTools(text: string): string[] {
 }
 
 export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem[], capMapIds: ReadonlySet<string>, available?: ReadonlySet<string>): { opened: TodoItem[]; closed: TodoItem[]; capped: TodoItem[] } {
+  // 2026-11-11 전에 저장된 할 일은 글로 만든 열쇠를 들고 있다 — 같은 문제가 지금도 있으면 지금 열쇠로 옮긴다(막힌 채 이어 받은 항목이 새 항목으로 다시 열리지 않게).
+  for (const p of problems) {
+    const old = p.textKey && p.textKey !== p.key ? store.byKey(p.textKey) : undefined;
+    if (old && !store.byKey(p.key)) store.meta.set(old.id, { ...(store.meta.get(old.id) ?? {}), key: p.key });
+  }
   const keys = new Set(problems.map((p) => p.key));
   const closed: TodoItem[] = [];
   for (const item of store.items) {
     if (item.source !== "gate" && item.source !== "critic") continue;
     const key = keyOf(store, item);
-    if (!key || (!key.startsWith("game:") && !key.startsWith("place:")) || keys.has(key)) continue;
+    if (!key || !isGateKey(key) || keys.has(key)) continue;
     // 앞 턴에서 막힌 채 이어 받은 항목인데 이번 턴 검사에는 안 나온다 — 고쳐진 것이 아니라 검사의 기준(시작 저장본·이 실행이 지은 장소)이 옮겨 간 것이다.
     // 이번 턴의 일이 아니므로 뺀다(막힌 채 두면 다시 나올 길이 없어 그 뒤 모든 턴이 미완료가 된다).
     if (item.status === "blocked" && store.meta.get(item.id)?.restored) { store.drop(item, `앞 턴에서 막힘(${item.blockedReason ?? "이유 없음"}) — 이번 턴 함수 검사에는 나오지 않는다(기존 결함)`, "auto"); closed.push(item); continue; }
@@ -87,11 +94,12 @@ export function splitPreexisting(problems: readonly V2GateProblem[], baselineKey
   const byId = new Map<string, string[]>();
   for (const key of now?.events.keys() ?? []) { const id = key.slice(key.indexOf(":") + 1); byId.set(id, [...(byId.get(id) ?? []), key]); }
   for (const p of problems) {
-    if (!p.key.startsWith("game:")) { current.push(p); continue; }
+    if (!p.finding) { current.push(p); continue; }
     // 편집기 기본값이 남은 것(출하 차단 ending-bg·title-image·opening…)은 시작 저장본에 있었어도 이번 턴이 끝낼 일이다 — 이어 하는 턴의 시작 저장본은 앞 턴의 결과라
     // 기본 그림도 «기존 결함»이 되어 완료를 막지 못했다(2026-11-09 assistant-reward village-1: 엔딩 기본 그림이 2턴째에 항목이 안 됐다).
-    if (baselineKeys?.has(p.key) && !SHIP_DEFAULT_LEAK.test(p.text)) { preexisting.push(p); continue; }
-    if (p.key.startsWith(AUTOPLAY_GATE_PREFIX)) { current.push(p); continue; }
+    // 시작 저장본 대조는 글까지 같아야 한다 — 같은 규칙이라도 이번 턴에 새로 생긴 것(글이 다르다)은 기존 결함이 아니다.
+    if (baselineKeys?.has(p.textKey ?? p.key) && !(p.finding.judge === "ship" && SHIP_DEFAULT_LEAK.has(p.finding.id))) { preexisting.push(p); continue; }
+    if (p.finding.judge === "play") { current.push(p); continue; }
     const ids = [...new Set([...p.text.matchAll(/\bev_[A-Za-z0-9_\-]+/gu)].map((m) => m[0]))];
     const keys = ids.flatMap((id) => byId.get(id) ?? []);
     // 함수 마감(출구 길 잇기·출구 넓히기)만 건드린 기존 이벤트도 «조수가 안 건드림»으로 본다 — 2026-10-30 boss-room: 마감이 버들마을 출구를 옮기자
