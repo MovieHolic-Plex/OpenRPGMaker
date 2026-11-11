@@ -50,6 +50,13 @@ export function reconcileFieldHud(project: Project, story: string): string[] {
   if (project.system.fieldHud === undefined || hudIsStoryTemplate(project)) return fillFieldHud(project, story);
   const hud = asPresetHud(project.system.fieldHud);
   if (hud.widgets !== undefined) return [];
+  // adventure 는 실시간 액션 전투의 HUD 다(체력·마력 막대 + 도구 5칸 + 스태미나 — 화면 왼쪽 위 3분의 1). 턴제 게임에 고른 것은 이름으로 고른 것이라
+  // 함수가 고르는 값으로 바꾼다. 몸 게이지를 끄기로 한 것은 지킨다.
+  if (hud.theme === "adventure" && project.system.actionCombat?.enabled !== true) {
+    const notes = fillFieldHud(project, story);
+    if (!hud.vitals && project.system.fieldHud) project.system.fieldHud = { ...project.system.fieldHud, vitals: false };
+    return [`필드 HUD adventure(실시간 액션용)는 턴제 게임에 맞지 않아 바꿨다 — ${notes.join(" ")}`];
+  }
   const shown = (config: typeof hud) => resolvedHudWidgets(config).map((w) => w.id).join(",");
   const unused = unusedHudGauges(hud, projectHudUse(project));
   const drop = new Set(unused.map((w) => w.id));

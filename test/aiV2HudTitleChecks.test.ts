@@ -68,9 +68,21 @@ describe("v2 HUD / title choice (fs-use-tools HUD; 2026-11-11 the HUD is derived
     const skills = (ctx.project.database as unknown as { skills: { mpCost?: unknown }[] }).skills;
     if (!skills.length) skills.push({} as never);
     skills[0]!.mpCost = { flat: 5, percentMax: 0 };
-    expect(reconcileFieldHud(ctx.project, "용사 RPG").length).toBe(1);
-    expect(resolvedHudWidgets(ctx.project.system.fieldHud!).filter((w) => w.kind === "gauge").map((w) => w.source)).toEqual(["hp", "mp"]);
-    expect(reconcileFieldHud(ctx.project, "용사 RPG")).toEqual([]);
+    ctx.project.system.actionCombat = { ...(ctx.project.system.actionCombat ?? {}), enabled: true } as never;
+    expect(reconcileFieldHud(ctx.project, "용사 액션 RPG").length).toBe(1);
+    expect(resolvedHudWidgets(ctx.project.system.fieldHud!).filter((w) => w.kind === "gauge").map((w) => w.source)).toEqual(["hp", "mp", "stamina"]);
+    expect(reconcileFieldHud(ctx.project, "용사 액션 RPG")).toEqual([]);
+  });
+
+  it("an action-combat HUD (adventure) picked for a turn-based game is replaced by the derived one", () => {
+    const p = createBlankProject() as Project;
+    const map = Object.values(p.maps)[0]!;
+    map.events = [{ id: "ev_fight", name: "적", x: 1, y: 1, trigger: { kind: "action" }, commands: [], pages: [{ id: "p0", conditions: [], trigger: { kind: "action" }, commands: [{ kind: "battleProcessing" }] }] }] as never;
+    p.system.fieldHud = normalizeFieldHud({ theme: "adventure", vitals: true, objective: true });
+    expect(reconcileFieldHud(p, "용사가 마왕을 잡는 RPG").length).toBe(1);
+    expect(p.system.fieldHud!.theme).toBe("classic");
+    expect(p.system.fieldHud!.objective).toBe(true);
+    expect(reconcileFieldHud(p, "용사가 마왕을 잡는 RPG")).toEqual([]);
   });
 
   it("an authored widget list (petal life, affection gauge) is left alone", () => {

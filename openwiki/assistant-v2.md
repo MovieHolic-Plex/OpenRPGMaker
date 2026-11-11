@@ -422,7 +422,7 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 - `set_field_hud`: 고른 테마의 게이지 가운데 이 게임이 쓰지 않는 것은 빼고 저장하고, 답에 `onScreen`·`unused` 를 싣는다(명시한 `vitals:true` 는 그대로).
   테마 설명은 «무엇이 뜨는가» 로 다시 썼다(`toolTextEn.ts` 도).
 - 끝맺음 `reconcileFieldHud`(story/shipLookDefaults.ts, `applyLookDefaults` 가 늘 부른다): 안 골랐거나 템플릿 그대로면 함수가 고르고(체력이 줄 일이 없으면 목표 줄만,
-  공포는 꽃잎, 싸우는 판타지는 classic, 그 밖은 hearts), 고른 테마에서 안 쓰는 게이지를 뺀다. 전투·기술이 뒤에 생기면 뺀 게이지가 돌아온다. 저자가 짠 widgets 는 안 건드린다.
+  공포는 꽃잎, 싸우는 판타지는 classic, 그 밖은 hearts), 턴제 게임에 고른 `adventure`(실시간 액션용)는 그 값으로 바꾸고, 고른 테마에서 안 쓰는 게이지를 뺀다. 전투·기술이 뒤에 생기면 뺀 게이지가 돌아온다. 저자가 짠 widgets 는 안 건드린다.
 - «HUD 선택» 관문은 지웠다(관문 하나 줄임) — 모델에게 고르라고 시키는 대신 함수가 게임에서 읽는다. 타이틀 모양 관문은 그대로.
 - 런타임 CSS: 판 없는 위젯의 이름표에도 숫자와 같은 어두운 판(밝은 땅 위에서 안 읽혔다).
 
