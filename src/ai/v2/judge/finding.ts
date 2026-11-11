@@ -26,6 +26,15 @@ export interface Finding {
 /** 보고·할 일에 실리는 관문 줄. */
 export const findingLine = (f: Finding): string => f.ko;
 
+/** 글머리 표지 낱말 — 판정 묶음마다 하나(「[게임 검사 음악] …」 · 「[출하 차단 no-healing] …」 · 「[scene thin] …」). */
+const TAG_WORD = { game: "게임 검사", ship: "출하 차단", scene: "scene" } as const;
+type TaggedJudge = keyof typeof TAG_WORD;
+
+/** 판정자가 문제 하나를 낸다 — 줄 글은 «[표지 id] body» 로 지금과 같다. */
+export function tagged(judge: TaggedJudge, id: string, body: string, more?: Pick<Finding, "target" | "evidence">): Finding {
+  return { judge, id, severity: "block", owner: "model", ko: `[${TAG_WORD[judge]} ${id}] ${body}`, ...more };
+}
+
 const TAG = /^\[(게임 검사|출하 차단|scene) ([^\]]+)\]/u;
 const TAG_JUDGE: Readonly<Record<string, FindingJudge>> = { "게임 검사": "game", "출하 차단": "ship", scene: "scene" };
 

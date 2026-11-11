@@ -16,6 +16,7 @@ import type { Project } from "@/project/types";
 import { splitScriptSpeaker } from "@/project/endingSummary";
 import { isRereadMarker } from "../story/rereadPage";
 import { SCENE_WORDS, TALK_WORDS } from "../request/asks";
+import { tagged, type Finding } from "./finding";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -127,12 +128,10 @@ const BUILT_SIGN_EVENT = /^ev_(?:world_)?gate_|^ev_locked_door_|^ev_dead_end_/u;
 /** 함수가 여러 자리에 같은 글로 적는 안내 줄 — 남은 단서 목록(«· 아직 …»)과 그 단계 이벤트의 자리(«「X」은 … 에 있다.»). */
 const BUILT_HINT_LINE = /^·\s|^「[^」]{1,40}」[은는이가]\s.{1,60}에 있다[.。]?$/u;
 
-interface SceneCraftFinding { readonly id: "repeat" | "name" | "thin" | "static" | "oneVoice" | "offPost"; readonly text: string }
-
-export function sceneCraftFindings(before: Project, after: Project, task: string): SceneCraftFinding[] {
+export function sceneCraftFindings(before: Project, after: Project, task: string): Finding[] {
   const pages = scenePages(before, after);
   if (!pages.length) return [];
-  const out: SceneCraftFinding[] = [];
+  const out: Finding[] = [];
   const sceneAsked = SCENE_WORDS.test(task);
   const talkAsked = TALK_WORDS.test(task);
 
@@ -154,7 +153,7 @@ export function sceneCraftFindings(before: Project, after: Project, task: string
     if (repeated.has(k)) continue;
     repeated.add(k);
     const sameEvent = first.p.eventId === p.eventId;
-    out.push({ id: "repeat", text: `[scene repeat] The line ${q(line.body)} is written twice — ${where(first.p)} and ${sameEvent ? `page ${p.pageIndex} of the same event` : where(p)}. Players notice a repeated line at once and stop reading the rest. Rewrite the second one so it says what changed since the first (or cut it). Fix: patch_event_page{mapId:'${p.mapId}', eventId:'${p.eventId}', pageIndex:${p.pageIndex}, set:{commands:[…the page with that text command rewritten…]}}.` });
+    out.push(tagged("scene", "repeat", `The line ${q(line.body)} is written twice — ${where(first.p)} and ${sameEvent ? `page ${p.pageIndex} of the same event` : where(p)}. Players notice a repeated line at once and stop reading the rest. Rewrite the second one so it says what changed since the first (or cut it). Fix: patch_event_page{mapId:'${p.mapId}', eventId:'${p.eventId}', pageIndex:${p.pageIndex}, set:{commands:[…the page with that text command rewritten…]}}.`));
   }
 
   // name: 「이름: 대사」 — 이름표(speaker)와 겹쳐 두 번 보이거나, 이름표 없이 대본 꼴로 보인다.
@@ -162,7 +161,7 @@ export function sceneCraftFindings(before: Project, after: Project, task: string
     const hit = p.lines.find((l) => { if (oldLines.has(norm(l.body))) return false; const s = splitScriptSpeaker(l.body); return !!s.speaker && s.speaker.length <= 12 && !/^\d/u.test(s.speaker); });
     if (!hit) continue;
     const s = splitScriptSpeaker(hit.body);
-    out.push({ id: "name", text: `[scene name] ${where(p)} writes the speaker inside the line: ${q(hit.body)}. The dialogue box already shows the name plate, so the player reads ${hit.speaker ? `«${hit.speaker}» and then «${s.speaker}:» again` : `a script prefix instead of a speaking person`}. Put the name in the speaker field and keep only the words in the body (add_event beat {do:'say', who:'${s.speaker}', text:'${s.text.slice(0, 30).replace(/'/gu, "’")}…'} or the text command {kind:'text', speaker:'${s.speaker}', body:…}).` });
+    out.push(tagged("scene", "name", `${where(p)} writes the speaker inside the line: ${q(hit.body)}. The dialogue box already shows the name plate, so the player reads ${hit.speaker ? `«${hit.speaker}» and then «${s.speaker}:» again` : `a script prefix instead of a speaking person`}. Put the name in the speaker field and keep only the words in the body (add_event beat {do:'say', who:'${s.speaker}', text:'${s.text.slice(0, 30).replace(/'/gu, "’")}…'} or the text command {kind:'text', speaker:'${s.speaker}', body:…}).`));
   }
 
   for (const p of pages.filter((x) => x.cutscene)) {
@@ -170,16 +169,16 @@ export function sceneCraftFindings(before: Project, after: Project, task: string
     const speakers = [...new Set(p.lines.map((l) => l.speaker).filter(Boolean))];
     // thin: 장면을 시킨 요청에서 새로 쓴 컷신 대사가 셋 미만.
     if (sceneAsked && p.lines.length < 3) {
-      out.push({ id: "thin", text: `[scene thin] ${where(p)} is a cutscene with ${p.lines.length} line${p.lines.length === 1 ? "" : "s"} (${p.lines.map((l) => q(l.body, 24)).join(" ")}). One line is an announcement, not a scene: the player needs the situation (who and why here), the turn (what is revealed, threatened or asked) and the consequence (what changes for the hero). Write 4–8 lines across those three parts, in each speaker's own voice, with a reaction from the hero (an emote beat or a short line). Fix: add_event{event:{kind:'cutscene', mapId:'${p.mapId}', redo:'${p.eventId}', beats:[…]}} (redo rewrites this scene in place).` });
+      out.push(tagged("scene", "thin", `${where(p)} is a cutscene with ${p.lines.length} line${p.lines.length === 1 ? "" : "s"} (${p.lines.map((l) => q(l.body, 24)).join(" ")}). One line is an announcement, not a scene: the player needs the situation (who and why here), the turn (what is revealed, threatened or asked) and the consequence (what changes for the hero). Write 4–8 lines across those three parts, in each speaker's own voice, with a reaction from the hero (an emote beat or a short line). Fix: add_event{event:{kind:'cutscene', mapId:'${p.mapId}', redo:'${p.eventId}', beats:[…]}} (redo rewrites this scene in place).`));
     }
     // static: 대사 셋 이상인데 움직임·반응·소리·효과가 하나도 없다.
     if (p.lines.length >= 3 && staging.length === 0) {
-      out.push({ id: "static", text: `[scene static] ${where(p)} reads ${p.lines.length} lines over a frozen screen — nobody walks, turns, reacts, and no music or effect changes. On a map the bodies tell the feeling the words cannot: step closer to threaten or plead, turn away to hide something, walk off to end it; an emote marks the moment a line lands; music or an effect marks the turn. Add at least one movement and one reaction or sound at the turn of this scene. Fix: add_event{event:{kind:'cutscene', mapId:'${p.mapId}', redo:'${p.eventId}', beats:[…same lines plus walk/face/emote/music beats…]}}.` });
+      out.push(tagged("scene", "static", `${where(p)} reads ${p.lines.length} lines over a frozen screen — nobody walks, turns, reacts, and no music or effect changes. On a map the bodies tell the feeling the words cannot: step closer to threaten or plead, turn away to hide something, walk off to end it; an emote marks the moment a line lands; music or an effect marks the turn. Add at least one movement and one reaction or sound at the turn of this scene. Fix: add_event{event:{kind:'cutscene', mapId:'${p.mapId}', redo:'${p.eventId}', beats:[…same lines plus walk/face/emote/music beats…]}}.`));
     }
     // oneVoice: 대화를 시킨 요청인데 한 사람만 말하고 상대 반응이 없다.
     const others = staging.includes("emote") || p.cmds.some((c) => c.kind === "choices" || c.kind === "showChoices" || c.kind === "presentItem");
     if (talkAsked && p.lines.length >= 3 && speakers.length <= 1 && !others && !p.lines.some((l) => !l.speaker)) {
-      out.push({ id: "oneVoice", text: `[scene one-voice] Only ${speakers[0] ? `«${speakers[0]}»` : "one person"} speaks in ${where(p)} (${p.lines.length} lines) and nobody answers or reacts. A conversation where one side talks reads like a notice board. Give the other side a turn: the hero reacts (emote beat {do:'emote', who:'주인공', emote:'!'} or a short line with who:'주인공'), or let the player answer with a choice.` });
+      out.push(tagged("scene", "one-voice", `Only ${speakers[0] ? `«${speakers[0]}»` : "one person"} speaks in ${where(p)} (${p.lines.length} lines) and nobody answers or reacts. A conversation where one side talks reads like a notice board. Give the other side a turn: the hero reacts (emote beat {do:'emote', who:'주인공', emote:'!'} or a short line with who:'주인공'), or let the player answer with a choice.`));
     }
   }
 
@@ -200,15 +199,15 @@ export function sceneCraftFindings(before: Project, after: Project, task: string
     const vanished = new Set(p.cmds.filter((c) => c.kind === "eraseEvent" || (c.kind === "m2Command" && /sprite-look/u.test(String(c.commandId)) && String(obj(c.fields)?.opacity ?? "") === "0")).map((c) => String(c.eventId ?? obj(c.fields)?.eventId ?? "")));
     for (const [id] of walked) {
       if (vanished.has(id)) continue;
-      out.push({ id: "offPost", text: `[scene off-post] The cutscene ${where(p)} walks «${people.get(id)}» (${id}), who already stood on this map, and leaves them wherever the walk ended. After the scene the player goes back to talk to them at their usual spot and cannot find them. End the scene with a walk back ({do:'walk', who:'${people.get(id)}', to:<their spot word>}), or if they should stay where the scene leaves them, move their post there with move_event.` });
+      out.push(tagged("scene", "off-post", `The cutscene ${where(p)} walks «${people.get(id)}» (${id}), who already stood on this map, and leaves them wherever the walk ended. After the scene the player goes back to talk to them at their usual spot and cannot find them. End the scene with a walk back ({do:'walk', who:'${people.get(id)}', to:<their spot word>}), or if they should stay where the scene leaves them, move their post there with move_event.`));
     }
   }
   return out;
 }
 
 /** 게임 검사 글(관문 항목) — 같은 종류는 최대 셋. */
-export function sceneCraftProblems(before: Project, after: Project, task: string): string[] {
+export function sceneCraftProblems(before: Project, after: Project, task: string): Finding[] {
   const all = sceneCraftFindings(before, after, task);
   const byId = new Map<string, number>();
-  return all.filter((f) => { const n = (byId.get(f.id) ?? 0) + 1; byId.set(f.id, n); return n <= 3; }).map((f) => f.text);
+  return all.filter((f) => { const n = (byId.get(f.id) ?? 0) + 1; byId.set(f.id, n); return n <= 3; });
 }

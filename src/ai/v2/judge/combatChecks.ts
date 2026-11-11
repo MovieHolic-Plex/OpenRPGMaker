@@ -10,6 +10,7 @@ import { classLearnedSkillIdsUpToLevel } from "@/project/sessionClass";
 import type { Project } from "@/project/types";
 import { buildsWholeGame } from "../request/readers";
 import { asksForEncounters } from "../request/readers";
+import { tagged, type Finding } from "./finding";
 
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj | undefined => (v && typeof v === "object" && !Array.isArray(v) ? (v as Obj) : undefined);
@@ -192,26 +193,26 @@ export function stepsPerEncounter(rate: number): number {
  * 끝맺음 관문에 올릴 전투 문제(빈 배열이면 통과). 전투를 건드린 실행이나 게임을 만드는 요청일 때만 본다.
  * 회복 수단 없음은 «출하 차단»급 — 고치지 못하면 «완성»이라고 쓰지 못한다.
  */
-export function combatProblems(before: Project, after: Project, task: string): string[] {
+export function combatProblems(before: Project, after: Project, task: string): Finding[] {
   if (!buildsWholeGame(after, task) && !touchedCombat(before, after)) return [];
   const sites = battleSites(after);
   if (!sites.length) return [];
-  const problems: string[] = [];
+  const problems: Finding[] = [];
   if (!healingSources(after).length) {
-    problems.push(`[출하 차단 no-healing] 전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) HP 를 되찾을 길이 하나도 없다 — 깎인 HP 가 그대로 남아 보스에서 무한 게임 오버가 나고, 승리 직후 자동 저장(HP 1)을 불러와도 그대로다. build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 결정적으로 넣는다. 직접 고치려면 마을에 여관(recoverAll 이벤트 또는 inn 명령)을 두거나, set_shop_stock 으로 상점에서 포션(item_potion)을 팔거나, place_chest{contents:{itemId:'item_potion'}} 로 보스 앞에 회복약을, 보스 앞에 place_savepoint{heal:true} 를 둔다. 회복 기술을 쓰는 동료(upsert_actor learnedSkills 에 skill_heal)도 된다. 고치지 못하면 «완성»이라고 쓰지 않는다.`);
+    problems.push(tagged("ship", "no-healing", `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) HP 를 되찾을 길이 하나도 없다 — 깎인 HP 가 그대로 남아 보스에서 무한 게임 오버가 나고, 승리 직후 자동 저장(HP 1)을 불러와도 그대로다. build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 결정적으로 넣는다. 직접 고치려면 마을에 여관(recoverAll 이벤트 또는 inn 명령)을 두거나, set_shop_stock 으로 상점에서 포션(item_potion)을 팔거나, place_chest{contents:{itemId:'item_potion'}} 로 보스 앞에 회복약을, 보스 앞에 place_savepoint{heal:true} 를 둔다. 회복 기술을 쓰는 동료(upsert_actor learnedSkills 에 skill_heal)도 된다. 고치지 못하면 «완성»이라고 쓰지 않는다.`));
   }
   // 요청에 없는 무작위 조우: 이 실행이 새로 켠 맵만(전에 켜져 있던 맵은 앞 요청이 켰다).
   if (!asksForEncounters(task)) {
     const was = new Set(encounterMaps(before));
     const turnedOn = encounterMaps(after).filter((id) => !was.has(id));
-    if (turnedOn.length) problems.push(`[게임 검사 조우] 요청에 무작위 조우(랜덤 인카운터)가 없는데 ${turnedOn.slice(0, 3).map((id) => `「${after.maps[id]!.name}」`).join(", ")} 에 켰다 — 시키지 않은 조우가 파티를 깎는다. set_encounter_table{mapId, entries, encounterRate:0} 으로 끄고, 싸움이 필요하면 보이는 적(place_field_enemy)이나 이벤트 전투로 둔다. 일부러 켰다면 보고에 «무작위 조우를 켰다(약 N걸음마다)»고 적는다.`);
+    if (turnedOn.length) problems.push(tagged("game", "조우", `요청에 무작위 조우(랜덤 인카운터)가 없는데 ${turnedOn.slice(0, 3).map((id) => `「${after.maps[id]!.name}」`).join(", ")} 에 켰다 — 시키지 않은 조우가 파티를 깎는다. set_encounter_table{mapId, entries, encounterRate:0} 으로 끄고, 싸움이 필요하면 보이는 적(place_field_enemy)이나 이벤트 전투로 둔다. 일부러 켰다면 보고에 «무작위 조우를 켰다(약 N걸음마다)»고 적는다.`));
   }
   // 첫 전투 구역이 시작 파티에게 너무 세다(J4).
   const hard = firstAreaAttrition(after);
   if (hard.length) {
     const list = hard.slice(0, 3).map((h) => `「${after.maps[h.mapId]!.name}」 ${h.troopId} 승률 ${Math.round(h.winRate * 100)}%·남은 HP ${Math.round(h.hpShare * 100)}%`).join(", ");
     const rate = after.maps[hard[0]!.mapId]!.encounterRate ?? 0;
-    problems.push(`[게임 검사 전투 난이도] 시작 파티(Lv${hard[0]!.level})로 첫 전투 구역의 조우를 모의 12판 해 보니 너무 세다: ${list} — 첫 숲에서 몇 번 만에 전멸하고 레벨을 올릴 틈이 없다. 첫 구역 적은 시작 파티가 대개 이기고(승률 ${Math.round(FIRST_AREA_MIN_WIN * 100)}% 이상) HP 가 ${Math.round(FIRST_AREA_MIN_HP_SHARE * 100)}% 넘게 남도록 upsert_enemy 로 HP·공격을 낮추거나 그 무리를 뒤쪽 맵(또는 conditions.minPartyLevel)으로 옮긴다. 조우율 ${rate}(약 ${stepsPerEncounter(rate)}걸음마다 한 번)${rate > 10 ? "도 잦다 — 6~10 으로 낮춘다" : ""}. simulate_battle{troopId, heroLevel:${hard[0]!.level}} 로 다시 확인한다.`);
+    problems.push(tagged("game", "전투 난이도", `시작 파티(Lv${hard[0]!.level})로 첫 전투 구역의 조우를 모의 12판 해 보니 너무 세다: ${list} — 첫 숲에서 몇 번 만에 전멸하고 레벨을 올릴 틈이 없다. 첫 구역 적은 시작 파티가 대개 이기고(승률 ${Math.round(FIRST_AREA_MIN_WIN * 100)}% 이상) HP 가 ${Math.round(FIRST_AREA_MIN_HP_SHARE * 100)}% 넘게 남도록 upsert_enemy 로 HP·공격을 낮추거나 그 무리를 뒤쪽 맵(또는 conditions.minPartyLevel)으로 옮긴다. 조우율 ${rate}(약 ${stepsPerEncounter(rate)}걸음마다 한 번)${rate > 10 ? "도 잦다 — 6~10 으로 낮춘다" : ""}. simulate_battle{troopId, heroLevel:${hard[0]!.level}} 로 다시 확인한다.`));
   }
   // MP 기술이 공짜 기술보다 약하다(J8) — 기술·배우를 건드린 실행이나 게임 만들기 요청일 때.
   problems.push(...weakPaidSkills(after).slice(0, 3));
@@ -234,8 +235,8 @@ function skillMagnitude(project: Project, skillId: string, stats: { attack: numb
  * MP 를 내는 기술이 공짜 기술보다 약하다(2026-10-25 판정 J8): 레온의 십자베기(MP 3, 위력 62)가 공짜 검격(위력 67)보다 덜 아팠다.
  * 시작 파티가 아는 기술마다, 같은 대상 범위·같은 능력치의 공짜 피해 기술보다 기대 피해가 높지 않으면 짚는다(상태 효과가 붙은 기술은 뺀다 — 쓰임이 다르다).
  */
-export function weakPaidSkills(project: Project): string[] {
-  const out: string[] = [];
+export function weakPaidSkills(project: Project): Finding[] {
+  const out: Finding[] = [];
   for (const id of project.system.startActorIds ?? []) {
     const raw = project.database.actors.find((a) => a.id === id);
     if (!raw) continue;
@@ -251,7 +252,7 @@ export function weakPaidSkills(project: Project): string[] {
       if (mine === undefined) continue;
       const rivals = skills.filter((s) => cost(s) <= 0 && s.scope === paid.scope && s.effect?.kind === "damage" && s.effect.statistic === (paid.effect as { statistic?: string }).statistic);
       const best = rivals.map((s) => ({ s, m: skillMagnitude(project, s.id, stats) })).filter((r): r is { s: (typeof skills)[number]; m: number } => r.m !== undefined).sort((a, b) => b.m - a.m)[0];
-      if (best && mine <= best.m) out.push(`[게임 검사 기술] ${actor.name}의 「${paid.name}」(${paid.id}, MP ${cost(paid)}, 위력 ${paid.power})가 공짜 「${best.s.name}」(${best.s.id}, 위력 ${best.s.power})보다 약하다(Lv${level} 기대 피해 ${Math.round(mine)} ≤ ${Math.round(best.m)}) — MP 를 내고 쓸 까닭이 없다. upsert_skill 로 MP 기술 위력을 공짜 기술보다 10% 이상 높이거나(위력 ${Math.ceil(best.s.power * 1.1)} 이상), 속성·상태 효과·여러 대상 같은 다른 쓰임을 준다.`);
+      if (best && mine <= best.m) out.push(tagged("game", "기술", `${actor.name}의 「${paid.name}」(${paid.id}, MP ${cost(paid)}, 위력 ${paid.power})가 공짜 「${best.s.name}」(${best.s.id}, 위력 ${best.s.power})보다 약하다(Lv${level} 기대 피해 ${Math.round(mine)} ≤ ${Math.round(best.m)}) — MP 를 내고 쓸 까닭이 없다. upsert_skill 로 MP 기술 위력을 공짜 기술보다 10% 이상 높이거나(위력 ${Math.ceil(best.s.power * 1.1)} 이상), 속성·상태 효과·여러 대상 같은 다른 쓰임을 준다.`));
     }
   }
   return out;

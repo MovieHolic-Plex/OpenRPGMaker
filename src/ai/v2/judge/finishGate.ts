@@ -17,7 +17,7 @@ import { V2Session } from "../turn/session";
 import { placeFixVerbs } from "./placeFix";
 import { V2_MAX_REPAIR_ROUNDS } from "../turn/session";
 import { stageOpensBattle } from "../story/stageBattle";
-import { findingLine, fromLine, type Finding } from "./finding";
+import { findingLine, fromLine, tagged, type Finding } from "./finding";
 
 /** 음악 요청의 일감인 게임 검사 — 나머지(이미 있던 위협·출하 차단 등)는 음악만 바라는 요청에서 참고다. */
 const MUSIC_WORK: ReadonlySet<string> = new Set(["음악", "효과음", "실행", "부작용"]);
@@ -35,8 +35,8 @@ const gameKey = (f: Finding): string => `game:${gateKey(findingLine(f))}`;
  */
 /** 게임 내용 검사(날씨·엔딩·상태·물건·깃발·부작용 + 전투 + 출하 차단). before = 요청 시작 저장본. */
 function gameFindings(before: Project, after: Project, task: string, writes?: StageWrites): Finding[] {
-  const game: string[] = [];
-  try { game.push(...gameContentProblems(before, after, task), ...unaskedChanges(before, after, task, writes)); } catch { game.length = 0; }
+  const game: Finding[] = [];
+  try { game.push(...gameContentProblems(before, after, task).map(fromLine), ...unaskedChanges(before, after, task, writes)); } catch { game.length = 0; }
   // 끝까지 깰 수 있는 전투인가(2026-10-25 판정 J55·J4): 회복 수단 없음·시키지 않은 무작위 조우·첫 구역이 너무 센 조우.
   try { game.push(...combatProblems(before, after, task)); } catch { /* 검사 실패는 무시 */ }
   // 새로 둔 보이는 적을 시작 파티로 재기(2026-10-30 omo-fr-o: 「약한 몬스터」 숲에 승률 93% 무리를 두어 판정자가 졌다) — 청사진 길 밖 전투까지.
@@ -44,12 +44,11 @@ function gameFindings(before: Project, after: Project, task: string, writes?: St
   // 장면 손질(2026-10-31 서사): 새로 쓴 장면의 반복 대사·대사 속 이름·한두 줄짜리 장면·멈춘 화면·혼잣말 대화·제자리 못 찾는 사람.
   try { game.push(...sceneCraftProblems(before, after, task)); } catch { /* 검사 실패는 무시 */ }
   // 출하 차단(2026-10-25 사용자 규칙): 게임을 만드는 요청이면 편집기 기본값·한 줄 엔딩이 남은 채 «다 됐다»고 하지 못한다.
-  const found = game.map(fromLine);
   try {
-    found.push(...shipBlockers(after, task).filter((b) => b.id !== "combat-no-healing" /* combatProblems no-healing 이 같은 것을 짚는다 */)
-      .map((b): Finding => ({ judge: "ship", id: b.id, severity: "block", owner: "model", ko: `[출하 차단 ${b.id}] ${b.message} 고치지 못하면 «완성»이라고 쓰지 말고 남은 기본값으로 보고한다.`, evidence: b.evidence })));
+    game.push(...shipBlockers(after, task).filter((b) => b.id !== "combat-no-healing" /* combatProblems no-healing 이 같은 것을 짚는다 */)
+      .map((b) => tagged("ship", b.id, `${b.message} 고치지 못하면 «완성»이라고 쓰지 말고 남은 기본값으로 보고한다.`, { evidence: b.evidence })));
   } catch { /* 검사 실패는 무시 */ }
-  return found;
+  return game;
 }
 
 /**
@@ -65,7 +64,7 @@ export function v2BaselineGameKeys(project: Project, task: string): Set<string> 
 /** 끝까지 플레이되는가(2026-11-09 assistant-reward 기준선: 몬스터 수집 두 판이 «완료»인데 엔딩까지 걸어갈 길이 없었다) — 게임을 만드는 요청만. 열쇠는 막힌 실행·단계마다 하나다. */
 function autoPlayGateProblems(project: Project, task: string): V2GateProblem[] {
   if (!buildsWholeGame(project, task)) return [];
-  try { return playProblems(project).map((p) => ({ key: `${AUTOPLAY_GATE_PREFIX}${p.key}`, text: p.text, source: "gate" as const })); } catch { return []; }
+  try { return playProblems(project).map((f) => ({ key: `${AUTOPLAY_GATE_PREFIX}${f.target?.ref ?? ""}`, text: findingLine(f), source: "gate" as const })); } catch { return []; }
 }
 
 /**
@@ -99,7 +98,7 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
   if (env && !settingOnly && !storeOnly && !asksToBeTold(env.request.task)) {
     const pick = (p: typeof env.ctx.project) => JSON.stringify([p.maps, p.database, p.endings ?? null, p.commonEvents ?? null, p.switches, p.variables, p.startMapId, p.startPos ?? null, p.system ?? null, p.dialogueDesk ?? null]);
     try {
-      if (pick(env.request.project) === pick(env.ctx.project)) game.push(fromLine("[게임 검사 실행] 이 요청으로 맵·데이터가 하나도 바뀌지 않았다. 묻거나 «도구가 없다»·«도구 호출 횟수 초과»라고 끝내지 말고 실행한다(도구 호출 횟수 제한은 없다 — 2026-10-29 3c Argon 이 room_parts 한 번 뒤 «호출 횟수 초과»라며 짓지 않았다). 장소·방은 make_place(방은 zones[].design 을 채워서)로 짓는다. 있는 NPC·물건은 move_event·upsert_event·patch_event_page 로 고치고, 새 것은 add_people·add_event·upsert_event 로 만든다. 꼭 맞는 그림이 없으면 가장 비슷한 기존 그림·물건으로 두고 보고에 적는다(아이템·이벤트·대사는 그림과 상관없이 만든다)."));
+      if (pick(env.request.project) === pick(env.ctx.project)) game.push(tagged("game", "실행", "이 요청으로 맵·데이터가 하나도 바뀌지 않았다. 묻거나 «도구가 없다»·«도구 호출 횟수 초과»라고 끝내지 말고 실행한다(도구 호출 횟수 제한은 없다 — 2026-10-29 3c Argon 이 room_parts 한 번 뒤 «호출 횟수 초과»라며 짓지 않았다). 장소·방은 make_place(방은 zones[].design 을 채워서)로 짓는다. 있는 NPC·물건은 move_event·upsert_event·patch_event_page 로 고치고, 새 것은 add_people·add_event·upsert_event 로 만든다. 꼭 맞는 그림이 없으면 가장 비슷한 기존 그림·물건으로 두고 보고에 적는다(아이템·이벤트·대사는 그림과 상관없이 만든다)."));
     } catch { /* 비교 실패는 무시 */ }
   }
   // 음악만 바라는 요청: 음악 밖 지적(이미 있던 체크포인트 위협·출하 차단…)은 일감이 아니다 — 한 바퀴를 더 돌리지 않고 기록에만 남긴다.
@@ -109,7 +108,7 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
     if (outside.length) env.emit({ type: "execution_status", name: "v2.music-only.notes", ok: true, summary: `음악 요청 밖 참고 ${outside.length}건 — 고치지 않음`, data: { notes: outside.map(findingLine) } });
   }
   // 작은 수정·음악 요청 턴이 «게임으로 시작한 프로젝트»의 옛 맵 화면 그림 때문에 막히지 않게: 이번 턴이 게임 하나를 짓는 일(buildsWholeGame — 이어 하기 턴도)이거나 시작 저장본에는 없던 map-view 일 때만.
-  if (env && (buildsWholeGame(env.ctx.project, env.request.task) || mapViewArtProblems(env.request.project, session, !!env.generateImage, env.request.task).length === 0)) game.push(...mapViewArtProblems(env.ctx.project, session, !!env.generateImage, env.request.task).map(fromLine));
+  if (env && (buildsWholeGame(env.ctx.project, env.request.task) || mapViewArtProblems(env.request.project, session, !!env.generateImage, env.request.task).length === 0)) game.push(...mapViewArtProblems(env.ctx.project, session, !!env.generateImage, env.request.task));
   const problems: V2GateProblem[] = [
     ...game.map((f) => ({ key: gameKey(f), text: findingLine(f), source: "gate" as const })),
     ...(env && !settingOnly && !storeOnly ? autoPlayGateProblems(env.ctx.project, env.request.task) : []),
@@ -128,19 +127,19 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
  * generate_art 를 먼저 시도해야 한다. 시도가 오류/불가로 기록돼 있으면(artAttempts) 그 실패가 증거라 맵 화면을 받아 준다.
  * 시도가 성공했는데 그림이 여전히 맵 화면이면(그 뒤에 다시 덮어씀) 다시 열린다.
  */
-export function mapViewArtProblems(project: Project, session: V2Session, canGenerate: boolean, task: string): string[] {
+export function mapViewArtProblems(project: Project, session: V2Session, canGenerate: boolean, task: string): Finding[] {
   if (!canGenerate || !buildsWholeGame(project, task)) return [];
-  const out: string[] = [];
+  const out: Finding[] = [];
   const isView = (id: string | undefined): boolean => typeof id === "string" && id.startsWith("map-view:");
   const attempt = (t: "title" | "ending") => session.artAttempts.get(t);
   // 열리는 경우: 이 실행에 생성기가 없었다(unavailable) 또는 같은 대상에서 두 번 실패(failed ≥ 2). 성공(ok)은 문을 열지 않는다.
   const accepted = (t: "title" | "ending") => { const a = attempt(t); return !!a && (a.status === "unavailable" || (a.status === "failed" && (a.failures ?? 1) >= 2)); };
   const title = (project.system.titleScreen ?? {}) as { backgroundResourceId?: string };
   const titleBg = title.backgroundResourceId ?? ((project.system as unknown as { titleResourceId?: string }).titleResourceId);
-  if (isView(titleBg) && !accepted("title")) out.push("[출하 차단 art-generation] 타이틀 그림이 게임 속 맵 화면(" + titleBg + ")이다 — 그림을 만들 수 있으니 맵 화면으로 두지 않는다. generate_art{target:\"title\", prompt:<이 이야기의 장면>} 으로 그림을 만든다. 생성이 오류로 실패하면(기록됨) 그때는 맵 화면을 받아 준다. 고치지 못하면 «완성» 이라고 하지 않는다.");
+  if (isView(titleBg) && !accepted("title")) out.push(tagged("ship", "art-generation", "타이틀 그림이 게임 속 맵 화면(" + titleBg + ")이다 — 그림을 만들 수 있으니 맵 화면으로 두지 않는다. generate_art{target:\"title\", prompt:<이 이야기의 장면>} 으로 그림을 만든다. 생성이 오류로 실패하면(기록됨) 그때는 맵 화면을 받아 준다. 고치지 못하면 «완성» 이라고 하지 않는다."));
   for (const ending of project.endings ?? []) {
     const bg = ending.presentation?.backgroundResourceId;
-    if (isView(bg) && !accepted("ending")) { out.push("[출하 차단 art-generation] 엔딩 「" + (ending.name || ending.id) + "」 그림이 게임 속 맵 화면(" + bg + ")이다 — generate_art{target:\"ending\", prompt:<엔딩 장면>} 으로 그림을 만든다. 생성이 오류로 실패하면(기록됨) 그때는 맵 화면을 받아 준다."); break; }
+    if (isView(bg) && !accepted("ending")) { out.push(tagged("ship", "art-generation", "엔딩 「" + (ending.name || ending.id) + "」 그림이 게임 속 맵 화면(" + bg + ")이다 — generate_art{target:\"ending\", prompt:<엔딩 장면>} 으로 그림을 만든다. 생성이 오류로 실패하면(기록됨) 그때는 맵 화면을 받아 준다.")); break; }
   }
   return out;
 }
