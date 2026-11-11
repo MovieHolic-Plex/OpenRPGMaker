@@ -91,6 +91,7 @@ import { getCharacterProfile, resolveCharacterSpeaker } from "@/project/characte
 import { resolveDialogueLook } from "@/project/dialogueStyles";
 import { dialogueSceneHooks } from "@/player/playSceneDialogueHooks";
 import { reportEndingClear } from "@/player/playSceneOverlays";
+import { activeEventRunLog } from "@/player/eventRunLog";
 import { emitChaseNoise } from "@/player/chaseNoise";
 import { CHASE_NOISE_RADIUS } from "@/project/chaseBrain";
 
@@ -315,7 +316,9 @@ export async function runCommands(
   scene.running = true; scene.setInputEnabled(false);
   const project = store.getCurrent();
   activeSession.commonEvents = project.commonEvents;
+  const runTrace = activeEventRunLog()?.trace("foreground", activeSession, currentEventId);
   const base = createInterpreter([...commands], activeSession, project, {
+    ...(runTrace ? { trace: runTrace } : {}),
     currentEventId, continueAfterTransfer: options.continueAfterTransfer, getEventPositions: () => scene.eventPositions,
     isEventIdle: target => isRuntimeEventIdle(scene, target),
     onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
@@ -327,6 +330,7 @@ export async function runCommands(
   const diagnosticOwner = diagnosticToken();
   const changedTerrainMaps = new Set<string>();
   const observe = (phase: "started" | "completed" | "cancelled" | "failed") => {
+    if (phase !== "started") runTrace?.end(phase);
     if (diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("event")) publishDiagnostic({ category: "event", phase, count: commands.length });
   };
   observe("started");
@@ -889,6 +893,13 @@ async function consumeBlockingStep(
       return resumeWithValue(scene, interpreter, await playQuickTimeEvent(scene, step));
     case "teleportMenu":
       return resumeWithValue(scene, interpreter, await playTeleportMenu(scene, step));
+    case "debugStep": {
+      // 테스트 플레이 「한 단계」: 🛠 패널의 「다음」·끄기·컷신 건너뛰기 중 먼저 오는 것까지 멈춘다.
+      await Promise.race([activeEventRunLog()?.waitForNext() ?? Promise.resolve(), skipController.waitForSkip()]);
+      const skipped = skipController.takeResult();
+      if (skipped) return skipped;
+      return resumeInterpreter(interpreter);
+    }
     default:
       return assertNever(step);
   }

@@ -9,6 +9,71 @@
  */
 import { storeThirdPartyName, validateManifest, type StorePackManifest } from "../../src/assetStore/format";
 import { z } from "zod";
+import dns from "node:dns";
+import { Agent, setGlobalDispatcher } from "undici";
+
+/**
+ * STORE_EDGE_IP — 운영 주소의 연결만 이 Cloudflare 엣지 IP 로 붙인다(Host·SNI 는 그대로). 시스템 설정은 건드리지 않고 이 프로세스의 fetch 에만 적용하며,
+ * 설정하지 않으면 아무 일도 하지 않는다. 느린 엣지 경로(DNS 가 주는 IP 중 일부)를 우회할 때만 쓴다.
+ */
+export function pinStoreEdge(env: NodeJS.ProcessEnv = process.env): string | null {
+  const ip = env.STORE_EDGE_IP?.trim();
+  const host = env.STORE_PUBLISH_PRODUCTION_URL ? new URL(env.STORE_PUBLISH_PRODUCTION_URL).hostname : "store.openrpgmaker.com";
+  if (!ip) return null;
+  const pinned = edgeLookup(host, ip, dns.lookup as unknown as EdgeLookup);
+  setGlobalDispatcher(new Agent({ connect: { lookup: pinned as never } }));
+  return `${host} -> ${ip}`;
+}
+
+type EdgeLookup = (name: string, options: { all?: boolean } | undefined, callback: (...args: unknown[]) => void) => void;
+
+/** connect.lookup: 스토어 호스트 이름만 고정 IP 로 답하고, 다른 이름(링크 안의 다른 호스트 등)은 원래 DNS 로 보낸다. */
+export function edgeLookup(host: string, ip: string, fallback: EdgeLookup): EdgeLookup {
+  return (name, options, callback) => {
+    if (name !== host) return fallback(name, options, callback);
+    if (options?.all) callback(null, [{ address: ip, family: 4 }]);
+    else callback(null, ip, 4);
+  };
+}
+
+export interface UploadRetryOptions {
+  /** 요청 하나의 상한(ms). 기본 120초. */
+  readonly timeoutMs?: number;
+  /** 같은 파일을 보내는 최대 횟수(처음 포함). 기본 2 — 파일은 내용 주소(sha256)라 다시 보내도 안전하다. */
+  readonly maxAttempts?: number;
+  readonly log?: (line: string) => void;
+  readonly now?: () => number;
+}
+
+/** 파일 하나를 올린다: 요청마다 상한을 두고, 시간 초과·연결 끊김·408·5xx 만 같은 파일을 다시 보낸다. 끝내 안 되면 sha8·바이트·시간·상태를 담아 던진다. */
+export async function uploadWithRetry(
+  send: (signal: AbortSignal) => Promise<{ status: number; ok: boolean; text(): Promise<string> }>,
+  tag: string,
+  options: UploadRetryOptions = {},
+): Promise<void> {
+  const timeoutMs = options.timeoutMs ?? 120_000;
+  const maxAttempts = options.maxAttempts ?? 2;
+  const log = options.log ?? ((line: string) => console.error(line));
+  const now = options.now ?? (() => performance.now());
+  for (let attempt = 1; ; attempt += 1) {
+    const started = now();
+    const took = () => `${((now() - started) / 1000).toFixed(1)}s`;
+    log(`${tag} attempt ${attempt}/${maxAttempts} start`);
+    let status = 0;
+    let detail = "";
+    try {
+      const response = await send(AbortSignal.timeout(timeoutMs));
+      status = response.status;
+      if (response.ok) { log(`${tag} attempt ${attempt} ok ${status} ${took()}`); return; }
+      detail = (await response.text()).slice(0, 300);
+    } catch (error) { // no-excuse-ok: catch — 시간 초과·연결 끊김도 한 번은 다시 보낸다, 끝내 안 되면 파일·시간을 남기고 던진다
+      detail = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+    }
+    log(`${tag} attempt ${attempt} FAILED status=${status || "none"} after ${took()} ${detail.slice(0, 120).replace(/\s+/g, " ")}`);
+    const retryable = status === 0 || status >= 500 || status === 408;
+    if (attempt >= maxAttempts || !retryable) throw new PublishError(`파일 올리기 ${status || "연결 실패"} ${tag} ${took()}: ${detail}`);
+  }
+}
 
 /** 서버 목록 응답에서 쓰는 부분만(`/api/v1/me`, `/api/v1/items`). */
 const ItemList = z.object({ items: z.array(z.object({ slug: z.string(), title: z.string(), status: z.string().optional() })) });
