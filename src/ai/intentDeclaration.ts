@@ -129,6 +129,11 @@ export interface IntentFacts {
   readonly userText: string;
   readonly currentMap: { readonly id: string; readonly name: string } | null;
   readonly selection: IntentSelectionFact | null;
+  /**
+   * 편집기에서 고른 이벤트 한 줄(`이름 (id) 위치 (x,y)`). 「이 NPC」「이 문」은 이것을 가리키므로, 분류기가 이 사실 없이 보면
+   * 대상이 모호하다고 되묻고 턴이 도구 0회로 끝난다(2026-11-10 스모크 rename-npc, 10월 500종 15/약 1000건).
+   */
+  readonly selectedEvent?: string | null;
   readonly maps: readonly { readonly id: string; readonly name: string }[];
   readonly facilityLabels: readonly string[];
   readonly toolNames: readonly string[];
@@ -211,6 +216,7 @@ Fields:
 - "useSelection": 선택 영역이 주어졌고 그 안에서 작업해야 하면 true. 새 맵을 만드는 요청이면 false. 선택 영역이 없으면 false. 「이 작업·이걸·여기」처럼 가리키는 말만 있고 이름 붙은 대상이 없으면, 선택 영역이 주어진 한 그 선택 영역을 가리키는 것이니 true(계획만·미리보기·추천 요청도 마찬가지).
 - "clarify": 도구가 실제로 갈릴 만큼 모호할 때만 사용자에게 할 한 문장 질문. 그 외 null. 진행할 수 있으면 되묻지 않는다. 「마을 만들어줘」「던전 만들어줘」「숲 만들어줘」「집 지어줘」「성 만들어줘」처럼 무엇을 짓는지만 말하고 어떤 것인지 말하지 않은 요청은 되묻지 않는다 — widenSubject 를 적고 clarify=null 로 둔다(코드가 지을 수 있는 장면으로 넓혀 바로 짓는다). 「집 지어줘」는 space="both"(외장+실내)로 둔다.
 - "widenSubject": mode=create 이고 사용자가 대상 낱말만 말했을 때(분위기·장소·테마·크기·수량·특징·작품 비유가 하나도 없을 때)만 "village"(마을·동네·도시) | "dungeon"(던전·동굴·지하) | "forest"(숲·숲길) | "house"(집·주택 한 채) | "castle"(성·성채·요새). 「사막 마을」「큰 마을」「집 3채 마을」「얼음 동굴」「여관 지어줘」처럼 무엇이든 하나라도 정해 주면 생략한다. 지금 맵을 고치는 요청·질문도 생략한다.
+- 사실에 「선택 이벤트」가 있고 요청이 「이·그·현재 NPC/문/이벤트」처럼 그 대상을 가리키면, 대상이 어느 것인지는 되묻지 않는다(그 이벤트다). 요청의 다른 부분이 모호하면 그것은 그대로 clarify 한다.
 - "clarifyOptions": clarify 가 있을 때 2~4개의 짧은 선택지 라벨. 없으면 [].
 - "needsPlan": 여러 산출물·여러 맵·마을/도시/RPG/캠페인·퀘스트 체인처럼 한두 번의 툴 호출로 끝나지 않으면 true. NPC 한 명, 소품 몇 개, 시설 하나, 질문은 false. 생성/수정 분류와 작업 규모는 독립이다. 「이 맵에 집을 만들어라」는 현재 맵의 집 한 채 시공이므로 space="outdoor", targetMapId=현재 맵 id, clarify=null, needsPlan=false다. 집 한 채(place_terrain_house)는 별도 다단계 계획의 근거가 아니다. 마을 전체나 여러 독립 시설을 조성하는 요청은 true.
 - "resetsContext": 사용자가 이전 작업과 무관한 새 작업·처음부터·프로젝트 초기화를 명시하면 true.
@@ -259,6 +265,7 @@ export function buildIntentUserPayload(facts: IntentFacts): string {
       ? `선택 영역: ${facts.selection.mapId} (${facts.selection.x},${facts.selection.y}) ${facts.selection.width}×${facts.selection.height}`
       : "선택 영역: 없음",
   );
+  if (facts.selectedEvent) context.push(`선택 이벤트: ${facts.selectedEvent} — 「이 이벤트」「이 NPC」「이 문」은 이 이벤트다`);
   context.push(`진행 중 계획: ${facts.hasActivePlan ? "있음" : "없음"}`);
   if (facts.maps.length > 0) {
     context.push(`맵 목록: ${facts.maps.slice(0, 16).map((map) => `${map.name}(${map.id})`).join(", ")}`);

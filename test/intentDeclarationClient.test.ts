@@ -367,6 +367,22 @@ describe("declareIntentCached", () => {
     expect(calls).toBe(2);
   });
 
+  it("선택한 이벤트가 다르면 같은 문장도 다시 선언한다(이벤트 없이 낸 되묻기가 선택 뒤에 재사용되지 않는다)", async () => {
+    let calls = 0;
+    const declarer: IntentDeclarer = async (facts) => {
+      calls += 1;
+      return { intent: { ...(await createLlmIntentDeclarer({ getConfig: () => CONFIG, chat: async () => reply(JSON.stringify({ mode: "modify", tools: [], summary: facts.userText })) })(facts)).intent }, elapsedMs: 5 };
+    };
+    const base = { ...FACTS, userText: "이 NPC 이름을 하린으로 바꿔줘" };
+    await declareIntentCached(declarer, base);
+    await declareIntentCached(declarer, { ...base, selectedEvent: "마을 주민 (ev_utility_npc) 위치 (4,5)" });
+    expect(calls).toBe(2);
+    await declareIntentCached(declarer, { ...base, selectedEvent: "마을 주민 (ev_utility_npc) 위치 (4,5)" });
+    expect(calls).toBe(2);
+    await declareIntentCached(declarer, { ...base, selectedEvent: "잡화점 주인 (ev_test_shop) 위치 (9,3)" });
+    expect(calls).toBe(3);
+  });
+
   it("폴백(모델 실패)은 캐시하지 않아 다음 호출이 다시 시도한다", async () => {
     let calls = 0;
     const declarer = createLlmIntentDeclarer({ getConfig: () => CONFIG, chat: async () => { calls += 1; return reply("not json"); } });
@@ -396,5 +412,12 @@ describe("buildIntentFacts", () => {
     expect(facts.toolNames).not.toContain("author_house");
     expect(facts.toolNames).toContain("build_hand_interior_room");
     expect(facts.toolNames).toContain("place_terrain_house");
+  });
+
+  it("고른 이벤트는 있을 때만 사실에 들어간다", () => {
+    const project = createBlankProject();
+    const input = { project, userText: "이 NPC 이름 바꿔줘", currentMapId: project.startMapId!, selection: null, hasActivePlan: false };
+    expect(buildIntentFacts(input)).not.toHaveProperty("selectedEvent");
+    expect(buildIntentFacts({ ...input, selectedEvent: "마을 주민 (ev_utility_npc) 위치 (4,5)" }).selectedEvent).toBe("마을 주민 (ev_utility_npc) 위치 (4,5)");
   });
 });
