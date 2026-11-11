@@ -110,7 +110,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   },
   place_chest: {
     d: "Place something the player takes once: a treasure chest (default), or an item lying on the ground (look:\"item\"). Examining it gives contents (item/gold) once; self switch A remembers it. look:\"item\" shows the item's own icon on the cell and the icon disappears when it is picked up — do not draw an object or use a transparent event for a pickup. Always use this for chests and pickups (not upsert_event/add_event). Decorative boxes are objects, not chests. Water cells are refused.",
-    p: { contents: "{itemId?: string, gold?: number} — at least one. The item must exist (upsert_item first).", look: "chest (default) | item = the item lies on the ground and is picked up." },
+    p: { contents: "{itemId?: string, count?: number, gold?: number} — itemId or gold, at least one. count = how many of the item (default 1). The item must exist (upsert_item first).", look: "chest (default) | item = the item lies on the ground and is picked up." },
   },
   declare_story_flag: {
     d: "Give a switch or variable a story meaning. action: declare | update | rename | retire. declare without targetId picks a free slot. To fix only the description use update with id + description.",
@@ -257,7 +257,20 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   upsert_common_event: { d: "Create or update a common event (custom logic only — prefer higher tools)." },
   set_npc_schedule: { d: "Give an existing NPC a timetable (needs configure_time_system on): when matches the game time, the NPC moves to at." },
   configure_time_system: { d: "Set up game time / calendar. enabled:false removes system.timeSystem." },
-  place_savepoint: { d: "Place a save point (glowing crystal). Examining it records a retry checkpoint and opens the save menu (mode both); heal:true also heals." },
+  place_savepoint: { d: "Place a save point (glowing crystal). Examining it records a retry checkpoint and opens the save menu (mode both); heal:true also heals. mode:'heal' = a healing spot instead: examining it fully heals the party and never saves («healing spring») — one call." },
+  set_session_start: {
+    d: "Set the new-game start state: gold, inventory and party. Only the fields you send change. «Start the game with 3 potions» is this one call — do not hand start items out with an auto event.",
+    p: { gold: "Start gold. 0 counts only when gold is the only field sent.", inventory: "{ itemId: count } — replaces the whole start inventory, so include what must stay. {} counts only when it is the only field sent.", partyActorIds: "Start party actor ids. An empty list is ignored." },
+  },
+  duplicate_event: {
+    d: "Copy an event with all its pages and commands to another cell or map — the canonical way to put «one more of the same» chest, NPC or sign. It lands on a valid cell at or near x,y.",
+    p: { fromMapId: "Map of the original.", eventId: "Event to copy.", toMapId: "Target map (may be the same map).", newId: "Id for the copy (omit = generated)." },
+  },
+  script_cutscene: { d: "Write one scene as a beat timeline and add it as an event page; player control is locked while it plays and unlocked after. Plays once when the map is entered: trigger:'auto', once:true. Plays once a condition holds: trigger:'auto', requiresSwitches:[…], once:true. A one-line narration on entering a map is {mapId, trigger:'auto', once:true, beats:[{kind:'narrate', text}]}. Beat kinds: say · narrate · text · approach · faceToward · faceEachOther · exitVia · enterVia · moveActor · look · emote · camera · wait · fade · flash · shake · tint · letterbox · picture · music · weather · particles · switch · transfer · ending (shapes are in the beats schema)." },
+  place_battle_blocker: {
+    d: "Place a visible enemy that blocks the way: examining it shows the intro lines, starts the troop battle, and after a win it is gone for good. Without graphic the walking chip is found by the lead enemy's name; if none matches, a generic hooded-monster chip is used and named in the result.",
+    p: { clearSwitchId: "Switch set on victory (omit = generated).", intro: "Lines before the battle.", victory: "Lines after winning.", victoryItems: "[{itemId, amount}] given on victory.", fightMovement: "fixed (default, stands guard) | random (wanders).", graphic: "{textureKey, characterIndex} or {query}. Omit to let the tool pick." },
+  },
   set_scene_mood: { d: "Apply a map mood preset (weather + lighting) in one call. applyMode 'map' sets the map default lighting and entry weather." },
   remove_map: { d: "Delete a map (destructive). Transfers into it are cleaned up; the user confirms before it applies. Not the start map." },
   author_snow_route: { d: "Build 1–3 snowfield route maps (snowy pass, frost road, ice field) chained from one edge of the start map, Beodeul snow art only; ice gaps optional." },
@@ -280,7 +293,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   set_opening_transition: { d: "Shot entry: cut | fade | wipe | iris | flash, and letterbox." },
   upsert_opening_audio_cue: { d: "Add or replace a timed sound/music cue in the opening (overall BGM kept)." },
   set_title_screen: { d: "Update the title screen: title, menu, display, audio, background layers, particles (stars), runners, PRESS START gate, entrance effects. Creates it if missing." },
-  configure_npc_patrol: { d: "Give an existing NPC (or chaser) a safe closed patrol path." },
+  configure_npc_patrol: { d: "Set how an existing NPC moves. type:'random' = wander around its spot, type:'fixed' = stand still — any NPC, every page that shows it; lines, conditions and position stay. directions:[…] = a safe closed patrol route (single-page talk-only villager, or a chaser)." },
   recommend_bgm: { d: "Pick BGM candidates for a mood/scene query, with full descriptions per candidate." },
   store_find_music: {
     d: "Find tracks in the asset-store music packs by scene, genre and mood (each track was listened to and described: genre, scene, mood, tempo, loop). Use it when the project's own tracks (recommend_bgm) do not fit, especially for a genre (Joseon, wuxia, horror, 16-bit retro, piano…). If the user names a game («크로노트리거 느낌»), put the name in query as written — the tool turns it into how it sounds; do not invent a genre. Never call a track that game's track («a track with that feel»). Candidates come in score order; the first has recommended:true and why — use it unless the user picked another (fallback:true = a stand-in outside the game's style). autoInstall:true (default) = install the recommended track with store_install{slug, assetIds:[assetId]} and assign it with set_game_audio without asking. false = the user turned on «ask first»: a preview card appears — do not install, end this turn.",
@@ -305,7 +318,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   create_map: { d: "Create a new blank grass map (max 1024×1024); BGM is chosen from the map name." },
   compose_modern_city_street: { d: "Compose a whole Tokyo-style modern_city street map (roads, sidewalks, crossings, building blocks) from a seed." },
   link_modern_city_interior: { d: "Link a modern_city street building door with an existing interior map (two-way transfer)." },
-  set_map_properties: { d: "Set map properties: name, tileset, characterScale, encounters, BGM (bgm), background/parallax (background.preset), battle background (battleBackground), save/escape limits, minimap, weather, loop." },
+  set_map_properties: { d: "Set map properties: name, tileset, characterScale, encounters, BGM (bgm), background/parallax (background.preset), battle background (battleBackground), save/escape limits (flags:{disableSave:true}; disableSave:true at the top level works too), minimap, weather, loop." },
   set_game_over: { d: "Set the defeat flow: classic | horror | blackout, return position, title/body/button text and background." },
   set_vn_look: { d: "Pick the visual-novel dialogue window skin: a preset plus name tag, choice buttons, wait marker, text size/spacing, portrait entrance, ESC menu colours." },
   configure_field_menu: { d: "Author the ESC menu: items, order, labels and window style (preset story|collector|romance|custom)." },

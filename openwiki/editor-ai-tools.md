@@ -680,7 +680,7 @@ source `defaults/beodeulArchitecture.ts`, `beodeulArchitectureTools.ts`; `author
 - **조사 이벤트(`investigationTools`, `upsert_event`)**: graphic 생략 시 보석 표식(object2#6)을 붙이던 규칙을 뺐다. 투명 + 「바닥에서 보이지 않는다」 경고. 그림은 그 칸의 물건 타일로 낸다.
 - **재료 라벨(`tileVocabulary.resolveMaterialByLabel`)**: 질의가 라벨로 **시작**하는 경우(뒤 조건을 버림)는 약매칭 60, 역할 가산점은 강매칭(70↑)에만. 물건 동의어는 질의 전체가 그 낱말일 때만 넓힌다. 「황금 나무 상자」「우편함 없는 제단」은 자동 시공되지 않고 후보를 받는다.
 - **타일 검색(`resourceSearch.bundledTileSemantics`, `tileMetadataTools.bundledTileLabels`)**: 표 없는 번들 시트에 합본 마을 라벨을 통째로 씌우지 않는다. 파생 시트는 합본 마을과 픽셀이 같은 칸만(`src/assets/combinedTownSharedCells.json`, 파생 시트를 다시 구우면 재생성) 그 라벨을 쓴다. tileMeta 빈 칸 때문에 숲마을·기후·바이옴 17종의 타일 검색이 TypeError 로 죽던 것을 고쳤다. `list_resources(kind:"tile")` 는 mapId/tilesetId 의 타일셋(생략 시 시작 맵)에서 찾는다.
-- **고정 그림 도구**: `place_battle_blocker` 는 부대 선두 적 이름으로, `place_storage_chest` 는 이름·템플릿(금고)으로 고른다. `add_companion` 은 그림 없는 액터를 거절한다. `scatter_object` 는 그룹 칸이 합본 마을 번호와 정확히 같을 때만 박힌 모양을 쓴다. `build_castle` 은 기존 맵의 타일셋을 바꾸지 않고 거절한다.
+- **고정 그림 도구**: `place_battle_blocker` 는 부대 선두 적 이름으로(맞는 걷기 칩이 없으면 2026-11-11 부터 거절 대신 「검은 두건 괴물」 칩으로 세우고 답에 적는다 — 슬라임·주민으로는 세우지 않는다), `place_storage_chest` 는 이름·템플릿(금고)으로 고른다. `add_companion` 은 그림 없는 액터를 거절한다. `scatter_object` 는 그룹 칸이 합본 마을 번호와 정확히 같을 때만 박힌 모양을 쓴다. `build_castle` 은 기존 맵의 타일셋을 바꾸지 않고 거절한다.
 - **그림 대조로 고친 라벨**: 던전 시트 441~443·471~473·27~29 = 촛불 마법진(예전 「황금 새장」·「황금 아치」), 444·445·474·475 = 1×1 계단(하네스 stairs-single), 446·476 = 석주, 447~449·477~479 = 왕좌(447 = 왼쪽 위), 118 = 수정, 117 = 레일, 54~56·84~86 = 레일 고리. 사용자 확정(2026-09-28): 배 444·445 올라가는 계단·474·475 내려가는 계단(475 = 오른쪽으로 내려감), 배 262·289·293·319·322·323·349·410 = 선체 일부, 월드 282 = 큰 바위, 레트로 바깥/집 268·269(+298·299) = 올라가는 계단, 434·435·464(+465) = 성벽 조각, 레트로 월드 444·445 올라가는·474·475 내려가는 계단, 레트로 월드 293 = 판독 보류. 레트로 바깥 350 우체통·359 동굴 입구 하단·382 우물·실내 357 피아노 좌·447 왕좌 왼쪽 위는 원래 라벨이 맞다(감사 에이전트 오판 — 그림 대조만으로 계단을 오르간으로, 보완 작화 칸을 빈칸으로 읽었다). 던전 생성기의 `landmark:"altar"` 는 모든 테마에서 마법진 3×3을 찍고, 자리가 없을 때만 여신상(경고)으로 물러난다.
 - 남은 과제(그림 대조가 애매해 코드에 반영하지 않은 칸)와 전체 대조표는 감사 산출물에 있다. 마을 생성기의 꽃 348·우물 382 는 사용자 확정(2026-07-16) 이력이 있어 이번에 바꾸지 않았다.
 
@@ -2924,6 +2924,7 @@ claims final acceptance. Real AI repair and final build/gates remain parent-owne
 - 추론 결과는 `diff.warnings`에 기록 ("이동 추론 → random(배회)…") — 모델이 다음 호출에서 명시하도록 유도
 - `movement` enum에 `approach` 추가 (`fixed|random|approach`)
 - `place_battle_blocker`에 `fightMovement` (`fixed|random`, 생략 시 fixed) 추가 — "길을 지키는" 원형 유지 + 순찰 옵션
+- **작은 일 한 호출 (2026-11-11):** `place_chest` `contents.count`(수량, 기본 1) · `place_savepoint` `mode:"heal"`(저장 없이 회복만) · `configure_npc_patrol` `type:"random"|"fixed"`(어느 NPC 에나 — 움직임만) · `set_map_properties` 는 맨 위 `disableSave`/`disableTeleport`/`disableEscape` 도 받는다(그 깃발 하나만) · `set_session_start` 는 채워 보낸 빈 값(`gold:0`·`inventory:{}`·`partyActorIds:[]`)에 시작 상태를 지우지 않는다. 근거·증거는 `openwiki/assistant-v2.md` 「한 호출로 끝나야 할 작은 일 여섯」.
 - `make_hunting_ground`의 `chase` 생략 시 기본값 `true`로 변경 (명시 `false` 존중) — 보이는 몬스터는 추격이 자연스러움
 
 Acceptance 게이트 완화 (`src/ai/assistantAcceptanceEvaluation.ts`):

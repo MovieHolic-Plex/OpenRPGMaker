@@ -324,6 +324,24 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 남은 것: 설원 실내 같은 구성기 칩셋에는 벽에 그릴 문 그림이 없다 — 지금은 출입구가 벽 발치의 보이지 않는 칸이다. 문 그림을 같이 놓으려면 칩셋마다 문 조각을 코드가 고르는 길이 필요하다(따로 다룬다).
 golden: 117/153 이 `create_transfer_pair` · `place_door` 글만 바뀜. 시험 `test/aiV2BackDoor.test.ts`.
 
+## 한 호출로 끝나야 할 작은 일 여섯 — 그림 없는 전투 블로커 · 맨 위 깃발 · 상자 수량 · 회복 지점 · 서성이기 · 시작 상태 (2026-11-11, 작은 일 둘째 묶음 뒤)
+
+둘째 묶음의 손 정답이 저수준 `upsert_event`/`patch_event_page` 를 써야 했거나, 도구가 거절해 한 번 더 불러야 했던 것들. 도구에서 고쳤다.
+
+- **`place_battle_blocker`**: `graphic` 없이 부르면 부대 선두 적 이름으로 걷기 칩을 찾고, 맞는 칩이 없으면 거절하지 않고 어느 종으로도 안 읽히는 「검은 두건 괴물」 칩(`tex_easyrpg_charset_monster3` #2)으로 세운 뒤
+  어느 칩인지와 바꾸는 법을 답에 적는다(전: 「동굴 박쥐」 부대는 `graphic` 없이는 놓을 수 없었다). 빈 칸만 채운 `graphic` 은 안 준 것이다(전: 투명 블로커). 슬라임·주민으로 세우지 않는다는 2026-09-27 규칙은 그대로다.
+- **`set_map_properties`**: 제한 깃발을 맨 위에 준 것(`disableSave:true`)도 받는다 — 그 깃발 하나만 바꾼다. 스키마에는 올리지 않았다(모든 칸을 채우는 모델이 `false` 를 채워 켜 둔 제한을 끄지 않게).
+  바꿀 것이 없을 때의 거절 글은 받은 키와 맞는 모양(`flags:{disableSave:true}`)을 적는다.
+- **`place_chest`**: `contents.count`(기본 1, 0·빈 칸은 1). 「포션 3개가 든 상자」가 한 호출이다.
+- **`place_savepoint{mode:"heal"}`**: 저장·체크포인트 없이 파티 전원 회복만 하는 자리(«회복의 샘»). 기본(`both`)·`heal:true`(회복하고 저장)는 전과 같다.
+- **`configure_npc_patrol{type:"random"|"fixed"}`**: 서성이기·제자리는 어느 NPC 에나 — 그 사람을 보이는 모든 페이지의 움직임만 바꾸고 대사·조건·자리는 그대로다. 순찰 경로(`directions`)의 보호 검사(단일 대사 페이지)는 그대로이고,
+  거절 글이 `type` 으로 가는 길을 알려 준다. **새 도구(`set_npc_movement`) 대신 이 도구를 넓힌 까닭:** 이 도구는 이미 v2 풀·영어 글·이름표에 있어 요청 묶음을 안 건드리고 바로 닿고, 새 이름을 더하면 레지스트리·이름표·카탈로그·풀 네 곳을 고쳐야 한다.
+- **`set_session_start`**: 빈 값(`gold:0` · `inventory:{}`)은 그 칸 하나만 보냈을 때만 뜻이 있고, 빈 파티(`partyActorIds:[]`)는 언제나 무시한다 — 「회복약 3개를 갖고 시작」 한 번에 시작 소지금·파티가 지워지지 않는다(전: 파티 0명).
+- **영어 글**: `toolTextEn.ts` 에 `set_session_start` · `duplicate_event` · `script_cutscene` · `place_battle_blocker` 를 더하고 `place_chest` · `place_savepoint` · `configure_npc_patrol` · `set_map_properties` 를 고쳤다.
+  네 도구를 v2 풀에 넣는 줄은 `src/ai/v2/request/toolGroups.ts` 의 `V2_GAME_TOOLS` 다(요청 묶음 담당 몫).
+
+증거: `test/toolsOneCallGaps.test.ts` · `test/aiV2OneCallToolText.test.ts`. 둘째 묶음 여섯 일(`boss-line-starter` · `no-save-built` · `heal-spring-built` · `npc-wander-starter` · `npc-still-starter` · `start-items-starter`)에 한 호출 정답을 `accept` 로 더했다(판정은 그대로).
+
 ## 조사 지점은 `place_examine_hotspots` — 물건 이름으로 놓는다 · 글만 나오는 조사는 장면이 아니다 (2026-11-11, 작은 일 재측정)
 
 작은 일 재측정(Terra, main 84a7fa331a)에서 통과는 했지만 «완료» 로 못 끝난 두 일 — `sign-starter`(표지판을 읽으면 글) · `examine-fireplace-built`(벽난로를 조사하면 글).
