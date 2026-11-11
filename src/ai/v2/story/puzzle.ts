@@ -58,8 +58,11 @@ export interface ChainLink {
   readonly speaker?: string;
   /** pickup·ending: 고르기 — 고른 것마다 그 대사 뒤 flag 스위치가 켜지고(뒤 고리·엔딩이 읽는다) 보상은 어느 것을 골라도 받는다. 취소하면 아무 일도 없다. */
   readonly choice?: { readonly options: readonly { readonly text: string; readonly lines?: readonly string[]; readonly flag: string }[] };
-  /** pickup·ending: 대사(lines) 뒤에 이 무리와 싸운다(도망·패배 불가) — 이긴 갈래에서만 winLines·보상·엔딩이 이어진다. */
-  readonly battle?: { readonly troopId: string; readonly winLines?: readonly string[] };
+  /**
+   * pickup·ending: 대사(lines) 뒤에 이 무리와 싸운다(도망·패배 불가) — 이긴 갈래에서만 winLines·보상·엔딩이 이어진다.
+   * leaves: 이긴 뒤 맵에서 사라진다(몬스터 그림으로 선 상대) — 「모래 속으로 물러난다」 뒤에도 그 자리에 서 있지 않게. 사람은 남아 doneLines 를 말한다.
+   */
+  readonly battle?: { readonly troopId: string; readonly winLines?: readonly string[]; readonly leaves?: boolean };
   /** ending: 엔딩을 부르기 바로 앞의 서술 줄(싸움이 있으면 이긴 뒤). */
   readonly closeLines?: readonly string[];
   /** ending: 엔딩 직전에 조건(앞 고리의 flag·물건 이름)이 맞으면 보이는 줄 — 고른 것에 따라 결말 한 줄이 달라진다. */
@@ -436,7 +439,8 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     let invisible = !existing || lookGraphic.transparent === true || (!lookGraphic.sprite && !lookGraphic.appearanceId && !(typeof lookGraphic.tileId === "number" && lookGraphic.tileId > 0));
     // 이름이 사람(직함·호칭)이면 반짝이 칸 대신 공용 캐릭터 칩을 붙인다(2026-10-28 standin joseon 「주모」「포졸」「종사관」).
     const personName = link.name ?? (existing as { name?: string } | undefined)?.name;
-    if (invisible && link.graphic) { look.graphic = { ...link.graphic }; invisible = false; }
+    // 싸우는 고리는 다시 지을 때도 상대의 그림을 다시 맞춘다(앞선 빌드가 세운 다른 그림이 남지 않게).
+    if (link.graphic && (invisible || link.battle)) { look.graphic = { ...link.graphic }; invisible = false; }
     if (invisible && (link.person || isPersonName(personName))) {
       const person = personGraphicFor(run.ctx.project, map, link.person ?? personName!);
       if (person) { look.graphic = person.graphic; invisible = false; personNotes.push(`${personName} → 「${person.label}」`); }
@@ -496,7 +500,10 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
         : finish();
       if (need.length) pages.push(basePage({ commands: speak(link.lockedLines ?? ["지금은 손댈 수 없다."]) }));
       pages.push(basePage({ conditions: need, commands: [...speak(link.lines), ...afterBattle(link, body)] }));
-      pages.push(basePage({ conditions: [{ kind: "switch", switchId: taken, value: true }], commands: speak(pickupDoneLines(link)) }));
+      // 쓰러뜨린 몬스터는 그 승리 스위치로 맵에서 걷힌다(그림 없음 · 밟고 지나감 · 눌러도 아무 일 없음) — 사람은 남아 뒷말을 한다.
+      pages.push(link.battle?.leaves
+        ? { trigger: { kind: "action" }, priority: "below", graphic: { transparent: true }, conditions: [{ kind: "switch", switchId: taken, value: true }], commands: [] }
+        : basePage({ conditions: [{ kind: "switch", switchId: taken, value: true }], commands: speak(pickupDoneLines(link)) }));
     } else if (link.role === "door") {
       if (!need.length) return fail(`${index + 1}번 고리(door): needs(열쇠 물건 이름 또는 깃발)가 없다`);
       const opened = flag(`door_open_${index + 1}`, `${args.name}: 문 열림`);

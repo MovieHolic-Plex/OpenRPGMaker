@@ -17,6 +17,7 @@ export { stage as blueprintAssembly } from "./blueprint-assembly";
 export { stage as blueprintOpening } from "./blueprint-opening";
 export { stage as gateOpenSteps } from "./gate-open-steps";
 export { stage as shipDefaults } from "./ship-defaults";
+export { stage as stepFoes } from "./step-foes";
 export { stage as fitUnwinnableBattles } from "./fit-unwinnable-battles";
 export { stage as pathBattles } from "./path-battles";
 export { stage as bossRest } from "./boss-rest";
