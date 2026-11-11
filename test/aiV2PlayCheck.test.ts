@@ -12,9 +12,9 @@ describe("v2 finish gate: the game must play through to an ending", () => {
   it("raises a play problem when the auto-play cannot reach the ending", () => {
     const problems = playProblems(load("endingSwitchUnset"));
     expect(problems.length).toBeGreaterThan(0);
-    expect(problems[0]!.text).toContain("[끝까지 플레이 불가]");
-    expect(problems[0]!.key.length).toBeGreaterThan(0);
-    expect(new Set(problems.map((p) => p.key)).size).toBe(problems.length);
+    expect(problems[0]!.ko).toContain("[끝까지 플레이 불가]");
+    expect(problems[0]!.target!.ref!.length).toBeGreaterThan(0);
+    expect(new Set(problems.map((p) => p.target!.ref)).size).toBe(problems.length);
   });
 
   it("raises nothing for a game whose auto-play reaches the ending", () => {

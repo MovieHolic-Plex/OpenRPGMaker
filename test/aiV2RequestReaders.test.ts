@@ -8,6 +8,10 @@ import { combatProblems } from "@/ai/v2/judge/combatChecks";
 import { gameContentProblems } from "@/ai/v2/judge/gameChecks";
 import { vqaEnabled } from "@/ai/v2/turn/support";
 import * as readers from "@/ai/v2/request/readers";
+import { findingLine } from "@/ai/v2/judge/finding";
+
+// 판정은 Finding 을 낸다 — 이 시험은 보고에 실리는 줄 글을 본다.
+const combatLines = (...args: Parameters<typeof combatProblems>): string[] => combatProblems(...args).map(findingLine);
 
 type TextReader = "asksChaseNotBattleMusic" | "asksWorkingShop" | "asksTimedWhereabouts" | "asksOpenField" | "namesRandomEncounters" | "asksCure" | "asksClueForLock"
   | "asksAfterStep" | "asksShownFlashback" | "asksActEnd" | "asksLetterbox" | "saysNewGame" | "asksOpening" | "asksComboSkill" | "asksPerDay" | "asksBattleDataRemoval"
@@ -91,10 +95,10 @@ describe("a turn that carries on a whole-game project is a whole-game turn for t
 
   it("combat checks run on the carry-on turn even when this turn did not touch combat", () => {
     const game = builtGame();
-    expect(combatProblems(game, structuredClone(game), CONTINUE).some((p) => p.startsWith("[출하 차단 no-healing]"))).toBe(true);
-    expect(combatProblems(game, structuredClone(game), SMALL)).toEqual([]);
+    expect(combatLines(game, structuredClone(game), CONTINUE).some((p) => p.startsWith("[출하 차단 no-healing]"))).toBe(true);
+    expect(combatLines(game, structuredClone(game), SMALL)).toEqual([]);
     const loose = builtGame(false);
-    expect(combatProblems(loose, structuredClone(loose), CONTINUE)).toEqual([]);
+    expect(combatLines(loose, structuredClone(loose), CONTINUE)).toEqual([]);
   });
 
   it("whole-game content checks (title and HUD choices) run on the carry-on turn, not on a small edit", () => {
