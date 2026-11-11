@@ -61,7 +61,13 @@ export interface StoreGameTransport {
   upload(path: string, bytes: Uint8Array, headers: Readonly<Record<string, string>>): Promise<void>;
 }
 
-export interface StoreGameProgress { readonly phase: "hash" | "upload" | "publish"; readonly done: number; readonly total: number }
+export interface StoreGameProgress {
+  readonly phase: "hash" | "upload" | "publish";
+  readonly done: number;
+  readonly total: number;
+  /** upload 단계: 막 보내기 시작한 파일(올리기 전에 찍는다 — 멈추면 이 파일 때문이다). */
+  readonly starting?: { readonly sha256: string; readonly path: string; readonly bytes: number };
+}
 
 const extOf = (path: string): string => {
   const base = path.slice(path.lastIndexOf("/") + 1);
@@ -94,6 +100,7 @@ export async function publishStoreGame(
   const total = queue.length;
   const worker = async (): Promise<void> => {
     for (let file = queue.shift(); file; file = queue.shift()) {
+      onProgress({ phase: "upload", done: sent, total, starting: { sha256: file.sha256, path: file.path, bytes: file.bytes.byteLength } });
       await transport.upload("/api/v1/games/files", file.bytes, { "x-sha256": file.sha256, "x-file-ext": extOf(file.path), "content-type": "application/octet-stream" });
       sent += 1;
       onProgress({ phase: "upload", done: sent, total });
