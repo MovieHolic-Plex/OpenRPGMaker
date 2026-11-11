@@ -12,6 +12,7 @@
 //   - 위층 칸은 한 칸에 하나뿐이다 — 키트끼리 겹치면 놓지 않는다. 발자국 + 여백을 예약한다.
 //   - 문 칸은 막힘, 바로 아래 접근칸과 그 아래 한 칸은 비우고 길로 잇는다. 소품을 놓을 때마다 시작 칸 BFS 로 «이미 닿던 칸이 끊기지 않는지» 보고, 끊으면 되돌린다.
 // 순수 함수다(프로젝트를 모른다). 칸 번호·통행은 호출자가 준 사전(palette)에서 얻는다 — 도구(prehistoricTools.ts)는 번들 정의에서, QA 스크립트는 구운 JSON 에서.
+import { exitRoadThroughWild, type ExitSide } from "./composerExitRoads";
 
 export type PrehistoricOutdoorStyle = "village" | "swamp" | "volcano" | "fossil";
 export type PrehistoricRoomStyle = "cave-dwelling" | "chieftain-hut" | "shaman-hut" | "cave-gallery";
@@ -43,6 +44,8 @@ export interface PrehistoricSpec {
   readonly height: number;
   readonly style: PrehistoricStyle;
   readonly seed?: number;
+  /** 다른 맵으로 나가는 변(야외만) — 길 그물에서 그 변의 가장자리까지 흙길을 낸다(이미 닿아 있으면 그대로). */
+  readonly exits?: readonly ExitSide[];
 }
 
 export interface PrehistoricResult {
@@ -97,6 +100,10 @@ const CHAIN: Readonly<Record<Exclude<Fam, "none">, readonly string[]>> = {
 };
 /** 충돌하면 남는 쪽(큰 수가 이긴다). 물·늪·용암은 지형의 뼈대라 풀·고사리보다 앞선다. */
 const FAM_RANK: Readonly<Record<Fam, number>> = { none: 0, fern: 1, grass: 2, ash: 3, mud: 4, water: 5 };
+/** 나가는 길이 지나며 걷어도 되는 흩어 둔 풀·나무·바위(집·작업터 기물은 아니다). */
+const WILD_PROP = /^ph-(rock-s|rock-l|rock-mossy|bush|berry-bush|tree-fern|fern-s|fern-giant|cycad|jungle-tree|araucaria|dead-tree|horsetail|mushrooms|swamp-tree|reeds|bone-pile)$/u;
+/** 나가는 길을 그려도 되는 쓰임. */
+const PAVE_USES: readonly string[] = ["open", "wild", "field", "plaza"];
 /** 걸을 수 없는 바닥 이름. */
 const WET = new Set(["water", "swamp", "lava"]);
 
@@ -509,6 +516,33 @@ class Board {
       if (this.use[k] === "bld" || this.use[k] === "prop") continue;
       this.over[k] = piece; this.use[k] = use;
     }
+  }
+  /**
+   * 길 그물에서 그 변의 가장자리까지 흙길(한 칸 폭 — 이 칩셋의 오솔길)을 낸다. 걸을 수 있는 빈 땅을 지나고(건물·물·늪·용암은 돌아간다),
+   * 길과 길섶에 걸친 풀·나무·바위는 걷는다. 길이 한 칸도 없는 장소(늪)는 들어오는 칸(start)에서 낸다.
+   */
+  exitRoad(side: ExitSide): void {
+    const at = (x: number, y: number) => (this.in(x, y) ? y * this.W + x : -1);
+    const wild = this.props.map((p) => { if (!WILD_PROP.test(p.kit)) return undefined; const size = this.kitSize(p.kit); return { x: p.x, y: p.y, w: size.w, h: size.h }; });
+    const seed = this.ground.includes("path") ? null : this.start;
+    const road = exitRoadThroughWild({
+      W: this.W, H: this.H,
+      // 길 = 흙길이 그려진 칸만(광장·작업터는 맨흙이라 거기서 시작하면 길 그물과 끊긴 토막이 된다 — 그 위로는 길을 그려 지나간다).
+      isRoad: (x, y) => { const k = at(x, y); return k >= 0 && (this.ground[k] === "path" || (!!seed && seed.x === x && seed.y === y)); },
+      canPave: (x, y) => { const k = at(x, y); return k >= 0 && PAVE_USES.includes(this.use[k]!) && this.upper[k]! < 0 && this.walk(x, y); },
+    }, side, wild, 1);
+    if (!road) { this.notes.push(`${side} 가장자리까지 길을 내지 못했다`); return; }
+    for (const i of road.drop) {
+      const p = wild[i]!;
+      for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) {
+        const k = at(x, y);
+        if (k < 0) continue;
+        this.upper[k] = -1; this.reserved[k] = false; if (this.use[k] === "prop") this.use[k] = "wild";
+      }
+      this.props.splice(i, 1);
+    }
+    if (!road.cells.length) return;
+    this.clearCells(road.cells); this.paint("path", road.cells, "path"); this.settle();
   }
   setUse(r: Rect, use: Use): void {
     for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) if (this.in(x, y) && this.use[y * this.W + x] !== "bld") this.use[y * this.W + x] = use;
@@ -1307,6 +1341,7 @@ export function composePrehistoric(spec: PrehistoricSpec, pal: PrehistoricPalett
   else if (spec.style === "volcano") start = composeVolcano(b, rng);
   else if (spec.style === "fossil") start = composeFossil(b, rng);
   else start = composeRoom(b, rng, spec.style as PrehistoricRoomStyle);
+  if (!indoor) for (const side of spec.exits ?? []) b.exitRoad(side);
   if (!indoor) { b.variety(); b.lanes(); }
   const exits: PrehistoricCell[] = [];
   if (indoor) { for (let x = 0; x < b.W; x++) if (b.walk(x, b.H - 1)) exits.push({ x, y: b.H - 1 }); }

@@ -5,7 +5,8 @@ import { usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createBuildRun } from "../../shared/buildRun";
 import { isPassable } from "@/project/collision";
-import { eventsOf, roadCellSet, tileLabel } from "../cells";
+import { eventsOf, tileLabel } from "../cells";
+import { roadCells } from "../surface";
 import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 
 /** v2 계획 모델에게 주는 유일한 마을 지식(≤900자). */
@@ -294,7 +295,7 @@ function farmAddons(run: BuildRun, mapId: string, text: string, warnings: string
     if (!map) break;
     // 작물 밭 키트 크기는 모른다 — 울타리 밭과 같은 자리 찾기로 7×5 를 쓴다.
     const w = kit.w || 7, h = kit.h || 5;
-    const roads = roadCellSet(run.ctx.project, map);
+    const roads = roadCells(run.ctx.project, map);
     const evCells = new Set(eventsOf(map).map((e) => e.y * map.width + e.x));
     const stamps = ((map as unknown as { structurePlacements?: { x: number; y: number; w: number; h: number }[] }).structurePlacements ?? []);
     const lower = (map as unknown as { lowerTiles?: number[] }).lowerTiles ?? [];

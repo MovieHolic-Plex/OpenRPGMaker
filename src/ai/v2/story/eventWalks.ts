@@ -2,7 +2,8 @@
 import type { Dir, GameMap, Project } from "@/project/types";
 import { canMove } from "@/project/collision";
 import { planApproach } from "@/project/staging/approach";
-import { dist, edgeExitCells, keepsMapConnected, objectAt, roadCellSet, shortestPathCells, transferCells, walkReach, walkStart, eventBlockers } from "../place/cells";
+import { dist, edgeExitCells, keepsMapConnected, objectAt, shortestPathCells, transferCells, walkReach, walkStart, eventBlockers } from "../place/cells";
+import { roadCells } from "../place/surface";
 import { Cell, PLAYER, DIR_STEP, StageSim } from "./eventStage";
 
 export const ROAD = /^(길|도로|큰길|길가|길 ?위|마을 ?길|골목|거리|road|street|path|way)$/i;
@@ -14,7 +15,7 @@ export const MIN_WALK = 3;
 
 /** 길(포석) 칸 — 칩셋에 길 이름표가 없으면 시작에서 맵 밖으로 나가는 최단 길. */
 export function roadsFor(project: Project, map: GameMap): Set<number> {
-  const roads = roadCellSet(project, map);
+  const roads = roadCells(project, map);
   if (roads.size >= 6) return roads;
   const start = walkStart(project, map);
   const blockers = eventBlockers(map);
