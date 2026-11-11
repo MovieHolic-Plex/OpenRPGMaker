@@ -304,6 +304,22 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 
 증거: `test/toolsReadEmptyAndBlocked.test.ts`.
 
+## 참고문서 읽기는 결과에 알림이 붙어도 인정한다 — `PiTilesetReferenceGate` (2026-11-11, 작은 일 재측정)
+
+작은 일 재측정(Terra, main 84a7fa331a)의 `door-backdoor-built`: 모델이 `read_tileset_reference` 로 그 용도를 끝까지 읽었는데(4번, 그림 11장)
+`place_door` 가 세 번 다 «타일셋 참고문서 선행 읽기 필요 (30건)» 으로 거절됐다. 모델은 문을 포기했다.
+
+원인은 관문이 읽은 것을 인정하는 방식이었다. 관문(`src/ai/piAgent/tilesetReferenceGate.ts`)은 제공자에게 나가는 요청에서 도구 결과 글을 찾아
+`JSON.parse` 한 것이 자기가 내준 결과와 같을 때만 «전달됐다» 로 친다. 그런데 v2 의 인자 고침은 결과에 따로 글 조각을 붙인다
+(«Fixed: dropped empty/default optional fields: …» — 값싼 모델은 선택 칸을 빈 값으로 채워 보내므로 거의 매번 붙는다). 관문은 글 조각을 전부
+이어 붙여 읽었고, 그 글은 JSON 이 아니어서 읽기 30건이 한 건도 인정되지 않았다. 읽을수록 같은 거절이 되풀이됐다.
+
+고친 것: 글 조각을 하나씩 본다. 한 조각 안에 알림 줄이 앞뒤로 붙었으면 결과 JSON 줄만 떼어 읽는다. 잘린 결과(`dataTruncated`)·실패한
+응답·내준 것과 다른 내용은 그대로 인정하지 않는다 — 전달 확인이라는 관문의 뜻은 바뀌지 않았다.
+
+근거: 모델 없는 탐침(지은 게임 판, 설원 용도 4번 읽기 → `place_door`) — main 은 알림이 붙은 세 모양(뒤 조각 · 같은 글 뒤 줄 · 같은 글 앞 줄) 모두
+«선행 읽기 필요 (30건)», 고친 뒤 네 모양 모두 통과, 잘린 결과·실패한 응답은 여전히 거절. 시험 `test/tilesetReferenceGateNotes.test.ts`.
+
 ## 엔딩을 다시 부르면 안 보낸 칸은 그대로 — `define_ending` (2026-11-11, 작은 일 기준선)
 
 첫 Terra 기준선(작은 일 30가지)에서 `generate_art{target:"ending"}` 는 41번 중 27번 거절됐다: 그림을 걸려고 `define_ending` 을 id·name·presentation 만으로
