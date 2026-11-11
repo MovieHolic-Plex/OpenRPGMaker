@@ -142,6 +142,8 @@ export interface PlaceBuildResult {
   readonly calls: readonly BuilderCall[];
   /** 빌더 전용 상태(다음 고치기에서 같은 빌더가 받는다): 예) 실내 마지막 도구 인자. */
   readonly state?: unknown;
+  /** 다시 짓기에서 옛 맵을 덮어 지을 수 없어 새 id(mapIds[0])로 짓고 옛 맵을 지웠을 때의 옛 id — 부르는 쪽이 체크포인트 뒤 옛 id 로 되돌린다(place/keepMapId.ts). */
+  readonly relaidFrom?: string;
 }
 
 /** 이 실행에서 지은 장소 하나의 기록 — 고치기는 이것을 고친다. */
