@@ -35,12 +35,12 @@ async function pool<T>(items: readonly T[], n: number, work: (item: T) => Promis
   let next = 0;
   await Promise.all(Array.from({ length: Math.max(1, Math.min(n, items.length)) }, async () => { while (next < items.length) await work(items[next++]!); }));
 }
-async function spawn(cmd: string[], cwd: string, logFile: string, env: Record<string, string> = {}): Promise<number> {
+async function spawn(cmd: string[], cwd: string, logFile: string, env: Record<string, string> = {}, limitMin = 45): Promise<number> {
   const log = fs.openSync(logFile, "a");
   try {
     const child = Bun.spawn(cmd, { cwd, stdout: log, stderr: log, env: { ...process.env, ...env } });
     // 게임 하나가 멈춰 서도 은행 전체가 기다리지 않게 — 45분이면 끊는다.
-    const timer = setTimeout(() => child.kill(), 45 * 60_000);
+    const timer = setTimeout(() => child.kill(), limitMin * 60_000);
     try { return await child.exited; } finally { clearTimeout(timer); }
   } finally { fs.closeSync(log); }
 }
@@ -130,8 +130,8 @@ async function run(): Promise<void> {
   console.log(`끝 — 재생 ${replaySec}초 · 전체 ${wallSec}초 · 표 ${path.join(out, "bank.txt")} · 그림 ${out}/<게임>/maps/`);
 }
 
-function diff(): number {
-  const [a, b] = argv.slice(argv.indexOf("--diff") + 1);
+function diff(dirA?: string, dirB?: string): number {
+  const [a, b] = dirA && dirB ? [dirA, dirB] : argv.slice(argv.indexOf("--diff") + 1);
   if (!a || !b) { console.error("--diff <결과A> <결과B>"); return 2; }
   const name = (dir: string) => { const f = path.join(dir, "bank.json"); const meta = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) as { at?: string; head?: string } : {}; return `${path.basename(path.resolve(dir))}@${meta.at ?? meta.head ?? "?"}`; };
   const report = diffReport(loadMetrics(a), loadMetrics(b), name(a), name(b));
@@ -145,18 +145,26 @@ function list(): void {
   console.log(`\n${rows.length}개 · ${bankDir}`);
 }
 
-/** 전/후를 한 번에: 기준 커밋(기본 origin/main)의 빌더와 지금 작업 폴더의 빌더로 은행을 차례로 돌리고 대조를 찍는다. */
+/** 전/후를 한 번에: 기준 커밋(기본 origin/main)의 빌더와 지금 작업 폴더의 빌더로 은행을 **같이** 돌리고 대조를 찍는다. 두 번의 줄은 <결과>/a.log · b.log 에 쌓인다. */
 async function ab(): Promise<number> {
   const out = path.resolve(flag("--out") ?? "");
   if (!flag("--out")) { console.error("ab --out <결과 폴더> [--base origin/main] 가 필요하다"); return 2; }
   const base = flag("--base") ?? "origin/main";
-  const pass = [...(flag("--only") ? ["--only", flag("--only")!] : []), ...(flag("--jobs") ? ["--jobs", flag("--jobs")!] : []), ...(has("--no-render") ? ["--no-render"] : []), ...(has("--no-autoplay") ? ["--no-autoplay"] : []), ...(flag("--bank") ? ["--bank", flag("--bank")!] : [])];
+  // 두 번을 같이 띄우므로 한 번의 몫은 절반(코어 여섯에 하나).
+  const jobs = flag("--jobs") ?? String(Math.max(1, Math.floor(os.cpus().length / 6)));
+  const pass = ["--jobs", jobs, ...(flag("--only") ? ["--only", flag("--only")!] : []), ...(has("--no-render") ? ["--no-render"] : []), ...(has("--no-autoplay") ? ["--no-autoplay"] : []), ...(flag("--bank") ? ["--bank", flag("--bank")!] : [])];
   const self = path.join(ROOT, "scripts/qa/assistant-v2/specBank.mts");
-  for (const args of [["run", "--at", base, "--out", path.join(out, "a"), ...pass], ["run", "--out", path.join(out, "b"), ...pass]]) {
-    const code = Bun.spawnSync(["bun", self, ...args], { cwd: ROOT, stdout: "inherit", stderr: "inherit" }).exitCode;
-    if (code !== 0) return code;
-  }
-  return Bun.spawnSync(["bun", self, "--diff", path.join(out, "a"), path.join(out, "b")], { cwd: ROOT, stdout: "inherit", stderr: "inherit" }).exitCode;
+  fs.mkdirSync(out, { recursive: true });
+  const started = Date.now();
+  console.log(`명세 은행 전/후: 기준 ${base} → ${path.join(out, "a")} · 지금 작업 폴더 → ${path.join(out, "b")} · 한 번에 ${jobs}개씩 · 진행은 ${path.join(out, "a.log")} · b.log`);
+  const codes = await Promise.all([
+    spawn(["bun", self, "run", "--at", base, "--out", path.join(out, "a"), ...pass], ROOT, path.join(out, "a.log"), {}, 180),
+    spawn(["bun", self, "run", "--out", path.join(out, "b"), ...pass], ROOT, path.join(out, "b.log"), {}, 180),
+  ]);
+  if (codes.some((code) => code !== 0)) { console.error(`은행 재생이 실패했다(exit ${codes.join("/")}) — ${path.join(out, "a.log")} · b.log`); return 1; }
+  const code = diff(path.join(out, "a"), path.join(out, "b"));
+  console.log(`끝 — 전/후 전체 ${Math.round((Date.now() - started) / 1000)}초 · 그림 ${out}/{a,b}/<게임>/maps/`);
+  return code;
 }
 
 const command = has("--diff") ? "diff" : rest[0];

@@ -49,6 +49,8 @@
 
 장소·경로 빌더를 옮긴 조각은 `bun scripts/qa/assistant-v2/worldProbe.mts <out>` 도 앞·뒤로 돌린다.
 
+빌더·끝맺음 단계의 **동작을 바꾸는** PR 은 `bun scripts/qa/assistant-v2/specBank.mts ab --out <폴더>` 로 저장된 판의 명세를 전/후 빌더로 다시 지어 수치·그림을 견준다(모델 없음 — `openwiki/assistant-v2.md` 「명세 은행」). 옮기기만 하는 조각은 대조 표의 모든 칸이 같아야 한다.
+
 턴 구동기(`turn/` · `loop/` · 판정자 차례)를 옮긴 조각은 `bun scripts/qa/assistant-v2/turnTrace.mts <out.json>` 도 앞·뒤로 찍어 `--diff` 가 「같다 (4개 장면)」 — 모델·검토자·화면 검수자를 대본으로 바꿔 `runAssistantV2` 를 네 요청(게임 전체 · «계속» · 작은 쓰기 · 질문)으로 돌리고 실행 상태·재주입 글·상태 카드·최종 보고·저장된 할 일을 찍는다. `golden.mts` 는 지시문과 도구 목록만 보므로 판정자 차례가 바뀐 것은 이것만 잡는다(`advisorRuns < 2` 를 `< 1` 로 바꾸면 네 장면 모두 「다르다」).
 
 ## 옮기는 도구 (`scripts/qa/assistant-v2/refactor/`)
