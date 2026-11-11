@@ -5,8 +5,8 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { classifyRequest } from "@/ai/v2/request/intent";
 import { recordTopicsNamed } from "@/ai/v2/request/topics";
-import { exposeV2Tools } from "@/ai/v2/toolExposure";
-import { createV2Tools } from "@/ai/v2/verbs";
+import { exposeV2Tools } from "@/ai/v2/tools/toolExposure";
+import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
 import { buildFixture, type FixtureId } from "@/harnesses/assistant-capability/node/smallJobs/fixtures";
 
