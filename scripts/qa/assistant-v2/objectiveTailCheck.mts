@@ -4,7 +4,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { readProjectSqlite } from "../../content/read-project-sqlite.mts";
-import { withWhere } from "../../../src/ai/v2/judge/discoverability.ts";
+import { withWhere } from "../../../src/ai/v2/judge/objectiveWhere.ts";
 import type { Project } from "../../../src/project/types.ts";
 
 const argv = process.argv.slice(2);

@@ -1,10 +1,11 @@
 // 걸어 닿지 못하는 진행 이벤트(전투·스위치·아이템·엔딩 — 출하 검사 critical-unreachable)는 닿는 빈 바닥으로(repairEventReach).
 // 경로를 다시 짓지 않는 판(전투가 든 단계라 build_blueprint_path 가 건너뜀)에도 돈다 — 2026-10-29 vm4 argon jrpg: 동굴 잡몹 (6,9)가 바위 속에 갇혔다.
-import type { LaneStage } from "../types";
-import { repairEventReach, unreachableEvents } from "../../../judge/eventReach";
+import type { FinishStage } from "../../types";
+import { unreachableEvents } from "../../../judge/eventReach";
+import { repairEventReach } from "../../../place/reachRepairs";
 
-export const stage: LaneStage = {
-  id: "event-reach", scope: "map", order: 150,
+export const stage: FinishStage = {
+  id: "event-reach", phase: "lane-map", order: 150,
   run(ctx, mapId) {
     const { env, notes, run } = ctx;
     const live = env.ctx.project.maps[mapId];

@@ -1,5 +1,5 @@
-// 출구·이동 칸 마감 단계 목록 — 한 줄에 단계 하나(order 순으로 적어 둔다; 실행 순서는 scope → 각 단계의 order 가 정한다).
-// 단계를 더하려면: stages/<id>.ts 를 만들고(형 LaneStage) 여기에 한 줄을 더한다. 문서 openwiki/assistant-v2.md 「끝맺음 단계 더하기」.
+// 출구·이동 칸 마감 단계 목록 — 한 줄에 단계 하나(order 순으로 적어 둔다; 실행 순서는 묶음(lane-project → lane-map) → 각 단계의 order 가 정한다).
+// 단계를 더하려면: stages/<id>.ts 를 만들고(형 FinishStage, phase 는 lane-project 나 lane-map) 여기에 한 줄을 더한다. 문서 openwiki/assistant-v2.md 「끝맺음 단계 더하기」.
 export { stage as retireBlankStart } from "./retire-blank-start";
 export { stage as sealEscapeExits } from "./seal-escape-exits";
 export { stage as mysteryCase } from "./mystery-case";

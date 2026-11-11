@@ -332,6 +332,27 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 golden: 153 가운데 117 이 `place_examine_hotspots` 글/스키마(81 은 그것만, 33 은 조사 카드 글 +23자), 표지판 요청 3줄은 처음 싣는 도구에 `place_examine_hotspots` 가 들고 `fill_region` 이 필요할 때로 물러남.
 시험 `test/aiV2ExamineSpots.test.ts`.
 
+||||||| 091e10574e
+## 버들항 맵의 빈 땅도 읽고 채운다 — 칸 역할을 안 적는 시트 · `amount:"few"` (2026-11-11, 작은 일 재측정)
+
+작은 일 재측정(Terra, main 84a7fa331a)에서 통과했지만 «완료» 로 못 끝난 `dress-trees-starter`(「마을 빈 곳에 나무를 몇 그루 심어 줘」, 버들항 시작 판):
+`find_empty_ground` 는 풀밭 432칸 마을을 「맨땅 0% · 빈 터 없음」 으로 읽었고, `furnish_outdoor_area` 는 버들항 맵을 거절하면서 없는 키트 이름(`kit:beodeul_city/bd-tree-…`)을 댔다.
+조수는 그 자리표시 이름을 그대로 찍다 실패하고, 할 일을 막힘으로 닫은 뒤 나무 셋을 맵 모서리 (0,0) · (3,0) 에 찍었다.
+
+원인: B3b 의 칸 판독(`src/project/openGround.ts`)은 칸 역할(`role: "terrain"`)로 땅을 읽는데, 버들항 시트(`beodeul_city`, 3.8만 칸)는 칸 역할을 하나도 적지 않는다 — 땅은 꼬리표(`grass` · `sand`)와 통행(`passable`)으로만 안다.
+
+고친 것(도구에서):
+- 칸 역할이 없는 칸은 **걸을 수 있고 땅 꼬리표(grass·풀밭·sand·모래·dirt·흙·snow·눈밭)가 있으면** 빈 야외 땅이다. 길·물·실내 꼬리표와 「…길」 이름표는 전처럼 뺀다.
+- `furnish_outdoor_area` 의 버들항 거절을 걷었다 — 다른 칩셋과 같은 길(그 칩셋의 야외 소품)로 채운다.
+- 기본 소품은 **어디에나 어울리는 자연물만**: 한 장소·던전 주제에 딸린 키트(꼬리표에 장소·던전·주제 — 사막 마을의 대추야자, 설원 소나무, 숲 던전의 룬 선돌)는 이름을 대지 않으면 고르지 않는다.
+  영어 꼬리표는 앞뒤가 글자가 아닐 때만 맞춘다 — `prop-street` 의 «tree» 때문에 현대 도시의 가로등·신호등·자판기·정류장 111개가 «나무» 로 뿌려지고 있었다(`fld_rock_s_a` 같은 밑줄 이름은 된다).
+- `props` 를 이름 일부로 줄 때: 낱말로 든 키트가 먼저(«나무» 는 「버들항 나무」 이지 「통나무」·「나무 벤치」 가 아니다), 그 안에서 어디에나 어울리는 자연물 → 자연물 → 전부 순.
+- `amount: "few" | "fill"`. `few` 는 세 구획까지만 놓는다(«몇 그루» 는 맵을 메우는 일이 아니다). 기본은 전처럼 맨땅 비율이 내려갈 때까지.
+
+근거(모델 없는 탐침, 버들항 시작 판): `find_empty_ground` 맨땅 0% → 94%, 빈 터 4곳과 소품 이름. `furnish_outdoor_area{props:["나무"], amount:"few"}` → 구획 3곳·34칸, 놓인 것은 전부 「버들항 나무 …」, 작은 일 판정기 `dressed` 통과.
+`amount` 없이 부르면 12구획, 맨땅 94% → 19%. 구조 키트가 있는 칩셋 42개 가운데 기본 소품이 달라진 것은 넷(버들항 · 현대 도시 · 조선: 묘비·맷돌이 빠지고 통나무 둘이 듦 · 일본 도시: 깃발 기둥·나무 상자가 빠짐), 지은 게임 판 맵들의 땅 판독은 그대로.
+golden: 123/153 이 `furnish_outdoor_area` 글/스키마만 바뀜(실리고 빠지는 도구 없음). 시험 `test/openGroundFill.test.ts`.
+
 ## 바닥에 놓인 물건은 `place_chest` 의 `look:"item"` — 줍는 물건 (2026-11-11, 작은 일 재측정)
 
 작은 일 재측정(Terra, main 84a7fa331a)의 `pickup-key-built`(「족장의 긴 집 바닥에 낡은 열쇠가 떨어져 있게 해 줘. 조사하면 주워 가게 해 줘」):
@@ -920,7 +941,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).
 
 - **끝맺음**: `src/ai/v2/finish/stages/<id>.ts` 가 `export const stage: FinishStage = { id, phase, order, run(ctx) }` 하나를 낸다. 목록은 `finish/stages/index.ts`(한 줄에 `export { stage as <이름> } from "./<id>"` 하나). 실행기 `finish/index.ts runFinishAutoBuild` 가 묶음 순서 `blueprint`(청사진이 있을 때 — 한 일은 `ctx.done`, 조수에게 줄 「[자동으로 지음]」 글) → `assembly`(게임 전체 요청일 때 — 한 일은 `ctx.assembled`, 묶음 끝에 `v2.assembly` 기록 + 체크포인트 `blueprint_assembly`) → `reload`(맨 끝 — 저장 → 다시 읽기 관문 `reload-check`, order 900) 로, 묶음 안은 `order` 오름차순으로 돈다. 옛 입구 `finishAutoBuild.ts` 는 다시 내보내기만 한다.
-- **출구·이동 칸 마감**(`session.clearLanes`, 끝맺음 단계 `lanes`): `src/ai/v2/finish/lanes/stages/<id>.ts` 가 `LaneStage = { id, scope, order, run(ctx, mapId) }`. `scope:"project"` 단계(빈 시작 맵 치우기·방탈출 봉인·추리 세우기·상점·시작 돈·고아 맵·은신처·얼굴 자리)를 먼저, 이어 맵마다 `scope:"map"` 단계(실내 출구 → … → 막힌 길 표지 → 굴 입구 앉히기 → 보물상자 → 잠긴 집 문 → 이동 칸 비우기 → 대상 앞 → 사람 흩기 → 닿지 못하는 이벤트 → 이동 칸 기록)를 돈다. 한 일은 `ctx.notes`, 맵 이름은 `mapLabel(env, mapId)`, 맵 하나 안에서 단계끼리 넘길 값은 `ctx.map`(맵마다 새로).
+- **출구·이동 칸 마감**(`session.clearLanes`, 끝맺음 단계 `lanes`): `src/ai/v2/finish/lanes/stages/<id>.ts` 가 끝맺음과 **같은 형** `FinishStage = { id, phase, order, run(ctx, mapId) }` 를 낸다(2026-11-11 R6b — 옛 `LaneStage`·`LaneCtx`·`scope` 는 없다. 형 `finish/types.ts`, 순서 세우기 `finish/stageOrder.ts orderedStages` 하나). `phase:"lane-project"` 단계(빈 시작 맵 치우기·방탈출 봉인·추리 세우기·상점·시작 돈·고아 맵·은신처·얼굴 자리)를 먼저, 이어 맵마다 `phase:"lane-map"` 단계(실내 출구 → … → 막힌 길 표지 → 굴 입구 앉히기 → 보물상자 → 잠긴 집 문 → 이동 칸 비우기 → 대상 앞 → 사람 흩기 → 닿지 못하는 이벤트 → 이동 칸 기록)를 돈다. 한 일은 `ctx.notes`, 맵 이름은 `mapLabel(env, mapId)`, 맵 하나 안에서 단계끼리 넘길 값은 `ctx.map`(맵마다 새로). 마감 묶음은 동기로만 돈다(약속을 돌려주면 던진다). `ctx.run` 은 마감 묶음에서 도구들과 같은 빌드 실행이다.
 - **더하는 법**: (1) 새 파일 `stages/<id>.ts` — 단계 하나, 실패가 끝맺음을 깨면 안 되면 그 안에서 `try/catch`; 기록 키가 필요하면 `env.emit({ type:"execution_status", name:"v2.…" })`. (2) `stages/index.ts` 에 한 줄. (3) `order` 는 앞뒤 단계 사이 빈 번호(10 간격, 꽉 차면 소수 `135` 도 된다). 같은 묶음 안 `order`·`id` 가 겹치면 모듈을 읽을 때 던진다 — 순서가 import 줄 순서에 기대지 않는다. 다른 단계 파일·실행기는 고치지 않는다.
 - **제자리 수정과 체크포인트(2026-10-31 J107)**: 끝맺음 단계·청사진 경로·전투 맞춤은 도구 draft 없이 `env.ctx.project` 를 제자리에서 고친다(`database.troops.push` 등). 실행기 `scripts/lib/piAgentRuntime.ts` 는 v2 실행에서 수용·되돌림 때마다 `ctx.project` 에 자기 `database`·`assets` 사본을 준다(`ownHeavyForInPlaceEdits`). 그전에는 수용 스냅숏과 같은 객체라 바뀌어도 «그대로»로 보여 줄에서 빠졌고, 편집기가 옛 DB 를 다시 붙여 「troopId 없음」 직렬화 왕복 실패로 조립 체크포인트가 매 차례 통째 거부됐다(JRPG 출하 게임에 목표 이어 걸기·전투 맞춤·타이틀이 하나도 안 들어갔다). 새 단계도 DB 를 제자리에서 고쳐도 된다. `tilesets` 는 이 보호 밖이니 타일셋은 도구(`run.call`)로 바꾼다.
 - **보스를 이기면 단계가 이어진다(`boss-win-finishes-step`, assembly 195, J108)**: 청사진 단계 이벤트의 넘어가는 페이지가 같은 맵 보스의 승리 스위치를 조건으로 걸면, 그 보스 승리 갈래 끝에 `callMapEvent(<단계 이벤트>)` 를 단다. 이기자마자 다음 목표·엔딩이 이어지고, 앞 단계가 안 됐으면 그 이벤트의 잠김 대사가 뜬다. 승리 뒤 보스 옆 칸을 다시 찾아 눌러야 엔딩이 나던 판(sl2 opus jrpg)을 막는다.

@@ -55,7 +55,8 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
     p: {
       region: "Side of the map to fill: all | top | bottom | left | right | top-left | top-right | bottom-left | bottom-right | center (default all).",
       area: "{x,y,w,h} exact rectangle instead of region.",
-      props: "Names of this chipset's outdoor props to use (from find_empty_ground's props list), e.g. palm, cactus, lamp. Omit = the chipset's trees, bushes and rocks.",
+      props: "Names (or part of a name) of this chipset's outdoor props to use, e.g. 나무 (tree), palm, cactus, lamp — find_empty_ground lists them. Omit = the chipset's trees, bushes and rocks.",
+      amount: "few = a handful (about three small groups) — use it when the request says «a few», «몇 그루», «조금»; fill (default) = fill the empty ground.",
       style: "auto (default) | grove | garden | plaza | pond — the last four only on monster-collecting sheets.",
       seed: "Change for a different arrangement.",
     },
