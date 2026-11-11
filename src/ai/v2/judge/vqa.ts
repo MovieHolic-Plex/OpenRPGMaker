@@ -7,6 +7,7 @@
 import { roomSpecOf } from "@/editor/handInterior/builder";
 import { BLUEPRINT_OPENING_SHOT_PREFIX } from "@/editor/tools/blueprintOpening";
 import type { Project } from "@/project/types";
+import { isProgramRoom, programRoomKind } from "../place/programMark";
 
 export const VQA_MAX_ROUNDS = 3;
 /**
@@ -94,8 +95,12 @@ export function vqaShotPlan(project: Project, changedMapIds: ReadonlySet<string>
     .filter((id, i, all): id is string => Boolean(id && project.maps[id]) && all.indexOf(id) === i);
   // 맵 그림은 줄여서 간다 — 칸 수를 적어 두지 않으면 검수자가 그림에서 크기를 어림해 «시작 칸이 맵 밖»이라고 한다. 주인공은 편집기 렌더에 없다.
   const startNote = project.startPos ? ` · 시작 맵 · 주인공은 게임에서만 그려짐, 시작 칸 ${project.startPos.x},${project.startPos.y}` : " · 시작 맵";
-  for (const id of ordered) { const map = project.maps[id]!; plan.push({ kind: "map", where: `맵 «${map.name}» (${map.width}×${map.height}칸${id === project.startMapId ? startNote : ""})`, ref: id }); }
-  return [...plan, ...autoOpening].slice(0, VQA_MAX_IMAGES);
+  const mapShot = (id: string): VqaShotPlanItem => { const map = project.maps[id]!; return { kind: "map", where: `맵 «${map.name}» (${map.width}×${map.height}칸${id === project.startMapId ? startNote : ""})`, ref: id }; };
+  // 목적표가 지은 방(가게·여관 안)은 맨 뒤에, 방 종류마다 한 장만 — 그림 예산은 청사진의 장소가 먼저 쓴다.
+  const kinds = new Set<string>();
+  const samples = ordered.filter((id) => { const kind = programRoomKind(project, id); if (kind === undefined || kinds.has(kind)) return false; kinds.add(kind); return true; });
+  for (const id of ordered) if (!isProgramRoom(project, id)) plan.push(mapShot(id));
+  return [...plan, ...autoOpening, ...samples.map(mapShot)].slice(0, VQA_MAX_IMAGES);
 }
 
 /** 끝맺음 단계(applyBlueprintOpening)가 맵을 잘라 지은 기본 오프닝 장면인가 — 장면 id 로 가른다(검수자 글이 아니라 사실로). */

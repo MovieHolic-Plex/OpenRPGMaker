@@ -11,8 +11,9 @@ import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations
 import { extractTreeNode, insertTreeNode } from "@/project/mapTree";
 import {
   DESERT_KIND_LABEL, DESERT_MIN_SIZE, DESERT_ROOM_LABEL, DESERT_ROOM_MAX, DESERT_ROOM_MIN,
-  composeDesertEast, composeDesertRoom, desertPaletteFromTileset, type DesertKind, type DesertRoomKind,
+  DESERT_SETTLEMENT, composeDesertEast, composeDesertRoom, desertPaletteFromTileset, desertProgramSize, type DesertKind, type DesertRoomKind,
 } from "@/project/desertEastComposer";
+import { PROGRAM_ROLE_TAG, needTag, programArg, programSchema, roleTag, type SettlementProgram } from "@/project/settlementProgram";
 import type { GameEvent, GameMap, MapId, Project, TilesetDef } from "@/project/types";
 import { claimStartIfBlank } from "./composerStart";
 import { requireMap } from "./mapHelpers";
@@ -79,6 +80,7 @@ export const COMPOSE_DESERT_EAST_MAP_TOOL: ToolDefinition = {
       seed: { type: "integer", minimum: 0, description: "배치 씨앗(생략 0)" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 깐다" },
       exits: EXIT_SIDES_SCHEMA,
+      program: programSchema(DESERT_SETTLEMENT),
     },
     required: ["kind"],
     additionalProperties: false,
@@ -88,15 +90,18 @@ export const COMPOSE_DESERT_EAST_MAP_TOOL: ToolDefinition = {
     const { mapId, map, tileset } = targetMap(draft, args);
     const kind = KINDS.find((k) => k === args.kind);
     if (!kind) throw new ToolError(`kind 는 ${KINDS.join("·")} 중 하나다`, { code: "invalid-args" });
-    const min = DESERT_MIN_SIZE[kind];
-    if (map.width < min.w || map.height < min.h) throw new ToolError(`맵이 작다(${map.width}×${map.height}) — ${DESERT_KIND_LABEL[kind]}는 ${min.w}×${min.h} 이상이어야 한다. resize_map 한 뒤 부른다`, { code: "map-too-small", mapId });
+    // 목적표가 있으면 맵 크기는 건물 수에서 나온다(고정 최소 크기가 아니다).
+    let program: SettlementProgram | undefined;
+    try { program = programArg(args.program, DESERT_SETTLEMENT); } catch (e) { throw new ToolError((e as Error).message, { code: "invalid-args" }); }
+    const min = program ? desertProgramSize(kind, program) : DESERT_MIN_SIZE[kind];
+    if (map.width < min.w || map.height < min.h) throw new ToolError(`맵이 작다(${map.width}×${map.height}) — ${DESERT_KIND_LABEL[kind]}는 ${program ? "이 목적표에서 " : ""}${min.w}×${min.h} 이상이어야 한다. resize_map 한 뒤 부른다`, { code: "map-too-small", mapId });
     if (map.width > min.w + 24 || map.height > min.h + 20) throw new ToolError(`맵이 너무 크다(${map.width}×${map.height}) — 빈 모래가 남는다. ${DESERT_KIND_LABEL[kind]}는 ${min.w + 24}×${min.h + 20} 이하로 resize_map 한다`, { code: "map-too-large", mapId });
     if (!isUntouched(map) && args.replace !== true) throw new ToolError("이미 칠한 맵이다 — 지우고 다시 깔려면 replace:true 를 준다(이벤트는 남는다)", { code: "map-not-blank", mapId });
     const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 0;
     const pal = desertPaletteFromTileset(tileset, pieces);
     let r;
     const exits = exitSidesArg(args.exits);
-    try { r = composeDesertEast({ width: map.width, height: map.height, kind, seed, ...(exits.length ? { exits } : {}) }, pal); }
+    try { r = composeDesertEast({ width: map.width, height: map.height, kind, seed, ...(exits.length ? { exits } : {}), ...(program ? { program } : {}) }, pal); }
     catch (e) { throw new ToolError(`${DESERT_KIND_LABEL[kind]}를 짜지 못했다 — ${(e as Error).message}. seed 를 바꿔 다시 부른다`, { code: "compose-failed", mapId }); }
     const next = structuredClone(draft);
     const target = writeLayers(next, mapId, r.lower, r.upper);
@@ -116,7 +121,7 @@ export const COMPOSE_DESERT_EAST_MAP_TOOL: ToolDefinition = {
     for (const d of r.buildings) {
       const door = d.doors[0];
       if (!door) continue;
-      addMapLocation(target, { name: `${d.name}`, x: d.rect.x, y: d.rect.y, w: d.rect.w, h: d.rect.h, note: `문 (${door.x},${door.y}) 외 ${d.doors.length - 1}칸 · 접근칸 (${d.access[0]!.x},${d.access[0]!.y}) — 실내는 compose_desert_east_room 으로 지어 link_desert_east_interior 로 잇는다`, tags: ["desert-east-building", d.kit] });
+      addMapLocation(target, { name: `${d.name}`, x: d.rect.x, y: d.rect.y, w: d.rect.w, h: d.rect.h, note: `문 (${door.x},${door.y}) 외 ${d.doors.length - 1}칸 · 접근칸 (${d.access[0]!.x},${d.access[0]!.y}) — 실내는 compose_desert_east_room 으로 지어 link_desert_east_interior 로 잇는다`, tags: ["desert-east-building", d.kit, ...(d.need ? [PROGRAM_ROLE_TAG, roleTag(d.need.role), needTag(d.need.id)] : [])] });
     }
     for (const z of r.zones) addMapLocation(target, { name: z.name, x: z.rect.x, y: z.rect.y, w: z.rect.w, h: z.rect.h, note: z.use, tags: ["desert-east-zone", COMPOSED_LAYOUT_TAG] });
     const blocked = (target.events ?? []).filter((e) => !walkable(next, target, e.x, e.y)).map((e) => `${e.name ?? e.id}(${e.x},${e.y})`);
@@ -128,7 +133,7 @@ export const COMPOSE_DESERT_EAST_MAP_TOOL: ToolDefinition = {
         + `문: ${doors.slice(0, 12).map((d) => `${d.name} (${d.doors.map((c) => `${c.x},${c.y}`).join(" · ")})`).join(" · ")}${doors.length > 12 ? ` 외 ${doors.length - 12}채` : ""}. 실내는 compose_desert_east_room 으로 짓고 link_desert_east_interior 로 잇는다.`
         + startClaim.note
         + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : ""),
-      data: { mapId, kind, seed, start: r.start, startClaimed: startClaim.claimed, buildings: r.buildings.map((d) => ({ name: d.name, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access })), zones: r.zones, props: r.props.length },
+      data: { mapId, kind, seed, start: r.start, startClaimed: startClaim.claimed, buildings: r.buildings.map((d) => ({ name: d.name, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access, ...(d.need ? { need: d.need } : {}) })), zones: r.zones, props: r.props.length, ...(r.unplaced ? { unplaced: r.unplaced } : {}) },
     };
   },
 };
