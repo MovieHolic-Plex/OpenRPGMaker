@@ -27,7 +27,7 @@ import type { ActorExperienceCurve, EnemyRecord, GameMap, Project, SkillRecord }
 import { blueprintMapFor } from "./blueprintPath";
 import { healingItemIds } from "../judge/combatChecks";
 import { startHealingItem } from "./healingAccess";
-import { wantsWholeGame } from "../request/readers";
+import { buildsWholeGame } from "../request/readers";
 import { WEAK_FOE_ASK } from "../request/combat";
 
 type Obj = Record<string, unknown>;
@@ -426,8 +426,8 @@ export function fieldBattleStrain(before: Project, after: Project, task: string)
   if (after.system.battleParty === "monsters" || after.system.monsterBattleParty === true) return [];
   const party = partyOf(after);
   if (!party) return [];
-  // 게임 전체 요청이면 끝맺음 path-battles 가 청사진 길 위 전투를 이미 맞췄다 — 그때만 길 위는 뺀다(장면 요청은 그 단계가 돌지 않는다).
-  const onPath = new Set(wantsWholeGame(task) ? pathBattles(after).map((b) => `${b.mapId}#${b.troopId}`) : []);
+  // 게임 하나를 짓는 턴(이어 하기 턴도 — 끝맺음 assembly 묶음과 같은 판정)이면 끝맺음 path-battles 가 청사진 길 위 전투를 이미 맞췄다 — 그때만 길 위는 뺀다(장면 요청은 그 단계가 돌지 않는다).
+  const onPath = new Set(buildsWholeGame(after, task) ? pathBattles(after).map((b) => `${b.mapId}#${b.troopId}`) : []);
   const weak = WEAK_FOE_ASK.test(task);
   const cache = new Map<string, { win: number; loss: number }>();
   const measure = (troopId: string) => {

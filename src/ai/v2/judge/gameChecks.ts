@@ -10,10 +10,9 @@ import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { simulateBattle } from "@/battle/simulate";
 import { gatesThatOpenNothing, lockBypasses, placeholderTexts, selfRevealingLocks, unjoinedFollowers, weakPuzzleLocks } from "./puzzleChecks";
 import { splitScriptSpeaker } from "@/project/endingSummary";
-import { wantsWholeGame } from "../request/readers";
+import { asksActEnd, asksAfterStep, asksChaseNotBattleMusic, asksChaserBehavior, asksClueForLock, asksComboSkill, asksCure, asksLetterbox, asksOpenField, asksOpening, asksShownFlashback, asksTimedWhereabouts, asksWorkingShop, buildsWholeGame, namesRandomEncounters, saysNewGame } from "../request/readers";
 import { enemyIdentityProblems } from "./enemyChecks";
 import { hudTitleChoiceProblems } from "./hudTitleChecks";
-import { withoutNegatedEncounters } from "../request/combat";
 import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMismatch } from "./lookChecks";
 import { dryBoats, dryBridges, placementProblems, type PlacementProblem } from "../place/placementRules";
 import { offPurposeProps } from "../place/roomPurpose";
@@ -47,7 +46,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   if (soundOnly(task) && !seBindingsChanged(before, after) && !kinds.has("playAudio") && !scriptCalls(/\bgame\.playSe\s*\(/u)) problems.push("[게임 검사 효과음] 요청에 효과음이 있는데 어느 자리에도 소리를 걸지 않았다. 화풍 통째로는 set_game_audio{role:'sfx-style', style}, 자리 하나는 store_find_sound → store_install → set_game_audio{role:'se', cue, resourceId}(프로젝트에 있는 소리면 list_resources{kind:'se'} 로 골라 바로 role:'se').");
   if (musicAsked(task) && !audioBindingsChanged(before, after) && !kinds.has("playAudio") && !kinds.has("stopAudio") && !m2Has(/bgm|audio|music/iu) && !scriptCalls(/\bgame\.(playBgm|stopBgm)\s*\(/u)) problems.push("[게임 검사 음악] 요청에 음악·BGM 이 있는데 어느 자리에도 곡을 걸지 않았다. 맵·전투·보스·승리·타이틀·엔딩 곡은 set_game_audio 로 건다(맞는 곡이 프로젝트에 없으면 store_find_music → 묻지 말고 store_install 로 넣은 뒤). 장면 도중 잠깐 바뀌는 곡만 add_event 의 music 비트({do:'music',action:'bgm',query:'festival'}).");
   // 추격 음악은 추격자가 나타날 때의 곡이다 — 전투 곡이 아니다(2026-10-30 실조수 e2e: 「아오오니 느낌으로 추격 음악」이 모든 전투에 걸렸다).
-  if (musicAsked(task) && /추격|쫓아|쫓기|chase/iu.test(task) && !/전투|배틀|battle/iu.test(task) && (before.system.battleBgmResourceId ?? null) !== (after.system.battleBgmResourceId ?? null)) problems.push("[게임 검사 음악] 추격 음악을 모든 전투 곡(battle-default)에 걸었다. 추격 곡은 set_game_audio role:'chase'(+mapIds)로 추격자가 나타날 때 바꾸고 끝나면 되돌린다 — 전투 곡은 원래대로 돌려놓는다(추격자가 없으면 곡만 넣어 두고 보고에 적는다).");
+  if (musicAsked(task) && asksChaseNotBattleMusic(task) && (before.system.battleBgmResourceId ?? null) !== (after.system.battleBgmResourceId ?? null)) problems.push("[게임 검사 음악] 추격 음악을 모든 전투 곡(battle-default)에 걸었다. 추격 곡은 set_game_audio role:'chase'(+mapIds)로 추격자가 나타날 때 바꾸고 끝나면 되돌린다 — 전투 곡은 원래대로 돌려놓는다(추격자가 없으면 곡만 넣어 두고 보고에 적는다).");
   // 1c) 눈에 안 보이는 «조사하는» 물건: 새로 만든 결정 키(action) 이벤트에 그림도 없고 그 칸에 물건 타일도 없다(이동석·덤불·표지판이 맨땅으로 보였다).
   if (!HIDDEN_WORDS.test(task)) {
     for (const ev of changed) {
@@ -108,11 +107,11 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     }
   }
   // 1d) 상점: 사고파는 요청인데 바꾼 이벤트 어디에도 상점 명령이 없다(대장장이가 낮에 대사만 했다 — 2026-10-24 스위트).
-  if (/상점|가게|무기점|도구점|잡화점|장사|shop|store/iu.test(task) && /팔|사고|살 수|구매|장사|문을 열|열고|열어|buy|sell/iu.test(task) && !kinds.has("shop")) {
+  if (asksWorkingShop(task) && !kinds.has("shop")) {
     problems.push("[게임 검사 상점] 요청에 사고파는 상점이 있는데 바꾼 이벤트에 상점 명령(kind:'shop')이 없다 — set_shop_stock 으로 그 NPC 에 상점을 달거나, 시간대 페이지라면 열린 시간 페이지에 {kind:'shop',goods,allowSell:true} 를 넣는다.");
   }
   // 1e) 시간표: 「밤에는 집에·낮에는 가게에」처럼 시간대마다 자리가 바뀌는 사람 — 시간표(schedule)나 시간대 페이지(timePhase)가 있어야 한다.
-  if (/(밤|저녁|아침|낮|새벽|시간)[^.!?]{0,12}(에는|엔|이 되면|마다|동안)[^.!?]{0,20}(집|가게|광장|여관|방)\s*(안|밖)?\s*(에|으로|로)\s*(있|가|들어가|돌아가|나와|서)/u.test(task)) {
+  if (asksTimedWhereabouts(task)) {
     const scheduled = Object.values(after.maps).some((m) => (m.events ?? []).some((e) => {
       const prev = before.maps[m.id]?.events?.find((b) => b.id === e.id) as unknown as Obj | undefined;
       const sch = (e as unknown as Obj).schedule;
@@ -150,7 +149,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     }
   }
   // 1e3) 「숲·들판에 적/사당」인데 새 맵 없이 마을 맵에 두었다(마을 나무 덩이 안의 고블린·멧돼지 — 2026-10-25).
-  if (/숲|들판|필드|초원/u.test(task) && !/마을\s*(안|광장|길|숲)|광장/u.test(task) && !Object.keys(after.maps).some((id) => !before.maps[id])) {
+  if (asksOpenField(task) && !Object.keys(after.maps).some((id) => !before.maps[id])) {
     const foes = changed.filter((ev) => ((ev as unknown as Obj).pages as Obj[] | undefined ?? []).some((p) => (p.trigger as Obj | undefined)?.kind === "eventTouch" && JSON.stringify(p.commands ?? []).includes("battleProcessing")));
     if (foes.length) problems.push(`[게임 검사 장소] 요청은 숲·들판인데 새 맵 없이 기존 맵에 필드 적 ${foes.length}개를 두었다 — author_forest_route(숲, 들판은 terrain:'field')로 그 맵을 짓고 가장자리로 이은 뒤 거기에 둔다.`);
   }
@@ -181,7 +180,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     });
   }
   // 1h) 무작위 조우: 「랜덤 인카운터·풀숲에서 마주치는」 요청인데 조우표가 안 바뀌었다(보이는 적 이벤트만 놓았다).
-  if (/랜덤|무작위|인카운터|마주치|조우|encounter/iu.test(withoutNegatedEncounters(task))) {
+  if (namesRandomEncounters(task)) {
     const enc = (m: unknown) => { const o = m as Obj | undefined; const v = o?.encounterTable ?? o?.encounters ?? o?.encounter; return Array.isArray(v) && v.length ? JSON.stringify(v) : ""; };
     const changedEnc = Object.values(after.maps).some((m) => enc(m) && enc(m) !== enc(before.maps[m.id]));
     if (!changedEnc) problems.push("[게임 검사 조우] 요청에 무작위 조우가 있는데 어느 맵의 조우표도 바뀌지 않았다 — set_encounter_table 로 그 맵에 적 그룹·빈도를 단다(보이는 적 이벤트는 무작위 조우가 아니다).");
@@ -194,9 +193,9 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     if (!encOn) problems.push("[게임 검사 전투] 요청에 싸울 몬스터·적이 있는데 이번에 단 전투(battleProcessing)도 켠 조우도 없다 — upsert_enemy·upsert_troop 로 적을 만들고 place_field_enemy 로 그 맵에 둔다(author_forest_route 결과 data.maps[i].enemySpots 가 적 자리, clearing·deadEnds·출입구 칸에 겹치지 않게).");
   }
   // 1j) 적 개성(2026-11-09 fs-use-tools E1): 게임을 만드는 요청에서 보스가 기본 공격뿐이거나 일반 적 기술이 전부 같다.
-  if (wantsWholeGame(task)) problems.push(...enemyIdentityProblems(after));
+  if (buildsWholeGame(after, task)) problems.push(...enemyIdentityProblems(after));
   // 1l) HUD·타이틀 선택(2026-11-09 fs-use-tools): 게임을 만드는 요청에서 HUD 가 이야기 기본 템플릿 그대로이거나 타이틀 모양을 아무도 고르지 않았다.
-  if (wantsWholeGame(task)) problems.push(...hudTitleChoiceProblems(after));
+  if (buildsWholeGame(after, task)) problems.push(...hudTitleChoiceProblems(after));
   // 2) 엔딩: 엔딩 정의 + triggerEnding.
   // 음악만 바라는 엔딩 요청(「잔잔하게 엔딩곡」)은 엔딩을 짓는 요청이 아니다. 엔딩 명령은 이번에 바꾼 이벤트가 아니라 프로젝트 전체에서 찾는다 —
   // 이미 있던 보스 이벤트의 triggerEnding 도 엔딩이다(2026-10-30 r11: 바꾼 이벤트만 봐서 «triggerEnding 이 없다»고 거짓으로 막았다).
@@ -220,7 +219,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   // 3) 상태 이상: 실제 상태 걸기(m2-019-change-state add) 또는 상태를 거는 데이터(아이템·기술·적의 stateEffects).
   if (STATE_WORDS.test(task)) {
     // 치료·해독 요청이면 상태를 «지우는» 것도 실제 상태 처리다(g-healer). 아이템의 healStateIds 도.
-    const cures = /치료|고쳐|고치|해독|낫게|cure|heal/iu.test(task);
+    const cures = asksCure(task);
     const applies = cmds.some((r) => r.cmd.kind === "m2Command" && /m2-019/u.test(String(r.cmd.commandId)) && (cures || obj(r.cmd.fields)?.operation !== "remove"))
       || (cures && cmds.some((r) => r.cmd.kind === "recoverAll"));
     const changedDb = changedRecordsJson(before, after);
@@ -270,7 +269,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     const changedIds = new Set(changed.map((ev) => ev.id));
     const clues = skippableClues(after).filter((line) => [...changedIds].some((id) => line.includes(`(${id})`)));
     if (clues.length) problems.push(`[게임 검사 퍼즐] ${clues.slice(0, 3).join(" / ")}. 단서 전 페이지에서는 보상 항목을 빼고 「뭔가 단서가 필요하다」 대사만 두며, 보상은 단서 스위치 조건 페이지에만 남긴다.`);
-    if (/단서|쪽지|힌트|일기|메모|적혀|써\s*있|clue|hint|note/iu.test(task) && /맞추|맞춰|퍼즐|비밀번호|암호|자물쇠|금고|열쇠가 나|puzzle|code/iu.test(task)) {
+    if (asksClueForLock(task)) {
       // 숫자·글자를 입력하는 자물쇠는 답을 알아야 풀리니 단서 스위치로 막지 않아도 된다 — 고르기 창으로 찍어 맞힐 수 있는 퍼즐만 본다.
       const guessable = changed.some((ev) => !allCommands(ev).some((r) => /^input/u.test(String(r.cmd.kind)))
         && allCommands(ev).some((r) => r.cmd.kind === "choices" && JSON.stringify(r.cmd.options ?? []).match(/"kind":"(changeItem|setSwitch)"/u)));
@@ -284,7 +283,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   }
   // 말로만 쫓는 추격자(2026-10-25 심판 J54): 요청이 「시야·추격·순찰·느낌표」인데 바뀐 이벤트 어디에도 쫓는 움직임·순찰 길·시야가 없다.
   {
-    const asked = /시야|추격|쫓|순찰|느낌표|「!」|patrol|chase|line of sight/iu.test(task);
+    const asked = asksChaserBehavior(task);
     const built = changed.some((ev) => ev.pages.some((pg) => {
       const mv = obj(pg.movement) ?? obj(pg.moveRoute);
       return !!mv && (mv.type === "chase" || !!obj(mv.route) || !!obj(mv.sight) || typeof mv.sightRange === "number");
@@ -353,7 +352,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   }
   // 순서가 있는 이야기: 「숲을 조사하고 돌아오면 … 제1막 끝」인데 엔딩·막 끝이 조건 없는 페이지에 있어 첫 대화에 바로 터진다
   // (2026-10-25 폴른 과업 fs-end-act: 숲에 가기도 전에 촌장 첫 대화에서 마을 습격 + 「제1막 끝」).
-  if (/돌아오면|다녀오면|다녀온 (?:뒤|다음|후)|(?:하|마치|끝내|조사하|보고하|만나|잡|물리치|구하)고 (?:나서|나면|오면|돌아)|한 (?:뒤|다음|후)에?|끝나면|마치면|이후에/u.test(task)) {
+  if (asksAfterStep(task)) {
     for (const r of cmds) {
       const endingText = r.cmd.kind === "text" && /제\s*\d+\s*막\s*끝|막이?\s*끝|THE END/iu.test(String(r.cmd.body ?? ""));
       if ((r.cmd.kind !== "triggerEnding" && !endingText) || r.ev.mapId === "common") continue;
@@ -366,7 +365,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   }
   // 회상(과거 장면): 화면 색만 바꾸고 지금 인물이 옛이야기를 읽어 주면 과거 장면이 아니다 — 과거 인물이 화면에 나와야 한다
   // (2026-10-25 장난감 가게 G34: 「장난감에게 말 걸면 과거 장면이 보이게」에 세피아 색 + 장난감 독백만 넣었다).
-  if (/회상|과거 장면|과거의 장면|옛날 장면|플래시백|flashback/iu.test(task) && /보이|나오|나와|등장|화면|장면/u.test(task)) {
+  if (asksShownFlashback(task)) {
     const others = (ev: { id: string }) => cmds.some((r) => r.ev.id === ev.id && (
       (r.cmd.kind === "moveEvent" && r.cmd.eventId !== undefined && r.cmd.eventId !== "player")
       || (r.cmd.kind === "m2Command" && /m2-225/u.test(String(r.cmd.commandId)) && Number((r.cmd.fields as Obj | undefined)?.opacity ?? 0) > 0)
@@ -411,20 +410,20 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     }
   }
   // 「제1막 끝」 카드: 대사 한 줄로 흉내 내면 게임이 그대로 이어진다 — 진짜 엔딩(막 끝 화면)이어야 한다(fs-end-act).
-  if (/제\s*\d+\s*막\s*끝|막이?\s*끝나|막 끝/u.test(task) && !kinds.has("triggerEnding")) {
+  if (asksActEnd(task) && !kinds.has("triggerEnding")) {
     problems.push("[게임 검사 엔딩] 요청에 「막 끝」 화면이 있는데 바꾼 이벤트에 진짜 엔딩 명령이 없다 — 대사 「제1막 끝」만으로는 게임이 그대로 이어진다. define_ending{id:'ending_act1',presentation:{finalTitle:'제1막 끝',badge:'제2막으로 이어집니다'}} 뒤 그 장면 끝에 {kind:'triggerEnding',endingId:'ending_act1'} 를 넣는다.");
   }
   // 레터박스(위아래 검은 띠): 컷신이 띠를 저절로 넣지 않는다 — 실제 띠 명령이 있어야 한다(2026-10-25 폴른 과업 fs-cine-letterbox: 「자동」이라 믿고 빠뜨림).
-  if (/레터박스|검은 띠|letterbox/iu.test(task) && JSON.stringify(after.system.opening ?? null) === JSON.stringify(before.system.opening ?? null) && !JSON.stringify(changed.map((ev) => ev.pages)).includes("letterbox")) {
+  if (asksLetterbox(task) && JSON.stringify(after.system.opening ?? null) === JSON.stringify(before.system.opening ?? null) && !JSON.stringify(changed.map((ev) => ev.pages)).includes("letterbox")) {
     problems.push("[게임 검사 화면] 요청에 위아래 검은 띠(레터박스)가 있는데 바꾼 이벤트에 띠 명령이 없다 — 컷신은 띠를 저절로 넣지 않는다. add_scene/script_cutscene 의 letterbox 비트({do:'letterbox',show:true,size:12}) 또는 {kind:'m2Command',commandId:'m2-202-screen-effect',fields:{effect:'letterbox',value:12,durationMs:400}} 를 장면 맨 앞에 넣는다.");
   }
   // 새 게임인데 오프닝이 공장 기본(「강을 낀 왕국…」) 그대로 켜져 있다 — 첫 화면부터 다른 이야기가 나온다(2026-10-25 조수 단독 게임 G3).
   {
     const op = after.system.opening as { enabled?: boolean; scenes?: { narration?: string; resourceId?: string }[] } | undefined;
     const factory = !!op?.enabled && (op.scenes ?? []).some((sc) => /강을 낀 왕국에는 오래도록 전쟁이 없었다/u.test(sc.narration ?? "") || sc.resourceId === "oprn-still-kingdom-day");
-    const newGame = after.meta.title !== before.meta.title || /게임을? (하나 )?만들|게임 하나|새 게임|만들고 싶어/u.test(task);
+    const newGame = after.meta.title !== before.meta.title || saysNewGame(task);
     // 요청이 오프닝을 고치라는데 공장 기본이 그대로면, 설정(켜기·음악)만 바꿨어도 문제다 — 「오프닝을 새로 만들었다」는 거짓 보고가 났다(2026-10-25 G35).
-    const openingAsk = /오프닝|opening|시작할 때 나오|처음 (시작할 때|나오는)/iu.test(task);
+    const openingAsk = asksOpening(task);
     if (factory && (openingAsk || newGame && JSON.stringify(op) === JSON.stringify(before.system.opening))) {
       problems.push("[게임 검사 오프닝] 게임을 새로 만들었는데 오프닝이 프로젝트 기본(「강을 낀 왕국에는 오래도록 전쟁이 없었다」)이 그대로 켜져 있다 — 새 게임 첫 화면에 엉뚱한 이야기가 나온다. plan_opening/set_opening 으로 이 게임 이야기(주인공·목표) 몇 장면으로 바꾸거나, 오프닝을 원하지 않으면 set_opening{enabled:false}.");
     }
@@ -450,7 +449,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
     }
   }
   // 연계기(두세 사람이 같이 쓰는 기술): 요청에 있는데 새/바뀐 연계 기록(comboActorIds 2명 이상)이 없다 — 평범한 기술 두 개로 흉내 내지 않는다(2026-10-25 데모 과업).
-  if (/연계|합체기|협동 기술|콤보 기술|같이 쓰는 (기술|필살기)|combo/iu.test(task)) {
+  if (asksComboSkill(task)) {
     const prior = new Map(before.database.skills.map((sk) => [sk.id, JSON.stringify(sk)]));
     const combo = after.database.skills.some((sk) => (sk.comboActorIds?.length ?? 0) >= 2 && prior.get(sk.id) !== JSON.stringify(sk));
     if (!combo) problems.push("[게임 검사 연계기] 요청에 연계기가 있는데 새로 만든 연계 기록이 없다(평범한 기술은 「연계」 명령에 안 뜬다). upsert_combo_tech{id:'skill_combo_…', name, actorIds:[두 배우], mpCosts, scope, power} 로 만들고, 참가 배우가 파티에 없으면 set_party 로 넣는다.");
@@ -468,7 +467,7 @@ export function gameContentProblems(before: Project, after: Project, task: strin
   if (JSON.stringify(before.system.titleScreen ?? null) !== JSON.stringify(after.system.titleScreen ?? null)) problems.push(...titleBackdropMismatch(after, task));
   // 주인공 모습 ↔ 장르(J43): 게임을 만드는 요청은 출하 검사(hero-look)가 이미 짚는다. 그 밖에는 이번에 장소(맵)를 새로 지은 실행만 —
   // 시작 위치 옮기기 같은 작은 고치기에서 시키지 않은 주인공 바꾸기를 시키지 않는다.
-  if (!wantsWholeGame(task) && Object.keys(after.maps).some((id) => !before.maps[id])) problems.push(...pristineFantasyHero(after, task));
+  if (!buildsWholeGame(after, task) && Object.keys(after.maps).some((id) => !before.maps[id])) problems.push(...pristineFantasyHero(after, task));
   problems.push(...placementContentProblems(before, after));
   return problems;
 }

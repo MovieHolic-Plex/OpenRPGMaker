@@ -41,7 +41,8 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 - `scripts/qa/assistant-v2/wholeGameTable.mts`(스위트 12 프롬프트·방 과제 17개·후속 차례 90줄): 어긋남 0.
 - `golden.mts --diff`: 기준 126줄 가운데 65줄이 달라졌다(더한 요청 6개 × 3상태는 따로) — 잘못 갈리던 문장 9개의 지시문·도구가 바뀌었고(「별의 노래」 8도구 → 온 도구, 「엔딩까지 가는 길에 표지판」·「처음부터 끝까지 맞춤법」·「게임 속 상점 NPC」 게임 하나 → 고치기, 「독서실」 게임 카드 빠짐, 「사냥터 경험치」 전투 도구 실림, 「동굴로 가게 이어 줘」 실내 목록 빠짐, 「맵 이름 바꿔 줘」·소리만 요청은 가벼운 지시문), 게임 하나로 시작한 프로젝트의 작은 요청 30여 줄이 `wholeWithProject true→false` 로 바뀌었다. 「계속」「남은 거 마저 해 줘」와 측정용 후속 문장은 그대로 게임 하나다.
 
-아직 이 기록을 읽지 않는 자리(다른 줄기 파일 — 본문을 고치지 않았다): `gameChecks.ts` 의 익명 정규식 약 25곳(조우 1h 줄 포함), `judge/finishGate.ts` 의 질문·스토어 전용 판정, `verbs.ts` 의 generate_art 싣기(지금은 `buildsWholeGame` — 작은 요청에는 안 실린다. `art` 칸을 같이 보면 「타이틀 그림 새로 그려 줘」에도 실린다), `gameChecks`·`pathBattleBudget`·`vqa`·`reload-check`·실행기의 `wantsWholeGame(task)`(글만 본다 — 이어 하기 턴에는 `buildsWholeGame` 이 맞다).
+아직 이 기록을 읽지 않는 자리: `tools/context.ts` 의 청사진 재촉 두 곳(`wantsWholeGame(task)` — 글만 본다)과 v1 실행기(`scripts/lib/piAgentRuntime.ts`, v2 가 아닐 때만).
+판정 코드의 요청 읽기는 2026-11-11 B7 에서 `request/readers.ts` 로 옮겼다(아래 「이어 하기 턴의 판정」).
 
 ## 지시문·도구 예산 — 작은 일에는 그 일의 카드와 도구만 (2026-11-11, 리팩토링 B1 뒤)
 
@@ -462,6 +463,41 @@ golden: 123/153 이 `furnish_outdoor_area` 글/스키마만 바뀜(실리고 빠
     전에는 「상점 주인 세워 줘」 의 첫 `add_people` 이 카드만 돌려주고 끝나 한 번을 버렸다.
 - 증거: golden 은 153 요청 중 6 요청만 달라진다 — 지은 게임의 이어 하기 3줄(지시문 12,139 → 31,691자, 게임 도구가 처음 목록에 생김)과 그림 요청 3줄(`generate_art` 가 필요할 때 싣는 목록에 생김).
   turnTrace 는 같다(4개 장면 · 305줄). 시험 `test/aiV2ContinueTools.test.ts`.
+
+## 이어 하기 턴의 판정 — 게임 하나를 잇는 «계속» 은 검사에서도 게임 하나다 (2026-11-11, 리팩토링 B7)
+
+**무엇이 문제였나.** 판정 코드가 요청을 두 가지로 따로 읽었다. (1) 「게임 하나냐」 를 글만 보는 `wantsWholeGame(task)` 로 물어, 게임 하나 청사진을 잇는 「계속 해 줘」 턴이
+도구·지시문·끝맺음에서는 게임 하나인데(위 두 절) 검사에서는 작은 요청이었다 — 화면 검수가 돌지 않아, 앞 턴이 남긴 화면 검수 항목을 모델이 `done` 이라고만 하면 다시 보는 눈 없이 닫혔다.
+(2) `gameChecks` · `finishGate` · `shipChecks` 안에 요청 글을 맞추는 익명 정규식이 흩어져 있었다(규칙 1 「요청 낱말 목록은 `request/` 에만」 위반).
+
+**규칙.**
+
+- 판정 코드는 「게임 하나냐」 를 `buildsWholeGame(project, task)`(요청 의도 기록의 `wholeGame`)로 묻는다: `judge/gameChecks`(적 정체 · 타이틀/HUD 고르기 · 작은 요청에서만 보는 기본 주인공 그림 검사는 건너뛴다) ·
+  `judge/combatChecks`(이번 턴이 전투를 안 건드려도 출하 전투 검사를 돈다) · `story/pathBattleBudget`(길 위 필드 전투 빼기) · `judge/finishGate`(맵 화면 그림 문제) ·
+  `turn/support.vqaEnabled`(화면 검수 켜기) · `finish/stages/reload-check`. 글에 게임 낱말이 있는 요청과 청사진이 없는 프로젝트의 「계속」 은 답이 그대로다.
+- 판정 코드 안의 요청 정규식은 `request/readers.ts` 의 이름 붙은 읽는 함수다 — 낱말은 한 글자도 바꾸지 않았다:
+  `asksChaseNotBattleMusic` `asksWorkingShop` `asksTimedWhereabouts` `asksOpenField` `namesRandomEncounters` `asksCure` `asksClueForLock` `asksChaserBehavior` `asksAfterStep`
+  `asksShownFlashback` `asksActEnd` `asksLetterbox` `saysNewGame` `asksOpening` `asksComboSkill` `asksPerDay` `asksBattleDataRemoval` `asksLookChange` `asksRemoval`
+  `asksDataChange(section, task)` `asksSettingOnly` `asksStoreOnly` `asksToBeTold` `requestedFeatureWord(id, task)`(추격자 · 어둠 · 숨기 — 옛 `REQUESTED_FEATURES[].words`).
+  새 요청 낱말은 판정 파일이 아니라 여기에 더한다.
+- 남은 것: `puzzleChecks.unjoinedFollowers` 의 `JOIN` 은 대사 글과 요청 글을 같은 낱말로 읽어 그대로 두었다. `tools/context.ts` 의 청사진 재촉은 글만 본다(도구 줄기 파일).
+
+**근거(모델 없음).**
+
+- 낱말 그대로: 요청 글 2,790줄(golden 153 · 말뭉치 · 시험 속 요청) × 읽는 함수 32개 = 89,280번을 옛 정규식과 맞대어 다른 답 0.
+- 판정 탐침(게임 하나 청사진 + 회복 길 없는 전투 하나):
+
+| 프로젝트 · 요청 | 전 | 후 |
+|---|---|---|
+| 청사진 있음 · 「계속 해 줘」 | 화면 검수 꺼짐 · 전투 문제 0 · 게임 검사 0 | 화면 검수 켜짐 · `[출하 차단 no-healing]` · `[게임 검사 타이틀 모양]` |
+| 청사진 있음 · 「촌장 대사를 바꿔 줘」 | 꺼짐 · 0 · 0 | 같다 |
+| 청사진 있음/없음 · 「판타지 RPG 게임 하나 만들어 줘.」 | 켜짐 · no-healing · 2건 | 같다 |
+| 청사진 없음 · 「계속 해 줘」 | 꺼짐 · 0 · 0 | 같다 |
+
+- `golden.mts --diff`: 같다(153 요청) — 지시문·도구는 안 바뀐다.
+- `turnTrace.mts`: 옛 장면 넷은 같다(305줄). 더한 장면 `continue-short`(청사진이 있는 프로젝트에 「계속 해 줘」)만 65 → 71줄로 달라진다 — 기존 결함 한 줄(`[게임 검사 타이틀 모양]`, 시작 저장본에 있던 것이라 완료를 막지 않는다),
+  화면 검수 한 판(다섯 줄: 결함 5건 · 모델 밖 2 · 그대로 3), 그리고 그 결과가 실린 최종 넉 줄. 앞 턴의 화면 검수 항목 셋(v10~v12)은 전에는 대본 모델의 `done` 만으로 닫혔고, 이제는 화면 검수가 다시 보고 «두 판 연속 그대로» 로 막는다(막음 1 · 다듬기 2 — 다듬기는 완료를 막지 않는다).
+- 시험 `test/aiV2RequestReaders.test.ts`. Terra 로는 아직 다시 재지 않았다 — 이어 하기 턴마다 화면 검수 한 판(그림 4~5장)이 더 든다.
 
 ## 작은 요청의 끝맺음 — 게임을 짓는 턴에만 청사진 끝맺음을 돈다 (2026-11-11, 작은 일 기준선)
 

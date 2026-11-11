@@ -1,6 +1,6 @@
 // 턴 구동기가 같이 쓰는 밑받침 — 켜고 끄는 스위치(환경 변수), 단계 시간 재기, 변경 요약. 2026-11-11 리팩토링 R3: scripts/lib/assistantV2Runtime.ts 에서 옮겼다.
 import type { PiAgentRequest } from "../../piAgent/protocol";
-import { wantsWholeGame } from "../request/readers";
+import { buildsWholeGame } from "../request/readers";
 import type { PiAssistantV2Env } from "../shared/env";
 import { summarizeProjectDiff } from "../judge/advisor";
 
@@ -20,7 +20,7 @@ export const safeDiff = (env: PiAssistantV2Env): string => {
 };
 
 /**
- * 화면 검수 고리(src/ai/v2/judge/vqa.ts) — 게임 전체를 만드는 요청에만, 읽기 전용이 아닐 때만. 끄려면 OPRN_V2_VQA=0.
+ * 화면 검수 고리(src/ai/v2/judge/vqa.ts) — 게임 하나를 짓는 턴에만(게임 하나 요청, 또는 그 게임을 잇는 «계속»), 읽기 전용이 아닐 때만. 끄려면 OPRN_V2_VQA=0.
  * 사용자 규칙(2026-10-25): 최소 한 판, 결함 없는 판이 나오거나 3판을 돌 때까지. 그림 경로가 없는 실행은 «검수 못 함»으로 보고한다.
  */
-export const vqaEnabled = (request: PiAgentRequest): boolean => process.env.OPRN_V2_VQA !== "0" && !request.readOnly && wantsWholeGame(request.task);
+export const vqaEnabled = (request: PiAgentRequest): boolean => process.env.OPRN_V2_VQA !== "0" && !request.readOnly && buildsWholeGame(request.project, request.task);
