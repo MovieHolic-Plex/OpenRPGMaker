@@ -585,7 +585,11 @@
 "out/si-observatory/3.1@r8846a054": 687,
 "out/si-observatory/1.2@rf7bf8a65": 688,
 "out/si-observatory/2.2@r3928a1b8": 689,
-"out/si-observatory/3.2@rf268526f": 690
+"out/si-observatory/3.2@rf268526f": 690,
+"out/si-seal-altar/0.0": 691,
+"out/si-seal-altar/1.0": 692,
+"out/si-seal-altar/0.1": 693,
+"out/si-seal-altar/1.1": 694
 },
 "strips": {
 "out/si-stream/0.0": [
