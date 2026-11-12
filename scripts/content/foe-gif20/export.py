@@ -8,6 +8,8 @@ src/assets/currentMonsterSheets20.ts 와 tiledata/foe-gif20/ 로 쓴다.
     『폴른 스타』의 시트를 그대로 쓴다(currentMonsterArt20.ts) — 이 파일의 것은 엄격한 관문을 통과한 판본으로 실려만 있다.
   - 근거(원본 GIF·첨부한 참고 그림·지시문·시트·관문 수치·판정)는 battle-gen `export20` 이 tiledata/foe-gif20/<slug>/ 에 쓴다.
   - PNG 는 무손실 팔레트 PNG 로 다시 싸고 다시 풀어 화소를 비교한다. 초상 = 시트 첫 칸(idle_a).
+  - tiledata/foe-gif20/<slug>/battle-640x480.png 는 이 스크립트가 쓰지 않는다 — 그 시트를 출하 플레이어(player.html)의 실제 전투에 세워 찍은 화면이다
+    (battle-gen integration/oprn/foe-gif20-battle.capture.mjs, 640×480 = 정확히 2배). 시트를 다시 내보내 화소가 바뀌면 다시 찍는다.
   - 『폴른 스타』 전용 파일(flagship/fallen/monsterSheets16.ts)은 건드리지 않는다.
 
   python3 scripts/content/foe-gif20/export.py [--battle-gen ~/z-project/battle-gen]
