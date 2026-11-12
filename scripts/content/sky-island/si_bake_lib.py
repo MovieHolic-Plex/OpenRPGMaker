@@ -132,12 +132,14 @@ class Outdoor:
         frames = [Image.open(f).convert('RGBA') for f in p['frames']] if p.get('frames') else None
         cells = {}
         ent = set(p.get('entrance') or [])
+        over = {tuple(k): v for k, v in (p.get('cells_pc') or {}).items()}     # 칸마다 통행 종류를 조각이 직접 선언(이야기 기물: 막힌 칸 solid · 솟은 칸 star · 바닥 그림 flat)
         for y in range(H):
             for x in range(W):
                 crop = lambda s: s.crop((x * T, y * T, x * T + T, y * T + T))
                 pc = cell_pc(p['kind'], crop(frames[0] if frames else im), y, H, x, W, p.get('pc'), p.get('role') == 'building')
                 if pc is None: continue
                 if y == H - 1 and x in ent: pc = 'solid'
+                if (x, y) in over: pc = over[(x, y)]
                 where = f' ({x + 1},{y + 1})' if W * H > 1 else ''
                 meta = dict(label=f"{p['name']}{where}", desc=f"{p['desc']} — {BL.PCNOTE[pc]}.", role=p.get('role', 'prop'),
                             tags=[self.theme, p['group']] + list(p.get('tags', [])), rep='repeat' if p['kind'] in ('terrain', 'flat') and W * H == 1 and not p.get('fixed') else 'fixed', piece=p['id'])
@@ -184,7 +186,7 @@ class Outdoor:
                       themes=[self.theme], origin='ai', confidence='high', snap='floor', anchor=dict(dx=W // 2, dy=H - 1))
             if nfr > 1: ai['tags'].append(f'애니메이션 {nfr}프레임')
             # stamp_tileset_object(조수의 키트 찍기 도구)가 읽는 종류 낱말: decal 바닥 표시 · overhead 머리 위(낙하물) · prop 막힘(기본)
-            ai['tags'].append('decal' if p['kind'] == 'flat' else 'overhead' if p['kind'] == 'debris' else 'prop')
+            ai['tags'].append(p.get('stamp') or ('decal' if p['kind'] == 'flat' else 'overhead' if p['kind'] == 'debris' else 'prop'))
             kit = dict(id=p['id'], kind='section', name=p['name'], width=W, height=H, tileSize=16, rows=rows, learnedFrom='pack-preset', ai=ai)
             ent = p.get('entrance')
             if ent:
