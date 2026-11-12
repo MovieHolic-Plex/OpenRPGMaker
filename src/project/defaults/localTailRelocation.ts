@@ -172,3 +172,34 @@ export function adoptBundleBeforeTail(tileset: TilesetDef, fresh: TilesetDef, st
   tileset.autotileGroups = [...(fresh.autotileGroups ?? []), ...(tileset.autotileGroups ?? []).filter((group) => !owned(group.id))];
   tileset.structureKits = [...(fresh.structureKits ?? []), ...(tileset.structureKits ?? []).filter((kit) => !owned(kit.id))];
 }
+
+type BundleShapeView = Pick<TilesetDef, "priority" | "passability" | "tileMeta" | "tileGroups" | "autotileGroups" | "animationStrips" | "structureKits">;
+/** 테마 번들 ensure 가 넘기는 것: 번들 칸 수 · 새 번들 정의 · 번들 소유 id 판정 · 그 번들의 모양 요약 함수와 번들 자신의 요약. */
+export interface ThemeBundle {
+  readonly count: number;
+  readonly fresh: () => TilesetDef;
+  readonly owned: (id: string) => boolean;
+  readonly signature: (view: BundleShapeView) => string;
+  readonly bundleSignature: () => string;
+}
+
+/**
+ * 테마 번들 ensure 공용(2026-11-12): 사본에 프로젝트 이식 꼬리가 있으면 settleLocalTail 로 자리 잡게 하고, 번들 구간이 번들과 다르면 adoptBundleBeforeTail 로 맞춘다.
+ * undefined = 이식 칸이 없다(호출자의 예전 길로 간다) · false = 손대지 않았다(프로젝트 없이 불렸거나, 더 새 번들 사본이거나, 이미 같다) · true = 바꿨다.
+ */
+export function settleThemeBundleTail(tileset: TilesetDef, project: RelocationProject | undefined, bundle: ThemeBundle): boolean | undefined {
+  const tail = settleLocalTail(tileset, bundle.count, project);
+  if (tail === null) return undefined;
+  if (tail === "kept") return false;
+  if (!tail.moved) {
+    const n = bundle.count;
+    const bundlePart = bundle.signature({
+      priority: tileset.priority.slice(0, n), passability: tileset.passability.slice(0, n), tileMeta: tileset.tileMeta?.slice(0, n),
+      tileGroups: (tileset.tileGroups ?? []).filter((group) => !group.tileIds.some((tile) => tile >= tail.start)), autotileGroups: tileset.autotileGroups,
+      animationStrips: (tileset.animationStrips ?? []).filter((strip) => strip.baseTile < tail.start), structureKits: tileset.structureKits,
+    });
+    if (bundlePart === bundle.bundleSignature()) return false;
+  }
+  adoptBundleBeforeTail(tileset, bundle.fresh(), tail.start, bundle.owned);
+  return true;
+}

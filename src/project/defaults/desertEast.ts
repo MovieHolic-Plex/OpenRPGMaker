@@ -13,7 +13,7 @@ const data = () => bundledJson("desertEastTileset");
 import references from "@/assets/desertEastReferences.json";
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
-import { adoptBundleBeforeTail, settleLocalTail, type RelocationProject } from "./localTailRelocation";
+import { settleThemeBundleTail, type RelocationProject } from "./localTailRelocation";
 
 export const DESERT_EAST_ID = "desert_east";
 export const DESERT_EAST_TEXTURE = "tex_desert_east";
@@ -132,20 +132,8 @@ export function ensureDesertEastTileset(tileset: TilesetDef, project?: Relocatio
   let changed = false;
   if (tileset.family !== DESERT_EAST_FAMILY) { tileset.family = DESERT_EAST_FAMILY; changed = true; }
   if (tileset.tilesPerRow === sheet.tilesPerRow) {
-    const tail = settleLocalTail(tileset, sheet.count, project);
-    if (tail === "kept") return changed;
-    if (tail) {
-      const n = sheet.count;
-      const shippedGroups = new Set((data().tileGroups as { id: string }[]).map((group) => group.id));
-      const bundlePart = shapeSignature({
-        priority: tileset.priority.slice(0, n), passability: tileset.passability.slice(0, n), tileMeta: tileset.tileMeta?.slice(0, n),
-        tileGroups: (tileset.tileGroups ?? []).filter((group) => shippedGroups.has(group.id)), autotileGroups: tileset.autotileGroups,
-        animationStrips: (tileset.animationStrips ?? []).filter((strip) => strip.baseTile < n), structureKits: tileset.structureKits,
-      });
-      if (!tail.moved && bundlePart === bundleShape()) return changed;
-      adoptBundleBeforeTail(tileset, createDesertEastTileset(), tail.start, isOwned);
-      return true;
-    }
+    const tail = settleThemeBundleTail(tileset, project, { count: sheet.count, fresh: createDesertEastTileset, owned: isOwned, signature: shapeSignature, bundleSignature: bundleShape });
+    if (tail !== undefined) return tail || changed;
     if (tileset.count > sheet.count) return changed;
     if (tileset.count === sheet.count && shapeSignature(tileset) === bundleShape()) return changed;
     const fresh = createDesertEastTileset();
