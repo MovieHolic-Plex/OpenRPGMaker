@@ -84,7 +84,7 @@ flags: `overlay`(투명 덧칠: 윤곽·접지·귀퉁이 검사 제외) · `thi
 - 덮어쓰기: `tiledata/jp-city/fable-roofs/<키트>.png` + `index.json`(지붕 상자·덮기 전 코드 그림 해시) → `scripts/content/jp-city/fable_roofs.py` 가 `bake_inaka._finalize` · `jp_regions_pack._finalize` · `buildings._sprite` 에서 코드 그림 위에 덮는다. 코드 그림이 바뀌면 굽기가 멈춘다.
 - 관문: **3/4 관문 미통과 — 오너 면제** 묶음 `fable-redraw-roofs-jp-city-2026-11-12`(bundle·shared, 스토어 제외). 통과가 아니다.
 - 칸 번호: jp_city 굽기는 그림이 바뀐 칸에 새 자리 키(`…@r<해시>`)를 준다 — 새 칸 260개가 끝에 붙었고(20199 → 20459) 옛 번호는 옛 그림 그대로다. **이미 깔린 맵은 옛 지붕을 그대로 보이고, 키트를 다시 찍어야 새 지붕이 된다.** 키트 id·크기·문·접근칸은 그대로.
-- 측정 «지붕 기울기»(모델 없음)와 남은 것: 박공 정면(B) 30채 · 처마 끝 모따기(F) · 2단 지붕(`sento`·`shop-soba`·`shop-wagashi`·`shrine-haiden`)·옛 시트 레시피(`jp-recipe-*`·`jp-prop-honden`·`nakamise`)는 다시 그리지 않았다. 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
+- 측정 «지붕 기울기»(모델 없음)와 남은 것: 박공 정면(B) 30채 · 처마 끝 모따기(F) · (A) 16채가 남았다: 2단 지붕(`sento`·`shop-soba`·`shop-wagashi`·`shrine-haiden`)·옛 시트 레시피(`jp-recipe-*`·`jp-prop-honden`·`nakamise`)는 다시 그리지 않았다. 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
 
 ## 거리 구성기 조화 검수 — 적대 시각 QA 한 판 (2026-10-13)
 
