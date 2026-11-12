@@ -62,7 +62,7 @@ import { streamSimple, validateToolArguments } from "@oh-my-pi/pi-ai";
 import { isCliContextExhaustedError } from "../../src/ai/piAgent/cliContextBudget.ts";
 import { CLI_CALL_TOOL, CLI_LAZY_TOOLS_LINE, cliToolFreezeOn } from "../../src/ai/piAgent/cliToolFreeze.ts";
 import { coerceToolArgs } from "../../src/ai/piAgent/argCoerce.ts";
-import { refusalLoopRefusal, refusalSignature, repairToolArgs, repeatedRefusalHint, repeatedShapeHint, shapeErrorSignature, shapeLoopRefusal, wrongTypeFieldHint } from "../../src/ai/piAgent/argRepair.ts";
+import { ArgShapeError, refusalLoopRefusal, refusalSignature, repairToolArgs, repeatedRefusalHint, repeatedShapeHint, shapeErrorSignature, shapeLoopRefusal, wrongTypeFieldHint } from "../../src/ai/piAgent/argRepair.ts";
 import type { RoleModel } from "../../src/ai/modelRoles.ts";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { codexVersionFetch } from "./codexClientVersion.ts";
@@ -690,7 +690,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     const pre = coerceToolArgs(tool.parameters, params, tool.name);
     if (pre.problems.length) {
       emit({ type: 'execution_status', name: 'tool.args.unsupported', ok: false, summary: `${tool.name}: ${pre.problems[0]!.slice(0, 160)}` });
-      throw new Error(pre.problems.join("\n"));
+      const failures = (shapeFailures.get(tool.name)?.count ?? 0) + 1;
+      shapeFailures.set(tool.name, { count: failures, same: 1, sig: "unsupported" });
+      throw new ArgShapeError(pre.problems.join("\n"), failures);
     }
     let fixedNotes: string[] = [...pre.changes];
     if (pre.changes.length) emit({ type: 'execution_status', name: 'tool.args.coerced', ok: true, summary: `${tool.name}: ${pre.changes.slice(0, 4).join(" · ").slice(0, 300)}`, data: { toolCallId: id, tool: tool.name, changes: pre.changes } });
@@ -716,14 +718,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         // 같은 오류 세 번째 — 긴 오류를 또 돌려주면 모델이 같은 호출을 되풀이했다(set_lighting_volume 13번). 거절하고 방법을 바꾸라고 한다.
         if (same >= 3) {
           emit({ type: 'execution_status', name: 'tool.args.loop', ok: false, summary: `${tool.name}: 같은 인자 모양 오류 ${same}번째 — 거절` });
-          throw new Error(`${shapeLoopRefusal(tool.name, tool.parameters, sig, same)}${escalation(tool)}`);
+          throw new ArgShapeError(`${shapeLoopRefusal(tool.name, tool.parameters, sig, same)}${escalation(tool)}`, failures);
         }
         // 모양을 고친 뒤에도 틀리면 고친 쪽 오류가 더 가깝다(남은 빈칸만 말한다) — 무엇을 고쳤는지 함께 알린다.
         const message = repairedError
           ? `[인자 모양 고침: ${repaired.changes.join(" · ")} — 그래도 남은 오류]\n${repairedError instanceof Error ? repairedError.message : String(repairedError)}`
           : error instanceof Error ? error.message : String(error);
         const fieldHint = wrongTypeFieldHint(tool.parameters, message);
-        throw new Error(failures >= 2 ? `${message}${fieldHint}${repeatedShapeHint(tool.name, tool.parameters, failures)}${escalation(tool)}` : `${message}${fieldHint}`);
+        throw new ArgShapeError(failures >= 2 ? `${message}${fieldHint}${repeatedShapeHint(tool.name, tool.parameters, failures)}${escalation(tool)}` : `${message}${fieldHint}`, failures);
       }
       valid = fixed;
       emit({ type: 'execution_status', name: 'tool.args.repaired', ok: true, summary: `${tool.name}: 인자 모양을 고쳐 실행 — ${repaired.changes.join(" · ")}`, data: { toolCallId: id, tool: tool.name, changes: repaired.changes } });
@@ -1393,6 +1395,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     cli: localCli,
     systemPrompt: localLoopSystemPrompt,
     tools, onPayload, resolveFallbackTool,
+    ...(options.v2?.callSchema ? { callSchema: options.v2.callSchema } : {}),
     ...(request.model ? { model: request.model } : {}),
     ...(request.thinkingLevel === "low" || request.thinkingLevel === "medium" || request.thinkingLevel === "high" ? { effort: request.thinkingLevel } : {}),
     ...(options.signal ? { signal: options.signal } : {}),

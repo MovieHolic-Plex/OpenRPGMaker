@@ -43,6 +43,14 @@ function arrayItemObject(s: Schema | undefined): Schema | undefined {
   return objectSchema(arr?.items);
 }
 
+/**
+ * 인자 모양 거절 — 실행기가 «이 실패는 인자 모양 탓»임을 글이 아니라 형으로 넘긴다(받는 쪽이 오류 글을 정규식으로 읽지 않게).
+ * streak = 이 도구가 연달아 낸 모양 오류 수(1부터).
+ */
+export class ArgShapeError extends Error {
+  constructor(message: string, readonly streak: number) { super(message); }
+}
+
 export interface ArgRepair {
   readonly args: unknown;
   /** 무엇을 고쳤는지(사람 말). 비면 고친 것이 없다. */

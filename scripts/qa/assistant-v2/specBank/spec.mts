@@ -42,6 +42,32 @@ export interface Spec {
   dropped: Record<string, number>;
 }
 
+/**
+ * 재생이 실행기에 넘기는 제공자. 재생은 모델 자리에 대본(streamFn)을 앉히는데, 로컬 CLI 제공자(local-cli:*)는 대본을 무시하고 진짜 CLI 를 띄운다.
+ * 2026-11-12: Haiku 판(local-cli:claude) 여섯을 «모델 없는 재생»으로 돌렸더니 실제 게임 여섯 판이 돌았다(CLI 호출 약 1,180번 · 캐시 읽기 3.6억 토큰).
+ * 그래서 대본을 받는다고 확인된 제공자(은행의 판이 찍힌 openai-compat:*)만 그대로 넘기고, 나머지는 대본용 기본값으로 바꾼다. 명세의 source 는 그대로 둔다(그 판이 어디서 왔는지).
+ */
+export const SCRIPTED_PROVIDER = "openai-compat:opencodex";
+export const SCRIPTED_MODEL = "gpt-6.1-terra";
+export function replayEngine(source: { provider?: string; model?: string }): { provider: string; model: string; swapped: boolean } {
+  const scripted = /^openai-compat:/u.test(source.provider ?? "");
+  return scripted ? { provider: source.provider!, model: source.model || SCRIPTED_MODEL, swapped: false } : { provider: SCRIPTED_PROVIDER, model: SCRIPTED_MODEL, swapped: !!source.provider };
+}
+
+/**
+ * 재생이 진짜 모델을 불렀다는 표시 — 있으면 그 까닭을 돌려준다(재생은 바로 멈춘다). 둘을 본다:
+ *  · 실행기가 찍는 `[pi-usage] input=N cacheRead=M` 줄 — 대본이면 늘 0 이다.
+ *  · 턴이 끝났는데 대본이 한 번도 안 불렸거나(scripted 0) 기록된 호출을 하나도 못 냈다(played 0 — «호출 0/N 재생»).
+ */
+export function realModelSign(sign: { usageLine?: string; turn?: { calls: number; played: number; scripted: number } }): string | undefined {
+  const usage = /^\[pi-usage\] input=(\d+) cacheRead=(\d+)/u.exec(sign.usageLine ?? "");
+  if (usage && (Number(usage[1]) > 0 || Number(usage[2]) > 0)) return `실행기가 진짜 사용량을 찍었다(${usage[0]}) — 대본 재생이면 input=0 cacheRead=0 이다`;
+  const turn = sign.turn;
+  if (turn && turn.calls > 0 && turn.scripted === 0) return `턴이 끝났는데 대본(streamFn)이 한 번도 안 불렸다 — 다른 엔진이 돌았다(호출 ${turn.played}/${turn.calls})`;
+  if (turn && turn.calls > 0 && turn.played === 0) return `기록된 호출을 하나도 못 냈다(호출 0/${turn.calls} 재생)`;
+  return undefined;
+}
+
 export const sha = (value: unknown, n = 12): string => createHash("sha1").update(typeof value === "string" ? value : JSON.stringify(value)).digest("hex").slice(0, n);
 
 /** 프로젝트를 바꾸지 않는 호출 — 제품의 READ_VERB(src/ai/v2/loop/todoTools.ts)와 같은 낱말. 은행에는 남기고 표시만 한다(읽기가 뒤 쓰기의 관문을 여는 도구가 있다). */

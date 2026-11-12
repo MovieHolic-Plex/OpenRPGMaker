@@ -153,6 +153,39 @@ Terra 작은 일 `door-roundtrip-starter` — 「잿불 마을 동쪽 끝에서 
 증거(모델 없음, 하네스의 진짜 starter 픽스처): `scope=place · 도구 47개 · 115,849자 · 지시문 34,733자` → `scope=edit · 도구 12개 · 16,181자 · 지시문 13,790자`,
 처음 싣는 목록에 `create_transfer_pair` `list_map_locations`. `golden.mts` 는 두 맵짜리 상태의 요청 둘(잇기 / 「새 마을을 만들고 … 이어 줘」)을 더 찍는다(153 → 155줄).
 
+## 게임 하나 요청의 처음 목록 — 짓는 턴과 고치는 턴 (2026-11-12, Haiku 게임 다섯 판 실측)
+
+작은 일의 상한(20개·4만 자)은 게임 하나 요청에는 걸리지 않는다. Haiku 게임 r1v-fun(Claude Code 고리)의 중계 기록: **도구 정의 56개·12.3만 자가 모델 요청 272건에 매번** 실렸다(시스템 글 5.5만 자와 함께 고정 접두부). 잇는 턴은 58개·12.6만 자.
+같은 기록과 r1h 네 판(합 15턴 — 짓는 턴 5 · 잇는 턴 10)의 호출을 세니: 12개(2.3만 자)는 한 번도 안 불렸고, 큰 넷(`edit_place` 1.7만 · `make_place` 1.1만 · `upsert_event` 1.0만 · `set_opening` 0.5만)은 판의 절반 이하에서만 불렸다. 잇는 턴에서는 실린 글자의 81~92% 가 그 턴에 한 번도 안 불린 도구였다.
+
+그래서 `toolExposure.ts` 가 게임 하나 요청(`intent.wholeGame`)을 **프로젝트 상태로** 둘로 가른다(요청 글의 낱말이 아니다):
+
+| 턴 | 가르는 것 | 처음부터 | 뒤로(`load_tools`) |
+|---|---|---|---|
+| 짓는 턴 | 청사진이 없거나, 단계 가운데 지은 이벤트(`GameBlueprintStep.built`)가 안 적힌 것이 있다 | 지금 규칙 그대로 + `list_endings` | `WHOLE_GAME_LATER` 16개 — 안 불린 12 + `edit_place` `make_place` `upsert_event` `set_opening` |
+| 고치는 턴 | 청사진의 단계가 다 `built` | `WHOLE_GAME_REPAIR` 24개만 — 읽기 · 돌려 보기 · 이벤트와 목표 고치기 · 엔딩 · 소품 | 나머지 전부(청사진 · 장소 · 사람 · 사건을 짓는 동사 포함) |
+
+- 같은 저장본으로 다시 만든 목록(모델 없음, `genre-tools/cliListFinal.mts` — 두 체크아웃의 실제 노출 코드): 짓는 턴 56개·12.4만 자 → **41개·6.2만 자**(구성기 세계 48개·9.0만 → 37개·5.4만), 고치는 턴 58개·12.7만 자 → **26개·4.0만 자**.
+- 기록된 호출 순서를 얹어 잰 «도구 정의 글자 × 호출»(뒤로 돌린 도구는 실은 순간부터 기록에 남아 매 호출 다시 읽힌다고 센다): 짓는 턴 5개 −33%, 잇는 턴 10개 −51%. 한 턴에 `load_tools` 로 싣는 도구는 가운데값 4 → 5(짓는 턴) · 4 → 6(잇는 턴).
+- 뒤로 돌린 v2 동사는 `load_tools` 설명의 앞쪽 목록(이름 — 한 줄 뜻)에 든다. 장소 하나를 짓는 요청(게임 하나가 아닌 것)은 그대로 `make_place` · `edit_place` 를 처음부터 받는다.
+- **모르는 것:** 기록은 그 도구들이 보이는 채로 찍혔다. 숨기면 고치는 동사를 덜 부를 수 있다 — 모델 판(같은 요청의 Haiku 게임 하나)으로만 알 수 있고 이 변경은 그것을 재지 않았다.
+
+**`call_tool` 로 부른 도구의 인자 모양 거절은 그 도구의 매개변수를 싣는다.** 같은 15턴에서 목록 밖 쓰기 도구의 실패는 41/141(29%)로 목록 안(34/431, 7.9%)의 네 배였다. 41건을 가르면:
+
+| 까닭 | 건수 | 이 변경 |
+|---|---|---|
+| 인자 모양(`set_map_properties` 15 — `bgm` 에 낱말 · `create_quest` 2 · `place_door` 1) | 18 | 17건은 실행기의 검증 거절이다 — 이제 거절 글이 매개변수를 싣는다. 8건은 그 턴에 그 도구를 `load_tools` 로 실은 적도 없었다(같은 인자로 8번 연달아 실패). 1건은 도구 안의 검사(`create_quest` 목표 칸)라 그대로다 |
+| `place_door` — 참고문서 선행 읽기 규칙 14 · 재료 이름표 1 | 15 | 다른 일(읽기 관문) — 고치지 않았다 |
+| `create_quest` — 퀘스트 내용 규칙(의뢰인과 목표 인물이 같음 3 · 프리셋과 다른 목표 구조 3) | 6 | 다른 일 — 고치지 않았다 |
+| `place_examine_hotspots` 물건 이름을 못 찾음 1 · `rewrite_dialogue` 윤문 지침 먼저 읽기 1 | 2 | 다른 일 |
+
+- 거절이 전에 준 것: 검증기의 오류 줄(「bgm: expected object or null, received string」, 허용 값은 안 적힌다)과 받은 인자, 두 번째부터 필수 칸만 채운 최소 예시(`{mapId:"…"}` — `bgm` 의 모양은 없다).
+- 이제: 실행기가 인자 모양 거절을 형(`ArgShapeError`, `argRepair.ts`)으로 던지고, 로컬 CLI 고리가 `call_tool` 로 온 호출이면 그 도구의 매개변수(`V2ToolExposure.callSchema` — 검증하는 스키마와 같은 모양, 깊은 칸 설명과 한국어 칸 설명은 걷는다)를 거절 글 끝에 붙인다(`cliToolFreeze.ts callToolFailureText`). 연달아 틀리면 첫 번째와 세 번째에만 붙인다.
+- `load_tools` 가 돌려주는 매개변수 글과 거절에 붙는 글은 검증하는 스키마와 모양이 같다 — 게임 하나 요청의 뒤로 돌린 도구 132개(짓는 턴) · 148개(고치는 턴)에서 다른 것 0개(`genre-tools/loadSchemaCheck.mts`, 제품의 `load_tools` 를 직접 불러 견준다). 고치기 전에도 0개였다. 다만 전에는 CLI 목록용 가볍게 하기(`compactCliToolList`)를 한 도구에 불러 만들었고 그 함수는 큰 반복 칸을 한국어 한 줄로 바꿀 수 있어서, 깊은 설명 걷기(`stripDeep`)만 쓰게 해 그 길을 없앴다.
+- 기록된 18건을 지금 코드로 다시 넣으면(`genre-tools/lazyFailReplay.mts`): 17건이 같은 오류로 거절되고 18건 모두 거절에 붙을 매개변수 글이 있다(`set_map_properties` 5.4천 자 — `bgm:{mode: parent|none|custom, resourceId, fadeInMs}` 가 그 안에 있다).
+
+테스트 `test/aiV2WholeGameFirstList.test.ts`. 측정 자료 `~/z-project/assistant-fable-runs/genre-tools/clilist/`.
+
 ## 작은 일은 그 일을 하는 도구에 늘 닿는다 — 풀·주제 줄·기록 이름 (2026-11-11, 작은 일 둘째 묶음)
 
 둘째 묶음 35건(`harness-data/assistant-capability/small-jobs-2.json`)을 모델 없이 분류해 보니 다섯 문장이 게임 도구 묶음을 받지 못했다(`tools.game=false`, `extra=0`):
@@ -2204,7 +2237,8 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
     예전 글은 `formatPiToolFailure` JSON — 200자에서 잘린 요약 + issues(같은 문장 되풀이, 규칙만, 보낸 값·고칠 방법 없음).
     지금은 영어로(사용자 결정 — 싼 모델은 영어 되먹임을 더 잘 쓴다): `Rejected: <도구> — <이유>` · `Blocking issues (N)` 최대 8(코드·맵·칸, 같은 칸 «xN») · `You sent: <거절 글이 말한 인자>=<보낸 값>` · `Already tried:` (같은 id 로 다시 불러 또 거절된 고침) ·
     `Fixed call: <도구>({…})`(420자 넘으면 «같은 인자 + 아래 고친 곳») + `Changes: remove patrol · a.doorAt.y 7→6 · drop N empty/default optional fields — 이유`. 고친 호출은 `correctionFor`(argGuard preCheck → retryCandidates → nextAfterFailure 같은 도구) 가 결정적으로 고른다.
-    도구 오류 문장(한국어)은 고치지 않는다 — 자주 나는 것만(doorAt·적 그룹 비었음·patrol·patrol.directions·repelSteps·이동 도착 칸 막힘·완성된 집·이벤트 없음·graphic·edit_place 다시 짓기 안 함·출입구 봉쇄·인자 누락/모르는 인자) `EN_RULES` 로 옮기고 나머지는 `Tool said (Korean): …`. 맵·인물 이름·대사는 그대로.
+    도구 오류 문장(한국어)은 고치지 않는다 — 자주 나는 것만(doorAt·적 그룹 비었음·patrol·patrol.directions·repelSteps·이동 도착 칸 막힘·완성된 집·이벤트 없음·graphic·edit_place 다시 짓기 안 함·출입구 봉쇄·인자 누락/모르는 인자) `EN_RULES` 로 옮기고 나머지는 `Tool said (Korean): …`.
+    명령 모양 거절(`patch_event_page`·`upsert_event` 의 «커맨드 형식 오류 … event_command_assist 를 써라»)은 따로 옮긴다(`commandShapeEn`) — 조수 v2 에는 `event_command_assist` 가 없어 그 글대로 부르면 «there is no tool named» 가 돌아왔다(2026-11-12 Haiku prison). v2 사본은 지금 명령을 읽는 `get_event` 와 `add_event` 를 이르고 예시 한 줄은 그대로 준다. 맵·인물 이름·대사는 그대로.
     H2 고침·돌려보냄, H3 `[Next call]`, H8 `[Change strategy]`, H7 재주입(`Do now: … Next call: …`)·상태 카드, `[Relocated and linked]`·`[Graphic matched]` 도 영어다. 기록·실패 세기(state.failures·서명)는 원래 글 그대로다.
     할 일 고리 글도 모델 몫은 영어다: todo 도구 설명·스키마·op 결과(init/done ✓✗/block/bind…), `TODO_CHECK_SCHEMA`·`parseTodoCheck` 오류, H4 `[Auto-check ✓]`, H5 `[Verb scope — not run (not a failure)]`, `[Todo first]`·`[Repeated call blocked]`·`[Repeat warning]`·`[Todo auto-blocked]`, 요청 뼈대 카드, 재주입 머리말(관문·검토자·화면 검수·함수 마감), 화면 검수 고치기 차례 글(`vqaFixBrief`), 이어 받은 목록, 문맥 줄임 표시, 조우 꺼짐·그림 찾기 상한.
     기계 확인은 두 언어로 돈다: `runTodoItemCheck` 가 `CheckResult.detail`(한국어 — 장부·최종 보고) 과 `.en`(모델) 을 함께 낸다(`checks.ts` 의 `t(ko,en)`). 목록은 `store.view(n, true)`, 실패 기록은 `lastFailEn`. 항목 내용·막힘 이유·상태 줄(emit)·최종 보고·v2 시스템 프롬프트 본문(`prompt.ts`·동사 카드)은 한국어 그대로다.
@@ -2315,6 +2349,12 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 bun scripts/qa/assistant-v2/specBank.mts ab --out /tmp/bank            # 기준(origin/main)의 빌더 → /tmp/bank/a, 지금 작업 폴더의 빌더 → /tmp/bank/b, 대조 표
 # 나눠서: run --at origin/main --out A · run --out B · --diff A B   (몇 판만: --only fun-x1,lay-main-village)
 ```
+
+**재생은 진짜 모델을 부르지 않는다 — 첫 `[pi-usage]` 줄을 보고 자리를 뜬다(hard rule, 2026-11-12).** 재생은 모델 자리에 대본(`streamFn`)을 앉히는데, 로컬 CLI 제공자(`local-cli:*` — Haiku 판이 찍힌 길)는 대본을 무시하고 진짜 CLI 를 띄운다.
+2026-11-12 Haiku 판 여섯을 임시 은행에 뽑아 재생했더니 실제 게임 여섯 판이 돌았다(CLI 호출 약 1,180번 · 캐시 읽기 약 3.6억 토큰 — 로그는 처음부터 «호출 0/N 재생»과 0 이 아닌 사용량을 찍고 있었다).
+- `specBank/spec.mts replayEngine` — 대본을 받는다고 확인된 제공자(`openai-compat:*`)만 그대로 넘기고 나머지는 대본용 기본값(`openai-compat:opencodex` · `gpt-6.1-terra`)으로 바꿔 재생한다. 명세의 `source` 는 그대로 두고 `replay.json` 의 `engine` 에 넘긴 것을 적는다.
+- `realModelSign` — 실행기가 찍는 `[pi-usage] input=N cacheRead=M` 이 0 이 아니거나, 턴이 끝났는데 대본이 한 번도 안 불렸거나(«모델 자리 0») 기록된 호출을 하나도 못 냈으면(«호출 0/N 재생») 재생을 끊고 **exit 3** 으로 크게 알린다. `specBank.mts run|ab` 는 exit 3 을 받으면 남은 게임을 띄우지 않고 멈춘다.
+- 사람 쪽 규칙: **재생의 첫 `[pi-usage]` 줄은 `input=0 cacheRead=0` 이다. 그 줄을 보고 나서 자리를 뜬다.** 0 이 아니면 바로 죽인다.
 
 **한 번에 4개까지(hard rule, 2026-11-11).** `--jobs` 기본은 4 다(`run` 은 4개, `ab` 는 전·후를 합쳐 4개 — 한 번에 2개씩). 재생 하나가 코어 하나와 3~4GB 를 쓰고, 같은 기계에서 모델 판(Terra 측정 묶음·작업자의 로컬 Terra 요청)이 돌 때 은행을 넓게 띄우면 그 판의 턴이 시간 제한에 걸린다 — 이 은행을 처음 만든 날 한 번에 12~14개로 돌려 부하 평균 50~110 을 만들었고, 그 사이 로컬 Terra 판 하나(`r1-fun`)가 멈췄다(멈춤 자체는 편집기↔워커의 끝없는 기다림이라는 제품 결함이었고 #4627 이 고쳤지만, 부하가 그 결함을 더 잘 밟게 한다). **모델 판이 도는 동안에는 4개보다 넓게 돌리지 않고, 로컬 Terra 판이 도는 중이면 리드에게 묻는다.** 기계가 비었을 때만 `--jobs` 로 올린다.
 
