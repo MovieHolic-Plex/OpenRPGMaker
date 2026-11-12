@@ -8,6 +8,9 @@ import { buildHudTally, parseHudReview, type HudShot } from "@/harnesses/assista
 import { parsePatterns } from "@/harnesses/assistant-capability/node/mapVqa/patterns";
 import { buildTally, loadReviewer, parseReview, type MapReview } from "@/harnesses/assistant-capability/node/mapVqa/verdict";
 import { extractJson, VISUAL_JUDGE } from "@/harnesses/assistant-capability/node/visualJudge";
+import { blockedOn, walkableFrom } from "@/harnesses/assistant-capability/node/matrixNativeSpec";
+import { runTool } from "@/editor/tools/toolRunner";
+import { isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
 
 // 조수가 깐 맵의 그림 검수(map-vqa)에서 모델 없이 볼 수 있는 것: 묶음·씨앗의 모양, 사실 읽기, 심은 결함의 조리법,
@@ -83,6 +86,48 @@ describe("맵의 사실 읽기", () => {
     const facts = mapFacts(project, mapId, true);
     for (const recipe of ["wall-off", "locked-text-on-way", "person-on-roof"] as Recipe[]) expect(plant(recipe, project, mapId, facts)).toBeNull();
   });
+});
+
+describe("막힌 칸은 엔진 통행으로 읽는다", () => {
+  // 왜(2026-11-12): 막힌 칸을 편집기 영역 격자의 '#' 글자로만 세어 물('~')이 걷는 칸이 됐다 — 섬 맵의 사실이 «걷는 칸 96%» 였고 검수자가 «바다 위를 걷는다» 를 막힘으로 적었다.
+  it("섬 맵: 바다는 막힌 칸이고, 걷는 칸 몫과 닿는 칸은 엔진 통행과 같다", () => {
+    const project = createBlankProject() as any;
+    const context: any = { project, currentMapId: project.startMapId, assistantRun: false };
+    const mapId = (runTool(context, "create_map", { name: "섬", width: 48, height: 36, tilesetId: "pirate_isles" }) as any).data.mapId as string;
+    const composed = runTool(context, "compose_pirate_isles_map", { mapId, kind: "beach", seed: 3 }) as any;
+    expect(composed.ok).toBe(true);
+    const doc = context.project, map = doc.maps[mapId];
+    let engine = 0;
+    for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) if (isPassable(doc, map, x, y)) engine++;
+    // 영역 격자는 여전히 물을 '~' 로 적는다(그림용) — 그 글자는 막힘이 아니다.
+    const grid: string[] = (runTool({ project: doc, currentMapId: mapId, assistantRun: false } as any, "get_map_region", { mapId, x: 0, y: 0, w: map.width, h: map.height }) as any).data.grid;
+    expect(grid.join("").split("~").length - 1).toBeGreaterThan(500);
+    const blocked = blockedOn(doc, mapId);
+    expect(blocked.has("0,0")).toBe(true);
+    expect(blocked.size + engine).toBe(map.width * map.height);
+    const facts = mapFacts(doc, mapId, true);
+    expect(facts.walkableShare).toBeCloseTo(engine / (map.width * map.height), 6);
+    expect(facts.walkableShare).toBeLessThan(0.6);
+    // 섬은 바다로 둘러싸여 가장자리에 걷는 칸이 없다.
+    expect(facts.openEdges).toEqual([]);
+    const walk = walkableFrom(doc, mapId, composed.data.spawn);
+    expect(walk.has("0,0")).toBe(false);
+    expect(walk.size).toBeLessThanOrEqual(engine);
+  }, 60_000);
+  it("막힌 칸 위의 이벤트는 «막힌 칸 위» 로 적힌다 — 이벤트가 선 칸도 타일의 통행으로 읽는다", () => {
+    const project = createBlankProject() as any;
+    const context: any = { project, currentMapId: project.startMapId, assistantRun: false };
+    const mapId = (runTool(context, "create_map", { name: "섬", width: 48, height: 36, tilesetId: "pirate_isles" }) as any).data.mapId as string;
+    runTool(context, "compose_pirate_isles_map", { mapId, kind: "beach", seed: 3 });
+    const other = (runTool(context, "create_map", { name: "건너편", width: 20, height: 15, tilesetId: "pirate_isles" }) as any).data.mapId as string;
+    const exit = (x: number, y: number, id: string) => ({ id, name: id, x, y, pages: [{ trigger: { kind: "touch" }, graphic: { kind: "none" }, commands: [{ kind: "transfer", mapId: other, x: 1, y: 1 }] }] });
+    context.project.maps[mapId].events.push(exit(0, 0, "ev_sea_exit"));
+    const facts = mapFacts(context.project, mapId, false);
+    const sea = facts.events.find((event) => event.x === 0 && event.y === 0)!;
+    expect(sea.kind).toBe("exit");
+    expect(sea.onBlocked).toBe(true);
+    expect(sea.reachable).toBe(false);
+  }, 60_000);
 });
 
 describe("검수자 답 읽기", () => {
