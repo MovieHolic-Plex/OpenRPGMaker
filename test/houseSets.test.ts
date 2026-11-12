@@ -218,15 +218,17 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
     expect(`${res.summary} ${JSON.stringify(res.issues ?? [])}`).toContain("house set");
   }, 120_000);
 
-  it("광장 구성: 고른 게임마다 모양·가운데 기물이 다르고 우물은 남는다", () => {
-    const wells = (map: GameMap) => (map.structurePlacements ?? []).filter((p) => /well/.test(p.kitId)).length;
-    const centre: Record<string, RegExp> = { round: /fountain/, market: /column_monument/, green: /^bd-tree-/, statue: /statue/ };
-    const plazas = [...tilesetLookOptions(lookTable, "plaza")].filter(Boolean);
-    expect(plazas.sort()).toEqual(Object.keys(centre).sort());
-    for (const plaza of plazas.slice(0, 2)) {
-      const built = village({ plaza }, KEY, 604811);
-      expect(wells(built.map)).toBeGreaterThanOrEqual(1);
-      expect((built.map.structurePlacements ?? []).some((p) => centre[plaza]!.test(p.kitId)), plaza).toBe(true);
+  it("광장 구성: 고른 게임마다 가운데 기물이 다르고 우물은 남는다 · 고르지 않은 게임은 원래 광장", () => {
+    const count = (map: GameMap, kit: RegExp) => (map.structurePlacements ?? []).filter((p) => kit.test(p.kitId)).length;
+    const centre: Record<string, RegExp> = { round: /fountain/, market: /column_monument/, green: /^bd-tree-d43edd/, statue: /statue/ };
+    expect([...tilesetLookOptions(lookTable, "plaza")].filter(Boolean).sort()).toEqual(Object.keys(centre).sort());
+    const classic = village({}, KEY).map;
+    expect(count(classic, /well/)).toBe(1);
+    for (const kit of Object.values(centre)) expect(count(classic, kit)).toBe(0);
+    for (const plaza of ["round", "market", "statue"]) {
+      const built = village({ plaza }, KEY).map;
+      expect(count(built, /well/), plaza).toBe(1);
+      for (const [name, kit] of Object.entries(centre)) expect(count(built, kit), `${plaza}/${name}`).toBe(name === plaza ? 1 : 0);
     }
   }, 480_000);
 });
