@@ -6,6 +6,7 @@ import { isPassable } from "@/project/collision";
 import { walkStart } from "./cells";
 import { applyThemeBackdrop, placeThemeOf, themeFieldTroops, usableLoot } from "./placeTheme";
 import type { BuildRun } from "../shared/types";
+import { leadEnemyId, useCurrentArt } from "../story/currentFoes";
 
 type Cell = { readonly x: number; readonly y: number };
 /** 맵 넓이에 따른 보이는 적 수 — 방 한 칸짜리 묘실은 하나, 큰 바깥 맵은 셋. */
@@ -24,7 +25,7 @@ export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { rea
   const backdrop = applyThemeBackdrop(run.ctx.project, mapId);
   if (backdrop.gap) onGap?.(backdrop.gap);
   const themed = themeFieldTroops(run.ctx.project, mapId);
-  if (themed.gap) onGap?.(themed.gap);
+  for (const gap of themed.gaps) onGap?.(gap);
   const troops = themed.troopIds.length ? themed.troopIds : pickFittedTroops(run.ctx.project, undefined).field;
   const want = foeCount(map0.width * map0.height);
   let foes = 0;
@@ -35,6 +36,8 @@ export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { rea
     const spot = pickSpot(run.ctx.project, map, origin, taken, 0.45 + (0.4 * (n - 1)) / Math.max(1, want - 1), 6);
     if (!spot) break;
     const troopId = troops[(salt + n) % troops.length]!;
+    // 세우는 적의 현행 그림을 먼저 넣는다 — 놓는 도구가 그 그림(전투 그림)으로 세운다(옛 걷기 칩이 아니라).
+    useCurrentArt(run.ctx.project, leadEnemyId(run.ctx.project, troopId));
     // 보이는 적은 걷는다 — 서 있기만 하는 적은 말 걸 사람으로 읽힌다(«해골 NPC 를 조사하자 전투»). 두 방향 · 한 칸 왕복까지 해 보고 그래도 없을 때만 세워 둔다.
     const walks = [{ length: 2, axis: n % 2 ? "horizontal" : "vertical" }, { length: 2, axis: n % 2 ? "vertical" : "horizontal" }, { length: 1, axis: "any" }];
     const placed = walks.some((patrol) => run.call("place_field_enemy", { mapId, x: spot.x, y: spot.y, troopId, behavior: "patrol", patrol, id: foeId(n) }).ok)

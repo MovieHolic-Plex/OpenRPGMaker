@@ -1,0 +1,11 @@
+{
+ "pass": true,
+ "wolfLevel": 4,
+ "score": 4,
+ "failed": [],
+ "reason": "The soldier is real low-res pixel art at the wolves' scale: limited palette, hard shading bands, an uneven dark outline and a clear silhouette. The crimson visored helmet, white chevron tabard, chainmail limbs, slate shield and readable steel sword all fit the design. He faces right, lunges right on attack, recoils left on hit and lies flat when dead, with no fringe or clipping. He has a little less 1–2 px texture than the wolves and idle_c is a fairly big crouch for an idle frame, but neither is a reason to fail him.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

@@ -147,5 +147,50 @@
     "seed": 1
    }
   }
+ },
+ "pirate_isles": {
+  "spec": "tiledata/pirate-isles/objects/spec.json",
+  "ask": "tiledata/pirate-isles/objects/ask.json",
+  "kitPrefix": "pi-",
+  "sheet": "public/assets/pirate-isles/pirate-isles-chipset.png",
+  "map": {
+   "width": 48,
+   "height": 36,
+   "tool": "compose_pirate_isles_map",
+   "args": {
+    "kind": "harbor",
+    "seed": 1
+   }
+  }
+ },
+ "sky_island": {
+  "spec": "tiledata/sky-island/objects/spec.json",
+  "ask": "tiledata/sky-island/objects/ask.json",
+  "kitPrefix": "si-",
+  "sheet": "public/assets/sky-island/sky-island-chipset.png",
+  "map": {
+   "width": 48,
+   "height": 36,
+   "tool": "compose_sky_island_map",
+   "args": {
+    "style": "shrine",
+    "seed": 1
+   }
+  }
+ },
+ "jp_city": {
+  "spec": "tiledata/jp-city/objects/spec.json",
+  "ask": "tiledata/jp-city/objects/ask.json",
+  "kitPrefix": "jp-",
+  "sheet": "public/assets/jp-city/jp-city-chipset.png",
+  "map": {
+   "width": 56,
+   "height": 40,
+   "tool": "compose_jp_city_street",
+   "args": {
+    "style": "residential",
+    "seed": 1
+   }
+  }
  }
 }

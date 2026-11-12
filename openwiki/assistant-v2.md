@@ -378,6 +378,92 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 다시 지은 판의 «모래 수호자» 는 미라 그림으로 서고 싸운다(옛 저장본의 수호자는 드래곤 사본 그대로 — 그림만 전투 그림과 같아진다). 자동 플레이 엔딩·다시 읽기 성공. **화면 미검증** — 그림은 사람·판정자가 본다.
 남은 것: 테마 표의 적은 기본 DB 106종에서 고른 것이라 SF·전국 일본·선사는 전부 대역이다(없는 그림 줄이 남는다). 시험 `test/aiV2PlaceTheme.test.ts`.
 
+## 적 그림은 현행 세트 — 『폴른 스타』가 쓰는 새 전투 시트에서만 고르고 그 그림을 프로젝트에 넣는다 (2026-11-12, 오너 r1w-fun)
+
+오너(Haiku 가 지은 선사 시대 게임 r1w-fun 을 해 보고): «몬스터는 왜 star fallen 이랑 다르게 구형 몬스터를 배치해놨고».
+
+무엇이 달랐나(파일 근거):
+
+| | 전투에 서는 그림 | 맵에 서는 그림 |
+|---|---|---|
+| r1w-fun (v2) | 번들 3×3 시트 `public/assets/generated/pixel-enemies/<slug>.png`(64px 9칸, #1872 의 140종) — 리자드맨·송곳니 멧돼지·검치호·화염 지네·새끼 용·베히모스 | 그 번들 그림의 첫 칸에서 런타임이 뽑은 걷기 칩(5곳) + 같은 «종류» 의 옛 걷기 칩 `tex_easyrpg_charset_animal` 1곳(검치호) |
+| 『폴른 스타』 | 같은 리소스 id 에 **업로드로 얹은** 새 시트 `src/project/flagship/fallen/monsterSheets16.ts`(34종, 5×4 20칸, 48~192px) — `monsterArt16.ts` 가 `project.assets.uploaded[<id>]`(초상) + `<id>-sheet16`(시트)로 넣는다 | 그 초상에서 런타임이 뽑은 걷기 칩(`fieldFoeSprite.ts`) |
+
+고르던 함수와 원인: `place/placeTheme.ts` 의 테마 표(세계 × 종류 → 기본 DB 적 id) · `blueprintPath.foeTroop` · `place/builders/dungeonFoes.planTroops` · `story/sceneVerbs.bossTroop` 이 모두 **기본 DB 적 106종의 `monsterResourceId` 를 그대로** 썼다. 새 그림은 『폴른 스타』 굽기 안에서만 얹혔으므로(프로젝트 업로드) v2 가 짓는 게임은 늘 번들 3×3 그림이었다. 맵 위는 `place_field_enemy` 가 같은 «종류» 의 옛 charset 칸(`fieldEnemyGraphics.ts`)을 먼저 골랐다.
+
+지금:
+
+- **현행 세트**(`src/assets/currentMonsterArt.ts`): id 목록(34) + `installCurrentMonsterArt(project, ids)`. 그림 데이터(0.9MB)는 그 자리에 두고 늦게 읽는다 — 턴 첫 지시 앞(`turn/modelHooks.firstPromptSuffix`)과 끝맺음 `step-foes` 앞에서 `preloadCurrentMonsterArt()`.
+- **고르는 한 곳**(`story/currentFoes.ts`): `currentFoe(project, 적 id)` → 그 적의 그림이 현행이면 그 적, 아니면 가장 가까운 현행 종(대역 표 — 해골·좀비·미라 → 창백한 유령, 리자드맨 → 독사, 검치호·곰 → 다이어 울프, 용류 → 청룡 …) + 바란 그림 이름. 대역도 없으면 undefined. 위 네 고르기가 모두 여기에 묻는다 — 구형 그림은 v2 가 세우는 적에 나오지 않는다.
+- **테마 표**: 적 목록 = 그 장소가 바라는 종 + 현행 그림이 있는 그 장소의 종. 서는 것은 현행 그림이 있는 종뿐(`drawn`)이고, 없는 종은 종마다 없는 그림 줄 `[art-gap] theme=prehistoric/swamp want=foe wanted=«lizardman-spear» …` 로 남는다 — 그 종이 그려지면 표를 고치지 않아도 선다. 테마 표에 없는 세계(버들항)의 싸우는 단계는 흔한 판타지 목록(`COMMON`)과 이름의 적 낱말(`enemyArtFor` → `currentFoe`)에서.
+- **같이 서는 길 적은 자기 기술이 있는 종만**(`placeTheme.withOwnSkills`): 시작 파티에 맞춘 사본은 센 기술이 「맹독 이빨」·「산성 침」으로 갈려(`bossThreatScaling.swapOverpoweredSkills`) 종이 달라도 기술이 같아진다. 현행 그림으로 좁히자 사막 길 적이 독사·복면 산적(둘 다 「맹독 이빨」)이 되어 끝맺음 «적 개성»이 울렸다(은행 jrpg-w3). 그래서 길 적 목록은 그 검사와 같은 값(`judge/enemyChecks.foeSkillNames`)으로 «종마다 다른 종에 없는 기술 하나»인 것만 순서대로 남긴다 — 선사 시대 늪은 독사·뿔 딱정벌레(멧돼지·사마귀는 사본 기술이 독사와 같다). 종 수를 늘리려면 고르기가 아니라 그 갈아 끼우기가 종마다 다른 기술을 주어야 한다(남은 일).
+- **던전 빌더의 대역 무리**(`dungeonFoes.ensureFoeTroop`): 맞춤이 목표(승률·한 판 손실 상한 — `fitWithinTarget`)에 못 닿으면 마릿수를 줄인다. 코볼트 대역 고블린 정찰병 둘은 독 때문에 공격을 3까지 내려도 Lv1 혼자에게 한 판 38% 였고 그 맵 필드 적을 이어 싸우면 76%(예산 60%)였다(은행 lay-main-mine). 한 마리로 맞추면 한 판 1%.
+- **그림 넣기**: 세울 적을 정한 자리에서 그 그림만 넣는다(`useCurrentArt`) — 전투 시트(`pixelEnemySheet` 가 프로젝트 저작 시트를 번들보다 먼저 찾는다)와 맵 위 그림(업로드 monster 가 먼저)이 같은 새 그림이 된다.
+- **맵 위**: `place_field_enemy` 는 그 프로젝트에 업로드 monster 그림이 있으면 옛 charset 칸 대신 전투 그림 그대로 세운다(런타임이 걷기 칩을 뽑는다). `stepFoes.foeGraphic` 도 같다.
+- **게임 밖 렌더러도 넣은 그림을 안다**(2026-11-12 r1s-fun — Sonnet 이 지은 판에서 화면 검수가 맵 7장 중 3장을 못 봤다: «map-event-rendering-unavailable: event …_wfoe1 graphic generated-enemy-hound-hell is not a supported charset/image»). 출하 플레이어는 그 적을 제대로 그렸다(런타임 `eventSpriteResources` 는 업로드 kind monster 를 초상 한 장 · 32px 상자로 안다) — 틀린 것은 게임 밖에서 맵 이벤트를 그리는 두 렌더러였다. ① 검수 그림(`src/ai/toolImageEventSprites.ts` — `show_map_region` · v2 화면 검수의 맵 그림 · 조수 맵 그림 전부)은 번들 그림만 알았고 프로젝트 업로드가 있으면 비켜서 «지원 안 함» 으로 맵 전체를 거절했다. ② 명세 은행·qa-game 의 맵 그림(`scripts/qa-game/render.mts`)은 96px 초상을 걷기 칩 칸(24×32)으로 잘라 투명 구석만 그렸다(적이 안 보임). 둘 다 런타임처럼 초상 한 장을 긴 변 32px(약 2칸) 상자에 발밑 가운데로 그린다. 편집기 맵 화면·이벤트 그림 미리보기는 런타임의 해석기(`resolveEventSpriteTexture`)를 같이 쓰므로 원래 맞았고, 변경 썸네일(`regionSnapshot`)은 이벤트를 점으로만 찍는다. 시험 `test/toolImageEventRender.test.ts` · `test/qaGameRender.test.ts`(시험용 캔버스 `toolImageRasterDom` 의 그림에 `decode()` 를 더했다 — 없어서 알파 그림을 그리는 시험이 빈 결과로 떨어졌다).
+- **옛 판**(끝맺음 `step-foes`): `redrawStepFoesIn`(함수가 고른 단계 상대 `troop_fit_*` 의 그림이 현행이 아니면 같은 이름·같은 사본 id 로 다시 고름) → `settleStepFoesIn` → `restockOffThemePlaces`(테마 밖 = 이제 구형 그림도) → `settleCurrentArtIn`(맵에서 싸우는 적마다 그림 넣기 · 옛 걷기 칩 → 전투 그림 · 그림이 없는 종은 없는 그림 줄).
+
+r1w-fun 저장본 → 끝맺음 재생(모델 없음, `finishReplay.mts`) 전/후:
+
+| 자리 | 전(그림) | 후(그림) |
+|---|---|---|
+| 늪지 길 적 셋 | lizardman-spear · boar-tusk(구) · tiger-saber(옛 걷기 칩) | snake-viper · beetle-horn · snake-viper |
+| 늪지 «늪 괴수»(s3) | dragon-whelp | wolf-dire |
+| 화산 기슭 길 적 | centipede-fire | spirit-fire |
+| 벽화 동굴 «불의 정령»(s7 보스) | behemoth-horn | spirit-fire |
+
+자동 플레이 엔딩 성공 → 성공 · 다시 읽기 성공. 저장(SQLite) → 출하 플레이어(`wholeGamePlayer --serve`)로 띄워 전투·맵을 봤다: 전투의 뿔 딱정벌레와 맵의 딱정벌레가 같은 그림. 그림 `~/claude-viz/av2-look-defaults.html`.
+
+명세 은행 ab(저장된 49 명세, 모델 없음, origin/main → 이 변경): 자동 플레이 엔딩 도달 9/10 → 9/10 · 나빠진 칸 없음 · 끝맺음 관문이 짚은 문제 166 → 157(«적 개성» 7 → 0, «전투 세기» 4 → 3) · 할 일 막힘 78 → 76 · 출하 차단 11 → 10 · 필드 그림 ≠ 전투 그림 0/10 → 0/10 · 없는 그림 줄 24 → 128(그릴 목록이 드러난 것) · 길 위 전투 뒤 레벨 82 → 75(종이 바뀌어 경험치가 달라졌다 — 나빠짐으로 치지 않는 칸). 첫 은행에서는 jrpg-w3(«적 개성» 독사)와 lay-main-mine(«전투 세기» 76%) 두 게임이 나빠졌고, 위 «자기 기술이 있는 종만»·«마릿수 줄이기» 가 그 원인을 고친 것이다. 수치는 화면 미검증 — 화면은 r1w-fun 한 판을 봤다.
+렌더러 수리 뒤 다시(main 004cf1a10a → 이 변경, 2026-11-12): 자동 플레이 엔딩 도달 9/10 → 9/10 · 정직한 플레이 9/10 → 9/10 · 나빠진 칸 없음 · 끝맺음 관문이 짚은 문제 165 → 156 · 할 일 막힘 78 → 76 · 출하 차단 10 → 10 · 없는 그림 줄 24 → 128 · 길 위 전투 뒤 레벨 82 → 75. 은행의 맵 그림에서 현행 적이 보인다(jrpg-w1 서리 절벽의 회색 늑대·큰 늑대, 얼음 동굴의 박쥐 — 세 칸을 잘라 봤다; 고치기 전 렌더러는 그 칸에 아무것도 그리지 않았다).
+
+**그릴 목록**(현행 그림이 없어 대역이 선 종 — 세계별, `[art-gap]` 줄의 `wanted`):
+
+| 세계 | 없는 종 |
+|---|---|
+| 선사 시대 | 공룡(랩터·트리케라톱스 — 트리케라톱스는 그림이 생겼지만 적 기록이 없다, 아래) · lizardman-spear · tiger-saber · behemoth-horn · salamander-flame (~~dragon-whelp · centipede-fire · bear-brown~~ 2026-11-12 그림) |
+| 북방 설원 | goat-mountain · lich-frost · slime-blue (~~bear-brown~~ 2026-11-12 그림) |
+| 사막 동방 | scorpion-sand · worm-sand · mummy-bandage · totem-cursed · skeleton-bone · bonepile-crawler |
+| 해적 군도 | lizardman-spear · squid-deep · shark-land · skeleton-knight · skeleton-bone |
+| 하늘섬 | harpy-cliff · sylph-air · spirit-wind · spirit-light · griffin-sky · roc-giant · gargoyle-stone |
+| 증기 도시 | rat-giant · puppet-string · sword-flying · armor-living |
+| 전국·에도 | 사무라이·닌자·요괴 · cat-shadow · armor-living · ogre-club · knight-fallen |
+| 우주 정거장 | 경비 로봇·드론·외계 생물 · slime-metal · sword-flying |
+| 황무지 | zombie-rot · ghoul-grave · rat-giant · behemoth-horn · ogre-club |
+
+대역 표에도 없는 종: mimic-chest · scarecrow-field. 현행 세트에 있지만 기본 DB 에 적 기록이 없어 v2 가 못 쓰는 그림: jelly-lantern · leafling-01 · snake-01 · well-olm · yeti-frost(『폴른 스타』 전용 적).
+남은 것: 모델이 `upsert_enemy`·`upsert_troop` 으로 직접 고른 구형 그림 적은 그대로 선다(끝맺음이 없는 그림 줄만 남긴다) · `author_dungeon` 을 직접 부른 던전의 주제 적(`dungeonThemeTroops`)은 v2 빌더를 거치지 않는다 · 몬스터 수집 장르의 종 그림은 다른 세트다. 시험 `test/aiV2CurrentFoes.test.ts` · `test/aiV2PlaceTheme.test.ts`.
+
+### 더 그린 종 — battle-gen gif20 단계의 통과분을 현행 세트에 더한다 (2026-11-12)
+
+그릴 목록을 『폴른 스타』 몬스터를 다시 그린 그 방식(ChatGPT 웹 9포즈 GIF → 좌우 반전 → 격자 도트화(16색 이하) → 5×4 20칸)으로 그린다. 그 방식은 이제 battle-gen 의 단계다
+(`cli.py gif` → `sheet20` → `check --kind motion20` → `review motion20`, 그 저장소 `docs/gif20.md`). 여기 들어오는 것은 **기계 관문(늑대 범위 지표 4개 · 16색 · 바닥선 · 대기 차이 등)을 통과하고,
+`claude-opus-5-5` medium 이 숨긴 불량 표본을 모두 떨어뜨린 묶음에서 늑대급 4 이상을 준 시트뿐**이다. 사람이 고르지 않는다.
+
+- 그림: `src/assets/currentMonsterSheets20.ts`(생성 파일 — `python3 scripts/content/foe-gif20/export.py --battle-gen <battle-gen 체크아웃>`; 통과가 아닌 종은 거절한다). 근거(원본 GIF · 첨부한 참고 그림 · 지시문 · 시트 · 관문 수치 · 판정)는 `tiledata/foe-gif20/<종>/`.
+- 넣기: `src/assets/currentMonsterArt20.ts` 의 `installMonsterArt20For` — 『폴른 스타』 설치와 같은 업로드 둘(초상 kind monster + `<id>-sheet20`). `currentMonsterArt.ts` 가 두 설치를 같이 늦게 읽고, `CURRENT_MONSTER_ART_IDS` 에 새 id 를 더했다. 고르는 쪽(`currentFoes.ts` · `placeTheme.ts`)은 고치지 않았다 — 그림이 생긴 종은 표를 고치지 않아도 선다.
+- 한 id 에 그림 하나: 같은 id 가 『폴른 스타』에도 있으면(`alsoInFlagship` — 잎새 정령) 그쪽 시트가 들어간다. 그 종의 새 시트는 엄격한 관문을 통과한 판본으로 실려만 있다(『폴른 스타』의 그림을 바꾸지 않는다).
+
+이번에 들어온 것(선사 시대 9종을 종마다 GIF 3장까지 — 무효 묶음에 든 GIF 는 세지 않는다 — 그린 결과 4종 + 보정 1종):
+
+| 종 | id | 칸 | 서는 곳(테마 표) | 판정 |
+|---|---|---|---|---|
+| 갈색 곰 | generated-enemy-bear-brown | 96 | 선사 시대 실내(동굴·움집) 길 적 · 북방 설원 바깥 길 적 | 늑대급 4.5 |
+| 새끼 용 | generated-enemy-dragon-whelp | 96 | 선사 시대 우두머리 | 4 |
+| 화염 지네 | generated-enemy-centipede-fire | 96 | 선사 시대 화산 기슭 길 적 | 4 |
+| 트리케라톱스 | generated-enemy-triceratops | 128 | **아직 서지 않는다** — 기본 DB 에 적 기록이 없다 | 4 |
+| 잎새 정령(보정) | generated-enemy-leafling-01 | 96 | 『폴른 스타』 전용 적 — 설치는 그쪽 시트 | 4 |
+
+테마가 세우는 것의 전/후(탐침, 모델 없음): 선사 시대 실내 길 적 `bat-cave · spider-cave` → `bat-cave · bear-brown · spider-cave` · 화산 기슭 `spirit-fire`(+대역) → `centipede-fire · spirit-fire` · 우두머리 후보 `wolf-dire · spirit-fire` → `dragon-whelp · wolf-dire · spirit-fire` · 북방 설원 바깥 `wolf-grey · wolf-dire`(곰은 다이어 울프 대역) → `wolf-grey · bear-brown · wolf-dire`.
+탈락해 그릴 목록에 남은 것: 랩터 · 리자드맨 · 검치호 · 베히모스 · 샐러맨더(늑대 범위 또는 Opus 반려 — 피격 칸이 뒤로 밀려나지 않음 등).
+
+**트리케라톱스·랩터는 적 기록이 없다.** 선사 시대 테마는 공룡을 글(`wantedFoes: "dinosaurs (raptor, triceratops)"`)로만 바란다 — 기본 DB 적 106종에 공룡이 없어 그림만으로는 서지 않는다.
+세우려면 기본 DB 에 적 기록(`enemy_triceratops`, 능력치 · 행동 묶음)을 더하고 테마 표의 `foes`/`bosses` 에 넣어야 한다. 번들 3×3 그림이 없는 종이라 적 기록보다 그림이 먼저 프로젝트에 있어야 한다(『폴른 스타』의 `installFallenMonsterArtWithoutBundle` 과 같은 순서). 이 변경에서는 하지 않았다.
+
+**주인공과 나란히 선 크기(기록만 — 전투 배치는 고치지 않았다).** 출하 플레이어 실제 전투 화면 640×480(그림 정확히 2배, 적 배율 100%)에서 주인공 전투 그림의 몸 높이는 약 48px(원본 24px)이다.
+새 종의 대기 자세 높이: 트리케라톱스 144px(원본 72 — 주인공의 3.0배) · 화염 지네 138px(69 — 2.9배) · 갈색 곰 118px(59 — 2.5배) · 새끼 용 110px(55 — 2.3배). 기준인 서리늑대는 104px(52 — 2.2배)다.
+새 종은 『폴른 스타』의 같은 체급과 같은 크기로 그렸고, 주인공이 그 옆에서 작아 보이는 것은 주인공 전투 그림 쪽 일이다(다른 작업자가 고친다). 캡처 `~/claude-viz/battle-gif.html`.
+
 ## 맵은 목적으로 깐다 — 목적표(역할 건물 · 채움 집 · 건물 수에서 나오는 크기), 사막 번들부터 (2026-11-11)
 
 **문제(오너 2026-11-11 «초록 네모가 전부 문이 맞기는 한데 ..», 「맵은 목적으로 깐다 — 공간이 남으면 너무 큰 것」).** 세계 장소는 종류마다 고정 크기로 지어져 집 줄을 끝까지 채웠다.
@@ -652,6 +738,45 @@ Terra 네 판의 화면 검수 장부 57줄 가운데 15줄이 끝맺음이 깐 
 Terra 세 판의 저장본에서 다시 깐 결과: 사막 fun-x1 장면 4·자막 4·선 사람 6(전 0), 버들항 jrpg-x1 4·4·3, 설원 fun-w3 4·4·6. 증거 `test/blueprintOpeningCast.test.ts`.
 
 **알려진 한계.** 사람은 맵에 선 자리 그대로라 맵에서 붙어 선 두 사람은 오프닝에서도 붙어 있다. 사람이 없는 맵의 장면은 빈 풍경이다. 무대보다 작은 맵(실내)은 1.2배로 늘어난다(전과 같다). 화면 검수는 표본의 첫 순간을 0ms 에서 찍는다(`judge/vqa.ts`) — 모델이 fade 로 여는 장면을 지으면 그 순간은 여전히 전환 한가운데다.
+
+## 대사에는 화자의 공용 흉상 — 칩에서 결정적으로, 사람·주인공 칩은 흉상이 있는 것부터 (2026-11-12, 오너 r1w-fun)
+
+오너(Haiku 가 지은 선사 시대 게임 r1w-fun 을 해 보고): «초상화나 이런 건 미리 만들어둔 거 써도 좋았겠다».
+공용 흉상은 2,687장이다(표정 세트 76 × 흉상·전신 × 16표정 + 현대 24종 5표정 + 캐스트, `src/assets/sharedPortraitAssets.ts`, 그림 `public/assets/shared/portraits/<줄기>/bust-<표정>.png`).
+r1w-fun 의 대화창에는 이름표만 떴다. 까닭 셋:
+
+1. 사슬·경로 빌더(`author_puzzle_chain` · `build_blueprint_path`)가 지은 사람 페이지에는 얼굴 명령(`changeFace`)이 없다 — 대사 명령만 쓴다.
+2. `add_people`(`place_npc`)은 칩의 검토된 짝 **얼굴 낱장**(48px)만 붙였다 — 흉상이 아니다.
+3. 고른 칩에 얼굴이 없었다: «촌장»·«산의 노인» = 터번 노인(people4#6, 짝 얼굴 없음), «주술사» = 청년 병사(people5#0, 낱장뿐), 주인공 = 청년 전사(people5#2, 낱장뿐 · 전투 그림도 없어 전투에는 기본 검사가 섰다).
+
+지금(`story/speakerBust.ts`):
+
+- **칩 → 흉상**(`bustOfChip`): 칩 → 검토된 짝 얼굴(`reviewedFaceIdForCharset`) → 표정 세트(`sharedExpressionSetIdOf`) → `shared-<줄기>-expressions-bust-base`. 모델에게 묻지 않는다. EasyRPG 사람·주역 칩 72칸 가운데 52칸에 흉상이 있다(People4·People5 전부 · People2 0·4 · Actor3 5 · Actor4 5 는 없다).
+- **대사에 걸기**(`settleSpeakerBustsIn`): 얼굴 명령이 없는 페이지는 화자 이름이 맵에 선 사람(이벤트 이름)·주인공이면 그 줄 바로 앞에 흉상을 걸고, 내레이션·모르는 화자 줄 앞에서는 지운다(갈래마다 따로). 얼굴 명령이 이미 있는 페이지는 낱장 얼굴만 같은 인물의 흉상으로 바꾼다(자리·직접 정한 `presentation`·외형 기록은 그대로). 되풀이 안전.
+- **표정**: 줄의 `emotion` 이 같은 세트의 표정 그림을 고른다(런타임 `dialogueFaceForEmotion` — 기쁨·슬픔·분노·놀람). 함수가 기분을 아는 줄에만 적는다: 싸우기 직전(`battleProcessing` 앞)의 그 사람 말 = `angry`. 모델에게 칸을 더 묻지 않는다.
+- **어디서 도나**: 내용 도구의 출구 하나(`tools/context.ts finishContent` — `add_people` · `add_event` · `add_scene` · `author_puzzle_chain` · `build_blueprint_path` · 보스·엔딩 장면이 지은 이벤트) + 끝맺음 `speaker-busts`(조립 맨 끝 310 — 주인공 칩이 정해진 뒤 게임 전체, 옛 판도).
+- **사람 칩**(`place/people.pickPersonGraphic`): 흉상 없는 칩은 검색어 두 단 반(250, 낱장만 있으면 150) 밀린다 — 역할 검색어 어디든 흉상 있는 칩이 있으면 그 칩. 이 맵 화풍의 역할 칩이 하나라도 있으면 이름으로 돌려 고르는 마지막 단보다 늘 앞이다(흉상이 없다고 여관 주인이 아무 주민이 되지 않는다). 노인 역할 검색어에 «대머리» 를 더했다(흰 수염 노인 흉상이 그 칩의 짝이다).
+- **흉상은 «맞는 칩» 안에서만 앞선다 · 못 알아들은 이름에는 그냥 주민**(2026-11-12 r1s-fun — Sonnet 이 지은 판에서 «오르텐 할멈» 대사창에 왕의 흉상 `people2-king` 이 떴다). 칩 → 흉상 짝은 맞았고 **칩이 틀렸다**: `pickPersonGraphic` 이 «할멈» 을 몰라 마지막 단(이름으로 돌려 고르기)으로 갔고, 그 단의 후보가 사람 칩 60칸 전체(왕·여왕·공주·메이드·기사·수녀·토끼 귀 차림 포함)였다. 이 고르기는 main 에서도 같은 칩을 냈다(«오르텐 할멈» → people3#0 왕, «마을 주민 다래» → 공주, «선원» → 갑옷 기사, «나디아» → 메이드 — 은행 이름 106개 가운데 15개) — 흉상이 뜨면서 눈에 보이게 된 것이다. 고친 것:
+  - 칩 검색의 낱말 표(`src/assets/charsetQuery.ts` — 검색과 고르기가 같이 쓴다)에 «할멈·할매·할미·할배». `npcGraphicIntent(글)` = 그 글에서 하나로 읽힌 성별·나이, `npcGraphicPersonQuery(글)` = 성별·나이로 읽힌 낱말만 추린 질의(«오르텐 할멈» → «할멈» — 이름이 섞인 글은 통째로는 0건이다). 고르는 쪽은 낱말 표를 따로 갖지 않는다.
+  - **맞음이 흉상보다 먼저**: 글이 말한 성별과 다른 칩 · 아이가 아닌데 아이 칩은 `MISFIT`(600 — 흉상 유무 250 + 검색어 단 차이보다 크고, 마지막 단 1000 보다 작다). 맞는 칩에 흉상이 없으면 흉상 없는 그 칩이 서고 대화창에는 이름표만 뜬다(다른 사람 얼굴을 띄우지 않는다). 역할 표의 기본 성별(촌장·문지기 = 남성)은 글이 말하지 않았을 때의 기울기(25)로 남는다 — 표의 낱말은 느슨해서(«왕» ⊂ «여왕») 꼭 지키면 여왕이 왕으로 선다.
+  - **이름으로 돌려 고를 후보 = 그냥 주민**(`plainPeople`): 이 맵 화풍의 칩 가운데 칩 설명에 «주민» 이 붙고 맞는 것만(아이·특이한 차림은 돌리기 전에 뺀다 — 넣고 돌리면 그 자리에 걸린 이름이 전부 다음 칩 하나로 몰린다: 고치기 전 못 알아들은 이름 75개 가운데 56개가 «청년 남성»). 주민 꼬리표 칩이 셋이 안 되는 화풍은 그 화풍의 맞는 사람 칩 전부(현대 학생 칩에는 주민 꼬리표가 없다) · 맞는 주민이 둘뿐이면(여자 주민) 그 둘만 돈다. 왕·공주·메이드·기사·수녀 칩은 그 역할을 말했을 때 검색어 단에서만 나온다.
+  - **말하지 않은 차림은 주민을 한 번 더 쓰는 것보다 뒤**(`UNASKED` 1100 — 마지막 단 1000 보다 크다; 2026-11-12 명세 은행 전/후에서 찾음): 검색어 단 안의 순위는 «성별만 맞은 칩» 까지 이어지고 같은 맵에서 쓴 칩은 뒤로 밀려서, 주민 둘을 세운 뒤의 «상인 여자» 가 토끼 귀 여성, «농부» 가 귀족 남성, «마을 주민 남자» 가 승려로 섰다(흉상이 있는 칩이 앞서면서 더 잦아졌다). 차림을 짚었는지는 칩 검색의 낱말 표로 읽는다 — `npcGraphicIsPlain(칩)`(«주민» 꼬리표가 있거나 성별·나이 말고는 꼬리표가 없다: 노파) · `npcGraphicNamedBy(글, 칩)`(낱말 표의 역할 줄 «사제» → 성직자, 또는 성별·나이 낱말이 아닌 낱말이 칩의 차림 꼬리표에 걸린다; 한 글자는 같을 때만 — «왕» ≠ «여왕»). 글 = 역할·외형 + 그 단의 검색어(`ROLE_LOOKS` 가 옮긴 낱말: 문지기 → 병사). 주민 꼬리표 칩이 셋이 안 되는 화풍(현대 칩)에는 걸지 않는다 — 순위 그대로.
+  - **나이도 맞음이다**: 글이 말한 나이와 두 단 넘게 어긋난 칩(«할배» 에 청년 · «소녀» 에 중년)은 `MISFIT`. 이웃 나이는 맞는 것으로 친다(남자 노인 주민 칩이 없어 «할배» 는 흰 수염 중년 주민으로 선다 — 그 칩의 흉상이 노인 흉상이다).
+  - **주민 칩을 다 쓴 맵은 고르게 다시 쓴다**: 같은 맵에서 쓴 칩은 쓴 만큼 뒤로(15씩 네 번까지), 특이한 차림(`ODD_LOOK`)은 그보다 크게(80) — 여자 주민 여섯이면 젊은 여성 · 중년 여성 · 노파가 번갈아 서고, 경비병 여섯은 여섯 다 경비병이다. 판타지 사람 칩의 그냥 어른 주민은 다섯뿐이라(남 3 · 여 2, 노파까지 여 3) 사람이 많은 맵에는 같은 칩이 다시 선다 — 그릴 것 목록의 «주민 남녀» 가 그 빈자리다.
+  - 이름으로 돌려 고를 후보에서 이 게임이 못 쓰는 칩(장르 잠금 · 몬스터 수집 전용)도 돌리기 전에 뺀다.
+  - 주인공(`pickChip`)도 같은 순서: 맞음+흉상 → 맞음(낱장) → 안 맞음+흉상 → 안 맞음.
+  - 전/후(직접 호출): «오르텐 할멈» people3#0 «왕»(흉상 people2-king) → people1#7 «노파»(흉상 people1-old-woman). 은행 이름 106개: 역할을 알아들은 이름의 칩은 그대로(바뀐 것 0), 못 알아들은 이름은 주민 다섯(젊은 여성 20 · 중년 여성 16 · 대머리 남성 13 · 중년 남성 12 · 청년 남성 11)으로만 갈린다. 한 맵에 여섯: «상인 여자» 젊은 여성 → 중년 여성 → 토끼 귀 여성 → 여자 메이드 → 여성 마법사 둘 ⇒ 젊은 여성 → 중년 여성 → 젊은 여성 → 중년 여성 → 노파 → 젊은 여성.
+- **주인공 칩**(`story/shipLookDefaults.pickChip` · `fillPartyLooks`): 흉상과 전투 그림이 둘 다 그 칩의 것인 칩이 먼저, 전투 그림(`battleCharacterResourceId`)도 그 칩의 것으로, 맵에 선 사람이 쓰는 칩은 피한다.
+
+런타임이 흉상을 띄우는 조건: `changeFace.resourceId` 가 공용 초상 id(`…-bust-<표정>`)면 대화창이 흉상으로 그린다(id 의 `-bust` 가 모양을 정한다 — `sharedPortraitAssets.ts` 머리말). 내보내기는 쓰인 흉상과 그 세트의 대사 표정 5장을 같이 싣는다(`webExportAssets` `sharedPortraitExpressionSiblings`).
+확인(모델 없음): r1w-fun 저장본의 사슬 사람·주인공 칩을 지금 고르기 함수로 다시 고른 뒤(`pickPersonGraphic` 직접 호출) 끝맺음 재생 → SQLite 에 저장 → 출하 플레이어(`wholeGamePlayer --serve`, 제품 내보내기 경로)로 띄워 촌장에게 말을 걸었다 — 흰 수염 노인 흉상이 대사창 왼쪽에 선다. 자동 플레이 엔딩 성공 → 성공 · 다시 읽기 성공. 그림 `~/claude-viz/av2-look-defaults.html`.
+
+명세 은행 ab(저장된 49 명세, 모델 없음, origin/main → 이 변경): 자동 플레이 엔딩 도달 9/10 → 9/10 · 나빠진 칸 없음(할 일·관문·출하 차단 모두 같은 수) · 지어진 게임 속 흉상 참조 2곳(1게임) → 195곳(18게임). 수치는 화면 미검증 — 화면은 r1w-fun 한 판을 봤다.
+고르기 수리 뒤 다시(main 4c290c40bd → 이 변경, 2026-11-12): 자동 플레이 엔딩 도달 9/10 → 9/10 · 정직한 플레이 9/10 → 9/10 · 나빠진 칸 없음(할 일 245/359 · 관문 165 · 출하 차단 10 모두 같은 수). 은행이 지은 게임의 사람 99명(27게임) 가운데 칩이 바뀐 사람 49명(12게임) · 칩에 흉상이 있는 사람 71 → 90 · 차림 칩(왕·공주·메이드·기사·승려·귀족·토끼 귀·터번·전통 의상·전사·병사)으로 선 사람 31 → 7 — 남은 7은 경비병 넷(문지기·왕궁 경비병·근위병·라시드)과 «왕» 낱말에 걸린 셋(«그림자 마왕»·«왕의 메아리»·«왕의 제단» — 역할 표의 느슨한 «왕» 은 main 과 같다, 고치지 않음). 흉상을 먼저 고르기만 했던 앞 판(d781e97ea6)은 같은 은행에서 토끼 귀 여성 2 · 승려 1 · 귀족 남성 2 가 남았다(«아미나» 상인 여자 → 토끼 귀, «농부 보리» → 귀족, «토르» 마을 주민 남자 → 승려).
+
+재 본 것(고치지 않음) — **사람 칩은 세계를 모른다**: `pickPersonGraphic` 은 역할 낱말 → 검색어(`ROLE_LOOKS`) → 칩 설명 검색, 화풍은 현대/판타지 둘뿐이다(`familyFits`). 선사 시대 부족에 맞는 사람 세트는 없다 — 설명에 원시·가죽옷이 든 칩은 15칸(REFMAP 변형 14 · Heroes 1)이고 얼굴·흉상이 없다. 역할 낱말이 없는 이름(«주술사»·«부족 전사»)은 사람 칩 전체에서 이름으로 돌려 고른다(왕·메이드·토끼 귀 차림도 후보다). «촌장의 딸» 은 «촌장» 낱말에 걸려 노인이 된다. 남성 노인 흉상은 하나뿐이라 촌장·산의 노인·(끝맺음이 세운) 떠돌이 상인이 같은 얼굴이 된다.
+그릴 것: 선사 부족 사람 세트(족장·주술사·사냥꾼·주민 남녀·아이)와 그 흉상 · People4·People5 20칸의 흉상. 떠돌이 상인의 얼굴은 인물 만들기(`piCharacterMaking`, 2026-11-05)가 생성한 낱장이라 화풍이 다르다 — 그 길은 건드리지 않았다.
+시험 `test/aiV2SpeakerBusts.test.ts`.
 
 ## 상점 주인은 `add_people` 한 번 — `sells` (2026-11-11, B5a)
 

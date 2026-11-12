@@ -255,6 +255,14 @@ function graphicVisual(project: Project, graphic: EventPageGraphic): { imageUrl:
   // 여기서 모르면 필드 적이 하나만 있어도 show_map_region 전체가 거절돼 조수가 던전을 한 번도 못 봤다(2026-10-22 assistant-dungeons 기준선).
   const monsterUrl = !def && !project.assets.uploaded[id] ? generatedMonsterSpriteUrl(id) : null;
   if (monsterUrl) return { imageUrl: monsterUrl, frame: { x: 0, y: 0, width: 32, height: 32 }, preserveAlpha: true, wholeImage: true };
+  // 프로젝트에 넣은 적 그림(업로드 kind monster — 『폴른 스타』의 새 전투 시트, v2 가 고른 현행 세트): 런타임은 그 초상(서 있는 칸) 한 장을
+  // 32px 상자에 맞춰 세운다(eventSpriteResources 의 uploadedKind monster). 번들 그림만 알던 위 줄은 업로드가 있으면 비켜서, 현행 그림 적이
+  // 하나라도 선 맵은 통째로 못 찍었다(2026-11-12 r1s-fun: 화면 검수가 7장 중 3장을 못 봤다).
+  const ownMonster = !def && project.assets.uploaded[id]?.kind === "monster" ? project.assets.uploaded[id] : undefined;
+  if (ownMonster) {
+    const url = uploadedAssetUrl(ownMonster);
+    return url ? { imageUrl: url, frame: fieldFoeBox(ownMonster.meta.width, ownMonster.meta.height), preserveAlpha: true, wholeImage: true } : null;
+  }
   const iconUrl = resolveCc0IconAssetUrl(id);
   const icon = CC0_ICON_ASSETS.find(asset => asset.id === id);
   if (!def && iconUrl && icon) return { imageUrl: iconUrl,
@@ -268,6 +276,13 @@ function graphicVisual(project: Project, graphic: EventPageGraphic): { imageUrl:
   }
   const imageUrl = charsetImageUrl(project, id);
   return imageUrl ? { imageUrl, frame: frameSourceForGraphic(graphic), origin: spriteFrameOrigin(def) } : null;
+}
+
+/** 필드 적 그림의 상자 — 긴 변 32px(약 2칸), 비율 그대로(런타임 fitSize 32). 크기를 모르면 정사각. */
+function fieldFoeBox(width: number | undefined, height: number | undefined): CharsetFrameSource {
+  const w = width && width > 0 ? width : 1, h = height && height > 0 ? height : 1;
+  const fit = 32 / Math.max(w, h);
+  return { x: 0, y: 0, width: Math.max(1, Math.round(w * fit)), height: Math.max(1, Math.round(h * fit)) };
 }
 
 async function loadUnkeyedSpriteImage(url: string): Promise<HTMLImageElement> {

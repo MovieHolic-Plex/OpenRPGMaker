@@ -1,0 +1,18 @@
+[battle-gen gif20 a2] leafling-01 잎새 정령 (Leafling spirit) 9-pose battle GIF
+Attached image: LEFT is my best pixel-art monster (a frost wolf) — it is the STYLE TARGET only, do not draw a wolf. RIGHT is the current, weaker version of the monster to redraw.
+Redraw the monster as: a small forest SPIRIT made of LEAVES AND TWIGS: a round head of layered green leaves with a REAL small face — two dark bead eyes and a tiny mouth, NO long nose, NO beak; body is a bundle of bark twigs wrapped in overlapping leaves, thin branch arms ending in twig fingers, leaf-skirt legs; a sprout and a couple of leaves on top. Fresh greens, brown bark, a small yellow-green highlight; a clear dark green-brown 1-pixel outline like the wolf's (broken on the lit side) and dark, readable eyes.
+STYLE (most important): match the LEFT wolf's pixel-art quality exactly — true low-resolution pixel art with clearly visible square pixels (each art pixel 5-6 screen pixels), a limited palette of about 14-16 colours, hand-placed 1-2 pixel highlights and texture clusters, 3-4 hard-edged shading bands (no airbrush gradients, no soft blending, no anti-aliasing, no blur), and a dark 1-pixel outline that is NOT uniform: darker and broken on the shadow side, lighter or dropped where light hits. Clear, distinctive silhouette readable at small size. A 3/4 side view facing LEFT like the wolf, with a character pose that has weight. No glow halo, no ground shadow, no text.
+Same scale and same facing in every frame. Flat solid magenta (#FF00FF) background in every frame, nothing else in the background. Keep the whole monster inside every frame with empty magenta margin on all sides. Its battle attack style is: float (drifts forward and lashes with a whip of leaves).
+Make ONE animated GIF with EXACTLY 9 frames, one pose per frame, in this exact order:
+1. idle A — standing ready pose
+2. idle B — breathing IN: the whole upper body/head clearly rises and expands (about 5% of its height higher), limbs/wings/tail shift too — the difference from frame 1 must be easy to see
+3. idle C — breathing OUT: body clearly lower and compressed (about 5% of its height lower than frame 1), head dips — clearly different from frames 1 and 2
+4. windup — gathering itself before the attack
+5. move — lunging toward the enemy (to the left)
+6. attack — the strike at full extension toward the left, clearly different from frames 4 and 8
+7. recover — pulling back after the attack
+8. hit — knocked backward (to the right) from taking damage, recoiling, eyes squeezed
+9. knocked out — lying flat on the ground asleep/inert, eyes closed (non-violent defeated pose, no blood, no injury)
+400 ms per frame, looping. Exactly 9 frames, nothing else.
+The previous attempt was rejected by the art reviewer for this reason — fix exactly this and keep everything else: "The yellow-faced leaf sprite looks straight at the viewer in its idle cells, and it is a small, blocky figure with flat green clumps, much weaker than the wolves. Idle_a and intro have stray red specks beside the right arm, and the attack is a sideways lean that throws a leaf."
+The whole body and the face must be turned in a 3/4 side view toward the LEFT in every frame like the wolf (both eyes on the left half of the head, nose direction left) — never looking straight at the viewer. Build it from clearly separate overlapping leaves with dark gaps and visible twig arms and legs, with 1-2 pixel highlights on the leaf edges like the wolf's fur, not flat green clumps. No red or pink pixels anywhere. Frame 6 (attack): it lunges to the LEFT and lashes a long whip of leaves straight out to the left at full extension.

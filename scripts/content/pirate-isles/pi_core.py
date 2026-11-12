@@ -511,12 +511,12 @@ import fable_roofs as FR  # noqa: E402
 PIECES = {}
 
 
-def piece(id_, name, w, h, kind, group='props', solid=(), tags=(), desc='', entrance=None, frames=1, walk=None, approach=None):
+def piece(id_, name, w, h, kind, group='props', solid=(), tags=(), desc='', entrance=None, frames=1, walk=None, approach=None, rule=None):
     """조각 등록. name = 관문 판정자에게 가는 영어 이름, desc = 한국어 설명(조수가 본다).
     solid = 막힌 칸 [(x,y)…] (그 밖 그림 칸은 위층 통행 ★), entrance = 건물 문 칸 (dx,dy) — 문 칸은 막히고 그 아래 칸이 접근칸."""
     def deco(fn):
         PIECES[id_] = dict(id=id_, name=name, w=w, h=h, kind=kind, group=group, solid=[tuple(s) for s in solid], tags=list(tags), desc=desc,
-                           entrance=entrance, approach=approach, frames=frames, draw=fn)
+                           entrance=entrance, approach=approach, frames=frames, draw=fn, rule=rule)     # rule = 조각이 직접 주는 놓는 규칙(없으면 굽기가 종류로 정한다)
         return fn
     return deco
 
@@ -573,7 +573,10 @@ def status_of(p):
         if f == 0 and FR.has('pirate-isles', 'pi-' + p['id']):      # 다시 그린 지붕: 오너 면제 묶음(면제는 통과가 아니다 — 보고에 «오너 면제»)
             res.append('pass' if FR.waived(img, p['kind']) else 'none'); continue
         r = read_receipt(pixel_sha256(img))
-        res.append('none' if not r else (r['verdict'] if r.get('kind') == p['kind'] else 'kind'))
+        if not r:
+            # 영수증이 없는 그림은 관문 자신의 번들 출구 규칙에 묻는다(서명된 사람 허용·오너 면제 묶음은 거기서 지난다). 여기에 둘째 규칙을 두지 않는다.
+            res.append('pass' if FR.waived(img, p['kind']) else 'none'); continue
+        res.append(r['verdict'] if r.get('kind') == p['kind'] else 'kind')
     return 'pass' if all(x == 'pass' for x in res) else ('none' if 'none' in res else 'fail')
 
 

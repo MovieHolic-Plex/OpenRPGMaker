@@ -1,12 +1,15 @@
 // 출하 기본값 — 겉모습·소리: 필드 HUD, 전투 곡·전투 배경, 파티 칩·이름, 창 모양. 차례는 shipDefaults.ts 의 applyShipDefaults.
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
+import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { findNpcGraphicMatches, queryNpcGraphics } from "@/assets/charsetQuery";
 import { climateBattleBackground, dungeonBattleBackground, interiorBattleBackground, placeNameBattleBackground } from "@/battle/battleBackdrop";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { createBlankProject } from "@/project/defaults";
 import { blueprintPremiseText } from "@/project/blueprintAssembly";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
+import { charsetBattlerForCharacter } from "@/assets/charsetBattlers";
+import { bustOfChip } from "./speakerBust";
 import type { Project } from "@/project/types";
 import { applyThemeBackdrop } from "../place/placeTheme";
 import { asPresetHud, HUD_SOURCES, normalizeFieldHud, projectCanLoseHp, projectHudUse, resolvedHudWidgets, unusedHudGauges } from "@/project/fieldHud";
@@ -205,18 +208,30 @@ function pickChip(text: string, avoid: ReadonlySet<string>, overrides: Project["
   const female = FEMALE.test(text);
   const role = ROLE_QUERIES.find((r) => r.re.test(text));
   const queries = [...(role ? (female ? role.female : role.male) : []), ...(female ? DEFAULT_QUERIES.female : DEFAULT_QUERIES.male)];
+  // 흉상(대화창)과 전투 그림이 둘 다 그 칩의 것인 칩이 먼저다 — 얼굴 낱장뿐인 칩은 그런 칩이 어느 검색어에도 없을 때만.
+  // «청년 전사»(people5)는 흉상도 전투 그림도 없어 대화창에는 이름표만, 전투에는 다른 사람(기본 검사)이 섰다(2026-11-12 r1w-fun).
+  // 다만 흉상은 «맞는 칩» 안에서만 앞선다: 성별이 어긋나거나 아이가 아닌데 아이 칩이면 흉상이 있어도 맞는 칩(낱장뿐이어도) 뒤다 —
+  // 검색어 하나의 결과 12개에는 느슨하게 걸린 다른 성별·나이의 칩도 섞여 있다.
+  const wanted = female ? "female" : "male";
+  const child = /소녀|소년|아이|어린/u.test(text);
+  const picks: (ChipPick | undefined)[] = [undefined, undefined, undefined, undefined]; // 맞음+흉상 · 맞음 · 안 맞음+흉상 · 안 맞음
   for (const query of queries) {
     for (const match of queryNpcGraphics(query, 12, overrides)) {
-      const asset = findCharsetAsset(match.entry.textureKey);
+      const entry = match.entry;
+      const asset = findCharsetAsset(entry.textureKey);
       if (!asset) continue;
-      const key = `${asset.id}#${match.entry.characterIndex}`;
+      const key = `${asset.id}#${entry.characterIndex}`;
       if (avoid.has(key)) continue;
-      const face = sharedFaceForCharset(match.entry.textureKey, match.entry.characterIndex)?.resourceId;
+      const face = sharedFaceForCharset(entry.textureKey, entry.characterIndex)?.resourceId;
       if (!face) continue; // 짝 얼굴이 검토된 칩만 — 모습과 얼굴이 같은 인물이어야 한다.
-      return { resourceId: asset.id, index: match.entry.characterIndex, label: match.entry.label, face };
+      const misfit = (!!entry.gender && entry.gender !== "none" && entry.gender !== wanted) || (entry.age === "child" && !child);
+      const whole = !!bustOfChip(entry.textureKey, entry.characterIndex) && !!charsetBattlerForCharacter(asset.id, entry.characterIndex);
+      const slot = (misfit ? 2 : 0) + (whole ? 0 : 1);
+      picks[slot] ??= { resourceId: asset.id, index: entry.characterIndex, label: entry.label, face };
+      if (slot === 0) return picks[0];
     }
   }
-  return undefined;
+  return picks.find((pick) => !!pick);
 }
 
 /**
@@ -230,6 +245,12 @@ export function fillPartyLooks(project: Project, story: string): string[] {
   const premise = premiseOf(project, story);
   const used = new Set<string>([...f.database.actors.filter((a) => (project.system.startActorIds ?? []).includes(a.id)).map((a) => `${a.characterResourceId}#${a.characterIndex ?? 0}`),
     ...party.map((a) => `${a.characterResourceId}#${a.characterIndex ?? 0}`)]);
+  // 맵에 선 사람의 칩도 피한다 — 주인공이 마을 사람과 같은 얼굴로 서지 않게(사람을 놓을 때는 주인공 칩을 피하지만 주인공은 그 뒤에 정해진다).
+  for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const page of ev.pages ?? []) {
+    const g = page.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
+    const asset = g?.sprite?.id ? findCharsetAsset(g.sprite.id) : undefined;
+    if (asset && typeof g?.pattern === "number") used.add(`${asset.id}#${decodeCharsetFrameIndex(g.pattern).characterIndex}`);
+  }
   const out: string[] = [];
   for (const actor of party) {
     const fa = fActors.get(actor.id);
@@ -242,6 +263,9 @@ export function fillPartyLooks(project: Project, story: string): string[] {
       if (pick) {
         actor.characterResourceId = pick.resourceId;
         actor.characterIndex = pick.index;
+        // 전투에 서는 그림도 그 칩의 것으로 — 없는 칩이면 비워 런타임 기본에 맡긴다(다른 사람의 전투 그림을 남기지 않는다).
+        const battler = charsetBattlerForCharacter(pick.resourceId, pick.index);
+        if (battler) actor.battleCharacterResourceId = battler; else delete (actor as { battleCharacterResourceId?: string }).battleCharacterResourceId;
         used.add(`${pick.resourceId}#${pick.index}`);
         const faceNote = faceDefault || !actor.faceResourceId ? (actor.faceResourceId = pick.face, ` + 짝 얼굴 ${pick.face}`) : "";
         out.push(`${actor.name} 모습 → ${pick.label}(${pick.resourceId}#${pick.index})${faceNote}`);
