@@ -41,6 +41,7 @@ import { V2_MAX_REPAIR_ROUNDS } from "../turn/session";
 import { hasRoomKit } from "../judge/placeFix";
 import { linkAtRoadMouths } from "../place/roadMouths";
 import { LINK_SIDES, repairCap, text, see, seenPayload, withImages, recordWrite, nextStep } from "./support";
+import { keepRelaidMapId, renameIdIn } from "../place/keepMapId";
 
 /** createV2Tools 에서 뗀 것 — task · run · poolVillage · requestWorld · freshStart · lean · epoch · specShown …. (makeVerbContext) */
 export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
@@ -161,11 +162,25 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
           next: keptRounds >= repairCap(before.record.spec) ? "고치기 상한 — 남은 문제를 보고한다." : "더 작은 패치로 한 번 더 고친다 — 비평 major 중 좌표가 있는 것 하나·둘만 그 칸 범위로 고치고(바닥 전체·방 구조는 건드리지 않는다), 나머지는 보고한다." }, before.seen.get(oldIds[0]!));
       }
     }
+    // 집 보호 때문에 새 id 로 다시 지은 마을은 옛 id 로 되돌린다(place/keepMapId.ts) — 되돌림 판정이 끝난 뒤에(되돌리면 옛 맵이 그 id 로 돌아온다).
+    // 이 장소의 기록·본 것도 옛 id 로 옮긴다.
+    let seenNow = seen;
+    if (result.relaidFrom) {
+      const laidAs = result.mapIds[0]!;
+      result = await keepRelaidMapId(env, session, verb, result);
+      const now = result.mapIds[0]!;
+      if (now !== laidAs) {
+        seenNow = renameIdIn(seen, laidAs, now);
+        session.places.delete(laidAs); session.seen.delete(laidAs);
+        session.places.set(now, { builder: builderId, spec, result, rounds });
+        session.seen.set(now, seenNow);
+      }
+    }
     // 설계 실내면 할 일 확인 room_zones 와 같은 판정을 결과에 싣는다(구역 수·초점·갈 이유·반복 — loop/roomZones.ts).
     const zones = zoneStatusLines(env.ctx.project, result.mapIds, String(task ?? ""));
     // 엄격 스키마가 채운 빈 dungeonDesign({rooms:[]})은 설계가 아니다 — 마을 결과에 «네 dungeonDesign 대로 지었다» 가 붙었다.
     const designedFloor = (spec.type === "dungeon" || spec.type === "cave") && (spec.dungeonDesign?.rooms?.length ?? 0) >= 2;
-    return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seen), ...(zones.length ? { zones } : {}), round: rounds, next: nextStep(seen, rounds, designedFloor ? "dungeon" : (spec.zones ?? []).some((z) => !!z.design), repairCap(spec), result.mapIds.some((id) => hasRoomKit(env.ctx.project, id))) }, seen);
+    return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seenNow), ...(zones.length ? { zones } : {}), round: rounds, next: nextStep(seenNow, rounds, designedFloor ? "dungeon" : (spec.zones ?? []).some((z) => !!z.design), repairCap(spec), result.mapIds.some((id) => hasRoomKit(env.ctx.project, id))) }, seenNow);
   };
   const finishContent = async (toolCallId: string, verb: string, args: unknown, result: ContentBuildResult): Promise<PiToolExecResult> => {
     recordWrite(env, run, toolCallId, verb, args, result.ok, result.summary, result.card !== undefined ? result.card : { eventIds: result.eventIds });
