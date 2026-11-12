@@ -1,5 +1,5 @@
 {
- "_doc": "버들항 이야기 기물 16종 — Claude Fable 5.2 medium 한 방 그림(이 프로젝트를 위해 그린 자체 저작). 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12. pieces/<id>.png 는 한 화소도 바꾸지 않는다(바꾸면 면제가 풀린다). 굽기 scripts/content/beodeul-objects/bake.py — 새 항목은 items 끝에만 더한다(칸 번호 덧붙이기 전용).",
+ "_doc": "버들항 이야기 기물 16종 — Claude Fable 5.2 medium 한 방 그림(이 프로젝트를 위해 그린 자체 저작). 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12. pieces/<id>.png 는 한 화소도 바꾸지 않는다(바꾸면 면제가 풀린다). 굽기 scripts/content/beodeul-objects/bake.py — 새 항목은 items 끝에만 더한다(칸 번호 덧붙이기 전용). ※ 2026-11-12 종류별 변형(variantOf 가 있는 항목): 같은 종류의 옛 킷과 칸 크기·막힌 칸이 같은 다른 그림 — 면제 묶음 fable-variety-beodeul-2026-11-12, 조수 실행이 게임 열쇠로 하나를 고른다(src/project/kitLook.ts).",
  "waiver": "fable-oneshot-2026-11-12",
  "license": "drawn by Claude Fable 5.2 for this project (own work)",
  "items": [
@@ -655,6 +655,1651 @@
    ],
    "desc": "나무 기둥 받침 위에 펼쳐 놓은 기록부. 붉은 끈. 책이 위에서 보인다.",
    "rule": "풀·흙·포석 같은 걷는 바닥 위에. 길 한가운데·문 앞·다리 끝을 막지 않는다. 아랫칸 막힘, 윗칸은 사람 위에 그려진다. 조사 이벤트를 아랫칸에 «같은 높이»로 겹쳐 둔다."
+  },
+  {
+   "id": "well-windlass",
+   "src": "bd-well-windlass.png",
+   "name": "우물 · 두레박 틀 돌 우물",
+   "en": "open stone well with a windlass",
+   "kind": "container",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "두레박 우물",
+    "두레박 틀 우물",
+    "windlass well"
+   ],
+   "family": "water",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "지붕 없는 둥근 돌 우물. 양쪽 나무 기둥에 두레박 감개(손잡이)가 걸리고 앞 테두리에 나무 두레박이 놓였다.",
+   "rule": "길에서 1칸 안쪽 잔디 · 아래 2줄 막힘 · 앞(아래)에 길이 닿아야 함 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-well_roofed",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "well-pump",
+   "src": "bd-well-pump.png",
+   "name": "우물 · 손 펌프와 돌 물통",
+   "en": "hand pump over a stone trough",
+   "kind": "container",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "펌프 우물",
+    "손 펌프",
+    "물 펌프",
+    "hand pump",
+    "water pump"
+   ],
+   "family": "water",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "무쇠 손 펌프와 그 앞의 네모난 돌 물통(청록 물), 오른쪽 앞에 나무 들통.",
+   "rule": "길에서 1칸 안쪽 잔디 · 아래 2줄 막힘 · 앞(아래)에 길이 닿아야 함 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-well_roofed",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "well-spout",
+   "src": "bd-well-spout.png",
+   "name": "우물 · 사자 물구멍 돌 수조",
+   "en": "wall fountain with a stone basin",
+   "kind": "container",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "샘터",
+    "돌 수조",
+    "물터",
+    "wall fountain"
+   ],
+   "family": "water",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "로마풍 물터 — 선 돌판의 물구멍에서 물줄기가 반달 돌 수조로 떨어진다.",
+   "rule": "길에서 1칸 안쪽 잔디 · 아래 2줄 막힘 · 앞(아래)에 길이 닿아야 함 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-well_roofed",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "bench-stone",
+   "src": "bd-bench-stone.png",
+   "name": "벤치 · 돌 벤치",
+   "en": "stone slab bench",
+   "kind": "seat",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "돌 벤치",
+    "stone bench"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "밝은 돌 널판을 어두운 돌 받침 둘에 얹은 등받이 없는 돌 벤치.",
+   "rule": "광장·분수·우물 옆 3칸 안 · 앉는 면이 정면(아래)을 향함 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-bench_wood",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "bench-log",
+   "src": "bd-bench-log.png",
+   "name": "벤치 · 반쪽 통나무 벤치",
+   "en": "half-log bench",
+   "kind": "seat",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "통나무 벤치",
+    "log bench"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "통나무를 반으로 켜 자른 면을 위로 얹은 벤치. 앞쪽에 껍질, 짧은 통나무 발 둘.",
+   "rule": "광장·분수·우물 옆 3칸 안 · 앉는 면이 정면(아래)을 향함 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-bench_wood",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "bench-trestle",
+   "src": "bd-bench-trestle.png",
+   "name": "벤치 · 등받이 없는 널 벤치와 방석",
+   "en": "backless trestle bench with a cushion",
+   "kind": "seat",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "널 벤치",
+    "방석 벤치",
+    "trestle bench"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "X 다리 위에 널 두 장을 얹은 등받이 없는 벤치. 왼쪽에 붉은 방석.",
+   "rule": "광장·분수·우물 옆 3칸 안 · 앉는 면이 정면(아래)을 향함 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-bench_wood",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "sign-hanging",
+   "src": "bd-sign-hanging.png",
+   "name": "이정표 · 걸이 간판 기둥",
+   "en": "post with a hanging sign board",
+   "kind": "front_prop",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "걸이 간판",
+    "걸이 간판 기둥",
+    "hanging sign"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "나무 기둥의 쇠 팔에 사슬로 매단 걸이 간판. 붉은 화살표 그림(글자 없음).",
+   "rule": "갈림길이나 마을 입구에 놓는다. 윗칸은 C, 아랫칸(기둥 밑)은 X.",
+   "variantOf": "bd-out-signpost",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "sign-milestone",
+   "src": "bd-sign-milestone.png",
+   "name": "이정표 · 돌 이정표",
+   "en": "stone milestone",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "돌 이정표",
+    "표지석",
+    "milestone"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "윗면이 둥근 회색 돌 이정표. 붉은 띠와 화살 홈, 발치에 이끼.",
+   "rule": "갈림길이나 마을 입구에 놓는다. 윗칸은 C, 아랫칸(기둥 밑)은 X.",
+   "variantOf": "bd-out-signpost",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "sign-cairn",
+   "src": "bd-sign-cairn.png",
+   "name": "이정표 · 돌무지와 깃대",
+   "en": "cairn with a pennant pole",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "돌무지 표지",
+    "깃대 돌무지",
+    "cairn waymark"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "납작한 돌을 쌓은 돌무지에 세운 깃대와 붉은 세모 깃발.",
+   "rule": "갈림길이나 마을 입구에 놓는다. 윗칸은 C, 아랫칸(기둥 밑)은 X.",
+   "variantOf": "bd-out-signpost",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "crate-closed",
+   "src": "bd-crate-closed.png",
+   "name": "상자 · 못 박은 닫힌 나무 상자",
+   "en": "closed nailed wooden crate",
+   "kind": "box",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "닫힌 상자",
+    "못 박은 상자",
+    "closed crate"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "못 박은 닫힌 나무 상자. 뚜껑 널 석 장, 앞면에 빗금 버팀대, 밧줄 고리.",
+   "rule": "가게 문 옆 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-crate_apple",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "crate-basket",
+   "src": "bd-crate-basket.png",
+   "name": "상자 · 감자 담긴 고리버들 바구니",
+   "en": "wicker basket of potatoes",
+   "kind": "container",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "감자 바구니",
+    "고리버들 바구니",
+    "광주리",
+    "wicker basket"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "감자가 가득한 둥근 고리버들 바구니. 엮은 테두리와 손잡이 둘.",
+   "rule": "가게 문 옆 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-crate_apple",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "crate-sack",
+   "src": "bd-crate-sack.png",
+   "name": "상자 · 곡식 자루",
+   "en": "tied grain sack",
+   "kind": "organic",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "곡식 자루",
+    "포대",
+    "grain sack"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "목을 묶은 통통한 삼베 곡식 자루. 앞에 꿰맨 줄, 왼쪽 아래 낟알 조금.",
+   "rule": "가게 문 옆 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-crate_apple",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "barrel-closed",
+   "src": "bd-barrel-closed.png",
+   "name": "통 · 닫힌 참나무 통",
+   "en": "closed oak barrel",
+   "kind": "container",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "닫힌 통",
+    "참나무 통",
+    "closed barrel"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "뚜껑 덮인 참나무 통. 윗면 타원 뚜껑과 쇠 테 둘.",
+   "rule": "가게 문 옆 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-fish_barrel",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "barrel-tub",
+   "src": "bd-barrel-tub.png",
+   "name": "통 · 물 담긴 나무 함지",
+   "en": "wooden water tub",
+   "kind": "container",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "나무 함지",
+    "물 함지",
+    "water tub"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "물이 담긴 낮고 넓은 나무 함지. 쇠 테 하나, 오른쪽 테두리에 나무 국자.",
+   "rule": "가게 문 옆 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-fish_barrel",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "barrel-amphora",
+   "src": "bd-barrel-amphora.png",
+   "name": "통 · 받침에 세운 항아리",
+   "en": "amphora in a stand",
+   "kind": "container",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "항아리",
+    "암포라",
+    "amphora"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "낮은 나무 받침에 세운 토기 항아리(암포라). 손잡이 둘, 몸통에 어두운 띠.",
+   "rule": "가게 문 옆 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-fish_barrel",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "fire-tripod",
+   "src": "bd-fire-tripod.png",
+   "name": "모닥불 · 삼발이 솥",
+   "en": "cooking pot on a tripod over a fire",
+   "kind": "organic",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "삼발이 솥",
+    "솥 건 모닥불",
+    "cooking fire"
+   ],
+   "family": "camp",
+   "themes": [
+    "field",
+    "forest",
+    "mountain",
+    "필드",
+    "숲",
+    "산"
+   ],
+   "desc": "막대 셋을 세운 삼발이에 검은 쇠솥을 매달고 아래에 불을 피웠다.",
+   "rule": "땅 위에 찍는다. 1줄 모두 막힘. 문 앞 칸·길·다리 끝을 막지 않는다. 같은 조각을 일렬로 세우지 않는다. ",
+   "variantOf": "bd-pick-deep-forest-path-campfire",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "fire-pit",
+   "src": "bd-fire-pit.png",
+   "name": "모닥불 · 돌 두른 화덕",
+   "en": "stone-lined fire pit",
+   "kind": "organic",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "화덕",
+    "불구덩이",
+    "fire pit"
+   ],
+   "family": "camp",
+   "themes": [
+    "field",
+    "forest",
+    "mountain",
+    "필드",
+    "숲",
+    "산"
+   ],
+   "desc": "납작한 돌로 네모나게 두른 화덕. 엇갈린 장작과 낮은 불꽃.",
+   "rule": "땅 위에 찍는다. 1줄 모두 막힘. 문 앞 칸·길·다리 끝을 막지 않는다. 같은 조각을 일렬로 세우지 않는다. ",
+   "variantOf": "bd-pick-deep-forest-path-campfire",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "fire-spit",
+   "src": "bd-fire-spit.png",
+   "name": "모닥불 · 꼬치 굽는 불",
+   "en": "fire with a roasting spit",
+   "kind": "organic",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "꼬치 불",
+    "생선 굽는 불",
+    "roasting spit"
+   ],
+   "family": "camp",
+   "themes": [
+    "field",
+    "forest",
+    "mountain",
+    "필드",
+    "숲",
+    "산"
+   ],
+   "desc": "갈래 막대 둘에 걸친 꼬치에 생선 한 마리, 아래 작은 모닥불.",
+   "rule": "땅 위에 찍는다. 1줄 모두 막힘. 문 앞 칸·길·다리 끝을 막지 않는다. 같은 조각을 일렬로 세우지 않는다. ",
+   "variantOf": "bd-pick-deep-forest-path-campfire",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "hay-rack",
+   "src": "bd-hay-rack.png",
+   "name": "짚가리 · 건초 말림 걸대",
+   "en": "hay drying rack",
+   "kind": "organic",
+   "w": 2,
+   "h": 3,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "words": [
+    "건초 걸대",
+    "건초 말림대",
+    "hay rack"
+   ],
+   "family": "farm",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "장대 셋을 맞대 세우고 건초를 겹겹이 걸쳐 말리는 걸대.",
+   "rule": "땅(풀·포석·바닥) 위에 찍는다. 아래 2줄 막힘, 그 위 1줄은 ★(사람 위에 그려짐). 문 앞 칸·길·다리 끝을 막지 않는다. 같은 조각을 일렬로 세우지 않는다. ",
+   "variantOf": "bd-pick-riverside-mill-haystack",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "hay-loaf",
+   "src": "bd-hay-loaf.png",
+   "name": "짚가리 · 사다리 걸친 네모 낟가리",
+   "en": "loaf-shaped haystack with a ladder",
+   "kind": "organic",
+   "w": 2,
+   "h": 3,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "words": [
+    "낟가리",
+    "네모 낟가리",
+    "hay loaf"
+   ],
+   "family": "farm",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "윗면이 둥글납작한 네모 낟가리. 오른쪽에 사다리, 위에 쇠스랑.",
+   "rule": "땅(풀·포석·바닥) 위에 찍는다. 아래 2줄 막힘, 그 위 1줄은 ★(사람 위에 그려짐). 문 앞 칸·길·다리 끝을 막지 않는다. 같은 조각을 일렬로 세우지 않는다. ",
+   "variantOf": "bd-pick-riverside-mill-haystack",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "wood-block",
+   "src": "bd-wood-block.png",
+   "name": "장작더미 · 모탕과 도끼",
+   "en": "chopping block with an axe",
+   "kind": "other",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "모탕",
+    "도끼 모탕",
+    "chopping block"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "도끼가 박힌 모탕(그루터기)과 오른쪽의 쪼갠 장작 몇 토막.",
+   "rule": "집 옆 마당에 놓는다.",
+   "variantOf": "bd-out-woodpile",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "wood-faggots",
+   "src": "bd-wood-faggots.png",
+   "name": "장작더미 · 나뭇단 세 묶음",
+   "en": "three bundles of brushwood",
+   "kind": "organic",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "나뭇단",
+    "땔감 묶음",
+    "firewood bundles"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "끈으로 묶은 잔가지 나뭇단 세 묶음을 나란히 눕혔다.",
+   "rule": "집 옆 마당에 놓는다.",
+   "variantOf": "bd-out-woodpile",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "lamp-lantern",
+   "src": "bd-lamp-lantern.png",
+   "name": "가로등 · 기둥 위 네모 등",
+   "en": "post with a square lantern on top",
+   "kind": "column",
+   "w": 1,
+   "h": 3,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     2
+    ]
+   ],
+   "words": [
+    "기둥 등",
+    "네모 등 기둥",
+    "lantern post"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "곧은 나무 기둥 위에 네모 쇠·유리 등을 얹은 가로등. 호박빛 유리.",
+   "rule": "길과 맞닿은 잔디 칸 (길 쪽이 앞) · 다른 가로등과 10칸 이상 · 문 앞 2칸 금지 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-lamp_crook",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "lamp-cresset",
+   "src": "bd-lamp-cresset.png",
+   "name": "가로등 · 쇠 화롯불 기둥",
+   "en": "iron pole with a fire basket",
+   "kind": "column",
+   "w": 1,
+   "h": 3,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     2
+    ]
+   ],
+   "words": [
+    "화롯불 기둥",
+    "횃불 기둥",
+    "cresset"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "가는 쇠 장대 끝 쇠 불바구니에 숯불과 불꽃이 타는 화롯불 기둥.",
+   "rule": "길과 맞닿은 잔디 칸 (길 쪽이 앞) · 다른 가로등과 10칸 이상 · 문 앞 2칸 금지 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-lamp_crook",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "lamp-stone",
+   "src": "bd-lamp-stone.png",
+   "name": "가로등 · 돌기둥 등",
+   "en": "stone pillar lamp",
+   "kind": "column",
+   "w": 1,
+   "h": 3,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     2
+    ]
+   ],
+   "words": [
+    "석등",
+    "돌기둥 등",
+    "stone lamp"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "네모 돌기둥 윗부분 감실에 작은 등잔불, 납작한 갓돌.",
+   "rule": "길과 맞닿은 잔디 칸 (길 쪽이 앞) · 다른 가로등과 10칸 이상 · 문 앞 2칸 금지 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-lamp_crook",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "cart-barrow",
+   "src": "bd-cart-barrow.png",
+   "name": "손수레 · 자루 실은 외바퀴 수레",
+   "en": "wheelbarrow with sacks",
+   "kind": "low_furniture",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "외바퀴 수레",
+    "wheelbarrow"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "곡식 자루 둘을 실은 나무 외바퀴 수레. 왼쪽에 바퀴, 오른쪽에 손잡이.",
+   "rule": "광장 또는 청과상 문 옆 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-veg_cart",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "cart-barrels",
+   "src": "bd-cart-barrels.png",
+   "name": "손수레 · 통 실은 두 바퀴 수레",
+   "en": "hand cart with barrels",
+   "kind": "low_furniture",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "통 실은 수레",
+    "짐수레",
+    "barrel cart"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "통 둘을 눕혀 실은 두 바퀴 손수레. 오른쪽에 끌채.",
+   "rule": "광장 또는 청과상 문 옆 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-veg_cart",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "cart-hay",
+   "src": "bd-cart-hay.png",
+   "name": "손수레 · 건초 실은 수레",
+   "en": "hand cart with hay",
+   "kind": "low_furniture",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "건초 수레",
+    "hay cart"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "살 댄 난간에 건초를 수북이 싣고 쇠스랑을 꽂은 손수레.",
+   "rule": "광장 또는 청과상 문 옆 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-veg_cart",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "altar-moss",
+   "src": "bd-altar-moss.png",
+   "name": "제단 · 이끼 낀 자연석 제단",
+   "en": "mossy fieldstone altar",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "자연석 제단",
+    "이끼 제단",
+    "fieldstone altar"
+   ],
+   "family": "ruin",
+   "themes": [
+    "dungeon",
+    "던전"
+   ],
+   "desc": "둥근 바위 둘에 넓적한 돌판을 얹은 자연석 제단. 이끼, 약초 그릇, 초 한 자루.",
+   "rule": "땅(풀·포석·바닥) 위에 찍는다. 아래 1줄 막힘, 그 위 1줄은 ★(사람 위에 그려짐). 문 앞 칸·길·다리 끝을 막지 않는다. 같은 조각을 일렬로 세우지 않는다. ",
+   "variantOf": "bd-pick-castle-catacombs-altar-stone",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "altar-dark",
+   "src": "bd-altar-dark.png",
+   "name": "제단 · 촛불 놓인 검은 돌 제단",
+   "en": "dark stone altar with candles",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "검은 제단",
+    "촛불 제단",
+    "dark altar"
+   ],
+   "family": "ruin",
+   "themes": [
+    "dungeon",
+    "던전"
+   ],
+   "desc": "어두운 회색 돌 제단. 윗판 가운데 붉은 천, 양 끝에 촛불 둘, 앞면에 고리 무늬.",
+   "rule": "땅(풀·포석·바닥) 위에 찍는다. 아래 1줄 막힘, 그 위 1줄은 ★(사람 위에 그려짐). 문 앞 칸·길·다리 끝을 막지 않는다. 같은 조각을 일렬로 세우지 않는다. ",
+   "variantOf": "bd-pick-castle-catacombs-altar-stone",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "altar-wood",
+   "src": "bd-altar-wood.png",
+   "name": "제단 · 나무 제사상",
+   "en": "wooden offering table",
+   "kind": "low_furniture",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "제사상",
+    "나무 제단",
+    "offering table"
+   ],
+   "family": "ruin",
+   "themes": [
+    "dungeon",
+    "던전"
+   ],
+   "desc": "굵은 다리 넷의 낮은 나무 제사상. 상 위에 둥근 빵·토기 잔·작은 선돌.",
+   "rule": "땅(풀·포석·바닥) 위에 찍는다. 아래 1줄 막힘, 그 위 1줄은 ★(사람 위에 그려짐). 문 앞 칸·길·다리 끝을 막지 않는다. 같은 조각을 일렬로 세우지 않는다. ",
+   "variantOf": "bd-pick-castle-catacombs-altar-stone",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "brazier-basket",
+   "src": "bd-brazier-basket.png",
+   "name": "화로 · 세 발 쇠 불바구니",
+   "en": "iron fire basket on three legs",
+   "kind": "container",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "불바구니",
+    "쇠 화로",
+    "fire basket"
+   ],
+   "family": "ruin",
+   "themes": [
+    "dungeon",
+    "던전"
+   ],
+   "desc": "짧은 다리 셋의 쇠 불바구니. 세로 쇠살 안에 숯불과 불꽃.",
+   "rule": "땅 위에 찍는다. 1줄 모두 막힘. 문 앞 칸·길·다리 끝을 막지 않는다. 같은 조각을 일렬로 세우지 않는다. ",
+   "variantOf": "bd-pick-aqueduct-sewer-brazier",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "brazier-bowl",
+   "src": "bd-brazier-bowl.png",
+   "name": "화로 · 돌 받침 불 대접",
+   "en": "stone bowl brazier on a pedestal",
+   "kind": "container",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "돌 화로",
+    "불 대접",
+    "stone brazier"
+   ],
+   "family": "ruin",
+   "themes": [
+    "dungeon",
+    "던전"
+   ],
+   "desc": "짧은 돌 받침 위 넓고 얕은 돌 대접에 기름불이 탄다.",
+   "rule": "땅 위에 찍는다. 1줄 모두 막힘. 문 앞 칸·길·다리 끝을 막지 않는다. 같은 조각을 일렬로 세우지 않는다. ",
+   "variantOf": "bd-pick-aqueduct-sewer-brazier",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "brazier-pot",
+   "src": "bd-brazier-pot.png",
+   "name": "화로 · 구멍 뚫린 질화로",
+   "en": "pierced clay fire pot",
+   "kind": "container",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "질화로",
+    "불 항아리",
+    "fire pot"
+   ],
+   "family": "ruin",
+   "themes": [
+    "dungeon",
+    "던전"
+   ],
+   "desc": "배에 구멍이 둘러 뚫린 둥근 질화로. 구멍마다 불빛, 위로 낮은 불꽃.",
+   "rule": "땅 위에 찍는다. 1줄 모두 막힘. 문 앞 칸·길·다리 끝을 막지 않는다. 같은 조각을 일렬로 세우지 않는다. ",
+   "variantOf": "bd-pick-aqueduct-sewer-brazier",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "bollard-post",
+   "src": "bd-bollard-post.png",
+   "name": "계선주 · 밧줄 감은 나무 말뚝",
+   "en": "wooden mooring post with rope",
+   "kind": "column",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "나무 말뚝",
+    "배 매는 말뚝",
+    "mooring post"
+   ],
+   "family": "harbour",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "굵은 나무 말뚝. 윗면에 나이테, 발치에 밧줄을 세 번 감았다.",
+   "rule": "물과 맞닿은 부두 줄 · 잔교 머리 양옆 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-mooring_bollard",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "bollard-stone",
+   "src": "bd-bollard-stone.png",
+   "name": "계선주 · 쇠고리 박힌 돌 말뚝",
+   "en": "stone bollard with an iron ring",
+   "kind": "column",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "돌 말뚝",
+    "쇠고리 말뚝",
+    "stone bollard"
+   ],
+   "family": "harbour",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "윗면이 둥근 땅딸막한 돌 말뚝. 앞면에 큰 쇠고리와 짧은 사슬.",
+   "rule": "물과 맞닿은 부두 줄 · 잔교 머리 양옆 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-mooring_bollard",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "laundry-horse",
+   "src": "bd-laundry-horse.png",
+   "name": "빨래 건조대 · 접이식 빨래 걸이",
+   "en": "folding clothes horse",
+   "kind": "frame",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "빨래 걸이",
+    "접이식 빨래 걸이",
+    "clothes horse"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "가는 살의 접이식 빨래 걸이(A 자). 크림색 수건·파란 천·붉은 천.",
+   "rule": "집 옆벽에 붙은 칸 · 다른 건조대와 16칸 이상 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-laundry_rack",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "laundry-tub",
+   "src": "bd-laundry-tub.png",
+   "name": "빨래 건조대 · 빨래 함지와 빨래판",
+   "en": "wash tub with a washboard",
+   "kind": "container",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "빨래 함지",
+    "빨래판",
+    "wash tub"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "빨래판을 기대 놓은 큰 나무 빨래 함지(비눗물)와 갠 빨래가 담긴 바구니.",
+   "rule": "집 옆벽에 붙은 칸 · 다른 건조대와 16칸 이상 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-laundry_rack",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "laundry-quilt",
+   "src": "bd-laundry-quilt.png",
+   "name": "빨래 건조대 · 이불 넌 장대",
+   "en": "quilt airing on a pole",
+   "kind": "frame",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "이불 장대",
+    "이불 널기",
+    "quilt pole"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "갈래 기둥 둘에 걸친 장대에 조각보 이불(빨강·파랑·크림)을 널었다.",
+   "rule": "집 옆벽에 붙은 칸 · 다른 건조대와 16칸 이상 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-laundry_rack",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "pots-halfbarrel",
+   "src": "bd-pots-halfbarrel.png",
+   "name": "문간 화분 · 반 통 화분",
+   "en": "half-barrel planter",
+   "kind": "container",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "통 화분",
+    "반 통 화분",
+    "half-barrel planter"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "쇠 테 하나의 반 통 화분. 푸른 허브와 흰 꽃 셋.",
+   "rule": "문 옆 칸 (문 앞 칸 금지) · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-door_pots",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "pots-urn",
+   "src": "bd-pots-urn.png",
+   "name": "문간 화분 · 담쟁이 돌 항아리",
+   "en": "stone urn with ivy",
+   "kind": "container",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "돌 항아리 화분",
+    "담쟁이 화분",
+    "stone urn"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "네모 받침 위 돌 항아리 화분. 앞으로 늘어진 담쟁이와 붉은 꽃 하나.",
+   "rule": "문 옆 칸 (문 앞 칸 금지) · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-door_pots",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "box-trough",
+   "src": "bd-box-trough.png",
+   "name": "꽃상자 · 돌 구유 화분",
+   "en": "stone trough planter",
+   "kind": "container",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "돌 구유 화분",
+    "돌 화분",
+    "stone trough planter"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "두꺼운 밝은 돌 구유 화분. 파란 꽃대 한 줄.",
+   "rule": "집 앞줄 문 옆, 문 칸 금지 · 2칸 폭 길 가장자리만 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-flowerbox_long",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "box-wattle",
+   "src": "bd-box-wattle.png",
+   "name": "꽃상자 · 욋가지 두른 채소 화단",
+   "en": "wattle-edged raised bed",
+   "kind": "container",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "채소 화단",
+    "욋가지 화단",
+    "raised bed"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "욋가지를 엮어 두른 긴 화단. 검은 흙에 둥근 양배추 넷.",
+   "rule": "집 앞줄 문 옆, 문 칸 금지 · 2칸 폭 길 가장자리만 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-flowerbox_long",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "bed-rocks",
+   "src": "bd-bed-rocks.png",
+   "name": "꽃밭 · 돌 두른 꽃밭",
+   "en": "rock-ringed flower bed",
+   "kind": "organic",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "돌 화단",
+    "돌 두른 꽃밭",
+    "rock flower bed"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "둥근 잔돌로 두른 낮은 꽃밭. 파란 꽃·흰 꽃.",
+   "rule": "쉼터 옆 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-flowerbed",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "bed-herbs",
+   "src": "bd-bed-herbs.png",
+   "name": "꽃밭 · 허브 이랑과 이름표 말뚝",
+   "en": "herb patch with stakes",
+   "kind": "organic",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "허브밭",
+    "텃밭",
+    "herb patch"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "이랑 셋의 작은 허브밭. 노란 꽃 한 줄, 왼쪽 끝에 이름표 말뚝 둘.",
+   "rule": "쉼터 옆 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-flowerbed",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "scare-sack",
+   "src": "bd-scare-sack.png",
+   "name": "허수아비 · 자루 머리 허수아비",
+   "en": "sack-headed scarecrow",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "자루 허수아비",
+    "sack scarecrow"
+   ],
+   "family": "farm",
+   "themes": [
+    "field",
+    "필드"
+   ],
+   "desc": "삼베 자루 머리에 밀짚모자, 기운 파란 윗도리의 허수아비.",
+   "rule": "땅(풀·포석·바닥) 위에 찍는다. 아래 1줄 막힘, 그 위 1줄은 ★(사람 위에 그려짐). 문 앞 칸·길·다리 끝을 막지 않는다. 같은 조각을 일렬로 세우지 않는다. ",
+   "variantOf": "bd-pick-wheat-roman-road-scarecrow",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "scare-pot",
+   "src": "bd-scare-pot.png",
+   "name": "허수아비 · 솥 쓴 막대 허수아비",
+   "en": "stick scarecrow with a pot hat",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "솥 허수아비",
+    "막대 허수아비",
+    "pot scarecrow"
+   ],
+   "family": "farm",
+   "themes": [
+    "field",
+    "필드"
+   ],
+   "desc": "엎은 쇠솥을 머리로 쓴 막대 허수아비. 붉은 목도리, 팔 끝에 까마귀.",
+   "rule": "땅(풀·포석·바닥) 위에 찍는다. 아래 1줄 막힘, 그 위 1줄은 ★(사람 위에 그려짐). 문 앞 칸·길·다리 끝을 막지 않는다. 같은 조각을 일렬로 세우지 않는다. ",
+   "variantOf": "bd-pick-wheat-roman-road-scarecrow",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "board-easel",
+   "src": "bd-board-easel.png",
+   "name": "입간판 · 화살표 그림 이젤 간판",
+   "en": "small easel sign",
+   "kind": "front_prop",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "이젤 간판",
+    "easel sign"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "세 발 이젤에 얹은 크림색 그림판. 붉은 화살표(글자 없음).",
+   "rule": "가게 문 옆 1칸 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-sandwich_board",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "board-crate",
+   "src": "bd-board-crate.png",
+   "name": "입간판 · 상자에 기댄 석판 간판",
+   "en": "slate propped on a crate",
+   "kind": "front_prop",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "석판 간판",
+    "slate sign"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "엎은 상자에 기대 세운 석판 간판(분필 줄 셋)과 상자 위 작은 등.",
+   "rule": "가게 문 옆 1칸 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-sandwich_board",
+   "waiver": "fable-variety-beodeul-2026-11-12"
+  },
+  {
+   "id": "pile-amphorae",
+   "src": "bd-pile-amphorae.png",
+   "name": "짐 더미 · 항아리 받침대와 자루",
+   "en": "amphorae in a rack with sacks",
+   "kind": "container",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "항아리 더미",
+    "항아리 받침대",
+    "amphora rack"
+   ],
+   "family": "harbour",
+   "themes": [
+    "village",
+    "마을"
+   ],
+   "desc": "낮은 나무 받침에 세운 항아리 셋, 오른쪽에 곡식 자루 둘, 왼쪽 앞에 작은 상자.",
+   "rule": "건물 옆 또는 부두 물가 줄 · 문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지 · 통행로 연결을 끊지 않음(BFS 재확인)",
+   "variantOf": "bd-prop-goods_pile",
+   "waiver": "fable-variety-beodeul-2026-11-12"
   }
  ]
 }

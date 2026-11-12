@@ -9,7 +9,7 @@
 import json, os, subprocess, sys, importlib
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pi_core as C
-MODS = ['pi_terrain', 'pi_nature', 'pi_buildings', 'pi_props', 'pi_boats', 'pi_interior', 'pi_anim']
+MODS = ['pi_terrain', 'pi_nature', 'pi_buildings', 'pi_props', 'pi_boats', 'pi_interior', 'pi_anim', 'pi_story']     # pi_story 는 끝에(이야기 기물 — 그림 PNG 를 그대로 싣는다)
 for m in MODS:
     if os.path.exists(os.path.join(C.HERE, m + '.py')): importlib.import_module(m)
 GROUPS = {'terrain', 'nature', 'buildings', 'props', 'boats', 'interior', 'anim'}

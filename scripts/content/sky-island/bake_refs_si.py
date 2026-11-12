@@ -30,7 +30,7 @@ ROOMS = [('cottage', 'room-cottage', 11, 11, 7, '오두막 실내 11×11'), ('sh
          ('cabin', 'room-cabin', 11, 10, 7, '비공정 선실 11×10'), ('observatory', 'room-observatory', 13, 12, 7, '천문대 실내 13×12')]
 HEAD = (f"tilesetId `sky_island` · 그림 `public/assets/sky-island/sky-island-chipset.png`(텍스처 `tex_sky_island`, **{N}칸**, 16px 칸, 시트 {TPR * 16}×{math.ceil(N / TPR) * 16}px, "
         f"한 줄 **{TPR}칸** — 번호 n 의 칸은 열 n%{TPR}, 행 n÷{TPR}(내림), 픽셀 (열×16, 행×16), 모두 0 기준). 계열 `oprn-sky` — 다른 칩셋(버들항·일본 도시·조선·마법 학교·고딕·실내 v5)의 칸 번호와 섞지 않는다. "
-        "팔레트 잠금 손 도트, 시점은 3/4 탑뷰(윗면 + 남쪽 앞면), 빛 왼쪽 위. 모든 그림은 object-gate 3/4 관문 영수증이 있는 조각만 구웠다(판정 프로필 미보정 — 잠정 통과).")
+        "팔레트 잠금 손 도트, 시점은 3/4 탑뷰(윗면 + 남쪽 앞면), 빛 왼쪽 위. 이야기 기물 1종(`si-objects` 묶음 — 봉인 제단)과 다시 그린 지붕 둘(천문대 돔·신전)은 3/4 관문 미통과 — 오너 면제 그림이고, 그 밖의 그림은 object-gate 3/4 관문 영수증이 있는 조각만 구웠다(판정 프로필 미보정 — 잠정 통과).")
 
 
 def arr(a): return json.dumps(a, separators=(',', ':'))
@@ -410,6 +410,29 @@ def compare(base, tampered, name, cols=4, s=0.5):
     cmp_.save(os.path.join(IMG, name), optimize=True)
 
 
+# ───────────────────────── 이야기 기물(si-objects 조각 묶음) ─────────────────────────
+OBJ_SPEC = os.path.join(ROOT, 'tiledata/sky-island/objects/spec.json')
+OBJ_SCENE = [('seal-altar', 2, 1)]     # (조각, 왼쪽 위 x, y) — 6×5 풀밭 장면
+
+
+def objects_refs():
+    """(문서 목록, 그림 목록) — spec.json 이 없으면 빈 목록. 문서 틀은 칩셋 공용 scripts/content/story-objects/refs_lib.py."""
+    if not os.path.exists(OBJ_SPEC): return [], []
+    sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'story-objects'))
+    import refs_lib
+    spec = json.load(open(OBJ_SPEC, encoding='utf-8'))
+    grass = [gid('si-grass'), gid('si-grass-b')]
+    assert all(passable(t) for t in grass), grass
+    names = '·'.join(it['name'].split('(')[0] for it in spec['items'])
+    doc, images, _ev = refs_lib.build(dict(
+        tileset=DATA, sheet=SHEET, spec=spec, kit_prefix='si-', chipset='sky_island', doc_id='si-objects', img_id='si-img-objects-', img_dir=IMG, url=URL(''),
+        scene=OBJ_SCENE, size=(6, 5), ground=lambda x, y: grass[(x * 7 + y * 13) % len(grass)],
+        title=f"sky_island · 이야기 기물 {len(spec['items'])}종({names})", head=HEAD, ground_note='풀밭·돌바닥', compose_tool='compose_sky_island_map',
+        order_notes=['봉인 제단(2×2)은 신전 섬 마당이나 섬 끝 전망 자리에 — 앞줄 한 줄은 걷는 바닥으로 비운다. 섬 밖(하늘)·다리 어귀·건물 문 앞 접근칸에는 놓지 않는다.'],
+        source='tiledata/sky-island/objects', bake='scripts/content/sky-island/bake_si.py'))
+    return [doc], images
+
+
 def main():
     nk_out = label_sheet([k for k in DATA['structureKits'] if is_outdoor_kit(k) and k['id'] != 'si-airship'] + [KITS['si-airship']], 'outdoor-kits.png', bg=(126, 176, 232, 255))
     nk_in = label_sheet([k for k in DATA['structureKits'] if not is_outdoor_kit(k)], 'interior-kits.png', S=3, Wd=1100)
@@ -433,7 +456,7 @@ def main():
     assert all(e for _, _, e in rows + rrows), [k for k, _, e in rows + rrows if not e]
 
     imgs = [dict(id='si-img-terrain', name='terrain.png', caption=f'바닥·가장자리·밑면·다리·실내 바닥/벽 낱칸 {nt}종 — 칸 번호·조각 id·통행(원본 ×2, 하늘색 배경).', dataUrl=URL('terrain.png')),
-            dict(id='si-img-kits', name='outdoor-kits.png', caption=f'야외 키트 도감 {nk_out}종(원본 ×2). 전부 object-gate 영수증이 있는 그림.', dataUrl=URL('outdoor-kits.png'))]
+            dict(id='si-img-kits', name='outdoor-kits.png', caption=f'야외 키트 도감 {nk_out}종(원본 ×2). 봉인 제단과 다시 그린 지붕 둘(천문대 돔·신전)은 3/4 관문 미통과 — 오너 면제 그림, 나머지는 object-gate 영수증이 있는 그림.', dataUrl=URL('outdoor-kits.png'))]
     for key, _, W, H, _, title in OUTDOOR:
         imgs.append(dict(id=f'si-img-{key}', name=f'outdoor-{key}.png', caption=f'{title} — 구성기 실제 출력, 원본 해상도 {W * 16}×{H * 16}(시트 칸 이어 붙임).', dataUrl=URL(f'outdoor-{key}.png')))
     imgs.append(dict(id='si-img-err-compare', name='outdoor-err-compare.png', caption='마을 예제 정상(왼쪽 위)과 변조 7종(문 앞 막힘·다리 끊김·반대 외곽·잘못된 층·잘린 밑동·맵 밖·겹침, 빨간 테두리 = 변조 자리). 0.5배.', dataUrl=URL('outdoor-err-compare.png')))
@@ -447,6 +470,7 @@ def main():
     for key, style, _, _, _, title in OUTDOOR:
         docs.append(dict(id=f'si-ex-{key}', name=f'sky_island 야외 예제 · {title}', markdown=example_md(title, exs[key], f'outdoor-{key}.png', style)))
     docs.append(dict(id='si-errors', name='sky_island 야외 · 정상/오류 변조 검출', markdown=errors_md(rows, 'outdoor-err-compare.png', '마을')))
+    odocs, oimgs = objects_refs(); docs += odocs; imgs += oimgs
     rdocs = [dict(id='si-room-howto', name='sky_island 실내 · 방 순서·규칙(먼저 읽는다)', markdown=room_howto_md())]
     for key, style, _, _, _, title in ROOMS:
         rdocs.append(dict(id=f'si-room-{key}', name=f'sky_island 실내 예제 · {title}', markdown=example_md(title, rooms[key], f'room-{key}.png', style)))

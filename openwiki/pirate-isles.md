@@ -100,6 +100,23 @@
 - 남은 것: `pi-stilt-hut`(두 번 그려도 오른쪽 3px — 굽지 않음), `pi-chapel`(박공 정면 — 직교 시점에 맞는 그림이라 그대로), 둥근 것(`hut-round`·등대·망루)은 예외. 문은 12×23px 로 주인공(24×32)보다 낮다 — 벽을 다시 그리지 않았으므로 그대로다. 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
 - **지붕 높이(2026-11-12, 오너 «지붕의 height 그러니까 세로 길이가 너무 길면 또 곤란함»)**: 한도는 `~/z-project/assistant-fable-runs/redraw/CONTRACT.md` §1 «roof height»(지붕 덩이 높이 ≤ 44px · 폭 128px 이상 48px · 덩이 몫 ≤ 55%). 넘는 7채를 **코드로** 낮췄다(모델 호출 0 — 용마루·처마 줄을 지키고 지붕 가운데에서 무늬 주기의 배수만큼 줄을 뺌, 지붕창·굴뚝이 지나는 줄은 건드리지 않는다): `house-plaster` 47 → 31px · `tavern` 45 → 36 · `hut-palm` 41 → 21 · `fish-shack` 40 → 20 · `hut-thatch` 38 → 26 · `cabin` 38 → 28 · `longhouse` 37 → 28. 벽·문 화소·그림 크기·키트 칸 수·입구는 그대로, 맨 윗줄 칸 10개(`house-plaster` 4 · `hut-palm` 3 · `fish-shack` 3)가 빈 칸(-1). **굽기 규칙이 바뀌었다**: `pi_bake` 도 이제 jp_city 처럼 옛 칸의 그림을 지킨다 — 번호를 받은 자리 키의 그림이 옛 시트의 그 칸과 다르면 `<키>@r<그림 해시>` 로 끝에 붙이고(1198 → 1240칸) 키트가 새 칸을 가리킨다. 아무도 안 쓰게 된 번호(그림이 바뀐 자리·빈 칸이 된 자리)는 옛 그림과 옛 정의 그대로다. 제자리 덮어쓰기로는 빈 칸이 된 자리가 깔린 맵에서 «안 보이는 막힌 칸» 이 된다. 오토타일 칸은 예전대로 제자리. 검사: 옛 칸 1198개 화소·통행·정의 변화 0, 옛 건물 키트 25채 맵 화소 차이 0, 두 번 구워 해시 동일, 구성기(harbor·beach·field, 같은 씨앗) 통행이 바뀐 칸 0 · 접근칸 11/11·6/6·1/1 도달.
 
+## 이야기 기물 2종 (2026-11-12) — 3/4 관문 미통과 · 오너 면제
+
+게임들이 바랐는데 그림이 없던 물건 둘을 시트 끝(1240~1242, 칸 1243 · 키트 168)에 덧붙였다. **이 그림들은 3/4 관문을 통과하지 않았다** — 오너 면제 묶음 `fable-oneshot-2026-11-12`(`harness-data/object-gate/waivers/`)가 그림 화소 해시·종류에 묶여 번들 출구만 연다. 스토어로는 나가지 않는다.
+
+| 키트 | 무엇 | 크기 · 놓는 법 | 칸 | 막힌 칸 | 관문 종류 |
+|---|---|---|---|---|---|
+| `pi-note` | 쪽지·보물 지도 조각(바닥) | 1×1 · decal | 1240 | 없음(밟고 지나감) | debris |
+| `pi-logbook-stand` | 항해 일지(통 위에 펼친 책) | 1×2 · tall | 1241~1242 | (0,1) | low_furniture |
+
+- 목록·그림: `tiledata/pirate-isles/objects/spec.json`(이름·크기·막힌 칸·찾는 낱말·놓는 규칙) · `pieces/pi-*.png`. **그림은 한 화소도 바꾸지 않는다** — 한 화소라도 바뀌면 면제가 풀려 굽기가 그 조각을 뺀다(검사 `test/pirateIslesStoryObjects.test.ts` 가 시트 칸과 원본을 대조한다).
+- 등록: `pi_story.py`(`pi_all.py` MODS 끝)가 그 PNG 를 조각 등록부에 **그대로** 싣는다(코드 그림이 아니다). 굽기는 같은 `pi_bake.py` — 자리 키 핀 덧붙이기 전용. 조각이 놓는 규칙을 직접 준다(`piece(..., rule=)`), 놓는 법은 태그(`decal`·`tall`).
+- 출구 검사는 관문 자신의 규칙이다: `pi_core.status_of` 는 영수증 없는 그림을 `object_gate.refusal(context='bundle')`(= `fable_roofs.waived`)에 묻는다 — 굽기에 둘째 규칙을 더하지 않았다. 보고 `bake-report.json` 의 `owner_waiver`.
+- 조수가 찾는 길: 키트 태그(`spec.json` 의 `words` — 쪽지·보물 지도·항해 일지·항해일지·기록부…). v2 코드에 낱말 목록은 없다. 이 두 키트의 이름은 한국어다(다른 조각의 이름은 관문 판정자용 영어). `list_tileset_objects` 는 이 칩셋의 키트를 하나도 돌려주지 않는다(전부터 — «팩 물체» 만 본다). v2 `draw_object` 는 낱말로 짚는다.
+- 참고문서: 문서 `pi-props/pi-props-objects`(사전·순서·6×4 조립 예제 전체 배열·정상/오류 그림, 검사 `E_OBJ_LAYER`·`E_OBJ_INCOMPLETE`·`E_OBJ_PASSAGE`) — `pi_refs.py` 가 칩셋 공용 틀 `scripts/content/story-objects/refs_lib.py` 로 만든다.
+- 탐침(모델 없음): `bun scripts/content/story-objects/probe.mts pirate_isles <out> --base-sheet <고치기 전 시트>`. 화면 증거 `verify-shots/pirate-isles-story-objects/`.
+- 시트 크기는 그대로다(768×416 — 지붕 높이 묶음이 1240칸까지 채운 줄의 남은 자리에 들어간다). 기존 저장본: 이 칩셋 끝에 다른 칩셋 그림을 붙여 쓴 프로젝트는 `settleThemeBundleTail`(`openwiki/runtime-project-schema.md` 「시트 끝에 칸을 끼운 번들」)이 이식 꼬리를 새 번들 끝 뒤로 밀고 두 키트를 채운다.
+
 ## 남은 일
 - 방파제 끝 계단·마감 조각과 부두 앞면(기둥)을 그린다.
 - 수상 가옥 좌우 변형을 그린다.

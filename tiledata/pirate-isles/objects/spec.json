@@ -1,0 +1,57 @@
+{
+ "_doc": "pirate_isles 이야기 기물 2종 — Claude Fable 5.2 medium 한 방 그림(이 프로젝트를 위해 그린 자체 저작, 색은 pirate_isles 시트에서 뽑음). 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12. pieces/<src> 는 한 화소도 바꾸지 않는다(바꾸면 면제가 풀리고 굽기가 그 조각을 막는다). 등록 scripts/content/pirate-isles/pi_story.py(조각 등록부에 그림을 그대로 싣는다) → 굽기 pi_bake.py — 새 항목은 items 끝에만(칸 번호는 자리 키 핀, 덧붙이기 전용). 키트 id = pi-<id>. place: prop·tall = 서 있는 기물(block 칸 막힘, 나머지 칸 ★) · decal = 밟고 지나가는 바닥 그림.",
+ "waiver": "fable-oneshot-2026-11-12",
+ "license": "drawn by Claude Fable 5.2 for this project (own work)",
+ "items": [
+  {
+   "id": "note",
+   "src": "pi-note.png",
+   "name": "쪽지·보물 지도 조각(바닥에 떨어진 것)",
+   "en": "treasure map scrap on the ground",
+   "kind": "debris",
+   "w": 1,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "words": [
+    "쪽지",
+    "보물 지도",
+    "보물 지도 조각",
+    "지도 조각",
+    "양피지",
+    "note",
+    "map scrap",
+    "treasure map"
+   ],
+   "desc": "가장자리가 해진 누런 양피지에 점선 길과 섬. 바닥 그림(밟고 지나간다).",
+   "rule": "모래·부두 판자·선실 바닥·동굴 바닥 어디든 한 장. 밟고 지나간다. 줍는·읽는 이벤트는 그 칸에 «플레이어 아래» 로 둔다. 물 위 금지."
+  },
+  {
+   "id": "logbook-stand",
+   "src": "pi-logbook-stand.png",
+   "name": "항해 일지(통 위에 펼친 책)",
+   "en": "ship's logbook on a barrel",
+   "kind": "low_furniture",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "항해 일지",
+    "항해일지",
+    "기록부",
+    "장부",
+    "일지",
+    "logbook",
+    "record book"
+   ],
+   "desc": "세운 통 위에 펼친 항해 일지와 깃펜. 윗칸은 책(사람 위에 그려짐), 아랫칸은 통.",
+   "rule": "부두·갑판·선장실·항구 사무소 벽가에. 아랫칸 막힘. 읽는 이벤트는 아랫칸에 «같은 높이·결정 키». 문 앞 접근칸·부두 통로 한가운데·물 위 금지."
+  }
+ ]
+}

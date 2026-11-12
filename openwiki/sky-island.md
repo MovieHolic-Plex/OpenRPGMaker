@@ -48,6 +48,22 @@
 - 칸 번호(jp_city 와 같은 규칙, #4668 뒤 고침): **옛 칸은 #4668 전의 그림 그대로, 다시 그린 신전 지붕·천문대 돔은 시트 끝의 새 칸**(668 → 691)이고 `si-shrine`·`si-observatory` 두 키트만 새 칸을 가리킨다. #4668 은 옛 칸을 제자리에서 덮어써서, 이미 깔린 신전이 새 지붕에 한 칸(167번 — 다른 조각과 나눠 쓰던 칸)만 옛 그림인 채로 보였다. `si_bake_lib.Outdoor.keep_old_cells(옛 시트)` + `put`: 번호를 받은 자리 키의 그림이 옛 시트의 그 칸과 다르면 옛 칸에 옛 그림을 남기고 `키@r<그림 해시>` 로 새 번호를 받는다. 검사(모델 없음, `~/z-project/assistant-fable-runs/redraw/roofs/laid_check.py`, 옛 = #4668 직전): 옛 칸 667개 중 화소가 달라진 칸 0 · 통행/우선순위 변화 0 · 옛 건물 키트 11채 맵의 다른 화소 0 · 새로 찍는 키트 86개의 그림은 #4668 뒤 main 과 화소 동일 · #4668 이 붙인 667번 칸 그대로 · 두 번 구워 해시 동일.
 - 남은 것: `si-tower-house`(뾰족 지붕 탑 — 박공 정면/첨탑, 그대로) · 등대·풍차·풍력기·비공정은 예외. 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
 
+## 이야기 기물 1종 (2026-11-12) — 3/4 관문 미통과 · 오너 면제
+
+게임이 바랐는데 그림이 없던 **봉인 제단**을 시트 끝(691~694, 칸 695 · 키트 87)에 덧붙였다. **이 그림은 3/4 관문을 통과하지 않았다** — 오너 면제 묶음 `fable-oneshot-2026-11-12`(`harness-data/object-gate/waivers/`)가 그림 화소 해시·종류에 묶여 번들 출구만 연다. 스토어로는 나가지 않는다.
+
+| 키트 | 무엇 | 크기 · 놓는 법 | 칸 | 막힌 칸 | 관문 종류 |
+|---|---|---|---|---|---|
+| `si-seal-altar` | 봉인 제단(대리석 제단·봉인) | 2×2 · tall | 691~694 | (0,1) (1,1) | box |
+
+- 목록·그림: `tiledata/sky-island/objects/spec.json`(이름·크기·막힌 칸·찾는 낱말·놓는 규칙) · `pieces/si-seal-altar.png`. **그림은 한 화소도 바꾸지 않는다** — 한 화소라도 바뀌면 면제가 풀려 굽기가 그 조각을 막는다(검사 `test/skyIslandStoryObjects.test.ts` 가 시트 칸과 원본을 대조한다).
+- 굽기는 같은 `bake_si.py`: 등록부 조각 뒤에 이 목록을 덧붙인다(핀 덧붙이기 전용, 묶음 `si:si-objects`). 조각이 칸마다 통행을 직접 선언한다(`cells_pc`), 놓는 법 태그(`stamp`)도 목록에서 온다.
+- 출구 검사는 관문 자신의 규칙이다: `si_bake_lib.gate_status` 가 오너 면제가 있는 그림을 `object_gate.refusal(context='bundle')` 에 묻는다(직각 지붕 때 넣은 그 줄 그대로 — 새 규칙 없음). 보고 `bake-report.json` 의 `gate.owner_waiver`(이 묶음) · `gate.owner_waived_files`(어느 면제 묶음으로든 지난 그림 — 천문대 돔·신전 지붕 포함).
+- 조수가 찾는 길: 키트 이름·태그(`words` — 봉인 제단·봉인·제단·대리석 제단). «제단» 한 낱말은 같은 태그를 가진 실내 `si-altar`(신전 제단)가 먼저고 이 키트가 둘째다. v2 코드에 낱말 목록은 없다.
+- 참고문서: 문서 `si-outdoor/si-objects`(사전·순서·6×5 조립 예제 전체 배열·정상/오류 그림) — `bake_refs_si.py` 가 칩셋 공용 틀 `scripts/content/story-objects/refs_lib.py` 로 만든다.
+- 탐침(모델 없음): `bun scripts/content/story-objects/probe.mts sky_island <out> --base-sheet <고치기 전 시트>`. 화면 증거 `verify-shots/sky-island-story-objects/`.
+- 기존 저장본: 이 칩셋 끝에 다른 칩셋 그림을 붙여 쓴 프로젝트는 `settleThemeBundleTail`(`openwiki/runtime-project-schema.md` 「시트 끝에 칸을 끼운 번들」)이 이식 꼬리를 새 번들 끝 뒤로 밀고 키트를 채운다.
+
 ## 함정
 - 접근칸 예약이 문 바로 아래 칸까지라 그 칸을 덮는 포석(신전 앞 광장)은 `patch` 가 거절한다 — 구성기에서 잠깐 풀었다 다시 예약한다.
 - 1×1 소품(꽃·방석·밧줄 뭉치)은 키트가 아니라 그룹(`si:si-<id>`)이다. 팔레트가 tileMeta `defaultLayer` 로 1×1 키트를 합성한다.

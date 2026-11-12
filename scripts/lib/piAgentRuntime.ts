@@ -415,6 +415,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     assistantRun: true,
     // 몬스터 자산 역방향 잠금: 이 요청이 몬스터 수집 요청이면 이 턴만 몬스터 도구·자산이 풀린다(워커 입구가 채운다, 없으면 task 로 판정).
     monsterTurn: request.monsterTurn ?? isMonsterRequestTurn(request.task),
+    // 게임 열쇠: 놓기 도구가 같은 종류의 다른 그림(킷 변형)을 이 게임 것으로 고른다 — 한 게임은 한 모습(project/kitLook.ts).
+    ...(request.projectKey ? { lookKey: String(request.projectKey) } : {}),
   };
   setClientEditHistory(request.editHistory ?? []);
   setPlanGrid(request.planGrid ?? null);

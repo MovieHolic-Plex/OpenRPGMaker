@@ -23,6 +23,7 @@ import { enforceGenreLockVisuals, genreLockVisualCatalogFilter, GenreLockVisualE
 import { isMonsterOnlyTool, monsterAssetsAllowed, monsterToolArgViolation, monsterToolRejection, withMonsterTurn } from "@/project/genreLockMonsterAssets";
 import { assertMonsterAssetLock, monsterAssetCatalogFilters, MonsterAssetLockError } from "@/project/genreLockMonsterAssetsDiff";
 import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
+import { withKitLook } from "@/project/kitLook";
 import { PeopleChipLockError, settlePeopleChipLock } from "@/project/peopleChipLock";
 import { isRetiredEasyRpgTileset, LIBRARY_IMPORT_TOOLS, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { guardWholeRecordRewrite } from "./assistantRewriteGuard";
@@ -239,7 +240,8 @@ function withCharsetCatalog<T>(ctx: ToolContext, project: Project, run: () => T)
     : forwardVisual ?? reverse?.visual;
   const inner = filter ? () => withNpcGraphicCatalogFilter(filter, run) : run;
   const scoped = visual ? () => withGenreLockVisualCatalog(visual, inner) : inner;
-  return withMonsterTurn(ctx.assistantRun ? { monsterTurn: ctx.monsterTurn === true } : undefined, scoped);
+  // 게임 열쇠(ctx.lookKey)도 이 구간에만 켠다 — 킷을 푸는 놓기 도구가 ctx 없이 그 게임의 변형 그림을 고른다(project/kitLook.ts).
+  return withKitLook(ctx.assistantRun ? ctx.lookKey : undefined, () => withMonsterTurn(ctx.assistantRun ? { monsterTurn: ctx.monsterTurn === true } : undefined, scoped));
 }
 
 /**

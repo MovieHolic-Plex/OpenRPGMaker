@@ -1,7 +1,7 @@
 {
 "version": 1,
 "tilesPerRow": 48,
-"count": 1240,
+"count": 1243,
 "cells": {
 "sand/0.0": 1,
 "sand/1.0": 2,
@@ -1241,6 +1241,9 @@
 "longhouse/4.1@rb57e21a3": 1236,
 "fish-shack/0.1@rab0dc325": 1237,
 "fish-shack/1.1@r83267c82": 1238,
-"fish-shack/2.1@rac582bff": 1239
+"fish-shack/2.1@rac582bff": 1239,
+"note/0.0": 1240,
+"logbook-stand/0.0": 1241,
+"logbook-stand/0.1": 1242
 }
 }
