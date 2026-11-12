@@ -15,7 +15,12 @@ interface WidgetMount {
   layout?: WidgetLayout;
   changedAt: number;
   changedPending?: boolean;
+  /** 줄 목록 위젯(동료·상태)의 내용 높이 — 저작 높이는 상한이고, 판은 지금 보이는 줄 수만큼만 차지한다. 아직 못 쟀으면 undefined. */
+  fitHeight?: number;
+  fitPending?: boolean;
 }
+/** 줄 수가 플레이 중에 달라지는 위젯 — 판 높이를 내용에 맞춘다(한 명뿐인 파티에 네 명 높이의 판이 화면 왼쪽을 덮었다, 2026-11-12 증기의 심장). */
+const LIST_KINDS: readonly HudWidget["kind"][] = ["party", "timers"];
 /** Same renderer for authoring preview and shipped player; input belongs to the editor only. */
 export class FieldHud {
   readonly root = hudNode("field-hud");
@@ -39,6 +44,7 @@ export class FieldHud {
       for (const widget of this.widgets) {
         if (!this.mounts.has(widget.id)) {
           const node = hudNode("hud-widget"); node.dataset.widgetId = widget.id; node.dataset.testid = `hud-widget-${widget.id}`;
+          if (widget.autoAvoid) node.dataset.autoAvoid = "true";
           this.mounts.set(widget.id, { node, changedAt: -Infinity });
         }
         this.root.append(this.mounts.get(widget.id)!.node);
@@ -94,9 +100,18 @@ export class FieldHud {
         drawHudWidget(mount.node, widget, reading);
         mount.drawnReading = reading;
         mount.drawnWidget = widget;
+        mount.fitPending = LIST_KINDS.includes(widget.kind);
+        if (!mount.fitPending) mount.fitHeight = undefined;
+      }
+      // 보이는 동안에만 잴 수 있다(대사·메뉴가 HUD 를 가리면 0) — 못 쟀으면 다음 프레임에 다시 잰다. 그동안은 저작 높이다.
+      if (mount.fitPending && !hidden && mount.node.offsetParent != null) {
+        mount.node.style.height = "auto";
+        const natural = mount.node.offsetHeight;
+        mount.layout = undefined;
+        if (natural > 0) { mount.fitHeight = natural; mount.fitPending = false; }
       }
       let width = Math.min(size.width - 8, widget.width);
-      const height = Math.min(size.height - 8, widget.height);
+      const height = Math.min(size.height - 8, widget.height, mount.fitHeight ?? widget.height);
       let anchor = widget.anchor;
       const bottom = anchor.startsWith("bottom");
       // Keep controls clear of the avatar; switching is based on the authored anchor, never on the moved position.
@@ -116,6 +131,12 @@ export class FieldHud {
           if (y >= oy + oh + 3 || y + height + 3 <= oy) continue;
           if (other.anchor.endsWith("right")) right = Math.min(right, ox - 4);
           else if (other.anchor.endsWith("left")) left = Math.max(left, ox + ow + 4);
+        }
+        // 목표 창처럼 HUD 판 밖에 고정된 창도 같은 띠에서는 비킨다(가운데보다 오른쪽에 있으면 오른쪽 끝, 아니면 왼쪽 끝).
+        for (const fixed of context.fixed ?? []) {
+          if (y >= fixed.y + fixed.height + 3 || y + height + 3 <= fixed.y) continue;
+          if (fixed.x + fixed.width / 2 >= size.width / 2) right = Math.min(right, fixed.x - 4);
+          else left = Math.max(left, fixed.x + fixed.width + 4);
         }
         if (right - left >= Math.min(width, Math.max(80, widget.slots * 14))) {
           width = Math.min(width, right - left);

@@ -1,144 +1,45 @@
 /**
- * 「현재 목표」 안내창 자리 고르기 — 순수 함수(화면 논리 px).
+ * 「현재 목표」 안내창과 상호작용 안내의 자리 — 순수 함수(화면 논리 px).
  *
- * 예전에는 오른쪽 위 고정(테마 HUD 는 top:88px)이라, 카메라가 주인공을 화면 가운데에 두는
- * 작은 방·좁은 맵에서 주인공 옆 가구·NPC·주인공 머리를 덮었다(장부 hud.json 93건, 14게임 전부).
- * 후보 자리(네 모서리·위아래 가운데·맵 바깥 여백 띠)마다 무엇을 덮는지 값을 매겨 가장 덜 덮는 곳을 고른다.
- *  - 주인공·인물(이벤트 그림)·다른 HUD 를 덮는 것이 가장 비싸다. 입구와 그 위 건물 얼굴(간판)도 덮지 않으려 한다.
- *  - 맵 바깥 여백(작은 방 둘레의 빈 화면)은 공짜다. 거기 들어가도록 창 폭을 줄인 후보도 낸다.
- *  - 지금 자리가 거의 같은 값이면 옮기지 않는다(걷는 동안 깜빡이지 않게).
+ * 목표 창은 한 자리에 머문다: 오른쪽 위, 그 자리에 다른 고정 HUD(시계·소지금)가 있으면 그 바로 밑.
+ * 2026-10-29~11-11 에는 후보 자리(네 모서리·위아래 가운데·맵 바깥 여백)마다 무엇을 덮는지 값을 매겨 걸을 때마다 다시 골랐다.
+ * 주인공·인물을 덜 덮었지만 맵마다 오른쪽 위 · 왼쪽 아래 · 가운데 위 · 오른쪽 아래로 옮겨 다녀 «목표가 어디 있는지» 를 매번 찾아야 했다
+ * (2026-11-12 증기의 심장 직접 플레이). 덮는 문제는 자리를 옮기지 않고 푼다 — 주인공과 마주 본 것이 창 밑에 들면 창이 흐려진다(hudYield.ts).
  */
 export type PlacementRect = { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
 
 export type ObjectivePlacementInput = {
   readonly stage: { readonly width: number; readonly height: number };
-  /** 지금 그려진 창 크기(최대 폭 maxWidth 로 줄바꿈된 결과). */
+  /** 지금 그려진 창 크기. */
   readonly box: { readonly width: number; readonly height: number };
-  /** 창이 쓸 수 있는 최대 폭. 맵 위아래 여백 띠에 넣을 때 줄 수를 줄이려고 자연 폭보다 넓힐 수 있다. */
-  readonly maxWidth: number;
-  /** 창 폭을 이보다 좁히지 않는다. */
-  readonly minWidth: number;
-  /** 맵 바깥 여백 띠에 넣을 때는 이 폭까지 좁힌다(글자 크기는 그대로, 줄만 는다). 없으면 minWidth. */
-  readonly minBandWidth?: number;
-  /** 폭 w 로 줄바꿈했을 때 실제 창 높이. 없으면 넓이 보존으로 어림한다. */
-  readonly measure?: (width: number) => number;
   readonly margin: number;
   readonly player: PlacementRect | null;
   readonly actors: readonly PlacementRect[];
-  /** 입구와 그 위 건물 얼굴(간판·지붕 표지) — 인물보다 싸게 피한다. 없으면 없음. */
-  readonly landmarks?: readonly PlacementRect[];
   readonly hud: readonly PlacementRect[];
   /** 맵이 화면에 그려진 사각형(화면 밖으로 넘친 부분 포함). 없으면 화면 전체가 맵이다. */
   readonly map: PlacementRect | null;
-  readonly current: ObjectivePlacement | null;
 };
 
 export type ObjectivePlacement = { readonly x: number; readonly y: number; readonly width: number };
 
 type Candidate = PlacementRect & { readonly bias: number };
 
-export function chooseObjectivePlacement(input: ObjectivePlacementInput): ObjectivePlacement {
-  const candidates = objectiveCandidates(input);
-  let best: Candidate | null = null;
-  let bestCost = Number.POSITIVE_INFINITY;
-  for (const candidate of candidates) {
-    const cost = placementCost(candidate, input) + candidate.bias;
-    if (cost < bestCost) { best = candidate; bestCost = cost; }
-  }
-  const current = input.current;
-  if (current && best) {
-    const kept = candidateAt(current, input);
-    // 지금 자리가 크게 나쁘지 않으면 그대로 둔다 — 한 칸 걸을 때마다 창이 뛰지 않게.
-    if (kept && placementCost(kept, input) <= bestCost + 0.6) return current;
-  }
-  if (!best) return { x: input.margin, y: input.margin, width: input.box.width };
-  return { x: Math.round(best.x), y: Math.round(best.y), width: Math.round(best.width) };
-}
-
-function objectiveCandidates(input: ObjectivePlacementInput): Candidate[] {
-  const { stage, margin: m } = input;
-  const out: Candidate[] = [];
-  const add = (x: number, y: number, width: number, height: number, bias: number): void => {
-    if (width < Math.min(input.minWidth, input.minBandWidth ?? input.minWidth) - 0.5 || x < 0 || y < 0 || x + width > stage.width + 0.5 || y + height > stage.height + 0.5) return;
-    out.push({ x, y, width, height, bias });
-  };
-  const corners = (width: number, height: number, extra: number): void => {
-    const right = stage.width - width - m, bottom = stage.height - height - m, center = (stage.width - width) / 2;
-    add(right, m, width, height, 0 + extra);
-    add(m, m, width, height, 0.15 + extra);
-    add(center, m, width, height, 0.25 + extra);
-    add(right, bottom, width, height, 0.35 + extra);
-    add(m, bottom, width, height, 0.45 + extra);
-    add(center, bottom, width, height, 0.5 + extra);
-  };
-  corners(input.box.width, input.box.height, 0);
-  // 좁힌 창: 넓이를 보존해 높이를 어림(줄 수가 는다). 맵 바깥 옆 여백에 들어가는 후보를 만든다.
-  const map = input.map;
-  const widths = new Set<number>();
-  for (const fraction of [0.75, 0.6]) widths.add(Math.round(input.box.width * fraction));
-  for (const width of widths) {
-    if (width >= input.box.width || width < input.minWidth) continue;
-    const height = estimatedHeight(input, width);
-    corners(width, height, 0.3);
-    if (map) {
-      // 옆 여백 띠 가운데 높이(맵이 화면 가운데에 작게 있을 때).
-      const y = Math.max(m, Math.min(stage.height - height - m, map.y));
-      add(m, y, width, height, 0.4);
-      add(stage.width - width - m, y, width, height, 0.4);
-    }
-  }
-  if (map) bandCandidates(input, map, add);
-  if (map) {
-    // 맵 위·아래 여백 띠(맵 가장자리 바로 바깥).
-    const above = map.y - input.box.height - m;
-    if (above >= m) add(Math.max(m, Math.min(stage.width - input.box.width - m, map.x + map.width - input.box.width)), above, input.box.width, input.box.height, 0.1);
-    const below = map.y + map.height + m;
-    if (below + input.box.height <= stage.height - m) add(Math.max(m, Math.min(stage.width - input.box.width - m, map.x + map.width - input.box.width)), below, input.box.width, input.box.height, 0.3);
-  }
-  return out;
-}
-
 /**
- * 맵 바깥 여백 띠 후보 — 방을 전혀 덮지 않는 자리. 옆 띠는 띠 폭에 맞춰 창을 좁히고(줄 수가 는다),
- * 위아래 띠는 띠 높이에 들어가는 가장 좁은 폭을 찾는다. 들어가지 않는 띠는 후보를 내지 않는다.
+ * 목표 창의 자리 — 오른쪽 위 모서리에서, 그 자리를 차지한 고정 HUD(시계·소지금·미니맵) 밑으로 내려 쌓는다.
+ * 주인공·인물·맵은 보지 않는다(걸어도 자리가 바뀌지 않는다). `hud` 에는 주인공을 피해 옮겨 앉는 칸을 넣지 않는다 — 그 칸이 목표 창을 비킨다.
  */
-function bandCandidates(input: ObjectivePlacementInput, map: PlacementRect, add: (x: number, y: number, width: number, height: number, bias: number) => void): void {
-  const { stage, margin: m, box } = input;
-  const minBand = Math.max(1, input.minBandWidth ?? input.minWidth);
-  const leftRoom = Math.floor(map.x - 2 * m), rightRoom = Math.floor(stage.width - (map.x + map.width) - 2 * m);
-  const sides: Array<[number, (width: number) => number]> = [
-    [rightRoom, width => stage.width - width - m],
-    [leftRoom, () => m],
-  ];
-  sides.forEach(([room, xOf], index) => {
-    if (room < minBand) return;
-    const width = Math.min(box.width, room);
-    const height = estimatedHeight(input, width);
-    const x = xOf(width);
-    // 같은 여백 자리면 키가 낮은 창(줄이 적은 창)이 낫다.
-    const bias = 0.05 * index + 0.5 * height / stage.height;
-    add(x, m, width, height, bias);
-    add(x, Math.max(m, Math.min(stage.height - height - m, map.y)), width, height, bias + 0.02);
-    add(x, stage.height - height - m, width, height, bias + 0.04);
-  });
-  const aboveRoom = Math.floor(map.y - 2 * m), belowRoom = Math.floor(stage.height - (map.y + map.height) - 2 * m);
-  const bands: Array<[number, (height: number) => number]> = [[aboveRoom, () => m], [belowRoom, height => stage.height - height - m]];
-  bands.forEach(([room, yOf], index) => {
-    if (room <= 0) return;
-    // 가장 좁으면서 띠 높이에 들어가는 폭(넓을수록 줄이 준다 — 자연 폭부터 화면 폭까지).
-    const maxWide = Math.min(Math.max(box.width, Math.floor(input.maxWidth)), Math.floor(stage.width - 2 * m));
-    const tries = [box.width];
-    for (let k = 1; k <= 4; k++) tries.push(Math.round(box.width + (maxWide - box.width) * k / 4));
-    for (const width of tries) {
-      if (width < minBand) continue;
-      const height = estimatedHeight(input, width);
-      if (height > room) continue;
-      const y = yOf(height), tall = 0.5 * height / stage.height;
-      add(stage.width - width - m, y, width, height, 0.1 + 0.1 * index + tall);
-      add(m, y, width, height, 0.15 + 0.1 * index + tall);
-      break;
-    }
-  });
+export function objectiveHome(input: Pick<ObjectivePlacementInput, "stage" | "box" | "margin" | "hud">): ObjectivePlacement {
+  const { stage, box, margin: m } = input;
+  const x = Math.max(m, stage.width - box.width - m);
+  let y = m;
+  for (let pass = 0; pass <= input.hud.length; pass += 1) {
+    const hit = input.hud.find((hud) => overlap({ x, y, width: box.width, height: box.height }, inflate(hud, 2)) > 0);
+    if (!hit) break;
+    y = hit.y + hit.height + m;
+  }
+  // 위쪽이 HUD 로 꽉 차 화면 아래 절반까지 밀리면 모서리에 그대로 둔다(그런 구성은 저작자가 목표 줄을 끈다).
+  if (y + box.height > stage.height / 2) y = m;
+  return { x: Math.round(x), y: Math.round(y), width: Math.round(box.width) };
 }
 
 /**
@@ -170,20 +71,6 @@ export function choosePromptPlacement(input: Pick<ObjectivePlacementInput, "stag
   return { x: Math.round(best.x), y: Math.round(best.y) };
 }
 
-function estimatedHeight(input: ObjectivePlacementInput, width: number): number {
-  const box = input.box;
-  if (input.measure && Math.round(width) !== Math.round(box.width)) return input.measure(Math.round(width));
-  if (width >= box.width) return box.height;
-  // 줄 하나 더 생길 여유를 둔다(줄바꿈은 어절 단위라 넓이보다 조금 더 든다).
-  return Math.ceil(box.height * (box.width / width) * 1.1);
-}
-
-function candidateAt(current: ObjectivePlacement, input: ObjectivePlacementInput): Candidate | null {
-  const height = estimatedHeight(input, current.width);
-  if (current.x < 0 || current.y < 0 || current.x + current.width > input.stage.width + 0.5 || current.y + height > input.stage.height + 0.5) return null;
-  return { x: current.x, y: current.y, width: current.width, height, bias: 0 };
-}
-
 function placementCost(box: PlacementRect, input: ObjectivePlacementInput): number {
   const boxArea = Math.max(1, box.width * box.height);
   let cost = 0;
@@ -192,7 +79,6 @@ function placementCost(box: PlacementRect, input: ObjectivePlacementInput): numb
     cost += 60 * overlap(box, player) / Math.max(1, area(player));
   }
   for (const actor of input.actors) cost += 10 * overlap(box, inflate(actor, 2)) / Math.max(1, area(actor));
-  for (const landmark of input.landmarks ?? []) cost += 6 * overlap(box, landmark) / Math.max(1, area(landmark));
   for (const hud of input.hud) cost += 80 * overlap(box, inflate(hud, 2)) / Math.max(1, Math.min(boxArea, area(hud)));
   // 맵 위를 덮는 넓이(여백 위는 공짜). 0~3.
   const map = input.map ?? { x: 0, y: 0, width: input.stage.width, height: input.stage.height };

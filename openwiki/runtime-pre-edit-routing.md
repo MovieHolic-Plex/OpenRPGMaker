@@ -10,7 +10,29 @@ Phaser 에 실린 텍스처와 파일이 같다는 가정이 맞는지 확인하
 - 다시 시도하려면: 워커에는 **실린 텍스처에서 만든 비트맵**만 넘기고(파일 주소 금지), 착지 화면을 원본 경로와 픽셀 비교하는 검사를 먼저 둔다.
   검은 화면 길이만으로 합격시키지 않는다.
 
+## 필드 HUD 는 주인공을 가리지 않는다 — 내용 높이 · 비키기 · 목표 창 제자리 (2026-11-12)
+
+조수가 지은 게임(「증기의 심장」, `fieldHud.theme: "party"`)을 직접 걸었을 때: 한 명뿐인 파티에 네 명 높이(90×138, 화면 28%×55%)의 「동료」 판이 늘 떠 있었고,
+부두에 들어서면 주인공이 판 밑에서 출발했고, 여관에서는 주인도 주인공도 안 보였다. 목표 창은 맵마다 오른쪽 위·왼쪽 아래·가운데 위·오른쪽 아래로 옮겨 다녔고,
+「새 목표」 카드는 목표 창·동료 판과 겹쳤다. 특정 테마가 아니라 런타임 규칙 넷으로 고쳤다(저작 데이터·프리셋은 그대로).
+
+1. **줄 목록 판은 보이는 줄만큼만**(`fieldHud.ts` `LIST_KINDS` = party · timers): 저작 높이는 상한이다. 그린 뒤 `height:auto` 로 내용 높이를 재(`fitHeight`) 그보다 크지 않게 놓는다.
+   가려져 못 잰 동안(대사·메뉴, 가짜 DOM)은 저작 높이로 두고 보이는 첫 프레임에 다시 잰다. 아래 닻(bottom-*)은 줄어든 높이로 바닥에 붙는다.
+2. **상시 창은 비킨다 — 자리는 그대로, 투명도만**(`hudYield.ts`, `playSceneZoneFeedback` 가 90ms 마다): 주인공 그림 + 주인공 둘레 한 칸(3×3칸 — 마주 본 것·「Z」 대상·길을 막은 통은 늘 이 안)
+   + 그 칸에 걸친 이벤트 그림을 덮은 창은 `data-yield="fade"`(투명도 .16), 잠깐 뜨는 알림(`.objective-card` · 지역 알림 · 토스트)과 겹친 창은 `"hide"`. 목표 카드가 떠 있는 동안 목표 창은 겹치지 않아도 숨는다(같은 글 두 번).
+   대상 창: `.field-hud > .hud-widget` · `.zone-feedback-objective` · `.action-hud` · `.hand-slot` · `.runtime-time-hud` · 미니맵. CSS 는 `fieldHud.css` 끝 세 줄(`.play-stage [data-yield]`).
+   이미 비킨 창은 3px 더 넉넉히 본다(가장자리에서 깜빡이지 않게). 새 상시 창을 만들면 `hudYield.ts PANEL_SELECTOR` 에 넣는다.
+3. **목표 창은 제자리**(`objectivePlacement.objectiveHome`): 오른쪽 위, 그 자리에 고정 HUD(시계·소지금·미니맵)가 있으면 그 밑으로 쌓는다. 주인공·인물·맵 여백은 보지 않는다 —
+   아래 「목표 안내창 자리」 절의 후보·값 매기기(`chooseObjectivePlacement`, 맵 여백 띠, 최소 폭, 입구 표지)는 **없앴다**. 덮는 문제는 2번이 맡는다.
+   주인공을 피해 위아래로 옮겨 앉는 칸(`autoAvoid` — `data-auto-avoid`)은 제자리 계산에서 빼고, 그 칸이 목표 창을 비킨다(`HudRuntimeContext.fixed` ← `objectiveBoxRect`).
+4. **상호작용 안내**(`choosePromptPlacement`)는 그대로 아래 가운데·왼쪽·오른쪽에서 고르되 이제 목표 창도 피한다(전에는 목표 창이 안내를 피했다).
+
+확인: 출하 플레이어(`player.html`)를 QA 체크포인트로 부두·여관·공방·네 명 파티·「새 목표」 직후에 띄워 전/후를 찍었다(`~/z-project/assistant-fable-runs/screen-words/shots.mjs` · `scenes.json`).
+시험 `test/hudYield.test.ts`(비키기 판정 · 제자리) · `test/fieldHudFrame.test.ts`(내용 높이 · 옮겨 앉는 칸이 목표 창을 비킴).
+
 ## 목표 안내창 자리·한국어 줄바꿈·숫자 입력 (2026-10-28, 장부 hud.json)
+
+> **2026-11-12:** 아래 「목표 안내창 자리」·「맵 바깥 여백 우선」 두 항목의 자리 고르기는 없앴다 — 목표 창은 제자리에 있고 덮으면 흐려진다(위 절). 남은 항목은 그대로다.
 
 - **목표 안내창 자리**: `playSceneZoneFeedback.placeObjective` 가 300ms 마다(글이 바뀌면 즉시) `objectivePlacement.chooseObjectivePlacement` 로 고른다.
   후보 = 네 모서리·위아래 가운데·맵 바깥 여백 띠(맵이 화면보다 작을 때), 좁힌 폭(넓이 보존 높이 어림) 후보.

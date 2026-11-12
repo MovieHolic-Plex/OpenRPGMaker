@@ -10,7 +10,8 @@ import { mapTileSize } from "@/project/tileGeometry";
 import { runtimePixelDensity } from "@/player/runtimeViewScale";
 import type { GameMap } from "@/project/types";
 import { createObjectiveCard, destroyObjectiveCard, syncObjectiveCard, type ObjectiveCard } from "@/player/objectiveCard";
-import { chooseObjectivePlacement, choosePromptPlacement, type ObjectivePlacement, type PlacementRect } from "@/player/objectivePlacement";
+import { choosePromptPlacement, objectiveHome, type ObjectivePlacement, type PlacementRect } from "@/player/objectivePlacement";
+import { applyHudYield } from "@/player/hudYield";
 import { eventMenuLocked } from "@/player/eventMenuLock";
 import { pickNearbyActionTarget } from "@/player/nearbyActionTarget";
 import {
@@ -100,8 +101,10 @@ export type PlaySceneZoneFeedback = {
   dom: ZoneFeedbackDom | null;
   /** 정면 조사 안내 기억. 칸·방향·세션이 같으면 PROMPT_REFRESH_MS 동안 다시 찾지 않는다. */
   prompt?: { readonly x: number; readonly y: number; readonly facing: string; readonly session: PlaySession; readonly atMs: number; readonly value: string | null };
-  /** 목표 안내창 자리. OBJECTIVE_PLACE_MS 마다 다시 고른다. */
-  objectivePlace?: { atMs: number; text: string; placement: ObjectivePlacement | null };
+  /** 목표 안내창 자리(제자리 — objectiveHome). OBJECTIVE_PLACE_MS 마다 다시 잰다. */
+  objectivePlace?: { atMs: number; text: string; placement: ObjectivePlacement; height: number };
+  /** 상시 창 비키기(hudYield)를 마지막으로 잰 때. */
+  yieldAtMs?: number;
   /** 상호작용 안내 자리. 같은 주기로 다시 고른다. */
   promptPlace?: { atMs: number; text: string; x: number; y: number };
   /** 첫 조작·목표 변경 때 가운데에 잠깐 뜨는 목표 카드(objectiveCard.ts). */
@@ -111,6 +114,8 @@ export type PlaySceneZoneFeedback = {
 };
 
 const OBJECTIVE_PLACE_MS = 300;
+/** 상시 창 비키기를 재는 주기 — 한 칸 걷는 시간(약 250ms)보다 짧게. */
+const HUD_YIELD_MS = 90;
 
 /**
  * 정면 조사 안내를 다시 계산하는 주기. 예전에는 매 프레임 맵의 모든 조사 이벤트 뷰(페이지 조건
@@ -168,7 +173,13 @@ export function syncPlaySceneZoneFeedback(
   feedback.dom?.render(view, update.effects);
   // 안내를 먼저 놓는다 — 목표 창은 안내(다른 HUD)를 피해 자리를 고른다.
   if (host && feedback.dom && view.prompt && !view.suppressed) placePrompt(scene, feedback, host, view.prompt);
-  if (host && feedback.dom && view.objective && !view.suppressed) placeObjective(scene, feedback, host, view.objective);
+  if (host && feedback.dom && view.objective && !view.suppressed) placeObjective(feedback, host, view.objective);
+  else feedback.objectivePlace = undefined;
+  // 상시 창이 주인공·마주 본 것·잠깐 뜨는 알림을 덮지 않게 한다(hudYield.ts). 매 프레임 재지 않는다.
+  if (host && !suppressed && feedback.elapsedMs - (feedback.yieldAtMs ?? -Infinity) >= HUD_YIELD_MS) {
+    feedback.yieldAtMs = feedback.elapsedMs;
+    applyHudYield(host, yieldProtectRects(scene, host));
+  }
   // 이벤트가 메뉴를 잠근 동안(기본, @/player/eventMenuLock) 터치 「메뉴」 단추를 숨긴다 — 눌러도 열리지 않는 단추를 보이지 않게.
   // 키보드 X·Esc 는 player.ts 가 같은 규칙으로 막는다. 매 프레임 불러 이어지는 이벤트 사이 틈 보정도 여기서 센다.
   const menuLocked = eventMenuLocked(scene.running, scene.session, performance.now());
@@ -212,7 +223,7 @@ function placePrompt(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedback, 
   const placement = choosePromptPlacement({
     stage, box, margin: Math.round(4 * uiScale),
     player: geometry.player, actors: geometry.actors, map: geometry.map,
-    // 자기 자신은 뺀다(목표 창은 선택자에서 이미 빠진다 — 목표 창이 안내를 피한다).
+    // 자기 자신은 뺀다. 목표 창은 제자리에 있으므로 안내가 목표 창을 피한다.
     hud: hudRects(host, element, stage),
     current: memo?.text === text ? { x: memo.x, y: memo.y } : null,
   });
@@ -221,98 +232,50 @@ function placePrompt(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedback, 
 }
 
 /**
- * 목표 안내창을 주인공·인물·다른 HUD 를 덮지 않는 자리로 옮긴다(objectivePlacement.ts).
- * 맵이 화면보다 작아 둘레가 비면 그 여백으로 간다. 300ms 마다, 또는 글이 바뀔 때만 잰다.
+ * 목표 안내창을 제자리(오른쪽 위, 그 자리의 고정 HUD 밑 — objectivePlacement.objectiveHome)에 둔다. 주인공·인물을 보고 옮기지 않는다.
+ * 300ms 마다, 또는 글이 바뀔 때만 잰다(HUD 구성이 바뀌면 그때 따라간다).
  */
-function placeObjective(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedback, host: HTMLElement, text: string): void {
+function placeObjective(feedback: PlaySceneZoneFeedback, host: HTMLElement, text: string): void {
   const element = host.querySelector<HTMLElement>(":scope > .zone-feedback > .zone-feedback-objective");
   if (!element || element.hidden) return;
   const memo = feedback.objectivePlace;
   if (memo && memo.text === text && feedback.elapsedMs - memo.atMs < OBJECTIVE_PLACE_MS) return;
-  const geometry = sceneGeometry(scene, host);
-  if (!geometry) return;
-  // 자연 크기(CSS 최대 폭으로 줄바꿈한 창)를 잰다 — 좁힌 폭은 아래에서 다시 건다.
-  // 왼쪽 끝에 놓고 잰다 — 지난 자리(left)에 둔 채 재면 남은 폭만큼 줄어든 크기를 자연 크기로 잘못 읽는다.
+  // 자연 크기(CSS 최대 폭으로 줄바꿈한 창)를 잰다. 왼쪽 끝에 놓고 잰다 — 지난 자리(left)에 둔 채 재면 남은 폭만큼 줄어든 크기를 자연 크기로 잘못 읽는다.
   Object.assign(element.style, { width: "", maxWidth: "", left: "0px", right: "auto" });
   const box = { width: element.offsetWidth, height: element.offsetHeight };
   if (box.width <= 0 || box.height <= 0) return;
   const stage = { width: host.clientWidth, height: host.clientHeight };
   const uiScale = Number.parseFloat(getComputedStyle(host).getPropertyValue("--play-ui-scale")) || 1;
-  const margin = Math.round(4 * uiScale);
-  // 좁힌 폭의 실제 높이를 잰다(글자 크기는 그대로, 줄만 는다). 잰 뒤 자연 폭으로 되돌린다.
-  const heights = new Map<number, number>();
-  const measure = (width: number): number => {
-    const cached = heights.get(width);
-    if (cached !== undefined) return cached;
-    element.style.width = `${width}px`;
-    element.style.maxWidth = "none";
-    const height = element.offsetHeight;
-    heights.set(width, height);
-    return height;
-  };
-  const style = getComputedStyle(element);
-  const fontPx = Number.parseFloat(style.fontSize) || 10;
-  const padX = (Number.parseFloat(style.paddingLeft) || 0) + (Number.parseFloat(style.paddingRight) || 0);
-  const placement = chooseObjectivePlacement({
-    stage,
-    box,
-    maxWidth: stage.width - 2 * margin,
-    minWidth: Math.min(box.width, Math.max(Math.round(stage.width * 0.22), objectiveMinWidth(box.width, fontPx, padX))),
-    // 여백 띠도 같은 최소 폭 — 한 줄 4글자까지 좁히던 때는 방 옆 여백에 4~5줄로 접혀 「한 어절씩 끊긴 안내」가 됐다
-    // (2026-10-29 VQA vm 9·17, terra 178, 감독 지적: 여백 무늬를 이은 뒤에도 2줄 → 4줄). 들어가지 않는 띠는 후보가 안 되고, 창은 방 가장자리를 조금 덮는다.
-    minBandWidth: objectiveMinWidth(box.width, fontPx, padX),
-    measure,
-    margin,
-    player: geometry.player,
-    actors: geometry.actors,
-    landmarks: geometry.landmarks,
-    hud: hudRects(host, element, stage),
-    map: geometry.map,
-    current: memo?.text === text ? memo.placement : null,
-  });
-  element.style.width = ""; element.style.maxWidth = "";
-  feedback.objectivePlace = { atMs: feedback.elapsedMs, text, placement };
+  const placement = objectiveHome({ stage, box, margin: Math.round(4 * uiScale), hud: hudRects(host, element, stage, HOME_HUD_SELECTOR) });
+  feedback.objectivePlace = { atMs: feedback.elapsedMs, text, placement, height: box.height };
   element.dataset.placed = "true";
-  Object.assign(element.style, {
-    left: `${placement.x}px`,
-    top: `${placement.y}px`,
-    right: "auto",
-    bottom: "auto",
-    width: placement.width !== box.width ? `${placement.width}px` : "",
-    maxWidth: placement.width !== box.width ? "none" : "",
-  });
+  Object.assign(element.style, { left: `${placement.x}px`, top: `${placement.y}px`, right: "auto", bottom: "auto" });
 }
-
-/** 목표 창 최소 폭: 한 줄 10글자 또는 자연 폭의 70% 중 큰 쪽(자연 폭보다 넓히지는 않는다). 두 줄 문장이 세 줄 넘게 접히지 않는다. */
-function objectiveMinWidth(naturalWidth: number, fontPx: number, padX: number): number {
-  return Math.min(naturalWidth, Math.max(Math.round(fontPx * 10 + padX), Math.round(naturalWidth * 0.7)));
-}
-
-type SceneGeometry = { readonly player: PlacementRect | null; readonly actors: PlacementRect[]; readonly landmarks: PlacementRect[]; readonly map: PlacementRect | null };
 
 /**
- * 맵의 입구(다른 맵으로 옮기는 이벤트 칸)와 그 위 건물 얼굴(좌우 한 칸·위로 세 칸 — 간판·지붕 표지) 칸 사각형. 맵마다 한 번 잰다.
- * 왜(2026-10-29 standin monster 새싹마을): 맵 위 끝에 붙은 몬스터 센터 앞에서 카메라가 더 올라가지 못해, 오른쪽 위 목표 창이
- * 센터의 「+」 지붕 간판을 덮었다 — 마을에서 회복 장소를 알아보는 표지다.
+ * 주인공과 그 둘레 한 칸, 그 칸에 걸친 사람·적 그림 — 상시 창이 덮으면 안 되는 곳(hudYield.ts). 화면 논리 px.
+ * 마주 본 것·「Z 조사」 대상·길을 막은 통은 늘 둘레 한 칸 안에 있다.
  */
-const entranceCache = new WeakMap<GameMap, { x: number; y: number; width: number; height: number }[]>();
-function entranceCells(map: GameMap): { x: number; y: number; width: number; height: number }[] {
-  const cached = entranceCache.get(map);
-  if (cached) return cached;
-  const out: { x: number; y: number; width: number; height: number }[] = [];
-  const leads = (node: unknown): boolean => Array.isArray(node) ? node.some(leads)
-    : !!node && typeof node === "object" && (((node as { kind?: unknown; mapId?: unknown }).kind === "transfer" && typeof (node as { mapId?: unknown }).mapId === "string" && (node as { mapId: string }).mapId !== map.id)
-      || Object.values(node as object).some((value) => value && typeof value === "object" && leads(value)));
-  for (const event of map.events ?? []) {
-    if (!leads(event.pages)) continue;
-    const top = Math.max(0, event.y - 3), left = Math.max(0, event.x - 1);
-    out.push({ x: left, y: top, width: Math.min(map.width, event.x + 2) - left, height: event.y + 1 - top });
-  }
-  entranceCache.set(map, out);
-  return out;
+function yieldProtectRects(scene: ZoneFeedbackScene, host: HTMLElement): PlacementRect[] {
+  const geometry = sceneGeometry(scene, host, false);
+  const camera = scene.cameras?.main;
+  const tile = scene.map ? mapTileSize(scene.map) : 0;
+  if (!geometry || !camera || tile <= 0) return geometry?.player ? [geometry.player] : [];
+  const scale = camera.zoom / runtimePixelDensity(scene);
+  const ring: PlacementRect = {
+    x: ((scene.tileX - 1) * tile - camera.worldView.x) * scale,
+    y: ((scene.tileY - 1) * tile - camera.worldView.y) * scale,
+    width: 3 * tile * scale,
+    height: 3 * tile * scale,
+  };
+  const touches = (rect: PlacementRect): boolean => rect.x < ring.x + ring.width && rect.x + rect.width > ring.x && rect.y < ring.y + ring.height && rect.y + rect.height > ring.y;
+  return [ring, ...(geometry.player ? [geometry.player] : []), ...geometry.actors.filter(touches)];
 }
 
-function sceneGeometry(scene: ZoneFeedbackScene, host: HTMLElement): SceneGeometry | null {
+type SceneGeometry = { readonly player: PlacementRect | null; readonly actors: PlacementRect[]; readonly map: PlacementRect | null };
+
+/** `withTargets` = 그림 없는 조사 대상(결정 키 이벤트) 칸도 인물로 센다 — 이벤트 뷰를 만들어야 해서 안내 자리를 고를 때만 켠다. */
+function sceneGeometry(scene: ZoneFeedbackScene, host: HTMLElement, withTargets = true): SceneGeometry | null {
   const camera = scene.cameras?.main;
   if (!camera || !(camera.zoom > 0)) return null;
   // 손 슬롯 칩과 같은 환산: worldView 원점 기준, 캔버스 px 를 픽셀 밀도로 나눠 논리 px.
@@ -334,7 +297,7 @@ function sceneGeometry(scene: ZoneFeedbackScene, host: HTMLElement): SceneGeomet
   }
   const tile = scene.map ? mapTileSize(scene.map) : 0;
   // 조사 대상(결정 키 이벤트)은 그림이 없는 투명 이벤트여도 피한다 — 방탈출의 책장·금고·벽시계가 대개 그렇다.
-  if (tile > 0) {
+  if (tile > 0 && withTargets) {
     for (const view of scene.activeRuntimeEvents("action")) {
       const b = footprintBounds(view.x, view.y, view.footprint);
       const rect = toScreen({ x: b.left * tile, y: b.top * tile, width: (b.right - b.left + 1) * tile, height: (b.bottom - b.top + 1) * tile });
@@ -342,30 +305,28 @@ function sceneGeometry(scene: ZoneFeedbackScene, host: HTMLElement): SceneGeomet
       actors.push(rect);
     }
   }
-  const landmarks: PlacementRect[] = [];
-  if (tile > 0 && scene.map) {
-    for (const cell of entranceCells(scene.map)) {
-      const rect = toScreen({ x: cell.x * tile, y: cell.y * tile, width: cell.width * tile, height: cell.height * tile });
-      if (rect.x + rect.width < 0 || rect.y + rect.height < 0 || rect.x > width || rect.y > height) continue;
-      landmarks.push(rect);
-    }
-  }
   const map = scene.map ? toScreen({ x: 0, y: 0, width: scene.map.width * tile, height: scene.map.height * tile }) : null;
-  return { player, actors, landmarks, map };
+  return { player, actors, map };
 }
 
-/** 목표 창이 피할 다른 화면 고정 UI(필드 HUD 위젯·지역 알림·조작 안내·미니맵 등). */
+/** 상호작용 안내가 피할 다른 화면 고정 UI(필드 HUD 위젯·지역 알림·목표 창을 뺀 안내·미니맵 등). */
 const HUD_SELECTOR = [
   ".field-hud > .hud-widget:not([hidden])",
-  ".zone-feedback > :not(.zone-feedback-objective):not([hidden])",
+  ".zone-feedback > :not([hidden])",
   ".action-hud", ".hand-slot", ".runtime-time-hud", "[data-testid='minimap-root']",
 ].join(",");
 
-function hudRects(host: HTMLElement, objective: HTMLElement, stage: { width: number; height: number }): PlacementRect[] {
+/** 목표 창 제자리를 정할 때 보는 고정 HUD — 주인공을 피해 옮겨 앉는 칸(autoAvoid)과 잠깐 뜨는 안내는 뺀다(그쪽이 목표 창을 비킨다). */
+const HOME_HUD_SELECTOR = [
+  ".field-hud > .hud-widget:not([hidden]):not([data-auto-avoid='true'])",
+  ".action-hud", ".hand-slot", ".runtime-time-hud", "[data-testid='minimap-root']",
+].join(",");
+
+function hudRects(host: HTMLElement, objective: HTMLElement, stage: { width: number; height: number }, selector = HUD_SELECTOR): PlacementRect[] {
   const hostRect = host.getBoundingClientRect();
   const scale = hostRect.width > 0 && stage.width > 0 ? hostRect.width / stage.width : 1;
   const rects: PlacementRect[] = [];
-  for (const node of host.querySelectorAll<HTMLElement>(HUD_SELECTOR)) {
+  for (const node of host.querySelectorAll<HTMLElement>(selector)) {
     if (node === objective || node.offsetParent === null) continue;
     const r = node.getBoundingClientRect();
     if (r.width <= 0 || r.height <= 0) continue;
@@ -385,6 +346,12 @@ function syncSessionSource(session: PlaySession, feedback: PlaySceneZoneFeedback
   if (!feedback.awaitingFirstUi || ui === undefined) return;
   feedback.model = createZoneFeedbackModel(ui, "consumeExisting");
   feedback.awaitingFirstUi = false;
+}
+
+/** 목표 창이 지금 차지한 자리(무대 논리 px) — 필드 HUD 의 옮겨 앉는 칸이 그 위로 올라가지 않게 넘긴다. 안 보이면 undefined. */
+export function objectiveBoxRect(feedback: PlaySceneZoneFeedback | null): PlacementRect | undefined {
+  const place = feedback?.objectivePlace;
+  return place ? { x: place.placement.x, y: place.placement.y, width: place.placement.width, height: place.height } : undefined;
 }
 
 export function destroyPlaySceneZoneFeedback(feedback: PlaySceneZoneFeedback): void {
