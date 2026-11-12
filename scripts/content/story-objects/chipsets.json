@@ -132,5 +132,20 @@
    "x1": 58,
    "y1": 21
   }
+ },
+ "prehistoric": {
+  "spec": "tiledata/prehistoric/objects/spec.json",
+  "ask": "tiledata/prehistoric/objects/ask.json",
+  "kitPrefix": "ph-",
+  "sheet": "public/assets/prehistoric/prehistoric-chipset.png",
+  "map": {
+   "width": 48,
+   "height": 36,
+   "tool": "compose_prehistoric_map",
+   "args": {
+    "style": "village",
+    "seed": 1
+   }
+  }
  }
 }

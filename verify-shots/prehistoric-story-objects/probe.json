@@ -1,0 +1,124 @@
+{
+ "chipset": "prehistoric",
+ "fresh": {
+  "kits": 2,
+  "of": 2,
+  "count": 774,
+  "referenceDocs": [
+   "ph-prehistoric/ph-dictionary",
+   "ph-prehistoric/ph-objects"
+  ],
+  "tablesMatchCount": true
+ },
+ "sheet": [
+  {
+   "id": "ph-trail-marker",
+   "name": "표식(돌·뼈 길 표식)",
+   "size": "1×1",
+   "kind": "organic",
+   "place": "prop",
+   "cells": [
+    769
+   ],
+   "blocked": "(0,0)"
+  },
+  {
+   "id": "ph-spring",
+   "name": "샘(바위 샘)",
+   "size": "2×2",
+   "kind": "container",
+   "place": "prop",
+   "cells": [
+    770,
+    771,
+    772,
+    773
+   ],
+   "blocked": "(0,0) (1,0) (0,1) (1,1)"
+  }
+ ],
+ "cellGate": {
+  "baseSheet": "768×272",
+  "sheet": "768×272",
+  "newCells": 5,
+  "newCellIndexes": [
+   769,
+   770,
+   771,
+   772,
+   773
+  ],
+  "bundleUncovered": 0,
+  "storeUncovered": 5
+ },
+ "words": [
+  {
+   "object": "trail-marker",
+   "word": "표식",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "trail-marker",
+   "word": "뼈 표식",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "spring",
+   "word": "샘",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  }
+ ],
+ "map": {
+  "tool": "compose_prehistoric_map",
+  "args": {
+   "style": "village",
+   "seed": 1
+  },
+  "size": "48×36",
+  "start": {
+   "x": 1,
+   "y": 35
+  }
+ },
+ "placed": [
+  {
+   "object": "spring",
+   "kit": "ph-spring",
+   "asked": "(23,17)",
+   "at": "(23,17)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,0) (1,0) (0,1) (1,1)",
+   "tool": "ph-spring 를 (23,18)에 놓았다"
+  },
+  {
+   "object": "trail-marker",
+   "kit": "ph-trail-marker",
+   "asked": "(21,18)",
+   "at": "(21,18)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,0)",
+   "tool": "ph-trail-marker 를 (21,18)에 놓았다"
+  }
+ ],
+ "scene": {
+  "crop": "칸 (17,13)–(29,24)",
+  "size": "208×192",
+  "heroes": [
+   {
+    "x": 23,
+    "y": 19,
+    "why": "spring 앞"
+   }
+  ]
+ }
+}
