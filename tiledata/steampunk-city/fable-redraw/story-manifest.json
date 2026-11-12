@@ -1,0 +1,41 @@
+{
+ "note": "object-gate owner-waive 의 --manifest 입력(저장소 뿌리에서 돌린다). 묶음 fable-story-steampunk-city-2026-11-13 — 이야기 기물(Fable 5.2 medium 한 방 그림과 그 조립, tiledata/steampunk-city/objects/spec.json). 출구 bundle·shared.",
+ "items": [
+  {
+   "png": "tiledata/steampunk-city/story/_gate/sp-ledger-desk.png",
+   "kind": "low_furniture",
+   "chipset": "steampunk_city",
+   "label": "story/sp-ledger-desk"
+  },
+  {
+   "png": "tiledata/steampunk-city/story/_gate/sp-stop-lever.png",
+   "kind": "other",
+   "chipset": "steampunk_city",
+   "label": "story/sp-stop-lever"
+  },
+  {
+   "png": "tiledata/steampunk-city/story/_gate/sp-lever-wall.png",
+   "kind": "wall_mounted",
+   "chipset": "steampunk_city",
+   "label": "story/sp-lever-wall"
+  },
+  {
+   "png": "tiledata/steampunk-city/story/_gate/sp-hatch-down.png",
+   "kind": "flat",
+   "chipset": "steampunk_city",
+   "label": "story/sp-hatch-down"
+  },
+  {
+   "png": "tiledata/steampunk-city/story/_gate/sp-room-door.png",
+   "kind": "wall_structure",
+   "chipset": "steampunk_city",
+   "label": "story/sp-room-door"
+  },
+  {
+   "png": "tiledata/steampunk-city/story/_gate/sp-great-heart.png",
+   "kind": "other",
+   "chipset": "steampunk_city",
+   "label": "story/sp-great-heart"
+  }
+ ]
+}

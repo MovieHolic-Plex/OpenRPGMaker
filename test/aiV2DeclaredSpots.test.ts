@@ -54,7 +54,8 @@ describe("stairs are what the chipset declares", () => {
     // 「지구라트(계단 신전)」 은 건물이다.
     expect(tilesetSurface(blank.tilesets.desert_east).stairs.size).toBe(0);
     expect(labels("modern_city").some((l) => l.includes("비상계단 아파트"))).toBe(false);
-    expect(labels("steampunk_city")).toHaveLength(8);
+    // 실내 계단 둘(오르는·내려가는 2×2) + 거리의 지하 입구 해치 2×2(2026-11-13 이야기 기물 — 역할 terrain·꼬리표 «계단»).
+    expect(labels("steampunk_city")).toHaveLength(12);
     expect(labels("steampunk_city").every((l) => l.includes("계단"))).toBe(true);
     // 제 꼬리표를 쓰는 번들은 표면 계약에 적는다.
     expect(tilesetSurface(blank.tilesets.joseon_baram).stairs.size).toBeGreaterThan(20);

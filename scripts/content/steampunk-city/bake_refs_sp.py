@@ -5,7 +5,7 @@
 
 예제 배열은 손으로 쓴 견본이 아니라 src/project/steampunkCityComposer.ts(compose_steampunk_city_map 도구와 같은 함수)를 qa/compose-scene.mts 로 돌린 결과다.
 산출: src/assets/steampunkCityReferences.json (그림은 경로만) · public/assets/steampunk-city-references/*.png
-용도 1개 `sp-steampunk`: sp-howto · sp-dictionary · sp-ex-street · sp-ex-industrial · sp-ex-dock · sp-ex-boiler-room · sp-ex-tavern · sp-errors.
+용도 1개 `sp-steampunk`: sp-howto · sp-dictionary · sp-ex-street · sp-ex-industrial · sp-ex-dock · sp-ex-boiler-room · sp-ex-tavern · sp-errors · sp-story-objects(이야기 기물, 문서 틀은 story-objects/refs_lib.py).
 """
 import collections, json, math, os, subprocess, sys
 from PIL import Image, ImageDraw, ImageFont
@@ -26,7 +26,8 @@ EXAMPLES = [('street', 'street', 48, 34, 1, '증기 도시 거리 48×34'), ('in
 HEAD = (f"tilesetId `steampunk_city` · 그림 `public/assets/steampunk-city/steampunk-city-chipset.png`(텍스처 `tex_steampunk_city`, **{N}칸**, 16px 칸, 시트 {TPR * 16}×{math.ceil(N / TPR) * 16}px, "
         f"한 줄 **{TPR}칸** — 번호 n 의 칸은 열 n%{TPR}, 행 n÷{TPR}(내림), 픽셀 (열×16, 행×16), 모두 0 기준). 계열 `oprn-steampunk` — 다른 칩셋(버들항·일본 도시·조선·마법 학교·캠퍼스·하늘섬·실내 v5)의 칸 번호와 섞지 않는다. "
         "팔레트는 steampunk_city 역할 팔레트 v3(48색 — 바닥 GROUND · 구조물 STRUCTURE · 강조 ACCENT · 먹)만. 시점은 직교 3/4 탑뷰: 건물은 직사각형 지붕 덩이 + 납작한 남쪽 앞벽, 물체는 윗면 + 남쪽 앞면, 빛 왼쪽 위. "
-        "그림은 2026-11-12 에 다시 구웠다(Fable 5.2 한 방 그림 + 옛 조각의 색만 옮긴 것) — 전부 «3/4 관문 미통과 — 오너 면제»(묶음 fable-redraw-steampunk-city-2026-11-12)다.")
+        "그림은 2026-11-12 에 다시 구웠다(Fable 5.2 한 방 그림 + 옛 조각의 색만 옮긴 것) — 전부 «3/4 관문 미통과 — 오너 면제»(묶음 fable-redraw-steampunk-city-2026-11-12)다. "
+        "2026-11-13 에 덧붙인 이야기 기물 6종(sp-ledger-desk · sp-stop-lever · sp-lever-wall · sp-hatch-down · sp-room-door · sp-great-heart)도 오너 면제 그림이다(묶음 fable-story-steampunk-city-2026-11-13).")
 
 
 def arr(a): return json.dumps(a, separators=(',', ':'))
@@ -216,6 +217,47 @@ def errors_md(rows):
     return '\n'.join(L)
 
 
+OBJ_SPEC = os.path.join(ROOT, 'tiledata/steampunk-city/objects/spec.json')
+# 이야기 기물 예제 16×7: 왼쪽 열 0~9 = 기관실(벽면 두 줄 + 리벳 철판 바닥), 열 10 = 방 동쪽 벽 윗면, 열 11~15 = 거리의 판석 보도. (기물 id, 왼쪽 위 x, y)
+OBJ_SCENE = [('lever-wall', 1, 0), ('room-door', 3, 0), ('great-heart', 5, 2), ('ledger-desk', 1, 4), ('stop-lever', 9, 4), ('hatch-down', 12, 3)]
+
+
+def tile_by_label(label):
+    hits = [i for i, m in enumerate(DATA['tileMeta']) if m and m.get('label') == label]
+    assert len(hits) == 1, (label, hits)
+    return hits[0]
+
+
+def objects_refs():
+    """(문서 목록, 그림 목록) — 이야기 기물 6종. 문서 틀은 칩셋 공용 scripts/content/story-objects/refs_lib.py. spec.json 이 없으면 빈 목록."""
+    if not os.path.exists(OBJ_SPEC): return [], []
+    sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'story-objects'))
+    import refs_lib
+    spec = json.load(open(OBJ_SPEC, encoding='utf-8'))
+    wall_top, wall_low = tile_by_label('리벳 철판 벽면(윗줄)'), tile_by_label('리벳 철판 벽면(아랫줄, 발판)')
+    floor, ceil, pave = tile_by_label('리벳 철판 바닥'), tile_by_label('천장(벽 윗면 덩어리)'), tile_by_label('판석 보도')
+    assert passable(floor) and passable(pave) and not passable(wall_top) and not passable(wall_low), (floor, pave, wall_top, wall_low)
+    assert all(DATA['tileMeta'][t].get('role') == 'wall' for t in (wall_top, wall_low))
+
+    def ground(x, y):
+        if x >= 11: return pave
+        if x == 10: return ceil
+        return wall_top if y == 0 else wall_low if y == 1 else floor
+    names = '·'.join(it['name'].split('(')[0] for it in spec['items'])
+    doc, images, _ev = refs_lib.build(dict(
+        tileset=DATA, sheet=SHEET, spec=spec, kit_prefix='sp-', chipset='steampunk_city', doc_id='sp-story-objects', img_id='sp-img-story-', img_dir=IMG, url=URL(''),
+        scene=OBJ_SCENE, size=(16, 7), ground=ground,
+        title=f"steampunk_city · 이야기 기물 {len(spec['items'])}종({names})", head=HEAD, ground_note='실내 바닥·벽면, 거리 보도', compose_tool='compose_steampunk_city_map',
+        pieces='tiledata/steampunk-city/fable-redraw/pieces/story/',
+        parts_note='전부 고정 조각(이어 찍지 않는다). 키트에 입구 부품(parts)은 없다 — 철문도 그림일 뿐이라 건물 입구로 세지 않고, 옆 방으로 가는 이동은 문 앞 바닥 칸의 이벤트가 한다.',
+        order_notes=['대심장 기관(4×3)은 기관실·보일러실 바닥 한가운데에 먼저 — 아래 두 줄 여덟 칸이 막히니 둘레 한 칸은 걷는 바닥으로 비운다. 방 하나에 하나. `compose_steampunk_city_map` 의 engine-room 은 대심장 기관과 곁의 정지 레버를 스스로 놓는다 — 그 방에는 다시 놓지 않는다.',
+                     '벽 레버·철문은 방 벽면 두 줄(윗줄·아랫줄 — 아래층 역할 wall) 위에 찍는다: 왼쪽 위 = 벽 윗줄 칸, base = 벽 아랫줄 칸. 벽 레버는 종류 낱말 wallmount 라 벽 칸 밖에 걸치면 도구가 거절한다. 바로 아래 바닥 칸은 비운다(레버를 당기는 자리 · 문 앞) — 철문으로 드나드는 이동 이벤트는 그 바닥 칸에 «닿으면».',
+                     '지하 입구 해치(2×2)는 거리·광장·공장 마당의 보도에 — 네 칸 모두 걷는다(칸 꼬리표 «계단»). 지하 방으로 가는 이동 이벤트는 아랫줄 두 칸에 «닿으면». 실내에서 내려가는 길은 sp-stairs-down 이다.',
+                     '기록부 책상·정지 레버는 실내·거리 어디에나 — 막힌 칸의 남쪽 한 칸을 서는 자리로 비운다.'],
+        source='tiledata/steampunk-city/objects', bake='scripts/content/steampunk-city/bake_sp.py'))
+    return [doc], images
+
+
 def main():
     nk = kit_sheet(lambda k: not is_interior_kit(k), 'kits-outdoor.png')
     ni = kit_sheet(is_interior_kit, 'kits-interior.png')
@@ -245,6 +287,7 @@ def main():
     for key, _, _, _, _, title in EXAMPLES:
         docs.append(dict(id=f'sp-ex-{key}', name=f'steampunk_city 예제 · {title}', markdown=example_md(title, exs[key][1], f'ex-{key}.png')))
     docs.append(dict(id='sp-errors', name='steampunk_city · 정상/오류 변조 검출', markdown=errors_md(rows)))
+    odocs, oimgs = objects_refs(); docs += odocs; imgs += oimgs
     cat = dict(id='sp-steampunk', name='steampunk_city · 스팀펑크 도시 (사전 · 순서 · 예제 5 · 변조 오류)',
                description='증기 도시 거리·공장 지대와 기차역·운하 부두·실내 여섯 가지를 짓는 법. 구성 도구 compose_steampunk_city_map, 바닥·배관 사전·키트 전체 배열·문 그림/접근칸/이벤트 분리·완성 예제 5장(구성기 실제 출력 배열)·변조 오류.', documents=docs, images=imgs)
     json.dump([cat], open(OUT, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))

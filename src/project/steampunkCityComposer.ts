@@ -837,8 +837,31 @@ function composeRoom(b: Board, rng: () => number, style: SteampunkRoomStyle): St
       break;
     }
     case "engine-room": {
+      // 방의 중심 기물은 대심장 기관(4×3)이다 — 방 가운데(출입구와 같은 축), 뒤 한 줄과 앞 한 줄은 걷는 바닥. 곁에 한 칸 띄워 정지 레버, 그 앞 칸도 비운다.
+      // 왜(2026-11-13 «증기의 심장» 플레이): 기관실이 낮은 실린더 기관 하나뿐인 빈 바닥이었다. 낮은 기관(sp-engine)은 큰 방에서 옆 기계로만 놓고, 대심장 키트가 없는 옛 사본에서는 예전처럼 가운데에 놓는다.
+      let heart = false;
+      if (b.has("sp-great-heart")) {
+        const hs = b.kitSize("sp-great-heart");
+        const hx = cx - Math.floor(hs.w / 2) + 1, hy = Math.max(fy0 + 1, Math.floor((fy0 + fy1) / 2) - 2);
+        if (b.propNear("sp-great-heart", [[hx, hy], [hx - 1, hy], [hx + 1, hy], [hx, hy + 1]], 1, ["floor"])) {
+          heart = true;
+          const p = b.props[b.props.length - 1]!;
+          b.reserve({ x: p.x, y: p.y + hs.h, w: hs.w, h: 1 });   // 기관 앞줄
+          if (b.has("sp-stop-lever")) {
+            const ls = b.kitSize("sp-stop-lever"), ly = p.y + hs.h - ls.h;   // 레버 발치가 기관 받침 줄에 맞는다
+            const left: [number, number][] = [[p.x - 2, ly], [p.x - 1, ly]], right: [number, number][] = [[p.x + hs.w + 1, ly], [p.x + hs.w, ly]];
+            if (b.propNear("sp-stop-lever", leftFirst ? [...left, ...right] : [...right, ...left], 0, ["floor"])) {
+              const l = b.props[b.props.length - 1]!;
+              b.reserve({ x: l.x, y: l.y + ls.h, w: 1, h: 1 });   // 레버를 당기는 자리
+            }
+          }
+        }
+      }
       const ew = b.has("sp-engine") ? b.kitSize("sp-engine").w : 4;
-      if (b.has("sp-engine")) b.propNear("sp-engine", [[cx - Math.floor(ew / 2), fy0 + 2], [cx - Math.floor(ew / 2) - 1, fy0 + 2], [cx - Math.floor(ew / 2) + 1, fy0 + 3]], 1, ["floor"]);
+      const roomy = fx1 - fx0 + 1 >= 20 && fy1 - fy0 + 1 >= 10;
+      if (b.has("sp-engine") && !heart) b.propNear("sp-engine", [[cx - Math.floor(ew / 2), fy0 + 2], [cx - Math.floor(ew / 2) - 1, fy0 + 2], [cx - Math.floor(ew / 2) + 1, fy0 + 3]], 1, ["floor"]);
+      // 큰 방의 옆 기계: 발전기(북쪽 벽, leftFirst 쪽)의 맞은편 구석 쪽에.
+      else if (b.has("sp-engine") && roomy) b.propNear("sp-engine", leftFirst ? [[fx1 - ew - 1, fy0 + 2], [fx1 - ew, fy0 + 2], [fx1 - ew - 1, fy0 + 3]] : [[fx0 + 2, fy0 + 2], [fx0 + 1, fy0 + 2], [fx0 + 2, fy0 + 3]], 1, ["floor"]);
       backWall("sp-dynamo", sideXs(2));
       wallDeco("sp-tool-rack", leftFirst ? xs(fx1 - 3, fx1 - 1) : xs(fx0, fx0 + 2));
       deco2("sp-pipe-wall", xs(fx0, fx1)); deco2("sp-gauge-wall", xs(fx0 + 2, fx1)); wallDeco("sp-valve-wheel", xs(fx0, fx1).reverse());
