@@ -93,10 +93,32 @@ const EN_RULES: readonly Rule[] = [
   { re: /^필수 인자 누락: (\S+)/u, en: (m) => `Missing required argument: ${m[1]}.` },
   { re: /^허용되지 않은 인자: (\S+) — 이 도구가 받는 인자: (.*)$/u, en: (m) => `Unknown argument: ${m[1]} — this tool accepts: ${m[2]}.` },
 ];
+/**
+ * 편집기의 명령 모양 거절(src/editor/tools/commandArgs.ts LOW_LEVEL_COMMAND_SHAPE_HINT · project/io/shapeCommandFields.ts)은 event_command_assist 를 권한다.
+ * 조수 v2 에는 그 도구가 없다 — 2026-11-12 Haiku prison: 그 글대로 불렀다가 «there is no tool named» 를 받고 항목을 막았다.
+ * v2 사본은 v2 에 있는 길을 이른다: 지금 명령을 읽는 get_event, 대사·장면은 add_event.
+ */
+const COMMAND_SHAPE_HINT = /^(.*?)\.*\s*커맨드 kind는 문자열\. 형식이 어려우면 event_command_assist나 고수준 툴을 사용하라\. 올바른 1커맨드 예시 JSON: (.*)$/su;
+function commandShapeEn(core: string): string | undefined {
+  const m = COMMAND_SHAPE_HINT.exec(core);
+  if (!m) return undefined;
+  const detail = m[1]!
+    .replace(/^커맨드 형식 오류:\s*(?:-\s*)?/u, "")
+    .replace(/\s*\(full list and shapes: event_command_assist\)/gu, "")
+    .replace(/기대 형식 (\S+?), 실제 타입 (\S+)/gu, "expected $1, got $2")
+    .replace(/알 수 없는 kind/gu, "unknown kind")
+    .replace(/(\S+?)[가이] 배열이 아닙니다/gu, "$1 must be an array")
+    .replace(/(\S+?)[가이] 문자열이 아닙니다/gu, "$1 must be a string")
+    .replace(/[.\s]+$/u, "");
+  return `Command shape error: ${detail}${/[?!]$/u.test(detail) ? "" : "."} Every command is an object with a string "kind". To read the commands this page has now, call get_event({"mapId":"<map>","eventId":"<event>"}) and send them back with your change; for spoken lines or a scene, add_event writes the commands for you. One valid command: ${m[2]!.trim()}`;
+}
+
 /** 도구 오류 한 줄을 영어로. 표에 없으면 «Tool said (Korean): …». 예시 JSON 은 «Example: …»로 살린다. */
 export function englishToolMessage(message: string, code?: string): string {
   const example = /—\s*(?:다시 보낼 형식 예시|호출 예시):\s*(\{.*\})/su.exec(message)?.[1];
   const core = oneLine(withoutExample(message));
+  const shape = commandShapeEn(core);
+  if (shape) return shape;
   // 이미 영어로 쓴 거절 글은 그대로 — 장소 이름만 한글인 영어 글이 «Tool said (Korean)» 으로 싸이면 모델이 옮기지 못한 글로 읽는다.
   const letters = core.replace(/[^\p{L}]/gu, "");
   if (/^(Rejected|Not built yet)\b/u.test(core) || (letters.length > 0 && letters.replace(/[^ㄱ-ㆎ가-힣]/gu, "").length / letters.length < 0.3)) return message.trim();

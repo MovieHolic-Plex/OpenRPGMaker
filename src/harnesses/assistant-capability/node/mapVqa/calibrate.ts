@@ -11,7 +11,7 @@ import { loadCorpusEntry, type MapItem } from './corpus';
 import { caught, plant, RECIPE_CLASSES, type Recipe, type Rect } from './decoys';
 import { mapFacts } from './facts';
 import { reviewMap } from './review';
-import { loadReviewer, MAP_VQA_DATA } from './verdict';
+import { carriedNote, loadReviewer, MAP_VQA_DATA } from './verdict';
 
 const REPO_ROOT = resolve(MAP_VQA_DATA, '../../..');
 type Seed = {
@@ -98,10 +98,12 @@ export async function runMapVqaCalibration(options: CalibrateOptions): Promise<n
     planted: { total: planted.length, missed: missed.length, missedLoose: looseMissed.length, byRecipe: Object.fromEntries([...new Set(planted.map(row => (row as any).recipe ?? 'positive'))].map(recipe => { const list = planted.filter(row => ((row as any).recipe ?? 'positive') === recipe); return [recipe, { total: list.length, caught: list.filter(row => (row as any).strict).length }]; })) },
     good: { total: good.length, withBlocker: falseAlarms.length, withMajor: good.filter(row => (row as any).majors > 0).length, majorsPerMap: rate(good.reduce((n, row) => n + (row as any).majors, 0), good.length) },
     unreviewed: rows.filter(row => row.status !== 'reviewed').map(row => row.id),
+    // 이어 쓴 답 = 지시문·글·그림이 화소까지 같은 물음에 앞 판이 낸 답(reviewer.json sameQuestionAs). 새로 물은 것은 judgeUsage.calls.
+    carried: { from: reviewer.sameQuestionAs, answers: usage.carried },
     judgeUsage: { calls: usage.calls, cached: usage.cached, failures: usage.failures, inputTokens: usage.inputTokens + usage.cacheReadTokens + usage.cacheWriteTokens, outputTokens: usage.outputTokens }, rows };
   writeFileSync(resolve(options.out, 'calibration.json'), JSON.stringify(record, null, 2));
   if (full) { mkdirSync(resolve(MAP_VQA_DATA, 'calibration'), { recursive: true }); writeFileSync(resolve(MAP_VQA_DATA, 'calibration', `${reviewer.version}.json`), JSON.stringify(record, null, 2)); }
-  console.log(`\nmap-vqa-calibrate(${reviewer.version}): ${record.status} — 심은·확인된 결함 ${planted.length}개 중 놓침 ${missed.length}(놓침 ${record.missRate}, 종류 무관 ${record.looseMissRate}) · 좋은 맵 ${good.length}장 중 막힘 헛경보 ${falseAlarms.length}(${record.falseAlarmRate}), 큰 결함이 붙은 좋은 맵 ${record.good.withMajor}`);
+  console.log(`\nmap-vqa-calibrate(${reviewer.version}): ${record.status} — 심은·확인된 결함 ${planted.length}개 중 놓침 ${missed.length}(놓침 ${record.missRate}, 종류 무관 ${record.looseMissRate}) · 좋은 맵 ${good.length}장 중 막힘 헛경보 ${falseAlarms.length}(${record.falseAlarmRate}), 큰 결함이 붙은 좋은 맵 ${record.good.withMajor}${carriedNote(record) ? ` · ${carriedNote(record)}` : ''}`);
   console.log(`${usageLine(usage)}\n${resolve(options.out, 'calibration.json')}${full ? `\n${resolve(MAP_VQA_DATA, 'calibration', `${reviewer.version}.json`)}` : existsSync(resolve(MAP_VQA_DATA, 'calibration', `${reviewer.version}.json`)) ? '' : '\n(부분 실행 — 저장소의 보정 기록은 쓰지 않았다)'}`);
   return 0;
 }

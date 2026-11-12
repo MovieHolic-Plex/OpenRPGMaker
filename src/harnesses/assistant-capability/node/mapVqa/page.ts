@@ -1,7 +1,7 @@
 // map-vqa 결과 한 장(자체완결 HTML, 그림은 data URI). 맨 위에 집계 표, 그 아래 맵마다 1배 그림 위에 결함 영역을 번호로 표시한다.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { MapReview, Reviewer, Tally } from './verdict';
+import { carriedNote, type MapReview, type Reviewer, type Tally } from './verdict';
 
 const esc = (text: unknown): string => String(text ?? '').replace(/[&<>"]/gu, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]!));
 const SEVERITY_KO: Record<string, string> = { blocker: '막힘', major: '큰 결함', polish: '다듬기' };
@@ -13,7 +13,7 @@ export function writeMapVqaPage(input: { out: string; tally: Tally; reviewer: Re
   const calibration: any = (tally as any).calibration ?? { status: 'uncalibrated' };
   const calibrationLine = calibration.status === 'uncalibrated'
     ? '<p class="warn"><b>보정 전 숫자입니다.</b> 이 검수자가 심어 둔 결함을 얼마나 잡는지 아직 재지 않았습니다.</p>'
-    : `<p class="${calibration.status === 'calibrated' ? 'ok' : 'warn'}"><b>검수자 보정(${esc(reviewer.version)})</b>: 일부러 심은 결함 ${calibration.planted?.total ?? '-'}개 중 놓친 것 ${calibration.planted?.missed ?? '-'}개(놓침 ${pct(calibration.missRate ?? 0)}) · 사람이 만든 좋은 맵 ${calibration.good?.total ?? '-'}장 중 «막힘»을 잘못 붙인 것 ${calibration.good?.withBlocker ?? '-'}장(헛경보 ${pct(calibration.falseAlarmRate ?? 0)})${calibration.status === 'calibrated' ? '' : ' — <b>놓친 것이 있어 아직 보정되지 않은 판입니다.</b>'}. 다만 그 좋은 맵 ${calibration.good?.total ?? '-'}장 중 ${calibration.good?.withMajor ?? '-'}장에도 «큰 결함»은 붙었습니다(견본의 지붕·물이 걸어지는 것 등) — «큰 결함» 수는 넉넉하게 잡힌 숫자로 읽어 주세요.</p>`;
+    : `<p class="${calibration.status === 'calibrated' ? 'ok' : 'warn'}"><b>검수자 보정(${esc(reviewer.version)})</b>: 일부러 심은 결함 ${calibration.planted?.total ?? '-'}개 중 놓친 것 ${calibration.planted?.missed ?? '-'}개(놓침 ${pct(calibration.missRate ?? 0)}) · 사람이 만든 좋은 맵 ${calibration.good?.total ?? '-'}장 중 «막힘»을 잘못 붙인 것 ${calibration.good?.withBlocker ?? '-'}장(헛경보 ${pct(calibration.falseAlarmRate ?? 0)})${calibration.status === 'calibrated' ? '' : ' — <b>놓친 것이 있어 아직 보정되지 않은 판입니다.</b>'}${carriedNote(calibration) ? ` · <b>${esc(carriedNote(calibration))}</b>` : ''}. 다만 그 좋은 맵 ${calibration.good?.total ?? '-'}장 중 ${calibration.good?.withMajor ?? '-'}장에도 «큰 결함»은 붙었습니다(견본의 지붕·물이 걸어지는 것 등) — «큰 결함» 수는 넉넉하게 잡힌 숫자로 읽어 주세요.</p>`;
   const beforeClass = (id: string) => before?.byClass?.[id];
   const delta = (was: number | undefined) => was === undefined ? '' : ` <span class="was">(앞 ${was})</span>`;
   const rankedRows = tally.ranked.map((row, index) => `<tr><td>${index + 1}</td><td><b>${esc(row.label)}</b><div class="id">${esc(row.class)}</div></td><td class="n"><b>${(row as any).score ?? row.blocker * 3 + row.major}</b></td><td class="n blocker">${row.blocker}${delta(beforeClass(row.class)?.blocker)}</td><td class="n major">${row.major}${delta(beforeClass(row.class)?.major)}</td><td class="n">${row.polish}${delta(beforeClass(row.class)?.polish)}</td><td class="n">${row.maps}${delta(beforeClass(row.class)?.maps)}</td></tr>`).join('');
