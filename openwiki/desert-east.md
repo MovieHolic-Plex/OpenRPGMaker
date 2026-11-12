@@ -60,6 +60,7 @@ Claude Fable 5.2 medium 한 방(그림 한 장에 호출 1번 — 142호출 $13.
 
 - **관문:** 3/4 관문을 통과하지 않았다. 오너 면제 묶음 `fable-variety-desert-east-2026-11-13`(409장, 출구 bundle·shared — 스토어 불가). 한 화소라도 바꾸면 면제가 풀려 굽기가 그 조각을 막는다.
 - **원본·목록:** `tiledata/desert-east/variety/src/*.png`(모델이 낸 그대로, 135장) → `python3 scripts/content/world-kits/fable/build.py desert_east` → `variety/pieces/*.png` + `spec.json` + `waiver-manifest.json` + `build-report.json` + `objects.json`(새 기물만 탐침 꼴). 새 기물의 변형(게시판 다른 그림 둘)도 같은 목록에 있다 — 굽기는 원본이 같은 목록에 있는 변형을 뒤로 미뤄 덧붙인다. `bake_de.py` 의 `variety_pieces` 가 등록부·이야기 기물 **뒤에** 덧붙인다.
+- **재질 칸의 이름표:** 재질 칸은 «그 자리에 원래 깔리던 칸» 의 이름·꼬리표를 물려받는다(자갈 길 칸 = 「다진 흙길 · 재질 road-cobble-a」, 꼬리표 `길`·`흙길` + `겉모습 재질`). 길 판정(`tilesetSurface` 의 사막 선언 = 꼬리표 `흙길`·`포석`)과 바닥 판정이 재질을 바꿔도 같아야 한다 — 꼬리표 없이 구운 첫 판은 명세 은행에서 «길 몫» 이 줄어 잡혔다(자갈·벽돌 길이 길로 세어지지 않았다).
 - **벽면 가족(`ai.lookWith`):** 방의 벽은 벽면(`de-wall-plaster`)과 창 난 벽(`de-wall-window-plaster`)이 번갈아 선다 — 따로 고르면 한 방에 두 벽이 섞인다(실측: 여섯 게임 가운데 둘). 창 난 벽·벽감 벽의 변형은
   «그 벽면 변형 + 원본 가족 그림이 벽면과 다른 화소(창·벽감)» 로 코드가 만들고(`worlds/desert_east.py` 의 `ACCENTS`), 변형에 `ai.lookWith = 벽면 원본` 을 단다. `lookKit` 은 그 값이 있으면 벽면 원본의 이름으로 뽑아 같은 순번이 된다(`src/project/kitLook.ts`).
 - **참고문서:** `de-outdoor` 용도의 `de-variety` 문서(변형 사전 `variety-variants.png` · 재질 `variety-looks.png` · 새 기물 정상/오류 그림 · 검사 코드) — `bake_refs_de.py` 의 `variety_refs()`.

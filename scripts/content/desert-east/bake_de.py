@@ -165,12 +165,25 @@ def variety_pieces(pieces, blocked):
     looks = spec.get('looks')
     if looks:
         ok = set()
+        # 재질 칸은 «그 자리에 원래 깔리던 칸» 의 이름·꼬리표를 물려받는다 — 길 판정(tilesetSurface: «흙길»·«포석» 꼬리표)·바닥 판정이 재질을 바꿔도 그대로여야 한다
+        # (명세 은행이 찾았다: 꼬리표 없이 구웠더니 자갈·벽돌 길이 길로 세어지지 않아 «길 몫» 이 줄었다).
+        import terrain as AT
+        orig = {}
+        for name, m in looks['tiles'].items():
+            for src_id, look_id in m.items(): orig.setdefault(look_id, by.get(src_id))
+        corner = {'de-' + it['id']: sum(v << i for i, v in enumerate(it['corners'])) for it in AT.R.items if it.get('wang')}
+        wang_piece = {(q['wang'], corner[q['id']]): q for q in pieces if q.get('wang') and q['id'] in corner}
+        for sid, sets in looks['wang'].items():
+            for name, ids in sets.items():
+                for idx, look_id in enumerate(ids): orig.setdefault(look_id, wang_piece.get((sid, idx)))
         for lk in looks['pieces']:
             png = os.path.join(ROOT, lk['src'])
             if not gate(lk['id'], png, 'terrain'): continue
             part = lk['id'].split('-')[2]
-            pieces.append(dict(id=lk['id'], name='겉모습 재질 칸 ' + lk['id'][len('de-look-'):], kind='terrain', png=png, group='de-looks', group_ko=GROUP_KO['looks'], fixed=True,
-                               desc=f"게임마다 고르는 바닥·길·광장 재질 칸({lk['id'][len('de-look-'):]}) — 구성기가 그 게임의 겉모습으로 깐다. {note}", role='terrain', tags=['사막·동양풍', '겉모습 재질'], rules='구성기(compose_desert_east_map)가 게임 열쇠로 고른 재질일 때만 깐다. 손으로 칠할 때는 한 맵에 한 재질만.',
+            src = orig.get(lk['id'])
+            pieces.append(dict(id=lk['id'], name=(src['name'] + ' · 재질 ' if src else '겉모습 재질 칸 ') + lk['id'][len('de-look-'):], kind='terrain', png=png, group='de-looks', group_ko=GROUP_KO['looks'], fixed=True,
+                               desc=f"게임마다 고르는 바닥·길·광장 재질 칸({lk['id'][len('de-look-'):]}){' — 「' + src['name'] + '」 자리에 깔린다' if src else ''} — 구성기가 그 게임의 겉모습으로 깐다. {note}", role='terrain',
+                               tags=['사막·동양풍'] + [t for t in (src or {}).get('tags', []) if t != '사막·동양풍'] + ['겉모습 재질'], rules='구성기(compose_desert_east_map)가 게임 열쇠로 고른 재질일 때만 깐다. 손으로 칠할 때는 한 맵에 한 재질만.',
                                tile_group=dict(id='looks', name='겉모습 재질(게임마다 고르는 바닥·길·광장)', desc='같은 사막 칩셋으로 지은 게임들이 서로 다른 땅으로 보이게, 조수 실행이 게임마다 하나씩 고르는 재질 칸과 그 가장자리 칸.',
                                                rules='구성기가 깐다 — 한 맵에서 원래 재질과 섞지 않는다.')))
             ok.add(lk['id'])
