@@ -11,6 +11,7 @@
 // 수리 라운드가 돌면 그 대체 단계가 두 번째 체크포인트가 된다(모델 호출 사이에 사용자가 편집할 수 있어
 // 첫 라운드를 커밋하지 않고 들고 있지 않는다).
 import { isAssistantEndpointReady } from "@/ai/assistantEndpoint";
+import { lookKit } from "@/project/kitLook";
 import {
   chatCompletion,
   configForLiteModel,
@@ -3060,7 +3061,9 @@ function stampKitDirectSteps(
   label = "",
   group?: string,
 ): StampStep[] {
-  const kit = (tileset.structureKits ?? []).find((k) => k.id === kitId);
+  // 조수 실행이면 이 게임의 변형 그림으로(같은 칸 크기·같은 막힌 칸) — 들길의 모닥불·벤치·가로등도 게임마다 갈린다(project/kitLook.ts).
+  const asked = (tileset.structureKits ?? []).find((k) => k.id === kitId);
+  const kit = asked && lookKit(tileset, asked);
   if (!kit) return [];
   const W = previewMap.width;
   const H = previewMap.height;
