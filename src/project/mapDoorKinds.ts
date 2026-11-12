@@ -44,29 +44,50 @@ type EntranceKit = { rows?: readonly { tiles?: readonly number[]; upperTiles?: r
 const wallCache = new Map<string, ReadonlySet<number>>();
 
 /**
- * 입구를 적어 둔 건물 키트(structureKits 의 entrance 부품)에서 «입구 열 밖»의 그림 타일 — 이름표에 문 낱말이 있어도 문이 아니다.
+ * 입구를 적어 둔 건물 키트(structureKits 의 entrance 부품)에서 «입구 칸 밖»의 그림 타일 — 이름표에 문 낱말이 있어도 문이 아니다.
  * 왜: 건물 한 채가 키트 한 덩이라 모든 칸의 이름표가 「회관 선술집(폭 6, …양개문…) (c,r)」 이다. 낱말로 읽으면 문 옆 벽·창 칸도 같은 문이라,
  * 문 사각형이 벽까지 4칸으로 넓어지고(벽이 문짝처럼 열린다) 이동 발판이 벽 칸마다 복제됐다(2026-11-12 명세 은행 fun-w3·jrpg-w1 설원 마을).
  * 입구 부품이 막힌 그림(문 칸)인 키트만 본다 — 입구가 걷는 칸(문턱·깔개·걸어 지나는 대문)인 키트는 문 그림이 그 둘레라 이름표로 읽는다.
- * 입구 칸과 같은 그림(가로로 되풀이되는 셔터)과 입구 열의 윗줄(문짝 위쪽)은 문 그림으로 남는다.
+ * 문 그림으로 남는 것: 입구 칸과 그 바로 윗줄(문짝 위쪽 — 문턱 칸 위에 셔터를 그린 상점가 줄), 그리고 그 칸들과 같은 그림(가로로 되풀이되는 셔터).
  */
+type DoorCells = { readonly columns: ReadonlySet<number>; readonly top: number; readonly bottom: number };
+
+/**
+ * 이 키트가 적어 둔 입구 열과 줄(윗줄 하나 포함) — 입구 부품이 막힌 그림일 때만. 입구가 걷는 칸이거나 입구를 안 적은 키트는 null.
+ * 문 그 자체인 키트도 null(건물이 아니다 — 옆에 벽이 없다): 입구 열이 폭 전체인 것(「문 · 격자문」 2×3), 문 높이(두 줄)를 넘지 않고 입구 열이 폭의 절반 이상인 것
+ * (「승강기 문」 2×2 — 입구는 한 칸만 적혀 있어도 두 칸이 한 문이다).
+ */
+function doorCells(tileset: TilesetDef | undefined, kit: EntranceKit): DoorCells | null {
+  const blocked = (t: number) => { const p = tileset?.passability?.[t]; return !p || !(p.up || p.down || p.left || p.right); };
+  const columns = new Set<number>();
+  let doorArt = false, top = Infinity, bottom = -1;
+  for (const p of kit.parts ?? []) {
+    if (p.kind !== "entrance" || typeof p.dx !== "number" || typeof p.dy !== "number") continue;
+    top = Math.min(top, p.dy - 1); bottom = Math.max(bottom, p.dy + (p.h ?? 1) - 1);
+    for (let x = p.dx; x < p.dx + (p.w ?? 1); x++) {
+      columns.add(x);
+      for (let y = p.dy; y < p.dy + (p.h ?? 1); y++) for (const t of [kit.rows?.[y]?.tiles?.[x], kit.rows?.[y]?.upperTiles?.[x]]) if (typeof t === "number" && t >= 0 && blocked(t)) doorArt = true;
+    }
+  }
+  const width = Math.max(0, ...(kit.rows ?? []).map((row) => Math.max(row.tiles?.length ?? 0, row.upperTiles?.length ?? 0)));
+  const doorItself = columns.size >= width || ((kit.rows?.length ?? 0) <= 2 && columns.size * 2 >= width);
+  return doorArt && !doorItself ? { columns, top, bottom } : null;
+}
+
 function kitWallTiles(tileset: TilesetDef | undefined): ReadonlySet<number> {
   const kits = ((tileset as { structureKits?: readonly EntranceKit[] } | undefined)?.structureKits ?? []) as readonly EntranceKit[];
   const key = `${tileset?.id}|${tileset?.passability?.length ?? 0}|${kits.length}`;
   const hit = wallCache.get(key);
   if (hit) return hit;
   const walls = new Set<number>(), doors = new Set<number>();
-  const blocked = (t: number) => { const p = tileset?.passability?.[t]; return !p || !(p.up || p.down || p.left || p.right); };
   for (const kit of kits) {
-    const parts = (kit.parts ?? []).filter((p) => p.kind === "entrance" && typeof p.dx === "number" && typeof p.dy === "number");
-    const column = new Set<number>();
-    let doorArt = false;
-    for (const p of parts) for (let x = p.dx!; x < p.dx! + (p.w ?? 1); x++) {
-      column.add(x);
-      for (let y = p.dy!; y < p.dy! + (p.h ?? 1); y++) for (const t of [kit.rows?.[y]?.tiles?.[x], kit.rows?.[y]?.upperTiles?.[x]]) if (typeof t === "number" && t >= 0 && blocked(t)) doorArt = true;
-    }
-    if (!doorArt) continue;
-    for (const row of kit.rows ?? []) for (const tiles of [row.tiles, row.upperTiles]) (tiles ?? []).forEach((t, x) => { if (typeof t === "number" && t >= 0) (column.has(x) ? doors : walls).add(t); });
+    const door = doorCells(tileset, kit);
+    if (!door) continue;
+    (kit.rows ?? []).forEach((row, y) => {
+      for (const tiles of [row.tiles, row.upperTiles]) (tiles ?? []).forEach((t, x) => {
+        if (typeof t === "number" && t >= 0) (door.columns.has(x) && y >= door.top && y <= door.bottom ? doors : walls).add(t);
+      });
+    });
   }
   for (const t of doors) walls.delete(t);
   if (wallCache.size > 64) wallCache.clear();
@@ -74,7 +95,7 @@ function kitWallTiles(tileset: TilesetDef | undefined): ReadonlySet<number> {
   return walls;
 }
 
-/** 칸의 이름표와 태그(위 층부터). 키트가 입구 열 밖이라고 적은 그림(kitWallTiles)은 뺀다. */
+/** 칸의 이름표와 태그(위 층부터). 키트가 입구 칸 밖이라고 적은 그림(kitWallTiles)은 뺀다. */
 function labelsAt(project: Project, map: GameMap, x: number, y: number): { label: string; tags: string }[] {
   if (x < 0 || y < 0 || x >= map.width || y >= map.height) return [];
   const tileset = project.tilesets[map.tilesetId];
@@ -129,7 +150,7 @@ function classifyCell(project: Project, map: GameMap, c: Cell): { kind: Exclude<
 /** 이름표의 같은 부품 줄기(좌표·번호 꼬리를 뗀 것) — 옆 칸이 같은 문의 다른 칸인지 본다. */
 const stem = (label: string): string => label.replace(/\s*\(\d+,\s*\d+\).*$/u, "").replace(/[_\s]\d+(?:_\d+)*$/u, "").trim();
 
-type KitLike = { id?: string; name?: string; width?: number; height?: number; rows?: readonly { tiles?: readonly number[]; upperTiles?: readonly number[] }[] };
+type KitLike = EntranceKit & { id?: string; name?: string; width?: number; height?: number };
 const KIT_DOOR = /door|문|셔터|shutter|gate/iu;
 
 /** bottom 칸을 덮는, 맵에 그대로 찍힌 작은 문 키트(4×4 이하)의 사각형. */
@@ -140,6 +161,8 @@ function placedDoorKit(project: Project, map: GameMap, bottom: Cell): { x: numbe
     const w = kit.width ?? 0, h = kit.height ?? 0;
     if (!kit.id || w < 1 || h < 1 || w > 4 || h > 4 || !Array.isArray(kit.rows) || kit.rows.length !== h) continue;
     if (!KIT_DOOR.test(`${kit.id} ${kit.name ?? ""}`) || /open|열림|locked|잠김/iu.test(kit.id)) continue;
+    // 문 칸을 적어 둔 건물 키트(「통나무 집(폭 4, 푸른 덧문)」 4×4)는 통째로 문이 아니다 — 집 한 채가 두 짝 문으로 열렸다. 그 집의 문은 적힌 입구 열이다.
+    if (doorCells(project.tilesets[map.tilesetId], kit)) continue;
     for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) {
       const ox = bottom.x - dx, oy = bottom.y - dy;
       if (ox < 0 || oy < 0 || ox + w > map.width || oy + h > map.height) continue;

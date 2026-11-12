@@ -1,6 +1,6 @@
 // 문 사각형의 폭은 건물 키트가 적어 둔 입구 열까지다 — 문 옆 벽·창 칸은 이름표에 「양개문」이 들어 있어도 문이 아니다.
 // 낱말로 넓히던 때(2026-11-12 명세 은행 fun-w3 「눈보라 마을」 선술집 · jrpg-w1 「서리울 마을」 긴집): 문이 4칸으로 적혀 벽 두세 칸이 문짝처럼 열리고,
-// 이동 발판이 벽 칸마다 복제됐다(ev_gate_…_r2 · _r3 — 막힌 벽 칸의 부딪힘 이동).
+// 이동 발판이 벽 칸마다 복제됐다(ev_gate_…_r2 · _r3 — 막힌 벽 칸의 부딪힘 이동). 작은 집(4×4 이하)은 이름에 「문」이 있으면 집 한 채가 문 키트로 읽혔다.
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { isPassable } from "@/project/collision";
@@ -69,6 +69,24 @@ describe("a door is as wide as the entrance its building kit declares", () => {
     const { gates } = link(s);
     expect(gates).toEqual([{ x: s.door.x, y: s.door.y }]);
     expect(isPassable(s.ctx.project, s.ctx.project.maps.map_t!, s.door.x, s.door.y)).toBe(false);
+  });
+
+  it("a small house is not a door kit: the cabin's door is its one declared cell, not the whole 4×4 house", () => {
+    const s = stage("snow_north", "sn-cabin-m");
+    const door = inferMapDoor(s.ctx.project, s.ctx.project.maps.map_t!, s.door)!;
+    expect({ kind: door.kind, x: door.rect.x, w: door.rect.w, h: door.rect.h }).toEqual({ kind: "swing", x: s.door.x, w: 1, h: 2 });
+    const { gates, doors } = link(s);
+    expect(gates).toEqual([{ x: s.door.x, y: s.door.y }]);
+    expect(doors).toEqual([]);
+  });
+
+  it("a kit that is the door itself keeps its size (elevator door 2×2 with one declared cell, lattice door 2×3)", () => {
+    const lift = stage("sf_station", "sf-elevator-door");
+    const a = inferMapDoor(lift.ctx.project, lift.ctx.project.maps.map_t!, lift.door)!;
+    expect({ kind: a.kind, w: a.rect.w, h: a.rect.h }).toEqual({ kind: "auto", w: 2, h: 2 });
+    const lattice = stage("jp_city", "jp-door-lattice");
+    const b = inferMapDoor(lattice.ctx.project, lattice.ctx.project.maps.map_t!, lattice.door)!;
+    expect({ kind: b.kind, w: b.rect.w, h: b.rect.h }).toEqual({ kind: "slide", w: 2, h: 3 });
   });
 
   it("a shutter drawn with one repeated tile keeps its full width (the same picture is the same door)", () => {
