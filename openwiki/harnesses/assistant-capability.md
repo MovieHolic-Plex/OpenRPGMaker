@@ -839,6 +839,34 @@ bun scripts/qa/assistant-v2/refusalNextCalls.mts <깔기 판의 jobs/<id> 폴더
 - 남은 거절 23 가운데 눈에 띄는 것: `review_layout`/`edit_place` 의 «고친 결과의 문제가 앞보다 많아 되돌림»(blacksmith 3번 · temple · throne-room), village-to-field 의 `author_forest_route` 칩셋 계열 거절(다음 호출은 `make_place` 로 간다), 마법 학교 칩셋의 `stamp_object` «참고문서 먼저 읽기».
 - 결과 쪽(기계 판정과 그림 검수를 다른 칸으로): `~/claude-viz/lay-tools-replay.html` 「Terra 실측」.
 
+### 깔기 도구 Haiku 실측 (2026-11-12) — 모델이 바뀌어 다른 표다
+
+측정 모델이 Claude Haiku 5.5 high(`--model local-claude-haiku-high`, 제공자 `local-cli:claude` = Claude Code 고리)로 바뀌었다. **위 Terra 표와 같은 줄에 놓지 않는다.**
+같은 24요청을 같은 모델로 두 번: main `00a1e0603f`(`mapvqa/lay-haiku-main-00a1e0603f`)와 그 위에 #4636 넷째 커밋까지(`mapvqa/lay-haiku-pr4636-1b7b69441d`). 동시 2, 화면 비평가를 막지 않았다.
+
+| 기계 판정(그림을 보지 않는다) | main | #4636 |
+|---|---|---|
+| 맵이 깔린 요청 | 23/24 | 23/24 |
+| «완료» | 10 | 10 |
+| v2Final 없이 끝난 요청 | 1 (prison — 부하 때의 시간 초과) | 1 (harbor — 20분 시간 초과) |
+| 도구 거절(todo 제외) | 79 | 83 |
+| · 장소 호출 거절 | 50 | 40 |
+| · `edit_place` 거절 (그런 요청 수) | 24 (14) | 21 (10) |
+| 비평 항목이 완료를 막은 요청 | 12 | 11 |
+| 다시 보기가 돈 요청(`v2.relook`) | 0 | 5 |
+| 관문이 도구를 실은 요청(`v2.gate.tools`) | 0 | 2 |
+| 도구 호출 · 환산 USD(CLI 보고) | 501 · $1.57 | 484 · $0.99 |
+
+- 로컬 CLI 고리에서도 v2 끝맺음은 그대로 돈다: 두 판 모두 끝난 턴마다 `done` · `v2Final` 이 있고 `v2.critic`(22요청) · `v2.gate.items` · `v2.advisor` 가 턴 기록에 남는다. `v2.vqa` 는 깔기 요청에는 어느 모델에서도 없다.
+- 바뀐 요청 둘: village-to-field 미완료 → 완료(다시 보기가 비평 지적을 1 → 0), harbor 완료 → 시간 초과.
+- **이 판이 드러낸 것(같은 PR 의 뒤 커밋으로 고침 — 모델로 다시 돌리지 않았다):** 장소만 까는 요청의 도구 목록(22개)에는 `create_transfer_pair` · `load_tools` 가 없다.
+  harbor 는 모델이 «항구 창고» 실내를 더 짓고 `make_place` 결과가 이른 `create_transfer_pair` 를 불렀다가 «there is no tool named» 를 받았다(main 판의 village-chief-house 도 같다). 잇지 못한 방의 항목을 고치다 20분을 채웠다.
+  village-chief-house 는 관문 글이 도구를 이름만 일러(«create_transfer_pair 로 잇는다») 실리지 않았다. prison · mine 은 관문이 `patch_event_page` 를 실었지만 재주입 글이 목록에 없는 `load_tools` 를 가리켰다.
+  고친 것: `turn/lateTools.ts`(이름으로 부르면 싣는다) · `judge/gates.ts`(이름만 이른 도구도 싣는다) · 재주입 글에 매개변수(`openwiki/assistant-v2.md` 「깔린 뒤의 «완료»」).
+- 빌더가 덮어 닫은 항목(`v2.todo.covered`)은 0 — Haiku 는 마을을 버들항으로 지어 구성기 세계 길이 돌지 않았다.
+- 부하가 치솟은 동안(부하 평균 470) 모델 호출 0번으로 «settled» 한 턴은 모델 결과가 아니다 — main 판의 cave · village-to-field · weapon-shop · inn 은 그 뒤 한 번 다시 돌린 값이다(`infra-broken/` 에 첫 판).
+- 그림과 함께: `~/claude-viz/lay-tools-replay.html` 「Haiku 실측」.
+
 ### 알려 둘 것
 
 - **높이 지형(relief) 맵의 사실 그림(2026-11-12):** 높은 단의 칸은 제 줄보다 위에 그려진다(버들항 마을의 윗단은 두 줄). 전에는 붉은 막·번호표·가로 눈금을 칸 줄에 그대로 놓아
