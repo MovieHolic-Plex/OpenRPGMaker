@@ -9,6 +9,7 @@ import { runTool } from "@/editor/tools";
 import { isPassable } from "@/project/collision";
 import { composeDesertEast, composeDesertRoom, desertLookFor, desertPaletteFromTileset, type DesertKind, type DesertPieces, type DesertRoomKind } from "@/project/desertEastComposer";
 import { kitVariants } from "@/project/kitLook";
+import { tilesetSurface } from "@/project/tilesetSurface";
 import type { Project, StructureKitDef, TilesetDef } from "@/project/types";
 
 const blank = createBlankProject() as Project;
@@ -79,6 +80,22 @@ describe("desert_east 구성기 사전 — 게임 열쇠", () => {
       if (look.ground) expect(pal.tile("de-sand")).not.toBe(P.tiles["de-sand"]);
     }
     expect(looks.size).toBeGreaterThanOrEqual(4);
+  });
+});
+
+describe("desert_east 재질 칸 — 원래 칸의 길 판정을 물려받는다", () => {
+  it("재질을 바꿔도 길 칸은 길로, 길이 아닌 칸은 길이 아닌 것으로 읽힌다(tilesetSurface)", () => {
+    const road = tilesetSurface(ts).road;
+    let roads = 0;
+    for (const [name, table] of Object.entries(P.looks!.tiles)) for (const [piece, cell] of Object.entries(table)) {
+      expect(road.has(cell), `${name} ${piece}`).toBe(road.has(P.tiles[piece]!));
+      if (road.has(cell)) roads += 1;
+    }
+    for (const [set, sets] of Object.entries(P.looks!.wang)) for (const [name, cells] of Object.entries(sets)) cells.forEach((cell, i) => {
+      expect(road.has(cell), `${set} ${name} #${i}`).toBe(road.has(P.wang[set]![i]!));
+      if (road.has(cell)) roads += 1;
+    });
+    expect(roads).toBeGreaterThan(50);
   });
 });
 
