@@ -1,0 +1,71 @@
+{
+ "gif": [
+  9,
+  [
+   353,
+   474
+  ]
+ ],
+ "scale": 5.052,
+ "hover": 0,
+ "colors": 16,
+ "cells": {
+  "idle_a": [
+   69,
+   64
+  ],
+  "idle_b": [
+   72,
+   59
+  ],
+  "idle_c": [
+   70,
+   50
+  ],
+  "windup": [
+   57,
+   59
+  ],
+  "move": [
+   69,
+   56
+  ],
+  "attack": [
+   87,
+   55
+  ],
+  "recover": [
+   72,
+   58
+  ],
+  "hit": [
+   54,
+   64
+  ],
+  "dead": [
+   84,
+   29
+  ]
+ },
+ "idleShift": {
+  "ab": 5,
+  "bc": 9,
+  "ac": 14
+ },
+ "idleXor": {
+  "ab": 793,
+  "bc": 913,
+  "ac": 1108
+ },
+ "attackVsHitXor": 1900,
+ "deadAspect": 2.896551724137931,
+ "idleAspect": 1.08,
+ "oldIdleWH": [
+  42,
+  48
+ ],
+ "newIdleWH": [
+  69,
+  64
+ ]
+}
