@@ -16,7 +16,7 @@ import { fitRequiredBattlesToStarters } from "./monsterRequiredBattles";
 import { equipMonsterCampaign } from "./monsterCampaignGifts";
 import { beginFitBudget, enterFastFit, FitBudgetExceeded, restoreFitState, snapshotFitState } from "./monsterFitBudget";
 import { Obj, reconcileFieldHud, premiseOf, fillBattleBgm, fillBattleBackgrounds, fillPartyLooks, fillPartyNames, fillWindowLook } from "./shipLookDefaults";
-import { moveEntrancesOntoArt, fillStaleObjectives, moveRepeatingStartObjective, pullBackStartObjective, fillGymArrivalObjectives, hasFinal } from "./shipObjectiveDefaults";
+import { moveEntrancesOntoArt, fillStaleObjectives, moveRepeatingStartObjective, pullBackStartObjective, fillGymArrivalObjectives, hasFinal, quietFieldGuides } from "./shipObjectiveDefaults";
 
 /** 출하 기본값을 채운다. 바꾼 항목 설명을 돌려준다(없으면 빈 배열). task 는 실행 지시문(앞선 요청 메모 포함). */
 export function applyShipDefaults(project: Project, task = project.gameBlueprint?.request ?? ""): string[] {
@@ -26,6 +26,7 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (lateStartObjective(project)) applied.push(...pullBackStartObjective(project));
   applied.push(...fillStaleObjectives(project));
   applied.push(...fillGymArrivalObjectives(project));
+  applied.push(...quietFieldGuides(project));
   // 레벨 맞춤 전에: 경험치 나누기·체육관 회복 지점(깎기보다 먼저 쓰는 수단).
   applied.push(...equipMonsterCampaign(project));
   // 곡선 → 스타터 맞춤(선물 동료·기술·깎기)을 바뀌는 것이 없을 때까지(최대 3바퀴). 선물 동료가 생기면 다음 바퀴 곡선이 관문을 더 올릴 수 있다 —

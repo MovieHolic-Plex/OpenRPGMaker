@@ -156,6 +156,17 @@ modern 계열이고 팔레트는 modern_city 에 잠겨 있다. 그림은 코드
 - **husk-b:** 5×4 → 5×6, 2층 앞면, 보이는 높이 87px = 주인공 3.6배. 관문 PASS, Sonnet PASS.
 - **asphalt-ph:** `_ap_tex_calm` — 덩이 골재를 버리고 낱화소 알 결(12~22%, 다섯 단). 관문 PASS, Sonnet PASS(`_review/r65/huskb-asph`). 길 덧그림 표본은 그대로 `asphalt-ph62` 바탕.
 
+## 직각 지붕 다시 그리기 (2026-11-12, 오너 지시)
+
+오너 2026-11-12: «이 에디터는 시야각이 직교해야하므로 sengoku_edo se-machiya-a 이런 식의 직각 지붕이어야». 오너가 이름으로 짚은 칩셋은 아니지만 같은 측정(지붕 기울기, 모델 없음)에서 판잣집 6채가 4~8px 로 걸렸다.
+
+- Claude Fable 5.2 medium 한 방으로 **지붕만** 다시 그린 3채를 구웠다(벽·문은 코드 그림 그대로): `wl-shack-a`(5→1px) · `wl-shack-b`(6→0px) · `wl-shack-c`(4→1px).
+- 굽지 않은 것: `wl-hut-sheet`·`wl-hut-stove` — 그렸지만 번들 시트의 옛 그림이 지금 코드 그림과 56px 달라(시트가 코드보다 옛 판) 덮어쓰기 검사가 막았다. `wl-shack-2f` — 2층 몸채가 1층보다 좁은 단이라 지붕 상자를 손으로 잡아야 한다(그리지 않음).
+- 덮어쓰기: `tiledata/wasteland-ruins/fable-roofs/<조각>.png` + `index.json` → `wl_core.render` 가 `scripts/content/lib/fable_roofs.py` 로 코드 그림 위에 덮는다. `wl_bake` 는 원래 `object_gate.refusal(context=bundle)` 로 채택하므로 면제 묶음이 그대로 닿는다.
+- 관문: **3/4 관문 미통과 — 오너 면제** 묶음 `fable-redraw-roofs-wasteland-ruins-2026-11-12`(bundle·shared, 스토어 제외). 통과가 아니다.
+- 칸 번호·정의 JSON 그대로(2776칸, 시트 그림만 바뀜) — 이미 깔린 맵이 새 지붕으로 보인다. 참고문서 굽기 스크립트는 이 칩셋에 없다.
+- 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
+
 ## 검수 기록
 
 - **증거:** `tiledata/wasteland-ruins/_review/`

@@ -237,7 +237,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (asset.textureKey === ATLAS_CARTOGRAPHY_TEXTURE) changed = ensureAtlasCartographyReferences(project.tilesets[id]) || changed;
       // 공방에서 그려 넣은 칸(맵 기물)은 번들 끝 뒤에 붙어 있다. 아래 ensure 가 번들 칸을 늘리면 겹치므로
       // 떼어 두었다가 새 끝 뒤에 다시 붙인다(번호가 바뀌면 맵 칸도 고친다). 손 도트 실내는 자기 ensure 가 한다.
-      const parkedWorkshop = asset.textureKey === ATLAS_BIOME_INTERIOR_TEXTURE ? null : detachWorkshopTiles(project.tilesets[id]);
+      const parkedWorkshop = asset.textureKey === ATLAS_BIOME_INTERIOR_TEXTURE ? null : detachWorkshopTiles(project.tilesets[id], project);
       if (asset.textureKey === WORLDMAP_SELECTED_TEXTURE) changed = ensureWorldmapSelectedTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_DOOR_TEXTURE) changed = ensureBeodeulDoorReferences(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_ARCHITECTURE_TEXTURE) changed = ensureBeodeulArchitectureTileset(project.tilesets[id]) || changed;

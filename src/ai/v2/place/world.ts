@@ -31,9 +31,15 @@ interface ComposedKind {
   /** 구성기에 넘기는 값(style·kind 인자). */
   readonly value: string;
   readonly size: readonly [number, number];
-  /** 세계의 기본 구성기와 다른 도구(사막 실내 compose_desert_east_room). */
+  /** 세계의 기본 구성기와 다른 도구(사막 실내 compose_desert_east_room · 방 구성 도구 ROOM_PROGRAM_TOOL). */
   readonly tool?: string;
 }
+
+/**
+ * 방 구성 도구 — 그 칩셋의 방 견본으로 «예제 방 구성»(value = layout.program) 하나를 짓는다. 맵은 도구가 스스로 만들고 크기도 방 구성이 정한다
+ * (size 는 모델 카드와 «가장 작은 방» 고르기에 쓰는 그 구성의 실제 크기). 전국·에도처럼 방 구성기가 따로 없고 방 견본만 있는 칩셋의 실내 종류가 쓴다.
+ */
+export const ROOM_PROGRAM_TOOL = "build_hand_interior_room";
 
 export interface WorldKind {
   readonly id: string;
@@ -44,6 +50,8 @@ export interface WorldKind {
   readonly indoor?: true;
   /** 싸움·보스가 어울리는 곳. */
   readonly danger?: true;
+  /** 실내 종류: 이름 없는 «누구의 집» 요청이 받는 살림집(make_place) — 없으면 가장 작은 방. 가게 앞채(마치야)가 농가보다 한 줄 작아 촌장 집이 가게가 되지 않게. */
+  readonly home?: true;
   /** 실내 종류: 이 방으로 들어가는 문이 어느 집 문인가(구성기가 돌려주는 집 키트·이름에 맞춘다) — 얼음 동굴 방은 얼음 동굴 입구, 묘실은 피라미드 입구. */
   readonly door?: RegExp;
   /** 구성기로 짓는다. 없으면 spec 으로 종전 빌더(버들항 마을·던전·실내)가 짓는다. */
@@ -81,8 +89,8 @@ export interface WorldSetting {
 
 const out = (id: string, ko: string, about: string, size: readonly [number, number], flags: { danger?: true; value?: string } = {}): WorldKind =>
   ({ id, ko, about, ...(flags.danger ? { danger: true as const } : {}), compose: { value: flags.value ?? id, size } });
-const room = (id: string, ko: string, about: string, size: readonly [number, number], door: RegExp, flags: { danger?: true; value?: string; tool?: string } = {}): WorldKind =>
-  ({ id, ko, about, indoor: true, door, ...(flags.danger ? { danger: true as const } : {}), compose: { value: flags.value ?? id, size, ...(flags.tool ? { tool: flags.tool } : {}) } });
+const room = (id: string, ko: string, about: string, size: readonly [number, number], door: RegExp, flags: { danger?: true; home?: true; value?: string; tool?: string } = {}): WorldKind =>
+  ({ id, ko, about, indoor: true, door, ...(flags.danger ? { danger: true as const } : {}), ...(flags.home ? { home: true as const } : {}), compose: { value: flags.value ?? id, size, ...(flags.tool ? { tool: flags.tool } : {}) } });
 const classic = (id: string, ko: string, about: string, spec: WorldKind["spec"], flags: { indoor?: true; danger?: true } = {}): WorldKind => ({ id, ko, about, ...flags, spec });
 
 /** 세계 표. 방 크기는 구성기가 짜는 크기 그대로(100칸 미만 방은 세는 맵이 못 되어 싣지 않는다: 사우나 11×9·사막 가게 10×8). 찻집은 13×9 에서만 짜진다(12×9 는 문에서 안 닿는 바닥이 남는다 — scripts/qa/assistant-v2/worldProbe.mts 로 잰다). */
@@ -213,6 +221,14 @@ export const WORLDS: readonly WorldSetting[] = [
       out("samurai", "무가 저택", "samurai estate", [52, 36]),
       out("temple", "절", "temple grounds", [54, 38]),
       out("castle", "성", "castle keep and yard", [44, 38], { danger: true }),
+      // 실내 — 방 구성기는 없고 손으로 짠 방 견본의 «방 구성» 여섯(src/assets/sengokuEdoRoomTemplates.json programs)을 방 구성 도구로 짓는다. 없을 때는
+      // «촌장 집» 이 «실내 종류 없음» 으로 거절되고 턴이 질문으로 끝났다(2026-11-12 Haiku). 여관 2층(ryokan-2f)은 거리 문이 아니라 계단으로 가는 층이라 싣지 않는다.
+      room("farmhouse", "농가 안", "farmhouse: hearth room and earthen kitchen", [11, 15], /minka|농가/u, { value: "minka", tool: ROOM_PROGRAM_TOOL, home: true }),
+      room("townhouse", "마치야 안", "merchant townhouse: shop front and kitchen", [11, 14], /machiya|마치야|shop|가게|술도가|포목|smithy|대장간/u, { value: "machiya", tool: ROOM_PROGRAM_TOOL }),
+      room("inn", "여관 안", "inn ground floor: guest room, kitchen, bath", [10, 21], /ryokan|여관|onsen|온천/u, { value: "ryokan-1f", tool: ROOM_PROGRAM_TOOL }),
+      room("samurai-house", "무가 저택 안", "samurai residence: tatami rooms, tea room, study", [16, 14], /samurai-house|무가/u, { tool: ROOM_PROGRAM_TOOL }),
+      room("dojo", "도장 안", "sword school hall with a study", [13, 16], /dojo|도장/u, { tool: ROOM_PROGRAM_TOOL }),
+      room("castle-hall", "성 알현실", "castle audience hall with a waiting room", [21, 10], /castle-keep|천수각/u, { tool: ROOM_PROGRAM_TOOL }),
     ],
   },
   {

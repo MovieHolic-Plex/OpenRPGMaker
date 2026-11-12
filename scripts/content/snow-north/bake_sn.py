@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""snow_north 굽기 — art/ 의 등록부(바닥 낱칸 · 오토타일 6 · 건물 · 야외 소품 · 실내) 중 object-gate 통과분을 한 시트로.
+"""snow_north 굽기 — art/ 의 등록부(바닥 낱칸 · 오토타일 6 · 건물 · 야외 소품 · 실내) 중 object-gate 출구를 지난 그림을 한 시트로.
+2026-11-12 부터 그림의 정본은 PNG 다: fable/build_fable.py 가 Fable 5.2 한 방 답(fable/answers)에서 tiledata/snow-north/<묶음>/_gate/ 를 쓴다(art/*.py 의 draw 는 등록부로만 남았다).
+그 그림들은 3/4 관문 미통과 — 오너 면제 묶음(fable-redraw-snow-north-2026-11-12)으로 bundle 출구를 지난다. 팔레트는 v2(48색, art/palette.py).
 
   python3 scripts/content/snow-north/bake_sn.py          # 쓰기
   python3 scripts/content/snow-north/bake_sn.py --dry    # 보고만
@@ -65,18 +67,19 @@ def build_pieces(report):
             d = dict(it, group=reg.group, png=png); items.append(d); by[it['id']] = d
     frame_ids = {f for _, _, fs, _ in anims for f in fs[1:]}
     anim_base = {fs[0]: (aid, n, fs, fps) for aid, n, fs, fps in anims}
-    pieces, prov, covered, blocked = [], 0, 0, []
+    pieces, prov, covered, blocked, waived = [], 0, 0, [], set()
 
     def status(it):
         nonlocal prov, covered
-        if not os.path.exists(it['png']): return 'PNG 없음 — art 내보내기 먼저'
+        if not os.path.exists(it['png']): return 'PNG 없음 — fable/build_fable.py 먼저'
         if it['id'] in PARTS:
             s = TB.covered_status(it['id'], it['png'])
-            if s in ('pass', 'prov'): covered += 1
+            if s in ('pass', 'prov', 'waived'): covered += 1
         else:
             s = TB.gate_status(it['png'], it['kind'])
         if s == 'pass': return True
         if s == 'prov': prov += 1; return True
+        if s == 'waived': waived.add(it['id']); return True      # 오너 면제 — 통과가 아니다(보고: «3/4 관문 미통과 — 오너 면제»)
         return s
 
     for it in items:
@@ -109,7 +112,7 @@ def build_pieces(report):
                 p['tags'] = p['tags'] + ['애니메이션']
                 p['desc'] = f"{an} — {len(fr)}프레임 반복(칸 {it['w']}×{it['h']}). " + p['desc']
         pieces.append(p)
-    report['gate'] = dict(provisional_profile_uncalibrated=prov, covered_by_assembled=covered, blocked=blocked, pieces=len(pieces),
+    report['gate'] = dict(provisional_profile_uncalibrated=prov, owner_waived_not_passed=len(waived), covered_by_assembled=covered, blocked=blocked, pieces=len(pieces),
                           outdoor=sum(1 for p in pieces if p['group'] != 'sn-interior'), interior=sum(1 for p in pieces if p['group'] == 'sn-interior'))
     return pieces
 
@@ -123,7 +126,7 @@ def bake_autotiles(O, report):
         gid = a['id']
         sample = os.path.join(TD, 'terrain', '_gate', 'sn-at-%s.png' % gid)
         st = TB.gate_status(sample, 'terrain')
-        if st not in ('pass', 'prov'):
+        if st not in ('pass', 'prov', 'waived'):
             report['gate']['blocked'].append(('at-' + gid, '견본 ' + st)); continue
         cellset = TB.cell_set(sample)
         d = os.path.join(TD, 'autotile', gid)

@@ -270,7 +270,7 @@ export function validateSystem(value: unknown): void {
       requireString(`system.seCues.${key}`, value);
     }
   }
-  if (system.fieldGuides !== undefined) assert(system.fieldGuides === "off" || system.fieldGuides === "arrows", "system.fieldGuides 는 off·arrows(생략 = 켜기)");
+  if (system.fieldGuides !== undefined) assert(system.fieldGuides === "off" || system.fieldGuides === "arrows" || system.fieldGuides === "on", "system.fieldGuides 는 off·arrows·on(생략 = 켜기)");
   if (system.saveAccess !== undefined) assert(system.saveAccess === "anywhere" || system.saveAccess === "savePoints", "system.saveAccess 는 anywhere | savePoints");
   if (system.emotionCycle !== undefined) {
     for (const [index, raw] of requireArray("system.emotionCycle", system.emotionCycle).entries()) {

@@ -1,7 +1,7 @@
 {
 "version": 1,
 "tilesPerRow": 48,
-"count": 1169,
+"count": 1192,
 "cells": {
 "hab-dome/1.0": 1,
 "hab-dome/2.0": 2,
@@ -1170,6 +1170,29 @@
 "vent-grill/0.0": 1165,
 "wall-pipes/0.0": 1166,
 "wall-pipes/1.0": 1167,
-"fire-extinguisher/0.0": 1168
+"fire-extinguisher/0.0": 1168,
+"hab-dome/0.0": 1169,
+"hab-dome/3.0": 1170,
+"hab-dome-l/0.0": 1171,
+"hab-dome-l/1.0": 1172,
+"hab-dome-l/4.0": 1173,
+"hab-dome-l/5.0": 1174,
+"greenhouse-dome/0.0": 1175,
+"greenhouse-dome/1.0": 1176,
+"greenhouse-dome/2.0": 1177,
+"greenhouse-dome/3.0": 1178,
+"reactor-building/0.0": 1179,
+"reactor-building/4.0": 1180,
+"shuttle/0.0": 1181,
+"shuttle/4.0": 1182,
+"terminal/0.0": 1183,
+"terminal/0.1": 1184,
+"alarm/0.0": 1185,
+"alarm/0.1": 1186,
+"supply-capsule/0.0": 1187,
+"supply-capsule/1.0": 1188,
+"supply-capsule/0.1": 1189,
+"supply-capsule/1.1": 1190,
+"toilet/0.0": 1191
 }
 }

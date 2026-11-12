@@ -177,6 +177,22 @@ class C:
     def img(s): return Image.fromarray(s.rgba(), 'RGBA')
 
 
+_REV = {rgb: (MATS[i], t) for i, r in enumerate(RGB) for t, rgb in reversed(list(enumerate(r)))}
+
+
+def paste_png(c, path, x, y):
+    """PNG(잠긴 팔레트 색만, 투명 = 그대로 둠)를 캔버스 (x, y) 에 얹는다. 파일이 없으면 아무것도 하지 않는다(바탕만 뽑을 때). 팔레트 밖 색은 오류."""
+    if not os.path.exists(path): return False
+    a = np.asarray(Image.open(path).convert('RGBA'))
+    for j in range(a.shape[0]):
+        for i in range(a.shape[1]):
+            if a[j, i, 3] == 0: continue
+            k = (int(a[j, i, 0]), int(a[j, i, 1]), int(a[j, i, 2]))
+            if k not in _REV or a[j, i, 3] != 255: raise ValueError('%s: (%d,%d) 팔레트 밖 색 %s' % (path, i, j, k))
+            c.P(x + i, y + j, *_REV[k])
+    return True
+
+
 def save(c_or_img, path, scale=1):
     im = c_or_img.img() if isinstance(c_or_img, C) else c_or_img
     os.makedirs(os.path.dirname(path), exist_ok=True)

@@ -1,0 +1,43 @@
+{
+"unit": "wall-screen-b",
+"name": "wall screen (data)",
+"w": 16,
+"h": 16,
+"cls": "wallm",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:0",
+"b": "ink:1",
+"c": "s_hull:0",
+"d": "s_hull:1",
+"e": "s_hull:2",
+"f": "s_hull:3",
+"g": "s_hull:4",
+"h": "s_hull:5",
+"i": "s_glass:0",
+"j": "a_green:0",
+"k": "a_green:1",
+"l": "a_cyan:1"
+},
+"rows": [
+"................",
+".bbbbbbbbbbbbbb.",
+".bhhhhhhhhhhhgb.",
+".bgaaaaaaaaaaeb.",
+".bgakkkkkkjiaeb.",
+".bgaiiiiiiiiaeb.",
+".bgakkkjiiiiaeb.",
+".bgaiiiiiiiiaeb.",
+".bgakkkkkkkjaeb.",
+".bgaiiiiiiiiaeb.",
+".bgakkkkjiiiaeb.",
+".bgaiiiiiiiiaeb.",
+".bgaaaaaaaaaaeb.",
+".bfeeeeeeeeledb.",
+".bbbbbbbbbbbbbb.",
+"................"
+],
+"note": "Wall display: thin blue-grey frame, dark screen, four green data lines of varying length, cyan status light."
+}

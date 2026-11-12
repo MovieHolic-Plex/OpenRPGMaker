@@ -1,0 +1,36 @@
+{
+"unit": "street-puddle-neon",
+"name": "small neon puddle",
+"w": 16,
+"h": 16,
+"cls": "flat",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:1",
+"b": "s_dark:0",
+"c": "s_dark:1",
+"m": "a_magenta:0",
+"y": "a_cyan:0"
+},
+"rows": [
+"................",
+"................",
+"................",
+"................",
+"....aaaaa.......",
+"...abbbbbaaa....",
+"..abbmmbbbbbc...",
+"..abbbbbyybbbc..",
+"..abmmbbbbbybc..",
+"...abbbyybbbcc..",
+"....ccbbbbccc...",
+"......ccccc.....",
+"................",
+"................",
+"................",
+"................"
+],
+"note": "Small dark rain puddle, lighter lower-right rim, short magenta and cyan neon reflection streaks."
+}

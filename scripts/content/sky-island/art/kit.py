@@ -10,6 +10,9 @@
 import os, json
 from PIL import Image, ImageDraw, ImageFont
 from px import C, ROOT, save
+import sys
+sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'lib'))
+import fable_roofs as FR  # noqa: E402
 from si_gate_kinds import GATE_KIND
 
 OUT = os.path.join(ROOT, 'tiledata', 'sky-island')
@@ -43,7 +46,8 @@ class Reg:
         for it in s.items:
             if only and it['id'] not in only: continue
             for f, path in enumerate(s.pngs(it)):
-                c = s.render(it, f); save(c, path)
+                c = s.render(it, f)
+                save(Image.fromarray(FR.apply('sky-island', 'si-' + it['id'], c.rgba()), 'RGBA') if f == 0 else c, path)   # 직각 지붕 덮어쓰기(오너 2026-11-12, scripts/content/lib/fable_roofs.py)
                 rows.append(dict(png=os.path.basename(path), kind=GATE_KIND.get(it['id'], it['kind']), name=it.get('gate_name') or it['name'], label='sky-island/si-' + it['id'] + ('' if f == 0 else '-f%d' % f)))
         if not only:
             with open(os.path.join(d, 'items.jsonl'), 'w') as fh:
