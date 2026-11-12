@@ -28,6 +28,8 @@ export interface DrawnThing {
   readonly label: string;
   /** 그 그림을 찍는 키트(알면)의 이름 — 괄호 속 설명까지. */
   readonly kitName?: string;
+  /** 그 그림을 찍는 키트 id(알면) — 같은 그림을 하나 더 찍을 때 쓴다. */
+  readonly kitId?: string;
   /** 그 키트에만 붙은 꼬리표(「밸브」「쪽지」). */
   readonly tags: readonly string[];
   readonly cells: readonly Cell[];
@@ -81,7 +83,7 @@ export function drawnThings(project: Project, map: GameMap): DrawnThing[] {
     // 움직이는 그림은 칸마다 이름표 꼬리(「(1,2) · 1/4프레임」)가 달라 한 점이 칸칸이 갈린다 — 같은 키트의 맞닿은 조각은 한 점으로 잇는다.
     const whole = kit ? out.find((t) => t.kit === kit && t.cells.some((a) => cells.some((b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y) === 1))) : undefined;
     if (whole) { whole.cells.push(...cells); continue; }
-    out.push({ label: thingName(cluster.label), ...(kit?.name ? { kitName: kit.name } : {}), tags: ownTags(index, kit), cells, ...(kit ? { kit } : {}) });
+    out.push({ label: thingName(cluster.label), ...(kit?.name ? { kitName: kit.name } : {}), tags: ownTags(index, kit), cells, ...(kit ? { kit, kitId: kit.id } : {}) });
   }
   return out.filter((t) => t.cells.length <= MAX_CELLS);
 }
@@ -125,40 +127,99 @@ export function thingSeat(project: Project, map: GameMap, thing: DrawnThing, nea
   return best ? { cell: best.cell, stand: best.stand } : undefined;
 }
 
-/** 이름이 가리키는 그림을 그 칩셋 키트에서 골라 near 곁 빈 바닥에 찍는다 — 걸어 닿던 칸이 끊기면 되돌리고 다음 자리. 찍은 물건을 돌려준다. */
+/** 바닥에 새로 찍을 수 있는 키트인가 — 벽에 거는 그림과 문·계단·창(지나다니는 그림)은 아니다. */
+const floorKit = (index: KitIndex, kit: Kit): boolean => !(kit.ai?.tags ?? []).some((t) => WALL_HUNG.has(t)) && !kitTiles(kit).some((t) => index.passage.has(t));
+
+/** 키트 한 벌을 near 곁 빈 바닥에 찍는다 — 걸어 닿던 칸이 끊기면 되돌리고 다음 자리. 찍은 물건(서서 쓸 자리가 있는 것)을 돌려준다. */
+function stampKitNear(run: BuildRun, mapId: string, kit: Kit, near: Cell, claimed: readonly Cell[]): DrawnThing | undefined {
+  const map0 = run.ctx.project.maps[mapId];
+  const reach0 = map0 ? reachableCells(run.ctx.project, map0) : undefined;
+  if (!map0 || !reach0) return undefined;
+  const reached = (r: Uint8Array) => { let n = 0; for (const v of r) n += v ? 1 : 0; return n; };
+  const w = kit.width ?? 1, h = kit.height ?? 1;
+  const spots: { x: number; y: number; d: number }[] = [];
+  for (let y = Math.max(0, near.y - 7); y <= Math.min(map0.height - h, near.y + 7); y += 1) for (let x = Math.max(0, near.x - 7); x <= Math.min(map0.width - w, near.x + 7); x += 1) {
+    let free = true;
+    // 발자국과 그 남쪽 한 줄(서는 자리)이 빈 걷는 바닥이어야 한다 — 문 앞·길목을 막지 않게 둘레 이벤트도 피한다.
+    for (let yy = y; yy <= y + h && free; yy += 1) for (let xx = x; xx < x + w && free; xx += 1) {
+      if (yy >= map0.height || !reach0[yy * map0.width + xx] || !isPassable(run.ctx.project, map0, xx, yy) || objectClusterAt(run.ctx.project, map0, xx, yy)) free = false;
+      else if ([...(map0.events ?? []), ...claimed].some((e) => Math.abs(e.x - xx) + Math.abs(e.y - yy) <= 1)) free = false;
+    }
+    if (free) spots.push({ x, y, d: Math.abs(x - near.x) + Math.abs(y + h - 1 - near.y) });
+  }
+  spots.sort((a, b) => a.d - b.d || a.y - b.y || a.x - b.x);
+  for (const spot of spots.slice(0, 16)) {
+    const snapshot = run.ctx.project;
+    const res = run.call("stamp_object", { objectId: `kit:${map0.tilesetId}/${kit.id}`, mapId, x: spot.x, y: spot.y });
+    const map = run.ctx.project.maps[mapId]!;
+    const reach = res.ok ? reachableCells(run.ctx.project, map) : undefined;
+    // 찍은 발자국만큼만 걷는 칸이 줄어야 한다 — 더 줄면 길목을 끊은 것이다.
+    if (!reach || reached(reach0) - reached(reach) > w * h) { run.ctx.project = snapshot; continue; }
+    const made = drawnThings(run.ctx.project, map).find((t) => t.cells.some((c) => c.x >= spot.x && c.x < spot.x + w && c.y >= spot.y && c.y < spot.y + h));
+    if (made && thingSeat(run.ctx.project, map, made, near, claimed)) return made;
+    run.ctx.project = snapshot;
+  }
+  return undefined;
+}
+
+/** 이름이 가리키는 그림을 그 칩셋 키트에서 골라 near 곁 빈 바닥에 찍는다. 찍은 물건을 돌려준다. */
 export function stampNamedThing(run: BuildRun, mapId: string, name: string, near: Cell, minMatch = 1, claimed: readonly Cell[] = []): DrawnThing | undefined {
   const map0 = run.ctx.project.maps[mapId];
   if (!map0) return undefined;
-  const tileset = run.ctx.project.tilesets[map0.tilesetId];
-  const index = kitIndex(tileset);
+  const index = kitIndex(run.ctx.project.tilesets[map0.tilesetId]);
   const scored = index.props.map((kit) => ({ kit, score: thingMatch(name, { label: labelWithoutNotes(kit.name ?? ""), kitName: kit.name ?? "", tags: ownTags(index, kit) }) }))
-    // 벽에 거는 그림과 문·계단·창(지나다니는 그림)은 바닥에 새로 찍는 물건이 아니다.
-    .filter((k) => k.score >= minMatch && !(k.kit.ai?.tags ?? []).some((t) => WALL_HUNG.has(t)) && !kitTiles(k.kit).some((t) => index.passage.has(t)))
+    .filter((k) => k.score >= minMatch && floorKit(index, k.kit))
     .sort((a, b) => b.score - a.score || (a.kit.width ?? 1) * (a.kit.height ?? 1) - (b.kit.width ?? 1) * (b.kit.height ?? 1));
-  const reach0 = reachableCells(run.ctx.project, map0);
-  if (!reach0) return undefined;
-  const reached = (r: Uint8Array) => { let n = 0; for (const v of r) n += v ? 1 : 0; return n; };
   for (const { kit } of scored.slice(0, 2)) {
+    const made = stampKitNear(run, mapId, kit, near, claimed);
+    if (made) return made;
+  }
+  return undefined;
+}
+
+/** 그 맵에 이미 놓인 물건과 같은 그림을 near 곁에 하나 더 찍는다 — 이름에 맞는 그림도, 가까이 놓인 물건도 없을 때 그 장소의 그림으로 대신한다. */
+export function stampCopyNear(run: BuildRun, mapId: string, like: DrawnThing, near: Cell, claimed: readonly Cell[] = []): DrawnThing | undefined {
+  const map0 = run.ctx.project.maps[mapId];
+  if (!map0 || !like.kitId) return undefined;
+  const index = kitIndex(run.ctx.project.tilesets[map0.tilesetId]);
+  const kit = index.props.find((k) => k.id === like.kitId);
+  return kit && floorKit(index, kit) ? stampKitNear(run, mapId, kit, near, claimed) : undefined;
+}
+
+/**
+ * 이름이 가리키는 «벽에 거는» 그림(밸브 바퀴·압력계)을 벽면 아랫줄에 건다 — 바로 아래가 서서 쓸 빈 바닥인 벽 칸, near 에 가까운 곳.
+ * 왜: 구성기가 건 벽 그림은 아래에 가구가 놓여 설 자리가 없을 때가 많다(보일러실의 밸브 바퀴 아래 화로·계단). 같은 그림을 쓸 수 있는 벽에 하나 더 건다.
+ */
+export function hangNamedThing(run: BuildRun, mapId: string, name: string, near: Cell, minMatch = 1, claimed: readonly Cell[] = []): DrawnThing | undefined {
+  const map0 = run.ctx.project.maps[mapId];
+  const reach = map0 ? reachableCells(run.ctx.project, map0) : undefined;
+  if (!map0 || !reach) return undefined;
+  const tileset = run.ctx.project.tilesets[map0.tilesetId];
+  const meta = ((tileset as { tileMeta?: unknown } | undefined)?.tileMeta ?? []) as Meta[];
+  const index = kitIndex(tileset);
+  const hung = index.props.map((kit) => ({ kit, score: thingMatch(name, { label: labelWithoutNotes(kit.name ?? ""), kitName: kit.name ?? "", tags: ownTags(index, kit) }) }))
+    .filter((k) => k.score >= minMatch && (k.kit.ai?.tags ?? []).some((t) => WALL_HUNG.has(t)) && (k.kit.rows ?? []).every((r) => (r.tiles ?? []).every((t) => t < 0)))
+    .sort((a, b) => b.score - a.score || (a.kit.width ?? 1) * (a.kit.height ?? 1) - (b.kit.width ?? 1) * (b.kit.height ?? 1));
+  const wall = (x: number, y: number) => x >= 0 && y >= 0 && x < map0.width && y < map0.height && meta[map0.lowerTiles[y * map0.width + x] ?? -1]?.role === "wall"
+    && (map0.upperTiles[y * map0.width + x] ?? -1) < 0 && (map0.upperOverlayTiles?.[y * map0.width + x] ?? -1) < 0;
+  const taken = [...(map0.events ?? []), ...claimed];
+  const floor = (x: number, y: number) => y < map0.height && !!reach[y * map0.width + x] && isPassable(run.ctx.project, map0, x, y) && !objectClusterAt(run.ctx.project, map0, x, y)
+    && !isEntranceArt(run.ctx.project, map0, x, y) && !taken.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1);
+  for (const { kit } of hung.slice(0, 2)) {
     const w = kit.width ?? 1, h = kit.height ?? 1;
     const spots: { x: number; y: number; d: number }[] = [];
-    for (let y = Math.max(0, near.y - 7); y <= Math.min(map0.height - h, near.y + 7); y += 1) for (let x = Math.max(0, near.x - 7); x <= Math.min(map0.width - w, near.x + 7); x += 1) {
-      let free = true;
-      // 발자국과 그 남쪽 한 줄(서는 자리)이 빈 걷는 바닥이어야 한다 — 문 앞·길목을 막지 않게 둘레 이벤트도 피한다.
-      for (let yy = y; yy <= y + h && free; yy += 1) for (let xx = x; xx < x + w && free; xx += 1) {
-        if (yy >= map0.height || !reach0[yy * map0.width + xx] || !isPassable(run.ctx.project, map0, xx, yy) || objectClusterAt(run.ctx.project, map0, xx, yy)) free = false;
-        else if ([...(map0.events ?? []), ...claimed].some((e) => Math.abs(e.x - xx) + Math.abs(e.y - yy) <= 1)) free = false;
-      }
-      if (free) spots.push({ x, y, d: Math.abs(x - near.x) + Math.abs(y + h - 1 - near.y) });
+    for (let y = 0; y + h < map0.height; y += 1) for (let x = 0; x + w <= map0.width; x += 1) {
+      let ok = true;
+      for (let yy = y; yy < y + h && ok; yy += 1) for (let xx = x; xx < x + w && ok; xx += 1) ok = wall(xx, yy);
+      for (let xx = x; xx < x + w && ok; xx += 1) ok = floor(xx, y + h);
+      if (ok) spots.push({ x, y, d: Math.abs(x - near.x) + Math.abs(y + h - near.y) });
     }
     spots.sort((a, b) => a.d - b.d || a.y - b.y || a.x - b.x);
-    for (const spot of spots.slice(0, 16)) {
+    for (const spot of spots.slice(0, 4)) {
       const snapshot = run.ctx.project;
-      const res = run.call("stamp_object", { objectId: `kit:${map0.tilesetId}/${kit.id}`, mapId, x: spot.x, y: spot.y });
+      const painted = (kit.rows ?? []).every((row, dy) => (row.upperTiles ?? []).every((tile, dx) => tile < 0 || run.call("paint_tiles", { mapId, layer: "3", mode: "cells", tile, cells: [{ x: spot.x + dx, y: spot.y + dy }] }).ok));
       const map = run.ctx.project.maps[mapId]!;
-      const reach = res.ok ? reachableCells(run.ctx.project, map) : undefined;
-      // 찍은 발자국만큼만 걷는 칸이 줄어야 한다 — 더 줄면 길목을 끊은 것이다.
-      if (!reach || reached(reach0) - reached(reach) > w * h) { run.ctx.project = snapshot; continue; }
-      const made = drawnThings(run.ctx.project, map).find((t) => t.cells.some((c) => c.x >= spot.x && c.x < spot.x + w && c.y >= spot.y && c.y < spot.y + h));
+      const made = painted ? drawnThings(run.ctx.project, map).find((t) => t.cells.some((c) => c.x === spot.x && c.y === spot.y + h - 1)) : undefined;
       if (made && thingSeat(run.ctx.project, map, made, near, claimed)) return made;
       run.ctx.project = snapshot;
     }

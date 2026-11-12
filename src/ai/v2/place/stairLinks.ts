@@ -37,7 +37,7 @@ export function stampRoomStairs(run: BuildRun, mapId: string, way: "up" | "down"
   const events = map0.events ?? [];
   for (const kit of kits.slice(0, 2)) {
     const w = kit.width ?? 1, h = kit.height ?? 1;
-    const spots: { x: number; y: number; far: number }[] = [];
+    const spots: { x: number; y: number; far: number; hung: number }[] = [];
     for (let y = 1; y + h <= map0.height - 1; y += 1) for (let x = 1; x + w <= map0.width - 1; x += 1) {
       let ok = true;
       for (let yy = y; yy < y + h && ok; yy += 1) for (let xx = x; xx < x + w && ok; xx += 1) {
@@ -47,10 +47,13 @@ export function stampRoomStairs(run: BuildRun, mapId: string, way: "up" | "down"
       for (let xx = x; xx < x + w && ok; xx += 1) ok = !isPassable(project0, map0, xx, y - 1) && !!reach0[(y + h) * map0.width + xx] && !objectClusterAt(project0, map0, xx, y + h);
       if (!ok) continue;
       const far = Math.min(...events.map((e) => Math.abs(e.x - x) + Math.abs(e.y - y)), 99);
-      spots.push({ x, y, far });
+      // 벽에 걸린 그림(밸브 바퀴·압력계) 아래는 나중 — 계단이 그 아래를 차지하면 그 그림 앞에 설 자리가 없어진다.
+      let hung = 0;
+      for (let xx = x; xx < x + w; xx += 1) hung += objectClusterAt(project0, map0, xx, y - 1) ? 1 : 0;
+      spots.push({ x, y, far, hung });
     }
-    // 다른 이벤트·출구에서 먼 자리부터 — 문 곁에 계단이 붙지 않게.
-    spots.sort((a, b) => b.far - a.far || a.y - b.y || a.x - b.x);
+    // 빈 벽 앞 먼저, 그다음 다른 이벤트·출구에서 먼 자리 — 문 곁에 계단이 붙지 않게.
+    spots.sort((a, b) => a.hung - b.hung || b.far - a.far || a.y - b.y || a.x - b.x);
     for (const spot of spots.slice(0, 8)) {
       const snapshot = run.ctx.project;
       const res = run.call("stamp_object", { objectId: `kit:${map0.tilesetId}/${kit.id}`, mapId, x: spot.x, y: spot.y });

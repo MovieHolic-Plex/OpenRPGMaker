@@ -5,6 +5,8 @@ import { pickFittedTroops, pickSpot } from "@/editor/tools/jrpgVolumeTools";
 import { isPassable } from "@/project/collision";
 import { walkStart } from "./cells";
 import { behindBuildingStrip } from "./entrances";
+import { incomingLandings } from "./where";
+import { laneCells } from "./placementRules";
 import { applyThemeBackdrop, placeThemeOf, themeFieldTroops, usableLoot } from "./placeTheme";
 import type { BuildRun } from "../shared/types";
 import { leadEnemyId, useCurrentArt } from "../story/currentFoes";
@@ -20,12 +22,17 @@ const foeCount = (cells: number): number => (cells >= 1200 ? 3 : cells >= 280 ? 
 export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { readonly x: number; readonly y: number } | undefined, salt: number, onGap?: (line: string) => void): string | undefined {
   const map0 = run.ctx.project.maps[mapId];
   if (!map0) return undefined;
-  const origin: Cell = entrance && isPassable(run.ctx.project, map0, entrance.x, entrance.y) ? { x: entrance.x, y: entrance.y } : walkStart(run.ctx.project, map0);
+  // 들어오는 칸 = 이 맵으로 오는 이동의 도착 칸(이은 뒤에 부른다). 구성기의 «들어서는 칸» 은 맵 한가운데일 수 있어 그 다음에 본다.
+  const landings = incomingLandings(run.ctx.project, mapId).filter((c) => isPassable(run.ctx.project, map0, c.x, c.y));
+  const origin: Cell = landings[0] ?? (entrance && isPassable(run.ctx.project, map0, entrance.x, entrance.y) ? { x: entrance.x, y: entrance.y } : walkStart(run.ctx.project, map0));
   const foeId = (n: number) => `ev_${mapId}_wfoe${n}`, chestId = `ev_${mapId}_wchest`;
   const taken = new Set<string>();
   // 건물 뒤 띠에는 적·상자를 두지 않는다 — 지붕 줄 뒤에 숨는다.
   const strip = behindBuildingStrip(run.ctx.project, map0);
-  const hidden = (c: Cell) => !!strip[c.y * map0.width + c.x];
+  // 어느 도착 칸에서든 다섯 걸음 안에는 적·상자를 두지 않는다 — 들어서자마자 싸우지 않게(맵에 문이 여럿이면 첫 문만 재면 다른 문 앞에 적이 선다).
+  // 차도·선로 칸도 피한다 — 끝맺음 관문의 «사람 자리» 가 상자·적에게도 같은 것을 짚는다(명세 은행 r1s-fun: 보물상자가 선로 칸 (1,32) 에).
+  const lanes = laneCells(run.ctx.project, map0);
+  const hidden = (c: Cell) => !!strip[c.y * map0.width + c.x] || lanes.has(c.y * map0.width + c.x) || landings.some((l) => Math.abs(l.x - c.x) + Math.abs(l.y - c.y) <= 5);
   const backdrop = applyThemeBackdrop(run.ctx.project, mapId);
   if (backdrop.gap) onGap?.(backdrop.gap);
   const themed = themeFieldTroops(run.ctx.project, mapId);
