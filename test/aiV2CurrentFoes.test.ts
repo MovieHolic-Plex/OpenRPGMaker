@@ -76,8 +76,10 @@ describe("v2 가 세우는 적은 현행 그림이 있는 종", () => {
     for (const e of project.database.enemies) { const cur = currentFoe(project, e.id); if (cur) expect(hasCurrentArt(project, cur.enemyId)).toBe(true); }
   });
 
-  it("구성기 세계 아홉 어디서나 길 적·우두머리가 현행 그림으로 선다 — 없는 종은 없는 그림 줄", () => {
-    for (const w of WORLDS.filter((x) => !!x.composer)) {
+  // 세계마다 한 시험 — 종류마다 시작 파티에 맞춘 사본을 만들어(모의전) 한 시험에 다 넣으면 CI 에서 49초가 걸렸다.
+  for (const w of WORLDS.filter((x) => !!x.composer)) {
+    it(`구성기 세계 ${w.id}: 어느 종류에서나 길 적·우두머리가 현행 그림으로 선다 — 없는 종은 없는 그림 줄`, () => {
+      {
       for (const kind of w.kinds) {
         const { project, mapId } = world(w.id, w.tilesetId, kind.id, `${w.id}-${kind.id}`);
         const field = themeFieldTroops(project, mapId);
@@ -90,8 +92,9 @@ describe("v2 가 세우는 적은 현행 그림이 있는 종", () => {
         expect(isCurrentMonsterArt(leadArt(project, boss.troopId)), `${w.id}/${kind.id} 우두머리`).toBe(true);
         for (const line of [...field.gaps, ...boss.gaps]) expect(parseArtGap(line), line).toBeDefined();
       }
-    }
-  });
+      }
+    }, 60_000);
+  }
 
   it("선사 시대 늪: 뱀·딱정벌레가 서고(멧돼지·사마귀는 맞춘 사본의 기술이 뱀과 같아 같이 서지 않는다), 리자드맨·검치호·공룡은 그릴 목록에 남는다", () => {
     const { project, mapId } = world("prehistoric", "prehistoric", "swamp", "늪지");
