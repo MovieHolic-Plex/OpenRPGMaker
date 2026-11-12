@@ -1,0 +1,47 @@
+{
+ "_doc": "jp_city 이야기 기물 1종 — Claude Fable 5.2 medium 한 방 그림(이 프로젝트를 위해 그린 자체 저작, 색은 jp_city 시트에서 뽑음). 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12. pieces/<src> 는 한 화소도 바꾸지 않는다(바꾸면 면제가 풀리고 굽기가 그 조각을 막는다). 굽기 블록 scripts/content/jp-city/blocks/story_objects.py(BLOCK_ORDER 끝) — 새 항목은 items 끝에만(칸 번호는 자리 키 핀 story_objects/<id>/<x>.<y>, 덧붙이기 전용). 키트 id = jp-<id>. place: prop·tall = 서 있는 기물(block 칸 막힘, 나머지 칸 ★) · decal = 밟고 지나가는 바닥 그림.",
+ "waiver": "fable-oneshot-2026-11-12",
+ "license": "drawn by Claude Fable 5.2 for this project (own work)",
+ "items": [
+  {
+   "id": "spring-basin",
+   "src": "jp-spring.png",
+   "name": "샘(돌 수반 샘물)",
+   "en": "spring-water stone basin",
+   "kind": "container",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "샘",
+    "샘물",
+    "돌 샘",
+    "돌 수반",
+    "약수터",
+    "물이 솟는 돌 샘",
+    "spring",
+    "stone basin"
+   ],
+   "desc": "거친 돌 수반에 대나무 물대로 샘물이 흘러들고, 청록 물 위에 국자가 걸쳐 있다. 이끼. 네 칸 모두 막힘.",
+   "rule": "신사 경내·공원·마을 어귀·산길 쉼터의 흙·자갈·잔디 위에. 네 칸 모두 막힘, 둘레 한 칸은 걷는 바닥으로 비운다. 마시는·살피는 이벤트는 아랫줄 칸에 «같은 높이·결정 키». 차도·건물 문 앞 접근칸·횡단보도 금지."
+  }
+ ]
+}

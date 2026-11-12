@@ -1,0 +1,32 @@
+{
+"id": "jp-story-objects",
+"name": "일본 도시 · 이야기 기물(샘)",
+"description": "jp_city 이야기 기물 1종 — 사전(칸 번호·막힌 칸·찾는 낱말), 놓는 순서, 조립 예제 전체 배열, 정상/오류 그림. 3/4 관문 미통과 — 오너 면제 그림(fable-oneshot-2026-11-12).",
+"documents": [
+{
+"id": "jp-story-objects",
+"name": "jp_city · 이야기 기물 1종(샘) — 사전·순서·예제·오류",
+"markdown": "# jp_city · 이야기 기물 1종(샘)\n\n일본 도시 칩셋 `jp_city`(텍스처 `tex_jp_city`, 20463칸, 16px 칸, 시트 96열 — 번호 n 의 칸은 열 n%96, 행 n÷96). 신사 경내·공원·마을 어귀에 쓰는 위층 키트다.\n\n게임들이 바랐는데 그림이 없던 물건이다. **이 1장은 3/4 관문 미통과 — 오너 면제 그림**(면제 묶음 fable-oneshot-2026-11-12, Claude Fable 5.2 한 방 그림)이다 — 관문 영수증이 없고 스토어로는 나가지 않는다. 그림 정본 `tiledata/jp-city/objects/pieces/`, 정의 `spec.json`, 굽기 `scripts/content/jp-city/bake_jp.py(블록 blocks/story_objects.py)`(그림을 그대로 굽는다 — 한 화소라도 바꾸면 면제가 풀린다).\n\n## 1. 사전\n\n모든 칸은 **위층(upperTiles)** 에 놓는다(아래층 흙·자갈·잔디은 그대로 — 투명 화소 밑으로 비친다). 서 있는 기물: 막힌 칸은 네 방향 막힘, 나머지 칸은 ★(사람 위에 그려지고 걷는다). 바닥 그림: 사람 아래·걷는다.\n\n| 키트 id | 무엇 | 크기 | 위층 칸 번호(위 줄 / 아래 줄) | 놓는 방식 | 막힌 칸 (dx,dy) | 찾는 낱말(키트 태그) |\n|---|---|---|---|---|---|---|\n| `jp-spring-basin` | 샘(돌 수반 샘물) | 2×2 | 20459 20460 / 20461 20462 | 서 있는 기물 | (0,0) (1,0) (0,1) (1,1) | 샘, 샘물, 돌 샘, 돌 수반, 약수터, 물이 솟는 돌 샘, spring, stone basin |\n\n전부 고정 조각(이어 찍지 않는다). 입구·문 부품은 없다.\n\n## 2. 실행 순서\n\n1. 바닥(흙·자갈·잔디)을 먼저 깐다 — 구성 도구 `compose_jp_city_street` 이 지은 맵이면 그대로 둔다.\n2. `stamp_tileset_object({ mapId, objectId: \"jp-…\", base })` — **base = 맨 아래 줄의 왼쪽 칸**(왼쪽 위가 (x,y)·높이 h 면 base = (x, y+h−1)). 조수 v2 는 `place_object({ mapId, objectId, at })`. 도구는 통째로 놓거나 거절한다.\n3. 샘(2×2)은 신사 경내·공원·마을 어귀·산길 쉼터의 흙·자갈·잔디 위에 — 둘레 한 칸은 걷는 바닥으로 비운다. 차도·횡단보도·건물 문 앞 접근칸에는 놓지 않는다.\n4. 그림일 뿐이다 — 읽기·줍기·조작은 이벤트를 따로 둔다(막힌 칸의 이벤트는 «같은 높이·결정 키», 바닥 그림은 그 칸 «플레이어 아래»).\n5. 빈 땅 채우기에 흩지 않는다(키트 태그 «주제 소품») — 이야기가 부를 때만 놓는다. 조각별 자리는 키트 `placementRules`.\n\n## 3. 조립 예제 6×5 (그림 `objects-scene.png` 원본 해상도 · `objects-scene-3x.png`)\n\n놓은 순서(키트 · 왼쪽 위): `jp-spring-basin` (2,1)\n\n아래층 lower(한 줄 = 맵 한 줄, index = y*6+x):\n```\n 3330  3330  3330  3330  3330  3330\n 3330  3330  3330  3330  3330  3330\n 3330  3330  3330  3330  3330  3330\n 3330  3330  3330  3330  3330  3330\n 3330  3330  3330  3330  3330  3330\n```\n\n위층 upper:\n```\n   -1    -1    -1    -1    -1    -1\n   -1    -1 20459 20460    -1    -1\n   -1    -1 20461 20462    -1    -1\n   -1    -1    -1    -1    -1    -1\n   -1    -1    -1    -1    -1    -1\n```\n\n## 4. 정상/오류 (실제로 변조해 검출, 그림 `objects-err.png` — 왼쪽 정상 · 가운데·오른쪽 변조, 빨간 상자)\n\n| 변조 | 검출 코드 | 첫 오류(코드, 키트, x, y) |\n|---|---|---|\n| 샘(돌 수반 샘물) 칸을 위층에서 빼 아래층에 찍음 (2,1) — 바닥이 사라지고 둘레가 뚫린다 | E_OBJ_LAYER | ('E_OBJ_LAYER', 'jp-spring-basin', 2, 1) |\n| 샘(돌 수반 샘물) 첫 줄 2칸을 뺌 (2,1) — 기물이 잘린다 | E_OBJ_INCOMPLETE | ('E_OBJ_INCOMPLETE', 'jp-spring-basin', 2, 1) |\n\n오류 코드: E_OBJ_LAYER 키트 칸이 아래층에 있다 · E_OBJ_INCOMPLETE 키트 칸이 빠졌다 · E_OBJ_PASSAGE 칸 통행이 선언(막힌 칸/걷는 칸)과 다르다.\n확인 범위: 키트 칸이 위층에 통째로 있는가, 칸 통행이 선언과 같은가(시트 통행표). 이벤트 실행·그림의 미감·3/4 시점(이 그림들은 관문 미통과다)·모델이 실제로 잘 놓는지는 보지 않는다."
+}
+],
+"images": [
+{
+"id": "jp-img-story-scene",
+"name": "objects-scene.png",
+"caption": "이야기 기물 1종 조립 예제 — 원본 해상도 96×80(시트 칸 이어 붙임). 3/4 관문 미통과 — 오너 면제 그림.",
+"dataUrl": "/assets/jp-city-story-references/objects-scene.png"
+},
+{
+"id": "jp-img-story-scene-3x",
+"name": "objects-scene-3x.png",
+"caption": "같은 장면 3배 최근접 확대.",
+"dataUrl": "/assets/jp-city-story-references/objects-scene-3x.png"
+},
+{
+"id": "jp-img-story-err",
+"name": "objects-err.png",
+"caption": "정상(왼쪽) · 샘(돌 수반 샘물)을 아래층에(가운데) · 샘(돌 수반 샘물) 첫 줄 빠짐(오른쪽), 2배 최근접. 빨간 상자 = 변조 자리.",
+"dataUrl": "/assets/jp-city-story-references/objects-err.png"
+}
+]
+}
