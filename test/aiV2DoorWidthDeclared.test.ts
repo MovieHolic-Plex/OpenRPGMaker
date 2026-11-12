@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
-import { inferMapDoor } from "@/project/mapDoorKinds";
+import { classifyDoorLabel, inferMapDoor } from "@/project/mapDoorKinds";
 import type { GameMap, Project } from "@/project/types";
 import { isEntranceArt } from "@/ai/v2/place/entrances";
 
@@ -22,7 +22,9 @@ function stage(tilesetId: string, kitId: string): { ctx: Ctx; door: { x: number;
   const part = kit.parts!.find((p) => p.kind === "entrance")!;
   const w = Math.max(12, kit.rows[0]!.tiles!.length + 6), h = Math.max(10, kit.rows.length + 6);
   for (const id of ["map_t", "map_in"]) expect(runTool(ctx, "create_map", { id, name: id, width: w, height: h, tilesetId }).ok).toBe(true);
-  const floor = tileset.passability.findIndex((p, t) => !!p && p.up && p.down && p.left && p.right && !!(tileset.tileMeta as unknown as ({ label?: string } | undefined)[])[t]?.label);
+  // 바닥: 사방으로 걷는 칸이고 건물 그림이 아니며 이름표가 문으로 읽히지 않는 첫 타일(sf_station 1번은 걷는 돔 지붕 칸 「거주 돔(… + 문)」 이다).
+  const meta = tileset.tileMeta as unknown as ({ label?: string; role?: string } | undefined)[];
+  const floor = tileset.passability.findIndex((p, t) => !!p && p.up && p.down && p.left && p.right && !!meta[t]?.label && !["wall", "building", "roof"].includes(meta[t]!.role ?? "") && !classifyDoorLabel(meta[t]!.label!));
   expect(floor).toBeGreaterThanOrEqual(0);
   const maps = { ...ctx.project.maps };
   for (const id of ["map_t", "map_in"]) {
