@@ -378,6 +378,58 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 다시 지은 판의 «모래 수호자» 는 미라 그림으로 서고 싸운다(옛 저장본의 수호자는 드래곤 사본 그대로 — 그림만 전투 그림과 같아진다). 자동 플레이 엔딩·다시 읽기 성공. **화면 미검증** — 그림은 사람·판정자가 본다.
 남은 것: 테마 표의 적은 기본 DB 106종에서 고른 것이라 SF·전국 일본·선사는 전부 대역이다(없는 그림 줄이 남는다). 시험 `test/aiV2PlaceTheme.test.ts`.
 
+## 적 그림은 현행 세트 — 『폴른 스타』가 쓰는 새 전투 시트에서만 고르고 그 그림을 프로젝트에 넣는다 (2026-11-12, 오너 r1w-fun)
+
+오너(Haiku 가 지은 선사 시대 게임 r1w-fun 을 해 보고): «몬스터는 왜 star fallen 이랑 다르게 구형 몬스터를 배치해놨고».
+
+무엇이 달랐나(파일 근거):
+
+| | 전투에 서는 그림 | 맵에 서는 그림 |
+|---|---|---|
+| r1w-fun (v2) | 번들 3×3 시트 `public/assets/generated/pixel-enemies/<slug>.png`(64px 9칸, #1872 의 140종) — 리자드맨·송곳니 멧돼지·검치호·화염 지네·새끼 용·베히모스 | 그 번들 그림의 첫 칸에서 런타임이 뽑은 걷기 칩(5곳) + 같은 «종류» 의 옛 걷기 칩 `tex_easyrpg_charset_animal` 1곳(검치호) |
+| 『폴른 스타』 | 같은 리소스 id 에 **업로드로 얹은** 새 시트 `src/project/flagship/fallen/monsterSheets16.ts`(34종, 5×4 20칸, 48~192px) — `monsterArt16.ts` 가 `project.assets.uploaded[<id>]`(초상) + `<id>-sheet16`(시트)로 넣는다 | 그 초상에서 런타임이 뽑은 걷기 칩(`fieldFoeSprite.ts`) |
+
+고르던 함수와 원인: `place/placeTheme.ts` 의 테마 표(세계 × 종류 → 기본 DB 적 id) · `blueprintPath.foeTroop` · `place/builders/dungeonFoes.planTroops` · `story/sceneVerbs.bossTroop` 이 모두 **기본 DB 적 106종의 `monsterResourceId` 를 그대로** 썼다. 새 그림은 『폴른 스타』 굽기 안에서만 얹혔으므로(프로젝트 업로드) v2 가 짓는 게임은 늘 번들 3×3 그림이었다. 맵 위는 `place_field_enemy` 가 같은 «종류» 의 옛 charset 칸(`fieldEnemyGraphics.ts`)을 먼저 골랐다.
+
+지금:
+
+- **현행 세트**(`src/assets/currentMonsterArt.ts`): id 목록(34) + `installCurrentMonsterArt(project, ids)`. 그림 데이터(0.9MB)는 그 자리에 두고 늦게 읽는다 — 턴 첫 지시 앞(`turn/modelHooks.firstPromptSuffix`)과 끝맺음 `step-foes` 앞에서 `preloadCurrentMonsterArt()`.
+- **고르는 한 곳**(`story/currentFoes.ts`): `currentFoe(project, 적 id)` → 그 적의 그림이 현행이면 그 적, 아니면 가장 가까운 현행 종(대역 표 — 해골·좀비·미라 → 창백한 유령, 리자드맨 → 독사, 검치호·곰 → 다이어 울프, 용류 → 청룡 …) + 바란 그림 이름. 대역도 없으면 undefined. 위 네 고르기가 모두 여기에 묻는다 — 구형 그림은 v2 가 세우는 적에 나오지 않는다.
+- **테마 표**: 적 목록 = 그 장소가 바라는 종 + 현행 그림이 있는 그 장소의 종. 서는 것은 현행 그림이 있는 종뿐(`drawn`)이고, 없는 종은 종마다 없는 그림 줄 `[art-gap] theme=prehistoric/swamp want=foe wanted=«lizardman-spear» …` 로 남는다 — 그 종이 그려지면 표를 고치지 않아도 선다. 테마 표에 없는 세계(버들항)의 싸우는 단계는 흔한 판타지 목록(`COMMON`)과 이름의 적 낱말(`enemyArtFor` → `currentFoe`)에서.
+- **같이 서는 길 적은 자기 기술이 있는 종만**(`placeTheme.withOwnSkills`): 시작 파티에 맞춘 사본은 센 기술이 「맹독 이빨」·「산성 침」으로 갈려(`bossThreatScaling.swapOverpoweredSkills`) 종이 달라도 기술이 같아진다. 현행 그림으로 좁히자 사막 길 적이 독사·복면 산적(둘 다 「맹독 이빨」)이 되어 끝맺음 «적 개성»이 울렸다(은행 jrpg-w3). 그래서 길 적 목록은 그 검사와 같은 값(`judge/enemyChecks.foeSkillNames`)으로 «종마다 다른 종에 없는 기술 하나»인 것만 순서대로 남긴다 — 선사 시대 늪은 독사·뿔 딱정벌레(멧돼지·사마귀는 사본 기술이 독사와 같다). 종 수를 늘리려면 고르기가 아니라 그 갈아 끼우기가 종마다 다른 기술을 주어야 한다(남은 일).
+- **던전 빌더의 대역 무리**(`dungeonFoes.ensureFoeTroop`): 맞춤이 목표(승률·한 판 손실 상한 — `fitWithinTarget`)에 못 닿으면 마릿수를 줄인다. 코볼트 대역 고블린 정찰병 둘은 독 때문에 공격을 3까지 내려도 Lv1 혼자에게 한 판 38% 였고 그 맵 필드 적을 이어 싸우면 76%(예산 60%)였다(은행 lay-main-mine). 한 마리로 맞추면 한 판 1%.
+- **그림 넣기**: 세울 적을 정한 자리에서 그 그림만 넣는다(`useCurrentArt`) — 전투 시트(`pixelEnemySheet` 가 프로젝트 저작 시트를 번들보다 먼저 찾는다)와 맵 위 그림(업로드 monster 가 먼저)이 같은 새 그림이 된다.
+- **맵 위**: `place_field_enemy` 는 그 프로젝트에 업로드 monster 그림이 있으면 옛 charset 칸 대신 전투 그림 그대로 세운다(런타임이 걷기 칩을 뽑는다). `stepFoes.foeGraphic` 도 같다.
+- **옛 판**(끝맺음 `step-foes`): `redrawStepFoesIn`(함수가 고른 단계 상대 `troop_fit_*` 의 그림이 현행이 아니면 같은 이름·같은 사본 id 로 다시 고름) → `settleStepFoesIn` → `restockOffThemePlaces`(테마 밖 = 이제 구형 그림도) → `settleCurrentArtIn`(맵에서 싸우는 적마다 그림 넣기 · 옛 걷기 칩 → 전투 그림 · 그림이 없는 종은 없는 그림 줄).
+
+r1w-fun 저장본 → 끝맺음 재생(모델 없음, `finishReplay.mts`) 전/후:
+
+| 자리 | 전(그림) | 후(그림) |
+|---|---|---|
+| 늪지 길 적 셋 | lizardman-spear · boar-tusk(구) · tiger-saber(옛 걷기 칩) | snake-viper · beetle-horn · snake-viper |
+| 늪지 «늪 괴수»(s3) | dragon-whelp | wolf-dire |
+| 화산 기슭 길 적 | centipede-fire | spirit-fire |
+| 벽화 동굴 «불의 정령»(s7 보스) | behemoth-horn | spirit-fire |
+
+자동 플레이 엔딩 성공 → 성공 · 다시 읽기 성공. 저장(SQLite) → 출하 플레이어(`wholeGamePlayer --serve`)로 띄워 전투·맵을 봤다: 전투의 뿔 딱정벌레와 맵의 딱정벌레가 같은 그림. 그림 `~/claude-viz/av2-look-defaults.html`.
+
+**그릴 목록**(현행 그림이 없어 대역이 선 종 — 세계별, `[art-gap]` 줄의 `wanted`):
+
+| 세계 | 없는 종 |
+|---|---|
+| 선사 시대 | 공룡(랩터·트리케라톱스) · lizardman-spear · tiger-saber · behemoth-horn · dragon-whelp · salamander-flame · centipede-fire · bear-brown |
+| 북방 설원 | bear-brown · goat-mountain · lich-frost · slime-blue |
+| 사막 동방 | scorpion-sand · worm-sand · mummy-bandage · totem-cursed · skeleton-bone · bonepile-crawler |
+| 해적 군도 | lizardman-spear · squid-deep · shark-land · skeleton-knight · skeleton-bone |
+| 하늘섬 | harpy-cliff · sylph-air · spirit-wind · spirit-light · griffin-sky · roc-giant · gargoyle-stone |
+| 증기 도시 | rat-giant · puppet-string · sword-flying · armor-living |
+| 전국·에도 | 사무라이·닌자·요괴 · cat-shadow · armor-living · ogre-club · knight-fallen |
+| 우주 정거장 | 경비 로봇·드론·외계 생물 · slime-metal · sword-flying |
+| 황무지 | zombie-rot · ghoul-grave · rat-giant · behemoth-horn · ogre-club |
+
+대역 표에도 없는 종: mimic-chest · scarecrow-field. 현행 세트에 있지만 기본 DB 에 적 기록이 없어 v2 가 못 쓰는 그림: jelly-lantern · leafling-01 · snake-01 · well-olm · yeti-frost(『폴른 스타』 전용 적).
+남은 것: 모델이 `upsert_enemy`·`upsert_troop` 으로 직접 고른 구형 그림 적은 그대로 선다(끝맺음이 없는 그림 줄만 남긴다) · `author_dungeon` 을 직접 부른 던전의 주제 적(`dungeonThemeTroops`)은 v2 빌더를 거치지 않는다 · 몬스터 수집 장르의 종 그림은 다른 세트다. 시험 `test/aiV2CurrentFoes.test.ts` · `test/aiV2PlaceTheme.test.ts`.
+
 ## 맵은 목적으로 깐다 — 목적표(역할 건물 · 채움 집 · 건물 수에서 나오는 크기), 사막 번들부터 (2026-11-11)
 
 **문제(오너 2026-11-11 «초록 네모가 전부 문이 맞기는 한데 ..», 「맵은 목적으로 깐다 — 공간이 남으면 너무 큰 것」).** 세계 장소는 종류마다 고정 크기로 지어져 집 줄을 끝까지 채웠다.

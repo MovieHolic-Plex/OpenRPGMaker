@@ -580,7 +580,9 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
 
       // 필드 그림 = 전투 그림과 같은 종류. 정본은 선두 적의 monsterResourceId(전투에서 보이는 그림)이다.
       const lead = draft.database.enemies.find((entry) => entry.id === troop.enemyIds[0]);
-      const expected = fieldGraphicForBattler(lead?.monsterResourceId);
+      // 이 프로젝트가 그 전투 그림을 새로 넣었으면(업로드 monster — 현행 몬스터 그림·공방 시트) 같은 종류의 옛 걷기 칩은 다른 그림이다: 전투 그림 그대로 세운다.
+      const ownArt = !!lead?.monsterResourceId && draft.assets.uploaded[lead.monsterResourceId]?.kind === 'monster';
+      const expected = ownArt ? undefined : fieldGraphicForBattler(lead?.monsterResourceId);
       let graphic: EventPageGraphic | undefined;
       let graphicNote: string | undefined;
       // query 만 준 그림(「wolf」)은 전투 그림이 있으면 그 그림을 쓴다 — 걷기 칩 검색이 0개라 거절되거나 다른 칩으로 어긋나지 않게.

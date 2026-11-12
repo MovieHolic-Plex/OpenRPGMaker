@@ -17,6 +17,8 @@ import { buildEvent } from "./events";
 import { buildPeople } from "../place/people";
 import { eventsOf } from "../place/cells";
 import { ensureFoeTroop, enemyArtFor } from "../place/builders/dungeonFoes";
+import { currentFoe } from "./currentFoes";
+import { artGapLine, parseArtGap } from "@/project/artGap";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
 import { reachableCells } from "../judge/eventReach";
 import { findMapId } from "../loop/argGuard";
@@ -47,7 +49,7 @@ export interface EndingSceneSpec {
 
 const clean = (lines: readonly unknown[] | undefined): string[] => (lines ?? []).map((l) => String(l ?? "").trim()).filter(Boolean).slice(0, 12);
 const result = (ok: boolean, run: BuildRun, firstCall: number, summary: string, warnings: string[], mapIds: string[], eventIds: { mapId: string; eventId: string }[] = []): ContentBuildResult =>
-  ({ ok, mapIds, summary, warnings, missingArt: [], calls: run.calls.slice(firstCall), eventIds });
+  ({ ok, mapIds, summary, warnings: warnings.filter((w) => !parseArtGap(w)), missingArt: warnings.filter((w) => !!parseArtGap(w)), calls: run.calls.slice(firstCall), eventIds });
 
 function ensureSwitch(project: Project, id: string, name: string): Project {
   const list = (project.switches ?? []) as { id: string; name: string }[];
@@ -70,8 +72,12 @@ function bossTroop(run: BuildRun, spec: BossEncounterSpec["boss"], warnings: str
     const own = project.database.troops.find((t) => { const ids = [...(t.enemyIds ?? []), ...(t.members ?? []).map((m) => m.enemyId)]; return ids.length === 1 && ids[0] === named.id; });
     if (own) return own.id;
   }
-  const art = named?.id ?? enemyArtFor(project, `${spec.enemy ?? ""} ${spec.name} ${spec.looks ?? ""}`) ?? ["enemy_knight_fallen", "enemy_demon_lord"].find((id) => project.database.enemies.some((e) => e.id === id));
-  if (!art) return undefined;
+  const wanted = named?.id ?? enemyArtFor(project, `${spec.enemy ?? ""} ${spec.name} ${spec.looks ?? ""}`) ?? ["enemy_knight_fallen", "enemy_demon_lord"].find((id) => project.database.enemies.some((e) => e.id === id));
+  if (!wanted) return undefined;
+  // 서는 것은 현행 그림이 있는 종(story/currentFoes) — 그림이 없는 종은 가장 가까운 현행 종이 그 이름으로 서고, 바란 그림은 없는 그림 줄로 남는다.
+  const drawn = currentFoe(project, wanted);
+  const art = drawn?.enemyId ?? wanted;
+  if (drawn?.wanted) warnings.push(artGapLine({ want: "boss", wanted: drawn.wanted, where: spec.name, standIn: project.database.enemies.find((e) => e.id === art)?.name ?? art, by: "add_boss_encounter" }));
   if (!enemyArtFor(project, `${spec.enemy ?? ""} ${spec.name} ${spec.looks ?? ""}`) && !named) warnings.push(`「${spec.name}」에 맞는 적 그림 낱말이 없어 ${art} 그림으로 세웠다 — 다른 그림이면 enemy 에 낱말(해골·늑대·용…)을 준다`);
   return ensureFoeTroop(run, art, "boss", pickTroops(project, undefined).boss, spec.name);
 }

@@ -70,6 +70,11 @@ function installArt(project: Project, want: (art: (typeof FS_MONSTER_SHEETS_16)[
   return installed;
 }
 
+/** 이 프로젝트에 그 id 들의 새 그림(초상 + 시트)을 넣는다 — 조수 v2 가 『폴른 스타』와 같은 그림을 쓰는 길(src/assets/currentMonsterArt.ts). 넣었거나 이미 있던 id. */
+export function installMonsterArt16For(project: Project, resourceIds: ReadonlySet<string>): Set<string> {
+  return installArt(project, (art) => resourceIds.has(art.resourceId));
+}
+
 export function applyFallenMonsterArt16(project: Project): void {
   const installed = installArt(project, () => true);
   for (const change of FS_MONSTER_SCALE_16) {
