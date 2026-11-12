@@ -324,6 +324,18 @@ export interface TileGraft {
   sourceTilesPerRow?: number;
 }
 
+/**
+ * 타일셋 겉모습: 같은 칩셋으로 지은 게임들이 서로 다른 마을로 보이게, 게임마다 바닥·길·광장 재질(surface)과 나무 수종(trees),
+ * 숲 생김새(woods — 그림이 아니라 시공기가 읽는 값)를 하나씩 고른다. 값은 번들 표(assets/beodeulLooks.json)의 선택지 이름.
+ */
+export interface TilesetLook {
+  /** 겉모습 그림판의 번들 textureKey — 프로젝트 문자열 수집(미리 싣기·내보내기)이 이 값으로 그림판을 찾는다. */
+  textureKey: string;
+  surface?: string;
+  trees?: string;
+  woods?: string;
+}
+
 // "보이지 않는 하네스" 구조 킷(2026-07-19 v2 설계 §③④ 수직 슬라이스).
 // 유저의 반복 붓질에서 감지·등록된 반복 단면 패턴 — 팔레트 스탬프의 데이터 원본.
 // rows[r].tiles = 하위 레이어(단면 r행, 좌→우), rows[r].upperTiles = 상위 레이어(-1 = 비움).
@@ -561,6 +573,11 @@ export interface TilesetDef {
   terrain: number[];
   // 타일 이식 목록. 렌더는 베이크(캔버스 합성)로 처리 — tileGrafts.ts / tilesetImage.ts 참고.
   tileGrafts?: TileGraft[];
+  /**
+   * 이 게임이 고른 겉모습(2026-11-12) — 번들 겉모습 그림판(textureKey)에서 갈래마다 하나. 칸 번호·통행·오토타일·킷은 그대로 두고
+   * 그릴 때만 그 칸의 그림을 겉모습 그림으로 겹친다(assets/tilesetLooks.ts → activeTileGrafts). 없으면 원래 그림.
+   */
+  look?: TilesetLook;
   tileMeta?: TileAiMetadata[];
   tileGroups?: TileGroupMetadata[];
   palettePresets?: PalettePreset[];

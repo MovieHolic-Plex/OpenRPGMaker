@@ -1,0 +1,424 @@
+{
+ "license": "OPRN 기본 에셋(게임 사용 자유) — 직접 그린 그림",
+ "author": "Claude Fable 5.2 (effort medium), 그림 하나에 호출 하나",
+ "waiver": "fable-looks-beodeul-2026-11-12",
+ "textures": [
+  {
+   "id": "ground-dry",
+   "src": "ground-dry.png",
+   "kind": "terrain",
+   "name": "마른 짧은 풀",
+   "en": "dry short grass"
+  },
+  {
+   "id": "ground-clover",
+   "src": "ground-clover.png",
+   "kind": "terrain",
+   "name": "이끼·토끼풀 바닥",
+   "en": "mossy clover ground"
+  },
+  {
+   "id": "ground-earth",
+   "src": "ground-earth.png",
+   "kind": "terrain",
+   "name": "다져진 맨흙",
+   "en": "bare packed earth"
+  },
+  {
+   "id": "ground-sand",
+   "src": "ground-sand.png",
+   "kind": "terrain",
+   "name": "바닷가 모래",
+   "en": "pale coastal sand"
+  },
+  {
+   "id": "road-dirt",
+   "src": "road-dirt.png",
+   "kind": "terrain",
+   "name": "다진 흙길",
+   "en": "packed dirt road"
+  },
+  {
+   "id": "road-gravel",
+   "src": "road-gravel.png",
+   "kind": "terrain",
+   "name": "자갈길",
+   "en": "gravel road"
+  },
+  {
+   "id": "road-brick",
+   "src": "road-brick.png",
+   "kind": "terrain",
+   "name": "붉은 벽돌 길",
+   "en": "red brick paving"
+  },
+  {
+   "id": "road-plank",
+   "src": "road-plank.png",
+   "kind": "terrain",
+   "name": "널길",
+   "en": "plank boardwalk"
+  },
+  {
+   "id": "road-flag",
+   "src": "road-flag.png",
+   "kind": "terrain",
+   "name": "옅은 판석 길",
+   "en": "pale flagstone road"
+  },
+  {
+   "id": "plaza-herring",
+   "src": "plaza-herring.png",
+   "kind": "terrain",
+   "name": "엇갈린 벽돌 광장",
+   "en": "herringbone brick plaza"
+  },
+  {
+   "id": "plaza-cobble",
+   "src": "plaza-cobble.png",
+   "kind": "terrain",
+   "name": "둥근 자갈 광장",
+   "en": "round cobble plaza"
+  },
+  {
+   "id": "plaza-slate",
+   "src": "plaza-slate.png",
+   "kind": "terrain",
+   "name": "점판암 광장",
+   "en": "slate slab plaza"
+  }
+ ],
+ "trees": [
+  {
+   "id": "tree-birch-4x5-1",
+   "src": "tree-birch-4x5-1.png",
+   "kind": "organic",
+   "species": "birch",
+   "slot": "4x5"
+  },
+  {
+   "id": "tree-birch-4x5-2",
+   "src": "tree-birch-4x5-2.png",
+   "kind": "organic",
+   "species": "birch",
+   "slot": "4x5"
+  },
+  {
+   "id": "tree-birch-3x4-1",
+   "src": "tree-birch-3x4-1.png",
+   "kind": "organic",
+   "species": "birch",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-birch-3x4-2",
+   "src": "tree-birch-3x4-2.png",
+   "kind": "organic",
+   "species": "birch",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-birch-3x3-1",
+   "src": "tree-birch-3x3-1.png",
+   "kind": "organic",
+   "species": "birch",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-birch-3x3-2",
+   "src": "tree-birch-3x3-2.png",
+   "kind": "organic",
+   "species": "birch",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-birch-2x2-1",
+   "src": "tree-birch-2x2-1.png",
+   "kind": "organic",
+   "species": "birch",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-birch-2x2-2",
+   "src": "tree-birch-2x2-2.png",
+   "kind": "organic",
+   "species": "birch",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-willow-4x5-1",
+   "src": "tree-willow-4x5-1.png",
+   "kind": "organic",
+   "species": "willow",
+   "slot": "4x5"
+  },
+  {
+   "id": "tree-willow-4x5-2",
+   "src": "tree-willow-4x5-2.png",
+   "kind": "organic",
+   "species": "willow",
+   "slot": "4x5"
+  },
+  {
+   "id": "tree-willow-3x4-1",
+   "src": "tree-willow-3x4-1.png",
+   "kind": "organic",
+   "species": "willow",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-willow-3x3-1",
+   "src": "tree-willow-3x3-1.png",
+   "kind": "organic",
+   "species": "willow",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-willow-2x2-1",
+   "src": "tree-willow-2x2-1.png",
+   "kind": "organic",
+   "species": "willow",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-willow-2x2-2",
+   "src": "tree-willow-2x2-2.png",
+   "kind": "organic",
+   "species": "willow",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-apple-4x5-1",
+   "src": "tree-apple-4x5-1.png",
+   "kind": "organic",
+   "species": "apple",
+   "slot": "4x5"
+  },
+  {
+   "id": "tree-apple-3x4-1",
+   "src": "tree-apple-3x4-1.png",
+   "kind": "organic",
+   "species": "apple",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-apple-3x4-2",
+   "src": "tree-apple-3x4-2.png",
+   "kind": "organic",
+   "species": "apple",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-apple-3x3-1",
+   "src": "tree-apple-3x3-1.png",
+   "kind": "organic",
+   "species": "apple",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-apple-3x3-2",
+   "src": "tree-apple-3x3-2.png",
+   "kind": "organic",
+   "species": "apple",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-apple-2x2-1",
+   "src": "tree-apple-2x2-1.png",
+   "kind": "organic",
+   "species": "apple",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-apple-2x2-2",
+   "src": "tree-apple-2x2-2.png",
+   "kind": "organic",
+   "species": "apple",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-maple-4x5-1",
+   "src": "tree-maple-4x5-1.png",
+   "kind": "organic",
+   "species": "maple",
+   "slot": "4x5"
+  },
+  {
+   "id": "tree-maple-3x4-1",
+   "src": "tree-maple-3x4-1.png",
+   "kind": "organic",
+   "species": "maple",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-maple-3x4-2",
+   "src": "tree-maple-3x4-2.png",
+   "kind": "organic",
+   "species": "maple",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-maple-3x3-1",
+   "src": "tree-maple-3x3-1.png",
+   "kind": "organic",
+   "species": "maple",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-maple-3x3-2",
+   "src": "tree-maple-3x3-2.png",
+   "kind": "organic",
+   "species": "maple",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-maple-2x2-1",
+   "src": "tree-maple-2x2-1.png",
+   "kind": "organic",
+   "species": "maple",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-maple-2x2-2",
+   "src": "tree-maple-2x2-2.png",
+   "kind": "organic",
+   "species": "maple",
+   "slot": "2x2"
+  }
+ ],
+ "surfaces": {
+  "steppe": {
+   "label": "마른 풀 들판 · 다진 흙길 · 자갈 광장",
+   "en": "dry grass, packed dirt streets, cobble square",
+   "ground": "ground-dry",
+   "road": "road-dirt",
+   "roadEdge": "soft",
+   "plaza": "plaza-cobble",
+   "track": null
+  },
+  "mosswood": {
+   "label": "이끼·토끼풀 바닥 · 옅은 판석 길 · 점판암 광장",
+   "en": "moss and clover, pale flagstone streets, slate square",
+   "ground": "ground-clover",
+   "road": "road-flag",
+   "roadEdge": "kerb",
+   "plaza": "plaza-slate",
+   "track": "road-dirt"
+  },
+  "frontier": {
+   "label": "맨흙 바닥 · 널길 · 자갈 광장",
+   "en": "bare earth, plank boardwalk streets, cobble square",
+   "ground": "ground-earth",
+   "road": "road-plank",
+   "roadEdge": "plank",
+   "plaza": "plaza-cobble",
+   "track": "road-gravel"
+  },
+  "coast": {
+   "label": "모래 바닥 · 붉은 벽돌 길 · 엇갈린 벽돌 광장",
+   "en": "pale sand, red brick streets, herringbone brick square",
+   "ground": "ground-sand",
+   "road": "road-brick",
+   "roadEdge": "kerb",
+   "plaza": "plaza-herring",
+   "track": "road-dirt"
+  },
+  "heath": {
+   "label": "마른 풀 들판 · 자갈길 · 점판암 광장",
+   "en": "dry grass, gravel streets, slate square",
+   "ground": "ground-dry",
+   "road": "road-gravel",
+   "roadEdge": "soft",
+   "plaza": "plaza-slate",
+   "track": "road-dirt"
+  },
+  "brickrow": {
+   "label": "풀밭 · 붉은 벽돌 길 · 엇갈린 벽돌 광장",
+   "en": "green meadow, red brick streets, herringbone brick square",
+   "ground": null,
+   "road": "road-brick",
+   "roadEdge": "kerb",
+   "plaza": "plaza-herring",
+   "track": null
+  }
+ },
+ "species": {
+  "birch": {
+   "label": "자작나무",
+   "en": "birch",
+   "canopy": [
+    "#143a27",
+    "#366324",
+    "#4b8232",
+    "#6f9a43",
+    "#94b353",
+    "#bca860",
+    "#bce89c"
+   ]
+  },
+  "willow": {
+   "label": "수양버들",
+   "en": "weeping willow"
+  },
+  "apple": {
+   "label": "사과나무",
+   "en": "apple tree"
+  },
+  "maple": {
+   "label": "단풍 든 나무",
+   "en": "autumn maple",
+   "canopy": [
+    "#3d220c",
+    "#7c3a22",
+    "#a25a30",
+    "#b77541",
+    "#f08a10",
+    "#ec9900",
+    "#fbc10d"
+   ]
+  }
+ },
+ "treeSlots": {
+  "4x5": [
+   "bd-tree-d43edd",
+   "bd-tree-5844f6",
+   "bd-tree-b1d104"
+  ],
+  "3x4": [
+   "bd-tree-1a786c",
+   "bd-tree-d61d7e",
+   "bd-tree-1e09f0",
+   "bd-tree-bdd36e"
+  ],
+  "3x3": [
+   "bd-tree-03a8f7",
+   "bd-tree-a80c85",
+   "bd-tree-3e8732",
+   "bd-tree-7ecdb8"
+  ],
+  "2x2": [
+   "bd-tree-e9d9b3",
+   "bd-tree-cc0fcb",
+   "bd-tree-47e17a",
+   "bd-tree-f4f319",
+   "bd-tree-37f48b",
+   "bd-tree-d105b2",
+   "bd-tree-0f7ed1",
+   "bd-tree-132848"
+  ]
+ },
+ "woods": {
+  "wall": {
+   "label": "둘레 숲 벽",
+   "en": "a dense forest wall around the settlement"
+  },
+  "clumps": {
+   "label": "작은 숲 덩이와 빈터",
+   "en": "many small clumps with clearings"
+  },
+  "rows": {
+   "label": "길·밭가 가로수 줄",
+   "en": "tree rows along roads and fields"
+  }
+ }
+}
