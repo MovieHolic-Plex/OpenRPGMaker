@@ -1,6 +1,5 @@
 // 턴의 끝 — 기계 표로 만든 최종 보고와 실행 요약. 2026-11-11 리팩토링 R3: runAssistantV2 의 꼬리에서 옮겼다.
 import type { PiAgentDoneEvent } from "../../piAgent/protocol";
-import { V2_MAX_REPAIR_ROUNDS } from "./session";
 import { buildsWholeGame } from "../request/readers";
 import { todoReport } from "../judge/finalReport";
 import { vqaSummary } from "../judge/vqa";
@@ -20,7 +19,7 @@ export function turnFinish(turn: TurnContext & Pick<ReturnType<typeof turnRechec
       const env = state.liveEnv;
       if (env && store.items.length) refreshChecks(env, true);
       if (env) stamp(env);
-      const left = session.unresolved().filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS || !store.items.length);
+      const left = session.unresolved().filter((o) => o.rounds >= o.cap || !store.items.length);
       const leftovers = left.flatMap((o) => o.problems.slice(0, 3).map((p) => `${o.name}(${o.mapId}): ${p.replace(/ — (dress_room|네가 설계한 방이다).*$/u, "").slice(0, 200)}`));
       try { if (env && buildsWholeGame(env.ctx.project, env.request.task)) { const { counted } = countMaps(env.ctx.project); if (counted.length < RECOMMENDED_MAPS) autoNotes.push(`세는 맵 ${counted.length}/${RECOMMENDED_MAPS}장(권장) — ${RECOMMENDED_MAPS - counted.length}장 부족(차단 아님)`); } } catch { /* 이 줄이 없어도 최종 보고는 나간다 */ }
       try { if (env && buildsWholeGame(env.ctx.project, env.request.task)) { const n = countQuests(env.ctx.project).counted.length; autoNotes.push(`세는 퀘스트 ${n}/${RECOMMENDED_QUESTS}개${n < RECOMMENDED_QUESTS ? ` — ${RECOMMENDED_QUESTS - n}개 부족` : ""}`); } } catch { /* 이 줄이 없어도 최종 보고는 나간다 */ }

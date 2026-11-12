@@ -100,6 +100,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   // 게임 도구 묶음은 요청 글과 프로젝트를 같이 본 기록에서 읽는다(게임 하나를 잇는 «계속» 도 받는다).
   const gameTools = classifyRequest(t, env.ctx.project).tools.game;
   const pool = gameTools && !audioOnly(t);
+  // 이 요청의 묶음에 없는 v2 도구(끝맺음 관문이 고치는 법으로 이른 것)를 같은 감싸개로 하나 만들어 준다 — 처음 불릴 때 한 번만 묶음 전체를 짓는다.
+  let poolTools: Map<string, PiToolShape> | undefined;
+  session.repairTool = (name) => (poolTools ??= new Map(createGameTools(gameEnv, t, { pool: true }).map((tool) => [tool.name, afterWrite(escalate(flattenWrapperTool(tool, gameEnv.record)))] as const))).get(name);
   return gameTools || wantsMusicTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? [...verbs, ...createGameTools(gameEnv, t, { pool }).map((tool) => afterWrite(escalate(flattenWrapperTool(tool, gameEnv.record))))] : verbs;
 }
 
