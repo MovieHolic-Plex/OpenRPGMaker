@@ -1,6 +1,7 @@
 // 문 그림 읽기 × 테마 표(모델 없음): 「이 칸이 문·계단 그림인가」를 묻는 도구·검사를 테마 맵마다 같은 상황에 놓고,
 // 칩셋이 적어 둔 입구(place/entrances.ts entranceArtCells)와 이름표 낱말로만 입구인 그림(가문비·얼음 구멍·무너진 아치…)을 갈라 잰다.
 //   줄 transfer-pair: create_transfer_pair 의 트리거 올리기 · 줄 scene-lint: 쓰기 도구 뒤에 모델에게 가는 장면 경고 scene-transfer-off-door(「문 칸으로 옮겨라」)
+//   줄 gate-art: 바깥 → 던전 출입구의 「굴 입구·문 그림이 없다」(placementRules door-bare)가 소품 그림의 낱말을 입구로 치는가
 //   ok 적힌 입구에서만 움직였다 · wrong 낱말로만 입구인 그림을 입구로 다뤘다 · none 적힌 입구를 못 알아봤다 · n/a 그 맵에 놓을 상황이 없다
 //   bun scripts/qa/assistant-v2/doorArtMatrix.mts <outDir> [테마,테마…]     문서 openwiki/assistant-v2.md 「문 그림 읽기도 적힌 입구로」
 import fs from "node:fs";
@@ -10,6 +11,7 @@ import { isDoorArtCell } from "../../../src/project/staging/doorCells.ts";
 import { tileLabel } from "../../../src/ai/v2/place/cells.ts";
 import { reachableCells } from "../../../src/ai/v2/judge/eventReach.ts";
 import { entranceArtCells, isEntranceArt } from "../../../src/ai/v2/place/entrances.ts";
+import { placementProblems } from "../../../src/ai/v2/place/placementRules.ts";
 import { mkRun, sources } from "./themeSources.mts";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -112,6 +114,46 @@ for await (const s of sources(only ? (t) => only.has(t) : undefined)) {
     const v: V = !fake.n && !real.n ? "n/a" : fakeToArt.length ? "wrong" : realToDoor.length < real.n ? "none" : "ok";
     rows.push({ stage: "scene-lint", theme: s.theme, kind: s.kind, v, detail, cases: [...fakeToArt.map((h) => ({ ...h, by: "word" })), ...realToDoor.map((h) => ({ ...h, by: "declared" }))] });
   } catch (e) { rows.push({ stage: "scene-lint", theme: s.theme, kind: s.kind, v: "wrong", detail: `threw ${(e as Error).message.slice(0, 160)}`, cases: [] }); }
+
+  // ── gate-art: 바깥 맵에서 던전으로 가는 출입구 — 「굴 입구·문·계단 그림이 없다」(place/placementRules.ts door-bare)가 무엇을 입구 그림으로 치는가.
+  //    세 자리에 심는다: 맨땅(위·아래 칸에 아무 그림 없음) · 적힌 입구 바로 밑 · 굽기가 소품·바닥이라 적은 그림(역할)인데 이름표 낱말이 문·굴·다리인 것 바로 밑(「가문비」「세운 보일러(화실 문)」).
+  //    맨땅과 소품 밑은 짚어야 하고 적힌 입구 밑은 짚지 않아야 한다. 역할이 건물이거나 없는 낱말 그림(성문·거목 굴 문)은 판정하지 않고 수만 적는다.
+  try {
+    const outdoor = M0.mapRole !== "dungeon" && M0.climate?.mode !== "indoor";
+    const meta: any[] = P0.tilesets[M0.tilesetId]?.tileMeta ?? [];
+    const WORD = /계단|사다리|문|입구|출구|갱구|굴|아치|통로|길|다리|발판|매트|깔개|그림자|stair|ladder|door|gate|adit|mouth|arch|exit|path|road|bridge|mat|rug|shadow/iu, ROAD = /길|path|road|모랫길|흙길/iu; // 옛 읽기(재는 쪽의 사본)
+    const ENTRANCE_ROLES = new Set(["building", "wall", "door", "stairs"]);
+    const tilesAt = (x: number, y: number): number[] => (x < 0 || y < 0 || x >= w || y >= M0.height ? [] : LAYERS.map((k) => M0[k]?.[y * w + x]).filter((t: any) => typeof t === "number" && t >= 0));
+    const wordTiles = (x: number, y: number) => tilesAt(x, y).filter((t) => { const l = meta[t]?.label; return !!l && WORD.test(l) && !ROAD.test(l); });
+    const kindAt = (x: number, y: number): "declared" | "prop-word" | "other-word" | "none" => {
+      if (art.has(y * w + x)) return "declared";
+      const wt = wordTiles(x, y);
+      if (!wt.length && !word(x, y)) return "none";
+      return wt.length && wt.every((t) => meta[t]?.role && !ENTRANCE_ROLES.has(meta[t].role)) ? "prop-word" : "other-word";
+    };
+    const spots: Record<string, { x: number; y: number; label?: string }[]> = { bare: [], declared: [], "prop-word": [], "other-word": [] };
+    if (outdoor) for (let y = 3; y < M0.height - 3; y++) for (let x = 3; x < w - 3; x++) {
+      if (!free(x, y) || evAt(x, y - 1) || evAt(x, y + 1)) continue;
+      const here = kindAt(x, y), up = kindAt(x, y - 1), down = kindAt(x, y + 1);
+      if (here !== "none" || down !== "none") continue;
+      (up === "none" ? spots.bare : spots[up])!.push({ x, y, label: up === "none" ? undefined : topLabel(P0, M0, x, y - 1) });
+    }
+    const gateTo = (id: string, x: number, y: number): any => ({ id, name: "→ 굴", x, y, trigger: { kind: "playerTouch" }, commands: [],
+      pages: [{ id: `${id}_p0`, name: "", conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" }, priority: "below", overlapForbidden: false, movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "transfer", mapId: "map_t_dungeon", x: 1, y: 1, direction: "down" }] }] });
+    const picked = Object.fromEntries(Object.entries(spots).map(([k, cells]) => [k, spread(cells, 4)]));
+    const planted = Object.entries(picked).flatMap(([k, cells]) => cells.map((c, n) => ({ k, c, id: `ev_t_${k}_${n}` })));
+    const map1 = { ...M0, events: [...M0.events, ...planted.map((q) => gateTo(q.id, q.c.x, q.c.y))] };
+    const p1 = { ...P0, maps: { ...P0.maps, [s.mapId]: map1, map_t_dungeon: { ...M0, id: "map_t_dungeon", name: "굴", mapRole: "dungeon", events: [] } } };
+    const flagged = new Set(placementProblems(p1, map1).filter((q: any) => q.kind === "door-bare").map((q: any) => q.eventId));
+    const hit = (k: string) => planted.filter((q) => q.k === k && flagged.has(q.id)).length, n = (k: string) => picked[k]!.length;
+    const missed = planted.filter((q) => q.k === "prop-word" && !flagged.has(q.id));
+    const named = [...new Set(missed.map((q) => `«${q.c.label}»`))].slice(0, 3).join(" ");
+    const detail = `cells under prop-role word art ${spots["prop-word"]!.length} · under a declared entrance ${spots.declared!.length} · called bare: bare ground ${hit("bare")}/${n("bare")} · under prop-role word art ${hit("prop-word")}/${n("prop-word")}${named ? ` (not called bare: ${named})` : ""}`
+      + ` · under a declared entrance ${hit("declared")}/${n("declared")} · under other word art (building role or none — not judged) ${hit("other-word")}/${n("other-word")}`;
+    const v: V = !outdoor || !planted.length ? "n/a" : missed.length ? "wrong" : hit("declared") || hit("bare") < n("bare") ? "none" : "ok";
+    rows.push({ stage: "gate-art", theme: s.theme, kind: s.kind, v, detail: outdoor ? detail : "indoor or dungeon map", cases: planted.map((q) => ({ ...q.c, by: q.k, bare: flagged.has(q.id) })) });
+  } catch (e) { rows.push({ stage: "gate-art", theme: s.theme, kind: s.kind, v: "wrong", detail: `threw ${(e as Error).message.slice(0, 160)}`, cases: [] }); }
 
   console.log(`${s.theme}/${s.kind} ${Date.now() - t0}ms ${rows.filter((r) => r.theme === s.theme && r.kind === s.kind).map((r) => `${r.stage}=${r.v}`).join(" ")}`);
 }

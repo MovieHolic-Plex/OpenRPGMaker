@@ -4,6 +4,7 @@
 import { roomSpecOf } from "@/editor/handInterior/builder";
 import { isPassable } from "@/project/collision";
 import { labelHasWord, labelNames } from "@/project/labelWords";
+import { kitWallTiles } from "@/project/mapDoorKinds";
 import { isDoorArtCell } from "@/project/staging/doorCells";
 import { tilesetSurface } from "@/project/tilesetSurface";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
@@ -221,6 +222,25 @@ export function isEntranceArt(project: Project, map: GameMap, x: number, y: numb
   if (!tiles) return isDoorArtCell(project, map, x, y);
   const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
   return LAYERS.some((layer) => { const t = m[layer]?.[y * map.width + x]; return typeof t === "number" && t >= 0 && tiles.has(t); });
+}
+
+// ── 굽기가 «드나드는 그림이 아닌 것» 이라 적은 타일 — 이름표에 문·굴·다리 낱말이 있어도 입구 그림으로 읽지 않는다(place/placementRules.ts 의 출입구 그림 검사).
+//   역할이 건물·벽·문·계단이 아닌 것(소품·바닥·장식 — 「가문비」「세운 보일러(화실 문)」「호빗 굴 마루」) · 입구를 적어 둔 건물 키트의 입구 칸 밖 그림(벽·창 — project/mapDoorKinds.ts kitWallTiles).
+//   적힌 드나드는 그림(위 entranceArtTiles)은 역할이 무엇이든 뺀다. 역할을 안 적은 칩셋(버들항·조선)의 타일은 키트 벽만 든다 — 나머지는 이름표로 읽는다.
+const ENTRANCE_ROLES = new Set(["building", "wall", "door", "stairs"]);
+const notEntranceCache = new Map<string, ReadonlySet<number>>();
+
+export function notEntranceTiles(tileset: TilesetDef | undefined): ReadonlySet<number> {
+  const meta = ((tileset as { tileMeta?: unknown } | undefined)?.tileMeta ?? []) as Meta[];
+  const key = `${tileset?.id}|${meta.length}|${((tileset as { structureKits?: readonly Kit[] } | undefined)?.structureKits ?? []).length}`;
+  const hit = notEntranceCache.get(key);
+  if (hit) return hit;
+  const out = new Set<number>(kitWallTiles(tileset));
+  meta.forEach((m, tile) => { if (m?.role && !ENTRANCE_ROLES.has(m.role)) out.add(tile); });
+  for (const tile of entranceArtTiles(tileset) ?? []) out.delete(tile);
+  if (notEntranceCache.size > 64) notEntranceCache.clear();
+  notEntranceCache.set(key, out);
+  return out;
 }
 
 /** 드나드는 그림이 놓인 칸(칸 번호 y*w+x) — 「입구 그림 옆 맨바닥에 선 이벤트」 출하 검사(judge/discoverability.ts offArtEntrances)가 맵을 한 번 훑어 읽는다. */

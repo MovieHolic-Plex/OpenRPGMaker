@@ -74,7 +74,7 @@ function doorCells(tileset: TilesetDef | undefined, kit: EntranceKit): DoorCells
   return doorArt && !doorItself ? { columns, top, bottom } : null;
 }
 
-function kitWallTiles(tileset: TilesetDef | undefined): ReadonlySet<number> {
+export function kitWallTiles(tileset: TilesetDef | undefined): ReadonlySet<number> {
   const kits = ((tileset as { structureKits?: readonly EntranceKit[] } | undefined)?.structureKits ?? []) as readonly EntranceKit[];
   const key = `${tileset?.id}|${tileset?.passability?.length ?? 0}|${kits.length}`;
   const hit = wallCache.get(key);

@@ -5,10 +5,10 @@
 //  J6  무기점 주인이 카운터 앞(손님 쪽)에 서서 빈 바닥 너머로 말했다 — 「카운터 앞」이 «주인 자리»로 풀렸다. 카운터는 북쪽 = 주인, 남쪽 = 손님.
 //  J40 옷장 숨기 이벤트가 옷장 그림 아래 칸이 아니라 옷장 앞에 놓인 상자 위에 있었다 — 조사 이벤트가 말하는 물건 위에 있지 않았다.
 //  사용자 규칙(2026-10-25): 사람은 차도·선로 한가운데 서서 말하지 않는다. 보도·가게 안·벤치·카운터·문 앞에 선다.
-// 순수 함수 — 칩셋 이름표·태그(라벨)로 판정한다.
+// 순수 함수 — 칩셋 이름표·태그(라벨)로 판정한다. 출입구 그림만은 칩셋이 적어 둔 입구를 먼저 읽는다(entrances.ts).
 import { canMove, isPassable } from "@/project/collision";
-import { isDoorArtCell } from "@/project/staging/doorCells";
 import type { GameEvent, GameMap, Project } from "@/project/types";
+import { isEntranceArt, notEntranceTiles } from "./entrances";
 
 type Cell = { readonly x: number; readonly y: number };
 const DIRS = [[0, -1], [0, 1], [-1, 0], [1, 0]] as const;
@@ -261,15 +261,33 @@ export function objectEventFit(project: Project, map: GameMap, ev: { name?: stri
 
 // ───────────── 출입구 그림 ─────────────
 
+// 「이 칸에 드나드는 그림이 있는가」는 칩셋이 적어 둔 입구(entrances.ts isEntranceArt)가 먼저다. 아래 낱말은 굽기가 무엇인지 적지 않은 타일에만 쓴다:
+// 낱말로만 읽던 때는 「가문비」(문) 곁의 맨땅 던전 출입구가 «문 그림 있음» 으로 넘어가고, 건물 「통나무 집」(통)의 칸이 낱개 소품이었다(2026-11-12 칩셋별 표 — 낱말이 입구 그림이라 한 타일의 대부분이 소품·바닥·건물 벽).
 /** 출입구 칸에 있어도 되는 그림(문·계단·굴 입구·길·다리·깔개). */
 const GATE_ART = /계단|사다리|문|입구|출구|갱구|굴|아치|통로|길|다리|발판|매트|깔개|그림자|stair|ladder|door|gate|adit|mouth|arch|exit|path|road|bridge|mat|rug|shadow/iu;
 /** 바닥에 놓인 낱개 소품 — 출입구 칸에 있으면 «물건 위 순간 이동»으로 읽힌다. */
 const LOOSE_PROP = /이끼|버섯|수정|결정|석순|돌|바위|자갈|부스러기|뼈|해골|풀|덤불|꽃|상자|궤짝|통|자루|화분|양초|촛|moss|mushroom|crystal|stalag|stone|rock|rubble|bone|skull|grass|bush|flower|crate|chest|barrel|sack|pot|candle/iu;
-function upperLabelsAt(project: Project, map: GameMap, x: number, y: number): string[] {
-  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return [];
+/** 굽기가 건물이라 적은 타일은 낱개 소품이 아니다 — 「가미나리몬(가운데 통과)」「꽃집 칸」「뼈대만 남은 3층 탑」이 통·꽃·뼈 로 소품이 됐다. */
+const BUILDING_ROLES = new Set(["building", "wall", "roof"]);
+/** 이 칸의 덮개 층에 놓인 낱개 소품의 이름표(없으면 undefined). */
+function loosePropAt(project: Project, map: GameMap, x: number, y: number): string | undefined {
+  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return undefined;
   const i = y * map.width + x;
   const m = map as unknown as { upperTiles?: ArrayLike<number>; upperOverlayTiles?: ArrayLike<number> };
-  return [m.upperTiles?.[i], m.upperOverlayTiles?.[i]].map((t) => metaOf(project, map, t)?.label ?? "").filter(Boolean);
+  for (const t of [m.upperTiles?.[i], m.upperOverlayTiles?.[i]]) {
+    const meta = metaOf(project, map, t) as { label?: string; role?: string } | undefined;
+    if (meta?.label && !BUILDING_ROLES.has(meta.role ?? "") && !GATE_ART.test(meta.label) && LOOSE_PROP.test(meta.label)) return meta.label;
+  }
+  return undefined;
+}
+/** 굽기가 다른 것이라 적지 않은 타일의 이름표가 문·계단·굴 입구인 칸(길 낱말은 뺀다 — 길은 입구 그림이 아니다). */
+function namedGateArt(project: Project, map: GameMap, x: number, y: number): boolean {
+  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+  const other = notEntranceTiles(project.tilesets[map.tilesetId]);
+  return layerTiles(map, y * map.width + x).some((t) => {
+    const label = typeof t === "number" && !other.has(t) ? metaOf(project, map, t)?.label : undefined;
+    return !!label && GATE_ART.test(label) && !/길|path|road|모랫길|흙길/iu.test(label);
+  });
 }
 function transferTargets(ev: GameEvent): string[] {
   const lists: unknown[][] = [ev.commands ?? [], ...((ev.pages ?? []).map((p) => p.commands ?? []))];
@@ -351,11 +369,11 @@ export function placementProblems(project: Project, map: GameMap, eventIds?: Rea
     if (hasTransfer(ev)) {
       // 출입구(2026-10-25 J25): 물건(수정·이끼·버섯) 그림 위 출입구, 문·계단·굴 입구 그림 없이 맨땅에서 던전으로 들어가는 출입구.
       // 건물 정면·역사(驛舍) 칸 위 출입구는 문간이다 — 바닥 소품(수정·이끼·버섯·돌·풀·상자·통) 위만 짚는다.
-      const prop = isDoorArtCell(project, map, ev.x, ev.y) ? undefined : upperLabelsAt(project, map, ev.x, ev.y).find((l) => !GATE_ART.test(l) && LOOSE_PROP.test(l));
+      const prop = isEntranceArt(project, map, ev.x, ev.y) ? undefined : loosePropAt(project, map, ev.x, ev.y);
       if (prop) out.push({ kind: "transfer-prop", eventId: ev.id, name, at: { x: ev.x, y: ev.y }, detail: `출입구 (${ev.x},${ev.y}) 가 물건 그림 「${prop.replace(/\s*\([^)]*\)\s*$/u, "")}」 위에 있다 — 물건을 밟으면 순간 이동하는 것처럼 보인다` });
       const to = transferTargets(ev).map((id) => project.maps[id]).find((m) => m && (m as unknown as { mapRole?: string }).mapRole === "dungeon");
       const outdoor = (map as unknown as { mapRole?: string; climate?: { mode?: string } }).mapRole !== "dungeon" && (map as unknown as { climate?: { mode?: string } }).climate?.mode !== "indoor";
-      const art = [0, -1, 1].some((dy) => isDoorArtCell(project, map, ev.x, ev.y + dy) || [...labelsAt(project, map, ev.x, ev.y + dy)].some((l) => GATE_ART.test(l) && !/길|path|road|모랫길|흙길/iu.test(l)));
+      const art = [0, -1, 1].some((dy) => isEntranceArt(project, map, ev.x, ev.y + dy) || namedGateArt(project, map, ev.x, ev.y + dy));
       // 맵 가장자리 출구는 길 끝이 맡는다 — 맵 밖으로 이어지는 길이 곧 입구다(caveGates.dressBareCaveGates·edgeExitRoads 와 같은 규칙).
       // 가장자리 칸 위에는 굴 입구를 찍을 자리도 없다: 2026-10-30 omo-loop-1030b 미완료 5판이 버들마을 (0,23)·(21,0) 출구에 갱구를 찍다
       // «transfer 목적지가 통행 불가»·«완성된 집 보호 영역»으로 거절되고 항목이 막힘으로 끝났다.
