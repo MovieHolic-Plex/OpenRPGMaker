@@ -1,5 +1,14 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 목표 명령의 대상 이벤트 — 선택 칸 `fields.targetMapId` · `targetEventId` (2026-11-12)
+
+- 「현재 목표」 명령(`{ kind: "m2Command", commandId: "m2-214-ui-command", fields: { surface: "objectiveChip", message, durationMs: 0 } }`)의 `fields` 에
+  선택 글자열 둘 `targetMapId` · `targetEventId` — 이 목표가 가리키는 이벤트(이 단계를 넘기는 이벤트). 둘 다 있을 때만 대상으로 읽는다.
+- `fields` 값은 글자열·숫자·불리언만 받는다(`shapeCommandFields.validateM2CommandShape`) — 그래서 객체 하나가 아니라 납작한 두 칸이다. 스키마 판은 그대로, 이주 없음.
+  없는 프로젝트(옛 프로젝트·손으로 만든 게임)는 표시가 목표 글의 이름으로 대상을 찾는다.
+- 쓰는 쪽: 조수 v2 끝맺음(`judge/objectiveRoutes.refreshObjectiveRoutes`)·`planObjective`. 편집기 명령 폼에는 이 칸이 없다 — 폼으로 목표를 다시 쓰면 대상이 빠질 수 있고, 그때는 글 찾기로 돌아간다.
+- 런타임 쪽(세션·저장 칸·체크포인트·표시)은 `runtime-sessions.md` 「목표가 가리키는 이벤트」.
+
 ## 대사 책상 — 선택 필드 `project.dialogueDesk` (2026-10-24)
 
 `{ voices: [{speaker, note, updatedAt?}], proposals: [{id, lineId, baseHash, before, after, reason?, batchId?, instruction?, source: "ai"|"human", createdAt}] }`

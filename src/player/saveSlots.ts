@@ -117,7 +117,7 @@ import { parseVehicleSessionState } from "@/project/vehicles";
 import { normalizeSceneLine, resolveVnExtras, saveSceneLine } from "@/project/vnExtras";
 import { normalizeJournalLines } from "@/project/storyJournal";
 import { normalizeBestiarySession } from "@/project/bestiary";
-import { currentObjectiveText } from "@/player/zoneFeedback";
+import { currentObjective } from "@/player/zoneFeedback";
 import { decodeMapBackgroundFlow, encodeMapBackgroundFlow } from "@/project/mapBackground";
 export {
   createSystemShellState,
@@ -306,6 +306,8 @@ export type SaveSnapshot = {
      * 없으면 목표 줄이 비거나, 맵에 들어올 때 도는 시작 목표가 저장 시점보다 앞선 목표로 되돌렸다(2026-10-29 vm2 deepseek 방탈출 A6).
      */
     readonly objective?: string;
+    /** 그 목표가 가리키는 이벤트(objectiveChip 의 target, 선택) — 없는 옛 저장본은 목표 글의 이름으로 대상을 찾는다. */
+    readonly objectiveTarget?: { readonly mapId: string; readonly eventId: string };
     readonly systemAudio?: Record<string, string>;
     /**
      * 「현재 BGM 기억」이 적어 둔 곡 id. 지금 나오는 곡(`audio.bgm`)과는 별개다.
@@ -641,7 +643,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       mapBackground: pickMapBackground(session),
       systemAudio: parseSystemAudioState(session.m2Runtime?.system),
       access: session.m2Runtime?.access && Object.keys(session.m2Runtime.access).length > 0 ? { ...session.m2Runtime.access } : undefined,
-      ...(() => { const objective = currentObjectiveText(session.m2Runtime?.ui); return objective ? { objective } : {}; })(),
+      ...(() => { const objective = currentObjective(session.m2Runtime?.ui); return objective ? { objective: objective.text, ...(objective.target ? { objectiveTarget: { ...objective.target } } : {}) } : {}; })(),
       ...persistedMemorizedBgmFields(session.m2Runtime?.audio),
     },
   };
@@ -1067,7 +1069,10 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
     const runtime = ensureM2Runtime(session);
     runtime.access = { ...snapshot.session.access };
   }
-  if (typeof snapshot.session.objective === "string" && snapshot.session.objective.trim()) ensureM2Runtime(session).ui.push({ surface: "objectiveChip", message: snapshot.session.objective.trim(), durationMs: 0 });
+  if (typeof snapshot.session.objective === "string" && snapshot.session.objective.trim()) {
+    const target = snapshot.session.objectiveTarget;
+    ensureM2Runtime(session).ui.push({ surface: "objectiveChip", message: snapshot.session.objective.trim(), durationMs: 0, ...(target ? { target: { mapId: target.mapId, eventId: target.eventId } } : {}) });
+  }
   if (project.system.dailyWeather?.enabled === true) {
     const weather = session.gameTime
       ? applyDailyWeatherForDate(project, session, session.gameTime)
@@ -1554,6 +1559,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       systemAudio: parseSystemAudioState(session.systemAudio),
       access: parseAccessState(session.access),
       objective: typeof session.objective === "string" && session.objective.trim() ? session.objective.trim().slice(0, 200) : undefined,
+      objectiveTarget: parseObjectiveTarget(session.objectiveTarget),
       ...memorizedBgm,
     },
   };
@@ -1719,6 +1725,13 @@ function parseSystemAudioState(value: unknown): SaveSnapshot["session"]["systemA
     if (typeof value[key] === "string") result[key] = value[key];
   }
   return Object.keys(result).length > 0 ? result : undefined;
+}
+
+/** 저장본의 목표 대상 — 맵 id·이벤트 id 두 글자열이 다 있을 때만(깨진 값은 버리고 글로 찾는다). */
+function parseObjectiveTarget(value: unknown): { mapId: string; eventId: string } | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const { mapId, eventId } = value as { mapId?: unknown; eventId?: unknown };
+  return typeof mapId === "string" && mapId.trim() && typeof eventId === "string" && eventId.trim() ? { mapId: mapId.trim().slice(0, 200), eventId: eventId.trim().slice(0, 200) } : undefined;
 }
 
 function parseAccessState(value: unknown): SaveSnapshot["session"]["access"] {

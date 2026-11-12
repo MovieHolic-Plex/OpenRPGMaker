@@ -11,6 +11,8 @@
 //   · 출발 = 그 순간의 실제 자리(play) + 그 맵의 착지 칸들과 걸어 닿는 칸에서 고르게 뽑은 자리(spread).
 // 걷기 규칙 = 타일 통행(canMove) + 막는 이벤트(같은 층·겹침 금지) 칸에는 못 선다. 움직이는 사람은 그 순간 서 있던 칸에 둔다.
 // --trace <순간 번호>[:x,y] --trace-out <json>: 그 순간(그 자리)의 걸음 자취와 QA 체크포인트(맵·자리·스위치·아이템·목표)를 적는다 — 실제 플레이어에서 같은 판을 띄워 볼 때.
+// --refresh: 재기 전에 끝맺음 「목표 길 안내」 단계(refreshObjectiveRoutes)를 지금 코드로 그 게임에 다시 돌린다 — 옛 저장본의 목표에 대상 이벤트를 묶어 본다.
+// --refresh-impl <파일>: --refresh 가 그 파일의 refreshObjectiveRoutes 를 쓴다(끝맺음 단계의 전/후 비교 — 저장소 안 파일).
 // --impl <폴더>: 그 폴더의 objectiveTarget.ts · objectiveRoute.ts 를 대신 쓴다(전/후 비교 — 저장소 안 폴더여야 `@/` 가 풀린다).
 // 수치는 그림을 보지 않은 것이다. 문서: openwiki/assistant-v2.md 「목표 화살표를 따라 걷는 자」.
 import fs from "node:fs";
@@ -20,6 +22,7 @@ import { readProjectSqlite } from "../../content/read-project-sqlite.mts";
 import { canMove, isPassable } from "../../../src/project/collision.ts";
 import { runtimeEventViewsForMap, type RuntimeEventView } from "../../../src/project/runtimeEventState.ts";
 import { runAutoPlay, type AutoPlayMoment } from "../../../src/qa/gameCheck/autoPlay.ts";
+import { refreshObjectiveRoutes } from "../../../src/ai/v2/judge/objectiveRoutes.ts";
 import type { GameMap, Project } from "../../../src/project/types.ts";
 import type { PlaySession } from "../../../src/project/session.ts";
 
@@ -31,7 +34,7 @@ const VIEW = { w: 20, h: 15 }; // 960×720 화면, 칸 48px
 
 const argv = process.argv.slice(2);
 const flag = (name: string): string | undefined => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined; };
-const FLAGS = new Set(["--hold", "--spread", "--impl", "--out", "--trace", "--trace-out"]);
+const FLAGS = new Set(["--hold", "--spread", "--impl", "--out", "--trace", "--trace-out", "--refresh-impl"]);
 const traceArg = flag("--trace");
 const traceOut = flag("--trace-out");
 const dirs = argv.filter((a, i) => !a.startsWith("--") && !FLAGS.has(argv[i - 1] ?? ""));
@@ -40,6 +43,9 @@ const SPREAD = Number(flag("--spread") ?? 24);
 const verbose = argv.includes("--verbose");
 const implDir = flag("--impl");
 const BLIND = argv.includes("--blind");
+const REFRESH = argv.includes("--refresh");
+const refreshImpl = flag("--refresh-impl");
+const refreshRoutes: (project: Project) => number = refreshImpl ? (await import(path.resolve(refreshImpl))).refreshObjectiveRoutes : refreshObjectiveRoutes;
 const outFile = flag("--out");
 
 const implBase = implDir ? path.resolve(implDir) : fileURLToPath(new URL("../../../src/player", import.meta.url));
@@ -49,13 +55,15 @@ const zone = await import("../../../src/player/zoneFeedback.ts");
 /** 바닥 길을 그리는 구현인가(그리고 그 길을 보는 사람으로 재나). */
 const SEES_TRAIL = !BLIND && typeof routeMod.routeTrail === "function";
 
-/** 그 순간 떠 있는 목표 글. */
-interface Objective { text: string | null }
+/** 그 순간 떠 있는 목표 — 글, 목표가 들고 온 대상 이벤트(있으면), 그때의 세션(잠긴 출구를 여는 이벤트를 고를 때). */
+interface Objective { text: string | null; target?: { mapId: string; eventId: string }; session: PlaySession }
 function objectiveOf(session: PlaySession): Objective {
-  return { text: zone.currentObjectiveText((session as { m2Runtime?: { ui?: never } }).m2Runtime?.ui) };
+  const now = zone.currentObjective((session as { m2Runtime?: { ui?: never } }).m2Runtime?.ui);
+  return { text: now?.text ?? null, ...(now?.target ? { target: now.target } : {}), session };
 }
 function targetViews(project: Project, map: GameMap, views: RuntimeEventView[], objective: Objective): RuntimeEventView[] {
-  return targetMod.objectiveTargetViews(project, map, views, objective.text) as RuntimeEventView[];
+  // 런타임(playSceneFieldStaging)과 같은 호출 — 옛 구현(--impl)은 다섯째 인자를 안 읽는다.
+  return targetMod.objectiveTargetViews(project, map, views, objective.text, { target: objective.target, session: objective.session }) as RuntimeEventView[];
 }
 
 interface Door { mapId: string; x: number; y: number }
@@ -283,6 +291,7 @@ interface GameReport {
 function measure(dir: string): GameReport {
   const game = path.basename(path.resolve(dir));
   const project = readProjectSqlite(path.join(dir, "project")) as Project;
+  if (REFRESH) refreshRoutes(project);
   const raw: AutoPlayMoment[] = [];
   const report = runAutoPlay(project, { budgetMs: 90_000, onGoal: (m) => raw.push(m) });
   const run = report.runs[0];

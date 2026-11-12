@@ -50,6 +50,8 @@ export type QaCheckpoint = {
    * 왜(2026-10-30 씬 벤치 gym-leader): 관장 앞 체크포인트에 목표 줄이 없거나 「연구소에서 첫 몬스터를 받자」였다.
    */
   readonly objective?: string;
+  /** 그 목표가 가리키는 이벤트(선택) — 목표 명령의 targetMapId · targetEventId 와 같은 것. */
+  readonly objectiveTarget?: { readonly mapId: string; readonly eventId: string };
   /** 불러온 직후 이 이벤트를 실행한다(맵 이벤트 id). */
   readonly startEventId?: string;
   /**
@@ -125,7 +127,8 @@ export function sessionFromQaCheckpoint(project: Project, checkpoint: QaCheckpoi
     if ("monsterParty" in checkpoint.sessionPatch) syncMonsterPartyFollowers(project, session);
   }
   if (typeof checkpoint.objective === "string" && checkpoint.objective.trim()) {
-    ensureM2Runtime(session).ui.push({ surface: "objectiveChip", message: checkpoint.objective.trim(), durationMs: 0 });
+    const target = checkpoint.objectiveTarget;
+    ensureM2Runtime(session).ui.push({ surface: "objectiveChip", message: checkpoint.objective.trim(), durationMs: 0, ...(target && typeof target.mapId === "string" && typeof target.eventId === "string" ? { target: { mapId: target.mapId, eventId: target.eventId } } : {}) });
   }
   if (checkpoint.startEventId) {
     const events = project.maps[mapId]?.events ?? [];
