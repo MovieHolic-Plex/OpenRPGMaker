@@ -8,11 +8,11 @@
   "interior": 52
  },
  "tiles": {
-  "count": 1211,
-  "rows": 26,
+  "count": 1329,
+  "rows": 28,
   "sheetPx": [
    768,
-   416
+   448
   ],
   "strips": 38,
   "kits": 107,
@@ -23,7 +23,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 1211,
+  "tiles_checked": 1329,
   "kits_checked": 107,
   "groups_checked": 70,
   "autotiles_checked": 0
