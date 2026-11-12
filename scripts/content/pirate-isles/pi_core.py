@@ -504,6 +504,9 @@ def rope_line(c, x0, y0, x1, y1, sag=2, mat='thatch'):
         c.P(round(x), round(y), K(mat, -1 if i % 2 else 0))
 
 
+sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'lib'))
+import fable_roofs as FR  # noqa: E402
+
 # ================================================================== 조각 등록부
 PIECES = {}
 
@@ -527,7 +530,7 @@ def render(p, f=0):
     c = Cv(p['w'] * T, p['h'] * T)
     if p['frames'] > 1: p['draw'](c, f)
     else: p['draw'](c)
-    return c.a
+    return FR.apply('pirate-isles', 'pi-' + p['id'], c.a) if f == 0 else c.a   # 직각 지붕 덮어쓰기(오너 2026-11-12, scripts/content/lib/fable_roofs.py)
 
 
 def palette_issues(a, tag):
@@ -566,7 +569,10 @@ def status_of(p):
     from object_gate import pixel_sha256, read_receipt
     res = []
     for f in range(p['frames']):
-        r = read_receipt(pixel_sha256(Image.fromarray(render(p, f), 'RGBA')))
+        img = Image.fromarray(render(p, f), 'RGBA')
+        if f == 0 and FR.has('pirate-isles', 'pi-' + p['id']):      # 다시 그린 지붕: 오너 면제 묶음(면제는 통과가 아니다 — 보고에 «오너 면제»)
+            res.append('pass' if FR.waived(img, p['kind']) else 'none'); continue
+        r = read_receipt(pixel_sha256(img))
         res.append('none' if not r else (r['verdict'] if r.get('kind') == p['kind'] else 'kind'))
     return 'pass' if all(x == 'pass' for x in res) else ('none' if 'none' in res else 'fail')
 

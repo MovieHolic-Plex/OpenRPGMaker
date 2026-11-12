@@ -1,0 +1,70 @@
+{
+ "_doc": "탐침이 묻는 낱말 — ~/z-project/assistant-fable-runs/object-oneshot/demand.json 의 wanted·ledgerNames(게임들이 실제로 쓴 이름)에서 옮겼다. 코드가 읽는 목록이 아니다(탐침 전용).",
+ "items": {
+  "spring": [
+   "샘",
+   "돌 샘",
+   "물이 솟는 돌 샘"
+  ],
+  "cave-mouth": [
+   "동굴 입구",
+   "던전 입구"
+  ],
+  "shard": [
+   "빛나는 파편",
+   "빛의 파편",
+   "빛나는 돌",
+   "잠든 별",
+   "샘의 파편"
+  ],
+  "ruin-entrance": [
+   "유적 입구",
+   "유적 돌 입구"
+  ],
+  "camp-tent": [
+   "야영 천막",
+   "천막"
+  ],
+  "livestock-pen": [
+   "가축 우리"
+  ],
+  "plank-ew": [
+   "늪 널빤지 길",
+   "판자 길"
+  ],
+  "plank-ns": [
+   "늪 널빤지 길",
+   "판자 길"
+  ],
+  "plank-corner": [
+   "널빤지 길 모퉁이"
+  ],
+  "plank-end": [
+   "널빤지 길 끝"
+  ],
+  "mining-tools": [
+   "곡괭이",
+   "채굴 도구"
+  ],
+  "notice-board": [
+   "게시판",
+   "기록판"
+  ],
+  "note": [
+   "쪽지",
+   "수로 지도"
+  ],
+  "seal-altar": [
+   "제단",
+   "봉인 제단",
+   "봉인"
+  ],
+  "broken-pillar": [
+   "무너진 기둥"
+  ],
+  "record-stand": [
+   "기록부",
+   "장부"
+  ]
+ }
+}

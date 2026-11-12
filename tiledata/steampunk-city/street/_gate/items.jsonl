@@ -19,3 +19,8 @@
 {"png": "sp-mooring-mast.png", "kind": "column", "name": "비행선 계류탑(무쇠 격자탑 + 꼭대기 원판 발판 + 놋쇠 계류 원뿔)", "label": "steampunk-city/sp-mooring-mast"}
 {"png": "sp-airship-docked.png", "kind": "structure", "name": "계류 비행선(위에서 본 기낭 — 넓은 윗면·굽은 늑골, 수평 꼬리 날개 판, 지붕이 보이는 곤돌라)", "label": "steampunk-city/sp-airship-docked"}
 {"png": "sp-tram-shelter.png", "kind": "structure", "name": "전차 정류장 지붕(무쇠 기둥 + 녹청 철판 지붕 + 벤치)", "label": "steampunk-city/sp-tram-shelter"}
+{"png": "sp-regulator.png", "kind": "other", "name": "증기 압력 조절기(리벳 철 상자 + 구리 관·밸브 바퀴·압력계)", "label": "steampunk-city/sp-regulator"}
+{"png": "sp-alarm.png", "kind": "other", "name": "경보기(무쇠 기둥 + 놋쇠 종·붉은 등)", "label": "steampunk-city/sp-alarm"}
+{"png": "sp-terminal.png", "kind": "box", "name": "천공 카드 단말기(놋쇠 건반·레버·다이얼 조작대)", "label": "steampunk-city/sp-terminal"}
+{"png": "sp-notice-board.png", "kind": "front_prop", "name": "거리 게시판(초록 무쇠 틀, 종이 넉 장 — 글자 없음)", "label": "steampunk-city/sp-notice-board"}
+{"png": "sp-note.png", "kind": "debris", "name": "바닥의 쪽지(접힌 종이 + 작은 놋쇠 톱니)", "label": "steampunk-city/sp-note"}
