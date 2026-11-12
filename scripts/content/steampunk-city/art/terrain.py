@@ -464,7 +464,7 @@ def _(c):
 def sheet(path=None, z=3):
     items = []
     for it in R.items:
-        im = R.render(it).img()
+        im = R.picture(it)
         if it['w'] == 1 and it['h'] == 1:
             from PIL import Image
             t = Image.new('RGBA', (48, 48))

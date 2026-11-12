@@ -1066,6 +1066,13 @@ def scenes():
     return out
 
 
+# ── 2026-11-12 Fable 5.2 한 방 기물(오너가 fable-oneshot-2026-11-12 로 먼저 받은 것). 그림은 fable/anchors/ 의 PNG 가 정본이다(draw 없음).
+_none = lambda c: None
+R.add('record-stand', '기록 책 받침대(통나무 독서대 위 펼친 책)', 1, 2, 'low_furniture', tags=['기록', '책', '독서대'], rules='회관·교회 실내 벽 앞. 앞 1칸 비움.')(_none)
+R.add('scroll', '두루마리 쪽지(바닥에 놓인 자작 껍질 두루마리)', 1, 1, 'debris', tags=['두루마리', '쪽지', '단서'], rules='바닥·탁자 곁에 하나.')(_none)
+R.add('chair', '나무 의자(모피 방석)', 1, 1, 'seat', tags=['의자', '좌석'], rules='탁자 곁. 벽난로 앞.')(_none)
+
+
 if __name__ == '__main__':
     R.export(); sheet(); scenes()
     from palette import check_palette

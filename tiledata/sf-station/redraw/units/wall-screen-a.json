@@ -1,0 +1,42 @@
+{
+"unit": "wall-screen-a",
+"name": "wall screen (graph)",
+"w": 16,
+"h": 16,
+"cls": "wallm",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:1",
+"b": "ink:0",
+"c": "s_hull:0",
+"d": "s_hull:1",
+"e": "s_hull:2",
+"f": "s_hull:3",
+"g": "s_hull:4",
+"h": "s_hull:5",
+"j": "a_cyan:1",
+"k": "a_cyan:2",
+"o": "a_orange:1"
+},
+"rows": [
+"................",
+"................",
+".aaaaaaaaaaaaaa.",
+".ahhhhhhhhhhhfa.",
+".agbbbbbbbbbbea.",
+".agbbbbbbbkbbea.",
+".agbbkbbbbjbbea.",
+".agbbjbbkbjbbea.",
+".agbkjbbjbjkbea.",
+".agbjjbkjbjjbea.",
+".agbjjbjjbjjbea.",
+".afeeeeeeeeeoda.",
+".accccccccccca..",
+".aaaaaaaaaaaaaa.",
+"................",
+"................"
+],
+"note": "Wall display: blue-grey frame, dark screen, six cyan bars in pairs, small orange status light."
+}

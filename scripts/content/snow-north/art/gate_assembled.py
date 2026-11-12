@@ -11,10 +11,11 @@ from PIL import Image
 from kit import OUT
 import props as PR, buildings as BL
 
-D = os.path.join(OUT, '_assembled')
+OUT_DIR = os.path.join(OUT, '_assembled')
+SRC = OUT      # 조각 PNG 를 읽는 곳(2026-11-12 부터 그림의 정본은 PNG — fable/build_fable.py 가 쓴다. 옛 그리개 draw 를 다시 부르지 않는다)
 
 
-def img(mod, pid): return mod.R.render(mod.R.by[pid]).img()
+def img(mod, pid): return Image.open(os.path.join(SRC, mod.R.group, '_gate', 'sn-%s.png' % pid)).convert('RGBA')
 
 
 def assemble(W, H, placements):
@@ -45,7 +46,7 @@ def samples():
 
 
 def build():
-    os.makedirs(D, exist_ok=True)
+    D = OUT_DIR; os.makedirs(D, exist_ok=True)
     rows, man = [], {}
     for s in samples():
         im = assemble(s['W'], s['H'], s['pl'])

@@ -1,0 +1,36 @@
+{
+"unit": "g-deck-grate",
+"name": "maintenance floor grating, 2 tiles",
+"w": 32,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "g_deck:0",
+"b": "g_deck:1",
+"c": "g_deck:2",
+"d": "g_deck:3",
+"x": "a_cyan:0"
+},
+"rows": [
+"dddddddddddddddddddddddddddddddd",
+"daaaaaaaaaaaaaaadaaaaaaaaaaaaaaa",
+"dcccccccccccccccdccccccccccccccc",
+"dbbbbbbbbbbbbbbbdbbbbbbbbbbbbbbb",
+"daaaaaaaaaaaaaaadaaaaaxxxxxaaaaa",
+"dcccccccccccccccdccccccccccccccc",
+"dbbbbbbbbbbbbbbbdbbbbbbbbbbbbbbb",
+"daaaaaaaaaaaaaaadaaaaaxxxxxaaaaa",
+"dcccccccccccccccdccccccccccccccc",
+"dbbbbbbbbbbbbbbbdbbbbbbbbbbbbbbb",
+"daaaaaaaaaaaaaaadaaaaaxxxxxaaaaa",
+"dcccccccccccccccdccccccccccccccc",
+"dbbbbbbbbbbbbbbbdbbbbbbbbbbbbbbb",
+"daaaaaaaaaaaaaaadaaaaaaaaaaaaaaa",
+"dcccccccccccccccdccccccccccccccc",
+"dbbbbbbbbbbbbbbbdbbbbbbbbbbbbbbb"
+],
+"note": "Horizontal bar grating with light frame line top/left; tile 2 has faint cyan glow in three middle gaps."
+}

@@ -1,0 +1,38 @@
+{
+"unit": "g-hydro-soil",
+"name": "hydroponic soil bed, 2 tiles",
+"w": 32,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"s": "s_rust:0",
+"k": "ink:1",
+"c": "s_rust:1",
+"g": "a_green:0",
+"G": "a_green:1",
+"d": "g_deck:2",
+"e": "g_deck:3"
+},
+"rows": [
+"ssssssssssssssssssssssssssssssss",
+"ssscssssssgssssssssssgsssssscsss",
+"kkkkkkkkkGgkkkkkkkkkGgkkkkkkkkkk",
+"sssssssscssssssssssscsssssssssss",
+"ssssssssssssssssssssssssssssssss",
+"ssssgssssssscssssssssssscssgssss",
+"kkkGgkkkkkkkkkkkkkkkkkkkkkGgkkkk",
+"sssssssssscsssssssssssssssssssss",
+"ssssssssssssssssssddddeddddeddss",
+"ssscssssssssgsssssscsssgssssssss",
+"kkkkkkkkkkkGgkkkkkkkkkGgkkkkkkkk",
+"sssssscsssssssssssssssssssssscss",
+"ssssssssssssssssssssssssssssssss",
+"sssssgsssscsssssssgssssscsssssss",
+"kkkkGgkkkkkkkkkkkGgkkkkkkkkkkkkk",
+"ssssssssssssssssssssssssssssssss"
+],
+"note": "Dark soil with east-west furrows, crumbs, small sprouts; tile 2 adds drip line with two emitters."
+}
