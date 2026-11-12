@@ -13,6 +13,7 @@ import { initLocalProjectStore } from '../../../../../electron/local-store/store
 import { readProjectSqlite } from '../../../../../scripts/content/read-project-sqlite.mts';
 import { sharedContentFile } from '../../../../../scripts/lib/sharedContentSqlite';
 import { runCheck, type Verdict } from './checks';
+import { endedOnQuestion, neverStarted, QUESTION_NOTE } from '../turnVerdict';
 import { buildFixture } from './fixtures';
 import { loadSuite, selectJobs, suiteFile, suiteLabel, type SmallJob } from './suite';
 
@@ -47,6 +48,10 @@ export type JobResult = {
   costUsd: number | null; totalTokens: number;
   /** v2 의 턴 끝 판정(할 일 장부). v1 은 null. */
   complete: boolean | null; completeNote: string;
+  /** 턴이 사용자에게 묻는 것으로 끝났다(turnVerdict.ts endedOnQuestion) — 최종 보고가 없는 것이 정상이다. */
+  endedOnQuestion: boolean;
+  /** 입력이 조수에 닿지 않았다(turnVerdict.ts neverStarted — 모델 호출 0 · 도구 0 · done 없음). 기반 오류로 센다. */
+  unsent: boolean;
   turns: Array<{ step: string; outcome: string; wallMs: number; tools: number }>;
   autoAnswered: boolean; pendingCards: string[];
   errors: string[];
@@ -105,7 +110,7 @@ async function runJob(job: SmallJob, root: string, pin: { file: string; config: 
   mkdirSync(resolve(session, 'inbox'), { recursive: true });
   const base: JobResult = { id: job.id, family: job.family, fixture: job.fixture, request: job.request, status: 'infra', pass: false, reason: '', check: null,
     toolCalls: [], toolCallCount: 0, toolErrors: 0, wallMs: 0, runMs: 0, modelCalls: 0, tokens: { input: 0, output: 0, cacheRead: 0, reviewTotal: 0 },
-    systemPromptChars: null, toolsOffered: null, toolsOfferedNames: [], toolSchemaChars: null, costUsd: null, totalTokens: 0, complete: null, completeNote: '', turns: [], autoAnswered: false, pendingCards: [],
+    systemPromptChars: null, toolsOffered: null, toolsOfferedNames: [], toolSchemaChars: null, costUsd: null, totalTokens: 0, complete: null, completeNote: '', endedOnQuestion: false, unsent: false, turns: [], autoAnswered: false, pendingCards: [],
     errors: [], persistence: null, model: '', provider: '', assistantVersion: '', answer: '', trace: [], statusNotes: [], startedAt, finishedAt: startedAt };
   const finish = (patch: Partial<JobResult>): JobResult => {
     const result = { ...base, ...patch, finishedAt: new Date().toISOString() };
@@ -171,7 +176,7 @@ async function runJob(job: SmallJob, root: string, pin: { file: string; config: 
     const after = readProjectSqlite(projectDir);
     keepSlim(resolve(dir, 'after.json.gz'), after);
     const check = runCheck(job.check, job.allow, before, after);
-    const { status, reason } = decide({ check, turnOutcomes: turns.map(turn => String(turn.outcome)), waitedLimit: waited === 'limit', errors: metrics.errors ?? [], toolCallCount: metrics.toolCallCount ?? 0, persistence, limitMs: options.limitMs });
+    const { status, reason } = decide({ check, turnOutcomes: turns.map(turn => String(turn.outcome)), waitedLimit: waited === 'limit', errors: metrics.errors ?? [], toolCallCount: metrics.toolCallCount ?? 0, persistence, limitMs: options.limitMs, unsent: metrics.unsent });
     return finish({ ...metrics, autoAnswered, persistence, check, status, pass: status === 'pass', reason });
   } catch (error) {
     await killGroup();
@@ -185,18 +190,19 @@ async function runJob(job: SmallJob, root: string, pin: { file: string; config: 
  * 판정 + 턴 기록 → 상태 한 가지. 실행기와 오프라인 재판정(rescore)이 같은 규칙을 쓴다.
  * 통과 = 판정 합격 + 저장·재로드 확인 + 시간 안. 기반 오류 = 모델·호스트 쪽 오류로 일을 못 한 것(조수의 불합격과 따로 센다).
  */
-export function decide(input: { check: Verdict; turnOutcomes: string[]; waitedLimit: boolean; errors: string[]; toolCallCount: number; persistence: JobResult['persistence']; limitMs: number }): { status: JobStatus; reason: string } {
+export function decide(input: { check: Verdict; turnOutcomes: string[]; waitedLimit: boolean; errors: string[]; toolCallCount: number; persistence: JobResult['persistence']; limitMs: number; /** 입력이 조수에 닿지 않았다 — 판정이 통과여도(«아무것도 안 바뀜» 이 정답인 일) 모델의 결과가 아니다. */ unsent?: boolean }): { status: JobStatus; reason: string } {
   const { check, persistence } = input;
   const errors = input.errors.filter(error => !error.startsWith('page: '));
   const timedOut = input.turnOutcomes.includes('timeout') || input.waitedLimit;
   const stillAsking = input.turnOutcomes.at(-1) === 'awaiting-answer';
   // 도구 호출 없이 오류로 끝났거나, 제공자 오류(속도 제한·연결·5xx)가 난 채 불합격이면 기반 오류다.
-  const infra = !check.pass && errors.length > 0 && (input.toolCallCount === 0 || errors.some(error => PROVIDER_ERROR.test(error)));
+  const infra = input.unsent === true || (!check.pass && errors.length > 0 && (input.toolCallCount === 0 || errors.some(error => PROVIDER_ERROR.test(error))));
   // 저장이 됐고, 새 브라우저 컨텍스트가 읽은 맵·자료집이 저장한 것과 같으면 저장·재로드 확인이다. 새 컨텍스트가 부팅하며 한 번 더 저장해
   // 저장 문서의 sha 가 달라지는 것(reloadedSame=false, 내용 변화 0)은 유실이 아니다 — 판정은 어차피 그 뒤의 저장 문서를 읽는다.
   const persisted = !!persistence && persistence.saved && (persistence.reloadedSame || persistence.rendererEqual);
   const status: JobStatus = infra ? 'infra' : timedOut ? 'timeout' : check.pass && persisted ? 'pass' : 'fail';
-  const reason = infra ? `기반 오류: ${errors[0]?.slice(0, 240)}`
+  const reason = input.unsent === true ? '기반 오류: 입력이 조수에 닿지 않았다 — 모델 호출 0 · 도구 0 · done 없음'
+    : infra ? `기반 오류: ${errors[0]?.slice(0, 240)}`
     : timedOut ? `시간 초과(${Math.round(input.limitMs / 60_000)}분) — 그때까지의 저장 결과: ${check.pass ? '판정은 통과' : check.reason}`
       : !check.pass ? `${check.reason}${stillAsking ? ' · 조수가 두 번째 질문에서 멈췄다' : ''}${errors.length ? ` · 턴 오류: ${errors[0]!.slice(0, 160)}` : ''}`
         : !persisted ? `판정은 통과했지만 저장·재로드 확인 실패(${JSON.stringify(persistence)})` : check.reason;
@@ -212,6 +218,7 @@ export function collect(turns: any[]): Partial<JobResult> {
   const prompts = turns.flatMap(turn => turn.prompts ?? []);
   const requests = turns.flatMap(turn => turn.requests ?? []).filter((request: any) => request.endpoint === '/v1/agent/run');
   const final = turns.flatMap(turn => turn.v2Final ?? []).at(-1);
+  const asked = !final && endedOnQuestion(turns);
   const cli = done.map(stats => stats.exposure).find(Boolean) as { systemChars?: number; firstList?: { names?: string[]; chars?: number } } | undefined;
   return {
     toolCalls: calls.map(({ name, ok }) => ({ name, ok })), toolCallCount: calls.length, toolErrors: calls.filter(call => !call.ok).length,
@@ -222,7 +229,7 @@ export function collect(turns: any[]): Partial<JobResult> {
     toolsOfferedNames: prompts[0]?.toolNames ?? cli?.firstList?.names ?? [], toolSchemaChars: prompts[0]?.sectionChars?.tools ?? cli?.firstList?.chars ?? null,
     costUsd: done.some(stats => typeof stats.costUsd === 'number') ? sum(stats => stats.costUsd) : null,
     totalTokens: sum(stats => stats.usage?.totalTokens ?? ((stats.usage?.input ?? 0) + (stats.usage?.output ?? 0) + (stats.usage?.cacheRead ?? 0) + (stats.usage?.cacheWrite ?? 0))),
-    complete: final ? final.complete === true : null, completeNote: final?.summary ?? '',
+    complete: final ? final.complete === true : null, completeNote: final?.summary ?? (asked ? QUESTION_NOTE : ''), endedOnQuestion: asked, unsent: neverStarted(turns),
     turns: turns.map(turn => ({ step: turn.step, outcome: turn.outcome, wallMs: turn.turnMs ?? turn.elapsedMs ?? 0, tools: (turn.toolCalls ?? []).length })),
     pendingCards: turns.flatMap(turn => (turn.pendingCards ?? []).map((card: any) => `${card.testid}: ${String(card.text).split('\n')[0]?.slice(0, 160)}`)),
     errors: turns.flatMap(turn => [...(turn.errors ?? []), ...(turn.pageErrors ?? []).map((error: any) => `page: ${error.message}`)]).map(String),

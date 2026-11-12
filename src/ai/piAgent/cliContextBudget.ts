@@ -41,7 +41,7 @@ function walkSchema(schema: Json, depth: number, path: string, visit: Visit, dro
 }
 
 /** 깊은 칸(둘째 단계 아래)의 설명 글을 걷는다. 스키마의 description 만 — 이름이 description 인 칸(properties 의 열쇠)은 그대로. */
-const stripDeep = (schema: Json): Json => walkSchema(schema, 0, "", () => undefined, (key, value, depth) => key === "description" && typeof value === "string" && depth >= 2);
+export const stripDeep = (schema: Json): Json => walkSchema(schema, 0, "", () => undefined, (key, value, depth) => key === "description" && typeof value === "string" && depth >= 2);
 
 /** CLI 에 보이는 도구 목록을 가볍게 한다. 도구 순서대로 걸으며 같은 큰 하위 스키마는 처음 나온 도구만 온전히 싣는다. */
 export function compactCliToolList<T extends { readonly name: string; readonly description: string; readonly inputSchema: unknown }>(list: readonly T[]): T[] {

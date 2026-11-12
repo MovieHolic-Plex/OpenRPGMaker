@@ -142,10 +142,12 @@ export const WORLDS: readonly WorldSetting[] = [
   {
     id: "pirate_isles", tilesetId: "pirate_isles", name: "Pirate Isles", ko: "해적 군도", pool: "fantasy", named: (t) => describesPiratePlace(t),
     pitch: "Tropical islands, a rowdy harbor, a fort and wrecks on the reef; maps, mutiny and buried things.",
-    composer: { tool: "compose_pirate_isles_map", param: "kind" },
+    composer: { tool: "compose_pirate_isles_map", param: "kind", exits: true },
     kinds: [
       out("harbor", "해적 항구", "harbor town with piers and a tavern", [56, 40]),
       out("beach", "야자 해변", "palm beach with huts", [52, 40]),
+      // 마을 밖 열린 땅 — 없으면 «들판» 요청이 항구로 지어졌다(2026-11-11 map-vqa 깔기 village-to-field).
+      out("field", "들판", "open coastal grassland: a sand road from edge to edge, a lone hut with a garden, a rest spot, groves", [48, 34]),
       out("fort", "요새", "stone fort with cannons", [48, 40], { danger: true }),
       out("wreck", "난파선 암초", "shipwreck on a reef", [46, 36], { danger: true }),
       room("ship", "해적선", "deck of a pirate ship", [30, 22], /harbor-office|warehouse|항만|부두/u),

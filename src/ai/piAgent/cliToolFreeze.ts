@@ -7,6 +7,8 @@
 // 목록에 있던 도구가 «빠진» 경우(윤문 차례처럼 통째로 바꿀 때)만 알린다 — 그때는 옛 도구를 부르면 안 되니까.
 // 끄기: OPRN_CLI_TOOL_FREEZE=0 (A/B 측정용).
 
+import { ArgShapeError } from "./argRepair";
+
 export const CLI_CALL_TOOL = "call_tool";
 
 export function cliToolFreezeOn(): boolean {
@@ -43,6 +45,18 @@ export function unwrapCallTool(args: unknown): { name: string; args: Record<stri
   if (name === CLI_CALL_TOOL) return { error: "call_tool cannot run itself — pass the inner tool's name." };
   const inner = a.args && typeof a.args === "object" && !Array.isArray(a.args) ? a.args as Record<string, unknown> : {};
   return { name, args: inner };
+}
+
+/**
+ * 실패한 도구 호출이 모델에게 돌려줄 글. call_tool 로 부른 도구(viaCallTool)는 목록에 스키마가 없으니, 인자 모양 거절(ArgShapeError)에는
+ * 그 도구의 매개변수를 붙여 다음 호출이 맞는 모양이 되게 한다. 연달아 틀릴 때 첫 번째와 세 번째에만 붙인다(두 번째는 바로 위에 있고, 그 뒤는 같은 글을 쌓지 않는다).
+ * 실측(2026-11-12 Haiku 게임 다섯 판): call_tool 로 부른 쓰기 도구의 실패 41건 가운데 18건이 인자 모양이었고, 8건은 그 도구를 load_tools 로 실은 적도 없었다.
+ */
+export function callToolFailureText(error: unknown, name: string, viaCallTool: boolean, callSchema: ((name: string) => string | undefined) | undefined): string {
+  const text = error instanceof Error ? error.message : String(error);
+  if (!viaCallTool || !(error instanceof ArgShapeError) || (error.streak !== 1 && error.streak !== 3)) return text;
+  const schema = callSchema?.(name);
+  return schema ? `${text}\n\nParameters of ${name} — this call is checked against them. Fix the fields the error names and run ${CLI_CALL_TOOL}{name:"${name}", args:{…}} again:\n${schema}` : text;
 }
 
 /** CLI 시스템 지시 한 줄 — 목록 밖 도구를 부르는 길. */
