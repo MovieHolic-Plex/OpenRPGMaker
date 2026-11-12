@@ -11,18 +11,20 @@ import { behindBuildingStrip, buildingEntrances, declaredStairCells } from "./en
 import { walkReach } from "./cells";
 import { laneCells } from "./placementRules";
 
-type Kit = { id: string; name?: string; width?: number; height?: number; rows?: { tiles?: number[]; upperTiles?: number[] }[] };
+type Kit = { id: string; name?: string; width?: number; height?: number; rows?: { tiles?: number[]; upperTiles?: number[] }[]; ai?: { tags?: string[] } };
+/** 방 안에 놓는 것이라고 칩셋이 적는 꼬리표 — 바깥 맵의 내려가는 길로는 쓰지 않는다. */
+const INDOOR_TAG = new Set(["실내", "indoor", "interior"]);
 
 /** 오르는 계단인가 내려가는 계단인가 — 키트가 id 끝에 적어 둔 것(…-up · …-down). 안 적었으면 undefined. */
 const kitWay = (kit: Kit): "up" | "down" | undefined => (/(^|[-_: ])up$/iu.test(kit.id) ? "up" : /(^|[-_: ])down$/iu.test(kit.id) ? "down" : undefined);
 
 /**
- * 땅에 얹는 내려가는 길(해치·바닥 계단 구멍)인가 — 내려가는 계단 키트(…-down) 가운데 아래층 타일이 없고 모든 칸을 밟을 수 있는 것:
- * 땅을 바꾸지 않고 덧그리고, 벽에 등을 대지 않아도 된다. 난간·벽이 막는 계단통(일본 도시 · 현대 도시의 실내 계단)은 아니다.
+ * 바깥 땅에 얹는 내려가는 길(해치·바닥 계단 구멍)인가 — 내려가는 계단 키트(…-down) 가운데 «실내» 꼬리표가 없고(증기 도시: 실내 계단 둘에는 있고 해치에는 없다),
+ * 아래층 타일이 없고 모든 칸을 밟을 수 있는 것: 땅을 바꾸지 않고 덧그리고, 벽에 등을 대지 않아도 된다. 난간·벽이 막는 계단통(일본 도시 · 현대 도시의 실내 계단)은 아니다.
  */
 function laidOnGround(project: Project, map: GameMap, kit: Kit): boolean {
   const meta = ((project.tilesets[map.tilesetId] as { tileMeta?: unknown } | undefined)?.tileMeta ?? []) as ({ passage?: string } | undefined)[];
-  return kitWay(kit) === "down" && (kit.rows ?? []).every((r) => (r.tiles ?? []).every((t) => t < 0) && (r.upperTiles ?? []).every((t) => t < 0 || meta[t]?.passage === "passable"));
+  return kitWay(kit) === "down" && !(kit.ai?.tags ?? []).some((tag) => INDOOR_TAG.has(tag)) && (kit.rows ?? []).every((r) => (r.tiles ?? []).every((t) => t < 0) && (r.upperTiles ?? []).every((t) => t < 0 || meta[t]?.passage === "passable"));
 }
 
 function stairKits(project: Project, map: GameMap): Kit[] {
