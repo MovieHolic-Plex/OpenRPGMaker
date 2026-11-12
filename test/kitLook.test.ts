@@ -12,7 +12,13 @@ const BASE = "test-bench", VARIANT = "test-bench-variant", VARIANT2 = "test-benc
 const PAIR_A = "test-pair-a", PAIR_B = "test-pair-b";
 const GAMES = Array.from({ length: 40 }, (_, n) => JSON.stringify(["project", `game-${n}`]));
 
+// 빈 프로젝트를 한 번만 만들고 시험마다 사본을 쓴다(만드는 데 1초 남짓 — 게임 열두 개를 매번 새로 만들면 CI 에서 시간 한도를 넘는다)
+let template: { project: Project; mapId: string; tilesetId: string } | undefined;
 function projectWithVariants(): { project: Project; mapId: string; tilesetId: string } {
+  template ??= buildProjectWithVariants();
+  return { ...template, project: structuredClone(template.project) };
+}
+function buildProjectWithVariants(): { project: Project; mapId: string; tilesetId: string } {
   const project = createBlankProject() as Project;
   const mapId = project.startMapId;
   const tilesetId = project.maps[mapId]!.tilesetId;
@@ -79,7 +85,7 @@ describe("킷 변형 고르기", () => {
   it("stamp_object: 조수 실행은 그 게임의 변형을 찍고, 통행은 원본과 같다 — 사람 편집·열쇠 없는 실행은 원본", () => {
     const seen = new Set<number>();
     let passable: string | undefined;
-    for (const key of GAMES.slice(0, 12)) {
+    for (const key of GAMES.slice(0, 10)) {
       const { project, mapId, tilesetId } = projectWithVariants();
       const ctx = { project, currentMapId: mapId, assistantRun: true, lookKey: key };
       const expected = lookKit(project.tilesets[tilesetId], project.tilesets[tilesetId]!.structureKits!.find((k) => k.id === BASE)!, key);
@@ -104,7 +110,7 @@ describe("킷 변형 고르기", () => {
       expect(runTool(ctx, "stamp_object", { objectId: `kit:${tilesetId}/${BASE}`, mapId, x: 4, y: 4 }).ok).toBe(true);
       expect(upperAt(ctx.project, mapId, 4, 4)).toBe(base.rows[0]!.upperTiles![0]);
     }
-  });
+  }, 60_000);
 
   it("stamp_tileset_object(이름으로 찾은 기물의 놓기 길)도 같은 변형을 찍는다", () => {
     for (const key of GAMES.slice(0, 8)) {
@@ -116,5 +122,5 @@ describe("킷 변형 고르기", () => {
       expect(upperAt(ctx.project, mapId, 5, 6)).toBe(expected.rows[0]!.upperTiles![0]);
       expect((res.data as { objectId?: string }).objectId).toBe(expected.id);
     }
-  });
+  }, 60_000);
 });

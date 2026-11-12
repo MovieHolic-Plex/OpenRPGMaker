@@ -1,6 +1,6 @@
 // 같은 마을 요청을 게임 여섯(프로젝트 열쇠 여섯)으로 짓는다(모델 없음) — 진짜 v2 빌더 함수(builderFor → author_beodeul_town)로.
 //
-//   bun scripts/content/beodeul-variety/sixSeeds.mts <결과 폴더> [--tag before|after] [--theme river|coast] [--salt N] [--no-look]
+//   bun scripts/content/beodeul-variety/sixSeeds.mts <결과 폴더> [--tag before|after] [--theme river|coast|temple|cave] [--salt N] [--no-look]
 //   --no-look: 게임 열쇠를 넘기지 않는다 — 고르기가 없던 때와 같은 결과(여섯 장이 같은 그림)를 지금 코드로 다시 낸다.
 //
 // 장소 씨앗(salt)은 여섯 모두 같다 — 배치(집·길·광장·소품 자리)는 같고, 달라지는 것은 «게임마다 고른 그림» 뿐이어야 한다.
@@ -26,9 +26,12 @@ const tag = opt("tag", "now"), theme = opt("theme", "river"), salt = Number(opt(
 fs.mkdirSync(out, { recursive: true });
 
 export const GAMES = ["ashvale", "moonharbor", "thornkeep", "reedwater", "saltmere", "oakhollow"].map((name) => JSON.stringify(["project", `variety-${name}`]));
-const REQUEST: Record<string, { name: string; task: string; hints: Record<string, unknown> }> = {
+const REQUEST: Record<string, { name: string; task: string; hints: Record<string, unknown>; spec?: Record<string, unknown> }> = {
   river: { name: "버들 마을", task: "강가에 작은 마을을 만들어 줘", hints: {} },
   coast: { name: "갈매기 포구", task: "바닷가에 포구 마을을 만들어 줘", hints: { theme: "coast" } },
+  // 던전 구성기(put)가 직접 찍는 기물 — 화로·제단·모닥불
+  temple: { name: "잊힌 신전", task: "버려진 신전 던전을 만들어 줘", hints: {}, spec: { type: "dungeon", theme: "temple", size: "medium", floors: 1 } },
+  cave: { name: "물안개 동굴", task: "작은 동굴을 만들어 줘", hints: {}, spec: { type: "cave", theme: "cave", size: "small", floors: 1 } },
 };
 const hash = (values: Iterable<number | string>): string => { let h = 0x811c9dc5; for (const v of values) for (const ch of String(v) + ",") { h ^= ch.charCodeAt(0); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(16).padStart(8, "0"); };
 
@@ -55,7 +58,7 @@ for (const [n, key] of GAMES.entries()) {
   // lookKey: 게임 열쇠(조수 실행이 요청에 실어 오는 projectKey 와 같은 값). 이 칸을 모르는 옛 코드에서는 그냥 무시된다.
   const ctx = { project, currentMapId: project.startMapId, assistantRun: true, ...(argv.includes("--no-look") ? {} : { lookKey: key }) } as ToolContext;
   const run = createBuildRun(ctx);
-  const spec = { type: "village", name: req.name, salt, variety: `${key}|${req.task}`, ...(Object.keys(req.hints).length ? { hints: req.hints } : {}) } as PlaceSpec;
+  const spec = { type: "village", name: req.name, salt, variety: `${key}|${req.task}`, ...(Object.keys(req.hints).length ? { hints: req.hints } : {}), ...(req.spec ?? {}) } as PlaceSpec;
   const res = builderFor(spec)!.build(run, spec);
   const map = res.mapIds[0] ? ctx.project.maps[res.mapIds[0]] : undefined;
   if (!res.ok || !map) { console.log(`${n} ${key}: 짓기 실패 — ${res.summary.slice(0, 200)}`); rows.push({ n, key, ok: false, summary: res.summary }); continue; }
