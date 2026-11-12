@@ -126,7 +126,8 @@ export function placeVerbs(c: VerbContext) {
           const area = (k: (typeof fits)[number]) => (k.compose?.size[0] ?? 99) * (k.compose?.size[1] ?? 99);
           const kind = named ?? (want.indoor && fits.length ? [...fits].sort((x, y) => area(x) - area(y))[0]! : spareKind(world, [...session.places.values()].flatMap((r) => parseWorldStyle(r.spec.style)?.kind.id ?? []), want));
           const others = fits.filter((k) => k !== kind).map((k) => `"world:${world.id}:${k.id}" (${k.about})`).join(", ");
-          const spec: PlaceSpec = { ...worldPlaceSpec(world, kind, asked.name), salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) };
+          // 모델이 적은 «다른 맵으로 나가는 변» 은 그대로 넘긴다 — 구성기가 그 가장자리까지 길을 낸다(전에는 버려져 섬·항구에 나가는 길이 없었다).
+          const spec: PlaceSpec = { ...worldPlaceSpec(world, kind, asked.name), salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(!kind.indoor && asked.exits?.length ? { exits: asked.exits } : {}) };
           const builder = builderFor(spec);
           if (builder) {
             env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${builder.id} — ${world.id}:${kind.id})` });
