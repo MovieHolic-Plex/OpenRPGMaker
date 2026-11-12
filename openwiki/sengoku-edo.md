@@ -89,7 +89,7 @@ QA 대상은 엔진 렌더러 원본 해상도다. 성하마을·성·신사/절
 - Claude Fable 5.2 medium 한 방으로 **지붕만** 다시 그렸다(벽·문·기단은 코드 그림 그대로): `se-minka`·`minka-small`·`barn`·`chashitsu`·`chaya-thatch`(이엉) · `se-onsen`·`dojo`·`samurai-house`·`temple-hall`(기와) · `se-shrine`(동판). 지붕 기울기(모델 없음) 11~22px → 0~1px.
 - 덮어쓰기: `tiledata/sengoku-edo/fable-roofs/<조각>.png` + `index.json` → `art/kit.py` 의 내보내기가 `scripts/content/lib/fable_roofs.py` 로 코드 그림 위에 덮어 `_gate/se-*.png` 를 쓴다. 코드 그림이 바뀌면 멈춘다.
 - 관문: **3/4 관문 미통과 — 오너 면제** 묶음 `fable-redraw-roofs-sengoku-edo-2026-11-12`(bundle·shared, 스토어 제외). `se_bake_lib.gate_status` 가 면제된 그림을 받는다(`WAIVED` 목록). 통과가 아니다.
-- 칸 번호: 기존 번호는 그대로(이미 깔린 맵이 새 지붕으로 보인다), 새 칸 12개가 끝에 붙었다(1061 → 1073). `se_bake_lib.Outdoor.put` 은 이제 **이미 번호를 받은 자리 키를 그림이 같아져도 합치지 않는다**(합치면 그 번호가 빈 칸이 되어 깔린 맵에 구멍 — 처음 구웠을 때 14칸이 비었다). 다른 건물과 기와 칸을 나눠 쓰던 6채(`onsen`·`dojo`·`samurai-house`·`temple-hall`·`barn`·`chashitsu`)는 그 자리에 새 칸 번호를 받았다 — **이미 깔린 그 건물들은 그 몇 칸이 그 번호를 원래 갖고 있던 건물의 그림으로 보인다**(다시 찍으면 맞는 그림; 번들에 저장된 이 칩셋 장소는 없다).
+- 칸 번호(jp_city 와 같은 규칙): **옛 칸은 옛 그림 그대로, 다시 그린 지붕은 시트 끝의 새 칸**(1061 → 1227, 새 칸 166)이고 다시 그린 10채의 키트만 새 칸을 가리킨다. 이미 깔린 맵은 전과 똑같이 보이고 새로 찍는 건물만 새 지붕이다. `se_bake_lib.Outdoor.keep_old_cells(옛 시트)` + `put`: 이미 번호를 받은 자리 키의 그림이 옛 시트의 그 칸과 다르면 옛 칸에 옛 그림을 남기고 `키@r<그림 해시>` 로 새 번호를 받는다(다시 구워도 같은 번호 — 두 번 구워 시트·정의·핀 해시 동일 확인). 검사(모델 없음, `~/z-project/assistant-fable-runs/redraw/roofs/laid_check.py`): 옛 칸 1061개 중 새 시트에서 화소가 달라진 칸 0 · 옛 칸의 통행/우선순위 변화 0 · 옛 키트 28채를 찍은 맵(11×175칸)을 옛 시트/새 시트로 그린 그림의 다른 화소 0.
 - 남은 것: `se-castle-turret`(2단 지붕 — 상자를 손으로 나눠야 한다), 예외(천수각·탑·종루·문·도리이). 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
 
 ## 조수 실측
