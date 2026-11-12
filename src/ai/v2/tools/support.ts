@@ -1,6 +1,5 @@
 // v2 동사들이 같이 쓰는 밑받침 — 결과 글 싸기, 지은 맵 보기(기계 검사·비평·그림), 쓰기 기록, 다음 단계 안내, 장소 패치 적용, 상한 값.
 import type { PiToolExecResult } from "@/ai/piAgent/toolAdapter";
-import { hasLayout } from "../place/builders/interiorLayoutBuild";
 import { layoutGiven } from "../place/interiorLayout";
 import { cleanLayoutHint } from "../place/builders/village";
 import type { PiAssistantV2Env } from "../shared/env";
@@ -16,7 +15,7 @@ import type { CriticVerdict } from "@/ai/piAgent/featureReview";
 import type { PlaceBuildResult, PlacePatch, PlaceRecord, PlaceSpec, PlaceType, ZoneSpec } from "../shared/types";
 import type { Project } from "@/project/types";
 import { V2Session, type Seen } from "../turn/session";
-import { V2_MAX_REPAIR_ROUNDS } from "../turn/session";
+import { V2_MAX_REPAIR_ROUNDS, repairCapOf } from "../turn/session";
 
 export const OPP_SIDE = { north: "south", south: "north", east: "west", west: "east" } as const;
 
@@ -26,13 +25,12 @@ export const WORLD_BOUNCES = 2;
 /** 한 장소에서 여러 바깥 장소로 나가는 길을 서로 다른 변에 둔다. */
 export const LINK_SIDES = ["east", "west", "north", "south"] as const;
 
-/** 칸 배치(spec.layout) 장소의 다시 짓기 상한 — 고침이 싸고 매번 검증되므로 자기 검토·고치기를 막지 않게 크게(2026-10-31 감독: 3바퀴가 목업 시험의 자기 검토 고침을 막았다). */
-const LAYOUT_MAX_REBUILDS = 12;
 
 /** 칸 배치 없이 온 손 도트 실내를 돌려보내는 최대 횟수 — 그 뒤엔 옛 설계 길로 짓는다. */
 export const LAYOUT_BOUNCES = 3;
 
-export const repairCap = (spec?: PlaceSpec): number => (spec && hasLayout(spec) ? LAYOUT_MAX_REBUILDS : V2_MAX_REPAIR_ROUNDS);
+/** 장소 하나의 고치기 상한(정본 turn/session.ts repairCapOf — 끝맺음 관문과 같은 수). */
+export const repairCap = (spec?: PlaceSpec): number => repairCapOf(spec);
 
 /** build_hand_interior_room 이 layout 방마다 다는 장소 꼬리표(handInteriorTools.ts 와 같은 값). */
 export const HAND_LAYOUT_ROOM_TAG = "hand-layout-room";

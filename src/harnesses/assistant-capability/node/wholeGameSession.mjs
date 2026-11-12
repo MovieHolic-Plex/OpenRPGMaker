@@ -269,7 +269,8 @@ try {
       // 앞 스트림이 살아 연결을 쥐고 있다 — livePeak 5 면 그 턴은 연결이 모자라 멈춘 것이다.
       streams: { ...streamCounts(events), livePeak: Math.max(livePeak, streamCounts(events).live) },
       sockets: { peak: socketPeak, atSettle: socketsAtSettle },
-      statusNotes: events.filter(e => e.type === 'execution_status').map(e => `${e.name}: ${String(e.summary ?? '').slice(0, 300)}`).slice(-40),
+      // 로컬 CLI 고리는 호출마다 turn.diag · tool.size 를 낸다(한 턴 90줄) — 마지막 40줄을 그것이 채워 v2 관문·비평 줄이 기록에서 밀려났다. 그 둘은 timeline 에만 남긴다.
+      statusNotes: events.filter(e => e.type === 'execution_status' && e.name !== 'turn.diag' && e.name !== 'tool.size').map(e => `${e.name}: ${String(e.summary ?? '').slice(0, 300)}`).slice(-80),
       // 턴 안의 시간표 — [보낸 뒤 ms, 종류, 이름]. 도구 호출 수가 적은데 턴이 길 때 어디서 시간이 갔는지(모델 대기·도구·끝맺음 단계) 가른다.
       timeline: events.filter(e => ['tool_start', 'tool_end', 'execution_status', 'assistant', 'done'].includes(e.type) && Number.isFinite(e.at))
         .map(e => [e.at - (sentAt || startedAt), e.type, String(e.name ?? '').slice(0, 60)]),

@@ -1184,6 +1184,44 @@ golden: 153 가운데 117 이 `place_examine_hotspots` 글/스키마(81 은 그�
 
 재생(`layReplay.mts`): village-chief-house 는 «촌장 집»(오두막 14×12)이 서고, 탐침 `refusalNextCalls.mts` ④ 가 계열 거절 → `make_place` → 같은 칩셋의 장소를 확인한다. 시험 `test/aiV2WorldRoutedPlace.test.ts`.
 
+## 깔린 뒤의 «완료» — 빌더가 덮은 항목 · 낡은 비평 다시 보기 · 관문이 이른 도구 싣기 (2026-11-12, 깔기 24판 Terra 재측정)
+
+위 네 묶음(#4621~#4624)을 넣고 같은 24요청을 실제 입력창으로 다시 돌렸다(Terra high, `mapvqa/lay-tools-2ad6d3596a`): 깔림 23 → 24/24, 장소 호출 거절 55 → 23, «pending action» 막힘 17 → 0.
+그런데 «완료» 는 8 → 6 이었다. 거절이 사라지자 완료를 정하는 것은 끝맺음 관문의 항목이었고, 미완료 18요청의 막힌 항목을 읽으면 넷이다.
+
+| 완료를 막은 것 | 기록 | 원인 | 고친 곳 |
+|---|---|---|---|
+| 비평가의 장소 항목이 다시 열림(15요청) | village: 비평 «우물이 안 보인다» → 모델이 우물을 놓음 → 관문이 같은 항목을 두 번 더 엶 | 비평가는 짓기·다시 짓기 때만 본다. `stamp_object`·`place_object`·`add_people` 로 고친 맵은 다시 보지 않고, 관문은 짓기 때의 지적을 그대로 읽었다 | `turn/relook.ts` — 관문 전에, 지적이 남은 장소의 지금 1배 그림이 비평가가 본 그림과 다르면 다시 보인다(맵마다 턴에 두 번까지) |
+| 관문 항목 «고치는 도구가 이 실행의 도구 목록에 없다»(11요청 12항목) | throne-room: `set_field_hud`, mine·ruins: `patch_event_page` | 그 요청의 묶음에 없을 뿐 조수 v2 에는 있는 도구다 | `judge/gates.ts syncGateItems` + `turn/afterMain.ts addRepairTool` — 관문 글이 이른 도구를 고치기 차례에 싣는다 |
+| 아무도 못 하는 항목(village-chief-house 8항목) | 구성기가 지은 «촌장 집» 에 모델이 건 칸 배치·자기 검토·방 그래프 항목 | 구성기 방은 칸 배치를 받지 않는다. 방은 마을과 이어지지도 않았고 결과 글은 그 요청에 없는 동사를 일렀다 | `tools/worldRoomLink.ts`(짓자마자 집 문에 잇는다) · `judge/todoRoomChecks.ts builderCover` · `loop/builderCover.ts` |
+| 고치기 상한(weapon-shop) | 도구는 «남은 바퀴 9», 관문은 «상한» | 칸 배치 장소의 상한이 도구 12 · 관문 3 으로 달랐고 자기 검토 두 바퀴가 3을 먹었다 | `turn/session.ts repairCapOf` 하나를 도구·관문·최종 보고가 쓴다 |
+
+규칙:
+
+- **비평가가 본 그림이 낡았으면 다시 본다.** 지적을 지우지도, 비평가를 누그러뜨리지도 않는다 — 같은 비평가가 지금 그림을 본다. 그림이 그대로면 묻지 않는다(호출 0).
+- **관문 글이 이른 도구는 고치기 차례에 실린다**(`load_tools` 와 같은 길 — 모델이 묻지 않아도). 조수 v2 에 아예 없는 도구를 이른 항목만 «이 요청에서 고칠 수 없음» 으로 **뺀다**(막힘이 아니다 — 완료를 막지 않고 최종 요약에 적힌다).
+  묶음에 있지만 아직 안 실은 도구(이름 호출·`load_tools` 로만 닿는 것)도 도구 목록에 올린다 — 모델은 목록에 안 보이는 `create_transfer_pair` 를 «제공되지 않는다» 며 항목을 막았다.
+  호출 모양(`tool{…}`)이 아니라 **이름만 이른 글**(«create_transfer_pair 로 잇는다»)의 도구도 싣는다. 항목을 빼는 판단은 호출 모양으로 이른 도구만 본다(낱말 하나가 도구가 아니라고 항목이 빠지지 않는다).
+  목록 고정 고리(로컬 CLI `call_tool`)에서는 실은 도구의 매개변수를 재주입 글에 바로 싣는다 — 장소만 까는 요청에는 `load_tools` 가 없다.
+- **동사 결과·관문 글이 이름으로 이른 v2 도구는 이름으로 부르면 그 자리에서 실린다**(`turn/lateTools.ts` — `hooks.lazyTool`). 게임 요청은 필요할 때 싣는 표가 이미 그랬고, 장소만 까는 요청은 표가 비어
+  `make_place` 결과가 이른 `create_transfer_pair` 를 부르면 «there is no tool named» 가 돌아왔다(2026-11-12 Haiku harbor · village-chief-house — main 과 #4636 양쪽). 쓰기 요청만, 조수 v2 묶음(`v2ToolPool`)에 있는 이름만.
+- **풀 칩셋 마을 뒤의 실내는 `make_place` 가 그 마을의 집 문에 잇는다**(`linkChild` — 선언한 입구와 같은 길). 결과 글은 두 문의 칸을 말하고 동사 이름을 대지 않는다.
+- **실내 종류가 없는 세계(전국·에도 · SF 정거장)의 실내 요청은 바깥 종류로 짓지 않는다.** 전에는 «촌장 집» 이 농촌 마을 54×42 한 장으로 서고 장소 확인이 ✓ 였다. 이제 짓지 않고 까닭을 말하며 없는 그림(`want=indoor-kind`)으로 적는다.
+- **구성기가 한 번에 지은 방의 방 검사(`layout_built`·`layout_review`·`room_graph`·`room_zones`)는 빌더의 사실로 닫는다:** 깔렸다(구역 수) · 시작/입구에서 닿는다 · 양쪽으로 이어졌다. 셋 중 하나라도 아니면 ✗ 이고 걸린 사실을 적는다.
+  쓰기 도구가 성공할 때마다 `closeBuilderCovered` 가 그런 항목을 닫고 `[Covered by the builder ✓]` 한 줄을 결과에 붙인다.
+- **구성기 방에 온 칸 배치 고침의 거절은 값이 찬 다음 호출 하나**다(`placeMemory.ts composedRefusal`): 지금 항목이 덮인 방 검사면 `todo done`, 물건 하나면 `draw_object`, 아니면 `inspect`. 칸 배치로 온 호출의 거절에는 다른 동사를 늘어놓지 않는다(막힘 되돌림이 배치 항목을 `add_people` 로 돌렸다).
+- **막힘 되돌림은 그 항목의 거절만 본다**(`loop/todoTools.ts` — 실패 기록에 항목 id). 다른 항목에서 난 거절 하나가 막힘 다섯을 되돌렸었다. 되돌릴 때 이르는 호출은 거절 글이 적은 호출 그대로(`nextCall.ts callInText`).
+- **고치기 상한은 한 곳에서 읽는다**(`repairCapOf`): 칸 배치 장소 12, 그 밖 3.
+- `place_object` 는 막힌 칸에서 5칸 안의 빈 칸을 찾는다(전 3칸).
+- 독립 검토자의 «기존 빈 맵 삭제» 도 자리표시 시작 맵 은퇴로 읽는다(`judge/advisor.ts isPlaceholderRemoval` — «기존·원래» 를 낱말로). 마을 빌더가 고침을 새 id(`map_blank_start_r2`)로 다시 지은 판에서 검토자가 이것을 막음으로 올려, 조수가 `create_map` 으로 빈 맵을 되살렸다.
+
+비평가의 지적이 사실인가(1배 그림을 직접 봄, 완료를 비평 항목이 막은 15요청): **거짓·낡음 3**(village 우물 · market-town 노점 · harbor 배와 부두 — 고친 뒤 다시 안 봄),
+**사실이고 모델이 가진 도구로 고칠 수 있음 7**(convenience-store · house · weapon-shop · village-chief-house · prison · blacksmith · tavern — 빈 바닥·성긴 방. 고침이 거절되거나 되돌려졌다),
+**사실이지만 그림·빌더만 고칠 수 있음 5**(castle 궁 건물 없음 · ruins 바깥 요청에 실내 던전 · swamp 널다리 없음 · farm 가축 우리 없음 · village-to-field 들판이 항구 종류로).
+
+탐침 `refusalNextCalls.mts` ⑦(풀 마을 → 방이 양쪽으로 이어짐 · 덮인 항목 닫힘 · 구성기 방 거절의 다음 호출 · 다른 항목의 막힘은 안 되돌림). 시험 `test/aiV2BuilderCover.test.ts`.
+하네스 쪽 수치는 `openwiki/harnesses/assistant-capability.md` 「깔기 도구 Terra 재측정」.
+
 ## 버들항 맵의 빈 땅도 읽고 채운다 — 칸 역할을 안 적는 시트 · `amount:"few"` (2026-11-11, 작은 일 재측정)
 
 작은 일 재측정(Terra, main 84a7fa331a)에서 통과했지만 «완료» 로 못 끝난 `dress-trees-starter`(「마을 빈 곳에 나무를 몇 그루 심어 줘」, 버들항 시작 판):
@@ -2016,7 +2054,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   - 랜드마크를 objects/wall_items 에 같은 id·자리로 또 적으면 겹침 거절이 아니라 하나로 친다.
   - 목록 카드 `interiorCatalog.ts chipsetCatalog` — 칩셋 메타데이터만으로(roomKit 역할표 `effectiveSpec` = roomSpecOf + 가구 표가 비면 kitHandObjects, 예제 방 표 `rooms.examples`, 낱말 검색 `searchParts`): 요청 낱말이 맞는 방 종류의 예제 기물 → 검색 결과를 «suggested» 줄로 먼저, 그다음 칩셋 전체 목록. 손 목록 없음(agent/bbox-chipsets 이식).
   - 자기 검토 단계 `review_layout({mapId, problems, patch})`(agent/bbox-better critique.py, terra 0.61→0.71): 고침(remove/add objects·wall_items, replace 필드)을 지금 배치에 그대로 적용해 다시 짓고 바퀴를 센다(배치 선언 위치 태그 `reviews:N`). 할 일 `{kind:"layout_review", map}` ✓ = N ≥ `OPRN_V2_LAYOUT_REVIEW_ROUNDS`(기본 2, 0 = 끔). 관문 ③b 가 layout 맵마다 이 항목을 달고, 검토만 남으면 재주입 글이 «플레이어 눈으로 보고 review_layout» 이다. `edit_place({patch:{mapId, layoutPatch}})` 도 같은 고침을 받는다.
-  - 칸 배치 장소의 다시 짓기 상한은 `LAYOUT_MAX_REBUILDS`(12) — 고침이 싸고 매번 검증되므로(3바퀴 상한이 자기 검토 고침을 막았다). 끝맺음 관문이 «더 고쳐라»를 다시 묻는 상한은 그대로 3.
+  - 칸 배치 장소의 다시 짓기 상한은 `LAYOUT_MAX_REBUILDS`(12) — 고침이 싸고 매번 검증되므로(3바퀴 상한이 자기 검토 고침을 막았다). 끝맺음 관문도 같은 수를 쓴다(`turn/session.ts repairCapOf`, 2026-11-12 — 전에는 관문만 3이라 자기 검토 두 바퀴 뒤 한 번 고치면 «상한» 이었다).
   - 손 도트 실내를 칸 배치 없이 보내면 장소마다 세 번까지 돌려보낸다(zones/design 을 들고 와도, mapId 를 채워 와도). 핵심 규칙 «좌표를 지어내지 마라»는 칸 배치·검토 고침·마을 hints.layout·던전 rooms[].at 을 예외로 적는다 — terra 가 이 규칙을 근거로 감옥을 막아 버렸다(5회차 첫 판).
   - 측정(같은 4과제, 판정자 gpt-6.1-sol 쌍 비교 + 공정성 재판정 Opus 5.5 medium, 기준 방 assistant-rooms-2): 4회차(칸 배치, 7bff4341a7·f301d3ea29) sol 5/52 · Opus 13/52, 5회차(벽 우선 + 자기 검토, 65a565414f) sol 5/52 · Opus **15/52**(무 14). 3회차는 sol 5/52 · Opus 7/52. opus 판은 Opus 판정 4/13 → 10/13 → 11/13 로 올랐고, terra-high 는 3/39 → 3/39 → 4/39(무 9→13)로 거의 그대로다 — 5회차 terra 12판 모두 칸 배치·대부분 검토 2바퀴였지만 기물 12~24개로 성기다(opus 49~85개). 4·5회차 terra 는 high, 3회차는 medium. 결과 쪽: `~/claude-viz/interior-omo-1030.html`.
   - **공간 검사(6회차, 3c3ddfe195 — `src/ai/v2/place/interiorSpace.ts`)**: terra 실내가 성겼다(기물 12~24개). bbox 실험(agent/bbox-walls `bbox-walls-3..5/lay.mts`, agent/bbox-chipsets `bbox-chipsets/space.mts`)의 검사를 옮겼다 — 함수는 재고 이름만 붙인다. 빈 칸 = 바닥인데 자기와 8 이웃에 벽·벽면·가구·난간이 없는 칸, 문·입구·계단 앞을 잇는 최단 길 3칸 폭은 빼고 센다. 방마다 빈 사각형 3x4 이상 · 빈 칸 25% 초과(바닥 30칸 이상) · 복도 30% 초과 · 바닥 80칸 이상 큰 방에서 통로 밖 가구 20% 미만이면 영어 고칠 말(벽 이름을 댄 «줄이기» 또는 방 쓰임에 맞는 묶음 예를 든 «채우기», 깔개는 안 친다). 문턱은 기준 방 실측 바로 위(기준 방 전체 7~20%, 방 ≤27%, 가장 큰 빈 사각형 ≤3x4). 깔개 상한 방마다 1개(바닥 150칸 이상 2개). 같은 크기·다른 쓰임 방 셋 이상은 위계 알림(경고). 공간 문제(soft)는 고치기가 남았으면 거절, 다 쓰면 «still open after the repairs» 경고로 깔고 자기 검토에서 고친다.
@@ -2089,9 +2127,9 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   진척 = 성공한 쓰기 도구의 **새** 결과 지문(이름+인자+결과 글, 시각·긴 수·id 가림, 창 256) 또는 열린 항목 수 감소. 서명(열린 수/전체·프로젝트 지문(할 일 제외)·보고 해시)이 앞과 같으면 멈춤. ask_user 로 물은 실행은 다시 돌리지 않는다.
   멈추면 열린 항목은 «고리 멈춤 — 이유» 막힘으로 닫고 ④~⑥ 은 건너뛴다(③ 은 돈다). 재주입마다 Agent 경로는 tool_choice required.
 - **관문 항목 맞추기**(`judge/gates.ts`): 열쇠(2026-11-11 부터 규칙·갈래·대상 — `findingKey`, 위 「관문 열쇠는 규칙·대상에서」. 그 전에는 수를 가린 문제 글)가 같은 문제는 새 항목을 만들지 않고 닫힌 항목이면 다시 연다(시도 +1, 상한이면 막힘).
-  문제가 사라진 항목은 함수가 닫고, 고치기 상한(맵당 3바퀴)에 닿은 장소 항목은 «상한» 막힘. 장소·컷신 문제의 열쇠는 맵마다 하나(`place:<mapId>:place|stage`)라 고칠 때마다 글이 바뀌어도 같은 항목이 다시 열려 시도 3에서 막힌다(글은 지금 것으로 바뀐다). 옛 `v2GateProblems` 글은 `v2GateProblems` 위의 얇은 포장으로 남았다.
+  문제가 사라진 항목은 함수가 닫고, 고치기 상한(`repairCapOf` — 맵당 3바퀴, 칸 배치 장소 12)에 닿은 장소 항목은 «상한» 막힘. 장소·컷신 문제의 열쇠는 맵마다 하나(`place:<mapId>:place|stage`)라 고칠 때마다 글이 바뀌어도 같은 항목이 다시 열려 시도 3에서 막힌다(글은 지금 것으로 바뀐다). 옛 `v2GateProblems` 글은 `v2GateProblems` 위의 얇은 포장으로 남았다.
 - **기존 결함**(`gates.ts splitPreexisting`): 시작 저장본에서 같은 게임 검사를 돌린 열쇠(`v2BaselineGameKeys`)에 있는 문제, 또는 문제 글이 짚는 이벤트가 모두 시작 저장본 그대로이거나 함수 마감(autoBuild)만 건드린 것이면 항목으로 만들지 않고 최종 보고 「기존 결함」 칸에만 싣는다 — 완료를 막지 않는다(omo-loop-1030: 버들마을 출입구 그림 없음이 세 장면 모두 할 일이 됐다).
-- **도구 없는 관문**: 관문 글이 이르는 도구가 이 실행에 없으면 막힘으로 닫지만, 결정적으로 고칠 수 있는 것은 끝맺음이 먼저 고친다 — `finish/stages/combat-menu.ts`(reload 묶음, 늘 돈다): 전투를 넣었는데 ESC 메뉴가 이야기용이면 소지품 뒤에 스킬·장비·상태 칸을 되돌린다.
+- **도구 없는 관문**: 관문 글이 이르는 도구가 이 요청의 묶음에 없으면 고치기 차례에 싣는다(2026-11-12, 위 「깔린 뒤의 «완료»」 — 조수 v2 에 없는 도구면 항목을 빼고 요약에 적는다. 전에는 막힘으로 닫았다). 결정적으로 고칠 수 있는 것은 끝맺음이 먼저 고친다 — `finish/stages/combat-menu.ts`(reload 묶음, 늘 돈다): 전투를 넣었는데 ESC 메뉴가 이야기용이면 소지품 뒤에 스킬·장비·상태 칸을 되돌린다.
 - **문 잇기 자리 옮기기**(`game.ts withTransferRelocation`): v2 의 `create_transfer_pair` 가 doorAt 모양 어긋남·문앞 막힘·도착 칸 겹침으로 거절되면 거절된 끝(그래도 안 되면 두 끝)의 doorAt 을 빼고 다시 불러 걸어 닿는 가장 가까운 칸에 잇는다(편집기 도구의 «문을 옆 칸으로 대신 잇지 않는다» 계약은 그대로, v2 감싸개만). terra boss-room r1~r3 저장본 셋 모두 link ✓ 로 재현.
 - **미완료 원인 수리**(2026-10-30 omo-loop-1030b 미완료 7판 분류 — `~/claude-viz/omo-unfinished-1030.html`):
   - 맵 **가장자리 출구는 door-bare 가 아니다**(`placementRules.ts` — caveGates 와 같은 규칙: 맵 밖으로 이어지는 길이 곧 입구). 버들마을 (0,23)·(21,0) 기존 출구가 마감의 길 포석으로 «바뀐 맵»이 되어 다섯 판에서 관문 항목이 됐고, 가장자리 칸 위 갱구 찍기는 «transfer 목적지 통행 불가»·«완성된 집 보호»로 늘 거절됐다.

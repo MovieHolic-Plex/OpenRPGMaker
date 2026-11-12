@@ -32,8 +32,11 @@ import { dropModelSeed } from "../../place/modelSeed";
 import { V2_MAX_REPAIR_ROUNDS } from "../../turn/session";
 import { SIZE, ROOM_DESIGN_SCHEMA, ZONE_SCHEMA, CONNECTIONS_SCHEMA, HINTS_SCHEMA, LAYOUT_SCHEMA, LAYOUT_PATCH_SCHEMA, PLACE_SPEC_SCHEMA, POINT } from "../placeSchema";
 import { OPP_SIDE, LAYOUT_BOUNCES, repairCap, HAND_LAYOUT_ROOM_TAG, text, INTERIOR_PLACE, CLEAR_DUNGEON, renderMap, recordWrite, adoptInterior, applyPatch, dropPatchFill, withSetupDefaults, placeVariety } from "../support";
-import { PAST_DESIGN_NOTE, layoutPatchRefusal, noDesignRefusal, notRelaidRefusal } from "../placeMemory";
-import { onePassRefusal } from "../../place/onePass";
+import { PAST_DESIGN_NOTE, composedRefusal, layoutPatchRefusal, noDesignRefusal, notRelaidRefusal } from "../placeMemory";
+import { runTodoItemCheck } from "../../judge/todoChecks";
+import { COVERABLE } from "../../loop/builderCover";
+import { linkWorldRoom } from "../worldRoomLink";
+import { recordArtGaps } from "@/project/artGap";
 import type { VerbContext } from "../context";
 import { keptPlaceResult } from "../../place/keepMapId";
 
@@ -124,6 +127,12 @@ export function placeVerbs(c: VerbContext) {
           const said = `${asked.name} ${asked.theme ?? ""}`.toLowerCase();
           const fits = world.kinds.filter((k) => !!k.indoor === want.indoor && !!k.danger === want.danger);
           const named = fits.find((k) => said.includes(k.id.replace(/-/gu, " ")) || k.ko.split(/\s+/u).some((w) => w.length >= 2 && said.includes(w)));
+          // 실내 종류가 없는 세계(전국·SF 정거장)의 실내 요청을 바깥 종류로 짓지 않는다 — «촌장 집» 이 농촌 마을 한 장으로 서고 장소 확인은 ✓ 였다.
+          if (want.indoor && !fits.length) {
+            recordArtGaps(session, [{ chipset: world.tilesetId, want: "indoor-kind", wanted: "실내 종류", where: asked.name, standIn: "none", by: "make_place" }]);
+            const cur = session.todo.current();
+            return text({ ok: false, summary: `«${asked.name}» was not built: ${world.name} has no indoor place kind yet (its kinds are all outdoor: ${world.kinds.map((k) => k.id).join(", ")}), and this project's maps use that chipset — a room from another chipset is not mixed in. It is recorded as missing art for the report.${cur ? ` Next call: todo({"op":"block","task":${JSON.stringify(cur.id)},"reason":"${world.name} has no indoor place kind, so this room cannot be built in the project's chipset"})` : ""}` });
+          }
           const area = (k: (typeof fits)[number]) => (k.compose?.size[0] ?? 99) * (k.compose?.size[1] ?? 99);
           const kind = named ?? (want.indoor && fits.length ? [...fits].sort((x, y) => area(x) - area(y))[0]! : spareKind(world, [...session.places.values()].flatMap((r) => parseWorldStyle(r.spec.style)?.kind.id ?? []), want));
           const others = fits.filter((k) => k !== kind).map((k) => `"world:${world.id}:${k.id}" (${k.about})`).join(", ");
@@ -133,7 +142,9 @@ export function placeVerbs(c: VerbContext) {
             env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${builder.id} — ${world.id}:${kind.id})` });
             await builder.prepare?.(spec);
             const built = builder.build(run, spec);
-            const note = `«${asked.name}» was built as the «${kind.id}» kind of ${world.name} (${kind.about}): this project's maps use that chipset, so other chipsets and your own cell layout are not mixed in.${others ? ` For another kind, call make_place again with the same name and style ${others}.` : ""} Link it with create_transfer_pair.`;
+            // 실내 종류는 이 세계의 바깥 장소 집 문에 바로 단다 — 잇기를 모델에게 넘기면 그 동사가 요청의 도구 목록에 없을 수 있다.
+            const linked = built.ok && kind.indoor ? linkWorldRoom(c, world, kind, spec, built) : "";
+            const note = `«${asked.name}» was built as the «${kind.id}» kind of ${world.name} (${kind.about}): this project's maps use that chipset, so other chipsets and your own cell layout are not mixed in.${others ? ` For another kind, call make_place again with the same name and style ${others}.` : ""}${linked}`;
             return finishPlace(id, "make_place", params, spec, builder.id, withSetupDefaults({ ...built, warnings: [note, ...built.warnings] }, builder.id, run.ctx.project, String(task ?? ""), freshStart, session.stageWrites), 0);
           }
         }
@@ -451,7 +462,15 @@ export function placeVerbs(c: VerbContext) {
       const builder = builderFor(newLayout ? applyPatch(record.spec, patch) : record.spec)!;
       // 거절은 기록이 있던 자리에 한 바퀴로 적는다 — 앞 턴의 기록을 «이번 턴에 지은 것»으로 옮기지 않는다.
       const keepRecord = (r: PlaceRecord) => { for (const mapId of r.result.mapIds) (fromPast ? session.pastPlaces : session.places).set(mapId, r); };
-      if (builder.onePass) { keepRecord({ ...record, rounds: record.rounds + 1 }); return text({ ok: false, summary: onePassRefusal(record.spec.name) }); }
+      if (builder.onePass) {
+        keepRecord({ ...record, rounds: record.rounds + 1 });
+        // 다음 호출 하나: 진행 중 항목이 이 맵의 방 검사이고 빌더가 덮었으면 그 항목을 닫는 todo done, 물건 고침이면 그 물건을 놓는 호출, 아니면 inspect.
+        const cur = session.todo.current();
+        let covered: string | undefined;
+        try { const r = cur?.check && COVERABLE.has(cur.check.kind) ? runTodoItemCheck(env.ctx.project, cur, { startMapId: env.ctx.project.startMapId }) : undefined; covered = r?.pass && r.covered && r.evidence?.mapId === patch.mapId ? cur!.id : undefined; } catch { covered = undefined; }
+        const anchor = (patch.addAnchors ?? []).find((a) => typeof a?.what === "string" && a.what.trim());
+        return text({ ok: false, summary: composedRefusal(env.ctx.project, patch.mapId, { layout: layoutGiven(patch.set?.layout) || !!patch.layoutPatch, ...(covered ? { coveredItem: covered } : {}), ...(anchor ? { anchor: { what: anchor.what, ...(anchor.near && (anchor.near.x || anchor.near.y) ? { near: anchor.near } : {}) } } : {}) }) });
+      }
       // 마을·던전·거리 빌더는 소품 하나하나·꾸밈 정도를 받지 않는다 — 그런 패치로 다시 지으면 같은 맵이 또 나오고 바퀴만 쓴다(2026-10-23 v2 실조수).
       if (builder.id !== interiorBuilder.id) {
         const effective = !!(patch.set || patch.variant !== undefined || patch.seed !== undefined || patch.addFeatures?.length || patch.removeFeatures?.length || patch.addZones?.length || patch.removeZones?.length
