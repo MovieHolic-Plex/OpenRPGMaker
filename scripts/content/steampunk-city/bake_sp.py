@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""steampunk_city 굽기 — art/ 의 일곱 등록부(바닥·건물·거리 소품·배관·탈것·거리/마당 기물·실내) 중 object-gate 통과분을 한 시트로.
+"""steampunk_city 굽기 — art/ 의 여덟 등록부(바닥·건물·거리 소품·배관·탈것·거리/마당 기물·실내·이야기 기물) 중 object-gate 통과분을 한 시트로.
 
   python3 scripts/content/steampunk-city/bake_sp.py          # 쓰기
   python3 scripts/content/steampunk-city/bake_sp.py --dry    # 보고만
@@ -28,7 +28,7 @@ TD = os.path.join(ROOT, 'tiledata', 'steampunk-city')
 P = dict(png=os.path.join(ROOT, 'public/assets/steampunk-city/steampunk-city-chipset.png'),
          tileset=os.path.join(ROOT, 'src/assets/steampunkCityTileset.json'), sheet=os.path.join(ROOT, 'src/assets/steampunkCitySheet.json'),
          pins=os.path.join(TD, 'bake-pins.json'), report=os.path.join(TD, 'bake-report.json'))
-GROUP_KO = dict(terrain='바닥·길·물', buildings='건물', props='거리 소품', pipes='배관 도랑', vehicles='탈것', street='거리·마당 기물', interior='실내')
+GROUP_KO = dict(terrain='바닥·길·물', buildings='건물', props='거리 소품', pipes='배관 도랑', vehicles='탈것', street='거리·마당 기물', interior='실내', story='이야기 기물')
 THEME = '스팀펑크'
 
 # 다칸 조각의 칸 통행: foot = 맨 아래 막힘 줄 수(그 위는 별 — 뒤로 지나가면 위에 그려진다). 0 이면 전부 별(머리 위 겹침).
@@ -52,9 +52,10 @@ WATER_ANIM = [('water', '운하 물(잔물결)', ['water', 'water-f1', 'water-f2
 
 
 def _regs():
-    import terrain as AT, buildings as AB, props as AP, pipes as API, vehicles as AV, street as AS, interior as AI   # noqa: E401
+    import terrain as AT, buildings as AB, props as AP, pipes as API, vehicles as AV, street as AS, interior as AI, story as AST   # noqa: E401
     anims = WATER_ANIM + [(a[:-5] if a.endswith('-anim') else a, n, f, fps) for a, n, f, fps in list(AP.ANIM) + list(AI.ANIM)]
-    return (AT.R, AB.R, AP.R, API.R, AV.R, AS.R, AI.R), anims
+    # 이야기 기물(story)은 맨 뒤: 키트 목록에서 실내 계단이 거리 해치보다 먼저 온다(계단 키트를 차례로 고르는 쪽이 방에 거리 해치를 찍지 않게)
+    return (AT.R, AB.R, AP.R, API.R, AV.R, AS.R, AI.R, AST.R), anims
 
 
 def build_pieces(report):
@@ -84,12 +85,16 @@ def build_pieces(report):
         g = it['group']; iid = it['id']
         role = ('terrain' if it['kind'] in ('terrain', 'flat') and g != 'interior' else 'building' if g == 'buildings' else 'fence' if iid in FENCE_IDS
                 else 'wall' if iid.startswith('wall-') or iid == 'ceiling' else 'terrain' if it['kind'] == 'terrain' else 'prop')
-        where = '실내' if g == 'interior' else '야외'
+        where = '실내' if g == 'interior' or it.get('indoor') else '야외'
         desc = f"{it['name']}. 스팀펑크 도시 {where} {GROUP_KO[g]}, 칸 {it['w']}×{it['h']}, 3/4 탑뷰(윗면 + 남쪽 앞면)."
+        if it.get('note'): desc = f"{it['name']}. {it['note']} 스팀펑크 도시 {GROUP_KO[g]}, 칸 {it['w']}×{it['h']}."
         p = dict(id='sp-' + iid, name=it['name'], kind=it['kind'], png=it['png'], group='sp-' + g, group_ko=GROUP_KO[g], desc=desc, role=role,
                  tags=list(it.get('tags') or []) + (['실내'] if g == 'interior' else []), rules=it.get('rules') or '')
         if iid in FOOT: p['foot'] = FOOT[iid]
         if iid in SOLID_CELLS: p['solid_cells'] = SOLID_CELLS[iid]
+        if it.get('solid') is not None and it['kind'] not in ('terrain', 'flat'): p['solid_cells'] = it['solid']     # 조각이 막힌 칸을 스스로 적었다(이야기 기물 spec.json 의 block)
+        if it.get('place') == 'decal': p['overlay'] = True                                                             # 밟고 지나가는 덧그림 — 불투명 칸도 위층(사람 밑)
+        if it.get('place') == 'wallmount': p['stamp_kind'] = 'wallmount'                                              # 벽면에 거는 그림 — 찍기 도구가 벽 칸 안에만 받는다
         if iid in BLOCKED: p['blocked'] = True
         if g == 'buildings':
             p['entrance'] = list(it.get('entrance') or [])

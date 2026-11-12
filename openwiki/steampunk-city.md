@@ -1,4 +1,4 @@
-# steampunk_city — 스팀펑크 공업 도시 칩셋 (2026-10-14, 그림 다시 굽기 2026-11-12)
+# steampunk_city — 스팀펑크 공업 도시 칩셋 (2026-10-14, 그림 다시 굽기 2026-11-12, 이야기 기물 6종 2026-11-13)
 
 벽돌·철·구리의 증기 도시: 연립·가게·여관 거리, 공장·보일러실·배관 도랑·석탄 마당, 기차역·증기 열차·화물 측선·문형 기중기,
 운하 부두·돌다리·잔교·바지선, 비행선 계류탑(땅 위 정박장), 실내 여섯(보일러실·기관실·공방·연구실·여관·선술집).
@@ -8,7 +8,7 @@
 
 | 무엇 | 어디 |
 |---|---|
-| 그림(코드 손 도트, 16px, 3/4) | `scripts/content/steampunk-city/art/` — terrain·buildings·props·pipes·vehicles·street·interior 일곱 등록부, `palette.py`(코드 도트가 그리는 옛 22 램프·116색), **`palette_v3.py`(굽는 색: 역할별 48색 + 옛 색 → v3 대응표)**, `px.py`/`kit.py` 그리개(`Reg.picture` = 굽는 그림) · Fable 한 방 그림 `tiledata/steampunk-city/fable-redraw/` |
+| 그림(코드 손 도트, 16px, 3/4) | `scripts/content/steampunk-city/art/` — terrain·buildings·props·pipes·vehicles·street·interior·story 여덟 등록부(story = 이야기 기물, 목록 `tiledata/steampunk-city/objects/spec.json`), `palette.py`(코드 도트가 그리는 옛 22 램프·116색), **`palette_v3.py`(굽는 색: 역할별 48색 + 옛 색 → v3 대응표)**, `px.py`/`kit.py` 그리개(`Reg.picture` = 굽는 그림) · Fable 한 방 그림 `tiledata/steampunk-city/fable-redraw/` |
 | 관문 내보내기 | `tiledata/steampunk-city/<묶음>/_gate/sp-<id>.png` + `items.jsonl`, `gate_sel.py <묶음> ids…` 로 sel.jsonl |
 | 굽기 | `python3 scripts/content/steampunk-city/bake_sp.py [--dry]` → `public/assets/steampunk-city/steampunk-city-chipset.png` · `src/assets/steampunkCity{Tileset,Sheet}.json` · `tiledata/steampunk-city/bake-{pins,report}.json`(번호 핀은 덧붙이기 전용) |
 | 참고문서 | `python3 scripts/content/steampunk-city/bake_refs_sp.py` → `src/assets/steampunkCityReferences.json`(이미지 바이트 없음) + `public/assets/steampunk-city-references/*.png` |
@@ -18,9 +18,9 @@
 | 조수 길잡이 | `src/ai/steampunkCityPolicy.ts` (plainTurn 에서 jp_city **보다 먼저** 판정 — 「증기기관 도시 거리」가 jp_city 의 「도시 거리」에도 걸린다) |
 | 장면 QA | `node_modules/.bin/vite-node scripts/content/steampunk-city/qa/compose-scene.mts -- out.json <style> W H seed` → `qa/render_scene.py`(렌더 + 검증) |
 
-## 수량 (굽기 보고서, 2026-11-12)
+## 수량 (굽기 보고서, 2026-11-13)
 
-조각 172(야외 120·실내 52) · 키트 107 · 칸 1211(48열×26줄) · 움직이는 칸 묶음 38(물·증기 구멍·굴뚝 연기·보일러·기관·테슬라 코일·벽난로) ·
+조각 178(야외 120 · 실내 52 · 이야기 기물 6) · 키트 113 · 칸 1355(48열×29줄 — 2026-11-12 다시 굽기 1211 → 지붕 낮추기 1329 → 이야기 기물 1355) · 움직이는 칸 묶음 38(물·증기 구멍·굴뚝 연기·보일러·기관·테슬라 코일·벽난로) ·
 정의 위반 0 · 팔레트 밖 0 · 재조립 불일치 0. 가족 라벨 `oprn-steampunk` = 「스팀펑크 도시(도트)」. (굽기 전: 키트 102 · 칸 851.)
 
 ## 그림 다시 굽기 (2026-11-12) — 역할 팔레트 v3 · 직각 지붕 · 주인공 크기 · Fable 한 방
@@ -44,12 +44,81 @@
 - **번호**: 옛 칸 번호 851개는 하나도 움직이지 않았다. 번호가 있는 자리는 그림이 다른 칸과 같아져도 제 번호에 굽는다(`sp_bake_lib.Outdoor.put`) — 저장된 맵의 옛 번호가 빈 칸이 되지 않게. 새 칸 360개는 뒤에 덧붙었다(직사각형 지붕이 채운 모서리 칸, 전에는 다른 건물과 칸을 나눠 쓰던 자리, 새 키트 5).
   칸 통행·층 우선순위가 바뀐 옛 번호 0, 키트 크기·문 칸·접근칸이 바뀐 키트 0. 건물 17채와 지브 기중기는 위쪽 모서리에 칸이 늘었다(전에는 투명).
 - **구성기 전/후**(같은 호출·같은 씨앗 1, 거리 48×34 · 공장 지대 52×40 · 부두 48×34): 건물 목록·순서 같음, 소품 수 같음, 걷기 검사 오류 전·후 모두 없음.
-- **다시 굽는 순서**: `fable/draw.py`(새로 그릴 때만) → `fable/build.py` → `art/<묶음>.py` 일곱(_gate 내보내기) → `fable/manifest.py`(면제 입력·흔적) → `object-gate owner-waive --replace …`(오너의 말이 있을 때만) → `bake_sp.py` → `bake_refs_sp.py`. 색만 바꿀 때는 `art/palette_v3.py` 의 표를 고치고 `fable-redraw/` 그림을 같은 램프·단으로 옮긴 뒤 build 부터.
+- **다시 굽는 순서**: `fable/draw.py`(새로 그릴 때만) → `fable/build.py` → `art/<묶음>.py` 여덟(_gate 내보내기) → `fable/manifest.py`(면제 입력·흔적 — 이야기 기물은 `story-manifest.json` 으로 따로) → `object-gate owner-waive --replace …`(오너의 말이 있을 때만; 이야기 기물 묶음은 `--manifest …/story-manifest.json --batch fable-story-steampunk-city-2026-11-13 --contexts bundle,shared`) → `bake_sp.py` → `bake_refs_sp.py`. 색만 바꿀 때는 `art/palette_v3.py` 의 표를 고치고 `fable-redraw/` 그림을 같은 램프·단으로 옮긴 뒤 build 부터.
 - **남은 것**: 칸 모듈 조립이라 창 두 가지(켜진 창·어두운 창)가 되풀이된다 · 판석 보도가 고른 회색이라 옛 보도보다 덜 따뜻하고 포석 돌의 명암이 옛 그림보다 얕다 · 비행선 기낭이 회색 범포(48색 안에 크림 램프가 없다)이고 늑골 간격이 고르지 않다 · 석탄재 마당에 비스듬한 결, 차도 포석과 밝기가 가깝다 ·
   풀·흙·승강장·물은 시트에 한 칸뿐이라 큰 면에서 16px 주기가 남는다(변주를 섞으려면 구성기를 고쳐야 한다) · 색만 옮긴 옛 조각의 빨강(화물차 바퀴·우체통)이 조금 튄다.
 - **지붕 높이(2026-11-12, 오너 «지붕의 height 그러니까 세로 길이가 너무 길면 또 곤란함»)**: 한도는 `~/z-project/assistant-fable-runs/redraw/CONTRACT.md` §1 «roof height»(지붕 덩이 높이 ≤ 44px · 폭 128px 이상 48px · 덩이 몫 ≤ 55%). 넘는 8채를 조립기(`fable/build.py`)에서 낮은 지붕 모듈로 다시 조립했다(모델 호출 0): 슬레이트 56px → 이미 있던 40px 모듈(`inn`·`tavern`·`boiler-house`·`station`·`guild-hall`, 지붕 줄 50 → 34~40px), 철판 56px → `iron40`(56px 모듈에서 판 두 줄, 18~33줄을 코드로 뺀 것 — `factory`·`warehouse`·`dock-warehouse`, 56 → 40px). `SPECS` 의 `roofWas=56` 은 feats 의 y 를 적을 때의 지붕 높이다: 지붕 위에 얹는 것(굴뚝·지붕창·천창·굴뚝대)은 새 지붕 안의 같은 비율 자리로 옮기고 벽에 걸친 것(시계·호이스트·배관·발코니)은 그대로 둔다. 그림 크기·문 칸·벽 화소는 그대로이고 건물이 아래로 붙어 맨 윗줄 칸 58개가 빈 칸(-1)이 됐다. **굽기 규칙**: `sp_bake_lib.Outdoor.keep_old_cells` + `retire_cells`(jp_city 와 같은 규칙 — 전에는 제자리 굽기였다): 번호를 받은 자리 키의 그림이 옛 시트와 다르면 `<키>@r<그림 해시>` 로 끝에 붙이고(1211 → 1329칸), 아무도 안 쓰게 된 번호는 옛 그림·옛 정의 그대로. 제자리로 구우면 빈 칸이 된 자리가 깔린 맵에서 안 보이는 막힌 칸이 된다. 검사: 옛 칸 1211개 화소·통행 변화 0, 옛 건물 키트 20채 맵 화소 차이 0, 두 번 구워 해시 동일. `sp-workshop` 3칸·`sp-row-soot-4` 2칸은 그림이 같은 다른 번호를 가리키게 됐다(나눠 쓰는 칸의 임자가 바뀜 — 그림·통행 동일). 구성기(street·industrial·dock, 같은 씨앗): 걸을 수 있는 칸 1200 → 1213 · 1374 → 1414 · 1025 → 1045(빈 칸이 된 자리), 접근칸 10/10 · 17/17 · 9/9 도달.
 
+## 이야기 기물 6종 (2026-11-13) — 일지 책상 · 레버 둘 · 지하 입구 해치 · 방 사이 철문 · 대심장 기관
+
+왜: Sonnet 이 지은 스팀펑크 게임 «증기의 심장»(`~/z-project/assistant-fable-runs/r1s-fun`)에서 단계가 쓰는 물건에 맞는 그림이 이 칩셋에 없었다 — 조수 v2 가 단계의 물건을 그 장소의 그림에 앉힐 때
+(이름의 낱말을 칸 이름표·키트 이름·꼬리표에서 찾는다, `openwiki/assistant-v2.md` 「이야기의 물건은 그 장소의 그림이다」) 화분·천공 카드 단말기·집 문으로 대신했다. 있는 조각을 먼저 봤다: `sp-engine` 은 낮은 실린더 기관,
+`sp-stairs-down` 은 실내 돌계단, 벽 통로(`wall-door-u/d`)는 열린 틈, `sp-terminal` 은 이름의 괄호 속에만 레버가 있다 — 다섯 수요 모두 꼬리표만 고쳐서는 안 되는 것이라 새로 그렸다.
+
+| 키트 | 무엇 | 칸 | 놓는 방식(spec `place`) | 막힌 칸 | 찾는 낱말(키트 꼬리표) |
+|---|---|---|---|---|---|
+| `sp-ledger-desk` | 일지·기록부·장부 책상(펼친 책·깃펜·놋쇠 등) | 2×2 | 서는 기물(실내·거리) | 아랫줄 2 | 일지·기록부·장부·기록·책상·근무 일지·ledger·logbook·desk |
+| `sp-stop-lever` | 정지 레버(바닥 받침대 위 큰 놋쇠 레버) | 1×2 | 서는 기물(실내·거리) | 아래 1 | 레버·정지 레버·스위치·조작 레버·lever·switch |
+| `sp-lever-wall` | 벽 레버(리벳 철판 상자 + 놋쇠 손잡이) | 1×2 | `wallmount` 벽면 두 줄 위(실내) | 2(벽) | 벽걸이·레버·벽 레버·스위치 |
+| `sp-hatch-down` | 지하 입구 해치(무쇠 틀 + 내려가는 돌계단) | 2×2 | `decal` 밟고 지나가는 바닥 그림(거리) | 없음 | 계단·지하·지하 입구·해치·입구·지하실 입구·내려가는 계단·hatch·cellar·stairs |
+| `sp-room-door` | 철문(방과 방 사이 리벳 무쇠 문) | 1×2 | `walldoor` 벽면 한 줄을 대신(실내) | 2(벽) | 문·door·철문·방문·출입문 |
+| `sp-great-heart` | 대심장 기관(구리 보일러 심장 엔진) | 4×3 | 서는 기물(실내) | 아래 두 줄 8 | 기관·엔진·대심장·심장·대심장 기관·대심장 엔진·보일러 심장·engine·heart |
+
+- **목록이 정본**: `tiledata/steampunk-city/objects/spec.json`(이름·크기·`place`·`block`·`words`·설명·놓는 규칙; 새 항목은 `items` 끝에만 — 칸 번호는 덧붙이기 전용 핀), 탐침이 묻는 낱말 `ask.json`.
+  등록 `art/story.py`(`Reg('story')`, `R.add_png`)가 목록을 읽는다. `bake_sp._regs` 의 **맨 끝**이다 — 실내 계단 둘(`sp-stairs-up`·`sp-stairs-down`)이 키트 차례에서 해치보다 앞이라 방의 계단 고르기가 바뀌지 않는다. 낱말은 키트 꼬리표다(코드에 낱말 표 없음).
+- **그림**: Claude Fable 5.2 medium 한 방, 조각당 호출 1번 — 7호출 · $0.87 · 다시 부른 것 0 · 잘림 0(이 프로젝트를 위해 그린 자체 저작). 주문 `fable/fb_jobs.add_story`, 새 종류·계약은 `fb_prompt` 의 `desk`·`wallmount`·`walldoor`·`floorhatch`
+  (`C_WALLMOUNT`·`C_WALLDOOR`·`C_FLOORHATCH` — 벽면 두 줄 32px 위에 정면으로 · 벽 한 줄을 통째로 대신하는 불투명 문 · 바닥에 누운 불투명 구멍), 참고 그림 `draw.IMG['room'|'street']`(벽면 두 줄 + 바닥 + 주인공 24×32 · 보도 + 가로등 + 주인공).
+  대심장은 본체 `x-heart-main` 48×48 과 곁 탑 `x-heart-side` 16×48 을 `fable/build.py` 가 잇는다(64×48). 그림 `fable-redraw/pieces/story/sp-<id>.png` — 한 화소도 바꾸지 않는다(바꾸면 면제가 풀리고 굽기가 그 조각을 막는다).
+- **굽기 규칙 셋**(`bake_sp.py`·`sp_bake_lib.py`): ① 조각이 `solid`(= spec `block`)를 적으면 그 칸만 막힘, 나머지는 ★ ② `place: decal` → `overlay` — 불투명한 바닥 그림도 **위층·사람 밑**(`cell_pc(overlay=True)` → `flat`)이라 아래층 포장을 바꾸지 않고 덧찍힌다
+  ③ `place: wallmount` → 종류 낱말 `wallmount`(`stamp_kind`) — `stamp_tileset_object` 가 벽 칸 안에만 받는다. `prop` 으로 두면 «발이 벽 칸 위» 라며 거절하고 바닥으로 옮겨 놓았다(탐침에서 본 것; 옛 벽걸이 `sp-gauge-wall`·`sp-valve-wheel` 은 아직 `prop` 이다 — 구성기가 직접 건다).
+- **읽는 쪽이 보는 것**: 해치 칸 = 역할 terrain + 꼬리표 «계단» → `tilesetSurface(ts).stairs`(이동 칸 아트). 철문 칸 = 꼬리표 «문»·`door` → `tilesetSurface(ts).doors`, 키트에 입구 부품(`parts`)이 없어 집 목록(`houseKits`·quickHouse)에 들지 않는다 — 찍기 도구에서는 종류 `door`(벽 칸 위에 찍힌다).
+  벽 레버 = 꼬리표 «벽걸이» + 모든 칸 위층. 서는 기물 셋은 역할 prop · 12칸 이하.
+- **이름이 낱말을 온전한 낱말로 담는다**(조수 v2 «그림에 앉히기» 쪽이 잰 조건, 2026-11-13): 단계 물건 이름의 마지막 낱말이 키트 이름·칸 이름표에 괄호 밖 온전한 낱말로 있어야 그 그림을 고르고 눈 검사(`project/eventSight`)가 «그 이름의 그림» 으로 읽는다
+  — 꼬리표만 맞으면 3키트 이하일 때만 잡히고 빛나는 표지가 붙는다. 그래서 책상의 이름이 «일지·기록부·장부 책상» 이다(처음 이름 «기록부 책상(펼친 일지 장부…)» 은 일지·장부가 괄호 속이었다 — 그림은 그대로 두고 이름만 고쳤다). 레버 둘은 «정지 레버»·«벽 레버».
+  6칸 이하는 빛 없이 읽히고, 12칸인 대심장 기관은 골라지지만 빛나는 표지가 붙는다(큰 그림의 한 칸은 어느 칸인지 안 읽힌다). 해치는 계단 칸으로만 된 작은 키트이고 id 가 `-down` 으로 끝난다.
+- **번호**: 1329~1354(26칸). 옛 1329칸의 화소·통행·층·메타와 옛 키트 107개 변화 0, 두 번 구워 해시 동일, 팔레트 밖 0. 저장본 «증기의 심장»(이식 칸 8곳): 여섯 키트가 실리고 이식 꼬리가 1355 뒤로 밀리며 맵 그림은 그대로, 다시 열어도 같다.
+- **탐침**(모델 없음) `bun scripts/content/story-objects/probe.mts steampunk_city <out>`(보일러실 24×16 — 기관실은 구성기가 대심장·레버를 스스로 놓으므로 탐침이 따로 놓아 보는 방은 보일러실이다) · `steampunk_city_street <out>`(거리 48×36 의 광장 벽돌 포장) — `chipsets.json` 의 `chipset`·`only` 로 한 칩셋을 두 장면으로 본다.
+  낱말 묻기 18번(기관실 11 · 거리 7) 모두 `draw_object` 가 그 키트를 첫째로 이르고(«일지»·«기록부»·«장부»·«레버»·«정지 레버»·«벽 레버»·«문»·«철문»·«기관»·«대심장 엔진»·«대심장»·«지하 입구»·«해치»), 여덟 번 놓기 모두 청한 자리에 놓이고 막힌 칸이 선언과 같다.
+  시트 칸 관문: 새 칸 26 · 번들 출구 미덮임 0 · 스토어 출구 미덮임 26(스토어로는 못 나간다). 증거 `verify-shots/steampunk-city-story-objects/`(보일러실·거리 탐침 장면, 구성기가 짠 기관실 17×12·24×16 에 주인공을 세운 `engine-room-composed-*`). 시험 `test/steampunkCityStoryObjects.test.ts`, 참고문서 `sp-story-objects`(사전·순서·예제 16×7·변조 둘).
+- **조수 v2 의 «그림에 앉히기»(PR #4693, 2026-11-13 현재 미병합 — 그 머리 14133a18 위에 이 굽기와 기관실 구성 변경을 얹어 잰 것)**: 기관실(구성기가 대심장·레버를 놓은 방)에서 «대심장 기관»·«대심장»·«대심장 엔진»·«기관» → 맵에 있는 대심장 기관(전: 낮은 `sp-engine` · 그림 없음),
+  «정지 레버»·«레버» → 맵에 있는 정지 레버(전: 천공 카드 단말기를 새로 찍음), «경비 근무 일지»·«기록부»·«낡은 장부»·«근무 기록» → 기록부 책상을 새로 찍음(전: 그림 없음). 보일러실·거리에서는 책상·레버·대심장을 새로 찍는다.
+  책상·레버는 «그 이름의 그림» 으로 읽혀 빛나는 표지가 붙지 않고, 대심장 기관은 12칸이라 골라지되 빛난다. 증거 `verify-shots/steampunk-city-story-objects/host-4693-{before,after}.txt`.
+  계단 잇기(`stampRoomStairs`)는 해치를 계단 키트로 읽지만 «아래로» 에서 실내 돌계단을 먼저 고른다(거리 맵에서도) — 해치에는 «실내» 꼬리표가 없고 실내 계단 둘에는 있으니 고르는 쪽이 그것으로 가를 수 있다. 방 사이 문을 벽에 찍는 빌더는 아직 없다(그림과 `doors` 표면만 있다 — 그 PR 쪽 일꾼이 키트 id 에 맞춰 붙인다).
+- **기관실 구성(2026-11-13)**: `compose_steampunk_city_map` 의 `engine-room` 이 **대심장 기관을 방의 중심 기물**로 놓는다 — 방 가운데(출입구와 같은 축), 뒤 한 줄과 앞 한 줄은 걷는 바닥. 곁에 한 칸 띄워 정지 레버(발치가 기관 받침 줄), 레버 앞 칸도 예약한다.
+  낮은 실린더 기관 `sp-engine` 은 큰 방(바닥 20×10 이상)에서 발전기 맞은편의 옆 기계로만 놓고, 대심장 키트가 없는 옛 사본에서는 예전처럼 가운데에 놓는다. 왜: «증기의 심장» 의 «대심장 기관실» 이 낮은 기관 하나뿐인 빈 바닥이었다.
+  새로 짜는 방에만 닿는다(저장된 방은 그대로). 출입구·벽·문 자리는 바뀌지 않았다. 열 가지 방(16×12 ~ 28×18, 씨앗 1~5)을 짜서 구성기 검증(`qa/render_scene.py`) 오류 0, 기관 앞줄 네 칸·레버 앞 칸·기관 뒤 한 줄이 출입구에서 걸어 닿는다(시험 `test/steampunkCityStoryObjects.test.ts`).
+- **남은 것**: 큰 기관실(24×16 이상)은 대심장·레버·낮은 기관·발전기를 놓고도 바닥이 넓게 빈다(구성기의 다른 소품 밀도는 건드리지 않았다) · 대심장은 4×3 칸(64×48px)이라 주인공 키의 한 배 반이다 — 방을 채우는 크기는 아니다 · 벽 레버의 위쪽 손잡이가 벽 윗줄에 닿아 낮은 벽(한 줄)에는 못 건다 · 해치는 거리용이고 실내의 내려가는 길은 `sp-stairs-down` 이다.
+
+### 같은 빈칸이 다른 테마 칩셋에도 있다 (2026-11-13 재고 — 그리지 않았다)
+
+`bun scripts/content/story-objects/needs.mts <out.json>`(모델 없음)이 번들 칩셋마다 다섯 수요에 맞는 키트를 잰다: 일지·레버·내려가는 길·방 사이 문은 조수가 쓰는 찾기(`existingMatches` — 키트 이름·꼬리표)에
+`needs.json` 의 낱말을 물은 위 3건 + 표면 계약(`tilesetSurface` 의 stairs·doors 칸으로만 된 키트), 큰 중심 기물은 입구 없는 물건 키트 6~20칸(나무·밭·탈것 제외). 낱말·제외 표는 `scripts/content/story-objects/needs.json`(탐침 전용).
+아래 ○ △ × 는 **잰 키트의 이름을 읽고 매긴 것**이다(놓아 보거나 플레이로 본 것이 아니다). 잰 결과 `verify-shots/steampunk-city-story-objects/needs-by-chipset.json`.
+
+| 칩셋 | 일지·기록부 책상 | 레버 | 내려가는 길 | 방 사이 문 | 큰 중심 기물 |
+|---|---|---|---|---|---|
+| beodeul_city | ○ | △ 던전 벽 레버 1×1 뿐 | △ 폐허 계단 구멍 1×1 | ○ 던전·폐허 문 | ○ 분수·수문 |
+| joseon_baram | △ 관아 책상(일지 그림 없음) | × | ○ | ○ | ○ |
+| modern_city | ○ | △ 제어반·조작반 | ○ 지하철 입구 | ○ | ○ |
+| jp_city | ○ | △ 전등 스위치·조작반 | ○ | ○ | △ |
+| wizarding_world | ○ 열람대 | × | ○ | ○ | ○ 큰 톱니 |
+| pirate_isles | ○ 항해 일지 | × | △ 갑판 해치 1×1 | × | △ 6칸까지 |
+| sengoku_edo | ○ | × | × | ○ 후스마·노렌 | ○ |
+| sky_island | △ 별자리 책상 | × | △ 사다리 | × | △ 제단·망원경 6칸 |
+| modern_campus | ○ | × | ○ | ○ | ○ |
+| sf_station | △ 조종 콘솔 | × | △ 바닥 해치 1×1 | × | △ 바깥 것뿐 |
+| wasteland_ruins | × | × | × | × | △ |
+| gothic_manor | ○ | × | △ 바깥 돌계단 | ○ 벽면 문 | ○ |
+| prehistoric | × | × | × | × | ○ |
+| desert_east | ○ | × | × | × | ○ 분수 |
+| snow_north | ○ | × | × | × | × |
+| atlas_biome_interior(공용 실내) | ○ | ○ | ○ | ○ | ○ |
+
+레버가 가장 넓게 비어 있다(공용 실내와 버들항 던전에만 그림이 있다). 방 사이 문·내려가는 길이 없는 것은 실내를 구성기 방으로 짓는 작은 테마들(해적·하늘섬·SF·폐허·선사·사막·설원)이다.
+
 ## 3/4 관문 (object-gate)
+
+- **이야기 기물 6장(2026-11-13)도 «3/4 관문 미통과 — 오너 면제»** 다 — 묶음 `fable-story-steampunk-city-2026-11-13`(출구 bundle·shared, 스토어 불가). 오너의 상시 말씀(2026-11-12 「구워도 되고 앞으로는 전부 오너 면제다 (FABLE 5.2 는 한번에 다 잘만든다)」)으로 `object-gate owner-waive` 가 적었다. 입력 `fable-redraw/story-manifest.json`(`fable/manifest.py` 가 `story/_gate/items.jsonl` 에서 쓴다 — 큰 묶음의 `waiver-manifest.json` 은 건드리지 않는다).
 
 - **2026-11-12 부터 이 칩셋의 그림 189장은 전부 «3/4 관문 미통과 — 오너 면제»** 다(묶음 `fable-redraw-steampunk-city-2026-11-12`, 출구 bundle·shared, 스토어 불가). 통과가 아니다.
   - `fable/…` 62장: Fable 5.2 한 방 그림과 그 조립(건물 18 · 이은 물체 3 · 민 프레임 2 포함) + 한 방 기물 5. 오너(질문 창, 2026-11-12): 「구워도 되고 앞으로는 전부 오너 면제다 (FABLE 5.2 는 한번에 다 잘만든다)」.
@@ -73,6 +142,7 @@
 - 소품 하나마다: 발자국+여백 빈칸, **자기 바닥 용도만**(석탄은 석탄재 마당, 노점은 광장 포석, 계선주는 둑 줄), 위층 겹침 금지, 시작 칸 BFS 로 이미 닿던 칸이 끊기면 되돌림.
 - 건물 접근칸과 그 아래 한 칸은 예약. 도구는 놓은 뒤 엔진 `isPassable` BFS 로 문·접근칸·출구를 검사하고 실패하면 맵을 바꾸지 않는다.
 - 최소 크기: street 44×34 · industrial 48×40 · dock 46×34 · 실내 14~16×11~12.
+- 기관실(`engine-room`)의 중심 기물은 대심장 기관 `sp-great-heart`(가운데·앞뒤 한 줄 비움) + 곁의 정지 레버 `sp-stop-lever` 다(2026-11-13, 위 「이야기 기물 6종」의 «기관실 구성»). 낮은 기관 `sp-engine` 은 큰 방의 옆 기계.
 
 ## 적대적 시각 QA (한 번, 2026-10-14)
 
