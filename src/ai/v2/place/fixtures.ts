@@ -24,7 +24,7 @@ const WALL_HUNG = new Set(["벽걸이", "wall-mounted", "hang"]);
 
 /** 맵에 그려져 있는 물건 한 점. */
 export interface DrawnThing {
-  /** 이름표의 이름 부분(「벽 밸브 바퀴」). */
+  /** 이름표의 물건 이름(「벽 밸브 바퀴」) — 칸 자리·괄호 속 설명은 뗀 것. */
   readonly label: string;
   /** 그 그림을 찍는 키트(알면)의 이름 — 괄호 속 설명까지. */
   readonly kitName?: string;
@@ -56,6 +56,9 @@ function kitIndex(tileset: TilesetDef | undefined): KitIndex {
   return out;
 }
 
+/** 이름표의 물건 이름 — 칸 자리·프레임 꼬리(「 (1,2) · 1/4프레임」)와 괄호 속 설명을 뗀다. */
+const thingName = (label: string): string => labelWithoutNotes(objectBaseLabel(label.replace(/\s*\(\d+,\s*\d+\).*$/u, ""))).replace(/\s+/gu, " ").trim();
+
 const ownTags = (index: KitIndex, kit: Kit | undefined): string[] => (kit?.ai?.tags ?? []).filter((t) => (index.tagCount.get(t) ?? 0) <= TAG_MAX_KITS);
 
 /** 이 맵에 그려진 물건들(위에서 아래, 왼쪽에서 오른쪽). 이벤트가 이미 앉은 것도 든다 — 고르는 쪽이 거른다. */
@@ -64,7 +67,7 @@ export function drawnThings(project: Project, map: GameMap): DrawnThing[] {
   const meta = ((tileset as { tileMeta?: unknown } | undefined)?.tileMeta ?? []) as Meta[];
   const index = kitIndex(tileset);
   const seen = new Uint8Array(map.width * map.height);
-  const out: DrawnThing[] = [];
+  const out: (DrawnThing & { cells: Cell[]; kit?: Kit })[] = [];
   for (let i = 0; i < seen.length; i += 1) {
     if (seen[i]) continue;
     const cluster = objectClusterAt(project, map, i % map.width, Math.floor(i / map.width));
@@ -74,9 +77,13 @@ export function drawnThings(project: Project, map: GameMap): DrawnThing[] {
     const tiles = cluster.cells.flatMap((c) => [map.upperTiles[c] ?? -1, map.upperOverlayTiles?.[c] ?? -1]).filter((t) => t >= 0);
     if (tiles.some((t) => NOT_A_THING.has(meta[t]?.role ?? ""))) continue;
     const kit = tiles.map((t) => index.byTile.get(t)).find(Boolean);
-    out.push({ label: objectBaseLabel(cluster.label), ...(kit?.name ? { kitName: kit.name } : {}), tags: ownTags(index, kit), cells: cluster.cells.map((c) => ({ x: c % map.width, y: Math.floor(c / map.width) })) });
+    const cells = cluster.cells.map((c) => ({ x: c % map.width, y: Math.floor(c / map.width) }));
+    // 움직이는 그림은 칸마다 이름표 꼬리(「(1,2) · 1/4프레임」)가 달라 한 점이 칸칸이 갈린다 — 같은 키트의 맞닿은 조각은 한 점으로 잇는다.
+    const whole = kit ? out.find((t) => t.kit === kit && t.cells.some((a) => cells.some((b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y) === 1))) : undefined;
+    if (whole) { whole.cells.push(...cells); continue; }
+    out.push({ label: thingName(cluster.label), ...(kit?.name ? { kitName: kit.name } : {}), tags: ownTags(index, kit), cells, ...(kit ? { kit } : {}) });
   }
-  return out;
+  return out.filter((t) => t.cells.length <= MAX_CELLS);
 }
 
 const tokens = (text: string): string[] => text.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((t) => t.length >= 2);

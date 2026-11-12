@@ -16,6 +16,7 @@ import { examineHint, lightUnseenThing, settleExamineSpot } from "./examineSpot"
 import { isPersonName, personGraphicFor } from "./personName";
 import { REREAD_PERSON, REREAD_THING } from "./rereadPage";
 import { settleStepThing } from "./stepThings";
+import { codeSpreadOver } from "./codeClues";
 
 type Obj = Record<string, unknown>;
 const STEPS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
@@ -608,17 +609,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     if (lit) reachNotes.push(lit);
   }
   // 답이 단서에 실제로 적혀 있는가.
-  // 조각 단서(「7 _ 9 _」「_ 2 _ _」「_ _ _ 4」)는 자리별로 겹쳐 답이 되면 적힌 것으로 본다 — 전에는 경고가 떠 모델이 맞는 단서를 고쳐 썼다.
-  const overlaid = (code: string, lines: readonly string[]): boolean => {
-    const n = [...code].length; const got: (string | undefined)[] = new Array(n).fill(undefined);
-    for (const line of lines) for (const m of line.matchAll(/[0-9A-Za-z_＿?○□*](?:[\s·-]*[0-9A-Za-z_＿?○□*])*/gu)) {
-      const toks = [...m[0].replace(/[\s·-]/gu, "")];
-      if (toks.length !== n) continue;
-      toks.forEach((t, i) => { if (/[0-9A-Za-z]/u.test(t)) got[i] = got[i] ?? t; });
-    }
-    return got.join("") === code;
-  };
-  for (const link of args.links) if ((link.role === "code" || link.role === "ending") && link.code && !args.links.some((l) => l !== link && [...(l.lines ?? []), ...(l.reward?.lines ?? []), ...(l.doneLines ?? [])].some((line) => line.includes(link.code!))) && !overlaid(link.code, args.links.filter((l) => l !== link).flatMap((l) => [...(l.lines ?? []), ...(l.reward?.lines ?? [])]))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
+  for (const link of args.links) if ((link.role === "code" || link.role === "ending") && link.code && !args.links.some((l) => l !== link && [...(l.lines ?? []), ...(l.reward?.lines ?? []), ...(l.doneLines ?? [])].some((line) => line.includes(link.code!))) && !codeSpreadOver(link.code, args.links.filter((l) => l !== link).flatMap((l) => [...(l.lines ?? []), ...(l.reward?.lines ?? [])]))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
   const seals = doors.filter((d) => args.links.find((l) => (l.eventId ?? "") === d.eventId)?.seal !== false).map((d) => sealLockedRoom(run, d.mapId, d.eventId));
   for (const s of seals) if (!s.ok) warnings.push(s.summary);
   const sealNote = `${reachNotes.length ? ` ${reachNotes.join(" / ")}.` : ""}${seals.length ? ` ${seals.map((s) => s.summary).join(" / ")}` : ""}`;

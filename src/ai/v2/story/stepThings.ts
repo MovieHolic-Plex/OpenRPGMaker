@@ -3,7 +3,7 @@
 // ③ 낱말이 키트 이름의 부품 설명에만 있는 그림. 맞는 그림이 없으면 사슬을 지은 뒤 가장 가까운 그림에 붙이고 «없는 그림» 한 줄을 남긴다(settleStepThing).
 // 왜·증거는 openwiki/assistant-v2.md 「이야기의 물건은 그 장소의 그림이다」.
 import { artGapLine } from "@/project/artGap";
-import { eventSight, pageHasGraphic } from "@/project/eventSight";
+import { pageHasGraphic } from "@/project/eventSight";
 import { unreachableEvents } from "../judge/eventReach";
 import { drawnThings, onDrawnThing, stampNamedThing, thingMatch, thingSeat, type DrawnThing } from "../place/fixtures";
 import type { BuildRun } from "../shared/types";
@@ -59,8 +59,7 @@ export function settleStepThing(run: BuildRun, mapId: string, eventId: string): 
   const gapFor = (standIn: string) => artGapLine({ chipset: map0.tilesetId, want: "step-thing", wanted: "단계가 쓰게 하는 물건의 그림", where: `${map0.name ?? mapId} ${ev0.x},${ev0.y}`, standIn, by: "build_blueprint_path", note: `「${name}」` });
   const under = onDrawnThing(run.ctx.project, map0, ev0);
   if (under) return thingMatch(name, under) ? {} : { gap: gapFor(under.label) };
-  const sight = eventSight(run.ctx.project, map0, ev0, ev0.pages?.[0]);
-  if (sight.seen === "art") return sight.named ? {} : { gap: gapFor(sight.label) };
+  // 건물 벽 한 칸·바닥 덧그림 위(옆 가구 붙이기가 벽으로 올린 것)는 물건이 아니다 — 아래에서 가장 가까운 물건으로 옮긴다.
   const cands = drawnThings(run.ctx.project, map0).flatMap((t) => { const seat = thingSeat(run.ctx.project, map0, t, ev0); return seat ? [{ t, seat, d: Math.abs(seat.stand.x - ev0.x) + Math.abs(seat.stand.y - ev0.y) }] : []; })
     // 작은 물건(여섯 칸까지)이 먼저 — 기차 한 량·큰 기계의 한 칸은 어느 칸인지 읽히지 않는다.
     .sort((a, b) => Number(a.t.cells.length > 6) - Number(b.t.cells.length > 6) || a.d - b.d || a.seat.cell.y - b.seat.cell.y || a.seat.cell.x - b.seat.cell.x);
