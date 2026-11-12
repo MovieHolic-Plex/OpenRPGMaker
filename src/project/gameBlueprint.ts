@@ -92,7 +92,11 @@ export interface GameBlueprint {
   playerGoal: string;
   /** 핵심 경로(시작 → 엔딩) 2~12단계. */
   steps: GameBlueprintStep[];
-  ending: { name: string; how: string; feeling: string };
+  /**
+   * how = 설계 메모(엔딩에 닿는 조건·다른 엔딩 설명) — 화면에 내지 않는다. closing = 엔딩 화면에서 플레이어가 읽는 맺음 글(2~4줄).
+   * 옛 청사진은 closing 이 없다.
+   */
+  ending: { name: string; how: string; feeling: string; closing?: string[] };
   /** 다시 쓴 청사진에서 빠진 단계가 지어 둔 것 — 다음 경로 짓기가 걷어 낸다(그 이벤트, 그 스위치를 기다리는 조건). */
   retired?: GameBlueprintStepBuilt[];
   /** 청사진을 쓴 요청 원문(앞부분). */
@@ -100,7 +104,10 @@ export interface GameBlueprint {
   updatedAt?: string;
 }
 
-export const BLUEPRINT_LIMITS = { steps: 12, minSteps: 2, text: 160, goal: 140, request: 600, places: 12 } as const;
+export const BLUEPRINT_LIMITS = { steps: 12, minSteps: 2, text: 160, goal: 140, request: 600, places: 12, closing: 6 } as const;
+
+/** 엔딩 화면에서 플레이어가 읽는 맺음 글. 없으면 빈 배열 — `ending.how` 는 설계 메모라 대신 쓰지 않는다. */
+export const endingClosing = (blueprint: Pick<GameBlueprint, "ending">): string[] => blueprint.ending.closing ?? [];
 
 function bounded(label: string, value: unknown, max: number): string {
   const text = requireString(label, value).trim();
@@ -195,7 +202,10 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
     ...(places.length ? { places } : {}),
     playerGoal: bounded("playerGoal", data.playerGoal, BLUEPRINT_LIMITS.goal),
     steps,
-    ending: { name: bounded("ending.name", ending.name, 60), how: bounded("ending.how", ending.how, BLUEPRINT_LIMITS.text), feeling: bounded("ending.feeling", ending.feeling, 60) },
+    ending: { name: bounded("ending.name", ending.name, 60), how: bounded("ending.how", ending.how, BLUEPRINT_LIMITS.text), feeling: bounded("ending.feeling", ending.feeling, 60), ...(() => {
+      const closing = (Array.isArray(ending.closing) ? ending.closing : []).flatMap((line) => (typeof line === "string" && line.trim() ? [line.trim().slice(0, BLUEPRINT_LIMITS.text)] : [])).slice(0, BLUEPRINT_LIMITS.closing);
+      return closing.length ? { closing } : {};
+    })() },
     ...(() => { const retired = (Array.isArray(data.retired) ? data.retired : []).flatMap((raw) => { const built = normalizeStepBuilt(raw); return built ? [built] : []; }).slice(0, 40); return retired.length ? { retired } : {}; })(),
     ...(typeof data.request === "string" && data.request.trim() ? { request: data.request.trim().slice(0, BLUEPRINT_LIMITS.request) } : {}),
     ...(typeof data.updatedAt === "string" ? { updatedAt: data.updatedAt } : {}),

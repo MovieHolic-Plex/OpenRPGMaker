@@ -41,6 +41,8 @@ export function blueprintVerbs(c: VerbContext) {
         const old = prior.steps.find((o) => o.id === st.id);
         return !st.text && old?.text && old.kind === st.kind && (old.who ?? "") === (st.who ?? "") ? { ...st, text: old.text } : st;
       }) };
+      // 앞 청사진의 맺음 글도 물려받는다 — 이름 맞추기 다시 쓰기가 엔딩 화면의 글을 지우지 않게.
+      if (prior?.ending.closing?.length && !parsed.blueprint.ending.closing?.length) parsed.blueprint = { ...parsed.blueprint, ending: { ...parsed.blueprint.ending, closing: prior.ending.closing } };
       // 앞 청사진의 단계가 지어 둔 이벤트·스위치도 물려받는다 — 이름만 바꾼 다시 쓰기가 사람을 한 명 더 세우지 않게(story/blueprintCarry.ts).
       parsed.blueprint = carryBuilt(prior, parsed.blueprint);
       // 갇힌 방 게임(방탈출·밀실)은 세계를 쓰지 않는다 — 방 하나를 설계해 짓는 종전 길이 맡는다(세계의 장소 종류에는 그 방이 없다).
@@ -81,11 +83,13 @@ export function blueprintVerbs(c: VerbContext) {
       noteAssembly(assembled);
       const walked = walkBlueprint(env.ctx.project);
       await env.checkpoint("write_blueprint");
+      // 맺음 글이 없으면 엔딩 화면에 설 글이 없다 — how 는 설계 메모라 대신 내지 않는다(story/shipDefaults.ts fillEndingClosure).
+      const noClosing = parsed.blueprint.ending.closing?.length ? "" : " ending.closing is empty — the ending screen has no text of yours. Call write_blueprint again with ending.closing (2–4 lines the player reads: what happened and what became of the people, by name); ending.how is a design note and is never shown.";
       if (world) {
         const unbuilt = (parsed.blueprint.places ?? []).filter((pl) => !blueprintMapFor(env.ctx.project, pl.name));
-        return text({ ok: true, summary: `Blueprint saved (${parsed.blueprint.steps.length} steps · world ${world.name} · ${parsed.blueprint.places?.length ?? 0} places).${worldNotes.length ? ` Code adjusted places: ${worldNotes.join("; ")}.` : ""} ${unbuilt.length ? `Next: build_places once — it builds and links ${unbuilt.length} place(s): ${unbuilt.map((pl) => `«${pl.name}»(${pl.kind})`).join(", ")}. Then build_blueprint_path once (do not write step events one by one with upsert_event).` : "All places are built. Next: build_blueprint_path once."}${assembled.length ? ` Title defaults set from the blueprint: ${assembled.join(" · ")}.` : ""}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
+        return text({ ok: true, summary: `Blueprint saved (${parsed.blueprint.steps.length} steps · world ${world.name} · ${parsed.blueprint.places?.length ?? 0} places).${worldNotes.length ? ` Code adjusted places: ${worldNotes.join("; ")}.` : ""} ${unbuilt.length ? `Next: build_places once — it builds and links ${unbuilt.length} place(s): ${unbuilt.map((pl) => `«${pl.name}»(${pl.kind})`).join(", ")}. Then build_blueprint_path once (do not write step events one by one with upsert_event).` : "All places are built. Next: build_blueprint_path once."}${assembled.length ? ` Title defaults set from the blueprint: ${assembled.join(" · ")}.` : ""}${noClosing}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
       }
-      return text({ ok: true, summary: `청사진을 걸었다(${parsed.blueprint.steps.length}단계). 장소를 make_place 로 지은 뒤 build_blueprint_path 한 번으로 단계별 이벤트·조건·엔딩 호출을 짓는다(이벤트를 upsert_event 로 하나씩 쓰지 않는다).${assembled.length ? ` 청사진에 맞춰 타이틀 기본값을 바꿨다: ${assembled.join(" · ")}.` : ""}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
+      return text({ ok: true, summary: `청사진을 걸었다(${parsed.blueprint.steps.length}단계). 장소를 make_place 로 지은 뒤 build_blueprint_path 한 번으로 단계별 이벤트·조건·엔딩 호출을 짓는다(이벤트를 upsert_event 로 하나씩 쓰지 않는다).${assembled.length ? ` 청사진에 맞춰 타이틀 기본값을 바꿨다: ${assembled.join(" · ")}.` : ""}${noClosing}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
     },
   };
   const buildBlueprintPathVerb: PiToolShape = {
