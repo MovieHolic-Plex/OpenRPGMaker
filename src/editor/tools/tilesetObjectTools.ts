@@ -7,6 +7,7 @@
 
 import type { GameMap, Project, SectionStructureKitDef, TilesetDef } from "@/project/types";
 import { isPassable } from "@/project/collision";
+import { lookKit } from "@/project/kitLook";
 import { footprintFromUpper, footprintRefusal } from "@/project/objectFootprint";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { requireMap } from "./mapHelpers";
@@ -227,7 +228,8 @@ const stampTilesetObject: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const tileset = draft.tilesets[map.tilesetId];
-    const kit = findObject(tileset, String(args.objectId ?? ""), args.direction);
+    // 조수 실행이면 이 게임의 변형 그림으로(같은 칸 크기·같은 막힌 칸) — 이름으로 찾은 «우물» 도 그 게임의 우물이 된다. 사람 편집은 고른 킷 그대로.
+    const kit = lookKit(tileset, findObject(tileset, String(args.objectId ?? ""), args.direction)) as SectionStructureKitDef;
     const base = args.base as { x?: unknown; y?: unknown } | undefined;
     const at = base !== undefined && args.at === undefined
       ? { x: base.x, y: Number.isInteger(base.y) ? (base.y as number) - kit.height + 1 : base.y }
