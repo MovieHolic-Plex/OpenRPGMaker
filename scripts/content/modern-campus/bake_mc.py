@@ -160,6 +160,7 @@ def bake(dry=False):
     report = collections.OrderedDict()
     pins = TB.Pins(P['pins'], TPR)
     O = TB.Outdoor(pins, TPR, 'mc', '캠퍼스')
+    O.keep_old_cells(P['png'])   # 옛 칸은 옛 그림 그대로, 바뀐 그림은 새 칸(이미 깔린 맵 보존)
     pieces = build_outdoor_pieces(report)
     for p in pieces: O.add_piece(p)
     ground = '걸을 수 있는 바닥(아래층).'
