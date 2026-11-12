@@ -1,7 +1,9 @@
 // 방에서 방으로 가는 문은 벽에 그려진 문이다 — 칩셋에 «벽에 거는 문» 키트가 있으면 뒷벽 벽면에 걸고 그 앞 바닥 칸을 이동 칸으로 쓴다.
 // 그런 키트가 없는 칩셋은 undefined — 부르는 쪽이 계단 키트(place/stairLinks)로 간다. 맨바닥 이동 칸은 그 둘이 다 없을 때만 남는다.
-// 읽는 것: 위층 타일만으로 된 작은 구조 키트이고 문 칸을 적어 둔 것 — 모든 칸이 표면 계약의 문 타일(tilesetSurface.doors: 역할 door · 꼬리표 door·문)이거나
-// 입구 부품(parts entrance)이 있다. 이름표·요청 글은 읽지 않는다. 건물 키트(아래층 타일이 있고 크다)는 여기 들지 않는다.
+// 읽는 것: 위층 타일만으로 된 작은 구조 키트이고 모든 칸이 표면 계약의 문 타일(tilesetSurface.doors: 역할 door · 꼬리표 door·문)이며 모든 칸이 막힌 그림인 것
+// — 벽면을 대신하는 문이다(문을 지나 걷는 것이 아니라 문 앞 칸에서 탄다). 이름표·요청 글은 읽지 않는다.
+// 입구 부품(parts entrance)만 적은 작은 키트는 받지 않는다 — 번들에서 그런 것은 모두 건물·천막이다(훈제막 · 낚시 오두막 · 피라미드 문, 2026-11-13 조사).
+// 바닥에 서는 문(아랫칸을 걸어 지나는 장지문·교실 문)도 받지 않는다 — 벽에 틈이 있어야 하는 다른 놓기다.
 // 왜(2026-11-13): 구성기 방에는 벽 문 조각이 없어 방 ↔ 방이 계단 그림이거나 맨바닥이었다 — 증기 도시에 방 사이 철문이 생겼다(#4702).
 import { isPassable } from "@/project/collision";
 import { objectClusterAt } from "@/project/objectFootprint";
@@ -11,8 +13,8 @@ import { reachableCells } from "../judge/eventReach";
 import type { BuildRun } from "../shared/types";
 import { isEntranceArt } from "./entrances";
 
-type Kit = { id: string; name?: string; width?: number; height?: number; rows?: { tiles?: number[]; upperTiles?: number[] }[]; parts?: { kind?: string; dx?: number; dy?: number }[] };
-type Meta = { role?: string } | undefined;
+type Kit = { id: string; name?: string; width?: number; height?: number; rows?: { tiles?: number[]; upperTiles?: number[] }[] };
+type Meta = { role?: string; passage?: string } | undefined;
 
 /** 벽에 거는 문 한 짝의 칸 수 상한(두 짝 문 2×3 까지) — 건물 한 채는 넘는다. */
 const MAX_DOOR_CELLS = 6;
@@ -21,6 +23,7 @@ const MAX_DOOR_CELLS = 6;
 export function wallDoorKits(project: Project, map: GameMap): { kit: Kit; doorDx: number }[] {
   const tileset = project.tilesets[map.tilesetId];
   const doors = tilesetSurface(tileset).doors;
+  const meta = ((tileset as { tileMeta?: unknown } | undefined)?.tileMeta ?? []) as Meta[];
   const kits = ((tileset as { structureKits?: readonly Kit[] } | undefined)?.structureKits ?? []) as readonly Kit[];
   const out: { kit: Kit; doorDx: number }[] = [];
   for (const kit of kits) {
@@ -29,10 +32,8 @@ export function wallDoorKits(project: Project, map: GameMap): { kit: Kit; doorDx
     if (w * h > MAX_DOOR_CELLS || rows.length !== h) continue;
     // 벽면을 덮는 그림: 아래층 타일이 없고 모든 칸에 위층 타일이 있다.
     if (!rows.every((r) => (r.tiles ?? []).every((t) => t < 0) && (r.upperTiles ?? []).length === w && (r.upperTiles ?? []).every((t) => t >= 0))) continue;
-    const entrance = (kit.parts ?? []).find((p) => p.kind === "entrance" && p.dy === h - 1 && typeof p.dx === "number");
-    const allDoor = rows.every((r) => (r.upperTiles ?? []).every((t) => doors.has(t)));
-    if (!entrance && !allDoor) continue;
-    out.push({ kit, doorDx: entrance?.dx ?? Math.floor((w - 1) / 2) });
+    if (!rows.every((r) => (r.upperTiles ?? []).every((t) => doors.has(t) && meta[t]?.passage === "solid"))) continue;
+    out.push({ kit, doorDx: Math.floor((w - 1) / 2) });
   }
   return out;
 }

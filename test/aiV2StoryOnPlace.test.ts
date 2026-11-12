@@ -7,6 +7,7 @@ import { V2Session } from "@/ai/v2/turn/session";
 import { isEntranceArt } from "@/ai/v2/place/entrances";
 import { drawnThings, onDrawnThing, thingMatch } from "@/ai/v2/place/fixtures";
 import { incomingLandings } from "@/ai/v2/place/where";
+import { wallDoorKits } from "@/ai/v2/place/wallDoors";
 import { isDoorEvent } from "@/ai/v2/judge/eventReach";
 import { finishStepOnBossVictoryIn } from "@/ai/v2/story/blueprintPathBattles";
 import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
@@ -155,11 +156,37 @@ describe("증기 도시 한 판 — 물건은 그림에, 단계는 차례로, �
       const front = [[0, 1], [1, 0], [-1, 0], [0, -1]].some(([dx, dy]) => isPassable(project, map, ev.x + dx!, ev.y + dy!) && !map.events.some((o) => o.id !== ev.id && o.x === ev.x + dx! && o.y === ev.y + dy! && /"kind":"transfer"/u.test(json(o.pages))));
       expect(front, `${map.name} (${ev.x},${ev.y}) 문 앞이 열려 있다`).toBe(true);
     }
-    // 방에서 방으로(보일러실 → 기관실)는 계단 그림이다.
+    // 방에서 방으로(보일러실 → 기관실)는 벽에 건 문이다 — 칩셋에 벽 문 키트(sp-room-door: 위층 타일뿐 · 칸 꼬리표 문, 입구 부품 없음)가 있으면 계단보다 먼저.
+    const kitTiles = (id: string): Set<number> => new Set(((project.tilesets[mapOf(project, "지하 보일러실").tilesetId] as unknown as { structureKits: { id: string; rows: { tiles?: number[]; upperTiles?: number[] }[] }[] })
+      .structureKits.find((k) => k.id === id)?.rows ?? []).flatMap((r) => [...(r.tiles ?? []), ...(r.upperTiles ?? [])]).filter((tile) => tile >= 0));
+    const doorTiles = kitTiles("sp-room-door"), hatchTiles = kitTiles("sp-hatch-down");
+    expect(doorTiles.size).toBe(2);
+    expect(hatchTiles.size).toBe(4);
+    // 벽 문으로 읽는 키트는 그것 하나다 — 건물(입구 부품만 적은 것)·바닥에 서는 문은 들지 않는다.
+    expect(wallDoorKits(project, mapOf(project, "지하 보일러실")).map((k) => k.kit.id)).toEqual(["sp-room-door"]);
     const boiler = mapOf(project, "지하 보일러실"), engine = mapOf(project, "대심장 기관실");
     const toEngine = boiler.events.filter((e) => json(e.pages).includes(`"mapId":"${engine.id}"`));
     expect(toEngine.length).toBeGreaterThanOrEqual(1);
     expect(toEngine.every((e) => isEntranceArt(project, boiler, e.x, e.y))).toBe(true);
+    // 문 칸은 벽면(못 걷는 칸)이고 바로 아래가 문 앞 바닥이다.
+    for (const e of toEngine) {
+      expect(doorTiles.has(boiler.upperTiles[e.y * boiler.width + e.x] ?? -1), `보일러실 → 기관실 (${e.x},${e.y}) 은 철문 칸`).toBe(true);
+      expect(isPassable(project, boiler, e.x, e.y)).toBe(false);
+      expect(isPassable(project, boiler, e.x, e.y + 1)).toBe(true);
+    }
+    // 땅 밑 방(종류 boiler-room 의 below)은 바깥에서 내려가는 길(sp-hatch-down: 계단 칸뿐 · …-down · 아래층 타일 없음)로 들어간다 — 보일러실 건물 문이 아니다.
+    const yard = mapOf(project, "굴뚝 공업지구");
+    const toBoiler = yard.events.filter((e) => json(e.pages).includes(`"mapId":"${boiler.id}"`));
+    expect(toBoiler.length).toBeGreaterThanOrEqual(1);
+    for (const e of toBoiler) {
+      expect(hatchTiles.has(yard.upperTiles[e.y * yard.width + e.x] ?? -1), `공업지구 → 보일러실 (${e.x},${e.y}) 은 해치 칸`).toBe(true);
+      expect(isPassable(project, yard, e.x, e.y)).toBe(true);
+    }
+    // 땅 밑이라 적지 않은 방(공방 · 기관실)은 해치로 들어가지 않는다.
+    for (const map of Object.values(project.maps)) for (const e of map.events) {
+      if (map.id === yard.id && toBoiler.includes(e)) continue;
+      if (/"kind":"transfer"/u.test(json(e.pages))) expect(hatchTiles.has(map.upperTiles[e.y * map.width + e.x] ?? -1), `${map.name} (${e.x},${e.y})`).toBe(false);
+    }
     // 적·상자는 어느 도착 칸에서든 다섯 걸음 밖이다 — 문을 길 끝으로 옮긴 뒤 옛 «들어서는 칸» 기준으로 놓인 적이 도착 칸 세 칸 곁에 섰다.
     for (const map of Object.values(project.maps)) for (const ev of map.events.filter((e) => /_wfoe\d+$|_wchest$/u.test(e.id))) {
       for (const land of incomingLandings(project, map.id)) expect(Math.abs(land.x - ev.x) + Math.abs(land.y - ev.y), `${map.name} ${ev.id} 는 도착 칸 (${land.x},${land.y}) 에서 떨어져 있다`).toBeGreaterThan(5);

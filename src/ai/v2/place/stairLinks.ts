@@ -16,8 +16,14 @@ type Kit = { id: string; name?: string; width?: number; height?: number; rows?: 
 /** 오르는 계단인가 내려가는 계단인가 — 키트가 id 끝에 적어 둔 것(…-up · …-down). 안 적었으면 undefined. */
 const kitWay = (kit: Kit): "up" | "down" | undefined => (/(^|[-_: ])up$/iu.test(kit.id) ? "up" : /(^|[-_: ])down$/iu.test(kit.id) ? "down" : undefined);
 
-/** 땅에 얹는 내려가는 길(해치·바닥 계단)인가 — 내려가는 계단 키트(…-down) 가운데 아래층 타일이 없는 것: 땅을 바꾸지 않고 덧그리고, 벽에 등을 대지 않아도 된다. */
-const laidOnGround = (kit: Kit): boolean => kitWay(kit) === "down" && (kit.rows ?? []).every((r) => (r.tiles ?? []).every((t) => t < 0));
+/**
+ * 땅에 얹는 내려가는 길(해치·바닥 계단 구멍)인가 — 내려가는 계단 키트(…-down) 가운데 아래층 타일이 없고 모든 칸을 밟을 수 있는 것:
+ * 땅을 바꾸지 않고 덧그리고, 벽에 등을 대지 않아도 된다. 난간·벽이 막는 계단통(일본 도시 · 현대 도시의 실내 계단)은 아니다.
+ */
+function laidOnGround(project: Project, map: GameMap, kit: Kit): boolean {
+  const meta = ((project.tilesets[map.tilesetId] as { tileMeta?: unknown } | undefined)?.tileMeta ?? []) as ({ passage?: string } | undefined)[];
+  return kitWay(kit) === "down" && (kit.rows ?? []).every((r) => (r.tiles ?? []).every((t) => t < 0) && (r.upperTiles ?? []).every((t) => t < 0 || meta[t]?.passage === "passable"));
+}
 
 function stairKits(project: Project, map: GameMap): Kit[] {
   const tileset = project.tilesets[map.tilesetId];
@@ -38,8 +44,7 @@ export function stampRoomStairs(run: BuildRun, mapId: string, way: "up" | "down"
   const map0 = project0.maps[mapId];
   const reach0 = map0 ? reachableCells(project0, map0) : undefined;
   if (!map0 || !reach0) return undefined;
-  // 땅에 얹는 해치는 바깥 것이다 — 방에서는 벽에 등을 대는 계단만 쓴다(키트 차례가 바뀌어도 방의 고르기가 그대로).
-  const kits = stairKits(project0, map0).filter((kit) => !laidOnGround(kit)).sort((a, b) => Number(kitWay(b) === way) - Number(kitWay(a) === way));
+  const kits = stairKits(project0, map0).sort((a, b) => Number(kitWay(b) === way) - Number(kitWay(a) === way));
   const count = (r: Uint8Array) => r.reduce((n, v) => n + (v ? 1 : 0), 0);
   const events = map0.events ?? [];
   for (const kit of kits.slice(0, 2)) {
@@ -84,7 +89,7 @@ export function stampWayDown(run: BuildRun, mapId: string, near?: { x: number; y
   const map0 = project0.maps[mapId];
   const reach0 = map0 ? reachableCells(project0, map0) : undefined;
   if (!map0 || !reach0) return undefined;
-  const kits = stairKits(project0, map0).filter(laidOnGround);
+  const kits = stairKits(project0, map0).filter((kit) => laidOnGround(project0, map0, kit));
   if (!kits.length) return undefined;
   const lanes = laneCells(project0, map0), strip = behindBuildingStrip(project0, map0);
   const fronts = buildingEntrances(project0, map0).map((e) => e.front);
