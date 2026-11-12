@@ -98,7 +98,9 @@ export function settleStepThing(run: BuildRun, mapId: string, eventId: string): 
     run.ctx.project = snapshot;
   }
   // 가까이에 놓인 물건이 없다 — 이 맵에 놓인 작은 물건과 같은 그림을 곁에 하나 더 찍는다(걸음 수로 받은 자리를 지킨다).
-  for (const like of things.filter((th) => th.kitId && th.cells.length <= COPY_CELLS && !tall(th)).sort(order).filter((th, i, all) => all.findIndex((o) => o.kitId === th.kitId) === i).slice(0, 3)) {
+  // 다른 이벤트가 앉은 물건(앞·뒤 단계의 「봉인 상자」)은 본뜨지 않는다 — 같은 그림 둘 가운데 하나가 다른 물건이 된다.
+  const hosts = (th: DrawnThing) => (map0.events ?? []).some((e) => th.cells.some((c) => c.x === e.x && c.y === e.y));
+  for (const like of things.filter((th) => th.kitId && th.cells.length <= COPY_CELLS && !tall(th) && !hosts(th)).sort(order).filter((th, i, all) => all.findIndex((o) => o.kitId === th.kitId) === i).slice(0, 3)) {
     const snapshot = run.ctx.project;
     const made = stampCopyNear(run, mapId, like, ev0);
     const cell = made ? sit(made) : undefined;
