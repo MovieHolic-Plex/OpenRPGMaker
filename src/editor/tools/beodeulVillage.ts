@@ -799,7 +799,11 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       }
       paths.push({ name: sp.role === "house" ? "골목" : "오름길", cells: path, width: 1 }); for (const c of path) network.add(c);
     }
-    // 길이 하나도 닿지 않는 넓은 단(높은 터·건너편 들)에는 들길 하나 — 한가운데에서 길망까지(못 내면 숲이 덮는다)
+    // 길이 하나도 닿지 않는 넓은 단(높은 터·건너편 들)의 들길 — 그 단이 받는 것(밭·목초지·과수원 자리) 앞까지만 낸다.
+    // 예전에는 단 한가운데까지 내고 그 끝을 막다른 길 다듬기에서 지켰다 — 다리·계단을 건넌 길이 풀밭 한가운데서 끝났다(2026-11-12 map-vqa Haiku
+    // 농장·시장 마을·작은 마을: «다리 건넌 길이 (13,42) 풀밭에서 끝난다»). 받는 것이 없는 단은 길을 내지 않는다(숲이 덮는다) —
+    // 자리를 코드가 정한 마을(모델 자리 없음)만 밭 자리 하나를 그 단 한가운데에 잡는다.
+    const laneEnds: number[] = [], laneFields: LayoutPoint[] = [];
     {
       const comp = new Int32Array(W * H).fill(-1); const comps: number[][] = [];
       for (let c0 = 0; c0 < W * H; c0 += 1) {
@@ -809,18 +813,45 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
           for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { if (!inMap(x + dx, y + dy)) continue; const n = idx(x + dx, y + dy); if (comp[n]! < 0 && lv[n] === lv[c0] && occ[n] !== WATERC && occ[n] !== RESV) { comp[n] = comps.length; cs.push(n); } } }
         comps.push(cs);
       }
+      // 단이 받는 것: 조수(또는 자동 배치)가 고른 밭·목초지·과수원 자리. 자리 둘레(밭 9×5 + 울타리 고리)는 길이 지나지 못하게 잡아 둔다.
+      const uses: LayoutPoint[] = [...(spec.field ? layout.fields ?? [] : []), ...(fenced ? layout.pastures ?? [] : []), ...(layout.orchards ?? [])]
+        .map((p) => ({ x: Math.max(6, Math.min(W - 7, Math.round(p.x))), y: Math.max(4, Math.min(H - 5, Math.round(p.y))) }));
+      const plot = (p: LayoutPoint): number[] | null => {
+        const cells: number[] = [];
+        for (let y = p.y - 3; y <= p.y + 3; y += 1) for (let x = p.x - 5; x <= p.x + 5; x += 1) { const c = idx(x, y); if (!inMap(x, y) || occ[c] !== FREE || lv[c] !== lv[idx(p.x, p.y)] || network.has(c)) return null; cells.push(c); }
+        return cells;
+      };
       let added = 0;
       for (const cs of comps.filter((cs) => cs.length >= 140 && !cs.some((c) => network.has(c))).sort((a, b) => b.length - a.length)) {
         if (added >= 3) break;
-        // 덩이 가장자리에서 가장 먼 칸(평평한 한가운데)
-        const inC = new Set(cs); const d = new Map<number, number>(); const q: number[] = [];
-        for (const c of cs) { const x = c % W, y = (c - x) / W; if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => !inC.has(idx(x + dx!, y + dy!)) || !inMap(x + dx!, y + dy!))) { d.set(c, 0); q.push(c); } }
-        for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const n = idx(x + dx, y + dy); if (inMap(x + dx, y + dy) && inC.has(n) && !d.has(n)) { d.set(n, d.get(c)! + 1); q.push(n); } } }
-        let best = cs[0]!, bd = -1; for (const [c, v] of d) if (v > bd) { bd = v; best = c; }
-        const path = routePath(grid(false), [best], (c) => network.has(c), opts(false));
-        if (!path) continue;
-        paths.push({ name: "들길", cells: path, width: 1 }); for (const c of path) network.add(c); added += 1;
-        keepRoad.add(best); // 들길 끝(높은 터 한가운데)은 막다른 길 다듬기에서 지킨다
+        const k = comp[cs[0]!]!;
+        const wants = uses.filter((p) => comp[idx(p.x, p.y)] === k).sort((a, b) => Math.hypot(a.x - gx, a.y - gy) - Math.hypot(b.x - gx, b.y - gy));
+        if (!wants.length && report.auto && spec.field) {
+          // 덩이 가장자리에서 가장 먼 칸(평평한 한가운데)에 밭 자리 하나
+          const inC = new Set(cs); const d = new Map<number, number>(); const q: number[] = [];
+          for (const c of cs) { const x = c % W, y = (c - x) / W; if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => !inC.has(idx(x + dx!, y + dy!)) || !inMap(x + dx!, y + dy!))) { d.set(c, 0); q.push(c); } }
+          for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const n = idx(x + dx, y + dy); if (inMap(x + dx, y + dy) && inC.has(n) && !d.has(n)) { d.set(n, d.get(c)! + 1); q.push(n); } } }
+          let mid = cs[0]!, bd = -1; for (const [c, v] of d) if (v > bd) { bd = v; mid = c; }
+          const p = { x: Math.max(6, Math.min(W - 7, mid % W)), y: Math.max(4, Math.min(H - 5, Math.floor(mid / W))) };
+          if (comp[idx(p.x, p.y)] === k) { wants.push(p); laneFields.push(p); }
+        }
+        for (const p of wants) {
+          const held = plot(p); if (!held) continue;
+          for (const c of held) occ[c] = PLAZA_HOLD;
+          // 길 끝은 그 자리 울타리 바로 앞(남쪽·북쪽) — 가까운 길로 나가는 쪽을 고른다
+          let pick: { end: number; path: number[] } | null = null;
+          for (const [dx, dy] of [[0, 4], [0, -4], [-2, 4], [2, 4], [-2, -4], [2, -4]] as const) {
+            const x = p.x + dx, y = p.y + dy; if (!inMap(x, y)) continue; const c = idx(x, y);
+            if (occ[c] !== FREE || comp[c] !== k || x < 1 || y < 1 || x >= W - 1 || y >= H - 1) continue;
+            const path = routePath(grid(false), [c], (n) => network.has(n), opts(false));
+            if (path && (!pick || path.length < pick.path.length)) pick = { end: c, path };
+          }
+          for (const c of held) occ[c] = FREE;
+          if (!pick) continue;
+          paths.push({ name: "들길", cells: pick.path, width: 1 }); for (const c of pick.path) network.add(c); added += 1;
+          laneEnds.push(pick.end);
+          break;
+        }
       }
     }
     // 길 칸 → 곧은 토막 Street(3b 가 토막마다 계단을 놓는다). 강 칸은 널다리(KEEP).
@@ -844,7 +875,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
     for (const c of network) if (occ[c] === RESV_DOOR || occ[c] === FREE) occ[c] = ROAD;
     for (const sp of spots) if (occ[idx(sp.front.x, sp.front.y)] === RESV_DOOR) occ[idx(sp.front.x, sp.front.y)] = FREE;
-    return { layout, report, spots, g: { x: gx, y: gy }, entrance, fords, plaza: (layout.gather?.plaza ?? true) !== false };
+    return { layout, report, spots, g: { x: gx, y: gy }, entrance, fords, plaza: (layout.gather?.plaza ?? true) !== false, laneEnds, laneFields };
   })() : null;
   // 늪 널판 마루(길이 아닌 칸)는 비워 둔다(CLEAR) — 소품·늪물·물가 고리가 마루를 먹지 않게
   for (const c of swampDeck) if (occ[c] === FREE) occ[c] = CLEAR;
