@@ -359,10 +359,10 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 
 - **장소 테마 표**(`place/placeTheme.ts`): 구성기 세계 아홉(snow_north · desert_east · pirate_isles · sky_island · steampunk_city · prehistoric · sengoku_edo · sf_station · wasteland)마다 바탕 + 실내 + 종류별(묘실·얼음 동굴·난파선·화산…)로 전투 배경 · 길 적 · 보스를 적는다. 맵의 테마 = 청사진 세계 + 청사진 장소 목록의 종류(`placeThemeOf`). 버들항(표에 없는 세계)은 종전 길.
 - **길 적**(`themeFieldTroops`): 테마의 적 하나짜리 무리(`troop_theme_<적>`)를 시작 파티에 맞춘 사본으로 세운다. **보스**(`themeBossTroop`): 상대 이름과 낱말이 겹치는 테마 적, 없으면 단계마다 돌려 고른다 — `blueprintPath.foeTroop` 이 먼저 묻는다.
-- **전투 배경**(`applyThemeBackdrop`): 겹 배경은 숲·평원·동굴·눈·사막 다섯뿐이다. 맞는 것이 있으면 적고, 없으면 대역을 적되 없는 그림 줄을 남긴다. 저작한 배경은 그대로(기본값 숲만 저작으로 치지 않는다). `shipLookDefaults.fillBattleBackgrounds` 도 테마를 먼저 묻는다.
-- **없는 그림 줄**: 모양은 하나다 — `src/project/artGap.ts`(아래 「없는 그림 기록은 하나」). 테마 쪽은 `[art-gap] theme=desert_east/tomb want=backdrop wanted=«stone burial chamber» where=«별의 매장실» stand-in=«battle-scenery-cave»`, `want` 는 backdrop·foe·boss. 새 그림은 그리지 않는다.
+- **전투 배경**(`applyThemeBackdrop`): 그 종류의 겹 배경(숲·평원·동굴·눈·사막)이나 번들 장소 그림(`still`)이 있으면 적고, 없으면 **다른 지형 대역을 깔지 않고** `battle-scenery-field`(그 맵 그대로 — 필드 화면 위에서 싸운다)를 적으며 없는 그림 줄을 남긴다(2026-11-12, 아래 「전투가 장소·파티에 맞는다」 — 그 전에는 묘실 = 동굴, 공장 거리 = 평원 같은 대역이었다). 저작한 배경은 그대로(기본값 숲만 저작으로 치지 않는다). `shipLookDefaults.fillBattleBackgrounds` 도 테마를 먼저 묻는다.
+- **없는 그림 줄**: 모양은 하나다 — `src/project/artGap.ts`(아래 「없는 그림 기록은 하나」). 테마 쪽은 `[art-gap] theme=desert_east/teahouse want=backdrop wanted=«adobe room interior» where=«찻집» stand-in=«battle-scenery-field»`, `want` 는 backdrop·foe·boss. 새 그림은 `battle-backdrop` 하네스로만 싣는다.
 - **상자**(`usableLoot`): 전투 중에도 쓰는 회복약(값 40~400)이나 돈. 제작 재료는 주지 않는다.
-- **보이는 적은 걷는다**(`populateWorldPlace`): 두 칸 왕복이 안 되면 다른 축, 그다음 한 칸 왕복을 해 본 뒤에만 서 있는 적으로 둔다 — 좁은 방에서 «조사하니 전투» 가 되던 자리.
+- **보이는 적은 걷고, 곁을 지나면 알아챈다**(`populateWorldPlace`): 두 칸 왕복이 안 되면 다른 축, 그다음 한 칸 왕복을 해 본 뒤에만 서 있는 적으로 둔다 — 좁은 방에서 «조사하니 전투» 가 되던 자리. 2026-11-12 부터 걷는 적은 `behavior:"chase"`·시야 세 칸·느린 걸음(순찰 + 알아채면 다가옴)으로 먼저 놓는다 — 순찰만 하던 적은 주인공 바로 옆을 스쳐 지나가고도 싸움을 걸지 않았다.
 - **싸우는 단계의 상대**(`story/stepFoes.ts`): 서 있는 그림 = 전투 그림(생성 도트가 있으면 그대로, 없을 때만 걷기 칩). 몬스터 그림으로 선 상대는 이긴 뒤 페이지가 투명·아래 통행·명령 없음(`puzzle.ts` `battle.leaves`). 사람 칩으로 선 상대는 남아 뒷말을 한다.
 - **옛 판 고치기**(끝맺음 `finish/stages/step-foes.ts`, 조립 order 135 — 길 위 전투 맞추기 앞): `settleStepFoesIn`(그림·걷힘) → `restockOffThemePlaces`(앞장선 적 그림이 테마 밖인 보이는 적·제작 재료 상자를 걷고 다시 놓는다) → `themeBattleBackdropsIn`.
 
@@ -377,6 +377,77 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 재생 뒤 fun-x1: 피라미드 사막 배경 · 모래 지렁이·독사·뿔 딱정벌레 / 매장실 동굴 배경(대역, 없는 그림 줄 1) · 미라. fun-w3: 서리 절벽 눈 배경 · 산양·다이어 울프 / 얼음 동굴 · 수정 골렘.
 다시 지은 판의 «모래 수호자» 는 미라 그림으로 서고 싸운다(옛 저장본의 수호자는 드래곤 사본 그대로 — 그림만 전투 그림과 같아진다). 자동 플레이 엔딩·다시 읽기 성공. **화면 미검증** — 그림은 사람·판정자가 본다.
 남은 것: 테마 표의 적은 기본 DB 106종에서 고른 것이라 SF·전국 일본·선사는 전부 대역이다(없는 그림 줄이 남는다). 시험 `test/aiV2PlaceTheme.test.ts`.
+
+## 전투가 장소·파티에 맞는다 — 배경은 그 장소의 것 · 길 적은 무언가를 치르게 · 보스는 «공격» 만으로는 못 이긴다 (2026-11-12, 오너 r1s-fun «증기의 심장»)
+
+오너가 해 본 판에서 나온 것: 공장 거리 전투가 햇살 풀밭에서, 보일러실·기관실 전투가 동굴에서 벌어졌다. 길 적은 두 대에 쓰러지며 한 번도 못 쳤고,
+보스는 «공격» 만 눌러 회복약 없이 이겼고, 레벨이 1→2 로 올라도 최대 HP 가 514 그대로였고, 불의 정령이 «산성 침» 을 썼고, 적 체력이 안 보였고,
+순찰하던 적이 주인공 바로 옆을 스쳐 지나갔다. 게임을 고치지 않고 **그 게임을 만든 빌더·기본값**을 고쳤다(같은 명세를 모델 없이 다시 지어 전/후를 쟀다).
+
+### 만든 곳 → 지금
+
+| 결함 | 만든 곳 | 지금 |
+|---|---|---|
+| 거리 = 풀밭, 보일러실 = 동굴 | `place/placeTheme.ts` 표의 대역(`standIn`) — 그림이 없는 종류에 다른 지형을 깔았다. 표 밖 맵은 `shipLookDefaults.fillBattleBackgrounds` 가 런타임 짐작(실내 칩셋 = 동굴 · 마을 이름 = 평원 · 모르면 숲)을 맵 값으로 적었다 | 대역이 없다. 그 종류의 겹 배경·장소 그림이 있으면 그것, 없으면 `battle-scenery-field`(그 맵 그대로 — 필드 화면 위에서 싸운다) + 없는 그림 줄. 표 밖 맵은 `sameKindBackground`(눈 기후 · 던전/동굴 이름·칩셋 · 숲/사막 이름 · 버들항 들판)가 말할 수 있을 때만 겹 배경, 그다음 가장 가까운 던전 조상, 아니면 그 맵 그대로. 출하 검사가 다섯 장씩 이르던 것은 다 채울 때까지 돈다 |
+| 길 적이 두 대에 쓰러지고 못 친다 | `bossThreatScaling.FIT_TARGETS.field` = 평타 2대·한 대 5% | 3대·7%, 한 판 손실 하한 8%(목표를 맞추는 것은 종전 `fitEnemyToStartParty` 그대로) |
+| 불의 정령의 «산성 침» | `swapOverpoweredSkills` — 상한을 넘는 기술을 **다른 생물의** 약한 기술로 바꿨다 | `tameOverpoweredSkills` — 그 적 자신의 기술을 약하게 한 사본(`skill_fit_<역할>_<적>_<기술>`, 이름·속성 그대로 위력만 상한에 맞춤). 원본 기술은 그대로 |
+| 레벨이 올라도 능력치가 그대로 | 기본 능력치 곡선이 99레벨까지의 2차 곡선(Lv1~5 HP 514·514·516·518·522) | `pathBattleTension.growStartPartyCurves` — 시작 파티 배우의 `parameterCurves` 에 레벨마다 바닥(HP 6% · MP 5% · 공·방·마 4% · 민 3%, 시작 레벨 값 대비). 원래 더 가파른 구간은 그대로, 되풀이 안전 |
+| 보스를 «공격» 만으로 이긴다 | `pathBattleBudget` 가 보스를 맨몸 모의로 **내리기만** 했고(손실 ≤ 70%), 회복약은 보스 앞 전투 수만큼만 줬다 | 시작 회복약 = 보스 앞 전투 수 + 보스전 몫 2(`BOSS_POTIONS`). 보스는 그 약과 기술을 쓰는 플레이(가장 낮게·가장 높게 도착하는 두 판)로 재고(승률 ≥ 95% · 12턴 안), `raiseBossTension` 이 길 사본을 «공격만·회복 없음»(가장 높게 도착하는 레벨) 승률 ≤ 10% 를 향해 올린다 — 평타 한 대는 영웅 최대 HP 의 40% 까지, 약·기술 플레이의 기준을 깨는 걸음은 되돌린다(그래서 10% 에 못 닿고 멈추는 보스가 있다 — 아래 수치) |
+| 적 체력이 안 보인다 | 도트 측면 스킨의 기본(원작처럼 숨김), `system.battleLook` 미설정 | `shipLookDefaults.fillEnemyHpLook` — 측면 전투가 있는 게임은 `battleLook.enemyHp·enemyNames` 를 켠다(『폴른 스타』와 같은 기본, 저작자가 고른 칸은 그대로, 몬스터 대치 게임 제외) |
+| 순찰 적이 곁을 스쳐 지나간다 | `worldPopulate` 가 `behavior:"patrol"`(정해진 왕복만)로 놓았다 | `behavior:"chase"` · 시야 3칸 · 느린 걸음 · 같은 순찰 길(시야 밖에서는 순찰, 알아채면 다가오고 놓치면 돌아간다). 안 놓이면 종전대로 순찰 → 제자리 |
+
+같이 고친 것(위 변경이 드러낸 것):
+
+- **은신처 검사**(`project/chaserHiding.chaserEvents`): «숨어서 피할 추격자» 는 닿으면 여느 전투(져도 되는 벌 전투가 아닌 것)가 열리는 보이는 적을 세지 않는다. 안 그러면 알아채는 적이 선 맵마다 `chaser-no-hiding` 출하 막힘이 섰다.
+- **못 이기는 전투 맞추기**(`blueprintPathBattles.fitUnwinnableStepBattlesIn`): 길 맞춤 사본(`troop_path_*`)은 다시 재지 않는다 — 맨몸 모의로는 «약을 써야 이기는 보스» 가 승률 50% 아래라 턴마다 사본이 쌓였다(`troop_fit_boss_path_fit_boss_…`).
+- **헤드리스 플레이어**(`testing/sceneTestRunner.actHeadless` — 자동 플레이·장면 시험): 체력이 30% 아래면 가방의 회복약을 쓴다. 몬스터 게임만 그러던 것을 모든 전투로. «공격» 만 누르던 자동 플레이가 올린 보스에게 져 엔딩 도달이 1/1 → 0/1 로 떨어졌었다.
+
+### 장소 종류마다의 배경 (세계 10 · 종류 83)
+
+재는 법: 세계마다 종류 하나짜리 청사진을 세워 `applyThemeBackdrop` 을 부른다(모델 없음).
+
+| 세계 | 그 장소의 그림 | 그 맵 그대로(`battle-scenery-field`) + 없는 그림 줄 |
+|---|---|---|
+| beodeul | 평원: village·port · 동굴: cave·mine · 숲: deep-forest | swamp-village · catacomb · temple · tower · house · inn · shop |
+| snow_north | 눈: village·market·lake·ice-cliff · **ice-cave** | cabin · longhall · tavern |
+| desert_east | 사막: oasis·bazaar·caravanserai·palace·pyramid · **tomb** | teahouse · inn · hammam · throne-hall |
+| pirate_isles | **beach** · 평원: field · **shipwreck**: wreck · 동굴: cave | harbor · fort · ship · tavern · hut |
+| sky_island | **cloud-sea**: village·dock·archipelago·shrine · **sky-shrine**: shrine-hall | cottage · cabin · observatory |
+| steampunk_city | **brick-street**: street·industrial·dock · **boiler-room**: boiler-room·engine-room | inn · tavern · workshop · lab |
+| prehistoric | **swamp** · **volcano** · 동굴: cave-dwelling·cave-gallery | village · fossil · chieftain-hut · shaman-hut |
+| sengoku_edo | 평원: village · **edo-town**: castle-town·inn-street·samurai·castle | temple · farmhouse · townhouse · inn · samurai-house · dojo · castle-hall |
+| sf_station | **station**: station·lab | street · moonbase |
+| wasteland | — | settlement · shanty · ruined-city |
+
+굵은 것은 2026-11-12 에 `battle-backdrop` 하네스로 실은 장소 그림 열둘이다(Opus 검수 4.0~4.5, `openwiki/harnesses/battle-backdrop.md` 「실린 열둘」). 그 맵 그대로인 종류는 42 — 그릴 목록이다.
+같은 세계의 다른 종류에 한 그림을 나눠 쓰는 자리(증기 도시 부두 = 벽돌 거리, 하늘섬 신전 섬 바깥 = 구름 바다, SF 연구 기지 = 정거장 복도)는 같은 종류의 장소라 그대로 뒀다.
+
+### 재기 — 같은 명세(r1s-fun)를 모델 없이 다시 지어 같은 전투를 모의
+
+`bun scripts/qa/assistant-v2/battleFitProbe.mts <재생 결과 폴더>`(전투 런타임 그대로, 24판, 시드 고정). 앞 = origin/main 빌더, 뒤 = 이 변경.
+
+| 전투 | 적 HP·공 | 기술 | 공격만·회복 없음(Lv1) | 기술 + 가진 회복약(Lv1) | 배경 |
+|---|---|---|---|---|---|
+| 거리 지옥 사냥개 | 134·41 → 201·48 | 공격·**산성 침**·포효 → 공격·**지옥불 이빨**·포효 | 2.4턴 HP −4% → 3.5턴 −18% | 2.1턴 −1% → 3.2턴 −14% | 평원 → 벽돌 거리 |
+| 거리 복면 산적 | 120·41 → 180·48 | 공격·맹독 이빨·연막탄 → 공격·기습·연막탄·맹독 이빨 | 2.5턴 −7% → 3.8턴 −19% | 2.0턴 −1% → 3.1턴 −8% | 평원 → 벽돌 거리 |
+| 보일러실 | 불의 정령 132·41 → 점토 골렘 177·48 | 공격·**산성 침** → 공격·암석 파쇄·집중 | 2.5턴 −12% → 3.5턴 −18% | 2.2턴 −8% → 3.1턴 −13% | 동굴 → 보일러실 |
+| 기관실 보스 폭주 자동인형 | 501·36 → 708·155 | 공격·대지 강타·단단해지기·몸통 박치기(그대로) | 승률 100% 12.6턴 −23% → **승률 0%**(6.7턴에 쓰러진다) | 승률 100% 8.6턴 약 0개 → 승률 96% 12.5턴 **약 3.1개**(받은 약 6개를 든 판) | 동굴 → 보일러실 |
+
+- 보스에 도착하는 레벨별(뒤): 공격만 Lv1 0% · Lv2 8% · Lv3 21%(길 위 전투를 다 이기고 온 판 — 앞은 어느 레벨이든 100%) / 기술 + 약 2개 79·88·96%, Lv1 로 받은 약 6개를 다 들고 오면 96%. **Lv3 에서 «공격만» 이 21% 남는다** — 10% 아래로 내리는 걸음(공격·HP 를 더 올림)은 Lv1 의 약·기술 플레이를 95% 아래로 떨어뜨려 되돌려졌다. 거기서 멈추고 그 사실을 보고 줄에 적는다(«더 올리면 기술·약으로도 못 이겨 여기서 멈춤»).
+- 보스를 재는 두 도착: 가장 낮게(피할 수 있는 전투를 다 피한 레벨 · 받은 시작 회복약을 다 든 채)와 가장 높게(길 위 전투를 다 이긴 레벨 · 보스전 몫 2개). 약·기술 플레이는 둘 다 95% 를 넘어야 하고, 턴 상한(12)은 높은 레벨 판에서 잰다.
+- 레벨별 선두 능력치: HP 514·514·516·518·522 → 514·545·576·607·637, 공 53·53·53·53·54 → 53·55·57·58·60. 시작 회복약 4 → 6.
+- 보일러실의 적이 불의 정령에서 점토 골렘으로 바뀐 것은 고른 것이 아니라 차례다 — 실내 적 넷이 이제 제 기술을 들어 «제 기술이 겹치지 않는 무리»(`withOwnSkills`)에 넷 다 남고, 채우기가 그 목록에서 차례로 고른다. 불의 정령은 이제 «공격·화염 폭발·지옥불 이빨» 을 쓴다.
+- 은행 대조(같은 명세 하나): 나빠진 칸 없음 · 없는 그림 줄 13 → 10 · 자동 플레이·정직한 플레이 엔딩 도달 1/1 그대로.
+- 출하 플레이어 캡처(시나리오 `battle-fit`): `bun scripts/qa/assistant-v2/battleFitProbe.mts <폴더> --shots <dir>` → `BATTLE_FIT_SHOTS=<dir>/shots.json BATTLE_FIT_INDEX=<n> npm run qa:runtime -- --netns --scenario battle-fit --project <dir>/shots.project.json`. 그림은 `http://mdc-server:18301/av2-battle-fit.html`.
+
+### 안 고친 것
+
+- **영웅 크기**: v2 기본 파티는 이미 『폴른 스타』와 같은 표시다 — 전투 걷기 시트 `charset-battler-*`(48px 칸)를 2배로. 영웅 그림은 칸 안에서 25px 남짓이라 현행 적 시트(48~192px 칸 × 2배) 옆에서 작다. 『폴른 스타』의 출하 화면도 같은 크기다.
+  빌더 기본값으로는 바꿀 것이 없고, 키우려면 측면 전투의 파티 배율(엔진)이나 영웅 전투 그림을 바꿔야 한다 — 『폴른 스타』까지 같이 바뀌므로 여기서 하지 않았다.
+- 필드 적의 속성 상성·상태 이상의 재미, 여러 명 파티의 보스 긴장(재는 것은 시작 파티 그대로다)은 보지 않았다.
+- **화면 미검증인 것**: 열두 장소 그림 가운데 출하 플레이어 전투 화면으로 본 것은 벽돌 거리·보일러실 둘이다. 나머지 열은 하네스의 무대 미리보기와 Opus 검수만 거쳤다. «그 맵 그대로» 는 거리 맵 하나에 표시를 걸어 출하 플레이어에서 한 번 봤다(배경 출처 `field`, 겹 배경 없음). 알아채는 적이 다가오는 움직임은 영상으로 보지 않았다(맵 데이터와 모의만).
+
+시험 `test/aiV2BattleFitsPlace.test.ts` · `test/aiV2PlaceTheme.test.ts`.
 
 ## 적 그림은 현행 세트 — 『폴른 스타』가 쓰는 새 전투 시트에서만 고르고 그 그림을 프로젝트에 넣는다 (2026-11-12, 오너 r1w-fun)
 

@@ -45,7 +45,7 @@ npm run harness -- battle-backdrop build <판> --bundle <키> --ko "<이름>" --
   그래서 마왕 편의점의 밤 편의점 트룹(`troop_mk_manual`)은 `battle-scenery-plains`(낮 풀밭)를 그렸다.
 - 바이옴 id 가 아닌 자원은 한 장 그림으로 `cover` 로 깔린다(640×480 무대 → 좌우가 잘린다). 한 장 그림에는 pixelated 표시가 없어서 2배로 미리 키워 저장한다.
 - 배틀러 발: retro2003 무대 640×480 에서 위 56px(스킨 inset) 아래 424px 영역에 저작 좌표 320×160 의 y 가 **발**로 놓인다(`battleFieldDom.positionBattleNode`, `_retro2003.css`) → 발이 높이 약 57~90%, 몸(약 144px)이 그 위. 그래서 아래 45%(`BACKDROP_GROUND_TOP` 0.55) 를 비운다. 시트의 무대 미리보기 상자가 이 자리다.
-- `system.battleBackdrop === "field"` / `battlePresentation === "onField"` 면 필드 스크린숏이 그려져 이 그림이 안 보인다. 스크린숏이 없으면 트룹 배경으로 떨어진다 — **마왕 편의점 데모가 이 상태다**(`battleBackdrop: "field"` → 밤 편의점에서 트룹의 낮 풀밭). `build` 는 경고하고, `--leave-field-mode` 를 줄 때만 끈다(프로젝트 전체 전투 표시가 바뀐다). 조수 도구도 요약에서 경고한다.
+- `system.battleBackdrop === "field"` / `battlePresentation === "onField"` 면(또는 고른 배경이 `battle-scenery-field` 면 — 아래 「그 맵 그대로」) 필드 스크린숏이 그려져 이 그림이 안 보인다. 스크린숏이 없으면 트룹 배경으로 떨어진다 — **마왕 편의점 데모가 이 상태다**(`battleBackdrop: "field"` → 밤 편의점에서 트룹의 낮 풀밭). `build` 는 경고하고, `--leave-field-mode` 를 줄 때만 끈다(프로젝트 전체 전투 표시가 바뀐다). 조수 도구도 요약에서 경고한다.
 - 바닥 띠 기준: 번들 8장 아래 무늬 밀도 0.02~0.18 → `≤0.22` 그리고 `≤ 위쪽×1.3+0.03`(8장 모두 통과).
 
 ## 장소 그림 (번들 한 장 그림, 2026-11-11)
@@ -68,9 +68,42 @@ npm run harness -- battle-backdrop build <판> --bundle <키> --ko "<이름>" --
   프로젝트 JSON 을 남긴다(모델 없음) → `capture --project <폴더>/<키>.project.json --map <맵 id> --run theme-<키> [--indoor] --note "<한 줄>"`.
 - **증명**: `bun scripts/qa/assistant-v2/themeBackdropProof.mts <폴더> [키,…]`(구성기 장소 + 실제 빌더 채우기 → 맵에 저장된 전투 배경 id · 런타임이 고르는 배경) →
   `THEME_BACKDROP_PROOF=<폴더>/proof.json THEME_BACKDROP_KEY=<키> npm run qa:runtime -- --scenario theme-backdrop --project <폴더>/<키>.proof.project.json` (출하 플레이어 전투 화면).
-- 실린 뒤에는 `placeTheme.ts` 표에서 그 줄의 `standIn`/`wantedBackdrop` 을 `backdrop` 으로 바꾼다. 통과 못 한 배경은 대역 + 없는 그림 줄 그대로 둔다(점수 완화·디코이 빼기·손 기록 금지).
+- 실린 뒤에는 `placeTheme.ts` 표에서 그 줄에 `still: "<키>"` 를 적는다. 통과 못 한 배경은 `battle-scenery-field`(그 맵 그대로 — 아래) + 없는 그림 줄 그대로 둔다(점수 완화·디코이 빼기·손 기록 금지). 다른 지형 그림을 대역으로 깔지 않는다(2026-11-12).
 
 실린 장소 그림과 검수 점수는 `battleSceneryStills.json` 과 원장이 정본이다(`npm run harness -- battle-backdrop status`).
+
+### 실린 열둘 (2026-11-12)
+
+| 키 | 장소(세계) | 판 | Opus 점수 |
+|---|---|---|---|
+| `tomb` | 묘실(desert_east) | `theme-tomb` | 4.5 |
+| `boiler-room` | 보일러실·기관실(steampunk_city) | `theme-boiler-room` | 4.5 |
+| `brick-street` | 벽돌 거리(steampunk_city 바깥) | `theme-brick-street-flat` | 4.0 |
+| `ice-cave` | 얼음 동굴(snow_north) | `theme-ice-cave` | 4.5 |
+| `beach` | 열대 해변(pirate_isles 바깥) | `theme-beach` | 4.0 |
+| `shipwreck` | 난파선(pirate_isles) | `theme-shipwreck` | 4.5 |
+| `cloud-sea` | 구름 바다(sky_island 바깥) | `theme-cloud-sea` | 4.5 |
+| `sky-shrine` | 하늘 신전(sky_island) | `theme-sky-shrine` | 4.5 |
+| `swamp` | 원시 늪(prehistoric) | `theme-swamp` | 4.5 |
+| `volcano` | 화산(prehistoric) | `theme-volcano` | 4.0 |
+| `edo-town` | 성하마을(sengoku_edo 바깥) | `theme-edo-town` | 4.5 |
+| `station` | 정거장 복도(sf_station) | `theme-station` | 4.5 |
+
+- 벽돌 거리 첫 판(`theme-brick-street`, 후보 8)은 자갈 무늬 때문에 기계 검사 `groundClear` 에서 전부 떨어져 검수에 가지 못했다. «바닥은 무늬 없는 평평한 띠» 를 적은 새 판에서 넷이 검수를 통과했다.
+- 검수 비용: 묶음 열둘 $0.53(묶음마다 원장 `reviews[].costUsd`).
+
+### 검수 경로 — 로컬 Claude (`BATTLE_BACKDROP_OPUS_VIA=claude-cli`)
+
+`review` 는 기본으로 중계기(`klb/claude-opus-5.5`)에 묻는다. 2026-11-11~12 그 중계기가 503 이라 로컬 Claude 경로를 더했다:
+`BATTLE_BACKDROP_OPUS_VIA=claude-cli npm run harness -- battle-backdrop review <판>` → `claude -p --model claude-opus-5-5 --effort medium`(도구·MCP·설정 없이, stream-json 으로 그림을 넣는다).
+지시문·디코이·통과 규칙은 같다. 응답의 `modelUsage` 가 Opus 가 아니면 실패한다(다른 모델로 떨어진 묶음은 효력이 없다). 묶음마다 `costUsd` 를 원장에 적는다.
+
+### 그 맵 그대로 — `battle-scenery-field`
+
+그림이 없는 장소에서 다른 지형 그림을 까는 대신 **필드 화면 위에서 싸운다.** 맵 `battleBackground`(또는 무리 배경)에 `battle-scenery-field` 를 적으면
+`resolveBattleBackdropId` 가 그 id 를 그대로 돌려주고, `playSceneBattle` 이 프로젝트 전체 설정(`system.battleBackdrop === "field"`)과 같은 길로 필드 스냅숏을 배경으로 쓴다
+(겹 배경을 깔지 않고 필드 스프라이트를 숨긴다 — `battleScenery.syncBattleScenery` · `isFieldBattleBackdrop`). 파일이 없는 내장 id 라 내보내기는 싣지 않고, 자원 검증·`unknownSceneryIdMessage`·도구 설명이 알아본다.
+조수 v2 는 세계·종류 표에 그림이 없는 종류와, 표 밖에서 같은 종류라고 말할 수 없는 맵(실내 칩셋·도시 거리)에 이것을 적고 없는 그림 줄을 남긴다 — `openwiki/assistant-v2.md` 「전투가 장소·파티에 맞는다」.
 
 ## 시간·빛
 

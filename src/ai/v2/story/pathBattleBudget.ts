@@ -290,7 +290,7 @@ export function fitPathBattlesIn(project: Project): string[] {
   const expOf = (roles: readonly Role[]) => [...new Map(battles.filter((b) => roles.includes(b.role)).map((b) => [`${b.mapId}#${b.eventId ?? b.troopId}`, troopExp(project, b.troopId)])).values()].reduce((sum, exp) => sum + exp, 0);
   const bossParty: BossParty = {
     ids: party.ids, minLevel: levelAfter(project, party.ids[0], party.level, expOf(["gate"])), maxLevel: levelAfter(project, party.ids[0], party.level, expOf(["gate", "field"])),
-    ...(potion ? { potion } : {}),
+    ...(potion ? { potion, startPotions: Math.max(0, project.session.inventory?.[potion] ?? 0) } : {}),
   };
 
   // 4) 몫: 보스 앞 손실 예산을 길목 2·잡몹 1 무게로 나눈다(상징 적·길목은 이벤트마다, 조우표는 한 번으로 친다).
@@ -306,7 +306,7 @@ export function fitPathBattlesIn(project: Project): string[] {
     plan.set(b.troopId, { role, cap: Math.min(prev?.cap ?? cap, cap) });
   }
 
-  // 5) 맞추기 — 내리기만. 보스는 가진 회복약과 기술을 쓰는 플레이(가장 낮게 도착하는 레벨)로 잰다.
+  // 5) 맞추기 — 내리기만. 보스는 가진 회복약과 기술을 쓰는 플레이(가장 낮게·가장 높게 도착하는 두 판)로 잰다.
   // 앞 길 전투에서 걸려 전투 뒤에도 남는 해로운 상태(독)를 지고 시작한다 — 보스는 쉼터 뒤라 맨몸. vm5 terra: 박쥐 독침의 독이 다음 박쥐 전투로
   // 이어져(방어 하락까지 겹쳐) 따로 재면 손실 20% 인 전투에서 전멸했다.
   const carried = new Map<string, string[]>();
