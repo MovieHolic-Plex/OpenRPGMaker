@@ -34,6 +34,8 @@ export type ReviewBatch = {
   readonly answers: Readonly<Record<string, ReviewAnswer>>;
   readonly counted: boolean;
   readonly reason: string;
+  /** 이 묶음에 든 검수 비용(달러) — 호출 경로가 값을 돌려줄 때만(claude-cli). */
+  readonly costUsd?: number;
 };
 
 const OPUS = /(^|[/:_.-])claude[-_ ]?opus|(^|[/:_.-])opus([-_ .]|$)/iu;

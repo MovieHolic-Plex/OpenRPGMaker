@@ -12,8 +12,14 @@ export interface PathStepText {
   readonly wrongLines?: readonly string[];
   /** battle 단계: 이긴 뒤 한두 줄(진 쪽의 말 또는 서술). */
   readonly winLines?: readonly string[];
+  /** find·puzzle 단계: 그 장소에 그려진 물건 가운데 이 단계가 쓰는 것의 이름(build_places 결과의 things). */
+  readonly on?: string;
   /** choice 단계: 고를 것들 — lines = 그것을 골랐을 때 그 사람의 답, later = 엔딩 직전에 보이는 «그 선택의 결과» 한 줄. */
   readonly choices?: readonly { readonly text: string; readonly lines?: readonly string[]; readonly later?: string }[];
+  /** 이 단계가 다음 할 일일 때의 「현재 목표」 줄(플레이어에게 하는 말). */
+  readonly goal?: string;
+  /** 이 단계에서 손에 들어오는 물건의 이름(소지품에 들어가고 다음 단계가 확인한다). */
+  readonly item?: string;
 }
 
 export const norm = (s: string) => s.normalize("NFC").replace(/[\s·・,.!?'"「」『』()[\]~\-_/]+/gu, "").toLowerCase();
@@ -52,8 +58,9 @@ export const towardJosa = (word: string): string => {
 };
 
 /** 「책상 조사를 살펴보았다」처럼 이벤트 이름의 행동 낱말까지 읽지 않게 — 「책상을 살펴보았다」. */
+export const eventNoun = (event: string): string => event.replace(/\s*(조사하기|조사|살펴보기|확인하기|확인|열기|탈출하기|탈출|찾기|수색)$/u, "").trim() || event;
 export const lookLine = (event: string): string => {
-  const noun = event.replace(/\s*(조사하기|조사|살펴보기|확인하기|확인|열기|탈출하기|탈출|찾기|수색)$/u, "").trim() || event;
+  const noun = eventNoun(event);
   return `${noun}${josa(noun, "을", "를")} 살펴보았다.`;
 };
 

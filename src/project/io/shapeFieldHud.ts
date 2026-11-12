@@ -17,7 +17,8 @@ export function validateFieldHud(value: unknown): void {
     for (const [key, options] of Object.entries({ kind:HUD_KINDS, source:HUD_SOURCES, shape:HUD_SHAPES, anchor:HUD_ANCHORS, condition:HUD_CONDITIONS, panel:{none:1,paper:1,dark:1} })) {
       if (widget[key] !== undefined) { requireString(`${path}.${key}`, widget[key]); assert(Object.hasOwn(options, widget[key] as string), `${path}.${key} is not supported`); }
     }
-    for (const [key, min, max] of [["x",0,1920],["y",0,1080],["width",20,640],["height",14,480],["max",1,999999999],["slots",1,10]] as const) {
+    // 폭·높이 하한은 정규화(project/fieldHud.ts normalizeWidget: 8..)와 같다 — 프리셋 칸(시계 56×12 · 체력 56×10 · 기력 12×36)이 저장본에 실리면 20·14 하한에 걸려 게임이 다시 열리지 않았다(2026-11-13 r1s-fun).
+    for (const [key, min, max] of [["x",0,1920],["y",0,1080],["width",8,640],["height",8,480],["max",1,999999999],["slots",1,10]] as const) {
       if(widget[key]===undefined)continue;
       requireNumber(`${path}.${key}`,widget[key]); const n=widget[key] as number;
       assert(Number.isFinite(n)&&Number.isInteger(n)&&n>=min&&n<=max,`${path}.${key} is outside ${min}..${max}`);

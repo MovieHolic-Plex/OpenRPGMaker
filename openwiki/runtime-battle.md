@@ -1781,6 +1781,11 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - **필드 배경** `system.battleBackdrop?: "field"`. `playSceneBattle` 이 진입 직전 Phaser `renderer.snapshot`(WebGL 버퍼가 비기 전 다음 프레임, 250ms 제한, 실패하면
   트룹 배경)으로 현재 필드 화면(주인공 주변 카메라 시야)을 jpeg dataURL 로 찍어 `mountBattleScene({ fieldBackdropUrl })` 로 넘긴다. `applyFieldBackdrop` 이
   `battle-backdrop[data-backdrop-source="field"]` 로 갈아끼우고, 전투 이벤트가 배경을 바꾸면(changeBattleback) 그쪽이 이긴다.
+  **맵·무리 하나만 필드 배경으로**(2026-11-12): 맵 `battleBackground`(또는 무리 배경)가 `battle-scenery-field`(`FIELD_BATTLE_BACKGROUND_ID`,
+  `databaseEnemyTroopRecordModel.ts`)면 프로젝트 설정이 기본이어도 그 전투만 같은 길로 간다 — `resolveBattleBackdropId` 는 그 id 를 그대로 돌려주고
+  (`isFieldBattleBackdrop`), `playSceneBattle` 이 스냅숏을 찍고 필드 스프라이트를 숨기며, `syncBattleScenery` 는 겹 배경을 깔지 않는다.
+  파일이 없는 내장 id 다(`generatedAssetResourceResolver` 내장 표에 null, 내보내기 은퇴 자원 검사에서 제외). 그 장소의 그림이 없을 때 다른 지형 그림 대신 쓴다
+  (조수 v2 끝맺음 — `openwiki/assistant-v2.md` 「전투가 장소·파티에 맞는다」).
   진입은 **제자리 페이드**: `createSkinBattleTransition(…, inPlace=true)` 가 막대·소용돌이·스킨 커버를 빼고 180ms 어두워진 뒤 전투 UI 만 페이드 인
   (`battle-scene[data-battle-backdrop-kind="field"]`, 23-entry-exit.css). 필드 위에 전투를 직접 그리는 온맵 전투는 범위 밖이다. 저작: `set_project_settings battle.backdrop: "field"|"default"`.
 - 검증 증거: `node scripts/runtime-qa.mjs --scenario ct-engine`(`scripts/qa/runtime/ct-engine*.m*`, 하네스에 `waitForStyleVar`·`repeatUntil` op 추가) —

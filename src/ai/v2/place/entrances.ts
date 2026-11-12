@@ -113,6 +113,13 @@ export function declaredDoorCells(project: Project, map: GameMap): { x: number; 
   return out;
 }
 
+/** 지나다니는 그림(문·계단·창·벽걸이)의 타일 — 조사할 물건으로 바닥에 새로 찍지 않는다(place/fixtures). */
+export function passageTiles(tileset: TilesetDef | undefined): ReadonlySet<number> {
+  const room = roomKitTiles(tileset), surface = tilesetSurface(tileset);
+  const hung = Object.values(roomSpecOf(tileset)?.objects ?? {}).filter((d) => d.kind === "hang").flatMap((d) => d.cells.map((c) => c[2])).filter((t): t is number => typeof t === "number" && t >= 0);
+  return new Set([...room.doors, ...room.stairs, ...room.windows, ...surface.doors, ...surface.stairs, ...entranceTiles(tileset).keys(), ...hung]);
+}
+
 /** 이 맵의 계단 칸(맨 아래 칸) — 방 키트의 계단 기물과 칩셋 표면 계약의 계단. */
 export function declaredStairCells(project: Project, map: GameMap): { x: number; y: number }[] {
   const tileset = project.tilesets[map.tilesetId];
@@ -131,7 +138,7 @@ const WINDOW_WORDS = ["창", "창문", "window"] as const;
 /** 벽 타일(역할 wall·terrain)에 굽기가 붙인 창 꼬리표 — 소품의 「창」 꼬리표는 무기 창일 수 있어 읽지 않는다(도장 「목검·창 걸이」). */
 const WINDOW_TAGS = new Set(["창", "창문", "전망창", "window", "窓"]);
 
-type NamedTiles = { readonly seats: ReadonlySet<number>; readonly windows: ReadonlySet<number>; readonly buildings: ReadonlySet<number> };
+type NamedTiles = { readonly seats: ReadonlySet<number>; readonly windows: ReadonlySet<number>; readonly buildings: ReadonlySet<number>; /** 들어가는 문을 적어 둔 키트(집 한 채)의 그림만 — 방의 벽·지붕 역할 타일은 빼고. */ readonly houses: ReadonlySet<number> };
 const BUILDING_ROLES = new Set(["building", "wall", "roof"]);
 const namedCache = new Map<string, NamedTiles>();
 
@@ -147,13 +154,14 @@ function namedTiles(tileset: TilesetDef | undefined): NamedTiles {
     if (!kit.parts?.some((part) => part.kind === "entrance")) continue;
     for (const row of kit.rows ?? []) for (const t of [...(row.tiles ?? []), ...(row.upperTiles ?? [])]) if (typeof t === "number" && t >= 0 && !ground(t)) buildings.add(t);
   }
+  const houses = new Set(buildings);
   meta.forEach((m, tile) => {
     if (m?.role && BUILDING_ROLES.has(m.role)) buildings.add(tile);
     if (!m?.label) return;
     if (SEAT_WORDS.some((word) => labelHasWord(m.label!, word))) seats.add(tile);
     if (WINDOW_WORDS.some((word) => labelNames(m.label!, word)) || ((m.role === "wall" || m.role === "terrain") && m.tags?.some((tag) => WINDOW_TAGS.has(tag)))) windows.add(tile);
   });
-  const out = { seats, windows, buildings };
+  const out = { seats, windows, buildings, houses };
   if (namedCache.size > 64) namedCache.clear();
   namedCache.set(key, out);
   return out;
@@ -181,6 +189,28 @@ export function placeMarks(project: Project, map: GameMap): PlaceMarks {
     }
   }
   return { buildings, stairs, seats, windows };
+}
+
+/**
+ * 건물 뒤 띠 — 남쪽으로 세 칸 안에 건물 그림이 있고 북쪽으로 세 칸 안에 맵 끝·막힌 칸이 있는, 깊이 네 칸까지의 걷는 띠(칸마다 1).
+ * 여기 선 사람·상자는 지붕 줄 뒤에 숨어 찾지 못한다(2026-11-12 r1s-fun: 곁가지 의뢰인 (2,1)·보물상자 (5,1) 이 공장 지붕 뒤 띠에 섰다). 자리를 고르는 쪽이 피한다.
+ */
+export function behindBuildingStrip(project: Project, map: GameMap): Uint8Array {
+  const w = map.width, h = map.height;
+  const houses = namedTiles(project.tilesets[map.tilesetId]).houses;
+  const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
+  const buildings = new Uint8Array(w * h);
+  for (const layer of LAYERS) { const tiles = m[layer]; for (let i = 0; tiles && i < w * h; i++) if (houses.has(tiles[i] ?? -1)) buildings[i] = 1; }
+  const out = new Uint8Array(w * h);
+  const open = (x: number, y: number) => y >= 0 && y < h && isPassable(project, map, x, y) && !buildings[y * w + x];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (!open(x, y)) continue;
+    let south = 1, north = 1;
+    while (south <= 3 && open(x, y + south)) south += 1;
+    while (north <= 3 && open(x, y - north)) north += 1;
+    if (south <= 3 && y + south < h && buildings[(y + south) * w + x] && north <= 3 && south + north - 1 <= 4) out[y * w + x] = 1;
+  }
+  return out;
 }
 
 // ── 드나드는 그림 — 「이 칸이 문·계단 그림인가」. 출하 검사(입구 그림 옆 맨바닥)와 맵 잇기·층 이동 도구가 같이 읽는다:

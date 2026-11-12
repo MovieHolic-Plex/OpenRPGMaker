@@ -3,8 +3,8 @@ import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { findNpcGraphicMatches, queryNpcGraphics } from "@/assets/charsetQuery";
-import { climateBattleBackground, dungeonBattleBackground, interiorBattleBackground, placeNameBattleBackground } from "@/battle/battleBackdrop";
-import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
+import { climateBattleBackground, dungeonBattleBackground, isForestNamedMap, placeNameBattleBackground } from "@/battle/battleBackdrop";
+import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID, FIELD_BATTLE_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { createBlankProject } from "@/project/defaults";
 import { blueprintPremiseText } from "@/project/blueprintAssembly";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
@@ -12,8 +12,9 @@ import { charsetBattlerForCharacter } from "@/assets/charsetBattlers";
 import { bustOfChip } from "./speakerBust";
 import type { Project } from "@/project/types";
 import { applyThemeBackdrop } from "../place/placeTheme";
-import { asPresetHud, HUD_SOURCES, normalizeFieldHud, projectCanLoseHp, projectHudUse, resolvedHudWidgets, unusedHudGauges } from "@/project/fieldHud";
+import { asPresetHud, HUD_SOURCES, normalizeFieldHud, projectCanLoseHp, projectFieldHpChanges, projectHudUse, resolvedHudWidgets, unusedHudGauges } from "@/project/fieldHud";
 import { hudIsStoryTemplate } from "../judge/hudTitleChecks";
+import { battleSites } from "../judge/combatChecks";
 
 export type Obj = Record<string, unknown>;
 
@@ -22,16 +23,16 @@ let factoryCache: Project | undefined;
 const factory = (): Project => (factoryCache ??= createBlankProject() as Project);
 
 /**
- * 필드 HUD 를 아무도 고르지 않았다(편집기 기본 — 하트 체력·숫자). set_field_hud 와 같은 값으로 고른다: 체력이 줄 일(전투·피해·조우)이
- * 없으면 끈다({off:true} — 목표 줄만), 있으면 공포는 꽃잎 생명(horror), 싸우는 판타지는 고전 창(classic), 그 밖은 하트 모험(hearts).
+ * 필드 HUD 를 아무도 고르지 않았다(편집기 기본 — 하트 체력·숫자). set_field_hud 와 같은 값으로 고른다: 필드에서 체력이 깎일 일(실시간 액션 전투·
+ * 피해 명령)이 없으면 끈다({off:true} — 목표 줄만), 있으면 공포는 꽃잎 생명(horror), 싸우는 판타지는 고전 창(classic), 그 밖은 하트 모험(hearts).
+ * 턴제 전투만 있는 게임도 끈다 — 체력은 전투 화면과 메뉴에 있고 필드에서는 걷는 내내 움직이지 않는다(2026-11-13 증기의 심장: 한 명 파티 판이 내내 떠 있었다).
  * 실측(2026-11-05 gpt-only-game 6차): 전투 없는 학교 연애가 체력 하트와 「514 / 514」를 내내 띄웠다.
  */
 export function fillFieldHud(project: Project, story: string): string[] {
-  // 2D 액션 전투는 명령 없이 체력을 깎는다(projectCanLoseHp 는 턴제 전투·피해 명령만 본다).
   const action = project.system.actionCombat?.enabled === true;
-  if (!action && !projectCanLoseHp(project)) {
+  if (!projectFieldHpChanges(project)) {
     project.system.fieldHud = { theme: "chase", vitals: false, clock: false, tools: false, objective: true, hideEmpty: true, widgets: [] };
-    return ["필드 HUD 끔(체력이 줄 일이 없다 — 목표 줄만)"];
+    return [projectCanLoseHp(project) ? "필드 HUD 끔(체력은 전투 안에서만 바뀐다 — 목표 줄만)" : "필드 HUD 끔(체력이 줄 일이 없다 — 목표 줄만)"];
   }
   const premise = premiseOf(project, story);
   const theme = /공포|호러|귀신|유령|괴담|좀비|horror/iu.test(premise) ? "horror" : !action && /마왕|용사|기사|판타지|RPG|던전/iu.test(premise) ? "classic" : "hearts";
@@ -67,7 +68,7 @@ export function reconcileFieldHud(project: Project, story: string): string[] {
   const next = unused.length ? { ...hud, widgets: resolvedHudWidgets(hud).filter((w) => !drop.has(w.id)) } : hud;
   if (shown(next) === shown(project.system.fieldHud)) return [];
   project.system.fieldHud = next;
-  return unused.length ? [`필드 HUD(${hud.theme})에서 이 게임이 쓰지 않는 게이지를 뺐다: ${unused.map((w) => w.label || HUD_SOURCES[w.source]).join(", ")}`] : [`필드 HUD(${hud.theme})에 전에 뺀 게이지를 되돌렸다(이제 쓰인다)`];
+  return unused.length ? [`필드 HUD(${hud.theme})에서 이 게임의 필드에서 바뀌지 않는 칸을 뺐다: ${unused.map((w) => w.label || (w.kind === "party" ? "동료 판" : HUD_SOURCES[w.source])).join(", ")}`] : [`필드 HUD(${hud.theme})에 전에 뺀 칸을 되돌렸다(이제 필드에서 바뀐다)`];
 }
 
 // ── 전투 곡 ─────────────────────────────────────────────────────────────
@@ -143,12 +144,16 @@ function nearestDungeonAncestor(project: Project, mapId: string): string | undef
 }
 
 /**
- * 전투가 나는데 배경을 안 정한 맵에 런타임이 고를 배경을 맵 값으로 적는다 — resolveBattleBackdrop 의 맵 단계와 같은 순서
- * (기후 → 던전·동굴 → 장소 이름 → 실내 칩셋 → 숲). 지형 태그 배경은 런타임에서 맵 값보다 앞서므로 그대로 이긴다.
+ * 이 맵과 같은 종류라고 말할 수 있는 겹 배경 — 눈 기후, 던전·동굴(이름·칩셋), 숲·사막 이름, 버들항 들판 칩셋의 마을·들(평원).
+ * 그 밖(실내 칩셋·도시 이름·모르는 칩셋)은 undefined — 다른 지형 그림을 짐작으로 깔지 않는다.
  */
-function runtimeMapBackground(project: Project, mapId: string): string | undefined {
-  return climateBattleBackground(project, mapId) ?? dungeonBattleBackground(project, mapId) ?? placeNameBattleBackground(project, mapId)
-    ?? interiorBattleBackground(project, mapId);
+function sameKindBackground(project: Project, mapId: string): string | undefined {
+  const sure = climateBattleBackground(project, mapId) ?? dungeonBattleBackground(project, mapId);
+  if (sure) return sure;
+  if (isForestNamedMap(project, mapId)) return DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
+  const named = placeNameBattleBackground(project, mapId);
+  if (named === "battle-scenery-desert") return named;
+  return project.maps[mapId]?.tilesetId === "beodeul_city" ? "battle-scenery-plains" : undefined;
 }
 
 /** 이 맵으로 들어오는 이동 명령(transfer)이 있는 다른 맵들 — 맵 id 순서. */
@@ -166,9 +171,9 @@ function entranceSources(project: Project, mapId: string): string[] {
 }
 
 /**
- * 전투가 나는데 배경을 안 정한 맵에 런타임이 고를 배경을 맵 값으로 적는다 — resolveBattleBackdrop 의 맵 단계와 같은 순서
- * (기후 → 던전·동굴 → 장소 이름 → 실내 칩셋). 그 단계가 아무것도 못 고르는 맵(「마왕의 방」)은 들어오는 길(이동 명령 + 청사진 단계 순서)을 거꾸로 따라
- * 가장 가까운 던전·동굴 조상의 배경, 없으면 바로 들어오는 맵의 배경, 그것도 없으면 런타임 기본(숲). 지형 태그 배경은 런타임에서 맵 값보다 앞서므로 그대로 이긴다.
+ * 전투가 나는데 배경을 안 정한 맵에 그 장소의 배경을 맵 값으로 적는다. 차례: 세계·종류 표(place/placeTheme) → 같은 종류라고 말할 수 있는 겹 배경
+ * (sameKindBackground) → 들어오는 길을 거꾸로 따라 가장 가까운 던전·동굴 조상(「마왕의 방」은 「마왕의 동굴」 안쪽이다) → «그 맵 그대로»(필드 화면).
+ * 짐작으로 다른 지형 그림(실내 = 동굴, 도시 = 풀밭, 모르면 숲)을 깔지 않는다. 지형 태그 배경은 런타임에서 맵 값보다 앞서므로 그대로 이긴다.
  */
 export function fillBattleBackgrounds(project: Project, evidence: string): string[] {
   const out: string[] = [];
@@ -178,15 +183,26 @@ export function fillBattleBackgrounds(project: Project, evidence: string): strin
     // 세계 장소는 그 장소의 테마가 먼저다 — 이름 낱말로는 「잠든 태양의 피라미드」 가 사막인지 모른다(숲 배경이 됐다).
     const themed = applyThemeBackdrop(project, mapId);
     if (themed.note) { out.push(themed.note); continue; }
-    // 맵 그래프(이동 명령 + 청사진 단계 순서)를 거꾸로 따라 가장 가까운 던전·동굴 조상 — 「마왕의 방」은 「마왕의 동굴」 안쪽이다.
-    const ancestor = nearestDungeonAncestor(project, mapId);
-    const sources = entranceSources(project, mapId).map((from) => project.maps[from]?.battleBackground ?? runtimeMapBackground(project, from)).filter((id): id is string => !!id);
-    const inherited = ancestor ?? sources[0];
-    const id = runtimeMapBackground(project, mapId) ?? inherited ?? DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
+    const id = sameKindBackground(project, mapId) ?? nearestDungeonAncestor(project, mapId) ?? FIELD_BATTLE_BACKGROUND_ID;
     map.battleBackground = id;
     out.push(`전투 배경 ${map.name || mapId} → ${id}`);
   }
   return out;
+}
+
+/**
+ * 도트 측면 전투가 있는 게임은 적 발밑에 이름표와 체력 막대를 띄운다(『폴른 스타』와 같은 기본 — battleLook.enemyNames·enemyHp).
+ * 도트 측면 스킨은 원작처럼 적 체력을 숨기는 것이 기본이라, 얼마나 남았는지 모른 채 «공격» 만 누르게 됐다. 저작자가 이미 고른 칸은 그대로 둔다.
+ */
+export function fillEnemyHpLook(project: Project): string[] {
+  const monsters = project.system.battleParty === "monsters" || project.system.monsterBattleParty === true || project.system.battleUiStyle === "pokemon";
+  if (monsters || !battleSites(project).length) return [];
+  const look = { ...(project.system.battleLook ?? {}) };
+  if (look.enemyHp !== undefined && look.enemyNames !== undefined) return [];
+  if (look.enemyHp === undefined) look.enemyHp = true;
+  if (look.enemyNames === undefined) look.enemyNames = true;
+  project.system.battleLook = look;
+  return ["전투 화면 — 적 이름표·체력 막대 켬"];
 }
 
 // ── 파티 모습·얼굴 ───────────────────────────────────────────────────────

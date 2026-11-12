@@ -7,7 +7,7 @@
 // 하나도 못 찾으면 undefined — 부르는 쪽이 걸어 닿는 칸에 이동 칸을 둔다. 문 그림을 지어내 깔지 않는다:
 // 이름표가 「…문」으로 끝나는 타일을 벽에 깔던 옛 4단계는 동굴 벽·숲 나무 줄에 마을 집 문을, 일본 집 벽에 「신문」을 깔았고,
 // 이름표로 읽은 문 그림(1단계)은 걸어서 지나는 성문 한가운데에 이동 칸을 두어 맵을 둘로 끊었다(2026-11-11 단계×테마 표).
-import { isPassable } from "@/project/collision";
+import { canMove, isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { reachableCells } from "../judge/eventReach";
 import { buildingEntrances, declaredStairCells } from "./entrances";
@@ -20,6 +20,13 @@ type Cell = { x: number; y: number };
 interface TransferSpot { readonly x: number; readonly y: number; readonly doorAt?: Cell; readonly note: string }
 
 const VERTICAL_PLACE = /\d\s*층|지하|탑|관측|다락|옥상|위층|아래층|floor|tower|basement|attic/iu;
+const BELOW_PLACE = /지하|basement/iu;
+/** 그 장소로 가는 계단이 오르는 계단인가 내려가는 계단인가 — 장소 이름이 위·아래층이라고 말할 때만(from 이 지하면 나가는 길은 오르는 계단). */
+export function stairWay(toName: string, fromName: string): "up" | "down" | undefined {
+  if (BELOW_PLACE.test(toName)) return "down";
+  if (VERTICAL_PLACE.test(toName) || BELOW_PLACE.test(fromName)) return "up";
+  return undefined;
+}
 const sideScore = (map: GameMap, c: Cell, side: Side) => {
   const d = side === "north" ? c.y : side === "south" ? map.height - 1 - c.y : side === "west" ? c.x : map.width - 1 - c.x;
   const mid = side === "north" || side === "south" ? Math.abs(c.x - map.width / 2) : Math.abs(c.y - map.height / 2);
@@ -48,7 +55,10 @@ function roadEndSpot(project: Project, map: GameMap, side: Side): TransferSpot |
   const ends: Cell[] = [];
   for (const i of roadCellSet(project, map)) {
     const x = i % w, y = Math.floor(i / w);
-    if ((x === 0 || y === 0 || x === w - 1 || y === map.height - 1) && reach[i] && !occupiedNear(map, { x, y }, 1)) ends.push({ x, y });
+    if (!(x === 0 || y === 0 || x === w - 1 || y === map.height - 1) || !reach[i] || occupiedNear(map, { x, y }, 1)) continue;
+    // 문 앞(맵 안쪽 한 칸)이 열려 있어야 한다 — 길 띠 끝이라도 바로 안쪽에 계선주·상자가 서 있으면 그 칸은 문 자리가 아니다.
+    const inX = x === 0 ? 1 : x === w - 1 ? w - 2 : x, inY = x === 0 || x === w - 1 ? y : y === 0 ? 1 : map.height - 2;
+    if (reach[inY * w + inX] && canMove(project, map, inX, inY, x, y)) ends.push({ x, y });
   }
   ends.sort((a, b) => sideScore(map, a, side) - sideScore(map, b, side) || a.y - b.y || a.x - b.x);
   const end = ends[0];

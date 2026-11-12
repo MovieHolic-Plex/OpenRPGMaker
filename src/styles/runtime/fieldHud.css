@@ -43,14 +43,13 @@
 .hud-slot-key { position:absolute; left:1px; top:0; font:5px/1.2 var(--font-mono-system); opacity:.9; }
 .hud-slot-count { position:absolute; right:1px; bottom:0; font:6px/1.1 var(--font-mono-system); }
 .hud-slot-empty { opacity:.4; }
-.hud-widget[data-kind="party"] { justify-content:flex-start; gap:5px; }
-.hud-party-row { display:flex; gap:5px; min-height:24px; }
-.hud-party-row .hud-art { width:23px; height:23px; flex-shrink:0; border-radius:2px; background:#ffffff16; }
-.hud-party-body { min-width:0; flex:1; }
-.hud-party-name { font-size:6px; margin-bottom:3px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-.hud-party-meter { height:4px; background:#0007; }
+/* 동료 판: 한 사람에 한 줄(이름 + 가는 막대, 7px). 얼굴·숫자는 메뉴에 있다. 네 명이면 54×39 — 화면의 2.7%. */
+.hud-widget[data-kind="party"] { justify-content:flex-start; gap:1px; }
+.hud-widget[data-kind="party"]:is([data-panel="dark"],[data-panel="paper"]) { padding:2px 3px; }
+.hud-party-row { display:flex; align-items:center; gap:4px; height:7px; flex-shrink:0; }
+.hud-party-name { font-size:6px; line-height:7px; flex:0 1 46%; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.hud-party-meter { height:3px; flex:1; min-width:0; background:#0007; }
 .hud-party-fill { height:100%; background:var(--hud-accent); }
-.hud-party-value { font-size:5px; margin-top:2px; }
 .hud-widget[data-kind="party"][data-source="friendship"] { justify-content:flex-start; gap:2px; }
 /* 호감 목록은 사람 수만큼만 판이 자란다 — 한 사람뿐인데 세 줄 높이의 어두운 판이 지도를 덮던 것(연애 두 번째 측정). 위쪽 칸 수 위젯과 겹치지 않게 y 는 그대로 둔다. */
 .hud-widget[data-kind="party"][data-source="friendship"][data-panel="dark"] { height:auto !important; min-height:0 !important; }
@@ -63,7 +62,6 @@
 [data-hud-hp="true"] .action-hud-hp,
 [data-hud-stamina="true"] .action-hud-stamina { display:none; }
 [data-hud-objective="false"] .zone-feedback-objective { display:none; }
-[data-field-hud]:not([data-field-hud="legacy"]) .zone-feedback-objective { top:calc(88px * var(--play-ui-scale, 1)); max-width:40%; font-size:calc(7px * var(--play-ui-scale, 1)); }
 [data-hud-objective-font="pixel"] .zone-feedback-objective { font-family:var(--font-pixel-small); }
 [data-hud-objective-font="round"] .zone-feedback-objective { font-family:var(--font-pixel-legacy); }
 [data-hud-objective-font="clean"] .zone-feedback-objective { font-family:var(--font-system-ui); }
@@ -77,7 +75,9 @@
 .field-hud { font-synthesis:none; font-variant-numeric:tabular-nums; }
 .field-hud[data-font="pixel"] { font-family:var(--font-pixel-small); }
 .field-hud[data-font="round"] { font-family:var(--font-pixel-legacy); }
-.field-hud:is([data-font="pixel"],[data-font="round"]) :is(.hud-label,.hud-value,.hud-date,.hud-party-name,.hud-party-value,.hud-effect) { font-size:9px; line-height:1; letter-spacing:0; }
+.field-hud:is([data-font="pixel"],[data-font="round"]) :is(.hud-label,.hud-value,.hud-date,.hud-effect) { font-size:9px; line-height:1; letter-spacing:0; }
+.field-hud:is([data-font="pixel"],[data-font="round"]) .hud-party-row { height:9px; }
+.field-hud:is([data-font="pixel"],[data-font="round"]) .hud-party-name { font-size:9px; line-height:9px; letter-spacing:0; }
 .field-hud:is([data-font="pixel"],[data-font="round"]) .hud-text { font-size:9px; line-height:1.3; }
 .field-hud[data-font="pixel"] .hud-time { font-size:18px; letter-spacing:0; }
 .field-hud[data-font="round"] .hud-time { font-size:16px; letter-spacing:0; }
@@ -85,16 +85,14 @@
 .field-hud[data-theme="collector"] .hud-widget[data-panel="paper"] { background:#faf9e9; border:2px solid #34494f; border-radius:1px; box-shadow:inset 0 0 0 1px #fff,0 2px 0 #243338; padding:5px 9px; color:#263c45; }
 .field-hud[data-theme="collector"] .hud-widget::before { content:""; width:3px; align-self:stretch; background:#b44949; flex-shrink:0; }
 .field-hud[data-theme="collector"] .hud-text { flex:1; text-align:left; }
-.field-hud[data-theme="hearts"] .hud-heart { width:14px; height:13px; background:#312f36d9; }
-.field-hud[data-theme="hearts"] .hud-hearts { gap:3px; }
+.field-hud[data-theme="hearts"] .hud-heart { width:12px; height:11px; background:#312f36d9; }
+.field-hud[data-theme="hearts"] .hud-hearts { gap:2px; }
 .field-hud[data-theme="hearts"] .hud-slot { border:2px solid #ecdca5; background:#263b39d9; box-shadow:0 1px 0 #142624; border-radius:5px; }
 .field-hud[data-theme="hearts"] .hud-slot-key { font-family:var(--font-pixel-small); font-size:9px; left:2px; top:1px; }
 .field-hud[data-theme="hearts"] .hud-text { color:#ffe39a; }
 .field-hud[data-theme="farm"] .hud-widget[data-shape="vertical"] .hud-label { font-size:9px; }
 .field-hud[data-theme="farm"] .hud-widget[data-shape="vertical"] .hud-value { font-family:var(--runtime-ui-font); font-size:5px; }
 .field-hud[data-theme="farm"] .hud-widget[data-kind="slots"] .hud-label { display:none; }
-.field-hud[data-theme="farm"] .hud-slot-key { font-family:var(--font-pixel-small); font-size:9px; }
-.field-hud[data-theme="farm"] .hud-slot-count { font-family:var(--font-pixel-small); font-size:9px; }
 .field-hud[data-theme="farm"] .hud-date { font-size:9px; }
 .hud-widget[data-shape="petals"] { align-items:center; padding:0; overflow:visible; }
 .hud-flower { width:38px; height:48px; position:relative; filter:drop-shadow(0 1px 1px #140e1b); }
@@ -112,8 +110,29 @@
 .hud-widget[data-empty="true"] .hud-flower { filter:grayscale(1) drop-shadow(0 1px 1px #140e1b); opacity:.6; }
 .play-stage[data-field-hud="chase"] > .minimap-root { display:none; }
 /* 픽셀 격자 계약: 수집 테마(에메랄드 몬스터)는 Galmuri9 를 18px(정확히 2배)로 쓴다. 9px 는 도트 절반 크기다. 상자 크기는 저작 값(위젯 w/h)을 그대로 따르고 안쪽 여백만 줄인다. */
-.field-hud[data-theme="collector"][data-font="pixel"] :is(.hud-label,.hud-value,.hud-date,.hud-party-name,.hud-party-value,.hud-effect,.hud-rel-name,.hud-text) { font-size:18px; line-height:20px; }
+.field-hud[data-theme="collector"][data-font="pixel"] :is(.hud-label,.hud-value,.hud-date,.hud-party-name,.hud-effect,.hud-rel-name,.hud-text) { font-size:18px; line-height:20px; }
+.field-hud[data-theme="collector"][data-font="pixel"] .hud-party-row { height:20px; }
 .field-hud[data-theme="collector"] .hud-widget[data-panel="paper"] { padding:2px 8px; }
+/* 한 줄 높이 칸(높이 16 미만 — fieldHudRender 가 data-compact 를 단다): 이름표·막대·숫자를 가로 한 줄로, 여백은 2px. 프리셋은 모두 이 크기다. */
+.hud-widget[data-compact="true"] { flex-direction:row; align-items:center; gap:3px; padding:2px 3px; }
+.hud-widget[data-compact="true"]:is([data-panel="dark"],[data-panel="paper"]) { padding:0 4px; }
+.hud-widget[data-compact="true"] .hud-label { font-size:6px; line-height:1; }
+.hud-widget[data-compact="true"][data-kind="gauge"] .hud-meter-bar { flex:1; min-width:0; height:5px; }
+.hud-widget[data-compact="true"] .hud-hearts { gap:2px; }
+.hud-widget[data-compact="true"] .hud-heart { flex-shrink:0; }
+.hud-widget[data-compact="true"][data-kind="text"] { justify-content:space-between; }
+.field-hud .hud-widget[data-compact="true"] .hud-text { font-size:8px; line-height:1; }
+.field-hud .hud-widget[data-compact="true"][data-kind="clock"] { flex-direction:row; justify-content:flex-end; gap:4px; }
+.field-hud .hud-widget[data-compact="true"] .hud-date { font-size:6px; line-height:1; }
+.field-hud .hud-widget[data-compact="true"] .hud-time { font-size:8px; line-height:1; letter-spacing:0; }
+.field-hud:is([data-font="pixel"],[data-font="round"]) .hud-widget[data-compact="true"] :is(.hud-text,.hud-date,.hud-time,.hud-label) { font-size:9px; line-height:1; }
+.hud-widget[data-compact="true"][data-kind="slots"] { padding:2px; }
+.hud-widget[data-compact="true"] .hud-slots { gap:1px; align-self:stretch; }
+.hud-widget[data-compact="true"] .hud-slot-key { font-size:4px; }
+.hud-widget[data-compact="true"] .hud-slot-count { font-size:5px; }
+.hud-widget[data-slim="true"] { padding:2px; gap:1px; }
+.hud-widget[data-slim="true"]:is([data-panel="dark"],[data-panel="paper"]) { padding:2px; }
+.hud-widget[data-slim="true"] .hud-meter-vertical { width:100%; }
 /* 상시 창 비키기(hudYield.ts): 주인공·마주 본 것을 덮은 창은 그동안 흐려지고, 잠깐 뜨는 알림(「새 목표」 카드·지역 알림)과 겹친 창은 숨는다. 자리는 옮기지 않는다. */
 .play-stage [data-yield] { transition:opacity .14s linear; }
 .play-stage [data-yield="fade"] { opacity:.16; }

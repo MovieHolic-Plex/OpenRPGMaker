@@ -51,10 +51,18 @@ describe("applyLookDefaults (v1 whole-game finish)", () => {
     expect(calm.system.fieldHud?.vitals).toBe(false);
     expect(calm.system.fieldHud?.objective).toBe(true);
     expect(ids(calm)).not.toContain("hud");
+    // 턴제 전투뿐인 게임: 체력은 전투 화면 안에서만 바뀐다 — 필드에는 목표 줄만(2026-11-13 필드 HUD 예산).
     const fight = battleGame();
     applyLookDefaults(fight, "좀비 생존 게임 만들어줘");
-    expect(fight.system.fieldHud?.theme).toBe("horror");
+    expect(fight.system.fieldHud?.widgets).toEqual([]);
+    expect(fight.system.fieldHud?.objective).toBe(true);
     expect(ids(fight)).not.toContain("hud");
+    // 필드에서 체력이 깎이는 게임(밟으면 다치는 함정)은 장르 HUD 를 받는다.
+    const trap = battleGame();
+    trap.maps[trap.startMapId!]!.events.push({ id: "ev_trap", name: "가시 함정", x: 5, y: 5, pages: [{ conditions: [], trigger: "playerTouch", commands: [{ kind: "changeActorHp", op: "-=", amount: 10 }] }] } as never);
+    applyLookDefaults(trap, "좀비 생존 게임 만들어줘");
+    expect(trap.system.fieldHud?.theme).toBe("horror");
+    expect(ids(trap)).not.toContain("hud");
     const action = createBlankProject() as Project;
     action.system.actionCombat = { ...(action.system.actionCombat ?? {}), enabled: true } as never;
     applyLookDefaults(action, "판타지 액션 게임 만들어줘");
