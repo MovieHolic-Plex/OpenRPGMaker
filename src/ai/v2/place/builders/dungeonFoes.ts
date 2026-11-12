@@ -1,10 +1,12 @@
 // 던전의 적·보스 — 주제 낱말로 적 그림 고르기(enemyArtFor), 닮은 적 무리, 트룹 만들기(ensureFoeTroop)·층별 트룹 계획(planTroops). 짓기는 dungeon.ts.
 import { dungeonTheme } from "@/editor/tools/dungeonThemeTroops";
-import { fitEnemyToStartParty } from "@/editor/tools/bossThreatScaling";
+import { fitEnemyToStartParty, fitWithinTarget } from "@/editor/tools/bossThreatScaling";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
 import { type DungeonType } from "@/editor/dungeonKit/types";
 import type { EnemyRecord, Project } from "@/project/types";
 import type { BuildRun } from "../../shared/types";
+import { currentFoe, hasCurrentArt } from "../../story/currentFoes";
+import { artGapLine } from "@/project/artGap";
 
 /** 적 낱말 → 데이터베이스 적 id(보이는 잡몹). 「불 속성」처럼 종이 없는 말은 주제 적에 맡긴다. */
 export const FOE_WORDS: readonly [RegExp, string][] = [
@@ -104,7 +106,7 @@ export function ensureFoeTroop(run: BuildRun, enemyId: string, role: "field" | "
   const short = enemyId.replace(/^enemy_/, "");
   const troopId = `troop_v2_${role}_${short}`;
   if (project.database.troops.some((t) => t.id === troopId)) return troopId;
-  const count = role === "field" ? Math.max(1, Math.min(3, project.database.troops.find((t) => t.id === like)?.members?.length ?? 2)) : 1;
+  let count = role === "field" ? Math.max(1, Math.min(3, project.database.troops.find((t) => t.id === like)?.members?.length ?? 2)) : 1;
   const target = strength(project, like);
   const own = (source.stats?.maxHp ?? 0) + 4 * (source.stats?.attack ?? 0);
   const k = target > 0 && own > 0 ? target / own : 1;
@@ -115,7 +117,10 @@ export function ensureFoeTroop(run: BuildRun, enemyId: string, role: "field" | "
   const copy: Record<string, unknown> = { id: enemyIdCopy, name: name ?? source.name, stats };
   for (const key of ["monsterResourceId", "battleScalePercent", "level", "skillIds", "rewards", "actions", "criticalHit", "attackOptions"]) if (s[key] !== undefined) copy[key] = structuredClone(s[key]);
   // 세기는 시작 파티에 맞춘다(dungeonThemeTroops 와 같은 맞춤) — 비례 옮기기는 파티가 없을 때만.
-  const fit = fitEnemyToStartParty(project, { ...source, id: enemyIdCopy, stats } as unknown as EnemyRecord, role, count);
+  let fit = fitEnemyToStartParty(project, { ...source, id: enemyIdCopy, stats } as unknown as EnemyRecord, role, count);
+  // 맞춤이 목표(승률·손실 상한)에 못 닿으면 마릿수를 줄인다 — 독을 거는 종 둘은 공격을 바닥까지 내려도 Lv1 혼자에게 한 판 손실이 38%였고
+  // 같은 무리 둘과 다른 무리 하나를 이어 싸우면 76%였다(2026-11-12 은행 lay-main-mine, 코볼트 대역 고블린 정찰병).
+  while (fit && count > 1 && !fitWithinTarget(fit, role)) { count -= 1; fit = fitEnemyToStartParty(project, { ...source, id: enemyIdCopy, stats } as unknown as EnemyRecord, role, count); }
   if (fit) { copy.stats = fit.stats; copy.level = fit.level; if (fit.actions) copy.actions = fit.actions; if (fit.skillIds) copy.skillIds = fit.skillIds; }
   const made = run.call("upsert_enemy", { enemy: copy, role: role === "boss" ? "boss" : "normal" });
   const useId = made.ok ? enemyIdCopy : enemyId;
@@ -132,13 +137,26 @@ export function planTroops(run: BuildRun, plan: DungeonPlan, toolArgs: Record<st
   const base = pickTroops(run.ctx.project, undefined);
   const troops: Record<string, unknown> = {};
   const like = (i: number) => base.field[i % Math.max(1, base.field.length)];
+  // 서는 것은 현행 그림이 있는 종뿐이다(story/currentFoes) — 그림이 없는 종은 가장 가까운 현행 종이 대신 서고, 바란 그림은 없는 그림 줄로 남는다.
+  const place = String(plan.args.name ?? toolArgs.name ?? plan.type);
+  const drawn = (id: string): string => {
+    const cur = currentFoe(run.ctx.project, id);
+    if (!cur) return id;
+    if (cur.wanted) { const line = artGapLine({ theme: `dungeon/${plan.type}`, want: "foe", wanted: cur.wanted, where: place, standIn: run.ctx.project.database.enemies.find((e) => e.id === cur.enemyId)?.name ?? cur.enemyId }); if (!plan.missing.includes(line)) plan.missing.push(line); }
+    return cur.enemyId;
+  };
+  // 골렘 걷기 칩은 맵에서 갈색 덩어리였다 — 현행 그림은 전투 그림 그대로 서므로 피하지 않는다.
+  const blob = (id: string): boolean => BLOB.has(id) && !hasCurrentArt(run.ctx.project, id);
+  const uniq = (ids: readonly string[]): string[] => [...new Set(ids.map(drawn))];
   // 잡몹: 요청 > 주제(덩어리 골렘 빼고). 도구는 주제 잡몹 앞 둘을 쓴다.
-  let fieldEnemies: string[] = theme.field.slice(0, 2);
-  if (plan.foes.length) fieldEnemies = plan.foes.slice(0, 3);
-  else if (fieldEnemies.some((id) => BLOB.has(id))) {
-    const keep = theme.field.filter((id) => !BLOB.has(id));
-    fieldEnemies = [...keep, ...["enemy_sword_flying", "enemy_skeleton_bone"].filter((id) => !keep.includes(id))].slice(0, 2);
+  let fieldEnemies: string[] = uniq(theme.field).slice(0, 2);
+  if (plan.foes.length) fieldEnemies = uniq(plan.foes).slice(0, 3);
+  else if (fieldEnemies.some((id) => blob(id))) {
+    const keep = uniq(theme.field).filter((id) => !blob(id));
+    fieldEnemies = [...keep, ...uniq(["enemy_sword_flying", "enemy_skeleton_bone"]).filter((id) => !keep.includes(id))].slice(0, 2);
   }
+  // 대역이 겹쳐 한 종만 남았으면(해골·좀비 → 유령) 굴에 흔한 현행 종으로 둘을 채운다.
+  if (!plan.foes.length && theme.field.length >= 2) for (const extra of uniq(["enemy_bat_cave", "enemy_spider_cave", "enemy_wisp_blue"])) if (fieldEnemies.length < 2 && !fieldEnemies.includes(extra)) fieldEnemies.push(extra);
   if (plan.foes.length || fieldEnemies.join() !== theme.field.slice(0, 2).join()) {
     const ids = fieldEnemies.map((id, i) => ensureFoeTroop(run, id, "field", like(i))).filter((v): v is string => !!v);
     if (ids.length) troops.field = ids;
@@ -148,11 +166,13 @@ export function planTroops(run: BuildRun, plan: DungeonPlan, toolArgs: Record<st
   // 보스: 요청 > 주제. 잡몹과 닮았거나 덩어리면 종류별 대체.
   // 보스 낱말이 없으면 요청한 잡몹의 큰 친척(박쥐 동굴 → 흡혈 박쥐): 「박쥐 동굴」 보스가 과부 거미라 거미 굴로 읽혔다(2026-10-23 비교 검수).
   const kin = plan.boss ? undefined : plan.foes.map((id) => KIN_BOSS[id]).find((v) => !!v);
-  let boss: [string, string] = plan.boss ? [plan.boss[0], plan.boss[1]] : kin ?? [theme.boss, ""];
-  if (taken.has(lookGroup(boss[0])) || BLOB.has(boss[0])) {
+  const want: [string, string] = plan.boss ? [plan.boss[0], plan.boss[1]] : kin ?? [theme.boss, theme.bossName ?? ""];
+  let boss: [string, string] = [drawn(want[0]), want[1]];
+  if (taken.has(lookGroup(boss[0])) || blob(boss[0])) {
     const type = String(toolArgs.type) as DungeonType;
-    const alt = [BOSS_FALLBACK[type], ["enemy_demon_lord", "깊은 곳의 마왕"] as [string, string], ["enemy_behemoth_horn", "베히모스"] as [string, string]]
-      .find((c): c is [string, string] => !!c && !taken.has(lookGroup(c[0])) && !BLOB.has(c[0]));
+    const alt = [BOSS_FALLBACK[type], ["enemy_demon_lord", "깊은 곳의 마왕"] as [string, string], ["enemy_behemoth_horn", "베히모스"] as [string, string], ["enemy_dragon_blue", ""] as [string, string], ["enemy_wolf_dire", ""] as [string, string]]
+      .map((c) => (c ? [drawn(c[0]), c[1]] as [string, string] : undefined))
+      .find((c): c is [string, string] => !!c && !taken.has(lookGroup(c[0])) && !blob(c[0]));
     if (alt) boss = alt; else warnings.push("보스 그림이 잡몹과 닮았다 — 대신할 그림을 찾지 못했다");
   }
   if (boss[0] !== theme.boss) {
@@ -161,8 +181,9 @@ export function planTroops(run: BuildRun, plan: DungeonPlan, toolArgs: Record<st
   }
   taken.add(lookGroup(boss[0]));
   // 수문장(마지막 앞 층): 보스·잡몹과 닮지 않게(성: 타락한 기사 둘, 탑: 살아있는 갑옷 = 잡몹).
-  if (Number(toolArgs.floors) > 1 && (taken.has(lookGroup(theme.midBoss)) || BLOB.has(theme.midBoss))) {
-    const alt = ["enemy_gargoyle_stone", "enemy_ogre_club", "enemy_wolf_dire", "enemy_spider_widow", "enemy_worm_sand"].find((id) => !taken.has(lookGroup(id)));
+  const mid = drawn(theme.midBoss);
+  if (Number(toolArgs.floors) > 1 && (mid !== theme.midBoss || taken.has(lookGroup(mid)) || blob(mid))) {
+    const alt = [mid, ...uniq(["enemy_wolf_dire", "enemy_hound_hell", "enemy_wraith_dark", "enemy_eye_floating", "enemy_snake_viper"])].find((id) => !taken.has(lookGroup(id)) && !blob(id));
     const id = alt ? ensureFoeTroop(run, alt, "midBoss", base.midBoss) : undefined;
     if (id) troops.midBoss = id;
   }

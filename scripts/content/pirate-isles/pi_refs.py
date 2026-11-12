@@ -249,7 +249,7 @@ c0 = cat('pi-start', '해적 군도 · 읽는 순서·층·실행 순서', 'pira
 group_rows = '\n'.join(f"| `pi-{g}` | {GROUPS[g]} | {len(by_group[g])} | {', '.join(e['id'] for e in examples.get(g, [])) or '없음'} |" for g in GROUPS)
 c0['documents'].append(dict(id='pi-order', name='해적 군도 · 읽는 순서·층과 통행·실행 순서', markdown='\n'.join([
     '# 열대 군도·해적 항구 (pirate_isles) — 읽는 순서 · 층과 통행 · 실행 순서', '', HEAD, '',
-    f"흰·금빛 모래 해안(젖은 모래·물거품 덩이 오토타일), 얕은 청록 바다·깊은 바다, 밀림 풀·흙길·모래길, 돌 방파제·판자 부두·요새 성벽 오토타일, 야자·활엽수·바위·산호, 오두막·수상 가옥·술집·창고·항만 사무소·선장의 집·등대·요새 문루·포대·병영·망루·노점·보물 동굴 입구·난파선, 통·상자·그물·대포·우물·횃불·보물 상자, 노 젓는 배·쪽배·고깃배·해적 범선, 배·술집·오두막·동굴 실내 가구의 **손 도트 조각**을 구운 시트다. 조립 키트 {len(DATA['structureKits'])}종 · 오토타일 {len(DATA['autotileGroups'])}세트 · 타일 그룹 {len(DATA['tileGroups'])}개. 모든 기물 조각은 3/4 탑뷰 관문(object-gate, 판정자 과반·화소 해시 영수증)을 통과했다.",
+    f"흰·금빛 모래 해안(젖은 모래·물거품 덩이 오토타일), 얕은 청록 바다·깊은 바다, 밀림 풀·흙길·모래길, 돌 방파제·판자 부두·요새 성벽 오토타일, 야자·활엽수·바위·산호, 오두막·수상 가옥·술집·창고·항만 사무소·선장의 집·등대·요새 문루·포대·병영·망루·노점·보물 동굴 입구·난파선, 통·상자·그물·대포·우물·횃불·보물 상자, 노 젓는 배·쪽배·고깃배·해적 범선, 배·술집·오두막·동굴 실내 가구의 **손 도트 조각**을 구운 시트다. 조립 키트 {len(DATA['structureKits'])}종 · 오토타일 {len(DATA['autotileGroups'])}세트 · 타일 그룹 {len(DATA['tileGroups'])}개. 이야기 기물 2종(`pi-props-objects` — 쪽지·항해 일지)과 직각 지붕으로 다시 그린 건물 지붕은 3/4 관문 미통과 — 오너 면제 그림이고, 그 밖의 기물 조각은 object-gate 3/4 관문 영수증(판정자 과반·화소 해시)이 있는 그림이다.",
     '', '## 이 타일셋에 없는 것',
     '- 사람(해적·주민)은 타일이 아니다 — 이벤트의 캐릭터 그림(공용 Actor 칩)으로 둔다. 배는 **정지 키트**(그림 칸)이며 움직이는 탈것이 아니다.',
     '- 글자가 있는 간판·깃발은 없다(해골 깃발·그림 간판만). 움직이는 칸(animationStrips)도 아직 없다.',
@@ -325,6 +325,25 @@ for g, kits in by_group.items():
             em.append(f"| {nm} | {', '.join(codes) or '(검사 못 잡음 — 범위 밖)'} | {' '.join(f'({x},{y})' for _, x, y, _ in pr[:6])}{' …' if len(pr) > 6 else ''} | `pi-img-{ex['id']}-err{n + 1}` |")
         c['documents'].append(dict(id=f"pi-{g}-err-{ex['id'].replace('pi-ex-', '')}", name=f"{gname} · 정상/오류 {ex['name']}", markdown='\n'.join(em)))
         print(ex['id'], '정상 검사', len(probs), '건')
+
+# 2-b) 이야기 기물(쪽지·보물 지도 조각 · 항해 일지) — 3/4 관문 미통과 · 오너 면제 그림. 문서 틀은 칩셋 공용 scripts/content/story-objects/refs_lib.py.
+OBJ_SPEC = os.path.join(ROOT, 'tiledata/pirate-isles/objects/spec.json')
+if os.path.exists(OBJ_SPEC):
+    sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'story-objects'))
+    import refs_lib
+    _spec = json.load(open(OBJ_SPEC, encoding='utf-8'))
+    _sand = [t for g in DATA['tileGroups'] if g['id'] == 'pi:floor:sand' for t in g['tileIds']]
+    assert _sand and all(passable(t) for t in _sand), _sand
+    _names = '·'.join(it['name'].split('(')[0] for it in _spec['items'])
+    _doc, _imgs, _ev = refs_lib.build(dict(
+        tileset=DATA, sheet=SHEET, spec=_spec, kit_prefix='pi-', chipset='pirate_isles', doc_id='pi-props-objects', img_id='pi-img-objects-', img_dir=IMGDIR, url='/assets/pirate-isles-references/',
+        scene=[('logbook-stand', 1, 1), ('note', 3, 2)], size=(6, 4), ground=lambda x, y: _sand[(x * 7 + y * 13) % len(_sand)],
+        title=f"pirate_isles · 이야기 기물 {len(_spec['items'])}종({_names})", head=HEAD, ground_note='모래·부두 판자·선실 바닥', compose_tool='compose_pirate_isles_map',
+        order_notes=['항해 일지(1×2)는 부두·갑판·선장실 벽가에 — 문 앞 접근칸·부두 통로 한가운데·물 위에는 놓지 않는다. 쪽지·지도 조각은 걷는 바닥 어디든(물 위 금지).',
+                     '바닥 그림(쪽지)은 이 칩셋의 다른 투명 덧그림처럼 2층(lowerOverlayTiles)에 있어도 된다 — 아래 예제는 놓기 도구와 같게 위층에 두었다.'],
+        source='tiledata/pirate-isles/objects', bake='scripts/content/pirate-isles/pi_bake.py'))
+    _c = next(c for c in cats if c['id'] == 'pi-props')
+    _c['documents'].append(_doc); _c['images'] += _imgs
 
 # 3) 검사 범위
 ck = cat('pi-check', '해적 군도 · 자동 검사 범위·층 기준', '구조 검사가 보는 것과 보지 않는 것, 층 정보 기준.')

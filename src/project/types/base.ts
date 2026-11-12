@@ -428,6 +428,11 @@ export interface StructureKitAiMeta {
    */
   themes?: string[];
   /**
+   * 같은 종류의 다른 그림 — 이 킷이 대신 설 수 있는 원본 킷 id(같은 타일셋, 같은 칸 크기·같은 막힌 칸).
+   * 조수 실행은 원본 id 로 온 놓기를 게임 열쇠로 고른 변형으로 찍는다(project/kitLook.ts). 사람 편집은 고른 킷 그대로.
+   */
+  variantOf?: string;
+  /**
    * 실내 방 문법의 의미 역할(bed, stove, …). TileGroupRole 과 축이 달라 이름을 분리한다.
    * 있으면 이 킷은 실내 가구로 취급되고, 방 종류의 requiredRoles 와 맞춘다.
    */

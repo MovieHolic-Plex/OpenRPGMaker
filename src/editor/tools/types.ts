@@ -57,6 +57,11 @@ export interface ToolContext {
   readonly assistantRun?: boolean;
   /** 이 사용자 요청 턴이 몬스터 수집(포켓몬식) 게임 요청으로 분류됐는가 — 몬스터 자산 역방향 잠금(genreLockMonsterAssets.ts)을 이 턴만 푼다. 조수 경로가 요청 글로 판정해 채운다. */
   readonly monsterTurn?: boolean;
+  /**
+   * 게임 열쇠(요청의 projectKey) — 조수 실행이 같은 종류의 다른 그림(킷 ai.variantOf)을 고르는 씨앗. 같은 게임은 늘 같은 그림을 받는다.
+   * 없으면 그림을 갈아 끼우지 않는다(사람 편집·콘텐츠 스크립트·옛 호출자). project/kitLook.ts
+   */
+  readonly lookKey?: string;
 }
 
 // 툴 내부 실행이 돌려주는 값. runner가 diff/lint/커밋을 처리한다.

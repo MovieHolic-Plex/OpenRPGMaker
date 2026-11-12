@@ -282,11 +282,12 @@ function extendPickedParts(tileset: TilesetDef, limit: number = sheet.count): bo
 
 /** Shipped kits the copy lacks are added (by id); bundle-owned `bd-pick-*` kits are replaced by the shipped ones. Others stay. */
 /**
- * 이야기 기물 꼬리(34,944~, scripts/content/beodeul-objects/bake.py)의 킷 접두사 — 샘·동굴 입구·유적 입구·게시판·쪽지·봉인 제단·널빤지 길 등 16종.
- * 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12 로 구웠다. 번들 소유라 옛 사본의 같은 id 킷은 번들 것으로 맞춘다.
+ * 이야기 기물 꼬리(34,944~, scripts/content/beodeul-objects/bake.py)의 킷 접두사 — 샘·동굴 입구·유적 입구·게시판·쪽지·봉인 제단·널빤지 길 등 16종과
+ * 종류별 변형 50종(우물·벤치·이정표 등의 다른 그림, ai.variantOf = 원본 킷 id). 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12 ·
+ * fable-variety-beodeul-2026-11-12 로 구웠다. 번들 소유라 옛 사본의 같은 id 킷은 번들 것으로 맞춘다.
  */
 export const BEODEUL_OBJECTS_KIT_PREFIX = "bd-obj-";
-/** 이야기 기물 꼬리의 첫 칸(옛 상수도 꼬리 34,816~34,943 바로 뒤). 한 줄(128칸): 34,944~35,071. */
+/** 이야기 기물 꼬리의 첫 칸(옛 상수도 꼬리 34,816~34,943 바로 뒤). 두 줄(256칸): 34,944~35,199 — 이야기 기물 16종 뒤에 종류별 변형(ai.variantOf)이 이어진다. */
 export const BEODEUL_OBJECTS_BASE = 34944;
 
 function mergeShippedKits(tileset: TilesetDef, withWall = true, withGap = true, withYard = true, withCapital = true, withTheme2 = true): boolean {

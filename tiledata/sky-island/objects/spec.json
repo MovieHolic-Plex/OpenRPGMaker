@@ -1,0 +1,37 @@
+{
+ "_doc": "sky_island 이야기 기물 1종 — Claude Fable 5.2 medium 한 방 그림(이 프로젝트를 위해 그린 자체 저작, 색은 sky_island 시트에서 뽑음). 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12. pieces/<src> 는 한 화소도 바꾸지 않는다(바꾸면 면제가 풀리고 굽기가 그 조각을 막는다). 굽기 scripts/content/sky-island/bake_si.py 가 등록부 조각 뒤에 이 목록을 덧붙인다 — 새 항목은 items 끝에만(칸 번호는 자리 키 핀, 덧붙이기 전용). 키트 id = si-<id>. place: prop·tall = 서 있는 기물(block 칸 막힘, 나머지 칸 ★) · decal = 밟고 지나가는 바닥 그림.",
+ "waiver": "fable-oneshot-2026-11-12",
+ "license": "drawn by Claude Fable 5.2 for this project (own work)",
+ "items": [
+  {
+   "id": "seal-altar",
+   "src": "si-seal-altar.png",
+   "name": "봉인 제단(대리석 제단·봉인)",
+   "en": "sealed marble altar",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "봉인 제단",
+    "봉인",
+    "제단",
+    "대리석 제단",
+    "seal altar",
+    "altar"
+   ],
+   "desc": "흰 대리석 제단. 윗판에 하늘빛 고리 봉인과 작은 수정, 금 테. 윗줄은 제단 윗판(사람 위에 그려짐), 아랫줄은 앞면.",
+   "rule": "신전 섬 마당·섬 끝 전망 자리·신전 실내 바닥에. 아랫줄 막힘. 봉인을 푸는 이벤트는 아랫줄 칸에 «같은 높이·결정 키» 로 둔다. 문 앞 접근칸·다리 어귀·길 한가운데 금지."
+  }
+ ]
+}

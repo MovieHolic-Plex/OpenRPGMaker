@@ -378,6 +378,62 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 다시 지은 판의 «모래 수호자» 는 미라 그림으로 서고 싸운다(옛 저장본의 수호자는 드래곤 사본 그대로 — 그림만 전투 그림과 같아진다). 자동 플레이 엔딩·다시 읽기 성공. **화면 미검증** — 그림은 사람·판정자가 본다.
 남은 것: 테마 표의 적은 기본 DB 106종에서 고른 것이라 SF·전국 일본·선사는 전부 대역이다(없는 그림 줄이 남는다). 시험 `test/aiV2PlaceTheme.test.ts`.
 
+## 적 그림은 현행 세트 — 『폴른 스타』가 쓰는 새 전투 시트에서만 고르고 그 그림을 프로젝트에 넣는다 (2026-11-12, 오너 r1w-fun)
+
+오너(Haiku 가 지은 선사 시대 게임 r1w-fun 을 해 보고): «몬스터는 왜 star fallen 이랑 다르게 구형 몬스터를 배치해놨고».
+
+무엇이 달랐나(파일 근거):
+
+| | 전투에 서는 그림 | 맵에 서는 그림 |
+|---|---|---|
+| r1w-fun (v2) | 번들 3×3 시트 `public/assets/generated/pixel-enemies/<slug>.png`(64px 9칸, #1872 의 140종) — 리자드맨·송곳니 멧돼지·검치호·화염 지네·새끼 용·베히모스 | 그 번들 그림의 첫 칸에서 런타임이 뽑은 걷기 칩(5곳) + 같은 «종류» 의 옛 걷기 칩 `tex_easyrpg_charset_animal` 1곳(검치호) |
+| 『폴른 스타』 | 같은 리소스 id 에 **업로드로 얹은** 새 시트 `src/project/flagship/fallen/monsterSheets16.ts`(34종, 5×4 20칸, 48~192px) — `monsterArt16.ts` 가 `project.assets.uploaded[<id>]`(초상) + `<id>-sheet16`(시트)로 넣는다 | 그 초상에서 런타임이 뽑은 걷기 칩(`fieldFoeSprite.ts`) |
+
+고르던 함수와 원인: `place/placeTheme.ts` 의 테마 표(세계 × 종류 → 기본 DB 적 id) · `blueprintPath.foeTroop` · `place/builders/dungeonFoes.planTroops` · `story/sceneVerbs.bossTroop` 이 모두 **기본 DB 적 106종의 `monsterResourceId` 를 그대로** 썼다. 새 그림은 『폴른 스타』 굽기 안에서만 얹혔으므로(프로젝트 업로드) v2 가 짓는 게임은 늘 번들 3×3 그림이었다. 맵 위는 `place_field_enemy` 가 같은 «종류» 의 옛 charset 칸(`fieldEnemyGraphics.ts`)을 먼저 골랐다.
+
+지금:
+
+- **현행 세트**(`src/assets/currentMonsterArt.ts`): id 목록(34) + `installCurrentMonsterArt(project, ids)`. 그림 데이터(0.9MB)는 그 자리에 두고 늦게 읽는다 — 턴 첫 지시 앞(`turn/modelHooks.firstPromptSuffix`)과 끝맺음 `step-foes` 앞에서 `preloadCurrentMonsterArt()`.
+- **고르는 한 곳**(`story/currentFoes.ts`): `currentFoe(project, 적 id)` → 그 적의 그림이 현행이면 그 적, 아니면 가장 가까운 현행 종(대역 표 — 해골·좀비·미라 → 창백한 유령, 리자드맨 → 독사, 검치호·곰 → 다이어 울프, 용류 → 청룡 …) + 바란 그림 이름. 대역도 없으면 undefined. 위 네 고르기가 모두 여기에 묻는다 — 구형 그림은 v2 가 세우는 적에 나오지 않는다.
+- **테마 표**: 적 목록 = 그 장소가 바라는 종 + 현행 그림이 있는 그 장소의 종. 서는 것은 현행 그림이 있는 종뿐(`drawn`)이고, 없는 종은 종마다 없는 그림 줄 `[art-gap] theme=prehistoric/swamp want=foe wanted=«lizardman-spear» …` 로 남는다 — 그 종이 그려지면 표를 고치지 않아도 선다. 테마 표에 없는 세계(버들항)의 싸우는 단계는 흔한 판타지 목록(`COMMON`)과 이름의 적 낱말(`enemyArtFor` → `currentFoe`)에서.
+- **같이 서는 길 적은 자기 기술이 있는 종만**(`placeTheme.withOwnSkills`): 시작 파티에 맞춘 사본은 센 기술이 「맹독 이빨」·「산성 침」으로 갈려(`bossThreatScaling.swapOverpoweredSkills`) 종이 달라도 기술이 같아진다. 현행 그림으로 좁히자 사막 길 적이 독사·복면 산적(둘 다 「맹독 이빨」)이 되어 끝맺음 «적 개성»이 울렸다(은행 jrpg-w3). 그래서 길 적 목록은 그 검사와 같은 값(`judge/enemyChecks.foeSkillNames`)으로 «종마다 다른 종에 없는 기술 하나»인 것만 순서대로 남긴다 — 선사 시대 늪은 독사·뿔 딱정벌레(멧돼지·사마귀는 사본 기술이 독사와 같다). 종 수를 늘리려면 고르기가 아니라 그 갈아 끼우기가 종마다 다른 기술을 주어야 한다(남은 일).
+- **던전 빌더의 대역 무리**(`dungeonFoes.ensureFoeTroop`): 맞춤이 목표(승률·한 판 손실 상한 — `fitWithinTarget`)에 못 닿으면 마릿수를 줄인다. 코볼트 대역 고블린 정찰병 둘은 독 때문에 공격을 3까지 내려도 Lv1 혼자에게 한 판 38% 였고 그 맵 필드 적을 이어 싸우면 76%(예산 60%)였다(은행 lay-main-mine). 한 마리로 맞추면 한 판 1%.
+- **그림 넣기**: 세울 적을 정한 자리에서 그 그림만 넣는다(`useCurrentArt`) — 전투 시트(`pixelEnemySheet` 가 프로젝트 저작 시트를 번들보다 먼저 찾는다)와 맵 위 그림(업로드 monster 가 먼저)이 같은 새 그림이 된다.
+- **맵 위**: `place_field_enemy` 는 그 프로젝트에 업로드 monster 그림이 있으면 옛 charset 칸 대신 전투 그림 그대로 세운다(런타임이 걷기 칩을 뽑는다). `stepFoes.foeGraphic` 도 같다.
+- **게임 밖 렌더러도 넣은 그림을 안다**(2026-11-12 r1s-fun — Sonnet 이 지은 판에서 화면 검수가 맵 7장 중 3장을 못 봤다: «map-event-rendering-unavailable: event …_wfoe1 graphic generated-enemy-hound-hell is not a supported charset/image»). 출하 플레이어는 그 적을 제대로 그렸다(런타임 `eventSpriteResources` 는 업로드 kind monster 를 초상 한 장 · 32px 상자로 안다) — 틀린 것은 게임 밖에서 맵 이벤트를 그리는 두 렌더러였다. ① 검수 그림(`src/ai/toolImageEventSprites.ts` — `show_map_region` · v2 화면 검수의 맵 그림 · 조수 맵 그림 전부)은 번들 그림만 알았고 프로젝트 업로드가 있으면 비켜서 «지원 안 함» 으로 맵 전체를 거절했다. ② 명세 은행·qa-game 의 맵 그림(`scripts/qa-game/render.mts`)은 96px 초상을 걷기 칩 칸(24×32)으로 잘라 투명 구석만 그렸다(적이 안 보임). 둘 다 런타임처럼 초상 한 장을 긴 변 32px(약 2칸) 상자에 발밑 가운데로 그린다. 편집기 맵 화면·이벤트 그림 미리보기는 런타임의 해석기(`resolveEventSpriteTexture`)를 같이 쓰므로 원래 맞았고, 변경 썸네일(`regionSnapshot`)은 이벤트를 점으로만 찍는다. 시험 `test/toolImageEventRender.test.ts` · `test/qaGameRender.test.ts`(시험용 캔버스 `toolImageRasterDom` 의 그림에 `decode()` 를 더했다 — 없어서 알파 그림을 그리는 시험이 빈 결과로 떨어졌다).
+- **옛 판**(끝맺음 `step-foes`): `redrawStepFoesIn`(함수가 고른 단계 상대 `troop_fit_*` 의 그림이 현행이 아니면 같은 이름·같은 사본 id 로 다시 고름) → `settleStepFoesIn` → `restockOffThemePlaces`(테마 밖 = 이제 구형 그림도) → `settleCurrentArtIn`(맵에서 싸우는 적마다 그림 넣기 · 옛 걷기 칩 → 전투 그림 · 그림이 없는 종은 없는 그림 줄).
+
+r1w-fun 저장본 → 끝맺음 재생(모델 없음, `finishReplay.mts`) 전/후:
+
+| 자리 | 전(그림) | 후(그림) |
+|---|---|---|
+| 늪지 길 적 셋 | lizardman-spear · boar-tusk(구) · tiger-saber(옛 걷기 칩) | snake-viper · beetle-horn · snake-viper |
+| 늪지 «늪 괴수»(s3) | dragon-whelp | wolf-dire |
+| 화산 기슭 길 적 | centipede-fire | spirit-fire |
+| 벽화 동굴 «불의 정령»(s7 보스) | behemoth-horn | spirit-fire |
+
+자동 플레이 엔딩 성공 → 성공 · 다시 읽기 성공. 저장(SQLite) → 출하 플레이어(`wholeGamePlayer --serve`)로 띄워 전투·맵을 봤다: 전투의 뿔 딱정벌레와 맵의 딱정벌레가 같은 그림. 그림 `~/claude-viz/av2-look-defaults.html`.
+
+명세 은행 ab(저장된 49 명세, 모델 없음, origin/main → 이 변경): 자동 플레이 엔딩 도달 9/10 → 9/10 · 나빠진 칸 없음 · 끝맺음 관문이 짚은 문제 166 → 157(«적 개성» 7 → 0, «전투 세기» 4 → 3) · 할 일 막힘 78 → 76 · 출하 차단 11 → 10 · 필드 그림 ≠ 전투 그림 0/10 → 0/10 · 없는 그림 줄 24 → 128(그릴 목록이 드러난 것) · 길 위 전투 뒤 레벨 82 → 75(종이 바뀌어 경험치가 달라졌다 — 나빠짐으로 치지 않는 칸). 첫 은행에서는 jrpg-w3(«적 개성» 독사)와 lay-main-mine(«전투 세기» 76%) 두 게임이 나빠졌고, 위 «자기 기술이 있는 종만»·«마릿수 줄이기» 가 그 원인을 고친 것이다. 수치는 화면 미검증 — 화면은 r1w-fun 한 판을 봤다.
+렌더러 수리 뒤 다시(main 004cf1a10a → 이 변경, 2026-11-12): 자동 플레이 엔딩 도달 9/10 → 9/10 · 정직한 플레이 9/10 → 9/10 · 나빠진 칸 없음 · 끝맺음 관문이 짚은 문제 165 → 156 · 할 일 막힘 78 → 76 · 출하 차단 10 → 10 · 없는 그림 줄 24 → 128 · 길 위 전투 뒤 레벨 82 → 75. 은행의 맵 그림에서 현행 적이 보인다(jrpg-w1 서리 절벽의 회색 늑대·큰 늑대, 얼음 동굴의 박쥐 — 세 칸을 잘라 봤다; 고치기 전 렌더러는 그 칸에 아무것도 그리지 않았다).
+
+**그릴 목록**(현행 그림이 없어 대역이 선 종 — 세계별, `[art-gap]` 줄의 `wanted`):
+
+| 세계 | 없는 종 |
+|---|---|
+| 선사 시대 | 공룡(랩터·트리케라톱스) · lizardman-spear · tiger-saber · behemoth-horn · dragon-whelp · salamander-flame · centipede-fire · bear-brown |
+| 북방 설원 | bear-brown · goat-mountain · lich-frost · slime-blue |
+| 사막 동방 | scorpion-sand · worm-sand · mummy-bandage · totem-cursed · skeleton-bone · bonepile-crawler |
+| 해적 군도 | lizardman-spear · squid-deep · shark-land · skeleton-knight · skeleton-bone |
+| 하늘섬 | harpy-cliff · sylph-air · spirit-wind · spirit-light · griffin-sky · roc-giant · gargoyle-stone |
+| 증기 도시 | rat-giant · puppet-string · sword-flying · armor-living |
+| 전국·에도 | 사무라이·닌자·요괴 · cat-shadow · armor-living · ogre-club · knight-fallen |
+| 우주 정거장 | 경비 로봇·드론·외계 생물 · slime-metal · sword-flying |
+| 황무지 | zombie-rot · ghoul-grave · rat-giant · behemoth-horn · ogre-club |
+
+대역 표에도 없는 종: mimic-chest · scarecrow-field. 현행 세트에 있지만 기본 DB 에 적 기록이 없어 v2 가 못 쓰는 그림: jelly-lantern · leafling-01 · snake-01 · well-olm · yeti-frost(『폴른 스타』 전용 적).
+남은 것: 모델이 `upsert_enemy`·`upsert_troop` 으로 직접 고른 구형 그림 적은 그대로 선다(끝맺음이 없는 그림 줄만 남긴다) · `author_dungeon` 을 직접 부른 던전의 주제 적(`dungeonThemeTroops`)은 v2 빌더를 거치지 않는다 · 몬스터 수집 장르의 종 그림은 다른 세트다. 시험 `test/aiV2CurrentFoes.test.ts` · `test/aiV2PlaceTheme.test.ts`.
+
 ## 맵은 목적으로 깐다 — 목적표(역할 건물 · 채움 집 · 건물 수에서 나오는 크기), 사막 번들부터 (2026-11-11)
 
 **문제(오너 2026-11-11 «초록 네모가 전부 문이 맞기는 한데 ..», 「맵은 목적으로 깐다 — 공간이 남으면 너무 큰 것」).** 세계 장소는 종류마다 고정 크기로 지어져 집 줄을 끝까지 채웠다.
@@ -2237,6 +2293,36 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   8318 중계기는 스트림에 사용량을 싣지 않고(비스트림은 prompt_tokens 1) — 토큰은 이 기록의 글자 수를 DeepSeek 실측(inferhub 는 사용량을 준다)으로 보정해 추정한다(입력 약 3.0자/토큰).
 - 비용 주의: Claude Code 의 `total_cost_usd` 는 claude-haiku-5-5 를 Opus 단가로 매긴다(실측 $2.28 = 같은 토큰 × Opus 정가). Haiku 는 토큰 × 공개 정가($0.10/$0.50)로 센다.
 - 결과 페이지 `~/claude-viz/cheap-model-check.html`.
+
+## 게임마다 한 가지 모습 — 같은 종류의 다른 그림을 게임 열쇠로 고른다 (2026-11-12)
+
+오너: «근데 보고있으면 모든 게임을 비슷하게 생성하니 동일 카테고리의 오브젝트들을 다양하게 생성하는 게 좀 필요할듯. 버들항부터 해봐».
+
+**잰 것(모델 없음, `bun scripts/content/beodeul-variety/measure.mts --out <json> <판 폴더…>`)**: 맵의 칸에서 소품 킷의 칸 행렬을 찾아 «어느 그림이 몇 번 놓였나» 를 센다. 종류 = 킷 이름의 끝 낱말(이름 찾기 `existingMatches` 가 묶는 것과 같은 묶음 — 낱말 목록이 아니다).
+저장된 조수 게임 11편: 마을·들 기물 46종류 · 놓임 2,483 · 놓임 가중 top-1 몫 51% · **게임 사이 같은 그림 90%**(던전 기물 97%). 우물·벤치·이정표·제단·모닥불·화로는 그림이 한 장이라 100%.
+고르는 곳을 따라가 보면(`beodeulVillage.ts` THEMES 목록 · `authorBeodeulTown.ts` PARK_PROPS · v2 `deadEndRoads.ts` SIGN · `story/stepArt.ts` ALTAR · `draw_object` 의 첫 일치) 고정 id 이거나, 씨앗으로 고르더라도 **그 종류의 그림이 하나뿐**이었다. 같은 마을 요청을 게임 여섯으로 지으면 여섯 장이 화소까지 같았다.
+
+**규칙**
+- 킷은 `ai.variantOf`(원본 킷 id)로 «같은 종류의 다른 그림» 임을 밝힌다. 변형은 원본과 칸 크기·막힌 칸이 같고 원본이 비운 칸에 그림을 두지 않는다(버들항 굽기가 맞춰 본다, `openwiki/beodeul-city.md` 「기물 종류별 변형」).
+- 고르는 자리는 **킷 칸을 맵에 쓰는 네 곳**이다 — `lookKit(tileset, kit)`(`src/project/kitLook.ts`): 놓기 도구 둘 `stamp_object`(`resolveObject`) · `stamp_tileset_object`(`findObject` 뒤), 버들항 던전 구성기의 기물 놓기 `put()`(`dungeonKit/beodeul/compose.ts`), 들길 실행기의 직접 찍기 `stampKitDirectSteps`(`stampPlaceRunner.ts`). 마을 구성기·v2 빌더·`place_object`·이름으로 찾은 기물(«우물»)은 앞의 둘을 지난다. 빌더 쪽 id 목록은 고치지 않았다.
+  뒤의 둘은 명세 은행이 찾았다: 놓기 도구 둘만 걸었을 때 화로 19곳·모닥불 7곳·제단 4곳이 게임마다 여전히 같은 그림이었다(칸을 직접 쓰는 길). 킷을 직접 쓰는 길을 새로 만들면 `lookKit` 을 지나게 한다 — 안 그러면 그 길의 기물만 모든 게임이 같다.
+- 열쇠 = 요청의 `projectKey`(v2 `placeVariety` 가 이미 쓰는 그 게임 열쇠). `piAgentRuntime` 이 `ToolContext.lookKey` 로 싣고, 실행기(`toolRunner.withCharsetCatalog`)가 도구 실행 구간 동안 `withKitLook` 으로 켠다(`withMonsterTurn` 과 같은 방식 — `run(draft,args)` 는 ctx 를 못 받는다). **조수 실행(`assistantRun`)만** 켠다: 사람 편집·열쇠 없는 스크립트는 고른 킷 그대로다.
+- 고르기 = `lookHash("look|<열쇠>|<원본 id>") % [원본, …변형]`. 한 게임 안에서는 어느 맵에서나 같은 그림(그 게임의 우물), 게임이 다르면 갈린다. 종류마다 따로 갈린다(FNV 끝에 섞기를 더했다 — 없으면 변형 수가 같은 종류들이 같은 순번으로 묶였다).
+- 변형 id 를 직접 댄 요청은 바꾸지 않는다. 변형이 없는 킷은 그대로다 — 변형을 구운 칩셋(지금은 버들항)에서만 달라진다.
+- 이름 찾기: `existingMatches` 는 원본이 같거나 더 잘 맞으면 그 변형 줄을 뺀다 — «우물» 은 원본 킷을 이르고(놓을 때 그 게임의 그림이 된다), 변형만의 낱말(«펌프», «돌 벤치»)은 그 변형을 이른다.
+- **프롬프트·도구 설명은 바뀌지 않았다**(골든 같음, 프롬프트 예산 그대로). 모델은 여전히 원본 id 를 쓴다. `stamp_tileset_object` 결과의 `objectId` 가 실제로 찍힌 킷이다. 기물 목록 도구(`list_tileset_objects`)에는 변형 킷이 따로 보인다 — 특정 그림이 꼭 필요하면 그 id 를 직접 댄다.
+
+**증거(모델 없음)**
+- 여섯 게임: `bun scripts/content/beodeul-variety/sixSeeds.mts <폴더> --tag after --theme river|coast` — 같은 마을 요청(같은 장소 씨앗)을 프로젝트 열쇠 여섯으로 진짜 빌더(`builderFor(spec).build` → `author_beodeul_town`)로 짓는다.
+  강가 42×42: 바닥 해시 1bb9da4a · 통행 격자 3110e0bc(걷는 칸 971) · 닿는 칸 926 이 **여섯 모두 같고** 위층 그림만 여섯이 다르다. 포구 84×38: 바닥 f7745e7e · 통행 353538b5(1,434) · 닿는 칸 1,334 같음 · 위층 여섯이 다름.
+  `--no-look`(열쇠 없음)은 여섯 장이 같은 그림이고, 고치기 전 main 의 그림과 화소까지 같다.
+  던전(`--theme temple|cave`)은 게임 열쇠로 이미 방 배치가 달라지므로 같은 게임을 끔/켬으로 견준다: 신전 여섯·동굴 여섯 모두 바닥·통행 격자·닿는 칸이 같고 제단·화로·모닥불 그림만 바뀐다(신전 보스 방의 흰 제단이 게임마다 나무 제사상·이끼 자연석·검은 돌).
+- 시험 `test/kitLook.test.ts`(시험이 만든 원본·변형 킷으로: 같은 게임 같은 그림 · 게임마다 갈림 · 종류마다 따로 · 직접 댄 변형·사람 편집·열쇠 없는 실행은 그대로 · 두 놓기 도구 · 통행 같음).
+- 명세 은행 `ab`(기준 origin/main): 게임 49(게임 10 + 장소 39), 두 번. ① 놓기 도구 둘만 건 나무(a@6bd64f8857 → b@f0640060df, 같은 기준): **«나빠진 칸 없음»** — 모든 칸이 전/후 같다. ② 네 곳을 다 건 나무(a@1991cb26d9 → b@4dd54d90d6): 도는 사이 main 이 여섯 커밋 앞서 가 a 쪽만 그것을 가졌다. 나빠진 줄 2개가 모두 fun-w1(할 일 끝 20/27 → 19/27 · 끝맺음 관문이 짚은 문제 30 → 31)인데, 게임별로 맞춰 보면 이 브랜치는 두 번 모두 19/27 · 31 로 옛 main 과 같고 **새 main 쪽만 20/27 · 30 으로 바뀌었다**(#4656 앞의 길 안내 수리가 b 에 없었다 — 이 변경 탓이 아니다). 이 변경으로 움직인 칸은 «저장본과 타일이 같은 맵» 20 → 16 하나: jrpg-w2·jrpg-x1 의 숲·동굴·신전이 이제 변형 기물을 찍는다(뜻한 바). 맵 그림 104장 가운데 버들항 22장이 1~61칸 다르다(소품 그림만 — 시장 마을·왕궁·신전 보스 방을 나란히 놓고 봤다), 나머지 다른 3장은 fun-w1 의 스팀펑크 지붕(main 의 변경). 은행의 버들항 맵 22장에서 마을·들 기물은 게임 사이 같은 그림 84% → 71%, 놓임 가중 top-1 49% → 46%(놓임 1,653 그대로) · 모닥불 7곳은 그림 1 → 3장, 제단 4곳은 1 → 2장. 수치는 화면 미검증 칸이다.
+- 골든: «같다 (157 요청)»(기준 origin/main 6bd64f8857) · 범위 tsc `new 0`.
+
+**하지 않은 것 / 남은 것**: v2 `place_object` 요약 글은 원본 id 를 말한다(그림은 변형). 마을 칸 배치 목록(`bboxVillageCatalog`)은 원본만 싣는다. 변형은 버들항 20종류뿐 — 다른 칩셋·던전 기물(벽 횃불·석순)은 그대로다. 킷 칸을 직접 쓰는 다른 길(데모 저작 스크립트 `flagship/*` 등)은 걸지 않았다 — 조수 실행이 아니다.
+집·바닥·나무·마을 문법은 그대로라 **게임들은 여전히 많이 닮았다**(42×42 강가 마을에서 사람이 만든 소품은 열 개 남짓이다).
 
 ## 워커 루프에 차례 주기 — 30초 넘는 침묵 없이 (2026-11-12)
 
