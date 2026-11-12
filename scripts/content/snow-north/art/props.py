@@ -908,6 +908,13 @@ def _(c):
     c.line(9, 6, 14, 0, 'log', 4); c.P(14, 0, 'log', 2); c.ell(8.5, 6.5, 1.2, 0.8, lambda X, Y, dx, dy, d: ('log', 3))
 
 
+# ── 2026-11-12 Fable 5.2 한 방 기물(오너가 fable-oneshot-2026-11-12 로 먼저 받은 것). 그림은 fable/anchors/ 의 PNG 가 정본이다(draw 없음).
+_none = lambda c: None
+R.add('seal-altar', '봉인 제단(오로라 빛 고리가 새겨진 돌 제단)', 2, 2, 'box', tags=['제단', '봉인', '유적'], rules='유적·동굴 입구·성소 한가운데. 앞 1칸 비움.')(_none)
+R.add('spring', '얼지 않는 샘(눈 얹힌 돌 둘레, 김 오르는 물)', 2, 2, 'container', tags=['샘', '물', '온천'], rules='마을 변두리·숲속 빈터. 둘레 1칸 비움.')(_none)
+R.add('bundle', '꾸러미(가죽에 싸서 붉은 끈으로 묶음)', 1, 1, 'box', tags=['꾸러미', '짐', '소포'], rules='문 앞·썰매 곁·노점 곁.')(_none)
+
+
 def sheet(path=None, z=3):
     items = [(it['id'], R.render(it).img()) for it in R.items]
     return contact(items, path or os.path.join(OUT, 'props', 'preview.png'), z=z, W=2000, bg=(214, 222, 236))

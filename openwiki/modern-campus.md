@@ -159,6 +159,17 @@ FAIL 둘은 **3/4 관문 미통과** — 굽지 않는다. 교훈: 윗면과 앞
 
 배선은 첫 판과 같다: `bundled.ts`·`bundledChipsetGeometry.ts`·`defaultAssets.ts`·`modernCampus.ts`·`concepts/format.ts`·`seed.json`·`startRoutePaint.ts`·`tilesetFamily.ts`(`oprn-campus`). `defaultMaps.ts` 의 빈칸 잔디는 1번이다.
 
+## 직각 지붕 다시 그리기 (2026-11-12, 오너 지시)
+
+오너 2026-11-12: «이 에디터는 시야각이 직교해야하므로 sengoku_edo se-machiya-a 이런 식의 직각 지붕이어야». 오너가 이름으로 짚은 칩셋은 아니지만 같은 측정(지붕 기울기, 모델 없음)에서 사다리꼴(우진각) 지붕 8채가 모두 11px 로 걸렸다.
+
+- Claude Fable 5.2 medium 한 방으로 **지붕만** 다시 그렸다(벽·문은 코드 그림 그대로): `mc-bld-hall-6`·`hall-7`·`hall-9`·`hall-12`·`dorm-5`·`dorm-7`·`gym`·`gym-green`. 11px → 0px. `gym`(160px 폭)은 줄 길이가 4자 틀려 두 번째 호출까지 썼다.
+- 덮어쓰기: `tiledata/modern-campus/fable-roofs/<조각>.png` + `index.json` → `art/kit.py` 내보내기가 `scripts/content/lib/fable_roofs.py` 로 코드 그림 위에 덮는다.
+- 관문: **3/4 관문 미통과 — 오너 면제** 묶음 `fable-redraw-roofs-modern-campus-2026-11-12`(bundle·shared, 스토어 제외). `theme_bake.gate_status` 가 면제된 그림을 받는다. 통과가 아니다.
+- 칸(jp_city 와 같은 규칙): **옛 칸은 옛 그림 그대로, 다시 그린 지붕은 시트 끝의 새 칸**(964 → 1132, 새 칸 168)이고 그 8채의 키트만 새 칸을 가리킨다 — 이미 깔린 맵은 전과 똑같고 새로 찍는 건물만 새 지붕이다. `theme_bake.Outdoor.keep_old_cells(옛 시트)` 를 `bake_mc.py` 가 부른다(부르지 않는 굽기는 예전 동작 그대로 — `put` 의 새 갈래는 `old_sheet` 가 있을 때만 탄다). 검사(모델 없음, `~/z-project/assistant-fable-runs/redraw/roofs/laid_check.py`): 옛 칸 964개 중 새 시트에서 화소가 달라진 칸 0 · 옛 칸 통행/우선순위 변화 0 · 옛 건물 키트 18채를 찍은 맵(14×176칸)의 옛 시트/새 시트 그림 차이 0화소 · 두 번 구워 시트·정의·핀 해시 동일. 고딕 저택(`bake_gm.py`)은 이 파일을 불러 쓰지 않는다(jp_city `bake_lib` 를 쓴다) — 이 가지에서 다시 구워 시트·정의 해시가 그대로임을 확인했다.
+- **같이 딸려 온 것(지붕 아님)**: 캠퍼스 실내가 빌려 쓰는 jp 학교 계단 두 키트(`mc-in-sc-stairs-up`·`mc-in-sc-stairwell-down`)는 원본 그림이 #3270(2026-10-23, 올라가는/내려가는 방향이 보이는 계단)에서 바뀌었는데 캠퍼스 시트는 그 뒤로 구운 적이 없었다. 이번 굽기에서 그 두 키트도 새 칸 12개(지금 원본 그림)를 가리킨다. 옛 칸 911~922 는 옛 계단 그대로이고, 옛 칸과 새 칸의 통행·우선순위·지형 값은 자리마다 같다.
+- 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
+
 ## quality-b 화풍 보정 (2026-10-14) — 버들항 수준 맞추기
 
 - 바꾼 것: 학교·체육관 벽 미색 칠 + 1층 벽돌 허리벽, 평지붕 초록 우레탄(판 이음·파라펫 그늘), 체육관 파란 골판, 잔디·운동장 흙·콘크리트 길 결,

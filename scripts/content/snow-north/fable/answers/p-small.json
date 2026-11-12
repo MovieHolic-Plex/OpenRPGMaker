@@ -1,0 +1,82 @@
+{
+"id": "p-small",
+"w": 64,
+"h": 16,
+"role": "object",
+"shot": 1,
+"legend": {
+"a": "ink:0",
+"b": "log:0",
+"c": "log:1",
+"d": "log:2",
+"e": "log:3",
+"f": "log:4",
+"g": "stone:0",
+"h": "stone:1",
+"i": "stone:2",
+"j": "stone:3",
+"k": "ink:1",
+"l": "hide:2",
+"m": "snow:2",
+"n": "snow:3",
+"o": "snow:1",
+"p": "shade:1",
+"q": "ice:1",
+"r": "ice:2",
+"s": "shade:0",
+"t": "hide:1",
+"u": "pine:0",
+"v": "hide:0"
+},
+"rows": [
+"............aea.....................aaaaaaaa..l......annfea.....",
+"...........aeda.....kkkkkkkkkk....aaffeeeeffaal.....anmlfeda....",
+"...kkk....aeda...kkkjjjjjjjjijk..afeakkkkkkaeld.....apfecdca....",
+"..kjjihkaeda....kjjjjiijjiiiiihkafeaqrqquuukleda.....adccba.....",
+"..kjiihgka.......kkiiiiiiiiiihhkafakruuuuuuuvada.....annfea.....",
+"...aakjihgkaa......kkhhhhhhhhhgkafeakuusuuukadca....anmlfeda....",
+".aaffkiihgkffaa......khhghhhgggkadfeakkkkkkaedca....apfecdca....",
+"aflfeekihgkeeffa......kkhhggkk..acdffeeeeeeddcba.....adccba.....",
+"afleddekgkddefea.......khigk....aedcfedcedcedcba.....annfea.....",
+"afledceddcdeefea...aakkhiggkkaa.ajiihihhihhghgga....anmlfeda....",
+"acffeedddeeeffca..aflkhhhhggkea.afdbfdbedbedbcba....apfecdca....",
+"adccffffffffccba..aeffkkkkkkfda.afdbfdbedbedbcba.....adccba.....",
+"adecccccccccdcba..adeeffffffdca.aedbedbedbdcbcba.....annfea.....",
+"aedcdecdcdbcdcba..adcdecdcdbcba.ajiihihhihhghgga....anmlfeda....",
+".adcdecdcdbcdba...adcdecdcdbcba..adbedbedbdcbba.....apfecdca....",
+"..aaaaaaaaaaaa.....aaaaaaaaaaa....aaaaaaaaaaaa.......adccba....."
+],
+"door": null,
+"cells": [
+{
+"name": "chopping-block",
+"x": 0,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "anvil",
+"x": 16,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "water-barrel",
+"x": 32,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "palisade-v",
+"x": 48,
+"y": 0,
+"w": 16,
+"h": 16
+}
+],
+"broken": false,
+"defects": []
+}

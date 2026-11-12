@@ -1,0 +1,83 @@
+{
+"id": "g-wet",
+"w": 32,
+"h": 32,
+"role": "ground",
+"shot": 1,
+"legend": {
+"a": "grey:1",
+"b": "grey:0",
+"c": "grey:2",
+"s": "snow:0",
+"w": "water:0",
+"v": "water:1",
+"i": "ice:0"
+},
+"rows": [
+"aaaaaaaaaaaaaaaawwwwwwwwwwwwwwww",
+"aaabbbaaaaaaaaaawwwwwwwwwwwwwwww",
+"aabbbbbaaaaccaaawwvvvvwwwwwwwwww",
+"aaabbbbaaaacsaaawwwwwwwwwwwwwwww",
+"aaaaabaaaaaaaaaawwwwwwwwwwwvvvww",
+"aaaaaaaaaaaaaaaawwwwwwwwwwwwwwww",
+"acaaaaaaabbaaaaawwwwwwwwwwwwwwww",
+"aaaaaaaabbbbbaaawwwwwviiwwwwwwww",
+"aaaaaaaaabbbbbaawwwwwwwwwwwwwwww",
+"aaaccaaaaaabbaaawwwwwwwwwwwwwwww",
+"aaacaaaaaaaaaaaavvwwwwwwwwwwwvvv",
+"aaaaaaaaaaaaaacawwwwwwwwwwwwwwww",
+"bbaaaaaaaaaaabbbwwwwwwvvvvwwwwww",
+"bbbaaaacaaaabbbbwwwwwwwwwwwwwwww",
+"baaaaaaaaaaaaabbwwwwwwwwwwwwwwww",
+"aaaaaaaaaaaaaaaawwwwwwwwwwwwwwww",
+"aaaaaaaaaaaaaaaawwwwwwwwwwwwwwww",
+"aaaaaaaaaabaaaaawwwwwwwwwvvvvvww",
+"aaaaaaaaabbbaaaawwwwwwwwwwwwwwww",
+"aacaaaaaaabbaaaawwwwwwwwwwwwwwww",
+"aaaaaaaaaaaaaaaawwwwwwwwwwwwwwww",
+"aaaaabbbbaaaaaaawvvvwwwwwwwwwwww",
+"aaaabbbbbbaaaaaawwwwwwwwwwwwwwww",
+"aaaabbbbbaaaaaaawwwwwwwwwwwwwwww",
+"aaaaaabbaaaaacaawwwwwwwwvvvvvvww",
+"aaaaaaaaaaaaaaaawwwwwwwwwwwwwwww",
+"abbaaaaaaaaaaaaawwwwwwwwwwwiwwww",
+"bbbbaaaaaaaaaaabwwwwwwwwwwwwwwww",
+"abbaaaaaascaaaaawwwwwwwwwwwwwwww",
+"aaaaaaaaaaaaaaaawwwvvvvwwwwwwwww",
+"aaaaaaaaaaaabaaawwwwwwwwwwwwwwww",
+"aaaaaaaaaaaaaaaawwwwwwwwwwwwwwww"
+],
+"door": null,
+"cells": [
+{
+"name": "slush",
+"x": 0,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "water",
+"x": 16,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "slush-b",
+"x": 0,
+"y": 16,
+"w": 16,
+"h": 16
+},
+{
+"name": "water-b",
+"x": 16,
+"y": 16,
+"w": 16,
+"h": 16
+}
+],
+"broken": false,
+"defects": []
+}

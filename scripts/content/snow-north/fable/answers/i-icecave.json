@@ -1,0 +1,88 @@
+{
+"id": "i-icecave",
+"w": 48,
+"h": 32,
+"role": "object",
+"shot": 1,
+"legend": {
+"a": "ink:1",
+"b": "shade:0",
+"c": "ice:0",
+"d": "ice:1",
+"e": "ice:2",
+"f": "snow:3",
+"g": "aurora:0",
+"h": "log:0",
+"i": "log:1",
+"j": "log:2",
+"k": "stone:0",
+"l": "stone:1"
+},
+"rows": [
+"..................................aaaaaaaaaaaaaa",
+"....................aaaaaaaa....aeffeeeeeeeeedda",
+".......aa..........aeeffffeea...aefeeiiiiiiieeda",
+"......aefa........aeffffeeeeda..aeeeijjjjjjiedca",
+".....aeefba.......aeffeeeeeeda..aeedijjjjjjiddca",
+".....aeedcba......adeeeeeeedda..aeeeeeeeeeeeddca",
+"....aeeddcba......acddeeeeddca..addihhhhhhhhicba",
+"....aeedgcba......aeccddddccba..adcijjjjjjjjicba",
+"....aeddgcba......aedcedcdcbba..aecijijjjjijicba",
+"....aeddgcba......afdcedcdcbba..aechhhhkkhhhhcba",
+"....aeddgcba......afdcedcdcbba..adciiiilliiiicba",
+"....aeddgcba.aa...aedcddcdcbba..adcijiiiiiijicba",
+"....aeddgcbaaeda..aedcedcdcbba..adcihhhhhhhhicba",
+"....aeddgcbaedba..aedcedcccbba..addccccccccccbba",
+".aa.aeddgcbaedba..aedceddbcbba..adccdccccdccbbba",
+"aefaaeddgcbadcba..afdcedcdcbba...aaaaaaaaaaaaaa.",
+"aeedaeddgcbadcba..afdcedcdcbba..................",
+".aedaeddgcbadca...aedcedcdcbba..................",
+".aedaeddgcbadca...aedcddcdcbba..................",
+"..aedaddgcbadba...aedcedcdbbba......aa..........",
+"..aedaddgcbacba...aedcedcdcbba.....afea.........",
+"..aedcaddcbacba...afdcedcdcbba.....afdba........",
+"..aeddadaabacba...aedcedcdcbba.....aedba........",
+"..aeddaaefaacba...aedcddcdcbba....afedcba.......",
+"..aeddaeeddacba...aedcedcdcbba....afedcba.......",
+"..aedcaeedcbadba.aaedcedcdcbbaa...aeddcba..aa...",
+".aeedcaeedcbadba.aeeddeddddccba..afeddcbba.afa..",
+".aeddcaeedcbadcaaeeeddeedddccbba.afedccbbaaedba.",
+"aeeddcaeddcbadcaaeddcdedcdcdcbba.aeedcdcbaaedba.",
+"aeddcbaeddcbacbaaedccdedcdccbbbaafeddccbbafedcba",
+"addccbaedccbacbaadcccddccdcbbbbaaeedcdccbaeedcba",
+".aaaaaaaaaaaaaa..aaaaaaaaaaaaaa..aaaaaaaaaaaaaa."
+],
+"door": null,
+"cells": [
+{
+"name": "ice-crystal",
+"x": 0,
+"y": 0,
+"w": 16,
+"h": 32
+},
+{
+"name": "ice-pillar",
+"x": 16,
+"y": 0,
+"w": 16,
+"h": 32
+},
+{
+"name": "frozen-chest",
+"x": 32,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "stalagmite-ice",
+"x": 32,
+"y": 16,
+"w": 16,
+"h": 16
+}
+],
+"broken": false,
+"defects": []
+}

@@ -357,7 +357,7 @@ const setProjectSettings: ToolDefinition = {
         additionalProperties: false,
       },
       startActorIds: { type: "array", items: { type: "string" } },
-      fieldGuides: { type: "string", enum: ["on", "off"], description: "off = 필드 자동 안내(목표 빛무리·화면 밖 목표 화살표, 인물·조사 대상 위 ▼)를 끈다. 출구 앞 목적지 글자·화살표는 없다(사용자 요청으로 삭제). 장면·대사가 갈 곳을 스스로 보여 주는 이야기 게임용 — 끄면 그만큼 장면에서 길이 보여야 한다. 저자가 단 page.glow·nearSparkle 은 남는다. on(기본) = 켜기" },
+      fieldGuides: { type: "string", enum: ["on", "off"], description: "off = 필드 자동 안내(목표 빛무리·화면 밖 목표 화살표, 인물·조사 대상 위 ▼)를 끄고, 목표 글의 「어디」 꼬리(「(… 입구: 서쪽 → 주술사)」)도 숨겨 목표 문장만 보인다. 조수가 지은 게임은 끄기로 출하된다 — 끄면 그만큼 장면·대사에서 길이 보여야 한다. 저자가 단 page.glow·nearSparkle 은 남는다. on = 켜기 — 사용자가 길 안내 화살표·표식을 달라고 했을 때만" },
       saveAccess: { type: "string", enum: ["anywhere", "savePoints"], description: "savePoints = 메뉴 「저장」을 없애고 세이브 포인트에서만 저장(place_savepoint 로 마을·쉼터·던전에 둔다). anywhere(기본) = 메뉴에서 언제든" },
       dialogue: {
         type: "object",
@@ -526,7 +526,8 @@ const setProjectSettings: ToolDefinition = {
     }
     // 옛 "arrows"(출구 화살표만)는 출구 표시를 지운 뒤 "off" 와 같다 — 들어오면 off 로 적는다.
     if (args.fieldGuides === "off" || args.fieldGuides === "arrows" || args.fieldGuides === "on") {
-      if (args.fieldGuides === "on") delete draft.system.fieldGuides; else draft.system.fieldGuides = "off";
+      // 켜기는 값으로 남긴다 — 생략이면 조수 v2 의 출하 기본값(끄기)이 다음 끝맺음에서 다시 끈다.
+      draft.system.fieldGuides = args.fieldGuides === "on" ? "on" : "off";
       changed.push(args.fieldGuides === "on" ? "필드 안내 표시 켬" : "필드 안내 표시 끔");
     }
     if (args.saveAccess === "savePoints" || args.saveAccess === "anywhere") {

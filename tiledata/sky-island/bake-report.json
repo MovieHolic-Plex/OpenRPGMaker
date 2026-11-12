@@ -5,11 +5,11 @@
   "pieces": 249
  },
  "tiles": {
-  "count": 668,
-  "rows": 14,
+  "count": 691,
+  "rows": 15,
   "sheetPx": [
    768,
-   224
+   240
   ],
   "strips": 35,
   "kits": 86,
@@ -20,7 +20,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 668,
+  "tiles_checked": 691,
   "kits_checked": 86,
   "groups_checked": 166,
   "autotiles_checked": 0

@@ -1,0 +1,39 @@
+{
+"unit": "bench",
+"name": "long bench",
+"w": 32,
+"h": 16,
+"cls": "prop",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:0",
+"b": "ink:1",
+"c": "s_hull:0",
+"d": "s_hull:1",
+"e": "s_hull:2",
+"f": "s_hull:3",
+"g": "s_hull:4",
+"h": "s_hull:5"
+},
+"rows": [
+".bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.",
+"beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb",
+"behhhhhhhhhhhhgddhhhhhhhhhhhhgeb",
+"behgggggggggggfddhgggggggggggfeb",
+"behgggggggggggfddhgggggggggggfeb",
+"behgfffffffffgfddhgfffffffffgfeb",
+"behgggggggggggfddhgggggggggggfeb",
+"behgggggggggggfddhgggggggggggfeb",
+"begfffffffffffeddgfffffffffffeeb",
+"beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb",
+"bedddddddddddddcadddddddddddddcb",
+"bdccccccccccccccacccccccccccccab",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"...bedcb................bedcb...",
+"..bfeedcb..............bfeedcb..",
+"..bbbbbbb..............bbbbbbb.."
+],
+"note": "Long lobby bench: two blue-grey seat pads on darker frame, low front edge, two short feet."
+}

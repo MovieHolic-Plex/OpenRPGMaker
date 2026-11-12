@@ -1,0 +1,38 @@
+{
+"unit": "g-deck-lane-v",
+"name": "corridor floor with a north-south guide light, 2 tiles",
+"w": 32,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "g_deck:0",
+"b": "g_deck:1",
+"c": "g_deck:2",
+"d": "g_deck:3",
+"e": "a_cyan:1",
+"f": "a_cyan:0",
+"g": "a_cyan:2"
+},
+"rows": [
+"aaaaaaaefaaaaaaaaaaaaaaefaaaaaaa",
+"adddddaefadddddcadddddaefadddddc",
+"adccccaefacccccbadccccaefacccccb",
+"adccccaefacccccbadccccaefacccccb",
+"adccccaefacccccbadccccaefacccccb",
+"adccccaefacccccbadccccaefacccccb",
+"adccccaefacccccbadccccaefacccccb",
+"adccccaefacccccbadccccaggacccccb",
+"adccccaefacccccbadccccageacccccb",
+"adccccaefacccccbadccccaefacccccb",
+"adccccaefacccccbadccccaefacccccb",
+"adccccaefacccccbadccccaefacccccb",
+"adccccaefacccccbadccccaefacccccb",
+"adccccaefacccccbadccccaefacccccb",
+"adccccaefacccccbadccccaefacccccb",
+"adbbbbaefabbbbbbadbbbbaefabbbbbb"
+],
+"note": "Deck plates with seam and lip, continuous cyan guide strip; tile 2 adds a bright arrow dot."
+}
