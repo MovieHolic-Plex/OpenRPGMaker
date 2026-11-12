@@ -45,13 +45,15 @@ function prints(project: Project): Map<string, string> {
   return outp;
 }
 const report: Record<string, unknown> = {};
+/** 참고문서 용도 beodeul-objects 가 있는가(문서 수/그림 수). */
+const refsOf = (ts: TilesetDef): string => { const c = (ts.referenceDocuments ?? []).find((cat) => cat.id === "beodeul-objects"); return c ? `docs ${c.documents.length} · images ${c.images.length}` : "없음"; };
 
 // ── 1. 새 프로젝트 ──
 const fresh = createBlankProject();
 const fc = fresh.tilesets.beodeul_city!;
 const freshGrafts = (fc.tileGrafts ?? []).map((g) => g.targetTile);
 report.fresh = {
-  cityKits: ownKits(fc).length, cityCount: fc.count, sheetTail: `${catalog.base}..${catalog.count - 1}`, firstBundleGraft: Math.min(...freshGrafts),
+  cityKits: ownKits(fc).length, references: refsOf(fc), cityCount: fc.count, sheetTail: `${catalog.base}..${catalog.count - 1}`, firstBundleGraft: Math.min(...freshGrafts),
   kitCellsMatchCatalog: catalog.items.every((it) => JSON.stringify(ownKits(fc).find((k) => k.id === it.kit)?.rows.map((r) => r.upperTiles)) === JSON.stringify(it.rows)),
   tablesMatchCount: ["passability", "priority", "terrain", "tileMeta"].every((k) => (fc as unknown as Record<string, unknown[]>)[k]!.length === fc.count),
 };
@@ -97,9 +99,11 @@ const again = structuredClone(store.loadSnapshot()!.project) as Project;
 store.close();
 const countSaved = again.tilesets.beodeul_city!.count;
 const kitsSaved = JSON.stringify(ownKits(again.tilesets.beodeul_city!));
+const refsReopened = refsOf(again.tilesets.beodeul_city!);
 ensureBundledTilesets(again);
 report.existing = {
   source, kitsAsLoaded: hadBefore, kitsAfterEnsure: ownKits(project.tilesets.beodeul_city!).length,
+  referencesAfterEnsure: refsOf(project.tilesets.beodeul_city!), referencesReopened: refsReopened,
   cityCountAsLoaded: countBefore, cityCountAfterEnsure: project.tilesets.beodeul_city!.count, graftsKept: (project.tilesets.beodeul_city!.tileGrafts ?? []).length === graftsBefore,
   firstLocalGraftAfterEnsure: Math.min(...(project.tilesets.beodeul_city!.tileGrafts ?? []).map((g) => g.targetTile)),
   mapsWhosePicturesChanged: changedMaps, save: saved.kind,
