@@ -135,6 +135,17 @@ export function fillStaleObjectives(project: Project): string[] {
 }
 
 /**
+ * 필드 안내(주인공 곁 화살표 · 목표 대상의 빛무리 · 머리 위 ▼ · 목표 글의 「어디」 꼬리)는 끈 채로 출하한다 — 켜기·끄기를 아무도 고르지 않았을 때만.
+ * 끄는 것은 그리기뿐이다: 목표 명령의 글과 대상(target)은 그대로 두어 자동 플레이·검사가 같은 대상을 따라가고, 켜면(set_project_settings{fieldGuides:"on"} ·
+ * 자료집 「필드 안내 표시」) 그대로 돌아온다. 왜: 화살표로 길을 다 알려 주는 게임은 걷는 일이 남지 않는다(오너 2026-10-30 · 2026-11-12).
+ */
+export function quietFieldGuides(project: Project): string[] {
+  if (project.system.fieldGuides !== undefined) return [];
+  project.system.fieldGuides = "off";
+  return ["필드 안내 끔(화살표·대상 표식·목표 글의 「어디」 꼬리 — 목표 문장만 보인다)"];
+}
+
+/**
  * 맵에 들어올 때마다 도는 페이지(장면 분위기)에 걸린 시작 목표를 한 번만 도는 자리로 옮긴다(planObjective at:start 가 그 페이지에서 빼고 다시 건다).
  * 왜(2026-10-29 vm2 deepseek 방탈출 A6): 열쇠를 얻고 저장 → 불러오기 하자 분위기 페이지가 다시 돌며 「일지를 읽자」로 되돌렸다.
  */

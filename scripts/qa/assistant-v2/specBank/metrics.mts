@@ -48,6 +48,7 @@ export const METRICS: readonly { key: string; label: string; better: "up" | "dow
   { key: "artGaps", label: "없는 그림 줄(art-gap)", better: "none" },
   { key: "missingArt", label: "그림 없음 줄(전부)", better: "none" },
   { key: "hudUnusedGauges", label: "HUD 의 안 쓰는 게이지", better: "down" },
+  { key: "guidesOff", label: "필드 안내 끔(화살표·표식·목표 꼬리 없음)", better: "up" },
   { key: "maps", label: "맵", better: "none" },
   { key: "events", label: "이벤트", better: "none" },
   { key: "replayPlayed", label: "재생한 호출/전체", better: "none" },

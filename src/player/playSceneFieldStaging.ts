@@ -24,7 +24,7 @@ import {
 import { mapTileSize } from "@/project/tileGeometry";
 import { store } from "@/project/store";
 import { runtimeEventViewById, runtimeEventViewsForMap } from "@/project/runtimeEventState";
-import { objectiveTargetViews } from "@/player/objectiveTarget";
+import { fieldGuidesOn, objectiveTargetViews } from "@/player/objectiveTarget";
 import { objectiveArrowAim, objectiveRoute, type ObjectiveRoute } from "@/player/objectiveRoute";
 import { currentObjective } from "@/player/zoneFeedback";
 import { spentPage, storyPerson, STORY_PERSON_RADIUS } from "@/player/examineTargets";
@@ -505,8 +505,7 @@ export function updateFieldStaging(scene: PlaySceneContext): void {
   // 저자가 안내 표시를 껐으면(system.fieldGuides "off"·"arrows") 목표 빛무리·화살표와 자동 조사 ▼ 를 그리지 않는다.
   // 저자가 단 page.glow·nearSparkle 은 그대로 둔다(위 두 줄). 출구 앞 「→ 목적지」 글자·화살표는 2026-11-01 사용자 요청
   // (폴른 스타 1.26 「문앞이나 이동하는 곳 앞에서 다음 위치뜨는거 … 진짜 별로다. 삭제해줘」)으로 기능째 지웠다 — "arrows" 는 저장본 호환용으로 "off" 와 같다.
-  const guides = store.getCurrent().system.fieldGuides;
-  if (guides === "off" || guides === "arrows") clearFieldGuides(scene);
+  if (!fieldGuidesOn(store.getCurrent())) clearFieldGuides(scene);
   else {
     syncObjectiveMarkers(scene, now);
     syncExamineMarkers(scene, now);
