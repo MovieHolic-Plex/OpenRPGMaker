@@ -37,6 +37,7 @@ import { isRetiredResourceId } from "@/assets/retiredAssets";
 import { FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
 import { SHARED_PORTRAIT_ASSETS, resolveSharedPortraitUrl } from "@/assets/sharedPortraitAssets";
 import type { GeneratedAssetManifest } from "./generatedAssetManifest";
+import { FIELD_BATTLE_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import type { Project } from "@/project/types";
 
 const FALLBACK_SKIN_ENEMY_URL = PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-01"]!;
@@ -59,6 +60,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   ...Object.fromEntries(BATTLE_SCENERY_CATALOG.map((entry) => [entry.resourceId, `/${entry.preview}`])),
   // 장소 그림(한 장짜리 번들 전투 배경, battle-backdrop 하네스 build --bundle). 여기 실려야 검증·고르기 목록·내보내기가 알아본다.
   ...Object.fromEntries(BATTLE_SCENERY_STILLS.map((still) => [still.resourceId, `/${still.image}`])),
+  // «그 맵 그대로» 전투 배경 표지 — 그림 파일이 없다(런타임이 필드 화면을 찍어 깐다). 알려진 id 로만 싣는다.
+  [FIELD_BATTLE_BACKGROUND_ID]: null,
   // 도트 측면 전투의 도트 효과 시트(anim_px_* 레코드가 쓴다).
   ...RETRO_PIXEL_FX_URLS,
   // 몬스터 수집 오프닝 애니메틱의 맵 배경(별빛섬 맵을 1:1 로 구운 그림).

@@ -34,6 +34,7 @@ import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { emeraldBattleTerrain } from "@/battle/emeraldBattleTerrain";
+import { isFieldBattleBackdrop } from "@/battle/battleBackdrop";
 import { monsterSkillIds, previewMonsterEvolution, replacePendingMonsterSkill } from "@/project/monsterCollection";
 import { playEmeraldEvolutions } from "@/player/emeraldEvolutionScene";
 import { playEmeraldMoveLearns, type EmeraldMoveLearnDecision } from "@/player/emeraldMoveLearnScene";
@@ -251,8 +252,9 @@ export async function playBattle(
         ? computeOnFieldAnchors(scene as unknown as OnFieldScene, fieldCanvas, step.ownerEventId, mapTileSize(scene.map))
         : undefined;
       // 필드 배경 스냅샷에도 주인공·동료·시비 건 적이 찍히면 같은 캐릭터가 배틀러와 두 번 보인다(CT 감사 캡처) — 둘 다 숨긴 뒤 찍는다.
-      const restoreOnFieldSprites = onFieldAnchors || project.system.battleBackdrop === "field" ? hideOnFieldSprites(scene as unknown as OnFieldScene, step.ownerEventId) : () => {};
-      const fieldBackdrop = project.system.battleBackdrop === "field" || onFieldAnchors !== undefined;
+      // 맵(또는 트룹)이 «그 맵 그대로» 표지를 골랐으면 그 전투만 같은 길로 간다 — 그 장소에 맞는 배경 그림이 없는 맵.
+      const fieldBackdrop = project.system.battleBackdrop === "field" || onFieldAnchors !== undefined || isFieldBattleBackdrop(runtime.snapshot().backdropResourceId);
+      const restoreOnFieldSprites = fieldBackdrop ? hideOnFieldSprites(scene as unknown as OnFieldScene, step.ownerEventId) : () => {};
       const fieldSnapshot = fieldBackdrop ? captureFieldSnapshot(scene.game) : Promise.resolve(undefined);
       const newTransition = (): BattleTransition => onFieldAnchors
         ? instantBattleTransition()
