@@ -15,6 +15,8 @@ import type { Project } from "@/project/types";
 import { sameFamilyTilesets, tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
 import { assertGenreLock, enforcingGenreLock, GENRE_LOCK_EXEMPT_TOOLS, GenreLockError, genreLockAllowsTileset, genreLockDefaultTileset, genreLockHidesTool, genreLockHiddenToolMessage, markMonsterGenre, monsterMarkerTool, monsterToolStartsLock } from "@/project/genreLock";
 import { applyMonsterIntentStart } from "@/project/genrePresets";
+import { noteToolChosenGraphic } from "./toolChosenGraphics";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { isRomanceTitleTarget, romanceTitleMismatch, romanceTitleMismatchMessage } from "@/project/romanceTitleArt";
 import { assertGenreLockCharsets, genreLockCharsetCatalogFilter, GenreLockCharsetError } from "@/project/genreLockCharsets";
 import { enforceGenreLockVisuals, genreLockVisualCatalogFilter, GenreLockVisualError, withGenreLockVisualCatalog, type VisualCatalogFilter } from "@/project/genreLockVisuals";
@@ -533,6 +535,9 @@ export function runToolDefinition(
     // 역방향 잠금: 일반 도구(set_encounter_table)는 몬스터 프로젝트·몬스터 요청 턴에서만 표지·키트 시작을 건다 — JRPG 의 랜덤 조우 한 줄이 프로젝트를 몬스터 게임으로 바꾸지 못하게 한다.
     const markerAllowed = !ctx.assistantRun || monsterAssetsAllowed(before, ctx);
     const lockProject: Project = ctx.assistantRun && markerAllowed && monsterToolStartsLock(name) && draft.system.genre === undefined && !draft.system.genreLock && applyMonsterIntentStart(draft).locked ? draft : before;
+    // 이 호출 안에서 잠금이 갈아 끼운 출연진 걷기 칩은 모델이 고른 것이 아니다 — 칩 관문(모델이 본 칩만)이 배우마다 되돌리지 않게 도구 선택으로 적는다
+    // (2026-11-12 셋째 묶음 Terra `trainer-sight-blank`: 빈 프로젝트의 place_trainer 가 배우 여덟 명의 칩으로 여덟 번 거절됐다).
+    if (lockProject === draft) for (const actor of draft.database.actors) if (actor.characterResourceId) noteToolChosenGraphic({ sprite: { type: "bundled", id: actor.characterResourceId }, pattern: charsetFrameIndex({ characterIndex: actor.characterIndex ?? 0, pattern: 0, direction: "down" }) });
     exec = withCharsetCatalog(ctx, lockProject, () => tool.run(draft, guarded?.args ?? normalizedArgs));
     // 몬스터 수집 전용 도구가 성공하면 장르 표지(system.genre)를 남긴다 — 잠금(빈 시작 맵에서만 걸린다)을 소급해 걸지 않는 대신 기록만 한다.
     if (markerAllowed && monsterMarkerTool(name, normalizedArgs)) markMonsterGenre(draft);

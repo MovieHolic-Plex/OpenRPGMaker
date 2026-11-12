@@ -4,6 +4,7 @@
 //   bun scripts/qa/assistant-v2/loopGaps.mts <project.json | 세션의 live.json> [seed]
 //   출력: [gap] N.Ns  <막히기 전 동사> → <돌아온 때 동사> · 맵마다 해시 · 끝줄 RESULT(max gap · ≥30s 수 · ≥10s 수 · 단계 기록 해시).
 //   전/후 대조: 두 커밋에서 같은 입력·씨앗으로 돌려 MAP·DB 줄과 stampsha 가 같아야 한다(청사진의 updatedAt 만 벽시계라 다르다).
+//   GUARD=1 이면 끝맺음 동안 타일셋·업로드 자산 항목을 얼리고 앞뒤 해시를 댄다(공유 사본을 쓰는 단계가 원본을 고치지 않는지).
 //   TASK=<요청 글>(기본 «모험 게임 하나 만들어 줘.»), DUMP=<파일> 이면 맵·DB·청사진을 JSON 으로 남긴다. 기계 부하에 따라 초는 달라진다 — 같은 때 나란히 돌려 비교한다.
 import fs from "node:fs";
 import { createHash } from "node:crypto";
@@ -39,16 +40,38 @@ const call = async (tool: string, args: unknown) => { phase = tool; const t0 = r
   if (!t) throw new Error(`no tool ${tool}`);
   const res = await t.execute(`c-${tool}`, args);
   const body = (res.content as { type: string; text?: string }[]).find((c) => c.type === "text")?.text ?? "{}"; let ok: unknown; try { ok = JSON.parse(body).ok; } catch { ok = body.slice(0, 80); }
+  if (ok !== true) console.log(`   ${tool}: ${body.slice(0, 700)}`);
   console.log(`== ${tool} ok=${ok} ${((realNow() - t0) / 1000).toFixed(1)}s`); await new Promise((r) => setTimeout(r, 300)); };
 await call("write_blueprint", { title: bp.title, genre: bp.genre, playerGoal: bp.playerGoal, places: bp.places, steps, ending: bp.ending, ...(bp.setting ? { setting: bp.setting } : {}) });
 await call("build_places", {});
 await call("build_blueprint_path", text.length ? { steps: text } : {});
+// GUARD=1: 끝맺음 동안 공유 사전(타일셋·업로드 자산 항목)에 아무도 쓰지 않는지 본다 — 마감 단계의 사본(cloneProjectSharingSharedDictionaries)은 그 항목을
+// 원본과 같이 가리키므로, 누가 제자리에서 고치면 «사본에서 고쳐 보기»가 원본을 바꾼다. 항목을 깊게 얼리고(쓰면 TypeError) 앞뒤 해시를 댄다.
+const guard = process.env.GUARD === "1";
+const sharedHash = () => createHash("sha256").update(JSON.stringify([env.ctx.project.tilesets, env.ctx.project.assets?.uploaded ?? {}])).digest("hex").slice(0, 16);
+const deepFreeze = (value: unknown, seen = new Set<unknown>()): number => {
+  if (!value || typeof value !== "object" || seen.has(value) || ArrayBuffer.isView(value)) return 0;
+  seen.add(value);
+  let n = 1;
+  for (const child of Object.values(value as Record<string, unknown>)) n += deepFreeze(child, seen);
+  Object.freeze(value);
+  return n;
+};
+let sharedBefore = "", frozen = 0;
+if (guard) {
+  sharedBefore = sharedHash();   // 글로 만들면서 지연 번들 타일셋도 되돌려진다 — 얼리기 전에.
+  for (const entry of [...Object.values(env.ctx.project.tilesets), ...Object.values(env.ctx.project.assets?.uploaded ?? {})]) frozen += deepFreeze(entry);
+}
 phase = "finish(autoBuild)"; { const t0 = realNow(); await runFinishAutoBuild(env, session); console.log(`== finish ${((realNow() - t0) / 1000).toFixed(1)}s`); }
 await new Promise((r) => setTimeout(r, 600)); clearInterval(timer);
+if (guard) {
+  const entries = [...Object.values(env.ctx.project.tilesets), ...Object.values(env.ctx.project.assets?.uploaded ?? {})];
+  console.log(`GUARD shared entries ${entries.length} (얼린 객체 ${frozen}) · 아직 얼어 있는 항목 ${entries.filter((e) => Object.isFrozen(e)).length} · hash ${sharedBefore} → ${sharedHash()} ${sharedBefore === sharedHash() ? "SAME" : "CHANGED"}`);
+}
 const p = env.ctx.project;
 const sha = createHash("sha256").update(JSON.stringify({ maps: p.maps, database: p.database, gameBlueprint: p.gameBlueprint, startMapId: p.startMapId })).digest("hex").slice(0, 16);
 console.log(`RESULT maps ${Object.keys(p.maps).length} · max gap ${(Math.max(0, ...gaps) / 1000).toFixed(1)}s · ≥30s ${gaps.filter((g) => g >= 30000).length} · ≥10s ${gaps.filter((g) => g >= 10000).length} · gaps ${gaps.length} · stamps ${stamps.length} · sha ${sha} · stampsha ${createHash("sha256").update(stamps.join("\n")).digest("hex").slice(0, 12)}`);
-const h = (v: unknown) => createHash("sha256").update(JSON.stringify(v)).digest("hex").slice(0, 10);
+const h = (v: unknown) => createHash("sha256").update(JSON.stringify(v) ?? "undefined").digest("hex").slice(0, 10);
 for (const m of Object.values(p.maps) as any[]) console.log(`MAP ${m.name} ${m.width}x${m.height} id=${h(m.id)} tiles=${h([m.layers, m.tiles, m.terrain, m.relief])} events=${h(m.events)} n=${(m.events ?? []).length} all=${h(m)}`);
 console.log(`DB ${h(p.database)} BP ${h(p.gameBlueprint)} start ${p.startMapId.slice(0, 12)}`);
 fs.writeFileSync(process.env.OUT ?? "/dev/null", stamps.join("\n"));

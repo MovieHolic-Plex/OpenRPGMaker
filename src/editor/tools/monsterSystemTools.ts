@@ -17,6 +17,9 @@ const configureMonsterSystem: ToolDefinition = {
   description:
     "몬스터 수집/포획 시스템을 켠다. enabled:true면 전투에 '포획' 커맨드가 뜬다. 포획 없는 몬스터 게임(대회형·트레이너 대전 중심)은 enabled:true + capture:false — 포획 커맨드는 끄고 몬스터 파티 전투만 켠다(「포획 없음」을 선언한 게임이라 검사기도 야생 조우·포획 도구를 요구하지 않는다). battleParty:true면 전투와 필드 메뉴·기술·회복약·저장 레벨이 실제 몬스터 파티를 사용한다. presentation:'collector'는 수집 게임 메뉴/HUD를 설정하고 미수정 기본 왕국 오프닝만 비활성화한다(저작한 오프닝은 보존). 설정 성공은 플레이 검증이 아니다. 동료 지급과 퍼즐 조작 뒤 run_scene_test의 playerCanMove/실제 이동을 검사하고 출하 플레이어도 확인한다. enabled:true 는 장르 칩셋 잠금도 켠다 — 이후 조수는 새 맵·칩셋에 몬스터 칩셋 계열만 쓸 수 있고 다른 계열은 거부된다. enabled:false면 포획/몬스터 전투 플래그를 제거하고 그 잠금도 푼다(「장르 잠금 해제됨」 경고가 결과·편집 기록에 남는다).",
   mode: "write",
+  // 몬스터 수집을 켜면 장르 잠금이 출연진의 걷기 칩을 수집 게임 출연진으로 스스로 갈아 끼운다(enableGenreLockSettled) — 모델이 칩을 고르지 않았다.
+  // 실측(2026-11-12 셋째 묶음 Terra `capture-on-blank`): 이 표시가 없어 칩 관문이 배우마다 「캐릭터 그림 선택을 되돌렸습니다」로 여섯 번 거절했고 포획은 끝내 켜지지 않았다.
+  choosesOwnGraphic: true,
   parameters: {
     type: "object",
     properties: {

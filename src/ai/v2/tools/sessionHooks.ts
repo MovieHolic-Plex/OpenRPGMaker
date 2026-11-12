@@ -179,7 +179,7 @@ export function installSessionHooks(c: VerbContext) {
       if (gaps.length) notes.push(`목적표 빈칸 ${gaps.length}건 — ${gaps.map((g) => g.detail).join(" / ").slice(0, 400)}`);
     }
     await yieldToLoop();
-    for (const n of retireBlankStart(run)) notes.push(n);
+    for (const n of retireBlankStart(run, env.request.project)) notes.push(n);
     // 게임은 목록의 첫 장소에서 시작한다 — 바깥 장소를 먼저 지어 시작이 다른 장소에 가 있으면 첫 장소로 옮긴다(이번에 지은 세계 장소일 때만).
     const firstMap = listed[0] ? mapOf(listed[0].name, true) : undefined;
     const firstRecord = firstMap ? session.places.get(firstMap.id) : undefined;
