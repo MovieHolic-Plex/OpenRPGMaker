@@ -61,7 +61,8 @@ describe("applyLookDefaults (v1 whole-game finish)", () => {
     const trap = battleGame();
     trap.maps[trap.startMapId!]!.events.push({ id: "ev_trap", name: "가시 함정", x: 5, y: 5, pages: [{ conditions: [], trigger: "playerTouch", commands: [{ kind: "changeActorHp", op: "-=", amount: 10 }] }] } as never);
     applyLookDefaults(trap, "좀비 생존 게임 만들어줘");
-    expect(trap.system.fieldHud?.theme).toBe("horror");
+    // 무엇을 띄울지는 게임의 사실로 정한다(요청 글의 «좀비» 를 읽지 않는다): 턴제 · 한 명 파티 → 하트, 동료가 있으면 동료 체력 줄.
+    expect(trap.system.fieldHud?.theme).toBe(trap.system.startActorIds.length > 1 ? "party" : "hearts");
     expect(ids(trap)).not.toContain("hud");
     const action = createBlankProject() as Project;
     action.system.actionCombat = { ...(action.system.actionCombat ?? {}), enabled: true } as never;

@@ -37,6 +37,7 @@ import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecor
 import { normalizeActionCombatConfig, normalizeActionSkillProfile, normalizeActionWeaponProfile } from "@/project/actionCombat";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeSystemFontConfig } from "@/project/fontRegistry";
+import { uiLookById } from "@/project/uiLook";
 import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_PROJECT_SPEED_LIMITS, isDialogueStyleId, normalizeDialogueFullPortraitSettings } from "@/project/dialogueStyles";
 import { isFontFamilyId } from "@/project/fontRegistry";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
@@ -358,6 +359,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID) records.menuUiStyle = system.menuUiStyle;
   // 대화창 스타일도 같은 계약 — 기본(glass)과 미등록 값은 저장하지 않는다.
   if (isDialogueStyleId(system.dialogueStyle) && system.dialogueStyle !== DEFAULT_DIALOGUE_STYLE_ID) records.dialogueStyle = system.dialogueStyle;
+  // 조수가 입힌 UI 모습 한 벌의 id(project/uiLook.ts) — 목록에 없는 값은 버린다.
+  if (uiLookById(system.uiLook)) records.uiLook = uiLookById(system.uiLook)!.id;
   if (isFontFamilyId(system.dialogueFont)) records.dialogueFont = system.dialogueFont;
   if (typeof system.dialogueSpeed === "number" && Number.isFinite(system.dialogueSpeed) && system.dialogueSpeed !== 1) {
     records.dialogueSpeed = Math.round(Math.min(DIALOGUE_PROJECT_SPEED_LIMITS.max, Math.max(DIALOGUE_PROJECT_SPEED_LIMITS.min, system.dialogueSpeed)) * 100) / 100;
