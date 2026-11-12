@@ -1,0 +1,17 @@
+[battle-gen gif20 a5] triceratops 트리케라톱스 (Triceratops) 9-pose battle GIF
+Attached image: my best pixel-art monster (a frost wolf) — it is the STYLE TARGET only, do not draw a wolf. There is no earlier sprite of the monster to draw; design it from the description below.
+Draw the monster as: a massive four-legged TRICERATOPS dinosaur: a huge head with a broad bony neck frill edged with small knobs, two long brow horns pointing forward and one short nose horn, a parrot-like beak; a barrel body on four thick pillar legs, a short heavy tail; rough pebbled hide in warm ochre-brown with a darker brown back, a cream belly and dull red-brown patches on the frill, ivory horns.
+STYLE (most important): match the wolf's pixel-art quality exactly — true low-resolution pixel art with clearly visible square pixels (each art pixel 5-6 screen pixels), a limited palette of about 14-16 colours, hand-placed 1-2 pixel highlights and texture clusters, 3-4 hard-edged shading bands (no airbrush gradients, no soft blending, no anti-aliasing, no blur), and a dark 1-pixel outline that is NOT uniform: darker and broken on the shadow side, lighter or dropped where light hits. Clear, distinctive silhouette readable at small size. A 3/4 side view facing LEFT like the wolf, with a character pose that has weight. No glow halo, no ground shadow, no text.
+Same scale and same facing in every frame. Flat solid magenta (#FF00FF) background in every frame, nothing else in the background. Keep the whole monster inside every frame with empty magenta margin on all sides. Its battle attack style is: stomp (lowers its head, takes two heavy steps forward and rams with its horns).
+Make ONE animated GIF with EXACTLY 9 frames, one pose per frame, in this exact order:
+1. idle A — standing ready pose
+2. idle B — breathing IN: the whole upper body/head clearly rises and expands (about 5% of its height higher), limbs/wings/tail shift too — the difference from frame 1 must be easy to see
+3. idle C — breathing OUT: body clearly lower and compressed (about 5% of its height lower than frame 1), head dips — clearly different from frames 1 and 2
+4. windup — gathering itself before the attack
+5. move — lunging toward the enemy (to the left)
+6. attack — the strike at full extension toward the left, clearly different from frames 4 and 8
+7. recover — pulling back after the attack
+8. hit — knocked backward (to the right) from taking damage, recoiling, eyes squeezed
+9. knocked out — lying flat on the ground asleep/inert, eyes closed (non-violent defeated pose, no blood, no injury)
+400 ms per frame, looping. Exactly 9 frames, nothing else.
+OUTLINE: use a selective outline like the wolf: darkest on the shadow side, a darker shade of the local colour on the lit side, broken or dropped where light hits. TEXTURE: add hand-placed 1-2 pixel highlights and small texture clusters like the wolf's fur, with hard-edged shading bands and no smooth gradients. There must be NO continuous dark contour line around the figure. The edge pixels of the silhouette are simply the body's own colours: the light skin colour along the top of the back and head where the light hits, mid tones on the sides, and the darkest tones only under the belly, the tail and the legs. Horns, claws, teeth, crest, belly and stripes reach the very edge of the silhouette in their own colours. Almost every colour of the palette should appear somewhere on the silhouette edge, exactly as on the frost wolf.

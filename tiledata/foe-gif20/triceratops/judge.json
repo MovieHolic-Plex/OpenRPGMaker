@@ -1,0 +1,15 @@
+{
+ "pass": true,
+ "wolfLevel": 4,
+ "why": "The brown triceratops clearly faces right with its frill, two brow horns, nose horn and beak readable, and it has hard shading bands and a cracked-hide texture. Idle_c sinks lower than idle_a, attack drops the horns forward to the right with the beak open, hit rears back to the left, and dead lies flat on the ground line.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium",
+ "batch": "20261112-205057-motion20-472fdb",
+ "runId": "f13072d3-6c7a-4ff9-9c28-658d451039ab",
+ "rawSha256": "a4e9588cd9ebaa23c0d7cd08402c20e283d36f9c6caa5aef7a8e8f06ea055f6c",
+ "hiddenControlsRejected": 3,
+ "pixelSha": "3d928734192b9a903a828b60d01f1c14a54d8669e03393f6170cc7d75888e0d8",
+ "standard": "battle-gen/1"
+}
