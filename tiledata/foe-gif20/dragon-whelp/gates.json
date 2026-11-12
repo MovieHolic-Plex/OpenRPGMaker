@@ -1,0 +1,80 @@
+{
+ "kind": "motion20",
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "facts": {
+  "size": [
+   480,
+   384
+  ],
+  "cell": 96,
+  "hover": 0,
+  "colours": 16,
+  "bottoms": [
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92
+  ],
+  "idleShiftPx": {
+   "01": 10,
+   "12": 7,
+   "02": 17
+  },
+  "idleXorPx": {
+   "01": 573,
+   "12": 737,
+   "02": 954
+  },
+  "attackVsHitXor": 1657,
+  "deadHeight": [
+   25,
+   54
+  ],
+  "wolf": {
+   "colors": 14,
+   "outlineColors": 12,
+   "smallSpecksPer100": 29.9,
+   "uniform2x2": 0.16,
+   "outlineInner": 0.76,
+   "lumLevels": 12,
+   "w": 67,
+   "h": 55
+  }
+ },
+ "pixelSha": "d2d05ed784247fb081bd811aa342e5e8057fcd7fc67d6fd62ac557892f385fde",
+ "convert": {
+  "th": 56,
+  "ncol": 16,
+  "key": "magenta",
+  "flip": true,
+  "scale": 5.078,
+  "idleBRebuilt": false,
+  "downscaler": "vendor/unfake (unfake-cli 1.4.0) downscale -m mode --no-elastic"
+ },
+ "tried": [
+  {
+   "th": 56,
+   "ncol": 16,
+   "ok": true,
+   "errors": []
+  }
+ ]
+}

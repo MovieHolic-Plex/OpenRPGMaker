@@ -75,8 +75,25 @@ export function installMonsterArt16For(project: Project, resourceIds: ReadonlySe
   return installArt(project, (art) => resourceIds.has(art.resourceId));
 }
 
+/**
+ * 사람 적 그림 시험 1종(fs-human-one 2026-11-11, 오너 「사람 적은 어떻게 바뀔라나 1개만 해바」). 걷기 칩 전투 시트를 쓰던 적 행만
+ * 새 GIF 시트 id 로 돌린다. 같은 charset-battler-actor1-2 를 파티 배우(성기사)도 쓰므로 그 id 를 덮지 않고 새 id 를 쓴다.
+ */
+const FS_HUMAN_ART_16: readonly { readonly from: string; readonly to: string }[] = [
+  { from: "charset-battler-actor1-2", to: "generated-enemy-inq-soldier" },
+  { from: "charset-battler-people2-2", to: "generated-enemy-cult-preacher" },
+  { from: "charset-battler-actor3-0-samurai", to: "generated-enemy-inq-shield" },
+  { from: "charset-battler-actor1-3", to: "generated-enemy-sarah" },
+  { from: "charset-battler-people3-7", to: "generated-enemy-inq-spearman" },
+  { from: "charset-battler-actor3-1", to: "generated-enemy-flagellant" },
+];
+
 export function applyFallenMonsterArt16(project: Project): void {
   const installed = installArt(project, () => true);
+  for (const swap of FS_HUMAN_ART_16) {
+    if (!installed.has(swap.to)) { console.warn(`[fallen-star art16] ${swap.to} 이 설치되지 않아 ${swap.from} 적을 그대로 둔다`); continue; }
+    for (const enemy of project.database.enemies) if (enemy.monsterResourceId === swap.from) enemy.monsterResourceId = swap.to;
+  }
   for (const change of FS_MONSTER_SCALE_16) {
     const enemy = project.database.enemies.find((e) => e.id === change.enemyId);
     if (!enemy) { console.warn(`[fallen-star art16] ${change.enemyId} 적이 없다`); continue; }

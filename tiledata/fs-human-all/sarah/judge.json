@@ -1,0 +1,11 @@
+{
+ "pass": true,
+ "wolfLevel": 4,
+ "score": 4,
+ "failed": [],
+ "reason": "Sarah has the same real low-res pixel look as the wolves: limited crimson, white and steel palette, hard shading bands and a dark outline, though she has slightly less hand-placed texture and the helm reads a bit like a hood. She faces right with a clear lance and pennant, the three idles differ, the attack lunges right, hit leans back to the left with the lance thrown up, and dead lies flat with nothing clipped or haloed.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

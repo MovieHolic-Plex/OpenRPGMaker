@@ -1,0 +1,11 @@
+{
+ "pass": true,
+ "wolfLevel": 4,
+ "score": 4,
+ "failed": [],
+ "reason": "The sprite is real pixel art at nearly the wolves' level, with a limited palette, hard shading bands, an uneven dark outline and a clear spearman silhouette, but its metal reads violet rather than steel and slate-blue, and the spear shaft is dark rather than pale ash wood. The design matches the faction (crimson-band kettle helmet, crimson tabard with white chevron, white cloak, steel leaf blade with a crimson pennant), and the motion works: it faces right, the three idles differ, the attack is a long lunge to the right, the hit cell recoils back and the dead cell lies flat, with no cut-off or fringe.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium"
+}

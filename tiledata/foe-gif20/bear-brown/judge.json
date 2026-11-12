@@ -1,0 +1,15 @@
+{
+ "pass": true,
+ "wolfLevel": 4.5,
+ "why": "The brown bear has hard-banded fur texture, a tan muzzle pointing right and a visible shoulder hump, close to wolf level. Attack is an open-mouthed claw lunge to the right, hit rears back upright, and dead lies flat on the ground line.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium",
+ "batch": "20261112-210444-motion20-61250b",
+ "runId": "786e1cc9-4e93-4755-8a41-b2fe32bdeb8a",
+ "rawSha256": "5662a36a7b177276bed73091139e7863a2136f2a8dd93ba133d0b9bbc47cbbd5",
+ "hiddenControlsRejected": 1,
+ "pixelSha": "609ddedbf4aaf548ae2976aa3bf9ec7b935197c0d3fd3d692ff7a466edd41c79",
+ "standard": "battle-gen/1"
+}

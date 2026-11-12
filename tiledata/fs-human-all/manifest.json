@@ -1,0 +1,122 @@
+{
+ "cult-preacher": {
+  "resourceId": "generated-enemy-cult-preacher",
+  "name": "광신도 설교자",
+  "cell": 96,
+  "try": 1,
+  "gifSha": "63346c4fe50a1a7281dd8c1ac3f173a5188661cf41ae7ddd1fd973addc003767",
+  "sheetSha": "f8c00350c95e1b305e59930dc24850de8449fc9068c6eb28c903ec70fda69d10",
+  "metrics": {
+   "colors": 16,
+   "outlineInner": 0.89,
+   "outlineColors": 13,
+   "smallSpecksPer100": 34.1,
+   "uniform2x2": 0.15,
+   "lumLevels": 15
+  },
+  "judge": {
+   "model": [
+    "claude-opus-5-5"
+   ],
+   "effort": "medium",
+   "wolfLevel": 4,
+   "pass": true
+  }
+ },
+ "inq-shield": {
+  "resourceId": "generated-enemy-inq-shield",
+  "name": "심문회 방패병",
+  "cell": 96,
+  "try": 2,
+  "gifSha": "58dbc1fdff6c078b7f7c1671a3c438d726a14a9bd151117ef95b324279a7f8eb",
+  "sheetSha": "b1ca2bd13169a01d200f50b37263ffceb79d6bc9fc6c2f45692a46ca12771b54",
+  "metrics": {
+   "colors": 15,
+   "outlineInner": 0.95,
+   "outlineColors": 12,
+   "smallSpecksPer100": 29.5,
+   "uniform2x2": 0.16,
+   "lumLevels": 12
+  },
+  "judge": {
+   "model": [
+    "claude-opus-5-5"
+   ],
+   "effort": "medium",
+   "wolfLevel": 4,
+   "pass": true
+  }
+ },
+ "sarah": {
+  "resourceId": "generated-enemy-sarah",
+  "name": "새라",
+  "cell": 96,
+  "try": 34,
+  "gifSha": "a50ad77cd1842fdb899726bb7d86926c9595b14893ad2a5a515808374e4417cc",
+  "sheetSha": "94ce13f33fcbf6fbf6557c0fc79de091fb44dbef948fc4878d905ad0cdcb0b9d",
+  "metrics": {
+   "colors": 14,
+   "outlineInner": 0.93,
+   "outlineColors": 13,
+   "smallSpecksPer100": 28.8,
+   "uniform2x2": 0.16,
+   "lumLevels": 13
+  },
+  "judge": {
+   "model": [
+    "claude-opus-5-5"
+   ],
+   "effort": "medium",
+   "wolfLevel": 4,
+   "pass": true
+  }
+ },
+ "inq-spearman": {
+  "resourceId": "generated-enemy-inq-spearman",
+  "name": "심문회 창병",
+  "cell": 96,
+  "try": 3,
+  "gifSha": "fe129b49ced2499a9bfced792dd71d5d6336058013699c306c27bba83a3610ba",
+  "sheetSha": "abb7d16bcaf080c241625b93dd79a3f57d222461a8e61bbbf8427bdb896a3062",
+  "metrics": {
+   "colors": 14,
+   "outlineInner": 0.91,
+   "outlineColors": 12,
+   "smallSpecksPer100": 25.8,
+   "uniform2x2": 0.16,
+   "lumLevels": 12
+  },
+  "judge": {
+   "model": [
+    "claude-opus-5-5"
+   ],
+   "effort": "medium",
+   "wolfLevel": 4,
+   "pass": true
+  }
+ },
+ "flagellant": {
+  "resourceId": "generated-enemy-flagellant",
+  "name": "채찍 고행자",
+  "cell": 96,
+  "try": 2,
+  "gifSha": "720fe6f2962e7daedc6610ab9562a752634ae3dfba9f5b781693fd1e3c3ed551",
+  "sheetSha": "c0cd801ba360828d3d9ffea15c9f64da500b960ce8dbd59b2e1cedeb7bc73eee",
+  "metrics": {
+   "colors": 14,
+   "outlineInner": 0.9,
+   "outlineColors": 12,
+   "smallSpecksPer100": 39.0,
+   "uniform2x2": 0.16,
+   "lumLevels": 12
+  },
+  "judge": {
+   "model": [
+    "claude-opus-5-5"
+   ],
+   "effort": "medium",
+   "wolfLevel": 4,
+   "pass": true
+  }
+ }
+}

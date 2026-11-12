@@ -1,0 +1,235 @@
+{
+ "kind": "motion20",
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "facts": {
+  "size": [
+   480,
+   384
+  ],
+  "cell": 96,
+  "hover": 0,
+  "colours": 14,
+  "bottoms": [
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92
+  ],
+  "idleShiftPx": {
+   "01": 7,
+   "12": 8,
+   "02": 15
+  },
+  "idleXorPx": {
+   "01": 528,
+   "12": 642,
+   "02": 882
+  },
+  "attackVsHitXor": 2055,
+  "deadHeight": [
+   22,
+   68
+  ],
+  "wolf": {
+   "colors": 14,
+   "outlineColors": 13,
+   "smallSpecksPer100": 33.9,
+   "uniform2x2": 0.18,
+   "outlineInner": 0.59,
+   "lumLevels": 13,
+   "w": 51,
+   "h": 69
+  }
+ },
+ "pixelSha": "3e3e1d2f495e79e461b953805f5a0f6c36c64a4191767a6f9659678dd2cf3686",
+ "convert": {
+  "th": 68,
+  "ncol": 14,
+  "key": "magenta",
+  "flip": true,
+  "scale": 4.838,
+  "idleBRebuilt": false,
+  "downscaler": "vendor/unfake (unfake-cli 1.4.0) downscale -m mode --no-elastic"
+ },
+ "tried": [
+  {
+   "th": 60,
+   "ncol": 16,
+   "ok": false,
+   "errors": [
+    "wolf range: smallSpecksPer100 41.5 (wolves 24.0-39.0)",
+    "wolf range: uniform2x2 0.09 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 60,
+   "ncol": 14,
+   "ok": false,
+   "errors": [
+    "wolf range: uniform2x2 0.14 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 60,
+   "ncol": 13,
+   "ok": false,
+   "errors": [
+    "wolf range: colors 12 (wolves 13-18)",
+    "wolf range: outlineColors 11 (wolves 12-15)"
+   ]
+  },
+  {
+   "th": 60,
+   "ncol": 17,
+   "ok": false,
+   "errors": [
+    "17 colours on the sheet (max 16)",
+    "wolf range: smallSpecksPer100 41.4 (wolves 24.0-39.0)",
+    "wolf range: uniform2x2 0.09 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 56,
+   "ncol": 16,
+   "ok": false,
+   "errors": [
+    "wolf range: smallSpecksPer100 45.8 (wolves 24.0-39.0)",
+    "wolf range: uniform2x2 0.1 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 56,
+   "ncol": 14,
+   "ok": false,
+   "errors": [
+    "wolf range: smallSpecksPer100 40.6 (wolves 24.0-39.0)",
+    "wolf range: uniform2x2 0.12 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 56,
+   "ncol": 13,
+   "ok": false,
+   "errors": [
+    "wolf range: colors 12 (wolves 13-18)",
+    "wolf range: outlineColors 11 (wolves 12-15)",
+    "wolf range: uniform2x2 0.13 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 56,
+   "ncol": 17,
+   "ok": false,
+   "errors": [
+    "17 colours on the sheet (max 16)",
+    "wolf range: smallSpecksPer100 45.6 (wolves 24.0-39.0)",
+    "wolf range: uniform2x2 0.1 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 64,
+   "ncol": 16,
+   "ok": false,
+   "errors": [
+    "wolf range: uniform2x2 0.11 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 64,
+   "ncol": 14,
+   "ok": false,
+   "errors": [
+    "wolf range: colors 12 (wolves 13-18)",
+    "wolf range: uniform2x2 0.14 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 64,
+   "ncol": 13,
+   "ok": false,
+   "errors": [
+    "wolf range: colors 11 (wolves 13-18)",
+    "wolf range: outlineColors 11 (wolves 12-15)"
+   ]
+  },
+  {
+   "th": 64,
+   "ncol": 17,
+   "ok": false,
+   "errors": [
+    "17 colours on the sheet (max 16)",
+    "wolf range: uniform2x2 0.11 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 52,
+   "ncol": 16,
+   "ok": false,
+   "errors": [
+    "wolf range: smallSpecksPer100 47.8 (wolves 24.0-39.0)",
+    "wolf range: uniform2x2 0.09 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 52,
+   "ncol": 14,
+   "ok": false,
+   "errors": [
+    "wolf range: smallSpecksPer100 42.5 (wolves 24.0-39.0)",
+    "wolf range: uniform2x2 0.13 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 52,
+   "ncol": 13,
+   "ok": false,
+   "errors": [
+    "wolf range: smallSpecksPer100 41.2 (wolves 24.0-39.0)",
+    "wolf range: uniform2x2 0.14 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 52,
+   "ncol": 17,
+   "ok": false,
+   "errors": [
+    "17 colours on the sheet (max 16)",
+    "wolf range: outlineColors 16 (wolves 12-15)",
+    "wolf range: smallSpecksPer100 48.0 (wolves 24.0-39.0)",
+    "wolf range: uniform2x2 0.09 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 68,
+   "ncol": 16,
+   "ok": false,
+   "errors": [
+    "wolf range: uniform2x2 0.14 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 68,
+   "ncol": 14,
+   "ok": true,
+   "errors": []
+  }
+ ]
+}
