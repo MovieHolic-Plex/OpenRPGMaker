@@ -95,6 +95,8 @@ export interface GameCheckOptions {
   readonly rawProject?: unknown;
   /** 자동 플레이 전체 상한(ms). */
   readonly autoPlayBudgetMs?: number;
+  /** 자동 플레이가 보이는 것(그림 있는 이벤트·접촉 칸)과 읽은 글만 쓴다(honestPlay.ts). 기본은 계획표의 좌표를 그대로 쓰는 기계 플레이. */
+  readonly honestPlay?: boolean;
   /** 호출자가 따로 계산한 지적(그림 기반 시각 공백 등, 노드 전용 검사) — 정렬·중복 제거에 함께 든다. */
   readonly extraFindings?: readonly Finding[];
 }

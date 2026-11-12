@@ -115,6 +115,7 @@ def bake(dry=False):
     report = collections.OrderedDict()
     pins = TB.Pins(P['pins'], TPR)
     O = TB.Outdoor(pins, TPR, 'sp', THEME)
+    O.keep_old_cells(P['png'], P['tileset'])   # 옛 칸은 옛 그림 그대로, 바뀐 그림은 새 칸(이미 깔린 맵 보존)
     pieces = build_pieces(report)
     for p in pieces: O.add_piece(p)
     O.finish_pieces(pieces, lambda p: p.get('role', 'prop'), '바닥(아래층).')

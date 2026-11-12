@@ -163,6 +163,14 @@ const SHIP: Readonly<Record<string, string>> = {
 
 const PLAY = "[play autoplay] Auto-play cannot reach an ending: the route is blocked at one step. The player must be able to walk from the start to the ending. Fix the path at the blocked place (door, create_transfer_pair, walkable cells) or the event that turns on that step's switch, then finish again. If it cannot be fixed, do not report the game as complete; name the blocked place in the report.";
 
+/** 정직한 플레이가 멈춘 까닭마다(qa/gameCheck/honestPlay.ts HONEST_CAUSES) — 길이 아니라 «보이는가 · 읽었는가» 를 고친다. */
+const PLAY_HONEST: Readonly<Record<string, string>> = {
+  unseen: "[play autoplay unseen] The path needs an event the player cannot see: it has no graphic and stands on bare floor or on one cell of a large building, so nothing shows where to examine. Give that event a graphic (patch_event_page{set:{graphic}}; place_chest{look:'item'} for a thing to pick up) or move it onto the drawn object it names (move_event), then finish again.",
+  unnamed: "[play autoplay unnamed] The path needs an event that sits unseen on a drawn object with a different name, and no line or objective shown before it names that thing. Name it in an earlier step's lines or in the objective, or move the event onto the object it names (move_event), then finish again.",
+  code: "[play autoplay code] A number lock on the path asks for a code that no line shown before it tells. Put the code in the lines of the step that tells it (build_blueprint_path{steps:[{id, lines, code}]} on that talk/find step), then finish again.",
+  touch: "[play autoplay touch] The path needs an unseen touch cell that is not on the way between visible things, so the player has no reason to step on it. Move it onto the walking line (a doorway, the road) with move_event, or make it an examine event with a graphic, then finish again.",
+};
+
 const NON_ASCII = /[^\x20-\x7e]/u;
 /** 줄·증거에서 뽑는 대상 — 프로젝트 id(map_… · ev_… · sw_… …)와 칸 좌표. */
 const REF = /\b(?:map|ev|sw|var|actor|troop|enemy|skill|item|state|equip|ending|quest|class)_[A-Za-z0-9][\w-]*|\bmap-view:[\w-]+|\(\d+,\s?\d+\)/gu;
@@ -237,7 +245,7 @@ function namedTools(ko: string): string {
 
 /** 표에서 이 문제의 글을 찾는다 — 갈래가 있으면 갈래 글, 없으면 규칙 글. */
 function textOf(f: Finding): string | undefined {
-  if (f.judge === "play") return PLAY;
+  if (f.judge === "play") return (f.variant ? PLAY_HONEST[f.variant] : undefined) ?? PLAY;
   const table = f.judge === "game" ? GAME : f.judge === "ship" ? SHIP : undefined;
   if (!table) return undefined;
   // 출하 차단은 갈래를 증거 머리에서 읽는다(ShipBlocker 에는 갈래 칸이 없다): 요청 기능 = 「chaser: …」, 번들 그림 = 「titleScreen.…」 · 「endings[…]…」.
@@ -263,4 +271,4 @@ export function findingEn(f: Finding, names?: RefNames): string | undefined {
 }
 
 /** 영어 글이 있는 규칙 열쇠(«game:날씨» · «ship:maps-min» · «play:autoplay») — 빠진 규칙을 재는 탐침·시험이 읽는다. */
-export const FINDING_EN_RULES: readonly string[] = [...Object.keys(GAME).map((k) => `game:${k}`), ...Object.keys(SHIP).map((k) => `ship:${k}`), "play:autoplay"];
+export const FINDING_EN_RULES: readonly string[] = [...Object.keys(GAME).map((k) => `game:${k}`), ...Object.keys(SHIP).map((k) => `ship:${k}`), "play:autoplay", ...Object.keys(PLAY_HONEST).map((k) => `play:autoplay/${k}`)];

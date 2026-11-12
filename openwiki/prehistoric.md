@@ -12,7 +12,7 @@
 | 그림(코드 손 도트) | `scripts/content/prehistoric/art/` — terrain(바닥 20 + 꼭짓점 가장자리 9쌍×14 + 조립 표본 9)·dwellings 13·nature 22·props 38·interior 66 등록부, `palette.py`(잠금), `px.py`/`kit.py`/`shapes.py`/`pelt.py`/`topview.py`(자른 면·판돌·통나무 윗면) 그리개 |
 | 관문 내보내기 | `tiledata/prehistoric/<묶음>/_gate/ph-<id>.png` + `items.jsonl`; 조립 표본 `terrain/_gate_assembled/ph-swatch-<쌍>.png`·`interior/_gate_assembled/ph-room-*.png`(+ `manifest.json` 부품 좌표). `python3 scripts/content/prehistoric/gate_batch.py > batch.jsonl` → `npm run harness -- object-gate review --batch batch.jsonl` |
 | 굽기 | `python3 scripts/content/prehistoric/bake_ph.py [--dry]` → `public/assets/prehistoric/prehistoric-chipset.png` · `src/assets/prehistoric{Tileset,Sheet}.json` · `tiledata/prehistoric/bake-{pins,report}.json`(핀 덧붙이기 전용). `--dev` 는 관문을 건너뛰는 구성기 시험용 — 커밋 금지 |
-| 참고문서 | `python3 scripts/content/prehistoric/bake_refs_ph.py` → `src/assets/prehistoricReferences.json`(이미지 바이트 없음, 문서 9·그림 9) + `public/assets/prehistoric-references/*.png`. 예제 6장은 구성기 실제 출력, 변조 5종(문 앞 막힘·집 겹침·길 끊김·문 칸 열림·가장자리 모서리 어긋남)이 모두 잡히는지 굽기 때 단언 |
+| 참고문서 | `python3 scripts/content/prehistoric/bake_refs_ph.py` → `src/assets/prehistoricReferences.json`(이미지 바이트 없음, 문서 10·그림 12 — 이야기 기물 문서 `ph-objects` 포함) + `public/assets/prehistoric-references/*.png`. 예제 6장은 구성기 실제 출력, 변조 5종(문 앞 막힘·집 겹침·길 끊김·문 칸 열림·가장자리 모서리 어긋남)이 모두 잡히는지 굽기 때 단언 |
 | 타일셋 정의·기존 프로젝트 심기 | `src/project/defaults/prehistoric.ts`, `defaultAssets.ts` 의 `ensureBundledTilesets`, 가족 `oprn-prehistoric` = 「선사 원시 세계(도트)」(`tilesetFamily.ts`) |
 | 구성기(순수 함수) | `src/project/prehistoricComposer.ts` `composePrehistoric(spec, pal)` — 야외 village·swamp·volcano·fossil, 실내 cave-dwelling·cave-gallery·chieftain-hut·shaman-hut |
 | 조수 도구 | `src/editor/tools/prehistoricTools.ts` — `compose_prehistoric_map`, `link_prehistoric_interior` |
@@ -47,6 +47,23 @@ MZ 규칙: 맨 위 ★ 아닌 층이 정한다. `FOOT` 키 큰 키트는 밑 N�
 - 시렁 둘(`fish-rack`·`spear-rack`)은 생김새가 낮은 평상이라 종류를 `low_furniture`(윗면 3줄 하한 같음)로 바꿨다.
   `spear-rack` 은 낱말 「rack」이 세운 걸이로 읽혀 `gate_batch.py` `DESC` 에 실제 생김새를 적었다(이미 받은 영수증 이름은 그대로).
 - 긴 목 뼈대(`longneck`)는 도랑 속에 누운 뼈대 위 그림으로 다시 그려 `debris`.
+
+## 이야기 기물 2종 (2026-11-12) — 3/4 관문 미통과 · 오너 면제
+
+게임들이 바랐는데 그림이 없던 물건 둘을 시트 끝(769~773, 칸 774 · 키트 89)에 덧붙였다. **이 그림들은 3/4 관문을 통과하지 않았다** — 오너 면제 묶음 `fable-oneshot-2026-11-12`(`harness-data/object-gate/waivers/`)가 그림 화소 해시·종류에 묶여 번들 출구만 연다. 스토어로는 나가지 않는다.
+
+| 키트 | 무엇 | 크기 · 놓는 법 | 칸 | 막힌 칸 | 관문 종류 |
+|---|---|---|---|---|---|
+| `ph-trail-marker` | 표식(돌·뼈 길 표식) | 1×1 · prop | 769 | 한 칸 | organic |
+| `ph-spring` | 샘(바위 샘) | 2×2 · prop | 770~773 | 네 칸 | container |
+
+- 목록·그림: `tiledata/prehistoric/objects/spec.json`(이름·크기·막힌 칸·찾는 낱말·놓는 규칙) · `pieces/ph-*.png`. **그림은 한 화소도 바꾸지 않는다** — 한 화소라도 바뀌면 면제가 풀려 굽기가 그 조각을 막는다(검사 `test/prehistoricStoryObjects.test.ts` 가 시트 칸과 원본을 대조한다).
+- 굽기는 같은 `bake_ph.py`: 등록부 조각 뒤에 이 목록을 덧붙인다(핀 덧붙이기 전용, 묶음 `ph:ph-objects`). 조각이 칸마다 통행을 직접 선언한다(`cells_pc` — 막힌 칸 solid · 나머지 ★ · 바닥 그림 flat), 놓는 법 태그(`stamp`)도 목록에서 온다.
+- 출구 검사는 관문 자신의 규칙이다: `ph_bake_lib.gate_status` 는 영수증 없는 그림을 `object_gate.refusal(context='bundle')` 에 묻는다 — 굽기에 둘째 규칙·임시 통과 길을 더하지 않았다. 보고 `bake-report.json` 의 `gate.owner_waiver`.
+- 조수가 찾는 길: 키트 이름·태그(`spec.json` 의 `words` — 표식·뼈 표식·돌무더기·샘·바위 샘…). v2 코드에 낱말 목록은 없다. 태그 «주제 소품» — 빈 땅 채우기에 흩지 않는다.
+- 참고문서: 문서 `ph-prehistoric/ph-objects`(사전·순서·8×5 조립 예제 전체 배열·정상/오류 그림, 검사 `E_OBJ_LAYER`·`E_OBJ_INCOMPLETE`·`E_OBJ_PASSAGE`) — `bake_refs_ph.py` 가 칩셋 공용 틀 `scripts/content/story-objects/refs_lib.py` 로 만든다.
+- 탐침(모델 없음): `bun scripts/content/story-objects/probe.mts prehistoric <out> --base-sheet <고치기 전 시트>`. 화면 증거 `verify-shots/prehistoric-story-objects/`.
+- 기존 저장본: 이 칩셋 끝에 다른 칩셋 그림을 붙여 쓴 프로젝트는 `settleThemeBundleTail`(`openwiki/runtime-project-schema.md` 「시트 끝에 칸을 끼운 번들」)이 이식 꼬리를 새 번들 끝 뒤로 밀고 두 키트를 채운다.
 
 ## 적대적 시각 QA (한 번, 2026-10-14)
 

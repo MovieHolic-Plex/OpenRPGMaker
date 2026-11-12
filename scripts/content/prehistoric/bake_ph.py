@@ -28,7 +28,8 @@ TD = os.path.join(ROOT, 'tiledata', 'prehistoric')
 P = dict(png=os.path.join(ROOT, 'public/assets/prehistoric/prehistoric-chipset.png'),
          tileset=os.path.join(ROOT, 'src/assets/prehistoricTileset.json'), sheet=os.path.join(ROOT, 'src/assets/prehistoricSheet.json'),
          pins=os.path.join(TD, 'bake-pins.json'), report=os.path.join(TD, 'bake-report.json'))
-GROUP_KO = dict(terrain='바닥·가장자리·물', dwellings='집·동굴', nature='식물·바위', props='야영·의식·화석·물 건너기', interior='실내')
+GROUP_KO = dict(terrain='바닥·가장자리·물', dwellings='집·동굴', nature='식물·바위', props='야영·의식·화석·물 건너기', interior='실내', objects='이야기 기물')
+OBJECTS = os.path.join(TD, 'objects')     # 이야기 기물(표식·샘): 그림 PNG 를 그대로 굽는다 — spec.json, 3/4 관문 미통과 — 오너 면제 묶음
 THEME = '선사'
 
 # 다칸 조각의 칸 통행: foot = 맨 아래 막힘 줄 수(그 위는 별). 0 이면 전부 별.
@@ -128,8 +129,26 @@ def build_pieces(report):
                 p['tags'] = p['tags'] + ['애니메이션']
                 p['desc'] = f"{an} — {len(fr)}프레임 반복(칸 {it['w']}×{it['h']}). " + p['desc']
         pieces.append(p)
+    waived = []
+    spec = json.load(open(os.path.join(OBJECTS, 'spec.json'), encoding='utf-8')) if os.path.exists(os.path.join(OBJECTS, 'spec.json')) else None
+    for it in (spec or {}).get('items', []):
+        pid = 'ph-' + it['id']
+        png = os.path.join(OBJECTS, 'pieces', it['src'])
+        # 이 그림들은 영수증이 없다 — gate_status 가 관문 자신의 출구(object_gate.refusal, bundle)에 묻고, 오너 면제 묶음이 화소 해시·종류로 받아 준다. 임시통과(prov)는 없다.
+        st = TB.gate_status(png, it['kind']) if os.path.exists(png) else 'PNG 없음'
+        if st != 'pass': blocked.append((pid, st)); continue
+        im = Image.open(png); assert im.size == (it['w'] * 16, it['h'] * 16), (pid, im.size)
+        flat = it['place'] == 'decal'
+        block = {tuple(c) for c in it['block']}
+        note = '바닥 그림, 밟고 지나간다.' if flat else '서 있는 기물, 막힌 칸 %s%s.' % (' '.join('(%d,%d)' % c for c in sorted(block, key=lambda c: (c[1], c[0]))), ', 나머지 칸은 사람 위에 그려진다' if len(block) < it['w'] * it['h'] else '')
+        pieces.append(dict(id=pid, name=it['name'], kind=it['kind'], png=png, group='ph-objects', group_ko=GROUP_KO['objects'],
+                           desc=f"{it['desc']} ({it['en']}) — {note} 3/4 관문 미통과 — 오너 면제 그림({spec['waiver']}).",
+                           role='prop', tags=['주제 소품'] + list(it['words']), rules=it['rule'], stamp=it['place'],
+                           cells_pc={(x, y): 'flat' if flat else 'solid' if (x, y) in block else 'star' for y in range(it['h']) for x in range(it['w'])}))
+        waived.append(pid)
     report['gate'] = dict(provisional_profile_uncalibrated=prov, covered_by_assembled=covered, blocked=blocked, pieces=len(pieces),
-                          outdoor=sum(1 for p in pieces if p['group'] != 'ph-interior'), interior=sum(1 for p in pieces if p['group'] == 'ph-interior'))
+                          outdoor=sum(1 for p in pieces if p['group'] != 'ph-interior'), interior=sum(1 for p in pieces if p['group'] == 'ph-interior'),
+                          owner_waiver=dict(batch=(spec or {}).get('waiver'), note='3/4 관문 미통과 — 오너 면제(통과가 아니다)', pieces=waived))
     return pieces
 
 
