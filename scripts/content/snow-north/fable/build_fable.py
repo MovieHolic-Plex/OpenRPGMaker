@@ -240,23 +240,105 @@ def pack_tile(im):
     return remap(im, lambda c: g['snow'][0] if c in grey else c)
 
 
-def R_building(roof, wall, r_order=None, w_order=None, finish=True, rows=None):
+def _features(im):
+    """지붕 캔버스에서 눈이 아닌 것의 덩어리(굴뚝·환기창·지붕창·용마루 장식·풀 포기·처마 선): [(화소 수, x0, x1, y0, y1)]."""
+    o = PAL.V2_RGB['object']; fam = set(o['snow']) | set(o['shade'])
+    a = np.array(im); h, w = a.shape[:2]
+    non = [[bool(a[y, x, 3]) and tuple(int(v) for v in a[y, x, :3]) not in fam for x in range(w)] for y in range(h)]
+    seen, out = set(), []
+    for y in range(h):
+        for x in range(w):
+            if not non[y][x] or (x, y) in seen: continue
+            st, px = [(x, y)], []; seen.add((x, y))
+            while st:
+                cx, cy = st.pop(); px.append((cx, cy))
+                for dx in (-1, 0, 1):
+                    for dy in (-1, 0, 1):
+                        nx, ny = cx + dx, cy + dy
+                        if 0 <= nx < w and 0 <= ny < h and non[ny][nx] and (nx, ny) not in seen: seen.add((nx, ny)); st.append((nx, ny))
+            out.append((len(px), min(q[0] for q in px), max(q[0] for q in px), min(q[1] for q in px), max(q[1] for q in px)))
+    return out
+
+
+ROOF_PERIOD = 12     # 눈 줄은 6줄마다 한 단, 두 단(벽돌 엇갈림)이 한 주기 — 실측: 12줄 떨어진 화소가 가장 많이 같다
+TUFT_PX = 24         # 이보다 작은 덩어리(눈 위로 나온 풀·이엉 포기)는 빼는 줄 안에 통째로 들어가면 같이 뺀다. 굴뚝·환기창·지붕창·용마루 장식은 절대 빼지 않는다
+
+
+def lower_roof(im, order=None, tail=0):
+    """지붕 캔버스(직사각형, 16px 구획)를 낮춘다 — 코드, 모델 호출 없음(오너 2026-11-12: «지붕의 height 그러니까 세로 길이가 너무 길면 또 곤란함»).
+    구획마다 굴뚝·환기창·지붕창이 지나지 않는 12줄(눈 줄 한 주기)을 통째로 빼고 그 위를 내린다. 주기를 통째로 빼므로 구획마다 빼는 자리가 달라도 눈 줄이 이어진다.
+    굴뚝·환기창·지붕창·용마루 장식은 한 화소도 잘리지 않는다(위 2줄·아래 1줄 여유 — 눈 모자와 그늘). 풀 포기는 빼는 줄 안에 통째로 들면 같이 빠지고, 걸치면 그 자리를 피한다.
+    tail: 처마 바로 위(모든 구획 같은 줄, 아무것도 없는 줄)에서 더 빼는 줄 수 — 지붕을 벽 높이에 맞출 때.
+    order: widen 순서(이웃 구획끼리 빼는 자리가 같도록 고를 때 쓴다). 돌려주는 캔버스는 높이만 줄었다(roof_finish 는 이 뒤에)."""
+    a = np.array(im); h, w = a.shape[:2]; n = w // T; P = ROOF_PERIOD
+    feats = [f for f in _features(im) if not (f[2] - f[1] >= w - 2)]           # 폭 전체를 지나는 것(용마루 선·처마 선)은 줄 고르기에서 뺀다 — 그 줄은 아래 범위 밖이다
+    lo, hi = 3, (h - 8 if tail else h - 3)                                      # 용마루 3줄 · 처마 쪽(tail 이 있으면 그 4줄 위까지)은 건드리지 않는다
+    if tail:
+        assert all(f[4] < h - 8 or f[3] >= h - 8 + tail for f in feats), ('처마 위 줄에 무언가 있다', feats)
+    def options(k):
+        mine = [f for f in feats if f[2] >= k * T and f[1] < (k + 1) * T]
+        for f in mine: assert f[1] >= k * T and f[2] < (k + 1) * T, ('구획에 걸친 덩어리', f)
+        out = []
+        for c in range(lo, hi - P + 1):
+            drop, low, ok = 0, 0, True
+            for px, x0, x1, y0, y1 in mine:
+                big = px > TUFT_PX
+                if y1 < c - (1 if big else 0) or y0 >= c + P + (2 if big else 0):               # 빼는 줄 밖(굴뚝은 여유를 둔다)
+                    if not big and y1 < c and h - 1 - y1 - P - tail < 8: low += 1                # 풀 포기가 처마 눈 턱에 내려앉는다 — 되도록 그 위쪽 줄을 뺀다
+                    continue
+                if not big and y0 >= c and y1 < c + P: drop += 1; continue                       # 풀 포기가 통째로 빠진다
+                ok = False; break
+            if ok: out.append((c, drop, low))
+        assert out, ('뺄 12줄이 없다', k, mine)
+        return out
+    opts = [options(k) for k in range(n)]
+    seq = [ord(ch) - 65 for ch in order] if order else list(range(n))
+    best = None
+    def rec(k, pick):
+        nonlocal best
+        if k == n:
+            cost = sum(1000 * d + 30 * lw for _, d, lw in pick) + sum(6 for i in range(len(seq) - 1) if pick[seq[i]][0] != pick[seq[i + 1]][0]) + sum(abs(c + P / 2 - h / 2) for c, _, _ in pick)
+            if best is None or cost < best[0]: best = (cost, list(pick))
+            return
+        for o in opts[k]: rec(k + 1, pick + [o])
+    rec(0, [])
+    out = np.zeros((h - P - tail, w, 4), a.dtype)
+    for k in range(n):
+        c = best[1][k][0]
+        rows = [y for y in range(h) if not (c <= y < c + P) and not (tail and h - 8 <= y < h - 8 + tail)]
+        out[:, k * T:(k + 1) * T] = a[rows, k * T:(k + 1) * T]
+    lower_roof.last = dict(cuts=[o[0] for o in best[1]], dropped=sum(o[1] for o in best[1]), rows=[h, h - P - tail])
+    return Image.fromarray(out, 'RGBA')
+
+
+def pad_top(im, n):
+    """위에 빈 n줄 — 지붕을 낮춰도 그림 크기·키트 칸 수·문 칸은 그대로다(맨 위 칸이 빈 칸이 된다)."""
+    out = Image.new('RGBA', (im.width, im.height + n), (0, 0, 0, 0)); out.alpha_composite(im, (0, n))
+    return out
+
+
+def R_building(roof, wall, r_order=None, w_order=None, finish=True, rows=None, lower=None):
+    """lower=(tail,): 지붕 캔버스를 12줄(+tail) 낮춘다(lower_roof). 그림 크기는 위를 비워 지킨다."""
     def f():
-        r = widen(J(roof), r_order) if r_order else J(roof)
+        r = J(roof); cut = 0
+        if lower is not None:
+            h0 = r.height; r = lower_roof(r, r_order, lower[0]); cut = h0 - r.height
+        if r_order: r = widen(r, r_order)
         if finish: r = roof_finish(r, rows)
-        return stack(r, widen(J(wall), w_order) if w_order else J(wall))
+        return pad_top(stack(r, widen(J(wall), w_order) if w_order else J(wall)), cut)
     return f
 
 
 # 아래 셋은 옛 키트의 칸 모양(어느 칸이 비어 있었나)을 지키려고 조립을 맞춘 것이다 — 칸이 생기거나 사라지면 저장된 맵에서 그 칸이 비거나 잘린다.
 def R_church():
-    """통널 교회 80×128: 뾰족탑+윗단 지붕(48 폭, 가운데) / 아랫단 지붕(80 폭, 40줄을 눈 줄 16줄 늘려 56줄 — 옛 그림처럼 윗단 양옆 칸까지 올라온다) / 벽."""
+    """통널 교회 80×128: 종탑(가운데 16px) + 윗단 지붕(48 폭) / 아랫단 지붕(80 폭) / 벽.
+    지붕 높이(오너 2026-11-12): 아랫단은 그린 40줄에서 눈 줄 한 주기를 뺀 28줄(전에는 40줄을 56줄로 늘려 지붕창이 둘로 보였다), 윗단은 아랫단 위 12줄에 걸친다(지붕창이 통째로 보인다).
+    종탑·윗단 화소는 그대로이고 자리만 24줄 내려왔다 — 지붕 덩이 68 → 44줄. 맨 위 24줄이 비어 위쪽 칸들이 빈 칸이 된다(크기 5×8·문 칸 그대로)."""
     out = Image.new('RGBA', (80, 128), (0, 0, 0, 0))
-    low = widen(J('b-church-roof'), 'ABCBD')
-    tall = Image.new('RGBA', (80, 56), (0, 0, 0, 0)); tall.paste(low.crop((0, 0, 80, 24)), (0, 0)); tall.paste(low.crop((0, 8, 80, 40)), (0, 24))
-    out.alpha_composite(roof_finish(tall), (0, 40))
-    top = J('b-church-top').copy(); a = np.array(top); a[:16, :16] = 0; a[:16, 32:] = 0      # 탑 머리는 가운데 칸 안에(옛 키트의 맨 윗줄은 가운데 한 칸)
-    out.alpha_composite(Image.fromarray(a, 'RGBA'), (16, 0))
+    low = roof_finish(widen(lower_roof(J('b-church-roof'), 'ABCBD'), 'ABCBD'))
+    out.alpha_composite(low, (0, 96 - low.height))
+    top = J('b-church-top').copy(); a = np.array(top); a[:16, :16] = 0; a[:16, 32:] = 0      # 탑 머리 양옆은 비운다(옛 그림과 같은 화소)
+    out.alpha_composite(Image.fromarray(a, 'RGBA'), (16, 96 - low.height + 12 - top.height))
     out.alpha_composite(widen(J('b-church-wall'), 'ABCBD'), (0, 96))
     return out
 
@@ -298,11 +380,11 @@ RECIPES = {
     'water': C('g-wet', 'water'), 'water-f1': lambda: roll(cut('g-wet', 'water'), dx=5), 'water-f2': lambda: roll(cut('g-wet', 'water'), dx=10),
     # 건물
     'cabin-s': R_building('b-cabin-s-roof', 'b-cabin-s-wall'), 'cabin-m': R_building('b-cabin-m-roof', 'b-cabin-m-wall'),
-    'cabin-l': R_building('b-cabin-l-roof', 'b-cabin-l-wall', 'ABCBD', 'ABCBD'), 'cabin-turf': R_building('b-turf-roof', 'b-turf-wall'),
-    'longhouse': R_building('b-long-roof', 'b-long-wall', 'ABBCBBD', 'ABDCBDE'), 'meadhall': R_building('b-mead-roof', 'b-mead-wall', 'ABBCBD', 'ABCDBE'),
+    'cabin-l': R_building('b-cabin-l-roof', 'b-cabin-l-wall', 'ABCBD', 'ABCBD', lower=(4,)), 'cabin-turf': R_building('b-turf-roof', 'b-turf-wall'),
+    'longhouse': R_building('b-long-roof', 'b-long-wall', 'ABBCBBD', 'ABDCBDE', lower=(4,)), 'meadhall': R_building('b-mead-roof', 'b-mead-wall', 'ABBCBD', 'ABCDBE', lower=(4,)),
     'stave-church': R_church, 'sauna': R_building('b-sauna-roof', 'b-sauna-wall'), 'smokehouse': lambda: roof_finish(J('b-smokehouse'), 22), 'fishing-hut': lambda: roof_finish(J('b-fishing-hut'), 20),
     'ice-house': R_building('b-icehouse-top', 'b-icehouse-bot', finish=False), 'watchtower': R_building('b-tower-top', 'b-tower-bot', rows=20), 'storehouse': R_building('b-store-roof', 'b-store-body'),
-    'mill': R_mill, 'barn': R_building('b-barn-roof', 'b-barn-wall', 'ABCBD', 'ABCBD'),
+    'mill': R_mill, 'barn': R_building('b-barn-roof', 'b-barn-wall', 'ABCBD', 'ABCBD', lower=(4,)),
     'smithy': R_building('b-smithy-roof', 'b-smithy-wall'), 'palisade-gate': R_building('b-gate-top', 'b-gate-bot', rows=22),
     'ice-cave': R_building('b-cave-top', 'b-cave-bot', finish=False), 'frozen-falls': R_building('b-falls-top', 'b-falls-bot', finish=False),
     # 나무·바위
