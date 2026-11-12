@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "kind": "assistant-map-vqa-reviewer",
   "version": "map-vqa-v3",
+  "sameQuestionAs": ["map-vqa-v2"],
   "classes": {
     "exit-off-road": "출구가 길·문과 어긋남",
     "road-to-nowhere": "어디로도 안 가는 길",
