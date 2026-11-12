@@ -31,6 +31,7 @@ import { dungeonGateSpot, pickTransferSpot, stairWay } from "../place/transferSp
 import { critiqueStaging } from "../judge/critic";
 import { edgeCell, isInside, isOutdoor, oppositeSide, pickDoor, villageDoors } from "../story/makeGame";
 import { stampRoomStairs } from "../place/stairLinks";
+import { kitOf } from "../place/exitDress";
 import { type EventBuildResult } from "../story/events";
 import { pickStageFrames, stageFrameProject } from "../story/eventStage";
 import { LAYOUT_CRITIQUE_ROUNDS, layoutSession, type LayoutPlaceState } from "../place/builders/placeLayout";
@@ -311,10 +312,13 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
           } else {
             // 지은 결과의 집 문 목록이 없으면(모델이 지은 부모 맵) 그 맵의 문 그림·계단·길 끝, 없으면 칩셋 문을 벽에 깔아 그 앞으로.
             // 방에서 방으로: 그 방의 쓰지 않은 계단 그림, 없으면 칩셋의 계단 키트를 벽 앞에 찍는다(place/stairLinks) — 맨바닥 이동 칸으로 잇지 않는다.
+            // 벽 문 조각이 있는 방 키트(손 도트 실내)의 같은 층 방끼리는 끝맺음이 벽에 문을 낸다(door-floor-transfers) — 계단은 위·아래층이거나 문 조각이 없는 방(구성기 방)에만.
             const roomParent = !!parentSpec && isInside(parentSpec);
-            const spot = pickTransferSpot(run, parentMap, { side: side ?? "north", outdoor: !!parentSpec && isOutdoor(parentSpec), otherName: cName, buildingDoor: isInside(spec), ...(roomParent ? { vertical: true } : {}) });
+            const way = stairWay(cName, pName);
+            const byStairs = roomParent && (!!way || !kitOf(env.ctx.project, env.ctx.project.maps[parentMap]!));
+            const spot = pickTransferSpot(run, parentMap, { side: side ?? "north", outdoor: !!parentSpec && isOutdoor(parentSpec), otherName: cName, buildingDoor: isInside(spec), ...(byStairs ? { vertical: true } : {}) });
             const before = env.ctx.project;
-            const stairs = !spot && roomParent ? stampRoomStairs(run, parentMap, stairWay(cName, pName)) : undefined;
+            const stairs = !spot && byStairs ? stampRoomStairs(run, parentMap, way) : undefined;
             if (spot) {
               const { note, ...a } = spot;
               const r = run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });

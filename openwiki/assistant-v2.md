@@ -2413,7 +2413,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 
 **지시문·스키마가 바뀐 것.** 지시문 블록은 그대로다(golden: 달라진 것은 `build_blueprint_path` 스키마 글뿐, 157 요청 가운데 그 도구가 실리는 151). 스키마 +251자(1,836 → 2,087): `steps[].on` 한 칸과 `winLines` 설명 앞머리(«puzzle step: 1–2 lines shown when the code is right.»). `build_places` 결과 글에 위 한 줄(증거 명세에서 517자).
 
-**방과 방을 잇는 계단(`place/stairLinks.ts`).** 칩셋 표면 계약의 계단 타일(`tilesetSurface.stairs`)로만 된 구조 키트를 뒷벽에 등을 댄 빈 바닥(다른 이벤트·출구에서 먼 자리)에 찍고, 그 발치 칸을 이동 칸으로 `create_transfer_pair` 에 넘긴다(도구가 계단 폭만큼 스스로 넓힌다). 오르는 계단·내려가는 계단은 키트 id 끝(`-up`·`-down`)과 장소 이름(`transferSpot.stairWay` — 「지하」로 가면 내려가는 계단, 지하에서 나가면 오르는 계단)으로 맞춘다. 건너편은 그 방의 제 문(남쪽 틈)에 닿는다.
+**방과 방을 잇는 계단(`place/stairLinks.ts`).** 칩셋 표면 계약의 계단 타일(`tilesetSurface.stairs`)로만 된 구조 키트를 뒷벽에 등을 댄 빈 바닥(다른 이벤트·출구에서 먼 자리)에 찍고, 그 발치 칸을 이동 칸으로 `create_transfer_pair` 에 넘긴다(도구가 계단 폭만큼 스스로 넓힌다). 오르는 계단·내려가는 계단은 키트 id 끝(`-up`·`-down`)과 장소 이름(`transferSpot.stairWay` — 「지하」로 가면 내려가는 계단, 지하에서 나가면 오르는 계단)으로 맞춘다. 건너편은 그 방의 제 문(남쪽 틈)에 닿는다. 벽 문 조각이 있는 방 키트(손 도트 실내)의 같은 층 방끼리는 계단을 찍지 않는다 — 끝맺음 `door-floor-transfers` 가 전처럼 벽에 문을 낸다. 계단은 위·아래층 장소이거나 문 조각이 없는 방(구성기 방)에만.
 계단 키트가 없는 칩셋(사막 · 설원 · 선사 · 전국 · SF · 황무지 — 2026-11-12 조사)은 예전 자리(가장자리 쪽 걷는 칸)에 남고 끝맺음 `door-floor-transfers` 가 `want=door-piece` 로 적는다.
 
 **칩셋에 맞는 그림이 없어 대신 쓴 것(증기 도시, 증거 명세 다시 짓기).**
