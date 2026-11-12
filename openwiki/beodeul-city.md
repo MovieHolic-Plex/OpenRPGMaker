@@ -1141,7 +1141,7 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 - **쓰는 곳:** `dress_village_quarter` 의 temple-ruins(판석) · mining · vineyard(다진 흙) 마당. `author_beodeul_town({quarter})` 가 빌더 `yard` 옵션으로 마당 자리를 먼저 비운다(다른 마을은 옵션이 없어 그대로). 규칙은 `openwiki/editor-ai-tools.md` 「마을 종류 표」 절에 있다.
 - **검수 증거:** `tiledata/beodeul-yard/_gate/`
 
-## 이야기 기물 꼬리 bd-obj (2026-11-12) — 칸 34,944~35,071, 옛 상수도 꼬리 바로 뒤
+## 이야기 기물 꼬리 bd-obj (2026-11-12) — 칸 34,944~34,998, 옛 상수도 꼬리 바로 뒤 (같은 꼬리의 34,999~ 는 아래 「기물 종류별 변형」)
 
 게임들이 바랐는데 그림이 없던 물건 16종(조수 실행의 «없는 그림» 장부): 샘 2×2 · 동굴 입구 3×3 · 빛나는 파편 1×1 · 유적 입구 3×3 · 야영 천막 2×2 · 가축 우리 3×3 ·
 늪 널빤지 길 넷(가로·세로·모퉁이 서→남·동쪽 끝, 1×1) · 곡괭이·채굴 도구 1×2 · 게시판 2×2 · 쪽지 1×1 · 봉인 제단 2×2 · 무너진 기둥 1×2 · 기록부 1×2.
@@ -1159,6 +1159,50 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 - **참고문서**: 번들 `beodeulCityReferences.json` 용도 `beodeul-objects`(생성 `bun scripts/content/prepare-beodeul-objects-references.mts`, 출처 `tiledata/beodeul-objects/`, 그림 `public/assets/beodeul-objects/`) — 킷 사전·실행 순서·16종을 모두 쓴 22×15 조립 예제의 네 층 배열(실제 놓기 도구 출력)·정상/오류 그림 4종(`wrong-layer`·`walk-blocked`·`entrance-blocked`·`kit-incomplete`, 실제로 변조해 검출)·검사 범위.
 - **탐침(모델 없음)**: `bun scripts/content/beodeul-objects/probe.mts <저장된 프로젝트 폴더> <outDir> [맵 id]` — 새 프로젝트·기존 저장본 사본(정규화 → 저장 → 다시 열기, 맵 그림 지문 동일), 낱말마다 `list_tileset_objects`·v2 `draw_object` 가 무엇을 이르는지, v2 `place_object` 로 16종 놓기(막힌 칸이 선언과 같은지·입구 판독), 1배 합성 그림.
 - **남은 것 / 하지 않은 것**: 널빤지 길 모퉁이·끝은 한 방향뿐이다. 마을 bbox 목록(`bboxVillageCatalog`)과 빈 땅 채우기에는 실리지 않는다(이름으로 부를 때만 놓인다). 동굴 입구는 들판 한가운데 서면 돌 움집처럼 보인다 — 절벽·숲 가장자리에 붙여야 한다. 그림에 바닥 그림자가 없다(버들항 나무·집은 있다). 이야기마다 다른 이름(«잠든 별», «수로 지도»)은 킷 낱말에 없으면 닿지 않는다.
+
+## 기물 종류별 변형 bd-obj (2026-11-12) — 칸 34,999~35,113, 같은 종류·다른 그림 50종
+
+오너(2026-11-12): «근데 보고있으면 모든 게임을 비슷하게 생성하니 동일 카테고리의 오브젝트들을 다양하게 생성하는 게 좀 필요할듯. 버들항부터 해봐».
+재 보니(모델 없음, `scripts/content/beodeul-variety/measure.mts` — 저장된 조수 게임 11편): 마을·들 기물 46종류 가운데 우물·벤치·이정표·제단·모닥불·화로·계선주 등은 **그림이 한 장**이라 어느 게임에서나 같은 그림이었다(게임 사이 같은 그림 90%).
+그래서 놓임이 많고 그림이 하나뿐인 20종류에 모양·재질이 다른 그림을 더했다. **건물·바닥 타일은 건드리지 않았다.**
+
+| 원본 킷 | 변형 (`bd-obj-…`) |
+|---|---|
+| `bd-prop-well_roofed` 지붕 우물 2×2 | well-windlass(두레박 틀) · well-pump(손 펌프와 돌 물통) · well-spout(사자 물구멍 돌 수조) |
+| `bd-prop-bench_wood` 나무 벤치 2×1 | bench-stone(돌) · bench-log(반쪽 통나무) · bench-trestle(널 벤치와 방석) |
+| `bd-out-signpost` 이정표 1×2 | sign-hanging(걸이 간판 기둥) · sign-milestone(돌 이정표) · sign-cairn(돌무지와 깃대) |
+| `bd-prop-crate_apple` 사과 상자 1×1 | crate-closed(닫힌 상자) · crate-basket(감자 바구니) · crate-sack(곡식 자루) |
+| `bd-prop-fish_barrel` 생선 통 1×1 | barrel-closed(닫힌 통) · barrel-tub(물 함지) · barrel-amphora(받침 항아리) |
+| `bd-pick-deep-forest-path-campfire` 모닥불 1×1 | fire-tripod(삼발이 솥) · fire-pit(돌 두른 화덕) · fire-spit(꼬치 굽는 불) |
+| `bd-pick-riverside-mill-haystack` 짚가리 2×3 | hay-rack(건초 말림 걸대) · hay-loaf(사다리 걸친 네모 낟가리) |
+| `bd-out-woodpile` 장작더미 2×1 | wood-block(모탕과 도끼) · wood-faggots(나뭇단 세 묶음) |
+| `bd-prop-lamp_crook` 가로등 1×3 | lamp-lantern(기둥 위 네모 등) · lamp-cresset(쇠 화롯불 기둥) · lamp-stone(돌기둥 등) |
+| `bd-prop-veg_cart` 채소 수레 2×2 | cart-barrow(외바퀴 수레) · cart-barrels(통 실은 수레) · cart-hay(건초 수레) |
+| `bd-pick-castle-catacombs-altar-stone` 돌 제단 2×2 | altar-moss(이끼 낀 자연석) · altar-dark(촛불 놓인 검은 돌) · altar-wood(나무 제사상) |
+| `bd-pick-aqueduct-sewer-brazier` 화로 1×1 | brazier-basket(세 발 쇠 불바구니) · brazier-bowl(돌 받침 불 대접) · brazier-pot(질화로) |
+| `bd-prop-mooring_bollard` 계선주 1×1 | bollard-post(밧줄 감은 나무 말뚝) · bollard-stone(쇠고리 돌 말뚝) |
+| `bd-prop-laundry_rack` 빨래 건조대 2×2 | laundry-horse(접이식 빨래 걸이) · laundry-tub(빨래 함지와 빨래판) · laundry-quilt(이불 넌 장대) |
+| `bd-prop-door_pots` 문가 화분 1×1 | pots-halfbarrel(반 통 화분) · pots-urn(담쟁이 돌 항아리) |
+| `bd-prop-flowerbox_long` 긴 꽃상자 2×1 | box-trough(돌 구유 화분) · box-wattle(욋가지 채소 화단) |
+| `bd-prop-flowerbed` 꽃밭 2×1 | bed-rocks(돌 두른 꽃밭) · bed-herbs(허브 이랑) |
+| `bd-pick-wheat-roman-road-scarecrow` 허수아비 1×2 | scare-sack(자루 머리) · scare-pot(솥 쓴 막대) |
+| `bd-prop-sandwich_board` 입간판 1×1 | board-easel(이젤 간판) · board-crate(상자에 기댄 석판) |
+| `bd-prop-goods_pile` 짐 더미 2×2 | pile-amphorae(항아리 받침대와 자루) |
+
+- **그림 = 3/4 관문 미통과 — 오너 면제(fable-variety-beodeul-2026-11-12).** Claude Fable 5.2 medium 한 방(그림마다 호출 하나, 주인공 24×32 와 원본 조각을 참고 그림으로, 호출 57 · $4.75 / 상한 $15).
+  색은 버들항 기물 178킷이 이미 쓰는 748색에 코드로 붙였다(OKLab 최근접). 55장을 그려 **1배에서 그 종류로 안 읽히는 5장을 뺐다**(well-timber · crate-stack · wood-sawhorse · bollard-cleat · pile-tarp).
+  깨져 돌아온 2장(altar-wood 답 못 읽음 · crate-stack 위 잘림)만 결함을 적어 한 번 더 불렀다. 코드로 손댄 그림 2장: hay-rack 의 걸대 끝 · hay-loaf 의 쇠스랑을 2화소 내렸다(원본 짚가리가 비운 윗줄 칸에 삐져나오지 않게).
+  오너 말씀(상시): «구워도 되고 앞으로는 전부 오너 면제다 (FABLE 5.2 는 한번에 다 잘만든다)» — 면제는 `owner-waive` 단계로만 적었다. 스토어 출구는 막힌다.
+- **변형 계약(굽기 `bake.py` 의 `variant_base` 가 맞춰 보고 다르면 멈춘다)**: `spec.json` 항목의 `variantOf` = 원본 킷 id. ① 칸 크기가 원본과 같다 ② 막힌 칸이 원본과 같다 ③ **원본이 비운 칸에는 그림을 두지 않는다** — 원본이 들어가는 자리면 변형도 들어간다.
+  킷은 `ai.variantOf`(원본 킷 id) · 원본의 태그(쓰임·장소) + 「주제 소품」(빈 땅 채우기에 흩지 않는다) + **변형만의 낱말**(«펌프», «돌 벤치» … — 종류 낱말 «우물» 은 달지 않는다: 이름 찾기가 원본을 첫째로 짚어야 게임마다 고르기가 돈다).
+- **칸**: 시트 꼬리 둘째 줄까지 — 35,072 → **35,200칸**(4384 → 4400px). 옛 칸 0~34,998 과 옛 킷·킷 순서·칸 묶음·오토타일은 그대로다(바뀐 것은 비어 있던 채움 칸 34,999~35,071 과 새 줄). 이미 깐 맵은 같은 그림을 가리킨다.
+  번들 이식 칸은 시트 끝 뒤라 128 밀린다 — 기존 사본은 `relocateLocalTail` 이 맵 번호까지 옮긴다(위 「이식 칸 이동」).
+- **게임마다 고르기**: 빌더·조수는 **원본 킷 id 를 그대로 쓴다.** 조수 실행에서 놓기 도구(`stamp_object`·`stamp_tileset_object`)가 그 게임의 열쇠로 원본·변형 가운데 하나를 고른다(`src/project/kitLook.ts`, `openwiki/assistant-v2.md` 「게임마다 한 가지 모습」). 사람 편집은 고른 킷 그대로다.
+- **참고문서**: `beodeul-objects` 용도에 6절 「종류별 변형」 · 문서 「종류별 변형 배열」 · 그림 `variants-1x/3x.png` · 정상/오류 2종(`kit-incomplete` · `variant-passage` = 변형 칸의 엔진 통행이 원본 킷의 같은 칸과 다름) — `prepare-beodeul-objects-references.mts` 가 실제 놓기 도구와 엔진 통행으로 다시 잰다.
+- **검사**: `test/beodeulObjects.test.ts`(변형 킷의 칸 크기·칸마다 통행 표시가 원본과 같은지, «우물»·«벤치»·«이정표» 가 원본을 첫째로 짚는지, «펌프»·«돌 벤치» 가 그 변형을 짚는지).
+  시트 칸 관문(모델 없음): 새 칸 115개 — 번들 출구 미덮임 0 · 공용 출구 미덮임 0 · **스토어 출구 미덮임 115**(면제는 스토어에 닿지 않는다).
+- **남은 것**: 변형이 없는 종류가 더 많다(노점·분수·조각상·울타리·던전 벽 횃불·석순 …). 마을 칸 배치 목록(`bboxVillageCatalog`)은 원본 id 만 싣는다(놓을 때 갈린다). 다른 테마 칩셋(사막·설원 …)에는 아직 변형이 없다 — 같은 `variantOf` 계약으로 더하면 고르기는 그대로 돈다.
+  게임이 닮아 보이는 더 큰 몫은 **집·바닥·나무·마을 문법**이다(42×42 강가 마을에서 사람이 만든 소품은 열 개 남짓) — 이 일의 범위 밖(버들항 건물은 원본 보존).
 
 ## 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
 

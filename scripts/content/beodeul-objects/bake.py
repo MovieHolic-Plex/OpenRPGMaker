@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""버들항 이야기 기물 16종(샘·동굴 입구·유적 입구·빛나는 파편·야영 천막·가축 우리·늪 널빤지 길 넷·곡괭이·게시판·쪽지·봉인 제단·무너진 기둥·기록부)을
-공용 버들항 시트 꼬리 34,944~35,071(한 줄 128칸)에 덧붙인다.
+"""버들항 이야기 기물 16종(샘·동굴 입구·유적 입구·빛나는 파편·야영 천막·가축 우리·늪 널빤지 길 넷·곡괭이·게시판·쪽지·봉인 제단·무너진 기둥·기록부)과
+종류별 변형(2026-11-12 — 우물·벤치·이정표·상자·통·모닥불·짚가리·장작더미·가로등·손수레·제단·화로·계선주·빨래·화분·꽃밭·허수아비·입간판·짐 더미의 다른 그림)을
+공용 버들항 시트 꼬리 34,944~(한 줄 128칸씩, 지금 두 줄 ~35,199)에 덧붙인다.
 
   python3 scripts/content/beodeul-objects/bake.py --dry   # 관문 상태만
   python3 scripts/content/beodeul-objects/bake.py         # 굽는다
@@ -13,6 +14,10 @@
 칸 번호는 덧붙이기 전용이다: spec.json 순서대로 굽고, 새 항목은 **끝에** 더한다(순서를 바꾸거나 빼면 아래 검사가 멈춘다). 한 줄(128칸)을 넘기면 줄을 늘린다 —
 그때는 시트 끝 뒤 번들 이식 칸이 또 밀리므로 `npx tsx scripts/content/check-bundle-save-compat.mts <저장본 폴더>` 로 실제 저장본 사본을 다시 연다.
 시트 순서: … → 호숫가(bake_lakeshore.py, 34,048~34,815) → 옛 상수도(bake_waterworks.py, 34,816~34,943) → 이야기 기물(이것). bake_waterworks.py 가 끝에서 이것을 다시 부른다.
+
+종류별 변형(spec variantOf = 같은 종류의 옛 킷 id): 그 킷과 칸 크기·막힌 칸이 같은 다른 그림이다(아래 검사가 맞춘다). 킷 ai.variantOf 로 굽히고, 조수 실행은
+원본 id 로 온 놓기를 게임 열쇠로 고른 변형으로 찍는다(src/project/kitLook.ts) — 한 게임은 한 모습. 태그는 원본 킷의 태그 + 그 변형만의 낱말(종류 낱말 하나만은 넣지 않는다).
+면제 묶음은 항목마다 다를 수 있다(spec item waiver, 없으면 spec waiver).
 
 놓는 방식(spec place): prop·tall = 서 있는 기물(block 칸만 막힘, 나머지 칸은 ★ 사람 위에 그려짐) · decal = 밟고 지나가는 바닥 그림(널빤지 길·쪽지 — 위층에 놓여
 물 칸 위에서도 걸을 수 있다). 조수가 찾는 낱말은 코드가 아니라 킷 이름·태그(spec words)에 있다.
@@ -33,7 +38,7 @@ STORE = ROOT / "tiledata/beodeul-objects"
 CATALOG = STORE / "catalog.json"
 T, COLS, BASE = 16, 128, 34944
 KIT_PREFIX = "bd-obj-"
-FAMILY_KO = {"water": "물가", "entrance": "입구", "story": "이야기 물건", "camp": "야영", "farm": "농장", "swamp": "늪", "mine": "광산", "village": "마을", "ruin": "유적"}
+FAMILY_KO = {"water": "물가", "entrance": "입구", "story": "이야기 물건", "camp": "야영", "farm": "농장", "swamp": "늪", "mine": "광산", "village": "마을", "ruin": "유적", "harbour": "항구"}
 OPEN = {k: True for k in ("up", "down", "left", "right")}
 SHUT = {k: False for k in ("up", "down", "left", "right")}
 GATE_NOTE = "3/4 관문 미통과 — 오너 면제 그림."
@@ -67,7 +72,25 @@ def cut(items, imgs):
     return cells, rows_of
 
 
-def kit_of(it, rows):
+def variant_base(it, ts):
+    """변형의 원본 킷 — 칸 크기와 막힌 칸이 같아야 갈아 끼울 수 있다. 다르면 굽지 않는다."""
+    base = next((k for k in ts["structureKits"] if k["id"] == it["variantOf"]), None)
+    if base is None: sys.exit(f"{it['id']}: 원본 킷 {it['variantOf']} 이 없다")
+    if (base["width"], base["height"]) != (it["w"], it["h"]): sys.exit(f"{it['id']}: 칸 크기 {it['w']}×{it['h']} 가 원본 {base['id']} {base['width']}×{base['height']} 와 다르다")
+    blocked = sorted([x, y] for y, row in enumerate(base["rows"]) for x in range(base["width"])
+                     if any(t >= 0 and not all(ts["passability"][t].values()) for t in (row.get("tiles", [-1] * base["width"])[x], (row.get("upperTiles") or [-1] * base["width"])[x])))
+    if blocked != sorted(it["block"]): sys.exit(f"{it['id']}: 막힌 칸 {sorted(it['block'])} 이 원본 {base['id']} 의 {blocked} 와 다르다")
+    # 원본이 비운 칸에는 그림을 두지 않는다 — 원본이 들어가는 자리면 변형도 들어간다(변형이 남의 칸을 덮거나 «이미 타일» 로 거절되지 않는다).
+    im = Image.open(STORE / "pieces" / it["src"]).convert("RGBA")
+    for y, row in enumerate(base["rows"]):
+        for x in range(base["width"]):
+            empty = row.get("tiles", [-1] * base["width"])[x] < 0 and (row.get("upperTiles") or [-1] * base["width"])[x] < 0
+            if empty and im.crop((x * T, y * T, x * T + T, y * T + T)).getchannel("A").getbbox():
+                sys.exit(f"{it['id']}: 원본 {base['id']} 이 비운 칸 ({x},{y}) 에 그림이 있다 — 그 칸을 비워라")
+    return base
+
+
+def kit_of(it, rows, base=None):
     flat = it["place"] == "decal"
     blocked = " ".join(f"({x},{y})" for x, y in it["block"])
     rest = ", 나머지 칸은 사람 위에 그려진다" if len(it["block"]) < it["w"] * it["h"] else ""
@@ -76,8 +99,12 @@ def kit_of(it, rows):
     ai["layerHome"] = "upper"
     # «주제 소품» = 이름을 대야만 놓이는 것(openGround 의 주제 소품) — 빈 땅 채우기가 제단·쪽지를 흩지 않는다.
     ai["tags"] = [it["place"], "버들항", "기물", "주제 소품", FAMILY_KO.get(it["family"], it["family"]), *it["words"]]
+    if base is not None:   # 변형: 원본 킷의 태그(쓰임·장소)도 단다 — 원본을 찾는 태그 검색이 변형도 찾는다. 빈 땅 채우기에는 흩지 않는다(«주제 소품»).
+        ai["tags"] += [t for t in base.get("ai", {}).get("tags", []) if t not in ai["tags"] and t not in ("prop", "물체")]
+        ai["variantOf"] = base["id"]
     ai["themes"] = it["themes"]
-    ai["description"] = f"{it['desc']} ({it['en']}) — " + ("바닥 그림, 밟고 지나간다." if flat else f"서 있는 기물, 막힌 칸 {blocked}{rest}.") + f" {GATE_NOTE}"
+    ai["description"] = f"{it['desc']} ({it['en']}) — " + ("바닥 그림, 밟고 지나간다." if flat else f"서 있는 기물, 막힌 칸 {blocked}{rest}.") \
+        + (f" 「{base.get('name', base['id'])}」({base['id']}) 과 같은 종류의 다른 그림(같은 칸 크기·같은 막힌 칸)." if base is not None else "") + f" {GATE_NOTE}"
     ai["placementRules"] = it["rule"]
     if it.get("access"): ai["access"] = it["access"]
     kit = dict(id=KIT_PREFIX + it["id"], name=f"버들항 기물 · {it['name']} {it['w']}×{it['h']}", kind="section", width=it["w"], height=it["h"], tileSize=T,
@@ -94,7 +121,8 @@ def main():
     from object_gate import require_all
     spec, items, imgs = load()
     got = require_all([(imgs[it["id"]], it["kind"], f"beodeul_objects/{it['id']}") for it in items], context="bundle")
-    print(f"관문(bundle 출구): {len(got)}/{len(items)} — {GATE_NOTE} 묶음 {spec['waiver']}")
+    waivers = sorted({it.get("waiver", spec["waiver"]) for it in items})
+    print(f"관문(bundle 출구): {len(got)}/{len(items)} — {GATE_NOTE} 묶음 {', '.join(waivers)}")
     cells, rows_of = cut(items, imgs)
     if CATALOG.exists():   # 덧붙이기 전용: 출하된 칸 번호는 그 그림을 지킨다
         old = {it["id"]: it["rows"] for it in json.loads(CATALOG.read_text(encoding="utf-8"))["items"]}
@@ -126,12 +154,12 @@ def main():
         ts["priority"].append("lower" if block or flat else "upper")
         ts["terrain"].append(0)
         ts["tileMeta"].append(dict(label=f"버들항 기물 · {it['name']}" + (f" ({x},{y})" if it["w"] * it["h"] > 1 else ""), description=f"{it['desc']} {GATE_NOTE}",
-                                   tags=["버들항", "기물", FAMILY_KO.get(it["family"], it["family"]), *it["words"]], defaultLayer="upper",
+                                   tags=["버들항", "기물", FAMILY_KO.get(it["family"], it["family"]), *it["words"], *(["prop"] if it.get("variantOf") else [])], defaultLayer="upper",
                                    passage="solid" if block else "walk" if flat else "star", source="bundled-default"))
     for _ in range(len(cells), rows * COLS):
         ts["passability"].append(dict(OPEN)); ts["priority"].append("lower"); ts["terrain"].append(0)
         ts["tileMeta"].append(dict(label="", description="", source="bundled-default"))
-    kits = [kit_of(it, rows_of[it["id"]]) for it in items]
+    kits = [kit_of(it, rows_of[it["id"]], variant_base(it, ts) if it.get("variantOf") else None) for it in items]
     ts["structureKits"] = [k for k in ts["structureKits"] if not k["id"].startswith(KIT_PREFIX)] + kits
     ts["count"] = count
     out.save(SHEET_PATH, optimize=True)
@@ -139,11 +167,12 @@ def main():
     SHEET_JSON.write_text(json.dumps(dict(count=count, tilesPerRow=COLS)) + "\n")
     cat = dict(tilesetId="beodeul_city", texture="tex_beodeul_city", tileSize=T, tilesPerRow=COLS, base=BASE, count=count, kitPrefix=KIT_PREFIX,
                source="scripts/content/beodeul-objects/bake.py (Claude Fable 5.2 medium one-shot pictures, colours taken from the beodeul_city sheet)",
-               license=spec["license"], gate=f"3/4 gate not passed — owner waiver {spec['waiver']}",
+               license=spec["license"], gate=f"3/4 gate not passed — owner waivers {', '.join(waivers)}",
                items=[dict(id=it["id"], kit=KIT_PREFIX + it["id"], name=it["name"], en=it["en"], kind=it["kind"], width=it["w"], height=it["h"], place=it["place"],
-                           rows=rows_of[it["id"]], block=it["block"], words=it["words"], sha256=sha) for it, sha in zip(items, got)])
+                           rows=rows_of[it["id"]], block=it["block"], words=it["words"], sha256=sha,
+                           **({"variantOf": it["variantOf"]} if it.get("variantOf") else {})) for it, sha in zip(items, got)])
     CATALOG.write_text(json.dumps(cat, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    print(f"이야기 기물 꼬리 {BASE}..{count - 1}: 킷 {len(kits)}개 ({KIT_PREFIX}*)")
+    print(f"이야기 기물 꼬리 {BASE}..{count - 1}: 킷 {len(kits)}개 ({KIT_PREFIX}*) — 변형 {sum(1 for it in items if it.get('variantOf'))}개")
 
 
 if __name__ == "__main__":
