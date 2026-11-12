@@ -1,0 +1,80 @@
+{
+"id": "g-snow",
+"w": 32,
+"h": 32,
+"role": "ground",
+"shot": 1,
+"legend": {
+"a": "snow:2",
+"b": "snow:3",
+"c": "snow:1",
+"t": "tundra:1"
+},
+"rows": [
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaabbbbaaa",
+"aaaabbbbbaaaaaaaaaaaaabbbbbbbbaa",
+"aaabbbbbbbbbaaaaaaaaaaacccccaaaa",
+"aaaaaaabbbbbbaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaacccccaaaaaabbaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaabbbbaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaacbbbaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaccaaaaaaaa",
+"aaaaaaabbbbaaaaaaaaaaaaaaaaaaaaa",
+"aaabbbbbbbbbbaaaaaaaaaaabbbbbaaa",
+"aabbbbbbaaaaaaaaaaaaabbbbbbbbbaa",
+"aaaccccaaaaaaaaaaaaaaaaccccaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaabbbaaaaaaaaaaaaaaaaaaa",
+"aaacacaabbbbbbaaaaaaaaaaaataaaaa",
+"aaaaaaaaaccccaaaaaaaaaaaaatcaaaa",
+"aaaaacacaaaaaaaaaaabbbbaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaabbbbbbbbaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaccccaaaaaaa",
+"aaaaaaacacaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaataaaaaaaaaaa",
+"aaaaaaaaaacacaaaaaaactaaaaaaaaaa",
+"aaabbbbaaaaaaaaaaaaaaaaaabbbbbaa",
+"aabbbbbbaaacacaaaaaaaaabbbbbbaaa",
+"aaaacccaaaaaaaaaaaaaaaaaccatcaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+],
+"door": null,
+"cells": [
+{
+"name": "snow",
+"x": 0,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "snow-b",
+"x": 16,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "snow-c",
+"x": 0,
+"y": 16,
+"w": 16,
+"h": 16
+},
+{
+"name": "snow-d",
+"x": 16,
+"y": 16,
+"w": 16,
+"h": 16
+}
+],
+"broken": false,
+"defects": []
+}

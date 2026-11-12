@@ -12,7 +12,7 @@ import type { BuildRun, ContentBuildResult } from "../shared/types";
 import { repairEventReach } from "../place/reachRepairs";
 import { dressInteriorExits } from "../place/exitDress";
 import { fixObjectSheetFacing, showExaminedThing } from "./examineArt";
-import { examineHint, settleExamineSpot } from "./examineSpot";
+import { examineHint, lightUnseenThing, settleExamineSpot } from "./examineSpot";
 import { isPersonName, personGraphicFor } from "./personName";
 import { REREAD_PERSON, REREAD_THING } from "./rereadPage";
 
@@ -594,9 +594,11 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     fixObjectSheetFacing(run, e.mapId, e.eventId);
     const link = args.links[i];
     const settled = link?.role === "door" ? [] : settleExamineSpot(run, e.mapId, e.eventId, examineHint(link?.role, [link?.reward?.item]));
-    if (settled.length) { reachNotes.push(`조사 칸: ${settled.join(", ")}`); continue; }
-    const shown = showExaminedThing(run, e.mapId, e.eventId);
-    if (shown) warnings.push(shown);
+    if (settled.length) reachNotes.push(`조사 칸: ${settled.join(", ")}`);
+    else { const shown = showExaminedThing(run, e.mapId, e.eventId); if (shown) warnings.push(shown); }
+    // 그래도 보이지 않는 조사 칸(맨바닥 · 큰 그림의 한 칸)은 늘 빛나게 — 경로가 거쳐야 하는 것은 화면에 보여야 한다.
+    const lit = link?.role === "door" ? undefined : lightUnseenThing(run, e.mapId, e.eventId);
+    if (lit) reachNotes.push(lit);
   }
   // 답이 단서에 실제로 적혀 있는가.
   // 조각 단서(「7 _ 9 _」「_ 2 _ _」「_ _ _ 4」)는 자리별로 겹쳐 답이 되면 적힌 것으로 본다 — 전에는 경고가 떠 모델이 맞는 단서를 고쳐 썼다.

@@ -67,9 +67,10 @@ export const PIRATE_ISLES_EXPOSED_TOOLS: readonly string[] = [
 const SIZE_GUIDE = "맵 크기는 kind 옆 괄호의 권장 크기 그대로 만든다 — 버들항 마을의 「64×40·집 12채」 기준을 이 칩셋에 쓰지 않는다(구성기는 권장 크기에 맞춰 짜므로 더 크게 만들면 빈 풀밭·모래만 늘어난다).";
 
 const KIND_GUIDE =
-  "kind 고르기: 해적 항구·부두·선착장 마을 → harbor(56×40) / 열대 섬 해변 마을·야자 마을·수상 가옥 → beach(52×40) / 해안 요새·포대 → fort(48×40) / 난파선·보물 동굴·무인도 → wreck(46×36) / "
+  "kind 고르기: 해적 항구·부두·선착장 마을 → harbor(56×40) / 열대 섬 해변 마을·야자 마을·수상 가옥 → beach(52×40) / 해안 요새·포대 → fort(48×40) / 난파선·보물 동굴·무인도 → wreck(46×36) / 마을 옆 들판·초원·들길 → field(48×34) / "
   + "배 안(선장실·선실·주방·선창) → ship(36×26) / 해적 술집 안 → tavern(32×24) / 오두막 안 → hut(16×14) / 보물 동굴 안 → cave(36×28). "
-  + "«난파선과 보물 동굴 섬»처럼 바깥과 안을 함께 말하면 맵 두 장: wreck(바깥) + cave(안)을 짓고, 바깥 맵 «보물 동굴 입구» 접근칸과 안 맵 «바깥 문 자리»를 create_transfer_pair 로 잇는다.";
+  + "«난파선과 보물 동굴 섬»처럼 바깥과 안을 함께 말하면 맵 두 장: wreck(바깥) + cave(안)을 짓고, 바깥 맵 «보물 동굴 입구» 접근칸과 안 맵 «바깥 문 자리»를 create_transfer_pair 로 잇는다. "
+  + "바깥 맵 둘을 길로 이으려면 두 맵 모두 exits 에 맞닿는 변을 준다(예: 마을 harbor exits:[\"east\"] + 들판 field exits:[\"west\"]) — 결과의 «나가는 길» 칸에 create_transfer_pair 를 단다. 섬(beach·wreck)은 가장자리로 나가는 길이 없다.";
 
 export const PIRATE_ISLES_POINTER_LINE =
   "해적 항구·열대 섬 마을·해안 요새·난파선·보물 동굴·배 안 같은 해적/열대 장소는 번들 칩셋 pirate_isles(계열 oprn-pirate)로 짓는다: 새 맵 create_map({name, width, height, tilesetId:\"pirate_isles\"}) → "

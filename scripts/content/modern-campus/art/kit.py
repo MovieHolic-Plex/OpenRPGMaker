@@ -5,6 +5,9 @@
 import os, json
 from PIL import Image, ImageDraw, ImageFont
 from px import C, ROOT, save
+import sys
+sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'lib'))
+import fable_roofs as FR  # noqa: E402
 
 OUT = os.path.join(ROOT, 'tiledata', 'modern-campus')
 
@@ -28,7 +31,8 @@ class Reg:
         rows = []
         for it in s.items:
             if only and it['id'] not in only: continue
-            c = s.render(it); path = os.path.join(d, 'mc-%s.png' % it['id']); save(c, path)
+            c = s.render(it); path = os.path.join(d, 'mc-%s.png' % it['id'])
+            save(Image.fromarray(FR.apply('modern-campus', 'mc-' + it['id'], c.rgba()), 'RGBA'), path)   # 직각 지붕 덮어쓰기(오너 2026-11-12, scripts/content/lib/fable_roofs.py)
             rows.append(dict(png=os.path.basename(path), kind=it['kind'], name=it['name'], label='modern-campus/mc-' + it['id']))
         if not only:
             with open(os.path.join(d, 'items.jsonl'), 'w') as f:

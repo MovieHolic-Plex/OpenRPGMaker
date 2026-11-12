@@ -1,0 +1,38 @@
+{
+"unit": "rock-regolith-m",
+"name": "medium moon rock",
+"w": 32,
+"h": 16,
+"cls": "prop",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"k": "ink:1",
+"K": "ink:0",
+"a": "g_dust:0",
+"b": "g_dust:1",
+"c": "g_dust:2",
+"d": "g_dust:3",
+"h": "s_dark:1"
+},
+"rows": [
+"......kkkkkkk...................",
+"....kkdddddddkk.................",
+"...kdddddddccckk................",
+"..kdddddddccccbbk...kkkkkk......",
+".kdddddddccccbbbakkkddddcckk....",
+".kddddddccccKbbbakdddddccccbkk..",
+"kdcccccccccKbbbaakddddccccbbbak.",
+"kccccccbbbKbbbbaakcccccccbbbaak.",
+"kcbbbbbbbKKbbbaaahkccbbbbbbaaahk",
+"kbbbbbbbbKbbaaaahhkbbbbbbbaaahhk",
+"kbbbbbabbbKaaaaahhkbbbbabaaaahhk",
+"kbbbbaabbaaKaaahhhkbbaabaaaahhhk",
+"kabbaaaaaaaaaahhhhkaaaaaaaahhhhk",
+".kaaaaaaaaaahhhhhkkaaaaaahhhhhk.",
+".kkaaaaaahhhhhhhkkkhhhhhhhhhkk..",
+"...kkkkkkkkkkkkkk..kkkkkkkkk...."
+],
+"note": "Two fused angular moon rock lumps, lit upper left, dark lower right, crack in left lump."
+}

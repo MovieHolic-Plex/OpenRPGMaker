@@ -26,7 +26,7 @@ export function rescoreSmallJobs(options: { run?: string }): number {
     // 전/후 문서가 없는 일(기동 실패 등)은 처음 결과를 그대로 둔다.
     if (!job || !existsSync(before) || !existsSync(after)) { skipped += 1; return live; }
     const check = runCheck(job.check, job.allow, restore(before), restore(after));
-    const { status, reason } = decide({ check, turnOutcomes: live.turns.map(turn => turn.outcome), waitedLimit: false, errors: live.errors, toolCallCount: live.toolCallCount, persistence: live.persistence, limitMs: (summary.timeLimitMin ?? 10) * 60_000 });
+    const { status, reason } = decide({ check, turnOutcomes: live.turns.map(turn => turn.outcome), waitedLimit: false, errors: live.errors, toolCallCount: live.toolCallCount, persistence: live.persistence, limitMs: (summary.timeLimitMin ?? 10) * 60_000, unsent: live.unsent === true });
     const first = (live as any).liveVerdict ?? { status: live.status, reason: live.reason };
     const next = { ...live, check, status, pass: status === 'pass', reason, ...(first.status !== status || first.reason !== reason ? { liveVerdict: first } : {}) } as JobResult;
     if (first.status !== status) { flipped += 1; console.log(`${live.id}: ${first.status} → ${status} — ${reason.slice(0, 140)}`); }

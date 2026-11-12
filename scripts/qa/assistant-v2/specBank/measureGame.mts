@@ -7,6 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { runGameCheck } from "../../../../src/qa/gameCheck/index.ts";
+import { runAutoPlay } from "../../../../src/qa/gameCheck/autoPlay.ts";
 import { walkBlueprint } from "../../../../src/ai/v2/story/blueprint.ts";
 import { shipBlockers } from "../../../../src/ai/v2/judge/shipChecks.ts";
 import { buildingEntrances } from "../../../../src/ai/v2/place/entrances.ts";
@@ -68,6 +69,11 @@ try {
   lines.gameBlockers = blockers.map((f) => `[${f.code}] ${f.message.slice(0, 200)}`);
   const run = check.autoPlay?.runs?.[0];
   if (autoplay && run) { values.autoplayEnding = [run.ok && run.endingReached ? 1 : 0, 1]; if (!run.ok) lines.autoplay = [`${run.failure?.goal ?? ""}: ${run.failure?.detail.slice(0, 240) ?? ""}`]; }
+  // 같은 판을 «사람이 볼 수 있는 것» 만 쓰는 플레이어로 한 번 더(qa/gameCheck/honestPlay.ts) — 그림 없는 조사 칸·알려 주지 않은 번호에서 멈춘다.
+  if (autoplay) {
+    const honest = runAutoPlay(project, { budgetMs: 30_000, honest: true }).runs?.[0];
+    if (honest) { values.honestEnding = [honest.ok && honest.endingReached ? 1 : 0, 1]; if (!honest.ok) lines.honestEnding = [`${honest.failure?.goal ?? ""}: ${honest.failure?.detail.slice(0, 240) ?? ""}`]; }
+  }
 } catch (error) { probeErrors.push(`runGameCheck: ${(error as Error).message.slice(0, 200)}`); }
 try { const bp = walkBlueprint(project).blockers; values.blueprintBlockers = bp.length; lines.blueprintBlockers = bp.map((b) => `${b.id}`); } catch (error) { probeErrors.push(`walkBlueprint: ${(error as Error).message.slice(0, 200)}`); }
 try { const ship = shipBlockers(project, task); values.shipBlockers = ship.length; lines.shipBlockers = ship.map((b) => `${b.id} — ${String(b.message ?? "").replace(/\s+/gu, " ").slice(0, 200)}${(b as { evidence?: string }).evidence ? ` [${(b as { evidence?: string }).evidence}]` : ""}`); } catch (error) { probeErrors.push(`shipBlockers: ${(error as Error).message.slice(0, 200)}`); }
@@ -175,6 +181,9 @@ try {
     lines.hud = [`theme ${hud.theme} · 필드에 뜨는 것: ${hudOnScreen(hud).join(", ") || "(없음)"}${unused.length ? ` · 안 쓰는 게이지: ${unused.map((w) => w.source).join(", ")}` : ""}`];
   } else lines.hud = ["HUD 설정 없음"];
 } catch (error) { probeErrors.push(`fieldHud: ${(error as Error).message.slice(0, 200)}`); }
+
+// 게임 하나를 지은 판만 — 장소만 지은 판은 끝맺음 출하 기본값이 돌지 않는다.
+if ((replay?.kind ?? "game") === "game") values.guidesOff = [project.system.fieldGuides === "off" || project.system.fieldGuides === "arrows" ? 1 : 0, 1];
 
 values.maps = Object.keys(project.maps).length;
 values.events = Object.values(project.maps).reduce((n, m) => n + (m.events ?? []).length, 0);

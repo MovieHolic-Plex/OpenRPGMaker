@@ -56,3 +56,6 @@
 {"png": "sn-anvil.png", "kind": "other", "name": "모루(그루터기 받침)", "label": "snow-north/sn-anvil"}
 {"png": "sn-millstones.png", "kind": "round_body", "name": "맷돌 두 짝(눕혀 쌓음)", "label": "snow-north/sn-millstones"}
 {"png": "sn-water-barrel.png", "kind": "container", "name": "물통과 국자(사우나 곁, 위에서 보이는 물)", "label": "snow-north/sn-water-barrel"}
+{"png": "sn-seal-altar.png", "kind": "box", "name": "봉인 제단(오로라 빛 고리가 새겨진 돌 제단)", "label": "snow-north/sn-seal-altar"}
+{"png": "sn-spring.png", "kind": "container", "name": "얼지 않는 샘(눈 얹힌 돌 둘레, 김 오르는 물)", "label": "snow-north/sn-spring"}
+{"png": "sn-bundle.png", "kind": "box", "name": "꾸러미(가죽에 싸서 붉은 끈으로 묶음)", "label": "snow-north/sn-bundle"}

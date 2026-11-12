@@ -1120,7 +1120,23 @@
 "obj:dais riser stone L:0,0": 7673,
 "obj:dais riser stone R:0,0": 7674,
 "obj:dais steps stone:0,0": 7675,
-"obj:dais steps stone:1,0": 7676
+"obj:dais steps stone:1,0": 7676,
+"obj:wall shackles:0,0": 7677,
+"obj:wall shackles:0,1": 7678,
+"obj:straw cot:0,0": 7679,
+"obj:straw cot:0,1": 7680,
+"obj:cell bars:0,-1": 7681,
+"obj:cell bars:0,0": 7682,
+"obj:cell bars door:0,-1": 7683,
+"obj:cell bars door:0,0": 7684,
+"obj:ledger stand:0,-1": 7685,
+"obj:ledger stand:0,0": 7686,
+"obj:observation bench:0,-1": 7687,
+"obj:observation bench:1,-1": 7688,
+"obj:observation bench:0,0": 7689,
+"obj:observation bench:1,0": 7690,
+"obj:floor key:0,0": 7691,
+"obj:floor note:0,0": 7692
 },
 "ids": [
 "plinth",
@@ -1230,6 +1246,14 @@
 "dome rib top east",
 "stone brazier",
 "stone brazier lit",
-"dome vault"
+"dome vault",
+"wall shackles",
+"straw cot",
+"cell bars",
+"cell bars door",
+"ledger stand",
+"observation bench",
+"floor key",
+"floor note"
 ]
 }

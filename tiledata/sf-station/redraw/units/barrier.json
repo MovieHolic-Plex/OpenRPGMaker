@@ -1,0 +1,37 @@
+{
+"unit": "barrier",
+"name": "hazard barrier",
+"w": 32,
+"h": 16,
+"cls": "prop",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:0",
+"b": "ink:1",
+"y": "a_yellow:0",
+"Y": "a_yellow:1",
+"o": "a_orange:0",
+"d": "s_dark:1"
+},
+"rows": [
+".bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.",
+"bYYYYYYYYYYYYYYYYYYYYYYYYYYYYYyb",
+"bYyyyyyyyyoyyyyyyyyyyyyyooyyyyob",
+"bYyyyyyyyyyyyyyyyoyyyyyyyyyyyyob",
+"bYyyyoyyyyyyyyyyyyyyyyyyyyyyyyob",
+"byooooooooooooooooooooooooooooob",
+"byyyyaaaayyyyaaaayyyyaaaayyyyaab",
+"byyyaaaayyyyaaaayyyyaaaayyyyaaab",
+"byyaaaayyyyaaaayyyyaaaayyyyaaaab",
+"byaaaayyyyaaaayyyyaaaayyyyaaaayb",
+"baaaayyyyaaaayyyyaaaayyyyaaaayyb",
+"baaayyyyaaaayyyyaaaayyyyaaaayyyb",
+"baaooooaaaaooooaaaaooooaaaaoooob",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"..bdddddb..............bdddddb..",
+"..bbbbbbb..............bbbbbbb.."
+],
+"note": "Low barrier: worn yellow top with light edge, diagonal yellow-ink striped front, two dark feet."
+}

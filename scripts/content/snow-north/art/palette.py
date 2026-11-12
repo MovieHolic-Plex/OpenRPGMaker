@@ -66,7 +66,44 @@ def hexrgb(h):
 
 
 RGB = {m: [hexrgb(c) for c in RAMPS[m]] for m in MATS}
-ALL = {c for m in MATS for c in RGB[m]}
+ALL_V1 = {c for m in MATS for c in RGB[m]}      # 2026-10-14 잠금(131색) — 옛 그리개(art/*.py 의 draw)만 쓴다. 굽는 그림에는 더 쓰지 않는다.
+
+# ───────────────────────── 팔레트 v2 (2026-11-12, Fable 다시 그리기) ─────────────────────────
+# 오너: «색감이 너무 튀는 느낌이라.. 색상 팔레트를 좀 정해야» → 48색, 역할별. 굽는 그림(시트)은 이 48색만 쓴다(check_palette).
+# GROUND = 넓은 바닥(낮은 채도, 가까운 단) · STRUCTURE = 벽·지붕·나무·기물 · ACCENT = 불빛·칠·천(조금만) · INK = 버들항 시트에서 잰 먹.
+# snow·ice 는 바닥과 구조물이 함께 쓴다(지붕 눈·얼음 벽돌) — 구조물에는 더 깊은 그늘 단(shade)이 하나씩 붙는다.
+V2_GROUND = {
+    # 눈·얼음·서리 풀은 옛 시트(2026-10-14)의 색을 그대로 가져왔다(감독 2026-11-12: 첫 판의 회색 눈·옅은 얼음이 옛 장면보다 탁했다).
+    # 얼음·물은 길 같은 «물러나는 바닥» 이 아니라 장소의 주인공이라 옛 호수의 색상·채도를 지킨다.
+    'snow':  ['#97a8c6', '#bccade', '#dce5f1', '#f6f9fd'],      # 0 푸른 그늘 · 1 다진 눈·옅은 그늘 · 2 눈밭 · 3 빛
+    'grey':  ['#5a5556', '#77716f', '#989392', '#b9b6ba'],
+    'tundra': ['#6b6547', '#857d5a'],
+    'frost': ['#8a9b95', '#b4c3bc'],
+    'ice':   ['#4486a2', '#68aac0', '#98cfdc', '#d2eef4'],      # 0 깊은 얼음·금 · 1 호수 · 2 밝은 결 · 3 반짝임(코드가 쓴다)
+    'water': ['#263c4e', '#34526a'],
+    'plank': ['#6a5240', '#80664f', '#967c63'],
+}
+V2_STRUCTURE = {
+    'log':   ['#3a2418', '#553523', '#714a2e', '#8e623c', '#aa7e50'],
+    'stone': ['#2a3042', '#414a60', '#5a6680', '#7888a0'],
+    'pine':  ['#14292a', '#1f3d39', '#2d5449', '#426d5b'],
+    'hide':  ['#6e5a4a', '#957e68', '#bca58a'],
+    'shade': ['#4486a2', '#7383a8'],                            # 0 얼음 그늘(= ice:0, 같은 색) · 1 눈 그늘(옛 눈 램프의 그늘 단)
+}
+V2_ACCENT = {
+    'glow':  ['#b5561c', '#e8922e', '#fbcf6a'],
+    'red':   ['#8a2c2e', '#b84a3a'],
+    'blue':  ['#2d4276', '#4764a0'],
+    'aurora': ['#3fae8c'],
+}
+V2_INK = {'ink': ['#170e08', '#071528']}
+V2_ROLE = {
+    'ground': dict(V2_GROUND),
+    'object': {**V2_INK, **V2_STRUCTURE, 'snow': V2_GROUND['snow'], 'ice': V2_GROUND['ice'], **V2_ACCENT},
+}
+V2_RGB = {role: {m: [hexrgb(c) for c in t] for m, t in ramps.items()} for role, ramps in V2_ROLE.items()}
+ALL = {c for ramps in V2_RGB.values() for t in ramps.values() for c in t}
+assert len(ALL) == 48, len(ALL)     # 램프 49칸 중 shade:0 과 ice:0 이 같은 색
 
 
 def check_palette(img):

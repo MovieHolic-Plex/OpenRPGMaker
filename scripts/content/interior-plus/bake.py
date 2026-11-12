@@ -21,7 +21,8 @@ SHJ = os.path.join(ROOT, 'src/assets/atlasBiomeInteriorSheet.json')
 SPJ = os.path.join(ROOT, 'src/assets/handInteriorSpec.json')
 PINS = os.path.join(TD, 'pins.json')
 MARK = 'interior-plus'
-CAT_KO = {'museum': '박물관·미술관', 'ship': '배 선실', 'arena': '투기장', 'puzzle': '퍼즐 방', 'observatory': '천문대'}
+CAT_KO = {'museum': '박물관·미술관', 'ship': '배 선실', 'arena': '투기장', 'puzzle': '퍼즐 방', 'observatory': '천문대',
+          'dungeon': '지하 감옥', 'study': '서재', 'story': '추억'}   # 뒤 셋은 v5 분류 이름 그대로(이야기 기물 oneshot)
 SLIDE = {'ice': 'ice'}   # 미끄러지는 바닥 → 타일셋 slideTiles 규칙(src/project/slideTiles.ts)
 PIT_SIDE = (('N', 1, '북'), ('E', 4, '동'), ('S', 16, '남'), ('W', 64, '서'))
 STAR = ' 솟은 칸·걸이(★): 캐릭터 위에 그리고 통행은 아래 층이 정한다.'
@@ -187,7 +188,7 @@ def main(repack=False):
             rows_kit[(dx, dy)] = n
         h_spec = 0 if p['kind'] == 'hang' else p['h']
         o = {'ko': p['ko'], 'category': p['cat'], 'category_ko': cat_ko, 'kind': p['kind'], 'w': p['w'], 'h': h_spec, 'up': p['up'] if p['kind'] in ('floor', 'wall') else 0,
-             'cells': cells, 'desc': p['desc'][:60], 'tags': p['tags'][:4], 'place': p['place'][:60], 'pair': p['pair'][:3], 'use': p['use']}
+             'cells': cells, 'desc': (p.get('short') or p['desc'])[:60], 'tags': p['tags'][:4], 'place': p['place'][:60], 'pair': p['pair'][:3], 'use': p['use']}
         if p['facing']: o['facing'] = p['facing']
         if p['surface']: o['surface'] = [1]
         sp['objects'][pid] = o
@@ -201,7 +202,7 @@ def main(repack=False):
             rules = ('발밑 줄이 북쪽 벽면 바로 아래 첫 바닥 줄이어야 한다; ' if p['kind'] == 'wall' else '') + \
                     (f'그림이 발밑 칸 위로 {p["up"]}px 솟는다 → 위 {-y0}칸은 플레이어 위에 그리는 겹침층; ' if y0 < 0 else '') + '출입문 칸과 문으로 이어지는 통로를 막지 않는다'
         ts['structureKits'].append({'id': f'hand-interior:{pid}', 'kind': 'section', 'name': p['ko'], 'width': x1 + 1, 'height': y1 - y0 + 1, 'rows': kit_rows,
-            'ai': {'snap': snap, 'tags': ['손 도트 실내', cat_ko], 'origin': 'ai', 'layerHome': 'upper', 'description': p['desc'], 'repeatability': 'fixed',
+            'ai': {'snap': snap, 'tags': ['손 도트 실내', cat_ko] + list(p.get('words') or []) + ([p['stamp']] if p.get('stamp') else []), 'origin': 'ai', 'layerHome': 'upper', 'description': p['desc'], 'repeatability': 'fixed',
                    'placementRules': rules, 'anchor': {'dx': 0, 'dy': -y0}}, 'learnedFrom': 'hand-interior-plus'})
 
     # 방 종류·건물·예제

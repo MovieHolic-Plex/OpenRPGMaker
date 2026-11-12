@@ -1,15 +1,15 @@
 {
  "gate": {
-  "provisional_profile_uncalibrated": 263,
+  "provisional_profile_uncalibrated": 261,
   "blocked": [],
   "pieces": 249
  },
  "tiles": {
-  "count": 667,
-  "rows": 14,
+  "count": 691,
+  "rows": 15,
   "sheetPx": [
    768,
-   224
+   240
   ],
   "strips": 35,
   "kits": 86,
@@ -20,7 +20,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 667,
+  "tiles_checked": 691,
   "kits_checked": 86,
   "groups_checked": 166,
   "autotiles_checked": 0

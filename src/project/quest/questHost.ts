@@ -6,6 +6,7 @@
 // 뒤 페이지가 이기므로 의뢰 페이지는 「그 의뢰가 걸려 있는 동안」만 조건이 맞게 두고, 끝나면 그 사람 자신의 페이지로 돌아간다.
 
 import { nestedCommandLists } from "../authoredCommandIndex";
+import { stepPagesOf } from "../blueprintStepPages";
 import { pageAtStart } from "../eventPageNow";
 import type { Command, EventPage, EventPageCondition, EventPageGraphic, GameEvent, Project } from "../types";
 import { questDefId } from "./questDef";
@@ -154,7 +155,15 @@ function renameSpeaker(commands: readonly Command[], speaker: string): void {
 export function questHost(project: Project, event: GameEvent, key: string): QuestHost {
   const own = ownPages(project, event, key);
   const first = event.pages![0]!;
-  const base = pageAtStart(project, event, own) ?? own[0] ?? { ...structuredClone(first), conditions: [], commands: [] };
+  const blank = (): EventPage => ({ ...structuredClone(first), conditions: [], commands: [] });
+  // 청사진 단계의 사람이면 의뢰 페이지는 그 단계를 넘긴 뒤에만 돈다(blueprintStepPages) — 바탕도 «넘긴 뒤의 그 사람» 이다.
+  // 시작 상태의 페이지(그 단계의 연 페이지)를 바탕으로 삼으면 제안 페이지가 단계의 대사·스위치·목표 줄을 한 번 더 돌린다.
+  // 넘긴 뒤가 없는 단계(엔딩을 부른다)면 의뢰 페이지는 단계가 열리기 전에만 도므로 연 페이지 앞의 페이지 가운데서 고른다 — 엔딩 명령을 물려받지 않는다.
+  const mapId = Object.values(project.maps).find((map) => map.events.some((entry) => entry.id === event.id))?.id;
+  const owner = mapId ? stepPagesOf(project, mapId, { ...event, pages: own }) : undefined;
+  const base = owner?.doneSwitchId ? pageAtStart(project, event, own, [owner.doneSwitchId, ...(owner.step.built?.switchId ? [owner.step.built.switchId] : [])]) ?? own[0] ?? blank()
+    : owner ? pageAtStart(project, event, own.slice(0, owner.liveIndex)) ?? blank()
+      : pageAtStart(project, event, own) ?? own[0] ?? blank();
   return {
     event,
     base,

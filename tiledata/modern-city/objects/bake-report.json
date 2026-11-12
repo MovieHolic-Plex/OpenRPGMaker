@@ -1,0 +1,34 @@
+{
+ "gate": {
+  "bundle_open": 5,
+  "owner_waiver": {
+   "batch": "fable-oneshot-2026-11-12",
+   "note": "3/4 관문 미통과 — 오너 면제(통과가 아니다)",
+   "pieces": [
+    "storage-cabinet",
+    "rubble",
+    "note",
+    "device",
+    "ledger"
+   ]
+  }
+ },
+ "count_before": 13839,
+ "count_after": 13839,
+ "owned_cells": 8,
+ "cells": [
+  13831,
+  13838
+ ],
+ "kits": [
+  "mc-prop-storage-cabinet",
+  "mc-prop-rubble",
+  "mc-prop-note",
+  "mc-prop-device",
+  "mc-prop-ledger"
+ ],
+ "sheet": [
+  768,
+  4624
+ ]
+}

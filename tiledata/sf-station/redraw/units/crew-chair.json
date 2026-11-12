@@ -1,0 +1,42 @@
+{
+"unit": "crew-chair",
+"name": "crew chair",
+"w": 16,
+"h": 16,
+"cls": "prop",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:1",
+"w": "s_white:3",
+"v": "s_white:2",
+"u": "s_white:1",
+"t": "s_white:0",
+"h": "s_hull:5",
+"g": "s_hull:4",
+"f": "s_hull:3",
+"e": "s_hull:2",
+"d": "s_hull:1",
+"c": "s_hull:0"
+},
+"rows": [
+".aaaaaaaaaaaaaa.",
+"awwwwwwwwwwwwvua",
+"awvvvvvvvvvvvvua",
+"avueeeeeeeeeeuta",
+"avudddddddddduta",
+"awwwwwwwwwwwwwva",
+"awhhhhhhhhhhhgva",
+"awhggggggggggfva",
+"awhggggggggggfva",
+"awgffffffffffeva",
+"avvvvvvvvvvvvvua",
+"auuuuuuuuuuuutta",
+"aattttttttttttaa",
+"....aafedcaa....",
+"...aagfeddcaa...",
+"...aaaaaaaaaaaa."
+],
+"note": "White ceramic crew chair, blue-grey seat pad from above, low padded backrest north, short central foot."
+}

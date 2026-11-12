@@ -25,8 +25,12 @@ PC, LOWER_PC, PCNOTE = BL.PC, BL.LOWER_PC, BL.PCNOTE
 
 # ───────────────────────── 관문 ─────────────────────────
 def gate_status(png, kind):
-    """'pass' | 'prov'(영수증 pass, 프로필 미보정) | 이유(str, 막힘). 영수증 파일을 직접 읽어 FAIL 을 임시통과로 세지 않는다."""
+    """'pass' | 'prov'(영수증 pass, 프로필 미보정) | 'waived'(오너 면제 묶음 — 통과가 아니다) | 이유(str, 막힘). 영수증 파일을 직접 읽어 FAIL 을 임시통과로 세지 않는다."""
     sha = OG.pixel_sha256(png)
+    # 오너 면제(2026-11-12, object-gate owner-waive): 이 그림 해시·종류가 묶음에 있고 출구 규칙(OG.refusal — 사람 거절·Opus 최종 판정이 위)이 받아 줄 때만.
+    if OG.owner_waiver_applies(OG.read_owner_waiver(sha), sha, kind, 'bundle'):
+        why = OG.refusal(png, kind=kind, context='bundle')
+        return 'waived' if why is None else why
     r = OG.read_receipt(sha)
     if not r: return '영수증 없음'
     if r.get('kind') != kind: return '영수증 종류 %s != %s' % (r.get('kind'), kind)
@@ -68,7 +72,7 @@ def covered_status(piece_id, png):
             if a.shape != me.shape or not (a[op] == me[op]).all(): ok = False; break
         if not ok: last = '조립 그림 화소 불일치(gate_assembled.py 다시)'; continue
         st = gate_status(sw, 'structure')
-        if st in ('pass', 'prov'): return st
+        if st in ('pass', 'prov', 'waived'): return st
         last = '조립 ' + m['assembled'] + ': ' + st
     return last
 
@@ -140,10 +144,49 @@ class Outdoor:
         self.strips, self.kits, self.groups = [], [], collections.OrderedDict()
         self.piece_cells = {}
 
+    def keep_old_cells(self, sheet_png, def_json=None):
+        """이미 구워진 시트의 칸은 그림을 지킨다(jp_city 와 같은 규칙, 2026-11-12 지붕 높이).
+        번호를 받은 자리 키의 그림이 바뀌면 새 자리 키 `<키>@r<그림 해시>` 로 끝에 붙이고 키트는 새 칸을 가리킨다. 옛 번호는 옛 그림·옛 통행 그대로 남는다
+        — 이미 깔린 맵은 한 화소도 바뀌지 않고, 새로 찍는 건물만 새 그림이 된다. 이 호출이 없으면 옛 동작(제자리 덮어쓰기)이다."""
+        self.old_sheet = Image.open(sheet_png).convert('RGBA') if os.path.exists(sheet_png) else None
+        self.old_def = json.load(open(def_json, encoding='utf-8')) if def_json and os.path.exists(def_json) else None
+
+    def retire_cells(self):
+        """번호는 있는데 이번 굽기에서 아무도 쓰지 않는 칸(지붕을 낮춰 빈 칸이 된 맨 윗줄 등): 옛 시트에 그림이 있으면 그 그림을 지킨다
+        (정의는 finalize 가 옛 정의에서 그대로 옮긴다) — 그 칸으로 깔아 둔 맵이 «안 보이는 막힌 칸» 이 되지 않는다."""
+        out = []
+        if getattr(self, 'old_sheet', None) is None or getattr(self, 'old_def', None) is None: return out
+        for key, tid in self.pins.map.items():
+            if tid in self.img or tid >= self.old_def.get('count', 0): continue
+            was = self._old_cell(tid)
+            if was is not None and was.getbbox() is not None: self.img[tid] = was; out.append(tid)
+        return sorted(out)
+
+    def _old_cell(self, tid):
+        sh = getattr(self, 'old_sheet', None)
+        x, y = (tid % self.tpr) * T, (tid // self.tpr) * T
+        if sh is None or y + T > sh.height: return None
+        return BL.norm(sh.crop((x, y, x + T, y + T)))
+
     def put(self, key, im, pc, meta):
         im = BL.norm(im)
         k2 = (im.tobytes(), pc)
-        if k2 in self.dedupe and not key.endswith('!'): return self.dedupe[k2]
+        if getattr(self, 'old_sheet', None) is None:
+            # 옛 동작(제자리): 이미 번호가 박힌 자리는 그림이 다른 칸과 같아져도 제 번호를 지킨다(저장된 맵이 그 번호를 들고 있다). 새 자리만 같은 그림을 나눠 쓴다.
+            if key not in self.pins.map and k2 in self.dedupe and not key.endswith('!'): return self.dedupe[k2]
+        else:
+            if not key.endswith('!') and key in self.pins.map:
+                tid = self.pins.map[key]; was = self._old_cell(tid)
+                if was is None or was.tobytes() == im.tobytes():             # 그림 그대로(또는 옛 시트에 없는 번호): 제 번호
+                    self.img[tid] = im; self.info[tid] = dict(meta, pc=pc); self.dedupe.setdefault(k2, tid)
+                    return tid
+                if tid not in self.img:                                      # 그림이 바뀌었다: 옛 번호는 옛 그림, 새 그림은 새 자리 키
+                    self.img[tid] = was; self.info[tid] = dict(meta, pc=pc, label=(meta['label'] + ' (옛 그림)')[:80]); self.dedupe.setdefault((was.tobytes(), pc), tid)
+                key = '%s@r%s' % (key, hashlib.sha1(im.tobytes()).hexdigest()[:8])
+                if key in self.pins.map:                                     # 두 번째 굽기: 새 자리 키가 이미 번호를 받았다
+                    tid = self.pins.map[key]; self.img[tid] = im; self.info[tid] = dict(meta, pc=pc); self.dedupe.setdefault(k2, tid)
+                    return tid
+            if k2 in self.dedupe and not key.endswith('!'): return self.dedupe[k2]
         tid = self.pins.one(key)
         self.img[tid] = im; self.info[tid] = dict(meta, pc=pc); self.dedupe.setdefault(k2, tid)
         return tid
@@ -219,6 +262,7 @@ class Outdoor:
 
 def finalize(ID, NAME, TEXTURE, FAMILY, TPR, O, extra_groups, extra_kits, priority_fix=None):
     """칸 정의(통행·층·메타)를 만들어 data(OrderedDict) 를 돌려준다. O = Outdoor."""
+    retired = O.retire_cells() if hasattr(O, 'retire_cells') else []
     img, info = O.img, O.info
     count = max(list(img) + [0]) + 1
     count = max(count, O.pins.next_id)
@@ -248,6 +292,9 @@ def finalize(ID, NAME, TEXTURE, FAMILY, TPR, O, extra_groups, extra_kits, priori
         g.update(source='bundled-default', confidence='high')
         tile_groups.append(g)
     kits = O.kits + list(extra_kits)
+    for t in retired:                                       # 물러난 칸: 옛 정의 그대로
+        od = O.old_def
+        passability[t] = od['passability'][t]; priority[t] = od['priority'][t]; terrain[t] = od['terrain'][t]; tile_meta[t] = od['tileMeta'][t]
     data = collections.OrderedDict(id=ID, name=NAME, textureKey=TEXTURE, family=FAMILY, tileSize=16, tilesPerRow=TPR, count=count, libraryEnd=count,
                                    passability=passability, priority=priority, terrain=terrain, tileMeta=tile_meta, tileGroups=tile_groups,
                                    autotileGroups=[], animationStrips=sorted(O.strips, key=lambda s: s['baseTile']), structureKits=kits)

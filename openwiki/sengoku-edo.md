@@ -82,6 +82,24 @@ QA 대상은 엔진 렌더러 원본 해상도다. 성하마을·성·신사/절
 - 조수(Argon medium, 「전국시대 성하마을 만들어줘」, 실제 입력창): 6.5 → 7.5. 같은 compose 배치에 풀 바둑판이 사라지고 나무 수관이 찼다. 시작 위치도 새 맵 (26,47)로 잡혔다(composerStart). 저장→재로드 일치. 남은 감점은 마치야 두 외형 반복, 해자 밖 빈 풀밭, 실내·NPC 0.
 - 남은 이질감: 대숲·실내·건물 윤곽은 여전히 sumi(순흑에 가까움, 바꾸면 영수증 163개 재판정), 버들 가지가 줄처럼 곧다, 기와는 여전히 세로 골이 규칙적, 장면 구성이 성기다(구성기 몫 — 덤불·나무 덩이 밀도가 버들항보다 낮다).
 
+## 직각 지붕 다시 그리기 (2026-11-12, 오너 지시)
+
+오너 2026-11-12: «이 에디터는 시야각이 직교해야하므로 sengoku_edo se-machiya-a 이런 식의 직각 지붕이어야하는데 … Fable 5.2 Medium 으로 1번만 시도». `se-machiya-a` 가 기준이고, 같은 칩셋 안의 사다리꼴(우진각) 지붕 10채를 그 투영으로 맞췄다.
+
+- Claude Fable 5.2 medium 한 방으로 **지붕만** 다시 그렸다(벽·문·기단은 코드 그림 그대로): `se-minka`·`minka-small`·`barn`·`chashitsu`·`chaya-thatch`(이엉) · `se-onsen`·`dojo`·`samurai-house`·`temple-hall`(기와) · `se-shrine`(동판). 지붕 기울기(모델 없음) 11~22px → 0~1px.
+- 덮어쓰기: `tiledata/sengoku-edo/fable-roofs/<조각>.png` + `index.json` → `art/kit.py` 의 내보내기가 `scripts/content/lib/fable_roofs.py` 로 코드 그림 위에 덮어 `_gate/se-*.png` 를 쓴다. 코드 그림이 바뀌면 멈춘다.
+- 관문: **3/4 관문 미통과 — 오너 면제** 묶음 `fable-redraw-roofs-sengoku-edo-2026-11-12`(bundle·shared, 스토어 제외). `se_bake_lib.gate_status` 가 면제된 그림을 받는다(`WAIVED` 목록). 통과가 아니다.
+- 칸 번호(jp_city 와 같은 규칙): **옛 칸은 옛 그림 그대로, 다시 그린 지붕은 시트 끝의 새 칸**(1061 → 1227, 새 칸 166)이고 다시 그린 10채의 키트만 새 칸을 가리킨다. 이미 깔린 맵은 전과 똑같이 보이고 새로 찍는 건물만 새 지붕이다. `se_bake_lib.Outdoor.keep_old_cells(옛 시트)` + `put`: 이미 번호를 받은 자리 키의 그림이 옛 시트의 그 칸과 다르면 옛 칸에 옛 그림을 남기고 `키@r<그림 해시>` 로 새 번호를 받는다(다시 구워도 같은 번호 — 두 번 구워 시트·정의·핀 해시 동일 확인). 검사(모델 없음, `~/z-project/assistant-fable-runs/redraw/roofs/laid_check.py`): 옛 칸 1061개 중 새 시트에서 화소가 달라진 칸 0 · 옛 칸의 통행/우선순위 변화 0 · 옛 키트 28채를 찍은 맵(11×175칸)을 옛 시트/새 시트로 그린 그림의 다른 화소 0.
+- **지붕 높이(2026-11-12, 오너 «지붕의 height 그러니까 세로 길이가 너무 길면 또 곤란함»)**: 한도는 `~/z-project/assistant-fable-runs/redraw/CONTRACT.md` §1 «roof height»(지붕 덩이 높이 ≤ 44px · 폭 128px 이상 48px · 덩이 몫 ≤ 55%, 기준 se-machiya-a/b 32px 와 버들항 집). 넘는 8채를 **코드로** 낮췄다(모델 호출 0): 용마루 6줄·처마 6줄을 지키고 지붕 가운데에서 무늬 주기의 배수만큼 줄을 빼 위쪽을 내렸다. `temple-hall` 55 → 35px · `minka` 51 → 28 · `dojo` 48 → 36 · `samurai-house` 46 → 36 · `chaya-thatch` 44 → 24 · `minka-small`·`barn`·`chashitsu` 36 → 26. 벽·문 화소·그림 크기·키트 칸 수·입구는 그대로이고 맨 윗줄 칸 19개(본당 9 · 민가 6 · 찻집 4)가 빈 칸(-1)이 됐다. 덮어쓰는 그림은 같은 `fable-roofs/<조각>.png`, 면제 묶음은 `--replace` 로 다시 적었다. 굽기: 1227 → 1280칸(새 칸 53), 옛 칸 1227개 화소·통행 변화 0, 옛 키트 28채 맵 화소 차이 0. `se_bake_lib.Outdoor.retire_cells`: 번호는 있는데 이번 굽기에서 아무도 안 쓰는 칸(앞서 붙인 높은 지붕의 `…@r<해시>` 칸)도 옛 시트의 그림과 옛 정의를 그대로 지킨다 — 그 칸으로 깔아 둔 맵이 빈 칸이 되지 않는다. 구성기 걷기 검사(village·samurai·temple·castle-town, 같은 씨앗): 걸을 수 있는 칸 1373 → 1391 · 1797 → 1806(빈 칸이 된 자리), 접근칸 전부 도달.
+- 남은 것: `se-castle-turret`(2단 지붕 — 상자를 손으로 나눠야 한다), 예외(천수각·탑·종루·문·도리이). 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
+
+## 조수 v2 의 실내 종류 (2026-11-12)
+
+조수 v2 세계 표(`src/ai/v2/place/world.ts`)가 방 구성 여섯을 실내 종류로 싣는다: `farmhouse`(minka) · `townhouse`(machiya) · `inn`(ryokan-1f) · `samurai-house` · `dojo` · `castle-hall`.
+방 구성 도구(`build_hand_interior_room`, `layout:{program, seed}`)로 짓고, 바깥 맵의 그 건물 문(농가 / 마치야·가게·대장간 / 여관·온천 / 무가 저택 / 도장 / 천수각)에 잇는다.
+전에는 실내 종류가 0이라 «촌장 집» 같은 실내 요청이 거절됐다. 표·크기·남은 것(여관 2층·다실)은 `openwiki/assistant-v2.md` 「전국·에도 세계의 실내 종류」.
+방 구성을 더하거나 이름을 바꾸면(`src/assets/sengokuEdoRoomTemplates.json programs`) 그 표의 `value` 와 `test/aiV2SengokuRooms.test.ts` 를 같이 고친다.
+
 ## 조수 실측
 
 `/tmp/se-gemini/rerun.sh` 는 `/tmp/ai-gemini/rerun.sh` 사본이다. 실제 편집기 입력창 경로로 gemini-3.8-flash(high)를 새 기본 프로젝트에서 돌린다. 세 판 모두 SQLite 에 저장한 뒤 다시 읽었고, 해시가 같았다(reloadEqual true).

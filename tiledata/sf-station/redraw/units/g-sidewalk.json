@@ -1,0 +1,36 @@
+{
+"unit": "g-sidewalk",
+"name": "concrete sidewalk slabs, 2 tiles",
+"w": 32,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "g_road:1",
+"b": "g_road:2",
+"c": "g_road:3",
+"d": "g_road:0",
+"e": "ink:1"
+},
+"rows": [
+"cccccccacccccccacccccccaccccccca",
+"cbbbbbbacbbbbbbacbbbbbbacbbbbbba",
+"cbbbbbbacbbbabbacbbabbbacbbbbbba",
+"cbbabbbacbbbbbbacbbbbbbacbbbbaba",
+"cbbbbbbacbbbbbbacbbbbbbacbbbbbba",
+"cbbbbabacbabbbbacbbbbabacbabbbba",
+"cbbbbbbacbbbbbbacbbbbbbacbbbbbba",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"cccccccacccccccacccccccaccccccca",
+"cbbbbbbacbbbbbbacbbbbbbacbbbbbba",
+"cbbbabbacbbbbbbacbbbbbbacdddddda",
+"cbbbbbbacbbabbbacbabbbbacdeddeda",
+"cbabbbbacbbbbbbacbbbbbbacdeddeda",
+"cbbbbbbacbbbbabacbbbabbacdddddda",
+"cbbbbbbacbbbbbbacbbbbbbacbbbbbba",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+],
+"note": "Concrete sidewalk slabs with darker joints, lit upper-left edges, sparse stains; tile 2 has a drain grate."
+}

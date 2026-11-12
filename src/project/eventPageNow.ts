@@ -6,10 +6,11 @@ import { resolveEventPage } from "./io/pageResolution";
 import type { EventPage, GameEvent, Project } from "./types";
 
 /** 시작 상태(시작 스위치·변수·소지품·파티)에서 조건이 맞는 페이지. pages 를 주면 그 가운데서만 고른다. */
-export function pageAtStart(project: Project, event: GameEvent, pages: readonly EventPage[] = event.pages ?? []): EventPage | undefined {
+export function pageAtStart(project: Project, event: GameEvent, pages: readonly EventPage[] = event.pages ?? [], alsoOn: readonly string[] = []): EventPage | undefined {
   const start = project.session;
   return resolveEventPage({ ...event, pages: [...pages] }, {
-    switches: { ...(start?.switches ?? {}) },
+    // alsoOn: 시작 상태에 더해 켜진 것으로 볼 스위치 — 「이 단계를 넘긴 뒤의 그 사람」 처럼 조금 뒤의 상태를 물을 때.
+    switches: { ...(start?.switches ?? {}), ...Object.fromEntries(alsoOn.map((id) => [id, true])) },
     variables: { ...(start?.variables ?? {}) },
     inventory: { ...(start?.inventory ?? {}) },
     partyActorIds: [...(start?.partyActorIds ?? [])],

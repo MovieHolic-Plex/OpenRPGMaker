@@ -1,0 +1,42 @@
+{
+"unit": "street-ac-cluster",
+"name": "air-conditioner units",
+"w": 32,
+"h": 16,
+"cls": "prop",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:0",
+"b": "ink:1",
+"d": "s_white:0",
+"e": "s_white:1",
+"f": "s_white:2",
+"g": "s_white:3",
+"h": "s_dark:0",
+"i": "s_rust:0",
+"j": "s_rust:1",
+"k": "s_rust:2",
+"G": "a_green:1"
+},
+"rows": [
+".bbbbbbbbbbbbb....bbbbbbbbbbbbb.",
+"bggggggggggggfb..bggggggggggggfb",
+"bggggeeeeegggfb..bggggeeeeegggfb",
+"bggeehhahheegfb..bggeehhahheegfb",
+"bgehhahhhahhefb..bgehhahhhahhefb",
+"bgehahhfhhahefb..bgehahhfhhahefb",
+"bgehhahhhahhefb..bgehhahhhahhefb",
+"bggeehhahheeffb..bggeehhahheeffb",
+"bggggeeeeeffffb..bggggeeeeeffffb",
+"beeeeeeeeeeeedb..beeeeeeeeeeeedb",
+"behhhhhhhhhhedb..behhhhhhhhhhedb",
+"beeeeeeeeeeeedbkkbeeeeeeeeeeeedb",
+"behhhhhhhhhhedbjjbehhhhhhhhhhedb",
+"beeeeeeeeeeGedbiibeeeeeeeeeeGedb",
+"bddddddddddddab..bddddddddddddab",
+".bbbbbbbbbbbbb....bbbbbbbbbbbbb."
+],
+"note": "Two white AC units with dark fan grilles on top, louvred fronts, copper pipe joining them."
+}

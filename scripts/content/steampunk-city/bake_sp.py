@@ -6,7 +6,9 @@
 
 산출: public/assets/steampunk-city/steampunk-city-chipset.png · src/assets/steampunkCityTileset.json · src/assets/steampunkCitySheet.json
       tiledata/steampunk-city/bake-pins.json · bake-report.json
-3/4 관문: 모든 조각은 그림 화소 해시의 object-gate 영수증이 pass 여야 한다(sp_bake_lib.gate_status). 막힌 조각은 굽지 않고 보고서 blocked 에 남긴다.
+3/4 관문: 모든 조각은 그림 화소 해시의 object-gate 영수증이 pass 이거나 오너 면제 묶음에 들어 있어야 한다(sp_bake_lib.gate_status). 막힌 조각은 굽지 않고 보고서 blocked 에 남긴다.
+         면제는 통과가 아니다 — 보고서 gate.owner_waived 로 따로 세고 «3/4 관문 미통과 — 오너 면제» 로 적는다.
+그림: art/ 의 코드 도트를 팔레트 v3 로 색만 옮긴 것 + tiledata/steampunk-city/fable-redraw/ 의 Fable 한 방 그림(kit.Reg.picture). 먼저 art/<묶음>.py 로 _gate PNG 를 내보낸다.
 움직이는 조각(물·증기 구멍·굴뚝 연기·보일러·기관·테슬라 코일·벽난로)은 정지 그림과 같은 id 의 애니메이션 키트로 굽는다(프레임 0 = 정지 그림).
 """
 import argparse, collections, json, os, sys
@@ -18,7 +20,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, 'art'))
 import sp_bake_lib as TB   # noqa: E402
 BL = TB.BL
-from palette import check_palette   # noqa: E402
+from palette_v3 import check_palette   # noqa: E402  (역할 팔레트 v3 — 48색)
 
 ID, NAME, TEXTURE, FAMILY = 'steampunk_city', '스팀펑크 도시 (손 도트)', 'tex_steampunk_city', 'oprn-steampunk'
 TPR = 48
@@ -38,6 +40,7 @@ FOOT = {
     'chimney': 1, 'jib-crane': 2, 'mooring-mast': 1, 'airship-docked': 2, 'tram-shelter': 1,
     'boiler': 2, 'engine': 2, 'tesla-coil': 1, 'drill-press': 1, 'curio-cabinet': 1, 'bookshelf': 1, 'wardrobe': 1, 'dresser': 1,
     'pipe-wall': 2, 'wall-clock-gear': 2,
+    'regulator': 1, 'alarm': 1, 'terminal': 1, 'notice-board': 1,
 }
 SOLID_CELLS = {'gantry-crane': [(0, 4), (4, 4), (0, 3), (4, 3)]}
 # 걸을 수 없는 바닥(물·석축·배관 도랑·승강장/부두 끝·실내 벽면·천장)
@@ -63,14 +66,15 @@ def build_pieces(report):
             d = dict(it, group=reg.group, png=png); items.append(d); by[it['id']] = d
     frame_ids = {f for _, _, fs, _ in anims for f in fs[1:]}
     anim_base = {fs[0]: (aid, n, fs, fps) for aid, n, fs, fps in anims}
-    pieces, prov, blocked = [], 0, []
+    pieces, prov, waived, blocked = [], 0, 0, []
 
     def status(it):
-        nonlocal prov
+        nonlocal prov, waived
         if not os.path.exists(it['png']): return 'PNG 없음 — art 내보내기 먼저'
         s = TB.gate_status(it['png'], it['kind'])
         if s == 'pass': return True
         if s == 'prov': prov += 1; return True
+        if s == 'waived': waived += 1; return True
         return s
 
     for it in items:
@@ -102,7 +106,7 @@ def build_pieces(report):
                 p['tags'] = p['tags'] + ['애니메이션']
                 p['desc'] = f"{an} — {len(fr)}프레임 반복(칸 {it['w']}×{it['h']}). " + p['desc']
         pieces.append(p)
-    report['gate'] = dict(provisional_profile_uncalibrated=prov, blocked=blocked, pieces=len(pieces),
+    report['gate'] = dict(provisional_profile_uncalibrated=prov, owner_waived=waived, blocked=blocked, pieces=len(pieces),
                           outdoor=sum(1 for p in pieces if p['group'] != 'sp-interior'), interior=sum(1 for p in pieces if p['group'] == 'sp-interior'))
     return pieces
 
@@ -111,6 +115,7 @@ def bake(dry=False):
     report = collections.OrderedDict()
     pins = TB.Pins(P['pins'], TPR)
     O = TB.Outdoor(pins, TPR, 'sp', THEME)
+    O.keep_old_cells(P['png'], P['tileset'])   # 옛 칸은 옛 그림 그대로, 바뀐 그림은 새 칸(이미 깔린 맵 보존)
     pieces = build_pieces(report)
     for p in pieces: O.add_piece(p)
     O.finish_pieces(pieces, lambda p: p.get('role', 'prop'), '바닥(아래층).')

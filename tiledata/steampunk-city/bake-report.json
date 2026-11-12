@@ -1,20 +1,21 @@
 {
  "gate": {
-  "provisional_profile_uncalibrated": 191,
+  "provisional_profile_uncalibrated": 0,
+  "owner_waived": 196,
   "blocked": [],
-  "pieces": 167,
-  "outdoor": 115,
+  "pieces": 172,
+  "outdoor": 120,
   "interior": 52
  },
  "tiles": {
-  "count": 851,
-  "rows": 18,
+  "count": 1329,
+  "rows": 28,
   "sheetPx": [
    768,
-   288
+   448
   ],
   "strips": 38,
-  "kits": 102,
+  "kits": 107,
   "groups": 70
  },
  "palette_violations": 0,
@@ -22,14 +23,14 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 851,
-  "kits_checked": 102,
+  "tiles_checked": 1329,
+  "kits_checked": 107,
   "groups_checked": 70,
   "autotiles_checked": 0
  },
  "reassembly": {
-  "kits": 102,
-  "checked": 102,
+  "kits": 107,
+  "checked": 107,
   "mismatched": 0,
   "ids": []
  }
