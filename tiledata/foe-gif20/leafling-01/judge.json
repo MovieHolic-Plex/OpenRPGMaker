@@ -1,0 +1,15 @@
+{
+ "pass": true,
+ "wolfLevel": 4,
+ "why": "The green leaf-cluster child with brown twig limbs looks right with a dot eye and small mouth (no beak), and its whip of vine reaches right in attack and cast_release. Hit tilts the leafy head back to the left, and dead lies flat on the ground, with hard green shading bands close to the wolves' level.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium",
+ "batch": "20261112-185800-motion20-d03830",
+ "runId": "cf3d88b6-c53b-40e2-b529-0f579fe68c09",
+ "rawSha256": "95c1857a0b91e7d95336798badf8ab09a4029dc7acea5cea3c5df6d6d6878a31",
+ "hiddenControlsRejected": 1,
+ "pixelSha": "3da2b230a81e413e015b71c4f391b257f5bb21b514dbf008001b69d148632454",
+ "standard": "battle-gen/1"
+}

@@ -1,0 +1,15 @@
+{
+ "pass": true,
+ "wolfLevel": 4,
+ "why": "The dark-red segmented centipede has an ochre pincer head pointing right, hard orange shading bands and hand-placed legs. It lunges right in attack, rears back to the left in hit and lies flat in dead, although a few magenta pixels near its pincers and legs are a borderline flaw.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium",
+ "batch": "20261112-205057-motion20-472fdb",
+ "runId": "c103eab9-3d6d-456e-9b9b-7ef40848b9c9",
+ "rawSha256": "5aaf42d9dd0886986420dfaaa8f4c1fedc825fdbed7c3dbcf99828d72cc074c3",
+ "hiddenControlsRejected": 3,
+ "pixelSha": "3e3e1d2f495e79e461b953805f5a0f6c36c64a4191767a6f9659678dd2cf3686",
+ "standard": "battle-gen/1"
+}

@@ -1,0 +1,134 @@
+{
+ "kind": "motion20",
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "facts": {
+  "size": [
+   480,
+   384
+  ],
+  "cell": 96,
+  "hover": 6,
+  "colours": 15,
+  "bottoms": [
+   86,
+   86,
+   86,
+   86,
+   86,
+   86,
+   86,
+   86,
+   92,
+   86,
+   86,
+   86,
+   86,
+   86,
+   86,
+   86,
+   86,
+   86,
+   86,
+   86
+  ],
+  "idleShiftPx": {
+   "01": 4,
+   "12": 3,
+   "02": 7
+  },
+  "idleXorPx": {
+   "01": 348,
+   "12": 516,
+   "02": 660
+  },
+  "attackVsHitXor": 1339,
+  "deadHeight": [
+   34,
+   59
+  ],
+  "wolf": {
+   "colors": 14,
+   "outlineColors": 14,
+   "smallSpecksPer100": 36.4,
+   "uniform2x2": 0.15,
+   "outlineInner": 0.86,
+   "lumLevels": 14,
+   "w": 41,
+   "h": 60
+  }
+ },
+ "pixelSha": "3da2b230a81e413e015b71c4f391b257f5bb21b514dbf008001b69d148632454",
+ "convert": {
+  "th": 58,
+  "ncol": 16,
+  "key": "magenta",
+  "flip": true,
+  "scale": 5.845,
+  "idleBRebuilt": true,
+  "downscaler": "vendor/unfake (unfake-cli 1.4.0) downscale -m mode --no-elastic"
+ },
+ "tried": [
+  {
+   "th": 54,
+   "ncol": 16,
+   "ok": false,
+   "errors": [
+    "wolf range: colors 12 (wolves 13-18)",
+    "wolf range: uniform2x2 0.14 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 54,
+   "ncol": 14,
+   "ok": false,
+   "errors": [
+    "wolf range: colors 11 (wolves 13-18)",
+    "wolf range: outlineColors 10 (wolves 12-15)",
+    "wolf range: uniform2x2 0.14 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 54,
+   "ncol": 13,
+   "ok": false,
+   "errors": [
+    "wolf range: colors 9 (wolves 13-18)",
+    "wolf range: outlineColors 9 (wolves 12-15)"
+   ]
+  },
+  {
+   "th": 50,
+   "ncol": 16,
+   "ok": false,
+   "errors": [
+    "wolf range: uniform2x2 0.12 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 50,
+   "ncol": 14,
+   "ok": false,
+   "errors": [
+    "wolf range: uniform2x2 0.12 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 50,
+   "ncol": 13,
+   "ok": false,
+   "errors": [
+    "wolf range: colors 12 (wolves 13-18)",
+    "wolf range: outlineColors 11 (wolves 12-15)",
+    "wolf range: uniform2x2 0.13 (wolves 0.15-0.23)"
+   ]
+  },
+  {
+   "th": 58,
+   "ncol": 16,
+   "ok": true,
+   "errors": []
+  }
+ ]
+}
