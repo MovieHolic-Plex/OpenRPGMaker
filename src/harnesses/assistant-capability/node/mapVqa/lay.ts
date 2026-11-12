@@ -11,6 +11,7 @@ import { initLocalProjectStore } from '../../../../../electron/local-store/store
 import { readProjectSqlite } from '../../../../../scripts/content/read-project-sqlite.mts';
 import { sharedContentFile } from '../../../../../scripts/lib/sharedContentSqlite';
 import { collect, gitInfo, keepSlim, modelPin, sessionEnv, waitFor } from '../smallJobs/run';
+import { layStatus, type LayStatus } from '../turnVerdict';
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../..');
 export const REQUESTS_FILE = resolve(REPO_ROOT, 'harness-data/assistant-capability/map-vqa/requests.json');
@@ -20,7 +21,7 @@ const writeJson = (file: string, data: unknown) => writeFileSync(file, JSON.stri
 
 export type LayJob = { id: string; kind: string; maps: number; request: string };
 export type LaySet = { schemaVersion: 1; kind: 'assistant-map-laying-set'; title: string; description: string; autoAnswer: string; jobs: LayJob[] };
-export type LayStatus = 'laid' | 'nothing' | 'timeout' | 'infra';
+export type { LayStatus };
 export type LayResult = {
   id: string; kind: string; request: string; status: LayStatus; reason: string;
   /** 조수가 새로 만들었거나 고친 맵(턴 전 문서와 다른 맵). */
@@ -28,7 +29,7 @@ export type LayResult = {
   wantedMaps: number;
   toolCalls: Array<{ name: string; ok: boolean }>; toolCallCount: number; toolErrors: number; wallMs: number; modelCalls: number;
   tokens: { input: number; output: number; cacheRead: number; reviewTotal: number };
-  complete: boolean | null; completeNote: string; autoAnswered: boolean; errors: string[];
+  complete: boolean | null; completeNote: string; /** 사용자에게 묻는 것으로 끝난 턴 — 최종 보고가 없는 것이 정상이다. */ endedOnQuestion: boolean; autoAnswered: boolean; errors: string[];
   persistence: { saved: boolean; reloadedSame: boolean; rendererEqual: boolean } | null;
   model: string; provider: string; assistantVersion: string; answer: string; startedAt: string; finishedAt: string;
 };
@@ -57,7 +58,7 @@ async function runJob(job: LayJob, root: string, editorRoot: string, pin: { file
   const dir = resolve(root, 'jobs', job.id), projectDir = resolve(dir, 'project'), session = resolve(dir, 'session');
   mkdirSync(resolve(session, 'inbox'), { recursive: true });
   const base: LayResult = { id: job.id, kind: job.kind, request: job.request, status: 'infra', reason: '', maps: [], wantedMaps: job.maps, toolCalls: [], toolCallCount: 0, toolErrors: 0, wallMs: 0, modelCalls: 0,
-    tokens: { input: 0, output: 0, cacheRead: 0, reviewTotal: 0 }, complete: null, completeNote: '', autoAnswered: false, errors: [], persistence: null, model: '', provider: '', assistantVersion: '', answer: '', startedAt, finishedAt: startedAt };
+    tokens: { input: 0, output: 0, cacheRead: 0, reviewTotal: 0 }, complete: null, completeNote: '', endedOnQuestion: false, autoAnswered: false, errors: [], persistence: null, model: '', provider: '', assistantVersion: '', answer: '', startedAt, finishedAt: startedAt };
   const finish = (patch: Partial<LayResult>): LayResult => { const result = { ...base, ...patch, finishedAt: new Date().toISOString() }; writeJson(resolve(dir, 'result.json'), result); return result; };
   const store = await initLocalProjectStore({ projectDir });
   try { await store.saveProject(createBlankProject()); } finally { store.close(); }
@@ -98,7 +99,7 @@ async function runJob(job: LayJob, root: string, editorRoot: string, pin: { file
     const turns = steps.map(step => readJson(resolve(session, 'turns', `${step}.json`))).filter(Boolean);
     const metrics = collect(turns);
     const picked = { toolCalls: metrics.toolCalls ?? [], toolCallCount: metrics.toolCallCount ?? 0, toolErrors: metrics.toolErrors ?? 0, wallMs: metrics.wallMs ?? 0, modelCalls: metrics.modelCalls ?? 0, tokens: metrics.tokens ?? base.tokens,
-      complete: metrics.complete ?? null, completeNote: metrics.completeNote ?? '', errors: metrics.errors ?? [], model: metrics.model ?? '', provider: metrics.provider ?? '', assistantVersion: metrics.assistantVersion ?? '', answer: metrics.answer ?? '', autoAnswered };
+      complete: metrics.complete ?? null, completeNote: metrics.completeNote ?? '', endedOnQuestion: metrics.endedOnQuestion ?? false, errors: metrics.errors ?? [], model: metrics.model ?? '', provider: metrics.provider ?? '', assistantVersion: metrics.assistantVersion ?? '', answer: metrics.answer ?? '', autoAnswered };
     const persistenceFile = readdirSync(session).find(name => name.startsWith('persistence-final-'));
     const receipt = persistenceFile ? readJson(resolve(session, persistenceFile)) : null;
     const persistence = receipt ? { saved: ['idle', 'saved'].includes(receipt.saveKind), reloadedSame: receipt.sameStoredDocument === true, rendererEqual: receipt.rendererMapsAndDatabaseEqual === true } : null;
@@ -108,8 +109,8 @@ async function runJob(job: LayJob, root: string, editorRoot: string, pin: { file
     const maps = laidMaps(before, after);
     const timedOut = turns.some(turn => turn.outcome === 'timeout') || waited === 'limit';
     const realErrors = picked.errors.filter(error => !error.startsWith('page: '));
-    const status: LayStatus = !maps.length && realErrors.length && picked.toolCallCount === 0 ? 'infra' : timedOut ? 'timeout' : maps.length ? 'laid' : 'nothing';
-    const reason = status === 'infra' ? `기반 오류: ${realErrors[0]?.slice(0, 240)}` : `${status === 'timeout' ? `시간 초과(${Math.round(options.limitMs / 60_000)}분) — 그때까지 ` : ''}바뀐 맵 ${maps.length}장(${maps.map(map => `${map.name} ${map.width}×${map.height}`).join(', ') || '없음'}) · 바란 맵 ${job.maps}장`;
+    const { status, unsent } = layStatus({ maps: maps.length, turns, errors: realErrors.length, toolCalls: picked.toolCallCount, timedOut });
+    const reason = unsent ? `기반 오류: 입력이 조수에 닿지 않았다 — 모델 호출 0 · 도구 0 · done 없음(턴 ${Math.round((picked.wallMs ?? 0) / 1000)}초)` : status === 'infra' ? `기반 오류: ${realErrors[0]?.slice(0, 240)}` : `${status === 'timeout' ? `시간 초과(${Math.round(options.limitMs / 60_000)}분) — 그때까지 ` : ''}바뀐 맵 ${maps.length}장(${maps.map(map => `${map.name} ${map.width}×${map.height}`).join(', ') || '없음'}) · 바란 맵 ${job.maps}장`;
     return finish({ ...picked, persistence, maps, status, reason });
   } catch (error) {
     await killGroup();
@@ -138,6 +139,8 @@ export async function runMapLaying(options: LayOptions): Promise<number> {
   const startedAt = new Date().toISOString(), results = new Map<string, LayResult>(), queue: LayJob[] = [];
   for (const job of jobs) {
     const dir = resolve(root, 'jobs', job.id), done = readJson(resolve(dir, 'result.json')) as LayResult | null;
+    // 기반 오류로 끝난 요청은 모델 시도가 아니다 — --skip-completed 로 이어 돌릴 때 그 폴더를 infra-broken/ 으로 치우고 다시 돌린다.
+    if (done?.status === 'infra' && options.skipCompleted) { mkdirSync(resolve(root, 'infra-broken'), { recursive: true }); renameSync(dir, resolve(root, 'infra-broken', `${job.id}-${Date.now()}`)); queue.push(job); continue; }
     if (done && options.skipCompleted) { results.set(job.id, done); continue; }
     if (done) throw Error(`${job.id}: 이미 실행한 결과가 있다(${dir}). 새 --out 을 쓰거나 --skip-completed 로 남은 것만 돌린다 — 실모델 시도는 덮어쓰지 않는다.`);
     if (existsSync(dir)) renameSync(dir, `${dir}.aborted-${Date.now()}`);
@@ -150,7 +153,7 @@ export async function runMapLaying(options: LayOptions): Promise<number> {
     const summary = { schemaVersion: 1, kind: 'assistant-map-laying-run', set: 'harness-data/assistant-capability/map-vqa/requests.json', title: set.title, modelPin: pinName,
       model: ordered.find(result => result.model) ? `${ordered.find(result => result.model)!.provider} ${ordered.find(result => result.model)!.model} (${pin.config.reasoningEffort ?? '-'})` : `${pin.config.providerId} ${pin.config.model}`,
       assistantVersion: options.v2 ? 'v2' : 'v1', timeLimitMin: limitMs / 60_000, parallel, editorRoot, editorHead: editorGit, git: gitInfo(), startedAt, finishedAt: new Date().toISOString(), planned: jobs.length,
-      counts: { jobs: ordered.length, laid: count('laid'), nothing: count('nothing'), timeout: count('timeout'), infra: count('infra'), complete: ordered.filter(result => result.complete === true).length, maps: ordered.reduce((n, result) => n + result.maps.length, 0) },
+      counts: { jobs: ordered.length, laid: count('laid'), nothing: count('nothing'), timeout: count('timeout'), infra: count('infra'), complete: ordered.filter(result => result.complete === true).length, endedOnQuestion: ordered.filter(result => result.endedOnQuestion).length, maps: ordered.reduce((n, result) => n + result.maps.length, 0) },
       jobs: ordered };
     writeJson(resolve(root, 'summary.json'), summary);
     return summary;
@@ -159,12 +162,12 @@ export async function runMapLaying(options: LayOptions): Promise<number> {
     for (let job = queue.shift(); job; job = queue.shift()) {
       const result = await runJob(job, root, editorRoot, pin, env, { v2: options.v2, limitMs, autoAnswer: set.autoAnswer });
       results.set(job.id, result);
-      console.log(`${result.status.toUpperCase().padEnd(7)} ${job.id} — 호출 ${result.toolCallCount} · ${(result.wallMs / 60_000).toFixed(1)}분 · ${result.reason.slice(0, 160)}`);
+      console.log(`${result.status.toUpperCase().padEnd(7)} ${job.id} — 호출 ${result.toolCallCount} · ${(result.wallMs / 60_000).toFixed(1)}분 · ${result.reason.slice(0, 160)}${result.endedOnQuestion ? ' · 질문으로 끝남' : ''}`);
       writeSummary();
     }
   };
   await Promise.all(Array.from({ length: parallel }, worker));
   const summary = writeSummary();
-  console.log(`\nmap-vqa-lay: 맵을 깐 요청 ${summary.counts.laid}/${summary.counts.jobs} · 아무것도 안 깔림 ${summary.counts.nothing} · 시간 초과 ${summary.counts.timeout} · 기반 오류 ${summary.counts.infra} · 맵 ${summary.counts.maps}장\n${resolve(root, 'summary.json')}`);
+  console.log(`\nmap-vqa-lay: 맵을 깐 요청 ${summary.counts.laid}/${summary.counts.jobs} · 아무것도 안 깔림 ${summary.counts.nothing} · 시간 초과 ${summary.counts.timeout} · 기반 오류 ${summary.counts.infra} · 질문으로 끝남 ${summary.counts.endedOnQuestion} · 맵 ${summary.counts.maps}장\n${resolve(root, 'summary.json')}`);
   return summary.counts.jobs === jobs.length ? 0 : 1;
 }

@@ -1,0 +1,3693 @@
+{
+  "schemaVersion": 1,
+  "kind": "assistant-map-vqa-calibration",
+  "version": "map-vqa-v3",
+  "at": "2026-11-12T03:26:15.484Z",
+  "status": "calibrated",
+  "missRate": 0,
+  "looseMissRate": 0,
+  "falseAlarmRate": 0,
+  "planted": {
+    "total": 33,
+    "missed": 0,
+    "missedLoose": 0,
+    "byRecipe": {
+      "strip-furniture": {
+        "total": 3,
+        "caught": 3
+      },
+      "shift-objects": {
+        "total": 4,
+        "caught": 4
+      },
+      "stamp-6x": {
+        "total": 4,
+        "caught": 4
+      },
+      "wall-off": {
+        "total": 4,
+        "caught": 4
+      },
+      "locked-text-on-way": {
+        "total": 4,
+        "caught": 4
+      },
+      "person-on-roof": {
+        "total": 4,
+        "caught": 4
+      },
+      "unpainted-hole": {
+        "total": 3,
+        "caught": 3
+      },
+      "exit-on-bare-edge": {
+        "total": 4,
+        "caught": 4
+      },
+      "positive": {
+        "total": 3,
+        "caught": 3
+      }
+    }
+  },
+  "good": {
+    "total": 15,
+    "withBlocker": 0,
+    "withMajor": 6,
+    "majorsPerMap": 1
+  },
+  "unreviewed": [],
+  "carried": {
+    "from": [
+      "map-vqa-v2"
+    ],
+    "answers": 33
+  },
+  "judgeUsage": {
+    "calls": 17,
+    "cached": 33,
+    "failures": 0,
+    "inputTokens": 223872,
+    "outputTokens": 49027
+  },
+  "rows": [
+    {
+      "id": "good--joseon-v20--조선-마을-20호-_v20",
+      "kind": "good",
+      "label": "joseon-v20 · 조선 마을 20호",
+      "status": "reviewed",
+      "pictureSha256": "8f16dc211cb97054399cf692484282daff9b1004a4501c4e435d73a250b6b7c1",
+      "blockers": 0,
+      "majors": 1,
+      "defects": [
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 31,
+            "y": 36,
+            "w": 17,
+            "h": 4
+          },
+          "evidence": "y=36~39의 흙길이 서쪽(x=31~38)에서는 강가(x=39)에서, 동쪽(x=46~52)에서는 강 반대편에서 각각 끊기는데 그 사이에 다리가 없어 길이 강에 막혀 끝난다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 10,
+            "y": 42,
+            "w": 54,
+            "h": 14
+          },
+          "evidence": "맵 남쪽 y=42~55 일대는 길·건물·목적지 없이 나무와 덤불만 무작위로 빽빽하게 깔린 채움 영역이라 탐험할 이유가 없는 넓은 공간이다."
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 16,
+            "w": 6,
+            "h": 12
+          },
+          "evidence": "서쪽 x=0~5, y=16~27에 똑같은 초가집이 위아래로 연달아 찍혀 있고, 동쪽 x=49~60에도 같은 초가·기와집이 줄지어 반복되어 복사해 붙인 느낌이 난다."
+        }
+      ]
+    },
+    {
+      "id": "good--joseon-cave--조선-동굴-cave",
+      "kind": "good",
+      "label": "joseon-cave · 조선 동굴",
+      "status": "reviewed",
+      "pictureSha256": "a092815d586957cd0c0e2405f106ed7219d477161bc4b108ea7f5bc278b29980",
+      "blockers": 0,
+      "majors": 0,
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "polish",
+          "region": {
+            "x": 39,
+            "y": 20,
+            "w": 2,
+            "h": 1
+          },
+          "evidence": "(39~40,20)에 검은 구덩이(함정 구멍)가 그려져 있는데 막힘 표시가 없어 그대로 밟고 지나갈 수 있어 구멍이 장식처럼 어색하게 읽힌다"
+        },
+        {
+          "class": "unpainted-or-seam",
+          "severity": "polish",
+          "region": {
+            "x": 21,
+            "y": 43,
+            "w": 6,
+            "h": 2
+          },
+          "evidence": "남쪽 입구 (21~26,43~44)에서 회색 동굴 바닥과 갈색 흙길이 자갈 띠 하나로 직선 사각형 경계를 이루며 갑자기 바뀌어 타일 이음매가 드러난다"
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 14,
+            "h": 19
+          },
+          "evidence": "북서쪽 (0~13,0~18)과 상단 0~4행이 아무것도 없는 어두운 암반으로만 채워져 48x48 맵에 비해 바깥 여백이 넓다"
+        }
+      ]
+    },
+    {
+      "id": "good--joseon-field--조선-사냥터-ield",
+      "kind": "good",
+      "label": "joseon-field · 조선 사냥터",
+      "status": "reviewed",
+      "pictureSha256": "9e42d866c7d2bc5288d9a81f16812fad8315fb54338ef18c1fc5c9aba6ac54d2",
+      "blockers": 0,
+      "majors": 3,
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 47,
+            "y": 0,
+            "w": 2,
+            "h": 6
+          },
+          "evidence": "시작 지점 S(47,0)이 성문 누각 기와지붕 위에 있고, 지붕 칸 x=47..48 y=0..5가 걸을 수 있어 플레이어가 지붕 위에서 시작해 지붕을 밟고 내려온다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 56,
+            "y": 43,
+            "w": 7,
+            "h": 5
+          },
+          "evidence": "중앙 도로에서 동쪽으로 갈라진 흙길(56..62,43..47)이 폐허 기둥 아래를 지나 풀밭 한가운데서 끊겨 아무 데도 이어지지 않는다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 12,
+            "y": 48,
+            "w": 2,
+            "h": 10
+          },
+          "evidence": "절벽 앞 도로에서 남쪽으로 내려가는 흙길 x=12..13이 y=57 풀밭에서 그냥 끝나, 옆의 천막(9,57)이나 다른 곳에 닿지 않는다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "polish",
+          "region": {
+            "x": 33,
+            "y": 55,
+            "w": 14,
+            "h": 4
+          },
+          "evidence": "중앙 도로에서 서쪽으로 난 짧은 흙길(33..46,55..58)이 흙더미 하나 앞에서 막다른 공터로 끝난다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "polish",
+          "region": {
+            "x": 44,
+            "y": 70,
+            "w": 8,
+            "h": 6
+          },
+          "evidence": "중앙 야영지 광장(44..51,70..75)에 돌·통나무·그루터기·모닥불 막힘 칸이 대각선으로 흩어져, 남쪽 길 x=47..48로 빠지는 통로가 지그재그로 좁아진다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 80,
+            "w": 46,
+            "h": 16
+          },
+          "evidence": "남서쪽 숲(0..45,80..95)은 같은 나무 몇 종만 촘촘히 반복될 뿐, 길·사람·볼거리가 하나도 없는 채움 공간이다."
+        }
+      ]
+    },
+    {
+      "id": "good--joseon-in-inn--조선-주막-실내-_inn",
+      "kind": "good",
+      "label": "joseon-in-inn · 조선 주막 실내",
+      "status": "reviewed",
+      "pictureSha256": "00dd65d31ddeb950fcf8a680618efea86710d5a0ddd1c2e033e30391599edfa8",
+      "blockers": 0,
+      "majors": 0,
+      "defects": [
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 14,
+            "w": 22,
+            "h": 2
+          },
+          "evidence": "y14~15 두 줄 전체가 검은 공백으로 칠해져 있고, 그 가운데 (10,14) 돌바닥과 (10,15) 흙바닥 한 칸짜리 통로만 허공에 떠 있어 건물 밖이 덜 그려진 것처럼 보인다"
+        }
+      ]
+    },
+    {
+      "id": "good--joseon-in-house--조선-민가-실내-ouse",
+      "kind": "good",
+      "label": "joseon-in-house · 조선 민가 실내",
+      "status": "reviewed",
+      "pictureSha256": "c09cb63d8c3ce890d2b31b1cc40af62182891390d8225aae4f7bf65a3ca95ee5",
+      "blockers": 0,
+      "majors": 0,
+      "defects": [
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 13,
+            "w": 15,
+            "h": 2
+          },
+          "evidence": "남쪽 벽 아래 (0,13)~(14,14) 두 줄이 문 앞 (10,13)~(10,14) 한 줄기 디딤길만 빼고 전부 검게 칠해져 있어, 집이 허공 위에 떠 있는 것처럼 보이고 맵 높이를 쓸데없이 차지한다."
+        }
+      ]
+    },
+    {
+      "id": "good--joseon-in-throne--조선-궁-어좌전-rone",
+      "kind": "good",
+      "label": "joseon-in-throne · 조선 궁 어좌전",
+      "status": "reviewed",
+      "pictureSha256": "a8c73b5a295fc275aada3f65406c201e98f37c32dbe3c609464a9365d28535c8",
+      "blockers": 0,
+      "majors": 0,
+      "defects": [
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 4,
+            "y": 12,
+            "w": 15,
+            "h": 8
+          },
+          "evidence": "하단 홀 바닥 (5,14)·(7,17)·(5,19)·(17,15)·(18,18)에 작은 상자가, (5,17)·(14,17)·(8,12)·(15,12)에 책이 흩어져 있다. 위엄 있어야 할 어좌전 바닥이 어질러진 창고처럼 보인다."
+        },
+        {
+          "class": "unpainted-or-seam",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 22,
+            "w": 24,
+            "h": 2
+          },
+          "evidence": "남쪽 문 밖 y=22..23은 계단 (10..13)만 그려져 있고, 양옆 x=0..9와 x=14..23은 검은 공백이다. 출입문이 허공으로 열린 듯 보인다."
+        }
+      ]
+    },
+    {
+      "id": "good--jp-city-shopstreet--일본-도시-상가-거리-간선-교차로-생활도로-건널목-reet",
+      "kind": "good",
+      "label": "jp-city-shopstreet · 일본 도시 · 상가 거리 (간선 교차로·생활도로·건널목)",
+      "status": "reviewed",
+      "pictureSha256": "2a9a7499f70613f4a77ca186935ebd2f1fc287d43723bd855603487e7c442e8e",
+      "blockers": 0,
+      "majors": 4,
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 9,
+            "w": 31,
+            "h": 14
+          },
+          "evidence": "북쪽 상가 출입문((1~2,9~10),(4~5,9~10),(8~10,9~10),(19~22,9~10) 유리문,(27~28,9~10))과 남쪽 상가 문((1~3,20~21),(7~8,20~21),(21~22,20~21))이 모두 붉게 막혀 있어, 그려진 문 앞까지 가도 들어갈 수 없다"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 31,
+            "h": 20
+          },
+          "evidence": "건물 외벽과 옥상(x=0~10, x=17~22, x=26~30의 y=0~8, 남쪽 건물 옥상 y=18~19)이 붉은 칠 없이 통행 가능해서, 플레이어가 빌딩 벽면과 지붕 위를 걸어 다닌다"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 15,
+            "y": 19,
+            "w": 16,
+            "h": 9
+          },
+          "evidence": "차도의 택시(15~19,25~27)와 주차장의 흰 승용차(26~30,19~21)가 통행 가능해서, 차체 위를 그대로 통과해 지나간다"
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "major",
+          "region": {
+            "x": 24,
+            "y": 0,
+            "w": 1,
+            "h": 22
+          },
+          "evidence": "x=24 선로가 북쪽 끝에서 내려와 (24,21) 보도 앞에서 뚝 끊겨 있다. 차단기 표지는 있지만 이어지는 선로가 없어 잘린 조각으로 보인다"
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "polish",
+          "region": {
+            "x": 25,
+            "y": 13,
+            "w": 7,
+            "h": 4
+          },
+          "evidence": "y=13~16 생활도로가 x=31 보도에서 볼라드로 막혀 끝나고, 옆 간선도로(x=33~38)와 이어지지 않는다"
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 10,
+            "y": 17,
+            "w": 8,
+            "h": 6
+          },
+          "evidence": "商店街 아치(10~17,18~22) 뒤가 흰 선으로 둘린 4칸짜리 아스팔트 공간뿐이어서, 상점가 입구가 짧은 막다른 홈처럼 보인다"
+        }
+      ]
+    },
+    {
+      "id": "good--jp-city-konbini--일본-편의점-コンビニ-실내-bini",
+      "kind": "good",
+      "label": "jp-city-konbini · 일본 편의점(コンビニ) 실내",
+      "status": "reviewed",
+      "pictureSha256": "390188c2e2251a37ddb12b7ac5505c9e2e44a425857761913854d3b0326ee7c0",
+      "blockers": 0,
+      "majors": 0,
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "polish",
+          "region": {
+            "x": 10,
+            "y": 5,
+            "w": 1,
+            "h": 4
+          },
+          "evidence": "x=10 y=6..8 칸이 계산대(8~9, 11~12)와 뒷벽 사이에 아무 칸막이·여닫이 없이 뚫려 있어, 손님이 매장 바닥에서 곧장 계산대 안쪽과 (10,5) 통로를 지나 창고로 걸어 들어가 직원 전용 공간 구분이 읽히지 않음"
+        },
+        {
+          "class": "unpainted-or-seam",
+          "severity": "polish",
+          "region": {
+            "x": 1,
+            "y": 6,
+            "w": 1,
+            "h": 2
+          },
+          "evidence": "매장 왼쪽 벽 옆 x=1 y=6..7 바닥 가장자리에만 진한 세로 그림자 띠가 그려져 위아래(y=5, y=8~10) 바닥과 이어지지 않는 타일 이음매처럼 보임"
+        }
+      ]
+    },
+    {
+      "id": "good--jp-city-house--2층-단독주택-1층-e-1f",
+      "kind": "good",
+      "label": "jp-city-house · 2층 단독주택 1층",
+      "status": "reviewed",
+      "pictureSha256": "e76edf14e46674a1b99d954d9cbd8d6ca8b84d8acfa078a500866038873a454d",
+      "blockers": 0,
+      "majors": 2,
+      "defects": [
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 9,
+            "y": 12,
+            "w": 1,
+            "h": 3
+          },
+          "evidence": "현관 돌바닥(x8-11 y12-13)에서 남쪽 x9 y14로 좁은 통로가 지도 가장자리까지 그려져 걸을 수 있지만 출구가 없어, 연결된 지도인데 현관으로 집 밖에 나갈 수 없음"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 7,
+            "y": 6,
+            "w": 4,
+            "h": 3
+          },
+          "evidence": "다다미방과 화장실로 가는 길이 복도 위쪽 x7 y6·x10 y6의 검은 빈 틈과 그 위 방 아래 벽선을 그대로 지나가며, 방 경계에는 문이나 문간이 그려져 있지 않아 어디로 들어가는지 읽히지 않음"
+        },
+        {
+          "class": "unpainted-or-seam",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 13,
+            "w": 6,
+            "h": 2
+          },
+          "evidence": "왼쪽 아래 x0-5 y13-14가 주변 바깥 벽색과 다른 짙은 남색 덩어리로 칠해져 있어 지도 바깥 여백이 이음매처럼 튀어 보임"
+        }
+      ]
+    },
+    {
+      "id": "good--jp-city-house--2층-단독주택-2층-e-2f",
+      "kind": "good",
+      "label": "jp-city-house · 2층 단독주택 2층",
+      "status": "reviewed",
+      "pictureSha256": "8454ab5b4b46f5087c73a9469631ee6ef4460c1400defa34c7422cb221ea09f0",
+      "blockers": 0,
+      "majors": 0,
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "polish",
+          "region": {
+            "x": 7,
+            "y": 6,
+            "w": 10,
+            "h": 1
+          },
+          "evidence": "(7,6), (11,6), (16,6)의 통로 칸이 방 바닥이 아니라 짙은 회색 벽 윗면처럼 칠해져 있어, 문을 지나 방으로 들어갈 때 벽 위를 밟고 지나가는 것처럼 보인다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 7,
+            "w": 7,
+            "h": 6
+          },
+          "evidence": "맵 왼쪽 아래 x0-6 y7-12의 약 42칸이 아무것도 없는 검은 공백이어서, 맵 크기에 비해 쓰이지 않는 여백이 크게 남는다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 8,
+            "y": 9,
+            "w": 11,
+            "h": 3
+          },
+          "evidence": "복도 아래쪽 x8-18 y9-11은 소품 하나 없는 맨 마루가 길게 이어져, 계단까지 걸어가는 동안 볼 것이 없다."
+        }
+      ]
+    },
+    {
+      "id": "good--jp-city-station--일본-작은-지상역-역사-駅舎-실내-tion",
+      "kind": "good",
+      "label": "jp-city-station · 일본 작은 지상역 역사(駅舎) 실내",
+      "status": "reviewed",
+      "pictureSha256": "22adc64f5e5be0e829a293df11a4fb9d0f469f13af3b68853d1bc56ed768789b",
+      "blockers": 0,
+      "majors": 2,
+      "defects": [
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 5,
+            "y": 10,
+            "w": 3,
+            "h": 1
+          },
+          "evidence": "남쪽 (5~7,10)에 역사 출입구 통로가 바닥 타일로 맵 끝까지 그려져 걸어갈 수 있지만, 연결된 맵인데도 exit이 없어 역 밖으로 나가려는 플레이어가 막다른 곳에 부딪힘"
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 11,
+            "y": 4,
+            "w": 4,
+            "h": 4
+          },
+          "evidence": "연결된 게임의 역사인데 우측 (11~14,4~7) 매표 창구와 개찰구에 역무원이 한 명도 없어 운영 중인 역이 텅 빈 것처럼 보임"
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 7,
+            "y": 4,
+            "w": 1,
+            "h": 6
+          },
+          "evidence": "점자 블록이 x=7, y=5..9에만 깔려 있고 북쪽 승강장 문(4~5,1..3) 쪽으로 이어지지 않으며, y=4에서 끊겨 시각 안내 동선이 어색함"
+        }
+      ]
+    },
+    {
+      "id": "good--wz-space-library--마법-학교-도서관-제한-구역-rary",
+      "kind": "good",
+      "label": "wz-space-library · 마법 학교 · 도서관 제한 구역",
+      "status": "reviewed",
+      "pictureSha256": "789a4af41e258f6fabe2d36f0eacf0c4ddef48c3bf011717c38d2852b59b6704",
+      "blockers": 0,
+      "majors": 0,
+      "defects": [
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 3,
+            "y": 5,
+            "w": 19,
+            "h": 8
+          },
+          "evidence": "(3~10,5~7), (3~10,10~12), (13~20,5~7), (13~20,10~12)에 똑같은 책장 그림 16개가 2x2 격자로 찍혀 있어 같은 도장을 반복한 티가 난다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 1,
+            "y": 15,
+            "w": 11,
+            "h": 3
+          },
+          "evidence": "입구 왼쪽 x=1~11, y=15~17 바닥에 아무것도 없고, 오른쪽 x=18~22, y=13~17도 비어 있어 제한 구역치고 아래쪽 절반이 휑하다."
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "polish",
+          "region": {
+            "x": 21,
+            "y": 7,
+            "w": 2,
+            "h": 2
+          },
+          "evidence": "(21~22,7~8)의 낮은 책장이 큰 책장 줄 끝과 동쪽 벽 사이에 끼워 넣은 듯 높이가 잘린 반쪽 조각처럼 보인다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 3,
+            "y": 2,
+            "w": 1,
+            "h": 3
+          },
+          "evidence": "(3,2~4)의 사다리가 책장이 아닌 맨 석벽에 기대 서 있어 무엇에 쓰는 사다리인지 읽히지 않는다."
+        }
+      ]
+    },
+    {
+      "id": "good--wz-space-greenhouse--마법-학교-온실-맨드레이크-ouse",
+      "kind": "good",
+      "label": "wz-space-greenhouse · 마법 학교 · 온실(맨드레이크)",
+      "status": "reviewed",
+      "pictureSha256": "38458f7975b00b64848bea8becbd58261acfa2941ef42334539eaccc96e121d7",
+      "blockers": 0,
+      "majors": 0,
+      "defects": [
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 4,
+            "y": 5,
+            "w": 15,
+            "h": 5
+          },
+          "evidence": "(4~18,5~9)에 맨드레이크 화분·양동이·작업대가 똑같은 한 덩어리로 4×2 격자에 여덟 번 찍혀 있어 복사한 티가 난다."
+        },
+        {
+          "class": "wrong-surface",
+          "severity": "polish",
+          "region": {
+            "x": 1,
+            "y": 2,
+            "w": 1,
+            "h": 3
+          },
+          "evidence": "(1,2~4)의 물약 선반과 바구니가 유리창·벽돌 벽면 위에 겹쳐 그려져 벽 속에 박힌 것처럼 보인다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 1,
+            "y": 11,
+            "w": 9,
+            "h": 2
+          },
+          "evidence": "좌하단 (1~9,11~12)은 화분 두 개 외에 아무것도 없는 맨 돌바닥이 넓게 이어져, 소품이 몰린 우하단과 비교해 허전하다."
+        }
+      ]
+    },
+    {
+      "id": "good--wz-nat-example-forest-edge--마법-학교-숲-가장자리-예제-edge",
+      "kind": "good",
+      "label": "wz-nat-example-forest-edge · 마법 학교 · 숲 가장자리 예제",
+      "status": "reviewed",
+      "pictureSha256": "10696aae49066bcf286053dba9ff3508bc45f80e34ef615a5ac691858fa6cc29",
+      "blockers": 0,
+      "majors": 0,
+      "defects": [
+        {
+          "class": "cut-off-piece",
+          "severity": "polish",
+          "region": {
+            "x": 3,
+            "y": 11,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "(3,11) 아래 가장자리의 이끼 바위가 맵 끝에서 아랫부분이 잘린 채 반만 그려져 있음"
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 8,
+            "y": 9,
+            "w": 5,
+            "h": 3
+          },
+          "evidence": "길 아래 x=8..12, y=9..11에는 수풀 한 포기만 있어, 촘촘한 윗부분에 비해 휑하게 비어 보임"
+        }
+      ]
+    },
+    {
+      "id": "good--modern-city--현대-도시-도쿄풍-예제-거리-mple",
+      "kind": "good",
+      "label": "modern-city · 현대 도시 · 도쿄풍 예제 거리",
+      "status": "reviewed",
+      "pictureSha256": "5bdcff0dfdb5b5b9ccd607ec8ec335e0cffb5bf2f1c470c01db7e8a7331a5027",
+      "blockers": 0,
+      "majors": 3,
+      "defects": [
+        {
+          "class": "cut-off-piece",
+          "severity": "major",
+          "region": {
+            "x": 33,
+            "y": 22,
+            "w": 27,
+            "h": 15
+          },
+          "evidence": "동쪽 블록에서 건물끼리 겹친다. (38..44,29..36) 베이지 건물 지붕이 (33..40,22..29) 오피스 하단의 붉은 기둥 출입구와 (40..45,22..29) 건물 차양·문을 덮고, (45..50,31..36) 건물이 병원 하단 + 표시와 입구를, (55..59,31..36"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 3,
+            "w": 60,
+            "h": 54
+          },
+          "evidence": "맵 전체 건물 출입문(예: (12..13,8..9) 상가 유리문, (35..36,8..9) 관공서 문, (48..49,54..56) 시계탑 건물 문, (1..7,54..56) 연립주택 문)이 모두 붉게 막혀 있다. 그려진 문인데 다가가도 들어갈 수 없다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 19,
+            "y": 54,
+            "w": 3,
+            "h": 3
+          },
+          "evidence": "(19..21,54..56)에 지하로 내려가는 계단 입구가 그려져 있지만 계단 칸이 붉게 막혀 있어 들어갈 수 없다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 15,
+            "h": 3
+          },
+          "evidence": "(0..14,0..2) 북서 건물 뒤 인도 띠가 걸을 수 있는 칸으로 그려져 있지만 건물과 (15..20,0..3) 공사 바리케이드에 막혀 본 구역과 이어지지 않는 고립 포켓(35칸)이다."
+        },
+        {
+          "class": "people-placement",
+          "severity": "polish",
+          "region": {
+            "x": 2,
+            "y": 31,
+            "w": 12,
+            "h": 1
+          },
+          "evidence": "공원 서쪽 산책로 (2..3,31)와 분수 옆 (12..13,31)에 벤치가 2칸 폭 모래길 위에 놓여 길을 반으로 좁힌다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--strip-furniture--joseon-in-inn--조선-주막-실내-_inn",
+      "kind": "decoy",
+      "label": "심은 결함 strip-furniture · joseon-in-inn · 조선 주막 실내",
+      "recipe": "strip-furniture",
+      "planted": {
+        "x": 0,
+        "y": 0,
+        "w": 22,
+        "h": 16
+      },
+      "note": "윗층(가구·소품)을 모두 지웠다",
+      "status": "reviewed",
+      "pictureSha256": "4384d04d88c2607fcaca7ed1d817ad99aee13fb88d36efe1d38819559fb5f805",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "empty-expanse",
+        "severity": "major",
+        "region": {
+          "x": 1,
+          "y": 1,
+          "w": 20,
+          "h": 12
+        },
+        "evidence": "대청(8~15,1~12)과 좌우 네 방(1~6, 17~20)에 상·탁자·부뚜막·이불 같은 가구가 하나도 없어, 주막이 아니라 빈 바닥 상자로 보인다."
+      },
+      "defects": [
+        {
+          "class": "empty-expanse",
+          "severity": "major",
+          "region": {
+            "x": 1,
+            "y": 1,
+            "w": 20,
+            "h": 12
+          },
+          "evidence": "대청(8~15,1~12)과 좌우 네 방(1~6, 17~20)에 상·탁자·부뚜막·이불 같은 가구가 하나도 없어, 주막이 아니라 빈 바닥 상자로 보인다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "polish",
+          "region": {
+            "x": 1,
+            "y": 1,
+            "w": 20,
+            "h": 3
+          },
+          "evidence": "좌우 방과 대청 윗줄 1~3행 및 오른쪽 아래 방 8~9행에 벽면처럼 세로줄 판자·흙벽 무늬가 그려져 있는데, 붉게 칠해지지 않아 걸을 수 있다. 벽을 밟고 다니는 것처럼 보인다."
+        },
+        {
+          "class": "unpainted-or-seam",
+          "severity": "polish",
+          "region": {
+            "x": 7,
+            "y": 4,
+            "w": 10,
+            "h": 3
+          },
+          "evidence": "방 입구 칸 (7,4~6)의 흙바닥과 (16,4~6)의 모래바닥이 대청 쪽으로 튀어나와 있고, 6행에서 테두리 선이 끊겨 바닥 경계가 어긋나 보인다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 14,
+            "w": 22,
+            "h": 2
+          },
+          "evidence": "맨 아래 14~15행은 x=10의 돌·흙 통로 두 칸만 있고 나머지가 검은 공백이라, 통로 타일이 허공에 떠 있는 것처럼 보인다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--strip-furniture--jp-city-konbini--일본-편의점-コンビニ-실내-bini",
+      "kind": "decoy",
+      "label": "심은 결함 strip-furniture · jp-city-konbini · 일본 편의점(コンビニ) 실내",
+      "recipe": "strip-furniture",
+      "planted": {
+        "x": 0,
+        "y": 0,
+        "w": 14,
+        "h": 12
+      },
+      "note": "윗층(가구·소품)을 모두 지웠다",
+      "status": "reviewed",
+      "pictureSha256": "fbd7dc87ff5bfddcdf6fd90f74b4b53fe6c72b0d60df6d60541ad3ad86d35981",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "empty-expanse",
+        "severity": "major",
+        "region": {
+          "x": 1,
+          "y": 3,
+          "w": 12,
+          "h": 8
+        },
+        "evidence": "(1..12,3..10) 매장 전체와 (9..12,3..4) 창고가 체크무늬 바닥 타일만 깔려 있고 진열대·계산대·냉장고가 하나도 없어, 편의점이 아니라 빈 방으로 보임"
+      },
+      "defects": [
+        {
+          "class": "empty-expanse",
+          "severity": "major",
+          "region": {
+            "x": 1,
+            "y": 3,
+            "w": 12,
+            "h": 8
+          },
+          "evidence": "(1..12,3..10) 매장 전체와 (9..12,3..4) 창고가 체크무늬 바닥 타일만 깔려 있고 진열대·계산대·냉장고가 하나도 없어, 편의점이 아니라 빈 방으로 보임"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 10,
+            "y": 6,
+            "w": 1,
+            "h": 2
+          },
+          "evidence": "창고로 가는 유일한 길인 (10,6..7)이 바닥이 아니라 옆 벽면과 같은 밝은 벽 색 띠로 그려져 있어, 걸을 수 있는데도 막힌 벽처럼 보여 통로로 읽히지 않음"
+        },
+        {
+          "class": "unpainted-or-seam",
+          "severity": "polish",
+          "region": {
+            "x": 8,
+            "y": 6,
+            "w": 1,
+            "h": 2
+          },
+          "evidence": "(8,6..7)에서 오른쪽 벽면 띠가 왼쪽 매장 바닥 쪽으로 끝 마감(측면 테두리) 없이 잘린 채 끝나 벽 조각이 허공에 떠 보임"
+        }
+      ]
+    },
+    {
+      "id": "decoy--strip-furniture--wz-space-greenhouse--마법-학교-온실-맨드레이크-ouse",
+      "kind": "decoy",
+      "label": "심은 결함 strip-furniture · wz-space-greenhouse · 마법 학교 · 온실(맨드레이크)",
+      "recipe": "strip-furniture",
+      "planted": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 15
+      },
+      "note": "윗층(가구·소품)을 모두 지웠다",
+      "status": "reviewed",
+      "pictureSha256": "844a9282abcdeedc516077e9bb2c30279eee45d8ae7d9ca398432367153dcef2",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "empty-expanse",
+        "severity": "blocker",
+        "region": {
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 15
+        },
+        "evidence": "24x15 전체가 같은 회색 돌바닥 타일 하나로 칠해져 있고, 소품은 (11,10)~(21,6)에 작은 것 몇 개뿐이라 그림의 대부분이 비어 있음"
+      },
+      "defects": [
+        {
+          "class": "empty-expanse",
+          "severity": "blocker",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 15
+          },
+          "evidence": "24x15 전체가 같은 회색 돌바닥 타일 하나로 칠해져 있고, 소품은 (11,10)~(21,6)에 작은 것 몇 개뿐이라 그림의 대부분이 비어 있음"
+        },
+        {
+          "class": "other",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 15
+          },
+          "evidence": "온실인데 유리벽, 벽, 문, 화분, 화단, 작업대, 맨드레이크 식물이 하나도 그려져 있지 않아 장소가 무엇인지 읽히지 않음"
+        },
+        {
+          "class": "other",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 15
+          },
+          "evidence": "실내 바닥이 네 변 모두 맵 가장자리까지 경계 없이 이어져, 실내인지 바깥 광장인지 구분되지 않음"
+        },
+        {
+          "class": "wrong-surface",
+          "severity": "polish",
+          "region": {
+            "x": 11,
+            "y": 6,
+            "w": 11,
+            "h": 6
+          },
+          "evidence": "(21,6)의 삽, (17~18,7)과 (13~15,11)의 흙덩이, (11,10~11)의 푸른 덩어리가 흙이나 화단 없이 맨 돌바닥 위에 흩어져 있어 아무렇게나 떨어진 것처럼 보임"
+        }
+      ]
+    },
+    {
+      "id": "decoy--shift-objects--joseon-in-inn--조선-주막-실내-_inn",
+      "kind": "decoy",
+      "label": "심은 결함 shift-objects · joseon-in-inn · 조선 주막 실내",
+      "recipe": "shift-objects",
+      "planted": {
+        "x": 0,
+        "y": 0,
+        "w": 22,
+        "h": 16
+      },
+      "note": "물체 층을 오른쪽 3칸·아래 2칸 밀었다",
+      "status": "reviewed",
+      "pictureSha256": "dc01cee340d7f20272957e222501f7f44e02e799d6ea71a64ac79df237d892b2",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "unpainted-or-seam",
+        "severity": "major",
+        "region": {
+          "x": 0,
+          "y": 14,
+          "w": 22,
+          "h": 2
+        },
+        "evidence": "y14~15 두 줄 전체가 검은 공백이다. 그 위에 (12,14) 항아리, (17,14) 바구니, (20,14) 고추 바구니, (13,15) 찬장, (10,14)~(10,15) 돌바닥 조각이 바닥 없이 떠 있고, (13,15) 같은 검은 칸은 걸을 수 있다."
+      },
+      "defects": [
+        {
+          "class": "unpainted-or-seam",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 14,
+            "w": 22,
+            "h": 2
+          },
+          "evidence": "y14~15 두 줄 전체가 검은 공백이다. 그 위에 (12,14) 항아리, (17,14) 바구니, (20,14) 고추 바구니, (13,15) 찬장, (10,14)~(10,15) 돌바닥 조각이 바닥 없이 떠 있고, (13,15) 같은 검은 칸은 걸을 수 있다."
+        },
+        {
+          "class": "enclosure-unreadable",
+          "severity": "major",
+          "region": {
+            "x": 1,
+            "y": 1,
+            "w": 9,
+            "h": 8
+          },
+          "evidence": "왼쪽 위 흙바닥 부엌(아궁이 (4~6,5~6) 주변 30칸)은 걸을 수 있다. 하지만 (7~8,5~7)의 장독과 벽돌더미, 아래쪽 벽에 막혀 본 구역과 끊겨 있고, 테두리 어디에도 문이나 틈이 그려져 있지 않다."
+        },
+        {
+          "class": "enclosure-unreadable",
+          "severity": "major",
+          "region": {
+            "x": 16,
+            "y": 1,
+            "w": 6,
+            "h": 7
+          },
+          "evidence": "오른쪽 위 노란 마루 칸((17,1) 부근 21칸)은 (11~20,3~4)의 미닫이 벽과 (19,6~7) 문짝에 막혀 본 구역과 끊겨 있다. 들어갈 문간이 보이지 않는다."
+        },
+        {
+          "class": "wrong-surface",
+          "severity": "major",
+          "region": {
+            "x": 4,
+            "y": 13,
+            "w": 6,
+            "h": 1
+          },
+          "evidence": "남쪽 외벽 띠 (4,13), (5,13), (7,13), (9,13) 위에 항아리와 바구니가 벽 위로 겹쳐 놓여 있다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 10,
+            "y": 6,
+            "w": 1,
+            "h": 3
+          },
+          "evidence": "대청 마루 한가운데 (10,6)~(10,7)에 벽 없이 미닫이 문짝이 홀로 서 있고, 그 아래 (10,8)에는 어디로도 이어지지 않는 계단 조각이 있다."
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "polish",
+          "region": {
+            "x": 16,
+            "y": 11,
+            "w": 1,
+            "h": 2
+          },
+          "evidence": "(16,11)~(16,12)에 회색 돌벽 토막이 마루 한가운데 홀로 박혀 있어 잘린 벽 조각처럼 보인다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 8,
+            "y": 1,
+            "w": 8,
+            "h": 2
+          },
+          "evidence": "미닫이 벽 뒤 (8~15,1~2) 마루 띠와 왼쪽 아래 흙바닥 (1~6,9~10)에 가구 없이 빈 바닥만 넓게 남아 있다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--shift-objects--jp-city-konbini--일본-편의점-コンビニ-실내-bini",
+      "kind": "decoy",
+      "label": "심은 결함 shift-objects · jp-city-konbini · 일본 편의점(コンビニ) 실내",
+      "recipe": "shift-objects",
+      "planted": {
+        "x": 0,
+        "y": 0,
+        "w": 14,
+        "h": 12
+      },
+      "note": "물체 층을 오른쪽 3칸·아래 2칸 밀었다",
+      "status": "reviewed",
+      "pictureSha256": "9caa361514b8f91f684a783e0bf5e600ec3a202f8978dcdf5eebd17c75bcf689",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "cut-off-piece",
+        "severity": "major",
+        "region": {
+          "x": 4,
+          "y": 11,
+          "w": 5,
+          "h": 1
+        },
+        "evidence": "남쪽 벽 바깥 맨 아래 줄 (4..8,11)에 잡지 진열대와 빨간 물체가 맵 가장자리에서 반쯤 잘린 채 입구 양옆에 그려져 있다"
+      },
+      "defects": [
+        {
+          "class": "enclosure-unreadable",
+          "severity": "major",
+          "region": {
+            "x": 9,
+            "y": 3,
+            "w": 4,
+            "h": 5
+          },
+          "evidence": "카운터 뒤 직원 구역 (9..12,3..4) 8칸은 걸을 수 있지만 들어가는 틈이 그려져 있지 않고, 카운터 사이 통로처럼 보이는 (10,6..7)은 ATM (10,4..5)에 막혀 끝나 플레이어가 길로 오인한다"
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "major",
+          "region": {
+            "x": 4,
+            "y": 11,
+            "w": 5,
+            "h": 1
+          },
+          "evidence": "남쪽 벽 바깥 맨 아래 줄 (4..8,11)에 잡지 진열대와 빨간 물체가 맵 가장자리에서 반쯤 잘린 채 입구 양옆에 그려져 있다"
+        },
+        {
+          "class": "unpainted-or-seam",
+          "severity": "major",
+          "region": {
+            "x": 11,
+            "y": 5,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "카운터 한가운데 (11,5)에 검은 빈 사각형이 있어 칠하다 만 칸처럼 보인다"
+        },
+        {
+          "class": "wrong-surface",
+          "severity": "major",
+          "region": {
+            "x": 12,
+            "y": 4,
+            "w": 2,
+            "h": 2
+          },
+          "evidence": "음료 진열장 (12..13,4..5)이 오른쪽 벽선을 넘어 바깥 어둠 위까지 튀어나와 그려져 있다"
+        },
+        {
+          "class": "wrong-surface",
+          "severity": "polish",
+          "region": {
+            "x": 8,
+            "y": 4,
+            "w": 1,
+            "h": 2
+          },
+          "evidence": "좌우 방을 나누는 칸막이 벽 (8,1..4) 끝에 진열장 (8..9,4..6)이 겹쳐 있어 벽과 가구 경계가 어긋난다"
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 1,
+            "y": 3,
+            "w": 3,
+            "h": 8
+          },
+          "evidence": "왼쪽 매장 (1..3,3..10)과 진열대 위 (4..7,3..4)가 빈 바닥뿐이라 편의점치고 진열이 듬성듬성하다"
+        }
+      ]
+    },
+    {
+      "id": "decoy--shift-objects--wz-space-library--마법-학교-도서관-제한-구역-rary",
+      "kind": "decoy",
+      "label": "심은 결함 shift-objects · wz-space-library · 마법 학교 · 도서관 제한 구역",
+      "recipe": "shift-objects",
+      "planted": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 19
+      },
+      "note": "물체 층을 오른쪽 3칸·아래 2칸 밀었다",
+      "status": "reviewed",
+      "pictureSha256": "59d861ffb7fb5fcbc0283b53a71fc225793f87ab1768c7a24cd399f5114d572b",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "wrong-surface",
+        "severity": "major",
+        "region": {
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 19
+        },
+        "evidence": "서쪽 벽(x=3) 바깥 x=0..2 전 구간과 북쪽 벽 위 y=0..1 띠에 방 안과 똑같은 석재 바닥이 깔려 있음. 그래서 벽 바깥이 또 하나의 방처럼 보이고, 실제로 들어갈 수 없는 99칸짜리 걷기 가능 구역이 됨."
+      },
+      "defects": [
+        {
+          "class": "wrong-surface",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 19
+          },
+          "evidence": "서쪽 벽(x=3) 바깥 x=0..2 전 구간과 북쪽 벽 위 y=0..1 띠에 방 안과 똑같은 석재 바닥이 깔려 있음. 그래서 벽 바깥이 또 하나의 방처럼 보이고, 실제로 들어갈 수 없는 99칸짜리 걷기 가능 구역이 됨."
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "major",
+          "region": {
+            "x": 17,
+            "y": 18,
+            "w": 4,
+            "h": 1
+          },
+          "evidence": "맨 아래 줄 (17..20,18)의 카운터 책상과 펼친 책이 맵 하단 가장자리에서 윗부분만 보이고 잘려 있어 눈에 띔."
+        },
+        {
+          "class": "enclosure-unreadable",
+          "severity": "polish",
+          "region": {
+            "x": 4,
+            "y": 6,
+            "w": 20,
+            "h": 13
+          },
+          "evidence": "방에 서쪽과 북쪽 벽만 있고 동쪽(x=23)과 남쪽(y=18)은 벽 없이 바닥이 맵 끝까지 이어짐. '제한 구역'의 경계와 입구가 어디인지 읽히지 않음."
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 6,
+            "y": 7,
+            "w": 18,
+            "h": 7
+          },
+          "evidence": "y=7..9와 y=11..13에 같은 책 배열의 책장 16칸이 2x2 블록 격자로 똑같이 반복 찍혀 있어 복사 붙여넣기처럼 보임."
+        }
+      ]
+    },
+    {
+      "id": "decoy--shift-objects--joseon-v20--조선-마을-20호-_v20",
+      "kind": "decoy",
+      "label": "심은 결함 shift-objects · joseon-v20 · 조선 마을 20호",
+      "recipe": "shift-objects",
+      "planted": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 56
+      },
+      "note": "물체 층을 오른쪽 3칸·아래 2칸 밀었다",
+      "status": "reviewed",
+      "pictureSha256": "782fe963ce07092f3341009b38478c7d6667e2f40fe5af69d2e77a26aba59afb",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "passage-mismatch",
+        "severity": "blocker",
+        "region": {
+          "x": 42,
+          "y": 27,
+          "w": 6,
+          "h": 6
+        },
+        "evidence": "(43~47,28)과 (43~47,31)에 다리 두 개가 그려져 있지만, 동쪽 구역 851칸이 주 보행 영역과 끊겨 있어 다리를 건너 동쪽 마을로 갈 수 없음"
+      },
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "blocker",
+          "region": {
+            "x": 42,
+            "y": 27,
+            "w": 6,
+            "h": 6
+          },
+          "evidence": "(43~47,28)과 (43~47,31)에 다리 두 개가 그려져 있지만, 동쪽 구역 851칸이 주 보행 영역과 끊겨 있어 다리를 건너 동쪽 마을로 갈 수 없음"
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 45,
+            "y": 3,
+            "w": 15,
+            "h": 35
+          },
+          "evidence": "P9·P10·P11·P12·P15·P18 등 동쪽 마을 주민 6명이 모두 걸어서 닿을 수 없는 고립 구역에 서 있음"
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 7,
+            "y": 6,
+            "w": 23,
+            "h": 30
+          },
+          "evidence": "P3(7,6)·P2(7,20)·P16(8,34)·P17(29,35)은 초가와 정자 지붕 위에, P20(11,19)은 관아 담장 위에 서 있어 막힌 칸 위에 사람이 올라가 있는 것으로 보임"
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "major",
+          "region": {
+            "x": 60,
+            "y": 25,
+            "w": 4,
+            "h": 6
+          },
+          "evidence": "(60~63,25~30)의 초가가 동쪽 맵 가장자리에서 잘려 반쪽만 보임"
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "major",
+          "region": {
+            "x": 3,
+            "y": 4,
+            "w": 6,
+            "h": 26
+          },
+          "evidence": "서쪽 (3~8,4~29) 열에 같은 초가와 기와집이 세로로 줄지어 찍혀 있고, 특히 y=19~23과 y=24~29의 초가는 완전히 같은 모양임"
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 52,
+            "y": 3,
+            "w": 12,
+            "h": 27
+          },
+          "evidence": "동쪽 (52~63,3~29)에 초가와 기와집이 2열 격자로 반복 배치되어 같은 집을 찍어낸 느낌을 줌"
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "polish",
+          "region": {
+            "x": 9,
+            "y": 10,
+            "w": 3,
+            "h": 13
+          },
+          "evidence": "관아 서쪽 담장 바깥 (9~11,10~22)의 넓은 흙마당 길이 담을 따라 이어지다가, 담장에 문 없이 그냥 끝남"
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 28,
+            "y": 5,
+            "w": 2,
+            "h": 17
+          },
+          "evidence": "관아 담 안 동쪽 (28~29,5~21)에 한 칸 폭의 밭고랑 띠가 길게 그려져 있어 마당 안 지형으로 어색함"
+        }
+      ]
+    },
+    {
+      "id": "decoy--stamp-6x--joseon-in-throne--조선-궁-어좌전-rone",
+      "kind": "decoy",
+      "label": "심은 결함 stamp-6x · joseon-in-throne · 조선 궁 어좌전",
+      "recipe": "stamp-6x",
+      "planted": {
+        "x": 0,
+        "y": 11,
+        "w": 23,
+        "h": 3
+      },
+      "note": "(9,1) 의 3×3 조각을 y=11 줄에 6번 찍었다",
+      "status": "reviewed",
+      "pictureSha256": "10555a15b4cdac0ad2de16cd9f3546ca391a87bfb173d4785fbb42a2f47cd677",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "wrong-surface",
+        "severity": "major",
+        "region": {
+          "x": 10,
+          "y": 11,
+          "w": 4,
+          "h": 3
+        },
+        "evidence": "x=10과 x=12..13,y=11..13의 병풍이 4칸 폭 붉은 카펫 위에 서 있다. 정문에서 어좌로 가는 중심 통로가 x=11 한 칸 계단으로 좁아져 의례 축이 병풍에 잘려 보인다."
+      },
+      "defects": [
+        {
+          "class": "wrong-surface",
+          "severity": "major",
+          "region": {
+            "x": 10,
+            "y": 11,
+            "w": 4,
+            "h": 3
+          },
+          "evidence": "x=10과 x=12..13,y=11..13의 병풍이 4칸 폭 붉은 카펫 위에 서 있다. 정문에서 어좌로 가는 중심 통로가 x=11 한 칸 계단으로 좁아져 의례 축이 병풍에 잘려 보인다."
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 11,
+            "w": 24,
+            "h": 3
+          },
+          "evidence": "y=11..13에 같은 산수 병풍이 여섯 번 연달아 찍혀 홀을 가로지르는 벽처럼 놓였다. 북쪽 벽 중앙 x=9..14,y=1..3의 병풍도 같은 그림이라 반복이 뚜렷하다."
+        },
+        {
+          "class": "wrong-surface",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 11,
+            "w": 24,
+            "h": 3
+          },
+          "evidence": "양 끝 병풍(x=0..3, x=20..23,y=11..13)이 좌우 외벽의 붉은 테두리와 벽 칸 위까지 덮어 실내 소품이 벽 밖으로 튀어나와 보인다."
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "polish",
+          "region": {
+            "x": 20,
+            "y": 13,
+            "w": 1,
+            "h": 2
+          },
+          "evidence": "오른쪽 붉은 기둥 (20,13..14)은 머리 장식 없이 아래 토막만 병풍 밑에 보인다. 왼쪽 대칭 기둥 (3,12..15)은 머리까지 온전해 한쪽만 잘린 것이 드러난다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "polish",
+          "region": {
+            "x": 7,
+            "y": 11,
+            "w": 13,
+            "h": 3
+          },
+          "evidence": "병풍 사이 x=7, x=15, x=19,y=12..13에 바닥이 드러나 상단 홀로 통하는 틈처럼 보이지만, y=11의 돌 캡이 막고 있어 지나갈 수 없는 막다른 홈이다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 1,
+            "y": 14,
+            "w": 22,
+            "h": 6
+          },
+          "evidence": "하단 홀 y=14..20 바닥에 작은 붉은 상자, 푸른 상자, 책 묶음이 줄도 맥락도 없이 흩어져 있다. 정전 바닥이 어질러진 창고처럼 보인다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--stamp-6x--jp-city-shopstreet--일본-도시-상가-거리-간선-교차로-생활도로-건널목-reet",
+      "kind": "decoy",
+      "label": "심은 결함 stamp-6x · jp-city-shopstreet · 일본 도시 · 상가 거리 (간선 교차로·생활도로·건널목)",
+      "recipe": "stamp-6x",
+      "planted": {
+        "x": 0,
+        "y": 13,
+        "w": 36,
+        "h": 6
+      },
+      "note": "(17,0) 의 6×6 조각을 y=13 줄에 6번 찍었다",
+      "status": "reviewed",
+      "pictureSha256": "51975e7a3ff75ae9e1ab777775e796a10a237506bb2e1a6c832d9f97e541672f",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "wrong-surface",
+        "severity": "major",
+        "region": {
+          "x": 12,
+          "y": 13,
+          "w": 24,
+          "h": 6
+        },
+        "evidence": "건물 띠가 북쪽 차도(x=12..15)와 동쪽 간선도로(x=33..35) 위에 겹쳐 그려져, 아스팔트 도로 한가운데에 건물이 올라앉아 있고 차선 점선도 y=13..18에서 끊긴다"
+      },
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 13,
+            "w": 36,
+            "h": 6
+          },
+          "evidence": "y=13..18 전체에 옥상과 유리창 외벽이 그려진 고층 건물 띠가 있는데 붉은 표시가 없어, 플레이어가 건물 지붕과 창문 위를 그대로 걸어 남북을 오간다"
+        },
+        {
+          "class": "wrong-surface",
+          "severity": "major",
+          "region": {
+            "x": 12,
+            "y": 13,
+            "w": 24,
+            "h": 6
+          },
+          "evidence": "건물 띠가 북쪽 차도(x=12..15)와 동쪽 간선도로(x=33..35) 위에 겹쳐 그려져, 아스팔트 도로 한가운데에 건물이 올라앉아 있고 차선 점선도 y=13..18에서 끊긴다"
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 13,
+            "w": 36,
+            "h": 6
+          },
+          "evidence": "같은 옥상 실외기와 유리창 배치의 건물 블록이 x=0부터 x=35까지 6번 똑같이 이어 찍혀 있어 복사한 벽처럼 보인다"
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 12,
+            "y": 0,
+            "w": 4,
+            "h": 13
+          },
+          "evidence": "북쪽 가장자리에서 내려오는 차도(x=12..15)가 y=12에서 건물 띠 외벽에 정면으로 부딪혀 끝나고, 이어지는 도로나 교차로가 없다"
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 12,
+            "y": 19,
+            "w": 5,
+            "h": 4
+          },
+          "evidence": "商店街 아치(x=12..16, y=19..22) 안쪽의 아스팔트 통로가 곧바로 위쪽 건물 띠 유리창 벽에 막혀, 상점가 입구가 아무 데로도 이어지지 않는다"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 1,
+            "y": 9,
+            "w": 29,
+            "h": 14
+          },
+          "evidence": "(3,10), (9,10), 격자문(16,10), 유리 자동문(20,10), 철문(29,10), (8,21), 철문(22,21) 등 그려진 출입문이 모두 붉은 막힘 칸이라 어느 건물에도 들어갈 수 없다"
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 19,
+            "w": 25,
+            "h": 3
+          },
+          "evidence": "y=19 상가 건물들의 지붕이 위쪽 건물 띠에 덮여 반쯤 잘려 있고, x=24 철길은 건물 띠 아래에서 다시 나타났다가 y=21 보도에서 뚝 끊긴다"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "polish",
+          "region": {
+            "x": 15,
+            "y": 19,
+            "w": 15,
+            "h": 9
+          },
+          "evidence": "주차된 흰 승용차(x=26..30, y=19..21)와 도로 위 택시(x=15..19, y=25..27)가 붉은 표시 없이 걸을 수 있는 칸이라, 차 위를 그대로 지나갈 수 있다"
+        }
+      ]
+    },
+    {
+      "id": "decoy--stamp-6x--joseon-v20--조선-마을-20호-_v20",
+      "kind": "decoy",
+      "label": "심은 결함 stamp-6x · joseon-v20 · 조선 마을 20호",
+      "recipe": "stamp-6x",
+      "planted": {
+        "x": 0,
+        "y": 25,
+        "w": 56,
+        "h": 6
+      },
+      "note": "(14,4) 의 6×6 조각을 y=25 줄에 6번 찍었다",
+      "status": "reviewed",
+      "pictureSha256": "95532c1da1bca230031078ce841b98a9244b10dd69f44af12798b170f0415b9b",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "repeated-stamp",
+        "severity": "major",
+        "region": {
+          "x": 0,
+          "y": 25,
+          "w": 57,
+          "h": 6
+        },
+        "evidence": "y=25~30에 똑같은 기와집이 x=0, 10, 20, 30, 40, 50마다 같은 간격으로 6채 줄지어 찍혀 있다."
+      },
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "blocker",
+          "region": {
+            "x": 45,
+            "y": 0,
+            "w": 19,
+            "h": 40
+          },
+          "evidence": "강(x=40~44) 동쪽 772칸이 본 구역과 끊겨 있다. 다리가 없고 y=25~30의 기와집(x=40~46)이 유일한 연결 지점을 막아, 동쪽 큰길 x=46~47과 주민 P5, P6, P7, P8, P11에 갈 수 없다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "blocker",
+          "region": {
+            "x": 30,
+            "y": 25,
+            "w": 7,
+            "h": 6
+          },
+          "evidence": "게임 시작 칸 S(31,28)가 기와집(x=30~36, y=25~30) 앞면 벽과 창살 위에 있어, 플레이어가 건물 벽 속에서 시작한다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 23,
+            "y": 36,
+            "w": 17,
+            "h": 3
+          },
+          "evidence": "y=37~38 흙길이 x=23부터 동쪽으로 뻗지만 x=39 강가에서 다리 없이 끝나, 맞은편 x=46 도로로 건너갈 수 없다."
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 25,
+            "w": 57,
+            "h": 6
+          },
+          "evidence": "y=25~30에 똑같은 기와집이 x=0, 10, 20, 30, 40, 50마다 같은 간격으로 6채 줄지어 찍혀 있다."
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 22,
+            "w": 57,
+            "h": 4
+          },
+          "evidence": "(0~6,23~25)의 초가지붕과 (50~56,22~25)의 기와지붕이 벽 없이 아래 기와집 지붕 위에 겹쳐 놓여, 지붕만 둥둥 떠 있는 것처럼 보인다."
+        },
+        {
+          "class": "enclosure-unreadable",
+          "severity": "polish",
+          "region": {
+            "x": 36,
+            "y": 24,
+            "w": 4,
+            "h": 5
+          },
+          "evidence": "(36~39,24~28)의 평상과 빨래줄 공간이 기와집과 나무에 둘러싸인 14칸 고립 구역이라, 길처럼 보이지만 들어갈 수 없다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--stamp-6x--wz-space-library--마법-학교-도서관-제한-구역-rary",
+      "kind": "decoy",
+      "label": "심은 결함 stamp-6x · wz-space-library · 마법 학교 · 도서관 제한 구역",
+      "recipe": "stamp-6x",
+      "planted": {
+        "x": 0,
+        "y": 8,
+        "w": 23,
+        "h": 3
+      },
+      "note": "(0,0) 의 3×3 조각을 y=8 줄에 6번 찍었다",
+      "status": "reviewed",
+      "pictureSha256": "143bb5eac47655f4ebbdd52a8c7b6c38ef43873ab9d07b4bda6b0e4e2ca35acb",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "cut-off-piece",
+        "severity": "major",
+        "region": {
+          "x": 1,
+          "y": 8,
+          "w": 22,
+          "h": 4
+        },
+        "evidence": "y=8~11 칸막이 벽에서 기둥과 벽면 타일이 책장을 덮고 있어 책장이 위아래로 잘려 보인다. 책장은 기둥 사이 조각과 y=11의 하단부만 드러나 서로 겹친 배치로 읽힌다."
+      },
+      "defects": [
+        {
+          "class": "cut-off-piece",
+          "severity": "major",
+          "region": {
+            "x": 1,
+            "y": 8,
+            "w": 22,
+            "h": 4
+          },
+          "evidence": "y=8~11 칸막이 벽에서 기둥과 벽면 타일이 책장을 덮고 있어 책장이 위아래로 잘려 보인다. 책장은 기둥 사이 조각과 y=11의 하단부만 드러나 서로 겹친 배치로 읽힌다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 3,
+            "y": 8,
+            "w": 17,
+            "h": 1
+          },
+          "evidence": "(3,8), (7,8), (15,8), (19,8)은 벽 캡 사이로 바닥이 드러나 통로 틈처럼 보인다. 그러나 위는 y=7 책장, 아래는 y=9 책장으로 막혀 들어갈 수도 지나갈 수도 없다."
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 1,
+            "y": 8,
+            "w": 22,
+            "h": 4
+          },
+          "evidence": "y=8~11 칸막이에 책장, 기둥, 벽, 사다리 묶음이 x=1~22에 걸쳐 같은 간격으로 6번 찍혀 있다. y=5~7의 4칸 책장 블록 2개도 동일하다."
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "polish",
+          "region": {
+            "x": 21,
+            "y": 7,
+            "w": 2,
+            "h": 1
+          },
+          "evidence": "(21~22,7)에 낮은 선반 또는 카운터 조각이 오른쪽 벽에 붙은 채 끊겨 있어 반쪽짜리 소품처럼 보인다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 1,
+            "y": 12,
+            "w": 6,
+            "h": 6
+          },
+          "evidence": "아래 홀 좌측 x=1~6, y=12~17은 아무 소품 없이 바닥만 있다. 우측 x=17~22, y=12~15도 비어 있어 홀이 휑하다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--wall-off--joseon-in-inn--조선-주막-실내-_inn",
+      "kind": "decoy",
+      "label": "심은 결함 wall-off · joseon-in-inn · 조선 주막 실내",
+      "recipe": "wall-off",
+      "planted": {
+        "x": 10,
+        "y": 12,
+        "w": 1,
+        "h": 4
+      },
+      "note": "가장자리의 열린 구간 1곳을 옆 벽 그림으로 막았다",
+      "status": "reviewed",
+      "pictureSha256": "d1fdc1a97f78a032fe8344892e6ecdb26059bb8c725931f23c43deb5a6cb126b",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "passage-mismatch",
+        "severity": "major",
+        "region": {
+          "x": 10,
+          "y": 12,
+          "w": 1,
+          "h": 1
+        },
+        "evidence": "게임 시작 칸 (10,12)에 갈색 항아리가 그려져 있고 걸을 수 있게 되어 있다. 그래서 플레이어가 처음부터 항아리와 겹친 채로 서서 시작한다."
+      },
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 10,
+            "y": 12,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "게임 시작 칸 (10,12)에 갈색 항아리가 그려져 있고 걸을 수 있게 되어 있다. 그래서 플레이어가 처음부터 항아리와 겹친 채로 서서 시작한다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 10,
+            "y": 13,
+            "w": 2,
+            "h": 1
+          },
+          "evidence": "아래쪽 외벽 (10~11,13)에 문틀처럼 세로선 두 줄이 그려져 있고, 바로 위가 시작 칸이라 출입구로 읽힌다. 그러나 이 칸은 막혀 있어 지나갈 수 없다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 14,
+            "w": 22,
+            "h": 2
+          },
+          "evidence": "외벽 아래 y14~15 두 줄이 맵 전체 폭에 걸쳐 아무것도 없는 검은 공백이다. 맵이 내용보다 아래로 늘어나 보인다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--wall-off--jp-city-konbini--일본-편의점-コンビニ-실내-bini",
+      "kind": "decoy",
+      "label": "심은 결함 wall-off · jp-city-konbini · 일본 편의점(コンビニ) 실내",
+      "recipe": "wall-off",
+      "planted": {
+        "x": 6,
+        "y": 10,
+        "w": 2,
+        "h": 2
+      },
+      "note": "가장자리의 열린 구간 1곳을 옆 벽 그림으로 막았다",
+      "status": "reviewed",
+      "pictureSha256": "3c803c66a4b7149641a54712e7d15f4a37bef30537669602c3300b537513df60",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "passage-mismatch",
+        "severity": "major",
+        "region": {
+          "x": 5,
+          "y": 10,
+          "w": 3,
+          "h": 2
+        },
+        "evidence": "하단 벽 (6~7,11)에 유리 자동문 입구가 그려져 있는데 바로 앞 (5~7,10)에 빨간 장바구니 더미가 놓인 막힌 칸이 있어 입구로 다가갈 수 없음"
+      },
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 5,
+            "y": 10,
+            "w": 3,
+            "h": 2
+          },
+          "evidence": "하단 벽 (6~7,11)에 유리 자동문 입구가 그려져 있는데 바로 앞 (5~7,10)에 빨간 장바구니 더미가 놓인 막힌 칸이 있어 입구로 다가갈 수 없음"
+        },
+        {
+          "class": "other",
+          "severity": "major",
+          "region": {
+            "x": 6,
+            "y": 10,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "게임 시작 칸 (6,10)이 빨간 장바구니 더미 소품 위라 플레이어가 바구니 위에 겹쳐 선 채로 시작함"
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 8,
+            "y": 9,
+            "w": 6,
+            "h": 2
+          },
+          "evidence": "계산대 앞 (8~13,9~10)은 아무 소품도 없는 회색 바닥만 펼쳐져 있어 좁은 매장치고 휑해 보임"
+        }
+      ]
+    },
+    {
+      "id": "decoy--wall-off--joseon-in-throne--조선-궁-어좌전-rone",
+      "kind": "decoy",
+      "label": "심은 결함 wall-off · joseon-in-throne · 조선 궁 어좌전",
+      "recipe": "wall-off",
+      "planted": {
+        "x": 10,
+        "y": 21,
+        "w": 4,
+        "h": 3
+      },
+      "note": "가장자리의 열린 구간 1곳을 옆 벽 그림으로 막았다",
+      "status": "reviewed",
+      "pictureSha256": "f2794b6df5cd82f91af3b5accda7460449bab3ec7e74df4913e6233da39516e5",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "enclosure-unreadable",
+        "severity": "major",
+        "region": {
+          "x": 0,
+          "y": 20,
+          "w": 24,
+          "h": 2
+        },
+        "evidence": "카펫이 (10~13,20)까지 내려와 21행 남쪽 장식벽에서 그대로 막히고, 벽 아래 빨간 기둥 (10~14,21)도 막힌 칸이다. 사방 어디에도 문·출입구가 그려져 있지 않아 플레이어가 홀을 어디로 드나드는지 읽을 수 없다."
+      },
+      "defects": [
+        {
+          "class": "enclosure-unreadable",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 20,
+            "w": 24,
+            "h": 2
+          },
+          "evidence": "카펫이 (10~13,20)까지 내려와 21행 남쪽 장식벽에서 그대로 막히고, 벽 아래 빨간 기둥 (10~14,21)도 막힌 칸이다. 사방 어디에도 문·출입구가 그려져 있지 않아 플레이어가 홀을 어디로 드나드는지 읽을 수 없다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 22,
+            "w": 24,
+            "h": 2
+          },
+          "evidence": "남쪽 벽 아래 22~23행 전체가 아무것도 없는 검은 띠로 남아 있어, 맵 하단 두 줄이 내용 없이 비어 보인다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 1,
+            "y": 12,
+            "w": 21,
+            "h": 8
+          },
+          "evidence": "하단 홀 바닥 (5,14)·(5,19)·(7,17)·(17,15)·(18,18)·(5,17)·(14,17) 등에 작은 상자와 책 더미가 무질서하게 흩어져 있어, 엄숙해야 할 어좌전 바닥이 어질러진 창고처럼 보인다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--wall-off--wz-space-library--마법-학교-도서관-제한-구역-rary",
+      "kind": "decoy",
+      "label": "심은 결함 wall-off · wz-space-library · 마법 학교 · 도서관 제한 구역",
+      "recipe": "wall-off",
+      "planted": {
+        "x": 12,
+        "y": 17,
+        "w": 1,
+        "h": 2
+      },
+      "note": "가장자리의 열린 구간 1곳을 옆 벽 그림으로 막았다",
+      "status": "reviewed",
+      "pictureSha256": "cc4bf41f956d4219b824f6876ee5e5577cdc95c6ed4a72cc48be52fde54f25a4",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "enclosure-unreadable",
+        "severity": "major",
+        "region": {
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 19
+        },
+        "evidence": "방 둘레(0~23, 0~18)가 전부 돌벽과 책장 벽뿐이고 문, 아치, 계단이 한 칸도 그려져 있지 않음. 플레이어가 이 방에 어떻게 들어왔고 어디로 나가는지 읽을 수 없음"
+      },
+      "defects": [
+        {
+          "class": "enclosure-unreadable",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 19
+          },
+          "evidence": "방 둘레(0~23, 0~18)가 전부 돌벽과 책장 벽뿐이고 문, 아치, 계단이 한 칸도 그려져 있지 않음. 플레이어가 이 방에 어떻게 들어왔고 어디로 나가는지 읽을 수 없음"
+        },
+        {
+          "class": "other",
+          "severity": "major",
+          "region": {
+            "x": 12,
+            "y": 17,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "게임 시작 칸 (12,17)이 금색 촛대가 그려진 막힌(빨간) 칸이라 플레이어가 촛대 위에 겹쳐 선 채 시작함"
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "major",
+          "region": {
+            "x": 3,
+            "y": 5,
+            "w": 18,
+            "h": 7
+          },
+          "evidence": "(3~10,5~7), (13~20,5~7), (3~10,9~11), (13~20,9~11)에 같은 책 배열의 책장 16개가 2x2 격자로 똑같이 찍혀 있어 복사한 티가 남"
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 21,
+            "y": 7,
+            "w": 2,
+            "h": 2
+          },
+          "evidence": "(21~22,7~8)에 크기와 모양이 다른 작은 책장이 큰 책장 줄 끝에 붙어 있어 동쪽 통로를 막고, 주변과 어울리지 않는 끼워 넣은 소품처럼 보임"
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 1,
+            "y": 13,
+            "w": 6,
+            "h": 5
+          },
+          "evidence": "하단 왼쪽 (1~6,13~17)과 오른쪽 (18~22,13~17)이 아무것도 없는 맨 돌바닥으로 남아 있어 하단이 휑함"
+        }
+      ]
+    },
+    {
+      "id": "decoy--locked-text-on-way--joseon-in-inn--조선-주막-실내-_inn",
+      "kind": "decoy",
+      "label": "심은 결함 locked-text-on-way · joseon-in-inn · 조선 주막 실내",
+      "recipe": "locked-text-on-way",
+      "planted": {
+        "x": 10,
+        "y": 14,
+        "w": 1,
+        "h": 1
+      },
+      "note": "열린 길목 1칸에 안 보이는 «잠긴 집 문» 글 이벤트를 깔았다",
+      "status": "reviewed",
+      "pictureSha256": "00dd65d31ddeb950fcf8a680618efea86710d5a0ddd1c2e033e30391599edfa8",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "invisible-event-misplaced",
+        "severity": "major",
+        "region": {
+          "x": 10,
+          "y": 14,
+          "w": 1,
+          "h": 1
+        },
+        "evidence": "V1 '문이 굳게 잠겨 있다. 들어갈 수 없는 집이다' 텍스트가 이미 집 안에서 남쪽 문(10,13)을 지나 나간 바깥 통로 칸(10,14)에 놓여 있어, 실내에서 나가는 플레이어에게 '들어갈 수 없는 집'이라는 엉뚱한 문구가 뜬다."
+      },
+      "defects": [
+        {
+          "class": "invisible-event-misplaced",
+          "severity": "major",
+          "region": {
+            "x": 10,
+            "y": 14,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "V1 '문이 굳게 잠겨 있다. 들어갈 수 없는 집이다' 텍스트가 이미 집 안에서 남쪽 문(10,13)을 지나 나간 바깥 통로 칸(10,14)에 놓여 있어, 실내에서 나가는 플레이어에게 '들어갈 수 없는 집'이라는 엉뚱한 문구가 뜬다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 14,
+            "w": 22,
+            "h": 2
+          },
+          "evidence": "하단 y=14~15 두 줄 전체가 검은 공백이고, 그 가운데 x=10에만 돌·흙 바닥 두 칸이 허공에 떠 있어 바깥 공간이 그려지지 않은 채 잘린 것처럼 보인다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--locked-text-on-way--jp-city-konbini--일본-편의점-コンビニ-실내-bini",
+      "kind": "decoy",
+      "label": "심은 결함 locked-text-on-way · jp-city-konbini · 일본 편의점(コンビニ) 실내",
+      "recipe": "locked-text-on-way",
+      "planted": {
+        "x": 6,
+        "y": 10,
+        "w": 2,
+        "h": 1
+      },
+      "note": "열린 길목 2칸에 안 보이는 «잠긴 집 문» 글 이벤트를 깔았다",
+      "status": "reviewed",
+      "pictureSha256": "390188c2e2251a37ddb12b7ac5505c9e2e44a425857761913854d3b0326ee7c0",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "invisible-event-misplaced",
+        "severity": "blocker",
+        "region": {
+          "x": 6,
+          "y": 10,
+          "w": 2,
+          "h": 1
+        },
+        "evidence": "편의점 입구 매트 바로 안쪽의 열린 바닥 (6,10)(7,10)에 '문이 굳게 잠겨 있다. 들어갈 수 없는 집이다' 접촉 이벤트가 있다. 시작 칸이 그 위라서 플레이어는 매장 안에 서자마자 '잠긴 집 문' 문구를 보게 되고, 입구로 오갈 때마다 이 문구가 다시 뜬다."
+      },
+      "defects": [
+        {
+          "class": "invisible-event-misplaced",
+          "severity": "blocker",
+          "region": {
+            "x": 6,
+            "y": 10,
+            "w": 2,
+            "h": 1
+          },
+          "evidence": "편의점 입구 매트 바로 안쪽의 열린 바닥 (6,10)(7,10)에 '문이 굳게 잠겨 있다. 들어갈 수 없는 집이다' 접촉 이벤트가 있다. 시작 칸이 그 위라서 플레이어는 매장 안에 서자마자 '잠긴 집 문' 문구를 보게 되고, 입구로 오갈 때마다 이 문구가 다시 뜬다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--locked-text-on-way--joseon-in-throne--조선-궁-어좌전-rone",
+      "kind": "decoy",
+      "label": "심은 결함 locked-text-on-way · joseon-in-throne · 조선 궁 어좌전",
+      "recipe": "locked-text-on-way",
+      "planted": {
+        "x": 10,
+        "y": 22,
+        "w": 4,
+        "h": 1
+      },
+      "note": "열린 길목 4칸에 안 보이는 «잠긴 집 문» 글 이벤트를 깔았다",
+      "status": "reviewed",
+      "pictureSha256": "a8c73b5a295fc275aada3f65406c201e98f37c32dbe3c609464a9365d28535c8",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "invisible-event-misplaced",
+        "severity": "major",
+        "region": {
+          "x": 10,
+          "y": 22,
+          "w": 4,
+          "h": 1
+        },
+        "evidence": "V1~V4(10..13,22)는 정문을 지나 이미 밖으로 나온 돌계단 위에 있는데 '문이 굳게 잠겨 있다. 들어갈 수 없는 집이다'라는 글을 띄운다. 안에서 열린 문으로 걸어 나온 플레이어는 이 글을 이해할 수 없고, 유일한 출입 길목에서 걸려 넘어진다."
+      },
+      "defects": [
+        {
+          "class": "invisible-event-misplaced",
+          "severity": "major",
+          "region": {
+            "x": 10,
+            "y": 22,
+            "w": 4,
+            "h": 1
+          },
+          "evidence": "V1~V4(10..13,22)는 정문을 지나 이미 밖으로 나온 돌계단 위에 있는데 '문이 굳게 잠겨 있다. 들어갈 수 없는 집이다'라는 글을 띄운다. 안에서 열린 문으로 걸어 나온 플레이어는 이 글을 이해할 수 없고, 유일한 출입 길목에서 걸려 넘어진다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 22,
+            "w": 24,
+            "h": 2
+          },
+          "evidence": "하단 행 22..23은 가운데 돌계단(10..13)을 빼고 양옆 약 20칸이 검게 칠해진 빈 바닥으로 남아 있다. 바깥 전각 앞마당이 그려지지 않아 맵 아래쪽이 잘려 보인다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 4,
+            "y": 12,
+            "w": 15,
+            "h": 8
+          },
+          "evidence": "하단 홀 바닥(4,14)(5,17)(11,17)(14,12)(17,18) 등에 작은 책·함 소품이 받침 없이 맨바닥에 흩어져 있다. 정돈된 어좌전에서 물건을 떨어뜨려 놓은 것처럼 보인다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--locked-text-on-way--wz-space-greenhouse--마법-학교-온실-맨드레이크-ouse",
+      "kind": "decoy",
+      "label": "심은 결함 locked-text-on-way · wz-space-greenhouse · 마법 학교 · 온실(맨드레이크)",
+      "recipe": "locked-text-on-way",
+      "planted": {
+        "x": 12,
+        "y": 13,
+        "w": 1,
+        "h": 1
+      },
+      "note": "열린 길목 1칸에 안 보이는 «잠긴 집 문» 글 이벤트를 깔았다",
+      "status": "reviewed",
+      "pictureSha256": "38458f7975b00b64848bea8becbd58261acfa2941ef42334539eaccc96e121d7",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "invisible-event-misplaced",
+        "severity": "major",
+        "region": {
+          "x": 12,
+          "y": 13,
+          "w": 1,
+          "h": 1
+        },
+        "evidence": "(12,13)은 남쪽 벽에 문 없이 뚫린 바닥 틈인데, V1이 '굳게 잠긴 집 문, 들어갈 수 없는 집'이라는 문구를 띄움. 온실 출구 틈에 집 문 잠김 문구가 나와 장면과 맞지 않고, 시작 지점 (12,12) 바로 아래라 곧바로 밟게 됨"
+      },
+      "defects": [
+        {
+          "class": "invisible-event-misplaced",
+          "severity": "major",
+          "region": {
+            "x": 12,
+            "y": 13,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "(12,13)은 남쪽 벽에 문 없이 뚫린 바닥 틈인데, V1이 '굳게 잠긴 집 문, 들어갈 수 없는 집'이라는 문구를 띄움. 온실 출구 틈에 집 문 잠김 문구가 나와 장면과 맞지 않고, 시작 지점 (12,12) 바로 아래라 곧바로 밟게 됨"
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "major",
+          "region": {
+            "x": 4,
+            "y": 5,
+            "w": 16,
+            "h": 5
+          },
+          "evidence": "(4~19,5~9)에 화분 2개, 맨드레이크 머리, 양동이가 올라간 똑같은 작업대가 2줄×4개 격자로 똑같이 찍혀 있어 복사해 붙인 티가 남"
+        },
+        {
+          "class": "wrong-surface",
+          "severity": "polish",
+          "region": {
+            "x": 1,
+            "y": 2,
+            "w": 1,
+            "h": 3
+          },
+          "evidence": "(1,2)~(1,4)의 물약 선반이 바닥이 아닌 유리창 벽과 석조 벽 띠 위에 겹쳐 그려져 있어 벽에 박힌 것처럼 보임"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "polish",
+          "region": {
+            "x": 13,
+            "y": 11,
+            "w": 9,
+            "h": 2
+          },
+          "evidence": "(13~15,11~12)와 (17~18,7)의 갈색 의자 받침, (21,6)의 삽이 모두 걸을 수 있는 칸이라 플레이어가 소품 위를 그대로 밟고 지나감"
+        }
+      ]
+    },
+    {
+      "id": "decoy--person-on-roof--joseon-v20--조선-마을-20호-_v20",
+      "kind": "decoy",
+      "label": "심은 결함 person-on-roof · joseon-v20 · 조선 마을 20호",
+      "recipe": "person-on-roof",
+      "planted": {
+        "x": 2,
+        "y": 10,
+        "w": 50,
+        "h": 23
+      },
+      "note": "사방이 막힌 칸 (2,11) (51,18) (41,32) 에 사람을 세웠다",
+      "status": "reviewed",
+      "pictureSha256": "3e9775be423b5978b9837ba825567c49029951697b1531fbad3e5b5db3988c8e",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "people-placement",
+        "severity": "major",
+        "region": {
+          "x": 2,
+          "y": 11,
+          "w": 1,
+          "h": 1
+        },
+        "evidence": "주민 P21이 (2,11) 서쪽 기와집 외벽·창문 칸 위에 서 있으며, 막힌 칸이라 플레이어가 다가가 말을 걸 수 없음"
+      },
+      "defects": [
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 2,
+            "y": 11,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "주민 P21이 (2,11) 서쪽 기와집 외벽·창문 칸 위에 서 있으며, 막힌 칸이라 플레이어가 다가가 말을 걸 수 없음"
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 51,
+            "y": 18,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "주민 P22가 (51,18) 동쪽 초가집 벽면(창문 위)에 겹쳐 그려져 있어 집 벽에 박힌 사람처럼 보이고 도달할 수 없음"
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 41,
+            "y": 32,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "주민 P23이 (41,32) 강 위 물레방아 바퀴에 겹쳐 서 있어 물 위/소품 위에 떠 있는 모습이며 막힌 칸이라 도달 불가"
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "polish",
+          "region": {
+            "x": 48,
+            "y": 7,
+            "w": 12,
+            "h": 15
+          },
+          "evidence": "동쪽 마을의 가로 흙길(y=7, y=14, y=21)이 x=59 부근 밭가 풀밭에서 아무 데로도 이어지지 않고 끊겨 막다른 길로 보임"
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 40,
+            "y": 25,
+            "w": 5,
+            "h": 5
+          },
+          "evidence": "(40~44,25)와 (40~44,28) 두 나무다리가 세 칸 간격으로 똑같이 나란히 찍혀 있고, 위쪽 다리는 동쪽 풀밭으로 이어져 중복된 다리로 보임"
+        }
+      ]
+    },
+    {
+      "id": "decoy--person-on-roof--modern-city--현대-도시-도쿄풍-예제-거리-mple",
+      "kind": "decoy",
+      "label": "심은 결함 person-on-roof · modern-city · 현대 도시 · 도쿄풍 예제 거리",
+      "recipe": "person-on-roof",
+      "planted": {
+        "x": 34,
+        "y": 8,
+        "w": 11,
+        "h": 44
+      },
+      "note": "사방이 막힌 칸 (37,9) (44,29) (34,51) 에 사람을 세웠다",
+      "status": "reviewed",
+      "pictureSha256": "b59b697d80dfc64ab2e6afb6e802fde4de9437f180f230dbd31e3058b50f7a9b",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "people-placement",
+        "severity": "major",
+        "region": {
+          "x": 37,
+          "y": 9,
+          "w": 1,
+          "h": 1
+        },
+        "evidence": "P1 주민이 (37,9) 파란 경찰서 건물 정면 벽 위, 문 옆 막힌 칸에 박혀 있어 말을 걸 수 없음"
+      },
+      "defects": [
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 37,
+            "y": 9,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "P1 주민이 (37,9) 파란 경찰서 건물 정면 벽 위, 문 옆 막힌 칸에 박혀 있어 말을 걸 수 없음"
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 44,
+            "y": 29,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "P2 주민이 (44,29) 남동 블록 빌딩 차양과 아래 건물 지붕이 겹치는 막힌 칸에 서 있어 닿을 수 없음"
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 34,
+            "y": 51,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "P3 주민이 (34,51) 남동 상점 건물의 회색 지붕 위에 서 있어 지붕 위 사람으로 보이고 닿을 수도 없음"
+        },
+        {
+          "class": "doorless-building",
+          "severity": "major",
+          "region": {
+            "x": 33,
+            "y": 22,
+            "w": 27,
+            "h": 10
+          },
+          "evidence": "남동 블록 윗줄 유리 빌딩, 헬리포트 병원, 붉은 아파트의 1층 입구가 (33~59,29~31)에서 아랫줄 건물에 덮여 문이 다른 건물을 향하거나 아예 보이지 않음"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 3,
+            "w": 60,
+            "h": 54
+          },
+          "evidence": "맵 전체 건물 정면에 유리문과 셔터가 그려져 있지만(예: (7,9), (16,9), (43,10), (54,56)) 문 칸이 모두 빨간 막힘이라 어느 문으로도 들어갈 수 없음"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 19,
+            "y": 51,
+            "w": 3,
+            "h": 5
+          },
+          "evidence": "(19~21,51~55) 지하철 계단 입구가 그려져 있지만 계단 칸이 막혀 있어 내려가는 길처럼 보이는 곳에 들어갈 수 없음"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 15,
+            "h": 3
+          },
+          "evidence": "좌상단 (0~14,0~2) 생울타리와 건물 사이 보도 띠가 걸을 수 있게 그려져 있지만, 건물과 공사 바리케이드에 막혀 주 보행 영역과 이어지지 않는 고립 구역(35칸)임"
+        }
+      ]
+    },
+    {
+      "id": "decoy--person-on-roof--jp-city-house--2층-단독주택-1층-e-1f",
+      "kind": "decoy",
+      "label": "심은 결함 person-on-roof · jp-city-house · 2층 단독주택 1층",
+      "recipe": "person-on-roof",
+      "planted": {
+        "x": 13,
+        "y": 1,
+        "w": 6,
+        "h": 7
+      },
+      "note": "사방이 막힌 칸 (15,2) (18,2) (13,7) 에 사람을 세웠다",
+      "status": "reviewed",
+      "pictureSha256": "613a8ac4e5f15d2629fb0220295982829c67be2a704c2eb76e1aa141b68f6943",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "people-placement",
+        "severity": "blocker",
+        "region": {
+          "x": 13,
+          "y": 2,
+          "w": 6,
+          "h": 6
+        },
+        "evidence": "P1(15,2)·P2(18,2)는 부엌 벽 타일 위에, P3(13,7)는 거실 벽면 위의 막힌 칸에 서 있어 말을 걸 수 없다."
+      },
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "blocker",
+          "region": {
+            "x": 12,
+            "y": 6,
+            "w": 9,
+            "h": 9
+          },
+          "evidence": "(12,9~10)에 미닫이문이 그려져 있고 거실·식당·부엌의 나무·타일 바닥이 넓게 깔려 있지만 문과 바닥 모두 붉은 막힌 칸이라 복도에서 들어갈 수 없다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "blocker",
+          "region": {
+            "x": 4,
+            "y": 8,
+            "w": 4,
+            "h": 4
+          },
+          "evidence": "복도 왼쪽 (7,8~9)의 나무문과 세면실·욕실 사이 (4~6,10~11)의 문들이 모두 붉은 칸이라 욕실 구역 전체에 들어갈 수 없다."
+        },
+        {
+          "class": "people-placement",
+          "severity": "blocker",
+          "region": {
+            "x": 13,
+            "y": 2,
+            "w": 6,
+            "h": 6
+          },
+          "evidence": "P1(15,2)·P2(18,2)는 부엌 벽 타일 위에, P3(13,7)는 거실 벽면 위의 막힌 칸에 서 있어 말을 걸 수 없다."
+        },
+        {
+          "class": "enclosure-unreadable",
+          "severity": "major",
+          "region": {
+            "x": 1,
+            "y": 1,
+            "w": 10,
+            "h": 5
+          },
+          "evidence": "좌상단 다다미방(1~10,1~5)은 아래쪽 벽이 끊김 없이 이어지고 문이나 틈이 그려져 있지 않아 어디로 들어가는지 알 수 없다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 9,
+            "y": 13,
+            "w": 1,
+            "h": 2
+          },
+          "evidence": "시작 지점 (9,13) 현관의 바닥이 남쪽 가장자리 (9,14)로 이어지지만 출구가 없어 집 밖으로 나갈 수 없다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 13,
+            "w": 7,
+            "h": 2
+          },
+          "evidence": "좌하단 (0~6,13~14)은 아무것도 그려지지 않은 짙은 단색 공백이라 집 윤곽이 잘린 것처럼 보인다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--person-on-roof--joseon-cave--조선-동굴-cave",
+      "kind": "decoy",
+      "label": "심은 결함 person-on-roof · joseon-cave · 조선 동굴",
+      "recipe": "person-on-roof",
+      "planted": {
+        "x": 39,
+        "y": 14,
+        "w": 4,
+        "h": 22
+      },
+      "note": "사방이 막힌 칸 (39,15) (41,34) (42,35) 에 사람을 세웠다",
+      "status": "reviewed",
+      "pictureSha256": "efa0cc8191ad5193511f3698db800190a0668c482e9480e8439014f7ab46c68a",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "people-placement",
+        "severity": "major",
+        "region": {
+          "x": 39,
+          "y": 15,
+          "w": 1,
+          "h": 1
+        },
+        "evidence": "P3 '주민'이 (39,15) 북동 곁방 뒤쪽 바위 벽면 타일 위에 서 있음. 막힌 칸이라 다가가 말을 걸 수 없고, 벽에 박힌 사람처럼 보임."
+      },
+      "defects": [
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 39,
+            "y": 15,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "P3 '주민'이 (39,15) 북동 곁방 뒤쪽 바위 벽면 타일 위에 서 있음. 막힌 칸이라 다가가 말을 걸 수 없고, 벽에 박힌 사람처럼 보임."
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 41,
+            "y": 34,
+            "w": 2,
+            "h": 2
+          },
+          "evidence": "P4(41,34)와 P5(42,35)가 남동 연못방 상자 옆 막힌 칸에 서 있음. 보행 영역에서 닿을 수 없어 바닥에 보이는 주민 둘에게 말을 걸 수 없음."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 48,
+            "h": 48
+          },
+          "evidence": "48x48 맵에서 보행 칸이 23%뿐임. 좌상단(0..18,0..12), 우상단(30..47,0..14), 우하단(29..47,38..47), 고리 안쪽(10..22,29..38)이 아무것도 없는 암반으로 채워져 내용보다 맵이 훨씬 큼."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "polish",
+          "region": {
+            "x": 39,
+            "y": 20,
+            "w": 2,
+            "h": 1
+          },
+          "evidence": "(39..40,20)에 검은 구덩이가 그려져 있는데 막힘 표시가 없어 그대로 걸어 지나갈 수 있음. 구멍 위를 걷는 것처럼 보임."
+        }
+      ]
+    },
+    {
+      "id": "decoy--unpainted-hole--wz-space-greenhouse--마법-학교-온실-맨드레이크-ouse",
+      "kind": "decoy",
+      "label": "심은 결함 unpainted-hole · wz-space-greenhouse · 마법 학교 · 온실(맨드레이크)",
+      "recipe": "unpainted-hole",
+      "planted": {
+        "x": 9,
+        "y": 5,
+        "w": 6,
+        "h": 5
+      },
+      "note": "(9,5) 의 6×5칸을 모든 층에서 비웠다",
+      "status": "reviewed",
+      "pictureSha256": "be6732b866af2158f1b6d6d48553dd1e31bf2084b81209780f97f2422e9d1530",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "unpainted-or-seam",
+        "severity": "blocker",
+        "region": {
+          "x": 9,
+          "y": 5,
+          "w": 6,
+          "h": 5
+        },
+        "evidence": "맵 정중앙 x9~14, y5~9의 약 30칸이 회색 체커보드로 비어 있어, 교실 한복판에 구멍이 뚫린 것처럼 보임"
+      },
+      "defects": [
+        {
+          "class": "unpainted-or-seam",
+          "severity": "blocker",
+          "region": {
+            "x": 9,
+            "y": 5,
+            "w": 6,
+            "h": 5
+          },
+          "evidence": "맵 정중앙 x9~14, y5~9의 약 30칸이 회색 체커보드로 비어 있어, 교실 한복판에 구멍이 뚫린 것처럼 보임"
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "major",
+          "region": {
+            "x": 8,
+            "y": 5,
+            "w": 9,
+            "h": 5
+          },
+          "evidence": "x8~9와 x15~16의 작업대 네 개가 중앙 미도색 구역에 잘려 화분 하나만 얹힌 반쪽 테이블로 끝남"
+        },
+        {
+          "class": "wrong-surface",
+          "severity": "polish",
+          "region": {
+            "x": 1,
+            "y": 2,
+            "w": 1,
+            "h": 3
+          },
+          "evidence": "x1, y2~4의 물약 선반이 위쪽 유리창 벽과 벽돌 띠 위에 겹쳐 그려져, 벽 속에 박힌 것처럼 보임"
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 4,
+            "y": 5,
+            "w": 16,
+            "h": 5
+          },
+          "evidence": "맨드레이크가 심긴 같은 작업대가 x4~7과 x17~20에 위아래 2×2 격자로 똑같이 찍혀 있음"
+        }
+      ]
+    },
+    {
+      "id": "decoy--unpainted-hole--joseon-v20--조선-마을-20호-_v20",
+      "kind": "decoy",
+      "label": "심은 결함 unpainted-hole · joseon-v20 · 조선 마을 20호",
+      "recipe": "unpainted-hole",
+      "planted": {
+        "x": 29,
+        "y": 26,
+        "w": 6,
+        "h": 5
+      },
+      "note": "(29,26) 의 6×5칸을 모든 층에서 비웠다",
+      "status": "reviewed",
+      "pictureSha256": "3505c711adbfc087e6db33a9385b684379fe6fc6af5eba39b55e592849823550",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "unpainted-or-seam",
+        "severity": "blocker",
+        "region": {
+          "x": 29,
+          "y": 26,
+          "w": 6,
+          "h": 5
+        },
+        "evidence": "중앙 교차로 (29~34,26~30)가 회색 체크무늬 미도색 칸이고 차단되어 있다. 동서 대로가 여기서 끊기고, 게임 시작점 S(31,28)도 이 구멍 안의 막힌 칸에 놓여 있다."
+      },
+      "defects": [
+        {
+          "class": "unpainted-or-seam",
+          "severity": "blocker",
+          "region": {
+            "x": 29,
+            "y": 26,
+            "w": 6,
+            "h": 5
+          },
+          "evidence": "중앙 교차로 (29~34,26~30)가 회색 체크무늬 미도색 칸이고 차단되어 있다. 동서 대로가 여기서 끊기고, 게임 시작점 S(31,28)도 이 구멍 안의 막힌 칸에 놓여 있다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "blocker",
+          "region": {
+            "x": 40,
+            "y": 25,
+            "w": 5,
+            "h": 5
+          },
+          "evidence": "강을 건너는 나무다리 두 개(40~44,25~26 / 40~44,28~29)가 붉게 차단되어 있다. 강 동쪽 마을 842칸과 주민 P8·P9·P10·P11·P14·P17에게 걸어서 갈 수 없다."
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 35,
+            "y": 29,
+            "w": 3,
+            "h": 3
+          },
+          "evidence": "P7(36,30)은 다리 서쪽 길 위에 서 있지만, 미도색 구멍과 막힌 다리 사이에 갇혀 도달할 수 없는 주민으로 표시된다."
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 16,
+            "w": 6,
+            "h": 12
+          },
+          "evidence": "서쪽 가장자리 (0~5,16~27)에 같은 초가집이 위아래로 똑같이 연달아 찍혀 있다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "polish",
+          "region": {
+            "x": 8,
+            "y": 39,
+            "w": 1,
+            "h": 4
+          },
+          "evidence": "남서쪽 길에서 내려가는 나무 잔교(8,39~42)가 연못가에서 끝난다. 배(5~7,45)는 그 끝에 닿지 않고 떨어져 떠 있다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--unpainted-hole--jp-city-shopstreet--일본-도시-상가-거리-간선-교차로-생활도로-건널목-reet",
+      "kind": "decoy",
+      "label": "심은 결함 unpainted-hole · jp-city-shopstreet · 일본 도시 · 상가 거리 (간선 교차로·생활도로·건널목)",
+      "recipe": "unpainted-hole",
+      "planted": {
+        "x": 17,
+        "y": 14,
+        "w": 6,
+        "h": 5
+      },
+      "note": "(17,14) 의 6×5칸을 모든 층에서 비웠다",
+      "status": "reviewed",
+      "pictureSha256": "6a5c9bd0f0cecd7f281dc5602eb1999e3dd0e0dcf4fb2cb3b0c9d9fdb783dadc",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "unpainted-or-seam",
+        "severity": "blocker",
+        "region": {
+          "x": 17,
+          "y": 14,
+          "w": 6,
+          "h": 5
+        },
+        "evidence": "맵 한가운데 x=17..22, y=14..18 약 30칸이 회색 체크무늬(미도색) 그대로 남아 있다. 아래 건물(x=18..22, y=19~)의 지붕까지 이 구멍에 잘려 나가 화면이 깨져 보인다."
+      },
+      "defects": [
+        {
+          "class": "unpainted-or-seam",
+          "severity": "blocker",
+          "region": {
+            "x": 17,
+            "y": 14,
+            "w": 6,
+            "h": 5
+          },
+          "evidence": "맵 한가운데 x=17..22, y=14..18 약 30칸이 회색 체크무늬(미도색) 그대로 남아 있다. 아래 건물(x=18..22, y=19~)의 지붕까지 이 구멍에 잘려 나가 화면이 깨져 보인다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 9,
+            "w": 29,
+            "h": 14
+          },
+          "evidence": "북쪽 상점 문(x=1..10, y=9..10), 유리 자동문(x=19..21, y=9..10), 노란 건물 철문(x=27..28, y=9..10), 남쪽 노렌 입구와 문(x=1..9, y=20..22), 회색 철문(x=21..22, y=20..22)이 모두 빨간 칸이다. 그려진 문 앞에"
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 24,
+            "y": 19,
+            "w": 1,
+            "h": 3
+          },
+          "evidence": "북쪽 가장자리에서 내려오는 철로(x=24)가 건널목을 지나 y=21에서 보도 타일에 막혀 뚝 끊긴다. 선로가 광장 한가운데서 사라지는 것처럼 보인다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 15,
+            "y": 19,
+            "w": 16,
+            "h": 9
+          },
+          "evidence": "주차장의 흰 승용차(x=26..30, y=19..21)와 도로 위 택시(x=15..19, y=25..27)는 빨간 칠이 없는 걸을 수 있는 칸이다. 플레이어가 차체 위를 그대로 걸어서 통과하게 된다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "polish",
+          "region": {
+            "x": 10,
+            "y": 17,
+            "w": 8,
+            "h": 6
+          },
+          "evidence": "'商店街' 아케이드 문(x=10..17, y=18..22) 안쪽은 상점 하나 없는 4칸짜리 빈 회색 통로이다. 상점가로 들어가는 입구처럼 그려졌지만 곧장 위쪽 도로로 빠져나갈 뿐이다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "polish",
+          "region": {
+            "x": 26,
+            "y": 13,
+            "w": 5,
+            "h": 4
+          },
+          "evidence": "건널목 동쪽 차도(x=26..30, y=13..16)가 볼라드와 보도(x=30..32)에서 끝난다. 바로 옆 간선도로(x=33~)와 이어지지 않아 차도가 막다른 곳으로 보인다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 25,
+            "w": 31,
+            "h": 6
+          },
+          "evidence": "남쪽 4차선 도로(x=0..30, y=25..30)는 택시 한 대와 화살표 두 개 말고는 비어 있다. 맵 아래쪽 약 1/5이 아무것도 없는 아스팔트이다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--exit-on-bare-edge--joseon-v20--조선-마을-20호-_v20",
+      "kind": "decoy",
+      "label": "심은 결함 exit-on-bare-edge · joseon-v20 · 조선 마을 20호",
+      "recipe": "exit-on-bare-edge",
+      "planted": {
+        "x": 0,
+        "y": 33,
+        "w": 3,
+        "h": 3
+      },
+      "note": "넓게 열린 west 가장자리의 (0,34) 맨땅에 안 보이는 출구를 놓았다",
+      "status": "reviewed",
+      "pictureSha256": "8f16dc211cb97054399cf692484282daff9b1004a4501c4e435d73a250b6b7c1",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "exit-off-road",
+        "severity": "major",
+        "region": {
+          "x": 0,
+          "y": 28,
+          "w": 2,
+          "h": 11
+        },
+        "evidence": "유일한 출구 E1 (0,34)는 정자(1~6,31~36) 옆 풀밭 칸에 있다. 서쪽으로 뻗은 큰길(y=28~29)과 아랫길(y=37~38)은 출구가 없는 가장자리 칸에서 끝나므로, 길을 따라 나가려는 플레이어는 나갈 수 없다."
+      },
+      "defects": [
+        {
+          "class": "exit-off-road",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 28,
+            "w": 2,
+            "h": 11
+          },
+          "evidence": "유일한 출구 E1 (0,34)는 정자(1~6,31~36) 옆 풀밭 칸에 있다. 서쪽으로 뻗은 큰길(y=28~29)과 아랫길(y=37~38)은 출구가 없는 가장자리 칸에서 끝나므로, 길을 따라 나가려는 플레이어는 나갈 수 없다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 6,
+            "y": 0,
+            "w": 58,
+            "h": 30
+          },
+          "evidence": "북쪽 가장자리에 닿는 흙길 세 갈래(x=7, x=31, x=47 부근 y=0)와 동쪽 가장자리에 닿는 큰길(x=63, y=28~29)이 모두 [NO exit] 구간에서 끊긴다. 마을 밖으로 이어지는 길처럼 보여도 실제로는 나갈 수 없다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 23,
+            "y": 37,
+            "w": 17,
+            "h": 2
+          },
+          "evidence": "물레방아 집 아래 흙길(y=37~38)이 동쪽으로 가다가 강가(x=39)에서 다리 없이 끊긴다. 강 건너편과도 이어지지 않는다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 38,
+            "y": 24,
+            "w": 2,
+            "h": 3
+          },
+          "evidence": "상류 나무다리(y=25) 서쪽 입구 바로 앞(38~39, 24~26)에 빨래 건조대가 서 있어 다리 진입로를 가로막는다."
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 49,
+            "y": 1,
+            "w": 14,
+            "h": 27
+          },
+          "evidence": "동쪽 구역에 같은 초가(50,2)(57,2)(50,16)(57,16)와 같은 기와집(51,8)(51,22)이 2열 격자로 거의 똑같이 반복 배치되어 있다."
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 53,
+            "w": 64,
+            "h": 3
+          },
+          "evidence": "아래 가장자리 y=54~55의 나무와 대숲 여러 그루가 가장자리에서 잘려 있다. 위쪽 가장자리 y=0의 나무 밑동(1,0)(11,0)(30,0)도 반만 보인다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--exit-on-bare-edge--joseon-field--조선-사냥터-ield",
+      "kind": "decoy",
+      "label": "심은 결함 exit-on-bare-edge · joseon-field · 조선 사냥터",
+      "recipe": "exit-on-bare-edge",
+      "planted": {
+        "x": 0,
+        "y": 40,
+        "w": 3,
+        "h": 3
+      },
+      "note": "넓게 열린 west 가장자리의 (0,41) 맨땅에 안 보이는 출구를 놓았다",
+      "status": "reviewed",
+      "pictureSha256": "9e42d866c7d2bc5288d9a81f16812fad8315fb54338ef18c1fc5c9aba6ac54d2",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "exit-off-road",
+        "severity": "major",
+        "region": {
+          "x": 0,
+          "y": 40,
+          "w": 2,
+          "h": 3
+        },
+        "evidence": "E1(0,41)은 절벽 왼쪽의 맨 풀밭 위에 있어 어떤 길도 이 칸으로 이어지지 않고, 절벽 앞 흙길은 x=6에서 끊겨 서쪽 가장자리에 닿지 않는다."
+      },
+      "defects": [
+        {
+          "class": "exit-off-road",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 40,
+            "w": 2,
+            "h": 3
+          },
+          "evidence": "E1(0,41)은 절벽 왼쪽의 맨 풀밭 위에 있어 어떤 길도 이 칸으로 이어지지 않고, 절벽 앞 흙길은 x=6에서 끊겨 서쪽 가장자리에 닿지 않는다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 47,
+            "y": 77,
+            "w": 2,
+            "h": 19
+          },
+          "evidence": "중앙 야영지에서 남쪽으로 곧게 뻗은 흙길(x=47..48)이 남쪽 가장자리 y=95까지 이어지지만 그 가장자리 구간에는 출구가 없다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 89,
+            "y": 84,
+            "w": 7,
+            "h": 6
+          },
+          "evidence": "연못 동쪽 길 끝 광장(x=89..95, y=85..89)에는 표지판과 통나무가 놓여 갈림목처럼 보이지만, 동쪽 가장자리 y=85..95 구간에 출구가 없다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 45,
+            "y": 0,
+            "w": 6,
+            "h": 6
+          },
+          "evidence": "북쪽 가장자리 x=47..48이 걷기 가능으로 열려 있고 시작점 S가 누각 기와지붕 위(47,0)에 있어, 플레이어가 성문 지붕 위에서 출발해 지붕을 걸어 다닌다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 7,
+            "y": 44,
+            "w": 15,
+            "h": 3
+          },
+          "evidence": "절벽 아랫면(8~21,45)에 동굴 입구 2개와 나무 갱도문이 뚜렷하게 그려져 있지만, 출구가 없어 길 끝에서 들어갈 수 없는 장식일 뿐이다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "polish",
+          "region": {
+            "x": 56,
+            "y": 43,
+            "w": 8,
+            "h": 5
+          },
+          "evidence": "중앙 길에서 동쪽으로 갈라진 흙길(x=57..63, y=44..47)이 폐허 두 개 아래 풀밭에서 그냥 끝난다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "polish",
+          "region": {
+            "x": 33,
+            "y": 54,
+            "w": 14,
+            "h": 5
+          },
+          "evidence": "중앙 길 서쪽 갈림길(x=33..46, y=55..58)이 원뿔 소품 하나만 있는 막다른 흙마당에서 끝나 목적지가 읽히지 않는다."
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 53,
+            "y": 37,
+            "w": 11,
+            "h": 6
+          },
+          "evidence": "똑같은 모양의 작은 바위 폐허 두 개(x=53..56과 x=59..63, y=37..42)가 나란히 복사돼 찍혀 있다."
+        }
+      ]
+    },
+    {
+      "id": "decoy--exit-on-bare-edge--jp-city-shopstreet--일본-도시-상가-거리-간선-교차로-생활도로-건널목-reet",
+      "kind": "decoy",
+      "label": "심은 결함 exit-on-bare-edge · jp-city-shopstreet · 일본 도시 · 상가 거리 (간선 교차로·생활도로·건널목)",
+      "recipe": "exit-on-bare-edge",
+      "planted": {
+        "x": 17,
+        "y": 0,
+        "w": 3,
+        "h": 3
+      },
+      "note": "넓게 열린 north 가장자리의 (18,0) 맨땅에 안 보이는 출구를 놓았다",
+      "status": "reviewed",
+      "pictureSha256": "2a9a7499f70613f4a77ca186935ebd2f1fc287d43723bd855603487e7c442e8e",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "exit-off-road",
+        "severity": "blocker",
+        "region": {
+          "x": 17,
+          "y": 0,
+          "w": 2,
+          "h": 1
+        },
+        "evidence": "유일한 출구 E1(18,0)이 빌딩 옥상 실외기 옆에 있고, 북쪽으로 뻗은 차도(x=12~15)와 보도는 출구 없이 맵 끝에 닿아 플레이어가 나가는 길을 읽을 수 없음"
+      },
+      "defects": [
+        {
+          "class": "exit-off-road",
+          "severity": "blocker",
+          "region": {
+            "x": 17,
+            "y": 0,
+            "w": 2,
+            "h": 1
+          },
+          "evidence": "유일한 출구 E1(18,0)이 빌딩 옥상 실외기 옆에 있고, 북쪽으로 뻗은 차도(x=12~15)와 보도는 출구 없이 맵 끝에 닿아 플레이어가 나가는 길을 읽을 수 없음"
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 11,
+            "w": 40,
+            "h": 21
+          },
+          "evidence": "동쪽 간선도로(x=33~38, 북쪽 가장자리), 하단 도로(서쪽 y=23~30, 동쪽 y=22~31), 남쪽 횡단보도(x=30~32), 서쪽 생활도로(y=11~20)가 모두 [NO exit] 가장자리로 끝남"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 32,
+            "h": 9
+          },
+          "evidence": "상단 건물들(x=0~11, 17~23, 26~31)의 2층 이상 외벽, 창문, 옥상이 붉은 표시 없이 걸을 수 있어 플레이어가 빌딩 벽면과 옥상 위를 걸어다님"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 1,
+            "y": 8,
+            "w": 29,
+            "h": 15
+          },
+          "evidence": "(2,9),(5,9),(8,9)의 상점 문, (19,9) 유리문, (27,9) 철문, (21,21) 철문, (6,21) 문이 모두 붉게 막혀 있고 출구도 없어 그려진 문 어디로도 들어갈 수 없음"
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 10,
+            "y": 18,
+            "w": 8,
+            "h": 5
+          },
+          "evidence": "商店街 아치(x=10~17, y=18~22)가 상점가 입구처럼 그려졌지만 안쪽은 흰 테두리로 닫힌 3칸짜리 빈 바닥이라 아케이드로 이어지지 않는 막다른 곳"
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "major",
+          "region": {
+            "x": 24,
+            "y": 0,
+            "w": 1,
+            "h": 21
+          },
+          "evidence": "철로(x=24)가 북쪽 끝 [NO exit]에서 시작해 y=20 보도 위에서 갑자기 끊겨 선로가 허공에서 사라짐. 레일 위도 걸을 수 있음"
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 40,
+            "h": 32
+          },
+          "evidence": "연결된 상점가 마을 맵인데 상점 앞, 보도, 건널목 어디에도 사람이 한 명도 없어 텅 빈 거리로 보임"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "polish",
+          "region": {
+            "x": 15,
+            "y": 19,
+            "w": 16,
+            "h": 9
+          },
+          "evidence": "주차된 흰 승용차(26~30,19~21)와 도로 위 택시(15~19,25~27)가 붉게 표시되지 않아 플레이어가 차체를 그대로 통과함"
+        }
+      ]
+    },
+    {
+      "id": "decoy--exit-on-bare-edge--wz-nat-example-forest-edge--마법-학교-숲-가장자리-예제-edge",
+      "kind": "decoy",
+      "label": "심은 결함 exit-on-bare-edge · wz-nat-example-forest-edge · 마법 학교 · 숲 가장자리 예제",
+      "recipe": "exit-on-bare-edge",
+      "planted": {
+        "x": 11,
+        "y": 0,
+        "w": 3,
+        "h": 3
+      },
+      "note": "넓게 열린 north 가장자리의 (12,0) 맨땅에 안 보이는 출구를 놓았다",
+      "status": "reviewed",
+      "pictureSha256": "10696aae49066bcf286053dba9ff3508bc45f80e34ef615a5ac691858fa6cc29",
+      "strict": true,
+      "loose": true,
+      "by": {
+        "class": "exit-off-road",
+        "severity": "major",
+        "region": {
+          "x": 12,
+          "y": 0,
+          "w": 1,
+          "h": 1
+        },
+        "evidence": "유일한 출구 E1 (12,0)은 북쪽 가장자리의 뒤틀린 나무 수관 위에 있다. 길이나 틈이 이어지지 않아 보이지 않고, 눈에 보이는 길은 동서로만 뻗어 있다."
+      },
+      "defects": [
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 7,
+            "w": 16,
+            "h": 2
+          },
+          "evidence": "맵을 가로지르는 유일한 흙길(y=7..8)이 서쪽 (0,7..8)과 동쪽 (15,7..8) 가장자리에서 끝나는데 양쪽 모두 출구가 없어, 길을 따라간 플레이어가 어디로도 나가지 못한다."
+        },
+        {
+          "class": "exit-off-road",
+          "severity": "major",
+          "region": {
+            "x": 12,
+            "y": 0,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "유일한 출구 E1 (12,0)은 북쪽 가장자리의 뒤틀린 나무 수관 위에 있다. 길이나 틈이 이어지지 않아 보이지 않고, 눈에 보이는 길은 동서로만 뻗어 있다."
+        },
+        {
+          "class": "cut-off-piece",
+          "severity": "polish",
+          "region": {
+            "x": 3,
+            "y": 11,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "하단 가장자리 (3,11)의 회색 바위가 아랫부분이 잘린 채 반만 그려져 있다."
+        }
+      ]
+    },
+    {
+      "id": "positive--fun-x1-palace",
+      "kind": "positive",
+      "label": "확인된 결함 · 초승달 궁전",
+      "note": "2026-11-11 게임 통판 fun-x1 «초승달 궁전»: 출구가 서·동쪽 맨모래 (0,20)/(47,20)에 있고 성문과 길은 남쪽으로 난다 · «굳게 닫힌 집 문» 글 이벤트 8개가 성문 기둥 칸에 있다(place/lockedDoors.ts)",
+      "status": "reviewed",
+      "pictureSha256": "09ebdc1b8f2553374c74bff5d2b2b5778111168e48d3f0b5d5f75fd450b8a6e1",
+      "expect": [
+        {
+          "what": "출구가 길과 어긋남",
+          "strict": true,
+          "loose": true,
+          "by": {
+            "class": "exit-off-road",
+            "severity": "major",
+            "region": {
+              "x": 0,
+              "y": 20,
+              "w": 48,
+              "h": 19
+            },
+            "evidence": "E1(0,20)과 E2(47,20)은 성벽 바깥 맨모래 한가운데에 있음. 눈에 보이는 길인 흙길(y37~38)은 x2와 x46 근처 모래에서 끝나 출구로 이어지지 않음"
+          }
+        },
+        {
+          "what": "성문의 잠긴 집 문 글",
+          "strict": true,
+          "loose": true,
+          "by": {
+            "class": "passage-mismatch",
+            "severity": "major",
+            "region": {
+              "x": 2,
+              "y": 33,
+              "w": 44,
+              "h": 4
+            },
+            "evidence": "남쪽 마을 흙집·흰 집·흰 돔 집·가게(x2~45,y33~36)의 문 9개가 모두 그려져 있으나 전부 막힘 칸이고 출구도 문 이벤트도 없어, 문 앞에 서도 아무 반응이 없음"
+          }
+        }
+      ],
+      "strict": true,
+      "loose": true,
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "blocker",
+          "region": {
+            "x": 23,
+            "y": 10,
+            "w": 2,
+            "h": 2
+          },
+          "evidence": "궁전 정면 중앙(23~24,10~11)에 아치형 나무 정문이 크게 그려져 있지만 빨간 막힘 칸이고 출구도 없어, 이 맵의 주인공인 궁전 안으로 들어갈 길이 전혀 없음"
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 2,
+            "y": 33,
+            "w": 44,
+            "h": 4
+          },
+          "evidence": "남쪽 마을 흙집·흰 집·흰 돔 집·가게(x2~45,y33~36)의 문 9개가 모두 그려져 있으나 전부 막힘 칸이고 출구도 문 이벤트도 없어, 문 앞에 서도 아무 반응이 없음"
+        },
+        {
+          "class": "exit-off-road",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 20,
+            "w": 48,
+            "h": 19
+          },
+          "evidence": "E1(0,20)과 E2(47,20)은 성벽 바깥 맨모래 한가운데에 있음. 눈에 보이는 길인 흙길(y37~38)은 x2와 x46 근처 모래에서 끝나 출구로 이어지지 않음"
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 23,
+            "y": 32,
+            "w": 3,
+            "h": 8
+          },
+          "evidence": "남문에서 곧게 내려가는 벽돌길(x23~25)이 남쪽 가장자리 y=39에 닿지만, 이 구간은 [NO exit]이라 가장 눈에 띄는 길이 막다른 곳이 됨"
+        },
+        {
+          "class": "invisible-event-misplaced",
+          "severity": "major",
+          "region": {
+            "x": 22,
+            "y": 28,
+            "w": 4,
+            "h": 4
+          },
+          "evidence": "V1~V8의 '문이 굳게 잠겨 있다. 들어갈 수 없는 집이다' 문구가 집이 아닌 궁전 남문 아치 양쪽 기둥(22·25,y28~31)에 세로로 4칸씩 겹쳐 놓여 있어, 열린 성문 옆에서 엉뚱한 '잠긴 집' 문구가 뜸"
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 10,
+            "y": 26,
+            "w": 1,
+            "h": 2
+          },
+          "evidence": "똑같은 모습의 P2 라시드(10,26)와 P1 자라(10,27)가 서쪽 정원 구석 잔디에 세로로 딱 붙어 서 있고, 가게(29~32,y32~36)에는 주인이 아무도 없음"
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "major",
+          "region": {
+            "x": 6,
+            "y": 33,
+            "w": 40,
+            "h": 4
+          },
+          "evidence": "흰 돔 집 4채와 파란 창 흰 집 2채가 같은 모양 그대로 남쪽 한 줄(y33~36)에 같은 간격으로 반복 배치되어 복사해 찍은 티가 남"
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 5,
+            "h": 33
+          },
+          "evidence": "성벽 서쪽(x0~4)과 동쪽(x43~47)의 모래 띠가 마른 풀과 돌 몇 개 말고는 비어 있어, 출구까지 아무것도 없는 빈 모래를 걸어야 함"
+        }
+      ]
+    },
+    {
+      "id": "positive--fun-x1-pyramid",
+      "kind": "positive",
+      "label": "확인된 결함 · 잠든 태양의 피라미드",
+      "note": "2026-11-11 fun-x1 «잠든 태양의 피라미드»: 서쪽 가장자리 (0,19)로 들어오는데 참배 길은 남쪽 가장자리로 난다 · 탑문 기둥에 «굳게 닫힌 집 문» 글",
+      "status": "reviewed",
+      "pictureSha256": "71340d82873cea066e151f2f5f762ad69eea2201cd7b2ece0c83329c708fef28",
+      "expect": [
+        {
+          "what": "출구가 길과 어긋남",
+          "strict": true,
+          "loose": true,
+          "by": {
+            "class": "exit-off-road",
+            "severity": "major",
+            "region": {
+              "x": 0,
+              "y": 19,
+              "w": 1,
+              "h": 1
+            },
+            "evidence": "초승달 궁전으로 가는 E1(0,19)은 길도 표지도 없는 맨 모래 가장자리에 있고, 눈에 보이는 유일한 길은 남쪽 가장자리로 향한다."
+          }
+        },
+        {
+          "what": "탑문의 잠긴 집 문 글",
+          "strict": true,
+          "loose": true,
+          "by": {
+            "class": "invisible-event-misplaced",
+            "severity": "major",
+            "region": {
+              "x": 20,
+              "y": 33,
+              "w": 4,
+              "h": 4
+            },
+            "evidence": "탑문 양쪽 기둥 칸(x=20,23, y=33..36)에 '굳게 잠긴 집 문' 텍스트 8개가 붙어 있는데, 그곳은 집이 아니라 열린 아치 탑문의 벽이다."
+          }
+        }
+      ],
+      "strict": true,
+      "loose": true,
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "blocker",
+          "region": {
+            "x": 21,
+            "y": 10,
+            "w": 2,
+            "h": 2
+          },
+          "evidence": "피라미드 입구 문(21..22,10..11)은 참배 길 끝에 그려져 있지만 E2(21,11)가 막힌 칸에 있어, 별의 매장실로 들어가는 유일한 입구에 플레이어가 올라설 수 없다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 21,
+            "y": 33,
+            "w": 2,
+            "h": 5
+          },
+          "evidence": "벽돌 참배 길이 탑문 아치를 지나 남쪽 가장자리(21..22,37)까지 이어지는데, 남쪽 x=3..30 가장자리에는 출구가 없어 길이 아무 데로도 가지 않는다."
+        },
+        {
+          "class": "exit-off-road",
+          "severity": "major",
+          "region": {
+            "x": 0,
+            "y": 19,
+            "w": 1,
+            "h": 1
+          },
+          "evidence": "초승달 궁전으로 가는 E1(0,19)은 길도 표지도 없는 맨 모래 가장자리에 있고, 눈에 보이는 유일한 길은 남쪽 가장자리로 향한다."
+        },
+        {
+          "class": "invisible-event-misplaced",
+          "severity": "major",
+          "region": {
+            "x": 20,
+            "y": 33,
+            "w": 4,
+            "h": 4
+          },
+          "evidence": "탑문 양쪽 기둥 칸(x=20,23, y=33..36)에 '굳게 잠긴 집 문' 텍스트 8개가 붙어 있는데, 그곳은 집이 아니라 열린 아치 탑문의 벽이다."
+        },
+        {
+          "class": "invisible-event-misplaced",
+          "severity": "major",
+          "region": {
+            "x": 31,
+            "y": 24,
+            "w": 3,
+            "h": 3
+          },
+          "evidence": "동쪽 무너진 신전 터의 부서진 아치(31..33,24..26)에 '잠긴 집 문' 텍스트 9개가 몰려 있는데, 집이 없는 폐허 아치이고 아치 사이 틈도 막혀 있다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 2,
+            "y": 30,
+            "w": 3,
+            "h": 2
+          },
+          "evidence": "야영지 오두막(2..4,30..31)에 어두운 출입구가 그려져 있지만 입구 칸이 막혀 있고 출구도 없어, 들어갈 수 있어 보이는 문이 벽이다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "major",
+          "region": {
+            "x": 36,
+            "y": 0,
+            "w": 12,
+            "h": 38
+          },
+          "evidence": "동쪽 x=36..47 전체가 모래와 사구, 흩어진 돌·풀만 있고 결정 하나와 적 몇 마리뿐이라 지도의 3분의 1 가까이가 비어 있다."
+        },
+        {
+          "class": "repeated-stamp",
+          "severity": "polish",
+          "region": {
+            "x": 3,
+            "y": 13,
+            "w": 37,
+            "h": 14
+          },
+          "evidence": "서쪽 신전 터(3..12,13..20)와 동쪽 신전 터(30..39,19..26)가 같은 벽돌 바닥, 쓰러진 블록, 기둥 배치를 거의 그대로 반복한다."
+        }
+      ]
+    },
+    {
+      "id": "positive--fun-w3-village",
+      "kind": "positive",
+      "label": "확인된 결함 · 눈보라 마을",
+      "note": "2026-11-10 fun-w3 «눈보라 마을»: 목책 문 기둥 칸 (21,30)(21,31)(24,30)(24,31)에 «굳게 닫힌 집 문» 글",
+      "status": "reviewed",
+      "pictureSha256": "7abbf72706c8774be6153f57eabf6e21d3248b3eee31f9067f08f1644d40dec0",
+      "expect": [
+        {
+          "what": "목책 문의 잠긴 집 문 글",
+          "strict": true,
+          "loose": true,
+          "by": {
+            "class": "invisible-event-misplaced",
+            "severity": "major",
+            "region": {
+              "x": 21,
+              "y": 30,
+              "w": 4,
+              "h": 2
+            },
+            "evidence": "열린 목책 문의 양쪽 기둥 (21,30)(21,31)(24,30)(24,31)에 '문이 굳게 잠겨 있다. 들어갈 수 없는 집이다' 텍스트가 붙어 있어, 집이 아닌 열린 문에서 잠긴 집 문 메시지가 나온다."
+          }
+        }
+      ],
+      "strict": true,
+      "loose": true,
+      "defects": [
+        {
+          "class": "passage-mismatch",
+          "severity": "blocker",
+          "region": {
+            "x": 22,
+            "y": 16,
+            "w": 4,
+            "h": 1
+          },
+          "evidence": "족장의 긴 집 붉은 문 앞 (22..25,16)의 출구 E2~E5가 모두 막힌 칸 위에 있어, 광장에서 긴 집으로 들어가는 유일한 입구가 제대로 밟히지 않는다."
+        },
+        {
+          "class": "exit-off-road",
+          "severity": "major",
+          "region": {
+            "x": 43,
+            "y": 17,
+            "w": 3,
+            "h": 3
+          },
+          "evidence": "겨울 시장으로 가는 E1 (45,18)은 동쪽 목책 바깥의 아무 표시 없는 눈밭에 있고, 길이나 문이 그쪽으로 이어지지 않아 플레이어가 찾을 수 없다."
+        },
+        {
+          "class": "road-to-nowhere",
+          "severity": "major",
+          "region": {
+            "x": 22,
+            "y": 23,
+            "w": 2,
+            "h": 13
+          },
+          "evidence": "광장에서 목책 문을 지나 남쪽으로 뻗은 큰길이 (22..23,35) 맵 남쪽 끝에서 출구 없이 끊겨, 길을 따라간 플레이어가 막다른 가장자리에 선다."
+        },
+        {
+          "class": "invisible-event-misplaced",
+          "severity": "major",
+          "region": {
+            "x": 21,
+            "y": 30,
+            "w": 4,
+            "h": 2
+          },
+          "evidence": "열린 목책 문의 양쪽 기둥 (21,30)(21,31)(24,30)(24,31)에 '문이 굳게 잠겨 있다. 들어갈 수 없는 집이다' 텍스트가 붙어 있어, 집이 아닌 열린 문에서 잠긴 집 문 메시지가 나온다."
+        },
+        {
+          "class": "passage-mismatch",
+          "severity": "major",
+          "region": {
+            "x": 4,
+            "y": 8,
+            "w": 38,
+            "h": 15
+          },
+          "evidence": "오두막들 (12,11)(33,11)(6,22)(13,21)(40,21)과 다리 창고의 계단 (31,21..22)에 문이 그려져 있지만 모두 붉은 막힌 칸이고 출구도 텍스트도 없어서, 문에 다가가도 아무 일도 일어나지 않는다."
+        },
+        {
+          "class": "people-placement",
+          "severity": "major",
+          "region": {
+            "x": 4,
+            "y": 8,
+            "w": 40,
+            "h": 22
+          },
+          "evidence": "목책 안 마을 광장과 집 마당 전체에 사람이 한 명도 없다. 유일한 인물 P1 떠돌이 상인 (24,33)은 남쪽 목책 바깥에 있어 마을이 비어 보인다."
+        },
+        {
+          "class": "enclosure-unreadable",
+          "severity": "major",
+          "region": {
+            "x": 2,
+            "y": 6,
+            "w": 42,
+            "h": 3
+          },
+          "evidence": "서·동·남쪽은 목책으로 막혀 있고 남쪽에 정식 문까지 있는데, 북쪽 y=7 부근은 울타리 없이 통째로 뚫려 있다. 마을의 경계와 출입 방향이 읽히지 않고, 동쪽 E1로 가려면 이 틈으로 돌아 나가야 한다."
+        },
+        {
+          "class": "empty-expanse",
+          "severity": "polish",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "w": 46,
+            "h": 8
+          },
+          "evidence": "북쪽 숲 띠 (0..45,0..7)와 목책 바깥 둘레는 나무만 흩어진 빈 눈밭이다. 북쪽 가장자리 전체가 출구 없이 열려 있어 걸어도 아무것도 없다."
+        },
+        {
+          "class": "other",
+          "severity": "polish",
+          "region": {
+            "x": 21,
+            "y": 32,
+            "w": 2,
+            "h": 1
+          },
+          "evidence": "회복의 샘 O1 (22,32)이 샘 그림 없이 2칸 폭 큰길 한가운데에 파란 수정 하나로 놓여 있어, 문 바로 앞 길을 반쯤 막는다."
+        },
+        {
+          "class": "style-mix",
+          "severity": "polish",
+          "region": {
+            "x": 2,
+            "y": 8,
+            "w": 42,
+            "h": 24
+          },
+          "evidence": "서쪽·동쪽 경계 (2,8..29)(43,8..29)는 가는 통나무 기둥 줄이고 남쪽은 높은 목책 벽이라, 모서리에서 서로 다른 울타리가 어색하게 맞물린다."
+        }
+      ]
+    }
+  ]
+}

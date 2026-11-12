@@ -12,8 +12,9 @@ import { PNG } from 'pngjs';
 export const VISUAL_JUDGE = { provider: 'claude-cli' as const, model: 'claude-opus-5-5', effort: 'medium' };
 
 export type JudgeImage = { label: string; png: Buffer };
-export type JudgeUsage = { calls: number; cached: number; inputTokens: number; outputTokens: number; cacheReadTokens: number; cacheWriteTokens: number; failures: number };
-export const newUsage = (): JudgeUsage => ({ calls: 0, cached: 0, inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, failures: 0 });
+/** carried = 캐시에서 읽은 것(cached) 가운데 «같은 물음인 앞 판» 의 답을 이어 쓴 수(askJudge sameQuestionAs). */
+export type JudgeUsage = { calls: number; cached: number; carried: number; inputTokens: number; outputTokens: number; cacheReadTokens: number; cacheWriteTokens: number; failures: number };
+export const newUsage = (): JudgeUsage => ({ calls: 0, cached: 0, carried: 0, inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, failures: 0 });
 
 export const sha256 = (data: Buffer | string): string => createHash('sha256').update(data).digest('hex');
 /** 그림 해시 = 화소(RGBA)와 크기의 해시. PNG 압축·메타데이터가 달라도 같은 그림이면 같다. */
@@ -74,6 +75,12 @@ export type JudgeAsk<T> = {
   images: JudgeImage[];
   /** 같은 그림을 독립적으로 다시 묻는 표 번호(0부터). */
   vote?: number;
+  /**
+   * 같은 물음인 앞 판 이름들 — 지시문 글은 그대로이고 판 이름만 올린 경우(예: 사실을 재는 코드가 바뀌어 보정을 다시 받아야 할 때).
+   * 지시문·글·그림 화소·표 번호가 모두 같은 물음은 검수자에게 가는 바이트가 같다 — 그 판의 답을 그대로 쓴다(다시 물으면 같은 물음의 표본을 한 번 더 뽑을 뿐이다).
+   * 글이나 그림이 조금이라도 바뀐 물음은 열쇠가 달라 새로 묻는다.
+   */
+  sameQuestionAs?: readonly string[];
   /** 답 글에서 판정을 꺼낸다. 형식이 어긋나면 null — 그 호출을 다시 한다. */
   parse: (reply: string) => T | null;
   usage: JudgeUsage;
@@ -93,13 +100,25 @@ export function extractJson(reply: string): unknown {
 }
 
 export async function askJudge<T>(ask: JudgeAsk<T>): Promise<JudgeAnswer<T>> {
-  const key = sha256(JSON.stringify({ version: ask.promptVersion, system: sha256(ask.system), text: ask.text, images: ask.images.map(image => [image.label, pixelSha(image.png)]), vote: ask.vote ?? 0, judge: VISUAL_JUDGE })).slice(0, 32);
+  const keyOf = (version: string) => sha256(JSON.stringify({ version, system: sha256(ask.system), text: ask.text, images: ask.images.map(image => [image.label, pixelSha(image.png)]), vote: ask.vote ?? 0, judge: VISUAL_JUDGE })).slice(0, 32);
+  const key = keyOf(ask.promptVersion);
   const file = resolve(ask.cacheDir, `${key}.json`);
   if (existsSync(file)) {
     // 캐시의 답도 지금의 읽기 규칙을 다시 거친다 — 규칙을 엄하게 고치면(예: 근거는 한국어) 옛 답은 답이 아니게 되고 다시 묻는다.
     const saved = JSON.parse(readFileSync(file, 'utf8'));
     const answer = typeof saved.raw === 'string' ? ask.parse(saved.raw) : null;
-    if (answer !== null) { ask.usage.cached += 1; return { answer, key, cached: true }; }
+    // 앞 판에서 이어 쓴 답(carriedFrom)은 다시 읽을 때도 이어 쓴 것으로 센다 — 두 번째 실행의 기록이 «새로 물은 48장» 으로 읽히지 않게.
+    if (answer !== null) { ask.usage.cached += 1; if (saved.carriedFrom) ask.usage.carried += 1; return { answer, key, cached: true }; }
+  }
+  for (const earlier of ask.sameQuestionAs ?? []) {
+    const prior = resolve(ask.cacheDir, `${keyOf(earlier)}.json`);
+    if (!existsSync(prior)) continue;
+    const saved = JSON.parse(readFileSync(prior, 'utf8'));
+    const answer = typeof saved.raw === 'string' ? ask.parse(saved.raw) : null;
+    if (answer === null) continue;
+    writeFileSync(file, JSON.stringify({ ...saved, key, promptVersion: ask.promptVersion, carriedFrom: { promptVersion: earlier, key: saved.key, at: saved.at } }, null, 2));
+    ask.usage.cached += 1; ask.usage.carried += 1;
+    return { answer, key, cached: true };
   }
   if (process.env.OPRN_VISUAL_JUDGE_OFFLINE === '1') return { error: '검수자를 부르지 않았다(OPRN_VISUAL_JUDGE_OFFLINE)', key };
   const content = [{ type: 'text', text: ask.text }, ...ask.images.flatMap(image => [{ type: 'text', text: `${image.label}:` }, { type: 'image', source: { type: 'base64', media_type: 'image/png', data: image.png.toString('base64') } }])];
@@ -136,4 +155,4 @@ export async function mapLimit<A, B>(items: readonly A[], limit: number, task: (
   return out;
 }
 
-export const usageLine = (usage: JudgeUsage): string => `검수자 호출 ${usage.calls}번(캐시에서 읽은 것 ${usage.cached} · 실패 ${usage.failures}) · 토큰 입력 ${usage.inputTokens + usage.cacheReadTokens + usage.cacheWriteTokens} / 출력 ${usage.outputTokens}`;
+export const usageLine = (usage: JudgeUsage): string => `검수자 호출 ${usage.calls}번(캐시에서 읽은 것 ${usage.cached}${usage.carried ? ` — 그중 같은 물음인 앞 판의 답 ${usage.carried}` : ''} · 실패 ${usage.failures}) · 토큰 입력 ${usage.inputTokens + usage.cacheReadTokens + usage.cacheWriteTokens} / 출력 ${usage.outputTokens}`;
