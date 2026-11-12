@@ -158,8 +158,8 @@ function collapseRepeats(tool: PiToolShape, seen: ShapeIndex, register = true): 
 export interface V2ToolExposure {
   /** 처음부터 싣는 도구(load_tools 포함). */
   readonly tools: PiToolShape[];
-  /** 필요할 때 싣는 도구(영어 사본·같은 모양 걷기를 마친 것) — 이름 → 도구. */
-  readonly lazy: ReadonlyMap<string, PiToolShape>;
+  /** 필요할 때 싣는 도구(영어 사본·같은 모양 걷기를 마친 것) — 이름 → 도구. 끝맺음 관문이 턴 중간에 싣는 도구도 여기에 더한다(이름 호출·load_tools 가 같은 표를 읽는다). */
+  readonly lazy: Map<string, PiToolShape>;
   /** 이 요청 묶음에 들었지만 처음부터 싣지 않은 이름(load_tools 설명의 앞쪽 목록). */
   readonly offered: readonly string[];
   /** 목록에 없는 도구(call_tool 로 부른다)의 매개변수 글 — 인자 모양 거절에 붙인다. 처음 목록에 있는 도구는 undefined. */
@@ -188,8 +188,8 @@ function parametersText(tool: PiToolShape, english = false): string {
   const parameters = english && getTool(tool.name) ? translateParams(tool.parameters, V2_TOOL_EN[tool.name], false) : tool.parameters;
   return JSON.stringify(stripDeep(parameters));
 }
-/** 목록 고정(call_tool) 때 load_tools 결과에 싣는 한 도구 — 설명과 매개변수 스키마. */
-const loadedSchema = (tool: PiToolShape): string => `- ${tool.name}: ${tool.description}\n  parameters: ${parametersText(tool)}`;
+/** 목록 고정(call_tool) 때 load_tools 결과·관문 재주입 글에 싣는 한 도구 — 설명과 매개변수 스키마. */
+export const loadedSchema = (tool: PiToolShape): string => `- ${tool.name}: ${tool.description}\n  parameters: ${parametersText(tool)}`;
 
 /**
  * 할 일 고리(withTodoLoop)까지 감싼 v2 도구 목록을 받아 이번 요청에 내놓을 모양으로 나눈다.

@@ -4,6 +4,7 @@ import { CAPABILITY_MAP_ID, fixtureEvent } from './capabilityFixture';
 import { runTool } from '../../../editor/tools/toolRunner';
 import { createBlankMap } from '../../../project/defaults/defaultMaps';
 import { DEFAULT_TILESET_ID } from '../../../project/defaults/constants';
+import { isPassable } from '../../../project/collision';
 import type { Project } from '../../../project/types';
 
 /**
@@ -217,15 +218,17 @@ export function blockedCells(project: Project, rect: Rect): Array<{ x: number; y
   return cells;
 }
 
-/** One map's blocked cells, read from the editor's own region grid for that map. */
+/**
+ * One map's blocked cells — the engine's own rule (isPassable): a cell the player cannot stand on.
+ * 왜(2026-11-12): 전에는 편집기 영역 격자(get_map_region)의 '#' 글자만 셌다. 그 격자는 통행을 묻기 전에 물을 '~', 나무를 'T', 이벤트 칸을 'E' 로 적어서
+ * 물·나무·이벤트가 선 벽이 모두 «걷는 칸» 이 됐다 — 맵 검수(map-vqa)가 섬 맵을 «걷는 칸 96%» 로 적고 바다에 붉은 칠이 없어 «바다 위를 걷는다» 는 결함이 붙었다.
+ * 글자는 사람이 보는 그림용이고, 막힘은 엔진에게 묻는다.
+ */
 export function blockedOn(project: Project, mapId: string): Set<string> {
   const map = mapOf(project, mapId);
-  if (!map) return new Set();
-  const context: any = { project, currentMapId: mapId, assistantRun: false };
-  const result: any = runTool(context, 'get_map_region', { mapId, x: 0, y: 0, w: map.width, h: map.height });
-  const grid: string[] = result.data?.grid ?? [];
   const blocked = new Set<string>();
-  grid.forEach((row, dy) => [...row].forEach((glyph, dx) => { if (glyph === '#') blocked.add(`${dx},${dy}`); }));
+  if (!map) return blocked;
+  for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) if (!isPassable(project, map, x, y)) blocked.add(`${x},${y}`);
   return blocked;
 }
 
@@ -267,8 +270,10 @@ export function reachableMaps(project: Project): Set<string> {
     const map = mapOf(project, current.mapId);
     if (!map) continue;
     const cells = walkableFrom(project, current.mapId, current.from);
+    // 문 그림 위의 이동(막힌 칸)은 앞 칸에서 쓴다 — 제 칸이나 옆 칸에 걸어서 닿으면 이어진 문이다.
+    const within = (x: number, y: number) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => cells.has(`${x + dx!},${y + dy!}`));
     for (const event of map.events ?? []) {
-      if (!cells.has(`${event.x},${event.y}`)) continue;
+      if (!within(event.x, event.y)) continue;
       for (const page of event.pages ?? []) for (const command of page.commands ?? []) {
         if (command?.kind !== 'transfer' || typeof command.mapId !== 'string' || seen.has(command.mapId)) continue;
         seen.add(command.mapId);

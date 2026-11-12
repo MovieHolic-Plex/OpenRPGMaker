@@ -13,7 +13,7 @@
 import { alignCodeClues, digitWord, shownToken } from "./codeClues";
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
-import { normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
+import { endingClosing, normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
 import { programAnchor } from "../place/program";
 import { incomingLandings, resolveWhere } from "../place/where";
@@ -170,6 +170,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   const bp = project0.gameBlueprint;
   const fail = (summary: string): BlueprintPathResult => ({ ok: false, mapIds: [], summary, warnings: [], missingArt: [], calls: [] });
   if (!bp) return fail("청사진이 없다 — write_blueprint 로 먼저 쓴다.");
+  // 엔딩에서 플레이어가 읽는 글은 ending.closing 뿐이다 — ending.how 는 설계 메모(«…하면 진실 엔딩»)라 화면에 내지 않는다.
+  const closing = endingClosing(bp);
   // 이번에 받은 글이 먼저, 없으면 청사진에 남긴 그 단계의 글(GameBlueprintStep.text) — 한 단계만 고쳐 불러도 나머지 단계의 글이 남는다.
   const given = new Map(text.map((t) => [t.id, t]));
   const byId = { get: (id: string): PathStepText | undefined => given.get(id) ?? storedStepText(bp, id) };
@@ -200,7 +202,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   let ending = endings.find((e) => sameName(e.name ?? "", bp.ending.name)) ?? (endings.length === 1 ? endings[0] : undefined);
   if (!ending) {
     const id = `ending_${Math.abs([...bp.ending.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)).toString(36)}`;
-    const res = run.call("define_ending", { id, name: bp.ending.name, conditions: [], epilogue: [{ kind: "say", text: bp.ending.how }], presentation: { finalTitle: bp.ending.name, credits: bp.title } });
+    const res = run.call("define_ending", { id, name: bp.ending.name, conditions: [], epilogue: closing.map((line) => ({ kind: "say", text: line })), presentation: { finalTitle: bp.ending.name, credits: bp.title } });
     if (!res.ok) return fail(`엔딩 「${bp.ending.name}」을 정의하지 못했다: ${String(res.summary).slice(0, 200)}`);
     ending = { id, name: bp.ending.name };
   }
@@ -347,11 +349,11 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     const modelLocked = clueLearn ? undefined : t?.lockedLines?.length ? t.lockedLines : undefined;
     if (last) {
       // 사람이 마지막 단계면: 대사가 없을 때 «살펴보았다»·엔딩 글을 그 사람 입으로 말하게 하지 않는다 — 할 일 한 줄 서술로 열고, 엔딩 글은 (싸움이 있으면 이긴 뒤) 서술로 붙인다.
-      const endLines = t?.lines?.length ? t.lines : code ? ["번호 자물쇠다. 알아낸 번호를 맞춰 보자."] : personal ? lines : [lookLine(step.event), bp.ending.how];
-      const closingNarration = personal && !t?.lines?.length && !code ? { closeLines: [`(${bp.ending.how.trim()})`] } : {};
+      const endLines = t?.lines?.length ? t.lines : code ? ["번호 자물쇠다. 알아낸 번호를 맞춰 보자."] : personal ? lines : [lookLine(step.event), ...closing.slice(0, 1)];
+      const closingNarration = personal && !t?.lines?.length && !code && closing.length ? { closeLines: [`(${closing[0]!})`] } : {};
       const lockedPerson = personal && needShown ? [`(${who}${josa(who!, "은", "는")} 아직 할 말이 없는 듯하다. ${needShown}${josa(needShown, "이", "가")} 먼저다.)`] : undefined;
       const locked = modelLocked ?? codeLocked ?? lockedPerson ?? lockedDefault;
-      links.push({ ...base, role: "ending", endingId: ending!.id, lines: endLines, ...closingNarration, ...(choice ? { choice } : {}), ...(variants.length ? { variants } : {}), ...(code ? { code, reward: { lines: [bp.ending.how] }, ...(t?.options?.length ? { options: t.options } : {}), ...(t?.wrongLines?.length ? { wrongLines: t.wrongLines } : {}) } : {}), ...(locked ? { lockedLines: locked } : {}) });
+      links.push({ ...base, role: "ending", endingId: ending!.id, lines: endLines, ...closingNarration, ...(choice ? { choice } : {}), ...(variants.length ? { variants } : {}), ...(code ? { code, reward: { lines: closing.length ? [closing[0]!] : ["철컥, 잠금이 풀렸다."] }, ...(t?.options?.length ? { options: t.options } : {}), ...(t?.wrongLines?.length ? { wrongLines: t.wrongLines } : {}) } : {}), ...(locked ? { lockedLines: locked } : {}) });
     } else if (code) {
       const locked = modelLocked ?? codeLocked ?? lockedDefault;
       const reward = isItem(step.gives) ? { item: step.gives, ...keptGives(step) } : { flag: step.gives, ...keptGives(step) };

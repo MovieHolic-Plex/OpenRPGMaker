@@ -1,5 +1,6 @@
 // 모델이 멈출 때마다 도는 판정자 차례 — ① 기계 확인 다시 ② 재주입 ③ 끝맺음 자동 짓기 ④ 끝맺음 관문 ⑤ 리드·독립 검토자 ⑥ 화면 검수. 2026-11-11 리팩토링 R3: runAssistantV2 의 afterMain 에서 옮겼다.
-import { V2_MAX_REPAIR_ROUNDS } from "./session";
+import { relookChangedPlaces } from "./relook";
+import { loadedSchema } from "../tools/toolExposure";
 import { v2BaselineGameKeys, v2GateProblems } from "../judge/finishGate";
 import { alignCodeClues } from "../story/codeClues";
 import { realignEvidencePlaces } from "../story/mysteryEvidencePlaces";
@@ -18,10 +19,31 @@ import type { turnRecheck } from "./recheck";
 import type { turnReinject } from "./reinject";
 import type { turnAutoBuild } from "./autoBuild";
 import type { turnVqa } from "./vqaRound";
+import type { turnLateTools } from "./lateTools";
 
 /** afterMain = 모델이 멈출 때마다 한 번. 돌려주는 글이 있으면 그 글로 같은 대화를 한 차례 더 돌고, 없으면 턴이 끝난다. */
-export function turnAfterMain(turn: TurnContext & Pick<ReturnType<typeof turnRecheck>, "refreshChecks" | "stamp"> & Pick<ReturnType<typeof turnReinject>, "reinject" | "newBatch"> & Pick<ReturnType<typeof turnAutoBuild>, "autoBuild" | "lateBuildPending"> & Pick<ReturnType<typeof turnVqa>, "vqaStep">) {
-  const { session, store, state, preexisting, calls, vqaRounds, autoNotes, advisorItems, writeRequest, toolNames, autoTouched, leadItems, vqaStep, refreshChecks, stamp, reinject, newBatch, autoBuild, lateBuildPending } = turn;
+export function turnAfterMain(turn: TurnContext & Pick<ReturnType<typeof turnRecheck>, "refreshChecks" | "stamp"> & Pick<ReturnType<typeof turnReinject>, "reinject" | "newBatch"> & Pick<ReturnType<typeof turnAutoBuild>, "autoBuild" | "lateBuildPending"> & Pick<ReturnType<typeof turnVqa>, "vqaStep"> & Pick<ReturnType<typeof turnLateTools>, "lateTool">) {
+  const { session, store, state, preexisting, calls, vqaRounds, autoNotes, advisorItems, writeRequest, toolNames, autoTouched, leadItems, vqaStep, refreshChecks, stamp, reinject, newBatch, autoBuild, lateBuildPending, lateTool } = turn;
+  // 끝맺음 관문이 고치는 법으로 이른 도구를 모델의 도구 목록에 올린다 — 묶음 밖 도구는 만들어 넣고(lateTools.ts), 묶음에 있지만 아직 안 실은 도구는 선언한다(모델은 목록에 없는 도구를 «없다» 고 읽었다).
+  const shown = new Set<string>();
+  const addRepairTool = (env: PiAssistantV2Env, name: string): "loaded" | "ready" | undefined => {
+    const exposure = state.exposure;
+    if (!exposure) return toolNames.has(name) ? "ready" : undefined;
+    if (shown.has(name) || exposure.tools.some((t) => t.name === name)) return "ready";
+    const tool = lateTool(name);
+    if (!tool) return undefined;
+    shown.add(name);
+    env.declareTool?.(tool);
+    return "loaded";
+  };
+  // 목록 고정(call_tool) 고리에는 load_tools 가 없는 요청도 있다(장소만 까는 요청) — 실은 도구의 매개변수를 재주입 글에 바로 싣는다.
+  const repairToolNote = (env: PiAssistantV2Env, names: readonly string[]): string => {
+    if (!names.length) return "";
+    const head = ` The tool(s) these fixes need were added for you: ${names.join(", ")}`;
+    if (env.declareTool && env.lazyToolsVia !== "call_tool") return `${head} — they are in your tool list from your next call.`;
+    const shapes = names.map((n) => state.exposure?.lazy.get(n)).filter((t): t is NonNullable<typeof t> => !!t);
+    return `${head} — your tool list does not change; run them with call_tool{name:"<tool>", args:{…}} using these parameters:\n${shapes.map(loadedSchema).join("\n")}`;
+  };
   const afterMain = async (env: PiAssistantV2Env) => {
     state.liveEnv = env;
     if (store.initialized && store.openCount() > 0) state.textStops += 1;
@@ -95,6 +117,8 @@ export function turnAfterMain(turn: TurnContext & Pick<ReturnType<typeof turnRec
           if (prompt) return prompt;
         }
       }
+      // ④-0 비평가가 본 그림이 낡았으면 다시 본다 — 다시 짓지 않는 도구로 고친 것을 못 본 지적이 항목으로 되풀이되지 않게(relook.ts).
+      for (const note of await timedAsync("relook", () => relookChangedPlaces(env, session))) env.emit({ type: "execution_status", name: "v2.relook", ok: true, summary: note });
       // ④ 끝맺음 관문 — 남은 문제는 «한 바퀴 더» 글이 아니라 할 일 항목이다.
       const gate = timed("v2GateProblems", () => v2GateProblems(session, env));
       if (!state.baselineKeys) { try { state.baselineKeys = v2BaselineGameKeys(env.request.project, env.request.task); } catch { state.baselineKeys = new Set(); } }
@@ -104,12 +128,18 @@ export function turnAfterMain(turn: TurnContext & Pick<ReturnType<typeof turnRec
         preexisting.set(p.key, p.text);
         env.emit({ type: "execution_status", name: "v2.gate.preexisting", ok: true, summary: `기존 결함(시작 저장본에 있었음 — 완료를 막지 않음): ${p.text.slice(0, 160)}` });
       }
-      const capMapIds = new Set(session.unresolved().filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS).map((o) => o.mapId));
-      const synced = syncGateItems(store, split.current, capMapIds, toolNames);
+      const capMapIds = new Set(session.unresolved().filter((o) => o.rounds >= o.cap).map((o) => o.mapId));
+      const synced = syncGateItems(store, split.current, capMapIds, toolNames, (name) => addRepairTool(env, name));
       if (synced.closed.length || synced.capped.length) env.emit({ type: "execution_status", name: "v2.gate.sync", ok: true, summary: `관문 항목 — 사라져 닫음 ${synced.closed.length} · 상한 막힘 ${synced.capped.length}` });
+      if (synced.loaded.length) env.emit({ type: "execution_status", name: "v2.gate.tools", ok: true, summary: `관문이 고치는 법으로 이른 도구를 실음: ${synced.loaded.join(", ")}` });
+      if (synced.unfixable.length) {
+        env.emit({ type: "execution_status", name: "v2.gate.unfixable", ok: false, summary: `고치는 도구가 조수 v2 에 없는 지적 ${synced.unfixable.length}건 — 완료를 막지 않고 보고에 남김` });
+        autoNotes.push(`이 요청에서 고칠 수 없는 지적 ${synced.unfixable.length}건(고치는 도구가 조수 v2 에 없다 — 완료를 막지 않음): ${synced.unfixable.map((i) => i.content.slice(0, 120)).join(" / ")}`);
+      }
       if (synced.opened.length) {
         env.emit({ type: "execution_status", name: "v2.gate.items", ok: false, summary: `끝맺음 관문이 짚은 것 ${synced.opened.length}건을 할 일에 덧붙임`, data: { items: synced.opened.map((i) => ({ id: i.id, source: i.source, content: i.content })) } });
-        const prompt = newBatch(env, synced.opened, `[Finish gate — added ${synced.opened.length} problem(s) found by function checks and critics to the todo list. Fix each and call done, or block(reason) if you cannot]`);
+        const toolNote = repairToolNote(env, synced.loaded);
+        const prompt = newBatch(env, synced.opened, `[Finish gate — added ${synced.opened.length} problem(s) found by function checks and critics to the todo list. Fix each and call done, or block(reason) if you cannot.]${toolNote}`);
         if (prompt) return prompt;
         return undefined;
       }

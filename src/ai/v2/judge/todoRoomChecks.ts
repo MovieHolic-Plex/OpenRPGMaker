@@ -8,7 +8,9 @@ import { eventBodyRect } from "@/project/eventFootprintQuery";
 import { normName } from "../todo/names";
 import type { CheckResult } from "../todo/types";
 import { layoutReviewRounds, REVIEWS_TAG } from "../place/layoutReview";
-import { t, liveCmds, isAuto, evLabel, mapAt, q, choose, Scope, has, mapInScope, scopeNote, mapNamed, allMapNames, isResult, mapReach } from "./todoCheckFacts";
+import { t, liveCmds, isAuto, evLabel, mapAt, q, choose, Scope, has, mapInScope, scopeNote, mapNamed, allMapNames, isResult, mapReach, transfersOut } from "./todoCheckFacts";
+import { isComposedLayoutMap } from "@/project/mapNamedLocations";
+import { WORLDS } from "../place/world";
 
 // ───────────── 실내 구역·방 그래프 ─────────────
 // 2026-10-30 mapvqa ③(판정자 gpt-6.1-sol, 사용자 기준 방과 쌍 비교): 진 방 = 한 칸짜리 방이라 조사할 곳이 없음·같은 서가/식탁 줄 반복,
@@ -169,6 +171,37 @@ function roomZonesOf(project: Project, m: GameMap, min: number): CheckResult {
   return { pass: true, detail: head, evidence: { mapId: m.id } };
 }
 
+/**
+ * 세계 구성기가 한 번에 깐 맵의 방 검사는 빌더의 사실 셋으로 본다 — 모델은 그 맵을 다시 깔 수 없어, 아무도 할 수 없는 항목에 «완료»가 걸렸다.
+ * 깔림(구역) · 걸어 닿음(구역 하나 이상) · 문이 양쪽으로 이어짐(시작 맵은 나가는 쪽만). 하나라도 틀리면 그 사실을 적어 ✗, 구성기 맵이 아니면 undefined(종전 검사).
+ */
+function builderCover(project: Project, m: GameMap): CheckResult | undefined {
+  const locs = (m.locations ?? []) as unknown as Loc[];
+  const world = WORLDS.find((w) => w.composer && w.tilesetId === m.tilesetId);
+  if (!world || !isComposedLayoutMap(m) || locs.some((l) => (l.tags ?? []).includes(LAYOUT_TAG) || (l.tags ?? []).includes(GRAPH_TAG))) return undefined;
+  const areas = locs.filter((l) => l.w * l.h > 1);
+  const reach = mapReach(project, m);
+  // 바깥 맵의 구역에는 건물 상자(걷는 칸이 없다)도 있다 — 닿은 구역 수를 사실로 적고, 하나도 못 닿을 때만 ✗.
+  const reached = reach ? areas.filter((l) => roomReached(m, reach, l)) : [];
+  const out = transfersOut(m).filter((x) => x.to.mapId !== m.id && project.maps[x.to.mapId]);
+  const into = Object.values(project.maps).filter((o) => o.id !== m.id && transfersOut(o).some((x) => x.to.mapId === m.id));
+  const start = project.startMapId === m.id;
+  const problems: string[] = [];
+  if (!areas.length) problems.push(t("구성기가 남긴 구역이 없다", "no area laid by the composer is recorded on the map"));
+  if (!reach) problems.push(t("들어오는 칸·시작점이 없어 걸어 볼 수 없다", "no entry cell or start point, so walking cannot be checked"));
+  if (reach && areas.length && !reached.length) problems.push(t("들어오는 칸에서 걸어 닿는 구역이 하나도 없다", "no laid area is reachable on foot from the entry"));
+  if (!start && !into.length) problems.push(t("이 맵으로 들어오는 이동이 어느 맵에도 없다", "no other map has a transfer into this map"));
+  if (!out.length && (!start || Object.keys(project.maps).length > 1)) problems.push(t("이 맵에서 나가는 이동이 없다", "this map has no transfer out to another map"));
+  const facts = [
+    t(`${world.ko} 구성기가 깐 구역 ${areas.length}곳(${areas.slice(0, 4).map(locName).join(", ")})`, `laid by the ${world.name} composer: ${areas.length} area(s) (${areas.slice(0, 4).map(locName).join(", ")})`),
+    ...(reached.length ? [t(`들어오는 칸에서 걸어 닿는 구역 ${reached.length}/${areas.length}`, `${reached.length}/${areas.length} area(s) reachable on foot from the entry`)] : []),
+    ...(into.length && out.length ? [t(`문이 양쪽으로 이어짐(${into.slice(0, 2).map((o) => q(String(o.name ?? o.id))).join(", ")})`, `linked both ways with ${into.slice(0, 2).map((o) => q(String(o.name ?? o.id))).join(", ")}`)] : start ? [t("시작 맵", "the start map")] : []),
+  ];
+  const head = `${mapAt(m)} ${t("빌더가 덮음", "covered by the builder")} — ${facts.join(" · ")}`;
+  if (problems.length) return { pass: false, detail: `${head} — ${t("걸린 것", "problems")}: ${problems.join(" / ")}`, evidence: { mapId: m.id } };
+  return { pass: true, covered: true, detail: head, evidence: { mapId: m.id } };
+}
+
 /** 이름으로 실내 맵 고르기(같은 이름 층 여럿이면 기록이 있는 맵을 먼저). */
 function interiorMaps(project: Project, sc: Scope, name: string, tag: string): GameMap[] | CheckResult {
   const cands = Object.values(project.maps).filter((m) => mapInScope(sc, m)).map(mapNamed);
@@ -183,7 +216,7 @@ function interiorMaps(project: Project, sc: Scope, name: string, tag: string): G
 export function checkRoomZones(project: Project, sc: Scope, name: string, min = 2): CheckResult {
   const maps = interiorMaps(project, sc, name, DESIGN_AREA);
   if (isResult(maps)) return maps;
-  const results = maps.map((m) => roomZonesOf(project, m, min));
+  const results = maps.map((m) => builderCover(project, m) ?? roomZonesOf(project, m, min));
   return results.find((x) => x.pass) ?? results[0]!;
 }
 
@@ -341,7 +374,7 @@ function layoutBuiltOf(project: Project, m: GameMap): CheckResult {
 export function checkLayoutBuilt(project: Project, sc: Scope, name: string): CheckResult {
   const maps = interiorMaps(project, sc, name, LAYOUT_TAG);
   if (isResult(maps)) return maps;
-  const results = maps.map((m) => layoutBuiltOf(project, m));
+  const results = maps.map((m) => builderCover(project, m) ?? layoutBuiltOf(project, m));
   const bad = results.find((r) => !r.pass);
   return bad ?? results[0]!;
 }
@@ -352,6 +385,8 @@ export function checkLayoutReview(project: Project, sc: Scope, name: string): Ch
   if (isResult(maps)) return maps;
   const want = layoutReviewRounds();
   const results = maps.map((m): CheckResult => {
+    const covered = builderCover(project, m);
+    if (covered) return covered;
     const decl = (m.locations ?? []).find((l) => (l.tags ?? []).includes(LAYOUT_TAG) && (l.tags ?? []).includes("decl"));
     const n = Number((decl?.tags ?? []).find((x) => x.startsWith(REVIEWS_TAG))?.slice(REVIEWS_TAG.length) ?? 0) || 0;
     if (!decl) return { pass: false, detail: t(`${mapAt(m)}: 칸 배치 선언이 없다`, `${mapAt(m)}: no layout record — build it with make_place spec.layout`), evidence: { mapId: m.id } };
@@ -365,6 +400,6 @@ export function checkLayoutReview(project: Project, sc: Scope, name: string): Ch
 export function checkRoomGraph(project: Project, sc: Scope, name: string): CheckResult {
   const maps = interiorMaps(project, sc, name, GRAPH_TAG);
   if (isResult(maps)) return maps;
-  const results = maps.map((m) => roomGraphOf(project, m));
+  const results = maps.map((m) => builderCover(project, m) ?? roomGraphOf(project, m));
   return results.find((x) => x.pass) ?? results[0]!;
 }

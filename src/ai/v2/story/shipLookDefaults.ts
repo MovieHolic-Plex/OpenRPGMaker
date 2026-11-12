@@ -267,12 +267,15 @@ const hashText = (text: string): number => { let h = 2166136261; for (let i = 0;
 
 /**
  * 시작 파티 중 편집기 기본 이름(「주인공」)이 남은 인물에 이름을 준다 — 칩 이름표·이야기 낱말이 여성을 말하면 여성 이름, 아니면 남성 이름에서
- * 청사진 제목+인물 id 해시로 하나. 프로젝트의 다른 인물·이벤트 이름과 겹치는 이름은 건너뛴다.
+ * 청사진 제목+인물 id 해시로 하나. 프로젝트의 다른 인물·이벤트·청사진 인물 이름에 든 이름은 건너뛴다 — 같은 이름뿐 아니라 그 이름을 품은 것도
+ * (2026-11-12 Haiku r1h-mystery: 용의자 「이도윤 (조카)」가 있는 게임의 주인공이 「도윤」이 되어 엔딩이 «도윤은 … 이 여정을 끝까지 걸어냈다» 로 맺었다).
  */
 export function fillPartyNames(project: Project, story: string): string[] {
   const f = factory();
   const fActors = new Map(f.database.actors.map((a) => [a.id, a]));
-  const taken = new Set<string>([...project.database.actors.map((a) => a.name.trim()), ...Object.values(project.maps).flatMap((m) => (m.events ?? []).map((e) => String(e.name ?? "").trim()))]);
+  const taken = new Set<string>([...project.database.actors.map((a) => a.name.trim()), ...Object.values(project.maps).flatMap((m) => (m.events ?? []).map((e) => String(e.name ?? "").trim())),
+    ...(project.gameBlueprint?.steps ?? []).flatMap((s) => [s.who ?? "", s.event])].filter(Boolean));
+  const used = (name: string) => [...taken].some((other) => other.includes(name));
   const seed = project.gameBlueprint?.title ?? project.meta.title ?? "";
   const out: string[] = [];
   for (const id of project.system.startActorIds ?? []) {
@@ -282,7 +285,7 @@ export function fillPartyNames(project: Project, story: string): string[] {
     const premise = project.gameBlueprint ? blueprintPremiseText(project, project.gameBlueprint) : story;
     const pool = FEMALE.test(`${chip} ${premise}`) ? FEMALE_NAMES : MALE_NAMES;
     const start = hashText(`${seed}|${id}`) % pool.length;
-    const name = Array.from({ length: pool.length }, (_, i) => pool[(start + i) % pool.length]!).find((n) => !taken.has(n));
+    const name = Array.from({ length: pool.length }, (_, i) => pool[(start + i) % pool.length]!).find((n) => !used(n));
     if (!name) continue;
     const relabeled = renameSpeaker(project, actor.name, name);
     out.push(`${actor.name} 이름 → ${name}${relabeled ? ` (대사 화자 ${relabeled}줄)` : ""}`);
