@@ -38,6 +38,15 @@
   신전 앞 광장·돌다리 착지, 참배 섬 깃발·등불, 정원 섬 새 물그릇, 섬 사슬 다리 착지 예약, 오두막 벽난로 벽에 붙임, 선실 조타륜 앞벽, 천문대 마루 바닥.
 - 남은 것(그림 일): 밑면이 세로 기둥 판(D8), 풀 결 단조(D9), 도리이·문루 키트 없음(D19), 굽은 시내 칸 없음(D21), 세로 밧줄 다리 깊이 단서(D23), 조타륜·천체 모형 그림(D35·D38), 방 옆벽 두께(D39), 바닥 등롱 빛(D40), 풍차 날개.
 
+## 직각 지붕·천문대 돔 다시 그리기 (2026-11-12, 오너 지시)
+
+오너 2026-11-12: «이 에디터는 시야각이 직교해야하므로 sengoku_edo se-machiya-a 이런 식의 직각 지붕이어야하는데 … sky_island si-observatory 이건 또 뭘 그린건지도 모르겠고 … Fable 5.2 Medium 으로 1번만 시도».
+
+- `si-observatory`: 옆에서 본 반구(초록 달걀)를 지우고, 옥상 마당(코드 그림 그대로) 위에 **위에서 본 둥근 돔**(관측 틈 + 놋쇠 망원경)을 얹었다. 돔 그림은 Claude Fable 5.2 medium 이 그린 44×42 PNG `scripts/content/sky-island/art/fable/si-observatory-dome.png` 이고 `art/buildings.py` 가 `px.paste_png` 로 붙인다(잠긴 팔레트 밖 색이면 오류). 첫 호출(옥상+돔 72×56 통째)은 출력 20,000 토큰을 추론에 다 쓰고 그림 없이 끝났다 — 돔만 떼어 한 번 더 불렀다. **아직 약하다**: 돔이 작고 어둡게 읽힌다(테두리 하이라이트·돔 밑 그늘·틈 밖으로 나온 망원경 통이 약함). 세 번째 호출은 하지 않았다.
+- `si-shrine`: 사다리꼴 동판 지붕을 직사각형으로(지붕만, Fable 한 방). 덮어쓰기 `tiledata/sky-island/fable-roofs/si-shrine.png` + `index.json` → `art/kit.py` 내보내기가 `scripts/content/lib/fable_roofs.py` 로 덮는다.
+- 관문: **3/4 관문 미통과 — 오너 면제** 묶음 `fable-redraw-roofs-sky-island-2026-11-12`(bundle·shared, 스토어 제외). `si_bake_lib.gate_status` 가 면제된 그림을 받는다. 통과가 아니다.
+- 남은 것: `si-tower-house`(뾰족 지붕 탑 — 박공 정면/첨탑, 그대로) · 등대·풍차·풍력기·비공정은 예외. 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
+
 ## 함정
 - 접근칸 예약이 문 바로 아래 칸까지라 그 칸을 덮는 포석(신전 앞 광장)은 `patch` 가 거절한다 — 구성기에서 잠깐 풀었다 다시 예약한다.
 - 1×1 소품(꽃·방석·밧줄 뭉치)은 키트가 아니라 그룹(`si:si-<id>`)이다. 팔레트가 tileMeta `defaultLayer` 로 1×1 키트를 합성한다.
