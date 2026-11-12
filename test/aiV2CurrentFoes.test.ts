@@ -125,10 +125,12 @@ describe("v2 가 세우는 적은 현행 그림이 있는 종", () => {
     }, 60_000);
   }
 
-  it("선사 시대 늪: 뱀·딱정벌레가 서고(멧돼지·사마귀는 맞춘 사본의 기술이 뱀과 같아 같이 서지 않는다), 리자드맨·검치호·공룡은 그릴 목록에 남는다", () => {
+  // 2026-11-12 까지는 뱀·딱정벌레 둘만 섰다 — 센 기술을 다른 생물의 약한 기술로 바꾸던 맞춤 때문에 멧돼지·사마귀의 사본이 뱀과 같은 기술을 들었다.
+  // 지금은 제 기술을 약하게 한 사본을 들어(멧돼지 «돌진», 사마귀 «교차 낫베기») 넷이 다 선다.
+  it("선사 시대 늪: 뱀·멧돼지·딱정벌레·사마귀가 제 기술로 서고, 리자드맨·검치호·공룡은 그릴 목록에 남는다", () => {
     const { project, mapId } = world("prehistoric", "prehistoric", "swamp", "늪지");
     const field = themeFieldTroops(project, mapId);
-    expect(field.troopIds.map((id) => leadArt(project, id)?.replace("generated-enemy-", ""))).toEqual(["snake-viper", "beetle-horn"]);
+    expect(field.troopIds.map((id) => leadArt(project, id)?.replace("generated-enemy-", ""))).toEqual(["snake-viper", "boar-tusk", "beetle-horn", "mantis-blade"]);
     expect(field.gaps.map((line) => parseArtGap(line)?.wanted)).toEqual(["dinosaurs (raptor, triceratops)", "lizardman-spear", "tiger-saber"]);
     // 이름이 맞는 종이 있으면 그 종(불의 정령), 없으면 돌려 고른다 — 어느 쪽이든 현행 그림.
     const fire = themeBossTroop(project, mapId, "불의 정령", true, 0);
