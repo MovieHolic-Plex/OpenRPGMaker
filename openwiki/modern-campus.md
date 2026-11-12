@@ -159,6 +159,16 @@ FAIL 둘은 **3/4 관문 미통과** — 굽지 않는다. 교훈: 윗면과 앞
 
 배선은 첫 판과 같다: `bundled.ts`·`bundledChipsetGeometry.ts`·`defaultAssets.ts`·`modernCampus.ts`·`concepts/format.ts`·`seed.json`·`startRoutePaint.ts`·`tilesetFamily.ts`(`oprn-campus`). `defaultMaps.ts` 의 빈칸 잔디는 1번이다.
 
+## 직각 지붕 다시 그리기 (2026-11-12, 오너 지시)
+
+오너 2026-11-12: «이 에디터는 시야각이 직교해야하므로 sengoku_edo se-machiya-a 이런 식의 직각 지붕이어야». 오너가 이름으로 짚은 칩셋은 아니지만 같은 측정(지붕 기울기, 모델 없음)에서 사다리꼴(우진각) 지붕 8채가 모두 11px 로 걸렸다.
+
+- Claude Fable 5.2 medium 한 방으로 **지붕만** 다시 그렸다(벽·문은 코드 그림 그대로): `mc-bld-hall-6`·`hall-7`·`hall-9`·`hall-12`·`dorm-5`·`dorm-7`·`gym`·`gym-green`. 11px → 0px. `gym`(160px 폭)은 줄 길이가 4자 틀려 두 번째 호출까지 썼다.
+- 덮어쓰기: `tiledata/modern-campus/fable-roofs/<조각>.png` + `index.json` → `art/kit.py` 내보내기가 `scripts/content/lib/fable_roofs.py` 로 코드 그림 위에 덮는다.
+- 관문: **3/4 관문 미통과 — 오너 면제** 묶음 `fable-redraw-roofs-modern-campus-2026-11-12`(bundle·shared, 스토어 제외). `theme_bake.gate_status` 가 면제된 그림을 받는다. 통과가 아니다.
+- 칸: 964 → 1060. 옛 지붕은 같은 슬레이트 칸을 건물끼리 나눠 썼고 새 지붕은 건물마다 그림이 달라 새 칸 96개가 붙었다. `theme_bake.Outdoor.put` 은 이제 이미 번호를 받은 자리 키를 그림이 같아져도 합치지 않는다(빈 칸 구멍 방지; 고딕 저택 굽기도 이 파일을 쓴다 — 다음 굽기에서 예전에 합쳐져 빈 칸이던 번호가 제 그림을 되찾을 수 있다). **이미 깔린 이 8채는 지붕 칸이 섞여 보일 수 있다 — 다시 찍어야 한다**(번들에 저장된 캠퍼스 장소는 없다).
+- 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
+
 ## quality-b 화풍 보정 (2026-10-14) — 버들항 수준 맞추기
 
 - 바꾼 것: 학교·체육관 벽 미색 칠 + 1층 벽돌 허리벽, 평지붕 초록 우레탄(판 이음·파라펫 그늘), 체육관 파란 골판, 잔디·운동장 흙·콘크리트 길 결,
