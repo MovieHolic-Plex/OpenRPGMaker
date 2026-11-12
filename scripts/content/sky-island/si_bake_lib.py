@@ -97,9 +97,30 @@ class Outdoor:
         self.strips, self.kits, self.groups = [], [], collections.OrderedDict()
         self.piece_cells = {}
 
+    def keep_old_cells(self, sheet_png):
+        """이미 구워진 시트의 칸은 그림을 지킨다(jp_city 와 같은 규칙, 2026-11-12 직각 지붕 다시 그리기).
+        번호를 받은 자리 키의 그림이 바뀌면 새 자리 키 `<키>@r<그림 해시>` 로 끝에 붙이고 키트는 새 칸을 가리킨다. 옛 번호는 옛 그림·옛 통행 그대로 남는다
+        — 이미 깔린 맵은 한 화소도 바뀌지 않고, 새로 찍는 건물만 새 그림이 된다. 이 호출이 없으면 옛 동작(제자리 덮어쓰기)이다."""
+        self.old_sheet = Image.open(sheet_png).convert('RGBA') if os.path.exists(sheet_png) else None
+
+    def _old_cell(self, tid):
+        sh = getattr(self, 'old_sheet', None)
+        x, y = (tid % self.tpr) * T, (tid // self.tpr) * T
+        if sh is None or y + T > sh.height: return None
+        return BL.norm(sh.crop((x, y, x + T, y + T)))
+
     def put(self, key, im, pc, meta):
         im = BL.norm(im)
         k2 = (im.tobytes(), pc)
+        if not key.endswith('!') and key in self.pins.map:
+            tid = self.pins.map[key]; was = self._old_cell(tid)
+            if was is not None and was.tobytes() == im.tobytes():        # 그림 그대로: 제 번호
+                self.img[tid] = im; self.info[tid] = dict(meta, pc=pc); self.dedupe.setdefault(k2, tid)
+                return tid
+            if was is not None:                                          # 그림이 바뀌었다: 옛 번호는 옛 그림, 새 그림은 새 자리 키
+                if tid not in self.img:
+                    self.img[tid] = was; self.info[tid] = dict(meta, pc=pc, label=(meta['label'] + ' (옛 그림)')[:80]); self.dedupe.setdefault((was.tobytes(), pc), tid)
+                key = '%s@r%s' % (key, hashlib.sha1(im.tobytes()).hexdigest()[:8])
         if k2 in self.dedupe and not key.endswith('!'): return self.dedupe[k2]
         tid = self.pins.one(key)
         self.img[tid] = im; self.info[tid] = dict(meta, pc=pc); self.dedupe.setdefault(k2, tid)
