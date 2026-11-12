@@ -1,3 +1,4 @@
+import { isEntranceArt } from "@/ai/v2/place/entrances";
 import { isRoadCell } from "@/ai/v2/place/surface";
 import { jsonEqual } from "@/util/structuralJson";
 import { fixActorPartyConditions } from "@/project/eventCommands/commandFieldAliases";
@@ -23,7 +24,6 @@ import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eve
 import { canMove, isPassable, tileAt } from "@/project/collision";
 import { unsafeSpawnLines } from "@/project/chaserSpawnSafety";
 import { ensureChaserHidingSpots, HIDING_SPARKLE } from "@/project/chaserHiding";
-import { isDoorArtCell } from "@/project/lint/scenePolishLint";
 import { kitDoorOpenCommands } from "@/project/kitDoors";
 import { doorLine, recordDoorForGate } from "./mapDoorTools";
 import { strandedByRemoval, strandedRefusal } from "./strandedSwitches";
@@ -3023,8 +3023,10 @@ const createTransferPair: ToolDefinition = {
     const mapB = requireMap(draft, b.mapId);
     const reachNotes: string[] = [];
     // 문 그림 바로 아래의 걷는 칸을 주면 그 칸이 문앞이고 트리거는 문 그림 칸에 선다 — 문 칸(doorAt)을 따로 주지 않아도 같다.
+    // 문 그림 = 칩셋이 적어 둔 입구(place/entrances.ts isEntranceArt). 이름표 낱말로 읽던 때는 「가문비」 밑 칸에 이은 출구의 트리거가 나무 위로 올라가
+    // 길 끝에서 걸어 나갈 수 없었다(설원 마을·호수 — 나무에 부딪혀야 넘어간다).
     const doorAbove = (map: GameMap, end: typeof a): Point | null => {
-      if (!onDoor || !isPassable(draft, map, end.x, end.y) || isDoorArtCell(draft, map, end.x, end.y) || !isDoorArtCell(draft, map, end.x, end.y - 1)) return null;
+      if (!onDoor || !isPassable(draft, map, end.x, end.y) || isEntranceArt(draft, map, end.x, end.y) || !isEntranceArt(draft, map, end.x, end.y - 1)) return null;
       return map.events.some((event) => event.x === end.x && event.y === end.y - 1) ? null : { x: end.x, y: end.y - 1 };
     };
     // 문 칸(doorAt)을 단 끝: doorAt 이 x,y 와 같은 칸이면 문앞만 준 것으로 읽고, 문앞이 막혀 그 자리에 못 잇으면 doorAt 없이
@@ -3064,7 +3066,7 @@ const createTransferPair: ToolDefinition = {
     // 문이 보도의 맨 바닥 칸에 서고, 조수가 그 문을 계단 위 보도로 옮겼다(2026-10-27 romance-j91 J103: 계단 그림은 안 열림).
     // 같은 그림 덩어리(4방 이웃 문 그림 칸)에서 착지점 바로 옆 칸을 문 칸으로 쓴다.
     const doorClusterCellBeside = (map: GameMap, req: Point, landing: Point): Point | null => {
-      if (!isDoorArtCell(draft, map, req.x, req.y)) return null;
+      if (!isEntranceArt(draft, map, req.x, req.y)) return null;
       const seen = new Set<string>([`${req.x},${req.y}`]);
       const queue: Point[] = [{ x: req.x, y: req.y }];
       for (let i = 0; i < queue.length && queue.length <= 36; i += 1) {
@@ -3073,7 +3075,7 @@ const createTransferPair: ToolDefinition = {
         for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
           const next = { x: cell.x + dx, y: cell.y + dy };
           const key = `${next.x},${next.y}`;
-          if (seen.has(key) || !isDoorArtCell(draft, map, next.x, next.y)) continue;
+          if (seen.has(key) || !isEntranceArt(draft, map, next.x, next.y)) continue;
           seen.add(key);
           queue.push(next);
         }
@@ -3084,10 +3086,10 @@ const createTransferPair: ToolDefinition = {
       if (!onDoor) return { ...endpoint, bump: false };
       // 실내 벽에 박힌 엘리베이터·계단은 그림 칸 바로 아래가 「탈 자리」(build_hand_interior_room 이 알려 주는 칸)다 —
       // 조수가 그 탈 자리를 x,y 로 주면 트리거가 그림 아래 바닥에 남았다(2026-10-22 r3 office-elevator 2층 쪽).
-      const above = !isDoorArtCell(draft, map, req.x, req.y) && endpoint.gate.x === req.x && endpoint.gate.y === req.y
-        && isDoorArtCell(draft, map, req.x, req.y - 1) ? { x: req.x, y: req.y - 1 } : null;
+      const above = !isEntranceArt(draft, map, req.x, req.y) && endpoint.gate.x === req.x && endpoint.gate.y === req.y
+        && isEntranceArt(draft, map, req.x, req.y - 1) ? { x: req.x, y: req.y - 1 } : null;
       const door = req.doorAt
-        ?? (isDoorArtCell(draft, map, req.x, req.y) && Math.abs(req.x - endpoint.gate.x) + Math.abs(req.y - endpoint.gate.y) === 1 ? { x: req.x, y: req.y } : null)
+        ?? (isEntranceArt(draft, map, req.x, req.y) && Math.abs(req.x - endpoint.gate.x) + Math.abs(req.y - endpoint.gate.y) === 1 ? { x: req.x, y: req.y } : null)
         ?? above
         ?? (req.x === endpoint.gate.x && req.y === endpoint.gate.y ? null : doorClusterCellBeside(map, req, endpoint.gate));
       if (!door || (door.x === endpoint.gate.x && door.y === endpoint.gate.y)) return { ...endpoint, bump: false };
