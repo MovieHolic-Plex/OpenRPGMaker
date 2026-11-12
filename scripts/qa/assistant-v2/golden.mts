@@ -75,6 +75,17 @@ function twoMaps(): Project {
   return project;
 }
 
+/** 청사진의 단계가 다 지어진 게임(GameBlueprintStep.built) — 게임 하나를 잇는 요청의 처음 목록이 고치는 도구로 줄어드는 상태. 이 요청들만 찍는다. */
+const PATH_BUILT_REQUESTS: readonly string[] = [
+  "아직 다 안 된 것 같아. 처음에 부탁한 대로 끝까지 만들어 줘. 게임을 처음부터 엔딩까지 실제로 플레이할 수 있게 해 줘.",
+  "계속",
+];
+function pathBuilt(): Project {
+  const project = STATES.builtGame!();
+  for (const step of project.gameBlueprint!.steps) step.built = { mapId: project.startMapId, eventId: "ev_golden_npc" };
+  return project;
+}
+
 type Shot = { whole: boolean; wholeWithProject: boolean; game: boolean; sysChars: number; sys: string[]; upFront: string[]; lazy: string[] };
 
 function shoot(task: string, project: Project): Shot {
@@ -125,5 +136,6 @@ if (args[0] === "--diff") process.exit(diff(args[1]!, args[2]!));
 const out: Record<string, Shot> = {};
 for (const [state, make] of Object.entries(STATES)) for (const task of REQUESTS) out[`${state} | ${task}`] = shoot(task, make());
 for (const task of TWO_MAP_REQUESTS) out[`twoMaps | ${task}`] = shoot(task, twoMaps());
+for (const task of PATH_BUILT_REQUESTS) out[`pathBuilt | ${task}`] = shoot(task, pathBuilt());
 writeFileSync(args[0] ?? "/dev/stdout", JSON.stringify(out, null, 1));
 if (args[0]) console.log(`${args[0]}: ${Object.keys(out).length} 요청 × 상태`);
