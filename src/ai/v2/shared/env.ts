@@ -104,6 +104,8 @@ export interface PiAssistantV2Hooks {
   readonly lazyTool?: (name: string) => PiToolShape | undefined;
   /** 없는 도구 이름을 부른 호출에 돌려줄 영어 글. */
   readonly unknownToolText?: (name: string) => string;
+  /** 목록에 없는 도구(call_tool 로 부른다)의 매개변수 글 — 로컬 CLI 고리가 인자 모양 거절에 붙인다(toolExposure.ts callSchema). */
+  readonly callSchema?: (name: string) => string | undefined;
   /**
    * 도구 호출을 계속 강제할지(tool_choice "required") — 실행기가 모델 호출마다 묻는다. v2 는 쓰기 요청에서 할 일 항목이 열려 있는 동안 true.
    * 왜(2026-11-01 cheap r7 flash): 재주입에 한 번 강제하면 한 번 부르고 바로 글로 멈춰, 재주입 한 번이 도구 하나에 그쳤고 «진척 없음» 으로 고리가 멈췄다.

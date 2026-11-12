@@ -33,6 +33,7 @@ export function createV2Turn(request: PiAgentRequest, options: TurnOptions, io: 
     lazyTool: lateTool,
     // load_tools 가 목록에 없는 요청(장소만 까는 요청)에는 그 도구를 권하지 않는다 — 관문이 도구를 실은 뒤 «load_tools 로 실어라» 가 나가 모델이 없는 도구를 불렀다(2026-11-12 Haiku prison·mine).
     unknownToolText: (name) => unknownToolText(name, state.exposure?.tools.some((t) => t.name === "load_tools") ? state.exposure.lazy : new Map()),
+    callSchema: (name) => state.exposure?.callSchema(name),
     stateCard,
     firstPromptSuffix,
     beforeFirstPrompt,
