@@ -17,6 +17,7 @@ import { runTodoCheck } from "@/ai/v2/judge/todoChecks";
 import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import { syncGateItems } from "@/ai/v2/judge/gates";
 import { turnLateTools } from "@/ai/v2/turn/lateTools";
+import { createV2Turn } from "@/ai/v2/turn/turn";
 import { TodoStore } from "@/ai/v2/loop/todoStore";
 import { todoReport } from "@/ai/v2/judge/finalReport";
 import type { PlaceSpec } from "@/ai/v2/shared/types";
@@ -244,6 +245,22 @@ describe("끝맺음 관문이 고치는 법으로 이른 도구는 고치기 차
     expect(lateTool("no_such_tool")).toBeUndefined();
     const readOnly = turnLateTools({ session: t.session, state: { exposure: { tools: [], lazy: new Map(), offered: [] } }, toolNames: new Set(), writeRequest: false } as never);
     expect(readOnly.lateTool("create_transfer_pair")).toBeUndefined();
+  }, SLOW);
+
+  it("턴 조립: 장소만 까는 요청의 목록에는 create_transfer_pair·load_tools 가 없고, 이름으로 부르면 실리며, 없는 이름의 거절 글은 load_tools 를 권하지 않는다", () => {
+    const project = createBlankProject();
+    const request = { task: "촌장 집 맵을 만들어 줘.", provider: "local-cli:claude", mapIds: [], project, currentMapId: project.startMapId } as never;
+    const v2 = createV2Turn(request, {}, { captureVqaShots: async () => ({ shots: [], failed: [] }) });
+    const env = { ctx: { project, currentMapId: project.startMapId, assistantRun: true }, request, emit: () => {}, record: () => {}, checkpoint: async () => {}, sideChat: async () => "{}",
+      preferToolNextTurn: () => {}, clearToolPreference: () => {}, lazyToolsVia: "call_tool" } as unknown as PiAssistantV2Env;
+    const listed = v2.hooks.tools(env).map((t) => t.name);
+    expect(listed).not.toContain("create_transfer_pair");
+    expect(listed).not.toContain("load_tools");
+    expect(v2.hooks.lazyTool!("create_transfer_pair")?.name).toBe("create_transfer_pair");
+    expect(v2.hooks.lazyTool!("make_place")).toBeUndefined();
+    const text = v2.hooks.unknownToolText!("no_such_tool");
+    expect(text).toContain("no tool named");
+    expect(text).not.toContain("load_tools");
   }, SLOW);
 
   it("실제 턴: 장소만 짓는 요청의 도구 묶음에 없는 set_field_hud 를 고리로 감싸 만들어 준다", async () => {
