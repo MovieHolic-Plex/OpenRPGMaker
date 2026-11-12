@@ -23,6 +23,9 @@
 끝난 뒤 새 끝 뒤에 다시 붙인다(`attachWorkshopTiles`, 번호가 바뀌면 그 칩셋을 쓰는 맵의 네 층과 킷을 고친다).
 손 도트 실내는 자기 ensure(`ensureAtlasBiomeInteriorCurrent`)가 같은 일을 하므로 건너뛴다. 업로드 칩셋은 번들 ensure 를 타지 않아 이주가 필요 없다.
 공방 칸 뒤에 다른 이식(생성 건물 시트 등)이 붙어 있으면 `detachWorkshopTiles` 가 손대지 않는다(null).
+**떼는 동안 맵 칸을 비켜 둔다(2026-11-12):** `detachWorkshopTiles(tileset, project)` 는 그 칩셋 맵의 공방 칸 번호를 보관 번호(칩셋 칸 수 밖)로 바꿔 두고, `attachWorkshopTiles` 가 그 번호만 새 번호로 되돌린다.
+전에는 다시 붙일 때 «옛 번호 → 새 번호» 로 맵을 고쳤는데, 그사이 번들 ensure 가 이식 꼬리를 밀어(버들항 `relocateLocalTail`) 다른 칸이 옛 공방 번호에 앉으면 그 칸까지 공방 그림으로 바뀌었다
+(실측: 버들항 시트가 128칸 자랐을 때 저장본 r1-fantasy 의 나무 칸 하나, `check-bundle-save-compat.mts` 가 잡음). 프로젝트 없이 부르는 손 도트 실내 ensure 는 예전 방식 그대로다.
 
 ## 시험
 
