@@ -68,8 +68,8 @@ describe("전국·에도 세계 표의 실내 종류", () => {
   it("여섯 종류 모두 세계 빌더가 짓는다 — 전국·에도 칩셋의 실내 맵이고, 들어오는 칸은 맨 아래 출입구 틈이다", () => {
     for (const id of ROOMS) {
       const kind = worldKind(world, id)!;
-      const ctx: ToolContext = { project: createBlankProject(), currentMapId: "", assistantRun: true };
-      ctx.currentMapId = ctx.project.startMapId;
+      const blank = createBlankProject();
+      const ctx: ToolContext = { project: blank, currentMapId: blank.startMapId, assistantRun: true };
       const run = createBuildRun(ctx);
       const spec = { ...worldPlaceSpec(world, kind, kind.ko), salt: 1 };
       const builder = builderFor(spec)!;
