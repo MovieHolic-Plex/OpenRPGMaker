@@ -66,13 +66,17 @@ describe("필드 HUD 예산 — 테마 프리셋", () => {
     expect(HUD_PARTY_ROW.row).toBeLessThanOrEqual(9);
     expect(party.height).toBeGreaterThanOrEqual(four);
     expect(party.width * four / (DEFAULT_VIEW.width * DEFAULT_VIEW.height)).toBeLessThanOrEqual(0.035);
+    // 목표 글이 두 줄로 감겨도(달력이 없어 시계가 숨은 게임) 네 명 판 + 목표 줄이 예산 안이다.
+    const twoLines = DEFAULT_VIEW.width * HUD_BUDGET.objectiveWidth * (2 * HUD_LINE.line + 2 * HUD_LINE.padY);
+    expect((party.width * four + twoLines) / (DEFAULT_VIEW.width * DEFAULT_VIEW.height)).toBeLessThanOrEqual(HUD_BUDGET.persistent);
   });
 });
 
 describe("필드 HUD 예산 — 목표 줄 · 조작 안내 · 알림 띠", () => {
   const css = readFileSync("src/styles/runtime/zoneFeedback.css", "utf8");
-  const block = (selector: string): string => {
-    const at = css.indexOf(`\n${selector} {`);
+  // last: 같은 선택자가 묶음 규칙의 마지막 줄로도 나올 때(.zone-feedback-prompt) 그 선택자만의 규칙을 읽는다.
+  const block = (selector: string, last = false): string => {
+    const at = last ? css.lastIndexOf(`\n${selector} {`) : css.indexOf(`\n${selector} {`);
     expect(at, selector).toBeGreaterThanOrEqual(0);
     return css.slice(at, css.indexOf("\n}", at));
   };
@@ -91,7 +95,7 @@ describe("필드 HUD 예산 — 목표 줄 · 조작 안내 · 알림 띠", () =
   });
 
   it("조작 안내: 한 줄, 가장 넓어도 화면의 4% 이하, 아래 끝에 선다", () => {
-    const prompt = block(".zone-feedback-prompt");
+    const prompt = block(".zone-feedback-prompt", true);
     expect(prompt).toContain("white-space: nowrap");
     const box = { width: DEFAULT_VIEW.width * HUD_LINE.promptMaxWidth, height: HUD_LINE.line + 2 * HUD_LINE.padY };
     expect(block(".zone-feedback-banner,\n.zone-feedback-toast,\n.zone-feedback-objective,\n.zone-feedback-prompt")).toContain(`max-width: ${HUD_LINE.promptMaxWidth * 100}%`);

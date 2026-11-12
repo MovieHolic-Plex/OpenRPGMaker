@@ -45,7 +45,7 @@
 .hud-slot-empty { opacity:.4; }
 /* 동료 판: 한 사람에 한 줄(이름 + 가는 막대, 7px). 얼굴·숫자는 메뉴에 있다. 네 명이면 54×39 — 화면의 2.7%. */
 .hud-widget[data-kind="party"] { justify-content:flex-start; gap:1px; }
-.hud-widget[data-kind="party"]:is([data-panel="dark"],[data-panel="paper"]) { padding:3px 4px; }
+.hud-widget[data-kind="party"]:is([data-panel="dark"],[data-panel="paper"]) { padding:2px 3px; }
 .hud-party-row { display:flex; align-items:center; gap:4px; height:7px; flex-shrink:0; }
 .hud-party-name { font-size:6px; line-height:7px; flex:0 1 46%; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
 .hud-party-meter { height:3px; flex:1; min-width:0; background:#0007; }

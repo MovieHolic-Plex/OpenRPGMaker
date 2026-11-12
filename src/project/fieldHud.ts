@@ -97,7 +97,7 @@ export const HUD_BUDGET = { persistent: 0.06, centre: 0.6, prompt: 0.04, objecti
 /** 목표 줄·조작 안내·알림의 글 크기(논리 px, 높이 240 기준 — zoneFeedback.css 가 같은 값을 --play-ui-scale 로 곱한다). */
 export const HUD_LINE = { font: 7, line: 8.5, padY: 1, padX: 4, promptMaxWidth: 0.6 } as const;
 /** 동료 판 한 줄(논리 px — fieldHud.css): 줄 높이 · 줄 사이 · 판 여백 · 테두리. 네 명이면 4×7 + 3×1 + 2×(3+1) = 39. */
-export const HUD_PARTY_ROW = { row: 7, gap: 1, pad: 3, border: 1 } as const;
+export const HUD_PARTY_ROW = { row: 7, gap: 1, pad: 2, border: 1 } as const;
 
 /**
  * 테마 프리셋 — 논리 화면 320×240 에 맞춘 크기다. 화면이 좁다: 늘 떠 있는 칸의 합이 화면의 6% 를 넘지 않고(목표 줄 한 줄 포함),
@@ -134,7 +134,7 @@ export function hudPreset(theme: FieldHudConfig["theme"]): HudWidget[] {
     { ...clock, panel: "dark" },
     w("effects", { kind: "timers", label: "", anchor: "top-left", x: 6, y: 23, width: 56, height: 24, panel: "dark" }),
   ];
-  if (theme === "party") return [w("party", { kind: "party", label: "", x: 6, y: 6, width: 54, height: 40, panel: "dark" }), { ...clock, panel: "dark" }];
+  if (theme === "party") return [w("party", { kind: "party", label: "", x: 6, y: 6, width: 50, height: 38, panel: "dark" }), { ...clock, panel: "dark" }];
   if (theme === "adventure") return [
     { ...hp, width: 64 },
     w("magic", { source: "mp", label: "", x: 6, y: 18, width: 64, height: 10, color: "#78bddb", showValue: false }),
