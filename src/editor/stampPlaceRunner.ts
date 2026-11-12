@@ -12,6 +12,7 @@
 // 첫 라운드를 커밋하지 않고 들고 있지 않는다).
 import { isAssistantEndpointReady } from "@/ai/assistantEndpoint";
 import { lookKit } from "@/project/kitLook";
+import { kitBaseTile } from "@/project/houseSetTiles";
 import {
   chatCompletion,
   configForLiteModel,
@@ -2483,10 +2484,12 @@ export function detectPlacedMapObjects(map: GameMap, tileset: TilesetDef | undef
     markCovered(p.x, p.y, p.w, p.h);
   }
 
-  // 2) upperTiles 에 찍힌 structureKit 무늬 탐지
+  // 2) upperTiles 에 찍힌 structureKit 무늬 탐지 — 집 벌(게임마다 다른 집 그림) 칸은 원본 킷의 같은 자리 칸으로 읽는다
+  const kitTile = kitBaseTile(tileset);
+  const upperAt = (i: number): number => kitTile(map.upperTiles[i] ?? -1);
   const upperPositions = new Map<number, number[]>();
   for (let i = 0; i < W * H; i++) {
-    const t = map.upperTiles[i] ?? -1;
+    const t = upperAt(i);
     if (t >= 0) {
       const list = upperPositions.get(t);
       if (list) list.push(i);
@@ -2547,7 +2550,7 @@ export function detectPlacedMapObjects(map: GameMap, tileset: TilesetDef | undef
       if (alreadyCovered) continue;
       let matches = 0;
       for (const cell of upperCells) {
-        if (map.upperTiles[(oy + cell.dy) * W + (ox + cell.dx)] === cell.tile) matches += 1;
+        if (upperAt((oy + cell.dy) * W + (ox + cell.dx)) === cell.tile) matches += 1;
       }
       if (matches < upperCells.length) continue;
       const rawName = (kit.name ?? kit.id).trim();

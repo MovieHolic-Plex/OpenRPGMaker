@@ -3,6 +3,7 @@
 // 「신문」 같은 물건도 문이 된다. 키트는 어느 칸이 들어가는 문인지 스스로 적어 둔다 — 문 칸은 막힌 그림이고 바로 아래 칸이 문 앞이다.
 import { roomSpecOf } from "@/editor/handInterior/builder";
 import { isPassable } from "@/project/collision";
+import { kitBaseTile } from "@/project/houseSetTiles";
 import { labelHasWord, labelNames } from "@/project/labelWords";
 import { isDoorArtCell } from "@/project/staging/doorCells";
 import { tilesetSurface } from "@/project/tilesetSurface";
@@ -54,12 +55,13 @@ function entranceTiles(tileset: TilesetDef | undefined): Map<number, string> {
 export function buildingEntrances(project: Project, map: GameMap): Entrance[] {
   const tiles = entranceTiles(project.tilesets[map.tilesetId]);
   if (!tiles.size) return [];
+  const base = kitBaseTile(project.tilesets[map.tilesetId]);   // 집 벌 칸은 원본 킷의 같은 자리 칸으로 읽는다(벌 집의 문도 그 킷의 문이다)
   const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
   const out: Entrance[] = [];
   for (let y = 0; y < map.height - 1; y++) for (let x = 0; x < map.width; x++) {
     const i = y * map.width + x;
     let kit: string | undefined;
-    for (const layer of LAYERS) { const t = m[layer]?.[i]; if (typeof t === "number" && t >= 0 && tiles.has(t)) { kit = tiles.get(t); break; } }
+    for (const layer of LAYERS) { const raw = m[layer]?.[i]; const t = typeof raw === "number" ? base(raw) : raw; if (typeof t === "number" && t >= 0 && tiles.has(t)) { kit = tiles.get(t); break; } }
     if (kit === undefined || isPassable(project, map, x, y) || !isPassable(project, map, x, y + 1)) continue;
     out.push({ x, y, front: { x, y: y + 1 }, kit });
   }
@@ -168,12 +170,14 @@ export function placeMarks(project: Project, map: GameMap): PlaceMarks {
   const n = map.width * map.height;
   const buildings = new Uint8Array(n), stairs = new Uint8Array(n), seats = new Uint8Array(n), windows = new Uint8Array(n);
   const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
+  const base = kitBaseTile(tileset);
   for (const layer of LAYERS) {
     const tiles = m[layer];
     if (!tiles) continue;
     for (let i = 0; i < n; i++) {
-      const t = tiles[i];
-      if (typeof t !== "number" || t < 0) continue;
+      const raw = tiles[i];
+      if (typeof raw !== "number" || raw < 0) continue;
+      const t = base(raw);
       if (named.buildings.has(t)) buildings[i] = 1;
       if (kit.stairs.has(t) || surfaceStairs.has(t)) stairs[i] = 1;
       if (kit.seats.has(t) || named.seats.has(t)) seats[i] = 1;
@@ -220,7 +224,8 @@ export function isEntranceArt(project: Project, map: GameMap, x: number, y: numb
   const tiles = entranceArtTiles(project.tilesets[map.tilesetId]);
   if (!tiles) return isDoorArtCell(project, map, x, y);
   const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
-  return LAYERS.some((layer) => { const t = m[layer]?.[y * map.width + x]; return typeof t === "number" && t >= 0 && tiles.has(t); });
+  const base = kitBaseTile(project.tilesets[map.tilesetId]);
+  return LAYERS.some((layer) => { const t = m[layer]?.[y * map.width + x]; return typeof t === "number" && t >= 0 && tiles.has(base(t)); });
 }
 
 /** 드나드는 그림이 놓인 칸(칸 번호 y*w+x) — 「입구 그림 옆 맨바닥에 선 이벤트」 출하 검사(judge/discoverability.ts offArtEntrances)가 맵을 한 번 훑어 읽는다. */

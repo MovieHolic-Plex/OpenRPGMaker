@@ -1,6 +1,7 @@
 // 집 벌 갈아 끼우기 — 원본 건물 킷을 그 게임의 벌 그림으로 바꾼 킷을 만든다(표·까닭은 assets/houseSets.ts).
 import { houseSetTableFor } from "@/assets/houseSets";
 import { translateTiles } from "./objectStamp";
+export { houseSetBaseTiles } from "./houseSetTiles";
 import type { StructureKitDef, TilesetDef } from "./types";
 
 const tileAt = (kit: StructureKitDef, x: number, y: number): number => {
@@ -46,31 +47,4 @@ export function houseSetKit(tileset: TilesetDef, kit: StructureKitDef, set: stri
       ...(row.upperTiles ? { upperTiles: row.upperTiles.map((tile, x) => swap(tile, rows[y]![x]!)) } : {}),
     })),
   };
-}
-
-const reverse = new WeakMap<object, Map<number, readonly [string, number, number]>>();
-
-/**
- * 벌 그림 칸 → 원본 칸. 이 타일셋에 붙은 벌 이식 칸마다 «원본 킷의 같은 자리 칸 번호» 를 돌려준다(벌을 쓰지 않는 타일셋은 빈 표).
- * 칸 번호로 건물을 찾는 도구(바닥 꾸밈·낮 빛 맞춤)가 이 표로 벌 집을 원본 킷과 같은 집으로 알아본다.
- */
-export function houseSetBaseTiles(tileset: TilesetDef): Map<number, number> {
-  const out = new Map<number, number>();
-  const table = houseSetTableFor(tileset.id);
-  if (!table || !tileset.tileGrafts?.some((graft) => graft.sourceChipset === table.texture)) return out;
-  let cells = reverse.get(table);
-  if (!cells) {
-    cells = new Map();
-    for (const set of Object.values(table.sets)) for (const [kitId, variants] of Object.entries(set.kits)) for (const rows of variants) rows.forEach((row, y) => row.forEach((cell, x) => { if (cell >= 0 && !cells!.has(cell)) cells!.set(cell, [kitId, x, y]); }));
-    reverse.set(table, cells);
-  }
-  const kits = new Map((tileset.structureKits ?? []).map((kit) => [kit.id, kit]));
-  for (const graft of tileset.tileGrafts) {
-    if (graft.sourceChipset !== table.texture) continue;
-    const at = cells.get(graft.sourceTile);
-    const kit = at && kits.get(at[0]);
-    const base = kit ? tileAt(kit, at![1], at![2]) : -1;
-    if (base >= 0) out.set(graft.targetTile, base);
-  }
-  return out;
 }
