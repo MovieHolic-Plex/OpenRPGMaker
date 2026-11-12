@@ -24,6 +24,7 @@ import { makeVerbContext } from "./context";
 import { blueprintVerbs } from "./verbs/blueprint";
 import { installSessionHooks } from "./sessionHooks";
 import { retireSeedStart } from "../blankStart";
+import { SEED_START_MAP_ID } from "@/editor/tools/startOnBuiltMap";
 import { placeVerbs } from "./verbs/place";
 import { peopleVerbs } from "./verbs/people";
 import { puzzleVerbs } from "./verbs/puzzle";
@@ -35,6 +36,7 @@ import { readVerbs } from "./verbs/read";
 export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiToolShape[] {
   const c = makeVerbContext(env, session);
   const { task, lean, requestWorld } = c;
+  const seedWasStart = env.request.project.startMapId === SEED_START_MAP_ID;
   const { readSpecs, roomPartsVerb, inspect, restoreEvent, askUser, askHelpers } = readVerbs(c);
   const { writeBlueprint, buildBlueprintPathVerb } = blueprintVerbs(c);
   installSessionHooks(c);
@@ -65,9 +67,10 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   } });
   // 빈 시작 맵 치우기(blankStart.ts retireSeedStart): 쓰기 하나가 끝날 때마다 본다 — 실제 장소가 따로 생겼으면 시작을 그리로 옮기고 빈 맵을 지운다.
   // 지금 보는 맵이 그 빈 맵이었으면 새 장소로 바꾼다(다음 짓기가 빈 맵이 아니라 그 장소와 이어지게).
+  // 자리표시 맵은 «이 요청이 시작될 때 게임이 시작하던 빈 맵» 뿐이다 — 시작이 다른 맵에 있던 프로젝트의 빈 맵(이름 붙인 둘째 맵)은 그 프로젝트의 것이다.
   const settleSeedStart = async (result: PiToolExecResult): Promise<PiToolExecResult> => {
     let settled: ReturnType<typeof retireSeedStart>;
-    try { settled = retireSeedStart(c.run); } catch { return result; }
+    try { settled = retireSeedStart(c.run, seedWasStart); } catch { return result; }
     if (!settled.notes.length) return result;
     if (settled.to && !env.ctx.project.maps[env.ctx.currentMapId ?? ""]) (env.ctx as { currentMapId?: string }).currentMapId = settled.to;
     env.emit({ type: "execution_status", name: "v2.seed_start", ok: true, summary: `빈 시작 맵 정리: ${settled.notes.join(" · ")}` });
@@ -97,6 +100,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   // 게임 도구 묶음은 요청 글과 프로젝트를 같이 본 기록에서 읽는다(게임 하나를 잇는 «계속» 도 받는다).
   const gameTools = classifyRequest(t, env.ctx.project).tools.game;
   const pool = gameTools && !audioOnly(t);
+  // 이 요청의 묶음에 없는 v2 도구(끝맺음 관문이 고치는 법으로 이른 것)를 같은 감싸개로 하나 만들어 준다 — 처음 불릴 때 한 번만 묶음 전체를 짓는다.
+  let poolTools: Map<string, PiToolShape> | undefined;
+  session.repairTool = (name) => (poolTools ??= new Map(createGameTools(gameEnv, t, { pool: true }).map((tool) => [tool.name, afterWrite(escalate(flattenWrapperTool(tool, gameEnv.record)))] as const))).get(name);
   return gameTools || wantsMusicTools(t) || wantsTerrainTools(t) || wantsStoreTools(t) ? [...verbs, ...createGameTools(gameEnv, t, { pool }).map((tool) => afterWrite(escalate(flattenWrapperTool(tool, gameEnv.record))))] : verbs;
 }
 

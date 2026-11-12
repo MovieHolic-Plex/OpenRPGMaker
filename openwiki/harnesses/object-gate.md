@@ -55,6 +55,24 @@
 - 영수증은 저장소가 아니라 `~/.cache/oprn/workshop-gate/receipts/<sha2>/<sha>-<kind>.json`(`OPRN_WORKSHOP_GATE_RECEIPTS`)에 쓴다. 같은 화소·같은 프로필이면 다시 부르지 않는다.
 - 속도: 한 판 안에서 눈 판정(eye) 답을 화소 해시·회차·종류로 나눠 쓴다(`shareEyeAnswers` — 보정과 같은 뜻) → 호출 20 → 11. 실측 한 장 18~32초(REFER 검사 포함).
 
+## 오너 면제 — 판정 없이 넣기로 한 그림 묶음 (오너 결정 2026-11-12)
+
+오너: 「fable 이 만든거는 기계 불합격이라 할지라도 그냥 배치하는 게 맞을거같음. 지금 시간도 토큰도 업승니 ..」 — Fable 5.2 medium 한 방으로 그린 맵 기물 59장을
+Opus 판정·고르는 모델 없이 넣는다. 위임 허용(`/api/decide`)은 AI 영수증이 있어야 해서 이 그림들에 닿지 않는다(영수증을 받으려면 장당 모델 호출 약 10번).
+그래서 관문에 **오너 면제** 기록 종류를 더했다(기록 방식은 오너가 같은 날 「알아서해라」 로 감독에게 위임).
+
+- 기록: `harness-data/object-gate/waivers/<묶음 id>.json`(`oprn-object-gate-owner-waiver/1`) — 오너가 한 말 원문 · 날짜 · 기록한 쪽 · 닿는 출구 · 그림마다 화소 해시·종류·이름·칸 해시.
+  **`npm run harness -- object-gate owner-waive --manifest <json> --batch <id> --owner "<원문>" --decided-at <날짜> --recorded-by "<누가·위임 근거>"` 단계만 쓴다**(모델 호출 없음). 손으로 쓰지 않는다. 목록은 `object-gate waivers`.
+- 효력(TS `ownerWaiverApplies`·`objectGateRefusal`, Python `owner_waiver_applies`·`refusal` — 같은 규칙):
+  - 그림 화소 해시와 종류가 묶음의 그 장과 같아야 한다. 한 화소라도 바뀌면 면제도 풀린다.
+  - `bundle` · `shared` · `workshop-local` 출구만. **`store` 출구는 면제를 받지 않는다**(묶음에 적어도 무효, 단계가 거절한다) — 밖으로 나가는 팩은 여전히 판정이 필요하다.
+  - 서명된 사람 거절(18323)이 있으면 면제도 막힌다. 보정된 Opus 최종 판정이 있는 그림은 그 판정이 최종이다(불합격을 면제로 뒤집지 않는다 — 단계도 그런 그림을 묶음에 넣지 않는다).
+  - 시트 칸 관문(`passingCellIndex`)은 면제된 그림의 칸 해시를 받아 준다(같은 출구 규칙을 지난 것만).
+- **면제는 통과가 아니다.** 완료 보고에는 «3/4 관문 미통과 — 오너 면제(묶음 id)» 로 쓴다. Opus 통과·사람 허용과 섞어 세지 않는다.
+- 새 묶음을 만드는 것은 오너가 그 그림들에 대해 그렇게 말했을 때뿐이다. 감독·에이전트가 관문이 막힌다고 스스로 묶음을 만들지 않는다 — PR 에서 `waivers/` 의 새 파일은 오너의 말 원문과 함께 본다.
+- 첫 묶음 `fable-oneshot-2026-11-12`: 59장(버들항 16 · 사막 8 · 실내 8 · 설원 7 · 스팀펑크 5 · 현대 5 · SF 4 · 해적 2 · 선사 2 · 일본 1 · 하늘섬 1), 기계 검사 불합격 2장 포함.
+- 탐침(모델 없음, 임시 `OBJECT_GATE_DATA`): 면제 전 «영수증이 없다» → 면제 뒤 bundle·shared·workshop-local 통과 · store 거절 · 다른 종류 거절 · 묶음 밖 그림 거절, TS `check` 와 Python `refusal` 이 같은 답. 시험 `test/objectGateOwnerWaiver.test.ts`.
+
 ## Opus 최종 판정 (사용자 결정 2026-10-21)
 
 **결정:** 18323 에서 불합격인 그림은 다시 그린다. 최종 판정은 Opus 5.5 medium 이 **적대적 VQA**(검사관)로 한다. 옵션 A(사람 허용이 최종, 2026-10-20)를 대체한다.

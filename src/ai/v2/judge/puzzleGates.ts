@@ -14,6 +14,7 @@ import { canMove } from "@/project/collision";
 import type { Command, Condition, GameEvent, GameMap, Project } from "@/project/types";
 import { anchorsOf, blockersOf, bodyReached, reachFrom } from "./eventReach";
 import type { BuildRun } from "../shared/types";
+import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 
 type Cell = { x: number; y: number };
 type Obj = Record<string, unknown>;
@@ -229,7 +230,9 @@ const canStand = (project: Project, map: GameMap, x: number, y: number) =>
 
 /** 끝맺음 lanes 용: 통로 선택지를 바로잡고, 안 열리는 퍼즐 문을 적는다. */
 export function checkPuzzleGates(run: BuildRun, mapId: string): string[] {
-  const next = structuredClone(run.ctx.project) as Project;
+  // 타일셋·업로드 자산은 원본을 가리키는 사본(projectClone.ts) — 여기서는 맵의 이벤트만 고친다. 통째 structuredClone 은 맵 한 장에 1.3~1.9초였고
+  // 맵마다 세 단계가 불러 출구 마감이 30초 넘게 워커 루프를 막았다(2026-11-12 CPU 프로파일: 마감 48초 중 47초가 이 세 사본).
+  const next = cloneProjectSharingSharedDictionaries(run.ctx.project);
   const notes = directPassageChoices(next, mapId);
   if (notes.length) run.ctx.project = next;
   notes.push(...puzzleGateGaps(run.ctx.project, mapId));

@@ -2,7 +2,7 @@
 //   bun scripts/qa/assistant-v2/refusalNextCalls.mts <깔기 판의 jobs/<id> 폴더 — 칸 배치가 든 make_place 기록, 예: …/lay-main-…/jobs/tavern> [--only 1,2,6]
 // ① 칸 배치 거절 → 고친 배치를 make_place 로 / 빈 mapId 의 edit_place layoutPatch 로 ② 빈 시작 맵에 온 edit_place → make_place
 // ③ 칸 배치로 깔지 않은 마을에 온 layoutPatch(빈 껍데기 · 기물 · 문) ④ 칩셋 계열 거절 뒤 make_place(그 세계의 종류로 선다) ⑤ 치워진 빈 시작 맵 id
-// ⑥ 선 마을에 물건 하나를 더하려는 edit_place → draw_object → place_object.
+// ⑥ 선 마을에 물건 하나를 더하려는 edit_place → draw_object → place_object. ⑦ 풀 마을 뒤의 실내: 집 문에 이어짐 · 빌더가 덮는 방 검사 · 구성기 방에 온 칸 배치.
 import fs from "node:fs";
 import path from "node:path";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
@@ -115,6 +115,34 @@ if (want(6)) {
   if (again) { const r3 = await t.call("place_object", JSON.parse(again)); say("6 that place_object call puts the object on the map", r3.ok, r3.body.slice(0, 200)); }
   const r2 = await t.call("edit_place", { patch: { mapId, set: { name: "", size: "medium", floors: 1, features: ["plaza", "market stalls"] }, variant: 0, dressing: 0, addAnchors: [] } });
   say("6 an edit that changes nothing says so and names inspect with the real map id", !r2.ok && /changes nothing/u.test(r2.body) && r2.body.includes(`inspect({"mapId":"${mapId}"})`), r2.body.slice(0, 300));
+}
+// ⑦ 풀 마을 뒤의 실내(그 세계의 방으로 선다): 집 문에 이어지고, 그 방에 건 칸 배치·자기 검토·방 그래프 항목은 빌더가 덮는다. 다른 항목의 막힘은 이 거절로 되돌리지 않는다.
+if (want(7)) {
+  const t = fresh("작은 마을이랑 촌장 집 안을 만들어 줘.");
+  const room = (kind: string) => ({ kind, map: "촌장 집", fresh: true });
+  await t.call("todo", { op: "init", list: [{ phase: "장소", items: [
+    { content: "마을 만들기", id: "v", check: { kind: "place", name: "새벽 마을", placeKind: "village", fresh: true } },
+    { content: "촌장 집 만들기", id: "house", check: { kind: "place", name: "촌장 집", placeKind: "interior", fresh: true } },
+    { content: "촌장 집 배치", id: "layout", check: room("layout_built") }, { content: "촌장 집 검토", id: "review", check: room("layout_review") }, { content: "촌장 집 방 구조", id: "graph", check: room("room_graph") },
+    { content: "마을에서 집으로", id: "in", check: { kind: "link", from: "새벽 마을", to: "촌장 집" } }, { content: "집에서 마을로", id: "out", check: { kind: "link", from: "촌장 집", to: "새벽 마을" } },
+    { content: "마을 광장 꾸미기", id: "deco" },
+  ] }] });
+  let made = await t.call("make_place", { type: "village", name: "새벽 마을", style: "pool:pirate_isles", size: "small" });
+  if (!made.ok || !/"mapIds":\["/u.test(made.body)) made = await t.call("make_place", { type: "village", name: "새벽 마을", style: "pool:pirate_isles", size: "small" });
+  const village = Object.values(t.ctx.project.maps).find((m) => m.name === "새벽 마을")?.id ?? "";
+  const r0 = await t.call("make_place", { type: "interior", name: "촌장 집", layout: laid.layout });
+  const house = Object.values(t.ctx.project.maps).find((m) => m.name === "촌장 집");
+  const goes = (from: string, to: string) => JSON.stringify(t.ctx.project.maps[from]?.events ?? []).includes(`"mapId":"${to}"`);
+  say("7 the room after a pool village is laid and linked both ways with a house door of the village", r0.ok && !!house && goes(village, house.id) && goes(house.id, village), `${house?.id} in ${goes(village, house?.id ?? "")} out ${goes(house?.id ?? "", village)}`);
+  say("7 its result says where the two doors are and names no verb for linking", /linked both ways with «새벽 마을»/u.test(r0.body) && !/create_transfer_pair/u.test(r0.body), /It is [^.]*\./u.exec(r0.body)?.[0] ?? r0.body.slice(0, 200));
+  const status = (id: string) => t.session.todo.get(id)?.status;
+  say("7 the layout, review and room-graph items for that room are closed as covered by the builder", ["layout", "review", "graph"].every((id) => status(id) === "completed") && /\[Covered by the builder ✓\]/u.test(r0.body), `layout ${status("layout")} review ${status("review")} graph ${status("graph")} — ${/\[Covered[^\n]*/u.exec(r0.body)?.[0].slice(0, 200) ?? "(no line)"}`);
+  const rIn = await t.call("todo", { op: "done", task: "in" }); const rOut = await t.call("todo", { op: "done", task: "out" });
+  say("7 the two link items pass their machine check", rIn.ok && rOut.ok, `${rIn.body.slice(0, 90)} | ${rOut.body.slice(0, 90)}`);
+  const r1 = await t.call("edit_place", { patch: { mapId: house?.id ?? "", set: { layout: laid.layout } }, todoId: "house" });
+  say("7 a cell layout sent to the composer-built room is refused with one filled call (inspect with the real map id)", !r1.ok && r1.body.includes(`Next call: inspect({"mapId":"${house?.id}"})`) && !/\[Next call\]/u.test(r1.body) && noEmptyId(r1.body), r1.body.slice(0, 330));
+  const r2 = await t.call("todo", { op: "block", task: "deco", reason: "광장에 놓을 그림이 없다" });
+  say("7 that refusal (it belonged to the house item) does not bounce the block of another item", r2.ok && !/rejection points to/u.test(r2.body), r2.body.slice(0, 160));
 }
 console.log(bad ? `\n${bad} BAD` : "\nall next calls accepted");
 process.exit(bad ? 1 : 0);

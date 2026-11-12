@@ -38,7 +38,7 @@ function state(label: string, project: Project) {
   const run = createBuildRun(ctx);
   state("A 전(실제 결과)", ctx.project);
   fs.writeFileSync(path.join(out, "A-before.png"), renderMapPng(ctx.project, ctx.project.maps[room]!).png);
-  const notes = [...retireBlankStart(run), ...sealEscapeExits(run)];
+  const notes = [...retireBlankStart(run, { maps: {}, startMapId: "" }), ...sealEscapeExits(run)];
   for (const id of Object.keys(ctx.project.maps)) notes.push(...dressInteriorExits(run, id).notes);
   const path1 = buildBlueprintPath(run);
   console.log(`-- 마감: ${notes.join(" / ")}\n-- build_blueprint_path(): ${path1.summary.slice(0, 300)}`);
@@ -52,7 +52,7 @@ function state(label: string, project: Project) {
   outside.upperTiles[0] = outside.lowerTiles[0]!;
   const ctx: ToolContext = { project: p, currentMapId: p.startMapId, assistantRun: true };
   const run = createBuildRun(ctx);
-  console.log(`\n-- B retireBlankStart: ${retireBlankStart(run).join(" / ") || "(치운 것 없음 — 자리표시 아님)"}`);
+  console.log(`\n-- B retireBlankStart: ${retireBlankStart(run, { maps: {}, startMapId: "" }).join(" / ") || "(치운 것 없음 — 자리표시 아님)"}`);
   state("B 전(바깥 맵이 자리표시 아님)", ctx.project);
   const res = buildBlueprintPath(run);
   console.log(`-- build_blueprint_path(): ${res.ok ? "ok" : "FAIL"} — ${res.summary.slice(0, 500)}`);

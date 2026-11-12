@@ -4,6 +4,7 @@
 //   - 진척 없는 재주입 2번 연속 — 진척 = 성공한 쓰기 도구의 새 결과 지문, 또는 열린 항목 수 감소(omo toolEffectFingerprint: 실패는 진척이 아니다)
 //   - 서명(열린 수/전체 수 · 프로젝트 지문 · 보고 해시)이 앞 재주입과 같으면(stale)
 //   - 사용자에게 물으며 멈춘 실행(ask_user)은 다시 돌리지 않는다
+import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { checkLabel, type TodoStore } from "./todoStore";
 import { modelText, type TodoItem } from "../todo/types";
 
@@ -43,6 +44,8 @@ export function projectFingerprint(project: unknown): string {
 export const textHash = (text: string): string => hash(text.toLowerCase().replace(/\s+/gu, " ").trim());
 
 export class TodoLoop {
+  /** 턴 중간에 실은 도구(끝맺음 관문이 고치는 법으로 이른 도구)를 할 일 고리로 감싼다 — withTodoLoop 가 건다. */
+  wrapLate?: (tool: PiToolShape) => PiToolShape;
   /** 이 묶음에서 연속 재주입 수. */
   consecutive = 0;
   /** 진척 없이 이어진 재주입 수. */

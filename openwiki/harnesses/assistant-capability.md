@@ -814,17 +814,73 @@ blocker 8개: 가장자리까지 간 길 끝에 출구 없이 «길이 끊겼다
 깔기 판(`lay-…/jobs/<id>/session/turns/NNN.json` 의 `toolArgs`·`toolCalls`)의 호출을 같은 순서로 지금 도구 층(`createV2Tools` → `withTodoLoop`: 인자 검사·거절 글·다음 호출·할 일 자동 확인)에 넣는다.
 
 ```bash
-bun scripts/qa/assistant-v2/layReplay.mts <깔기 판 폴더> <결과 폴더> [--only a,b] [--render] [--verbose]
+bun scripts/qa/assistant-v2/layReplay.mts <깔기 판 폴더> <결과 폴더> [--only a,b] [--render] [--verbose] [--apply-check]
 bun scripts/qa/assistant-v2/refusalNextCalls.mts <깔기 판의 jobs/<id> 폴더> [--only 1,2,6]   # 거절 글이 이르는 다음 호출을 실제로 불러 본다
 ```
 
 - 세는 것: 거절(기록 → 재생, 장소 호출만 / 전부) · 실행기의 «다음 호출 강제» 에 막힌 호출(흉내) · 처음 세 번의 장소 호출 안에 깔렸나(시작 맵이 빈 맵이 아니고 시작 칸에서 그 맵 걷는 칸의 절반 넘게 닿는다) · 빈 맵이 남았나. `--render` 는 끝난 맵을 1배 PNG 로 쓴다.
 - 기록의 호출은 옛 응답에 대한 모델의 반응이다: 옛 강제 때문에 부른 호출은 건너뛰고, 새 맵의 id 는 같은 호출의 결과끼리 짝지어 옮긴다. 그래도 풀 칩셋·숲길 지시서처럼 판마다 다른 것은 맞지 않는다(village-to-field).
   고친 뒤의 «완료» 율은 이것이 아니라 Terra 재측정으로 잰다 — 이것은 «같은 호출에 도구가 무엇을 답하는가» 의 전/후다.
+- `--apply-check`(2026-11-12): 체크포인트마다 편집기 적용 단계의 두 판정을 흉내 낸다 — 완성된 집 보호(받아들인 상태의 집 칸이 같은 맵 id 에서 바뀌면 거절하고 그 변경을 되돌린다)와
+  맵 소실 물음(턴 시작에 있던 손댄 맵이 사라지면 묻는다 — 세기만 하고 받아들인다). 빌더가 맵을 지우고 다시 짓는 길을 고칠 때 쓴다. 줄 끝에
+  `apply: checkpoints N · rejected N · map-loss questions N · maps <끝의 맵 id>`, 로그에 체크포인트마다의 맵 id 가 남는다. 기록의 `<id>_rN` 인자는 그 맵이 지금 없고 `<id>` 가 있으면 `<id>` 로 읽는다.
+  실제 편집기의 병합·권위 판정은 흉내 내지 않는다 — 실제 적용은 실제 턴으로 본다.
 - 2026-11-11 수치와 규칙: `openwiki/assistant-v2.md` 「깔기 요청의 거절은 다음 호출 하나를 실제 값으로 이른다」.
+
+### 깔기 도구 Terra 재측정 (2026-11-12) — 같은 24요청을 실제 입력창으로
+
+`map-vqa-lay --model terra-high --v2`, 동시 2, 로컬(부하 평균 35~55 — 다른 실행과 같이 썼다. 시간 초과·기반 오류 0, 이벤트 사이 빈틈 5분 이상인 턴 0).
+기록 = `mapvqa/lay-main-0636b72004`(main), 이번 = `mapvqa/lay-tools-2ad6d3596a`(main `165daf4ef3` + #4621~#4624).
+
+| 기계 판정(그림을 보지 않는다) | 기록 | 네 묶음 |
+|---|---|---|
+| 맵이 깔린 요청 | 23/24 | 24/24 (맵 27장) |
+| «완료» | 8 | 6 |
+| 도구 거절(todo 제외) | 68 | 31 |
+| · 장소 호출 거절 | 55 | 23 |
+| · `edit_place` 거절 (그런 요청 수) | 32 (18) | 15 (11) |
+| «pending action» 에 막힌 호출 | 17 | 0 |
+
+- 거절은 줄었는데 «완료» 가 줄어든 까닭: 완료를 막는 것이 도구 거절에서 끝맺음 관문의 항목으로 옮겨 갔다. 미완료 18요청의 막힌 항목 = 비평가 장소 항목 16(15요청) · 관문 «도구가 목록에 없다» 12(11요청 — 그것만으로 막힌 요청은 throne-room 하나) · 모델이 건 항목 12.
+  관문 12항목 가운데 9는 #4607 의 HUD 오경보(시계 칸을 체력 HUD 로 읽음 — #4633 으로 고침, 이르는 도구 `set_field_hud`), 2는 `patch_event_page`(장면이 되풀이됨 — mine · ruins).
+- 비평가 지적의 참·거짓(1배 그림을 직접 봄)과 고친 규칙은 `openwiki/assistant-v2.md` 「깔린 뒤의 «완료»」.
+- 남은 거절 23 가운데 눈에 띄는 것: `review_layout`/`edit_place` 의 «고친 결과의 문제가 앞보다 많아 되돌림»(blacksmith 3번 · temple · throne-room), village-to-field 의 `author_forest_route` 칩셋 계열 거절(다음 호출은 `make_place` 로 간다), 마법 학교 칩셋의 `stamp_object` «참고문서 먼저 읽기».
+- 결과 쪽(기계 판정과 그림 검수를 다른 칸으로): `~/claude-viz/lay-tools-replay.html` 「Terra 실측」.
+
+### 깔기 도구 Haiku 실측 (2026-11-12) — 모델이 바뀌어 다른 표다
+
+측정 모델이 Claude Haiku 5.5 high(`--model local-claude-haiku-high`, 제공자 `local-cli:claude` = Claude Code 고리)로 바뀌었다. **위 Terra 표와 같은 줄에 놓지 않는다.**
+같은 24요청을 같은 모델로 두 번: main `00a1e0603f`(`mapvqa/lay-haiku-main-00a1e0603f`)와 그 위에 #4636 넷째 커밋까지(`mapvqa/lay-haiku-pr4636-1b7b69441d`). 동시 2, 화면 비평가를 막지 않았다.
+
+| 기계 판정(그림을 보지 않는다) | main | #4636 |
+|---|---|---|
+| 맵이 깔린 요청 | 23/24 | 23/24 |
+| «완료» | 10 | 10 |
+| v2Final 없이 끝난 요청 | 1 (prison — 부하 때의 시간 초과) | 1 (harbor — 20분 시간 초과) |
+| 도구 거절(todo 제외) | 79 | 83 |
+| · 장소 호출 거절 | 50 | 40 |
+| · `edit_place` 거절 (그런 요청 수) | 24 (14) | 21 (10) |
+| 비평 항목이 완료를 막은 요청 | 12 | 11 |
+| 다시 보기가 돈 요청(`v2.relook`) | 0 | 5 |
+| 관문이 도구를 실은 요청(`v2.gate.tools`) | 0 | 2 |
+| 도구 호출 · 환산 USD(CLI 보고) | 501 · $1.57 | 484 · $0.99 |
+
+- 로컬 CLI 고리에서도 v2 끝맺음은 그대로 돈다: 두 판 모두 끝난 턴마다 `done` · `v2Final` 이 있고 `v2.critic`(22요청) · `v2.gate.items` · `v2.advisor` 가 턴 기록에 남는다. `v2.vqa` 는 깔기 요청에는 어느 모델에서도 없다.
+- 바뀐 요청 둘: village-to-field 미완료 → 완료(다시 보기가 비평 지적을 1 → 0), harbor 완료 → 시간 초과.
+- **이 판이 드러낸 것(같은 PR 의 뒤 커밋으로 고침 — 모델로 다시 돌리지 않았다):** 장소만 까는 요청의 도구 목록(22개)에는 `create_transfer_pair` · `load_tools` 가 없다.
+  harbor 는 모델이 «항구 창고» 실내를 더 짓고 `make_place` 결과가 이른 `create_transfer_pair` 를 불렀다가 «there is no tool named» 를 받았다(main 판의 village-chief-house 도 같다). 잇지 못한 방의 항목을 고치다 20분을 채웠다.
+  village-chief-house 는 관문 글이 도구를 이름만 일러(«create_transfer_pair 로 잇는다») 실리지 않았다. prison · mine 은 관문이 `patch_event_page` 를 실었지만 재주입 글이 목록에 없는 `load_tools` 를 가리켰다.
+  고친 것: `turn/lateTools.ts`(이름으로 부르면 싣는다) · `judge/gates.ts`(이름만 이른 도구도 싣는다) · 재주입 글에 매개변수(`openwiki/assistant-v2.md` 「깔린 뒤의 «완료»」).
+- 빌더가 덮어 닫은 항목(`v2.todo.covered`)은 0 — Haiku 는 마을을 버들항으로 지어 구성기 세계 길이 돌지 않았다.
+- 부하가 치솟은 동안(부하 평균 470) 모델 호출 0번으로 «settled» 한 턴은 모델 결과가 아니다 — main 판의 cave · village-to-field · weapon-shop · inn 은 그 뒤 한 번 다시 돌린 값이다(`infra-broken/` 에 첫 판).
+- 그림과 함께: `~/claude-viz/lay-tools-replay.html` 「Haiku 실측」.
 
 ### 알려 둘 것
 
+- **높이 지형(relief) 맵의 사실 그림(2026-11-12):** 높은 단의 칸은 제 줄보다 위에 그려진다(버들항 마을의 윗단은 두 줄). 전에는 붉은 막·번호표·가로 눈금을 칸 줄에 그대로 놓아
+  윗단에서 두 줄 아래로 어긋났고, 위 여백을 잘라 윗단의 맨 위 두 줄이 그림에서 빠졌다 — 검수자가 그림에서 읽은 칸 줄이 한 단에서 두 줄 틀렸다(«시골 마을» 의 «교회 문·길이 막혔다» 는 실제로는 두 줄 아래 칸).
+  지금은 막·번호표·가로 눈금을 칸이 **그려진 자리**에 놓고(눈금은 단이 바뀌는 곳에서 꺾이고 줄 번호를 다시 적는다) 위 여백을 그림에 싣는다(`mapVqa/pictures.ts` `lift` · `RELIEF_LEGEND`).
+  평지 맵의 그림·물음 글은 화소까지 그대로다(판정 캐시 유지). 높이 지형 맵은 그림 해시가 바뀌어 다시 묻는다.
 - 그림은 헤드리스 맵 렌더다(출하 플레이어 화면이 아니다). 사람 칩은 16×21 로 그려 런타임(약 16×24)보다 조금 작고, 날씨·조명 구멍·걷는 움직임은 없다. 이벤트 그림은 새 게임 상태의 페이지만 본다(스위치가 켜진 뒤의 모습은 안 본다).
   `scripts/qa-game/render.mts` 가 아이템 아이콘 그림(`cc0-…` — 줍는 물건·세이브 수정)을 16px 상자에 맞춰 그리도록 고쳤다(전에는 칩 칸으로 잘라 안 보였다).
 - 걷는 칸은 **엔진 통행**(`isPassable`)으로 읽는다(`matrixNativeSpec.ts blockedOn`, 2026-11-12). 전에는 편집기 영역 격자(`get_map_region`)의 `#` 글자만 막힌 칸으로 셌는데,

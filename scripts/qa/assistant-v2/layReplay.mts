@@ -1,5 +1,8 @@
 // 「이 장소를 깔아 줘」 판의 도구 호출을 모델 없이 지금 코드로 다시 돌린다 — 거절 수·«다음 호출 강제»에 막힌 수·처음 세 번의 장소 호출 안에 깔렸는지를 센다.
-//   bun scripts/qa/assistant-v2/layReplay.mts <runRoot> <outDir> [--only a,b] [--render] [--verbose]
+//   bun scripts/qa/assistant-v2/layReplay.mts <runRoot> <outDir> [--only a,b] [--render] [--verbose] [--apply-check]
+// --apply-check: 체크포인트마다 편집기 적용 단계의 두 판정을 흉내 낸다 — 완성된 집 보호(같은 맵 id 의 옛 집 칸이 바뀌면 거절하고 그 변경을 되돌린다)와
+//   맵 소실 확인(턴 시작에 있던, 손댄 맵이 사라지면 묻는다 — 여기서는 세기만 하고 받아들인다). 빌더가 맵을 지우고 다시 짓는 길을 고칠 때 본다.
+//   줄 끝에 «apply: 체크포인트 N · 거절 N · 소실 물음 N», 로그에 체크포인트마다의 맵 id 가 남는다.
 // runRoot = map-vqa 깔기 판 폴더(jobs/<id>/before.json.gz · session/turns/NNN.json — toolArgs·toolCalls). 문서 openwiki/harnesses/assistant-capability.md.
 // 도구 층은 실제 턴과 같다(createV2Tools → withTodoLoop: 인자 검사·거절 글·다음 호출·할 일 자동 확인). 실행기의 «다음 호출 강제»(SoftToolRequirement)는
 // 여기서 흉내 낸다: 강제가 걸린 채 다른 도구(todo 제외)를 부르면 실행하지 않는다. 기록의 호출은 옛 응답에 대한 모델의 반응이라, 고친 코드에서는 앞 호출이
@@ -18,6 +21,9 @@ import type { GameMap, Project } from "../../../src/project/types.ts";
 import { isPassable } from "../../../src/project/collision.ts";
 import { isBareTileMap } from "../../../src/ai/v2/blankStart.ts";
 import { isMonsterRequestTurn } from "../../../src/ai/piAgent/monsterGameRequest.ts";
+import { assertHouseProtection, captureHouseProtection, type HouseSnapshot } from "../../../src/editor/tools/houseProtection.ts";
+import { mapLossConfirmRequest } from "../../../src/ai/mapDestructionConfirm.ts";
+import { isUntouchedMap } from "../../../src/project/projectBlankness.ts";
 
 const argv = process.argv.slice(2);
 const flag = (name: string) => argv.includes(`--${name}`);
@@ -78,16 +84,38 @@ for (const job of fs.readdirSync(path.join(runRoot, "jobs")).sort()) {
   const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true, monsterTurn: isMonsterRequestTurn(task) };
   const session = new V2Session();
   let pref: string | undefined;
+  const log: string[] = [`# ${job} — ${task}`];
+  // 편집기 적용 단계 흉내(--apply-check): 받아들인 상태의 집 보호 사본과 맵 사전을 들고, 체크포인트마다 지금 프로젝트를 그것에 댄다.
+  const applyStats = { checkpoints: 0, rejected: 0, lossPrompts: 0 };
+  const turnStartMaps = { ...project.maps };
+  let acceptedProject: Project = { ...project, maps: { ...project.maps } };
+  let acceptedHouses: HouseSnapshot[] = flag("apply-check") ? captureHouseProtection(project) : [];
+  const applyCheckpoint = async (label: string): Promise<void> => {
+    const next = ctx.project;
+    try { assertHouseProtection(acceptedHouses, next, []); }
+    catch (e) {
+      applyStats.rejected++;
+      log.push(`   [apply ${label}] REJECTED: ${String((e as Error).message).slice(0, 200)}`);
+      ctx.project = acceptedProject;
+      throw new Error(`적용 실패(commit-rejected): ${(e as Error).message} — 이 도구의 변경은 적용 검증에서 거부돼 되돌렸습니다.`);
+    }
+    const guarded = { ...acceptedProject, maps: Object.fromEntries(Object.entries(acceptedProject.maps).filter(([id]) => turnStartMaps[id] !== undefined && !isUntouchedMap(turnStartMaps[id]!))) } as Project;
+    const loss = mapLossConfirmRequest(guarded, next);
+    if (loss) { applyStats.lossPrompts++; log.push(`   [apply ${label}] map-loss question: removed ${loss.removedMapIds.join(",") || "-"} emptied ${loss.emptiedMapIds.join(",") || "-"}`); }
+    applyStats.checkpoints++;
+    log.push(`   [apply ${label}] ok · maps ${Object.keys(next.maps).join(",")} · start ${next.startMapId}`);
+    acceptedProject = { ...next, maps: { ...next.maps } };
+    acceptedHouses = captureHouseProtection(next);
+  };
   const env = {
     ctx, request: { task, provider: "local-cli:claude", mapIds: [], project } as never,
     emit: () => {}, record: () => {},
     sideChat: async () => JSON.stringify({ score: 7, majors: [] }),
-    checkpoint: async () => {},
+    checkpoint: flag("apply-check") ? applyCheckpoint : async () => {},
     preferToolNextTurn: (toolName: string) => { pref = toolName; },
     clearToolPreference: () => { pref = undefined; },
   } as unknown as PiAssistantV2Env;
   const tools = withTodoLoop(env, session.todo, session.loop, createV2Tools(env, session), session.hooks);
-  const log: string[] = [`# ${job} — ${task}`];
   let refusals = 0, placeRefusals = 0, blocked = 0, skippedForced = 0, missing = 0, placeCalls = 0, n = 0;
   let within3: { laid: boolean; note: string } | undefined;
   const firstRefusal: string[] = [];
@@ -95,11 +123,13 @@ for (const job of fs.readdirSync(path.join(runRoot, "jobs")).sort()) {
   // 기록의 맵 id → 재생의 맵 id. 새 맵의 id 는 판마다 다르다 — 같은 호출이 양쪽에서 성공했으면 결과에 나온 id 를 차례로 짝지어, 뒤 호출의 인자를 옮긴다.
   const idMap = new Map<string, string>();
   const mapIdsIn = (text: string) => [...new Set(text.match(/map_[0-9a-f]{8}-[0-9a-f-]{27}(?:_r\d+)?/gu) ?? [])];
+  // 기록의 «다시 지어 바뀐 id»(<id>_rN)가 지금 프로젝트에 없고 옛 id 가 있으면 옛 id 로 읽는다 — 다시 지어도 id 를 지키는 코드에서 기록의 뒤 호출이 그 맵을 찾게.
+  const relaidIds = (json: string): string => json.replace(/"(map_[A-Za-z0-9_-]+?)_r\d+"/gu, (whole, base: string) => (!ctx.project.maps[whole.slice(1, -1)] && ctx.project.maps[base] ? `"${base}"` : whole));
   const remap = (args: Record<string, unknown>): Record<string, unknown> => {
-    if (!idMap.size) return args;
+    if (!idMap.size) return JSON.parse(relaidIds(JSON.stringify(args))) as Record<string, unknown>;
     let json = JSON.stringify(args);
     for (const [from, to] of idMap) json = json.split(from).join(to);
-    return JSON.parse(json) as Record<string, unknown>;
+    return JSON.parse(relaidIds(json)) as Record<string, unknown>;
   };
   for (const turn of turns) {
     const calls = turn.toolArgs ?? [], olds = turn.toolCalls ?? [];
@@ -142,7 +172,7 @@ for (const job of fs.readdirSync(path.join(runRoot, "jobs")).sort()) {
   fs.writeFileSync(path.join(out, `${job}.log`), log.join("\n"));
   if (flag("render")) for (const m of Object.values(p.maps)) fs.writeFileSync(path.join(out, `${job}--${(m.name ?? m.id).replace(/[^\p{L}\p{N}]+/gu, "_")}-${m.id.slice(-4)}.png`), renderMapPng(p, m).png);
   rows.push({ job, oldRefusals: oldStats.refusals, oldPlaceRefusals: oldStats.placeRefusals, oldBlocked: oldStats.blocked, refusals, placeRefusals, blocked, skippedForced, laidIn3: within3.laid, laidEnd: end.laid, blankLeft, start: `${p.startMapId}(${p.startPos.x},${p.startPos.y})`, note: end.note, maps, firstRefusal: firstRefusal[0] ?? "" });
-  console.log(`${job.padEnd(22)} place-call refusals ${String(oldStats.placeRefusals).padStart(2)}→${String(placeRefusals).padStart(2)} · all refusals ${String(oldStats.refusals).padStart(2)}→${String(refusals).padStart(2)} · blocked ${String(oldStats.blocked).padStart(2)}→${String(blocked).padStart(2)} · in3 ${within3.laid ? "LAID" : "----"} · end ${end.laid ? "LAID" : "----"}${blankLeft ? " · blank map left" : ""} · ${end.note}`);
+  console.log(`${job.padEnd(22)} place-call refusals ${String(oldStats.placeRefusals).padStart(2)}→${String(placeRefusals).padStart(2)} · all refusals ${String(oldStats.refusals).padStart(2)}→${String(refusals).padStart(2)} · blocked ${String(oldStats.blocked).padStart(2)}→${String(blocked).padStart(2)} · in3 ${within3.laid ? "LAID" : "----"} · end ${end.laid ? "LAID" : "----"}${blankLeft ? " · blank map left" : ""} · ${end.note}${flag("apply-check") ? ` · apply: checkpoints ${applyStats.checkpoints} · rejected ${applyStats.rejected} · map-loss questions ${applyStats.lossPrompts} · maps ${Object.keys(p.maps).join(",")}` : ""}`);
 }
 const sum = (k: string) => rows.reduce((a, r) => a + Number(r[k] ?? 0), 0);
 const total = { jobs: rows.length, recordedPlaceRefusals: sum("oldPlaceRefusals"), recordedRefusals: sum("oldRefusals"), recordedBlocked: sum("oldBlocked"), placeRefusals: sum("placeRefusals"), refusals: sum("refusals"), blocked: sum("blocked"), laidIn3: rows.filter((r) => r.laidIn3).length, laidEnd: rows.filter((r) => r.laidEnd).length, blankLeft: rows.filter((r) => r.blankLeft).length };

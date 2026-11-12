@@ -270,7 +270,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   // 광장 칸(34,27)을 문으로 짐작해 「맨바닥 이동」이 남았고, set_map_door 로 문 그림을 찾다 여섯 번 거절됐다).
   const doorList = (state.doors ?? []).slice(0, 14).map((d) => `${String(d.kit ?? "").replace(/^bd-/, "")}(${d.x},${d.y})`);
   const doorNote = doorList.length ? ` · 집 문 앞 칸(실내 잇기 create_transfer_pair 의 a 좌표): ${doorList.join(" ")}${(state.doors?.length ?? 0) > doorList.length ? " …" : ""}` : "";
-  return { ok: true, mapIds: [builtId], entrance, summary: `${spec.name}: ${parts.join(" · ")} (${num(data.width)}×${num(data.height)}, seed ${seed})${doorNote}`, warnings, missingArt: missing, calls, state };
+  return { ok: true, mapIds: [builtId], entrance, summary: `${spec.name}: ${parts.join(" · ")} (${num(data.width)}×${num(data.height)}, seed ${seed})${doorNote}`, warnings, missingArt: missing, calls, state, ...(replacedFrom ? { relaidFrom: replacedFrom } : {}) };
 }
 
 /**
