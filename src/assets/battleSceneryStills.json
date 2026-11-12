@@ -1,5 +1,150 @@
 {
  "version": 1,
  "about": "한 장짜리 번들 전투 배경(장소 그림) 목록. `npm run harness -- battle-backdrop build <판> --bundle <키> --ko … --en …` 가 쓴다 — 손으로 고치지 않는다. 그림은 public/assets/generated/battle-scenery/<키>/preview.png (640×360 = 320×180 격자 2배), pixelSha256 은 그 그림의 화소 해시, 판·검수 기록은 harness-data/battle-backdrop/ledger.json.",
- "stills": []
+ "stills": [
+  {
+   "key": "beach",
+   "ko": "열대 해변",
+   "en": "tropical beach and sea",
+   "run": "theme-beach",
+   "pixelSha256": "43902fa4f11f16dadd41bc1591c63fb5d0154cfc0694515e7cd9dc241da2cbf0",
+   "nativePixelSha256": "e71a99c6a2cfe7e6a77afb7b2160e88b253fc55b44a3acce5f1566ff19fa8bc6",
+   "score": 4,
+   "batch": "20261112-132820-theme-beach",
+   "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+   "place": "야자 해변"
+  },
+  {
+   "key": "boiler-room",
+   "ko": "보일러실·기관실",
+   "en": "boiler / engine room",
+   "run": "theme-boiler-room",
+   "pixelSha256": "d5d1539eaa1b8096d963e6576b1a8507a95fff69f23e099b69d538da343b7de2",
+   "nativePixelSha256": "8feb677fbb5df51fa43ba9e5850596880899a5c0b794cd0a76ebe40bb321c542",
+   "score": 4.5,
+   "batch": "20261112-132139-theme-boiler-room",
+   "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+   "place": "보일러실"
+  },
+  {
+   "key": "brick-street",
+   "ko": "증기 도시 벽돌 거리",
+   "en": "brick street under factory smoke",
+   "run": "theme-brick-street-flat",
+   "pixelSha256": "5a9633605cf1afe575575b7fbaf88bb2a8f54a172390c12188185e13c76e308c",
+   "nativePixelSha256": "969e70cd79d8b970079b68f65d099ebb4ebd0bcb5c2bf622f5b16bace2b928b8",
+   "score": 4,
+   "batch": "20261112-140221-theme-brick-street-flat",
+   "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+   "place": "증기 도시 거리"
+  },
+  {
+   "key": "cloud-sea",
+   "ko": "구름 바다 위 하늘섬",
+   "en": "floating island above a sea of clouds",
+   "run": "theme-cloud-sea",
+   "pixelSha256": "421c2da99232d7dedefdebc1fa44385e45295e55485a7d7a0ae0ec6b80ddd77c",
+   "nativePixelSha256": "6f714a2a384d3fb6791e0d4c3da992fcf79b24422d5d50b8da53d3a92dc42efc",
+   "score": 4.5,
+   "batch": "20261112-133238-theme-cloud-sea",
+   "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+   "place": "하늘 마을"
+  },
+  {
+   "key": "edo-town",
+   "ko": "성 안뜰·에도 거리",
+   "en": "castle yard / Edo town",
+   "run": "theme-edo-town",
+   "pixelSha256": "873cbfa4eda9712655c49ead15bddec283b929149881b80645b6fba0e3bc16c4",
+   "nativePixelSha256": "7e66ed713ca3111c9cd0f96bc6bc1d2733aceeec14dc66f41c2cac87f71838e5",
+   "score": 4.5,
+   "batch": "20261112-134705-theme-edo-town",
+   "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+   "place": "성"
+  },
+  {
+   "key": "ice-cave",
+   "ko": "얼음 동굴",
+   "en": "ice cave interior",
+   "run": "theme-ice-cave",
+   "pixelSha256": "61b30a9759742d81e44742a48d4d66e426adfb0cc06318951c71815eacf7bb28",
+   "nativePixelSha256": "98916647e9c2a763e69a0fc4060f967bbbf2498bf2d9ddd568885e3a9e197ef9",
+   "score": 4.5,
+   "batch": "20261112-132503-theme-ice-cave",
+   "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+   "place": "얼음 동굴"
+  },
+  {
+   "key": "shipwreck",
+   "ko": "난파선 암초",
+   "en": "shipwreck on a reef",
+   "run": "theme-shipwreck",
+   "pixelSha256": "8f225e4b2d65d123b7c68207c8f29c6484537669d3ac126eafaff92f79f0ed64",
+   "nativePixelSha256": "22ec7f960aceafbf20361d3ff4041e740c77067672b83befb3c82b4dd5c2a7ea",
+   "score": 4.5,
+   "batch": "20261112-135603-theme-shipwreck",
+   "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+   "place": "난파선 암초"
+  },
+  {
+   "key": "sky-shrine",
+   "ko": "하늘 신전 안",
+   "en": "sky shrine inner hall",
+   "run": "theme-sky-shrine",
+   "pixelSha256": "454989284d442483f2228d41a1a26b37f5bd8478b87d9d0848e1b4ad05a18824",
+   "nativePixelSha256": "5bc59d963d85bc2025937922566f67565464d71a06c03376387dee91cc50ec5a",
+   "score": 4.5,
+   "batch": "20261112-135326-theme-sky-shrine",
+   "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+   "place": "신전 안"
+  },
+  {
+   "key": "station",
+   "ko": "정거장 복도",
+   "en": "space station corridor",
+   "run": "theme-station",
+   "pixelSha256": "835f3ce6b1df4448265ae610583aa65765627af90c106f82f52a777b91bf6d24",
+   "nativePixelSha256": "8098a4a42261886c1dd758186bbadb0b7dd0dcbc0718af47fd5cb344a8aecb95",
+   "score": 4.5,
+   "batch": "20261112-135001-theme-station",
+   "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+   "place": "정거장"
+  },
+  {
+   "key": "swamp",
+   "ko": "원시 늪",
+   "en": "primeval reed swamp",
+   "run": "theme-swamp",
+   "pixelSha256": "f8001cfd2224f25e443adfd5269bf55c2a69420d280799493b903702221d969c",
+   "nativePixelSha256": "ca244fb9cf7415b996fd62cb497d131b948f5ef43f413e7af0c30401f041b4a2",
+   "score": 4.5,
+   "batch": "20261112-133612-theme-swamp",
+   "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+   "place": "늪"
+  },
+  {
+   "key": "tomb",
+   "ko": "돌 묘실",
+   "en": "stone burial chamber",
+   "run": "theme-tomb",
+   "pixelSha256": "575f859dd90a9be8983ba16286a3b61917edb1f6d5d964a050871b9a08d9c181",
+   "nativePixelSha256": "57787101cedcd2784c7e371f3b0587b5819e6500d06ae7ac00959efde2f03a11",
+   "score": 4.5,
+   "batch": "20261112-130342-theme-tomb",
+   "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+   "place": "묘실"
+  },
+  {
+   "key": "volcano",
+   "ko": "화산 기슭",
+   "en": "lava field at a volcano",
+   "run": "theme-volcano",
+   "pixelSha256": "6a76841c590fe913169b405c275cc06ab510df617c223bb37c1343e993cea276",
+   "nativePixelSha256": "166bd54849be827a87df02d0874c0a1d5034a22b1b8b6c72649ee245489580a1",
+   "score": 4,
+   "batch": "20261112-134251-theme-volcano",
+   "by": "opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)",
+   "place": "화산 기슭"
+  }
+ ]
 }
