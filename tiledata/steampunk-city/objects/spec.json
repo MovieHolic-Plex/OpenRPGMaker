@@ -5,7 +5,7 @@
  "items": [
   {
    "id": "ledger-desk",
-   "name": "기록부 책상(펼친 일지 장부·깃펜 잉크병·놋쇠 등)",
+   "name": "일지·기록부·장부 책상(펼친 책·깃펜 잉크병·놋쇠 등)",
    "en": "clerk's writing desk with an open ledger",
    "kind": "low_furniture",
    "w": 2,

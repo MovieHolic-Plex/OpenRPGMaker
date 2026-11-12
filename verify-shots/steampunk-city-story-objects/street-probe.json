@@ -25,7 +25,7 @@
  "sheet": [
   {
    "id": "sp-ledger-desk",
-   "name": "기록부 책상(펼친 일지 장부·깃펜 잉크병·놋쇠 등)",
+   "name": "일지·기록부·장부 책상(펼친 책·깃펜 잉크병·놋쇠 등)",
    "size": "2×2",
    "kind": "low_furniture",
    "place": "tall",
