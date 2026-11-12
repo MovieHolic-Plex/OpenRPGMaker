@@ -38,6 +38,7 @@ import { COVERABLE } from "../../loop/builderCover";
 import { linkWorldRoom } from "../worldRoomLink";
 import { recordArtGaps } from "@/project/artGap";
 import type { VerbContext } from "../context";
+import { keptPlaceResult } from "../../place/keepMapId";
 
 /** createV2Tools 에서 뗀 것 — buildWorldPlaces · buildWorld · makePlace · editPlace · reviewLayout · findPiecesVerb. (placeVerbs) */
 export function placeVerbs(c: VerbContext) {
@@ -320,6 +321,8 @@ export function placeVerbs(c: VerbContext) {
         if (mapId) result = { ...result, warnings: [...result.warnings, `요청에 들어가는 장소(동굴·던전)가 있다 — 그림 한 장(draw_object)이나 마을 앵커가 아니라 make_place type "cave"(또는 "dungeon")로 짓는다. 이 마을(${mapId})을 지은 뒤 바로 부르면 짓기가 마을${side ? ` ${KO[side]}쪽 가장자리 길 끝` : "의 그 방향 가장자리 길"} 칸에 바깥 문을 잇는다${side ? `(던전 설계 entrance 는 마을에서 들어오는 쪽 = ${OPP_SIDE[side]})` : ""}.`] };
       }
       const placed = await finishPlace(id, "make_place", params, spec, builder.id, result, 0);
+      // 다시 지으며 새 id 가 됐다가 옛 id 로 되돌려진 맵이면(place/keepMapId.ts) 끝난 뒤의 id 로 읽는다.
+      result = keptPlaceResult(session, result);
       noteLayoutPlace(spec, result);
       if (result.ok && result.mapIds[0] && (result.state as { bbox?: string } | undefined)?.bbox) attachLayoutCritique(placed, env, session, result.mapIds[0], spec, result.state);
       return placed;
@@ -502,9 +505,11 @@ export function placeVerbs(c: VerbContext) {
       const notes = [...shellNote, ...(redesigned?.notes ?? []), ...(fromPast ? [PAST_DESIGN_NOTE] : [])];
       const result = notes.length ? { ...built, warnings: [...notes, ...built.warnings] } : built;
       const fixed = await finishPlace(id, "edit_place", params, spec, builder.id, result, record.rounds + 1, before.seen.size ? before : undefined);
-      noteLayoutPlace(spec, result);
-      const laidMap = result.mapIds[0];
-      if (result.ok && laidMap && (result.state as { bbox?: string } | undefined)?.bbox) attachLayoutCritique(fixed, env, session, laidMap, spec, result.state);
+      // 다시 지으며 새 id 가 됐다가 옛 id 로 되돌려진 맵이면(place/keepMapId.ts) 끝난 뒤의 id 로 읽는다.
+      const laid = keptPlaceResult(session, result);
+      noteLayoutPlace(spec, laid);
+      const laidMap = laid.mapIds[0];
+      if (laid.ok && laidMap && (laid.state as { bbox?: string } | undefined)?.bbox) attachLayoutCritique(fixed, env, session, laidMap, spec, laid.state);
       return fixed;
     },
   };

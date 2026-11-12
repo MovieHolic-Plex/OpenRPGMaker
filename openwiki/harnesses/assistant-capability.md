@@ -810,13 +810,17 @@ blocker 8개: 가장자리까지 간 길 끝에 출구 없이 «길이 끊겼다
 깔기 판(`lay-…/jobs/<id>/session/turns/NNN.json` 의 `toolArgs`·`toolCalls`)의 호출을 같은 순서로 지금 도구 층(`createV2Tools` → `withTodoLoop`: 인자 검사·거절 글·다음 호출·할 일 자동 확인)에 넣는다.
 
 ```bash
-bun scripts/qa/assistant-v2/layReplay.mts <깔기 판 폴더> <결과 폴더> [--only a,b] [--render] [--verbose]
+bun scripts/qa/assistant-v2/layReplay.mts <깔기 판 폴더> <결과 폴더> [--only a,b] [--render] [--verbose] [--apply-check]
 bun scripts/qa/assistant-v2/refusalNextCalls.mts <깔기 판의 jobs/<id> 폴더> [--only 1,2,6]   # 거절 글이 이르는 다음 호출을 실제로 불러 본다
 ```
 
 - 세는 것: 거절(기록 → 재생, 장소 호출만 / 전부) · 실행기의 «다음 호출 강제» 에 막힌 호출(흉내) · 처음 세 번의 장소 호출 안에 깔렸나(시작 맵이 빈 맵이 아니고 시작 칸에서 그 맵 걷는 칸의 절반 넘게 닿는다) · 빈 맵이 남았나. `--render` 는 끝난 맵을 1배 PNG 로 쓴다.
 - 기록의 호출은 옛 응답에 대한 모델의 반응이다: 옛 강제 때문에 부른 호출은 건너뛰고, 새 맵의 id 는 같은 호출의 결과끼리 짝지어 옮긴다. 그래도 풀 칩셋·숲길 지시서처럼 판마다 다른 것은 맞지 않는다(village-to-field).
   고친 뒤의 «완료» 율은 이것이 아니라 Terra 재측정으로 잰다 — 이것은 «같은 호출에 도구가 무엇을 답하는가» 의 전/후다.
+- `--apply-check`(2026-11-12): 체크포인트마다 편집기 적용 단계의 두 판정을 흉내 낸다 — 완성된 집 보호(받아들인 상태의 집 칸이 같은 맵 id 에서 바뀌면 거절하고 그 변경을 되돌린다)와
+  맵 소실 물음(턴 시작에 있던 손댄 맵이 사라지면 묻는다 — 세기만 하고 받아들인다). 빌더가 맵을 지우고 다시 짓는 길을 고칠 때 쓴다. 줄 끝에
+  `apply: checkpoints N · rejected N · map-loss questions N · maps <끝의 맵 id>`, 로그에 체크포인트마다의 맵 id 가 남는다. 기록의 `<id>_rN` 인자는 그 맵이 지금 없고 `<id>` 가 있으면 `<id>` 로 읽는다.
+  실제 편집기의 병합·권위 판정은 흉내 내지 않는다 — 실제 적용은 실제 턴으로 본다.
 - 2026-11-11 수치와 규칙: `openwiki/assistant-v2.md` 「깔기 요청의 거절은 다음 호출 하나를 실제 값으로 이른다」.
 
 ### 깔기 도구 Terra 재측정 (2026-11-12) — 같은 24요청을 실제 입력창으로
