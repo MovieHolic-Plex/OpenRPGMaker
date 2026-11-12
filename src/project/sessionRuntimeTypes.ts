@@ -191,10 +191,15 @@ export type M2CheckpointState = {
   readonly slotId: string;
 };
 
+/** 「현재 목표」가 가리키는 이벤트 — 목표를 건 쪽(빌더)이 아는 대상. 없으면 런타임이 목표 글의 이름으로 찾는다(openwiki/runtime-sessions.md 「목표는 대상 이벤트를 들고 다닌다」). */
+export type ObjectiveTargetRef = { readonly mapId: string; readonly eventId: string };
+
 export type M2UiCommandState = {
   readonly durationMs: number;
   readonly message: string;
   readonly surface: string;
+  /** objectiveChip 전용(선택): 명령의 fields.targetMapId · targetEventId. */
+  readonly target?: ObjectiveTargetRef;
 };
 
 export type M2DebugLogState = {

@@ -78,7 +78,7 @@ describe("action combat AI tools", () => {
     expect(spawns.some((spawn) => spawn.troopId === troopId && spawn.chase === true)).toBe(true);
   });
 
-  it("make_action_enemy modifies existing enemy and warns about non-opted map", () => {
+  it("make_action_enemy modifies existing enemy and opts a non-opted map in, saying so", () => {
     const context: ToolContext = { project: createBlankProject() };
     const existing = context.project.database.enemies[0];
     if (!existing) throw new Error("enemy fixture missing");
@@ -93,7 +93,10 @@ describe("action combat AI tools", () => {
     expect(result.ok).toBe(true);
     const updated = context.project.database.enemies.find((entry) => entry.id === existing.id);
     expect(updated?.actionProfile?.attack?.kind).toBe("projectile");
-    expect(result.summary).toContain("옵트인이 아닙니다");
+    // Break(2026-11-11 작은 일 셋째 묶음): 옵트인이 아닌 맵의 스폰은 싸우지 않는다 — 전에는 주의 글만 남겨 set_action_combat 을 한 번 더 불러야 했다.
+    expect(context.project.maps[mapId]?.actionCombat).toBe(true);
+    expect(context.project.system.actionCombat?.enabled).toBe(true);
+    expect((result.diff?.warnings ?? []).join(" ")).toContain("turned real-time action combat on");
   });
 
   it("make_action_enemy rejects invalid profiles and unknown troops", () => {

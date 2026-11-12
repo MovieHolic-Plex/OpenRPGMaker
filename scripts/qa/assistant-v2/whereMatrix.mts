@@ -2,6 +2,7 @@
 // resolveWhere 로 풀고, 고른 칸이 그 말대로인지를 칩셋이 적어 둔 것(역할·꼬리표·방 키트)으로 따로 판정한다.
 //   ok 말대로 · wrong 말과 다른 칸(가구를 벽으로 · 다른 물건을 그 물건으로) · miss 그 물건이 맵에 있는데 못 찾음 · none 기본 자리로 감 · n/a 그 맵에 없는 것
 // 판정과 따로, 고른 칸이 계단 곁·앉는 가구 곁인지와 가구의 하나뿐인 앞 칸을 막는지도 센다.
+//   bun scripts/qa/assistant-v2/whereMatrix.mts <outDir> --bank <명세 은행 결과 폴더>   저장된 판의 자리 낱말 호출을 그 판의 맵에서 낱말만으로 다시 푼다(아래 bankWords)
 //   bun scripts/qa/assistant-v2/whereMatrix.mts <outDir> [테마,테마…]     (WHERE_IMPL=<다른 where.ts 경로> 로 옛 구현을 같은 판정으로 잰다)     문서 openwiki/assistant-v2.md 「자리 낱말도 적힌 것으로」
 import fs from "node:fs";
 import { isPassable } from "../../../src/project/collision.ts";
@@ -83,9 +84,54 @@ const DECLARED: Record<string, "road" | "door" | "stairs"> = { "길 옆": "road"
 
 const { resolveWhere } = (await import(process.env.WHERE_IMPL ?? "../../../src/ai/v2/place/where.ts")) as { resolveWhere: typeof ResolveWhere };
 const out = process.argv[2]!;
-const only = process.argv[3]?.split(",");
+const bankDir = process.argv[3] === "--bank" ? process.argv[4] : undefined;
+const only = bankDir ? undefined : process.argv[3]?.split(",");
 fs.mkdirSync(out, { recursive: true });
 const rows: Row[] = [];
+
+/**
+ * 저장된 판(명세 은행)의 자리 낱말 호출 — 모델이 실제로 쓴 낱말을 그 판의 맵에서 낱말만으로 푼다.
+ * 왜: 은행 재생은 모델이 낱말과 같이 준 칸(at)을 그대로 써서 낱말 풀이를 거의 안 거친다(107건 가운데 62건). 여기서는 at 을 버린다.
+ * 맵은 은행 결과 폴더(specBank.mts run·ab 의 <게임>/project.json — 다 지은 뒤의 맵)에서 이름으로 찾고, 그 호출이 세운 사람은 제 칸을 비운 것으로 친다.
+ * 낱말이 자유로워(「광장 한쪽」「연못 옆 정원」) 말대로인지는 판정하지 않는다 — 고른 칸·기본 자리로 감·계단 곁·가구의 하나뿐인 앞 칸을 적어 두 구현을 대조한다.
+ */
+function bankWords(dir: string): void {
+  const PLACING: Record<string, string> = { add_people: "person", add_event: "person", move_event: "person", add_boss_encounter: "person", place_object: "obj1", draw_object: "obj1" };
+  const bank = new URL("../../../harness-data/assistant-capability/spec-bank/", import.meta.url).pathname;
+  for (const file of fs.readdirSync(bank).filter((f) => f.endsWith(".json")).sort()) {
+    const spec = JSON.parse(fs.readFileSync(`${bank}${file}`, "utf8")) as { id: string; maps: Record<string, string[]>; turns: { calls: { n: string; a?: any }[] }[] };
+    const asks: { tool: string; mapId: string; word: string; name?: string; hadAt: boolean }[] = [];
+    for (const turn of spec.turns) for (const call of turn.calls) {
+      if (!PLACING[call.n] || !call.a) continue;
+      for (const item of [call.a, ...(Array.isArray(call.a.people) ? call.a.people : [])]) {
+        if (typeof item?.where !== "string" || !item.where.trim() || /^\d+\s*,\s*\d+$/u.test(item.where)) continue;
+        asks.push({ tool: call.n, mapId: String(item.mapId ?? call.a.mapId ?? ""), word: item.where, ...(typeof item.name === "string" ? { name: item.name } : {}), hadAt: !!item.at && !(item.at.x === 0 && item.at.y === 0) });
+      }
+    }
+    const projectFile = `${dir}/${spec.id}/project.json`;
+    if (!asks.length || !fs.existsSync(projectFile)) continue;
+    const raw = JSON.parse(fs.readFileSync(projectFile, "utf8"));
+    const project = raw.project ?? raw;
+    const judges = new Map<string, ReturnType<typeof judgeOf>>();
+    for (const ask of asks) {
+      const names = spec.maps[ask.mapId] ?? [];
+      const map = (Object.values(project.maps) as any[]).find((m) => names.includes(m.name));
+      if (!map) { rows.push({ theme: spec.id, kind: names[0] ?? ask.mapId.slice(0, 12), indoor: false, who: PLACING[ask.tool]!, word: ask.word, v: "n/a", cell: "-", how: "", detail: "map not in the replayed game", stairs: false, seat: false, blocks: false }); continue; }
+      const J = judges.get(map.id) ?? judgeOf(project, map);
+      judges.set(map.id, J);
+      const own = ask.name ? map.events.find((e: any) => e.name === ask.name)?.id : undefined;
+      const fp = WHO[PLACING[ask.tool]!];
+      const r = resolveWhere(project, map, ask.word, { ...(fp ? { footprint: fp } : {}), ...(own ? { exceptId: own } : {}) }) as any;
+      const cells = (r.cells ?? [r.cell]) as { x: number; y: number }[];
+      const around = cells.flatMap((c) => [[0, -1], [0, 1], [-1, 0], [1, 0]].map(([dx, dy]) => ({ x: c.x + dx!, y: c.y + dy! }))).filter((n) => J.inside(n.x, n.y));
+      rows.push({ theme: spec.id, kind: String(map.name), indoor: J.indoor, who: PLACING[ask.tool]!, word: ask.word, v: r.fallback ? "none" : "ok", cell: `${r.cell.x},${r.cell.y}`, how: String(r.how ?? ""),
+        detail: `${ask.tool}${ask.hadAt ? " · the model also gave a cell" : ""}${r.note ? ` · ${String(r.note).slice(0, 90)}` : ""}`, stairs: around.some((n) => J.stair(n.x, n.y)), seat: around.some((n) => J.seat(n.x, n.y)), blocks: false });
+    }
+    console.log(`${spec.id} ${asks.length} where words`);
+  }
+  fs.writeFileSync(`${out}/where-bank.json`, JSON.stringify(rows, null, 1));
+  console.log(`저장된 판의 자리 낱말 ${rows.length}건 · 기본 자리로 감 ${rows.filter((r) => r.v === "none").length} · 맵 없음 ${rows.filter((r) => r.v === "n/a").length} · 계단 곁 ${rows.filter((r) => r.stairs).length} · 앉는 가구 곁 ${rows.filter((r) => r.seat).length}`);
+}
 
 function oneMap(s: Src): void {
   const project = s.project, map = project.maps[s.mapId];
@@ -147,6 +193,8 @@ function oneMap(s: Src): void {
     rec("person", word, r, ok ? "ok" : "wrong", said.slice(0, 70));
   }
 }
+
+if (bankDir) { bankWords(bankDir); process.exit(0); }
 
 for await (const s of sources(only ? (t) => only.includes(t) : undefined)) {
   if ("error" in s) { console.log(`build failed ${s.theme}/${s.kind}: ${s.error}`); continue; }

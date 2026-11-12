@@ -16,7 +16,7 @@ import { createWizardingWorldTileset, ensureWizardingWorldTileset } from "@/proj
 import { createModernCityTileset, ensureModernCityTileset } from "@/project/defaults/modernCity";
 import { kitHandObjects } from "@/project/roomKit";
 import { passabilityOf } from "@/project/collision";
-import { isDoorArtCell } from "@/project/lint/scenePolishLint";
+import { isEntranceArt } from "@/ai/v2/place/entrances";
 import { isUntouchedMap } from "@/project/projectBlankness";
 import type { Command, GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
 import { workshopHandObjects } from "@/project/workshopTiles";
@@ -275,7 +275,7 @@ function snapArrivalsToTravelArt(draft: Project, notes: string[]): void {
       for (const t of eventTransfers(event)) {
         const target = draft.maps[t.mapId];
         if (!target || target.climate?.mode !== "indoor" || target.id === from.id) continue;
-        const returns = (target.events ?? []).filter((e) => eventTransfers(e).some((r) => r.mapId === from.id) && isDoorArtCell(draft, target, e.x, e.y));
+        const returns = (target.events ?? []).filter((e) => eventTransfers(e).some((r) => r.mapId === from.id) && isEntranceArt(draft, target, e.x, e.y));
         if (!returns.length || returns.some((e) => Math.max(Math.abs(e.x - t.x), Math.abs(e.y - t.y)) <= 1)) continue;
         const above = returns.find((e) => e.x === t.x && e.y === t.y - 2);
         if (!above) continue;
@@ -295,12 +295,13 @@ function snapArrivalsToTravelArt(draft: Project, notes: string[]): void {
  * 왜(2026-10-22 장면 교훈 시험 「집 계단」): 도구가 알려 준 탈 자리(그림 앞 바닥)에 links 를 두자 scene-transfer-off-door 가
  * 여섯 건 났다 — 계단 앞 바닥을 지나가기만 해도 층이 바뀐다. 데모 교훈은 「문·계단 그림 칸에서 발동, 착지는 그 앞」이다.
  * 그림 칸이 이미 문 그림(엘리베이터 문턱)이면 그대로 두고, 그림 칸이 막혀 있으면 priority:"same" 부딪힘으로 발동한다.
+ * 그림 칸 = 방 키트가 문·계단이라 적은 기물(place/entrances.ts isEntranceArt) — 이름표 낱말로 읽던 때는 「증기 구멍」「서고 사다리」「포문」「관중석 돌 계단」도 층 이동 그림이었다.
  */
 function liftTravelLinksOntoArt(draft: Project, map: GameMap, tileset: TilesetDef, notes: string[]): void {
   const taken = new Set((map.events ?? []).map((e) => `${e.x},${e.y}`));
   for (const event of map.events ?? []) {
     const indoor = eventTransfers(event).some((t) => t.mapId !== map.id && draft.maps[t.mapId]?.climate?.mode === "indoor");
-    if (!indoor || isDoorArtCell(draft, map, event.x, event.y) || !isDoorArtCell(draft, map, event.x, event.y - 1)) continue;
+    if (!indoor || isEntranceArt(draft, map, event.x, event.y) || !isEntranceArt(draft, map, event.x, event.y - 1)) continue;
     if (taken.has(`${event.x},${event.y - 1}`)) continue;
     const idx = (event.y - 1) * map.width + event.x;
     const p = passabilityOf(tileset, map.lowerTiles[idx] ?? -1, map.lowerOverlayTiles?.[idx] ?? -1, map.upperTiles[idx] ?? -1, map.upperOverlayTiles?.[idx] ?? -1);

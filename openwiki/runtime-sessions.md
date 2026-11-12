@@ -249,6 +249,28 @@ Session state, save slots, farming, friendship, calendar, lighting, weather, fie
   - 같은 뿌리(vm3 추리): flash 「불러오기 선택 때 누른 Enter 가 새서 『더는 볼 것이 없다』」, terra 「불러온 직후 무관한 한스 대사창」 — 같은 시나리오로 옛 코드에서 둘 다 재현(책 받침대·한스 대사), 고친 뒤 없음.
 - **메뉴 시계는 저장 칸과 같은 꼴**(2026-10-29 vm3 terra 추리 「메뉴 0:00 인데 슬롯 0:38」): 상태 메뉴 시계(`formatPlayClock`)가 h:mm, 저장·불러오기 칸이 m:ss 라 같은 38초가 「0:00」·「0:38」로 읽혔다. 메뉴도 한 시간 안은 m:ss, 넘으면 h:mm:ss. 값의 정본은 그대로 `session.playTimeSeconds`.
 
+## 목표가 가리키는 이벤트 — 명령 → 세션 → 저장 칸 → 체크포인트 (2026-11-12)
+
+- **왜.** 표시(빛무리·화살표)는 목표 **글**의 이름으로 대상을 찾았다. 이름이 같은 다른 이벤트, 이름 있는 말 이벤트 뒤의 이름 없는 보스, 글에 이름이 없는 단계에서
+  표시가 엉뚱한 곳에 서거나 없었다(따라 걷는 자 16판 1칸 누르기 148/162 가운데 «엉뚱한 대상» 8 · «표시 없음» 6 — `openwiki/assistant-v2.md` 「목표가 대상을 들고 다닌다」).
+- **데이터 모양(전부 선택 · 스키마 판 그대로 · 이주 없음).**
+  - 명령: 목표 명령(`m2Command` `m2-214-ui-command`, `surface: "objectiveChip"`)의 `fields.targetMapId` · `fields.targetEventId`(글자열 둘).
+    **객체 하나(`fields.target = {…}`)로 싣지 않는다** — `shapeCommandFields.validateM2CommandShape` 가 `fields` 값으로 글자열·숫자·불리언만 받아 프로젝트 읽기가 실패한다.
+  - 세션: `M2UiCommandState.target?: { mapId, eventId }`(`sessionRuntimeTypes.ObjectiveTargetRef`). `m2ModernRuntime.recordUiCommand` 가 두 칸이 다 있을 때만 싣는다
+    (선택 칸이라 `fieldString` 의 «missing field» 경고를 내지 않는다). 대상 없는 새 목표가 걸리면 대상도 사라진다(마지막 objectiveChip 이 지금 목표).
+  - 읽기: `zoneFeedback.currentObjective(ui)` → `{ text, target? }`. `currentObjectiveText` 는 그 `text`.
+  - 저장 칸: 스냅숏 `session.objectiveTarget?: { mapId, eventId }`(`session.objective` 옆). 적용 때 되올리는 objectiveChip 에 같이 싣는다.
+    모양이 틀리면(`parseObjectiveTarget`) 버리고 글만 읽는다. **옛 저장본(글만)은 그대로 읽힌다** — 표시는 글로 찾는다.
+  - QA 체크포인트: `QaCheckpoint.objectiveTarget?`(`objective` 옆).
+- **표시.** `playSceneFieldStaging.syncObjectiveMarkers` 가 `objectiveTargetViews(project, map, views, text, { target, session })` 로 부른다.
+  대상이 이 맵에 있고 눌러서 일이 나는 페이지가 열려 있으면 그 이벤트, 다른 맵이면 그 맵으로 가는 첫 출구. 대상 이벤트가 없거나(지워짐) 열린 페이지가 비었으면 글 찾기로 내려간다.
+  손으로 만든 게임·편집기에서 고친 목표(명령 폼에는 이 두 칸이 없다)는 전과 같이 글로 찾는다.
+- **잠긴 길목.** 가는 길(맵 경로)의 어느 출구가 아직 안 채워진 스위치·아이템 조건에 잠겨 있으면, 표시는 닫힌 출구 대신 **그 조건을 지금 채워 줄 수 있는 이벤트**에 선다
+  (이 맵에 있으면 그 이벤트, 다른 맵이면 그리로 가는 문; 채워 주는 페이지가 또 잠겨 있으면 네 겹까지 거슬러 간다; 채워 주는 이벤트가 없으면 닫힌 출구 — 다가가면 그 문의 잠김 글이 말한다).
+  `objectiveTarget.routeUnlockers` · 색인 `lockIndex`(프로젝트의 `maps` 객체마다 한 번, 맵·이벤트 수가 달라지면 다시). 판(`options.session` 의 `switches`·`inventory`)을 안 주면(편집기·빌더 검사) 잠금을 읽지 않는다.
+  전에는 닫힌 길목에 표시가 안 붙어 화살표도 빛무리도 없었다(r1-fun 3순간 · jrpg-x1 3순간).
+- 시험 `test/objectiveExplicitTarget.test.ts`(명령 모양 검사 통과 · 실행 · 저장/불러오기 · 옛 저장본 · 틀린 모양 · 체크포인트 · 표시 · 잠긴 길목).
+
 ## Roguelike run kernel and field rooms (Phase 0–3, 2026-08-24)
 
 - `PlaySession.roguelikeRun` is optional runtime-only state, not authored project data. Version 1 stores `{ version, runId, seed, floor, status, flags, roomResetCounts, roomEventGenerationKeys, currentRoomId? }`; status is `active | completed | failed | abandoned`. `roomEventGenerationKeys` is saved so loading in the same room generation does not resurrect consumed one-shot events; old v1 saves without it normalize to `{}`. The pure authority is `src/project/roguelikeRun.ts`.

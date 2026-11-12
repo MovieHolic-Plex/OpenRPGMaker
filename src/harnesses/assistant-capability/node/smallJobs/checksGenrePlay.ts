@@ -91,7 +91,7 @@ export const GENRE_PLAY_KINDS: Record<string, (spec: CheckSpec, before: Doc, aft
     const was = eventOf(before, spec.mapId, spec.eventId), now = eventOf(after, spec.mapId, spec.eventId);
     if (!was || !now) return no(`${spec.eventId} 가 없다`);
     const session = startSession(after), threshold: number = spec.threshold;
-    let rising: Set<string> | null = null;
+    let rising = null as Set<string> | null;
     for (let talk = 1; talk <= threshold + 1; talk++) {
       const held = stores(session), play = interact(now, session, after), up = gains(held, stores(session));
       const plus = new Set(Object.keys(up).filter(key => up[key] === 1));
