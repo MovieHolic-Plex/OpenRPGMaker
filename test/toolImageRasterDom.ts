@@ -75,6 +75,16 @@ export class ToolImageRasterImage {
       }
     });
   }
+
+  /** 브라우저 Image.decode() 와 같은 약속 — 알파를 그대로 쓰는 그림(아이콘·적 초상)은 렌더러가 onload 대신 이걸 기다린다. */
+  decode(): Promise<void> {
+    if (this.complete) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const loaded = this.onload, failed = this.onerror;
+      this.onload = () => { loaded?.(); resolve(); };
+      this.onerror = (error) => { failed?.(error); reject(error instanceof Error ? error : new Error("image decode failed")); };
+    });
+  }
 }
 
 /** pngjs-backed Canvas stand-in used by tool image evidence tests. */
