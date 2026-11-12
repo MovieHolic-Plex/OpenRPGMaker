@@ -14,6 +14,8 @@ import { isPassable } from "@/project/collision";
 import { layerTileAt } from "@/project/mapLayers";
 import { runTool } from "@/editor/tools";
 import { harmonizeBeodeulDaylight } from "@/editor/tools/beodeulLightTools";
+import { detectPlacedMapObjects } from "@/editor/stampPlaceRunner";
+import { buildingEntrances, placeMarks } from "@/ai/v2/place/entrances";
 import type { ToolContext } from "@/editor/tools/types";
 import type { GameMap, Project, StructureKitDef, TilesetDef } from "@/project/types";
 
@@ -187,6 +189,19 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
       return JSON.stringify(data.anchors);
     };
     expect(anchors(looked.project, looked.map)).toBe(anchors(plain.project, plain.map));
+  }, 480_000);
+
+  it("입구·건물 찾기: 벌 마을의 집 문·건물 칸·놓인 집이 같은 게임의 벌 없는 마을과 같다(v2 가 문을 잇고 잠그는 자리)", () => {
+    const same = village({}, KEY), looked = village({ houses: SETS[3]! }, KEY);
+    expect(setCellsOnMap(looked.project, looked.map)).toBeGreaterThan(100);
+    const doors = (v: { project: Project; map: GameMap }) => buildingEntrances(v.project, v.map).map((e) => `${e.x},${e.y},${e.kit}`);
+    expect(doors(looked)).toEqual(doors(same));
+    expect(doors(same).length).toBeGreaterThan(3);
+    expect(Array.from(placeMarks(looked.project, looked.map).buildings)).toEqual(Array.from(placeMarks(same.project, same.map).buildings));
+    // 지우기·옮기기 도구가 맵에서 집을 찾는 길: 기록이 없어도 칸 무늬로 같은 집을 찾는다
+    const found = (v: { project: Project; map: GameMap }) => { const map = structuredClone(v.map); map.structurePlacements = []; return detectPlacedMapObjects(map, v.project.tilesets[TS]).filter((o) => /^bd-(house|farm)-/.test(o.kitId ?? "")).map((o) => `${o.kitId}@${o.x},${o.y}`).sort(); };
+    expect(found(looked)).toEqual(found(same));
+    expect(found(same).length).toBeGreaterThan(3);
   }, 480_000);
 
   it("지붕 가족을 직접 말한 마을은 말한 그림 그대로 짓는다(벌로 갈아 끼우지 않는다) — 결과 글도 벌 없는 게임과 같다", () => {
