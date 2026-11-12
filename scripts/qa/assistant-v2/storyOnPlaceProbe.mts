@@ -219,8 +219,13 @@ for (const m of Object.values(project.maps)) for (const e of m.events as GameEve
 
 // 바깥 맵의 한 칸 주머니 — 걷는 칸인데 걸어 나갈 이웃이 하나뿐인 칸(소품 사이에 낀 칸).
 const pockets: string[] = [];
+// 방인가 — 실내 기후이거나, 청사진이 그 장소를 그 세계의 실내 종류로 적었다(구성기 방은 실내 기후가 아닐 수 있다).
+const roomNames = ((): Set<string> => {
+  const world = worldById(project.gameBlueprint?.setting);
+  return new Set((project.gameBlueprint?.places ?? []).filter((p) => !!(world && worldKind(world, p.kind)?.indoor)).map((p) => p.name));
+})();
 for (const m of Object.values(project.maps)) {
-  if ((m as unknown as { climate?: { mode?: string } }).climate?.mode === "indoor") continue;
+  if ((m as unknown as { climate?: { mode?: string } }).climate?.mode === "indoor" || roomNames.has(m.name ?? "")) continue;
   for (let y = 1; y < m.height - 1; y++) for (let x = 1; x < m.width - 1; x++) {
     if (!isPassable(project, m, x, y)) continue;
     if (Object.values(DIR).filter(([dx, dy]) => isPassable(project, m, x + dx, y + dy)).length <= 1) pockets.push(`${m.name}(${x},${y})`);
