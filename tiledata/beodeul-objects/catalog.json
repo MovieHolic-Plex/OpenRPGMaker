@@ -1,0 +1,618 @@
+{
+ "tilesetId": "beodeul_city",
+ "texture": "tex_beodeul_city",
+ "tileSize": 16,
+ "tilesPerRow": 128,
+ "base": 34944,
+ "count": 35072,
+ "kitPrefix": "bd-obj-",
+ "source": "scripts/content/beodeul-objects/bake.py (Claude Fable 5.2 medium one-shot pictures, colours taken from the beodeul_city sheet)",
+ "license": "drawn by Claude Fable 5.2 for this project (own work)",
+ "gate": "3/4 gate not passed — owner waiver fable-oneshot-2026-11-12",
+ "items": [
+  {
+   "id": "spring",
+   "kit": "bd-obj-spring",
+   "name": "샘 · 물이 솟는 돌 샘",
+   "en": "stone spring",
+   "kind": "container",
+   "width": 2,
+   "height": 2,
+   "place": "prop",
+   "rows": [
+    [
+     34944,
+     34945
+    ],
+    [
+     34946,
+     34947
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "샘",
+    "돌 샘",
+    "물이 솟는 샘",
+    "spring"
+   ],
+   "sha256": "27d3d711e75531ecc0ddcef4f291b4a5b3b4fec4eae22bd2e334adf01e27a8af"
+  },
+  {
+   "id": "cave-mouth",
+   "kit": "bd-obj-cave-mouth",
+   "name": "동굴 입구·던전 입구 · 바위 굴",
+   "en": "cave mouth in a rock outcrop",
+   "kind": "structure",
+   "width": 3,
+   "height": 3,
+   "place": "tall",
+   "rows": [
+    [
+     34948,
+     34949,
+     34950
+    ],
+    [
+     34951,
+     34952,
+     34953
+    ],
+    [
+     34954,
+     34955,
+     34956
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "words": [
+    "동굴 입구",
+    "던전 입구",
+    "동굴",
+    "굴 입구",
+    "cave mouth",
+    "cave entrance"
+   ],
+   "sha256": "9c54a704df28010f4bee619c9acd4b6a2322738e629667ff22255331e0f39fd9"
+  },
+  {
+   "id": "shard",
+   "kit": "bd-obj-shard",
+   "name": "빛나는 파편·빛의 파편·빛나는 돌",
+   "en": "glowing shard",
+   "kind": "organic",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     34957
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "빛나는 파편",
+    "빛의 파편",
+    "빛나는 돌",
+    "파편",
+    "별 조각",
+    "glowing shard"
+   ],
+   "sha256": "fe284046ec9c27f372b8a8bc9d6929d258881819d91552e8f22ee0b336ba47cc"
+  },
+  {
+   "id": "ruin-entrance",
+   "kit": "bd-obj-ruin-entrance",
+   "name": "유적 입구·유적 돌 입구",
+   "en": "stone ruin entrance",
+   "kind": "structure",
+   "width": 3,
+   "height": 3,
+   "place": "tall",
+   "rows": [
+    [
+     34958,
+     34959,
+     34960
+    ],
+    [
+     34961,
+     34962,
+     34963
+    ],
+    [
+     34964,
+     34965,
+     34966
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "words": [
+    "유적 입구",
+    "유적 돌 입구",
+    "유적",
+    "돌 입구",
+    "ruin entrance"
+   ],
+   "sha256": "99db3df49a75f1fffde89c0c8c17f105934b8192916d978434de1e228389d9d7"
+  },
+  {
+   "id": "camp-tent",
+   "kit": "bd-obj-camp-tent",
+   "name": "야영 천막",
+   "en": "traveller's camp tent",
+   "kind": "structure",
+   "width": 2,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     34967,
+     34968
+    ],
+    [
+     34969,
+     34970
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "야영 천막",
+    "천막",
+    "야영지 천막",
+    "camp tent",
+    "tent"
+   ],
+   "sha256": "6d9cc427dc52deeb0293c7b40b23d9e7f03b3fbbab76f36965f0d432b4b41f36"
+  },
+  {
+   "id": "livestock-pen",
+   "kit": "bd-obj-livestock-pen",
+   "name": "가축 우리",
+   "en": "small livestock pen",
+   "kind": "frame",
+   "width": 3,
+   "height": 3,
+   "place": "prop",
+   "rows": [
+    [
+     34971,
+     34972,
+     34973
+    ],
+    [
+     34974,
+     34975,
+     34976
+    ],
+    [
+     34977,
+     34978,
+     34979
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "words": [
+    "가축 우리",
+    "우리",
+    "축사",
+    "livestock pen"
+   ],
+   "sha256": "2bf56af50163b1464a2e8b6ff66187ee2da671854476269e0c9e2b230461ef1d"
+  },
+  {
+   "id": "plank-ew",
+   "kit": "bd-obj-plank-ew",
+   "name": "늪 널빤지 길·판자 길 가로(널다리)",
+   "en": "plank walkway, east-west run",
+   "kind": "flat",
+   "width": 1,
+   "height": 1,
+   "place": "decal",
+   "rows": [
+    [
+     34980
+    ]
+   ],
+   "block": [],
+   "words": [
+    "널빤지 길",
+    "판자 길",
+    "늪 널빤지 길",
+    "널길",
+    "널다리",
+    "plank walkway",
+    "boardwalk"
+   ],
+   "sha256": "b909a80c969cbf02d82ac28291b7a1dc232a5afbb308d117c0f177f958750a4d"
+  },
+  {
+   "id": "plank-ns",
+   "kit": "bd-obj-plank-ns",
+   "name": "늪 널빤지 길·판자 길 세로(널다리)",
+   "en": "plank walkway, north-south run",
+   "kind": "flat",
+   "width": 1,
+   "height": 1,
+   "place": "decal",
+   "rows": [
+    [
+     34981
+    ]
+   ],
+   "block": [],
+   "words": [
+    "널빤지 길",
+    "판자 길",
+    "늪 널빤지 길",
+    "널길",
+    "널다리",
+    "plank walkway",
+    "boardwalk"
+   ],
+   "sha256": "e63064098d41329708071ed075d3fda9e8f4a493ebb528bd9924bafd909b592b"
+  },
+  {
+   "id": "plank-corner",
+   "kit": "bd-obj-plank-corner",
+   "name": "늪 널빤지 길 모퉁이·판자 길 모퉁이(널다리) 서→남",
+   "en": "plank walkway corner (west to south)",
+   "kind": "flat",
+   "width": 1,
+   "height": 1,
+   "place": "decal",
+   "rows": [
+    [
+     34982
+    ]
+   ],
+   "block": [],
+   "words": [
+    "널빤지 길 모퉁이",
+    "판자 길 모퉁이",
+    "널다리 모퉁이",
+    "plank corner"
+   ],
+   "sha256": "dab9a51ed29cb3b46ae314fc3b76c86f9f521d194cf582abf9f1a8170735a439"
+  },
+  {
+   "id": "plank-end",
+   "kit": "bd-obj-plank-end",
+   "name": "늪 널빤지 길 끝·판자 길 끝(널다리) 동쪽",
+   "en": "plank walkway east end",
+   "kind": "flat",
+   "width": 1,
+   "height": 1,
+   "place": "decal",
+   "rows": [
+    [
+     34983
+    ]
+   ],
+   "block": [],
+   "words": [
+    "널빤지 길 끝",
+    "판자 길 끝",
+    "널다리 끝",
+    "plank end"
+   ],
+   "sha256": "56892e29d59a63331c8abce3391de05d7045e9d95dbab88d04e48ae968a5e4c2"
+  },
+  {
+   "id": "mining-tools",
+   "kit": "bd-obj-mining-tools",
+   "name": "곡괭이·채굴 도구(광석 상자)",
+   "en": "pickaxe and shovel on an ore crate",
+   "kind": "box",
+   "width": 1,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     34984
+    ],
+    [
+     34985
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "곡괭이",
+    "채굴 도구",
+    "삽",
+    "광석 상자",
+    "pickaxe",
+    "mining tools"
+   ],
+   "sha256": "99bd6153ce0c6417187a811df60dfa51063dd77f22aa31dc06f333f00d8a1c68"
+  },
+  {
+   "id": "notice-board",
+   "kit": "bd-obj-notice-board",
+   "name": "게시판·기록판",
+   "en": "village notice board",
+   "kind": "front_prop",
+   "width": 2,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     34986,
+     34987
+    ],
+    [
+     34988,
+     34989
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "게시판",
+    "기록판",
+    "알림판",
+    "공고판",
+    "notice board"
+   ],
+   "sha256": "53d9f9dda6d6972dc7bc172206c881995d1c47c05450ccdb48103c55a36ec6b2"
+  },
+  {
+   "id": "note",
+   "kit": "bd-obj-note",
+   "name": "쪽지(바닥에 떨어진 종이)",
+   "en": "note on the ground",
+   "kind": "debris",
+   "width": 1,
+   "height": 1,
+   "place": "decal",
+   "rows": [
+    [
+     34990
+    ]
+   ],
+   "block": [],
+   "words": [
+    "쪽지",
+    "종이",
+    "편지",
+    "메모",
+    "note"
+   ],
+   "sha256": "bca5f58bdcd27775867a85f9dade388a0ccedcd415f7b72a608673791f39ae2f"
+  },
+  {
+   "id": "seal-altar",
+   "kit": "bd-obj-seal-altar",
+   "name": "봉인 제단(봉인·제단)",
+   "en": "sealed stone altar",
+   "kind": "box",
+   "width": 2,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     34991,
+     34992
+    ],
+    [
+     34993,
+     34994
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "봉인 제단",
+    "제단",
+    "봉인",
+    "결계 제단",
+    "seal altar",
+    "altar"
+   ],
+   "sha256": "9a74ae76c4db34ea3eab5f2ad726f7c8232dfc35c66afdc0291ee5460053339e"
+  },
+  {
+   "id": "broken-pillar",
+   "kit": "bd-obj-broken-pillar",
+   "name": "무너진 기둥(부러진 돌기둥)",
+   "en": "broken stone pillar",
+   "kind": "column",
+   "width": 1,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     34995
+    ],
+    [
+     34996
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "무너진 기둥",
+    "부러진 기둥",
+    "돌기둥",
+    "broken pillar"
+   ],
+   "sha256": "c2aa0723002e1710eb75387afc076ad3cf1619099f955d29c765842565c882a7"
+  },
+  {
+   "id": "record-stand",
+   "kit": "bd-obj-record-stand",
+   "name": "기록부·장부(받침 위 책)",
+   "en": "record book on a stand",
+   "kind": "low_furniture",
+   "width": 1,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     34997
+    ],
+    [
+     34998
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "기록부",
+    "장부",
+    "기록대",
+    "받침 위 책",
+    "record book",
+    "ledger"
+   ],
+   "sha256": "4cb194af5d79e10ea45567fe069dfcda146ab5f4671b62e76012ffeab3387f35"
+  }
+ ]
+}
