@@ -147,5 +147,20 @@
     "seed": 1
    }
   }
+ },
+ "pirate_isles": {
+  "spec": "tiledata/pirate-isles/objects/spec.json",
+  "ask": "tiledata/pirate-isles/objects/ask.json",
+  "kitPrefix": "pi-",
+  "sheet": "public/assets/pirate-isles/pirate-isles-chipset.png",
+  "map": {
+   "width": 48,
+   "height": 36,
+   "tool": "compose_pirate_isles_map",
+   "args": {
+    "kind": "harbor",
+    "seed": 1
+   }
+  }
  }
 }

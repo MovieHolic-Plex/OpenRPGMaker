@@ -1,7 +1,7 @@
 # 버들항 이야기 기물 16종 — 샘·동굴 입구·유적 입구·게시판·쪽지·봉인 제단·널빤지 길 (bd-obj-*, 2026-11-12)
 
 타일셋 `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chipset.png`(텍스처 `tex_beodeul_city`) · **16px 칸, 한 줄 128칸**.
-번호 n 의 칸 = 행 ⌊n/128⌋, 열 n mod 128. 이 기물의 칸은 시트 꼬리 **34944~34998**(행 273)이다. 다른 칩셋 번호를 섞지 않는다.
+번호 n 의 칸 = 행 ⌊n/128⌋, 열 n mod 128. 이 기물의 칸은 시트 꼬리 **34944~35113**(행 273)이다. 다른 칩셋 번호를 섞지 않는다.
 게임들이 바랐는데 그림이 없던 물건이다(조수 실행의 «없는 그림» 장부). 그림 정본 `tiledata/beodeul-objects/pieces/<id>.png`, 정의 `tiledata/beodeul-objects/spec.json`, 굽기 `scripts/content/beodeul-objects/bake.py`.
 **3/4 관문 미통과 — 오너 면제 그림**(면제 묶음 fable-oneshot-2026-11-12, Claude Fable 5.2 한 방 그림). 관문을 통과한 그림이 아니다 — 스토어로는 나가지 않는다.
 
@@ -64,3 +64,74 @@
 - 킷 칸이 3층에 통째로 있는가(`wrong-layer`·`kit-incomplete`) · 막힌 칸/걸음 칸이 선언과 같은가(`passage-mismatch`) · 입구 앞 접근칸이 비었는가(`entrance-blocked`) · 널빤지 길을 (1,9)→(6,12) 로 걸어 건널 수 있는가(`walk-blocked`).
 - 물 위 널빤지를 빼면 그 칸이 다시 막히는가, 입구 칸이 조수 v2 의 입구 판독(킷 parts entrance)에 잡히는가, 막힌 자리 놓기가 거절되고 맵이 그대로인가.
 - **확인하지 않는 것**: 이벤트 실행(읽기·이동·줍기), 그림의 미적 품질·3/4 시점(이 그림들은 관문 미통과다), 다른 기물과의 어울림, 모델이 실제로 잘 놓는지.
+
+## 6. 종류별 변형 50종 — 같은 종류, 다른 그림 (2026-11-12)
+
+우물·벤치·이정표처럼 그림이 한 장뿐이던 종류 20개에 **모양·재질이 다른 그림**을 더했다(면제 묶음 fable-variety-beodeul-2026-11-12, 같은 3/4 관문 미통과 — 오너 면제). 건물·바닥 타일은 없다.
+- 변형 킷은 `ai.variantOf` 에 **원본 킷 id** 를 적는다. 칸 크기·막힌 칸·★ 칸·층(3층)이 원본과 같다(굽기가 맞춰 보고 다르면 멈춘다) — 원본 자리에 갈아 끼워도 배치·통행이 그대로다.
+- **놓을 때는 원본 킷 id 를 쓴다**(`bd-prop-well_roofed` 등, 원래 쓰던 그대로). 조수 실행에서는 놓기 도구가 그 게임의 열쇠로 원본·변형 가운데 하나를 고른다 — 한 게임 안에서는 늘 같은 그림, 게임이 다르면 다른 그림(`src/project/kitLook.ts`). 도구 결과의 `objectId` 가 실제로 찍힌 킷이다.
+- 특정 그림이 꼭 필요할 때만 변형 킷 id 를 직접 쓴다 — 직접 댄 변형 id 는 바뀌지 않는다. 사람 편집(조수 실행이 아닌 놓기)은 고른 킷 그대로다.
+- 이름으로 찾기(«우물»)는 원본 킷을 먼저 준다. 변형만의 낱말(«펌프», «돌 벤치», «이정석» …)은 그 변형을 준다.
+- 이미 깐 맵은 바뀌지 않는다(맵은 칸 번호를 갖고 있고 옛 칸의 그림은 그대로다).
+
+| 원본 킷 | 변형 킷 id | 무엇 | 크기 | 칸 번호 | 막힌 칸 | 찾는 낱말 |
+|---|---|---|---|---|---|---|
+| `bd-prop-well_roofed` 버들항 소품 돌 우물 (지붕) 2×2 | `bd-obj-well-windlass` | 우물 · 두레박 틀 돌 우물 | 2×2 | 34999 35000 / 35001 35002 | (0,0) (1,0) (0,1) (1,1) | 두레박 우물, 두레박 틀 우물, windlass well |
+| `bd-prop-well_roofed` 버들항 소품 돌 우물 (지붕) 2×2 | `bd-obj-well-pump` | 우물 · 손 펌프와 돌 물통 | 2×2 | 35003 35004 / 35005 35006 | (0,0) (1,0) (0,1) (1,1) | 펌프 우물, 손 펌프, 물 펌프, hand pump, water pump |
+| `bd-prop-well_roofed` 버들항 소품 돌 우물 (지붕) 2×2 | `bd-obj-well-spout` | 우물 · 사자 물구멍 돌 수조 | 2×2 | 35007 35008 / 35009 35010 | (0,0) (1,0) (0,1) (1,1) | 샘터, 돌 수조, 물터, wall fountain |
+| `bd-prop-bench_wood` 버들항 소품 나무 벤치 2×1 | `bd-obj-bench-stone` | 벤치 · 돌 벤치 | 2×1 | 35011 35012 | (0,0) (1,0) | 돌 벤치, stone bench |
+| `bd-prop-bench_wood` 버들항 소품 나무 벤치 2×1 | `bd-obj-bench-log` | 벤치 · 반쪽 통나무 벤치 | 2×1 | 35013 35014 | (0,0) (1,0) | 통나무 벤치, log bench |
+| `bd-prop-bench_wood` 버들항 소품 나무 벤치 2×1 | `bd-obj-bench-trestle` | 벤치 · 등받이 없는 널 벤치와 방석 | 2×1 | 35015 35016 | (0,0) (1,0) | 널 벤치, 방석 벤치, trestle bench |
+| `bd-out-signpost` 외곽 이정표 | `bd-obj-sign-hanging` | 이정표 · 걸이 간판 기둥 | 1×2 | 35017 / 35018 | (0,1) | 걸이 간판, 걸이 간판 기둥, hanging sign |
+| `bd-out-signpost` 외곽 이정표 | `bd-obj-sign-milestone` | 이정표 · 돌 이정표 | 1×2 | 35019 / 35020 | (0,1) | 돌 이정표, 표지석, milestone |
+| `bd-out-signpost` 외곽 이정표 | `bd-obj-sign-cairn` | 이정표 · 돌무지와 깃대 | 1×2 | 35021 / 35022 | (0,1) | 돌무지 표지, 깃대 돌무지, cairn waymark |
+| `bd-prop-crate_apple` 버들항 소품 과일 상자 1×1 | `bd-obj-crate-closed` | 상자 · 못 박은 닫힌 나무 상자 | 1×1 | 35023 | (0,0) | 닫힌 상자, 못 박은 상자, closed crate |
+| `bd-prop-crate_apple` 버들항 소품 과일 상자 1×1 | `bd-obj-crate-basket` | 상자 · 감자 담긴 고리버들 바구니 | 1×1 | 35024 | (0,0) | 감자 바구니, 고리버들 바구니, 광주리, wicker basket |
+| `bd-prop-crate_apple` 버들항 소품 과일 상자 1×1 | `bd-obj-crate-sack` | 상자 · 곡식 자루 | 1×1 | 35025 | (0,0) | 곡식 자루, 포대, grain sack |
+| `bd-prop-fish_barrel` 버들항 소품 생선 통 1×1 | `bd-obj-barrel-closed` | 통 · 닫힌 참나무 통 | 1×1 | 35026 | (0,0) | 닫힌 통, 참나무 통, closed barrel |
+| `bd-prop-fish_barrel` 버들항 소품 생선 통 1×1 | `bd-obj-barrel-tub` | 통 · 물 담긴 나무 함지 | 1×1 | 35027 | (0,0) | 나무 함지, 물 함지, water tub |
+| `bd-prop-fish_barrel` 버들항 소품 생선 통 1×1 | `bd-obj-barrel-amphora` | 통 · 받침에 세운 항아리 | 1×1 | 35028 | (0,0) | 항아리, 암포라, amphora |
+| `bd-pick-deep-forest-path-campfire` 버들항 깊은 숲길 · 모닥불 1×1 | `bd-obj-fire-tripod` | 모닥불 · 삼발이 솥 | 1×1 | 35029 | (0,0) | 삼발이 솥, 솥 건 모닥불, cooking fire |
+| `bd-pick-deep-forest-path-campfire` 버들항 깊은 숲길 · 모닥불 1×1 | `bd-obj-fire-pit` | 모닥불 · 돌 두른 화덕 | 1×1 | 35030 | (0,0) | 화덕, 불구덩이, fire pit |
+| `bd-pick-deep-forest-path-campfire` 버들항 깊은 숲길 · 모닥불 1×1 | `bd-obj-fire-spit` | 모닥불 · 꼬치 굽는 불 | 1×1 | 35031 | (0,0) | 꼬치 불, 생선 굽는 불, roasting spit |
+| `bd-pick-riverside-mill-haystack` 버들항 강가 방앗간 마을 · 둥근 짚가리 2×3 | `bd-obj-hay-rack` | 짚가리 · 건초 말림 걸대 | 2×3 | -1 -1 / 35032 35033 / 35034 35035 | (0,1) (1,1) (0,2) (1,2) | 건초 걸대, 건초 말림대, hay rack |
+| `bd-pick-riverside-mill-haystack` 버들항 강가 방앗간 마을 · 둥근 짚가리 2×3 | `bd-obj-hay-loaf` | 짚가리 · 사다리 걸친 네모 낟가리 | 2×3 | -1 -1 / 35036 35037 / 35038 35039 | (0,1) (1,1) (0,2) (1,2) | 낟가리, 네모 낟가리, hay loaf |
+| `bd-out-woodpile` 외곽 장작더미 | `bd-obj-wood-block` | 장작더미 · 모탕과 도끼 | 2×1 | 35040 35041 | (0,0) (1,0) | 모탕, 도끼 모탕, chopping block |
+| `bd-out-woodpile` 외곽 장작더미 | `bd-obj-wood-faggots` | 장작더미 · 나뭇단 세 묶음 | 2×1 | 35042 35043 | (0,0) (1,0) | 나뭇단, 땔감 묶음, firewood bundles |
+| `bd-prop-lamp_crook` 버들항 소품 목 굽은 가로등 1×3 | `bd-obj-lamp-lantern` | 가로등 · 기둥 위 네모 등 | 1×3 | 35044 / 35045 / 35046 | (0,2) | 기둥 등, 네모 등 기둥, lantern post |
+| `bd-prop-lamp_crook` 버들항 소품 목 굽은 가로등 1×3 | `bd-obj-lamp-cresset` | 가로등 · 쇠 화롯불 기둥 | 1×3 | 35047 / 35048 / 35049 | (0,2) | 화롯불 기둥, 횃불 기둥, cresset |
+| `bd-prop-lamp_crook` 버들항 소품 목 굽은 가로등 1×3 | `bd-obj-lamp-stone` | 가로등 · 돌기둥 등 | 1×3 | 35050 / 35051 / 35052 | (0,2) | 석등, 돌기둥 등, stone lamp |
+| `bd-prop-veg_cart` 버들항 소품 채소 손수레 2×2 | `bd-obj-cart-barrow` | 손수레 · 자루 실은 외바퀴 수레 | 2×2 | 35053 35054 / 35055 35056 | (0,1) (1,1) | 외바퀴 수레, wheelbarrow |
+| `bd-prop-veg_cart` 버들항 소품 채소 손수레 2×2 | `bd-obj-cart-barrels` | 손수레 · 통 실은 두 바퀴 수레 | 2×2 | 35057 35058 / 35059 35060 | (0,1) (1,1) | 통 실은 수레, 짐수레, barrel cart |
+| `bd-prop-veg_cart` 버들항 소품 채소 손수레 2×2 | `bd-obj-cart-hay` | 손수레 · 건초 실은 수레 | 2×2 | 35061 35062 / 35063 35064 | (0,1) (1,1) | 건초 수레, hay cart |
+| `bd-pick-castle-catacombs-altar-stone` 버들항 성 지하 감옥·카타콤 · 돌 제단 2×2 | `bd-obj-altar-moss` | 제단 · 이끼 낀 자연석 제단 | 2×2 | 35065 35066 / 35067 35068 | (0,1) (1,1) | 자연석 제단, 이끼 제단, fieldstone altar |
+| `bd-pick-castle-catacombs-altar-stone` 버들항 성 지하 감옥·카타콤 · 돌 제단 2×2 | `bd-obj-altar-dark` | 제단 · 촛불 놓인 검은 돌 제단 | 2×2 | 35069 35070 / 35071 35072 | (0,1) (1,1) | 검은 제단, 촛불 제단, dark altar |
+| `bd-pick-castle-catacombs-altar-stone` 버들항 성 지하 감옥·카타콤 · 돌 제단 2×2 | `bd-obj-altar-wood` | 제단 · 나무 제사상 | 2×2 | 35073 35074 / 35075 35076 | (0,1) (1,1) | 제사상, 나무 제단, offering table |
+| `bd-pick-aqueduct-sewer-brazier` 버들항 지하 수도교·하수도 · 화로 1×1 | `bd-obj-brazier-basket` | 화로 · 세 발 쇠 불바구니 | 1×1 | 35077 | (0,0) | 불바구니, 쇠 화로, fire basket |
+| `bd-pick-aqueduct-sewer-brazier` 버들항 지하 수도교·하수도 · 화로 1×1 | `bd-obj-brazier-bowl` | 화로 · 돌 받침 불 대접 | 1×1 | 35078 | (0,0) | 돌 화로, 불 대접, stone brazier |
+| `bd-pick-aqueduct-sewer-brazier` 버들항 지하 수도교·하수도 · 화로 1×1 | `bd-obj-brazier-pot` | 화로 · 구멍 뚫린 질화로 | 1×1 | 35079 | (0,0) | 질화로, 불 항아리, fire pot |
+| `bd-prop-mooring_bollard` 버들항 소품 계선주 1×1 | `bd-obj-bollard-post` | 계선주 · 밧줄 감은 나무 말뚝 | 1×1 | 35080 | (0,0) | 나무 말뚝, 배 매는 말뚝, mooring post |
+| `bd-prop-mooring_bollard` 버들항 소품 계선주 1×1 | `bd-obj-bollard-stone` | 계선주 · 쇠고리 박힌 돌 말뚝 | 1×1 | 35081 | (0,0) | 돌 말뚝, 쇠고리 말뚝, stone bollard |
+| `bd-prop-laundry_rack` 버들항 소품 빨래 건조대 2×2 | `bd-obj-laundry-horse` | 빨래 건조대 · 접이식 빨래 걸이 | 2×2 | 35082 35083 / 35084 35085 | (0,1) (1,1) | 빨래 걸이, 접이식 빨래 걸이, clothes horse |
+| `bd-prop-laundry_rack` 버들항 소품 빨래 건조대 2×2 | `bd-obj-laundry-tub` | 빨래 건조대 · 빨래 함지와 빨래판 | 2×2 | 35086 35087 / 35088 35089 | (0,1) (1,1) | 빨래 함지, 빨래판, wash tub |
+| `bd-prop-laundry_rack` 버들항 소품 빨래 건조대 2×2 | `bd-obj-laundry-quilt` | 빨래 건조대 · 이불 넌 장대 | 2×2 | 35090 35091 / 35092 35093 | (0,1) (1,1) | 이불 장대, 이불 널기, quilt pole |
+| `bd-prop-door_pots` 버들항 소품 문간 화분 둘 1×1 | `bd-obj-pots-halfbarrel` | 문간 화분 · 반 통 화분 | 1×1 | 35094 | (0,0) | 통 화분, 반 통 화분, half-barrel planter |
+| `bd-prop-door_pots` 버들항 소품 문간 화분 둘 1×1 | `bd-obj-pots-urn` | 문간 화분 · 담쟁이 돌 항아리 | 1×1 | 35095 | (0,0) | 돌 항아리 화분, 담쟁이 화분, stone urn |
+| `bd-prop-flowerbox_long` 버들항 소품 긴 꽃상자 2×1 | `bd-obj-box-trough` | 꽃상자 · 돌 구유 화분 | 2×1 | 35096 35097 | (0,0) (1,0) | 돌 구유 화분, 돌 화분, stone trough planter |
+| `bd-prop-flowerbox_long` 버들항 소품 긴 꽃상자 2×1 | `bd-obj-box-wattle` | 꽃상자 · 욋가지 두른 채소 화단 | 2×1 | 35098 35099 | (0,0) (1,0) | 채소 화단, 욋가지 화단, raised bed |
+| `bd-prop-flowerbed` 버들항 소품 꽃밭 2×1 | `bd-obj-bed-rocks` | 꽃밭 · 돌 두른 꽃밭 | 2×1 | 35100 35101 | (0,0) (1,0) | 돌 화단, 돌 두른 꽃밭, rock flower bed |
+| `bd-prop-flowerbed` 버들항 소품 꽃밭 2×1 | `bd-obj-bed-herbs` | 꽃밭 · 허브 이랑과 이름표 말뚝 | 2×1 | 35102 35103 | (0,0) (1,0) | 허브밭, 텃밭, herb patch |
+| `bd-pick-wheat-roman-road-scarecrow` 버들항 밀밭 로마 가도 · 허수아비 1×2 | `bd-obj-scare-sack` | 허수아비 · 자루 머리 허수아비 | 1×2 | 35104 / 35105 | (0,1) | 자루 허수아비, sack scarecrow |
+| `bd-pick-wheat-roman-road-scarecrow` 버들항 밀밭 로마 가도 · 허수아비 1×2 | `bd-obj-scare-pot` | 허수아비 · 솥 쓴 막대 허수아비 | 1×2 | 35106 / 35107 | (0,1) | 솥 허수아비, 막대 허수아비, pot scarecrow |
+| `bd-prop-sandwich_board` 버들항 소품 입간판 (분필) 1×1 | `bd-obj-board-easel` | 입간판 · 화살표 그림 이젤 간판 | 1×1 | 35108 | (0,0) | 이젤 간판, easel sign |
+| `bd-prop-sandwich_board` 버들항 소품 입간판 (분필) 1×1 | `bd-obj-board-crate` | 입간판 · 상자에 기댄 석판 간판 | 1×1 | 35109 | (0,0) | 석판 간판, slate sign |
+| `bd-prop-goods_pile` 버들항 소품 통·상자·자루 더미 2×2 | `bd-obj-pile-amphorae` | 짐 더미 · 항아리 받침대와 자루 | 2×2 | 35110 35111 / 35112 35113 | (0,1) (1,1) | 항아리 더미, 항아리 받침대, amphora rack |
+
+그림 `variants-1x.png`(원본 해상도) · `variants-3x.png`: 종류마다 한 줄 — 맨 왼쪽이 원본 킷, 그 오른쪽이 변형. 전체 배열은 「종류별 변형 배열」 문서.
+
+| 오류 코드 | 변조한 맵 칸 | 무엇을 했나 | 그림 |
+|---|---|---|---|
+| `kit-incomplete` | (18,10) | 기둥 등 가로등(1×3)의 맨 윗칸을 뺐다 — 등이 잘린다. | err-variant-kit-incomplete.png (왼쪽 정상 · 오른쪽 오류, 빨간 상자) |
+| `variant-passage` | (19,1) | 돌 벤치(2×1)의 왼쪽 칸을 뺐다 — 원본 벤치의 같은 칸은 막힌 칸인데 이 칸은 걸음이 된다(갈아 끼운 자리의 통행이 달라진다). | err-variant-variant-passage.png (왼쪽 정상 · 오른쪽 오류, 빨간 상자) |
+
+자동 검사(같은 스크립트): 변형 장면의 킷 칸이 3층에 통째로 있는가 · **변형의 칸마다 엔진 통행(isPassable)이 원본 킷의 같은 칸과 같은가**(`variant-passage`). 확인하지 않는 것: 그림이 그 종류로 읽히는지(사람이 1배에서 보고 5장을 뺐다), 게임마다 실제로 갈리는지(`test/kitLook.test.ts`·`scripts/content/beodeul-variety/sixSeeds.mts`).
