@@ -12,7 +12,7 @@ import { charsetBattlerForCharacter } from "@/assets/charsetBattlers";
 import { bustOfChip } from "./speakerBust";
 import type { Project } from "@/project/types";
 import { applyThemeBackdrop } from "../place/placeTheme";
-import { asPresetHud, HUD_SOURCES, normalizeFieldHud, projectCanLoseHp, projectHudUse, resolvedHudWidgets, unusedHudGauges } from "@/project/fieldHud";
+import { asPresetHud, HUD_SOURCES, normalizeFieldHud, projectCanLoseHp, projectFieldHpChanges, projectHudUse, resolvedHudWidgets, unusedHudGauges } from "@/project/fieldHud";
 import { hudIsStoryTemplate } from "../judge/hudTitleChecks";
 import { battleSites } from "../judge/combatChecks";
 
@@ -23,16 +23,16 @@ let factoryCache: Project | undefined;
 const factory = (): Project => (factoryCache ??= createBlankProject() as Project);
 
 /**
- * 필드 HUD 를 아무도 고르지 않았다(편집기 기본 — 하트 체력·숫자). set_field_hud 와 같은 값으로 고른다: 체력이 줄 일(전투·피해·조우)이
- * 없으면 끈다({off:true} — 목표 줄만), 있으면 공포는 꽃잎 생명(horror), 싸우는 판타지는 고전 창(classic), 그 밖은 하트 모험(hearts).
+ * 필드 HUD 를 아무도 고르지 않았다(편집기 기본 — 하트 체력·숫자). set_field_hud 와 같은 값으로 고른다: 필드에서 체력이 깎일 일(실시간 액션 전투·
+ * 피해 명령)이 없으면 끈다({off:true} — 목표 줄만), 있으면 공포는 꽃잎 생명(horror), 싸우는 판타지는 고전 창(classic), 그 밖은 하트 모험(hearts).
+ * 턴제 전투만 있는 게임도 끈다 — 체력은 전투 화면과 메뉴에 있고 필드에서는 걷는 내내 움직이지 않는다(2026-11-13 증기의 심장: 한 명 파티 판이 내내 떠 있었다).
  * 실측(2026-11-05 gpt-only-game 6차): 전투 없는 학교 연애가 체력 하트와 「514 / 514」를 내내 띄웠다.
  */
 export function fillFieldHud(project: Project, story: string): string[] {
-  // 2D 액션 전투는 명령 없이 체력을 깎는다(projectCanLoseHp 는 턴제 전투·피해 명령만 본다).
   const action = project.system.actionCombat?.enabled === true;
-  if (!action && !projectCanLoseHp(project)) {
+  if (!projectFieldHpChanges(project)) {
     project.system.fieldHud = { theme: "chase", vitals: false, clock: false, tools: false, objective: true, hideEmpty: true, widgets: [] };
-    return ["필드 HUD 끔(체력이 줄 일이 없다 — 목표 줄만)"];
+    return [projectCanLoseHp(project) ? "필드 HUD 끔(체력은 전투 안에서만 바뀐다 — 목표 줄만)" : "필드 HUD 끔(체력이 줄 일이 없다 — 목표 줄만)"];
   }
   const premise = premiseOf(project, story);
   const theme = /공포|호러|귀신|유령|괴담|좀비|horror/iu.test(premise) ? "horror" : !action && /마왕|용사|기사|판타지|RPG|던전/iu.test(premise) ? "classic" : "hearts";
@@ -68,7 +68,7 @@ export function reconcileFieldHud(project: Project, story: string): string[] {
   const next = unused.length ? { ...hud, widgets: resolvedHudWidgets(hud).filter((w) => !drop.has(w.id)) } : hud;
   if (shown(next) === shown(project.system.fieldHud)) return [];
   project.system.fieldHud = next;
-  return unused.length ? [`필드 HUD(${hud.theme})에서 이 게임이 쓰지 않는 게이지를 뺐다: ${unused.map((w) => w.label || HUD_SOURCES[w.source]).join(", ")}`] : [`필드 HUD(${hud.theme})에 전에 뺀 게이지를 되돌렸다(이제 쓰인다)`];
+  return unused.length ? [`필드 HUD(${hud.theme})에서 이 게임의 필드에서 바뀌지 않는 칸을 뺐다: ${unused.map((w) => w.label || (w.kind === "party" ? "동료 판" : HUD_SOURCES[w.source])).join(", ")}`] : [`필드 HUD(${hud.theme})에 전에 뺀 칸을 되돌렸다(이제 필드에서 바뀐다)`];
 }
 
 // ── 전투 곡 ─────────────────────────────────────────────────────────────

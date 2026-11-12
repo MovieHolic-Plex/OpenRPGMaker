@@ -9,51 +9,63 @@
   z-index: 30;
 }
 
+/* 필드 안내 네 가지는 모두 작은 글 한 줄짜리 띠다(논리 화면 320×240 기준 7px, 고해상도 무대는 --play-ui-scale 로 같은 비율).
+   화면이 좁다 — 9px 글에 4·8px 여백이던 때는 목표 창 하나가 화면의 5%, 「Z 대화」 안내가 2.5% 였다(2026-11-13 오너 «HUD 가 개판»).
+   예산(test/fieldHudBudget.test.ts): 늘 떠 있는 것 합계 ≤ 6%, 가운데 60%×60% 에는 아무것도 없다, 조작 안내 ≤ 4%·아래 끝. */
 .zone-feedback-banner,
 .zone-feedback-toast,
 .zone-feedback-objective,
 .zone-feedback-prompt {
   background: var(--runtime-glass-panel);
-  border: 1px solid var(--runtime-glass-hairline);
-  /* handSlot.css 와 같은 이유로 윈도스킨 칠을 멈줌다 — slice fill 이 배경을 덮는다. */
+  border: 0;
+  /* handSlot.css 와 같은 이유로 윈도스킨 칠을 멈춘다 — slice fill 이 배경을 덮는다. */
   border-image: none;
-  border-radius: var(--runtime-glass-radius-small);
-  box-shadow: var(--runtime-glass-shadow);
+  border-radius: calc(2px * var(--play-ui-scale, 1));
   box-sizing: border-box;
-  line-height: 1.4;
-  max-width: 72%;
-  padding: var(--space-1) var(--space-2);
+  font-size: calc(7px * var(--play-ui-scale, 1));
+  line-height: calc(8.5px * var(--play-ui-scale, 1));
+  max-width: 60%;
+  padding: calc(1px * var(--play-ui-scale, 1)) calc(4px * var(--play-ui-scale, 1));
   position: absolute;
 }
 
+/* 알림은 위쪽 끝에만 선다 — 지역 알림 바로 밑이 체크포인트 알림. 가운데(세로 20%~80%)로 내려오지 않는다. */
 .zone-feedback-banner {
   left: 50%;
-  top: var(--space-3);
+  top: calc(4px * var(--play-ui-scale, 1));
   transform: translateX(-50%);
 }
 
 .zone-feedback-toast {
   left: 50%;
-  top: calc(var(--space-4) * 3);
+  top: calc(18px * var(--play-ui-scale, 1));
   transform: translateX(-50%);
 }
 
 .zone-feedback-objective {
-  /* 목표 줄은 늘 읽혀야 한다 — 고해상도 무대(--play-ui-scale, fieldHud.ts)에서도 같은 크기로 보이게 키운다(J105). 320×240 에서는 1배 그대로. */
-  font-size: calc(var(--runtime-font-size-9) * var(--play-ui-scale, 1));
-  right: var(--space-2);
-  top: var(--space-2);
-  /* 자리는 playSceneZoneFeedback.placeObjective 가 주인공·인물·HUD 를 피해 고른다(inline left/top). 위 값은 씬이 없을 때의 기본이다.
-     반투명 판 뒤로 가구 윤곽이 비쳐 어수선했다 — 거의 불투명하게. 줄 길이를 고르게 해 「데)」 한 글자 줄을 막는다. */
-  background: rgba(12, 15, 30, 0.95);
-  text-wrap: balance;
+  right: calc(4px * var(--play-ui-scale, 1));
+  top: calc(4px * var(--play-ui-scale, 1));
+  /* 자리는 playSceneZoneFeedback.placeObjective 가 정한다(오른쪽 위 제자리 — inline left/top). 위 값은 씬이 없을 때의 기본이다.
+     목표 줄: 한 줄, 화면 폭의 45% 까지. 넘치면 두 줄까지만 감고 그 뒤는 말줄임 — 두 줄일 때 높이 19px(화면 높이의 7.9%).
+     전체 글은 메뉴의 「현재 목표」와 목표가 바뀔 때의 알림 띠(.objective-card)에 있다. 판은 옅게 — 늘 떠 있는 것이 눈을 끌지 않게. */
+  background: rgba(12, 15, 30, 0.62);
+  max-width: 45%;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
+
+.zone-feedback-objective[hidden] { display: none; }
 
 .zone-feedback-prompt {
   animation: zone-prompt-settle 3.4s ease-out forwards;
-  bottom: var(--space-3);
+  bottom: calc(4px * var(--play-ui-scale, 1));
   left: 50%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transform: translateX(-50%);
+  white-space: nowrap;
 }
 
 /* 상호작용 안내는 잠깐 또렷했다가 사라진다 — 같은 자리에 서 있는 동안 계속 떠 있지 않게(playSceneZoneFeedback.setPromptLine). 옅게 남겨도 「상시 표시」로 읽혔다(가혹 검수 r6). */
@@ -78,30 +90,29 @@
   }
 }
 
-/* 첫 조작·목표 변경 때 가운데에 잠깐 뜨는 목표 카드(objectiveCard.ts). 구석 목표 줄은 판정자가 「안내 없음」으로 읽었다(2026-10-29). */
+/* 첫 조작·목표 변경 때 잠깐 뜨는 알림 띠(objectiveCard.ts) — 위쪽 끝, 목표 줄이 앉는 오른쪽 위 모서리에서 한두 줄. 닫히면 그 자리에 목표 줄이 남는다.
+   전에는 화면 가운데의 카드(논리 160×105px 안팎, 화면의 21%)가 방을 덮었다(2026-11-13 오너). 어떤 게임에서도 가운데 카드는 없다. */
 .objective-card {
-  animation: objective-card-in 0.22s ease-out;
-  background: rgba(12, 15, 30, 0.94);
-  border: 1px solid var(--runtime-glass-hairline);
+  align-items: baseline;
+  animation: objective-strip-in 0.18s ease-out;
+  background: rgba(12, 15, 30, 0.9);
+  border: 0;
   border-image: none;
-  border-radius: var(--runtime-glass-radius-small);
-  box-shadow: var(--runtime-glass-shadow);
+  border-radius: calc(2px * var(--play-ui-scale, 1));
   box-sizing: border-box;
   color: var(--runtime-window-text);
-  display: flex;
-  flex-direction: column;
+  column-gap: calc(4px * var(--play-ui-scale, 1));
+  display: grid;
   font-family: var(--runtime-ui-font);
-  gap: calc(var(--space-1) * var(--play-ui-scale, 1));
-  left: 50%;
-  max-width: 78%;
-  padding: calc(var(--space-2) * var(--play-ui-scale, 1)) calc(var(--space-3) * var(--play-ui-scale, 1));
+  grid-template-columns: auto minmax(0, 1fr);
+  max-width: 72%;
+  padding: calc(2px * var(--play-ui-scale, 1)) calc(5px * var(--play-ui-scale, 1));
   pointer-events: none;
   position: absolute;
-  text-align: center;
+  right: calc(4px * var(--play-ui-scale, 1));
+  row-gap: calc(1px * var(--play-ui-scale, 1));
   text-shadow: 1px 1px 0 var(--runtime-window-shadow);
-  /* 카메라는 주인공을 화면 가운데에 둔다 — 38% 에 걸린 세 줄 카드가 주인공 머리를 덮었다(폴른 스타 1막 VQA 2026-10-31). */
-  top: 26%;
-  transform: translate(-50%, -50%);
+  top: calc(4px * var(--play-ui-scale, 1));
   z-index: 31;
 }
 
@@ -109,33 +120,37 @@
 
 .objective-card-label {
   color: #f4d27a; /* 금빛 이름표 — 런타임에 같은 색 토큰이 없다(전에는 정의 없는 --runtime-accent 의 대체값으로 같은 색이 그려졌다). */
-  font-size: calc(var(--runtime-font-size-9) * var(--play-ui-scale, 1));
-  letter-spacing: 0.08em;
+  font-size: calc(6px * var(--play-ui-scale, 1));
+  line-height: calc(9px * var(--play-ui-scale, 1));
+  white-space: nowrap;
 }
 
+/* 목표 글: 작은 글 두 줄까지. 첫 조작 띠는 조작 안내 줄이 따로 있으므로 한 줄. */
 .objective-card-text {
-  font-size: calc(var(--runtime-font-size-9) * 1.45 * var(--play-ui-scale, 1));
-  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: calc(7px * var(--play-ui-scale, 1));
+  line-height: calc(9px * var(--play-ui-scale, 1));
   margin: 0;
-  text-wrap: balance;
+  overflow: hidden;
 }
+
+.objective-card[data-kind="intro"] .objective-card-text { -webkit-line-clamp: 1; }
 
 .objective-card-controls {
-  border-top: 1px solid var(--runtime-glass-hairline);
-  font-size: calc(var(--runtime-font-size-9) * var(--play-ui-scale, 1));
-  opacity: 0.85;
-  padding-top: calc(var(--space-1) * var(--play-ui-scale, 1));
+  font-size: calc(6px * var(--play-ui-scale, 1));
+  grid-column: 1 / -1;
+  line-height: calc(8px * var(--play-ui-scale, 1));
+  opacity: 0.8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* 목표 없이 조작 안내만 뜨면 위에 가를 줄이 없다 — 빈 칸 위에 금만 그어져 있었다. */
-.objective-card-controls:first-child {
-  border-top: 0;
-  padding-top: 0;
-}
-
-@keyframes objective-card-in {
-  from { opacity: 0; transform: translate(-50%, -42%); }
-  to { opacity: 1; transform: translate(-50%, -50%); }
+@keyframes objective-strip-in {
+  from { opacity: 0; transform: translateY(calc(-6px * var(--play-ui-scale, 1))); }
+  to { opacity: 1; transform: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

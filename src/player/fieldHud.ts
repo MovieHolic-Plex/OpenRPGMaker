@@ -1,6 +1,6 @@
 import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
-import { effectiveFieldHud, normalizeFieldHud, resolvedHudWidgets, recommendedHudFont, type HudWidget } from "@/project/fieldHud";
+import { effectiveFieldHud, fieldHudWidgets, normalizeFieldHud, recommendedHudFont, type HudWidget } from "@/project/fieldHud";
 import { isActionCombatMap } from "@/project/actionCombat";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { readHudWidget, type HudEntry, type HudReading, type HudRuntimeContext } from "./fieldHudData";
@@ -26,6 +26,7 @@ export class FieldHud {
   readonly root = hudNode("field-hud");
   private readonly mounts = new Map<string, WidgetMount>();
   private configSource: unknown;
+  private projectSource: unknown;
   private initialized = false;
   private widgets: HudWidget[] = [];
   private config = normalizeFieldHud(undefined);
@@ -34,11 +35,13 @@ export class FieldHud {
   }
   update(project: Project, session: PlaySession, context: HudRuntimeContext = {}): void {
     const hudSource = effectiveFieldHud(project);
-    if (this.configSource !== hudSource || !this.initialized) {
+    if (this.configSource !== hudSource || this.projectSource !== project || !this.initialized) {
       this.initialized = true;
       this.configSource = hudSource;
+      this.projectSource = project;
       this.config = normalizeFieldHud(hudSource);
-      this.widgets = resolvedHudWidgets(this.config);
+      // 프리셋 구성에서는 이 게임의 필드에서 바뀔 수 없는 칸(턴제 게임의 체력·마력 막대, 동료 체력 판)을 올리지 않는다 — fieldHudWidgets.
+      this.widgets = fieldHudWidgets(project, this.config);
       const wanted = new Set(this.widgets.map(w => w.id));
       for (const [id, mount] of this.mounts) if (!wanted.has(id)) { mount.node.remove(); this.mounts.delete(id); }
       for (const widget of this.widgets) {
@@ -116,9 +119,7 @@ export class FieldHud {
       const bottom = anchor.startsWith("bottom");
       // Keep controls clear of the avatar; switching is based on the authored anchor, never on the moved position.
       if (widget.autoAvoid && context.playerY !== undefined && (bottom ? context.playerY > size.height - height - widget.y - 20 : anchor.startsWith("top") && context.playerY < height + widget.y + 20)) anchor = anchor.replace(bottom ? "bottom" : "top", bottom ? "top" : "bottom") as HudWidget["anchor"];
-      let x = anchor.endsWith("right") ? size.width - width - widget.x : anchor.endsWith("center") ? (size.width - width) / 2 + widget.x - 10 : widget.x;
-      let y = anchor.startsWith("bottom") ? size.height - height - widget.y : anchor.startsWith("middle") ? (size.height - height) / 2 + widget.y - 10 : widget.y;
-      x = Math.max(4, Math.min(size.width - width - 4, x)); y = Math.max(4, Math.min(size.height - height - 4, y));
+      let { x, y } = hudAnchorPoint(widget, anchor, size, width, height);
       if (anchor !== widget.anchor) {
         // Auto-relocated controls must also clear fixed panels such as the calendar.
         let left = 4, right = size.width - 4;
@@ -183,6 +184,13 @@ export class FieldHud {
     this.root.remove(); this.mounts.clear();
     for (const key of ["fieldHud", "hudFont", "hudObjectiveFont", "hudObjective", "hudStamina", "hudHp"]) delete this.host.dataset[key];
   }
+}
+
+/** 앵커와 저작 좌표에서 칸의 왼쪽 위 — 화면 논리 px, 가장자리 4px 안쪽. 예산 검사(test/fieldHudBudget.test.ts)가 같은 셈으로 프리셋의 자리를 잰다. */
+export function hudAnchorPoint(widget: Pick<HudWidget, "x" | "y">, anchor: string, size: { width: number; height: number }, width: number, height: number): { x: number; y: number } {
+  const x = anchor.endsWith("right") ? size.width - width - widget.x : anchor.endsWith("center") ? (size.width - width) / 2 + widget.x - 10 : widget.x;
+  const y = anchor.startsWith("bottom") ? size.height - height - widget.y : anchor.startsWith("middle") ? (size.height - height) / 2 + widget.y - 10 : widget.y;
+  return { x: Math.max(4, Math.min(size.width - width - 4, x)), y: Math.max(4, Math.min(size.height - height - 4, y)) };
 }
 
 function writeDataset(node: HTMLElement, key: string, value: string): void {

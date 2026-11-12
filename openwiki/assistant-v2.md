@@ -903,6 +903,10 @@ r1w-fun 의 대화창에는 이름표만 떴다. 까닭 셋:
 - 끝맺음 `reconcileFieldHud`(story/shipLookDefaults.ts, `applyLookDefaults` 가 늘 부른다): 안 골랐거나 템플릿 그대로면 함수가 고르고(체력이 줄 일이 없으면 목표 줄만,
   공포는 꽃잎, 싸우는 판타지는 classic, 그 밖은 hearts), 턴제 게임에 고른 `adventure`(실시간 액션용)는 그 값으로 바꾸고, 고른 테마에서 안 쓰는 게이지를 뺀다. 전투·기술이 뒤에 생기면 뺀 게이지가 돌아온다. 저자가 짠 widgets 는 안 건드린다.
 - «HUD 선택» 관문은 지웠다(관문 하나 줄임) — 모델에게 고르라고 시키는 대신 함수가 게임에서 읽는다. 타이틀 모양 관문은 그대로.
+- **2026-11-13 — «쓰는 게이지» 가 아니라 «필드에서 바뀌는 칸».** `projectHudUse` 의 `hp` 는 이제 «필드에서 체력이 깎인다»(`projectFieldHpChanges`: 실시간 액션 전투·피해 명령)이고 `mp`·`stamina` 는 액션 전투일 때만 참이다.
+  턴제 전투만 있는 게임에서는 체력·마력 게이지와 **동료 체력 판**이 `unused` 로 빠지고(`set_field_hud` 의 답 · 끝맺음), `fillFieldHud` 는 그런 게임을 «목표 줄만» 으로 끈다(전에는 classic/hearts).
+  런타임도 프리셋 구성에서 같은 칸을 올리지 않는다(`fieldHudWidgets`) — 이미 지어 둔 게임도 같다. 프리셋 크기·알림 띠·목표 줄 예산은 `runtime-pre-edit-routing.md` «필드 HUD 예산».
+  모델에게 가는 글: `set_field_hud` 설명 +126자(«party = party HP rows (only where HP drops on the field)» · «…cannot change on the field are left out — in a turn-based game HP lives in the battle screen and the menu»).
 - 런타임 CSS: 판 없는 위젯의 이름표에도 숫자와 같은 어두운 판(밝은 땅 위에서 안 읽혔다).
 
 **확인(모델 없음).** `fun-x1` 저장본: 필드에 뜨는 것 「마력 막대 + 목표 줄」 → 「목표 줄」. `fun-w3`: 체력·마력·(다쳤을 때) 스태미나 고리 → 체력·마력.

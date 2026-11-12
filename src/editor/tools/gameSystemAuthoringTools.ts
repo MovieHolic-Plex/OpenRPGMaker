@@ -54,7 +54,7 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
   tool('read_game_systems','전투 규칙·출전 파티·ESC 실제 항목·HUD·도감/지도/배지 정의·음악 연결을 함께 읽고 불일치를 표시.','read',schema({},[]),p=>({summary:'현재 게임 시스템과 실제 메뉴 모델을 조회했습니다.',data:systemView(p)})),
   // 2026-10-25 사용자 규칙: 편집기 기본 HUD(체력 하트·514/514)를 출하하지 않는다. 조수가 장르에 맞는 HUD 를 고르거나 끈다.
   tool('set_field_hud','탐색 화면에 늘 떠 있는 HUD 를 장르에 맞게 고르거나 끈다(편집기 기본 HUD 를 그대로 두지 않는다). theme: '+Object.entries(FIELD_HUD_THEMES).filter(([k])=>k!=='legacy').map(([k,v])=>`${k}(${v})`).join(', ')+'. off:true = HUD 없음(이야기·추리·연애 대부분). vitals/clock/tools/objective 로 칸을 켜고 끈다. 답의 onScreen 이 필드에 실제로 뜨는 것이다 — 이 게임이 쓰지 않는 게이지(unused)는 켜지 않는다.','write',schema({
-    theme:{type:'string',enum:Object.keys(FIELD_HUD_THEMES).filter(k=>k!=='legacy'),description:'HUD 모양(필드에 뜨는 것). classic=필드에 아무것도 없음(능력치는 메뉴) — 턴제 JRPG, hearts=하트 체력+소지금, horror=꽃잎 생명, chase=없음, party=동료 패널, collector=지역 이름, minimal=작은 하트·시계, farm=시계·소지금·기력·도구, survival=도구·식량·체력·스태미나, adventure=체력·마력 막대+도구 5칸+스태미나(실시간 액션 전투 게임만).'},
+    theme:{type:'string',enum:Object.keys(FIELD_HUD_THEMES).filter(k=>k!=='legacy'),description:'HUD 모양(필드에 뜨는 것). classic=필드에 아무것도 없음(능력치는 메뉴) — 턴제 JRPG, hearts=하트 체력+소지금, horror=꽃잎 생명, chase=없음, party=동료 체력 줄(필드에서 체력이 깎이는 게임만), collector=지역 이름, minimal=작은 하트·시계, farm=시계·소지금·기력·도구, survival=도구·식량·체력·스태미나, adventure=체력·마력 막대+도구 5칸+스태미나(실시간 액션 전투 게임만).'},
     off:{type:'boolean',description:'true 면 상시 HUD 를 모두 끈다.'},
     vitals:{type:'boolean',description:'몸 게이지(체력·마력·기력·스태미나) 표시'},clock:{type:'boolean',description:'달력·시계'},tools:{type:'boolean',description:'도구 슬롯'},objective:{type:'boolean',description:'목표 한 줄'},
   },[]),(p,args)=>{
@@ -78,10 +78,10 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     // 명시한 vitals:true 는 그대로 둔다(끝맺음이 게임이 다 지어진 뒤에 다시 맞춘다).
     const unused=flags.vitals===true?[]:unusedHudGauges(next,projectHudUse(p));
     if(unused.length){const drop=new Set(unused.map(w=>w.id));next.widgets=resolvedHudWidgets(next).filter(w=>!drop.has(w.id));}
-    const nameOf=(w:{label:string;source:keyof typeof HUD_SOURCES})=>w.label||HUD_SOURCES[w.source];
-    const dropped=unused.length?` — 이 게임이 쓰지 않는 게이지는 뺐다: ${unused.map(nameOf).join(', ')}`:'';
+    const nameOf=(w:{label:string;kind:string;source:keyof typeof HUD_SOURCES})=>w.label||(w.kind==='party'?'동료 판':HUD_SOURCES[w.source]);
+    const dropped=unused.length?` — 이 게임의 필드에서 바뀌지 않는 칸은 뺐다(체력은 전투 화면과 메뉴에 있다): ${unused.map(nameOf).join(', ')}`:'';
     const shown=[...resolvedHudWidgets(next).filter(w=>w.enabled).map(nameOf),...(next.objective?['목표 한 줄']:[])];
-    return {summary:`필드 HUD: ${FIELD_HUD_THEMES[next.theme]}(${next.theme}) — 필드에 뜨는 것: ${shown.join(', ')||'없음'}${note}${dropped}`,data:{hud:next,onScreen:hudOnScreen(next),unused:unused.map(w=>`${w.source} gauge${w.label?` «${w.label}»`:''}`)}};
+    return {summary:`필드 HUD: ${FIELD_HUD_THEMES[next.theme]}(${next.theme}) — 필드에 뜨는 것: ${shown.join(', ')||'없음'}${note}${dropped}`,data:{hud:next,onScreen:hudOnScreen(next),unused:unused.map(w=>w.kind==='party'?'party panel':`${w.source} gauge${w.label?` «${w.label}»`:''}`)}};
   }),
   tool('configure_shop_presentation','전체 상점의 표현을 명시적으로 선택. collector는 흰 도트 창의 도구점. 상품·가격·수량·매입 예산은 유지. event-default는 각 명령 스킨 사용.','write',schema({preset:{type:'string',enum:[...SHOP_UI_PRESETS,'event-default']}},['preset']),(p,args)=>{
     if(args.preset==='event-default')delete p.meta.oprnShopPreset;
