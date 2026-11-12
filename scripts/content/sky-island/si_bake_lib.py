@@ -25,9 +25,14 @@ PC, LOWER_PC, PCNOTE = BL.PC, BL.LOWER_PC, BL.PCNOTE
 
 
 # ───────────────────────── 관문 ─────────────────────────
+WAIVED = []
+
+
 def gate_status(png, kind):
     """'pass' | 'prov'(영수증 pass, 프로필 미보정) | 이유(str, 막힘). 영수증 파일을 직접 읽어 FAIL 을 임시통과로 세지 않는다."""
     sha = OG.pixel_sha256(png)
+    # 오너 면제 묶음(2026-11-12 직각 지붕 다시 그리기): 면제는 통과가 아니다 — 보고에는 «3/4 관문 미통과 — 오너 면제».
+    if OG.read_owner_waiver(sha) and OG.refusal(png, kind=kind, context='bundle') is None: WAIVED.append(os.path.basename(str(png))); return 'pass'
     r = OG.read_receipt(sha)
     if not r: return '영수증 없음'
     if r.get('kind') != kind: return '영수증 종류 %s != %s' % (r.get('kind'), kind)
