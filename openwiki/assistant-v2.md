@@ -1575,6 +1575,12 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - **쓰기 하나가 끝날 때마다 빈 시드 맵을 본다**(`blankStart.ts` `retireSeedStart`, `tools/verbs.ts` 가 v2 동사와 게임 도구 뒤에 부른다). 빈 맵이 아직 빈 채이고 실제 장소가 따로 생겼으면
   시작을 그 장소(시작 맵이 실제 장소면 그대로, 아니면 빈 맵이 이어진 맵, 그것도 없으면 첫 장소)의 걸어 닿는 칸으로 옮기고, 빈 맵으로 가는 이동 이벤트와 빈 맵을 지운다. 결과에 `[Start map] …` 한 줄이 붙는다.
   게임 청사진의 끝맺음 단계(`retireBlankStart`)는 그대로다 — 이것은 청사진 없는 한 줄 요청에도 닿는 같은 일이다.
+- **자리표시 맵은 «이 요청이 시작될 때 게임이 시작하던 빈 맵» 뿐이다**(2026-11-12). id 가 `map_blank_start` 이고 비어 있다는 것만으로 지우지 않는다 —
+  `retireSeedStart(run, seedWasStart)` 는 요청 시작 때 시작 맵이 그 맵이었을 때만 돌고, `retireBlankStart(run, before)` 는 요청 전부터 있던 빈 맵을
+  그때의 시작 맵일 때만 치운다(이 요청이 만든 빈 맵은 전처럼 치운다). 왜: Haiku 작은 일 셋째 묶음 세 판(password-safe · life-petals · ending-by-talks)에서
+  시작 맵이 「잿불 마을」 인 프로젝트의 둘째 맵 「동쪽 들판」(id `map_blank_start`, 풀밭 한 장)을 쓰기 도구가 끝날 때마다 지웠고, 모델이 `create_map` 으로 되살리면 또 지웠다
+  (ending-by-talks 84 호출). 시작이 다른 맵에 있으면 그 빈 맵은 그 프로젝트의 것이다. 탐침(모델 없음): 시작 맵에 그림이 있는 starter 판에 `add_people` 한 번 —
+  전 «seed removed · [Start map] 줄», 후 «「동쪽 들판」 그대로 · 줄 없음»; 새 프로젝트 `make_place` 마을은 전후 같다(빈 맵 지움·시작 옮김). 시험 `test/aiV2SeedStart.test.ts`.
 - **치워진 맵 id 로 온 뒤따른 호출은 시작 맵으로 고쳐 받는다**(`loop/argGuard.ts` — `mapId`·`fromMapId`·`toMapId`, 결과에 그렇게 알린다). 모델은 앞 결과에서 본 id 를 계속 쓴다.
 - **첫 바깥 장소의 시작 칸은 그 장소로 들어오는 길 입구에서 두세 칸 안쪽이다**(`place/startSpot.ts` `roadEntranceStart` — 길 입구는 `place/roadMouths.ts`): 남·서·동·북 순서, 걸어 닿는 가장 큰 덩이 안,
   이벤트가 없고 지붕·나무 그림 밑(`underRoof.ts` `coveredCell`)이 아닌 길 칸. 가장자리에 닿는 길이 없는 맵은 빌더가 정한 칸을 그대로 쓴다.
