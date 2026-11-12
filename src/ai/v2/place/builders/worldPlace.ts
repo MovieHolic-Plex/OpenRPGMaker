@@ -43,6 +43,10 @@ function doorsOf(project: Project, map: GameMap, data: Record<string, unknown>):
   for (const a of (Array.isArray(data.areas) ? data.areas : []) as Record<string, unknown>[]) {
     if (a.tag === "exit") continue;   // 방 자신의 나가는 문 — 들어오는 칸(exitCell)으로 쓴다
     const door = cellOf(a.door);
+    // 집 문은 «막힌 문 칸 + 그 앞 걷는 칸» 이다(place/entrances.ts 와 같은 뜻). 걸어서 지나는 문 칸은 통로·대문이라 방을 달지 않는다 —
+    // 정거장 갑판의 방 사이 통로에 방을 달면 선실로 들어가는 걸음이 다른 맵으로 옮겨진다(구성기 세계 아홉을 재면 그런 문은 갑판 통로 · 요새 안뜰 문 · 황무지 대문·야영지뿐이다).
+    const passage: Cell | undefined = door;   // walkable 은 형 가드라 door 를 그대로 넣으면 아래 줄에서 never 가 된다
+    if (walkable(project, map, passage)) continue;
     add(cellOf(a.access) ?? (door ? { x: door.x, y: door.y + 1 } : undefined), `${String(a.tag ?? "")} ${String(a.name ?? "")}`.trim());
   }
   return doors;

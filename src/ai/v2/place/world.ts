@@ -238,6 +238,11 @@ export const WORLDS: readonly WorldSetting[] = [
       out("street", "네온 거리", "neon city street", [48, 30]),
       out("lab", "연구 기지", "research base", [40, 30], { danger: true }),
       out("moonbase", "달 기지", "moon base on the surface", [48, 32], { danger: true }),
+      // 실내 — 한 칸짜리 방(구성기 quarters · canteen · clinic). station · lab 은 그 자체가 밀폐된 갑판 한 장이라 집 문에 달 방이 아니다.
+      // 방은 거리·달 기지의 건물 문이나 갑판의 승강기·에어록(막힌 문 칸 + 앞 바닥 칸)에 달린다 — 갑판 안 방 사이 통로에는 달지 않는다(worldPlace.doorsOf).
+      room("quarters", "거주실", "living quarters: bunk, lockers, desk (someone's home)", [12, 11], /apartment|capsule|hab-|tower|elevator|아파트|캡슐|거주|타워|승강기/u, { home: true }),
+      room("canteen", "식당", "canteen with a galley counter and tables", [16, 11], /noodle|arcade|club|국수|아케이드|클럽/u),
+      room("clinic", "진료실", "small clinic: med beds, scanner, cabinet", [14, 11], /clinic|lab-module|airlock|진료소|연구 모듈|에어록/u),
     ],
   },
   {
