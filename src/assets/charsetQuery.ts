@@ -55,8 +55,9 @@ const SYNONYMS: readonly {
   readonly tags?: readonly string[];
   readonly category?: CharsetCategory;
 }[] = [
-  { terms: ["old woman", "elder woman", "할머니", "노파"], gender: "female", age: "elder", tags: ["할머니", "노인", "여성"] },
-  { terms: ["old man", "elder man", "할아버지", "노인 남성"], gender: "male", age: "elder", tags: ["노인", "남성"] },
+  // 할멈·할매·할미·할배: 이름에 붙는 흔한 부름말(«오르텐 할멈») — 모르면 질의가 0건이라 고르는 쪽이 아무 사람이나 세웠다(2026-11-12 r1s-fun: 할멈이 왕 칩).
+  { terms: ["old woman", "elder woman", "할머니", "노파", "할멈", "할매", "할미"], gender: "female", age: "elder", tags: ["할머니", "노인", "여성"] },
+  { terms: ["old man", "elder man", "할아버지", "노인 남성", "할배"], gender: "male", age: "elder", tags: ["노인", "남성"] },
   { terms: ["아줌마", "아주머니", "주부", "housewife"], gender: "female", age: "middle", tags: ["여성", "중년"] },
   { terms: ["아저씨"], gender: "male", age: "middle", tags: ["남성", "중년"] },
   { terms: ["소녀", "girl"], gender: "female", age: "child", tags: ["소녀", "아이", "어린이"] },
@@ -169,6 +170,30 @@ function intentFromQuery(normalized: string): QueryIntent {
     for (const tag of synonym.tags ?? []) tags.add(tag);
   }
   return { genders, ages, tags, categories };
+}
+
+/**
+ * 글(역할·이름·외형 낱말)에서 읽힌 성별·나이 — 하나로만 읽힐 때(«남자아이» 처럼 둘이 겹치지 않을 때). 칩을 고르는 쪽이 «그 사람에게 맞는 칩»을 가릴 때 쓴다.
+ * 검색(queryNpcGraphics)과 같은 낱말 표를 본다 — 고르는 쪽이 낱말 표를 따로 갖지 않는다.
+ */
+export function npcGraphicIntent(text: string): { readonly gender?: Exclude<CharsetGender, "none">; readonly age?: CharsetAge } {
+  const intent = intentFromQuery(normalizeQuery(text));
+  return { ...(intent.genders.size === 1 ? { gender: [...intent.genders][0]! } : {}), ...(intent.ages.size === 1 ? { age: [...intent.ages][0]! } : {}) };
+}
+
+/**
+ * 글에서 성별·나이로 읽힌 낱말만 추린 질의(«오르텐 할멈» → «할멈»). 이름이 섞인 글은 통째로 물으면 0건이다 — 고르는 쪽이 이것으로 한 번 더 묻는다.
+ * 읽힌 낱말이 없으면 undefined.
+ */
+export function npcGraphicPersonQuery(text: string): string | undefined {
+  const normalized = normalizeQuery(text), tokens = englishTokens(normalized);
+  const words: string[] = [];
+  for (const synonym of SYNONYMS) {
+    if (!synonym.gender && !synonym.age) continue;
+    const term = synonym.terms.find((t) => hasTerm(normalized, tokens, t));
+    if (term && !words.includes(term)) words.push(term);
+  }
+  return words.length ? words.join(" ") : undefined;
 }
 
 function textMatchScore(term: string, entry: CharsetSemanticEntry): number {

@@ -210,21 +210,28 @@ function pickChip(text: string, avoid: ReadonlySet<string>, overrides: Project["
   const queries = [...(role ? (female ? role.female : role.male) : []), ...(female ? DEFAULT_QUERIES.female : DEFAULT_QUERIES.male)];
   // 흉상(대화창)과 전투 그림이 둘 다 그 칩의 것인 칩이 먼저다 — 얼굴 낱장뿐인 칩은 그런 칩이 어느 검색어에도 없을 때만.
   // «청년 전사»(people5)는 흉상도 전투 그림도 없어 대화창에는 이름표만, 전투에는 다른 사람(기본 검사)이 섰다(2026-11-12 r1w-fun).
-  let faceOnly: ChipPick | undefined;
+  // 다만 흉상은 «맞는 칩» 안에서만 앞선다: 성별이 어긋나거나 아이가 아닌데 아이 칩이면 흉상이 있어도 맞는 칩(낱장뿐이어도) 뒤다 —
+  // 검색어 하나의 결과 12개에는 느슨하게 걸린 다른 성별·나이의 칩도 섞여 있다.
+  const wanted = female ? "female" : "male";
+  const child = /소녀|소년|아이|어린/u.test(text);
+  const picks: (ChipPick | undefined)[] = [undefined, undefined, undefined, undefined]; // 맞음+흉상 · 맞음 · 안 맞음+흉상 · 안 맞음
   for (const query of queries) {
     for (const match of queryNpcGraphics(query, 12, overrides)) {
-      const asset = findCharsetAsset(match.entry.textureKey);
+      const entry = match.entry;
+      const asset = findCharsetAsset(entry.textureKey);
       if (!asset) continue;
-      const key = `${asset.id}#${match.entry.characterIndex}`;
+      const key = `${asset.id}#${entry.characterIndex}`;
       if (avoid.has(key)) continue;
-      const face = sharedFaceForCharset(match.entry.textureKey, match.entry.characterIndex)?.resourceId;
+      const face = sharedFaceForCharset(entry.textureKey, entry.characterIndex)?.resourceId;
       if (!face) continue; // 짝 얼굴이 검토된 칩만 — 모습과 얼굴이 같은 인물이어야 한다.
-      const pick = { resourceId: asset.id, index: match.entry.characterIndex, label: match.entry.label, face };
-      if (bustOfChip(match.entry.textureKey, match.entry.characterIndex) && charsetBattlerForCharacter(asset.id, match.entry.characterIndex)) return pick;
-      faceOnly ??= pick;
+      const misfit = (!!entry.gender && entry.gender !== "none" && entry.gender !== wanted) || (entry.age === "child" && !child);
+      const whole = !!bustOfChip(entry.textureKey, entry.characterIndex) && !!charsetBattlerForCharacter(asset.id, entry.characterIndex);
+      const slot = (misfit ? 2 : 0) + (whole ? 0 : 1);
+      picks[slot] ??= { resourceId: asset.id, index: entry.characterIndex, label: entry.label, face };
+      if (slot === 0) return picks[0];
     }
   }
-  return faceOnly;
+  return picks.find((pick) => !!pick);
 }
 
 /**

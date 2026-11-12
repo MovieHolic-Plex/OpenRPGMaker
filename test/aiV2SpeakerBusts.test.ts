@@ -4,6 +4,7 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { findSharedPortrait, dialogueFaceForEmotion } from "@/assets/sharedPortraitAssets";
 import { bustOfChip, bustOfFace, settleSpeakerBustsIn } from "@/ai/v2/story/speakerBust";
 import { pickPersonGraphic } from "@/ai/v2/place/people";
+import { npcGraphicIntent, npcGraphicPersonQuery } from "@/assets/charsetQuery";
 import { fillPartyLooks } from "@/ai/v2/story/shipLookDefaults";
 import { charsetBattlerForCharacter } from "@/assets/charsetBattlers";
 import { collectWebExportAssets } from "@/project/webExportAssets";
@@ -102,6 +103,38 @@ describe("사람·주인공 칩 고르기 — 흉상이 있는 칩 먼저", () =
     expect(innkeeper.label).toBe("여관 주인");
     // 역할 낱말이 없는 이름은 이름으로 돌려 고르되 흉상이 있는 칩에서.
     for (const name of ["주술사", "족장 바라", "동굴 지기 아루", "사냥꾼"]) { const pick = pickPersonGraphic(project, map, name, undefined)!; expect(bustOfChip(pick.textureKey, pick.characterIndex), name).toBeDefined(); }
+  });
+
+  // 2026-11-12 r1s-fun: «오르텐 할멈» 이 왕 칩으로 서서 대사창에 왕의 흉상이 떴다. 칩 → 흉상 짝은 맞았고 칩이 틀렸다 —
+  // «할멈» 을 몰라 이름으로 돌려 골랐고, 돌리는 후보가 사람 칩 60칸 전체(왕·공주·메이드·기사 포함)였다.
+  it("할멈은 노파 칩으로 서고 그 흉상이 뜬다 — 이름이 섞여도, 글이 말한 성별은 역할 표의 기본보다 먼저", () => {
+    const project = createBlankProject() as Project;
+    const map = project.maps[project.startMapId]!;
+    for (const name of ["오르텐 할멈", "할멈", "할머니"]) {
+      const pick = pickPersonGraphic(project, map, name, undefined)!;
+      expect(`${pick.textureKey}#${pick.characterIndex} ${pick.label}`, name).toBe("tex_easyrpg_charset_people1#7 노파");
+      expect(bustOfChip(pick.textureKey, pick.characterIndex), name).toBe("shared-people1-old-woman-expressions-bust-base");
+    }
+    expect(npcGraphicIntent("오르텐 할멈")).toEqual({ gender: "female", age: "elder" });
+    expect(npcGraphicPersonQuery("오르텐 할멈")).toBe("할멈");
+    expect(npcGraphicPersonQuery("신문팔이 핀")).toBeUndefined();
+    // 글이 «여성» 이라고 했으면 남자 칩(촌장의 기본)은 흉상이 있어도 서지 않는다. 역할 표의 느슨한 낱말(«왕» ⊂ «여왕»)은 기울기일 뿐이다.
+    expect(pickPersonGraphic(project, map, "여성 촌장", undefined)!.label).toBe("중년 여성 주민(흑인)");
+    expect(pickPersonGraphic(project, map, "여왕", undefined)!.label).toBe("여왕");
+  });
+
+  it("역할을 못 알아들은 이름에는 그냥 주민만 선다 — 왕·공주·메이드·기사·아이 칩은 그 역할을 말했을 때만, 이름마다 고르게 갈린다", () => {
+    const project = createBlankProject() as Project;
+    const map = project.maps[project.startMapId]!;
+    const plain = ["청년 남성", "젊은 여성", "중년 남성 주민(흑인)", "중년 여성 주민(흑인)", "대머리 남성 주민"];
+    const names = ["기록가 여울", "마을 주민 다래", "선원", "나디아", "오르텐", "신문팔이 핀", "노동자 하크", "시민 엘리", "선장 바르가", "모라", "미르", "숲지기 연", "겨울 손님", "주술사", "족장 바라", "사냥꾼"];
+    const labels = names.map((name) => pickPersonGraphic(project, map, name, undefined)!.label);
+    for (const [i, label] of labels.entries()) expect(plain, names[i]).toContain(label);
+    expect(new Set(labels).size).toBe(plain.length);
+    // 말한 역할은 그대로 그 칩이다.
+    expect(pickPersonGraphic(project, map, "왕", undefined)!.label).toBe("왕");
+    expect(pickPersonGraphic(project, map, "공주", undefined)!.label).toBe("공주");
+    expect(pickPersonGraphic(project, map, "수녀", undefined)!.label).toBe("수녀");
   });
 
   it("주인공: 흉상과 전투 그림이 둘 다 그 칩의 것인 칩 · 전투 그림도 그 칩으로 · 맵에 선 사람의 칩은 피한다", () => {
