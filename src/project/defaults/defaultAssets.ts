@@ -329,7 +329,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       }
       // 사막·동양풍 (desert_east 굽기): 번들 칸 표·`de-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === DESERT_EAST_TEXTURE) {
-        changed = ensureDesertEastTileset(project.tilesets[id]) || changed;
+        changed = ensureDesertEastTileset(project.tilesets[id], project) || changed;
         changed = ensureDesertEastReferences(project.tilesets[id]) || changed;
       }
       // 북방 설원 (snow_north 굽기): 번들 칸 표·`sn-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
