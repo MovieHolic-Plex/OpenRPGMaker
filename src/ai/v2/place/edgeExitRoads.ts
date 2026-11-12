@@ -154,12 +154,14 @@ export function widenRoadExits(run: BuildRun, mapId: string): string[] {
     // ③ 길이 가장자리로 나가는 끝 — 칸과 안쪽 칸이 모두 길.
     const exitEnd = (x: number, y: number) => road(x, y) && road(x + inward[0], y + inward[1]);
     if (!exitEnd(ev.x, ev.y)) continue;
+    // 안쪽 칸에서 걸어 들어올 수 있어야 출구다 — 길 띠 위의 계선주·가로등 뒤 칸에 선 사본은 닿지 못하는 문이라 그 맵의 뒤 잇기가 모두 거절됐다.
+    const opensInward = (x: number, y: number) => canMove(project, map, x + inward[0], y + inward[1], x, y);
     // 출구 양옆으로 길이 이어지는 칸 — 이벤트·착지 칸·못 걷는 칸(길섶의 바위)을 만나면 그쪽은 거기서 끝난다. 가까운 칸부터 상한까지.
     const arms = [-1, 1].map((sign) => {
       const arm: { x: number; y: number }[] = [];
       for (let k = 1; k < ROAD_EXIT_MAX_WIDTH; k += 1) {
         const x = ev.x + across[0] * sign * k, y = ev.y + across[1] * sign * k;
-        if (x < 0 || y < 0 || x >= W || y >= H || !exitEnd(x, y) || taken.has(`${x},${y}`) || landingKeys.has(`${x},${y}`) || !canMoveInto(project, map, x, y)) break;
+        if (x < 0 || y < 0 || x >= W || y >= H || !exitEnd(x, y) || !opensInward(x, y) || taken.has(`${x},${y}`) || landingKeys.has(`${x},${y}`) || !canMoveInto(project, map, x, y)) break;
         arm.push({ x, y });
       }
       return arm;

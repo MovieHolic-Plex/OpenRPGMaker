@@ -4,6 +4,7 @@
 import { pickFittedTroops, pickSpot } from "@/editor/tools/jrpgVolumeTools";
 import { isPassable } from "@/project/collision";
 import { walkStart } from "./cells";
+import { behindBuildingStrip } from "./entrances";
 import { applyThemeBackdrop, placeThemeOf, themeFieldTroops, usableLoot } from "./placeTheme";
 import type { BuildRun } from "../shared/types";
 
@@ -21,6 +22,9 @@ export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { rea
   const origin: Cell = entrance && isPassable(run.ctx.project, map0, entrance.x, entrance.y) ? { x: entrance.x, y: entrance.y } : walkStart(run.ctx.project, map0);
   const foeId = (n: number) => `ev_${mapId}_wfoe${n}`, chestId = `ev_${mapId}_wchest`;
   const taken = new Set<string>();
+  // 건물 뒤 띠에는 적·상자를 두지 않는다 — 지붕 줄 뒤에 숨는다.
+  const strip = behindBuildingStrip(run.ctx.project, map0);
+  const hidden = (c: Cell) => !!strip[c.y * map0.width + c.x];
   const backdrop = applyThemeBackdrop(run.ctx.project, mapId);
   if (backdrop.gap) onGap?.(backdrop.gap);
   const themed = themeFieldTroops(run.ctx.project, mapId);
@@ -32,7 +36,7 @@ export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { rea
     const map = run.ctx.project.maps[mapId]!;
     if (map.events.some((e) => e.id === foeId(n))) continue;
     // 들어온 칸에서 중간~먼 쪽으로 퍼뜨린다(문 앞에서 바로 싸우지 않게 최소 6걸음).
-    const spot = pickSpot(run.ctx.project, map, origin, taken, 0.45 + (0.4 * (n - 1)) / Math.max(1, want - 1), 6);
+    const spot = pickSpot(run.ctx.project, map, origin, taken, 0.45 + (0.4 * (n - 1)) / Math.max(1, want - 1), 6, hidden);
     if (!spot) break;
     const troopId = troops[(salt + n) % troops.length]!;
     // 보이는 적은 걷는다 — 서 있기만 하는 적은 말 걸 사람으로 읽힌다(«해골 NPC 를 조사하자 전투»). 두 방향 · 한 칸 왕복까지 해 보고 그래도 없을 때만 세워 둔다.
@@ -44,7 +48,7 @@ export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { rea
   let chest = false;
   const map = run.ctx.project.maps[mapId]!;
   if (!map.events.some((e) => e.id === chestId)) {
-    const spot = pickSpot(run.ctx.project, map, origin, taken, 0.97, 6);
+    const spot = pickSpot(run.ctx.project, map, origin, taken, 0.97, 6, hidden);
     if (spot) chest = !!run.call("place_chest", { mapId, x: spot.x, y: spot.y, id: chestId, name: "깊은 곳의 보물상자", contents: usableLoot(run.ctx.project, salt) }).ok;
   }
   if (!foes && !chest && !backdrop.note) return undefined;

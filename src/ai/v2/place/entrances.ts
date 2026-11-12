@@ -113,6 +113,13 @@ export function declaredDoorCells(project: Project, map: GameMap): { x: number; 
   return out;
 }
 
+/** 지나다니는 그림(문·계단·창·벽걸이)의 타일 — 조사할 물건으로 바닥에 새로 찍지 않는다(place/fixtures). */
+export function passageTiles(tileset: TilesetDef | undefined): ReadonlySet<number> {
+  const room = roomKitTiles(tileset), surface = tilesetSurface(tileset);
+  const hung = Object.values(roomSpecOf(tileset)?.objects ?? {}).filter((d) => d.kind === "hang").flatMap((d) => d.cells.map((c) => c[2])).filter((t): t is number => typeof t === "number" && t >= 0);
+  return new Set([...room.doors, ...room.stairs, ...room.windows, ...surface.doors, ...surface.stairs, ...entranceTiles(tileset).keys(), ...hung]);
+}
+
 /** 이 맵의 계단 칸(맨 아래 칸) — 방 키트의 계단 기물과 칩셋 표면 계약의 계단. */
 export function declaredStairCells(project: Project, map: GameMap): { x: number; y: number }[] {
   const tileset = project.tilesets[map.tilesetId];
@@ -181,6 +188,23 @@ export function placeMarks(project: Project, map: GameMap): PlaceMarks {
     }
   }
   return { buildings, stairs, seats, windows };
+}
+
+/**
+ * 건물 뒤 띠 — 건물 그림 바로 북쪽 두 줄 안이고 그 위가 곧 맵 끝·막힌 칸인 걷는 칸(칸마다 1). 여기 선 사람·상자는 지붕 줄 뒤에 숨어 찾지 못한다
+ * (2026-11-12 r1s-fun: 곁가지 의뢰인 (2,1)·보물상자 (5,1) 이 공장 지붕 뒤 한 줄 띠에 섰다). 자리를 고르는 쪽이 피한다.
+ */
+export function behindBuildingStrip(project: Project, map: GameMap): Uint8Array {
+  const w = map.width, h = map.height;
+  const buildings = placeMarks(project, map).buildings;
+  const out = new Uint8Array(w * h);
+  const open = (x: number, y: number) => y >= 0 && isPassable(project, map, x, y) && !buildings[y * w + x];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (!open(x, y)) continue;
+    const backed = (y + 1 < h && buildings[(y + 1) * w + x]) || (y + 2 < h && buildings[(y + 2) * w + x] && open(x, y + 1));
+    if (backed && (!open(x, y - 1) || !open(x, y - 2))) out[y * w + x] = 1;
+  }
+  return out;
 }
 
 // ── 드나드는 그림 — 「이 칸이 문·계단 그림인가」. 출하 검사(입구 그림 옆 맨바닥)와 맵 잇기·층 이동 도구가 같이 읽는다:

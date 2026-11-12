@@ -26,9 +26,10 @@ import { mapBundleIds } from "@/ai/piAgent/mapBundle";
 import { buildBlueprintPath } from "../story/blueprintPath";
 import { type PathStepText } from "../story/blueprintPathNames";
 import { spreadCrowdedPeople } from "../place/reachRepairs";
-import { dungeonGateSpot, pickTransferSpot } from "../place/transferSpot";
+import { dungeonGateSpot, pickTransferSpot, stairWay } from "../place/transferSpot";
 import { critiqueStaging } from "../judge/critic";
 import { edgeCell, isInside, isOutdoor, oppositeSide, pickDoor, villageDoors } from "../story/makeGame";
+import { stampRoomStairs } from "../place/stairLinks";
 import { type EventBuildResult } from "../story/events";
 import { pickStageFrames, stageFrameProject } from "../story/eventStage";
 import { LAYOUT_CRITIQUE_ROUNDS, layoutSession, type LayoutPlaceState } from "../place/builders/placeLayout";
@@ -306,11 +307,20 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
             linked = r.ok; notes.push(r.ok ? `${pName} 집 문(${door.x},${door.y - 1}${door.kit ? ` ${door.kit}` : ""}) ↔ ${cName}` : `${pName} 집 문 잇기 실패: ${r.summary.slice(0, 160)}`);
           } else {
             // 지은 결과의 집 문 목록이 없으면(모델이 지은 부모 맵) 그 맵의 문 그림·계단·길 끝, 없으면 칩셋 문을 벽에 깔아 그 앞으로.
-            const spot = pickTransferSpot(run, parentMap, { side: side ?? "north", outdoor: !!parentSpec && isOutdoor(parentSpec), otherName: cName, buildingDoor: isInside(spec) });
+            // 방에서 방으로: 그 방의 쓰지 않은 계단 그림, 없으면 칩셋의 계단 키트를 벽 앞에 찍는다(place/stairLinks) — 맨바닥 이동 칸으로 잇지 않는다.
+            const roomParent = !!parentSpec && isInside(parentSpec);
+            const spot = pickTransferSpot(run, parentMap, { side: side ?? "north", outdoor: !!parentSpec && isOutdoor(parentSpec), otherName: cName, buildingDoor: isInside(spec), ...(roomParent ? { vertical: true } : {}) });
+            const before = env.ctx.project;
+            const stairs = !spot && roomParent ? stampRoomStairs(run, parentMap, stairWay(cName, pName)) : undefined;
             if (spot) {
               const { note, ...a } = spot;
               const r = run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
               linked = r.ok; notes.push(r.ok ? `${pName} ${note} ↔ ${cName}` : `${pName} ${note} 잇기 실패: ${r.summary.slice(0, 160)}`);
+            } else if (stairs) {
+              const r = run.call("create_transfer_pair", { a: { mapId: parentMap, x: stairs.x, y: stairs.y }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
+              linked = r.ok && hasTransferTo(parentMap, childMap);
+              if (linked) notes.push(`${pName} ${stairs.note} ↔ ${cName}`);
+              else env.ctx.project = before;
             }
           }
         } else if (spec.type === "dungeon" || spec.type === "cave") {
@@ -346,8 +356,11 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
           const dir = side ?? "north";
           const spotA = pickTransferSpot(run, parentMap, { side: dir, outdoor: !parentSpec || isOutdoor(parentSpec), otherName: cName, buildingDoor: isInside(spec) });
           const a = spotA ? { x: spotA.x, y: spotA.y, ...(spotA.doorAt ? { doorAt: spotA.doorAt } : {}) } : edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, dir);
-          const spotB = result.entrance && result.entrance.mapId === childMap ? undefined : pickTransferSpot(run, childMap, { side: oppositeSide(dir), outdoor: isOutdoor(spec), otherName: pName, buildingDoor: !!parentSpec && isInside(parentSpec) });
-          const b = result.entrance && result.entrance.mapId === childMap ? { x: result.entrance.x, y: result.entrance.y } : spotB ? { x: spotB.x, y: spotB.y, ...(spotB.doorAt ? { doorAt: spotB.doorAt } : {}) } : edgeCell(env.ctx.project, env.ctx.project.maps[childMap]!, oppositeSide(dir));
+          // 바깥 맵의 «들어서는 칸» 은 맵 한가운데일 수 있다(구성기의 시작 칸) — 그 칸을 문으로 쓰면 열린 길 위에 돌아가는 칸이 선다. 맵 가장자리에 닿을 때만 쓴다.
+          const cm = env.ctx.project.maps[childMap]!;
+          const given = result.entrance && result.entrance.mapId === childMap && (!isOutdoor(spec) || result.entrance.x === 0 || result.entrance.y === 0 || result.entrance.x === cm.width - 1 || result.entrance.y === cm.height - 1) ? result.entrance : undefined;
+          const spotB = given ? undefined : pickTransferSpot(run, childMap, { side: oppositeSide(dir), outdoor: isOutdoor(spec), otherName: pName, buildingDoor: !!parentSpec && isInside(parentSpec) });
+          const b = given ? { x: given.x, y: given.y } : spotB ? { x: spotB.x, y: spotB.y, ...(spotB.doorAt ? { doorAt: spotB.doorAt } : {}) } : edgeCell(env.ctx.project, env.ctx.project.maps[childMap]!, oppositeSide(dir));
           const r = a && b ? run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, ...b } }) : undefined;
           const how = [spotA?.note, spotB?.note].filter(Boolean).join(" · ");
           if (r?.ok) notes.push(`${pName}(${a!.x},${a!.y}) ↔ ${cName}(${b!.x},${b!.y}) — ${how || "문 그림 없이 이동 칸으로 이었다"}`);
