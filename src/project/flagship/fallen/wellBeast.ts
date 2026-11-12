@@ -213,7 +213,8 @@ export function wellData(project: Project, exec: Exec): void {
   const troop = project.database.troops.find((t) => t.id === FS2_WELL_BEAST_TROOP) as unknown as Rec;
   troop.battleEventPages = [
     { id: "troop_fs2_well_open", name: "시작 — 소리로 사냥한다", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 1 }],
-      commands: [say(ELENA, "눈이 없어… 소리로 우리를 찾는 거야."), say(KAEL, "아가미가 펴지면 조심해!")] },
+      // 깨우는 장면(ev_fs2_well_wake)에서 이미 「눈이 없어. 소리로 우리를 찾고 있어」를 말했다 — 전투 첫 줄은 같은 말을 되풀이하지 않는다.
+      commands: [say(ELENA, "숨소리도 줄여… 우리가 움직이는 쪽으로 고개를 돌려."), say(KAEL, "아가미가 펴지면 조심해!")] },
     { id: "troop_fs2_well_phase2", name: "2페이즈 — 붉은 아가미", span: "battle", runOnce: true,
       conditions: [{ kind: "enemyHpBelow", enemyId: FS2_WELL_BEAST_ENEMY, percent: 50 }],
       commands: [
@@ -320,7 +321,9 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
 
   // 보스 — 둥지 한가운데 웅크린 영주. 깨우는 줄을 밟으면 한 번 연출 뒤 조사로 싸운다(이기기 전까지 다시 도전).
   const beastId = "ev_fs2_well_beast";
-  const beastGfx = { sprite: { type: "bundled", id: "tex_easyrpg_charset_monster1" }, direction: "down", pattern: 0, scale: 1.4, scaleMode: "manual" };
+  // 배율 2 — 필드 칩은 128px 초상을 1/4 로 떼어 낸 몸 24×13px(테 포함 28×17)이다. 1.4 는 몸 약 2.1×1.1칸으로 누운 짐승처럼 보여
+  //   (2026-11-12 오너 Q3 = A 「키우기만」) 2 로 키워 몸 약 3×1.6칸(테 포함 3.5×2.1)을 발밑 3×2 칸에 맞춘다. 그림·엔진은 그대로.
+  const beastGfx = { sprite: { type: "bundled", id: "tex_easyrpg_charset_monster1" }, direction: "down", pattern: 0, scale: 2, scaleMode: "manual" };
   // 전투 스위치(2페이즈·순환)는 세션 스위치라 지고 다시 붙으면 남아 있다 — 싸움마다 처음 상태로 돌린다.
   const resetFight = [SW_WELL_P2, SW_WELL_ECHO, SW_WELL_FLOOD, SW_WELL_BITE2, SW_WELL_SONG, SW_WELL_SHELL2, SW_WELL_MUD2].map((id) => setSw(id, false));
   const fight: Command[] = [

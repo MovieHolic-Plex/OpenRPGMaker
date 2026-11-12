@@ -136,4 +136,41 @@ describe("field HUD idle frames", () => {
     hud.update(project, session, { playerY: 220 });
     expect(style.writes).toBe(moved);
   });
+
+  it("sizes a party panel to the rows it shows, not to the authored box", () => {
+    restore = installFakeDom();
+    const project = createBlankProject();
+    const party: HudWidget = { ...goldWidget(), id: "party", kind: "party", source: "hp", label: "동료", anchor: "top-left", x: 10, y: 10, width: 90, height: 138, autoAvoid: false, slots: 8, panel: "dark" };
+    project.system.fieldHud = { theme: "party", vitals: true, clock: false, tools: false, objective: true, hideEmpty: true, widgets: [party] };
+    const session = startSession(project, 1);
+    const host = new FakeElement("div");
+    const hud = new FieldHud(host as unknown as HTMLElement);
+    hud.update(project, session, {});
+    const widget = (hud.root as unknown as FakeElement).querySelector(".hud-widget") as FakeElement;
+    // 가짜 DOM 은 크기를 모른다 — 못 잰 동안은 저작 높이다.
+    expect(widget.style.height).toBe("138px");
+    // 한 줄짜리 내용 높이(48px)를 잴 수 있게 되면 판은 그 높이가 된다. 저작 높이보다 커지지는 않는다.
+    Object.defineProperty(widget, "offsetParent", { configurable: true, value: host });
+    Object.defineProperty(widget, "offsetHeight", { configurable: true, value: 48 });
+    hud.update(project, session, {});
+    expect(widget.style.height).toBe("48px");
+    Object.defineProperty(widget, "offsetHeight", { configurable: true, value: 400 });
+    session.actorVitals[session.partyActorIds[0]!]!.hp -= 1;
+    hud.update(project, session, {});
+    expect(widget.style.height).toBe("138px");
+  });
+
+  it("keeps an auto-relocated strip off a fixed box outside the HUD (the objective box)", () => {
+    restore = installFakeDom();
+    const project = createBlankProject();
+    project.system.fieldHud = { theme: "minimal", vitals: false, clock: false, tools: false, objective: true, hideEmpty: false, widgets: [{ ...goldWidget(), width: 218 }] };
+    const session = startSession(project, 1);
+    const host = new FakeElement("div");
+    const hud = new FieldHud(host as unknown as HTMLElement);
+    // 주인공이 아래쪽에 있어 띠가 위로 올라간다 — 오른쪽 위 목표 창(188..316)과 같은 띠다.
+    hud.update(project, session, { playerY: 220, fixed: [{ x: 188, y: 4, width: 128, height: 30 }] });
+    const widget = (hud.root as unknown as FakeElement).querySelector(".hud-widget") as FakeElement;
+    expect(widget.dataset.avoiding).toBe("true");
+    expect(parseFloat(widget.style.left) + parseFloat(widget.style.width)).toBeLessThanOrEqual(184);
+  });
 });
