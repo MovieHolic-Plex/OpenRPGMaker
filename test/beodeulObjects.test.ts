@@ -97,8 +97,13 @@ describe("버들항 이야기 기물 꼬리", () => {
       expect(kit.ai?.role).toBe(base.ai?.role);
       for (let y = 0; y < kit.height; y++) for (let x = 0; x < kit.width; x++) {
         const mine = kit.rows[y]!.upperTiles![x]!, theirs = base.rows[y]!.upperTiles![x]!;
-        expect(mine >= 0, `${kit.id} (${x},${y})`).toBe(theirs >= 0);
-        if (mine < 0) continue;
+        if (mine < 0) {
+          // 변형이 비운 칸: 원본도 비었거나 원본의 그 칸이 걸음 칸(★·○)이어야 한다 — 막힌 칸을 비우면 통행이 달라진다
+          expect(theirs < 0 || passageMarkForTile(ts, theirs) !== "x", `${kit.id} (${x},${y})`).toBe(true);
+          continue;
+        }
+        // 원본이 비운 칸에는 그림을 두지 않는다 — 원본이 들어가는 자리면 변형도 들어간다
+        expect(theirs >= 0, `${kit.id} (${x},${y})`).toBe(true);
         // 통행 표시(X 막힘 · ★ 사람 위 걸음 칸 · ○ 걸음 칸) — 엔진의 통행과 그리는 순서가 이 표시로 정해진다
         expect(passageMarkForTile(ts, mine), `${kit.id} (${x},${y})`).toBe(passageMarkForTile(ts, theirs));
       }
