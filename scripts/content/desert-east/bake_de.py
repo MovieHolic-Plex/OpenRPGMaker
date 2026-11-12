@@ -28,7 +28,8 @@ P = dict(png=os.path.join(ROOT, 'public/assets/desert-east/desert-east-chipset.p
 UNGATED = os.environ.get('DE_UNGATED')   # 개발용: 관문 없이 /tmp 로만 굽는다(저장소 산출물은 절대 안 쓴다)
 if UNGATED:
     P = {k: os.path.join(UNGATED, os.path.basename(v)) for k, v in P.items()}
-GROUP_KO = dict(terrain='바닥', buildings='건물·유적', props='소품', interior='실내')
+GROUP_KO = dict(terrain='바닥', buildings='건물·유적', props='소품', interior='실내', objects='이야기 기물')
+OBJECTS = os.path.join(TD, 'objects')     # 이야기 기물(샘·제단·화단·기록부·쪽지·표식·파편·비문 돌): 그림 PNG 를 그대로 굽는다 — spec.json, 3/4 관문 미통과 — 오너 면제 묶음
 ANIM = []
 
 
@@ -84,7 +85,25 @@ def build_pieces(report):
             if it.get('entrance'): p['entrance'] = list(it['entrance'])
             if it.get('passable'): p['passable'] = [list(c) for c in it['passable']]
             pieces.append(p)
-    report['gate'] = dict(provisional_profile_uncalibrated=prov, blocked=blocked, pieces=len(pieces), wang=wang_ok)
+    waived = []
+    spec = json.load(open(os.path.join(OBJECTS, 'spec.json'), encoding='utf-8')) if os.path.exists(os.path.join(OBJECTS, 'spec.json')) else None
+    for it in (spec or {}).get('items', []):
+        pid = 'de-' + it['id']
+        png = os.path.join(OBJECTS, 'pieces', it['src'])
+        # 이 그림들은 영수증이 없다 — gate_status 가 관문 자신의 출구(object_gate.refusal, bundle)에 묻고, 오너 면제 묶음이 화소 해시·종류로 받아 준다. 개발용 임시통과(prov)는 없다.
+        st = TB.gate_status(png, it['kind']) if os.path.exists(png) else 'PNG 없음'
+        if st != 'pass': blocked.append((pid, st)); continue
+        im = Image.open(png); assert im.size == (it['w'] * 16, it['h'] * 16), (pid, im.size)
+        flat = it['place'] == 'decal'
+        block = {tuple(c) for c in it['block']}
+        note = '바닥 그림, 밟고 지나간다.' if flat else '서 있는 기물, 막힌 칸 %s%s.' % (' '.join('(%d,%d)' % c for c in sorted(block, key=lambda c: (c[1], c[0]))), ', 나머지 칸은 사람 위에 그려진다' if len(block) < it['w'] * it['h'] else '')
+        pieces.append(dict(id=pid, name=it['name'], kind=it['kind'], png=png, group='de-objects', group_ko=GROUP_KO['objects'],
+                           desc=f"{it['desc']} ({it['en']}) — {note} 3/4 관문 미통과 — 오너 면제 그림({spec['waiver']}).",
+                           role='prop', tags=['사막·동양풍', '주제 소품'] + list(it['words']), rules=it['rule'], stamp=it['place'],
+                           cells_pc={(x, y): 'flat' if flat else 'solid' if (x, y) in block else 'star' for y in range(it['h']) for x in range(it['w'])}))
+        waived.append(pid)
+    report['gate'] = dict(provisional_profile_uncalibrated=prov, blocked=blocked, pieces=len(pieces), wang=wang_ok,
+                          owner_waiver=dict(batch=(spec or {}).get('waiver'), note='3/4 관문 미통과 — 오너 면제(통과가 아니다)', pieces=waived))
     return pieces, AT
 
 

@@ -1,0 +1,92 @@
+{
+ "se-barn": {
+  "box": [
+   0,
+   0,
+   63,
+   33
+  ],
+  "oldSha": "b55a45ebbad9b6a47cb9f0f69325a5d81254e0420f9d2808d8f9aafb6ac499f0"
+ },
+ "se-chashitsu": {
+  "box": [
+   0,
+   0,
+   47,
+   33
+  ],
+  "oldSha": "424055aa8b7d5b12c4692c94fc296441f5d21daa2c2164ae65e0af26c2c5b98b"
+ },
+ "se-chaya-thatch": {
+  "box": [
+   0,
+   0,
+   63,
+   33
+  ],
+  "oldSha": "ba760996ceec7e8ccb1c726124b8796ee67d3266583f0d212cf22317909c644a"
+ },
+ "se-dojo": {
+  "box": [
+   0,
+   0,
+   111,
+   44
+  ],
+  "oldSha": "996affa11aa1c9ed0634131654727b5bc87a5ace98c8cb315ed64dfb7bcb2d82"
+ },
+ "se-minka": {
+  "box": [
+   0,
+   0,
+   95,
+   49
+  ],
+  "oldSha": "db93506acece74c3ca944bc2e4ba7885e17068e131a22c3bbb8d990cb7f42ec5"
+ },
+ "se-minka-small": {
+  "box": [
+   0,
+   0,
+   63,
+   33
+  ],
+  "oldSha": "1629700eb4187af693121ca0b9c386988a28728c585239dfb5410b34397c49d0"
+ },
+ "se-onsen": {
+  "box": [
+   0,
+   0,
+   95,
+   36
+  ],
+  "oldSha": "c9a69570b48f0e72cc15efee2e83607b69d2a413040a928abfabf56da89d5394"
+ },
+ "se-samurai-house": {
+  "box": [
+   0,
+   0,
+   127,
+   42
+  ],
+  "oldSha": "f03c272279e13ca8fb4b325c6faf07f7371159cc1165b9a25d652ea79483d219"
+ },
+ "se-shrine": {
+  "box": [
+   0,
+   1,
+   95,
+   42
+  ],
+  "oldSha": "35de337c759deb4e51d95b8a2fcdf8e3a4189a85b373b74248a316c3339542df"
+ },
+ "se-temple-hall": {
+  "box": [
+   0,
+   0,
+   143,
+   54
+  ],
+  "oldSha": "a2bd4cc2e380d1bf36a9755c92e4587a50f26aa414334c51368ec2df6d4ce153"
+ }
+}

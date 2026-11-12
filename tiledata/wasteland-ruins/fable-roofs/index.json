@@ -1,0 +1,29 @@
+{
+ "wl-shack-a": {
+  "box": [
+   0,
+   11,
+   63,
+   43
+  ],
+  "oldSha": "834919d01242b9e85cf1b41f99c01ed608508b21d1f7986797991537e6802ec8"
+ },
+ "wl-shack-b": {
+  "box": [
+   0,
+   0,
+   79,
+   44
+  ],
+  "oldSha": "5497f7081c83cce3f970ccb3229cca9fec7255f09e7be4c46ab90d1a2a757d00"
+ },
+ "wl-shack-c": {
+  "box": [
+   0,
+   4,
+   63,
+   42
+  ],
+  "oldSha": "4ad48a89cf415b6779e7137618ee83d44b650f40657e847278e21cda749bf294"
+ }
+}

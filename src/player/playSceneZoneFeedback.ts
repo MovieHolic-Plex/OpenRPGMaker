@@ -5,7 +5,7 @@ import type { RuntimeEventView } from "@/project/runtimeEventState"
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { footprintBounds, footprintContains } from "@/project/footprint";
 import { objectClusterAt } from "@/project/objectFootprint";
-import { objectiveTextOnMap, promptTargetName } from "@/player/objectiveTarget";
+import { fieldGuidesOn, objectiveShown, promptTargetName } from "@/player/objectiveTarget";
 import { mapTileSize } from "@/project/tileGeometry";
 import { runtimePixelDensity } from "@/player/runtimeViewScale";
 import type { GameMap } from "@/project/types";
@@ -106,8 +106,8 @@ export type PlaySceneZoneFeedback = {
   promptPlace?: { atMs: number; text: string; x: number; y: number };
   /** 첫 조작·목표 변경 때 가운데에 잠깐 뜨는 목표 카드(objectiveCard.ts). */
   card?: ObjectiveCard | null;
-  /** 지금 맵에서 읽는 목표 글(objectiveTextOnMap) — 글·맵이 같으면 다시 만들지 않는다. */
-  objectiveOnMap?: { readonly raw: string; readonly mapId: string; readonly shown: string };
+  /** 지금 보이는 목표 글(objectiveShown) — 글·맵·안내 켬/끔이 같으면 다시 만들지 않는다. */
+  objectiveOnMap?: { readonly raw: string; readonly mapId: string; readonly guides: boolean; readonly shown: string };
 };
 
 const OBJECTIVE_PLACE_MS = 300;
@@ -189,8 +189,11 @@ function objectiveViewOnMap(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFee
   const map = scene.map;
   if (!map || !view.objective) return view;
   let seen = feedback.objectiveOnMap;
-  if (!seen || seen.raw !== view.objective || seen.mapId !== map.id) {
-    seen = feedback.objectiveOnMap = { raw: view.objective, mapId: map.id, shown: objectiveTextOnMap(map, view.objective) };
+  // 필드 안내를 끈 게임(system.fieldGuides "off")은 「어디」 꼬리 없이 목표 문장만 보인다.
+  const project = store.getCurrent();
+  const guides = fieldGuidesOn(project);
+  if (!seen || seen.raw !== view.objective || seen.mapId !== map.id || seen.guides !== guides) {
+    seen = feedback.objectiveOnMap = { raw: view.objective, mapId: map.id, guides, shown: objectiveShown(project, map, view.objective) };
   }
   return seen.shown === view.objective ? view : { ...view, objective: seen.shown };
 }

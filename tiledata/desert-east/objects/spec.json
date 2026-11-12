@@ -1,0 +1,250 @@
+{
+ "_doc": "desert_east 이야기 기물 8종 — Claude Fable 5.2 medium 한 방 그림(이 프로젝트를 위해 그린 자체 저작, 색은 desert_east 시트에서 뽑음). 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12. pieces/<id>.png 는 한 화소도 바꾸지 않는다(바꾸면 면제가 풀리고 굽기가 그 조각을 막는다). 굽기 scripts/content/desert-east/bake_de.py 가 등록부 조각 뒤에 이 목록을 덧붙인다 — 새 항목은 items 끝에만(칸 번호는 자리 키 핀, 덧붙이기 전용). place: prop·tall = 서 있는 기물(block 칸 막힘, 나머지 칸 ★) · decal = 밟고 지나가는 바닥 그림.",
+ "waiver": "fable-oneshot-2026-11-12",
+ "license": "drawn by Claude Fable 5.2 for this project (own work)",
+ "items": [
+  {
+   "id": "seal-altar",
+   "src": "de-seal-altar.png",
+   "name": "봉인 제단(사암 제단·봉인)",
+   "en": "sealed sandstone altar",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "봉인 제단",
+    "제단",
+    "봉인",
+    "사암 제단",
+    "seal altar",
+    "altar"
+   ],
+   "desc": "사암 제단. 윗판에 청록·금 원판(봉인 문양), 앞면에 군청 띠. 윗줄은 제단 윗판(사람 위에 그려짐), 아랫줄은 앞면.",
+   "rule": "유적·신전 터·오아시스 못가의 모래나 포석 위에. 아랫줄 막힘. 봉인을 푸는 이벤트는 아랫줄 칸에 «같은 높이·결정 키» 로 둔다. 문 앞·길 한가운데 금지."
+  },
+  {
+   "id": "flower-bed",
+   "src": "de-flower-bed.png",
+   "name": "화단(어도비 테 꽃밭)",
+   "en": "raised adobe flower bed",
+   "kind": "container",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "화단",
+    "꽃밭",
+    "꽃 화단",
+    "flower bed"
+   ],
+   "desc": "어도비 벽돌 테 안에 붉고 노란 꽃이 핀 화단.",
+   "rule": "집 벽 앞·마당 가장자리·궁전 정원 길가에 한두 개. 두 칸 모두 막힘. 문 앞 접근칸·길 위 금지."
+  },
+  {
+   "id": "spring",
+   "src": "de-spring.png",
+   "name": "샘 · 오아시스 돌 샘",
+   "en": "oasis spring basin",
+   "kind": "container",
+   "w": 3,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "words": [
+    "샘",
+    "물이 솟는 돌 샘",
+    "오아시스 샘",
+    "돌 샘",
+    "샘터",
+    "spring"
+   ],
+   "desc": "둥근 사암 테와 청록 타일 띠 안에 물이 고인 샘. 뒤쪽 돌 물받이에서 물줄기가 떨어지고 왼쪽 위에 갈대.",
+   "rule": "오아시스 마을 광장·풀밭·모래 위에. 아홉 칸 모두 막힘 — 둘레 한 칸은 걸을 수 있는 바닥으로 비운다. 물을 긷거나 살피는 이벤트는 아랫줄 가운데 칸에 «같은 높이·결정 키»."
+  },
+  {
+   "id": "record-stand",
+   "src": "de-record-stand.png",
+   "name": "기록부·장부(받침 위 책)",
+   "en": "record book on a stand",
+   "kind": "low_furniture",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "기록부",
+    "장부",
+    "기록대",
+    "받침 위 책",
+    "record book",
+    "ledger"
+   ],
+   "desc": "나무 받침대 위 기울인 상판에 펼친 책(두 쪽, 남색 끈). 윗칸은 책(사람 위에 그려짐), 아랫칸은 받침.",
+   "rule": "대상 숙소 마당·성문 옆·유적 입구 곁 벽가에. 아랫칸 막힘. 읽는 이벤트는 아랫칸에 «같은 높이·결정 키»."
+  },
+  {
+   "id": "note",
+   "src": "de-note.png",
+   "name": "쪽지·두루마리(바닥에 떨어진 것)",
+   "en": "scroll and note on the ground",
+   "kind": "debris",
+   "w": 1,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "words": [
+    "쪽지",
+    "두루마리",
+    "종이",
+    "편지",
+    "메모",
+    "note",
+    "scroll"
+   ],
+   "desc": "붉은 끈으로 묶은 두루마리와 글씨 적힌 종이 한 장. 바닥 그림(밟고 지나간다).",
+   "rule": "모래·포석·흙길 위 어디든 한 장. 밟고 지나간다. 줍는·읽는 이벤트는 그 칸에 «플레이어 아래» 로 둔다."
+  },
+  {
+   "id": "marker",
+   "src": "de-marker.png",
+   "name": "표식(돌탑 길 표식)",
+   "en": "stone marker cairn",
+   "kind": "organic",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "표식",
+    "돌무더기",
+    "돌탑",
+    "길 표식",
+    "이정표 돌",
+    "marker",
+    "cairn"
+   ],
+   "desc": "납작한 돌 넷을 쌓고 주황 천을 묶은 길 표식 돌탑.",
+   "rule": "사막 길가·갈림길·유적 가는 길의 모래 위에. 한 칸 막힘 — 길 칸 위가 아니라 길 옆에."
+  },
+  {
+   "id": "shard",
+   "src": "de-shard.png",
+   "name": "빛나는 파편·빛의 파편·샘의 심장 조각",
+   "en": "glowing spring-heart shard",
+   "kind": "organic",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "빛나는 파편",
+    "빛의 파편",
+    "파편",
+    "샘의 파편",
+    "샘의 심장",
+    "수정 조각",
+    "glowing shard"
+   ],
+   "desc": "모래에 박힌 청록 수정 조각.",
+   "rule": "이야기가 부르는 자리에 한 개(유적 안뜰·샘 곁·사구 사이). 한 칸 막힘. 줍는 이벤트는 그 칸에 «같은 높이·결정 키»."
+  },
+  {
+   "id": "inscription-stone",
+   "src": "de-inscription-stone.png",
+   "name": "비문 돌(새김 글 사암 판)",
+   "en": "inscribed sandstone slab",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "비문 돌",
+    "비문",
+    "새김 돌",
+    "글 새긴 돌",
+    "inscription stone"
+   ],
+   "desc": "둥근 머리 사암 판. 군청 테 안에 새김 띠 다섯 줄(읽을 수 있는 글자는 없다), 받침돌. 윗칸은 사람 위에 그려짐.",
+   "rule": "유적·피라미드 탑문 곁·신전 터 벽가에. 아랫칸 막힘. 읽는 이벤트는 아랫칸에 «같은 높이·결정 키». 무늬 비석 de-stele 과 섞어 줄 세우지 않는다."
+  }
+ ]
+}

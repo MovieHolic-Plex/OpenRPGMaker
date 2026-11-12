@@ -13,6 +13,7 @@ const data = () => bundledJson("desertEastTileset");
 import references from "@/assets/desertEastReferences.json";
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
+import { settleThemeBundleTail, type RelocationProject } from "./localTailRelocation";
 
 export const DESERT_EAST_ID = "desert_east";
 export const DESERT_EAST_TEXTURE = "tex_desert_east";
@@ -122,13 +123,17 @@ function bundleShape(): string {
  * - 한 줄 폭이 같고 칸 수가 번들 이하인 사본(같은 시트의 옛 굽기, 덧붙이기 전용): 번들 소유 칸 표를 새 굽기로 바꾼다.
  *   저자가 더한 조립 부품·오토타일 그룹(`de-` 가 아닌 id)은 남기고, 번들 소유 `de-` 항목은 최신으로 바꾼다. 맵·저작 참고문서는 건드리지 않는다.
  * - 더 새 번들에서 저장된(칸이 더 많은) 사본은 줄이지 않는다.
+ * - 프로젝트 이식 칸(tileGrafts — stamp_tileset_object 가 다른 칩셋 그림을 끝에 붙인 칸)이 있는 사본: 번들이 그 자리까지 자랐으면 이식 꼬리를 새 번들 끝 뒤로
+ *   밀고(맵·킷 번호도 같이, localTailRelocation.ts — `project` 를 받았을 때만) 번들 구간의 칸 표·`de-` 부품을 새 굽기로 채운다. 꼬리 칸은 그대로다.
  * - 한 줄 폭이 다른 사본은 다른 시트라 칸 번호가 가리키는 그림이 다르다 — 칸 표를 번들 것으로 통째로 바꾼다(저자 항목도 번호가 무의미하므로 버린다).
  */
-export function ensureDesertEastTileset(tileset: TilesetDef): boolean {
+export function ensureDesertEastTileset(tileset: TilesetDef, project?: RelocationProject): boolean {
   if (tileset.id !== DESERT_EAST_ID || !isDesertEastTileset(tileset)) return false;
   let changed = false;
   if (tileset.family !== DESERT_EAST_FAMILY) { tileset.family = DESERT_EAST_FAMILY; changed = true; }
   if (tileset.tilesPerRow === sheet.tilesPerRow) {
+    const tail = settleThemeBundleTail(tileset, project, { count: sheet.count, fresh: createDesertEastTileset, owned: isOwned, signature: shapeSignature, bundleSignature: bundleShape });
+    if (tail !== undefined) return tail || changed;
     if (tileset.count > sheet.count) return changed;
     if (tileset.count === sheet.count && shapeSignature(tileset) === bundleShape()) return changed;
     const fresh = createDesertEastTileset();

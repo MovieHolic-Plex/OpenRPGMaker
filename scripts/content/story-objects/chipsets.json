@@ -1,0 +1,136 @@
+{
+ "_doc": "이야기 기물 탐침(probe.mts)이 읽는 칩셋 표 — 탐침 전용이다(조수·v2 코드가 읽는 목록이 아니다). spec = 그 칩셋 굽기가 읽는 기물 목록, ask = 게임들이 실제로 바란 낱말(수요 장부에서 옮김), map = 그 칩셋의 구성기 도구로 실제 맵 한 장을 깔 인자. listTool = 그 칩셋에서 낱말로 기물을 찾는 조회 도구(기본 list_tileset_objects — 손 도트 실내는 list_hand_interior_parts, 결과 id 에 킷 머리가 없다). placeArea = 탐침이 v2 place_object 로 놓아 볼 바닥 구역(문 앞 통로를 피하게 — 없으면 맵 전체에서 흔한 맨바닥·길 아닌 칸. 구역을 주면 그 안의 걷는 빈 칸을 그대로 쓴다 — 현대 도시는 보도가 «길» 칸이다).",
+ "desert_east": {
+  "spec": "tiledata/desert-east/objects/spec.json",
+  "ask": "tiledata/desert-east/objects/ask.json",
+  "kitPrefix": "de-",
+  "sheet": "public/assets/desert-east/desert-east-chipset.png",
+  "map": {
+   "width": 48,
+   "height": 40,
+   "tool": "compose_desert_east_map",
+   "args": {
+    "kind": "oasis",
+    "seed": 1
+   }
+  }
+ },
+ "atlas_biome_interior": {
+  "spec": "tiledata/hand-interior/plus/oneshot/spec.json",
+  "ask": "tiledata/hand-interior/plus/oneshot/ask.json",
+  "kitPrefix": "hand-interior:",
+  "sheet": "public/assets/atlas-interior/interior-chipset.png",
+  "map": {
+   "create": false,
+   "tool": "build_hand_interior_room",
+   "args": {
+    "name": "지하 감옥",
+    "plan": [
+     "######################",
+     "#......#......#......#",
+     "#......#......#......#",
+     "#......#......#......#",
+     "#......#......#......#",
+     "#......#......#......#",
+     "##..#####..#####..####",
+     "#....................#",
+     "#....................#",
+     "#....................#",
+     "#....................#",
+     "#....................#",
+     "#....................#",
+     "##########.###########"
+    ],
+    "floor": "dungeon",
+    "wall": "dungeonw",
+    "objects": [
+     {
+      "id": "wall shackles",
+      "x": 2,
+      "y": 1
+     },
+     {
+      "id": "straw cot",
+      "x": 5,
+      "y": 3
+     },
+     {
+      "id": "cell bars",
+      "x": 2,
+      "y": 6
+     },
+     {
+      "id": "cell bars door",
+      "x": 3,
+      "y": 6
+     },
+     {
+      "id": "cell bars",
+      "x": 9,
+      "y": 6
+     },
+     {
+      "id": "cell bars door",
+      "x": 10,
+      "y": 6
+     },
+     {
+      "id": "floor key",
+      "x": 11,
+      "y": 4
+     },
+     {
+      "id": "floor note",
+      "x": 12,
+      "y": 5
+     },
+     {
+      "id": "observation bench",
+      "x": 16,
+      "y": 3
+     },
+     {
+      "id": "ledger stand",
+      "x": 19,
+      "y": 3
+     }
+    ]
+   }
+  },
+  "listTool": {
+   "name": "list_hand_interior_parts",
+   "idPrefix": ""
+  },
+  "placeArea": {
+   "x0": 1,
+   "y0": 9,
+   "x1": 20,
+   "y1": 12
+  }
+ },
+ "modern_city": {
+  "spec": "tiledata/modern-city/objects/spec.json",
+  "ask": "tiledata/modern-city/objects/ask.json",
+  "kitPrefix": "mc-prop-",
+  "sheet": "public/assets/modern-city/modern-city-chipset.png",
+  "map": {
+   "width": 60,
+   "height": 48,
+   "tool": "compose_modern_city_street",
+   "args": {
+    "seed": 1,
+    "shops": [
+     "편의점",
+     "카페",
+     "사무실"
+    ]
+   }
+  },
+  "placeArea": {
+   "x0": 33,
+   "y0": 19,
+   "x1": 58,
+   "y1": 21
+  }
+ }
+}

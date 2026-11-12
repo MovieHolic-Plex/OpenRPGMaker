@@ -22,6 +22,7 @@ import numpy as np  # noqa: E402
 from PIL import Image  # noqa: E402
 from house_kit import K, Cv, OL  # noqa: E402
 from shitamachi_pack import H, disc, line  # noqa: E402
+import fable_roofs as FR  # noqa: E402
 
 BLOCK = 'jp_regions_pack'
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..'))
@@ -1697,6 +1698,7 @@ def _finalize():
     for k in KITS:
         up, base = _cv(k['w'], k['h']), _cv(k['w'], k['h'])
         k['draw'](up, base)
+        up.a[:] = FR.apply('jp-' + k['id'], up.a)                       # 직각 지붕 덮어쓰기(오너 2026-11-12, fable_roofs.py)
         grids = {}
         for layer, cv in (('up', up), ('base', base)):
             g = [[None] * k['w'] for _ in range(k['h'])]

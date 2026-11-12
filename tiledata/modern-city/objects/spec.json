@@ -1,0 +1,133 @@
+{
+ "_doc": "modern_city 이야기 기물 5종 — Claude Fable 5.2 medium 한 방 그림(이 프로젝트를 위해 그린 자체 저작, 색은 modern_city 시트에서 뽑음). 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12. pieces/<src> 는 한 화소도 바꾸지 않는다(바꾸면 면제가 풀리고 굽기가 그 조각을 막는다). 굽기 scripts/content/modern-city-street/bake_story.py 가 시트 끝에 덧붙인다 — 새 항목은 items 끝에만(칸 번호는 이름 핀 story:<id>:<x>,<y>, 덧붙이기 전용). 키트 id = mc-prop-<id>. place: prop·tall = 서 있는 기물(block 칸 막힘, 나머지 칸 ★) · decal = 밟고 지나가는 바닥 그림.",
+ "waiver": "fable-oneshot-2026-11-12",
+ "license": "drawn by Claude Fable 5.2 for this project (own work)",
+ "items": [
+  {
+   "id": "storage-cabinet",
+   "src": "mc-storage-cabinet.png",
+   "name": "보관함(철제 두 문 보관함)",
+   "en": "steel storage cabinet",
+   "kind": "box",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "보관함",
+    "철제 보관함",
+    "서류 보관함",
+    "캐비닛",
+    "storage cabinet",
+    "cabinet"
+   ],
+   "desc": "연회색 철제 두 문 보관함. 윗칸은 윗면과 문 윗부분(사람 위에 그려짐), 아랫칸은 문 아랫부분과 발.",
+   "rule": "실내 벽가(사무실·편의점 뒷방·창고·역무실)나 건물 뒤 보도 벽 쪽 줄에. 아랫칸 막힘. 여는·뒤지는 이벤트는 아랫칸에 «같은 높이·결정 키». 문 앞 접근칸·차도 금지."
+  },
+  {
+   "id": "rubble",
+   "src": "mc-rubble.png",
+   "name": "잔해(콘크리트 잔해)",
+   "en": "concrete rubble",
+   "kind": "debris",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "잔해",
+    "콘크리트 잔해",
+    "무너진 잔해",
+    "건물 잔해",
+    "rubble",
+    "debris"
+   ],
+   "desc": "깨진 콘크리트 덩이, 휜 철근 둘, 노랑·검정 차단판 조각. 길을 막는 잔해.",
+   "rule": "보도·골목·주차장·실내 복도 바닥에 — 길을 막는 자리에 둔다(두 칸 모두 막힘). 치우는 이벤트는 그 칸에 «같은 높이·결정 키». 건물 문 앞 접근칸을 막을 때는 이야기가 그렇게 부를 때만. 차도 금지."
+  },
+  {
+   "id": "note",
+   "src": "mc-note.png",
+   "name": "쪽지(바닥에 떨어진 메모)",
+   "en": "memo sheets on the floor",
+   "kind": "debris",
+   "w": 1,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "words": [
+    "쪽지",
+    "메모",
+    "메모지",
+    "붙임쪽지",
+    "종이",
+    "note",
+    "memo"
+   ],
+   "desc": "흰 종이 두 장과 노란 붙임쪽지. 바닥 그림(밟고 지나간다). 흰 바닥 위에서는 조금 묻힌다 — 어두운 바닥·보도에 둔다.",
+   "rule": "보도·실내 바닥 어디든 한 장. 밟고 지나간다. 줍는·읽는 이벤트는 그 칸에 «플레이어 아래» 로 둔다. 흰 타일 바닥은 피한다."
+  },
+  {
+   "id": "device",
+   "src": "mc-device.png",
+   "name": "기계 장치(제어반)",
+   "en": "floor-standing control box",
+   "kind": "box",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "기계 장치",
+    "제어반",
+    "출입 장치",
+    "조절기",
+    "제어 장치",
+    "control box",
+    "device"
+   ],
+   "desc": "회색 철 상자 제어반. 유리창 안 표시등 둘, 붉은 단추. 윗칸은 윗면과 창(사람 위에 그려짐), 아랫칸은 몸통과 발.",
+   "rule": "문·셔터·승강기 옆 벽가, 기계실·주차장·역 구내 벽 쪽 줄에. 아랫칸 막힘. 누르는·조작하는 이벤트는 아랫칸에 «같은 높이·결정 키». 문 앞 접근칸·차도 금지."
+  },
+  {
+   "id": "ledger",
+   "src": "mc-ledger.png",
+   "name": "장부(바닥에 펼쳐진 찢긴 장부)",
+   "en": "torn ledger book",
+   "kind": "debris",
+   "w": 1,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "words": [
+    "장부",
+    "기록부",
+    "찢긴 장부",
+    "펼친 장부",
+    "ledger",
+    "record book"
+   ],
+   "desc": "붉은 표지의 펼친 장부와 찢긴 쪽 조각. 바닥 그림(밟고 지나간다).",
+   "rule": "보도·실내 바닥 어디든 한 권. 밟고 지나간다. 줍는·읽는 이벤트는 그 칸에 «플레이어 아래» 로 둔다."
+  }
+ ]
+}
