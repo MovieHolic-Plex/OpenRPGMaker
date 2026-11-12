@@ -1311,6 +1311,19 @@
     "the round-1 battle line does not restate the wake cutscene line (no same-meaning sentence such as 'it has no eyes, it hunts by sound' twice); it adds new information such as how to act",
     "the cutscene and the battle line together still say what the boss does (warning kept) without naming its weakness or the answer"
    ]
+  },
+  {
+   "id": "boss-field-sprite-fills-footprint",
+   "label": "큰 보스의 필드 그림은 막아 둔 발밑 칸만큼 크게 보인다",
+   "port": 19576,
+   "lessons": [
+    "field-sprite-matches-footprint"
+   ],
+   "prompt": "물가에 잠든 커다란 짐승 보스를 3칸×2칸 크기로 놓아 줘. 말을 걸어야 싸우게 하고.",
+   "requirements": [
+    "the boss body drawn on the field covers about its blocked footprint (3x2 tiles), not a small 2x1 picture inside a larger blocked area that reads like a fallen animal",
+    "the size comes from the event graphic scale or footprint data on the existing art; no new art is drawn just to enlarge it"
+   ]
   }
  ]
 }
