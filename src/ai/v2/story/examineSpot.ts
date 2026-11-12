@@ -372,5 +372,13 @@ export function settleFurnitureSpots(run: BuildRun, mapId: string): string[] {
     const label = baseOf(tileLabel(run.ctx.project, map, (map as unknown as Record<string, ArrayLike<number>>).upperTiles?.[ev.y * map.width + ev.x]));
     notes.push(`「${String((ev as { name?: string }).name ?? id)}」 ${label} ${bw}×${bh} 전체에서 조사되게(${ev.x},${ev.y}→${ax},${ay})`);
   }
+  // 경로의 조사 칸(청사진 단계 · 사슬 고리)이 앉힌 뒤에도 보이지 않으면 늘 빛나게 — 짓고 난 뒤 다른 손(닿게 옮기기 · 길목 비우기 · 모델의 move_event)이
+  // 맨바닥으로 옮긴 것도 마감이 다시 본다(2026-11-12 명세 은행 jrpg-x1: 3턴째 관문이 「광산의 옛 물길 기록」 (35,10) 을 «보이지 않는 것» 으로 짚었다).
+  const steps = new Set((run.ctx.project.gameBlueprint?.steps ?? []).flatMap((step) => (step.built?.mapId === mapId ? [step.built.eventId] : [])));
+  for (const id of ids) {
+    if (!steps.has(id) && !id.startsWith("ev_chain_")) continue;
+    const lit = lightUnseenThing(run, mapId, id);
+    if (lit) notes.push(lit);
+  }
   return notes;
 }
