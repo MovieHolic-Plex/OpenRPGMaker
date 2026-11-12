@@ -4,20 +4,55 @@
 // 변형 킷은 원본과 발밑·통행이 같아(굽기가 맞춘다) 찍는 순간에 갈아 끼워도 배치·통행·도달이 그대로다. 고르는 자리는 킷 id 를 푸는
 // 두 곳(stamp_object·stamp_tileset_object)뿐이라 마을 구성기·v2 빌더·이름으로 찾은 기물(«우물»)이 모두 같은 그림을 받는다.
 // 한 게임은 한 모습이다: 열쇠 + 원본 id 로 고르므로 그 게임의 우물은 어느 맵에서나 같은 우물이다.
-import type { StructureKitDef, TilesetDef } from "./types";
+// 집은 킷마다 따로 고르지 않는다 — 게임의 집 벌(tileset.look.houses) 하나가 가족을 통째로 바꾼다(assets/houseSets.ts).
+import { houseSetKit } from "./houseSetKit";
+import type { StructureKitDef, TilesetDef, TilesetLook } from "./types";
 
+type LookOf = (tilesetId: string) => TilesetLook | undefined;
 let activeKey: string | undefined;
+let activeLookOf: LookOf | undefined;
 
-/** 도구 실행 구간 동안 게임 열쇠를 켠다 — run(draft,args) 는 ctx 를 못 받아서 실행기가 이 값으로 넘긴다(withMonsterTurn 과 같은 방식). */
-export function withKitLook<T>(key: string | undefined, run: () => T): T {
+/**
+ * 도구 실행 구간 동안 게임 열쇠를 켠다 — run(draft,args) 는 ctx 를 못 받아서 실행기가 이 값으로 넘긴다(withMonsterTurn 과 같은 방식).
+ * lookOf: 그 구간이 시작할 때의 프로젝트로 본 «타일셋 겉모습»(아직 적히지 않았으면 이번에 처음 지으면 쓰게 될 것) — 집 벌이 읽는다.
+ */
+export function withKitLook<T>(key: string | undefined, run: () => T, lookOf?: LookOf): T {
   const previous = activeKey;
+  const previousLookOf = activeLookOf;
   activeKey = key?.trim() ? key : undefined;
-  try { return run(); } finally { activeKey = previous; }
+  activeLookOf = activeKey ? lookOf : undefined;
+  try { return run(); } finally { activeKey = previous; activeLookOf = previousLookOf; }
+}
+
+let activeSite: string | undefined;
+
+/**
+ * 이 구간에서 찍는 건물의 자리(맵·칸) — 집 벌이 «같은 벌 안 변형» 을 집마다 고르는 씨다(lookKit). 같은 자리의 같은 킷은 늘 같은 그림이다.
+ * 자리를 모르는 호출(이름 풀기만 하는 곳)은 킷마다 한 장으로 고른다.
+ */
+export function withKitSite<T>(site: string | undefined, run: () => T): T {
+  const previous = activeSite;
+  activeSite = site;
+  try { return run(); } finally { activeSite = previous; }
+}
+
+let houseSetOff = false;
+
+/** 이 구간에서는 집 벌로 갈아 끼우지 않는다 — 지붕 가족을 직접 말한 마을 요청(roofs)은 말한 그림 그대로 짓는다. */
+export function withoutHouseSet<T>(run: () => T): T {
+  const previous = houseSetOff;
+  houseSetOff = true;
+  try { return run(); } finally { houseSetOff = previous; }
 }
 
 /** 지금 도구 실행 구간의 게임 열쇠(없으면 사람 편집·스크립트 — 그림을 갈아 끼우지 않는다). */
 export function activeKitLook(): string | undefined {
   return activeKey;
+}
+
+/** 지금 구간에서 그 타일셋의 겉모습: 타일셋에 적힌 것, 없으면 이번 도구가 그 칩셋의 첫 맵을 지을 때 적힐 것. */
+export function activeTilesetLook(tileset: Pick<TilesetDef, "id" | "look">): TilesetLook | undefined {
+  return tileset.look ?? activeLookOf?.(tileset.id);
 }
 
 /**
@@ -51,8 +86,14 @@ export function kitVariants(tileset: Pick<TilesetDef, "structureKits"> | undefin
  * 이 게임이 그 킷 자리에 쓰는 그림. 열쇠가 없거나 변형이 없으면 그 킷 그대로.
  * 변형 id 를 직접 댄 요청(ai.variantOf 가 있는 킷)은 바꾸지 않는다 — 고른 것은 원본 id 로 온 요청뿐이다.
  */
-export function lookKit(tileset: Pick<TilesetDef, "structureKits"> | undefined, kit: StructureKitDef, key: string | undefined = activeKey): StructureKitDef {
+export function lookKit(tileset: Pick<TilesetDef, "structureKits"> | TilesetDef | undefined, kit: StructureKitDef, key: string | undefined = activeKey, site: string | undefined = activeSite): StructureKitDef {
   if (!key || kit.ai?.variantOf) return kit;
+  // 집 벌: 이 게임이 고른 벌이 그 킷을 덮으면 벌 그림으로(킷 id·이름·칸 크기·통행 그대로 — project/houseSetKit.ts).
+  if (!houseSetOff && tileset && "passability" in tileset) {
+    const set = activeTilesetLook(tileset)?.houses;
+    const swapped = set ? houseSetKit(tileset, kit, set, lookHash(`house|${key}|${kit.id}|${site ?? ""}`)) : undefined;
+    if (swapped) return swapped;
+  }
   const variants = kitVariants(tileset, kit.id);
   if (!variants.length) return kit;
   const options = [kit, ...variants];

@@ -3063,7 +3063,7 @@ function stampKitDirectSteps(
 ): StampStep[] {
   // 조수 실행이면 이 게임의 변형 그림으로(같은 칸 크기·같은 막힌 칸) — 들길의 모닥불·벤치·가로등도 게임마다 갈린다(project/kitLook.ts).
   const asked = (tileset.structureKits ?? []).find((k) => k.id === kitId);
-  const kit = asked && lookKit(tileset, asked);
+  const kit = asked && lookKit(tileset, asked, undefined, `${mapId}|${ox}|${oy}`);
   if (!kit) return [];
   const W = previewMap.width;
   const H = previewMap.height;

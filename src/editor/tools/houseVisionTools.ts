@@ -7,6 +7,7 @@
 
 import type { GameMap, Project } from "@/project/types";
 import { layerTileAt } from '@/project/mapLayers';
+import { houseSetBaseTiles } from '@/project/houseSetKit';
 import beodeulArchitecture from '@/assets/beodeulArchitectureCatalog.json';
 import { TILE } from "@/project/defaults/constants";
 import { requireMap } from "./mapHelpers";
@@ -48,8 +49,10 @@ export const HOUSE_VISION_TOOLS: readonly ToolDefinition[] = [lookAtHouses];
 function observeBeodeulBuildings(project:Project,map:GameMap,bounds:HouseRect|undefined):ToolExecResult {
   const ts=project.tilesets[map.tilesetId]!;
   const grafts=new Map(ts.tileGrafts?.map(g=>[g.targetTile,g]));
-  const same=(actual:number,wanted:number)=>{
-    const g=grafts.get(actual);
+  // 집 벌(게임마다 다른 집 그림) 칸은 원본 킷의 같은 자리 칸으로 읽는다 — 벌 집도 그 킷으로 센다(project/houseSetKit.ts).
+  const setBase=houseSetBaseTiles(ts);
+  const same=(actual0:number,wanted:number)=>{
+    const actual=setBase.get(actual0)??actual0,g=grafts.get(actual);
     return actual===wanted||g?.sourceChipset==='tex_beodeul_city'&&g.sourceTile===wanted
       ||g?.sourceChipset==='tex_beodeul_door'&&(wanted===5743&&g.sourceTile<8||wanted===2333&&g.sourceTile>=8&&g.sourceTile<16);
   };

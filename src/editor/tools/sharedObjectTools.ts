@@ -12,7 +12,7 @@ import type { GameMap, Project, StructureKitDef, TilesetDef } from "@/project/ty
 import { catalogEntry, resolveObjectAlias, sharedObjectDef, sharedObjects, sharedPlaces } from "./sharedDesignCatalog";
 import { rejectSettlementPropOnRoute } from "./routePropPolicy";
 import { roadCutAt } from "./roadCutGuard";
-import { lookKit } from "@/project/kitLook";
+import { lookKit, withKitSite } from "@/project/kitLook";
 import { rejectOnSceneStage } from "./sceneStageGuard";
 import { ToolError, type ToolDefinition } from "./types";
 import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
@@ -157,7 +157,8 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       const objectId = String(args.objectId);
       const map = project.maps[String(args.mapId)] ?? fail(`맵을 찾을 수 없습니다: ${String(args.mapId)}`);
       rejectSettlementPropOnRoute(map, objectId);
-      const resolved = resolveObject(project, objectId);
+      // 찍는 자리를 알려 준다 — 집 벌은 같은 벌 안에서도 집마다(자리마다) 다른 변형 그림을 고른다(project/kitLook.ts withKitSite).
+      const resolved = withKitSite(`${map.id}|${String(args.x)}|${String(args.y)}`, () => resolveObject(project, objectId));
       rejectOnSceneStage(map, { x: Number(args.x), y: Number(args.y), w: resolved.pattern.width, h: resolved.pattern.height }, "stamp_object");
       if (isRetiredInteriorTileset(resolved.source.id, resolved.source)) throw new ToolError(retiredInteriorMessage(resolved.source.id), { code: "retired-interior-tileset" });
       const layers = (args.layers as Layers | undefined) ?? resolved.defaultLayers;
