@@ -434,6 +434,11 @@ export const RELIEF_STYLES: Readonly<Record<string, ReliefStyleSpec>> = {
   // 마을 지형 계단(2026-10-30 사용자 「경사로를 전부 계단으로 — 버들항 칩셋 계단 조각」): 바탕 양식과 같은 색·벽에, 자동 계단(5~8)을
   // 칩셋 bd-mpart-stairs 돌계단 화소(rampArt.json *-steps, scripts/content/build-village-stair-art.mts)로 칠한다 — 걷기 규칙은 그대로.
   "grass-steps": { smoothStairs: true, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#1a4c22", "#276d2d", "#3d8d43", "#5fa84a", "#87c464", "#b4e08a"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
+  // 게임 겉모습의 바닥 재질에 맞춘 풀 둑 변형(2026-11-12, assets/beodeulLooks.json grounds) — 윗면 가장자리 색만 그 바닥 색이고 벽·계단은 grass-steps 와 같다(reliefStyleForGround).
+  "grass-steps@ground-dry": { smoothStairs: true, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#5a5630", "#7a743e", "#978c4c", "#a0a44c", "#bca860", "#ccb68e"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
+  "grass-steps@ground-clover": { smoothStairs: true, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#16332e", "#1f463f", "#285b51", "#396b42", "#4c7d48", "#6b8b66"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
+  "grass-steps@ground-earth": { smoothStairs: true, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#3e2616", "#573620", "#71482c", "#8a5e3c", "#967042", "#ab967d"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
+  "grass-steps@ground-sand": { smoothStairs: true, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#7d6f52", "#9a8a66", "#b3a37f", "#e0cf9a", "#ece2c4", "#f4ecd6"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
   "snow-steps": { smoothStairs: true, family: "snow", overlay: "icicles", overlayEvery: 2, top: ["#6a7f9e", "#93a9c6", "#b9cce0", "#d6e3ef", "#e9f1f8", "#ffffff"], wall: ["#2a3040", "#3c4658", "#566479", "#71819a", "#93a3bb", "#b9c6d8"], accent: SNOW_WHITE },
   "sand-steps": { smoothStairs: true, family: "strata", top: ["#5b4d35", "#826e4c", "#ae9366", "#d9b87f", "#f5d090", "#ffefa5"], wall: ["#5a3e22", "#7a5630", "#98703f", "#b58a50", "#cfa566", "#e8c282"], accent: MOSS },
   // 던전 높이 단(2026-10-30 「던전 설계에 높이 단 — 마을과 같은 버들항 계단 조각」): 버들항 동굴 바위 앞면 색(칩셋에서 뽑은 6색)의 흙벽 절벽 + 같은 bd-mpart-stairs 돌계단.
@@ -514,7 +519,17 @@ export function compileReliefStyle(style: string | undefined): ReliefWallStyle |
 
 /** 바이옴 경사로 도트(tiledata/relief-art/<style>-ramp.ase → scripts/content/build-relief-ramp-art.mjs → rampArt.json). 없으면 undefined. */
 export function reliefRampArt(style: string | undefined): ReliefRampArt | undefined {
-  return style ? (rampArt as Record<string, ReliefRampArt>)[style] : undefined;
+  // 바닥 재질 변형(grass-steps@ground-…)은 원래 양식의 계단 도트를 그대로 쓴다
+  return style ? (rampArt as Record<string, ReliefRampArt>)[style] ?? (rampArt as Record<string, ReliefRampArt>)[style.split("@")[0]!] : undefined;
+}
+
+/**
+ * 게임 겉모습의 바닥 재질에 맞춘 둑 양식 이름(2026-11-12). 풀 둑(grass-steps)의 윗면 가장자리 풀 색만 그 바닥 색으로 바꾼 변형이 있으면
+ * 그 이름(`grass-steps@ground-sand`), 없으면 원래 양식. 벽·계단·통행은 같다.
+ */
+export function reliefStyleForGround(style: string, ground: string | undefined): string {
+  const name = ground ? `${style}@${ground}` : style;
+  return RELIEF_STYLES[name] ? name : style;
 }
 
 /** 자동 계단 경사로를 비탈로 그리는 양식인가(ReliefStyleSpec.smoothStairs). */

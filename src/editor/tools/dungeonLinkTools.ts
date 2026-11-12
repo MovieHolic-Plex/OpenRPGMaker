@@ -128,11 +128,19 @@ export function linkEntranceInDraft(draft: Project, args: DungeonLinkArgs): { li
   const beforeMouth = structuredClone(draft.maps[fromMap.id]!);
   const mouth = caveMouth(draft, fromMap, fromGate);
   if (mouth) notes.push(mouth);
-  const from = { mapId: fromMap.id, x: fromGate.x, y: fromGate.y };
+  // 갱구를 세웠으면 출입구는 그 문 앞 칸 그대로(exact) — 그냥 주면 연결 도구가 출입구를 가까운 벽(절벽 밑) 쪽으로 당겨,
+  // 굴 그림은 문 없이 남고 출입구는 두어 칸 옆 맨땅에 놓였다(2026-11-13 명세 은행 jrpg-w2 갈대항구: 갱구 (31..33,14..17) · 출입구 (35,16)).
+  const from = { mapId: fromMap.id, x: fromGate.x, y: fromGate.y, ...(mouth ? { exact: true } : {}) };
   const to = { mapId: toMap.id, ...(toGate ? { x: toGate.x, y: toGate.y } : {}), ...(toLanding ? { entry: { x: toLanding.x, y: toLanding.y } } : {}), ...(toDoor ? { doorAt: { x: toDoor.x, y: toDoor.y } } : {}) };
   let link: LinkResult;
   try { link = linkMapsInDraft(draft, { from, to, bidirectional: true, fade: args.fade ?? "black", registerEdge: true }); }
-  catch (error) { if (mouth) draft.maps[fromMap.id] = beforeMouth; throw error; }
+  catch (error) {
+    if (!mouth) throw error;
+    // 그 칸 그대로는 못 잇는다(문 앞이 막혔다) — 갱구를 걷고 예전처럼 가까운 닿는 칸으로 잇는다. 맨땅 출입구는 끝맺음(dressBareCaveGates)이 다시 본다.
+    draft.maps[fromMap.id] = beforeMouth; notes.splice(notes.indexOf(mouth), 1);
+    if (!(error instanceof ToolError)) throw error;
+    link = linkMapsInDraft(draft, { from: { mapId: fromMap.id, x: fromGate.x, y: fromGate.y }, to, bidirectional: true, fade: args.fade ?? "black", registerEdge: true });
+  }
   return { link, fromGate, ...(toGate ? { toGate } : {}), ...(placeName ? { placeName } : {}), notes };
 }
 

@@ -7,6 +7,7 @@ import beodeulCitySheet from "./beodeulCitySheet.json";
 import beodeulGroundCatalog from './beodeulGroundCatalog.json';
 import beodeulForestTrunksCatalog from './beodeulForestTrunks.json';
 import beodeulNatureCatalog from './beodeulNatureCatalog.json';
+import { tilesetLookSheetCount } from './tilesetLooks';
 import beodeulWarmTreesCatalog from './beodeulWarmTreesCatalog.json';
 import beodeulArchitectureCatalog from './beodeulArchitectureCatalog.json';
 import beodeulFormsCatalog from './beodeulFormsCatalog.json';
@@ -132,7 +133,11 @@ export const FOREST_FANTASY_TOWN_TEXTURE_KEY = "tex_forest_harmony_fantasy_town"
 
 /** The reference composite is loaded only by projects that explicitly use its board tileset. */
 // 참고·이식 시트(숲마을 부품·던전 재칠 등)는 저작권 정리(2026-10-07)로 전부 지웠다. 자리만 남긴다.
-export const BUNDLED_REFERENCE_CHIPSET_ASSETS: readonly BundledImageAsset[] = [];
+// 버들항 겉모습 그림판(2026-11-12) — 타일셋이 아니라 «게임마다 고른 겉모습» 이 겹쳐 그리는 그림만 든 시트다(assets/tilesetLooks.ts,
+// 굽기 scripts/content/beodeul-looks/bake.py). 겉모습을 고른 프로젝트만 싣는다(tileset.look.textureKey 문자열로 찾는다).
+export const BUNDLED_REFERENCE_CHIPSET_ASSETS: readonly BundledImageAsset[] = [
+  {textureKey:"tex_beodeul_looks",path:"assets/beodeul-looks/chipset.png",name:"버들항 · 게임마다 다른 겉모습(바닥·길·광장 재질, 나무 수종)"},
+];
 
 export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:'tex_beodeul_warm_trees',path:'assets/beodeul-warm-trees/chipset.png',name:'버들항 · 따뜻한 황록 나무·숲'},
@@ -224,6 +229,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_beodeul_ground") return beodeulGroundCatalog.count;
   if (key === "tex_beodeul_forest_trunks") return beodeulForestTrunksCatalog.count;
   if (key === "tex_beodeul_nature") return beodeulNatureCatalog.count;
+  if (tilesetLookSheetCount(key) !== undefined) return tilesetLookSheetCount(key)!;
   if (key === 'tex_beodeul_architecture') return beodeulArchitectureCatalog.count;
   if (key === 'tex_beodeul_forms') return beodeulFormsCatalog.count;
   if (key === 'tex_beodeul_reviewed') return beodeulReviewedCatalog.count;

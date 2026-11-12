@@ -1,0 +1,2427 @@
+{
+ "schema": "oprn-object-gate-owner-waiver/1",
+ "id": "fable-looks-beodeul-2026-11-12",
+ "owner": "구워도 되고 앞으로는 전부 오너 면제다 (FABLE 5.2 는 한번에 다 잘만든다)",
+ "decidedAt": "2026-11-12",
+ "recordedBy": "버들항 겉모습(바닥·길·나무) 작업자 Claude(감독 세션 0306a26a 가 띄운 작업자) — 감독 2차 지시: Fable 5.2 그림은 오너의 상시 면제(bundle·shared 만)",
+ "contexts": [
+  "bundle",
+  "shared",
+  "workshop-local"
+ ],
+ "note": "버들항 «게임마다 다른 겉모습» 2차 — 바닥·길·광장 재질 칸 12장(16×16)과 나무 수종 넷(자작·수양버들·사과·단풍) 그림 28장. Claude Fable 5.2 medium, 그림 하나에 호출 하나(답이 깨진 2장 — 자갈길·수양버들 4×5 — 만 한 번 더). 색은 버들항 시트·기물이 이미 쓰는 색에 코드로 붙임. 재질 칸으로 만든 가장자리·섞인 칸과 숲 수관 색 옮김은 코드 조립(scripts/content/beodeul-looks/bake.py). 자료 ~/z-project/assistant-fable-runs/redraw/beodeul-variety/r2 · 페이지 beodeul-variety.html.",
+ "items": [
+  {
+   "pixelSha256": "7a38996678ebbe9ae3fd68c9d0f2be85fa4e04cb5a164bf09490bcb25b6e2481",
+   "kind": "terrain",
+   "label": "beodeul_looks/ground-dry",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "c3f0e85f2682dde5"
+    ],
+    "24": [
+     "0dae2ff636196708",
+     "1207be4613e970c7",
+     "22be1947dd0ecfeb",
+     "2efa8fc2c51d2a89",
+     "61320c1dcc4dfc6f",
+     "6f43a34e51d7e9d3"
+    ],
+    "32": [
+     "2bb05637808e5796",
+     "ad04681638cbc736",
+     "b0e9065dd0530b46",
+     "bd30cc5666108437",
+     "c931fd50bdf3f32c",
+     "f4241b6ade55b825"
+    ],
+    "48": [
+     "140002774ac992a5",
+     "3bdcf3e26beef7f3",
+     "47f9f32a39436d6d",
+     "9216e51b05f18a0b",
+     "b7244c768c2b9a8b",
+     "bb368982abf909d8"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "306eda772faaaaaeccd5c03301d70a4cb85f2be5079bf800dc0ea401ee80c977",
+   "kind": "terrain",
+   "label": "beodeul_looks/ground-clover",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "9bc93e25725e08f0"
+    ],
+    "24": [
+     "06f836dea565a124",
+     "2891f51a71d7700c",
+     "2e3da94f9f831b44",
+     "42317eb7f11a0ba7",
+     "b3a67b015c69afff",
+     "bceb75d736434d96"
+    ],
+    "32": [
+     "3732cf98934b279b",
+     "5e8f6211d5cc3887",
+     "7fa2e45f87bc9aa1",
+     "a314f89746c91ead",
+     "a360815863de06c8",
+     "e8fa2942dba632c4"
+    ],
+    "48": [
+     "0694781eda98c6fd",
+     "0b0880988d93b38b",
+     "50d65c884f7c6754",
+     "57ede2cc9dd1ead9",
+     "a9a0cb7f8f3eb847",
+     "cf01ddabb001a062"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "ed16c3b3c2b00c59c3c5646f72dc3df907c07a2f6bc622faff4f631b1a23b319",
+   "kind": "terrain",
+   "label": "beodeul_looks/ground-earth",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "a0f58cb1ff342ae0"
+    ],
+    "24": [
+     "182d16c6cada6aa8",
+     "1dd3119d9346051b",
+     "370a774cfccdecb6",
+     "4d80537860a3bcc5",
+     "8bf750918fc801a6",
+     "d7b5b866d284414d"
+    ],
+    "32": [
+     "1b5f7241ca75c9d4",
+     "297cd14d28bad00b",
+     "8c1a8ab44c412197",
+     "c3908cc2c6258dc4",
+     "c89e1e6a9db0cd61",
+     "ebc1985f13840881"
+    ],
+    "48": [
+     "3cdfccfb520a1f6d",
+     "4ce99473200991e2",
+     "7885c7f172e1703a",
+     "7c7becea03ccf84a",
+     "b6d15f6cd7c53d20",
+     "c3d8e826bcff35ae"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "db37970056be0a94651e74eac736cd694c06aea14e1cc094bab9e01b86fa46b8",
+   "kind": "terrain",
+   "label": "beodeul_looks/ground-sand",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "63b74512bc6b6513"
+    ],
+    "24": [
+     "25a8f025915a6df8",
+     "536772b3de001e29",
+     "569eac3c0282b1ab",
+     "701f423fa9283648",
+     "7ee179347e5ab87f",
+     "fb75c95d3c07b856"
+    ],
+    "32": [
+     "286c8790c4747f94",
+     "2a65c76611091e2c",
+     "493b15530319c44f",
+     "6d6492f01e21c83f",
+     "798455fb1a9322fe",
+     "95e4cdc306d5caba"
+    ],
+    "48": [
+     "74df9cad97cbc492",
+     "7945590af8ce8a7a",
+     "bf2ee0b287325e98",
+     "c3b2164981529596",
+     "cd5c7e10d3a27c03",
+     "fa1b2cd418f9f12c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "9e92f2d2bae78b291af87d5c944e494331be271f083aaa15c28afc960d3880ca",
+   "kind": "terrain",
+   "label": "beodeul_looks/road-dirt",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "4325bcbe0f11970a"
+    ],
+    "24": [
+     "00805425295e9a76",
+     "4a8a11382d249f15",
+     "5723f7143425d5dc",
+     "7fa42cb4ef5fa39c",
+     "c4ac2763d4ade205",
+     "cf988aadfee3a531"
+    ],
+    "32": [
+     "6c49928e81ddf82b",
+     "6f6d4d75109788f3",
+     "7669627ac86e22c8",
+     "a7fd6c90e346bff6",
+     "aa98b0ee1f199fb2",
+     "c53487e5e59b0c7c"
+    ],
+    "48": [
+     "75ba549c001531e6",
+     "95e6031c4479d9b3",
+     "a17d2e500d14a5b4",
+     "b2827d2337dce912",
+     "c63537bd2b5790b3",
+     "d58ae496ef49fada"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "52ed069bf87e685578294f1e66fcd092fd6ade4b19780e604fef205f47524817",
+   "kind": "terrain",
+   "label": "beodeul_looks/road-gravel",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "085c8377b9a17dd3"
+    ],
+    "24": [
+     "371a0ee83c72251f",
+     "61ff76e5b2c7d61d",
+     "69080f2df461a6e7",
+     "880c92a678dbdb5f",
+     "ac45ebed38662211",
+     "e470a5b81ddde79a"
+    ],
+    "32": [
+     "0e5c8f9d6af678aa",
+     "3938ea65e37eea33",
+     "9033b3e135813c98",
+     "9ba8d243cd7c5dd3",
+     "c0390b7b801dbce6",
+     "d207812ff856c11b"
+    ],
+    "48": [
+     "034a912d264fc065",
+     "2d51d82568da7eed",
+     "338f30f8eac800b9",
+     "9664e1629be857f7",
+     "a00ad5e4cbe839a9",
+     "c5f9864a297c9c73"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "48a8d97f4669104047ed85f7f90285281aed190c9cdcfb80f3e2980979cc1a38",
+   "kind": "terrain",
+   "label": "beodeul_looks/road-brick",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "bcfb926d89d751d5"
+    ],
+    "24": [
+     "16a4cbe236ab50ff",
+     "18156aa7334c1c0a",
+     "260da68451ed96a0",
+     "8704fc17d97fc1a2",
+     "d0cefa7913a30e3c",
+     "dac4578363c73862"
+    ],
+    "32": [
+     "01ad2a658f107d89",
+     "11b6b97c16482305",
+     "5167f03d99ba0d8e",
+     "6844a0b55f74f027",
+     "6ac2bfb1d4c8c7dd",
+     "d943d3497074f883"
+    ],
+    "48": [
+     "2d61ac31b235c759",
+     "40aaa45064c86ce5",
+     "9675f922a447fb16",
+     "a9263cfe1a2061d2",
+     "b40d22f449cba2c8",
+     "cfa8453f5611b24e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "44b336b8dc006a635cf9e1007ebf2c531b824abe911e8279072f96350fd374d0",
+   "kind": "terrain",
+   "label": "beodeul_looks/road-plank",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "bd2da3a506d70c57"
+    ],
+    "24": [
+     "0ec645e86d55deee",
+     "2155d42429365a08",
+     "60fdfd52178fe45c",
+     "653481923c3297ef",
+     "e5021e56a8264aee",
+     "eed4994af479f539"
+    ],
+    "32": [
+     "1d4b56cec4082d14",
+     "2a79b54891b077e7",
+     "4a62220a4338ad1a",
+     "81b01e93dd9c8761",
+     "d022bec6607b2fff",
+     "d85db3f0734d6eb3"
+    ],
+    "48": [
+     "14069293eadf7f6b",
+     "5739fbf2af4a4963",
+     "661c942720a99c9e",
+     "c22673a7fbabd43e",
+     "caa01bc116212972",
+     "f4f58ce437b76657"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d7b93e3e52a47a0aef798200f9adf482377263837160a410ad8f1918194cf84c",
+   "kind": "terrain",
+   "label": "beodeul_looks/road-flag",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "727fff5b71eba5f0"
+    ],
+    "24": [
+     "11d3525407de78d9",
+     "334b686273eef6b0",
+     "4a865fb0a256d146",
+     "7cb6334ef5a07371",
+     "dd4dfda89e172bdd",
+     "ff55d7881c186d63"
+    ],
+    "32": [
+     "391feab5967affc2",
+     "4219039fda5dd226",
+     "4da77f806950d214",
+     "622ad6798b962625",
+     "75548dddb35c93c2",
+     "a0ded8a45f2c2ab0"
+    ],
+    "48": [
+     "0e6be8f853342d86",
+     "1e37cc92b6526ce6",
+     "80ad00a177ceccbd",
+     "b0da1ae93bacba71",
+     "c9607d79b0dbe985",
+     "e4ccda9d7fda8998"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "3aaeb190c450f198e62351af6976a770081caff69bd81e2251edd1fe4ece90f7",
+   "kind": "terrain",
+   "label": "beodeul_looks/plaza-herring",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "80e984c98ce2393f"
+    ],
+    "24": [
+     "0066448106abe1ce",
+     "14339837c8c2e5ed",
+     "4eb5154bc337e9de",
+     "5ba9dd99764ea247",
+     "5e731fe3d3f47063",
+     "6df305fbbf1b4e02"
+    ],
+    "32": [
+     "5139c99c8f174561",
+     "92098621a860950c",
+     "9b72fbb18bbc284d",
+     "a8cc38d27eed1b05",
+     "bf4a409c02f3f00c",
+     "f6e1204d7882c31d"
+    ],
+    "48": [
+     "089bcbfc1fe5f1e2",
+     "3958497eaa4a9056",
+     "bed2be1edfdcf437",
+     "e0a0d868afb21405",
+     "e8820931310222f8",
+     "f0fbdfe1369ac7b6"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "b247f912f1bf3803502185acefdd9485409d6dc36e354b8afde60c1378d81f77",
+   "kind": "terrain",
+   "label": "beodeul_looks/plaza-cobble",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "9627be5829bcf495"
+    ],
+    "24": [
+     "29b1f484d5d11c3f",
+     "54a4a63628e4e23e",
+     "5d5ee7a3007af127",
+     "6e674eb26020a35c",
+     "a5de83527bf06391",
+     "c564e44b33504ed2"
+    ],
+    "32": [
+     "1d50d87ddf67d909",
+     "33f4535e6854499c",
+     "79758bf1328f525b",
+     "adb2997732d103ed",
+     "b0819470b452bc50",
+     "f836747313bfa3a6"
+    ],
+    "48": [
+     "478dc2e3bae621fc",
+     "6f76119676a34d0d",
+     "895aad4370ef5422",
+     "a627f28f73d225b2",
+     "b3c567d5fdbfd4bc",
+     "fb584b338012c40f"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "abf2eaedc98abd492c833acb8cec4e369601e3b5cf586400e5c7d5ef3fd6602f",
+   "kind": "terrain",
+   "label": "beodeul_looks/plaza-slate",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "fc56ec5f93273533"
+    ],
+    "24": [
+     "47fcca2816293128",
+     "4c387c58fdd3df17",
+     "4c5f134d1b6f8867",
+     "678ffa497cca8d46",
+     "9be4d61d7a17fc80",
+     "f63f600151b8389a"
+    ],
+    "32": [
+     "01c39609d0a7180e",
+     "071c4f27b0515fb8",
+     "58ee64675a2a0246",
+     "5ce3c15f05cad743",
+     "77f933cf0388b8f7",
+     "a91314d767b3a5e0"
+    ],
+    "48": [
+     "1efbd0b73f90e325",
+     "39a6eab6293bf4e2",
+     "56cce2069959cac8",
+     "89d1abe2db48eddc",
+     "b13b14ab285982a4",
+     "dec27d0fb6ef5493"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "9e4177b05bbd0b006c5a60ea45316b6df14c0841eb669e7d9b60c260317742b2",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-birch-4x5-1",
+   "width": 64,
+   "height": 80,
+   "cells": {
+    "16": [
+     "02774bf4a912ad65",
+     "06920b189860abd6",
+     "09208ba14985cbe2",
+     "17dc3334b410e567",
+     "219d996d461a518b",
+     "3f6cfdf85b54da10",
+     "55302b0dc41acd8b",
+     "8239e66e592fd156",
+     "8be9afc51868a33b",
+     "90b4cb1e754d230e",
+     "99bcf889e67b0b1e",
+     "a5b3ab81a70c7b11",
+     "aa6626debea49128",
+     "d58bd14558b1ff47",
+     "e75036c995e710ec"
+    ],
+    "24": [
+     "06ed1526ce7826aa",
+     "1893bac5b4cb8f77",
+     "1bd59a9af7094965",
+     "1f37dd164f9067bf",
+     "1f3cd4e6f61b9b87",
+     "20615e0b1f316576",
+     "221d86e4c7c458f6",
+     "23b03e624b179c2a",
+     "2462b75844fbb296",
+     "27f14a4d09e246c6",
+     "287a37264f74cf0d",
+     "2a204c4a6a154c95",
+     "308150ef69fb40be",
+     "31786a64d982f7e3",
+     "3dffdec571b31861",
+     "45b941dbcdeb47e8",
+     "49603eb32a9a5e7f",
+     "4964144578c28aed",
+     "4d23631c4e32470f",
+     "5037d1a10287d534",
+     "52377b4bc059c3d6",
+     "5271157ba96a666c",
+     "53a1c491bea13f9c",
+     "56c6106c3c06ab8e",
+     "5ac9ef41e2978d2e",
+     "5e8ae93167210a6f",
+     "63b569c214bfec30",
+     "6c76932ce50d03f2",
+     "6f6705f563edb33c",
+     "70f78ea248e2ea04",
+     "7212261c8a2e6f0f",
+     "7212f045fa2ecc6b",
+     "72981bf0b061a61d",
+     "771deeb82111ce07",
+     "82644311eb8a0fa3",
+     "84893d9b69610be6",
+     "907e8e9da0311eb7",
+     "95c82e4a81fe99e1",
+     "979a298364e0abc8",
+     "9c8d401faf985148",
+     "9dee8caf41248884",
+     "9ff63ce5e9e496a8",
+     "a1694ee21ca49a0b",
+     "afc5d65adca42e63",
+     "b1310accf2ce1c80",
+     "b132e68bdc9abe24",
+     "b4d75cb0d3c769b3",
+     "c134f3ea89f39c3e",
+     "d91e94bd15b1a1dc",
+     "d92320e85de52521",
+     "e21a79831713558a",
+     "e287a825321ce826",
+     "e48d21a4def5473f",
+     "e50a50d771a3c6a6",
+     "ecc8923b4193828a",
+     "efad3e2fb106792e",
+     "f75eef5cb073b951",
+     "fc6ab17797eae44c"
+    ],
+    "32": [
+     "09bd1778b41a1d04",
+     "2afed90c0eb84204",
+     "2c628f3b0a7600f4",
+     "2cf18a0ae5ce3bb8",
+     "35828bf09f49543a",
+     "382c333cd2e13680",
+     "633ba2c1a1be3872",
+     "805575ba9c5c9af4",
+     "8a23d9ee7e3aaa31",
+     "c5501bc9782bec1c",
+     "e64c772397e1c783",
+     "f31328e0b6611ef9"
+    ],
+    "48": [
+     "023f79da24649e2b",
+     "05be53c39f3ddb7a",
+     "08c9cd38a0b18630",
+     "1baf9c6834ef95d8",
+     "1ddbcd198649e1ff",
+     "25f2118e23244b61",
+     "264d5bd4a374faf5",
+     "4c5e609028b3eb51",
+     "786cd5fac479ac28",
+     "7f401efc28e4b349",
+     "87895b31433c0bb5",
+     "882ac4c423c29ff6",
+     "970f42c6eae3a6ea",
+     "9b74c5ef46900a2f",
+     "b9b5201750fe37f1",
+     "c7d4ead7d1f59fd4",
+     "c9c4b75995e644f3",
+     "d0c502fa27480c51",
+     "d81536c67613b31c",
+     "dae65eb58e8d8c5b",
+     "dfdf86fdccb333b5",
+     "eea88bd9401cec44"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "dd044c161e3ba142aa7d46525b03238df774d800d65b9593fc6a083ebba16356",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-birch-4x5-2",
+   "width": 64,
+   "height": 80,
+   "cells": {
+    "16": [
+     "0c825200a986f449",
+     "12d8262ab8ee4093",
+     "1a28ed75a4d61b3d",
+     "3411d3d2b8cc49f0",
+     "42959e9465679be9",
+     "4a4283b50d475d38",
+     "5a44d06c107b1c6f",
+     "5c9ce8e52aeb97b5",
+     "73df990120b2c9da",
+     "848d9cff280d4352",
+     "9010204d78b6d39f",
+     "a40b9b611ee5f5e4",
+     "a5db045ff012fb86",
+     "b735c9a57b6c171c",
+     "cced9a3555cf3ce7",
+     "f45ac26c65194e25",
+     "f7f8a51cb7928621"
+    ],
+    "24": [
+     "0467ece517af3b2e",
+     "0677b19fb1d1d9a7",
+     "06bc236a1ac6e105",
+     "08f99ad539f4a6d4",
+     "09875e9d95bb1ccf",
+     "09d99cb1c28a72d3",
+     "0b1d62a25abf2d50",
+     "0b7953d336f7de3d",
+     "0fbce01b6f54b9e6",
+     "12969548966f2934",
+     "139bcc6ab63a2847",
+     "15eddfaf0cf99df7",
+     "1b809918a2ab0267",
+     "1e292011e6a70227",
+     "1fc1e9f3183f9fd2",
+     "200e41bf387ac932",
+     "22b585b0a9f673da",
+     "2647b833d1cfcd34",
+     "2c123cd1f6a70ef2",
+     "2de196636dcc7476",
+     "2f9d2472613831a8",
+     "30f3d0a215a990ce",
+     "35efaf274a6d5742",
+     "3d4fd26864419bfe",
+     "4102c86e38cf6124",
+     "492a36b0243dac6e",
+     "60d699bb21469149",
+     "7728272af04c2b64",
+     "779f0c7ef65ec2cc",
+     "7b909cc40bbb2132",
+     "820bff124564ea9b",
+     "877d38f661b51ddc",
+     "881c5d14724bebd1",
+     "8875b54eee486b4c",
+     "a99ef8bbb5cbd32d",
+     "a9a6ae0d4b8d0a23",
+     "ab4b4f4e35d26a7e",
+     "b2be515e397ecacb",
+     "b324e60feebd7f2a",
+     "c2eef519e0a9a85d",
+     "c404145d8c2098d6",
+     "d1d078a464051fea",
+     "d4dcd4fe93cc960b",
+     "d53c008d8701f963",
+     "da3110eb9b2a011d",
+     "dd19a9007d31bf42",
+     "e1f3a05f7f12e471",
+     "e6d44881826bc2be",
+     "e783d79cbfa892e3",
+     "ea93087181160e15",
+     "ead669a3006a4478",
+     "eeb264c536ad4d3f",
+     "f09679123d676b4b",
+     "f3ed2b845b63e1f7",
+     "f4757b86951bf868",
+     "f69674a4afe5e5b9",
+     "f6a432c78877e970",
+     "f78a76076786b372",
+     "fd4570d0cee39492",
+     "ff071e640e0d42cd"
+    ],
+    "32": [
+     "0514f260d93c6ec8",
+     "079b4fc74ef55ea8",
+     "718b84b266043fc9",
+     "778de0c7b04ec8f3",
+     "7970097b7bea8dfc",
+     "86019681ee1ba514",
+     "94ff07424e5999f2",
+     "a31e449fd3d22f60",
+     "c691a08c687a901e",
+     "de049b644165b792",
+     "e4bdf813206f5300",
+     "f8dcef38eb385db1"
+    ],
+    "48": [
+     "1147bf1c9b3d9f94",
+     "1b5cce03ea1deec3",
+     "2437b8c68ca0c189",
+     "2dd2dc7058386cb8",
+     "3a32f63caf6798d4",
+     "4a875a4d9cf09e87",
+     "4cdad27a934492f2",
+     "5f6634d73255ae86",
+     "62708a9b62c8dea3",
+     "7ef40e63ff76e8fd",
+     "829aed945f144f8c",
+     "82db41835d98df41",
+     "8b9e33d782011ee4",
+     "979ec43282b8efa9",
+     "c0b5d210bde86167",
+     "d97327814284391b",
+     "da8d71cd9bd6e9f8",
+     "dc74a247aa680bc9",
+     "e12499820ae5c599",
+     "e28f17425b3734ac",
+     "e849c15b6af7a232",
+     "e90ab12d020bd3da",
+     "f470c76876caa57f"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c257208993dd48e73f49288d67722419736a761daf217924bdfd6af5e51f8a10",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-birch-3x4-1",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "0bbd900252eaaa43",
+     "55948de4837c785c",
+     "757eabe532713cd9",
+     "7763cf727b5720c0",
+     "889d6498bc327d86",
+     "94f6b9df81f5d624",
+     "9713f08328c03864",
+     "b7f09b223df65bab",
+     "ccb6e21b0deb9671",
+     "d87915ddc02daa78",
+     "f81cb6834cd3804d"
+    ],
+    "24": [
+     "2251ed1fe7a20d20",
+     "2c9c1f662ff8d5d1",
+     "2e72d19c9399c380",
+     "4b9fd749e53e93a2",
+     "4e4ce7ee21f6d75a",
+     "78e52bd33e72970b",
+     "a8d4d128e928819d",
+     "b1e6257cb1ac1d92",
+     "d41cb5b1fb145084",
+     "e629595f5c935ab8",
+     "f4e0d7ebd083a4af",
+     "f9893cbb33b4d09f"
+    ],
+    "32": [
+     "17b864b9ee5aaff4",
+     "1a8b3421a0033960",
+     "33cbbe832c00c8a9",
+     "39b60e280a263b66",
+     "3c71c042361c032d",
+     "4315171c0fe4d37f",
+     "45f6d6686d850157",
+     "4ccc89a24959c0da",
+     "75a47ae5d6c964a9",
+     "9893b38fa9058e12",
+     "99c6ced186c85b8c",
+     "d72ab981a6e302fd"
+    ],
+    "48": [
+     "2dd91f04b052045c",
+     "47020a3b10c50f19",
+     "66dbde67f3cdf694",
+     "f7acbe6975d46832"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "3589c643f654f3c7a9915718e4214b1ff9388e3631612b3623f3a589b3b24cbc",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-birch-3x4-2",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "2605f2016446921d",
+     "550a7b6224295cdf",
+     "5e60bae2d46d3983",
+     "8bb32b00fcf0beeb",
+     "9246d5f17895fb7b",
+     "9f0a803a52d15dd4",
+     "aabc872ad3ff33f9",
+     "adbe89c069a9e8b5",
+     "e2d9bd7b2c9d7998",
+     "e959fd17bb88f800",
+     "f364ca430324b357"
+    ],
+    "24": [
+     "1eeabe6264013788",
+     "532d5abb0d5c0b76",
+     "64595d3f37143b34",
+     "84e62f85a3bcfe34",
+     "864b0552464acae4",
+     "8debd527311c953d",
+     "a7651453bc8d32ec",
+     "acff1246737cc21b",
+     "ae1ac9e42e0e03e9",
+     "bc1ee4f6a13b84d7",
+     "d56ea9bf7d3ac0a6",
+     "e38c8bcb1c2538c2"
+    ],
+    "32": [
+     "0812e274e2a61640",
+     "0d42409d0c55424b",
+     "5a5702fdc772f6b7",
+     "66e9147bbf2a0474",
+     "7b4da070ce8acc0b",
+     "ab6adffacb2a6c1d",
+     "af0bca83d8f582e4",
+     "b04a2b26c45e5fe5",
+     "b361f92ec61bfce8",
+     "c1f18c36c896b83e",
+     "dbd0a90926dc05fb",
+     "f6231e7978095d2b"
+    ],
+    "48": [
+     "9d36ef175973ee36",
+     "b2fa2009b3aeda55",
+     "ba6b8f3291fdfbdf",
+     "c6747a9b05b5e4f7"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "17526c9d218df794e5d6350e052b96a32f3280a097bd973daf4828032f3db539",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-birch-3x3-1",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "12a76cc35b058dfb",
+     "4049c7e4b2d80b1c",
+     "494d2fe49cde9b86",
+     "4e42c246001123cc",
+     "63bd702578a810fb",
+     "89c7f72e60f1de85",
+     "b54b41469e12ef68",
+     "d5a836c307e42c4c",
+     "e7fba011d39736c7"
+    ],
+    "24": [
+     "275c21c2eb6823a9",
+     "3e3ecc5e5e23e134",
+     "e114c44504bfffea",
+     "edcae73fd117845f"
+    ],
+    "32": [
+     "184557e777878313",
+     "26173864475a507b",
+     "3294bd80db8bfef4",
+     "391b8b4d030f076c",
+     "41f711accf28955f",
+     "43a2fbbba6e0ba37",
+     "5d16cc6c16d13496",
+     "5dcfd0e182576aad",
+     "6051f92cdeefd876",
+     "648bddad1c3e0295",
+     "65f9d369a8724ae5",
+     "7be71d301d6e0e51",
+     "af56e7e3ab7cda2d",
+     "b69122e422c3db76",
+     "d332fd73efe1b1af",
+     "d76de3184e2cf0b8",
+     "de267f82571e72de",
+     "debe6872a822cd9a",
+     "ec03af09c27a2fa2",
+     "f2340f9e271d5965",
+     "f723fd1fbfd2663e",
+     "f83c96358b20bcef",
+     "fa2be569b02b221b",
+     "ff4ae5401e22e29f"
+    ],
+    "48": [
+     "890e0b690a583915"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "01fcd294c69e47f3f4674badabeb3cdfdf43e0386fcbb182fb0f504dd0819894",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-birch-3x3-2",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "05427dd6860245d7",
+     "110618d0f588374d",
+     "1923ca6f2a3b0561",
+     "30859f409a502238",
+     "6bcf3121b1639a94",
+     "9266395c3cd6437e",
+     "97d630c79e8065eb",
+     "d545b9f1e69b7e38",
+     "d9ab065f8df5c6ec"
+    ],
+    "24": [
+     "02943f099b3e6719",
+     "3deadd39c9917777",
+     "7c5de3841380c78d",
+     "efbd67ef7bfdc9c0"
+    ],
+    "32": [
+     "02e36560f423633c",
+     "0f02fc78bc0b834e",
+     "1305176d46181067",
+     "13541b0bb19da821",
+     "3ff9efc417efd864",
+     "4626f8bf3f0fcb9f",
+     "47415940ae265422",
+     "4d73a1b6c4f7b75b",
+     "5b0f4453fc060fb6",
+     "69f3064e89ab1061",
+     "716dc1bf961e9668",
+     "7c7927a94e37682c",
+     "9f74b2e2705a9491",
+     "a1b44b05c44956ef",
+     "a69ade1611acf77d",
+     "a880c83410eff149",
+     "ac8f5f19697eed9f",
+     "ade9733aba02408b",
+     "ae23b9c5ef484aa7",
+     "afd1371618eba23e",
+     "b336e9f888ee883d",
+     "d28243c44fbe2ba4",
+     "d37d43286fec81fc",
+     "e2ddcd774063b0fd"
+    ],
+    "48": [
+     "2793e749a6dbf114"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "8e726196fd29f766365c5eef60ce67f9b6c70e10339fc1186ce1fb00c6bf99b7",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-birch-2x2-1",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "0d1d7b9cc1fd4bc5",
+     "26c3ea37ac204d4a",
+     "3068ac911cccd828",
+     "f6b6480ea4bb2936"
+    ],
+    "24": [
+     "02d85cfdaaa190d4",
+     "15ca0bffe2a98f91",
+     "16075aedf7a265c2",
+     "223249bc7f016350",
+     "31bfaea9eccfb87b",
+     "33a280c096ef618d",
+     "53766a063b4bccf6",
+     "5a6f4daefb78b0e7",
+     "70ee1bee4820333b",
+     "7bb02102791fc7b4",
+     "8142acf72e883d36",
+     "84c74c0582da58c6",
+     "9f4f71c8be44f8ff",
+     "a9f49f4c775546b7",
+     "b096aaa50dc39402",
+     "b4bb8c4fef2375c0",
+     "b789e7d5d6153fa2",
+     "bd0dcf4d9fbd46f5",
+     "d1399aa4e6f51e2e",
+     "e582da2621dff2c1",
+     "eb820eb9a06fe7f6",
+     "f69674a4afe5e5b9"
+    ],
+    "32": [
+     "1cfdc86973ea3a37"
+    ],
+    "48": [
+     "236bccb80a27317d",
+     "2bf4b2c32b934336",
+     "39363a64e294f349",
+     "3fe5abc97e2edaf6",
+     "4df7ddaa9155daa3",
+     "f61bdffbc30c7544"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "3385a2c362bf6d6a53837d02e14d80b1ddac2dd64b520b013849978f4ba9a17f",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-birch-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "35350994da78c629",
+     "6b5cbe138efe462f",
+     "cfc3b7ff05a58cb2",
+     "eeb04acd80c96031"
+    ],
+    "24": [
+     "34b1f12b02bb9bea",
+     "54eead22f6a580a3",
+     "5bfab24c25f6b5d4",
+     "5fb658e58ddc4aa0",
+     "735d01b7b38b8361",
+     "84b1e13c1d696898",
+     "8e6ed65171b600aa",
+     "94adce3e2e5ada37",
+     "9749c6601b7edcfe",
+     "981d314a5395c1e3",
+     "abb99d5d3d326b7c",
+     "aed61a998bf5238a",
+     "b608b5714270c263",
+     "bb69ca456e6d77ea",
+     "c26e103bbf1f6245",
+     "c40168631e373469",
+     "cd9725a1fb24ab8a",
+     "da8dc87e1a85479a",
+     "dc10a4acc396df3c",
+     "e36b30dddc0effb0",
+     "f26a55031c6323c8",
+     "f7bc8f59acd011e9",
+     "feb1f5e1bb37ccd7"
+    ],
+    "32": [
+     "06b6b3c2653fa790"
+    ],
+    "48": [
+     "073dbe54f3a44655",
+     "5ce3c0af2e8afd60",
+     "7e504d29f3b8ea16",
+     "c9b9cae365ecb486",
+     "fd647feccd64833d",
+     "ff11aa4814fee49b"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "1cdfe2a2f7d5d689ff8a462f88e844769c0fce016c41663319dd6616c71f8bf5",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-willow-4x5-1",
+   "width": 64,
+   "height": 80,
+   "cells": {
+    "16": [
+     "0b17984678befdb7",
+     "1d8ce0e58bc7f8fd",
+     "274e992f21bf8dfa",
+     "277a817712a94995",
+     "3865b8ec00502728",
+     "643a351b8eb48ae3",
+     "7b7487aa1eb2e0b0",
+     "7e265b323271137f",
+     "8b6212663d4d63fe",
+     "a09485e7ad586d05",
+     "a98596811469ee84",
+     "b26d97da66d4c6c0",
+     "b2da32f74bdb832d",
+     "baa8f8ce00fcc06b",
+     "c7000c859af8982e",
+     "c9ac5f73f70ee6f9",
+     "cfe37da293a3fa32",
+     "dfe0922bebca271a",
+     "f110b4f3b8be54a7",
+     "fcbcb11b754dfabd"
+    ],
+    "24": [
+     "046e10f5334e8373",
+     "04a29c00c61825ce",
+     "05a5fa6b6b468d1e",
+     "05c85eb7a989940c",
+     "067554be00f7282c",
+     "06c2f7ef0352043b",
+     "0ca149ebe629eca2",
+     "15ae259e5c721ce9",
+     "16737e6494a045a6",
+     "1d959869e7bd27ac",
+     "211d7b47f13f1a7a",
+     "2368703b6becd7de",
+     "241ac4a0dd735024",
+     "2e00cc751691cd63",
+     "2e83626ff320789d",
+     "33d1b33f6d3d2322",
+     "38a7e58136c67ba2",
+     "38e06b73050d5a3e",
+     "3a6fa7698222e361",
+     "3dc71387c4d337d4",
+     "3de915484c8623db",
+     "3e196e7cfe336eef",
+     "45a7b4f1c4a2dd9e",
+     "47bd0c6679ae7cb6",
+     "48fa6686fbf20881",
+     "4e1269cc31949aa7",
+     "51b4ac69b1bf5266",
+     "57ff555b9d079d1d",
+     "5900927c0336a4b8",
+     "5dad285eeb587916",
+     "5f3175b60230bf74",
+     "5f5ce33da3657804",
+     "61352d3eda4208b2",
+     "69b3620d18682681",
+     "6a643705d0c3aab0",
+     "6ba9ec84d54a5412",
+     "72c3decad48ef0ed",
+     "7487add4036b6b9e",
+     "75c5dc7a841e60c0",
+     "7ae8c5aad116ef16",
+     "7e6ebbcaf8f2c0bc",
+     "81ee4edcffb07415",
+     "838d495bb4ba6694",
+     "88b2e55d986e0095",
+     "8e2102fc98d941e8",
+     "92c03da1142d275e",
+     "96e6183e798d33ad",
+     "9729bc40e38c957d",
+     "97f89f2e489b9896",
+     "998398ee67ca23f4",
+     "9bf978a01c0ce9c3",
+     "a315de87df38e8bc",
+     "b015dda56d77e3f9",
+     "b25b255ab9856142",
+     "b2b6d9ba4a597eac",
+     "b764476b9f975e25",
+     "b7c5d0e5392399cc",
+     "b91e2adc24742d9a",
+     "b9bc1c9b3815aa41",
+     "c537f923b6929d84",
+     "c5d7e439a426a0a6",
+     "c6342fd5e2708325",
+     "c7a61457510f024c",
+     "c9353c79a4a9bf6a",
+     "c9ac95e9a08551fc",
+     "dfa1036d9bc111cc",
+     "e601d0132d503b0a",
+     "e60af8f0d3644858",
+     "eabfb1c944351071",
+     "ebe86f111b9afdb5",
+     "f9a94697e5e959e6",
+     "ff7f315e5cd17110"
+    ],
+    "32": [
+     "2baa26ec6dc8b518",
+     "37d9ef8487593b98",
+     "47ed20fa20175b70",
+     "64748c8252bd47bc",
+     "785102a32d467533",
+     "86dac82aefdfdd86",
+     "9f3e36787fd5415b",
+     "afc20b1122539afb",
+     "de596fd27e90bd39",
+     "e19a74a32be6e62b",
+     "e9a2fae25efa97da",
+     "f106fe1a279309a1"
+    ],
+    "48": [
+     "0fc3f7d776fcde00",
+     "19c4f45f0448ecb4",
+     "1a9158ff630d0570",
+     "1f2178610e9899bb",
+     "2c96a79119ea6e92",
+     "2d654cea5cac48a5",
+     "3ae1284cd0d9180a",
+     "40598eee16c7d73c",
+     "4a4d1c588e85d6ff",
+     "5a219819abe8bf2b",
+     "5ae9bcaaab13f868",
+     "63ba847e1ec891eb",
+     "70b9051f6b8e6ae9",
+     "845e3d3c7816f7b5",
+     "8d35c13bd14cd7c1",
+     "8e564c17e5037b06",
+     "9094bbf11f24532e",
+     "9625868d99eecb1e",
+     "a05e0ffb4cc04c98",
+     "a2dd060e71068e01",
+     "c6afd48280639339",
+     "dbc954bf546b1e12",
+     "dc837397235f7e31",
+     "e259382a4074e6c2"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "77a8a951cb622ead9107b32311ecea0cd93add960d76576c4b8decb94c8b7a14",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-willow-4x5-2",
+   "width": 64,
+   "height": 80,
+   "cells": {
+    "16": [
+     "0e9ab1ecde4d9c2d",
+     "0fcd43a809d736a2",
+     "3f63d644319c94b4",
+     "521f37c6c44682a7",
+     "5776ae30ebe79989",
+     "60223e9c1f7d9c0b",
+     "653e43fb632a527b",
+     "6b2a0d3b8e6ffaba",
+     "6cba7134e99116ea",
+     "86bc02302a16c4fe",
+     "8802054692108a9f",
+     "8b99a20f6f674a3d",
+     "9155351932c93892",
+     "98673235f41243d8",
+     "9a03538ea682531a",
+     "a3398fee5b1c6fd9",
+     "a855c622e513a99c",
+     "bcc671d3bc7339b6",
+     "c3bf72373fb7f79c",
+     "c4ea1264b7237902"
+    ],
+    "24": [
+     "0ca840d76f557b66",
+     "0f212e0695f27ec0",
+     "0f34836a8c168f84",
+     "116b260b80929fce",
+     "12b8ffb9cdc7a2db",
+     "15e8bab927b69a65",
+     "1811a851add2ce0e",
+     "1b07bc55aa88589a",
+     "1d06987fd3150e0c",
+     "207b0920e92fcf19",
+     "21a3da14040bcf1a",
+     "251ca7446424f9c6",
+     "2a2cdc92c0b77f45",
+     "35f9cc967d381de3",
+     "3862e97246b28fef",
+     "3cc80fe02fe4b0fc",
+     "3d1c43eb9f418ceb",
+     "3f3d9f046d7e2ba9",
+     "40d7ebc5962ebbf2",
+     "424246738eec0002",
+     "4304bfb57ffe4376",
+     "4967a66341c412bf",
+     "4ca218aeabbf101a",
+     "4dc11680f00f91ed",
+     "54c418db8eafe97a",
+     "5e0ac5a0f0a2d11f",
+     "61236800f9be8c43",
+     "630b99a6ed974bf5",
+     "774d2f8b656b841d",
+     "7b7179145e6c8c7e",
+     "7c3e7df5d02a8837",
+     "7c3f3572f4028266",
+     "7cae75aabd2d5fe4",
+     "7d61cb1f066e6df1",
+     "7e047484094161be",
+     "7fcad9df640e187d",
+     "8228806a00c8fad0",
+     "897dbbc4f7c7ca20",
+     "8ccc214d0c33ee08",
+     "8e99e11ec835d55a",
+     "95d4a25fbe5d8dc5",
+     "982d7b3887d7ee9e",
+     "a0d091cf51de733a",
+     "a17a294b4e0cc20c",
+     "a66c50646260dcca",
+     "adc57e2de0d408bc",
+     "b0041828b6b9b13b",
+     "b3ecfbf50ac6f5bb",
+     "b5a4042d7b8467c0",
+     "b5edad4cc67daf86",
+     "b6542ed816f29d11",
+     "b8b4124dc2898cd4",
+     "bb82dfa19998a9b5",
+     "bcbbc1d926420c4d",
+     "bda732c1a516925c",
+     "c73d939d88313019",
+     "c88eabe652763c56",
+     "cd4c183780909f60",
+     "cf5ce7916c79ddad",
+     "d1cab597fa0f9f13",
+     "d3dc99467b6031dc",
+     "d9a53ffc1f9a688e",
+     "e4b6ed91262cd6a2",
+     "e82460dbc6643b70",
+     "ed63338b0032ec3f",
+     "f1554f0ebb1fa2ef",
+     "f2a2a1bfb38b03d7",
+     "f510f422f54504cd",
+     "f829a93d52739192",
+     "fa55bdcf3981f5db",
+     "fef095f04a43dae4"
+    ],
+    "32": [
+     "1dce77a593fd9f22",
+     "224c67bd8135875c",
+     "4156a9ac08a8f358",
+     "5b8a62bbdf39152e",
+     "6568cc9fab620766",
+     "6ddab11ba1905bdf",
+     "76485f82cd8e4343",
+     "84845f9700b8f2ea",
+     "a59a77b988454935",
+     "b161463ba58ff861",
+     "b2de4c6ef61e1ec3",
+     "b78f0f09f9996bcc"
+    ],
+    "48": [
+     "22701b1f37e1f668",
+     "2976385dd3ff8668",
+     "2bbfb372da4fdc80",
+     "2c6f6e37bb22f154",
+     "3842d16f4cd7789b",
+     "3843ad9a9c97de48",
+     "38b414065777db37",
+     "3b3553f859b83158",
+     "48d19212069f64c5",
+     "535754467e0b75c7",
+     "571159d7f4ab3059",
+     "7234b930f6dd9772",
+     "7245ae75a01745ba",
+     "743bbf4aaefce221",
+     "89ae8690d865ed8d",
+     "8aedca35fe4ec679",
+     "90044837de7450ad",
+     "956a3f419b7d6c12",
+     "9a35265284a59eb0",
+     "b3f80bf8f00dc567",
+     "b62f38e0d9099492",
+     "d1df8ad34c39d740",
+     "d2a463f9f474c41c",
+     "d328c7fa2d5d5041"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "6271d93d8a7c51d19fc80b141b7ac0a9b0e17aaf2d988df8ce36ca3a1683ad4a",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-willow-3x4-1",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "04f011f800d6d933",
+     "14a08448b733c847",
+     "21ba0b8d0b3bd7be",
+     "3c1dfb968b2a1ddd",
+     "73f48c836422454d",
+     "a5514fa3efbe522b",
+     "a58bfa9cf91ad734",
+     "aa361f98871b91d3",
+     "c46ead28539a444d",
+     "c6cd95b5e7a043f5"
+    ],
+    "24": [
+     "16b58d0b2a230460",
+     "387c29bf4671c390",
+     "3eeb70ce5fcf6e86",
+     "59e74e56d97fa933",
+     "676897a229219ba6",
+     "74887c1417dbcf85",
+     "82fba843b878a16c",
+     "a891157c540c913d",
+     "a9a3178e64c40075",
+     "b74a6a4df7b02f2c",
+     "dd4f831d5406c2b1",
+     "f55b1798324dbf54"
+    ],
+    "32": [
+     "0fe69e1da6f5550c",
+     "1274e60780ecf2d0",
+     "136d51e3d076e3c3",
+     "14c5e9fcb76f489c",
+     "1a7d00cf1fb05847",
+     "470bec7a91457942",
+     "6fb0aa649a8eacbc",
+     "725a9dc5f2301729",
+     "80de24ec70b70bf3",
+     "c2261b5d362fc6aa",
+     "d2bbaee6387cf262",
+     "d8cfe94061f832de"
+    ],
+    "48": [
+     "5c616f2e3d975221",
+     "6df0dd48622f0fd7",
+     "a4ddf5f25b2392a2",
+     "b938840d52121ac4"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "fc7b34506266562386f3086e846735064a3b32b793d1c8a25f18d67bf0c89114",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-willow-3x3-1",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "2b710471b93f7520",
+     "39d6249dd837a71a",
+     "4984524f9cde2855",
+     "bc66483f0d0b56c1",
+     "d30d8c16bd4f296b",
+     "dc1f21e5fffc652e",
+     "deefa9fe3da886c7",
+     "f66b7e2bad7f0c03",
+     "fd528f2e6cf08a23"
+    ],
+    "24": [
+     "05b73d0175a460de",
+     "347abcfb57e4ee79",
+     "3b99c37792e12854",
+     "ff993caad43cedee"
+    ],
+    "32": [
+     "006b858a5efe230b",
+     "07f3f86fdbd06fb1",
+     "13f494a691d1181d",
+     "162d5a999b88792d",
+     "18dabcdc19eb419d",
+     "1a305aecaaf36146",
+     "1f63c57572aff017",
+     "21a1e8132922b503",
+     "2e528dc90ae96baa",
+     "35b3d35efa78f5fe",
+     "399e00ea2c9d7a94",
+     "39eebd83695477f3",
+     "4c0d5aad227cb82e",
+     "4f760a80b3c18928",
+     "51f36e7cab777ade",
+     "57484805ed6a7e29",
+     "5b26c792df6fcdb8",
+     "79a489ec62aede1a",
+     "9332434aff1971f0",
+     "aee05915a7ec1b43",
+     "bdb0dbef808932fa",
+     "d0567cdf72008a44",
+     "f78621b6130646b0",
+     "fa19d8cada03fef0"
+    ],
+    "48": [
+     "7b33c0454c20f449"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "9aac9bde5d46cc1d81e5ae22fcf8943a9ab77a8131eeed849c774322bbc329b0",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-willow-2x2-1",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "3e62c78b9a3d1392",
+     "a9574acb81078e2e",
+     "dac9c03ae581dbc2",
+     "fec12a18d508f6ce"
+    ],
+    "24": [
+     "05a32714fec15738",
+     "070e1289fa785825",
+     "0a7e746ab1d81a47",
+     "0d951be2f9c8d49a",
+     "14171e7e42bef980",
+     "15bc9ca5f74cfab4",
+     "1ad98bea13fb5c74",
+     "36c7b55d2e43baec",
+     "3e51f62bd00e861e",
+     "5394c02a48c225d7",
+     "5e72f4255cfd3e34",
+     "99333bdcccf7ece7",
+     "9eb37b8687eadfc6",
+     "a83878679d6b8b79",
+     "acd5e3fb244b5be7",
+     "ada7254220d2f352",
+     "b0e7cbb594457e8b",
+     "c0d9250d4bf091f5",
+     "d4834f893ef2f06f",
+     "d650087d0e4ba946",
+     "e7d3febccba3341b",
+     "eb453afac841ab89",
+     "fbb9472475cfbb67",
+     "ffdfa748277703d2"
+    ],
+    "32": [
+     "77d4ed84bb28c225"
+    ],
+    "48": [
+     "1549da6548cd20f6",
+     "3404cf286b568c3d",
+     "487d97c66fe5f1df",
+     "548a4bb31e630611",
+     "c873414f4c4ceb4b",
+     "fa6f9cbd67a6b141"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "a9d781b5c03063f5623dc1e87f16211fed12fb35bb0d2ef324331e765f45a911",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-willow-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "33a87a67f6002193",
+     "3ded340158f28066",
+     "49a7d312477c4079",
+     "8656c645e35c655b"
+    ],
+    "24": [
+     "09b931a606a60001",
+     "216d43f213fb194b",
+     "223565e06e03ea2a",
+     "22cad95061b8bfea",
+     "3893ca72ecbb2d00",
+     "40f722184e240f33",
+     "4c38f5cb0b14ecd9",
+     "767ecb75e8ea6311",
+     "864c574afc59a67e",
+     "9dca75cb094c57b7",
+     "a746923a7bbe82e4",
+     "a84eeb00c676014b",
+     "be34e28fb37e7119",
+     "d1ba479b55258204",
+     "d51901519d4be0fd",
+     "df519064cbf45b69",
+     "e8a78f5f2cda2790",
+     "ea089bc33c4bb478"
+    ],
+    "32": [
+     "53f9d53792e9da3a"
+    ],
+    "48": [
+     "160e4f4dca25a15f",
+     "1e03d2244d12186b",
+     "9c562f091bf81f0d",
+     "ae98f4f821a52ae3",
+     "d28f6bd786282cc0",
+     "f6673701e45e8862"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "1dbeffb865517ab6ab8d35558f7697da4db6a57b3756388a6c7d4fd5b21e27ca",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-apple-4x5-1",
+   "width": 64,
+   "height": 80,
+   "cells": {
+    "16": [
+     "07db21f3129bdfda",
+     "24305a99753c06ee",
+     "30d037891948427b",
+     "4b4bee355ed71803",
+     "62ec9ca6644c3e5a",
+     "6a615cdca4449f0b",
+     "6ae3303248f43e7c",
+     "7600d9ff5aa1d218",
+     "79fa89b1e722cfef",
+     "b3d541c5837a82ad",
+     "caa2c91bee7663d4",
+     "cb292dc9c536fdcd",
+     "d72c27676e403d79",
+     "d85af57a621e4e58",
+     "da0234148b1f128c",
+     "df2e4a49b268eafe",
+     "e1d34c5be5aaa2f8",
+     "e1ec302b2dc1cd3c"
+    ],
+    "24": [
+     "027b50f41088263f",
+     "05e275ac130b4238",
+     "0b76deb043ec9652",
+     "0d1acb3f4d808fd1",
+     "0e68fde0ad339c49",
+     "0f30179499316507",
+     "106ea6e3138b30e7",
+     "1fcd11ee70d712fb",
+     "244feb9c99056d03",
+     "25e00d279ad39333",
+     "262e3995ee26872b",
+     "268ac2163deb3c39",
+     "283fe178e057b411",
+     "2bd85517949d8471",
+     "364da8dd945c7397",
+     "370f03f17cc8c47e",
+     "3733b7c88f20da51",
+     "3bdde68cf841f164",
+     "466a0f717af0cd3f",
+     "4af1eaea91ec4706",
+     "4dd2e828e4d1a0ac",
+     "4eb79fb60647bb95",
+     "51e956e1efab7657",
+     "520fa4641ad2affd",
+     "5a370128a1732440",
+     "683b81c8ce438ae3",
+     "69c1c855f04b1c25",
+     "6fb70742d3c1062f",
+     "76bc5c8cc78b5b60",
+     "7adad9b35c5e8721",
+     "8d6830871676063c",
+     "8ef8ce0eb3f61b3d",
+     "91145834a97f101e",
+     "957ca439bb373c4b",
+     "99f5d0723a96434a",
+     "9b5e367a9e030c24",
+     "9db42c66c4b34abf",
+     "a60d1f16f79c5233",
+     "aa2f619fed923fef",
+     "ab5e611c81023d53",
+     "acb4e8b181dae19e",
+     "ad3cbf018ad2834a",
+     "b6c19e1e1adce025",
+     "b7a6eb5e40120e16",
+     "b9342a8db079c647",
+     "baf3383423738e1b",
+     "bb806b6129e6069f",
+     "c3863628e1c2890c",
+     "c3905d7c08c5e566",
+     "cd128aa08c5228e4",
+     "d788845af4cacb0b",
+     "d801d9764da718c2",
+     "d899e2a5628c43fd",
+     "daf0a4885fe3e8da",
+     "de586adaf637f8db",
+     "e14c653bad5a2cfc",
+     "e1d3dc80a400055d",
+     "e3d160291a15af27",
+     "e65a19d201b8b650",
+     "e76e87211928063e",
+     "e9cfbcd060b2bfce",
+     "eb2b16a3ccbc1d22",
+     "eb52e3eb81721835",
+     "ec9350618e476a38",
+     "ecd895d9a26d9780",
+     "f229decd1041849f",
+     "fc3ec54d5a2b6fc5"
+    ],
+    "32": [
+     "1ac68c9e724a4028",
+     "338affdac8c38dfa",
+     "5baadf4863a8eb03",
+     "60e0e5d83e93476a",
+     "6171e9375acfb974",
+     "9c2eb87d00971e5e",
+     "b9de1c08fedeb064",
+     "bd19a0cae264584f",
+     "d5c63cedc5c0c7fb",
+     "defb41c5dd1d4ce4",
+     "f3394c13797520ac",
+     "f3c96d7cc1366cca"
+    ],
+    "48": [
+     "19e416a7b5e7e50c",
+     "22d8d52291c3791a",
+     "239cef233d741e4d",
+     "246d0a6ef75d8c98",
+     "2ef785528e860e61",
+     "3f8be82c22693ff9",
+     "4509ea7f4894ddde",
+     "4c3f7fc389b33899",
+     "4daaa8f6aec4d54b",
+     "5369a4ef9eeecfc6",
+     "5f259ecacd77e4a2",
+     "6a886c97cffb2105",
+     "6fb5c654b2a617df",
+     "74c59f6b5f528fa6",
+     "92edf47a8e7575e7",
+     "a73709cf04b4643c",
+     "aadee30dd8c32e95",
+     "aceb40aa3180e043",
+     "af9a75fda5b394a2",
+     "bfc6018d2d869733",
+     "c7b5ccea918a8f2f",
+     "dfb44c69b23d72bf",
+     "e52b9c4c13a0193e",
+     "f371a220b7ca146e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "9c87d7f9833e12b3cb75e05ba315b6d5ac1f78586d6bd67ee5cffe68cb2da329",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-apple-3x4-1",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "1bc0e584a5af2fca",
+     "4e50e457c412ba2e",
+     "632d41af69a690b1",
+     "6a35c0ce08e677de",
+     "842734fc9f7376cd",
+     "8d46b0262d04e93d",
+     "8e50aec24ff2906b",
+     "9fd19e2b7921a467",
+     "b6cf877a4296cf02",
+     "b865fee3fa72b3dd",
+     "c023faad0f1eb0ac",
+     "e372af2654a399a3"
+    ],
+    "24": [
+     "02e5bd9e7cdebb00",
+     "07da33014240938e",
+     "0ac1251b3b370c2a",
+     "12598f5cbadf5204",
+     "3e916a9af4fd9d0c",
+     "42ccfcf00d8456ec",
+     "44f8e42b221eae52",
+     "65475ace29ecc407",
+     "6f6b1d8d7fa84678",
+     "ab15df549fae0b40",
+     "f6cf00aa22370083",
+     "f875273f6f818e94"
+    ],
+    "32": [
+     "0434efeea476de78",
+     "0501f719636d4401",
+     "05e68db03315aef4",
+     "2ff21e0e7f352153",
+     "3e8b0215dd10592c",
+     "455a201356156bf0",
+     "7a8e22b690c4260f",
+     "8616bf5c523a905b",
+     "92032ba792a778c3",
+     "96ecc9e08a321209",
+     "b06ed0ef40653743",
+     "fe8941bf66282b1f"
+    ],
+    "48": [
+     "0343110ca517049d",
+     "3285dc54760a0591",
+     "35444d338aa086db",
+     "9e376db28b281ae8"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "0b06af8df635f5b8be7ead8b4c90ced951a5be323288114c32c4bc8c25a0abf1",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-apple-3x4-2",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "0b9713f22de71cb7",
+     "0f523b5d641071ff",
+     "4d8dfe333be28034",
+     "92008831f73a6266",
+     "a5b58e5abe375383",
+     "c66ba17ff4562485",
+     "e2051b3279184e5a",
+     "e463395d733826d4",
+     "ee6634c03c3c75c3",
+     "f17ae7486a22f619",
+     "f9d407174d6608dd"
+    ],
+    "24": [
+     "030930166f29345e",
+     "08a550e7e4f16375",
+     "2467d26649ba8111",
+     "35a4f2c4ab472b18",
+     "7ada2b54b4c8b1c5",
+     "821141066e372e3a",
+     "883d7417c1e01f06",
+     "8b28f600e1f1d2f5",
+     "8b2f24cbe3766938",
+     "d8f51e90aaab9c1c",
+     "d94ee03395d8bfb4",
+     "e6276bdc1e2193c4"
+    ],
+    "32": [
+     "0346a6316dc25b8f",
+     "169a50b61dfce5f3",
+     "1a438918f58cc0d9",
+     "2497280cf0d3d910",
+     "56496cd4f5711dd0",
+     "6c6f6d71ba66d966",
+     "88c299194e1c9588",
+     "92a8521b975389a5",
+     "d96bb776da42c919",
+     "ef15bf46812eff4a",
+     "f52b8cf6f3c9d3be",
+     "fe42dd59cccbd021"
+    ],
+    "48": [
+     "197b9bd86612c475",
+     "7882bdb6996c7cd3",
+     "92c5c0077ed96697",
+     "f7e424f9e3340dff"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "b0cd6a4dce384840ca272fe64592193e436a27b03f4f4e3486995cfbe6ea9d44",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-apple-3x3-1",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "09e18bf8ed5e57b0",
+     "321eb9199d7089d4",
+     "3b7af65586018cd8",
+     "7efaf908bf98c675",
+     "9288723b316cd886",
+     "b4459035059e3dc1",
+     "c7b654ad2f2567fd",
+     "dd45a8dd04ba1cdf",
+     "e40017b3c035b01f"
+    ],
+    "24": [
+     "c173ccdd98d666a1",
+     "d06f7bb010369b6c",
+     "d4639e151d50437a",
+     "d5bd039688071b7f"
+    ],
+    "32": [
+     "0ae7f05d13917e95",
+     "10946abdc23c6135",
+     "11341fdd3ef955e5",
+     "17044ee3c1bbe934",
+     "174b6c7707d2f545",
+     "22978c23ae66a2ff",
+     "3fd80473fa4c55ed",
+     "44e060c564c82f34",
+     "5da045100f01986b",
+     "69c8aaf11c5d3547",
+     "6c877ad0e30a3a6f",
+     "719922a01ac3458b",
+     "8412a8201fb0dc60",
+     "89df2eeb2b62a8fd",
+     "9832293239ee5a7b",
+     "9a05b9a0ae9fda9b",
+     "a4018ef6c4658d98",
+     "a4bd31ee80daab32",
+     "b5162d4d3f4e295b",
+     "bef269de8b539081",
+     "c6c30f7b316aabb8",
+     "c7b8ba36cea1efeb",
+     "e2420b794789f86d",
+     "eaa6394196f15f79"
+    ],
+    "48": [
+     "52f7299e17973374"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "10664d539670feb2fd1d61e7091e733ae032198954ab3f673c62aebc685fdc17",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-apple-3x3-2",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "51ccd5e40a43933b",
+     "baff3dd1f33be924",
+     "bb80d5ab56adbff8",
+     "bdc3862dfa79ba9e",
+     "de6967d59086288f",
+     "e702a3ae962fd0a1",
+     "e879bd50865815d6",
+     "e9592cdb770e2f5e",
+     "f2265603c58a6574"
+    ],
+    "24": [
+     "4d36d0f2048fd96f",
+     "7e2cd0288ea082ac",
+     "bfb43354fe7f243c",
+     "c5a231252d072e41"
+    ],
+    "32": [
+     "0087a8297395bad1",
+     "09cec46fd7fe80f5",
+     "158ac9f4136048b2",
+     "1697517403d3896e",
+     "2b5864fd93159b70",
+     "2dc1bde79f6a7540",
+     "33665a135c33e54c",
+     "3ecf604146166465",
+     "4d2a3f070dd1f4f8",
+     "5fc5a1d3a5f799d6",
+     "6acaf7297e04c900",
+     "6f297cbd2ff01938",
+     "7c6762d3005b6e2d",
+     "8554da004964d414",
+     "88afd686e86714f6",
+     "9059125caa8b20c4",
+     "a63c44217ddf1ec4",
+     "a677f2bd7b35ab1b",
+     "a8d423ab194935f7",
+     "b7fbe1d067e50c6a",
+     "c16c8332a7cd1a65",
+     "e4e5f72adcd37b54",
+     "eca9a3b24b13e7e5",
+     "ede3a83c0283af84"
+    ],
+    "48": [
+     "0c75700ca37c9918"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "7aa00299d0c83f4ae2719d0dcb57fd85cc57d68e6bc2be516578164497a23e10",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-apple-2x2-1",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "09c2e2b16b57b524",
+     "a60ce179bb45ccfd",
+     "f3d25679a41aacd4",
+     "f9cb03b1353988cf"
+    ],
+    "24": [
+     "09952cc9649f445f",
+     "10f47e2b51bdeaa2",
+     "17103566ab2f5398",
+     "363c66b4a39d8078",
+     "6598586f7ecee61f",
+     "660d50907ccf595d",
+     "7902915225344dd5",
+     "8e8b7c4b79c227fb",
+     "935aa9142dd03363",
+     "99ff9d91eb8f250f",
+     "9b14358f00d27ff1",
+     "a21eea20b73f3dc7",
+     "b3026ce95c172341",
+     "b79747cfc0648af2",
+     "c97955a1c78566bf",
+     "e2839eaaf7db9e4d",
+     "e2dc1b1e14e3d897",
+     "f6e649d519c6bd8f"
+    ],
+    "32": [
+     "ca5d37d840df9380"
+    ],
+    "48": [
+     "1023e40aa8aa5826",
+     "14de8a1f8eb7cdd6",
+     "6d314a4519dc0bf0",
+     "b3e72703e825beee",
+     "e701b8320ee17c3b",
+     "f28c9aa4c25c5d22"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "9c31c9dbdc54f770c3e1e5e634a51b900208b31bda84791429034d18144a666f",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-apple-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "26b4b96280609887",
+     "6f72b56b4d42d03f",
+     "90017c13e6eebb1f",
+     "de44a7b7edc9c76d"
+    ],
+    "24": [
+     "012cfc6b6d1ad411",
+     "0ddaee8099941b12",
+     "1300a725c871207f",
+     "157c713d06c18854",
+     "1d959cf8ac121fc4",
+     "252a6951bd90bd14",
+     "2a3d4de2b878e092",
+     "2bdec334f3504411",
+     "4aea1b1c50b5947c",
+     "5771b5f179a496e2",
+     "642c1d09edd3917a",
+     "8c06c799cf47052b",
+     "92d28dc8f2025f67",
+     "a469ccfbb4a2d44a",
+     "bc23968a426e3485",
+     "bf1ab8f8335fd74c",
+     "c952a8664dca3ecf",
+     "fccd4afc02b9f9d6"
+    ],
+    "32": [
+     "232d107dec9b1bfb"
+    ],
+    "48": [
+     "3994277a616b70f5",
+     "46f16534caa568fc",
+     "635efc58efa5bd0e",
+     "87123ce5ad6cab21",
+     "8c6095cd170e4333",
+     "f13242c9c489fa13"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "5ab96b5d18f4356bf0cdd98772018da7332527d91a21c86e5b98ddaf19f0c0b3",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-maple-4x5-1",
+   "width": 64,
+   "height": 80,
+   "cells": {
+    "16": [
+     "08f6c40f4d0c4dbd",
+     "257138d513784aaa",
+     "5fc380a3cd606f82",
+     "716b914991ec013b",
+     "7e35b8b940493af9",
+     "85fbc363b9c051c5",
+     "8825acdf4eadb556",
+     "8fc8ab572e234c56",
+     "912e47fdb513bd94",
+     "a632e0787de5e815",
+     "af2042f67d7c4b57",
+     "b707fc4370127fe1",
+     "b71d7d8a8052cf0f",
+     "be4ba96b64dab0ab",
+     "c10505c52c3ee139",
+     "d5f2fb3ea82df92b",
+     "ea57cbe5061d085b",
+     "f99ac15eea132159"
+    ],
+    "24": [
+     "0392f30bc2373499",
+     "05d919c4ac4f50d3",
+     "1060ffe6b001721e",
+     "11e003a95c850468",
+     "152f5dc6a9ff7277",
+     "170764aca2ce6cec",
+     "208043de68be6321",
+     "22668ac3d4eeffe1",
+     "26631dda1678d9b8",
+     "2a6408657edf9201",
+     "3f95defa62ec27c5",
+     "44f4dd04cd11f0da",
+     "498f0b92fc564377",
+     "49f16af906c888cb",
+     "54daef856db70b7d",
+     "54ed8a06cbd28800",
+     "555f277a313f8b87",
+     "589910af9a807daa",
+     "606caa337864707b",
+     "65295c2d7e3334c4",
+     "66abd5f42dd6f09b",
+     "6766106afa0ccdc8",
+     "67e089a27e172752",
+     "6c00bac9443ce2ad",
+     "74654146ba126fd8",
+     "775b59cbfa19a298",
+     "7da3292e91bc1955",
+     "7f4c82a2ce877f70",
+     "80442e1565e38393",
+     "8347e7c8fe60b50a",
+     "8721bcc9da3d90ba",
+     "895e90474b865653",
+     "8bd7885e1e63994b",
+     "9214343f1b75d4b7",
+     "961cfbc6fbd318d5",
+     "9bf22a45025101cf",
+     "9c1b661458677bb4",
+     "9ec3a78f6e67d2e8",
+     "9f3cd25200654bf6",
+     "a19b6f173480cf1f",
+     "a263fece76aa6e2c",
+     "a62821b4475d3a62",
+     "a95554bdea7337df",
+     "adfbc0eb76e1f1b9",
+     "b39390bc26ba3c0a",
+     "b4fd54734734d64e",
+     "be36b4c9dc33e671",
+     "c05f2734e6dec206",
+     "c26f93aa80028d21",
+     "c4adf42992bc1f1a",
+     "c6679d989181542a",
+     "c953c49462726773",
+     "c9f9d4aece2503fd",
+     "d0b4d125cfaf5e7a",
+     "d3af9e0615949d13",
+     "d3d1da6a00532e85",
+     "d5866d4ae6e3265c",
+     "dbee9510f85abaaf",
+     "dd1ce8be972d58a5",
+     "dd7d2dc38e0e9562",
+     "e4d97b2fbcbc8a12",
+     "e8e5e9fe88d9e4d7",
+     "f1c06c12c3eb127d",
+     "f953d1dfe4fc0285",
+     "fcdd2e62c67dafd4",
+     "fd7fc76a2abc240d",
+     "fe69a28f220cbadf",
+     "ff8819eb47cbc224"
+    ],
+    "32": [
+     "4064fc49b74110fa",
+     "541a93371a98f95d",
+     "569043d9c6c1e952",
+     "58f9b4e1c31cb63b",
+     "5f5d72a60e087721",
+     "61d3a39c66eb8bea",
+     "745b482e622afd33",
+     "9a5fe4a17312ec96",
+     "a31605c8ee573fea",
+     "e2cd4a037975f592",
+     "e51edee03209ce00",
+     "e95e85e8b3e61ffe"
+    ],
+    "48": [
+     "11b6b200ed296b3d",
+     "22e9f2fb3018b419",
+     "27ba039708a3027d",
+     "2f8514beb5c223f3",
+     "345582f69e40c542",
+     "3c3232138b77bcd8",
+     "4b6771bcb7ac6cf5",
+     "4b90b322f00be8ea",
+     "55bc768f58950dd4",
+     "59d2f8d1e0317343",
+     "76fd581b1cb4bd17",
+     "789ec00d79f76e4a",
+     "88cc8c1fb34a9623",
+     "8fe2add968a37efb",
+     "99bf90281ed568b3",
+     "a273cb97d96a796f",
+     "af10586b37082714",
+     "c4ab2f88b48191f8",
+     "cfb8cac7ba5ac058",
+     "da7a2bbd3a6f1e69",
+     "e9fa01c86ffe37ff",
+     "f12455f6585a96a6",
+     "f9edb1cf0339e00b",
+     "fd91eb4a3e0b5c99"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "9f61be8bccd7c2c764958fbe1fa48b1c892de5237405c5d7b7c0579b03ae968d",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-maple-3x4-1",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "19498568cdf35740",
+     "1f408c6cc3c35413",
+     "2871521a789a306d",
+     "4d3bee2a8b111de0",
+     "4fd06ac7447ec40e",
+     "582529b7c2d7fc52",
+     "60746589ee975da7",
+     "8105297892236fe0",
+     "8e69661da50c3841",
+     "c6df7a7143696651",
+     "cccc45fc2aa53999",
+     "edc1bfb8534addf0"
+    ],
+    "24": [
+     "0bfc23fa55c3ba49",
+     "1418049fd02dc870",
+     "19df64600296760e",
+     "3d7a3d253229002c",
+     "3ec9b144e1d38323",
+     "4bcfb26aa4d93845",
+     "786ffb72f32583ae",
+     "7a1c2b85e4bf14e5",
+     "b895c617316c621d",
+     "ce4a4faa490686a9",
+     "e160e9aafe586a90",
+     "e50e2ed5c0ea7f26"
+    ],
+    "32": [
+     "053b47893047fb3a",
+     "119a984ab832ff34",
+     "144ea7553f2bfbbc",
+     "25e7148a4035b030",
+     "4f58f4b73576efb5",
+     "67964f19e2e2b204",
+     "6f36978e7654263e",
+     "7b489f40de784df1",
+     "7bb722482bcf9b41",
+     "a234372c04943604",
+     "c98d0ea915126e96",
+     "d1dcbf93550d17dd"
+    ],
+    "48": [
+     "499ec9e551d24137",
+     "674df05d4dc17142",
+     "815b7a05774feef7",
+     "dcd75f216d6442d0"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "2635434c182a98d832893993b93406b979e489c27247fcafce296cd3376d22d1",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-maple-3x4-2",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "6c813815777fd3eb",
+     "7f02bf0bca2b9921",
+     "873d2fa505b056a6",
+     "8ab923be880277fb",
+     "bce0426b516731f7",
+     "bd98324bd2c200e3",
+     "cada33338cf178bf",
+     "d64357deab7c2004",
+     "db6f58249b8d6d59",
+     "dfd981db4d5efbc2",
+     "e8c74168eee21bfb"
+    ],
+    "24": [
+     "07a17ab391bbe414",
+     "09b1c5ce114ee465",
+     "16e5a833838d1865",
+     "1fa7ae0ad6c94516",
+     "2d846351bfd2ca49",
+     "4f07ab582964b185",
+     "5c312c8e86e8322b",
+     "9a6e513bc4eed9f8",
+     "b3aebb82fcdb615d",
+     "b978719b80696409",
+     "c75ae27de647e76e",
+     "d094a166d4ca1169"
+    ],
+    "32": [
+     "2cb51be25bac51b0",
+     "2fcbccba39a8f601",
+     "33652bddcfbb9491",
+     "4cd03b6cafe61c9d",
+     "6415dca10681315e",
+     "7e702a33eb9695c8",
+     "8b05925e62eba23d",
+     "9f6a89b901e284d9",
+     "bf95867e806783e2",
+     "d356794899fc1c67",
+     "e279033dd3b07ccf",
+     "fee588247d0d8710"
+    ],
+    "48": [
+     "57a252222a929ce8",
+     "ca05d9af80599095",
+     "e2d09fb1f0918c37",
+     "ed8bd29c334b6d9c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "cf6fc4d10de06c9bed367ecb834bd162291aa92b7170c9a70bcc3c30bad7f38d",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-maple-3x3-1",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "08d55661a000dfe5",
+     "45bd62e84c7a7749",
+     "4b38b562c9f9aeac",
+     "5f607204dc0fe939",
+     "63dc35e8f4b0e4bc",
+     "6adcb72130a1834a",
+     "9fe971483fa7c2ea",
+     "ae86c5a5ebdea38c",
+     "bae9ec7808967685"
+    ],
+    "24": [
+     "41796f4b15320b2d",
+     "57127726bdc2a41a",
+     "d4e6bcb79836b733",
+     "d5d7029efb0da19b"
+    ],
+    "32": [
+     "018ad48a2da8aa18",
+     "1028fa7e4483cb88",
+     "1536afba6e8c9b33",
+     "2179d3ee0be120b7",
+     "3b01170799bcb54e",
+     "44db8aafc5d974f6",
+     "458e2b17b4ab04a0",
+     "4ebc6b41792e55e0",
+     "5ad308c5b65554c3",
+     "62a4a91b4c85be35",
+     "64c9aa2c86f09ec5",
+     "7159baae895e645e",
+     "74032fc3ef345c78",
+     "8aab1007a1d84cba",
+     "8da9eb0534824213",
+     "9bb21f27447a83b3",
+     "b06e6ac5a777d44e",
+     "b98de0af9d02e644",
+     "bdffee9ea2a3d132",
+     "cdace9eba2e56f04",
+     "d5bfeb1c4a6eb391",
+     "e7ef46035fb00b96",
+     "ea1d004304cda4ac",
+     "ec1ac0c4b6b24b92"
+    ],
+    "48": [
+     "7a6a7528621a5f45"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "a23648245d0a9ce5fb507631fa3990934255e3b0923dc1d3a925c4a8bbc9cefb",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-maple-3x3-2",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "0930646ec58decac",
+     "1878f92f9c4bc121",
+     "2149533d411bdf0d",
+     "34b92b34f7231c7f",
+     "4706570d770479f4",
+     "5b8a65f438bdac34",
+     "636f10c0ae7fac40",
+     "d9d984782199b33a",
+     "fca68c8de1810258"
+    ],
+    "24": [
+     "14bb70a63badfcc1",
+     "53c5a6069d16d48c",
+     "eeccdf5056f75374",
+     "f0bed0e4b42bd035"
+    ],
+    "32": [
+     "08478001428bdb52",
+     "1aa4643a84c138b8",
+     "1bdbcc317875c457",
+     "1f196b4e703c66dc",
+     "2f07a028930f9c62",
+     "2f37a6ba35ca5abe",
+     "354141e4ab0b181b",
+     "3790abe41130efe2",
+     "42f4a8d59ed57003",
+     "455bd37a0ab20448",
+     "514e18e7bb7e6e23",
+     "583011a98031fbdd",
+     "6afc344249f69bae",
+     "7160d5605a7c2ad2",
+     "72d5c4a460c03967",
+     "7b19f47fb898027a",
+     "82af7dedad54bf8a",
+     "82dc14cdc0dd6b19",
+     "9aa9558f111a5299",
+     "a43e5d1e954e9ac0",
+     "aef2ec306d858df9",
+     "e5a071ab3e834f29",
+     "ea70df80d23b6dde",
+     "f72489252726d686"
+    ],
+    "48": [
+     "ae84c20f778c6217"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "b74ef920be5c6245c88b0346850861d1a6d34b539de2931dcca810b083c1fba8",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-maple-2x2-1",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "977693d136cfa1d8",
+     "b7f3d0310e5dcb46",
+     "e1e2e2250690c83c",
+     "ef37b3bbc5876038"
+    ],
+    "24": [
+     "0eca0c623d6f8bb7",
+     "198b3330cd3ab6be",
+     "2aa68165526ed229",
+     "4ad208001c9f4cfa",
+     "5c0938cfecadb038",
+     "5efde2d6a4fb7373",
+     "626b7efa4a9f6353",
+     "783ba55aa95e95a8",
+     "8240fd9f13c145de",
+     "876e6eefe6ecb31d",
+     "8e3e7b086413e5a9",
+     "9903ff7b37d84f48",
+     "9a7f9514823bcb52",
+     "9af5fd07e1c37c64",
+     "a2ce34e47ac36430",
+     "b9f2bf48a06a5495",
+     "d5cba4cc85039d74",
+     "f0257916c23b9598"
+    ],
+    "32": [
+     "ee4fd99f2efbb43c"
+    ],
+    "48": [
+     "6c115acd4b672197",
+     "a639b0bb355c534c",
+     "b264ebf3312fd7c5",
+     "d199e987eae23d3c",
+     "dc19dccfc65a37e4",
+     "e63ef5aec2243698"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "61762903855dcdefac467d848ca5728a58b571c73ea14b5adf06af5281251655",
+   "kind": "organic",
+   "label": "beodeul_looks/tree-maple-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "65b27e2de7128ce6",
+     "7efc61a76ac35bb8",
+     "d3538eda5f7426fd",
+     "e2bfe7c6a6525b4a"
+    ],
+    "24": [
+     "013193418a71f578",
+     "0852592b1600c662",
+     "0f6103d6b33d9328",
+     "2599cbe2947ed118",
+     "3e0bc85ac15d9556",
+     "405f544b95f1c428",
+     "4e4950e39832f1d2",
+     "6b8effd0fff77d21",
+     "6db90d9cb78d74c6",
+     "6fead738001d780f",
+     "8cd0fa6b3fee2aa3",
+     "93c2e6d0c4fc0866",
+     "942f539e5cc6eec2",
+     "abc8b74d8f846f20",
+     "b3c36b49e686a49c",
+     "bf7a5d2ef3ee237c",
+     "d751431f70972a93",
+     "fc1c216e2eb4535a"
+    ],
+    "32": [
+     "d0117bb65bae7620"
+    ],
+    "48": [
+     "0d3dfb96c78acef3",
+     "4982bdbfcacc7555",
+     "592fc0403d0543cc",
+     "5970fd893f86d020",
+     "b035475ae6ce367a",
+     "b151d2f9edff6cd0"
+    ]
+   }
+  }
+ ]
+}

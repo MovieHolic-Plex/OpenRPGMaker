@@ -24,7 +24,7 @@ export function activeKitLook(): string | undefined {
  * 글자열 해시(FNV-1a) + 끝 섞기. 끝 섞기가 없으면 낮은 비트가 열쇠의 낮은 비트만 따라간다 — 변형 수가 같은(2·4장) 종류들이
  * 게임마다 늘 같은 짝으로 갈려 «모습» 이 서너 가지뿐이 된다(실측: 우물·벤치가 여섯 게임에서 같은 순번으로 갈렸다).
  */
-function lookHash(text: string): number {
+export function lookHash(text: string): number {
   let h = 0x811c9dc5;
   for (let i = 0; i < text.length; i += 1) { h ^= text.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
   h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); h ^= h >>> 16;
