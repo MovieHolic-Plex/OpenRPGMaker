@@ -444,6 +444,9 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 - 기관실 보스전이 보일러실 그림인 것: 배경은 맵이 아니라 **세계 × 장소 종류**로 고르고(`placeTheme.ts`), 표가 `engine-room` 에 `boiler-room` 그림을 적는다 — 번들 그림은 종류마다 한 장이고 기관실 것은 그리지 않았다(이번 한도 열둘).
   그 맵 자체의 캡처로 만든 그림을 그 맵에만 거는 길은 있다(하네스 `build --project … --target map:<id>`, 조수 도구 `generate_battle_backdrop`) — 다만 맵마다 생성 한 번 + 검수가 들어 모델 없는 빌더 기본값으로는 못 쓴다.
 - 은행 대조(같은 명세 하나): 나빠진 칸 없음 · 없는 그림 줄 13 → 10 · 자동 플레이·정직한 플레이 엔딩 도달 1/1 그대로.
+- 은행 대조(49판 전부, 기준 `df0eb710c9` ↔ `73d2d90439`, 모델 호출 0): **나빠진 칸 없음** · 기계 «완료» 16 → 17 · 할 일 막힘 76 → 74 · 끝맺음 관문이 짚은 문제 156 → 153 · 주제 밖 전투 배경(숲) 1/32 → 0/32 · 출하 차단 10 · 자동/정직한 플레이 9/10 그대로.
+  없는 그림 줄은 117 → 118 이다 — 새 장소 그림으로 줄어든 판(`fun-w1` 12 → 9 등)과, 전에는 말없이 다른 지형을 깔던 곳이 «그 맵 그대로 + 없는 그림 줄» 로 드러난 판(`jrpg-x1` 의 신전·마법탑 등)이 섞인 수다.
+  첫 대조(위 세 관문을 고치기 전)는 네 칸이 나빠졌다 — 기계 «완료» 16 → 15 · 할 일 막힘 76 → 82 · 관문 문제 156 → 167. 원인은 위 「같이 고친 것」의 뒤 세 줄(«전투 세기» 에 맞춘 길 적 무리 · «못 이기는 전투» 관문의 회복약 · 단계 상대와 다른 종)이었다.
 - 출하 플레이어 캡처(시나리오 `battle-fit`): `bun scripts/qa/assistant-v2/battleFitProbe.mts <폴더> --shots <dir>` → `BATTLE_FIT_SHOTS=<dir>/shots.json BATTLE_FIT_INDEX=<n> npm run qa:runtime -- --netns --scenario battle-fit --project <dir>/shots.project.json`. 그림은 `http://mdc-server:18301/av2-battle-fit.html`.
 
 ### 안 고친 것
