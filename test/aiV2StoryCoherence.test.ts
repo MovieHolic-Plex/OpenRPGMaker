@@ -75,8 +75,46 @@ describe("잠김 글은 실제 조건에서 나온다", () => {
     expect(eventOf("번호 쪽지")).toBeDefined();
     expect(bodies(eventOf("별의 봉인"), 0).join(" ")).not.toContain("문지기");
     expect(bodies(eventOf("별의 봉인"), 0)[0]).toContain("번호");
-    expect(bodies(eventOf("번호 쪽지"), 0).join(" ")).toContain("문지기 격파");
+    // 쪽지의 잠김 글은 앞 단계의 상대를 이름으로 가리킨다 — 깃발 이름(«문지기 격파»)은 화면에 내지 않는다.
+    expect(bodies(eventOf("번호 쪽지"), 0).join(" ")).toContain("「얼음 문지기」를 쓰러뜨려야 한다.");
+    expect(bodies(eventOf("번호 쪽지"), 0).join(" ")).not.toContain("문지기 격파");
 
+  }, SLOW);
+
+  it("단계 이벤트의 글과 목표 줄에 설계 칸(action · needs · gives · feeling)이 나오지 않는다 — 물건은 item 으로 소지품에 들어간다", async () => {
+    const { ctx, call, eventOf } = harness();
+    if (!(await call("write_blueprint", blueprint)).ok) expect((await call("write_blueprint", blueprint)).ok).toBe(true);
+    const text = stepText(true).map((t) => (t.id === "s3" ? { ...t, item: "은빛 등불", goal: "상인 미라에게서 밤길에 쓸 것을 고르자" } : t));
+    expect((await call("build_blueprint_path", { steps: text })).ok).toBe(true);
+    // 화면에 나가는 글만 모은다: 대사 본문과 목표 줄.
+    const lines: string[] = [];
+    const collect = (node: unknown): void => {
+      if (Array.isArray(node)) { node.forEach(collect); return; }
+      if (!node || typeof node !== "object") return;
+      const c = node as { kind?: string; body?: unknown; fields?: { surface?: unknown; message?: unknown } };
+      if (c.kind === "text" && typeof c.body === "string") lines.push(c.body);
+      if (c.fields?.surface === "objectiveChip") lines.push(String(c.fields.message ?? ""));
+      Object.values(c).forEach(collect);
+    };
+    collect(Object.values(ctx.project.maps).flatMap((m) => m.events).map((e) => e.pages));
+    const shown = lines.join("\n");
+    for (const step of blueprint.steps) {
+      expect(shown, `${step.id} action`).not.toContain(step.action);
+      expect(shown, `${step.id} feeling`).not.toContain(`${step.feeling}…`);
+      // 깃발 이름은 화면에 없다 — 물건 이름인 gives 가 소지품 이름(『…』)으로 나오는 것만 예외다(마지막 단계의 「엔딩」 은 낱말이 흔해 빼고 본다).
+      if (step.gives !== "엔딩") expect(shown.replaceAll(`『${step.gives}』`, ""), `${step.id} gives`).not.toContain(step.gives);
+    }
+    expect(shown).not.toContain("알아냈다");
+    expect(shown).not.toContain("있어야 할 것 같다");
+    // 목표 줄: 모델이 쓴 goal 이 있으면 그것, 없으면 사람·물건 이름으로 지은 줄.
+    expect(shown).toContain("상인 미라에게서 밤길에 쓸 것을 고르자");
+    expect(shown).toContain("낡은 일지를 살펴보자");
+    expect(shown).toContain("얼음 문지기를 쓰러뜨리자");
+    // 건네는 물건은 실제 소지품이고, 다음 단계(문지기)가 그 물건을 확인한다.
+    const lamp = ctx.project.database.items.find((item) => item.name === "은빛 등불");
+    expect(lamp).toBeDefined();
+    expect(JSON.stringify(eventOf("떠돌이 상인 미라")?.pages)).toContain(`"kind":"changeItem","itemId":"${lamp!.id}"`);
+    expect(JSON.stringify((eventOf("얼음 문지기")?.pages ?? []).map((p) => p.conditions))).toContain(`"itemId":"${lamp!.id}"`);
   }, SLOW);
 
   it("앞선 빌드가 남긴 «다른 단계를 먼저 하라» 는 잠김 줄을 뺀다", () => {

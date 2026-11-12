@@ -310,7 +310,7 @@ export function questsMinBlocker(project: Project, task: string): ShipBlocker[] 
   const why = uncounted.slice(0, 4).map((q) => `「${q.title}」(${q.id}) ${q.detail}`).join(" · ");
   return [{
     id: "quests-min",
-    message: `세는 퀘스트가 ${counted.length}/${need}개다 — ${need - counted.length}개 더. 퀘스트마다 단계 2개 이상, 단계마다 서로 다른 label 이 있어야 센다(label 없는 단계는 안 센다), 제목은 퀘스트마다 다르게: create_quest{def:{key:"q_<영문>", title:"<제목>", order:"sequence", giver:{create:{mapId,x,y,name}}, steps:[{kind:"talk", label:"<1단계 목표>", target:{create:{mapId,x,y,name}}, lines:["…"]}, {kind:"talk", label:"<2단계 목표>", target:{create:{mapId,x,y,name}}, lines:["…"]}]}}.${why ? ` 안 세는 퀘스트: ${why}.` : ""}`,
+    message: `세는 퀘스트가 ${counted.length}/${need}개다 — ${need - counted.length}개 더. 퀘스트마다 단계 2개 이상, 단계마다 서로 다른 label 이 있어야 센다(label 없는 단계는 안 센다), 제목은 퀘스트마다 다르게: create_quest{def:{key:"q_<영문>", title:"<제목>", order:"sequence", giver:{create:{mapId,x,y,name}}, steps:[{kind:"talk", label:"<1단계 목표>", target:{create:{mapId,x,y,name}}, lines:["…"]}, {kind:"talk", label:"<2단계 목표>", target:{create:{mapId,x,y,name}}, lines:["…"]}]}}. 물건을 나르는 의뢰(술통·편지·약)는 실제 물건을 옮긴다: onAcceptItems:[{itemId,count:1}] + 단계 {kind:"deliver", itemId, count:1, target, label, lines}(먼저 upsert_item) — talk 단계는 아무것도 나르지 않는다.${why ? ` 안 세는 퀘스트: ${why}.` : ""}`,
     evidence: `counted=${counted.length} need=${need} uncounted=${uncounted.length}`,
   }];
 }

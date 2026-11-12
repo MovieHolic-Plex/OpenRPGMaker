@@ -265,6 +265,12 @@ function pickupDoneLines(link: ChainLink): readonly string[] {
   return link.doneLines ?? ["비어 있다."];
 }
 
+/** 소지품 설명 — 그 물건을 준 사람, 아니면 찾은 곳의 이름. */
+const itemSource = (link: ChainLink): string | undefined => {
+  const giver = link.speaker?.trim(), spot = link.name?.trim();
+  return giver ? `${giver}에게서 받았다.` : spot ? `「${spot}」에서 찾았다.` : undefined;
+};
+
 /** 이름 need 를 켜는 스위치 — 사슬이 선언한 「…「need」…」 깃발 중 실제로 어떤 이벤트가 켜는 것, 아니면 이름이 need 인 이벤트가 켜는 스위치(하나뿐일 때). */
 function switchFromProject(project: { maps: Record<string, { events: readonly { name?: string; pages?: readonly unknown[] }[] }>; storyFlags?: readonly { kind?: string; targetId?: string; description?: string }[] }, need: string): string | undefined {
   const setBy = (node: unknown, out: Set<string>): void => {
@@ -309,7 +315,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
   }
   const chainKey = slug(args.name || "chain");
   const have = new Map<string, { kind: "flag"; switchId: string } | { kind: "item"; itemId: string }>();
-  const itemId = (name: string, keep?: string): string => {
+  const itemId = (name: string, keep?: string, from?: string): string => {
     const db = run.ctx.project.database.items ?? [];
     // 전에 지어 둔 물건이면 이름만 새 이름으로 — 같은 id 를 쓰면 그 물건으로 잠가 둔 문이 그대로 열린다.
     const kept = keep ? db.find((it) => it.id === keep) : undefined;
@@ -320,7 +326,8 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     const found = db.find((it) => it.id === name || it.name === name);
     if (found) return found.id;
     const id = `item_${chainKey}_${slug(name)}`;
-    const res = run.call("upsert_item", { item: { id, name, description: `${args.name} — 열쇠·단서 물건`, price: 0, consumable: false } });
+    // 소지품 설명도 플레이어가 읽는다 — 어디서 났는지를 이름으로 적는다(사슬 이름·갈래 낱말은 쓰지 않는다).
+    const res = run.call("upsert_item", { item: { id, name, description: from ?? "길을 여는 데 쓰는 물건.", price: 0, consumable: false } });
     if (!res.ok) warnings.push(`물건 ${name} 을 만들지 못했다: ${String(res.summary).slice(0, 120)}`);
     return id;
   };
@@ -485,7 +492,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     let gave: { switchId?: string; itemId?: string } | undefined;
     const rewardCmds = (): Obj[] => {
       const out: Obj[] = [...say(link.reward?.lines)];
-      if (link.reward?.item) { const it = itemId(link.reward.item, link.reward.itemId); gave = { ...gave, itemId: it }; have.set(link.reward.item, { kind: "item", itemId: it }); out.push({ kind: "changeItem", itemId: it, op: "+=", amount: 1 }); if (!link.reward.lines?.length) out.push({ kind: "text", body: `『${link.reward.item}』${josa(link.reward.item, "을/를")} 얻었다.` }); }
+      if (link.reward?.item) { const it = itemId(link.reward.item, link.reward.itemId, itemSource(link)); gave = { ...gave, itemId: it }; have.set(link.reward.item, { kind: "item", itemId: it }); out.push({ kind: "changeItem", itemId: it, op: "+=", amount: 1 }); if (!link.reward.lines?.length) out.push({ kind: "text", body: `『${link.reward.item}』${josa(link.reward.item, "을/를")} 얻었다.` }); }
       if (link.reward?.flag) { const sw = flag(link.reward.flag, `${args.name}: ${link.reward.flag}`, link.reward.switchId); gave = { ...gave, switchId: sw }; have.set(link.reward.flag, { kind: "flag", switchId: sw }); out.push({ kind: "setSwitch", switchId: sw, value: true }); }
       return out;
     };
