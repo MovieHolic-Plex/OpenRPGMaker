@@ -196,6 +196,34 @@ export function npcGraphicPersonQuery(text: string): string | undefined {
   return words.length ? words.join(" ") : undefined;
 }
 
+/** 성별·나이만 가리키는 낱말(낱말 표의 성별·나이 줄의 낱말·꼬리표)과 «주민» — 칩의 차림을 가리키지 않는다. */
+const PERSON_ONLY_WORDS: ReadonlySet<string> = new Set(["주민", ...SYNONYMS.filter((s) => s.gender || s.age).flatMap((s) => [...s.terms, ...(s.tags ?? [])]).map((t) => normalizeQuery(t))]);
+
+/** 칩의 «차림» 꼬리표 — 성별·나이 낱말과 «주민», 칩 이름을 옮긴 첫 칸을 뺀 것(왕관·메이드·기사·토끼·상인…). */
+function costumeTags(entry: CharsetSemanticEntry): string[] {
+  // 꼬리표 첫 칸은 칩 이름을 그대로 옮긴 것이다(«청년 남성» · «어린 소녀») — 그 한 칸만 뺀다. 이름이 곧 차림인 칩(왕·수녀·하녀)은 같은 낱말이 뒤에 한 번 더 있다.
+  const label = normalizeQuery(entry.label);
+  return entry.tags.map((t) => normalizeQuery(t)).filter((t, i) => t && !(i === 0 && t === label) && !PERSON_ONLY_WORDS.has(t));
+}
+
+/** 그냥 사람 칩인가 — «주민» 꼬리표가 붙었거나 차림 꼬리표가 하나도 없다(노파 = 노인·여성·할머니뿐). */
+export function npcGraphicIsPlain(entry: CharsetSemanticEntry): boolean {
+  return entry.tags.includes("주민") || costumeTags(entry).length === 0;
+}
+
+/**
+ * 글이 이 칩의 차림을 짚었는가 — 낱말 표의 역할 줄(«사제» → 성직자)로 읽혔거나, 성별·나이 낱말이 아닌 낱말이 차림 꼬리표에 걸린다.
+ * «상인 여자» 는 토끼 귀 여성을 짚지 않는다(«여자» 는 성별일 뿐) — 고르는 쪽이 말하지 않은 차림의 칩을 뒤로 미는 데 쓴다. 한 글자 낱말은 꼬리표와 같을 때만(«왕» ≠ «여왕»).
+ */
+export function npcGraphicNamedBy(text: string, entry: CharsetSemanticEntry): boolean {
+  const traits = costumeTags(entry);
+  const normalized = normalizeQuery(text);
+  const intent = intentFromQuery(normalized);
+  if (traits.some((t) => intent.tags.has(t))) return true;
+  return normalized.split(" ").some((term) => !!term && !PERSON_ONLY_WORDS.has(term)
+    && traits.some((t) => t === term || (term.length >= 2 && t.includes(term)) || (t.length >= 2 && term.includes(t))));
+}
+
 function textMatchScore(term: string, entry: CharsetSemanticEntry): number {
   const normalized = normalizeQuery(term);
   if (!normalized) return 0;

@@ -4,7 +4,7 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { findSharedPortrait, dialogueFaceForEmotion } from "@/assets/sharedPortraitAssets";
 import { bustOfChip, bustOfFace, settleSpeakerBustsIn } from "@/ai/v2/story/speakerBust";
 import { pickPersonGraphic } from "@/ai/v2/place/people";
-import { npcGraphicIntent, npcGraphicPersonQuery } from "@/assets/charsetQuery";
+import { npcGraphicIntent, npcGraphicIsPlain, npcGraphicNamedBy, npcGraphicPersonQuery, queryNpcGraphics } from "@/assets/charsetQuery";
 import { fillPartyLooks } from "@/ai/v2/story/shipLookDefaults";
 import { charsetBattlerForCharacter } from "@/assets/charsetBattlers";
 import { collectWebExportAssets } from "@/project/webExportAssets";
@@ -135,6 +135,54 @@ describe("사람·주인공 칩 고르기 — 흉상이 있는 칩 먼저", () =
     expect(pickPersonGraphic(project, map, "왕", undefined)!.label).toBe("왕");
     expect(pickPersonGraphic(project, map, "공주", undefined)!.label).toBe("공주");
     expect(pickPersonGraphic(project, map, "수녀", undefined)!.label).toBe("수녀");
+  });
+
+  // 2026-11-12 명세 은행(흉상 먼저 고르기 전/후): 주민 둘을 세우고 나면 «상인 여자» 가 토끼 귀 여성, «농부» 가 귀족 남성, «마을 주민 남자» 가 승려로 섰다 —
+  // 검색어 단의 순위는 성별만 맞은 칩까지 이어지고, 같은 맵에서 쓴 칩은 뒤로 밀린다. 말하지 않은 차림의 칩은 주민 칩을 한 번 더 쓰는 것보다 뒤다.
+  it("한 맵에 같은 부류의 사람을 여럿 세워도 말하지 않은 차림(토끼 귀·귀족·승려·여왕)은 서지 않는다 — 주민 칩을 고르게 다시 쓴다", () => {
+    const stand = (role: string, looks: string | undefined, times: number): string[] => {
+      const project = createBlankProject() as Project;
+      const map = project.maps[project.startMapId]!;
+      const labels: string[] = [];
+      for (let i = 0; i < times; i += 1) {
+        const pick = pickPersonGraphic(project, map, role, looks)!;
+        labels.push(pick.label);
+        map.events = [...(map.events ?? []), { id: `ev_p${i}`, name: `p${i}`, x: i, y: 0, pages: [{ id: "p1", conditions: [], trigger: { kind: "action" }, commands: [],
+          graphic: { sprite: { type: "bundled", id: pick.textureKey }, direction: "down", pattern: charsetFrameIndex({ characterIndex: pick.characterIndex, direction: "down", pattern: 1 }) } }] } as unknown as GameEvent];
+      }
+      return labels;
+    };
+    const count = (labels: string[], label: string) => labels.filter((l) => l === label).length;
+    const women = stand("상인", "상인 여자", 6);
+    for (const label of women) expect(["젊은 여성", "중년 여성 주민(흑인)", "노파"], women.join(" → ")).toContain(label);
+    expect(count(women, "젊은 여성")).toBeLessThanOrEqual(3);
+    const farmers = stand("농부", "농부", 6);
+    for (const label of farmers) expect(["중년 남성 주민(흑인)", "대머리 남성 주민"], farmers.join(" → ")).toContain(label);
+    expect(count(farmers, "중년 남성 주민(흑인)")).toBe(3);
+    const men = stand("마을 사람", "마을 주민 남자", 6);
+    expect(men.slice().sort()).toEqual(["대머리 남성 주민", "대머리 남성 주민", "중년 남성 주민(흑인)", "중년 남성 주민(흑인)", "청년 남성", "청년 남성"]);
+    // 경비병은 여섯이 서도 경비병이다(난쟁이 병사·주민으로 바뀌지 않는다).
+    expect(new Set(stand("경비병", undefined, 6))).toEqual(new Set(["청년 병사"]));
+  });
+
+  it("차림을 짚었는지는 칩 검색의 낱말 표로 읽는다 — 성별·나이 낱말은 차림이 아니다 · 할배는 청년 칩이 아니라 흉상이 있는 중년 주민", () => {
+    const entry = (label: string) => queryNpcGraphics(label, 30).find((m) => m.entry.label === label && /^tex_easyrpg_charset_people/.test(m.entry.textureKey))!.entry;
+    expect(npcGraphicNamedBy("상인 여자", entry("토끼 귀 여성"))).toBe(false);
+    expect(npcGraphicNamedBy("토끼 귀 종업원", entry("토끼 귀 여성"))).toBe(true);
+    expect(npcGraphicNamedBy("여왕", entry("왕"))).toBe(false);
+    expect(npcGraphicNamedBy("늙은 왕 king", entry("왕"))).toBe(true);
+    expect(npcGraphicNamedBy("사제", entry("승려"))).toBe(true);
+    expect(npcGraphicNamedBy("아저씨 남성", entry("귀족 남성"))).toBe(false);
+    expect(npcGraphicNamedBy("하녀장", entry("여자 메이드"))).toBe(true);
+    for (const label of ["노파", "청년 남성", "젊은 여성", "대머리 남성 주민"]) expect(npcGraphicIsPlain(entry(label)), label).toBe(true);
+    for (const label of ["왕", "여왕", "공주", "수녀", "승려", "토끼 귀 여성", "귀족 남성", "여자 메이드", "여관 주인", "청년 병사"]) expect(npcGraphicIsPlain(entry(label)), label).toBe(false);
+    const project = createBlankProject() as Project;
+    const map = project.maps[project.startMapId]!;
+    for (const name of ["할배", "오르텐 할배"]) {
+      const pick = pickPersonGraphic(project, map, name, undefined)!;
+      expect(["중년 남성 주민(흑인)", "대머리 남성 주민"], name).toContain(pick.label);
+      expect(bustOfChip(pick.textureKey, pick.characterIndex), name).toBeDefined();
+    }
   });
 
   it("주인공: 흉상과 전투 그림이 둘 다 그 칩의 것인 칩 · 전투 그림도 그 칩으로 · 맵에 선 사람의 칩은 피한다", () => {
