@@ -89,6 +89,16 @@
 - 3/4 관문: 1차 149장 PASS 145 / FAIL 4(hut-round·hammock·crab·chest-big — 1판 그림·1판 영수증으로 둔다, `OLD_OUTLINE`), 2차 22장 PASS 22. 최종 178/178. 지표 칸당 고유색 8/16/14 → 9/17/34.
 - 남은 이질감: 풀색 자체가 버들항보다 짙다(팔레트 잠금), 그늘 덩이는 나무 많은 곳에서 드물게 보인다, FAIL 넷은 아직 검은 윤곽, 물은 밝은 청록 반복.
 
+## 직각 지붕 다시 그리기 (2026-11-12, 오너 지시)
+
+오너 2026-11-12: «이 에디터는 시야각이 직교해야하므로 sengoku_edo se-machiya-a 이런 식의 직각 지붕이어야하는데, … pirate_isles pi-hut-thatch 같은 식의 지붕들은 … 좀 문제가 많다 … Fable 5.2 Medium 으로 1번만 시도».
+
+- `house()` 의 우진각(사다리꼴) 지붕 건물 13채를 Claude Fable 5.2 medium 한 방으로 **지붕만** 다시 그렸다(벽·문·기단은 코드 그림 그대로): `pi-hut-thatch`·`hut-palm`·`cabin`·`house-plaster`·`tavern`·`warehouse`·`harbor-office`·`longhouse`·`boathouse`·`captain-house`·`fort-barracks`·`fish-shack`·`smokehouse`. 지붕 기울기(모델 없음, 줄마다 윤곽 좌우 가장자리의 이동) 5~15px → 0~1px.
+- 덮어쓰기: `tiledata/pirate-isles/fable-roofs/<조각>.png` + `index.json`(지붕 상자·덮기 전 코드 그림 해시) → `pi_core.render` 가 `scripts/content/lib/fable_roofs.py` 로 코드 그림 위에 덮는다. 코드 그림이 바뀌면 멈춘다.
+- 관문: **3/4 관문 미통과 — 오너 면제** 묶음 `fable-redraw-roofs-pirate-isles-2026-11-12`(bundle·shared, 스토어 제외). `pi_core.status_of` 는 덮어쓴 조각을 그 면제로만 통과시킨다. 통과가 아니다.
+- 칸 번호 그대로(1198칸, 핀 불변) — 이미 깔린 맵·예제가 새 지붕으로 보인다. `pi_bake` 는 이제 **이미 번호를 받은 자리 키를 다른 칸과 그림이 같아져도 합치지 않는다**(합치면 그 번호가 빈 칸이 되어 깔린 맵에 구멍이 난다 — 술집 지붕 529번에서 봤다). 그 결과 옛 빈 칸 535 가 술집 (4,2) 칸 그림을 다시 갖는다.
+- 남은 것: `pi-stilt-hut`(두 번 그려도 오른쪽 3px — 굽지 않음), `pi-chapel`(박공 정면 — 직교 시점에 맞는 그림이라 그대로), 둥근 것(`hut-round`·등대·망루)은 예외. 문은 12×23px 로 주인공(24×32)보다 낮다 — 벽을 다시 그리지 않았으므로 그대로다. 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
+
 ## 남은 일
 - 방파제 끝 계단·마감 조각과 부두 앞면(기둥)을 그린다.
 - 수상 가옥 좌우 변형을 그린다.

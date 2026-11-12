@@ -67,6 +67,39 @@ describe("공방 기물을 칩셋에 굽기", () => {
     expect(p.tilesets[ID]!.count).toBe(foot + 2);
   });
 
+  it("떼는 동안 맵의 공방 칸을 비켜 둔다 — 그사이 옛 공방 번호로 옮겨 온 다른 칸은 공방 그림이 되지 않는다", () => {
+    // 2026-11-12 저장본 r1-fantasy: 번들 시트가 128칸 자라자 로드 정규화가 이식 꼬리를 128 밀었고, 공방 칸의 옛 번호에 앉은 나무 칸이
+    // 다시 붙이기의 «옛 번호 → 새 번호» 에 딸려 공방 그림으로 바뀌었다(맵 한 칸).
+    const p = createBlankProject();
+    const kit = bakeWorkshopObject(p, ID, shelf());
+    const foot = kit.rows[1]!.upperTiles![0]!;
+    p.maps.room = { ...Object.values(p.maps)[0]!, id: "room", tilesetId: ID, width: 2, height: 1, lowerTiles: [5, 5], upperTiles: [foot, -1], lowerOverlayTiles: [-1, -1], upperOverlayTiles: [-1, -1] } as Project["maps"][string];
+    const t = p.tilesets[ID]!;
+    const parked = detachWorkshopTiles(t, p)!;
+    expect(parked.mapCellsParked).toBe(true);
+    expect(p.maps.room!.upperTiles[0]).toBeGreaterThan(foot);   // 보관 번호(칩셋 칸 수 밖)
+    // 번들이 두 줄 자라고, 그사이 다른 칸이 옛 공방 번호로 옮겨 왔다
+    const grow = t.tilesPerRow * 2;
+    for (let i = 0; i < grow; i++) { t.passability.push({ up: true, down: true, left: true, right: true }); t.priority.push("lower"); t.terrain.push(0); t.tileMeta!.push({ label: "새 번들 칸", description: "", source: "bundled-default" } as never); }
+    t.count += grow;
+    p.maps.room!.upperTiles[1] = foot;
+    expect(attachWorkshopTiles(p, ID, parked)).toBe(true);
+    const now = p.tilesets[ID]!.structureKits!.find((k) => k.id === kit.id)!.rows[1]!.upperTiles![0]!;
+    expect(now).toBe(foot + grow);
+    expect(p.maps.room!.upperTiles).toEqual([now, foot]);   // 공방 칸만 새 번호로, 옮겨 온 칸은 그대로
+
+    // 맵을 넘기지 않는 옛 호출(손 도트 실내 ensure)은 예전처럼 옛 번호 → 새 번호
+    const q = createBlankProject();
+    const kit2 = bakeWorkshopObject(q, ID, shelf());
+    const foot2 = kit2.rows[1]!.upperTiles![0]!;
+    q.maps.room = { ...Object.values(q.maps)[0]!, id: "room", tilesetId: ID, width: 1, height: 1, lowerTiles: [5], upperTiles: [foot2], lowerOverlayTiles: [-1], upperOverlayTiles: [-1] } as Project["maps"][string];
+    const parked2 = detachWorkshopTiles(q.tilesets[ID]!)!;
+    expect(parked2.mapCellsParked).toBeUndefined();
+    expect(q.maps.room!.upperTiles[0]).toBe(foot2);
+    attachWorkshopTiles(q, ID, parked2);
+    expect(q.maps.room!.upperTiles[0]).toBe(foot2);
+  });
+
   it("손 도트 사양 꼴: 발밑 첫 줄이 dy 0, 솟은 줄은 음수", () => {
     const p = createBlankProject();
     bakeWorkshopObject(p, ID, shelf());
