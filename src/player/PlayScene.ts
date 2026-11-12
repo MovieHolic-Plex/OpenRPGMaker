@@ -117,6 +117,7 @@ import {
   createPlaySceneZoneFeedback,
   destroyPlaySceneZoneFeedback,
   syncPlaySceneZoneFeedback,
+  objectiveBoxRect,
   type PlaySceneZoneFeedback,
 } from "@/player/playSceneZoneFeedback";
 import { mountHandSlotChip, type HandSlotChip } from "@/player/handSlotChip";
@@ -511,7 +512,17 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       // worldView 원점에서 재고, 캔버스 px 를 픽셀 밀도로 나눠 논리 px 로 되돌린다.
       playerX: this.player ? (this.player.x - this.cameras.main.worldView.x) * this.cameras.main.zoom / runtimePixelDensity(this) : undefined,
       playerY: this.player ? (this.player.y - spriteReliefLiftPx(this.map, this.player) - this.cameras.main.worldView.y) * this.cameras.main.zoom / runtimePixelDensity(this) : undefined,
+      fixed: this.objectiveFixedRects(),
     });
+  }
+
+  /** 목표 창 자리(있을 때만) — 같은 값이면 같은 배열을 돌려준다(프레임마다 배열을 새로 만들지 않는다). */
+  private objectiveFixedCache: { key: string; rects: readonly { x: number; y: number; width: number; height: number }[] } = { key: "", rects: [] };
+  private objectiveFixedRects(): readonly { x: number; y: number; width: number; height: number }[] {
+    const rect = objectiveBoxRect(this.zoneFeedback);
+    const key = rect ? `${rect.x},${rect.y},${rect.width},${rect.height}` : "";
+    if (key !== this.objectiveFixedCache.key) this.objectiveFixedCache = { key, rects: rect ? [rect] : [] };
+    return this.objectiveFixedCache.rects;
   }
 
   getMapId(): MapId {

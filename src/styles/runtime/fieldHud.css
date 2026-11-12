@@ -114,3 +114,7 @@
 /* 픽셀 격자 계약: 수집 테마(에메랄드 몬스터)는 Galmuri9 를 18px(정확히 2배)로 쓴다. 9px 는 도트 절반 크기다. 상자 크기는 저작 값(위젯 w/h)을 그대로 따르고 안쪽 여백만 줄인다. */
 .field-hud[data-theme="collector"][data-font="pixel"] :is(.hud-label,.hud-value,.hud-date,.hud-party-name,.hud-party-value,.hud-effect,.hud-rel-name,.hud-text) { font-size:18px; line-height:20px; }
 .field-hud[data-theme="collector"] .hud-widget[data-panel="paper"] { padding:2px 8px; }
+/* 상시 창 비키기(hudYield.ts): 주인공·마주 본 것을 덮은 창은 그동안 흐려지고, 잠깐 뜨는 알림(「새 목표」 카드·지역 알림)과 겹친 창은 숨는다. 자리는 옮기지 않는다. */
+.play-stage [data-yield] { transition:opacity .14s linear; }
+.play-stage [data-yield="fade"] { opacity:.16; }
+.play-stage [data-yield="hide"] { opacity:0; }

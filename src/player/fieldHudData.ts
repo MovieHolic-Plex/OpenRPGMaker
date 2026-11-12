@@ -8,7 +8,11 @@ import { handSlotCurrent, handSlotEntries, handSlotIndex } from "./handSlot";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { resolveActorFaceResourceId, resolveActorName } from "@/project/sessionActorCommands";
 import { defaultActorFaceResourceId } from "@/project/actorModel";
-export interface HudRuntimeContext { stamina?: number; staminaMax?: number; playerX?: number; playerY?: number }
+export interface HudRuntimeContext {
+  stamina?: number; staminaMax?: number; playerX?: number; playerY?: number;
+  /** HUD 판 밖에 고정된 창(목표 창)의 자리 — 주인공을 피해 옮겨 앉는 칸(autoAvoid)이 그 위로 올라가지 않는다. 무대 논리 px. */
+  fixed?: readonly { readonly x: number; readonly y: number; readonly width: number; readonly height: number }[];
+}
 export interface HudEntry { name: string; value?: number; max?: number; icon?: string; key?: string; selected?: boolean }
 export interface HudReading { available: boolean; value: number; max: number; text?: string; detail?: string; entries?: HudEntry[] }
 const WEATHER: Record<string, string> = { none: "맑음", rain: "비", storm: "폭풍", snow: "눈", fog: "안개" };
