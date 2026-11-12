@@ -9,12 +9,36 @@
  *   ③ Opus 기록이 없을 때만 옛 규칙: 서명된 사람 허용(이제 필수가 아니라 선택) 또는 보정된 옛 프로필의 pass.
  *   bundle·shared·store → 보정된 프로필의 「pass」 영수증만. 공방 「그래도 넣기」도 받지 않는다.
  *   workshop-local      → pass, 또는 사람이 직접 누른 「그래도 넣기」 덮어쓰기. 조수·에이전트는 덮어쓸 수 없다.
+ *   ④ 오너 면제(2026-11-12, waivers/<묶음>.json): 오너가 «판정 없이 넣어라» 고 결정한 그림 묶음. Opus 최종 기록이 없는 그림에만 효력이 있고,
+ *      서명된 사람 거절은 그 위에서 막는다. bundle·shared·workshop-local 만 — **store 출구는 면제를 받지 않는다.** 면제는 «통과» 가 아니다:
+ *      보고에는 «3/4 관문 미통과 — 오너 면제» 로 쓴다. 기록은 `object-gate owner-waive` 단계만 쓴다(손으로 쓰지 않는다).
  * Python 쪽 같은 규칙: src/harnesses/_core/object_gate/__init__.py. 둘을 같이 고친다.
  */
 
 import { OBJECT_GATE_PROFILE, type ObjectGateEyeAnswer, type ObjectGateJudgeAnswer, type ObjectGateKind, type ObjectGateState, type ObjectGateStyleAnswer, type ObjectGateStyleKind } from './rules';
 
 export type ObjectGateContext = 'bundle' | 'shared' | 'store' | 'workshop-local';
+
+/** 오너 면제가 닿을 수 있는 출구 — 스토어(밖으로 나가는 팩)는 없다. */
+export const OBJECT_GATE_WAIVER_CONTEXTS = ['bundle', 'shared', 'workshop-local'] as const satisfies readonly ObjectGateContext[];
+/** 오너 면제 묶음의 그림 한 장 — 화소 해시·종류에 묶인다. 한 화소라도 바뀌면 면제도 풀린다. */
+export type ObjectGateOwnerWaiverItem = { pixelSha256: string; kind: ObjectGateKind; label: string; width: number; height: number; cells: Record<string, string[]>; note?: string };
+/** 오너 면제 묶음(waivers/<id>.json). owner = 오너가 한 말 원문, decidedAt = 그 날짜, recordedBy = 기록한 쪽(감독·에이전트 이름과 위임 근거). */
+export type ObjectGateOwnerWaiverBatch = {
+  schema: 'oprn-object-gate-owner-waiver/1'; id: string; owner: string; decidedAt: string; recordedBy: string;
+  contexts: ObjectGateContext[]; note?: string; items: ObjectGateOwnerWaiverItem[];
+};
+/** 그림 한 장에 닿은 면제(묶음 머리 + 그 장). */
+export type ObjectGateOwnerWaiver = { batch: Pick<ObjectGateOwnerWaiverBatch, 'schema' | 'id' | 'owner' | 'decidedAt' | 'recordedBy' | 'contexts'>; item: ObjectGateOwnerWaiverItem };
+
+/** 이 면제가 이 그림·종류·출구에 효력이 있는가. 스토어 출구와 적지 않은 출구에는 없다. */
+export function ownerWaiverApplies(waiver: ObjectGateOwnerWaiver | null | undefined, pixelSha256: string, kind: ObjectGateKind | undefined, context: ObjectGateContext): boolean {
+  if (!waiver || waiver.batch.schema !== 'oprn-object-gate-owner-waiver/1') return false;
+  if (context === 'store' || !(OBJECT_GATE_WAIVER_CONTEXTS as readonly string[]).includes(context) || !waiver.batch.contexts.includes(context)) return false;
+  if (!waiver.batch.owner?.trim() || !waiver.batch.decidedAt?.trim() || !waiver.batch.recordedBy?.trim()) return false;
+  if (waiver.item.pixelSha256 !== pixelSha256) return false;
+  return !kind || waiver.item.kind === kind;
+}
 
 export type ObjectGateHalf = { pass: boolean; reasons: string[] };
 
@@ -232,6 +256,8 @@ export function objectGateRefusal(input: {
   /** Opus 최종 판정 기록(final/<해시>.json). 보정된 최종 프로필의 것만 효력이 있다. */
   final?: ObjectGateFinal | null;
   calibratedFinalProfiles?: ReadonlySet<string>;
+  /** 오너 면제(waivers/). Opus 최종 기록이 없는 그림에만, store 가 아닌 출구에서만 효력이 있다. 서명된 사람 거절이 그 위에서 막는다. */
+  waiver?: ObjectGateOwnerWaiver | null;
 }): string | null {
   const { receipt, pixelSha256, kind, context } = input;
   // 2026-10-21: Opus 최종 판정이 우선이다. 사람 거절만 그 위에 있다.
@@ -244,6 +270,12 @@ export function objectGateRefusal(input: {
     if (context === 'workshop-local' && receipt?.pixelSha256 === pixelSha256 && receipt.override?.by === 'human') return null;
     const why = final.reasons.length ? final.reasons.join(' · ') : 'fail';
     return `Opus 최종 판정 불합격(${why}) — 다시 그려 새 해시로 다시 받아라`;
+  }
+  // 오너 면제(2026-11-12): Opus 최종 기록이 없는 그림만. 서명된 사람 거절(어느 종류로 했든)이 있으면 면제도 막힌다. 스토어 출구는 받지 않는다.
+  if (ownerWaiverApplies(input.waiver, pixelSha256, kind, context)) {
+    const rejected = input.hold ? humanDecision(input.hold, { pixelSha256, kind: input.hold.kind } as ObjectGateReceipt) === 'reject' : false;
+    if (rejected) return `사람이 검토 화면에서 거절했다(${input.hold!.decidedBy}, ${input.hold!.decidedAt.slice(0, 10)}) — 최종이다. 오너 면제도 이 그림에는 닿지 않는다`;
+    return null;
   }
   if (!receipt) return '3/4·화풍 판정 영수증이 없다 — object-gate final-review 로 Opus 최종 판정을 받아라';
   if (receipt.pixelSha256 !== pixelSha256) return '영수증의 그림 해시가 지금 그림과 다르다 — 고친 뒤 다시 판정받아라';
