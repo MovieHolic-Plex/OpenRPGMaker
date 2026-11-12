@@ -35,6 +35,33 @@ const mapOf = (args: Obj): string | undefined => [args.mapId, isObj(args.patch) 
 /** 자리표시(<…>)가 하나도 없는 호출인가. */
 export const isFilledCall = (call: NextCall): boolean => !/"<[^"<>]*>"/u.test(JSON.stringify(call.args));
 
+/**
+ * 글 안의 «Next call: verb({...})» 가운데 verbs 에 있는 첫 호출 — 거절 글이 이미 인자를 다 채워 준 호출을 뼈대(<…>)로 바꾸지 않게 그대로 꺼낸다.
+ * 글이 JSON 글 속이면(따옴표가 \" 로 적혔다) 벗겨서 읽는다. 인자를 JSON 으로 읽지 못하면(자리표시가 섞인 호출) 건너뛴다.
+ */
+export function callInText(text: string, verbs: readonly string[]): NextCall | undefined {
+  for (const body of text.includes('\\"') ? [text.replace(/\\"/gu, '"').replace(/\\\\/gu, "\\"), text] : [text]) {
+    for (const m of body.matchAll(/Next call[^:\n]{0,60}: ([a-z_]+)\(\{/gu)) {
+      if (!verbs.includes(m[1]!)) continue;
+      const from = m.index! + m[0].length - 1;
+      let depth = 0, inStr = false, esc = false, end = -1;
+      for (let i = from; i < body.length && end < 0; i++) {
+        const ch = body[i]!;
+        if (inStr) { if (esc) esc = false; else if (ch === "\\") esc = true; else if (ch === '"') inStr = false; continue; }
+        if (ch === '"') inStr = true;
+        else if (ch === "{") depth++;
+        else if (ch === "}" && --depth === 0) end = i;
+      }
+      if (end < 0) continue;
+      try {
+        const args: unknown = JSON.parse(body.slice(from, end + 1));
+        if (isObj(args)) return { verb: m[1]!, args, why: "the rejection gave this call", exact: true };
+      } catch { /* 자리표시가 섞인 호출 */ }
+    }
+  }
+  return undefined;
+}
+
 /** 쓰기 동사 이름이 거절 글에 들어 있나(낱말 경계). */
 const mentions = (text: string, verb: string) => new RegExp(`(^|[^a-z_])${verb}([^a-z_]|$)`, "u").test(text);
 

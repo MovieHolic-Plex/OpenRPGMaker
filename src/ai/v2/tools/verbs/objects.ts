@@ -28,7 +28,8 @@ export function objectVerbs(c: VerbContext) {
       const first = plan ? plan.base : p.at && !p.where ? p.at : resolveWhere(env.ctx.project, map, p.where, p.at ? { at: p.at } : {}).cell;
       const tried: string[] = [];
       let placed: { ok: boolean; summary: string } | undefined;
-      for (let r = 0; r <= 3 && !placed?.ok; r++) for (let dy = -r; dy <= r && !placed?.ok; dy++) for (let dx = -r; dx <= r && !placed?.ok; dx++) {
+      // 다섯 칸 둘레까지 — 세 칸(49자리)으로는 건물이 들어찬 광장·성 안에서 큰 물건이 한 자리도 못 찾았다.
+      for (let r = 0; r <= 5 && !placed?.ok; r++) for (let dy = -r; dy <= r && !placed?.ok; dy++) for (let dx = -r; dx <= r && !placed?.ok; dx++) {
         if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
         const base = { x: first.x + dx, y: first.y + dy };
         const res = run.call("stamp_tileset_object", { mapId: p.mapId, objectId: p.objectId, base });
@@ -36,7 +37,7 @@ export function objectVerbs(c: VerbContext) {
         if (res.ok) placed = { ok: true, summary: `${p.objectId} 를 (${base.x},${base.y})에 놓았다${plan && !r ? ` — draw_object 가 미리 정한 자리${plan.how ? `(${plan.how})` : ""}` : ""}${r ? ` — 처음 자리 (${first.x},${first.y})가 막혀 옮겼다` : ""}` };
         else placed = { ok: false, summary: String(res.summary).slice(0, 200) };
       }
-      return finishContent(id, "place_object", params, { ok: !!placed?.ok, mapIds: [p.mapId], summary: placed?.ok ? placed.summary : `놓지 못했다(${tried.length}자리 시도): ${placed?.summary ?? ""}`, warnings: [], missingArt: placed?.ok ? [] : [`${p.objectId} — 놓을 자리가 없다`], calls: [] });
+      return finishContent(id, "place_object", params, { ok: !!placed?.ok, mapIds: [p.mapId], summary: placed?.ok ? placed.summary : `Not placed: all ${tried.length} spots within 5 cells of (${first.x},${first.y}) are taken or off the map (last: ${placed?.summary ?? ""}). Next call: inspect({"mapId":"${p.mapId}"}) — pick a cell on open ground from its picture and call place_object again with that at.`, warnings: [], missingArt: placed?.ok ? [] : [`${p.objectId} — 놓을 자리가 없다`], calls: [] });
     },
   };
   // ───── move_object: 놓인 가구 하나 옮기기·돌리기·빼기(손 도트 실내). 다시 짓지 않으므로 고치기 바퀴를 쓰지 않는다 ─────

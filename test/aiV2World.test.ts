@@ -378,6 +378,7 @@ describe("함수가 지은 것을 검사가 다시 모델에게 돌려보내지 
   it("자리표시 시작 맵 은퇴는 막는 삭제가 아니다 — 그 맵 안의 것을 지운 삭제는 그대로 막는다", () => {
     const level = (what: string) => parseAdvisorReply(JSON.stringify({ claims: [], removals: [{ what, mentioned: false }], unreachable: [], missing: [], notes: [] })).notes[0]!.level;
     expect(level("빈 맵 삭제")).toBe("aside");
+    expect(level("기존 빈 맵 삭제")).toBe("aside");
     expect(level("맵 「빈 맵」(map_blank_start) 삭제")).toBe("aside");
     expect(level("빈 맵에 있던 촌장 NPC 삭제")).toBe("blocker");
     expect(level("여관 주인 이벤트 삭제")).toBe("blocker");

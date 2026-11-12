@@ -8,7 +8,7 @@ import { classPatterns, PATTERNS_VERSION } from './patterns';
 import { askArtGaps, battleFacts, buildArtGaps, clusterThings, toolReportsOfSession, ART_GAPS_VERSION, type GapEntry } from './artGaps';
 import { corpusSessions, layJobsOf, loadCorpus, type MapItem } from './corpus';
 import { factsText, mapFacts, type MapFacts } from './facts';
-import { cleanPicture, detailPictures, FACTS_LEGEND, factsPicture, markedPicture } from './pictures';
+import { cleanPicture, detailPictures, FACTS_LEGEND, factsPicture, markedPicture, RELIEF_LEGEND } from './pictures';
 import { writeMapVqaPage } from './page';
 import { buildTally, calibrationOf, loadReviewer, parseReview, type MapReview, type Reviewer } from './verdict';
 
@@ -30,7 +30,7 @@ export async function reviewMap(item: MapItem, options: ReviewOptions): Promise<
   if (options.noReview) review = { ...base, error: '검수자를 부르지 않았다(--no-review)' };
   else {
     const answer = await askJudge({ cacheDir: resolve(options.out, 'judge-cache'), promptVersion: options.reviewer.version, system: options.reviewer.system, usage: options.usage,
-      text: `${item.context}\n\n${text}\n\n${FACTS_LEGEND}\n\nInspect this map and reply with the JSON object.`,
+      text: `${item.context}\n\n${text}\n\n${FACTS_LEGEND}${pictures.relief ? `\n\n${RELIEF_LEGEND}` : ''}\n\nInspect this map and reply with the JSON object.`,
       images: [{ label: 'CLEAN picture at 1x (what the player sees)', png: pictures.clean }, ...details.map(detail => ({ label: detail.label, png: detail.png })), { label: 'FACTS picture', png: factsPng }],
       parse: reply => parseReview(reply, options.reviewer, facts) });
     review = 'answer' in answer ? { ...base, status: 'reviewed', ...answer.answer, judgeKey: answer.key } : { ...base, error: answer.error, judgeKey: answer.key };
