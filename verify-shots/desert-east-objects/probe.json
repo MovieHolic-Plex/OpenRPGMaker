@@ -1,0 +1,392 @@
+{
+ "chipset": "desert_east",
+ "fresh": {
+  "kits": 8,
+  "of": 8,
+  "count": 950,
+  "referenceDocs": [
+   "de-outdoor/de-objects"
+  ],
+  "tablesMatchCount": true
+ },
+ "sheet": [
+  {
+   "id": "de-seal-altar",
+   "name": "봉인 제단(사암 제단·봉인)",
+   "size": "2×2",
+   "kind": "box",
+   "place": "tall",
+   "cells": [
+    928,
+    929,
+    930,
+    931
+   ],
+   "blocked": "(0,1) (1,1)"
+  },
+  {
+   "id": "de-flower-bed",
+   "name": "화단(어도비 테 꽃밭)",
+   "size": "2×1",
+   "kind": "container",
+   "place": "prop",
+   "cells": [
+    932,
+    933
+   ],
+   "blocked": "(0,0) (1,0)"
+  },
+  {
+   "id": "de-spring",
+   "name": "샘 · 오아시스 돌 샘",
+   "size": "3×3",
+   "kind": "container",
+   "place": "prop",
+   "cells": [
+    934,
+    935,
+    936,
+    937,
+    938,
+    939,
+    940,
+    941,
+    942
+   ],
+   "blocked": "(0,0) (1,0) (2,0) (0,1) (1,1) (2,1) (0,2) (1,2) (2,2)"
+  },
+  {
+   "id": "de-record-stand",
+   "name": "기록부·장부(받침 위 책)",
+   "size": "1×2",
+   "kind": "low_furniture",
+   "place": "tall",
+   "cells": [
+    943,
+    944
+   ],
+   "blocked": "(0,1)"
+  },
+  {
+   "id": "de-note",
+   "name": "쪽지·두루마리(바닥에 떨어진 것)",
+   "size": "1×1",
+   "kind": "debris",
+   "place": "decal",
+   "cells": [
+    945
+   ],
+   "blocked": "없음(밟고 지나감)"
+  },
+  {
+   "id": "de-marker",
+   "name": "표식(돌탑 길 표식)",
+   "size": "1×1",
+   "kind": "organic",
+   "place": "prop",
+   "cells": [
+    946
+   ],
+   "blocked": "(0,0)"
+  },
+  {
+   "id": "de-shard",
+   "name": "빛나는 파편·빛의 파편·샘의 심장 조각",
+   "size": "1×1",
+   "kind": "organic",
+   "place": "prop",
+   "cells": [
+    947
+   ],
+   "blocked": "(0,0)"
+  },
+  {
+   "id": "de-inscription-stone",
+   "name": "비문 돌(새김 글 사암 판)",
+   "size": "1×2",
+   "kind": "column",
+   "place": "tall",
+   "cells": [
+    948,
+    949
+   ],
+   "blocked": "(0,1)"
+  }
+ ],
+ "cellGate": {
+  "baseSheet": "768×320",
+  "sheet": "768×320",
+  "newCells": 22,
+  "newCellIndexes": [
+   928,
+   929,
+   930,
+   931,
+   932,
+   933,
+   934,
+   935,
+   936,
+   937,
+   938,
+   939,
+   940,
+   941,
+   942,
+   943,
+   944,
+   945,
+   946,
+   947,
+   948,
+   949
+  ],
+  "bundleUncovered": 0,
+  "storeUncovered": 22
+ },
+ "existing": {
+  "source": "/home/main/z-project/assistant-fable-runs/jrpg-v2/project",
+  "kitsAsLoaded": 0,
+  "countAsLoaded": 960,
+  "kitsAfterEnsure": 8,
+  "countAfterEnsure": 1008,
+  "mapsOnThisChipset": 1,
+  "localGraftsAsLoaded": [
+   928,
+   929
+  ],
+  "localGraftsAfterEnsure": [
+   976,
+   977
+  ],
+  "mapPicturesUnchanged": true,
+  "reopenedPicturesSame": true,
+  "save": "saved",
+  "reopenedKits": 8,
+  "reopenedStable": true,
+  "referenceDocsAfterEnsure": [
+   "de-outdoor/de-objects"
+  ]
+ },
+ "words": [
+  {
+   "object": "seal-altar",
+   "word": "봉인 제단",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "seal-altar",
+   "word": "제단",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "seal-altar",
+   "word": "봉인",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "flower-bed",
+   "word": "화단",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "spring",
+   "word": "샘",
+   "list_tileset_objects": "1/2",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "spring",
+   "word": "물이 솟는 돌 샘",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "record-stand",
+   "word": "기록부",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "record-stand",
+   "word": "장부",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "note",
+   "word": "쪽지",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "note",
+   "word": "두루마리",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "marker",
+   "word": "표식",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "marker",
+   "word": "돌무더기",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "shard",
+   "word": "빛나는 파편",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "shard",
+   "word": "샘의 심장",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "inscription-stone",
+   "word": "비문 돌",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "inscription-stone",
+   "word": "비문",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  }
+ ],
+ "map": {
+  "tool": "compose_desert_east_map",
+  "args": {
+   "kind": "oasis",
+   "seed": 1
+  },
+  "size": "48×40",
+  "start": {
+   "x": 0,
+   "y": 39
+  }
+ },
+ "placed": [
+  {
+   "object": "spring",
+   "kit": "de-spring",
+   "asked": "(30,15)",
+   "at": "(30,15)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,0) (1,0) (2,0) (0,1) (1,1) (2,1) (0,2) (1,2) (2,2)",
+   "tool": "de-spring 를 (30,17)에 놓았다"
+  },
+  {
+   "object": "seal-altar",
+   "kit": "de-seal-altar",
+   "asked": "(24,26)",
+   "at": "(24,26)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,1) (1,1)",
+   "tool": "de-seal-altar 를 (24,27)에 놓았다"
+  },
+  {
+   "object": "flower-bed",
+   "kit": "de-flower-bed",
+   "asked": "(31,20)",
+   "at": "(31,20)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,0) (1,0)",
+   "tool": "de-flower-bed 를 (31,20)에 놓았다"
+  },
+  {
+   "object": "record-stand",
+   "kit": "de-record-stand",
+   "asked": "(15,19)",
+   "at": "(15,19)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,1)",
+   "tool": "de-record-stand 를 (15,20)에 놓았다"
+  },
+  {
+   "object": "inscription-stone",
+   "kit": "de-inscription-stone",
+   "asked": "(22,28)",
+   "at": "(22,28)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,1)",
+   "tool": "de-inscription-stone 를 (22,29)에 놓았다"
+  },
+  {
+   "object": "note",
+   "kit": "de-note",
+   "asked": "(28,17)",
+   "at": "(28,17)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "tool": "de-note 를 (28,17)에 놓았다"
+  },
+  {
+   "object": "marker",
+   "kit": "de-marker",
+   "asked": "(20,28)",
+   "at": "(20,28)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,0)",
+   "tool": "de-marker 를 (20,28)에 놓았다"
+  },
+  {
+   "object": "shard",
+   "kit": "de-shard",
+   "asked": "(27,29)",
+   "at": "(27,29)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,0)",
+   "tool": "de-shard 를 (27,29)에 놓았다"
+  }
+ ],
+ "scene": {
+  "crop": "칸 (11,11)–(37,35)",
+  "size": "432×400",
+  "heroes": [
+   {
+    "x": 24,
+    "y": 28,
+    "why": "seal-altar 앞"
+   },
+   {
+    "x": 29,
+    "y": 17,
+    "why": "note 옆(밟고 지나가는 바닥 그림)"
+   },
+   {
+    "x": 16,
+    "y": 20,
+    "why": "record-stand 옆"
+   }
+  ]
+ }
+}

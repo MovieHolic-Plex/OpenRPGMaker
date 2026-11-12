@@ -11,22 +11,36 @@
     "불합격 판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3"
    ]
   ],
-  "pieces": 245,
+  "pieces": 253,
   "wang": {
    "road": "prov",
    "grass": "prov",
    "water": "prov",
    "dune": "prov",
    "flag": "prov"
+  },
+  "owner_waiver": {
+   "batch": "fable-oneshot-2026-11-12",
+   "note": "3/4 관문 미통과 — 오너 면제(통과가 아니다)",
+   "pieces": [
+    "de-seal-altar",
+    "de-flower-bed",
+    "de-spring",
+    "de-record-stand",
+    "de-note",
+    "de-marker",
+    "de-shard",
+    "de-inscription-stone"
+   ]
   }
  },
  "tiles": {
-  "count": 928,
+  "count": 950,
   "rows": 20,
-  "kits": 127,
-  "groups": 46,
-  "pieces": 245,
-  "single_tiles": 70,
+  "kits": 135,
+  "groups": 47,
+  "pieces": 253,
+  "single_tiles": 73,
   "wang_sets": {
    "road": 16,
    "grass": 16,
@@ -39,14 +53,14 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 928,
-  "kits_checked": 127,
-  "groups_checked": 46,
+  "tiles_checked": 950,
+  "kits_checked": 135,
+  "groups_checked": 47,
   "autotiles_checked": 0
  },
  "reassembly": {
-  "kits": 127,
-  "checked": 127,
+  "kits": 135,
+  "checked": 135,
   "mismatched": 0,
   "ids": []
  }

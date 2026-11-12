@@ -809,6 +809,9 @@ def main():
         # 한국 업무 지구 소품(지하철 출구 번호 표지·세로 입간판·가로수 보호판, art_kr.py) — 이름 핀(kr:*)으로 번호를 고정해 다시 붙인다.
         import bake_kr
         bake_kr.apply()
+        # 이야기 기물(보관함·잔해·쪽지·기계 장치·장부, tiledata/modern-city/objects) — 이름 핀(story:*)으로 번호를 고정해 다시 붙인다. 3/4 관문 미통과 — 오너 면제 그림.
+        import bake_story
+        bake_story.apply()
     rep = out['report']
     if a.selftest:
         rep['selftest'] = selftest(a.out_root)

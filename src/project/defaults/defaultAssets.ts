@@ -264,32 +264,32 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       }
       // 현대 도시 · 도쿄풍 (modern-chipset 하네스 굽기): 번들 칸 표와 참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === MODERN_CITY_TEXTURE) {
-        changed = ensureModernCityTileset(project.tilesets[id]) || changed;
+        changed = ensureModernCityTileset(project.tilesets[id], project) || changed;
         changed = ensureModernCityReferences(project.tilesets[id]) || changed;
       }
       // 일본 도시 (jp_city 굽기): modern_city 와 별개 번들. 번들 칸 표·`jp-` 부품/오토타일·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === JP_CITY_TEXTURE) {
-        changed = ensureJpCityTileset(project.tilesets[id]) || changed;
+        changed = ensureJpCityTileset(project.tilesets[id], project) || changed;
         changed = ensureJpCityReferences(project.tilesets[id]) || changed;
       }
       // 마법 학교 · 해리포터풍 (wizarding_world 굽기): 번들 칸 표·`wz-` 부품/오토타일·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === WIZARDING_WORLD_TEXTURE) {
-        changed = ensureWizardingWorldTileset(project.tilesets[id]) || changed;
+        changed = ensureWizardingWorldTileset(project.tilesets[id], project) || changed;
         changed = ensureWizardingWorldReferences(project.tilesets[id]) || changed;
       }
       // 열대 군도·해적 항구 (pirate_isles 굽기): 번들 칸 표·`pi-` 부품/오토타일·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === PIRATE_ISLES_TEXTURE) {
-        changed = ensurePirateIslesTileset(project.tilesets[id]) || changed;
+        changed = ensurePirateIslesTileset(project.tilesets[id], project) || changed;
         changed = ensurePirateIslesReferences(project.tilesets[id]) || changed;
       }
       // 전국·에도 일본 (sengoku_edo 굽기): 번들 칸 표·`se-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === SENGOKU_EDO_TEXTURE) {
-        changed = ensureSengokuEdoTileset(project.tilesets[id]) || changed;
+        changed = ensureSengokuEdoTileset(project.tilesets[id], project) || changed;
         changed = ensureSengokuEdoReferences(project.tilesets[id]) || changed;
       }
       // 하늘섬 (sky_island 굽기): 번들 칸 표·`si-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === SKY_ISLAND_TEXTURE) {
-        changed = ensureSkyIslandTileset(project.tilesets[id]) || changed;
+        changed = ensureSkyIslandTileset(project.tilesets[id], project) || changed;
         changed = ensureSkyIslandReferences(project.tilesets[id]) || changed;
       }
       // 버들항 웨이브 장소 (원본 그림 칸, 되살림 2026-10-29): 칸 표·`bd-wave-` 참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
@@ -299,42 +299,42 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       }
       // 스팀펑크 도시 (steampunk_city 굽기): 번들 칸 표·`sp-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === STEAMPUNK_CITY_TEXTURE) {
-        changed = ensureSteampunkCityTileset(project.tilesets[id]) || changed;
+        changed = ensureSteampunkCityTileset(project.tilesets[id], project) || changed;
         changed = ensureSteampunkCityReferences(project.tilesets[id]) || changed;
       }
       // 현대 학교·캠퍼스 (modern_campus 굽기): 번들 칸 표·`mc-` 부품·참고문서(야외 mc-·실내 mci-)를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === MODERN_CAMPUS_TEXTURE) {
-        changed = ensureModernCampusTileset(project.tilesets[id]) || changed;
+        changed = ensureModernCampusTileset(project.tilesets[id], project) || changed;
         changed = ensureModernCampusReferences(project.tilesets[id]) || changed;
       }
       // SF 정거장·네온 거리 (sf_station 굽기): 번들 칸 표·`sf-` 부품/오토타일·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === SF_STATION_TEXTURE) {
-        changed = ensureSfStationTileset(project.tilesets[id]) || changed;
+        changed = ensureSfStationTileset(project.tilesets[id], project) || changed;
         changed = ensureSfStationReferences(project.tilesets[id]) || changed;
       }
       // 폐허·황무지 (wasteland_ruins 굽기): 번들 칸 표·`wl-` 부품/오토타일·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === WASTELAND_RUINS_TEXTURE) {
-        changed = ensureWastelandRuinsTileset(project.tilesets[id]) || changed;
+        changed = ensureWastelandRuinsTileset(project.tilesets[id], project) || changed;
         changed = ensureWastelandRuinsReferences(project.tilesets[id]) || changed;
       }
       // 고딕 저택·묘지 (gothic_manor 굽기): 번들 칸 표·`gm-` 부품/오토타일·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === GOTHIC_MANOR_TEXTURE) {
-        changed = ensureGothicManorTileset(project.tilesets[id]) || changed;
+        changed = ensureGothicManorTileset(project.tilesets[id], project) || changed;
         changed = ensureGothicManorReferences(project.tilesets[id]) || changed;
       }
       // 선사 시대 원시 세계 (prehistoric 굽기): 번들 칸 표·`ph-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === PREHISTORIC_TEXTURE) {
-        changed = ensurePrehistoricTileset(project.tilesets[id]) || changed;
+        changed = ensurePrehistoricTileset(project.tilesets[id], project) || changed;
         changed = ensurePrehistoricReferences(project.tilesets[id]) || changed;
       }
       // 사막·동양풍 (desert_east 굽기): 번들 칸 표·`de-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === DESERT_EAST_TEXTURE) {
-        changed = ensureDesertEastTileset(project.tilesets[id]) || changed;
+        changed = ensureDesertEastTileset(project.tilesets[id], project) || changed;
         changed = ensureDesertEastReferences(project.tilesets[id]) || changed;
       }
       // 북방 설원 (snow_north 굽기): 번들 칸 표·`sn-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
       if (asset.textureKey === SNOW_NORTH_TEXTURE) {
-        changed = ensureSnowNorthTileset(project.tilesets[id]) || changed;
+        changed = ensureSnowNorthTileset(project.tilesets[id], project) || changed;
         changed = ensureSnowNorthReferences(project.tilesets[id]) || changed;
       }
       if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) changed = ensureAtlasVehiclesReferences(project.tilesets[id]) || changed;

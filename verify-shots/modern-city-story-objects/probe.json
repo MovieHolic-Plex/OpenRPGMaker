@@ -1,0 +1,276 @@
+{
+ "chipset": "modern_city",
+ "fresh": {
+  "kits": 5,
+  "of": 5,
+  "count": 13839,
+  "referenceDocs": [
+   "mc-story-objects/mc-story-objects"
+  ],
+  "tablesMatchCount": true
+ },
+ "sheet": [
+  {
+   "id": "mc-prop-storage-cabinet",
+   "name": "보관함(철제 두 문 보관함)",
+   "size": "1×2",
+   "kind": "box",
+   "place": "tall",
+   "cells": [
+    13831,
+    13832
+   ],
+   "blocked": "(0,1)"
+  },
+  {
+   "id": "mc-prop-rubble",
+   "name": "잔해(콘크리트 잔해)",
+   "size": "2×1",
+   "kind": "debris",
+   "place": "prop",
+   "cells": [
+    13833,
+    13834
+   ],
+   "blocked": "(0,0) (1,0)"
+  },
+  {
+   "id": "mc-prop-note",
+   "name": "쪽지(바닥에 떨어진 메모)",
+   "size": "1×1",
+   "kind": "debris",
+   "place": "decal",
+   "cells": [
+    13835
+   ],
+   "blocked": "없음(밟고 지나감)"
+  },
+  {
+   "id": "mc-prop-device",
+   "name": "기계 장치(제어반)",
+   "size": "1×2",
+   "kind": "box",
+   "place": "tall",
+   "cells": [
+    13836,
+    13837
+   ],
+   "blocked": "(0,1)"
+  },
+  {
+   "id": "mc-prop-ledger",
+   "name": "장부(바닥에 펼쳐진 찢긴 장부)",
+   "size": "1×1",
+   "kind": "debris",
+   "place": "decal",
+   "cells": [
+    13838
+   ],
+   "blocked": "없음(밟고 지나감)"
+  }
+ ],
+ "cellGate": {
+  "baseSheet": "768×4624",
+  "sheet": "768×4624",
+  "newCells": 8,
+  "newCellIndexes": [
+   13831,
+   13832,
+   13833,
+   13834,
+   13835,
+   13836,
+   13837,
+   13838
+  ],
+  "bundleUncovered": 0,
+  "storeUncovered": 8
+ },
+ "existing": {
+  "source": "/home/main/z-project/assistant-fable-runs/r1-horror/project",
+  "kitsAsLoaded": 0,
+  "countAsLoaded": 13872,
+  "kitsAfterEnsure": 5,
+  "countAfterEnsure": 13920,
+  "mapsOnThisChipset": 3,
+  "localGraftsAsLoaded": [
+   13831,
+   13832,
+   13833,
+   13834
+  ],
+  "localGraftsAfterEnsure": [
+   13879,
+   13880,
+   13881,
+   13882
+  ],
+  "mapPicturesUnchanged": true,
+  "reopenedPicturesSame": true,
+  "save": "saved",
+  "reopenedKits": 5,
+  "reopenedStable": true,
+  "referenceDocsAfterEnsure": [
+   "mc-story-objects/mc-story-objects"
+  ]
+ },
+ "words": [
+  {
+   "object": "storage-cabinet",
+   "word": "보관함",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "rubble",
+   "word": "잔해",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "note",
+   "word": "쪽지",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "note",
+   "word": "메모",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "device",
+   "word": "출입 장치",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "device",
+   "word": "기계 장치",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "device",
+   "word": "제어반",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "ledger",
+   "word": "장부",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "ledger",
+   "word": "기록부",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "이 기물을 이른다(첫째)"
+  }
+ ],
+ "map": {
+  "tool": "compose_modern_city_street",
+  "args": {
+   "seed": 1,
+   "shops": [
+    "편의점",
+    "카페",
+    "사무실"
+   ]
+  },
+  "size": "60×48",
+  "start": {
+   "x": 0,
+   "y": 47
+  }
+ },
+ "placed": [
+  {
+   "object": "storage-cabinet",
+   "kit": "mc-prop-storage-cabinet",
+   "asked": "(34,19)",
+   "at": "(34,19)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,1)",
+   "tool": "mc-prop-storage-cabinet 를 (34,20)에 놓았다"
+  },
+  {
+   "object": "rubble",
+   "kit": "mc-prop-rubble",
+   "asked": "(45,19)",
+   "at": "(45,19)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,0) (1,0)",
+   "tool": "mc-prop-rubble 를 (45,19)에 놓았다"
+  },
+  {
+   "object": "device",
+   "kit": "mc-prop-device",
+   "asked": "(36,19)",
+   "at": "(36,19)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,1)",
+   "tool": "mc-prop-device 를 (36,20)에 놓았다"
+  },
+  {
+   "object": "note",
+   "kit": "mc-prop-note",
+   "asked": "(40,19)",
+   "at": "(40,19)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "tool": "mc-prop-note 를 (40,19)에 놓았다"
+  },
+  {
+   "object": "ledger",
+   "kit": "mc-prop-ledger",
+   "asked": "(48,20)",
+   "at": "(48,20)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "tool": "mc-prop-ledger 를 (48,20)에 놓았다"
+  }
+ ],
+ "scene": {
+  "crop": "칸 (30,15)–(54,26)",
+  "size": "400×192",
+  "heroes": [
+   {
+    "x": 41,
+    "y": 19,
+    "why": "note 옆(밟고 지나가는 바닥 그림)"
+   },
+   {
+    "x": 49,
+    "y": 20,
+    "why": "ledger 옆(밟고 지나가는 바닥 그림)"
+   },
+   {
+    "x": 35,
+    "y": 20,
+    "why": "storage-cabinet 옆"
+   }
+  ]
+ }
+}

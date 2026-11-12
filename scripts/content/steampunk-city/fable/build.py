@@ -83,6 +83,9 @@ class Kit:
     def __init__(self):
         g = lambda k: C.src('k-' + k)
         self.roof = {'slate40': g('roof-slate-40'), 'slate56': g('roof-slate-56'), 'iron56': g('roof-iron-56')}
+        # 낮은 철판 지붕(40px): 56px 모듈에서 판 두 줄(세로 주기 8px, 18~33줄)을 코드로 뺀 것 — 새로 그린 화소 없음(2026-11-12 지붕 높이 한도, CONTRACT §1).
+        if self.roof['iron56'] is not None:
+            a = np.array(self.roof['iron56']); self.roof['iron40'] = Image.fromarray(np.concatenate([a[:18], a[34:]]), 'RGBA')
         self.up = {'brick': g('brick-up'), 'stone': g('stone-up')}
         self.gr = {'brick': g('brick-ground'), 'stone': g('stone-ground')}
         self.door = {'d1': g('brick-door1'), 'd2': g('brick-door2'), 'shop': g('brick-shop'), 'freight': g('brick-freight'), 'sd2': g('stone-door2')}
@@ -99,7 +102,9 @@ class Kit:
 
 
 def building(kit, spec):
-    """spec: id, W, H, mat('brick'|'stone'), soot, roof, ups=[[칸…]…], ground=[칸…], door=(종류, 문 첫 칸), feats=[(이름, x, y)], awning."""
+    """spec: id, W, H, mat('brick'|'stone'), soot, roof, ups=[[칸…]…], ground=[칸…], door=(종류, 문 첫 칸), feats=[(이름, x, y)], awning, roofWas.
+    그림 크기(W×H)·문 칸은 그대로 두고 지붕만 낮출 수 있다: roof 가 전보다 낮으면 건물을 아래로 붙이고 맨 위에 빈 줄이 생긴다(y0).
+    roofWas = feats 의 y 를 적을 때의 지붕 높이 — 지붕 위에 얹는 것(굴뚝·지붕창·천창·굴뚝대)은 새 지붕 안의 같은 비율 자리로 옮기고, 벽에 걸친 것은 그대로 둔다."""
     W, Hh = spec['W'], spec['H']
     need = ['roof:' + spec['roof'], 'door:' + spec['door'][0]] + ['feat:' + f[0] for f in spec.get('feats', [])]
     mats = {spec['mat']} | {m for row in spec['ups'] for m, _ in row if m} | {m for m, _ in spec['ground'] if m}
@@ -113,8 +118,10 @@ def building(kit, spec):
     a = np.array(roof)
     sl = P3.STRUCTURE['slate']
     a[:, 0, :3], a[:, 1, :3], a[:, W - 2, :3], a[:, W - 1, :3] = hx(sl[3]), hx(sl[0]), hx(sl[1]), hx(sl[0])     # 양 끝 박공널(곧은 세로 끝)
-    im.alpha_composite(Image.fromarray(a, 'RGBA'), (0, 0))
-    y = roof.height
+    y0 = Hh - (roof.height + 32 * len(spec['ups']) + 40)        # 지붕을 낮춘 만큼 위가 빈다(낮추지 않았으면 0)
+    assert y0 >= 0, (spec['id'], y0)
+    im.alpha_composite(Image.fromarray(a, 'RGBA'), (0, y0))
+    y = y0 + roof.height
 
     def plain(m, h):
         if h == 32:
@@ -145,17 +152,21 @@ def building(kit, spec):
     dx = cell0 * 16 - bx
     im.alpha_composite(soot(dm) if kind != 'sd2' else dm, (dx, y))
     door = [dx + bx, y + by, bw, bh]
+    was = spec.get('roofWas', roof.height)
     for name, fx, fy in spec.get('feats', []):
+        fh = kit.feat[name].height
+        if fy + fh <= was and was != roof.height:                # 지붕 위에 얹힌 것: 새 지붕 안의 같은 비율 자리
+            fy = y0 + round(fy * (roof.height - fh) / (was - fh))
         im.alpha_composite(kit.feat[name], (fx, fy))
     # 벽 양 끝 세로선(문 자리는 건드리지 않는다)
     a = np.array(im)
     edge = hx(P3.STRUCTURE['brick'][0] if spec['mat'] == 'brick' else P3.GROUND['gstone'][1])
     for x in (0, W - 1):
-        for yy in range(roof.height, Hh):
+        for yy in range(y0 + roof.height, Hh):
             if not (door[0] <= x < door[0] + door[2] and yy >= door[1]):
                 a[yy, x, :3] = edge
     im = Image.fromarray(a, 'RGBA')
-    info = dict(roofRows=roof.height, taper=roof_taper(im, roof.height - 1), door=door, doorCheck=door_check(bw, bh, storey=32), entranceCells=list(range(door[0] // 16, (door[0] + door[2] - 1) // 16 + 1)))
+    info = dict(roofRows=roof.height, roofTop=y0, taper=roof_taper(im, y0 + roof.height - 1), door=door, doorCheck=door_check(bw, bh, storey=32), entranceCells=list(range(door[0] // 16, (door[0] + door[2] - 1) // 16 + 1)))
     return im, info
 
 
@@ -171,16 +182,16 @@ SPECS = [
  dict(id='shop-gears', W=64, H=144, mat=B, roof='slate40', ups=[U(B, 0, 1, 0, 2), U(B, 2, 0, 1, 0)], ground=U(B, 0, N, N, N), door=('shop', 2), feats=[('chimney', 46, 2), ('dormer', 8, 14), ('dormer', 28, 14)]),
  dict(id='shop-apoth', W=48, H=112, mat=B, roof='slate40', ups=[U(B, 0, 2, 1)], ground=U(B, N, N, N), door=('shop', 1), awning=RED2GREEN, feats=[('chimney', 30, 2), ('dormer', 8, 14)]),
  dict(id='shop-bakery', W=48, H=112, mat=B, soot=1, roof='slate40', ups=[U(B, 1, 2, 0)], ground=U(B, N, N, N), door=('shop', 1), awning=RED2SLATE, feats=[('chimney', 4, 2), ('chimney', 30, 2)]),
- dict(id='inn', W=96, H=160, mat=B, roof='slate56', ups=[U(B, 0, 1, 0, 0, 1, 0), U(B, 1, 0, 2, 2, 0, 1)], ground=U(B, 0, N, N, N, N, 2), door=('d2', 2), feats=[('chimney', 6, 4), ('chimney', 74, 4), ('dormer', 28, 24), ('dormer', 52, 24), ('balcony', 32, 110)]),
- dict(id='tavern', W=80, H=128, mat=B, soot=1, roof='slate56', ups=[U(B, 0, 1, 0, 0, 1)], ground=U(B, 2, N, N, N, N), door=('d2', 2), feats=[('chimney', 60, 4), ('dormer', 12, 24), ('dormer', 36, 24)]),
- dict(id='warehouse', W=128, H=128, mat=B, roof='iron56', ups=[U(B, 1, 2, 1, N, N, 1, 2, 1)], ground=U(B, 0, N, N, N, N, N, N, 0), door=('freight', 3), feats=[('hoist', 56, 54), ('skylight', 16, 22), ('skylight', 80, 22)]),
- dict(id='station', W=128, H=128, mat=S, roof='slate56', ups=[U(S, 0, 1, 0, N, N, 0, 1, 0)], ground=U(S, 0, 1, N, N, N, N, 1, 2), door=('sd2', 3), feats=[('clock', 48, 56), ('chimney', 10, 4), ('chimney', 102, 4)]),
+ dict(id='inn', W=96, H=160, mat=B, roof='slate40', roofWas=56, ups=[U(B, 0, 1, 0, 0, 1, 0), U(B, 1, 0, 2, 2, 0, 1)], ground=U(B, 0, N, N, N, N, 2), door=('d2', 2), feats=[('chimney', 6, 4), ('chimney', 74, 4), ('dormer', 28, 24), ('dormer', 52, 24), ('balcony', 32, 110)]),
+ dict(id='tavern', W=80, H=128, mat=B, soot=1, roof='slate40', roofWas=56, ups=[U(B, 0, 1, 0, 0, 1)], ground=U(B, 2, N, N, N, N), door=('d2', 2), feats=[('chimney', 60, 4), ('dormer', 12, 24), ('dormer', 36, 24)]),
+ dict(id='warehouse', W=128, H=128, mat=B, roof='iron40', roofWas=56, ups=[U(B, 1, 2, 1, N, N, 1, 2, 1)], ground=U(B, 0, N, N, N, N, N, N, 0), door=('freight', 3), feats=[('hoist', 56, 54), ('skylight', 16, 22), ('skylight', 80, 22)]),
+ dict(id='station', W=128, H=128, mat=S, roof='slate40', roofWas=56, ups=[U(S, 0, 1, 0, N, N, 0, 1, 0)], ground=U(S, 0, 1, N, N, N, N, 1, 2), door=('sd2', 3), feats=[('clock', 48, 56), ('chimney', 10, 4), ('chimney', 102, 4)]),
  dict(id='clock-tower', W=64, H=176, mat=S, roof='slate40', ups=[U(S, N, N, N, N), U(B, 2, 1, 1, 2), U(B, 2, 0, 0, 2)], ground=U(S, N, N, N, N), door=('sd2', 1), feats=[('clock', 16, 40)]),
- dict(id='guild-hall', W=128, H=160, mat=S, roof='slate56', ups=[U(S, 0, 2, 1, 0, 0, 1, 2, 0), U(S, 1, 2, 0, 1, 1, 0, 2, 1)], ground=U(S, 0, 1, N, N, N, N, 1, 2), door=('sd2', 3), feats=[('chimney', 8, 4), ('chimney', 104, 4), ('dormer', 40, 24), ('dormer', 72, 24), ('balcony', 48, 110)]),
- dict(id='dock-warehouse', W=112, H=160, mat=B, soot=1, roof='iron56', ups=[U(B, 1, 2, 1, N, N, 1, 2), U(B, 2, 1, 2, N, N, 2, 1)], ground=U(B, 0, N, N, N, N, N, 0), door=('freight', 3), feats=[('hoist', 56, 58), ('skylight', 40, 22)]),
+ dict(id='guild-hall', W=128, H=160, mat=S, roof='slate40', roofWas=56, ups=[U(S, 0, 2, 1, 0, 0, 1, 2, 0), U(S, 1, 2, 0, 1, 1, 0, 2, 1)], ground=U(S, 0, 1, N, N, N, N, 1, 2), door=('sd2', 3), feats=[('chimney', 8, 4), ('chimney', 104, 4), ('dormer', 40, 24), ('dormer', 72, 24), ('balcony', 48, 110)]),
+ dict(id='dock-warehouse', W=112, H=160, mat=B, soot=1, roof='iron40', roofWas=56, ups=[U(B, 1, 2, 1, N, N, 1, 2), U(B, 2, 1, 2, N, N, 2, 1)], ground=U(B, 0, N, N, N, N, N, 0), door=('freight', 3), feats=[('hoist', 56, 58), ('skylight', 40, 22)]),
  dict(id='workshop', W=96, H=112, mat=B, roof='slate40', ups=[U(B, N, 0, N, N, 1, N)], ground=U(B, 0, N, N, N, N, 2), door=('freight', 2), feats=[('skylight', 6, 16), ('skylight', 44, 16), ('stack', 78, 2), ('pipes', 0, 40), ('pipes', 48, 40)], extra=True),
- dict(id='boiler-house', W=96, H=128, mat=B, soot=1, roof='slate56', ups=[U(B, N, 1, N, N, 1, N)], ground=U(B, 0, N, N, N, N, 0), door=('d2', 2), feats=[('stack', 8, 6), ('stack', 30, 6), ('stack', 72, 6), ('pipes', 0, 58), ('pipes', 48, 58)], extra=True),
- dict(id='factory', W=160, H=128, mat=B, soot=1, roof='iron56', ups=[U(B, 1, 1, 2, 1, N, N, 1, 2, 1, 1)], ground=U(B, 0, 0, N, N, N, N, N, N, 0, 0), door=('freight', 4), feats=[('stack', 10, 6), ('stack', 134, 6), ('skylight', 40, 22), ('skylight', 88, 22), ('hoist', 72, 54)], extra=True),
+ dict(id='boiler-house', W=96, H=128, mat=B, soot=1, roof='slate40', roofWas=56, ups=[U(B, N, 1, N, N, 1, N)], ground=U(B, 0, N, N, N, N, 0), door=('d2', 2), feats=[('stack', 8, 6), ('stack', 30, 6), ('stack', 72, 6), ('pipes', 0, 58), ('pipes', 48, 58)], extra=True),
+ dict(id='factory', W=160, H=128, mat=B, soot=1, roof='iron40', roofWas=56, ups=[U(B, 1, 1, 2, 1, N, N, 1, 2, 1, 1)], ground=U(B, 0, 0, N, N, N, N, N, N, 0, 0), door=('freight', 4), feats=[('stack', 10, 6), ('stack', 134, 6), ('skylight', 40, 22), ('skylight', 88, 22), ('hoist', 72, 54)], extra=True),
  dict(id='row-soot-4', W=64, H=144, mat=B, soot=1, roof='slate40', ups=[U(B, 1, 0, 2, 1), U(B, 0, 2, 1, 0)], ground=U(B, N, N, N, 2), door=('d1', 1), feats=[('chimney', 40, 2), ('balcony', 16, 62)], extra=True),
  dict(id='row-flush-3', W=48, H=144, mat=B, roof='slate40', ups=[U(B, 0, 1, 2), U(B, 2, 0, 1)], ground=U(B, 0, N, N), door=('d1', 2), feats=[('dormer', 6, 14), ('dormer', 28, 14)], extra=True),
 ]

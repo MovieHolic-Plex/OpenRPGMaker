@@ -8,7 +8,7 @@
 |---|---|
 | 잠긴 팔레트 | `scripts/content/desert-east/art/palette.json` (램프마다 7단) |
 | 그림 등록부 | `art/terrain.py`(바닥·모서리 왕 타일 5벌) · `buildings.py` · `props.py` · `interior.py` — `python3 <파일>.py` 가 `tiledata/desert-east/<묶음>/_gate/de-*.png` + `items.jsonl` + `preview.png` 를 쓴다 |
-| 굽기 | `scripts/content/desert-east/bake_de.py` (관문 영수증 pass 만 굽는다, `DE_UNGATED=/tmp/x` 는 관문 없이 /tmp 로만 — 개발용) |
+| 굽기 | `scripts/content/desert-east/bake_de.py` (관문 영수증 pass 만 굽는다 — 이야기 기물 8종은 오너 면제, 아래 절, `DE_UNGATED=/tmp/x` 는 관문 없이 /tmp 로만 — 개발용) |
 | 참고문서 | `bake_refs_de.py` → `src/assets/desertEastReferences.json` + `public/assets/desert-east-references/*.png` (용도 de-outdoor · de-interior) |
 | 구성기(순수 함수) | `src/project/desertEastComposer.ts` — `composeDesertEast`(야외 5종) · `composeDesertRoom`(실내 6종) |
 | 타일셋 정의·보정 | `src/project/defaults/desertEast.ts` (`ensureDesertEastTileset`·`ensureDesertEastReferences`, `defaultAssets.ts` 의 `ensureBundledTilesets` 가 부른다) |
@@ -32,6 +32,19 @@
 `npm run harness -- object-gate review --batch tiledata/desert-east/<묶음>/_gate/items.jsonl --force` (묶음 terrain·buildings·props·interior).
 모서리 왕 타일은 한 벌 4×4 묶음 그림 `de-wang-<벌>.png` 의 영수증이 16칸을 덮는다. 보정 프로필이 미보정이라 통과는 잠정이다(`object-gate status`).
 
+## 이야기 기물 8종 (2026-11-12, 시트 928~949) — 3/4 관문 미통과 · 오너 면제
+게임들이 실제로 바랐는데 시트에 없던 물건을 Claude Fable 5.2 medium 이 한 방에 그린 것(이 프로젝트를 위해 그린 자체 저작) 가운데 오너가 반영하라고 한 여덟: `de-seal-altar`(봉인 제단 2×2, 928~931) · `de-flower-bed`(화단 2×1, 932~933) · `de-spring`(샘 3×3, 934~942) · `de-record-stand`(기록부 1×2, 943~944) · `de-note`(쪽지 1×1 바닥 그림, 945) · `de-marker`(돌탑 표식, 946) · `de-shard`(빛나는 파편, 947) · `de-inscription-stone`(비문 돌 1×2, 948~949).
+- **관문:** 이 그림들은 3/4 관문을 통과하지 않았다. 오너 면제 묶음 `fable-oneshot-2026-11-12`(`harness-data/object-gate/waivers/`)가 그림 화소 해시·종류에 묶여 번들 출구만 연다(스토어 출구는 막힌다). 굽기는 영수증 없는 조각을 관문 자신의 출구 규칙(`object_gate.refusal(context='bundle')`)에 묻는다 — `de_bake_lib.gate_status` 에 둘째 규칙은 없다. 한 화소라도 바꾸면 면제가 풀려 굽기가 그 조각을 막는다.
+- **원본·목록:** `tiledata/desert-east/objects/pieces/de-*.png`(한 화소도 고치지 않는다) + `spec.json`(이름·낱말·크기·놓는 법·막힌 칸·규칙). `bake_de.py` 가 등록부 조각 **뒤에** 이 목록을 덧붙인다 — 새 항목은 `items` 끝에만(칸 번호는 자리 키 핀).
+- **통행:** 서 있는 기물(prop·tall) = `block` 칸 막힘, 나머지 칸은 ★(걸어 지나가고 사람 위에 그려짐) · 바닥 그림(decal, 쪽지) = 밟고 지나감. 킷 태그 끝의 `prop`/`tall`/`decal` 이 `stamp_tileset_object` 의 놓는 법이다.
+- **조수가 찾는 길:** 낱말 목록이 아니라 킷 이름·태그다(`spec.json` 의 `words` 가 태그가 된다 — 「샘」「물이 솟는 돌 샘」「돌무더기」「샘의 심장」). `list_tileset_objects(query)` · v2 `draw_object(what)` 가 «이미 있다 → place_object(de-…)» 로 이른다. 게임들이 쓴 이름은 `objects/ask.json`(탐침 전용).
+- **참고문서:** `de-outdoor` 용도의 `de-objects` 문서(사전·순서·전체 배열·정상/오류 그림 `objects-scene*.png`·`objects-err.png`, 검사 코드 E_OBJ_LAYER·E_OBJ_INCOMPLETE·E_OBJ_PASSAGE) — `bake_refs_de.py` 가 같이 굽는다.
+- **탐침(모델 없음):** `bun scripts/content/story-objects/probe.mts desert_east <outDir> --base-sheet <고치기 전 시트> --saved <저장본 폴더>` — 새 프로젝트·시트 칸 관문(번들 0 / 스토어 22 미덮임)·기존 저장본·낱말→킷·v2 `place_object` 통행·주인공이 선 1배 장면. 칩셋 표는 `scripts/content/story-objects/chipsets.json`(다음 칩셋도 같은 탐침을 쓴다).
+
+### 이식 칸이 있는 옛 사본 (2026-11-12)
+`stamp_tileset_object` 로 다른 칩셋 그림을 붙여 쓴 프로젝트는 사본 끝(928~)에 이식 칸(`tileGrafts`)이 있다. 전에는 «칸이 번들보다 많은 사본» 이라 번들이 자라도 손대지 않았고, 그 프로젝트는 새 킷을 영영 못 받았다(실측: jrpg-v2 저장본, 928·929 = 황무지 표지판).
+지금은 `ensureDesertEastTileset(tileset, project)` 가 `settleLocalTail`(`src/project/defaults/localTailRelocation.ts`)로 이식 꼬리를 새 번들 끝 뒤(한 줄 폭 배수)로 밀고 — 맵·킷·changeTile 번호도 같이 — `adoptBundleBeforeTail` 로 번들 구간 칸 표·`de-` 부품을 채운다. 그림은 그대로다(같은 저장본 7맵 렌더 전후 해시 같음). 번들 끝과 꼬리 사이에 이름표가 든 칸이 있으면 더 새 번들에서 저장한 사본으로 보고 손대지 않는다. 다른 테마 번들 13개도 같은 길을 쓴다 — 공용 `settleThemeBundleTail` 한 줄(`openwiki/runtime-project-schema.md` 「시트 끝에 칸을 끼운 번들」 항목).
+
 ## 조수 경로
 `plainTurn.ts` 가 사막·오아시스·바자르·피라미드·아라비안·실크로드 낱말(로마풍·버들항·지중해 제외)을 보면 `desertEastTargetFor` 노트를 붙이고 위 세 도구를 첫 요청부터 노출한다.
 월드맵 테마 `desert-east` 의 마을 칩셋도 desert_east 다(`worldTerrainTools.ts` THEME_TOWN_TILESETS).
@@ -43,6 +56,7 @@
 - 조수 실제 입력창(gemini-3.8-flash high, `assistant-capability` 실행기 복제): 오아시스 7 · 바자르 6.5 · 피라미드+묘실 6 (연결까지 성공). 피라미드 판에서 배치 품질 권고를 받은 조수가 석재를 낱개로 덧찍어서
   구성기 맵·방에 `composed-layout` 이름표를 달았다(`scripts/lib/piAgentRuntime.ts` 가 그 맵을 권고에서 뺀다). 이 고침 뒤 실조수 재확인은 할당량 소진으로 못 했다.
 - 남은 일: 오벨리스크 관문, 바자르 격자 단조로움, 조수 재확인.
+- 2026-11-12: 이야기 기물 8종을 덧붙여 칸 950, 키트 135, 조각 253/255(막힌 둘은 그대로 `de-obelisk`·`de-fence-wood`). 참고문서를 다시 구우며 예제 그림 넷(`ex-bazaar`·`ex-caravanserai`·`ex-palace`·`ex-pyramid`)도 지금 구성기 출력으로 갱신됐다 — 지난 굽기 뒤 구성기가 바뀌어 있었다(이 묶음과 무관한 밀린 갱신).
 
 - **시작 위치 (2026-10-14):** `compose_desert_east_map` 이 빈 시작 맵을 이 맵의 시작 칸으로 옮긴다(`src/editor/tools/composerStart.ts`; 실내 `compose_desert_east_room`·작가가 정한 시작은 제외). 모델이 `set_start_position` 을 안 부르면 시작 맵이 빈 맵으로 남던 결함.
 - **화풍 정렬 quality-b (2026-10-14):** 버들항 수준 명암·질감으로 야자(렌즈 잎·빛/그늘 반·빗살 틈, 줄기 비늘, 밑동 풀 그늘), 평지붕 윗면(`bparts.flat_roof` 빛 기울기 디더·미장 덩이·빗물 얼룩·잔금 → 건물 15종), 풀(짙은 풀 덩이·풀잎 점), 흙길(눌린 흙 디더·잔돌·발굽 홈), 모래 잔 결, 물(흩어진 물결 — 칸마다 찍히던 글자 무늬 제거)을 다시 그렸다. 칸 번호·키트 크기 그대로. 관문 영수증 새로 52장(PASS 48 · FAIL 4: 지붕 첫 판의 회당·궁전 2 — 덩이를 둥글게 고친 뒤 통과, 오벨리스크 시도 2), 오벨리스크는 두 번 다시 그려도 미통과라 원래 그림으로(여전히 비석으로 대체). 시트 지표(칸당 고유색 중앙 7·p90 13, 어두운 V 62→61, 채도 0.49)는 잠긴 램프(6~7단) 때문에 거의 그대로 — 차이는 단 배치·디더라 눈으로 본다. 조수(gemini-4-argon medium, 실제 입력창) 「사막 오아시스 마을 만들어줘」 6 → 7(저장·재로드 일치). 남은 것: 야자 키트가 작아 버들항 나무만큼 덩이가 크지 않음, 사암 포석 광장이 평평함.

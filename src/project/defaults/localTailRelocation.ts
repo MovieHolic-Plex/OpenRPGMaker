@@ -125,3 +125,81 @@ export function relocateLocalTail(project: RelocationProject, tilesetId: string,
   }
   return { from, to: from + shift, shift, cells: oldCount - from, maps: users.size };
 }
+
+/**
+ * 테마 번들(시트 한 장을 덧붙이며 자라고, 번들 자신의 이식 칸은 없는 칩셋 — desert_east 등)의 사본에 프로젝트 이식 꼬리가 있을 때 그 꼬리를 자리 잡게 한다(2026-11-12).
+ *
+ * 왜: stamp_tileset_object 가 다른 칩셋 그림을 붙이면 그 칸은 사본의 번들 끝 바로 뒤에 온다. 그 뒤로 번들이 자라면 새 번들 칸과 번호가 겹치는데,
+ * 테마 번들의 ensure 는 «칸이 번들보다 많은 사본 = 더 새 번들에서 저장한 것» 으로 보고 손대지 않았다 → 그런 프로젝트는 새 기물 킷을 영영 못 받았다.
+ *
+ * - 이식 칸이 없으면 null(호출자의 예전 길).
+ * - 꼬리가 지금 번들 끝보다 앞에서 시작하면(번들이 그 자리까지 자랐다) relocateLocalTail 로 새 번들 끝 뒤(한 줄 폭 배수)로 민다. 프로젝트 없이 불리면 "kept".
+ * - 꼬리가 번들 끝보다 뒤에서 시작하면: 그 사이가 빈 칸(앞서 민 자리)일 때만 받아들인다. 이름표가 든 칸이 있으면 더 새 번들에서 저장한 사본이다 → "kept".
+ * 반환한 start 앞 [0, bundleCount) 는 호출자가 adoptBundleBeforeTail 로 번들 표를 채운다.
+ */
+export function settleLocalTail(tileset: TilesetDef, bundleCount: number, project?: RelocationProject): { start: number; moved: LocalTailRelocation | null } | "kept" | null {
+  if (!(tileset.tileGrafts ?? []).length) return null;
+  const start = copyBundleEnd(tileset, 0);
+  if (start < bundleCount) {
+    const moved = project ? relocateLocalTail(project, tileset.id, 0, bundleCount) : null;
+    return moved ? { start: moved.to, moved } : "kept";
+  }
+  for (let tile = bundleCount; tile < start; tile += 1) {
+    const meta = tileset.tileMeta?.[tile];
+    if (meta?.label || meta?.description) return "kept";
+  }
+  return { start, moved: null };
+}
+
+/**
+ * 번들 구간 [0, fresh.count) 의 칸 표를 번들 것으로 바꾸고 그 뒤(빈 틈·프로젝트 이식 꼬리)는 그대로 둔다. 칸 수는 줄이지 않는다.
+ * 묶음·띠는 번들 것 + 꼬리(start 이후 칸)를 가리키는 사본 것, 킷·오토타일은 번들 것 + 저자 것(owned 가 아닌 id).
+ */
+export function adoptBundleBeforeTail(tileset: TilesetDef, fresh: TilesetDef, start: number, owned: (id: string) => boolean): void {
+  const n = fresh.count;
+  const splice = <T>(mine: readonly T[] | undefined, theirs: readonly T[], blank: () => T): T[] => {
+    const tail = (mine ?? []).slice(n);
+    while (n + tail.length < tileset.count) tail.push(blank());
+    return [...theirs.slice(0, n), ...tail];
+  };
+  tileset.passability = splice(tileset.passability, fresh.passability, () => ({ up: true, down: true, left: true, right: true }));
+  tileset.priority = splice(tileset.priority, fresh.priority, () => "lower" as const);
+  tileset.terrain = splice(tileset.terrain, fresh.terrain, () => 0);
+  if (fresh.tileMeta) tileset.tileMeta = splice(tileset.tileMeta, fresh.tileMeta, () => ({ label: "", description: "" }));
+  const shippedGroups = new Set((fresh.tileGroups ?? []).map((group) => group.id));
+  tileset.tileGroups = [...(fresh.tileGroups ?? []), ...(tileset.tileGroups ?? []).filter((group) => !shippedGroups.has(group.id) && group.tileIds.some((tile) => tile >= start))];
+  tileset.animationStrips = [...(fresh.animationStrips ?? []), ...(tileset.animationStrips ?? []).filter((strip) => strip.baseTile >= start)];
+  tileset.autotileGroups = [...(fresh.autotileGroups ?? []), ...(tileset.autotileGroups ?? []).filter((group) => !owned(group.id))];
+  tileset.structureKits = [...(fresh.structureKits ?? []), ...(tileset.structureKits ?? []).filter((kit) => !owned(kit.id))];
+}
+
+type BundleShapeView = Pick<TilesetDef, "priority" | "passability" | "tileMeta" | "tileGroups" | "autotileGroups" | "animationStrips" | "structureKits">;
+/** 테마 번들 ensure 가 넘기는 것: 번들 칸 수 · 새 번들 정의 · 번들 소유 id 판정 · 그 번들의 모양 요약 함수와 번들 자신의 요약. */
+export interface ThemeBundle {
+  readonly count: number;
+  readonly fresh: () => TilesetDef;
+  readonly owned: (id: string) => boolean;
+  readonly signature: (view: BundleShapeView) => string;
+  readonly bundleSignature: () => string;
+}
+
+/**
+ * 테마 번들 ensure 공용(2026-11-12): 사본에 프로젝트 이식 꼬리가 있으면 settleLocalTail 로 자리 잡게 하고, 번들 구간이 번들과 다르면 adoptBundleBeforeTail 로 맞춘다.
+ * undefined = 이식 칸이 없다(호출자의 예전 길로 간다) · false = 손대지 않았다(프로젝트 없이 불렸거나, 더 새 번들 사본이거나, 이미 같다) · true = 바꿨다.
+ */
+export function settleThemeBundleTail(tileset: TilesetDef, project: RelocationProject | undefined, bundle: ThemeBundle): boolean | undefined {
+  const tail = settleLocalTail(tileset, bundle.count, project);
+  if (tail === null) return undefined;
+  if (tail === "kept") return false;
+  if (!tail.moved) {
+    const n = bundle.count;
+    const bundlePart = bundle.signature({
+      priority: tileset.priority.slice(0, n), passability: tileset.passability.slice(0, n), tileMeta: tileset.tileMeta?.slice(0, n),
+      tileGroups: (tileset.tileGroups ?? []).filter((group) => !group.tileIds.some((tile) => tile >= tail.start)), autotileGroups: tileset.autotileGroups,
+      animationStrips: (tileset.animationStrips ?? []).filter((strip) => strip.baseTile < tail.start), structureKits: tileset.structureKits,
+    });
+    if (bundlePart === bundle.bundleSignature()) return false;
+  }
+  adoptBundleBeforeTail(tileset, bundle.fresh(), tail.start, bundle.owned);
+  return true;
+}
