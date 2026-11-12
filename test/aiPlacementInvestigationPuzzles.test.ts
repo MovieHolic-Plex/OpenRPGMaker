@@ -236,7 +236,8 @@ describe("조사 퍼즐 이벤트 통행 가능 배치", () => {
     expect(eventsByIds(map, (gate.data as PuzzleData).eventIds).map(({ x, y }) => [x, y])).toEqual([[9, 2]]);
     expect(eventsByIds(map, (plates.data as PuzzleData).eventIds).map(({ x, y }) => [x, y])).toEqual([[12, 2], [13, 2]]);
     expect(sequence.warnings).toBeUndefined();
-    expect(password.warnings).toBeUndefined();
+    // 자리는 그대로다(위치 조정 경고 없음) — 그 칸에 물건 타일이 없다는 알림 하나만 온다.
+    expect(password.warnings).toEqual([expect.stringContaining("has no picture")]);
     expect(gate.warnings).toBeUndefined();
     expect(plates.warnings).toBeUndefined();
   });

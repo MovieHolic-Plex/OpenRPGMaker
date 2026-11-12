@@ -43,6 +43,8 @@ export type JobResult = {
   tokens: { input: number; output: number; cacheRead: number; reviewTotal: number };
   /** 첫 모델 호출의 지시문 글자 수와 처음부터 실린 도구 수. */
   systemPromptChars: number | null; toolsOffered: number | null; toolsOfferedNames: string[]; toolSchemaChars: number | null;
+  /** Claude Code 고리가 보고한 환산 비용(구독 한도 사용 — 청구 아님). Pi 고리는 null. totalTokens 는 캐시 읽기·쓰기를 포함한 합. */
+  costUsd: number | null; totalTokens: number;
   /** v2 의 턴 끝 판정(할 일 장부). v1 은 null. */
   complete: boolean | null; completeNote: string;
   turns: Array<{ step: string; outcome: string; wallMs: number; tools: number }>;
@@ -103,7 +105,7 @@ async function runJob(job: SmallJob, root: string, pin: { file: string; config: 
   mkdirSync(resolve(session, 'inbox'), { recursive: true });
   const base: JobResult = { id: job.id, family: job.family, fixture: job.fixture, request: job.request, status: 'infra', pass: false, reason: '', check: null,
     toolCalls: [], toolCallCount: 0, toolErrors: 0, wallMs: 0, runMs: 0, modelCalls: 0, tokens: { input: 0, output: 0, cacheRead: 0, reviewTotal: 0 },
-    systemPromptChars: null, toolsOffered: null, toolsOfferedNames: [], toolSchemaChars: null, complete: null, completeNote: '', turns: [], autoAnswered: false, pendingCards: [],
+    systemPromptChars: null, toolsOffered: null, toolsOfferedNames: [], toolSchemaChars: null, costUsd: null, totalTokens: 0, complete: null, completeNote: '', turns: [], autoAnswered: false, pendingCards: [],
     errors: [], persistence: null, model: '', provider: '', assistantVersion: '', answer: '', trace: [], statusNotes: [], startedAt, finishedAt: startedAt };
   const finish = (patch: Partial<JobResult>): JobResult => {
     const result = { ...base, ...patch, finishedAt: new Date().toISOString() };
@@ -210,11 +212,16 @@ export function collect(turns: any[]): Partial<JobResult> {
   const prompts = turns.flatMap(turn => turn.prompts ?? []);
   const requests = turns.flatMap(turn => turn.requests ?? []).filter((request: any) => request.endpoint === '/v1/agent/run');
   const final = turns.flatMap(turn => turn.v2Final ?? []).at(-1);
+  const cli = done.map(stats => stats.exposure).find(Boolean) as { systemChars?: number; firstList?: { names?: string[]; chars?: number } } | undefined;
   return {
     toolCalls: calls.map(({ name, ok }) => ({ name, ok })), toolCallCount: calls.length, toolErrors: calls.filter(call => !call.ok).length,
     wallMs: turns.reduce((total, turn) => total + (turn.turnMs ?? turn.elapsedMs ?? 0), 0), runMs: sum(stats => stats.ms), modelCalls: sum(stats => stats.usage?.calls),
     tokens: { input: sum(stats => stats.usage?.input), output: sum(stats => stats.usage?.output), cacheRead: sum(stats => stats.usage?.cacheRead), reviewTotal: sum(stats => stats.review?.totalTokens) },
-    systemPromptChars: prompts[0]?.systemChars ?? null, toolsOffered: prompts[0]?.toolCount ?? null, toolsOfferedNames: prompts[0]?.toolNames ?? [], toolSchemaChars: prompts[0]?.sectionChars?.tools ?? null,
+    // Pi 고리는 첫 모델 호출의 prompt_inspection 에서, Claude Code 고리(local-cli)는 그 사건이 없어 턴 끝 stats.exposure 의 첫 목록에서 읽는다.
+    systemPromptChars: prompts[0]?.systemChars ?? cli?.systemChars ?? null, toolsOffered: prompts[0]?.toolCount ?? cli?.firstList?.names?.length ?? null,
+    toolsOfferedNames: prompts[0]?.toolNames ?? cli?.firstList?.names ?? [], toolSchemaChars: prompts[0]?.sectionChars?.tools ?? cli?.firstList?.chars ?? null,
+    costUsd: done.some(stats => typeof stats.costUsd === 'number') ? sum(stats => stats.costUsd) : null,
+    totalTokens: sum(stats => stats.usage?.totalTokens ?? ((stats.usage?.input ?? 0) + (stats.usage?.output ?? 0) + (stats.usage?.cacheRead ?? 0) + (stats.usage?.cacheWrite ?? 0))),
     complete: final ? final.complete === true : null, completeNote: final?.summary ?? '',
     turns: turns.map(turn => ({ step: turn.step, outcome: turn.outcome, wallMs: turn.turnMs ?? turn.elapsedMs ?? 0, tools: (turn.toolCalls ?? []).length })),
     pendingCards: turns.flatMap(turn => (turn.pendingCards ?? []).map((card: any) => `${card.testid}: ${String(card.text).split('\n')[0]?.slice(0, 160)}`)),
@@ -239,7 +246,8 @@ export function summarize(results: JobResult[], meta: Record<string, unknown>): 
     perFixture: Object.fromEntries([...new Set(results.map(r => r.fixture))].map(fixture => [fixture, count(results.filter(r => r.fixture === fixture))])),
     medians: { toolCalls: median(ran.map(r => r.toolCallCount)), wallMs: median(ran.map(r => r.wallMs)), runMs: median(ran.map(r => r.runMs)), modelCalls: median(ran.map(r => r.modelCalls)),
       inputTokens: median(ran.map(r => r.tokens.input + r.tokens.cacheRead)), outputTokens: median(ran.map(r => r.tokens.output)), systemPromptChars: median(ran.map(r => r.systemPromptChars ?? NaN)), toolsOffered: median(ran.map(r => r.toolsOffered ?? NaN)), toolSchemaChars: median(ran.map(r => r.toolSchemaChars ?? NaN)) },
-    totals: { wallMs: results.reduce((n, r) => n + r.wallMs, 0), inputTokens: results.reduce((n, r) => n + r.tokens.input + r.tokens.cacheRead, 0), outputTokens: results.reduce((n, r) => n + r.tokens.output, 0), toolCalls: results.reduce((n, r) => n + r.toolCallCount, 0) },
+    totals: { wallMs: results.reduce((n, r) => n + r.wallMs, 0), inputTokens: results.reduce((n, r) => n + r.tokens.input + r.tokens.cacheRead, 0), outputTokens: results.reduce((n, r) => n + r.tokens.output, 0), toolCalls: results.reduce((n, r) => n + r.toolCallCount, 0),
+      totalTokens: results.reduce((n, r) => n + (r.totalTokens ?? 0), 0), costUsd: results.some(r => typeof r.costUsd === 'number') ? results.reduce((n, r) => n + (r.costUsd ?? 0), 0) : null },
     jobs: results };
 }
 const minutes = (ms: number) => (ms / 60_000).toFixed(1);
