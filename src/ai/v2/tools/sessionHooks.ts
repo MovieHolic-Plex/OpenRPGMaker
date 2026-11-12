@@ -17,6 +17,7 @@ import { isPlaceholderMap, moveBareEvents, retireBlankStart } from "../blankStar
 import { guessPlaceSpec } from "../place/placeGuess";
 import { edgeCell, isInside, isOutdoor, oppositeSide, villageDoors, walkGame } from "../story/makeGame";
 import { designMissingRooms } from "../place/designRooms";
+import { yieldToLoop } from "../shared/yieldLoop";
 import { LINK_SIDES, recordWrite, placeVariety } from "./support";
 import type { VerbContext } from "./context";
 
@@ -35,7 +36,7 @@ export function installSessionHooks(c: VerbContext) {
   // 끝맺음(2026-10-28 standin jrpg): 컷신에서 주인공에게 다가온 소녀가 동굴 입구 착지 칸 앞에 서서 자동 플레이가 막혔다.
   session.clearLanes = async () => {
     // 단계(빈 시작 맵 치우기 → 방탈출 봉인 → … → 맵마다 출구 마감·길·그림·사람 자리)는 src/ai/v2/finish/lanes/stages/ — 한 단계에 파일 하나.
-    const notes = runLaneStages(env, session, run);
+    const notes = await runLaneStages(env, session, run);
     if (notes.length) {
       recordWrite(env, run, `auto-lanes-${Date.now()}`, "move_event", { auto: "transfer-lanes" }, true, notes.join(" / ").slice(0, 400), {});
       await env.checkpoint("clear_transfer_lanes");
@@ -97,6 +98,8 @@ export function installSessionHooks(c: VerbContext) {
     const outdoors: Built[] = [];
     let prev: Built = { mapId: start0 && (isPlaceholderMap(start0) || bareIds.has(start0.id)) ? "" : env.ctx.project.startMapId };
     for (const { name, place } of plan) {
+      // 장소 하나를 짓고 잇는 일은 동기다 — 장소와 장소 사이에 루프에 차례를 준다(shared/yieldLoop.ts: 여섯 곳을 내리 지으면 40~70초 워커가 말이 없다).
+      await yieldToLoop();
       const kind = kindOf(place);
       const fromMap = place?.from ? mapOf(place.from, true) : undefined;
       // 들어오는 앞 장소: 청사진이 정했으면 그곳. 아니면 실내는 그 종류의 문이 남은 바깥 장소(없으면 마지막 바깥 장소), 바깥은 마지막 바깥 장소.
@@ -162,7 +165,7 @@ export function installSessionHooks(c: VerbContext) {
     }
     // 역할 건물 가운데 청사진이 방을 적지 않은 것(가게·여관…)은 빌더가 방을 지어 그 문에 잇는다 — 세지 않는 방이다(place/programMark.ts).
     if (world && programs) {
-      notes.push(...layProgramRooms(run, world, (parentMapId, name, roomMapId, entrance, door) =>
+      notes.push(...await layProgramRooms(run, world, (parentMapId, name, roomMapId, entrance, door) =>
         linkChild(parentMapId, undefined, undefined, { type: "interior", name }, { ok: true, mapIds: [roomMapId], entrance: { mapId: roomMapId, ...entrance }, summary: "", warnings: [], missingArt: [], calls: [] }, undefined, door)));
       // 빈칸은 덮지 않고 적는다: 실내 종류가 없는 역할(사막의 살림집)은 없는 그림 장부에, 나머지(못 놓은 역할·집 상한)는 턴 기록에.
       const gaps = programGaps(env.ctx.project);
@@ -175,6 +178,7 @@ export function installSessionHooks(c: VerbContext) {
       if (rest.length) env.emit({ type: "execution_status", name: "v2.program-gap", ok: false, summary: `목적표 빈칸 ${rest.length}건: ${rest.map((g) => g.detail).join(" / ").slice(0, 600)}`, data: { gaps: rest } });
       if (gaps.length) notes.push(`목적표 빈칸 ${gaps.length}건 — ${gaps.map((g) => g.detail).join(" / ").slice(0, 400)}`);
     }
+    await yieldToLoop();
     for (const n of retireBlankStart(run)) notes.push(n);
     // 게임은 목록의 첫 장소에서 시작한다 — 바깥 장소를 먼저 지어 시작이 다른 장소에 가 있으면 첫 장소로 옮긴다(이번에 지은 세계 장소일 때만).
     const firstMap = listed[0] ? mapOf(listed[0].name, true) : undefined;
@@ -190,6 +194,7 @@ export function installSessionHooks(c: VerbContext) {
       session.stockedPlaces.add(mapId);
       const placed = populateWorldPlace(run, mapId, rec.result.entrance, rec.spec.salt ?? 1, (gap) => session.missingArt.add(gap));
       if (placed) notes.push(placed);
+      await yieldToLoop();
     }
     // 옮긴 조사 이벤트를 이름이 가리키는 물건(책상·쪽지…)·문 그림 칸으로 — 빈 맵에서는 물건이 없어 아무 칸이었다.
     // 시작이 새 방으로 옮겨진 뒤에 돈다(걸어 닿는지는 시작점에서 잰다).
