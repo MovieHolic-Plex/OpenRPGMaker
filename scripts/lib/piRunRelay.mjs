@@ -93,7 +93,7 @@ const mapRuns = createMapRunLocks();
 
 function createRun(runId, controller) {
   const run = {
-    runId, controller, lines: [], firstSeq: 0, bytes: 0, finished: false, listeners: new Set(),
+    runId, controller, lines: [], firstSeq: 0, bytes: 0, finished: false, listeners: new Set(), readers: new Map(),
     startedAt: Date.now(), lastChunkAt: Date.now(), maxGapMs: 0, maxGapAt: 0, detachedAt: Date.now(), graceTimer: null, cleanupTimer: null,
   };
   runs.set(runId, run);
@@ -175,26 +175,52 @@ async function pump(run, ndjson) {
   }
 }
 
+/** 읽는 이 번호(?reader=) — 실행을 연 클라이언트가 POST 와 그 뒤 이어 받기에 같은 값을 싣는다. 모양이 다르면 없는 것으로 본다. */
+export function readerIdOf(value) {
+  return typeof value === "string" && /^[A-Za-z0-9-]{8,64}$/.test(value) ? value : null;
+}
+
 /**
  * 실행 기록을 after 번째 줄부터 읽는 ReadableStream. 줄마다 seq 를 붙인다 — 끊긴 브라우저가 마지막으로 받은 번호를 안다.
  * 리더가 끊겨도(cancel) 실행은 계속된다. 실행이 끝나고 줄을 다 보내면 닫힌다.
+ *
+ * reader(읽는 이 번호)가 있으면 같은 읽는 이의 앞 스트림을 여기서 끝낸다 — 이어 받기는 «앞 스트림을 버리고 새로 읽겠다»는 뜻이다.
+ * 왜(2026-11-11): 브라우저가 제 리더만 끊고 연결이 남는 경우(본문을 복제해 같이 읽는 시험 구동기)가 있었고, 이어 받기 한 번마다 연결 하나가 남아
+ * 호스트당 연결 6개가 차면 저장·적용 응답이 나가지 못했다. 번호가 없는 읽기(끝난 실행의 기록을 따로 읽는 QA 스크립트 — scripts/qa/live-*.mjs)와
+ * 다른 번호의 읽기는 건드리지 않는다 — 실행 번호만으로 끊으면 그런 둘째 읽기가 편집기의 스트림을 «오류 없이» 닫아 편집기가 실행이 끝난 줄 안다.
  */
-function tail(run, after) {
+function tail(run, after, reader = null) {
   let seq = Math.max(after, run.firstSeq);
   let notify = null;
   const listener = () => notify?.();
   const encoder = new TextEncoder();
   let closed = false;
+  let stream = null;
+  const forget = () => { if (reader && run.readers.get(reader) === supersede) run.readers.delete(reader); };
   const stop = () => {
     if (closed) return;
     closed = true;
     run.listeners.delete(listener);
+    forget();
     detach(run);
   };
+  // 같은 읽는 이의 새 스트림이 열렸다 — 이 스트림을 닫는다(새 스트림이 이미 듣고 있으므로 «아무도 안 듣는다» 유예는 걸지 않는다).
+  const supersede = () => {
+    if (closed) return;
+    closed = true;
+    run.listeners.delete(listener);
+    try { stream?.close(); } catch { /* 이미 닫힘 */ }
+    notify?.();
+  };
   return new ReadableStream({
-    start() {
+    start(controller) {
+      stream = controller;
       run.listeners.add(listener);
       clearTimeout(run.graceTimer);
+      if (!reader) return;
+      const previous = run.readers.get(reader);
+      run.readers.set(reader, supersede);
+      previous?.();
     },
     async pull(controller) {
       for (;;) {
@@ -262,15 +288,15 @@ export async function startRelayedRun(body, startAgent, options = {}) {
     throw error;
   }
   void pump(run, result.ndjson);
-  return { status: 200, stream: true, ndjson: tail(run, 0), headers: { "X-Oprn-Run-Id": runId } };
+  return { status: 200, stream: true, ndjson: tail(run, 0, readerIdOf(options.reader)), headers: { "X-Oprn-Run-Id": runId } };
 }
 
-/** GET /v1/agent/run?runId=&after= — 끊긴 실행을 이어 받는다. */
-export function resumeRelayedRun(runId, after) {
+/** GET /v1/agent/run?runId=&after=[&reader=] — 끊긴 실행을 이어 받는다. reader 가 있으면 같은 읽는 이의 앞 스트림을 끝낸다(tail). */
+export function resumeRelayedRun(runId, after, reader = null) {
   const run = runs.get(runId);
   if (!run) return { status: 404, body: { error: "실행 기록이 없습니다. 끝난 지 오래됐거나 호스트가 다시 시작됐습니다." } };
   const from = Number.isInteger(after) && after >= 0 ? after : 0;
-  return { status: 200, stream: true, ndjson: tail(run, from), headers: { "X-Oprn-Run-Id": runId } };
+  return { status: 200, stream: true, ndjson: tail(run, from, readerIdOf(reader)), headers: { "X-Oprn-Run-Id": runId } };
 }
 
 /** POST /v1/agent/cancel — 사용자가 누른 중단. 이것만 워커를 멈춘다. */

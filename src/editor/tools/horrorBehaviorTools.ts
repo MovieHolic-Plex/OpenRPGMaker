@@ -31,11 +31,13 @@ export function parsePursuit(value: unknown): ChaseAcrossMaps | undefined {
 }
 export const CONFIGURE_OBJECT_BEHAVIOR: ToolDefinition = {
   name: 'configure_object_behavior', mode: 'write',
-  description: '기존 이벤트 페이지를 밀 수 있는 가구 또는 실제 은신처로 설정한다. 가구 그림은 이벤트에 지정하고 원래 가구 타일은 제거해 통행 가능한 바닥 위에 둔다. 조사 대사로 은신을 흉내 내지 말 것. 일반 조사 명령보다 물체 동작이 우선한다. 페이지 조건/그림/기존 명령은 보존한다.',
-  parameters: { type: 'object', properties: { mapId: { type: 'string' }, eventId: { type: 'string' }, pageId: { type: 'string' }, kind: { type: 'string', enum: ['none', 'pushable', 'hiding'] } }, required: ['mapId', 'eventId', 'pageId', 'kind'] },
+  description: '기존 이벤트 페이지를 밀 수 있는 가구 또는 실제 은신처로 설정한다. 가구 그림은 이벤트에 지정하고 원래 가구 타일은 제거해 통행 가능한 바닥 위에 둔다. 조사 대사로 은신을 흉내 내지 말 것. 일반 조사 명령보다 물체 동작이 우선한다. 페이지 조건/그림/기존 명령은 보존한다. pageId 를 생략하면 그 이벤트의 첫 페이지.',
+  parameters: { type: 'object', properties: { mapId: { type: 'string' }, eventId: { type: 'string' }, pageId: { type: 'string' }, kind: { type: 'string', enum: ['none', 'pushable', 'hiding'] } }, required: ['mapId', 'eventId', 'kind'] },
   run(project, args) {
     const map = requireMap(project, args.mapId as string);
-    const page = map.events.find(e => e.id === args.eventId)?.pages?.find(p => p.id === args.pageId);
+    // pageId 를 안 적으면 첫 페이지다 — 물건 이벤트는 거의 한 페이지이고, 페이지 id 를 읽으러 한 번 더 부르게 하지 않는다.
+    const pages = map.events.find(e => e.id === args.eventId)?.pages;
+    const page = args.pageId === undefined ? pages?.[0] : pages?.find(p => p.id === args.pageId);
     if (!page || !['none', 'pushable', 'hiding'].includes(args.kind as string)) throw new ToolError('이벤트 페이지와 물체 종류를 확인하세요.');
     if (args.kind === 'none') delete page.interaction;
     else {

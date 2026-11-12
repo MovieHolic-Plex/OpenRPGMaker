@@ -3,7 +3,7 @@ import { allPages, childLists, visitPageCommands, type RawCommand } from "@/qa/g
 import type { GameMap, Project } from "@/project/types";
 import { mapRoute } from "@/player/objectiveTarget";
 import { josa } from "@/util/josa";
-import { objectiveCommand, isObjectiveCommand } from "./objectiveCommand";
+import { objectiveCommand, isObjectiveCommand, objectiveTargetOf, setObjectiveTarget, type ObjectiveTarget } from "./objectiveCommand";
 import { Cell, landmarkWord, bare, withWhere } from "./objectiveWhere";
 
 /**
@@ -33,7 +33,7 @@ function battleGateHolders(project: Project): Map<string, { switchId: string; ho
         const troop = project.database.troops.find((t) => t.id === setter.troopId);
         if (troop?.name) (setter.event as { name?: string }).name = troop.name;
       }
-      if (!String(setter.event.name ?? "").trim()) continue;
+      // 이름 없는 전투 이벤트도 남긴다 — 목표 글은 이름이 있어야 고쳐 쓰지만, 목표가 가리키는 대상(target)은 이름이 없어도 그 전투다.
       out.set(event.id, { switchId, holder: { map: setter.map, event: setter.event } });
       break;
     }
@@ -61,24 +61,62 @@ export function refreshObjectiveRoutes(project: Project): number {
     }
     return undefined;
   };
+  // 청사진 단계의 이벤트 — 빌더가 지은 것을 적어 두었으면(step.built) 그것, 아니면 이름·id 로 찾는다.
+  // 지어 둔 이벤트가 그 뒤 지워졌으면(맵을 다시 지음) 이름으로 돌아간다.
+  const builtEvent = (step: (typeof steps)[number] | undefined) => {
+    const map = step?.built ? project.maps[step.built.mapId] : undefined;
+    const event = map?.events?.find((e) => e.id === step?.built?.eventId);
+    return map && event ? { map, event } : undefined;
+  };
+  const isStepEvent = (step: (typeof steps)[number], mapId: string, event: GameMap["events"][number]): boolean => {
+    const built = builtEvent(step);
+    return built ? built.event.id === event.id && built.map.id === mapId : step.event === event.id || step.event === event.name;
+  };
+  const findStep = (step: (typeof steps)[number] | undefined) => builtEvent(step) ?? find(step?.event);
   let changed = 0;
   for (const map of Object.values(project.maps)) for (const event of map.events ?? []) {
-    const k = steps.findIndex((step) => step.event === event.id || step.event === event.name);
+    const stepIndexes = steps.flatMap((step, index) => (isStepEvent(step, map.id, event) ? [index] : []));
+    const k = stepIndexes[0] ?? -1;
     for (const page of event.pages ?? []) {
       const opening = map.id === project.startMapId && ["auto", "parallel"].includes(String((page.trigger as { kind?: string } | undefined)?.kind));
       const pageOrigin: Cell = opening && project.startPos ? project.startPos as Cell : { x: event.x, y: event.y };
-      const stepNext = k >= 0 ? find(steps[k + 1]?.event) : opening ? find(steps[0]?.event) : undefined;
+      const stepNext = k >= 0 ? findStep(steps[k + 1]) : opening ? findStep(steps[0]) : undefined;
       // 이 페이지가 이미 그 승리 뒤에만 도는 페이지면(보스 자신·승리 조건 페이지) 잠금 대상을 그대로 가리킨다.
       const pageSwitches = new Set((page.conditions ?? []).map((c) => String((c as { switchId?: string }).switchId ?? "")));
-      const holderFor = (target: { map: GameMap; event: GameMap["events"][number] } | undefined) => {
+      // 글을 고쳐 쓸 때는 이름 있는 전투만(이름 없는 대상을 글에 넣을 수 없다), 대상(target)은 이름이 없어도 그 전투.
+      const battleFor = (target: { map: GameMap; event: GameMap["events"][number] } | undefined) => {
         const gate = target ? holders.get(target.event.id) : undefined;
         return gate && gate.holder.event.id !== event.id && !pageSwitches.has(gate.switchId) ? gate.holder : undefined;
       };
+      const holderFor = (target: { map: GameMap; event: GameMap["events"][number] } | undefined) => {
+        const holder = battleFor(target);
+        return holder && String(holder.event.name ?? "").trim() ? holder : undefined;
+      };
       const next = holderFor(stepNext) ?? stepNext;
+      // 단계 목표(글이 다음 단계의 할 일 그대로 — stepObjectives 가 건 것)가 가리킬 이벤트 = 다음 단계를 넘기는 이벤트.
+      // 같은 이벤트가 여러 단계를 맡으면 어느 페이지의 목표인지 알 수 없어 묶지 않는다.
+      const advance = stepNext && stepNext.event.id !== event.id && stepIndexes.length <= 1 ? stepNext : undefined;
+      const stepTexts = (k >= 0 ? [steps[k + 1]?.action] : opening ? [steps[0]?.action, project.gameBlueprint?.playerGoal] : [])
+        .filter((t): t is string => typeof t === "string").map((t) => t.trim().replace(/[.。!]+$/u, "").slice(0, 60));
+      /** 대상이 싸워 이겨야 열리는 이벤트면 그 전투(이름이 없어도)로. */
+      const throughBattle = (target: ObjectiveTarget): ObjectiveTarget => {
+        const at = project.maps[target.mapId]?.events?.find((e) => e.id === target.eventId);
+        const battle = at ? battleFor({ map: project.maps[target.mapId]!, event: at }) : undefined;
+        return battle ? { mapId: battle.map.id, eventId: battle.event.id } : target;
+      };
       const visit = (list: RawCommand[]): void => {
         for (const command of list) {
           for (const child of childLists(command)) { const raw = rawChild(command, child.key); if (raw) visit(raw); }
           if (!isObjectiveCommand(command)) continue;
+          // 대상 묶기: 단계 목표(와 같은 글의 시작 목표)는 다음 단계를 넘기는 이벤트를 든다. 그 밖의 목표는 건 쪽이 적은 대상을 두되 없어진 이벤트면 뗀다.
+          // 용의자 목표처럼 다른 것을 말하는 목표에 다음 단계를 묶으면 표시가 글과 다른 곳에 선다 — 글이 단계의 할 일 그대로일 때만 묶는다.
+          {
+            const text0 = String((command.fields as Record<string, unknown>).message ?? "").replace(/\s*\([^()]*\)\s*$/u, "").trim().replace(/[.。!]+$/u, "").slice(0, 60);
+            const had = objectiveTargetOf(command);
+            const alive = had && (project.maps[had.mapId]?.events ?? []).some((e) => e.id === had.eventId) ? had : undefined;
+            const bound = advance && stepTexts.includes(text0) ? { mapId: advance.map.id, eventId: advance.event.id } : alive;
+            if (setObjectiveTarget(command, bound ? throughBattle(bound) : undefined)) changed += 1;
+          }
           const fields = command.fields as Record<string, unknown>;
           const message = String(fields.message ?? "");
           const landing = landings.get(command);
@@ -198,20 +236,20 @@ export function rawChild(command: RawCommand, key: string): RawCommand[] | undef
 }
 
 /** 명령 목록 안에서 이정표 쓰기 바로 뒤(같은 목록)에 목표 명령을 넣는다. 이미 같은 글의 목표가 있으면 그 자리를 바꾼다. 넣은 수. */
-export function insertAfterMilestones(list: RawCommand[], message: string): number {
+export function insertAfterMilestones(list: RawCommand[], message: string, target?: ObjectiveTarget): number {
   let placed = 0;
   for (let i = 0; i < list.length; i += 1) {
     const command = list[i]!;
     for (const child of childLists(command)) {
       const raw = rawChild(command, child.key);
-      if (raw) placed += insertAfterMilestones(raw, message);
+      if (raw) placed += insertAfterMilestones(raw, message, target);
     }
   }
   let last = -1;
   list.forEach((command, i) => { if (isMilestoneWrite(command)) last = i; });
   if (last < 0) return placed;
   const next = list[last + 1];
-  if (next && isObjectiveCommand(next)) { list[last + 1] = objectiveCommand(message); return placed + 1; }
-  list.splice(last + 1, 0, objectiveCommand(message));
+  if (next && isObjectiveCommand(next)) { list[last + 1] = objectiveCommand(message, target); return placed + 1; }
+  list.splice(last + 1, 0, objectiveCommand(message, target));
   return placed + 1;
 }

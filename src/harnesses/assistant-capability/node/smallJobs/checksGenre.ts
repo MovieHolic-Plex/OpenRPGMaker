@@ -31,7 +31,7 @@ const standNote = (doc: Doc, mapId: string, event: Ev): string | null => (!visib
 
 export const GENRE_KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result> = {
   /** 밭: 그 맵의 경작 가능 칸이 minCells~maxCells, 모두 걸을 수 있는 빈 칸. */
-  farmPlot(spec, before, after) {
+  farmPlot(spec, _before, after) {
     const map = after.maps?.[spec.mapId];
     if (!map) return no(`맵 ${spec.mapId} 가 없다`);
     const cells = new Set<string>();

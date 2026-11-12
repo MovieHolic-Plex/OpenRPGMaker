@@ -72,32 +72,194 @@ export function mapRoute(project: Pick<Project, "maps">, fromId: string, toId: s
   return undefined;
 }
 
-/** 지금 맵에서 targets 맵들로 가는 첫 출구 — 바로 가는 문이 있으면 그것, 없으면 가장 짧은 경로의 첫 맵으로 가는 문. */
-function firstExitsTo(project: Pick<Project, "maps">, map: GameMap, views: readonly RuntimeEventView[], targets: ReadonlySet<string>): RuntimeEventView[] {
-  const direct = doorsTo(views, targets);
-  if (direct.length) return direct;
-  const hops = new Set<string>();
-  let best = Infinity;
-  for (const id of targets) {
-    const route = mapRoute(project, map.id, id);
-    if (!route || route.length < 2 || route.length > best) continue;
-    if (route.length < best) { hops.clear(); best = route.length; }
-    hops.add(route[1]!);
+/** 표시가 지금 판을 읽는 데 쓰는 것(선택) — 켜진 스위치·가진 아이템. 없으면(편집기·검사) 아무것도 안 가진 판으로 본다. */
+export interface ObjectiveSessionLike {
+  readonly switches?: Readonly<Record<string, boolean>>;
+  readonly inventory?: Readonly<Record<string, number>>;
+}
+
+type Need = { readonly kind: "switch" | "item"; readonly id: string };
+
+/** 페이지 조건 가운데 «켜져 있어야·갖고 있어야» 하는 것. */
+function pageNeeds(page: { readonly conditions?: unknown } | undefined): Need[] {
+  const out: Need[] = [];
+  for (const raw of Array.isArray(page?.conditions) ? page!.conditions as unknown[] : []) {
+    const c = raw as { kind?: string; switchId?: unknown; value?: unknown; itemId?: unknown; present?: unknown };
+    if (c.kind === "switch" && c.value === true && typeof c.switchId === "string") out.push({ kind: "switch", id: c.switchId });
+    if (c.kind === "item" && c.present === true && typeof c.itemId === "string") out.push({ kind: "item", id: c.itemId });
   }
-  return hops.size ? doorsTo(views, hops) : [];
+  return out;
+}
+
+const needKey = (need: Need): string => `${need.kind}:${need.id}`;
+
+/** 명령들이 켜는 스위치·주는 아이템(갈래 안까지). */
+function collectGives(commands: readonly Command[] | undefined, out: Set<string>): void {
+  for (const command of commands ?? []) {
+    const record = command as unknown as Record<string, unknown>;
+    if (record.kind === "setSwitch" && typeof record.switchId === "string" && record.value === true) out.add(`switch:${record.switchId}`);
+    if (record.kind === "changeItem" && typeof record.itemId === "string" && record.op !== "-=") out.add(`item:${record.itemId}`);
+    for (const value of Object.values(record)) {
+      if (Array.isArray(value) && value.length && typeof value[0] === "object" && value[0] && "kind" in (value[0] as object)) collectGives(value as Command[], out);
+    }
+    if (command.kind === "choices") for (const option of command.options) collectGives(option.branch, out);
+  }
+}
+
+/** 잠금을 읽는 색인 — 맵마다 «어디로 옮기는 페이지가 무슨 조건을 거나», 조건마다 «어느 이벤트의 어느 조건 페이지가 채워 주나». 표시는 0.4초마다 묻는다. */
+interface LockIndex {
+  readonly stamp: number;
+  readonly doors: Map<string, { readonly to: string; readonly needs: Need[] }[]>;
+  readonly givers: Map<string, { readonly mapId: string; readonly eventId: string; readonly needs: Need[] }[]>;
+}
+const lockIndexes = new WeakMap<object, LockIndex>();
+function lockIndex(project: Pick<Project, "maps">): LockIndex {
+  const maps = Object.values(project.maps);
+  // 편집기 플레이는 같은 맵 객체를 고쳐 쓴다 — 맵·이벤트 수가 달라지면 다시 만든다.
+  let stamp = maps.length;
+  for (const other of maps) stamp = (stamp * 31 + (other.events?.length ?? 0)) | 0;
+  const cached = lockIndexes.get(project.maps);
+  if (cached && cached.stamp === stamp) return cached;
+  const index: LockIndex = { stamp, doors: new Map(), givers: new Map() };
+  for (const other of maps) {
+    const doors: { to: string; needs: Need[] }[] = [];
+    for (const event of other.events ?? []) for (const page of event.pages ?? []) {
+      const needs = pageNeeds(page);
+      const to = new Set<string>();
+      transferMapIds(page.commands, to);
+      for (const id of to) if (id !== other.id) doors.push({ to: id, needs });
+      const gives = new Set<string>();
+      collectGives(page.commands, gives);
+      for (const key of gives) {
+        const list = index.givers.get(key) ?? [];
+        list.push({ mapId: other.id, eventId: event.id, needs });
+        index.givers.set(key, list);
+      }
+    }
+    index.doors.set(other.id, doors);
+  }
+  lockIndexes.set(project.maps, index);
+  return index;
+}
+
+const met = (need: Need, session: ObjectiveSessionLike): boolean =>
+  need.kind === "switch" ? session.switches?.[need.id] === true : (session.inventory?.[need.id] ?? 0) > 0;
+
+/** from → to 로 옮기는 페이지들이 모두 아직 안 채워진 조건(스위치·아이템)을 걸고 있으면 그 조건들. 열린 페이지가 하나라도 있으면 빈 배열. */
+function hopLock(index: LockIndex, fromId: string, toId: string, session: ObjectiveSessionLike): Need[] {
+  const unmet = new Map<string, Need>();
+  for (const door of index.doors.get(fromId) ?? []) {
+    if (door.to !== toId) continue;
+    const missing = door.needs.filter((need) => !met(need, session));
+    if (!missing.length) return [];
+    for (const need of missing) unmet.set(needKey(need), need);
+  }
+  return [...unmet.values()];
 }
 
 /**
- * 목표 글의 대상 이벤트들(지금 맵).
+ * 그 조건들을 지금 채워 줄 수 있는 이벤트(어느 맵이든). 채워 주는 페이지가 또 다른 조건에 잠겨 있으면 그 조건을 채우는 이벤트로 거슬러 간다(네 겹까지).
+ */
+function openersOf(index: LockIndex, needs: readonly Need[], session: ObjectiveSessionLike, depth = 0, seen = new Set<string>()): { mapId: string; eventId: string }[] {
+  const out: { mapId: string; eventId: string }[] = [];
+  for (const need of needs) {
+    const key = needKey(need);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    for (const giver of index.givers.get(key) ?? []) {
+      const missing = giver.needs.filter((n) => !met(n, session));
+      if (!missing.length) out.push({ mapId: giver.mapId, eventId: giver.eventId });
+      else if (depth < 4) out.push(...openersOf(index, missing, session, depth + 1, seen));
+    }
+  }
+  return out;
+}
+
+/**
+ * 가는 길(route: 지금 맵 → … → 대상 맵)의 어느 출구가 잠겨 있으면, 그 잠금을 지금 풀 수 있는 이벤트(이 맵에 있으면 그 이벤트, 다른 맵이면 그리로 가는 문).
+ * 왜(2026-11-12 r1-fun · jrpg-x1 여섯 순간): 목표는 「(황금 천막 시장 입구: …)」 인데 그 길목은 나디아와 이야기해야 열렸다 — 닫힌 길목에는 표시가 안 붙어
+ * 화살표도 빛무리도 없었다. 누구와 먼저 이야기했는지는 판마다 다르므로 빌더가 글로 못 박지 않고, 런타임이 지금 스위치·소지품과 잠금 조건에서 읽는다.
+ * 길이 다 열려 있거나 판을 모르면(session 없음) undefined — 평소처럼 첫 출구를 가리킨다.
+ */
+function routeUnlockers(project: Pick<Project, "maps">, map: GameMap, views: readonly RuntimeEventView[], route: readonly string[], session: ObjectiveSessionLike | undefined): RuntimeEventView[] | undefined {
+  if (!session) return undefined;
+  const index = lockIndex(project);
+  for (let i = 0; i + 1 < route.length; i += 1) {
+    const unmet = hopLock(index, route[i]!, route[i + 1]!, session);
+    if (!unmet.length) continue;
+    const openers = openersOf(index, unmet, session);
+    const here = new Set(openers.filter((o) => o.mapId === map.id).map((o) => o.eventId));
+    const own = views.filter((view) => here.has(view.event.id) && pickable(view, true));
+    if (own.length) return own;
+    const away = new Set(openers.filter((o) => o.mapId !== map.id).map((o) => o.mapId));
+    const hops = new Set<string>();
+    for (const id of away) { const r = mapRoute(project, map.id, id); if (r && r.length >= 2) hops.add(r[1]!); }
+    const doors = hops.size ? doorsTo(views, hops) : [];
+    if (doors.length) return doors;
+    // 푸는 이벤트를 못 찾았다 — 첫 걸음이 잠긴 문이면 그 문(다가가면 잠김 글이 무엇이 모자란지 말한다), 뒤쪽 잠금이면 평소대로.
+    if (i === 0) {
+      const locked = views.filter((view) => pickable(view, true) && (view.event.pages ?? []).some((page) => { const to = new Set<string>(); transferMapIds(page.commands, to); return to.has(route[1]!); }));
+      if (locked.length) return locked;
+    }
+    return undefined;
+  }
+  return undefined;
+}
+
+/** 지금 맵에서 targets 맵들로 가는 첫 출구 — 가장 짧은 맵 경로의 첫 문. 그 길의 어느 출구가 잠겨 있으면 잠금을 푸는 이벤트(routeUnlockers). */
+function firstExitsTo(project: Pick<Project, "maps">, map: GameMap, views: readonly RuntimeEventView[], targets: ReadonlySet<string>, session?: ObjectiveSessionLike): RuntimeEventView[] {
+  const hops = new Set<string>();
+  let best = Infinity;
+  let shortest: string[] | undefined;
+  for (const id of targets) {
+    const route = mapRoute(project, map.id, id);
+    if (!route || route.length < 2 || route.length > best) continue;
+    if (route.length < best) { hops.clear(); best = route.length; shortest = route; }
+    hops.add(route[1]!);
+  }
+  const unlock = shortest ? routeUnlockers(project, map, views, shortest, session) : undefined;
+  if (unlock) return unlock;
+  const direct = doorsTo(views, targets);
+  if (direct.length) return direct;
+  return hops.size ? doorsTo(views, hops) : [];
+}
+
+/** 목표 대상 찾기의 선택 입력 — 목표가 들고 온 대상 이벤트와 지금 판(잠긴 출구를 여는 이벤트를 고를 때). */
+export interface ObjectiveTargetOptions {
+  readonly target?: { readonly mapId: string; readonly eventId: string } | null;
+  readonly session?: ObjectiveSessionLike;
+}
+
+/** 눌러서(조사·접촉) 무슨 일이 나는 페이지가 열려 있나 — 목표가 들고 온 대상이 이미 끝난(빈 페이지) 이벤트면 글로 찾는다. */
+function pressable(view: RuntimeEventView): boolean {
+  const kind = view.trigger.kind;
+  return !!view.page && (kind === "action" || kind === "playerTouch" || kind === "eventTouch") && (view.page.commands ?? []).length > 0;
+}
+
+/**
+ * 목표의 대상 이벤트들(지금 맵).
+ * 0) 목표가 대상 이벤트를 들고 왔으면(options.target — 빌더가 아는 «이 단계를 넘기는 이벤트») 그 이벤트, 다른 맵이면 그 맵으로 가는 첫 출구.
+ *    그 이벤트가 없거나 눌러도 아무 일 없는 페이지면 아래 글 찾기로 간다(옛 저장본·손으로 만든 게임도 아래로).
  * 1) 꼬리 「(이름: 자리)」의 이름과 같은 이벤트 — 「(<맵> 입구: …)」 면 그 맵으로 가는 문.
  * 2) 글에 이름이 나온 이벤트(두 글자 이상, 다른 나온 이름에 품긴 짧은 이름은 뺀다).
  * 3) 글에 이름이 나온 다른 맵으로 가는 문.
  */
-export function objectiveTargetViews(project: Pick<Project, "maps">, map: GameMap, views: readonly RuntimeEventView[], text: string | null | undefined): RuntimeEventView[] {
+export function objectiveTargetViews(project: Pick<Project, "maps">, map: GameMap, views: readonly RuntimeEventView[], text: string | null | undefined, options: ObjectiveTargetOptions = {}): RuntimeEventView[] {
   const objective = (text ?? "").trim();
   if (!objective) return [];
+  const session = options.session;
   const candidates = views.filter((view) => pickable(view));
   const doorCandidates = views.filter((view) => pickable(view, true));
+  const aimed = options.target;
+  if (aimed && project.maps[aimed.mapId]) {
+    if (aimed.mapId === map.id) {
+      const own = views.filter((view) => view.event.id === aimed.eventId && pressable(view));
+      if (own.length) return own;
+    } else if ((project.maps[aimed.mapId]!.events ?? []).some((event) => event.id === aimed.eventId)) {
+      const doors = firstExitsTo(project, map, doorCandidates, new Set([aimed.mapId]), session);
+      if (doors.length) return doors;
+    }
+  }
   const tailMatch = /\(([^():]+):([^()]*)\)\s*$/u.exec(objective);
   const tail = tailMatch?.[1]?.trim();
   const others = Object.values(project.maps).filter((other) => other.id !== map.id);
@@ -108,25 +270,37 @@ export function objectiveTargetViews(project: Pick<Project, "maps">, map: GameMa
     return new Set((exactMaps.length || key.length < 2 ? exactMaps : others.filter((other) => bare(other.name ?? "").includes(key))).map((other) => other.id));
   };
   if (tail) {
+    // 꼬리는 목표가 걸린 맵에서 본 길이다: 「(<첫 맵> 입구: 자리 → <거쳐 가는 맵>에서 자리 → <끝 맵> · <대상>)」. 어느 맵에서 읽든 «끝»을 먼저 본다 —
+    // 끝 맵에 들어섰으면 그 대상 이벤트, 아직이면 끝 맵으로 가는 첫 출구. 첫 마디(「<첫 맵> 입구」)부터 보면 끝 맵 안에서 온 길로 되돌아가는 문을 짚는다
+    // (2026-11-12 r1 여섯 판: 전당 안에서 화살표가 마을로 나가는 문을 가리켜 마을↔전당을 맴돌았다).
     const entrance = /^(.+?)\s*입구$/u.exec(tail)?.[1];
-    if (entrance) {
-      const doors = firstExitsTo(project, map, doorCandidates, mapsNamed(entrance));
+    // 「→」 뒤는 그 뒤에 찾을 대상이다. 거쳐 가는 맵의 방위 마디가 낄 수 있어 첫 「→」 뒤를 모두 본다(뒤 마디가 먼저).
+    const after = tailMatch?.[2]?.split("→").slice(1).join("·");
+    const parts = (after ?? "").split("·").map((part) => part.trim()).filter(Boolean).reverse();
+    const hereKey = bare(map.name ?? "");
+    // 끝 맵 = 꼬리에 이름이 그대로 나온 맵 가운데 맨 뒤 것, 없으면 「입구」 맵. 대상 이름(「마왕」)이 맵 이름(「마왕의 방」)의 일부여도 맵으로 읽지 않는다.
+    const exactMaps = (name: string): string[] => { const key = bare(name); return key.length >= 2 ? Object.values(project.maps).filter((other) => bare(other.name ?? "") === key).map((other) => other.id) : []; };
+    const endPart = parts.find((part) => exactMaps(part).length > 0);
+    const endIds = new Set(endPart ? exactMaps(endPart) : entrance ? (bare(entrance) === hereKey ? [map.id] : [...mapsNamed(entrance)]) : []);
+    const arrived = endIds.has(map.id);
+    if (endIds.size && !arrived) {
+      const doors = firstExitsTo(project, map, doorCandidates, endIds, session);
       if (doors.length) return doors;
     }
-    // 「(숲 입구: 북동쪽 → 숲 통과)」·「(마을 입구: 남쪽 → 마왕의 동굴 · 마왕 처치)」 — 「→」 뒤는 그 뒤에 찾을 대상이다.
-    // 그 맵에 들어선 뒤(입구 맵 = 지금 맵)에는 이 맵의 그 이벤트를, 아직 가는 길이면 목적지 맵으로 가는 첫 출구를 가리킨다.
-    // 「(로비 입구: 남쪽 → 로비에서 서쪽 → 뒤뜰 · 단서 발견)」 — 거쳐 가는 맵의 방위 마디가 낄 수 있어 첫 「→」 뒤를 모두 본다(뒤 마디가 먼저).
-    const after = tailMatch?.[2]?.split("→").slice(1).join("·");
-    if (after) {
-      const parts = after.split("·").map((part) => part.trim()).filter(Boolean);
-      for (const part of [...parts].reverse()) {
-        const named = candidates.filter((view) => bare(view.event.name ?? "") === bare(part));
-        if (named.length) return named;
+    for (const part of parts) {
+      const named = candidates.filter((view) => bare(view.event.name ?? "") === bare(part));
+      if (named.length) return named;
+    }
+    // 끝 맵으로 가는 길을 못 찾았을 때만 옛 순서로 — 「입구」 맵의 문, 꼬리에 이름 일부가 나온 맵의 문.
+    if (!arrived) {
+      if (entrance) {
+        const doors = firstExitsTo(project, map, doorCandidates, mapsNamed(entrance), session);
+        if (doors.length) return doors;
       }
-      for (const part of [...parts].reverse()) {
+      for (const part of parts) {
         const ids = mapsNamed(part);
         if (!ids.size) continue;
-        const doors = firstExitsTo(project, map, doorCandidates, ids);
+        const doors = firstExitsTo(project, map, doorCandidates, ids, session);
         if (doors.length) return doors;
       }
     }
@@ -139,7 +313,7 @@ export function objectiveTargetViews(project: Pick<Project, "maps">, map: GameMa
   const best = named0.filter((view) => { const name = bare(view.event.name ?? ""); return !named0.some((other) => { const o = bare(other.event.name ?? ""); return o.length > name.length && o.includes(name); }); });
   if (best.length) return best;
   const named = new Set(Object.values(project.maps).filter((other) => other.id !== map.id && bare(other.name ?? "").length >= 2 && plain.includes(bare(other.name ?? ""))).map((other) => other.id));
-  return named.size ? firstExitsTo(project, map, doorCandidates, named) : [];
+  return named.size ? firstExitsTo(project, map, doorCandidates, named, session) : [];
 }
 
 /**
@@ -154,8 +328,13 @@ export function objectiveTextOnMap(map: Pick<GameMap, "name" | "events">, text: 
   const eventNames = new Set((map.events ?? []).map((event) => bare(event.name ?? "")));
   const parts = tail[2]!.split(/\s+\/\s+/u).map((part) => {
     const head = /^(.+?)\s*입구:[^→]*(?:→\s*(.*))?$/su.exec(part);
+    if (!head) return part;
+    // 끝 맵(꼬리 맨 뒤 「<맵> · <대상>」 의 맵)에 들어섰으면 온 길은 지나간 말이다 — 대상만 남긴다(2026-11-12 r1-snow 눈가림 플레이:
+    // 전당 안에서 목표창이 「눈울타리 마을 입구: 서쪽 끝 …」 을 다시 보여 줬다).
+    const last = (head[2] ?? "").split("→").at(-1)!.split("·").map((piece) => piece.trim()).filter(Boolean);
+    if (last.length > 1 && bare(last[0]!) === here && bare(head[1]!) !== here) return last.slice(1).join(" · ");
     // 「동굴 입구」 가 이 맵의 이벤트 이름이면 맵 입구 마디가 아니다(「(동굴 입구: 북쪽)」 = 이름: 자리).
-    if (!head || bare(head[1]!) !== here || eventNames.has(bare(`${head[1]!}입구`))) return part;
+    if (bare(head[1]!) !== here || eventNames.has(bare(`${head[1]!}입구`))) return part;
     const rest = (head[2] ?? "").trim();
     // 거쳐 가는 맵: 「<이 맵>에서 <자리> → <다음 맵> · <대상>」 → 「<다음 맵> 입구: <자리> → <대상>」.
     const via = /^(.+?)에서\s+(.+?)\s*→\s*([^·→]+?)(?:\s*·\s*(.+))?$/su.exec(rest);

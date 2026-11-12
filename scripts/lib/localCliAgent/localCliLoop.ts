@@ -63,6 +63,8 @@ export interface LocalCliWeight {
   systemSections?: { head: string; chars: number }[];
   /** 마지막 tools/list 에서 설명+스키마가 가장 긴 도구 12개. */
   listTop?: { name: string; chars: number }[];
+  /** 첫 tools/list — 처음 실린 도구의 이름과 글자 수. 뒤의 대사 다듬기 패스가 목록을 갈아 끼워도 남는다(측정이 «처음 실린 도구»를 읽는다). */
+  firstList?: { names: string[]; chars: number };
   /**
    * 모델 요청마다: 실행 시작부터 첫 응답 줄까지(startMs), 직전 도구 끝·차례 시작부터 기다린 시간(waitMs = 모델 생각·생성),
    * 그 요청의 출력·캐시 토큰과 부른 도구. 시간 대부분이 어디서 가는지(생각 대 도구) 재는 근거.
@@ -173,6 +175,7 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
       weight.listChars = JSON.stringify(list).length;
       weight.listCount = list.length;
       weight.listTop = list.map((tool) => ({ name: tool.name, chars: JSON.stringify(tool).length })).sort((a, b) => b.chars - a.chars).slice(0, 12);
+      weight.firstList ??= { names: list.map((tool) => tool.name), chars: weight.listChars };
       return list;
     },
     async callTool(mcpName, mcpArgs) {
