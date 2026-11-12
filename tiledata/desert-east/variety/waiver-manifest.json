@@ -1,0 +1,2663 @@
+{
+ "note": "object-gate owner-waive 의 --manifest 입력(저장소 뿌리에서 돌린다). 묶음 fable-variety-desert-east-2026-11-13. Fable 5.2 medium 한 방 그림과 그 코드 조립(빈 칸 지우기·지붕+벽 잇기·재질로 만든 왕 타일).",
+ "items": [
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-scrub-1.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-scrub-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-scrub-2.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-scrub-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-tuft-1.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-tuft-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-tuft-2.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-tuft-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-reeds-1.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-reeds-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-reeds-2.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-reeds-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-oleander-1.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-oleander-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-oleander-2.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-oleander-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-aloe-1.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-aloe-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-aloe-2.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-aloe-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-rock-small-1.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-rock-small-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-rock-small-2.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-rock-small-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-boulder-1.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-boulder-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-boulder-2.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-boulder-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-outcrop-1.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-outcrop-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-palm-date-1.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-palm-date-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-palm-date-2.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-palm-date-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-palm-young-1.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-palm-young-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-palm-young-2.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-palm-young-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-palm-pair-1.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-palm-pair-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-palm-stump-1.png",
+   "kind": "organic",
+   "chipset": "desert_east",
+   "label": "variant/de-palm-stump-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-stall-pottery-1.png",
+   "kind": "structure",
+   "chipset": "desert_east",
+   "label": "variant/de-stall-pottery-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-stall-spice-1.png",
+   "kind": "structure",
+   "chipset": "desert_east",
+   "label": "variant/de-stall-spice-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-stall-carpet-1.png",
+   "kind": "structure",
+   "chipset": "desert_east",
+   "label": "variant/de-stall-carpet-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-stall-fruit-1.png",
+   "kind": "structure",
+   "chipset": "desert_east",
+   "label": "variant/de-stall-fruit-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-stall-lantern-1.png",
+   "kind": "structure",
+   "chipset": "desert_east",
+   "label": "variant/de-stall-lantern-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-jar-big-1.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "variant/de-jar-big-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-jar-big-2.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "variant/de-jar-big-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-jars-group-1.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "variant/de-jars-group-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-basket-spice-1.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "variant/de-basket-spice-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-basket-spice-2.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "variant/de-basket-spice-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-sacks-1.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "variant/de-sacks-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-sacks-2.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "variant/de-sacks-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-crate-1.png",
+   "kind": "box",
+   "chipset": "desert_east",
+   "label": "variant/de-crate-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-crate-2.png",
+   "kind": "box",
+   "chipset": "desert_east",
+   "label": "variant/de-crate-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-crates-stack-1.png",
+   "kind": "box",
+   "chipset": "desert_east",
+   "label": "variant/de-crates-stack-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-carpet-rolls-1.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "variant/de-carpet-rolls-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-lantern-post-1.png",
+   "kind": "column",
+   "chipset": "desert_east",
+   "label": "variant/de-lantern-post-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-lantern-post-2.png",
+   "kind": "column",
+   "chipset": "desert_east",
+   "label": "variant/de-lantern-post-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-brazier-1.png",
+   "kind": "container",
+   "chipset": "desert_east",
+   "label": "variant/de-brazier-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-brazier-2.png",
+   "kind": "container",
+   "chipset": "desert_east",
+   "label": "variant/de-brazier-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-torch-stand-1.png",
+   "kind": "column",
+   "chipset": "desert_east",
+   "label": "variant/de-torch-stand-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-brazier-stand-1.png",
+   "kind": "column",
+   "chipset": "desert_east",
+   "label": "variant/de-brazier-stand-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-bench-stone-1.png",
+   "kind": "seat",
+   "chipset": "desert_east",
+   "label": "variant/de-bench-stone-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-bench-stone-2.png",
+   "kind": "seat",
+   "chipset": "desert_east",
+   "label": "variant/de-bench-stone-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-divan-1.png",
+   "kind": "seat",
+   "chipset": "desert_east",
+   "label": "variant/de-divan-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-cushion-1.png",
+   "kind": "seat",
+   "chipset": "desert_east",
+   "label": "variant/de-cushion-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-tea-table-1.png",
+   "kind": "low_furniture",
+   "chipset": "desert_east",
+   "label": "variant/de-tea-table-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-shop-counter-1.png",
+   "kind": "low_furniture",
+   "chipset": "desert_east",
+   "label": "variant/de-shop-counter-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-tea-counter-1.png",
+   "kind": "low_furniture",
+   "chipset": "desert_east",
+   "label": "variant/de-tea-counter-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-well-1.png",
+   "kind": "container",
+   "chipset": "desert_east",
+   "label": "variant/de-well-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-well-2.png",
+   "kind": "container",
+   "chipset": "desert_east",
+   "label": "variant/de-well-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-trough-1.png",
+   "kind": "container",
+   "chipset": "desert_east",
+   "label": "variant/de-trough-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-hitch-post-1.png",
+   "kind": "column",
+   "chipset": "desert_east",
+   "label": "variant/de-hitch-post-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-hitch-post-2.png",
+   "kind": "column",
+   "chipset": "desert_east",
+   "label": "variant/de-hitch-post-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-camel-1.png",
+   "kind": "other",
+   "chipset": "desert_east",
+   "label": "variant/de-camel-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-camel-rest-1.png",
+   "kind": "other",
+   "chipset": "desert_east",
+   "label": "variant/de-camel-rest-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-cart-camel-1.png",
+   "kind": "box",
+   "chipset": "desert_east",
+   "label": "variant/de-cart-camel-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-handcart-1.png",
+   "kind": "box",
+   "chipset": "desert_east",
+   "label": "variant/de-handcart-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-shelf-pottery-1.png",
+   "kind": "tall_furniture",
+   "chipset": "desert_east",
+   "label": "variant/de-shelf-pottery-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-shelf-pottery-2.png",
+   "kind": "tall_furniture",
+   "chipset": "desert_east",
+   "label": "variant/de-shelf-pottery-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-shelf-inn-1.png",
+   "kind": "tall_furniture",
+   "chipset": "desert_east",
+   "label": "variant/de-shelf-inn-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-bed-mat-1.png",
+   "kind": "low_furniture",
+   "chipset": "desert_east",
+   "label": "variant/de-bed-mat-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-bed-mat-2.png",
+   "kind": "low_furniture",
+   "chipset": "desert_east",
+   "label": "variant/de-bed-mat-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-jar-tall-1.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "variant/de-jar-tall-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-jar-tall-2.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "variant/de-jar-tall-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-vase-tall-1.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "variant/de-vase-tall-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-chest-brass-1.png",
+   "kind": "box",
+   "chipset": "desert_east",
+   "label": "variant/de-chest-brass-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-treasure-chest-1.png",
+   "kind": "box",
+   "chipset": "desert_east",
+   "label": "variant/de-treasure-chest-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-rug-medallion-1.png",
+   "kind": "flat",
+   "chipset": "desert_east",
+   "label": "variant/de-rug-medallion-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-tannur-oven-1.png",
+   "kind": "container",
+   "chipset": "desert_east",
+   "label": "variant/de-tannur-oven-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-hookah-1.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "variant/de-hookah-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-basin-tap-1.png",
+   "kind": "container",
+   "chipset": "desert_east",
+   "label": "variant/de-basin-tap-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-marble-bench-1.png",
+   "kind": "seat",
+   "chipset": "desert_east",
+   "label": "variant/de-marble-bench-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-throne-1.png",
+   "kind": "seat",
+   "chipset": "desert_east",
+   "label": "variant/de-throne-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-sarcophagus-1.png",
+   "kind": "box",
+   "chipset": "desert_east",
+   "label": "variant/de-sarcophagus-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-guardian-statue-1.png",
+   "kind": "figure",
+   "chipset": "desert_east",
+   "label": "variant/de-guardian-statue-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-canopic-jars-1.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "variant/de-canopic-jars-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-offering-table-1.png",
+   "kind": "low_furniture",
+   "chipset": "desert_east",
+   "label": "variant/de-offering-table-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-column-palace-1.png",
+   "kind": "column",
+   "chipset": "desert_east",
+   "label": "variant/de-column-palace-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-kiln-1.png",
+   "kind": "container",
+   "chipset": "desert_east",
+   "label": "variant/de-kiln-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-incense-burner-1.png",
+   "kind": "container",
+   "chipset": "desert_east",
+   "label": "variant/de-incense-burner-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-incense-burner-2.png",
+   "kind": "container",
+   "chipset": "desert_east",
+   "label": "variant/de-incense-burner-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-notice-board-1.png",
+   "kind": "front_prop",
+   "chipset": "desert_east",
+   "label": "variant/de-notice-board-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-notice-board-2.png",
+   "kind": "front_prop",
+   "chipset": "desert_east",
+   "label": "variant/de-notice-board-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-plunge-pool-1.png",
+   "kind": "container",
+   "chipset": "desert_east",
+   "label": "variant/de-plunge-pool-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-wall-plaster-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "variant/de-wall-plaster-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-wall-stone-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "variant/de-wall-stone-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-wall-tomb-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "variant/de-wall-tomb-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-wall-palace-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "variant/de-wall-palace-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-wall-hammam-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "variant/de-wall-hammam-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-barrel.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "object/de-barrel"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-barrels.png",
+   "kind": "round_body",
+   "chipset": "desert_east",
+   "label": "object/de-barrels"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-notice-board.png",
+   "kind": "front_prop",
+   "chipset": "desert_east",
+   "label": "object/de-notice-board"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-stop-lever.png",
+   "kind": "other",
+   "chipset": "desert_east",
+   "label": "object/de-stop-lever"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-hatch-down.png",
+   "kind": "flat",
+   "chipset": "desert_east",
+   "label": "object/de-hatch-down"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-room-door.png",
+   "kind": "wall_structure",
+   "chipset": "desert_east",
+   "label": "object/de-room-door"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-save-crystal.png",
+   "kind": "figure",
+   "chipset": "desert_east",
+   "label": "object/de-save-crystal"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-wall-window-plaster-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "variant/de-wall-window-plaster-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-wall-niche-stone-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "variant/de-wall-niche-stone-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-v-house-adobe-4-1.png",
+   "kind": "structure",
+   "chipset": "desert_east",
+   "label": "house/de-v-house-adobe-4-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-v-house-adobe-4-2.png",
+   "kind": "structure",
+   "chipset": "desert_east",
+   "label": "house/de-v-house-adobe-4-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-v-house-adobe-3-1.png",
+   "kind": "structure",
+   "chipset": "desert_east",
+   "label": "house/de-v-house-adobe-3-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-v-house-stone-4-1.png",
+   "kind": "structure",
+   "chipset": "desert_east",
+   "label": "house/de-v-house-stone-4-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-v-house-plaster-4-1.png",
+   "kind": "structure",
+   "chipset": "desert_east",
+   "label": "house/de-v-house-plaster-4-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-v-house-adobe-5-1.png",
+   "kind": "structure",
+   "chipset": "desert_east",
+   "label": "house/de-v-house-adobe-5-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-v-house-shop-1.png",
+   "kind": "structure",
+   "chipset": "desert_east",
+   "label": "house/de-v-house-shop-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-house-wide-5.png",
+   "kind": "structure",
+   "chipset": "desert_east",
+   "label": "house/de-house-wide-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-house-hut-2.png",
+   "kind": "structure",
+   "chipset": "desert_east",
+   "label": "house/de-house-hut-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-ground-red-a.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-ground-red-a"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-ground-red-b.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-ground-red-b"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-ground-pale-a.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-ground-pale-a"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-ground-pale-b.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-ground-pale-b"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-a.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-a"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-b.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-b"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-a.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-a"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-b.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-b"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-plaza-zellige-a.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-plaza-zellige-a"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-plaza-zellige-b.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-plaza-zellige-b"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-plaza-marble-a.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-plaza-marble-a"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-plaza-marble-b.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-plaza-marble-b"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-plaza-herring-a.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-plaza-herring-a"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-plaza-herring-b.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-plaza-herring-b"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-cobble-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-cobble-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-brick-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-brick-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-red-cobble-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-cobble-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-road-pale-brick-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-red-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-red-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-grass-pale-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-grass-pale-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-red-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-red-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-dune-pale-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-dune-pale-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-zellige-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-marble-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-marble-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-herring-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-herring-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-zellige-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-marble-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-red-herring-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-15"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-0.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-0"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-1.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-1"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-2.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-2"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-3.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-3"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-4.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-4"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-5.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-5"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-6.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-6"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-7.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-7"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-8.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-8"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-9.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-9"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-10.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-10"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-11.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-11"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-12.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-12"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-13.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-13"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-14.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-14"
+  },
+  {
+   "png": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-15.png",
+   "kind": "terrain",
+   "chipset": "desert_east",
+   "label": "look/de-look-flag-pale-herring-15"
+  }
+ ]
+}

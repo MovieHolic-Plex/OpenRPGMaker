@@ -1,0 +1,4313 @@
+{
+ "_doc": "테마 세계 칩셋 늘리기 첫 판 — scripts/content/world-kits/fable/build.py 가 쓴다(손으로 고치지 않는다). 그림은 Claude Fable 5.2 medium 한 방과 그 코드 조립 · 3/4 관문 미통과 — 오너 면제 묶음(waiver). 변형은 원본 키트와 칸 크기·통행이 같고 ai.variantOf 로 굽는다.",
+ "waiver": "fable-variety-desert-east-2026-11-13",
+ "license": "drawn by Claude Fable 5.2 for this project (own work)",
+ "items": [
+  {
+   "type": "variant",
+   "id": "de-scrub-1",
+   "variantOf": "de-scrub",
+   "src": "tiledata/desert-east/variety/pieces/de-scrub-1.png",
+   "gate": "organic",
+   "w": 1,
+   "h": 1,
+   "en": "a grey-green saltbush tuft with tiny pale leaves and a few dry twigs",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-scrub-2",
+   "variantOf": "de-scrub",
+   "src": "tiledata/desert-east/variety/pieces/de-scrub-2.png",
+   "gate": "organic",
+   "w": 1,
+   "h": 1,
+   "en": "a low thorny camel-thorn bush with dark olive leaves and small yellow flowers",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-tuft-1",
+   "variantOf": "de-tuft",
+   "src": "tiledata/desert-east/variety/pieces/de-tuft-1.png",
+   "gate": "organic",
+   "w": 1,
+   "h": 1,
+   "en": "a fan of pale straw-yellow grass blades bending in the wind",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-tuft-2",
+   "variantOf": "de-tuft",
+   "src": "tiledata/desert-east/variety/pieces/de-tuft-2.png",
+   "gate": "organic",
+   "w": 1,
+   "h": 1,
+   "en": "three short spiky esparto grass clumps, ochre and dull green",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-reeds-1",
+   "variantOf": "de-reeds",
+   "src": "tiledata/desert-east/variety/pieces/de-reeds-1.png",
+   "gate": "organic",
+   "w": 1,
+   "h": 1,
+   "en": "tall papyrus stems with round feathery heads",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-reeds-2",
+   "variantOf": "de-reeds",
+   "src": "tiledata/desert-east/variety/pieces/de-reeds-2.png",
+   "gate": "organic",
+   "w": 1,
+   "h": 1,
+   "en": "cattail reeds with brown seed heads and long blades",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-oleander-1",
+   "variantOf": "de-oleander",
+   "src": "tiledata/desert-east/variety/pieces/de-oleander-1.png",
+   "gate": "organic",
+   "w": 1,
+   "h": 1,
+   "en": "a pink bougainvillea bush, papery magenta flowers over dark leaves",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-oleander-2",
+   "variantOf": "de-oleander",
+   "src": "tiledata/desert-east/variety/pieces/de-oleander-2.png",
+   "gate": "organic",
+   "w": 1,
+   "h": 1,
+   "en": "a white jasmine shrub with small star flowers",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-aloe-1",
+   "variantOf": "de-aloe",
+   "src": "tiledata/desert-east/variety/pieces/de-aloe-1.png",
+   "gate": "organic",
+   "w": 1,
+   "h": 1,
+   "en": "a round barrel cactus with ribs and a crown of red flowers",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-aloe-2",
+   "variantOf": "de-aloe",
+   "src": "tiledata/desert-east/variety/pieces/de-aloe-2.png",
+   "gate": "organic",
+   "w": 1,
+   "h": 1,
+   "en": "an agave rosette of thick blue-grey pointed leaves",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-rock-small-1",
+   "variantOf": "de-rock-small",
+   "src": "tiledata/desert-east/variety/pieces/de-rock-small-1.png",
+   "gate": "organic",
+   "w": 1,
+   "h": 1,
+   "en": "a flat red sandstone slab with layered edges",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-rock-small-2",
+   "variantOf": "de-rock-small",
+   "src": "tiledata/desert-east/variety/pieces/de-rock-small-2.png",
+   "gate": "organic",
+   "w": 1,
+   "h": 1,
+   "en": "two smooth grey river pebbles side by side",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-boulder-1",
+   "variantOf": "de-boulder",
+   "src": "tiledata/desert-east/variety/pieces/de-boulder-1.png",
+   "gate": "organic",
+   "w": 2,
+   "h": 2,
+   "en": "a wind-carved sandstone boulder with horizontal layers and an overhang",
+   "cells": [
+    [
+     0,
+     0,
+     "star"
+    ],
+    [
+     1,
+     0,
+     "star"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-boulder-2",
+   "variantOf": "de-boulder",
+   "src": "tiledata/desert-east/variety/pieces/de-boulder-2.png",
+   "gate": "organic",
+   "w": 2,
+   "h": 2,
+   "en": "a heap of dark weathered basalt blocks",
+   "cells": [
+    [
+     0,
+     0,
+     "star"
+    ],
+    [
+     1,
+     0,
+     "star"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-outcrop-1",
+   "variantOf": "de-outcrop",
+   "src": "tiledata/desert-east/variety/pieces/de-outcrop-1.png",
+   "gate": "organic",
+   "w": 3,
+   "h": 2,
+   "en": "a low mesa of layered red and ochre rock with a flat top",
+   "cells": [
+    [
+     0,
+     0,
+     "star"
+    ],
+    [
+     1,
+     0,
+     "star"
+    ],
+    [
+     2,
+     0,
+     "star"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ],
+    [
+     2,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-palm-date-1",
+   "variantOf": "de-palm-date",
+   "src": "tiledata/desert-east/variety/pieces/de-palm-date-1.png",
+   "gate": "organic",
+   "w": 2,
+   "h": 3,
+   "en": "a tall date palm with heavy orange date clusters under the fronds, ringed trunk",
+   "cells": [
+    [
+     0,
+     0,
+     "star"
+    ],
+    [
+     1,
+     0,
+     "star"
+    ],
+    [
+     0,
+     1,
+     "star"
+    ],
+    [
+     1,
+     1,
+     "star"
+    ],
+    [
+     0,
+     2,
+     "solid"
+    ],
+    [
+     1,
+     2,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-palm-date-2",
+   "variantOf": "de-palm-date",
+   "src": "tiledata/desert-east/variety/pieces/de-palm-date-2.png",
+   "gate": "organic",
+   "w": 2,
+   "h": 3,
+   "en": "a slender leaning palm with a ragged crown and a few dead brown fronds hanging",
+   "cells": [
+    [
+     0,
+     0,
+     "star"
+    ],
+    [
+     1,
+     0,
+     "star"
+    ],
+    [
+     0,
+     1,
+     "star"
+    ],
+    [
+     1,
+     1,
+     "star"
+    ],
+    [
+     0,
+     2,
+     "solid"
+    ],
+    [
+     1,
+     2,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-palm-young-1",
+   "variantOf": "de-palm-young",
+   "src": "tiledata/desert-east/variety/pieces/de-palm-young-1.png",
+   "gate": "organic",
+   "w": 2,
+   "h": 2,
+   "en": "a dwarf fan palm with stiff fan-shaped leaves on short stalks",
+   "cells": [
+    [
+     0,
+     0,
+     "star"
+    ],
+    [
+     1,
+     0,
+     "star"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-palm-young-2",
+   "variantOf": "de-palm-young",
+   "src": "tiledata/desert-east/variety/pieces/de-palm-young-2.png",
+   "gate": "organic",
+   "w": 2,
+   "h": 2,
+   "en": "a young date palm sprouting from a ring of stones",
+   "cells": [
+    [
+     0,
+     0,
+     "star"
+    ],
+    [
+     1,
+     0,
+     "star"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-palm-pair-1",
+   "variantOf": "de-palm-pair",
+   "src": "tiledata/desert-east/variety/pieces/de-palm-pair-1.png",
+   "gate": "organic",
+   "w": 3,
+   "h": 3,
+   "en": "two doum palms with forked trunks and fan crowns",
+   "cells": [
+    [
+     0,
+     0,
+     "star"
+    ],
+    [
+     1,
+     0,
+     "star"
+    ],
+    [
+     2,
+     0,
+     "star"
+    ],
+    [
+     0,
+     1,
+     "star"
+    ],
+    [
+     1,
+     1,
+     "star"
+    ],
+    [
+     2,
+     1,
+     "star"
+    ],
+    [
+     0,
+     2,
+     "solid"
+    ],
+    [
+     1,
+     2,
+     "solid"
+    ],
+    [
+     2,
+     2,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-palm-stump-1",
+   "variantOf": "de-palm-stump",
+   "src": "tiledata/desert-east/variety/pieces/de-palm-stump-1.png",
+   "gate": "organic",
+   "w": 1,
+   "h": 1,
+   "en": "a cut palm trunk with sprouting new leaves at its top",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-stall-pottery-1",
+   "variantOf": "de-stall-pottery",
+   "src": "tiledata/desert-east/variety/pieces/de-stall-pottery-1.png",
+   "gate": "structure",
+   "w": 2,
+   "h": 2,
+   "en": "a stall under a green-and-white striped awning selling stacked copper pots and trays",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-stall-spice-1",
+   "variantOf": "de-stall-spice",
+   "src": "tiledata/desert-east/variety/pieces/de-stall-spice-1.png",
+   "gate": "structure",
+   "w": 2,
+   "h": 2,
+   "en": "a stall under a plain reed mat roof with open sacks of dates, nuts and dried figs",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-stall-carpet-1",
+   "variantOf": "de-stall-carpet",
+   "src": "tiledata/desert-east/variety/pieces/de-stall-carpet-1.png",
+   "gate": "structure",
+   "w": 2,
+   "h": 2,
+   "en": "a stall under an indigo awning with hanging woven baskets and bags",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-stall-fruit-1",
+   "variantOf": "de-stall-fruit",
+   "src": "tiledata/desert-east/variety/pieces/de-stall-fruit-1.png",
+   "gate": "structure",
+   "w": 2,
+   "h": 2,
+   "en": "a stall under an orange awning with melons, pomegranates and grapes in crates",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-stall-lantern-1",
+   "variantOf": "de-stall-lantern",
+   "src": "tiledata/desert-east/variety/pieces/de-stall-lantern-1.png",
+   "gate": "structure",
+   "w": 2,
+   "h": 2,
+   "en": "a stall under a red awning with hanging bird cages and a perfume bottle shelf",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-jar-big-1",
+   "variantOf": "de-jar-big",
+   "src": "tiledata/desert-east/variety/pieces/de-jar-big-1.png",
+   "gate": "round_body",
+   "w": 1,
+   "h": 1,
+   "en": "a tall unglazed amphora with two handles leaning in a wooden stand",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-jar-big-2",
+   "variantOf": "de-jar-big",
+   "src": "tiledata/desert-east/variety/pieces/de-jar-big-2.png",
+   "gate": "round_body",
+   "w": 1,
+   "h": 1,
+   "en": "a squat turquoise-glazed storage jar with a wooden lid",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-jars-group-1",
+   "variantOf": "de-jars-group",
+   "src": "tiledata/desert-east/variety/pieces/de-jars-group-1.png",
+   "gate": "round_body",
+   "w": 2,
+   "h": 1,
+   "en": "three blue-and-white painted pots of different heights",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-basket-spice-1",
+   "variantOf": "de-basket-spice",
+   "src": "tiledata/desert-east/variety/pieces/de-basket-spice-1.png",
+   "gate": "round_body",
+   "w": 1,
+   "h": 1,
+   "en": "a woven palm-leaf basket heaped with dates",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-basket-spice-2",
+   "variantOf": "de-basket-spice",
+   "src": "tiledata/desert-east/variety/pieces/de-basket-spice-2.png",
+   "gate": "round_body",
+   "w": 1,
+   "h": 1,
+   "en": "a round brass bowl of saffron threads on a low stool",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-sacks-1",
+   "variantOf": "de-sacks",
+   "src": "tiledata/desert-east/variety/pieces/de-sacks-1.png",
+   "gate": "round_body",
+   "w": 1,
+   "h": 1,
+   "en": "two tied hemp grain sacks leaning on each other",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-sacks-2",
+   "variantOf": "de-sacks",
+   "src": "tiledata/desert-east/variety/pieces/de-sacks-2.png",
+   "gate": "round_body",
+   "w": 1,
+   "h": 1,
+   "en": "a pile of striped woollen bundles tied with rope",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-crate-1",
+   "variantOf": "de-crate",
+   "src": "tiledata/desert-east/variety/pieces/de-crate-1.png",
+   "gate": "box",
+   "w": 1,
+   "h": 1,
+   "en": "a palm-rib cage crate with a clay jar inside",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-crate-2",
+   "variantOf": "de-crate",
+   "src": "tiledata/desert-east/variety/pieces/de-crate-2.png",
+   "gate": "box",
+   "w": 1,
+   "h": 1,
+   "en": "a small iron-banded cedar chest box",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-crates-stack-1",
+   "variantOf": "de-crates-stack",
+   "src": "tiledata/desert-east/variety/pieces/de-crates-stack-1.png",
+   "gate": "box",
+   "w": 2,
+   "h": 2,
+   "en": "a stack of rope-tied wooden crates and a rolled mat on top",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-carpet-rolls-1",
+   "variantOf": "de-carpet-rolls",
+   "src": "tiledata/desert-east/variety/pieces/de-carpet-rolls-1.png",
+   "gate": "round_body",
+   "w": 1,
+   "h": 1,
+   "en": "three rolled kilim rugs standing upright in red, indigo and saffron",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-lantern-post-1",
+   "variantOf": "de-lantern-post",
+   "src": "tiledata/desert-east/variety/pieces/de-lantern-post-1.png",
+   "gate": "column",
+   "w": 1,
+   "h": 2,
+   "en": "a black iron post with a hanging star-pierced brass lantern",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-lantern-post-2",
+   "variantOf": "de-lantern-post",
+   "src": "tiledata/desert-east/variety/pieces/de-lantern-post-2.png",
+   "gate": "column",
+   "w": 1,
+   "h": 2,
+   "en": "a carved wooden pole with a cloth-shaded oil lamp on top",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-brazier-1",
+   "variantOf": "de-brazier",
+   "src": "tiledata/desert-east/variety/pieces/de-brazier-1.png",
+   "gate": "container",
+   "w": 1,
+   "h": 1,
+   "en": "a low clay fire bowl on three stones with glowing coals",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-brazier-2",
+   "variantOf": "de-brazier",
+   "src": "tiledata/desert-east/variety/pieces/de-brazier-2.png",
+   "gate": "container",
+   "w": 1,
+   "h": 1,
+   "en": "a copper basin brazier on a tripod with a small flame",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-torch-stand-1",
+   "variantOf": "de-torch-stand",
+   "src": "tiledata/desert-east/variety/pieces/de-torch-stand-1.png",
+   "gate": "column",
+   "w": 1,
+   "h": 2,
+   "en": "a sandstone pillar topped by a burning oil bowl",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-brazier-stand-1",
+   "variantOf": "de-brazier-stand",
+   "src": "tiledata/desert-east/variety/pieces/de-brazier-stand-1.png",
+   "gate": "column",
+   "w": 1,
+   "h": 2,
+   "en": "a tall bronze stand with a pierced dome burner glowing inside",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-bench-stone-1",
+   "variantOf": "de-bench-stone",
+   "src": "tiledata/desert-east/variety/pieces/de-bench-stone-1.png",
+   "gate": "seat",
+   "w": 2,
+   "h": 1,
+   "en": "a wooden bench with a woven palm seat and turned legs",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-bench-stone-2",
+   "variantOf": "de-bench-stone",
+   "src": "tiledata/desert-east/variety/pieces/de-bench-stone-2.png",
+   "gate": "seat",
+   "w": 2,
+   "h": 1,
+   "en": "a mud-brick bench plastered white with a striped cushion",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-divan-1",
+   "variantOf": "de-divan",
+   "src": "tiledata/desert-east/variety/pieces/de-divan-1.png",
+   "gate": "seat",
+   "w": 2,
+   "h": 1,
+   "en": "a low divan with indigo cushions and a fringed cover",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-cushion-1",
+   "variantOf": "de-cushion",
+   "src": "tiledata/desert-east/variety/pieces/de-cushion-1.png",
+   "gate": "seat",
+   "w": 1,
+   "h": 1,
+   "en": "a square leather pouf with stitched star pattern",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-tea-table-1",
+   "variantOf": "de-tea-table",
+   "src": "tiledata/desert-east/variety/pieces/de-tea-table-1.png",
+   "gate": "low_furniture",
+   "w": 2,
+   "h": 1,
+   "en": "a low octagonal inlaid wooden table with a teapot and two glasses",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-shop-counter-1",
+   "variantOf": "de-shop-counter",
+   "src": "tiledata/desert-east/variety/pieces/de-shop-counter-1.png",
+   "gate": "low_furniture",
+   "w": 2,
+   "h": 1,
+   "en": "a cedar counter with a set of brass weights and an abacus",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-tea-counter-1",
+   "variantOf": "de-tea-counter",
+   "src": "tiledata/desert-east/variety/pieces/de-tea-counter-1.png",
+   "gate": "low_furniture",
+   "w": 3,
+   "h": 1,
+   "en": "a tiled counter with a big copper kettle on coals and glasses",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     2,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-well-1",
+   "variantOf": "de-well",
+   "src": "tiledata/desert-east/variety/pieces/de-well-1.png",
+   "gate": "container",
+   "w": 2,
+   "h": 2,
+   "en": "a round well with a turquoise tiled rim and a bucket on a rope, no roof",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-well-2",
+   "variantOf": "de-well",
+   "src": "tiledata/desert-east/variety/pieces/de-well-2.png",
+   "gate": "container",
+   "w": 2,
+   "h": 2,
+   "en": "a square sandstone well under a small timber frame with a pulley",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-trough-1",
+   "variantOf": "de-trough",
+   "src": "tiledata/desert-east/variety/pieces/de-trough-1.png",
+   "gate": "container",
+   "w": 2,
+   "h": 1,
+   "en": "a hollowed palm-log trough full of water",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-hitch-post-1",
+   "variantOf": "de-hitch-post",
+   "src": "tiledata/desert-east/variety/pieces/de-hitch-post-1.png",
+   "gate": "column",
+   "w": 1,
+   "h": 1,
+   "en": "a wooden post with an iron ring and a coiled rope",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-hitch-post-2",
+   "variantOf": "de-hitch-post",
+   "src": "tiledata/desert-east/variety/pieces/de-hitch-post-2.png",
+   "gate": "column",
+   "w": 1,
+   "h": 1,
+   "en": "a carved stone hitching post with a brass ring",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-camel-1",
+   "variantOf": "de-camel",
+   "src": "tiledata/desert-east/variety/pieces/de-camel-1.png",
+   "gate": "other",
+   "w": 2,
+   "h": 2,
+   "en": "a pale cream dromedary with a red tasselled saddle blanket",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-camel-rest-1",
+   "variantOf": "de-camel-rest",
+   "src": "tiledata/desert-east/variety/pieces/de-camel-rest-1.png",
+   "gate": "other",
+   "w": 2,
+   "h": 2,
+   "en": "a dark brown camel resting on the ground with saddle bags",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-cart-camel-1",
+   "variantOf": "de-cart-camel",
+   "src": "tiledata/desert-east/variety/pieces/de-cart-camel-1.png",
+   "gate": "box",
+   "w": 3,
+   "h": 2,
+   "en": "a two-wheeled donkey cart loaded with water skins and a donkey",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     2,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ],
+    [
+     2,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-handcart-1",
+   "variantOf": "de-handcart",
+   "src": "tiledata/desert-east/variety/pieces/de-handcart-1.png",
+   "gate": "box",
+   "w": 2,
+   "h": 1,
+   "en": "a wheelbarrow of melons with a wooden wheel",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-shelf-pottery-1",
+   "variantOf": "de-shelf-pottery",
+   "src": "tiledata/desert-east/variety/pieces/de-shelf-pottery-1.png",
+   "gate": "tall_furniture",
+   "w": 2,
+   "h": 2,
+   "en": "a niche shelf of brass lamps and teapots",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-shelf-pottery-2",
+   "variantOf": "de-shelf-pottery",
+   "src": "tiledata/desert-east/variety/pieces/de-shelf-pottery-2.png",
+   "gate": "tall_furniture",
+   "w": 2,
+   "h": 2,
+   "en": "a wooden rack of rolled scrolls and books",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-shelf-inn-1",
+   "variantOf": "de-shelf-inn",
+   "src": "tiledata/desert-east/variety/pieces/de-shelf-inn-1.png",
+   "gate": "tall_furniture",
+   "w": 1,
+   "h": 2,
+   "en": "a narrow cupboard with carved lattice doors",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-bed-mat-1",
+   "variantOf": "de-bed-mat",
+   "src": "tiledata/desert-east/variety/pieces/de-bed-mat-1.png",
+   "gate": "low_furniture",
+   "w": 1,
+   "h": 2,
+   "en": "a rope-strung wooden bed with a striped blanket",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-bed-mat-2",
+   "variantOf": "de-bed-mat",
+   "src": "tiledata/desert-east/variety/pieces/de-bed-mat-2.png",
+   "gate": "low_furniture",
+   "w": 1,
+   "h": 2,
+   "en": "a sleeping mat with a red woollen blanket and a bolster",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-jar-tall-1",
+   "variantOf": "de-jar-tall",
+   "src": "tiledata/desert-east/variety/pieces/de-jar-tall-1.png",
+   "gate": "round_body",
+   "w": 1,
+   "h": 1,
+   "en": "a tall terracotta jar with a painted black band",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-jar-tall-2",
+   "variantOf": "de-jar-tall",
+   "src": "tiledata/desert-east/variety/pieces/de-jar-tall-2.png",
+   "gate": "round_body",
+   "w": 1,
+   "h": 1,
+   "en": "a slender lapis-glazed vase with gold rim",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-vase-tall-1",
+   "variantOf": "de-vase-tall",
+   "src": "tiledata/desert-east/variety/pieces/de-vase-tall-1.png",
+   "gate": "round_body",
+   "w": 1,
+   "h": 1,
+   "en": "a tall brass ewer with a long spout",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-chest-brass-1",
+   "variantOf": "de-chest-brass",
+   "src": "tiledata/desert-east/variety/pieces/de-chest-brass-1.png",
+   "gate": "box",
+   "w": 1,
+   "h": 1,
+   "en": "a painted green chest with flower motifs and brass corners",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-treasure-chest-1",
+   "variantOf": "de-treasure-chest",
+   "src": "tiledata/desert-east/variety/pieces/de-treasure-chest-1.png",
+   "gate": "box",
+   "w": 1,
+   "h": 1,
+   "en": "a closed black-and-gold lacquer chest with a gold scarab clasp",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-rug-medallion-1",
+   "variantOf": "de-rug-medallion",
+   "src": "tiledata/desert-east/variety/pieces/de-rug-medallion-1.png",
+   "gate": "flat",
+   "w": 3,
+   "h": 2,
+   "en": "a red kilim with a row of indigo diamonds and fringes at both ends",
+   "cells": [
+    [
+     0,
+     0,
+     "flat"
+    ],
+    [
+     1,
+     0,
+     "floor"
+    ],
+    [
+     2,
+     0,
+     "flat"
+    ],
+    [
+     0,
+     1,
+     "flat"
+    ],
+    [
+     1,
+     1,
+     "floor"
+    ],
+    [
+     2,
+     1,
+     "flat"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-tannur-oven-1",
+   "variantOf": "de-tannur-oven",
+   "src": "tiledata/desert-east/variety/pieces/de-tannur-oven-1.png",
+   "gate": "container",
+   "w": 1,
+   "h": 1,
+   "en": "a round clay bread oven with flatbread on its rim",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-hookah-1",
+   "variantOf": "de-hookah",
+   "src": "tiledata/desert-east/variety/pieces/de-hookah-1.png",
+   "gate": "round_body",
+   "w": 1,
+   "h": 1,
+   "en": "a tall green-glass water pipe with a coiled hose",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-basin-tap-1",
+   "variantOf": "de-basin-tap",
+   "src": "tiledata/desert-east/variety/pieces/de-basin-tap-1.png",
+   "gate": "container",
+   "w": 1,
+   "h": 1,
+   "en": "a carved stone basin with a brass lion-head spout",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-marble-bench-1",
+   "variantOf": "de-marble-bench",
+   "src": "tiledata/desert-east/variety/pieces/de-marble-bench-1.png",
+   "gate": "seat",
+   "w": 2,
+   "h": 1,
+   "en": "a turquoise tiled bench with a white top",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-throne-1",
+   "variantOf": "de-throne",
+   "src": "tiledata/desert-east/variety/pieces/de-throne-1.png",
+   "gate": "seat",
+   "w": 2,
+   "h": 2,
+   "en": "a carved ebony and ivory throne under a small fringed canopy on a step",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-sarcophagus-1",
+   "variantOf": "de-sarcophagus",
+   "src": "tiledata/desert-east/variety/pieces/de-sarcophagus-1.png",
+   "gate": "box",
+   "w": 2,
+   "h": 1,
+   "en": "a plain granite sarcophagus with a carved lid band",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-guardian-statue-1",
+   "variantOf": "de-guardian-statue",
+   "src": "tiledata/desert-east/variety/pieces/de-guardian-statue-1.png",
+   "gate": "figure",
+   "w": 1,
+   "h": 2,
+   "en": "a standing jackal-headed guardian statue on a plinth",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-canopic-jars-1",
+   "variantOf": "de-canopic-jars",
+   "src": "tiledata/desert-east/variety/pieces/de-canopic-jars-1.png",
+   "gate": "round_body",
+   "w": 1,
+   "h": 1,
+   "en": "four small alabaster jars with animal-head lids on a tray",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-offering-table-1",
+   "variantOf": "de-offering-table",
+   "src": "tiledata/desert-east/variety/pieces/de-offering-table-1.png",
+   "gate": "low_furniture",
+   "w": 2,
+   "h": 1,
+   "en": "a low stone table with bread loaves, figs and a lit lamp",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-column-palace-1",
+   "variantOf": "de-column-palace",
+   "src": "tiledata/desert-east/variety/pieces/de-column-palace-1.png",
+   "gate": "column",
+   "w": 1,
+   "h": 2,
+   "en": "a slim column with a lotus capital, painted bands in turquoise and red",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-kiln-1",
+   "variantOf": "de-kiln",
+   "src": "tiledata/desert-east/variety/pieces/de-kiln-1.png",
+   "gate": "container",
+   "w": 2,
+   "h": 2,
+   "en": "a beehive mud-brick kiln with pots stacked on its side",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-incense-burner-1",
+   "variantOf": "de-incense-burner",
+   "src": "tiledata/desert-east/variety/pieces/de-incense-burner-1.png",
+   "gate": "container",
+   "w": 1,
+   "h": 1,
+   "en": "a tall brass incense burner with a pierced domed lid and a thin curl of smoke",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-incense-burner-2",
+   "variantOf": "de-incense-burner",
+   "src": "tiledata/desert-east/variety/pieces/de-incense-burner-2.png",
+   "gate": "container",
+   "w": 1,
+   "h": 1,
+   "en": "a small turquoise-glazed clay incense bowl on a low wooden stool with glowing embers",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-notice-board-1",
+   "variantOf": "de-notice-board",
+   "src": "tiledata/desert-east/variety/pieces/de-notice-board-1.png",
+   "gate": "front_prop",
+   "w": 2,
+   "h": 2,
+   "en": "a whitewashed wall-like board of mud brick with a timber frame, pinned parchment sheets and a brass bell (no letters)",
+   "cells": [
+    [
+     0,
+     0,
+     "star"
+    ],
+    [
+     1,
+     0,
+     "star"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-notice-board-2",
+   "variantOf": "de-notice-board",
+   "src": "tiledata/desert-east/variety/pieces/de-notice-board-2.png",
+   "gate": "front_prop",
+   "w": 2,
+   "h": 2,
+   "en": "a notice board made of a carved sandstone slab on a plinth with pinned paper notes and a red ribbon (no letters)",
+   "cells": [
+    [
+     0,
+     0,
+     "star"
+    ],
+    [
+     1,
+     0,
+     "star"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-plunge-pool-1",
+   "variantOf": "de-plunge-pool",
+   "src": "tiledata/desert-east/variety/pieces/de-plunge-pool-1.png",
+   "gate": "container",
+   "w": 3,
+   "h": 2,
+   "en": "a sunken bath pool rimmed with green glazed tiles, steaming pale water and two steps at the left",
+   "cells": [
+    [
+     0,
+     0,
+     "solid"
+    ],
+    [
+     1,
+     0,
+     "solid"
+    ],
+    [
+     2,
+     0,
+     "solid"
+    ],
+    [
+     0,
+     1,
+     "solid"
+    ],
+    [
+     1,
+     1,
+     "solid"
+    ],
+    [
+     2,
+     1,
+     "solid"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-wall-plaster-1",
+   "variantOf": "de-wall-plaster",
+   "src": "tiledata/desert-east/variety/pieces/de-wall-plaster-1.png",
+   "gate": "terrain",
+   "w": 1,
+   "h": 2,
+   "en": "a lime-plastered wall with a band of blue-and-white painted tiles at its foot and a plain cornice",
+   "cells": [
+    [
+     0,
+     0,
+     "solidfloor"
+    ],
+    [
+     0,
+     1,
+     "solidfloor"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-wall-stone-1",
+   "variantOf": "de-wall-stone",
+   "src": "tiledata/desert-east/variety/pieces/de-wall-stone-1.png",
+   "gate": "terrain",
+   "w": 1,
+   "h": 2,
+   "en": "a coursed sandstone wall with a carved frieze of small arches near the top",
+   "cells": [
+    [
+     0,
+     0,
+     "solidfloor"
+    ],
+    [
+     0,
+     1,
+     "solidfloor"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-wall-tomb-1",
+   "variantOf": "de-wall-tomb",
+   "src": "tiledata/desert-east/variety/pieces/de-wall-tomb-1.png",
+   "gate": "terrain",
+   "w": 1,
+   "h": 2,
+   "en": "a dark limestone tomb wall painted with a band of hieroglyph-like pictures (no readable letters) on ochre",
+   "cells": [
+    [
+     0,
+     0,
+     "solidfloor"
+    ],
+    [
+     0,
+     1,
+     "solidfloor"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-wall-palace-1",
+   "variantOf": "de-wall-palace",
+   "src": "tiledata/desert-east/variety/pieces/de-wall-palace-1.png",
+   "gate": "terrain",
+   "w": 1,
+   "h": 2,
+   "en": "a palace wall of white marble panels with a gold-and-lapis geometric star band",
+   "cells": [
+    [
+     0,
+     0,
+     "solidfloor"
+    ],
+    [
+     0,
+     1,
+     "solidfloor"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-wall-hammam-1",
+   "variantOf": "de-wall-hammam",
+   "src": "tiledata/desert-east/variety/pieces/de-wall-hammam-1.png",
+   "gate": "terrain",
+   "w": 1,
+   "h": 2,
+   "en": "a bath-house wall of green-glazed square tiles with a white grout grid and a dark skirting",
+   "cells": [
+    [
+     0,
+     0,
+     "solidfloor"
+    ],
+    [
+     0,
+     1,
+     "solidfloor"
+    ]
+   ]
+  },
+  {
+   "type": "object",
+   "src": "tiledata/desert-east/variety/pieces/de-barrel.png",
+   "gate": "round_body",
+   "id": "de-barrel",
+   "name": "나무 통(물·기름)",
+   "en": "wooden barrel",
+   "kind": "round_body",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "통",
+    "나무 통",
+    "술통",
+    "물통",
+    "barrel"
+   ]
+  },
+  {
+   "type": "object",
+   "src": "tiledata/desert-east/variety/pieces/de-barrels.png",
+   "gate": "round_body",
+   "id": "de-barrels",
+   "name": "통 둘(테 두른 나무 통)",
+   "en": "two barrels",
+   "kind": "round_body",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "통",
+    "나무 통",
+    "술통",
+    "barrels"
+   ]
+  },
+  {
+   "type": "object",
+   "src": "tiledata/desert-east/variety/pieces/de-notice-board.png",
+   "gate": "front_prop",
+   "id": "de-notice-board",
+   "name": "게시판(나무 판에 붙은 종이·포고문)",
+   "en": "notice board",
+   "kind": "front_prop",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "게시판",
+    "알림판",
+    "포고문",
+    "공고",
+    "기록판",
+    "notice board"
+   ]
+  },
+  {
+   "type": "object",
+   "src": "tiledata/desert-east/variety/pieces/de-stop-lever.png",
+   "gate": "other",
+   "id": "de-stop-lever",
+   "name": "바닥 레버(돌 받침 위 큰 놋 레버)",
+   "en": "floor lever",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "레버",
+    "바닥 레버",
+    "스위치",
+    "조작 레버",
+    "lever",
+    "switch"
+   ]
+  },
+  {
+   "type": "object",
+   "src": "tiledata/desert-east/variety/pieces/de-hatch-down.png",
+   "gate": "flat",
+   "id": "de-hatch-down",
+   "name": "지하로 내려가는 돌계단 입구",
+   "en": "stone stairs going down",
+   "kind": "flat",
+   "w": 2,
+   "h": 2,
+   "place": "decal",
+   "block": [],
+   "words": [
+    "계단",
+    "지하",
+    "지하 입구",
+    "입구",
+    "뚜껑문",
+    "내려가는 계단",
+    "stairs",
+    "cellar"
+   ]
+  },
+  {
+   "type": "object",
+   "src": "tiledata/desert-east/variety/pieces/de-room-door.png",
+   "gate": "wall_structure",
+   "id": "de-room-door",
+   "name": "방 문(나무 아치 문)",
+   "en": "arched wooden door between rooms",
+   "kind": "wall_structure",
+   "w": 1,
+   "h": 2,
+   "place": "walldoor",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "문",
+    "door",
+    "방문",
+    "나무 문",
+    "출입문"
+   ]
+  },
+  {
+   "type": "object",
+   "src": "tiledata/desert-east/variety/pieces/de-save-crystal.png",
+   "gate": "figure",
+   "id": "de-save-crystal",
+   "name": "세이브 수정(빛나는 청록 수정 받침)",
+   "en": "glowing save crystal",
+   "kind": "figure",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "세이브",
+    "세이브 수정",
+    "수정",
+    "저장",
+    "save crystal",
+    "crystal"
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-wall-window-plaster-1",
+   "variantOf": "de-wall-window-plaster",
+   "lookWith": "de-wall-plaster",
+   "src": "tiledata/desert-east/variety/pieces/de-wall-window-plaster-1.png",
+   "gate": "terrain",
+   "w": 1,
+   "h": 2,
+   "en": "a lime-plastered wall with a band of blue-and-white painted tiles at its foot and a plain cornice — with the opening of the original piece",
+   "cells": [
+    [
+     0,
+     0,
+     "solidfloor"
+    ],
+    [
+     0,
+     1,
+     "solidfloor"
+    ]
+   ]
+  },
+  {
+   "type": "variant",
+   "id": "de-wall-niche-stone-1",
+   "variantOf": "de-wall-niche-stone",
+   "lookWith": "de-wall-stone",
+   "src": "tiledata/desert-east/variety/pieces/de-wall-niche-stone-1.png",
+   "gate": "terrain",
+   "w": 1,
+   "h": 2,
+   "en": "a coursed sandstone wall with a carved frieze of small arches near the top — with the opening of the original piece",
+   "cells": [
+    [
+     0,
+     0,
+     "solidfloor"
+    ],
+    [
+     0,
+     1,
+     "solidfloor"
+    ]
+   ]
+  },
+  {
+   "type": "house",
+   "id": "de-v-house-adobe-4-1",
+   "variantOf": "de-house-adobe-4",
+   "name": "흙벽돌 집 변형 1",
+   "src": "tiledata/desert-east/variety/pieces/de-v-house-adobe-4-1.png",
+   "gate": "structure",
+   "w": 4,
+   "h": 4,
+   "entrance": [
+    1
+   ],
+   "en": "a whitewashed mud-brick house with a blue door, a rug airing on the roof terrace and a row of clay jars"
+  },
+  {
+   "type": "house",
+   "id": "de-v-house-adobe-4-2",
+   "variantOf": "de-house-adobe-4",
+   "name": "흙벽돌 집 변형 2",
+   "src": "tiledata/desert-east/variety/pieces/de-v-house-adobe-4-2.png",
+   "gate": "structure",
+   "w": 4,
+   "h": 4,
+   "entrance": [
+    1
+   ],
+   "en": "a two-tone ochre mud house with palm-trunk beam ends sticking out under the parapet and a curtain doorway"
+  },
+  {
+   "type": "house",
+   "id": "de-v-house-adobe-3-1",
+   "variantOf": "de-house-adobe-3",
+   "name": "흙벽돌 집(작은) 변형 1",
+   "src": "tiledata/desert-east/variety/pieces/de-v-house-adobe-3-1.png",
+   "gate": "structure",
+   "w": 3,
+   "h": 4,
+   "entrance": [
+    1
+   ],
+   "en": "a narrow pink-clay house with a small round window and a green wooden door"
+  },
+  {
+   "type": "house",
+   "id": "de-v-house-stone-4-1",
+   "variantOf": "de-house-stone-4",
+   "name": "사암 집 변형 1",
+   "src": "tiledata/desert-east/variety/pieces/de-v-house-stone-4-1.png",
+   "gate": "structure",
+   "w": 4,
+   "h": 4,
+   "entrance": [
+    2
+   ],
+   "en": "a sandstone house with a carved lintel over the door and a roof terrace with a little pergola of palm leaves"
+  },
+  {
+   "type": "house",
+   "id": "de-v-house-plaster-4-1",
+   "variantOf": "de-house-plaster-4",
+   "name": "회칠 흰 집 변형 1",
+   "src": "tiledata/desert-east/variety/pieces/de-v-house-plaster-4-1.png",
+   "gate": "structure",
+   "w": 4,
+   "h": 4,
+   "entrance": [
+    1
+   ],
+   "en": "a white plastered house with turquoise window shutters, a turquoise door and dried peppers on the roof"
+  },
+  {
+   "type": "house",
+   "id": "de-v-house-adobe-5-1",
+   "variantOf": "de-house-adobe-5",
+   "name": "흙벽돌 집(넓은, 마당 지붕) 변형 1",
+   "src": "tiledata/desert-east/variety/pieces/de-v-house-adobe-5-1.png",
+   "gate": "structure",
+   "w": 5,
+   "h": 5,
+   "entrance": [
+    2
+   ],
+   "en": "a large mud-brick house with two small windows, a heavy timber door and a roof terrace with a ladder hatch and drying dates"
+  },
+  {
+   "type": "house",
+   "id": "de-v-house-shop-1",
+   "variantOf": "de-house-shop",
+   "name": "가게 집(줄무늬 차양) 변형 1",
+   "src": "tiledata/desert-east/variety/pieces/de-v-house-shop-1.png",
+   "gate": "structure",
+   "w": 4,
+   "h": 5,
+   "entrance": [
+    2
+   ],
+   "en": "a shop house with a red-and-white striped awning over a counter of spice jars, and a blank brass sign board hanging on chains (no letters)"
+  },
+  {
+   "type": "house",
+   "id": "de-house-wide-5",
+   "variantOf": null,
+   "name": "낮고 넓은 흙집(창 둘)",
+   "src": "tiledata/desert-east/variety/pieces/de-house-wide-5.png",
+   "gate": "structure",
+   "w": 5,
+   "h": 4,
+   "entrance": [
+    2
+   ],
+   "en": "a wide low mud-brick house with two small shuttered windows, a timber door and a roof terrace with a water jar and a reed sunshade"
+  },
+  {
+   "type": "house",
+   "id": "de-house-hut-2",
+   "variantOf": null,
+   "name": "작은 흙움막(갈대 지붕 테라스)",
+   "src": "tiledata/desert-east/variety/pieces/de-house-hut-2.png",
+   "gate": "structure",
+   "w": 2,
+   "h": 3,
+   "entrance": [
+    0
+   ],
+   "en": "a tiny one-room mud hut with a reed mat over its roof terrace and a low curtained doorway"
+  }
+ ],
+ "looks": {
+  "parts": {
+   "ground": [
+    "",
+    "red",
+    "pale"
+   ],
+   "road": [
+    "",
+    "cobble",
+    "brick"
+   ],
+   "plaza": [
+    "",
+    "zellige",
+    "marble",
+    "herring"
+   ]
+  },
+  "clash": {
+   "pale": [
+    "zellige",
+    "marble"
+   ],
+   "red": [
+    "brick"
+   ]
+  },
+  "tiles": {
+   "red": {
+    "de-sand": "de-look-ground-red-a",
+    "de-sand-b": "de-look-ground-red-b",
+    "de-sand-c": "de-look-ground-red-a",
+    "de-sand-d": "de-look-ground-red-b",
+    "de-sand-ripple": "de-look-ground-red-b",
+    "de-sand-pebble": "de-look-ground-red-a"
+   },
+   "pale": {
+    "de-sand": "de-look-ground-pale-a",
+    "de-sand-b": "de-look-ground-pale-b",
+    "de-sand-c": "de-look-ground-pale-a",
+    "de-sand-d": "de-look-ground-pale-b",
+    "de-sand-ripple": "de-look-ground-pale-b",
+    "de-sand-pebble": "de-look-ground-pale-a"
+   },
+   "cobble": {
+    "de-road": "de-look-road-cobble-a",
+    "de-road-b": "de-look-road-cobble-b"
+   },
+   "brick": {
+    "de-road": "de-look-road-brick-a",
+    "de-road-b": "de-look-road-brick-b"
+   },
+   "zellige": {
+    "de-flag": "de-look-plaza-zellige-a",
+    "de-flag-b": "de-look-plaza-zellige-b"
+   },
+   "marble": {
+    "de-flag": "de-look-plaza-marble-a",
+    "de-flag-b": "de-look-plaza-marble-b"
+   },
+   "herring": {
+    "de-flag": "de-look-plaza-herring-a",
+    "de-flag-b": "de-look-plaza-herring-b"
+   }
+  },
+  "wang": {
+   "road": {
+    "cobble": [
+     "de-look-road-cobble-0",
+     "de-look-road-cobble-1",
+     "de-look-road-cobble-2",
+     "de-look-road-cobble-3",
+     "de-look-road-cobble-4",
+     "de-look-road-cobble-5",
+     "de-look-road-cobble-6",
+     "de-look-road-cobble-7",
+     "de-look-road-cobble-8",
+     "de-look-road-cobble-9",
+     "de-look-road-cobble-10",
+     "de-look-road-cobble-11",
+     "de-look-road-cobble-12",
+     "de-look-road-cobble-13",
+     "de-look-road-cobble-14",
+     "de-look-road-cobble-15"
+    ],
+    "brick": [
+     "de-look-road-brick-0",
+     "de-look-road-brick-1",
+     "de-look-road-brick-2",
+     "de-look-road-brick-3",
+     "de-look-road-brick-4",
+     "de-look-road-brick-5",
+     "de-look-road-brick-6",
+     "de-look-road-brick-7",
+     "de-look-road-brick-8",
+     "de-look-road-brick-9",
+     "de-look-road-brick-10",
+     "de-look-road-brick-11",
+     "de-look-road-brick-12",
+     "de-look-road-brick-13",
+     "de-look-road-brick-14",
+     "de-look-road-brick-15"
+    ],
+    "red": [
+     "de-look-road-red-0",
+     "de-look-road-red-1",
+     "de-look-road-red-2",
+     "de-look-road-red-3",
+     "de-look-road-red-4",
+     "de-look-road-red-5",
+     "de-look-road-red-6",
+     "de-look-road-red-7",
+     "de-look-road-red-8",
+     "de-look-road-red-9",
+     "de-look-road-red-10",
+     "de-look-road-red-11",
+     "de-look-road-red-12",
+     "de-look-road-red-13",
+     "de-look-road-red-14",
+     "de-look-road-red-15"
+    ],
+    "red+cobble": [
+     "de-look-road-red-cobble-0",
+     "de-look-road-red-cobble-1",
+     "de-look-road-red-cobble-2",
+     "de-look-road-red-cobble-3",
+     "de-look-road-red-cobble-4",
+     "de-look-road-red-cobble-5",
+     "de-look-road-red-cobble-6",
+     "de-look-road-red-cobble-7",
+     "de-look-road-red-cobble-8",
+     "de-look-road-red-cobble-9",
+     "de-look-road-red-cobble-10",
+     "de-look-road-red-cobble-11",
+     "de-look-road-red-cobble-12",
+     "de-look-road-red-cobble-13",
+     "de-look-road-red-cobble-14",
+     "de-look-road-red-cobble-15"
+    ],
+    "pale": [
+     "de-look-road-pale-0",
+     "de-look-road-pale-1",
+     "de-look-road-pale-2",
+     "de-look-road-pale-3",
+     "de-look-road-pale-4",
+     "de-look-road-pale-5",
+     "de-look-road-pale-6",
+     "de-look-road-pale-7",
+     "de-look-road-pale-8",
+     "de-look-road-pale-9",
+     "de-look-road-pale-10",
+     "de-look-road-pale-11",
+     "de-look-road-pale-12",
+     "de-look-road-pale-13",
+     "de-look-road-pale-14",
+     "de-look-road-pale-15"
+    ],
+    "pale+cobble": [
+     "de-look-road-pale-cobble-0",
+     "de-look-road-pale-cobble-1",
+     "de-look-road-pale-cobble-2",
+     "de-look-road-pale-cobble-3",
+     "de-look-road-pale-cobble-4",
+     "de-look-road-pale-cobble-5",
+     "de-look-road-pale-cobble-6",
+     "de-look-road-pale-cobble-7",
+     "de-look-road-pale-cobble-8",
+     "de-look-road-pale-cobble-9",
+     "de-look-road-pale-cobble-10",
+     "de-look-road-pale-cobble-11",
+     "de-look-road-pale-cobble-12",
+     "de-look-road-pale-cobble-13",
+     "de-look-road-pale-cobble-14",
+     "de-look-road-pale-cobble-15"
+    ],
+    "pale+brick": [
+     "de-look-road-pale-brick-0",
+     "de-look-road-pale-brick-1",
+     "de-look-road-pale-brick-2",
+     "de-look-road-pale-brick-3",
+     "de-look-road-pale-brick-4",
+     "de-look-road-pale-brick-5",
+     "de-look-road-pale-brick-6",
+     "de-look-road-pale-brick-7",
+     "de-look-road-pale-brick-8",
+     "de-look-road-pale-brick-9",
+     "de-look-road-pale-brick-10",
+     "de-look-road-pale-brick-11",
+     "de-look-road-pale-brick-12",
+     "de-look-road-pale-brick-13",
+     "de-look-road-pale-brick-14",
+     "de-look-road-pale-brick-15"
+    ]
+   },
+   "grass": {
+    "red": [
+     "de-look-grass-red-0",
+     "de-look-grass-red-1",
+     "de-look-grass-red-2",
+     "de-look-grass-red-3",
+     "de-look-grass-red-4",
+     "de-look-grass-red-5",
+     "de-look-grass-red-6",
+     "de-look-grass-red-7",
+     "de-look-grass-red-8",
+     "de-look-grass-red-9",
+     "de-look-grass-red-10",
+     "de-look-grass-red-11",
+     "de-look-grass-red-12",
+     "de-look-grass-red-13",
+     "de-look-grass-red-14",
+     "de-look-grass-red-15"
+    ],
+    "pale": [
+     "de-look-grass-pale-0",
+     "de-look-grass-pale-1",
+     "de-look-grass-pale-2",
+     "de-look-grass-pale-3",
+     "de-look-grass-pale-4",
+     "de-look-grass-pale-5",
+     "de-look-grass-pale-6",
+     "de-look-grass-pale-7",
+     "de-look-grass-pale-8",
+     "de-look-grass-pale-9",
+     "de-look-grass-pale-10",
+     "de-look-grass-pale-11",
+     "de-look-grass-pale-12",
+     "de-look-grass-pale-13",
+     "de-look-grass-pale-14",
+     "de-look-grass-pale-15"
+    ]
+   },
+   "dune": {
+    "red": [
+     "de-look-dune-red-0",
+     "de-look-dune-red-1",
+     "de-look-dune-red-2",
+     "de-look-dune-red-3",
+     "de-look-dune-red-4",
+     "de-look-dune-red-5",
+     "de-look-dune-red-6",
+     "de-look-dune-red-7",
+     "de-look-dune-red-8",
+     "de-look-dune-red-9",
+     "de-look-dune-red-10",
+     "de-look-dune-red-11",
+     "de-look-dune-red-12",
+     "de-look-dune-red-13",
+     "de-look-dune-red-14",
+     "de-look-dune-red-15"
+    ],
+    "pale": [
+     "de-look-dune-pale-0",
+     "de-look-dune-pale-1",
+     "de-look-dune-pale-2",
+     "de-look-dune-pale-3",
+     "de-look-dune-pale-4",
+     "de-look-dune-pale-5",
+     "de-look-dune-pale-6",
+     "de-look-dune-pale-7",
+     "de-look-dune-pale-8",
+     "de-look-dune-pale-9",
+     "de-look-dune-pale-10",
+     "de-look-dune-pale-11",
+     "de-look-dune-pale-12",
+     "de-look-dune-pale-13",
+     "de-look-dune-pale-14",
+     "de-look-dune-pale-15"
+    ]
+   },
+   "flag": {
+    "zellige": [
+     "de-look-flag-zellige-0",
+     "de-look-flag-zellige-1",
+     "de-look-flag-zellige-2",
+     "de-look-flag-zellige-3",
+     "de-look-flag-zellige-4",
+     "de-look-flag-zellige-5",
+     "de-look-flag-zellige-6",
+     "de-look-flag-zellige-7",
+     "de-look-flag-zellige-8",
+     "de-look-flag-zellige-9",
+     "de-look-flag-zellige-10",
+     "de-look-flag-zellige-11",
+     "de-look-flag-zellige-12",
+     "de-look-flag-zellige-13",
+     "de-look-flag-zellige-14",
+     "de-look-flag-zellige-15"
+    ],
+    "marble": [
+     "de-look-flag-marble-0",
+     "de-look-flag-marble-1",
+     "de-look-flag-marble-2",
+     "de-look-flag-marble-3",
+     "de-look-flag-marble-4",
+     "de-look-flag-marble-5",
+     "de-look-flag-marble-6",
+     "de-look-flag-marble-7",
+     "de-look-flag-marble-8",
+     "de-look-flag-marble-9",
+     "de-look-flag-marble-10",
+     "de-look-flag-marble-11",
+     "de-look-flag-marble-12",
+     "de-look-flag-marble-13",
+     "de-look-flag-marble-14",
+     "de-look-flag-marble-15"
+    ],
+    "herring": [
+     "de-look-flag-herring-0",
+     "de-look-flag-herring-1",
+     "de-look-flag-herring-2",
+     "de-look-flag-herring-3",
+     "de-look-flag-herring-4",
+     "de-look-flag-herring-5",
+     "de-look-flag-herring-6",
+     "de-look-flag-herring-7",
+     "de-look-flag-herring-8",
+     "de-look-flag-herring-9",
+     "de-look-flag-herring-10",
+     "de-look-flag-herring-11",
+     "de-look-flag-herring-12",
+     "de-look-flag-herring-13",
+     "de-look-flag-herring-14",
+     "de-look-flag-herring-15"
+    ],
+    "red": [
+     "de-look-flag-red-0",
+     "de-look-flag-red-1",
+     "de-look-flag-red-2",
+     "de-look-flag-red-3",
+     "de-look-flag-red-4",
+     "de-look-flag-red-5",
+     "de-look-flag-red-6",
+     "de-look-flag-red-7",
+     "de-look-flag-red-8",
+     "de-look-flag-red-9",
+     "de-look-flag-red-10",
+     "de-look-flag-red-11",
+     "de-look-flag-red-12",
+     "de-look-flag-red-13",
+     "de-look-flag-red-14",
+     "de-look-flag-red-15"
+    ],
+    "red+zellige": [
+     "de-look-flag-red-zellige-0",
+     "de-look-flag-red-zellige-1",
+     "de-look-flag-red-zellige-2",
+     "de-look-flag-red-zellige-3",
+     "de-look-flag-red-zellige-4",
+     "de-look-flag-red-zellige-5",
+     "de-look-flag-red-zellige-6",
+     "de-look-flag-red-zellige-7",
+     "de-look-flag-red-zellige-8",
+     "de-look-flag-red-zellige-9",
+     "de-look-flag-red-zellige-10",
+     "de-look-flag-red-zellige-11",
+     "de-look-flag-red-zellige-12",
+     "de-look-flag-red-zellige-13",
+     "de-look-flag-red-zellige-14",
+     "de-look-flag-red-zellige-15"
+    ],
+    "red+marble": [
+     "de-look-flag-red-marble-0",
+     "de-look-flag-red-marble-1",
+     "de-look-flag-red-marble-2",
+     "de-look-flag-red-marble-3",
+     "de-look-flag-red-marble-4",
+     "de-look-flag-red-marble-5",
+     "de-look-flag-red-marble-6",
+     "de-look-flag-red-marble-7",
+     "de-look-flag-red-marble-8",
+     "de-look-flag-red-marble-9",
+     "de-look-flag-red-marble-10",
+     "de-look-flag-red-marble-11",
+     "de-look-flag-red-marble-12",
+     "de-look-flag-red-marble-13",
+     "de-look-flag-red-marble-14",
+     "de-look-flag-red-marble-15"
+    ],
+    "red+herring": [
+     "de-look-flag-red-herring-0",
+     "de-look-flag-red-herring-1",
+     "de-look-flag-red-herring-2",
+     "de-look-flag-red-herring-3",
+     "de-look-flag-red-herring-4",
+     "de-look-flag-red-herring-5",
+     "de-look-flag-red-herring-6",
+     "de-look-flag-red-herring-7",
+     "de-look-flag-red-herring-8",
+     "de-look-flag-red-herring-9",
+     "de-look-flag-red-herring-10",
+     "de-look-flag-red-herring-11",
+     "de-look-flag-red-herring-12",
+     "de-look-flag-red-herring-13",
+     "de-look-flag-red-herring-14",
+     "de-look-flag-red-herring-15"
+    ],
+    "pale": [
+     "de-look-flag-pale-0",
+     "de-look-flag-pale-1",
+     "de-look-flag-pale-2",
+     "de-look-flag-pale-3",
+     "de-look-flag-pale-4",
+     "de-look-flag-pale-5",
+     "de-look-flag-pale-6",
+     "de-look-flag-pale-7",
+     "de-look-flag-pale-8",
+     "de-look-flag-pale-9",
+     "de-look-flag-pale-10",
+     "de-look-flag-pale-11",
+     "de-look-flag-pale-12",
+     "de-look-flag-pale-13",
+     "de-look-flag-pale-14",
+     "de-look-flag-pale-15"
+    ],
+    "pale+herring": [
+     "de-look-flag-pale-herring-0",
+     "de-look-flag-pale-herring-1",
+     "de-look-flag-pale-herring-2",
+     "de-look-flag-pale-herring-3",
+     "de-look-flag-pale-herring-4",
+     "de-look-flag-pale-herring-5",
+     "de-look-flag-pale-herring-6",
+     "de-look-flag-pale-herring-7",
+     "de-look-flag-pale-herring-8",
+     "de-look-flag-pale-herring-9",
+     "de-look-flag-pale-herring-10",
+     "de-look-flag-pale-herring-11",
+     "de-look-flag-pale-herring-12",
+     "de-look-flag-pale-herring-13",
+     "de-look-flag-pale-herring-14",
+     "de-look-flag-pale-herring-15"
+    ]
+   }
+  },
+  "pieces": [
+   {
+    "id": "de-look-ground-red-a",
+    "src": "tiledata/desert-east/variety/pieces/de-look-ground-red-a.png"
+   },
+   {
+    "id": "de-look-ground-red-b",
+    "src": "tiledata/desert-east/variety/pieces/de-look-ground-red-b.png"
+   },
+   {
+    "id": "de-look-ground-pale-a",
+    "src": "tiledata/desert-east/variety/pieces/de-look-ground-pale-a.png"
+   },
+   {
+    "id": "de-look-ground-pale-b",
+    "src": "tiledata/desert-east/variety/pieces/de-look-ground-pale-b.png"
+   },
+   {
+    "id": "de-look-road-cobble-a",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-a.png"
+   },
+   {
+    "id": "de-look-road-cobble-b",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-b.png"
+   },
+   {
+    "id": "de-look-road-brick-a",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-a.png"
+   },
+   {
+    "id": "de-look-road-brick-b",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-b.png"
+   },
+   {
+    "id": "de-look-plaza-zellige-a",
+    "src": "tiledata/desert-east/variety/pieces/de-look-plaza-zellige-a.png"
+   },
+   {
+    "id": "de-look-plaza-zellige-b",
+    "src": "tiledata/desert-east/variety/pieces/de-look-plaza-zellige-b.png"
+   },
+   {
+    "id": "de-look-plaza-marble-a",
+    "src": "tiledata/desert-east/variety/pieces/de-look-plaza-marble-a.png"
+   },
+   {
+    "id": "de-look-plaza-marble-b",
+    "src": "tiledata/desert-east/variety/pieces/de-look-plaza-marble-b.png"
+   },
+   {
+    "id": "de-look-plaza-herring-a",
+    "src": "tiledata/desert-east/variety/pieces/de-look-plaza-herring-a.png"
+   },
+   {
+    "id": "de-look-plaza-herring-b",
+    "src": "tiledata/desert-east/variety/pieces/de-look-plaza-herring-b.png"
+   },
+   {
+    "id": "de-look-road-cobble-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-0.png"
+   },
+   {
+    "id": "de-look-road-cobble-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-1.png"
+   },
+   {
+    "id": "de-look-road-cobble-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-2.png"
+   },
+   {
+    "id": "de-look-road-cobble-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-3.png"
+   },
+   {
+    "id": "de-look-road-cobble-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-4.png"
+   },
+   {
+    "id": "de-look-road-cobble-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-5.png"
+   },
+   {
+    "id": "de-look-road-cobble-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-6.png"
+   },
+   {
+    "id": "de-look-road-cobble-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-7.png"
+   },
+   {
+    "id": "de-look-road-cobble-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-8.png"
+   },
+   {
+    "id": "de-look-road-cobble-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-9.png"
+   },
+   {
+    "id": "de-look-road-cobble-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-10.png"
+   },
+   {
+    "id": "de-look-road-cobble-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-11.png"
+   },
+   {
+    "id": "de-look-road-cobble-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-12.png"
+   },
+   {
+    "id": "de-look-road-cobble-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-13.png"
+   },
+   {
+    "id": "de-look-road-cobble-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-14.png"
+   },
+   {
+    "id": "de-look-road-cobble-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-cobble-15.png"
+   },
+   {
+    "id": "de-look-road-brick-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-0.png"
+   },
+   {
+    "id": "de-look-road-brick-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-1.png"
+   },
+   {
+    "id": "de-look-road-brick-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-2.png"
+   },
+   {
+    "id": "de-look-road-brick-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-3.png"
+   },
+   {
+    "id": "de-look-road-brick-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-4.png"
+   },
+   {
+    "id": "de-look-road-brick-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-5.png"
+   },
+   {
+    "id": "de-look-road-brick-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-6.png"
+   },
+   {
+    "id": "de-look-road-brick-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-7.png"
+   },
+   {
+    "id": "de-look-road-brick-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-8.png"
+   },
+   {
+    "id": "de-look-road-brick-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-9.png"
+   },
+   {
+    "id": "de-look-road-brick-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-10.png"
+   },
+   {
+    "id": "de-look-road-brick-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-11.png"
+   },
+   {
+    "id": "de-look-road-brick-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-12.png"
+   },
+   {
+    "id": "de-look-road-brick-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-13.png"
+   },
+   {
+    "id": "de-look-road-brick-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-14.png"
+   },
+   {
+    "id": "de-look-road-brick-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-brick-15.png"
+   },
+   {
+    "id": "de-look-road-red-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-0.png"
+   },
+   {
+    "id": "de-look-road-red-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-1.png"
+   },
+   {
+    "id": "de-look-road-red-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-2.png"
+   },
+   {
+    "id": "de-look-road-red-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-3.png"
+   },
+   {
+    "id": "de-look-road-red-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-4.png"
+   },
+   {
+    "id": "de-look-road-red-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-5.png"
+   },
+   {
+    "id": "de-look-road-red-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-6.png"
+   },
+   {
+    "id": "de-look-road-red-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-7.png"
+   },
+   {
+    "id": "de-look-road-red-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-8.png"
+   },
+   {
+    "id": "de-look-road-red-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-9.png"
+   },
+   {
+    "id": "de-look-road-red-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-10.png"
+   },
+   {
+    "id": "de-look-road-red-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-11.png"
+   },
+   {
+    "id": "de-look-road-red-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-12.png"
+   },
+   {
+    "id": "de-look-road-red-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-13.png"
+   },
+   {
+    "id": "de-look-road-red-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-14.png"
+   },
+   {
+    "id": "de-look-road-red-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-15.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-0.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-1.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-2.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-3.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-4.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-5.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-6.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-7.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-8.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-9.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-10.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-11.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-12.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-13.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-14.png"
+   },
+   {
+    "id": "de-look-road-red-cobble-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-red-cobble-15.png"
+   },
+   {
+    "id": "de-look-road-pale-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-0.png"
+   },
+   {
+    "id": "de-look-road-pale-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-1.png"
+   },
+   {
+    "id": "de-look-road-pale-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-2.png"
+   },
+   {
+    "id": "de-look-road-pale-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-3.png"
+   },
+   {
+    "id": "de-look-road-pale-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-4.png"
+   },
+   {
+    "id": "de-look-road-pale-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-5.png"
+   },
+   {
+    "id": "de-look-road-pale-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-6.png"
+   },
+   {
+    "id": "de-look-road-pale-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-7.png"
+   },
+   {
+    "id": "de-look-road-pale-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-8.png"
+   },
+   {
+    "id": "de-look-road-pale-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-9.png"
+   },
+   {
+    "id": "de-look-road-pale-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-10.png"
+   },
+   {
+    "id": "de-look-road-pale-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-11.png"
+   },
+   {
+    "id": "de-look-road-pale-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-12.png"
+   },
+   {
+    "id": "de-look-road-pale-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-13.png"
+   },
+   {
+    "id": "de-look-road-pale-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-14.png"
+   },
+   {
+    "id": "de-look-road-pale-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-15.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-0.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-1.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-2.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-3.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-4.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-5.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-6.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-7.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-8.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-9.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-10.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-11.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-12.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-13.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-14.png"
+   },
+   {
+    "id": "de-look-road-pale-cobble-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-cobble-15.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-0.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-1.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-2.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-3.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-4.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-5.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-6.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-7.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-8.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-9.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-10.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-11.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-12.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-13.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-14.png"
+   },
+   {
+    "id": "de-look-road-pale-brick-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-road-pale-brick-15.png"
+   },
+   {
+    "id": "de-look-grass-red-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-0.png"
+   },
+   {
+    "id": "de-look-grass-red-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-1.png"
+   },
+   {
+    "id": "de-look-grass-red-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-2.png"
+   },
+   {
+    "id": "de-look-grass-red-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-3.png"
+   },
+   {
+    "id": "de-look-grass-red-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-4.png"
+   },
+   {
+    "id": "de-look-grass-red-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-5.png"
+   },
+   {
+    "id": "de-look-grass-red-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-6.png"
+   },
+   {
+    "id": "de-look-grass-red-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-7.png"
+   },
+   {
+    "id": "de-look-grass-red-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-8.png"
+   },
+   {
+    "id": "de-look-grass-red-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-9.png"
+   },
+   {
+    "id": "de-look-grass-red-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-10.png"
+   },
+   {
+    "id": "de-look-grass-red-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-11.png"
+   },
+   {
+    "id": "de-look-grass-red-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-12.png"
+   },
+   {
+    "id": "de-look-grass-red-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-13.png"
+   },
+   {
+    "id": "de-look-grass-red-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-14.png"
+   },
+   {
+    "id": "de-look-grass-red-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-red-15.png"
+   },
+   {
+    "id": "de-look-grass-pale-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-0.png"
+   },
+   {
+    "id": "de-look-grass-pale-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-1.png"
+   },
+   {
+    "id": "de-look-grass-pale-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-2.png"
+   },
+   {
+    "id": "de-look-grass-pale-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-3.png"
+   },
+   {
+    "id": "de-look-grass-pale-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-4.png"
+   },
+   {
+    "id": "de-look-grass-pale-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-5.png"
+   },
+   {
+    "id": "de-look-grass-pale-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-6.png"
+   },
+   {
+    "id": "de-look-grass-pale-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-7.png"
+   },
+   {
+    "id": "de-look-grass-pale-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-8.png"
+   },
+   {
+    "id": "de-look-grass-pale-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-9.png"
+   },
+   {
+    "id": "de-look-grass-pale-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-10.png"
+   },
+   {
+    "id": "de-look-grass-pale-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-11.png"
+   },
+   {
+    "id": "de-look-grass-pale-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-12.png"
+   },
+   {
+    "id": "de-look-grass-pale-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-13.png"
+   },
+   {
+    "id": "de-look-grass-pale-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-14.png"
+   },
+   {
+    "id": "de-look-grass-pale-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-grass-pale-15.png"
+   },
+   {
+    "id": "de-look-dune-red-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-0.png"
+   },
+   {
+    "id": "de-look-dune-red-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-1.png"
+   },
+   {
+    "id": "de-look-dune-red-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-2.png"
+   },
+   {
+    "id": "de-look-dune-red-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-3.png"
+   },
+   {
+    "id": "de-look-dune-red-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-4.png"
+   },
+   {
+    "id": "de-look-dune-red-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-5.png"
+   },
+   {
+    "id": "de-look-dune-red-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-6.png"
+   },
+   {
+    "id": "de-look-dune-red-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-7.png"
+   },
+   {
+    "id": "de-look-dune-red-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-8.png"
+   },
+   {
+    "id": "de-look-dune-red-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-9.png"
+   },
+   {
+    "id": "de-look-dune-red-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-10.png"
+   },
+   {
+    "id": "de-look-dune-red-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-11.png"
+   },
+   {
+    "id": "de-look-dune-red-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-12.png"
+   },
+   {
+    "id": "de-look-dune-red-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-13.png"
+   },
+   {
+    "id": "de-look-dune-red-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-14.png"
+   },
+   {
+    "id": "de-look-dune-red-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-red-15.png"
+   },
+   {
+    "id": "de-look-dune-pale-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-0.png"
+   },
+   {
+    "id": "de-look-dune-pale-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-1.png"
+   },
+   {
+    "id": "de-look-dune-pale-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-2.png"
+   },
+   {
+    "id": "de-look-dune-pale-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-3.png"
+   },
+   {
+    "id": "de-look-dune-pale-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-4.png"
+   },
+   {
+    "id": "de-look-dune-pale-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-5.png"
+   },
+   {
+    "id": "de-look-dune-pale-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-6.png"
+   },
+   {
+    "id": "de-look-dune-pale-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-7.png"
+   },
+   {
+    "id": "de-look-dune-pale-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-8.png"
+   },
+   {
+    "id": "de-look-dune-pale-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-9.png"
+   },
+   {
+    "id": "de-look-dune-pale-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-10.png"
+   },
+   {
+    "id": "de-look-dune-pale-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-11.png"
+   },
+   {
+    "id": "de-look-dune-pale-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-12.png"
+   },
+   {
+    "id": "de-look-dune-pale-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-13.png"
+   },
+   {
+    "id": "de-look-dune-pale-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-14.png"
+   },
+   {
+    "id": "de-look-dune-pale-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-dune-pale-15.png"
+   },
+   {
+    "id": "de-look-flag-zellige-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-0.png"
+   },
+   {
+    "id": "de-look-flag-zellige-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-1.png"
+   },
+   {
+    "id": "de-look-flag-zellige-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-2.png"
+   },
+   {
+    "id": "de-look-flag-zellige-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-3.png"
+   },
+   {
+    "id": "de-look-flag-zellige-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-4.png"
+   },
+   {
+    "id": "de-look-flag-zellige-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-5.png"
+   },
+   {
+    "id": "de-look-flag-zellige-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-6.png"
+   },
+   {
+    "id": "de-look-flag-zellige-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-7.png"
+   },
+   {
+    "id": "de-look-flag-zellige-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-8.png"
+   },
+   {
+    "id": "de-look-flag-zellige-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-9.png"
+   },
+   {
+    "id": "de-look-flag-zellige-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-10.png"
+   },
+   {
+    "id": "de-look-flag-zellige-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-11.png"
+   },
+   {
+    "id": "de-look-flag-zellige-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-12.png"
+   },
+   {
+    "id": "de-look-flag-zellige-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-13.png"
+   },
+   {
+    "id": "de-look-flag-zellige-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-14.png"
+   },
+   {
+    "id": "de-look-flag-zellige-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-zellige-15.png"
+   },
+   {
+    "id": "de-look-flag-marble-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-0.png"
+   },
+   {
+    "id": "de-look-flag-marble-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-1.png"
+   },
+   {
+    "id": "de-look-flag-marble-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-2.png"
+   },
+   {
+    "id": "de-look-flag-marble-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-3.png"
+   },
+   {
+    "id": "de-look-flag-marble-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-4.png"
+   },
+   {
+    "id": "de-look-flag-marble-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-5.png"
+   },
+   {
+    "id": "de-look-flag-marble-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-6.png"
+   },
+   {
+    "id": "de-look-flag-marble-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-7.png"
+   },
+   {
+    "id": "de-look-flag-marble-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-8.png"
+   },
+   {
+    "id": "de-look-flag-marble-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-9.png"
+   },
+   {
+    "id": "de-look-flag-marble-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-10.png"
+   },
+   {
+    "id": "de-look-flag-marble-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-11.png"
+   },
+   {
+    "id": "de-look-flag-marble-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-12.png"
+   },
+   {
+    "id": "de-look-flag-marble-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-13.png"
+   },
+   {
+    "id": "de-look-flag-marble-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-14.png"
+   },
+   {
+    "id": "de-look-flag-marble-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-marble-15.png"
+   },
+   {
+    "id": "de-look-flag-herring-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-0.png"
+   },
+   {
+    "id": "de-look-flag-herring-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-1.png"
+   },
+   {
+    "id": "de-look-flag-herring-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-2.png"
+   },
+   {
+    "id": "de-look-flag-herring-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-3.png"
+   },
+   {
+    "id": "de-look-flag-herring-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-4.png"
+   },
+   {
+    "id": "de-look-flag-herring-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-5.png"
+   },
+   {
+    "id": "de-look-flag-herring-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-6.png"
+   },
+   {
+    "id": "de-look-flag-herring-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-7.png"
+   },
+   {
+    "id": "de-look-flag-herring-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-8.png"
+   },
+   {
+    "id": "de-look-flag-herring-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-9.png"
+   },
+   {
+    "id": "de-look-flag-herring-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-10.png"
+   },
+   {
+    "id": "de-look-flag-herring-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-11.png"
+   },
+   {
+    "id": "de-look-flag-herring-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-12.png"
+   },
+   {
+    "id": "de-look-flag-herring-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-13.png"
+   },
+   {
+    "id": "de-look-flag-herring-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-14.png"
+   },
+   {
+    "id": "de-look-flag-herring-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-herring-15.png"
+   },
+   {
+    "id": "de-look-flag-red-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-0.png"
+   },
+   {
+    "id": "de-look-flag-red-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-1.png"
+   },
+   {
+    "id": "de-look-flag-red-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-2.png"
+   },
+   {
+    "id": "de-look-flag-red-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-3.png"
+   },
+   {
+    "id": "de-look-flag-red-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-4.png"
+   },
+   {
+    "id": "de-look-flag-red-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-5.png"
+   },
+   {
+    "id": "de-look-flag-red-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-6.png"
+   },
+   {
+    "id": "de-look-flag-red-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-7.png"
+   },
+   {
+    "id": "de-look-flag-red-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-8.png"
+   },
+   {
+    "id": "de-look-flag-red-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-9.png"
+   },
+   {
+    "id": "de-look-flag-red-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-10.png"
+   },
+   {
+    "id": "de-look-flag-red-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-11.png"
+   },
+   {
+    "id": "de-look-flag-red-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-12.png"
+   },
+   {
+    "id": "de-look-flag-red-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-13.png"
+   },
+   {
+    "id": "de-look-flag-red-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-14.png"
+   },
+   {
+    "id": "de-look-flag-red-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-15.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-0.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-1.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-2.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-3.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-4.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-5.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-6.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-7.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-8.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-9.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-10.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-11.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-12.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-13.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-14.png"
+   },
+   {
+    "id": "de-look-flag-red-zellige-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-zellige-15.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-0.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-1.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-2.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-3.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-4.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-5.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-6.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-7.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-8.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-9.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-10.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-11.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-12.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-13.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-14.png"
+   },
+   {
+    "id": "de-look-flag-red-marble-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-marble-15.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-0.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-1.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-2.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-3.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-4.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-5.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-6.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-7.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-8.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-9.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-10.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-11.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-12.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-13.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-14.png"
+   },
+   {
+    "id": "de-look-flag-red-herring-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-red-herring-15.png"
+   },
+   {
+    "id": "de-look-flag-pale-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-0.png"
+   },
+   {
+    "id": "de-look-flag-pale-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-1.png"
+   },
+   {
+    "id": "de-look-flag-pale-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-2.png"
+   },
+   {
+    "id": "de-look-flag-pale-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-3.png"
+   },
+   {
+    "id": "de-look-flag-pale-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-4.png"
+   },
+   {
+    "id": "de-look-flag-pale-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-5.png"
+   },
+   {
+    "id": "de-look-flag-pale-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-6.png"
+   },
+   {
+    "id": "de-look-flag-pale-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-7.png"
+   },
+   {
+    "id": "de-look-flag-pale-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-8.png"
+   },
+   {
+    "id": "de-look-flag-pale-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-9.png"
+   },
+   {
+    "id": "de-look-flag-pale-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-10.png"
+   },
+   {
+    "id": "de-look-flag-pale-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-11.png"
+   },
+   {
+    "id": "de-look-flag-pale-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-12.png"
+   },
+   {
+    "id": "de-look-flag-pale-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-13.png"
+   },
+   {
+    "id": "de-look-flag-pale-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-14.png"
+   },
+   {
+    "id": "de-look-flag-pale-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-15.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-0",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-0.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-1",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-1.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-2",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-2.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-3",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-3.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-4",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-4.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-5",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-5.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-6",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-6.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-7",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-7.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-8",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-8.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-9",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-9.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-10",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-10.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-11",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-11.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-12",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-12.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-13",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-13.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-14",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-14.png"
+   },
+   {
+    "id": "de-look-flag-pale-herring-15",
+    "src": "tiledata/desert-east/variety/pieces/de-look-flag-pale-herring-15.png"
+   }
+  ]
+ }
+}

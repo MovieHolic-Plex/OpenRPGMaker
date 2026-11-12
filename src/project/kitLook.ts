@@ -56,5 +56,6 @@ export function lookKit(tileset: Pick<TilesetDef, "structureKits"> | undefined, 
   const variants = kitVariants(tileset, kit.id);
   if (!variants.length) return kit;
   const options = [kit, ...variants];
-  return options[lookHash(`look|${key}|${kit.id}`) % options.length]!;
+  // 함께 바뀌는 가족(변형의 ai.lookWith = 으뜸 원본)은 으뜸의 이름으로 뽑는다 — 벽면과 창 난 벽면이 한 게임에서 같은 순번이 된다.
+  return options[lookHash(`look|${key}|${variants[0]!.ai?.lookWith ?? kit.id}`) % options.length]!;
 }

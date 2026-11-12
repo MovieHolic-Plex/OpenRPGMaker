@@ -241,5 +241,50 @@
    "x1": 27,
    "y1": 33
   }
+ },
+ "desert_east_variety": {
+  "spec": "tiledata/desert-east/variety/objects.json",
+  "ask": "tiledata/desert-east/variety/ask.json",
+  "kitPrefix": "de-",
+  "sheet": "public/assets/desert-east/desert-east-chipset.png",
+  "chipset": "desert_east",
+  "only": [
+   "barrel",
+   "barrels",
+   "notice-board",
+   "stop-lever",
+   "hatch-down",
+   "save-crystal"
+  ],
+  "map": {
+   "width": 48,
+   "height": 40,
+   "tool": "compose_desert_east_map",
+   "args": {
+    "kind": "oasis",
+    "seed": 1
+   }
+  }
+ },
+ "desert_east_variety_room": {
+  "spec": "tiledata/desert-east/variety/objects.json",
+  "ask": "tiledata/desert-east/variety/ask.json",
+  "kitPrefix": "de-",
+  "sheet": "public/assets/desert-east/desert-east-chipset.png",
+  "chipset": "desert_east",
+  "only": [
+   "room-door",
+   "barrel",
+   "stop-lever"
+  ],
+  "map": {
+   "width": 16,
+   "height": 12,
+   "tool": "compose_desert_east_room",
+   "args": {
+    "kind": "shop",
+    "seed": 1
+   }
+  }
  }
 }
