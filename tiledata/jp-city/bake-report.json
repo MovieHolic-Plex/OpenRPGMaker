@@ -1,6 +1,6 @@
 {
  "tiles": {
-  "count": 20459,
+  "count": 20463,
   "tilesPerRow": 96,
   "rows": 214,
   "sheetPx": [
@@ -11,7 +11,7 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 15119,
+  "block_cells": 15123,
   "legacy": 2203,
   "legacy_ids": [
    3747,
@@ -110,40 +110,40 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 15119
+   "block": 15123
   }
  },
  "pc_counts": {
   "star": 7574,
-  "solid": 4371,
+  "solid": 4375,
   "floor": 4018,
   "solidfloor": 1318,
   "flat": 820,
   "blank": 155
  },
  "kits": {
-  "total": 1573,
+  "total": 1574,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 1397
+   "block-kit": 1398
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 1397
+  "block_kit": 1398
  },
  "groups": {
-  "total": 377,
+  "total": 378,
   "by_kind": {
    "street": 9,
    "band": 60,
    "deco": 73,
    "prop": 11,
-   "block": 224
+   "block": 225
   }
  },
  "autotiles": {
@@ -221,7 +221,8 @@
    "jp_inaka_pack",
    "jp_forest_r4",
    "interior_house3",
-   "street_stairs"
+   "street_stairs",
+   "story_objects"
   ],
   "merged": [
    "autotiles_ground",
@@ -267,7 +268,8 @@
    "jp_inaka_pack",
    "jp_forest_r4",
    "interior_house3",
-   "street_stairs"
+   "street_stairs",
+   "story_objects"
   ],
   "missing": [],
   "on_disk_not_in_order": [
@@ -629,11 +631,19 @@
     "groups": 1,
     "kits": 7,
     "notes": "거리 계단 7키트: 육교 곧은 계단(-e/-w, 2×8) + 상판(붉은 갈색, 2×6 가로 반복, 거더·쇠 기둥·도로 그늘) + 옆 계단 한 쌍(-l/-r, 3×2, 콘크리트 판 4단) + 단상(2×4 가로 반복) + 벽 사다리(1×3, 4층). 높이 문법: 상판·단상 = 지면에서 16px, 윗면은 제 칸 줄, 앞면(거더·옹벽)은 그 밑 줄. 계단 칸은 위·아래로만, 옆 계단 0줄은 동서로만(dirs). 3/4 관문: 부품은 조립 그림(육교·단상)이 덮는다(_gate/assembled.json). 한계: 육교 줄은 남북으로 못 지난다(차도가 끊긴다)."
+   },
+   {
+    "name": "story_objects",
+    "cells": 4,
+    "autotiles": 0,
+    "groups": 1,
+    "kits": 1,
+    "notes": "이야기 기물 1키트 — 그림 PNG 를 그대로 자른 칸(코드 그림 아님). 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12."
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 1573,
+  "kits_checked": 1574,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -724,7 +734,8 @@
    "inaka": 31,
    "overpass": 3,
    "side": 2,
-   "stage": 1
+   "stage": 1,
+   "spring": 1
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -734,9 +745,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 20459,
-  "kits_checked": 1573,
-  "groups_checked": 377,
+  "tiles_checked": 20463,
+  "kits_checked": 1574,
+  "groups_checked": 378,
   "autotiles_checked": 25
  },
  "relayout_identical": {
@@ -798,10 +809,10 @@
    }
   }
  },
- "sheet_hash": "81ab7313266dffcc6cd8f7a5620e595330c32b01",
+ "sheet_hash": "f5320bc6ae261985fdee59b5420845d524d16aba",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 1573,
+  "kits_checked": 1574,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -892,7 +903,8 @@
    "inaka": 31,
    "overpass": 3,
    "side": 2,
-   "stage": 1
+   "stage": 1,
+   "spring": 1
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -902,9 +914,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 20459,
-  "kits_checked": 1573,
-  "groups_checked": 377,
+  "tiles_checked": 20463,
+  "kits_checked": 1574,
+  "groups_checked": 378,
   "autotiles_checked": 25
  },
  "files": {

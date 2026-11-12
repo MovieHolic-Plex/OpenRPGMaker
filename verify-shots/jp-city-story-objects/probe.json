@@ -1,0 +1,93 @@
+{
+ "chipset": "jp_city",
+ "fresh": {
+  "kits": 1,
+  "of": 1,
+  "count": 20463,
+  "referenceDocs": [
+   "jp-story-objects/jp-story-objects"
+  ],
+  "tablesMatchCount": true
+ },
+ "sheet": [
+  {
+   "id": "jp-spring-basin",
+   "name": "샘(돌 수반 샘물)",
+   "size": "2×2",
+   "kind": "container",
+   "place": "prop",
+   "cells": [
+    20459,
+    20460,
+    20461,
+    20462
+   ],
+   "blocked": "(0,0) (1,0) (0,1) (1,1)"
+  }
+ ],
+ "cellGate": {
+  "baseSheet": "1536×3424",
+  "sheet": "1536×3424",
+  "newCells": 4,
+  "newCellIndexes": [
+   20459,
+   20460,
+   20461,
+   20462
+  ],
+  "bundleUncovered": 0,
+  "storeUncovered": 4
+ },
+ "words": [
+  {
+   "object": "spring-basin",
+   "word": "샘",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "spring-basin",
+   "word": "물이 솟는 돌 샘",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "이 기물을 이른다(첫째)"
+  }
+ ],
+ "map": {
+  "tool": "compose_jp_city_street",
+  "args": {
+   "style": "residential",
+   "seed": 1
+  },
+  "size": "56×40",
+  "start": {
+   "x": 0,
+   "y": 39
+  }
+ },
+ "placed": [
+  {
+   "object": "spring-basin",
+   "kit": "jp-spring-basin",
+   "asked": "(14,22)",
+   "at": "(14,22)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,0) (1,0) (0,1) (1,1)",
+   "tool": "jp-spring-basin 를 (14,23)에 놓았다"
+  }
+ ],
+ "scene": {
+  "crop": "칸 (10,18)–(20,28)",
+  "size": "176×176",
+  "heroes": [
+   {
+    "x": 14,
+    "y": 24,
+    "why": "spring-basin 앞"
+   }
+  ]
+ }
+}

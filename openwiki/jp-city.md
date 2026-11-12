@@ -36,6 +36,23 @@ modern3 팔레트(154색) 손 도트로 그린 일본 도시(상가·주택·역
 - 굽기가 내놓는 조립 부품 id 와 오토타일 그룹 id 는 반드시 `jp-` 로 시작해야 한다. 아니면 갱신 때 저자 항목으로 보고 번들 것을 새로 바꾸지 못한다.
 - 정의 JSON 의 필수 키는 위 목록 그대로다(`modernCityTileset.json` 과 같은 모양).
 
+## 이야기 기물 1종 (2026-11-12, 블록 `story_objects`) — 3/4 관문 미통과 · 오너 면제
+
+게임이 바랐는데 그림이 없던 **샘(돌 수반)** 을 시트 끝(20459~20462, 칸 20463 · 키트 1574)에 덧붙였다. **이 그림은 3/4 관문을 통과하지 않았다** — 오너 면제 묶음 `fable-oneshot-2026-11-12`(`harness-data/object-gate/waivers/`)가 그림 화소 해시·종류에 묶여 번들 출구만 연다. 스토어로는 나가지 않는다.
+
+| 키트 | 무엇 | 크기 · 놓는 법 | 칸 | 막힌 칸 | 관문 종류 |
+|---|---|---|---|---|---|
+| `jp-spring-basin` | 샘(돌 수반 샘물) | 2×2 · prop | 20459~20462 | 네 칸 | container |
+
+- 목록·그림: `tiledata/jp-city/objects/spec.json`(이름·크기·막힌 칸·찾는 낱말·놓는 규칙) · `pieces/jp-spring.png`. **그림은 한 화소도 바꾸지 않는다** — 블록은 PNG 를 그대로 칸으로 자른다(코드 그림이 아니다). 이 그림의 22색은 모두 modern3 ∪ 일본 팔레트 계약 색 안이고 계약이 옮기는 색이 없어서, 굽기의 야외 칸 계약 맞춤(`contract_remap`)을 거쳐도 화소가 그대로다(검사 `test/jpCityStoryObjects.test.ts` 가 시트 칸과 원본을 대조한다). 계약이 옮기는 색을 쓴 그림을 더하면 화소가 바뀌어 면제가 풀리니, 그런 그림은 여기에 넣지 않는다.
+- 블록 `scripts/content/jp-city/blocks/story_objects.py`(`BLOCK_ORDER` 끝): 번호 핀 키 `story_objects/<id>/<x>.<y>`, 묶음 `jp:story-objects`. 이미 있는 `jp-lot-spring` 은 놀이터 스프링 놀이기구다 — 물이 솟는 샘은 `jp-spring-basin`.
+- 출구 검사는 관문 자신의 규칙 하나다: 블록의 `pictures()` 가 그림마다 `object_gate.refusal(그림, kind, context='bundle')` 을 묻고, None 이 아니면 굽기 전체가 멈춘다. 둘째 규칙은 없다(`gate_kinds.enforce()` 는 street_hand 키트만 본다 — 그대로다).
+- 조수가 찾는 길: 키트 이름·태그(`words` — 샘·샘물·돌 샘·돌 수반·약수터·물이 솟는 돌 샘). v2 코드에 낱말 목록은 없다. `list_tileset_objects` 는 이 칩셋 키트를 돌려주지 않는다(전부터). v2 `draw_object` 는 낱말로 짚는다.
+- 참고문서: 용도 `jp-story-objects`(문서 1·그림 3 — 사전·순서·6×5 자갈 조립 예제 전체 배열·정상/오류 그림). `python3 scripts/content/jp-city/refs_story.py`(문서 틀은 칩셋 공용 `scripts/content/story-objects/refs_lib.py`), 그림 `public/assets/jp-city-story-references/`, 저장본 `tiledata/jp-city/objects/refs/`.
+  **`bake_refs.py` 는 2026-11-12 main 에서 이미 멈춘다**(322줄 `REGION` 미분류 칸 19577… — 그 스크립트를 마지막으로 돌린 뒤 덧붙은 블록의 칸). 그래서 이 용도는 `refs_story.py` 가 JSON 에 따로 넣고, `bake_refs.py` 끝에는 이 용도를 다시 붙이는 줄만 넣어 두었다(그 스크립트가 다시 돌게 되면 쓰인다 — 지금은 실행해 보지 못했다).
+- 탐침(모델 없음): `bun scripts/content/story-objects/probe.mts jp_city <out> --base-sheet <고치기 전 시트>` — `compose_jp_city_street`(residential, 씨앗 1) 공원 잔디에 v2 `place_object` 로. 화면 증거 `verify-shots/jp-city-story-objects/`.
+- 기존 저장본: 이 칩셋 끝에 다른 칩셋 그림을 붙여 쓴 프로젝트는 `settleThemeBundleTail`(`openwiki/runtime-project-schema.md` 「시트 끝에 칸을 끼운 번들」)이 이식 꼬리를 새 번들 끝 뒤로 밀고 키트를 채운다.
+
 ## 기존 프로젝트 갱신 규칙
 
 `ensureJpCityTileset` (`modern_city` 규칙 복제 + 오토타일 보존 개선):
