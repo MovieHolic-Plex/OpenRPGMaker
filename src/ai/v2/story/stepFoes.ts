@@ -7,6 +7,9 @@ import { isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import type { EventPage, Project } from "@/project/types";
 import { applyThemeBackdrop } from "../place/placeTheme";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { FITTED_TROOP_PREFIX } from "@/editor/tools/bossThreatScaling";
+import { hasCurrentArt, leadEnemyId } from "./currentFoes";
+import { foeTroop } from "./stepFoeTroop";
 
 type Obj = Record<string, unknown>;
 type Page = EventPage;
@@ -60,6 +63,33 @@ export function settleStepFoesIn(project: Project): string[] {
     notes.push(`「${String(ev.name ?? ev.id)}」 — 서 있는 그림을 전투 그림으로, 이긴 뒤에는 맵에서 걷힘`);
   }
   return notes;
+}
+
+/**
+ * 옛 판 고치기 — 함수가 고른 싸우는 단계 상대(맞춤 사본 troop_fit_*)의 그림이 현행 세트가 아니면 지금 규칙으로 다시 고른다(같은 이름 · 같은 사본 id).
+ * 모델·저자가 직접 고른 무리는 그대로 둔다. 다시 고른 것 한 줄씩과 없는 그림 줄.
+ */
+export function redrawStepFoesIn(project: Project): { readonly notes: string[]; readonly gaps: string[] } {
+  const notes: string[] = [], gaps: string[] = [];
+  const steps = project.gameBlueprint?.steps ?? [];
+  const lastBattle = steps.reduce((hit, st, i) => (st.kind === "battle" ? i : hit), -1);
+  for (const [k, step] of steps.entries()) {
+    const map = step.kind === "battle" && step.built ? project.maps[step.built.mapId] : undefined;
+    const ev = map?.events?.find((e) => e.id === step.built?.eventId);
+    if (!map || !ev) continue;
+    let troopId = "";
+    walk(ev.pages ?? [], (c) => { if (c.kind === "battleProcessing" && typeof c.troopId === "string") troopId ||= c.troopId; });
+    if (!troopId.startsWith(FITTED_TROOP_PREFIX) || hasCurrentArt(project, leadEnemyId(project, troopId))) continue;
+    const troop = project.database.troops.find((t) => t.id === troopId);
+    const who = troopId.startsWith(`${FITTED_TROOP_PREFIX}foe_`) ? troop?.name : undefined;
+    const found: string[] = [];
+    const next = foeTroop(project, step.id, who, k === lastBattle, map.id, k, found);
+    if (!next || !hasCurrentArt(project, leadEnemyId(project, next))) continue;
+    gaps.push(...found);
+    if (next !== troopId) map.events = map.events.map((e) => (e.id === ev.id ? JSON.parse(JSON.stringify(e).split(`"troopId":${JSON.stringify(troopId)}`).join(`"troopId":${JSON.stringify(next)}`)) as typeof e : e));
+    notes.push(`「${who ?? troop?.name ?? step.event}」 — 싸우는 상대를 현행 그림이 있는 종으로 다시 고름`);
+  }
+  return { notes, gaps };
 }
 
 /** 전투가 나는 세계 장소의 전투 배경을 테마로 맞춘다(없는 값·기본값 숲만 바꾼다). 바꾼 것과 없는 그림 줄. */

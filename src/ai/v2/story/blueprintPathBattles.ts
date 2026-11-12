@@ -2,7 +2,7 @@
 import type { GameMap, Project } from "@/project/types";
 import type { BuildRun } from "../shared/types";
 import { battleStepBypass, isBattleStep, isCodeStep, victoryGatedSwitches } from "./blueprint";
-import { pickFittedTroops } from "@/editor/tools/jrpgVolumeTools";
+import { foeTroop } from "./stepFoeTroop";
 import { fitTroopCopy } from "@/editor/tools/bossThreatScaling";
 import { simulateBattle } from "@/battle/simulate";
 import { planObjective } from "../judge/objectivePlan";
@@ -22,7 +22,7 @@ function pageMoves(page: RawPage): boolean {
  *    「먼저 <보스>를 쓰러뜨려야 한다」 페이지를 둔다(열쇠는 있는데 아직 못 이긴 때).
  *  - 없으면: 그 페이지 안에서 시작 파티에 맞춘 보스 그룹과 싸우고(도망·패배 불가), 원래 명령은 승리 갈래에서만 한다.
  */
-export function gateBattleSteps(run: BuildRun): string[] {
+export function gateBattleSteps(run: BuildRun, gaps?: string[]): string[] {
   const bp = run.ctx.project.gameBlueprint;
   if (!bp) return [];
   const notes: string[] = [];
@@ -70,7 +70,8 @@ export function gateBattleSteps(run: BuildRun): string[] {
         if (!run.call("upsert_event", { mapId: map.id, event: { ...structuredClone(ev), pages: folded.map((f) => f.page) } as unknown as Record<string, unknown>, replacePages: true }).ok) notes.pop();
         continue;
       }
-      const troopId = pickFittedTroops(project, undefined).boss;
+      // 그 단계의 상대를 고르는 한 곳(stepFoeTroop — 장소 테마 · 현행 그림)에 묻는다. DB 에서 가장 센 무리(구형 그림의 붉은 드래곤)를 쓰던 자리.
+      const troopId = foeTroop(project, step.id, undefined, true, map.id, bp.steps.indexOf(step), gaps ?? []);
       if (!troopId) continue;
       for (const page of pages) {
         if (!pageMoves(page)) { out.push(page); continue; }

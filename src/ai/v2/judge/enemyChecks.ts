@@ -10,6 +10,17 @@ import { tagged, type Finding } from "./finding";
 const BOSS_WORDS = /boss|보스|마왕|魔王|드래곤|dragon|용왕|수문장|두목|우두머리|군주/iu;
 const isBasicAttack = (skillId: string, name: string): boolean => skillId === "skill_attack" || /_attack$/u.test(skillId) || name === "공격";
 
+/** 그 적의 기술 이름(기본 공격 제외) — 적 개성을 재는 단위. 적을 고르는 쪽(place/placeTheme)도 같은 값으로 고른다. */
+export function foeSkillNames(project: Project, enemyId: string | undefined): Set<string> {
+  const enemy = project.database.enemies.find((e) => e.id === enemyId);
+  const out = new Set<string>();
+  for (const skillId of [...(enemy?.skillIds ?? []), ...(enemy?.actions ?? []).map((a) => a.skillId)]) {
+    const name = project.database.skills.find((s) => s.id === skillId)?.name ?? skillId;
+    if (!isBasicAttack(skillId, name)) out.add(name);
+  }
+  return out;
+}
+
 interface Foe { readonly name: string; boss: boolean; readonly skills: Set<string>; readonly ids: Set<string> }
 
 /** 맵 하나가 부르는 무리 id — 이벤트 전투·무작위 조우표·필드 적 스폰. mapId "common" 은 공용 이벤트(어느 맵인지 모른다). */
