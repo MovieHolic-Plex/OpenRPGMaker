@@ -1,19 +1,19 @@
 {
  "schema": "oprn-object-gate-owner-waiver/1",
  "id": "fable-redraw-roofs-pirate-isles-2026-11-12",
- "owner": "이 에디터는 시야각이 직교해야하므로 sengoku_edo se-machiya-a 이런 식의 직각 지붕이어야하는데, jp_city jp-inaka-kominka-thatched jp_city jp-inaka-kawara-farmhouse pirate_isles pi-hut-thatch 같은 식의 지붕들은 ... 좀 문제가 많다. jp_city jp-inaka-agri-tin-shed 도 그렇고 ... sky_island si-observatory 이건 또 뭘 그린건지도 모르겠고 ... sf_station 시리즈는 전부 다시 그려야할듯. 바닥 타일부터 건물까지. snow_north 도 아예 다시 그려라. Fable 5.2 Medium 으로 1번만 시도하는 게 차라리 가격이 덜 들어간다는 걸 깨달았따. 그렇게 빠르게 진행할 것. / fable 이 만든거는 기계 불합격이라 할지라도 그냥 배치하는 게 맞을거같음. 지금 시간도 토큰도 업승니 ..",
+ "owner": "구워도 되고 앞으로는 전부 오너 면제다 (FABLE 5.2 는 한번에 다 잘만든다)",
  "decidedAt": "2026-11-12",
- "recordedBy": "지붕 다시 그리기 작업자(Claude, 감독 세션 0306a26a 의 지시 — 오너 2026-11-12 직각 지붕 지시)",
+ "recordedBy": "지붕 다시 그리기 작업자(Claude, 감독 세션 0306a26a 의 지시)",
  "contexts": [
   "bundle",
   "shared"
  ],
- "note": "Fable 5.2 medium 한 방으로 지붕만 다시 그린 pirate_isles 건물(벽·문은 옛 화소 그대로). 판정 모델 없음. 자료 ~/z-project/assistant-fable-runs/redraw/roofs, 페이지 roof-orthogonal.html.",
+ "note": "오너가 2026-11-12 감독의 질문 1 «Fable 로 다시 그린 그림(… 직각 지붕 다시 그리기)을 판정 없이 오너 면제로 번들에 구워도 됩니까? (스토어에는 안 올립니다)» 에 한 답. roof-redraw = Fable 5.2 medium 한 방으로 그린 지붕(천문대는 돔)을 코드가 옛 건물 그림 위에 조립한 것 — 벽·문·기단 화소는 옛 영수증을 받은 그림 그대로다. 직각 지붕 지시(같은 날): «이 에디터는 시야각이 직교해야하므로 sengoku_edo se-machiya-a 이런 식의 직각 지붕이어야». 자료 ~/z-project/assistant-fable-runs/redraw/roofs, 페이지 roof-orthogonal.html.",
  "items": [
   {
    "pixelSha256": "5a2f21fd5c20f5aada56b39c8e63f7a1a32a5d04da272551575bbf997244ae48",
    "kind": "structure",
-   "label": "pirate_isles/pi-hut-thatch",
+   "label": "pirate_isles/roof-redraw/pi-hut-thatch",
    "width": 48,
    "height": 64,
    "cells": {
@@ -70,7 +70,7 @@
   {
    "pixelSha256": "ed4625c20953573d084e12575f3d9aacdf69cd0547d8ebe7a2ceebe1723095da",
    "kind": "structure",
-   "label": "pirate_isles/pi-cabin",
+   "label": "pirate_isles/roof-redraw/pi-cabin",
    "width": 64,
    "height": 64,
    "cells": {
@@ -185,7 +185,7 @@
   {
    "pixelSha256": "ad55d790a16cc5a239acf54e97a06908f0805da19c18de6532dcedd679187e2e",
    "kind": "structure",
-   "label": "pirate_isles/pi-house-plaster",
+   "label": "pirate_isles/roof-redraw/pi-house-plaster",
    "width": 64,
    "height": 80,
    "cells": {
@@ -330,7 +330,7 @@
   {
    "pixelSha256": "a887eae903ac93bc32fa38e60271083f618539f359c718af703855adb8c515bd",
    "kind": "structure",
-   "label": "pirate_isles/pi-tavern",
+   "label": "pirate_isles/roof-redraw/pi-tavern",
    "width": 96,
    "height": 96,
    "cells": {
@@ -410,7 +410,7 @@
   {
    "pixelSha256": "46bb1c8653c0296e6d3dabc4d404e1e1d206687326d17612a6be8e6c7742b818",
    "kind": "structure",
-   "label": "pirate_isles/pi-warehouse",
+   "label": "pirate_isles/roof-redraw/pi-warehouse",
    "width": 80,
    "height": 64,
    "cells": {
@@ -561,7 +561,7 @@
   {
    "pixelSha256": "2e09b9f22a5a15c020d61a407bacab0ec60979dbb62fcf1c7445b02dd1e95e91",
    "kind": "structure",
-   "label": "pirate_isles/pi-harbor-office",
+   "label": "pirate_isles/roof-redraw/pi-harbor-office",
    "width": 80,
    "height": 96,
    "cells": {
@@ -694,7 +694,7 @@
   {
    "pixelSha256": "eed80bc6fae3e95096e03d9c109273ab31742b7852837079857f783e77815e00",
    "kind": "structure",
-   "label": "pirate_isles/pi-hut-palm",
+   "label": "pirate_isles/roof-redraw/pi-hut-palm",
    "width": 48,
    "height": 64,
    "cells": {
@@ -751,7 +751,7 @@
   {
    "pixelSha256": "03e867cb761bb6bdd79fbff4e6c5f144b7c2850fdc48bb8da790a759008a1e5a",
    "kind": "structure",
-   "label": "pirate_isles/pi-longhouse",
+   "label": "pirate_isles/roof-redraw/pi-longhouse",
    "width": 80,
    "height": 64,
    "cells": {
@@ -902,7 +902,7 @@
   {
    "pixelSha256": "ed7b146ffb04a1f2bb3e8640f5fa440f23ce437350cf4cac1c356e6e99f6f6aa",
    "kind": "structure",
-   "label": "pirate_isles/pi-captain-house",
+   "label": "pirate_isles/roof-redraw/pi-captain-house",
    "width": 96,
    "height": 96,
    "cells": {
@@ -982,7 +982,7 @@
   {
    "pixelSha256": "6551cdccdfe66b2035353b4adfabae77f22d1df731b9a9d54074ca3da8a34fa5",
    "kind": "structure",
-   "label": "pirate_isles/pi-fort-barracks",
+   "label": "pirate_isles/roof-redraw/pi-fort-barracks",
    "width": 80,
    "height": 64,
    "cells": {
@@ -1131,7 +1131,7 @@
   {
    "pixelSha256": "3ea0330b608b206e1e0c404d2f1f3c34df796ad05c3490d8c59619501b300ee2",
    "kind": "structure",
-   "label": "pirate_isles/pi-fish-shack",
+   "label": "pirate_isles/roof-redraw/pi-fish-shack",
    "width": 48,
    "height": 64,
    "cells": {
@@ -1188,7 +1188,7 @@
   {
    "pixelSha256": "3b7478982e31c97168525c21b4f5b43af213c9f936b70b4c867b5a31df77179d",
    "kind": "structure",
-   "label": "pirate_isles/pi-boathouse",
+   "label": "pirate_isles/roof-redraw/pi-boathouse",
    "width": 64,
    "height": 64,
    "cells": {
@@ -1303,7 +1303,7 @@
   {
    "pixelSha256": "9abc7b4119c8ac44c07b4366bf26c94a8f808954ec77eb32f384bdd93f434053",
    "kind": "structure",
-   "label": "pirate_isles/pi-smokehouse",
+   "label": "pirate_isles/roof-redraw/pi-smokehouse",
    "width": 32,
    "height": 48,
    "cells": {
