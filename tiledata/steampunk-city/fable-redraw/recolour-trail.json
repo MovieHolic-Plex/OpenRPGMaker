@@ -651,7 +651,7 @@
    "piece": "buildings/sp-inn",
    "kind": "structure",
    "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
-   "pixelSha256": "08d27adba8763b0f1042a0d0b78270a3aedee61fe3508ebf201b8f02a126e751",
+   "pixelSha256": "cad3b6eea4e2e4d96835032e87ab1be97214d67650f21e3960e1176ff1e27b3d",
    "before": {
     "pixelSha256": "1ad72eb69d71c9cdc9596c1a293c0976d372eab7f25ed80916744ae37054dce6",
     "receipt": {
@@ -667,7 +667,7 @@
    "piece": "buildings/sp-tavern",
    "kind": "structure",
    "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
-   "pixelSha256": "558ff301d672cdda25d186b8e3e25eb7cab3e42d9b2ec41867fb9c6dfc6e0a10",
+   "pixelSha256": "1319e736fa423137f3b679f7befce2f974304dcd5fd679f1c5c853ffed5aa326",
    "before": {
     "pixelSha256": "73ca0d88168cd6a25dd966e4be12c812b2fce7ae0cfaa03b073a31054aefb778",
     "receipt": {
@@ -683,7 +683,7 @@
    "piece": "buildings/sp-factory",
    "kind": "structure",
    "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
-   "pixelSha256": "440568def89a75cc0c2916604b9844078f6e775e3d915aed9ef4bb887fc370d7",
+   "pixelSha256": "f904905a5e831e5899d1b339299992dac0ba899ad1c378015fae5fbc86e782a2",
    "before": {
     "pixelSha256": "fc73e20c37e6e3c7cd089e6b6309c83b79233f6562ae9c2689b7ffecdc7530b8",
     "receipt": {
@@ -699,7 +699,7 @@
    "piece": "buildings/sp-boiler-house",
    "kind": "structure",
    "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
-   "pixelSha256": "3b3a2469b64a2ab3cf3ef7def2ab08239787fd755d79fc311edd7c9234a70653",
+   "pixelSha256": "aa1a268f5029d014ab6ccbe73228d8083ce8b80ba3477df61f4f4f03ee68a729",
    "before": {
     "pixelSha256": "489e7f151ec4189ae0474967b90b27f4169ed13681557a501fa227cf7ab08b07",
     "receipt": {
@@ -715,7 +715,7 @@
    "piece": "buildings/sp-warehouse",
    "kind": "structure",
    "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
-   "pixelSha256": "2b24b5733d7e0a5af77fcc08fea670f0d4c9b62e550f9ee2c4455ffa370f30ba",
+   "pixelSha256": "e151bec62235a70ac612d975d28503d9240d7a44ce5dc88c51673a59361cf364",
    "before": {
     "pixelSha256": "32331cb229b9aa82810057e3a4fb73459f4ff242bcb970b8f94e65801adef440",
     "receipt": {
@@ -731,7 +731,7 @@
    "piece": "buildings/sp-station",
    "kind": "structure",
    "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
-   "pixelSha256": "1451715c5a4e8b2e41aefa65ae4aa84a6a5a18c748f1fca2d22c32eacce20d80",
+   "pixelSha256": "52fd6a8e00479a5e2787cdc76bc43fedddf5feb2f6eaca763f0810dbfed3a767",
    "before": {
     "pixelSha256": "ce98f4f1990f6bbf03f7556c9d07d03d0ae14715e57a78b1d0f4fa5750b0ca2e",
     "receipt": {
@@ -763,7 +763,7 @@
    "piece": "buildings/sp-guild-hall",
    "kind": "structure",
    "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
-   "pixelSha256": "4f2def323d407190b26362e0685de85c3adb956aea8f08a145cccdf247f30c49",
+   "pixelSha256": "f418988481c310e2449115d9b34019e1b87cfdaa053adbff679e961f267626d4",
    "before": {
     "pixelSha256": "35f58127bc571a939a02b673311c46d47919d31ee3d296fe35778cab22754130",
     "receipt": {
@@ -827,7 +827,7 @@
    "piece": "buildings/sp-dock-warehouse",
    "kind": "structure",
    "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
-   "pixelSha256": "b81cfe3243a06bde5d5d8ee0eb9837e98f3890e48b0ff64c8eadaf0f81a8016a",
+   "pixelSha256": "7714b897190083cbc4c379e9e02d05595035053badf83f1fd5ee20d112139b19",
    "before": {
     "pixelSha256": "d0150b3ceaf2aa7acb44c2af8886427a88c57ef86faf3bf00172358609683865",
     "receipt": {

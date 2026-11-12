@@ -57,7 +57,7 @@ const TODO_TOOL_DESCRIPTION = [
   "The todo list for this request. For a write request, the first call is op:\"init\" listing the whole request as items grouped by phase — one item per place, person, line, battle, link, ending, and object in the request.",
   "Give every item a check (machine check): place=place, person=person, line=talk, battle=battle(boss), map link=link, ending=ending, item=item, present evidence=present_evidence, objective line=objective, reachable on foot=reachable, interior laid from spec.layout=layout_built, interior built as a room graph=room_graph, zones inside one interior room=room_zones. Use none only for what a machine cannot see.",
   "For an interior (inn, study, shop, jail, library, castle room, lab…) laid from spec.layout, add layout_built, layout_review and room_graph items (map=its name) after its place item. Otherwise add a room_graph item (map=its name) after its place item when you build it as several rooms (zones with x, y, landmark and connections), or room_zones (min 2) for one room split into zones. The function adds the item itself for designed interiors you did not cover.",
-  "ops: init(list) · start(task) · done(task — runs the machine check; ✗ means it is not done) · block(task, reason — when you cannot do it: one-line reason, then the next item) · drop(task, reason — no longer needed for the request) · append(phase, items) · bind(task, mapId/eventId/itemId/troopId — the real id the item means, when the check says \"ambiguous\") · view.",
+  "ops: init(list) · start(task) · done(task — runs the machine check; ✗ means it is not done) · block(task, reason — when you cannot do it: one-line reason, then the next item) · drop(task, reason — no longer needed for the request) · append(phase, items) · bind(task, mapId/eventId/itemId/troopId — the real id the item means, when the check says \"ambiguous\") · view. On a long list the result of start/done/block/drop/bind shows the changed item and the open items only — view returns the whole list.",
   "Map, event, item and troop ids created by a write verb are bound automatically to the item in progress — if one call builds a different item, pass todoId to that verb. A \"make X\" item never passes with something that existed before.",
   "One item in progress at a time. Mark an item done as soon as it is finished. Do not end your turn after calling only todo — continue with real verbs in the same response.",
   "Problems found by function checks, critics and screen review come back as items in this list (source shown). Report \"complete\" only when no item is open and every machine check is ✓.",
@@ -146,7 +146,9 @@ function applySkeleton(env: PiAssistantV2Env, store: TodoStore, hooks: HookStats
 const skeletonKey = (e: SkeletonElement) => `skeleton:${e.check?.kind}:${JSON.stringify(e.check)}`;
 
 function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: TodoToolsState, verbNames: ReadonlySet<string>, hooks: HookStats = new HookStats()): PiToolShape {
-  const done = (summary: string, ok = true, extra: Record<string, unknown> = {}): PiToolExecResult => text({ ok, summary, ...extra, list: store.view(40, true) });
+  // 결과에 싣는 목록: 목록을 쓰거나(init·append) 보자고 한(view) 때와 항목을 못 찾은 때는 전체, 항목 하나를 고친 때는 그 줄과 열린 줄만(todoStore.viewFocusEn 머리말).
+  let shown: { full: boolean; id?: string } = { full: true };
+  const done = (summary: string, ok = true, extra: Record<string, unknown> = {}): PiToolExecResult => text({ ok, summary, ...extra, list: shown.full || !shown.id ? store.view(40, true) : store.viewFocusEn(shown.id) });
   return {
     name: "todo", label: "todo", concurrency: "exclusive", description: TODO_TOOL_DESCRIPTION,
     parameters: {
@@ -174,7 +176,8 @@ function createTodoTool(env: PiAssistantV2Env, store: TodoStore, state: TodoTool
       const op = inferred ?? String(p.op);
       const warnings: string[] = [];
       let result: PiToolExecResult;
-      const target = (): TodoItem | undefined => store.resolve(p.task) ?? (op === "done" || op === "block" || op === "bind" ? store.current() : undefined);
+      shown = { full: !(op === "start" || op === "done" || op === "block" || op === "drop" || op === "bind") };
+      const target = (): TodoItem | undefined => { const item = store.resolve(p.task) ?? (op === "done" || op === "block" || op === "bind" ? store.current() : undefined); if (item) shown.id = item.id; return item; };
       const notFound = () => done(`Item «${p.task ?? ""}» not found — pass its id (t1…) or its exact content`, false);
       switch (op) {
         case "init": {

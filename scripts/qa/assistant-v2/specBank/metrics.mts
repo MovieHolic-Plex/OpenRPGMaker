@@ -13,6 +13,7 @@ export const METRICS: readonly { key: string; label: string; better: "up" | "dow
   { key: "blueprintBlockers", label: "청사진 걷기 막힘", better: "down" },
   { key: "shipBlockers", label: "출하 차단", better: "down" },
   { key: "autoplayEnding", label: "자동 플레이 엔딩 도달", better: "up" },
+  { key: "honestEnding", label: "정직한 플레이 엔딩 도달(보이는 것·읽은 글만)", better: "up" },
   { key: "exitsOnRoad", label: "출구가 길 위(길 있는 맵)", better: "up" },
   { key: "exitsFullWidth", label: "가장자리 출구가 길 폭 전체", better: "up" },
   { key: "exitsRoadless", label: "길 없는 맵의 출구", better: "none" },

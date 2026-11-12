@@ -104,7 +104,7 @@ export const BUILD_BLUEPRINT_PATH_SCHEMA = {
       lines: { type: "array", items: { type: "string" }, description: "what is said or shown when the condition is met — for a talk/choice/battle step the person's own words (a line starting with «(» is narration)" },
       lockedLines: { type: "array", items: { type: "string" }, description: "when the condition is not met yet — a hint naming this step's own needs (never another step)" },
       doneLines: { type: "array", items: { type: "string" }, description: "when examined again after it is done" },
-      code: { type: "string", description: "make this step a number lock — the answer (3+ digits, written in an earlier step's lines)" },
+      code: { type: "string", description: "puzzle step: its lock's answer (3+ digits). Other steps: the number that person or thing tells — said in their lines" },
       options: { type: "array", items: { type: "string" }, description: "make code a choice instead (include the right answer)" },
       wrongLines: { type: "array", items: { type: "string" } },
       winLines: { type: "array", items: { type: "string" }, description: "battle step: 1–2 lines after the player wins — the foe's own words, or narration wrapped in parentheses: «(The beast backs into the reeds.)». A foe drawn as a monster leaves the map after the win, so its doneLines are not shown" },
@@ -253,6 +253,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   let prevKept: { mapId: string; eventId: string; gives: string; event: string } | undefined;
   // 그대로 둔 단계 이벤트를 gives 로 — 번호 단계 needs 가 단서 여럿(「일기장 단서, 그림 뒤 단서」)이면 번호를 나눠 적는다.
   const keptByGives = new Map<string, { mapId: string; eventId: string; gives: string; event: string }>();
+  /** 앞 단계의 사람·물건이 알려 준 번호(자물쇠 단계가 code 를 안 줬으면 가장 최근 것이 정답). */
+  const heard: string[] = [];
   steps.forEach((step, k) => {
     const keptBefore = prevKept;
     prevKept = undefined;
@@ -293,8 +295,13 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     let clueLearn: string | undefined;
     // 모델이 code 를 안 줬어도 앞 단계·이 단계 대사(또는 그대로 둔 앞 이벤트 대사)에 번호를 적었으면 그 번호가 정답이다 — 함수가 새 번호를 정하면
     // 단서 번호가 둘이 된다(2026-10-29 vm3 flash escape: 책상 「비밀번호는 4862다」 + 함수 쪽지 「5858」).
-    const told0 = isCodeStep(step) && !t?.code ? modelCode(run, [...steps.slice(0, k).flatMap((st) => byId.get(st.id)?.lines ?? []), ...(t?.lines ?? [])], keptBefore) : undefined;
-    const code = isCodeStep(step) || t?.code ? (t?.code ?? told0 ?? stepCode(`${bp.title}|${step.id}|${step.event}`)) : undefined;
+    // 번호를 넣는 곳은 자물쇠 단계(kind:"puzzle")뿐이다. 종류를 적은 다른 단계(talk·find·choice·battle)가 code 를 주면 그 사람·물건이 번호를 «알려 주는» 단계다 —
+    // 그 사람에게 자물쇠를 달지 않고, 그 대사에 번호가 들어 있게 하고, 뒤의 자물쇠 단계가 그 번호로 열린다
+    // (2026-11-12 r1w-fun: 「주술사에게 숫자를 전해 듣는다」 talk 단계에 code 가 있다고 주술사가 번호 자물쇠가 됐고, 번호는 그림 없는 «번호 쪽지» 에 적혔다).
+    const tells = step.kind && step.kind !== "puzzle" ? t?.code?.trim() || undefined : undefined;
+    const told0 = !tells && isCodeStep(step) && !t?.code ? modelCode(run, [...steps.slice(0, k).flatMap((st) => byId.get(st.id)?.lines ?? []), ...(t?.lines ?? [])], keptBefore) : undefined;
+    const code = !tells && (isCodeStep(step) || t?.code) ? (t?.code ?? heard.at(-1) ?? told0 ?? stepCode(`${bp.title}|${step.id}|${step.event}`)) : undefined;
+    if (tells) heard.push(tells);
     if (code) {
       // 앞선 고리 어느 것이든 그 대사에 번호가 있으면 이미 알려 준 것이다 — 사슬은 순서대로만 열리므로 이 단계에 닿은 플레이어는 그 대사를 지났다.
       // 바로 앞 단계만 보면 두세 단계 앞의 기록이 알려 준 번호를 같은 방의 «번호 쪽지»로 한 번 더 읽어야 자물쇠가 열렸다.
@@ -332,7 +339,9 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     }
     linkStep.push(k);
     // 사람 단계에 대사를 안 줬으면 «살펴보았다» 대신 그 단계의 할 일을 서술 한 줄로.
-    const lines = t?.lines?.length ? t.lines : personal ? [`(${step.action.trim().replace(/[.。]+$/u, "")}.)`] : [lookLine(step.event)];
+    const said = t?.lines?.length ? t.lines : personal ? [`(${step.action.trim().replace(/[.。]+$/u, "")}.)`] : [lookLine(step.event)];
+    // 번호를 알려 주는 단계인데 대사에 그 번호가 없으면 한 줄 덧붙인다 — 플레이어가 읽은 글에 번호가 있어야 뒤의 자물쇠를 연다.
+    const lines = tells && !said.some((line) => line.includes(tells)) ? [...said, personal ? `(${who}${josa(who!, "이", "가")} 알려 준 번호는 「${tells}」.)` : `적힌 번호는 「${tells}」.`] : said;
     // 고르기(choice): 고른 것마다 깃발 — 엔딩 직전에 그 선택의 결과 한 줄(later)이 달라진다.
     const options = step.kind === "choice" ? (t?.choices ?? []).filter((o) => o?.text?.trim()).slice(0, 4) : [];
     const choice = options.length >= 2 ? { options: options.map((o, i) => ({ text: o.text.trim(), ...(o.lines?.length ? { lines: o.lines } : {}), flag: `${step.id} 선택 ${i + 1}` })) } : undefined;

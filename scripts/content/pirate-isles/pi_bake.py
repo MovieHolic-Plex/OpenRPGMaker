@@ -11,7 +11,7 @@
   terrain: 걷는 바닥 = floor, 물·벽 천장·벽 앞면·성벽 윗면 = solidfloor.  debris/flat 조각 = flat(투명 덧그림, 걷는다).
   wall_mounted = solid(벽 앞면 위).  그 밖: solid 목록 칸 solid, 나머지 그림 칸 star(사람 위에 그려지고 아래층 통행을 따른다).
 """
-import argparse, collections, json, math, os, sys
+import argparse, collections, hashlib, json, math, os, sys
 import numpy as np
 from PIL import Image
 
@@ -93,6 +93,15 @@ def bake(dry=False):
     img, info, rejected, adopted = {}, {}, [], []
     dedupe = {}
     piece_cells = {}
+    # 옛 칸은 옛 그림 그대로(jp_city 와 같은 규칙, 2026-11-12 지붕 높이): 번호를 받은 자리 키의 그림이 옛 시트의 그 칸과 다르면 새 자리 키 `<키>@r<그림 해시>` 로
+    # 끝에 붙이고 키트는 새 칸을 가리킨다. 이번 굽기에서 아무도 안 쓰는 번호(그림이 바뀐 자리·빈 칸이 된 자리)는 옛 그림과 옛 정의를 그대로 지킨다 —
+    # 이미 깔린 맵은 한 화소도, 한 칸의 통행도 바뀌지 않는다. 오토타일(덩이·이웃 4) 칸은 예전대로 제자리에서 굽는다.
+    old_sheet = Image.open(P['png']).convert('RGBA') if os.path.exists(P['png']) else None
+    old_def = json.load(open(P['tileset'], encoding='utf-8')) if os.path.exists(P['tileset']) else None
+    def old_cell(tid):
+        x, y = (tid % TPR) * 16, (tid // TPR) * 16
+        if old_sheet is None or y + 16 > old_sheet.height: return None
+        return BL.norm(old_sheet.crop((x, y, x + 16, y + 16)))
     for p in C.PIECES.values():
         st = C.status_of(p)
         if st != 'pass': rejected.append(dict(id=p['id'], why=st)); continue
@@ -108,6 +117,9 @@ def bake(dry=False):
             meta = dict(label=f"{p['name'][:60]}{where}"[:80], desc=f"{p['desc'] or p['name']} — {BL.PCNOTE[pc]}.", role=role_of(p),
                         tags=['해적 군도', GROUP_KO[p['group']]] + p['tags'], rep='auto' if (blob or a4) else ('repeat' if p['kind'] == 'terrain' else 'fixed'))
             key = f"{p['id']}/{x}.{y}"
+            if not (blob or a4) and key in pins.map:
+                was = old_cell(pins.map[key])
+                if was is not None and was.tobytes() != crop.tobytes(): key = '%s@r%s' % (key, hashlib.sha1(crop.tobytes()).hexdigest()[:8])
             k2 = (crop.tobytes(), pc)
             # 이미 번호를 받은 자리 키는 그림이 다른 칸과 같아져도 제 번호를 지킨다 — 합치면 그 번호가 빈 칸이 되어 이미 깔린 맵에 구멍이 난다(2026-11-12 직각 지붕: 술집 지붕 529 번).
             if k2 in dedupe and not (blob or a4) and key not in pins.map: tid = dedupe[k2]
@@ -116,6 +128,12 @@ def bake(dry=False):
             cells[(x, y)] = (tid, pc)
         piece_cells[p['id']] = cells
 
+    retired = []
+    if old_def is not None:
+        for key, tid in pins.map.items():
+            if tid in img or tid >= old_def.get('count', 0): continue
+            was = old_cell(tid)
+            if was is not None and was.getbbox() is not None: img[tid] = was; retired.append(tid)
     count = max(list(img) + [pins.next_id - 1, 0]) + 1
     assert math.ceil(count / TPR) * 16 <= BL.MAX_H, ('시트 높이 초과', count)
     for t in range(count):
@@ -137,6 +155,8 @@ def bake(dry=False):
         elif home == 'upper': m['layerBacking'] = 'none'
         tile_meta.append(m)
 
+    for t in retired:                                       # 물러난 칸: 옛 정의 그대로
+        passability[t] = old_def['passability'][t]; priority[t] = old_def['priority'][t]; terrain[t] = old_def['terrain'][t]; tile_meta[t] = old_def['tileMeta'][t]
     def tids_of(pid): return sorted({t for t, _ in piece_cells.get(pid, {}).values()})
     autotile_groups = []
     auto_tables = {}

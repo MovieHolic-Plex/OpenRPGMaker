@@ -11,6 +11,7 @@ import { isPassable } from "@/project/collision";
 import { questPresetIssue } from './questPresets';
 import { validateQuestReferences } from './questValidation';
 import { GENERIC_GIVER, hostCommands, hostPage, prepareQuestHost, questHost, type QuestHost } from './questHost';
+import { settleStepPages } from '../blueprintStepPages';
 import { resolveAnchorPoint } from "@/project/locationAnchors";
 import type { Command, EventPage, EventPageCondition, EventPageGraphic, GameEvent, GameMap, Project, SimpleTriggerKind } from "@/project/types";
 import {
@@ -688,6 +689,9 @@ export function compileQuest(project: Project, def: QuestDef, options: QuestComp
     const changed = page(`${target.id}_${def.key}_world${i}`, base.name ?? '변화', [switchCond(flags.done)], change.lines.map(line => text(line)), base.graphic ?? { transparent: true }, { priority: change.passable ? 'below' : base.priority });
     target.pages!.push(changed);
   }
+
+  // 청사진 단계의 사람에게 얹은 의뢰 페이지는 그 단계를 넘긴 뒤에만 돈다 — 단계의 연 페이지를 가리지 않는다(blueprintStepPages).
+  counters.warnings.push(...settleStepPages(project));
 
   // 5) 메타 보존.
   project.quests = [...(project.quests ?? []).filter((quest) => questDefId(quest) !== def.key), def];
