@@ -1,0 +1,59 @@
+{
+"id": "g-floors",
+"w": 48,
+"h": 16,
+"role": "ground",
+"shot": 1,
+"legend": {
+"a": "plank:0",
+"b": "plank:1",
+"c": "plank:2",
+"i": "ice:0",
+"j": "ice:1",
+"k": "ice:2"
+},
+"rows": [
+"bbbbbccccccbabbbcccccccccccccccciiiiijjjjjiiiiii",
+"bbcccccccbbbabbcccccbbbbbccccccciiiijjjjjjjiiiii",
+"bbbbbbcccccbabbbcccccccccccccccciiiijjjkjjjjiiii",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaiiiiijjjkjjjiiii",
+"cccacccccccccbbbcccccccccccccccciiiiiijjjkjiiiii",
+"cbbaccbabcccccbbcccccccccccbbbccjiiiiiiiijkiiiij",
+"cccaccccbbbcccccccccccccccccccccjjiiiiiiiiiiiijj",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaajjjiiiiiiiiiijjj",
+"bbbbbbbbacccccbbbbccccccccccccbbjjjjiiiiiiiijjjj",
+"bccccbbbacccccccccccccccccccccccjjjiiikiiiiiijjj",
+"bbbbbbbbaccbbbbbccccccccccccccccjjiiikiiiiiiiijj",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaiiiikiiiijjjiiii",
+"ccccbbbbbbbbbacbcccccccccccccccciiiiiiiijjjjjiii",
+"cccccccbbbabbaccccccccbbbbcccccciiiiiiijjjjjkkii",
+"ccbbbbbbbbbbbacccccccccccccccccciiiiiijjjjjjiiii",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaiiiiiijjjjjiiiii"
+],
+"door": null,
+"cells": [
+{
+"name": "floor-plank",
+"x": 0,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "floor-sauna",
+"x": 16,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "floor-ice",
+"x": 32,
+"y": 0,
+"w": 16,
+"h": 16
+}
+],
+"broken": false,
+"defects": []
+}

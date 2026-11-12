@@ -20,9 +20,9 @@
 {"png": "sn-water.png", "kind": "terrain", "name": "열린 물(얼음 구멍·여울)", "label": "snow-north/sn-water"}
 {"png": "sn-water-f1.png", "kind": "terrain", "name": "열린 물(얼음 구멍·여울) (프레임 2)", "label": "snow-north/sn-water-f1"}
 {"png": "sn-water-f2.png", "kind": "terrain", "name": "열린 물(얼음 구멍·여울) (프레임 3)", "label": "snow-north/sn-water-f2"}
-{"png": "sn-at-pack.png", "kind": "terrain", "name": "autotile pack (다진 눈 inside snow-bank border)", "label": "snow-north/sn-at-pack"}
-{"png": "sn-at-ice.png", "kind": "terrain", "name": "autotile ice (얼음 inside snow-bank border)", "label": "snow-north/sn-at-ice"}
-{"png": "sn-at-tundra.png", "kind": "terrain", "name": "autotile tundra (툰드라 inside snow-bank border)", "label": "snow-north/sn-at-tundra"}
-{"png": "sn-at-frost.png", "kind": "terrain", "name": "autotile frost (서리 풀 inside snow-bank border)", "label": "snow-north/sn-at-frost"}
-{"png": "sn-at-slush.png", "kind": "terrain", "name": "autotile slush (진창 inside snow-bank border)", "label": "snow-north/sn-at-slush"}
-{"png": "sn-at-water.png", "kind": "terrain", "name": "autotile water (열린 물 inside snow-bank border)", "label": "snow-north/sn-at-water"}
+{"png": "sn-at-pack.png", "kind": "terrain", "name": "autotile pack", "label": "snow-north/sn-at-pack"}
+{"png": "sn-at-ice.png", "kind": "terrain", "name": "autotile ice", "label": "snow-north/sn-at-ice"}
+{"png": "sn-at-tundra.png", "kind": "terrain", "name": "autotile tundra", "label": "snow-north/sn-at-tundra"}
+{"png": "sn-at-frost.png", "kind": "terrain", "name": "autotile frost", "label": "snow-north/sn-at-frost"}
+{"png": "sn-at-slush.png", "kind": "terrain", "name": "autotile slush", "label": "snow-north/sn-at-slush"}
+{"png": "sn-at-water.png", "kind": "terrain", "name": "autotile water", "label": "snow-north/sn-at-water"}
