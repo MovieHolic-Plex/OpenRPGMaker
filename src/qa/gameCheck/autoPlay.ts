@@ -1893,7 +1893,18 @@ function pathOpenerGoals(project: Project, mapId: string | undefined): Goal[] {
   return goals;
 }
 
-function runPlan(project: Project, label: string, goals: readonly Goal[], deadline: number, preamble: readonly string[] = []): AutoPlayRun {
+/** 목표를 실행하기 직전의 판 — 그때 세션·맵·자리와 이제 부를 이벤트. 길 안내 탐침(objectiveFollowProbe)이 «그 순간 플레이어가 가진 것»으로 잰다. */
+export interface AutoPlayMoment {
+  readonly goal: string;
+  readonly where: CommandWhere;
+  /** 이 목표가 채우는 요구의 종류 — "map" 이면 다음 맵으로 들어가는 문일 뿐이다. */
+  readonly requirement?: Requirement["kind"];
+  /** 이미 채워진 목표(앞 목표의 같은 대화가 스위치와 아이템을 함께 줬다) — 걸을 일이 없다. */
+  readonly alreadyDone: boolean;
+  readonly state: SceneTestResult;
+}
+
+function runPlan(project: Project, label: string, goals: readonly Goal[], deadline: number, preamble: readonly string[] = [], onGoal?: (moment: AutoPlayMoment) => void): AutoPlayRun {
   const started = Date.now();
   const first = quietScene(project, []);
   const lastGoal = goals.at(-1);
@@ -1911,6 +1922,7 @@ function runPlan(project: Project, label: string, goals: readonly Goal[], deadli
   const queue = [...goals];
   for (let index = 0; index < queue.length; index++) {
     const goal = queue[index]!;
+    onGoal?.({ goal: goal.label, where: goal.visit.where, ...(goal.req ? { requirement: goal.req.kind } : {}), alreadyDone: goal.done?.(driver.last.session, driver.last) === true, state: driver.last });
     let step = executeGoal(driver, goal);
     // 장치 순서가 정해진 퍼즐(두 번째 바위를 밀어야 첫 바위에 닿는다)은 계획 순서가 거꾸로일 수 있다 —
     // 같은 맵의 다음 목표 하나를 먼저 하고 다시 시도한다(2026-10-06 몬스터 원정 용마루 체육관).
@@ -1971,7 +1983,11 @@ function endingKey(visit: CommandVisit): string {
 
 export function runAutoPlay(
   project: Project,
-  options: { readonly budgetMs?: number; readonly companionJoins?: readonly CommandVisit[]; readonly recoverBeforeRandomEncounters?: boolean } = {},
+  options: {
+    readonly budgetMs?: number; readonly companionJoins?: readonly CommandVisit[]; readonly recoverBeforeRandomEncounters?: boolean;
+    /** 기본 경로의 목표마다 실행 직전에 부른다(탐침 전용 — 판을 바꾸지 않는다). */
+    readonly onGoal?: (moment: AutoPlayMoment) => void;
+  } = {},
 ): AutoPlayReport {
   pageProject = project;
   if (options.recoverBeforeRandomEncounters) RECOVERING_PROJECTS.add(project);
@@ -1999,8 +2015,8 @@ export function runAutoPlay(
   }
   const starter = give ? planCriticalPath(project, give, starterGoal(give)) : undefined;
   const runs: AutoPlayRun[] = [starter
-    ? runPlan(project, "기본 경로(파트너 받고)", [...starter.goals, ...plan.goals], deadline, [...starter.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다`), ...preamble])
-    : runPlan(project, "기본 경로", plan.goals, deadline, preamble)];
+    ? runPlan(project, "기본 경로(파트너 받고)", [...starter.goals, ...plan.goals], deadline, [...starter.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다`), ...preamble], options.onGoal)
+    : runPlan(project, "기본 경로", plan.goals, deadline, preamble, options.onGoal)];
   // 합류하는 동료를 모두(배우별 첫 합류, 최대 MAX_COMPANION_JOINS 명) 차례로 데려간다 — JRPG 는 3인 파티를 전제로
   // 층마다 적을 세운다. 첫 동료만 데려가면 3층 순찰대에 둘이서 쓰러지는 거짓 막힘이 났다(2026-09-24 도그푸딩).
   const joinByActor = new Map<string, { readonly join: CommandVisit; readonly plan: CriticalPlan }>();

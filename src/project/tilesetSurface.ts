@@ -20,6 +20,8 @@ export interface SurfaceDecl {
   readonly notRoad?: TilePick;
   /** 계단 — 오르내리는 칸. 안 적으면 번들 공통 말(STAIRS)로 읽는다. 다른 꼬리표를 쓰는 번들만 적는다. */
   readonly stairs?: TilePick;
+  /** 낱장 문 — 벽에 붙이는 문 타일(건물 키트 밖). 안 적으면 번들 공통 말(DOORS)로 읽는다. 다른 꼬리표를 쓰는 번들만 적는다. */
+  readonly doors?: TilePick;
   /** 새 길 칸을 까는 재료 — 오토타일 묶음 id 와 fill_region 에 주는 재료 말. 맵에 가장 많이 깔린 것을 쓴다. 없으면 이 칩셋의 길은 구성기만 낸다. */
   readonly lay?: readonly { readonly group: string; readonly material: string }[];
 }
@@ -30,6 +32,8 @@ export interface TilesetSurface {
   readonly road: ReadonlySet<number>;
   /** 계단 칸 — 이름표 낱말이 아니라 굽기가 적은 역할·꼬리표(「지구라트(계단 신전)」「비상계단 아파트」는 계단이 아니다). */
   readonly stairs: ReadonlySet<number>;
+  /** 낱장 문 칸 — 굽기가 문이라 적은 역할·꼬리표. 건물 타일은 뺀다(건물의 문은 그 구조 키트가 입구 부품으로 적는다 — 「목책 문」「에어록 모듈」은 통째로 문이 아니다). */
+  readonly doors: ReadonlySet<number>;
   readonly lay: readonly { readonly material: string; readonly tiles: ReadonlySet<number> }[];
 }
 
@@ -54,7 +58,7 @@ export const SURFACES: Readonly<Record<string, SurfaceDecl>> = {
     lay: [{ group: "sf-at-road", material: "night city asphalt road autotile with concrete curb on open sides, 16 variants" }, { group: "sf-at-regolith-path", material: "compacted moon regolith road autotile with wheel ruts and berm edges, 16 variants" }],
   },
   wasteland_ruins: { road: { tags: ["도로", "보도"] }, lay: [{ group: "wl-asphalt", material: "금 간 아스팔트" }] },
-  wizarding_world: { road: { tags: ["흙길", "골목"] }, lay: [{ group: "wz-nat-dirt", material: "숲길 흙" }, { group: "wz-post-snowcobble", material: "눈 덮인 자갈 골목" }] },
+  wizarding_world: { road: { tags: ["흙길", "골목"] }, doors: { tags: ["문", "door", "출입구", "입구"] }, lay: [{ group: "wz-nat-dirt", material: "숲길 흙" }, { group: "wz-post-snowcobble", material: "눈 덮인 자갈 골목" }] },
   joseon_baram: {
     road: { tags: ["road64", "road16", "fld_trail32", "slab_edge16", "slab", "slab_dirt"] },
     stairs: { tags: ["in_stairs_wood_3", "in_stairs_wood_2", "in_stairs_stone_3", "in_stairs_down", "bank_stairs"] },
@@ -64,7 +68,7 @@ export const SURFACES: Readonly<Record<string, SurfaceDecl>> = {
     ],
   },
   jp_city: {
-    road: { roles: ["path"], tags: ["sidewalk", "lane", "crosswalk", "횡단보도"] },
+    road: { roles: ["path"], tags: ["sidewalk", "lane", "crosswalk", "횡단보도"] }, doors: { tags: ["door"] },
     lay: [
       { group: "jp-sidewalk-curb", material: "보도 연석" }, { group: "jp-lane-road", material: "생활도로" },
       { group: "jp-gravel-lawn", material: "자갈 참배길" }, { group: "jp-inaka-at-dirt", material: "시골 흙길" },
@@ -82,6 +86,8 @@ const FALLBACK: SurfaceDecl = {
 
 /** 계단의 번들 공통 말 — 굽기들이 계단 칸에 쓰는 역할·꼬리표 그대로. */
 const STAIRS: TilePick = { roles: ["stairs"], tags: ["계단", "stairs", "stair"] };
+/** 낱장 문의 번들 공통 말 — 굽기들이 문 타일에 쓰는 역할·꼬리표 그대로(이름표의 「문」 글자가 아니다: 「가문비」「문루」「활 구멍」). */
+const DOORS: TilePick = { roles: ["door"], tags: ["door", "문"] };
 
 type Meta = { readonly label?: string; readonly tags?: readonly string[]; readonly role?: string } | null | undefined;
 
@@ -93,7 +99,7 @@ function picks(pick: TilePick | undefined, meta: Meta): boolean {
 }
 
 const cache = new WeakMap<object, TilesetSurface>();
-const NONE: TilesetSurface = { declared: false, road: new Set(), stairs: new Set(), lay: [] };
+const NONE: TilesetSurface = { declared: false, road: new Set(), stairs: new Set(), doors: new Set(), lay: [] };
 
 /** 칩셋의 표면 — 선언(없으면 낱말 추정)을 칸 번호 집합으로 푼다. tileMeta 배열마다 한 번만 센다. */
 export function tilesetSurface(tileset: Pick<TilesetDef, "id" | "tileMeta" | "autotileGroups"> | undefined): TilesetSurface {
@@ -105,15 +111,17 @@ export function tilesetSurface(tileset: Pick<TilesetDef, "id" | "tileMeta" | "au
   const spec = decl ?? FALLBACK;
   const road = new Set<number>();
   const stairs = new Set<number>();
+  const doors = new Set<number>();
   meta.forEach((m, tile) => {
     if (picks(spec.road, m) && !picks(spec.notRoad, m)) road.add(tile);
     if (picks(spec.stairs ?? STAIRS, m)) stairs.add(tile);
+    if (m?.role !== "building" && picks(spec.doors ?? DOORS, m)) doors.add(tile);
   });
   const lay = (spec.lay ?? []).flatMap(({ group, material }) => {
     const members = tileset.autotileGroups?.find((g) => g.id === group)?.memberTileIds;
     return members?.length ? [{ material, tiles: new Set(members) }] : [];
   });
-  const surface: TilesetSurface = { declared: !!decl, road, stairs, lay };
+  const surface: TilesetSurface = { declared: !!decl, road, stairs, doors, lay };
   cache.set(meta, surface);
   return surface;
 }

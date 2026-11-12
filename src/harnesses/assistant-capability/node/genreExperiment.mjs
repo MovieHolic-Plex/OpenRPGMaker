@@ -180,7 +180,8 @@ export async function runGenreTrial(rootArg, caseId, options = {}) {
         const probe = await page.evaluate(() => {
           const events = window.__capEvents ?? [];
           const opened = events.filter(event => event.type === 'stream_open').length;
-          const closed = events.filter(event => ['stream_closed', 'stream_error'].includes(event.type)).length;
+          // 이어 받기에 밀려 끊긴 앞 가지(stream_superseded)도 닫힌 스트림이다 — 빼면 이어 받은 턴이 끝나도 「열림 > 닫힘」 으로 남는다.
+          const closed = events.filter(event => ['stream_closed', 'stream_error', 'stream_superseded'].includes(event.type)).length;
           return { opened, closed, busy: Boolean(window.__oprnAiBridge?.status().turnBusy), count: events.length,
             ended: events.some(event => ['done', 'error', 'cancelled', 'chat_done'].includes(event.type)),
             // 의도 선언의 되묻기로 멈춘 턴(실행 없음): 선택지 줄이 대화에 보이고 패널이 한가하다.
