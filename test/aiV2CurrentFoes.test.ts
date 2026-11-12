@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { normalizeGameBlueprint } from "@/project/gameBlueprint";
 import { CURRENT_MONSTER_ART_IDS, hasCurrentMonsterArt, installCurrentMonsterArt, isCurrentMonsterArt, preloadCurrentMonsterArt } from "@/assets/currentMonsterArt";
+import { CURRENT_MONSTER_SHEETS_20 } from "@/assets/currentMonsterSheets20";
 import { FS_MONSTER_SHEETS_16 } from "@/project/flagship/fallen/monsterSheets16";
 import { currentFoe, hasCurrentArt, leadEnemyId, settleCurrentArtIn } from "@/ai/v2/story/currentFoes";
 import { foeSkillNames } from "@/ai/v2/judge/enemyChecks";
@@ -33,8 +34,36 @@ const leadArt = (project: Project, troopId: string | undefined): string | undefi
 };
 
 describe("현행 몬스터 그림", () => {
-  it("id 목록은 폴른 스타의 새 시트와 같다", () => {
-    expect([...CURRENT_MONSTER_ART_IDS].sort()).toEqual([...new Set(FS_MONSTER_SHEETS_16.map((art) => art.resourceId))].sort());
+  it("id 목록은 폴른 스타의 새 시트 + 같은 방식으로 더 그린 종(currentMonsterSheets20)과 같다", () => {
+    expect([...CURRENT_MONSTER_ART_IDS].sort()).toEqual([...new Set([...FS_MONSTER_SHEETS_16, ...CURRENT_MONSTER_SHEETS_20].map((art) => art.resourceId))].sort());
+    // 두 파일에 다 있는 id 는 표시가 있고(설치는 폴른 스타 것), 그 밖의 id 는 한 파일에만 있다.
+    const fallen = new Set(FS_MONSTER_SHEETS_16.map((art) => art.resourceId));
+    for (const art of CURRENT_MONSTER_SHEETS_20) expect(fallen.has(art.resourceId), art.resourceId).toBe(art.alsoInFlagship === true);
+  });
+
+  it("더 그린 종(battle-gen gif20)도 같은 길로 들어간다 — 20칸 시트 · 맵 위 그림 · 대역 없이 그 적", async () => {
+    await preloadCurrentMonsterArt();
+    const project = createBlankProject() as Project;
+    const ids = CURRENT_MONSTER_SHEETS_20.map((art) => art.resourceId);
+    expect([...installCurrentMonsterArt(project, ids)].sort()).toEqual([...ids].sort());
+    setPixelEnemySheetProjectSource(() => project);
+    try {
+      for (const art of CURRENT_MONSTER_SHEETS_20) {
+        const sheet = pixelEnemySheet(art.resourceId)!;
+        expect(sheet.projectAuthored, art.resourceId).toBe(true);
+        expect(sheet.grid, art.resourceId).toBe("5x4");
+        expect(sheet.cell, art.resourceId).toBe(art.cell);
+        // 폴른 스타에도 있는 id(잎새 정령)는 그쪽 시트가 들어간다 — 한 id 에 그림 하나.
+        expect(project.assets.uploaded[art.resourceId]?.generatedBy, art.resourceId).toBe(art.alsoInFlagship ? "battle-gen:fallen-star" : "battle-gen:gif20");
+        expect(resolveEventSpriteTexture(project, art.resourceId, 0)).toMatchObject({ texture: art.resourceId, monster: true });
+      }
+    } finally { setPixelEnemySheetProjectSource(undefined); }
+    const before = JSON.stringify(project.assets.uploaded);
+    installCurrentMonsterArt(project, ids);
+    expect(JSON.stringify(project.assets.uploaded)).toBe(before);
+    for (const id of ["enemy_bear_brown", "enemy_dragon_whelp", "enemy_centipede_fire"]) expect(currentFoe(project, id)).toEqual({ enemyId: id });
+    // 아직 못 그린 종은 그대로 대역 + 그릴 목록.
+    expect(currentFoe(project, "enemy_tiger_saber")).toEqual({ enemyId: "enemy_wolf_dire", wanted: "tiger-saber" });
   });
 
   it("넣으면 전투 시트와 맵 위 그림이 둘 다 그 그림이 된다 — 넣지 않은 프로젝트는 번들 그림 그대로", async () => {
@@ -105,9 +134,13 @@ describe("v2 가 세우는 적은 현행 그림이 있는 종", () => {
     const fire = themeBossTroop(project, mapId, "불의 정령", true, 0);
     expect(leadArt(project, fire.troopId)).toBe("generated-enemy-spirit-fire");
     expect(fire.gaps).toEqual([]);
+    // 새끼 용이 그려진 뒤(2026-11-12): 우두머리 후보가 새끼 용·다이어 울프·불의 정령 셋이 되고 그릴 목록에서 빠진다.
     const beast = themeBossTroop(project, mapId, "늪 괴수", false, 2);
-    expect(leadArt(project, beast.troopId)).toBe("generated-enemy-wolf-dire");
-    expect(beast.gaps.map((line) => parseArtGap(line)?.wanted)).toEqual(["dinosaurs (raptor, triceratops)", "behemoth-horn", "tiger-saber", "dragon-whelp"]);
+    expect(leadArt(project, beast.troopId)).toBe("generated-enemy-spirit-fire");
+    expect(beast.gaps.map((line) => parseArtGap(line)?.wanted)).toEqual(["dinosaurs (raptor, triceratops)", "behemoth-horn", "tiger-saber"]);
+    const whelp = themeBossTroop(project, mapId, "새끼 용", true, 0);
+    expect(leadArt(project, whelp.troopId)).toBe("generated-enemy-dragon-whelp");
+    expect(whelp.gaps).toEqual([]);
   });
 
   it("테마 표에 없는 세계(버들항)의 싸우는 단계도 현행 그림 — 낱말이 가리키는 종에 그림이 없으면 대역 + 그릴 목록", () => {
@@ -143,7 +176,7 @@ describe("옛 판 맞추기(끝맺음 step-foes)", () => {
   it("함수가 고른 단계 상대(맞춤 사본)의 그림이 현행이 아니면 같은 이름으로 다시 고른다", () => {
     const { project, mapId } = world("prehistoric", "prehistoric", "swamp", "늪지");
     const map = project.maps[mapId]!;
-    const old = project.database.enemies.find((e) => e.id === "enemy_dragon_whelp")!;
+    const old = project.database.enemies.find((e) => e.id === "enemy_tiger_saber")!;   // 아직 현행 그림이 없는 종
     (project.database.enemies as unknown[]).push({ ...structuredClone(old), id: "enemy_fit_foe_s1", name: "늪 괴수" });
     (project.database.troops as unknown[]).push({ id: "troop_fit_foe_s1", name: "늪 괴수", enemyIds: ["enemy_fit_foe_s1"], members: [{ enemyId: "enemy_fit_foe_s1", x: 0, y: 0, hidden: false }], autoAlign: true, battleEventPages: [] });
     (map.events as unknown[]).push({ id: "ev_chain_x_1", name: "늪 괴수", x: 2, y: 2, pages: [{ graphic: { sprite: { type: "bundled", id: old.monsterResourceId }, direction: "down", pattern: 0 }, trigger: { kind: "action" }, commands: [{ kind: "battleProcessing", troopId: "troop_fit_foe_s1", canEscape: false, canLose: false }] }] });

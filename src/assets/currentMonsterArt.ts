@@ -1,19 +1,22 @@
-// 지금 쓰는 몬스터 그림(현행 세트) — 『폴른 스타』가 쓰는 새 전투 시트(5×4 20칸)와 한 칸 초상.
+// 지금 쓰는 몬스터 그림(현행 세트) — 『폴른 스타』가 쓰는 새 전투 시트(5×4 20칸)와 한 칸 초상 + 같은 방식으로 더 그린 종(currentMonsterSheets20.ts).
 // 번들 3×3 시트(구형)와 리소스 id 가 같다. 프로젝트에 같은 id 의 업로드(초상 + 시트)를 넣으면 전투 그림(pixelEnemySheets)과
 // 맵 위 그림(eventSpriteResources — 업로드 monster 가 먼저) 둘 다 새 그림으로 잡힌다. 넣지 않은 프로젝트는 종전 번들 그림 그대로다.
-// 그림 데이터(0.9MB)는 flagship/fallen/monsterSheets16.ts 에 있다 — 편집기 번들에 싣지 않으려고 여기는 id 목록만 들고, 쓸 때 한 번 늦게 읽는다.
+// 그림 데이터는 flagship/fallen/monsterSheets16.ts(0.9MB)와 currentMonsterSheets20.ts(0.14MB)에 있다 — 편집기 번들에 싣지 않으려고 여기는 id 목록만 들고, 쓸 때 한 번 늦게 읽는다.
 import type { Project } from "@/project/types";
 
-/** 현행 세트의 리소스 id(monsterSheets16.ts 의 것 전부 — test/currentMonsterArt.test.ts 가 맞춘다). */
+/** 현행 세트의 리소스 id(monsterSheets16.ts 와 currentMonsterSheets20.ts 의 것 전부 — test/aiV2CurrentFoes.test.ts 가 맞춘다). */
 export const CURRENT_MONSTER_ART_IDS: readonly string[] = [
   "generated-enemy-bandit-mask",
   "generated-enemy-bat-cave",
+  "generated-enemy-bear-brown",
   "generated-enemy-bee-giant",
   "generated-enemy-beetle-horn",
   "generated-enemy-bird-hawk",
   "generated-enemy-boar-tusk",
+  "generated-enemy-centipede-fire",
   "generated-enemy-crab-rock",
   "generated-enemy-dragon-blue",
+  "generated-enemy-dragon-whelp",
   "generated-enemy-eel-electric",
   "generated-enemy-eye-floating",
   "generated-enemy-ghost-pale",
@@ -34,6 +37,7 @@ export const CURRENT_MONSTER_ART_IDS: readonly string[] = [
   "generated-enemy-spider-cave",
   "generated-enemy-spirit-fire",
   "generated-enemy-spirit-water",
+  "generated-enemy-triceratops",
   "generated-enemy-well-olm",
   "generated-enemy-wisp-blue",
   "generated-enemy-wolf-dire",
@@ -52,7 +56,10 @@ let loading: Promise<void> | undefined;
 
 /** 그림 데이터를 읽어 둔다(한 번). 그 뒤로 installCurrentMonsterArt 가 동기로 돈다. */
 export function preloadCurrentMonsterArt(): Promise<void> {
-  loading ??= import("@/project/flagship/fallen/monsterArt16").then((m) => { installer = m.installMonsterArt16For; });
+  loading ??= Promise.all([import("@/project/flagship/fallen/monsterArt16"), import("@/assets/currentMonsterArt20")]).then(([fallen, more]) => {
+    // 한 id 는 한 곳에서만 넣는다 — 더 그린 종(20)은 『폴른 스타』에도 있는 id 를 건너뛴다.
+    installer = (project, ids) => new Set([...fallen.installMonsterArt16For(project, ids), ...more.installMonsterArt20For(project, ids)]);
+  });
   return loading;
 }
 

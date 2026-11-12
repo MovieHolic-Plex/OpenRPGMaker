@@ -1,0 +1,172 @@
+{
+ "bear-brown": {
+  "resourceId": "generated-enemy-bear-brown",
+  "name": "갈색 곰",
+  "en": "Brown bear",
+  "world": "prehistoric",
+  "cell": 96,
+  "grid": "5x4",
+  "motion": "stomp",
+  "idleFrameMs": 320,
+  "hover": 0,
+  "try": 4,
+  "gifSha": "e73f079513a68126f3f352baac6313d1ba209037ba413a5a9069389b565eb5c1",
+  "sheetSha": "5d41b2a4360b0f81af0e9a1404524a5f5e9437584edd51fc5ef6ed401957f383",
+  "pixelSha": "609ddedbf4aaf548ae2976aa3bf9ec7b935197c0d3fd3d692ff7a466edd41c79",
+  "identityRef": true,
+  "metrics": {
+   "colors": 14,
+   "outlineColors": 14,
+   "smallSpecksPer100": 24.7,
+   "uniform2x2": 0.18,
+   "outlineInner": 0.93,
+   "lumLevels": 13
+  },
+  "sheetColours": 14,
+  "judge": {
+   "model": [
+    "claude-opus-5-5"
+   ],
+   "effort": "medium",
+   "wolfLevel": 4.5,
+   "pass": true,
+   "batch": "20261112-210444-motion20-61250b"
+  }
+ },
+ "centipede-fire": {
+  "resourceId": "generated-enemy-centipede-fire",
+  "name": "화염 지네",
+  "en": "Fire centipede",
+  "world": "prehistoric",
+  "cell": 96,
+  "grid": "5x4",
+  "motion": "dash",
+  "idleFrameMs": 180,
+  "hover": 0,
+  "try": 2,
+  "gifSha": "1487c1159b2cf08ab92170059989e661b9b3e05ee08a2d7bea71cd834dabdf4f",
+  "sheetSha": "9fc529c5d1232c0cb2f4c544936f1edb0ad4a2f437db8407f350a16653435946",
+  "pixelSha": "3e3e1d2f495e79e461b953805f5a0f6c36c64a4191767a6f9659678dd2cf3686",
+  "identityRef": true,
+  "metrics": {
+   "colors": 14,
+   "outlineColors": 13,
+   "smallSpecksPer100": 33.9,
+   "uniform2x2": 0.18,
+   "outlineInner": 0.59,
+   "lumLevels": 13
+  },
+  "sheetColours": 14,
+  "judge": {
+   "model": [
+    "claude-opus-5-5"
+   ],
+   "effort": "medium",
+   "wolfLevel": 4,
+   "pass": true,
+   "batch": "20261112-205057-motion20-472fdb"
+  }
+ },
+ "dragon-whelp": {
+  "resourceId": "generated-enemy-dragon-whelp",
+  "name": "새끼 용",
+  "en": "Dragon whelp",
+  "world": "prehistoric",
+  "cell": 96,
+  "grid": "5x4",
+  "motion": "breath",
+  "idleFrameMs": 200,
+  "hover": 0,
+  "try": 2,
+  "gifSha": "f5b5ef99fbefbcf18729317eefe332a9d92bcd2490ae389fada26248c113e80a",
+  "sheetSha": "43ce12c89ae20dff24a2eca8cb9aeeada0f55e380a5a40ad56ef117a3887f512",
+  "pixelSha": "d2d05ed784247fb081bd811aa342e5e8057fcd7fc67d6fd62ac557892f385fde",
+  "identityRef": true,
+  "metrics": {
+   "colors": 14,
+   "outlineColors": 12,
+   "smallSpecksPer100": 29.9,
+   "uniform2x2": 0.16,
+   "outlineInner": 0.76,
+   "lumLevels": 12
+  },
+  "sheetColours": 16,
+  "judge": {
+   "model": [
+    "claude-opus-5-5"
+   ],
+   "effort": "medium",
+   "wolfLevel": 4,
+   "pass": true,
+   "batch": "20261112-205057-motion20-472fdb"
+  }
+ },
+ "leafling-01": {
+  "resourceId": "generated-enemy-leafling-01",
+  "name": "잎새 정령",
+  "en": "Leafling spirit",
+  "world": "fallen-star",
+  "cell": 96,
+  "grid": "5x4",
+  "motion": "float",
+  "idleFrameMs": 200,
+  "hover": 6,
+  "try": 2,
+  "gifSha": "998a52364200a7dd16cafe9f207f42d5a8a308822d9b5a9f123586431be6e906",
+  "sheetSha": "5960882dab7db6c14cc190744eff01b8a29f419d8fed6ed78310e629dad45a5e",
+  "pixelSha": "3da2b230a81e413e015b71c4f391b257f5bb21b514dbf008001b69d148632454",
+  "identityRef": true,
+  "metrics": {
+   "colors": 14,
+   "outlineColors": 14,
+   "smallSpecksPer100": 36.4,
+   "uniform2x2": 0.15,
+   "outlineInner": 0.86,
+   "lumLevels": 14
+  },
+  "sheetColours": 15,
+  "judge": {
+   "model": [
+    "claude-opus-5-5"
+   ],
+   "effort": "medium",
+   "wolfLevel": 4,
+   "pass": true,
+   "batch": "20261112-185800-motion20-d03830"
+  }
+ },
+ "triceratops": {
+  "resourceId": "generated-enemy-triceratops",
+  "name": "트리케라톱스",
+  "en": "Triceratops",
+  "world": "prehistoric",
+  "cell": 128,
+  "grid": "5x4",
+  "motion": "stomp",
+  "idleFrameMs": 320,
+  "hover": 0,
+  "try": 5,
+  "gifSha": "4984010ddd1b79d4d9156d560714798c5e3652b3fea0f7233fe60b6b9cf179db",
+  "sheetSha": "25f93b2aa49a74a91366ef137c243984248dd780942c770d782645a149872bd0",
+  "pixelSha": "3d928734192b9a903a828b60d01f1c14a54d8669e03393f6170cc7d75888e0d8",
+  "identityRef": false,
+  "metrics": {
+   "colors": 14,
+   "outlineColors": 12,
+   "smallSpecksPer100": 26.8,
+   "uniform2x2": 0.15,
+   "outlineInner": 0.91,
+   "lumLevels": 13
+  },
+  "sheetColours": 14,
+  "judge": {
+   "model": [
+    "claude-opus-5-5"
+   ],
+   "effort": "medium",
+   "wolfLevel": 4,
+   "pass": true,
+   "batch": "20261112-205057-motion20-472fdb"
+  }
+ }
+}

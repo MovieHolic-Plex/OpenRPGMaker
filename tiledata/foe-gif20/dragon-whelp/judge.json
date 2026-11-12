@@ -1,0 +1,15 @@
+{
+ "pass": true,
+ "wolfLevel": 4,
+ "why": "The teal dragon has a cream belly, small horns and folded wings, with crisp pixel shading, and faces right with its eye and snout on the right. It breathes a blue-white beam to the right in attack, tumbles back onto its back toward the left in hit and lies flat in dead.",
+ "model": [
+  "claude-opus-5-5"
+ ],
+ "effort": "medium",
+ "batch": "20261112-205057-motion20-472fdb",
+ "runId": "c103eab9-3d6d-456e-9b9b-7ef40848b9c9",
+ "rawSha256": "5aaf42d9dd0886986420dfaaa8f4c1fedc825fdbed7c3dbcf99828d72cc074c3",
+ "hiddenControlsRejected": 3,
+ "pixelSha": "d2d05ed784247fb081bd811aa342e5e8057fcd7fc67d6fd62ac557892f385fde",
+ "standard": "battle-gen/1"
+}

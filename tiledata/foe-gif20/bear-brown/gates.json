@@ -1,0 +1,107 @@
+{
+ "kind": "motion20",
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "facts": {
+  "size": [
+   480,
+   384
+  ],
+  "cell": 96,
+  "hover": 0,
+  "colours": 14,
+  "bottoms": [
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92,
+   92
+  ],
+  "idleShiftPx": {
+   "01": 4,
+   "12": 5,
+   "02": 9
+  },
+  "idleXorPx": {
+   "01": 626,
+   "12": 425,
+   "02": 937
+  },
+  "attackVsHitXor": 1569,
+  "deadHeight": [
+   34,
+   58
+  ],
+  "wolf": {
+   "colors": 14,
+   "outlineColors": 14,
+   "smallSpecksPer100": 24.7,
+   "uniform2x2": 0.18,
+   "outlineInner": 0.93,
+   "lumLevels": 13,
+   "w": 77,
+   "h": 59
+  }
+ },
+ "pixelSha": "609ddedbf4aaf548ae2976aa3bf9ec7b935197c0d3fd3d692ff7a466edd41c79",
+ "convert": {
+  "th": 56,
+  "ncol": 17,
+  "key": "magenta",
+  "flip": true,
+  "scale": 5.022,
+  "idleBRebuilt": false,
+  "downscaler": "vendor/unfake (unfake-cli 1.4.0) downscale -m mode --no-elastic"
+ },
+ "tried": [
+  {
+   "th": 56,
+   "ncol": 16,
+   "ok": false,
+   "errors": [
+    "wolf range: smallSpecksPer100 22.1 (wolves 24.0-39.0)"
+   ]
+  },
+  {
+   "th": 56,
+   "ncol": 14,
+   "ok": false,
+   "errors": [
+    "wolf range: colors 12 (wolves 13-18)",
+    "wolf range: smallSpecksPer100 21.0 (wolves 24.0-39.0)"
+   ]
+  },
+  {
+   "th": 56,
+   "ncol": 13,
+   "ok": false,
+   "errors": [
+    "wolf range: colors 11 (wolves 13-18)",
+    "wolf range: outlineColors 11 (wolves 12-15)",
+    "wolf range: smallSpecksPer100 19.4 (wolves 24.0-39.0)"
+   ]
+  },
+  {
+   "th": 56,
+   "ncol": 17,
+   "ok": true,
+   "errors": []
+  }
+ ]
+}

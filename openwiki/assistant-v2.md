@@ -421,8 +421,8 @@ r1w-fun 저장본 → 끝맺음 재생(모델 없음, `finishReplay.mts`) 전/�
 
 | 세계 | 없는 종 |
 |---|---|
-| 선사 시대 | 공룡(랩터·트리케라톱스) · lizardman-spear · tiger-saber · behemoth-horn · dragon-whelp · salamander-flame · centipede-fire · bear-brown |
-| 북방 설원 | bear-brown · goat-mountain · lich-frost · slime-blue |
+| 선사 시대 | 공룡(랩터·트리케라톱스 — 트리케라톱스는 그림이 생겼지만 적 기록이 없다, 아래) · lizardman-spear · tiger-saber · behemoth-horn · salamander-flame (~~dragon-whelp · centipede-fire · bear-brown~~ 2026-11-12 그림) |
+| 북방 설원 | goat-mountain · lich-frost · slime-blue (~~bear-brown~~ 2026-11-12 그림) |
 | 사막 동방 | scorpion-sand · worm-sand · mummy-bandage · totem-cursed · skeleton-bone · bonepile-crawler |
 | 해적 군도 | lizardman-spear · squid-deep · shark-land · skeleton-knight · skeleton-bone |
 | 하늘섬 | harpy-cliff · sylph-air · spirit-wind · spirit-light · griffin-sky · roc-giant · gargoyle-stone |
@@ -433,6 +433,36 @@ r1w-fun 저장본 → 끝맺음 재생(모델 없음, `finishReplay.mts`) 전/�
 
 대역 표에도 없는 종: mimic-chest · scarecrow-field. 현행 세트에 있지만 기본 DB 에 적 기록이 없어 v2 가 못 쓰는 그림: jelly-lantern · leafling-01 · snake-01 · well-olm · yeti-frost(『폴른 스타』 전용 적).
 남은 것: 모델이 `upsert_enemy`·`upsert_troop` 으로 직접 고른 구형 그림 적은 그대로 선다(끝맺음이 없는 그림 줄만 남긴다) · `author_dungeon` 을 직접 부른 던전의 주제 적(`dungeonThemeTroops`)은 v2 빌더를 거치지 않는다 · 몬스터 수집 장르의 종 그림은 다른 세트다. 시험 `test/aiV2CurrentFoes.test.ts` · `test/aiV2PlaceTheme.test.ts`.
+
+### 더 그린 종 — battle-gen gif20 단계의 통과분을 현행 세트에 더한다 (2026-11-12)
+
+그릴 목록을 『폴른 스타』 몬스터를 다시 그린 그 방식(ChatGPT 웹 9포즈 GIF → 좌우 반전 → 격자 도트화(16색 이하) → 5×4 20칸)으로 그린다. 그 방식은 이제 battle-gen 의 단계다
+(`cli.py gif` → `sheet20` → `check --kind motion20` → `review motion20`, 그 저장소 `docs/gif20.md`). 여기 들어오는 것은 **기계 관문(늑대 범위 지표 4개 · 16색 · 바닥선 · 대기 차이 등)을 통과하고,
+`claude-opus-5-5` medium 이 숨긴 불량 표본을 모두 떨어뜨린 묶음에서 늑대급 4 이상을 준 시트뿐**이다. 사람이 고르지 않는다.
+
+- 그림: `src/assets/currentMonsterSheets20.ts`(생성 파일 — `python3 scripts/content/foe-gif20/export.py --battle-gen <battle-gen 체크아웃>`; 통과가 아닌 종은 거절한다). 근거(원본 GIF · 첨부한 참고 그림 · 지시문 · 시트 · 관문 수치 · 판정)는 `tiledata/foe-gif20/<종>/`.
+- 넣기: `src/assets/currentMonsterArt20.ts` 의 `installMonsterArt20For` — 『폴른 스타』 설치와 같은 업로드 둘(초상 kind monster + `<id>-sheet20`). `currentMonsterArt.ts` 가 두 설치를 같이 늦게 읽고, `CURRENT_MONSTER_ART_IDS` 에 새 id 를 더했다. 고르는 쪽(`currentFoes.ts` · `placeTheme.ts`)은 고치지 않았다 — 그림이 생긴 종은 표를 고치지 않아도 선다.
+- 한 id 에 그림 하나: 같은 id 가 『폴른 스타』에도 있으면(`alsoInFlagship` — 잎새 정령) 그쪽 시트가 들어간다. 그 종의 새 시트는 엄격한 관문을 통과한 판본으로 실려만 있다(『폴른 스타』의 그림을 바꾸지 않는다).
+
+이번에 들어온 것(선사 시대 9종을 종마다 GIF 3장까지 — 무효 묶음에 든 GIF 는 세지 않는다 — 그린 결과 4종 + 보정 1종):
+
+| 종 | id | 칸 | 서는 곳(테마 표) | 판정 |
+|---|---|---|---|---|
+| 갈색 곰 | generated-enemy-bear-brown | 96 | 선사 시대 실내(동굴·움집) 길 적 · 북방 설원 바깥 길 적 | 늑대급 4.5 |
+| 새끼 용 | generated-enemy-dragon-whelp | 96 | 선사 시대 우두머리 | 4 |
+| 화염 지네 | generated-enemy-centipede-fire | 96 | 선사 시대 화산 기슭 길 적 | 4 |
+| 트리케라톱스 | generated-enemy-triceratops | 128 | **아직 서지 않는다** — 기본 DB 에 적 기록이 없다 | 4 |
+| 잎새 정령(보정) | generated-enemy-leafling-01 | 96 | 『폴른 스타』 전용 적 — 설치는 그쪽 시트 | 4 |
+
+테마가 세우는 것의 전/후(탐침, 모델 없음): 선사 시대 실내 길 적 `bat-cave · spider-cave` → `bat-cave · bear-brown · spider-cave` · 화산 기슭 `spirit-fire`(+대역) → `centipede-fire · spirit-fire` · 우두머리 후보 `wolf-dire · spirit-fire` → `dragon-whelp · wolf-dire · spirit-fire` · 북방 설원 바깥 `wolf-grey · wolf-dire`(곰은 다이어 울프 대역) → `wolf-grey · bear-brown · wolf-dire`.
+탈락해 그릴 목록에 남은 것: 랩터 · 리자드맨 · 검치호 · 베히모스 · 샐러맨더(늑대 범위 또는 Opus 반려 — 피격 칸이 뒤로 밀려나지 않음 등).
+
+**트리케라톱스·랩터는 적 기록이 없다.** 선사 시대 테마는 공룡을 글(`wantedFoes: "dinosaurs (raptor, triceratops)"`)로만 바란다 — 기본 DB 적 106종에 공룡이 없어 그림만으로는 서지 않는다.
+세우려면 기본 DB 에 적 기록(`enemy_triceratops`, 능력치 · 행동 묶음)을 더하고 테마 표의 `foes`/`bosses` 에 넣어야 한다. 번들 3×3 그림이 없는 종이라 적 기록보다 그림이 먼저 프로젝트에 있어야 한다(『폴른 스타』의 `installFallenMonsterArtWithoutBundle` 과 같은 순서). 이 변경에서는 하지 않았다.
+
+**주인공과 나란히 선 크기(기록만 — 전투 배치는 고치지 않았다).** 출하 플레이어 실제 전투 화면 640×480(그림 정확히 2배, 적 배율 100%)에서 주인공 전투 그림의 몸 높이는 약 48px(원본 24px)이다.
+새 종의 대기 자세 높이: 트리케라톱스 144px(원본 72 — 주인공의 3.0배) · 화염 지네 138px(69 — 2.9배) · 갈색 곰 118px(59 — 2.5배) · 새끼 용 110px(55 — 2.3배). 기준인 서리늑대는 104px(52 — 2.2배)다.
+새 종은 『폴른 스타』의 같은 체급과 같은 크기로 그렸고, 주인공이 그 옆에서 작아 보이는 것은 주인공 전투 그림 쪽 일이다(다른 작업자가 고친다). 캡처 `~/claude-viz/battle-gif.html`.
 
 ## 맵은 목적으로 깐다 — 목적표(역할 건물 · 채움 집 · 건물 수에서 나오는 크기), 사막 번들부터 (2026-11-11)
 

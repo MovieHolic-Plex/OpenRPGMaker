@@ -1,0 +1,18 @@
+[battle-gen gif20 a2] centipede-fire 화염 지네 (Fire centipede) 9-pose battle GIF
+Attached image: LEFT is my best pixel-art monster (a frost wolf) — it is the STYLE TARGET only, do not draw a wolf. RIGHT is the current, weaker version of the monster to redraw.
+Redraw the monster as: a giant FIRE CENTIPEDE reared up like a striking snake: a long body of dark crimson armoured segments with glowing orange gaps between the plates, many short yellow-ochre legs along both sides, the tail half coiled on the ground and the front half raised high, a rounded ochre-yellow head with two long antennae, a dark eye and a pair of curved pincer jaws.
+STYLE (most important): match the LEFT wolf's pixel-art quality exactly — true low-resolution pixel art with clearly visible square pixels (each art pixel 5-6 screen pixels), a limited palette of about 14-16 colours, hand-placed 1-2 pixel highlights and texture clusters, 3-4 hard-edged shading bands (no airbrush gradients, no soft blending, no anti-aliasing, no blur), and a dark 1-pixel outline that is NOT uniform: darker and broken on the shadow side, lighter or dropped where light hits. Clear, distinctive silhouette readable at small size. A 3/4 side view facing LEFT like the wolf, with a character pose that has weight. No glow halo, no ground shadow, no text.
+Same scale and same facing in every frame. Flat solid magenta (#FF00FF) background in every frame, nothing else in the background. Keep the whole monster inside every frame with empty magenta margin on all sides. Its battle attack style is: dash (whips its reared body forward and bites with its pincers).
+Make ONE animated GIF with EXACTLY 9 frames, one pose per frame, in this exact order:
+1. idle A — standing ready pose
+2. idle B — breathing IN: the whole upper body/head clearly rises and expands (about 5% of its height higher), limbs/wings/tail shift too — the difference from frame 1 must be easy to see
+3. idle C — breathing OUT: body clearly lower and compressed (about 5% of its height lower than frame 1), head dips — clearly different from frames 1 and 2
+4. windup — gathering itself before the attack
+5. move — lunging toward the enemy (to the left)
+6. attack — the strike at full extension toward the left, clearly different from frames 4 and 8
+7. recover — pulling back after the attack
+8. hit — knocked backward (to the right) from taking damage, recoiling, eyes squeezed
+9. knocked out — lying flat on the ground asleep/inert, eyes closed (non-violent defeated pose, no blood, no injury)
+400 ms per frame, looping. Exactly 9 frames, nothing else.
+SIZE AND DETAIL (the previous attempt was rejected for this): draw it CHUNKIER and SIMPLER than usual — the figure is only about 60 art pixels tall, every art pixel is a clear 7-8 screen-pixel square, flat areas of colour 2-4 art pixels wide, fewer tiny details (no single-pixel noise, no fine stipple, no thin strands), bold readable shapes like the frost wolf.
+There must be NO continuous dark contour line around the figure. The edge pixels of the silhouette are simply the body's own colours: the light skin colour along the top of the back and head where the light hits, mid tones on the sides, and the darkest tones only under the belly, the tail and the legs. Horns, claws, teeth, crest, belly and stripes reach the very edge of the silhouette in their own colours. Almost every colour of the palette should appear somewhere on the silhouette edge, exactly as on the frost wolf.

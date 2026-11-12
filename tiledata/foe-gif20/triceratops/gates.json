@@ -1,0 +1,145 @@
+{
+ "kind": "motion20",
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "facts": {
+  "size": [
+   640,
+   512
+  ],
+  "cell": 128,
+  "hover": 0,
+  "colours": 14,
+  "bottoms": [
+   124,
+   124,
+   124,
+   124,
+   124,
+   124,
+   124,
+   124,
+   124,
+   124,
+   124,
+   124,
+   124,
+   124,
+   124,
+   124,
+   124,
+   124,
+   124,
+   124
+  ],
+  "idleShiftPx": {
+   "01": 4,
+   "12": 4,
+   "02": 8
+  },
+  "idleXorPx": {
+   "01": 471,
+   "12": 947,
+   "02": 1174
+  },
+  "attackVsHitXor": 2154,
+  "deadHeight": [
+   49,
+   71
+  ],
+  "wolf": {
+   "colors": 14,
+   "outlineColors": 12,
+   "smallSpecksPer100": 26.8,
+   "uniform2x2": 0.15,
+   "outlineInner": 0.91,
+   "lumLevels": 13,
+   "w": 109,
+   "h": 72
+  }
+ },
+ "pixelSha": "3d928734192b9a903a828b60d01f1c14a54d8669e03393f6170cc7d75888e0d8",
+ "convert": {
+  "th": 71,
+  "ncol": 17,
+  "key": "magenta",
+  "flip": true,
+  "scale": 4.085,
+  "idleBRebuilt": true,
+  "downscaler": "vendor/unfake (unfake-cli 1.4.0) downscale -m mode --no-elastic"
+ },
+ "tried": [
+  {
+   "th": 76,
+   "ncol": 16,
+   "ok": false,
+   "errors": [
+    "wolf range: outlineColors 9 (wolves 12-15)",
+    "wolf range: smallSpecksPer100 23.8 (wolves 24.0-39.0)"
+   ]
+  },
+  {
+   "th": 76,
+   "ncol": 14,
+   "ok": false,
+   "errors": [
+    "wolf range: colors 12 (wolves 13-18)",
+    "wolf range: outlineColors 9 (wolves 12-15)",
+    "wolf range: smallSpecksPer100 21.4 (wolves 24.0-39.0)"
+   ]
+  },
+  {
+   "th": 76,
+   "ncol": 13,
+   "ok": false,
+   "errors": [
+    "wolf range: colors 11 (wolves 13-18)",
+    "wolf range: outlineColors 9 (wolves 12-15)",
+    "wolf range: smallSpecksPer100 20.5 (wolves 24.0-39.0)"
+   ]
+  },
+  {
+   "th": 76,
+   "ncol": 17,
+   "ok": false,
+   "errors": [
+    "wolf range: outlineColors 10 (wolves 12-15)"
+   ]
+  },
+  {
+   "th": 71,
+   "ncol": 16,
+   "ok": false,
+   "errors": [
+    "wolf range: outlineColors 11 (wolves 12-15)"
+   ]
+  },
+  {
+   "th": 71,
+   "ncol": 14,
+   "ok": false,
+   "errors": [
+    "wolf range: colors 11 (wolves 13-18)",
+    "wolf range: outlineColors 10 (wolves 12-15)",
+    "wolf range: smallSpecksPer100 22.0 (wolves 24.0-39.0)"
+   ]
+  },
+  {
+   "th": 71,
+   "ncol": 13,
+   "ok": false,
+   "errors": [
+    "wolf range: colors 12 (wolves 13-18)",
+    "wolf range: outlineColors 10 (wolves 12-15)",
+    "wolf range: smallSpecksPer100 22.2 (wolves 24.0-39.0)"
+   ]
+  },
+  {
+   "th": 71,
+   "ncol": 17,
+   "ok": true,
+   "errors": []
+  }
+ ]
+}
