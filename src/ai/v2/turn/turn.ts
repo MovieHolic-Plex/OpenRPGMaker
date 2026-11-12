@@ -8,6 +8,7 @@ import { turnAutoBuild } from "./autoBuild";
 import { createTurnContext, type TurnIo, type TurnOptions } from "./context";
 import { turnEvents } from "./events";
 import { turnFinish } from "./finishTurn";
+import { turnLateTools } from "./lateTools";
 import { turnModelHooks } from "./modelHooks";
 import { turnRecheck } from "./recheck";
 import { turnReinject } from "./reinject";
@@ -22,12 +23,14 @@ export function createV2Turn(request: PiAgentRequest, options: TurnOptions, io: 
   const { refreshChecks, stamp } = turnRecheck(turn);
   const { reinject, newBatch } = turnReinject(turn);
   const { autoBuild, lateBuildPending } = turnAutoBuild(turn);
+  const { lateTool } = turnLateTools(turn);
   const { tools, stateCard, firstPromptSuffix, beforeFirstPrompt, keepToolsOn } = turnModelHooks(turn);
-  const { afterMain } = turnAfterMain({ ...turn, vqaStep, refreshChecks, stamp, reinject, newBatch, autoBuild, lateBuildPending });
+  const { afterMain } = turnAfterMain({ ...turn, vqaStep, refreshChecks, stamp, reinject, newBatch, autoBuild, lateBuildPending, lateTool });
   const { finishTurn } = turnFinish({ ...turn, refreshChecks, stamp });
   const hooks: PiAssistantV2Hooks = {
     tools,
-    lazyTool: (name) => state.exposure?.lazy.get(name),
+    // 이름으로 바로 부른 호출도 같은 길로 — 묶음 밖 v2 도구는 그 자리에서 지어 싣는다(lateTools.ts).
+    lazyTool: lateTool,
     unknownToolText: (name) => unknownToolText(name, state.exposure?.lazy ?? new Map()),
     stateCard,
     firstPromptSuffix,

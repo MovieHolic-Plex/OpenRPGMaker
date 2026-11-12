@@ -153,8 +153,8 @@ function loadedLine(tool: PiToolShape): string {
   return `- ${tool.name}: ${tool.description}\n  required: ${req.length ? req.join(", ") : "(none)"} · fields: ${props.join(", ") || "(none)"}`;
 }
 
-/** 목록 고정(call_tool) 때 load_tools 결과에 싣는 한 도구 — 설명과 매개변수 스키마(CLI 목록과 같은 가벼운 모양). */
-function loadedSchema(tool: PiToolShape): string {
+/** 목록 고정(call_tool) 때 load_tools 결과·관문 재주입 글에 싣는 한 도구 — 설명과 매개변수 스키마(CLI 목록과 같은 가벼운 모양). */
+export function loadedSchema(tool: PiToolShape): string {
   const [compact] = compactCliToolList([{ name: tool.name, description: tool.description, inputSchema: tool.parameters }]);
   return `- ${tool.name}: ${tool.description}\n  parameters: ${JSON.stringify(compact?.inputSchema ?? tool.parameters)}`;
 }

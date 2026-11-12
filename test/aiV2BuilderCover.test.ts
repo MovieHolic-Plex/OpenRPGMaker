@@ -16,6 +16,7 @@ import { v2GateProblems } from "@/ai/v2/judge/finishGate";
 import { runTodoCheck } from "@/ai/v2/judge/todoChecks";
 import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import { syncGateItems } from "@/ai/v2/judge/gates";
+import { turnLateTools } from "@/ai/v2/turn/lateTools";
 import { TodoStore } from "@/ai/v2/loop/todoStore";
 import { todoReport } from "@/ai/v2/judge/finalReport";
 import type { PlaceSpec } from "@/ai/v2/shared/types";
@@ -212,6 +213,38 @@ describe("끝맺음 관문이 고치는 법으로 이른 도구는 고치기 차
     expect(lazy.loaded).toEqual(["create_transfer_pair"]);
     expect(lazy.unfixable).toEqual([]);
   });
+
+  it("호출 모양이 아니라 이름만 이른 도구도 싣는다 — «create_transfer_pair 로 잇는다» (Haiku village-chief-house)", () => {
+    const text = "[게임 검사 이동] 새 맵 「촌장 집」(map_chief_house) 로 들어가는 문·이동이 어느 맵에도 없다 — 플레이어가 갈 수 없다. create_transfer_pair 로 문(집 문·마을 가장자리)과 잇는다.";
+    const asked: string[] = [];
+    const sync = syncGateItems(new TodoStore(), [{ key: "game:link", text, source: "gate" }], new Set(), new Set(["inspect"]), (name) => { asked.push(name); return name === "create_transfer_pair" ? "loaded" : undefined; });
+    expect(sync.loaded).toEqual(["create_transfer_pair"]);
+    expect(sync.opened).toHaveLength(1);
+    // 맵 id(map_…)는 도구 후보가 아니다.
+    expect(asked).toEqual(["create_transfer_pair"]);
+  });
+
+  it("이름만 나온 낱말이 도구가 아니어도 항목을 빼지 않는다 — 빼는 것은 호출 모양으로 이른 도구가 없을 때뿐", () => {
+    const store = new TodoStore();
+    const sync = syncGateItems(store, [{ key: "game:x", text: "[게임 검사 x] 칩셋 atlas_biome_interior 의 문 그림이 없다.", source: "gate" }], new Set(), new Set(["inspect"]), () => undefined);
+    expect(sync.unfixable).toEqual([]);
+    expect(sync.opened).toHaveLength(1);
+    expect(store.items[0]!.status).not.toBe("dropped");
+  });
+
+  it("실제 턴: 장소만 짓는 요청에서 이름으로 부른 create_transfer_pair 를 그 자리에서 지어 싣는다 — 읽기 요청·없는 이름은 싣지 않는다", () => {
+    const t = turn("촌장 집 맵을 만들어 줘.");
+    const exposure = { tools: [], lazy: new Map(), offered: [] };
+    const toolNames = new Set<string>();
+    const { lateTool } = turnLateTools({ session: t.session, state: { exposure }, toolNames, writeRequest: true } as never);
+    expect(lateTool("create_transfer_pair")?.name).toBe("create_transfer_pair");
+    expect(exposure.lazy.has("create_transfer_pair")).toBe(true);
+    expect(toolNames.has("create_transfer_pair")).toBe(true);
+    expect(lateTool("create_transfer_pair")).toBe(exposure.lazy.get("create_transfer_pair"));
+    expect(lateTool("no_such_tool")).toBeUndefined();
+    const readOnly = turnLateTools({ session: t.session, state: { exposure: { tools: [], lazy: new Map(), offered: [] } }, toolNames: new Set(), writeRequest: false } as never);
+    expect(readOnly.lateTool("create_transfer_pair")).toBeUndefined();
+  }, SLOW);
 
   it("실제 턴: 장소만 짓는 요청의 도구 묶음에 없는 set_field_hud 를 고리로 감싸 만들어 준다", async () => {
     const t = turn("왕궁 맵을 만들어 줘.");

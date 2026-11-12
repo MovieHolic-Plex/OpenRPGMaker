@@ -26,10 +26,16 @@ function capReopened(store: TodoStore, items: readonly TodoItem[], what: string)
  * 끝맺음 관문 문제(v2GateProblems)를 gate·critic 항목으로. capMapIds = 고치기 상한에 닿은 장소 맵 — 그 맵의 장소 항목이 문제 목록에서 사라져도
  * «고쳐짐»이 아니라 «상한»이다(막힘으로 닫는다).
  */
+const ID_PREFIX = /^(?:sw|var|ev|map|item|troop|enemy|actor|skill|state|class|armor|weapon|chest|npc|tex)_/u;
 /** 문제 글이 고치는 법으로 이르는 도구 이름들(`configure_field_menu{…}`·`upsert_actor(…)` 모양). */
 function namedTools(text: string): string[] {
   // 스위치·이벤트 id(«sw_kmt0gqg_k39y2je(「숲길 탐색」)»)는 도구 이름이 아니다 — 2026-10-30 omo-unfinished forest: 깃발 항목이 «고치는 도구가 없다»로 막혔다.
-  return [...new Set([...text.matchAll(/\b([a-z][a-z0-9]*(?:_[a-z0-9]+)+)\s*[{(]/gu)].map((m) => m[1]!).filter((n) => !/^(?:sw|var|ev|map|item|troop|enemy|actor|skill|state|class|armor|weapon|chest|npc|tex)_/u.test(n)))];
+  return [...new Set([...text.matchAll(/\b([a-z][a-z0-9]*(?:_[a-z0-9]+)+)\s*[{(]/gu)].map((m) => m[1]!).filter((n) => !ID_PREFIX.test(n)))];
+}
+
+/** 문제 글에 이름만 나온 도구 후보(«create_transfer_pair 로 잇는다» — 호출 모양이 아니다). 싣는 데만 쓴다 — 없는 이름이어도 항목을 빼지 않는다. */
+function mentionedTools(text: string): string[] {
+  return [...new Set([...text.matchAll(/(?<![A-Za-z0-9_])([a-z][a-z0-9]*(?:_[a-z0-9]+)+)(?![A-Za-z0-9_])/gu)].map((m) => m[1]!).filter((n) => !ID_PREFIX.test(n)))];
 }
 
 /**
@@ -69,10 +75,12 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
     if (!isOpen(item.status)) continue;
     const full = problems.find((p) => p.key === keyOf(store, item))?.text ?? item.content;
     const named = namedTools(full);
-    if (!named.length) continue;
-    const state = named.map((t) => addTool?.(t) ?? (available.has(t) ? "ready" as const : undefined));
-    loaded.push(...named.filter((t, k) => state[k] === "loaded" && !loaded.includes(t)));
-    if (state.some((s) => s)) continue;
+    // 이름만 나온 도구(«create_transfer_pair 로 잇는다»)도 싣는다 — 2026-11-12 Haiku village-chief-house: 호출 모양이 아니라 안 실렸고 모델이 «도구가 없다» 로 막았다.
+    const all = [...named, ...mentionedTools(full).filter((t) => !named.includes(t))];
+    if (!all.length) continue;
+    const state = all.map((t) => addTool?.(t) ?? (available.has(t) ? "ready" as const : undefined));
+    loaded.push(...all.filter((t, k) => state[k] === "loaded" && !loaded.includes(t)));
+    if (!named.length || state.some((s) => s)) continue;
     store.drop(item, `고치는 도구(${named.join(", ")})가 조수 v2 에 없다 — 이 요청에서 고칠 수 없음`, "auto");
     unfixable.push(item);
   }
