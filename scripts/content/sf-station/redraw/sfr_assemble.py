@@ -13,7 +13,46 @@ N, E, S, W = 1, 2, 4, 8
 
 
 def col(name):
+    if name.startswith('#'): return PAL.rgb(name) + (255,)
     r, t = name.split(':'); return PAL.rgb(PAL.ALL[r][int(t)]) + (255,)
+
+
+def recolor(im, cmap, rows=None):
+    """색 옮김(정확히 그 색 → 그 색, 동시에). 투명 화소는 그대로. rows=(y0, y1) 이면 그 줄들만."""
+    a = np.array(im.convert('RGBA')); out = a.copy()
+    for src, dst in cmap.items():
+        m = (a[..., 0] == PAL.rgb(src)[0]) & (a[..., 1] == PAL.rgb(src)[1]) & (a[..., 2] == PAL.rgb(src)[2]) & (a[..., 3] == 255)
+        if rows: m[:rows[0]] = False; m[rows[1]:] = False
+        out[m, :3] = PAL.rgb(dst)
+    return Image.fromarray(out, 'RGBA')
+
+
+def orange_windows(im, seed):
+    """켜진 창(노랑 덩이)의 절반쯤을 주황으로 — 옛 타워의 주황·노랑 섞임. 창 = 노랑 화소 덩이(1px 벌려 창살로 갈린 칸을 한 창으로), 4×4 이상·채움 55% 이상(위험 띠·고리 표식은 뺀다)."""
+    from scipy import ndimage
+    a = np.array(im.convert('RGBA')); y0, y1 = PAL.rgb('#d9bc2c'), PAL.rgb('#ffee86')
+    isy = ((a[..., :3] == y0).all(-1) | (a[..., :3] == y1).all(-1)) & (a[..., 3] == 255)
+    lab, n = ndimage.label(ndimage.binary_dilation(isy, structure=np.ones((3, 3), bool))); k = 0
+    for i, sl in enumerate(ndimage.find_objects(lab), 1):
+        h, w = sl[0].stop - sl[0].start, sl[1].stop - sl[1].start; m = (lab == i) & isy
+        if not (4 <= w <= 16 and 4 <= h <= 16) or m.sum() < 0.55 * (w - 2) * (h - 2): continue
+        if hsh(sl[1].start, sl[0].start, seed) % 100 >= 55: continue
+        body = m & (a[..., :3] == y0).all(-1); a[body, :3] = PAL.rgb('#f09a40'); k += 1
+    return Image.fromarray(a, 'RGBA'), k
+
+
+def final_snap(im):
+    """구운 팔레트(v4) 밖의 색 → 가장 가까운 v4 색(OKLab). → (그림, 바뀐 화소 수)"""
+    cols = sorted({PAL.rgb(c) for r in PAL.FINAL.values() for c in r}); lab = L.oklab(np.array(cols, float)); ok = set(cols)
+    a = np.array(im.convert('RGBA')); n = 0; cache = {}
+    for y in range(a.shape[0]):
+        for x in range(a.shape[1]):
+            if a[y, x, 3] != 255: continue
+            k = tuple(int(v) for v in a[y, x, :3])
+            if k in ok: continue
+            if k not in cache: cache[k] = cols[int(((lab - L.oklab(np.array(k, float))) ** 2).sum(axis=1).argmin())]
+            a[y, x, :3] = cache[k]; n += 1
+    return Image.fromarray(a, 'RGBA'), n
 
 
 def unit(uid):
@@ -91,17 +130,18 @@ def at_wall(ceil, mat):
 
 
 def at_road(asp):
+    """도로: 밤 아스팔트 + 열린 쪽 연석(보도 판석 색: 윗면 밝음 → 아스팔트 쪽 그늘)."""
     def fn(m, ox, oy):
         a = np.array(asp[(ox // 16 * 3 + oy // 16) % 2])
         if not m & N:
-            for x in range(16): P(a, x, 0, 'g_road:3'); P(a, x, 1, 'g_road:2'); P(a, x, 2, 'g_road:1'); P(a, x, 3, 'ink:1')
+            for x in range(16): P(a, x, 0, '#70707c'); P(a, x, 1, '#5a5a64'); P(a, x, 2, '#44444f'); P(a, x, 3, '#1a1a22')
         if not m & W:
-            for y in range(16): P(a, 0, y, 'g_road:3'); P(a, 1, y, 'g_road:2'); P(a, 2, y, 'ink:1')
+            for y in range(16): P(a, 0, y, '#70707c'); P(a, 1, y, '#5a5a64'); P(a, 2, y, '#1a1a22')
         if not m & E:
-            for y in range(16): P(a, 15, y, 'g_road:1'); P(a, 14, y, 'g_road:2'); P(a, 13, y, 'ink:1')
+            for y in range(16): P(a, 15, y, '#44444f'); P(a, 14, y, '#5a5a64'); P(a, 13, y, '#1a1a22')
         if not m & S:
-            for x in range(16): P(a, x, 11, 'ink:1'); P(a, x, 12, 'g_road:3'); P(a, x, 13, 'g_road:2'); P(a, x, 14, 'g_road:1'); P(a, x, 15, 'g_road:0')
-            for x in range(3, 16, 8): P(a, x, 14, 'g_road:0')
+            for x in range(16): P(a, x, 11, '#1a1a22'); P(a, x, 12, '#70707c'); P(a, x, 13, '#5a5a64'); P(a, x, 14, '#44444f'); P(a, x, 15, '#34343f')
+            for x in range(3, 16, 8): P(a, x, 14, '#34343f')
         return Image.fromarray(a, 'RGBA')
     return autosheet(fn)
 
@@ -118,7 +158,7 @@ def at_regolith_path(reg, path):
                 if not m & E: d = min(d, 15 - x)
                 j = 2 + hsh(ox + x, oy + y, 7) % 2
                 if d > j: a[y, x] = p[y, x]
-                elif d == j: P(a, x, y, 'g_dust:3' if hsh(ox + x, oy + y, 3) % 3 else 'g_dust:2')
+                elif d == j: P(a, x, y, '#888894' if hsh(ox + x, oy + y, 3) % 3 else '#70707c')
         return Image.fromarray(a, 'RGBA')
     return autosheet(fn)
 
@@ -171,8 +211,8 @@ def marks_from_old(pid, asp):
         lum = cell[..., :3].astype(float) @ L.LUM
         for y in range(16):
             for x in range(16):
-                if lum[y, x] > 110: a[y, x] = col('g_tile:2' if lum[y, x] > 170 else 'g_tile:0')
-                elif lum[y, x] > 85: a[y, x] = col('g_road:3')
+                if lum[y, x] > 110: a[y, x] = col('#a2a2ae' if lum[y, x] > 170 else '#70707c')
+                elif lum[y, x] > 85: a[y, x] = col('#44444f')
         out.append(Image.fromarray(a, 'RGBA'))
     return strip(out)
 
@@ -198,7 +238,14 @@ def main():
     # 바닥 낱칸
     for pid, uid in [(p, 'g-' + p) for p in ('deck-plate', 'deck-grate', 'deck-hazard', 'deck-lane-h', 'deck-lane-v', 'lab-floor', 'crew-floor', 'cargo-floor', 'glass-floor', 'void-star', 'regolith', 'landing-plate', 'asphalt', 'sidewalk', 'puddle', 'hydro-soil')]:
         put(pid, unit(uid), 'fable', [uid]); done.add(pid)
+    # 실험실 바닥: 배수구 변형이 흩뿌려져 흰 방에 점처럼 보였다(구성기는 변형을 22% 섞는다) — 둘째 칸도 무늬 없는 판으로 둔다(칸 번호는 그대로).
+    lf = unit('g-lab-floor')
+    if lf is not None:
+        lf.paste(lf.crop((0, 0, 16, 16)), (16, 0)); lf.save(f'{H}/out/lab-floor.png'); res['lab-floor']['note'] = 'variant 2 = variant 1 (drain removed by code)'
     asp = unit('g-asphalt'); deck = unit('g-deck-plate'); reg = unit('g-regolith'); path = unit('g-regolith-path'); rail = unit('g-rail'); wh = unit('w-hull'); ww = unit('w-white'); wv = unit('wf-viewport')
+    if asp is not None: asp = recolor(asp, PAL.MAP_ASPHALT)
+    if reg is not None: reg = recolor(reg, PAL.MAP_MOON)
+    if path is not None: path = recolor(path, PAL.MAP_MOON)             # 길은 땅보다 한 단 밝은 채로 같이 내린다        # 차선·횡단보도·도로 오토타일은 밤 아스팔트 위에 만든다
     for pid in ('lane-dash', 'crosswalk'):
         put(pid, marks_from_old(pid, tiles(asp)) if asp else None, 'code', ['g-asphalt']); done.add(pid)
     put('at-deck', at_deck(tiles(deck)) if deck else None, 'code', ['g-deck-plate'])
@@ -235,6 +282,25 @@ def main():
     for pid in INV:
         if pid in done: continue
         put(pid, unit(pid), 'fable', [pid])
+    # 색 옮김(CONTRACT §9, 모델 호출 없음): 밤 거리의 땅·건물과 승무원 선실 바닥은 옛 시트의 밝기 범위로, 그 밖은 구운 팔레트(v4) 밖의 색만 가장 가까운 색으로.
+    remap = {}
+    for pid, r in res.items():
+        if r['source'] == 'old': continue
+        o_ = INV[pid]
+        cmap = (PAL.MAP_ASPHALT if pid == 'asphalt' else PAL.MAP_PUDDLE if pid == 'puddle' else PAL.MAP_SIDEWALK if pid == 'sidewalk' else PAL.MAP_CREW if pid == 'crew-floor' else
+                PAL.MAP_MOON if pid in ('regolith', 'crater') else PAL.MAP_LAB if pid == 'lab-floor' else PAL.MAP_VEHICLE.get(pid) or
+                (PAL.MAP_STREET_BUILDING if o_['group'] == 'street' and o_['w'] * o_['h'] >= 16 else None))
+        im = Image.open(f'{H}/out/{pid}.png').convert('RGBA'); before = np.array(im)
+        if cmap: im = recolor(im, cmap)
+        if pid in PAL.PURPLE_BUILDINGS: im = recolor(im, PAL.MAP_PURPLE_WALL)
+        if pid in PAL.MAP_REGION: im = recolor(im, PAL.MAP_REGION[pid][1], rows=PAL.MAP_REGION[pid][0])
+        if pid in PAL.ORANGE_WINDOW_BUILDINGS: im, r['orangeWindows'] = orange_windows(im, len(pid))
+        im, n = final_snap(im)
+        ch = int((np.array(im) != before).any(axis=2).sum())
+        if ch: im.save(f'{H}/out/{pid}.png'); remap[pid] = dict(map=('asphalt' if pid == 'asphalt' else 'puddle' if pid == 'puddle' else 'sidewalk' if pid == 'sidewalk' else 'crew' if pid == 'crew-floor' else 'moon' if pid in ('regolith', 'crater') else 'lab' if pid == 'lab-floor' else 'vehicle' if pid in PAL.MAP_VEHICLE else 'stall' if pid in PAL.MAP_REGION else 'street-building' if cmap else 'snap'), px=ch)
+        r['remap'] = remap.get(pid)
+    import collections as _c
+    print('remapped pieces:', dict(_c.Counter(v['map'] for v in remap.values())), 'pixels', sum(v['px'] for v in remap.values()))
     # 옛 시트에서 한 번호를 나눠 쓰던 칸(같은 그림 칸)은 새 그림에서도 같은 그림이어야 한다 — 저장된 맵은 그 번호 하나만 가리킨다(셔터 3칸·타워 창 등 9묶음).
     d = json.load(open(f'{H}/before/sfStationTileset.json')); use = {}
     for k in d['structureKits']:

@@ -24,7 +24,33 @@ ACCENT = {
  'a_green': ['#1e6c32', '#44b45c'],
  'a_glow': ['#ffffff'],
 }
-ALL = {**INK, **GROUND, **STRUCTURE, **ACCENT}
+ALL = {**INK, **GROUND, **STRUCTURE, **ACCENT}      # 그릴 때 프롬프트에 준 팔레트(v3)
+
+# ───────── 구운 팔레트(v4, CONTRACT §9 — 버들항 띠는 낮의 마른 땅에만. 밤 거리·승무원 선실은 옛 시트의 밝기 범위가 목표) ─────────
+# 그린 그림을 코드가 옮긴다(모델 호출 없음). 48색 그대로: 낮 콘크리트 3단(565662 6a6a78 80808f) → 달 먼지 램프로, 밝은 남색 3단(31416c 405484 51689d) → 유리 램프로 합치고,
+# 그 자리에 밤 아스팔트 3단(옛 conc -3…-1)과 밤 남색 3단(옛 navy -2…0)을 넣었다.
+F_GROUND = {
+ 'g_deck': GROUND['g_deck'], 'g_tile': ['#a0a9b4', '#b4bcc6', '#c3cad2'],   # lab floor, one step lighter (toward the old white lab)
+ 'g_road': ['#1a1a22', '#26262f', '#34343f', '#44444f'],      # night asphalt (0-2), dark concrete joint (3)
+ 'g_dust': GROUND['g_dust'],                                    # moon regolith; also light concrete (sidewalk slabs, landing plates)
+ 'g_carpet': ['#131a30', '#1b2542', '#253256', '#264268'],     # navy crew-quarters carpet
+}
+F_STRUCTURE = {
+ 's_hull': STRUCTURE['s_hull'], 's_white': STRUCTURE['s_white'],
+ 's_dark': ['#26262f', '#34343f', '#44444f'],
+ 's_night': ['#131a30', '#1b2542', '#253256'],                 # night tower walls
+ 's_violet': ['#1c1040', '#2c1a66', '#40288c'],                # night tower walls, purple variant (the old towers' own wall colours)
+ 's_glass': STRUCTURE['s_glass'], 's_rust': ['#66301a', '#8a4626', '#b85a1c'],
+}
+FINAL = {**INK, **F_GROUND, **F_STRUCTURE, **ACCENT}
+# 조각 종류별 색 옮김(그린 색 → 구운 색)
+MAP_ASPHALT = {'#44444f': '#26262f', '#565662': '#1a1a22', '#6a6a78': '#34343f', '#80808f': '#44444f'}
+MAP_PUDDLE = {'#44444f': '#1a1a22', '#565662': '#34343f', '#6a6a78': '#44444f'}
+MAP_SIDEWALK = {'#44444f': '#34343f', '#565662': '#44444f', '#6a6a78': '#5a5a64', '#80808f': '#70707c'}
+MAP_CREW = {'#3b475e': '#1b2542', '#4f5f7a': '#253256', '#5b6c88': '#264268', '#667896': '#264268'}
+MAP_STREET_BUILDING = {'#31416c': '#131a30', '#405484': '#1b2542', '#51689d': '#253256',
+                       '#2e384c': '#1c2230', '#3b475e': '#2e384c', '#4f5f7a': '#3b475e', '#667896': '#4f5f7a', '#8396b2': '#667896', '#a3b4cb': '#8396b2',
+                       '#363644': '#26262f', '#44444f': '#34343f', '#365c88': '#264268', '#4c7aa8': '#365c88'}
 ROLE_OF = {**{k: 'INK' for k in INK}, **{k: 'GROUND' for k in GROUND}, **{k: 'STRUCTURE' for k in STRUCTURE}, **{k: 'ACCENT' for k in ACCENT}}
 NOTE = {'ink': 'darkest outline / deepest shadow / screen background', 'g_deck': 'station floor metal', 'g_tile': 'white ceramic floor tile', 'g_road': 'asphalt (tones 0-1) and concrete (tones 2-3)',
         'g_dust': 'moon regolith dust and rock', 's_hull': 'blue-grey station metal', 's_white': 'white ceramic panels', 's_dark': 'black equipment, rubber, dark frames',
@@ -32,6 +58,8 @@ NOTE = {'ink': 'darkest outline / deepest shadow / screen background', 'g_deck':
         'a_cyan': 'screens, light strips, coolant', 'a_orange': 'hazard marks, warm lamps', 'a_yellow': 'hazard stripes, lit windows', 'a_magenta': 'neon', 'a_violet': 'neon',
         'a_green': 'terminal bars, leaves', 'a_glow': 'white core of a lamp, 1-3 px'}
 
+F_NOTE = dict(NOTE, g_road='night asphalt (0-2), dark concrete joints (3)', g_dust='moon regolith; light concrete (sidewalk slabs, landing plates)', g_carpet='navy crew-quarters carpet', g_tile='white lab floor tile',
+              s_dark='black equipment, dark roofs', s_night='night tower walls', s_violet='night tower walls, purple variant', s_rust='copper, rust, soil, containers (light tone shared with a_orange)')
 
 def rgb(h): return (int(h[1:3], 16), int(h[3:5], 16), int(h[5:7], 16))
 
@@ -48,8 +76,27 @@ if __name__ == '__main__':
     import numpy as np, sys
     sys.argv = sys.argv[:1]
     from sfr_measure_fn import LC
-    uniq = {c for r in ALL.values() for c in r}
+    uniq = {c for r in FINAL.values() for c in r}
     print('colours', len(uniq))
-    for n, r in ALL.items():
+    ROLE_OF.update(g_carpet='GROUND', s_violet='STRUCTURE')
+    for n, r in FINAL.items():
         L, C = LC(np.array([rgb(c) for c in r]))
         print(f'{ROLE_OF[n]:9} {n:10}', ' '.join(f'{c} {l:.2f}/{cc:.3f}' for c, l, cc in zip(r, L, C)))
+
+# 셋째 판(감독 지시, 코드만): 달 땅 한 단 내림 · 실험실 바닥 한 단 올림 · 거리의 색 양(탈것·노점 차양·보라 벽 타워·주황 창)
+MAP_MOON = {'#a2a2ae': '#888894', '#888894': '#70707c', '#70707c': '#5a5a64', '#5a5a64': '#44444f'}
+MAP_LAB = {'#7c8693': '#a0a9b4', '#909aa6': '#a0a9b4', '#a0a9b4': '#b4bcc6', '#b4bcc6': '#c3cad2'}
+MAP_PURPLE_WALL = {'#131a30': '#1c1040', '#1b2542': '#2c1a66', '#253256': '#40288c'}
+PURPLE_BUILDINGS = ('street-tower-m', 'street-club', 'street-arcade')
+ORANGE_WINDOW_BUILDINGS = ('street-tower-s', 'street-tower-m', 'street-tower-l', 'street-apartment', 'street-capsule-hotel')
+MAP_VEHICLE = {   # 차체 램프 → ACCENT (유리·밑면·윤곽은 그대로)
+ 'pod-car': {'#c3cad2': '#ff9eea', '#a0a9b4': '#d63cbe', '#7c8693': '#861a76', '#59626f': '#861a76'},
+ 'street-pod-car-cyan': {'#a3b4cb': '#a0ecf6', '#8396b2': '#2cb0cc', '#667896': '#2cb0cc', '#4f5f7a': '#12687e'},
+ 'street-pod-taxi': {'#a3b4cb': '#ffee86', '#8396b2': '#d9bc2c', '#667896': '#d9bc2c', '#4f5f7a': '#b85a1c'},
+ 'street-hover-bike': {'#a3b4cb': '#9c84f0', '#8396b2': '#9c84f0', '#667896': '#5a3cb4', '#4f5f7a': '#5a3cb4'},
+}
+MAP_REGION = {    # (조각, 줄 범위[y0, y1)) → 색 옮김: 차양·간판 판만
+ 'street-market-stall-a': ((0, 15), {'#b0603a': '#d63cbe', '#8a4626': '#861a76', '#66301a': '#861a76'}),
+ 'street-market-stall-b': ((0, 15), {'#365c88': '#2cb0cc', '#264268': '#12687e', '#4c7aa8': '#a0ecf6', '#405484': '#2cb0cc', '#31416c': '#12687e', '#51689d': '#a0ecf6'}),
+ 'street-kiosk': ((0, 14), {'#a3b4cb': '#f09a40', '#8396b2': '#f09a40', '#667896': '#b85a1c'}),
+}

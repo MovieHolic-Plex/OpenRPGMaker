@@ -13,12 +13,13 @@ import sf_core as C
 DIR = os.path.join(C.OUT, 'redraw', 'pieces')
 REDRAWN = set()
 
-# 팔레트 v3(역할별 48색, CONTRACT §6) — 이름은 추가만. 값의 근거·역할은 redraw/sfr_palette.py.
+# 구운 팔레트 v4(역할별 48색, CONTRACT §6·§9) — 이름은 추가만. 값의 근거·역할·그린 색→구운 색 옮김 표는 redraw/sfr_palette.py.
+# 밤 거리의 땅·건물과 승무원 선실 바닥은 옛 시트의 밝기 범위다(버들항 띠는 낮의 마른 땅에만 쓴다).
 PALETTE_V3 = {
  'ink': '071528 1c2230',
- 'g_deck': '3b475e 4f5f7a 5b6c88 667896', 'g_tile': '7c8693 909aa6 a0a9b4 b4bcc6', 'g_road': '44444f 565662 6a6a78 80808f', 'g_dust': '5a5a64 70707c 888894 a2a2ae',
- 's_hull': '2e384c 3b475e 4f5f7a 667896 8396b2 a3b4cb', 's_white': '59626f 7c8693 a0a9b4 c3cad2', 's_dark': '363644 44444f', 's_night': '31416c 405484 51689d',
- 's_glass': '264268 365c88 4c7aa8', 's_rust': '66301a 8a4626 b0603a',
+ 'g_deck': '3b475e 4f5f7a 5b6c88 667896', 'g_tile': 'a0a9b4 b4bcc6 c3cad2', 'g_road': '1a1a22 26262f 34343f 44444f', 'g_dust': '5a5a64 70707c 888894 a2a2ae', 'g_carpet': '131a30 1b2542 253256 264268',
+ 's_hull': '2e384c 3b475e 4f5f7a 667896 8396b2 a3b4cb', 's_white': '59626f 7c8693 a0a9b4 c3cad2', 's_dark': '26262f 34343f 44444f', 's_night': '131a30 1b2542 253256', 's_violet': '1c1040 2c1a66 40288c',
+ 's_glass': '264268 365c88 4c7aa8', 's_rust': '66301a 8a4626 b85a1c',
  'a_cyan': '12687e 2cb0cc a0ecf6', 'a_orange': 'b85a1c f09a40', 'a_yellow': 'd9bc2c ffee86', 'a_magenta': '861a76 d63cbe ff9eea', 'a_violet': '5a3cb4 9c84f0', 'a_green': '1e6c32 44b45c', 'a_glow': 'ffffff',
 }
 for _n, _v in PALETTE_V3.items():
