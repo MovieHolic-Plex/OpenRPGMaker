@@ -19,6 +19,8 @@ export type GameBlueprintStepKind = (typeof STEP_KINDS)[number];
  */
 export interface GameBlueprintStepText {
   lines?: string[];
+  /** find·puzzle: 모델이 고른 «그 장소에 그려진 물건» 의 이름 — 경로를 다시 지을 때도 그 그림에 앉는다(story/stepThings). */
+  on?: string;
   lockedLines?: string[];
   doneLines?: string[];
   /** battle: 이긴 뒤의 말. */
@@ -142,6 +144,7 @@ export function normalizeStepText(raw: unknown): GameBlueprintStepText | undefin
   const r = raw as Record<string, unknown>;
   const list = (v: unknown, max: number): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && !!x.trim()).map((x) => x.trim().slice(0, 400)).slice(0, max) : []);
   const out: GameBlueprintStepText = {};
+  if (typeof r.on === "string" && r.on.trim()) out.on = r.on.trim().slice(0, 60);
   for (const key of STEP_TEXT_LISTS) { const got = list(r[key], 8); if (got.length) out[key] = got; }
   if ((typeof r.code === "string" || typeof r.code === "number") && String(r.code).trim()) out.code = String(r.code).trim().slice(0, 24);
   if (typeof r.goal === "string" && r.goal.trim()) out.goal = r.goal.trim().slice(0, 80);

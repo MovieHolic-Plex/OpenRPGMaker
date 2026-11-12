@@ -2467,7 +2467,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 
 **단계 물건의 차례(`story/stepThings.ts`).** `find`·`puzzle` 단계와 함수가 끼우는 «번호 쪽지»(칩셋에 「쪽지」 키트가 있으면 그것 — 증기 도시 `sp-note` · 버들항 `bd-obj-note` · 손 도트 실내 `floor note` · 사막 `de-note` · 설원 `sn-scroll` · 현대 `mc-prop-note` · 해적 `pi-note`).
 
-1. 모델이 고른 그림 — `build_blueprint_path.steps[].on`(그 맵의 그림 → 없으면 그 이름의 키트를 찍는다).
+1. 모델이 고른 그림 — `build_blueprint_path.steps[].on`(그 맵의 그림 → 없으면 그 이름의 키트를 찍는다). 고른 이름은 단계의 글과 함께 청사진에 남는다(`GameBlueprintStepText.on`) — 함수가 경로를 다시 지을 때도 읽는다.
 2. 이벤트 이름의 물건 낱말이 맞는 그림(세기 2 이상) — 맵에 있는 것, 없으면 키트를 찍는다.
 3. 괄호 속 부품 설명만 맞는 그림(세기 1) — 맵에 있는 것, 없으면 키트를 찍는다.
 4. 그래도 없으면 예전처럼 걸음 수로 고른 칸에 세우고, 사슬을 지은 뒤 `settleStepThing` 이 **가까운 물건**(여덟 칸 안)에 앉힌다 — 여섯 칸까지의 작은 것 먼저, 그 가운데 통째로 막힌 낮은 물건(상자·통·화분)이 윗줄을 뒤로 지나가는 키 큰 것(나무·가로등)보다 먼저다.
