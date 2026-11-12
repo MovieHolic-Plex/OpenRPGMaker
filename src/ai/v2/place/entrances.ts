@@ -4,6 +4,7 @@
 import { roomSpecOf } from "@/editor/handInterior/builder";
 import { isPassable } from "@/project/collision";
 import { labelHasWord, labelNames } from "@/project/labelWords";
+import { isDoorArtCell } from "@/project/staging/doorCells";
 import { tilesetSurface } from "@/project/tilesetSurface";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 
@@ -182,24 +183,51 @@ export function placeMarks(project: Project, map: GameMap): PlaceMarks {
   return { buildings, stairs, seats, windows };
 }
 
-/**
- * 드나드는 그림이 놓인 칸(칸 번호 y*w+x) — 건물 키트의 입구 그림 · 방 키트의 문·계단 기물 · 표면 계약의 계단. 어느 층이든.
- * 「입구 그림 옆 맨바닥에 선 이벤트」 출하 검사(judge/discoverability.ts offArtEntrances)가 읽는다 — 이름표 낱말로 읽으면 「가문비」「얼음 구멍」「무너진 아치 문」과
- * 설명에 「양개문」이 든 건물의 모든 칸이 입구 그림이었다.
- */
-export function entranceArtCells(project: Project, map: GameMap): Set<number> {
-  const tileset = project.tilesets[map.tilesetId];
-  const kit = entranceTiles(tileset), room = roomKitTiles(tileset), stairs = tilesetSurface(tileset).stairs;
-  const out = new Set<number>();
-  if (!kit.size && !room.doors.size && !room.stairs.size && !stairs.size) return out;
-  const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
-  for (const layer of LAYERS) {
-    const tiles = m[layer];
-    if (!tiles) continue;
-    for (let i = 0; i < map.width * map.height; i++) {
-      const t = tiles[i];
-      if (typeof t === "number" && t >= 0 && (kit.has(t) || room.doors.has(t) || room.stairs.has(t) || stairs.has(t))) out.add(i);
+// ── 드나드는 그림 — 「이 칸이 문·계단 그림인가」. 출하 검사(입구 그림 옆 맨바닥)와 맵 잇기·층 이동 도구가 같이 읽는다:
+//   건물 키트의 입구 그림 · 방 키트의 문·계단 기물 · 표면 계약의 계단 · 표면 계약의 낱장 문(굽기가 문이라 적은 꼬리표 — 버들항 「집 문」, 성채 「오크 문」)
+// 입구를 적어 둔 키트의 나머지 그림은 꼬리표가 문이어도 문이 아니다(그 키트가 어느 칸이 문인지 이미 적었다).
+// 이름표 낱말로 읽던 때는 「가문비」「얼음 구멍」「무너진 아치 문」「성벽(활 구멍)」과 설명에 「양개문」이 든 건물의 모든 칸이 문 그림이라,
+// 나무 밑 칸에 이은 출입구의 트리거가 나무 위로 올라갔다. 아무것도 적지 않은 칩셋(올린 것 — 표면 선언·입구 키트·방 키트가 없다)만 이름표로 읽는다.
+const artCache = new Map<string, ReadonlySet<number> | null>();
+
+/** 이 칩셋의 드나드는 그림 타일. null = 아무것도 적지 않은 칩셋(이름표로 읽는다). */
+function entranceArtTiles(tileset: TilesetDef | undefined): ReadonlySet<number> | null {
+  const kits = ((tileset as { structureKits?: readonly Kit[] } | undefined)?.structureKits ?? []) as readonly Kit[];
+  const meta = ((tileset as { tileMeta?: unknown } | undefined)?.tileMeta ?? []) as Meta[];
+  const spec = roomSpecOf(tileset);
+  const key = `${tileset?.id}|${meta.length}|${kits.length}|${spec ? Object.keys(spec.objects).length : 0}`;
+  const hit = artCache.get(key);
+  if (hit !== undefined) return hit;
+  const kit = entranceTiles(tileset), room = roomKitTiles(tileset), surface = tilesetSurface(tileset);
+  let out: Set<number> | null = null;
+  if (surface.declared || kit.size || spec) {
+    out = new Set([...kit.keys(), ...room.doors, ...room.stairs, ...surface.stairs]);
+    const kitBody = new Set<number>();
+    for (const k of kits) {
+      if (!k.parts?.some((part) => part.kind === "entrance")) continue;
+      for (const row of k.rows ?? []) for (const t of [...(row.tiles ?? []), ...(row.upperTiles ?? [])]) if (typeof t === "number" && t >= 0) kitBody.add(t);
     }
+    for (const t of surface.doors) if (!kitBody.has(t)) out.add(t);
   }
+  if (artCache.size > 64) artCache.clear();
+  artCache.set(key, out);
+  return out;
+}
+
+/** 이 칸(어느 층이든)에 드나드는 그림이 놓였는가. */
+export function isEntranceArt(project: Project, map: GameMap, x: number, y: number): boolean {
+  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+  const tiles = entranceArtTiles(project.tilesets[map.tilesetId]);
+  if (!tiles) return isDoorArtCell(project, map, x, y);
+  const m = map as unknown as Record<string, ArrayLike<number> | undefined>;
+  return LAYERS.some((layer) => { const t = m[layer]?.[y * map.width + x]; return typeof t === "number" && t >= 0 && tiles.has(t); });
+}
+
+/** 드나드는 그림이 놓인 칸(칸 번호 y*w+x) — 「입구 그림 옆 맨바닥에 선 이벤트」 출하 검사(judge/discoverability.ts offArtEntrances)가 맵을 한 번 훑어 읽는다. */
+export function entranceArtCells(project: Project, map: GameMap): Set<number> {
+  const out = new Set<number>();
+  const tiles = entranceArtTiles(project.tilesets[map.tilesetId]);
+  if (tiles && !tiles.size) return out;
+  for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) if (isEntranceArt(project, map, x, y)) out.add(y * map.width + x);
   return out;
 }

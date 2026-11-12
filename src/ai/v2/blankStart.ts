@@ -123,8 +123,12 @@ function startCell(project: Project, map: GameMap, from: { x: number; y: number 
   return undefined;
 }
 
-/** 청사진이 있고 그 장소 맵이 하나라도 지어졌으면 빈 자리표시 맵을 치운다. 메모 목록. */
-export function retireBlankStart(run: BuildRun): string[] {
+/**
+ * 청사진이 있고 그 장소 맵이 하나라도 지어졌으면 빈 자리표시 맵을 치운다. 메모 목록.
+ * `before` = 이 요청이 시작될 때의 프로젝트. 그때 이미 있던 빈 맵은 게임이 그 맵에서 시작하고 있었을 때만 자리표시 맵이다 —
+ * 시작이 다른 맵에 있던 프로젝트의 빈 맵(이름만 붙여 둔 「동쪽 들판」)은 그 프로젝트의 것이라 두고, 이 요청이 만든 빈 맵은 치운다(retireSeedStart 머리말).
+ */
+export function retireBlankStart(run: BuildRun, before: Pick<Project, "maps" | "startMapId">): string[] {
   const notes: string[] = [];
   const project = run.ctx.project;
   const bp = project.gameBlueprint;
@@ -136,6 +140,7 @@ export function retireBlankStart(run: BuildRun): string[] {
   for (const blank of Object.values(project.maps)) {
     const cur = run.ctx.project;
     if (placeIds.has(blank.id) || !isPlaceholderMap(blank)) continue;
+    if (before.maps[blank.id] && before.startMapId !== blank.id) continue;
     if (Object.keys(cur.maps).length < 2) break;
     // 다른 맵에서 이 빈 맵으로 가던 이동 이벤트 — 새 시작 칸 후보(그 문 칸)를 먼저 적어 둔다.
     const inbound: { mapId: string; event: GameEvent }[] = [];
@@ -171,9 +176,15 @@ export function retireBlankStart(run: BuildRun): string[] {
  * 시작을 그 장소의 들어오는 칸으로 옮기고, 빈 맵으로 오가던 이동을 지우고, 빈 맵을 지운다. 돌려주는 to = 빈 맵 대신 쓸 맵 id.
  * 왜(2026-11-11 map-vqa 깔기 24판): 숲길 도구가 빈 맵 북쪽 가장자리에 숲을 이어 야영지 게임이 빈 풀밭에서 시작했고(camp), 동굴 계단이 빈 맵으로 나왔다(forest-to-cave).
  * 청사진 게임은 끝맺음(retireBlankStart)이 같은 일을 한다 — 청사진이 없으면 그 단계가 돌지 않는다.
+ *
+ * 자리표시 맵인지는 id 와 «비어 있다» 만으로 정하지 않는다 — **이 요청이 시작될 때 게임이 그 맵에서 시작하고 있었을 때만**(seedWasStart) 치운다.
+ * 왜(2026-11-12 Haiku 작은 일 셋째 묶음, 세 판): 시작 맵이 「잿불 마을」 인 프로젝트의 둘째 맵 「동쪽 들판」(id 는 map_blank_start, 아직 풀밭 한 장)을
+ * 짓기 도구가 끝날 때마다 지웠다. 모델이 «나는 remove_map 을 부르지 않았다» 며 create_map 으로 되살렸고 또 지워졌다(ending-by-talks 84 호출).
+ * 시작이 다른 맵에 있으면 누군가(사용자·앞 턴) 그 맵을 골라 둔 것이고, 남은 빈 맵은 그 프로젝트의 맵이다 — 함수가 지울 것이 아니다.
  */
-export function retireSeedStart(run: BuildRun): { notes: string[]; to?: string } {
+export function retireSeedStart(run: BuildRun, seedWasStart: boolean): { notes: string[]; to?: string } {
   const notes: string[] = [];
+  if (!seedWasStart) return { notes };
   const project = run.ctx.project;
   const seed = project.maps[SEED_START_MAP_ID];
   if (!seed || !isPlaceholderMap(seed)) return { notes };

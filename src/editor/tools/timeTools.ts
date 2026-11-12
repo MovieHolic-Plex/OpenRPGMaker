@@ -11,7 +11,8 @@ const configureTimeSystem: ToolDefinition = {
   description:
     "게임 시간/달력 시스템을 설정한다. enabled:false면 system.timeSystem을 제거해 기존 프로젝트와 같은 완전 비활성 상태로 둔다. " +
     "restMenu 를 주면 ESC 메뉴에 「쉬기」가 생겨 플레이어가 아침(6시)·정오·저녁(18시)·자정 중 고른 시각까지 시간을 흘린다(밤까지 기다려 밤에만 나오는 적을 사냥하는 식). " +
-    "쉬면 페이드 뒤 맵 이벤트 페이지의 시간대 조건과 필드 스폰의 timePhases 가 다시 평가된다. 추격 중에는 늘 거절된다. 생략하면 기존 쉬기 설정을 그대로 둔다.",
+    "쉬면 페이드 뒤 맵 이벤트 페이지의 시간대 조건과 필드 스폰의 timePhases 가 다시 평가된다. 추격 중에는 늘 거절된다. 생략하면 기존 쉬기 설정을 그대로 둔다. " +
+    "이미 켜진 시계에서는 보낸 칸만 바뀐다(하루 끝 공통 이벤트 onDayEnd 연결도 그대로 — 처음부터 다시 잡으려면 enabled:false 로 끈 뒤 다시 켠다).",
   mode: "write",
   parameters: {
     type: "object",
@@ -47,14 +48,18 @@ const configureTimeSystem: ToolDefinition = {
     if (onDayEnd && !draft.commonEvents.some((event) => event.id === onDayEnd)) {
       throw new ToolError(`onDayEnd 공통 이벤트를 찾을 수 없습니다: ${onDayEnd}`, { code: "common-event-not-found" });
     }
+    // 이미 켜진 시계를 다시 설정할 때 안 보낸 칸은 그대로 둔다 — 전에는 기본값으로 되돌려, 하루 끝 공통 이벤트(onDayEnd) 연결이 조용히 끊겼다.
+    // 실측(2026-11-12 셋째 묶음 Haiku `deadline-ending-starter`): set_deadline_ending 이 건 기한 판정을, 그 도구의 경고를 따라 forceSleep 을 켜려던
+    // 다음 호출 configure_time_system{enabled, forceSleep:true} 이 지웠다 — 엔딩은 영영 오지 않았다. 처음부터 다시 잡으려면 enabled:false 로 끈 뒤 다시 켠다.
+    const kept = draft.system.timeSystem?.enabled ? draft.system.timeSystem : undefined;
     const normalized = normalizeTimeSystemConfig({
       enabled: true,
-      minutesPerRealSecond: numberArg(args.minutesPerRealSecond, DEFAULT_TIME_MINUTES_PER_REAL_SECOND),
-      dayStartHour: integerArg(args.dayStartHour, DEFAULT_DAY_START_HOUR),
-      dayEndHour: integerArg(args.dayEndHour, DEFAULT_DAY_END_HOUR),
-      daysPerSeason: integerArg(args.daysPerSeason, DEFAULT_DAYS_PER_SEASON),
-      forceSleep: args.forceSleep === true,
-      onDayEnd,
+      minutesPerRealSecond: numberArg(args.minutesPerRealSecond, kept?.minutesPerRealSecond ?? DEFAULT_TIME_MINUTES_PER_REAL_SECOND),
+      dayStartHour: integerArg(args.dayStartHour, kept?.dayStartHour ?? DEFAULT_DAY_START_HOUR),
+      dayEndHour: integerArg(args.dayEndHour, kept?.dayEndHour ?? DEFAULT_DAY_END_HOUR),
+      daysPerSeason: integerArg(args.daysPerSeason, kept?.daysPerSeason ?? DEFAULT_DAYS_PER_SEASON),
+      forceSleep: typeof args.forceSleep === "boolean" ? args.forceSleep : kept?.forceSleep === true,
+      onDayEnd: args.onDayEnd === undefined ? kept?.onDayEnd : onDayEnd,
       restMenu: restMenuArg(args.restMenu, draft.system.timeSystem?.restMenu),
     });
     if (!normalized) throw new ToolError("시간 시스템 설정 정규화에 실패했습니다.", { code: "invalid-time-system" });

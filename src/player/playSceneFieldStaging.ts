@@ -26,7 +26,7 @@ import { store } from "@/project/store";
 import { runtimeEventViewById, runtimeEventViewsForMap } from "@/project/runtimeEventState";
 import { objectiveTargetViews } from "@/player/objectiveTarget";
 import { objectiveArrowAim, objectiveRoute, type ObjectiveRoute } from "@/player/objectiveRoute";
-import { currentObjectiveText } from "@/player/zoneFeedback";
+import { currentObjective } from "@/player/zoneFeedback";
 import { spentPage, storyPerson, STORY_PERSON_RADIUS } from "@/player/examineTargets";
 import { paperPose, paperSheetDone, seededRandom, spawnPaperSheets, stepPaperSheet } from "@/player/paperFlutter";
 
@@ -678,10 +678,12 @@ function syncObjectiveMarkers(scene: PlaySceneContext, now: number): void {
   if (now >= state.nextCheck) {
     state.nextCheck = now + 400;
     const project = store.getCurrent();
-    const text = currentObjectiveText(scene.session.m2Runtime?.ui);
+    const objective = currentObjective(scene.session.m2Runtime?.ui);
+    const text = objective?.text ?? null;
     state.text = text;
     const views = text ? runtimeEventViewsForMap(project, map, scene.session, scene.eventPositions) : [];
-    const all = objectiveTargetViews(project, map, views, text);
+    // 목표가 대상 이벤트를 들고 왔으면 그것이 먼저다(글의 이름 찾기는 그다음) — 잠긴 출구를 여는 이벤트는 지금 스위치·소지품에서 읽는다.
+    const all = objectiveTargetViews(project, map, views, text, { target: objective?.target, session: scene.session });
     const size0 = mapTileSize(map);
     state.points = all.map((view) => ({ x: (view.x + 0.5) * size0, y: (view.y + 0.5) * size0 }));
     state.tiles = all.map((view) => ({ x: view.x, y: view.y }));
