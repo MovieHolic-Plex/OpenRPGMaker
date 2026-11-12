@@ -13,7 +13,7 @@ import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder
 import { isPassable } from "@/project/collision";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { isDoorName, reachableCells, unreachableEvents } from "../judge/eventReach";
+import { isDoorEvent, reachableCells, unreachableEvents } from "../judge/eventReach";
 import { repairEventReach } from "./reachRepairs";
 import type { BuildRun } from "../shared/types";
 import { CODE_STEP_WORDS } from "../shared/stepWords";
@@ -252,7 +252,7 @@ function clearDecoyDoorArt(project: Project, map: GameMap, k: Kit): string[] {
   const base = (t: number) => (t >= 0 ? String(meta[t]?.label ?? "").replace(/\s*\([^)]*\)\s*$/u, "").trim() : "");
   const doorish = (name: string) => /문|door/iu.test(name) && !/문틀|문패|문양|창문|문서|arch|frame/iu.test(name);
   const events = map.events ?? [];
-  const doors = events.filter((e) => isDoorName(String((e as { name?: string }).name ?? "")) && !hasTransfer(e.pages ?? e.commands));
+  const doors = events.filter((e) => isDoorEvent(project, e) && !hasTransfer(e.pages ?? e.commands));
   if (doors.length !== 1) return [];
   const door = doors[0]!;
   const artName = base(layerTileAt(map, 3, door.y * w + door.x));
@@ -322,7 +322,7 @@ export function dressInteriorExits(run: BuildRun, mapId: string, laid?: Laid): E
   // (2026-10-29 standin memory: 할머니 집 «장롱 편지»(엔딩을 부르는 투명 조사 칸)를 잠긴 문 그림 위로 옮겼다).
   const lockish = (e: GameEvent) => CODE_STEP_WORDS.test(String((e as { name?: string }).name ?? "")) || /자물쇠|잠금|lock/iu.test(String((e as { name?: string }).name ?? ""));
   const escapeGame = project0.gameBlueprint ? isEscapeBlueprint(project0.gameBlueprint) : false;
-  const door = events.find((e) => isDoorName(String((e as { name?: string }).name ?? "")) && !hasTransfer(e.pages ?? e.commands))
+  const door = events.find((e) => isDoorEvent(project0, e) && !hasTransfer(e.pages ?? e.commands))
     ?? events.find((e) => endsGame(e) && !visible(e) && !hasTransfer(e.pages ?? e.commands) && (escapeGame || lockish(e)));
   const tileLabel = (t: number) => String(((project0.tilesets[map.tilesetId]?.tileMeta ?? []) as unknown as ({ label?: string } | undefined)[])[t]?.label ?? "");
   const start = project0.startMapId === mapId ? project0.startPos : undefined;

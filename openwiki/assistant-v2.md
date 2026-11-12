@@ -725,6 +725,7 @@ Terra 네 판의 화면 검수 장부 57줄 가운데 15줄이 끝맺음이 깐 
 | (2026-11-12) 화면 검수자: 자기 자신은 맨 마지막 | `src/ai/v2/judge/vqa.ts` (`vqaReviewerCandidates`) | 차례는 «다른 계열 모두 → 같은 계열» 인데, 같은 계열에서는 눈·검토자 칸이 비어 있으면 곧바로 주 모델 자신이었다. Haiku 5.5 실행 측정에서 Codex CLI(GPT 할당량 없음)·Gemini CLI(그림 못 봄)가 답하지 못하자 Haiku 가 제 화면을 검수했다 — 같은 계열의 Sonnet 은 후보에 없었다. 이제 로컬 CLI 검수용 모델(`LOCAL_CLI_REVIEWERS`: Sonnet · gpt-6.1-sol · Argon) 가운데 주 모델과 같은 계열이고 다른 모델인 것이 주 모델 앞에 선다(Haiku → Sonnet, Terra → Sol). 표시는 그대로 «같은 계열 검수»(약한 증거) — 독립 검수가 된 것은 아니다. 시험 `test/aiV2VqaReviewerOrder.test.ts`. |
 | (2026-11-12) 청사진을 다시 쓰면 지어 둔 것을 물려받는다 | `src/ai/v2/story/blueprintCarry.ts` · `blueprintPath.ts` · `puzzle.ts` · `src/project/gameBlueprint.ts` · `tools/verbs/blueprint.ts` | 모델이 청사진을 다시 쓰면(단계 수·장소는 그대로, 사람 이름만 바뀜 — 저장된 Terra 판 13개 중 6개) 경로 빌더는 단계 이벤트를 «그 맵의 같은 이름» 으로 찾아 새 사람을 세웠고 앞 경로의 사람은 남았다: 이야기 줄이 두 벌, 문·길은 앞 사람의 스위치를 기다림(r1-fun). 이제 단계가 제가 지은 것을 적어 둔다 — `GameBlueprintStep.built {mapId, eventId, switchId?, itemId?}`(함수만 쓴다, 모델이 보낸 값은 버린다). `write_blueprint` → `carryBuilt`: 새 단계가 앞 단계의 built 를 물려받는다(같은 이름 먼저, 그다음 같은 id), 받을 단계가 없는 것은 `retired`. `build_blueprint_path` → `settleCarriedSteps`: 물려받은 이벤트를 새 이름으로(그 이름을 부르던 잠김 글·목표 꼬리도, 조사는 받침에 맞게), 장소를 옮긴 단계·빠진 단계의 이벤트는 걷고 아무도 안 켜게 된 스위치를 기다리던 조건을 푼다 → 빌더가 **같은 이벤트·같은 스위치 id** 로 다시 짓는다(`ChainLink.reward.switchId/itemId`, 그림은 새 이름으로 다시 `relook`). 넘기는 것의 종류가 바뀐 단계(물건 → 깃발)는 `remapGives` 가 옛 것을 기다리던 조건을 새 것으로 옮긴다. `ev_chain_*`(함수가 지은 것)만 이름을 바꾸고 걷는다. 저장 모양: `built` · `retired` 는 선택 칸이라 옛 저장본은 그대로 읽힌다(`normalizeStepBuilt` — 모양이 틀리면 없는 것으로). 실측(r1-fun 을 둘째 경로 짓기까지 모델 없이 재생): 사슬 이벤트 12(단계 아닌 것 5) → 7(0) · 같이 쓰는 «집어 감» 5 → 0 · 아무도 안 켜는 스위치를 기다리는 페이지 2 → 0. 시험 `test/aiV2BlueprintCarry.test.ts`. |
 | (2026-11-12) 할 일 결과는 짧게 | `src/ai/v2/loop/todoStore.ts`(`viewFocusEn` · `SHORT_LIST`) · `loop/todoTools.ts` | Haiku 게임 하나(r1v-fun) 실측: `todo` 를 91번 불렀고 결과마다 목록 전체(평균 6.7천 자)가 돌아와, 대화에 쌓여 뒤 호출들이 다시 읽은 것이 그 판 입력의 8.7%(도구 결과 가운데 가장 큰 몫)였다. 이제 항목 하나를 고친 결과(start · done · block · drop · bind)는 세는 줄 + 그 항목 + 열린 항목 8개 + «나머지 N개» 한 줄만 싣는다. 목록을 쓰거나(init · append) 보자고 한(view) 때, 항목을 못 찾은 때, 목록이 10개 이하일 때는 전체다. 덤: 전체 보기는 40줄에서 끊겨 41번째 뒤의 새 관문·비평 항목이 결과에 안 보였는데(r1v-fun 은 46개), 짧은 목록은 자리와 상관없이 열린 항목을 보인다. 저장된 판의 목록으로 잰 크기(모델 없음): r1v-fun 9,449 → 중앙 382자 · r1h-mystery 11,235 → 396 · r1h-desert 6,897 → 307(끝난 판이라 열린 줄이 없다 — 열린 8줄이 다 차면 약 2천 자). 시험 `test/aiV2TodoBriefResult.test.ts`. 모델이 짧은 목록으로도 다음 일을 잘 고르는지는 미측정. |
+| (2026-11-12) 이야기의 물건은 그 장소의 그림 · 단계는 차례로 · 문은 그려진 자리에 | `src/ai/v2/place/fixtures.ts` · `place/stairLinks.ts` · `story/stepThings.ts` · `story/examineSpot.ts`(`lightUnseenThing`) · `judge/eventReach.ts`(`isDoorEvent`) · `place/reachRepairs.ts` · `place/exitDress.ts` · `story/clueObjects.ts` · `story/blueprintPath.ts` · `story/blueprintPathBattles.ts` · `story/puzzle.ts` · `story/stepArt.ts` · `place/edgeExitRoads.ts` · `place/transferSpot.ts` · `place/entrances.ts` · `place/where.ts` · `place/worldPopulate.ts` · `tools/context.ts`(`linkChild`) · `tools/verbs/place.ts` · `src/project/steampunkCityComposer.ts` · `src/editor/tools/jrpgVolumeTools.ts`(`pickSpot` 의 `avoid`) | r1s-fun 「증기의 심장」: 단계 물건이 맨바닥 반짝임·아무 상자에 섰고, 번호를 맞혀도 글이 없고, 보스 승리가 마지막 단계를 대신 했고, 방→방 문이 맨바닥이었다. 조사·퍼즐 단계는 그려진 물건(이름표 + 키트 꼬리표)에 앉고 없으면 키트를 찍고, 그래도 없으면 가까운 물건(없으면 그 장소의 작은 물건을 곁에 하나 더) + 늘 빛나는 표지 + art-gap. 아래 「이야기의 물건은 그 장소의 그림이다」 절 |
 | (2026-11-12) 엔딩 맺음 글 — 설계 메모는 화면에 내지 않는다 | `src/project/gameBlueprint.ts`(`ending.closing` · `endingClosing`) · `story/blueprint.ts`(스키마·카드) · `story/blueprintPath.ts` · `story/shipDefaults.ts`(`fillEndingClosure`) · `story/shipLookDefaults.ts`(`fillPartyNames`) · `tools/verbs/blueprint.ts` | 청사진 `ending.how` 는 «엔딩에 닿는 법»(다른 엔딩 설명 포함)을 적는 설계 메모인데, 경로 빌더·기본 맺음 글이 그 글을 엔딩 화면·마지막 단계 대사로 그대로 냈다. Haiku r1h-mystery · r1h-snow · r1h-fun 의 how 는 셋 다 조건문(«강수연 아내를 지목하면 … 진실 엔딩. 다른 지목은 미궁»)이었고 mystery · snow 엔딩 화면에 그 줄이 나왔다(눈가림 판정 «개발자 메모»). 이제 플레이어가 읽는 글은 `ending.closing`(2~4줄 · 스키마에서는 선택 칸이다 — 필수로 두면 인자 검증이 청사진을 통째로 거절해, closing 없는 옛 기록을 재생하는 명세 은행이 맵 80 → 13 으로 무너졌다 · 다시 쓴 청사진이 빼면 앞 것을 물려받는다 · 없으면 write_blueprint 결과가 그렇게 알린다) 뿐이다 — `define_ending` 의 처음 epilogue, 마지막 단계의 기본 대사·맺음 서술, 번호 자물쇠 엔딩의 보상 글, `fillEndingClosure` 가 모두 closing 을 쓰고 how 와 마지막 단계의 action 은 쓰지 않는다. closing 이 없고 남는 줄(주인공·느낌)로 모자라면 채우지 않는다 — 출하 검사 `ending-closure` 가 모델에게 쓰게 한다. 같이: 주인공 기본 이름(`fillPartyNames`)은 게임 속 인물 이름·청사진 who/event 에 «든» 이름도 피한다(용의자 「이도윤 (조카)」가 있는 게임의 주인공이 「도윤」이 됐다). 탐침(모델 없음, 저장된 r1h-mystery): 전 «how 줄 / 도윤은 … 걸어냈다 / 느낌» → 후 closing 없음 «하람은 … / 느낌 / 하람의 이야기는 …», closing 있음 «closing 두 줄 / 하람은 …». golden: 달라진 149/155 전부 `write_blueprint` 글·스키마. 시험 `test/aiV2EndingClosing.test.ts`. 실제 모델이 closing 을 쓰는지는 미측정. |
 ||||||| 12d874b62c
 | (2026-11-12) 목표가 대상 이벤트를 들고 다닌다 · 잠긴 길목이면 여는 이벤트 | `src/ai/v2/judge/objectiveCommand.ts` · `objectiveRoutes.ts` · `objectivePlan.ts` · `story/shipObjectiveDefaults.ts` · `src/player/objectiveTarget.ts` · `zoneFeedback.ts` · `saveSlots.ts` · `qaCheckpoint.ts` · `interpreter/m2ModernRuntime.ts` | 표시가 목표 글의 이름으로 대상을 찾아 이름이 같은 다른 이벤트·잠긴 말 이벤트에 서거나(8순간), 닫힌 길목이라 아예 없었다(6순간). 끝맺음 「목표 길 안내」 가 단계 목표에 다음 단계를 넘기는 이벤트(`step.built` → 이름, 싸움에 잠겼으면 전투 이벤트)를 묶는다 — 명령의 **납작한 두 칸** `fields.targetMapId`·`targetEventId`(객체 하나는 명령 모양 검사에서 프로젝트 읽기가 실패한다), 세션·저장 칸·체크포인트에서는 `target { mapId, eventId }`. 런타임은 대상을 글보다 먼저 쓰고(글 찾기는 옛 저장본·손으로 만든 게임의 대비), 가는 길의 출구가 잠겨 있으면 지금 스위치·소지품으로 그 잠금을 푸는 이벤트에 선다(이름을 목표 글에 못 박지 않는다 — 순서가 자유인 잠금은 빌더가 누가 남았는지 모른다). 따라 걷는 자 16판 1칸 누르기 148/162 → 159/162. 아래 「목표가 대상을 들고 다닌다」. |
@@ -2439,6 +2440,75 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 **새 단계를 더할 때.** 단계 하나가 30초를 넘지 않게 한다. 맵마다 도는 단계는 맵 한 장에 몇 초 안이어야 한다 — `[v2-lane] <id> took Ns in total` 과
 `[pi-agent-stream] event loop blocked Ns` 줄이 호스트 로그(`HARNESS_HOST_LOG`)에 남는다. 긴 고리를 가진 빌더는 고리 안에서 `await yieldToLoop()` 를 부른다.
 
+## 이야기의 물건은 그 장소의 그림이다 · 단계는 차례로 · 문은 그려진 자리에 (2026-11-12)
+
+**왜.** 눈가림 플레이 r1s-fun 「증기의 심장」(Sonnet 5.5 high 가 «재밌는 게임 만들어 줘.» 로 지은 게임, 세계 steampunk_city, 빌더 60d6ace46d — 증거 `~/claude-viz/r1s-vqa.html` 2·4절).
+오너: «증기의 심장 게임을 고치는 게 아니라, 조수를 잘 고쳐야겠지 … 저런 식으로 못 만들게 해야하지않겠냐». 지은 게임은 손대지 않았고(증거), 같은 명세를 모델 없이 다시 지어 전/후를 쟀다.
+
+| 본 것 | 그것을 만든 코드 | 이제 빌더가 지키는 것 |
+|---|---|---|
+| 「압력 밸브」(퍼즐)가 벽의 밸브 바퀴를 두고 나무 상자 칸에 | `blueprintPath.spotFor` 가 «압력 밸브 앞» 을 통째 낱말로 찾아 못 찾고 걸음 수로 빈 칸을 골랐고, `examineSpot.attachToNeighbor` 가 곁의 아무 가구(상자)에 붙였다 | 조사·퍼즐 단계의 이벤트는 그 맵에 **그려진 물건 칸**에 앉는다(`story/stepThings.ts hostStepThing`). 마주 보고 누르는 높이, 반짝임 없음 |
+| 「대심장 정지 레버」가 맨바닥의 반짝임(밟는 칸) | 곁에 가구가 없으면 `lowerToFloor`(발밑) + `lightUnseenThing`(늘 빛남) | 이름의 물건 낱말이 맵의 그림에 없으면 그 칩셋의 키트를 찾아 **찍는다**(「레버」 → 「천공 카드 단말기(놋쇠 건반·레버·다이얼 조작대)」) |
+| 「감시탑 일지」가 빈 마당의 반짝이는 상자 칩 | `stepArt.dressPickupSteps` 가 그림 없는 줍기 단계를 보물상자 칩으로 | 맞는 그림이 칩셋에 없으면 **가장 가까운 작은 물건**에 앉히고 «없는 그림» 한 줄(`want=step-thing`)을 남긴다. 물건에 앉은 단계는 상자 칩으로 바꾸지 않는다 |
+| 번호를 맞혀도 `winLines` 가 안 나옴 | `blueprintPath.ts` 가 번호 단계에서 `t.winLines` 를 읽지 않았다(싸움 단계만) | 맞힌 갈래에 `winLines`(없으면 «철컥, 잠금이 풀렸다.») |
+| 보스를 이기면 마지막 단계(레버)가 저절로 돌고 엔딩 | `blueprintPathBattles.finishStepOnBossVictoryIn` 이 «승리 스위치로 잠긴 단계» 를 승리 갈래 끝에서 불렀다 — 그 싸움이 **제 단계**(s6)인데도 다음 단계(s7)를 불렀다 | 싸움이 청사진 단계 이벤트면 그 승리는 그 단계만 끝낸다. 다음 단계는 플레이어가 한다(따로 선 보스가 잠근 단계는 전처럼 이어진다) |
+| 보일러실 → 기관실이 동쪽 벽 곁 맨바닥 한 칸 | `linkChild` 의 방→방 길이 문 그림을 못 찾으면 `edgeCell`(걸어 닿는 가장자리 쪽 칸) | 방에서 방으로는 그 방의 쓰지 않은 계단 그림, 없으면 **칩셋의 계단 키트를 뒷벽 앞에 찍어** 그 칸으로(`place/stairLinks.ts`) |
+| 공업지구 도착 칸 (30,20) 바로 위 (30,19) 가 부두로 돌아가는 칸(열린 길 한가운데) · 부두 동쪽 문 (47,14) 앞 (46,14) 에 계선주 | ① `edgeExitRoads.widenRoadExits` 가 길 띠 위 계선주 뒤 칸 (0,14) 에 길 폭 사본을 세웠다 — 닿지 못하는 문이라 그 맵의 뒤 `link_maps` 가 전부 «출입구 설치로 문이 봉쇄됩니다» 로 거절 ② 그래서 내려간 마지막 길이 `transferSpot.roadEndSpot`(문 앞을 안 봄)과 구성기의 시작 칸(`result.entrance` — 공업지구는 맵 한가운데) | 길 폭 사본·길 끝 문은 **안쪽 칸에서 걸어 들어올 수 있는 칸**만. 바깥 맵의 «들어서는 칸» 은 맵 가장자리에 닿을 때만 문으로 쓴다 — 전·후 같은 명세에서 부두↔공업지구가 길이 맵 끝에 닿는 자리끼리 이어진다 |
+| 곁가지 의뢰인 (2,1)·보물상자 (5,1) 가 공장 지붕 뒤 띠에 | `where.resolveWhere` 의 기본 자리 «시작 근처» 가 시작 맵이 아니면 `walkStart`(가장 큰 걸음 덩이의 왼쪽 위 칸)에서 쟀고, `worldPopulate` 의 상자는 들어온 칸에서 가장 먼 칸 | 바깥 맵에서 사람의 기본 자리는 들어서는 칸에서 재고(방 안과 청사진 단계 이벤트의 기본 자리는 전과 같다 — 종류를 안 적은 옛 청사진의 단계가 전부 문 앞 한 줄에 모였다, 명세 은행 jrpg-v2: 길 60칸 → 13칸), 사람·적·상자는 **건물 뒤 띠**(`entrances.behindBuildingStrip`)를 피한다. 적·상자는 차도·선로 칸(`placementRules.laneCells`)에도 서지 않는다(r1s-fun 재생: 보물상자가 선로 칸). 적·상자는 구성기의 «들어서는 칸» 이 아니라 **실제 도착 칸**(이 맵으로 오는 이동의 도착 칸 전부)에서 재고 어느 도착 칸에서든 다섯 걸음 안에는 두지 않는다 — 문이 길 끝으로 옮겨지자 옛 기준으로 놓인 적이 도착 칸 세 칸 곁에 섰다 |
+| 여관의 어디로도 가지 않는 계단 · 보도의 한 칸 주머니(통 둘·가로등·환기구) | 스팀펑크 구성기(`steampunkCityComposer.ts`)가 여관에 계단 소품을 놓았고, `Board.prop` 은 길이 끊기는지만 봤다 | 계단은 잇는 쪽이 찍는다(구성기는 놓지 않는다). 바깥 소품이 걷는 칸 하나를 세 면으로 가두면 놓지 않는다(`openAir`) |
+
+**그려진 물건 읽기(`place/fixtures.ts`).** 낱말 표가 없다 — 칩셋이 적어 둔 것만 읽는다.
+
+- `drawnThings(project, map)` — 맵의 위층 그림 한 점(`objectClusterAt`, 12칸까지, 타일 역할이 건물·벽·지붕·바닥·물·계단이 아닌 것). 그 그림을 찍는 구조 키트를 알면 키트 이름(괄호 속 부품 설명까지)과 **그 키트만의 꼬리표**(칩셋 키트 3개 이하에만 붙은 꼬리표 — 「밸브」「쪽지」「단말기」. 「실내」「거리」 같은 갈래 꼬리표는 뺀다)를 같이 든다. 칸마다 이름표 꼬리가 다른 움직이는 그림(증기 기관)은 같은 키트의 맞닿은 조각을 한 점으로 잇는다.
+- `thingMatch(이름, 그림)` — 3 = 이름표가 이름을 통째로 담는다 · 2 = 이름의 물건 낱말(마지막 어절)이 이름표의 온전한 낱말(`labelHasWord`)이거나 그 키트만의 꼬리표 · 1 = 그 낱말이 키트 이름의 괄호 속 설명에 있다 · 0 = 아니다. 글자 포함으로 읽지 않는다.
+- `thingSeat` — 이벤트가 앉는 그림 칸과 그 곁의 서는 칸(걸어 닿고, 다른 이벤트·계단·문 그림 위가 아닌 칸. 남쪽에서 마주 보는 자리 먼저). 다른 이벤트가 이미 앉은 그림은 쓰지 않는다 — 경로는 단계 자리를 다 고른 뒤 한 번에 지으므로, 아직 이벤트로 서지 않은 앞 단계의 자리(`claimed`)도 차지한 것으로 본다(같은 방의 밸브 바퀴 둘 가운데 같은 것을 두 단계가 고르지 않는다).
+- `hangNamedThing` — 벽에 거는 그림(꼬리표 `벽걸이`: 밸브 바퀴·압력계)을 벽면 칸(타일 역할 wall, 위층이 빈 칸)에 건다. 바로 아래가 서서 쓸 빈 바닥인 자리만. 구성기가 건 벽 그림은 아래에 가구·계단이 놓여 설 자리가 없을 때가 있어(무작위 소금 네 판 가운데 두 판), 그때 같은 그림을 쓸 수 있는 벽에 하나 더 건다.
+- `stampNamedThing` — 이름에 맞는 키트를 near 곁 빈 바닥에 `stamp_object` 로 찍는다. 발자국과 남쪽 한 줄이 빈 걷는 바닥이고 이벤트에서 한 칸 떨어진 자리, 찍은 뒤 걸어 닿는 칸이 발자국보다 더 줄면 되돌린다. 벽에 거는 그림(꼬리표 `벽걸이`·손 도트 실내 `hang`)과 문·계단·창 그림(`entrances.passageTiles`)은 바닥에 찍지 않는다.
+
+**단계 물건의 차례(`story/stepThings.ts`).** `find`·`puzzle` 단계와 함수가 끼우는 «번호 쪽지»(칩셋에 「쪽지」 키트가 있으면 그것 — 증기 도시 `sp-note` · 버들항 `bd-obj-note` · 손 도트 실내 `floor note` · 사막 `de-note` · 설원 `sn-scroll` · 현대 `mc-prop-note` · 해적 `pi-note`).
+
+1. 모델이 고른 그림 — `build_blueprint_path.steps[].on`(그 맵의 그림 → 없으면 그 이름의 키트를 찍는다).
+2. 이벤트 이름의 물건 낱말이 맞는 그림(세기 2 이상) — 맵에 있는 것, 없으면 키트를 찍는다.
+3. 괄호 속 부품 설명만 맞는 그림(세기 1) — 맵에 있는 것, 없으면 키트를 찍는다.
+4. 그래도 없으면 예전처럼 걸음 수로 고른 칸에 세우고, 사슬을 지은 뒤 `settleStepThing` 이 **가까운 물건**(여덟 칸 안)에 앉힌다 — 여섯 칸까지의 작은 것 먼저, 그 가운데 통째로 막힌 낮은 물건(상자·통·화분)이 윗줄을 뒤로 지나가는 키 큰 것(나무·가로등)보다 먼저다.
+5. 여덟 칸 안에 놓인 물건이 없으면 그 맵에 놓인 작은 물건(네 칸까지, 통째로 막힌 것)과 **같은 그림을 곁에 하나 더 찍고**(`fixtures.stampCopyNear`) 거기 앉힌다 — 걸음 수로 받은 자리를 지킨다. 멀리 있는 물건으로 끌고 가면 단계가 문 앞에 모여 걷는 길이 짧아진다(명세 은행 fun-v2 재생: 「메아리 제단」이 26칸 밖의 뿌리로 갔다). 다른 이벤트가 앉은 물건(다른 단계의 「봉인 상자」)은 본뜨지 않는다. 찍을 것도 없으면(그려진 물건이 하나도 없는 맵) 예전 표지(맨바닥 + 늘 빛남)로 남고 `stand-in=none` 으로 적는다.
+
+가구 윗면에 탁상 물건이 얹혀 있으면(`examineArt.showExaminedThing` 이 책상에 그린 일기장·편지) 가구 이름과 이벤트 이름이 달라도 없는 그림으로 적지 않는다.
+
+**이름이 다른 그림 위는 빛난다.** 짓는 쪽과 재는 쪽이 같은 눈(`project/eventSight`)을 쓴다: 이름표가 이벤트 이름의 물건 낱말을 담은 작은 그림(여섯 칸까지)은 그림이 곧 그 물건이라 반짝이지도 빛나지도 않는다(「압력 밸브」 ↔ 벽 밸브 바퀴, 「…레버」 ↔ 단말기 이름표의 레버). 4·5번으로 앉은 물건, 모델이 고른 이름 다른 그림, 일곱 칸 넘는 큰 그림의 한 칸은 그림만 봐서는 그 물건인 줄 모르므로 **늘 빛나는 표지**(`page.glow`)를 그 그림 칸에 단다(`examineSpot.lightUnseenThing` 의 `unnamedToo` — 단계가 쓰게 하는 물건에만). 맨바닥이 아니라 그 물건이 빛난다.
+왜(명세 은행 연습 판 2026-11-12): 4번으로 등잔 기둥에 앉은 「대상의 기록」(fun-x1) · 별자리 지도 벽걸이에 앉은 「광산의 옛 물길 기록」(jrpg-x1)을 정직한 자동 플레이가 «다른 물건 그림 위 — 읽은 글 어디에도 그 이름이 없다» 로 멈췄다(전에는 벽 칸의 늘 빛나는 표지라 지나갔다).
+
+**조사 단계는 문이 아니다 — 종류가 말한다.** 「태양의 비문」(jrpg-w3, find 단계)이 이름 끝의 「문」 때문에 «닿게 옮기기» 의 문 규칙에 걸려 궁전 문 칸으로 갔고, 표지 없는 큰 그림의 한 칸으로 남았다. 낱말 표(`NOT_DOOR_NAME`)에 낱말을 더하지 않는다 — 청사진의 조사(find) 단계가 세운 이벤트는 `eventReach.isDoorEvent` 가 문으로 읽지 않는다: 사슬을 짓는 중에는 고리가 종류를 들고 가고(`ChainLink.thing === "find"` → `repairEventReach` 의 `found`), 지은 뒤에는 청사진 단계의 `kind` 로 읽는다(`examineSpot` · `clueObjects` · `exitDress` · `stepArt`). 번호 자물쇠가 달린 문(puzzle 단계)과 청사진 밖 이벤트는 전처럼 이름으로 읽고, 그런 문은 문 그림 칸이 제자리라 `settleStepThing` 이 옮기지 않는다. 「태양의 비문」은 이제 사막 칩셋의 「비문 돌」 키트를 찍고 거기 앉는다.
+
+이것은 빌더가 지키는 것이지 턴 끝 관문이 아니다 — 모델의 턴을 돌려보내지 않는다. 대사는 모델의 것이라 함수가 고쳐 쓰지 않는다: 4·5번(가까운 물건)에서는 대사가 그 그림과 어긋날 수 있다(「감시탑 안 … 책상에」 ↔ 석탄 상자). 그래서 모델에게 먼저 보인다 — `build_places` 결과에 조사·퍼즐 단계가 있는 장소마다 그려진 물건 이름 8개까지(`Things drawn where a find/puzzle step happens (name one as that step's «on»): «지하 보일러실»: 벽 구리 배관, 벽 밸브 바퀴, …`).
+
+**지시문·스키마가 바뀐 것.** 지시문 블록은 그대로다(golden: 달라진 것은 `build_blueprint_path` 스키마 글뿐, 157 요청 가운데 그 도구가 실리는 151). 스키마 +251자(1,836 → 2,087): `steps[].on` 한 칸과 `winLines` 설명 앞머리(«puzzle step: 1–2 lines shown when the code is right.»). `build_places` 결과 글에 위 한 줄(증거 명세에서 517자).
+
+**방과 방을 잇는 계단(`place/stairLinks.ts`).** 칩셋 표면 계약의 계단 타일(`tilesetSurface.stairs`)로만 된 구조 키트를 뒷벽에 등을 댄 빈 바닥(다른 이벤트·출구에서 먼 자리)에 찍고, 그 발치 칸을 이동 칸으로 `create_transfer_pair` 에 넘긴다(도구가 계단 폭만큼 스스로 넓힌다). 오르는 계단·내려가는 계단은 키트 id 끝(`-up`·`-down`)과 장소 이름(`transferSpot.stairWay` — 「지하」로 가면 내려가는 계단, 지하에서 나가면 오르는 계단)으로 맞춘다. 건너편은 그 방의 제 문(남쪽 틈)에 닿는다. 벽 문 조각이 있는 방 키트(손 도트 실내)의 같은 층 방끼리는 계단을 찍지 않는다 — 끝맺음 `door-floor-transfers` 가 전처럼 벽에 문을 낸다. 계단은 위·아래층 장소이거나 문 조각이 없는 방(구성기 방)에만.
+계단은 빈 벽 앞을 먼저 고른다 — 벽에 걸린 그림(밸브 바퀴·압력계) 아래에 서면 그 그림 앞에 설 자리가 없어진다(빈 벽이 없을 때만 그 아래).
+계단 키트가 없는 칩셋(사막 · 설원 · 선사 · 전국 · SF · 황무지 — 2026-11-12 조사)은 예전 자리(가장자리 쪽 걷는 칸)에 남고 끝맺음 `door-floor-transfers` 가 `want=door-piece` 로 적는다.
+
+**칩셋에 맞는 그림이 없어 대신 쓴 것(증기 도시, 증거 명세 다시 짓기).**
+
+| 바란 것 | 대신 | 왜 |
+|---|---|---|
+| 「감시탑 일지」(공업지구) — 일지·기록 물건, 감시탑 | 가까운 작은 물건(소금에 따라 석탄 상자·무쇠 화분·나무 통…) + 늘 빛나는 표지 + art-gap | 증기 도시 칩셋에 책상·일지·감시탑 그림이 없다(바깥 이야기 물건은 조절기·경보기·단말기·게시판·쪽지뿐) |
+| 「대심장 정지 레버」 — 레버 한 점 | 천공 카드 단말기(조작대에 레버가 있다)를 기관실에 찍음 | 레버만 따로 그린 조각이 없다 |
+| 방과 방 사이의 벽 문 | 계단 키트 | 증기 도시 방에는 벽 문 조각이 없다(방 출구는 남쪽 틈뿐) |
+| 「지하 보일러실」로 내려가는 바깥 입구(해치·지하 계단) | 「보일러실」 건물 문 | 바깥 맵에 놓을 지하 입구 그림이 없다(계단 두 키트는 실내용) |
+
+**재는 법(모델 없음).** `bun scripts/qa/assistant-v2/storyOnPlaceProbe.mts <명세.json> <결과 폴더>` — 명세 은행의 게임 명세에서 그때의 청사진 · 장소 소금 · 경로 대사 · 사람 놓기를 그대로 다시 짓고 끝맺음 자동 단계까지 돌린 뒤, 단계 물건마다(무엇 위에 섰나 · 밟는 칸인가 · 서는 칸 수 · 반짝임), 문마다(문 그림·가장자리·맨바닥 · 문 앞 · 도착 칸 곁의 되돌아가는 칸), 건물 뒤 띠의 사람·상자, 바깥 맵의 한 칸 주머니, 단계 흐름(다른 단계를 부르는가 · 엔딩)을 `facts.txt`·`facts.json` 과 1배 그림(`maps/*.png`, 표시 얹은 `*.marks.png`)으로 낸다. 증거 명세는 은행에 넣었다(`spec-bank/r1s-fun.json`).
+
+증거 명세 전/후(기준 origin/main 85713af382 → 이 변경, 같은 소금):
+
+| | 전 | 후 |
+|---|---|---|
+| 조사·퍼즐 단계 3개 가운데 그려진 물건 위 | 1(나무 상자 — 이름과 다른 그림) | 3(밸브 바퀴 · 단말기 · 가까운 작은 물건[빛남 · 없는 그림 기록]) |
+| 밟는 칸(발밑) · 제 칩(보물상자) | 1 · 1 | 0 · 0 |
+| 맨바닥 이동 칸 · 문 앞이 막힌 문 · 도착 칸 곁의 되돌아가는 칸 | 2 · 2 · 2 | 0 · 0 · 0 |
+| 바깥 맵의 한 칸 주머니 | 8 | 0 |
+| 보스 승리가 다음 단계를 부름 | 예(s6 → s7) | 아니오 |
+
 ## 끝맺음 단계 더하기 (2026-10-29 단계 목록화)
 
 끝맺음 자동 단계와 출구·이동 칸 마감은 **단계 하나 = 파일 하나** 목록이다. 수리 작업자 여럿이 같은 파일(옛 `finishAutoBuild.ts`·`verbs.ts clearLanes`)을 고쳐 체리픽이 부딪히던 것을 없앤 구조 변경이며 동작은 같다(`finishReplay --trace` 로 vm5~vm7 판 대조).
@@ -2722,11 +2792,11 @@ bun scripts/qa/assistant-v2/specBank.mts ab --out /tmp/bank            # 기준(
 `--at <커밋>` 은 그 커밋의 작업 폴더를 `/tmp/spec-bank-<커밋>-<pid>` 에 만들어(패키지는 이 폴더의 것을 잇는다) 그 빌더로 재생하고 끝나면 지운다 — 작업 폴더를 건드리지 않는다.
 재는 자(탐침)는 늘 지금 폴더의 것이라 옛 빌더로 지은 게임도 같은 자로 잰다. 결과 폴더: `<게임>/project.json · replay.json · metrics.json · maps/*.png`, `bank.txt`(게임마다 표 하나 + 은행 합계), `bank.json`. 결과 폴더는 은행 한 번에 약 4.3GB 다(판마다 `project.json` 92MB — 칩셋이 든 프로젝트 전체) — `ab` 한 번이 8.6GB 이니 `/tmp` 에 두고 보고 나면 지운다.
 
-**은행에 든 것** — `harness-data/assistant-capability/spec-bank/*.json`(49개 · 2.1MB). `specBank.mts list` 가 표로 보인다.
+**은행에 든 것** — `harness-data/assistant-capability/spec-bank/*.json`(50개 · 2.2MB). `specBank.mts list` 가 표로 보인다.
 
 | 갈래 | 판 | 어디서 |
 |---|---|---|
-| 게임 하나(여러 턴) | 10 — `fun-v2`(세계 없음) · `fun-w1`(증기 도시) · `fun-w2`(선사) · `fun-w3`(설원) · `fun-x1`(사막) · `jrpg-v2`(세계 없음) · `jrpg-w1`(설원) · `jrpg-w2`(버들항) · `jrpg-w3`(사막) · `jrpg-x1`(버들항) | `assistant-fable-runs/<판>` — 「재밌는 게임 만들어 줘」·「판타지 RPG 게임 하나 만들어 줘」 + 후속 두 번 |
+| 게임 하나(여러 턴) | 11 — `fun-v2`(세계 없음) · `fun-w1`(증기 도시) · `fun-w2`(선사) · `fun-w3`(설원) · `fun-x1`(사막) · `jrpg-v2`(세계 없음) · `jrpg-w1`(설원) · `jrpg-w2`(버들항) · `jrpg-w3`(사막) · `jrpg-x1`(버들항) · `r1s-fun`(증기 도시, Sonnet 5.5 — 2026-11-12 「증기의 심장」 눈가림 증거 판) | `assistant-fable-runs/<판>` — 「재밌는 게임 만들어 줘」·「판타지 RPG 게임 하나 만들어 줘」 + 후속 두 번 |
 | 장소 하나(한 턴) | 39 — `lay-main-*` 24 · `lay-base-*` 15 | 맵 깔기 24가지(`map-vqa` 의 두 묶음) |
 
 새 판 더하기: `bun scripts/qa/assistant-v2/specBank.mts extract <판 폴더>…`(게임 하나를 지은 판 폴더 `RUN.txt`·`session/`·`project/`, 또는 `map-vqa` 의 과제 폴더. 지금 도는 측정 묶음 `r1-*` 은 같은 하네스가 만드는 폴더다 — 끝나면 뽑아 넣는다, 아직 안 넣었다). v1 판은 받지 않는다. 명세에 열쇠·토큰 꼴이나 이 기계의 절대 경로가 있으면 뽑기가 거절한다.

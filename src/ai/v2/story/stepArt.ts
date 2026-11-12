@@ -5,10 +5,11 @@
 // 규칙: 버들항 바깥 맵에서 이름이 봉인·제단·결계·의식·마법진인 청사진 단계 이벤트가 모든 페이지 투명이고 그 칸에 그림이 없으면,
 // 3걸음 안에 번들 「돌 제단」(2×2, 버들항 성 지하 카타콤 조각)을 세우고 이벤트를 제단 아랫줄로 옮긴다. 제단 네 칸은 빈 통행 칸·이벤트 없음이어야 하고,
 // 세운 뒤 못 닿는 이벤트가 늘면 되돌린다. 새 그림은 그리지 않는다.
+import { onDrawnThing } from "../place/fixtures";
 import { isPassable } from "@/project/collision";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
 import type { GameMap, Project } from "@/project/types";
-import { isDoorName, reachableCells, unreachableEvents } from "../judge/eventReach";
+import { isDoorEvent, reachableCells, unreachableEvents } from "../judge/eventReach";
 import { buildingEntrances } from "../place/entrances";
 import { isMysteryBlueprint, isProgressWord, resolveSteps } from "./mysteryCaseRead";
 import { resolveGraphic } from "@/editor/tools/eventCompile";
@@ -93,7 +94,7 @@ export function openDoorSteps(project: Project): string[] {
   for (const r of resolveSteps(project)) {
     const map = project.maps[r.map.id];
     const ev = map?.events.find((e) => e.id === r.ev.id);
-    if (!map || !ev || !isDoorName(`${ev.name ?? ""} ${r.step.event}`) || JSON.stringify(ev.pages ?? []).includes('"transfer"')) continue;
+    if (!map || !ev || !isDoorEvent(project, { ...ev, name: `${ev.name ?? ""} ${r.step.event}` }) || JSON.stringify(ev.pages ?? []).includes('"transfer"')) continue;
     const pages = ev.pages ?? [];
     const opener = pages.findIndex((p) => sets(p).length > 0 && (p.conditions ?? []).length > 0);
     if (opener < 0) continue;
@@ -256,6 +257,8 @@ export function dressPickupSteps(run: BuildRun, mapId: string): string[] {
     const map = project.maps[mapId]!;
     const ev = map.events.find((e) => e.id === r.ev.id);
     if (!ev || (!namedAsGift && NOT_PICKUP.test(`${ev.name ?? ""} ${r.step.event}`)) || !allTransparent(ev)) continue;
+    // 그 장소의 그림에 앉은 단계 물건(story/stepThings)은 그 그림이 곧 줍는 자리다 — 보물상자 칩으로 바꿔 곁 빈 칸에 세우지 않는다.
+    if (onDrawnThing(project, map, ev)) continue;
     // 윗층 그림(지붕·나무 머리) 아래 칸이면 그 자리는 못 쓰고 2칸 안 다른 칸을 찾는다(아래 자리 고르기가 칸마다 윗층을 본다 — vm8 flash 「동굴 열쇠」 (7,11)은 지붕 밑이었다).
     const text = JSON.stringify(ev.pages ?? []);
     if (/"kind":"(?:transfer|battleProcessing|showChoices|choices|presentItem|shop)"/u.test(text) || /"speaker"/u.test(text)) continue;

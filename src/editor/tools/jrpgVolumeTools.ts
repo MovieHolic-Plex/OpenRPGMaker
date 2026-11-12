@@ -92,14 +92,14 @@ function distances(project: Project, map: GameMap, origin: Cell, blocked: Readon
  * origin 에서 닿는 칸 중 rank(0=가까움, 1=가장 먼 곳) 근처의, 막아도 다른 칸이 끊기지 않는 칸.
  * 문·출입구 이벤트 옆, 맵 가장자리는 고르지 않는다.
  */
-export function pickSpot(project: Project, map: GameMap, origin: Cell, taken: Set<string>, rank: number, minDist = 2): Cell | undefined {
+export function pickSpot(project: Project, map: GameMap, origin: Cell, taken: Set<string>, rank: number, minDist = 2, avoid?: (c: Cell) => boolean): Cell | undefined {
   const blocked = new Set([...eventCells(map), ...taken]);
   const dist = distances(project, map, origin, blocked);
   const base = dist.size;
   const nearEvent = (c: Cell): boolean => (map.events ?? []).some((e) => Math.abs(e.x - c.x) + Math.abs(e.y - c.y) <= 1);
   const candidates = [...dist.entries()]
     .map(([k, d]) => { const [x, y] = k.split(",").map(Number); return { x: x!, y: y!, d }; })
-    .filter((c) => c.d >= minDist && c.x > 0 && c.y > 0 && c.x < map.width - 1 && c.y < map.height - 1 && !nearEvent(c))
+    .filter((c) => c.d >= minDist && c.x > 0 && c.y > 0 && c.x < map.width - 1 && c.y < map.height - 1 && !nearEvent(c) && !avoid?.(c))
     .sort((a, b) => a.d - b.d || a.y - b.y || a.x - b.x);
   if (!candidates.length) return undefined;
   const start = Math.min(candidates.length - 1, Math.round(rank * (candidates.length - 1)));

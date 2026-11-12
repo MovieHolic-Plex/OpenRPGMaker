@@ -9,7 +9,7 @@ import { objectAt, tileLabel } from "./cells";
 import { objectBaseLabel, objectClusterAt } from "@/project/objectFootprint";
 import type { ArtGap } from "@/project/artGap";
 import type { BuildRun } from "../shared/types";
-import { Cell, DIRS, eventBlocks, anchorsOf, reachFrom, blockersOf, bodyReached, nextTo, reachableCells, unreachableEvents, isDoorName, baseLabel, hostWords, itemTileWords, objectCells, singleTileObject, invisibleEvent } from "../judge/eventReach";
+import { Cell, DIRS, eventBlocks, anchorsOf, reachFrom, blockersOf, bodyReached, nextTo, reachableCells, unreachableEvents, isDoorEvent, baseLabel, hostWords, itemTileWords, objectCells, singleTileObject, invisibleEvent } from "../judge/eventReach";
 
 export interface ReachRepair { readonly moved: string[]; readonly stuck: string[] }
 
@@ -22,7 +22,7 @@ export interface ReachRepair { readonly moved: string[]; readonly stuck: string[
  *     칩셋에 그 낱말의 1칸 그림이 없으면 깔지 않고 noArt 에 적는다(비슷한 그림을 대신 고르지 않는다). 문 이름인데 적힌 문 칸이 없는 맵도 noArt.
  * 다른 이벤트(목록 밖 포함)를 못 닿게 만드는 자리는 고르지 않는다.
  */
-export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonly string[], hostsFor?: ReadonlyMap<string, readonly (readonly string[])[]>): ReachRepair & { readonly noArt: ArtGap[] } {
+export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonly string[], hostsFor?: ReadonlyMap<string, readonly (readonly string[])[]>, found?: ReadonlySet<string>): ReachRepair & { readonly noArt: ArtGap[] } {
   const moved: string[] = [];
   const stuck: string[] = [];
   const noArt = new Map<string, ArtGap>();
@@ -58,7 +58,7 @@ export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonl
     let target: Cell | undefined;
     let why = "";
     // 1) 문
-    const door = isDoorName(name);
+    const door = isDoorEvent(project, ev, found);
     const doors = door ? declaredDoorCells(project, map) : [];
     if (door && doors.length) {
       if (doors.some((d) => d.x === ev.x && d.y === ev.y) && judge(here)) continue;
