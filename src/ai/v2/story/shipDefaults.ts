@@ -1,5 +1,6 @@
 // 조수 v2 출하 기본값 채우기 — 싼 모델이 끝내 못 고쳐 출하가 막히거나 경고만 남는 출하 검사 여섯(2026-10-29 vm1 측정):
 import { blueprintPlaceName } from "@/project/blueprintAssembly";
+import { endingClosing } from "@/project/gameBlueprint";
 import type { Project } from "@/project/types";
 import { editorDefaultsLeft, endingClosureProblems, endingConditionsUnset, emptySparkles, selfLoopTransfers, silentLockedExits, writtenStateIds } from "../judge/shipChecks";
 import { defaultPlaceLeaks } from "../judge/shipArtChecks";
@@ -281,8 +282,12 @@ const sentence = (text: string): string => { const t = text.trim().replace(/[.�
 const isClause = (text: string): boolean => /다[.!?]?$/u.test(text.trim());
 
 /**
- * 장면으로 맺지 않는 엔딩(endingClosureProblems)에 청사진 ending.how·feeling 과 주인공 이름으로 짧은 맺음 글을 덧붙이고,
+ * 장면으로 맺지 않는 엔딩(endingClosureProblems)에 청사진의 맺음 글(ending.closing)·feeling 과 주인공 이름으로 짧은 맺음 글을 덧붙이고,
  * 마지막 그림이 없으면 이야기에 맞는 스틸을 준다. 모델이 쓴 줄은 그대로 두고 앞에 둔다.
+ *
+ * 설계 메모는 화면에 내지 않는다 — ending.how(«강수연 아내를 지목하면 … 진실 엔딩. 다른 지목은 미궁»)와 마지막 단계의 action(«범인을 지목한다»)은
+ * 플레이어에게 하는 말이 아니다(2026-11-12 Haiku r1h-mystery · r1h-snow: 그 줄이 엔딩 화면에 그대로 나왔다 — 눈가림 판정 «개발자 메모»).
+ * 맺음 글이 없고 남는 줄(주인공·느낌)로 모자라면 채우지 않고 둔다 — 출하 검사(ending-closure)가 모델에게 맺음 글을 쓰게 한다.
  */
 function fillEndingClosure(project: Project): string[] {
   const blueprint = project.gameBlueprint;
@@ -302,11 +307,10 @@ function fillEndingClosure(project: Project): string[] {
     const add = (line: string) => { if (line && !has(line)) beats.push({ kind: "say", text: line }); };
     const enough = () => { const lines = said(); return lines.length >= 3 && lines.reduce((n, t) => n + t.length, 0) >= 80; };
     const before = said().length;
-    if (needLines) add(sentence(blueprint.ending.how));
+    if (needLines) for (const line of endingClosing(blueprint)) add(sentence(line));
     if ((needLines || needPerson) && heroName) add(`${topic(heroName)} ${place ? `${place}에서 시작한 ` : ""}이 여정을 끝까지 걸어냈다.`);
     const feeling = blueprint.ending.feeling.trim();
     if (feeling && !enough()) add(isClause(feeling) ? sentence(feeling) : `${subject(feeling)} 오래도록 남았다.`);
-    if (!enough()) add(sentence(blueprint.steps.at(-1)?.action ?? ""));
     if (!enough() && heroName) add(`${heroName}의 이야기는 여기서 한 매듭을 짓는다.`);
     (ending as unknown as Obj).epilogue = beats;
     const added = said().length - before;
