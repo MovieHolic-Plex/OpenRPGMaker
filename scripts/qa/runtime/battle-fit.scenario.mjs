@@ -63,5 +63,12 @@ export default {
       expect: { testidPresent: ["battle-scene"] },
       shot: true,
     },
+    {
+      id: "settled",
+      note: "기술 연출이 다 걷힌 뒤 — 배경이 그대로인가",
+      ops: [{ kind: "hold", dir: null, ms: 4000 }],
+      expect: { testidPresent: ["battle-scene", "actor-command-attack"] },
+      shot: true,
+    },
   ],
 };
