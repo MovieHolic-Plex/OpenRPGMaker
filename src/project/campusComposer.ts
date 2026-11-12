@@ -162,6 +162,8 @@ class Board {
   }
   building(kitId: string, x: number, y: number): CampusBuilding {
     const kit = this.stamp(kitId, x, y, "bld");
+    // 키트 사각형 전체가 건물 자리다 — 지붕을 낮춰 맨 윗줄이 빈 칸이 된 건물도 그 줄에 소품·길을 놓지 않는다(빈 칸은 stamp 가 표시하지 않는다).
+    for (let r = 0; r < kit.height; r++) for (let c = 0; c < kit.width; c++) if (this.in(x + c, y + r)) this.use[(y + r) * this.W + x + c] = "bld";
     const entrance = !!kit.door && (this.entranceAll || this.entrances.has(kitId));
     // 문을 내지 않는 건물은 문 칸을 옆 벽 타일로 덮는다 — 문 그림은 안으로 이어지는 건물에만 있다.
     if (!entrance) {
