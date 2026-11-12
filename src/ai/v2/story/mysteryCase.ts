@@ -377,7 +377,7 @@ function giveEvidenceItem(run: BuildRun, src: Resolved, title: string): { id: st
   const name = evidenceName(src.step.gives);
   if (!name || /엔딩|ending/iu.test(name)) return undefined;
   const id = `item_case_${hash(`${title}|${src.step.id}|${name}`).toString(36)}`;
-  if (!run.call("upsert_item", { item: { id, name, description: `[증거] ${src.step.action}`, price: 0, consumable: false } }).ok) return undefined;
+  if (!run.call("upsert_item", { item: { id, name, description: `${src.map.name ?? src.step.place}의 「${String((src.ev as { name?: string }).name ?? "").trim() || src.step.event}」에서 얻은 증거.`, price: 0, consumable: false } }).ok) return undefined;
   let added = false;
   const pages = (src.ev.pages ?? []).map((page) => {
     const commands = [...(page.commands ?? [])] as Command[];

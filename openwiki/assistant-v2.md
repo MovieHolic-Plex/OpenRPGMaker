@@ -528,7 +528,7 @@ main 에서도 남쪽으로 이으면 같은 결함이 났다. 목적표 판의 
 |---|---|---|
 | 단계 종류 `steps[].kind`·`who` | `gameBlueprint.ts` `STEP_KINDS` | talk(사람이 제 말로 다음 실마리를 준다) · find(조사·줍기) · battle(이겨야 넘어간다) · puzzle(번호 자물쇠) · choice(고른 것이 뒤에 보인다). 안 적으면 종전대로 낱말로 추정한다 |
 | 섞임 검사 `stepMixProblems` | `blueprint.ts` → `write_blueprint` | 사람 단계(talk·choice) 2개 이상·서로 다른 사람 2명 · 싸움 1개(추리·연애·퍼즐·공포·방탈출 장르는 빼고) · 퍼즐이나 고르기 1개 · find 3연속 금지 · talk/choice/battle 에 `who`. 세계 게임은 장소 검사와 같은 두 번, 그 밖은 얇은 청사진 거절과 같은 한 번만 돌려보낸다(다시 쓰는 청사진·한 방 게임은 안 본다) |
-| 대사 `build_blueprint_path{steps:[{id, lines, winLines, choices}]}` | `blueprintPath.ts` `pathTextProblems` | 사람 단계에 대사가 없거나 고르기에 `choices` 가 없으면 한 번 돌려보낸다(이미 명령이 있는 단계 이벤트는 안 묻는다). 두 번째는 받은 글로 짓고 빈 대사는 단계의 할 일 한 줄 서술로 채운다 |
+| 대사 `build_blueprint_path{steps:[{id, lines, winLines, choices}]}` | `blueprintPath.ts` `pathTextProblems` | 사람 단계에 대사가 없거나 고르기에 `choices` 가 없으면 한 번 돌려보낸다(이미 명령이 있는 단계 이벤트는 안 묻는다). 두 번째는 받은 글로 짓고 빈 대사는 «(○○와 이야기를 나누었다.)» 서술 한 줄로 채운다(`playerLines.ts` `wordlessLine` — `action` 을 읽히지 않는다, 2026-11-12) |
 | 사람 고리 | `puzzle.ts` `ChainLink.person·speaker` | 캐릭터 칩(`personGraphicFor`)으로 서고 그 이름으로 말한다(«(» 로 시작하는 줄은 서술). 대사를 받았으면 «『…』을 알아냈다» 토큰 줄을 붙이지 않는다. 다시 말 걸면 마지막 대사 |
 | 고르기 | `ChainLink.choice`·`variants` | 고른 것마다 스위치. 길은 어느 것을 골라도 이어지고, 엔딩 직전에 고른 것의 `later` 한 줄이 갈린다 |
 | 싸움 | `ChainLink.battle`·`foeTroop` | 대사 → 전투(도망·패배 불가) → 이긴 갈래에서만 `winLines`·보상·엔딩. 상대는 시작 파티에 맞춘 사본 무리(마지막 싸움 = 보스, 앞 싸움 = 중간 보스)이고 앞장선 적 이름이 `who` 다(원본 DB 적은 그대로) |
@@ -1084,7 +1084,7 @@ v2 가 그 스위치를 쓰지 않았고, 스위치는 그림(빛무리·화살�
 **고친 것 ① — 목표 명령이 대상 이벤트를 든다.** `objectiveCommand(message, target?)` 가 `fields.targetMapId`·`targetEventId` 로 싣는다(객체 하나로는 못 싣는다 — 명령 `fields` 는 글자열·숫자·불리언만).
 런타임 쪽 모양(세션 → 저장 칸 → 체크포인트 → 표시, 글 찾기는 대비)은 `runtime-sessions.md` 「목표가 가리키는 이벤트」.
 - 묶는 곳은 끝맺음 「목표 길 안내」(`refreshObjectiveRoutes`) 한 군데다 — 문·맵·이벤트가 다 선 뒤라 id 가 바뀌지 않는다. 다시 돌려도 같다.
-- **무엇에 묶나:** 단계 목표(글이 다음 청사진 단계의 `action` 그대로인 것 — `stepObjectives` 가 건 것, 시작 페이지면 첫 단계·`playerGoal`)에 **다음 단계를 넘기는 이벤트**.
+- **무엇에 묶나:** 단계 목표(글이 다음 청사진 단계의 목표 줄 `stepGoal` 인 것 — `stepObjectives` 가 건 것. 2026-11-12 전에 지은 게임은 `action` 그대로였고 그것도 알아본다. 시작 페이지면 첫 단계·`playerGoal`)에 **다음 단계를 넘기는 이벤트**.
   그 이벤트는 `step.built`(build_blueprint_path 가 적은 `{ mapId, eventId }`, #4639)가 있고 그 이벤트가 아직 있으면 그것, 없으면(옛 저장본·맵을 다시 지음) 이름·id.
   대상이 전투 승리 스위치에 잠겨 있으면 그 스위치를 켜는 **전투 이벤트**(이름이 없어도 — 글은 이름이 있어야 고쳐 쓰지만 대상은 id 다).
 - **무엇에 안 묶나:** 다음 단계와 다른 것을 말하는 목표(용의자 목표, 곁 일) — 글과 표시가 갈린다. 같은 이벤트가 여러 단계를 맡으면 어느 페이지의 목표인지 몰라 안 묶는다.
@@ -1870,6 +1870,40 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 - **같은 모양 걷기**: 설명 뺀 모양이 400자 이상인 하위 스키마가 앞(처음부터 싣는 도구)에 있으면 v1 도구는 느슨한 자리표시(«Same shape as 도구 경로»)로, v2 동사는 설명만 걷는다(동사는 광고 스키마가 곧 검증기라서). v1 도구의 실제 검증은 레지스트리 `validateArgs` 가 원래 스키마로 한다.
 - 측정 `bun scripts/qa/assistant-v2/dumpPrompt.mts`(도구 글), 기록 재생 `bun scripts/qa/assistant-v2/toolExposureReplay.mts`(닿음·인자 검증 회귀 0 이어야 한다).
 - **스크립트 묶음(`SCRIPT_TIER`, 2026-10-31 왕복 줄이기)**: 로직 낱말(레버·비밀번호·공식·할인·시간대…)이 맞으면 `author_script`·`edit_script` 둘만 처음부터 싣는다. 스크립트 켬/끔 A/B(`~/z-project/assistant-whole-game/reports/script-ab-poc.md`)에서 `get_script_api`·`check_script`·`dry_run_script` 를 처음부터 실으니 쓰기 앞뒤로 매번 불러 모델 호출 136 vs 102·비용 $41.9 vs $23.3 이었다. 이제 `author_script` 한 번이 컴파일·`explain` 저장·`examples` 실행 결과까지 돌려주고(여러 개는 `scripts:[…]`), API 요약(`scriptApiQuickRef()`, `src/project/script/dts.ts`)은 `SCRIPT_TIER` 카드에 붙는다. 나머지 일곱은 이름 호출·`load_tools`. `GAME_CARD` 스크립트 줄·v1 시스템 지시·능력 색인 정책은 같은 규칙이다(2026-11-01 강화) — 읽히는 것은 전부 이벤트 명령, 스크립트는 공식·목록 반복·순서 판정·타이머 같은 1~3줄 조각만이고 결과를 변수에 써 둘레 명령(`\V[var_id]`·분기)이 읽는다, 이벤트마다 한 번 정하고 되돌리지 않음, 기존 명령은 사용자가 시킬 때만. 정본 글은 `openwiki/script-sandbox.md` 「정책」. 확인 `bun scripts/qa/script-ab/exposure.mts`(끔: `OPRN_V2_SCRIPTS=0`).
+
+## 화면에 나가는 글은 플레이어에게 쓴 문장만 — 설계 칸은 화면에 없다 (2026-11-12, r1s-fun «증기의 심장»)
+
+**문제(오너 2026-11-12, Sonnet 5.5 high 가 «재밌는 게임 만들어 줘.» 로 지은 판).** 목표 창에 «공업지구로 가려면 어떻게 할지 선택한다(파업 노동자 편 / 공장주 편)» 이 떴고,
+오프닝 자막은 «밤마다 멈추지 않는 도시의 대심장을 세우기 위해, 사람들의 단서를 모아 기관실의 폭주 기…» 처럼 잘린 문장과 «긴장과 호기심…» 이었다.
+대사 끝에 «『자동인형 정지』를 알아냈다», 잠긴 곳에 «자동인형 정지가 있어야 할 것 같다. 먼저 「폭주 자동인형」을 마쳐야 한다», 이긴 뒤 «(폭주 자동인형을 쓰러뜨렸다.)» 가 나왔다.
+할멈이 «황동 렌치» 를 쥐여 주는데 소지품에는 아무것도 없었고, 곁 퀘스트 «파업장의 맥주 한 통» 은 말만 전하는 talk 두 단계였다.
+
+**원인 — 청사진의 설계 칸이 그대로 화면 글이 됐다.** 청사진 단계의 `action`·`needs`·`gives`·`feeling` 은 모델이 설계를 적는 칸이다(지시문도 그렇게 묻는다). 그런데 빌더 다섯 곳이 그 글을 플레이어에게 읽혔다.
+
+| 화면 글 | 전에 지은 곳 | 지금 |
+|---|---|---|
+| 목표 줄 | `blueprintPathText.ts` `stepObjectives` — 다음 단계의 `action` 그대로 | `playerLines.ts` `stepGoal`: 모델이 플레이어에게 쓴 `text.goal` 이 있으면 그 줄, 없으면 단계의 사람·물건 **이름**으로 지은 줄(«○○에게 말을 걸자» · «○○를 쓰러뜨리자» · «○○의 번호를 맞히자» · «○○를 살펴보자»). 뒤에 붙는 «(어디: …)» 길 안내는 그대로다 — 같은 맵의 그림 없는 대상은 글이 이름을 이미 부르므로 `guideTexts.ts` 가 글 끝에 «(회복의 샘 서쪽)» 처럼 기댈 곳만 붙인다. `objectivePlan.ts` 의 늦은 시작 목표도 같은 함수 |
+| 잠김 글 | `blueprintPath.ts` `lockedDefault`·`lockedPerson` — «`needs` 가 있어야 할 것 같다» | `lockedHint`: 앞 단계의 사람·물건을 이름으로 가리킨다(«먼저 [장소의 ]「○○」에게 말을 걸어 보자.»). 깃발 이름은 안 낸다. 모델이 쓴 `lockedLines` 가 있으면 그것 |
+| 보상 줄 | 깃발 보상 «『`gives`』을 알아냈다» | 없다. 물건일 때만 «『물건』을 얻었다.» |
+| 전투 뒤 | 기본 `winLines` «(○○을 쓰러뜨렸다.)» | 모델이 쓴 `winLines` 만 낸다 |
+| 대사 없는 사람 단계 | `(${action})` 서술 | `wordlessLine` «(○○와 이야기를 나누었다.)» |
+| 오프닝 자막 | `blueprintOpening.ts` `narrationLine` — `playerGoal` 을 46자에서 자르고 `…`, 다음 장면에 첫 단계 `action`·`feeling…` | `captionLines`: `playerGoal` 을 쉼표·문장 단위로 나눠 장면에 나눠 싣는다(자르지 않는다 — 한 줄보다 긴 구절은 이어 주는 어미 뒤나 가운데 어절 사이에서 고르게 나눈다). 남는 장면은 그 맵 이름, 없으면 게임 제목. `action`·`feeling` 은 싣지 않는다 |
+| 추리 증거 설명 | `mysteryCase.ts` `[증거] ${action}` | «○○의 「이벤트 이름」에서 얻은 증거.» |
+
+**건네는 물건은 실제 물건이다.** `build_blueprint_path{steps:[{id, item}]}` 로 그 단계에서 건네는 물건 이름을 주면(대사를 쓰는 바로 그 호출이다) 그 이름의 아이템이 소지품에 들어가고
+다음 단계의 조건이 스위치가 아니라 **그 아이템**이 된다(설명 «○○에게서 받았다.»). 전에는 `gives` 가 물건 낱말(열쇠·쪽지…)일 때만 아이템이 됐다 — 그 옛 규칙은 그대로 두고 넓히지 않았다(낱말 목록을 늘리지 않는다).
+`item` 이 없고 `gives` 도 물건이 아니면 종전처럼 스위치로 잇는다. 그때 대사가 물건을 건넨다고 말해도 빌더는 알 수 없다 — 그래서 지시문이 `item` 을 묻는다.
+
+**새 칸은 둘뿐이다(둘 다 선택).** `GameBlueprintStepText.goal`(80자까지) · `item`(40자까지) — `gameBlueprint.ts` `normalizeStepText`. 청사진(`write_blueprint`)에는 칸을 더하지 않았다.
+지시문은 `BLUEPRINT_CARD` +176자(게임 하나 요청의 시스템 지시문), `write_blueprint` 스키마 +41자(«design note … never shown»), `build_blueprint_path` 스키마 +323자(`goal`·`item` 설명).
+`quests-min` 돌려보내는 글(그 검사가 걸릴 때만 간다) +116자(영어 글은 480자 상한 안 — `test/aiV2FindingEn.test.ts`) — 물건을 나르는 의뢰는 `onAcceptItems` + `{kind:"deliver"}` 로 쓰라는 한 문장. 전의 예시는 talk 두 단계뿐이라 모델이 술통 의뢰도 talk 로 썼다.
+
+**남은 것.** ① 모델이 `goal`·`item` 을 실제로 쓰는지는 모델을 돌려 봐야 안다(이 변경은 모델 없이 검증했다). 안 써도 화면에는 이름으로 지은 줄만 나온다. ② `stepSubjects.ts` `personLine` 은 `action` 에서 살펴볼 대상 낱말을 뽑아
+«부탁하오. ○○를 좀 살펴봐 주시오.» 를 만든다 — 종류(`kind`) 없는 옛 청사진 경로라 손대지 않았다. ③ 건넨 물건은 다음 단계만 확인하고 쓰고 나서 없애지 않는다. ④ 번호 쪽지의 «(열쇠 이름)으로 열자 안에 쪽지가 있다» 는 물건 이름을 쓰므로 그대로다.
+
+**확인(모델 없음).** r1s-fun 명세를 은행에 넣어 origin/main 과 나란히 다시 지었다(`specBank.mts ab`, 결과 표는 PR 본문). `test/aiV2PlayerLines.test.ts`(줄 짓는 함수·자막 나누기·`goal`/`item` 정규화) ·
+`test/aiV2StoryCoherence.test.ts` «단계 이벤트의 글과 목표 줄에 설계 칸이 나오지 않는다»(도구 경로로 지어 대사·목표 줄 전부에서 `action`·깃발 이름·`feeling…` 을 찾는다, 물건은 소지품·다음 단계 조건까지).
+필드 HUD(동료 패널 높이 · 주인공을 가리면 비키기 · 목표 창 제자리)는 런타임 쪽이다 — `runtime-pre-edit-routing.md` «필드 HUD 는 주인공을 가리지 않는다».
 
 ## 새 플레이어 길잡이 — 목표 줄·보이는 이야기 이벤트 (2026-10-26, J90~J96)
 

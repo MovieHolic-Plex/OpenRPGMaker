@@ -1,8 +1,8 @@
 // 청사진 기본 오프닝 — 게임의 실제 맵(map-view) 장면 2~4개 + 청사진 문장으로 다듬은 짧은 내레이션(2026-10-28 스위트 조립 장부).
 //
 // 장부·턴 기록: 장르와 무관한 프리셋 그림(왕국·마왕성·벽난로 노인), 회화풍 스틸과 도트 게임의 화풍 불일치, 오프닝이 아예 없거나 꺼짐.
-// 청사진이 있으면 결정적으로 짓는다: 시작 장소 전경 → 청사진 다음 장소 1~2곳 → 시작 장소의 주인공 시작 위치. 글은 모델이 이미 쓴 청사진 문장
-// (playerGoal·첫 단계 action·느낌)을 다듬기만 한다 — 새 모델 호출 없음, 숫자·암호·정답 낱말이 든 문장은 뺀다.
+// 청사진이 있으면 결정적으로 짓는다: 시작 장소 전경 → 청사진 다음 장소 1~2곳 → 시작 장소의 주인공 시작 위치. 글은 플레이어에게 쓴 줄
+// (playerGoal — 구절 단위로 나눈다)과 장소 이름뿐이다 — 단계의 action · feeling 은 설계 메모라 싣지 않는다. 새 모델 호출 없음, 숫자·암호·정답 낱말이 든 문장은 뺀다.
 // 모델이 직접 만든 오프닝(생성·업로드 그림, 맵 화면, 글 장면)은 건드리지 않는다. 기본값·꺼짐·없음·장르가 안 맞는 번들 스틸·캐릭터 시트일 때만.
 // 2026-11-11 Terra 네 판 장부(오프닝 15줄): «인물이 한 명도 없고 대사도 없이 맵 조각만», «첫 프레임이 붉은 점무늬». 장면마다 그 맵에 처음부터 서 있는 사람을
 // 제 칸에 그대로 세우고(걷는 연기는 붙이지 않는다 — 움직이는 오프닝은 author_opening_stage 몫), 자막을 장면 끝까지 두고, 전환은 cut 으로 둔다.
@@ -55,25 +55,48 @@ export function blueprintOpeningReplaceable(project: Project): { replace: boolea
   return bad ? { replace: true, why: `장르에 안 맞는 번들 그림·캐릭터 시트뿐이었다(${[...new Set(ids)].slice(0, 3).join(", ")})` } : { replace: false, why: "모델이 고른 그림 오프닝" };
 }
 
+/** 자막 한 줄의 길이(무대 384px · 11px 글꼴에서 두 줄 안). */
+const CAPTION_CHARS = 46;
+
 /**
- * 청사진 문장 다듬기(새 모델 호출 없이): 괄호·영문 식별자를 빼고, 「4자리」「지하 2층」 같은 수량은 숫자째 덜어 낸다(정답·자릿수 누설 금지).
- * 남은 숫자나 퍼즐 장치(숫자·힌트·정답·암호…)·제작 낱말(컷신·스위치·이벤트·플레이어)이 든 문장은 뺀다. 「게임이 시작되면」 머리는 지운다. 46자 안.
+ * 오프닝 자막 줄 — 새 플레이어 안내(playerGoal) 한 문장을 자르지 않고 구절(쉼표·문장 끝) 단위로 나눈다. 한 구절이 길면 이어 주는 어미 뒤나 가운데 어절 사이에서 고르게 나눈다(말줄임 없음).
+ * 괄호·영문 식별자는 빼고, 숫자나 퍼즐 장치(정답·암호…)·제작 낱말(스위치·이벤트·플레이어)이 든 문장은 싣지 않는다(정답 누설 금지). 「게임이 시작되면」 머리는 지운다.
+ * 왜: 전에는 46자에서 잘라 «…기관실의…» 로 끝났고, 나머지 장면에는 단계의 action · feeling(설계 메모)을 실었다(2026-11-12 증기의 심장).
  */
-export function narrationLine(text: string | undefined): string | undefined {
-  if (!text) return undefined;
+const size = (line: string) => Array.from(line).length;
+
+/** 한 줄보다 긴 구절을 둘로 고르게 나눈다(되풀이) — 이어 주는 어미(…고 · …며 · …서 · …따라 · …위해) 뒤를 먼저, 없으면 가운데에 가장 가까운 어절 사이. */
+function breakClause(clause: string): string[] {
+  const words = clause.split(/\s+/u);
+  if (size(clause) <= CAPTION_CHARS || words.length < 2) return [clause];
+  const half = size(clause) / 2;
+  let best = 1, bestCost = Infinity, at = 0;
+  for (let i = 1; i < words.length; i += 1) {
+    at += size(words[i - 1]!) + (i > 1 ? 1 : 0);
+    const cost = Math.abs(at - half) - (/(?:고|며|서|면|따라|위해|지만|도록)$/u.test(words[i - 1]!) ? 8 : 0);
+    if (cost < bestCost) { bestCost = cost; best = i; }
+  }
+  return [...breakClause(words.slice(0, best).join(" ")), ...breakClause(words.slice(best).join(" "))];
+}
+
+export function captionLines(text: string | undefined): string[] {
+  if (!text) return [];
   const cleaned = text.replace(/\([^)]*\)|\[[^\]]*\]/gu, " ").replace(/\b[A-Za-z]+[_-][\w-]*\b/gu, " ")
     .replace(/\s*\d+\s*(?:자리|개|번째|번|층|칸|명|단계|일|시)(?=[\s을를이가의에은는도]|$)/gu, "");
-  const sentences = cleaned.split(/(?<=[.!?。…])\s+|\s*\n\s*/u);
-  const kept = sentences.map((s) => s.replace(/^(?:게임이\s*시작되면|게임\s*시작\s*시|시작하면)\s*,?\s*/u, "").replace(/\s+/gu, " ").trim())
+  const sentences = cleaned.split(/(?<=[.!?。…])\s+|\s*\n\s*/u)
+    .map((s) => s.replace(/^(?:게임이\s*시작되면|게임\s*시작\s*시|시작하면)\s*,?\s*/u, "").replace(/\s+/gu, " ").trim())
     .filter((s) => s && !/\d|숫자|힌트|정답|답은|(?:암호|비밀\s*번호|코드|조합)\s*(?:는|은|가|이)(?![가-힣])|패스워드|password|컷신|스위치|이벤트|플레이어|튜토리얼/iu.test(s));
-  let line = kept.join(" ").trim();
-  if (!line) return undefined;
-  if (Array.from(line).length > 46) {
-    const cut = Array.from(line).slice(0, 46).join("");
-    const at = Math.max(cut.lastIndexOf(" "), cut.lastIndexOf(","));
-    line = `${(at > 20 ? cut.slice(0, at) : cut).replace(/[,\s]+$/u, "")}…`;
+  const out: string[] = [];
+  for (const sentence of sentences) {
+    let line = "";
+    // 구절(쉼표 뒤)마다 이어 붙이다 한 줄을 넘으면 줄을 바꾼다. 구절 하나가 한 줄보다 길면 breakClause 가 나눈다.
+    for (const clause of sentence.split(/(?<=[,，、])\s*/u).flatMap(breakClause)) {
+      const next = line ? `${line} ${clause}` : clause;
+      if (line && size(next) > CAPTION_CHARS) { out.push(line); line = clause; } else line = next;
+    }
+    if (line) out.push(line);
   }
-  return line;
+  return out;
 }
 
 function mapForPlace(project: Project, place: string | undefined): GameMap | undefined {
@@ -214,32 +237,28 @@ export function applyBlueprintOpening(project: Project): string[] {
     first.focus = { x: startPos.x < start.width / 2 ? start.width - 1 : 0, y: startPos.y < start.height / 2 ? start.height - 1 : 0 };
   }
   if (shots.length > 1 && shots.slice(0, -1).some((s) => cropKey(s) === cropKey(finalShot))) shots.splice(0, 1);
-  // 글: 목표 → 첫 단계 행동 → 느낌(마지막 장면, 말줄임).
-  const step0 = blueprint.steps[0];
-  const goal = narrationLine(blueprint.playerGoal), action = narrationLine(step0?.action);
-  const feeling = step0?.feeling ? narrationLine(`${step0.feeling.replace(/[.。…]+$/u, "")}…`) : undefined;
-  // 자리: 목표는 첫 장면, 느낌은 마지막 장면(주인공 자리), 첫 행동은 그 사이(장면이 둘뿐이면 목표가 없을 때 첫 장면).
-  const captions = new Map<number, string>();
-  const last = shots.length - 1;
-  if (goal) captions.set(0, goal);
-  if (feeling && !captions.has(last)) captions.set(last, feeling);
-  if (action) {
-    const slot = [1, 2, 0].find((i) => i < last && !captions.has(i)) ?? (!captions.has(last) ? last : undefined);
-    if (slot !== undefined) captions.set(slot, action);
-  }
-  // 글이 없는 장면은 그 장소에서 처음 할 일, 그것도 없으면 장소 이름 — 자막 없는 맵 조각은 «무슨 장면인지 모를 그림»으로 읽혔다.
+  // 글: 플레이어에게 쓴 줄만 — 새 플레이어 안내(playerGoal)를 구절 단위로 앞 장면부터 싣고, 남는 장면에는 그 장소 이름을 싣는다.
+  // 단계의 action · feeling 은 설계 메모라 싣지 않는다.
+  const goal = captionLines(blueprint.playerGoal);
+  const captions = new Map<number, string[]>();
+  // 줄이 장면보다 많으면 차례대로 고르게 나눠 한 장면에 여러 줄을 잇는다.
+  const per = Math.max(1, Math.ceil(goal.length / shots.length));
+  goal.forEach((line, i) => { const at = Math.min(shots.length - 1, Math.floor(i / per)); captions.set(at, [...(captions.get(at) ?? []), line]); });
+  // 글이 없는 장면은 장소 이름, 그 이름을 이미 실었으면 게임 제목 — 자막 없는 맵 조각은 «무슨 장면인지 모를 그림»으로 읽혔다.
+  const named = new Set<string>();
   shots.forEach((shot, i) => {
     if (captions.has(i)) return;
-    const here = blueprint.steps.find((step) => mapForPlace(project, step.place)?.id === shot.map.id);
-    const line = [narrationLine(here?.action), shot.map.name?.trim()].find((text) => !!text && ![...captions.values()].includes(text));
-    if (line) captions.set(i, line);
+    const name = [shot.map.name?.trim(), blueprint.title.trim()].find((text) => !!text && !named.has(text));
+    if (!name) return;
+    named.add(name);
+    captions.set(i, [name]);
   });
   const music = project.system.opening?.musicResourceId;
   const saved = project.system.opening;
   project.system.opening = { enabled: true, skippable: true, scenes: [], ...(music ? { musicResourceId: music } : {}) } as typeof project.system.opening;
   try { shots.forEach((shot, i) => {
     const shotId = `${BLUEPRINT_OPENING_SHOT_PREFIX}${i + 1}`;
-    run(project, "create_opening_animatic_shot", { shotId, durationMs: SHOT_MS, width: STAGE.width, height: STAGE.height, narration: captions.get(i) ?? "" });
+    run(project, "create_opening_animatic_shot", { shotId, durationMs: SHOT_MS, width: STAGE.width, height: STAGE.height, narration: (captions.get(i) ?? []).join(" ") });
     run(project, "place_opening_background", { shotId, layerId: "bg", mapId: shot.map.id, focus: shot.focus, zoom: shot.zoom });
     // 배경을 자막 띠 사이에만 다시 깐다(같은 레이어 id) — 띠 밑에 깔린 맵 줄은 어차피 안 보이고, 가장자리 줄에 선 사람을 가린다.
     run(project, "upsert_opening_layer", { shotId, layer: { id: "bg", kind: "image", role: "background", resourceId: openingMapViewResourceId(shot.map.id),
@@ -257,9 +276,9 @@ export function applyBlueprintOpening(project: Project): string[] {
       // 그 장르에 못 쓰는 칩·시트가 아닌 그림은 도구가 거절한다 — 그 사람만 빼고 장면은 남긴다.
       try { run(project, "upsert_opening_layer", { shotId, layer }); } catch { /* 이 사람은 세우지 않는다 */ }
     });
-    const caption = captions.get(i);
-    // 자막은 장면 끝까지 남는다(fadeOutMs 0) — 끝 순간에 글이 사라진 그림이 «대사 없음»으로 읽혔다.
-    if (caption) run(project, "set_opening_caption", { shotId, layerId: "caption", cues: [{ atMs: 200, text: caption }], fadeOutMs: 0 });
+    const lines = captions.get(i) ?? [];
+    // 자막은 장면 끝까지 남는다(fadeOutMs 0) — 끝 순간에 글이 사라진 그림이 «대사 없음»으로 읽혔다. 여러 줄이면 장면 시간을 고르게 나눈다.
+    if (lines.length) run(project, "set_opening_caption", { shotId, layerId: "caption", cues: lines.map((text, n) => ({ atMs: 200 + Math.round((SHOT_MS - 400) * n / lines.length), text })), fadeOutMs: 0 });
   }); } catch (error) { project.system.opening = saved; throw error; } // 반쯤 지은 오프닝을 남기지 않는다
   if (project.system.opening) project.system.opening = { ...project.system.opening, enabled: true, skippable: true };
   const cast = (project.system.opening?.scenes ?? []).reduce((sum, scene) => sum + ((scene as { composition?: { layers?: { role?: string }[] } }).composition?.layers?.filter((l) => l.role === "actor").length ?? 0), 0);
