@@ -16,7 +16,7 @@ import { leanPromptFor } from "../request/readers";
 import { createBuildRun } from "../shared/buildRun";
 import { localizeVillagePoolSpec } from "../../villageChipsetPool";
 import { layoutGiven } from "../place/interiorLayout";
-import { type WorldSetting } from "../place/world";
+import { parseWorldStyle, type WorldSetting } from "../place/world";
 import { worldForRequest } from "../request/world";
 import { isFreshProject } from "../request/scope";
 import { fixPlayerStart, type MachineCheck } from "../judge/machineChecks";
@@ -30,7 +30,8 @@ import { spreadCrowdedPeople } from "../place/reachRepairs";
 import { dungeonGateSpot, pickTransferSpot, stairWay } from "../place/transferSpot";
 import { critiqueStaging } from "../judge/critic";
 import { edgeCell, isInside, isOutdoor, oppositeSide, pickDoor, villageDoors } from "../story/makeGame";
-import { stampRoomStairs } from "../place/stairLinks";
+import { stampRoomStairs, stampWayDown } from "../place/stairLinks";
+import { hangWallDoor } from "../place/wallDoors";
 import { kitOf } from "../place/exitDress";
 import { type EventBuildResult } from "../story/events";
 import { pickStageFrames, stageFrameProject } from "../story/eventStage";
@@ -306,20 +307,38 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
         let linked = false;
         if (isInside(spec) && result.entrance) {
           const door = givenDoor ?? pickDoor(villageDoors(parentResult ?? ({ state: undefined } as unknown as PlaceBuildResult)), spec.name, usedDoors, env.ctx.project.maps[parentMap]!);
-          if (door) {
+          // 땅 밑이라고 적힌 방(종류의 below)은 바깥에서 내려가는 길로 들어간다 — 그 방 건물의 문 곁에 해치를 얹는다. 그런 키트가 없으면 아래 건물 문.
+          const beforeDown = env.ctx.project;
+          const down = parseWorldStyle(spec.style)?.kind.below && !!parentSpec && isOutdoor(parentSpec) ? stampWayDown(run, parentMap, door) : undefined;
+          if (down) {
+            const r = run.call("create_transfer_pair", { a: { mapId: parentMap, x: down.x, y: down.y }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
+            linked = r.ok && hasTransferTo(parentMap, childMap);
+            if (linked) notes.push(`${pName} ${down.note} ↔ ${cName}`);
+            else env.ctx.project = beforeDown;
+          }
+          if (linked) { /* 내려가는 길로 이었다 */ } else if (door) {
             const r = run.call("create_transfer_pair", { a: { mapId: parentMap, x: door.x, y: door.y, doorAt: { x: door.x, y: door.y - 1 } }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
             linked = r.ok; notes.push(r.ok ? `${pName} 집 문(${door.x},${door.y - 1}${door.kit ? ` ${door.kit}` : ""}) ↔ ${cName}` : `${pName} 집 문 잇기 실패: ${r.summary.slice(0, 160)}`);
           } else {
             // 지은 결과의 집 문 목록이 없으면(모델이 지은 부모 맵) 그 맵의 문 그림·계단·길 끝, 없으면 칩셋 문을 벽에 깔아 그 앞으로.
-            // 방에서 방으로: 그 방의 쓰지 않은 계단 그림, 없으면 칩셋의 계단 키트를 벽 앞에 찍는다(place/stairLinks) — 맨바닥 이동 칸으로 잇지 않는다.
+            // 방에서 방으로: 그 방의 쓰지 않은 계단 그림(위·아래층일 때), 없으면 칩셋의 벽 문 키트를 뒷벽에 걸고(place/wallDoors), 그것도 없으면 계단 키트를 벽 앞에 찍는다(place/stairLinks) — 맨바닥 이동 칸으로 잇지 않는다.
             // 벽 문 조각이 있는 방 키트(손 도트 실내)의 같은 층 방끼리는 끝맺음이 벽에 문을 낸다(door-floor-transfers) — 계단은 위·아래층이거나 문 조각이 없는 방(구성기 방)에만.
             const roomParent = !!parentSpec && isInside(parentSpec);
             const way = stairWay(cName, pName);
             const byStairs = roomParent && (!!way || !kitOf(env.ctx.project, env.ctx.project.maps[parentMap]!));
             const spot = pickTransferSpot(run, parentMap, { side: side ?? "north", outdoor: !!parentSpec && isOutdoor(parentSpec), otherName: cName, buildingDoor: isInside(spec), ...(byStairs ? { vertical: true } : {}) });
             const before = env.ctx.project;
-            const stairs = !spot && byStairs ? stampRoomStairs(run, parentMap, way) : undefined;
-            if (spot) {
+            // 벽 문 조각이 없는 방(구성기 방)끼리만 — 손 도트 실내는 끝맺음이 방 키트의 문을 낸다.
+            const wallDoor = !spot && roomParent && !kitOf(env.ctx.project, env.ctx.project.maps[parentMap]!) ? hangWallDoor(run, parentMap) : undefined;
+            if (wallDoor) {
+              const { note, ...a } = wallDoor;
+              const r = run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
+              linked = r.ok && hasTransferTo(parentMap, childMap);
+              if (linked) notes.push(`${pName} ${note} ↔ ${cName}`);
+              else env.ctx.project = before;
+            }
+            const stairs = !spot && !linked && byStairs ? stampRoomStairs(run, parentMap, way) : undefined;
+            if (linked) { /* 벽 문으로 이었다 */ } else if (spot) {
               const { note, ...a } = spot;
               const r = run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, x: result.entrance.x, y: result.entrance.y } });
               linked = r.ok; notes.push(r.ok ? `${pName} ${note} ↔ ${cName}` : `${pName} ${note} 잇기 실패: ${r.summary.slice(0, 160)}`);
