@@ -1,0 +1,28 @@
+{
+ "variants": 93,
+ "houses": 9,
+ "objects": 7,
+ "looks": 334,
+ "dropped": [
+  {
+   "id": "n-lever-wall",
+   "why": "사막 실내의 벽면 칸은 칸 역할이 terrain 이라 놓기 도구(stamp_tileset_object 의 벽걸이 규칙 — 아래층이 wall·roof 역할)가 받지 않는다. 놓을 수 없는 그림은 굽지 않는다(바닥 레버 de-stop-lever 가 그 일을 한다)"
+  },
+  {
+   "id": "n-house-tower-3",
+   "why": "지붕 덩이가 48px 로 벽(32px)보다 높다(지붕 높이 상한 44px·몫 55% 초과) — 1배에서 빈 지붕 판으로 읽힌다"
+  }
+ ],
+ "missing": [
+  "v-fountain-1"
+ ],
+ "accents": 2,
+ "filled": {
+  "v-house-adobe-4-1": 11,
+  "v-house-adobe-4-2": 6,
+  "v-house-stone-4-1": 2,
+  "v-house-plaster-4-1": 2,
+  "v-house-shop-1": 1,
+  "n-house-wide-5": 2
+ }
+}

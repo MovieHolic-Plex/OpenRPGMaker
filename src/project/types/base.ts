@@ -445,6 +445,11 @@ export interface StructureKitAiMeta {
    */
   variantOf?: string;
   /**
+   * 변형 킷에만: 함께 바뀌는 가족의 으뜸 원본 킷 id. 이어 붙는 그림(벽면 ↔ 창 난 벽면)은 한 게임에서 같은 순번의 변형이어야 한다 —
+   * 이 값이 있으면 원본을 고를 때 그 으뜸 원본의 이름으로 뽑는다(변형 수가 으뜸과 같아야 순번이 맞는다, 굽기가 맞춘다).
+   */
+  lookWith?: string;
+  /**
    * 실내 방 문법의 의미 역할(bed, stove, …). TileGroupRole 과 축이 달라 이름을 분리한다.
    * 있으면 이 킷은 실내 가구로 취급되고, 방 종류의 requiredRoles 와 맞춘다.
    */

@@ -12,6 +12,8 @@
 
 import { deadAlleyMouths } from "./composerDeadAlleys";
 import { exitRoadThroughWild, type ExitSide } from "./composerExitRoads";
+import { activeKitLook, lookHash, lookKit } from "./kitLook";
+import type { StructureKitDef } from "./types";
 import { BuildingBudget, fillerOf, placeableRoles, type RoleNeed, type SettlementDecl, type SettlementProgram } from "./settlementProgram";
 
 export type DesertKind = "oasis" | "bazaar" | "palace" | "pyramid" | "caravanserai";
@@ -32,7 +34,16 @@ export interface DesertPalette {
   kit(id: string): DesertKit | undefined;
   /** 칸 번호가 걸을 수 있는가(아래층·위층 공통 판정). */
   passable(tile: number): boolean;
+  /**
+   * 게임 열쇠로 읽는 사전인가. 참이면 구성기가 «게임마다 다르게» 재료를 쓴다: 새 종류(넓은 흙집·흙움막·통·게시판)를 섞고 방은 배치 둘 가운데 씨앗으로 고른다.
+   * 거짓(열쇠 없음 — 사람 편집·스크립트·옛 호출)이면 구성은 2026-11-13 이전과 한 칸도 다르지 않다.
+   */
+  readonly varied?: boolean;
 }
+/** 열쇠가 있을 때만 구성기가 스스로 고르는 새 종류(이름을 대고 부른 놓기 — 프로그램·stamp — 는 열쇠와 상관없이 된다). */
+const VARIED_ONLY: ReadonlySet<string> = new Set(["de-house-wide-5", "de-house-hut-2", "de-barrel", "de-barrels", "de-notice-board"]);
+/** 구성기가 스스로 고를 수 있는 키트인가. */
+const offers = (pal: DesertPalette, id: string): boolean => !!pal.kit(id) && (!!pal.varied || !VARIED_ONLY.has(id));
 
 export interface DesertCell { readonly x: number; readonly y: number }
 export interface DesertBuilding {
@@ -75,7 +86,7 @@ export const DESERT_KIND_LABEL: Readonly<Record<DesertKind, string>> = {
 };
 
 /** 채움 집·살림집 키트(가게·2층·돔처럼 역할이 생김새로 읽히는 키트는 뺀다 — 가게처럼 생긴 집은 언제나 가게다). */
-const PLAIN_HOUSES = ["de-house-adobe-4", "de-house-stone-4", "de-house-plaster-4", "de-house-windtower", "de-house-adobe-3"];
+const PLAIN_HOUSES = ["de-house-adobe-4", "de-house-stone-4", "de-house-plaster-4", "de-house-windtower", "de-house-adobe-3", "de-house-wide-5", "de-house-hut-2"];
 
 /**
  * 사막 번들의 목적표 선언 — 어느 키트가 어느 역할의 건물이고, 안으로 들어가면 어느 방(compose_desert_east_room 의 kind)인가.
@@ -128,7 +139,7 @@ const bazaarStreetY = (program: SettlementProgram): number => (program.roles.som
 const BUILDING_NAME: Readonly<Record<string, string>> = {
   "de-house-adobe-3": "흙집", "de-house-adobe-4": "흙집", "de-house-adobe-5": "큰 흙집", "de-house-stone-4": "사암 집", "de-house-plaster-4": "흰 집",
   "de-house-dome-4": "돔 집", "de-house-dome-white": "흰 돔 집", "de-house-2f": "2층 집", "de-house-shop": "가게", "de-house-windtower": "바람탑 집",
-  "de-domed-hall": "회당", "de-palace": "궁전", "de-tent-bedouin": "유목 천막", "de-tent-pavilion": "정자 천막", "de-pyramid-door": "피라미드 입구", "de-ziggurat": "지구라트",
+  "de-house-wide-5": "넓은 흙집", "de-house-hut-2": "흙움막", "de-domed-hall": "회당", "de-palace": "궁전", "de-tent-bedouin": "유목 천막", "de-tent-pavilion": "정자 천막", "de-pyramid-door": "피라미드 입구", "de-ziggurat": "지구라트",
 };
 
 /** 트인 모래에 흩어 둔 것(wildDesert·scatter) — 나가는 길이 지나면 걷어도 되는 소품. */
@@ -407,7 +418,7 @@ class Board {
   closeDeadAlleys(start: DesertCell): void {
     const mouths = deadAlleyMouths({ W: this.W, H: this.H, walk: (x, y) => this.walk(x, y), plain: (x, y) => this.use[this.k(x, y)] === "open" && !this.reserved[this.k(x, y)] }, start);
     for (const { x, y } of mouths) {
-      if (!ALLEY_BLOCKS.some((id) => this.pal.kit(id) && this.prop(id, x, y, 0))) this.notes.push(`막다른 골목 어귀 (${x},${y})를 막지 못했다`);
+      if (!ALLEY_BLOCKS.some((id) => offers(this.pal, id) && this.prop(id, x, y, 0))) this.notes.push(`막다른 골목 어귀 (${x},${y})를 막지 못했다`);
     }
   }
   reach(from: DesertCell): Set<number> {
@@ -426,21 +437,21 @@ class Board {
 }
 
 // ───────────────────────── 공통 조각 ─────────────────────────
-const HOUSES_3 = ["de-house-adobe-3", "de-house-dome-white"];
+const HOUSES_3 = ["de-house-adobe-3", "de-house-dome-white", "de-house-hut-2"];
 const HOUSES_4 = ["de-house-adobe-4", "de-house-stone-4", "de-house-plaster-4", "de-house-dome-4", "de-house-2f", "de-house-windtower", "de-house-shop"];
-const HOUSES_5 = ["de-house-adobe-5"];
+const HOUSES_5 = ["de-house-adobe-5", "de-house-wide-5"];
 const STALLS = ["de-stall-pottery", "de-stall-spice", "de-stall-carpet", "de-stall-fruit", "de-stall-lantern"];
 const PALMS = ["de-palm-date", "de-palm-young", "de-palm-pair"];
 const DESERT_BITS = ["de-scrub", "de-tuft", "de-tuft", "de-rock-small", "de-aloe"];
 /** 막다른 골목 어귀를 막는 한 칸 소품. */
-const ALLEY_BLOCKS = ["de-jar-big", "de-crate", "de-sacks", "de-basket-spice"];
+const ALLEY_BLOCKS = ["de-jar-big", "de-crate", "de-sacks", "de-basket-spice", "de-barrel"];
 
 /** 길(가로) 북쪽에 집 줄 — 집 아랫줄이 길 바로 위, 문 접근칸이 길. x0..x1 사이를 왼쪽부터 채운다. */
 function houseRow(b: Board, rng: () => number, x0: number, x1: number, roadY: number, pool: readonly string[], gapMin = 1, allow: readonly Use[] = ["open", "field"], jitter = true): DesertBuilding[] {
   const out: DesertBuilding[] = [];
   let x = x0;
   while (x < x1) {
-    const choices = pool.filter((id) => b.pal.kit(id) && x + b.kitSize(id).w <= x1);
+    const choices = pool.filter((id) => offers(b.pal, id) && x + b.kitSize(id).w <= x1);
     if (!choices.length) break;
     const id = pick(rng, choices);
     const { w, h } = b.kitSize(id);
@@ -470,7 +481,7 @@ function programRow(b: Board, rng: () => number, spans: readonly { x0: number; x
       const sp = spans[i]!;
       const at = (id: string): Rect => { const { w, h } = b.kitSize(id); return { x: sp.inner === "left" ? cur[i]! : cur[i]! - w, y: roadY - 1 - h, w, h }; };
       const fits = (id: string): boolean => { if (!b.pal.kit(id)) return false; const r = at(id); return r.x >= sp.x0 && r.x + r.w <= sp.x1 && r.y >= 1 && b.free(r, 0, allow); };
-      const got = budget.next(fits, PLAIN_HOUSES, (kits) => pick(rng, kits));
+      const got = budget.next(fits, PLAIN_HOUSES.filter((id) => offers(b.pal, id)), (kits) => pick(rng, kits));
       if (!got) {
         cur[i]! += sp.inner === "left" ? 1 : -1;
         if (sp.inner === "left" ? cur[i]! > sp.x1 - 3 : cur[i]! < sp.x0 + 3) live[i] = false;
@@ -500,7 +511,7 @@ function toExits(b: Board, r: { x0: number; x1: number }): { x0: number; x1: num
 function doorDressing(b: Board, rng: () => number, houses: readonly DesertBuilding[], roadY: number): void {
   for (const h of houses) {
     if (rng() < 0.45) continue;
-    const id = pick(rng, ["de-jar-big", "de-jars-group", "de-sacks", "de-crate", "de-basket-spice"]);
+    const id = pick(rng, ["de-jar-big", "de-jars-group", "de-sacks", "de-crate", "de-basket-spice", "de-barrel", "de-barrels"].filter((k) => offers(b.pal, k)));
     const side = rng() < 0.5 ? h.rect.x - 1 : h.rect.x + h.rect.w;
     b.prop(id, side, roadY - 1, 0, ["open"]);
   }
@@ -689,6 +700,7 @@ function composeOasis(b: Board, rng: () => number): DesertCell {
     b.prop("de-well", wx, wy, 0, ["plaza"]);
     b.prop("de-bench-stone", wx - 3, wy + 1, 0, ["plaza"]); b.prop("de-bench-stone", wx + 3, wy + 1, 0, ["plaza"]);
     b.prop("de-jars-rack", wx + 3, wy - 1, 0, ["plaza"]) || b.prop("de-jars-rack", wx - 3, wy - 1, 0, ["plaza"]);
+    if (b.pal.varied) b.prop("de-notice-board", plaza.x, plaza.y, 0, ["plaza"]) || b.prop("de-notice-board", plaza.x + plaza.w - 2, plaza.y, 0, ["plaza"]);
   }
   // 큰길 북쪽 집 줄(광장·못 풀 띠를 피한다)
   const north = [...houseRow(b, rng, 3, plaza.x - 1, mainY, [...HOUSES_4, ...HOUSES_3]), ...houseRow(b, rng, plaza.x + plaza.w + 1, W - 3, mainY, [...HOUSES_4, ...HOUSES_3])];
@@ -749,6 +761,7 @@ function composeBazaar(b: Board, rng: () => number): DesertCell {
   b.prop("de-fountain", px + 4, sy - 3, 0, ["plaza"]);
   b.prop("de-bench-stone", px, sy - 2, 0, ["plaza"]);
   b.prop("de-bench-stone", px + 9, sy - 2, 0, ["plaza"]);
+  if (b.pal.varied) b.prop("de-notice-board", px, sy - 5, 0, ["plaza"]) || b.prop("de-notice-board", px + 9, sy - 5, 0, ["plaza"]);
   // 큰길 북쪽: 노점·가게 줄(광장 양옆)
   const rowN = (x0: number, x1: number) => {
     let x = x0;
@@ -781,6 +794,7 @@ function composeBazaar(b: Board, rng: () => number): DesertCell {
   b.ground({ x: 1, y: my - 1, w: W - 2, h: mh + 1 }, "r", "open");
   b.zone("바닥 장터", "깔개 좌판·그늘막·염색 건조대(두 줄 격자)", { x: 1, y: my, w: W - 2, h: mh });
   // 적대 검수(2026-10-14): 깔개 위 항아리처럼 떠 보이는 묶음을 뺐다. 앞줄 = 노점(통로 my+2 를 향해), 뒷줄 = 장인 묶음(같은 묶음이 이웃하지 않게).
+  const BARREL_MOD: readonly [string, number, number][] = [["de-barrels", 0, 1], ["de-crate", 2, 1]];
   const MODS_B: readonly (readonly [string, number, number][])[] = [
     [["de-parasol-reed", 0, 0], ["de-sacks", 2, 1]],
     [["de-carpet-rack", 0, 0]],
@@ -789,6 +803,7 @@ function composeBazaar(b: Board, rng: () => number): DesertCell {
     [["de-jars-rack", 0, 1], ["de-sacks", 2, 1]],
     [["de-crates-stack", 0, 0], ["de-handcart", 2, 1]],
     [["de-incense-burner", 0, 1], ["de-basket-spice", 1, 1]],
+    ...(b.pal.varied ? [BARREL_MOD] : []),
   ];
   const skipEntry = (x: number) => x <= entryX + 2 && x + 3 >= entryX;
   {
@@ -1211,23 +1226,74 @@ export function composeDesertEast(spec: DesertSpec, pal: DesertPalette): DesertR
   throw new Error(`배치를 짜지 못했다 — ${last}`);
 }
 
-/** 번들 정의(+ 구성기 사전 desertEastPieces.json)로 사전을 만든다. */
+/** 구성기 사전(desertEastPieces.json)의 꼴. looks = 게임마다 고르는 바닥·길·광장 재질(굽기가 재질 칸만 그림에서 받고 가장자리 왕 타일은 코드로 만든다). */
+export interface DesertPieces {
+  readonly tiles: Readonly<Record<string, number>>;
+  readonly wang: Readonly<Record<string, readonly number[]>>;
+  readonly looks?: {
+    /** 갈래(ground·road·plaza)마다 고를 수 있는 재질 이름 — 맨 앞의 "" 는 원래 그림. */
+    readonly parts: Readonly<Record<string, readonly string[]>>;
+    /** 같이 고르지 않는 짝: 바닥 재질 → 그 바닥에서는 원래 그림으로 두는 길·광장 재질(색이 같아 경계가 안 보인다). */
+    readonly clash?: Readonly<Record<string, readonly string[]>>;
+    /** 재질 이름 → 한 칸 바닥 조각 id → 칸. */
+    readonly tiles: Readonly<Record<string, Readonly<Record<string, number>>>>;
+    /** 왕 타일 벌 → 재질 이름 묶음("red+cobble") → 16칸. */
+    readonly wang: Readonly<Record<string, Readonly<Record<string, readonly number[]>>>>;
+  };
+}
+/** 이 게임이 고른 사막 겉모습(재질 이름, 없으면 원래 그림). */
+export interface DesertLook { readonly ground?: string; readonly road?: string; readonly plaza?: string }
+const LOOK_PARTS = ["ground", "road", "plaza"] as const;
+/** 왕 타일 벌마다 그 그림에 든 재질 갈래. */
+const WANG_LOOK_PARTS: Readonly<Record<string, readonly (typeof LOOK_PARTS)[number][]>> = { road: ["ground", "road"], grass: ["ground"], dune: ["ground"], flag: ["ground", "plaza"] };
+
+/** 게임 열쇠로 고른 사막 겉모습 — 갈래마다 따로 고른다. 열쇠가 없으면(사람 편집·스크립트) 빈 값 = 원래 그림. */
+export function desertLookFor(pieces: DesertPieces, key: string | undefined): DesertLook {
+  const out: { ground?: string; road?: string; plaza?: string } = {};
+  if (!key || !pieces.looks) return out;
+  for (const part of LOOK_PARTS) {
+    const options = pieces.looks.parts[part] ?? [""];
+    const pick = options[lookHash(`look|${key}|desert_east|${part}`) % options.length];
+    if (pick) out[part] = pick;
+  }
+  const clash = (out.ground && pieces.looks.clash?.[out.ground]) || [];
+  if (out.road && clash.includes(out.road)) delete out.road;
+  if (out.plaza && clash.includes(out.plaza)) delete out.plaza;
+  return out;
+}
+
+/**
+ * 번들 정의(+ 구성기 사전 desertEastPieces.json)로 사전을 만든다.
+ * key = 게임 열쇠(조수 실행의 도구 구간에서만 켜진다 — project/kitLook.ts). 열쇠가 있으면 그 게임의 겉모습으로 읽는다:
+ * 키트는 같은 종류의 다른 그림(ai.variantOf — 칸 크기·통행이 원본과 같다), 바닥·길·광장은 그 게임의 재질 칸. 열쇠가 없으면 지금까지와 똑같은 칸이다.
+ */
 export function desertPaletteFromTileset(def: {
   readonly passability: readonly { readonly up: boolean }[];
   readonly structureKits?: readonly unknown[];
-}, pieces: { readonly tiles: Readonly<Record<string, number>>; readonly wang: Readonly<Record<string, readonly number[]>> }): DesertPalette {
+}, pieces: DesertPieces, key: string | undefined = activeKitLook()): DesertPalette {
   const kits = new Map<string, DesertKit>();
-  for (const raw of def.structureKits ?? []) {
-    const k = raw as { id: string; width: number; height: number; rows: DesertKit["rows"]; parts?: { kind: string; dx: number; w: number }[] };
-    if (!k?.id || !Array.isArray(k.rows)) continue;
+  const toKit = (k: { id: string; width: number; height: number; rows: DesertKit["rows"]; parts?: { kind: string; dx: number; w: number }[] }): DesertKit => {
     const part = k.parts?.find((p) => p.kind === "entrance");
-    kits.set(k.id, { id: k.id, width: k.width, height: k.height, rows: k.rows, door: part ? { dx: part.dx, w: part.w } : undefined });
+    return { id: k.id, width: k.width, height: k.height, rows: k.rows, door: part ? { dx: part.dx, w: part.w } : undefined };
+  };
+  const tileset = { structureKits: (def.structureKits ?? []) as StructureKitDef[] };
+  for (const raw of tileset.structureKits) {
+    if (!raw?.id || !Array.isArray(raw.rows)) continue;
+    // 그 게임의 그림: 원본 id 로 물으면 변형 가운데 하나(문 자리는 원본 것 — 변형은 원본 자리에 그대로 들어간다)
+    const shown = key ? lookKit(tileset, raw, key) : raw;
+    kits.set(raw.id, shown === raw ? toKit(raw as never) : { ...toKit(raw as never), rows: shown.rows as DesertKit["rows"] });
   }
+  const look = desertLookFor(pieces, key);
+  const lookTiles = [look.ground, look.road, look.plaza].map((name) => (name ? pieces.looks?.tiles[name] : undefined));
   return {
-    tile: (piece) => pieces.tiles[piece] ?? -1,
-    wang: (set, idx) => pieces.wang[set]?.[idx] ?? -1,
+    tile: (piece) => { for (const table of lookTiles) { const t = table?.[piece]; if (t !== undefined) return t; } return pieces.tiles[piece] ?? -1; },
+    wang: (set, idx) => {
+      const name = (WANG_LOOK_PARTS[set] ?? []).map((part) => look[part]).filter(Boolean).join("+");
+      return (name ? pieces.looks?.wang[set]?.[name]?.[idx] : undefined) ?? pieces.wang[set]?.[idx] ?? -1;
+    },
     kit: (id) => kits.get(id),
     passable: (t) => !!def.passability[t]?.up,
+    varied: !!key,
   };
 }
 
@@ -1290,21 +1356,46 @@ class Room {
       if (inside) { if (u !== "floor" && !(allowAisle && u === "aisle")) return false; }
       else if (u === "prop") return false;
     }
+    const before: [number, number, number, RUse][] = [];
     kit.rows.forEach((row, j) => row.tiles.forEach((lo, i) => {
       const k = this.k(x + i, y + j), up = row.upperTiles?.[i] ?? -1;
+      before.push([k, this.lower[k]!, this.upper[k]!, this.use[k]!]);
       if (lo >= 0) this.lower[k] = lo;
       if (up >= 0) this.upper[k] = up;
       this.use[k] = "prop";
     }));
     this.props.push({ kit: id, x, y });
+    this.placed.push({ index: this.props.length - 1, before });
     return true;
+  }
+  /** put 으로 놓은 가구의 칸 기록(걷어 낼 때 그 칸을 되돌린다). */
+  readonly placed: { index: number; before: [number, number, number, RUse][] }[] = [];
+  /**
+   * 문에서 닿지 않는 바닥이 남으면 그 바닥에 붙은 가구를 하나씩 걷는다(나중에 놓은 것부터, 최대 6개) — 큰 방에서 가구 줄이 구석을 막던 판(찻집 16×12)을 버리지 않고 살린다.
+   * 돌려주는 값 = 남은 닿지 않는 바닥.
+   */
+  openCuts(start: DesertCell): string[] {
+    for (let n = 0; n < 6; n++) {
+      const cut = roomCut(this, start);
+      if (!cut.length) return cut;
+      const cells = new Set(cut.map((c) => { const [x, y] = c.slice(1, -1).split(",").map(Number); return this.k(x!, y!); }));
+      const touches = (rec: { before: [number, number, number, RUse][] }) => rec.before.some(([k]) => [k - 1, k + 1, k - this.W, k + this.W].some((q) => cells.has(q)));
+      const at = [...this.placed].reverse().find(touches);
+      if (!at) return cut;
+      for (const [k, lo, up, use] of at.before) { this.lower[k] = lo; this.upper[k] = up; this.use[k] = use; }
+      this.props.splice(at.index, 1);
+      this.placed.splice(this.placed.indexOf(at), 1);
+      for (const rec of this.placed) if (rec.index > at.index) rec.index -= 1;
+    }
+    return roomCut(this, start);
   }
   /** put 하되, 그 때문에 문에서 닿지 않는 바닥이 생기면 되돌린다. */
   putSafe(id: string, x: number, y: number, door: DesertCell): boolean {
     const lo = this.lower.slice(), up = this.upper.slice(), us = this.use.slice(), n = this.props.length;
+    const m = this.placed.length;
     if (!this.put(id, x, y)) return false;
     if (!roomCut(this, door).length) return true;
-    this.lower.splice(0, lo.length, ...lo); this.upper.splice(0, up.length, ...up); this.use.splice(0, us.length, ...us); this.props.length = n;
+    this.lower.splice(0, lo.length, ...lo); this.upper.splice(0, up.length, ...up); this.use.splice(0, us.length, ...us); this.props.length = n; this.placed.length = m;
     return false;
   }
   /** 벽걸이(등)는 벽 아랫줄 칸 위층에 겹친다. */
@@ -1395,6 +1486,9 @@ function furnish(r: Room, kind: DesertRoomKind, room: Rect, rng: () => number, c
       if (xx !== undefined) r.hang(id, xx, 2);
     }
   };
+  // 방마다 배치 둘(씨앗으로 고른다) — 재고(2026-11-13): 같은 종류의 방은 씨앗이 달라도 가구가 100% 같았다. 둘째 배치는 같은 가구를 다른 자리에(벽 앞 줄을 반대쪽으로·가운데 무리를 옮김) 놓고
+  // 새 그림(통·문 쪽 소품)을 섞는다. 둘 다 문 → 방 가운데 통로는 비우고 모든 빈 바닥이 문에서 닿아야 한다(composeDesertRoom 이 다시 확인한다).
+  if (r.pal.varied && rng() < 0.5 && furnishAlt(r, kind, room, rng, wallRow, lanterns)) return;
   switch (kind) {
     case "teahouse": {
       wallRow(["de-divan", "de-divan"], x0, cx - 2);
@@ -1502,6 +1596,93 @@ function furnish(r: Room, kind: DesertRoomKind, room: Rect, rng: () => number, c
   }
 }
 
+/** 방의 둘째 배치. 그 방 종류에 둘째 배치가 없으면 false(첫 배치로 짠다). */
+function furnishAlt(r: Room, kind: DesertRoomKind, room: Rect, rng: () => number, wallRow: (ids: readonly string[], from: number, to: number, gap?: number) => void, lanterns: (every: number, id?: string) => void): boolean {
+  const x0 = room.x, x1 = room.x + room.w - 1, y0 = room.y, y1 = room.y + room.h - 1;
+  const cx = Math.floor((x0 + x1) / 2);
+  const door = { x: Math.floor(r.W / 2), y: r.H - 2 };
+  switch (kind) {
+    case "teahouse": {
+      // 찻대는 왼쪽 벽 앞, 디완 줄은 오른쪽 · 양탄자 무리는 왼쪽 아래 · 오른쪽 아래 구석에 통과 항아리
+      r.put("de-tea-counter", x0, y0) || r.put("de-tea-counter", x0 + 1, y0);
+      r.put("de-jar-tall", x0 + 3, y0); r.put("de-hookah", x0 + 4, y0);
+      wallRow(["de-divan", "de-divan"], cx + 1, x1);
+      r.put("de-tea-table", x1 - 2, y0 + 1); r.put("de-cushion", x1, y0 + 1);
+      const rx = x0, ry = y1 - 2;
+      if (r.put("de-rug-medallion", rx, ry, 0)) { overlay(r, "de-tea-table", rx, ry); overlay(r, "de-cushion", rx + 2, ry); overlay(r, "de-cushion", rx + 1, ry + 1); }
+      r.putSafe("de-tea-table", x1 - 3, y0 + 3, door) && (r.putSafe("de-cushion", x1 - 1, y0 + 3, door), r.putSafe("de-cushion", x1 - 3, y0 + 4, door));
+      r.putSafe("de-barrel", x1, y1, door) || r.putSafe("de-jar-tall", x1, y1, door);
+      r.putSafe("de-jar-tall", x1 - 1, y1, door);
+      lanterns(4);
+      return true;
+    }
+    case "shop": {
+      // 선반은 오른쪽부터, 계산대는 왼쪽 앞 · 통 줄과 자루는 오른쪽 아래
+      let x = x1 - 1;
+      for (let n = 0; n < 3 && x >= x0 + 3; n++) { while (x >= x0 + 3 && !r.put("de-shelf-pottery", x, y0)) x--; x -= 3; }
+      r.put("de-carpet-stack", x0, y0) || r.put("de-carpet-stack", x0 + 1, y0);
+      let placed = false;
+      for (const yy of [y0 + 3, y0 + 2]) for (let xx = x0; xx <= cx - 3 && !placed; xx++) if (r.putSafe("de-shop-counter", xx, yy, door)) { placed = true; r.putSafe("de-chest-brass", xx, yy + 1, door); }
+      r.putSafe("de-barrels", x1 - 1, y1, door) || r.putSafe("de-jar-tall", x1, y1, door);
+      for (const [dx, dy] of [[0, 0], [-1, 0], [0, -1]] as const) r.putSafe("de-sacks-spice", x1 + dx, y1 - 1 + dy, door);
+      r.putSafe("de-basket-spice", x0, y1, door); r.putSafe("de-jar-tall", x0 + 1, y1, door);
+      lanterns(5);
+      return true;
+    }
+    case "palace_hall": {
+      // 옥좌 둘레에 화로대 넷 · 기둥 대신 양탄자 길 양옆에 화로대·사자 석상 줄 · 긴 의자는 아래쪽 벽 옆
+      r.put("de-throne", cx, y0) || r.put("de-throne", cx - 1, y0);
+      r.put("de-brazier-stand", cx - 2, y0); r.put("de-brazier-stand", cx + 3, y0);
+      r.put("de-vase-tall", cx - 3, y0); r.put("de-vase-tall", cx + 4, y0);
+      wallRow(["de-divan-royal"], x0, x0 + 3); wallRow(["de-divan-royal"], x1 - 3, x1);
+      for (let y = y0 + 3; y + 1 <= y1 - 1; y += 3) { r.putSafe("de-guardian-statue", cx - 3, y, door); r.putSafe("de-guardian-statue", cx + 4, y, door); }
+      for (let y = y0 + 4; y + 1 <= y1; y += 4) { r.putSafe("de-column-palace", x0 + 1, y, door); r.putSafe("de-column-palace", x1 - 1, y, door); }
+      if (r.pal.tile("de-rug-runner") >= 0) for (let y = y1; y >= y0 + 2; y--) {
+        const u = r.u(cx, y);
+        if (u !== "aisle" && u !== "floor") break;
+        r.lower[r.k(cx, y)] = r.t("de-rug-runner");
+        if (r.u(cx + 1, y) === "aisle" || r.u(cx + 1, y) === "floor") r.lower[r.k(cx + 1, y)] = r.t("de-rug-runner");
+      }
+      return true;
+    }
+    case "tomb": {
+      // 석관 둘을 나란히 · 수호 석상은 석관 양옆 · 보물은 묘실 아래 구석
+      r.put("de-sarcophagus", cx - 3, y0 + 2) ; r.put("de-sarcophagus", cx + 2, y0 + 2);
+      r.put("de-guardian-statue", cx - 4, y0 + 1); r.put("de-guardian-statue", cx + 4, y0 + 1);
+      r.put("de-offering-table", cx, y0) || r.put("de-offering-table", cx - 1, y0);
+      r.put("de-canopic-jars", x0, y0); r.put("de-canopic-jars", x1, y0);
+      r.put("de-torch-stand", x0 + 1, y0 + 4); r.put("de-torch-stand", x1 - 1, y0 + 4);
+      for (const [x, y] of [[x0, y1], [x0 + 1, y1], [x1, y1], [x1 - 1, y1], [x0, y1 - 1], [x1, y1 - 1]] as const) r.putSafe(pick(rng, ["de-treasure-chest", "de-jar-tall", "de-canopic-jars"]), x, y, door);
+      for (let y = y0 + 2; y <= y1 - 3; y += 3) { r.putSafe("de-vase-tall", x0, y, door); r.putSafe("de-jar-tall", x1, y, door); }
+      r.put("de-sand-pile", cx - 1, y1); r.put("de-sand-pile", x0 + 2, y0 + 1);
+      return true;
+    }
+    case "hammam": {
+      // 탕은 북쪽 벽 앞 가운데, 대야는 양옆 벽 · 걸상은 아래 줄
+      r.put("de-plunge-pool", cx - 1, y0, 1);
+      for (let y = y0 + 1; y <= y1 - 1; y += 3) { r.putSafe("de-basin-tap", x0, y, door); r.putSafe("de-basin-tap", x1, y, door); }
+      for (let x = x0 + 2; x <= x1 - 3; x += 3) if (Math.abs(x - cx) > 1 && Math.abs(x + 1 - cx) > 1) r.putSafe("de-marble-bench", x, y1, door);
+      r.putSafe("de-towel-rack", x0 + 1, y0, door); r.putSafe("de-towel-rack", x1 - 1, y0, door);
+      r.putSafe("de-vase-tall", x0, y1, door); r.putSafe("de-vase-tall", x1, y1, door);
+      r.putSafe("de-column-palace", cx - 4, y0 + 3, door); r.putSafe("de-column-palace", cx + 4, y0 + 3, door);
+      return true;
+    }
+    case "inn": {
+      // 침상을 두 줄(북쪽 벽 앞·아래 줄) · 화덕은 오른쪽 위 · 통·선반은 왼쪽
+      let n = 0;
+      for (let x = x0 + 2; x <= x1 - 2 && n < 3; x += 2) { if (Math.abs(x - cx) <= 1) continue; if (r.put("de-bed-mat", x, y0)) n++; }
+      r.put("de-tannur-oven", x1, y0); r.put("de-jar-tall", x1 - 1, y0);
+      r.put("de-shelf-inn", x0, y0); r.put("de-barrel", x0 + 1, y0) || r.put("de-jar-tall", x0 + 1, y0);
+      for (let x = x0; x <= x1 && n < 5; x += 3) { if (Math.abs(x - cx) <= 2) continue; if (r.putSafe("de-bed-mat", x, y1 - 1, door)) { n++; r.putSafe("de-chest-brass", x + 1, y1, door); } }
+      r.putSafe("de-divan", cx - 3, y0 + 3, door) && r.putSafe("de-tea-table", cx - 3, y0 + 4, door);
+      lanterns(4);
+      return true;
+    }
+  }
+  void rng;
+  return false;
+}
+
 /** 문 안쪽 칸에서 닿지 않는 빈 바닥 칸 목록. */
 function roomCut(r: Room, start: DesertCell): string[] {
   const seen = new Set<number>([r.k(start.x, start.y)]); const q = [start];
@@ -1528,7 +1709,8 @@ export function composeDesertRoom(spec: DesertRoomSpec, pal: DesertPalette): Des
   if (spec.width < min.w || spec.height < min.h) throw new Error(`${DESERT_ROOM_LABEL[spec.kind]} 는 ${min.w}×${min.h} 이상이어야 한다`);
   if (spec.width > DESERT_ROOM_MAX.w || spec.height > DESERT_ROOM_MAX.h) throw new Error(`방은 ${DESERT_ROOM_MAX.w}×${DESERT_ROOM_MAX.h} 이하로 — 큰 방은 빈 바닥이 남는다`);
   let last = "";
-  for (let attempt = 0; attempt < 6; attempt++) {
+  // 두 바퀴: 먼저 예전처럼 씨앗만 바꿔 여섯 번(예전에 짜이던 방은 결과가 그대로다), 그래도 안 되면 막는 가구를 걷어 내며 다시 여섯 번(찻집 16×12 이상처럼 늘 막히던 크기).
+  for (const rescue of [false, true]) for (let attempt = 0; attempt < 6; attempt++) {
     const seed = (spec.seed ?? 0) * 7919 + attempt * 104729 + 29;
     const rng = mulberry(seed);
     const r = new Room(spec.width, spec.height, pal, seed);
@@ -1537,8 +1719,8 @@ export function composeDesertRoom(spec: DesertRoomSpec, pal: DesertPalette): Des
     furnish(r, spec.kind, room, rng, corridor);
     // 모든 빈 바닥이 문에서 닿는가
     const start = { x: doors[0]!.x, y: doors[0]!.y - 1 };
-    const cut = roomCut(r, start);
-    if (!cut.length) return { lower: r.lower, upper: r.upper, doors, start, props: r.props, notes: attempt ? [`씨앗 ${attempt}번 다시`] : [] };
+    const cut = rescue ? r.openCuts(start) : roomCut(r, start);
+    if (!cut.length) return { lower: r.lower, upper: r.upper, doors, start, props: r.props, notes: [...(attempt ? [`씨앗 ${attempt}번 다시`] : []), ...(rescue ? ["길을 막던 가구를 걷어 냈다"] : [])] };
     last = `문에서 닿지 않는 바닥 ${cut.slice(0, 4).join(" ")}`;
   }
   throw new Error(`방을 짜지 못했다 — ${last}`);

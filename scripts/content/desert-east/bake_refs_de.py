@@ -355,6 +355,151 @@ def objects_refs():
     return docs, imgs
 
 
+# ───────────────────────── 다른 그림·새 기물·겉모습 재질(de-variety) ─────────────────────────
+VAR_SPEC = os.path.join(ROOT, 'tiledata/desert-east/variety/spec.json')
+VAR_SCENE = [('de-notice-board', 1, 4), ('de-barrels', 4, 5), ('de-barrel', 7, 5), ('de-stop-lever', 9, 4), ('de-save-crystal', 11, 4), ('de-hatch-down', 13, 4),
+             ('de-room-door', 8, 0)]     # (키트, 왼쪽 위 x, y) — 16×8: 윗 두 줄은 실내 벽면(방 문), 아래는 모래
+
+
+def variety_scene(spec):
+    W, H = 16, 8
+    sand = [PIECES['tiles'][n] for n in ('de-sand', 'de-sand-b', 'de-sand-c', 'de-sand-d')]
+    d = dict(width=W, height=H, lower=[sand[(x * 7 + y * 13) % 4] for y in range(H) for x in range(W)], upper=[-1] * (W * H))
+    wall = KIT['de-wall-plaster']
+    for x in range(W):
+        for r in range(2): d['lower'][r * W + x] = wall['rows'][r]['tiles'][0]
+    have = {it['id'] for it in spec['items']}
+    scene = [(k, x, y) for k, x, y in VAR_SCENE if k in have and k in KIT]
+    for kid, x, y in scene: stamp(d, kid, x, y)
+    return d, scene
+
+
+def variety_check(d, spec, scene):
+    W = d['width']; by = {it['id']: it for it in spec['items']}; errs = []
+    for kid, ox, oy in scene:
+        it = by[kid]; k = KIT[kid]; block = {tuple(c) for c in it['block']}
+        for r, row in enumerate(k['rows']):
+            for c, t in enumerate(row['upperTiles']):
+                if t < 0: continue
+                i = (oy + r) * W + ox + c
+                if d['upper'][i] != t: errs.append(('E_OBJ_LAYER' if d['lower'][i] == t else 'E_OBJ_INCOMPLETE', kid, ox + c, oy + r)); continue
+                if passable(t) == ((c, r) in block): errs.append(('E_OBJ_PASSAGE', kid, ox + c, oy + r))
+                if it['place'] in ('wallmount', 'walldoor') and passable(d['lower'][i]): errs.append(('E_OBJ_OFF_WALL', kid, ox + c, oy + r))
+    return errs
+
+
+def variety_sheets(spec):
+    """그림 둘: 원본 옆에 변형(variety-variants.png) · 겉모습 재질 견본(variety-looks.png — 재질마다 모래/길/광장 가장자리 왕 타일 4×4)."""
+    bases = {}
+    for it in spec['items']:
+        if it.get('variantOf') and it['id'] in KIT: bases.setdefault(it['variantOf'], []).append(it['id'])
+    S, pad, Wd = 2, 8, 1400
+    x = y = pad; rowh = 0; place = []
+    for b, vs in bases.items():
+        ims = [BL.reassemble(KIT[k], SHEET, TPR) for k in [b] + vs]
+        w = sum(im.width * S + 4 for im in ims) + 6; h = max(im.height for im in ims) * S + 14
+        if x + w + pad > Wd: x, y, rowh = pad, y + rowh + pad, 0
+        place.append((x, y, b, ims)); x += w + pad; rowh = max(rowh, h)
+    sheet = Image.new('RGBA', (Wd, y + rowh + pad), (214, 184, 132, 255)); dr = ImageDraw.Draw(sheet)
+    for x0, y0, b, ims in place:
+        dr.text((x0, y0), b.replace('de-', ''), fill=(40, 24, 16, 255), font=FONT)
+        xx = x0; hh = max(im.height for im in ims) * S
+        for n, im in enumerate(ims):
+            sheet.alpha_composite(im.resize((im.width * S, im.height * S), Image.NEAREST), (xx, y0 + 14 + hh - im.height * S)); xx += im.width * S + 4
+            if n == 0: dr.line([(xx, y0 + 14), (xx, y0 + 14 + hh)], fill=(120, 90, 50, 255)); xx += 4
+    sheet.save(os.path.join(IMG, 'variety-variants.png'), optimize=True)
+    looks = PIECES.get('looks') or {}
+    rows = [(sid, name, tiles) for sid, sets in (looks.get('wang') or {}).items() for name, tiles in sets.items()]
+    Z = 2; per = 6
+    im = Image.new('RGBA', (per * (64 * Z + 10) + 6, (len(rows) + per - 1) // per * (64 * Z + 20) + 6), (40, 36, 44, 255)); dr = ImageDraw.Draw(im)
+    for n, (sid, name, tiles) in enumerate(rows):
+        ox, oy = 6 + (n % per) * (64 * Z + 10), 4 + (n // per) * (64 * Z + 20)
+        dr.text((ox, oy), f'{sid} · {name}', fill=(255, 255, 255, 255), font=FONT)
+        for i, t in enumerate(tiles): im.alpha_composite(RS.tile(t).resize((16 * Z, 16 * Z), Image.NEAREST), (ox + (i % 4) * 16 * Z, oy + 14 + (i // 4) * 16 * Z))
+    im.save(os.path.join(IMG, 'variety-looks.png'), optimize=True)
+    return bases
+
+
+def variety_md(spec, d, scene, tamper_rows, bases):
+    by = {it['id']: it for it in spec['items']}
+    looks = PIECES.get('looks') or {}
+    L = [f"# desert_east · 같은 종류의 다른 그림 · 새 집 · 새 기물 · 게임마다 고르는 바닥 재질\n\n{HEAD}\n",
+         f"같은 사막 칩셋으로 지은 게임들이 서로 달라 보이게 2026-11-13 에 더한 그림이다. **모두 3/4 관문 미통과 — 오너 면제 그림**(면제 묶음 {spec['waiver']}, Claude Fable 5.2 한 방 그림과 그 코드 조립) — 관문 영수증이 없고 스토어로는 나가지 않는다. "
+         "정의 `tiledata/desert-east/variety/spec.json`, 그림 `variety/pieces/`, 굽기는 다른 조각과 같은 `bake_de.py`.\n",
+         "## 1. 사전\n\n### 1-1. 변형 키트(같은 종류의 다른 그림)\n\n변형은 원본 키트와 **칸 크기·채운 칸·칸마다 통행·층·문 칸이 같다**(킷 `ai.variantOf` = 원본 id). 원본 자리에 그대로 갈아 끼울 수 있다. 칸 번호 전체 배열은 «사전» 문서의 키트 절에 있다(같은 id).\n",
+         "| 원본 키트 | 크기 | 변형 키트 |\n|---|---|---|"]
+    for b, vs in bases.items(): L.append(f"| `{b}` {KIT[b]['name']} | {KIT[b]['width']}×{KIT[b]['height']} | {' · '.join('`%s`' % v for v in vs)} |")
+    L.append("\n### 1-2. 새 집(평지붕 직각 지붕 + 남쪽 앞벽)\n\n| 키트 id | 이름 | 크기 | 문 칸 x(맨 아랫줄, 막힘) | 접근칸 |\n|---|---|---|---|---|")
+    for it in spec['items']:
+        if it['type'] == 'house' and not it.get('variantOf') and it['id'] in KIT: L.append(f"| `{it['id']}` | {it['name']} | {it['w']}×{it['h']} | {', '.join(map(str, it['entrance']))} | 문 바로 아래 줄(걸을 수 있는 길·마당) |")
+    L.append("\n### 1-3. 새 기물\n\n모든 칸은 **위층(upperTiles)**. 서 있는 기물: 막힌 칸은 네 방향 막힘, 나머지 칸은 ★(사람 위에 그려지고 걷는다). 바닥 그림(decal): 사람 아래·걷는다. 벽면 기물(wallmount·door): 실내 벽면 칸(벽 두 줄) 위층에만.\n")
+    L.append("| 키트 id | 무엇 | 크기 | 위층 칸 번호(위 줄 / 아래 줄) | 놓는 방식 | 막힌 칸 (dx,dy) | 찾는 낱말(키트 태그) |\n|---|---|---|---|---|---|---|")
+    how = dict(prop='서 있는 기물', tall='서 있는 기물', decal='바닥 그림(밟고 지나감)', wallmount='벽면에 건다', walldoor='벽면의 문')
+    for it in spec['items']:
+        if it['type'] != 'object' or it['id'] not in KIT: continue
+        k = KIT[it['id']]
+        L.append(f"| `{it['id']}` | {it['name']} | {it['w']}×{it['h']} | {' / '.join(' '.join(map(str, r['upperTiles'])) for r in k['rows'])} | {how[it['place']]} | {' '.join('(%d,%d)' % tuple(c) for c in it['block']) or '—'} | {', '.join(it['words'])} |")
+    L.append("\n### 1-4. 겉모습 재질(게임마다 고르는 바닥·길·광장)\n\n갈래 셋(ground 모래 · road 길 · plaza 광장)마다 재질 이름 하나를 고른다(\"\" = 원래 그림). 한 칸 바닥은 원래 조각 id 자리에 그 재질의 칸을, 모서리 왕 타일은 그 재질 묶음의 16칸을 쓴다 — 번호 규칙(NW1+NE2+SW4+SE8)·통행은 원래 벌과 같다. 가장자리 꼴은 원래 왕 타일과 같은 코드가 만들었다(재질 화소만 새 그림).\n")
+    L.append("| 갈래 | 고를 수 있는 재질 |\n|---|---|")
+    for part, names in (looks.get('parts') or {}).items(): L.append(f"| {part} | {' · '.join('`%s`' % (n or '(원래)') for n in names)} |")
+    L.append("\n| 재질 | 원래 조각 id → 칸 번호 |\n|---|---|")
+    for name, m in (looks.get('tiles') or {}).items(): L.append(f"| `{name}` | {' · '.join('%s→%d' % kv for kv in m.items())} |")
+    L.append("\n| 벌 | 재질 묶음(ground+road / ground+plaza) | 칸 번호 0..15 |\n|---|---|---|")
+    for sid, sets in (looks.get('wang') or {}).items():
+        for name, tiles in sets.items(): L.append(f"| `{sid}` | `{name}` | `{arr(tiles)}` |")
+    L.append("\n## 2. 실행 순서\n\n1. **구성 도구가 고른다**: `compose_desert_east_map`·`compose_desert_east_room` 은 조수 실행(게임 열쇠)이면 원본 id 로 놓는 자리마다 그 게임의 그림(원본 또는 변형 하나)을, 땅에는 그 게임의 재질을 깐다. 한 게임은 어느 맵에서나 같은 그림·같은 재질이다. 열쇠가 없으면(사람 편집) 원래 그림만.\n"
+             "2. **손으로 놓을 때**: `stamp_tileset_object`·`place_object` 에 원본 id 를 주면 같은 규칙으로 그 게임의 그림이 놓인다. 변형 id 를 직접 주면 그 그림 그대로. 놓는 자리 규칙은 원본과 같다(키트 `placementRules`).\n"
+             "3. **바닥을 손으로 칠할 때**: 한 맵에 한 재질만 — 원래 모래 옆에 다른 재질의 모래 칸을 섞지 않는다. 가장자리는 그 재질 묶음의 왕 타일 16칸으로(번호 규칙은 «사전» 문서).\n"
+             "4. **새 기물**: 통·게시판은 구성 도구가 광장·집 곁에 놓는다. 레버·내려가는 계단 입구·방 문·세이브 수정은 이야기가 부를 때만(키트 태그 «주제 소품»). 방 문은 실내 벽면 칸 위에만, 계단 입구는 남쪽 한 줄을 비우고.\n"
+             "5. 그림일 뿐이다 — 읽기·당기기·내려가기·저장은 이벤트를 따로 둔다(막힌 칸의 이벤트는 «같은 높이·결정 키», 계단 입구는 윗줄 칸 «닿으면»).\n")
+    arrs = lambda a: '\n'.join(arr(a[y * d['width']:(y + 1) * d['width']]) for y in range(d['height']))
+    L.append(f"## 3. 조립 예제 {d['width']}×{d['height']} (그림 `variety-scene.png` 원본 해상도 · `variety-scene-3x.png`) — 윗 두 줄은 실내 벽면\n\n놓은 순서(키트 · 왼쪽 위): "
+             + ' · '.join(f"`{p}` ({x},{y})" for p, x, y in scene) + f"\n\n아래층 lower(한 줄 = 맵 한 줄, index = y*{d['width']}+x):\n```\n{arrs(d['lower'])}\n```\n\n위층 upper:\n```\n{arrs(d['upper'])}\n```\n")
+    L.append("## 4. 정상/오류 (실제로 변조해 검출, 그림 `variety-err.png` — 왼쪽 정상 · 오른쪽 변조, 빨간 상자)\n\n| 변조 | 검출 코드 | 첫 오류(코드, 키트, x, y) |\n|---|---|---|")
+    for desc, errs in tamper_rows: L.append(f"| {desc} | {', '.join(sorted({e[0] for e in errs})) or '못 잡음'} | {errs[0] if errs else '-'} |")
+    L.append("\n오류 코드: E_OBJ_LAYER 키트 칸이 아래층에 있다 · E_OBJ_INCOMPLETE 키트 칸이 빠졌다 · E_OBJ_PASSAGE 칸 통행이 선언과 다르다 · E_OBJ_OFF_WALL 벽면 기물이 벽면 칸 밖에 있다.\n"
+             "확인 범위: 새 기물 칸이 위층에 통째로 있는가 · 통행이 선언과 같은가 · 벽면 기물이 벽면 위인가. 변형 키트의 칸 크기·통행이 원본과 같은지는 저장소 시험(`test/desertEastVariety.test.ts`)이 본다. 그림의 미감·3/4 시점(관문 미통과)·모델이 실제로 잘 놓는지는 보지 않는다.\n"
+             "그림: `variety-variants.png`(원본 | 변형, 2배) · `variety-looks.png`(재질 묶음마다 왕 타일 16칸, 2배).")
+    return '\n'.join(L)
+
+
+def variety_refs():
+    """(문서 목록, 그림 목록) — variety/spec.json 이 없으면 빈 목록."""
+    if not os.path.exists(VAR_SPEC): return [], []
+    spec = json.load(open(VAR_SPEC, encoding='utf-8'))
+    d, scene = variety_scene(spec); errs = variety_check(d, spec, scene)
+    assert not errs, errs[:4]
+    im = RS.render(d); im.save(os.path.join(IMG, 'variety-scene.png'), optimize=True)
+    im.resize((im.width * 3, im.height * 3), Image.NEAREST).save(os.path.join(IMG, 'variety-scene-3x.png'), optimize=True)
+    W = d['width']; rows = []; pics = []
+    pos = {k: (x, y) for k, x, y in scene}
+    hx, hy = pos['de-hatch-down']; nx, ny = pos['de-notice-board']; lx, ly = pos['de-room-door']
+    t1 = json.loads(json.dumps(d)); i = hy * W + hx; t1['lower'][i] = t1['upper'][i]; t1['upper'][i] = -1                       # 계단 입구 한 칸을 아래층에
+    t2 = json.loads(json.dumps(d)); t2['upper'][ny * W + nx] = -1; t2['upper'][ny * W + nx + 1] = -1                             # 게시판 윗줄을 뺌
+    t3 = json.loads(json.dumps(d))                                                                                               # 방 문을 모래 바닥으로 옮김
+    for r in range(2): t3['upper'][(ly + 5 + r) * W + lx] = t3['upper'][(ly + r) * W + lx]; t3['upper'][(ly + r) * W + lx] = -1
+    def check3(t):   # 옮긴 자리로 검사(장면 좌표를 바꿔서)
+        return variety_check(t, spec, [(k, x, y + 5) if k == 'de-room-door' else (k, x, y) for k, x, y in scene])
+    for desc, t, box, chk in ((f'계단 입구 왼쪽 위 칸을 위층에서 빼 아래층에 찍음 ({hx},{hy}) — 모래가 사라진다', t1, (hx, hy, 1, 1), lambda t: variety_check(t, spec, scene)),
+                              (f'게시판 윗줄 두 칸을 뺌 ({nx},{ny})·({nx + 1},{ny}) — 지붕이 잘린다', t2, (nx, ny, 2, 1), lambda t: variety_check(t, spec, scene)),
+                              (f'방 문을 벽면에서 모래 바닥 ({lx},{ly + 5}) 로 옮김 — 벽면 기물이 바닥에 뜬다', t3, (lx, ly + 5, 1, 2), check3)):
+        e = chk(t); assert e, desc; rows.append((desc, e))
+        pic = RS.render(t); dr = ImageDraw.Draw(pic); x, y, w, h = box
+        dr.rectangle([x * 16, y * 16, (x + w) * 16 - 1, (y + h) * 16 - 1], outline=(255, 30, 30, 255), width=1); pics.append(pic)
+    S = 2; cmp_ = Image.new('RGBA', (im.width * S * 2 + 8, im.height * S * 2 + 8), (20, 20, 28, 255))
+    for n, pic in enumerate([im] + pics): cmp_.paste(pic.resize((pic.width * S, pic.height * S), Image.NEAREST), ((n % 2) * (im.width * S + 8), (n // 2) * (im.height * S + 8)))
+    cmp_.save(os.path.join(IMG, 'variety-err.png'), optimize=True)
+    bases = variety_sheets(spec)
+    nv = sum(len(v) for v in bases.values())
+    docs = [dict(id='de-variety', name=f'desert_east · 같은 종류의 다른 그림 {nv}종·새 집·새 기물·게임마다 고르는 바닥 재질 — 사전·순서·예제·오류', markdown=variety_md(spec, d, scene, rows, bases))]
+    imgs = [dict(id='de-img-variety-scene', name='variety-scene.png', caption=f"새 기물 조립 예제 — 원본 해상도 {im.width}×{im.height}(윗 두 줄은 실내 벽면 — 방 문). 3/4 관문 미통과 — 오너 면제 그림.", dataUrl=URL('variety-scene.png')),
+            dict(id='de-img-variety-scene-3x', name='variety-scene-3x.png', caption='같은 장면 3배 최근접 확대.', dataUrl=URL('variety-scene-3x.png')),
+            dict(id='de-img-variety-err', name='variety-err.png', caption='정상(왼쪽 위) · 계단 입구 칸을 아래층에 · 게시판 윗줄 빠짐 · 방 문을 바닥으로, 2배 최근접. 빨간 상자 = 변조 자리.', dataUrl=URL('variety-err.png')),
+            dict(id='de-img-variety-variants', name='variety-variants.png', caption=f'원본(세로선 왼쪽)과 같은 종류의 다른 그림 {nv}종(오른쪽), 2배. 3/4 관문 미통과 — 오너 면제 그림.', dataUrl=URL('variety-variants.png')),
+            dict(id='de-img-variety-looks', name='variety-looks.png', caption='게임마다 고르는 바닥·길·광장 재질 — 재질 묶음마다 모서리 왕 타일 16칸(번호 순 4×4), 2배.', dataUrl=URL('variety-looks.png'))]
+    return docs, imgs
+
+
 def main():
     n_out = kit_sheet(None, 'kits-outdoor.png', True); n_in = kit_sheet(None, 'kits-interior.png', False); wang_sheet()
     exs = {}
@@ -388,6 +533,7 @@ def main():
         docs.append(dict(id=f'de-ex-{kind}', name=f'desert_east 야외 예제 · {title}', markdown=example_md(title, exs[kind][1], f'ex-{kind}.png', kind)))
     docs.append(dict(id='de-errors', name='desert_east 야외 · 정상/오류 변조 검출', markdown=errors_md(rows)))
     odocs, oimgs = objects_refs(); docs += odocs; imgs += oimgs
+    vdocs, vimgs = variety_refs(); docs += vdocs; imgs += vimgs
     out_cat = dict(id='de-outdoor', name='desert_east · 사막·동양풍 야외 (사전 · 순서 · 예제 5 · 변조 오류)',
                    description='오아시스 마을·바자르 거리·궁전·피라미드 유적·대상 숙소를 짓는 법. 구성 도구 compose_desert_east_map, 바닥·왕 타일·키트 전체 배열, 문 그림/접근칸/이벤트 분리, 완성 예제 5장(구성기 실제 출력), 변조 오류.', documents=docs, images=imgs)
     rimgs = [dict(id='de-img-kits-interior', name='kits-interior.png', caption=f'실내 키트 도감 {n_in}종(원본 ×2).', dataUrl=URL('kits-interior.png'))]
