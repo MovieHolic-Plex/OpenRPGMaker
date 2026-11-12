@@ -60,7 +60,10 @@ export function settleStepThing(run: BuildRun, mapId: string, eventId: string): 
   const name = String((ev0 as { name?: string }).name ?? ev0.id);
   const gapFor = (standIn: string) => artGapLine({ chipset: map0.tilesetId, want: "step-thing", wanted: "단계가 쓰게 하는 물건의 그림", where: `${map0.name ?? mapId} ${ev0.x},${ev0.y}`, standIn, by: "build_blueprint_path", note: `「${name}」` });
   const under = onDrawnThing(run.ctx.project, map0, ev0);
-  if (under) return thingMatch(name, under) ? {} : { gap: gapFor(under.label) };
+  // 가구 윗면에 얹은 탁상 물건(examineArt 가 그린 일기장·편지)이 있으면 그 물건이 보이는 것이다 — 가구 이름과 달라도 없는 그림이 아니다.
+  const at = ev0.y * map0.width + ev0.x;
+  const laidOn = (map0.upperTiles[at] ?? -1) >= 0 && (map0.upperOverlayTiles?.[at] ?? -1) >= 0;
+  if (under) return thingMatch(name, under) || laidOn ? {} : { gap: gapFor(under.label) };
   // 건물 벽 한 칸·바닥 덧그림 위(옆 가구 붙이기가 벽으로 올린 것)는 물건이 아니다 — 아래에서 가장 가까운 물건으로 옮긴다.
   const cands = drawnThings(run.ctx.project, map0).flatMap((t) => { const seat = thingSeat(run.ctx.project, map0, t, ev0); return seat ? [{ t, seat, d: Math.abs(seat.stand.x - ev0.x) + Math.abs(seat.stand.y - ev0.y) }] : []; })
     // 작은 물건(여섯 칸까지)이 먼저 — 기차 한 량·큰 기계의 한 칸은 어느 칸인지 읽히지 않는다.
