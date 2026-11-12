@@ -59,10 +59,26 @@ export function blueprintOpeningReplaceable(project: Project): { replace: boolea
 const CAPTION_CHARS = 46;
 
 /**
- * 오프닝 자막 줄 — 새 플레이어 안내(playerGoal) 한 문장을 자르지 않고 구절(쉼표·문장 끝) 단위로 나눈다. 한 구절이 길면 어절 사이에서 나눈다(말줄임 없음).
+ * 오프닝 자막 줄 — 새 플레이어 안내(playerGoal) 한 문장을 자르지 않고 구절(쉼표·문장 끝) 단위로 나눈다. 한 구절이 길면 이어 주는 어미 뒤나 가운데 어절 사이에서 고르게 나눈다(말줄임 없음).
  * 괄호·영문 식별자는 빼고, 숫자나 퍼즐 장치(정답·암호…)·제작 낱말(스위치·이벤트·플레이어)이 든 문장은 싣지 않는다(정답 누설 금지). 「게임이 시작되면」 머리는 지운다.
  * 왜: 전에는 46자에서 잘라 «…기관실의…» 로 끝났고, 나머지 장면에는 단계의 action · feeling(설계 메모)을 실었다(2026-11-12 증기의 심장).
  */
+const size = (line: string) => Array.from(line).length;
+
+/** 한 줄보다 긴 구절을 둘로 고르게 나눈다(되풀이) — 이어 주는 어미(…고 · …며 · …서 · …따라 · …위해) 뒤를 먼저, 없으면 가운데에 가장 가까운 어절 사이. */
+function breakClause(clause: string): string[] {
+  const words = clause.split(/\s+/u);
+  if (size(clause) <= CAPTION_CHARS || words.length < 2) return [clause];
+  const half = size(clause) / 2;
+  let best = 1, bestCost = Infinity, at = 0;
+  for (let i = 1; i < words.length; i += 1) {
+    at += size(words[i - 1]!) + (i > 1 ? 1 : 0);
+    const cost = Math.abs(at - half) - (/(?:고|며|서|면|따라|위해|지만|도록)$/u.test(words[i - 1]!) ? 8 : 0);
+    if (cost < bestCost) { bestCost = cost; best = i; }
+  }
+  return [...breakClause(words.slice(0, best).join(" ")), ...breakClause(words.slice(best).join(" "))];
+}
+
 export function captionLines(text: string | undefined): string[] {
   if (!text) return [];
   const cleaned = text.replace(/\([^)]*\)|\[[^\]]*\]/gu, " ").replace(/\b[A-Za-z]+[_-][\w-]*\b/gu, " ")
@@ -70,12 +86,11 @@ export function captionLines(text: string | undefined): string[] {
   const sentences = cleaned.split(/(?<=[.!?。…])\s+|\s*\n\s*/u)
     .map((s) => s.replace(/^(?:게임이\s*시작되면|게임\s*시작\s*시|시작하면)\s*,?\s*/u, "").replace(/\s+/gu, " ").trim())
     .filter((s) => s && !/\d|숫자|힌트|정답|답은|(?:암호|비밀\s*번호|코드|조합)\s*(?:는|은|가|이)(?![가-힣])|패스워드|password|컷신|스위치|이벤트|플레이어|튜토리얼/iu.test(s));
-  const size = (line: string) => Array.from(line).length;
   const out: string[] = [];
   for (const sentence of sentences) {
     let line = "";
-    // 구절(쉼표 뒤)마다 이어 붙이다 한 줄을 넘으면 줄을 바꾼다. 구절 하나가 한 줄보다 길면 어절 사이에서 나눈다.
-    for (const clause of sentence.split(/(?<=[,，、])\s*/u).flatMap((c) => (size(c) <= CAPTION_CHARS ? [c] : c.split(/\s+/u)))) {
+    // 구절(쉼표 뒤)마다 이어 붙이다 한 줄을 넘으면 줄을 바꾼다. 구절 하나가 한 줄보다 길면 breakClause 가 나눈다.
+    for (const clause of sentence.split(/(?<=[,，、])\s*/u).flatMap(breakClause)) {
       const next = line ? `${line} ${clause}` : clause;
       if (line && size(next) > CAPTION_CHARS) { out.push(line); line = clause; } else line = next;
     }

@@ -7,6 +7,7 @@
 // 규칙:
 //  1) 목표 줄(objectiveChip) 글 끝의 「(이름)」이 그 목표를 거는 맵의 이벤트 이름이고 그 이벤트에 보이는 그림이 없으면
 //     「(이름: 기댈 곳)」으로 바꾼다(landmarkWord — 회복의 샘·상인·그림 있는 이름 이벤트·처음 선 자리, 6칸 안).
+//     꼬리 없이 글이 그 이름을 부르면(«○○를 살펴보자») 글 끝에 「(기댈 곳)」을 붙인다.
 //  2) 대사 글의 「<사람>(님)이 <곳>에서/에」에서 <사람>이 같은 맵 이벤트 이름이고 <곳> 낱말이 그 사람 둘레(3칸) 칸 이름표·이벤트 이름에 없으면,
 //     <곳>을 말하는 이(그 대사 이벤트)에서 본 방위(「바로 남쪽」 「동쪽」)로 바꾼다. 말하는 이가 그 사람 자신이면 두지 않는다.
 // 고친 것만 적는다. 새 그림은 없다.
@@ -60,12 +61,14 @@ function fixGuideTexts(project: Project, mapId: string): string[] {
       const fields = c.fields as Obj;
       const message = String(fields.message);
       const m = /\(([^():]{2,30})\)\s*$/u.exec(message);
-      const target = m ? byName.get(m[1]!.trim()) : undefined;
-      if (m && target && !visible(target)) {
+      // 꼬리가 없는 목표 줄은 대상을 글에서 부른다(«○○를 살펴보자» — playerLines.stepGoal) — 글에 나온 이 맵 이벤트 이름(가장 긴 것)을 대상으로 본다.
+      const named = m ? m[1]!.trim() : message.includes("(") ? undefined : [...byName.keys()].filter((n) => message.includes(n)).sort((x, y) => y.length - x.length)[0];
+      const target = named ? byName.get(named) : undefined;
+      if (named && target && (m || target.id !== ev.id) && !visible(target)) {
         const where = landmarkWord(project, map, target.x, target.y, target.id);
         if (where) {
-          fields.message = `${message.slice(0, m.index)}(${m[1]!.trim()}: ${where})`;
-          notes.push(`목표 「${message.slice(0, 30)}…」 대상 「${m[1]!.trim()}」은 그림이 없다 → 「${where}」를 붙임`);
+          fields.message = m ? `${message.slice(0, m.index)}(${named}: ${where})` : `${message} (${where})`;
+          notes.push(`목표 「${message.slice(0, 30)}…」 대상 「${named}」은 그림이 없다 → 「${where}」를 붙임`);
         }
       }
       return;
