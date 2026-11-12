@@ -16,6 +16,8 @@ import { runTool } from "@/editor/tools";
 import { harmonizeBeodeulDaylight } from "@/editor/tools/beodeulLightTools";
 import { detectPlacedMapObjects } from "@/editor/stampPlaceRunner";
 import { buildingEntrances, placeMarks } from "@/ai/v2/place/entrances";
+import { resolveWhere } from "@/ai/v2/place/where";
+import { coveredCell } from "@/ai/v2/place/underRoof";
 import type { ToolContext } from "@/editor/tools/types";
 import type { GameMap, Project, StructureKitDef, TilesetDef } from "@/project/types";
 
@@ -241,9 +243,16 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
     expect(count(classic, /well/)).toBe(1);
     for (const kit of Object.values(centre)) expect(count(classic, kit)).toBe(0);
     for (const plaza of ["round", "market", "statue"]) {
-      const built = village({ plaza }, KEY).map;
+      const { project, map: built } = village({ plaza }, KEY);
       expect(count(built, /well/), plaza).toBe(1);
       for (const [name, kit] of Object.entries(centre)) expect(count(built, kit), `${plaza}/${name}`).toBe(name === plaza ? 1 : 0);
+      // 광장에 세우는 사람은 가운데 기물의 머리 그림 밑(걸을 수 있지만 윗층 그림이 덮는 칸)에 서지 않는다 — 가려지고, 끝맺음이 옮기면 출구 마감을 한 번 더 쓴다.
+      const taken: { x: number; y: number }[] = [];
+      for (const word of ["광장", "광장", "우물 옆"]) {
+        const spot = resolveWhere(project, built, word, { avoid: taken }).cell;
+        taken.push(spot);
+        expect(coveredCell(project, built, spot.x, spot.y), `${plaza}/${word} (${spot.x},${spot.y})`).toBe(false);
+      }
     }
   }, 480_000);
 });

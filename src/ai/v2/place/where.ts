@@ -8,6 +8,7 @@ import { Cell, DIRS, eventsOf, transferCells, eventBodyCells, eventBlockers, wal
 import { declaredDoorCells, placeMarks } from "./entrances";
 import { roadCells } from "./surface";
 import { personSpotContext, personSpotCost } from "./personSpot";
+import { coveredCell } from "./underRoof";
 
 export interface WhereResolution {
   /** 사람이 설 칸 — 물건(footprint)이면 발밑 맨 아래 줄의 왼쪽 칸(generate_missing_object·stamp_tileset_object 의 base). */
@@ -305,8 +306,11 @@ export function resolveWhere(
   // 실내 사람은 문 곁·가구의 하나뿐인 접근 칸·다른 사람 바로 위아래·양탄자 가운데를 피한다(personSpotCost).
   const spotCtx = !fp && indoor ? personSpotContext(project, map, opts.exceptId) : undefined;
   const spotCost = (c: Cell): number => (spotCtx ? personSpotCost(project, map, c, spotCtx) : 0);
+  // 바깥 맵의 사람은 지붕·나무 머리·기둥 머리 그림 밑(걸을 수 있지만 윗층 그림이 덮는 칸)에 서지 않는다 — 가려져 안 보이고, 끝맺음이 한 칸 옮기면
+  // 출구 마감 지문이 낡아 다시 돌 횟수를 쓴다(2026-11-13 은행 jrpg-w2: 광장 한가운데 기념 기둥 머리 밑에 선 주민 → 늦게 지은 오프닝이 마감을 못 받음).
+  const coverCost = (c: Cell): number => (!fp && !indoor && coveredCell(project, map, c.x, c.y) ? 8 : 0);
   const pick = (score: (c: Cell) => number): Cell | undefined => {
-    const ranked = cells.map((c) => ({ c, s: score(c) + roadCost(c) + spotCost(c) })).filter((r) => Number.isFinite(r.s)).sort((a, b) => a.s - b.s);
+    const ranked = cells.map((c) => ({ c, s: score(c) + roadCost(c) + spotCost(c) + coverCost(c) })).filter((r) => Number.isFinite(r.s)).sort((a, b) => a.s - b.s);
     let tries = 0;
     for (const { c } of ranked) {
       if (++tries > 80) break;
