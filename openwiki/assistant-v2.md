@@ -652,6 +652,32 @@ Terra 세 판의 저장본에서 다시 깐 결과: 사막 fun-x1 장면 4·자�
 
 **알려진 한계.** 사람은 맵에 선 자리 그대로라 맵에서 붙어 선 두 사람은 오프닝에서도 붙어 있다. 사람이 없는 맵의 장면은 빈 풍경이다. 무대보다 작은 맵(실내)은 1.2배로 늘어난다(전과 같다). 화면 검수는 표본의 첫 순간을 0ms 에서 찍는다(`judge/vqa.ts`) — 모델이 fade 로 여는 장면을 지으면 그 순간은 여전히 전환 한가운데다.
 
+## 대사에는 화자의 공용 흉상 — 칩에서 결정적으로, 사람·주인공 칩은 흉상이 있는 것부터 (2026-11-12, 오너 r1w-fun)
+
+오너(Haiku 가 지은 선사 시대 게임 r1w-fun 을 해 보고): «초상화나 이런 건 미리 만들어둔 거 써도 좋았겠다».
+공용 흉상은 2,687장이다(표정 세트 76 × 흉상·전신 × 16표정 + 현대 24종 5표정 + 캐스트, `src/assets/sharedPortraitAssets.ts`, 그림 `public/assets/shared/portraits/<줄기>/bust-<표정>.png`).
+r1w-fun 의 대화창에는 이름표만 떴다. 까닭 셋:
+
+1. 사슬·경로 빌더(`author_puzzle_chain` · `build_blueprint_path`)가 지은 사람 페이지에는 얼굴 명령(`changeFace`)이 없다 — 대사 명령만 쓴다.
+2. `add_people`(`place_npc`)은 칩의 검토된 짝 **얼굴 낱장**(48px)만 붙였다 — 흉상이 아니다.
+3. 고른 칩에 얼굴이 없었다: «촌장»·«산의 노인» = 터번 노인(people4#6, 짝 얼굴 없음), «주술사» = 청년 병사(people5#0, 낱장뿐), 주인공 = 청년 전사(people5#2, 낱장뿐 · 전투 그림도 없어 전투에는 기본 검사가 섰다).
+
+지금(`story/speakerBust.ts`):
+
+- **칩 → 흉상**(`bustOfChip`): 칩 → 검토된 짝 얼굴(`reviewedFaceIdForCharset`) → 표정 세트(`sharedExpressionSetIdOf`) → `shared-<줄기>-expressions-bust-base`. 모델에게 묻지 않는다. EasyRPG 사람·주역 칩 72칸 가운데 52칸에 흉상이 있다(People4·People5 전부 · People2 0·4 · Actor3 5 · Actor4 5 는 없다).
+- **대사에 걸기**(`settleSpeakerBustsIn`): 얼굴 명령이 없는 페이지는 화자 이름이 맵에 선 사람(이벤트 이름)·주인공이면 그 줄 바로 앞에 흉상을 걸고, 내레이션·모르는 화자 줄 앞에서는 지운다(갈래마다 따로). 얼굴 명령이 이미 있는 페이지는 낱장 얼굴만 같은 인물의 흉상으로 바꾼다(자리·직접 정한 `presentation`·외형 기록은 그대로). 되풀이 안전.
+- **표정**: 줄의 `emotion` 이 같은 세트의 표정 그림을 고른다(런타임 `dialogueFaceForEmotion` — 기쁨·슬픔·분노·놀람). 함수가 기분을 아는 줄에만 적는다: 싸우기 직전(`battleProcessing` 앞)의 그 사람 말 = `angry`. 모델에게 칸을 더 묻지 않는다.
+- **어디서 도나**: 내용 도구의 출구 하나(`tools/context.ts finishContent` — `add_people` · `add_event` · `add_scene` · `author_puzzle_chain` · `build_blueprint_path` · 보스·엔딩 장면이 지은 이벤트) + 끝맺음 `speaker-busts`(조립 맨 끝 310 — 주인공 칩이 정해진 뒤 게임 전체, 옛 판도).
+- **사람 칩**(`place/people.pickPersonGraphic`): 흉상 없는 칩은 검색어 두 단 반(250, 낱장만 있으면 150) 밀린다 — 역할 검색어 어디든 흉상 있는 칩이 있으면 그 칩. 이 맵 화풍의 역할 칩이 하나라도 있으면 이름으로 돌려 고르는 마지막 단보다 늘 앞이다(흉상이 없다고 여관 주인이 아무 주민이 되지 않는다). 노인 역할 검색어에 «대머리» 를 더했다(흰 수염 노인 흉상이 그 칩의 짝이다).
+- **주인공 칩**(`story/shipLookDefaults.pickChip` · `fillPartyLooks`): 흉상과 전투 그림이 둘 다 그 칩의 것인 칩이 먼저, 전투 그림(`battleCharacterResourceId`)도 그 칩의 것으로, 맵에 선 사람이 쓰는 칩은 피한다.
+
+런타임이 흉상을 띄우는 조건: `changeFace.resourceId` 가 공용 초상 id(`…-bust-<표정>`)면 대화창이 흉상으로 그린다(id 의 `-bust` 가 모양을 정한다 — `sharedPortraitAssets.ts` 머리말). 내보내기는 쓰인 흉상과 그 세트의 대사 표정 5장을 같이 싣는다(`webExportAssets` `sharedPortraitExpressionSiblings`).
+확인(모델 없음): r1w-fun 저장본의 사슬 사람·주인공 칩을 지금 고르기 함수로 다시 고른 뒤(`pickPersonGraphic` 직접 호출) 끝맺음 재생 → SQLite 에 저장 → 출하 플레이어(`wholeGamePlayer --serve`, 제품 내보내기 경로)로 띄워 촌장에게 말을 걸었다 — 흰 수염 노인 흉상이 대사창 왼쪽에 선다. 자동 플레이 엔딩 성공 → 성공 · 다시 읽기 성공. 그림 `~/claude-viz/av2-look-defaults.html`.
+
+재 본 것(고치지 않음) — **사람 칩은 세계를 모른다**: `pickPersonGraphic` 은 역할 낱말 → 검색어(`ROLE_LOOKS`) → 칩 설명 검색, 화풍은 현대/판타지 둘뿐이다(`familyFits`). 선사 시대 부족에 맞는 사람 세트는 없다 — 설명에 원시·가죽옷이 든 칩은 15칸(REFMAP 변형 14 · Heroes 1)이고 얼굴·흉상이 없다. 역할 낱말이 없는 이름(«주술사»·«부족 전사»)은 사람 칩 전체에서 이름으로 돌려 고른다(왕·메이드·토끼 귀 차림도 후보다). «촌장의 딸» 은 «촌장» 낱말에 걸려 노인이 된다. 남성 노인 흉상은 하나뿐이라 촌장·산의 노인·(끝맺음이 세운) 떠돌이 상인이 같은 얼굴이 된다.
+그릴 것: 선사 부족 사람 세트(족장·주술사·사냥꾼·주민 남녀·아이)와 그 흉상 · People4·People5 20칸의 흉상. 떠돌이 상인의 얼굴은 인물 만들기(`piCharacterMaking`, 2026-11-05)가 생성한 낱장이라 화풍이 다르다 — 그 길은 건드리지 않았다.
+시험 `test/aiV2SpeakerBusts.test.ts`.
+
 ## 상점 주인은 `add_people` 한 번 — `sells` (2026-11-11, B5a)
 
 구조 재점검 5-1: 상점 주인 한 명에 호출 4~6번이 들었다(아이템 조회 → 사람 → 이벤트 조회 → `set_shop_stock`). `add_people` 에 상점 칸이 없었다.

@@ -16,6 +16,7 @@ import type { BuildRun, ContentBuildResult, PersonSpec } from "../shared/types";
 import { exitThroats, laneCells, wanderReach } from "./placementRules";
 import { Cell, findMap, eventsOf, eventBlockers, walkStart, keepsMapConnected } from "./cells";
 import { resolveWhere } from "./where";
+import { bustOfChip } from "../story/speakerBust";
 
 export const PEOPLE_CARD =
   "People spec: {role,name?,where?,at?,looks?,firstTalk?,laterTalk?,movement?,sells?,mapId?}. " +
@@ -36,7 +37,7 @@ export const PEOPLE_CARD =
 // (2026-10-23 v1/v2 눈가림 비교: v2 문지기가 해골 투구 갑옷(적처럼 읽힘)에 얼굴 없음).
 const ROLE_LOOKS: ReadonlyArray<readonly [RegExp, readonly string[], ("male" | "female")?]> = [
   [/경비|문지기|수문장|파수|위병|보초|병사|군인|초병|guard|sentry|gatekeeper|soldier|watchman/i, ["병사", "guard"], "male"],
-  [/촌장|이장|장로|원로|마을 ?어른|elder|chief|headman|mayor/i, ["할아버지", "노인"], "male"],
+  [/촌장|이장|장로|원로|마을 ?어른|elder|chief|headman|mayor/i, ["할아버지", "노인", "대머리"], "male"],
   // 청사진 단계 이름의 직함(2026-10-28 standin joseon·magic: 포졸·주모·종사관·교수·사서가 전부 「중년 남성 주민」이 됐다).
   [/포졸|포교|나졸|군졸|순라/i, ["병사", "guard"], "male"],
   [/종사관|사또|대감|양반|관원|나리|선비|영주|귀족|noble|lord/i, ["귀족", "노학자"], "male"],
@@ -47,7 +48,7 @@ const ROLE_LOOKS: ReadonlyArray<readonly [RegExp, readonly string[], ("male" | "
   [/선생|교사|스승|teacher|tutor/i, ["선생", "교수"]],
   [/의사|doctor|medic/i, ["박사", "연구원"]],
   [/할머니|노파|old woman|grandma/i, ["할머니", "노인"], "female"],
-  [/할아버지|노인|영감|old man|grandpa/i, ["할아버지", "노인"], "male"],
+  [/할아버지|노인|영감|old man|grandpa/i, ["할아버지", "노인", "대머리"], "male"],
   [/여관|바텐더|술집 ?주인|주점 ?주인|innkeeper|bartender|barkeep/i, ["여관 주인", "상인"]],
   [/상인|장사|점원|가게|행상|merchant|shopkeeper|vendor|clerk|peddler/i, ["상인", "여관 주인"]],
   [/소녀|여자아이|girl/i, ["소녀", "아이"], "female"],
@@ -160,7 +161,11 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
       const key = `${e.textureKey}#${e.characterIndex}`;
       // 맵 화풍과 다른 계열은 얼굴 짝(70)보다 무겁게 친다 — 현대 편의점 점장이 얼굴 있는 판타지 RTP 주민 칩으로 뽑혔고, 첫 사람 칩이라 사람 칩 잠금이
       // RTP 로 걸려 뒤이은 행인의 현대 칩 검색(여학생)이 0 개가 됐다(2026-10-31 asst-parity 마왕 편의점 opus 후).
-      const score = qi * 100 + rank + (face ? 0 : 70) + (familyFits(map, e.textureKey) ? 0 : 120)
+      // 대화창에 그 사람의 흉상이 뜨는 칩이 먼저다(story/speakerBust): 흉상 없는 칩은 검색어 두 단 반(250, 얼굴 낱장만 있으면 150)만큼 밀린다 —
+      // 역할 검색어 어디든 흉상 있는 칩이 있으면 그 칩(촌장 = 얼굴 없는 터번 노인 → 흰 수염 노인).
+      // 이 맵 화풍의 역할 칩이 하나라도 있으면 이름으로 돌려 고르는 마지막 단·다른 화풍 칩보다 늘 앞이다(1000) — 흉상이 없다고 여관 주인이 아무 주민으로 바뀌지 않는다.
+      const fits = familyFits(map, e.textureKey);
+      const score = qi * 100 + rank + (bustOfChip(e.textureKey, e.characterIndex) ? 0 : face ? 150 : 250) + (fits ? 0 : 120) + (spin || !fits ? 1000 : 0)
         + (gender && e.gender && e.gender !== "none" && e.gender !== gender ? 25 : 0) + (used.has(key) ? 15 : usedElsewhere.has(key) ? 8 : 0)
         + (heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`) ? 300 : 0)
         // 특이한 차림(이국 터번·닌자·요정·난쟁이·수녀)은 그렇게 말했을 때만 — 마을 촌장이 터번 노인으로 나왔다.
