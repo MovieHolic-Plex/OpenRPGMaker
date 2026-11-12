@@ -152,12 +152,17 @@ describe("place and whole-game requests", () => {
     expect(shoot("이 맵에 상점 주인 한 명 세워 줘.", "blank").text).not.toContain("[Fallen-Star-style jobs");
   });
 
-  it("a whole-game prompt does not grow (main 2026-11-11 after #4556: 35,491 · 67,349 chars; now 35,369 · 67,227)", () => {
+  // 2026-11-12: 실내 이야기 기물 8종(#4677)으로 방탈출 지시문이 67,493자가 됐다 — 상한을 올리지 않고 목록에서 «크기 표의 구운 크기» 52줄을 뺐다(66,610자).
+  it("a whole-game prompt does not grow (main 2026-11-11 after #4556: 35,491 · 67,349 chars; 2026-11-12: 66,610)", () => {
     const fantasy = shoot("판타지 RPG 게임 하나 만들어 줘.", "blank");
     expect(fantasy.chars).toBeLessThanOrEqual(35_491);
     expect(fantasy.text).toContain("[Fallen-Star-style jobs");
     expect(fantasy.upFront).toContain("write_blueprint");
-    expect(shoot("방탈출 게임 만들어 줘.", "blank").chars).toBeLessThanOrEqual(67_349);
+    const escape = shoot("방탈출 게임 만들어 줘.", "blank");
+    expect(escape.chars).toBeLessThanOrEqual(66_700);
+    // 크기 표는 한 줄이 말한다 — 놓는 법 글자가 붙고, 구운 크기(dining 2x1 2x1 f)는 목록에 다시 실리지 않는다.
+    expect(escape.text).toMatch(/sized tables [^\n]*: dining f, [^\n]*sideboard\(1 row\) w\^1/u);
+    expect(escape.text).not.toContain("dining 2x1 2x1");
   });
 
   it("a place request gets only the game-card lines its words name", () => {
