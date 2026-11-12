@@ -32,7 +32,7 @@ const [chipset, out] = argv;
 if (!chipset || !out) { console.error("usage: probe.mts <chipset> <outDir> [--base-sheet png] [--saved dir]"); process.exit(2); }
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../../..");
 const read = (rel: string) => JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
-const conf = read("scripts/content/story-objects/chipsets.json")[chipset] as { spec: string; ask: string; kitPrefix: string; sheet: string; map: { width: number; height: number; tool: string; args: Record<string, unknown> } };
+const conf = read("scripts/content/story-objects/chipsets.json")[chipset] as { spec: string; ask: string; kitPrefix: string; sheet: string; listTool?: { name: string; idPrefix: string }; placeArea?: { x0: number; y0: number; x1: number; y1: number }; map: { create?: boolean; width: number; height: number; tool: string; args: Record<string, unknown> } };
 if (!conf) { console.error(`chipsets.json 에 ${chipset} 가 없다`); process.exit(2); }
 type Item = { id: string; name: string; kind: string; w: number; h: number; place: string; block: [number, number][] };
 const items = (read(conf.spec) as { items: Item[] }).items;
@@ -47,7 +47,9 @@ const report: Record<string, unknown> = { chipset };
 // ── 1. 새 프로젝트 ──
 const fresh = createBlankProject();
 const fts = fresh.tilesets[chipset]!;
-const docs = (fts.referenceDocuments ?? []).flatMap((c) => c.documents.map((d) => `${c.id}/${d.id}`)).filter((id) => /objects/u.test(id));
+/** 이 기물들을 적은 참고문서(용도/문서 id) — 본문에 기물 id 가 든 문서. */
+const docsOf = (ts: TilesetDef) => (ts.referenceDocuments ?? []).flatMap((c) => c.documents.filter((d) => items.some((it) => d.markdown.includes(`\`${it.id}\``) || d.markdown.includes(kitId(it.id)))).map((d) => `${c.id}/${d.id}`));
+const docs = docsOf(fts);
 report.fresh = {
   kits: ownKits(fts).length, of: items.length, count: fts.count, referenceDocs: docs,
   tablesMatchCount: ["passability", "priority", "terrain", "tileMeta"].every((k) => (fts as unknown as Record<string, unknown[]>)[k]!.length === fts.count),
@@ -100,7 +102,7 @@ if (savedDir) {
     source: savedDir, kitsAsLoaded: had, countAsLoaded: countBefore, kitsAfterEnsure: ownKits(project.tilesets[chipset]!).length, countAfterEnsure: project.tilesets[chipset]!.count,
     mapsOnThisChipset: own.length, localGraftsAsLoaded: graftsBefore, localGraftsAfterEnsure: (project.tilesets[chipset]?.tileGrafts ?? []).map((g) => g.targetTile), mapPicturesUnchanged: print(project) === before, reopenedPicturesSame: print(again) === before, save: saved.kind, reopenedKits: (JSON.parse(kitsSaved) as unknown[]).length,
     reopenedStable: JSON.stringify(ownKits(again.tilesets[chipset]!)) === kitsSaved && again.tilesets[chipset]!.count === countSaved,
-    referenceDocsAfterEnsure: (project.tilesets[chipset]!.referenceDocuments ?? []).flatMap((c) => c.documents.map((d) => `${c.id}/${d.id}`)).filter((id) => /objects/u.test(id)),
+    referenceDocsAfterEnsure: docsOf(project.tilesets[chipset]!),
   };
   fs.rmSync(dir, { recursive: true, force: true });
 }
@@ -108,11 +110,12 @@ if (savedDir) {
 // ── 4. 실제 맵: 그 칩셋의 구성기로 깐다 ──
 const ctx: ToolContext = { project: fresh, currentMapId: "probe", assistantRun: true };
 const must = (name: string, args: Record<string, unknown>) => { const r = runTool(ctx, name, args); if (!r.ok) throw new Error(`${name}: ${r.summary}`); return r; };
-must("create_map", { id: "probe", name: "탐침 맵", width: conf.map.width, height: conf.map.height, tilesetId: chipset });
+if (conf.map.create !== false) must("create_map", { id: "probe", name: "탐침 맵", width: conf.map.width, height: conf.map.height, tilesetId: chipset });   // 실내 짓기 도구는 맵을 스스로 만든다
 must(conf.map.tool, { mapId: "probe", ...conf.map.args });
 {
   const m = ctx.project.maps.probe!; let start = { x: 0, y: 0 };
   for (let x = 0; x < m.width; x++) if (isPassable(ctx.project, m, x, m.height - 1)) { start = { x, y: m.height - 1 }; break; }
+  if (!isPassable(ctx.project, m, start.x, start.y)) outer: for (let y = m.height - 1; y >= 0; y--) for (let x = 0; x < m.width; x++) if (isPassable(ctx.project, m, x, y)) { start = { x, y }; break outer; }
   ctx.project = { ...ctx.project, startMapId: "probe", startPos: start } as Project;
 }
 const cur = () => ctx.project.maps.probe!;
@@ -133,17 +136,18 @@ const call = async (name: string, args: unknown) => {
 };
 
 // ── 5. 낱말로 찾기 ──
+const LIST = conf.listTool ?? { name: "list_tileset_objects", idPrefix: "" };
 const wordRows: Record<string, unknown>[] = [];
 for (const it of items) for (const word of ASK[it.id] ?? []) {
   let listed: { id: string }[] = [];
-  try { listed = (getTool("list_tileset_objects")!.run(ctx.project, { mapId: "probe", query: word }) as { data: { objects: { id: string }[] } }).data.objects; } catch { /* 없음 */ }
-  const rank = listed.findIndex((o) => o.id === kitId(it.id));
+  try { listed = (getTool(LIST.name)!.run(ctx.project, { mapId: "probe", query: word }) as { data: { objects: { id: string }[] } }).data.objects; } catch { /* 없음 */ }
+  const rank = listed.findIndex((o) => LIST.idPrefix + o.id === kitId(it.id) || o.id === kitId(it.id) || conf.kitPrefix + o.id === kitId(it.id));
   const drawn = await call("draw_object", { object: { what: word, mapId: "probe" } });
   const sum = String(drawn.summary ?? "");
   const next = /place_object\(\{"mapId":"[^"]*","objectId":"([^"]+)"/u.exec(sum)?.[1];
   const how = next === kitId(it.id) ? "이 기물을 이른다(첫째)" : next && sum.includes(`${kitId(it.id)} (`) ? `후보에 있음(첫째는 ${next})` : next ? `다른 기물을 이른다(${next})`
     : /들어가는 장소|make_place/u.test(sum) ? "그리지 않음 — «장소» 로 돌려보냄(make_place)" : /지형·바닥·벽 칸/u.test(sum) ? "거부 — «지형 칸» 으로 봄" : drawn.ok ? "못 찾음 — 새 그림 카드를 띄움" : `기타: ${sum.slice(0, 90)}`;
-  wordRows.push({ object: it.id, word, list_tileset_objects: rank < 0 ? `없음(${listed.length}건)` : `${rank + 1}/${listed.length}`, draw_object: how });
+  wordRows.push({ object: it.id, word, listTool: LIST.name, list_tileset_objects: rank < 0 ? `없음(${listed.length}건)` : `${rank + 1}/${listed.length}`, draw_object: how });
 }
 report.words = wordRows;
 
@@ -155,7 +159,7 @@ const ground = (() => {
   const roadTiles = tilesetSurface(ctx.project.tilesets[chipset]!).road;
   for (let i = 0; i < map.lowerTiles.length; i++) if (!roadTiles.has(map.lowerTiles[i] ?? -1) && bare(map, i) && isPassable(ctx.project, map, i % map.width, Math.floor(i / map.width))) n.set(map.lowerTiles[i]!, (n.get(map.lowerTiles[i]!) ?? 0) + 1);
   const top = [...n].sort((a, b) => b[1] - a[1]); const most = top[0]?.[1] ?? 0;
-  return new Set(top.filter(([, c]) => c >= most * 0.25).map(([t]) => t));
+  return new Set(top.filter(([, c]) => c >= most * 0.1).map(([t]) => t));
 })();
 const road = tilesetSurface(ts).road;   // 칩셋이 길이라 적은 칸 — 길 위에는 세우지 않는다
 const onRoad = (m: GameMap, i: number) => road.has(m.lowerTiles[i] ?? -1) || road.has((m.lowerOverlayTiles ?? [])[i] ?? -1);
@@ -163,12 +167,19 @@ const reserved = new Set<number>(), occupied = new Set<number>();
 const events = new Set(map.events.map((e) => e.y * map.width + e.x));
 const reach0 = reachableCells(ctx.project, map);
 const freeLand = (x: number, y: number) => { const i = y * map.width + x; const m = cur();
-  return x >= 1 && y >= 1 && x < m.width - 1 && y < m.height - 1 && isPassable(ctx.project, m, x, y) && ground.has(m.lowerTiles[i]!) && !onRoad(m, i) && bare(m, i) && !events.has(i) && !reserved.has(i) && (!reach0 || reach0[i] === 1); };
-function spot(w: number, h: number): { x: number; y: number } | null {
+  const area = conf.placeArea; if (area && (x < area.x0 || y < area.y0 || x > area.x1 || y > area.y1)) return false;
+  // 구역을 손으로 정한 칩셋은 그 구역의 바닥을 그대로 믿는다(현대 도시는 «길» 칸이 곧 보도라 길을 피하면 놓을 데가 없다)
+  return x >= 1 && y >= 1 && x < m.width - 1 && y < m.height - 1 && isPassable(ctx.project, m, x, y) && (area ? true : ground.has(m.lowerTiles[i]!) && !onRoad(m, i)) && bare(m, i) && !events.has(i) && !reserved.has(i) && (!reach0 || reach0[i] === 1); };
+/** 벽 걸이 자리: 그림 칸이 모두 벽 칸(1층 역할 wall)이고 위층이 비었으며, 바로 아래가 걸어서 닿는 바닥. */
+const wallAt = (x: number, y: number) => { const m = cur(); const i = y * m.width + x;
+  return x >= 0 && y >= 0 && x < m.width && y < m.height && (ts.tileMeta?.[m.lowerTiles[i] ?? -1] as { role?: string } | undefined)?.role === "wall" && bare(m, i) && !reserved.has(i); };
+function spot(w: number, h: number, onWall = false): { x: number; y: number } | null {
   const cx = map.width / 2, cy = map.height / 2; let best: { x: number; y: number; d: number } | null = null;
-  for (let y = 2; y + h < map.height - 2; y++) for (let x = 2; x + w < map.width - 2; x++) {
+  const lo = map.width < 30 ? 1 : 2;   // 작은 방은 벽 바로 안쪽 줄까지 본다
+  for (let y = onWall ? 0 : lo; y + h < map.height - (onWall ? 0 : lo); y++) for (let x = lo; x + w < map.width - lo; x++) {
     let ok = true;
-    for (let dy = 0; dy <= h && ok; dy++) for (let dx = 0; dx < w && ok; dx++) ok = freeLand(x + dx, y + dy);   // 기물 칸 + 앞줄
+    if (onWall) { for (let dy = 0; dy < h && ok; dy++) for (let dx = 0; dx < w && ok; dx++) ok = wallAt(x + dx, y + dy); for (let dx = 0; dx < w && ok; dx++) ok = isPassable(ctx.project, cur(), x + dx, y + h) && !reserved.has((y + h) * map.width + x + dx) && (!reach0 || reach0[(y + h) * map.width + x + dx] === 1); }
+    else for (let dy = 0; dy <= h && ok; dy++) for (let dx = 0; dx < w && ok; dx++) ok = freeLand(x + dx, y + dy);   // 기물 칸 + 앞줄
     const d = (x + w / 2 - cx) ** 2 + (y + h / 2 - cy) ** 2;
     if (ok && (!best || d < best.d)) best = { x, y, d };
   }
@@ -178,25 +189,29 @@ const placed: Record<string, unknown>[] = [];
 const where = new Map<string, { x: number; y: number }>();
 for (const it of [...items].sort((a, b) => b.w * b.h - a.w * a.h)) {
   const kit = ownKits(ts).find((k) => k.id === kitId(it.id))!;
-  const s = spot(it.w, it.h);
+  const s = spot(it.w, it.h, it.place === "wallmount");
   if (!s) { placed.push({ object: it.id, kit: kit.id, ok: false, at: "자리 없음" }); continue; }
   for (let dy = -1; dy <= it.h + 1; dy++) for (let dx = -1; dx <= it.w; dx++) reserved.add((s.y + dy) * map.width + s.x + dx);
   const base = { x: s.x, y: s.y + it.h - 1 };
   // 도구가 자리를 옮기면 왜 처음 자리가 안 됐는지: 같은 호출을 프로젝트 사본 위에서 먼저 해 그 결과 글을 읽는다
   const dry = runTool({ project: structuredClone(ctx.project), currentMapId: "probe", assistantRun: true }, "stamp_tileset_object", { mapId: "probe", objectId: kit.id, base });
   const firstRefusal = dry.ok ? "" : `${dry.summary ?? ""} ${(dry.issues ?? []).map((i) => i.message).join(" / ")}`.trim();
+  const beforeUp = [...up(cur())], beforeOver = [...(cur().upperOverlayTiles ?? [])];
   const res = await call("place_object", { mapId: "probe", objectId: kit.id, at: base });
   const m = cur(); const cells = kitCells(kit);
-  // 실제로 놓인 자리(도구가 옮겼을 수 있다): 아직 세지 않은 칸에서 킷 그림 전체가 맞는 곳
-  let ox = -1, oy = -1;
-  for (let y = 0; y + it.h <= m.height && ox < 0; y++) for (let x = 0; x + it.w <= m.width && ox < 0; x++)
-    if (cells.every((row, dy) => row.every((t, dx) => t < 0 || (up(m)[(y + dy) * m.width + x + dx] === t && !occupied.has((y + dy) * m.width + x + dx))))) { ox = x; oy = y; }
+  // 실제로 놓인 자리(도구가 옮겼을 수 있다): 호출 앞뒤로 위층 두 겹에서 이 킷 칸으로 바뀐 칸의 왼쪽 위
+  const mine = new Set(cells.flat().filter((n) => n >= 0)); let ox = -1, oy = -1;
+  for (const [layer, was] of [[up(m), beforeUp], [m.upperOverlayTiles ?? [], beforeOver]] as const) for (let i = 0; i < layer.length; i++) if (layer[i] !== was[i] && mine.has(layer[i]!)) {
+    const x = i % m.width, y = Math.floor(i / m.width); ox = ox < 0 ? x : Math.min(ox, x); oy = oy < 0 ? y : Math.min(oy, y);
+  }
   const drawnOk = ox >= 0; const blockedNow: string[] = [];
   if (drawnOk) for (let dy = 0; dy < it.h; dy++) for (let dx = 0; dx < it.w; dx++) { occupied.add((oy + dy) * m.width + ox + dx); if (!isPassable(ctx.project, m, ox + dx, oy + dy)) blockedNow.push(`(${dx},${dy})`); }
   if (drawnOk) { where.set(it.id, { x: ox, y: oy }); for (let dy = -1; dy <= it.h + 1; dy++) for (let dx = -1; dx <= it.w; dx++) reserved.add((oy + dy) * m.width + ox + dx); }
+  // 벽 걸이는 벽 위에 걸린다 — 그 칸은 벽이 막는다. 선언(막힌 칸 없음)은 «그림 칸 자신이 통행을 막지 않는가» 로 본다.
+  if (it.place === "wallmount" && drawnOk) { blockedNow.length = 0; cells.flat().forEach((t, i) => { if (t >= 0 && !ts.passability[t]?.up) blockedNow.push(`(${i % it.w},${Math.floor(i / it.w)})`); }); }
   const want = it.block.map(([x, y]) => `(${x},${y})`);
   placed.push({ object: it.id, kit: kit.id, asked: `(${s.x},${s.y})`, at: drawnOk ? `(${ox},${oy})` : "안 놓임", ok: !!res.ok && drawnOk, moved: drawnOk && (ox !== s.x || oy !== s.y), ...(firstRefusal ? { firstSpotRefusal: firstRefusal.slice(0, 220) } : {}),
-    blockedAsDeclared: drawnOk && JSON.stringify([...blockedNow].sort()) === JSON.stringify([...want].sort()), blocked: blockedNow.join(" ") || "없음", tool: String(res.summary ?? "").slice(0, 110) });
+    blockedAsDeclared: drawnOk && JSON.stringify([...blockedNow].sort()) === JSON.stringify([...want].sort()), blocked: (blockedNow.join(" ") || "없음") + (it.place === "wallmount" ? " (벽면 위 걸이 — 그 칸은 벽이 막는다)" : ""), tool: String(res.summary ?? "").slice(0, 110) });
 }
 report.map = { tool: conf.map.tool, args: conf.map.args, size: `${map.width}×${map.height}`, start: ctx.project.startPos };
 report.placed = placed;
@@ -208,11 +223,12 @@ report.placed = placed;
   const heroes: { x: number; y: number; why: string }[] = [];
   for (const it of items) {
     const at = where.get(it.id); if (!at) continue;
+    if (it.place === "wallmount") { if (can(at.x, at.y + it.h)) heroes.push({ x: at.x, y: at.y + it.h, why: `${it.id} 아래(벽 걸이)` }); continue; }
     if (!it.block.length) { if (can(at.x + 1, at.y)) heroes.push({ x: at.x + 1, y: at.y, why: `${it.id} 옆(밟고 지나가는 바닥 그림)` }); continue; }
     const front = { x: at.x + Math.floor((it.w - 1) / 2), y: at.y + it.h };
     if (it.w * it.h >= 4 && can(front.x, front.y)) heroes.push({ ...front, why: `${it.id} 앞` });
   }
-  const tall = items.find((it) => it.h === 2 && it.w === 1 && where.has(it.id));
+  const tall = items.find((it) => it.h === 2 && it.w === 1 && it.place !== "wallmount" && it.block.length === 1 && where.has(it.id));
   if (tall) { const at = where.get(tall.id)!; if (can(at.x + 1, at.y + 1)) heroes.push({ x: at.x + 1, y: at.y + 1, why: `${tall.id} 옆` }); }
   const full = PNG.sync.read(renderMapPng({ ...ctx.project, startMapId: "" } as Project, m).png);
   const chip = PNG.sync.read(fs.readFileSync(path.join(ROOT, "public/assets/easyrpg/charset/Actor1.png")));
@@ -223,7 +239,8 @@ report.placed = placed;
     const d = (ty * full.width + tx) * 4; full.data[d] = chip.data[s]!; full.data[d + 1] = chip.data[s + 1]!; full.data[d + 2] = chip.data[s + 2]!; full.data[d + 3] = 255;
   }
   const xs = [...where.values()].map((p) => p.x), ys = [...where.values()].map((p) => p.y);
-  const x0 = Math.max(0, Math.min(...xs) - 4), y0 = Math.max(0, Math.min(...ys) - 4), x1 = Math.min(m.width, Math.max(...xs) + 7), y1 = Math.min(m.height, Math.max(...ys) + 7);
+  const small = m.width <= 40 && m.height <= 30;   // 작은 맵(방 하나)은 통째로
+  const x0 = small ? 0 : Math.max(0, Math.min(...xs) - 4), y0 = small ? 0 : Math.max(0, Math.min(...ys) - 4), x1 = small ? m.width : Math.min(m.width, Math.max(...xs) + 7), y1 = small ? m.height : Math.min(m.height, Math.max(...ys) + 7);
   const crop = new PNG({ width: (x1 - x0) * 16, height: (y1 - y0) * 16 });
   PNG.bitblt(full, crop, x0 * 16, y0 * 16, crop.width, crop.height, 0, 0);
   fs.writeFileSync(path.join(out, "scene-1x.png"), PNG.sync.write(crop));

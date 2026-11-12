@@ -119,7 +119,7 @@ def bake(dry=False):
     covers = _assembled()
     pins = TB.Pins(P['pins'], TPR)
     O = TB.Outdoor(pins, TPR, 'se', '전국·에도')
-    O.keep_old_cells(P['png'])   # 옛 칸은 옛 그림 그대로, 바뀐 그림은 새 칸(이미 깔린 맵 보존)
+    O.keep_old_cells(P['png'], P['tileset'])   # 옛 칸은 옛 그림 그대로, 바뀐 그림은 새 칸(이미 깔린 맵 보존)
     pieces = build_outdoor_pieces(report, covers)
     for p in pieces: O.add_piece(p)
     O.finish_pieces(pieces, lambda p: p.get('role', 'prop'), '걸을 수 있는 바닥(아래층).')
