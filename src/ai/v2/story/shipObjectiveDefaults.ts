@@ -115,9 +115,14 @@ export function fillStaleObjectives(project: Project): string[] {
     const live = readers.filter((r) => !vanishesWhenRead(project, r.mapId, r.eventId));
     // 청사진 밖 장치(레버)면 같은 맵의 청사진 단계 대상으로 — 길이 열린 뒤 할 일은 그 단계다.
     const sameMapStep = k < 0 ? steps.map((step) => (project.maps[event.mapId]?.events ?? []).find((e) => e.id === step.event || e.name === step.event)).find((e) => !!e && e.id !== event.eventId) : undefined;
-    const target = stepTarget ?? live.map((r) => r.name).find((n) => n && !/^ev_/u.test(n)) ?? (sameMapStep ? String(sameMapStep.name ?? sameMapStep.id) : undefined);
+    const liveNamed = live.find((r) => r.name && !/^ev_/u.test(r.name));
+    const target = stepTarget ?? liveNamed?.name ?? (sameMapStep ? String(sameMapStep.name ?? sameMapStep.id) : undefined);
     if (!target) continue;
-    const plan = planObjective(project, { text: `${object(`「${target}」`)} 찾아가자`, eventId: event.eventId, mapId: event.mapId });
+    // 목표가 가리킬 이벤트를 함께 싣는다 — 이름이 같은 다른 이벤트가 있어도 표시는 이 이벤트에 선다(다음 단계 이벤트 · 이 이벤트가 켠 것을 읽는 이벤트 · 같은 맵 단계).
+    const builtNext = nextStep?.built && (project.maps[nextStep.built.mapId]?.events ?? []).some((e) => e.id === nextStep.built!.eventId) ? { mapId: nextStep.built.mapId, eventId: nextStep.built.eventId } : undefined;
+    const stepEvent = builtNext ?? (nextStep ? Object.values(project.maps).flatMap((m) => (m.events ?? []).filter((e) => e.id === nextStep.event || e.name === nextStep.event).map((e) => ({ mapId: m.id, eventId: e.id }))).at(0) : undefined);
+    const aim = stepTarget ? stepEvent : liveNamed ? { mapId: liveNamed.mapId, eventId: liveNamed.eventId } : sameMapStep ? { mapId: event.mapId, eventId: sameMapStep.id } : undefined;
+    const plan = planObjective(project, { text: `${object(`「${target}」`)} 찾아가자`, eventId: event.eventId, mapId: event.mapId, ...(aim ? { target: aim } : {}) });
     if (!plan.ok) continue;
     for (const { mapId, event: next } of plan.events) {
       const map = project.maps[mapId];

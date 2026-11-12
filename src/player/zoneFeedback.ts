@@ -1,4 +1,4 @@
-import type { M2UiCommandState } from "@/project/sessionRuntimeTypes"
+import type { M2UiCommandState, ObjectiveTargetRef } from "@/project/sessionRuntimeTypes"
 import type { EventPage } from "@/project/types";
 
 const BANNER_DURATION_MS = 1500;
@@ -160,18 +160,24 @@ function activeMessage(message: TimedMessage | null, nowMs: number): TimedMessag
 
 /** 지금 「현재 목표」 글(목표 줄과 같은 규칙: 마지막 objectiveChip, 다 채운 n/n 은 없음). 메뉴 첫 화면도 쓴다. */
 export function currentObjectiveText(entries: readonly M2UiCommandState[] | undefined): string | null {
-  return entries ? lastObjective(entries) : null;
+  return currentObjective(entries)?.text ?? null;
 }
 
-function lastObjective(entries: readonly M2UiCommandState[]): string | null {
-  for (let index = entries.length - 1; index >= 0; index -= 1) {
-    const entry = entries[index];
+/** 지금 「현재 목표」 — 글과, 목표를 건 쪽이 적어 둔 대상 이벤트(있으면). 표시(빛무리·화살표)와 저장이 쓴다. */
+export function currentObjective(entries: readonly M2UiCommandState[] | undefined): { readonly text: string; readonly target?: ObjectiveTargetRef } | null {
+  for (let index = (entries?.length ?? 0) - 1; index >= 0; index -= 1) {
+    const entry = entries![index];
     if (entry?.surface.trim() !== "objectiveChip") continue;
     const message = entry.message.trim();
     if (!message) continue;
-    return completedObjective(message) ? null : message;
+    if (completedObjective(message)) return null;
+    return entry.target ? { text: message, target: entry.target } : { text: message };
   }
   return null;
+}
+
+function lastObjective(entries: readonly M2UiCommandState[]): string | null {
+  return currentObjective(entries)?.text ?? null;
 }
 
 function completedObjective(message: string): boolean {

@@ -10,6 +10,8 @@ import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import { buildDeadlineEndingEvent, DEADLINE_ENDING_COMMON_EVENT_ID, DEADLINE_ENDING_VARIABLE_ID, ensureHeroineEndings, hasRomanceDeadlineSkeleton, retireGenericHappy } from "@/project/deadlineEnding";
 import { ROMANCE_ENDING_HAPPY_AT, ROMANCE_ENDING_HAPPY_ID, ROMANCE_ENDING_NORMAL_AT, ROMANCE_ENDING_NORMAL_ID, SEGMENT_END_ENDING_ID } from "@/project/playableSegmentContract";
 import { ANY_FRIENDSHIP_KEY } from "@/project/session";
+import { normalizeTimeSystemConfig } from "@/project/databaseRecordModel";
+import { DEFAULT_DAY_END_HOUR, DEFAULT_DAY_START_HOUR, DEFAULT_DAYS_PER_SEASON, DEFAULT_TIME_MINUTES_PER_REAL_SECOND } from "@/project/gameTime";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { CONDITION_SCHEMA, CUTSCENE_BEAT_SCHEMA } from "./schemaShapes";
@@ -221,7 +223,7 @@ export { DEADLINE_ENDING_COMMON_EVENT_ID, DEADLINE_ENDING_VARIABLE_ID };
 const setDeadlineEnding: ToolDefinition = {
   name: "set_deadline_ending",
   description:
-    "N일이 지나면 결말을 정한다(연애·관계 게임의 기한 엔딩). 시간 시스템이 켜져 있어야 한다 — 하루가 끝날 때마다 지난 날을 세고(변수 var_days_elapsed), days 번째 하루가 끝나면 tiers 를 위에서부터 보아 처음 맞는 엔딩을 실행한다. "
+    "N일이 지나면 결말을 정한다(연애·관계 게임의 기한 엔딩). 시간 시스템이 꺼져 있으면 기본 시계로 켠다(하루 끝에 저절로 잠들어 날이 넘어간다) — 하루가 끝날 때마다 지난 날을 세고(변수 var_days_elapsed), days 번째 하루가 끝나면 tiers 를 위에서부터 보아 처음 맞는 엔딩을 실행한다. "
     + "tiers 는 호감이 높은 것부터 [{endingId, friendshipAtLeast, characterId?}] 로 적고, 마지막 항목은 friendshipAtLeast 를 생략해 기본 결말로 둔다. "
     + "인물이 여럿이면(다인 연애) 항목마다 characterId 를 줘 「그 사람의 호감이 문턱 이상이면 그 사람과의 결말」 로 적는다 — 위에서부터 처음 맞는 항목이 이기므로 여러 명이 문턱을 넘으면 먼저 적은 인물이 이긴다(그래서 더 아끼는 결말·높은 문턱을 위에 둔다). "
     + `characterId 를 「${ANY_FRIENDSHIP_KEY}」 로 주면 「가장 호감이 높은 사람」 기준이다(인물이 아직 없을 때·인물 무관 평범/혼자 결말). `
@@ -258,9 +260,6 @@ const setDeadlineEnding: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const days = typeof args.days === "number" && Number.isInteger(args.days) && args.days >= 1 ? args.days : undefined;
     if (days === undefined) throw new ToolError("days 는 1 이상의 정수여야 합니다.", { code: "invalid-args" });
-    if (!draft.system.timeSystem?.enabled) {
-      throw new ToolError("시간 시스템이 꺼져 있어 기한을 셀 수 없습니다 — configure_time_system({enabled:true}) 를 먼저 부르세요.", { code: "time-system-required" });
-    }
     const skeletonTiersAll = [
       { endingId: ROMANCE_ENDING_HAPPY_ID, friendshipAtLeast: ROMANCE_ENDING_HAPPY_AT, characterId: ANY_FRIENDSHIP_KEY },
       { endingId: ROMANCE_ENDING_NORMAL_ID, friendshipAtLeast: ROMANCE_ENDING_NORMAL_AT, characterId: ANY_FRIENDSHIP_KEY },
@@ -284,7 +283,9 @@ const setDeadlineEnding: ToolDefinition = {
       if (!endingId || !known.has(endingId)) {
         throw new ToolError(`tiers[${index}].endingId '${endingId}' 인 엔딩이 없습니다 — define_ending 으로 먼저 정의하세요. 있는 엔딩: ${[...known].join(", ") || "없음"}`, { code: "ending-not-found" });
       }
-      const threshold = tier.friendshipAtLeast;
+      // 0 이하의 문턱은 누구나 넘는다 — 문턱 없는 기본 결말로 읽는다. 싼 모델은 선택 칸을 0 으로 채워 보낸다
+      // (2026-11-12 셋째 묶음 Terra: tiers:[{endingId, friendshipAtLeast:0}] 를 일곱 번 보내고 «마지막 항목은 문턱 없이»로 일곱 번 거절당했다).
+      const threshold = typeof tier.friendshipAtLeast === "number" && tier.friendshipAtLeast <= 0 ? undefined : tier.friendshipAtLeast;
       if (threshold !== undefined && (typeof threshold !== "number" || !Number.isFinite(threshold))) {
         throw new ToolError(`tiers[${index}].friendshipAtLeast 는 숫자여야 합니다.`, { code: "invalid-args" });
       }
@@ -294,6 +295,9 @@ const setDeadlineEnding: ToolDefinition = {
       }
       return { endingId, threshold: threshold === undefined ? undefined : Math.trunc(threshold as number), characterId: tierCharacter };
     });
+    // 문턱 없는 항목 뒤에 같은 엔딩이 또 적혀 있으면 닿지 않는 겹침이다 — 걷어 낸다(다른 엔딩이면 아래에서 거절).
+    const firstDefault = resolved.findIndex((tier) => tier.threshold === undefined);
+    if (firstDefault >= 0 && resolved.slice(firstDefault + 1).every((tier) => tier.endingId === resolved[firstDefault]!.endingId)) resolved.length = firstDefault + 1;
     const last = resolved[resolved.length - 1]!;
     if (last.threshold !== undefined) {
       throw new ToolError("마지막 tiers 항목은 friendshipAtLeast 없이 기본 결말이어야 합니다 — 어느 문턱도 못 넘은 경우 결말이 없어 기한이 와도 게임이 끝나지 않습니다.", { code: "invalid-args" });
@@ -314,7 +318,14 @@ const setDeadlineEnding: ToolDefinition = {
       }
     }
     ensureNamedVariable(draft, DEADLINE_ENDING_VARIABLE_ID, "지난 날");
-    const timeSystem = draft.system.timeSystem;
+    // 시간 시스템이 꺼져 있으면 기본 시계로 켠다(하루 끝에 저절로 잠들어 날이 넘어가게) — 「7일이 지나면 끝나게」 한 줄이 «시간 시스템 먼저» 로 거절됐다(2026-11-11 작은 일 셋째 묶음).
+    const turnedOn = !draft.system.timeSystem?.enabled;
+    if (turnedOn) {
+      const clock = normalizeTimeSystemConfig({ enabled: true, minutesPerRealSecond: DEFAULT_TIME_MINUTES_PER_REAL_SECOND, dayStartHour: DEFAULT_DAY_START_HOUR, dayEndHour: DEFAULT_DAY_END_HOUR, daysPerSeason: DEFAULT_DAYS_PER_SEASON, forceSleep: true });
+      if (!clock) throw new ToolError("시간 시스템 설정 정규화에 실패했습니다.", { code: "invalid-time-system" });
+      draft.system.timeSystem = clock;
+    }
+    const timeSystem = draft.system.timeSystem!;
     const previousHook = timeSystem.onDayEnd && timeSystem.onDayEnd !== DEADLINE_ENDING_COMMON_EVENT_ID ? timeSystem.onDayEnd : undefined;
     if (previousHook && !draft.commonEvents.some((event) => event.id === previousHook)) {
       throw new ToolError(`system.timeSystem.onDayEnd '${previousHook}' 인 공통 이벤트가 없습니다.`, { code: "common-event-not-found" });
@@ -327,6 +338,7 @@ const setDeadlineEnding: ToolDefinition = {
     const warnings = [
       ...(retiredHappy ? [`일반 해피 엔딩 ${ROMANCE_ENDING_HAPPY_ID} 는 인물별 엔딩과 같은 문턱이라 닿을 수 없어 지웠습니다 — 인물 엔딩이 그 자리를 대신합니다.`] : []),
       ...(generated.length ? [`인물 엔딩 ${generated.join(", ")} 을(를) 기본 문구로 만들었습니다 — define_ending 으로 같은 id 의 에필로그를 그 인물에 맞게 다시 쓰세요(문턱은 이 도구가 건 호감 ${ROMANCE_ENDING_HAPPY_AT}).`] : []),
+      ...(turnedOn ? ["The time system was off — turned it on with the default clock (a day runs 6:00 to 2:00 and ends by itself, so the days pass). Adjust it with configure_time_system if needed."] : []),
       ...(previousHook ? [`기존 onDayEnd '${previousHook}' 는 기한 판정 앞에서 먼저 실행하도록 이었습니다.`] : []),
       ...(timeSystem.forceSleep === true ? [] : ["forceSleep 이 꺼져 있으면 플레이어가 자지 않는 한 하루가 끝나지 않아 기한이 오지 않습니다 — 연애 게임은 하루 칸을 다 쓰면 자동으로 하루가 끝나도록 forceSleep 을 켜거나 잠자리 이벤트(sleepUntilMorning)를 두세요."]),
     ];

@@ -18,6 +18,10 @@
 `pageHorror.ts`는 기존 `updateEventPage` 경로를 사용하므로 초안·취소·적용·편집 감사 로그를 공유한다.
 AI도 `make_chase_scene.pursuit`와 `configure_object_behavior`로 같은 페이지 필드를 저작한다.
 학교 호러 프리셋 지시(`HORROR_CHASE_AUTHORING_GUIDE`)는 방을 `place_concept`로, 은신을 옷장과 같은 칸의 `hidingSpots`로, 숫자 암호를 `compile_puzzle` `password`(inputNumber)로 만든다. 추격 스위치를 꺼서 숨는 척을 하거나 선택지 보기에 암호 숫자를 적지 않는다.
+`compile_puzzle` `password` (2026-11-11): 숫자만으로 된 1~6자리 답은 「0427」처럼 0 으로 시작해도 숫자 입력창으로 받는다(전에는 선택지로 떨어졌다).
+글자 답의 선택지 보기 다섯은 맞는 글자와 같은 종류(숫자·영문·한글)에서 이어진 글자이고 맞는 글자의 자리는 답과 자리 번호로 정해진다 — 전에는 **맞는 글자가 늘 첫 칸**이라 첫 칸만 누르면 열렸다.
+그 칸 윗층에 물건 타일이 없으면 장치에 `nearSparkle {radius:2}` 를 달고 영어 알림(「has no picture … stamp_object」)을 돌려준다.
+`configure_object_behavior` 는 `pageId` 를 생략하면 그 이벤트의 첫 페이지를 고친다(페이지 id 를 읽으러 한 번 더 부르지 않게).
 **추격자 맵의 은신처는 0곳이 될 수 없다(2026-10-29).** standin horror 「폐병원」은 순찰·즉사 추격자가 있는데 숨을 곳이 0곳이었다(조수가 hidingSpots 를 주지 않았다).
 `src/project/chaserHiding.ts` `ensureChaserHidingSpots` 가 맵에 이미 있는 숨을 만한 가구(옷장·사물함·캐비닛 > 침대 > 커튼·책상, 협탁·모니터·걸대 제외 — 타일 이름표 `objectClusterAt`)
 중 순찰 길(집 칸 + `movement.route`)에서 발 칸까지 걸어서 2~14걸음(벽 너머 맨해튼 거리 아님 — canMove BFS)인 막힌 가구 칸 1~2곳(서로 4칸 넘게; 가까운 곳이 하나라도 있으면 먼 곳으로 채우지 않는다)에 투명 `interaction hiding` 이벤트(`ev_hide_<추격자>_<n>`, 이름 「숨을 곳: 가구」)를 결정적으로 건다.

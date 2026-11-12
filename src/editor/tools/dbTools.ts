@@ -2174,7 +2174,11 @@ const defineCrop: ToolDefinition = {
       stages: [{ days: 1 }, { days: 2 }],
       seasons: ["spring"],
     };
-    const merged = mergeRecord(draft.database.crops, args.crop, "crop", cropRecordSchema, example, ["name", "seedItemId", "harvestItemId", "stages", "seasons"]);
+    // 계절을 안 적은 새 작물은 사계절 자란다 — 「순무는 3일 뒤에 수확」 한 줄이 seasons 누락으로 거절됐다(2026-11-11 작은 일 셋째 묶음). 있는 작물은 보낸 칸만 바뀐다.
+    const input = args.crop as Record<string, unknown> | undefined;
+    const isNew = !!input && typeof input === "object" && !draft.database.crops.some((crop) => crop.id === input.id);
+    const cropInput = isNew && input!.seasons === undefined ? { ...input, seasons: ["spring", "summer", "fall", "winter"] } : args.crop;
+    const merged = mergeRecord(draft.database.crops, cropInput, "crop", cropRecordSchema, example, ["name", "seedItemId", "harvestItemId", "stages", "seasons"]);
     const record = normalizeCropRecord(merged as Partial<CropRecord> & Pick<CropRecord, "id" | "name">);
     const itemIds = new Set(draft.database.items.map((item) => item.id));
     const missing = [record.seedItemId, record.harvestItemId].filter((itemId) => !itemIds.has(itemId));

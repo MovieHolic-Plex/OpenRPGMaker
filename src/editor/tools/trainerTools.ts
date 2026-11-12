@@ -14,6 +14,7 @@ import { assertEventShape, placementAdjustedWarning, resolveEventPlacement, upse
 import { walkableFromAnchors } from './transferReachability';
 import { entryCells } from '@/project/eventPassageBlock';
 import { GRAPHIC_SPEC_SCHEMA } from './schemaShapes';
+import { noteToolChosenGraphic } from './toolChosenGraphics';
 import { charsetFrameIndex, decodeCharsetFrameIndex } from '@/assets/easyrpgRtp';
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel } from '@/project/monsterCollection';
 import { demoEnemy, demoTroop } from '@/project/defaults/scarloxyDemoGame';
@@ -250,6 +251,8 @@ export const TRAINER_TOOLS: readonly ToolDefinition[] = [
           try { base = resolveGraphic({ query }, { overrides: draft.charsetLabels, avoidKeys: usedCharsetGraphicKeysOnMap(map), seed: `${map.id}:${name}:${start.x},${start.y}` }); if (query === 'villager') warnings.push('조련사 도트를 못 찾아 주민 도트를 썼습니다 — graphic 으로 사람 도트를 고르세요(list_npc_graphics).'); break; } catch (error) { if (!(error instanceof ToolError)) throw error; }
         }
         if (!base) throw new ToolError('사람 도트를 찾지 못했습니다 — graphic:{query|textureKey,characterIndex} 로 직접 고르세요(list_npc_graphics).', { code: 'graphic-not-found' });
+        // graphic 을 생략하면 도구가 조련사 도트를 고른다 — 모델의 선택이 아니니 칩 관문에 도구 선택으로 알린다(안 알리면 「되돌렸습니다」로 트레이너가 통째로 사라진다).
+        noteToolChosenGraphic(base);
       }
       const pattern = typeof base.pattern === 'number' ? base.pattern : 0;
       const look = decodeCharsetFrameIndex(pattern);

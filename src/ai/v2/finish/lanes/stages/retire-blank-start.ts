@@ -4,7 +4,7 @@ import { retireBlankStart } from "../../../blankStart";
 
 export const stage: FinishStage = {
   id: "retire-blank-start", phase: "lane-project", order: 10,
-  run({ notes, run }) {
-    notes.push(...retireBlankStart(run));
+  run({ notes, run, env }) {
+    notes.push(...retireBlankStart(run, env.request.project));
   },
 };

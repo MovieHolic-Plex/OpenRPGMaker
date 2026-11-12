@@ -536,19 +536,25 @@ function passwordWrongCommands(variableId: string | undefined, reset: boolean, w
   ];
 }
 
+/** 숫자만으로 된 1~6자리 암호는 숫자 입력창으로 받는다 — 「0427」처럼 0 으로 시작해도 자리 수가 같아 같은 값이다. */
 function canUseInputNumber(answer: string): boolean {
-  return /^(0|[1-9]\d*)$/.test(answer) && answer.length >= 1 && answer.length <= 6;
+  return /^\d{1,6}$/.test(answer);
 }
 
+const PASSWORD_POOLS: readonly string[] = ["0123456789", "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz", "가나다라마바사아자차카타파하"];
+/**
+ * 선택지로 받는 암호의 한 자리 보기 다섯 — 맞는 글자와 같은 종류(숫자·영문·한글)에서 차례대로 이어진 다섯 글자(끝에서는 처음으로 돈다)이고,
+ * 맞는 글자가 그 다섯 가운데 몇째인지는 답과 자리 번호로 정한다(다시 지어도 같다).
+ * 왜: 맞는 글자가 늘 첫 칸이면 답을 몰라도 첫 칸만 누르면 열린다(2026-11-11 작은 일 셋째 묶음 password-safe).
+ */
 function passwordChoiceOptions(answer: string, position: number): string[] {
   const correct = answer[position] as string;
-  const pool = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ가나다라마바사아자차카타파하";
-  const options = [correct];
-  for (const char of pool) {
-    if (options.length >= 5) break;
-    if (!options.includes(char)) options.push(char);
-  }
-  return options;
+  const pool = [...(PASSWORD_POOLS.find((chars) => chars.includes(correct)) ?? PASSWORD_POOLS.join(""))];
+  const seed = [...answer].reduce((sum, char) => sum + (char.codePointAt(0) ?? 0), position * 7 + 3);
+  const rank = seed % 5, at = pool.indexOf(correct);
+  // 어느 종류에도 없는 글자(기호 등)는 차례가 없다 — 이어진 넷 사이 그 자리에 끼운다.
+  if (at < 0) { const options = Array.from({ length: 4 }, (_, i) => pool[(seed + i) % pool.length] as string); options.splice(rank, 0, correct); return options; }
+  return Array.from({ length: 5 }, (_, i) => pool[(at - rank + i + pool.length) % pool.length] as string);
 }
 
 function passwordChoiceCommands(answer: string, prompt: string, position: number, solveCommands: readonly Command[], reset: boolean, wrong?: PasswordWrong): Command[] {
@@ -584,7 +590,7 @@ function compilePassword(draft: Project, map: GameMap, args: RecordValue): ToolE
     label: `password '${name}'`,
     code: "puzzle-password-impassable",
   });
-  const warnings = placement.adjusted
+  const warnings: string[] = placement.adjusted
     ? [`password '${name}' 위치 자동 조정: (${at.x}, ${at.y}) → (${placement.x}, ${placement.y})`]
     : [];
   const prompt = typeof args.prompt === "string" && args.prompt.length > 0 ? args.prompt : "암호를 입력한다.";
@@ -632,10 +638,16 @@ function compilePassword(draft: Project, map: GameMap, args: RecordValue): ToolE
       }),
     ],
   };
+  // 그 칸 윗층에 물건 타일이 없으면 장치는 빈 바닥이다 — 가까이 가면 반짝이게 하고(찾을 수는 있게) 모델에게 그 칸에 물건을 놓으라고 이른다.
+  const bare = (map.upperTiles[placement.y * map.width + placement.x] ?? -1) <= 0;
+  if (bare) {
+    event.pages![0]!.nearSparkle = { radius: 2 };
+    warnings.push(`The password device '${name}' at (${placement.x},${placement.y}) has no picture: that cell has no object tile, so the player sees bare floor (it only sparkles from 2 cells away). Stamp a safe/chest/panel object on that cell (list_spatial_designs → stamp_object), or compile it on a cell that already has furniture.`);
+  }
   assertEventShape(event);
   map.events.push(event);
   return {
-    summary: `${map.name}에 password 퍼즐 '${puzzleId}' 컴파일 — ${canUseInputNumber(answer) ? "숫자 입력" : "선택지 입력"}`,
+    summary: `${map.name}에 password 퍼즐 '${puzzleId}' 컴파일 — ${canUseInputNumber(answer) ? "숫자 입력" : "선택지 입력"}${bare ? " · 빈 바닥 위(그림 없음 — 가까이 가면 반짝임)" : ""}`,
     data: { created: 1, skipped: 0, puzzleId, kind: "password", eventIds: [eventId], variableId, solveSwitchId: solve.solveSwitchId },
     ...(warnings.length > 0 ? { warnings } : {}),
   };
