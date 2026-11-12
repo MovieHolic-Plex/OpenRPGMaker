@@ -11,6 +11,10 @@ import { chaserEvents, chaserMapsWithoutHiding } from "@/project/chaserHiding";
 import { FIELD_BATTLE_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { addFitSkills, fitEnemyToStartParty, fitTroopCopy } from "@/editor/tools/bossThreatScaling";
 import { parseArtGap } from "@/project/artGap";
+import { themeBossTroop, themeFieldTroops } from "@/ai/v2/place/placeTheme";
+import { preloadCurrentMonsterArt } from "@/assets/currentMonsterArt";
+import { enemyIdentityProblems } from "@/ai/v2/judge/enemyChecks";
+import { fitWithinTarget } from "@/editor/tools/bossThreatScaling";
 import { fitPathBattlesIn, PATH_TROOP_PREFIX } from "@/ai/v2/story/pathBattleBudget";
 import { fitUnwinnableStepBattlesIn } from "@/ai/v2/story/blueprintPathBattles";
 import { simulateBattle } from "@/battle/simulate";
@@ -183,6 +187,37 @@ describe("보스는 «공격» 만으로는 못 이긴다", () => {
     expect(fitUnwinnableStepBattlesIn(project)).toEqual([]);
     expect(bossTroop()).toBe(troopId);
     expect(JSON.stringify(project.database.enemies.map((e) => [e.id, e.stats]))).toBe(stats);
+  }, 180_000);
+});
+
+// 2026-11-13 명세 은행 전/후(49게임): 길 적을 평타 세 대로 올리자 던전 빌더의 무리(동굴 박쥐 둘)가 한 판 52% 를 깎아 «전투 세기» 관문이 섰고,
+// 제 기술을 든 길 적이 같은 종의 단계 상대와 기술이 같아 «적 개성» 관문이 섰다. 둘 다 고르는 곳·맞추는 곳에서 막는다.
+describe("길 적은 관문이 재는 값 안에서 선다", () => {
+  it("혼자 선 적도 무리도 한 판 손실이 8~15% 안이다 — 한 맵의 적 셋을 이어 싸워도 예산(60%)을 넘지 않는다", () => {
+    const project = createBlankProject() as Project;
+    for (const [id, count] of [["enemy_hound_hell", 1], ["enemy_bat_cave", 1], ["enemy_bat_cave", 2], ["enemy_snake_viper", 1], ["enemy_goblin_scout", 2]] as const) {
+      const enemy = project.database.enemies.find((e) => e.id === id)!;
+      const fit = fitEnemyToStartParty(project, enemy, "field", count)!;
+      expect(fitWithinTarget(fit, "field"), `${id}×${count} 손실 ${fit.loss}`).toBe(true);
+      expect(fit.winRate).toBe(1);
+      expect(fit.loss).toBeLessThanOrEqual(0.15);
+    }
+  }, 180_000);
+
+  it("그 맵의 단계 상대와 같은 종은 길 적으로 서지 않는다 — «적 개성» 검사가 서지 않는다", async () => {
+    await preloadCurrentMonsterArt();
+    const { project, mapId } = world("prehistoric", "prehistoric", [{ name: "갈대 늪", kind: "swamp" }]);
+    const map = project.maps[mapId]!;
+    const names = (ids: readonly string[]) => ids.map((id) => project.database.troops.find((t) => t.id === id)?.name);
+    expect(names(themeFieldTroops(project, mapId).troopIds)).toContain("송곳니 멧돼지");
+    const boss = themeBossTroop(project, mapId, "늪의 송곳니", false, 0).troopId!;
+    expect(project.database.troops.find((t) => t.id === boss)?.name).toBe("송곳니 멧돼지");
+    map.events.push({ id: "ev_step", name: "늪의 송곳니", x: 4, y: 4, pages: [{ conditions: [], trigger: { kind: "action" }, commands: [{ kind: "battleProcessing", troopId: boss, canEscape: false, canLose: false }] }] } as never);
+    const field = themeFieldTroops(project, mapId).troopIds;
+    expect(names(field)).not.toContain("송곳니 멧돼지");
+    expect(field.length).toBeGreaterThanOrEqual(2);
+    field.forEach((troopId, n) => map.events.push({ id: `ev_${mapId}_wfoe${n + 1}`, name: "", x: 6 + n, y: 6, pages: [{ conditions: [], trigger: { kind: "eventTouch" }, commands: [{ kind: "battleProcessing", troopId, canEscape: true, canLose: false }] }] } as never));
+    expect(enemyIdentityProblems(project)).toEqual([]);
   }, 180_000);
 });
 

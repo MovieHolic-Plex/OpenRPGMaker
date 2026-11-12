@@ -211,12 +211,41 @@ function fitted(project: Project, enemyIds: readonly string[], role: EnemyFitRol
  * 한 맵에 같이 설 길 적 — 종마다 다른 종에 없는 자기 기술이 하나는 있는 무리만(순서대로). 끝맺음 «적 개성» 검사와 같은 값(judge/enemyChecks)으로 고른다.
  * 왜(2026-11-12 은행 jrpg-w3): 현행 그림으로 좁히자 사막 길 적이 독사·복면 산적이 되었는데 맞춘 사본 둘 다 「맹독 이빨」이라 독사에게 자기 기술이 없었다.
  */
-function withOwnSkills(project: Project, troopIds: readonly string[]): string[] {
+function withOwnSkills(project: Project, troopIds: readonly string[], others: readonly ReadonlySet<string>[] = []): string[] {
   const skills = (troopId: string) => foeSkillNames(project, leadEnemyId(project, troopId));
-  const own = (ids: readonly string[]) => ids.every((id) => [...skills(id)].some((s) => ids.every((o) => o === id || !skills(o).has(s))));
+  // 그 맵에서 이미 싸우는 다른 적(단계 상대)과도 견준다 — 같은 종의 길 적은 그 상대와 기술이 같아 둘 다 «자기 기술이 없다» 가 된다.
+  const sets = (ids: readonly string[]) => [...others, ...ids.map(skills)];
+  const own = (ids: readonly string[]) => { const all = sets(ids); return all.slice(others.length).every((mine) => [...mine].some((s) => all.every((o) => o === mine || !o.has(s)))); };
   const kept: string[] = [];
   for (const id of troopIds) if (own([...kept, id])) kept.push(id);
   return kept.length ? kept : troopIds.slice(0, 1);
+}
+
+/** 이 맵에서 세계 채우기의 적(`ev_<맵>_wfoe<n>`)이 아닌 이벤트가 여는 전투의 적들 — 기본 공격을 뺀 기술 이름 집합(적마다). */
+function otherFoeSkills(project: Project, map: GameMap): ReadonlySet<string>[] {
+  const out: ReadonlySet<string>[] = [];
+  const seen = new Set<string>();
+  const worldFoe = new RegExp(`^ev_${map.id}_wfoe\\d+$`, "u");
+  for (const event of map.events ?? []) {
+    if (worldFoe.test(event.id)) continue;
+    const visit = (node: unknown): void => {
+      if (Array.isArray(node)) { node.forEach(visit); return; }
+      if (!node || typeof node !== "object") return;
+      const cmd = node as { kind?: unknown; troopId?: unknown };
+      if (cmd.kind === "battleProcessing" && typeof cmd.troopId === "string") {
+        const troop = project.database.troops.find((t) => t.id === cmd.troopId);
+        for (const enemyId of troop?.members?.map((m) => m.enemyId) ?? troop?.enemyIds ?? []) {
+          if (seen.has(enemyId)) continue;
+          seen.add(enemyId);
+          const names = foeSkillNames(project, enemyId);
+          if (names.size) out.push(names);
+        }
+      }
+      for (const value of Object.values(node)) if (value && typeof value === "object") visit(value);
+    };
+    visit(event.pages);
+  }
+  return out;
 }
 
 /** 테마가 바란 적 가운데 현행 그림이 있는 것(세울 수 있는 것)과, 그림이 없어 못 세우는 종의 이름(그릴 목록). 프로젝트 DB 에 없는 적은 뺀다. */
@@ -245,7 +274,7 @@ export function themeFieldTroops(project: Project, mapId: string): { readonly tr
   const map = project.maps[mapId];
   if (!theme || !map) return { troopIds: [], gaps: [] };
   const want = drawn(project, theme.entry.foes);
-  const troopIds = withOwnSkills(project, fitted(project, want.ids, "field"));
+  const troopIds = withOwnSkills(project, fitted(project, want.ids, "field"), otherFoeSkills(project, map));
   const names = troopIds.map((id) => project.database.troops.find((t) => t.id === id)?.name ?? id).join("·");
   if (!troopIds.length) return { troopIds, gaps: foeGaps(theme, "foe", placeName(map), "default field troops", want.undrawn, theme.entry.wantedFoes ?? `foes of ${theme.kind?.about ?? theme.world.name}`) };
   return { troopIds, gaps: foeGaps(theme, "foe", placeName(map), names, want.undrawn, theme.entry.wantedFoes) };

@@ -152,11 +152,14 @@ export function scaleBossToStartParty(project: Project, enemy: EnemyRecord, lock
 
 /** 역할별 맞춤 목표: 영웅 평타 몇 대에 한 마리가 쓰러지나 · 적 평타 한 대가 영웅 최대 HP 의 몇 할인가 · 모의전 하한/상한 · 파티 대비 민첩. */
 const FIT_TARGETS = {
-  // 길 적: 평타 세 대(두 대면 적이 한 번도 못 치고 쓰러졌다 — 지옥 사냥개 2타·받은 피해 0), 한 판에 HP 를 조금은 잃는다.
-  field: { hits: 3, perExtraMember: 1, share: 0.07, minWin: 0.95, maxLoss: 0.35, minLoss: 0.08, agility: 0.8, levelOffset: 0 },
+  // 길 적: 혼자 선 적은 평타 세 대(두 대면 적이 한 번도 못 치고 쓰러졌다 — 지옥 사냥개 2타·받은 피해 0), 한 판에 HP 를 8~15% 잃는다.
+  // 상한 15% = 길 위 예산(보스 앞 60%)을 상징 적 넷이 나눈 몫 — 한 맵의 적 셋을 이어 싸워도 60% 를 넘지 않는다(끝맺음·«전투 세기» 검사와 같은 값).
+  field: { hits: 3, perExtraMember: 1, share: 0.07, minWin: 0.95, maxLoss: 0.15, minLoss: 0.08, agility: 0.8, levelOffset: 0 },
   midBoss: { hits: 6, perExtraMember: 3, share: 0.07, minWin: 0.95, maxLoss: 0.6, minLoss: 0.2, agility: 0.9, levelOffset: 1 },
   boss: { hits: BOSS_HITS_TO_KILL, perExtraMember: 4, share: BOSS_HIT_SHARE, minWin: BOSS_MIN_WIN_RATE, maxLoss: BOSS_MAX_PARTY_LOSS, minLoss: BOSS_MIN_PARTY_LOSS, agility: 0.9, levelOffset: 2 },
 } as const;
+/** 여러 마리 길 적 무리는 한 마리가 평타 두 대·한 대 5%(무리 전체로 싸움 길이가 혼자 선 적과 비슷하다 — 세 대씩이면 박쥐 둘이 한 판 55% 를 깎았다). */
+const FIELD_GROUP = { hits: 2, share: 0.05 } as const;
 const FIT_PROBE_TROOP_ID = "__fit_probe";
 
 export type EnemyFitRole = keyof typeof FIT_TARGETS;
@@ -199,19 +202,20 @@ export function fitEnemyToStartParty(project: Project, enemy: EnemyRecord, role:
   const hero = party[0];
   if (!hero || hero.maxHp <= 0) return undefined;
   const target = FIT_TARGETS[role];
+  const group = role === "field" && count > 1;
   const partyHp = party.reduce((sum, battler) => sum + battler.maxHp, 0);
   const partyAgility = party.reduce((sum, battler) => sum + battler.agility, 0) / party.length;
   // 방어가 영웅 공격보다 크게 높으면 평타가 1 만 들어간다 — 공격력의 8할로 묶는다.
   const defense = Math.max(1, Math.min(enemy.stats.defense, Math.round(hero.attackPower * 0.8)));
   const tuning = computeEnemyTuning({
     project, heroLevel, partyActorIds: [...partyActorIds], enemyDefense: defense,
-    targetHitsToKill: target.hits + target.perExtraMember * (party.length - 1),
-    targetDamageToHeroPerHit: Math.max(1, Math.round(hero.maxHp * target.share)),
+    targetHitsToKill: (group ? FIELD_GROUP.hits : target.hits) + target.perExtraMember * (party.length - 1),
+    targetDamageToHeroPerHit: Math.max(1, Math.round(hero.maxHp * (group ? FIELD_GROUP.share : target.share))),
   });
   let stats: EnemyStats = { ...enemy.stats, defense, maxHp: tuning.maxHp, attack: tuning.attack, mind: tuning.attack, agility: Math.max(1, Math.round(partyAgility * target.agility)) };
   // 능력치만 낮춰서는 안 되는 적이 있다 — 끝판 기술(마왕의 심판 위력 220·전체)은 위력이 공격력보다 커서 Lv1 파티를 한두 턴에 지운다.
   // 이 적 사본의 기술만, 위력을 낮춘 **그 기술의 사본**으로 바꾼다(이름·속성·연출 그대로, 데이터베이스 기술은 그대로).
-  const swapped = tameOverpoweredSkills(project, enemy, role, hero, stats);
+  const swapped = tameOverpoweredSkills(project, enemy, role, hero, stats, group ? count : 1);
   const measure = (): { winRate: number; loss: number } => {
     const probeEnemy = { ...enemy, stats, ...(swapped ? { actions: swapped.actions, skillIds: swapped.skillIds } : {}) } as EnemyRecord;
     const probe = normalizeTroopRecord({ id: FIT_PROBE_TROOP_ID, name: enemy.name, enemyIds: Array.from({ length: Math.max(1, count) }, () => enemy.id) });
@@ -229,13 +233,19 @@ export function fitEnemyToStartParty(project: Project, enemy: EnemyRecord, role:
   try {
     outcome = measure();
     // 너무 세면 공격·마력을 15%씩 내리고, 바닥에 닿으면 HP 도 내린다(기술 위력·회복 기술·여러 마리가 산식보다 세다).
-    for (let round = 0; round < 12 && (outcome.winRate < target.minWin || outcome.loss > target.maxLoss); round += 1) {
-      const attack = Math.max(1, Math.floor(stats.attack * 0.85));
-      const mind = Math.max(1, Math.floor(stats.mind * 0.85));
-      const maxHp = attack === stats.attack ? Math.max(1, Math.floor(stats.maxHp * 0.85)) : stats.maxHp;
+    // 길 적은 공격을 내려도 손실이 안 줄면(독·기술이 피해를 정한다 — 독사) 바로 HP 를 내린다: 싸움이 짧아져야 덜 잃는다. HP 바닥은 산식 값의 절반(평타 두 대는 버틴다).
+    const hpFloor = role === "field" ? Math.max(1, Math.ceil(tuning.maxHp / 2)) : 1;
+    let stalled = false;
+    for (let round = 0; round < (role === "field" ? 16 : 12) && (outcome.winRate < target.minWin || outcome.loss > target.maxLoss); round += 1) {
+      const lowerAttack = !stalled && stats.attack > 1;
+      const attack = lowerAttack ? Math.max(1, Math.floor(stats.attack * 0.85)) : stats.attack;
+      const mind = lowerAttack ? Math.max(1, Math.floor(stats.mind * 0.85)) : stats.mind;
+      const maxHp = lowerAttack ? stats.maxHp : Math.max(hpFloor, Math.floor(stats.maxHp * 0.85));
       if (attack === stats.attack && maxHp === stats.maxHp) break;
       stats = { ...stats, attack, mind, maxHp };
-      outcome = measure();
+      const next = measure();
+      if (role === "field" && lowerAttack && next.winRate >= outcome.winRate && outcome.loss - next.loss < 0.01) stalled = true;
+      outcome = next;
     }
     // 거의 안 아프면(보스·수문장) 공격만 20%씩 올린다. 파티가 지기 시작하면 한 단계 되돌린다.
     for (let round = 0; round < MAX_ROUNDS && target.minLoss > 0 && outcome.winRate >= target.minWin && outcome.loss < target.minLoss; round += 1) {
@@ -265,7 +275,7 @@ type SkillRecord = Project["database"]["skills"][number];
  */
 function tameOverpoweredSkills(
   project: Project, enemy: EnemyRecord, role: EnemyFitRole,
-  hero: { readonly maxHp: number; readonly defense: number; readonly mind: number }, stats: EnemyStats,
+  hero: { readonly maxHp: number; readonly defense: number; readonly mind: number }, stats: EnemyStats, sharedBy = 1,
 ): { actions: EnemyRecord["actions"]; skillIds: string[]; skills: SkillRecord[] } | undefined {
   const known = new Map(project.database.skills.map(skill => [skill.id, skill]));
   const hitsOf = (skill: SkillRecord) => (skill.hitSequence?.length ? skill.hitSequence.reduce((a, b) => a + b, 0) : 1);
@@ -274,7 +284,8 @@ function tameOverpoweredSkills(
     const mind = skill.effect.statistic === "mind";
     return Math.max(1, power + Math.floor((mind ? stats.mind : stats.attack) / 2) - Math.floor((mind ? hero.mind : hero.defense) / 2)) * hitsOf(skill);
   };
-  const cap = (skill: SkillRecord) => hero.maxHp * SKILL_HIT_CAP[role][skill.scope === "allEnemies" ? 1 : 0];
+  // 여러 마리 무리는 한 방의 상한을 마릿수로 나눈다 — 셋이 같은 기술을 쓰면 한 차례에 세 번 맞는다.
+  const cap = (skill: SkillRecord) => hero.maxHp * SKILL_HIT_CAP[role][skill.scope === "allEnemies" ? 1 : 0] / Math.max(1, sharedBy);
   const tail = enemy.id.replace(/^enemy_/u, "");
   const copies = new Map<string, SkillRecord>();
   const pick = (id: string): string => {
