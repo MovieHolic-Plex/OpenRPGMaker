@@ -29,7 +29,7 @@ ROOMS = [('teahouse', 13, 10, '찻집 13×10'), ('shop', 11, 9, '바자르 가�
          ('hammam', 13, 11, '목욕탕 13×11'), ('inn', 13, 10, '여관 방 13×10')]
 HEAD = (f"tilesetId `desert_east` · 그림 `public/assets/desert-east/desert-east-chipset.png`(텍스처 `tex_desert_east`, **{N}칸**, 16px 칸, 시트 {TPR * 16}×{math.ceil(N / TPR) * 16}px, "
         f"한 줄 **{TPR}칸** — 번호 n 의 칸은 열 n%{TPR}, 행 n÷{TPR}(내림), 픽셀 (열×16, 행×16), 모두 0 기준). 계열 `oprn-desert-east` — 다른 칩셋(버들항·일본 도시·조선·마법 학교·실내 v5)의 칸 번호와 섞지 않는다. "
-        "팔레트는 desert_east 잠금 21램프(사암·흙벽돌·회칠·청록·군청·금·나무·야자·물·모래…). 시점은 3/4 탑뷰(윗면 + 남쪽 앞면), 빛 왼쪽 위. 모든 그림은 object-gate 3/4 관문 영수증이 있는 조각만 구웠다.")
+        "팔레트는 desert_east 잠금 21램프(사암·흙벽돌·회칠·청록·군청·금·나무·야자·물·모래…). 시점은 3/4 탑뷰(윗면 + 남쪽 앞면), 빛 왼쪽 위. 이야기 기물 8종(`de-objects` 묶음 — 봉인 제단·화단·샘·기록부·쪽지·표식·빛나는 파편·비문 돌)은 3/4 관문 미통과 — 오너 면제 그림이고, 그 밖의 그림은 object-gate 3/4 관문 영수증이 있는 조각만 구웠다.")
 
 
 def arr(a): return json.dumps(a, separators=(',', ':'))
@@ -275,6 +275,86 @@ def errors_md(rows):
     return '\n'.join(L)
 
 
+# ───────────────────────── 이야기 기물(de-objects 조각 묶음) ─────────────────────────
+OBJ_SPEC = os.path.join(ROOT, 'tiledata/desert-east/objects/spec.json')
+OBJ_SCENE = [('spring', 1, 1), ('seal-altar', 6, 2), ('inscription-stone', 9, 2), ('record-stand', 11, 2), ('flower-bed', 13, 3),
+             ('marker', 6, 6), ('shard', 8, 6), ('note', 10, 6)]     # (조각, 왼쪽 위 x, y) — 16×8 모래 장면
+
+
+def objects_scene(spec):
+    """모래 16×8 위에 8종을 키트 배열 그대로 놓은 장면 + 좌표 검사(통행이 선언과 같은가 · 3층에 통째로 있는가)."""
+    W, H = 16, 8
+    sand = [PIECES['tiles'][n] for n in ('de-sand', 'de-sand-b', 'de-sand-c', 'de-sand-d')]
+    d = dict(width=W, height=H, lower=[sand[(x * 7 + y * 13) % 4] for y in range(H) for x in range(W)], upper=[-1] * (W * H))
+    for pid, x, y in OBJ_SCENE: stamp(d, 'de-' + pid, x, y)
+    return d
+
+
+def objects_check(d, spec):
+    W = d['width']; by = {it['id']: it for it in spec['items']}; errs = []
+    for pid, ox, oy in OBJ_SCENE:
+        it = by[pid]; k = KIT['de-' + pid]; block = {tuple(c) for c in it['block']}
+        for r, row in enumerate(k['rows']):
+            for c, t in enumerate(row['upperTiles']):
+                if t < 0: continue
+                i = (oy + r) * W + ox + c
+                if d['upper'][i] != t: errs.append(('E_OBJ_LAYER' if d['lower'][i] == t else 'E_OBJ_INCOMPLETE', 'de-' + pid, ox + c, oy + r)); continue
+                if passable(t) == ((c, r) in block): errs.append(('E_OBJ_PASSAGE', 'de-' + pid, ox + c, oy + r))
+    return errs
+
+
+def objects_md(spec, d, tamper_rows):
+    by = {it['id']: it for it in spec['items']}
+    L = [f"# desert_east · 이야기 기물 8종 (샘·봉인 제단·화단·기록부·쪽지·표식·빛나는 파편·비문 돌)\n\n{HEAD}\n",
+         f"게임들이 바랐는데 그림이 없던 물건이다. **이 여덟 그림은 3/4 관문 미통과 — 오너 면제 그림**(면제 묶음 {spec['waiver']}, Claude Fable 5.2 한 방 그림)이다 — 관문 영수증이 없고 스토어로는 나가지 않는다. "
+         "그림 정본 `tiledata/desert-east/objects/pieces/`, 정의 `spec.json`, 굽기는 다른 조각과 같은 `bake_de.py`.\n",
+         "## 1. 사전\n\n모든 칸은 **위층(upperTiles)** 에 놓는다(아래층 모래·포석·풀은 그대로 — 투명 화소 밑으로 비친다). 서 있는 기물: 막힌 칸은 네 방향 막힘, 나머지 칸은 ★(사람 위에 그려지고 걷는다). 바닥 그림(쪽지): 사람 아래·걷는다.\n",
+         "| 키트 id | 무엇 | 크기 | 위층 칸 번호(위 줄 / 아래 줄) | 놓는 방식 | 막힌 칸 (dx,dy) | 찾는 낱말(키트 태그) |\n|---|---|---|---|---|---|---|"]
+    for it in spec['items']:
+        k = KIT['de-' + it['id']]
+        L.append(f"| `de-{it['id']}` | {it['name']} | {it['w']}×{it['h']} | {' / '.join(' '.join(map(str, r['upperTiles'])) for r in k['rows'])} | {'바닥 그림(밟고 지나감)' if it['place'] == 'decal' else '서 있는 기물'} | "
+                 f"{' '.join('(%d,%d)' % tuple(c) for c in it['block']) or '—'} | {', '.join(it['words'])} |")
+    L.append("\n전부 고정 조각(이어 찍지 않는다). 입구·문 부품은 없다. 같은 것이 실내에 필요하면 이 키트를 그대로 쓴다(실내 전용 변형은 없다).\n")
+    L.append("## 2. 실행 순서\n\n1. 땅(모래·포석·풀)을 먼저 깐다 — 구성 도구 `compose_desert_east_map` 이 지은 맵이면 그대로 둔다.\n"
+             "2. `stamp_tileset_object({ mapId, objectId: \"de-…\", base })` — **base = 맨 아래 줄의 왼쪽 칸**(왼쪽 위가 (x,y)·높이 h 면 base = (x, y+h−1)). 조수 v2 는 `place_object({ mapId, objectId, at })`. 도구는 통째로 놓거나 거절한다.\n"
+             "3. 큰 것부터(샘 3×3 → 제단 2×2·화단 2×1 → 1×2 → 1×1). 샘 둘레 한 칸은 걷는 바닥으로 비운다. 물 위·건물 문 앞 접근칸·길 한가운데에는 놓지 않는다.\n"
+             "4. 그림일 뿐이다 — 읽기·줍기·봉인 풀기는 이벤트를 따로 둔다(막힌 칸의 이벤트는 «같은 높이·결정 키», 쪽지는 그 칸 «플레이어 아래»).\n"
+             "5. 빈 땅 채우기에 흩지 않는다(키트 태그 «주제 소품») — 이야기가 부를 때만 놓는다. 조각별 자리는 키트 `placementRules`.\n")
+    arrs = lambda a: '\n'.join(arr(a[y * d['width']:(y + 1) * d['width']]) for y in range(d['height']))
+    L.append(f"## 3. 조립 예제 {d['width']}×{d['height']} (그림 `objects-scene.png` 원본 해상도 · `objects-scene-3x.png`)\n\n놓은 순서(키트 · 왼쪽 위): "
+             + ' · '.join(f"`de-{p}` ({x},{y})" for p, x, y in OBJ_SCENE) + f"\n\n아래층 lower(한 줄 = 맵 한 줄, index = y*{d['width']}+x):\n```\n{arrs(d['lower'])}\n```\n\n위층 upper:\n```\n{arrs(d['upper'])}\n```\n")
+    L.append("## 4. 정상/오류 (실제로 변조해 검출, 그림 `objects-err.png` — 왼쪽 정상 · 오른쪽 변조, 빨간 상자)\n\n| 변조 | 검출 코드 | 첫 오류(코드, 키트, x, y) |\n|---|---|---|")
+    for desc, errs in tamper_rows: L.append(f"| {desc} | {', '.join(sorted({e[0] for e in errs})) or '못 잡음'} | {errs[0] if errs else '-'} |")
+    L.append("\n오류 코드: E_OBJ_LAYER 키트 칸이 아래층에 있다 · E_OBJ_INCOMPLETE 키트 칸이 빠졌다 · E_OBJ_PASSAGE 칸 통행이 선언(막힌 칸/걷는 칸)과 다르다.\n"
+             "확인 범위: 키트 칸이 위층에 통째로 있는가, 칸 통행이 선언과 같은가(시트 통행표). 이벤트 실행·그림의 미감·3/4 시점(이 그림들은 관문 미통과다)·모델이 실제로 잘 놓는지는 보지 않는다.")
+    return '\n'.join(L)
+
+
+def objects_refs():
+    """(문서 목록, 그림 목록) — spec.json 이 없으면 빈 목록."""
+    if not os.path.exists(OBJ_SPEC): return [], []
+    spec = json.load(open(OBJ_SPEC, encoding='utf-8'))
+    d = objects_scene(spec); errs = objects_check(d, spec)
+    assert not errs, errs[:4]
+    im = RS.render(d); im.save(os.path.join(IMG, 'objects-scene.png'), optimize=True)
+    im.resize((im.width * 3, im.height * 3), Image.NEAREST).save(os.path.join(IMG, 'objects-scene-3x.png'), optimize=True)
+    W = d['width']; rows = []; pics = []
+    t1 = json.loads(json.dumps(d)); i = 6 * W + 10; t1['lower'][i] = t1['upper'][i]; t1['upper'][i] = -1            # 쪽지를 아래층에(모래가 사라진다)
+    t2 = json.loads(json.dumps(d)); t2['upper'][2 * W + 6] = -1; t2['upper'][2 * W + 7] = -1                          # 제단 윗줄을 뺌
+    for desc, t, box in (('쪽지 칸을 위층에서 빼 아래층에 찍음 (10,6) — 모래가 사라지고 둘레가 뚫린다', t1, (10, 6, 1, 1)), ('봉인 제단 윗줄 두 칸을 뺌 (6,2)·(7,2) — 제단이 잘린다', t2, (6, 2, 2, 1))):
+        e = objects_check(t, spec); assert e, desc; rows.append((desc, e))
+        pic = RS.render(t); dr = ImageDraw.Draw(pic); x, y, w, h = box
+        dr.rectangle([x * 16, y * 16, (x + w) * 16 - 1, (y + h) * 16 - 1], outline=(255, 30, 30, 255), width=1); pics.append(pic)
+    S = 2; cmp_ = Image.new('RGBA', (im.width * S * 3 + 16, im.height * S), (20, 20, 28, 255))
+    for n, pic in enumerate([im] + pics): cmp_.paste(pic.resize((pic.width * S, pic.height * S), Image.NEAREST), (n * (im.width * S + 8), 0))
+    cmp_.save(os.path.join(IMG, 'objects-err.png'), optimize=True)
+    docs = [dict(id='de-objects', name='desert_east · 이야기 기물 8종(샘·제단·화단·기록부·쪽지·표식·파편·비문 돌) — 사전·순서·예제·오류', markdown=objects_md(spec, d, rows))]
+    imgs = [dict(id='de-img-objects-scene', name='objects-scene.png', caption=f"이야기 기물 8종 조립 예제 — 원본 해상도 {im.width}×{im.height}(시트 칸 이어 붙임). 3/4 관문 미통과 — 오너 면제 그림.", dataUrl=URL('objects-scene.png')),
+            dict(id='de-img-objects-scene-3x', name='objects-scene-3x.png', caption='같은 장면 3배 최근접 확대.', dataUrl=URL('objects-scene-3x.png')),
+            dict(id='de-img-objects-err', name='objects-err.png', caption='정상(왼쪽) · 쪽지를 아래층에(가운데) · 제단 윗줄 빠짐(오른쪽), 2배 최근접. 빨간 상자 = 변조 자리.', dataUrl=URL('objects-err.png'))]
+    return docs, imgs
+
+
 def main():
     n_out = kit_sheet(None, 'kits-outdoor.png', True); n_in = kit_sheet(None, 'kits-interior.png', False); wang_sheet()
     exs = {}
@@ -297,7 +377,7 @@ def main():
     for i, im in enumerate(pics[:6]): cmp_.paste(im.resize((tw, th), Image.NEAREST), ((i % 3) * (tw + 8), (i // 3) * (th + 8)))
     cmp_.save(os.path.join(IMG, 'err-compare.png'), optimize=True)
     assert all(errs for _, _, errs in rows), [k for k, _, e in rows if not e]
-    imgs = [dict(id='de-img-kits-outdoor', name='kits-outdoor.png', caption=f'야외 키트 도감 {n_out}종(원본 ×2). 전부 object-gate 영수증이 있는 그림.', dataUrl=URL('kits-outdoor.png')),
+    imgs = [dict(id='de-img-kits-outdoor', name='kits-outdoor.png', caption=f'야외 키트 도감 {n_out}종(원본 ×2). 이야기 기물 8종(봉인 제단·화단·샘·기록부·쪽지·표식·파편·비문 돌)은 3/4 관문 미통과 — 오너 면제 그림이고, 나머지는 object-gate 영수증이 있는 그림.', dataUrl=URL('kits-outdoor.png')),
             dict(id='de-img-wang', name='wang-sets.png', caption='모서리 왕 타일 다섯 벌(×3) — 번호 0..15 = NW1+NE2+SW4+SE8.', dataUrl=URL('wang-sets.png'))]
     for kind, W, H, _, title in EXAMPLES:
         imgs.append(dict(id=f'de-img-ex-{kind}', name=f'ex-{kind}.png', caption=f'{title} — 구성기 실제 출력, 원본 해상도 {W * 16}×{H * 16}(시트 칸 이어 붙임).', dataUrl=URL(f'ex-{kind}.png')))
@@ -307,6 +387,7 @@ def main():
     for kind, _, _, _, title in EXAMPLES:
         docs.append(dict(id=f'de-ex-{kind}', name=f'desert_east 야외 예제 · {title}', markdown=example_md(title, exs[kind][1], f'ex-{kind}.png', kind)))
     docs.append(dict(id='de-errors', name='desert_east 야외 · 정상/오류 변조 검출', markdown=errors_md(rows)))
+    odocs, oimgs = objects_refs(); docs += odocs; imgs += oimgs
     out_cat = dict(id='de-outdoor', name='desert_east · 사막·동양풍 야외 (사전 · 순서 · 예제 5 · 변조 오류)',
                    description='오아시스 마을·바자르 거리·궁전·피라미드 유적·대상 숙소를 짓는 법. 구성 도구 compose_desert_east_map, 바닥·왕 타일·키트 전체 배열, 문 그림/접근칸/이벤트 분리, 완성 예제 5장(구성기 실제 출력), 변조 오류.', documents=docs, images=imgs)
     rimgs = [dict(id='de-img-kits-interior', name='kits-interior.png', caption=f'실내 키트 도감 {n_in}종(원본 ×2).', dataUrl=URL('kits-interior.png'))]

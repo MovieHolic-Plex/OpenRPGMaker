@@ -1,0 +1,10 @@
+{
+ "_doc": "이야기 기물 탐침(probe.mts)이 읽는 칩셋 표 — 탐침 전용이다(조수·v2 코드가 읽는 목록이 아니다). spec = 그 칩셋 굽기가 읽는 기물 목록, ask = 게임들이 실제로 바란 낱말(수요 장부에서 옮김), map = 그 칩셋의 구성기 도구로 실제 맵 한 장을 깔 인자.",
+ "desert_east": {
+  "spec": "tiledata/desert-east/objects/spec.json",
+  "ask": "tiledata/desert-east/objects/ask.json",
+  "kitPrefix": "de-",
+  "sheet": "public/assets/desert-east/desert-east-chipset.png",
+  "map": { "width": 48, "height": 40, "tool": "compose_desert_east_map", "args": { "kind": "oasis", "seed": 1 } }
+ }
+}

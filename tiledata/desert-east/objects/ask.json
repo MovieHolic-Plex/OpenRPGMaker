@@ -1,0 +1,13 @@
+{
+ "_doc": "탐침이 묻는 낱말 — ~/z-project/assistant-fable-runs/object-oneshot/demand.json 의 wanted·ledgerNames(게임들이 실제로 쓴 이름)에서 옮겼다. 코드가 읽는 목록이 아니다(탐침 전용).",
+ "items": {
+  "seal-altar": ["봉인 제단", "제단", "봉인"],
+  "flower-bed": ["화단"],
+  "spring": ["샘", "물이 솟는 돌 샘"],
+  "record-stand": ["기록부", "장부"],
+  "note": ["쪽지", "두루마리"],
+  "marker": ["표식", "돌무더기"],
+  "shard": ["빛나는 파편", "샘의 심장"],
+  "inscription-stone": ["비문 돌", "비문"]
+ }
+}
