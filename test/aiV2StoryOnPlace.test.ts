@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
+import { normalizeStepText } from "@/project/gameBlueprint";
 import { isPassable } from "@/project/collision";
 import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
@@ -177,5 +178,8 @@ describe("증기 도시 한 판 — 물건은 그림에, 단계는 차례로, �
     expect(path.ok).toBe(true);
     const { map, ev } = stepEvent(ctx.project, "s5");
     expect(onDrawnThing(ctx.project, map, ev)?.label).toContain("압력계");
+    // 고른 그림은 청사진에 남는다 — 함수가 경로를 다시 지을 때(끝맺음 뒤 · 다음 턴)도 읽는다.
+    expect(ctx.project.gameBlueprint!.steps.find((st) => st.id === "s5")!.text?.on).toBe("벽 압력계 묶음");
+    expect(normalizeStepText({ on: "  벽 밸브 바퀴 ", lines: ["x"] })).toEqual({ on: "벽 밸브 바퀴", lines: ["x"] });
   }, SLOW);
 });
