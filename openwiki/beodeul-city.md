@@ -1141,6 +1141,25 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 - **쓰는 곳:** `dress_village_quarter` 의 temple-ruins(판석) · mining · vineyard(다진 흙) 마당. `author_beodeul_town({quarter})` 가 빌더 `yard` 옵션으로 마당 자리를 먼저 비운다(다른 마을은 옵션이 없어 그대로). 규칙은 `openwiki/editor-ai-tools.md` 「마을 종류 표」 절에 있다.
 - **검수 증거:** `tiledata/beodeul-yard/_gate/`
 
+## 이야기 기물 꼬리 bd-obj (2026-11-12) — 칸 34,944~35,071, 옛 상수도 꼬리 바로 뒤
+
+게임들이 바랐는데 그림이 없던 물건 16종(조수 실행의 «없는 그림» 장부): 샘 2×2 · 동굴 입구 3×3 · 빛나는 파편 1×1 · 유적 입구 3×3 · 야영 천막 2×2 · 가축 우리 3×3 ·
+늪 널빤지 길 넷(가로·세로·모퉁이 서→남·동쪽 끝, 1×1) · 곡괭이·채굴 도구 1×2 · 게시판 2×2 · 쪽지 1×1 · 봉인 제단 2×2 · 무너진 기둥 1×2 · 기록부 1×2.
+
+- **그림 = 3/4 관문 미통과 — 오너 면제(fable-oneshot-2026-11-12).** Claude Fable 5.2 medium 한 방 그림(색은 버들항 시트에서 뽑은 팔레트)이고 관문 판정을 받지 않았다. 오너가 «다 맘에 들고 공용 번들에 반영» 으로 넣기로 했다(`openwiki/harnesses/object-gate.md` 「오너 면제」). 면제는 그림 화소 해시 + 종류에 묶인다 — `tiledata/beodeul-objects/pieces/<id>.png` 를 한 화소라도 바꾸면 굽기가 멈춘다. 스토어 출구는 막힌다.
+- **정본**: `tiledata/beodeul-objects/pieces/*.png`(16장) · `spec.json`(id·관문 종류·크기·놓는 방식·막힌 칸·낱말·입구 부품·규칙) · `catalog.json`(굽기가 쓴다: 칸 번호·해시).
+- **굽기**: `python3 scripts/content/beodeul-objects/bake.py [--dry]` — 그림마다 `object_gate.require_all(context="bundle")`(초안·임시 통과 길 없음), 시트 한 줄(128칸)을 덧붙이고 `beodeulCityTileset.json` 에 칸 표와 킷 `bd-obj-<id>` 를 쓴다. 멱등(다시 돌려도 같은 바이트). 칸 번호는 덧붙이기 전용 — 새 항목은 `spec.json` 끝에(순서 바꾸기·빼기는 굽기가 멈춘다). 꼬리 사슬: `bake_waterworks.py` 가 끝에서 이것을 다시 부른다.
+- **칸 표**: 서 있는 기물(spec place prop·tall)은 막힌 칸 = 막힘·priority lower, 나머지 칸 = ★(priority upper, 사람 위·걸음). 바닥 그림(decal: 널빤지 길·쪽지)은 priority lower·걸음이고 **3층(upperTiles)** 에 놓인다 — ★ 아닌 맨 위 층이 통행을 정하므로 물 칸 위에 놓으면 그 칸을 걸을 수 있다(널빤지 길이 물을 건넌다). 놓기 도구의 발밑 검사는 이름에 «널다리» 가 든 킷을 면제한다.
+- **킷**: `learnedFrom: "pack-preset"`(조수 `list_tileset_objects`·`stamp_tileset_object`, v2 `place_object`), `ai.tags` = 놓는 방식 + 「주제 소품」(빈 땅 채우기 `openGroundProps` 가 흩지 않는다 — 이름을 대야만 놓인다) + 갈래 + **게임이 바란 낱말들**. 동굴 입구·유적 입구는 `parts` 에 `entrance` (1,2) 와 `ai.access` (1,3) — v2 `buildingEntrances` 가 입구로 읽는다.
+- **낱말 → 킷 (조수)**: v2 `draw_object({what})` → `generate_missing_object` 의 «이미 있는 기물» 검사(`existingMatches`)가 킷을 이른다 → `place_object`. 낱말 목록은 코드에 없다 — 킷 이름·태그가 답한다. 이 일로 그 검사를 고쳤다(`openwiki/editor-ai-tools.md` 「없는 기물 그리기」): 태그가 이름과 같으면 맞음(한 글자 «샘» 도), 맞는 정도 순(같은 이름 > 이름 전체 포함 > 끝 낱말만), 끝 낱말이 지형(«판자 길» 의 길)이어도 킷이 그 이름을 태그로 달았으면 그 킷을 이른다.
+  «동굴 입구·던전 입구» 는 이 실행에서 던전을 아직 짓지 않았으면 v2 가 장소(`make_place`)로 돌려보낸다(설계) — 던전을 지은 뒤에는 이 킷을 이른다.
+- **기존 사본**: `ensureBeodeulCityTileset` → `relocateLocalTail`(이식 꼬리를 128 뒤로) + `extendPickedParts`(칸 표) + `mergeShippedKits`(`bd-obj-` 는 번들 소유 접두사). 주제 2 꼬리를 못 받는 사본(프로젝트 없이 부른 경우)은 이 킷·참고문서도 받지 않는다. 참고문서는 `ensureBeodeulCityReferences`(칸이 있을 때만).
+- **옛 저장본 검사**: `npx tsx scripts/content/check-bundle-save-compat.mts ~/z-project/assistant-fable-runs --limit 40` — 저장본 40개 중 열리던 38개 모두 통과(나머지 2개는 굽기 전에도 「folded project row … sha256」 으로 안 열린다).
+  이 검사가 **공방 칸 번호 충돌**을 잡았다(저장본 r1-fantasy, 맵 한 칸이 나무 → 공방 그림): 시트가 128칸 자라 이식 꼬리가 밀리면, 떼어 둔 공방 칸의 옛 번호 자리에 다른 이식 칸이 앉고, 다시 붙일 때 «옛 번호 → 새 번호» 가 그 칸까지 바꿨다. `detachWorkshopTiles(tileset, project)` 가 떼는 동안 맵의 공방 칸을 보관 번호로 비켜 두게 고쳤다(`openwiki/harnesses/map-objects.md` 「번호 이주」).
+- **참고문서**: 번들 `beodeulCityReferences.json` 용도 `beodeul-objects`(생성 `bun scripts/content/prepare-beodeul-objects-references.mts`, 출처 `tiledata/beodeul-objects/`, 그림 `public/assets/beodeul-objects/`) — 킷 사전·실행 순서·16종을 모두 쓴 22×15 조립 예제의 네 층 배열(실제 놓기 도구 출력)·정상/오류 그림 4종(`wrong-layer`·`walk-blocked`·`entrance-blocked`·`kit-incomplete`, 실제로 변조해 검출)·검사 범위.
+- **탐침(모델 없음)**: `bun scripts/content/beodeul-objects/probe.mts <저장된 프로젝트 폴더> <outDir> [맵 id]` — 새 프로젝트·기존 저장본 사본(정규화 → 저장 → 다시 열기, 맵 그림 지문 동일), 낱말마다 `list_tileset_objects`·v2 `draw_object` 가 무엇을 이르는지, v2 `place_object` 로 16종 놓기(막힌 칸이 선언과 같은지·입구 판독), 1배 합성 그림.
+- **남은 것 / 하지 않은 것**: 널빤지 길 모퉁이·끝은 한 방향뿐이다. 마을 bbox 목록(`bboxVillageCatalog`)과 빈 땅 채우기에는 실리지 않는다(이름으로 부를 때만 놓인다). 동굴 입구는 들판 한가운데 서면 돌 움집처럼 보인다 — 절벽·숲 가장자리에 붙여야 한다. 그림에 바닥 그림자가 없다(버들항 나무·집은 있다). 이야기마다 다른 이름(«잠든 별», «수로 지도»)은 킷 낱말에 없으면 닿지 않는다.
+
 ## 자연 기물 beodeul_organic (2026-10-24) — 숲·들판의 바위·덤불·통나무·버섯·들꽃·고사리·풀·이끼 돌·고목·사당 돌
 
 버들항 B1 활엽 숲(낙성 숲 화풍) 나무 사이에 놓는 자연 기물 37종. 버들항 잠금 팔레트(원본 키트에서 뽑은 137색) 코드 손 도트다. 생성 이미지·object-gen 은 쓰지 않았다.

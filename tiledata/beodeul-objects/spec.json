@@ -1,0 +1,660 @@
+{
+ "_doc": "버들항 이야기 기물 16종 — Claude Fable 5.2 medium 한 방 그림(이 프로젝트를 위해 그린 자체 저작). 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12. pieces/<id>.png 는 한 화소도 바꾸지 않는다(바꾸면 면제가 풀린다). 굽기 scripts/content/beodeul-objects/bake.py — 새 항목은 items 끝에만 더한다(칸 번호 덧붙이기 전용).",
+ "waiver": "fable-oneshot-2026-11-12",
+ "license": "drawn by Claude Fable 5.2 for this project (own work)",
+ "items": [
+  {
+   "id": "spring",
+   "src": "bd-spring.png",
+   "name": "샘 · 물이 솟는 돌 샘",
+   "en": "stone spring",
+   "kind": "container",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "샘",
+    "돌 샘",
+    "물이 솟는 샘",
+    "spring"
+   ],
+   "family": "water",
+   "themes": [
+    "field",
+    "forest",
+    "ruin",
+    "필드",
+    "숲",
+    "유적"
+   ],
+   "desc": "이끼 낀 돌을 두른 샘. 청록 물이 솟고 앞으로 물줄기가 흐른다. 지붕·두레박 없음(우물이 아니다).",
+   "rule": "풀·흙·포석 같은 걷는 바닥 위에. 길 한가운데·문 앞·다리 끝을 막지 않는다. 네 칸 모두 막힌다 — 조사 이벤트는 샘 아래(남쪽) 칸에서 위를 보게 둔다."
+  },
+  {
+   "id": "cave-mouth",
+   "src": "bd-cave-mouth.png",
+   "name": "동굴 입구·던전 입구 · 바위 굴",
+   "en": "cave mouth in a rock outcrop",
+   "kind": "structure",
+   "w": 3,
+   "h": 3,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "words": [
+    "동굴 입구",
+    "던전 입구",
+    "동굴",
+    "굴 입구",
+    "cave mouth",
+    "cave entrance"
+   ],
+   "family": "entrance",
+   "themes": [
+    "field",
+    "forest",
+    "mountain",
+    "필드",
+    "숲",
+    "산"
+   ],
+   "desc": "자연 바위 둔덕에 난 어두운 굴 입구. 윗줄은 이끼 낀 바위 윗면(사람 위에 그려짐), 아래 두 줄은 바위 앞면. 굴은 맨 아래 가운데 칸.",
+   "rule": "숲 가장자리·절벽 밑·길 끝에. 아래 두 줄 막힘(굴 칸 포함). 굴 칸 바로 아래 칸을 비우고 그 칸에 이동 이벤트를 둔다(또는 굴 칸에 «같은 높이» 이동 이벤트). 문 앞 2칸에 소품 금지.",
+   "parts": [
+    {
+     "id": "mouth",
+     "kind": "entrance",
+     "dx": 1,
+     "dy": 2,
+     "w": 1,
+     "h": 1
+    }
+   ],
+   "access": [
+    {
+     "dx": 1,
+     "dy": 3
+    }
+   ]
+  },
+  {
+   "id": "shard",
+   "src": "bd-shard.png",
+   "name": "빛나는 파편·빛의 파편·빛나는 돌",
+   "en": "glowing shard",
+   "kind": "organic",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "빛나는 파편",
+    "빛의 파편",
+    "빛나는 돌",
+    "파편",
+    "별 조각",
+    "glowing shard"
+   ],
+   "family": "story",
+   "themes": [
+    "field",
+    "forest",
+    "cave",
+    "ruin",
+    "필드",
+    "숲",
+    "동굴",
+    "유적"
+   ],
+   "desc": "땅에 박힌 청록 수정 파편(이야기 물건). 밝은 속과 작은 조각 둘.",
+   "rule": "풀·흙·포석 같은 걷는 바닥 위에. 길 한가운데·문 앞·다리 끝을 막지 않는다. 한 칸 막힘 — 조사 이벤트를 이 칸에 «같은 높이»로 겹쳐 둔다."
+  },
+  {
+   "id": "ruin-entrance",
+   "src": "bd-ruin-entrance.png",
+   "name": "유적 입구·유적 돌 입구",
+   "en": "stone ruin entrance",
+   "kind": "structure",
+   "w": 3,
+   "h": 3,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "words": [
+    "유적 입구",
+    "유적 돌 입구",
+    "유적",
+    "돌 입구",
+    "ruin entrance"
+   ],
+   "family": "entrance",
+   "themes": [
+    "ruin",
+    "field",
+    "forest",
+    "유적",
+    "필드",
+    "숲"
+   ],
+   "desc": "옛 유적의 돌 입구. 크림빛 돌기둥 둘이 금 간 상인방을 받치고 가운데가 어두운 문, 발치에 돌계단, 왼쪽 기둥에 담쟁이. 문은 맨 아래 가운데 칸.",
+   "rule": "절벽·언덕 밑이나 유적 바닥 끝에. 아래 두 줄 막힘(문 칸 포함), 윗줄은 사람 위에 그려진다. 문 칸 바로 아래 칸을 비우고 이동 이벤트를 둔다. 문 앞 2칸에 소품 금지.",
+   "parts": [
+    {
+     "id": "door",
+     "kind": "entrance",
+     "dx": 1,
+     "dy": 2,
+     "w": 1,
+     "h": 1
+    }
+   ],
+   "access": [
+    {
+     "dx": 1,
+     "dy": 3
+    }
+   ]
+  },
+  {
+   "id": "camp-tent",
+   "src": "bd-camp-tent.png",
+   "name": "야영 천막",
+   "en": "traveller's camp tent",
+   "kind": "structure",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "야영 천막",
+    "천막",
+    "야영지 천막",
+    "camp tent",
+    "tent"
+   ],
+   "family": "camp",
+   "themes": [
+    "field",
+    "forest",
+    "camp",
+    "필드",
+    "숲",
+    "야영지"
+   ],
+   "desc": "물들이지 않은 크림색 천의 작은 야영 천막(시장 줄무늬 차양이 아니다). 가운데 삼각 입구.",
+   "rule": "풀·흙·포석 같은 걷는 바닥 위에. 길 한가운데·문 앞·다리 끝을 막지 않는다. 아랫줄 막힘, 윗줄은 사람 위에 그려진다. 모닥불·짐 옆에 한두 채."
+  },
+  {
+   "id": "livestock-pen",
+   "src": "bd-livestock-pen.png",
+   "name": "가축 우리",
+   "en": "small livestock pen",
+   "kind": "frame",
+   "w": 3,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "words": [
+    "가축 우리",
+    "우리",
+    "축사",
+    "livestock pen"
+   ],
+   "family": "farm",
+   "themes": [
+    "farm",
+    "village",
+    "field",
+    "농장",
+    "마을",
+    "필드"
+   ],
+   "desc": "가로대 울타리로 두른 작은 가축 우리. 남쪽 가운데 판자 문, 안에 짚과 여물통. 가축은 그려져 있지 않다(가축은 캐릭터로 세운다).",
+   "rule": "풀·흙·포석 같은 걷는 바닥 위에. 길 한가운데·문 앞·다리 끝을 막지 않는다. 아홉 칸 모두 막힌다. 헛간·밭 옆 흙 위에. 가축 캐릭터는 우리 바로 옆 칸에 세운다."
+  },
+  {
+   "id": "plank-ew",
+   "src": "bd-plank-ew.png",
+   "name": "늪 널빤지 길·판자 길 가로(널다리)",
+   "en": "plank walkway, east-west run",
+   "kind": "flat",
+   "w": 1,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "words": [
+    "널빤지 길",
+    "판자 길",
+    "늪 널빤지 길",
+    "널길",
+    "널다리",
+    "plank walkway",
+    "boardwalk"
+   ],
+   "family": "swamp",
+   "themes": [
+    "swamp",
+    "field",
+    "늪",
+    "필드"
+   ],
+   "desc": "늪 물 위에 놓는 널빤지 길의 가로 한 칸. 위아래 2화소가 비어 물이 보인다. 걸어서 지나간다.",
+   "rule": "얕은 물·늪 위에 동서로 이어 찍는다(repeat x). 양 끝은 뭍에 닿거나 끝 조각으로 맺는다. 꺾이는 자리는 모퉁이 조각(서→남 한 방향만 있다). 깊은 물(waterDepth 2 이상)은 널을 놓아도 못 건넌다.",
+   "growth": "horizontal"
+  },
+  {
+   "id": "plank-ns",
+   "src": "bd-plank-ns.png",
+   "name": "늪 널빤지 길·판자 길 세로(널다리)",
+   "en": "plank walkway, north-south run",
+   "kind": "flat",
+   "w": 1,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "words": [
+    "널빤지 길",
+    "판자 길",
+    "늪 널빤지 길",
+    "널길",
+    "널다리",
+    "plank walkway",
+    "boardwalk"
+   ],
+   "family": "swamp",
+   "themes": [
+    "swamp",
+    "field",
+    "늪",
+    "필드"
+   ],
+   "desc": "늪 물 위에 놓는 널빤지 길의 세로 한 칸. 좌우 2화소가 비어 물이 보인다. 걸어서 지나간다.",
+   "rule": "얕은 물·늪 위에 남북으로 이어 찍는다(repeat y). 가로 줄과 만나는 자리는 모퉁이 조각.",
+   "growth": "vertical"
+  },
+  {
+   "id": "plank-corner",
+   "src": "bd-plank-corner.png",
+   "name": "늪 널빤지 길 모퉁이·판자 길 모퉁이(널다리) 서→남",
+   "en": "plank walkway corner (west to south)",
+   "kind": "flat",
+   "w": 1,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "words": [
+    "널빤지 길 모퉁이",
+    "판자 길 모퉁이",
+    "널다리 모퉁이",
+    "plank corner"
+   ],
+   "family": "swamp",
+   "themes": [
+    "swamp",
+    "field",
+    "늪",
+    "필드"
+   ],
+   "desc": "널빤지 길 모퉁이 한 칸 — 서쪽에서 온 가로 줄을 남쪽으로 가는 세로 줄에 잇는다(빗금 이음선). 이 방향 하나뿐이다.",
+   "rule": "가로 줄의 동쪽 끝이자 세로 줄의 북쪽 끝 칸에 찍는다. 다른 세 방향 모퉁이 그림은 없다 — 길을 서→남으로만 꺾는다."
+  },
+  {
+   "id": "plank-end",
+   "src": "bd-plank-end.png",
+   "name": "늪 널빤지 길 끝·판자 길 끝(널다리) 동쪽",
+   "en": "plank walkway east end",
+   "kind": "flat",
+   "w": 1,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "words": [
+    "널빤지 길 끝",
+    "판자 길 끝",
+    "널다리 끝",
+    "plank end"
+   ],
+   "family": "swamp",
+   "themes": [
+    "swamp",
+    "field",
+    "늪",
+    "필드"
+   ],
+   "desc": "널빤지 길의 동쪽 끝 한 칸 — 서쪽에서 온 널이 들쭉날쭉 끊긴다. 오른쪽 4화소는 비어 있다.",
+   "rule": "가로 줄의 동쪽 끝에만 쓴다(다른 방향 끝 그림은 없다). 끝 칸도 걸을 수 있다."
+  },
+  {
+   "id": "mining-tools",
+   "src": "bd-mining-tools.png",
+   "name": "곡괭이·채굴 도구(광석 상자)",
+   "en": "pickaxe and shovel on an ore crate",
+   "kind": "box",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "곡괭이",
+    "채굴 도구",
+    "삽",
+    "광석 상자",
+    "pickaxe",
+    "mining tools"
+   ],
+   "family": "mine",
+   "themes": [
+    "mine",
+    "cave",
+    "field",
+    "광산",
+    "동굴",
+    "필드"
+   ],
+   "desc": "광석이 든 나무 상자에 곡괭이와 삽을 기대 세웠다.",
+   "rule": "풀·흙·포석 같은 걷는 바닥 위에. 길 한가운데·문 앞·다리 끝을 막지 않는다. 아랫칸 막힘, 윗칸은 사람 위에 그려진다. 갱도 입구·작업장 벽가에."
+  },
+  {
+   "id": "notice-board",
+   "src": "bd-notice-board.png",
+   "name": "게시판·기록판",
+   "en": "village notice board",
+   "kind": "front_prop",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "게시판",
+    "기록판",
+    "알림판",
+    "공고판",
+    "notice board"
+   ],
+   "family": "village",
+   "themes": [
+    "village",
+    "field",
+    "camp",
+    "마을",
+    "필드",
+    "야영지"
+   ],
+   "desc": "너와 지붕을 얹은 판자 게시판. 종이 석 장이 붙어 있다(글자 없음). 정면형 소품.",
+   "rule": "풀·흙·포석 같은 걷는 바닥 위에. 길 한가운데·문 앞·다리 끝을 막지 않는다. 아랫줄 막힘, 윗줄은 사람 위에 그려진다. 길가·광장 가장자리에서 길 쪽(남쪽)을 보게."
+  },
+  {
+   "id": "note",
+   "src": "bd-note.png",
+   "name": "쪽지(바닥에 떨어진 종이)",
+   "en": "note on the ground",
+   "kind": "debris",
+   "w": 1,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "words": [
+    "쪽지",
+    "종이",
+    "편지",
+    "메모",
+    "note"
+   ],
+   "family": "story",
+   "themes": [
+    "field",
+    "forest",
+    "cave",
+    "ruin",
+    "village",
+    "필드",
+    "숲",
+    "동굴",
+    "유적",
+    "마을"
+   ],
+   "desc": "바닥에 떨어진 구겨진 양피지 한 장, 작은 돌로 눌러 놓았다. 밟고 지나간다.",
+   "rule": "바닥 위 한 칸. 조사 이벤트를 이 칸에 «아래» 높이로 겹쳐 둔다(밟고 지나갈 수 있다). 길 한가운데보다 길섶·방 구석에."
+  },
+  {
+   "id": "seal-altar",
+   "src": "bd-seal-altar.png",
+   "name": "봉인 제단(봉인·제단)",
+   "en": "sealed stone altar",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "봉인 제단",
+    "제단",
+    "봉인",
+    "결계 제단",
+    "seal altar",
+    "altar"
+   ],
+   "family": "story",
+   "themes": [
+    "ruin",
+    "forest",
+    "cave",
+    "field",
+    "유적",
+    "숲",
+    "동굴",
+    "필드"
+   ],
+   "desc": "따뜻한 회갈색 돌 제단. 윗판에 청록 고리 봉인이 빛나고 앞에 계단 둘, 이음매에 이끼.",
+   "rule": "풀·흙·포석 같은 걷는 바닥 위에. 길 한가운데·문 앞·다리 끝을 막지 않는다. 아랫줄 막힘, 윗줄은 사람 위에 그려진다. 봉인·제단 단계 이벤트는 아랫줄 칸에 «같은 높이»로 겹쳐 둔다."
+  },
+  {
+   "id": "broken-pillar",
+   "src": "bd-broken-pillar.png",
+   "name": "무너진 기둥(부러진 돌기둥)",
+   "en": "broken stone pillar",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "무너진 기둥",
+    "부러진 기둥",
+    "돌기둥",
+    "broken pillar"
+   ],
+   "family": "ruin",
+   "themes": [
+    "ruin",
+    "field",
+    "forest",
+    "유적",
+    "필드",
+    "숲"
+   ],
+   "desc": "중간에서 부러진 홈 파인 회색 돌기둥과 발치에 떨어진 토막.",
+   "rule": "풀·흙·포석 같은 걷는 바닥 위에. 길 한가운데·문 앞·다리 끝을 막지 않는다. 아랫칸 막힘, 윗칸은 사람 위에 그려진다. 온전한 기둥 줄 사이에 한두 개 섞는다."
+  },
+  {
+   "id": "record-stand",
+   "src": "bd-record-stand.png",
+   "name": "기록부·장부(받침 위 책)",
+   "en": "record book on a stand",
+   "kind": "low_furniture",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "기록부",
+    "장부",
+    "기록대",
+    "받침 위 책",
+    "record book",
+    "ledger"
+   ],
+   "family": "story",
+   "themes": [
+    "ruin",
+    "village",
+    "camp",
+    "유적",
+    "마을",
+    "야영지"
+   ],
+   "desc": "나무 기둥 받침 위에 펼쳐 놓은 기록부. 붉은 끈. 책이 위에서 보인다.",
+   "rule": "풀·흙·포석 같은 걷는 바닥 위에. 길 한가운데·문 앞·다리 끝을 막지 않는다. 아랫칸 막힘, 윗칸은 사람 위에 그려진다. 조사 이벤트를 아랫칸에 «같은 높이»로 겹쳐 둔다."
+  }
+ ]
+}

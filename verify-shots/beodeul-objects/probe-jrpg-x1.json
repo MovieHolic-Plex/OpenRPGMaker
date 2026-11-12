@@ -1,0 +1,698 @@
+{
+ "fresh": {
+  "cityKits": 16,
+  "references": "docs 2 · images 7",
+  "cityCount": 38016,
+  "sheetTail": "34944..35071",
+  "firstBundleGraft": 35072,
+  "kitCellsMatchCatalog": true,
+  "tablesMatchCount": true
+ },
+ "sheet": [
+  {
+   "id": "bd-obj-spring",
+   "name": "버들항 기물 · 샘 · 물이 솟는 돌 샘 2×2",
+   "size": "2×2",
+   "kind": "container",
+   "place": "prop",
+   "cells": [
+    34944,
+    34945,
+    34946,
+    34947
+   ],
+   "blocked": "(0,0) (1,0) (0,1) (1,1)",
+   "entrance": ""
+  },
+  {
+   "id": "bd-obj-cave-mouth",
+   "name": "버들항 기물 · 동굴 입구·던전 입구 · 바위 굴 3×3",
+   "size": "3×3",
+   "kind": "structure",
+   "place": "tall",
+   "cells": [
+    34948,
+    34949,
+    34950,
+    34951,
+    34952,
+    34953,
+    34954,
+    34955,
+    34956
+   ],
+   "blocked": "(0,1) (1,1) (2,1) (0,2) (1,2) (2,2)",
+   "entrance": "(1,2)"
+  },
+  {
+   "id": "bd-obj-shard",
+   "name": "버들항 기물 · 빛나는 파편·빛의 파편·빛나는 돌 1×1",
+   "size": "1×1",
+   "kind": "organic",
+   "place": "prop",
+   "cells": [
+    34957
+   ],
+   "blocked": "(0,0)",
+   "entrance": ""
+  },
+  {
+   "id": "bd-obj-ruin-entrance",
+   "name": "버들항 기물 · 유적 입구·유적 돌 입구 3×3",
+   "size": "3×3",
+   "kind": "structure",
+   "place": "tall",
+   "cells": [
+    34958,
+    34959,
+    34960,
+    34961,
+    34962,
+    34963,
+    34964,
+    34965,
+    34966
+   ],
+   "blocked": "(0,1) (1,1) (2,1) (0,2) (1,2) (2,2)",
+   "entrance": "(1,2)"
+  },
+  {
+   "id": "bd-obj-camp-tent",
+   "name": "버들항 기물 · 야영 천막 2×2",
+   "size": "2×2",
+   "kind": "structure",
+   "place": "tall",
+   "cells": [
+    34967,
+    34968,
+    34969,
+    34970
+   ],
+   "blocked": "(0,1) (1,1)",
+   "entrance": ""
+  },
+  {
+   "id": "bd-obj-livestock-pen",
+   "name": "버들항 기물 · 가축 우리 3×3",
+   "size": "3×3",
+   "kind": "frame",
+   "place": "prop",
+   "cells": [
+    34971,
+    34972,
+    34973,
+    34974,
+    34975,
+    34976,
+    34977,
+    34978,
+    34979
+   ],
+   "blocked": "(0,0) (1,0) (2,0) (0,1) (1,1) (2,1) (0,2) (1,2) (2,2)",
+   "entrance": ""
+  },
+  {
+   "id": "bd-obj-plank-ew",
+   "name": "버들항 기물 · 늪 널빤지 길·판자 길 가로(널다리) 1×1",
+   "size": "1×1",
+   "kind": "flat",
+   "place": "decal",
+   "cells": [
+    34980
+   ],
+   "blocked": "없음(밟고 지나감)",
+   "entrance": ""
+  },
+  {
+   "id": "bd-obj-plank-ns",
+   "name": "버들항 기물 · 늪 널빤지 길·판자 길 세로(널다리) 1×1",
+   "size": "1×1",
+   "kind": "flat",
+   "place": "decal",
+   "cells": [
+    34981
+   ],
+   "blocked": "없음(밟고 지나감)",
+   "entrance": ""
+  },
+  {
+   "id": "bd-obj-plank-corner",
+   "name": "버들항 기물 · 늪 널빤지 길 모퉁이·판자 길 모퉁이(널다리) 서→남 1×1",
+   "size": "1×1",
+   "kind": "flat",
+   "place": "decal",
+   "cells": [
+    34982
+   ],
+   "blocked": "없음(밟고 지나감)",
+   "entrance": ""
+  },
+  {
+   "id": "bd-obj-plank-end",
+   "name": "버들항 기물 · 늪 널빤지 길 끝·판자 길 끝(널다리) 동쪽 1×1",
+   "size": "1×1",
+   "kind": "flat",
+   "place": "decal",
+   "cells": [
+    34983
+   ],
+   "blocked": "없음(밟고 지나감)",
+   "entrance": ""
+  },
+  {
+   "id": "bd-obj-mining-tools",
+   "name": "버들항 기물 · 곡괭이·채굴 도구(광석 상자) 1×2",
+   "size": "1×2",
+   "kind": "box",
+   "place": "tall",
+   "cells": [
+    34984,
+    34985
+   ],
+   "blocked": "(0,1)",
+   "entrance": ""
+  },
+  {
+   "id": "bd-obj-notice-board",
+   "name": "버들항 기물 · 게시판·기록판 2×2",
+   "size": "2×2",
+   "kind": "front_prop",
+   "place": "tall",
+   "cells": [
+    34986,
+    34987,
+    34988,
+    34989
+   ],
+   "blocked": "(0,1) (1,1)",
+   "entrance": ""
+  },
+  {
+   "id": "bd-obj-note",
+   "name": "버들항 기물 · 쪽지(바닥에 떨어진 종이) 1×1",
+   "size": "1×1",
+   "kind": "debris",
+   "place": "decal",
+   "cells": [
+    34990
+   ],
+   "blocked": "없음(밟고 지나감)",
+   "entrance": ""
+  },
+  {
+   "id": "bd-obj-seal-altar",
+   "name": "버들항 기물 · 봉인 제단(봉인·제단) 2×2",
+   "size": "2×2",
+   "kind": "box",
+   "place": "tall",
+   "cells": [
+    34991,
+    34992,
+    34993,
+    34994
+   ],
+   "blocked": "(0,1) (1,1)",
+   "entrance": ""
+  },
+  {
+   "id": "bd-obj-broken-pillar",
+   "name": "버들항 기물 · 무너진 기둥(부러진 돌기둥) 1×2",
+   "size": "1×2",
+   "kind": "column",
+   "place": "tall",
+   "cells": [
+    34995,
+    34996
+   ],
+   "blocked": "(0,1)",
+   "entrance": ""
+  },
+  {
+   "id": "bd-obj-record-stand",
+   "name": "버들항 기물 · 기록부·장부(받침 위 책) 1×2",
+   "size": "1×2",
+   "kind": "low_furniture",
+   "place": "tall",
+   "cells": [
+    34997,
+    34998
+   ],
+   "blocked": "(0,1)",
+   "entrance": ""
+  }
+ ],
+ "cellGate": {
+  "tailCellsDrawn": 55,
+  "sheetEndsAtTail": true,
+  "bundleUncovered": 0,
+  "storeUncovered": 55
+ },
+ "existing": {
+  "source": "jrpg-x1/project",
+  "kitsAsLoaded": 0,
+  "kitsAfterEnsure": 16,
+  "referencesAfterEnsure": "docs 2 · images 7",
+  "referencesReopened": "docs 2 · images 7",
+  "cityCountAsLoaded": 39424,
+  "cityCountAfterEnsure": 39552,
+  "graftsKept": true,
+  "firstLocalGraftAfterEnsure": 35072,
+  "mapsWhosePicturesChanged": [],
+  "save": "saved",
+  "reopenedKits": 16,
+  "reopenedKitsStableAfterEnsure": true,
+  "reopenedCountStable": true,
+  "reopenedPicturesSame": true
+ },
+ "words": [
+  {
+   "object": "spring",
+   "word": "샘",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "spring",
+   "word": "돌 샘",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "spring",
+   "word": "물이 솟는 돌 샘",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "cave-mouth",
+   "word": "동굴 입구",
+   "list_tileset_objects": "1/1",
+   "draw_object": "그리지 않음 — «장소» 로 돌려보냄(make_place) · 던전을 지은 뒤: 이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "cave-mouth",
+   "word": "던전 입구",
+   "list_tileset_objects": "1/1",
+   "draw_object": "그리지 않음 — «장소» 로 돌려보냄(make_place) · 던전을 지은 뒤: 이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "shard",
+   "word": "빛나는 파편",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "shard",
+   "word": "빛의 파편",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "shard",
+   "word": "빛나는 돌",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "shard",
+   "word": "잠든 별",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "못 찾음 — 새 그림 카드를 띄움"
+  },
+  {
+   "object": "shard",
+   "word": "샘의 파편",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "ruin-entrance",
+   "word": "유적 입구",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "ruin-entrance",
+   "word": "유적 돌 입구",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "camp-tent",
+   "word": "야영 천막",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "camp-tent",
+   "word": "천막",
+   "list_tileset_objects": "1/1",
+   "draw_object": "후보 2번째(첫째는 bd-dg-goblin-tent)"
+  },
+  {
+   "object": "livestock-pen",
+   "word": "가축 우리",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "plank-ew",
+   "word": "늪 널빤지 길",
+   "list_tileset_objects": "1/4",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "plank-ew",
+   "word": "판자 길",
+   "list_tileset_objects": "1/4",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "plank-ns",
+   "word": "늪 널빤지 길",
+   "list_tileset_objects": "2/4",
+   "draw_object": "후보 2번째(첫째는 bd-obj-plank-ew)"
+  },
+  {
+   "object": "plank-ns",
+   "word": "판자 길",
+   "list_tileset_objects": "2/4",
+   "draw_object": "후보 2번째(첫째는 bd-obj-plank-ew)"
+  },
+  {
+   "object": "plank-corner",
+   "word": "널빤지 길 모퉁이",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "plank-end",
+   "word": "널빤지 길 끝",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "mining-tools",
+   "word": "곡괭이",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "mining-tools",
+   "word": "채굴 도구",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "notice-board",
+   "word": "게시판",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "notice-board",
+   "word": "기록판",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "note",
+   "word": "쪽지",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "note",
+   "word": "수로 지도",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "다른 기물을 이른다(bd-pick-wizard-tower-starmap)"
+  },
+  {
+   "object": "seal-altar",
+   "word": "제단",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "seal-altar",
+   "word": "봉인 제단",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "seal-altar",
+   "word": "봉인",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "broken-pillar",
+   "word": "무너진 기둥",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "record-stand",
+   "word": "기록부",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "record-stand",
+   "word": "장부",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  }
+ ],
+ "map": {
+  "id": "map_blank_start",
+  "name": "물안개 마을",
+  "size": "50×40",
+  "waterBlock": {
+   "x": 1,
+   "y": 9
+  }
+ },
+ "placed": [
+  {
+   "object": "plank-ew",
+   "kit": "bd-obj-plank-ew",
+   "asked": "(1,9)",
+   "at": "(1,9)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-plank-ew 를 (1,9)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "note": "물 위"
+  },
+  {
+   "object": "plank-ew",
+   "kit": "bd-obj-plank-ew",
+   "asked": "(2,9)",
+   "at": "(2,9)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-plank-ew 를 (2,9)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "note": "물 위"
+  },
+  {
+   "object": "plank-ew",
+   "kit": "bd-obj-plank-ew",
+   "asked": "(3,9)",
+   "at": "(3,9)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-plank-ew 를 (3,9)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "note": "물 위"
+  },
+  {
+   "object": "plank-corner",
+   "kit": "bd-obj-plank-corner",
+   "asked": "(4,9)",
+   "at": "(4,9)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-plank-corner 를 (4,9)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "note": "물 위"
+  },
+  {
+   "object": "plank-ns",
+   "kit": "bd-obj-plank-ns",
+   "asked": "(4,10)",
+   "at": "(4,10)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-plank-ns 를 (4,10)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "note": "물 위"
+  },
+  {
+   "object": "plank-ns",
+   "kit": "bd-obj-plank-ns",
+   "asked": "(4,11)",
+   "at": "(4,11)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-plank-ns 를 (4,11)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "note": "물 위"
+  },
+  {
+   "object": "plank-ew",
+   "kit": "bd-obj-plank-ew",
+   "asked": "(1,11)",
+   "at": "(1,11)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-plank-ew 를 (1,11)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "note": "물 위"
+  },
+  {
+   "object": "plank-end",
+   "kit": "bd-obj-plank-end",
+   "asked": "(2,11)",
+   "at": "(2,11)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-plank-end 를 (2,11)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "note": "물 위"
+  },
+  {
+   "object": "cave-mouth",
+   "kit": "bd-obj-cave-mouth",
+   "asked": "(39,20)",
+   "at": "(39,19)",
+   "ok": true,
+   "moved": true,
+   "firstSpotRefusal": "'stamp_tileset_object' 실행 실패: 완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다. 완성된 집의 보호 영역은 AI가 변경할 수 없습니다. 집 밖에서 작업하세요. 직접 편집은 가능합니다.",
+   "tool": "bd-obj-cave-mouth 를 (39,21)에 놓았다 — 처음 자리 (39,22)가 막혀 옮겼다",
+   "blockedAsDeclared": true,
+   "blocked": "(0,1) (1,1) (2,1) (0,2) (1,2) (2,2)",
+   "entranceSeenByV2": true
+  },
+  {
+   "object": "ruin-entrance",
+   "kit": "bd-obj-ruin-entrance",
+   "ok": false,
+   "at": "자리 없음"
+  },
+  {
+   "object": "livestock-pen",
+   "kit": "bd-obj-livestock-pen",
+   "ok": false,
+   "at": "자리 없음"
+  },
+  {
+   "object": "spring",
+   "kit": "bd-obj-spring",
+   "asked": "(25,22)",
+   "at": "(25,22)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-spring 를 (25,23)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "(0,0) (1,0) (0,1) (1,1)"
+  },
+  {
+   "object": "camp-tent",
+   "kit": "bd-obj-camp-tent",
+   "asked": "(28,22)",
+   "at": "(28,22)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-camp-tent 를 (28,23)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "(0,1) (1,1)"
+  },
+  {
+   "object": "notice-board",
+   "kit": "bd-obj-notice-board",
+   "asked": "(24,13)",
+   "at": "(24,13)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-notice-board 를 (24,14)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "(0,1) (1,1)"
+  },
+  {
+   "object": "seal-altar",
+   "kit": "bd-obj-seal-altar",
+   "asked": "(16,18)",
+   "at": "(16,18)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-seal-altar 를 (16,19)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "(0,1) (1,1)"
+  },
+  {
+   "object": "mining-tools",
+   "kit": "bd-obj-mining-tools",
+   "asked": "(21,20)",
+   "at": "(21,20)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-mining-tools 를 (21,21)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "(0,1)"
+  },
+  {
+   "object": "broken-pillar",
+   "kit": "bd-obj-broken-pillar",
+   "asked": "(29,15)",
+   "at": "(29,15)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-broken-pillar 를 (29,16)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "(0,1)"
+  },
+  {
+   "object": "record-stand",
+   "kit": "bd-obj-record-stand",
+   "asked": "(19,25)",
+   "at": "(19,25)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-record-stand 를 (19,26)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "(0,1)"
+  },
+  {
+   "object": "shard",
+   "kit": "bd-obj-shard",
+   "asked": "(22,15)",
+   "at": "(22,15)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-shard 를 (22,15)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "(0,0)"
+  },
+  {
+   "object": "note",
+   "kit": "bd-obj-note",
+   "asked": "(26,25)",
+   "at": "(26,25)",
+   "ok": true,
+   "moved": false,
+   "tool": "bd-obj-note 를 (26,25)에 놓았다",
+   "blockedAsDeclared": true,
+   "blocked": "없음"
+  }
+ ]
+}
