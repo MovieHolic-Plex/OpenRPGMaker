@@ -176,6 +176,9 @@ try {
   } else lines.hud = ["HUD 설정 없음"];
 } catch (error) { probeErrors.push(`fieldHud: ${(error as Error).message.slice(0, 200)}`); }
 
+// 게임 하나를 지은 판만 — 장소만 지은 판은 끝맺음 출하 기본값이 돌지 않는다.
+if ((replay?.kind ?? "game") === "game") values.guidesOff = [project.system.fieldGuides === "off" || project.system.fieldGuides === "arrows" ? 1 : 0, 1];
+
 values.maps = Object.keys(project.maps).length;
 values.events = Object.values(project.maps).reduce((n, m) => n + (m.events ?? []).length, 0);
 if (replay?.trust) { values.trustMapTiles = [replay.trust.maps.sameTiles, replay.trust.maps.saved]; values.trustEvents = [replay.trust.events.matched, replay.trust.events.saved]; values.trustEventContent = [replay.trust.events.sameContent, replay.trust.events.saved]; }
