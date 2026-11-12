@@ -4072,6 +4072,8 @@ const placeStorageChest: ToolDefinition = {
     "농장 창고·인벤 확장용. 보물상자(1회 보상)는 place_chest. 장식 박스는 place_props. " +
     "벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다.",
   mode: "write",
+  // 그림 인자가 없다 — 금고·서랍장 칩은 도구가 고른다(place_chest · place_savepoint 와 같다). 안 적으면 칩 관문이 첫 호출을 되돌린다(2026-11-12 셋째 묶음).
+  choosesOwnGraphic: true,
   parameters: {
     type: "object",
     properties: {

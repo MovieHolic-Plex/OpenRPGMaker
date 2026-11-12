@@ -46,6 +46,40 @@ describe("장치 도구 — 한 호출 꼴", () => {
     expect(result.diff?.warnings ?? []).toEqual(expect.arrayContaining([expect.stringMatching(/^The time system was off/u)]));
   });
 
+  it("set_deadline_ending: 0 으로 채워 보낸 문턱은 기본 결말이다(싼 모델은 선택 칸을 0 · \"*\" 로 채운다)", () => {
+    // Break(2026-11-12 셋째 묶음 Terra, 수리 뒤 실행): tiers:[{endingId, friendshipAtLeast:0, characterId:"*"}] 를 일곱 번 보내고 일곱 번 «마지막 항목은 문턱 없이»로 거절당했다.
+    const [, ending] = job("deadline-ending-starter").reference;
+    const endingId = (ending!.args as { id: string }).id;
+    const filled = { endingId, friendshipAtLeast: 0, characterId: "*" };
+    for (const tiers of [[filled], [filled, filled]]) {
+      const { verdict } = judge("deadline-ending-starter", [ending!, { tool: "set_deadline_ending", args: { days: 3, characterId: "*", tiers } }]);
+      expect(verdict.pass, verdict.reason).toBe(true);
+    }
+    // 문턱 없는 항목 뒤에 다른 엔딩이 있으면 여전히 거절한다 — 닿지 않는 엔딩을 말없이 버리지 않는다.
+    const ctx: ToolContext = { project: buildFixture("starter") };
+    runTool(ctx, ending!.tool, ending!.args);
+    runTool(ctx, "define_ending", { id: "ending_other", name: "다른 끝" });
+    expect(runTool(ctx, "set_deadline_ending", { days: 3, tiers: [filled, { endingId: "ending_other" }] }).ok).toBe(false);
+  });
+
+  it("configure_time_system: 켜진 시계를 다시 설정해도 안 보낸 칸(기한 판정 연결 포함)은 그대로다", () => {
+    // 2026-11-12 Haiku: set_deadline_ending 뒤에 그 도구의 경고를 따라 forceSleep 을 켜려던 호출이 onDayEnd 연결을 지워 엔딩이 오지 않았다.
+    const [, ending] = job("deadline-ending-starter").reference;
+    const calls = [
+      ending!,
+      { tool: "configure_time_system", args: { enabled: true, dayStartHour: 6, dayEndHour: 24, minutesPerRealSecond: 2, daysPerSeason: 30 } },
+      { tool: "set_deadline_ending", args: { days: 3, tiers: [{ endingId: (ending!.args as { id: string }).id }] } },
+      { tool: "configure_time_system", args: { enabled: true, forceSleep: true } },
+    ];
+    const { after, verdict } = judge("deadline-ending-starter", calls);
+    expect(verdict.pass, verdict.reason).toBe(true);
+    expect(after.system.timeSystem).toMatchObject({ enabled: true, forceSleep: true, onDayEnd: "ce_deadline_ending", dayEndHour: 24, minutesPerRealSecond: 2, daysPerSeason: 30 });
+    // 끄고 다시 켜면 처음부터다.
+    const fresh = applyCalls(after, [{ tool: "configure_time_system", args: { enabled: false } }, { tool: "configure_time_system", args: { enabled: true } }]);
+    expect(fresh.system.timeSystem?.onDayEnd).toBeUndefined();
+    expect(fresh.system.timeSystem?.dayEndHour).toBe(26);
+  });
+
   it("set_deadline_ending: 켜 둔 시계는 건드리지 않고, 실패하면 시간 시스템도 켜지 않는다", () => {
     const [clock, ending, deadline] = job("deadline-ending-starter").reference;
     const ctx: ToolContext = { project: buildFixture("starter") };

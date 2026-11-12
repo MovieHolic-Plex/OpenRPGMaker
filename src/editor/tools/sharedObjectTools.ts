@@ -1,6 +1,7 @@
 // 공용 오브젝트 찍기(stamp_object)와 공용 목록 한 줄 읽기(get_spatial_design 의 공용 id 분기).
 // 목록은 sharedDesignCatalog.ts(공용 오브젝트 카탈로그 + 프로젝트 킷). 장소 안 킷은 그 장소 원본을 prepare 에서 불러 온다.
 import { isPassable } from "@/project/collision";
+import { eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
 import { checkKitPlacement, checkReliefPlacement } from "@/project/kitPlacementRules";
 import { footprintFromUpper, footprintRefusal, overlappedObjects } from "@/project/objectFootprint";
 import { offPurposeProps } from "@/ai/v2/place/roomPurpose";
@@ -145,7 +146,7 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       mapId: { type: "string" },
       x: { type: "integer", description: "왼쪽 위 칸 x" }, y: { type: "integer", description: "왼쪽 위 칸 y" },
       layers: { type: "string", enum: ["both", "lower", "upper"], description: "찍을 층. 생략하면 오브젝트 기본값" },
-      onOverlap: { type: "string", enum: ["refuse", "nearest", "replace"], description: "서는 소품이 다른 가구와 겹칠 때: refuse(기본 — 가까운 빈 자리를 알려 준다) · nearest(그 가까운 빈 자리에 바로 찍는다) · replace(겹친 가구를 걷어 내고 그 자리에 찍는다). 방 쓰임에 안 맞는 가구(교실의 소파·냉장고, 예배당의 안락의자)와 겹치면 기본값에서도 걷어 낸다" },
+      onOverlap: { type: "string", enum: ["refuse", "nearest", "replace"], description: "서는 소품이 다른 가구와 겹칠 때: refuse(기본 — 가까운 빈 자리를 알려 준다) · nearest(그 가까운 빈 자리에 바로 찍는다 — 사람이 선 칸도 비켜 찍는다) · replace(겹친 가구를 걷어 내고 그 자리에 찍는다). 방 쓰임에 안 맞는 가구(교실의 소파·냉장고, 예배당의 안락의자)와 겹치면 기본값에서도 걷어 낸다" },
     }, required: ["objectId", "mapId", "x", "y"], additionalProperties: false },
     prepare: args => prepareSharedObject(args.objectId),
     preservesAuthoredRaster: true,
@@ -213,6 +214,23 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
             args = { ...args, x: free.x, y: free.y };
           } else {
             throw new ToolError(`${label} at (${String(args.x)},${String(args.y)}) would stand on the road at (${cut.x},${cut.y}) and cut it in two — players walking the road could not get past. Put it beside the road${free ? `: top-left (${free.x},${free.y}) is free and keeps the road open (or pass onOverlap:'nearest')` : " (grass next to the road)"}.`, { code: "object-cuts-road", mapId: map.id, ...(free ?? {}) });
+          }
+        }
+        // 사람이 선 칸: nearest 는 그것도 겹침으로 친다 — 찍고 나서 경고만 하면 모델이 그 사람을 옮긴다(시키지 않은 수정).
+        // 실측(2026-11-12 셋째 묶음 Terra `hiding-spot-starter`): 나무통을 아이가 선 칸 위에 찍고 아이를 옮겨 판정이 떨어졌다. refuse(기본)·replace 는 그대로다.
+        // 발만이 아니라 그림 칸 전부를 본다 — 위층 그림은 그 칸의 사람을 막거나(발) 덮는다(윗줄).
+        const personUnder = (ox: number, oy: number) => map.events.find((e) => eventRequiresPassableTile(e) && cells.some((c) => ox + c.dx === e.x && oy + c.dy === e.y));
+        const under = mode === "nearest" ? personUnder(Number(args.x), Number(args.y)) : undefined;
+        if (under) {
+          let free: { x: number; y: number } | undefined;
+          for (let r = 1; r <= 6 && !free; r++) for (let dy = -r; dy <= r && !free; dy++) for (let dx = -r; dx <= r && !free; dx++) {
+            if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+            const ox = Number(args.x) + dx, oy = Number(args.y) + dy;
+            if (!footprintRefusal(project, map, cells, ox, oy, label) && !roadCutAt(project, map, feetAt(ox, oy)) && !personUnder(ox, oy)) free = { x: ox, y: oy };
+          }
+          if (free) {
+            overlapNotes.push(`(${String(args.x)},${String(args.y)}) has «${under.name ?? under.id}» standing on it, so the object was stamped on the nearest free spot (${free.x},${free.y}) instead — that person was not moved; leave them where they are.`);
+            args = { ...args, x: free.x, y: free.y };
           }
         }
       }

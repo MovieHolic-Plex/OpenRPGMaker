@@ -44,7 +44,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   },
   stamp_object: {
     d: "Stamp one object (id from list_spatial_designs kind:'object') with its top-left at (x,y). Pictures from other tilesets are grafted in. A standing prop is refused if its feet land on wall, roof, water or another object — the refusal names the nearest free top-left; retry there or pass onOverlap:'nearest'. Use fill_region for wide ground.",
-    p: { objectId: "Row id from list_spatial_designs (obj:… / kit:… / group:…).", x: "Top-left x.", y: "Top-left y.", layers: "Layers to stamp. Omit = the object's default.", onOverlap: "When a standing prop overlaps furniture: refuse (default, names a free spot) | nearest (stamp at that free spot) | replace (clear the overlapped furniture).", referencePurpose: "Terrain kits only: the tileset reference purpose id (read that reference first). Optional for finished prop kits." },
+    p: { objectId: "Row id from list_spatial_designs (obj:… / kit:… / group:…).", x: "Top-left x.", y: "Top-left y.", layers: "Layers to stamp. Omit = the object's default.", onOverlap: "When a standing prop overlaps furniture: refuse (default, names a free spot) | nearest (stamp at that free spot; also steps off a cell a person stands on) | replace (clear the overlapped furniture).", referencePurpose: "Terrain kits only: the tileset reference purpose id (read that reference first). Optional for finished prop kits." },
   },
   find_empty_ground: {
     d: "Find empty outdoor ground rectangles (largest first) on any chipset — walkable terrain with nothing on it; roads, water and indoor floors do not count. Returns each lot's x,y,w,h, the bare-ground share, and the outdoor props this chipset has. To fill what it finds call furnish_outdoor_area with the same region.",
@@ -257,7 +257,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   place_npc: { d: "Place an NPC event with lines (v1). Prefer add_people. Chests, storage and save points have their own tools." },
   upsert_common_event: { d: "Create or update a common event (custom logic only — prefer higher tools)." },
   set_npc_schedule: { d: "Give an existing NPC a timetable (needs configure_time_system{enabled:true} first): schedule:[{when:{timePhase:'night'} or {hourRange:[18,24]}, at:{x,y,mapId?}}] — while `when` matches the game time the NPC stands at `at`; otherwise where it was placed." },
-  configure_time_system: { d: "Set up game time / calendar. enabled:false removes system.timeSystem." },
+  configure_time_system: { d: "Set up game time / calendar. enabled:false removes system.timeSystem. On a clock that is already on, only the fields you send change (the onDayEnd hook that set_deadline_ending made stays unless you send onDayEnd)." },
   place_savepoint: { d: "Place a save point (glowing crystal). Examining it records a retry checkpoint and opens the save menu (mode both); heal:true also heals. mode:'heal' = a healing spot instead: examining it fully heals the party and never saves («healing spring») — one call." },
   set_session_start: {
     d: "Set the new-game start state: gold, inventory and party. Only the fields you send change. «Start the game with 3 potions» is this one call — do not hand start items out with an auto event.",
