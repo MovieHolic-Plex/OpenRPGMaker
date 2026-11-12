@@ -86,14 +86,18 @@ export function existingMatches(project: Project, tileset: TilesetDef, title: st
     if (full.length >= 2 && (squash(name).includes(full) || squash(id).includes(full))) return 1;
     return tail && (squash(name).includes(tail) || squash(id).includes(tail)) ? 2 : -1;
   };
-  const ranked: { readonly row: Existing; readonly rank: number }[] = [];
+  const ranked: { readonly row: Existing; readonly rank: number; readonly variantOf?: string }[] = [];
   for (const kit of tileset.structureKits ?? []) {
     if (kit.width > 8 || kit.height > 8) continue; // 건물·구역 킷은 기물이 아니다
     const r = rank(kit.name ?? "", kit.id, kit.ai?.tags ?? []);
     if (r < 0) continue;
-    ranked.push({ rank: r, row: { id: kit.id, name: kit.name ?? kit.id, how: kit.learnedFrom === "workshop" || kit.learnedFrom === "pack-preset" ? "stamp_tileset_object" : "stamp_object(kit:id) 또는 stamp_tileset_object", ...(r === 0 ? { declared: true as const } : {}) } });
+    ranked.push({ rank: r, ...(kit.ai?.variantOf ? { variantOf: kit.ai.variantOf } : {}), row: { id: kit.id, name: kit.name ?? kit.id, how: kit.learnedFrom === "workshop" || kit.learnedFrom === "pack-preset" ? "stamp_tileset_object" : "stamp_object(kit:id) 또는 stamp_tileset_object", ...(r === 0 ? { declared: true as const } : {}) } });
   }
-  const out: Existing[] = ranked.sort((a, b) => a.rank - b.rank).map((entry) => entry.row); // 안정 정렬 — 같은 정도 안에서는 킷 순서
+  // 같은 종류의 다른 그림(변형 킷)은 원본이 같은 정도 이상으로 맞으면 뺀다 — 원본 하나가 그 종류를 대표하고, 놓을 때 그 게임의 변형으로 찍힌다(project/kitLook.ts).
+  // 변형만 맞는 이름(«펌프»)이나 변형이 더 꼭 맞는 이름(«펌프 우물»)은 그 변형이 남는다.
+  const rankOf = new Map(ranked.map((entry) => [entry.row.id, entry.rank] as const));
+  const kept = ranked.filter((entry) => entry.variantOf === undefined || !(rankOf.has(entry.variantOf) && rankOf.get(entry.variantOf)! <= entry.rank));
+  const out: Existing[] = kept.sort((a, b) => a.rank - b.rank).map((entry) => entry.row); // 안정 정렬 — 같은 정도 안에서는 킷 순서
   if (tileset.id === ATLAS_BIOME_INTERIOR_ID) {
     for (const needle of new Set([title.trim(), head])) {
       if (!needle) continue;
