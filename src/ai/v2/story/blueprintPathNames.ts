@@ -12,6 +12,8 @@ export interface PathStepText {
   readonly wrongLines?: readonly string[];
   /** battle 단계: 이긴 뒤 한두 줄(진 쪽의 말 또는 서술). */
   readonly winLines?: readonly string[];
+  /** find·puzzle 단계: 그 장소에 그려진 물건 가운데 이 단계가 쓰는 것의 이름(build_places 결과의 things). */
+  readonly on?: string;
   /** choice 단계: 고를 것들 — lines = 그것을 골랐을 때 그 사람의 답, later = 엔딩 직전에 보이는 «그 선택의 결과» 한 줄. */
   readonly choices?: readonly { readonly text: string; readonly lines?: readonly string[]; readonly later?: string }[];
 }
