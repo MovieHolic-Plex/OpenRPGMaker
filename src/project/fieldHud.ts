@@ -46,6 +46,8 @@ export interface FieldHudConfig {
   theme: keyof typeof FIELD_HUD_THEMES;
   font?: keyof typeof HUD_FONTS;
   menuStyle?: keyof typeof HUD_MENUS;
+  /** HUD 껍질의 판 — 프리셋 칸 가운데 판이 있는 것과 목표 줄·알림 띠가 이 판으로 선다(project/uiLook.ts 가 정한다). 생략 = 테마가 정한 판·어두운 목표 줄. 직접 짠 widgets 는 건드리지 않는다. */
+  panel?: "dark" | "paper";
   vitals: boolean; clock: boolean; tools: boolean; objective: boolean; hideEmpty: boolean;
   /** Omitted = generated preset; [] = deliberately empty HUD. */
   widgets?: HudWidget[];
@@ -83,7 +85,7 @@ export function normalizeFieldHud(value: unknown): FieldHudConfig {
     ids.add(id);
     return { ...widget, id };
   }) : undefined;
-  return { theme, ...(raw.font !== undefined ? { font: choice(raw.font, HUD_FONTS, "auto") } : {}), ...(raw.menuStyle !== undefined ? { menuStyle: choice(raw.menuStyle, HUD_MENUS, "project") } : {}), vitals: flag("vitals", true), clock: flag("clock", true), tools: flag("tools", true), objective: flag("objective", !["minimal", "collector", "classic", "horror", "chase", "hearts"].includes(theme)), hideEmpty: flag("hideEmpty", true), ...(widgets !== undefined ? { widgets } : {}) };
+  return { theme, ...(raw.font !== undefined ? { font: choice(raw.font, HUD_FONTS, "auto") } : {}), ...(raw.menuStyle !== undefined ? { menuStyle: choice(raw.menuStyle, HUD_MENUS, "project") } : {}), ...(raw.panel === "dark" || raw.panel === "paper" ? { panel: raw.panel } : {}), vitals: flag("vitals", true), clock: flag("clock", true), tools: flag("tools", true), objective: flag("objective", !["minimal", "collector", "classic", "horror", "chase", "hearts"].includes(theme)), hideEmpty: flag("hideEmpty", true), ...(widgets !== undefined ? { widgets } : {}) };
 }
 /**
  * 필드 HUD 예산 — 논리 화면에 대한 몫. 화면이 좁다(320×240 을 3배쯤으로 본다): 게임이 보여야 한다.
@@ -148,7 +150,7 @@ export const HUD_BODY_SOURCES: readonly HudWidget["source"][] = ["hp", "mp", "en
 export const isBodyGauge = (w: Pick<HudWidget, "kind" | "source">): boolean => w.kind === "gauge" && HUD_BODY_SOURCES.includes(w.source);
 export function resolvedHudWidgets(config: FieldHudConfig): HudWidget[] {
   if (config.widgets !== undefined) return config.widgets;
-  return hudPreset(config.theme).filter(w => (!isBodyGauge(w) || config.vitals) && (w.kind !== "clock" || config.clock) && (w.source !== "tools" || config.tools)).map(w => w.source === "tools" ? { ...w, hideEmpty: config.hideEmpty } : w);
+  return hudPreset(config.theme).filter(w => (!isBodyGauge(w) || config.vitals) && (w.kind !== "clock" || config.clock) && (w.source !== "tools" || config.tools)).map(w => w.source === "tools" ? { ...w, hideEmpty: config.hideEmpty } : w).map(w => config.panel && w.panel !== "none" ? { ...w, panel: config.panel } : w);
 }
 
 /** 클래식 JRPG 의 필드 HUD — 프리셋 위젯이 없는 「고전 JRPG」 테마. 저작자가 정한 fieldHud 가 없을 때만 쓴다(jrpg-real-1 J09: 기본 하트 HUD 가 지도 위쪽을 덮었다). */

@@ -7,7 +7,7 @@ export const stage: FinishStage = {
   id: "ship-defaults", phase: "assembly", order: 130,
   run({ env, session, assembled }) {
     try {
-      const applied = applyShipDefaults(env.ctx.project, env.request.task);
+      const applied = applyShipDefaults(env.ctx.project, env.request.task, env.request.projectKey ? String(env.request.projectKey) : "");
       assembled.push(...applied);
       // 예산을 넘긴 맞춤은 «기록하고 완료는 허용» — 모델이 풀 수 없고 같은 입력이면 같은 곳에서 또 멈춘다. 최종 보고가 이 줄을 읽는다.
       const cut = applied.find((line) => line.startsWith(FIT_INCOMPLETE_PREFIX));
