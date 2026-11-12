@@ -153,9 +153,12 @@ describe("place and whole-game requests", () => {
   });
 
   // 2026-11-12: 실내 이야기 기물 8종(#4677)으로 방탈출 지시문이 67,493자가 됐다 — 상한을 올리지 않고 목록에서 «크기 표의 구운 크기» 52줄을 뺐다(66,610자).
-  it("a whole-game prompt does not grow (main 2026-11-11 after #4556: 35,491 · 67,349 chars; 2026-11-12: 66,610)", () => {
+  // 2026-11-13: 청사진 카드의 goal · item 한 줄(+176)로 판타지 지시문이 35,663자가 됐다 — 상한을 올리지 않고 카드에서 도구 스키마의 칸 설명과 같은 말을 뺐다(35,328자).
+  it("a whole-game prompt does not grow (main 2026-11-11 after #4556: 35,491 · 67,349 chars; 2026-11-12: 66,610; 2026-11-13: 35,328)", () => {
     const fantasy = shoot("판타지 RPG 게임 하나 만들어 줘.", "blank");
-    expect(fantasy.chars).toBeLessThanOrEqual(35_491);
+    expect(fantasy.chars).toBeLessThanOrEqual(35_328);
+    // 뺀 말은 write_blueprint · build_blueprint_path 의 칸 설명이 한다 — 두 도구가 처음부터 실려야 한다.
+    expect(fantasy.upFront).toContain("build_blueprint_path");
     expect(fantasy.text).toContain("[Fallen-Star-style jobs");
     expect(fantasy.upFront).toContain("write_blueprint");
     const escape = shoot("방탈출 게임 만들어 줘.", "blank");

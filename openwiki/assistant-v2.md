@@ -1897,6 +1897,8 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 
 **새 칸은 둘뿐이다(둘 다 선택).** `GameBlueprintStepText.goal`(80자까지) · `item`(40자까지) — `gameBlueprint.ts` `normalizeStepText`. 청사진(`write_blueprint`)에는 칸을 더하지 않았다.
 지시문은 `BLUEPRINT_CARD` +176자(게임 하나 요청의 시스템 지시문), `write_blueprint` 스키마 +41자(«design note … never shown»), `build_blueprint_path` 스키마 +323자(`goal`·`item` 설명).
+
+2026-11-13 — 그 +176자로 판타지 게임 하나 지시문이 35,663자(상한 35,491)가 됐다. 상한은 올리지 않고 카드에서 **도구 스키마의 칸 설명과 같은 말**을 뺐다(−335자, 35,328자 · 방탈출 66,451자): 단계 줄의 «place (exact name of the map to build) · … · feeling (the scene's mood)» 풀이는 `write_blueprint` 의 칸 설명이, «goal (the objective line …) and item (…)» 풀이는 `build_blueprint_path` 의 칸 설명이 한다. 카드에는 칸 이름과 스키마에 없는 말(사람이면 이벤트 이름 = 그 사람 이름)만 남는다. 두 도구는 게임 하나 요청에 처음부터 실린다(`aiV2PromptBudget` 이 못박는다) — 카드에 칸 풀이를 다시 쓰지 말 것.
 `quests-min` 돌려보내는 글(그 검사가 걸릴 때만 간다) +116자(영어 글은 480자 상한 안 — `test/aiV2FindingEn.test.ts`) — 물건을 나르는 의뢰는 `onAcceptItems` + `{kind:"deliver"}` 로 쓰라는 한 문장. 전의 예시는 talk 두 단계뿐이라 모델이 술통 의뢰도 talk 로 썼다.
 
 **남은 것.** ① 모델이 `goal`·`item` 을 실제로 쓰는지는 모델을 돌려 봐야 안다(이 변경은 모델 없이 검증했다). 안 써도 화면에는 이름으로 지은 줄만 나온다. ② `stepSubjects.ts` `personLine` 은 `action` 에서 살펴볼 대상 낱말을 뽑아
