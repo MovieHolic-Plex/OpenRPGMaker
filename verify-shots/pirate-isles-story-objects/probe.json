@@ -1,0 +1,134 @@
+{
+ "chipset": "pirate_isles",
+ "fresh": {
+  "kits": 2,
+  "of": 2,
+  "count": 1243,
+  "referenceDocs": [
+   "pi-props/pi-props-dict-2",
+   "pi-props/pi-props-objects"
+  ],
+  "tablesMatchCount": true
+ },
+ "sheet": [
+  {
+   "id": "pi-note",
+   "name": "쪽지·보물 지도 조각(바닥에 떨어진 것)",
+   "size": "1×1",
+   "kind": "debris",
+   "place": "decal",
+   "cells": [
+    1240
+   ],
+   "blocked": "없음(밟고 지나감)"
+  },
+  {
+   "id": "pi-logbook-stand",
+   "name": "항해 일지(통 위에 펼친 책)",
+   "size": "1×2",
+   "kind": "low_furniture",
+   "place": "tall",
+   "cells": [
+    1241,
+    1242
+   ],
+   "blocked": "(0,1)"
+  }
+ ],
+ "cellGate": {
+  "baseSheet": "768×416",
+  "sheet": "768×416",
+  "newCells": 3,
+  "newCellIndexes": [
+   1240,
+   1241,
+   1242
+  ],
+  "bundleUncovered": 0,
+  "storeUncovered": 3
+ },
+ "words": [
+  {
+   "object": "note",
+   "word": "보물 지도",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "note",
+   "word": "쪽지",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "logbook-stand",
+   "word": "항해일지",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "logbook-stand",
+   "word": "항해 일지",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "logbook-stand",
+   "word": "기록부",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "이 기물을 이른다(첫째)"
+  }
+ ],
+ "map": {
+  "tool": "compose_pirate_isles_map",
+  "args": {
+   "kind": "harbor",
+   "seed": 1
+  },
+  "size": "48×36",
+  "start": {
+   "x": 0,
+   "y": 0
+  }
+ },
+ "placed": [
+  {
+   "object": "logbook-stand",
+   "kit": "pi-logbook-stand",
+   "asked": "(28,18)",
+   "at": "(28,18)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,1)",
+   "tool": "pi-logbook-stand 를 (28,19)에 놓았다"
+  },
+  {
+   "object": "note",
+   "kit": "pi-note",
+   "asked": "(28,15)",
+   "at": "(28,15)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "tool": "pi-note 를 (28,15)에 놓았다"
+  }
+ ],
+ "scene": {
+  "crop": "칸 (24,11)–(34,24)",
+  "size": "176×224",
+  "heroes": [
+   {
+    "x": 29,
+    "y": 15,
+    "why": "note 옆(밟고 지나가는 바닥 그림)"
+   }
+  ]
+ }
+}
