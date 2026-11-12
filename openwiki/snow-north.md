@@ -36,6 +36,13 @@
   실측: 옛 키트 95/95 가 칸 번호·크기·입구·접근칸 그대로 · 옛 칸 976개의 통행·층 변화 0 · 오토타일 배치 같음 · 애니메이션 줄 23 그대로 · 칸 수 976 → 989(새 키트 6의 13칸) · 구성기 9장면(village·lake·cave·market·cabin·longhall·tavern·sauna·ice-cave, seed 1)의 칸 배열이 옛 것과 같고 통행 검사 오류 0. 교회·방앗간·가문비 두 그루는 옛 키트의 빈 칸 모양에 맞추려고 조립을 맞췄다(`R_church`·`R_mill`·`R_pine_pair`).
 - **헛간 문:** 키트는 입구 1칸을 선언하는데 옛 그림은 문이 2칸이었다. 문을 1칸(16×28)으로 그렸다. 선언은 그대로.
 - **내 눈에 틀린 것(솔직하게):** 눈밭 기본 칸의 옅은 그늘 줄이 16px 마다 되풀이된다 · 서리 풀 덩이가 옅은 회녹색 얼룩이다 · 통나무 마루가 벽돌처럼 읽힌다 · 넓은 건물은 같은 구획이 반복된다 · 교회 뾰족탑이 작은 상자다 · 장작 창고·뒤집힌 배가 무엇인지 흐리다 · 남북 목책이 가늘다 · 프레임 2·3은 코드로 흔든 것. 잘 된 것: 벽·문·노점·나무·소품·실내.
+- **남은 것(둘째 판을 감독이 받은 뒤, 다음에 손댈 사람에게):**
+  - 얼음 결: 옛 호수의 잔물결 무늬가 더 살아 있었다. 새 얼음은 거의 민무늬다(금 몇 줄).
+  - 뒤집힌 배(`sn-boat`)가 갈색 통나무처럼 읽힌다 — 한 장 다시 그릴 후보 1순위. 장작 창고(`sn-woodpile`)·남북 목책(`sn-palisade-v`)도 같다.
+  - 광장·길: 옛 다진 눈은 따뜻한 회백이라 눈밭과 색으로 갈렸다. 새 것은 눈밭보다 한 단 어둡고 푸른 눈이라 장터 광장이 눈밭과 덜 갈린다.
+  - 긴집 지붕(`fable/answers/b-long-roof.json`)의 8번째 줄은 모델 답이 끊겨 윗줄을 베껴 메운 것이다.
+  - 넓은 건물의 16px 구획 반복 · 교회 뾰족탑 · 서리 풀 덩이 · 얼음 동굴 바닥 · 통나무 마루 · 눈밭 기본 칸의 되풀이 · 코드로 흔든 프레임 2·3(위 «내 눈에 틀린 것»).
+- 조각 하나만 다시 그리는 법 · 굽는 순서 · 약한 곳은 `~/z-project/assistant-fable-runs/redraw/snow_north/HANDOFF.md`.
 - 다시 굽는 순서: `build_fable.py` → `npm run harness -- object-gate owner-waive --manifest scripts/content/snow-north/fable/waive-manifest.json --batch … --replace`(그림이 바뀌었을 때만) → `bake_sn.py` → `bake_refs_sn.py`.
 - 그리는 도구(지시문·예산 장치·기계 검사)는 저장소 밖 `~/z-project/assistant-fable-runs/redraw/snow_north/` 에 있다(setup.py · draw.py · evalj.py · scene.py · page.py). 보고 페이지 http://mdc-server:18301/redraw-snow-north.html.
 
