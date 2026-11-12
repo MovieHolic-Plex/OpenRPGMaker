@@ -93,11 +93,23 @@ class Outdoor:
         self.strips, self.kits, self.groups = [], [], collections.OrderedDict()
         self.piece_cells = {}
 
-    def keep_old_cells(self, sheet_png):
+    def keep_old_cells(self, sheet_png, def_json=None):
         """이미 구워진 시트의 칸은 그림을 지킨다(jp_city 와 같은 규칙, 2026-11-12 직각 지붕 다시 그리기).
         번호를 받은 자리 키의 그림이 바뀌면 새 자리 키 `<키>@r<그림 해시>` 로 끝에 붙이고 키트는 새 칸을 가리킨다. 옛 번호는 옛 그림·옛 통행 그대로 남는다
         — 이미 깔린 맵은 한 화소도 바뀌지 않고, 새로 찍는 건물만 새 그림이 된다. 이 호출이 없으면 옛 동작(제자리 덮어쓰기)이다."""
         self.old_sheet = Image.open(sheet_png).convert('RGBA') if os.path.exists(sheet_png) else None
+        self.old_def = json.load(open(def_json, encoding='utf-8')) if def_json and os.path.exists(def_json) else None
+
+    def retire_cells(self):
+        """번호는 있는데 이번 굽기에서 아무도 쓰지 않는 칸: 옛 시트에 그림이 있으면 그 그림을 지킨다(정의는 finalize 가 옛 정의에서 그대로 옮긴다).
+        앞선 굽기가 끝에 붙인 `<키>@r<해시>` 칸(그 뒤 그림이 또 바뀐 자리)이 여기 걸린다 — 그 칸으로 깔아 둔 맵이 빈 칸이 되지 않는다."""
+        out = []
+        if getattr(self, 'old_sheet', None) is None or getattr(self, 'old_def', None) is None: return out
+        for key, tid in self.pins.map.items():
+            if tid in self.img or tid >= self.old_def.get('count', 0): continue
+            was = self._old_cell(tid)
+            if was is not None and was.getbbox() is not None: self.img[tid] = was; out.append(tid)
+        return sorted(out)
 
     def _old_cell(self, tid):
         sh = getattr(self, 'old_sheet', None)
@@ -197,6 +209,7 @@ class Outdoor:
 
 def finalize(ID, NAME, TEXTURE, FAMILY, TPR, O, extra_groups, extra_kits, priority_fix=None):
     """칸 정의(통행·층·메타)를 만들어 data(OrderedDict) 를 돌려준다. O = Outdoor."""
+    retired = O.retire_cells() if hasattr(O, 'retire_cells') else []
     img, info = O.img, O.info
     count = max(list(img) + [0]) + 1
     count = max(count, O.pins.next_id)
@@ -226,6 +239,9 @@ def finalize(ID, NAME, TEXTURE, FAMILY, TPR, O, extra_groups, extra_kits, priori
         g.update(source='bundled-default', confidence='high')
         tile_groups.append(g)
     kits = O.kits + list(extra_kits)
+    for t in retired:                                       # 물러난 칸: 옛 정의 그대로
+        od = O.old_def
+        passability[t] = od['passability'][t]; priority[t] = od['priority'][t]; terrain[t] = od['terrain'][t]; tile_meta[t] = od['tileMeta'][t]
     data = collections.OrderedDict(id=ID, name=NAME, textureKey=TEXTURE, family=FAMILY, tileSize=16, tilesPerRow=TPR, count=count, libraryEnd=count,
                                    passability=passability, priority=priority, terrain=terrain, tileMeta=tile_meta, tileGroups=tile_groups,
                                    autotileGroups=[], animationStrips=sorted(O.strips, key=lambda s: s['baseTile']), structureKits=kits)
