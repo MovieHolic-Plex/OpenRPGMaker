@@ -563,7 +563,8 @@ export function applyFallenMobBalance(project: Project, exec: Exec): void {
  * 근거: 이야기 순서 50부대를 「특성을 모르는 / 아는」 두 자동 전투 정책으로 200판씩 잰 표에서 잡몹 41부대가 모두 밴드 밖(모름 >40% 또는 앎 >70%)이었다
  * (http://mdc-server:18301/autopilot-usability.html). 지식 의존 부대(도깨비불·재의 회수자·달빛의 용)·보스·결투·우두머리는 넣지 않는다.
  * 규칙: 아래 무리의 적 중 **다른 무리에 나오지 않는 적만**(같은 적을 보스·우두머리 무리와 나눠 쓰면 건드리지 않는다) 약점 B(×1.5)를 A(×2)로,
- * 최대 HP 를 ×1.15. 서리 박쥐 두 무리·숯덩이 골렘·탑 파수 기계·순찰 기사 두 무리·재까마귀는 특성 장치(#4421, 무기 무효·HP 배수)가 따로 맞추므로 뺐다 — 겹치면 HP 가 ×1.15 더 붙어 밴드를 벗어난다. 전역 속성 배율(elements.damageMultipliers)은 바꾸지 않는다 — 보스·지식 의존 부대까지 움직이므로(ultrabrain 판정).
+ * 최대 HP 를 ×1.15. 서리 박쥐 두 무리·숯덩이 골렘·탑 파수 기계·재까마귀는 특성 장치(#4421, 무기 무효·HP 배수)가 따로 맞추므로 뺐다 — 겹치면 HP 가 ×1.15 더 붙어 밴드를 벗어난다.
+ * 순찰 기사 두 무리는 특성 장치에서도 빠졌지만(2026-11-12, 오너 결정 대기) 여기에도 넣지 않는다 — 기사를 어떻게 할지는 오너가 정한다. 전역 속성 배율(elements.damageMultipliers)은 바꾸지 않는다 — 보스·지식 의존 부대까지 움직이므로(ultrabrain 판정).
  */
 export const FS_WEAKNESS_TRASH_TROOPS: readonly string[] = [
   "troop_fs_wolves",
@@ -637,6 +638,10 @@ export function applyFallenTrashWeakness(project: Project): string[] {
  *   모름 정책도 98.5% 로 이겨 넣지 않았다. 「모름」이 0~5% 로 매우 낮은 것은 무기만 쓰면 못 이긴다는 뜻이다 — 도감·약점 장부로 배운다.
  * 장치: 무기(검·창·활)로는 피해가 없고(E) 약점 하나가 A 다. 알아낸 무효·약점은 전투가 도감 약점 장부(knownWeaknesses)에 적는다.
  * 엔진 작업 없음 — 속성 배율 데이터만 쓴다. 능력치 표(applyFallenMobStats)가 무리별 적을 떼어 곱한 뒤에 적용해야 한다(HP 배수는 그 위에서 잰 값).
+ * 재측정(2026-11-12, #4542 새라의 관통상 뒤 · 같은 정책·200판 · 모름/앎/공격만): 박쥐 3/65.5/0·8/58/0, 파수 기계 8.5/68/0, 까마귀 0.5/61/0 은 밴드 안.
+ *   숯덩이 골렘 70/87.5/0 으로 벗어나 HP 를 ×1.5 더 올렸다(×2.7 → ×4.05, 구운 값 3348 → 5022): ×1.5 에서 48.5/64.
+ *   순찰 기사 두 무리는 90/70/0 으로 벗어났고 HP 를 올리면 앎이 먼저 무너져(×1.5 64.5/8 · ×2 47/0 · ×3 17/0) 뺐다 —
+ *   오너 결정(2026-11-12 「그래 그렇게하고 병합하도록해」, 안 A). 기사의 약점 설계는 이번에 바꾸지 않는다. http://mdc-server:18301/fs-owner-123b.html
  */
 const WEAPON_IMMUNE = { sword: "E", spear: "E", bow: "E" } as const;
 /** 적 id → 덧씌울 속성 배율과 최대 HP 배수. 배수는 그 무리를 200판×3정책으로 잰 값이다. */
@@ -644,13 +649,11 @@ export const FS_TRAIT_PILOT: Readonly<Record<string, { readonly rates: Readonly<
   // 서리 박쥐 — 무기 무효, 불 약점. 눈 북쪽 1 85/85/42 → 4.5/62.5/0, 얼음 호수 90.5/90.5/41.5 → 9/64.5/0.
   enemy_fs2_frost_bat_t_fs2_frost_bats: { rates: { ...WEAPON_IMMUNE, fire: "A" }, hp: 1.6 },
   enemy_fs2_frost_bat_t_fs2_frost_bats_lake: { rates: { ...WEAPON_IMMUNE, fire: "A" }, hp: 1.6 },
-  // 달아오른 숯덩이 골렘(혼자 나오는 무리) — 무기·주먹 무효, 물 약점(원래 B). 100/100/99.5 → 34/62.5/0.
-  enemy_fs2_cinder_golem: { rates: { ...WEAPON_IMMUNE, hit: "E", water: "A" }, hp: 2.7 },
+  // 달아오른 숯덩이 골렘(혼자 나오는 무리) — 무기·주먹 무효, 물 약점(원래 B). 100/100/99.5 → 34/62.5/0(11-08, ×2.7).
+  // 11-12 재측정 70/87.5/0 → HP ×1.5 더(×4.05) 48.5/64/0.
+  enemy_fs2_cinder_golem: { rates: { ...WEAPON_IMMUNE, hit: "E", water: "A" }, hp: 4.05 },
   // 탑 파수 기계(혼자 나오는 무리) — 무기·주먹 무효, 번개 약점(원래 A). 100/100/99 → 18/65/0.
   enemy_fs2_tower_sentinel: { rates: { ...WEAPON_IMMUNE, hit: "E", thunder: "A" }, hp: 2.1 },
-  // 넓히기 3차 — 순찰 기사 두 무리(요새 안·밖, 같은 수치): 판금이라 무기·주먹 무효, 번개 약점. 100/100/68.5 → 2/60.5/0.
-  enemy_fs2_fort_knight_t_fs2_fort_knights: { rates: { ...WEAPON_IMMUNE, hit: "E", thunder: "A" }, hp: 2.2 },
-  enemy_fs2_fort_knight_t_fs2_fort_knights_out: { rates: { ...WEAPON_IMMUNE, hit: "E", thunder: "A" }, hp: 2.2 },
   // 재까마귀 ×3: 재로 된 몸이라 무기·주먹 무효, 물 약점(원래 D → A). 100/100/64 → 1.5/66/0.
   enemy_fs2_ash_crow_t_fs2_ash_crows: { rates: { ...WEAPON_IMMUNE, hit: "E", water: "A" }, hp: 2.2 },
 };
