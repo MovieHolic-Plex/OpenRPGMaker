@@ -334,6 +334,10 @@ export interface TilesetLook {
   surface?: string;
   trees?: string;
   woods?: string;
+  /** 집 벌(assets/houseSets.ts) — 그 게임의 집·가게·여관·높은 곳 건물 그림 가족. 없으면 원래 붉은 기와·목골 가족. */
+  houses?: string;
+  /** 광장 구성(시공기가 읽는 값) — 모양·가운데 기물·둘레 꾸밈. 없으면 원래 네모 광장과 우물. */
+  plaza?: string;
 }
 
 // "보이지 않는 하네스" 구조 킷(2026-07-19 v2 설계 §③④ 수직 슬라이스).
