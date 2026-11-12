@@ -5,11 +5,11 @@ import { audioAsk, type AudioAsk } from "./audio";
 import { combatAsk, type CombatAsk } from "./combat";
 import { HORROR_WORDS, puzzleAsk } from "./genre";
 import { ART_ASK, ENDING_WORDS } from "./asks";
-import { PLACE_BUILD_WORDS } from "./place";
+import { PLACE_BUILD_WORDS, buildsPlaceBeyondWhere } from "./place";
 import { MAKE_GAME_WORDS, ONE_ROOM_GAME, SINGLE_PLACE, asksToChange, asksToContinue, bareDescription, isEscapeBlueprint, isFreshProject, linkedExistingMaps, wholeGameAsk } from "./scope";
 import { maskNames, userText } from "./text";
 import { matchToolGroups, type ToolGroups } from "./toolGroups";
-import { gameTopics, jobFacets, recordTopicsNamed, smallJobTools, type GameTopic, type JobFacets } from "./topics";
+import { DEVICE_TOPICS, gameTopics, jobFacets, recordTopicsNamed, smallJobTools, type GameTopic, type JobFacets } from "./topics";
 
 /**
  * 요청의 범위 — 하나만 고른다.
@@ -28,6 +28,7 @@ interface RequestText {
   /** 앞 실행을 이어 하라는 요청이다. */ readonly continuation: boolean;
   /** 장소를 짓는 낱말이 있다. */ readonly placeBuild: boolean;
   /** 맵 여러 장과 이야기를 한 번에 맡기는 낱말이 있다(make_game). */ readonly makeGame: boolean;
+  /** 게임 하나 범위가 「…게임으로 만들어 줘」 꼴로만 정해졌다 — 지은 것이 있는 프로젝트에서는 고치기다. */ readonly intoGame: boolean;
   /** 방·맵 하나, 또는 방 하나짜리 게임을 말한다. */ readonly oneRoom: boolean;
   readonly audio: AudioAsk;
   readonly combat: CombatAsk;
@@ -49,12 +50,12 @@ export interface RequestIntent extends RequestText {
   /** 장소를 짓지 않는 요청이다(고치기·질문·소리·이어 하기) — 장소 카드·짓기 동사를 필요할 때만 싣는다. */ readonly editOnly: boolean;
 }
 
-function scopeOf(own: string, topic: string, facts: { audioOnly: boolean; write: boolean; continuation: boolean; placeBuild: boolean; makeGame: boolean }): { scope: RequestScope; why: string } {
+function scopeOf(own: string, topic: string, facts: { audioOnly: boolean; write: boolean; continuation: boolean; placeBuild: boolean; makeGame: boolean }): { scope: RequestScope; why: string; into?: boolean } {
   if (!own.trim()) return { scope: "edit", why: "empty request" };
   if (facts.audioOnly) return { scope: "audio", why: "asks only for music or sound-effect work" };
   if (!facts.write) return { scope: "question", why: "asks a question or to be shown something" };
   const whole = wholeGameAsk(topic);
-  if (whole.asked) return { scope: "wholeGame", why: whole.why };
+  if (whole.asked) return { scope: "wholeGame", why: whole.why, into: whole.into };
   if (facts.continuation) return { scope: "continue", why: "asks to carry on the previous run" };
   if (facts.placeBuild) return { scope: "place", why: "asks to build or rebuild a place" };
   if (facts.makeGame) return { scope: "place", why: "asks for several maps or a story line" };
@@ -82,11 +83,11 @@ export function readRequest(task: string | undefined): RequestText {
     // 쓰기 판정은 실행기가 붙인 메모까지 본다(옛 동작 그대로) — 메모 속 「만들어」가 질문을 쓰기로 바꿀 수 있다는 것은 알려진 한계다.
     const write = asksToChange(raw), continuation = asksToContinue(own);
     const placeBuild = PLACE_BUILD_WORDS.test(topic), makeGame = MAKE_GAME_WORDS.test(topic);
-    const { scope, why } = scopeOf(own, topic, { audioOnly: audio.only, write, continuation, placeBuild, makeGame });
+    const { scope, why, into } = scopeOf(own, topic, { audioOnly: audio.only, write, continuation, placeBuild, makeGame });
     const tools = matchToolGroups(topic, { wholeGame: scope === "wholeGame", audio, combat });
     const topics = gameTopics(topic, combat), job = jobFacets(topic);
     return {
-      own, topic, scope, why, write, continuation, placeBuild, makeGame,
+      own, topic, scope, why, write, continuation, placeBuild, makeGame, intoGame: into === true,
       oneRoom: SINGLE_PLACE.test(topic) || ONE_ROOM_GAME.test(topic),
       audio, combat, horror: HORROR_WORDS.test(topic), puzzle: puzzleAsk(topic), ending: ENDING_WORDS.test(topic), art: ART_ASK.test(topic),
       tools, topics, job, smallTools: smallJobTools(topics, job, tools, audio, combat),
@@ -106,19 +107,26 @@ export function classifyRequest(task: string | undefined, project: Pick<Project,
   const escape = blueprint ? isEscapeBlueprint(blueprint) : false;
   // 장소 짓기로 읽힌 글이 이미 있는 맵 둘을 잇기만 하라는 것이면 작은 일이다(맵 이름은 프로젝트마다 달라 기억 열쇠에 넣는다).
   const linked = text.scope === "place" ? linkedExistingMaps(text.own, project) : [];
+  // 장치 하나를 있는 맵에 더하는 일(「마을 빈 땅에 밭을 6칸」「동쪽 들판을 실시간 액션 전투 맵으로」)도 작은 일이다 — 그 장치를 짓는 도구가 따로 있고,
+  // 장소 낱말은 일할 곳·바뀔 맵으로만 나온다. 장소 카드와 짓기 동사 26~50개가 실려 create_farm_plot·make_action_enemy 가 밀렸다(2026-11-11 작은 일 셋째 묶음).
+  const device = text.scope === "place" && text.placeBuild && !text.makeGame && text.topics.some((topic) => DEVICE_TOPICS.has(topic)) && !buildsPlaceBeyondWhere(text.topic);
+  // 「꽃잎을 체력으로 쓰는 게임으로 만들어 줘」 — 지은 것이 있는 프로젝트에서 «…게임으로 만들어» 는 그 게임을 바꾸라는 말이다. 빈 프로젝트에서는 게임 하나를 만든다.
+  const reshape = text.scope === "wholeGame" && text.intoGame && !fresh;
   // 작은 일이 이름으로 부른 기록(아이템·장비·적)의 주제 — 글의 낱말로는 모르는 것을 프로젝트의 기록 이름으로 안다. 장소 짓기·게임 하나·소리만 바라는 요청은 보지 않는다.
-  const small = text.scope === "edit" || text.scope === "continue" || text.scope === "question" || linked.length > 0;
+  const small = text.scope === "edit" || text.scope === "continue" || text.scope === "question" || linked.length > 0 || device || reshape;
   const named = small && !text.audio.only ? recordTopicsNamed(text.own, project.database).filter((topic) => !text.topics.includes(topic)) : [];
-  const key = [task ?? "", fresh ? 1 : 0, blueprint ? `b:${blueprint.request ?? ""}` : "", escape ? 1 : 0, linked.join("|"), named.join("|")].join("\u0000");
+  const key = [task ?? "", fresh ? 1 : 0, blueprint ? `b:${blueprint.request ?? ""}` : "", escape ? 1 : 0, linked.join("|"), named.join("|"), device ? "d" : "", reshape ? "r" : ""].join("\u0000");
   return remember(INTENT_MEMO, key, () => {
     // 청사진은 게임 하나를 만들 때만 생긴다 — 첫 요청 글이 남아 있지 않은 옛 청사진도 게임 하나로 본다.
     const inherits = text.scope === "continue" && !!blueprint && (first!.scope === "wholeGame" || !blueprint.request?.trim());
-    const wholeGame = text.scope === "wholeGame" || inherits;
+    const wholeGame = (text.scope === "wholeGame" && !reshape) || inherits;
     // 빈 프로젝트에 묘사만 온 글(「장난감 가게」)은 첫 장소를 짓는 시작이다 — 시킨 일이 분명한 작은 요청은 빈 프로젝트에서도 작은 요청이다.
     const firstPlace = fresh && text.scope === "edit" && bareDescription(text.own);
-    const scope: RequestScope = firstPlace ? "place" : linked.length ? "edit" : text.scope;
+    const scope: RequestScope = firstPlace ? "place" : linked.length || device || reshape ? "edit" : text.scope;
     const why = firstPlace ? "a bare description on an empty project — start with a first place"
       : linked.length ? `links maps that already exist (${linked.length} named) — nothing to build`
+      : device ? "adds one mechanic to a map that already exists — the place words only say where"
+      : reshape ? "«make it into a game that …» on a project that already has a game — a change to what exists"
       : inherits ? `${text.why}; the blueprint's first request was a whole game` : text.scope === "continue" ? `${text.why}; no whole-game blueprint to inherit` : text.why;
     // 빈 프로젝트의 이어 하기(「계속」)는 고칠 것이 없다 — 앞 실행이 아무것도 못 쓰고 끊긴 것이라 짓는 카드·도구를 그대로 싣는다.
     const editOnly = !!text.own.trim() && scope !== "wholeGame" && scope !== "place" && !(fresh && scope === "continue");
@@ -128,7 +136,8 @@ export function classifyRequest(task: string | undefined, project: Pick<Project,
     // find_events·get_event·patch_event_page·move_event 가 만들어지지도 않았다(도구 6개: inspect·add_event·add_people·read_specs·ask_user·load_tools).
     const editsBuilt = editOnly && !text.audio.only;
     const widen = !text.tools.game && (inherits || editsBuilt);
-    const tools = widen ? matchToolGroups(text.topic, { wholeGame: inherits, editsBuilt, audio: text.audio, combat: text.combat }) : text.tools;
+    // 고치기로 내린 «…게임으로 만들어» 는 게임 하나 묶음(타이틀·오프닝·엔딩 도구)을 벗고 지은 것을 고치는 묶음을 받는다.
+    const tools = widen || reshape ? matchToolGroups(text.topic, { wholeGame: inherits, editsBuilt, audio: text.audio, combat: text.combat }) : text.tools;
     const topics = named.length ? [...text.topics, ...named] : text.topics;
     return {
       ...text, scope, why, wholeGame, fresh, tools, topics,

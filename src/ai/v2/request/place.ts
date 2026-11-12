@@ -18,6 +18,13 @@ const NOT_THE_PLACE = String.raw`(?!\s*(?:의\s*)?(?:이름|제목|명칭|음악
 /** 장소를 짓거나 다시 짓는 요청 낱말 — 장소 이름 뒤 열두 글자 안에 짓기 동사, 또는 «새 ○○». 넉넉히 잡는다(잘못 맞으면 장소 카드를 더 실을 뿐이다). */
 export const PLACE_BUILD_WORDS = new RegExp(`(?:${PLACE_NOUNS})${NOT_THE_PLACE}[^.!?\\n]{0,12}(?:${BUILD_VERBS})|(?:새|새로운|new)\\s*(?:${PLACE_NOUNS})`, "iu");
 
+/** 「동쪽 들판을 실시간 액션 전투 맵으로 만들고」 — 있는 장소(…을/를)가 무엇이 되는지를 말한다. 「맵」은 장소 종류가 아니라 그 장소를 다시 가리키는 말이다. */
+const BECOMES_A_MAP = new RegExp(`(?:${PLACE_NOUNS})(?:을|를)([^.!?\\n,]{0,24}?)(?:맵|지도|map)\\s*(?:으로|로)(?=\\s*(?:만들|바꿔|바꾸))`, "giu");
+/** 「마을 빈 땅에 밭을」「이 맵에 함정을」 — 장소 낱말이 «어디에» 자리에 왔다(일할 곳). 지을 것이 장소면(「마을에 집을 지어 줘」) 그 낱말이 따로 맞는다. */
+const AS_LOCATION = new RegExp(`(?:${PLACE_NOUNS})[^.!?\\n을를,]{0,8}?에(?:서|다)?(?=\\s)`, "giu");
+/** 일할 곳·바뀔 맵으로만 나온 장소 낱말을 가리고도 장소를 짓는 말이 남는가 — 장치 하나를 있는 맵에 더하는 요청을 장소 짓기와 가른다(intent.ts). */
+export const buildsPlaceBeyondWhere = (topic: string): boolean => PLACE_BUILD_WORDS.test(topic.replace(BECOMES_A_MAP, "□를$1□로").replace(AS_LOCATION, "□에"));
+
 /** 실내 칸 배치용 칩셋 목록 카드(영어, 만든 것) — 실내 요청이거나 지금 맵이 손 도트 실내일 때만 싣는다(약 4k 토큰). */
 export const INTERIOR_WORDS = new RegExp(String.raw`실내|${ROOM_WORD}|방\s*탈출|밀실|여관|주점|선술집|객잔|(?<!로\s)가게|상점|잡화|서재|도서|서고|감옥|뇌옥|감방|교회|성당|예배당|대장간|길드|집\s*안|부엌|연구실|\b(?:inn|tavern|shop|store|library|study|jail|prison|room|interior|chapel|forge|guild|kitchen)\b`, "iu");
 

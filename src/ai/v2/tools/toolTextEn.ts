@@ -242,7 +242,8 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
 
   // ── on demand (one or two lines; the Korean parameter notes stay) ─────────
   create_quest: { d: "Create a playable quest from a declarative QuestDef: events, progress flags and objective metadata. 27 presets + custom; objectives talk|collect|kill|reach|inspect|deliver|choice|escort|craft. An existing NPC used as giver or target keeps what it does (own lines, shop/inn, speaker name, face, movement): quest pages are added after its own pages and run only while the quest or step is open; afterwards the NPC is back to its own lines (dialogue.afterComplete gives it a new line). One NPC can give several quests." },
-  upsert_item: { d: "Create or update an item record (existing id: only the sent fields merge). Healing amounts, prices and effect skills go here." },
+  // 장비 칸(equipmentProfile, 1.3천 자)은 내놓지 않는다 — 무기·방어구는 upsert_equipment 가 쓴다. 「새 아이템 … 가격은 30G」에서 이 도구가 글자 상한에 40자 차이로 밀렸다(2026-11-11).
+  upsert_item: { d: "Create or update an item record (existing id: only the sent fields merge). Healing amounts, prices and effect skills go here. Weapons and armour: upsert_equipment.", hide: ["item.equipmentProfile"] },
   upsert_equipment: { d: "Create or update a weapon/armour record (existing id: only the sent fields merge). damageDealtPercent, damageTakenPercent, criticalRate." },
   set_shop_stock: { d: "Edit an NPC's shop stock: add:[{itemId}] adds to what it sells, remove:[itemId] stops selling those, stock:[…] replaces everything. Only pages that already hold a shop change (quest pages are left alone); an NPC with no shop becomes one — the canonical way to make 'talk to this NPC to open a shop'. Selling is on." },
   set_sell_prices: { d: "Upsert the sell-price table (system.sellPrices) by itemId; removeItemIds deletes rows." },
@@ -255,7 +256,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   upsert_troop_battle_page: { d: "Create or update one troop battle-event page (boss phases, battle scripts). Validates conditions and commands; check simulate_battle phaseCoverage after." },
   place_npc: { d: "Place an NPC event with lines (v1). Prefer add_people. Chests, storage and save points have their own tools." },
   upsert_common_event: { d: "Create or update a common event (custom logic only — prefer higher tools)." },
-  set_npc_schedule: { d: "Give an existing NPC a timetable (needs configure_time_system on): when matches the game time, the NPC moves to at." },
+  set_npc_schedule: { d: "Give an existing NPC a timetable (needs configure_time_system{enabled:true} first): schedule:[{when:{timePhase:'night'} or {hourRange:[18,24]}, at:{x,y,mapId?}}] — while `when` matches the game time the NPC stands at `at`; otherwise where it was placed." },
   configure_time_system: { d: "Set up game time / calendar. enabled:false removes system.timeSystem." },
   place_savepoint: { d: "Place a save point (glowing crystal). Examining it records a retry checkpoint and opens the save menu (mode both); heal:true also heals. mode:'heal' = a healing spot instead: examining it fully heals the party and never saves («healing spring») — one call." },
   set_session_start: {
@@ -322,12 +323,22 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   set_game_over: { d: "Set the defeat flow: classic | horror | blackout, return position, title/body/button text and background." },
   set_vn_look: { d: "Pick the visual-novel dialogue window skin: a preset plus name tag, choice buttons, wait marker, text size/spacing, portrait entrance, ESC menu colours." },
   configure_field_menu: { d: "Author the ESC menu: items, order, labels and window style (preset story|collector|romance|custom)." },
-  make_chase_scene: { d: "Create a real-time chaser event that paths around obstacles (at, graphic, speed, sightRange; killOnTouch runs killPlayer)." },
-  configure_object_behavior: { d: "Make an existing event page pushable furniture or a real hiding place (do not fake hiding with lines)." },
+  // onTouch(닿았을 때 도는 장면 — 죽이지 않는 추격자, 9천 자)는 내놓지 않는다: 흔한 길은 killOnTouch 와 caughtPenalty 다.
+  make_chase_scene: {
+    d: "Place something that chases the player in real time (walks around obstacles): {mapId, chaser:{at:{x,y}, graphic:{query:'ghost'}, speed?, sightRange?}, killOnTouch:true} — touching it is game over (caughtText = the one line shown first). It starts chasing only after a switch turns on with activateSwitch:'sw_…' (turn that switch on in the event that wakes it, e.g. picking up the key). hidingSpots:[{x,y}] turns the furniture on those cells into real hiding places; safeZone:{x,y,w,h} is a few cells where the player cannot be caught; with killOnTouch a checkpoint at this map's entrance is added, so the player restarts there, not at the title (checkpointOnEntry:false turns that off). Caught without dying = caughtPenalty{text, sendTo:{mapId,x,y}}.",
+    p: { chaser: "{at:{x,y}, graphic:{query} or {selectionId} from list_npc_graphics, speed?, sightRange?}.", activateSwitch: "Switch id that wakes the chaser (created if missing). Omit = chases from the start.", hidingSpots: "Cells of wardrobes/beds/lockers to hide in: [{x,y,mapId?}].", pursuit: "{scope:'map'|'connected', doorDelayMs, searchMs, onLost:'wait'|'return'} — how long it searches and whether it follows through doors.", caughtPenalty: "Instead of game over: {text, troopId? (forced battle), sendTo:{mapId,x,y}}." },
+    hide: ["onTouch"],
+  },
+  configure_object_behavior: { d: "Turn an existing event into something the player can push (kind:'pushable' — pressing the action key at it pushes it one cell away) or hide inside (kind:'hiding' — examining it hides the player from chasers): {mapId, eventId, kind}. The event must already show a picture (a rock, crate, wardrobe — add_event or place it first). pageId omitted = its first page. kind:'none' undoes it. Do not fake pushing or hiding with dialogue lines.", p: { pageId: "Page id; omit = the event's first page." } },
   make_horror_loop: { d: "Place a Witch's-House-style trap + checkpoint (+ optional chaser) loop in one call." },
   set_lighting_volume: { d: "Darkness and lights for a map or area: ambient (0 = bright, 0.8–0.9 dark) and sources (e.g. a flashlight at the player)." },
   set_life_flower: { d: "Ib-style 'petals = life' system in one call: life variable, petal HUD, damage common event (flash, shake, −1, game over at 0)." },
-  compile_puzzle: { d: "Compile a declarative puzzle into events: {mapId, puzzleId, kind, onSolve:{setSwitch?,beats?,message?}, reset?}; kinds include switch-sequence, item-gate, code-lock, push-block and more." },
+  // onSolve.beats(풀었을 때 장면, 8천 자)는 내놓지 않는다 — 풀림은 message·setSwitch·giveItems 로 적고 장면은 그 스위치를 읽는 이벤트가 맡는다.
+  compile_puzzle: {
+    d: "Build one puzzle device as events. kind:'password' = a code lock at {x,y}: {mapId, puzzleId, kind:'password', at:{x,y}, name, answer, prompt?, onSolve:{message?, giveItems?:[itemId], setSwitch?}} — a 1–6 digit answer is typed on a number pad, letters are picked one at a time; a wrong code shows wrongMessage. Put it on a cell that shows a safe/chest/panel (a bare cell only sparkles). kind:'item-gate' = needs an item: {at, requiredItemId, consumeItem?, lockedMessage, unlockedMessage, blocking:true for a door or chain}. kind:'switch-sequence' = press nodes:[{at,name}] in order:[index…]. kind:'push-switches' = plates:[{at}] that pushed objects must cover. Never put the answer in prompt or name; onSolve.setSwitch is the switch other events read to open a door.",
+    p: { onSolve: "What solving does: {message?, giveItems?:[existing item ids], setSwitch?: switch id turned on}.", at: "Cell of the device {x,y} (password, item-gate).", answer: "password: the code.", blocking: "item-gate: true = blocks the cell until solved (door, chain).", wrongMessage: "password: line on a wrong code.", nodes: "switch-sequence: [{at:{x,y}, name?}].", plates: "push-switches: [{at:{x,y}, name?}]." },
+    hide: ["onSolve.beats"],
+  },
   make_gallery_room: { d: "Assemble an Ib-style gallery/examine room: N examine spots + an item-gate or switch-sequence puzzle + optional ending switch." },
   fill_region: { d: "Fill a rect with a material (tile label, e.g. '물' water / '잔디' grass). On beodeul_city use material:'버들항 물' (Beodeul water) with referencePurpose:'beodeul-city-water'. shape:'ellipse' optional." },
   store_game_reviews: { d: "Read player reviews of this game on the store: summary labels, recent reviews, complaint topics." },
@@ -348,6 +359,63 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   },
   read_tileset_reference: { d: "Read one tileset reference document (all pages and images) for a purpose before laying those tiles." },
   list_tileset_references: { d: "List the reference purposes and documents of a tileset." },
+  // ── JRPG 가 아닌 게임의 장치(2026-11-11, openwiki/assistant-v2-genre-tools.md) — 풀에만 두고(toolGroups.ts V2_GENRE_TOOLS) 작은 일의 주제가 맞을 때 처음부터 싣는다 ──
+  place_trap: {
+    d: "Place an instant-death trap: at:{x,y} or cells:[{x,y}…]; trigger:'touch' (stepping on it kills) or 'action' (examining it kills); message = the line shown as the player dies. respawnCheckpoint:true adds a checkpoint at this map's entrance, so the player restarts there (items and switches kept) instead of at the title. The trap is invisible unless graphic is given — put it on a cell that looks dangerous (spikes, pit, thorns) or give graphic{query}.",
+    p: { graphic: "Optional picture: {query:'spikes'} or {selectionId} from list_npc_graphics. Omit = invisible.", cells: "Several trap cells [{x,y}…].", at: "One trap cell {x,y}." },
+  },
+  lock_door: {
+    d: "Lock an existing door (the transfer made by create_transfer_pair or a place builder) until a condition holds: {mapId, x, y (the door cell or the cell in front), unlockWhen, lockedText}. unlockWhen is ONE of {itemId} (the player holds that item — a key), {switchId}, {storyFlagId}, {variableId, op, value}, {timePhase} (needs the time system). Several needed together (a key and three pages) = unlockWhenAny:[[{itemId:'a'},{itemId:'b'}]]; either-or = unlockWhenAny:[[…],[…]]. While locked the player reads lockedText and steps back. Calling again replaces the lock; unlock:true removes it. No door there yet → create_transfer_pair first.",
+    p: { unlockWhen: "One condition: {itemId} | {switchId} | {storyFlagId} | {variableId, op, value} | {timePhase}.", unlockWhenAny: "OR of AND-lists: [[cond, cond], [cond]]. Not together with unlockWhen.", lockedText: "Line shown while locked (required unless unlock:true).", speaker: "Speaker of lockedText (omit = narration).", stepBack: "false = do not push the player back a step.", unlock: "true = remove the lock." },
+  },
+  place_storage_chest: {
+    d: "Place a storage chest: examining it opens the deposit/withdraw window every time, and what is stored is saved (a farm shed box, a warehouse, a vault). {mapId, x, y, name?, displayName?}. A one-time reward chest is place_chest.",
+    p: { chestId: "Storage key; omit = its own. Chests with the same chestId share contents.", template: "farm (default) | warehouse | vault.", displayName: "Title shown in the storage window." },
+  },
+  create_farm_plot: {
+    d: "Mark a rectangle of an existing map as a field the player can till with a hoe and plant seeds in: {mapId, area:{x,y,w,h}}. It only declares the tillable cells — no tile changes, tilled soil is drawn during play — so no place rebuild is needed. Put it on open grass or dirt (find_empty_ground); one field is about 3×2 to 8×5, call again for another. To farm, the player also needs a hoe item (upsert_item{item:{…, farmTool:'hoe'}}) and a crop (define_crop).",
+    p: { area: "{x,y,w,h} — walkable open cells only." },
+  },
+  define_crop: {
+    d: "Create or update a crop: {crop:{id, name, seedItemId, harvestItemId, stages:[{days}…], harvestCount?}}. Planting uses one seed; the stage days add up to the growing time (grows 3 days = stages:[{days:1},{days:2}]); then it yields harvestItemId × harvestCount. Create both items first with upsert_item (the seed has type:'seed'). seasons omitted = grows all year. regrow:{days} = harvest again without replanting.",
+    p: { crop: "Crop record (existing id: only the sent fields change).", "crop.seasons": "spring | summer | fall | winter. Omit = all four.", "crop.stages[].days": "Days this growth stage takes." },
+  },
+  upsert_fish_species: { d: "Create or update a kind of fish: {fish:{id, name, itemId}} — itemId is the item the player receives when it bites (upsert_item first). Then list it in a fishing spot with configure_fishing." },
+  configure_fishing: {
+    d: "Turn fishing on and set where it works: {spots:[{id, mapId, area:{x,y,w,h}, catches:[{fishId, weight?}]}]}. area = the water cells of that spot; catches = fish from upsert_fish_species (empty = nothing bites). A sent spot replaces the spot with the same id; others stay. Order: upsert_item (the fish item) → upsert_fish_species → configure_fishing.",
+    p: { spots: "Fishing spots.", "spots[].area": "Water cells {x,y,w,h}.", "spots[].catches": "What bites: [{fishId, weight?, seasons?, timePhases?}].", replaceSpots: "true = drop all existing spots first." },
+  },
+  set_deadline_ending: {
+    d: "End the game after N days: when day `days` ends, the first matching tier's ending runs. {days, tiers:[{endingId, friendshipAtLeast?, characterId?}…]} — list tiers from the highest affection down; the last tier has no friendshipAtLeast (the default ending). A plain «the game ends after 7 days» = tiers:[{endingId}]. Endings must exist first (define_ending; their conditions may be []). characterId = whose affection is read ('*' = whoever is highest). Turns the time system on if it is off. Calling again updates it.",
+    p: { days: "Day count (≥1); the start day is day 1.", tiers: "Top to bottom, first match wins.", "tiers[].friendshipAtLeast": "Affection needed; omit on the last tier.", characterId: "Default person whose affection is read ('*' = highest)." },
+  },
+  set_dialogue_system: {
+    d: "Reading aids for the dialogue window: backlog (a log of past lines the player can open), auto-advance, skip, hide-window. {backlog:true}, {auto:true}, {skip:true}, {hideButton:true} turn each on or off; preset:'romance' turns all four on; defaults:{textSpeed, autoSpeed, skipScope:'read'|'all', windowOpacity} are the starting settings. Only the given fields change.",
+    p: { backlogLimit: "Lines kept in the backlog, 20–500 (default 100).", language: "Language of the button/backlog labels (game text is not translated)." },
+  },
+  set_action_combat: {
+    d: "Make a map fight in real time: {enabled:true, mapId} — on that map the player swings, dodges and guards on the field instead of entering the turn-based battle screen. Then add enemies with make_action_enemy. hearts/stamina:true show those HUD gauges; enemyHpBars: always | damaged | never. Without mapId only the global settings change.",
+  },
+  make_action_enemy: {
+    d: "Give an enemy real-time behaviour and release it on a map, in one call: {enemyId (an existing enemy — get_database_records{collection:'enemies'}), actionProfile:{contactDamage, aggroRange, attack:{kind:'melee'|'projectile'|'dash', windupMs, recoverMs, damage, range}}, spawnMode:'add', spawn:{mapId, area:{x,y,w,h}, maxAlive, chase:true}}. maxAlive = how many roam the area at once; chase:true = they run at the player. The troop is made for you and the map is switched to action combat if it was not. A brand-new enemy also needs name and monsterResourceId (list_resources{kind:'monster'}). Change a spawn later with spawnMode:'update' + spawn.id.",
+    p: { "spawn.area": "Open walkable rectangle {x,y,w,h} the enemies roam.", "spawn.maxAlive": "How many are alive at once.", "spawn.respawnSec": "Seconds until a defeated one returns (omit = default).", "spawn.troopId": "Omit — a one-enemy troop is created.", "actionProfile.attack": "{kind, windupMs (telegraph), recoverMs, damage, range (cells)}.", monsterResourceId: "Picture for a NEW enemy (list_resources).", appearanceTags: "For a new picture: identity tags of that resource." },
+    hide: ["actionProfile.extraAttacks", "spawn.graphic"],
+  },
+  configure_monster_system: {
+    d: "Turn monster collecting on: {enabled:true} adds the «capture» command to battles. battleParty:true = the player's monsters fight (monster-trainer style); capture:false = monster battles without capturing; presentation:'collector' = collector menu and HUD; rules:'gen1' = face-off battle rules and return-to-centre on defeat. Turning it on also limits new maps to the monster chipset family. enabled:false removes all of it.",
+    p: { shinyRate: "1/N chance of an alternate-colour monster (0 = off).", boxNames: "Storage box names, first box first.", statRules: "{natures?, evs?} optional stat depth." },
+  },
+  give_starter_monsters: {
+    d: "Create the «choose your first monster» event: {speciesIds:[three species ids], actorEvent:{mapId, x, y, name}}. Talking to it shows each monster, asks to confirm (No goes back to the list), gives the chosen one and never offers again. Species ids: get_database_records{collection:'monsterSpecies'}.",
+    p: { speciesIds: "Species to choose from (usually three).", actorEvent: "{mapId, x, y, name} of the event that offers them (omit = on the start map)." },
+  },
+  place_trainer: {
+    d: "Place a trainer who battles on sight: when the player steps into the trainer's line of sight (sightRange cells, blocked by walls) a «!» pops up, the trainer walks over, says `before` and the battle starts; after a win they say `after`, give rewardGold/rewardItems and never challenge again (talking offers a rematch). The party is team:[{speciesId, level}] (1–6; enemies and troop are created) or an existing troopId. facing omitted = the longest straight corridor. Refused on doorways, within 2 cells of the start, or when the sight line reaches an entrance. Not for wild monsters (place_field_enemy) or bosses you talk to (place_battle_blocker).",
+    p: { team: "[{speciesId, level}] 1–6 monsters. Either team or troopId.", sightRange: "Sight length in cells, 2–8 (default 4).", before: "Line before the battle.", after: "Line after the player wins.", rewardGold: "Prize money.", winSwitchId: "Switch turned on by the win (omit = created) — use it to open a gate.", graphic: "Omit = a trainer sprite is chosen." },
+  },
+  manage_flag_slot: {
+    d: "Add (or delete) a named switch or variable with its starting value: {action:'add', kind:'variable', id:'var_hunger', name:'Hunger', variableValue:10}. Use it for a counter or gauge that must start above 0 (events change it with setVariable; show it on screen with set_project_settings{fieldHud:{widgets:[…]}}). delete works only when nothing uses it.",
+  },
   // ── TypeScript event scripts (registry text is already English; these are the short v2 copies) ──
   get_script_api: { d: "The full typed game API (.d.ts with this project's ids as literal types). Rarely needed: the API reference is in the instructions; call it only when unsure of a project id." },
   check_script: { d: "Type-check TypeScript without changing anything. Not needed before author_script/edit_script — they compile and reject with the same diagnostics." },

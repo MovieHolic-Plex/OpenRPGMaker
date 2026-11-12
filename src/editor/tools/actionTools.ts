@@ -1,4 +1,4 @@
-import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
+import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeActionCombatConfig, normalizeEnemyActionProfile } from "@/project/actionCombat";
 import { normalizeProjectFactions, PLAYER_FACTION_ID } from "@/project/factions";
 import { requireMap } from "./mapHelpers";
@@ -153,7 +153,7 @@ function prepareActionEnemy(
 
 const makeActionEnemy: ToolDefinition = {
   name: "make_action_enemy",
-  description: "실시간 액션 전투용 적을 만든다. 기존 actionProfile은 보낸 필드만 수정하고 생략한 공격·속성은 유지한다. 먼저 적과 upsert_troop 트룹을 만든 뒤 spawn을 지정한다. 새 저작은 spawnMode:add로 추가, 교정은 spawnMode:update와 기존 spawn.id로 수정한다. add의 ID 충돌과 update의 없는 ID는 무변경 오류다. spawnMode 생략은 기존 ID 갱신/새 ID 추가의 레거시 동작이다. 삭제는 remove_field_spawn을 쓴다. 리소스·맵·트룹 검증 실패 시 아무것도 바꾸지 않는다. 맵은 set_action_combat으로 옵트인되어 있어야 한다.",
+  description: "실시간 액션 전투용 적을 만든다. 기존 actionProfile은 보낸 필드만 수정하고 생략한 공격·속성은 유지한다. 없는 enemyId 는 name 으로 새로 만들고 spawn 으로 맵에 푼다 — spawn.troopId 를 생략하면 이 적 하나짜리 트룹을 만들어 쓰고, 그 맵이 액션 전투 맵이 아니면 옵트인한다. 새 저작은 spawnMode:add로 추가, 교정은 spawnMode:update와 기존 spawn.id로 수정한다. add의 ID 충돌과 update의 없는 ID는 무변경 오류다. spawnMode 생략은 기존 ID 갱신/새 ID 추가의 레거시 동작이다. 삭제는 remove_field_spawn을 쓴다. 리소스·맵·트룹 검증 실패 시 아무것도 바꾸지 않는다.",
   mode: "write",
   domains: ["database", "map"],
   parameters: {
@@ -178,7 +178,7 @@ const makeActionEnemy: ToolDefinition = {
         properties: {
           id: { type: "string", minLength: 1, description: "같은 맵에서 재시도할 때 갱신할 스폰 ID. 생략하면 새 스폰을 추가한다." },
           mapId: { type: "string" },
-          troopId: { type: "string" },
+          troopId: { type: "string", description: "생략하면 이 적 하나짜리 트룹(troop_<enemyId>_field)을 만들어 쓴다." },
           area: {
             type: "object",
             properties: { x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer" }, h: { type: "integer" } },
@@ -191,7 +191,7 @@ const makeActionEnemy: ToolDefinition = {
           graphic: { type: "object", additionalProperties: true },
           timePhases: { type: "array", items: { type: "string", enum: ["morning", "day", "evening", "night"] }, description: "이 시간대에만 나온다(시간 시스템이 켜졌을 때). 생략하면 늘" },
         },
-        required: ["mapId", "troopId", "area"],
+        required: ["mapId", "area"],
       },
     },
     required: ["enemyId", "actionProfile"],
@@ -216,8 +216,13 @@ const makeActionEnemy: ToolDefinition = {
     let spawnChange: { mapId: string; spawnId: string; spawnOutcome: "added" | "modified" } | undefined;
     if (spawn) {
       const map = requireMap(draft, spawn.mapId as string);
-      const troopId = spawn.troopId as string;
-      const troop = draft.database.troops.find((entry) => entry.id === troopId);
+      // 트룹을 안 적으면 이 적 하나짜리 트룹을 만들어 쓴다 — 「덤벼드는 슬라임 두 마리」가 적 → 트룹 → 스폰 → 맵 옵트인 네 호출이었다(2026-11-11 작은 일 셋째 묶음).
+      const ownTroopId = `troop_${enemy.id}_field`;
+      const troopId = typeof spawn.troopId === "string" && spawn.troopId.length > 0 ? spawn.troopId : ownTroopId;
+      // 검사가 다 지난 뒤에 넣는다(실패한 호출은 아무것도 바꾸지 않는다).
+      const newTroop = troopId === ownTroopId && !draft.database.troops.some((entry) => entry.id === ownTroopId)
+        ? normalizeTroopRecord({ id: ownTroopId, name: enemy.name, enemyIds: [enemy.id] }) : undefined;
+      const troop = newTroop ?? draft.database.troops.find((entry) => entry.id === troopId);
       if (!troop) {
         throw new ToolError(`존재하지 않는 troopId: ${troopId} — 먼저 upsert_troop으로 트룹을 만드세요.`, { code: "troop-not-found" });
       }
@@ -253,12 +258,18 @@ const makeActionEnemy: ToolDefinition = {
         ...(spawn.graphic !== undefined ? { graphic: structuredClone(spawn.graphic) as FieldSpawnDef["graphic"] } : {}),
         ...(spawn.timePhases !== undefined ? { timePhases: parseSpawnTimePhases(spawn.timePhases) } : {}),
       };
+      if (newTroop) { draft.database.troops.push(newTroop); notes.push(`트룹 ${newTroop.id} 추가`); }
       map.fieldSpawns = existingSpawn
         ? (map.fieldSpawns ?? []).map((entry) => entry.id === def.id ? def : entry)
         : [...(map.fieldSpawns ?? []), def];
       spawnChange = { mapId: map.id, spawnId: def.id, spawnOutcome: existingSpawn ? "modified" : "added" };
       notes.push(`맵 '${map.name}'에 스폰 ${def.id} ${existingSpawn ? "수정" : "추가"}`);
-      if (map.actionCombat !== true) notes.push("주의: 이 맵은 아직 액션 옵트인이 아닙니다 — set_action_combat { enabled:true, mapId } 필요");
+      // 액션 전투가 꺼진 맵의 스폰은 싸우지 않는다 — 그 맵을 스스로 옵트인하고 알린다(전에는 «set_action_combat 필요» 주의만 남겼다).
+      if (map.actionCombat !== true) {
+        map.actionCombat = true;
+        if (draft.system.actionCombat?.enabled !== true) draft.system.actionCombat = normalizeActionCombatConfig({ ...(draft.system.actionCombat ?? {}), enabled: true });
+        warnings.push(`Map '${map.name}' was not an action-combat map — turned real-time action combat on for it (set_action_combat{enabled:false, mapId:'${map.id}'} turns it back off).`);
+      }
     }
     const enemyIndex = draft.database.enemies.findIndex((entry) => entry.id === enemy.id);
     if (enemyIndex >= 0) draft.database.enemies[enemyIndex] = enemy;
