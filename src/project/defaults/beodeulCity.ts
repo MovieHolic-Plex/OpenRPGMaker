@@ -169,8 +169,11 @@ export function ensureBeodeulCityReferences(tileset: TilesetDef): boolean {
   let changed = false;
   // 성벽 꼬리를 받지 못한 사본(그 자리에 이식 칸이 있던 옛 사본)에는 성벽 참고문서를 심지 않는다 — 없는 칸을 가리키게 된다
   const hasWall = (tileset.tileMeta?.[BEODEUL_TOWN_WALL_BASE]?.label ?? "").includes("성벽");
+  // 이야기 기물 꼬리(34,944~)도 같다 — 그 칸을 받지 못한 사본에는 그 참고문서를 심지 않는다
+  const hasObjects = (tileset.tileMeta?.[BEODEUL_OBJECTS_BASE]?.label ?? "").startsWith("버들항 기물");
   for (const shipped of REFERENCES) {
     if (shipped.id === "beodeul-town-wall" && !hasWall) continue;
+    if (shipped.id === "beodeul-objects" && !hasObjects) continue;
     const i = cats.findIndex(existing => existing.id === shipped.id);
     if (i < 0) { cats.push(structuredClone(shipped)); changed = true; continue; }
     const cur = cats[i]!;
@@ -278,17 +281,27 @@ function extendPickedParts(tileset: TilesetDef, limit: number = sheet.count): bo
 }
 
 /** Shipped kits the copy lacks are added (by id); bundle-owned `bd-pick-*` kits are replaced by the shipped ones. Others stay. */
+/**
+ * 이야기 기물 꼬리(34,944~, scripts/content/beodeul-objects/bake.py)의 킷 접두사 — 샘·동굴 입구·유적 입구·게시판·쪽지·봉인 제단·널빤지 길 등 16종.
+ * 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12 로 구웠다. 번들 소유라 옛 사본의 같은 id 킷은 번들 것으로 맞춘다.
+ */
+export const BEODEUL_OBJECTS_KIT_PREFIX = "bd-obj-";
+/** 이야기 기물 꼬리의 첫 칸(옛 상수도 꼬리 34,816~34,943 바로 뒤). 한 줄(128칸): 34,944~35,071. */
+export const BEODEUL_OBJECTS_BASE = 34944;
+
 function mergeShippedKits(tileset: TilesetDef, withWall = true, withGap = true, withYard = true, withCapital = true, withTheme2 = true): boolean {
   const shipped = (data().structureKits as unknown as StructureKitDef[]).filter(kit => (withWall || !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX))
     && (withGap || (!kit.id.startsWith(BEODEUL_DUNGEON_GAP_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_DUNGEON_THEME_KIT_PREFIX)))
-    && (withTheme2 || (!kit.id.startsWith(BEODEUL_DUNGEON_THEME2_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_DUNGEON_CAVE_KIT_PREFIX)))
+    // 주제 2 꼬리를 못 받는 사본(그 자리에 이식 칸, 옮길 프로젝트 없이 부름)은 그 뒤 꼬리(동굴 기물·이야기 기물)의 칸도 없다 — 그 킷도 받지 않는다.
+    && (withTheme2 || (!kit.id.startsWith(BEODEUL_DUNGEON_THEME2_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_DUNGEON_CAVE_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_OBJECTS_KIT_PREFIX)))
     && (withYard || !kit.id.startsWith(BEODEUL_YARD_KIT_PREFIX)) && (withCapital || !kit.id.startsWith(BEODEUL_CAPITAL_KIT_PREFIX)));
   const shippedById = new Map(shipped.map(kit => [kit.id, kit]));
   const current = tileset.structureKits ?? [];
   let changed = false;
   const kept = current.filter(kit => {
     if (!kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_FARM_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX)
-      && !kit.id.startsWith(BEODEUL_DUNGEON_GAP_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_YARD_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_CAPITAL_KIT_PREFIX)) return true;
+      && !kit.id.startsWith(BEODEUL_DUNGEON_GAP_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_YARD_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_CAPITAL_KIT_PREFIX)
+      && !kit.id.startsWith(BEODEUL_OBJECTS_KIT_PREFIX)) return true;
     const ship = shippedById.get(kit.id);
     if (!ship) { changed = true; return false; }                       // a pick that was dropped from the bundle
     if (JSON.stringify(ship) !== JSON.stringify(kit)) { changed = true; return false; }

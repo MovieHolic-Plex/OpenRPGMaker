@@ -1,0 +1,38 @@
+{
+"unit": "g-deck-lane-h",
+"name": "corridor floor with an east-west guide light, 2 tiles",
+"w": 32,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "g_deck:0",
+"b": "g_deck:1",
+"c": "g_deck:2",
+"d": "g_deck:3",
+"e": "a_cyan:1",
+"f": "a_cyan:0",
+"g": "a_cyan:2"
+},
+"rows": [
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"addddddddddddddbaddddddddddddddb",
+"adcccccccccccccbadcccccccccccccb",
+"adccccccccccbccbadccccccccccbccb",
+"adcccccccccccccbadcccccccccccccb",
+"adcccccccccccccbadcccccccccccccb",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"eeeeeeeeeeeeeeeeeeeeeeeggeeeeeee",
+"ffffffffffffffffffffffffffffffff",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"adcccccccccccccbadcccccccccccccb",
+"adcccccccccccccbadcccccccccccccb",
+"adcccccccccccccbadcccccccccccccb",
+"adccccccccccbccbadccccccccccbccb",
+"adcccccccccccccbadcccccccccccccb",
+"abbbbbbbbbbbbbbbabbbbbbbbbbbbbbb"
+],
+"note": "Deck plates with seam and lip, recessed cyan east-west guide strip; tile 2 has a bright dot."
+}

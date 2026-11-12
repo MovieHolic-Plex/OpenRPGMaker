@@ -8,10 +8,11 @@
 """
 import os, sys, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from px import C, rnd, h32, clamp, blob, box3, NT, MI
+from px import C, rnd, h32, clamp, blob, box3, NT, MI, paste_png
 from kit import Reg
 
 R = Reg('buildings')
+FABLE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fable')   # Fable 한 방 그림(PNG, 잠긴 팔레트 색만)
 A = R.add
 
 
@@ -495,28 +496,8 @@ def _(c):
     c.R(4, 52, 72, 4, 'stone', 3); c.HL(4, 52, 72, 'stone', 6); c.HL(4, 55, 72, 'stone', 1)
     for x in range(6, 75, 6): c.R(x, 48, 2, 5, 'stone', 4)
     c.HL(4, 47, 72, 'stone', 5)
-    # 돔: 마당 뒤쪽에 앉은 반구 — 밑동 타원이 마당 위에 보인다
-    c.ell(cx, 40, 24, 6, lambda x, y, dx, dy, d: ('stone', 2))
-    for y in range(4, 41):
-        for x in range(cx - 24, cx + 25):
-            u = (x + 0.5 - cx) / 24
-            if abs(u) > 1: continue
-            top = 40 - 34 * math.sqrt(1 - u * u)
-            base = 40 + 4 * math.sqrt(1 - u * u)
-            if y < top or y > base: continue
-            w = (y - top) / max(1, base - top)
-            t = 5 if (u < -0.35 and w < 0.5) else 4 if u < 0.15 else 3 if u < 0.6 else 2
-            if int(w * 8) % 2 == 1 and w > 0.12: t -= 1 if t > 2 else 0
-            c.P(x, y, 'roofg', t)
-    for x in range(cx - 24, cx + 25):
-        u = (x + 0.5 - cx) / 24
-        if abs(u) <= 1: c.P(x, round(40 + 4 * math.sqrt(1 - u * u)), 'roofg', 1); c.P(x, round(40 - 34 * math.sqrt(1 - u * u)), 'roofg', 1)
-    for y in range(7, 43):
-        for x in range(cx - 3, cx + 3):
-            g = c.get(x, y)
-            if g and g[0] == 'roofg': c.P(x, y, 'sumi', 1 if x < cx + 1 else 2)
-    c.VL(cx - 4, 7, 35, 'brass', 4); c.VL(cx + 3, 7, 35, 'brass', 2)
-    c.R(cx - 2, 2, 5, 9, 'brass', 3); c.HL(cx - 2, 2, 5, 'brass', 5); c.ell(cx, 2, 2.5, 1.2, lambda x, y, dx, dy, d: ('sumi', 1))
+    # 돔: 위에서 본 둥근 돔(관측 틈 + 망원경). 옆에서 본 반구(초록 달걀)는 오너 반려(2026-11-12 «뭘 그린건지도 모르겠고») — Fable 5.2 medium 한 방 그림을 그대로 얹는다.
+    paste_png(c, os.path.join(FABLE, 'si-observatory-dome.png'), 18, 4)
     window(c, 13, 64, 10, 10, shutters=False, box=False, s=3)
     window(c, 57, 64, 10, 10, shutters=False, box=False, s=6)
     door(c, 33, 95, 14, 28)

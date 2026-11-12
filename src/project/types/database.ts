@@ -2254,10 +2254,12 @@ export interface SystemRecords {
   clearStatesAfterBattle?: boolean;
   /**
    * "off" 면 필드 자동 안내 표시를 그리지 않는다 — 목표 대상 빛무리·화면 밖 목표 화살표, 이야기 인물·조사 대상 위 ▼.
+   * 끄면 목표 창·카드·메뉴의 목표 글도 「어디」 꼬리(「(… 입구: 서쪽 → 주술사)」) 없이 문장만 보인다(objectiveTarget.objectiveSentence).
    * 저자가 페이지에 단 늘 빛나는 표지(page.glow)·가까이 반짝임(nearSparkle)은 그대로다. 생략 = 켜기(기존).
+   * "on" = 켜기로 고른 것 — 생략과 같게 그리지만, 조수 v2 의 출하 기본값(끄기)이 덮지 않는다.
    * "arrows"(옛 「출구 화살표만」)는 출구 앞 글자·화살표를 기능째 지운 뒤(2026-11-01) "off" 와 같다 — 저장본 호환으로만 남긴다.
    */
-  fieldGuides?: "off" | "arrows";
+  fieldGuides?: "off" | "arrows" | "on";
   /** "savePoints" 면 메뉴의 「저장」이 사라지고 세이브 포인트(place_savepoint 의 openSaveMenu)에서만 저장한다. 생략 = 어디서나. */
   saveAccess?: "anywhere" | "savePoints";
   battleUiStyle?: BattleUiStyle;

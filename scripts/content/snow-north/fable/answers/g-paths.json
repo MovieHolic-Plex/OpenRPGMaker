@@ -1,0 +1,82 @@
+{
+"id": "g-paths",
+"w": 32,
+"h": 32,
+"role": "ground",
+"shot": 1,
+"legend": {
+"a": "grey:0",
+"b": "grey:1",
+"c": "grey:2",
+"d": "grey:3",
+"s": "snow:1",
+"S": "snow:2"
+},
+"rows": [
+"cccccaccccbbbccccccbsSsbcccccccc",
+"cbbccacccccccccc.ccbsSSbcccccccc",
+"cccccaccbbbbbcccccbsSSsbcccccccc",
+"aaaassaaaaaaaaaacbsSsbbccccccccb",
+"bbbbbbbccbbbbbbbbsSsbcccccccccbs",
+"bbccccbbbbbbbbbbsSsbbccccccccbsS",
+"bbbbbbbbbbcccbbbSssbbbbbbbbbbsSs",
+"aaaaaaaaaasssaaasSSsssssssssSSss",
+"ccccccccccccacccbssSSSSsssbbsssb",
+"cccbbbbcccccaccbcbbbssbbbbccbsbc",
+"ccccccccbbccacccccccbsbcccccbsbc",
+"asaaaaaaaaaaaaaaccccbsSbccccbsSb",
+"bbbbccccbbbbbbbbccccbsSbcccccbsb",
+"bbbbbbbbbbbccbbbcccbsSsbcccccbbc",
+"cccbbbbbbbbbbbbbcccbsSsbcccccccc",
+"aaaaaaassaaaaaaacccbsSsbcccccccc",
+"bbbbbabbbbbbbbbbcccbcccccccbcccc",
+"bbbbbabbbbbbabbbcccbcddccccbcccc",
+"bbbbabbbbbbaaabbcccbcdddcccbcccc",
+"aabbabbbbbbbaabbcccbcccccccbccdd",
+"bbaaaaabbbbbbbaadccbcccccccbcccc",
+"bbbbbbbaaaaaaabbcccbcccccccbcccc",
+"bbbbbbbabbbbbbbbcccbcccccccbcccc",
+"bbaabbbabbbbbbbbbbbbbbbbbbbbbbbb",
+"baaaabbabbbbbbbbccccccbcccccccbc",
+"bbaabbabbbbbabbbccccccbccccdccbc",
+"bbbbbbabbbbbbabbcdddccbcccddccbc",
+"aaabbbabbbbbaaaaccdcccbcccccccbc",
+"bbbaaaaabbaaabbbccccccbcccccccbc",
+"bbbbbabbaaabbbbbccccccbcccccccbc",
+"bbbbbabbbbbbbbbbccccccbcccccccbc",
+"bbbbbabbbbbbbbbbbbbbbbbbbbbbbbbb"
+],
+"door": null,
+"cells": [
+{
+"name": "boards",
+"x": 0,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "flagstone",
+"x": 16,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "hearthstone",
+"x": 0,
+"y": 16,
+"w": 16,
+"h": 16
+},
+{
+"name": "floor-stone",
+"x": 16,
+"y": 16,
+"w": 16,
+"h": 16
+}
+],
+"broken": false,
+"defects": []
+}

@@ -1034,11 +1034,11 @@ function displayFilterField(project: Project): HTMLElement {
 function fieldGuidesField(project: Project): HTMLElement {
   const select = el("select", { dataset: { testid: "db-field-system-field-guides" } }) as HTMLSelectElement;
   for (const [value, label] of [["on", "켜기"], ["off", "끄기"]] as const) select.append(el("option", { text: label, attrs: { value } }));
-  select.value = project.system.fieldGuides ? "off" : "on";
+  select.value = project.system.fieldGuides === "off" || project.system.fieldGuides === "arrows" ? "off" : "on";
   select.addEventListener("change", () => {
     updateSystem((draft) => {
-      if (select.value === "off") draft.system.fieldGuides = "off";
-      else delete draft.system.fieldGuides;
+      // 켜기도 값으로 남긴다 — 사람이 고른 켜기를 조수의 출하 기본값(끄기)이 덮지 않게.
+      draft.system.fieldGuides = select.value === "off" ? "off" : "on";
     }, "system:field-guides");
   });
   return rm2k3Fieldset("필드 안내 표시", [

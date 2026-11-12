@@ -27,7 +27,7 @@ EXAMPLES = [('village', 'village', 46, 36, 1, '눈 덮인 북방 마을 46×36')
             ('ice-cave', 'ice-cave', 18, 12, 1, '얼음 동굴 안 18×12')]
 HEAD = (f"tilesetId `snow_north` · 그림 `public/assets/snow-north/snow-north-chipset.png`(텍스처 `tex_snow_north`, **{N}칸**, 16px 칸, 시트 {TPR * 16}×{math.ceil(N / TPR) * 16}px, "
         f"한 줄 **{TPR}칸** — 번호 n 의 칸은 열 n%{TPR}, 행 n÷{TPR}(내림), 픽셀 (열×16, 행×16), 모두 0 기준). 계열 `oprn-snow` — 다른 칩셋(버들항 눈 기후 시트·마법 학교·던전·일본 도시·조선·실내 v5)의 칸 번호와 섞지 않는다. "
-        "팔레트는 snow_north 잠금 팔레트(차가운 파랑·흰색 + 따뜻한 창불)만. 시점은 3/4 탑뷰(윗면 + 남쪽 앞면), 빛 왼쪽 위. 모든 그림은 object-gate 3/4 관문 영수증이 있는 조각(목책·울타리·굴뚝 연기는 조립 그림 영수증, 오토타일 칸은 견본 영수증)만 구웠다.")
+        "팔레트는 snow_north 잠금 팔레트 v2(48색: 바닥은 낮은 채도의 가까운 단, 구조물, 불빛·칠만 강조색)만. 시점은 직교 3/4 탑뷰(윗면 + 남쪽 앞면, 지붕은 직사각형), 빛 왼쪽 위. 그림은 2026-11-12 Fable 5.2 한 방으로 다시 그린 것이고 3/4 관문 미통과 — 오너 면제 묶음(fable-redraw-snow-north-2026-11-12)으로 구웠다(칸 번호·키트·통행은 그대로).")
 
 AUTOS = {g['id']: g for g in DATA['autotileGroups']}
 OF = {}       # 칸 번호 → 오토타일 그룹 id

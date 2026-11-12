@@ -1,0 +1,42 @@
+{
+"unit": "wall-screen-c",
+"name": "wall warning screen",
+"w": 16,
+"h": 16,
+"cls": "wallm",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:0",
+"b": "ink:1",
+"c": "s_hull:0",
+"d": "s_hull:1",
+"e": "s_hull:2",
+"f": "s_hull:3",
+"g": "s_hull:4",
+"h": "s_hull:5",
+"L": "a_orange:1",
+"o": "a_orange:0",
+"n": "a_cyan:0"
+},
+"rows": [
+"................",
+".bbbbbbbbbbbbbb.",
+".bhhhhhhhhhhhfb.",
+".bhaaaaaaaaabeb.",
+".bgaaaaLLaaaaeb.",
+".bgaaaLaaLaaaeb.",
+".bgaaLaLLaLaaeb.",
+".bgaLaaaaaaLaeb.",
+".bgaLLLLLLLLaeb.",
+".bgaaaaaaaaaaeb.",
+".bganannaaaaaeb.",
+".bgffffffffLLeb.",
+".bddddddddoLocb.",
+".bbbbbbbbbbbbbb.",
+"................",
+"................"
+],
+"note": "Dark wall screen in thin hull frame, orange warning triangle with dot, orange lamp at lower right corner."
+}

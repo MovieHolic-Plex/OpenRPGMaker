@@ -1,0 +1,39 @@
+{
+"unit": "hatch-floor",
+"name": "floor hatch",
+"w": 16,
+"h": 16,
+"cls": "flat",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:1",
+"c": "s_hull:0",
+"d": "s_hull:1",
+"e": "s_hull:2",
+"f": "s_hull:3",
+"g": "s_hull:4",
+"h": "s_hull:5",
+"y": "a_yellow:0"
+},
+"rows": [
+"................",
+".cccccccccccccc.",
+".cyyggggggggyyc.",
+".cyeeeeeeeeeeyc.",
+".cgeeeeeeeeeedc.",
+".cgeffffffffedc.",
+".cgefccccccdedc.",
+".cgefcaaaaadedc.",
+".cgefchgggadedc.",
+".cgefcaaaaadedc.",
+".cgefdfffffdedc.",
+".cgeddddddddedc.",
+".cyeeeeeeeeeeyc.",
+".cyyddddddddyyc.",
+".caaaaaaaaaaaaa.",
+"................"
+],
+"note": "Steel floor hatch plate with lit upper-left rim, recessed handle bar and yellow corner marks."
+}
