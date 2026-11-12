@@ -1,5 +1,5 @@
 {
- "_doc": "이야기 기물 탐침(probe.mts)이 읽는 칩셋 표 — 탐침 전용이다(조수·v2 코드가 읽는 목록이 아니다). spec = 그 칩셋 굽기가 읽는 기물 목록, ask = 게임들이 실제로 바란 낱말(수요 장부에서 옮김), map = 그 칩셋의 구성기 도구로 실제 맵 한 장을 깔 인자. listTool = 그 칩셋에서 낱말로 기물을 찾는 조회 도구(기본 list_tileset_objects — 손 도트 실내는 list_hand_interior_parts, 결과 id 에 킷 머리가 없다). placeArea = 탐침이 v2 place_object 로 놓아 볼 바닥 구역(문 앞 통로를 피하게 — 없으면 맵 전체에서 흔한 맨바닥·길 아닌 칸. 구역을 주면 그 안의 걷는 빈 칸을 그대로 쓴다 — 현대 도시는 보도가 «길» 칸이다).",
+ "_doc": "이야기 기물 탐침(probe.mts)이 읽는 칩셋 표 — 탐침 전용이다(조수·v2 코드가 읽는 목록이 아니다). spec = 그 칩셋 굽기가 읽는 기물 목록, ask = 게임들이 실제로 바란 낱말(수요 장부에서 옮김), map = 그 칩셋의 구성기 도구로 실제 맵 한 장을 깔 인자. listTool = 그 칩셋에서 낱말로 기물을 찾는 조회 도구(기본 list_tileset_objects — 손 도트 실내는 list_hand_interior_parts, 결과 id 에 킷 머리가 없다). placeArea = 탐침이 v2 place_object 로 놓아 볼 바닥 구역(문 앞 통로를 피하게 — 없으면 맵 전체에서 흔한 맨바닥·길 아닌 칸. 구역을 주면 그 안의 걷는 빈 칸을 그대로 쓴다 — 현대 도시는 보도가 «길» 칸이다). chipset·only = 한 칩셋을 두 장면으로 볼 때(steampunk_city: 기관실 실내 + 거리) 열쇠를 둘 두고 칩셋 id 와 그 장면에 놓을 기물 id 를 적는다.",
  "desert_east": {
   "spec": "tiledata/desert-east/objects/spec.json",
   "ask": "tiledata/desert-east/objects/ask.json",
@@ -191,6 +191,55 @@
     "style": "residential",
     "seed": 1
    }
+  }
+ },
+ "steampunk_city": {
+  "spec": "tiledata/steampunk-city/objects/spec.json",
+  "ask": "tiledata/steampunk-city/objects/ask.json",
+  "kitPrefix": "sp-",
+  "sheet": "public/assets/steampunk-city/steampunk-city-chipset.png",
+  "only": [
+   "great-heart",
+   "ledger-desk",
+   "stop-lever",
+   "lever-wall",
+   "room-door"
+  ],
+  "map": {
+   "width": 24,
+   "height": 16,
+   "tool": "compose_steampunk_city_map",
+   "args": {
+    "style": "engine-room",
+    "seed": 1
+   }
+  }
+ },
+ "steampunk_city_street": {
+  "spec": "tiledata/steampunk-city/objects/spec.json",
+  "ask": "tiledata/steampunk-city/objects/ask.json",
+  "kitPrefix": "sp-",
+  "sheet": "public/assets/steampunk-city/steampunk-city-chipset.png",
+  "chipset": "steampunk_city",
+  "only": [
+   "hatch-down",
+   "ledger-desk",
+   "stop-lever"
+  ],
+  "map": {
+   "width": 48,
+   "height": 36,
+   "tool": "compose_steampunk_city_map",
+   "args": {
+    "style": "street",
+    "seed": 1
+   }
+  },
+  "placeArea": {
+   "x0": 16,
+   "y0": 25,
+   "x1": 27,
+   "y1": 33
   }
  }
 }

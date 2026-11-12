@@ -1,0 +1,1952 @@
+{
+ "needs": {
+  "log": {
+   "label": "일지·기록부를 읽는 책상/받침",
+   "words": [
+    "일지",
+    "기록부",
+    "장부",
+    "일기장",
+    "책상",
+    "독서대",
+    "ledger",
+    "logbook",
+    "journal",
+    "desk",
+    "lectern"
+   ],
+   "maxCells": 12
+  },
+  "lever": {
+   "label": "당기는 레버·스위치",
+   "words": [
+    "레버",
+    "lever",
+    "스위치",
+    "switch",
+    "조작반",
+    "제어반"
+   ],
+   "maxCells": 12
+  },
+  "down": {
+   "label": "아래로 내려가는 길(계단·해치·사다리)",
+   "words": [
+    "지하 입구",
+    "해치",
+    "내려가는 계단",
+    "계단통",
+    "사다리",
+    "뚜껑문",
+    "hatch",
+    "trapdoor",
+    "cellar",
+    "ladder"
+   ],
+   "maxCells": 12
+  },
+  "door": {
+   "label": "방과 방 사이 문(건물 입구가 아닌 문 그림)",
+   "words": [
+    "문",
+    "방문",
+    "철문",
+    "나무 문",
+    "미닫이",
+    "door"
+   ],
+   "maxCells": 6
+  }
+ },
+ "chipsets": {
+  "beodeul_city": {
+   "name": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+   "kits": 1307,
+   "log": [
+    {
+     "id": "bd-obj-record-stand",
+     "name": "버들항 기물 · 기록부·장부(받침 위 책) 1×2",
+     "size": "1×2",
+     "by": "«기록부»"
+    },
+    {
+     "id": "bd-pick-dungeon-theme-lectern",
+     "name": "버들항 던전 · 펼친 책 독서대 1×2 독서대 1×2",
+     "size": "1×2",
+     "by": "«독서대»"
+    }
+   ],
+   "lever": [
+    {
+     "id": "bd-dg-lever-down",
+     "name": "버들항 던전 · 벽 레버 내림",
+     "size": "1×1",
+     "by": "«레버»"
+    },
+    {
+     "id": "bd-dg-lever-up",
+     "name": "버들항 던전 · 벽 레버 올림",
+     "size": "1×1",
+     "by": "«레버»"
+    }
+   ],
+   "down": [
+    {
+     "id": "bd-pick-temple-ruins-stairs-down",
+     "name": "버들항 신전 폐허 · 바닥에서 아래로 내려가는 계단 한 칸 1×1",
+     "size": "1×1",
+     "by": "표면 계약"
+    },
+    {
+     "id": "bd-mpart-stairs",
+     "name": "돌계단과 끝장식 기둥",
+     "size": "5×2",
+     "by": "«내려가는 계단»"
+    }
+   ],
+   "door": [
+    {
+     "id": "bd-dg-door-closed",
+     "name": "버들항 던전 · 문 닫힘 1×2",
+     "size": "1×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "bd-dg-door-open",
+     "name": "버들항 던전 · 문 열림 1×2",
+     "size": "1×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "bd-pick-temple-ruins-door-wood",
+     "name": "버들항 신전 폐허 · 나무 문 1×2",
+     "size": "1×2",
+     "by": "«나무 문»"
+    }
+   ],
+   "centre": [
+    {
+     "id": "bd-capital-fountain",
+     "name": "왕도 광장 분수 4×4",
+     "size": "4×4",
+     "by": "16칸"
+    },
+    {
+     "id": "bd-capital-watergate-n",
+     "name": "왕도 운하 수문 4×4(북쪽 성벽 안쪽 면)",
+     "size": "4×4",
+     "by": "16칸"
+    },
+    {
+     "id": "bd-capital-watergate-s",
+     "name": "왕도 운하 수문 4×4(남쪽 성벽 바깥 면)",
+     "size": "4×4",
+     "by": "16칸"
+    },
+    {
+     "id": "bd-capital-dais",
+     "name": "왕도 포고 단 4×2",
+     "size": "4×2",
+     "by": "8칸"
+    },
+    {
+     "id": "bd-capital-lamp-double",
+     "name": "왕도 왕실 쌍등 2×3",
+     "size": "2×3",
+     "by": "6칸"
+    }
+   ],
+   "centreCount": 5,
+   "largestCells": 16,
+   "dropped": [
+    {
+     "id": "bd-pick-aqueduct-sewer-stairs-up-face",
+     "name": "버들항 지하 수도교·하수도 · 벽 앞면에서 올라가는 계단 1×2",
+     "size": "1×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "bd-mpart-ivy-arch",
+     "name": "담쟁이 아치(정원 입구)",
+     "size": "3×3",
+     "by": "«지하 입구»"
+    },
+    {
+     "id": "bd-obj-hay-loaf",
+     "name": "버들항 기물 · 짚가리 · 사다리 걸친 네모 낟가리 2×3",
+     "size": "2×3",
+     "by": "«사다리»"
+    },
+    {
+     "id": "bd-prop-door_pots",
+     "name": "버들항 소품 문간 화분 둘 1×1",
+     "size": "1×1",
+     "by": "«door»"
+    }
+   ]
+  },
+  "joseon_baram": {
+   "name": "조선 · 바람의나라풍 (손 도트)",
+   "kits": 542,
+   "log": [
+    {
+     "id": "jb-in_gwan_desk",
+     "name": "조선 in gwan desk 3×1",
+     "size": "3×1",
+     "by": "«desk»"
+    }
+   ],
+   "lever": [],
+   "down": [
+    {
+     "id": "jb-bank_stairs",
+     "name": "조선 물가 계단 1×2",
+     "size": "1×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jb-in_stairs_wood_3",
+     "name": "조선 in stairs wood 3 3×3",
+     "size": "3×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jb-in_stairs_wood_2",
+     "name": "조선 in stairs wood 2 2×3",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jb-in_stairs_stone_3",
+     "name": "조선 in stairs stone 3 3×3",
+     "size": "3×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jb-in_stairs_down",
+     "name": "조선 in stairs down 1×1",
+     "size": "1×1",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jb-in_ladder_loft",
+     "name": "조선 in ladder loft 1×3",
+     "size": "1×3",
+     "by": "«ladder»"
+    }
+   ],
+   "door": [
+    {
+     "id": "jb-in_wall_hoe_door",
+     "name": "조선 in wall hoe door 1×2",
+     "size": "1×2",
+     "by": "«door»"
+    },
+    {
+     "id": "jb-in_wall_chang_door",
+     "name": "조선 in wall chang door 1×2",
+     "size": "1×2",
+     "by": "«door»"
+    },
+    {
+     "id": "jb-in_wall_mok_door",
+     "name": "조선 in wall mok door 1×2",
+     "size": "1×2",
+     "by": "«door»"
+    }
+   ],
+   "centre": [
+    {
+     "id": "jb-pal_byeongpung_ilwol",
+     "name": "조선 pal byeongpung ilwol 6×3",
+     "size": "6×3",
+     "by": "18칸"
+    },
+    {
+     "id": "jb-palace_pond_6",
+     "name": "조선 궁궐 pond_6 6×3",
+     "size": "6×3",
+     "by": "18칸"
+    },
+    {
+     "id": "jb-deungrong_mun",
+     "name": "조선 청사초롱 문 4×4",
+     "size": "4×4",
+     "by": "16칸"
+    },
+    {
+     "id": "jb-hongsalmun",
+     "name": "조선 홍살문 5×3",
+     "size": "5×3",
+     "by": "15칸"
+    },
+    {
+     "id": "jb-fld_boulder_mass",
+     "name": "조선 fld boulder mass 4×3",
+     "size": "4×3",
+     "by": "12칸"
+    },
+    {
+     "id": "jb-fld_dead_a",
+     "name": "조선 fld dead a 3×4",
+     "size": "3×4",
+     "by": "12칸"
+    }
+   ],
+   "centreCount": 37,
+   "largestCells": 18,
+   "dropped": []
+  },
+  "modern_city": {
+   "name": "현대 도시 · 도쿄풍 (도트)",
+   "kits": 1088,
+   "log": [
+    {
+     "id": "mc-prop-ledger",
+     "name": "장부(바닥에 펼쳐진 찢긴 장부)",
+     "size": "1×1",
+     "by": "«기록부»"
+    },
+    {
+     "id": "mc-in-mci-desk-pc",
+     "name": "사무 책상(화면 남향)",
+     "size": "2×2",
+     "by": "«책상»"
+    },
+    {
+     "id": "mc-in-mci-desk-pc-back",
+     "name": "사무 책상(화면 북향)",
+     "size": "2×2",
+     "by": "«책상»"
+    },
+    {
+     "id": "mc-in-r10-home-laptop-desk",
+     "name": "노트북 책상",
+     "size": "2×2",
+     "by": "«책상»"
+    },
+    {
+     "id": "mc-in-opus-hospital-doctor-desk",
+     "name": "진료실 의사 책상",
+     "size": "2×2",
+     "by": "«desk»"
+    },
+    {
+     "id": "mc-in-opus-aud-lectern",
+     "name": "연설대",
+     "size": "1×2",
+     "by": "«lectern»"
+    }
+   ],
+   "lever": [
+    {
+     "id": "mc-in-r10b-elev-button-panel",
+     "name": "엘리베이터 조작반",
+     "size": "1×2",
+     "by": "«조작반»"
+    },
+    {
+     "id": "mc-prop-device",
+     "name": "기계 장치(제어반)",
+     "size": "1×2",
+     "by": "«제어반»"
+    }
+   ],
+   "down": [
+    {
+     "id": "mc-in-mci-stairs-down",
+     "name": "내려가는 계단",
+     "size": "2×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "mc-prop-subway-a",
+     "name": "지하철 입구",
+     "size": "3×3",
+     "by": "«지하 입구»"
+    },
+    {
+     "id": "mc-prop-subway-b",
+     "name": "지하철 입구",
+     "size": "3×3",
+     "by": "«지하 입구»"
+    },
+    {
+     "id": "mc-prop-subway-c",
+     "name": "지하철 입구",
+     "size": "3×3",
+     "by": "«지하 입구»"
+    },
+    {
+     "id": "mc-in-opus-stairs-pair-down-stone",
+     "name": "돌 계단(▼ 내려가는)",
+     "size": "3×3",
+     "by": "«내려가는 계단»"
+    }
+   ],
+   "door": [
+    {
+     "id": "mc-in-mci-door-wood",
+     "name": "열린 나무 문",
+     "size": "1×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "mc-in-mci-door-glass",
+     "name": "열린 유리 자동문",
+     "size": "1×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "mc-in-mci-door-steel",
+     "name": "열린 철문",
+     "size": "1×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "mc-in-mci-door-hospital",
+     "name": "열린 병원 미닫이",
+     "size": "1×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "mc-in-r10b-elev-car-door",
+     "name": "엘리베이터 카 문(안쪽)",
+     "size": "1×3",
+     "by": "표면 계약"
+    }
+   ],
+   "centre": [
+    {
+     "id": "mc-in-r13-jumbo-arcade-dance-stage",
+     "name": "댄스 리듬 게임 스테이지(4×3)",
+     "size": "4×5",
+     "by": "20칸"
+    },
+    {
+     "id": "mc-in-r13-jumbo-council-oval-table",
+     "name": "타원형 회의 탁자(5×3)",
+     "size": "5×4",
+     "by": "20칸"
+    },
+    {
+     "id": "mc-in-r13-jumbo-dept-perfume-rotunda",
+     "name": "원형 화장품 카운터·향수 탑(4×4)",
+     "size": "4×5",
+     "by": "20칸"
+    },
+    {
+     "id": "mc-in-r13-jumbo-hosp-nurse-command",
+     "name": "원형 간호사 스테이션(5×3)",
+     "size": "5×4",
+     "by": "20칸"
+    },
+    {
+     "id": "mc-in-r13-jumbo-izakaya-u-bar",
+     "name": "ㄷ자 야키토리 카운터(5×3)",
+     "size": "5×4",
+     "by": "20칸"
+    },
+    {
+     "id": "mc-in-r13-jumbo-mart-seafood-island",
+     "name": "수산 아일랜드 쇼케이스(5×3)",
+     "size": "5×4",
+     "by": "20칸"
+    }
+   ],
+   "centreCount": 160,
+   "largestCells": 20,
+   "dropped": [
+    {
+     "id": "mc-in-mci-stairs-up",
+     "name": "오르는 계단",
+     "size": "2×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "mc-in-opus-roof-stair-hut",
+     "name": "옥상 계단 탑옥",
+     "size": "3×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "mc-in-mci-stairs-up",
+     "name": "오르는 계단",
+     "size": "2×2",
+     "by": "«내려가는 계단»"
+    },
+    {
+     "id": "mc-in-opus-train-door",
+     "name": "전동차 양문형 출입문",
+     "size": "2×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "mc-in-opus-train-door-s",
+     "name": "전동차 남쪽 출입문",
+     "size": "2×1",
+     "by": "표면 계약"
+    },
+    {
+     "id": "mc-in-r10-train-door-steel",
+     "name": "스테인리스 양문 출입문",
+     "size": "2×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "mc-in-r10-train-door-sill",
+     "name": "출입문 문턱 안전 띠",
+     "size": "2×1",
+     "by": "표면 계약"
+    }
+   ]
+  },
+  "jp_city": {
+   "name": "일본 도시 · 상가·주택·역·신사 (도트)",
+   "kits": 1574,
+   "log": [
+    {
+     "id": "jp-in-as-item-diary",
+     "name": "일기장 상자",
+     "size": "1×1",
+     "by": "«일기장»"
+    },
+    {
+     "id": "jp-in-sc-desk-n",
+     "name": "학생 책상·의자(북향)",
+     "size": "1×1",
+     "by": "«책상»"
+    },
+    {
+     "id": "jp-in-sc-staff-desk",
+     "name": "교사 책상(교무실)",
+     "size": "2×1",
+     "by": "«책상»"
+    },
+    {
+     "id": "jp-in-of-desk-w",
+     "name": "섬 사무 책상(서쪽 자리)",
+     "size": "1×2",
+     "by": "«책상»"
+    },
+    {
+     "id": "jp-in-desk-study",
+     "name": "공부 책상(책꽂이)",
+     "size": "2×2",
+     "by": "«desk»"
+    },
+    {
+     "id": "jp-in-desk-chair-s",
+     "name": "의자(남쪽 향함)",
+     "size": "1×1",
+     "by": "«desk»"
+    },
+    {
+     "id": "jp-in-desk-chair-n",
+     "name": "의자(북쪽 향함)",
+     "size": "1×1",
+     "by": "«desk»"
+    }
+   ],
+   "lever": [
+    {
+     "id": "jp-in-light-switch",
+     "name": "전등 스위치",
+     "size": "1×2",
+     "by": "«스위치»"
+    },
+    {
+     "id": "jp-in-mc-autolock",
+     "name": "오토록 조작반",
+     "size": "1×2",
+     "by": "«조작반»"
+    }
+   ],
+   "down": [
+    {
+     "id": "jp-in-stairwell-down-wood",
+     "name": "내려가는 나무 계단 구멍(난간)",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-in-sc-stairwell-down",
+     "name": "학교 내려가는 계단통(쇠 난간)",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-in-of-stairwell-down",
+     "name": "비상계단 내려가는 구멍(철 난간)",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-in-mc-stairwell-down",
+     "name": "내려가는 맨션 공용 계단통",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-in-as-stairwell-down",
+     "name": "부서진 내려가는 계단통",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-in-cs-stairwell-down",
+     "name": "콘크리트 계단통(내려가는, 난간 없음)",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-side-stair-l",
+     "name": "올라가는 옆 계단 왼쪽(서쪽에서 들어서 동쪽을 보고 오름, 도착 단상)",
+     "size": "3×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-side-stair-r",
+     "name": "올라가는 옆 계단 오른쪽(동쪽에서 들어서 서쪽을 보고 오름, 도착 단상)",
+     "size": "3×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-subway-stairs-down",
+     "name": "내려가는 계단(승강장으로)",
+     "size": "4×3",
+     "by": "«내려가는 계단»"
+    },
+    {
+     "id": "jp-in-ug-ladder-up",
+     "name": "터널 벽 사다리(위로)",
+     "size": "1×3",
+     "by": "«사다리»"
+    },
+    {
+     "id": "jp-in-ug-hatch-down",
+     "name": "바닥 점검구(아래로 사다리)",
+     "size": "1×1",
+     "by": "«사다리»"
+    },
+    {
+     "id": "jp-in-ug-manhole-ladder",
+     "name": "맨홀 사다리(지상으로)",
+     "size": "1×3",
+     "by": "«사다리»"
+    },
+    {
+     "id": "jp-in-wh-ladder-hatch",
+     "name": "사다리 구멍(아래로)",
+     "size": "1×1",
+     "by": "«hatch»"
+    },
+    {
+     "id": "jp-in-cs-ladder-up",
+     "name": "가설 사다리(위층으로)",
+     "size": "1×3",
+     "by": "«ladder»"
+    }
+   ],
+   "door": [
+    {
+     "id": "jp-in-door-western",
+     "name": "양실 문",
+     "size": "1×2",
+     "by": "«문»"
+    },
+    {
+     "id": "jp-in-door-open-western",
+     "name": "양실 문(열림)",
+     "size": "1×3",
+     "by": "«문»"
+    },
+    {
+     "id": "jp-in-kr-room-door",
+     "name": "노래방 방 문(작은 유리창, 열림)",
+     "size": "1×3",
+     "by": "«방문»"
+    },
+    {
+     "id": "jp-in-h2-genkan-door-steel",
+     "name": "맨션 철제 현관문 문턱",
+     "size": "1×1",
+     "by": "«철문»"
+    },
+    {
+     "id": "jp-in-ug-door-steel",
+     "name": "철문(열림 — 잠긴 문 자리)",
+     "size": "1×3",
+     "by": "«철문»"
+    },
+    {
+     "id": "jp-in-door-side-sliding",
+     "name": "미닫이 옆문(열림)",
+     "size": "1×3",
+     "by": "«미닫이»"
+    },
+    {
+     "id": "jp-in-h2-sash-door",
+     "name": "베란다 유리 미닫이 문턱",
+     "size": "2×1",
+     "by": "«미닫이»"
+    }
+   ],
+   "centre": [
+    {
+     "id": "jp-bike-shelter",
+     "name": "自転車置き場 교직원 자전거 보관대(지붕)",
+     "size": "6×3",
+     "by": "18칸"
+    },
+    {
+     "id": "jp-flagpoles",
+     "name": "国旗掲揚台 게양대 셋(가운데 국기)",
+     "size": "3×6",
+     "by": "18칸"
+    },
+    {
+     "id": "jp-in-wh-container-h",
+     "name": "20피트 컨테이너(가로, 빨강)",
+     "size": "6×3",
+     "by": "18칸"
+    },
+    {
+     "id": "jp-in-wh-container-h-blue",
+     "name": "20피트 컨테이너(가로, 파랑)",
+     "size": "6×3",
+     "by": "18칸"
+    },
+    {
+     "id": "jp-in-wh-container-h-green",
+     "name": "20피트 컨테이너(가로, 초록)",
+     "size": "6×3",
+     "by": "18칸"
+    },
+    {
+     "id": "jp-rg-fishing-boat",
+     "name": "어선(漁船) - 흰 선체·쪽빛 띠·조타실·大漁旗(6×3)",
+     "size": "6×3",
+     "by": "18칸"
+    }
+   ],
+   "centreCount": 122,
+   "largestCells": 18,
+   "dropped": [
+    {
+     "id": "jp-prop-iron-stair",
+     "name": "외부 철제 계단",
+     "size": "2×4",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-prop-iron-stair-r",
+     "name": "외부 철제 계단(반전)",
+     "size": "2×4",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-in-stairs-up-wood",
+     "name": "나무 계단(올라가는, 1칸 폭)",
+     "size": "1×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-in-stairs-up-wood-wide",
+     "name": "나무 계단(올라가는, 2칸 폭)",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-in-sc-stairs-up",
+     "name": "학교 콘크리트 계단(올라가는)",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-in-of-stairs-up",
+     "name": "비상계단(올라가는)",
+     "size": "1×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-in-mc-stairs-up",
+     "name": "맨션 공용 계단(올라가는)",
+     "size": "1×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-in-as-stairs-up-broken",
+     "name": "부서진 콘크리트 계단(올라가는)",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-in-cs-stairs-up-bare",
+     "name": "콘크리트 계단(올라가는, 난간 없음)",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "jp-in-oshiire",
+     "name": "오시이레(押入れ)",
+     "size": "2×2",
+     "by": "«문»"
+    }
+   ]
+  },
+  "wizarding_world": {
+   "name": "마법 학교 (해리포터풍)",
+   "kits": 636,
+   "log": [
+    {
+     "id": "wz-lib-lectern",
+     "name": "검사 열람대",
+     "size": "1×2",
+     "by": "«독서대»"
+    }
+   ],
+   "lever": [],
+   "down": [
+    {
+     "id": "wz-castle-stair-down",
+     "name": "성채 돌계단통(내려가는 계단)",
+     "size": "2×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-clock-stair",
+     "name": "정비 계단(올라가는 계단)",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-hd-stairs-down",
+     "name": "창고에서 가게로 올라가는 나무 계단",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-owl-stair-down",
+     "name": "탑 계단통(내려가는 계단)",
+     "size": "2×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-castle-door-s",
+     "name": "성채 남벽 출입구(문턱)",
+     "size": "1×2",
+     "by": "«지하 입구»"
+    },
+    {
+     "id": "wz-lib-ladder",
+     "name": "서가 사다리",
+     "size": "1×3",
+     "by": "«사다리»"
+    },
+    {
+     "id": "wz-nv-wand-stock-ladder-ladder",
+     "name": "stock-ladder · 재고 사다리",
+     "size": "1×3",
+     "by": "«사다리»"
+    }
+   ],
+   "door": [
+    {
+     "id": "wz-castle-door-s",
+     "name": "성채 남벽 출입구(문턱)",
+     "size": "1×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-gh-door-closed",
+     "name": "온실 문(닫힘)",
+     "size": "1×4",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-gh-door-open",
+     "name": "온실 문(열림)",
+     "size": "1×4",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-gh-door-locked",
+     "name": "온실 문(잠김)",
+     "size": "1×4",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-wand-testdoor-closed",
+     "name": "시험실 문(닫힘)",
+     "size": "1×4",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-wand-testdoor-open",
+     "name": "시험실 문(열림)",
+     "size": "1×4",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-wand-testdoor-locked",
+     "name": "시험실 문(잠김)",
+     "size": "1×4",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-post-door-closed",
+     "name": "우체국 문(닫힘)",
+     "size": "1×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-post-door-ajar",
+     "name": "우체국 문(조금 열림)",
+     "size": "1×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-post-door-open",
+     "name": "우체국 문(활짝)",
+     "size": "1×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-castle-door1-closed",
+     "name": "성채 1칸 오크 문(닫힘)",
+     "size": "1×4",
+     "by": "«문»"
+    }
+   ],
+   "centre": [
+    {
+     "id": "wz-clock-gear-l",
+     "name": "큰 황동 톱니(4×4)",
+     "size": "4×4",
+     "by": "16칸"
+    },
+    {
+     "id": "wz-clock-gear-l-spin",
+     "name": "큰 톱니(회전)",
+     "size": "4×4",
+     "by": "16칸"
+    },
+    {
+     "id": "wz-qd-goal-6",
+     "name": "링 골대 (기둥 6칸, 2×8)",
+     "size": "2×8",
+     "by": "16칸"
+    },
+    {
+     "id": "wz-qd-goal-5",
+     "name": "링 골대 (기둥 5칸, 2×7)",
+     "size": "2×7",
+     "by": "14칸"
+    },
+    {
+     "id": "wz-nat-conifer-large",
+     "name": "큰 침엽수",
+     "size": "3×4",
+     "by": "12칸"
+    },
+    {
+     "id": "wz-nat-conifer-large-snow",
+     "name": "눈 얹힌 큰 침엽수",
+     "size": "3×4",
+     "by": "12칸"
+    }
+   ],
+   "centreCount": 61,
+   "largestCells": 16,
+   "dropped": [
+    {
+     "id": "wz-castle-stair-up",
+     "name": "성채 돌계단(올라가는 계단)",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-owl-stair-up",
+     "name": "탑 돌계단(올라가는 계단)",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wz-post-slot",
+     "name": "우체국 편지 투입구",
+     "size": "1×1",
+     "by": "«지하 입구»"
+    },
+    {
+     "id": "wz-castle-stair-up",
+     "name": "성채 돌계단(올라가는 계단)",
+     "size": "2×3",
+     "by": "«내려가는 계단»"
+    }
+   ]
+  },
+  "pirate_isles": {
+   "name": "열대 군도·해적 항구 (손 도트)",
+   "kits": 168,
+   "log": [
+    {
+     "id": "pi-logbook-stand",
+     "name": "항해 일지(통 위에 펼친 책)",
+     "size": "1×2",
+     "by": "«일지»"
+    },
+    {
+     "id": "pi-captain-desk",
+     "name": "captain's wooden writing desk with sea chart, quill in inkwell and oil lamp on t",
+     "size": "2×2",
+     "by": "«책상»"
+    }
+   ],
+   "lever": [],
+   "down": [
+    {
+     "id": "pi-ladder-hatch",
+     "name": "open square deck hatch with a wooden ladder going down into the dark hold",
+     "size": "1×1",
+     "by": "«사다리»"
+    }
+   ],
+   "door": [],
+   "centre": [
+    {
+     "id": "pi-bar-counter",
+     "name": "long polished wooden tavern bar counter with panelled front, brass foot rail, mu",
+     "size": "3×2",
+     "by": "6칸"
+    },
+    {
+     "id": "pi-dock-crane",
+     "name": "wooden dock crane house with a plank roof seen from above, big treadwheel in fro",
+     "size": "2×3",
+     "by": "6칸"
+    },
+    {
+     "id": "pi-fishing-boat",
+     "name": "small fishing boat with a short mast, furled sail and a pile of nets",
+     "size": "3×2",
+     "by": "6칸"
+    },
+    {
+     "id": "pi-tavern-table",
+     "name": "long rectangular wooden tavern table seen from above at 3/4: deep plank top with",
+     "size": "3×2",
+     "by": "6칸"
+    }
+   ],
+   "centreCount": 4,
+   "largestCells": 6,
+   "dropped": [
+    {
+     "id": "pi-stairs-up",
+     "name": "steep wooden ship stairs with rope handrail going up toward the north",
+     "size": "1×2",
+     "by": "표면 계약"
+    }
+   ]
+  },
+  "sengoku_edo": {
+   "name": "전국·에도 일본 (손 도트)",
+   "kits": 110,
+   "log": [
+    {
+     "id": "se-in-shop-counter",
+     "name": "가게 장부 자리(초바, 낮은 책상 + 격자 가림)",
+     "size": "2×2",
+     "by": "«장부»"
+    },
+    {
+     "id": "se-in-writing-desk",
+     "name": "앉은뱅이 책상(붓·벼루)",
+     "size": "1×2",
+     "by": "«책상»"
+    }
+   ],
+   "lever": [],
+   "down": [],
+   "door": [
+    {
+     "id": "se-in-door-fusuma",
+     "name": "방 사이 미닫이(열린 후스마 틈)",
+     "size": "1×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "se-in-door-noren",
+     "name": "노렌 드리운 문 틈(가게 안쪽·부엌)",
+     "size": "1×3",
+     "by": "표면 계약"
+    }
+   ],
+   "centre": [
+    {
+     "id": "se-in-dais",
+     "name": "상단(영주 자리, 한 단 높인 다다미 단)",
+     "size": "3×3",
+     "by": "9칸"
+    },
+    {
+     "id": "se-torii-small",
+     "name": "작은 도리이(붉은, 폭 3)",
+     "size": "3×3",
+     "by": "9칸"
+    },
+    {
+     "id": "se-bench-parasol",
+     "name": "붉은 양산 평상(노다테 우산)",
+     "size": "2×3",
+     "by": "6칸"
+    },
+    {
+     "id": "se-chozuya",
+     "name": "데미즈야(손 씻는 곳, 지붕 + 돌 물확)",
+     "size": "2×3",
+     "by": "6칸"
+    },
+    {
+     "id": "se-in-goods-shelf",
+     "name": "물건 선반(피륙·상자, 벽 앞)",
+     "size": "2×3",
+     "by": "6칸"
+    },
+    {
+     "id": "se-in-irori",
+     "name": "이로리(바닥 화로, 숯불 + 걸린 무쇠 주전자)",
+     "size": "2×3",
+     "by": "6칸"
+    }
+   ],
+   "centreCount": 9,
+   "largestCells": 9,
+   "dropped": []
+  },
+  "sky_island": {
+   "name": "하늘섬 (손 도트)",
+   "kits": 87,
+   "log": [
+    {
+     "id": "si-desk",
+     "name": "별자리 책상",
+     "size": "2×1",
+     "by": "«책상»"
+    }
+   ],
+   "lever": [],
+   "down": [
+    {
+     "id": "si-ladder",
+     "name": "사다리",
+     "size": "1×2",
+     "by": "«사다리»"
+    }
+   ],
+   "door": [],
+   "centre": [
+    {
+     "id": "si-altar",
+     "name": "신전 제단(수정)",
+     "size": "3×2",
+     "by": "6칸"
+    },
+    {
+     "id": "si-pond",
+     "name": "작은 연못",
+     "size": "3×2",
+     "by": "6칸"
+    },
+    {
+     "id": "si-telescope",
+     "name": "큰 망원경",
+     "size": "2×3",
+     "by": "6칸"
+    }
+   ],
+   "centreCount": 3,
+   "largestCells": 6,
+   "dropped": []
+  },
+  "steampunk_city": {
+   "name": "스팀펑크 도시 (손 도트)",
+   "kits": 113,
+   "log": [
+    {
+     "id": "sp-ledger-desk",
+     "name": "기록부 책상(펼친 일지 장부·깃펜 잉크병·놋쇠 등)",
+     "size": "2×2",
+     "by": "«일지»"
+    }
+   ],
+   "lever": [
+    {
+     "id": "sp-stop-lever",
+     "name": "정지 레버(바닥 받침대 위 큰 놋쇠 레버)",
+     "size": "1×2",
+     "by": "«레버»"
+    },
+    {
+     "id": "sp-lever-wall",
+     "name": "벽 레버(리벳 철판 상자 + 놋쇠 손잡이)",
+     "size": "1×2",
+     "by": "«레버»"
+    },
+    {
+     "id": "sp-terminal",
+     "name": "천공 카드 단말기(놋쇠 건반·레버·다이얼 조작대)",
+     "size": "2×2",
+     "by": "«레버»"
+    }
+   ],
+   "down": [
+    {
+     "id": "sp-stairs-down",
+     "name": "내려가는 돌계단(바닥 구멍)",
+     "size": "2×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "sp-hatch-down",
+     "name": "지하 입구 해치(무쇠 틀 + 내려가는 돌계단)",
+     "size": "2×2",
+     "by": "표면 계약"
+    }
+   ],
+   "door": [
+    {
+     "id": "sp-room-door",
+     "name": "철문(방과 방 사이 리벳 무쇠 문)",
+     "size": "1×2",
+     "by": "표면 계약"
+    }
+   ],
+   "centre": [
+    {
+     "id": "sp-gasometer",
+     "name": "가스 저장탑(무쇠 기둥 틀 안의 둥근 저장통, 위 뚜껑이 보인다)",
+     "size": "4×4",
+     "by": "16칸"
+    },
+    {
+     "id": "sp-engine",
+     "name": "세운 실린더 증기 기관(받침대 + 뚜껑이 보이는 실린더 + 크로스헤드 + 누운 플라이휠)",
+     "size": "4×3",
+     "by": "12칸"
+    },
+    {
+     "id": "sp-great-heart",
+     "name": "대심장 기관(구리 보일러 심장 엔진 — 화실 불빛·동맥 배관·조속기 탑)",
+     "size": "4×3",
+     "by": "12칸"
+    },
+    {
+     "id": "sp-jib-crane",
+     "name": "부두 증기 기중기(돌 받침 + 운전실 + 비스듬한 격자 팔·갈고리)",
+     "size": "3×4",
+     "by": "12칸"
+    },
+    {
+     "id": "sp-mooring-mast",
+     "name": "비행선 계류탑(무쇠 격자탑 + 꼭대기 원판 발판 + 놋쇠 계류 원뿔)",
+     "size": "2×6",
+     "by": "12칸"
+    },
+    {
+     "id": "sp-boiler",
+     "name": "세운 보일러(리벳 원통 + 화실 문 불빛 + 압력계)",
+     "size": "3×3",
+     "by": "9칸"
+    }
+   ],
+   "centreCount": 17,
+   "largestCells": 16,
+   "dropped": [
+    {
+     "id": "sp-stairs-up",
+     "name": "오르는 나무 계단(북쪽으로)",
+     "size": "2×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "sp-stairs-up",
+     "name": "오르는 나무 계단(북쪽으로)",
+     "size": "2×2",
+     "by": "«내려가는 계단»"
+    }
+   ]
+  },
+  "modern_campus": {
+   "name": "현대 학교·캠퍼스 (손 도트)",
+   "kits": 159,
+   "log": [
+    {
+     "id": "mc-in-mc-desk-pair",
+     "name": "2인 책상·의자 한 쌍(나란히)",
+     "size": "2×1",
+     "by": "«책상»"
+    },
+    {
+     "id": "mc-in-mc-lecture-bench",
+     "name": "강의실 긴 책상(3인, 의자 붙음)",
+     "size": "3×1",
+     "by": "«책상»"
+    },
+    {
+     "id": "mc-in-mc-carrel",
+     "name": "독서실 칸막이 책상(2칸)",
+     "size": "2×2",
+     "by": "«책상»"
+    },
+    {
+     "id": "mc-in-mc-nurse-desk",
+     "name": "보건실 책상(약상자·체온계 올림)",
+     "size": "2×1",
+     "by": "«desk»"
+    },
+    {
+     "id": "mc-in-mc-dorm-desk",
+     "name": "기숙사 책상 + 위 선반(스탠드·책)",
+     "size": "2×2",
+     "by": "«desk»"
+    },
+    {
+     "id": "mc-in-mc-lectern",
+     "name": "강의대(경사진 윗판 연단)",
+     "size": "1×2",
+     "by": "«lectern»"
+    }
+   ],
+   "lever": [],
+   "down": [
+    {
+     "id": "mc-in-sc-stairwell-down",
+     "name": "학교 내려가는 계단통(쇠 난간)",
+     "size": "2×3",
+     "by": "표면 계약"
+    }
+   ],
+   "door": [
+    {
+     "id": "mc-in-door-open-toilet",
+     "name": "화장실 문(열림)",
+     "size": "1×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "mc-in-sc-classroom-door",
+     "name": "교실 미닫이 문(열림)",
+     "size": "1×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "mc-in-sc-roof-door",
+     "name": "옥상 塔屋 철문",
+     "size": "1×2",
+     "by": "표면 계약"
+    }
+   ],
+   "centre": [
+    {
+     "id": "mc-clock-tower",
+     "name": "시계탑(벽돌 탑 + 돌 난간 옥상 + 작은 돔)",
+     "size": "2×6",
+     "by": "12칸"
+    },
+    {
+     "id": "mc-fountain",
+     "name": "분수(둥근 화강암 수반)",
+     "size": "3×3",
+     "by": "9칸"
+    },
+    {
+     "id": "mc-fountain-anim",
+     "name": "분수(물 움직임)",
+     "size": "3×3",
+     "by": "9칸"
+    },
+    {
+     "id": "mc-scoreboard",
+     "name": "점수판(기둥 둘 + 전광판)",
+     "size": "3×3",
+     "by": "9칸"
+    },
+    {
+     "id": "mc-in-mc-board-green",
+     "name": "초록 칠판(넓은 4칸, 알루미늄 틀)",
+     "size": "4×2",
+     "by": "8칸"
+    },
+    {
+     "id": "mc-in-sc-blackboard",
+     "name": "칠판",
+     "size": "4×2",
+     "by": "8칸"
+    }
+   ],
+   "centreCount": 16,
+   "largestCells": 12,
+   "dropped": [
+    {
+     "id": "mc-in-sc-stairs-up",
+     "name": "학교 콘크리트 계단(올라가는)",
+     "size": "2×3",
+     "by": "표면 계약"
+    },
+    {
+     "id": "mc-bleachers",
+     "name": "스탠드(3단 계단식 관람석)",
+     "size": "4×2",
+     "by": "«내려가는 계단»"
+    },
+    {
+     "id": "mc-in-sc-stairs-up",
+     "name": "학교 콘크리트 계단(올라가는)",
+     "size": "2×3",
+     "by": "«내려가는 계단»"
+    },
+    {
+     "id": "mc-in-mc-window-class",
+     "name": "교실 창(미닫이 알루미늄, 파란 하늘)",
+     "size": "2×2",
+     "by": "«미닫이»"
+    }
+   ]
+  },
+  "sf_station": {
+   "name": "SF 정거장·네온 거리 (손 도트)",
+   "kits": 169,
+   "log": [
+    {
+     "id": "sf-console-desk",
+     "name": "조종 콘솔(윗면 화면 둘 + 자판 줄 + 앞면 눌린 패널)",
+     "size": "2×1",
+     "by": "«desk»"
+    }
+   ],
+   "lever": [],
+   "down": [
+    {
+     "id": "sf-hatch-floor",
+     "name": "바닥 해치(정사각 판 + 가운데 손잡이 + 위험 모서리)",
+     "size": "1×1",
+     "by": "«해치»"
+    }
+   ],
+   "door": [],
+   "centre": [
+    {
+     "id": "sf-docking-gate",
+     "name": "도킹 게이트(둥근 도킹 고리 + 안쪽 해치 + 고정 집게 넷)",
+     "size": "4×4",
+     "by": "16칸"
+    },
+    {
+     "id": "sf-radome-tower",
+     "name": "레이돔 탑(판 기단 + 굵은 기둥 + 육각 판 레이돔)",
+     "size": "3×4",
+     "by": "12칸"
+    },
+    {
+     "id": "sf-solar-array-l",
+     "name": "대형 태양광 패널(두 장 + 셀 격자 + 받침 상자 둘)",
+     "size": "5×2",
+     "by": "10칸"
+    },
+    {
+     "id": "sf-container-stack",
+     "name": "컨테이너 더미(아래 남색 + 위 주황, 두 대)",
+     "size": "3×3",
+     "by": "9칸"
+    },
+    {
+     "id": "sf-antenna-mast",
+     "name": "안테나 마스트(세 단 굵은 탑 + 위험 띠 + 꼭대기 경고등)",
+     "size": "2×4",
+     "by": "8칸"
+    },
+    {
+     "id": "sf-tube-h",
+     "name": "연결 통로 튜브(가로로 누운 가압 통로 + 유리 창 줄 + 이음 고리)",
+     "size": "4×2",
+     "by": "8칸"
+    }
+   ],
+   "centreCount": 13,
+   "largestCells": 16,
+   "dropped": [
+    {
+     "id": "sf-vent-stack",
+     "name": "배기 굴뚝(받침 상자 위 짧고 굵은 원통 + 어두운 입구)",
+     "size": "1×2",
+     "by": "«지하 입구»"
+    },
+    {
+     "id": "sf-pod-car",
+     "name": "호버 포드(사다리꼴 지붕 윗면 + 유리 돔 캐노피 + 지붕 짐 받침대 + 짧은 옆판 + 밑 추진 빛 + 그림자)",
+     "size": "3×2",
+     "by": "«사다리»"
+    },
+    {
+     "id": "sf-bunk",
+     "name": "이층 침대(밝은 위 칸 매트 윗면·담요 + 두꺼운 틀 앞면 + 그늘진 아래 칸 + 사다리 + 기둥)",
+     "size": "2×2",
+     "by": "«사다리»"
+    },
+    {
+     "id": "sf-deck-plate",
+     "name": "station deck floor plating, four variants (brushed steel panel, recessed hatch, half-plate seam, floor light)",
+     "size": "4×1",
+     "by": "«hatch»"
+    }
+   ]
+  },
+  "wasteland_ruins": {
+   "name": "폐허·황무지 (손 도트)",
+   "kits": 70,
+   "log": [],
+   "lever": [],
+   "down": [],
+   "door": [],
+   "centre": [
+    {
+     "id": "wl-scrap-heap",
+     "name": "고철 더미",
+     "size": "3×2",
+     "by": "6칸"
+    },
+    {
+     "id": "wl-water-tank",
+     "name": "기둥 위 물탱크",
+     "size": "2×3",
+     "by": "6칸"
+    }
+   ],
+   "centreCount": 2,
+   "largestCells": 6,
+   "dropped": [
+    {
+     "id": "wl-gate-scrap",
+     "name": "고철 대문",
+     "size": "2×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "wl-gate-scrap",
+     "name": "고철 대문",
+     "size": "2×2",
+     "by": "«문»"
+    }
+   ]
+  },
+  "gothic_manor": {
+   "name": "고딕 저택·묘지 (호러, 손 도트)",
+   "kits": 137,
+   "log": [
+    {
+     "id": "gm-desk",
+     "name": "서재 책상(촛대·펼친 책·깃펜)",
+     "size": "2×2",
+     "by": "«책상»"
+    }
+   ],
+   "lever": [],
+   "down": [
+    {
+     "id": "gm-steps-stone",
+     "name": "바깥 돌계단(3단)",
+     "size": "2×1",
+     "by": "표면 계약"
+    }
+   ],
+   "door": [
+    {
+     "id": "gm-wm-door1",
+     "name": "저택 붉은 다마스크 벽지(오크 징두리 판벽) 북벽 문(열림 1칸)",
+     "size": "1×4",
+     "by": "«문»"
+    },
+    {
+     "id": "gm-ws-door1",
+     "name": "지하 축축한 마름돌 벽 북벽 문(열림 1칸)",
+     "size": "1×4",
+     "by": "«door»"
+    }
+   ],
+   "centre": [
+    {
+     "id": "gm-bld-fountain",
+     "name": "마른 분수(천사상·석조 수반)",
+     "size": "3×4",
+     "by": "12칸"
+    },
+    {
+     "id": "gm-dining-table",
+     "name": "긴 식탁(먼지 쌓인 만찬)",
+     "size": "4×2",
+     "by": "8칸"
+    },
+    {
+     "id": "gm-altar",
+     "name": "돌 제단(촛대·펼친 경전)",
+     "size": "3×2",
+     "by": "6칸"
+    },
+    {
+     "id": "gm-bed",
+     "name": "사주식 침대(찢긴 휘장)",
+     "size": "2×3",
+     "by": "6칸"
+    },
+    {
+     "id": "gm-bld-well",
+     "name": "돌 우물(박공 지붕틀·도르래)",
+     "size": "2×3",
+     "by": "6칸"
+    },
+    {
+     "id": "gm-bookshelf",
+     "name": "높은 오크 책장(먼지 쌓인 윗판)",
+     "size": "2×3",
+     "by": "6칸"
+    }
+   ],
+   "centreCount": 9,
+   "largestCells": 12,
+   "dropped": [
+    {
+     "id": "gm-gate-iron-open",
+     "name": "무쇠 쌍문(열림)",
+     "size": "3×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "gm-gate-iron-open",
+     "name": "무쇠 쌍문(열림)",
+     "size": "3×2",
+     "by": "«문»"
+    }
+   ]
+  },
+  "prehistoric": {
+   "name": "선사 시대 원시 세계 (손 도트)",
+   "kits": 89,
+   "log": [],
+   "lever": [],
+   "down": [],
+   "door": [],
+   "centre": [
+    {
+     "id": "ph-volcano-s",
+     "name": "작은 화산 언덕(빛나는 분화구)",
+     "size": "5×4",
+     "by": "20칸"
+    },
+    {
+     "id": "ph-longneck",
+     "name": "긴 목 공룡 뼈대(땅에 누운 화석, 위에서 본 모습)",
+     "size": "6×3",
+     "by": "18칸"
+    },
+    {
+     "id": "ph-ribcage",
+     "name": "거대 갈비뼈 화석(땅에서 솟은 아치)",
+     "size": "4×3",
+     "by": "12칸"
+    },
+    {
+     "id": "ph-stone-circle",
+     "name": "돌 둘레(환상 열석)",
+     "size": "4×3",
+     "by": "12칸"
+    },
+    {
+     "id": "ph-basalt-columns",
+     "name": "현무암 기둥 무리(육각 윗면)",
+     "size": "2×3",
+     "by": "6칸"
+    },
+    {
+     "id": "ph-dino-skull",
+     "name": "공룡 머리뼈 화석",
+     "size": "3×2",
+     "by": "6칸"
+    }
+   ],
+   "centreCount": 8,
+   "largestCells": 20,
+   "dropped": [
+    {
+     "id": "ph-granary",
+     "name": "곡식 창고(기둥 위 이엉 오두막 + 사다리)",
+     "size": "2×3",
+     "by": "«사다리»"
+    }
+   ]
+  },
+  "desert_east": {
+   "name": "사막·동양풍 (손 도트)",
+   "kits": 135,
+   "log": [
+    {
+     "id": "de-record-stand",
+     "name": "기록부·장부(받침 위 책)",
+     "size": "1×2",
+     "by": "«기록부»"
+    }
+   ],
+   "lever": [],
+   "down": [],
+   "door": [],
+   "centre": [
+    {
+     "id": "de-fountain",
+     "name": "청록 타일 팔각 분수",
+     "size": "3×3",
+     "by": "9칸"
+    },
+    {
+     "id": "de-spring",
+     "name": "샘 · 오아시스 돌 샘",
+     "size": "3×3",
+     "by": "9칸"
+    },
+    {
+     "id": "de-outcrop",
+     "name": "바위 언덕(노두)",
+     "size": "3×2",
+     "by": "6칸"
+    },
+    {
+     "id": "de-plunge-pool",
+     "name": "타일 탕(물)",
+     "size": "3×2",
+     "by": "6칸"
+    },
+    {
+     "id": "de-shaduf",
+     "name": "두레박 장대(샤두프)",
+     "size": "2×3",
+     "by": "6칸"
+    }
+   ],
+   "centreCount": 5,
+   "largestCells": 9,
+   "dropped": [
+    {
+     "id": "de-fountain-indoor",
+     "name": "대리석 실내 분수",
+     "size": "2×2",
+     "by": "«door»"
+    }
+   ]
+  },
+  "snow_north": {
+   "name": "북방 설원 (손 도트)",
+   "kits": 101,
+   "log": [
+    {
+     "id": "sn-record-stand",
+     "name": "기록 책 받침대(통나무 독서대 위 펼친 책)",
+     "size": "1×2",
+     "by": "«독서대»"
+    }
+   ],
+   "lever": [],
+   "down": [],
+   "door": [],
+   "centre": [],
+   "centreCount": 0,
+   "largestCells": 0,
+   "dropped": []
+  },
+  "atlas_biome_interior": {
+   "name": "실내 · 손 도트 v5 (아틀라스)",
+   "kits": 643,
+   "log": [
+    {
+     "id": "hand-interior:ledger stand",
+     "name": "기록부(받침 위 펼친 장부)",
+     "size": "1×2",
+     "by": "«기록부»"
+    },
+    {
+     "id": "hand-interior:diary stand",
+     "name": "일기장 받침",
+     "size": "1×2",
+     "by": "«일기장»"
+    },
+    {
+     "id": "hand-interior:desk 1x1",
+     "name": "책상 1×1",
+     "size": "1×1",
+     "by": "«책상»"
+    },
+    {
+     "id": "hand-interior:desk 2x1",
+     "name": "책상 2×1",
+     "size": "2×1",
+     "by": "«책상»"
+    },
+    {
+     "id": "hand-interior:desk 3x1",
+     "name": "책상 3×1",
+     "size": "3×1",
+     "by": "«책상»"
+    },
+    {
+     "id": "hand-interior:lectern",
+     "name": "성경대",
+     "size": "1×2",
+     "by": "«lectern»"
+    }
+   ],
+   "lever": [
+    {
+     "id": "hand-interior:wall lever",
+     "name": "벽 레버",
+     "size": "1×2",
+     "by": "«레버»"
+    },
+    {
+     "id": "hand-interior:wall lever on",
+     "name": "벽 레버(켬)",
+     "size": "1×2",
+     "by": "«레버»"
+    },
+    {
+     "id": "hand-interior:crystal switch",
+     "name": "수정 스위치",
+     "size": "1×2",
+     "by": "«스위치»"
+    },
+    {
+     "id": "hand-interior:control console",
+     "name": "제어반(움직임, 2칸)",
+     "size": "2×2",
+     "by": "«제어반»"
+    }
+   ],
+   "down": [
+    {
+     "id": "hand-interior:stairs down",
+     "name": "내려가는 계단",
+     "size": "2×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "hand-interior:stairwell down",
+     "name": "내려가는 계단통(위층)",
+     "size": "3×2",
+     "by": "표면 계약"
+    },
+    {
+     "id": "hand-interior:star seal",
+     "name": "별 봉인 돌뚜껑(지하 입구·닫힘, 2×2)",
+     "size": "2×2",
+     "by": "«지하 입구»"
+    },
+    {
+     "id": "hand-interior:library ladder",
+     "name": "서고 사다리",
+     "size": "1×3",
+     "by": "«사다리»"
+    },
+    {
+     "id": "hand-interior:ship ladder",
+     "name": "올라가는 갑판 사다리",
+     "size": "1×3",
+     "by": "«사다리»"
+    },
+    {
+     "id": "hand-interior:observing platform",
+     "name": "관측 발판(난간 두른 높은 단과 사다리, 2×2)",
+     "size": "2×3",
+     "by": "«사다리»"
+    },
+    {
+     "id": "hand-interior:trapdoor",
+     "name": "내려가는 뚜껑문",
+     "size": "1×1",
+     "by": "«뚜껑문»"
+    }
+   ],
+   "door": [
+    {
+     "id": "hand-interior:locked door",
+     "name": "잠긴 나무 문",
+     "size": "1×2",
+     "by": "«나무 문»"
+    },
+    {
+     "id": "hand-interior:round door",
+     "name": "둥근 문(2칸)",
+     "size": "2×2",
+     "by": "«door»"
+    }
+   ],
+   "centre": [
+    {
+     "id": "hand-interior:star lens",
+     "name": "별 렌즈(옛 별지기의 큰 렌즈, 4×2)",
+     "size": "4×5",
+     "by": "20칸"
+    },
+    {
+     "id": "hand-interior:pulpit",
+     "name": "설교단(4×3)",
+     "size": "4×3",
+     "by": "12칸"
+    },
+    {
+     "id": "hand-interior:bookshelf 3w",
+     "name": "책장 3w",
+     "size": "3×3",
+     "by": "9칸"
+    },
+    {
+     "id": "hand-interior:confessional",
+     "name": "고해소(3칸)",
+     "size": "3×3",
+     "by": "9칸"
+    },
+    {
+     "id": "hand-interior:fishing net",
+     "name": "그물",
+     "size": "3×3",
+     "by": "9칸"
+    },
+    {
+     "id": "hand-interior:magitek engine",
+     "name": "마도 기관(움직임, 3×2)",
+     "size": "3×3",
+     "by": "9칸"
+    }
+   ],
+   "centreCount": 66,
+   "largestCells": 20,
+   "dropped": [
+    {
+     "id": "hand-interior:stairs up stone",
+     "name": "올라가는 돌 계단",
+     "size": "3×3",
+     "by": "«내려가는 계단»"
+    },
+    {
+     "id": "hand-interior:doormat",
+     "name": "발깔개",
+     "size": "2×1",
+     "by": "«door»"
+    },
+    {
+     "id": "hand-interior:indoor fountain",
+     "name": "실내 분수",
+     "size": "2×3",
+     "by": "«door»"
+    }
+   ]
+  }
+ }
+}

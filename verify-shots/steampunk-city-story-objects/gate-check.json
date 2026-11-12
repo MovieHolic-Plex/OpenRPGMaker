@@ -1,0 +1,44 @@
+[
+ {
+  "id": "steampunk-city/sp-ledger-desk",
+  "kind": "low_furniture",
+  "bundle": null,
+  "shared": null,
+  "store": "3/4·화풍 판정 영수증이 없다 — object-gate final-review 로 Opus 최종 판정을 받아라"
+ },
+ {
+  "id": "steampunk-city/sp-stop-lever",
+  "kind": "other",
+  "bundle": null,
+  "shared": null,
+  "store": "3/4·화풍 판정 영수증이 없다 — object-gate final-review 로 Opus 최종 판정을 받아라"
+ },
+ {
+  "id": "steampunk-city/sp-lever-wall",
+  "kind": "wall_mounted",
+  "bundle": null,
+  "shared": null,
+  "store": "3/4·화풍 판정 영수증이 없다 — object-gate final-review 로 Opus 최종 판정을 받아라"
+ },
+ {
+  "id": "steampunk-city/sp-hatch-down",
+  "kind": "flat",
+  "bundle": null,
+  "shared": null,
+  "store": "3/4·화풍 판정 영수증이 없다 — object-gate final-review 로 Opus 최종 판정을 받아라"
+ },
+ {
+  "id": "steampunk-city/sp-room-door",
+  "kind": "wall_structure",
+  "bundle": null,
+  "shared": null,
+  "store": "3/4·화풍 판정 영수증이 없다 — object-gate final-review 로 Opus 최종 판정을 받아라"
+ },
+ {
+  "id": "steampunk-city/sp-great-heart",
+  "kind": "other",
+  "bundle": null,
+  "shared": null,
+  "store": "3/4·화풍 판정 영수증이 없다 — object-gate final-review 로 Opus 최종 판정을 받아라"
+ }
+]

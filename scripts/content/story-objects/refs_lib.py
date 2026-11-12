@@ -10,11 +10,15 @@
       scene=[('note', 1, 2), ...], size=(12, 6), ground=lambda x, y: <아래층 칸 번호>,
       title='modern_city · 이야기 기물 5종(…)', head='<머리 한 줄>', ground_note='보도·실내 바닥', compose_tool='compose_modern_city_street',
       order_notes=['큰 것부터 …', …], source='tiledata/modern-city/objects', bake='scripts/content/modern-city-street/bake_story.py'))
+
+선택 인자(없으면 예전 글 그대로): pieces = 그림 정본 폴더(기본 `<source>/pieces/`) · parts_note = 사전 표 아래 한 줄(기본 «입구·문 부품은 없다»).
+spec 의 place 가 wallmount(벽면에 거는 그림)·walldoor(벽면 한 줄을 대신하는 문)인 기물은 예제 장면에서 벽 칸(ground 가 돌려주는 벽 타일) 위에 놓는다.
 """
 import json, os
 from PIL import Image, ImageDraw
 
 T = 16
+PLACE_KO = {'decal': '바닥 그림(밟고 지나감)', 'wallmount': '벽면에 거는 그림(벽 칸 위)', 'walldoor': '벽면 문(벽 칸 위, 한 줄 폭)'}
 
 
 def _arr(a): return ' '.join('%5d' % v for v in a)
@@ -81,14 +85,15 @@ def build(cfg):
 
     L = [f"# {cfg['title']}\n\n{cfg['head']}\n",
          f"게임들이 바랐는데 그림이 없던 물건이다. **이 {n}장은 3/4 관문 미통과 — 오너 면제 그림**(면제 묶음 {spec['waiver']}, Claude Fable 5.2 한 방 그림)이다 — 관문 영수증이 없고 스토어로는 나가지 않는다. "
-         f"그림 정본 `{cfg['source']}/pieces/`, 정의 `spec.json`, 굽기 `{cfg['bake']}`(그림을 그대로 굽는다 — 한 화소라도 바꾸면 면제가 풀린다).\n",
-         f"## 1. 사전\n\n모든 칸은 **위층(upperTiles)** 에 놓는다(아래층 {cfg['ground_note']}은 그대로 — 투명 화소 밑으로 비친다). 서 있는 기물: 막힌 칸은 네 방향 막힘, 나머지 칸은 ★(사람 위에 그려지고 걷는다). 바닥 그림: 사람 아래·걷는다.\n",
+         f"그림 정본 `{cfg.get('pieces') or cfg['source'] + '/pieces/'}`, 정의 `spec.json`, 굽기 `{cfg['bake']}`(그림을 그대로 굽는다 — 한 화소라도 바꾸면 면제가 풀린다).\n",
+         f"## 1. 사전\n\n모든 칸은 **위층(upperTiles)** 에 놓는다(아래층 {cfg['ground_note']}은 그대로 — 투명 화소 밑으로 비친다). 서 있는 기물: 막힌 칸은 네 방향 막힘, 나머지 칸은 ★(사람 위에 그려지고 걷는다). 바닥 그림: 사람 아래·걷는다."
+         + (" 벽면 그림(벽에 거는 것·벽면 문): 아래층이 벽인 칸 위에 찍고 그 칸은 막힌다 — 쓰는 자리는 바로 아래 바닥 칸." if any(it['place'] in ('wallmount', 'walldoor') for it in spec['items']) else "") + "\n",
          "| 키트 id | 무엇 | 크기 | 위층 칸 번호(위 줄 / 아래 줄) | 놓는 방식 | 막힌 칸 (dx,dy) | 찾는 낱말(키트 태그) |\n|---|---|---|---|---|---|---|"]
     for it in spec['items']:
         k = kits[P + it['id']]
-        L.append(f"| `{P}{it['id']}` | {it['name']} | {it['w']}×{it['h']} | {' / '.join(' '.join(map(str, r['upperTiles'])) for r in k['rows'])} | {'바닥 그림(밟고 지나감)' if it['place'] == 'decal' else '서 있는 기물'} | "
+        L.append(f"| `{P}{it['id']}` | {it['name']} | {it['w']}×{it['h']} | {' / '.join(' '.join(map(str, r['upperTiles'])) for r in k['rows'])} | {PLACE_KO.get(it['place'], '서 있는 기물')} | "
                  f"{' '.join('(%d,%d)' % tuple(c) for c in it['block']) or '—'} | {', '.join(it['words'])} |")
-    L.append("\n전부 고정 조각(이어 찍지 않는다). 입구·문 부품은 없다.\n")
+    L.append("\n" + (cfg.get('parts_note') or "전부 고정 조각(이어 찍지 않는다). 입구·문 부품은 없다.") + "\n")
     steps = [f"바닥({cfg['ground_note']})을 먼저 깐다 — 구성 도구 `{cfg['compose_tool']}` 이 지은 맵이면 그대로 둔다.",
              f"`stamp_tileset_object({{ mapId, objectId: \"{P}…\", base }})` — **base = 맨 아래 줄의 왼쪽 칸**(왼쪽 위가 (x,y)·높이 h 면 base = (x, y+h−1)). 조수 v2 는 `place_object({{ mapId, objectId, at }})`. 도구는 통째로 놓거나 거절한다."]
     steps += cfg['order_notes']

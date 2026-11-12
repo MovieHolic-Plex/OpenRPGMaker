@@ -2,7 +2,9 @@
 // ③ 기존 저장본에 실리고 다시 열어도 그대로인가 ④ 게임들이 바란 낱말로 실제 도구가 찾아 주는가 ⑤ v2 place_object 로 놓이고 통행이 적은 대로인가
 // ⑥ 주인공(Actor1 24×32)이 곁에 선 1배 장면.
 //
-//   bun scripts/content/story-objects/probe.mts <칩셋 id> <outDir> [--base-sheet <고치기 전 시트 png>] [--saved <저장된 프로젝트 폴더>]
+//   bun scripts/content/story-objects/probe.mts <chipsets.json 열쇠> <outDir> [--base-sheet <고치기 전 시트 png>] [--saved <저장된 프로젝트 폴더>]
+//
+// 열쇠는 보통 칩셋 id 다. 한 칩셋을 두 장면(실내·거리)으로 볼 때는 열쇠를 둘 두고 `chipset`(칩셋 id)·`only`(그 장면에 놓을 기물 id)를 적는다.
 //
 // 칩셋 표는 chipsets.json, 낱말은 그 칩셋의 ask.json(수요 장부에서 옮긴 것) — 여기 코드에 낱말 목록은 없다. 저장본에는 쓰지 않는다(임시 사본).
 // 맵은 그 칩셋의 구성기 도구로 새로 깐 실제 맵이다. 길: list_tileset_objects(query) · v2 draw_object(what) → «이미 있다 → place_object» · v2 place_object.
@@ -28,33 +30,37 @@ import { passingCellIndex, uncoveredSheetCells } from "../../../src/harnesses/ob
 
 const argv = process.argv.slice(2);
 const opt = (name: string) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined; };
-const [chipset, out] = argv;
-if (!chipset || !out) { console.error("usage: probe.mts <chipset> <outDir> [--base-sheet png] [--saved dir]"); process.exit(2); }
+const [confKey, out] = argv;
+if (!confKey || !out) { console.error("usage: probe.mts <chipset> <outDir> [--base-sheet png] [--saved dir]"); process.exit(2); }
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../../..");
 const read = (rel: string) => JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
-const conf = read("scripts/content/story-objects/chipsets.json")[chipset] as { spec: string; ask: string; kitPrefix: string; sheet: string; listTool?: { name: string; idPrefix: string }; placeArea?: { x0: number; y0: number; x1: number; y1: number }; map: { create?: boolean; width: number; height: number; tool: string; args: Record<string, unknown> } };
-if (!conf) { console.error(`chipsets.json 에 ${chipset} 가 없다`); process.exit(2); }
+const conf = read("scripts/content/story-objects/chipsets.json")[confKey] as { chipset?: string; only?: string[]; spec: string; ask: string; kitPrefix: string; sheet: string; listTool?: { name: string; idPrefix: string }; placeArea?: { x0: number; y0: number; x1: number; y1: number }; map: { create?: boolean; width: number; height: number; tool: string; args: Record<string, unknown> } };
+if (!conf) { console.error(`chipsets.json 에 ${confKey} 가 없다`); process.exit(2); }
+const chipset = conf.chipset ?? confKey;
 type Item = { id: string; name: string; kind: string; w: number; h: number; place: string; block: [number, number][] };
-const items = (read(conf.spec) as { items: Item[] }).items;
+const all = (read(conf.spec) as { items: Item[] }).items;
+const items = conf.only ? all.filter((it) => conf.only!.includes(it.id)) : all;   // 이 장면에 놓고 낱말을 물을 기물(시트·새 프로젝트 검사는 전부)
+/** 벽면에 찍는 것: 벽 걸이와 벽면 문. */
+const onWallFace = (it: Item) => it.place === "wallmount" || it.place === "walldoor";
 const ASK = (read(conf.ask) as { items: Record<string, string[]> }).items;
 fs.mkdirSync(out, { recursive: true });
 const kitId = (id: string) => conf.kitPrefix + id;
-const ownIds = new Set(items.map((it) => kitId(it.id)));
+const ownIds = new Set(all.map((it) => kitId(it.id)));
 const ownKits = (ts: TilesetDef) => (ts.structureKits ?? []).filter((k) => ownIds.has(k.id));
 const kitCells = (kit: StructureKitDef) => kit.rows.map((r) => (r.upperTiles ?? []).map((t, i) => (t >= 0 ? t : (r.tiles ?? [])[i] ?? -1)));
-const report: Record<string, unknown> = { chipset };
+const report: Record<string, unknown> = { chipset, ...(conf.only ? { only: conf.only } : {}) };
 
 // ── 1. 새 프로젝트 ──
 const fresh = createBlankProject();
 const fts = fresh.tilesets[chipset]!;
 /** 이 기물들을 적은 참고문서(용도/문서 id) — 본문에 기물 id 가 든 문서. */
-const docsOf = (ts: TilesetDef) => (ts.referenceDocuments ?? []).flatMap((c) => c.documents.filter((d) => items.some((it) => d.markdown.includes(`\`${it.id}\``) || d.markdown.includes(kitId(it.id)))).map((d) => `${c.id}/${d.id}`));
+const docsOf = (ts: TilesetDef) => (ts.referenceDocuments ?? []).flatMap((c) => c.documents.filter((d) => all.some((it) => d.markdown.includes(`\`${it.id}\``) || d.markdown.includes(kitId(it.id)))).map((d) => `${c.id}/${d.id}`));
 const docs = docsOf(fts);
 report.fresh = {
-  kits: ownKits(fts).length, of: items.length, count: fts.count, referenceDocs: docs,
+  kits: ownKits(fts).length, of: all.length, count: fts.count, referenceDocs: docs,
   tablesMatchCount: ["passability", "priority", "terrain", "tileMeta"].every((k) => (fts as unknown as Record<string, unknown[]>)[k]!.length === fts.count),
 };
-report.sheet = items.map((it) => {
+report.sheet = all.map((it) => {
   const kit = ownKits(fts).find((k) => k.id === kitId(it.id))!;
   return { id: kit.id, name: kit.name, size: `${it.w}×${it.h}`, kind: it.kind, place: it.place, cells: kitCells(kit).flat(), blocked: it.block.map(([x, y]) => `(${x},${y})`).join(" ") || "없음(밟고 지나감)" };
 });
@@ -189,7 +195,7 @@ const placed: Record<string, unknown>[] = [];
 const where = new Map<string, { x: number; y: number }>();
 for (const it of [...items].sort((a, b) => b.w * b.h - a.w * a.h)) {
   const kit = ownKits(ts).find((k) => k.id === kitId(it.id))!;
-  const s = spot(it.w, it.h, it.place === "wallmount");
+  const s = spot(it.w, it.h, onWallFace(it));
   if (!s) { placed.push({ object: it.id, kit: kit.id, ok: false, at: "자리 없음" }); continue; }
   for (let dy = -1; dy <= it.h + 1; dy++) for (let dx = -1; dx <= it.w; dx++) reserved.add((s.y + dy) * map.width + s.x + dx);
   const base = { x: s.x, y: s.y + it.h - 1 };
@@ -208,10 +214,10 @@ for (const it of [...items].sort((a, b) => b.w * b.h - a.w * a.h)) {
   if (drawnOk) for (let dy = 0; dy < it.h; dy++) for (let dx = 0; dx < it.w; dx++) { occupied.add((oy + dy) * m.width + ox + dx); if (!isPassable(ctx.project, m, ox + dx, oy + dy)) blockedNow.push(`(${dx},${dy})`); }
   if (drawnOk) { where.set(it.id, { x: ox, y: oy }); for (let dy = -1; dy <= it.h + 1; dy++) for (let dx = -1; dx <= it.w; dx++) reserved.add((oy + dy) * m.width + ox + dx); }
   // 벽 걸이는 벽 위에 걸린다 — 그 칸은 벽이 막는다. 선언(막힌 칸 없음)은 «그림 칸 자신이 통행을 막지 않는가» 로 본다.
-  if (it.place === "wallmount" && drawnOk) { blockedNow.length = 0; cells.flat().forEach((t, i) => { if (t >= 0 && !ts.passability[t]?.up) blockedNow.push(`(${i % it.w},${Math.floor(i / it.w)})`); }); }
+  if (onWallFace(it) && drawnOk) { blockedNow.length = 0; cells.flat().forEach((t, i) => { if (t >= 0 && !ts.passability[t]?.up) blockedNow.push(`(${i % it.w},${Math.floor(i / it.w)})`); }); }
   const want = it.block.map(([x, y]) => `(${x},${y})`);
   placed.push({ object: it.id, kit: kit.id, asked: `(${s.x},${s.y})`, at: drawnOk ? `(${ox},${oy})` : "안 놓임", ok: !!res.ok && drawnOk, moved: drawnOk && (ox !== s.x || oy !== s.y), ...(firstRefusal ? { firstSpotRefusal: firstRefusal.slice(0, 220) } : {}),
-    blockedAsDeclared: drawnOk && JSON.stringify([...blockedNow].sort()) === JSON.stringify([...want].sort()), blocked: (blockedNow.join(" ") || "없음") + (it.place === "wallmount" ? " (벽면 위 걸이 — 그 칸은 벽이 막는다)" : ""), tool: String(res.summary ?? "").slice(0, 110) });
+    blockedAsDeclared: drawnOk && JSON.stringify([...blockedNow].sort()) === JSON.stringify([...want].sort()), blocked: (blockedNow.join(" ") || "없음") + (onWallFace(it) ? " (벽면 위 그림 — 그 칸은 벽이 막는다)" : ""), tool: String(res.summary ?? "").slice(0, 110) });
 }
 report.map = { tool: conf.map.tool, args: conf.map.args, size: `${map.width}×${map.height}`, start: ctx.project.startPos };
 report.placed = placed;
@@ -223,12 +229,12 @@ report.placed = placed;
   const heroes: { x: number; y: number; why: string }[] = [];
   for (const it of items) {
     const at = where.get(it.id); if (!at) continue;
-    if (it.place === "wallmount") { if (can(at.x, at.y + it.h)) heroes.push({ x: at.x, y: at.y + it.h, why: `${it.id} 아래(벽 걸이)` }); continue; }
+    if (onWallFace(it)) { if (can(at.x, at.y + it.h)) heroes.push({ x: at.x, y: at.y + it.h, why: `${it.id} 아래(벽면)` }); continue; }
     if (!it.block.length) { if (can(at.x + 1, at.y)) heroes.push({ x: at.x + 1, y: at.y, why: `${it.id} 옆(밟고 지나가는 바닥 그림)` }); continue; }
     const front = { x: at.x + Math.floor((it.w - 1) / 2), y: at.y + it.h };
     if (it.w * it.h >= 4 && can(front.x, front.y)) heroes.push({ ...front, why: `${it.id} 앞` });
   }
-  const tall = items.find((it) => it.h === 2 && it.w === 1 && it.place !== "wallmount" && it.block.length === 1 && where.has(it.id));
+  const tall = items.find((it) => it.h === 2 && it.w === 1 && !onWallFace(it) && it.block.length === 1 && where.has(it.id));
   if (tall) { const at = where.get(tall.id)!; if (can(at.x + 1, at.y + 1)) heroes.push({ x: at.x + 1, y: at.y + 1, why: `${tall.id} 옆` }); }
   const full = PNG.sync.read(renderMapPng({ ...ctx.project, startMapId: "" } as Project, m).png);
   const chip = PNG.sync.read(fs.readFileSync(path.join(ROOT, "public/assets/easyrpg/charset/Actor1.png")));

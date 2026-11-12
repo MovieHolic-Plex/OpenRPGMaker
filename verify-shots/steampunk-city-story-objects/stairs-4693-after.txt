@@ -1,0 +1,14 @@
+surface keys declared,road,stairs,doors,lay
+sp-hatch-down stairs true doors false 
+sp-room-door stairs false doors true 
+sp-stairs-down stairs true doors false 
+sp-stairs-up stairs true doors false 
+street way down → 계단 「내려가는 돌계단(바닥 구멍)」을 (6,11)에 놓음 이동칸 (6,12)
+street way up → 계단 「오르는 나무 계단(북쪽으로)」을 (6,11)에 놓음 이동칸 (6,12)
+street way - → 계단 「오르는 나무 계단(북쪽으로)」을 (6,11)에 놓음 이동칸 (6,12)
+engine-room way down → 계단 「내려가는 돌계단(바닥 구멍)」을 (3,3)에 놓음 이동칸 (3,4)
+engine-room way up → 계단 「오르는 나무 계단(북쪽으로)」을 (3,3)에 놓음 이동칸 (3,4)
+engine-room way - → 계단 「오르는 나무 계단(북쪽으로)」을 (3,3)에 놓음 이동칸 (3,4)
+boiler-room way down → 계단 「내려가는 돌계단(바닥 구멍)」을 (2,3)에 놓음 이동칸 (2,4)
+boiler-room way up → 계단 「오르는 나무 계단(북쪽으로)」을 (2,3)에 놓음 이동칸 (2,4)
+boiler-room way - → 계단 「오르는 나무 계단(북쪽으로)」을 (2,3)에 놓음 이동칸 (2,4)

@@ -1,0 +1,16 @@
+engine-room «경비 근무 일지» → 없음(맨바닥 → settle) [-]
+engine-room «기록부» → 없음(맨바닥 → settle) [-]
+engine-room «낡은 장부» → 없음(맨바닥 → settle) [-]
+engine-room «정지 레버» → 천공 카드 단말기 @(12,10) [sp-terminal] (새로 찍음)
+engine-room «비상 정지 레버» → 천공 카드 단말기 @(12,10) [sp-terminal] (새로 찍음)
+engine-room «레버» → 천공 카드 단말기 @(12,10) [sp-terminal] (새로 찍음)
+engine-room «벽 레버» → 천공 카드 단말기 @(12,10) [sp-terminal] (새로 찍음)
+engine-room «대심장 기관» → 세운 실린더 증기 기관 @(12,7) [sp-engine] (맵에 있던 것)
+engine-room «대심장 엔진» → 없음(맨바닥 → settle) [-]
+engine-room «대심장» → 없음(맨바닥 → settle) [-]
+engine-room «기관» → 세운 실린더 증기 기관 @(12,7) [sp-engine] (맵에 있던 것)
+boiler-room «근무 일지» → 없음(맨바닥 → settle) [-]
+boiler-room «정지 레버» → 천공 카드 단말기 @(9,8) [sp-terminal] (새로 찍음)
+boiler-room «대심장 기관» → 세운 실린더 증기 기관 @(11,7) [sp-engine] (새로 찍음)
+street «경비 초소 일지» → 없음(맨바닥 → settle) [-]
+street «정지 레버» → 천공 카드 단말기 @(24,22) [sp-terminal] (새로 찍음)

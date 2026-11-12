@@ -45,6 +45,9 @@ IMG = {
 IMG['part'] = IMG['prop']
 IMG['feat'] = IMG['roof'] + IMG['prop']
 IMG['wall'] = IMG['roof']
+# 이야기 기물(add_story)이 보는 참고 그림 — 이 칩셋의 방(벽 두 줄·바닥·기물)과 거리(보도·차도·가스등)에 주인공이 선 그림
+IMG['room'] = [('room@4x.png', 'A ROOM of THIS chipset in its new look and palette with the player in it (4x): the wall face is two tiles (32 pixels) tall above the floor; things hang on the wall face; machines stand on the floor. Take the materials, the tone steps, the top faces seen from above and the SIZES relative to the player (the player is 24x32 and stands on one 16-pixel floor tile).')]
+IMG['street'] = [('street@4x.png', 'A STREET of THIS chipset in its new look and palette with the player on it (4x): flagstone footway, cobbled carriageway, a gas lamp. Take how quiet the pavement is and the SIZES relative to the player (the player is 24x32 and stands on one 16-pixel tile).')]
 HERO = ('hero-scale.png', 'The PLAYER CHARACTER at 1x (left) and 4x (right) on the 16-pixel map grid: sprite frame 24x32, the figure is 16 px wide and 24 px tall. Draw to this scale and for this camera.')
 
 
@@ -55,11 +58,11 @@ def log(m):
 
 def jobs():
     J = T.Jobs()
-    JB.add_ground(J); JB.add_kit(J); JB.add_props(J); JB.add_parts(J)
+    JB.add_ground(J); JB.add_kit(J); JB.add_props(J); JB.add_parts(J); JB.add_story(J)
     for j in J.J:
         j['role'] = 'ground' if j['cls'] == 'ground' else 'structure'
         j['extra'] = EXTRA.get(j['id'], [])
-        j['images'] = [f for f, _ in IMG[j['cls']] + [HERO]]
+        j['images'] = [f for f, _ in IMG[j.get('imgs') or j['cls']] + [HERO]]
     return J.J
 
 
@@ -87,16 +90,31 @@ def refs():
     pv = Image.open(os.path.join(C.ROOT, 'harness-data/object-gate/style-refs/ground/paving.png')).convert('RGBA')
     pv.alpha_composite(hero, (20, 8))
     C.big(pv, 6).save(f'{rd}/ground-hero@6x.png')
+    # 이야기 기물용: 굽기 정본(_gate PNG)으로 짠 방 한 칸(리벳 철판 벽 두 줄 + 철판 바닥 + 기관·밸브 바퀴·압력계)과 거리 한 토막(판석 보도·연석·자갈 차도·가스등)에 주인공
+    gate = lambda g, i: Image.open(os.path.join(C.ROOT, 'tiledata/steampunk-city', g, '_gate', f'sp-{i}.png')).convert('RGBA')
+    room = Image.new('RGBA', (144, 96), C.BG + (255,))
+    for x in range(0, 144, 16):
+        room.alpha_composite(gate('interior', 'wall-iron-u'), (x, 0)); room.alpha_composite(gate('interior', 'wall-iron-d'), (x, 16))
+        for y in range(32, 96, 16): room.alpha_composite(gate('interior', 'floor-iron'), (x, y))
+    room.alpha_composite(gate('interior', 'valve-wheel'), (16, 16)); room.alpha_composite(gate('interior', 'gauge-wall'), (112, 0))
+    room.alpha_composite(gate('interior', 'engine'), (64, 40)); room.alpha_composite(hero, (28, 96 - 8 - 32))
+    C.big(room, 4).save(f'{rd}/room@4x.png')
+    st = Image.new('RGBA', (112, 80), C.BG + (255,))
+    for x in range(0, 112, 16):
+        for y, i in ((0, 'flag'), (16, 'flag'), (32, 'flag'), (48, 'cobble'), (64, 'cobble')): st.alpha_composite(gate('terrain', i), (x, y))
+    st.alpha_composite(gate('props', 'gas-lamp'), (16, 0)); st.alpha_composite(hero, (60, 12))
+    C.big(st, 4).save(f'{rd}/street@4x.png')
 
 
 def base_prompt(j):
-    imgs = IMG[j['cls']] + [HERO]
+    imgs = IMG[j.get('imgs') or j['cls']] + [HERO]
     pal = T.palette_text(j['role']) + ''.join(f'\n  {r}: ' + ' '.join(f'{i}={c}' for i, c in enumerate(P3.RAMPS[r])) for r in j['extra'])
-    con = {'variant': T.C_VARIANT, 'roof': T.C_ROOF, 'wallmod': T.C_WALLMOD, 'feat': T.C_FEAT}.get(j['contract']) or {'ground': T.C_GROUND, 'prop': T.C_PROP, 'part': T.C_PART}[j['cls']]
+    con = ({'variant': T.C_VARIANT, 'roof': T.C_ROOF, 'wallmod': T.C_WALLMOD, 'feat': T.C_FEAT, 'wallmount': T.C_WALLMOUNT, 'walldoor': T.C_WALLDOOR, 'floorhatch': T.C_FLOORHATCH}.get(j['contract'])
+           or {'ground': T.C_GROUND, 'prop': T.C_PROP, 'part': T.C_PART}[j['cls']])
     door = j['id'] in DOOR
     return T.TEMPLATE.format(cap=j['cap'], rowtok=round(j['w'] * 0.8), imglist='\n'.join(f'- picture {i + 1}: {c}' for i, (_, c) in enumerate(imgs)), name=j['name'], w=j['w'], h=j['h'], canvas_note='',
                              kind=j['kind'], kind_rule=T.KIND[j['kind']], text=j['text'], contract=con.replace('{last}', str(j['w'] - 1)), colour_rules=T.CR_GROUND if j['role'] == 'ground' else T.CR_STRUCT, palette=pal,
-                             door_ex=' "door": [x, y, w, h],' if door else '', opaque_note=' This piece has no transparent pixel.' if j['cls'] in ('ground', 'roof', 'wall') else '',
+                             door_ex=' "door": [x, y, w, h],' if door else '', opaque_note=' This piece has no transparent pixel.' if j['cls'] in ('ground', 'roof', 'wall') or j.get('opaque') else '',
                              eg='gstone:2' if j['role'] == 'ground' else 'brass:3',
                              door_rule='- "door": the door OPENING you drew (the leaf area the figure walks through, without frame) as [first column, first row, width, height] in canvas pixels.\n' if door else '')
 

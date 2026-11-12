@@ -1,0 +1,6 @@
+{"png": "sp-ledger-desk.png", "kind": "low_furniture", "name": "일지·기록부·장부 책상(펼친 책·깃펜 잉크병·놋쇠 등)", "label": "steampunk-city/sp-ledger-desk"}
+{"png": "sp-stop-lever.png", "kind": "other", "name": "정지 레버(바닥 받침대 위 큰 놋쇠 레버)", "label": "steampunk-city/sp-stop-lever"}
+{"png": "sp-lever-wall.png", "kind": "wall_mounted", "name": "벽 레버(리벳 철판 상자 + 놋쇠 손잡이)", "label": "steampunk-city/sp-lever-wall"}
+{"png": "sp-hatch-down.png", "kind": "flat", "name": "지하 입구 해치(무쇠 틀 + 내려가는 돌계단)", "label": "steampunk-city/sp-hatch-down"}
+{"png": "sp-room-door.png", "kind": "wall_structure", "name": "철문(방과 방 사이 리벳 무쇠 문)", "label": "steampunk-city/sp-room-door"}
+{"png": "sp-great-heart.png", "kind": "other", "name": "대심장 기관(구리 보일러 심장 엔진 — 화실 불빛·동맥 배관·조속기 탑)", "label": "steampunk-city/sp-great-heart"}
