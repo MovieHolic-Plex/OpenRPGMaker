@@ -1,0 +1,83 @@
+{
+"id": "g-grass",
+"w": 32,
+"h": 32,
+"role": "ground",
+"shot": 1,
+"legend": {
+"a": "tundra:1",
+"b": "tundra:0",
+"p": "grey:1",
+"s": "snow:1",
+"f": "frost:1",
+"g": "frost:0",
+"t": "snow:2"
+},
+"rows": [
+"aaaaaaaaaaaaaaaaffffffffffgfffff",
+"aaabaaaaaaaaaaaafffsffffffgfffff",
+"aaabbaaaaaabaaaaffgfffffffffffff",
+"aaaabaaaaabbaaaaffggfffffffffsff",
+"aaaaaaaaaabaaaaaffffffffffffgfff",
+"aaaaaaaaaaaaaaaaffffffgffffggfff",
+"aaaaaappaaaaaaaafffffggfffffffff",
+"aaaaaaaaaaaaabaaffffffffffffffff",
+"abaaaaaaaaaaabbaffffffffffffffgf",
+"abbaaaaaaaaaaaaafgffffffsfffffgf",
+"aaaaaaaabaaaaaaafggffffgffffffff",
+"aaaaaaabbaaaaaaaffffffggffffffff",
+"aaaaaaabaaaapaaaffffffffffffgfff",
+"aaaaaaaaaaaaaaaafffffffffffggfff",
+"aaaabaaaaaaaaaaaffffgfffffffffff",
+"aaaaabaaaaaaaaaaffffgfffffffffff",
+"aaaaaaaaaaaaaaaaffffffffgfffffff",
+"aaaaaaaaaabaaaaafgffffffggffffgf",
+"aaaaaaaaabbaaaaafgffttffffffffgg",
+"aaabaaaaaaaaaaaaffftttffffffffff",
+"aaabbaaaaaaaaaaaffffffffffgfffff",
+"aaaaaaaaaaaaaaaafffffgfffggfffff",
+"aaaaaaaaaaassaaaffffggffffffffff",
+"aaaaaaaaaasssaaaffffffffffffsfff",
+"aaaaaaaaaaaaaaaaffgfffffffffgfff",
+"aapaaaaaaaaaaaaaffggffffgfffffff",
+"aaaaaabaaaaaaaaafffffffggffffttf",
+"aaaaaabbaaaaaabaffffffffffffttff",
+"aaaaaaaaaaaaaabafffffgffffffffff",
+"aaaaaaaaaaaaaaaaffffggfffffgffff",
+"aaaaaaaaapaaaaaafsfffffffffggfff",
+"aaaaaaaaaaaaaaaaffgfffffffffffff"
+],
+"door": null,
+"cells": [
+{
+"name": "tundra",
+"x": 0,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "frost",
+"x": 16,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "tundra-b",
+"x": 0,
+"y": 16,
+"w": 16,
+"h": 16
+},
+{
+"name": "frost-b",
+"x": 16,
+"y": 16,
+"w": 16,
+"h": 16
+}
+],
+"broken": false,
+"defects": []
+}

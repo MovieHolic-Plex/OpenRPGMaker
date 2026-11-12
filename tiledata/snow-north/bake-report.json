@@ -1,24 +1,25 @@
 {
  "gate": {
-  "provisional_profile_uncalibrated": 155,
+  "provisional_profile_uncalibrated": 0,
+  "owner_waived_not_passed": 153,
   "covered_by_assembled": 8,
   "blocked": [],
-  "pieces": 131,
-  "outdoor": 91,
-  "interior": 40
+  "pieces": 137,
+  "outdoor": 94,
+  "interior": 43
  },
  "autotiles": {
   "groups": 6
  },
  "tiles": {
-  "count": 976,
+  "count": 989,
   "rows": 21,
   "sheetPx": [
    768,
    336
   ],
   "strips": 23,
-  "kits": 95,
+  "kits": 101,
   "groups": 45,
   "autotiles": 6
  },
@@ -27,14 +28,14 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 976,
-  "kits_checked": 95,
+  "tiles_checked": 989,
+  "kits_checked": 101,
   "groups_checked": 45,
   "autotiles_checked": 6
  },
  "reassembly": {
-  "kits": 95,
-  "checked": 95,
+  "kits": 101,
+  "checked": 101,
   "mismatched": 0,
   "ids": []
  }

@@ -1,0 +1,81 @@
+{
+"id": "t-rocks",
+"w": 64,
+"h": 16,
+"role": "object",
+"shot": 1,
+"legend": {
+"a": "ink:1",
+"b": "ink:0",
+"c": "pine:0",
+"d": "log:1",
+"e": "shade:1",
+"f": "snow:0",
+"g": "snow:1",
+"h": "snow:2",
+"i": "snow:3",
+"j": "stone:0",
+"k": "stone:1",
+"l": "stone:2",
+"m": "stone:3",
+"n": "log:0",
+"o": "log:2",
+"p": "log:3",
+"q": "hide:0",
+"r": "hide:1",
+"s": "hide:2",
+"t": "pine:1",
+"u": "log:4"
+},
+"rows": [
+"......................................................i...h.....",
+"....aaa.............................aaaaaa........i...r...r.....",
+"..aaiihaa...........aaaaaa........aaiiihhbbbb.....r...r.i.r..h..",
+".aiiihhhga.aaa.....aiiihhgaa.....aiiihhhgssrrbb...r.h.s.r.r..r..",
+".aiihhhggfaihha...aiihhhgemmaa..aiihhhggesrqrsrb..s.r.r.r.s..r..",
+"aiihhhggfeaiihga..aihhggemmlka..aihhggfesrqpqrsb..r.r.r.s.r.ir..",
+"aihhhggffeihhhga..ahhgfemmllka..aehggfersrqqrssb..r.s.r.r.r.rq..",
+"ahhggeffechhhgfa..agfemmlllkka..bneeffesrrrrssob..q.r.q.r.q.rq..",
+"aeggfectdcehggfa..aeemmllklkja..bonneessssssoonb..r.r.r.q.r.rq..",
+"acefecdctdcegffa..ammlllkllkja..bpoonnnnnnnnodnb..q.q.r.r.q.qq..",
+"atcdctcdcctcefea..amlllkkjkkja..bpodopoddodndnnb..q.q.q.q.q.qq..",
+"acdtcdtctdcdctca..allkjlkkkjja..bpodopoddodndnnb..qaqiqiqhqaqqa.",
+"atcdcctdccdtcdca..alkkkkjkjjja..bupdopodoodndnnb.aqiiihihhhgqgfa",
+"actcdtccdtccdcta..akkjkkjjjjja..bpodopoddodndnnbaiiihhhhhgggffea",
+".acdccdtccdccta...ajjkjjjjjjaa..bpoddpoddodnnnnbahhhggeggffefeea",
+"..aaaaaaaaaaaa.....aaaaaaaaaa....bbbbbbbbbbbbbb..aaaaaaaaaaaaaa."
+],
+"door": null,
+"cells": [
+{
+"name": "bush",
+"x": 0,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "boulder-s",
+"x": 16,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "stump",
+"x": 32,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "reeds",
+"x": 48,
+"y": 0,
+"w": 16,
+"h": 16
+}
+],
+"broken": false,
+"defects": []
+}

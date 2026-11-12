@@ -1,0 +1,89 @@
+{
+"id": "i-walls-other",
+"w": 48,
+"h": 32,
+"role": "object",
+"shot": 1,
+"legend": {
+"a": "ink:0",
+"b": "log:0",
+"c": "log:1",
+"d": "log:2",
+"e": "stone:0",
+"f": "stone:1",
+"g": "stone:2",
+"h": "ink:1",
+"i": "shade:0",
+"j": "ice:0",
+"k": "ice:1",
+"l": "ice:2",
+"m": "stone:3"
+},
+"rows": [
+"aaaaaaaaaaaaaaaahhhhhhhhhhhhhhhhaaaaaaaaaaaaaaaa",
+"bbbabbbabbbabbbaeeieeeffeeieeefebbbbcbbbbbbbbbbb",
+"dcbadcbadcbadcbaiijifffgiijjifffbbbbbbbbbbccbbbb",
+"dcbaccbadcbadcbajjkjifgijjkjjiffaaaaaaaaaaaaaaaa",
+"ccbadcbadcbaccbajkljjiijjkkjjjifbbbbbbbbbbbbcbbb",
+"dcbadcbaccbadcbajkjjjieijkjjiijfbbccbbbbbbbbbbbb",
+"dcbadcbadcbadcbaijjjiefeijjiiejjbbbbbbbcbbbbbbbb",
+"dbbadcbadcbadcbafijiieffgijiefijaaaaaaaaaaaaaaaa",
+"dcbaccbadcbaccbaffiieffggfiefgjibbbbbbbbcbbbbbbb",
+"ccbadcbadcbadcbagffeiifgffeijjkibbbbbbbbbbbbbccb",
+"dcbadcbadbbadcbagfeijjiffeijkljibcbbbbbbbbbbbbbb",
+"dcbadcbaccbadcbafeijkjjieeijkjjiaaaaaaaaaaaaaaaa",
+"dcbaccbadcbadcbaeijklkjjieijjjifbbbbbbccbbbbbbbb",
+"bbbabbbabbbabbbaijjkkjjiieiijiffbbbbbbbbbbbbbcbb",
+"dddcdddddddcddddijjkjjiifeeiiffgbbbcbbbbbbbbbbbb",
+"bbbabbbbbbbabbbbfijjjiiffgeeffggaaaaaaaaaaaaaaaa",
+"bbbabbbabbbabbbaffijiieffggeifgfhhhhhhhhehhhhhhh",
+"dcbadcbadcbadcbagfiiiejiffgeijffhheehhheeehhhhhh",
+"ccbadcbadcbaccbagfeeejkjiffeijjiheeiehhheehhheeh",
+"dcbadcbaccbadcbafeeijklkjifeijkjhheehhhhhhhheeie",
+"dcbaccbadcbadcbaeeijjkkjjieeijkjhhhhhheehhhhheeh",
+"dcbadcbadcbadbbaeijjjkjjiieiijjjehhhheeeehhhhhhh",
+"ccbadcbadcbadcbaijjkjjjiiefiijjieehhheieehhhehhh",
+"dcbadbbadcbaccbaijkljjiieffeiiifehhhhheehhheeehh",
+"dcbadcbaccbadcbaijjkjiieefgfeiffhhhhhhhhhhhheehh",
+"dcbaccbadcbadcbafijjiieeffggfeefhhheehhhhehhhhhh",
+"ccbadcbadcbadcbaffiiieejiffgffeehheeeehheeehhhhe",
+"bbbabbbabbbabbbaefieeijkjiefeeijhhheiehhheehhhee",
+"mggggggemggggggekjeejkljieejkjiehhhhehhhhhhhheei",
+"gfffffgegfffffgekiehjkjiehhjkiehehhhhhhheehhhhee",
+"ffffeffffffeffffjehheliehhejiehhhhhhhheeeehhhhhh",
+"eeeeeeeeeeeeeeeeehhhehhhhhehhhhhhhhhhhhheehhhhhh"
+],
+"door": null,
+"cells": [
+{
+"name": "wall-plank",
+"x": 0,
+"y": 0,
+"w": 16,
+"h": 32
+},
+{
+"name": "wall-ice",
+"x": 16,
+"y": 0,
+"w": 16,
+"h": 32
+},
+{
+"name": "ceiling",
+"x": 32,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "ceiling-ice",
+"x": 32,
+"y": 16,
+"w": 16,
+"h": 16
+}
+],
+"broken": false,
+"defects": []
+}
