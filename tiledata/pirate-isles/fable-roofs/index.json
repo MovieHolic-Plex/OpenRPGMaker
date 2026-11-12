@@ -1,0 +1,119 @@
+{
+ "pi-boathouse": {
+  "box": [
+   0,
+   0,
+   63,
+   30
+  ],
+  "oldSha": "69ca8c9a052561d4a96845cbcc1745b158e707e30dc4202bbdb1b304100a1b5a"
+ },
+ "pi-cabin": {
+  "box": [
+   0,
+   0,
+   63,
+   38
+  ],
+  "oldSha": "2eb42e1dfa74b485e9212ec578c038aaa74fc4419ff2799d8d3b716422351be4"
+ },
+ "pi-captain-house": {
+  "box": [
+   0,
+   0,
+   95,
+   40
+  ],
+  "oldSha": "ad66957258ad1c76f130bd8c1c57edf5dc939f82a0c27c6494702de1af7c0ae7"
+ },
+ "pi-fish-shack": {
+  "box": [
+   0,
+   0,
+   47,
+   39
+  ],
+  "oldSha": "36fcaeb5e08b025c51746ff391eed032bcd8dd5c8681b0a10e3703b1c924fd5f"
+ },
+ "pi-fort-barracks": {
+  "box": [
+   0,
+   0,
+   79,
+   34
+  ],
+  "oldSha": "1262219272e6ade9a67549e7be228f0f7451349daff6f99d37dbe7d5cbecb1bd"
+ },
+ "pi-harbor-office": {
+  "box": [
+   0,
+   0,
+   79,
+   38
+  ],
+  "oldSha": "d39c35080c0e7e2cb3d6ffca85ddd2135091218235e348bae48855217fd8a8f1"
+ },
+ "pi-house-plaster": {
+  "box": [
+   0,
+   0,
+   63,
+   46
+  ],
+  "oldSha": "9c5a06b811d903b7b91d0f2a88befed9147d993f9b6324a53ed4437220bff864"
+ },
+ "pi-hut-palm": {
+  "box": [
+   1,
+   0,
+   46,
+   40
+  ],
+  "oldSha": "e0af53cd4b3bec507b91080ffcd7a6fa6acfebbf7aa7ae09d7d8e011989dcf7d"
+ },
+ "pi-hut-thatch": {
+  "box": [
+   0,
+   0,
+   47,
+   37
+  ],
+  "oldSha": "bf4310bab42fae1fe9eaca3c6e7649ea6af6f385ac8412e4a9f41240a9d81ac5"
+ },
+ "pi-longhouse": {
+  "box": [
+   1,
+   0,
+   78,
+   35
+  ],
+  "oldSha": "1055502f30812d74c0b882390276e6d3acb419d3d1d7aaff0a4b7ccb031cfb73"
+ },
+ "pi-smokehouse": {
+  "box": [
+   0,
+   0,
+   31,
+   25
+  ],
+  "oldSha": "cc40a8f820e09fda0ce3d7310ea87d219517db9eb1bfa69abd3db4267bc7d1b2"
+ },
+ "pi-tavern": {
+  "box": [
+   0,
+   0,
+   95,
+   44
+  ],
+  "oldSha": "998699ebac2ab22bdb356307266b9cb881a7cc8e241a1b5d44ea7938d5242be6"
+ },
+ "pi-warehouse": {
+  "box": [
+   0,
+   0,
+   79,
+   32
+  ],
+  "oldSha": "d41ad482cbdce1fc1ce6f72f8583a9813394e77bba2baa51fc1d2c210ede96b4"
+ }
+}

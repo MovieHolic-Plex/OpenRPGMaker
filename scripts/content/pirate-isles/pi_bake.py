@@ -109,7 +109,8 @@ def bake(dry=False):
                         tags=['해적 군도', GROUP_KO[p['group']]] + p['tags'], rep='auto' if (blob or a4) else ('repeat' if p['kind'] == 'terrain' else 'fixed'))
             key = f"{p['id']}/{x}.{y}"
             k2 = (crop.tobytes(), pc)
-            if k2 in dedupe and not (blob or a4): tid = dedupe[k2]
+            # 이미 번호를 받은 자리 키는 그림이 다른 칸과 같아져도 제 번호를 지킨다 — 합치면 그 번호가 빈 칸이 되어 이미 깔린 맵에 구멍이 난다(2026-11-12 직각 지붕: 술집 지붕 529 번).
+            if k2 in dedupe and not (blob or a4) and key not in pins.map: tid = dedupe[k2]
             else:
                 tid = pins.assign(key); img[tid] = crop; info[tid] = dict(meta, pc=pc); dedupe.setdefault(k2, tid)
             cells[(x, y)] = (tid, pc)
