@@ -1,0 +1,373 @@
+{
+ "_doc": "atlas_biome_interior 이야기 기물 8종 — Claude Fable 5.2 medium 한 방 그림(이 프로젝트를 위해 그린 자체 저작, 색은 실내 시트에서 뽑음). 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12. pieces/<src> 는 한 화소도 바꾸지 않는다(바꾸면 면제가 풀리고 굽기가 그 조각을 막는다). scripts/content/interior-plus/pieces/oneshot.py 가 이 목록을 interior-plus 조각으로 싣는다(REG.picture) — 새 항목은 items 끝에만(칸 번호는 tiledata/hand-interior/plus/pins.json, 덧붙이기 전용). kind = 관문 종류(면제 기록과 같아야 한다) · w,h = 그림 칸 수 · place = stamp_tileset_object 의 놓는 법(킷 태그) · block = 그림 안 막힌 칸 · piece = interior-plus 사양(floor: 발밑 w×h + up px 솟음 / hang: 벽면 걸이 rows 줄 / flat: 밟는 바닥 그림) · rooms = 사양 tags(어울리는 방) · words = 킷 태그(게임이 부르는 이름).",
+ "waiver": "fable-oneshot-2026-11-12",
+ "license": "drawn by Claude Fable 5.2 for this project (own work)",
+ "kitPrefix": "hand-interior:",
+ "items": [
+  {
+   "id": "wall shackles",
+   "src": "in-shackles.png",
+   "name": "족쇄(벽 사슬 — 쇠판에 긴 사슬 두 줄)",
+   "en": "wall shackles",
+   "kind": "wall_mounted",
+   "w": 1,
+   "h": 2,
+   "place": "wallmount",
+   "block": [],
+   "piece": {
+    "kind": "hang",
+    "w": 1,
+    "h": 0,
+    "up": 0,
+    "rows": 2
+   },
+   "cat": "dungeon",
+   "use": [
+    "block"
+   ],
+   "rooms": [
+    "지하 감옥",
+    "감방",
+    "감옥",
+    "고문실"
+   ],
+   "pair": [
+    "straw cot",
+    "cell bars",
+    "slop bucket"
+   ],
+   "words": [
+    "족쇄",
+    "벽 사슬",
+    "벽 족쇄",
+    "쇠사슬",
+    "감방 소품",
+    "shackles"
+   ],
+   "desc": "벽에 박은 쇠판과 고리에서 긴 사슬 두 줄이 늘어지고 끝에 열린 수갑이 달렸다. 벽면 두 줄을 덮는 걸이(바닥 칸은 차지하지 않는다).",
+   "short": "쇠판·고리에서 늘어진 긴 사슬 두 줄과 열린 수갑(벽면 두 줄 걸이).",
+   "rule": "감방 북쪽 벽면 윗줄에 건다(벽면 두 줄을 덮는다). 짚 침상 위쪽·옆."
+  },
+  {
+   "id": "straw cot",
+   "src": "in-straw-cot.png",
+   "name": "짚 침상(감방 — 짚더미·기운 담요·베개)",
+   "en": "prison straw pallet",
+   "kind": "low_furniture",
+   "w": 1,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "piece": {
+    "kind": "floor",
+    "w": 1,
+    "h": 2,
+    "up": 0
+   },
+   "cat": "dungeon",
+   "use": [
+    "sleep"
+   ],
+   "rooms": [
+    "감방",
+    "지하 감옥",
+    "감옥",
+    "쉼터"
+   ],
+   "pair": [
+    "wall shackles",
+    "slop bucket",
+    "cell bars"
+   ],
+   "words": [
+    "짚 침상",
+    "감옥 침상",
+    "감방 침상",
+    "감방 소품",
+    "straw cot"
+   ],
+   "desc": "바닥에 깐 짚더미 위에 기운 회갈색 담요와 납작한 베개 — 틀 없는 감방 잠자리(1×2, 머리가 북쪽).",
+   "short": "바닥 짚더미에 기운 담요·납작 베개 — 틀 없는 감방 잠자리(1×2).",
+   "rule": "감방 벽가에 세로로. 두 칸 모두 막힘. 앞(옆) 한 칸은 비운다."
+  },
+  {
+   "id": "cell bars",
+   "src": "in-cell-bars.png",
+   "name": "감옥 철창(칸 — 쇠창살 벽 한 칸)",
+   "en": "prison cell bars",
+   "kind": "front_prop",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "piece": {
+    "kind": "floor",
+    "w": 1,
+    "h": 1,
+    "up": 16
+   },
+   "cat": "dungeon",
+   "use": [
+    "block"
+   ],
+   "rooms": [
+    "감방",
+    "지하 감옥",
+    "감옥",
+    "간수실"
+   ],
+   "pair": [
+    "cell bars door",
+    "wall shackles",
+    "straw cot"
+   ],
+   "words": [
+    "철창",
+    "감옥 철창",
+    "쇠창살",
+    "감방 철창",
+    "cell bars"
+   ],
+   "desc": "윗 가로대·둥근 쇠창살 넷·가운데 띠·아래 문턱으로 된 감옥 철창 한 칸. 가로대와 문턱이 양 끝까지 차 있어 옆으로 이어 세우면 한 줄 철창이 된다. 아랫칸 막힘, 윗칸은 사람 위에 그려진다.",
+   "short": "쇠창살 넷·가로대·문턱의 철창 한 칸 — 옆으로 이어 세운다(16px 솟음).",
+   "rule": "감방과 복도 사이 트인 줄에 옆으로 이어 세운다. 한 칸은 cell bars door."
+  },
+  {
+   "id": "cell bars door",
+   "src": "in-cell-door.png",
+   "name": "감옥 철창 문(잠긴 쇠창살 문)",
+   "en": "prison cell barred door",
+   "kind": "front_prop",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "piece": {
+    "kind": "floor",
+    "w": 1,
+    "h": 1,
+    "up": 16
+   },
+   "cat": "dungeon",
+   "use": [
+    "gate"
+   ],
+   "rooms": [
+    "감방",
+    "지하 감옥",
+    "감옥",
+    "간수실"
+   ],
+   "pair": [
+    "cell bars",
+    "floor key",
+    "key ring hook"
+   ],
+   "words": [
+    "철창 문",
+    "감옥 문",
+    "감옥 철창 문",
+    "감방 문",
+    "cell door"
+   ],
+   "desc": "굵은 문틀에 쇠창살 셋, 경첩 둘, 열쇠 구멍 판이 달린 감옥 철창 문(닫힘). 철창 칸(cell bars)과 한 벌. 아랫칸 막힘, 윗칸은 사람 위에 그려진다.",
+   "short": "문틀·쇠창살 셋·경첩·열쇠 구멍 판의 닫힌 철창 문(16px 솟음).",
+   "rule": "철창 줄 가운데 한 칸. 여는 이벤트는 아랫칸에. 앞뒤 한 칸씩 비운다."
+  },
+  {
+   "id": "ledger stand",
+   "src": "in-ledger-stand.png",
+   "name": "기록부(받침 위 펼친 장부)",
+   "en": "ledger on a reading stand",
+   "kind": "low_furniture",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "piece": {
+    "kind": "floor",
+    "w": 1,
+    "h": 1,
+    "up": 16
+   },
+   "cat": "study",
+   "use": [
+    "read"
+   ],
+   "rooms": [
+    "여관",
+    "서재",
+    "간수실",
+    "관청"
+   ],
+   "pair": [
+    "lectern",
+    "notice board"
+   ],
+   "words": [
+    "기록부",
+    "기록장",
+    "장부",
+    "받침 위 책",
+    "ledger"
+   ],
+   "desc": "나무 받침대 위 기울인 상판에 펼친 장부(두 쪽에 글 줄, 붉은 끈). 성경대(lectern)와 같은 나무색. 아랫칸 막힘, 윗칸은 사람 위에 그려진다.",
+   "short": "나무 받침대에 펼친 장부(붉은 끈) — 읽는 기록부(16px 솟음).",
+   "rule": "계산대 옆·현관 벽가·간수실 문 옆에 하나. 읽는 이벤트는 아랫칸에."
+  },
+  {
+   "id": "observation bench",
+   "src": "in-observation-bench.png",
+   "name": "관측 작업대(망원경·도면·모래시계)",
+   "en": "observation workbench",
+   "kind": "low_furniture",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "piece": {
+    "kind": "floor",
+    "w": 2,
+    "h": 1,
+    "up": 16
+   },
+   "cat": "observatory",
+   "use": [
+    "search"
+   ],
+   "rooms": [
+    "관측실",
+    "천문대",
+    "서재",
+    "작업실"
+   ],
+   "pair": [
+    "lens bench",
+    "celestial chart"
+   ],
+   "words": [
+    "관측 작업대",
+    "관측대",
+    "관측 책상",
+    "observation bench"
+   ],
+   "desc": "서랍 달린 나무 작업대 위에 삼각대 망원경, 물줄기가 그려진 도면, 눈금 자, 모래시계, 잉크병. 강·별을 살피는 사람의 작업대(2칸 폭). 아랫줄 막힘, 윗줄은 사람 위에 그려진다.",
+   "short": "작업대 위 삼각대 망원경·도면·모래시계·잉크병(2칸 폭, 16px 솟음).",
+   "rule": "창가·벽가에 하나. 살피는 이벤트는 아랫줄 칸에 «같은 높이·결정 키». 앞 한 줄 비운다."
+  },
+  {
+   "id": "floor key",
+   "src": "in-key.png",
+   "name": "열쇠(바닥에 떨어진 금빛 열쇠)",
+   "en": "key on the floor",
+   "kind": "debris",
+   "w": 1,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "piece": {
+    "kind": "flat",
+    "w": 1,
+    "h": 1,
+    "up": 0
+   },
+   "cat": "dungeon",
+   "use": [
+    "key"
+   ],
+   "rooms": [
+    "감방",
+    "지하 감옥",
+    "침실",
+    "창고"
+   ],
+   "pair": [
+    "cell bars door",
+    "key ring hook"
+   ],
+   "words": [
+    "열쇠",
+    "떨어진 열쇠",
+    "금빛 열쇠",
+    "key"
+   ],
+   "desc": "고리·자루·이가 분명한 금빛 열쇠에 붉은 끈. 바닥에 떨어진 것(밟고 지나간다).",
+   "short": "붉은 끈 달린 금빛 열쇠 — 바닥에 떨어진 것(밟음).",
+   "rule": "이야기가 부르는 자리의 바닥 한 칸. 줍는 이벤트는 그 칸에 «플레이어 아래». 가구 밑·문턱 칸 금지."
+  },
+  {
+   "id": "floor note",
+   "src": "in-note.png",
+   "name": "쪽지(바닥에 떨어진 접힌 종이)",
+   "en": "note on the floor",
+   "kind": "debris",
+   "w": 1,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "piece": {
+    "kind": "flat",
+    "w": 1,
+    "h": 1,
+    "up": 0
+   },
+   "cat": "story",
+   "use": [
+    "read"
+   ],
+   "rooms": [
+    "침실",
+    "서재",
+    "감방",
+    "여관"
+   ],
+   "pair": [
+    "ledger stand",
+    "mailbox"
+   ],
+   "words": [
+    "쪽지",
+    "메모",
+    "편지",
+    "종이",
+    "note"
+   ],
+   "desc": "접힌 크림색 종이 두 장에 글 줄, 붉은 봉랍 점. 바닥에 떨어진 것(밟고 지나간다).",
+   "short": "접힌 크림색 종이와 붉은 봉랍 — 바닥에 떨어진 쪽지(밟음).",
+   "rule": "침대 발치·책상 옆·문 앞 바닥 한 칸. 읽는 이벤트는 그 칸에 «플레이어 아래»."
+  }
+ ]
+}

@@ -1,0 +1,474 @@
+{
+ "chipset": "atlas_biome_interior",
+ "fresh": {
+  "kits": 8,
+  "of": 8,
+  "count": 7693,
+  "referenceDocs": [
+   "hand-interior-v5/hand-interior-v5-objects-dungeon",
+   "hand-interior-v5/hand-interior-v5-objects-study",
+   "hand-interior-v5/hand-interior-v5-objects-observatory",
+   "hand-interior-v5/hand-interior-v5-objects-magitek-monster-stable-story"
+  ],
+  "tablesMatchCount": true
+ },
+ "sheet": [
+  {
+   "id": "hand-interior:wall shackles",
+   "name": "족쇄(벽 사슬 — 쇠판에 긴 사슬 두 줄)",
+   "size": "1×2",
+   "kind": "wall_mounted",
+   "place": "wallmount",
+   "cells": [
+    7677,
+    7678
+   ],
+   "blocked": "없음(밟고 지나감)"
+  },
+  {
+   "id": "hand-interior:straw cot",
+   "name": "짚 침상(감방 — 짚더미·기운 담요·베개)",
+   "size": "1×2",
+   "kind": "low_furniture",
+   "place": "prop",
+   "cells": [
+    7679,
+    7680
+   ],
+   "blocked": "(0,0) (0,1)"
+  },
+  {
+   "id": "hand-interior:cell bars",
+   "name": "감옥 철창(칸 — 쇠창살 벽 한 칸)",
+   "size": "1×2",
+   "kind": "front_prop",
+   "place": "tall",
+   "cells": [
+    7681,
+    7682
+   ],
+   "blocked": "(0,1)"
+  },
+  {
+   "id": "hand-interior:cell bars door",
+   "name": "감옥 철창 문(잠긴 쇠창살 문)",
+   "size": "1×2",
+   "kind": "front_prop",
+   "place": "tall",
+   "cells": [
+    7683,
+    7684
+   ],
+   "blocked": "(0,1)"
+  },
+  {
+   "id": "hand-interior:ledger stand",
+   "name": "기록부(받침 위 펼친 장부)",
+   "size": "1×2",
+   "kind": "low_furniture",
+   "place": "tall",
+   "cells": [
+    7685,
+    7686
+   ],
+   "blocked": "(0,1)"
+  },
+  {
+   "id": "hand-interior:observation bench",
+   "name": "관측 작업대(망원경·도면·모래시계)",
+   "size": "2×2",
+   "kind": "low_furniture",
+   "place": "tall",
+   "cells": [
+    7687,
+    7688,
+    7689,
+    7690
+   ],
+   "blocked": "(0,1) (1,1)"
+  },
+  {
+   "id": "hand-interior:floor key",
+   "name": "열쇠(바닥에 떨어진 금빛 열쇠)",
+   "size": "1×1",
+   "kind": "debris",
+   "place": "decal",
+   "cells": [
+    7691
+   ],
+   "blocked": "없음(밟고 지나감)"
+  },
+  {
+   "id": "hand-interior:floor note",
+   "name": "쪽지(바닥에 떨어진 접힌 종이)",
+   "size": "1×1",
+   "kind": "debris",
+   "place": "decal",
+   "cells": [
+    7692
+   ],
+   "blocked": "없음(밟고 지나감)"
+  }
+ ],
+ "cellGate": {
+  "baseSheet": "768×2560",
+  "sheet": "768×2576",
+  "newCells": 16,
+  "newCellIndexes": [
+   7677,
+   7678,
+   7679,
+   7680,
+   7681,
+   7682,
+   7683,
+   7684,
+   7685,
+   7686,
+   7687,
+   7688,
+   7689,
+   7690,
+   7691,
+   7692
+  ],
+  "bundleUncovered": 0,
+  "storeUncovered": 16
+ },
+ "existing": {
+  "source": "/home/main/z-project/rpg-zzu-fs2-frost/.oprn-projects/fallen-star",
+  "kitsAsLoaded": 0,
+  "countAsLoaded": 7682,
+  "kitsAfterEnsure": 8,
+  "countAfterEnsure": 7730,
+  "mapsOnThisChipset": 20,
+  "localGraftsAsLoaded": [
+   7680,
+   7681
+  ],
+  "localGraftsAfterEnsure": [
+   7728,
+   7729
+  ],
+  "mapPicturesUnchanged": true,
+  "reopenedPicturesSame": true,
+  "save": "saved",
+  "reopenedKits": 8,
+  "reopenedStable": true,
+  "referenceDocsAfterEnsure": [
+   "hand-interior-v5/hand-interior-v5-objects-dungeon",
+   "hand-interior-v5/hand-interior-v5-objects-study",
+   "hand-interior-v5/hand-interior-v5-objects-observatory",
+   "hand-interior-v5/hand-interior-v5-objects-magitek-monster-stable-story"
+  ]
+ },
+ "words": [
+  {
+   "object": "wall shackles",
+   "word": "족쇄",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "2/2",
+   "draw_object": "후보에 있음(첫째는 hand-interior:shackles)"
+  },
+  {
+   "object": "wall shackles",
+   "word": "벽 사슬",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "1/5",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "wall shackles",
+   "word": "감방 소품",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "16/17",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "straw cot",
+   "word": "짚 침상",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "1/3",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "straw cot",
+   "word": "감옥 침상",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "2/3",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "cell bars",
+   "word": "철창",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "1/8",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "cell bars",
+   "word": "감옥 철창",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "1/4",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "cell bars door",
+   "word": "감옥 철창 문",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "1/4",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "cell bars door",
+   "word": "철창 문",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "1/8",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "ledger stand",
+   "word": "기록부",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "ledger stand",
+   "word": "기록장",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "없음(0건)",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "ledger stand",
+   "word": "장부",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "observation bench",
+   "word": "관측 작업대",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "1/2",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "floor key",
+   "word": "열쇠",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "1/12",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "floor note",
+   "word": "쪽지",
+   "listTool": "list_hand_interior_parts",
+   "list_tileset_objects": "1/3",
+   "draw_object": "이 기물을 이른다(첫째)"
+  }
+ ],
+ "map": {
+  "tool": "build_hand_interior_room",
+  "args": {
+   "name": "지하 감옥",
+   "plan": [
+    "######################",
+    "#......#......#......#",
+    "#......#......#......#",
+    "#......#......#......#",
+    "#......#......#......#",
+    "#......#......#......#",
+    "##..#####..#####..####",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "##########.###########"
+   ],
+   "floor": "dungeon",
+   "wall": "dungeonw",
+   "objects": [
+    {
+     "id": "wall shackles",
+     "x": 2,
+     "y": 1
+    },
+    {
+     "id": "straw cot",
+     "x": 5,
+     "y": 3
+    },
+    {
+     "id": "cell bars",
+     "x": 2,
+     "y": 6
+    },
+    {
+     "id": "cell bars door",
+     "x": 3,
+     "y": 6
+    },
+    {
+     "id": "cell bars",
+     "x": 9,
+     "y": 6
+    },
+    {
+     "id": "cell bars door",
+     "x": 10,
+     "y": 6
+    },
+    {
+     "id": "floor key",
+     "x": 11,
+     "y": 4
+    },
+    {
+     "id": "floor note",
+     "x": 12,
+     "y": 5
+    },
+    {
+     "id": "observation bench",
+     "x": 16,
+     "y": 3
+    },
+    {
+     "id": "ledger stand",
+     "x": 19,
+     "y": 3
+    }
+   ]
+  },
+  "size": "22×14",
+  "start": {
+   "x": 10,
+   "y": 13
+  }
+ },
+ "placed": [
+  {
+   "object": "observation bench",
+   "kit": "hand-interior:observation bench",
+   "asked": "(10,9)",
+   "at": "(10,9)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,1) (1,1)",
+   "tool": "hand-interior:observation bench 를 (10,10)에 놓았다"
+  },
+  {
+   "object": "wall shackles",
+   "kit": "hand-interior:wall shackles",
+   "asked": "(8,7)",
+   "at": "(8,7)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "없음 (벽면 위 걸이 — 그 칸은 벽이 막는다)",
+   "tool": "hand-interior:wall shackles 를 (8,8)에 놓았다"
+  },
+  {
+   "object": "straw cot",
+   "kit": "hand-interior:straw cot",
+   "asked": "(13,9)",
+   "at": "(13,9)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,0) (0,1)",
+   "tool": "hand-interior:straw cot 를 (13,10)에 놓았다"
+  },
+  {
+   "object": "cell bars",
+   "kit": "hand-interior:cell bars",
+   "asked": "(6,9)",
+   "at": "(6,9)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,1)",
+   "tool": "hand-interior:cell bars 를 (6,10)에 놓았다"
+  },
+  {
+   "object": "cell bars door",
+   "kit": "hand-interior:cell bars door",
+   "asked": "(15,9)",
+   "at": "(15,9)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,1)",
+   "tool": "hand-interior:cell bars door 를 (15,10)에 놓았다"
+  },
+  {
+   "object": "ledger stand",
+   "kit": "hand-interior:ledger stand",
+   "asked": "(4,9)",
+   "at": "(4,9)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,1)",
+   "tool": "hand-interior:ledger stand 를 (4,10)에 놓았다"
+  },
+  {
+   "object": "floor key",
+   "kit": "hand-interior:floor key",
+   "asked": "(8,11)",
+   "at": "(8,11)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "tool": "hand-interior:floor key 를 (8,11)에 놓았다"
+  },
+  {
+   "object": "floor note",
+   "kit": "hand-interior:floor note",
+   "asked": "(17,9)",
+   "at": "(17,9)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "tool": "hand-interior:floor note 를 (17,9)에 놓았다"
+  }
+ ],
+ "scene": {
+  "crop": "칸 (0,0)–(21,13)",
+  "size": "352×224",
+  "heroes": [
+   {
+    "x": 8,
+    "y": 9,
+    "why": "wall shackles 아래(벽 걸이)"
+   },
+   {
+    "x": 10,
+    "y": 11,
+    "why": "observation bench 앞"
+   },
+   {
+    "x": 9,
+    "y": 11,
+    "why": "floor key 옆(밟고 지나가는 바닥 그림)"
+   },
+   {
+    "x": 18,
+    "y": 9,
+    "why": "floor note 옆(밟고 지나가는 바닥 그림)"
+   },
+   {
+    "x": 7,
+    "y": 10,
+    "why": "cell bars 옆"
+   }
+  ]
+ }
+}

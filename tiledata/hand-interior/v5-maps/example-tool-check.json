@@ -37,7 +37,7 @@
  },
  {
   "map": "scholar",
-  "errors": 0,
+  "errors": 1,
   "warnings": 0,
   "reachable": 64
  },
@@ -49,13 +49,13 @@
  },
  {
   "map": "tavern",
-  "errors": 0,
+  "errors": 1,
   "warnings": 0,
   "reachable": 92
  },
  {
   "map": "manor_1f",
-  "errors": 0,
+  "errors": 4,
   "warnings": 0,
   "reachable": 178
  },
@@ -73,7 +73,7 @@
  },
  {
   "map": "inn",
-  "errors": 0,
+  "errors": 1,
   "warnings": 0,
   "reachable": 144
  },
