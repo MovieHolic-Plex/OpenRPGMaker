@@ -399,16 +399,40 @@ export class TodoStore {
     let phase = "";
     for (const item of this.items.slice(0, maxItems)) {
       if (item.phase !== phase) { phase = item.phase; lines.push(`[${PHASE_EN[phase] ?? phase}]`); }
-      const m = this.meta.get(item.id);
-      const check = item.check && item.check.kind !== "none" ? ` · check: ${checkLabel(item.check, true)}${m?.lastCheck ? (m.lastCheck.pass ? " ✓" : ` ✗ ${clip(m.lastCheck.en ?? m.lastCheck.detail, 90)}`) : ""}` : "";
-      const why = item.blockedReason ? ` — ${item.blockedReason}` : "";
-      const bound = refsLabel(item.refs, true);
-      const src = item.source === "model" ? "" : ` (${item.source === "gate" ? "function check" : item.source === "critic" ? "critic" : "screen review"})`;
-      lines.push(` ${MARK_EN[item.status]} ${item.id} ${modelText(item)}${src}${check}${bound ? ` · ${bound}` : ""}${item.attempts ? ` · attempts ${item.attempts}` : ""}${why}`);
+      lines.push(this.lineEn(item));
     }
     if (this.items.length > maxItems) lines.push(` …${this.items.length - maxItems} more items`);
     return lines.join("\n");
   }
+
+  private lineEn(item: TodoItem): string {
+    const m = this.meta.get(item.id);
+    const check = item.check && item.check.kind !== "none" ? ` · check: ${checkLabel(item.check, true)}${m?.lastCheck ? (m.lastCheck.pass ? " ✓" : ` ✗ ${clip(m.lastCheck.en ?? m.lastCheck.detail, 90)}`) : ""}` : "";
+    const why = item.blockedReason ? ` — ${item.blockedReason}` : "";
+    const bound = refsLabel(item.refs, true);
+    const src = item.source === "model" ? "" : ` (${item.source === "gate" ? "function check" : item.source === "critic" ? "critic" : "screen review"})`;
+    return ` ${MARK_EN[item.status]} ${item.id} ${modelText(item)}${src}${check}${bound ? ` · ${bound}` : ""}${item.attempts ? ` · attempts ${item.attempts}` : ""}${why}`;
+  }
+
+  /**
+   * 항목 하나를 고친 뒤 모델이 받는 짧은 목록(영어): 세는 줄 + 그 항목 + 아직 열린 항목(순서대로 maxOpen 개). 끝난·막힌·뺀 항목은 수로만 남는다.
+   * 왜(2026-11-12 Haiku 게임 하나 r1v-fun 실측): todo 를 91번 불렀고 결과마다 목록 전체(평균 6.7천 자)가 돌아와, 대화에 쌓여 뒤 호출들이 다시 읽은 것이
+   * 그 판 입력의 8.7% 였다(도구 결과 가운데 가장 큰 몫). 모델이 다음에 할 일을 고르는 데 필요한 것은 방금 고친 줄과 열린 줄이다 — 전체는 `todo view` 가 준다.
+   * 목록이 짧으면(SHORT_LIST 이하) 전체가 더 싸고 분명하니 전체를 준다.
+   */
+  viewFocusEn(focusId: string | undefined, maxOpen = 8): string {
+    if (this.items.length <= TodoStore.SHORT_LIST || !focusId) return this.viewEn(40);
+    const c = this.counts();
+    const lines = [`Todo ${c.done}/${c.total} done · ${c.open} open${c.blocked ? ` · ${c.blocked} blocked` : ""}${c.dropped ? ` · ${c.dropped} dropped` : ""}`];
+    const focus = this.items.find((i) => i.id === focusId);
+    if (focus) lines.push(this.lineEn(focus));
+    const open = this.items.filter((i) => isOpen(i.status) && i.id !== focusId);
+    for (const item of open.slice(0, maxOpen)) lines.push(this.lineEn(item));
+    const hidden = this.items.length - (focus ? 1 : 0) - Math.min(open.length, maxOpen);
+    if (hidden > 0) lines.push(` …${hidden} more not shown (${open.length > maxOpen ? `${open.length - maxOpen} open, ` : ""}the rest done, blocked or dropped) — todo view shows the whole list`);
+    return lines.join("\n");
+  }
+  static readonly SHORT_LIST = 10;
 
   serialize(task: string): AssistantTodoState {
     return { version: 1, task: clip(task, 1500), at: Date.now(), items: this.items.map((i) => ({ ...i, ...(i.dependsOn ? { dependsOn: [...i.dependsOn] } : {}) })), meta: Object.fromEntries([...this.meta].map(([k, v]) => [k, { ...v }])),

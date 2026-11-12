@@ -3,7 +3,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 1198,
+  "tiles_checked": 1240,
   "kits_checked": 166,
   "groups_checked": 38,
   "autotiles_checked": 12
@@ -17,8 +17,8 @@
   "cells_off_palette": 0
  },
  "tiles": {
-  "count": 1198,
-  "rows": 25,
+  "count": 1240,
+  "rows": 26,
   "kits": 166,
   "groups": 38,
   "autotiles": 12

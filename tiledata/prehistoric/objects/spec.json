@@ -1,0 +1,72 @@
+{
+ "_doc": "prehistoric 이야기 기물 2종 — Claude Fable 5.2 medium 한 방 그림(이 프로젝트를 위해 그린 자체 저작, 색은 prehistoric 시트에서 뽑음). 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12. pieces/<src> 는 한 화소도 바꾸지 않는다(바꾸면 면제가 풀리고 굽기가 그 조각을 막는다). 굽기 scripts/content/prehistoric/bake_ph.py 가 등록부 조각 뒤에 이 목록을 덧붙인다 — 새 항목은 items 끝에만(칸 번호는 자리 키 핀, 덧붙이기 전용). 키트 id = ph-<id>. place: prop·tall = 서 있는 기물(block 칸 막힘, 나머지 칸 ★) · decal = 밟고 지나가는 바닥 그림.",
+ "waiver": "fable-oneshot-2026-11-12",
+ "license": "drawn by Claude Fable 5.2 for this project (own work)",
+ "items": [
+  {
+   "id": "trail-marker",
+   "src": "ph-marker.png",
+   "name": "표식(돌·뼈 길 표식)",
+   "en": "bone and stone trail marker",
+   "kind": "organic",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "표식",
+    "뼈 표식",
+    "돌 표식",
+    "길 표식",
+    "돌무더기",
+    "trail marker",
+    "marker"
+   ],
+   "desc": "납작한 돌 셋 위에 세워 꽂은 뼈, 붉은 황토 칠. 길·사냥터·금기 자리를 알리는 표식.",
+   "rule": "갈림길 모퉁이·동굴 입구 옆·사냥터 가장자리·금기 자리 앞의 흙·풀 위에. 한 칸 막힘. 살피는 이벤트는 그 칸에 «같은 높이·결정 키». 집 문 앞 접근칸·길 한가운데·물 위 금지."
+  },
+  {
+   "id": "spring",
+   "src": "ph-spring.png",
+   "name": "샘(바위 샘)",
+   "en": "rock spring",
+   "kind": "container",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "샘",
+    "바위 샘",
+    "샘물",
+    "물이 솟는 샘",
+    "옹달샘",
+    "spring"
+   ],
+   "desc": "이끼 낀 바위 테 안에 짙은 푸른 물과 물결 고리, 앞으로 흐르는 물줄기, 고사리. 네 칸 모두 막힘.",
+   "rule": "마을 빈터 가장자리·숲속 빈터·동굴 앞의 흙·풀 위에. 네 칸 모두 막힘, 둘레 한 칸은 걷는 바닥으로 비운다. 마시는·살피는 이벤트는 아랫줄 칸에 «같은 높이·결정 키». 집 문 앞 접근칸·길 한가운데·물·용암 위 금지."
+  }
+ ]
+}

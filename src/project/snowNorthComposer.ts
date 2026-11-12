@@ -291,12 +291,16 @@ class Board {
     for (const a of access) { this.paintCell(pathGround, a.x, a.y, "path"); this.reserve({ x: a.x, y: a.y, w: 1, h: 2 }); }
     const b = { name: BUILDING_NAME[kitId] ?? kitId, kit: kitId, rect: { x, y, w: kit.width, h: kit.height }, doors, access };
     this.buildings.push(b);
-    // 굴뚝 연기(건물 위 두 칸) — 그 칸이 비었을 때만
+    // 지붕을 낮춰 맨 윗줄이 통째로 빈 키트(2026-11-12 지붕 높이): 연기는 빈 줄만큼 내려 지붕 바로 위에 놓고, 그 빈 줄은 예약한다(걷는 땅이지만 소품·길을 놓지 않는다).
+    let top = 0;
+    while (top < kit.height - 1 && kit.rows[top]!.tiles.every((t, c) => t < 0 && (kit.rows[top]!.upperTiles?.[c] ?? -1) < 0)) top++;
+    // 굴뚝 연기(지붕 위 두 칸) — 그 칸이 비었을 때만
     const sx = SMOKE_X[kitId];
-    if (sx !== undefined && y >= 2 && this.has("sn-smoke")) {
-      const r = { x: x + sx, y: y - 2, w: 1, h: 2 };
+    if (sx !== undefined && y + top >= 2 && this.has("sn-smoke")) {
+      const r = { x: x + sx, y: y + top - 2, w: 1, h: 2 };
       if (this.free(r, 0, [...OPEN_USES, "path", "plaza", "market", "pen", "ice"])) { this.stamp("sn-smoke", r.x, r.y, "prop"); this.reserve(r); }
     }
+    if (top) this.reserve({ x, y, w: kit.width, h: top });
     return b;
   }
   /** 건물을 놓을 수 있나(발자국 + 여백 1 + 문 앞 두 칸이 걷는 땅). */
