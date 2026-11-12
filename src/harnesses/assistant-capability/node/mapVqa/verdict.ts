@@ -24,11 +24,12 @@ export type MapReview = {
   /** 없는 그림 장부용 둘째 물음(artGaps.ts)의 답. 묻지 않았으면 없다. */
   art?: ArtReview;
 };
-export type Reviewer = { version: string; system: string; classes: Record<string, string> };
+/** sameQuestionAs = 지시문 글이 같은 앞 판들(reviewer.json) — 글·그림이 화소까지 같은 물음은 그 판의 답을 이어 쓴다(visualJudge.ts). */
+export type Reviewer = { version: string; system: string; classes: Record<string, string>; sameQuestionAs: string[] };
 
 export function loadReviewer(): Reviewer {
   const seed = JSON.parse(readFileSync(resolve(MAP_VQA_DATA, 'reviewer.json'), 'utf8'));
-  return { version: seed.version, system: (seed.system as string[]).join('\n'), classes: seed.classes };
+  return { version: seed.version, system: (seed.system as string[]).join('\n'), classes: seed.classes, sameQuestionAs: Array.isArray(seed.sameQuestionAs) ? seed.sameQuestionAs.map(String) : [] };
 }
 
 /** 검수자 답 → 결함 목록. 종류·심각도·영역이 형식에 안 맞으면 null(그 호출을 다시 한다). */
@@ -74,6 +75,12 @@ export function buildTally(reviews: MapReview[], meta: Record<string, unknown>, 
     ranked, byClass, perCorpus: Object.fromEntries(corpora.map(corpus => { const list = reviews.filter(review => review.group.split(':')[0] === corpus); return [corpus, { ...count(list), byClass: classCounts(list.filter(review => review.status === 'reviewed')) }]; })), perGroup: Object.fromEntries(groups.map(group => [group, count(reviews.filter(review => review.group === group))])),
     maps: reviews.map(review => ({ id: review.id, group: review.group, label: review.label, name: review.map.name, size: `${review.map.width}x${review.map.height}`, tilesetId: review.map.tilesetId, status: review.status, pictureSha256: review.pictureSha256,
       blocker: review.defects.filter(defect => defect.severity === 'blocker').length, major: review.defects.filter(defect => defect.severity === 'major').length, polish: review.defects.filter(defect => defect.severity === 'polish').length, defects: review.defects })) };
+}
+
+/** 보정 기록의 «이어 쓴 답» 한 줄 — «보정됨» 을 적는 곳마다 붙인다(48장을 새로 물은 것으로 읽지 않게). 이어 쓴 것이 없으면 빈 글. */
+export function carriedNote(calibration: any): string {
+  const answers = Number(calibration?.carried?.answers ?? 0), total = Number(calibration?.planted?.total ?? 0) + Number(calibration?.good?.total ?? 0);
+  return answers > 0 ? `${total}장 중 ${answers}장은 ${(calibration.carried.from ?? []).join('·') || '앞 판'} 의 답을 이어 씀(물음이 화소까지 같다) · 새로 물은 것 ${total - answers}장` : '';
 }
 
 /** 보정 기록(harness-data/…/map-vqa/calibration/<판>.json)에서 이 지시문 판의 놓침·헛경보 비율. 없으면 null — 숫자에 «보정 전»이라고 붙인다. */

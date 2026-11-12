@@ -1,0 +1,38 @@
+{
+"unit": "g-landing-plate",
+"name": "concrete landing plate, 2 tiles",
+"w": 32,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "g_road:1",
+"b": "g_road:2",
+"c": "g_road:3",
+"d": "g_road:0",
+"y": "a_yellow:0",
+"o": "a_orange:0",
+"p": "a_orange:1"
+},
+"rows": [
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"acccccccccccccccaccccccccccccccc",
+"acbbbbbbbbbbbbbbacbbbbbbbbbbbbbb",
+"acbbbabbbbbbcbbbacbbbbbbbbbabbbb",
+"acbbbbabbbbbbbbbacbcbbbbbbbbabbb",
+"acbbbbbbyybbbbbbacbbbbddddbbbbbb",
+"acbbbbbyyyybbbbbacbbbdoooodbbbbb",
+"acbbbbyybbyybbbbacbbbdoppodbbbbb",
+"acbbbyybbbbybbbbacbbbdoppodbbbbb",
+"acbbbybbbbbbybbbacbbbdoooodbbbbb",
+"acbbbbbbbbbbbbbbacbbbbddddbbbbbb",
+"acbbbbbbbbbaabbbacbbbbbbbbbbbbbb",
+"acbcbbbbbbbbbabbacbbabbbbbbbcbbb",
+"acbbbbbbcbbbbbbbacbbbabbbbbbbbbb",
+"acbbbbbbbbbbbbbbacbbbbbbbbbbbbbb",
+"acbbbbbbbbbbbbbbacbbbbbbbbbbbbbb"
+],
+"note": "Concrete plates with joint and lip; tile 1 worn yellow chevron, tile 2 orange landing light in dark socket."
+}

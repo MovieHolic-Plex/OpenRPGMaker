@@ -4,6 +4,7 @@ import { compactMapLayers } from "@/project/mapLayers";
 import { composePirateIslesMap, labelPirateAreas, PIRATE_DEFAULT_SIZE, PIRATE_MAP_KINDS, PIRATE_MIN_SIZE, type PirateMapKind } from "@/project/pirateIslesComposer";
 import { isPirateIslesTileset, PIRATE_ISLES_FAMILY, PIRATE_ISLES_ID } from "@/project/defaults/pirateIsles";
 import { isPassable } from "@/project/collision";
+import { EXIT_SIDES_SCHEMA, exitSidesArg } from "@/project/composerExitRoads";
 import type { GameMap, Project } from "@/project/types";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -13,7 +14,7 @@ function isUntouched(map: GameMap): boolean {
 }
 
 const KIND_KO: Readonly<Record<PirateMapKind, string>> = {
-  harbor: "해적 항구 마을", beach: "열대 섬 해변 마을", fort: "해안 요새", wreck: "난파선·보물 동굴 섬", ship: "배 안", tavern: "해적 술집 안", hut: "섬 오두막 안", cave: "보물 동굴 안",
+  harbor: "해적 항구 마을", beach: "열대 섬 해변 마을", fort: "해안 요새", wreck: "난파선·보물 동굴 섬", ship: "배 안", tavern: "해적 술집 안", hut: "섬 오두막 안", cave: "보물 동굴 안", field: "해안 들판",
 };
 const sizes = (rec: typeof PIRATE_MIN_SIZE) => PIRATE_MAP_KINDS.map((k) => `${k} ${rec[k].w}×${rec[k].h}`).join(", ");
 
@@ -24,7 +25,8 @@ export const COMPOSE_PIRATE_ISLES_MAP_TOOL: ToolDefinition = {
   fillsCurrentMapId: true,
   description: "해적 군도 칩셋(pirate_isles) 맵 한 장을 종류째 짠다 — 견본이 아니라 씨앗마다 다른 배치가 나온다(계획 → 섬·해안 → 건물(문 앞 길) → 소품, 놓을 때마다 통행 검사). "
     + "kind: harbor(해적 항구 마을: 바다·돌 방파제·판자 부두·정박한 배·해적 범선·술집·창고·시장 광장) | beach(열대 섬 해변 마을: 섬·모래 둘레·오두막·광장 모닥불·토템·물 위 수상 가옥·쪽배) | "
-    + "fort(해안 요새: 성벽·포대 탑·남벽 문루·바다 겨눈 대포·안뜰 병영·망루 — 문루 문 앞 접근칸과 안뜰 안쪽 칸을 이동 이벤트로 잇는다) | wreck(난파선과 보물 동굴 섬) | ship(배 안: 선장실·선원 선실·주방·선창) | tavern(해적 술집 안) | hut(섬 오두막 안) | cave(보물 동굴 안). "
+    + "fort(해안 요새: 성벽·포대 탑·남벽 문루·바다 겨눈 대포·안뜰 병영·망루 — 문루 문 앞 접근칸과 안뜰 안쪽 칸을 이동 이벤트로 잇는다) | wreck(난파선과 보물 동굴 섬) | ship(배 안: 선장실·선원 선실·주방·선창) | tavern(해적 술집 안) | hut(섬 오두막 안) | cave(보물 동굴 안) | field(해안 들판: 풀밭을 동서로 가로지르는 모랫길·외딴 오두막과 텃밭·길가 쉼터·나무 덩이·꽃 무더기, 남쪽 끝에 해변 — 마을 옆 들판·초원). "
+    + "exits 로 다른 맵으로 나가는 변을 주면 길에서 그 가장자리까지 길을 낸다(harbor·field 는 큰길이 동서 가장자리에 닿아 있다 · 섬인 beach·wreck 과 바다 쪽 변은 길을 못 내고 결과에 적는다). "
     + `맵 크기 하한: ${sizes(PIRATE_MIN_SIZE)} (권장 ${sizes(PIRATE_DEFAULT_SIZE)}). `
     + "손댄 맵은 replace:true 여야 다시 짠다(땅·기물을 지우고 이벤트는 남긴다). 결과의 건물·구역 이름표(list_map_locations)에 문 앞 접근칸 좌표가 있다 — 거기에 이동 이벤트를 단다.",
   parameters: {
@@ -34,6 +36,7 @@ export const COMPOSE_PIRATE_ISLES_MAP_TOOL: ToolDefinition = {
       kind: { type: "string", enum: [...PIRATE_MAP_KINDS], description: "맵 종류" },
       seed: { type: "integer", minimum: 0, description: "씨앗 — 다른 값이면 다른 배치. 생략하면 0" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 짠다" },
+      exits: EXIT_SIDES_SCHEMA,
     },
     required: ["kind"],
     additionalProperties: false,
@@ -58,7 +61,8 @@ export const COMPOSE_PIRATE_ISLES_MAP_TOOL: ToolDefinition = {
     const seed = typeof args.seed === "number" && Number.isInteger(args.seed) && args.seed >= 0 ? args.seed : 0;
 
     const next = structuredClone(map);
-    const result = composePirateIslesMap(next, tileset, kind, seed);
+    const exits = exitSidesArg(args.exits);
+    const result = composePirateIslesMap(next, tileset, kind, seed, undefined, exits.length ? { exits } : {});
     if (result.placed.length < 4) throw new ToolError(`맵을 짜지 못했다 — 기물 ${result.placed.length}개만 놓였다. 맵을 더 크게 하거나 다른 seed 를 준다`, { code: "compose-failed", mapId });
     compactMapLayers(next);
     const labels = labelPirateAreas(next, result.areas);
@@ -80,7 +84,8 @@ export const COMPOSE_PIRATE_ISLES_MAP_TOOL: ToolDefinition = {
       summary: `${result.summary}. 건물·구역: ${labels.join(" · ")}. 출발 칸 (${result.spawn.x},${result.spawn.y}).`
         + (moved.length ? ` 막힌 칸의 이벤트를 옮겼다: ${moved.join(", ")}.` : "") + oversize
         + " 이 배치는 완성이다 — 기물을 흩뿌려 채우지 말고, 길·부두·방파제 가장자리·문 앞에는 찍지 않는다. 다음: show_map_region 으로 보고, 문 앞 접근칸에 기획의 이동 이벤트·NPC·단서를 둔다.",
-      data: { mapId, kind, seed, areas: result.areas, spawn: result.spawn, placed: result.placed.length, skipped: result.skipped, unreachable: result.unreachable },
+      data: { mapId, kind, seed, areas: result.areas, spawn: result.spawn, placed: result.placed.length, skipped: result.skipped, unreachable: result.unreachable,
+        ...(exits.length ? { exits: result.exits, exitsMissing: result.exitsMissing } : {}) },
     };
   },
 };

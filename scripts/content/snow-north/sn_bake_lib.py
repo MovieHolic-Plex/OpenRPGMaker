@@ -25,8 +25,12 @@ PC, LOWER_PC, PCNOTE = BL.PC, BL.LOWER_PC, BL.PCNOTE
 
 # ───────────────────────── 관문 ─────────────────────────
 def gate_status(png, kind):
-    """'pass' | 'prov'(영수증 pass, 프로필 미보정) | 이유(str, 막힘). 영수증 파일을 직접 읽어 FAIL 을 임시통과로 세지 않는다."""
+    """'pass' | 'prov'(영수증 pass, 프로필 미보정) | 'waived'(오너 면제 묶음 — 통과가 아니다) | 이유(str, 막힘). 영수증 파일을 직접 읽어 FAIL 을 임시통과로 세지 않는다."""
     sha = OG.pixel_sha256(png)
+    # 오너 면제(2026-11-12, object-gate owner-waive): 이 그림 해시·종류가 묶음에 있고 출구 규칙(OG.refusal — 사람 거절·Opus 최종 판정이 위)이 받아 줄 때만.
+    if OG.owner_waiver_applies(OG.read_owner_waiver(sha), sha, kind, 'bundle'):
+        why = OG.refusal(png, kind=kind, context='bundle')
+        return 'waived' if why is None else why
     r = OG.read_receipt(sha)
     if not r: return '영수증 없음'
     if r.get('kind') != kind: return '영수증 종류 %s != %s' % (r.get('kind'), kind)
@@ -68,7 +72,7 @@ def covered_status(piece_id, png):
             if a.shape != me.shape or not (a[op] == me[op]).all(): ok = False; break
         if not ok: last = '조립 그림 화소 불일치(gate_assembled.py 다시)'; continue
         st = gate_status(sw, 'structure')
-        if st in ('pass', 'prov'): return st
+        if st in ('pass', 'prov', 'waived'): return st
         last = '조립 ' + m['assembled'] + ': ' + st
     return last
 
@@ -143,7 +147,8 @@ class Outdoor:
     def put(self, key, im, pc, meta):
         im = BL.norm(im)
         k2 = (im.tobytes(), pc)
-        if k2 in self.dedupe and not key.endswith('!'): return self.dedupe[k2]
+        # 이미 번호가 박힌 자리는 그림이 다른 칸과 같아져도 제 번호를 지킨다(2026-11-12 다시 그리기 — 저장된 맵이 그 번호를 들고 있다). 새 자리만 같은 그림을 나눠 쓴다.
+        if key not in self.pins.map and k2 in self.dedupe and not key.endswith('!'): return self.dedupe[k2]
         tid = self.pins.one(key)
         self.img[tid] = im; self.info[tid] = dict(meta, pc=pc); self.dedupe.setdefault(k2, tid)
         return tid

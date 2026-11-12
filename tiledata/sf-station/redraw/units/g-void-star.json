@@ -1,0 +1,36 @@
+{
+"unit": "g-void-star",
+"name": "open space, 4 tiles",
+"w": 64,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:0",
+"b": "ink:1",
+"d": "g_dust:1",
+"e": "g_dust:3",
+"t": "g_tile:3"
+},
+"rows": [
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaeaaaaaaaaaaaaaaaaaaaaaaadaaaaaabbbbaaaaaaaaaaaaaaaaaaaaaaeaaa",
+"aaaaaaaabbbaaaaaaaaaadaaaaaaaaaaaaaabbbbbbaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaabbbbbbbaaaaaaadtdaaaaaaaaaaaaaaaaabbbbaaaaaaadaaaaaaaaaaaa",
+"aaaabbbbaaaaaaaaaaaaadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbaa",
+"aaaaaaaaaaaadaaaaaaaaaaaabbbbaaaaaaataaaaaaaaaaaaaaaaabbbbbbaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaabbbbbaaaaaaaaaaaaaaaaaaaaaaaabbbbaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaadaaaaaaaaaaaaaaaaaaa",
+"aabbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbaaaaaaaaaaaaaaaaaaaaaa",
+"aaabbbbbaaaaaaaaaaeaaaaaaaaaaaaaaaaabbbbbbbbaaaaaaaaaaaaaataaaaa",
+"aaaaaabbbbaataaaaaaaaaaaaabbbaaaaabbbbaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaabbbbbbbaaaaaaaaaaaaaaaaaaaabbbbbaaaaaaaaa",
+"aaaadaaaaaaaaaaaaaaabbbbbaaaaaaaaaaaaaaaaeaaaaaaaaaaabbbbbbaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+],
+"note": "Deep space: ink black, faint nebula wisps, sparse stars, one plus-shaped star in tile 2; clean edges."
+}

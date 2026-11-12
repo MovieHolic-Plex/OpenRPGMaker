@@ -1,0 +1,38 @@
+{
+"unit": "g-glass-floor",
+"name": "viewport glass floor, 2 tiles",
+"w": 32,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "g_deck:2",
+"b": "g_deck:1",
+"k": "ink:0",
+"m": "ink:1",
+"s": "g_tile:3",
+"d": "g_dust:2",
+"g": "g_deck:0"
+},
+"rows": [
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"abbbbbbbbbbbbbbbabbbbbbbbbbbbbbb",
+"abmmmmmmmmmmmmmmabmmmmmmmmmmmmmm",
+"abmkkkkkkkkkgkkkabmkkkkkkkkkkskk",
+"abmkkskkkkkgkkkkabmkkdkkkkkkkkkk",
+"abmkkkkkkkgkkkmmabmmmkkkkkkkkkkk",
+"abmkkkkkkkkkmmmmabmmmmmmkkkkkkkk",
+"abmkkkkkkmmmmmkkabmkkmmmmmmkkkkk",
+"abmkkkmmmmmmkkkkabmkkkkkmmmmmmkk",
+"abmmmmmmmkkkkdkkabmkkkkkkkkmmmmm",
+"abmmmmkkkkkkkkkkabmkkkgkkkkkkkmm",
+"abmkkkkkkkkkkkkkabmkkgkkkaakkkkk",
+"abmkkkkdkkkkkkkkabmkgkkkkamkkskk",
+"abmkkkkkkkkkskkkabmkkkkkkkkkkkkk",
+"abmkkkkkkkkkkkkkabmkkkkdkkkkkkkk",
+"abmkkkkkkkkkkkkkabmkkkkkkkkkkkkk"
+],
+"note": "Two glass floor panes: deck frame top/left, deep space with soft band, stars, glint, tiny planet crescent."
+}

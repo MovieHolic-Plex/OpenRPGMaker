@@ -8,7 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createAssistantMessageEventStream } from "@oh-my-pi/pi-ai";
 import { PNG } from "pngjs";
-import { compareReference, eventClass, eventIdsIn, eventTokens, itemKey, mapIdsIn, nameKey, NEEDS_OUTSIDE, referenceOf, sha, type Spec, type Trust } from "./spec.mts";
+import { compareReference, eventClass, eventIdsIn, eventTokens, itemKey, mapIdsIn, nameKey, NEEDS_OUTSIDE, realModelSign, referenceOf, replayEngine, sha, type Spec, type Trust } from "./spec.mts";
 
 const ROOT = path.resolve(import.meta.dir, "../../../..");
 const [specFile, outDir] = process.argv.slice(2);
@@ -103,6 +103,30 @@ globalThis.fetch = (async (input: unknown, init?: unknown) => {
   counters.blockedFetch += 1; counters.fetchUrls.add(url.replace(/\?.*$/u, "").slice(0, 80));
   throw new Error("명세 은행 재생: 모델·네트워크 없음");
 }) as typeof fetch;
+
+// ── 진짜 모델을 부르지 않는다: 대본을 받는 제공자로만 넘기고(spec.mts replayEngine), 그래도 진짜 사용량이 보이면 바로 멈춘다 ─────────────
+const engine = replayEngine(spec.source);
+if (engine.swapped) console.error(`[${spec.id}] 제공자 ${spec.source.provider} 는 대본을 받지 않는다 — ${engine.provider} 로 재생한다(모델 없음)`);
+const stopReplay = new AbortController();
+let realModel: string | undefined;
+/** 진짜 모델의 흔적 — 실행을 끊고(CLI 자식까지) 끝에서 exit 3. 끊기지 않으면 10초 뒤 그냥 나간다. */
+const tripRealModel = (why: string): void => {
+  if (realModel) return;
+  realModel = why;
+  stopReplay.abort();
+  setTimeout(() => { shout(); process.exit(3); }, 10_000).unref();
+};
+const shout = (): void => {
+  const bar = "✗".repeat(60);
+  process.stderr.write(`\n${bar}\n[spec-bank] 재생이 진짜 모델을 불렀다 — 멈춘다. ${spec.id}: ${realModel}\n  기록된 제공자 ${spec.source.provider || "(없음)"} → 넘긴 제공자 ${engine.provider}. 재생의 첫 [pi-usage] 줄은 input=0 cacheRead=0 이어야 한다.\n${bar}\n`);
+  console.log(`${spec.id}: 재생 중단 — 진짜 모델 호출(${realModel})`);
+};
+const plainError = console.error.bind(console);
+console.error = (...args: unknown[]): void => {
+  plainError(...args);
+  const why = typeof args[0] === "string" ? realModelSign({ usageLine: args[0] }) : undefined;
+  if (why) tripRealModel(why);
+};
 
 // ── 제품 입구 — 옛 커밋에서도 있는 것만 고정으로, 새 구조는 있으면 ─────────────────────────────────────────────
 const { runPiAgent } = await import(path.join(ROOT, "scripts/lib/piAgentRuntime.ts")) as { runPiAgent: (request: unknown, options: unknown) => Promise<{ project: AnyProject }> };
@@ -298,7 +322,7 @@ for (const [t, turn] of spec.turns.entries()) {
     } else if (event.type === "error") notes.push(`error: ${String(event.message ?? "").slice(0, 200)}`);
   };
   const request = {
-    provider: spec.source.provider || "openai-compat:opencodex", model: spec.source.model || "gpt-6.1-terra", mode: "single", task: turn.task,
+    provider: engine.provider, model: engine.model, mode: "single", task: turn.task,
     mapIds: [project.startMapId], scopeStrict: false, currentMapId: project.startMapId, project, ...(spec.projectKey ? { projectKey: spec.projectKey } : {}),
     assistantVersion: "v2", applyMode: "auto", maxTurns: calls.length + 400,
   };
@@ -306,6 +330,7 @@ for (const [t, turn] of spec.turns.entries()) {
     streamFn, model: { id: request.model, name: request.model, api: "openai-completions", provider: "spec-bank", input: ["text", "image"], reasoning: false, contextWindow: 400_000, maxTokens: 32_000, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 } },
     onCheckpoint: async (checkpoint: { project: AnyProject }) => { if (checkpoint.project.maps) checkpointMaps = checkpoint.project.maps; },
     timeoutMs: 45 * 60_000,
+    signal: stopReplay.signal,
   };
   let done: { project: AnyProject } | undefined;
   let error: string | undefined;
@@ -337,6 +362,9 @@ for (const [t, turn] of spec.turns.entries()) {
   const reference = spec.reference.afterTurn[String(t + 1)] ?? (t === spec.turns.length - 1 ? spec.reference.final : undefined);
   turnsOut.push({ input: turn.input.slice(0, 80), calls: calls.length, played: cursor, forced, ...(turn.verdict ? { verdictWas: turn.verdict } : {}), ...(verdictNow ? { verdictNow } : {}), statuses, ...(missingArt ? { missingArt } : {}), notes, gateItems, ...(reference && done ? { trust: compareReference(reference, referenceOf(project)) } : {}), ms: Date.now() - t0, ...(error ? { error } : {}) });
   console.error(`[${spec.id}] 턴 ${t + 1}/${spec.turns.length}: 호출 ${cursor}/${calls.length} · 모델 자리 ${modelCalls} · 이어 붙임 ${forced} · ${Math.round((Date.now() - t0) / 1000)}초${error ? ` · 예외 ${error.split("\n")[0]}` : ""}`);
+  // 예외로 끝난 턴은 아래에서 «예외»로 적는다 — 사용량 줄이 찍혔으면 realModel 이 이미 서 있다.
+  const sign = realModel ?? (error ? undefined : realModelSign({ turn: { calls: calls.length, played: cursor, scripted: modelCalls } }));
+  if (sign) { realModel = sign; shout(); process.exit(3); }
   if (error) break;
 }
 
@@ -354,7 +382,7 @@ const played = log.filter((l) => l.now !== undefined);
 const writes = (l: CallLog) => !spec.turns[l.turn - 1]!.calls[l.i]!.read && l.n !== "todo";
 const savedSalts = Object.fromEntries((project.assistantTodo?.memory?.places?.places ?? []).filter((p) => p.spec?.name).map((p) => [p.spec!.name!, p.spec!.salt]));
 const result = {
-  id: spec.id, kind: spec.kind, request: spec.request, source: spec.source, replayedAt: process.env.SPEC_BANK_HEAD ?? "", layout: turnModule?.createV2Turn ? "turn" : "runAssistantV2", ms: Date.now() - started,
+  id: spec.id, kind: spec.kind, request: spec.request, source: spec.source, engine, replayedAt: process.env.SPEC_BANK_HEAD ?? "", layout: turnModule?.createV2Turn ? "turn" : "runAssistantV2", ms: Date.now() - started,
   calls: {
     total: spec.turns.reduce((n, t) => n + t.calls.length, 0), played: played.length,
     notPlayed: spec.turns.reduce((n, t) => n + t.calls.length, 0) - played.length,
