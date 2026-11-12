@@ -1,0 +1,36 @@
+{
+ "_doc": "탐침이 묻는 낱말 — ~/z-project/assistant-fable-runs/object-oneshot/demand.json 의 wanted·ledgerNames(게임들이 실제로 쓴 이름)에서 옮겼다. 코드가 읽는 목록이 아니다(탐침 전용).",
+ "items": {
+  "wall shackles": [
+   "족쇄",
+   "벽 사슬",
+   "감방 소품"
+  ],
+  "straw cot": [
+   "짚 침상",
+   "감옥 침상"
+  ],
+  "cell bars": [
+   "철창",
+   "감옥 철창"
+  ],
+  "cell bars door": [
+   "감옥 철창 문",
+   "철창 문"
+  ],
+  "ledger stand": [
+   "기록부",
+   "기록장",
+   "장부"
+  ],
+  "observation bench": [
+   "관측 작업대"
+  ],
+  "floor key": [
+   "열쇠"
+  ],
+  "floor note": [
+   "쪽지"
+  ]
+ }
+}
