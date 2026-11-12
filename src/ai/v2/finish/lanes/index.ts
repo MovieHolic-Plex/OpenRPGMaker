@@ -26,9 +26,12 @@ export function runLaneStages(env: PiAssistantV2Env, session: V2Session, run: Re
 async function runLaneStagesRecorded(env: PiAssistantV2Env, session: V2Session, run: RecordingBuildRun): Promise<string[]> {
   const ctx: FinishCtx = { env, session, run, notes: [], map: {}, done: [], assembled: [], walked: [] };
   laneMs.clear();
-  for (const stage of LANE_STAGES) if (stage.phase === "lane-project") { timedLane(stage.id, () => stage.run(ctx, "")); await yieldToLoop(); }
+  // 청사진 없는 장소 턴(«마을 하나 깔아 줘»): 이번 턴에 장소 도구가 지은 맵만, 맵 단계만 돈다 — 게임 단계(빈 시작 맵·상점·시작 돈 …)와 남의 맵은 건드리지 않는다.
+  const own = env.ctx.project.gameBlueprint ? undefined : new Set(session.places.keys());
+  if (!own) for (const stage of LANE_STAGES) if (stage.phase === "lane-project") { timedLane(stage.id, () => stage.run(ctx, "")); await yieldToLoop(); }
   const perMap = LANE_STAGES.filter((s) => s.phase === "lane-map");
   for (const mapId of Object.keys(env.ctx.project.maps)) {
+    if (own && !own.has(mapId)) continue;
     ctx.map = {};
     for (const stage of perMap) { timedLane(stage.id, () => stage.run(ctx, mapId)); await yieldToLoop(); }
   }

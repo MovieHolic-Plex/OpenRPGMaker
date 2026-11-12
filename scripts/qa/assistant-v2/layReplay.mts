@@ -1,5 +1,7 @@
 // 「이 장소를 깔아 줘」 판의 도구 호출을 모델 없이 지금 코드로 다시 돌린다 — 거절 수·«다음 호출 강제»에 막힌 수·처음 세 번의 장소 호출 안에 깔렸는지를 센다.
-//   bun scripts/qa/assistant-v2/layReplay.mts <runRoot> <outDir> [--only a,b] [--render] [--verbose] [--apply-check]
+//   bun scripts/qa/assistant-v2/layReplay.mts <runRoot> <outDir> [--only a,b] [--render] [--verbose] [--apply-check] [--finish]
+// --finish: 호출을 다 돌린 뒤 실제 턴의 끝맺음 자동 단계(finish/index.ts runFinishAutoBuild)를 한 번 돌리고, 바깥 맵의 건물 입구(문 하나 = 옆으로 붙은 입구 칸들)가
+//   끝맺음 전/후에 어떻게 답하는지 센다 — 들어가는 문(이동 이벤트) · «들어갈 수 없다» 한 줄 · 답 없음. 줄 끝에 «doors: 답 없음 N→N», 로그에 끝맺음이 한 일.
 // --apply-check: 체크포인트마다 편집기 적용 단계의 두 판정을 흉내 낸다 — 완성된 집 보호(같은 맵 id 의 옛 집 칸이 바뀌면 거절하고 그 변경을 되돌린다)와
 //   맵 소실 확인(턴 시작에 있던, 손댄 맵이 사라지면 묻는다 — 여기서는 세기만 하고 받아들인다). 빌더가 맵을 지우고 다시 짓는 길을 고칠 때 본다.
 //   줄 끝에 «apply: 체크포인트 N · 거절 N · 소실 물음 N», 로그에 체크포인트마다의 맵 id 가 남는다.
@@ -24,6 +26,9 @@ import { isMonsterRequestTurn } from "../../../src/ai/piAgent/monsterGameRequest
 import { assertHouseProtection, captureHouseProtection, type HouseSnapshot } from "../../../src/editor/tools/houseProtection.ts";
 import { mapLossConfirmRequest } from "../../../src/ai/mapDestructionConfirm.ts";
 import { isUntouchedMap } from "../../../src/project/projectBlankness.ts";
+import { runFinishAutoBuild } from "../../../src/ai/v2/finish/index.ts";
+import { buildingEntrances } from "../../../src/ai/v2/place/entrances.ts";
+import { isEntranceLine } from "../../../src/ai/v2/place/lockedDoors.ts";
 
 const argv = process.argv.slice(2);
 const flag = (name: string) => argv.includes(`--${name}`);
@@ -65,6 +70,25 @@ function startState(project: Project): { laid: boolean; note: string } {
   if (!reach) return { laid: false, note: `start (${project.startPos.x},${project.startPos.y}) on ${map.name} is not walkable` };
   if (reach * 2 < walk) return { laid: false, note: `start (${project.startPos.x},${project.startPos.y}) reaches ${reach}/${walk} walkable cells` };
   return { laid: true, note: `${map.name} ${map.width}x${map.height} start (${project.startPos.x},${project.startPos.y}) reach ${reach}/${walk}` };
+}
+
+/** 바깥 맵의 건물 입구가 어떻게 답하나 — 문 하나 = 옆으로 붙은 입구 칸들. 들어가는 문(문 칸·문 앞·곁의 이동 이벤트) · 한 줄(lockedDoors 가 세운 것) · 답 없음. */
+function doorAnswers(project: Project): { doors: number; enter: number; line: number; silent: number } {
+  const out = { doors: 0, enter: 0, line: 0, silent: 0 };
+  for (const map of Object.values(project.maps)) {
+    if (isBareTileMap(map) || (map as unknown as { climate?: { mode?: string } }).climate?.mode === "indoor") continue;
+    const doors: { x: number; y: number }[][] = [];
+    for (const e of buildingEntrances(project, map)) { const last = doors.at(-1)?.at(-1); if (last && last.y === e.y && last.x + 1 === e.x) doors.at(-1)!.push(e); else doors.push([e]); }
+    const events = map.events ?? [];
+    for (const door of doors) {
+      out.doors++;
+      const near = events.filter((ev) => door.some((d) => Math.abs(ev.x - d.x) <= 1 && ev.y >= d.y && ev.y <= d.y + 1));
+      if (near.some((ev) => JSON.stringify(ev.pages ?? []).includes('"kind":"transfer"'))) out.enter++;
+      else if (events.some((ev) => isEntranceLine(ev) && door.some((d) => d.x === ev.x && d.y === ev.y))) out.line++;
+      else out.silent++;
+    }
+  }
+  return out;
 }
 
 const rows: Record<string, unknown>[] = [];
@@ -162,6 +186,16 @@ for (const job of fs.readdirSync(path.join(runRoot, "jobs")).sort()) {
     }
   }
   if (!within3) within3 = startState(ctx.project);
+  let finish = "";
+  let doorRow: Record<string, unknown> = {};
+  if (flag("finish")) {
+    const before = doorAnswers(ctx.project), events0 = Object.values(ctx.project.maps).reduce((a, m) => a + (m.events?.length ?? 0), 0);
+    const note = await runFinishAutoBuild(env, session).catch((e: Error) => `THROW ${e.message}`);
+    const after = doorAnswers(ctx.project), events1 = Object.values(ctx.project.maps).reduce((a, m) => a + (m.events?.length ?? 0), 0);
+    finish = ` · doors ${after.doors}: silent ${before.silent}→${after.silent} line ${before.line}→${after.line} enter ${before.enter}→${after.enter} · events ${events0}→${events1}`;
+    doorRow = { doors: after.doors, silentBefore: before.silent, silentAfter: after.silent, lineBefore: before.line, lineAfter: after.line, enterBefore: before.enter, enterAfter: after.enter, eventsBefore: events0, eventsAfter: events1 };
+    log.push(`== finish:${finish}\n   ${String(note ?? "(nothing reported)").replace(/\n/gu, "\n   ")}`);
+  }
   const end = startState(ctx.project);
   const p = ctx.project;
   const maps = Object.values(p.maps).map((m) => `${m.name} ${m.width}x${m.height}${isBareTileMap(m) ? " (blank)" : ""}${m.id === p.startMapId ? " *start" : ""}`);
@@ -171,10 +205,11 @@ for (const job of fs.readdirSync(path.join(runRoot, "jobs")).sort()) {
   log.push(`== end: ${end.laid ? "LAID" : "not laid"} — ${end.note} · maps: ${maps.join(" | ")}`);
   fs.writeFileSync(path.join(out, `${job}.log`), log.join("\n"));
   if (flag("render")) for (const m of Object.values(p.maps)) fs.writeFileSync(path.join(out, `${job}--${(m.name ?? m.id).replace(/[^\p{L}\p{N}]+/gu, "_")}-${m.id.slice(-4)}.png`), renderMapPng(p, m).png);
-  rows.push({ job, oldRefusals: oldStats.refusals, oldPlaceRefusals: oldStats.placeRefusals, oldBlocked: oldStats.blocked, refusals, placeRefusals, blocked, skippedForced, laidIn3: within3.laid, laidEnd: end.laid, blankLeft, start: `${p.startMapId}(${p.startPos.x},${p.startPos.y})`, note: end.note, maps, firstRefusal: firstRefusal[0] ?? "" });
-  console.log(`${job.padEnd(22)} place-call refusals ${String(oldStats.placeRefusals).padStart(2)}→${String(placeRefusals).padStart(2)} · all refusals ${String(oldStats.refusals).padStart(2)}→${String(refusals).padStart(2)} · blocked ${String(oldStats.blocked).padStart(2)}→${String(blocked).padStart(2)} · in3 ${within3.laid ? "LAID" : "----"} · end ${end.laid ? "LAID" : "----"}${blankLeft ? " · blank map left" : ""} · ${end.note}${flag("apply-check") ? ` · apply: checkpoints ${applyStats.checkpoints} · rejected ${applyStats.rejected} · map-loss questions ${applyStats.lossPrompts} · maps ${Object.keys(p.maps).join(",")}` : ""}`);
+  rows.push({ job, oldRefusals: oldStats.refusals, oldPlaceRefusals: oldStats.placeRefusals, oldBlocked: oldStats.blocked, refusals, placeRefusals, blocked, skippedForced, laidIn3: within3.laid, laidEnd: end.laid, blankLeft, ...doorRow, start: `${p.startMapId}(${p.startPos.x},${p.startPos.y})`, note: end.note, maps, firstRefusal: firstRefusal[0] ?? "" });
+  console.log(`${job.padEnd(22)} place-call refusals ${String(oldStats.placeRefusals).padStart(2)}→${String(placeRefusals).padStart(2)} · all refusals ${String(oldStats.refusals).padStart(2)}→${String(refusals).padStart(2)} · blocked ${String(oldStats.blocked).padStart(2)}→${String(blocked).padStart(2)} · in3 ${within3.laid ? "LAID" : "----"} · end ${end.laid ? "LAID" : "----"}${blankLeft ? " · blank map left" : ""} · ${end.note}${flag("apply-check") ? ` · apply: checkpoints ${applyStats.checkpoints} · rejected ${applyStats.rejected} · map-loss questions ${applyStats.lossPrompts} · maps ${Object.keys(p.maps).join(",")}` : ""}${finish}`);
 }
 const sum = (k: string) => rows.reduce((a, r) => a + Number(r[k] ?? 0), 0);
-const total = { jobs: rows.length, recordedPlaceRefusals: sum("oldPlaceRefusals"), recordedRefusals: sum("oldRefusals"), recordedBlocked: sum("oldBlocked"), placeRefusals: sum("placeRefusals"), refusals: sum("refusals"), blocked: sum("blocked"), laidIn3: rows.filter((r) => r.laidIn3).length, laidEnd: rows.filter((r) => r.laidEnd).length, blankLeft: rows.filter((r) => r.blankLeft).length };
+const total = { jobs: rows.length, recordedPlaceRefusals: sum("oldPlaceRefusals"), recordedRefusals: sum("oldRefusals"), recordedBlocked: sum("oldBlocked"), placeRefusals: sum("placeRefusals"), refusals: sum("refusals"), blocked: sum("blocked"), laidIn3: rows.filter((r) => r.laidIn3).length, laidEnd: rows.filter((r) => r.laidEnd).length, blankLeft: rows.filter((r) => r.blankLeft).length,
+  ...(flag("finish") ? { doors: sum("doors"), silentBefore: sum("silentBefore"), silentAfter: sum("silentAfter"), lineAfter: sum("lineAfter"), enterAfter: sum("enterAfter"), eventsBefore: sum("eventsBefore"), eventsAfter: sum("eventsAfter") } : {}) };
 fs.writeFileSync(path.join(out, "summary.json"), JSON.stringify({ total, rows }, null, 1));
 console.log(`\nTOTAL ${JSON.stringify(total)}`);

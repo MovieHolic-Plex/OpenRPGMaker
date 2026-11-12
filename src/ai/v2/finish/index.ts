@@ -1,6 +1,7 @@
 // 조수 v2 끝맺음 자동 단계 — 실행기(scripts/lib/assistantV2Runtime.ts)가 끝맺음 관문 직전·늦은 청사진 차례에 도는 순서 그대로.
 // 단계 하나 = finish/stages/<id>.ts 하나({ id, phase, order, run }), 목록 = finish/stages/index.ts(한 줄에 하나). 실행 순서는 묶음(phase) → order.
 //   blueprint(청사진이 있을 때): 빈 맵 이름 → 장소 → 경로(+ 회복 길) → 단서·주인공·조사 자리 → 출구·이동 칸 마감
+//   place(청사진이 없고 이번 턴에 장소를 지었을 때): 그 맵들의 출구·문 마감(맵 단계만)
 //   assembly(게임 전체 요청일 때): 조립 기본값(타이틀·오프닝) → 출하 기본값 → 단계 순서·전투 맞춤 → 목표·출구 다듬기
 //   reload(맨 끝): 저장 → 다시 읽기 관문
 // 재생 스크립트(scripts/qa/assistant-v2/finishReplay.mts)도 이 함수를 불러, 실제 실행기와 같은 순서를 지나는지 따로 맞추지 않아도 된다.
@@ -29,7 +30,7 @@ const timedStage = async (id: string, run: () => void | Promise<void>): Promise<
 const recordedRun = async (ctx: FinishCtx, stage: FinishStage): Promise<void> => { await recordStageWrites(() => ctx.env.ctx.project, ctx.session.stageWrites, () => stage.run(ctx, "")); await yieldToLoop(); };
 
 /** 이 실행기가 도는 묶음(마감 묶음 lane-* 은 finish/lanes/index.ts 가 돈다). */
-const PHASES: readonly FinishPhase[] = ["blueprint", "assembly", "reload"];
+const PHASES: readonly FinishPhase[] = ["blueprint", "place", "assembly", "reload"];
 
 const FINISH_STAGES: readonly FinishStage[] = orderedStages(Object.values(registered), PHASES);
 
@@ -56,6 +57,11 @@ export async function runFinishAutoBuild(env: PiAssistantV2Env, session: V2Sessi
     const whole = blueprintTurn(env);
     for (const stage of phase("blueprint")) if (whole || stage.ownWork) await timedStage(`blueprint:${stage.id}`, () => recordedRun(ctx, stage));
     if (ctx.done.length) ctx.autoPath = [`[자동으로 지음] 청사진이 엔딩까지 이어지지 않거나 길목·출구가 막혀 함수가 대신 지었다 — 최종 보고에 「자동으로 지음:」으로 이 목록을 그대로 적는다(네가 지었다고 쓰지 않는다):`, ...ctx.done.map((d) => `- ${d}`), `대사를 다듬으려면 build_blueprint_path{steps:[{id,lines,lockedLines}]} 로 다시 부른다(같은 이벤트를 고쳐 쓴다). ${worldOf(env.ctx.project)?.composer ? "세계 장소는 구성기가 한 번에 깐 맵이라 다시 짓지 않는다 — 꾸미려면 place_object·add_people." : "자동으로 지은 장소를 꾸미려면 edit_place·dress_room."}`].join("\n");
+  }
+  else {
+    for (const stage of phase("place")) await timedStage(`place:${stage.id}`, () => recordedRun(ctx, stage));
+    // 조수에게 주는 글(영어) — 한 줄씩 최종 보고에 옮긴다.
+    if (ctx.done.length) ctx.autoPath = [`[Finished by function] After the places were built, a function closed their exits and doors — list these under «자동으로 지음:» in the final report as they are (do not write that you did them):`, ...ctx.done.map((d) => `- ${d}`)].join("\n");
   }
   if (buildsWholeGame(env.ctx.project, env.request.task)) {
     for (const stage of phase("assembly")) await timedStage(`assembly:${stage.id}`, () => recordedRun(ctx, stage));

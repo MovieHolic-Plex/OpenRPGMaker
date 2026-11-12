@@ -11,12 +11,14 @@ import type { ReachRepair } from "../place/reachRepairs";
  * 끝맺음 실행기(finish/index.ts runFinishAutoBuild)가 도는 셋 — 묶음마다 조건을 본다:
  * - blueprint: 청사진이 있을 때만. 한 일은 ctx.done → 조수에게 줄 「[자동으로 지음]」 글.
  * - assembly: 게임 전체 요청(wantsWholeGame)일 때만. 한 일은 ctx.assembled → v2.assembly 기록 + 체크포인트 blueprint_assembly.
+ * - place: 청사진이 없고 이번 턴에 장소 도구가 맵을 지었을 때만(«마을 하나 깔아 줘») — 그 맵들의 맵 마감. 한 일은 ctx.done → 조수에게 줄 글.
  * - reload: 맨 끝(저장 → 다시 읽기 관문). 단계가 조건을 스스로 본다.
  * 출구·이동 칸 마감(finish/lanes/index.ts runLaneStages — blueprint 의 lanes 단계가 session.clearLanes 로 부른다)이 도는 둘:
- * - lane-project: 맵 돌기 전에 한 번(빈 시작 맵 치우기·방탈출 봉인·상점·은신처·얼굴 자리 …).
+ * - lane-project: 맵 돌기 전에 한 번(빈 시작 맵 치우기·방탈출 봉인·상점·은신처·얼굴 자리 …). 청사진 없는 장소 턴에는 돌지 않는다.
  * - lane-map: 맵마다(Object.keys(project.maps) 를 돌기 시작할 때 한 번 읽은 순서) — 출구 마감·길·그림·사람 자리 … 한 일은 ctx.notes. 동기로만 돈다.
+ *   청사진 없는 장소 턴에는 이번 턴에 지은 맵(session.places)만 돈다.
  */
-export type FinishPhase = "blueprint" | "assembly" | "reload" | "lane-project" | "lane-map";
+export type FinishPhase = "blueprint" | "place" | "assembly" | "reload" | "lane-project" | "lane-map";
 
 export interface FinishCtx {
   readonly env: PiAssistantV2Env;
