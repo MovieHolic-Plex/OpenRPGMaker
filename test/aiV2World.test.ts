@@ -272,7 +272,7 @@ describe("단계 종류 — 청사진 경로가 종류마다 다른 이벤트를
     return { ctx, call, eventOf, text: (name: string) => JSON.stringify(eventOf(name).pages) };
   }
   const SPOTS = ["현관", "복도", "교실", "도서실", "옥상 계단", "옥상"];
-  const base = (stepsIn: GameBlueprint["steps"]) => ({ title: "밤의 학교", genre: "모험", playerGoal: "밤의 학교에서 단서를 따라 옥상까지 가자.", steps: stepsIn, ending: { name: "새벽", how: "해가 뜨고 문이 열렸다.", feeling: "안도" } });
+  const base = (stepsIn: GameBlueprint["steps"]) => ({ title: "밤의 학교", genre: "모험", playerGoal: "밤의 학교에서 단서를 따라 옥상까지 가자.", steps: stepsIn, ending: { name: "새벽", how: "옥상에서 마지막 일을 하면 새벽 엔딩.", feeling: "안도", closing: ["해가 뜨고 문이 열렸다."] } });
 
   it("세계 없는 게임의 청사진에는 장소 목록을 남기지 않는다", async () => {
     const { ctx, call } = harness();
@@ -346,7 +346,8 @@ describe("단계 종류 — 청사진 경로가 종류마다 다른 이벤트를
     expect(end).toContain('"kind":"choices"');
     expect(end).toContain("너는 소녀 곁에 남았다.");
     expect(end).toContain("triggerEnding");
-    // 마지막이 싸움이고 대사를 안 줬다: 상대가 «살펴보았다»·엔딩 글을 말하지 않는다 — 서술로 열고, 엔딩 글은 이긴 뒤 서술.
+    // 마지막이 싸움이고 대사를 안 줬다: 상대가 «살펴보았다»·엔딩 글을 말하지 않는다 — 서술로 열고, 맺음 글(ending.closing 첫 줄)은 이긴 뒤 서술.
+    // 설계 메모(ending.how)는 어디에도 나오지 않는다(#4650).
     const b = harness();
     const lastBattle = mixed(SPOTS).map((st, i) => (i === 5 ? { ...st, kind: "battle" as const, who: "옥상의 그림자", event: "옥상의 그림자", action: "그림자와 싸워 이긴다" } : i === 4 ? { ...st, kind: "find" as const, who: undefined, event: "옥상 계단의 낡은 상자" } : st));
     await b.call("write_blueprint", base(lastBattle as GameBlueprint["steps"]));
@@ -360,6 +361,7 @@ describe("단계 종류 — 청사진 경로가 종류마다 다른 이벤트를
     expect(page.map((c) => c.kind)).toEqual(["text", "battleProcessing", "fork"]);
     expect(page[2]!.then!.map((c) => c.kind)).toEqual(["text", "text", "triggerEnding"]);
     expect(page[2]!.then![1]!.body).toBe("(해가 뜨고 문이 열렸다.)");
+    expect(spoken).not.toContain("새벽 엔딩");
   }, 120_000);
 });
 
