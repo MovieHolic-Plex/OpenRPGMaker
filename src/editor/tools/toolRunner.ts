@@ -28,6 +28,7 @@ import { familyBaselineMap, isWorldmapKitMap } from "@/project/tilesetBaseline";
 import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialToolState";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
 import { newScenePolishIssues } from "@/project/lint/scenePolishLint";
+import { isEntranceArt } from "@/ai/v2/place/entrances";
 import { compactMapLayers, EXTRA_LAYER_KEYS, hasExtraLayers } from "@/project/mapLayers";
 import { formatTreePairRepairSummary, repairTreePairsOnMap } from "@/project/lint/repairTreePairs";
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
@@ -304,7 +305,7 @@ function compactTouchedMapLayers(before: Project, draft: Project): void {
 }
 
 function safeScenePolish(before: Project, after: Project): LintIssue[] {
-  try { return newScenePolishIssues(before, after); } catch { return []; }
+  try { return newScenePolishIssues(before, after, { doorArt: isEntranceArt }); } catch { return []; }
 }
 
 /**

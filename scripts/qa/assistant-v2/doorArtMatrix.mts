@@ -1,13 +1,15 @@
 // 문 그림 읽기 × 테마 표(모델 없음): 「이 칸이 문·계단 그림인가」를 묻는 도구·검사를 테마 맵마다 같은 상황에 놓고,
 // 칩셋이 적어 둔 입구(place/entrances.ts entranceArtCells)와 이름표 낱말로만 입구인 그림(가문비·얼음 구멍·무너진 아치…)을 갈라 잰다.
+//   줄 transfer-pair: create_transfer_pair 의 트리거 올리기 · 줄 scene-lint: 쓰기 도구 뒤에 모델에게 가는 장면 경고 scene-transfer-off-door(「문 칸으로 옮겨라」)
 //   ok 적힌 입구에서만 움직였다 · wrong 낱말로만 입구인 그림을 입구로 다뤘다 · none 적힌 입구를 못 알아봤다 · n/a 그 맵에 놓을 상황이 없다
 //   bun scripts/qa/assistant-v2/doorArtMatrix.mts <outDir> [테마,테마…]     문서 openwiki/assistant-v2.md 「문 그림 읽기도 적힌 입구로」
 import fs from "node:fs";
 import { isPassable } from "../../../src/project/collision.ts";
+import { newScenePolishIssues } from "../../../src/project/lint/scenePolishLint.ts";
 import { isDoorArtCell } from "../../../src/project/staging/doorCells.ts";
 import { tileLabel } from "../../../src/ai/v2/place/cells.ts";
 import { reachableCells } from "../../../src/ai/v2/judge/eventReach.ts";
-import { entranceArtCells } from "../../../src/ai/v2/place/entrances.ts";
+import { entranceArtCells, isEntranceArt } from "../../../src/ai/v2/place/entrances.ts";
 import { mkRun, sources } from "./themeSources.mts";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -82,6 +84,34 @@ for await (const s of sources(only ? (t) => only.has(t) : undefined)) {
     const v: V = !fake.length && !real.length ? "n/a" : fakeMoved.length ? "wrong" : realMoved.length < realTried.length ? "none" : "ok";
     rows.push({ stage: "transfer-pair", theme: s.theme, kind: s.kind, v, detail, cases: [...fake.map((r) => ({ ...r, by: "word" })), ...real.map((r) => ({ ...r, by: "declared" }))] });
   } catch (e) { rows.push({ stage: "transfer-pair", theme: s.theme, kind: s.kind, v: "wrong", detail: `threw ${(e as Error).message.slice(0, 160)}`, cases: [] }); }
+
+  // ── scene-lint: 그림 바로 밑 걷는 칸에 선 출구(밟으면 다른 맵) — 경고가 «문 칸 (x,y) 으로 옮겨라» 고 그 그림 칸을 가리키는가.
+  //    낱말 읽기(SCENE_READER=word, 옛 동작)와 적힌 입구 읽기(기본 — 도구 실행기가 주는 것)를 같은 심기로 잰다.
+  try {
+    const reader = process.env.SCENE_READER === "word" ? undefined : isEntranceArt;
+    const exitAt = (id: string, x: number, y: number): any => ({ id, name: "나가는 곳", x, y, trigger: { kind: "playerTouch" }, commands: [],
+      pages: [{ id: `${id}_p0`, name: "", conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" }, priority: "below", overlapForbidden: false, movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "transfer", mapId: "map_t_elsewhere", x: 1, y: 1, direction: "down" }] }] });
+    const under = (pred: (x: number, y: number) => boolean) => {
+      const cells: { x: number; y: number }[] = [];
+      for (let y = 2; y < M0.height - 2; y++) for (let x = 2; x < w - 2; x++) if (free(x, y) && !art.has(y * w + x) && !word(x, y) && !evAt(x, y - 1) && pred(x, y - 1)) cells.push({ x, y });
+      return cells;
+    };
+    const pointed = (cells: { x: number; y: number }[], tag: string) => {
+      if (!cells.length) return { n: 0, hits: [] as { x: number; y: number; label: string }[], bare: 0 };
+      const map1 = { ...M0, events: [...M0.events, ...cells.map((c, k) => exitAt(`ev_t_${tag}_${k}`, c.x, c.y))] };
+      const p1 = { ...P0, maps: { ...P0.maps, [s.mapId]: map1, map_t_elsewhere: { ...M0, id: "map_t_elsewhere", name: "다른 곳", events: [] } } };
+      const issues = newScenePolishIssues(P0, p1, reader ? { doorArt: reader } : {}).filter((i) => i.code === "scene-transfer-off-door" && i.mapId === s.mapId && String(i.eventId).startsWith(`ev_t_${tag}_`));
+      const hits = issues.map((i) => /옆\((\d+),(\d+)\)/u.exec(i.message)).filter(Boolean).map((m) => ({ x: Number(m![1]), y: Number(m![2]), label: topLabel(P0, M0, Number(m![1]), Number(m![2])) }));
+      return { n: cells.length, hits, bare: issues.length - hits.length };
+    };
+    const fake = pointed(spread(under((x, y) => !art.has(y * w + x) && word(x, y)), 4), "w"), real = pointed(spread(under((x, y) => art.has(y * w + x)), 4), "d");
+    const fakeToArt = fake.hits.filter((h) => !art.has(h.y * w + h.x)), realToDoor = real.hits.filter((h) => art.has(h.y * w + h.x));
+    const named = [...new Set(fakeToArt.map((h) => `«${h.label}»`))].slice(0, 3).join(" ");
+    const detail = `exit under word-only art: told to move onto that picture ${fakeToArt.length}/${fake.n}${named ? ` ${named}` : ""} (called bare ground ${fake.bare}) · exit under a declared entrance: told to move onto the door ${realToDoor.length}/${real.n}`;
+    const v: V = !fake.n && !real.n ? "n/a" : fakeToArt.length ? "wrong" : realToDoor.length < real.n ? "none" : "ok";
+    rows.push({ stage: "scene-lint", theme: s.theme, kind: s.kind, v, detail, cases: [...fakeToArt.map((h) => ({ ...h, by: "word" })), ...realToDoor.map((h) => ({ ...h, by: "declared" }))] });
+  } catch (e) { rows.push({ stage: "scene-lint", theme: s.theme, kind: s.kind, v: "wrong", detail: `threw ${(e as Error).message.slice(0, 160)}`, cases: [] }); }
 
   console.log(`${s.theme}/${s.kind} ${Date.now() - t0}ms ${rows.filter((r) => r.theme === s.theme && r.kind === s.kind).map((r) => `${r.stage}=${r.v}`).join(" ")}`);
 }

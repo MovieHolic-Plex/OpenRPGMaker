@@ -50,6 +50,15 @@ import { checkSeatedPose } from "./seatedPoseLint";
 import { checkStairEntrances } from "./stairEntranceLint";
 import { cellIs, doorCacheKey, LAYERS, type TileMetaLike } from "../staging/doorCells";
 
+/**
+ * 「이 칸이 문·계단 그림인가」 — 부르는 쪽이 준다. run_lint 는 칩셋이 적어 둔 입구(ai/v2/place/entrances.ts isEntranceArt)를 준다.
+ * 이 파일은 src/project 라 방 키트 명세(편집기 쪽)를 끌어오지 않는다. 안 주면 이름표 낱말로 읽는다(올린 시트·옛 호출자).
+ * 낱말로 읽으면 「가문비」「성벽(활 구멍)」과 설명에 「양개문」이 든 건물의 모든 칸이 문 그림이라, 그 곁의 출입구마다 «문 칸으로 옮겨라»가 붙었다.
+ */
+export type DoorArtReader = (project: Project, map: GameMap, x: number, y: number) => boolean;
+let doorArtReader: DoorArtReader | undefined;
+const isDoorArt: DoorArtReader = (project, map, x, y) => (doorArtReader ? doorArtReader(project, map, x, y) : cellIs(project, map, x, y, "door"));
+
 type Cell = { x: number; y: number };
 
 const VEHICLE_WORDS = /자동차|승용차|택시|버스|트럭|오토바이|스쿠터|자전거|전차|열차|기차|\bcar\b|taxi|\bbus\b|truck|motorbike|motorcycle|scooter|bicycle|\bbike\b|train|tram/iu;
@@ -185,11 +194,11 @@ function checkTransfers(project: Project, issues: LintIssue[], gates: readonly G
     if (!gate.doorLike) continue;
 
     // 1) 트리거 자리: 문·계단 그림 칸, 맵 가장자리, 자기 그림이 있는 문 이벤트.
-    const onDoor = cellIs(project, map, event.x, event.y, "door");
+    const onDoor = isDoorArt(project, map, event.x, event.y);
     const ownArt = visibleGraphic(gate.page);
     const near = onDoor || ownArt || onEdge(map, event.x, event.y) ? undefined : (Object.values(STEP) as Cell[])
       .map((d) => ({ x: event.x + d.x, y: event.y + d.y }))
-      .find((c) => cellIs(project, map, c.x, c.y, "door"));
+      .find((c) => isDoorArt(project, map, c.x, c.y));
     if (near) {
       // 문 그림이 바로 옆인데 트리거가 바닥 칸이다 — 가장자리 근처여도 «문 앞 보도에서 들어감» 이다.
       issues.push({
@@ -269,13 +278,13 @@ function exitCells(project: Project, map: GameMap, gates: readonly Gate[]): (c: 
   const mapGates = gates.filter((g) => g.map.id === map.id).map((g) => ({ x: g.event.x, y: g.event.y }));
   return (c) => isEdgeExit(project, map, c.x, c.y)
     || mapGates.some((g) => chebyshev(g, c) <= 1)
-    || [c, ...Object.values(STEP).map((d) => ({ x: c.x + d.x, y: c.y + d.y }))].some((n) => cellIs(project, map, n.x, n.y, "door"));
+    || [c, ...Object.values(STEP).map((d) => ({ x: c.x + d.x, y: c.y + d.y }))].some((n) => isDoorArt(project, map, n.x, n.y));
 }
 
 /** 사라져도 되는 «바로 그» 칸: 이동(문) 이벤트 칸·문 그림 칸·맵 끝 칸. exitCells 는 그 한 칸 앞까지 받아 준다. */
 function exitCellsStrict(project: Project, map: GameMap, gates: readonly Gate[]): (c: Cell) => boolean {
   const mapGates = gates.filter((g) => g.map.id === map.id).map((g) => ({ x: g.event.x, y: g.event.y }));
-  return (c) => onEdge(map, c.x, c.y) || mapGates.some((g) => g.x === c.x && g.y === c.y) || cellIs(project, map, c.x, c.y, "door");
+  return (c) => onEdge(map, c.x, c.y) || mapGates.some((g) => g.x === c.x && g.y === c.y) || isDoorArt(project, map, c.x, c.y);
 }
 
 /** exitVia·enterVia 의 문 칸(런타임 playSceneDoorway 와 같은 규칙: target 이벤트 → x,y → 가장 가까운 이동 이벤트). */
@@ -937,7 +946,7 @@ function checkArrivalFacing(project: Project, issues: LintIssue[], gates: readon
           for (let i = 1; i <= 2; i += 1) {
             const cx = command.x + step.x * i, cy = command.y + step.y * i;
             const gate = gates.find((g) => g.map.id === dest.id && g.event.x === cx && g.event.y === cy);
-            const art = cellIs(project, dest, cx, cy, "door") || cellIs(project, dest, cx, cy, "up") || cellIs(project, dest, cx, cy, "down");
+            const art = isDoorArt(project, dest, cx, cy);   // 오르내리는 계단 그림도 문 그림에 든다
             if (!gate && !art) continue;
             const key = `${dest.id}|${command.x}|${command.y}|${command.direction}`;
             if (seen.has(key)) break;
@@ -1769,8 +1778,9 @@ function checkEndingCardsDistinct(project: Project, issues: LintIssue[]): void {
   }
 }
 
-export function lintScenePolish(project: Project): LintIssue[] {
+export function lintScenePolish(project: Project, opts: { doorArt?: DoorArtReader } = {}): LintIssue[] {
   const issues: LintIssue[] = [];
+  doorArtReader = opts.doorArt;
   let gates: Gate[] = [];
   try { gates = collectGates(project); } catch { /* 이상한 저장본 — 이동 검사만 건너뛴다 */ }
   const guard = (fn: (p: Project, out: LintIssue[], g: readonly Gate[]) => void): void => {
@@ -1816,7 +1826,7 @@ function issueKey(issue: LintIssue): string {
 }
 
 /** 쓰기 도구 뒤: 이번 변경이 새로 만든 장면 경고만. 이미 있던 경고를 매 호출 되풀이하지 않는다. */
-export function newScenePolishIssues(before: Project, after: Project): LintIssue[] {
-  const old = new Set(lintScenePolish(before).map(issueKey));
-  return lintScenePolish(after).filter((issue) => !old.has(issueKey(issue)));
+export function newScenePolishIssues(before: Project, after: Project, opts: { doorArt?: DoorArtReader } = {}): LintIssue[] {
+  const old = new Set(lintScenePolish(before, opts).map(issueKey));
+  return lintScenePolish(after, opts).filter((issue) => !old.has(issueKey(issue)));
 }

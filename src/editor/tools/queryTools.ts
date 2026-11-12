@@ -8,6 +8,7 @@ import { oprnPanoramaSetOfImage } from "@/assets/oprnPanoramas";
 import { mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
 import { lintScenePolish } from "@/project/lint/scenePolishLint";
 import { lintExamineEvents } from "@/ai/v2/judge/examineLint";
+import { isEntranceArt } from "@/ai/v2/place/entrances";
 import { lintAudioVariety } from "@/ai/v2/judge/audioVarietyLint";
 import { lintOriginalIpNames } from "@/project/lint/originalIpLint";
 import { SHARED_PORTRAIT_ASSETS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitExpressionsOfSet, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
@@ -828,7 +829,7 @@ export function runProjectLint(project: Project, args: Record<string, unknown>):
     ...flatGroundIssues(project),
     ...areaUseIssues(project),
     ...deadEndExitIssues(project),
-    ...lintScenePolish(project),
+    ...lintScenePolish(project, { doorArt: isEntranceArt }),
     ...lintExamineEvents(project),
     ...lintAudioVariety(project),
     ...lintOriginalIpNames(project),
