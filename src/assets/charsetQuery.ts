@@ -55,8 +55,9 @@ const SYNONYMS: readonly {
   readonly tags?: readonly string[];
   readonly category?: CharsetCategory;
 }[] = [
-  { terms: ["old woman", "elder woman", "할머니", "노파"], gender: "female", age: "elder", tags: ["할머니", "노인", "여성"] },
-  { terms: ["old man", "elder man", "할아버지", "노인 남성"], gender: "male", age: "elder", tags: ["노인", "남성"] },
+  // 할멈·할매·할미·할배: 이름에 붙는 흔한 부름말(«오르텐 할멈») — 모르면 질의가 0건이라 고르는 쪽이 아무 사람이나 세웠다(2026-11-12 r1s-fun: 할멈이 왕 칩).
+  { terms: ["old woman", "elder woman", "할머니", "노파", "할멈", "할매", "할미"], gender: "female", age: "elder", tags: ["할머니", "노인", "여성"] },
+  { terms: ["old man", "elder man", "할아버지", "노인 남성", "할배"], gender: "male", age: "elder", tags: ["노인", "남성"] },
   { terms: ["아줌마", "아주머니", "주부", "housewife"], gender: "female", age: "middle", tags: ["여성", "중년"] },
   { terms: ["아저씨"], gender: "male", age: "middle", tags: ["남성", "중년"] },
   { terms: ["소녀", "girl"], gender: "female", age: "child", tags: ["소녀", "아이", "어린이"] },
@@ -169,6 +170,58 @@ function intentFromQuery(normalized: string): QueryIntent {
     for (const tag of synonym.tags ?? []) tags.add(tag);
   }
   return { genders, ages, tags, categories };
+}
+
+/**
+ * 글(역할·이름·외형 낱말)에서 읽힌 성별·나이 — 하나로만 읽힐 때(«남자아이» 처럼 둘이 겹치지 않을 때). 칩을 고르는 쪽이 «그 사람에게 맞는 칩»을 가릴 때 쓴다.
+ * 검색(queryNpcGraphics)과 같은 낱말 표를 본다 — 고르는 쪽이 낱말 표를 따로 갖지 않는다.
+ */
+export function npcGraphicIntent(text: string): { readonly gender?: Exclude<CharsetGender, "none">; readonly age?: CharsetAge } {
+  const intent = intentFromQuery(normalizeQuery(text));
+  return { ...(intent.genders.size === 1 ? { gender: [...intent.genders][0]! } : {}), ...(intent.ages.size === 1 ? { age: [...intent.ages][0]! } : {}) };
+}
+
+/**
+ * 글에서 성별·나이로 읽힌 낱말만 추린 질의(«오르텐 할멈» → «할멈»). 이름이 섞인 글은 통째로 물으면 0건이다 — 고르는 쪽이 이것으로 한 번 더 묻는다.
+ * 읽힌 낱말이 없으면 undefined.
+ */
+export function npcGraphicPersonQuery(text: string): string | undefined {
+  const normalized = normalizeQuery(text), tokens = englishTokens(normalized);
+  const words: string[] = [];
+  for (const synonym of SYNONYMS) {
+    if (!synonym.gender && !synonym.age) continue;
+    const term = synonym.terms.find((t) => hasTerm(normalized, tokens, t));
+    if (term && !words.includes(term)) words.push(term);
+  }
+  return words.length ? words.join(" ") : undefined;
+}
+
+/** 성별·나이만 가리키는 낱말(낱말 표의 성별·나이 줄의 낱말·꼬리표)과 «주민» — 칩의 차림을 가리키지 않는다. */
+const PERSON_ONLY_WORDS: ReadonlySet<string> = new Set(["주민", ...SYNONYMS.filter((s) => s.gender || s.age).flatMap((s) => [...s.terms, ...(s.tags ?? [])]).map((t) => normalizeQuery(t))]);
+
+/** 칩의 «차림» 꼬리표 — 성별·나이 낱말과 «주민», 칩 이름을 옮긴 첫 칸을 뺀 것(왕관·메이드·기사·토끼·상인…). */
+function costumeTags(entry: CharsetSemanticEntry): string[] {
+  // 꼬리표 첫 칸은 칩 이름을 그대로 옮긴 것이다(«청년 남성» · «어린 소녀») — 그 한 칸만 뺀다. 이름이 곧 차림인 칩(왕·수녀·하녀)은 같은 낱말이 뒤에 한 번 더 있다.
+  const label = normalizeQuery(entry.label);
+  return entry.tags.map((t) => normalizeQuery(t)).filter((t, i) => t && !(i === 0 && t === label) && !PERSON_ONLY_WORDS.has(t));
+}
+
+/** 그냥 사람 칩인가 — «주민» 꼬리표가 붙었거나 차림 꼬리표가 하나도 없다(노파 = 노인·여성·할머니뿐). */
+export function npcGraphicIsPlain(entry: CharsetSemanticEntry): boolean {
+  return entry.tags.includes("주민") || costumeTags(entry).length === 0;
+}
+
+/**
+ * 글이 이 칩의 차림을 짚었는가 — 낱말 표의 역할 줄(«사제» → 성직자)로 읽혔거나, 성별·나이 낱말이 아닌 낱말이 차림 꼬리표에 걸린다.
+ * «상인 여자» 는 토끼 귀 여성을 짚지 않는다(«여자» 는 성별일 뿐) — 고르는 쪽이 말하지 않은 차림의 칩을 뒤로 미는 데 쓴다. 한 글자 낱말은 꼬리표와 같을 때만(«왕» ≠ «여왕»).
+ */
+export function npcGraphicNamedBy(text: string, entry: CharsetSemanticEntry): boolean {
+  const traits = costumeTags(entry);
+  const normalized = normalizeQuery(text);
+  const intent = intentFromQuery(normalized);
+  if (traits.some((t) => intent.tags.has(t))) return true;
+  return normalized.split(" ").some((term) => !!term && !PERSON_ONLY_WORDS.has(term)
+    && traits.some((t) => t === term || (term.length >= 2 && t.includes(term)) || (t.length >= 2 && term.includes(t))));
 }
 
 function textMatchScore(term: string, entry: CharsetSemanticEntry): number {

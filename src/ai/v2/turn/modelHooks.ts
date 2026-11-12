@@ -9,6 +9,7 @@ import { checkLabel } from "../loop/todoStore";
 import { leadPlanMessages, planForWorker, projectDigest, toolCatalog } from "./split";
 import type { TurnContext } from "./context";
 import { modelTextCut } from "../todo/types";
+import { preloadCurrentMonsterArt } from "@/assets/currentMonsterArt";
 
 /** runPiAgent 의 v2 갈고리 가운데 모델 호출 앞뒤의 것 다섯. */
 export function turnModelHooks(turn: TurnContext) {
@@ -46,6 +47,8 @@ export function turnModelHooks(turn: TurnContext) {
   };
   // 리드 계획 — 리드는 요청·요청 뼈대·프로젝트 요약·워커 도구 목록만 보고 할 일+사양을 쓴다. 그 글이 워커 첫 지시 뒤에 붙는다.
   const firstPromptSuffix = async (env: PiAssistantV2Env) => {
+    // 첫 도구 호출 전에 현행 몬스터 그림을 읽어 둔다 — 적을 고르는 함수(story/currentFoes)가 그 자리에서 동기로 넣는다.
+    if (writeRequest) await preloadCurrentMonsterArt().catch(() => undefined);
     if (!env.leadChat || !writeRequest) return undefined;
     const t0 = Date.now();
     try {

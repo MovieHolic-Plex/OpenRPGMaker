@@ -87,8 +87,9 @@ describe("장소의 테마 — 적 · 전투 배경 · 상자", () => {
     const { project, mapId } = desert();
     expect(placeThemeOf(project, mapId)?.id).toBe("desert_east/pyramid");
     const field = themeFieldTroops(project, mapId);
-    expect(field.gap).toBeUndefined();
-    expect(field.troopIds.map((id) => project.database.troops.find((t) => t.id === id)?.name)).toEqual(["모래 전갈", "모래 지렁이", "독사", "뿔 딱정벌레"]);
+    // 서는 것은 현행 그림이 있는 종뿐이다 — 그림이 없는 모래 전갈·모래 지렁이는 없는 그림 줄(그릴 목록)로만 남는다(test/aiV2CurrentFoes.test.ts).
+    expect(field.gaps.map((line) => parseArtGap(line)?.wanted)).toEqual(["scorpion-sand", "worm-sand"]);
+    expect(field.troopIds.map((id) => project.database.troops.find((t) => t.id === id)?.name)).toEqual(["독사", "뿔 딱정벌레"]);
     expect(field.troopIds.every((id) => id.startsWith("troop_fit_field_"))).toBe(true);
     const boss = themeBossTroop(project, mapId, "모래 수호자", true, 0);
     expect(project.database.troops.find((t) => t.id === boss.troopId)?.name).toBe("점토 골렘");
