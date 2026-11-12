@@ -47,7 +47,7 @@ export const WRITE_BLUEPRINT_SCHEMA = {
       gives: { type: "string", description: "what opens the next step (key, switch, affection) — the last one is the ending" },
       feeling: { type: "string", description: "the feeling of this scene" },
     }, required: ["place", "event", "action", "gives", "feeling"] } },
-    ending: { type: "object", properties: { name: { type: "string" }, how: { type: "string", description: "design note: how the player reaches this ending (never shown in the game)" }, feeling: { type: "string" }, closing: { type: "array", items: { type: "string" }, description: "2–4 lines the player reads on the ending screen — narration of what happened and what became of the people (by name). Not a condition, not a note." } }, required: ["name", "how", "feeling", "closing"] },
+    ending: { type: "object", properties: { name: { type: "string" }, how: { type: "string", description: "design note: how the player reaches this ending (never shown in the game)" }, feeling: { type: "string" }, closing: { type: "array", items: { type: "string" }, description: "2–4 lines the player reads on the ending screen — narration of what happened and what became of the people (by name). Not a condition, not a note." } }, required: ["name", "how", "feeling"] },
   },
   // title·genre 는 빠뜨려도 된다 — 다시 쓸 때 앞 청사진·프로젝트 제목으로 채운다(mt2 Flash: 매 턴 이 둘이 빠져 한 번씩 실패했다).
   required: ["playerGoal", "steps", "ending"],
