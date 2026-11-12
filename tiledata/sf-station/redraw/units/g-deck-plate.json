@@ -1,0 +1,38 @@
+{
+"unit": "g-deck-plate",
+"name": "station deck floor plating, 4 tiles",
+"w": 64,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "g_deck:0",
+"b": "g_deck:1",
+"c": "g_deck:2",
+"d": "g_deck:3",
+"x": "a_cyan:0",
+"y": "a_cyan:1",
+"z": "a_cyan:2"
+},
+"rows": [
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"bddddddddddddddcbddddddddddddddcbddddddddddddddcbddddddddddddddc",
+"bdccccccccccccccbdccccccccccccccbdccccccccccccccbdcccccccccccccc",
+"bdccccccccccccccbdccccccccccccccbdccccdddcccccccbdcccccccccccccc",
+"bdccaccccccccaccbdccaccccccccaccbdccaccccccccaccbdccaccccccccacc",
+"bdccccccccccccccbdccccccccdddcccbdcccaaaaaaaccccbdccdddccccccccc",
+"bdccccddddccccccbdccccccccccccccbdcccabbbbbdccccbdccccbbbbbccccc",
+"bdccccccccccccccbdccccccccccccccbdcccabbbbbdccccbdccccxzzzxccccc",
+"bdccccccccccccccbdccdddcccccccccbdcccabaaabdccccbdccccxyyyxccccc",
+"bdcccccccccdddccbdccccccccccccccbdcccabbbbbdccccbdccccbbbbbccccc",
+"bdccccccccccccccbdccccccccccccccbdcccabbbbbdccccbdcccccccccccccc",
+"bdccccdddcccccccbdccccccddddccccbdcccaddddddccccbdcccccccdddcccc",
+"bdccccccccccccccbdccccccccccccccbdccccccccccccccbdcccccccccccccc",
+"bdccaccccccccaccbdccaccccccccaccbdccaccccccccaccbdccaccccccccacc",
+"bdccccccccccccccbdccccccccccccccbdccccccccccccccbdcccccccccccccc",
+"bdccccccccccccccbdccccccccccccccbdccccccccccccccbdcccccccccccccc"
+],
+"note": "Four steel deck plates: two plain with brushed strokes, one with recessed hatch, one with cyan floor light."
+}

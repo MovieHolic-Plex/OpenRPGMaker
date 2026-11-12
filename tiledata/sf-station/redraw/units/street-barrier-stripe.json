@@ -1,0 +1,42 @@
+{
+"unit": "street-barrier-stripe",
+"name": "striped road barrier",
+"w": 32,
+"h": 16,
+"cls": "prop",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"b": "ink:1",
+"g": "s_white:3",
+"f": "s_white:2",
+"e": "s_white:1",
+"d": "s_white:0",
+"o": "a_orange:0",
+"m": "a_orange:1",
+"w": "a_glow:0",
+"j": "s_rust:1",
+"h": "s_dark:0",
+"i": "s_dark:1"
+},
+"rows": [
+".bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.",
+"bgbbbbbggggggggggggggggggbbbbbfb",
+"bgbmwmbggggggggfgggggggggbmwmbfb",
+"bgbmmobggggggggfgggggggggbmmobfb",
+"bgbbbbbffffffffffffffffffbbbbbeb",
+"bfeeeeeeeeeeeeeeeeeeeeeeeeeeeedb",
+"boooggggooooggggooooggggoooogggb",
+"booggggooooggggooooggggooooggggb",
+"boggggooooggggooooggggooooggggob",
+"bggggooooggggooooggggooooggggoob",
+"bfffooooffffooooffffooooffffooob",
+"beejjjjeeeejjjjeeeejjjjeeeejjjjb",
+".bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.",
+"...biihhb..............biihhb...",
+"..bdiihhhb............bdiihhhb..",
+"..bbbbbbbb............bbbbbbbb.."
+],
+"note": "White beam top with orange end lamps, diagonal orange-white striped front, two dark feet."
+}

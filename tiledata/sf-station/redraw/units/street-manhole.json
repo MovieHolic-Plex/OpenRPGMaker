@@ -1,0 +1,37 @@
+{
+"unit": "street-manhole",
+"name": "manhole cover",
+"w": 16,
+"h": 16,
+"cls": "flat",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:1",
+"h": "s_hull:3",
+"e": "s_hull:2",
+"d": "s_hull:1",
+"c": "s_hull:0",
+"k": "s_dark:0"
+},
+"rows": [
+"................",
+"................",
+"......hhhe......",
+"....hhddddek....",
+"...hddddddddk...",
+"...hccdccdcca...",
+"..hdddddddddda..",
+"..hdccdccdccda..",
+"..hdddddddddda..",
+"..edccdccdccda..",
+"...edddddddda...",
+"...kccdccdcca...",
+"....kaddddaa....",
+"......aaaa......",
+"................",
+"................"
+],
+"note": "Round iron manhole cover, light upper-left rim, dark lower-right rim, rows of short grooves."
+}

@@ -1,0 +1,42 @@
+{
+"unit": "street-neon-ring-wall",
+"name": "wall neon ring sign",
+"w": 16,
+"h": 16,
+"cls": "wallm",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:0",
+"b": "ink:1",
+"d": "s_dark:0",
+"h": "s_hull:1",
+"m": "a_magenta:1",
+"M": "a_magenta:2",
+"n": "a_magenta:0",
+"c": "a_cyan:1",
+"C": "a_cyan:2",
+"k": "a_cyan:0",
+"w": "a_glow:0"
+},
+"rows": [
+"................",
+"..hhhhhhhhhhhh..",
+".bddddMMmmddddb.",
+".bddMMddddmmddb.",
+".bdMddddddddmdb.",
+".bdMddCCccddmdb.",
+".bMddCddddcddmb.",
+".bMddCdwwdcddmb.",
+".bmddcdwwdkddnb.",
+".bmddcddddkddnb.",
+".bdmddcckkddndb.",
+".bdmddddddddndb.",
+".bddmmddddnnddb.",
+".bddddmmnnddddb.",
+"..aaaaaaaaaaaa..",
+"................"
+],
+"note": "Dark backplate with outer magenta neon ring, inner cyan ring and white centre dot, lit from upper left."
+}

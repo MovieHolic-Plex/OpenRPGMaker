@@ -1,0 +1,35 @@
+{
+"unit": "street-neon-flat-strip",
+"name": "floor guide strip",
+"w": 32,
+"h": 16,
+"cls": "flat",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:1",
+"b": "a_cyan:1",
+"c": "a_cyan:0",
+"k": "a_cyan:2"
+},
+"rows": [
+"................................",
+"................................",
+"................................",
+"................................",
+"................................",
+"..b.......b.......b.......b.....",
+"aaakaaaaaaakaaaaaaakaaaaaaakaaaa",
+"bbbbkbbbbbbbkbbbbbbbkbbbbbbbkbbb",
+"cccckccccccckccccccckccccccckccc",
+"aaakaaaaaaakaaaaaaakaaaaaaakaaaa",
+"..b.......b.......b.......b.....",
+"................................",
+"................................",
+"................................",
+"................................",
+"................................"
+],
+"note": "Cyan floor light strip with dark edge lines and east-pointing bright chevrons every 8 px."
+}

@@ -1,0 +1,34 @@
+{
+"unit": "g-crew-floor",
+"name": "crew quarters rubber floor, 2 tiles",
+"w": 32,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "g_deck:0",
+"b": "g_deck:1",
+"c": "g_deck:2"
+},
+"rows": [
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"bcbbbcbbbcbbbcbbbcbbbcbbbcbbbcbb",
+"bbabbbabbbabbbabbbabbbabbbabbbab",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbcbbbcbbbcbbbcbbbcbbbcbbbcbbbc",
+"abbbabbbabbbabbbabbbabbbabbbabbb",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbaaaaaaaaaaaabb",
+"bcbbbcbbbcbbbcbbbcbbbcbbbcbbbcbb",
+"bbabbbabbbabbbabbbabbbabbbabbbab",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbcbbbcbbbcbbbcbbbcbbbcbbbcbbbc",
+"abbbabbbabbbabbbabbbabbbabbbabbb",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+],
+"note": "Studded rubber floor, staggered studs with shadow pixel; tile 2 adds inner east-west strip seam at row 8."
+}
