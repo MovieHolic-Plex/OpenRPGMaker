@@ -12,7 +12,7 @@ function isUntouched(map: GameMap): boolean {
   return map.lowerTiles.every((t) => t === map.lowerTiles[0]) && map.upperTiles.every((t) => t === -1);
 }
 
-const KIND_KO: Readonly<Record<SfMapKind, string>> = { station: "정거장 로비·거주구", lab: "연구 기지 실내", street: "사이버 네온 거리", moonbase: "달 기지 야외" };
+const KIND_KO: Readonly<Record<SfMapKind, string>> = { station: "정거장 로비·거주구", lab: "연구 기지 실내", street: "사이버 네온 거리", moonbase: "달 기지 야외", quarters: "거주실", canteen: "식당", clinic: "진료실" };
 
 export const COMPOSE_SF_STATION_MAP_TOOL: ToolDefinition = {
   name: "compose_sf_station_map",
@@ -21,7 +21,8 @@ export const COMPOSE_SF_STATION_MAP_TOOL: ToolDefinition = {
   fillsCurrentMapId: true,
   description: "SF 칩셋(sf_station) 맵 한 장을 종류째 짠다 — 견본이 아니라 씨앗마다 다른 배치가 나온다. "
     + "kind: station(우주 정거장 로비+복도+거주구 선실·식당·위생실) | lab(연구 기지 실내: 실험실+복도+의무실·냉동 수면실·서버실·수경 재배실) | "
-    + "street(사이버펑크 네온 거리: 고층 네온 빌딩 줄·보도·4줄 도로·횡단보도·호버카·광장 노점·키오스크·광고판·남쪽 가게 줄) | moonbase(달 기지 야외: 레골리스·다져진 길·돔·모듈·관제탑·착륙장·셔틀·로버·태양광). "
+    + "street(사이버펑크 네온 거리: 고층 네온 빌딩 줄·보도·4줄 도로·횡단보도·호버카·광장 노점·키오스크·광고판·남쪽 가게 줄) | moonbase(달 기지 야외: 레골리스·다져진 길·돔·모듈·관제탑·착륙장·셔틀·로버·태양광) | "
+    + `quarters(거주실 한 칸: 침대·사물함·책상) · canteen(식당 한 칸) · clinic(진료실 한 칸) — 거리·달 기지 건물 문이나 정거장 승강기 뒤에 다는 방(맨 아래 벽의 두 칸이 나가는 문, 권장 ${SF_DEFAULT_SIZE.quarters.w}×${SF_DEFAULT_SIZE.quarters.h} · ${SF_DEFAULT_SIZE.canteen.w}×${SF_DEFAULT_SIZE.canteen.h} · ${SF_DEFAULT_SIZE.clinic.w}×${SF_DEFAULT_SIZE.clinic.h}). `
     + `맵 크기 하한: station ${SF_MIN_SIZE.station.w}×${SF_MIN_SIZE.station.h}, lab ${SF_MIN_SIZE.lab.w}×${SF_MIN_SIZE.lab.h}, street ${SF_MIN_SIZE.street.w}×${SF_MIN_SIZE.street.h}, moonbase ${SF_MIN_SIZE.moonbase.w}×${SF_MIN_SIZE.moonbase.h} `
     + `(권장 station ${SF_DEFAULT_SIZE.station.w}×${SF_DEFAULT_SIZE.station.h}, lab ${SF_DEFAULT_SIZE.lab.w}×${SF_DEFAULT_SIZE.lab.h}, street ${SF_DEFAULT_SIZE.street.w}×${SF_DEFAULT_SIZE.street.h}, moonbase ${SF_DEFAULT_SIZE.moonbase.w}×${SF_DEFAULT_SIZE.moonbase.h}). `
     + "손댄 맵은 replace:true 여야 다시 짠다(땅·벽·기물을 지우고 이벤트는 남긴다). 결과의 구역·건물 이름표(list_map_locations)에 문 좌표가 있다 — 문 앞 접근칸에 이동 이벤트를 단다.",

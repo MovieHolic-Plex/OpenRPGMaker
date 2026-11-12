@@ -6,6 +6,7 @@
 //   station  정거장 로비 + 복도 + 거주구(선실 여럿·식당·위생실). 벽은 선체 격벽(at-wall-hull) 천장 + 그 밑 앞면 두 줄(wall-face-hull/-viewport).
 //   lab      연구 기지 실내: 큰 실험실 + 복도 + 의무실·냉동실·서버실. 벽은 흰 연구실 벽(at-wall-white / wall-face-white).
 //   street   사이버 네온 거리: [뒷골목] [북쪽 건물 줄] [보도] [4줄 도로·횡단보도·탈것] [광장(노점·키오스크·광고판·정류장)] [남쪽 건물 줄] [맨 아래 보도].
+//   quarters · canteen · clinic  한 칸짜리 방(거주실 · 식당 · 진료실): 방 하나 + 맨 아래 벽의 두 칸 나가는 문. 거리·달 기지 건물 문이나 승강기 뒤에 단다.
 //   moonbase 달 기지 야외: 레골리스 땅 + 다져진 길(오토타일) 큰길과 문마다 잇는 가지길 + 북쪽 모듈·돔 줄 + 남쪽 착륙장·셔틀·로버·탱크·태양광·접시·바위.
 //
 // 실내 규칙(3/4 시점): 방 바깥은 모두 벽 천장이다. 방의 맨 위 두 줄은 벽 앞면(막힘)이고 바닥은 그 아래부터다. 방끼리는 남북 문 통로(폭 2)로만 잇는다
@@ -17,14 +18,21 @@ import { setLayerTileAt, layerTileAt } from "@/project/mapLayers";
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import type { GameMap, StructureKitDef, TilesetDef } from "@/project/types";
 
-export type SfMapKind = "station" | "lab" | "street" | "moonbase";
-export const SF_MAP_KINDS: readonly SfMapKind[] = ["station", "lab", "street", "moonbase"];
+/** 한 칸짜리 방 — 거리·달 기지의 건물 문이나 정거장 승강기 뒤에 다는 방. 가구 한 벌은 정거장·연구 기지의 아래 방과 같다. */
+export type SfRoomKind = "quarters" | "canteen" | "clinic";
+export const SF_ROOM_KINDS: readonly SfRoomKind[] = ["quarters", "canteen", "clinic"];
+export type SfMapKind = "station" | "lab" | "street" | "moonbase" | SfRoomKind;
+export const SF_MAP_KINDS: readonly SfMapKind[] = ["station", "lab", "street", "moonbase", ...SF_ROOM_KINDS];
 export const SF_MIN_SIZE: Readonly<Record<SfMapKind, { w: number; h: number }>> = {
   station: { w: 34, h: 26 }, lab: { w: 32, h: 24 }, street: { w: 36, h: 26 }, moonbase: { w: 34, h: 18 },
+  quarters: { w: 12, h: 10 }, canteen: { w: 14, h: 10 }, clinic: { w: 12, h: 10 },
 };
 export const SF_DEFAULT_SIZE: Readonly<Record<SfMapKind, { w: number; h: number }>> = {
   station: { w: 44, h: 32 }, lab: { w: 40, h: 30 }, street: { w: 48, h: 30 }, moonbase: { w: 38, h: 20 },
+  quarters: { w: 12, h: 11 }, canteen: { w: 16, h: 11 }, clinic: { w: 14, h: 11 },
 };
+/** 종류마다의 씨앗 덧셈(같은 씨앗이라도 종류가 다르면 다른 난수 줄) — 옛 넷의 값은 그대로다. */
+const KIND_SALT: Readonly<Record<SfMapKind, number>> = { station: 0, lab: 7919, street: 15887, moonbase: 23861, quarters: 31873, canteen: 39841, clinic: 47809 };
 
 export interface SfPlaced { readonly id: string; readonly x: number; readonly y: number }
 export interface SfArea { readonly name: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number; readonly tag: string; readonly door?: { x: number; y: number } }
@@ -161,14 +169,14 @@ class Board {
   }
 
   /** 키트를 찍되, 찍은 뒤 must 칸들이 출발점에서 걸어 닿지 않으면 되돌린다. */
-  stampSafe(id: string, x: number, y: number, start: { x: number; y: number }, must: readonly { x: number; y: number }[], opts: { onWall?: boolean } = {}): boolean {
+  stampSafe(id: string, x: number, y: number, start: { x: number; y: number }, must: readonly { x: number; y: number }[], opts: { onWall?: boolean; whole?: boolean } = {}): boolean {
     this.journal = [];
     const takenBefore = this.taken.slice();
     const ok = this.stamp(id, x, y, opts);
     const journal = this.journal;
     this.journal = null;
     if (!ok) return false;
-    if (this.reachesAll(start, must)) return true;
+    if (this.reachesAll(start, must) && (!opts.whole || this.reachesEveryFloor(start))) return true;
     for (let j = journal.length - 1; j >= 0; j--) setLayerTileAt(this.map, journal[j]!.layer, journal[j]!.i, journal[j]!.prev);
     for (let i = 0; i < this.taken.length; i++) this.taken[i] = takenBefore[i]!;
     this.placed.pop();
@@ -194,6 +202,12 @@ class Board {
     const seen = this.reach(start);
     return must.every((p) => this.inb(p.x, p.y) && seen[this.idx(p.x, p.y)] === 1);
   }
+  /** 출발점에서 닿지 않는 걷는 칸이 하나도 없나 — 한 칸짜리 방은 가구 뒤에 갇힌 바닥을 남기지 않는다. */
+  reachesEveryFloor(start: { x: number; y: number }): boolean {
+    const seen = this.reach(start);
+    for (let y = 0; y < this.h; y++) for (let x = 0; x < this.w; x++) if (!seen[this.idx(x, y)] && this.walkable(x, y)) return false;
+    return true;
+  }
   kitSize(id: string): { w: number; h: number } | undefined { const k = this.kit(id); return k ? { w: k.width, h: k.height } : undefined; }
 }
 
@@ -201,6 +215,137 @@ class Board {
 interface Room { name: string; tag: string; x: number; y: number; w: number; h: number; floor: string; /** 바닥 변형 고정(줄무늬 같은 강한 변형을 흩뿌리지 않게) */ floorCol?: number }
 
 const CELL_WALL = 0, CELL_FLOOR = 1;
+
+/**
+ * 방 껍데기를 칠한다: 벽 천장 오토타일 + 벽 앞면 두 줄 + 방마다 바닥. 앞면 표(face: 0 윗줄 · 1 아랫줄 · -1 바닥)를 돌려준다.
+ * viewport = 첫 방(로비)의 전망창 열 범위, passage = 방에 속하지 않는 바닥 칸(문 통로)의 바닥을 빌릴 방.
+ */
+function paintShell(b: Board, hull: string, grid: readonly number[], rooms: readonly Room[], roomOf: readonly number[], passage: Room, viewport?: readonly [number, number]): number[] {
+  const { w: Wd, h: Hd } = b;
+  // 앞면 칸: 위가 벽인 바닥 칸(문 통로 아래는 아니다) → 앞면 0줄, 그 아래 → 앞면 1줄
+  const face = new Array<number>(Wd * Hd).fill(-1);
+  for (let y = 1; y < Hd; y++) for (let xx = 0; xx < Wd; xx++) {
+    const i = b.idx(xx, y);
+    if (grid[i] !== CELL_FLOOR || grid[b.idx(xx, y - 1)] !== CELL_WALL) continue;
+    face[i] = 0;
+    if (y + 1 < Hd && grid[b.idx(xx, y + 1)] === CELL_FLOOR) face[b.idx(xx, y + 1)] = 1;
+  }
+  // 천장 오토타일 + 앞면 + 바닥
+  const wallMask = grid.map((c) => c === CELL_WALL);
+  b.autotile(`at-wall-${hull}`, wallMask);
+  const faceKit = b.kit(`wall-face-${hull}`), viewKit = b.kit("wall-face-viewport");
+  const viewportFrom = viewport?.[0] ?? -1, viewportTo = viewport?.[1] ?? -1;
+  for (let y = 0; y < Hd; y++) for (let xx = 0; xx < Wd; xx++) {
+    const i = b.idx(xx, y);
+    if (grid[i] !== CELL_FLOOR) continue;
+    const f = face[i]!;
+    if (f >= 0) {
+      const inView = roomOf[i] === 0 && xx >= viewportFrom && xx < viewportTo && viewKit;
+      const kit = inView ? viewKit! : faceKit;
+      const col = inView ? (xx % 2 === 0 ? 0 : 3) : (b.chance(0.12) ? b.int(1, 3) : 0);
+      const t = kit?.rows[f]?.tiles[col] ?? -1;
+      if (t >= 0) b.setLower(xx, y, t);
+      continue;
+    }
+    const r = roomOf[i]! >= 0 ? rooms[roomOf[i]!]! : passage;
+    b.setLower(xx, y, b.floor(r.floor, r.floorCol));
+  }
+  return face;
+}
+
+const floorTop = (r: Room): number => r.y + 2;                          // 앞면 두 줄 아래 첫 바닥 줄
+
+/** 방에 가구를 놓는 손(뒷벽 줄 · 앞면 부착물 · 흩어 놓기). 놓을 때마다 spawn 에서 must 칸이 닿는지 보고 막으면 되돌린다. */
+function roomTools(b: Board, doorCells: readonly { x: number; y: number }[], face: readonly number[], spawn: { x: number; y: number }, must: readonly { x: number; y: number }[], whole = false) {
+  /** 이 방 위·아래 가장자리에 붙은 문 통로의 열. 가구는 그 열을 피한다(통로가 방 안으로 이어지게). */
+  const doorCols = (r: Room) => doorCells.filter((d) => (d.y === r.y - 1 || d.y === r.y + r.h) && d.x + 1 >= r.x && d.x < r.x + r.w).flatMap((d) => [d.x, d.x + 1]);
+  const free = (r: Room, x0: number, w: number) => !doorCols(r).some((c) => c >= x0 && c < x0 + w);
+  const tryAt = (id: string, xx: number, yy: number, onWall = false) => b.stampSafe(id, xx, yy, spawn, must, { onWall, ...(whole ? { whole } : {}) });
+  /** 방 뒷벽(바닥 첫 줄)을 따라 키 큰 가구를 왼쪽부터 늘어놓는다. */
+  const alongBack = (r: Room, ids: readonly string[], gap = 1) => {
+    let cx = r.x + 1;
+    for (const id of ids) {
+      const s = b.kitSize(id); if (!s) continue;
+      while (cx + s.w <= r.x + r.w - 1 && !free(r, cx, s.w)) cx++;
+      if (cx + s.w > r.x + r.w - 1) break;
+      if (tryAt(id, cx, floorTop(r))) cx += s.w + gap; else cx++;
+    }
+  };
+  /** 앞면 아래 줄(벽 부착물). 문 통로 위는 비운다. */
+  const onFace = (r: Room, ids: readonly string[], step: number) => {
+    for (let cx = r.x + 1 + b.int(0, 2), k = 0; cx < r.x + r.w - 1; cx += step, k++) {
+      const id = ids[k % ids.length]!; const s = b.kitSize(id); if (!s) continue;
+      if (cx + s.w > r.x + r.w - 1 || !free(r, cx, s.w)) continue;
+      if (face[b.idx(cx, r.y + 1)] !== 1) continue;
+      tryAt(id, cx, r.y + 1, true);
+    }
+  };
+  /** 방 안 빈 곳에 흩어 놓기(가장자리 1칸·문 앞 2줄 비움). */
+  const scatter = (r: Room, ids: readonly string[], n: number, rowFrom = 1) => {
+    let placed = 0;
+    for (let tries = 0; tries < n * 14 && placed < n; tries++) {
+      const id = ids[(placed + tries) % ids.length]!; const s = b.kitSize(id); if (!s) continue;
+      const xx = b.int(r.x + 1, r.x + r.w - 1 - s.w), yy = b.int(floorTop(r) + rowFrom, r.y + r.h - 1 - s.h);
+      if (xx < r.x || yy < floorTop(r)) continue;
+      if (!free(r, xx, s.w) && yy + s.h >= r.y + r.h - 1) continue;
+      if (tryAt(id, xx, yy)) placed++;
+    }
+  };
+
+  return { free, tryAt, alongBack, onFace, scatter };
+}
+type RoomTools = ReturnType<typeof roomTools>;
+
+/** 방 종류(tag)마다의 가구 한 벌 — 정거장·연구 기지의 아래 방 줄과 한 칸짜리 방 종류가 같이 쓴다. */
+function furnishRoom(b: Board, tools: RoomTools, r: Room): void {
+  const { tryAt, alongBack, onFace, scatter } = tools;
+  switch (r.tag) {
+    case "cabin": {
+      alongBack(r, [b.pick(["bunk", "bunk", "bed-single"]), "locker", "locker"], 0);
+      onFace(r, [b.pick(["porthole-star", "porthole-planet"]), "wall-lamp"], 3);
+      const deskY = floorTop(r) + 3;
+      if (tryAt("console-desk", r.x + 1, deskY)) tryAt("crew-chair", r.x + 1, deskY + 1);
+      tryAt("rug-hex", r.x + Math.max(1, r.w - 3), deskY + 1);
+      scatter(r, ["planter-box", "cargo-crate", "stool"], 2, 5);
+      break;
+    }
+    case "mess":
+      alongBack(r, ["galley-counter", "galley-fridge", "vending-int"], 1);
+      onFace(r, ["wall-screen-b", "wall-lamp"], 5);
+      for (let k = 0; k < 3; k++) {
+        const xx = r.x + 2 + k * 4, yy = floorTop(r) + 3;
+        if (tryAt("mess-table", xx, yy)) { tryAt("stool", xx, yy + 1); tryAt("stool", xx + 1, yy + 1); }
+      }
+      break;
+    case "hygiene":
+      alongBack(r, ["shower-pod", "shower-pod", "shower-pod"], 0);
+      for (let k = 0; k < 3; k++) tryAt("sink-unit", r.x + 1 + k, r.y + r.h - 2);
+      tryAt("locker-row", r.x + r.w - 3, floorTop(r) + 3);
+      onFace(r, ["vent-grill"], 4);
+      break;
+    case "medbay":
+      alongBack(r, ["med-cabinet", "med-scanner"], 1);
+      scatter(r, ["med-bed", "med-bed", "crew-chair"], 3, 2);
+      onFace(r, ["wall-screen-c"], 5);
+      break;
+    case "cryo":
+      alongBack(r, ["cryo-bank", "cryo-pod", "cryo-pod"], 0);
+      scatter(r, ["power-conduit", "analysis-console"], 2, 3);
+      break;
+    case "server":
+      alongBack(r, ["server-rack", "server-rack", "server-rack", "server-rack", "server-rack"], 0);
+      scatter(r, ["power-conduit", "console-desk", "pipe-cluster"], 2, 2);
+      break;
+    case "hydro":
+      alongBack(r, ["hydroponic-rack", "hydroponic-rack", "hydroponic-rack"], 1);
+      scatter(r, ["planter-box", "planter-box"], 2, 2);
+      break;
+    case "storage":
+      alongBack(r, ["cargo-container-int", "locker-row"], 1);
+      scatter(r, ["cargo-crate", "cargo-pallet", "cargo-crate"], 3, 2);
+      break;
+  }
+}
 
 function composeInterior(b: Board, kind: "station" | "lab"): { areas: SfArea[]; spawn: { x: number; y: number } } {
   const { w: Wd, h: Hd } = b;
@@ -261,86 +406,27 @@ function composeInterior(b: Board, kind: "station" | "lab"): { areas: SfArea[]; 
     doorN(r.x + dx, lowY - 1);
   }
 
-  // 앞면 칸: 위가 벽인 바닥 칸(문 통로 아래는 아니다) → 앞면 0줄, 그 아래 → 앞면 1줄
-  const face = new Array<number>(Wd * Hd).fill(-1);
-  for (let y = 1; y < Hd; y++) for (let xx = 0; xx < Wd; xx++) {
-    const i = b.idx(xx, y);
-    if (grid[i] !== CELL_FLOOR || grid[b.idx(xx, y - 1)] !== CELL_WALL) continue;
-    face[i] = 0;
-    if (y + 1 < Hd && grid[b.idx(xx, y + 1)] === CELL_FLOOR) face[b.idx(xx, y + 1)] = 1;
-  }
-  // 천장 오토타일 + 앞면 + 바닥
-  const wallMask = grid.map((c) => c === CELL_WALL);
-  b.autotile(`at-wall-${hull}`, wallMask);
-  const faceKit = b.kit(`wall-face-${hull}`), viewKit = b.kit("wall-face-viewport");
-  const viewportFrom = kind === "station" ? top.x + Math.floor(top.w * 0.3) : -1, viewportTo = kind === "station" ? top.x + Math.floor(top.w * 0.7) : -1;
-  for (let y = 0; y < Hd; y++) for (let xx = 0; xx < Wd; xx++) {
-    const i = b.idx(xx, y);
-    if (grid[i] !== CELL_FLOOR) continue;
-    const f = face[i]!;
-    if (f >= 0) {
-      const inView = roomOf[i] === 0 && xx >= viewportFrom && xx < viewportTo && viewKit;
-      const kit = inView ? viewKit! : faceKit;
-      const col = inView ? (xx % 2 === 0 ? 0 : 3) : (b.chance(0.12) ? b.int(1, 3) : 0);
-      const t = kit?.rows[f]?.tiles[col] ?? -1;
-      if (t >= 0) b.setLower(xx, y, t);
-      continue;
-    }
-    const r = roomOf[i]! >= 0 ? rooms[roomOf[i]!]! : corr;
-    b.setLower(xx, y, b.floor(r.floor, r.floorCol));
-  }
+  const face = paintShell(b, hull, grid, rooms, roomOf, corr, kind === "station" ? [top.x + Math.floor(top.w * 0.3), top.x + Math.floor(top.w * 0.7)] : undefined);
   // 복도 가운데 안내등 줄
   const laneY = corr.y + 3;
   for (let xx = corr.x; xx < corr.x + corr.w; xx++) if (face[b.idx(xx, laneY)]! < 0) b.setLower(xx, laneY, b.floor("deck-lane-h", 0));
   // 문 통로 바닥(벽 줄을 뚫은 칸)
   for (const d of doorCells) for (const dx of [0, 1]) b.setLower(d.x + dx, d.y, b.floor("deck-hazard", 0));
 
-  const floorTop = (r: Room) => r.y + 2;                          // 앞면 두 줄 아래 첫 바닥 줄
   const spawn = { x: Math.floor(Wd / 2), y: corr.y + 3 };
   const must: { x: number; y: number }[] = [];
   for (const d of doorCells) must.push({ x: d.x, y: d.y }, { x: d.x, y: d.y + 1 }, { x: d.x, y: d.y - 1 });
   for (const r of rooms) must.push({ x: r.x + Math.floor(r.w / 2), y: floorTop(r) + Math.floor((r.h - 2) / 2) });
-  /** 이 방 위·아래 가장자리에 붙은 문 통로의 열. 가구는 그 열을 피한다(통로가 방 안으로 이어지게). */
-  const doorCols = (r: Room) => doorCells.filter((d) => (d.y === r.y - 1 || d.y === r.y + r.h) && d.x + 1 >= r.x && d.x < r.x + r.w).flatMap((d) => [d.x, d.x + 1]);
-  const free = (r: Room, x0: number, w: number) => !doorCols(r).some((c) => c >= x0 && c < x0 + w);
-  const tryAt = (id: string, xx: number, yy: number, onWall = false) => b.stampSafe(id, xx, yy, spawn, must, { onWall });
-  /** 방 뒷벽(바닥 첫 줄)을 따라 키 큰 가구를 왼쪽부터 늘어놓는다. */
-  const alongBack = (r: Room, ids: readonly string[], gap = 1) => {
-    let cx = r.x + 1;
-    for (const id of ids) {
-      const s = b.kitSize(id); if (!s) continue;
-      while (cx + s.w <= r.x + r.w - 1 && !free(r, cx, s.w)) cx++;
-      if (cx + s.w > r.x + r.w - 1) break;
-      if (tryAt(id, cx, floorTop(r))) cx += s.w + gap; else cx++;
-    }
-  };
-  /** 앞면 아래 줄(벽 부착물). 문 통로 위는 비운다. */
-  const onFace = (r: Room, ids: readonly string[], step: number) => {
-    for (let cx = r.x + 1 + b.int(0, 2), k = 0; cx < r.x + r.w - 1; cx += step, k++) {
-      const id = ids[k % ids.length]!; const s = b.kitSize(id); if (!s) continue;
-      if (cx + s.w > r.x + r.w - 1 || !free(r, cx, s.w)) continue;
-      if (face[b.idx(cx, r.y + 1)] !== 1) continue;
-      tryAt(id, cx, r.y + 1, true);
-    }
-  };
-  /** 방 안 빈 곳에 흩어 놓기(가장자리 1칸·문 앞 2줄 비움). */
-  const scatter = (r: Room, ids: readonly string[], n: number, rowFrom = 1) => {
-    let placed = 0;
-    for (let tries = 0; tries < n * 14 && placed < n; tries++) {
-      const id = ids[(placed + tries) % ids.length]!; const s = b.kitSize(id); if (!s) continue;
-      const xx = b.int(r.x + 1, r.x + r.w - 1 - s.w), yy = b.int(floorTop(r) + rowFrom, r.y + r.h - 1 - s.h);
-      if (xx < r.x || yy < floorTop(r)) continue;
-      if (!free(r, xx, s.w) && yy + s.h >= r.y + r.h - 1) continue;
-      if (tryAt(id, xx, yy)) placed++;
-    }
-  };
-
+  const tools = roomTools(b, doorCells, face, spawn, must);
+  const { free, tryAt, alongBack, onFace, scatter } = tools;
+  /** 로비·실험실 뒷벽에 선 승강기·에어록 문 — 다른 맵으로 가는 문이다(방 사이 통로와 달리 막힌 벽 칸 + 그 앞 바닥 칸). */
+  const lifts: { id: string; x: number }[] = [];
   // ── 위 큰 방
   if (kind === "station") {
     const cx = top.x + Math.floor(top.w / 2) - 1;
     // 승강기·에어록 문(벽 앞면 두 줄 위) — 문 앞 바닥 칸은 늘 비운다
     for (const [id, dx] of [[b.pick(["elevator-door", "airlock-inner"]), 2 + b.int(0, 2)], ["elevator-door", top.w - 4 - b.int(0, 2)]] as const) {
-      if (free(top, top.x + dx, 2) && tryAt(id, top.x + dx, top.y, true)) must.push({ x: top.x + dx, y: floorTop(top) }, { x: top.x + dx + 1, y: floorTop(top) });
+      if (free(top, top.x + dx, 2) && tryAt(id, top.x + dx, top.y, true)) { must.push({ x: top.x + dx, y: floorTop(top) }, { x: top.x + dx + 1, y: floorTop(top) }); lifts.push({ id, x: top.x + dx }); }
     }
     onFace(top, ["wall-screen-a", "porthole-planet", "wall-lamp", "wall-map-display", "porthole-star", "wall-screen-b"], b.int(4, 6));
     const midY = floorTop(top) + Math.floor((top.h - 2) / 2) - 1;
@@ -359,7 +445,9 @@ function composeInterior(b: Board, kind: "station" | "lab"): { areas: SfArea[]; 
     }
     for (let k = 0; k < 4; k++) tryAt(b.pick(["planter-box", "cargo-crate"]), top.x + 2 + k * Math.floor((top.w - 6) / 3), top.y + top.h - 1);
   } else {
-    tryAt("airlock-inner", top.x + 2 + b.int(0, 2), top.y);
+    const ax = top.x + 2 + b.int(0, 2);
+    // 뒷벽의 에어록 — 전에는 onWall 없이 불러 벽 칸이라 한 번도 서지 않았다(실험실에는 다른 맵으로 가는 문이 없었다).
+    if (tryAt("airlock-inner", ax, top.y, true)) { must.push({ x: ax, y: floorTop(top) }, { x: ax + 1, y: floorTop(top) }); lifts.push({ id: "airlock-inner", x: ax }); }
     onFace(top, ["wall-screen-c", "wall-screen-a", "fire-extinguisher", "wall-screen-b", "vent-grill"], b.int(4, 6));
     alongBack(top, b.chance(0.5) ? ["fume-hood", "specimen-tank", "specimen-tank", "server-rack", "fume-hood", "3d-printer"] : ["3d-printer", "fume-hood", "specimen-tank", "hydroponic-rack", "server-rack"], 1);
     const midY = floorTop(top) + 3;
@@ -376,57 +464,50 @@ function composeInterior(b: Board, kind: "station" | "lab"): { areas: SfArea[]; 
   tryAt("pipe-cluster", corr.x + corr.w - 2, corr.y + 1, true);
   for (let k = 0; k < 2; k++) { const xx = b.int(corr.x + 3, corr.x + corr.w - 4); if (face[b.idx(xx, corr.y + 4)]! < 0) tryAt("hatch-floor", xx, corr.y + 4); }
   // ── 아래 방
-  for (const r of lowRooms) {
-    switch (r.tag) {
-      case "cabin": {
-        alongBack(r, [b.pick(["bunk", "bunk", "bed-single"]), "locker", "locker"], 0);
-        onFace(r, [b.pick(["porthole-star", "porthole-planet"]), "wall-lamp"], 3);
-        const deskY = floorTop(r) + 3;
-        if (tryAt("console-desk", r.x + 1, deskY)) tryAt("crew-chair", r.x + 1, deskY + 1);
-        tryAt("rug-hex", r.x + Math.max(1, r.w - 3), deskY + 1);
-        scatter(r, ["planter-box", "cargo-crate", "stool"], 2, 5);
-        break;
-      }
-      case "mess":
-        alongBack(r, ["galley-counter", "galley-fridge", "vending-int"], 1);
-        onFace(r, ["wall-screen-b", "wall-lamp"], 5);
-        for (let k = 0; k < 3; k++) {
-          const xx = r.x + 2 + k * 4, yy = floorTop(r) + 3;
-          if (tryAt("mess-table", xx, yy)) { tryAt("stool", xx, yy + 1); tryAt("stool", xx + 1, yy + 1); }
-        }
-        break;
-      case "hygiene":
-        alongBack(r, ["shower-pod", "shower-pod", "shower-pod"], 0);
-        for (let k = 0; k < 3; k++) tryAt("sink-unit", r.x + 1 + k, r.y + r.h - 2);
-        tryAt("locker-row", r.x + r.w - 3, floorTop(r) + 3);
-        onFace(r, ["vent-grill"], 4);
-        break;
-      case "medbay":
-        alongBack(r, ["med-cabinet", "med-scanner"], 1);
-        scatter(r, ["med-bed", "med-bed", "crew-chair"], 3, 2);
-        onFace(r, ["wall-screen-c"], 5);
-        break;
-      case "cryo":
-        alongBack(r, ["cryo-bank", "cryo-pod", "cryo-pod"], 0);
-        scatter(r, ["power-conduit", "analysis-console"], 2, 3);
-        break;
-      case "server":
-        alongBack(r, ["server-rack", "server-rack", "server-rack", "server-rack", "server-rack"], 0);
-        scatter(r, ["power-conduit", "console-desk", "pipe-cluster"], 2, 2);
-        break;
-      case "hydro":
-        alongBack(r, ["hydroponic-rack", "hydroponic-rack", "hydroponic-rack"], 1);
-        scatter(r, ["planter-box", "planter-box"], 2, 2);
-        break;
-      case "storage":
-        alongBack(r, ["cargo-container-int", "locker-row"], 1);
-        scatter(r, ["cargo-crate", "cargo-pallet", "cargo-crate"], 3, 2);
-        break;
-    }
-  }
+  for (const r of lowRooms) furnishRoom(b, tools, r);
   const areas: SfArea[] = rooms.map((r) => ({ name: r.name, x: r.x, y: r.y, w: r.w, h: r.h, tag: r.tag,
     ...(doorCells.find((d) => d.x >= r.x && d.x < r.x + r.w && (d.y === r.y - 1 || d.y === r.y + r.h)) ? { door: doorCells.find((d) => d.x >= r.x && d.x < r.x + r.w && (d.y === r.y - 1 || d.y === r.y + r.h))! } : {}) }));
+  // 승강기·에어록: 문 칸 = 벽 앞면 아랫줄(막힘), 그 앞 바닥 칸이 접근칸 — 거리의 건물 문과 같은 모양이라 다른 맵(거주실·진료실)을 여기에 단다.
+  for (const lift of lifts) {
+    const s = b.kitSize(lift.id) ?? { w: 2, h: 2 };
+    areas.push({ name: lift.id === "airlock-inner" ? "에어록" : "승강기", x: lift.x, y: top.y, w: s.w, h: s.h, tag: lift.id === "airlock-inner" ? "airlock" : "elevator", door: { x: lift.x, y: floorTop(top) - 1 } });
+  }
   return { areas, spawn };
+}
+
+// ─────────────────────────────── 한 칸짜리 방(거주실·식당·진료실)
+const ROOM_PLAN: Readonly<Record<SfRoomKind, { name: string; tag: string; floor: string; hull: "hull" | "white" }>> = {
+  quarters: { name: "거주실", tag: "cabin", floor: "crew-floor", hull: "hull" },
+  canteen: { name: "식당", tag: "mess", floor: "lab-floor", hull: "hull" },
+  clinic: { name: "진료실", tag: "medbay", floor: "lab-floor", hull: "white" },
+};
+
+/**
+ * 방 하나: 벽 한 칸 두께 안쪽 전부가 방이고, 맨 아래 벽 줄을 두 칸 뚫어 나가는 문으로 쓴다(맵 맨 아래 줄의 걷는 칸 = 들어오고 나가는 칸).
+ * 가구는 정거장·연구 기지의 같은 방(선실·식당·의무실) 한 벌이고, 넓은 방은 남는 바닥에 그 방의 것을 조금 더 놓는다.
+ */
+function composeRoom(b: Board, kind: SfRoomKind): { areas: SfArea[]; spawn: { x: number; y: number } } {
+  const { w: Wd, h: Hd } = b;
+  const plan = ROOM_PLAN[kind];
+  const grid = new Array<number>(Wd * Hd).fill(CELL_WALL);
+  const roomOf = new Array<number>(Wd * Hd).fill(-1);
+  const room: Room = { name: plan.name, tag: plan.tag, x: 1, y: 1, w: Wd - 2, h: Hd - 2, floor: plan.floor };
+  for (let y = room.y; y < room.y + room.h; y++) for (let x = room.x; x < room.x + room.w; x++) { grid[b.idx(x, y)] = CELL_FLOOR; roomOf[b.idx(x, y)] = 0; }
+  // 나가는 문은 가운데에서 한두 칸 옆 — 책상·침대가 붙는 왼쪽 벽을 비켜 오른쪽으로.
+  const exitX = Math.max(3, Math.min(Wd - 4, Math.floor(Wd / 2) + b.int(0, 1)));
+  const door = { x: exitX, y: Hd - 1 };
+  for (const dx of [0, 1]) grid[b.idx(exitX + dx, Hd - 1)] = CELL_FLOOR;
+  const face = paintShell(b, plan.hull, grid, [room], roomOf, room);
+  for (const dx of [0, 1]) b.setLower(exitX + dx, Hd - 1, b.floor("deck-hazard", 0));
+  const spawn = { x: exitX, y: Hd - 2 };
+  const must = [{ x: exitX, y: Hd - 1 }, { x: exitX + 1, y: Hd - 1 }, { x: exitX, y: Hd - 2 }, { x: exitX + 1, y: Hd - 2 }, { x: room.x + Math.floor(room.w / 2), y: floorTop(room) + Math.floor((room.h - 2) / 2) }];
+  const tools = roomTools(b, [door], face, spawn, must, true);
+  furnishRoom(b, tools, room);
+  // 한 칸 방은 갑판의 같은 방보다 넓다 — 남는 바닥에 그 방의 살림을 더한다.
+  if (kind === "quarters") { tools.tryAt("mess-table", room.x + room.w - 4, floorTop(room) + 2); tools.tryAt("stool", room.x + room.w - 4, floorTop(room) + 3); tools.scatter(room, ["planter-box", "locker"], 2, 3); }
+  if (kind === "clinic") { tools.tryAt("console-desk", room.x + 1, room.y + room.h - 3); tools.tryAt("crew-chair", room.x + 1, room.y + room.h - 2); }
+  if (kind === "canteen") tools.scatter(room, ["planter-box", "bench"], 2, 4);
+  return { areas: [{ name: plan.name, x: room.x, y: room.y, w: room.w, h: room.h, tag: plan.tag }, { name: "나가는 문", x: exitX, y: Hd - 1, w: 2, h: 1, tag: "exit", door }], spawn };
 }
 
 // ─────────────────────────────── 네온 거리
@@ -631,13 +712,13 @@ function composeMoonbase(b: Board): { areas: SfArea[]; spawn: { x: number; y: nu
  * tileset 은 번들 sf_station 사본이어야 한다(키트 `sf-…`·오토타일 `sf-at-…`·바닥 그룹 `sf:floor:…`).
  */
 export function composeSfStationMap(map: GameMap, tileset: TilesetDef, kind: SfMapKind, seed: number): SfComposeResult {
-  const b = new Board(map, tileset, seed + (kind === "station" ? 0 : kind === "lab" ? 7919 : kind === "street" ? 15887 : 23861));
+  const b = new Board(map, tileset, seed + KIND_SALT[kind]);
   for (let i = 0; i < map.width * map.height; i++) { setLayerTileAt(map, 2, i, -1); setLayerTileAt(map, 3, i, -1); setLayerTileAt(map, 4, i, -1); }
-  const out = kind === "street" ? composeStreet(b) : kind === "moonbase" ? composeMoonbase(b) : composeInterior(b, kind);
+  const out = kind === "street" ? composeStreet(b) : kind === "moonbase" ? composeMoonbase(b) : kind === "station" || kind === "lab" ? composeInterior(b, kind) : composeRoom(b, kind);
   const counts = new Map<string, number>();
   for (const p of b.placed) counts.set(p.id, (counts.get(p.id) ?? 0) + 1);
   const top = [...counts.entries()].sort((a, c) => c[1] - a[1]).slice(0, 8).map(([id, n]) => `${id}×${n}`).join(", ");
-  const kindKo = { station: "정거장 로비·거주구", lab: "연구 기지 실내", street: "사이버 네온 거리", moonbase: "달 기지 야외" }[kind];
+  const kindKo = { station: "정거장 로비·거주구", lab: "연구 기지 실내", street: "사이버 네온 거리", moonbase: "달 기지 야외", quarters: "거주실", canteen: "식당", clinic: "진료실" }[kind];
   return {
     kind, seed, placed: b.placed, areas: out.areas, spawn: out.spawn, skipped: b.skipped,
     summary: `${kindKo} ${map.width}×${map.height} (seed ${seed}) — 구역 ${out.areas.length}곳 · 기물 ${b.placed.length}개(${top})`,
