@@ -3037,8 +3037,9 @@ function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRu
     .map((skillId) => skills.get(skillId))
     .filter((skill): skill is NonNullable<typeof skill> => !!skill && (skill.scope === "enemy" || skill.scope === "allEnemies") && (skill.power ?? 0) > 0)
     .sort((a, b) => expected(b) - expected(a) || (b.power ?? 0) - (a.power ?? 0));
-  // 몬스터 게임의 플레이어는 체력이 바닥나면 가방의 회복약을 쓴다(교수가 다섯 개를 쥐여 준다).
-  const potion = project.system.battleModel === "gen1" && active && active.hp > 0 && active.hp <= active.maxHp * 0.3
+  // 플레이어는 체력이 바닥나면 가방의 회복약을 쓴다(몬스터 게임은 교수가 다섯 개를 쥐여 주고, 조수가 지은 게임은 길 위 전투·보스전 몫을 들고 시작한다).
+  // 예전에는 몬스터 게임만 그랬다 — 그 밖의 게임은 «공격» 만 눌러, 약을 써야 이기는 보스를 막다른 길로 읽었다(2026-11-12).
+  const potion = active && active.hp > 0 && active.hp <= active.maxHp * 0.3
     ? project.database.items
       .filter((item) => (item.hpRecovery.flat > 0 || item.hpRecovery.percentMax > 0) && !item.onlyUsableInMenu && !item.onlyEffectiveOnDeadActors
         && (item.occasion === "always" || item.occasion === "battle") && (snapshot.eventState.inventory[item.id] ?? 0) > 0)
@@ -3075,7 +3076,7 @@ function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRu
   const healWithMove: ActorCommand[] = healMove ? [{ kind: "skill", skillId: healMove.id, targetEnemyId }] : [];
   const attempts: ActorCommand[] = project.system.battleModel === "gen1"
     ? [...run, ...healSelf, ...healWithMove, ...throwBall, ...damaging.map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }]
-    : [{ kind: "attack", targetEnemyId }];
+    : [...healSelf, { kind: "attack", targetEnemyId }];
   for (const command of attempts) {
     runtime.performActorCommand(command);
     const after = read();

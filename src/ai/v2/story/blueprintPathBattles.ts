@@ -5,6 +5,7 @@ import { battleStepBypass, isBattleStep, isCodeStep, victoryGatedSwitches } from
 import { foeTroop } from "./stepFoeTroop";
 import { fitTroopCopy } from "@/editor/tools/bossThreatScaling";
 import { simulateBattle } from "@/battle/simulate";
+import { PATH_TROOP_PREFIX } from "./pathBattleBudget";
 import { planObjective } from "../judge/objectivePlan";
 import { OBJECTIVE_SURFACE } from "../judge/objectiveCommand";
 import { norm, sameName, mapFor, josa, RawPage } from "./blueprintPathNames";
@@ -336,8 +337,9 @@ export function fitUnwinnableStepBattlesIn(project: Project, write?: (mapId: str
             if (!verdict.has(troopId)) {
               let replace: string | undefined;
               try {
-                const sim = simulateBattle({ project, troopId, heroLevel: level, partyActorIds: party, n: 12, seed: 7, useSkills: true });
-                if (sim.winRate < STEP_BATTLE_MIN_WIN) {
+                // 길 맞춤 사본(troop_path_*)은 끝맺음 path-battles 가 «가진 회복약을 쓰는 플레이» 로 이미 쟀다 — 맨몸으로 다시 재 맞추면 턴마다 사본이 쌓인다.
+                const sim = troopId.startsWith(PATH_TROOP_PREFIX) ? undefined : simulateBattle({ project, troopId, heroLevel: level, partyActorIds: party, n: 12, seed: 7, useSkills: true });
+                if (sim && sim.winRate < STEP_BATTLE_MIN_WIN) {
                   const fitted = fitTroopCopy(project, troopId, "boss");
                   if (fitted && fitted !== troopId) { replace = fitted; notes.push(`「${ev.name ?? ev.id}」 전투 ${troopId}(승률 ${Math.round(sim.winRate * 100)}%)를 시작 파티에 맞춘 ${fitted} 로`); }
                 }

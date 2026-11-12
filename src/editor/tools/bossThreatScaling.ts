@@ -152,7 +152,8 @@ export function scaleBossToStartParty(project: Project, enemy: EnemyRecord, lock
 
 /** 역할별 맞춤 목표: 영웅 평타 몇 대에 한 마리가 쓰러지나 · 적 평타 한 대가 영웅 최대 HP 의 몇 할인가 · 모의전 하한/상한 · 파티 대비 민첩. */
 const FIT_TARGETS = {
-  field: { hits: 2, perExtraMember: 1, share: 0.05, minWin: 0.95, maxLoss: 0.35, minLoss: 0, agility: 0.8, levelOffset: 0 },
+  // 길 적: 평타 세 대(두 대면 적이 한 번도 못 치고 쓰러졌다 — 지옥 사냥개 2타·받은 피해 0), 한 판에 HP 를 조금은 잃는다.
+  field: { hits: 3, perExtraMember: 1, share: 0.07, minWin: 0.95, maxLoss: 0.35, minLoss: 0.08, agility: 0.8, levelOffset: 0 },
   midBoss: { hits: 6, perExtraMember: 3, share: 0.07, minWin: 0.95, maxLoss: 0.6, minLoss: 0.2, agility: 0.9, levelOffset: 1 },
   boss: { hits: BOSS_HITS_TO_KILL, perExtraMember: 4, share: BOSS_HIT_SHARE, minWin: BOSS_MIN_WIN_RATE, maxLoss: BOSS_MAX_PARTY_LOSS, minLoss: BOSS_MIN_PARTY_LOSS, agility: 0.9, levelOffset: 2 },
 } as const;
@@ -161,9 +162,16 @@ const FIT_PROBE_TROOP_ID = "__fit_probe";
 export type EnemyFitRole = keyof typeof FIT_TARGETS;
 export type EnemyFit = {
   readonly stats: EnemyStats; readonly level: number; readonly winRate: number; readonly loss: number; readonly note: string;
-  /** 기술을 갈아 끼웠으면 새 행동·기술 목록(아니면 undefined — 원래 것을 둔다). */
+  /** 센 기술을 약한 사본으로 바꿨으면 새 행동·기술 목록(아니면 undefined — 원래 것을 둔다). */
   readonly actions?: EnemyRecord["actions"]; readonly skillIds?: readonly string[];
+  /** 그 약한 사본 기술들 — 적 사본을 프로젝트에 넣기 전에 addFitSkills 로 넣는다. */
+  readonly skills?: readonly SkillRecord[];
 };
+
+/** 맞춤이 만든 약한 사본 기술을 프로젝트 기술 목록에 넣는다(이미 있으면 그대로). */
+export function addFitSkills(project: Project, fit: Pick<EnemyFit, "skills"> | undefined): void {
+  for (const skill of fit?.skills ?? []) if (!project.database.skills.some(known => known.id === skill.id)) project.database.skills.push(structuredClone(skill) as SkillRecord);
+}
 
 /** 맞춤이 그 역할의 목표(승률 하한·손실 상한)에 닿았나 — 못 닿았으면 부르는 쪽이 마릿수를 줄인다. */
 export const fitWithinTarget = (fit: EnemyFit, role: EnemyFitRole): boolean => fit.winRate >= FIT_TARGETS[role].minWin && fit.loss <= FIT_TARGETS[role].maxLoss;
@@ -202,14 +210,17 @@ export function fitEnemyToStartParty(project: Project, enemy: EnemyRecord, role:
   });
   let stats: EnemyStats = { ...enemy.stats, defense, maxHp: tuning.maxHp, attack: tuning.attack, mind: tuning.attack, agility: Math.max(1, Math.round(partyAgility * target.agility)) };
   // 능력치만 낮춰서는 안 되는 적이 있다 — 끝판 기술(마왕의 심판 위력 220·전체)은 위력이 공격력보다 커서 Lv1 파티를 한두 턴에 지운다.
-  // 이 적 사본의 기술만, 같은 대상 범위·같은 능력치(·되도록 같은 속성)의 더 약한 몬스터 기술로 바꾼다(데이터베이스 기술은 그대로).
-  const swapped = swapOverpoweredSkills(project, enemy, role, hero, stats);
+  // 이 적 사본의 기술만, 위력을 낮춘 **그 기술의 사본**으로 바꾼다(이름·속성·연출 그대로, 데이터베이스 기술은 그대로).
+  const swapped = tameOverpoweredSkills(project, enemy, role, hero, stats);
   const measure = (): { winRate: number; loss: number } => {
     const probeEnemy = { ...enemy, stats, ...(swapped ? { actions: swapped.actions, skillIds: swapped.skillIds } : {}) } as EnemyRecord;
     const probe = normalizeTroopRecord({ id: FIT_PROBE_TROOP_ID, name: enemy.name, enemyIds: Array.from({ length: Math.max(1, count) }, () => enemy.id) });
     const probeProject = {
       ...project,
-      database: { ...project.database, enemies: [...project.database.enemies.filter(e => e.id !== enemy.id), probeEnemy], troops: [...project.database.troops.filter(t => t.id !== FIT_PROBE_TROOP_ID), probe] },
+      database: {
+        ...project.database, enemies: [...project.database.enemies.filter(e => e.id !== enemy.id), probeEnemy], troops: [...project.database.troops.filter(t => t.id !== FIT_PROBE_TROOP_ID), probe],
+        ...(swapped ? { skills: [...project.database.skills.filter(k => !swapped.skills.some(c => c.id === k.id)), ...swapped.skills] } : {}),
+      },
     } as Project;
     const result = simulateBattle({ project: probeProject, troopId: FIT_PROBE_TROOP_ID, heroLevel, partyActorIds: [...partyActorIds], n: SIM_SAMPLES, seed: 1 });
     return { winRate: result.winRate, loss: 1 - result.avgHpRemaining / partyHp };
@@ -240,51 +251,47 @@ export function fitEnemyToStartParty(project: Project, enemy: EnemyRecord, role:
   const level = heroLevel + target.levelOffset;
   return {
     stats, level, winRate: outcome.winRate, loss: outcome.loss,
-    ...(swapped ? { actions: swapped.actions, skillIds: swapped.skillIds } : {}),
+    ...(swapped ? { actions: swapped.actions, skillIds: swapped.skillIds, skills: swapped.skills } : {}),
     note: `${enemy.name}: 시작 파티 Lv${heroLevel}(HP ${partyHp}) 기준 ${role} 맞춤 — HP ${stats.maxHp}·공 ${stats.attack}·방 ${stats.defense}·민 ${stats.agility}×${count}, 모의 ${SIM_SAMPLES}판 승률 ${Math.round(outcome.winRate * 100)}%·HP 손실 ${Math.round(outcome.loss * 100)}%`,
   };
 }
 
 type SkillRecord = Project["database"]["skills"][number];
 
-function swapOverpoweredSkills(
+/**
+ * 한 방이 그 역할의 상한(영웅 최대 HP 비율)을 넘는 피해 기술을 위력만 낮춘 사본(`skill_fit_<역할>_<적>_<기술>`)으로 바꾼다.
+ * 왜: 예전에는 상한 안에 드는 다른 몬스터 기술로 갈아 끼웠다 — 불의 정령이 「산성 침」을 쓰고, 종이 달라도 기술이 같아졌다.
+ * 그 적의 기술은 그 적의 정의에서 온다: 이름·속성·대상·연출은 그대로 두고 위력만 내린다.
+ */
+function tameOverpoweredSkills(
   project: Project, enemy: EnemyRecord, role: EnemyFitRole,
   hero: { readonly maxHp: number; readonly defense: number; readonly mind: number }, stats: EnemyStats,
-): { actions: EnemyRecord["actions"]; skillIds: string[] } | undefined {
-  const skills = new Map(project.database.skills.map(skill => [skill.id, skill]));
-  const element = (skill: SkillRecord) => skill.elementId;
-  const statistic = (skill: SkillRecord) => (skill.effect?.kind === "damage" ? skill.effect.statistic : undefined);
-  const expected = (skill: SkillRecord): number => {
+): { actions: EnemyRecord["actions"]; skillIds: string[]; skills: SkillRecord[] } | undefined {
+  const known = new Map(project.database.skills.map(skill => [skill.id, skill]));
+  const hitsOf = (skill: SkillRecord) => (skill.hitSequence?.length ? skill.hitSequence.reduce((a, b) => a + b, 0) : 1);
+  const expected = (skill: SkillRecord, power = skill.power): number => {
     if (skill.effect?.kind !== "damage" || skill.effect.affects !== "hp" || skill.damageFormula) return 0;
     const mind = skill.effect.statistic === "mind";
-    const hits = skill.hitSequence?.length ? skill.hitSequence.reduce((a, b) => a + b, 0) : 1;
-    return Math.max(1, skill.power + Math.floor((mind ? stats.mind : stats.attack) / 2) - Math.floor((mind ? hero.mind : hero.defense) / 2)) * hits;
+    return Math.max(1, power + Math.floor((mind ? stats.mind : stats.attack) / 2) - Math.floor((mind ? hero.mind : hero.defense) / 2)) * hitsOf(skill);
   };
   const cap = (skill: SkillRecord) => hero.maxHp * SKILL_HIT_CAP[role][skill.scope === "allEnemies" ? 1 : 0];
-  const pool = project.database.skills.filter(skill => skill.id.startsWith("skill_mon_") && skill.effect?.kind === "damage" && !skill.damageFormula);
-  const replace = (skill: SkillRecord): string | null => {
-    if (expected(skill) <= cap(skill)) return skill.id;
-    const fits = pool.filter(other => other.scope === skill.scope && statistic(other) === statistic(skill) && expected(other) <= cap(skill));
-    const best = [...fits].sort((a, b) => Number(element(b) === element(skill)) - Number(element(a) === element(skill)) || b.power - a.power)[0];
-    return best?.id ?? null;
-  };
-  let changed = false;
-  const map = new Map<string, string | null>();
-  const pick = (id: string): string | null => {
-    if (!map.has(id)) {
-      const skill = skills.get(id);
-      const next = skill ? replace(skill) : id;
-      if (next !== id) changed = true;
-      map.set(id, next);
+  const tail = enemy.id.replace(/^enemy_/u, "");
+  const copies = new Map<string, SkillRecord>();
+  const pick = (id: string): string => {
+    const skill = known.get(id);
+    if (!skill || id.startsWith("skill_fit_") || expected(skill) <= cap(skill)) return id;
+    const copyId = `skill_fit_${role}_${tail}_${id.replace(/^skill_/u, "")}`;
+    if (!copies.has(copyId)) {
+      const mind = skill.effect?.kind === "damage" && skill.effect.statistic === "mind";
+      // expected(power) = (power + 능력/2 − 방어/2) × 타수 ≤ 상한 을 power 로 푼다. 능력치만으로 넘으면 위력 1.
+      const power = Math.max(1, Math.floor(cap(skill) / hitsOf(skill) - Math.floor((mind ? stats.mind : stats.attack) / 2) + Math.floor((mind ? hero.mind : hero.defense) / 2)));
+      copies.set(copyId, { ...structuredClone(skill), id: copyId, power: Math.min(skill.power, power) } as SkillRecord);
     }
-    return map.get(id)!;
+    return copyId;
   };
-  const actions = (enemy.actions ?? []).flatMap(action => {
-    const next = pick(action.skillId);
-    return next ? [{ ...action, skillId: next }] : [];
-  });
-  const skillIds = [...new Set(((enemy as unknown as { skillIds?: string[] }).skillIds ?? []).map(pick).filter((id): id is string => !!id))];
-  return changed ? { actions, skillIds } : undefined;
+  const actions = (enemy.actions ?? []).map(action => ({ ...action, skillId: pick(action.skillId) }));
+  const skillIds = [...new Set(((enemy as unknown as { skillIds?: string[] }).skillIds ?? []).map(pick))];
+  return copies.size ? { actions, skillIds, skills: [...copies.values()] } : undefined;
 }
 
 /** 맞춘 사본 적 그룹 id 접두 — pickTroops 가 다시 고르지 않는다. */
@@ -320,6 +327,7 @@ export function fitTroopCopy(project: Project, troopId: string | undefined, role
       (copy as { level?: number }).level = fit.level;
       if (fit.actions) copy.actions = fit.actions;
       if (fit.skillIds) (copy as { skillIds?: readonly string[] }).skillIds = fit.skillIds;
+      addFitSkills(project, fit);
       project.database.enemies.push(copy);
     }
     copies.set(enemyId, copyId);
