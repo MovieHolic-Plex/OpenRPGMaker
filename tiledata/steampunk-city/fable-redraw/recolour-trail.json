@@ -1,0 +1,3013 @@
+{
+ "note": "면제 묶음에 싣지 못하는 장별 흔적(owner-waive 는 장마다 메모를 받지 않는다): 지금 그림 해시 · 바꾸기 전 그림 해시 · 그 그림의 옛 영수증(판정·프로필). recolour 무리의 옛 판정은 모두 미보정 프로필의 pass 였다.",
+ "counts": {
+  "fable": 62,
+  "recolour": 127
+ },
+ "items": [
+  {
+   "group": "fable",
+   "id": "sp-cobble",
+   "piece": "terrain/sp-cobble",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-cobble",
+   "pixelSha256": "bd158a338c3db59bdf689f432b20f31be08bc3ec629b0991a8b880a0ec0dfafb",
+   "before": {
+    "pixelSha256": "5f5f4f9c69a91b717ed54522cc30b0041fb775bc1167a35eb11fe629bc1ed080",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-cobble-b",
+   "piece": "terrain/sp-cobble-b",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-cobble-b",
+   "pixelSha256": "f758e10d82cb1fbbe0793dffdf1223a39a1c4b24ff75b2e009941f95897d5ede",
+   "before": {
+    "pixelSha256": "7e809f829b79d2d27daaa2cbce75e9543aaecf57762dbbb5fc454d74cc3d9561",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-cobble-c",
+   "piece": "terrain/sp-cobble-c",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-cobble-c",
+   "pixelSha256": "047c2b0b5dd3519ce396c5b950eb35a0bd41d8402f841882f4b7cd41277384d9",
+   "before": {
+    "pixelSha256": "9d5f6d44483cfdb9641e969d49d50fd04f9f20aa8031765660e618bf533ee53d",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-cobble-oil",
+   "piece": "terrain/sp-cobble-oil",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-cobble-oil",
+   "pixelSha256": "bc8f8d37bd7ae93bc89239cec8ef180aa952cebcbafded57ffb0e170f62aea25",
+   "before": {
+    "pixelSha256": "ec8ce7d7989ae123215d14fcc1f2d63011d7fb83be00d105279fc709e934cc2e",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-flag",
+   "piece": "terrain/sp-flag",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-flag",
+   "pixelSha256": "2a300ef6f6094b6b0bb1c62d75dc63ef0146670973cba460b87958f829d2eba3",
+   "before": {
+    "pixelSha256": "36e8814800d6a4eea83fe0dbc15df570991f5915b354861eb60f460e83b3b76b",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-flag-c",
+   "piece": "terrain/sp-flag-c",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-flag-c",
+   "pixelSha256": "b1662b80571a601f0ab5da297107ef57f9501cdbf1d8aa4d07b83e3906589044",
+   "before": {
+    "pixelSha256": "d791fcd650a123fb5d16299636c3c93fc78f970e1a87d033d80dba81c2c63cdb",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-curb-s",
+   "piece": "terrain/sp-curb-s",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "7079060a7c78c2a70a31dd8e6f3d2ae7e65229a6ac8590da0441d42fa6020932",
+   "before": {
+    "pixelSha256": "fa20c358dcf1ea5f31ca179e0c20954b101ff3cf61ec53c7e5b975ed408e0a48",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-curb-n",
+   "piece": "terrain/sp-curb-n",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "6f378df1bff0423e3e2e05f13726c28e5ef9006756e3f307db3bc9f64489f5e1",
+   "before": {
+    "pixelSha256": "841a76702aa1877fce6bbff1b7a76a4486a90d7f774b896a2dbf962c21dc0684",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-brickpave",
+   "piece": "terrain/sp-brickpave",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "d105cc3f214f1f6d761a322b9530fbd70fd305e626457111abf1cae3f1d8dfcc",
+   "before": {
+    "pixelSha256": "0156b9eeec2ab544280eba044aa5e82e8835d2d8b3f341a877ba22201cc2baef",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-brickpave-b",
+   "piece": "terrain/sp-brickpave-b",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "65a1eb2fb53b512e31d0d2365ca79f2171712639a664f66983360dfbc574f203",
+   "before": {
+    "pixelSha256": "e3840464210358b369a33ba32733dfec2f81aef5d1246737f3871bedb510a8ec",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-tread",
+   "piece": "terrain/sp-tread",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "8308054c44cd1f94d81879f6130d498ddd36089a66192585b9d2e98d46a621ee",
+   "before": {
+    "pixelSha256": "97a886cf800278b5be88d3a7df6314eecb47f374fa20fa163c996f9a6bda903a",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-grate",
+   "piece": "terrain/sp-grate",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "4eaa9d0f50a87eb0ff445cf42700d1259deda5db652bf77720ccc91d94fd4f5c",
+   "before": {
+    "pixelSha256": "8a141c93b4122225bcb3ac13f2dfd1f75a49ebcd6fe24ca565fb6af226c7a7a3",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-cinder",
+   "piece": "terrain/sp-cinder",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-cinder",
+   "pixelSha256": "e26336dc666e6893543a76a4f93e37d719649172793ab8c0998fb732911ccc20",
+   "before": {
+    "pixelSha256": "25af10d06fe104ece2ca53855bda0ca090ae4368032bda6308c78355c056a6f9",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-cinder-b",
+   "piece": "terrain/sp-cinder-b",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-cinder-b",
+   "pixelSha256": "232cec3b28c99a311a520081c9a8b74027aa794bb08615f6d9827c89362713fd",
+   "before": {
+    "pixelSha256": "b067b0f55c9b55e79654d752899e7083b0f404901d6510838e018132d8b465da",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-cinder-c",
+   "piece": "terrain/sp-cinder-c",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-cinder-c",
+   "pixelSha256": "4c0d2476659cc8b27936992b825f43aa3c20a368a9383c1f6f11247f0a65dfc2",
+   "before": {
+    "pixelSha256": "7fe8bf77d0ec2e247105509b931453b12f0763b3abf9c1ebf61ce5d3943ca4e1",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-grass",
+   "piece": "terrain/sp-grass",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-grass",
+   "pixelSha256": "8efe27e071ba2f4f78a8ec936bb2d7f42cdb70fe2f1b2045770ed76dbcb0b08b",
+   "before": {
+    "pixelSha256": "90d92a3fb8c8c08179298f990b8e00d3f1365d1623d49bacc7f933f793aecd0f",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-soil",
+   "piece": "terrain/sp-soil",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-soil",
+   "pixelSha256": "5d5e80c7e4f62363edae513a61149abfdd4b4fa09a711810072d0f5d6171d039",
+   "before": {
+    "pixelSha256": "4ce67569acc3a0a22088d3227fa306dd4d1f0dac201115f5f3b4dbe75be5664a",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-rail-n",
+   "piece": "terrain/sp-rail-n",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-rail-n",
+   "pixelSha256": "ec49b1e180107ed923cde285bf09ebc855ce61eb67303758bfd4993435cc9d2e",
+   "before": {
+    "pixelSha256": "45f8a476cd48e8df99977a1f0ae3da0fca7f355518279208803e8105192bef63",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-rail-s",
+   "piece": "terrain/sp-rail-s",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-rail-s",
+   "pixelSha256": "b8739c883d4f9d3d4043af80b9073d1abc2bbed38938dff9a19c7ed46468b65e",
+   "before": {
+    "pixelSha256": "04be87d3fd6c6914456eed2e369e4da5b97547d9040f3001c3bbaf4f93261645",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-tram-n",
+   "piece": "terrain/sp-tram-n",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-tram-n",
+   "pixelSha256": "36802fbc72dae79609f54ae5c93dfaf2483fe74447762a90ca63a08c503bbbb8",
+   "before": {
+    "pixelSha256": "8dc9f7c3c0993cf5b2a7a8841ede1f849aa7b66a07bfce8fb0b2af599c723d13",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-tram-s",
+   "piece": "terrain/sp-tram-s",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-tram-s",
+   "pixelSha256": "4080051b93b2660b6a6cd4f94a719822caa4297a12c429542251f44969d133b7",
+   "before": {
+    "pixelSha256": "25393feffe296f9b160181501e8c9d1be4d17471735911378c445b0185475238",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-water",
+   "piece": "terrain/sp-water",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-water",
+   "pixelSha256": "a129b533594816300096af57df2c1ed9ce400b8265fe0bb97436c5fce32cbf4f",
+   "before": {
+    "pixelSha256": "698c340b7907bb68a1afc8e85cd2e634b6d1d2541a9ec5ebd9ad710dd2cb3a88",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-water-f1",
+   "piece": "terrain/sp-water-f1",
+   "kind": "terrain",
+   "how": "Fable 한 방 그림을 코드로 민 애니메이션 프레임",
+   "pixelSha256": "75750ea1f7915862852f6a38ff1d7fce519a2e50437a16eec026864cbbca4b1b",
+   "before": {
+    "pixelSha256": "04005ebf637cf6cedd1112db17c2436aa45e8e5f45fae0cca638bf8935a04c9c",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-water-f2",
+   "piece": "terrain/sp-water-f2",
+   "kind": "terrain",
+   "how": "Fable 한 방 그림을 코드로 민 애니메이션 프레임",
+   "pixelSha256": "031ada3ed82e77c4d7ee9153a5da418ea61594e3be766e19805b9538852f8b28",
+   "before": {
+    "pixelSha256": "7d75996f4dc5b99fc927b6806ec3d8fb7dfb3865aa528f2e31e21c7d9615a797",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-quay",
+   "piece": "terrain/sp-quay",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "5403cb8867fe84fe48405689b301802f54bb9eafa31e76356af5ad2c1911f657",
+   "before": {
+    "pixelSha256": "0d8ade29a3e93633c69a3ba2c9d26afc8a30fc142a65bc0dbf90c2322263ff21",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-quay-lip",
+   "piece": "terrain/sp-quay-lip",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "78e1a220b20b3e79d22079a6d6410919afee53b461be913f842986e8b1f2feba",
+   "before": {
+    "pixelSha256": "987c3c9d4e771284134c3516a0901b583a29365ce03fbf16b3347b79a103ab89",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-deck",
+   "piece": "terrain/sp-deck",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "dfbb346711f743bc4c8bd4fe8715626c38e67483494471495bc27cce6ba501e2",
+   "before": {
+    "pixelSha256": "e93efdb7306895c504daba62df638264df11c941f391f023309b2198065d9de4",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-deck-edge",
+   "piece": "terrain/sp-deck-edge",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "0ae6b49601e94d81dc9bd4768be30d6355f052528db889ba57c6117564a3ceff",
+   "before": {
+    "pixelSha256": "0a1ab2df16ddccf817de9fdaa450e8b496b08656af3739bce2d4c653b6a22c32",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-platform",
+   "piece": "terrain/sp-platform",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-platform",
+   "pixelSha256": "70981f5e055e8e598e98320f1462c201f20fa4a86ec1d5c60a66c857085c62e4",
+   "before": {
+    "pixelSha256": "4666e15e14ef167d44400826131fee0b8b2b82ee4c28c9d998693a854f6f55a3",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-platform-edge",
+   "piece": "terrain/sp-platform-edge",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "e607db564069d36868d4354965e9b7ad8dada7d690c2916ec312e424774e9828",
+   "before": {
+    "pixelSha256": "d77377e230627120506949d382b82333afe4b2fa3acaab28aa062be7d6873bb9",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-bridge-w",
+   "piece": "terrain/sp-bridge-w",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "6c8cff02f1e35cfb4976e4a8b4125d78828f10fbd35e7f87f9f901eb8e43c3e2",
+   "before": {
+    "pixelSha256": "f9ac0dd620f7868797d957db11078cb5159f4582f155661057f87db45c8884f0",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-bridge-m",
+   "piece": "terrain/sp-bridge-m",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-bridge-m",
+   "pixelSha256": "71e94ed71498a10855a345a8a5a835f1fa8548c9ae530d41cb6935323ac61f5e",
+   "before": {
+    "pixelSha256": "5d552a650e286010072ed52dbaa66058fca209c55c74bf0b9cb46238a94ab7cb",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-bridge-e",
+   "piece": "terrain/sp-bridge-e",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "eb1792b99971601ce8261d79102247568c20e692d458273d729b489fb15a382c",
+   "before": {
+    "pixelSha256": "3d5aa63b86a113fe7e0721444b048d6702fecdc92af0d4eb1cd6019b83f9067b",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-flag-b",
+   "piece": "terrain/sp-flag-b",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-flag-b",
+   "pixelSha256": "7889a00d29a38f8f1e70090d5d639d53bd88253d0c9b48a024b8cc95a9e7a976",
+   "before": {
+    "pixelSha256": "96d301e25d53041b4c0db80fd27f99c4a0fb5034929661c9eb4ca64e04ee1445",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-clock-post",
+   "piece": "street/sp-clock-post",
+   "kind": "column",
+   "how": "Fable 5.2 medium 한 방: q-clock-post",
+   "pixelSha256": "63c0b846cc32aac4cbaa44d38263eab3d8b5ddbe2461aa857fe09324388f5ba9",
+   "before": {
+    "pixelSha256": "cbfa4a780fe321efd502da4cf2a6e7d70bc09ec7d5b130e61466b437fcc32dd8",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pillar-box",
+   "piece": "street/sp-pillar-box",
+   "kind": "column",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "f0d0e6459e43f10642edf5fd1d1fe00a905826cea09d73953b9df40fefb294e0",
+   "before": {
+    "pixelSha256": "a903603258315aa37ce693d2a036d6a055ba73b30c11f0d749742d2e107fd561",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-kiosk",
+   "piece": "street/sp-kiosk",
+   "kind": "structure",
+   "how": "Fable 5.2 medium 한 방: q-kiosk",
+   "pixelSha256": "dc4bb53ab8c80e3c7b63cff391f6bb93341760ab2b8d85c70ed4fba3938e40e1",
+   "before": {
+    "pixelSha256": "ad2ace785b02ec52d32d13e3c9f444767daf1beab9b9d88a8a74e3400f27c9cd",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-poster-column",
+   "piece": "street/sp-poster-column",
+   "kind": "column",
+   "how": "Fable 5.2 medium 한 방: q-poster-column",
+   "pixelSha256": "57f763d92fbe1c72aed6a430cfb44a8750f87d4b1b7fb6052326dcdbd1836347",
+   "before": {
+    "pixelSha256": "7444c95c30735c4bc9734ad7eadbe7844c128f0e3a0fae38b820de427e2bae0a",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-gear-monument",
+   "piece": "street/sp-gear-monument",
+   "kind": "figure",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "0d99dafd6474e98702ecada3108107e2fad9f7b82dce2dfed28101378f6c1050",
+   "before": {
+    "pixelSha256": "082933cfdc9a4959f633a0edeadefd9e3bfb0d60d0fc4825b31127bbb00c8ba1",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "figure"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-fountain",
+   "piece": "street/sp-fountain",
+   "kind": "container",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "7e6df04dad3f59b3f33b0c14710814034643ef19373e3a8ef774ecd464a8a0c8",
+   "before": {
+    "pixelSha256": "2a380b051f565ccd01c9cf8935a2ee6dce2ac377fc96141e7383737ce4c812b5",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-plane-tree",
+   "piece": "street/sp-plane-tree",
+   "kind": "organic",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "065128a50996ed058447722feb51460b536467ea5a5d57d5d7cc2e545f20dff8",
+   "before": {
+    "pixelSha256": "505f11de915f078449be5508844e2977d4b004ec889e91b14e0d11945a3b7db7",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "organic"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-planter",
+   "piece": "street/sp-planter",
+   "kind": "container",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "b260dde2a338db44b8932bd0d23cea32f386ada1167cab5619287bb890df81f2",
+   "before": {
+    "pixelSha256": "4bc4278a37c1d37c8d02d14941c925c5e4fbda9a7d49bbf8e58aff87ba4e75cb",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-scrap-heap",
+   "piece": "street/sp-scrap-heap",
+   "kind": "debris",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "d6dc218aa2b8caf7837883af5c7cb133fe40843008fcb91a70a09873e2688278",
+   "before": {
+    "pixelSha256": "4ff5bae2cfc7778b02389737b233c253e36963d48ae1dd643e73d2ba088150b9",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "debris"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-gasometer",
+   "piece": "street/sp-gasometer",
+   "kind": "structure",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "5690f9d79f654f2427f1a8de75f31a4cc9755b8a896c6f0f5d23895e3cb36bb1",
+   "before": {
+    "pixelSha256": "d712e62ca7c362f6ea53b9a29c7f7942c07073d1735c4fc412bf9eade2432411",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-rail-signal",
+   "piece": "street/sp-rail-signal",
+   "kind": "column",
+   "how": "Fable 5.2 medium 한 방: q-rail-signal",
+   "pixelSha256": "a48b7e8412af0b476c961bc767af8995ac489b8f4e8d2b1b5195029febcf77a5",
+   "before": {
+    "pixelSha256": "2c4e74899f04afc8e187f25d6d39aa2d66a7eab56f3b9fb33fcade6b292c1572",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-buffer-stop",
+   "piece": "street/sp-buffer-stop",
+   "kind": "box",
+   "how": "Fable 5.2 medium 한 방: q-buffer-stop",
+   "pixelSha256": "0204bbd60486c1dc5cc9a782bca40e0cc54bda595380bbac4c915c5be179bac2",
+   "before": {
+    "pixelSha256": "de7da36ca2339adca11021cde9a23ed6f69794d194f98fe8736592b11d5a1788",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "box"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-bollard",
+   "piece": "street/sp-bollard",
+   "kind": "column",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "1f763119e8a6881d2c063364515b5b67ea14f371d96ae4ccab9c05c1c9cec7d3",
+   "before": {
+    "pixelSha256": "9c8e5efbfb73e1eaedc572d33a68dee5910ae5edc3723522a58c34dd735f71f6",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-rope-coil",
+   "piece": "street/sp-rope-coil",
+   "kind": "flat",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "a82f7897087caf456977aa8292d3463de25d390e0b1bc46576efbcaf3038580e",
+   "before": {
+    "pixelSha256": "0e57068e0ac3e3834fcdfe5c12d8d351afdeb6bc24fb64c2e41bdbac96ddcb79",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "flat"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-chimney",
+   "piece": "street/sp-chimney",
+   "kind": "column",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "c4cc408acc6022ce25ff2afd538c76061f081028ff8d833bdac5fe132a352a8e",
+   "before": {
+    "pixelSha256": "18eb60f63ee3e244795e19305044fb4c8c8324c1e8be4ec5158790e49a11919b",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-hydrant",
+   "piece": "street/sp-hydrant",
+   "kind": "column",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "2dbad6f3f0c4de44101e9261cdc0bb48f4f99559de7420aeea9c505be124223a",
+   "before": {
+    "pixelSha256": "feb1e454c78d6b2023b2ba649557831997c9f06c345d5ba8d7fb741e1b4d1c86",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-gantry-crane",
+   "piece": "street/sp-gantry-crane",
+   "kind": "frame",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "22ef964262d443ee1b3df6b1e0780374b6d26fe2ad67ae1d5db09389aaea426b",
+   "before": {
+    "pixelSha256": "f098e5e820a0f6ad3f98f147acc8be54bcd7257487ea7b152cb1ccc94ae5b778",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "frame"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-jib-crane",
+   "piece": "street/sp-jib-crane",
+   "kind": "structure",
+   "how": "Fable 한 방 부분 조각을 코드로 이음: x-crane-top, x-crane-base",
+   "pixelSha256": "8a89898bf6cdfe15ceaea97238b40a6dc099ea9938717d4a086bb7e4f151e4a5",
+   "before": {
+    "pixelSha256": "8c9d512a20cb8340c7c5aa56daaa35607c814353dbfe0a13ab702d2dd21e4454",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-mooring-mast",
+   "piece": "street/sp-mooring-mast",
+   "kind": "column",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "487a2ab4427ceea38755b26cd963f531c26d01d4940a58cdb7e3386b41e68b8c",
+   "before": {
+    "pixelSha256": "46f182641c8ee4efe8347fff78b7b1768c6e5af1cc780ee57e610384c8d1a36b",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-airship-docked",
+   "piece": "street/sp-airship-docked",
+   "kind": "structure",
+   "how": "Fable 한 방 부분 조각을 코드로 이음: x-air-w, x-air-m, x-air-e, x-air-gondola",
+   "pixelSha256": "0206a937251493ccf319323e107d0882370d0cd0b9cf38ac2b719fb36a3b8df5",
+   "before": {
+    "pixelSha256": "d937109353f03496128cf844840b311c490fbdf1052020748ab94ae01a7715bb",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-tram-shelter",
+   "piece": "street/sp-tram-shelter",
+   "kind": "structure",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "5a948a18cd25ebc2ce5df27b3850ce796e373a74f1a8eafe84ddb11862ce76c8",
+   "before": {
+    "pixelSha256": "1130a82313c72f61bc4784ca0ecdd5827b6819dfdccecc250af4ff3fe5cda1b5",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-row-3",
+   "piece": "buildings/sp-row-3",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "e7ef0bcbce498c9891a445b64cfa00279c82ef18810e3df3a0af196d0b989c63",
+   "before": {
+    "pixelSha256": "7f5380017feea7daa3a6206a0ea5dcbb9898edbe3bd6b7ae52cd8b9816282e41",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-row-4",
+   "piece": "buildings/sp-row-4",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "79ac105046a9165737eb9b5aa573d5975a8de94d7bb428242dac8aab9d88924e",
+   "before": {
+    "pixelSha256": "fe2735b208a7b2d8bee51a6e3a0240476c1683f06f62c1c2ebcd0157f0ab2230",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-row-soot-3",
+   "piece": "buildings/sp-row-soot-3",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "2a2ef4c7a2503bbb84c5987fb57260eba99457de21751c74b496166db281c10e",
+   "before": {
+    "pixelSha256": "33fbf1f4105a7bcb9cd918a8c09c9663dca75f10dc9275a77c45e6e05215d968",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-shop-gears",
+   "piece": "buildings/sp-shop-gears",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "d6c5c80dac517af40d43e0ca9e79454bdfad8e8b52f3d2376697d22308c7cf10",
+   "before": {
+    "pixelSha256": "f15c005d8554fd6acc353ff399a839e908e886d7c3046f686f40b860b8b8870c",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-shop-apoth",
+   "piece": "buildings/sp-shop-apoth",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "61e123a337841bc2c22893437f3f0b7d18308a26c702ad46a43eaff76df067b5",
+   "before": {
+    "pixelSha256": "91c70e37b4d630996218dccd94289bb62855033e8f4113dd21be7fe424bb2680",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-shop-bakery",
+   "piece": "buildings/sp-shop-bakery",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "0ed718be7519ddbcf37b4ea8ed2856cd3a119adf9c6a968b65ae6e7adf5d9e74",
+   "before": {
+    "pixelSha256": "b90c764895bc4281a40ee3c528041bdb1ea8820236d4f60253c7a8799528a2c5",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-inn",
+   "piece": "buildings/sp-inn",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "58a1bea8a0eabc700056ac6fbb74aefbbde0388c46d567533a8ec70a74a3be22",
+   "before": {
+    "pixelSha256": "1ad72eb69d71c9cdc9596c1a293c0976d372eab7f25ed80916744ae37054dce6",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-tavern",
+   "piece": "buildings/sp-tavern",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "5727312173331873c192c5de16492c11baa2b990542b6dd231d2b7e5fda88d8a",
+   "before": {
+    "pixelSha256": "73ca0d88168cd6a25dd966e4be12c812b2fce7ae0cfaa03b073a31054aefb778",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-factory",
+   "piece": "buildings/sp-factory",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "559c94974d8087182e8bce43e77b3d82513b8dce13a960fc823329ecb053ee64",
+   "before": {
+    "pixelSha256": "fc73e20c37e6e3c7cd089e6b6309c83b79233f6562ae9c2689b7ffecdc7530b8",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-boiler-house",
+   "piece": "buildings/sp-boiler-house",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "b7acdbaf97b4fe7a430fefb602c1774a56f7a05997dcc2c36829b4e321b17db6",
+   "before": {
+    "pixelSha256": "489e7f151ec4189ae0474967b90b27f4169ed13681557a501fa227cf7ab08b07",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-warehouse",
+   "piece": "buildings/sp-warehouse",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "c86e562fb859e8384c4dbee6147643c5dd416447b24e3fd0cd8a56336a8742f0",
+   "before": {
+    "pixelSha256": "32331cb229b9aa82810057e3a4fb73459f4ff242bcb970b8f94e65801adef440",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-station",
+   "piece": "buildings/sp-station",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "d0a9504d9ecc16051cf27500b6ec96a9d4a992ca8c008c702e5034b90832f393",
+   "before": {
+    "pixelSha256": "ce98f4f1990f6bbf03f7556c9d07d03d0ae14715e57a78b1d0f4fa5750b0ca2e",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-clock-tower",
+   "piece": "buildings/sp-clock-tower",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "c4eb4a7d9d64602540e29fb2f480be2aa7c0d7856e0b409e42284055092d04c3",
+   "before": {
+    "pixelSha256": "e00e44dc7e95fb95c1f7e3f23c476e9b927f21d831e9b538b3e48f5825b0ad3c",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-guild-hall",
+   "piece": "buildings/sp-guild-hall",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "cdf36ab24501e6ee72799dd846f6d98e114e152bb579a1dff024f999aeaf1a64",
+   "before": {
+    "pixelSha256": "35f58127bc571a939a02b673311c46d47919d31ee3d296fe35778cab22754130",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-workshop",
+   "piece": "buildings/sp-workshop",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "e32a005186af93c701ee3440abf4e4e0ecfe1743a3647213148590023f91652b",
+   "before": {
+    "pixelSha256": "ca5e4b22cac89a7ba8f21f3acf95cad76f2faf3dee1c146dc5942f80f66a5faf",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-lab",
+   "piece": "buildings/sp-lab",
+   "kind": "structure",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "3b89dadaa1f3e1808f75803d250bd278ba58ca2ce7d401485c72bb5e56337254",
+   "before": {
+    "pixelSha256": "80b56506223634a86cfbb69a60507b06b94386a4eae025db6d3618e04409fb93",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pump-house",
+   "piece": "buildings/sp-pump-house",
+   "kind": "structure",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "d6e6d5430853e0c2dab3f9cd289517b8f31b58e27b3e72074b232ea7e853681e",
+   "before": {
+    "pixelSha256": "807fc20750470289a1c127a0f548bbcb08ba7fc6f17038caff7ef010226607b8",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-dock-warehouse",
+   "piece": "buildings/sp-dock-warehouse",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "d70df1fbb93477bac73033e732211655729541b3bc14cd0dbd11adec8e32cd10",
+   "before": {
+    "pixelSha256": "d0150b3ceaf2aa7acb44c2af8886427a88c57ef86faf3bf00172358609683865",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-row-soot-4",
+   "piece": "buildings/sp-row-soot-4",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "7ba4b1167efc77e8bd733cb275c33029c29c818a03daa4e734f242fb96c272b6",
+   "before": {
+    "pixelSha256": "3e5bf01868794273ea899e56ed94c82a08fe2d3c693e41f9e430347797592440",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-row-flush-3",
+   "piece": "buildings/sp-row-flush-3",
+   "kind": "structure",
+   "how": "Fable 한 방 키트 조각(지붕·벽·문 모듈·얹는 부품)을 코드로 조립",
+   "pixelSha256": "24603f84dd824b64416f9ac9ea42c9a93de0107f09750effc48f97cf190049b3",
+   "before": {
+    "pixelSha256": "2555b4e9edf4c0f88947404c0989225fbee914f6a2533e6e2898729526407c9b",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-ew",
+   "piece": "pipes/sp-pipe-ew",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "f423cc409cc3a2798d18c063fc99870f3c7e763d49066578b02db1659255bdf6",
+   "before": {
+    "pixelSha256": "1378bd3da225c74d9b239a172e6aa2a057165352d86013aebe20c583fe1adcc4",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-ns",
+   "piece": "pipes/sp-pipe-ns",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "afd97d317ac0787bf7e268377bfc12f35eb1b6ae15910115a653ae96b5b5a40e",
+   "before": {
+    "pixelSha256": "a2a7d288d8db54d1cc3c8f17df0f6ccd163c98fe84651dc3b5fc331d9658562d",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-ne",
+   "piece": "pipes/sp-pipe-ne",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "3f5ba39e7c4747e23b203fb11f18dd005ffc97b25de4aa4770a7bda997492016",
+   "before": {
+    "pixelSha256": "d2c8b244aa0b3062b3aed54843252b59ab10fba5bfa65b7d63bd5c0059cd5b76",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-nw",
+   "piece": "pipes/sp-pipe-nw",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "5100d241f99787c71f8357f355ffc4802ea33054537906de2a62e54203b1c95f",
+   "before": {
+    "pixelSha256": "43b8146117b4b3697c426c72a5c445e2e69d569865b3f78514391196d7c902b4",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-se",
+   "piece": "pipes/sp-pipe-se",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "25f48b498afa927ef70466c835ad578d2c442583db17b28fbfc0039821bc17f7",
+   "before": {
+    "pixelSha256": "a9beb6cdbc071da45d1b702d742a88972954c281764890d38b721887438303dd",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-sw",
+   "piece": "pipes/sp-pipe-sw",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "6f3c57077d5e071f2e359e3f7bd11a39419b0910164e3d225fd2549408a11937",
+   "before": {
+    "pixelSha256": "1a832101369cd504d1228077d54fabaa87bb408598329b1f9ea35967b822bd9f",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-new",
+   "piece": "pipes/sp-pipe-new",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "dd60206653cad50571db9d44f4664447cb8128a4e96c58c7571b3145bceb264d",
+   "before": {
+    "pixelSha256": "4377d2b5cf9a0ac44d1e70d10d1ad17ee2dc54631d587e2e3ee1a185528f1d64",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-sew",
+   "piece": "pipes/sp-pipe-sew",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "70e84119acafb53f5a269e5c1044bdea829b726b353d634bcf6623c458e8c65d",
+   "before": {
+    "pixelSha256": "a8ab791288a1fb95fbcf11bb2946e64a0c80a828ef53768e92a365294499ccae",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-nes",
+   "piece": "pipes/sp-pipe-nes",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "c105ec116630fec0007234bbe6524efb25b4caa8ff44074e3457a3c97b322cfc",
+   "before": {
+    "pixelSha256": "40eedcb7e17c3daf18e2450a38247cc75c10c1cda8feabeaba59b2ae4b07a7c5",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-nsw",
+   "piece": "pipes/sp-pipe-nsw",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "6ed9d906eb78a11e9ec581114e4c5da9058165f8dffc2d745ae4c19c49d72dbf",
+   "before": {
+    "pixelSha256": "2cdacf6172cf8b2fed542c14fa07d26c9e5705f37e0f0f1863374d83a44885a7",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-e",
+   "piece": "pipes/sp-pipe-e",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "3183ccf685e4ea351b35ca4a7e45d0ecca2e45127e671ae56d7362b3d30d0420",
+   "before": {
+    "pixelSha256": "e8d0426aeda93bc1312006cb173e640b429f566caac4fd2265d859227695c4bd",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-w",
+   "piece": "pipes/sp-pipe-w",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "8a09bb1204064d3a84cc80cbaba1a74052e7f57b2a3e763bede7873287d812e3",
+   "before": {
+    "pixelSha256": "41db18e340a53906dc5b38762b37cbccbea95e870157df938fb39905396f88d8",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-n",
+   "piece": "pipes/sp-pipe-n",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "949bf379495e238fda6dfef04d0f738aa38cadeea320548c124aa52b1e68033a",
+   "before": {
+    "pixelSha256": "637456ce18dd67feb7ea26c25bcbcbfe7c086fd7fba95993233d660d32716f50",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-s",
+   "piece": "pipes/sp-pipe-s",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "3fe8d2ad49e29255afc51c026980f2cd5c7486bf7468f2db0fc1f1ae49ba725c",
+   "before": {
+    "pixelSha256": "db9f4d4234400acfb55b477bb7e4c56924ac6c242c3048a01b99e7686018f54d",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-grate-ew",
+   "piece": "pipes/sp-pipe-grate-ew",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "7e89d3a5a48db559a5177f1b4c9c54d8816930bdb14e4dfdb5f049b6867ff459",
+   "before": {
+    "pixelSha256": "ace6eb53359d8728900cfa9bce18ad2ea649941a07bafabb21b05793f0205d0c",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-grate-ns",
+   "piece": "pipes/sp-pipe-grate-ns",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "7585659795b67cd1e291057eed7f9aa8d4f506331ac98ddf1a3247ba160dfb78",
+   "before": {
+    "pixelSha256": "7cc84a5a27c7b3641394a646a702885399ee33ac9df38bdd2a7ea0f49a6cedcb",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-gas-lamp",
+   "piece": "props/sp-gas-lamp",
+   "kind": "column",
+   "how": "Fable 한 방 시범 그림의 색을 v3 로 옮김",
+   "pixelSha256": "79befe910a0279f31081a9e1eb5485c90a955391779ae23d9e388a45eabba087",
+   "before": {
+    "pixelSha256": "589bdd4a53b6faaf8911d5248dc795962273785813d32dabd61f81d9143b7aca",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-plaza-lamp",
+   "piece": "props/sp-plaza-lamp",
+   "kind": "column",
+   "how": "Fable 5.2 medium 한 방: q-plaza-lamp",
+   "pixelSha256": "f73021307beca7daa7c801907711cbde550eae06b6069805c16983f6b1daa6d0",
+   "before": {
+    "pixelSha256": "df4ff886267b7ad4dfcca8f0396fb90c27b182dc324d123d6284dbaea84c2bdb",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-bench",
+   "piece": "props/sp-bench",
+   "kind": "seat",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "f16d8570cb8e8b647c822c783f09ea0fa6be7980a1afedbd946dd14ab9174f06",
+   "before": {
+    "pixelSha256": "4655b9ab51a78342ff9352b495c7d6c925f7ddc3f6de5f8e22ac70ad547ad555",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "seat"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-crates",
+   "piece": "props/sp-crates",
+   "kind": "box",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "6e3a466a7d042f0be2c6d9a53a10c25cd34dbcd7186f6ac4f060d06343b16bcf",
+   "before": {
+    "pixelSha256": "7025a32bcb6412af8dfb6c95d6bea445d5d6c96c8147648df9abacae46f772bb",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "box"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-barrels",
+   "piece": "props/sp-barrels",
+   "kind": "round_body",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "0ef6ce357a201ebda215e5e46f446373aba9631a3baf9f520ecc5bb297623720",
+   "before": {
+    "pixelSha256": "f915a2fe5067e08443872fd211b510078ed7f6b50cfb25dc831e16557a1149f0",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "round_body"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-barrel",
+   "piece": "props/sp-barrel",
+   "kind": "round_body",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "9a861336785465e9c6c67a6bccabb3d0b8b4d613899d983e3b50f9ba2af21f68",
+   "before": {
+    "pixelSha256": "48b31902b0d6f9e15534a2326bfccfe84799943979ed57a26ec25b80790e2a1f",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "round_body"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-coal-bunker",
+   "piece": "props/sp-coal-bunker",
+   "kind": "container",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "3d1df7511aac6e2fab6138852be916021a69a4ec9bb20fc957962612212cba5d",
+   "before": {
+    "pixelSha256": "0f8e07dae73440a461ac6fdf37dff2c2afd16d18022cd4781d337fdb71d8f18e",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-coal-heap",
+   "piece": "props/sp-coal-heap",
+   "kind": "organic",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "d17f470899cb2baf7b760caae2039b6a45637d6ea2193fe010cb7af7ba826abc",
+   "before": {
+    "pixelSha256": "9ad1711c23da54cad38c4cd0cb94ceb81728460a3f7a3f793ed94a5d7ff7ff3f",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "organic"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-fence",
+   "piece": "props/sp-fence",
+   "kind": "other",
+   "how": "Fable 5.2 medium 한 방: q-fence",
+   "pixelSha256": "457f186e1731254af2e3c14712c74fa33182575495e05cfc5119e4b73a1a891d",
+   "before": {
+    "pixelSha256": "53e0e53c6da31827f250da0d4986395b52fcfc3522acf4715e6024c737e1e52d",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "other"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-fence-v",
+   "piece": "props/sp-fence-v",
+   "kind": "other",
+   "how": "Fable 5.2 medium 한 방: q-fence-v",
+   "pixelSha256": "3e9ef954733b1773677fd9f3796d2b00e2bd098a62bd88433bfa98ed29b11883",
+   "before": {
+    "pixelSha256": "eef513d2c9c6ca988c2bfd991cb348ae146409556ab232b22d2ecc50c817f1a7",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "other"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-water-tower",
+   "piece": "props/sp-water-tower",
+   "kind": "structure",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "7c4e4905092919d9b5402db1694894c80b9ea20505df46f5d51a4ce0bcef8e64",
+   "before": {
+    "pixelSha256": "063e7f8e73345d928ef49d2b6a79304b372c1aaf09e5012cdb4663fef4615681",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-stall-fruit",
+   "piece": "props/sp-stall-fruit",
+   "kind": "structure",
+   "how": "Fable 5.2 medium 한 방: q-stall-fruit",
+   "pixelSha256": "d66ae0312b44adc544d0917c3e5910a20e82a2ce91515a5852be017147dda507",
+   "before": {
+    "pixelSha256": "1cf23aab44f89014397f25f8370a2058eaf9d962ddc823aa9ba7258efc65274e",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-stall-parts",
+   "piece": "props/sp-stall-parts",
+   "kind": "structure",
+   "how": "Fable 5.2 medium 한 방: q-stall-parts",
+   "pixelSha256": "0d5d58ec0ffe20ba6facac5a0f0aae80e98a12b5755c699ce4d867a1c35309af",
+   "before": {
+    "pixelSha256": "0ac54671842342395771ca6a65d17f42e87f9af2079db75b472d793d3e4d7914",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-stall-fish",
+   "piece": "props/sp-stall-fish",
+   "kind": "structure",
+   "how": "Fable 5.2 medium 한 방: q-stall-fish",
+   "pixelSha256": "b86c5b8bd3aba2c73dc584cb1bc5b3b17af140e33d72e9b5eab66b894e384621",
+   "before": {
+    "pixelSha256": "3d162ae8cd05972bc969da13ddef5360fc1d340bbb4f4b19fd68776cf912e201",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-steam-vent",
+   "piece": "props/sp-steam-vent",
+   "kind": "container",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "4255eb77df39060bebf5002a4d229f59a65ead03c85f51950b0e1e00b3d91b3c",
+   "before": {
+    "pixelSha256": "e519f655bbeda969408fd55aa9f7d0f2d473ef462575e63b13f87d46c7c9c7fe",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-steam-vent-f1",
+   "piece": "props/sp-steam-vent-f1",
+   "kind": "container",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "7f718afa028bd1b6b2b5c554cdfb6428396f82f619f5698d48c4b8f986e2c379",
+   "before": {
+    "pixelSha256": "93a969622d1188a82a0fe6b5366250105a48bb81b12401b4e5e503e3776b750f",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-steam-vent-f2",
+   "piece": "props/sp-steam-vent-f2",
+   "kind": "container",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "8a5d1d0cb7b694cad8dc6c5e4773c594df46d75ec080eed78400f6f7f708c0af",
+   "before": {
+    "pixelSha256": "b472e47961ebe99553b64aaae09694d24a7e58a57a9ba1c02d584649ec10d075",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-steam-vent-f3",
+   "piece": "props/sp-steam-vent-f3",
+   "kind": "container",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "3f2a60f154a8f147bb569d1d244d241c2fd5bb1d1c8dfc172725535a936295b7",
+   "before": {
+    "pixelSha256": "037144364c5d5af842c9ab7d9819c0faa79a3ffc50f06c4942d0fc0a14e369ec",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-stack-smoke",
+   "piece": "props/sp-stack-smoke",
+   "kind": "column",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "3c2674e6670321b8c787ecd562f152f7679c19c73131ca399d9eadad4c599bb3",
+   "before": {
+    "pixelSha256": "1e7e44b6fc10fae69b0097cadf0d1163f08ad8589372777cc3f426ccb1ecde8a",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-stack-smoke-f1",
+   "piece": "props/sp-stack-smoke-f1",
+   "kind": "column",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "18c1b092a63434930fae543ea70ed69b0711eda90bddfe68b8505154efd1c7bc",
+   "before": {
+    "pixelSha256": "3e7dbbe3e6aa7d78a3a9f038b92b67c4205e580b33f4c4f54a86c33723b7b2ea",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-stack-smoke-f2",
+   "piece": "props/sp-stack-smoke-f2",
+   "kind": "column",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "8971d3e2f0fcf39ff87891fd5db981544ef9804535cb76b29299834a02897625",
+   "before": {
+    "pixelSha256": "c35a410ed4aa56e58777125a1eb13c842761ac575aae5bfabccdfd1a756cee20",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-stack-smoke-f3",
+   "piece": "props/sp-stack-smoke-f3",
+   "kind": "column",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "616f38e2e0bb51ab1351f80db828efe20de5610c173fd08f5b177e06aa7e915b",
+   "before": {
+    "pixelSha256": "5d25132c3f6c35eb5d6e36c144b2b221ada14379fd9b1fc9b825cc26f8347b7c",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-locomotive",
+   "piece": "vehicles/sp-locomotive",
+   "kind": "structure",
+   "how": "Fable 한 방 부분 조각을 코드로 이음: x-loco-w, x-loco-e",
+   "pixelSha256": "05a6968db7ff8a266c2953d2213a95be0759534109bb9a18e904eaae4481d903",
+   "before": {
+    "pixelSha256": "bf22ac76b5bc5c01261ffd6a4b9116788e9485a5fabbc2c70e8642f8e66c514d",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-tender",
+   "piece": "vehicles/sp-tender",
+   "kind": "container",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "d2724dc5b278a2796f7feb8aa2ba6036048c82e870132abfce24133b03c8a127",
+   "before": {
+    "pixelSha256": "32acbbb402f2589ac5339e305eb64d2554fdaecc661d687a05615a366c225546",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-coach",
+   "piece": "vehicles/sp-coach",
+   "kind": "structure",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "71da147a5d71925961bffe1a1b05dd786b9baec46564322018fe4911253e3df7",
+   "before": {
+    "pixelSha256": "d30a7bf845a036c4446c6741c948b3bb9563e364e6361eb35880693b1c180aea",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-wagon-coal",
+   "piece": "vehicles/sp-wagon-coal",
+   "kind": "container",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "d8ea50c1891da53213f783b327200554fabaf0d18f9e5e38dae8080fd0042545",
+   "before": {
+    "pixelSha256": "5ccd103e0fe5c2878b67988ec1f39aa52ecf873310321de7f14c88ec81d94cec",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-wagon-box",
+   "piece": "vehicles/sp-wagon-box",
+   "kind": "structure",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "2203bd18a27865ffd63bb6318680d862b9afb5809d70be473e5c5edc9f6920b5",
+   "before": {
+    "pixelSha256": "def55f39cfff09990312654daf5d990687c0726da5ba4184159147afed79ae32",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-steam-tram",
+   "piece": "vehicles/sp-steam-tram",
+   "kind": "structure",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "d64641fd0bb9c531271a9300500bacd11a2757e4cfee0a4398158a332ba2ed29",
+   "before": {
+    "pixelSha256": "9c7114d92e3c315d62c1bacc3af3192f5a7c90b7958807b069619b2c8df53ed3",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "structure"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-barge",
+   "piece": "vehicles/sp-barge",
+   "kind": "container",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "1a6dcb843e9266be18bddab9ce15c8486e01244c8c3d2938007786d81e59963e",
+   "before": {
+    "pixelSha256": "60e8131648fdc034924502bc7a713911c12cfae41e9d8faa120aa3cc607932b1",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-rowboat",
+   "piece": "vehicles/sp-rowboat",
+   "kind": "container",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "b7db1e7fcbb0bfcc0fd9b68e297b3788730725ad32128ae6589caddb363f1716",
+   "before": {
+    "pixelSha256": "238b6dc9527a6f7ad38b6f3aac8f600d3ab9f0a8f2ede301b100e0fba6d1f7f1",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-minecart",
+   "piece": "vehicles/sp-minecart",
+   "kind": "container",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "454fc66aab2d26fd9db7abd58a57dd86e3343dabbd298b17a799a62afb43486d",
+   "before": {
+    "pixelSha256": "f9f2da3725c17dba992e1028b383c54174f04a95fe3362831fe7753f76308bf3",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-handcart",
+   "piece": "vehicles/sp-handcart",
+   "kind": "container",
+   "how": "Fable 5.2 medium 한 방: q-handcart",
+   "pixelSha256": "a072edca88e43668569293f58ec36be392cb3cf2d9610f427e83a8cf89bf469d",
+   "before": {
+    "pixelSha256": "56192026c728439c283bcb1c037a89f4a45abb1c489234f196337288a1025de2",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-floor-plank",
+   "piece": "interior/sp-floor-plank",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "439a69cf34be37d93e9d0d809f3642e4aa4fe588bbbf308037fe970108d12593",
+   "before": {
+    "pixelSha256": "fc5a205b9f4b795d4d99363327c012fb2247927d90dcc74725d71aff7cfc97bd",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-floor-iron",
+   "piece": "interior/sp-floor-iron",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "97902821e99253ee3a03a66d74f374e91bad0cd0583148c23ff1654cce73e357",
+   "before": {
+    "pixelSha256": "153edd47825226d89c585c202d561403d7e1bfd8826f53143782aaafdf6d52f0",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-floor-checker",
+   "piece": "interior/sp-floor-checker",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "c76df10a43d1b13bd04b51295c6691f1c4c0ae3bedb162d51d373a6321ada44d",
+   "before": {
+    "pixelSha256": "6399409e907c0a25bae871b153a82dd7a0896ad57f9a7cabaf84c070f620ed17",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-floor-herring",
+   "piece": "interior/sp-floor-herring",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "0c03463ff3411d1e397a617f4665816c08689f3ff7624c0f51fc05c58ebfac6b",
+   "before": {
+    "pixelSha256": "aff883a7fa379350b006f6674a64a6bb62b09e3fd4f15587cf4abb342d1d35c2",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-floor-stone",
+   "piece": "interior/sp-floor-stone",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-floor-stone",
+   "pixelSha256": "f049382f828832b4059943bbb3399d3d7295b874bf676e41a3bcb83f4cb304b9",
+   "before": {
+    "pixelSha256": "28dd02fdeb3a70832c92e15e11c9ec8ffc7ff0d104f74a3b3f16990210fece63",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-rug",
+   "piece": "interior/sp-rug",
+   "kind": "flat",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "47ba0a7b8c88207d7a528198aa2ac1b65c3f7734fed2166e26f9fb989a8789b5",
+   "before": {
+    "pixelSha256": "3d496027edecf8cc81c0709b17ff504bd5e4e02d99e97840df8dd37124802f91",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "flat"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-ceiling",
+   "piece": "interior/sp-ceiling",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "2dea2a1d91d69cdedb8acc5048733efb59aaa6cc6bdfe7404f565da1f89070b9",
+   "before": {
+    "pixelSha256": "339c3bf67da6cd951e35f0d0dd42857dee63fdfe4b6c1827da80b792d448b017",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-wall-brick-u",
+   "piece": "interior/sp-wall-brick-u",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "c10fbec5f46451cd16fee02a37c1ec7fc9edae67c89fb814e1790805ff320d13",
+   "before": {
+    "pixelSha256": "125f8403f83014c765888520a108784f3d64458b726388adabc658f7497b9952",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-wall-brick-d",
+   "piece": "interior/sp-wall-brick-d",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "6be527baf8e1904a0ede315f132fb3cbff2703822a983c46db934af1a2e1f23e",
+   "before": {
+    "pixelSha256": "85a22835220da39055a8e0f81ed5596b493b10260bcac95efbae3430b751751a",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-wall-panel-u",
+   "piece": "interior/sp-wall-panel-u",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "b11e6e58bfc82a53390fb1dfd8dfc92fe0724bfb56cb4befc4192faefa160784",
+   "before": {
+    "pixelSha256": "877a727200ddd6f7b7fa0ae0d76fda071e53e94916f7f888d2c35ee17b81b89f",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-wall-panel-d",
+   "piece": "interior/sp-wall-panel-d",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "ac520314b78ad60b42a3864954324ab39943d51f9585797a5d3915197d9a26cd",
+   "before": {
+    "pixelSha256": "1c85d34f1253c7fb0f65adcc74f8bcd1a4e2d00eb3236a6ce637ef7d2b8fbe6e",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-wall-iron-u",
+   "piece": "interior/sp-wall-iron-u",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "16b4536fa29ddfc4466a13b6f982a992d428db5722e9cf839f7a04e835455cc8",
+   "before": {
+    "pixelSha256": "abb1c4d0e35c5718c6824a30026c192410e986bbe6fce2bfdcea726bfd597841",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-wall-iron-d",
+   "piece": "interior/sp-wall-iron-d",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "8b2abe91d5289f10b6986ce913e9d02120026b383fbe2fcccabdda79383c0271",
+   "before": {
+    "pixelSha256": "f90218345656486b2f621fd8313b00e631f202af14d0c94457c71999585077a0",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-wall-window-u",
+   "piece": "interior/sp-wall-window-u",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "521586d4707150e8d3c39b23378fdd8040717c61072d72ca7fde4c918ebc0976",
+   "before": {
+    "pixelSha256": "24729842e7aee28faa3ce16c13412cd2639666695d03d1253bb235061d0395ee",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-wall-window-d",
+   "piece": "interior/sp-wall-window-d",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "3520c85f9dbfd5564edb48318c5e066cdfbc9a29caeb0c9909306f8896877484",
+   "before": {
+    "pixelSha256": "b1f033de8114f42dbdc719f5cd31749ddb40202feb9e918e18f0f98911ca97fe",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-wall-door-u",
+   "piece": "interior/sp-wall-door-u",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "a618d6f3d6e3e431a4a50b33350015fa2cc06a8585bde86ad374056a753fc47a",
+   "before": {
+    "pixelSha256": "b2e855d0bbcdc798fbecc0d6724995c58901085ad69e6a8f8f7a09f7c9ef1d88",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-wall-door-d",
+   "piece": "interior/sp-wall-door-d",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "a23bbf9cbde75e361d8811d5b15a40c8b236553755ddbdcc59c73c773f9d139e",
+   "before": {
+    "pixelSha256": "f2b6d2589bf2a8bd87171380c4a4a0dd9dedb474e975b70a19569f97c2bf9bc4",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-boiler",
+   "piece": "interior/sp-boiler",
+   "kind": "round_body",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "9ef5c01527554cc0b976068f77123acf354babf461ff6b1e5dca2265128aac30",
+   "before": {
+    "pixelSha256": "da11199e395e90c422bc6eaec0b0356e3a3cd730080cf7f9dd5ab6a6b62e2c2b",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "round_body"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-boiler-f1",
+   "piece": "interior/sp-boiler-f1",
+   "kind": "round_body",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "e9644dbab5c8d12c1ce0e64d9bc4cc7563432c5f8c6ca29931e92df4604524f1",
+   "before": {
+    "pixelSha256": "9fa939aba36d7e509d18e4b112ae894286084bb69101efe0ebcd686f49fcb38c",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "round_body"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-boiler-f2",
+   "piece": "interior/sp-boiler-f2",
+   "kind": "round_body",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "f898aad74f3deecdcd6c7ef6f8c0616bc382acc9d8e4a23cb792a3b9e64f9e6d",
+   "before": {
+    "pixelSha256": "63db357196b2e5e07b1aa5e33604969b0c8f0462cc7b50e8d1e8337f0370bf17",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "round_body"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-furnace",
+   "piece": "interior/sp-furnace",
+   "kind": "container",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "a84841510168509fed6635c7bed2fb2fe6eee1ddf670247ae2d8d9bac6cdee18",
+   "before": {
+    "pixelSha256": "741382eac3e2855cfd82e050d0e837c9ce3556cbf1af0c4126c61249aac885c6",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-coal-bin",
+   "piece": "interior/sp-coal-bin",
+   "kind": "container",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "2ac39971d9adf9c6f78a19e21daab6ac6bbb8c3afbb61870948b963831d40c2d",
+   "before": {
+    "pixelSha256": "a6f722f502aae71cdddfab75150717539148ef637e52b51da2f1444baef737cd",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "container"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-engine",
+   "piece": "interior/sp-engine",
+   "kind": "other",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "9b84bbb3056e80416391f42aca3a527c852df410b84c9af03ab0951a1c9e3ae1",
+   "before": {
+    "pixelSha256": "074d838d511dd231f068b38b8d8dbda7b2d84faf9defa232c1c895e0e73dd9f5",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "other"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-engine-f1",
+   "piece": "interior/sp-engine-f1",
+   "kind": "other",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "2c8fc238142309314c64f73048c8b43a8122dcd0391d4e95efdd571e46227986",
+   "before": {
+    "pixelSha256": "d4b792ec25b3321707ac44e5474322e3001d378ffbc6d8e648b3558c6c533110",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "other"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-engine-f2",
+   "piece": "interior/sp-engine-f2",
+   "kind": "other",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "e685a9c275e1122e64bcbea951fea58c5a7e67445a6d155d4feaa3db75f25938",
+   "before": {
+    "pixelSha256": "9ebd669f0464e2ddbeaead8486586d2a8acf1b633a229478a6d3b302e056fa07",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "other"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-engine-f3",
+   "piece": "interior/sp-engine-f3",
+   "kind": "other",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "addf8c6d6c85ac4be0bd90312d0d373dce0a5762da6c9f43b0ace73a532221fd",
+   "before": {
+    "pixelSha256": "a4b24aeab565f8e58a08d8e0917d6b4c65b8ee292ca9bd2159fa53bcc70effa4",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "other"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-dynamo",
+   "piece": "interior/sp-dynamo",
+   "kind": "box",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "bec76516b50961ac7cc668a7418e011388bdf9498d04bbfa7c64b8200144e484",
+   "before": {
+    "pixelSha256": "c0434d77bf9699c49a7bfea74d434336a613be5b42e4364d0110d0d46091aef9",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "box"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-pipe-wall",
+   "piece": "interior/sp-pipe-wall",
+   "kind": "wall_mounted",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "92b47faeb82d961b044144c8600b6779dcb1ac16834e1c2b5e044bfe48d69e67",
+   "before": {
+    "pixelSha256": "9fce7b7dfd2f133bf4096dfacefcdd8d093b128e4bebadbf816b09695cde9eba",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "wall_mounted"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-gauge-wall",
+   "piece": "interior/sp-gauge-wall",
+   "kind": "wall_mounted",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "1f1efad092e9819c56a798888104490edf57108bd3295f5ff075caaf211b16da",
+   "before": {
+    "pixelSha256": "982e53d303cdfc52f5b5525ba660eabe1eca254b03067dfedc49b97b7b97c37a",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "wall_mounted"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-valve-wheel",
+   "piece": "interior/sp-valve-wheel",
+   "kind": "wall_mounted",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "d198e977aad26c802905cf002d217ded172dbd7b29a79b95384051ccf6774e0f",
+   "before": {
+    "pixelSha256": "34850972e1034bad874b543e14a33a07fce5c7bed0fabe40e2b7588b5c534c7e",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "wall_mounted"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-wall-clock-gear",
+   "piece": "interior/sp-wall-clock-gear",
+   "kind": "wall_mounted",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "157b4c25a2497342dfc94ce9f31a819b73778560aae9adb829e08bf104f31158",
+   "before": {
+    "pixelSha256": "e034d704710e2a4ad7e45c36c68851973794ff6d4765d02b142a4a990e638d67",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "wall_mounted"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-tool-rack",
+   "piece": "interior/sp-tool-rack",
+   "kind": "wall_mounted",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "31066e81151f4f9924825a60f8f494afd7b231aa31f02d0eab8642d92a741f53",
+   "before": {
+    "pixelSha256": "19ae3fb92a774eb48cc240a7f5caf0d86bb8fe3b1bceb3a1af5666c758d118ba",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "wall_mounted"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-shelf-wall",
+   "piece": "interior/sp-shelf-wall",
+   "kind": "wall_mounted",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "f436a27dab2fa882958f5f8ddae570225261e7d9f9f7e42b15e7bc7a426b63ac",
+   "before": {
+    "pixelSha256": "9ceb2be8217efe212b11bb37dea4787b2a5b83032621e26599f9447c10f0918d",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "wall_mounted"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-workbench",
+   "piece": "interior/sp-workbench",
+   "kind": "low_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "259a79c7bb8a9406b81a371a944a84fe039d72d062c1d2b36aefd41bf8a12ee9",
+   "before": {
+    "pixelSha256": "6e3d65c6a1cd019b438af1f075f4d31c4ea436eeea1994cba3ba86b163ee5ebd",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "low_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-anvil",
+   "piece": "interior/sp-anvil",
+   "kind": "other",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "8efbbd3bc64964bd040e61508769cb70e01fcc68b74cee49aa297e3472775f42",
+   "before": {
+    "pixelSha256": "8b67673105ab5d1f35226241cc83a1c18e9bcd4c91ab1d2713e0394b5aca4360",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "other"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-lathe",
+   "piece": "interior/sp-lathe",
+   "kind": "low_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "e20bbf445ca6b95cf1373695db6f5b7d4cafc6b981a2878bf7fba943311c0423",
+   "before": {
+    "pixelSha256": "0f3215f1e3f2457d68cc4b8260e05eec87e1098ab3c839b2a482a287ec76ce05",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "low_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-drill-press",
+   "piece": "interior/sp-drill-press",
+   "kind": "tall_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "dc74ac2f52bb6fab952d3db6ede4c014c9777da41c7d7d3430d4efc68704b059",
+   "before": {
+    "pixelSha256": "7018e34c5ebbda4819e8bf6aaa92013420075c0a8d56829931b497f9cfceac85",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "tall_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-lab-bench",
+   "piece": "interior/sp-lab-bench",
+   "kind": "low_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "66624c85ee22b3c4cae495a4798e33251d2519dce043c641dc89be0d5e593924",
+   "before": {
+    "pixelSha256": "d8413254edc98cbf1979ca562edadd4d788376d5ec1905ff83de19531b81cefd",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "low_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-tesla-coil",
+   "piece": "interior/sp-tesla-coil",
+   "kind": "column",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "624d89e39f56644a31c3d8abdfd8d97aa69cf9c35e49eacb1c14e78425789d6f",
+   "before": {
+    "pixelSha256": "d2162a2eac38ad7d00b1baa5a8fcb149033dac187b5833b8cf3317458dcd81af",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-tesla-coil-f1",
+   "piece": "interior/sp-tesla-coil-f1",
+   "kind": "column",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "0341ed8fa9050cf3975297061fda659e73babe5f9e7262a18db88ab93c3b60d2",
+   "before": {
+    "pixelSha256": "37301f7c257b2d069f322f58c3820c4dd9a8d33f15136687a54d8e30170d85c5",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-tesla-coil-f2",
+   "piece": "interior/sp-tesla-coil-f2",
+   "kind": "column",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "58aa0eef2566482324326dfcf4571cf7e685b36f16fab496de62f2c21465ba16",
+   "before": {
+    "pixelSha256": "f27e4c1e6370c9d39c4fa3a339ed7ba5f9a79ec05421f9320ad237394ee63fba",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "column"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-drafting-table",
+   "piece": "interior/sp-drafting-table",
+   "kind": "low_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "a1fb8c75e6f8fb5c0d3cb92254fe450dcdfbd712470f4fb71f16b71ae66364de",
+   "before": {
+    "pixelSha256": "07a728adcd076fe44bd794f2983fb80aed1fef66856724c542be0a27b04332ab",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "low_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-curio-cabinet",
+   "piece": "interior/sp-curio-cabinet",
+   "kind": "tall_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "4cc0af4f27f341d2ad22f80499ec858e0415ea4984f33ade0a86607a599dd28e",
+   "before": {
+    "pixelSha256": "1b2bbdfc2b9cf1262ec717818596fd48b187bca7b8e91ee69fc827d47bbf08d5",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "tall_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-bookshelf",
+   "piece": "interior/sp-bookshelf",
+   "kind": "tall_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "91d8e526c6341d64d5274c36d9f0cbc5eee6b7c53777731c63246b9ba3406c2a",
+   "before": {
+    "pixelSha256": "f2fbf02485f27d4b160172f6c1749c14e2c70fe92f4564711589e19dfbcd480a",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "tall_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-bar-counter",
+   "piece": "interior/sp-bar-counter",
+   "kind": "low_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "b7dc19487a3386e842a1113522c880ddc41b82fa2e82b539102ece400337c779",
+   "before": {
+    "pixelSha256": "558939197a129951f1c03b92a0c625584d9c21e6de9876df7107e89b595ba97d",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "low_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-barrel-rack",
+   "piece": "interior/sp-barrel-rack",
+   "kind": "frame",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "b16122cbe53754f07636c538b4e23a281cf8b8d158e01af815778807f7abab54",
+   "before": {
+    "pixelSha256": "b8b1baced7901807c8dfb5373dcf5f01c5e4525c8ca00e266564bf7314a6440d",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "frame"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-tavern-table",
+   "piece": "interior/sp-tavern-table",
+   "kind": "low_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "157e69650d421870bd098fac26e57673a497a16e368e3df6fdb4972d68c533a8",
+   "before": {
+    "pixelSha256": "6da692c9442ebfd35288c763e0e0e0739ee723268df4fbe56b9b96ba6fc30e85",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "low_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-stool",
+   "piece": "interior/sp-stool",
+   "kind": "seat",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "9ebd3d61a6786a4f0d4764bc637194b57e8fb95757fc65b88f26f1a7020a59cc",
+   "before": {
+    "pixelSha256": "07d11c690a2404a04a9f9219e2a667e18193e2da03a97fa0ae59cb7db802abab",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "seat"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-chair",
+   "piece": "interior/sp-chair",
+   "kind": "seat",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "57c32ec2c364dd1dabcac89e3db076f3f935789cb012399294af654625d65587",
+   "before": {
+    "pixelSha256": "50efc3f7bdb421f16d6ae5d9f2a63482aa3f172d864977546972c4a31b097bf9",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "seat"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-fireplace",
+   "piece": "interior/sp-fireplace",
+   "kind": "tall_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "9f37d40091478a70e182f4bdf2450e8f0b8ffa2ef6febf05711d398252d63dd7",
+   "before": {
+    "pixelSha256": "4a791b9dfc9ced06d84c2e388c8e77fa5605062ec8c34cea37cfaa6ea220300d",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "tall_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-fireplace-f1",
+   "piece": "interior/sp-fireplace-f1",
+   "kind": "tall_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "78a6836e0e85755251a6c7fdeac68d4123fb7b1772c6eff51ad6ebd886513d19",
+   "before": {
+    "pixelSha256": "510bb0f3879ded4dd5694a8374c4532fbd328f07020295b6de60f2a21c147029",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "tall_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-fireplace-f2",
+   "piece": "interior/sp-fireplace-f2",
+   "kind": "tall_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "cf505b932948e756bcbefefa307bb1b6357977185e0b256d4e3dbf39b942f2b8",
+   "before": {
+    "pixelSha256": "8d7095d29e02a0fab64355725b7f6bb67b1a38c2e3ba450004b869d598aa6f6a",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "tall_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-inn-counter",
+   "piece": "interior/sp-inn-counter",
+   "kind": "low_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "b474fc2075acbe1cbd70d9bf51d966f72d843bdf2c78087f302a6e22430f84b2",
+   "before": {
+    "pixelSha256": "9e2e29d6c1919c664cdfd97ec66963df35ea88112048585f0398b3be516acf6e",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "low_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-bed",
+   "piece": "interior/sp-bed",
+   "kind": "low_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "687cac38f0a5e632fdfebd1ccdd6e9e549015b1695e36baffa5a6b76faf3d781",
+   "before": {
+    "pixelSha256": "e5ba7fc4c88fa83fc38c217558cd65bab623b4ae9f5b9d2b6897da16216c27f0",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "low_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-wardrobe",
+   "piece": "interior/sp-wardrobe",
+   "kind": "tall_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "40628ec25f32128dd6aca90cc9a7b33b4f79b7fda051f66f9711f4cf99db267a",
+   "before": {
+    "pixelSha256": "a4f48a5b8348acb132177e474ab3a9721cc0103730fb59e89a64f129651a7435",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "tall_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-nightstand",
+   "piece": "interior/sp-nightstand",
+   "kind": "low_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "45e14de003f5ab47f1af93fe741571cc0b934c5b7637c9ce501473b2e954f864",
+   "before": {
+    "pixelSha256": "3866166beaa98ba543700f074004c0a269ba415c5c9512967f8e10cbc1975dcc",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "low_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-dresser",
+   "piece": "interior/sp-dresser",
+   "kind": "tall_furniture",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "08c69da227987a44706ae043941bd42db79c4a121301905dbe68393db8fcdb09",
+   "before": {
+    "pixelSha256": "c394bdb9048f3fc01b89731541d65565dbdbad038f4f1f3d8208e2473abc8983",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "tall_furniture"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-crate-in",
+   "piece": "interior/sp-crate-in",
+   "kind": "box",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "c294ffd3fb828bc1ff0c227647dfb43ac34b21dee41ae7d579f26eabedbf56b0",
+   "before": {
+    "pixelSha256": "ff861f1f91f9941ac41b2f75e910d75611000bafe410b698f2848f7f96b769fe",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "box"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-sack",
+   "piece": "interior/sp-sack",
+   "kind": "box",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "0c1b6d5c0e589435af7f45492f409f5245f61329e2c3d1efcb28ba994b8b494c",
+   "before": {
+    "pixelSha256": "380dceef3bf532f606e5abe43cf8c10fbea039b3e2b18020ece30a937de8ae42",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "box"
+    }
+   }
+  },
+  {
+   "group": "recolour",
+   "id": "sp-stairs-up",
+   "piece": "interior/sp-stairs-up",
+   "kind": "terrain",
+   "how": "코드 도트 그대로, 색만 팔레트 v3 로 옮김(모양 같음) — 옛 판정은 색만 바꾸기 전의 같은 모양에 대한 것",
+   "pixelSha256": "9aa368149b5171c61ac72288b723bf3edad6b325ac82774dfe97cd540729e05a",
+   "before": {
+    "pixelSha256": "09ea7c357f6f23ee39781e9447d9b3ab39921079861b855455e68484025273be",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-stairs-down",
+   "piece": "interior/sp-stairs-down",
+   "kind": "terrain",
+   "how": "Fable 5.2 medium 한 방: g-stairs-down",
+   "pixelSha256": "9f5340e67986ef21434a53c9c3616f4f52966b01696b94c5032f45987ec03c75",
+   "before": {
+    "pixelSha256": "07ac54dc647f18a641bc101cf807166f04215274d90066d9fe5bca2cc02c08ad",
+    "receipt": {
+     "verdict": "pass",
+     "profileHash": "ca6aaa9c55194dc5",
+     "kind": "terrain"
+    }
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-regulator",
+   "piece": "street/sp-regulator",
+   "kind": "other",
+   "how": "Fable 5.2 medium 한 방 기물(object-oneshot 둘째 판) — 색을 팔레트 v3 로 맞춤",
+   "pixelSha256": "92e9a2e43a31746e7423fe37a8a51c99335ff65f1c1baf6d74485b161455c5ef",
+   "before": {
+    "pixelSha256": "4de86ffe33a0474e7934ba8e79e5ab79d6c129db79a3d503a36ac0b599d0fe55",
+    "waiverBatch": "fable-oneshot-2026-11-12"
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-alarm",
+   "piece": "street/sp-alarm",
+   "kind": "other",
+   "how": "Fable 5.2 medium 한 방 기물(object-oneshot 둘째 판) — 색을 팔레트 v3 로 맞춤",
+   "pixelSha256": "b074d1d950d2697db5e20f806a87572e019fde2ac3d47c071fda1f15bedbdc4e",
+   "before": {
+    "pixelSha256": "784ad0217723c3e6949d5115ae97e5caf29eedf76f963188935e4f10f710a146",
+    "waiverBatch": "fable-oneshot-2026-11-12"
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-terminal",
+   "piece": "street/sp-terminal",
+   "kind": "box",
+   "how": "Fable 5.2 medium 한 방 기물(object-oneshot 둘째 판) — 색을 팔레트 v3 로 맞춤",
+   "pixelSha256": "11ccf00a8f07bb13200fcff5f3718585a7ff8a27c8a37b382f95fad699cfe63d",
+   "before": {
+    "pixelSha256": "a4ecc819adc4a95619614ced902bff8851ea2444962d487d096b7c483a4e3a85",
+    "waiverBatch": "fable-oneshot-2026-11-12"
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-notice-board",
+   "piece": "street/sp-notice-board",
+   "kind": "front_prop",
+   "how": "Fable 5.2 medium 한 방 기물(object-oneshot 둘째 판) — 색을 팔레트 v3 로 맞춤",
+   "pixelSha256": "c328f2dbe26c6f30fe5d73a8d7f459b441cbf3994c0f124cf9b506e822dd76e6",
+   "before": {
+    "pixelSha256": "3144bb42859e7f10c8f89027fa2d5d6d74b10013386d046b4d0ed26d501ec430",
+    "waiverBatch": "fable-oneshot-2026-11-12"
+   }
+  },
+  {
+   "group": "fable",
+   "id": "sp-note",
+   "piece": "street/sp-note",
+   "kind": "debris",
+   "how": "Fable 5.2 medium 한 방 기물(object-oneshot 둘째 판) — 색을 팔레트 v3 로 맞춤",
+   "pixelSha256": "d77de42decc4a9c7463f4b4267cadd94694c6f4e3a7246d331328d77a8c72f25",
+   "before": {
+    "pixelSha256": "6e2cc22771925b99509d20061cdfc8720cac093e08eb187a0f0800ab0c6f0c40",
+    "waiverBatch": "fable-oneshot-2026-11-12"
+   }
+  }
+ ]
+}

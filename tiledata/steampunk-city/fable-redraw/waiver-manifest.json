@@ -1,0 +1,1139 @@
+{
+ "note": "object-gate owner-waive 의 --manifest 입력. 묶음 fable-redraw-steampunk_city-2026-11-12. 두 무리: fable/(Fable 5.2 medium 한 방 그림과 그 조립) · recolour/(옛 조각의 색만 옮긴 것). 기록은 owner-waive 단계만 쓴다.",
+ "items": [
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-cobble.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-cobble"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-cobble-b.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-cobble-b"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-cobble-c.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-cobble-c"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-cobble-oil.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-cobble-oil"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-flag.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-flag"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-flag-c.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-flag-c"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-curb-s.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-curb-s"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-curb-n.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-curb-n"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-brickpave.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-brickpave"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-brickpave-b.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-brickpave-b"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-tread.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-tread"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-grate.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-grate"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-cinder.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-cinder"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-cinder-b.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-cinder-b"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-cinder-c.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-cinder-c"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-grass.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-grass"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-soil.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-soil"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-rail-n.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-rail-n"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-rail-s.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-rail-s"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-tram-n.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-tram-n"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-tram-s.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-tram-s"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-water.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-water"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-water-f1.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-water-f1"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-water-f2.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-water-f2"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-quay.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-quay"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-quay-lip.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-quay-lip"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-deck.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-deck"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-deck-edge.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-deck-edge"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-platform.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-platform"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-platform-edge.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-platform-edge"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-bridge-w.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-bridge-w"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-bridge-m.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-bridge-m"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-bridge-e.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-bridge-e"
+  },
+  {
+   "png": "tiledata/steampunk-city/terrain/_gate/sp-flag-b.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-flag-b"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-clock-post.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-clock-post"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-pillar-box.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pillar-box"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-kiosk.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-kiosk"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-poster-column.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-poster-column"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-gear-monument.png",
+   "kind": "figure",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-gear-monument"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-fountain.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-fountain"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-plane-tree.png",
+   "kind": "organic",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-plane-tree"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-planter.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-planter"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-scrap-heap.png",
+   "kind": "debris",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-scrap-heap"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-gasometer.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-gasometer"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-rail-signal.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-rail-signal"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-buffer-stop.png",
+   "kind": "box",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-buffer-stop"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-bollard.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-bollard"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-rope-coil.png",
+   "kind": "flat",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-rope-coil"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-chimney.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-chimney"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-hydrant.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-hydrant"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-gantry-crane.png",
+   "kind": "frame",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-gantry-crane"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-jib-crane.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-jib-crane"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-mooring-mast.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-mooring-mast"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-airship-docked.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-airship-docked"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-tram-shelter.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-tram-shelter"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-row-3.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-row-3"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-row-4.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-row-4"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-row-soot-3.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-row-soot-3"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-shop-gears.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-shop-gears"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-shop-apoth.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-shop-apoth"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-shop-bakery.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-shop-bakery"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-inn.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-inn"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-tavern.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-tavern"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-factory.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-factory"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-boiler-house.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-boiler-house"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-warehouse.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-warehouse"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-station.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-station"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-clock-tower.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-clock-tower"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-guild-hall.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-guild-hall"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-workshop.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-workshop"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-lab.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-lab"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-pump-house.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pump-house"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-dock-warehouse.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-dock-warehouse"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-row-soot-4.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-row-soot-4"
+  },
+  {
+   "png": "tiledata/steampunk-city/buildings/_gate/sp-row-flush-3.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-row-flush-3"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-ew.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-ew"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-ns.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-ns"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-ne.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-ne"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-nw.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-nw"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-se.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-se"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-sw.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-sw"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-new.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-new"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-sew.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-sew"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-nes.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-nes"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-nsw.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-nsw"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-e.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-e"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-w.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-w"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-n.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-n"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-s.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-s"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-grate-ew.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-grate-ew"
+  },
+  {
+   "png": "tiledata/steampunk-city/pipes/_gate/sp-pipe-grate-ns.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-grate-ns"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-gas-lamp.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-gas-lamp"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-plaza-lamp.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-plaza-lamp"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-bench.png",
+   "kind": "seat",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-bench"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-crates.png",
+   "kind": "box",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-crates"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-barrels.png",
+   "kind": "round_body",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-barrels"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-barrel.png",
+   "kind": "round_body",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-barrel"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-coal-bunker.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-coal-bunker"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-coal-heap.png",
+   "kind": "organic",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-coal-heap"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-fence.png",
+   "kind": "other",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-fence"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-fence-v.png",
+   "kind": "other",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-fence-v"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-water-tower.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-water-tower"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-stall-fruit.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-stall-fruit"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-stall-parts.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-stall-parts"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-stall-fish.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-stall-fish"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-steam-vent.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-steam-vent"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-steam-vent-f1.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-steam-vent-f1"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-steam-vent-f2.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-steam-vent-f2"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-steam-vent-f3.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-steam-vent-f3"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-stack-smoke.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-stack-smoke"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-stack-smoke-f1.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-stack-smoke-f1"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-stack-smoke-f2.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-stack-smoke-f2"
+  },
+  {
+   "png": "tiledata/steampunk-city/props/_gate/sp-stack-smoke-f3.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-stack-smoke-f3"
+  },
+  {
+   "png": "tiledata/steampunk-city/vehicles/_gate/sp-locomotive.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-locomotive"
+  },
+  {
+   "png": "tiledata/steampunk-city/vehicles/_gate/sp-tender.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-tender"
+  },
+  {
+   "png": "tiledata/steampunk-city/vehicles/_gate/sp-coach.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-coach"
+  },
+  {
+   "png": "tiledata/steampunk-city/vehicles/_gate/sp-wagon-coal.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-wagon-coal"
+  },
+  {
+   "png": "tiledata/steampunk-city/vehicles/_gate/sp-wagon-box.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-wagon-box"
+  },
+  {
+   "png": "tiledata/steampunk-city/vehicles/_gate/sp-steam-tram.png",
+   "kind": "structure",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-steam-tram"
+  },
+  {
+   "png": "tiledata/steampunk-city/vehicles/_gate/sp-barge.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-barge"
+  },
+  {
+   "png": "tiledata/steampunk-city/vehicles/_gate/sp-rowboat.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-rowboat"
+  },
+  {
+   "png": "tiledata/steampunk-city/vehicles/_gate/sp-minecart.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-minecart"
+  },
+  {
+   "png": "tiledata/steampunk-city/vehicles/_gate/sp-handcart.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-handcart"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-floor-plank.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-floor-plank"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-floor-iron.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-floor-iron"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-floor-checker.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-floor-checker"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-floor-herring.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-floor-herring"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-floor-stone.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-floor-stone"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-rug.png",
+   "kind": "flat",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-rug"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-ceiling.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-ceiling"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-wall-brick-u.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-wall-brick-u"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-wall-brick-d.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-wall-brick-d"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-wall-panel-u.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-wall-panel-u"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-wall-panel-d.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-wall-panel-d"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-wall-iron-u.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-wall-iron-u"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-wall-iron-d.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-wall-iron-d"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-wall-window-u.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-wall-window-u"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-wall-window-d.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-wall-window-d"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-wall-door-u.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-wall-door-u"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-wall-door-d.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-wall-door-d"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-boiler.png",
+   "kind": "round_body",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-boiler"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-boiler-f1.png",
+   "kind": "round_body",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-boiler-f1"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-boiler-f2.png",
+   "kind": "round_body",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-boiler-f2"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-furnace.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-furnace"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-coal-bin.png",
+   "kind": "container",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-coal-bin"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-engine.png",
+   "kind": "other",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-engine"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-engine-f1.png",
+   "kind": "other",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-engine-f1"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-engine-f2.png",
+   "kind": "other",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-engine-f2"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-engine-f3.png",
+   "kind": "other",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-engine-f3"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-dynamo.png",
+   "kind": "box",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-dynamo"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-pipe-wall.png",
+   "kind": "wall_mounted",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-pipe-wall"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-gauge-wall.png",
+   "kind": "wall_mounted",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-gauge-wall"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-valve-wheel.png",
+   "kind": "wall_mounted",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-valve-wheel"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-wall-clock-gear.png",
+   "kind": "wall_mounted",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-wall-clock-gear"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-tool-rack.png",
+   "kind": "wall_mounted",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-tool-rack"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-shelf-wall.png",
+   "kind": "wall_mounted",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-shelf-wall"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-workbench.png",
+   "kind": "low_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-workbench"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-anvil.png",
+   "kind": "other",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-anvil"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-lathe.png",
+   "kind": "low_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-lathe"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-drill-press.png",
+   "kind": "tall_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-drill-press"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-lab-bench.png",
+   "kind": "low_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-lab-bench"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-tesla-coil.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-tesla-coil"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-tesla-coil-f1.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-tesla-coil-f1"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-tesla-coil-f2.png",
+   "kind": "column",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-tesla-coil-f2"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-drafting-table.png",
+   "kind": "low_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-drafting-table"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-curio-cabinet.png",
+   "kind": "tall_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-curio-cabinet"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-bookshelf.png",
+   "kind": "tall_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-bookshelf"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-bar-counter.png",
+   "kind": "low_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-bar-counter"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-barrel-rack.png",
+   "kind": "frame",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-barrel-rack"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-tavern-table.png",
+   "kind": "low_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-tavern-table"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-stool.png",
+   "kind": "seat",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-stool"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-chair.png",
+   "kind": "seat",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-chair"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-fireplace.png",
+   "kind": "tall_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-fireplace"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-fireplace-f1.png",
+   "kind": "tall_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-fireplace-f1"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-fireplace-f2.png",
+   "kind": "tall_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-fireplace-f2"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-inn-counter.png",
+   "kind": "low_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-inn-counter"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-bed.png",
+   "kind": "low_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-bed"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-wardrobe.png",
+   "kind": "tall_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-wardrobe"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-nightstand.png",
+   "kind": "low_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-nightstand"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-dresser.png",
+   "kind": "tall_furniture",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-dresser"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-crate-in.png",
+   "kind": "box",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-crate-in"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-sack.png",
+   "kind": "box",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-sack"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-stairs-up.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "recolour/sp-stairs-up"
+  },
+  {
+   "png": "tiledata/steampunk-city/interior/_gate/sp-stairs-down.png",
+   "kind": "terrain",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-stairs-down"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-regulator.png",
+   "kind": "other",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-regulator"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-alarm.png",
+   "kind": "other",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-alarm"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-terminal.png",
+   "kind": "box",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-terminal"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-notice-board.png",
+   "kind": "front_prop",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-notice-board"
+  },
+  {
+   "png": "tiledata/steampunk-city/street/_gate/sp-note.png",
+   "kind": "debris",
+   "chipset": "steampunk_city",
+   "label": "fable/sp-note"
+  }
+ ]
+}

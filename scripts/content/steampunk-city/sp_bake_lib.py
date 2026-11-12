@@ -25,8 +25,13 @@ PC, LOWER_PC, PCNOTE = BL.PC, BL.LOWER_PC, BL.PCNOTE
 
 # ───────────────────────── 관문 ─────────────────────────
 def gate_status(png, kind):
-    """'pass' | 'prov'(영수증 pass, 프로필 미보정) | 이유(str, 막힘). 영수증 파일을 직접 읽어 FAIL 을 임시통과로 세지 않는다."""
+    """'pass' | 'prov'(영수증 pass, 프로필 미보정) | 'waived'(3/4 관문 미통과 — 오너 면제) | 이유(str, 막힘). 영수증 파일을 직접 읽어 FAIL 을 임시통과로 세지 않는다.
+    오너 면제(waivers/<묶음>.json, `object-gate owner-waive` 단계만 쓴다)는 관문의 출구 규칙(OG.refusal) 그대로 본다 — 이 그림 해시·종류·bundle 출구에 닿고,
+    보정된 Opus 최종 판정·서명된 사람 거절이 없을 때만. 면제는 통과가 아니라서 따로 센다."""
     sha = OG.pixel_sha256(png)
+    if OG.owner_waiver_applies(OG.read_owner_waiver(sha), sha, kind, 'bundle'):
+        why = OG.refusal(png, kind=kind, context='bundle')
+        return 'waived' if why is None else why
     r = OG.read_receipt(sha)
     if not r: return '영수증 없음'
     if r.get('kind') != kind: return '영수증 종류 %s != %s' % (r.get('kind'), kind)
