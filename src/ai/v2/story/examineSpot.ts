@@ -9,6 +9,7 @@
 //  3) 그래도 맨바닥이면 발밑(below)으로 내린다 — 지나갈 수 있고, 앞에 서서도 발밑에서도 조사된다(런타임 정면 조회는 높이를 가리지 않는다).
 // 어느 단계도 다른 이벤트를 못 닿게 만들지 않는다(eventReach.unreachableEvents 로 전/후 비교, 나빠지면 되돌린다).
 import { isPassable } from "@/project/collision";
+import { eventSight } from "@/project/eventSight";
 import type { GameEvent, GameMap } from "@/project/types";
 import { eventBlocks, isDoorName, reachableCells, unreachableEvents } from "../judge/eventReach";
 import { showExaminedThing } from "./examineArt";
@@ -170,6 +171,28 @@ export function settleExamineSpot(run: BuildRun, mapId: string, eventId: string,
     if (lowered) notes.push(lowered);
   }
   return notes;
+}
+
+/**
+ * 경로가 거쳐야 하는 조사 칸이 끝내 보이지 않으면(제 그림이 없고, 맨바닥이거나 건물·성벽 같은 큰 그림의 한 칸이다) 늘 빛나는 표지(page.glow)를 단다.
+ * 가까이 가야 한 번 터지는 반짝임(nearSparkle)은 «보인다» 가 아니다 — 플레이어는 어디로 걸어갈지 볼 수 없다.
+ * 왜(2026-11-12 r1w-fun · 저장된 판 47개 중 25개): find 단계의 「거대 두개골」「젖은 운송 장부」「태양의 비문」이 맨바닥·성문 벽의 그림 없는 칸이었고,
+ * 기계 플레이어만 계획표의 좌표로 찾아갔다. 보이는가는 project/eventSight 가 판정한다(정직한 자동 플레이와 같은 눈).
+ * 이미 넘긴 뒤의 페이지(«더는 볼 것이 없다»)에는 달지 않는다 — 넘길 것이 남은 페이지까지만 빛난다.
+ */
+export function lightUnseenThing(run: BuildRun, mapId: string, eventId: string): string | undefined {
+  const map = run.ctx.project.maps[mapId];
+  const ev = map?.events.find((e) => e.id === eventId);
+  if (!map || !ev || !examineOnly(ev) || carriesTransfer(ev)) return undefined;
+  const pages = ev.pages ?? [];
+  const advances = (page: (typeof pages)[number]) => /"kind":"(?:setSwitch|changeItem|triggerEnding|ending|inputNumber|battleProcessing|choices)"/u.test(JSON.stringify(page.commands ?? []));
+  const lastLive = pages.reduce((last, page, i) => (advances(page) ? i : last), -1);
+  const lit: number[] = [];
+  for (const [pageIndex, page] of pages.entries()) {
+    if (pageIndex > lastLive || page.glow || eventSight(run.ctx.project, map, ev, page).seen !== "none") continue;
+    if (run.call("patch_event_page", { mapId, eventId, pageIndex, set: { glow: { radius: 1 } } }).ok) lit.push(pageIndex);
+  }
+  return lit.length ? `「${String((ev as { name?: string }).name ?? ev.id)}」 (${ev.x},${ev.y}) 그림 없는 조사 칸에 늘 빛나는 표지` : undefined;
 }
 
 /** 맵의 모든 그림 없는 조사 칸을 고친다(청사진 경로 다시 고치기용). */
