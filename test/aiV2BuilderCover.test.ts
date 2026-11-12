@@ -21,7 +21,6 @@ import { createV2Turn } from "@/ai/v2/turn/turn";
 import { TodoStore } from "@/ai/v2/loop/todoStore";
 import { todoReport } from "@/ai/v2/judge/finalReport";
 import type { PlaceSpec } from "@/ai/v2/shared/types";
-import { pickVillageChipset } from "@/ai/villageChipsetPool";
 
 const SLOW = 120_000;
 
@@ -111,26 +110,24 @@ describe("풀 칩셋 마을 뒤의 실내는 make_place 가 집 문에 잇고, �
 });
 
 describe("실내 종류가 없는 세계의 실내 요청은 바깥 종류로 짓지 않는다", () => {
-  it("전국·에도 마을 뒤의 «촌장 집»: 짓지 않고 까닭과 없는 그림 기록을 남긴다(농촌 마을 한 장이 «촌장 집» 으로 서지 않는다)", async () => {
-    // 칩셋 풀은 프로젝트 열쇠로 고른다 — 전국·에도가 뽑히는 열쇠를 찾아 그 프로젝트로 돈다.
-    const task = "작은 마을이랑 촌장 집 안을 만들어 줘.";
-    const key = Array.from({ length: 400 }, (_, k) => `key-${k}`).find((k) => pickVillageChipset(createBlankProject(), k, task)?.entry.tilesetId === "sengoku_edo");
-    expect(key, "전국·에도가 뽑히는 열쇠").toBeTruthy();
-    const t = turn(task, undefined, key);
+  it("황무지 정착지 뒤의 «촌장 집»: 짓지 않고 까닭과 없는 그림 기록을 남긴다(정착지 한 장이 «촌장 집» 으로 서지 않는다)", async () => {
+    // 황무지는 실내 그림이 아직 없는 세계다(전국·에도는 2026-11-12 에 방 구성 여섯을 실내 종류로 받았다 — test/aiV2SengokuRooms.test.ts).
+    const t = turn("황무지 생존자 정착지랑 촌장 집 안을 만들어 줘.");
     await t.call("todo", { op: "init", list: [{ phase: "장소", items: [
-      { content: "마을 만들기", id: "v", check: { kind: "place", name: "새벽 마을", placeKind: "village", fresh: true } },
+      { content: "정착지 만들기", id: "v", check: { kind: "place", name: "새벽 정착지", placeKind: "village", fresh: true } },
       { content: "촌장 집 만들기", id: "house", check: { kind: "place", name: "촌장 집", placeKind: "interior", fresh: true } }] }] });
-    const made = await t.call("make_place", { type: "village", name: "새벽 마을", size: "small" });
-    expect(Object.values(t.ctx.project.maps).find((m) => m.name === "새벽 마을")?.tilesetId).toBe("sengoku_edo");
+    const made = await t.call("make_place", { type: "village", name: "새벽 정착지", style: "world:wasteland:settlement" });
+    expect(Object.values(t.ctx.project.maps).find((m) => m.name === "새벽 정착지")?.tilesetId).toBe("wasteland_ruins");
     expect(made.ok, made.body.slice(0, 600)).toBe(true);
     const before = Object.keys(t.ctx.project.maps).length;
     const home = await t.call("make_place", { type: "interior", name: "촌장 집", mapId: "" });
     expect(home.ok).toBe(false);
     expect(home.body).toMatch(/has no indoor place kind/u);
-    expect(home.body).toContain('todo({"op":"block","task":"house"');
+    // 다음 호출은 지금 하던 항목을 막는 호출이다(정착지 항목이 아직 열려 있으면 그 항목 — 황무지 정착지는 «마을» 장소 확인을 아직 못 넘는다).
+    expect(home.body).toMatch(/Next call: todo\(\{"op":"block","task":"(v|house)","reason":"Wasteland has no indoor place kind/u);
     expect(Object.keys(t.ctx.project.maps).length).toBe(before);
-    expect([...t.session.missingArt].some((line) => line.includes("indoor-kind") && line.includes("sengoku_edo"))).toBe(true);
-    const blocked = await t.call("todo", { op: "block", task: "house", reason: "Sengoku · Edo Japan has no indoor place kind" });
+    expect([...t.session.missingArt].some((line) => line.includes("indoor-kind") && line.includes("wasteland_ruins"))).toBe(true);
+    const blocked = await t.call("todo", { op: "block", task: "house", reason: "Wasteland has no indoor place kind" });
     expect(blocked.ok, blocked.body.slice(0, 300)).toBe(true);
   }, SLOW);
 });

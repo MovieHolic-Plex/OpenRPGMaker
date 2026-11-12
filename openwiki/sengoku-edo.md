@@ -82,6 +82,13 @@ QA 대상은 엔진 렌더러 원본 해상도다. 성하마을·성·신사/절
 - 조수(Argon medium, 「전국시대 성하마을 만들어줘」, 실제 입력창): 6.5 → 7.5. 같은 compose 배치에 풀 바둑판이 사라지고 나무 수관이 찼다. 시작 위치도 새 맵 (26,47)로 잡혔다(composerStart). 저장→재로드 일치. 남은 감점은 마치야 두 외형 반복, 해자 밖 빈 풀밭, 실내·NPC 0.
 - 남은 이질감: 대숲·실내·건물 윤곽은 여전히 sumi(순흑에 가까움, 바꾸면 영수증 163개 재판정), 버들 가지가 줄처럼 곧다, 기와는 여전히 세로 골이 규칙적, 장면 구성이 성기다(구성기 몫 — 덤불·나무 덩이 밀도가 버들항보다 낮다).
 
+## 조수 v2 의 실내 종류 (2026-11-12)
+
+조수 v2 세계 표(`src/ai/v2/place/world.ts`)가 방 구성 여섯을 실내 종류로 싣는다: `farmhouse`(minka) · `townhouse`(machiya) · `inn`(ryokan-1f) · `samurai-house` · `dojo` · `castle-hall`.
+방 구성 도구(`build_hand_interior_room`, `layout:{program, seed}`)로 짓고, 바깥 맵의 그 건물 문(농가 / 마치야·가게·대장간 / 여관·온천 / 무가 저택 / 도장 / 천수각)에 잇는다.
+전에는 실내 종류가 0이라 «촌장 집» 같은 실내 요청이 거절됐다. 표·크기·남은 것(여관 2층·다실)은 `openwiki/assistant-v2.md` 「전국·에도 세계의 실내 종류」.
+방 구성을 더하거나 이름을 바꾸면(`src/assets/sengokuEdoRoomTemplates.json programs`) 그 표의 `value` 와 `test/aiV2SengokuRooms.test.ts` 를 같이 고친다.
+
 ## 조수 실측
 
 `/tmp/se-gemini/rerun.sh` 는 `/tmp/ai-gemini/rerun.sh` 사본이다. 실제 편집기 입력창 경로로 gemini-3.8-flash(high)를 새 기본 프로젝트에서 돌린다. 세 판 모두 SQLite 에 저장한 뒤 다시 읽었고, 해시가 같았다(reloadEqual true).
