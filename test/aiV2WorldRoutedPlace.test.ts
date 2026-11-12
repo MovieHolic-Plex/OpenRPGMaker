@@ -10,6 +10,7 @@ import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { withTodoLoop } from "@/ai/v2/loop/todoTools";
 import { V2Session } from "@/ai/v2/turn/session";
 import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
+import { edgeRoadMouths } from "@/ai/v2/place/roadMouths";
 
 const SLOW = 120_000;
 
@@ -50,6 +51,38 @@ describe("풀 칩셋 마을 뒤의 장소는 그 세계의 종류로 선다", ()
     const field = await t.call("make_place", { type: "village", name: "동쪽 들판" });
     expect(field.ok, field.body.slice(0, 600)).toBe(true);
     expect(Object.values(t.ctx.project.maps).find((m) => m.name === "동쪽 들판")!.tilesetId).toBe("pirate_isles");
+    // 들판은 그 세계의 들판 종류로 선다(전에는 종류가 없어 항구 마을이 됐다).
+    expect(field.body).toContain("«field» kind");
+  }, SLOW);
+
+  // 2026-11-11 map-vqa 깔기 village-to-field: 모델이 마을에 exits:["east"], 들판에 exits:["west"] 를 적었는데 둘 다 버려졌다 —
+  // 마을은 섬(가장자리에 땅이 없다)으로, 들판은 항구로 지어져 «마을 동쪽 길로 나가면 들판» 이 설 자리가 없었다.
+  it("나가는 변을 적은 풀 마을은 가장자리에 길이 닿는 마을로 서고, 들판도 맞닿는 변에 길 입구가 있다", async () => {
+    const t = turn("마을 맵이랑 그 동쪽에 붙은 들판 맵을 만들어 줘. 마을 동쪽 길로 나가면 들판으로 이어지게 해 줘.");
+    await t.call("todo", { op: "init", list: [{ phase: "p", items: [
+      { content: "마을 만들기", id: "v", check: { kind: "place", name: "마을", placeKind: "village", fresh: true } },
+      { content: "들판 만들기", id: "f", check: { kind: "place", name: "들판", placeKind: "field", fresh: true } }] }] });
+    const made = await t.call("make_place", { spec: { type: "village", name: "마을", style: "pool:pirate_isles", size: "medium", exits: ["east"] } });
+    expect(made.ok, made.body.slice(0, 600)).toBe(true);
+    expect(made.body).toContain("road leaves the map at east");
+    const field = await t.call("make_place", { spec: { type: "village", name: "들판", style: "field", theme: "field", exits: ["west"] } });
+    expect(field.ok, field.body.slice(0, 600)).toBe(true);
+    expect(field.body).toContain("road leaves the map at west");
+    const project = t.ctx.project;
+    const village = Object.values(project.maps).find((m) => m.name === "마을")!, meadow = Object.values(project.maps).find((m) => m.name === "들판")!;
+    expect([village.tilesetId, meadow.tilesetId]).toEqual(["pirate_isles", "pirate_isles"]);
+    expect(edgeRoadMouths(project, village).map((m) => m.side)).toContain("east");
+    expect(edgeRoadMouths(project, meadow).map((m) => m.side)).toContain("west");
+  }, SLOW);
+
+  it("나가는 변을 적지 않은 풀 마을은 예전처럼 섬 마을이다", async () => {
+    const t = turn("마을 하나 만들어 줘.");
+    await t.call("todo", { op: "init", list: [{ phase: "p", items: [{ content: "마을 만들기", id: "v", check: { kind: "place", name: "새벽 마을", placeKind: "village", fresh: true } }] }] });
+    const made = await t.call("make_place", { spec: { type: "village", name: "새벽 마을", style: "pool:pirate_isles", size: "small" } });
+    expect(made.ok, made.body.slice(0, 600)).toBe(true);
+    const village = Object.values(t.ctx.project.maps).find((m) => m.name === "새벽 마을")!;
+    expect([village.width, village.height]).toEqual([48, 36]);
+    expect(edgeRoadMouths(t.ctx.project, village)).toEqual([]);
   }, SLOW);
 });
 

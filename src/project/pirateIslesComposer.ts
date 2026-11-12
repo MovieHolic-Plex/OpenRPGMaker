@@ -9,6 +9,8 @@
 //   beach   열대 섬 해변 마을: 깊은 바다로 둘러싼 섬(모래 둘레 + 풀 안쪽) + 모래길 두 줄과 광장(모닥불·토템) + 오두막들 + 물 위 수상 가옥·부두·쪽배.
 //   fort    해안 요새: 남쪽 바다·해변 위 돌 성벽(윗면 걷는 길 그림 + 앞면 두 줄) 사각 + 모퉁이 포대 + 남벽 문루(대문 안팎은 이동 이벤트로 잇는다 — 통행 검사는 portal 로 붙여 본다) + 안뜰(병영·망루·깃대·보급 마당·우물).
 //   wreck   난파선과 보물 동굴 섬: 작은 섬 + 북쪽 바위 둔덕의 보물 동굴 입구 + 남쪽 해변에 박힌 난파선·흩어진 짐 + 흙길.
+//   field   해안 들판: 풀밭을 동서로 가로지르는 모랫길(양 끝이 맵 가장자리) + 외딴 오두막과 텃밭 + 길가 쉼터 + 나무 덩이·꽃 무더기·바위, 남쪽 끝에 해변과 바다.
+// 나가는 변(exits): 다른 맵으로 나가는 변을 주면 길 그물에서 그 가장자리까지 길을 낸다(composerExitRoads). 섬(beach·wreck)은 땅이 가장자리에 닿지 않아 못 낸다 — 결과에 적는다.
 //   ship    배 안(실내): 뱃머리가 뾰족한 선체 — 위 줄 선장실·선원 선실·주방, 복도(위 갑판 계단), 아래 줄 선창·포 갑판(남쪽 뱃전 대포). 벽 천장 + 앞면 두 줄.
 //   tavern  해적 술집 안(실내): 큰 홀(바 카운터·탁자·벽난로) + 부엌·창고.
 //   hut     섬 오두막 안(실내): 작은 방 하나.
@@ -18,21 +20,24 @@
 import { setLayerTileAt, layerTileAt } from "@/project/mapLayers";
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import type { GameMap, StructureKitDef, TilesetDef } from "@/project/types";
+import { exitRoadCells, type ExitSide } from "./composerExitRoads";
 
-export type PirateMapKind = "harbor" | "beach" | "fort" | "wreck" | "ship" | "tavern" | "hut" | "cave";
-export const PIRATE_MAP_KINDS: readonly PirateMapKind[] = ["harbor", "beach", "fort", "wreck", "ship", "tavern", "hut", "cave"];
-export const PIRATE_OUTDOOR_KINDS: readonly PirateMapKind[] = ["harbor", "beach", "fort", "wreck"];
+export type PirateMapKind = "harbor" | "beach" | "fort" | "wreck" | "ship" | "tavern" | "hut" | "cave" | "field";
+// 순서를 바꾸지 않는다 — 종류의 자리가 씨앗 소금이다(composePirateIslesMap). 새 종류는 끝에 붙인다.
+export const PIRATE_MAP_KINDS: readonly PirateMapKind[] = ["harbor", "beach", "fort", "wreck", "ship", "tavern", "hut", "cave", "field"];
+export const PIRATE_OUTDOOR_KINDS: readonly PirateMapKind[] = ["harbor", "beach", "fort", "wreck", "field"];
 export const PIRATE_MIN_SIZE: Readonly<Record<PirateMapKind, { w: number; h: number }>> = {
   harbor: { w: 44, h: 34 }, beach: { w: 40, h: 32 }, fort: { w: 40, h: 34 }, wreck: { w: 36, h: 30 },
-  ship: { w: 30, h: 22 }, tavern: { w: 26, h: 20 }, hut: { w: 14, h: 12 }, cave: { w: 30, h: 24 },
+  ship: { w: 30, h: 22 }, tavern: { w: 26, h: 20 }, hut: { w: 14, h: 12 }, cave: { w: 30, h: 24 }, field: { w: 36, h: 28 },
 };
 export const PIRATE_DEFAULT_SIZE: Readonly<Record<PirateMapKind, { w: number; h: number }>> = {
   harbor: { w: 56, h: 40 }, beach: { w: 52, h: 40 }, fort: { w: 48, h: 40 }, wreck: { w: 46, h: 36 },
-  ship: { w: 36, h: 26 }, tavern: { w: 32, h: 24 }, hut: { w: 16, h: 14 }, cave: { w: 36, h: 28 },
+  ship: { w: 36, h: 26 }, tavern: { w: 32, h: 24 }, hut: { w: 16, h: 14 }, cave: { w: 36, h: 28 }, field: { w: 48, h: 34 },
 };
 
 export interface PiratePlaced { readonly id: string; readonly x: number; readonly y: number }
 export interface PirateArea { readonly name: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number; readonly tag: string; readonly door?: { x: number; y: number }; readonly access?: { x: number; y: number } }
+export interface PirateExit { readonly side: ExitSide; readonly x: number; readonly y: number }
 export interface PirateComposeResult {
   readonly kind: PirateMapKind;
   readonly seed: number;
@@ -43,6 +48,10 @@ export interface PirateComposeResult {
   readonly unreachable: number;
   /** 이동 이벤트로 이을 두 칸(요새 대문 안팎) — 통행 검사가 붙여 본 쌍. */
   readonly portals: readonly (readonly [{ x: number; y: number }, { x: number; y: number }])[];
+  /** 나가는 길이 맵 가장자리에 닿은 칸(변마다 길 폭의 가운데 칸). */
+  readonly exits: readonly PirateExit[];
+  /** 주문받았지만 길을 내지 못한 변(바다·섬). */
+  readonly exitsMissing: readonly ExitSide[];
   readonly summary: string;
 }
 
@@ -129,6 +138,10 @@ class Board {
   readonly usedBuild = new Map<string, number>();
   skipped = 0;
   readonly rng: () => number;
+  /** 다른 맵으로 나가는 변(구성기 인자). */
+  exitSides: readonly ExitSide[] = [];
+  readonly exits: PirateExit[] = [];
+  readonly exitsMissing: ExitSide[] = [];
 
   constructor(readonly map: GameMap, readonly ts: TilesetDef, readonly seed: number) {
     this.w = map.width; this.h = map.height;
@@ -344,6 +357,39 @@ class Board {
   reachesAll(start: Pt, must: readonly Pt[]): boolean {
     const seen = this.reach(start);
     return must.every((p) => this.inb(p.x, p.y) && seen[this.idx(p.x, p.y)] === 1);
+  }
+
+  /**
+   * 나가는 길: 길 그물(모래길·흙길)에서 exitSides 의 가장자리까지 폭 2 길을 낸다. 땅을 칠하기 전에 부른다 — 땅 문자만 바꾼다.
+   * 풀·모래만 길로 바꾼다. keepOut = 건물·성벽 자리(길이 지나지 않는 사각형). 섬처럼 땅이 가장자리에 닿지 않으면 exitsMissing 에 적는다.
+   */
+  carveExitRoads(keepOut: readonly { x: number; y: number; w: number; h: number }[] = []): void {
+    const dirt = this.grid.includes("p");
+    const kept = (x: number, y: number) => keepOut.some((r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h);
+    for (const side of this.exitSides) {
+      const cells = exitRoadCells({
+        W: this.w, H: this.h,
+        isRoad: (x, y) => this.inb(x, y) && "vp".includes(this.g(x, y)),
+        canPave: (x, y) => this.inb(x, y) && "gs".includes(this.g(x, y)) && !kept(x, y),
+      }, side, 2);
+      if (!cells) { this.exitsMissing.push(side); continue; }
+      for (const c of cells) this.set(c.x, c.y, this.g(c.x, c.y) === "s" || !dirt ? "v" : "p");
+      const at = this.edgeRoadCell(side);
+      if (at) this.exits.push({ side, ...at }); else this.exitsMissing.push(side);
+    }
+  }
+  /** 그 변의 가장자리 줄에서 길이 나가는 구간의 가운데 칸. */
+  private edgeRoadCell(side: ExitSide): Pt | undefined {
+    const horizontal = side === "north" || side === "south";
+    const line = side === "north" || side === "west" ? 0 : horizontal ? this.h - 1 : this.w - 1;
+    const [ix, iy] = side === "north" ? [0, 1] : side === "south" ? [0, -1] : side === "west" ? [1, 0] : [-1, 0];
+    const run: Pt[] = [];
+    for (let k = 1; k < (horizontal ? this.w : this.h) - 1; k++) {
+      const x = horizontal ? k : line, y = horizontal ? line : k;
+      if ("vp".includes(this.g(x, y)) && "vp".includes(this.g(x + ix!, y + iy!))) run.push({ x, y });
+      else if (run.length) break;
+    }
+    return run[Math.floor((run.length - 1) / 2)];
   }
 
   /** 건물 키트 둘레 1칸을 소품 금지로. */
@@ -576,8 +622,12 @@ function composeHarbor(b: Board): { areas: PirateArea[]; spawn: Pt } {
   const tv = plotOf(b, "tavern", tavernX, northFoot - 5);
   const northIds = ["captain-house", "house-plaster", "cabin", "chapel", "house-plaster", "hut-thatch", "fish-shack"];
   if (tv) { b.rect(tv.x, tv.y, tv.w, tv.h, "g"); plots.push(tv); }
-  buildingRow(b, northIds, 1 + b.int(0, 2), tavernX - 1, northFoot, northTop - 1, "g", plots, 1, 3, () => false, 1);
-  buildingRow(b, northIds.slice().reverse(), tavernX + 7, Wd - 1, northFoot, northTop - 1, "g", plots, 1, 3, () => false, 1);
+  // 북쪽으로 나가는 맵이면 술집 옆에 골목 한 줄을 비워 큰길에서 북쪽 가장자리까지 모랫길을 낸다.
+  const northLane = !b.exitSides.includes("north") ? -1 : tavernX >= 7 ? tavernX - 4 : Math.min(Wd - 4, tavernX + 8);
+  const laneSkip = (x: number, w: number) => northLane >= 0 && x + w > northLane - 1 && x < northLane + 3;
+  buildingRow(b, northIds, 1 + b.int(0, 2), tavernX - 1, northFoot, northTop - 1, "g", plots, 1, 3, laneSkip, 1);
+  buildingRow(b, northIds.slice().reverse(), tavernX + 7, Wd - 1, northFoot, northTop - 1, "g", plots, 1, 3, laneSkip, 1);
+  if (northLane >= 0) for (let y = 0; y < street; y++) { b.set(northLane, y, "v"); b.set(northLane + 1, y, "v"); }
   // 남쪽 줄(방파제 앞, 문이 방파제로): 창고·항만 사무소·배 창고·생선 훈제막 — 광장 칸은 비운다
   const southIds = ["warehouse", "harbor-office", "warehouse", "fish-shack", "smokehouse", "boathouse"];
   buildingRow(b, southIds, qx0, qx1, southFoot, southTop, "g", plots, 1, 2, (x, w) => x + w > plazaRect.x - 1 && x < plazaRect.x + plazaRect.w + 1);
@@ -605,6 +655,7 @@ function composeHarbor(b: Board): { areas: PirateArea[]; spawn: Pt } {
   }
   tidyCoast(b);
   shallowRing(b, 3);
+  b.carveExitRoads(plots);
   // 방파제·부두 바로 옆은 깊은 물이어도 된다(배가 댄다) — 단, 얕은 물 띠가 해변을 감싼다
   b.paintGround();
   // 건물
@@ -724,6 +775,7 @@ function composeHarbor(b: Board): { areas: PirateArea[]; spawn: Pt } {
 
 // ─────────────────────────────── 섬 모양(야외 섬 종류 공통)
 /** 타원 + 잡음 섬. land = 땅, rx/ry 반지름. 해안선 둘레 모래 bw 칸, 안쪽 풀. */
+const ISLAND_RIM = 2;
 function island(b: Board, cx: number, cy: number, rx: number, ry: number, bw: number, s: number): void {
   // 큰 타원 하나 + 작은 곶 둘(씨앗마다 방향이 다르다) — 합집합 거리
   const lobes = [{ x: cx, y: cy, rx, ry }];
@@ -736,7 +788,9 @@ function island(b: Board, cx: number, cy: number, rx: number, ry: number, bw: nu
     for (const l of lobes) d = Math.min(d, Math.hypot((x + 0.5 - l.x) / l.rx, (y + 0.5 - l.y) / l.ry));
     d += noise2(x, y, s, 4) * 0.13 + noise2(x, y, s + 7, 7) * 0.14 + noise2(x, y, s + 9, 13) * 0.1;
     const inner = 1 - bw / Math.min(rx, ry) + noise2(x, y, s + 13, 4) * 0.08;
-    if (d < 1) b.set(x, y, d < inner ? "g" : "s");
+    // 섬은 맵 가장자리에 닿지 않는다(가장자리 두 줄은 바다) — 곶이 가장자리에 걸치면 «출구 없는 열린 가장자리»가 된다.
+    const rim = x < ISLAND_RIM || y < ISLAND_RIM || x >= b.w - ISLAND_RIM || y >= b.h - ISLAND_RIM;
+    if (d < 1 && !rim) b.set(x, y, d < inner ? "g" : "s");
     else b.set(x, y, "~");
   }
   smooth(b, "sg", "~", 2);
@@ -785,6 +839,8 @@ function composeBeach(b: Board): { areas: PirateArea[]; spawn: Pt } {
   shallowRing(b, 3);
   const pierX = px + 2, pierLen = Math.min(Hd - shoreY - 3, 6 + b.int(0, 2));
   b.rect(pierX, shoreY - 1, 2, pierLen + 1, "b");
+  // 길 끝 ↔ 부두 머리: 그 사이 모래를 모랫길로 잇는다 — 길과 부두 사이에 낀 모래 한 줄을 아래 다듬기가 얕은 물로 바꿔 부두가 섬에서 끊겼다.
+  for (let y = sy; y < shoreY - 1; y++) for (const x of [pierX, pierX + 1]) if (b.g(x, y) === "s") b.set(x, y, "v");
   // 수상 가옥 둘: 부두 끝 좌우로 가지 판(접근칸)
   const stilts: Plot[] = [];
   const endY = shoreY - 1 + pierLen;
@@ -800,6 +856,7 @@ function composeBeach(b: Board): { areas: PirateArea[]; spawn: Pt } {
   }
   // 옆 해변(동쪽): 그물 말리는 곳 / 서쪽: 해먹
   smooth(b, "s", "w", 1);
+  b.carveExitRoads([...plots, ...stilts]);
   b.paintGround();
   stampPlots(b, plots, areas);
   for (const p of stilts) {
@@ -878,6 +935,7 @@ function composeFort(b: Board): { areas: PirateArea[]; spawn: Pt } {
   const gateX = fx + Math.floor(fw / 2) - 2;
   for (let y = fy + fh + 2; y < Hd && b.g(gateX + 1, y) === "g"; y++) { b.set(gateX + 1, y, "p"); if (b.g(gateX + 2, y) === "g") b.set(gateX + 2, y, "p"); }
   shallowRing(b, 3);
+  b.carveExitRoads([{ x: fx - 3, y: fy - 3, w: fw + 6, h: fh + 6 }]);       // 성벽·포대 탑 둘레 두 칸은 비운다
   b.paintGround();
   const spawn = { x: gateX + 1, y: fy + fh + 3 };
   const must: Pt[] = [];
@@ -920,7 +978,7 @@ function composeFort(b: Board): { areas: PirateArea[]; spawn: Pt } {
   cluster(b, ["well"], cx0 + Math.floor(cw / 2) + 2, cy0 + Math.floor(ch / 2), 1, "c", spawn, must, 1);
   // 바깥: 해변 야자·바위·쪽배, 풀숲 나무 덩이(요새 둘레 2칸 비움)
   b.markNear(fx - 1, fy - 1, fw + 2, fh + 3, 1);
-  for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) if (b.g(x, y) === "p") b.markClear(x, y);
+  for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) if ("pv".includes(b.g(x, y))) b.markClear(x, y);
   for (const gx of [b.int(1, Math.max(2, fx - 6)), b.int(Math.min(Wd - 6, fx + fw + 2), Wd - 5)]) for (const gy of [b.int(1, 6), b.int(10, shore - 9)]) grove(b, ["palm", "tree-broad", "palm-pair", "banana", "tree-fruit"], gx, gy, b.int(2, 3), "g", spawn, must);
   sprinkle(b, ["bush", "fern", "rock-small", "bush-hibiscus"], Math.floor(Wd / 6), "g", { x: 0, y: 0, w: Wd, h: Hd }, spawn, must, 2);
   sprinkle(b, ["palm-lean", "rock-large", "palm"], Math.floor(Wd / 9), "s", { x: 0, y: 0, w: Wd, h: Hd }, spawn, must, 2);
@@ -972,6 +1030,7 @@ function composeWreck(b: Board): { areas: PirateArea[]; spawn: Pt } {
   const wreckSide: Pt = wreck ? { x: wreck.x + 2, y: wreck.y - 2 } : { x: Math.round(cx), y: Math.round(cy) + 4 };
   wpath(b, { x: caveAcc.x, y: caveAcc.y }, wreckSide);
   shallowRing(b, 3);
+  b.carveExitRoads(cave ? [cave] : []);
   b.paintGround();
   const spawn = { x: wreckSide.x, y: wreckSide.y };
   const must: Pt[] = [];
@@ -1030,6 +1089,119 @@ function composeWreck(b: Board): { areas: PirateArea[]; spawn: Pt } {
   sprinkle(b, ["rowboat", "bamboo-raft"], 1, "w", { x: 0, y: Math.floor(Hd / 2), w: Wd, h: Hd / 2 }, spawn, must, 1);
   for (let k = 0; k < 2; k++) cluster(b, ["coral", "rock-water", "coral-purple"], b.int(4, Wd - 6), b.pick([3, Hd - 5]), 2, "w", spawn, must, 2);
   sprinkle(b, ["sea-stack"], 2, "~", all, spawn, must, 2);
+  return { areas, spawn };
+}
+
+// ─────────────────────────────── 해안 들판
+/** 꽃 무더기: 걸을 수 있는 한 칸 조각(꽃·풀포기·고사리)을 기준점 둘레에 모아 놓는다 — 같은 조각이 이웃해도 된다(cluster·grove 는 같은 조각을 띄운다). */
+function patch(b: Board, ids: readonly string[], cx: number, cy: number, n: number, ground: string): number {
+  let k = 0;
+  for (let t = 0; t < n * 8 && k < n; t++) {
+    const x = cx + b.int(-2, 2), y = cy + b.int(-1, 1);
+    if (x < 1 || y < 1 || x >= b.w - 1 || y >= b.h - 1) continue;
+    const i = b.idx(x, y);
+    if (!ground.includes(b.g(x, y)) || b.taken[i] || b.near[i] || b.clear[i]) continue;
+    if (b.stamp(ids[(k + t) % ids.length]!, x, y)) k++;
+  }
+  return k;
+}
+
+/**
+ * 들판: 마을 밖 열린 땅. 풀밭을 동서로 가로지르는 모랫길(양 끝이 맵 가장자리 — 옆 맵으로 나가는 길) + 길에서 가지길로 닿는 외딴 오두막과 텃밭
+ * + 길가 쉼터(모닥불·통나무 의자) + 나무 덩이·꽃 무더기·바위. 남쪽 끝은 해변과 바다(남쪽으로 나가는 맵이면 바다 없이 풀밭이 끝까지).
+ */
+function composeField(b: Board): { areas: PirateArea[]; spawn: Pt } {
+  const { w: Wd, h: Hd } = b;
+  const areas: PirateArea[] = [];
+  b.grid.fill("g");
+  const coast = !b.exitSides.includes("south");
+  const shore = coast ? Hd - 6 + b.int(-1, 1) : Hd;
+  if (coast) {
+    for (let x = 0; x < Wd; x++) {
+      const sy = shore + Math.round(noise1(x, b.seed, 6) * 1.5);
+      for (let y = sy; y < Hd; y++) b.set(x, y, "~");
+      for (let y = sy - 6; y < sy; y++) if (y >= sy - 3.2 + noise2(x, y, b.seed + 3, 4) * 1.2 + noise2(x, y, b.seed + 4, 9) * 0.7) b.set(x, y, "s");
+    }
+    tidyCoast(b);
+  }
+  // 들길: 서쪽 끝 → 동쪽 끝, 완만하게 굽는다(폭 2). 풀밭의 가운데 높이를 지난다.
+  const lowest = (coast ? shore - 9 : Hd - 7);
+  const base = Math.round((6 + lowest) / 2) + b.int(-2, 2);
+  // 여섯 칸마다 한 줄씩만 오르내린다 — 칸마다 흔들면 길이 톱니가 되고 한두 칸짜리 혹이 튀어나온다.
+  const SEG = 6, ys: number[] = [];
+  for (let k = 0; k * SEG < Wd; k++) {
+    const want = Math.max(6, Math.min(lowest, base + Math.round(noise1(k, b.seed + 31, 3) * 2.6)));
+    ys.push(k === 0 ? want : Math.max(ys[k - 1]! - 1, Math.min(ys[k - 1]! + 1, want)));
+  }
+  const roadY = (x: number) => ys[Math.min(ys.length - 1, Math.floor(Math.max(0, x) / SEG))]!;
+  for (let x = 0, prev = roadY(0); x < Wd; x++) {
+    const y = roadY(x);
+    for (let yy = Math.min(prev, y); yy <= Math.max(prev, y) + 1; yy++) b.set(x, yy, "v");
+    prev = y;
+  }
+  // 외딴 오두막: 길 북쪽, 맵의 한쪽 삼분의 일 — 문 앞에서 길까지 가지길
+  const plots: Plot[] = [];
+  const west = b.chance(0.5);
+  const hutId = b.pick(["cabin", "hut-thatch", "hut-palm"]);
+  const hs = b.kitSize(hutId);
+  const hutX = west ? b.int(Math.round(Wd * 0.2), Math.round(Wd * 0.34)) : b.int(Math.round(Wd * 0.6), Math.round(Wd * 0.74));
+  let hut: Plot | null = hs ? plotOf(b, hutId, hutX, roadY(hutX + 1) - 4 - hs.h + 1) : null;
+  if (hut && hut.access && hut.y >= 2) {
+    plots.push(hut);
+    for (let y = hut.access.y; y < roadY(hut.access.x); y++) b.set(hut.access.x, y, "v");
+  } else hut = null;
+  if (coast) shallowRing(b, 3);
+  b.carveExitRoads(plots);
+  b.paintGround();
+  stampPlots(b, plots, areas);
+  for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) if (b.g(x, y) === "v") b.markClear(x, y);
+  const spawnX = hut?.access ? hut.access.x : Math.floor(Wd / 2);
+  const spawn = { x: spawnX, y: roadY(spawnX) + 1 };
+  const must: Pt[] = areas.filter((a) => a.access).map((a) => a.access!);
+  must.push({ x: 0, y: roadY(0) }, { x: Wd - 1, y: roadY(Wd - 1) }, ...b.exits.map((e) => ({ x: e.x, y: e.y })));
+  b.prune(spawn, must);
+  const meadowBottom = coast ? shore - 7 : Hd - 4;
+  // 오두막 살림: 옆에 대울타리 텃밭(꽃·바나나·과일나무), 반대쪽에 우물, 문 옆에 통·자루
+  if (hut && areas.some((a) => a.tag === hut!.id)) {
+    const gx = west ? hut.x + hut.w + 1 : hut.x - 7;
+    for (let k = 0; k < 3; k++) if (b.propFits("fence-bamboo", gx + k * 2, hut.y + hut.h, "g")) b.stampSafe("fence-bamboo", gx + k * 2, hut.y + hut.h, spawn, must);
+    patch(b, ["flowerbed", "flowerbed", "grass-tuft"], gx + 3, hut.y + hut.h - 2, 5, "g");
+    cluster(b, ["tree-fruit", "banana"], gx + 2, hut.y - 1, 2, "g", spawn, must, 2);
+    cluster(b, ["well"], west ? hut.x - 3 : hut.x + hut.w + 1, hut.y + hut.h - 2, 1, "g", spawn, must, 1);
+    beside(b, hut, ["barrel", "sacks", "crate", "barrels"], "g", spawn, must);
+    areas.push({ name: "오두막 텃밭", x: gx, y: hut.y + hut.h - 3, w: 6, h: 4, tag: "garden" });
+  }
+  // 길가 쉼터: 오두막 반대쪽 절반, 길 남쪽 — 모닥불·통나무 의자·그루터기
+  for (let t = 0; t < 20; t++) {
+    const cx = west ? b.int(Math.round(Wd * 0.58), Math.round(Wd * 0.8)) : b.int(Math.round(Wd * 0.2), Math.round(Wd * 0.42));
+    const cy = roadY(cx) + 4;
+    if (cy > meadowBottom || !b.propFits("campfire", cx, cy, "g", 2) || !b.stampSafe("campfire", cx, cy, spawn, must)) continue;
+    clusterPad(b, ["log-bench"], cx - 1, cy + 2, 1, "g", spawn, must, 1);
+    clusterPad(b, ["palm-stump", "log-bench"], cx + 2, cy, 1, "g", spawn, must, 1);
+    clusterPad(b, ["barrel", "sacks"], cx - 3, cy, 1, "g", spawn, must, 1);
+    areas.push({ name: "길가 쉼터", x: cx - 3, y: cy - 1, w: 7, h: 4, tag: "camp" });
+    break;
+  }
+  // 길 양 끝 푯말(길 북쪽 풀밭)
+  for (const sx of [3, Wd - 5]) clusterPad(b, ["signpost"], sx, roadY(sx) - 3, 1, "g", spawn, must, 0);
+  // 나무 덩이: 길에서 네 칸 넘게 떨어진 풀밭에 — 덩이 곁에 덤불
+  for (let t = 0, made = 0; t < 90 && made < Math.max(4, Math.floor((Wd * Hd) / 240)); t++) {
+    const gx = b.int(2, Wd - 5), gy = b.int(1, meadowBottom);
+    if (b.g(gx, gy) !== "g" || b.near[b.idx(gx, gy)] || b.clear[b.idx(gx, gy)] || Math.abs(gy + 2 - roadY(gx)) < 5) continue;
+    if (grove(b, ["tree-broad", "palm", "tree-broad", "tree-fruit", "palm-pair"], gx, gy, b.int(3, 5), "g", spawn, must) > 0) { made++; cluster(b, ["bush", "fern", "bush-hibiscus"], gx + b.pick([-3, 3]), gy + 2, 2, "g", spawn, must, 1); }
+  }
+  // 북쪽 끝 나무 줄: 들판이 숲 가장자리에서 끝난다(사이사이 빈틈) — 나가는 길 칸은 비운다
+  for (let gx = b.int(1, 4); gx < Wd - 3; gx += b.int(6, 9)) grove(b, ["tree-broad", "palm", "tree-broad", "palm-pair"], gx, 1, b.int(2, 3), "g", spawn, must);
+  // 꽃 무더기·바위: 트인 풀밭 여기저기(걷는 데 걸리지 않는 조각)
+  for (let k = 0; k < Math.max(4, Math.floor(Wd / 10)); k++) patch(b, ["flowerbed", "grass-tuft", "flowerbed", "fern"], b.int(3, Wd - 4), b.int(3, meadowBottom), b.int(4, 6), "g");
+  sprinkle(b, ["rock-large", "rock-small", "palm-stump"], Math.floor(Wd / 12), "g", { x: 0, y: 0, w: Wd, h: meadowBottom }, spawn, must, 2);
+  if (coast) {
+    const all = { x: 0, y: 0, w: Wd, h: Hd };
+    sprinkle(b, ["palm-lean", "palm", "palm-young"], Math.floor(Wd / 8), "s", all, spawn, must, 2);
+    sprinkle(b, ["shells", "driftwood", "crab", "tide-pool", "coconuts"], Math.floor(Wd / 6), "s", all, spawn, must, 2);
+    sprinkle(b, ["rowboat", "canoe"], 1, "w", all, spawn, must, 1);
+    cluster(b, ["rock-water", "sea-stack", "coral"], b.int(4, Wd - 6), Hd - 3, 2, "w~", spawn, must, 3);
+  }
   return { areas, spawn };
 }
 
@@ -1274,22 +1446,28 @@ export const PIRATE_INTERIOR_PLANS: Readonly<Record<"ship" | "tavern" | "hut" | 
  * 맵 한 장을 짠다. map 의 땅·2층·3층을 덮어쓴다(이벤트·이름표는 건드리지 않는다 — 이름표는 labelPirateAreas).
  * tileset 은 번들 pirate_isles 사본이어야 한다(키트 `pi-…`·오토타일 `pi-at-…`).
  */
-export function composePirateIslesMap(map: GameMap, tileset: TilesetDef, kind: PirateMapKind, seed: number, plans: typeof PIRATE_INTERIOR_PLANS = PIRATE_INTERIOR_PLANS): PirateComposeResult {
+export function composePirateIslesMap(map: GameMap, tileset: TilesetDef, kind: PirateMapKind, seed: number, plans: typeof PIRATE_INTERIOR_PLANS = PIRATE_INTERIOR_PLANS, options: { exits?: readonly ExitSide[] } = {}): PirateComposeResult {
   const salt = PIRATE_MAP_KINDS.indexOf(kind) * 7919;
   const b = new Board(map, tileset, seed + salt);
+  if (PIRATE_OUTDOOR_KINDS.includes(kind)) b.exitSides = [...new Set(options.exits ?? [])];
   for (let i = 0; i < map.width * map.height; i++) { setLayerTileAt(map, 2, i, -1); setLayerTileAt(map, 3, i, -1); setLayerTileAt(map, 4, i, -1); }
   const out = kind === "harbor" ? composeHarbor(b) : kind === "beach" ? composeBeach(b) : kind === "fort" ? composeFort(b) : kind === "wreck" ? composeWreck(b)
-    : composeInterior(b, kind, plans[kind]);
+    : kind === "field" ? composeField(b) : composeInterior(b, kind, plans[kind]);
   // 마지막 통행 검사: 출발점에서 문 앞 접근칸에 닿지 않는 곳을 센다(보고용)
   const seen = b.reach(out.spawn);
   const unreachable = out.areas.filter((a) => a.access && !seen[b.idx(a.access.x, a.access.y)]).length;
   const counts = new Map<string, number>();
   for (const p of b.placed) counts.set(p.id, (counts.get(p.id) ?? 0) + 1);
   const top = [...counts.entries()].sort((a, c) => c[1] - a[1]).slice(0, 8).map(([id, n]) => `${id}×${n}`).join(", ");
-  const kindKo: Record<PirateMapKind, string> = { harbor: "해적 항구 마을", beach: "열대 섬 해변 마을", fort: "해안 요새", wreck: "난파선·보물 동굴 섬", ship: "배 안", tavern: "해적 술집 안", hut: "섬 오두막 안", cave: "보물 동굴 안" };
+  const kindKo: Record<PirateMapKind, string> = { harbor: "해적 항구 마을", beach: "열대 섬 해변 마을", fort: "해안 요새", wreck: "난파선·보물 동굴 섬", ship: "배 안", tavern: "해적 술집 안", hut: "섬 오두막 안", cave: "보물 동굴 안", field: "해안 들판" };
+  // 나가는 길: 가장자리 칸이 시작 칸에서 걸어 닿는 것만 남긴다.
+  const exits = b.exits.filter((e) => seen[b.idx(e.x, e.y)] === 1);
+  const exitsMissing = [...b.exitsMissing, ...b.exits.filter((e) => !exits.includes(e)).map((e) => e.side)];
+  const exitNote = (exits.length ? ` · 나가는 길 ${exits.map((e) => `${e.side}(${e.x},${e.y})`).join(" ")}` : "")
+    + (exitsMissing.length ? ` · 길을 못 낸 변 ${exitsMissing.join(",")}(바다·섬이라 땅이 가장자리에 닿지 않는다)` : "");
   return {
-    kind, seed, placed: b.placed, areas: out.areas, spawn: out.spawn, skipped: b.skipped, unreachable, portals: b.portals,
-    summary: `${kindKo[kind]} ${map.width}×${map.height} (seed ${seed}) — 구역·건물 ${out.areas.length}곳 · 기물 ${b.placed.length}개(${top})${unreachable ? ` · 닿지 않는 문 ${unreachable}` : ""}`,
+    kind, seed, placed: b.placed, areas: out.areas, spawn: out.spawn, skipped: b.skipped, unreachable, portals: b.portals, exits, exitsMissing,
+    summary: `${kindKo[kind]} ${map.width}×${map.height} (seed ${seed}) — 구역·건물 ${out.areas.length}곳 · 기물 ${b.placed.length}개(${top})${unreachable ? ` · 닿지 않는 문 ${unreachable}` : ""}${exitNote}`,
   };
 }
 
@@ -1314,5 +1492,6 @@ export function pirateKindFromText(text: string): PirateMapKind {
   if (/요새|성채|포대|fort/iu.test(text)) return "fort";
   if (/난파|보물\s*(?:동굴|섬)|shipwreck|treasure\s*(?:cave|island)/iu.test(text)) return "wreck";
   if (/항구|부두|선착장|harbo|port|dock/iu.test(text)) return "harbor";
+  if (/들판|들길|초원|풀밭|벌판|field|meadow|grassland/iu.test(text)) return "field";
   return "beach";
 }
