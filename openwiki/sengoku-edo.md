@@ -82,6 +82,16 @@ QA 대상은 엔진 렌더러 원본 해상도다. 성하마을·성·신사/절
 - 조수(Argon medium, 「전국시대 성하마을 만들어줘」, 실제 입력창): 6.5 → 7.5. 같은 compose 배치에 풀 바둑판이 사라지고 나무 수관이 찼다. 시작 위치도 새 맵 (26,47)로 잡혔다(composerStart). 저장→재로드 일치. 남은 감점은 마치야 두 외형 반복, 해자 밖 빈 풀밭, 실내·NPC 0.
 - 남은 이질감: 대숲·실내·건물 윤곽은 여전히 sumi(순흑에 가까움, 바꾸면 영수증 163개 재판정), 버들 가지가 줄처럼 곧다, 기와는 여전히 세로 골이 규칙적, 장면 구성이 성기다(구성기 몫 — 덤불·나무 덩이 밀도가 버들항보다 낮다).
 
+## 직각 지붕 다시 그리기 (2026-11-12, 오너 지시)
+
+오너 2026-11-12: «이 에디터는 시야각이 직교해야하므로 sengoku_edo se-machiya-a 이런 식의 직각 지붕이어야하는데 … Fable 5.2 Medium 으로 1번만 시도». `se-machiya-a` 가 기준이고, 같은 칩셋 안의 사다리꼴(우진각) 지붕 10채를 그 투영으로 맞췄다.
+
+- Claude Fable 5.2 medium 한 방으로 **지붕만** 다시 그렸다(벽·문·기단은 코드 그림 그대로): `se-minka`·`minka-small`·`barn`·`chashitsu`·`chaya-thatch`(이엉) · `se-onsen`·`dojo`·`samurai-house`·`temple-hall`(기와) · `se-shrine`(동판). 지붕 기울기(모델 없음) 11~22px → 0~1px.
+- 덮어쓰기: `tiledata/sengoku-edo/fable-roofs/<조각>.png` + `index.json` → `art/kit.py` 의 내보내기가 `scripts/content/lib/fable_roofs.py` 로 코드 그림 위에 덮어 `_gate/se-*.png` 를 쓴다. 코드 그림이 바뀌면 멈춘다.
+- 관문: **3/4 관문 미통과 — 오너 면제** 묶음 `fable-redraw-roofs-sengoku-edo-2026-11-12`(bundle·shared, 스토어 제외). `se_bake_lib.gate_status` 가 면제된 그림을 받는다(`WAIVED` 목록). 통과가 아니다.
+- 칸 번호: 기존 번호는 그대로(이미 깔린 맵이 새 지붕으로 보인다), 새 칸 12개가 끝에 붙었다(1061 → 1073). `se_bake_lib.Outdoor.put` 은 이제 **이미 번호를 받은 자리 키를 그림이 같아져도 합치지 않는다**(합치면 그 번호가 빈 칸이 되어 깔린 맵에 구멍 — 처음 구웠을 때 14칸이 비었다). 다른 건물과 기와 칸을 나눠 쓰던 6채(`onsen`·`dojo`·`samurai-house`·`temple-hall`·`barn`·`chashitsu`)는 그 자리에 새 칸 번호를 받았다 — **이미 깔린 그 건물들은 그 몇 칸만 옛 기와로 남는다**(다시 찍으면 새 그림).
+- 남은 것: `se-castle-turret`(2단 지붕 — 상자를 손으로 나눠야 한다), 예외(천수각·탑·종루·문·도리이). 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
+
 ## 조수 실측
 
 `/tmp/se-gemini/rerun.sh` 는 `/tmp/ai-gemini/rerun.sh` 사본이다. 실제 편집기 입력창 경로로 gemini-3.8-flash(high)를 새 기본 프로젝트에서 돌린다. 세 판 모두 SQLite 에 저장한 뒤 다시 읽었고, 해시가 같았다(reloadEqual true).
