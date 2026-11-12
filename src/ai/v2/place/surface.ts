@@ -32,11 +32,30 @@ export function roadCells(project: Project, map: GameMap): Set<number> {
   return out;
 }
 
+/**
+ * 걸어서 이어지는 «길 줄» 칸 전부(칸 번호) — 길 + 길을 잇는 칸(광장 판석·다리·잔교) + 계단(계단 칸·단을 오르는 경사 칸), 걸을 수 있는 칸만.
+ * 길망(judge/roadNetwork)이 «이 길이 어디로 가는가» 를 볼 때 쓴다 — 다리·계단에서 길이 끊긴 것으로 세지 않게.
+ */
+export function wayCells(project: Project, map: GameMap): Set<number> {
+  const { road, links, stairs } = surfaceOf(project, map), layers = tileLayers(map), out = new Set<number>();
+  const ramps = (map as unknown as { relief?: { ramps?: ArrayLike<number> } }).relief?.ramps;
+  for (let i = 0; i < map.width * map.height; i++) {
+    const way = (ramps?.[i] ?? 0) !== 0 || layers.some((layer) => { const t = layer?.[i] ?? -1; return road.has(t) || links.has(t) || stairs.has(t); });
+    if (way && isPassable(project, map, i % map.width, Math.floor(i / map.width))) out.add(i);
+  }
+  return out;
+}
+
 /** 칩셋의 물 칸 묶음(tileGroups 역할 water)에 든 칸인가. */
 function isWaterTile(project: Project, map: GameMap, tile: number): boolean {
   if (tile < 0) return false;
   const groups = project.tilesets[map.tilesetId]?.tileGroups ?? [];
   return groups.some((g) => g.role === "water" && (g.tileIds as readonly number[] | undefined)?.includes(tile));
+}
+
+/** 물 칸인가(바닥 층이 칩셋의 물 묶음). */
+export function isWaterCell(project: Project, map: GameMap, x: number, y: number): boolean {
+  return x >= 0 && y >= 0 && x < map.width && y < map.height && isWaterTile(project, map, map.lowerTiles[y * map.width + x] ?? -1);
 }
 
 /** 그 칸의 표면: 다른 맵으로 가는 이동이 선 칸은 출구, 선언된 길, 못 걷는 물, 그 밖의 못 걷는 칸은 벽, 나머지는 땅. */

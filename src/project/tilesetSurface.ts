@@ -20,6 +20,8 @@ export interface SurfaceDecl {
   readonly notRoad?: TilePick;
   /** 계단 — 오르내리는 칸. 안 적으면 번들 공통 말(STAIRS)로 읽는다. 다른 꼬리표를 쓰는 번들만 적는다. */
   readonly stairs?: TilePick;
+  /** 길을 잇는 칸 — 길은 아니지만 길이 그 위로 이어지는 바닥(광장 판석·다리·잔교). 안 적으면 번들 공통 말(LINKS)로 읽는다. */
+  readonly links?: TilePick;
   /** 낱장 문 — 벽에 붙이는 문 타일(건물 키트 밖). 안 적으면 번들 공통 말(DOORS)로 읽는다. 다른 꼬리표를 쓰는 번들만 적는다. */
   readonly doors?: TilePick;
   /** 새 길 칸을 까는 재료 — 오토타일 묶음 id 와 fill_region 에 주는 재료 말. 맵에 가장 많이 깔린 것을 쓴다. 없으면 이 칩셋의 길은 구성기만 낸다. */
@@ -34,6 +36,10 @@ export interface TilesetSurface {
   readonly stairs: ReadonlySet<number>;
   /** 낱장 문 칸 — 굽기가 문이라 적은 역할·꼬리표. 건물 타일은 뺀다(건물의 문은 그 구조 키트가 입구 부품으로 적는다 — 「목책 문」「에어록 모듈」은 통째로 문이 아니다). */
   readonly doors: ReadonlySet<number>;
+  /** 길을 잇는 칸(광장 판석·다리·잔교) — 길망을 볼 때만 길과 한 줄로 센다. 새 길을 깔거나 다듬는 쪽은 road 만 본다. */
+  readonly links: ReadonlySet<number>;
+  /** 길이 닿을 만한 것 — 건물·소품·울타리·밭 칸(나무·바위 같은 자연물은 뺀다). 길망이 «이 길 끝에 무엇이 있는가» 를 볼 때 막힌 칸에서만 센다. */
+  readonly things: ReadonlySet<number>;
   readonly lay: readonly { readonly material: string; readonly tiles: ReadonlySet<number> }[];
 }
 
@@ -89,6 +95,14 @@ const STAIRS: TilePick = { roles: ["stairs"], tags: ["계단", "stairs", "stair"
 /** 낱장 문의 번들 공통 말 — 굽기들이 문 타일에 쓰는 역할·꼬리표 그대로(이름표의 「문」 글자가 아니다: 「가문비」「문루」「활 구멍」). */
 const DOORS: TilePick = { roles: ["door"], tags: ["door", "문"] };
 
+/** 길을 잇는 칸의 번들 공통 말 — 굽기들이 광장 판석·다리·잔교에 쓰는 역할·꼬리표 그대로. */
+const LINKS: TilePick = { roles: ["bridge", "plaza"], tags: ["bridge", "plaza", "다리", "잔교", "광장"] };
+
+/** 길이 닿을 만한 것의 번들 공통 말 — 굽기들이 건물·소품 칸에 쓰는 역할·꼬리표 그대로. */
+const THINGS: TilePick = { roles: ["building", "prop", "fence"], tags: ["building", "prop", "built"] };
+/** 그 가운데 자연물 — 길 끝이 나무·바위에 닿은 것은 «어디에 닿은» 것이 아니다. */
+const NATURE: TilePick = { tags: ["tree", "bush", "rock", "나무", "야자", "숲", "바위", "풀"] };
+
 type Meta = { readonly label?: string; readonly tags?: readonly string[]; readonly role?: string } | null | undefined;
 
 function picks(pick: TilePick | undefined, meta: Meta): boolean {
@@ -99,7 +113,7 @@ function picks(pick: TilePick | undefined, meta: Meta): boolean {
 }
 
 const cache = new WeakMap<object, TilesetSurface>();
-const NONE: TilesetSurface = { declared: false, road: new Set(), stairs: new Set(), doors: new Set(), lay: [] };
+const NONE: TilesetSurface = { declared: false, road: new Set(), stairs: new Set(), doors: new Set(), links: new Set(), things: new Set(), lay: [] };
 
 /** 칩셋의 표면 — 선언(없으면 낱말 추정)을 칸 번호 집합으로 푼다. tileMeta 배열마다 한 번만 센다. */
 export function tilesetSurface(tileset: Pick<TilesetDef, "id" | "tileMeta" | "autotileGroups"> | undefined): TilesetSurface {
@@ -112,16 +126,20 @@ export function tilesetSurface(tileset: Pick<TilesetDef, "id" | "tileMeta" | "au
   const road = new Set<number>();
   const stairs = new Set<number>();
   const doors = new Set<number>();
+  const links = new Set<number>();
+  const things = new Set<number>();
   meta.forEach((m, tile) => {
     if (picks(spec.road, m) && !picks(spec.notRoad, m)) road.add(tile);
     if (picks(spec.stairs ?? STAIRS, m)) stairs.add(tile);
     if (m?.role !== "building" && picks(spec.doors ?? DOORS, m)) doors.add(tile);
+    if (m?.role !== "building" && picks(spec.links ?? LINKS, m) && !picks(spec.notRoad, m)) links.add(tile);
+    if (picks(THINGS, m) && !picks(NATURE, m)) things.add(tile);
   });
   const lay = (spec.lay ?? []).flatMap(({ group, material }) => {
     const members = tileset.autotileGroups?.find((g) => g.id === group)?.memberTileIds;
     return members?.length ? [{ material, tiles: new Set(members) }] : [];
   });
-  const surface: TilesetSurface = { declared: !!decl, road, stairs, doors, lay };
+  const surface: TilesetSurface = { declared: !!decl, road, stairs, doors, links, things, lay };
   cache.set(meta, surface);
   return surface;
 }
