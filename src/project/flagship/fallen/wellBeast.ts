@@ -213,7 +213,8 @@ export function wellData(project: Project, exec: Exec): void {
   const troop = project.database.troops.find((t) => t.id === FS2_WELL_BEAST_TROOP) as unknown as Rec;
   troop.battleEventPages = [
     { id: "troop_fs2_well_open", name: "시작 — 소리로 사냥한다", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 1 }],
-      commands: [say(ELENA, "눈이 없어… 소리로 우리를 찾는 거야."), say(KAEL, "아가미가 펴지면 조심해!")] },
+      // 깨우는 장면(ev_fs2_well_wake)에서 이미 「눈이 없어. 소리로 우리를 찾고 있어」를 말했다 — 전투 첫 줄은 같은 말을 되풀이하지 않는다.
+      commands: [say(ELENA, "숨소리도 줄여… 우리가 움직이는 쪽으로 고개를 돌려."), say(KAEL, "아가미가 펴지면 조심해!")] },
     { id: "troop_fs2_well_phase2", name: "2페이즈 — 붉은 아가미", span: "battle", runOnce: true,
       conditions: [{ kind: "enemyHpBelow", enemyId: FS2_WELL_BEAST_ENEMY, percent: 50 }],
       commands: [

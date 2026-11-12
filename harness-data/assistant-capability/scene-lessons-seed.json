@@ -1298,6 +1298,19 @@
     "the assistant counts how many act-2 enemies can take the state (n/m) before and after, instead of assuming the skill works",
     "an inherited immunity copied from the cloned act-1 record is cleared on ordinary act-2 enemies while bosses that were made immune on purpose keep it"
    ]
+  },
+  {
+   "id": "battle-opening-line-adds-new-info",
+   "label": "보스 전투 첫 대사는 직전 컷신 대사를 되풀이하지 않는다",
+   "port": 19575,
+   "lessons": [
+    "battle-line-not-repeating-cutscene"
+   ],
+   "prompt": "동굴 안에 잠든 눈먼 괴물 보스를 넣어 줘. 다가가면 깨어나는 짧은 컷신이 있고, 말을 걸면 싸우고, 전투 첫 차례에 동료가 한마디 하게 해 줘.",
+   "requirements": [
+    "the round-1 battle line does not restate the wake cutscene line (no same-meaning sentence such as 'it has no eyes, it hunts by sound' twice); it adds new information such as how to act",
+    "the cutscene and the battle line together still say what the boss does (warning kept) without naming its weakness or the answer"
+   ]
   }
  ]
 }
