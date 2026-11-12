@@ -5,6 +5,7 @@ import { usesCodeTerrain } from "@/editor/tools/authorBeodeulTown";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createBuildRun } from "../../shared/buildRun";
 import { isPassable } from "@/project/collision";
+import { projectTilesetLook } from "@/project/tilesetLook";
 import { eventsOf, tileLabel } from "../cells";
 import { roadCells } from "../surface";
 import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
@@ -167,7 +168,9 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     // 코드 지형 마을은 땅을 미리보기(villageArgs 만으로 codeTerrainFor)에서 이미 정했다 — 여기서 terraces 를 덧붙이면 지은 땅이 미리본 땅과 달라지고
     // 평지 요청에 세 단이 깔렸다(2026-10-30 실조수 opus 「강가의 평범한 시골 마을」: 미리본 동서 강 → 지은 맵은 서쪽 협곡 강·단 0/2/4, salt%3==0).
     if (args.terrain === undefined && spec.salt % 3 === 0 && !usesCodeTerrain(args, String(args.theme ?? "river"))) args.terrain = "terraces";
-    if (args.forestType === undefined) args.forestType = (["broadleaf", "conifer", "mixed"] as const)[Math.floor(spec.salt / 3) % 3];
+    // 게임이 나무 수종을 골랐으면(겉모습 trees — project/tilesetLook.ts) 활엽 나무 자리로 짓는다: 수종 그림은 활엽 나무 킷 칸에 겹쳐 그린다.
+    if (args.forestType === undefined) args.forestType = projectTilesetLook(run.ctx.project, "beodeul_city", run.ctx.lookKey)?.trees ? "broadleaf"
+      : (["broadleaf", "conifer", "mixed"] as const)[Math.floor(spec.salt / 3) % 3];
     // 맵 크기가 블록 격자를 정한다 — 같은 형태라도 가로·세로가 다르면 집·광장·밭 자리가 달라진다.
     // 지형 먼저(평지·성벽이 아닌 마을)는 낮은 단·마을 단·높은 단이 세로로 쌓이므로 8줄 더
     if (args.width === undefined && args.height === undefined) { const [w, h] = ([[42, 34], [50, 32], [38, 40]] as const)[Math.floor(spec.salt / 9) % 3]!; args.width = w; args.height = h + (args.walls === true || args.landform === "flat" || args.terrain === "flat" ? 0 : 8); }

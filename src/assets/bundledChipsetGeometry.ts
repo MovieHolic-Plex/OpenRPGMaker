@@ -61,6 +61,7 @@ export function bundledChipsetTilesPerRow(key: string): number {
   if (key === "tex_beodeul_ground") return 8;
   if (key === "tex_beodeul_forest_trunks") return 16;
   if (key === "tex_beodeul_nature") return 16;
+  if (key === "tex_beodeul_looks") return 128;
   if (key === 'tex_beodeul_architecture') return 16;
   if (key === 'tex_beodeul_forms') return 16;
   if (key === 'tex_beodeul_reviewed') return 16;
