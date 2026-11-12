@@ -106,7 +106,9 @@ describe("증기 도시 한 판 — 물건은 그림에, 단계는 차례로, �
       const under = onDrawnThing(project, map, ev);
       expect(under, `${id} ${ev.name} (${ev.x},${ev.y}) 는 그려진 물건 위`).toBeTruthy();
       expect((ev.pages ?? []).every((p) => (p.priority ?? "same") === "same"), `${id} 는 마주 보고 누른다`).toBe(true);
-      expect((ev.pages ?? []).some((p) => !!(p as { nearSparkle?: unknown }).nearSparkle), `${id} 에 반짝임이 없다`).toBe(false);
+      // 이름이 맞는 그림에 앉은 단계는 반짝이지 않는다. 맞는 그림이 없어 가장 가까운 물건에 앉은 단계(s4)는 그 물건이 가까이에서 한 번 반짝인다.
+      if (id !== "s4") expect((ev.pages ?? []).some((p) => !!(p as { nearSparkle?: unknown }).nearSparkle), `${id} 에 반짝임이 없다`).toBe(false);
+      expect((ev.pages ?? []).some((p) => !!(p as { glow?: unknown }).glow), `${id} 는 늘 빛나는 표지가 아니다`).toBe(false);
       const stand = [[0, 1], [1, 0], [-1, 0], [0, -1]].some(([dx, dy]) => isPassable(project, map, ev.x + dx!, ev.y + dy!));
       expect(stand, `${id} 곁에 설 칸이 있다`).toBe(true);
     }
