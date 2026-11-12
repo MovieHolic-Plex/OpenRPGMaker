@@ -60,8 +60,9 @@ describe("전국·에도 세계 표의 실내 종류", () => {
     expect(at("samurai-house")).toContain("samurai-house");
     expect(at("dojo")).toContain("dojo");
     expect(at("castle-hall")).toContain("castle-keep");
-    // 제 문이 없으면 다른 종류가 찜하지 않은 문(찻집).
+    // 제 문이 없으면 다른 종류가 찜하지 않은 문(찻집 — 곳간도 아무도 찜하지 않는다).
     expect(pickWorldDoor(world, worldKind(world, "farmhouse")!, doors.filter((d) => !d.kit.includes("minka")))?.kit).toContain("chaya");
+    expect(pickWorldDoor(world, worldKind(world, "farmhouse")!, [{ kit: "se-kura 곳간" }, { kit: "se-minka-small 작은 농가" }])?.kit).toContain("minka-small");
   });
 
   it("여섯 종류 모두 세계 빌더가 짓는다 — 전국·에도 칩셋의 실내 맵이고, 들어오는 칸은 맨 아래 출입구 틈이다", () => {
@@ -117,6 +118,27 @@ describe("전국·에도 마을 뒤의 «촌장 집»", () => {
     const walk = walkGame(project, [village.id, house!.id]);
     expect(walk.unreached).toEqual([]);
     expect(walk.noWayBack).toEqual([]);
+
+    // 결과 글이 이른 길: 다른 이름 + 그 세계의 실내 종류 화풍 → 그 종류로 서고 집 문에 이어진다(전에는 «칸 배치를 설계하라» 로 돌아왔다).
+    const shop = await t.call("make_place", { type: "interior", name: "쌀가게 안채", style: "world:sengoku_edo:townhouse" });
+    const after = t.ctx.project;
+    const store = Object.values(after.maps).find((m) => m.name === "쌀가게 안채");
+    expect(store, shop.slice(0, 600)).toBeTruthy();
+    expect([store!.width, store!.height]).toEqual([11, 14]);
+    expect(shop).toContain("«townhouse» kind");
+    expect(shop).toMatch(/linked both ways with «새벽 마을»/u);
+    const walk2 = walkGame(after, Object.keys(after.maps));
+    expect(walk2.unreached).toEqual([]);
+    expect(walk2.noWayBack).toEqual([]);
+
+    // 이미 선 방·마을에 다른 종류를 적어 오면 다시 짓지 않는다 — 맵 수가 그대로다(전에는 같은 이름의 마을이 한 장 더 섰다).
+    const count = Object.keys(after.maps).length;
+    const again = await t.call("make_place", { type: "interior", name: "촌장 집", style: "world:sengoku_edo:townhouse" });
+    expect(again).toMatch(/already stands as the «farmhouse» kind/u);
+    expect(again).toContain("not rebuilt as another kind");
+    const restyle = await t.call("make_place", { type: "village", name: "새벽 마을", style: "world:sengoku_edo:castle-town" });
+    expect(restyle).toMatch(/«새벽 마을» already stands in Sengoku · Edo Japan/u);
+    expect(Object.keys(t.ctx.project.maps).length).toBe(count);
   }, SLOW);
 });
 

@@ -85,7 +85,7 @@ QA 대상은 엔진 렌더러 원본 해상도다. 성하마을·성·신사/절
 ## 조수 v2 의 실내 종류 (2026-11-12)
 
 조수 v2 세계 표(`src/ai/v2/place/world.ts`)가 방 구성 여섯을 실내 종류로 싣는다: `farmhouse`(minka) · `townhouse`(machiya) · `inn`(ryokan-1f) · `samurai-house` · `dojo` · `castle-hall`.
-방 구성 도구(`build_hand_interior_room`, `layout:{program, seed}`)로 짓고, 바깥 맵의 그 건물 문(농가·곳간 / 마치야·가게·대장간 / 여관·온천 / 무가 저택 / 도장 / 천수각)에 잇는다.
+방 구성 도구(`build_hand_interior_room`, `layout:{program, seed}`)로 짓고, 바깥 맵의 그 건물 문(농가 / 마치야·가게·대장간 / 여관·온천 / 무가 저택 / 도장 / 천수각)에 잇는다.
 전에는 실내 종류가 0이라 «촌장 집» 같은 실내 요청이 거절됐다. 표·크기·남은 것(여관 2층·다실)은 `openwiki/assistant-v2.md` 「전국·에도 세계의 실내 종류」.
 방 구성을 더하거나 이름을 바꾸면(`src/assets/sengokuEdoRoomTemplates.json programs`) 그 표의 `value` 와 `test/aiV2SengokuRooms.test.ts` 를 같이 고친다.
 

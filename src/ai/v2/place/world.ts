@@ -221,7 +221,7 @@ export const WORLDS: readonly WorldSetting[] = [
       out("castle", "성", "castle keep and yard", [44, 38], { danger: true }),
       // 실내 — 방 구성기는 없고 손으로 짠 방 견본의 «방 구성» 여섯(src/assets/sengokuEdoRoomTemplates.json programs)을 방 구성 도구로 짓는다. 없을 때는
       // «촌장 집» 이 «실내 종류 없음» 으로 거절되고 턴이 질문으로 끝났다(2026-11-12 Haiku). 여관 2층(ryokan-2f)은 거리 문이 아니라 계단으로 가는 층이라 싣지 않는다.
-      room("farmhouse", "농가 안", "farmhouse: hearth room and earthen kitchen", [11, 15], /minka|농가|kura|곳간/u, { value: "minka", tool: ROOM_PROGRAM_TOOL, home: true }),
+      room("farmhouse", "농가 안", "farmhouse: hearth room and earthen kitchen", [11, 15], /minka|농가/u, { value: "minka", tool: ROOM_PROGRAM_TOOL, home: true }),
       room("townhouse", "마치야 안", "merchant townhouse: shop front and kitchen", [11, 14], /machiya|마치야|shop|가게|술도가|포목|smithy|대장간/u, { value: "machiya", tool: ROOM_PROGRAM_TOOL }),
       room("inn", "여관 안", "inn ground floor: guest room, kitchen, bath", [10, 21], /ryokan|여관|onsen|온천/u, { value: "ryokan-1f", tool: ROOM_PROGRAM_TOOL }),
       room("samurai-house", "무가 저택 안", "samurai residence: tatami rooms, tea room, study", [16, 14], /samurai-house|무가/u, { tool: ROOM_PROGRAM_TOOL }),

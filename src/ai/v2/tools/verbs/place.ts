@@ -116,17 +116,21 @@ export function placeVerbs(c: VerbContext) {
       // 손 도트 실내·버들항 숲길은 다른 칩셋 계열이라 도구 실행기가 거절한다(2026-11-11 map-vqa 깔기 village-chief-house: 풀 마을 뒤 «촌장 집» 실내가 끝내 서지 못했다).
       {
         const asked = (params as { spec?: Partial<PlaceSpec> })?.spec;
-        const world = asked?.name && !env.ctx.project.gameBlueprint && !parseWorldStyle(asked.style) && !String(asked.style ?? "").startsWith("pool:") ? pickWorld(env.ctx.project, undefined, "") : undefined;
-        // 그 세계의 종류로 이미 선 장소에 손 도트 칸 배치가 또 오면 다른 칩셋으로 다시 짓지 않는다(계열 거절) — 선 맵을 돌려주고 배치를 쓰지 않았다고 알린다.
-        const stands = world && asked?.name ? blueprintMapFor(env.ctx.project, asked.name) : undefined;
+        // 그 세계의 실내 종류를 화풍으로 적어 온 호출(world:<세계>:<방>)도 여기서 짓는다 — 종전 길은 방을 짓기만 하고 집 문에 잇지 않았다.
+        const styled = parseWorldStyle(asked?.style);
+        const lived = asked?.name && !env.ctx.project.gameBlueprint && !String(asked.style ?? "").startsWith("pool:") ? pickWorld(env.ctx.project, undefined, "") : undefined;
+        const world = !styled || (styled.kind.indoor && styled.world === lived) ? lived : undefined;
+        // 그 세계의 종류로 이미 선 장소에 손 도트 칸 배치나 다른 종류가 또 오면 다시 짓지 않는다(계열 거절 · 한 번에 짓는 맵) — 선 맵을 돌려주고 쓰지 않았다고 알린다.
+        const stands = lived && asked?.name ? blueprintMapFor(env.ctx.project, asked.name) : undefined;
         const standsAs = stands ? parseWorldStyle(session.placeOf(stands.id)?.spec.style) : undefined;
-        if (stands && standsAs && layoutGiven(asked?.layout)) return text({ ok: true, mapIds: [stands.id], summary: `«${stands.name}» already stands as the «${standsAs.kind.id}» kind of ${standsAs.world.name} (${stands.id}, ${stands.width}×${stands.height}). The cell layout you sent was not used: this project's maps use that chipset and cell layouts belong to another one. Put single things in it with place_object, add_people or move_event.` });
+        // 화풍으로 다른 종류를 적어 온 호출은 풀 마을(기록된 화풍 pool:<칩셋>)에도 답한다 — 종전에는 같은 이름의 맵이 한 장 더 섰다(이어지지 않은 «새벽 마을» 둘).
+        if (stands && lived && (standsAs ? layoutGiven(asked?.layout) || styled : styled && stands.tilesetId === lived.tilesetId)) return text({ ok: true, mapIds: [stands.id], summary: `«${stands.name}» already stands${standsAs ? ` as the «${standsAs.kind.id}» kind of ${standsAs.world.name}` : ` in ${lived.name}`} (${stands.id}, ${stands.width}×${stands.height}). ${layoutGiven(asked?.layout) ? "The cell layout you sent was not used: this project's maps use that chipset and cell layouts belong to another one." : "It is laid by a composer in one pass and is not rebuilt as another kind — for a place of another kind call make_place with another place name and that style."} Put single things in it with place_object, add_people or move_event.` });
         if (world && asked?.name && !blueprintMapFor(env.ctx.project, asked.name) && !(asked.mapId && env.ctx.project.maps[asked.mapId])) {
-          const want = { indoor: asked.type === "interior" || asked.type === "house", danger: asked.type === "dungeon" || asked.type === "cave" };
+          const want = styled ? { indoor: true, danger: !!styled.kind.danger } : { indoor: asked.type === "interior" || asked.type === "house", danger: asked.type === "dungeon" || asked.type === "cave" };
           // 종류: 장소 이름·테마가 그 세계 종류의 이름을 말하면 그것, 실내면 그 세계의 살림집(home)이나 가장 작은 방(오두막·선실 — 누구의 집·가게로도 읽힌다), 아니면 덜 쓴 종류.
           const said = `${asked.name} ${asked.theme ?? ""}`.toLowerCase();
           const fits = world.kinds.filter((k) => !!k.indoor === want.indoor && !!k.danger === want.danger);
-          const named = fits.find((k) => said.includes(k.id.replace(/-/gu, " ")) || k.ko.split(/\s+/u).some((w) => w.length >= 2 && said.includes(w)));
+          const named = styled?.kind ?? fits.find((k) => said.includes(k.id.replace(/-/gu, " ")) || k.ko.split(/\s+/u).some((w) => w.length >= 2 && said.includes(w)));
           // 실내 종류가 없는 세계(전국·SF 정거장)의 실내 요청을 바깥 종류로 짓지 않는다 — «촌장 집» 이 농촌 마을 한 장으로 서고 장소 확인은 ✓ 였다.
           if (want.indoor && !fits.length) {
             recordArtGaps(session, [{ chipset: world.tilesetId, want: "indoor-kind", wanted: "실내 종류", where: asked.name, standIn: "none", by: "make_place" }]);
@@ -144,7 +148,7 @@ export function placeVerbs(c: VerbContext) {
             const built = builder.build(run, spec);
             // 실내 종류는 이 세계의 바깥 장소 집 문에 바로 단다 — 잇기를 모델에게 넘기면 그 동사가 요청의 도구 목록에 없을 수 있다.
             const linked = built.ok && kind.indoor ? linkWorldRoom(c, world, kind, spec, built) : "";
-            const note = `«${asked.name}» was built as the «${kind.id}» kind of ${world.name} (${kind.about}): this project's maps use that chipset, so other chipsets and your own cell layout are not mixed in.${others ? ` For another kind, call make_place again with the same name and style ${others}.` : ""}${linked}`;
+            const note = `«${asked.name}» was built as the «${kind.id}» kind of ${world.name} (${kind.about}): this project's maps use that chipset, so other chipsets and your own cell layout are not mixed in.${others ? ` For a place of another kind, call make_place with another place name and style ${others}.` : ""}${linked}`;
             return finishPlace(id, "make_place", params, spec, builder.id, withSetupDefaults({ ...built, warnings: [note, ...built.warnings] }, builder.id, run.ctx.project, String(task ?? ""), freshStart, session.stageWrites), 0);
           }
         }
