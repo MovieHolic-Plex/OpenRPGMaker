@@ -1,6 +1,7 @@
 // v2 동사들이 함께 쓰는 문맥 — 한 실행의 요청 글·빌드 실행기·지식 카드 관문·청사진 관문·짓기 결과 마무리(finishPlace·finishContent)·장소 잇기.
 // createV2Tools 가 한 번 만들고 동사 공장들(tools/verbs/*)에 넘긴다. 2026-11-11 리팩토링 R2c: 1,662줄 함수의 지역 상태였다.
 import type { PiAssistantV2Env } from "../shared/env";
+import { settleSpeakerBustsIn } from "../story/speakerBust";
 import type { V2Session } from "../turn/session";
 import { withoutIntentNote } from "@/ai/piAgent/monsterGameRequest";
 import type { PiToolExecResult } from "@/ai/piAgent/toolAdapter";
@@ -184,6 +185,8 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
     return withImages({ ok: true, mapIds: result.mapIds, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, ...seenPayload(seenNow), ...(zones.length ? { zones } : {}), round: rounds, next: nextStep(seenNow, rounds, designedFloor ? "dungeon" : (spec.zones ?? []).some((z) => !!z.design), repairCap(spec), result.mapIds.some((id) => hasRoomKit(env.ctx.project, id))) }, seenNow);
   };
   const finishContent = async (toolCallId: string, verb: string, args: unknown, result: ContentBuildResult): Promise<PiToolExecResult> => {
+    // 방금 지은 이벤트의 대사에 화자 흉상을 건다(story/speakerBust) — 사람·사슬·경로·장면 어느 빌더든 같은 규칙.
+    if (result.ok && result.eventIds?.length) settleSpeakerBustsIn(env.ctx.project, result.eventIds);
     recordWrite(env, run, toolCallId, verb, args, result.ok, result.summary, result.card !== undefined ? result.card : { eventIds: result.eventIds });
     session.content.push({ verb, result });
     for (const m of result.missingArt) session.missingArt.add(m);

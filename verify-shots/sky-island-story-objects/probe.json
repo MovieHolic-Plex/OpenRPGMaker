@@ -1,0 +1,101 @@
+{
+ "chipset": "sky_island",
+ "fresh": {
+  "kits": 1,
+  "of": 1,
+  "count": 695,
+  "referenceDocs": [
+   "si-outdoor/si-dictionary",
+   "si-outdoor/si-objects"
+  ],
+  "tablesMatchCount": true
+ },
+ "sheet": [
+  {
+   "id": "si-seal-altar",
+   "name": "봉인 제단(대리석 제단·봉인)",
+   "size": "2×2",
+   "kind": "box",
+   "place": "tall",
+   "cells": [
+    691,
+    692,
+    693,
+    694
+   ],
+   "blocked": "(0,1) (1,1)"
+  }
+ ],
+ "cellGate": {
+  "baseSheet": "768×240",
+  "sheet": "768×240",
+  "newCells": 4,
+  "newCellIndexes": [
+   691,
+   692,
+   693,
+   694
+  ],
+  "bundleUncovered": 0,
+  "storeUncovered": 4
+ },
+ "words": [
+  {
+   "object": "seal-altar",
+   "word": "봉인 제단",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "seal-altar",
+   "word": "봉인",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "seal-altar",
+   "word": "제단",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "2/2",
+   "draw_object": "후보에 있음(첫째는 si-altar)"
+  }
+ ],
+ "map": {
+  "tool": "compose_sky_island_map",
+  "args": {
+   "style": "shrine",
+   "seed": 1
+  },
+  "size": "46×40",
+  "start": {
+   "x": 19,
+   "y": 33
+  }
+ },
+ "placed": [
+  {
+   "object": "seal-altar",
+   "kit": "si-seal-altar",
+   "asked": "(21,14)",
+   "at": "(21,14)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,1) (1,1)",
+   "tool": "si-seal-altar 를 (21,15)에 놓았다"
+  }
+ ],
+ "scene": {
+  "crop": "칸 (17,10)–(27,20)",
+  "size": "176×176",
+  "heroes": [
+   {
+    "x": 21,
+    "y": 16,
+    "why": "seal-altar 앞"
+   }
+  ]
+ }
+}

@@ -162,5 +162,20 @@
     "seed": 1
    }
   }
+ },
+ "sky_island": {
+  "spec": "tiledata/sky-island/objects/spec.json",
+  "ask": "tiledata/sky-island/objects/ask.json",
+  "kitPrefix": "si-",
+  "sheet": "public/assets/sky-island/sky-island-chipset.png",
+  "map": {
+   "width": 48,
+   "height": 36,
+   "tool": "compose_sky_island_map",
+   "args": {
+    "style": "shrine",
+    "seed": 1
+   }
+  }
  }
 }

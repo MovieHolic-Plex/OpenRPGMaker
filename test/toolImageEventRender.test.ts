@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { clearToolImageEventSpriteCache } from "@/ai/toolImageEventSprites";
+import { clearToolImageEventSpriteCache, resolveRegionEventSprites } from "@/ai/toolImageEventSprites";
+import { installCurrentMonsterArt, preloadCurrentMonsterArt } from "@/assets/currentMonsterArt";
 import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
 import { renderHarmonyMapImages } from "@/ai/ultrabrainImage";
 import { charsetGraphic } from "@/editor/tools/eventCompile";
@@ -142,6 +143,28 @@ describe("show_map_region event depiction", () => {
     requirePage(chest, 1).graphic = charsetGraphic("tex_easyrpg_charset_people1", 6);
     const openedChanged = await renderRegion(project, map.id);
     expect(openedChanged.dataUrl).toBe(withChest.dataUrl);
+  });
+
+  it("draws an enemy picture installed in the project (uploaded monster) as the runtime does: the whole portrait in a two-tile box", async () => {
+    // 2026-11-12 r1s-fun: v2 가 현행 세트 적 그림을 프로젝트에 넣자(업로드 kind monster) 그 적이 선 맵 셋이 통째로
+    // «map-event-rendering-unavailable» 이라 화면 검수가 그 맵을 못 봤다. 번들 그림만 알던 줄이 업로드 앞에서 비켰기 때문이다.
+    restoreDom = installToolImageRasterDom();
+    const project = seededProject(), map = requireMap(project);
+    const empty = await renderRegion(project, map.id);
+    const id = "generated-enemy-spirit-fire";
+    placeNpc(map, multiPageEvent("foe", 4, 4, [pageGraphic("p0", { sprite: { type: "bundled", id }, direction: "down", pattern: 0 })]));
+    const bundled = await renderRegion(project, map.id);
+    expect(pixelDiffRatio(empty.raster, bundled.raster)).toBeGreaterThan(0.001);
+
+    await preloadCurrentMonsterArt();
+    expect([...installCurrentMonsterArt(project, [id])]).toEqual([id]);
+    expect(project.assets.uploaded[id]?.kind).toBe("monster");
+    const sprites = resolveRegionEventSprites(project, map, { x: 0, y: 0, w: 10, h: 8 }, 16);
+    expect(sprites.ok && sprites.sprites.map((sprite) => [sprite.eventId, sprite.wholeImage, sprite.destW, sprite.destH])).toEqual([["foe", true, 32, 32]]);
+    const installed = await renderRegion(project, map.id);
+    expect(pixelDiffRatio(empty.raster, installed.raster)).toBeGreaterThan(0.001);
+    // 넣은 그림은 번들 3×3 시트의 그림과 다른 그림이다(현행 세트).
+    expect(pixelDiffRatio(bundled.raster, installed.raster)).toBeGreaterThan(0);
   });
 
   it("fails closed instead of tile-only proof when a claimed graphic is unsupported", async () => {

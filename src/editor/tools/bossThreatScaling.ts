@@ -165,6 +165,9 @@ export type EnemyFit = {
   readonly actions?: EnemyRecord["actions"]; readonly skillIds?: readonly string[];
 };
 
+/** 맞춤이 그 역할의 목표(승률 하한·손실 상한)에 닿았나 — 못 닿았으면 부르는 쪽이 마릿수를 줄인다. */
+export const fitWithinTarget = (fit: EnemyFit, role: EnemyFitRole): boolean => fit.winRate >= FIT_TARGETS[role].minWin && fit.loss <= FIT_TARGETS[role].maxLoss;
+
 /** 역할별 기술 한 방의 상한(영웅 최대 HP 비율) — 단일 대상 / 전체 대상. */
 const SKILL_HIT_CAP = { field: [0.1, 0.07], midBoss: [0.18, 0.12], boss: [0.24, 0.16] } as const;
 

@@ -12,17 +12,16 @@
 // 지은 뒤 청사진의 place·event 를 실제 맵·이벤트 이름에 맞춰 둔다(출하 검사 walkBlueprint 가 같은 이름으로 걷는다).
 import { alignCodeClues, digitWord, shownToken } from "./codeClues";
 import { isPassable } from "@/project/collision";
-import type { GameMap, Project } from "@/project/types";
+import type { GameMap } from "@/project/types";
 import { endingClosing, normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
 import { programAnchor } from "../place/program";
 import { incomingLandings, resolveWhere } from "../place/where";
-import { applyThemeBackdrop, themeBossTroop } from "../place/placeTheme";
+import { applyThemeBackdrop } from "../place/placeTheme";
 import { walkStart } from "../place/cells";
 import type { BuildRun, ContentBuildResult } from "../shared/types";
 import { BLUEPRINT_PATH_IDS, codeStepBypass, escapeLeaks, eventGives, isCodeStep, walkBlueprint } from "./blueprint";
-import { pickFittedTroops, pickSpot } from "@/editor/tools/jrpgVolumeTools";
-import { FITTED_TROOP_PREFIX } from "@/editor/tools/bossThreatScaling";
+import { pickSpot } from "@/editor/tools/jrpgVolumeTools";
 import { trivialCode } from "./puzzle";
 import { repairEventReach } from "../place/reachRepairs";
 import { dressInteriorExits } from "../place/exitDress";
@@ -37,6 +36,7 @@ import { hostStepThing } from "./stepThings";
 import { behindBuildingStrip } from "../place/entrances";
 import { foeGraphic, settleStepFoesIn, themeBattleBackdropsIn } from "./stepFoes";
 import { remapGives, settleCarriedSteps } from "./blueprintCarry";
+import { foeTroop } from "./stepFoeTroop";
 
 /**
  * 이미 지은 청사진 단계 이벤트·퍼즐 고리 이벤트를 걸어 가 조사할 수 있는 자리로 옮긴다(내용은 그대로). 옮긴 것 목록.
@@ -159,10 +159,10 @@ export function buildBlueprintPath(run: BuildRun, text: readonly PathStepText[] 
   const extra: string[] = [];
   try { extra.push(...gateKeyedEntrances(run)); } catch { /* 잠금 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...gateEntrySteps(run)); } catch { /* 들어가기 단계 잠금 실패는 경로를 깨지 않는다 */ }
-  try { extra.push(...gateBattleSteps(run)); } catch { /* 전투 잠금 실패는 경로를 깨지 않는다 */ }
+  const gaps: string[] = [];
+  try { extra.push(...gateBattleSteps(run, gaps)); } catch { /* 전투 잠금 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...orderStepBattles(run)); } catch { /* 순서 보호 실패는 경로를 깨지 않는다 */ }
   try { extra.push(...fitUnwinnableStepBattles(run)); } catch { /* 맞추기 실패는 경로를 깨지 않는다 */ }
-  const gaps: string[] = [];
   try { extra.push(...settleStepFoesIn(run.ctx.project)); const bg = themeBattleBackdropsIn(run.ctx.project); extra.push(...bg.notes); gaps.push(...bg.gaps); } catch { /* 상대 그림·배경 맞추기 실패는 경로를 깨지 않는다 */ }
   try { const heal = ensureHealingAccess(run); if (heal.length) extra.push(`회복 길을 넣었다: ${heal.join(", ")}`); } catch { /* 회복 넣기 실패는 경로를 깨지 않는다 */ }
   try { const shop = ensureSupplyShop(run); if (shop.length) extra.push(`상점을 넣었다: ${shop.join(", ")}`); } catch { /* 상점 넣기 실패는 경로를 깨지 않는다 */ }
@@ -429,38 +429,4 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   const objectiveNotes = stepObjectives(run, steps, links.map((l, li) => ({ step: linkStep[li]!, name: l.name ?? "", made: eventIds[li] })));
   const roles = links.map((l, i) => `${linkStep[i]! < 0 ? `(단서) ${l.name}` : `${steps[linkStep[i]!]!.id} ${steps[linkStep[i]!]!.event}`}(${l.role}${l.code ? ` 번호 ${l.code}` : ""}${l.needs ? ` ← ${l.needs}` : l.needsCondition ? " ← 앞 단계 이벤트가 켜는 것" : ""})`).join(" → ");
   return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], missingArt: [...new Set([...built.missingArt, ...artGaps])], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}${objectiveNotes.length ? ` 목표 줄: ${objectiveNotes.join(" / ")}` : ""}` };
-}
-
-/**
- * 싸우는 단계의 상대 무리 — 시작 파티에 맞춘 보스(마지막 싸움)·중간 보스 사본. 상대 이름(who)이 있으면 그 이름을 단 사본을 단계마다 하나 둔다
- * (원본 DB 적은 그대로, 다시 지으면 같은 사본을 고쳐 쓴다). 전투 화면의 적 이름이 청사진의 그 사람이 된다.
- */
-function foeTroop(project: Project, stepId: string, who: string | undefined, final: boolean, mapId: string, salt: number, gaps: string[]): string | undefined {
-  // 그 장소의 테마에 맞는 상대가 먼저다(사막 유적의 수호자가 늘 «붉은 드래곤» 사본이었다) — 테마가 없는 맵(버들항)만 종전대로 DB 에서 가장 센 무리.
-  const themed = themeBossTroop(project, mapId, who, final, salt);
-  if (themed.gap) gaps.push(themed.gap);
-  const picked = themed.troopId ? undefined : pickFittedTroops(project, undefined);
-  const baseId = themed.troopId ?? (final ? picked!.boss : picked!.midBoss) ?? picked!.boss ?? picked!.midBoss ?? picked!.field.at(-1);
-  const name = who?.trim();
-  const source = project.database.troops.find((t) => t.id === baseId);
-  if (!baseId || !source || !name) return baseId;
-  const key = stepId.replace(/[^A-Za-z0-9]+/gu, "_").toLowerCase() || "s";
-  const id = `${FITTED_TROOP_PREFIX}foe_${key}`, enemyCopyId = `enemy_fit_foe_${key}`;
-  const members = (source.members?.length ? source.members.map((m) => m.enemyId) : source.enemyIds) ?? [];
-  const lead = project.database.enemies.find((e) => e.id === members[0]);
-  if (!lead) return baseId;
-  const enemy = { ...structuredClone(lead), id: enemyCopyId, name } as typeof lead;
-  const troop = structuredClone(source) as typeof source;
-  (troop as { id: string }).id = id;
-  (troop as { name?: string }).name = name;
-  // 이름은 앞장선 하나만 — 같은 적이 여럿인 무리에서 모두가 그 사람이 되지 않게.
-  let renamed = false;
-  const swap = (enemyId: string): string => { if (renamed || enemyId !== lead.id) return enemyId; renamed = true; return enemyCopyId; };
-  (troop as { enemyIds: string[] }).enemyIds = (source.enemyIds ?? members).map(swap);
-  renamed = false;
-  if (source.members?.length) (troop as { members: unknown[] }).members = source.members.map((m) => ({ ...m, enemyId: swap(m.enemyId) }));
-  const put = <T extends { id: string }>(list: T[], row: T) => { const i = list.findIndex((x) => x.id === row.id); if (i >= 0) list[i] = row; else list.push(row); };
-  put(project.database.enemies as { id: string }[], enemy);
-  put(project.database.troops as { id: string }[], troop);
-  return id;
 }
