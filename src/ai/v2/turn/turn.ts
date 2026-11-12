@@ -29,6 +29,7 @@ export function createV2Turn(request: PiAgentRequest, options: TurnOptions, io: 
     tools,
     lazyTool: (name) => state.exposure?.lazy.get(name),
     unknownToolText: (name) => unknownToolText(name, state.exposure?.lazy ?? new Map()),
+    callSchema: (name) => state.exposure?.callSchema(name),
     stateCard,
     firstPromptSuffix,
     beforeFirstPrompt,

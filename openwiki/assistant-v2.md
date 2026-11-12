@@ -153,6 +153,39 @@ Terra 작은 일 `door-roundtrip-starter` — 「잿불 마을 동쪽 끝에서 
 증거(모델 없음, 하네스의 진짜 starter 픽스처): `scope=place · 도구 47개 · 115,849자 · 지시문 34,733자` → `scope=edit · 도구 12개 · 16,181자 · 지시문 13,790자`,
 처음 싣는 목록에 `create_transfer_pair` `list_map_locations`. `golden.mts` 는 두 맵짜리 상태의 요청 둘(잇기 / 「새 마을을 만들고 … 이어 줘」)을 더 찍는다(153 → 155줄).
 
+## 게임 하나 요청의 처음 목록 — 짓는 턴과 고치는 턴 (2026-11-12, Haiku 게임 다섯 판 실측)
+
+작은 일의 상한(20개·4만 자)은 게임 하나 요청에는 걸리지 않는다. Haiku 게임 r1v-fun(Claude Code 고리)의 중계 기록: **도구 정의 56개·12.3만 자가 모델 요청 272건에 매번** 실렸다(시스템 글 5.5만 자와 함께 고정 접두부). 잇는 턴은 58개·12.6만 자.
+같은 기록과 r1h 네 판(합 15턴 — 짓는 턴 5 · 잇는 턴 10)의 호출을 세니: 12개(2.3만 자)는 한 번도 안 불렸고, 큰 넷(`edit_place` 1.7만 · `make_place` 1.1만 · `upsert_event` 1.0만 · `set_opening` 0.5만)은 판의 절반 이하에서만 불렸다. 잇는 턴에서는 실린 글자의 81~92% 가 그 턴에 한 번도 안 불린 도구였다.
+
+그래서 `toolExposure.ts` 가 게임 하나 요청(`intent.wholeGame`)을 **프로젝트 상태로** 둘로 가른다(요청 글의 낱말이 아니다):
+
+| 턴 | 가르는 것 | 처음부터 | 뒤로(`load_tools`) |
+|---|---|---|---|
+| 짓는 턴 | 청사진이 없거나, 단계 가운데 지은 이벤트(`GameBlueprintStep.built`)가 안 적힌 것이 있다 | 지금 규칙 그대로 + `list_endings` | `WHOLE_GAME_LATER` 16개 — 안 불린 12 + `edit_place` `make_place` `upsert_event` `set_opening` |
+| 고치는 턴 | 청사진의 단계가 다 `built` | `WHOLE_GAME_REPAIR` 24개만 — 읽기 · 돌려 보기 · 이벤트와 목표 고치기 · 엔딩 · 소품 | 나머지 전부(청사진 · 장소 · 사람 · 사건을 짓는 동사 포함) |
+
+- 같은 저장본으로 다시 만든 목록(모델 없음, `genre-tools/cliListFinal.mts` — 두 체크아웃의 실제 노출 코드): 짓는 턴 56개·12.4만 자 → **41개·6.2만 자**(구성기 세계 48개·9.0만 → 37개·5.4만), 고치는 턴 58개·12.7만 자 → **26개·4.0만 자**.
+- 기록된 호출 순서를 얹어 잰 «도구 정의 글자 × 호출»(뒤로 돌린 도구는 실은 순간부터 기록에 남아 매 호출 다시 읽힌다고 센다): 짓는 턴 5개 −33%, 잇는 턴 10개 −51%. 한 턴에 `load_tools` 로 싣는 도구는 가운데값 4 → 5(짓는 턴) · 4 → 6(잇는 턴).
+- 뒤로 돌린 v2 동사는 `load_tools` 설명의 앞쪽 목록(이름 — 한 줄 뜻)에 든다. 장소 하나를 짓는 요청(게임 하나가 아닌 것)은 그대로 `make_place` · `edit_place` 를 처음부터 받는다.
+- **모르는 것:** 기록은 그 도구들이 보이는 채로 찍혔다. 숨기면 고치는 동사를 덜 부를 수 있다 — 모델 판(같은 요청의 Haiku 게임 하나)으로만 알 수 있고 이 변경은 그것을 재지 않았다.
+
+**`call_tool` 로 부른 도구의 인자 모양 거절은 그 도구의 매개변수를 싣는다.** 같은 15턴에서 목록 밖 쓰기 도구의 실패는 41/141(29%)로 목록 안(34/431, 7.9%)의 네 배였다. 41건을 가르면:
+
+| 까닭 | 건수 | 이 변경 |
+|---|---|---|
+| 인자 모양(`set_map_properties` 15 — `bgm` 에 낱말 · `create_quest` 2 · `place_door` 1) | 18 | 17건은 실행기의 검증 거절이다 — 이제 거절 글이 매개변수를 싣는다. 8건은 그 턴에 그 도구를 `load_tools` 로 실은 적도 없었다(같은 인자로 8번 연달아 실패). 1건은 도구 안의 검사(`create_quest` 목표 칸)라 그대로다 |
+| `place_door` — 참고문서 선행 읽기 규칙 14 · 재료 이름표 1 | 15 | 다른 일(읽기 관문) — 고치지 않았다 |
+| `create_quest` — 퀘스트 내용 규칙(의뢰인과 목표 인물이 같음 3 · 프리셋과 다른 목표 구조 3) | 6 | 다른 일 — 고치지 않았다 |
+| `place_examine_hotspots` 물건 이름을 못 찾음 1 · `rewrite_dialogue` 윤문 지침 먼저 읽기 1 | 2 | 다른 일 |
+
+- 거절이 전에 준 것: 검증기의 오류 줄(「bgm: expected object or null, received string」, 허용 값은 안 적힌다)과 받은 인자, 두 번째부터 필수 칸만 채운 최소 예시(`{mapId:"…"}` — `bgm` 의 모양은 없다).
+- 이제: 실행기가 인자 모양 거절을 형(`ArgShapeError`, `argRepair.ts`)으로 던지고, 로컬 CLI 고리가 `call_tool` 로 온 호출이면 그 도구의 매개변수(`V2ToolExposure.callSchema` — 검증하는 스키마와 같은 모양, 깊은 칸 설명과 한국어 칸 설명은 걷는다)를 거절 글 끝에 붙인다(`cliToolFreeze.ts callToolFailureText`). 연달아 틀리면 첫 번째와 세 번째에만 붙인다.
+- `load_tools` 가 돌려주는 매개변수 글과 거절에 붙는 글은 검증하는 스키마와 모양이 같다 — 게임 하나 요청의 뒤로 돌린 도구 132개(짓는 턴) · 148개(고치는 턴)에서 다른 것 0개(`genre-tools/loadSchemaCheck.mts`, 제품의 `load_tools` 를 직접 불러 견준다). 고치기 전에도 0개였다. 다만 전에는 CLI 목록용 가볍게 하기(`compactCliToolList`)를 한 도구에 불러 만들었고 그 함수는 큰 반복 칸을 한국어 한 줄로 바꿀 수 있어서, 깊은 설명 걷기(`stripDeep`)만 쓰게 해 그 길을 없앴다.
+- 기록된 18건을 지금 코드로 다시 넣으면(`genre-tools/lazyFailReplay.mts`): 17건이 같은 오류로 거절되고 18건 모두 거절에 붙을 매개변수 글이 있다(`set_map_properties` 5.4천 자 — `bgm:{mode: parent|none|custom, resourceId, fadeInMs}` 가 그 안에 있다).
+
+테스트 `test/aiV2WholeGameFirstList.test.ts`. 측정 자료 `~/z-project/assistant-fable-runs/genre-tools/clilist/`.
+
 ## 작은 일은 그 일을 하는 도구에 늘 닿는다 — 풀·주제 줄·기록 이름 (2026-11-11, 작은 일 둘째 묶음)
 
 둘째 묶음 35건(`harness-data/assistant-capability/small-jobs-2.json`)을 모델 없이 분류해 보니 다섯 문장이 게임 도구 묶음을 받지 못했다(`tools.game=false`, `extra=0`):

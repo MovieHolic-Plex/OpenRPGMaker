@@ -11,7 +11,8 @@
 // 실행기(scripts/lib/piAgentRuntime.ts)는 env.declareTool 로 실은 도구를 다음 모델 호출부터 선언하고, 이름만 부른 호출은 options.v2.lazyTool 로 이 사본을 찾는다.
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { getTool } from "@/editor/tools/toolRegistry";
-import { compactCliToolList } from "@/ai/piAgent/cliContextBudget";
+import { stripDeep } from "@/ai/piAgent/cliContextBudget";
+import type { Project } from "@/project/types";
 import type { PiAssistantV2Env } from "../shared/env";
 import { V2_TOOL_EN, type ToolTextEn } from "./toolTextEn";
 import { classifyRequest, describeIntent } from "../request/intent";
@@ -37,6 +38,30 @@ export const V2_UP_FRONT: ReadonlySet<string> = new Set([
   // author_script/edit_script 가 컴파일·예시 실행을 한 번에 돌려주고, API 요약은 SCRIPT_TIER 카드에 있다. 나머지는 이름 호출·load_tools 로.
   "author_script", "edit_script",
 ]);
+
+/**
+ * 게임 하나 요청(intent.wholeGame)에서 처음부터 싣지 않는 것. 기록: Haiku 게임 다섯 판 15턴(r1v-fun · r1h 4판, 2026-11-12) —
+ * 도구 56개·12.3만 자가 모델 호출마다 실렸는데, 12개(2.3만 자)는 한 번도 안 불렸고 큰 넷(edit_place 1.7만 · make_place 1.1만 · upsert_event 1.0만 · set_opening 0.5만)은 판의 절반 이하에서만 불렸다.
+ * 필요하면 load_tools 로 싣는다(구성기 세계의 장소 짓기 동사가 이미 그렇게 간다). 재는 법: openwiki/assistant-v2.md 「게임 하나 요청의 처음 목록」.
+ */
+const WHOLE_GAME_LATER: ReadonlySet<string> = new Set([
+  "edit_place", "make_place", "set_project_settings", "upsert_event", "set_opening", "upsert_actor",
+  "add_scene", "draw_object", "place_object", "dungeon_parts", "set_start_position", "place_chest", "furnish_outdoor_area",
+  "create_opening_animatic_shot", "place_opening_background", "place_opening_charset_actor",
+]);
+/** 게임 하나 요청에는 요청 묶음 밖이라도 처음부터 싣는다 — list_endings 는 잇는 턴 10번에 10번 불렸다(167자). */
+const WHOLE_GAME_ALWAYS: ReadonlySet<string> = new Set(["list_endings"]);
+/**
+ * 청사진의 단계가 다 지어진 게임을 잇는 턴(고치기)에 처음부터 싣는 것 — 읽기 · 돌려 보기 · 이벤트와 목표 고치기 · 엔딩 · 소품.
+ * 같은 기록의 잇는 턴 10번에서, 실린 글자의 81~92% 가 그 턴에 한 번도 안 불린 도구였다(12.6만 자 → 3.9만 자). 짓는 동사(청사진 · 장소 · 사람 · 사건)는 load_tools 로.
+ */
+const WHOLE_GAME_REPAIR: ReadonlySet<string> = new Set([
+  "todo", "ask_user", "get_event", "find_events", "inspect", "find_switch_usage", "get_story_state", "get_database_records", "read_npc_layout", "run_scene_test", "list_endings",
+  "patch_event_page", "move_event", "remove_event", "restore_event", "declare_story_flag", "set_objective", "set_field_hud", "define_ending", "generate_art",
+  "stamp_object", "find_empty_ground", "list_resources", "list_spatial_designs",
+]);
+/** 청사진의 단계마다 지은 이벤트가 적혀 있나(GameBlueprintStep.built — build_blueprint_path 가 적는다). 하나라도 비면 아직 짓는 턴이다. */
+const pathBuilt = (project: Project): boolean => !!project.gameBlueprint?.steps.length && project.gameBlueprint.steps.every((step) => !!step.built);
 
 /** 같은 모양으로 걷을 하위 스키마의 최소 크기(설명 뺀 JSON 글자 수). 분기 명령 배열(약 420자)은 걷고, {x,y} 같은 작은 모양은 남긴다. */
 const COLLAPSE_MIN = 400;
@@ -137,6 +162,8 @@ export interface V2ToolExposure {
   readonly lazy: ReadonlyMap<string, PiToolShape>;
   /** 이 요청 묶음에 들었지만 처음부터 싣지 않은 이름(load_tools 설명의 앞쪽 목록). */
   readonly offered: readonly string[];
+  /** 목록에 없는 도구(call_tool 로 부른다)의 매개변수 글 — 인자 모양 거절에 붙인다. 처음 목록에 있는 도구는 undefined. */
+  readonly callSchema: (name: string) => string | undefined;
 }
 
 const gloss = (tool: PiToolShape): string => {
@@ -153,11 +180,16 @@ function loadedLine(tool: PiToolShape): string {
   return `- ${tool.name}: ${tool.description}\n  required: ${req.length ? req.join(", ") : "(none)"} · fields: ${props.join(", ") || "(none)"}`;
 }
 
-/** 목록 고정(call_tool) 때 load_tools 결과에 싣는 한 도구 — 설명과 매개변수 스키마(CLI 목록과 같은 가벼운 모양). */
-function loadedSchema(tool: PiToolShape): string {
-  const [compact] = compactCliToolList([{ name: tool.name, description: tool.description, inputSchema: tool.parameters }]);
-  return `- ${tool.name}: ${tool.description}\n  parameters: ${JSON.stringify(compact?.inputSchema ?? tool.parameters)}`;
+/**
+ * call_tool 로 부르는 도구의 매개변수 글 — 실행기가 그 호출을 검증하는 스키마(이 사본의 parameters) 그대로, 깊은 칸의 설명만 걷는다.
+ * load_tools 결과와 인자 모양 거절(callSchema)이 같은 모양을 쓴다. english 면 영어 덮개가 없는 한국어 칸 설명도 걷는다(거절 글은 짧게).
+ */
+function parametersText(tool: PiToolShape, english = false): string {
+  const parameters = english && getTool(tool.name) ? translateParams(tool.parameters, V2_TOOL_EN[tool.name], false) : tool.parameters;
+  return JSON.stringify(stripDeep(parameters));
 }
+/** 목록 고정(call_tool) 때 load_tools 결과에 싣는 한 도구 — 설명과 매개변수 스키마. */
+const loadedSchema = (tool: PiToolShape): string => `- ${tool.name}: ${tool.description}\n  parameters: ${parametersText(tool)}`;
 
 /**
  * 할 일 고리(withTodoLoop)까지 감싼 v2 도구 목록을 받아 이번 요청에 내놓을 모양으로 나눈다.
@@ -201,15 +233,21 @@ export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolSh
   const order = lean && !intent.wholeGame && intent.scope !== "audio" ? new Map(intent.smallTools.map((name, i) => [name, i] as const)) : undefined;
   if (order) tools = [...tools].sort((x, y) => (order.get(x.name) ?? order.size) - (order.get(y.name) ?? order.size));
   const small = order && withinSmallBudget(tools.filter((t) => order.has(t.name)));
-  const offeredSet = new Set([...intent.tools.extra, ...(placeLazy ? PLACE_BUILD_VERBS : [])]);
+  // 게임 하나: 청사진의 단계가 다 지어져 있으면 잇는 턴(고치는 도구만 처음부터), 아니면 짓는 턴(안 쓰는 것 · 드물게 쓰는 큰 것만 뒤로). 요청 글이 아니라 프로젝트 상태로 가른다.
+  const repairTurn = intent.wholeGame && pathBuilt(env.ctx.project);
+  const later = (name: string) => repairTurn ? !WHOLE_GAME_REPAIR.has(name) : intent.wholeGame && WHOLE_GAME_LATER.has(name);
+  // 뒤로 돌린 v2 동사도 load_tools 설명의 앞쪽 목록(이름 — 한 줄 뜻)에 든다.
+  const offeredSet = new Set([...intent.tools.extra, ...(placeLazy ? PLACE_BUILD_VERBS : []), ...(intent.wholeGame ? tools.filter((t) => !getTool(t.name) && later(t.name)).map((t) => t.name) : [])]);
   // 처음부터 = 이 요청 묶음에 들었고(offered) 기록에서 쓴 것(V2_UP_FRONT). 묶음 밖 도구(v2ToolPool 로만 들어온 것)는 늘 필요할 때.
-  const isLazy = (t: PiToolShape) => small ? !small.has(t.name) : (placeLazy && PLACE_BUILD_VERBS.has(t.name))
+  const pinned = (name: string) => intent.wholeGame && (WHOLE_GAME_ALWAYS.has(name) || (repairTurn && WHOLE_GAME_REPAIR.has(name)));
+  const isLazy = (t: PiToolShape) => small ? !small.has(t.name) : pinned(t.name) ? false : later(t.name) || (placeLazy && PLACE_BUILD_VERBS.has(t.name))
     || (lazyOn && !!getTool(t.name) && (!V2_UP_FRONT.has(t.name) || !offeredSet.has(t.name)));
   const seen: ShapeIndex = new Map();
   const upFront = tools.filter((t) => !isLazy(t)).map((t) => collapseRepeats(englishToolCopy(t, true), seen));
   const lazy = new Map<string, PiToolShape>();
   for (const t of tools) if (isLazy(t)) lazy.set(t.name, collapseRepeats(englishToolCopy(t, false), seen, false));
-  if (!lazy.size) return { tools: upFront, lazy, offered: [] };
+  const callSchema = (name: string) => { const tool = lazy.get(name); return tool ? parametersText(tool, true) : undefined; };
+  if (!lazy.size) return { tools: upFront, lazy, offered: [], callSchema };
   const offered = [...lazy.keys()].filter((n) => offeredSet.has(n));
   const others = [...lazy.keys()].filter((n) => !offeredSet.has(n));
   const loaded = new Set<string>();
@@ -248,7 +286,7 @@ export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolSh
       return { content: [{ type: "text", text: JSON.stringify({ ok: got.length > 0 || already.length > 0, summary }) }], details: { ok: got.length > 0 || already.length > 0, summary } } as Awaited<ReturnType<PiToolShape["execute"]>>;
     },
   } as PiToolShape;
-  return { tools: [...upFront, loadTools], lazy, offered };
+  return { tools: [...upFront, loadTools], lazy, offered, callSchema };
 }
 
 /** 없는 도구 이름을 부른 호출에 돌려줄 영어 글(실행기가 v2 에서 «tool not found» 대신 쓴다). */
