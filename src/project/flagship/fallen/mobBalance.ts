@@ -517,6 +517,7 @@ function battleTroopIds(event: GameEvent): string[] {
 export function applyFallenMobBalance(project: Project, exec: Exec): void {
   for (const w of applyFallenMobStats(project)) console.warn(`[fallen-star mob] ${w}`);
   for (const w of applyFallenTrashWeakness(project)) console.warn(`[fallen-star mob] ${w}`);
+  for (const w of applyFallenTraitPilot(project)) console.warn(`[fallen-star mob] ${w}`);
   for (const split of FS_TROOP_SPLITS) {
     let changed = 0;
     const swap = (cs: readonly Command[] | undefined): void => {
@@ -619,6 +620,48 @@ export function applyFallenTrashWeakness(project: Project): string[] {
     if (!enemy) { warnings.push(`잡몹 약점 보정: 적 없음 ${enemyId}`); continue; }
     for (const [elementId, grade] of Object.entries(enemy.elementRates ?? {})) if (grade === "B") enemy.elementRates[elementId] = "A";
     enemy.stats = { ...enemy.stats, maxHp: Math.round(enemy.stats.maxHp * FS_WEAKNESS_TRASH_HP) };
+  }
+  return warnings;
+}
+
+
+// ── 잡몹 「모르면 손해」 장치 파일럿(2026-11-08, autopilot-usability) ─────────
+/**
+ * 오너 결정(2026-11-08): 「잡몹에 모르면 손해 장치 달아」 — 세 무리 파일럿(서리 박쥐·재 뱀·결정 거미)에서 시작해 밴드가 움직이면 넓힌다.
+ * 이야기 레벨·파티로 200판씩 세 정책(모름 / 앎 / 공격만)을 잰 결과 서리 박쥐만 목표 밴드(모름 ≤40%, 앎 60~70%)에 들어갔다:
+ *   눈 북쪽 1 무리 85/85/42 → 4.5/62.5/0, 얼음 호수 무리 90.5/90.5/41.5 → 9/64.5/0 (HP ×1.6).
+ * 결정 거미(반격 자세)는 최선 55/69 로 밴드를 못 맞췄고 재 뱀(힘 모으기·물/얼음으로 끊김)은 차이가 없어 넣지 않는다 —
+ * http://mdc-server:18301/autopilot-usability.html 「파일럿 결과」.
+ * 넓히기 2차(같은 날): 혼자 나오는 숯덩이 골렘·탑 파수 기계에 같은 꼴(무기 무효 + 약점 하나)을 달았다. 박쥐가 다른 쉬운 적과 섞인 무리(하늘탑·눈 혼성)는
+ *   앎 정책이 93% 아래로 안 내려가 넣지 않았다. 3차: 순찰 기사 두 무리·재까마귀를 더했다. 태엽나방은 그 시점 파티가 바람·불을 이미 많이 써서
+ *   모름 정책도 98.5% 로 이겨 넣지 않았다. 「모름」이 0~5% 로 매우 낮은 것은 무기만 쓰면 못 이긴다는 뜻이다 — 도감·약점 장부로 배운다.
+ * 장치: 무기(검·창·활)로는 피해가 없고(E) 약점 하나가 A 다. 알아낸 무효·약점은 전투가 도감 약점 장부(knownWeaknesses)에 적는다.
+ * 엔진 작업 없음 — 속성 배율 데이터만 쓴다. 능력치 표(applyFallenMobStats)가 무리별 적을 떼어 곱한 뒤에 적용해야 한다(HP 배수는 그 위에서 잰 값).
+ */
+const WEAPON_IMMUNE = { sword: "E", spear: "E", bow: "E" } as const;
+/** 적 id → 덧씌울 속성 배율과 최대 HP 배수. 배수는 그 무리를 200판×3정책으로 잰 값이다. */
+export const FS_TRAIT_PILOT: Readonly<Record<string, { readonly rates: Readonly<Record<string, "A" | "E">>; readonly hp: number }>> = {
+  // 서리 박쥐 — 무기 무효, 불 약점. 눈 북쪽 1 85/85/42 → 4.5/62.5/0, 얼음 호수 90.5/90.5/41.5 → 9/64.5/0.
+  enemy_fs2_frost_bat_t_fs2_frost_bats: { rates: { ...WEAPON_IMMUNE, fire: "A" }, hp: 1.6 },
+  enemy_fs2_frost_bat_t_fs2_frost_bats_lake: { rates: { ...WEAPON_IMMUNE, fire: "A" }, hp: 1.6 },
+  // 달아오른 숯덩이 골렘(혼자 나오는 무리) — 무기·주먹 무효, 물 약점(원래 B). 100/100/99.5 → 34/62.5/0.
+  enemy_fs2_cinder_golem: { rates: { ...WEAPON_IMMUNE, hit: "E", water: "A" }, hp: 2.7 },
+  // 탑 파수 기계(혼자 나오는 무리) — 무기·주먹 무효, 번개 약점(원래 A). 100/100/99 → 18/65/0.
+  enemy_fs2_tower_sentinel: { rates: { ...WEAPON_IMMUNE, hit: "E", thunder: "A" }, hp: 2.1 },
+  // 넓히기 3차 — 순찰 기사 두 무리(요새 안·밖, 같은 수치): 판금이라 무기·주먹 무효, 번개 약점. 100/100/68.5 → 2/60.5/0.
+  enemy_fs2_fort_knight_t_fs2_fort_knights: { rates: { ...WEAPON_IMMUNE, hit: "E", thunder: "A" }, hp: 2.2 },
+  enemy_fs2_fort_knight_t_fs2_fort_knights_out: { rates: { ...WEAPON_IMMUNE, hit: "E", thunder: "A" }, hp: 2.2 },
+  // 재까마귀 ×3: 재로 된 몸이라 무기·주먹 무효, 물 약점(원래 D → A). 100/100/64 → 1.5/66/0.
+  enemy_fs2_ash_crow_t_fs2_ash_crows: { rates: { ...WEAPON_IMMUNE, hit: "E", water: "A" }, hp: 2.2 },
+};
+
+export function applyFallenTraitPilot(project: Project): string[] {
+  const warnings: string[] = [];
+  for (const [id, trait] of Object.entries(FS_TRAIT_PILOT)) {
+    const enemy = project.database.enemies.find((e) => e.id === id);
+    if (!enemy) { warnings.push(`특성 장치 파일럿: 적 없음 ${id}`); continue; }
+    enemy.elementRates = { ...enemy.elementRates, ...trait.rates };
+    enemy.stats = { ...enemy.stats, maxHp: Math.round(enemy.stats.maxHp * trait.hp) };
   }
   return warnings;
 }
