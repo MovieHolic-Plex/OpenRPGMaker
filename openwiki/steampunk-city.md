@@ -1,4 +1,4 @@
-# steampunk_city — 스팀펑크 공업 도시 칩셋 (2026-10-14)
+# steampunk_city — 스팀펑크 공업 도시 칩셋 (2026-10-14, 그림 다시 굽기 2026-11-12)
 
 벽돌·철·구리의 증기 도시: 연립·가게·여관 거리, 공장·보일러실·배관 도랑·석탄 마당, 기차역·증기 열차·화물 측선·문형 기중기,
 운하 부두·돌다리·잔교·바지선, 비행선 계류탑(땅 위 정박장), 실내 여섯(보일러실·기관실·공방·연구실·여관·선술집).
@@ -8,7 +8,7 @@
 
 | 무엇 | 어디 |
 |---|---|
-| 그림(코드 손 도트, 16px, 3/4) | `scripts/content/steampunk-city/art/` — terrain·buildings·props·pipes·vehicles·street·interior 일곱 등록부, `palette.py`(잠금 22 램프·116색), `px.py`/`kit.py` 그리개 |
+| 그림(코드 손 도트, 16px, 3/4) | `scripts/content/steampunk-city/art/` — terrain·buildings·props·pipes·vehicles·street·interior 일곱 등록부, `palette.py`(코드 도트가 그리는 옛 22 램프·116색), **`palette_v3.py`(굽는 색: 역할별 48색 + 옛 색 → v3 대응표)**, `px.py`/`kit.py` 그리개(`Reg.picture` = 굽는 그림) · Fable 한 방 그림 `tiledata/steampunk-city/fable-redraw/` |
 | 관문 내보내기 | `tiledata/steampunk-city/<묶음>/_gate/sp-<id>.png` + `items.jsonl`, `gate_sel.py <묶음> ids…` 로 sel.jsonl |
 | 굽기 | `python3 scripts/content/steampunk-city/bake_sp.py [--dry]` → `public/assets/steampunk-city/steampunk-city-chipset.png` · `src/assets/steampunkCity{Tileset,Sheet}.json` · `tiledata/steampunk-city/bake-{pins,report}.json`(번호 핀은 덧붙이기 전용) |
 | 참고문서 | `python3 scripts/content/steampunk-city/bake_refs_sp.py` → `src/assets/steampunkCityReferences.json`(이미지 바이트 없음) + `public/assets/steampunk-city-references/*.png` |
@@ -18,13 +18,43 @@
 | 조수 길잡이 | `src/ai/steampunkCityPolicy.ts` (plainTurn 에서 jp_city **보다 먼저** 판정 — 「증기기관 도시 거리」가 jp_city 의 「도시 거리」에도 걸린다) |
 | 장면 QA | `node_modules/.bin/vite-node scripts/content/steampunk-city/qa/compose-scene.mts -- out.json <style> W H seed` → `qa/render_scene.py`(렌더 + 검증) |
 
-## 수량 (굽기 보고서)
+## 수량 (굽기 보고서, 2026-11-12)
 
-조각 163(야외 111·실내 52) · 키트 102 · 칸 835(48열×18줄) · 움직이는 칸 묶음 38(물·증기 구멍·굴뚝 연기·보일러·기관·테슬라 코일·벽난로) ·
-정의 위반 0 · 팔레트 밖 0 · 재조립 불일치 0. 가족 라벨 `oprn-steampunk` = 「스팀펑크 도시(도트)」.
+조각 172(야외 120·실내 52) · 키트 107 · 칸 1211(48열×26줄) · 움직이는 칸 묶음 38(물·증기 구멍·굴뚝 연기·보일러·기관·테슬라 코일·벽난로) ·
+정의 위반 0 · 팔레트 밖 0 · 재조립 불일치 0. 가족 라벨 `oprn-steampunk` = 「스팀펑크 도시(도트)」. (굽기 전: 키트 102 · 칸 851.)
+
+## 그림 다시 굽기 (2026-11-12) — 역할 팔레트 v3 · 직각 지붕 · 주인공 크기 · Fable 한 방
+
+오너: 「스팀펑크 타일들과 오브젝트는 좀 많이 갈아엎어야할듯」 · 「이 에디터는 시야각이 직교해야하므로 … 직각 지붕이어야」 · 「색상 팔레트를 좀 정해야하는 거아니냐? 특히 주인공 캐릭터를 넣어서 원근감이나 사이즈 비율을 잘 정할 수 있게」.
+**조각 id·크기·문 칸·칸 통행·칸 번호는 그대로 두고 그림만 바꿨다** — 구성기·저장된 맵·참고문서 배열이 고치지 않고 돈다. 페이지 http://mdc-server:18301/steampunk-redo.html .
+
+- **팔레트 v3 (48색, 역할별)** `art/palette_v3.py`: GROUND 18(따뜻한 회색 돌 6 · 벽돌 포장 3 · 흙 3 · 풀 3 · 물 3) · STRUCTURE 21(벽돌 5 · 슬레이트/무쇠 5 · 나무 4 · 구리→놋쇠 5 · 녹청 2) · ACCENT 7(불빛 3 · 빨강 2 · 초록 2) · 먹 2(버들항 계열 공유).
+  바닥 조각은 GROUND+먹만, 그 밖은 STRUCTURE+ACCENT+먹(+돌). 색의 세기는 낮게~보통이고(오너가 짚은 것은 파란 포석과 주황 벽돌의 채도 충돌), **밝기는 옛 시트에서 잰 범위**를 따른다(v3.1): 차도 포석이 가장 어둡고(평균 L 0.42) 보도 판석이 중간(0.61), 광장 벽돌은 판석보다 뚜렷이 어두운 적갈(0.47), 석탄재 0.37, 구조물의 가장 어두운 단 0.25~0.29.
+  처음 판(v3.0)은 모든 램프를 버들항 낮 바닥의 10–90 백분위 띠에 넣었다가 구성기 장면이 허옇게 떴다(거리 평균 L 0.49 → 0.56, 가장 어두운 10% 0.31 → 0.40) — 그 띠는 낮의 마른 바닥에만 맞는 기준이다. 같은 날 색 표만 고쳐 다시 구웠다(거리 0.48 · 공장 지대 0.42 · 부두 0.44, 옛 0.49 · 0.44 · 0.46).
+  `check_palette` 가 48색 밖을 거절하고, 새 그림은 `snap`(OKLab 최근접, 디더링 없음)으로 맞춘다.
+- **굽는 그림 = `kit.Reg.picture(it)`**: `fable-redraw/pieces/<묶음>/sp-<id>.png`(또는 `held/`)가 있으면 그 그림, 없으면 코드 도트(`render`)를 그린 뒤 `palette_v3.REMAP` 로 **색만** 옮긴다(모양은 한 화소도 안 바뀐다). `art/<묶음>.py` 를 돌리면 `_gate/` PNG 가 이 그림으로 나간다.
+- **Fable 5.2 medium 한 방(조각당 호출 1번, 61호출 · $6.16, 잘림 0)** — 실행기 `scripts/content/steampunk-city/fable/draw.py`(`--list` · `--prompts` 는 모델을 부르지 않는다; 그릴 때는 `--only <id,…> --cap-usd <달러>` 가 있어야 한다. 예약/정산 예산 장치·잘린 호출 다시 안 부름), 주문 `fb_jobs.py`, 틀·계약 `fb_prompt.py`. `fable-redraw/src/` 가 모델이 그린 조각이다(색은 v3.0 으로 그린 뒤 v3.1 의 같은 램프·단으로 옮겼다):
+  바닥 21(포석 4 · 판석 3 · 승강장 · 석탄재 3 · 풀 · 흙 · 노면 궤도 2 · 선로 2 · 물 · 돌다리 · 실내 돌바닥 · 내려가는 계단), 소품·거리 시설 12, 큰 물체의 부분 조각 8(기관차 2 · 지브 기중기 2 · 비행선 4 — 코드로 이음),
+  **건물 키트 20**(가로로 이어 붙는 지붕 모듈 3 · 16px 칸으로 잘라 쓰는 벽 층 모듈 4 · 문 모듈 5 · 얹는 부품 8). 물 프레임 2·3 은 물 칸을 코드로 민 것이다.
+- **건물 18채는 키트를 코드로 조립**한다 — `python3 scripts/content/steampunk-city/fable/build.py`(`--check` 는 쓰지 않고 `pieces/` 와 견준다): `SPECS` 한 줄이 건물 한 채(지붕 모듈·층마다 칸 목록·문 모듈과 문 칸·얹는 부품), 결과가 `fable-redraw/pieces/`. 직사각형 지붕 덩이 + 납작한 앞벽.
+  지붕 끝 x 퍼짐 0px(기준 2px 이하), 문 열림 16×27~28(외문·가게 문) · 32×30~32(양개문·화물 문) — 주인공 칩 속 사람 16×24. 한 층 32px, 1층 40px.
+  유지 판정이던 공방·보일러실·공장도 옛 지붕이 83~127px 기울어 다시 지었고, 빼기 판정이던 row-soot-4 · row-flush-3 는 id 를 지키려고 다시 지었다. 연구소·펌프장(돔)은 색만 옮겼다.
+- **색만 옮긴 옛 조각 127장**(실내 59 · 배관 16 · 거리 · 소품 · 탈것 · 바닥의 연석·벽돌 포장·철판·석축·부두·다리 난간, 애니메이션 프레임 17 포함).
+- **Fable 한 방 기물 5개**(조절기 `sp-regulator` · 경보기 `sp-alarm` · 단말기 `sp-terminal` · 게시판 `sp-notice-board` · 쪽지 `sp-note`)를 v3 로 맞춰 거리 묶음 키트로 더했다(`street.py` `R.add_png`).
+- **번호**: 옛 칸 번호 851개는 하나도 움직이지 않았다. 번호가 있는 자리는 그림이 다른 칸과 같아져도 제 번호에 굽는다(`sp_bake_lib.Outdoor.put`) — 저장된 맵의 옛 번호가 빈 칸이 되지 않게. 새 칸 360개는 뒤에 덧붙었다(직사각형 지붕이 채운 모서리 칸, 전에는 다른 건물과 칸을 나눠 쓰던 자리, 새 키트 5).
+  칸 통행·층 우선순위가 바뀐 옛 번호 0, 키트 크기·문 칸·접근칸이 바뀐 키트 0. 건물 17채와 지브 기중기는 위쪽 모서리에 칸이 늘었다(전에는 투명).
+- **구성기 전/후**(같은 호출·같은 씨앗 1, 거리 48×34 · 공장 지대 52×40 · 부두 48×34): 건물 목록·순서 같음, 소품 수 같음, 걷기 검사 오류 전·후 모두 없음.
+- **다시 굽는 순서**: `fable/draw.py`(새로 그릴 때만) → `fable/build.py` → `art/<묶음>.py` 일곱(_gate 내보내기) → `fable/manifest.py`(면제 입력·흔적) → `object-gate owner-waive --replace …`(오너의 말이 있을 때만) → `bake_sp.py` → `bake_refs_sp.py`. 색만 바꿀 때는 `art/palette_v3.py` 의 표를 고치고 `fable-redraw/` 그림을 같은 램프·단으로 옮긴 뒤 build 부터.
+- **남은 것**: 칸 모듈 조립이라 창 두 가지(켜진 창·어두운 창)가 되풀이된다 · 판석 보도가 고른 회색이라 옛 보도보다 덜 따뜻하고 포석 돌의 명암이 옛 그림보다 얕다 · 비행선 기낭이 회색 범포(48색 안에 크림 램프가 없다)이고 늑골 간격이 고르지 않다 · 석탄재 마당에 비스듬한 결, 차도 포석과 밝기가 가깝다 ·
+  풀·흙·승강장·물은 시트에 한 칸뿐이라 큰 면에서 16px 주기가 남는다(변주를 섞으려면 구성기를 고쳐야 한다) · 색만 옮긴 옛 조각의 빨강(화물차 바퀴·우체통)이 조금 튄다.
 
 ## 3/4 관문 (object-gate)
 
+- **2026-11-12 부터 이 칩셋의 그림 189장은 전부 «3/4 관문 미통과 — 오너 면제»** 다(묶음 `fable-redraw-steampunk-city-2026-11-12`, 출구 bundle·shared, 스토어 불가). 통과가 아니다.
+  - `fable/…` 62장: Fable 5.2 한 방 그림과 그 조립(건물 18 · 이은 물체 3 · 민 프레임 2 포함) + 한 방 기물 5. 오너(질문 창, 2026-11-12): 「구워도 되고 앞으로는 전부 오너 면제다 (FABLE 5.2 는 한번에 다 잘만든다)」.
+  - `recolour/…` 127장: 옛 조각의 색만 옮긴 것. 오너: 「같이 구워라」. 옛 판정(전부 미보정 프로필 `ca6aaa9c55194dc5` 의 pass)은 **색을 바꾸기 전의 같은 모양**에 대한 것이다.
+  - 장마다의 흔적(지금 해시 · 바꾸기 전 해시 · 옛 영수증)은 `tiledata/steampunk-city/fable-redraw/recolour-trail.json`, 면제 단계 입력은 `waiver-manifest.json`. 굽기 보고서는 `gate.owner_waived` 로 센다(`sp_bake_lib.gate_status` 가 관문의 `refusal` 을 그대로 본다).
+- 아래는 2026-10-14 판의 기록이다(그때 그림은 영수증 PASS · 프로필 미보정 «provisional»).
 - 모든 조각이 그림 화소 해시 영수증으로 PASS. **프로필 미보정이라 「provisional」** — 「관문 합격」이라고 쓰지 말 것.
 - 떨어진 뒤 고친 것: 시계 기둥·광고탑·화분·신호등(정면 입면 → 큰 윗면 원판), 기관차(옆모습·둥근 바퀴·둥근 창 → 상자형 기관차, 직사각 창, 바퀴는 아래 반원만),
   비행선(대칭 옆모습 → 평면 타원 윗면 + 옆 띠, 휜 늑골, 수평 꼬리날개, 곤돌라 지붕).

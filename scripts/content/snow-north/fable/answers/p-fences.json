@@ -1,0 +1,110 @@
+{
+"id": "p-fences",
+"w": 64,
+"h": 32,
+"role": "object",
+"shot": 1,
+"legend": {
+"a": "ink:0",
+"b": "log:0",
+"c": "log:1",
+"d": "log:2",
+"e": "log:3",
+"f": "log:4",
+"g": "stone:0",
+"h": "stone:1",
+"i": "stone:2",
+"j": "stone:3",
+"k": "shade:0",
+"l": "shade:1",
+"m": "snow:0",
+"n": "snow:1",
+"o": "snow:2",
+"p": "snow:3",
+"q": "ice:0",
+"r": "ice:1",
+"s": "ice:2",
+"t": "ink:1"
+},
+"rows": [
+"................................................................",
+"......................poon......................................",
+"..p....pp....p........pnnl......pponppooppnopppo......nnnnn.....",
+".pol..ponl..pol.......feec......oonoonnoomnoonnm....nnnnnmmmm...",
+".fdc..efdc..fdc.......edcb......ssssrsssssssrsss...nnnnnmmmmml..",
+"efdcbefedcbefdcbponoonedcbopnonmssrsssssrssssssr...nnnmmmmmmmll.",
+"efdcbefedcbefdcbffefffedcbfeffefrrsrrrsrrrrsrrrr...nnmmmmmmmlll.",
+"efdcbeffdcbeedcbdddcddedcbddcdddsrrrrrrksrrrrrrk...nmmmmmmmmllj.",
+"eedcbefedcbefdcbbbbbbbedcbbbbbbbrrrrrrqkrrrrrrqk....mmmmmmllll..",
+"efdcbefedcbefdcb......edcb......rrrrrqqkrrrrrqqk....mmmlllllj...",
+"efddbeeedcbefdcbfefffeedcbffefferqqqqqqkrqqqqqqk......llljj.....",
+"efdcbefedcbefddbddcdddedcbdddcddkkkkkkkkkkkkkkkk................",
+"efdcbefeccbefdcbbbbbbbedcbbbbbbbrrqksrrrrrqksrrr.....nnnn.......",
+"edccbedddcbedccb......edcb......rrqkrrrrrrqkrrrr...nnnnmmmm.....",
+"ijihgijiihgijihg......edcb......rqqkrrrrrqqkrrrq...nnnmmmmml....",
+"ddcbbdddcbbddcbb......dcba......qqqkqqqqqqqkqqqq...nnmmmmmll....",
+"efdcbefedcbefdcb......ec.ec.......pppppopppoon.....nmmmmmlll....",
+"efdcbefedcbeedcb......fc.ec.......ppoppppoonnm......mmmllllj....",
+"eedcbeffdcbefdcb......ec.fc.......oonlooonnlmm.......llljj......",
+"efdcbefedcbefdcb......ec.ec.......sssrssssssrs..................",
+"efdbbefedcbefdcb.....poooon.......ssssssrssssr......nnn.........",
+"efdcbeeedcbefddb.....ponnnl.......rrsrrrrrsrrq....nnnnmmm.......",
+"efdcbefedcbefdcb.....ffeeed.......ksrrrrrrrrqk....nnmmmml.......",
+"efddbefedcbeedcb.....eeddcb.......krrrrrrrrrqk....nmmmmll.......",
+"efdcbefeccbefdcb.....eeddcb.......krrsrrrrrqqk.....mmlllj.......",
+"eedcbefedcbefdcb.....eeddcb.......krrrrrrrqqqk......llj.........",
+"efdcbefedcbefdcb.....eddccb.......krqqqqqqqqqk..................",
+"efdcbeffdcbefddb.....dccbba.......kkkkkkkkkkkk.....nnm..........",
+"efdcbefedcbefdcb......ec.ec.......ksrrrkrrrrqk....nnmml.........",
+"eedcbeeedcbeedcb......fc.ec.......krrrqkrrrqqk....nmmll.........",
+"ddccbdddccbddccb......ec.fc.......krqqqkrqqqqk.....mlj..........",
+"dccbadcccbadccba......ec.ec.......kqqqqkqqqqqk......l..........."
+],
+"door": null,
+"cells": [
+{
+"name": "palisade",
+"x": 0,
+"y": 0,
+"w": 16,
+"h": 32
+},
+{
+"name": "fence",
+"x": 16,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "fence-v",
+"x": 16,
+"y": 16,
+"w": 16,
+"h": 16
+},
+{
+"name": "ice-wall",
+"x": 32,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "ice-wall-post",
+"x": 32,
+"y": 16,
+"w": 16,
+"h": 16
+},
+{
+"name": "smoke",
+"x": 48,
+"y": 0,
+"w": 16,
+"h": 32
+}
+],
+"broken": false,
+"defects": []
+}

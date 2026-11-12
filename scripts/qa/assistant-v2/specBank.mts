@@ -100,6 +100,7 @@ async function run(): Promise<void> {
   // --at <커밋>: 그 커밋의 빌더로 재생한다. 임시 작업 폴더를 /tmp 에 만들고(패키지는 이 폴더의 것을 잇는다) 이 재생기를 복사해 넣는다.
   const at = flag("--at");
   let cwd = ROOT, atSha = "", worktree = "";
+  let realModel = "";
   if (at) {
     atSha = sh(["git", "rev-parse", "--short=10", at]).out.trim();
     if (!atSha) { console.error(`커밋을 못 찾음: ${at}`); process.exit(2); }
@@ -115,16 +116,20 @@ async function run(): Promise<void> {
     await pool(files, jobs, async (file) => {
       const id = path.basename(file, ".json");
       const dir = path.join(out, id);
+      if (realModel) return;
       fs.rmSync(dir, { recursive: true, force: true });
       fs.mkdirSync(dir, { recursive: true });
       const t0 = Date.now();
       const code = await spawn(["bun", path.join(cwd, "scripts/qa/assistant-v2/specBank/replayGame.mts"), file, dir, ...(has("--no-render") ? ["--no-render"] : [])], cwd, path.join(dir, "replay.log"), { SPEC_BANK_HEAD: atSha || head });
       const line = fs.existsSync(path.join(dir, "replay.log")) ? fs.readFileSync(path.join(dir, "replay.log"), "utf8").trim().split("\n").filter((l) => l.startsWith(`${id}:`)).at(-1) : "";
       console.log(`  ${line || `${id}: 재생 실패(exit ${code}) — ${path.join(dir, "replay.log")}`} [${Math.round((Date.now() - t0) / 1000)}초]`);
+      // exit 3 = 재생이 진짜 모델을 불렀다(replayGame.mts) — 남은 게임을 띄우지 않고, 임시 작업 폴더를 치운 뒤 은행 전체를 멈춘다.
+      if (code === 3) realModel = `${id} — ${path.join(dir, "replay.log")}`;
     });
   } finally {
     if (worktree) { sh(["git", "worktree", "remove", "--force", worktree]); fs.rmSync(worktree, { recursive: true, force: true }); sh(["git", "worktree", "prune"]); }
   }
+  if (realModel) { console.error(`\n[spec-bank] 재생이 진짜 모델을 불렀다 — 은행을 멈춘다: ${realModel}`); process.exit(3); }
   const replaySec = Math.round((Date.now() - started) / 1000);
   await measureAll(out, files.map((f) => path.basename(f, ".json")), jobs);
   const wallSec = Math.round((Date.now() - started) / 1000);

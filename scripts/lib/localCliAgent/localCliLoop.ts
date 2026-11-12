@@ -13,7 +13,7 @@
 
 import { capResultImages, compactCliToolList, CLI_CONTEXT_EXHAUSTED_PREFIX, isCliApiErrorText, isCliContextExhaustedText } from "../../../src/ai/piAgent/cliContextBudget.ts";
 import type { PiToolShape } from "../../../src/ai/piAgent/toolAdapter.ts";
-import { CLI_CALL_TOOL, CLI_CALL_TOOL_SPEC, cliListNeedsAnnounce, cliToolFreezeOn, unwrapCallTool } from "../../../src/ai/piAgent/cliToolFreeze.ts";
+import { CLI_CALL_TOOL, CLI_CALL_TOOL_SPEC, callToolFailureText, cliListNeedsAnnounce, cliToolFreezeOn, unwrapCallTool } from "../../../src/ai/piAgent/cliToolFreeze.ts";
 import { startLocalMcpServer, type LocalMcpContent, type LocalMcpServer } from "./mcpHttpServer.ts";
 import { localCliBinary, LOCAL_CLI_ADAPTERS } from "./registry.ts";
 import type { LocalCliBilling, LocalCliEvent, LocalCliId, LocalCliSession, LocalCliUsage } from "./types.ts";
@@ -28,6 +28,8 @@ export interface LocalCliLoopSetup {
   readonly onPayload: (payload: unknown) => unknown;
   /** 목록에 없지만 이 실행 경계 안의 이름(폴백 구제). 선언까지 해 준다. */
   readonly resolveFallbackTool: (name: string) => PiToolShape | undefined;
+  /** 목록에 없는 도구(call_tool 로 부른 것)의 매개변수 글 — 인자 모양 거절에 붙인다. 목록에 있는 도구·모르는 이름은 undefined. */
+  readonly callSchema?: (name: string) => string | undefined;
   readonly model?: string;
   readonly effort?: "low" | "medium" | "high";
   readonly signal?: AbortSignal;
@@ -199,7 +201,7 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
         sentResults.push({ name: mcpName, content: result.content as never, isError: false });
         return { content: result.content as LocalMcpContent[] };
       } catch (error) {
-        const text = error instanceof Error ? error.message : String(error);
+        const text = callToolFailureText(error, name, !!via, setup.callSchema);
         emit({ type: "tool_execution_end", toolCallId: id, toolName: name, isError: true, result: { content: [{ type: "text", text }] } });
         sentResults.push({ name: mcpName, content: [{ type: "text", text }], isError: true });
         return { content: [{ type: "text", text }], isError: true };

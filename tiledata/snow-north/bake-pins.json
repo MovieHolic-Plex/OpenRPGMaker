@@ -904,7 +904,20 @@
 "at/water/m255!": 972,
 "at/water/b1!": 973,
 "at/water/b2!": 974,
-"out/sn-meadhall/2.1": 975
+"out/sn-meadhall/2.1": 975,
+"out/sn-seal-altar/0.0": 976,
+"out/sn-seal-altar/1.0": 977,
+"out/sn-seal-altar/0.1": 978,
+"out/sn-seal-altar/1.1": 979,
+"out/sn-spring/0.0": 980,
+"out/sn-spring/1.0": 981,
+"out/sn-spring/0.1": 982,
+"out/sn-spring/1.1": 983,
+"out/sn-bundle/0.0": 984,
+"out/sn-record-stand/0.0": 985,
+"out/sn-record-stand/0.1": 986,
+"out/sn-scroll/0.0": 987,
+"out/sn-chair/0.0": 988
 },
 "strips": {
 "out/sn-water/0.0": [

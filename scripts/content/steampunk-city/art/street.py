@@ -976,8 +976,16 @@ for _id in ('sacks', 'boiler-tank', 'standpipe'):
     R.items.remove(R.by.pop(_id))
 
 
+# Fable 5.2 medium 한 방 기물(object-oneshot 둘째 판, 2026-11-12) — 그림은 tiledata/steampunk-city/fable-redraw/held/ 의 PNG(팔레트 v3 로 맞춘 것)뿐이다.
+R.add_png('regulator', '증기 압력 조절기(리벳 철 상자 + 구리 관·밸브 바퀴·압력계)', 1, 2, 'other', tags=['조절기', '장치', '공장', '거리'], rules='공장 벽 곁·배관 곁. 길 칸을 막지 않는다.')
+R.add_png('alarm', '경보기(무쇠 기둥 + 놋쇠 종·붉은 등)', 1, 2, 'other', tags=['경보기', '종', '장치', '거리'], rules='공장 문 곁·역·부두. 둘레 1칸 비움.')
+R.add_png('terminal', '천공 카드 단말기(놋쇠 건반·레버·다이얼 조작대)', 2, 2, 'box', tags=['단말기', '조작대', '장치'], rules='역·조합 회관 앞·공방 곁. 앞 1칸은 비워 둔다(조작하는 자리).')
+R.add_png('notice-board', '거리 게시판(초록 무쇠 틀, 종이 넉 장 — 글자 없음)', 2, 2, 'front_prop', tags=['게시판', '거리', '광장'], rules='보도·광장 가장자리. 앞 1칸은 비워 둔다(읽는 자리).')
+R.add_png('note', '바닥의 쪽지(접힌 종이 + 작은 놋쇠 톱니)', 1, 1, 'debris', tags=['쪽지', '종이', '단서'], rules='바닥 위 한 칸 — 밟고 지나간다. 이벤트 자리 표시로 쓴다.')
+
+
 def sheet(path=None, z=3):
-    items = [(it['id'], R.render(it).img()) for it in R.items]
+    items = [(it['id'], R.picture(it)) for it in R.items]
     return contact(items, path or os.path.join(OUT, 'street', 'preview.png'), z=z, W=2000)
 
 

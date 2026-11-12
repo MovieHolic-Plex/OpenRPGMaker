@@ -1,0 +1,81 @@
+{
+"id": "g-ice",
+"w": 32,
+"h": 32,
+"role": "ground",
+"shot": 1,
+"legend": {
+"a": "ice:1",
+"b": "ice:0",
+"c": "ice:2",
+"s": "snow:1",
+"w": "snow:2"
+},
+"rows": [
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaabbabbbaaaaa",
+"aaaaaaaaaaaaaaaaaaaabbbbbbbbaaaa",
+"aaaaaaaaaccaaaaaaaaabbbbbbbbbaaa",
+"aaaaaacccaaaaaaaaaabbbbbbaabbaaa",
+"aaacccaaaaaaaaaaaaabbbaaabbbbaaa",
+"aaaaaaaaaaaaaaaaaaaabbbbbbbbbaaa",
+"aaaaaaaaaaaaaaaaaaabbbbbbbbbaaaa",
+"aaaaaaaaabaaaaaaaaaabbbbbbbbaaaa",
+"aaaaaaaaaabbaaaaaaaaaabbbabaaaaa",
+"aaaaaaaaaaaabaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaabaaaaaaaaaaasswwsaaaa",
+"aaaaaaaaaabcaaaaaaaaasswaaaaaaaa",
+"aaabcaaaaabcaaaaaaaaaaaaaaaaaaaa",
+"aaaabbcaabcaaaaaaaaaaaaaaaaaaaaa",
+"aaaaacbbbcaaaaaaaaasswwwssaaaaaa",
+"aaaaaaacbbcaaaaaaaaaaaaaaaswaaaa",
+"aaaaaaabcabbcaaaaaaaaaaaaaaaaaaa",
+"aaaaaabcaaacbaaaaaaaaaaaswwsaaaa",
+"aaaaaabaaaaaaaaaaaaaaaswaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaasswsaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+],
+"door": null,
+"cells": [
+{
+"name": "ice",
+"x": 0,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "ice-clear",
+"x": 16,
+"y": 0,
+"w": 16,
+"h": 16
+},
+{
+"name": "ice-crack",
+"x": 0,
+"y": 16,
+"w": 16,
+"h": 16
+},
+{
+"name": "ice-dust",
+"x": 16,
+"y": 16,
+"w": 16,
+"h": 16
+}
+],
+"broken": false,
+"defects": []
+}
