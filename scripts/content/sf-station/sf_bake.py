@@ -159,7 +159,9 @@ def bake(dry=False):
         if p['kind'] == 'wall_mounted': ai['snap'] = 'wall-north'
         kit = dict(id='sf-' + p['id'], kind='section', name=p['name'], width=p['w'], height=p['h'], tileSize=16, rows=rows, learnedFrom='db-authored', ai=ai)
         if role_of(p) == 'building':
-            kit['parts'] = [dict(id='door', kind='entrance', dx=p['w'] // 2, dy=p['h'] - 1, w=1, h=1)]
+            # 문은 건물 가운데에 그린다 — 짝수 폭 건물의 문 그림은 가운데 두 칸에 반씩 걸친다(입구 2칸), 홀수 폭은 가운데 한 칸.
+            # 왜(2026-11-12): 짝수 폭 14종이 오른쪽 가운데 칸만 입구로 적어, 문 그림의 왼쪽 반 앞에서는 들어가지 못했고 그 칸의 이동 발판은 «적지 않은 칸» 으로 잡혔다.
+            kit['parts'] = [dict(id='door', kind='entrance', dx=(p['w'] - 1) // 2, dy=p['h'] - 1, w=2 - p['w'] % 2, h=1)]
         kits.append(kit)
     tile_groups = []
     for g in groups.values():
