@@ -1,9 +1,12 @@
 // map-vqa 의 그림(모델 없음): ① 깨끗한 1배 그림(플레이어가 보는 모습 — 편집기 표식 없음) ② 정수 배로 키운 4분면
 // ③ 사실 표시 그림(막힌 칸 붉은 막 · 출구/사람/물건/적/안 보이는 이벤트 번호표 · 5칸 눈금) ④ 보고서용 결함 표시 그림.
+// 높이 지형(relief) 맵: 높은 단의 칸은 제 줄보다 위에 그려진다. 막·번호표·가로 눈금은 칸이 «그려진 자리»에 놓는다 —
+// 눈금을 칸 줄에 그대로 그으면 검수자가 그림에서 읽은 줄 번호가 단 높이만큼 어긋난다(«교회 문이 막혔다» 가 두 줄 아래 칸이었다).
 import { PNG } from 'pngjs';
 import type { GameMap, Project } from '../../../../project/types';
 import { magnify } from '../visualJudge';
-import { cropPng, renderLook, type Raster } from '../smallJobs/visualPictures';
+import { reliefMapView } from '../../../../editor/reliefMapView';
+import { renderLook, type Raster } from '../smallJobs/visualPictures';
 import type { FactEvent, MapFacts } from './facts';
 
 type Rgb = readonly [number, number, number];
@@ -47,11 +50,26 @@ class Canvas {
   png(): Buffer { const image = new PNG({ width: this.width, height: this.height }); image.data = this.data; return PNG.sync.write(image); }
 }
 
-export type MapPictures = { raster: Raster; pad: number; clean: Buffer; tile: number };
-/** 깨끗한 1배 그림. 높이 지형이 위로 넓힌 여백(pad)은 잘라 낸다 — 칸 좌표가 그림과 바로 맞게. */
+/** pad = 높이 지형이 그림 위로 넓힌 화소(맨 윗줄의 높은 칸이 그려지는 띠). lift(x,y) = 그 칸이 제 줄보다 위로 올라가 그려진 화소(평지 0). */
+export type MapPictures = { raster: Raster; pad: number; clean: Buffer; tile: number; lift: (x: number, y: number) => number; relief: boolean };
+/** 그림에서 칸 사각형을 자른다. 맨 윗줄에서 시작하는 사각형은 위 여백(pad)까지 싣는다 — 잘라 내면 높은 단의 윗줄이 그림에서 사라진다. */
+function crop(pictures: Pick<MapPictures, 'raster' | 'pad' | 'tile'>, rect: { x: number; y: number; w: number; h: number }): Buffer {
+  const { raster, pad, tile } = pictures, top = rect.y === 0 ? 0 : rect.y * tile + pad;
+  const out = new PNG({ width: rect.w * tile, height: rect.h * tile + (rect.y === 0 ? pad : 0) });
+  for (let y = 0; y < out.height; y += 1) {
+    const sy = top + y;
+    if (sy >= raster.height) continue;
+    raster.data.copy(out.data, y * out.width * 4, (sy * raster.width + rect.x * tile) * 4, (sy * raster.width + rect.x * tile + out.width) * 4);
+  }
+  return PNG.sync.write(out);
+}
+/** 깨끗한 1배 그림(플레이어가 보는 모습 그대로 — 높이 지형의 위 여백 포함). */
 export function cleanPicture(project: Project, map: GameMap, tile: number): MapPictures {
   const raster = renderLook(project, map), pad = Math.max(0, raster.height - map.height * tile);
-  return { raster, pad, clean: cropPng(raster, { x: 0, y: 0, w: map.width, h: map.height }, tile, pad), tile };
+  const view = reliefMapView(map, tile);
+  const lift = (x: number, y: number) => { const at = view?.rows[y]?.cells[x]?.y; return at === undefined ? 0 : Math.round(y * tile + view!.pad - at); };
+  const base = { raster, pad, tile };
+  return { ...base, clean: crop(base, { x: 0, y: 0, w: map.width, h: map.height }), lift, relief: !!view };
 }
 
 /** 검수자가 자세히 보는 그림: 작은 맵은 통째로 키운 한 장, 큰 맵은 2칸 겹친 4분면을 각각 키운 넉 장. */
@@ -63,7 +81,7 @@ export function detailPictures(pictures: MapPictures, map: { width: number; heig
   const out: Array<{ label: string; png: Buffer }> = [];
   for (const [name, x, y] of [['NW (top-left)', 0, 0], ['NE (top-right)', map.width - halfW, 0], ['SW (bottom-left)', 0, map.height - halfH], ['SE (bottom-right)', map.width - halfW, map.height - halfH]] as const) {
     const rect = { x, y, w: halfW, h: halfH }, factor = Math.max(2, Math.min(4, Math.floor(limit / (Math.max(halfW, halfH) * tile))));
-    out.push({ label: `Quadrant ${name}: cells x=${x}..${x + halfW - 1}, y=${y}..${y + halfH - 1}, magnified ${factor}x`, png: magnify(cropPng(pictures.raster, rect, tile, pictures.pad), factor) });
+    out.push({ label: `Quadrant ${name}: cells x=${x}..${x + halfW - 1}, y=${y}..${y + halfH - 1}, magnified ${factor}x`, png: magnify(crop(pictures, rect), factor) });
   }
   return out;
 }
@@ -73,20 +91,31 @@ const MARGIN = 16;
 /** 사실 표시 그림: 막힌 칸에 붉은 막, 이벤트 번호표, 5칸마다 눈금과 칸 번호. 판정이 아니라 문서에서 읽은 사실만 그린다. */
 export function factsPicture(pictures: MapPictures, facts: MapFacts): Buffer {
   const { tile } = pictures, k = facts.width * tile * 2 + MARGIN <= 1568 && facts.height * tile * 2 + MARGIN <= 1568 ? 2 : 1, cell = tile * k;
-  const canvas = new Canvas(facts.width * cell + MARGIN, facts.height * cell + MARGIN);
+  const top = MARGIN + pictures.pad * k;
+  const canvas = new Canvas(facts.width * cell + MARGIN, facts.height * cell + top);
   const clean = PNG.sync.read(pictures.clean);
   canvas.blit({ width: clean.width, height: clean.height, data: clean.data }, MARGIN, MARGIN, k);
+  // 칸 (x,y) 가 그림에서 그려진 자리의 위쪽 화소 — 높은 단은 제 줄보다 위다.
+  const cellY = (x: number, y: number) => top + y * cell - pictures.lift(Math.max(0, Math.min(facts.width - 1, x)), Math.max(0, Math.min(facts.height - 1, y))) * k;
   for (const blockedCell of facts.blocked) {
-    const [x, y] = blockedCell.split(',').map(Number);
-    canvas.fill(MARGIN + x! * cell, MARGIN + y! * cell, cell, cell, [255, 0, 0], 0.28);
+    const [x, y] = blockedCell.split(',').map(Number), py = cellY(x!, y!);
+    canvas.fill(MARGIN + x! * cell, py, cell, cell, [255, 0, 0], 0.28);
     // 붉은 벽·지붕 위에서도 막힌 칸이 읽히게 빗금을 더한다.
-    for (let i = 0; i < cell; i += 1) for (let j = (i % 6); j < cell; j += 6) canvas.fill(MARGIN + x! * cell + j, MARGIN + y! * cell + i, 1, 1, [120, 0, 0], 0.7);
+    for (let i = 0; i < cell; i += 1) for (let j = (i % 6); j < cell; j += 6) canvas.fill(MARGIN + x! * cell + j, py + i, 1, 1, [120, 0, 0], 0.7);
   }
-  for (let x = 0; x <= facts.width; x += 5) { canvas.fill(MARGIN + x * cell, MARGIN, 1, facts.height * cell, [255, 255, 255], 0.35); if (x < facts.width) canvas.text(MARGIN + x * cell + 1, 1, String(x), 2, [255, 255, 255], null); }
-  for (let y = 0; y <= facts.height; y += 5) { canvas.fill(MARGIN, MARGIN + y * cell, facts.width * cell, 1, [255, 255, 255], 0.35); if (y < facts.height) canvas.text(0, MARGIN + y * cell + 1, String(y), y >= 100 ? 1 : 2, [255, 255, 255], null); }
+  for (let x = 0; x <= facts.width; x += 5) { canvas.fill(MARGIN + x * cell, MARGIN, 1, canvas.height - MARGIN, [255, 255, 255], 0.35); if (x < facts.width) canvas.text(MARGIN + x * cell + 1, 1, String(x), 2, [255, 255, 255], null); }
+  // 가로 눈금은 칸마다 그 칸이 그려진 높이에 긋는다 — 단이 바뀌는 곳에서 선이 꺾이고, 꺾인 자리에 줄 번호를 다시 적는다.
+  for (let y = 0; y <= facts.height; y += 5) {
+    for (let x = 0; x < facts.width; x += 1) {
+      canvas.fill(MARGIN + x * cell, cellY(x, y), cell, 1, [255, 255, 255], 0.35);
+      if (y < facts.height && x > 0 && pictures.lift(x, y) !== pictures.lift(x - 1, y)) canvas.text(MARGIN + x * cell + 1, cellY(x, y) + 1, String(y), 1, [255, 255, 255]);
+    }
+    if (y < facts.height) canvas.text(0, cellY(0, y) + 1, String(y), y >= 100 ? 1 : 2, [255, 255, 255], null);
+  }
   const mark = (x: number, y: number, tag: string, rgb: Rgb) => {
-    canvas.box(MARGIN + x * cell, MARGIN + y * cell, cell, cell, rgb, Math.max(2, k));
-    const width = tag.length * 8 + 2, tx = Math.min(canvas.width - width, MARGIN + x * cell), ty = MARGIN + y * cell - 14 >= MARGIN ? MARGIN + y * cell - 14 : MARGIN + (y + 1) * cell;
+    const py = cellY(x, y);
+    canvas.box(MARGIN + x * cell, py, cell, cell, rgb, Math.max(2, k));
+    const width = tag.length * 8 + 2, tx = Math.min(canvas.width - width, MARGIN + x * cell), ty = py - 14 >= MARGIN ? py - 14 : py + cell;
     canvas.text(tx, ty, tag, 2, rgb);
   };
   if (facts.start) mark(facts.start.x, facts.start.y, 'S', COLOR.start);
@@ -94,6 +123,8 @@ export function factsPicture(pictures: MapPictures, facts: MapFacts): Buffer {
   return canvas.png();
 }
 export const FACTS_LEGEND = 'FACTS picture legend (facts read from the saved map, not verdicts): red-tinted cells = BLOCKED (cannot be walked on); untinted = walkable. Boxes with tags: blue E# = exit (map transfer), yellow P# = person, cyan O# = visible object event, red F# = roaming foe, magenta V# = INVISIBLE event that shows text, green S = game start cell. White grid lines every 5 cells; numbers on the top and left margins are cell coordinates (x across, y down, origin top-left).';
+/** 높이 지형 맵에만 덧붙이는 범례 — 평지 맵의 물음 글(과 판정 캐시)은 그대로 둔다. */
+export const RELIEF_LEGEND = 'This map has raised ground (terraces). A cell on a raised terrace is DRAWN higher on the picture than its row: the red tint, the tags and the horizontal 5-cell lines are placed where each cell is drawn, so a row line steps up where the ground rises and its row number is repeated at the step. Read a cell\'s y from the line on its own terrace, not from the left margin, and give every region in cell coordinates.';
 
 export type MarkedDefect = { index: number; severity: 'blocker' | 'major' | 'polish'; region: { x: number; y: number; w: number; h: number } };
 const SEVERITY_COLOR: Record<MarkedDefect['severity'], Rgb> = { blocker: [255, 40, 40], major: [255, 150, 0], polish: [255, 235, 60] };
@@ -106,11 +137,13 @@ export function markedPicture(pictures: MapPictures, map: { width: number; heigh
   for (const defect of [...defects].sort((a, b) => b.region.w * b.region.h - a.region.w * a.region.h)) {
     const x = Math.max(0, Math.min(map.width - 1, defect.region.x)), y = Math.max(0, Math.min(map.height - 1, defect.region.y));
     const w = Math.max(1, Math.min(map.width - x, defect.region.w)), h = Math.max(1, Math.min(map.height - y, defect.region.h));
-    canvas.box(x * tile, y * tile, w * tile, h * tile, SEVERITY_COLOR[defect.severity], 2);
+    // 상자는 그 영역 가운데 칸이 그려진 높이에 놓는다(높은 단의 결함이 두 줄 아래에 표시되지 않게).
+    const py = pictures.pad + y * tile - pictures.lift(Math.min(map.width - 1, x + (w >> 1)), Math.min(map.height - 1, y + (h >> 1)));
+    canvas.box(x * tile, py, w * tile, h * tile, SEVERITY_COLOR[defect.severity], 2);
     // 같은 자리에서 시작하는 상자의 번호는 옆으로 비켜 적는다.
     const taken = labels.filter(label => label === `${x},${y}`).length;
     labels.push(`${x},${y}`);
-    canvas.text(x * tile + taken * 18, y * tile, String(defect.index), 2, SEVERITY_COLOR[defect.severity]);
+    canvas.text(x * tile + taken * 18, py, String(defect.index), 2, SEVERITY_COLOR[defect.severity]);
   }
   return canvas.png();
 }

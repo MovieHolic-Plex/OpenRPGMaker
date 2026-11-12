@@ -26,13 +26,23 @@ function capReopened(store: TodoStore, items: readonly TodoItem[], what: string)
  * 끝맺음 관문 문제(v2GateProblems)를 gate·critic 항목으로. capMapIds = 고치기 상한에 닿은 장소 맵 — 그 맵의 장소 항목이 문제 목록에서 사라져도
  * «고쳐짐»이 아니라 «상한»이다(막힘으로 닫는다).
  */
+const ID_PREFIX = /^(?:sw|var|ev|map|item|troop|enemy|actor|skill|state|class|armor|weapon|chest|npc|tex)_/u;
 /** 문제 글이 고치는 법으로 이르는 도구 이름들(`configure_field_menu{…}`·`upsert_actor(…)` 모양). */
 function namedTools(text: string): string[] {
   // 스위치·이벤트 id(«sw_kmt0gqg_k39y2je(「숲길 탐색」)»)는 도구 이름이 아니다 — 2026-10-30 omo-unfinished forest: 깃발 항목이 «고치는 도구가 없다»로 막혔다.
-  return [...new Set([...text.matchAll(/\b([a-z][a-z0-9]*(?:_[a-z0-9]+)+)\s*[{(]/gu)].map((m) => m[1]!).filter((n) => !/^(?:sw|var|ev|map|item|troop|enemy|actor|skill|state|class|armor|weapon|chest|npc|tex)_/u.test(n)))];
+  return [...new Set([...text.matchAll(/\b([a-z][a-z0-9]*(?:_[a-z0-9]+)+)\s*[{(]/gu)].map((m) => m[1]!).filter((n) => !ID_PREFIX.test(n)))];
 }
 
-export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem[], capMapIds: ReadonlySet<string>, available?: ReadonlySet<string>): { opened: TodoItem[]; closed: TodoItem[]; capped: TodoItem[] } {
+/** 문제 글에 이름만 나온 도구 후보(«create_transfer_pair 로 잇는다» — 호출 모양이 아니다). 싣는 데만 쓴다 — 없는 이름이어도 항목을 빼지 않는다. */
+function mentionedTools(text: string): string[] {
+  return [...new Set([...text.matchAll(/(?<![A-Za-z0-9_])([a-z][a-z0-9]*(?:_[a-z0-9]+)+)(?![A-Za-z0-9_])/gu)].map((m) => m[1]!).filter((n) => !ID_PREFIX.test(n)))];
+}
+
+/**
+ * addTool = 관문 글이 이른 도구 하나를 모델의 도구 목록에 올린다: "loaded" = 지금 올렸다(묶음 밖 도구·아직 안 실은 도구), "ready" = 이미 목록에 있다, undefined = 조수 v2 에 없는 이름.
+ * loaded = 고치기 차례를 위해 올린 도구 이름, unfixable = 고치는 도구가 v2 에 없어 뺀 항목(완료를 막지 않는다 — 최종 보고에 적는다).
+ */
+export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem[], capMapIds: ReadonlySet<string>, available?: ReadonlySet<string>, addTool?: (name: string) => "loaded" | "ready" | undefined): { opened: TodoItem[]; closed: TodoItem[]; capped: TodoItem[]; loaded: string[]; unfixable: TodoItem[] } {
   // 2026-11-11 전에 저장된 할 일은 글로 만든 열쇠를 들고 있다 — 같은 문제가 지금도 있으면 지금 열쇠로 옮긴다(막힌 채 이어 받은 항목이 새 항목으로 다시 열리지 않게).
   for (const p of problems) {
     const old = p.textKey && p.textKey !== p.key ? store.byKey(p.textKey) : undefined;
@@ -49,7 +59,7 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
     if (item.status === "blocked" && store.meta.get(item.id)?.restored) { store.drop(item, `앞 턴에서 막힘(${item.blockedReason ?? "이유 없음"}) — 이번 턴 함수 검사에는 나오지 않는다(기존 결함)`, "auto"); closed.push(item); continue; }
     if (!isOpen(item.status) && !(item.status === "completed" && store.meta.get(item.id)?.closedBy === "model")) continue;
     const mapId = key.startsWith("place:") ? key.slice(6, key.indexOf(":", 6)) : "";
-    if (mapId && capMapIds.has(mapId)) store.block(item, "장소 고치기 상한(1바퀴)에 닿음 — 남은 문제로 보고", "auto");
+    if (mapId && capMapIds.has(mapId)) store.block(item, "장소 고치기 상한에 닿음 — 남은 문제로 보고", "auto");
     else store.done(item, { pass: true, detail: "함수 검사에서 사라짐" }, "auto");
     closed.push(item);
   }
@@ -58,6 +68,22 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
     ...store.append("비평", problems.filter((p) => p.source === "critic").map((p) => ({ content: p.text, key: p.key })), "critic"),
   ];
   const capped = capReopened(store, opened, "같은 문제");
+  // 고치는 법으로 이른 도구가 이 요청의 묶음에 없으면 고치기 차례에 싣는다 — «도구가 없다» 막힘에 완료가 걸리지 않게. 조수 v2 에 없는 이름일 때만 뺀 채 보고한다.
+  const loaded: string[] = [];
+  const unfixable: TodoItem[] = [];
+  if (available) for (const item of opened) {
+    if (!isOpen(item.status)) continue;
+    const full = problems.find((p) => p.key === keyOf(store, item))?.text ?? item.content;
+    const named = namedTools(full);
+    // 이름만 나온 도구(«create_transfer_pair 로 잇는다»)도 싣는다 — 2026-11-12 Haiku village-chief-house: 호출 모양이 아니라 안 실렸고 모델이 «도구가 없다» 로 막았다.
+    const all = [...named, ...mentionedTools(full).filter((t) => !named.includes(t))];
+    if (!all.length) continue;
+    const state = all.map((t) => addTool?.(t) ?? (available.has(t) ? "ready" as const : undefined));
+    loaded.push(...all.filter((t, k) => state[k] === "loaded" && !loaded.includes(t)));
+    if (!named.length || state.some((s) => s)) continue;
+    store.drop(item, `고치는 도구(${named.join(", ")})가 조수 v2 에 없다 — 이 요청에서 고칠 수 없음`, "auto");
+    unfixable.push(item);
+  }
   // 게임 검사·관문이 «이 호출이면 풀린다» 를 문구 맨 끝에 적었는데 항목 내용은 220자에서 잘린다(todoStore) —
   // 잘리지 않은 문제 글에서 꺼내 항목의 다음 호출(meta.nextCall)로 둔다. 재주입의 «Next call» 이 이 호출 그대로 나간다.
   // 출하 차단 줄은 «[출하 차단 id] 문구 고치지 못하면 …» 로 꼬리 문장이 붙는다(verbs.ts gameProblemTexts) — 호출은 문구 끝이 아니라 중간에 있으므로 끝 고정 없이 첫 «})» 까지 읽는다(JSON 안에는 «})» 가 없다).
@@ -71,15 +97,7 @@ export function syncGateItems(store: TodoStore, problems: readonly V2GateProblem
       if (args && typeof args === "object" && !Array.isArray(args)) store.meta.set(item.id, { ...(store.meta.get(item.id) ?? {}), nextCall: { verb: call[1]!, text: `${call[1]}(${call[2]})` } });
     } catch { /* 뼈대로 */ }
   }
-  // 고치는 법으로 이른 도구가 이 실행에 하나도 없으면 조수가 할 수 없다 — 돌리지 않고 막힘으로 닫는다(남은 문제로 보고된다).
-  // 2026-10-30 omo-loop-1030 ending: «configure_field_menu 로 ESC 메뉴를 기본으로» 항목을 도구 없이 세 번 돌았다.
-  if (available) for (const item of opened) {
-    if (!isOpen(item.status)) continue;
-    const full = problems.find((p) => p.key === keyOf(store, item))?.text ?? item.content;
-    const tools = namedTools(full);
-    if (tools.length && !tools.some((t) => available.has(t))) { store.block(item, `고치는 도구(${tools.join(", ")})가 이 실행의 도구 목록에 없다 — 남은 문제`, "auto"); capped.push(item); }
-  }
-  return { opened: opened.filter((i) => !capped.includes(i)), closed, capped };
+  return { opened: opened.filter((i) => !capped.includes(i) && !unfixable.includes(i)), closed, capped, loaded, unfixable };
 }
 
 /**

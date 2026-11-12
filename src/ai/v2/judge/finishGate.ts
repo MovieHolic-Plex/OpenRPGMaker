@@ -15,7 +15,7 @@ import { fieldBattleStrain } from "../story/pathBattleBudget";
 import { placeLayoutProblems } from "../place/builders/placeLayout";
 import { V2Session } from "../turn/session";
 import { placeFixVerbs } from "./placeFix";
-import { V2_MAX_REPAIR_ROUNDS } from "../turn/session";
+import { repairCapOf } from "../turn/session";
 import { stageOpensBattle } from "../story/stageBattle";
 import { findingKey, findingLine, tagged, type Finding } from "./finding";
 import { findingEn, refNames, type RefNames } from "./findingEn";
@@ -102,7 +102,7 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
   if (session.questions.length) return { problems: [], leftovers: [], missing: [] };
   const open = env ? withoutStaleFightCritique(env.ctx.project, session, session.unresolved()) : session.unresolved();
   const missing = [...session.missingArt];
-  const fixable = open.filter((o) => o.rounds < V2_MAX_REPAIR_ROUNDS);
+  const fixable = open.filter((o) => o.rounds < o.cap);
   // 게임 내용 검사(날씨·엔딩·상태·물건 고르기·깃발·부작용) — 요청 낱말과 실제로 바뀐 이벤트를 맞댄다.
   let game: Finding[] = env ? gameFindings(env.request.project, env.ctx.project, env.request.task, session.stageWrites) : [];
   // 아무것도 안 바꾸고 «도구가 없다»며 끝내기(2026-10-24 g3-edit-move: 대장장이 옮기기를 묻기만 했다, g3-apple-count: 그림 카드만 남겼다).
@@ -132,8 +132,8 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
       source: o.problems.some((p) => p.startsWith("[비평")) ? "critic" as const : "gate" as const })),
   ];
   // 칸 배치 장소(placeLayout.ts): 배치 항목이 맵에 있나·이어짐·보스 앞방·문앞 길·자기 비평 두 바퀴 — 지금 맵에서 다시 잰다.
-  if (env) problems.push(...placeLayoutProblems(env.ctx.project, session, (m) => (session.places.get(m)?.rounds ?? 0) < V2_MAX_REPAIR_ROUNDS));
-  const leftovers = open.filter((o) => o.rounds >= V2_MAX_REPAIR_ROUNDS).map((o) => `${o.name}: ${o.problems.slice(0, 4).join(" / ")}`);
+  if (env) problems.push(...placeLayoutProblems(env.ctx.project, session, (m) => (session.places.get(m)?.rounds ?? 0) < repairCapOf(session.places.get(m)?.spec)));
+  const leftovers = open.filter((o) => o.rounds >= o.cap).map((o) => `${o.name}: ${o.problems.slice(0, 4).join(" / ")}`);
   return { problems, leftovers, missing };
 }
 

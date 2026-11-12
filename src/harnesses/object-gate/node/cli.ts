@@ -1,9 +1,11 @@
 import { spawn } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
-import { OBJECT_GATE_PROFILE, objectGateRefusal, type ObjectGateContext, type ObjectGateKind } from '../../_core/objectGate';
+import { OBJECT_GATE_KINDS, OBJECT_GATE_PROFILE, OBJECT_GATE_WAIVER_CONTEXTS, finalApplies, objectGateRefusal, type ObjectGateContext, type ObjectGateKind, type ObjectGateOwnerWaiverItem } from '../../_core/objectGate';
 import { createInterface } from 'node:readline/promises';
 import { humanDecision, validFrontPropApproval } from '../../_core/objectGate';
 import { existsSync, readFileSync } from 'node:fs';
+import { receiptCells } from './cells';
+import { calibratedFinalProfiles, listOwnerWaiverBatches, readFinal, readPng, writeOwnerWaiverBatch } from './store';
 import { exitInputs, calibratedProfiles, gateProfileHash, listApprovals, listQueueBatches, listReceipts, pngPixelSha256, readApproval, readHoldDecision, readProfiles, readReceipt, removeApproval, writeApproval, writeHoldDecision, writeQueueBatch } from './store';
 
 const spawnBun = (argv: string[]): Promise<number> => new Promise((done, reject) => {
@@ -32,6 +34,45 @@ export async function run(argv: string[]): Promise<number> {
     const refusal = objectGateRefusal({ ...exitInputs(sha), pixelSha256: sha, kind: option('kind') as ObjectGateKind | undefined, context });
     console.log(refusal ? `거절: ${refusal}` : `통과 (${sha.slice(0, 12)})`);
     return refusal ? 3 : 0;
+  }
+  // 오너 면제 묶음(2026-11-12): 오너가 «판정 없이 넣어라» 고 결정한 그림들을 화소 해시·종류에 묶어 적는다. 모델을 부르지 않는다.
+  // 면제는 통과가 아니다 — 스토어 출구에는 닿지 않고, 서명된 사람 거절·Opus 최종 기록이 있는 그림은 묶음에 넣지 않는다.
+  if (stage === 'owner-waive') {
+    const manifest = option('manifest'), id = option('batch'), owner = option('owner')?.trim(), decidedAt = option('decided-at')?.trim(), recordedBy = option('recorded-by')?.trim();
+    if (!manifest || !id || !owner || !decidedAt || !recordedBy) throw Error('owner-waive --manifest <json: items[{png, kind, id|label}]> --batch <id> --owner "<오너가 한 말 원문>" --decided-at <YYYY-MM-DD> --recorded-by "<기록한 쪽·위임 근거>" [--contexts bundle,shared,workshop-local] [--note 메모]');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(decidedAt)) throw Error(`--decided-at 은 YYYY-MM-DD: ${decidedAt}`);
+    const contexts = (option('contexts') ?? OBJECT_GATE_WAIVER_CONTEXTS.join(',')).split(',').map(c => c.trim()).filter(Boolean) as ObjectGateContext[];
+    const badContext = contexts.filter(c => !(OBJECT_GATE_WAIVER_CONTEXTS as readonly string[]).includes(c));
+    if (badContext.length) { console.error(`거절: 오너 면제가 닿을 수 없는 출구 ${badContext.join(', ')} — 스토어 출구는 면제를 받지 않는다(허용: ${OBJECT_GATE_WAIVER_CONTEXTS.join(', ')})`); return 3; }
+    if (listOwnerWaiverBatches().some(b => b.id === id) && !argv.includes('--replace')) { console.error(`거절: 면제 묶음 ${id} 가 이미 있다 — 같은 묶음을 다시 쓰려면 --replace`); return 3; }
+    const doc = JSON.parse(readFileSync(resolve(manifest), 'utf8')) as { items?: Array<{ png?: string; kind?: string; id?: string; label?: string; chipset?: string }> };
+    const calibratedFinal = calibratedFinalProfiles();
+    const items: ObjectGateOwnerWaiverItem[] = [], problems: string[] = [];
+    for (const raw of doc.items ?? []) {
+      const label = `${raw.chipset ? `${raw.chipset}/` : ''}${raw.label ?? raw.id ?? ''}`;
+      if (!raw.png || !existsSync(resolve(raw.png))) { problems.push(`${label || '?'}: 그림 파일이 없다(${raw.png})`); continue; }
+      if (!raw.kind || !(raw.kind in OBJECT_GATE_KINDS)) { problems.push(`${label}: 모르는 종류 ${raw.kind}`); continue; }
+      if (!label) { problems.push(`${raw.png}: 이름(id|label)이 없다`); continue; }
+      const { width, height, data } = readPng(resolve(raw.png));
+      const sha = await pngPixelSha256(resolve(raw.png));
+      const hold = readHoldDecision(sha);
+      if (hold && humanDecision(hold, { pixelSha256: sha, kind: hold.kind } as never) === 'reject') { problems.push(`${label}: 사람이 검토 화면에서 거절한 그림이다 — 면제할 수 없다`); continue; }
+      const final = readFinal(sha);
+      if (finalApplies(final, sha, calibratedFinal)) { problems.push(`${label}: 보정된 Opus 최종 판정(${final.verdict})이 있는 그림이다 — 그 판정이 최종이다`); continue; }
+      if (items.some(i => i.pixelSha256 === sha)) continue;
+      items.push({ pixelSha256: sha, kind: raw.kind as ObjectGateKind, label, width, height, cells: receiptCells(width, height, data) });
+    }
+    if (problems.length) { console.error(`거절: ${problems.length}장을 묶음에 넣을 수 없다\n${problems.join('\n')}`); return 3; }
+    if (!items.length) { console.error('거절: 묶음에 넣을 그림이 없다'); return 3; }
+    const path = writeOwnerWaiverBatch({ schema: 'oprn-object-gate-owner-waiver/1', id, owner, decidedAt, recordedBy, contexts, ...(option('note') ? { note: option('note') } : {}), items });
+    console.log(`오너 면제 묶음 ${id}: ${items.length}장 · 출구 ${contexts.join(', ')} → ${path}\n  면제는 통과가 아니다 — 보고에는 «3/4 관문 미통과 — 오너 면제» 로 쓴다. 스토어 출구는 여전히 막힌다.`);
+    return 0;
+  }
+  if (stage === 'waivers') {
+    const batches = listOwnerWaiverBatches();
+    if (!batches.length) { console.log('오너 면제 묶음 없음'); return 0; }
+    for (const b of batches) console.log(`${b.id}: ${b.items.length}장 · ${b.decidedAt} · 출구 ${b.contexts.join(', ')} · 기록 ${b.recordedBy}\n  오너: ${b.owner}`);
+    return 0;
   }
   // 정면형 소품(front_prop) 종류 선언의 사람 승인. 감독·에이전트는 승인하지 않는다 — 터미널(대화형)에서 사람이 그림 해시 앞 8자를 직접 쳐야 기록된다(파이프·백그라운드·--yes 는 거절).
   if (stage === 'approve-front-prop') {
@@ -157,5 +198,5 @@ export async function run(argv: string[]): Promise<number> {
     console.log(`  현재 프로필 영수증 ${now.length}장 — 통과 ${now.filter(r => r.verdict === 'pass').length}, 보류 ${now.filter(r => r.verdict === 'refer').length} (3/4 통과 ${now.filter(r => r.view34?.verdict === 'pass').length}, 화풍 통과 ${now.filter(r => r.style?.verdict === 'pass').length}) · 옛 프로필 ${receipts.length - now.length}장은 무효(재검수 필요: rereview)`);
     return 0;
   }
-  throw Error('단계: review | calibrate | rereview | check | status | audit | preview | approve-front-prop | revoke-front-prop | approvals | enqueue | serve-holds | holds | selftest-holds | redelegate-holds | supersede-holds');
+  throw Error('단계: review | calibrate | rereview | check | owner-waive | waivers | status | audit | preview | approve-front-prop | revoke-front-prop | approvals | enqueue | serve-holds | holds | selftest-holds | redelegate-holds | supersede-holds');
 }

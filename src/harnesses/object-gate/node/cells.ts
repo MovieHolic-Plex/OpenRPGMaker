@@ -12,7 +12,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { objectGateRefusal, type ObjectGateContext, type ObjectGateReceipt } from '../../_core/objectGate';
-import { GATE_DATA, calibratedFinalProfiles, calibratedProfiles, listFinals, listReceipts, readApproval, readFinal, readHoldDecision, readReceipt } from './store';
+import { GATE_DATA, calibratedFinalProfiles, calibratedProfiles, listFinals, listOwnerWaiverBatches, listReceipts, readApproval, readFinal, readHoldDecision, readOwnerWaiver, readReceipt } from './store';
 
 export const CELL_SIZES = [16, 24, 32, 48] as const;
 export const BASELINE_FILE = resolve(GATE_DATA, 'baseline-cells.txt');
@@ -78,6 +78,14 @@ export function passingCellIndex(context: ObjectGateContext, receipts: ObjectGat
     if (objectGateRefusal({ receipt, pixelSha256: final.pixelSha256, context, calibratedProfiles: calibrated, approval: null, hold: readHoldDecision(final.pixelSha256), final, calibratedFinalProfiles: calibratedFinal })) continue;
     const stand = receipt ?? ({ schema: 'oprn-object-gate-receipt/1', pixelSha256: final.pixelSha256, width: final.width, height: final.height, kind: final.kind, name: final.name, label: final.label, profileHash: final.profileHash, verdict: 'pass', reasons: [], runs: [], decidedAt: final.decidedAt, cells: final.cells } as ObjectGateReceipt);
     for (const hashes of Object.values(final.cells ?? {})) for (const h of hashes) index.set(h, stand);
+  }
+  // 오너 면제 묶음의 그림(2026-11-12): 출구 규칙이 받아 준 것만 — 스토어 출구·사람 거절·Opus 최종 기록이 있는 그림은 여기서도 빠진다.
+  const batches = listOwnerWaiverBatches();
+  for (const batch of batches) for (const item of batch.items) {
+    const sha = item.pixelSha256;
+    if (objectGateRefusal({ receipt: readReceipt(sha), pixelSha256: sha, kind: item.kind, context, calibratedProfiles: calibrated, approval: null, hold: readHoldDecision(sha), final: readFinal(sha), calibratedFinalProfiles: calibratedFinal, waiver: readOwnerWaiver(sha, batches) })) continue;
+    const stand = { schema: 'oprn-object-gate-receipt/1', pixelSha256: sha, width: item.width, height: item.height, kind: item.kind, name: item.label, label: `owner-waiver/${batch.id}/${item.label}`, profileHash: `owner-waiver:${batch.id}`, cells: item.cells } as unknown as ObjectGateReceipt;
+    for (const hashes of Object.values(item.cells ?? {})) for (const h of hashes) if (!index.has(h)) index.set(h, stand);
   }
   return index;
 }
