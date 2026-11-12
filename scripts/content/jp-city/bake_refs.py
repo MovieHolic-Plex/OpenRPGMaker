@@ -3315,6 +3315,12 @@ def finalize():
                     for key in ('tile',):
                         if key in it and isinstance(it[key], int): assert -1 <= it[key] < COUNT
     # 범위 밖 칸 번호 — emitted_tiles 는 tnum 에서 이미 단언. 키트 전부 문서에 있어야 한다.
+    # 이야기 기물 용도(jp-story-objects)는 refs_story.py 가 따로 만든다(그림은 다른 폴더라 위 검사·청소 밖) — 저장본을 다시 붙이고 그 키트를 «문서에 실린 키트» 로 센다.
+    import refs_story
+    story = refs_story.references(ROOT)
+    if story:
+        cats.append(story); doc_ids += [d['id'] for d in story['documents']]; img_ids |= {i['id'] for i in story['images']}
+        emitted_kits.update(refs_story.kit_ids(ROOT))
     missing = sorted(set(KITS) - emitted_kits)
     assert not missing, missing[:10]
     for k in RECIPES + DOORS + PROPS: assert k in emitted_kits
