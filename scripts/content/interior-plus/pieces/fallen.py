@@ -255,8 +255,9 @@ def star_seal_open(c):
     """v5 「stairs down」(3960~3963) 구멍 속 계단을 화소 그대로 옮겨 나무 램프를 테두리와 같은 따뜻한 돌(linen)로 바꿔 칠한다 —
     v5 계단과 같은 디딤판 구조(밝은 앞 모서리·디딤판·그늘 줄, 안쪽 좌우 벽)라 1배에서 「내려가는 계단」으로 읽힌다(VQA r6: 손으로 그린 판은 화덕·창살로 읽혔다)."""
     _seal_frame(c)
-    src = Image.new('RGBA', (32, 32))
-    for i, (x, y) in zip((3960, 3961, 3962, 3963), ((0, 0), (16, 0), (0, 16), (16, 16))): src.paste(_sheet_tile(i), (x, y))
+    # 출발 그림은 이 조각을 구울 때의 v5 「stairs down」 네 칸을 얼려 둔 사본이다(frozen/). 시트에서 바로 읽으면 그 계단을 제자리에서 다시 그린 뒤(bf743c3dce)
+    # 이 조각이 실린 화소와 다른 그림이 되어, 영수증 없는 새 그림으로 굽기 전체를 막았다(2026-11-12 실측). 실린 화소(7486~7489)는 그대로다.
+    src = Image.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'frozen', 'stairs-down-before-bf743c3dce.png')).convert('RGBA')
     remap = {(8, 8, 10): K('black', 0), (42, 24, 11): K('black', 1), (58, 34, 16): K('black', 2), (65, 30, 5): K('linen', 0),
              (99, 49, 11): K('linen', 1), (109, 59, 21): K('linen', 1), (154, 84, 53): K('linen', 2), (158, 104, 75): K('linen', 2),
              (183, 114, 70): K('linen', 3)}

@@ -315,6 +315,38 @@ v5 시트 **끝에 덧붙인** 손 도트 조각(같은 팔레트 v6·같은 램
   그림 액자 한 중심선·관람 줄이 그림을 가리던 것·진열장 윗면 판·쇠창살 문을 벽면 걸이로(모래 위에 서 있던 문)·물통 거치대와 자루가 발밑 칸보다 7px 떠 있던 것·삼베 자루 색·닻 사슬 고리·고패 지렛대·핀 막대·북채(뿔처럼 보임)·허수아비 얼굴 제거·선체 벽 걸레받이·투기장 모래 반복·관중석 좌석 정렬·사다리와 돛대가 한 기둥으로 보이던 것·주방 탁상 물건이 탁자 앞턱에 그려지던 것(2줄 탁자로).
   남은 것: v5 조각(족쇄·짚 더미·화로)이 사암·돌무더기 벽 위에서 잘 안 보인다, 대리석 바닥 광택 줄 반복(v5 바닥), 관중석 계단 단차(층 높이는 이 칩셋 구조 밖).
 
+## 이야기 기물 8종 — interior-plus `oneshot` (2026-11-12, 7677~7692) · 3/4 관문 미통과 — 오너 면제
+게임들이 실제로 바랐는데 실내 시트에 없던(또는 어두운 벽에서 안 읽히던) 물건을 Claude Fable 5.2 medium 이 한 방에 그린 것(이 프로젝트를 위해 그린 자체 저작) 가운데 오너가 반영하라고 한 여덟.
+칸 7677 → 7693, 사양 기물 635 → 643. 이전 칸은 화소·통행·층이 그대로다(굽기 전후 대조).
+
+| id (킷 `hand-interior:<id>`) | 이름 | 사양 | 칸 | 놓는 법(킷 태그) |
+|---|---|---|---|---|
+| `wall shackles` | 족쇄(벽 사슬 — 쇠판에 긴 사슬 두 줄) | hang 1칸 × 벽면 2줄 | 7677~7678 | wallmount |
+| `straw cot` | 짚 침상(감방) | floor 1×2 | 7679~7680 | prop |
+| `cell bars` | 감옥 철창(칸) — 옆으로 이어 세운다 | floor 1×1 + 16px | 7681~7682 | tall |
+| `cell bars door` | 감옥 철창 문(잠긴 쇠창살 문) | floor 1×1 + 16px, use gate | 7683~7684 | tall |
+| `ledger stand` | 기록부(받침 위 펼친 장부) | floor 1×1 + 16px, use read | 7685~7686 | tall |
+| `observation bench` | 관측 작업대(망원경·도면·모래시계) | floor 2×1 + 16px | 7687~7690 | tall |
+| `floor key` | 열쇠(바닥에 떨어진 것) | flat 1×1, use key | 7691 | decal |
+| `floor note` | 쪽지(바닥에 떨어진 것) | flat 1×1, use read | 7692 | decal |
+
+- **관문:** 여덟 장 모두 3/4 관문을 통과하지 않았다. 오너 면제 묶음 `fable-oneshot-2026-11-12`(`harness-data/object-gate/waivers/`)가 그림 화소 해시·종류에 묶여 번들 출구만 연다(스토어 출구는 막힌다).
+  `gate_rooms.state` 는 영수증 없는 그림을 관문 자신의 출구 규칙(`object_gate.refusal(context='bundle')`)에 묻고, 면제는 통과와 따로 `waived` 로 센다 — 굽기 머리줄 «오너 면제(3/4 관문 미통과) 8». 그 스크립트에 둘째 규칙은 없다.
+- **그림을 그대로 싣는 길:** `iplib.REG.picture(id, png, …)` — PNG 를 화소 그대로 조각으로 등록한다(다시 그리지 않는다). 크기가 조각 캔버스와 다르거나 팔레트 v6 옮기기가 한 화소라도 바꾸면 거부한다(면제·영수증은 화소 해시에 묶인다).
+  목록 `tiledata/hand-interior/plus/oneshot/spec.json` + `pieces/in-*.png`(한 화소도 고치지 않는다), 모듈 `scripts/content/interior-plus/pieces/oneshot.py`. 새 항목은 `items` 끝에만(번호는 `plus/pins.json`).
+- **조수가 찾는 길:** 조각에 `words`(게임이 부르는 이름 — 철창·감옥 철창 문·기록부·장부·열쇠·쪽지 …)와 `stamp`(prop·tall·decal·wallmount)를 적으면 굽기가 킷 태그에 싣는다(`REG.piece(..., words=, stamp=)`).
+  v2 `draw_object(what)` 는 킷 이름·태그로 «이미 있다 → place_object(hand-interior:…)» 를 이르고, `list_hand_interior_parts(query)` 는 사양의 이름·설명·방 태그로 찾는다. «족쇄» 는 v5 `shackles` 가 먼저다(이름이 같다) — 새 것은 «벽 사슬» · «감방 소품».
+  방을 지을 때는 `build_hand_interior_room objects[].id`(철창은 감방과 복도 사이 트인 줄에 칸마다, 한 칸은 문), 지은 방에 더할 때는 v2 `place_object`/`stamp_tileset_object`(벽 걸이는 벽면 칸에만 걸린다).
+- **참고문서:** `prepare-references.mts` 를 다시 돌려 가구 사전(dungeon·study·observatory·…story)·순서·사전 문서·시트 그림에 실었다. 분류가 커지며 묶음 사전 문서 일곱의 id 가 다시 나뉘었다(문서 수는 64 그대로 — 기존 프로젝트는 칸 수가 달라 용도 전체를 번들 것으로 바꾼다).
+  이 묶음과 무관하게 밀려 있던 갱신도 같이 들어왔다: 예제 방 넷(scholar·tavern·manor_1f·inn)의 «도구 검사 오류 0 → 1~4»(지난 굽기 뒤 도구 검사가 엄해졌다 — 예제 입력이 지금 도구 검사에 걸린다), 오류 표 두 줄·오류 그림 일곱 장.
+- **탐침(모델 없음):** `bun scripts/content/story-objects/probe.mts atlas_biome_interior <outDir> --base-sheet <고치기 전 시트> --saved <저장본>` — 감옥 방(감방 셋 + 복도)을 `build_hand_interior_room` 으로 짓고(여덟 종을 objects 로), 복도에 v2 `place_object` 로 다시 놓아 통행을 잰다. 시트 칸 관문 번들 0 / 스토어 16 미덮임.
+- **기존 저장본:** 시트 끝에 다른 칩셋 그림을 붙여 쓴 프로젝트(폴른 스타 — 7680·7681 에 버들항 수정 받침)는 `detachV5GraftTail` → 새 번들 끝 뒤로 다시 붙는다(7728·7729, 맵 번호도). 실내 맵 20장 렌더 전후 해시 같음.
+- **굽기 길을 고친 것 둘(이 묶음과 따로, 같은 변경):**
+  1. `star seal open` 은 v5 `stairs down` 네 칸을 시트에서 읽어 그렸는데, 그 계단을 제자리에서 다시 그린 뒤(bf743c3dce) 실린 화소와 다른 그림이 되어 «영수증 없음» 으로 `bake.py` 전체를 막고 있었다(main 에서 재현).
+     출발 그림을 그때의 네 칸 사본(`pieces/frozen/stairs-down-before-bf743c3dce.png`)으로 얼렸다 — 실린 화소(7486~7489)와 같은 그림이 다시 나온다.
+  2. `ship ladder` 의 이름·설명은 구운 JSON 에만 고쳐져 있었다(같은 커밋) — `ship.py` 로 옮겼다(`short=` 로 사양 설명을 따로). 칸 이름표 셋(7074~7076)만 킷 이름과 같게 바뀐다.
+- 남은 것: 손으로 짠 감옥 견본(`authored-…` jail)은 아직 철창을 쓰지 않는다. 벽 사슬 족쇄는 어두운 벽(`dungeonw`)에서 1배로 약하다.
+
 ## 3/4·품질 재검 — 의자 밖 기물 (2026-10-20, props34)
 
 감사 `~/claude-viz/interior-props-34-audit-1.*` 가 이 칩셋 기물 100종을 FAIL 로 냈지만 사유가 분류 틀 문장이라, 의자 4종을 뺀 96종을 4배·8배로

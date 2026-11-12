@@ -58,6 +58,28 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
 - 거리 구성기: 잔디는 `mc:lawn` 을 칸 해시로 섞어 칠하고(옛 정의면 `mc:green`), 남쪽 보도·세로 도로 보도 가로수는 큰 가로수(줄기 = 맨 아래 보도 줄, 수관은 연석·차도 위), 건물 뒤 녹지는 열마다 큰 나무·철쭉 둘까지, 공원은 큰 나무 하나 + 잎 덩이 나무 + 철쭉. 키트가 없으면 옛 키트로 돌아간다.
 - 지표(60×48 seed 17 장면): 칸당 고유색 중앙값 3→5·p90 9→11, 채도 0.38→0.41. 새 칸만: 중앙값 9·p90 11·채도 0.61(옛 나무·잔디 칸 5·7·0.45).
 
+## 이야기 기물 5종 (2026-11-12, `scripts/content/modern-city-street/bake_story.py`) — 3/4 관문 미통과 · 오너 면제
+
+게임들이 바랐는데 그림이 없던 물건 다섯을 시트 끝(13831~13838, 칸 13839 · 키트 1088)에 덧붙였다. **이 그림들은 3/4 관문을 통과하지 않았다** — 오너 면제 묶음 `fable-oneshot-2026-11-12`(`harness-data/object-gate/waivers/`)가 그림 화소 해시·종류에 묶여 번들 출구만 연다. 스토어로는 나가지 않는다.
+
+| 키트 | 무엇 | 크기 · 놓는 법 | 칸 | 막힌 칸 | 관문 종류 |
+|---|---|---|---|---|---|
+| `mc-prop-storage-cabinet` | 보관함(철제 두 문) | 1×2 · tall | 13831~13832 | (0,1) | box |
+| `mc-prop-rubble` | 잔해(콘크리트) | 2×1 · prop | 13833~13834 | 두 칸 | debris |
+| `mc-prop-note` | 쪽지(바닥 메모) | 1×1 · decal | 13835 | 없음(밟고 지나감) | debris |
+| `mc-prop-device` | 기계 장치(제어반) | 1×2 · tall | 13836~13837 | (0,1) | box |
+| `mc-prop-ledger` | 장부(바닥에 펼친) | 1×1 · decal | 13838 | 없음(밟고 지나감) | debris |
+
+- 목록·그림: `tiledata/modern-city/objects/spec.json`(이름·크기·막힌 칸·찾는 낱말·놓는 규칙) · `pieces/mc-*.png`. **그림은 한 화소도 바꾸지 않는다** — `bake_story.py` 는 PNG 를 그대로 붙이고(`BL.norm` 색 맞춤을 쓰지 않는다) 붙인 칸이 원본과 같은지 확인한다. 한 화소라도 바뀌면 면제가 풀려 굽기가 그 조각을 막는다.
+- 출구 검사는 관문 자신의 규칙 하나다: 그림마다 `object_gate.refusal(그림, kind, context='bundle')` 이 None 이 아니면 굽지 않는다. 이 스크립트에는 «임시 통과» 같은 둘째 규칙이 없다(`bake_kr.py`·`bake_green.py` 의 영수증 읽기를 옮겨 오지 않았다). `bake_story.py gate` 가 «번들 출구 열림 5 · 오너 면제(3/4 관문 미통과) 5» 를 찍는다.
+- 덧붙이기 전용: 번호는 이름 핀 `story:<id>:<x>,<y>`(`pins.json` · 소유 `objects/baked.json`). `bake_tileset.py` main 이 `bake_kr` 다음에 `bake_story.apply()` 를 이어 부른다. 새 기물은 `spec.json` 의 `items` 끝에만 더한다.
+- 칸: 서 있는 기물의 막힌 칸 = `solid`(위층·막힘), 나머지 = ★(위층·걷는다·사람 위), 바닥 그림 = `flat`(통행·사람 밑, 홈 위층). 전부 키트의 `upperTiles` 에 있다. 묶음 `mc:prop:story`.
+- 조수가 찾는 길: 키트 이름·태그(`spec.json` 의 `words` — 보관함·잔해·쪽지·메모·기계 장치·제어반·출입 장치·장부·기록부…)와 놓는 법 태그(`tall`·`prop`·`decal`). v2 코드에 낱말 목록은 없다. 태그 «주제 소품» — 빈 땅 채우기에 흩지 않는다.
+- 참고문서: 용도 `mc-story-objects`(문서 1·그림 3 — 사전·순서·12×5 보도 조립 예제 전체 배열·정상/오류 그림, 검사 `E_OBJ_LAYER`·`E_OBJ_INCOMPLETE`·`E_OBJ_PASSAGE`). `python3 scripts/content/modern-city-street/refs_story.py`(문서 틀은 칩셋 공용 `scripts/content/story-objects/refs_lib.py`), 그림 `public/assets/modern-city-story-references/`, 저장본 `tiledata/modern-city/objects/refs/`. `bake_refs.py` 는 JSON 을 통째로 다시 쓰므로 끝에서 이 용도를 다시 붙인다(실내 용도와 같은 방식).
+- 탐침(모델 없음): `bun scripts/content/story-objects/probe.mts modern_city <out> --base-sheet <고치기 전 시트> --saved <저장본>` — `compose_modern_city_street`(60×48, 씨앗 1) 보도에 v2 `place_object` 로 놓는다. 현대 도시는 `tilesetSurface().road` 가 보도이므로 탐침 구역(`chipsets.json` 의 `placeArea`)을 손으로 정했다. 놓기 도구는 서 있는 기물을 차도(아스팔트) 위에 놓으려 하면 거절하고 옆 보도로 옮긴다.
+- 기존 저장본: 이 칩셋 끝(13831~)에 다른 칩셋 그림을 붙여 쓴 프로젝트가 실제로 있다(저장본 r1-horror · r1-romance · r1broken-horror). `ensureModernCityTileset(tileset, project)` 의 `settleThemeBundleTail`(`openwiki/runtime-project-schema.md` 「시트 끝에 칸을 끼운 번들」)이 그 이식 꼬리를 새 번들 끝 뒤로 밀고 다섯 키트를 채운다(r1-horror 사본: 킷 0 → 5, 이식 칸 13831~13834 → 13879~13882, 이 칩셋 맵 3장 그림 같음).
+- 검사 `test/modernCityStoryObjects.test.ts`. 화면 증거 `verify-shots/modern-city-story-objects/`.
+
 ## 실내 (2026-10-14, `scripts/content/modern-city-int/`)
 
 - 가구 64종·바닥 9·벽면 8·탁자 3·탁상 물건 7 — 코드 손 도트(`pieces.py`, `art_*.py`), object-gate 영수증(문 4종은 조립 방 `assembled.py`). 네 번 다시 그려도 못 넘은 14종은 `pieces.DROPPED`.

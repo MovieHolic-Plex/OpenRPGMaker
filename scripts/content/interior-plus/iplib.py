@@ -187,15 +187,32 @@ class Reg:
     def __init__(s):
         s.pieces = {}; s.floors = {}; s.walls = {}; s.pits = {}; s.order = []
 
-    def piece(s, id, ko, cat, kind, w, h, up, gate, desc, tags, place, pair=(), use=('block',), facing=None, surface=False, rows=None, style=None):
+    def piece(s, id, ko, cat, kind, w, h, up, gate, desc, tags, place, pair=(), use=('block',), facing=None, surface=False, rows=None, style=None,
+              short=None, words=(), stamp=None):
         """kind = 사양 종류(floor·wall·hang·flat). up = 발밑 위로 솟은 px. rows = 걸이 줄 수(기본 2).
-        style = object-gate 화풍 비교 종류(building·roof·wall·tree·ground·water·prop). 없으면 3/4 종류의 기본값."""
+        style = object-gate 화풍 비교 종류(building·roof·wall·tree·ground·water·prop). 없으면 3/4 종류의 기본값.
+        short = 사양(handInteriorSpec)에 싣는 짧은 설명(없으면 desc 앞 60자). words = 킷 태그에 덧붙이는 찾는 말(게임이 부르는 이름).
+        stamp = 킷 태그에 덧붙이는 놓는 법(stamp_tileset_object: prop·tall·decal·wallmount) — 없으면 그 도구의 기본(prop)."""
         def deco(fn):
             s.pieces[id] = dict(id=id, ko=ko, cat=cat, kind=kind, w=w, h=h, up=up, gate=gate, desc=desc, tags=list(tags), place=place,
-                                pair=list(pair), use=list(use), facing=facing, surface=surface, rows=rows, style=style, fn=fn, mod=fn.__module__)
+                                pair=list(pair), use=list(use), facing=facing, surface=surface, rows=rows, style=style, short=short,
+                                words=list(words), stamp=stamp, fn=fn, mod=fn.__module__)
             s.order.append(id)
             return fn
         return deco
+
+    def picture(s, id, png, ko, cat, kind, w, h, up, gate, desc, tags, place, **kw):
+        """이미 그려진 그림(PNG)을 화소 그대로 조각으로 싣는다 — 다시 그리지 않는다. 크기가 조각 캔버스와 다르거나 실내 공통 팔레트 v6 옮기기가
+        한 화소라도 바꾸면 거부한다(관문 기록·면제는 그림 화소 해시에 묶인다 — 굽기가 화소를 바꾸면 그 기록이 풀린다)."""
+        from PIL import Image
+        src = Image.open(png).convert('RGBA')
+        s.piece(id, ko, cat, kind, w, h, up, gate, desc, tags, place, **kw)(lambda c: None)
+        p = s.pieces[id]; p['mod'] = 'picture'; p['png'] = png
+        cv = canvas_of(p)
+        if src.size != (cv.w, cv.h): raise SystemExit(f'{id}: 그림 {src.size} 이 조각 캔버스 {(cv.w, cv.h)} 와 다르다')
+        if snap(src).tobytes() != src.tobytes(): raise SystemExit(f'{id}: 팔레트 v6 옮기기가 화소를 바꾼다 — 그림을 그대로 실을 수 없다')
+        p['_img'] = src
+        return p
 
     def floor(s, id, ko, cols, rows):
         def deco(fn): s.floors[id] = dict(id=id, ko=ko, cols=cols, rows=rows, fn=fn); return fn
