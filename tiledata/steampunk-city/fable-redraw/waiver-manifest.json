@@ -1,5 +1,5 @@
 {
- "note": "object-gate owner-waive 의 --manifest 입력. 묶음 fable-redraw-steampunk_city-2026-11-12. 두 무리: fable/(Fable 5.2 medium 한 방 그림과 그 조립) · recolour/(옛 조각의 색만 옮긴 것). 기록은 owner-waive 단계만 쓴다.",
+ "note": "object-gate owner-waive 의 --manifest 입력. 묶음 fable-redraw-steampunk-city-2026-11-12(묶음 id 는 밑줄을 받지 않는다). 두 무리: fable/(Fable 5.2 medium 한 방 그림과 그 조립) · recolour/(옛 조각의 색만 옮긴 것). 기록은 owner-waive 단계만 쓴다.",
  "items": [
   {
    "png": "tiledata/steampunk-city/terrain/_gate/sp-cobble.png",

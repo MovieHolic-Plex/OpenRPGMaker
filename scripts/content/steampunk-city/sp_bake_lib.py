@@ -103,7 +103,8 @@ class Outdoor:
     def put(self, key, im, pc, meta):
         im = BL.norm(im)
         k2 = (im.tobytes(), pc)
-        if k2 in self.dedupe and not key.endswith('!'): return self.dedupe[k2]
+        # 이미 번호가 있는 자리(key)는 그림이 다른 칸과 같아져도 제 번호에 그대로 굽는다 — 그림을 바꿔 구워도(2026-11-12 다시 그리기) 저장된 맵의 옛 번호가 빈 칸이 되지 않게.
+        if k2 in self.dedupe and not key.endswith('!') and key not in self.pins.map: return self.dedupe[k2]
         tid = self.pins.one(key)
         self.img[tid] = im; self.info[tid] = dict(meta, pc=pc); self.dedupe.setdefault(k2, tid)
         return tid
