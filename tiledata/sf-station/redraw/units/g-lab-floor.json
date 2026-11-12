@@ -1,0 +1,36 @@
+{
+"unit": "g-lab-floor",
+"name": "white laboratory floor tiles, 2 tiles",
+"w": 32,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"h": "g_tile:3",
+"b": "g_tile:2",
+"g": "g_tile:1",
+"o": "g_tile:0",
+"d": "g_deck:0"
+},
+"rows": [
+"hhhhhhhghhhhhhhghhhhhhhghhhhhhhg",
+"hbbbbbbghbbbbbbghbbbbbbghbbbbbbg",
+"hbbhbbbghbbhbbbghbbhbbbghbbhbbbg",
+"hbhbbbbghbhbbbbghbhbbbbghbhbbbbg",
+"hbbbbbbghbbbbbbghbbbbbbghbbbbbbg",
+"hbbbbbbghbbbbbbghbbbbbooobbbbbbg",
+"hbbbbbbghbbbbbbghbbbbodddobbbbbg",
+"gggggggggggggggggggggodddogggggg",
+"hhhhhhhghhhhhhhghhhhhodddohhhhhg",
+"hbbbbbbghbbbbbbghbbbbbooobbbbbbg",
+"hbbhbbbghbbhbbbghbbhbbbghbbhbbbg",
+"hbhbbbbghbhbbbbghbhbbbbghbhbbbbg",
+"hbbbbbbghbbbbbbghbbbbbbghbbbbbbg",
+"hbbbbbbghbbbbbbghbbbbbbghbbbbbbg",
+"hbbbbbbghbbbbbbghbbbbbbghbbbbbbg",
+"gggggggggggggggggggggggggggggggg"
+],
+"note": "White ceramic lab floor, four glazed 8x8 tiles each with gloss stroke; tile 2 adds central round drain."
+}

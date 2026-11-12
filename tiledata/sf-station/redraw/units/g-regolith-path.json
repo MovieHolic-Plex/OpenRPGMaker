@@ -1,0 +1,34 @@
+{
+"unit": "g-regolith-path",
+"name": "compacted regolith road, 2 tiles",
+"w": 32,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "g_dust:2",
+"b": "g_dust:1",
+"c": "g_dust:3"
+},
+"rows": [
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaabbbbaaaaaaaaaaaaaaaaaabbbaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaacaaaaaaaabbbbbaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaabbbbbaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaacaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaabbbaaaaaaaaaaaaaaabbbbaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+],
+"note": "Smooth compacted regolith road, two tiles with faint darker marks and one light fleck each."
+}

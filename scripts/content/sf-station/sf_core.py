@@ -332,10 +332,14 @@ def export(group=None, only=None):
 
 
 def status_of(p):
-    from object_gate import pixel_sha256, read_receipt
+    """pass = 옛 영수증 통과 또는 오너 면제(waivers/<묶음>.json, bundle 출구)가 닿는 그림. 면제는 통과가 아니다 — 보고에는 «3/4 관문 미통과 — 오너 면제» 로 쓴다."""
+    from object_gate import pixel_sha256, read_receipt, read_owner_waiver, owner_waiver_applies, refusal
     res = []
     for f in range(p['frames']):
-        r = read_receipt(pixel_sha256(Image.fromarray(render(p, f), 'RGBA')))
+        img = Image.fromarray(render(p, f), 'RGBA'); sha = pixel_sha256(img)
+        if owner_waiver_applies(read_owner_waiver(sha), sha, p['kind'], 'bundle'):
+            res.append('pass' if refusal(img, kind=p['kind'], context='bundle') is None else 'fail'); continue
+        r = read_receipt(sha)
         res.append('none' if not r else (r['verdict'] if r.get('kind') == p['kind'] else 'kind'))
     return 'pass' if all(x == 'pass' for x in res) else ('none' if 'none' in res else 'fail')
 

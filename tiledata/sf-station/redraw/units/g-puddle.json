@@ -1,0 +1,38 @@
+{
+"unit": "g-puddle",
+"name": "neon-reflecting puddle decal, 2 tiles",
+"w": 32,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"i": "ink:1",
+"r": "g_road:0",
+"e": "g_road:1",
+"m": "a_magenta:0",
+"M": "a_magenta:1",
+"c": "a_cyan:0",
+"C": "a_cyan:1"
+},
+"rows": [
+"................................",
+"................................",
+"................................",
+"................................",
+"....iiiiii............iiiii.....",
+"..iirrrrrrre.......iiirrrrrre...",
+".irrmmmMmrrrre....irrrrccccrre..",
+".irrrrrrrrrrre....irrrrrrrrrre..",
+".irrrrmmmmrrre....irccCccrrrre..",
+"..rrrrrrrrrree....rrrrrrcccre...",
+"...rrrrrrrree......rrrrrrrre....",
+".....eeeeee.........eeeeeee.....",
+"................................",
+"................................",
+"................................",
+"................................"
+],
+"note": "Two transparent puddle decals: dark asphalt water, ink upper-left edge, lighter lower-right rim, magenta and cyan reflection streaks."
+}

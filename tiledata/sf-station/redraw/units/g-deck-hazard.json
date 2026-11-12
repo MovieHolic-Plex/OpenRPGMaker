@@ -1,0 +1,34 @@
+{
+"unit": "g-deck-hazard",
+"name": "hazard-striped threshold floor, 2 tiles",
+"w": 32,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"y": "a_yellow:0",
+"d": "g_deck:0",
+"c": "g_deck:1"
+},
+"rows": [
+"yyyyddddyyyyddddyyyyddddyyyydddd",
+"yyyddddyyyyddddyyyyddddyyyyddddy",
+"yyddddyyyyddddyyyyddddccyyddddyy",
+"yddddyccyddddyyyyddddyyyyddddyyy",
+"ddddyycyddddyyyyddddyyyyddddyyyy",
+"dddyyyyddddyyyyddddycyyddddyccyd",
+"ddyyyyddddyccyddddyyyyddddyyyydd",
+"dyyyyddddyyyyddddyyyyddddyyyyddd",
+"yyyyddddyyyyddddyyyyddddyccydddd",
+"yyyddddyyccddddyyyyddddyyyyddddy",
+"yyddddyycyddddyyyyddddyyyyddddyy",
+"yddddyyyyddddyyyyddddcyyyddddyyy",
+"ddddccyyddddyyyyddddycyyddddyyyy",
+"dddyyyyddddyyyyddddyyyyddddccyyd",
+"ddyyyyddddyyyyddddyyyyddddyyyydd",
+"dyyyyddddyyyyddddyyyyddddyyyyddd"
+],
+"note": "Two seamless diagonal hazard-stripe threshold tiles, yellow and dark deck, with differing scuff wear."
+}

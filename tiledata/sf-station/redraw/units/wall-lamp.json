@@ -1,0 +1,43 @@
+{
+"unit": "wall-lamp",
+"name": "wall lamp",
+"w": 16,
+"h": 16,
+"cls": "wallm",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:0",
+"b": "ink:1",
+"c": "s_hull:0",
+"d": "s_hull:1",
+"e": "s_hull:2",
+"f": "s_hull:3",
+"g": "s_hull:4",
+"h": "s_hull:5",
+"j": "a_cyan:0",
+"k": "a_cyan:1",
+"l": "a_cyan:2",
+"w": "a_glow:0"
+},
+"rows": [
+"................",
+"................",
+"................",
+"...bbbbbbbbbb...",
+"..bhhhhhhhhhgb..",
+"..bgffffffffeb..",
+".baaaaaaaaaaaab.",
+".balllllllllkab.",
+".balwwwlllkkkab.",
+".bakkkkkkkkkjab.",
+".baaaaaaaaaaaab.",
+"..bgjjjjjjjjeb..",
+"..bfeeeeeeeedb..",
+"..bddddddddccb..",
+"...bbbbbbbbbb...",
+"................"
+],
+"note": "Blue-grey mounting plate with oblong cyan lamp, white core, dark cyan glow line beneath."
+}

@@ -1,0 +1,35 @@
+{
+"unit": "g-regolith",
+"name": "moon regolith ground, 4 tiles",
+"w": 64,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "g_dust:0",
+"b": "g_dust:1",
+"c": "g_dust:2",
+"d": "g_dust:3"
+},
+"rows": [
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbcccbbbbbbbbbbbbbbbbbbbcccbbbbbbbbbbbbbbbbbbbbbbcccbbbbbbbbbbb",
+"bbccccbbbbbbbbbbbbaabbbbccccbbbbbbbdbbbbbcccbbbbbbccbbbbbbbbbbbb",
+"bbcbbbabbbbaabbbbbaaabbbcbbbabbbbbbbabbbbccbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbaabbbaaabbbbbbbbbbbbbbaabbbbbbbbbbbbbbbabbbbbbbbbaaabbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaabbbbbbbbaaaabcbbbbb",
+"bbbbbbbbcccbbbbbbbbccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaabbbcbbbbb",
+"bbbbbbbccccbbbbbbbcccbbbbbbbbbbbbbbbbbbbbdbbbbbbbbbbbabbbccbbbbb",
+"bbaabbbcbbbabbbbbbcbbabbbbaaabbbbbaabbbbbbabbbbbbbbbbbbccccbbbbb",
+"bbaaabbbbbaabbbbbbbbaabbbbbaabbbbbaaabbbbbbbbbbbbbbbbbcccbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbcccbbbbbbbbbbbbbbbcccbbbbbbbbbbbdbbbcccbbbbbbaabbbbbbbbabbb",
+"bbbbbcbbabbbbbbbbbbbbbbcbbabbbbbbbbbbbabbcbbabbbbbbaabbbbbbaabbb",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+],
+"note": "Moon dust tiles: soft mounds and hollows, three pebbles, one small crater; uniform tone-1 edges for seamless tiling."
+}
