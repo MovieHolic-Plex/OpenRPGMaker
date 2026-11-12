@@ -1,0 +1,37 @@
+{
+"unit": "g-asphalt",
+"name": "city asphalt road at night, 4 tiles",
+"w": 64,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "g_road:0",
+"b": "g_road:1",
+"c": "g_road:2",
+"k": "ink:1",
+"m": "a_magenta:0",
+"y": "a_cyan:0"
+},
+"rows": [
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaabbbbaaaaaaaaaaaaaaaaabbbbaaaaaaabbbbaaaaaaaaaaaaaaaaaabbbaaaa",
+"aabbbbbbaaacaaaaaaaaaaabbbbbbaaaaaaabbbbaaaacaaaaaacaaaabbbbbaaa",
+"aaabbbaaaaaaaaaaaaacaaaaabbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaakaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaabbbbaaaaaaabbbaaaaaaaaaaaaaakkaaaaaaaaaaaaaaabbbbbaaaaaa",
+"aaaaaaabbbbbbaaaaabbbbbaaaaaaaaaaaaaaakbbbaaaaaaaaaabmmcbbbaaaaa",
+"aacaaaaabbbbaaaaaabbbbaaaaaacaaaaaaaaabkkbbaaaaaaaaabbcyybbaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaakaaaaaaaaaaabbbbbaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaabbbaaaaaaaaaaaaaaakkaaaaaaaaaaaaaaaaaaaa",
+"aaabbbbaaaaaaaaaaaaaaaabbbbbaaaaaacaaaaaaaaaaaaaaaaaaaaaaaaacaaa",
+"aabbbbbbaaaacaaaaaaacaaabbbbbaaaaaaaaaaabbbbaaaaaabbbbaaaaaaaaaa",
+"aaaabbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbaaaaaaabbbbaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+],
+"note": "Night asphalt: two plain patchy tiles, one hairline crack tile, one wet patch with faint neon reflection."
+}

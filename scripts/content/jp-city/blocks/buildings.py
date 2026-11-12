@@ -13,6 +13,7 @@ from PIL import Image                                     # noqa: E402
 from lib_blocks_lines.core import check_cell, ROOT        # noqa: E402
 import catalog as CG                                      # noqa: E402
 import house_kit as HK                                    # noqa: E402
+import fable_roofs as FR                                  # noqa: E402
 
 BLOCK = 'buildings'
 OUTDIR = os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', 'buildings')
@@ -58,7 +59,7 @@ def _sprite(id_):
         m = dict(m, doors=[d + pad_l for d in m['doors']])
     if x1 > a.shape[1]:
         a = np.concatenate([a, np.zeros((a.shape[0], x1 - a.shape[1], 4), np.uint8)], 1)
-    crop = a[T:B, x0:x1]
+    crop = FR.apply('jp-bldg-' + id_.replace('_', '-'), a[T:B, x0:x1])   # 직각 지붕 덮어쓰기(오너 2026-11-12, fable_roofs.py)
     m = dict(m, groundRow=G - T)                          # 땅 줄(크롭 좌표) — 줄 키트가 건물 발을 맞출 때 쓴다
     return name, cat, crop, m, x0
 

@@ -210,6 +210,8 @@ def piece(id_, name, w, h, kind, en='', group='props', solid=(), frames=1, tags=
 
 
 _RCACHE = {}
+sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'lib'))
+import fable_roofs as FR  # noqa: E402
 
 
 def render(p, f=0):
@@ -217,7 +219,8 @@ def render(p, f=0):
     if key not in _RCACHE:
         c = Cv(p['w'] * T, p['h'] * T)
         p['draw'](c, f) if p['frames'] > 1 else p['draw'](c)
-        _RCACHE[key] = selout(c.a)
+        a = selout(c.a)
+        _RCACHE[key] = FR.apply('wasteland-ruins', 'wl-' + p['id'], a) if f == 0 else a   # 직각 지붕 덮어쓰기(오너 2026-11-12, scripts/content/lib/fable_roofs.py)
     return _RCACHE[key].copy()
 
 

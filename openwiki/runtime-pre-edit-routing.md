@@ -47,6 +47,9 @@ Phaser 에 실린 텍스처와 파일이 같다는 가정이 맞는지 확인하
   그리지 않고 남은 것을 걷는다(`clearFieldGuides`). 저자가 단 `page.glow`·`nearSparkle` 은 남는다. 장면이 스스로 길을 보여 주는 이야기 게임(마왕 편의점 「너무 친절함 … 화살표 짜증남」)용.
   `databaseRecordModel` 화이트리스트에 넣어 저장/로드 왕복에서 살아남는다. 편집기 「시스템 → 필드 안내 표시」(`fieldGuidesField`, 켜기/끄기)와
   `set_project_settings({fieldGuides:"on"|"off"})` 가 같은 값을 쓴다.
+  **2026-11-12:** 끄면 목표 창·목표 카드·메뉴의 목표 글도 「어디」 꼬리 없이 문장만 보인다(`objectiveTarget.objectiveSentence` · `objectiveShown` — 저장된 글과 대상 찾기는 원문 그대로).
+  켜기는 칸을 지우지 않고 `"on"` 으로 적는다(생략과 같게 그린다) — 조수 v2 가 지은 게임은 끄기로 출하되므로(`quietFieldGuides`), 사람·조수가 고른 켜기가 값으로 남아야 다음 끝맺음이 덮지 않는다.
+  켜졌는지는 `fieldGuidesOn(project)` 하나로 읽는다. 문서 `assistant-v2.md` 「필드 안내는 끈 채로 출하한다」.
 - **출구 목적지 글자·화살표는 없다(2026-11-01 삭제):** 문·맵 출구 앞에 「→ 목적지」 글자나 화살표를 띄우던 `syncExitLabels`·`exitLabelPlacement`·`exitArrowGlyph` 를
   사용자 요청(폴른 스타 1.26 「문앞이나 이동하는 곳 앞에서 다음 위치뜨는거 … 진짜 별로다. 삭제해줘」)으로 기능째 지웠다. 되살리지 말 것 — 길은 장면(문 그림·길·표지판·목표 빛무리)으로 보인다.
   옛 중간값 `fieldGuides: "arrows"`(출구 화살표만)는 저장본 호환으로 타입·검사에 남았고 런타임에서 `"off"` 와 같다. 편집기·조수는 더는 그 값을 쓰지 않는다(조수가 보내면 `"off"` 로 적는다).

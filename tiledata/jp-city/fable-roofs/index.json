@@ -1,0 +1,128 @@
+{
+ "jp-bldg-apart-wood2": {
+  "box": [
+   13,
+   12,
+   210,
+   44
+  ],
+  "oldSha": "1c14d7e777a96202ea38124614bb2788c0b9ca7f3b301b6fb1cbb0b9b637096f"
+ },
+ "jp-bldg-house-hip2-wide": {
+  "box": [
+   13,
+   8,
+   162,
+   44
+  ],
+  "oldSha": "b555b45b61d44430b3bd0d7010a8a4517315902d1f09aa7753f7f52ceb035434"
+ },
+ "jp-bldg-house-hiraya": {
+  "box": [
+   13,
+   0,
+   146,
+   24
+  ],
+  "oldSha": "93fd54305e4bcc8204e820f6d5d976117848f9239ab47dfc5c065ccef29fbf1f"
+ },
+ "jp-bldg-house-machiya": {
+  "box": [
+   13,
+   10,
+   98,
+   46
+  ],
+  "oldSha": "bcce7810a12816fadfb17335af0fbae1fb68edc4d047efeb0c959c414cc1b8c9"
+ },
+ "jp-bldg-house-nagaya": {
+  "box": [
+   13,
+   14,
+   210,
+   38
+  ],
+  "oldSha": "ddf211d91497c163973ba11d5dc774837c68e61908706efcfbfa9a5e7cca7706"
+ },
+ "jp-bldg-house-shed-modern": {
+  "box": [
+   13,
+   7,
+   114,
+   40
+  ],
+  "oldSha": "43abb1a9cde6c023a8b74d4e1a7b71e01f2e2d3043b7c9f85cea8e5827c1379e"
+ },
+ "jp-bldg-station-small": {
+  "box": [
+   13,
+   10,
+   210,
+   42
+  ],
+  "oldSha": "58fd6e7f2cd4f17d6e0f212167f6ee39d07869d69554893c74921a60d9e4ac61"
+ },
+ "jp-inaka-agri-tin-shed": {
+  "box": [
+   2,
+   18,
+   61,
+   37
+  ],
+  "oldSha": "4c08384bb3dbe5d27c5c6dc7ffbe112fad2f8d487e6b7d4f4d0ccc45e153bc95"
+ },
+ "jp-inaka-dagashiya": {
+  "box": [
+   2,
+   28,
+   77,
+   51
+  ],
+  "oldSha": "d749e1e01237b0003f0dd31a31b12ba2d9a401fd74b333ae586c5022d46b56d5"
+ },
+ "jp-inaka-kawara-farmhouse": {
+  "box": [
+   4,
+   11,
+   91,
+   34
+  ],
+  "oldSha": "4c815f99f0944db5e2d2e8172a342f8773d361cf31af6cb8a507c61dced471ce"
+ },
+ "jp-inaka-kominka-thatched": {
+  "box": [
+   5,
+   19,
+   90,
+   43
+  ],
+  "oldSha": "59f01ed1f7960b1cbc2f4b862f47412e030c68ee94c922c51c40ceb8d03ddc75"
+ },
+ "jp-inaka-kura-storehouse": {
+  "box": [
+   3,
+   9,
+   60,
+   32
+  ],
+  "oldSha": "0456a5a899061f01bef9cb3f04959a9c022286cb433253b8bfbb378e717d3494"
+ },
+ "jp-inaka-wooden-station": {
+  "box": [
+   5,
+   21,
+   106,
+   44
+  ],
+  "oldSha": "f520d95fe75804d3b1806f762e504370ae19c23fb1f2391530d6e466f7c73cd4"
+ },
+ "jp-rg-lodge": {
+  "box": [
+   5,
+   1,
+   105,
+   49
+  ],
+  "oldSha": "7cbef8758b7faa817380f4a550e08d95d237c1357bd0076d00e4579f56ba1e18"
+ }
+}

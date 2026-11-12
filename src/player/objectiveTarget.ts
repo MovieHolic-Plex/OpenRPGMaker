@@ -345,6 +345,39 @@ export function objectiveTextOnMap(map: Pick<GameMap, "name" | "events">, text: 
   return parts.length ? `${body} (${parts.join(" / ")})` : body;
 }
 
+/** 필드 안내 표시가 켜져 있나 — system.fieldGuides "off"(옛 "arrows" 포함)면 꺼짐, 생략·"on" 이면 켜짐. */
+export function fieldGuidesOn(project: { readonly system?: { readonly fieldGuides?: string } }): boolean {
+  const guides = project.system?.fieldGuides;
+  return guides !== "off" && guides !== "arrows";
+}
+
+const BEARING_WORD = /^(?:(?:북|남|동|서|북동|북서|남동|남서)쪽|가운데|바로 옆)$/u;
+/** 「이름: 자리」 의 자리 말 끝 — 방위·가장자리·곁을 이르는 닫힌 낱말(objectiveWhere 의 placeWord · landmarkWord 가 쓰는 것). */
+const SPOT_END = /(?:쪽|가운데|옆|구석|편)$/u;
+
+/**
+ * 목표 글에서 「어디」 꼬리를 뗀 문장 — 필드 안내를 끈 게임의 목표 창·카드·메뉴에 보이는 글이다(저장된 글과 대상 찾기는 원문 그대로).
+ * 꼬리 = 맨 끝 괄호의 마디가 모두 길 안내 꼴일 때만: 「<곳> 입구: 자리」 · 「→」 로 이은 길 · 이 게임의 맵·이벤트 이름(「이름」) · 「무엇: 자리」 · 방위 한 낱말.
+ * 저자가 쓴 다른 괄호(「(세 개)」 「(0/3)」)는 문장의 일부라 둔다.
+ */
+export function objectiveSentence(project: Pick<Project, "maps">, text: string): string {
+  const tail = /^(.*?)\s*\(([^()]*)\)\s*$/su.exec(text);
+  if (!tail || !tail[1]!.trim()) return text;
+  const names = new Set<string>();
+  for (const map of Object.values(project.maps)) {
+    names.add(bare(map.name ?? ""));
+    for (const event of map.events ?? []) names.add(bare(event.name ?? ""));
+  }
+  names.delete("");
+  const guide = (part: string): boolean => /입구:|→/u.test(part) || names.has(bare(part.split(":")[0]!)) || BEARING_WORD.test(part.trim()) || (part.includes(":") && SPOT_END.test(part.trim()));
+  return tail[2]!.split(/\s+\/\s+/u).every(guide) ? tail[1]!.trimEnd() : text;
+}
+
+/** 목표 창·카드에 보이는 글 — 안내가 켜져 있으면 지금 맵에서 읽는 꼬리(objectiveTextOnMap), 꺼져 있으면 문장만(objectiveSentence). */
+export function objectiveShown(project: Pick<Project, "maps"> & { readonly system?: { readonly fieldGuides?: string } }, map: Pick<GameMap, "name" | "events">, text: string): string {
+  return fieldGuidesOn(project) ? objectiveTextOnMap(map, text) : objectiveSentence(project, text);
+}
+
 const GENERIC_NAME = /^(?:ev[_-]|event|이벤트|npc\b|조사\s*지점$|조사$|단서$|지점$)/iu;
 
 /** 「Z 조사 · 책장」의 이름 부분 — 이벤트 이름(사람이 읽는 이름이면), 문이면 가는 맵 이름, 없으면 그 칸 가구 이름표. */

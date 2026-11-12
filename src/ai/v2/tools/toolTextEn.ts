@@ -190,7 +190,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
       touchControls: "Phone/tablet controls (desktop unaffected). Defaults are fine; tapToMove:false for puzzle maps.",
       displayFilter: "Retro screen filter: scanlines | crt. Retro games only.",
       cameraZoom: "Default camera zoom 0.25–6 (default 1).",
-      fieldGuides: "off = turn off automatic field guidance (goal glow, off-screen goal arrow, ▼ over people and examine spots; there is no exit destination text) — for story games whose scenes and lines show the way themselves; the way must then be visible in the scene. Author-set page.glow and nearSparkle stay. on (default) = on.",
+      fieldGuides: "off = no automatic field guidance: no goal glow, no goal arrow, no ▼ over people and examine spots, and the objective line shows only its sentence without the «(… entrance: west → name)» tail. Games you build ship with it off, so the scenes and lines must show the way themselves. Author-set page.glow and nearSparkle stay. on = turn the guidance on — only when the user asked for a guide arrow or target marker.",
       playResolution: "Logical resolution (pixel density, not view range — zoom sets the range).",
       "battle.teams": "FF6-style team swap battles (2–4 teams). [] = off.",
       "battle.uiStyle": "retro2003 = pixel side view (default) | pokemon = monster face-off.",

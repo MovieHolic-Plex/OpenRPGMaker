@@ -1,0 +1,74 @@
+{
+ "mc-bld-dorm-5": {
+  "box": [
+   0,
+   0,
+   79,
+   44
+  ],
+  "oldSha": "78faf7b87133c6950ab48f7b4dacb66d52b2e298dacecbc65cce58da6599886a"
+ },
+ "mc-bld-dorm-7": {
+  "box": [
+   0,
+   0,
+   111,
+   44
+  ],
+  "oldSha": "d550032494fdc56ae8bf8730a25116465e4f4a964d29fdf33db58be6d46343dc"
+ },
+ "mc-bld-gym": {
+  "box": [
+   0,
+   0,
+   159,
+   60
+  ],
+  "oldSha": "be45251fa43e202fec9da53b7e24301aa226f3bb36a3925add05b18eb8a05d53"
+ },
+ "mc-bld-gym-green": {
+  "box": [
+   0,
+   0,
+   127,
+   44
+  ],
+  "oldSha": "7db6bf29f6e2f5097506c44117e9e8e36e54735e608d8c35140f5a533b4b7473"
+ },
+ "mc-bld-hall-12": {
+  "box": [
+   0,
+   0,
+   191,
+   60
+  ],
+  "oldSha": "21fcb3ec19aad4e302b09c4c968b920ed5c1b018ccb1ba51f95a9044645b08bc"
+ },
+ "mc-bld-hall-6": {
+  "box": [
+   0,
+   0,
+   95,
+   44
+  ],
+  "oldSha": "deae3d19cde76f679509df1ab20f7104de787eb3469a7df117423e1e7ab9d6bb"
+ },
+ "mc-bld-hall-7": {
+  "box": [
+   0,
+   0,
+   111,
+   44
+  ],
+  "oldSha": "930c4f49f9ea815173ae6b30c1221b255ad516cad0a4d78e8dc16163670c42b3"
+ },
+ "mc-bld-hall-9": {
+  "box": [
+   0,
+   0,
+   143,
+   44
+  ],
+  "oldSha": "923318f44a07addf9fe31bfbb52325d7d7b05a456a4d1bd26db60f510efee551"
+ }
+}

@@ -1,4 +1,5 @@
 import { currentObjectiveText } from "@/player/zoneFeedback";
+import { fieldGuidesOn, objectiveSentence } from "@/player/objectiveTarget";
 import { dialogueUiText } from "@/player/dialogueUiStrings";
 import { resolveDialogueSystem, type AuthoredDialogueSystem } from "@/project/dialogueSystem";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
@@ -265,7 +266,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       ],
     }),
     ...(landingOnly
-      ? [withObjectiveCard(options.session, snapshot.relationship
+      ? [withObjectiveCard(options.project, options.session, snapshot.relationship
         ? renderRelationshipOverview(options.project, options.session, snapshot)
         : snapshot.story
           ? renderStoryOverview(options.project, options.session, snapshot)
@@ -602,9 +603,11 @@ function renderPartyCharacter(project: PlayerStatusMenuOptions["project"], sessi
  * 화면 대부분을 차지하는 판이 비어 미완성 상태창처럼 보였다(장부 hud #5·#15·#25·#48·#83·#90·#94·#96·#112).
  * 목표 줄을 닫고 메뉴를 연 사람에게도 지금 할 일이 보인다. 목표가 없으면 아무것도 붙이지 않는다.
  */
-function withObjectiveCard(session: PlayerStatusMenuOptions["session"], overview: HTMLElement): HTMLElement {
-  const objective = currentObjectiveText(session.m2Runtime?.ui);
-  if (!objective) return overview;
+function withObjectiveCard(project: PlayerStatusMenuOptions["project"], session: PlayerStatusMenuOptions["session"], overview: HTMLElement): HTMLElement {
+  const raw = currentObjectiveText(session.m2Runtime?.ui);
+  if (!raw) return overview;
+  // 필드 안내를 끈 게임은 메뉴에서도 목표 문장만 보인다(목표 창과 같은 규칙).
+  const objective = fieldGuidesOn(project) ? raw : objectiveSentence(project, raw);
   overview.append(el("section", {
     class: "status-menu-objective-card",
     attrs: { "aria-label": "현재 목표" },

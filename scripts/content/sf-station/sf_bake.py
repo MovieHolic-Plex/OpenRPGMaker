@@ -80,7 +80,9 @@ def bake(dry=False):
                         tags=['sf', GROUP_KO[p['group']], '줄' + p['line']] + p['tags'], rep='auto' if auto else ('repeat' if p['kind'] == 'terrain' else 'fixed'))
             key = f"{p['id']}/{x}.{y}"
             k2 = (crop.tobytes(), pc)
-            if k2 in dedupe and not auto: tid = dedupe[k2]
+            # 같은 그림 칸은 한 번호를 나눠 쓴다 — 단, 이전 굽기에 자기 번호(핀)가 있던 칸은 그 번호를 지킨다(그림을 다시 그려 두 칸이 같아져도
+            # 저장된 맵이 가리키는 번호가 빈 칸이 되지 않게: 2026-11-12 다시 그리기).
+            if k2 in dedupe and not auto and key not in prev.get('cells', {}): tid = dedupe[k2]
             else:
                 tid = pins.assign(key); img[tid] = crop; info[tid] = dict(meta, pc=pc); dedupe.setdefault(k2, tid)
             cells[(x, y)] = (tid, pc)

@@ -1,0 +1,42 @@
+{
+"unit": "g-rail",
+"name": "maglev track parts, 3 tiles",
+"w": 48,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "g_road:0",
+"b": "g_road:1",
+"d": "g_deck:0",
+"D": "g_deck:3",
+"c": "g_deck:1",
+"e": "g_deck:2",
+"r": "s_rust:0",
+"k": "ink:1",
+"y": "a_cyan:0",
+"Y": "a_cyan:1",
+"Z": "a_cyan:2"
+},
+"rows": [
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaabbaaaaaaaaaaaaaabbaaaaaaaaaaaaaabbaaaaaaaaaaa",
+"aabbbaaaaabaaaaaaabbbaaaaabaaaaaaabbbaaaaabaaaaa",
+"aaabaaaaabbbaaaaaraaaraaaraaaraaaaabaaaaabbbaaaa",
+"aaaaaaaaaabbaaaaDDDDDDDDDDDDDDDDaaaaDDDDDDDDaaaa",
+"aaaaaabaaaaaaaaaddddddddddddddddaaaaDeccccedaaaa",
+"aaaaabbbaaaaaaaakrkkkrkkkrkkkrkkaaaaDccccccdaaaa",
+"aaaaaabbaaaaabaakrkkkrkkkrkkkrkkaaaaDccZYccdabaa",
+"aabaaaaaaaaabbaayYyyYyyYyyYyyYyyaabaDccYyccdbbaa",
+"abbbaaaaaaaaabaakrkkkrkkkrkkkrkkabbbDccccccdabaa",
+"aabbaaaabaaaaaaaDDDDDDDDDDDDDDDDaabbDeccccedaaaa",
+"aaaaaaabbbaaaaaaddddddddddddddddaaaaddddddddaaaa",
+"aaaaaaaabbaaaaaaaraaaraaaraaaraaaaaaaaaabbaaaaaa",
+"aaaaaaaaaaaabaaaaaaaaaaaaaaabaaaaaaaaaaaaaaabaaa",
+"aaabaaaaaaabbaaaaaabaaaaaaabbaaaaaabaaaaaaabbaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+],
+"note": "Ballast bed, east-west maglev track with rails, sleepers and cyan strip, junction hub plate with lamp."
+}
