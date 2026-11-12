@@ -123,7 +123,7 @@ export function placeVerbs(c: VerbContext) {
         if (stands && standsAs && layoutGiven(asked?.layout)) return text({ ok: true, mapIds: [stands.id], summary: `«${stands.name}» already stands as the «${standsAs.kind.id}» kind of ${standsAs.world.name} (${stands.id}, ${stands.width}×${stands.height}). The cell layout you sent was not used: this project's maps use that chipset and cell layouts belong to another one. Put single things in it with place_object, add_people or move_event.` });
         if (world && asked?.name && !blueprintMapFor(env.ctx.project, asked.name) && !(asked.mapId && env.ctx.project.maps[asked.mapId])) {
           const want = { indoor: asked.type === "interior" || asked.type === "house", danger: asked.type === "dungeon" || asked.type === "cave" };
-          // 종류: 장소 이름·테마가 그 세계 종류의 이름을 말하면 그것, 실내면 가장 작은 방(오두막·선실 — 누구의 집·가게로도 읽힌다), 아니면 덜 쓴 종류.
+          // 종류: 장소 이름·테마가 그 세계 종류의 이름을 말하면 그것, 실내면 그 세계의 살림집(home)이나 가장 작은 방(오두막·선실 — 누구의 집·가게로도 읽힌다), 아니면 덜 쓴 종류.
           const said = `${asked.name} ${asked.theme ?? ""}`.toLowerCase();
           const fits = world.kinds.filter((k) => !!k.indoor === want.indoor && !!k.danger === want.danger);
           const named = fits.find((k) => said.includes(k.id.replace(/-/gu, " ")) || k.ko.split(/\s+/u).some((w) => w.length >= 2 && said.includes(w)));
@@ -134,7 +134,7 @@ export function placeVerbs(c: VerbContext) {
             return text({ ok: false, summary: `«${asked.name}» was not built: ${world.name} has no indoor place kind yet (its kinds are all outdoor: ${world.kinds.map((k) => k.id).join(", ")}), and this project's maps use that chipset — a room from another chipset is not mixed in. It is recorded as missing art for the report.${cur ? ` Next call: todo({"op":"block","task":${JSON.stringify(cur.id)},"reason":"${world.name} has no indoor place kind, so this room cannot be built in the project's chipset"})` : ""}` });
           }
           const area = (k: (typeof fits)[number]) => (k.compose?.size[0] ?? 99) * (k.compose?.size[1] ?? 99);
-          const kind = named ?? (want.indoor && fits.length ? [...fits].sort((x, y) => area(x) - area(y))[0]! : spareKind(world, [...session.places.values()].flatMap((r) => parseWorldStyle(r.spec.style)?.kind.id ?? []), want));
+          const kind = named ?? (want.indoor && fits.length ? fits.find((k) => k.home) ?? [...fits].sort((x, y) => area(x) - area(y))[0]! : spareKind(world, [...session.places.values()].flatMap((r) => parseWorldStyle(r.spec.style)?.kind.id ?? []), want));
           const others = fits.filter((k) => k !== kind).map((k) => `"world:${world.id}:${k.id}" (${k.about})`).join(", ");
           const spec: PlaceSpec = { ...worldPlaceSpec(world, kind, asked.name), salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task) };
           const builder = builderFor(spec);
