@@ -25,7 +25,8 @@ EXAMPLES = [('street', 'street', 48, 34, 1, '증기 도시 거리 48×34'), ('in
             ('boiler-room', 'boiler-room', 15, 11, 1, '보일러실 15×11'), ('tavern', 'tavern', 18, 13, 2, '선술집 18×13')]
 HEAD = (f"tilesetId `steampunk_city` · 그림 `public/assets/steampunk-city/steampunk-city-chipset.png`(텍스처 `tex_steampunk_city`, **{N}칸**, 16px 칸, 시트 {TPR * 16}×{math.ceil(N / TPR) * 16}px, "
         f"한 줄 **{TPR}칸** — 번호 n 의 칸은 열 n%{TPR}, 행 n÷{TPR}(내림), 픽셀 (열×16, 행×16), 모두 0 기준). 계열 `oprn-steampunk` — 다른 칩셋(버들항·일본 도시·조선·마법 학교·캠퍼스·하늘섬·실내 v5)의 칸 번호와 섞지 않는다. "
-        "팔레트는 steampunk_city 잠금 팔레트(재질 22·116색)만. 시점은 3/4 탑뷰(윗면 + 남쪽 앞면), 빛 왼쪽 위. 모든 그림은 object-gate 3/4 관문 영수증이 있는 조각만 구웠다.")
+        "팔레트는 steampunk_city 역할 팔레트 v3(48색 — 바닥 GROUND · 구조물 STRUCTURE · 강조 ACCENT · 먹)만. 시점은 직교 3/4 탑뷰: 건물은 직사각형 지붕 덩이 + 납작한 남쪽 앞벽, 물체는 윗면 + 남쪽 앞면, 빛 왼쪽 위. "
+        "그림은 2026-11-12 에 다시 구웠다(Fable 5.2 한 방 그림 + 옛 조각의 색만 옮긴 것) — 전부 «3/4 관문 미통과 — 오너 면제»(묶음 fable-redraw-steampunk-city-2026-11-12)다.")
 
 
 def arr(a): return json.dumps(a, separators=(',', ':'))
@@ -234,7 +235,7 @@ def main():
     for i, im in enumerate(pics[:6]): cmp_.paste(im.resize((tw, th), Image.NEAREST), ((i % 3) * (tw + 8), (i // 3) * (th + 8)))
     cmp_.save(os.path.join(IMG, 'err-compare.png'), optimize=True)
     assert all(errs for _, _, errs in rows), [k for k, _, e in rows if not e]
-    imgs = [dict(id='sp-img-kits-outdoor', name='kits-outdoor.png', caption=f'야외 키트 도감 {nk}종(원본 ×2). 전부 object-gate 영수증이 있는 그림.', dataUrl=URL('kits-outdoor.png')),
+    imgs = [dict(id='sp-img-kits-outdoor', name='kits-outdoor.png', caption=f'야외 키트 도감 {nk}종(원본 ×2). 전부 3/4 관문 미통과 — 오너 면제로 구운 그림.', dataUrl=URL('kits-outdoor.png')),
             dict(id='sp-img-kits-interior', name='kits-interior.png', caption=f'실내 키트 도감 {ni}종(원본 ×2).', dataUrl=URL('kits-interior.png'))]
     for key, _, W, H, _, title in EXAMPLES:
         imgs.append(dict(id=f'sp-img-{key}', name=f'ex-{key}.png', caption=f'{title} — 구성기 실제 출력, 원본 해상도 {W * 16}×{H * 16}(시트 칸 이어 붙임).', dataUrl=URL(f'ex-{key}.png')))
