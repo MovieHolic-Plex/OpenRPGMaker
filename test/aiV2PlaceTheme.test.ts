@@ -78,7 +78,7 @@ describe("장소의 테마 — 적 · 전투 배경 · 상자", () => {
     map.tilesetId = "desert_east";
     map.name = "잠든 피라미드";
     project.gameBlueprint = normalizeGameBlueprint({ title: "t", genre: "모험", setting: "desert_east", playerGoal: "g", ending: { name: "끝", how: "끝", feeling: "f" },
-      places: [{ name: "잠든 피라미드", kind: "pyramid" }, { name: "묘실", kind: "tomb" }],
+      places: [{ name: "잠든 피라미드", kind: "pyramid" }, { name: "묘실", kind: "tomb" }, { name: "찻집", kind: "teahouse" }],
       steps: [{ id: "s1", place: map.name, event: "x", action: "a", gives: "가", feeling: "f" }, { id: "s2", place: map.name, event: "y", action: "b", needs: "가", gives: "엔딩", feeling: "f" }] });
     return { project, mapId: map.id };
   }
@@ -100,12 +100,18 @@ describe("장소의 테마 — 적 · 전투 배경 · 상자", () => {
     expect(applyThemeBackdrop(project, mapId)).toEqual({});
   });
 
-  it("맞는 그림이 없으면 대역을 쓰고 없는 그림 줄을 남긴다 — 줄은 다시 읽힌다", () => {
+  it("맞는 그림이 없으면 그 맵 그대로 싸우고 없는 그림 줄을 남긴다 — 줄은 다시 읽힌다", () => {
     const { project, mapId } = desert();
+    // 묘실은 장소 그림이 실렸다(2026-11-12, battle-backdrop 하네스) — 없는 그림 줄이 없다.
     project.maps[mapId]!.name = "묘실";
+    expect(applyThemeBackdrop(project, mapId).gap).toBeUndefined();
+    expect(project.maps[mapId]!.battleBackground).toBe("battle-scenery-tomb");
+    // 그림이 없는 장소(찻집)는 다른 지형 그림 대신 «그 맵 그대로» 를 쓰고 없는 그림 줄을 남긴다(예전 대역은 동굴이었다).
+    delete (project.maps[mapId] as { battleBackground?: string }).battleBackground;
+    project.maps[mapId]!.name = "찻집";
     const res = applyThemeBackdrop(project, mapId);
-    expect(project.maps[mapId]!.battleBackground).toBe("battle-scenery-cave");
-    expect(parseArtGap(res.gap!)).toEqual({ theme: "desert_east/tomb", want: "backdrop", wanted: "stone burial chamber", where: "묘실", standIn: "battle-scenery-cave" });
+    expect(project.maps[mapId]!.battleBackground).toBe("battle-scenery-field");
+    expect(parseArtGap(res.gap!)).toEqual({ theme: "desert_east/teahouse", want: "backdrop", wanted: "adobe room interior", where: "찻집", standIn: "battle-scenery-field" });
     const gap = { theme: "sf_station/*", want: "foe", wanted: "security robots, drones, aliens", where: "정거장", standIn: "금속 슬라임" } as const;
     expect(parseArtGap(artGapLine(gap))).toEqual(gap);
     // 테마 표에 없는 세계(버들항)의 맵은 종전 길로 간다.

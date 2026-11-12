@@ -14,6 +14,8 @@ import { leadEnemyId, useCurrentArt } from "../story/currentFoes";
 type Cell = { readonly x: number; readonly y: number };
 /** 맵 넓이에 따른 보이는 적 수 — 방 한 칸짜리 묘실은 하나, 큰 바깥 맵은 셋. */
 const foeCount = (cells: number): number => (cells >= 1200 ? 3 : cells >= 280 ? 2 : 1);
+/** 보이는 적이 주인공을 알아채는 거리(칸) — 곁을 지나가면 덤비고, 멀리 돌아가면 피할 수 있다. */
+const NOTICE_RANGE = 3;
 
 /**
  * 한 맵에 적·상자를 둔다. 둔 것이 있으면 한 줄(없으면 undefined). entrance = 그 맵에 들어오는 칸(없으면 가장 큰 걸음 덩이).
@@ -51,7 +53,9 @@ export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { rea
     useCurrentArt(run.ctx.project, leadEnemyId(run.ctx.project, troopId));
     // 보이는 적은 걷는다 — 서 있기만 하는 적은 말 걸 사람으로 읽힌다(«해골 NPC 를 조사하자 전투»). 두 방향 · 한 칸 왕복까지 해 보고 그래도 없을 때만 세워 둔다.
     const walks = [{ length: 2, axis: n % 2 ? "horizontal" : "vertical" }, { length: 2, axis: n % 2 ? "vertical" : "horizontal" }, { length: 1, axis: "any" }];
-    const placed = walks.some((patrol) => run.call("place_field_enemy", { mapId, x: spot.x, y: spot.y, troopId, behavior: "patrol", patrol, id: foeId(n) }).ok)
+    // 걷다가 주인공이 가까이(세 칸 안) 오면 알아채고 다가온다 — 순찰만 하는 적은 주인공 바로 옆을 스쳐 지나가고도 싸움을 걸지 않았다.
+    const placed = walks.some((patrol) => run.call("place_field_enemy", { mapId, x: spot.x, y: spot.y, troopId, behavior: "chase", sightRange: NOTICE_RANGE, pace: "slow", patrol, id: foeId(n) }).ok)
+      || walks.some((patrol) => run.call("place_field_enemy", { mapId, x: spot.x, y: spot.y, troopId, behavior: "patrol", patrol, id: foeId(n) }).ok)
       || run.call("place_field_enemy", { mapId, x: spot.x, y: spot.y, troopId, behavior: "stationary", id: foeId(n) }).ok;
     if (placed) foes += 1;
   }

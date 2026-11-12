@@ -2,6 +2,7 @@ import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { BATTLE_SCENERY_CATALOG, BATTLE_SCENERY_LAYERS, resolveSceneryBiome, type BattleSceneryBiome } from "@/assets/battleSceneryCatalog";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
+import { isFieldBattleBackdrop } from "@/battle/battleBackdrop";
 import { clearBattleBackdropMotion } from "@/player/battleBackdropMotion";
 import type { Project } from "@/project/types";
 
@@ -57,7 +58,7 @@ export function clearBattleScenery(backdrop: HTMLElement): void {
 
 /** 원래 단일 배경은 남겨 두고 네 장을 모두 읽은 뒤에만 그 위를 덮는다. */
 export function syncBattleScenery(backdrop: HTMLElement, project: Project, resourceId?: string): void {
-  if (!usesLayeredScenery(project) || backdrop.dataset.backdropSource === "field") {
+  if (!usesLayeredScenery(project) || backdrop.dataset.backdropSource === "field" || isFieldBattleBackdrop(resourceId)) {
     clearBattleScenery(backdrop);
     return;
   }

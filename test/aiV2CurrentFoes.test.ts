@@ -34,8 +34,24 @@ const leadArt = (project: Project, troopId: string | undefined): string | undefi
 };
 
 describe("현행 몬스터 그림", () => {
-  it("id 목록은 폴른 스타의 새 시트 + 같은 방식으로 더 그린 종(currentMonsterSheets20)과 같다", () => {
-    expect([...CURRENT_MONSTER_ART_IDS].sort()).toEqual([...new Set([...FS_MONSTER_SHEETS_16, ...CURRENT_MONSTER_SHEETS_20].map((art) => art.resourceId))].sort());
+  // 손으로 맞추는 개수 대조가 아니라 그림 표(두 시트 파일)와 기본 DB 를 따른다 — 『폴른 스타』가 제 이야기 적(사람 적 시트 등)을 표에 더해도 빨개지지 않고,
+  // v2 가 세울 수 있는 적(기본 DB 에 적 기록이 있는 그림)의 시트를 더하고 id 목록을 빠뜨리면 빨개진다(2026-11-13: 사람 적 여섯 장이 표에 들어오며 개수 대조가 깨졌다).
+  it("id 목록의 그림은 모두 표에 있어 설치되고, 표의 그림 가운데 기본 DB 의 적이 쓰는 것·더 그린 종은 모두 목록에 있다", async () => {
+    const sheets = new Set([...FS_MONSTER_SHEETS_16, ...CURRENT_MONSTER_SHEETS_20].map((art) => art.resourceId));
+    const current = new Set(CURRENT_MONSTER_ART_IDS);
+    expect(current.size).toBe(CURRENT_MONSTER_ART_IDS.length);
+    for (const id of CURRENT_MONSTER_ART_IDS) expect(sheets.has(id), `${id} 의 시트가 표에 없다`).toBe(true);
+    // 목록의 id 는 실제로 설치된다(초상 업로드 kind monster).
+    await preloadCurrentMonsterArt();
+    const project = createBlankProject() as Project;
+    expect([...installCurrentMonsterArt(project, CURRENT_MONSTER_ART_IDS)].sort()).toEqual([...CURRENT_MONSTER_ART_IDS].sort());
+    for (const id of CURRENT_MONSTER_ART_IDS) expect(hasCurrentMonsterArt(project, id), id).toBe(true);
+    // 표의 그림 가운데 v2 가 세울 수 있는 것(기본 DB 의 적이 쓰는 그림)과 v2 용으로 더 그린 종은 목록에 있어야 한다.
+    const defaultFoeArt = new Set((createBlankProject() as Project).database.enemies.map((enemy) => enemy.monsterResourceId));
+    for (const id of sheets) if (defaultFoeArt.has(id)) expect(current.has(id), `${id} 는 기본 DB 의 적이 쓰는 현행 시트인데 CURRENT_MONSTER_ART_IDS 에 없다`).toBe(true);
+    for (const art of CURRENT_MONSTER_SHEETS_20) expect(current.has(art.resourceId), art.resourceId).toBe(true);
+    // 몇 개는 이름으로 못 박는다.
+    for (const id of ["generated-enemy-wolf-grey", "generated-enemy-hound-hell", "generated-enemy-golem-iron", "generated-enemy-dragon-whelp"]) expect(current.has(id), id).toBe(true);
     // 두 파일에 다 있는 id 는 표시가 있고(설치는 폴른 스타 것), 그 밖의 id 는 한 파일에만 있다.
     const fallen = new Set(FS_MONSTER_SHEETS_16.map((art) => art.resourceId));
     for (const art of CURRENT_MONSTER_SHEETS_20) expect(fallen.has(art.resourceId), art.resourceId).toBe(art.alsoInFlagship === true);
@@ -125,10 +141,12 @@ describe("v2 가 세우는 적은 현행 그림이 있는 종", () => {
     }, 60_000);
   }
 
-  it("선사 시대 늪: 뱀·딱정벌레가 서고(멧돼지·사마귀는 맞춘 사본의 기술이 뱀과 같아 같이 서지 않는다), 리자드맨·검치호·공룡은 그릴 목록에 남는다", () => {
+  // 2026-11-12 까지는 뱀·딱정벌레 둘만 섰다 — 센 기술을 다른 생물의 약한 기술로 바꾸던 맞춤 때문에 멧돼지·사마귀의 사본이 뱀과 같은 기술을 들었다.
+  // 지금은 제 기술을 약하게 한 사본을 들어(멧돼지 «돌진», 사마귀 «교차 낫베기») 넷이 다 선다.
+  it("선사 시대 늪: 뱀·멧돼지·딱정벌레·사마귀가 제 기술로 서고, 리자드맨·검치호·공룡은 그릴 목록에 남는다", () => {
     const { project, mapId } = world("prehistoric", "prehistoric", "swamp", "늪지");
     const field = themeFieldTroops(project, mapId);
-    expect(field.troopIds.map((id) => leadArt(project, id)?.replace("generated-enemy-", ""))).toEqual(["snake-viper", "beetle-horn"]);
+    expect(field.troopIds.map((id) => leadArt(project, id)?.replace("generated-enemy-", ""))).toEqual(["snake-viper", "boar-tusk", "beetle-horn", "mantis-blade"]);
     expect(field.gaps.map((line) => parseArtGap(line)?.wanted)).toEqual(["dinosaurs (raptor, triceratops)", "lizardman-spear", "tiger-saber"]);
     // 이름이 맞는 종이 있으면 그 종(불의 정령), 없으면 돌려 고른다 — 어느 쪽이든 현행 그림.
     const fire = themeBossTroop(project, mapId, "불의 정령", true, 0);
