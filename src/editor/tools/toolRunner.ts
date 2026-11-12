@@ -41,6 +41,7 @@ import { authoringWritePrerequisite } from '../../harnesses/_core/authoringRegis
 import { rejectUnavailablePackStills } from "./stillPackGuard";
 import { formatTerrainFrameViolations, terrainFrameViolations } from "@/project/terrainFrame";
 import { ToolError, type JsonSchema, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
+import { settleStepPages } from "@/project/blueprintStepPages";
 import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots, type HouseSnapshot } from "./houseProtection";
 
 export interface RunToolOptions {
@@ -545,7 +546,9 @@ export function runToolDefinition(
       const made = syncHeroineDeadline(draft);
       if (made.length) exec = { ...exec, warnings: [`호감 대화 인물이 둘 이상이라 기한 판정에 인물 엔딩 ${made.join(", ")} 을(를) 얹었습니다(기본 에필로그) — define_ending 으로 같은 id 의 에필로그를 그 인물에 맞게 다시 쓰세요.`, ...(exec.warnings ?? [])] };
     }
-    const runnerWarnings = [...(prunedNote ? [prunedNote] : []), ...(guarded?.warnings ?? [])];
+    // 조수의 모든 쓰기 도구가 지나는 한 곳: 청사진 단계의 이벤트에 무엇을 얹었든 그 단계의 연 페이지를 가리지 못한다(blueprintStepPages — 의뢰·덧붙인 페이지).
+    const heldPages = ctx.assistantRun && draft.gameBlueprint ? settleStepPages(draft) : [];
+    const runnerWarnings = [...(prunedNote ? [prunedNote] : []), ...(guarded?.warnings ?? []), ...heldPages];
     if (runnerWarnings.length) exec = { ...exec, warnings: [...runnerWarnings, ...(exec.warnings ?? [])] };
     compactTouchedMapLayers(before, draft);
     // 장르 잠금은 계열 검사보다 먼저 돈다(허용 칩셋 목록·대안을 알리는 더 구체적인 거부). allowsTilesetChange 도구(예제 통째 가져오기 등)도 거친다 — 프로젝트를 통째로 되돌리거나 갈아 끼우는 도구만 빠진다.
