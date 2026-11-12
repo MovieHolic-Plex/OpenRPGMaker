@@ -1866,7 +1866,7 @@ v1 의 `script_cutscene` 비트로 옮긴다(`events.ts`).
 
 **새 칸은 둘뿐이다(둘 다 선택).** `GameBlueprintStepText.goal`(80자까지) · `item`(40자까지) — `gameBlueprint.ts` `normalizeStepText`. 청사진(`write_blueprint`)에는 칸을 더하지 않았다.
 지시문은 `BLUEPRINT_CARD` +176자(게임 하나 요청의 시스템 지시문), `write_blueprint` 스키마 +41자(«design note … never shown»), `build_blueprint_path` 스키마 +323자(`goal`·`item` 설명).
-`quests-min` 돌려보내는 글(그 검사가 걸릴 때만 간다) +255자 — 물건을 나르는 의뢰는 `onAcceptItems` + `{kind:"deliver"}` 로 쓰라는 한 문장. 전의 예시는 talk 두 단계뿐이라 모델이 술통 의뢰도 talk 로 썼다.
+`quests-min` 돌려보내는 글(그 검사가 걸릴 때만 간다) +116자(영어 글은 480자 상한 안 — `test/aiV2FindingEn.test.ts`) — 물건을 나르는 의뢰는 `onAcceptItems` + `{kind:"deliver"}` 로 쓰라는 한 문장. 전의 예시는 talk 두 단계뿐이라 모델이 술통 의뢰도 talk 로 썼다.
 
 **남은 것.** ① 모델이 `goal`·`item` 을 실제로 쓰는지는 모델을 돌려 봐야 안다(이 변경은 모델 없이 검증했다). 안 써도 화면에는 이름으로 지은 줄만 나온다. ② `stepSubjects.ts` `personLine` 은 `action` 에서 살펴볼 대상 낱말을 뽑아
 «부탁하오. ○○를 좀 살펴봐 주시오.» 를 만든다 — 종류(`kind`) 없는 옛 청사진 경로라 손대지 않았다. ③ 건넨 물건은 다음 단계만 확인하고 쓰고 나서 없애지 않는다. ④ 번호 쪽지의 «(열쇠 이름)으로 열자 안에 쪽지가 있다» 는 물건 이름을 쓰므로 그대로다.

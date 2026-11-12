@@ -359,8 +359,10 @@ describe("단계 종류 — 청사진 경로가 종류마다 다른 이벤트를
     expect(spoken).not.toContain('"speaker":"옥상의 그림자","body":"해가 뜨고 문이 열렸다."');
     const page = (foe.pages ?? []).map((pg) => pg.commands ?? []).find((cmds) => cmds.some((c) => c.kind === "battleProcessing"))! as unknown as { kind: string; then?: { kind: string; body?: string }[] }[];
     expect(page.map((c) => c.kind)).toEqual(["text", "battleProcessing", "fork"]);
-    expect(page[2]!.then!.map((c) => c.kind)).toEqual(["text", "text", "triggerEnding"]);
-    expect(page[2]!.then![1]!.body).toBe("(해가 뜨고 문이 열렸다.)");
+    // 이긴 뒤 줄(winLines)을 안 줬으면 «(…을 쓰러뜨렸다.)» 를 지어 넣지 않는다 — 맺음 글 한 줄 뒤에 엔딩(2026-11-12).
+    expect(page[2]!.then!.map((c) => c.kind)).toEqual(["text", "triggerEnding"]);
+    expect(page[2]!.then![0]!.body).toBe("(해가 뜨고 문이 열렸다.)");
+    expect(spoken).not.toContain("쓰러뜨렸다");
     expect(spoken).not.toContain("새벽 엔딩");
   }, 120_000);
 });
