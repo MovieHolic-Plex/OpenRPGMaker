@@ -13,6 +13,7 @@ const data = () => bundledJson("pirateIslesTileset");
 import references from "@/assets/pirateIslesReferences.json";
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
+import { settleThemeBundleTail, type RelocationProject } from "./localTailRelocation";
 
 export const PIRATE_ISLES_ID = "pirate_isles";
 export const PIRATE_ISLES_TEXTURE = "tex_pirate_isles";
@@ -124,11 +125,15 @@ function bundleShape(): string {
  * - 더 새 번들에서 저장된(칸이 더 많은) 사본은 줄이지 않는다.
  * - 한 줄 폭이 다른 사본은 다른 시트라 칸 번호가 가리키는 그림이 다르다 — 칸 표를 번들 것으로 통째로 바꾼다(저자 항목도 번호가 무의미하므로 버린다).
  */
-export function ensurePirateIslesTileset(tileset: TilesetDef): boolean {
+export function ensurePirateIslesTileset(tileset: TilesetDef, project?: RelocationProject): boolean {
   if (tileset.id !== PIRATE_ISLES_ID || !isPirateIslesTileset(tileset)) return false;
   let changed = false;
   if (tileset.family !== PIRATE_ISLES_FAMILY) { tileset.family = PIRATE_ISLES_FAMILY; changed = true; }
   if (tileset.tilesPerRow === sheet.tilesPerRow) {
+    // 프로젝트 이식 칸(stamp_tileset_object 가 다른 칩셋 그림을 끝에 붙인 칸)이 있는 사본: 번들이 그 자리까지 자랐으면 꼬리를 새 번들 끝 뒤로 밀고
+    // (맵·킷 번호도 — `project` 를 받았을 때만) 번들 구간만 새 굽기로 채운다(localTailRelocation.ts). 전에는 «칸이 더 많은 사본» 이라 건너뛰어 새 킷을 못 받았다.
+    const tail = settleThemeBundleTail(tileset, project, { count: sheet.count, fresh: createPirateIslesTileset, owned: isOwned, signature: shapeSignature, bundleSignature: bundleShape });
+    if (tail !== undefined) return tail || changed;
     if (tileset.count > sheet.count) return changed;
     if (tileset.count === sheet.count && shapeSignature(tileset) === bundleShape()) return changed;
     const fresh = createPirateIslesTileset();

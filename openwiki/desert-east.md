@@ -43,7 +43,7 @@
 
 ### 이식 칸이 있는 옛 사본 (2026-11-12)
 `stamp_tileset_object` 로 다른 칩셋 그림을 붙여 쓴 프로젝트는 사본 끝(928~)에 이식 칸(`tileGrafts`)이 있다. 전에는 «칸이 번들보다 많은 사본» 이라 번들이 자라도 손대지 않았고, 그 프로젝트는 새 킷을 영영 못 받았다(실측: jrpg-v2 저장본, 928·929 = 황무지 표지판).
-지금은 `ensureDesertEastTileset(tileset, project)` 가 `settleLocalTail`(`src/project/defaults/localTailRelocation.ts`)로 이식 꼬리를 새 번들 끝 뒤(한 줄 폭 배수)로 밀고 — 맵·킷·changeTile 번호도 같이 — `adoptBundleBeforeTail` 로 번들 구간 칸 표·`de-` 부품을 채운다. 그림은 그대로다(같은 저장본 7맵 렌더 전후 해시 같음). 번들 끝과 꼬리 사이에 이름표가 든 칸이 있으면 더 새 번들에서 저장한 사본으로 보고 손대지 않는다. 다른 테마 번들(`if (tileset.count > sheet.count) return`)도 시트가 자랄 때 같은 두 함수를 쓴다.
+지금은 `ensureDesertEastTileset(tileset, project)` 가 `settleLocalTail`(`src/project/defaults/localTailRelocation.ts`)로 이식 꼬리를 새 번들 끝 뒤(한 줄 폭 배수)로 밀고 — 맵·킷·changeTile 번호도 같이 — `adoptBundleBeforeTail` 로 번들 구간 칸 표·`de-` 부품을 채운다. 그림은 그대로다(같은 저장본 7맵 렌더 전후 해시 같음). 번들 끝과 꼬리 사이에 이름표가 든 칸이 있으면 더 새 번들에서 저장한 사본으로 보고 손대지 않는다. 다른 테마 번들 13개도 같은 길을 쓴다 — 공용 `settleThemeBundleTail` 한 줄(`openwiki/runtime-project-schema.md` 「시트 끝에 칸을 끼운 번들」 항목).
 
 ## 조수 경로
 `plainTurn.ts` 가 사막·오아시스·바자르·피라미드·아라비안·실크로드 낱말(로마풍·버들항·지중해 제외)을 보면 `desertEastTargetFor` 노트를 붙이고 위 세 도구를 첫 요청부터 노출한다.
