@@ -1,19 +1,19 @@
 {
  "schema": "oprn-object-gate-owner-waiver/1",
  "id": "fable-redraw-roofs-sengoku-edo-2026-11-12",
- "owner": "이 에디터는 시야각이 직교해야하므로 sengoku_edo se-machiya-a 이런 식의 직각 지붕이어야하는데, jp_city jp-inaka-kominka-thatched jp_city jp-inaka-kawara-farmhouse pirate_isles pi-hut-thatch 같은 식의 지붕들은 ... 좀 문제가 많다. jp_city jp-inaka-agri-tin-shed 도 그렇고 ... sky_island si-observatory 이건 또 뭘 그린건지도 모르겠고 ... sf_station 시리즈는 전부 다시 그려야할듯. 바닥 타일부터 건물까지. snow_north 도 아예 다시 그려라. Fable 5.2 Medium 으로 1번만 시도하는 게 차라리 가격이 덜 들어간다는 걸 깨달았따. 그렇게 빠르게 진행할 것. / fable 이 만든거는 기계 불합격이라 할지라도 그냥 배치하는 게 맞을거같음. 지금 시간도 토큰도 업승니 ..",
+ "owner": "구워도 되고 앞으로는 전부 오너 면제다 (FABLE 5.2 는 한번에 다 잘만든다)",
  "decidedAt": "2026-11-12",
- "recordedBy": "지붕 다시 그리기 작업자(Claude, 감독 세션 0306a26a 의 지시 — 오너 2026-11-12 직각 지붕 지시)",
+ "recordedBy": "지붕 다시 그리기 작업자(Claude, 감독 세션 0306a26a 의 지시)",
  "contexts": [
   "bundle",
   "shared"
  ],
- "note": "Fable 5.2 medium 한 방으로 지붕만 다시 그린 sengoku_edo 건물(벽·문은 옛 화소 그대로). 판정 모델 없음. 자료 ~/z-project/assistant-fable-runs/redraw/roofs, 페이지 roof-orthogonal.html.",
+ "note": "오너가 2026-11-12 감독의 질문 1 «Fable 로 다시 그린 그림(… 직각 지붕 다시 그리기)을 판정 없이 오너 면제로 번들에 구워도 됩니까? (스토어에는 안 올립니다)» 에 한 답. roof-redraw = Fable 5.2 medium 한 방으로 그린 지붕(천문대는 돔)을 코드가 옛 건물 그림 위에 조립한 것 — 벽·문·기단 화소는 옛 영수증을 받은 그림 그대로다. 직각 지붕 지시(같은 날): «이 에디터는 시야각이 직교해야하므로 sengoku_edo se-machiya-a 이런 식의 직각 지붕이어야». 자료 ~/z-project/assistant-fable-runs/redraw/roofs, 페이지 roof-orthogonal.html.",
  "items": [
   {
    "pixelSha256": "33cc375b8b086ae3d1d8b5dab83974517cb0c76fcf34c23384a111490addf1f0",
    "kind": "structure",
-   "label": "sengoku_edo/se-chaya-thatch",
+   "label": "sengoku_edo/roof-redraw/se-chaya-thatch",
    "width": 64,
    "height": 64,
    "cells": {
@@ -128,7 +128,7 @@
   {
    "pixelSha256": "7adbdb49b5f9eaf116b0923a0f913e29e44be9916083f3ec681bb17485b8ec53",
    "kind": "structure",
-   "label": "sengoku_edo/se-onsen",
+   "label": "sengoku_edo/roof-redraw/se-onsen",
    "width": 96,
    "height": 80,
    "cells": {
@@ -230,7 +230,7 @@
   {
    "pixelSha256": "1bad0746c1eedd5b79422ed09cd79b94d75c402e566afac7a3567a12201e66d9",
    "kind": "structure",
-   "label": "sengoku_edo/se-dojo",
+   "label": "sengoku_edo/roof-redraw/se-dojo",
    "width": 112,
    "height": 80,
    "cells": {
@@ -492,7 +492,7 @@
   {
    "pixelSha256": "4d484f388cd1e1322c3d6b3bf6762c767c2abd7b8d83166217bac8e4ff42049d",
    "kind": "structure",
-   "label": "sengoku_edo/se-samurai-house",
+   "label": "sengoku_edo/roof-redraw/se-samurai-house",
    "width": 128,
    "height": 80,
    "cells": {
@@ -736,7 +736,7 @@
   {
    "pixelSha256": "9b8dbd8d4c97f99bbaae1c1d5d87515d8000c0d0218dc3f2c1e17bf3e489028e",
    "kind": "structure",
-   "label": "sengoku_edo/se-shrine",
+   "label": "sengoku_edo/roof-redraw/se-shrine",
    "width": 96,
    "height": 80,
    "cells": {
@@ -840,7 +840,7 @@
   {
    "pixelSha256": "e798cc61955790f7db13a7a21c1799e80312ce0e09c360952516d90e1937c578",
    "kind": "structure",
-   "label": "sengoku_edo/se-temple-hall",
+   "label": "sengoku_edo/roof-redraw/se-temple-hall",
    "width": 144,
    "height": 96,
    "cells": {
@@ -969,7 +969,7 @@
   {
    "pixelSha256": "cfa7319edda8e05d6631335055b299a17280d1a9b7c93902fb799947ed71a7b0",
    "kind": "structure",
-   "label": "sengoku_edo/se-minka",
+   "label": "sengoku_edo/roof-redraw/se-minka",
    "width": 96,
    "height": 80,
    "cells": {
@@ -1072,7 +1072,7 @@
   {
    "pixelSha256": "be19e623c0ece86c6995ba4838c4cb75c526d7434d9d36a59fca999dd3c5c548",
    "kind": "structure",
-   "label": "sengoku_edo/se-minka-small",
+   "label": "sengoku_edo/roof-redraw/se-minka-small",
    "width": 64,
    "height": 64,
    "cells": {
@@ -1187,7 +1187,7 @@
   {
    "pixelSha256": "cbe48a1dacbfcd23cae1ccbdc866aa111bca8e1cf2f54b0ba17557b17c4cee55",
    "kind": "structure",
-   "label": "sengoku_edo/se-barn",
+   "label": "sengoku_edo/roof-redraw/se-barn",
    "width": 64,
    "height": 64,
    "cells": {
@@ -1301,7 +1301,7 @@
   {
    "pixelSha256": "c2e447d4530c10302283e369799473760ff0aba8b692949420c7cf6ed7e06a66",
    "kind": "structure",
-   "label": "sengoku_edo/se-chashitsu",
+   "label": "sengoku_edo/roof-redraw/se-chashitsu",
    "width": 48,
    "height": 64,
    "cells": {
