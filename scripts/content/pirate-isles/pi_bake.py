@@ -213,7 +213,7 @@ def bake(dry=False):
                 (lo if pc in BL.LOWER_PC else up)[x] = t
                 gr.append([t, pc])
             rows.append(dict(tiles=lo, upperTiles=up)); grid.append(gr)
-        ai = dict(description=(p['desc'] or p['name'])[:400], placementRules=placement_rule(p)[:400],
+        ai = dict(description=(p['desc'] or p['name'])[:400], placementRules=(p.get('rule') or placement_rule(p))[:400],
                   tags=['해적 군도', GROUP_KO[p['group']], p['kind']] + p['tags'], role=role_of(p),
                   repeatability='repeat' if p['kind'] == 'terrain' else 'fixed', layerHome='lower' if p['kind'] == 'terrain' else 'upper',
                   themes=['해적', '열대 섬', '항구'], origin='ai', confidence='high')
@@ -248,6 +248,8 @@ def bake(dry=False):
     rep['tiles'] = dict(count=count, rows=math.ceil(count / TPR), kits=len(kits), groups=len(tile_groups), autotiles=len(autotile_groups))
     rep['adopted'] = dict(pieces=len(adopted), by_group=dict(collections.Counter(p['group'] for p in adopted)))
     rep['rejected'] = rejected
+    import pi_story as ST
+    rep['owner_waiver'] = dict(batch=ST.SPEC['waiver'], note='3/4 관문 미통과 — 오너 면제(통과가 아니다)', pieces=['pi-' + p['id'] for p in adopted if p['id'] in ST.IDS])
     out = dict(data=data, sheet=sheet, report=rep, piece_cells=piece_cells, comp=comp)
     if dry: return out
     os.makedirs(os.path.dirname(P['png']), exist_ok=True)
@@ -269,3 +271,4 @@ if __name__ == '__main__':
     print(json.dumps({k: r[k] for k in ('tiles', 'adopted', 'reassembly', 'palette')}, ensure_ascii=False))
     print('정의 검사 위반', r['definition']['violations'], r['definition']['by_code'], r['definition']['examples'] if r['definition']['violations'] else '')
     print('거절', len(r['rejected']), [x['id'] for x in r['rejected']][:40])
+    print('오너 면제(3/4 관문 미통과)', r['owner_waiver']['pieces'])
