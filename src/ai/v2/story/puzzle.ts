@@ -53,8 +53,8 @@ export interface ChainLink {
   readonly needsAll?: readonly string[];
   /** 이 고리는 사람이다 — 이름(역할)으로 캐릭터 칩을 고른다(이름에 직함이 없어도). 적 이름이면 적 칩. */
   readonly person?: string;
-  /** 이 고리는 사물이다(청사진 단계 종류 find·puzzle) — 그림 없는 칸을 기본 주민 칩으로 세우지 않는다(이름의 머리 명사가 사물 목록에 없어도). */
-  readonly thing?: boolean;
+  /** 이 고리는 사물이다(청사진 단계 종류 find·puzzle; 조사 단계는 "find" — 이름에 「문」이 있어도 문이 아니다) — 그림 없는 칸을 기본 주민 칩으로 세우지 않는다(이름의 머리 명사가 사물 목록에 없어도). */
+  readonly thing?: boolean | "find";
   /** 이 이벤트는 앞 경로의 다른 사람이었다(청사진 다시 쓰기로 이름이 바뀜) — 그림을 새 이름으로 다시 고른다. */
   readonly relook?: boolean;
   /** 이 고리 이벤트의 그림을 정해 준다(싸우는 상대의 전투 그림과 같은 종류의 필드 그림) — 그림 없는 칸일 때만 쓴다. */
@@ -587,7 +587,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     // 막다른 남쪽 출구는 메우고 문 고리를 북벽 문 그림으로(exitDress) — 자리 고치기 전에 해야 문이 그 그림 칸에 붙는다.
     const exits = dressInteriorExits(run, mapId);
     if (exits.notes.length) reachNotes.push(`출구 마감: ${exits.notes.join(" / ")}`);
-    const fixed = repairEventReach(run, mapId, eventIds.filter((e) => e.mapId === mapId).map((e) => e.eventId));
+    const fixed = repairEventReach(run, mapId, eventIds.filter((e) => e.mapId === mapId).map((e) => e.eventId), undefined, new Set(eventIds.filter((_, i) => args.links[i]?.thing === "find").map((e) => e.eventId)));
     if (fixed.moved.length) reachNotes.push(`닿게 옮김: ${fixed.moved.join(", ")}`);
     for (const s of fixed.stuck) warnings.push(`걸어 가서 조사할 자리를 못 찾았다: ${s}`);
   }
@@ -601,7 +601,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     if (settled.length) reachNotes.push(`조사 칸: ${settled.join(", ")}`);
     else { const shown = showExaminedThing(run, e.mapId, e.eventId); if (shown) warnings.push(shown); }
     // 단계가 쓰게 하는 물건은 맨바닥에 남기지 않는다 — 가장 가까운 그림에 앉히고, 그 이름의 그림이 아니면 «없는 그림» 으로 적는다.
-    const seated: ReturnType<typeof settleStepThing> = link?.thing && link.role !== "door" ? settleStepThing(run, e.mapId, e.eventId) : {};
+    const seated: ReturnType<typeof settleStepThing> = link?.thing && link.role !== "door" ? settleStepThing(run, e.mapId, e.eventId, link.thing === "find") : {};
     if (seated.note) reachNotes.push(seated.note);
     if (seated.gap) missingArt.push(seated.gap);
     // 그래도 보이지 않는 조사 칸(맨바닥 · 큰 그림의 한 칸 · 단계 물건이 앉은 이름 다른 그림)은 늘 빛나게 — 경로가 거쳐야 하는 것은 화면에 보여야 한다.

@@ -6,7 +6,7 @@ import { V2Session } from "@/ai/v2/turn/session";
 import { isEntranceArt } from "@/ai/v2/place/entrances";
 import { drawnThings, onDrawnThing, thingMatch } from "@/ai/v2/place/fixtures";
 import { incomingLandings } from "@/ai/v2/place/where";
-import { isDoorName } from "@/ai/v2/judge/eventReach";
+import { isDoorEvent } from "@/ai/v2/judge/eventReach";
 import { finishStepOnBossVictoryIn } from "@/ai/v2/story/blueprintPathBattles";
 import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import type { ToolContext } from "@/editor/tools/types";
@@ -30,9 +30,19 @@ describe("이름이 그림을 가리키는 세기(thingMatch)", () => {
   it("낱말이 키트 이름의 괄호 속 부품 설명에만 있으면 약하게 맞는다", () => {
     expect(thingMatch("대심장 정지 레버", terminal)).toBe(1);
   });
-  it("「비문」은 문이 아니다 — 문 그림 칸으로 끌려가지 않는다", () => {
-    expect(isDoorName("태양의 비문")).toBe(false);
-    expect(isDoorName("굳게 닫힌 철문")).toBe(true);
+  it("조사(find) 단계가 세운 이벤트는 이름에 「문」이 있어도 문이 아니다 — 단계의 종류가 말한다(낱말 표에 낱말을 더하지 않는다)", () => {
+    const project = createBlankProject();
+    const ev = { id: "ev_chain_x_4", name: "태양의 비문", x: 1, y: 1, pages: [] } as unknown as GameEvent;
+    // 청사진 밖의 이벤트는 전처럼 이름으로 읽는다.
+    expect(isDoorEvent(project, ev)).toBe(true);
+    // 사슬을 짓는 중(아직 청사진에 적히기 전)에는 부르는 쪽이 조사 단계의 id 를 넘긴다.
+    expect(isDoorEvent(project, ev, new Set([ev.id]))).toBe(false);
+    // 지은 뒤에는 청사진 단계의 종류로.
+    project.gameBlueprint = { title: "t", genre: "g", playerGoal: "p", steps: [{ id: "s4", kind: "find", place: "p", event: "태양의 비문", action: "a", gives: "g", feeling: "f", built: { mapId: project.startMapId, eventId: ev.id } }], ending: { name: "e", how: "h", feeling: "f" } } as unknown as Project["gameBlueprint"];
+    expect(isDoorEvent(project, ev)).toBe(false);
+    // 번호 자물쇠가 달린 문(puzzle 단계)은 전처럼 문이다.
+    project.gameBlueprint!.steps[0]!.kind = "puzzle";
+    expect(isDoorEvent(project, { ...ev, name: "굳게 닫힌 철문" } as GameEvent)).toBe(true);
   });
   it("낱말이 없으면 아니다 — 글자 포함으로 읽지 않는다", () => {
     expect(thingMatch("감시탑 일지", valve)).toBe(0);

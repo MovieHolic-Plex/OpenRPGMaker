@@ -121,9 +121,17 @@ export function unreachableEvents(project: Project, mapId: string, eventIds?: re
 }
 
 const DOOR_NAME = /문|door|출구|현관|exit|gate/iu;
-const NOT_DOOR_NAME = /금고|창문|서랍|문서|문양|문장|비문|주문|질문|자물쇠|문지기|문하생|천문|lock|safe|window/iu;
+const NOT_DOOR_NAME = /금고|창문|서랍|문서|문양|문장|주문|질문|자물쇠|문지기|문하생|천문|lock|safe|window/iu;
 /** 이름이 문인 이벤트(탈출 문·현관문) — 문 옆 자물쇠·금고문은 아니다. */
 export const isDoorName = (name: string) => DOOR_NAME.test(name) && !NOT_DOOR_NAME.test(name);
+/**
+ * 문인 이벤트인가. 청사진의 조사(find) 단계가 세운 이벤트는 문이 아니다 — 단계의 종류가 말하고 이름의 글자는 읽지 않는다(「태양의 비문」이 궁전 문 칸으로 갔다).
+ * 그 밖의 이벤트(번호 자물쇠가 달린 문 · 모델이 세운 문)는 전처럼 이름으로. found = 사슬을 짓는 중이라 아직 청사진에 적히지 않은 조사 단계의 이벤트 id.
+ */
+export function isDoorEvent(project: Project, ev: GameEvent, found?: ReadonlySet<string>): boolean {
+  if (found?.has(ev.id) || (project.gameBlueprint?.steps ?? []).some((s) => s.kind === "find" && s.built?.eventId === ev.id)) return false;
+  return isDoorName(String((ev as { name?: string }).name ?? ""));
+}
 
 // ── 이름이 가리키는 물건 ─────────────────────────────────────────────────────────
 // 2026-10-28 mt2: 「책상 서랍의 쪽지」가 빈 바닥에 떠 있고(deepseek), 「낡은 기록」은 책장 앞 맨바닥 투명 칸이었다(terra),

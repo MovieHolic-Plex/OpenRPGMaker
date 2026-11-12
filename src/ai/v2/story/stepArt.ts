@@ -9,7 +9,7 @@ import { onDrawnThing } from "../place/fixtures";
 import { isPassable } from "@/project/collision";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
 import type { GameMap, Project } from "@/project/types";
-import { isDoorName, reachableCells, unreachableEvents } from "../judge/eventReach";
+import { isDoorEvent, reachableCells, unreachableEvents } from "../judge/eventReach";
 import { buildingEntrances } from "../place/entrances";
 import { isMysteryBlueprint, isProgressWord, resolveSteps } from "./mysteryCaseRead";
 import { resolveGraphic } from "@/editor/tools/eventCompile";
@@ -94,7 +94,7 @@ export function openDoorSteps(project: Project): string[] {
   for (const r of resolveSteps(project)) {
     const map = project.maps[r.map.id];
     const ev = map?.events.find((e) => e.id === r.ev.id);
-    if (!map || !ev || !isDoorName(`${ev.name ?? ""} ${r.step.event}`) || JSON.stringify(ev.pages ?? []).includes('"transfer"')) continue;
+    if (!map || !ev || !isDoorEvent(project, { ...ev, name: `${ev.name ?? ""} ${r.step.event}` }) || JSON.stringify(ev.pages ?? []).includes('"transfer"')) continue;
     const pages = ev.pages ?? [];
     const opener = pages.findIndex((p) => sets(p).length > 0 && (p.conditions ?? []).length > 0);
     if (opener < 0) continue;

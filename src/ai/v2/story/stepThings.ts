@@ -59,13 +59,14 @@ export function hostStepThing(run: BuildRun, mapId: string, name: string, near: 
  * 사슬이 세운 단계 물건의 마무리 — 그림 없는 이벤트가 맨바닥에 남았으면 가장 가까운 그려진 물건에 앉히고(마주 보고 누르는 높이로),
  * 앉은 그림이 그 이름의 물건이 아니면 «없는 그림» 줄을 돌려준다. 제 그림(칩)이 있는 이벤트는 건드리지 않는다.
  */
-export function settleStepThing(run: BuildRun, mapId: string, eventId: string): { readonly note?: string; readonly gap?: string } {
+export function settleStepThing(run: BuildRun, mapId: string, eventId: string, found = false): { readonly note?: string; readonly gap?: string } {
   const map0 = run.ctx.project.maps[mapId];
   const ev0 = map0?.events.find((e) => e.id === eventId);
   if (!map0 || !ev0 || (ev0.pages ?? []).some((p) => pageHasGraphic(p))) return {};
   const name = String((ev0 as { name?: string }).name ?? ev0.id);
-  // 문 이름 조사 칸은 문 그림 칸이 제자리다(닿게 옮기기가 앉힌다) — 여기서 옮기면 다음 고치기가 도로 문으로 데려가 서로 싸운다.
-  if (isDoorName(name)) return {};
+  // 문(번호 자물쇠가 달린 문)은 문 그림 칸이 제자리다(닿게 옮기기가 앉힌다) — 여기서 옮기면 다음 고치기가 도로 문으로 데려가 서로 싸운다.
+  // found = 조사(find) 단계: 문이 아니다 — 단계의 종류가 말하고 이름의 「문」 글자는 읽지 않는다.
+  if (!found && isDoorName(name)) return {};
   const gapFor = (standIn: string) => artGapLine({ chipset: map0.tilesetId, want: "step-thing", wanted: "단계가 쓰게 하는 물건의 그림", where: `${map0.name ?? mapId} ${ev0.x},${ev0.y}`, standIn, by: "build_blueprint_path", note: `「${name}」` });
   const under = onDrawnThing(run.ctx.project, map0, ev0);
   // 가구 윗면에 얹은 탁상 물건(examineArt 가 그린 일기장·편지)이 있으면 그 물건이 보이는 것이다 — 가구 이름과 달라도 없는 그림이 아니다.

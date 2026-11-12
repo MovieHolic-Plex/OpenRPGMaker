@@ -11,7 +11,7 @@
 import { isPassable } from "@/project/collision";
 import { eventSight } from "@/project/eventSight";
 import type { GameEvent, GameMap } from "@/project/types";
-import { eventBlocks, isDoorName, reachableCells, unreachableEvents } from "../judge/eventReach";
+import { eventBlocks, isDoorEvent, reachableCells, unreachableEvents } from "../judge/eventReach";
 import { showExaminedThing } from "./examineArt";
 import { objectAt, tileLabel } from "../place/cells";
 import type { BuildRun } from "../shared/types";
@@ -51,7 +51,7 @@ const labelsAt = (run: BuildRun, map: GameMap, c: Cell, upperOnly = false): stri
 /** 맨바닥에 선 막는 투명 조사 칸인가. */
 function blankFloorBlocker(run: BuildRun, map: GameMap, ev: GameEvent): boolean {
   // 잠긴 문·막힌 틈은 일부러 막는 칸이다 — 건드리지 않는다.
-  if (ev.id.startsWith("ev_chain_seal_") || isDoorName(String((ev as { name?: string }).name ?? ""))) return false;
+  if (ev.id.startsWith("ev_chain_seal_") || isDoorEvent(run.ctx.project, ev)) return false;
   return invisible(ev) && examineOnly(ev) && eventBlocks(ev) && !objectAt(map, ev) && isPassable(run.ctx.project, map, ev.x, ev.y);
 }
 
@@ -326,7 +326,7 @@ export function settleFurnitureSpots(run: BuildRun, mapId: string): string[] {
   const notes: string[] = [];
   // 싸움·이동을 하는 이벤트는 조사 칸이 아니다 — 투명 보스 「마왕과의 결전」이 옆 벽에 붙고 벽 몸이 되어 설 칸을 잃었다(vm2 deepseek jrpg 재생).
   const fights = (e: GameEvent) => /"kind":"battleProcessing"/u.test(JSON.stringify(e.pages ?? []));
-  const ids = (run.ctx.project.maps[mapId]?.events ?? []).filter((e) => invisible(e) && examineOnly(e) && !carriesTransfer(e) && !fights(e) && !e.id.startsWith("ev_chain_seal_") && !isDoorName(String((e as { name?: string }).name ?? ""))).map((e) => e.id);
+  const ids = (run.ctx.project.maps[mapId]?.events ?? []).filter((e) => invisible(e) && examineOnly(e) && !carriesTransfer(e) && !fights(e) && !e.id.startsWith("ev_chain_seal_") && !isDoorEvent(run.ctx.project, e)).map((e) => e.id);
   for (const id of ids) {
     const find = () => run.ctx.project.maps[mapId]?.events.find((e) => e.id === id);
     staleBody(run, mapId, id, notes);
