@@ -37,7 +37,7 @@ export function setBundledTilesetDiffWriting(enabled: boolean): void {
  * 차이 보기에 그대로 싣는 가벼운 머리. 되돌릴 때 이 값이 정본이다(차이에는 다시 싣지 않는다).
  * 시작 화면 표지(electron/local-store/summary.ts → startCover.ts)는 문서를 되돌리지 않고 이 머리만으로 그린다.
  */
-const HEADER_KEYS = ["id", "name", "image", "kind", "family", "tileSize", "tilesPerRow", "count", "transparentColor", "tileGrafts"] as const;
+const HEADER_KEYS = ["id", "name", "image", "kind", "family", "tileSize", "tilesPerRow", "count", "transparentColor", "tileGrafts", "look"] as const;
 const HEADER = new Set<string>(HEADER_KEYS);
 
 type ArrayPatch = {

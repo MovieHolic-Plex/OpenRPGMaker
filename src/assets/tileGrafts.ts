@@ -7,16 +7,19 @@
 // (export 번들은 vite alias 없이 실제 tilesetImage.ts 를 그대로 사용), DOM 미리보기는 tileGraftImageCache.ts 가 이 모듈을 공유한다.
 import { bundledChipsetTileSize, bundledChipsetTilesPerRow } from "./bundledChipsetGeometry";
 import type { TileGraft, TilesetDef } from "@/project/types";
+import { tilesetLookGrafts, tilesetLookSignature } from "./tilesetLooks";
 
 type GraftSource = HTMLImageElement | HTMLCanvasElement;
 
 // 유효한 graft 만 남기고 targetTile 중복은 마지막 항목이 이긴다(덮어쓰기 의미론).
-export function activeTileGrafts(tileset: Pick<TilesetDef, "tileGrafts">): TileGraft[] {
+// 타일셋이 겉모습(look)을 골랐으면 그 그림도 여기서 겹친다 — 저장된 이식 목록은 그대로이고, 그리는 쪽(아틀라스 굽기·미리 싣기)만 본다(tilesetLooks.ts).
+export function activeTileGrafts(tileset: Pick<TilesetDef, "tileGrafts"> & Partial<Pick<TilesetDef, "look" | "image">>): TileGraft[] {
   const byTarget = new Map<number, TileGraft>();
   for (const graft of tileset.tileGrafts ?? []) {
     if (!isValidTileGraft(graft)) continue;
     byTarget.set(graft.targetTile, graft);
   }
+  for (const graft of tilesetLookGrafts(tileset)) byTarget.set(graft.targetTile, graft);
   return [...byTarget.values()].sort((a, b) => a.targetTile - b.targetTile);
 }
 
@@ -40,18 +43,22 @@ export function isValidTileGraft(graft: TileGraft | undefined | null): graft is 
 // 넘었다(Node 실측). 배열 정체성과 길이가 같으면 같은 답이다 — 이식을 바꾸는 코드는 배열을 새로 만들거나
 // push 한다(길이가 바뀐다). 항목을 제자리에서 고치는 코드는 없다.
 const graftSuffixCache = new WeakMap<readonly TileGraft[], { readonly length: number; readonly suffix: string }>();
-export function tileGraftsTextureSuffix(tileset: Pick<TilesetDef, "tileGrafts">): string {
+export function tileGraftsTextureSuffix(tileset: Pick<TilesetDef, "tileGrafts"> & Partial<Pick<TilesetDef, "look" | "image">>): string {
+  // 겉모습은 저장된 이식 배열과 따로 바뀐다 — 서명을 뒤에 붙인다(배열 캐시는 저장된 이식만 본다).
+  const look = tilesetLookSignature(tileset);
+  const lookSuffix = look ? `__look_${hashString(look)}` : "";
   const source = tileset.tileGrafts;
-  if (!source || source.length === 0) return "";
+  if (!source || source.length === 0) return lookSuffix;
   const cached = graftSuffixCache.get(source);
-  if (cached && cached.length === source.length) return cached.suffix;
+  if (cached && cached.length === source.length) return cached.suffix + lookSuffix;
   const suffix = computeTileGraftsTextureSuffix(tileset);
   graftSuffixCache.set(source, { length: source.length, suffix });
-  return suffix;
+  return suffix + lookSuffix;
 }
 
 function computeTileGraftsTextureSuffix(tileset: Pick<TilesetDef, "tileGrafts">): string {
-  const grafts = activeTileGrafts(tileset);
+  // 저장된 이식만(겉모습 서명은 tileGraftsTextureSuffix 가 따로 붙인다)
+  const grafts = activeTileGrafts({ tileGrafts: tileset.tileGrafts });
   if (grafts.length === 0) return "";
   const signature = grafts
     .map((graft) => `${graft.targetTile}:${graft.sourceChipset}:${graft.sourceTile}`)

@@ -24,6 +24,7 @@ import { isMonsterOnlyTool, monsterAssetsAllowed, monsterToolArgViolation, monst
 import { assertMonsterAssetLock, monsterAssetCatalogFilters, MonsterAssetLockError } from "@/project/genreLockMonsterAssetsDiff";
 import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
 import { withKitLook } from "@/project/kitLook";
+import { settleProjectLook } from "@/project/tilesetLook";
 import { PeopleChipLockError, settlePeopleChipLock } from "@/project/peopleChipLock";
 import { isRetiredEasyRpgTileset, LIBRARY_IMPORT_TOOLS, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { guardWholeRecordRewrite } from "./assistantRewriteGuard";
@@ -553,6 +554,8 @@ export function runToolDefinition(
     const runnerWarnings = [...(prunedNote ? [prunedNote] : []), ...(guarded?.warnings ?? []), ...heldPages];
     if (runnerWarnings.length) exec = { ...exec, warnings: [...runnerWarnings, ...(exec.warnings ?? [])] };
     compactTouchedMapLayers(before, draft);
+    // 게임마다 한 가지 겉모습: 이 호출이 그 칩셋의 첫 맵을 지었으면 바닥·길·나무 겉모습을 게임 열쇠로 골라 타일셋에 적는다(project/tilesetLook.ts — 칸 번호는 그대로, 그림만).
+    if (ctx.assistantRun) settleProjectLook(before, draft, ctx.lookKey);
     // 장르 잠금은 계열 검사보다 먼저 돈다(허용 칩셋 목록·대안을 알리는 더 구체적인 거부). allowsTilesetChange 도구(예제 통째 가져오기 등)도 거친다 — 프로젝트를 통째로 되돌리거나 갈아 끼우는 도구만 빠진다.
     if (!GENRE_LOCK_EXEMPT_TOOLS.has(name)) {
       const lockWarnings = rejectGenreLockViolation(ctx, before, draft, name);

@@ -278,9 +278,12 @@ function carryCreatedGrafts(merged: Project, started: Project, result: Project):
     const groups = createdById(startedTileset.autotileGroups ?? [], resultTileset.autotileGroups ?? [], targetGroups);
     const known = new Set([...(startedTileset.tileGrafts ?? []), ...(target.tileGrafts ?? [])].map((graft) => graft.targetTile));
     const added = (resultTileset.tileGrafts ?? []).filter((graft) => !known.has(graft.targetTile));
-    if (added.length === 0 && groups === targetGroups) continue;
+    // 게임 겉모습(tileset.look): 묶음이 그 칩셋의 첫 맵을 지으며 고른 값 — 시작 때도 병합본에도 없을 때만 옮긴다(project/tilesetLook.ts).
+    const look = !startedTileset.look && !target.look ? resultTileset.look : undefined;
+    if (added.length === 0 && groups === targetGroups && !look) continue;
     const next = added.length === 0 ? { ...target } : { ...target, tileGrafts: [...(target.tileGrafts ?? []), ...clone(added)] };
     if (groups !== targetGroups) next.autotileGroups = [...groups];
+    if (look) next.look = clone(look);
     // 끝을 넘는 슬롯에 이식하면 addTileGraft 가 count 와 타일별 배열을 먼저 늘린다. 이식만 옮기면
     // 병합본이 `targetTile out of range (count 확장 누락)` 로 게이트에서 거부된다(2026-09-23 실측).
     // 늘린 꼬리(원래 count 뒤)만 옮긴다 — 기존 슬롯의 속성 변경은 여전히 범위 밖이다.
