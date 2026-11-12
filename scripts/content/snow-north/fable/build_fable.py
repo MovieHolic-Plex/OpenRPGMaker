@@ -9,6 +9,7 @@
 - 건물 = 지붕(직사각형) + 벽을 위아래로 붙인다. 폭 5칸 이상은 16px 구획(왼 끝·가운데·특징/문·오른 끝)을 코드가 늘어놓는다.
 - 오토타일 6그룹(47 모양 + 속 변형 2)은 옛 배치(art/autotile.py Depression.depth)를 그대로 쓰고 속·바깥 그림만 새 바닥 칸에서 읽는다.
 - 움직이는 조각의 프레임 2·3, 남북 방향 길, 그늘 눈, 가문비 두 그루, 반대 무늬 깃발은 코드가 만든다.
+- 코드 마감(색·처마 선만): 지붕 눈의 줄별 명암과 고르지 않은 처마 눈 턱(roof_finish), 노점 차양의 색 띠 늘리기(awning), 다진 눈의 회색 긁힘 → 푸른 그늘(pack_tile), 눈밭 기본 칸의 되풀이되는 밝은 결 지우기(snow_base).
 - 답이 없거나 깨진 조각은 옛 그림(fable/old/sn-<id>.png — 2026-11-12 이전 커밋의 tiledata/snow-north/<묶음>/_gate 를 꺼내 둔다)을 v2 팔레트로 옮겨 남긴다(KEPT 에 적힌다). 지금은 그런 조각이 없어 fable/old 는 저장소에 없다.
 """
 import argparse, json, math, os, sys
@@ -167,25 +168,76 @@ def waft(im, f):
 
 
 # ───────────────────────── 조립식 ─────────────────────────
+def _h(x, y=0, k=0):
+    v = (x * 73856093) ^ (y * 19349663) ^ (k * 83492791)
+    return (v ^ (v >> 13)) & 0xffff
+
+
 def roof_finish(im, rows=None):
-    """지붕 조각 마감(색만, 모양은 그대로): 흰 지붕이 흰 눈밭에 녹아 사라지지 않게
-    ① 눈 화소를 한 단씩 내리고(눈밭보다 한 단 푸르고 어둡게 — 가장 밝은 마루 결만 남긴다) ② 윗변·좌우 변 1px 를 먹(ink:1)으로 두른다."""
+    """지붕 조각 마감(코드, 모델 호출 없음 — 감독 2026-11-12: 한 방 지붕 눈이 평평한 띠로 읽혔다). 직사각형 윤곽은 그대로 둔다.
+    ① 처마 눈 턱 바로 위 2줄만 한 단 어둡게(턱으로 말려 내려가는 그늘). 나머지 눈은 답 그대로다 — 위 절반을 한 단 밝히는 것도 해 봤지만 흰 종이 + 가로 금으로 읽혀 버렸다.
+    ② 처마 눈 턱을 고르지 않게: 턱이 3~7px 폭으로 군데군데 1~2px 처마 그늘 위로 늘어진다(두툼한 눈이 처마를 넘어 온다).
+    ③ 윗변·좌우 변 1px 를 먹(ink:1)으로 두른다 — 흰 지붕이 흰 눈밭에 녹지 않게.
+    rows: 지붕이 캔버스의 위 rows 줄일 때(통째 그린 작은 건물). 처마 = 그 마지막 4줄(눈 턱 · 턱 밑 · 그늘 2줄)."""
     o = PAL.V2_RGB['object']; sn = o['snow']; sh = o['shade'][1]
-    down = {sn[3]: sn[2], sn[2]: sn[1], sn[1]: sn[0], sn[0]: sh}
+    tone = {sh: -1, **{c: i for i, c in enumerate(sn)}}
+    col = lambda t: sh if t < 0 else sn[min(3, t)]
     a = np.array(im); h = rows or a.shape[0]; w = a.shape[1]
-    crest = np.zeros((h, w), bool)
-    for y in range(h):
+    lip = h - 4
+    for y in range(lip):
+        d = -1 if y >= lip - 2 else 0
+        if not d: continue
         for x in range(w):
             c = tuple(int(v) for v in a[y, x, :3])
-            if a[y, x, 3] and c in down:
-                # 마루 쪽(위 1/4)의 가장 밝은 결은 그대로 둔다
-                if c == sn[3] and y < h // 4: continue
-                a[y, x, :3] = down[c]
+            if a[y, x, 3] and c in tone: a[y, x, :3] = col(max(-1, tone[c] + d))
+    x = 2 + _h(w, h) % 4
+    while x < w - 4:
+        n = 3 + _h(x, w, 1) % 5
+        for i in range(n):
+            xx = x + i
+            if xx >= w - 2 or not a[h - 1, xx, 3]: continue
+            deep = n >= 5 and 0 < i < n - 1
+            a[lip, xx, :3] = sn[3]; a[lip + 1, xx, :3] = sn[2] if deep else sn[1]
+            a[lip + 2, xx, :3] = sn[1] if deep else sn[0]
+            if deep: a[lip + 3, xx, :3] = sn[0]
+        x += n + 3 + _h(x, w, 2) % 6
     ink = o['ink'][1]; op = a[:, :, 3] > 0
     for y in range(h):
         for x in range(w):
             if op[y, x] and (x == 0 or not op[y, x - 1] or x == w - 1 or not op[y, x + 1] or y == 0 or not op[y - 1, x]): a[y, x, :3] = ink
     return Image.fromarray(a, 'RGBA')
+
+
+def awning(im):
+    """노점 차양(코드): 한 방 그림은 눈이 차양의 위 절반을 덮어 장터가 갈색 상자 줄로 읽혔다. 줄무늬를 위로 늘려(4번째 줄부터) 색 띠를 두 배로 하고,
+    눈은 맨 위 3줄과 군데군데 늘어진 덩이로 남긴다. 살림 노점처럼 색 줄이 가는 차양은 4px 줄무늬 한 칸 걸러 오로라 색으로 채운다."""
+    o = PAL.V2_RGB['object']; snow = set(o['snow']) | {o['shade'][1]}; acc = {c for k in ('red', 'blue', 'aurora') for c in o[k]}
+    a = np.array(im); w = a.shape[1]
+    rows = [y for y in range(3, 14) if sum(1 for x in range(w) if tuple(a[y, x, :3]) in snow) < w * 0.25 and sum(1 for x in range(w) if tuple(a[y, x, :3]) in acc) >= 4]
+    if not rows: return im
+    r0 = rows[0] + (1 if len(rows) > 1 else 0)
+    if sum(1 for x in range(w) if tuple(a[r0, x, :3]) in acc) < w * 0.3:      # 가는 색 줄 → 넓은 줄무늬
+        hide = set(o['hide'])
+        for y in rows:
+            for x in range(1, w - 1):
+                if (x // 4) % 2 == 0 and tuple(a[y, x, :3]) in hide: a[y, x, :3] = o['aurora'][0]
+    for y in range(3, rows[0]):
+        for x in range(1, w - 1):
+            if tuple(a[y, x, :3]) in snow and not (y <= 4 and _h(x // 3, 7) % 3 == 0): a[y, x, :3] = a[r0, x, :3]
+    return Image.fromarray(a, 'RGBA')
+
+
+def snow_base(im):
+    """눈밭 기본 칸(맵의 눈밭 대부분이 이 한 칸이다): 밝은 바람결 줄이 칸마다 같은 자리에 되풀이돼 줄표 무늬로 읽혔다 — 밝은 결을 지우고 옅은 그늘 줄만 남긴다.
+    바람결은 드물게 섞이는 변주 칸(snow-b·c·d)에만 남는다."""
+    g = PAL.V2_RGB['ground']['snow']
+    return remap(im, lambda c: g[2] if c == g[3] else c)
+
+
+def pack_tile(im):
+    """다진 눈 칸: 답은 눈 램프 1단 바탕 + 2단 얼룩 + 회색 긁힘으로 왔다. 회색 긁힘을 눈의 푸른 그늘 단으로 옮겨 «눈밭보다 한 단 어둡고 푸른 눈» 으로만 읽히게 한다."""
+    g = PAL.V2_RGB['ground']; grey = set(g['grey'])
+    return remap(im, lambda c: g['snow'][0] if c in grey else c)
 
 
 def R_building(roof, wall, r_order=None, w_order=None, finish=True, rows=None):
@@ -224,7 +276,7 @@ def R_pine_pair():
 
 
 def R_snow_shade():
-    return remap(cut('g-snow', 'snow'), lambda c: shade_rgb(c, -1))
+    return remap(snow_base(cut('g-snow', 'snow')), lambda c: shade_rgb(c, -1))
 
 
 def R_banner_b():
@@ -238,8 +290,8 @@ def half(jid, name, top): return lambda: cut(jid, name).crop((0, 0 if top else 1
 C = lambda jid, name=None: (lambda: cut(jid, name)) if name else (lambda: J(jid))
 RECIPES = {
     # 바닥
-    'snow': C('g-snow', 'snow'), 'snow-b': C('g-snow', 'snow-b'), 'snow-c': C('g-snow', 'snow-c'), 'snow-d': C('g-snow', 'snow-d'), 'snow-shade': R_snow_shade,
-    'pack': C('g-pack', 'pack'), 'pack-sled': C('g-pack', 'pack-sled'), 'pack-sled-v': lambda: transpose(cut('g-pack', 'pack-sled')),
+    'snow': lambda: snow_base(cut('g-snow', 'snow')), 'snow-b': C('g-snow', 'snow-b'), 'snow-c': C('g-snow', 'snow-c'), 'snow-d': C('g-snow', 'snow-d'), 'snow-shade': R_snow_shade,
+    'pack': lambda: pack_tile(cut('g-pack', 'pack')), 'pack-sled': lambda: pack_tile(cut('g-pack', 'pack-sled')), 'pack-sled-v': lambda: pack_tile(transpose(cut('g-pack', 'pack-sled'))),
     'ice': C('g-ice', 'ice'), 'ice-clear': C('g-ice', 'ice-clear'), 'ice-crack': C('g-ice', 'ice-crack'), 'ice-dust': C('g-ice', 'ice-dust'),
     'tundra': C('g-grass', 'tundra'), 'frost': C('g-grass', 'frost'), 'slush': C('g-wet', 'slush'),
     'boards': C('g-paths', 'boards'), 'boards-v': lambda: transpose(cut('g-paths', 'boards')), 'flagstone': C('g-paths', 'flagstone'), 'hearthstone': C('g-paths', 'hearthstone'),
@@ -269,7 +321,7 @@ RECIPES = {
     'chopping-block': C('p-small', 'chopping-block'), 'anvil': C('p-small', 'anvil'), 'water-barrel': C('p-small', 'water-barrel'), 'palisade-v': C('p-small', 'palisade-v'),
     'palisade': C('p-fences', 'palisade'), 'fence': C('p-fences', 'fence'), 'fence-v': C('p-fences', 'fence-v'), 'ice-wall': C('p-fences', 'ice-wall'), 'ice-wall-post': C('p-fences', 'ice-wall-post'),
     'smoke': C('p-fences', 'smoke'), 'smoke-f1': lambda: waft(cut('p-fences', 'smoke'), 1), 'smoke-f2': lambda: waft(cut('p-fences', 'smoke'), 2),
-    'stall-fish': C('p-stall-fish', 'stall-fish'), 'stall-fur': C('p-stall-fur', 'stall-fur'), 'stall-wares': C('p-stall-wares', 'stall-wares'),
+    'stall-fish': lambda: awning(cut('p-stall-fish', 'stall-fish')), 'stall-fur': lambda: awning(cut('p-stall-fur', 'stall-fur')), 'stall-wares': lambda: awning(cut('p-stall-wares', 'stall-wares')),
     # 실내
     'floor-plank': C('g-floors', 'floor-plank'), 'floor-stone': C('g-paths', 'floor-stone'), 'floor-ice': C('g-floors', 'floor-ice'), 'floor-sauna': C('g-floors', 'floor-sauna'),
     'ceiling': C('i-walls-other', 'ceiling'), 'ceiling-ice': C('i-walls-other', 'ceiling-ice'),
@@ -296,7 +348,7 @@ def role_of(it, group):
 
 
 # ───────────────────────── 오토타일 ─────────────────────────
-OLD2NEW = {'snow': [0, 0, 0, 1, 1, 2, 3], 'ice': [0, 0, 0, 1, 1, 2, 2]}     # 옛 둑 단(7단) → v2 단
+OLD2NEW = {'snow': [0, 0, 0, 0, 1, 2, 3], 'ice': [0, 0, 0, 0, 1, 2, 3]}     # 옛 둑 단(7단) → v2 단(v2 의 네 단 = 옛 3~6단과 같은 색)
 AUTO = dict(      # 그룹 → (속 칸, 속 변형 둘, 바깥 칸)
     pack=('pack', ('pack-b', 'pack-c'), 'snow'), ice=('ice', ('~ice', 'ice-dust'), 'snow'), tundra=('tundra', ('tundra-b', '~tundra'), 'snow'),
     frost=('frost', ('frost-b', '~frost'), 'snow'), slush=('slush', ('slush-b', '~slush'), 'snow'), water=('water', ('water-b', '~water'), 'ice'))
@@ -306,7 +358,8 @@ AUTO_SRC = {'pack': 'g-pack', 'pack-b': 'g-pack', 'pack-c': 'g-pack', 'ice': 'g-
 
 def fill_of(name):
     if name.startswith('~'): return hflip(fill_of(name[1:]))
-    return cut(AUTO_SRC[name], name)
+    im = cut(AUTO_SRC[name], name)
+    return pack_tile(im) if name.startswith('pack') else snow_base(im) if name == 'snow' else im
 
 
 def auto_cell(dep, m, inside, outside, om):
@@ -342,7 +395,7 @@ def auto_cell(dep, m, inside, outside, om):
             for y in range(1, 12):
                 d0, e0 = dep.depth(m, x, y, 0, 0)
                 if e0 == 'N' and d0 >= 0:
-                    for k in range((1, 0, 2, 0, 1, 3, 0, 1)[(x * 5 + 3) % 8]): a[y + k, x, :3] = ice[2]
+                    for k in range((1, 0, 2, 0, 1, 3, 0, 1)[(x * 5 + 3) % 8]): a[y + k, x, :3] = ice[3] if k == 0 else ice[2]
                     break
     return Image.fromarray(a, 'RGBA')
 
