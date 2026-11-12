@@ -7,7 +7,8 @@ import { objectBaseLabel, objectClusterAt } from "@/project/objectFootprint";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { reachableCells } from "../judge/eventReach";
 import type { BuildRun } from "../shared/types";
-import { isEntranceArt, passageTiles } from "./entrances";
+import { behindBuildingStrip, isEntranceArt, passageTiles } from "./entrances";
+import { laneCells } from "./placementRules";
 
 type Cell = { x: number; y: number };
 type Kit = { id: string; name?: string; width?: number; height?: number; rows?: { tiles?: number[]; upperTiles?: number[] }[]; parts?: { kind?: string }[]; ai?: { tags?: string[]; role?: string } };
@@ -137,12 +138,15 @@ function stampKitNear(run: BuildRun, mapId: string, kit: Kit, near: Cell, claime
   if (!map0 || !reach0) return undefined;
   const reached = (r: Uint8Array) => { let n = 0; for (const v of r) n += v ? 1 : 0; return n; };
   const w = kit.width ?? 1, h = kit.height ?? 1;
+  // 차도·선로 위와 지붕 뒤 띠에는 찍지 않는다 — 사람·상자 자리와 같은 규칙(책상이 선로 침목 위에 놓였다: 2026-11-13 증거 명세 「감시탑 일지」).
+  const lanes = laneCells(run.ctx.project, map0), strip = behindBuildingStrip(run.ctx.project, map0);
   const spots: { x: number; y: number; d: number }[] = [];
   for (let y = Math.max(0, near.y - 7); y <= Math.min(map0.height - h, near.y + 7); y += 1) for (let x = Math.max(0, near.x - 7); x <= Math.min(map0.width - w, near.x + 7); x += 1) {
     let free = true;
     // 발자국과 그 남쪽 한 줄(서는 자리)이 빈 걷는 바닥이어야 한다 — 문 앞·길목을 막지 않게 둘레 이벤트도 피한다.
     for (let yy = y; yy <= y + h && free; yy += 1) for (let xx = x; xx < x + w && free; xx += 1) {
       if (yy >= map0.height || !reach0[yy * map0.width + xx] || !isPassable(run.ctx.project, map0, xx, yy) || objectClusterAt(run.ctx.project, map0, xx, yy)) free = false;
+      else if (lanes.has(yy * map0.width + xx) || strip[yy * map0.width + xx]) free = false;
       else if ([...(map0.events ?? []), ...claimed].some((e) => Math.abs(e.x - xx) + Math.abs(e.y - yy) <= 1)) free = false;
     }
     if (free) spots.push({ x, y, d: Math.abs(x - near.x) + Math.abs(y + h - 1 - near.y) });
