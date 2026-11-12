@@ -23,9 +23,12 @@ import { machineSkillOf } from "@/project/monsterMedicine";
 import { isMonsterPartyGame, monsterCurrentHp, monsterMaxHp, rejectPendingMonsterSkill, replacePendingMonsterSkill } from "@/project/monsterCollection";
 import { allPages, childLists, conditionLeaves, visitPageCommands, type CommandVisit, type PageRef, type RawCommand } from "./walk";
 import type { AutoPlayReport, AutoPlayRun, AutoPlayStepTrace, CommandWhere } from "./types";
+import { honestRefusal } from "./honestPlay";
 
 /** 파티가 아는 스킬을 읽는 페이지 조건(partyKnowsSkill)까지 푸는 resolveEventPage — 프로젝트는 자동 플레이 한 판 동안 하나다. */
 let pageProject: Project | undefined;
+/** 정직한 플레이(honestPlay.ts) — 보이는 것과 읽은 글만 쓴다. 자동 플레이 한 판 동안 하나다. */
+let honestMode = false;
 function resolveEventPage(event: GameEvent, session: PlaySession): ReturnType<typeof resolveEventPageRaw> {
   return resolveEventPageRaw(event, session, pageProject ? partySkillContext(pageProject, session as unknown as PartySkillSession) : undefined);
 }
@@ -757,6 +760,8 @@ interface Driver {
   acquiring?: Set<string>;
   /** 이번 판에서 확정한 단계마다 본 변수 값·켜진 스위치 — 지나간 일시 값을 「이미 거쳤다」로 알아보는 증거. */
   seen?: { readonly vars: Map<string, Set<number>>; readonly switches: Set<string> };
+  /** 저장 지점(base) 앞에서 띄운 글 — 러너의 글 목록은 base 부터 다시 쌓인다(정직한 플레이가 «읽은 글» 로 쓴다). */
+  shown?: string[];
 }
 
 /** 막힘이 아니라 경고로 낮춰 통과시킨 단계의 detail 머리 — runPlan 이 뒤의 실패에 덧붙인다. */
@@ -888,6 +893,7 @@ function learnPendingMoves(project: Project, session: PlaySession): PlaySession 
 function checkpoint(driver: Driver): void {
   const learned = isMonsterPartyGame(driver.project) ? learnPendingMoves(driver.project, driver.last.session) : null;
   if (driver.steps.length === 0 && driver.base && !learned) return;
+  if (honestMode) (driver.shown ??= []).push(...driver.last.finalState.messages);
   driver.base = learned ?? structuredClone(driver.last.session);
   driver.baseMoved = driver.last.movedEvents;
   // 복제하면 세션에 붙은 체크포인트(마지막 회복 센터)가 사라진다 — 함께 옮긴다.
@@ -1340,6 +1346,14 @@ function fireEvent(driver: Driver, event: GameEvent, visit: CommandVisit): strin
   if (trigger === "none") return `${event.name ?? event.id} 의 현재 활성 페이지가 없습니다(페이지 조건이 안 맞음).`;
   const touch = trigger === "touch" || trigger === "playerTouch" || trigger === "eventTouch";
   const mapId = session.currentMapId;
+  if (honestMode && driver.project.maps[mapId]) {
+    const refusal = honestRefusal({
+      project: driver.project, map: runtimeMap(driver.project.maps[mapId]!, session), session,
+      messages: [...(driver.shown ?? []), ...driver.last.finalState.messages], moved: driver.last.movedEvents,
+      pageOf: (other) => (other.pages?.length ? resolveEventPage(other, session) ?? undefined : undefined),
+    }, event, touch, (variableId) => numberInputAnswer(driver.project, variableId));
+    if (refusal) return refusal;
+  }
   // 이미 접촉 이벤트 칸 위에 서 있으면(패배 뒤 센터 출입문 위로 옮겨졌을 때) 한 칸 비켰다가 다시 밟는다 — 제자리는 발동하지 않는다.
   if (touch && session.x === event.x && session.y === event.y) {
     const map = runtimeMap(driver.project.maps[mapId]!, session);
@@ -1987,9 +2001,12 @@ export function runAutoPlay(
     readonly budgetMs?: number; readonly companionJoins?: readonly CommandVisit[]; readonly recoverBeforeRandomEncounters?: boolean;
     /** 기본 경로의 목표마다 실행 직전에 부른다(탐침 전용 — 판을 바꾸지 않는다). */
     readonly onGoal?: (moment: AutoPlayMoment) => void;
+    /** 정직한 플레이 — 보이는 것(그림 있는 이벤트·접촉 칸)과 읽은 글만 쓴다(honestPlay.ts). 어기면 그 목표에서 멈춘다. */
+    readonly honest?: boolean;
   } = {},
 ): AutoPlayReport {
   pageProject = project;
+  honestMode = options.honest === true;
   if (options.recoverBeforeRandomEncounters) RECOVERING_PROJECTS.add(project);
   else RECOVERING_PROJECTS.delete(project);
   const deadline = Date.now() + (options.budgetMs ?? 60_000);

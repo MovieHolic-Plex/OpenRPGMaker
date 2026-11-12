@@ -14,6 +14,7 @@
 //   · 벽 앞면 위에 천장이 한 줄도 없는 「떠 있는 벽 토막」이 생길 수 있었다 → 배치 간격 규칙 + 검사(stranded-wall)
 //   · 서사 앵커가 없었다 → 입구(올라가는 계단)·보스방(입구에서 가장 먼 방)·보물 방·잠긴 문 자리(gate)를 결과로 돌려준다
 import { checkGroundSupportForStamp, groundSupportIssues, kitSupportKind, supportSurfaceOf } from "@/project/groundSupport";
+import { lookKit } from "@/project/kitLook";
 import { autotileVariantForMask, cellHash } from "@/project/defaults/autotileEngine";
 import type { AutotileGroup, GameMap, StructureKitDef, TilesetDef } from "@/project/types";
 import { DungeonComposeError } from "../errors";
@@ -637,7 +638,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const placedLog: { id: string; x: number; y: number; cells: (readonly [number, number, number])[] }[] = [];
   const put = (kitId: string, x: number, y: number, opts: { label?: string; free?: boolean; liquidOk?: boolean } = {}): boolean => {
     if (!hasKit(kitId)) return false;
-    const def = kit(kitId);
+    // 기물은 이 게임의 변형 그림으로(화로·제단·모닥불 — 같은 칸 크기·같은 막힌 칸). 벽·바닥 킷은 변형이 없어 그대로다(project/kitLook.ts).
+    const def = lookKit(ts, kit(kitId));
     if (x < 0 || y < 0 || x + def.width > W || y + def.height > H) return false;
     if (checkGroundSupportForStamp(pseudo, ts, def, x, y)) return false;
     const ownSupport = kitSupportKind(def) === null;   // 던전 테마 밖 키트(광산 골짜기 등)는 groundSupport 가 안 본다 — 같은 규칙을 여기서 직접

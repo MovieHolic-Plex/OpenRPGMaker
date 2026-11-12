@@ -4,11 +4,11 @@
  "tileSize": 16,
  "tilesPerRow": 128,
  "base": 34944,
- "count": 35072,
+ "count": 35200,
  "kitPrefix": "bd-obj-",
  "source": "scripts/content/beodeul-objects/bake.py (Claude Fable 5.2 medium one-shot pictures, colours taken from the beodeul_city sheet)",
  "license": "drawn by Claude Fable 5.2 for this project (own work)",
- "gate": "3/4 gate not passed — owner waiver fable-oneshot-2026-11-12",
+ "gate": "3/4 gate not passed — owner waivers fable-oneshot-2026-11-12, fable-variety-beodeul-2026-11-12",
  "items": [
   {
    "id": "spring",
@@ -613,6 +613,1664 @@
     "ledger"
    ],
    "sha256": "4cb194af5d79e10ea45567fe069dfcda146ab5f4671b62e76012ffeab3387f35"
+  },
+  {
+   "id": "well-windlass",
+   "kit": "bd-obj-well-windlass",
+   "name": "우물 · 두레박 틀 돌 우물",
+   "en": "open stone well with a windlass",
+   "kind": "container",
+   "width": 2,
+   "height": 2,
+   "place": "prop",
+   "rows": [
+    [
+     34999,
+     35000
+    ],
+    [
+     35001,
+     35002
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "두레박 우물",
+    "두레박 틀 우물",
+    "windlass well"
+   ],
+   "sha256": "01bfb774d002893a17051211872961b5079fc9f090146d9e0e0deb85b004b7d9",
+   "variantOf": "bd-prop-well_roofed"
+  },
+  {
+   "id": "well-pump",
+   "kit": "bd-obj-well-pump",
+   "name": "우물 · 손 펌프와 돌 물통",
+   "en": "hand pump over a stone trough",
+   "kind": "container",
+   "width": 2,
+   "height": 2,
+   "place": "prop",
+   "rows": [
+    [
+     35003,
+     35004
+    ],
+    [
+     35005,
+     35006
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "펌프 우물",
+    "손 펌프",
+    "물 펌프",
+    "hand pump",
+    "water pump"
+   ],
+   "sha256": "342bfc8a12a889ca6e1b4e17fc442eb8b9340d63b5ade751e505608cb6423a2b",
+   "variantOf": "bd-prop-well_roofed"
+  },
+  {
+   "id": "well-spout",
+   "kit": "bd-obj-well-spout",
+   "name": "우물 · 사자 물구멍 돌 수조",
+   "en": "wall fountain with a stone basin",
+   "kind": "container",
+   "width": 2,
+   "height": 2,
+   "place": "prop",
+   "rows": [
+    [
+     35007,
+     35008
+    ],
+    [
+     35009,
+     35010
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "샘터",
+    "돌 수조",
+    "물터",
+    "wall fountain"
+   ],
+   "sha256": "b372c026179ce2432a2980c4770fe4400770b048af80c87ec6a4b53f4ba5177b",
+   "variantOf": "bd-prop-well_roofed"
+  },
+  {
+   "id": "bench-stone",
+   "kit": "bd-obj-bench-stone",
+   "name": "벤치 · 돌 벤치",
+   "en": "stone slab bench",
+   "kind": "seat",
+   "width": 2,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35011,
+     35012
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "돌 벤치",
+    "stone bench"
+   ],
+   "sha256": "aa5f2f5a1fee7b93fd758f7dc99a0f696a515fde31258f0b18364220ef77b712",
+   "variantOf": "bd-prop-bench_wood"
+  },
+  {
+   "id": "bench-log",
+   "kit": "bd-obj-bench-log",
+   "name": "벤치 · 반쪽 통나무 벤치",
+   "en": "half-log bench",
+   "kind": "seat",
+   "width": 2,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35013,
+     35014
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "통나무 벤치",
+    "log bench"
+   ],
+   "sha256": "89ac5241ce2e230309595f41962142c0ed64b468045d13f392e47ad76090dca2",
+   "variantOf": "bd-prop-bench_wood"
+  },
+  {
+   "id": "bench-trestle",
+   "kit": "bd-obj-bench-trestle",
+   "name": "벤치 · 등받이 없는 널 벤치와 방석",
+   "en": "backless trestle bench with a cushion",
+   "kind": "seat",
+   "width": 2,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35015,
+     35016
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "널 벤치",
+    "방석 벤치",
+    "trestle bench"
+   ],
+   "sha256": "d7448cbaca16f1ca28609a04663c2f97622c7623b50bbcbcc6477cb82f080bbe",
+   "variantOf": "bd-prop-bench_wood"
+  },
+  {
+   "id": "sign-hanging",
+   "kit": "bd-obj-sign-hanging",
+   "name": "이정표 · 걸이 간판 기둥",
+   "en": "post with a hanging sign board",
+   "kind": "front_prop",
+   "width": 1,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35017
+    ],
+    [
+     35018
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "걸이 간판",
+    "걸이 간판 기둥",
+    "hanging sign"
+   ],
+   "sha256": "36cd0f2421960480ad34e4f204137f2ffa6d91e0bbde010ed68dbb1441ec0bb4",
+   "variantOf": "bd-out-signpost"
+  },
+  {
+   "id": "sign-milestone",
+   "kit": "bd-obj-sign-milestone",
+   "name": "이정표 · 돌 이정표",
+   "en": "stone milestone",
+   "kind": "column",
+   "width": 1,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35019
+    ],
+    [
+     35020
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "돌 이정표",
+    "표지석",
+    "milestone"
+   ],
+   "sha256": "d14cb52e327268a3566e724ba325a0eacee5425d1af068c3adf27f430b53a301",
+   "variantOf": "bd-out-signpost"
+  },
+  {
+   "id": "sign-cairn",
+   "kit": "bd-obj-sign-cairn",
+   "name": "이정표 · 돌무지와 깃대",
+   "en": "cairn with a pennant pole",
+   "kind": "other",
+   "width": 1,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35021
+    ],
+    [
+     35022
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "돌무지 표지",
+    "깃대 돌무지",
+    "cairn waymark"
+   ],
+   "sha256": "be408debd27bb717e0961b4ffeb995191dd0530bc094bb59ecc5f3b31a12c260",
+   "variantOf": "bd-out-signpost"
+  },
+  {
+   "id": "crate-closed",
+   "kit": "bd-obj-crate-closed",
+   "name": "상자 · 못 박은 닫힌 나무 상자",
+   "en": "closed nailed wooden crate",
+   "kind": "box",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35023
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "닫힌 상자",
+    "못 박은 상자",
+    "closed crate"
+   ],
+   "sha256": "e4d5e15ddc511624acbfa94921b9b8b5c29f80a7231bc2353629794c7cb0bb1e",
+   "variantOf": "bd-prop-crate_apple"
+  },
+  {
+   "id": "crate-basket",
+   "kit": "bd-obj-crate-basket",
+   "name": "상자 · 감자 담긴 고리버들 바구니",
+   "en": "wicker basket of potatoes",
+   "kind": "container",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35024
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "감자 바구니",
+    "고리버들 바구니",
+    "광주리",
+    "wicker basket"
+   ],
+   "sha256": "027a6bce02163d205907f68a3e0d696e50bf071c2c3e0f7325814ab9f47c25c8",
+   "variantOf": "bd-prop-crate_apple"
+  },
+  {
+   "id": "crate-sack",
+   "kit": "bd-obj-crate-sack",
+   "name": "상자 · 곡식 자루",
+   "en": "tied grain sack",
+   "kind": "organic",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35025
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "곡식 자루",
+    "포대",
+    "grain sack"
+   ],
+   "sha256": "0f80fe348910a188f190e7030d225a9d93674b26efe93e11554f69eb553f4397",
+   "variantOf": "bd-prop-crate_apple"
+  },
+  {
+   "id": "barrel-closed",
+   "kit": "bd-obj-barrel-closed",
+   "name": "통 · 닫힌 참나무 통",
+   "en": "closed oak barrel",
+   "kind": "container",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35026
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "닫힌 통",
+    "참나무 통",
+    "closed barrel"
+   ],
+   "sha256": "315335624bbffc41f148a27dd0dd255986a27ccef744cccdeda7d42d14ec5fe1",
+   "variantOf": "bd-prop-fish_barrel"
+  },
+  {
+   "id": "barrel-tub",
+   "kit": "bd-obj-barrel-tub",
+   "name": "통 · 물 담긴 나무 함지",
+   "en": "wooden water tub",
+   "kind": "container",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35027
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "나무 함지",
+    "물 함지",
+    "water tub"
+   ],
+   "sha256": "055d1dfb32475c7ae62d6d57a2e534d12c77b521f14057ca7623a210039ed960",
+   "variantOf": "bd-prop-fish_barrel"
+  },
+  {
+   "id": "barrel-amphora",
+   "kit": "bd-obj-barrel-amphora",
+   "name": "통 · 받침에 세운 항아리",
+   "en": "amphora in a stand",
+   "kind": "container",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35028
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "항아리",
+    "암포라",
+    "amphora"
+   ],
+   "sha256": "a7d9c9e593310ab043d36416e826de2772839c5b2b6d4b0f08fff86026b090f7",
+   "variantOf": "bd-prop-fish_barrel"
+  },
+  {
+   "id": "fire-tripod",
+   "kit": "bd-obj-fire-tripod",
+   "name": "모닥불 · 삼발이 솥",
+   "en": "cooking pot on a tripod over a fire",
+   "kind": "organic",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35029
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "삼발이 솥",
+    "솥 건 모닥불",
+    "cooking fire"
+   ],
+   "sha256": "74bd3d0afe2c9c961ee7f89b877bb98e5c2494dda7dc17a733f92eda446163cd",
+   "variantOf": "bd-pick-deep-forest-path-campfire"
+  },
+  {
+   "id": "fire-pit",
+   "kit": "bd-obj-fire-pit",
+   "name": "모닥불 · 돌 두른 화덕",
+   "en": "stone-lined fire pit",
+   "kind": "organic",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35030
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "화덕",
+    "불구덩이",
+    "fire pit"
+   ],
+   "sha256": "49a3a8bb6ab112e1000fbd134a431e137a94b7313bccc595fc2ce3e5df856157",
+   "variantOf": "bd-pick-deep-forest-path-campfire"
+  },
+  {
+   "id": "fire-spit",
+   "kit": "bd-obj-fire-spit",
+   "name": "모닥불 · 꼬치 굽는 불",
+   "en": "fire with a roasting spit",
+   "kind": "organic",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35031
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "꼬치 불",
+    "생선 굽는 불",
+    "roasting spit"
+   ],
+   "sha256": "5b88f8dcb8536bce97ea3eaba7cba5ff1666ef4ccfa4995f2f05020b9ac100ad",
+   "variantOf": "bd-pick-deep-forest-path-campfire"
+  },
+  {
+   "id": "hay-rack",
+   "kit": "bd-obj-hay-rack",
+   "name": "짚가리 · 건초 말림 걸대",
+   "en": "hay drying rack",
+   "kind": "organic",
+   "width": 2,
+   "height": 3,
+   "place": "tall",
+   "rows": [
+    [
+     -1,
+     -1
+    ],
+    [
+     35032,
+     35033
+    ],
+    [
+     35034,
+     35035
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "words": [
+    "건초 걸대",
+    "건초 말림대",
+    "hay rack"
+   ],
+   "sha256": "b21a5f04e25f1ef3f8cde3d30ad17f47d9f13bba73d8f39c01f0c2067242d280",
+   "variantOf": "bd-pick-riverside-mill-haystack"
+  },
+  {
+   "id": "hay-loaf",
+   "kit": "bd-obj-hay-loaf",
+   "name": "짚가리 · 사다리 걸친 네모 낟가리",
+   "en": "loaf-shaped haystack with a ladder",
+   "kind": "organic",
+   "width": 2,
+   "height": 3,
+   "place": "tall",
+   "rows": [
+    [
+     -1,
+     -1
+    ],
+    [
+     35036,
+     35037
+    ],
+    [
+     35038,
+     35039
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "words": [
+    "낟가리",
+    "네모 낟가리",
+    "hay loaf"
+   ],
+   "sha256": "9b70470ea3b3ebc7314929dd7c7c9309653fc1dd86dd95d1a11f91f62be8394d",
+   "variantOf": "bd-pick-riverside-mill-haystack"
+  },
+  {
+   "id": "wood-block",
+   "kit": "bd-obj-wood-block",
+   "name": "장작더미 · 모탕과 도끼",
+   "en": "chopping block with an axe",
+   "kind": "other",
+   "width": 2,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35040,
+     35041
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "모탕",
+    "도끼 모탕",
+    "chopping block"
+   ],
+   "sha256": "4996fff3d01d3b2a1ce69340685f93298ec249109f2d7d9ad5f6d355bda4b4e9",
+   "variantOf": "bd-out-woodpile"
+  },
+  {
+   "id": "wood-faggots",
+   "kit": "bd-obj-wood-faggots",
+   "name": "장작더미 · 나뭇단 세 묶음",
+   "en": "three bundles of brushwood",
+   "kind": "organic",
+   "width": 2,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35042,
+     35043
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "나뭇단",
+    "땔감 묶음",
+    "firewood bundles"
+   ],
+   "sha256": "e578762410d16e4f3d51cba40d4a767ab069b30be14d4e13641fa35f194a449e",
+   "variantOf": "bd-out-woodpile"
+  },
+  {
+   "id": "lamp-lantern",
+   "kit": "bd-obj-lamp-lantern",
+   "name": "가로등 · 기둥 위 네모 등",
+   "en": "post with a square lantern on top",
+   "kind": "column",
+   "width": 1,
+   "height": 3,
+   "place": "tall",
+   "rows": [
+    [
+     35044
+    ],
+    [
+     35045
+    ],
+    [
+     35046
+    ]
+   ],
+   "block": [
+    [
+     0,
+     2
+    ]
+   ],
+   "words": [
+    "기둥 등",
+    "네모 등 기둥",
+    "lantern post"
+   ],
+   "sha256": "b87f0b22247d3f9882f178f917fc5a1e5aee4ae47249840124dcd2a4212b62d5",
+   "variantOf": "bd-prop-lamp_crook"
+  },
+  {
+   "id": "lamp-cresset",
+   "kit": "bd-obj-lamp-cresset",
+   "name": "가로등 · 쇠 화롯불 기둥",
+   "en": "iron pole with a fire basket",
+   "kind": "column",
+   "width": 1,
+   "height": 3,
+   "place": "tall",
+   "rows": [
+    [
+     35047
+    ],
+    [
+     35048
+    ],
+    [
+     35049
+    ]
+   ],
+   "block": [
+    [
+     0,
+     2
+    ]
+   ],
+   "words": [
+    "화롯불 기둥",
+    "횃불 기둥",
+    "cresset"
+   ],
+   "sha256": "3587c2fa05ad621339149e53737ee539c6e88c24da8139517cc5ddbd1a9f5912",
+   "variantOf": "bd-prop-lamp_crook"
+  },
+  {
+   "id": "lamp-stone",
+   "kit": "bd-obj-lamp-stone",
+   "name": "가로등 · 돌기둥 등",
+   "en": "stone pillar lamp",
+   "kind": "column",
+   "width": 1,
+   "height": 3,
+   "place": "tall",
+   "rows": [
+    [
+     35050
+    ],
+    [
+     35051
+    ],
+    [
+     35052
+    ]
+   ],
+   "block": [
+    [
+     0,
+     2
+    ]
+   ],
+   "words": [
+    "석등",
+    "돌기둥 등",
+    "stone lamp"
+   ],
+   "sha256": "249c384274f2ebead427171569e5aad759f91b5ef5694bd855f3b7effff21cb2",
+   "variantOf": "bd-prop-lamp_crook"
+  },
+  {
+   "id": "cart-barrow",
+   "kit": "bd-obj-cart-barrow",
+   "name": "손수레 · 자루 실은 외바퀴 수레",
+   "en": "wheelbarrow with sacks",
+   "kind": "low_furniture",
+   "width": 2,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35053,
+     35054
+    ],
+    [
+     35055,
+     35056
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "외바퀴 수레",
+    "wheelbarrow"
+   ],
+   "sha256": "2f50000a5f4cd87e553cd3333361c3bbc2c1a2921d9e192e21425e0c49602828",
+   "variantOf": "bd-prop-veg_cart"
+  },
+  {
+   "id": "cart-barrels",
+   "kit": "bd-obj-cart-barrels",
+   "name": "손수레 · 통 실은 두 바퀴 수레",
+   "en": "hand cart with barrels",
+   "kind": "low_furniture",
+   "width": 2,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35057,
+     35058
+    ],
+    [
+     35059,
+     35060
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "통 실은 수레",
+    "짐수레",
+    "barrel cart"
+   ],
+   "sha256": "3c77b3069f5570a76de10484e3439c6ff2dfc65632da182690826cb7280505cc",
+   "variantOf": "bd-prop-veg_cart"
+  },
+  {
+   "id": "cart-hay",
+   "kit": "bd-obj-cart-hay",
+   "name": "손수레 · 건초 실은 수레",
+   "en": "hand cart with hay",
+   "kind": "low_furniture",
+   "width": 2,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35061,
+     35062
+    ],
+    [
+     35063,
+     35064
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "건초 수레",
+    "hay cart"
+   ],
+   "sha256": "9497d8324581f01f5c76348750d12772dfdee4bc025f26731f5d0549a3debc2a",
+   "variantOf": "bd-prop-veg_cart"
+  },
+  {
+   "id": "altar-moss",
+   "kit": "bd-obj-altar-moss",
+   "name": "제단 · 이끼 낀 자연석 제단",
+   "en": "mossy fieldstone altar",
+   "kind": "box",
+   "width": 2,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35065,
+     35066
+    ],
+    [
+     35067,
+     35068
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "자연석 제단",
+    "이끼 제단",
+    "fieldstone altar"
+   ],
+   "sha256": "2743dc128bbf656f924c1281f27033fef5ae392b1837dc37e83ed83f220469b3",
+   "variantOf": "bd-pick-castle-catacombs-altar-stone"
+  },
+  {
+   "id": "altar-dark",
+   "kit": "bd-obj-altar-dark",
+   "name": "제단 · 촛불 놓인 검은 돌 제단",
+   "en": "dark stone altar with candles",
+   "kind": "box",
+   "width": 2,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35069,
+     35070
+    ],
+    [
+     35071,
+     35072
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "검은 제단",
+    "촛불 제단",
+    "dark altar"
+   ],
+   "sha256": "7ec3ce5811d6d154fdcf1ee865e71dfd602f010e625c9db7acabfaf4f98ef586",
+   "variantOf": "bd-pick-castle-catacombs-altar-stone"
+  },
+  {
+   "id": "altar-wood",
+   "kit": "bd-obj-altar-wood",
+   "name": "제단 · 나무 제사상",
+   "en": "wooden offering table",
+   "kind": "low_furniture",
+   "width": 2,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35073,
+     35074
+    ],
+    [
+     35075,
+     35076
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "제사상",
+    "나무 제단",
+    "offering table"
+   ],
+   "sha256": "752b0898d75069f19d2e73fa1a1f3c6c9777defbb6a84b3e2bb23c97d2c04c80",
+   "variantOf": "bd-pick-castle-catacombs-altar-stone"
+  },
+  {
+   "id": "brazier-basket",
+   "kit": "bd-obj-brazier-basket",
+   "name": "화로 · 세 발 쇠 불바구니",
+   "en": "iron fire basket on three legs",
+   "kind": "container",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35077
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "불바구니",
+    "쇠 화로",
+    "fire basket"
+   ],
+   "sha256": "2b7540cdb5421555d34856425bf3994eae75d4bb756ad79a58c5484a7cdef1bf",
+   "variantOf": "bd-pick-aqueduct-sewer-brazier"
+  },
+  {
+   "id": "brazier-bowl",
+   "kit": "bd-obj-brazier-bowl",
+   "name": "화로 · 돌 받침 불 대접",
+   "en": "stone bowl brazier on a pedestal",
+   "kind": "container",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35078
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "돌 화로",
+    "불 대접",
+    "stone brazier"
+   ],
+   "sha256": "6afdc760850056b2d45c2437e62b4adb4709851e2747b40c817dac2dd55221b8",
+   "variantOf": "bd-pick-aqueduct-sewer-brazier"
+  },
+  {
+   "id": "brazier-pot",
+   "kit": "bd-obj-brazier-pot",
+   "name": "화로 · 구멍 뚫린 질화로",
+   "en": "pierced clay fire pot",
+   "kind": "container",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35079
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "질화로",
+    "불 항아리",
+    "fire pot"
+   ],
+   "sha256": "3416e88cda24a0ac71e013165637dde4be8f7c527f0880c2d06444fb4364b229",
+   "variantOf": "bd-pick-aqueduct-sewer-brazier"
+  },
+  {
+   "id": "bollard-post",
+   "kit": "bd-obj-bollard-post",
+   "name": "계선주 · 밧줄 감은 나무 말뚝",
+   "en": "wooden mooring post with rope",
+   "kind": "column",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35080
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "나무 말뚝",
+    "배 매는 말뚝",
+    "mooring post"
+   ],
+   "sha256": "b1fc47e3c42299d00780efb2492ba7d770573a41c0ce9167743d8cc1e052a703",
+   "variantOf": "bd-prop-mooring_bollard"
+  },
+  {
+   "id": "bollard-stone",
+   "kit": "bd-obj-bollard-stone",
+   "name": "계선주 · 쇠고리 박힌 돌 말뚝",
+   "en": "stone bollard with an iron ring",
+   "kind": "column",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35081
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "돌 말뚝",
+    "쇠고리 말뚝",
+    "stone bollard"
+   ],
+   "sha256": "7a599fe427bf91ffa0bf73148855c50c560c000a9b8c1b90f109326b6b0d45b7",
+   "variantOf": "bd-prop-mooring_bollard"
+  },
+  {
+   "id": "laundry-horse",
+   "kit": "bd-obj-laundry-horse",
+   "name": "빨래 건조대 · 접이식 빨래 걸이",
+   "en": "folding clothes horse",
+   "kind": "frame",
+   "width": 2,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35082,
+     35083
+    ],
+    [
+     35084,
+     35085
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "빨래 걸이",
+    "접이식 빨래 걸이",
+    "clothes horse"
+   ],
+   "sha256": "381aba31fe3b80ba53642052609e5fb5df2c0f4fb0fca6a7cde890765a3884c7",
+   "variantOf": "bd-prop-laundry_rack"
+  },
+  {
+   "id": "laundry-tub",
+   "kit": "bd-obj-laundry-tub",
+   "name": "빨래 건조대 · 빨래 함지와 빨래판",
+   "en": "wash tub with a washboard",
+   "kind": "container",
+   "width": 2,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35086,
+     35087
+    ],
+    [
+     35088,
+     35089
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "빨래 함지",
+    "빨래판",
+    "wash tub"
+   ],
+   "sha256": "ed5ca4a15c644441b7e80d1ca24adafaaff14ed486cb759a417e19a65a1f8fdb",
+   "variantOf": "bd-prop-laundry_rack"
+  },
+  {
+   "id": "laundry-quilt",
+   "kit": "bd-obj-laundry-quilt",
+   "name": "빨래 건조대 · 이불 넌 장대",
+   "en": "quilt airing on a pole",
+   "kind": "frame",
+   "width": 2,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35090,
+     35091
+    ],
+    [
+     35092,
+     35093
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "이불 장대",
+    "이불 널기",
+    "quilt pole"
+   ],
+   "sha256": "f2cbcd2b0f1ea8859d5079f88373da9344156f7032d4719c07024ac1cd6053e5",
+   "variantOf": "bd-prop-laundry_rack"
+  },
+  {
+   "id": "pots-halfbarrel",
+   "kit": "bd-obj-pots-halfbarrel",
+   "name": "문간 화분 · 반 통 화분",
+   "en": "half-barrel planter",
+   "kind": "container",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35094
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "통 화분",
+    "반 통 화분",
+    "half-barrel planter"
+   ],
+   "sha256": "48fcdc2c623933972328cf491dadec7fe6ad2d2058954a9528bc376263348760",
+   "variantOf": "bd-prop-door_pots"
+  },
+  {
+   "id": "pots-urn",
+   "kit": "bd-obj-pots-urn",
+   "name": "문간 화분 · 담쟁이 돌 항아리",
+   "en": "stone urn with ivy",
+   "kind": "container",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35095
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "돌 항아리 화분",
+    "담쟁이 화분",
+    "stone urn"
+   ],
+   "sha256": "60fc7197ce08cfc77f72e51abf3d24017c19f7294f49653e4fb613192b39ddec",
+   "variantOf": "bd-prop-door_pots"
+  },
+  {
+   "id": "box-trough",
+   "kit": "bd-obj-box-trough",
+   "name": "꽃상자 · 돌 구유 화분",
+   "en": "stone trough planter",
+   "kind": "container",
+   "width": 2,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35096,
+     35097
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "돌 구유 화분",
+    "돌 화분",
+    "stone trough planter"
+   ],
+   "sha256": "6ae60d5ad50921afc4154083c73adf6569f98a2ef062357c79d2ac78169b65c5",
+   "variantOf": "bd-prop-flowerbox_long"
+  },
+  {
+   "id": "box-wattle",
+   "kit": "bd-obj-box-wattle",
+   "name": "꽃상자 · 욋가지 두른 채소 화단",
+   "en": "wattle-edged raised bed",
+   "kind": "container",
+   "width": 2,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35098,
+     35099
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "채소 화단",
+    "욋가지 화단",
+    "raised bed"
+   ],
+   "sha256": "7eb7868c26bb24cdf38cf7f58f07d6d337aa157e4ca92191cb158b0c79e654b6",
+   "variantOf": "bd-prop-flowerbox_long"
+  },
+  {
+   "id": "bed-rocks",
+   "kit": "bd-obj-bed-rocks",
+   "name": "꽃밭 · 돌 두른 꽃밭",
+   "en": "rock-ringed flower bed",
+   "kind": "organic",
+   "width": 2,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35100,
+     35101
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "돌 화단",
+    "돌 두른 꽃밭",
+    "rock flower bed"
+   ],
+   "sha256": "a208493385ef909c26f7116c7990932b10404dcf9d6a9d5862a39d5c31afeba5",
+   "variantOf": "bd-prop-flowerbed"
+  },
+  {
+   "id": "bed-herbs",
+   "kit": "bd-obj-bed-herbs",
+   "name": "꽃밭 · 허브 이랑과 이름표 말뚝",
+   "en": "herb patch with stakes",
+   "kind": "organic",
+   "width": 2,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35102,
+     35103
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "허브밭",
+    "텃밭",
+    "herb patch"
+   ],
+   "sha256": "4ef074c7d67c564a8c1d0fa587c2a962eef69109bae5a2a89372e1a8a16d38b6",
+   "variantOf": "bd-prop-flowerbed"
+  },
+  {
+   "id": "scare-sack",
+   "kit": "bd-obj-scare-sack",
+   "name": "허수아비 · 자루 머리 허수아비",
+   "en": "sack-headed scarecrow",
+   "kind": "other",
+   "width": 1,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35104
+    ],
+    [
+     35105
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "자루 허수아비",
+    "sack scarecrow"
+   ],
+   "sha256": "79174362bf85936aec5510f9e5aaea20b4e9a1b8e8e0bf9bf2d18bd3b5dc8133",
+   "variantOf": "bd-pick-wheat-roman-road-scarecrow"
+  },
+  {
+   "id": "scare-pot",
+   "kit": "bd-obj-scare-pot",
+   "name": "허수아비 · 솥 쓴 막대 허수아비",
+   "en": "stick scarecrow with a pot hat",
+   "kind": "other",
+   "width": 1,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35106
+    ],
+    [
+     35107
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "솥 허수아비",
+    "막대 허수아비",
+    "pot scarecrow"
+   ],
+   "sha256": "24bd1975e8a25739619d3a5140c0f6690e1076d49e355654b9e946dcd4391388",
+   "variantOf": "bd-pick-wheat-roman-road-scarecrow"
+  },
+  {
+   "id": "board-easel",
+   "kit": "bd-obj-board-easel",
+   "name": "입간판 · 화살표 그림 이젤 간판",
+   "en": "small easel sign",
+   "kind": "front_prop",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35108
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "이젤 간판",
+    "easel sign"
+   ],
+   "sha256": "65293976e3e2861f78c396c06bce1dabdf60457fe6fb574ad593ee0648c3de26",
+   "variantOf": "bd-prop-sandwich_board"
+  },
+  {
+   "id": "board-crate",
+   "kit": "bd-obj-board-crate",
+   "name": "입간판 · 상자에 기댄 석판 간판",
+   "en": "slate propped on a crate",
+   "kind": "front_prop",
+   "width": 1,
+   "height": 1,
+   "place": "prop",
+   "rows": [
+    [
+     35109
+    ]
+   ],
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "석판 간판",
+    "slate sign"
+   ],
+   "sha256": "87576a6109043e82968c7b8b292e8ef8d29cf40be197ad4ec1bd244fa0e22aaa",
+   "variantOf": "bd-prop-sandwich_board"
+  },
+  {
+   "id": "pile-amphorae",
+   "kit": "bd-obj-pile-amphorae",
+   "name": "짐 더미 · 항아리 받침대와 자루",
+   "en": "amphorae in a rack with sacks",
+   "kind": "container",
+   "width": 2,
+   "height": 2,
+   "place": "tall",
+   "rows": [
+    [
+     35110,
+     35111
+    ],
+    [
+     35112,
+     35113
+    ]
+   ],
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "항아리 더미",
+    "항아리 받침대",
+    "amphora rack"
+   ],
+   "sha256": "601b1667a794433601103d8ffc1ff15ea0a6e998b2a1072c1fcdf2ff81a43bd6",
+   "variantOf": "bd-prop-goods_pile"
   }
  ]
 }
