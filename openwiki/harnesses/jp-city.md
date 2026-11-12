@@ -76,6 +76,17 @@ flags: `overlay`(투명 덧칠: 윤곽·접지·귀퉁이 검사 제외) · `thi
 ## 복제에서 바꾼 점 (modern-chipset 대비)
 팔레트 modern4 문자 풀 → modern3 램프 격자 · 탈것 시점(side/front/back) 제거 → 항목 하나 · kind `vehicle` → `building-part` `prop` `tilesheet` `kit`(+슬롯·조립 예·통행) · 검사: modern3 밖 색·반투명·`@cell 16`·슬롯 COVER·키트 이음 추가, 탈것 바퀴·대칭 제거 · 검수 맥락: 기준차 대신 도시 화풍 목표(`anchor`)·이웃 조각(`prop`) · `bake`·codex 백엔드 제거 · 사람 눈금(Actor1) 대신 사람 없는 눈금 그림.
 
+## 직각 지붕 다시 그리기 (2026-11-12, 오너 지시 — 이 하네스를 거치지 않았다)
+
+오너 2026-11-12: «이 에디터는 시야각이 직교해야하므로 sengoku_edo se-machiya-a 이런 식의 직각 지붕이어야하는데, jp_city jp-inaka-kominka-thatched jp_city jp-inaka-kawara-farmhouse … 같은 식의 지붕들은 … 좀 문제가 많다. jp_city jp-inaka-agri-tin-shed 도 그렇고 … Fable 5.2 Medium 으로 1번만 시도». **이 지붕 다시 그리기에 한해 오너의 오늘 지시가 «Sonnet 5명 후보 → 사람이 고름» 을 대신한다**(후보·pick 없음).
+
+- 사다리꼴(우진각·옆 물매) 지붕 14채를 Claude Fable 5.2 medium 한 방으로 지붕만 다시 그렸다(벽·문·기단은 옛 화소 그대로): 시골 6(`jp-inaka-kominka-thatched`·`kawara-farmhouse`·`agri-tin-shed`·`kura-storehouse`·`dagashiya`·`wooden-station`) · 지역 1(`jp-rg-lodge`) · 건물 블록 7(`jp-bldg-house-hiraya`·`house-hip2-wide`·`house-machiya`·`house-nagaya`·`house-shed-modern`·`apart-wood2`·`station-small`).
+- 덮어쓰기: `tiledata/jp-city/fable-roofs/<키트>.png` + `index.json`(지붕 상자·덮기 전 코드 그림 해시) → `scripts/content/jp-city/fable_roofs.py` 가 `bake_inaka._finalize` · `jp_regions_pack._finalize` · `buildings._sprite` 에서 코드 그림 위에 덮는다. 코드 그림이 바뀌면 굽기가 멈춘다.
+- 관문: **3/4 관문 미통과 — 오너 면제** 묶음 `fable-redraw-roofs-jp-city-2026-11-12`(bundle·shared, 스토어 제외). 통과가 아니다.
+- 칸 번호: jp_city 굽기는 그림이 바뀐 칸에 새 자리 키(`…@r<해시>`)를 준다 — 새 칸 260개가 끝에 붙었고(20199 → 20459) 옛 번호는 옛 그림 그대로다. **이미 깔린 맵은 옛 지붕을 그대로 보이고, 키트를 다시 찍어야 새 지붕이 된다.** 키트 id·크기·문·접근칸은 그대로. 검사(모델 없음, `~/z-project/assistant-fable-runs/redraw/roofs/laid_check.py`): 옛 칸 20199개 중 새 시트에서 화소가 달라진 칸 0 · 통행/우선순위 변화 0 · 옛 건물 키트 241개를 찍은 맵의 옛 시트/새 시트 그림 차이 0화소.
+- 참고 그림: `python3 scripts/content/jp-city/bake_refs.py` 는 **이 작업 전부터 main 에서 멈춘다**(origin/main 408a4329e0 에서 `bake_refs.py` 322줄 `AssertionError: [19577, 19578, …]` — `jp_forest_r4`·`street_stairs` 핀이 영역 표에 없다. 그 단언을 넘겨도 최상위 문장 21개가 더 깨진다: `len(AT) == 17`, `jp-inaka-at-grass`, `jp-overpass-stair-e`, `jp-in-glass-cupboard` …; `--dump` 는 `engine_dump.mts:580` 에서 죽는다). 그래서 다시 그린 키트가 실제로 보이는 그림 세 장만 다시 구웠다: `bldg-dict-house-1`·`bldg-dict-apartment-1`·`bldg-dict-public-1`(건물 도감 — `jp-bldg-*` 7채). 방법: 저장소 파일은 고치지 않고 `bake_refs.py` 의 최상위 문장을 하나씩 실행하며 깨진 문장은 넘기는 임시 실행기(`~/z-project/assistant-fable-runs/redraw/roofs/jp_refs_partial.py`)를 이 가지와 가지의 밑에서 한 번씩 돌려, 두 결과가 다른 그림만 골랐다(4장; 넷째 `sheet-overview` 는 시트 전체를 줄인 그림이고 main 에서 이미 설명 글의 크기와 어긋나 있어 그대로 두었다). 이 세 장은 main 에서 먼저 바뀐 다른 집 그림도 같이 지금 시트대로 보인다. **남은 것**: 시골·지역 키트(`jp-inaka-*`·`jp-rg-lodge`)는 참고 그림이 원래 없다(그 도감 쪽은 구워진 적이 없다) · 문서 `jp-bldg-hand-dict-*` 의 칸 배열은 그 7채에 옛 칸 번호(옛 지붕)를 적고 있다 · 장소 그림 32곳은 옛 칸이라 옛 지붕 그대로다 — `bake_refs.py` 를 main 에서 고친 뒤 통째로 다시 구워야 한다.
+- 측정 «지붕 기울기»(모델 없음)와 남은 것: 박공 정면(B) 30채 · 처마 끝 모따기(F) · (A) 16채가 남았다: 2단 지붕(`sento`·`shop-soba`·`shop-wagashi`·`shrine-haiden`)·옛 시트 레시피(`jp-recipe-*`·`jp-prop-honden`·`nakamise`)는 다시 그리지 않았다. 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
+
 ## 거리 구성기 조화 검수 — 적대 시각 QA 한 판 (2026-10-13)
 
 `planJpCityStreet`(`src/project/jpCityStreetComposer.ts`)로 거리를 짜면 3/4 관문(object-gate)은 **그림 한 장**만 본다. 그림이 다 합격해도 **배치·바닥·소품 조화**는 따로 깨진다

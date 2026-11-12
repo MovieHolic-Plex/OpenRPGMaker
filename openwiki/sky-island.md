@@ -45,6 +45,7 @@
 - `si-observatory`: 옆에서 본 반구(초록 달걀)를 지우고, 옥상 마당(코드 그림 그대로) 위에 **위에서 본 둥근 돔**(관측 틈 + 놋쇠 망원경)을 얹었다. 돔 그림은 Claude Fable 5.2 medium 이 그린 44×42 PNG `scripts/content/sky-island/art/fable/si-observatory-dome.png` 이고 `art/buildings.py` 가 `px.paste_png` 로 붙인다(잠긴 팔레트 밖 색이면 오류). 첫 호출(옥상+돔 72×56 통째)은 출력 20,000 토큰을 추론에 다 쓰고 그림 없이 끝났다 — 돔만 떼어 한 번 더 불렀다. **아직 약하다**: 돔이 작고 어둡게 읽힌다(테두리 하이라이트·돔 밑 그늘·틈 밖으로 나온 망원경 통이 약함). 세 번째 호출은 하지 않았다.
 - `si-shrine`: 사다리꼴 동판 지붕을 직사각형으로(지붕만, Fable 한 방). 덮어쓰기 `tiledata/sky-island/fable-roofs/si-shrine.png` + `index.json` → `art/kit.py` 내보내기가 `scripts/content/lib/fable_roofs.py` 로 덮는다.
 - 관문: **3/4 관문 미통과 — 오너 면제** 묶음 `fable-redraw-roofs-sky-island-2026-11-12`(bundle·shared, 스토어 제외). `si_bake_lib.gate_status` 가 면제된 그림을 받는다. 통과가 아니다.
+- 칸 번호(jp_city 와 같은 규칙, #4668 뒤 고침): **옛 칸은 #4668 전의 그림 그대로, 다시 그린 신전 지붕·천문대 돔은 시트 끝의 새 칸**(668 → 691)이고 `si-shrine`·`si-observatory` 두 키트만 새 칸을 가리킨다. #4668 은 옛 칸을 제자리에서 덮어써서, 이미 깔린 신전이 새 지붕에 한 칸(167번 — 다른 조각과 나눠 쓰던 칸)만 옛 그림인 채로 보였다. `si_bake_lib.Outdoor.keep_old_cells(옛 시트)` + `put`: 번호를 받은 자리 키의 그림이 옛 시트의 그 칸과 다르면 옛 칸에 옛 그림을 남기고 `키@r<그림 해시>` 로 새 번호를 받는다. 검사(모델 없음, `~/z-project/assistant-fable-runs/redraw/roofs/laid_check.py`, 옛 = #4668 직전): 옛 칸 667개 중 화소가 달라진 칸 0 · 통행/우선순위 변화 0 · 옛 건물 키트 11채 맵의 다른 화소 0 · 새로 찍는 키트 86개의 그림은 #4668 뒤 main 과 화소 동일 · #4668 이 붙인 667번 칸 그대로 · 두 번 구워 해시 동일.
 - 남은 것: `si-tower-house`(뾰족 지붕 탑 — 박공 정면/첨탑, 그대로) · 등대·풍차·풍력기·비공정은 예외. 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
 
 ## 함정

@@ -26,7 +26,10 @@ def gate_status(png, kind):
     """'pass' | 'prov'(영수증 pass, 프로필 미보정) | 이유(str, 막힘). 영수증 파일을 직접 읽어 FAIL 을 임시통과로 세지 않는다."""
     sha = OG.pixel_sha256(png)
     r = OG.read_receipt(sha)
-    if not r: return '영수증 없음'
+    if not r:
+        # 영수증이 없는 그림은 관문 자신의 출구 규칙에 묻는다(서명된 사람 허용·오너 면제 묶음은 거기서 지난다). 여기에 둘째 규칙을 두지 않는다.
+        why = OG.refusal(png, kind=kind, context='bundle')
+        return 'pass' if why is None else '영수증 없음 — ' + why
     if r.get('kind') != kind: return '영수증 종류 %s != %s' % (r.get('kind'), kind)
     if r.get('verdict') != 'pass': return '불합격 ' + ' · '.join(r.get('reasons') or [])[:120]
     why = OG.refusal(png, kind=kind, context='bundle')
@@ -100,6 +103,7 @@ class Outdoor:
         frames = [Image.open(f).convert('RGBA') for f in p['frames']] if p.get('frames') else None
         cells = {}
         ent = set(p.get('entrance') or [])
+        over = {tuple(k): v for k, v in (p.get('cells_pc') or {}).items()}     # 칸마다 통행 종류를 조각이 직접 선언(이야기 기물: 막힌 칸 solid · 솟은 칸 star · 바닥 그림 flat)
         for y in range(H):
             for x in range(W):
                 crop = lambda s: s.crop((x * T, y * T, x * T + T, y * T + T))
@@ -108,6 +112,7 @@ class Outdoor:
                 if p.get('pc'): pc = p['pc']
                 if (x, y) in set(map(tuple, p.get('passable') or [])): pc = 'star'
                 if y == H - 1 and x in ent: pc = 'solid'
+                if (x, y) in over: pc = over[(x, y)]
                 where = f' ({x + 1},{y + 1})' if W * H > 1 else ''
                 meta = dict(label=f"{p['name']}{where}", desc=f"{p['desc']} — {BL.PCNOTE[pc]}.", role=p.get('role', 'prop'),
                             tags=[self.theme, p['group']] + list(p.get('tags', [])), rep='repeat' if p['kind'] in ('terrain',) and W * H == 1 and not p.get('fixed') else 'fixed', piece=p['id'])
@@ -157,7 +162,7 @@ class Outdoor:
                       themes=[self.theme], origin='ai', confidence='high', snap='floor', anchor=dict(dx=W // 2, dy=H - 1))
             if nfr > 1: ai['tags'].append(f'애니메이션 {nfr}프레임')
             # stamp_tileset_object(조수의 키트 찍기 도구)가 읽는 종류 낱말: decal 바닥 표시 · overhead 머리 위(낙하물) · prop 막힘(기본)
-            ai['tags'].append('decal' if p['kind'] == 'flat' else 'overhead' if p['kind'] == 'debris' else 'prop')
+            ai['tags'].append(p.get('stamp') or ('decal' if p['kind'] == 'flat' else 'overhead' if p['kind'] == 'debris' else 'prop'))
             kit = dict(id=p['id'], kind='section', name=p['name'], width=W, height=H, tileSize=16, rows=rows, learnedFrom='pack-preset', ai=ai)
             ent = p.get('entrance')
             if ent:

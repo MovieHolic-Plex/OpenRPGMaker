@@ -1418,6 +1418,11 @@ sys.path.insert(0, os.path.join(ROOT, 'scripts/content/modern-city-int'))
 import refs_interior
 interior_reference = refs_interior.references(ROOT)
 if interior_reference: CATS_OUT.append(interior_reference)
+# 이야기 기물 용도(mc-story-objects)는 scripts/content/modern-city-street/refs_story.py 가 따로 만든다 — 같은 방식으로 저장본을 다시 붙인다.
+sys.path.insert(0, os.path.join(ROOT, 'scripts/content/modern-city-street'))
+import refs_story
+story_reference = refs_story.references(ROOT)
+if story_reference: CATS_OUT.append(story_reference)
 os.makedirs(MD_DIR, exist_ok=True)
 for fn in os.listdir(MD_DIR):
     if fn.endswith('.md'): os.remove(os.path.join(MD_DIR, fn))

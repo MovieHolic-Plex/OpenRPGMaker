@@ -1,4 +1,4 @@
-# 가구 사전 — 지하 (6종)
+# 가구 사전 — 지하 감옥 (11종)
 
 cells = [dx, dy, 칸, 층] (발밑 왼쪽 위 기준). kind: floor 바닥 가구(막힘) · wall 북쪽 벽 앞(막힘) · hang 벽면 윗줄 걸이(★) · flat 밟는 바닥 무늬(2층).
 
@@ -8,7 +8,12 @@ cells = [dx, dy, 칸, 층] (발밑 왼쪽 위 기준). kind: floor 바닥 가구
 - `key ring hook` 열쇠 꾸러미 걸이 — 벽면 윗줄 못에 걸린 큰 쇠 열쇠 꾸러미. 간수실.  · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)  · 쓰는 방: 감옥·간수실
 - `prison cot` 감방 침상 — 감방 벽에 붙인 판자 침상(얇은 짚 매트, 쇠사슬 고정). 1×2.  · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)  · 쓰는 방: 감옥·감방
 - `straw pile` 짚 더미(바닥) — 바닥에 흩어진 짚(밟을 수 있음). 감방·마구간 구석.  · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)  · 쓰는 방: 감옥·마구간
+- `wall shackles` 족쇄(벽 사슬 — 쇠판에 긴 사슬 두 줄) — 쇠판·고리에서 늘어진 긴 사슬 두 줄과 열린 수갑(벽면 두 줄 걸이). 감방 북쪽 벽면 윗줄에 건다(벽면 두 줄을 덮는다). 짚 침상 위쪽·옆. · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)  · 쓰는 방: 지하 감옥·감방·감옥·고문실 · 짝: straw cot, cell bars, slop bucket
+- `straw cot` 짚 침상(감방 — 짚더미·기운 담요·베개) — 바닥 짚더미에 기운 담요·납작 베개 — 틀 없는 감방 잠자리(1×2). 감방 벽가에 세로로. 두 칸 모두 막힘. 앞(옆) 한 칸은 비운다. · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)  · 쓰는 방: 감방·지하 감옥·감옥·쉼터 · 짝: wall shackles, slop bucket, cell bars
+- `cell bars` 감옥 철창(칸 — 쇠창살 벽 한 칸) — 쇠창살 넷·가로대·문턱의 철창 한 칸 — 옆으로 이어 세운다(16px 솟음). 감방과 복도 사이 트인 줄에 옆으로 이어 세운다. 한 칸은 cell bars door. · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)  · 쓰는 방: 감방·지하 감옥·감옥·간수실 · 짝: cell bars door, wall shackles, straw cot
+- `cell bars door` 감옥 철창 문(잠긴 쇠창살 문) — 문틀·쇠창살 셋·경첩·열쇠 구멍 판의 닫힌 철창 문(16px 솟음). 철창 줄 가운데 한 칸. 여는 이벤트는 아랫칸에. 앞뒤 한 칸씩 비운다. · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)  · 쓰는 방: 감방·지하 감옥·감옥·간수실 · 짝: cell bars, floor key, key ring hook
+- `floor key` 열쇠(바닥에 떨어진 금빛 열쇠) — 붉은 끈 달린 금빛 열쇠 — 바닥에 떨어진 것(밟음). 이야기가 부르는 자리의 바닥 한 칸. 줍는 이벤트는 그 칸에 «플레이어 아래». 가구 밑·문턱 칸 금지. · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)  · 쓰는 방: 감방·지하 감옥·침실·창고 · 짝: cell bars door, key ring hook
 
 ```json
-[{"id":"shackles","ko":"족쇄","kind":"hang","w":1,"h":0,"overhangPx":0,"cells":[[0,0,4572,3]]},{"id":"slop bucket","ko":"오물통","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,4573,3]]},{"id":"drip puddle","ko":"물방울 웅덩이(움직임)","kind":"flat","w":1,"h":1,"overhangPx":0,"animated":true,"cells":[[0,0,4584,2]]},{"id":"key ring hook","ko":"열쇠 꾸러미 걸이","kind":"hang","w":1,"h":0,"overhangPx":0,"cells":[[0,0,5179,3],[0,1,5180,3]]},{"id":"prison cot","ko":"감방 침상","kind":"wall","w":1,"h":2,"overhangPx":16,"cells":[[0,-1,5191,3],[0,0,5192,3],[0,1,5193,3]]},{"id":"straw pile","ko":"짚 더미(바닥)","kind":"flat","w":1,"h":1,"overhangPx":0,"cells":[[0,0,5215,2]]}]
+[{"id":"shackles","ko":"족쇄","kind":"hang","w":1,"h":0,"overhangPx":0,"cells":[[0,0,4572,3]]},{"id":"slop bucket","ko":"오물통","kind":"floor","w":1,"h":1,"overhangPx":0,"cells":[[0,0,4573,3]]},{"id":"drip puddle","ko":"물방울 웅덩이(움직임)","kind":"flat","w":1,"h":1,"overhangPx":0,"animated":true,"cells":[[0,0,4584,2]]},{"id":"key ring hook","ko":"열쇠 꾸러미 걸이","kind":"hang","w":1,"h":0,"overhangPx":0,"cells":[[0,0,5179,3],[0,1,5180,3]]},{"id":"prison cot","ko":"감방 침상","kind":"wall","w":1,"h":2,"overhangPx":16,"cells":[[0,-1,5191,3],[0,0,5192,3],[0,1,5193,3]]},{"id":"straw pile","ko":"짚 더미(바닥)","kind":"flat","w":1,"h":1,"overhangPx":0,"cells":[[0,0,5215,2]]},{"id":"wall shackles","ko":"족쇄(벽 사슬 — 쇠판에 긴 사슬 두 줄)","kind":"hang","w":1,"h":0,"overhangPx":0,"cells":[[0,0,7677,3],[0,1,7678,3]]},{"id":"straw cot","ko":"짚 침상(감방 — 짚더미·기운 담요·베개)","kind":"floor","w":1,"h":2,"overhangPx":0,"cells":[[0,0,7679,3],[0,1,7680,3]]},{"id":"cell bars","ko":"감옥 철창(칸 — 쇠창살 벽 한 칸)","kind":"floor","w":1,"h":1,"overhangPx":16,"cells":[[0,-1,7681,3],[0,0,7682,3]]},{"id":"cell bars door","ko":"감옥 철창 문(잠긴 쇠창살 문)","kind":"floor","w":1,"h":1,"overhangPx":16,"cells":[[0,-1,7683,3],[0,0,7684,3]]},{"id":"floor key","ko":"열쇠(바닥에 떨어진 금빛 열쇠)","kind":"flat","w":1,"h":1,"overhangPx":0,"cells":[[0,0,7691,2]]}]
 ```

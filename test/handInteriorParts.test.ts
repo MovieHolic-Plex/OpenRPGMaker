@@ -8,10 +8,10 @@ import { createBlankProject } from "@/project/defaults";
 const run = (args: Record<string, unknown>) => LIST_HAND_INTERIOR_PARTS_TOOL.run(createBlankProject() as never, args as never) as { summary: string; data: any };
 
 describe("handInteriorSpec 소품 메모", () => {
-  it("635종(v5 381 + 고른 「함께 쓰기」 변형 5 + 고른 새 기물·interior-plus·퍼즐·낙성 실내) 모두 desc·tags 가 있고, desc 는 60자 이하·서로 다르다", () => {
+  it("643종(v5 381 + 고른 「함께 쓰기」 변형 5 + 고른 새 기물·interior-plus·퍼즐·낙성 실내·이야기 기물 8) 모두 desc·tags 가 있고, desc 는 60자 이하·서로 다르다", () => {
     const objs = Object.entries(S.objects);
-    // 527 → 635: 이후 handInteriorSpec.json 에 기물이 더해졌다(interior-plus·퍼즐 #3081·낙성 실내 #3234·#3277 등).
-    expect(objs.length).toBe(635);
+    // 527 → 635: 이후 handInteriorSpec.json 에 기물이 더해졌다(interior-plus·퍼즐 #3081·낙성 실내 #3234·#3277 등). 635 → 643: 이야기 기물 8종(oneshot, 2026-11-12).
+    expect(objs.length).toBe(643);
     for (const [id, o] of objs) {
       expect(o.desc, id).toBeTruthy();
       expect(o.desc!.length, id).toBeLessThanOrEqual(60);
