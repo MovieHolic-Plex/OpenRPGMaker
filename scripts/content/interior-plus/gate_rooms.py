@@ -115,11 +115,16 @@ def current_profile():
 
 
 def state(img, kind):
-    """('pass'|'provisional', None) 또는 (None, 이유)."""
+    """('pass'|'provisional'|'waived', None) 또는 (None, 이유). waived = 3/4 관문 미통과 — 오너 면제(번들 출구만 열린다)."""
     import object_gate as OG
     sha = OG.pixel_sha256(img)
     rc = OG.read_receipt(sha)
-    if not rc: return None, '영수증 없음 — object-gate review 를 먼저 받아라'
+    if not rc:
+        # 영수증이 없는 그림은 관문 자신의 출구 규칙에 묻는다(오너 면제 묶음 등 — src/harnesses/_core/object_gate). 여기에 둘째 규칙을 두지 않는다.
+        # 면제는 통과가 아니다 — 'waived' 로 따로 센다.
+        why = OG.refusal(img, kind=kind, context='bundle')
+        if why is not None: return None, '영수증 없음 — ' + why
+        return ('waived' if OG.owner_waiver_applies(OG.read_owner_waiver(sha), sha, kind, 'bundle') else 'pass'), None
     # 서명된 사람 결정이 최종이다(2026-10-20): 허용이면 통과, 거절이면 막는다.
     human = OG.human_decision(OG.read_hold_decision(sha), rc)
     if human == 'reject': return None, '사람이 검토 화면에서 거절했다 — 최종'
@@ -165,7 +170,7 @@ def check(reg):
     """기물 + 조립 그림 전부 → {'pass','provisional','needs_receipt','superseded','bad'}.
     needs_receipt = 현재 프로필 영수증이 없지만 이미 main 시트에 실린 그대로인 것(옛 프로필 영수증은 무효). 통과로 세지 않는다 —
     이미 실려 있어 굽기는 그 칸을 다시 쓰기만 하고(화소 그대로), 「재보정 후 영수증 필요」로 크게 출력한다. 새 것·바뀐 것은 여기 들 수 없다."""
-    res = {'pass': [], 'provisional': [], 'needs_receipt': [], 'bad': []}
+    res = {'pass': [], 'provisional': [], 'waived': [], 'needs_receipt': [], 'bad': []}
     old = _shipped_unchanged(reg)
     items = [(f'atlas_biome_interior/plus/{pid}', iplib.render(reg.pieces[pid]), reg.pieces[pid]['gate'], pid in old['piece']) for pid in reg.order]
     rs = rooms(reg)
@@ -204,7 +209,7 @@ def require_structure(reg):
     """굽기 관문: 새 것·바뀐 것은 모두 pass/provisional 이어야 한다. 아니면 SystemExit(이유 전부).
     이미 main 에 실린 그대로인 것은 막지 않지만 통과도 아니다 — 「재보정 후 영수증 필요」 목록을 크게 찍는다."""
     res = check(reg)
-    print(f"[3/4 관문] 기물 {len(reg.order)} + 조립 그림 {len(rooms(reg))}: 통과 {len(res['pass'])} · 미보정 프로필 임시통과 {len(res['provisional'])} · "
+    print(f"[3/4 관문] 기물 {len(reg.order)} + 조립 그림 {len(rooms(reg))}: 통과 {len(res['pass'])} · 미보정 프로필 임시통과 {len(res['provisional'])} · 오너 면제(3/4 관문 미통과) {len(res['waived'])} · "
           f"재보정 후 영수증 필요(이미 실린 그대로, 통과 아님) {len(res['needs_receipt'])} · 다른 통과 그림이 대신 덮음 {len(res.get('superseded', []))} · 막힘 {len(res['bad'])}")
     if res['needs_receipt']:
         print('!' * 72)
