@@ -277,7 +277,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     const paced = existing ? undefined : spotFor(map, personal ? undefined : `${step.event} 앞`, !!step.kind, step.kind === "battle" ? 0.92 : personal ? 0.45 : 0.3 + 0.13 * (k % 5), personal && step.kind !== "battle" ? who : undefined);
     const t = byId.get(step.id);
     // 조사·퍼즐 단계의 물건은 그 장소에 그려진 물건에 앉는다(story/stepThings) — 맞는 그림이 없을 때만 걸음 수로 고른 빈 칸.
-    const host = paced && (step.kind === "find" || step.kind === "puzzle") ? hostStepThing(run, map.id, step.event, paced, t?.on) : undefined;
+    const host = paced && (step.kind === "find" || step.kind === "puzzle") ? hostStepThing(run, map.id, step.event, paced, t?.on, taken.get(map.id)) : undefined;
     if (host) taken.set(map.id, [...(taken.get(map.id) ?? []), host.cell]);
     const at = host?.cell ?? paced;
     // 대사를 주지 않았으면 모델이 지은 단계 이벤트(명령이 있고, 마지막이면 엔딩을 부르는 것)는 그대로 둔다 — 빠진 단계만 짓는다
@@ -338,7 +338,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
         const keyed = gated && needText ? /^(.+?)\s*열쇠$/u.exec(needText.trim()) : null;
         const clueName = keyed ? `잠긴 ${keyed[1]}` : "번호 쪽지";
         const near = spotFor(map, `${keyed ? keyed[1] : "쪽지"} 앞`, !!step.kind, 0.55);
-        const noteHost = hostStepThing(run, map.id, clueName, near);
+        const noteHost = hostStepThing(run, map.id, clueName, near, undefined, taken.get(map.id));
         if (noteHost) taken.set(map.id, [...(taken.get(map.id) ?? []), noteHost.cell]);
         const where = { cell: noteHost?.cell ?? near };
         const learn = `${step.event} 번호`;

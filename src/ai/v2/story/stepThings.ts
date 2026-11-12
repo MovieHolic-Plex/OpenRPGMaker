@@ -17,34 +17,36 @@ interface ThingHost {
 }
 
 /** 이름이 가리키는 그림(세기 min 이상) 가운데 서서 쓸 자리가 있는 것 — 세기 높은 것, near 에 가까운 것 먼저. */
-function seatOnMap(run: BuildRun, mapId: string, name: string, near: Cell, min: number): ThingHost | undefined {
+function seatOnMap(run: BuildRun, mapId: string, name: string, near: Cell, min: number, claimed: readonly Cell[]): ThingHost | undefined {
   const map = run.ctx.project.maps[mapId];
   if (!map) return undefined;
   const dist = (t: DrawnThing) => Math.min(...t.cells.map((c) => Math.abs(c.x - near.x) + Math.abs(c.y - near.y)));
   const scored = drawnThings(run.ctx.project, map).map((t) => ({ t, score: thingMatch(name, t) })).filter((s) => s.score >= min)
     .sort((a, b) => b.score - a.score || dist(a.t) - dist(b.t));
   for (const { t } of scored) {
-    const seat = thingSeat(run.ctx.project, map, t, near);
+    const seat = thingSeat(run.ctx.project, map, t, near, claimed);
     if (seat) return { cell: seat.cell, label: t.label };
   }
   return undefined;
 }
 
-function seatStamped(run: BuildRun, mapId: string, name: string, near: Cell, min: number): ThingHost | undefined {
-  const made = stampNamedThing(run, mapId, name, near, min);
+function seatStamped(run: BuildRun, mapId: string, name: string, near: Cell, min: number, claimed: readonly Cell[]): ThingHost | undefined {
+  const made = stampNamedThing(run, mapId, name, near, min, claimed);
   const map = run.ctx.project.maps[mapId];
-  const seat = made && map ? thingSeat(run.ctx.project, map, made, near) : undefined;
+  const seat = made && map ? thingSeat(run.ctx.project, map, made, near, claimed) : undefined;
   return made && seat ? { cell: seat.cell, label: made.label } : undefined;
 }
 
 /** 새로 세울 단계 물건의 자리 — 그 장소의 그림 한 칸. 맞는 그림이 없으면 undefined(부르는 쪽이 예전 자리에 세우고 settleStepThing 이 마무리한다). */
-export function hostStepThing(run: BuildRun, mapId: string, name: string, near: Cell, on?: string): ThingHost | undefined {
+export function hostStepThing(run: BuildRun, mapId: string, name: string, near: Cell, on?: string, claimed: readonly Cell[] = []): ThingHost | undefined {
   const want = on?.trim();
+  // near 는 이 단계가 걸음 수로 받은 제 자리다 — 남의 자리(claimed)에서 뺀다.
+  const others = claimed.filter((c) => c.x !== near.x || c.y !== near.y);
   if (want) {
-    const named = seatOnMap(run, mapId, want, near, 1) ?? seatStamped(run, mapId, want, near, 1);
+    const named = seatOnMap(run, mapId, want, near, 1, others) ?? seatStamped(run, mapId, want, near, 1, others);
     if (named) return named;
   }
-  return seatOnMap(run, mapId, name, near, 2) ?? seatStamped(run, mapId, name, near, 2) ?? seatOnMap(run, mapId, name, near, 1) ?? seatStamped(run, mapId, name, near, 1);
+  return seatOnMap(run, mapId, name, near, 2, others) ?? seatStamped(run, mapId, name, near, 2, others) ?? seatOnMap(run, mapId, name, near, 1, others) ?? seatStamped(run, mapId, name, near, 1, others);
 }
 
 /**

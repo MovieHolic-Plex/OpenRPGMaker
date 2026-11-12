@@ -104,10 +104,11 @@ export function thingMatch(name: string, thing: { readonly label: string; readon
 }
 
 /** 물건 한 점의 «서서 쓰는 자리» — 그림 칸 c(이벤트가 앉는 칸)와 그 곁의 걸어 닿는 칸 stand. near 에 가까운 것, 남쪽에서 마주 보는 것 먼저. */
-export function thingSeat(project: Project, map: GameMap, thing: DrawnThing, near?: Cell): { cell: Cell; stand: Cell } | undefined {
+export function thingSeat(project: Project, map: GameMap, thing: DrawnThing, near?: Cell, claimed: readonly Cell[] = []): { cell: Cell; stand: Cell } | undefined {
   const reach = reachableCells(project, map);
   if (!reach) return undefined;
-  const taken = new Set((map.events ?? []).map((e) => `${e.x},${e.y}`));
+  // claimed = 아직 이벤트로 서지 않은 앞 단계들의 자리(같은 사슬이 한 번에 짓는다) — 같은 그림·같은 서는 칸을 두 단계가 쓰지 않는다.
+  const taken = new Set([...(map.events ?? []), ...claimed].map((e) => `${e.x},${e.y}`));
   let best: { cell: Cell; stand: Cell; cost: number } | undefined;
   for (const cell of thing.cells) {
     if (taken.has(`${cell.x},${cell.y}`)) return undefined;
@@ -125,7 +126,7 @@ export function thingSeat(project: Project, map: GameMap, thing: DrawnThing, nea
 }
 
 /** 이름이 가리키는 그림을 그 칩셋 키트에서 골라 near 곁 빈 바닥에 찍는다 — 걸어 닿던 칸이 끊기면 되돌리고 다음 자리. 찍은 물건을 돌려준다. */
-export function stampNamedThing(run: BuildRun, mapId: string, name: string, near: Cell, minMatch = 1): DrawnThing | undefined {
+export function stampNamedThing(run: BuildRun, mapId: string, name: string, near: Cell, minMatch = 1, claimed: readonly Cell[] = []): DrawnThing | undefined {
   const map0 = run.ctx.project.maps[mapId];
   if (!map0) return undefined;
   const tileset = run.ctx.project.tilesets[map0.tilesetId];
@@ -145,7 +146,7 @@ export function stampNamedThing(run: BuildRun, mapId: string, name: string, near
       // 발자국과 그 남쪽 한 줄(서는 자리)이 빈 걷는 바닥이어야 한다 — 문 앞·길목을 막지 않게 둘레 이벤트도 피한다.
       for (let yy = y; yy <= y + h && free; yy += 1) for (let xx = x; xx < x + w && free; xx += 1) {
         if (yy >= map0.height || !reach0[yy * map0.width + xx] || !isPassable(run.ctx.project, map0, xx, yy) || objectClusterAt(run.ctx.project, map0, xx, yy)) free = false;
-        else if ((map0.events ?? []).some((e) => Math.abs(e.x - xx) + Math.abs(e.y - yy) <= 1)) free = false;
+        else if ([...(map0.events ?? []), ...claimed].some((e) => Math.abs(e.x - xx) + Math.abs(e.y - yy) <= 1)) free = false;
       }
       if (free) spots.push({ x, y, d: Math.abs(x - near.x) + Math.abs(y + h - 1 - near.y) });
     }
@@ -158,7 +159,7 @@ export function stampNamedThing(run: BuildRun, mapId: string, name: string, near
       // 찍은 발자국만큼만 걷는 칸이 줄어야 한다 — 더 줄면 길목을 끊은 것이다.
       if (!reach || reached(reach0) - reached(reach) > w * h) { run.ctx.project = snapshot; continue; }
       const made = drawnThings(run.ctx.project, map).find((t) => t.cells.some((c) => c.x >= spot.x && c.x < spot.x + w && c.y >= spot.y && c.y < spot.y + h));
-      if (made && thingSeat(run.ctx.project, map, made, near)) return made;
+      if (made && thingSeat(run.ctx.project, map, made, near, claimed)) return made;
       run.ctx.project = snapshot;
     }
   }
