@@ -168,7 +168,8 @@ const events = new Set(map.events.map((e) => e.y * map.width + e.x));
 const reach0 = reachableCells(ctx.project, map);
 const freeLand = (x: number, y: number) => { const i = y * map.width + x; const m = cur();
   const area = conf.placeArea; if (area && (x < area.x0 || y < area.y0 || x > area.x1 || y > area.y1)) return false;
-  return x >= 1 && y >= 1 && x < m.width - 1 && y < m.height - 1 && isPassable(ctx.project, m, x, y) && ground.has(m.lowerTiles[i]!) && !onRoad(m, i) && bare(m, i) && !events.has(i) && !reserved.has(i) && (!reach0 || reach0[i] === 1); };
+  // 구역을 손으로 정한 칩셋은 그 구역의 바닥을 그대로 믿는다(현대 도시는 «길» 칸이 곧 보도라 길을 피하면 놓을 데가 없다)
+  return x >= 1 && y >= 1 && x < m.width - 1 && y < m.height - 1 && isPassable(ctx.project, m, x, y) && (area ? true : ground.has(m.lowerTiles[i]!) && !onRoad(m, i)) && bare(m, i) && !events.has(i) && !reserved.has(i) && (!reach0 || reach0[i] === 1); };
 /** 벽 걸이 자리: 그림 칸이 모두 벽 칸(1층 역할 wall)이고 위층이 비었으며, 바로 아래가 걸어서 닿는 바닥. */
 const wallAt = (x: number, y: number) => { const m = cur(); const i = y * m.width + x;
   return x >= 0 && y >= 0 && x < m.width && y < m.height && (ts.tileMeta?.[m.lowerTiles[i] ?? -1] as { role?: string } | undefined)?.role === "wall" && bare(m, i) && !reserved.has(i); };
