@@ -1,0 +1,200 @@
+import { describe, expect, it } from "vitest";
+import { createBlankProject } from "@/project/defaults";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { findSharedPortrait, dialogueFaceForEmotion } from "@/assets/sharedPortraitAssets";
+import { bustOfChip, bustOfFace, settleSpeakerBustsIn } from "@/ai/v2/story/speakerBust";
+import { pickPersonGraphic } from "@/ai/v2/place/people";
+import { npcGraphicIntent, npcGraphicIsPlain, npcGraphicNamedBy, npcGraphicPersonQuery, queryNpcGraphics } from "@/assets/charsetQuery";
+import { fillPartyLooks } from "@/ai/v2/story/shipLookDefaults";
+import { charsetBattlerForCharacter } from "@/assets/charsetBattlers";
+import { collectWebExportAssets } from "@/project/webExportAssets";
+import type { Command, GameEvent, Project } from "@/project/types";
+
+// 2026-11-12 오너(r1w-fun): «초상화나 이런 건 미리 만들어둔 거 써도 좋았겠다». 공용 흉상(76세트 × 16표정)이 있는데 v2 가 지은 대사에는 이름표만 떴다.
+// 이제 화자의 흉상이 기본이다 — 칩에서 결정적으로 나온다(칩 → 검토된 짝 얼굴 → 표정 세트 → 흉상). 문서 openwiki/assistant-v2.md 「대사에는 화자의 공용 흉상」.
+
+const OLD_MAN = "shared-people1-old-man-expressions-bust-base";
+const chip = (sheet: string, index: number) => ({ sprite: { type: "bundled", id: `tex_easyrpg_charset_${sheet}` }, direction: "down", pattern: charsetFrameIndex({ characterIndex: index, direction: "down", pattern: 1 }) });
+const text = (speaker: string | undefined, body: string): Command => ({ kind: "text", ...(speaker ? { speaker } : {}), body }) as Command;
+
+function withEvent(pages: unknown[], name = "촌장", id = "ev_chain_t_1"): { project: Project; event: () => GameEvent } {
+  const project = createBlankProject() as Project;
+  const map = project.maps[project.startMapId]!;
+  (map.events as unknown[]).push({ id, name, x: 3, y: 3, pages });
+  return { project, event: () => project.maps[map.id]!.events.find((e) => e.id === id)! };
+}
+const kinds = (commands: readonly Command[]) => commands.map((c) => (c.kind === "changeFace" ? `face:${c.resourceId}` : c.kind === "text" ? `text:${c.speaker ?? ""}${c.emotion ? `:${c.emotion}` : ""}` : c.kind));
+
+describe("칩 → 공용 흉상", () => {
+  it("짝 얼굴이 검토된 칩은 그 표정 세트의 흉상, 없는 칩은 없다", () => {
+    expect(bustOfChip("tex_easyrpg_charset_people1", 6)).toBe(OLD_MAN);
+    expect(bustOfChip("easyrpg-charset-people1", 6)).toBe(OLD_MAN);
+    expect(findSharedPortrait(OLD_MAN)?.mode).toBe("bust");
+    expect(bustOfFace("easyrpg-faceset-people1-06")).toBe(OLD_MAN);
+    // 터번 노인(짝 얼굴 없음) · 청년 병사(얼굴 낱장뿐, 흉상 없음) · 몬스터 칩.
+    expect(bustOfChip("tex_easyrpg_charset_people4", 6)).toBeUndefined();
+    expect(bustOfChip("tex_easyrpg_charset_people5", 0)).toBeUndefined();
+    expect(bustOfChip("generated-enemy-boar-tusk", 0)).toBeUndefined();
+  });
+
+  it("줄의 표정이 같은 세트의 표정 그림을 고르며, 내보내기에 실린다", () => {
+    expect(dialogueFaceForEmotion(OLD_MAN, "angry", undefined)).toBe("shared-people1-old-man-expressions-bust-angry");
+    const { project } = withEvent([{ graphic: chip("people1", 6), trigger: { kind: "action" }, commands: [text("촌장", "어서 오게.")] }]);
+    settleSpeakerBustsIn(project);
+    // 내보내기: 쓴 흉상과 대사 표정이 고르는 같은 세트의 표정 그림이 같이 실린다.
+    const paths = collectWebExportAssets(project).map((asset) => asset.zipPath);
+    expect(paths.some((path) => path.endsWith("people1-old-man/bust-base.png"))).toBe(true);
+    expect(paths.some((path) => path.endsWith("people1-old-man/bust-angry.png"))).toBe(true);
+  });
+});
+
+describe("대사에 화자 흉상", () => {
+  it("얼굴 명령이 없는 페이지: 그 사람이 말하는 줄 앞에만 걸고 내레이션 앞에서는 지운다 — 갈래 안도, 싸우기 직전 말은 화난 얼굴", () => {
+    const { project, event } = withEvent([
+      { graphic: chip("people1", 6), trigger: { kind: "action" }, commands: [
+        text(undefined, "(다시 묻는다.)"), text("촌장", "숫자를 받았느냐."), text("촌장", "서둘러라."), text(undefined, "(촌장이 고개를 돌린다.)"),
+        { kind: "choices", options: [{ text: "예", branch: [text("촌장", "좋다.")] }, { text: "아니오", branch: [text(undefined, "(대답하지 않았다.)")] }], cancelBehavior: "disallow" },
+      ] },
+      { graphic: chip("people1", 6), trigger: { kind: "action" }, commands: [text("촌장", "덤벼라!"), { kind: "battleProcessing", troopId: "troop_slime", canEscape: false, canLose: false }, text("촌장", "졌다.")] },
+    ]);
+    expect(settleSpeakerBustsIn(project)).toEqual(["대사 3곳에 화자 흉상(이벤트 1개)"]);
+    const [talk, fight] = event().pages!;
+    expect(kinds(talk!.commands!.slice(0, 6))).toEqual(["text:", `face:${OLD_MAN}`, "text:촌장", "text:촌장", "face:", "text:"]);
+    const choices = talk!.commands!.at(-1) as Extract<Command, { kind: "choices" }>;
+    expect(kinds(choices.options[0]!.branch)).toEqual([`face:${OLD_MAN}`, "text:촌장"]);
+    expect(kinds(choices.options[1]!.branch)).toEqual(["text:"]);
+    expect(kinds(fight!.commands!)).toEqual([`face:${OLD_MAN}`, "text:촌장:angry", "battleProcessing", "text:촌장"]);
+    // 되풀이 안전.
+    const once = JSON.stringify(event());
+    expect(settleSpeakerBustsIn(project)).toEqual([]);
+    expect(JSON.stringify(event())).toBe(once);
+  });
+
+  it("이미 얼굴 명령이 있는 페이지(place_npc): 낱장 얼굴만 같은 인물의 흉상으로 — 자리·비운 얼굴·직접 정한 모양은 그대로", () => {
+    const face = (resourceId: string, extra: Record<string, unknown> = {}) => ({ kind: "changeFace", resourceId, position: "left", flipHorizontally: false, ...extra }) as Command;
+    const { project, event } = withEvent([{ graphic: chip("people1", 6), trigger: { kind: "action" }, commands: [
+      face("easyrpg-faceset-people1-06"), text("촌장", "어서 오게."), face(""), text(undefined, "(바람이 분다.)"), face("easyrpg-faceset-people1-06", { presentation: "face" }), text("촌장", "…"),
+    ] }]);
+    settleSpeakerBustsIn(project);
+    expect(kinds(event().pages![0]!.commands!)).toEqual([`face:${OLD_MAN}`, "text:촌장", "face:", "text:", "face:easyrpg-faceset-people1-06", "text:촌장"]);
+  });
+
+  it("흉상이 없는 칩·몬스터 그림·모르는 화자는 건드리지 않는다 · 주인공 이름 줄에는 주인공 흉상", () => {
+    const { project, event } = withEvent([{ graphic: chip("people4", 6), trigger: { kind: "action" }, commands: [text("촌장", "어서 오게.")] }]);
+    expect(settleSpeakerBustsIn(project)).toEqual([]);
+    expect(kinds(event().pages![0]!.commands!)).toEqual(["text:촌장"]);
+    const hero = project.database.actors.find((a) => a.id === project.system.startActorIds![0])!;
+    const heroBust = bustOfChip(hero.characterResourceId, hero.characterIndex ?? 0)!;
+    expect(heroBust).toBeDefined();
+    const map = project.maps[project.startMapId]!;
+    (map.events as unknown[]).push({ id: "ev_sign", name: "표지판", x: 5, y: 5, pages: [{ graphic: { transparent: true }, trigger: { kind: "action" }, commands: [text(hero.name, "여기가 마을이구나."), text("지나가던 목소리", "…")] }] });
+    settleSpeakerBustsIn(project, [{ mapId: map.id, eventId: "ev_sign" }]);
+    expect(kinds(project.maps[map.id]!.events.find((e) => e.id === "ev_sign")!.pages![0]!.commands!)).toEqual([`face:${heroBust}`, `text:${hero.name}`, "face:", "text:지나가던 목소리"]);
+  });
+});
+
+describe("사람·주인공 칩 고르기 — 흉상이 있는 칩 먼저", () => {
+  it("촌장은 흉상이 있는 노인 칩으로 선다(얼굴 없는 터번 노인이 아니라) — 역할 칩뿐인 여관 주인은 그대로", () => {
+    const project = createBlankProject() as Project;
+    const map = project.maps[project.startMapId]!;
+    const chief = pickPersonGraphic(project, map, "촌장", undefined)!;
+    expect(bustOfChip(chief.textureKey, chief.characterIndex)).toBe(OLD_MAN);
+    const innkeeper = pickPersonGraphic(project, map, "여관 주인", undefined)!;
+    expect(innkeeper.label).toBe("여관 주인");
+    // 역할 낱말이 없는 이름은 이름으로 돌려 고르되 흉상이 있는 칩에서.
+    for (const name of ["주술사", "족장 바라", "동굴 지기 아루", "사냥꾼"]) { const pick = pickPersonGraphic(project, map, name, undefined)!; expect(bustOfChip(pick.textureKey, pick.characterIndex), name).toBeDefined(); }
+  });
+
+  // 2026-11-12 r1s-fun: «오르텐 할멈» 이 왕 칩으로 서서 대사창에 왕의 흉상이 떴다. 칩 → 흉상 짝은 맞았고 칩이 틀렸다 —
+  // «할멈» 을 몰라 이름으로 돌려 골랐고, 돌리는 후보가 사람 칩 60칸 전체(왕·공주·메이드·기사 포함)였다.
+  it("할멈은 노파 칩으로 서고 그 흉상이 뜬다 — 이름이 섞여도, 글이 말한 성별은 역할 표의 기본보다 먼저", () => {
+    const project = createBlankProject() as Project;
+    const map = project.maps[project.startMapId]!;
+    for (const name of ["오르텐 할멈", "할멈", "할머니"]) {
+      const pick = pickPersonGraphic(project, map, name, undefined)!;
+      expect(`${pick.textureKey}#${pick.characterIndex} ${pick.label}`, name).toBe("tex_easyrpg_charset_people1#7 노파");
+      expect(bustOfChip(pick.textureKey, pick.characterIndex), name).toBe("shared-people1-old-woman-expressions-bust-base");
+    }
+    expect(npcGraphicIntent("오르텐 할멈")).toEqual({ gender: "female", age: "elder" });
+    expect(npcGraphicPersonQuery("오르텐 할멈")).toBe("할멈");
+    expect(npcGraphicPersonQuery("신문팔이 핀")).toBeUndefined();
+    // 글이 «여성» 이라고 했으면 남자 칩(촌장의 기본)은 흉상이 있어도 서지 않는다. 역할 표의 느슨한 낱말(«왕» ⊂ «여왕»)은 기울기일 뿐이다.
+    expect(pickPersonGraphic(project, map, "여성 촌장", undefined)!.label).toBe("중년 여성 주민(흑인)");
+    expect(pickPersonGraphic(project, map, "여왕", undefined)!.label).toBe("여왕");
+  });
+
+  it("역할을 못 알아들은 이름에는 그냥 주민만 선다 — 왕·공주·메이드·기사·아이 칩은 그 역할을 말했을 때만, 이름마다 고르게 갈린다", () => {
+    const project = createBlankProject() as Project;
+    const map = project.maps[project.startMapId]!;
+    const plain = ["청년 남성", "젊은 여성", "중년 남성 주민(흑인)", "중년 여성 주민(흑인)", "대머리 남성 주민"];
+    const names = ["기록가 여울", "마을 주민 다래", "선원", "나디아", "오르텐", "신문팔이 핀", "노동자 하크", "시민 엘리", "선장 바르가", "모라", "미르", "숲지기 연", "겨울 손님", "주술사", "족장 바라", "사냥꾼"];
+    const labels = names.map((name) => pickPersonGraphic(project, map, name, undefined)!.label);
+    for (const [i, label] of labels.entries()) expect(plain, names[i]).toContain(label);
+    expect(new Set(labels).size).toBe(plain.length);
+    // 말한 역할은 그대로 그 칩이다.
+    expect(pickPersonGraphic(project, map, "왕", undefined)!.label).toBe("왕");
+    expect(pickPersonGraphic(project, map, "공주", undefined)!.label).toBe("공주");
+    expect(pickPersonGraphic(project, map, "수녀", undefined)!.label).toBe("수녀");
+  });
+
+  // 2026-11-12 명세 은행(흉상 먼저 고르기 전/후): 주민 둘을 세우고 나면 «상인 여자» 가 토끼 귀 여성, «농부» 가 귀족 남성, «마을 주민 남자» 가 승려로 섰다 —
+  // 검색어 단의 순위는 성별만 맞은 칩까지 이어지고, 같은 맵에서 쓴 칩은 뒤로 밀린다. 말하지 않은 차림의 칩은 주민 칩을 한 번 더 쓰는 것보다 뒤다.
+  it("한 맵에 같은 부류의 사람을 여럿 세워도 말하지 않은 차림(토끼 귀·귀족·승려·여왕)은 서지 않는다 — 주민 칩을 고르게 다시 쓴다", () => {
+    const stand = (role: string, looks: string | undefined, times: number): string[] => {
+      const project = createBlankProject() as Project;
+      const map = project.maps[project.startMapId]!;
+      const labels: string[] = [];
+      for (let i = 0; i < times; i += 1) {
+        const pick = pickPersonGraphic(project, map, role, looks)!;
+        labels.push(pick.label);
+        map.events = [...(map.events ?? []), { id: `ev_p${i}`, name: `p${i}`, x: i, y: 0, pages: [{ id: "p1", conditions: [], trigger: { kind: "action" }, commands: [],
+          graphic: { sprite: { type: "bundled", id: pick.textureKey }, direction: "down", pattern: charsetFrameIndex({ characterIndex: pick.characterIndex, direction: "down", pattern: 1 }) } }] } as unknown as GameEvent];
+      }
+      return labels;
+    };
+    const count = (labels: string[], label: string) => labels.filter((l) => l === label).length;
+    const women = stand("상인", "상인 여자", 6);
+    for (const label of women) expect(["젊은 여성", "중년 여성 주민(흑인)", "노파"], women.join(" → ")).toContain(label);
+    expect(count(women, "젊은 여성")).toBeLessThanOrEqual(3);
+    const farmers = stand("농부", "농부", 6);
+    for (const label of farmers) expect(["중년 남성 주민(흑인)", "대머리 남성 주민"], farmers.join(" → ")).toContain(label);
+    expect(count(farmers, "중년 남성 주민(흑인)")).toBe(3);
+    const men = stand("마을 사람", "마을 주민 남자", 6);
+    expect(men.slice().sort()).toEqual(["대머리 남성 주민", "대머리 남성 주민", "중년 남성 주민(흑인)", "중년 남성 주민(흑인)", "청년 남성", "청년 남성"]);
+    // 경비병은 여섯이 서도 경비병이다(난쟁이 병사·주민으로 바뀌지 않는다).
+    expect(new Set(stand("경비병", undefined, 6))).toEqual(new Set(["청년 병사"]));
+  });
+
+  it("차림을 짚었는지는 칩 검색의 낱말 표로 읽는다 — 성별·나이 낱말은 차림이 아니다 · 할배는 청년 칩이 아니라 흉상이 있는 중년 주민", () => {
+    const entry = (label: string) => queryNpcGraphics(label, 30).find((m) => m.entry.label === label && /^tex_easyrpg_charset_people/.test(m.entry.textureKey))!.entry;
+    expect(npcGraphicNamedBy("상인 여자", entry("토끼 귀 여성"))).toBe(false);
+    expect(npcGraphicNamedBy("토끼 귀 종업원", entry("토끼 귀 여성"))).toBe(true);
+    expect(npcGraphicNamedBy("여왕", entry("왕"))).toBe(false);
+    expect(npcGraphicNamedBy("늙은 왕 king", entry("왕"))).toBe(true);
+    expect(npcGraphicNamedBy("사제", entry("승려"))).toBe(true);
+    expect(npcGraphicNamedBy("아저씨 남성", entry("귀족 남성"))).toBe(false);
+    expect(npcGraphicNamedBy("하녀장", entry("여자 메이드"))).toBe(true);
+    for (const label of ["노파", "청년 남성", "젊은 여성", "대머리 남성 주민"]) expect(npcGraphicIsPlain(entry(label)), label).toBe(true);
+    for (const label of ["왕", "여왕", "공주", "수녀", "승려", "토끼 귀 여성", "귀족 남성", "여자 메이드", "여관 주인", "청년 병사"]) expect(npcGraphicIsPlain(entry(label)), label).toBe(false);
+    const project = createBlankProject() as Project;
+    const map = project.maps[project.startMapId]!;
+    for (const name of ["할배", "오르텐 할배"]) {
+      const pick = pickPersonGraphic(project, map, name, undefined)!;
+      expect(["중년 남성 주민(흑인)", "대머리 남성 주민"], name).toContain(pick.label);
+      expect(bustOfChip(pick.textureKey, pick.characterIndex), name).toBeDefined();
+    }
+  });
+
+  it("주인공: 흉상과 전투 그림이 둘 다 그 칩의 것인 칩 · 전투 그림도 그 칩으로 · 맵에 선 사람의 칩은 피한다", () => {
+    const project = createBlankProject() as Project;
+    project.gameBlueprint = { title: "불씨", genre: "판타지 모험", playerGoal: "불씨를 되찾자", ending: { name: "끝", how: "끝", feeling: "f" }, steps: [] } as never;
+    const map = project.maps[project.startMapId]!;
+    (map.events as unknown[]).push({ id: "ev_npc", name: "주술사", x: 4, y: 4, pages: [{ graphic: chip("people1", 2), trigger: { kind: "action" }, commands: [] }] });
+    fillPartyLooks(project, "판타지 모험");
+    const hero = project.database.actors.find((a) => a.id === project.system.startActorIds![0])!;
+    expect(`${hero.characterResourceId}#${hero.characterIndex}`).not.toBe("easyrpg-charset-people1#2");
+    expect(bustOfChip(hero.characterResourceId, hero.characterIndex ?? 0)).toBeDefined();
+    expect(hero.battleCharacterResourceId).toBe(charsetBattlerForCharacter(hero.characterResourceId, hero.characterIndex ?? 0));
+    expect(hero.battleCharacterResourceId).toBeDefined();
+  });
+});
