@@ -176,10 +176,16 @@ function recordCheckpoint(session: PlaySessionLike, runtime: M2RuntimeState, fie
 }
 
 function recordUiCommand(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {
+  // 목표가 가리키는 이벤트(선택) — 명령 fields 는 문자열·숫자·불리언만 실을 수 있어 두 글자열 칸으로 온다.
+  // 선택 칸이라 fieldString(없으면 경고)을 쓰지 않는다 — 대상 없는 목표가 대부분이다.
+  const optional = (key: string): string => { const value = fields[key]; return typeof value === "string" ? value.trim() : ""; };
+  const targetMapId = optional("targetMapId");
+  const targetEventId = optional("targetEventId");
   const command = {
     surface: fieldString(fields, "surface", "toast"),
     message: fieldString(fields, "message", ""),
     durationMs: fieldNumber(fields, "durationMs", 1600),
+    ...(targetMapId && targetEventId ? { target: { mapId: targetMapId, eventId: targetEventId } } : {}),
   };
   runtime.ui.push(command);
   session.flags[`ui:${command.surface}`] = command.message.length > 0;
