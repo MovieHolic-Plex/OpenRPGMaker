@@ -70,6 +70,8 @@ export interface CheckResult {
   /** 모델이 받는 같은 판정의 영어 글(runTodoItemCheck 가 채운다). */
   en?: string;
   evidence?: { mapId?: string; eventId?: string; x?: number; y?: number };
+  /** 이 항목의 일을 빌더가 이미 했다(세계 구성기가 깐 맵의 방 검사) — 고리가 모델의 done 을 기다리지 않고 닫는다. */
+  covered?: true;
 }
 
 const TODO_CHECK_KINDS = [

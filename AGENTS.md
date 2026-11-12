@@ -233,6 +233,7 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 - 판정기 `npm run harness -- object-gate final-review --batch items.jsonl`(또는 `--png --kind`) — `claude -p --model claude-opus-5-5 --effort medium`(로컬 Claude 경로, Argon 아님), 검사관 지시문, 한 호출 6장, 3표 만장일치, 애매하면 불합격. 기록 `final/<해시>.json` 은 그림 화소 해시·종류·프로필에 묶인다. 한 화소라도 바뀌면 다시 받는다.
 - **보정된 최종 프로필의 기록만 효력이 있다**(`final-calibrate`: 숨김 표본 포함 확실 위반을 하나도 놓치지 않아야 calibrated). 현황은 `object-gate final-status`. 보정 기준을 풀지 마라 — 놓치면 지시문을 더 엄하게 한다.
 - 출구(`require_pass`·`check`·시트 칸 관문·스토어·공방, TS·Python 같은 규칙): ① 서명된 사람 **거절**은 최종 차단(Opus 통과도 막는다) ② Opus 기록이 있으면 그 판정이 최종(fail = 차단, 공방 로컬만 사람 「그래도 넣기」) ③ Opus 기록이 없을 때만 옛 규칙(서명된 사람 허용 — 이제 선택 — 또는 보정된 옛 프로필의 PASS).
+- **오너 면제(2026-11-12):** 오너가 «판정 없이 넣어라» 고 직접 말한 그림 묶음은 `object-gate owner-waive` 로 `waivers/<묶음>.json` 에 적는다(화소 해시·종류에 묶임, 오너의 말 원문 필수). bundle·shared·공방 로컬 출구만 지나고 **스토어 출구는 지나지 못한다.** 사람 거절·보정된 Opus 최종 판정이 그 위에 있다. 면제는 통과가 아니다 — 보고에 «3/4 관문 미통과 — 오너 면제» 로 쓴다. 감독·에이전트가 스스로 묶음을 만들지 않는다. 문서 `openwiki/harnesses/object-gate.md` 「오너 면제」.
 - 검토 화면 `serve-holds`(http://mdc-server:18323/)는 Opus 판정·이유를 보이고 「Opus 불합격」으로 거른다. 대기열 일괄 판정은 `final-queue`, 불합격 목록(`~/.cache/opus-gate/fails.json`)이 다시 그리기 작업 목록이다.
 - **감독·에이전트는 이 판정자 밖에서 그림을 통과시키지 않는다.** 기록 파일을 손으로 쓰거나, 사람 화면을 흉내 내 POST 하거나, 서명 키를 읽지 않는다.
 - 새 그림을 만든 에이전트는 완료 보고에 `object-gate final-review` 결과(또는 `final-status`)를 붙인다. Opus pass 가 없으면 「3/4 관문 미통과」라고 쓴다.

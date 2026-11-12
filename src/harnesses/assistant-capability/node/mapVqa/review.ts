@@ -8,9 +8,9 @@ import { classPatterns, PATTERNS_VERSION } from './patterns';
 import { askArtGaps, battleFacts, buildArtGaps, clusterThings, toolReportsOfSession, ART_GAPS_VERSION, type GapEntry } from './artGaps';
 import { corpusSessions, layJobsOf, loadCorpus, type MapItem } from './corpus';
 import { factsText, mapFacts, type MapFacts } from './facts';
-import { cleanPicture, detailPictures, FACTS_LEGEND, factsPicture, markedPicture } from './pictures';
+import { cleanPicture, detailPictures, FACTS_LEGEND, factsPicture, markedPicture, RELIEF_LEGEND } from './pictures';
 import { writeMapVqaPage } from './page';
-import { buildTally, calibrationOf, loadReviewer, parseReview, type MapReview, type Reviewer } from './verdict';
+import { buildTally, calibrationOf, carriedNote, loadReviewer, parseReview, type MapReview, type Reviewer } from './verdict';
 
 export type ReviewOptions = { out: string; reviewer: Reviewer; usage: JudgeUsage; noReview?: boolean; /** 없는 그림 장부용 둘째 물음도 한다. */ art?: boolean };
 /** 맵 한 장: 그림을 만들고(늘) 검수자에게 묻는다(noReview 가 아니면). 그림·판정을 <out>/maps/<id>/ 에 쓴다. */
@@ -29,8 +29,8 @@ export async function reviewMap(item: MapItem, options: ReviewOptions): Promise<
   let review = base;
   if (options.noReview) review = { ...base, error: '검수자를 부르지 않았다(--no-review)' };
   else {
-    const answer = await askJudge({ cacheDir: resolve(options.out, 'judge-cache'), promptVersion: options.reviewer.version, system: options.reviewer.system, usage: options.usage,
-      text: `${item.context}\n\n${text}\n\n${FACTS_LEGEND}\n\nInspect this map and reply with the JSON object.`,
+    const answer = await askJudge({ cacheDir: resolve(options.out, 'judge-cache'), promptVersion: options.reviewer.version, sameQuestionAs: options.reviewer.sameQuestionAs, system: options.reviewer.system, usage: options.usage,
+      text: `${item.context}\n\n${text}\n\n${FACTS_LEGEND}${pictures.relief ? `\n\n${RELIEF_LEGEND}` : ''}\n\nInspect this map and reply with the JSON object.`,
       images: [{ label: 'CLEAN picture at 1x (what the player sees)', png: pictures.clean }, ...details.map(detail => ({ label: detail.label, png: detail.png })), { label: 'FACTS picture', png: factsPng }],
       parse: reply => parseReview(reply, options.reviewer, facts) });
     review = 'answer' in answer ? { ...base, status: 'reviewed', ...answer.answer, judgeKey: answer.key } : { ...base, error: answer.error, judgeKey: answer.key };
@@ -63,7 +63,7 @@ export async function runMapVqa(options: MapVqaOptions): Promise<number> {
     }
   });
   const calibration = calibrationOf(reviewer.version);
-  const tally = buildTally(results, { corpus: options.corpus, generatedAt: new Date().toISOString(), layJobs: layJobsOf(options.corpus), calibration: calibration ? { status: calibration.status, missRate: calibration.missRate, falseAlarmRate: calibration.falseAlarmRate, planted: calibration.planted, good: calibration.good } : { status: 'uncalibrated' },
+  const tally = buildTally(results, { corpus: options.corpus, generatedAt: new Date().toISOString(), layJobs: layJobsOf(options.corpus), calibration: calibration ? { status: calibration.status, missRate: calibration.missRate, falseAlarmRate: calibration.falseAlarmRate, planted: calibration.planted, good: calibration.good, ...(calibration.carried ? { carried: calibration.carried } : {}) } : { status: 'uncalibrated' },
     judgeUsage: { calls: usage.calls, cached: usage.cached, failures: usage.failures, inputTokens: usage.inputTokens + usage.cacheReadTokens + usage.cacheWriteTokens, outputTokens: usage.outputTokens } }, reviewer);
   // HUD 검수(map-vqa-hud 가 같은 결과 폴더에 남긴 hud.json)가 있으면 그 집계를 따로 한 묶음으로 싣는다 — 맵 깔기 결함과 섞어 세지 않는다.
   const hudFile = resolve(options.out, 'hud.json');
@@ -100,6 +100,6 @@ export async function runMapVqa(options: MapVqaOptions): Promise<number> {
   const t = tally.totals;
   console.log(`\nmap-vqa: 맵 ${t.maps}장(검수 ${t.reviewed}) · blocker 가 있는 맵 ${t.withBlocker} · major 이상이 있는 맵 ${t.withMajorOrWorse} · 깨끗한 맵 ${t.clean} · 결함 blocker ${t.blocker} / major ${t.major} / polish ${t.polish}`);
   if (artGaps) console.log(`없는 그림 장부: ${artGaps.totals.rows}줄(검수자 ${artGaps.totals.fromReviewer} · 도구 신고 ${artGaps.totals.fromTools} · 다른 주제 대역 ${artGaps.totals.wrongTheme}) → ${resolve(options.out, 'art-gaps.json')}`);
-  console.log(`${usageLine(usage)}\n보정: ${calibration ? `${calibration.status} — 놓침 ${calibration.missRate} · 헛경보 ${calibration.falseAlarmRate}` : '보정 전(uncalibrated) — 이 숫자는 보정되지 않은 검수자의 것이다'}\n${resolve(options.out, 'tally.json')}\n${html}`);
+  console.log(`${usageLine(usage)}\n보정: ${calibration ? `${calibration.status} — 놓침 ${calibration.missRate} · 헛경보 ${calibration.falseAlarmRate}${carriedNote(calibration) ? ` · ${carriedNote(calibration)}` : ''}` : '보정 전(uncalibrated) — 이 숫자는 보정되지 않은 검수자의 것이다'}\n${resolve(options.out, 'tally.json')}\n${html}`);
   return 0;
 }

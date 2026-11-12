@@ -4,7 +4,7 @@ import { homedir } from 'node:os';
 import { existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { PNG } from 'pngjs';
-import { OBJECT_GATE_PROFILE, objectGatePixelSha256, objectGateProfileHash, type ObjectGateFinal, type ObjectGateFinalProfileRecord, type ObjectGateFrontPropApproval, type ObjectGateHoldDecision, type ObjectGateProfileRecord, normalizeObjectGateImage, objectGateHoldPayload, type ObjectGateReceipt, type ObjectGateStyleKind, type ObjectGateStyleRefSet } from '../../_core/objectGate';
+import { OBJECT_GATE_PROFILE, objectGatePixelSha256, objectGateProfileHash, type ObjectGateFinal, type ObjectGateFinalProfileRecord, type ObjectGateOwnerWaiver, type ObjectGateOwnerWaiverBatch, type ObjectGateFrontPropApproval, type ObjectGateHoldDecision, type ObjectGateProfileRecord, normalizeObjectGateImage, objectGateHoldPayload, type ObjectGateReceipt, type ObjectGateStyleKind, type ObjectGateStyleRefSet } from '../../_core/objectGate';
 
 export const GATE_DATA = resolve(process.env.OBJECT_GATE_DATA ?? 'harness-data/object-gate');
 const receiptPath = (sha: string) => resolve(GATE_DATA, 'receipts', sha.slice(0, 2), `${sha}.json`);
@@ -269,7 +269,30 @@ export function writeFinalProfile(record: ObjectGateFinalProfileRecord): string 
   writeFileSync(path, `${JSON.stringify(record, null, 1)}\n`);
   return path;
 }
-/** 출구 입력 한 벌(영수증·승인·사람 결정·Opus 최종) — 노드 출구가 같은 것을 넘기게. */
+// ── 오너 면제 묶음(waivers/<id>.json) — `object-gate owner-waive` 단계만 쓴다 ──
+const waiverDir = () => resolve(GATE_DATA, 'waivers');
+export function listOwnerWaiverBatches(): ObjectGateOwnerWaiverBatch[] {
+  const dir = waiverDir();
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir).filter(f => f.endsWith('.json')).sort().map(f => JSON.parse(readFileSync(resolve(dir, f), 'utf8')) as ObjectGateOwnerWaiverBatch)
+    .filter(b => b.schema === 'oprn-object-gate-owner-waiver/1' && Array.isArray(b.items));
+}
+export function readOwnerWaiver(sha: string, batches: ObjectGateOwnerWaiverBatch[] = listOwnerWaiverBatches()): ObjectGateOwnerWaiver | null {
+  for (const batch of batches) {
+    const item = batch.items.find(i => i.pixelSha256 === sha);
+    if (item) return { batch: { schema: batch.schema, id: batch.id, owner: batch.owner, decidedAt: batch.decidedAt, recordedBy: batch.recordedBy, contexts: batch.contexts }, item };
+  }
+  return null;
+}
+export function writeOwnerWaiverBatch(batch: ObjectGateOwnerWaiverBatch): string {
+  if (!/^[a-z0-9][a-z0-9-]{2,60}$/.test(batch.id)) throw Error(`면제 묶음 id 는 영문 소문자·숫자·하이픈: ${batch.id}`);
+  const path = resolve(waiverDir(), `${batch.id}.json`);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify(batch, null, 1)}\n`);
+  return path;
+}
+
+/** 출구 입력 한 벌(영수증·승인·사람 결정·Opus 최종·오너 면제) — 노드 출구가 같은 것을 넘기게. */
 export function exitInputs(sha: string) {
-  return { receipt: readReceipt(sha), approval: readApproval(sha), hold: readHoldDecision(sha), final: readFinal(sha), calibratedProfiles: calibratedProfiles(), calibratedFinalProfiles: calibratedFinalProfiles() };
+  return { receipt: readReceipt(sha), approval: readApproval(sha), hold: readHoldDecision(sha), final: readFinal(sha), calibratedProfiles: calibratedProfiles(), calibratedFinalProfiles: calibratedFinalProfiles(), waiver: readOwnerWaiver(sha) };
 }

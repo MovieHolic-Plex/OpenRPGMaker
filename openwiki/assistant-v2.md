@@ -153,6 +153,39 @@ Terra 작은 일 `door-roundtrip-starter` — 「잿불 마을 동쪽 끝에서 
 증거(모델 없음, 하네스의 진짜 starter 픽스처): `scope=place · 도구 47개 · 115,849자 · 지시문 34,733자` → `scope=edit · 도구 12개 · 16,181자 · 지시문 13,790자`,
 처음 싣는 목록에 `create_transfer_pair` `list_map_locations`. `golden.mts` 는 두 맵짜리 상태의 요청 둘(잇기 / 「새 마을을 만들고 … 이어 줘」)을 더 찍는다(153 → 155줄).
 
+## 게임 하나 요청의 처음 목록 — 짓는 턴과 고치는 턴 (2026-11-12, Haiku 게임 다섯 판 실측)
+
+작은 일의 상한(20개·4만 자)은 게임 하나 요청에는 걸리지 않는다. Haiku 게임 r1v-fun(Claude Code 고리)의 중계 기록: **도구 정의 56개·12.3만 자가 모델 요청 272건에 매번** 실렸다(시스템 글 5.5만 자와 함께 고정 접두부). 잇는 턴은 58개·12.6만 자.
+같은 기록과 r1h 네 판(합 15턴 — 짓는 턴 5 · 잇는 턴 10)의 호출을 세니: 12개(2.3만 자)는 한 번도 안 불렸고, 큰 넷(`edit_place` 1.7만 · `make_place` 1.1만 · `upsert_event` 1.0만 · `set_opening` 0.5만)은 판의 절반 이하에서만 불렸다. 잇는 턴에서는 실린 글자의 81~92% 가 그 턴에 한 번도 안 불린 도구였다.
+
+그래서 `toolExposure.ts` 가 게임 하나 요청(`intent.wholeGame`)을 **프로젝트 상태로** 둘로 가른다(요청 글의 낱말이 아니다):
+
+| 턴 | 가르는 것 | 처음부터 | 뒤로(`load_tools`) |
+|---|---|---|---|
+| 짓는 턴 | 청사진이 없거나, 단계 가운데 지은 이벤트(`GameBlueprintStep.built`)가 안 적힌 것이 있다 | 지금 규칙 그대로 + `list_endings` | `WHOLE_GAME_LATER` 16개 — 안 불린 12 + `edit_place` `make_place` `upsert_event` `set_opening` |
+| 고치는 턴 | 청사진의 단계가 다 `built` | `WHOLE_GAME_REPAIR` 24개만 — 읽기 · 돌려 보기 · 이벤트와 목표 고치기 · 엔딩 · 소품 | 나머지 전부(청사진 · 장소 · 사람 · 사건을 짓는 동사 포함) |
+
+- 같은 저장본으로 다시 만든 목록(모델 없음, `genre-tools/cliListFinal.mts` — 두 체크아웃의 실제 노출 코드): 짓는 턴 56개·12.4만 자 → **41개·6.2만 자**(구성기 세계 48개·9.0만 → 37개·5.4만), 고치는 턴 58개·12.7만 자 → **26개·4.0만 자**.
+- 기록된 호출 순서를 얹어 잰 «도구 정의 글자 × 호출»(뒤로 돌린 도구는 실은 순간부터 기록에 남아 매 호출 다시 읽힌다고 센다): 짓는 턴 5개 −33%, 잇는 턴 10개 −51%. 한 턴에 `load_tools` 로 싣는 도구는 가운데값 4 → 5(짓는 턴) · 4 → 6(잇는 턴).
+- 뒤로 돌린 v2 동사는 `load_tools` 설명의 앞쪽 목록(이름 — 한 줄 뜻)에 든다. 장소 하나를 짓는 요청(게임 하나가 아닌 것)은 그대로 `make_place` · `edit_place` 를 처음부터 받는다.
+- **모르는 것:** 기록은 그 도구들이 보이는 채로 찍혔다. 숨기면 고치는 동사를 덜 부를 수 있다 — 모델 판(같은 요청의 Haiku 게임 하나)으로만 알 수 있고 이 변경은 그것을 재지 않았다.
+
+**`call_tool` 로 부른 도구의 인자 모양 거절은 그 도구의 매개변수를 싣는다.** 같은 15턴에서 목록 밖 쓰기 도구의 실패는 41/141(29%)로 목록 안(34/431, 7.9%)의 네 배였다. 41건을 가르면:
+
+| 까닭 | 건수 | 이 변경 |
+|---|---|---|
+| 인자 모양(`set_map_properties` 15 — `bgm` 에 낱말 · `create_quest` 2 · `place_door` 1) | 18 | 17건은 실행기의 검증 거절이다 — 이제 거절 글이 매개변수를 싣는다. 8건은 그 턴에 그 도구를 `load_tools` 로 실은 적도 없었다(같은 인자로 8번 연달아 실패). 1건은 도구 안의 검사(`create_quest` 목표 칸)라 그대로다 |
+| `place_door` — 참고문서 선행 읽기 규칙 14 · 재료 이름표 1 | 15 | 다른 일(읽기 관문) — 고치지 않았다 |
+| `create_quest` — 퀘스트 내용 규칙(의뢰인과 목표 인물이 같음 3 · 프리셋과 다른 목표 구조 3) | 6 | 다른 일 — 고치지 않았다 |
+| `place_examine_hotspots` 물건 이름을 못 찾음 1 · `rewrite_dialogue` 윤문 지침 먼저 읽기 1 | 2 | 다른 일 |
+
+- 거절이 전에 준 것: 검증기의 오류 줄(「bgm: expected object or null, received string」, 허용 값은 안 적힌다)과 받은 인자, 두 번째부터 필수 칸만 채운 최소 예시(`{mapId:"…"}` — `bgm` 의 모양은 없다).
+- 이제: 실행기가 인자 모양 거절을 형(`ArgShapeError`, `argRepair.ts`)으로 던지고, 로컬 CLI 고리가 `call_tool` 로 온 호출이면 그 도구의 매개변수(`V2ToolExposure.callSchema` — 검증하는 스키마와 같은 모양, 깊은 칸 설명과 한국어 칸 설명은 걷는다)를 거절 글 끝에 붙인다(`cliToolFreeze.ts callToolFailureText`). 연달아 틀리면 첫 번째와 세 번째에만 붙인다.
+- `load_tools` 가 돌려주는 매개변수 글과 거절에 붙는 글은 검증하는 스키마와 모양이 같다 — 게임 하나 요청의 뒤로 돌린 도구 132개(짓는 턴) · 148개(고치는 턴)에서 다른 것 0개(`genre-tools/loadSchemaCheck.mts`, 제품의 `load_tools` 를 직접 불러 견준다). 고치기 전에도 0개였다. 다만 전에는 CLI 목록용 가볍게 하기(`compactCliToolList`)를 한 도구에 불러 만들었고 그 함수는 큰 반복 칸을 한국어 한 줄로 바꿀 수 있어서, 깊은 설명 걷기(`stripDeep`)만 쓰게 해 그 길을 없앴다.
+- 기록된 18건을 지금 코드로 다시 넣으면(`genre-tools/lazyFailReplay.mts`): 17건이 같은 오류로 거절되고 18건 모두 거절에 붙을 매개변수 글이 있다(`set_map_properties` 5.4천 자 — `bgm:{mode: parent|none|custom, resourceId, fadeInMs}` 가 그 안에 있다).
+
+테스트 `test/aiV2WholeGameFirstList.test.ts`. 측정 자료 `~/z-project/assistant-fable-runs/genre-tools/clilist/`.
+
 ## 작은 일은 그 일을 하는 도구에 늘 닿는다 — 풀·주제 줄·기록 이름 (2026-11-11, 작은 일 둘째 묶음)
 
 둘째 묶음 35건(`harness-data/assistant-capability/small-jobs-2.json`)을 모델 없이 분류해 보니 다섯 문장이 게임 도구 묶음을 받지 못했다(`tools.game=false`, `extra=0`):
@@ -582,7 +615,6 @@ Terra 네 판의 화면 검수 장부 57줄 가운데 15줄이 끝맺음이 깐 
 | (2026-11-11) 조립 뒤 24분 멈춤 — 그림·응답 하나가 턴을 붙잡음 | `src/ai/piAgent/client.ts` | 그림 응답과 단계 적용 응답은 한 줄(`checkpoints`)로 차례를 선다. 끝나지 않는 그리기나 매달린 응답 POST 하나가 뒤의 체크포인트 응답을 전부 막았고, 응답 중(`acksInFlight`)이라 워치독도 울리지 않아 워커가 체크포인트 시한(30분)까지 기다렸다(측정 r1 로컬 판: `stream.resume` 직후 `v2.assembly` 뒤 무사건 24분, 워커·편집기 둘 다 한가). 또 워커가 45초 시한으로 이미 버린 그림에 늦게 답하면 409 가 돌아와 턴 전체가 끊겼다. | ① 편집기 쪽 그리기에 시한(검수 그림 40초 · 생성 290초) — 지나면 `issue` 로 답하고 줄을 비운다. ② 그림 응답의 409 는 `render.dropped` 한 줄로 남기고 턴은 계속. ③ 응답 POST 한 번마다 시한(그림 30초 · 적용 120초, `postAck` 가 다시 보낸다). 원인이 그림인지 적용인지는 운전기 기록에 render/checkpoint 사건이 없어 가르지 못했다 — 실제 판 확인 전. |
 | (2026-11-12) 사슬 고리 번호는 고리의 것 · 깊이 관문은 이미 긴 경로에 서지 않는다 | `src/ai/v2/story/puzzle.ts` · `src/ai/v2/judge/shipChecks.ts` | Terra 측정 r1-fun(눈가림 재미 2, 첫 마을에서 막힘)의 원인 둘. ① `buildPuzzleChain` 의 고리 몫 스위치·변수(`taken_N` · `<번호>_solved_N` · `door_open_N` · `var_<사슬>_N[_wrong]`)는 호출 안의 순번으로 번호를 받았다 — 같은 이름의 사슬을 두 번에 나눠 지으면(청사진을 다시 쓰면 새 단계만 온다) 뒤 호출의 첫 고리가 앞 호출 첫 고리의 «집어 감» 을 같이 써, 앞 사람과 말하면 뒤 사람이 «받은 뒤» 대사로 넘어가 길을 여는 스위치를 켜지 않았다(저장된 판 13개 중 5개에 같은 꼴). 이제 번호는 «그 이벤트만 쓰던 번호가 있으면 그것, 없으면 게임 어디서도 안 쓰는 번호» 다 — 처음 짓는 사슬의 결과는 그대로. ② 그 다시 쓰기를 시킨 것은 `act-depth-min` 이었다: 깊이는 스위치·변수 사슬만 세어, 가운데 단계 하나가 물건으로 넘기면 7단계 경로가 3 으로 재어진다. 처방이 «청사진을 6~8단계로 다시 써라» 인 관문이므로, 청사진에 서로 다른 단계 이벤트가 `MIN_ACT_DEPTH`+1 개 이상이고 `walkBlueprint` 에 경로 막힘이 없으면 올리지 않는다(척도와 같은 값을 내는 `progressionDepth` 는 그대로). 남은 것: 청사진을 다시 쓰면 앞 경로의 사람이 고아로 남는다(13판 중 6판) — 단계가 지은 것을 단계 id 로 물려받게 하는 것은 다음 PR. 시험 `test/aiV2ChainSlots.test.ts`. |
 | (2026-11-12) 화면 검수자: 자기 자신은 맨 마지막 | `src/ai/v2/judge/vqa.ts` (`vqaReviewerCandidates`) | 차례는 «다른 계열 모두 → 같은 계열» 인데, 같은 계열에서는 눈·검토자 칸이 비어 있으면 곧바로 주 모델 자신이었다. Haiku 5.5 실행 측정에서 Codex CLI(GPT 할당량 없음)·Gemini CLI(그림 못 봄)가 답하지 못하자 Haiku 가 제 화면을 검수했다 — 같은 계열의 Sonnet 은 후보에 없었다. 이제 로컬 CLI 검수용 모델(`LOCAL_CLI_REVIEWERS`: Sonnet · gpt-6.1-sol · Argon) 가운데 주 모델과 같은 계열이고 다른 모델인 것이 주 모델 앞에 선다(Haiku → Sonnet, Terra → Sol). 표시는 그대로 «같은 계열 검수»(약한 증거) — 독립 검수가 된 것은 아니다. 시험 `test/aiV2VqaReviewerOrder.test.ts`. |
-||||||| 00a1e0603f
 | (2026-11-12) 청사진을 다시 쓰면 지어 둔 것을 물려받는다 | `src/ai/v2/story/blueprintCarry.ts` · `blueprintPath.ts` · `puzzle.ts` · `src/project/gameBlueprint.ts` · `tools/verbs/blueprint.ts` | 모델이 청사진을 다시 쓰면(단계 수·장소는 그대로, 사람 이름만 바뀜 — 저장된 Terra 판 13개 중 6개) 경로 빌더는 단계 이벤트를 «그 맵의 같은 이름» 으로 찾아 새 사람을 세웠고 앞 경로의 사람은 남았다: 이야기 줄이 두 벌, 문·길은 앞 사람의 스위치를 기다림(r1-fun). 이제 단계가 제가 지은 것을 적어 둔다 — `GameBlueprintStep.built {mapId, eventId, switchId?, itemId?}`(함수만 쓴다, 모델이 보낸 값은 버린다). `write_blueprint` → `carryBuilt`: 새 단계가 앞 단계의 built 를 물려받는다(같은 이름 먼저, 그다음 같은 id), 받을 단계가 없는 것은 `retired`. `build_blueprint_path` → `settleCarriedSteps`: 물려받은 이벤트를 새 이름으로(그 이름을 부르던 잠김 글·목표 꼬리도, 조사는 받침에 맞게), 장소를 옮긴 단계·빠진 단계의 이벤트는 걷고 아무도 안 켜게 된 스위치를 기다리던 조건을 푼다 → 빌더가 **같은 이벤트·같은 스위치 id** 로 다시 짓는다(`ChainLink.reward.switchId/itemId`, 그림은 새 이름으로 다시 `relook`). 넘기는 것의 종류가 바뀐 단계(물건 → 깃발)는 `remapGives` 가 옛 것을 기다리던 조건을 새 것으로 옮긴다. `ev_chain_*`(함수가 지은 것)만 이름을 바꾸고 걷는다. 저장 모양: `built` · `retired` 는 선택 칸이라 옛 저장본은 그대로 읽힌다(`normalizeStepBuilt` — 모양이 틀리면 없는 것으로). 실측(r1-fun 을 둘째 경로 짓기까지 모델 없이 재생): 사슬 이벤트 12(단계 아닌 것 5) → 7(0) · 같이 쓰는 «집어 감» 5 → 0 · 아무도 안 켜는 스위치를 기다리는 페이지 2 → 0. 시험 `test/aiV2BlueprintCarry.test.ts`. |
 | (2026-11-12) 엔딩 맺음 글 — 설계 메모는 화면에 내지 않는다 | `src/project/gameBlueprint.ts`(`ending.closing` · `endingClosing`) · `story/blueprint.ts`(스키마·카드) · `story/blueprintPath.ts` · `story/shipDefaults.ts`(`fillEndingClosure`) · `story/shipLookDefaults.ts`(`fillPartyNames`) · `tools/verbs/blueprint.ts` | 청사진 `ending.how` 는 «엔딩에 닿는 법»(다른 엔딩 설명 포함)을 적는 설계 메모인데, 경로 빌더·기본 맺음 글이 그 글을 엔딩 화면·마지막 단계 대사로 그대로 냈다. Haiku r1h-mystery · r1h-snow · r1h-fun 의 how 는 셋 다 조건문(«강수연 아내를 지목하면 … 진실 엔딩. 다른 지목은 미궁»)이었고 mystery · snow 엔딩 화면에 그 줄이 나왔다(눈가림 판정 «개발자 메모»). 이제 플레이어가 읽는 글은 `ending.closing`(2~4줄 · 스키마에서는 선택 칸이다 — 필수로 두면 인자 검증이 청사진을 통째로 거절해, closing 없는 옛 기록을 재생하는 명세 은행이 맵 80 → 13 으로 무너졌다 · 다시 쓴 청사진이 빼면 앞 것을 물려받는다 · 없으면 write_blueprint 결과가 그렇게 알린다) 뿐이다 — `define_ending` 의 처음 epilogue, 마지막 단계의 기본 대사·맺음 서술, 번호 자물쇠 엔딩의 보상 글, `fillEndingClosure` 가 모두 closing 을 쓰고 how 와 마지막 단계의 action 은 쓰지 않는다. closing 이 없고 남는 줄(주인공·느낌)로 모자라면 채우지 않는다 — 출하 검사 `ending-closure` 가 모델에게 쓰게 한다. 같이: 주인공 기본 이름(`fillPartyNames`)은 게임 속 인물 이름·청사진 who/event 에 «든» 이름도 피한다(용의자 「이도윤 (조카)」가 있는 게임의 주인공이 「도윤」이 됐다). 탐침(모델 없음, 저장된 r1h-mystery): 전 «how 줄 / 도윤은 … 걸어냈다 / 느낌» → 후 closing 없음 «하람은 … / 느낌 / 하람의 이야기는 …», closing 있음 «closing 두 줄 / 하람은 …». golden: 달라진 149/155 전부 `write_blueprint` 글·스키마. 시험 `test/aiV2EndingClosing.test.ts`. 실제 모델이 closing 을 쓰는지는 미측정. |
 ||||||| 12d874b62c
@@ -1216,6 +1248,44 @@ golden: 153 가운데 117 이 `place_examine_hotspots` 글/스키마(81 은 그�
 남은 것(그림): 해적 군도·사막 세계에는 «들판» 종류가 없어 «동쪽 들판» 은 해변·항구 종류로 선다. 전국·SF 정거장·폐허 세계에는 실내 종류가 없다.
 
 재생(`layReplay.mts`): village-chief-house 는 «촌장 집»(오두막 14×12)이 서고, 탐침 `refusalNextCalls.mts` ④ 가 계열 거절 → `make_place` → 같은 칩셋의 장소를 확인한다. 시험 `test/aiV2WorldRoutedPlace.test.ts`.
+
+## 깔린 뒤의 «완료» — 빌더가 덮은 항목 · 낡은 비평 다시 보기 · 관문이 이른 도구 싣기 (2026-11-12, 깔기 24판 Terra 재측정)
+
+위 네 묶음(#4621~#4624)을 넣고 같은 24요청을 실제 입력창으로 다시 돌렸다(Terra high, `mapvqa/lay-tools-2ad6d3596a`): 깔림 23 → 24/24, 장소 호출 거절 55 → 23, «pending action» 막힘 17 → 0.
+그런데 «완료» 는 8 → 6 이었다. 거절이 사라지자 완료를 정하는 것은 끝맺음 관문의 항목이었고, 미완료 18요청의 막힌 항목을 읽으면 넷이다.
+
+| 완료를 막은 것 | 기록 | 원인 | 고친 곳 |
+|---|---|---|---|
+| 비평가의 장소 항목이 다시 열림(15요청) | village: 비평 «우물이 안 보인다» → 모델이 우물을 놓음 → 관문이 같은 항목을 두 번 더 엶 | 비평가는 짓기·다시 짓기 때만 본다. `stamp_object`·`place_object`·`add_people` 로 고친 맵은 다시 보지 않고, 관문은 짓기 때의 지적을 그대로 읽었다 | `turn/relook.ts` — 관문 전에, 지적이 남은 장소의 지금 1배 그림이 비평가가 본 그림과 다르면 다시 보인다(맵마다 턴에 두 번까지) |
+| 관문 항목 «고치는 도구가 이 실행의 도구 목록에 없다»(11요청 12항목) | throne-room: `set_field_hud`, mine·ruins: `patch_event_page` | 그 요청의 묶음에 없을 뿐 조수 v2 에는 있는 도구다 | `judge/gates.ts syncGateItems` + `turn/afterMain.ts addRepairTool` — 관문 글이 이른 도구를 고치기 차례에 싣는다 |
+| 아무도 못 하는 항목(village-chief-house 8항목) | 구성기가 지은 «촌장 집» 에 모델이 건 칸 배치·자기 검토·방 그래프 항목 | 구성기 방은 칸 배치를 받지 않는다. 방은 마을과 이어지지도 않았고 결과 글은 그 요청에 없는 동사를 일렀다 | `tools/worldRoomLink.ts`(짓자마자 집 문에 잇는다) · `judge/todoRoomChecks.ts builderCover` · `loop/builderCover.ts` |
+| 고치기 상한(weapon-shop) | 도구는 «남은 바퀴 9», 관문은 «상한» | 칸 배치 장소의 상한이 도구 12 · 관문 3 으로 달랐고 자기 검토 두 바퀴가 3을 먹었다 | `turn/session.ts repairCapOf` 하나를 도구·관문·최종 보고가 쓴다 |
+
+규칙:
+
+- **비평가가 본 그림이 낡았으면 다시 본다.** 지적을 지우지도, 비평가를 누그러뜨리지도 않는다 — 같은 비평가가 지금 그림을 본다. 그림이 그대로면 묻지 않는다(호출 0).
+- **관문 글이 이른 도구는 고치기 차례에 실린다**(`load_tools` 와 같은 길 — 모델이 묻지 않아도). 조수 v2 에 아예 없는 도구를 이른 항목만 «이 요청에서 고칠 수 없음» 으로 **뺀다**(막힘이 아니다 — 완료를 막지 않고 최종 요약에 적힌다).
+  묶음에 있지만 아직 안 실은 도구(이름 호출·`load_tools` 로만 닿는 것)도 도구 목록에 올린다 — 모델은 목록에 안 보이는 `create_transfer_pair` 를 «제공되지 않는다» 며 항목을 막았다.
+  호출 모양(`tool{…}`)이 아니라 **이름만 이른 글**(«create_transfer_pair 로 잇는다»)의 도구도 싣는다. 항목을 빼는 판단은 호출 모양으로 이른 도구만 본다(낱말 하나가 도구가 아니라고 항목이 빠지지 않는다).
+  목록 고정 고리(로컬 CLI `call_tool`)에서는 실은 도구의 매개변수를 재주입 글에 바로 싣는다 — 장소만 까는 요청에는 `load_tools` 가 없다.
+- **동사 결과·관문 글이 이름으로 이른 v2 도구는 이름으로 부르면 그 자리에서 실린다**(`turn/lateTools.ts` — `hooks.lazyTool`). 게임 요청은 필요할 때 싣는 표가 이미 그랬고, 장소만 까는 요청은 표가 비어
+  `make_place` 결과가 이른 `create_transfer_pair` 를 부르면 «there is no tool named» 가 돌아왔다(2026-11-12 Haiku harbor · village-chief-house — main 과 #4636 양쪽). 쓰기 요청만, 조수 v2 묶음(`v2ToolPool`)에 있는 이름만.
+- **풀 칩셋 마을 뒤의 실내는 `make_place` 가 그 마을의 집 문에 잇는다**(`linkChild` — 선언한 입구와 같은 길). 결과 글은 두 문의 칸을 말하고 동사 이름을 대지 않는다.
+- **실내 종류가 없는 세계(전국·에도 · SF 정거장)의 실내 요청은 바깥 종류로 짓지 않는다.** 전에는 «촌장 집» 이 농촌 마을 54×42 한 장으로 서고 장소 확인이 ✓ 였다. 이제 짓지 않고 까닭을 말하며 없는 그림(`want=indoor-kind`)으로 적는다.
+- **구성기가 한 번에 지은 방의 방 검사(`layout_built`·`layout_review`·`room_graph`·`room_zones`)는 빌더의 사실로 닫는다:** 깔렸다(구역 수) · 시작/입구에서 닿는다 · 양쪽으로 이어졌다. 셋 중 하나라도 아니면 ✗ 이고 걸린 사실을 적는다.
+  쓰기 도구가 성공할 때마다 `closeBuilderCovered` 가 그런 항목을 닫고 `[Covered by the builder ✓]` 한 줄을 결과에 붙인다.
+- **구성기 방에 온 칸 배치 고침의 거절은 값이 찬 다음 호출 하나**다(`placeMemory.ts composedRefusal`): 지금 항목이 덮인 방 검사면 `todo done`, 물건 하나면 `draw_object`, 아니면 `inspect`. 칸 배치로 온 호출의 거절에는 다른 동사를 늘어놓지 않는다(막힘 되돌림이 배치 항목을 `add_people` 로 돌렸다).
+- **막힘 되돌림은 그 항목의 거절만 본다**(`loop/todoTools.ts` — 실패 기록에 항목 id). 다른 항목에서 난 거절 하나가 막힘 다섯을 되돌렸었다. 되돌릴 때 이르는 호출은 거절 글이 적은 호출 그대로(`nextCall.ts callInText`).
+- **고치기 상한은 한 곳에서 읽는다**(`repairCapOf`): 칸 배치 장소 12, 그 밖 3.
+- `place_object` 는 막힌 칸에서 5칸 안의 빈 칸을 찾는다(전 3칸).
+- 독립 검토자의 «기존 빈 맵 삭제» 도 자리표시 시작 맵 은퇴로 읽는다(`judge/advisor.ts isPlaceholderRemoval` — «기존·원래» 를 낱말로). 마을 빌더가 고침을 새 id(`map_blank_start_r2`)로 다시 지은 판에서 검토자가 이것을 막음으로 올려, 조수가 `create_map` 으로 빈 맵을 되살렸다.
+
+비평가의 지적이 사실인가(1배 그림을 직접 봄, 완료를 비평 항목이 막은 15요청): **거짓·낡음 3**(village 우물 · market-town 노점 · harbor 배와 부두 — 고친 뒤 다시 안 봄),
+**사실이고 모델이 가진 도구로 고칠 수 있음 7**(convenience-store · house · weapon-shop · village-chief-house · prison · blacksmith · tavern — 빈 바닥·성긴 방. 고침이 거절되거나 되돌려졌다),
+**사실이지만 그림·빌더만 고칠 수 있음 5**(castle 궁 건물 없음 · ruins 바깥 요청에 실내 던전 · swamp 널다리 없음 · farm 가축 우리 없음 · village-to-field 들판이 항구 종류로).
+
+탐침 `refusalNextCalls.mts` ⑦(풀 마을 → 방이 양쪽으로 이어짐 · 덮인 항목 닫힘 · 구성기 방 거절의 다음 호출 · 다른 항목의 막힘은 안 되돌림). 시험 `test/aiV2BuilderCover.test.ts`.
+하네스 쪽 수치는 `openwiki/harnesses/assistant-capability.md` 「깔기 도구 Terra 재측정」.
 
 ## 버들항 맵의 빈 땅도 읽고 채운다 — 칸 역할을 안 적는 시트 · `amount:"few"` (2026-11-11, 작은 일 재측정)
 
@@ -2049,7 +2119,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   - 랜드마크를 objects/wall_items 에 같은 id·자리로 또 적으면 겹침 거절이 아니라 하나로 친다.
   - 목록 카드 `interiorCatalog.ts chipsetCatalog` — 칩셋 메타데이터만으로(roomKit 역할표 `effectiveSpec` = roomSpecOf + 가구 표가 비면 kitHandObjects, 예제 방 표 `rooms.examples`, 낱말 검색 `searchParts`): 요청 낱말이 맞는 방 종류의 예제 기물 → 검색 결과를 «suggested» 줄로 먼저, 그다음 칩셋 전체 목록. 손 목록 없음(agent/bbox-chipsets 이식).
   - 자기 검토 단계 `review_layout({mapId, problems, patch})`(agent/bbox-better critique.py, terra 0.61→0.71): 고침(remove/add objects·wall_items, replace 필드)을 지금 배치에 그대로 적용해 다시 짓고 바퀴를 센다(배치 선언 위치 태그 `reviews:N`). 할 일 `{kind:"layout_review", map}` ✓ = N ≥ `OPRN_V2_LAYOUT_REVIEW_ROUNDS`(기본 2, 0 = 끔). 관문 ③b 가 layout 맵마다 이 항목을 달고, 검토만 남으면 재주입 글이 «플레이어 눈으로 보고 review_layout» 이다. `edit_place({patch:{mapId, layoutPatch}})` 도 같은 고침을 받는다.
-  - 칸 배치 장소의 다시 짓기 상한은 `LAYOUT_MAX_REBUILDS`(12) — 고침이 싸고 매번 검증되므로(3바퀴 상한이 자기 검토 고침을 막았다). 끝맺음 관문이 «더 고쳐라»를 다시 묻는 상한은 그대로 3.
+  - 칸 배치 장소의 다시 짓기 상한은 `LAYOUT_MAX_REBUILDS`(12) — 고침이 싸고 매번 검증되므로(3바퀴 상한이 자기 검토 고침을 막았다). 끝맺음 관문도 같은 수를 쓴다(`turn/session.ts repairCapOf`, 2026-11-12 — 전에는 관문만 3이라 자기 검토 두 바퀴 뒤 한 번 고치면 «상한» 이었다).
   - 손 도트 실내를 칸 배치 없이 보내면 장소마다 세 번까지 돌려보낸다(zones/design 을 들고 와도, mapId 를 채워 와도). 핵심 규칙 «좌표를 지어내지 마라»는 칸 배치·검토 고침·마을 hints.layout·던전 rooms[].at 을 예외로 적는다 — terra 가 이 규칙을 근거로 감옥을 막아 버렸다(5회차 첫 판).
   - 측정(같은 4과제, 판정자 gpt-6.1-sol 쌍 비교 + 공정성 재판정 Opus 5.5 medium, 기준 방 assistant-rooms-2): 4회차(칸 배치, 7bff4341a7·f301d3ea29) sol 5/52 · Opus 13/52, 5회차(벽 우선 + 자기 검토, 65a565414f) sol 5/52 · Opus **15/52**(무 14). 3회차는 sol 5/52 · Opus 7/52. opus 판은 Opus 판정 4/13 → 10/13 → 11/13 로 올랐고, terra-high 는 3/39 → 3/39 → 4/39(무 9→13)로 거의 그대로다 — 5회차 terra 12판 모두 칸 배치·대부분 검토 2바퀴였지만 기물 12~24개로 성기다(opus 49~85개). 4·5회차 terra 는 high, 3회차는 medium. 결과 쪽: `~/claude-viz/interior-omo-1030.html`.
   - **공간 검사(6회차, 3c3ddfe195 — `src/ai/v2/place/interiorSpace.ts`)**: terra 실내가 성겼다(기물 12~24개). bbox 실험(agent/bbox-walls `bbox-walls-3..5/lay.mts`, agent/bbox-chipsets `bbox-chipsets/space.mts`)의 검사를 옮겼다 — 함수는 재고 이름만 붙인다. 빈 칸 = 바닥인데 자기와 8 이웃에 벽·벽면·가구·난간이 없는 칸, 문·입구·계단 앞을 잇는 최단 길 3칸 폭은 빼고 센다. 방마다 빈 사각형 3x4 이상 · 빈 칸 25% 초과(바닥 30칸 이상) · 복도 30% 초과 · 바닥 80칸 이상 큰 방에서 통로 밖 가구 20% 미만이면 영어 고칠 말(벽 이름을 댄 «줄이기» 또는 방 쓰임에 맞는 묶음 예를 든 «채우기», 깔개는 안 친다). 문턱은 기준 방 실측 바로 위(기준 방 전체 7~20%, 방 ≤27%, 가장 큰 빈 사각형 ≤3x4). 깔개 상한 방마다 1개(바닥 150칸 이상 2개). 같은 크기·다른 쓰임 방 셋 이상은 위계 알림(경고). 공간 문제(soft)는 고치기가 남았으면 거절, 다 쓰면 «still open after the repairs» 경고로 깔고 자기 검토에서 고친다.
@@ -2122,9 +2192,9 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   진척 = 성공한 쓰기 도구의 **새** 결과 지문(이름+인자+결과 글, 시각·긴 수·id 가림, 창 256) 또는 열린 항목 수 감소. 서명(열린 수/전체·프로젝트 지문(할 일 제외)·보고 해시)이 앞과 같으면 멈춤. ask_user 로 물은 실행은 다시 돌리지 않는다.
   멈추면 열린 항목은 «고리 멈춤 — 이유» 막힘으로 닫고 ④~⑥ 은 건너뛴다(③ 은 돈다). 재주입마다 Agent 경로는 tool_choice required.
 - **관문 항목 맞추기**(`judge/gates.ts`): 열쇠(2026-11-11 부터 규칙·갈래·대상 — `findingKey`, 위 「관문 열쇠는 규칙·대상에서」. 그 전에는 수를 가린 문제 글)가 같은 문제는 새 항목을 만들지 않고 닫힌 항목이면 다시 연다(시도 +1, 상한이면 막힘).
-  문제가 사라진 항목은 함수가 닫고, 고치기 상한(맵당 3바퀴)에 닿은 장소 항목은 «상한» 막힘. 장소·컷신 문제의 열쇠는 맵마다 하나(`place:<mapId>:place|stage`)라 고칠 때마다 글이 바뀌어도 같은 항목이 다시 열려 시도 3에서 막힌다(글은 지금 것으로 바뀐다). 옛 `v2GateProblems` 글은 `v2GateProblems` 위의 얇은 포장으로 남았다.
+  문제가 사라진 항목은 함수가 닫고, 고치기 상한(`repairCapOf` — 맵당 3바퀴, 칸 배치 장소 12)에 닿은 장소 항목은 «상한» 막힘. 장소·컷신 문제의 열쇠는 맵마다 하나(`place:<mapId>:place|stage`)라 고칠 때마다 글이 바뀌어도 같은 항목이 다시 열려 시도 3에서 막힌다(글은 지금 것으로 바뀐다). 옛 `v2GateProblems` 글은 `v2GateProblems` 위의 얇은 포장으로 남았다.
 - **기존 결함**(`gates.ts splitPreexisting`): 시작 저장본에서 같은 게임 검사를 돌린 열쇠(`v2BaselineGameKeys`)에 있는 문제, 또는 문제 글이 짚는 이벤트가 모두 시작 저장본 그대로이거나 함수 마감(autoBuild)만 건드린 것이면 항목으로 만들지 않고 최종 보고 「기존 결함」 칸에만 싣는다 — 완료를 막지 않는다(omo-loop-1030: 버들마을 출입구 그림 없음이 세 장면 모두 할 일이 됐다).
-- **도구 없는 관문**: 관문 글이 이르는 도구가 이 실행에 없으면 막힘으로 닫지만, 결정적으로 고칠 수 있는 것은 끝맺음이 먼저 고친다 — `finish/stages/combat-menu.ts`(reload 묶음, 늘 돈다): 전투를 넣었는데 ESC 메뉴가 이야기용이면 소지품 뒤에 스킬·장비·상태 칸을 되돌린다.
+- **도구 없는 관문**: 관문 글이 이르는 도구가 이 요청의 묶음에 없으면 고치기 차례에 싣는다(2026-11-12, 위 「깔린 뒤의 «완료»」 — 조수 v2 에 없는 도구면 항목을 빼고 요약에 적는다. 전에는 막힘으로 닫았다). 결정적으로 고칠 수 있는 것은 끝맺음이 먼저 고친다 — `finish/stages/combat-menu.ts`(reload 묶음, 늘 돈다): 전투를 넣었는데 ESC 메뉴가 이야기용이면 소지품 뒤에 스킬·장비·상태 칸을 되돌린다.
 - **문 잇기 자리 옮기기**(`game.ts withTransferRelocation`): v2 의 `create_transfer_pair` 가 doorAt 모양 어긋남·문앞 막힘·도착 칸 겹침으로 거절되면 거절된 끝(그래도 안 되면 두 끝)의 doorAt 을 빼고 다시 불러 걸어 닿는 가장 가까운 칸에 잇는다(편집기 도구의 «문을 옆 칸으로 대신 잇지 않는다» 계약은 그대로, v2 감싸개만). terra boss-room r1~r3 저장본 셋 모두 link ✓ 로 재현.
 - **미완료 원인 수리**(2026-10-30 omo-loop-1030b 미완료 7판 분류 — `~/claude-viz/omo-unfinished-1030.html`):
   - 맵 **가장자리 출구는 door-bare 가 아니다**(`placementRules.ts` — caveGates 와 같은 규칙: 맵 밖으로 이어지는 길이 곧 입구). 버들마을 (0,23)·(21,0) 기존 출구가 마감의 길 포석으로 «바뀐 맵»이 되어 다섯 판에서 관문 항목이 됐고, 가장자리 칸 위 갱구 찍기는 «transfer 목적지 통행 불가»·«완성된 집 보호»로 늘 거절됐다.
@@ -2163,7 +2233,8 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
     예전 글은 `formatPiToolFailure` JSON — 200자에서 잘린 요약 + issues(같은 문장 되풀이, 규칙만, 보낸 값·고칠 방법 없음).
     지금은 영어로(사용자 결정 — 싼 모델은 영어 되먹임을 더 잘 쓴다): `Rejected: <도구> — <이유>` · `Blocking issues (N)` 최대 8(코드·맵·칸, 같은 칸 «xN») · `You sent: <거절 글이 말한 인자>=<보낸 값>` · `Already tried:` (같은 id 로 다시 불러 또 거절된 고침) ·
     `Fixed call: <도구>({…})`(420자 넘으면 «같은 인자 + 아래 고친 곳») + `Changes: remove patrol · a.doorAt.y 7→6 · drop N empty/default optional fields — 이유`. 고친 호출은 `correctionFor`(argGuard preCheck → retryCandidates → nextAfterFailure 같은 도구) 가 결정적으로 고른다.
-    도구 오류 문장(한국어)은 고치지 않는다 — 자주 나는 것만(doorAt·적 그룹 비었음·patrol·patrol.directions·repelSteps·이동 도착 칸 막힘·완성된 집·이벤트 없음·graphic·edit_place 다시 짓기 안 함·출입구 봉쇄·인자 누락/모르는 인자) `EN_RULES` 로 옮기고 나머지는 `Tool said (Korean): …`. 맵·인물 이름·대사는 그대로.
+    도구 오류 문장(한국어)은 고치지 않는다 — 자주 나는 것만(doorAt·적 그룹 비었음·patrol·patrol.directions·repelSteps·이동 도착 칸 막힘·완성된 집·이벤트 없음·graphic·edit_place 다시 짓기 안 함·출입구 봉쇄·인자 누락/모르는 인자) `EN_RULES` 로 옮기고 나머지는 `Tool said (Korean): …`.
+    명령 모양 거절(`patch_event_page`·`upsert_event` 의 «커맨드 형식 오류 … event_command_assist 를 써라»)은 따로 옮긴다(`commandShapeEn`) — 조수 v2 에는 `event_command_assist` 가 없어 그 글대로 부르면 «there is no tool named» 가 돌아왔다(2026-11-12 Haiku prison). v2 사본은 지금 명령을 읽는 `get_event` 와 `add_event` 를 이르고 예시 한 줄은 그대로 준다. 맵·인물 이름·대사는 그대로.
     H2 고침·돌려보냄, H3 `[Next call]`, H8 `[Change strategy]`, H7 재주입(`Do now: … Next call: …`)·상태 카드, `[Relocated and linked]`·`[Graphic matched]` 도 영어다. 기록·실패 세기(state.failures·서명)는 원래 글 그대로다.
     할 일 고리 글도 모델 몫은 영어다: todo 도구 설명·스키마·op 결과(init/done ✓✗/block/bind…), `TODO_CHECK_SCHEMA`·`parseTodoCheck` 오류, H4 `[Auto-check ✓]`, H5 `[Verb scope — not run (not a failure)]`, `[Todo first]`·`[Repeated call blocked]`·`[Repeat warning]`·`[Todo auto-blocked]`, 요청 뼈대 카드, 재주입 머리말(관문·검토자·화면 검수·함수 마감), 화면 검수 고치기 차례 글(`vqaFixBrief`), 이어 받은 목록, 문맥 줄임 표시, 조우 꺼짐·그림 찾기 상한.
     기계 확인은 두 언어로 돈다: `runTodoItemCheck` 가 `CheckResult.detail`(한국어 — 장부·최종 보고) 과 `.en`(모델) 을 함께 낸다(`checks.ts` 의 `t(ko,en)`). 목록은 `store.view(n, true)`, 실패 기록은 `lastFailEn`. 항목 내용·막힘 이유·상태 줄(emit)·최종 보고·v2 시스템 프롬프트 본문(`prompt.ts`·동사 카드)은 한국어 그대로다.

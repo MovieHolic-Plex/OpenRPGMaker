@@ -1,12 +1,14 @@
 // 한 실행(턴)의 v2 상태 — 동사·끝맺음 단계·판정자가 함께 읽고 쓴다. 턴이 시작될 때 새로 만든다(실행기 assistantV2Runtime.ts).
 // 2026-11-11 리팩토링 R2: verbs.ts 에서 떼어 냈다 — 끝맺음 단계·레인 35파일이 이 형 하나 때문에 verbs.ts 와 서로를 끌어오고 있었다.
 import type { CriticVerdict } from "@/ai/piAgent/featureReview";
+import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { MachineCheck } from "../judge/machineChecks";
 import { TodoLoop } from "../loop/continuation";
 import { HookStats } from "../loop/hookStats";
 import { TodoStore } from "../loop/todoStore";
 import type { StageWrites } from "../shared/stageWrites";
 import type { ContentBuildResult, PlaceRecord, PlaceSpec } from "../shared/types";
+import { layoutGiven } from "../place/interiorLayout";
 
 /** 한 맵의 마지막 검사 결과(기계 검사·비평·그림). */
 export interface Seen {
@@ -94,13 +96,17 @@ export class V2Session {
   buildPlaces?: () => Promise<string[]>;
   /** 이번 실행에 make_place 로 지은 장소가 시작에서 닿지 않으면 요청 속 맵(없으면 지금·시작 맵)과 잇는다(createV2Tools 가 건다). 한 일 목록. */
   linkBuiltPlaces?: () => Promise<string[]>;
+  /** 이 요청의 묶음에 없는 v2 도구 하나를 만들어 준다(createV2Tools 가 건다) — 끝맺음 관문이 고치는 법으로 이른 도구를 고치기 차례에 싣는 데 쓴다. v2 에 없는 이름이면 undefined. */
+  repairTool?: (name: string) => PiToolShape | undefined;
   /** 청사진 경로를 결정적으로 짓는다(createV2Tools 가 건다) — 끝맺음 단계가 모델 대신 부른다. */
   buildPath?: (why: string) => Promise<{ ok: boolean; summary: string }>;
   criticCalls = 0;
   criticMs = 0;
+  /** 비평가가 본 그림과 맵이 달라져 다시 본 횟수(맵별 — turn/relook.ts). */
+  readonly relooks = new Map<string, number>();
   /** 모델 입장에서 「아직 안 끝난 것」 — 끝맺음 관문이 읽는다. */
-  unresolved(): { mapId: string; name: string; rounds: number; problems: string[] }[] {
-    const out: { mapId: string; name: string; rounds: number; problems: string[] }[] = [];
+  unresolved(): { mapId: string; name: string; rounds: number; cap: number; problems: string[] }[] {
+    const out: { mapId: string; name: string; rounds: number; cap: number; problems: string[] }[] = [];
     for (const [mapId, record] of this.places) {
       const seen = this.seen.get(mapId);
       if (!seen) continue;
@@ -110,9 +116,9 @@ export class V2Session {
         ...critics.flatMap((v) => v.majors.map((m) => `[비평 축${m.axis}${m.x !== undefined ? ` (${m.x},${m.y})${m.w ? ` ${m.w}×${m.h}` : ""}` : ""}] ${m.what}${m.fix ? ` → ${m.fix}` : ""}`)),
         ...critics.filter((v) => v.problem).map((v) => `[비평 미판정] ${v.problem}`),
       ];
-      if (problems.length) out.push({ mapId, name: record.spec.name, rounds: record.rounds, problems });
+      if (problems.length) out.push({ mapId, name: record.spec.name, rounds: record.rounds, cap: repairCapOf(record.spec), problems });
     }
-    for (const [mapId, st] of this.stages) if (st.problems.length) out.push({ mapId, name: `${st.name} 컷신(add_event redo:${st.eventIds?.[0] ?? "<장면 id>"})`, rounds: st.rounds, problems: st.problems });
+    for (const [mapId, st] of this.stages) if (st.problems.length) out.push({ mapId, name: `${st.name} 컷신(add_event redo:${st.eventIds?.[0] ?? "<장면 id>"})`, rounds: st.rounds, cap: V2_MAX_REPAIR_ROUNDS, problems: st.problems });
     return out;
   }
 }
@@ -122,3 +128,12 @@ export class V2Session {
 // 2026-10-30 omo 할 일 고리: 1바퀴 상한이 비평 항목을 «상한 막힘»으로 닫았다(세 장면 모두). 상한은 할 일 항목의 시도 상한(TODO_MAX_ATTEMPTS=3)과
 // 고리의 진척 규칙(진척 없는 재주입 2번이면 멈춤)이 맡는다 — 맵당 다시 짓기 상한도 같은 3.
 export const V2_MAX_REPAIR_ROUNDS = 3;
+
+/** 칸 배치(spec.layout) 장소의 다시 짓기 상한 — 고침이 싸고 매번 검증되며, 자기 검토 바퀴(review_layout)도 같은 수를 쓰므로 크게. */
+const LAYOUT_MAX_REBUILDS = 12;
+
+/**
+ * 장소 하나의 고치기 상한 — 도구(edit_place·review_layout)와 끝맺음 관문이 같은 수를 쓴다.
+ * 왜: 관문만 3을 쓰면 칸 배치 방은 자기 검토 두 바퀴가 그 3을 먹어, 비평 항목이 한 번 고친 뒤 «상한»으로 막혔다(도구는 «남은 바퀴 9» 라고 했다).
+ */
+export const repairCapOf = (spec: PlaceSpec | undefined): number => (spec && layoutGiven(spec.layout) ? LAYOUT_MAX_REBUILDS : V2_MAX_REPAIR_ROUNDS);

@@ -12,6 +12,9 @@
   ② 보정된 최종 프로필(final-profiles/<해시>.json status calibrated)의 Opus 기록(final/<해시>.json)이 있으면 그 판정이 최종 —
      pass 면 통과, fail 이면 차단(사람 허용도 뒤집지 않는다. 공방 로컬만 사람 「그래도 넣기」).
   ③ Opus 기록이 없을 때만 옛 규칙: 서명된 사람 허용(선택) 또는 보정된 옛 프로필의 pass.
+  ④ 오너 면제(2026-11-12, waivers/<묶음>.json — `object-gate owner-waive` 단계만 쓴다): 오너가 «판정 없이 넣어라» 고 결정한 그림 묶음.
+     Opus 최종 기록이 없는 그림에만 효력이 있고, 서명된 사람 거절이 그 위에서 막는다. bundle·shared·workshop-local 만 — store 출구는 받지 않는다.
+     면제는 통과가 아니다: 보고에는 «3/4 관문 미통과 — 오너 면제» 로 쓴다.
 서명이 안 맞는 기록(손으로 쓴 것)은 없는 것과 같다.
 front_prop 은 사람 승인 기록(approvals/front_prop/<해시>.json)이 있어야만 3/4 반쪽을 면제한다(승인은 CLI approve-front-prop, 터미널에서 사람이 직접).
 출구(context): bundle·shared·store 는 pass 만(사람 덮어쓰기도 무효), workshop-local 은 pass 또는 사람의 「그래도 넣기」.
@@ -156,6 +159,38 @@ def final_applies(final: dict | None, sha: str) -> bool:
         and final.get("verdict") in ("pass", "fail") and final.get("profileHash") in calibrated_final_profiles()
 
 
+WAIVER_CONTEXTS = ("bundle", "shared", "workshop-local")  # 스토어 출구는 오너 면제를 받지 않는다(TS OBJECT_GATE_WAIVER_CONTEXTS 와 같다)
+
+
+def read_owner_waiver(sha: str) -> dict | None:
+    """오너 면제 묶음(waivers/<id>.json)에서 이 그림 해시의 면제. {"batch": 묶음 머리, "item": 그 장}. TS readOwnerWaiver 와 같다."""
+    folder = GATE_DATA / "waivers"
+    if not folder.exists():
+        return None
+    for path in sorted(folder.glob("*.json")):
+        batch = json.loads(path.read_text())
+        if batch.get("schema") != "oprn-object-gate-owner-waiver/1" or not isinstance(batch.get("items"), list):
+            continue
+        for item in batch["items"]:
+            if item.get("pixelSha256") == sha:
+                return {"batch": {k: batch.get(k) for k in ("schema", "id", "owner", "decidedAt", "recordedBy", "contexts")}, "item": item}
+    return None
+
+
+def owner_waiver_applies(waiver: dict | None, sha: str, kind: str | None, context: str) -> bool:
+    """이 면제가 이 그림·종류·출구에 효력이 있는가(TS ownerWaiverApplies 와 같다)."""
+    if not waiver or (waiver.get("batch") or {}).get("schema") != "oprn-object-gate-owner-waiver/1":
+        return False
+    batch, item = waiver["batch"], waiver.get("item") or {}
+    if context == "store" or context not in WAIVER_CONTEXTS or context not in (batch.get("contexts") or []):
+        return False
+    if not all(str(batch.get(k) or "").strip() for k in ("owner", "decidedAt", "recordedBy")):
+        return False
+    if item.get("pixelSha256") != sha:
+        return False
+    return kind is None or item.get("kind") == kind
+
+
 def refusal(img, *, kind: str | None, context: str) -> str | None:
     """통과면 None, 막으면 이유."""
     if context not in CONTEXTS:
@@ -178,6 +213,12 @@ def refusal(img, *, kind: str | None, context: str) -> str | None:
             return None
         why = " · ".join(final.get("reasons") or []) or "fail"
         return f"Opus 최종 판정 불합격({why}) — 다시 그려 새 해시로 다시 받아라"
+    # 오너 면제(2026-11-12): Opus 최종 기록이 없는 그림만. 서명된 사람 거절(어느 종류로 했든)이 있으면 면제도 막힌다. 스토어 출구는 받지 않는다(TS 와 같다).
+    if owner_waiver_applies(read_owner_waiver(sha), sha, kind, context):
+        held = read_hold_decision(sha)
+        if held and human_decision(held, {"pixelSha256": sha, "kind": held.get("kind")}) == "reject":
+            return f"사람이 검토 화면에서 거절했다({held.get('decidedBy')}, {str(held.get('decidedAt'))[:10]}) — 최종이다. 오너 면제도 이 그림에는 닿지 않는다"
+        return None
     if not receipt:
         return "3/4·화풍 판정 영수증이 없다 — object-gate final-review 로 Opus 최종 판정을 받아라"
     if kind and receipt.get("kind") != kind:
