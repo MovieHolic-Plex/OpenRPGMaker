@@ -1,0 +1,63 @@
+{
+ "size": "17×12",
+ "seed": 3,
+ "props": [
+  {
+   "kit": "sp-great-heart",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "kit": "sp-stop-lever",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "kit": "sp-dynamo",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "kit": "sp-tool-rack",
+   "x": 1,
+   "y": 2
+  },
+  {
+   "kit": "sp-pipe-wall",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "kit": "sp-gauge-wall",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "kit": "sp-valve-wheel",
+   "x": 15,
+   "y": 2
+  },
+  {
+   "kit": "sp-crate-in",
+   "x": 15,
+   "y": 10
+  },
+  {
+   "kit": "sp-coal-bin",
+   "x": 1,
+   "y": 10
+  }
+ ],
+ "heroes": [
+  {
+   "x": 8,
+   "y": 7,
+   "why": "대심장 기관 앞"
+  },
+  {
+   "x": 12,
+   "y": 7,
+   "why": "정지 레버 앞"
+  }
+ ]
+}
