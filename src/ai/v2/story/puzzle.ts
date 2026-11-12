@@ -604,8 +604,8 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     const seated: ReturnType<typeof settleStepThing> = link?.thing && link.role !== "door" ? settleStepThing(run, e.mapId, e.eventId) : {};
     if (seated.note) reachNotes.push(seated.note);
     if (seated.gap) missingArt.push(seated.gap);
-    // 그래도 보이지 않는 조사 칸(맨바닥 · 큰 그림의 한 칸)은 늘 빛나게 — 경로가 거쳐야 하는 것은 화면에 보여야 한다.
-    const lit = link?.role === "door" ? undefined : lightUnseenThing(run, e.mapId, e.eventId);
+    // 그래도 보이지 않는 조사 칸(맨바닥 · 큰 그림의 한 칸 · 단계 물건이 앉은 이름 다른 그림)은 늘 빛나게 — 경로가 거쳐야 하는 것은 화면에 보여야 한다.
+    const lit = link?.role === "door" ? undefined : lightUnseenThing(run, e.mapId, e.eventId, !!link?.thing);
     if (lit) reachNotes.push(lit);
   }
   // 답이 단서에 실제로 적혀 있는가.

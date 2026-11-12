@@ -5,6 +5,8 @@ import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
 import { isEntranceArt } from "@/ai/v2/place/entrances";
 import { drawnThings, onDrawnThing, thingMatch } from "@/ai/v2/place/fixtures";
+import { incomingLandings } from "@/ai/v2/place/where";
+import { isDoorName } from "@/ai/v2/judge/eventReach";
 import { finishStepOnBossVictoryIn } from "@/ai/v2/story/blueprintPathBattles";
 import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import type { ToolContext } from "@/editor/tools/types";
@@ -27,6 +29,10 @@ describe("이름이 그림을 가리키는 세기(thingMatch)", () => {
   });
   it("낱말이 키트 이름의 괄호 속 부품 설명에만 있으면 약하게 맞는다", () => {
     expect(thingMatch("대심장 정지 레버", terminal)).toBe(1);
+  });
+  it("「비문」은 문이 아니다 — 문 그림 칸으로 끌려가지 않는다", () => {
+    expect(isDoorName("태양의 비문")).toBe(false);
+    expect(isDoorName("굳게 닫힌 철문")).toBe(true);
   });
   it("낱말이 없으면 아니다 — 글자 포함으로 읽지 않는다", () => {
     expect(thingMatch("감시탑 일지", valve)).toBe(0);
@@ -106,9 +112,14 @@ describe("증기 도시 한 판 — 물건은 그림에, 단계는 차례로, �
       const under = onDrawnThing(project, map, ev);
       expect(under, `${id} ${ev.name} (${ev.x},${ev.y}) 는 그려진 물건 위`).toBeTruthy();
       expect((ev.pages ?? []).every((p) => (p.priority ?? "same") === "same"), `${id} 는 마주 보고 누른다`).toBe(true);
-      // 이름이 맞는 그림에 앉은 단계는 반짝이지 않는다. 맞는 그림이 없어 가장 가까운 물건에 앉은 단계(s4)는 그 물건이 가까이에서 한 번 반짝인다.
-      if (id !== "s4") expect((ev.pages ?? []).some((p) => !!(p as { nearSparkle?: unknown }).nearSparkle), `${id} 에 반짝임이 없다`).toBe(false);
-      expect((ev.pages ?? []).some((p) => !!(p as { glow?: unknown }).glow), `${id} 는 늘 빛나는 표지가 아니다`).toBe(false);
+      // 이름이 맞는 그림에 앉은 단계는 반짝이지도 빛나지도 않는다 — 그림이 곧 그 물건이다.
+      // 맞는 그림이 없어 가까운 물건에 앉은 단계(s4 「감시탑 일지」)는 그 물건이 늘 빛난다 — 그림만 봐서는 그 물건인 줄 모른다(정직한 플레이와 같은 눈: project/eventSight).
+      const lit = (ev.pages ?? []).some((p) => !!(p as { glow?: unknown }).glow);
+      if (id === "s4") expect(lit || thingMatch(ev.name ?? "", under!) > 0, "s4 는 이름이 다른 그림 위에서 빛난다").toBe(true);
+      else {
+        expect((ev.pages ?? []).some((p) => !!(p as { nearSparkle?: unknown }).nearSparkle), `${id} 에 반짝임이 없다`).toBe(false);
+        expect(lit, `${id} 는 늘 빛나는 표지가 아니다`).toBe(false);
+      }
       const stand = [[0, 1], [1, 0], [-1, 0], [0, -1]].some(([dx, dy]) => isPassable(project, map, ev.x + dx!, ev.y + dy!));
       expect(stand, `${id} 곁에 설 칸이 있다`).toBe(true);
     }
@@ -138,6 +149,10 @@ describe("증기 도시 한 판 — 물건은 그림에, 단계는 차례로, �
     const toEngine = boiler.events.filter((e) => json(e.pages).includes(`"mapId":"${engine.id}"`));
     expect(toEngine.length).toBeGreaterThanOrEqual(1);
     expect(toEngine.every((e) => isEntranceArt(project, boiler, e.x, e.y))).toBe(true);
+    // 적·상자는 어느 도착 칸에서든 다섯 걸음 밖이다 — 문을 길 끝으로 옮긴 뒤 옛 «들어서는 칸» 기준으로 놓인 적이 도착 칸 세 칸 곁에 섰다.
+    for (const map of Object.values(project.maps)) for (const ev of map.events.filter((e) => /_wfoe\d+$|_wchest$/u.test(e.id))) {
+      for (const land of incomingLandings(project, map.id)) expect(Math.abs(land.x - ev.x) + Math.abs(land.y - ev.y), `${map.name} ${ev.id} 는 도착 칸 (${land.x},${land.y}) 에서 떨어져 있다`).toBeGreaterThan(5);
+    }
     // 그 장소에 그려진 물건을 읽는다 — 보일러실에는 밸브 바퀴가 있다.
     expect(drawnThings(project, boiler).some((t) => t.label.includes("밸브"))).toBe(true);
   }, SLOW);

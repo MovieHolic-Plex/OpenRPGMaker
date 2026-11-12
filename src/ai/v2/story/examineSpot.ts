@@ -180,7 +180,7 @@ export function settleExamineSpot(run: BuildRun, mapId: string, eventId: string,
  * 기계 플레이어만 계획표의 좌표로 찾아갔다. 보이는가는 project/eventSight 가 판정한다(정직한 자동 플레이와 같은 눈).
  * 이미 넘긴 뒤의 페이지(«더는 볼 것이 없다»)에는 달지 않는다 — 넘길 것이 남은 페이지까지만 빛난다.
  */
-export function lightUnseenThing(run: BuildRun, mapId: string, eventId: string): string | undefined {
+export function lightUnseenThing(run: BuildRun, mapId: string, eventId: string, unnamedToo = false): string | undefined {
   const map = run.ctx.project.maps[mapId];
   const ev = map?.events.find((e) => e.id === eventId);
   if (!map || !ev || !examineOnly(ev) || carriesTransfer(ev)) return undefined;
@@ -188,11 +188,14 @@ export function lightUnseenThing(run: BuildRun, mapId: string, eventId: string):
   const advances = (page: (typeof pages)[number]) => /"kind":"(?:setSwitch|changeItem|triggerEnding|ending|inputNumber|battleProcessing|choices)"/u.test(JSON.stringify(page.commands ?? []));
   const lastLive = pages.reduce((last, page, i) => (advances(page) ? i : last), -1);
   const lit: number[] = [];
+  let onOther = false;
   for (const [pageIndex, page] of pages.entries()) {
-    if (pageIndex > lastLive || page.glow || eventSight(run.ctx.project, map, ev, page).seen !== "none") continue;
-    if (run.call("patch_event_page", { mapId, eventId, pageIndex, set: { glow: { radius: 1 } } }).ok) lit.push(pageIndex);
+    const sight = eventSight(run.ctx.project, map, ev, page);
+    // unnamedToo(단계가 쓰게 하는 물건): 이름이 다른 그림 위에 앉았으면 그 그림도 빛난다 — 그림만 봐서는 그 물건인 줄 모른다(정직한 플레이의 «다른 물건 그림 위»).
+    if (pageIndex > lastLive || page.glow || !(sight.seen === "none" || (unnamedToo && sight.seen === "art" && !sight.named))) continue;
+    if (run.call("patch_event_page", { mapId, eventId, pageIndex, set: { glow: { radius: 1 } } }).ok) { lit.push(pageIndex); onOther = onOther || sight.seen === "art"; }
   }
-  return lit.length ? `「${String((ev as { name?: string }).name ?? ev.id)}」 (${ev.x},${ev.y}) 그림 없는 조사 칸에 늘 빛나는 표지` : undefined;
+  return lit.length ? `「${String((ev as { name?: string }).name ?? ev.id)}」 (${ev.x},${ev.y}) ${onOther ? "이름이 다른 그림 위라 그 그림에" : "그림 없는 조사 칸에"} 늘 빛나는 표지` : undefined;
 }
 
 /** 맵의 모든 그림 없는 조사 칸을 고친다(청사진 경로 다시 고치기용). */

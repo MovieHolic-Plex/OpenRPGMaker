@@ -121,7 +121,7 @@ export function unreachableEvents(project: Project, mapId: string, eventIds?: re
 }
 
 const DOOR_NAME = /문|door|출구|현관|exit|gate/iu;
-const NOT_DOOR_NAME = /금고|창문|서랍|문서|문양|문장|주문|질문|자물쇠|문지기|문하생|천문|lock|safe|window/iu;
+const NOT_DOOR_NAME = /금고|창문|서랍|문서|문양|문장|비문|주문|질문|자물쇠|문지기|문하생|천문|lock|safe|window/iu;
 /** 이름이 문인 이벤트(탈출 문·현관문) — 문 옆 자물쇠·금고문은 아니다. */
 export const isDoorName = (name: string) => DOOR_NAME.test(name) && !NOT_DOOR_NAME.test(name);
 
