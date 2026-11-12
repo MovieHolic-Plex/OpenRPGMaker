@@ -39,15 +39,51 @@ function metaOf(tileset: TilesetDef | undefined, tile: number): MetaLike | undef
   return (Array.isArray(meta) ? meta[tile] : (meta as Record<string, unknown>)[String(tile)]) as MetaLike | undefined;
 }
 
-/** 칸의 이름표와 태그(위 층부터). */
+type EntranceKit = { rows?: readonly { tiles?: readonly number[]; upperTiles?: readonly number[] }[]; parts?: readonly { kind?: string; dx?: number; dy?: number; w?: number; h?: number }[] };
+/** 쓰기 도구마다 초안이 타일셋을 복제하므로 객체가 아니라 id·크기로 기억한다. */
+const wallCache = new Map<string, ReadonlySet<number>>();
+
+/**
+ * 입구를 적어 둔 건물 키트(structureKits 의 entrance 부품)에서 «입구 열 밖»의 그림 타일 — 이름표에 문 낱말이 있어도 문이 아니다.
+ * 왜: 건물 한 채가 키트 한 덩이라 모든 칸의 이름표가 「회관 선술집(폭 6, …양개문…) (c,r)」 이다. 낱말로 읽으면 문 옆 벽·창 칸도 같은 문이라,
+ * 문 사각형이 벽까지 4칸으로 넓어지고(벽이 문짝처럼 열린다) 이동 발판이 벽 칸마다 복제됐다(2026-11-12 명세 은행 fun-w3·jrpg-w1 설원 마을).
+ * 입구 부품이 막힌 그림(문 칸)인 키트만 본다 — 입구가 걷는 칸(문턱·깔개·걸어 지나는 대문)인 키트는 문 그림이 그 둘레라 이름표로 읽는다.
+ * 입구 칸과 같은 그림(가로로 되풀이되는 셔터)과 입구 열의 윗줄(문짝 위쪽)은 문 그림으로 남는다.
+ */
+function kitWallTiles(tileset: TilesetDef | undefined): ReadonlySet<number> {
+  const kits = ((tileset as { structureKits?: readonly EntranceKit[] } | undefined)?.structureKits ?? []) as readonly EntranceKit[];
+  const key = `${tileset?.id}|${tileset?.passability?.length ?? 0}|${kits.length}`;
+  const hit = wallCache.get(key);
+  if (hit) return hit;
+  const walls = new Set<number>(), doors = new Set<number>();
+  const blocked = (t: number) => { const p = tileset?.passability?.[t]; return !p || !(p.up || p.down || p.left || p.right); };
+  for (const kit of kits) {
+    const parts = (kit.parts ?? []).filter((p) => p.kind === "entrance" && typeof p.dx === "number" && typeof p.dy === "number");
+    const column = new Set<number>();
+    let doorArt = false;
+    for (const p of parts) for (let x = p.dx!; x < p.dx! + (p.w ?? 1); x++) {
+      column.add(x);
+      for (let y = p.dy!; y < p.dy! + (p.h ?? 1); y++) for (const t of [kit.rows?.[y]?.tiles?.[x], kit.rows?.[y]?.upperTiles?.[x]]) if (typeof t === "number" && t >= 0 && blocked(t)) doorArt = true;
+    }
+    if (!doorArt) continue;
+    for (const row of kit.rows ?? []) for (const tiles of [row.tiles, row.upperTiles]) (tiles ?? []).forEach((t, x) => { if (typeof t === "number" && t >= 0) (column.has(x) ? doors : walls).add(t); });
+  }
+  for (const t of doors) walls.delete(t);
+  if (wallCache.size > 64) wallCache.clear();
+  wallCache.set(key, walls);
+  return walls;
+}
+
+/** 칸의 이름표와 태그(위 층부터). 키트가 입구 열 밖이라고 적은 그림(kitWallTiles)은 뺀다. */
 function labelsAt(project: Project, map: GameMap, x: number, y: number): { label: string; tags: string }[] {
   if (x < 0 || y < 0 || x >= map.width || y >= map.height) return [];
   const tileset = project.tilesets[map.tilesetId];
+  const walls = kitWallTiles(tileset);
   const index = y * map.width + x;
   const out: { label: string; tags: string }[] = [];
   for (const layer of LAYERS) {
     const tile = (map[layer] as ArrayLike<number> | undefined)?.[index] ?? -1;
-    const m = metaOf(tileset, tile);
+    const m = walls.has(tile) ? undefined : metaOf(tileset, tile);
     if (m) out.push({ label: (m.label ?? "").trim(), tags: (m.tags ?? []).join(" ") });
   }
   return out;
