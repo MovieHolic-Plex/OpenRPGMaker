@@ -701,7 +701,12 @@
 "out/ph-lane-1011/0.0": 765,
 "out/ph-lane-1100/0.0": 766,
 "out/ph-lane-1101/0.0": 767,
-"out/ph-lane-1110/0.0": 768
+"out/ph-lane-1110/0.0": 768,
+"out/ph-trail-marker/0.0": 769,
+"out/ph-spring/0.0": 770,
+"out/ph-spring/1.0": 771,
+"out/ph-spring/0.1": 772,
+"out/ph-spring/1.1": 773
 },
 "strips": {
 "out/ph-swamp/0.0": [

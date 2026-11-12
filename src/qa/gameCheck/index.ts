@@ -74,7 +74,7 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
       try {
         // 몬스터 캠페인(체육관 8곳·리그, 진 뒤 수련)은 한 실행에 1분 가까이 걸린다 — 기본 1분이면 회복 실행이 시간 상한에 걸렸다.
         const budgetMs = options.autoPlayBudgetMs ?? (isMonsterPartyGame(project) ? 240_000 : undefined);
-        return runAutoPlay(project, { budgetMs, companionJoins: companionJoins(project), recoverBeforeRandomEncounters });
+        return runAutoPlay(project, { budgetMs, companionJoins: companionJoins(project), recoverBeforeRandomEncounters, ...(options.honestPlay ? { honest: true } : {}) });
       } catch (error) {
         return { targets: [], plan: [], runs: [], skipped: `자동 플레이 중 예외: ${error instanceof Error ? error.message : String(error)}` };
       }

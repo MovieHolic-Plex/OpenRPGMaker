@@ -5,7 +5,14 @@ import { AUTOPLAY_GATE_PREFIX, playProblems } from "@/ai/v2/judge/playCheck";
 import { buildQaFixture } from "./fixtures/qaGame/qaGameFixtures";
 import type { Project } from "@/project/types";
 
-const load = (name: Parameters<typeof buildQaFixture>[0]): Project => deserialize(serialize(buildQaFixture(name)));
+// 견본의 사람·물건은 그림 없이 지어져 있다 — 이 관문의 자동 플레이는 보이는 것만 쓰므로(정직한 플레이), 지은 게임이 그렇듯 페이지마다 칩을 입힌다.
+const load = (name: Parameters<typeof buildQaFixture>[0]): Project => {
+  const project = deserialize(serialize(buildQaFixture(name)));
+  for (const map of Object.values(project.maps)) for (const event of map.events) for (const page of event.pages ?? []) {
+    if (!page.graphic?.sprite && !page.graphic?.appearanceId) page.graphic = { ...page.graphic, transparent: false, sprite: { type: "bundled", id: "fixture-chip" } };
+  }
+  return project;
+};
 const WHOLE_GAME = "마을과 던전이 있는 모험 게임을 만들어 줘";
 
 describe("v2 finish gate: the game must play through to an ending", () => {
@@ -19,6 +26,12 @@ describe("v2 finish gate: the game must play through to an ending", () => {
 
   it("raises nothing for a game whose auto-play reaches the ending", () => {
     expect(playProblems(load("clean"))).toEqual([]);
+  });
+
+  it("an ending only the plan can find is not reached: the path's people have no graphic", () => {
+    const unseen = playProblems(deserialize(serialize(buildQaFixture("clean"))));
+    expect(unseen.length).toBeGreaterThan(0);
+    expect(unseen.every((problem) => problem.variant === "unseen")).toBe(true);
   });
 
   it("the finish gate carries the problem for a whole-game request and not for a small edit", () => {

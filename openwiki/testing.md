@@ -2278,6 +2278,8 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 - 기다리는 애니메이션(`showAnimation{wait:true}`, 2026-11-05 gpt-only-game 8차 마을): 조사·접촉 뒤 `finishHeldAnimations` 가 `wait` 로 애니메이션을 끝까지 돌린 뒤 선택지·맵 이동을 본다.
   전에는 던전 출구 문(`fx:door-open` wait → transfer)에서 멈춘 채 「문을 썼지만 이동하지 않았다」 막힘을 냈다(실제 플레이어는 마을로 돌아감). 회귀 `test/qaGameCheck.test.ts`.
 알려진 한계: `storeParty`/`recallParty` 로 바뀐 파티 구성은 자동 플레이가 모델링하지 않는다(세트 안 배우를 선행 조건으로 보지 않음), 다단계 보스·`oncePerBattle` 은 기존 전투 해결기(첫 적을 계속 공격)에 맡긴다.
+
+**정직한 자동 플레이(2026-11-12, `src/qa/gameCheck/honestPlay.ts`).** `runAutoPlay(project, { honest: true })` · `runGameCheck(project, { honestPlay: true })` 는 계획표의 좌표 대신 **사람이 볼 수 있는 것**만 쓴다 — 조사로 여는 이벤트는 보여야 하고(제 그림 · `page.glow` · 이름이 맞는 그려진 물건, 판정은 `src/project/eventSight.ts`), 숫자 입력의 답은 이미 띄운 글에 있어야 한다. 어기면 그 목표에서 멈추고 까닭 머리말(`HONEST_CAUSES`)을 적는다. 기본값은 기계 플레이 그대로다. 명세 은행은 두 플레이어를 나란히 잰다(«자동 플레이 엔딩 도달» · «정직한 플레이 엔딩 도달»). 배경·규칙 표는 `openwiki/assistant-v2.md` 「길을 따라갈 수 없는 경로」.
 - `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — `author_stage_performance` 로 저작한 공연 컷신을 출하 플레이어로 본다(가사·합창 코너 자막, 조명 어두움, 끝난 뒤 색조 복구). 크로미움은 `unshare -rn` 안에서.
 
 ## CT 회귀 시나리오 복구 (2026-10-15)

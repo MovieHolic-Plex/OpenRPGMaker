@@ -25,7 +25,7 @@ EXAMPLES = [('village', 'village', 48, 36, 1, '원시 부족 마을 48×36'), ('
             ('fossil', 'fossil', 46, 34, 1, '공룡 화석 계곡 46×34'), ('cave-dwelling', 'cave-dwelling', 18, 13, 1, '동굴 거처 18×13'), ('cave-gallery', 'cave-gallery', 24, 12, 1, '동굴 벽화 회랑 24×12')]
 HEAD = (f"tilesetId `prehistoric` · 그림 `public/assets/prehistoric/prehistoric-chipset.png`(텍스처 `tex_prehistoric`, **{N}칸**, 16px 칸, 시트 {TPR * 16}×{math.ceil(N / TPR) * 16}px, "
         f"한 줄 **{TPR}칸** — 번호 n 의 칸은 열 n%{TPR}, 행 n÷{TPR}(내림), 픽셀 (열×16, 행×16), 모두 0 기준). 계열 `oprn-prehistoric` — 다른 칩셋(버들항·던전·일본 도시·조선·마법 학교·실내 v5)의 칸 번호와 섞지 않는다. "
-        "팔레트는 prehistoric 잠금 팔레트(재질 22)만. 시점은 3/4 탑뷰(윗면 + 남쪽 앞면), 빛 왼쪽 위. 모든 그림은 object-gate 3/4 관문 영수증이 있는 조각(가장자리·벽면 낱칸은 조립 표본 영수증)만 구웠다.")
+        "팔레트는 prehistoric 잠금 팔레트(재질 22)만. 시점은 3/4 탑뷰(윗면 + 남쪽 앞면), 빛 왼쪽 위. 이야기 기물 2종(`ph-objects` 묶음 — 표식·샘)은 3/4 관문 미통과 — 오너 면제 그림이고, 그 밖의 그림은 object-gate 3/4 관문 영수증이 있는 조각(가장자리·벽면 낱칸은 조립 표본 영수증)만 구웠다.")
 # 가장자리 쌍: 이름 → (안 재질, 밖 재질)
 PAIRS = dict(grass=('grass', 'dirt'), fern=('fern', 'dirt'), mud=('mud', 'dirt'), ash=('ash', 'dirt'), stone=('stone', 'grass'), swamp=('swamp', 'mud'),
              water=('water', 'dirt'), lava=('lava', 'crust'), crust=('crust', 'ash'))
@@ -255,6 +255,29 @@ def errors_md(rows):
     return '\n'.join(L)
 
 
+# ───────────────────────── 이야기 기물(ph-objects 조각 묶음) ─────────────────────────
+OBJ_SPEC = os.path.join(ROOT, 'tiledata/prehistoric/objects/spec.json')
+OBJ_SCENE = [('spring', 1, 1), ('trail-marker', 5, 2)]     # (조각, 왼쪽 위 x, y) — 8×5 흙 장면
+
+
+def objects_refs():
+    """(문서 목록, 그림 목록) — spec.json 이 없으면 빈 목록. 문서 틀은 칩셋 공용 scripts/content/story-objects/refs_lib.py."""
+    if not os.path.exists(OBJ_SPEC): return [], []
+    sys.path.insert(0, os.path.join(ROOT, 'scripts', 'content', 'story-objects'))
+    import refs_lib
+    spec = json.load(open(OBJ_SPEC, encoding='utf-8'))
+    dirt = [t for g in DATA['tileGroups'] if g['id'] in ('ph:ph-dirt', 'ph:ph-dirt-b') for t in g['tileIds']]
+    assert len(dirt) >= 2 and all(passable(t) for t in dirt), dirt
+    names = '·'.join(it['name'].split('(')[0] for it in spec['items'])
+    doc, images, _ev = refs_lib.build(dict(
+        tileset=DATA, sheet=SHEET, spec=spec, kit_prefix='ph-', chipset='prehistoric', doc_id='ph-objects', img_id='ph-img-objects-', img_dir=IMG, url=URL(''),
+        scene=OBJ_SCENE, size=(8, 5), ground=lambda x, y: dirt[(x * 7 + y * 13) % len(dirt)],
+        title=f"prehistoric · 이야기 기물 {len(spec['items'])}종({names})", head=HEAD, ground_note='흙·풀', compose_tool='compose_prehistoric_map',
+        order_notes=['큰 것부터(샘 2×2 → 표식 1×1). 샘 둘레 한 칸은 걷는 바닥으로 비운다. 물·늪·용암 위, 집 문 앞 접근칸, 길 한가운데에는 놓지 않는다.'],
+        source='tiledata/prehistoric/objects', bake='scripts/content/prehistoric/bake_ph.py'))
+    return [doc], images
+
+
 def main():
     nk = kit_sheet(lambda k: not is_interior_kit(k), 'kits-outdoor.png')
     ni = kit_sheet(is_interior_kit, 'kits-interior.png')
@@ -274,7 +297,7 @@ def main():
     for i, im in enumerate(pics[:6]): cmp_.paste(im.resize((tw, th), Image.NEAREST), ((i % 3) * (tw + 8), (i // 3) * (th + 8)))
     cmp_.save(os.path.join(IMG, 'err-compare.png'), optimize=True)
     assert all(errs for _, _, errs in rows), [k for k, _, e in rows if not e]
-    imgs = [dict(id='ph-img-kits-outdoor', name='kits-outdoor.png', caption=f'야외 키트 도감 {nk}종(원본 ×2). 전부 object-gate 영수증이 있는 그림.', dataUrl=URL('kits-outdoor.png')),
+    imgs = [dict(id='ph-img-kits-outdoor', name='kits-outdoor.png', caption=f'야외 키트 도감 {nk}종(원본 ×2). 이야기 기물 둘(표식·샘)은 3/4 관문 미통과 — 오너 면제 그림, 나머지는 object-gate 영수증이 있는 그림.', dataUrl=URL('kits-outdoor.png')),
             dict(id='ph-img-kits-interior', name='kits-interior.png', caption=f'실내 키트 도감 {ni}종(원본 ×2).', dataUrl=URL('kits-interior.png'))]
     for key, _, W, H, _, title in EXAMPLES:
         imgs.append(dict(id=f'ph-img-{key}', name=f'ex-{key}.png', caption=f'{title} — 구성기 실제 출력, 원본 해상도 {W * 16}×{H * 16}(시트 칸 이어 붙임).', dataUrl=URL(f'ex-{key}.png')))
@@ -284,6 +307,7 @@ def main():
     for key, _, _, _, _, title in EXAMPLES:
         docs.append(dict(id=f'ph-ex-{key}', name=f'prehistoric 예제 · {title}', markdown=example_md(title, exs[key][1], f'ex-{key}.png')))
     docs.append(dict(id='ph-errors', name='prehistoric · 정상/오류 변조 검출', markdown=errors_md(rows)))
+    odocs, oimgs = objects_refs(); docs += odocs; imgs += oimgs
     cat = dict(id='ph-prehistoric', name='prehistoric · 선사 원시 세계 (사전 · 순서 · 예제 6 · 변조 오류)',
                description='원시 부족 마을·늪지·화산 골짜기·공룡 화석 계곡과 동굴 거처·벽화 회랑·족장 집·무당 천막 실내를 짓는 법. 구성 도구 compose_prehistoric_map, 바닥·꼭짓점 가장자리 사전·키트 전체 배열·문 그림/접근칸/이벤트 분리·완성 예제 6장(구성기 실제 출력 배열)·변조 오류.', documents=docs, images=imgs)
     json.dump([cat], open(OUT, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
