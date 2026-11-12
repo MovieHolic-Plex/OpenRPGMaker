@@ -39,6 +39,8 @@ export function silentLockedExits(project: Project): { mapId: string; eventId: s
     const pages = (ev.pages ?? []) as unknown as Obj[];
     const moving = pages.filter((p) => JSON.stringify(p.commands ?? []).includes('"kind":"transfer"'));
     if (!moving.length || moving.some((p) => !(p.conditions as unknown[] | undefined)?.length)) continue;
+    // 저절로 도는 페이지(엔진 무대 오프닝 컷신 등)는 걸어 들어가는 출구가 아니다 — 여기에 «막힘 한 줄» 을 붙이면 조건 없는 자동 페이지가 되어, 그 맵에 들어올 때마다 «갈 수 없다» 가 저절로 뜬다.
+    if (moving.every((p) => /^(auto|parallel)$/u.test(String((p.trigger as Obj | undefined)?.kind ?? "")))) continue;
     const told = pages.some((p) => !(p.conditions as unknown[] | undefined)?.length && JSON.stringify(p.commands ?? []).includes('"kind":"text"'));
     if (!told) out.push({ mapId: map.id, eventId: ev.id, x: ev.x, y: ev.y });
   }
