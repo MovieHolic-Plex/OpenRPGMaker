@@ -30,6 +30,7 @@ import inaka_art_props as _props  # noqa: E402,F401  (registers kits 11..30 and 
 from inaka_art_houses import KITS, Cv, _RAMP  # noqa: E402
 from inaka_art_props import GROUND, GROUND_GROUPS  # noqa: E402
 from inaka_art_ground import autotile_cells  # noqa: E402
+import fable_roofs as FR  # noqa: E402
 
 BLOCK: Final[str] = 'jp_inaka_pack'
 OUTDIR: Final[str] = os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', BLOCK)
@@ -87,6 +88,7 @@ def _finalize():
     for k in KITS:
         up, base = _cv(k['w'], k['h']), _cv(k['w'], k['h'])
         k['draw'](up, base)
+        up.a[:] = FR.apply('jp-' + k['id'], up.a)                       # 직각 지붕 덮어쓰기(오너 2026-11-12, fable_roofs.py)
         grids: dict[str, list[list[str | None]]] = {}
         for layer, cv in (('up', up), ('base', base)):
             g: list[list[str | None]] = [[None] * k['w'] for _ in range(k['h'])]
