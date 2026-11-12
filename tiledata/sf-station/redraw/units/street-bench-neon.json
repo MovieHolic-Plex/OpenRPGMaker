@@ -1,0 +1,42 @@
+{
+"unit": "street-bench-neon",
+"name": "street bench",
+"w": 32,
+"h": 16,
+"cls": "prop",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:0",
+"b": "ink:1",
+"c": "s_hull:0",
+"d": "s_hull:1",
+"e": "s_hull:2",
+"f": "s_hull:3",
+"g": "s_hull:4",
+"h": "s_hull:5",
+"o": "a_magenta:0",
+"m": "a_magenta:1",
+"n": "a_magenta:2"
+},
+"rows": [
+".bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.",
+"bhhhhhhhhhhhhhhhhhhhhhhhhhhhhgfb",
+"bfffffffffffffffffffffffffffeedb",
+"bhhhhhhhhhhhhhhhhhhhhhhhhhhhhgfb",
+"bggggggggggggggggggggggggggggfeb",
+"bdccccccccccccccccccccccccccccdb",
+"bhhhhhhhhhhhhhhhhhhhhhhhhhhhhgfb",
+"bggggggggggggggggggggggggggggfeb",
+"bdccccccccccccccccccccccccccccdb",
+"bhhhhhhhhhhhhhhhhhhhhhhhhhhhhgfb",
+"bggggggggggggggggggggggggggggfeb",
+"beeeeeeeeeeeeeeeeeeeeeeeeeeeeedb",
+"bddddddddddddddddddddddddddddccb",
+"bfecbaaaaaaaaaaaaaaaaaaaaaabfecb",
+"bfecbommmmmmnnmmmmmmmmmmmmobfecb",
+"bbbbb......................bbbbb"
+],
+"note": "Street bench: backrest bar, three blue-grey slats from above, front apron, metal legs, magenta under-glow line."
+}

@@ -7,7 +7,7 @@
 """
 import json, os, subprocess, sys, importlib
 import sf_core as C
-MODS = ['sf_base', 'sf_terrain', 'sf_outdoor', 'sf_street', 'sf_interior', 'sf_anim', 'sf2_interior', 'sf2_outdoor', 'sf2_street', 'sf2_terrain']
+MODS = ['sf_base', 'sf_terrain', 'sf_outdoor', 'sf_street', 'sf_interior', 'sf_anim', 'sf2_interior', 'sf2_outdoor', 'sf2_street', 'sf2_terrain', 'sf3_redraw']
 ONLY_MOD = os.environ.get('SF_MODS')          # 병렬 작업자는 자기 모듈만: SF_MODS=sf_outdoor python3 sf_all.py gate outdoor --todo
 for m in MODS:
     if ONLY_MOD and m not in ONLY_MOD.split(',') and m != 'sf_base': continue  # noqa

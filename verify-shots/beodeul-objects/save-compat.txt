@@ -1,0 +1,85 @@
+OK   before/fun-v2
+     저장 때 beodeul_city 39552칸·이식 3627 → 지금 beodeul_city 39680칸·이식 3627, 맵 6 · 이식 칸을 쓰는 맵 칸 4547
+OK   before/fun-v2-final
+     저장 때 beodeul_city 39552칸·이식 3627 → 지금 beodeul_city 39680칸·이식 3627, 맵 6 · 이식 칸을 쓰는 맵 칸 4547
+OK   before/jrpg-v2
+     저장 때 beodeul_city 38528칸·이식 2775 → 지금 beodeul_city 38656칸·이식 2775, 맵 6 · 이식 칸을 쓰는 맵 칸 3421
+OK   before/jrpg-v2-final
+     저장 때 beodeul_city 38528칸·이식 2775 → 지금 beodeul_city 38656칸·이식 2775, 맵 6 · 이식 칸을 쓰는 맵 칸 3421
+OK   fun-v2/project
+     저장 때 beodeul_city 39552칸·이식 3627 → 지금 beodeul_city 39680칸·이식 3627, 맵 6 · 이식 칸을 쓰는 맵 칸 4547
+OK   fun-w1/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 6 · 이식 칸을 쓰는 맵 칸 6
+OK   fun-w2/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 7 · 이식 칸을 쓰는 맵 칸 0
+OK   fun-w3/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 6 · 이식 칸을 쓰는 맵 칸 0
+OK   fun-x1/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 6 · 이식 칸을 쓰는 맵 칸 0
+FAIL fun-x1-gatefix/project
+     
+     열기 실패: folded project row does not match its stored sha256
+FAIL fun-x1-gatefix-arrow/project
+     
+     열기 실패: folded project row does not match its stored sha256
+OK   jrpg-v1/project
+     저장 때 beodeul_city 39040칸·이식 3530 → 지금 beodeul_city 39168칸·이식 3530, 맵 4 · 이식 칸을 쓰는 맵 칸 2351
+OK   jrpg-v2/project
+     저장 때 beodeul_city 38528칸·이식 2775 → 지금 beodeul_city 38656칸·이식 2775, 맵 6 · 이식 칸을 쓰는 맵 칸 3421
+OK   jrpg-w1/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 6 · 이식 칸을 쓰는 맵 칸 3
+OK   jrpg-w2/project
+     저장 때 beodeul_city 39552칸·이식 3807 → 지금 beodeul_city 39680칸·이식 3807, 맵 6 · 이식 칸을 쓰는 맵 칸 3281
+OK   jrpg-w3/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 7 · 이식 칸을 쓰는 맵 칸 0
+OK   jrpg-x1/project
+     저장 때 beodeul_city 39424칸·이식 3610 → 지금 beodeul_city 39552칸·이식 3610, 맵 8 · 이식 칸을 쓰는 맵 칸 1715
+OK   purpose/purpose-desert-failed-start/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 1 · 이식 칸을 쓰는 맵 칸 0
+OK   purpose-desert/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 8 · 이식 칸을 쓰는 맵 칸 0
+OK   purpose-desert2/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 9 · 이식 칸을 쓰는 맵 칸 0
+OK   purpose-desert3/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 8 · 이식 칸을 쓰는 맵 칸 0
+OK   purpose-desert4/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 8 · 이식 칸을 쓰는 맵 칸 0
+OK   purpose-desert5/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 9 · 이식 칸을 쓰는 맵 칸 0
+OK   r1-desert/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 6 · 이식 칸을 쓰는 맵 칸 0
+OK   r1-escape/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 2 · 이식 칸을 쓰는 맵 칸 0
+OK   r1-fantasy/project
+     저장 때 beodeul_city 39425칸·이식 3716 → 지금 beodeul_city 39553칸·이식 3716, 맵 8 · 이식 칸을 쓰는 맵 칸 3106
+OK   r1-farm/project
+     저장 때 beodeul_city 39552칸·이식 3693 → 지금 beodeul_city 39680칸·이식 3693, 맵 6 · 이식 칸을 쓰는 맵 칸 5878
+OK   r1-fun/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 7 · 이식 칸을 쓰는 맵 칸 0
+OK   r1-horror/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 3 · 이식 칸을 쓰는 맵 칸 8
+OK   r1-monster/project
+     저장 때 beodeul_city 38144칸·이식 2748 → 지금 beodeul_city 38272칸·이식 2748, 맵 2 · 이식 칸을 쓰는 맵 칸 1580
+OK   r1-mystery/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 2 · 이식 칸을 쓰는 맵 칸 0
+OK   r1-pirate/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 6 · 이식 칸을 쓰는 맵 칸 0
+OK   r1-romance/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 2 · 이식 칸을 쓰는 맵 칸 3
+OK   r1-scifi/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 6 · 이식 칸을 쓰는 맵 칸 0
+OK   r1-snow/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 6 · 이식 칸을 쓰는 맵 칸 0
+OK   r1broken-desert/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 6 · 이식 칸을 쓰는 맵 칸 0
+OK   r1broken-escape/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 2 · 이식 칸을 쓰는 맵 칸 0
+OK   r1broken-fantasy/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 6 · 이식 칸을 쓰는 맵 칸 0
+OK   r1broken-farm/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 2 · 이식 칸을 쓰는 맵 칸 0
+OK   r1broken-fun/project
+     저장 때 beodeul_city 37888칸·이식 2515 → 지금 beodeul_city 38016칸·이식 2515, 맵 6 · 이식 칸을 쓰는 맵 칸 0
+
+저장본 40개 · 통과 38 · 경고 0 · 실패 2
+exit 1

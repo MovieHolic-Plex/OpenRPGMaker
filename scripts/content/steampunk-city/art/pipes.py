@@ -116,7 +116,7 @@ R.add('pipe-grate-ns', '배관 도랑 덮개(세로 — 사람이 건너는 무�
 
 
 def sheet(path=None, z=4):
-    items = [(it['id'], R.render(it).img()) for it in R.items]
+    items = [(it["id"], R.picture(it)) for it in R.items]
     return contact(items, path or os.path.join(OUT, 'pipes', 'preview.png'), z=z, W=1600)
 
 

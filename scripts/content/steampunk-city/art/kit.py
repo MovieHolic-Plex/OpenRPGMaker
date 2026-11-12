@@ -7,6 +7,7 @@ from PIL import Image, ImageDraw, ImageFont
 from px import C, ROOT, save
 
 OUT = os.path.join(ROOT, 'tiledata', 'steampunk-city')
+FABLE = os.path.join(OUT, 'fable-redraw')      # Fable 5.2 medium 한 방으로 다시 그린 그림(2026-11-12) — pieces/<묶음>/sp-<id>.png · held/sp-<id>.png · src/(조립 전 조각)
 
 
 # ═══ 윤곽 재질 톤(화풍 정렬 2026-10-14 2판) ═══
@@ -61,6 +62,10 @@ class Reg:
     def __init__(s, group):
         s.group = group; s.items = []; s.by = {}
 
+    def add_png(s, id_, name, w, h, kind, tags=(), rules='', **meta):
+        """그림이 fable-redraw/ 의 PNG 뿐인 조각(코드 도트 없음)을 등록한다."""
+        s.add(id_, name, w, h, kind, tags=tags, rules=rules, **meta)(lambda c: None)
+
     def add(s, id_, name, w, h, kind, tags=(), rules='', **meta):
         def deco(fn):
             it = dict(id=id_, name=name, w=w, h=h, kind=kind, draw=fn, tags=list(tags), rules=rules, **meta)
@@ -73,12 +78,24 @@ class Reg:
         if s.group + '/' + it['id'] not in OUTLINE_KEEP: material_outline(c)
         return c
 
+    def picture(s, it):
+        """굽기에 들어가는 그림(RGBA, 팔레트 v3). Fable 한 방으로 다시 그린 조각은 tiledata/steampunk-city/fable-redraw/ 의 그림 그대로,
+        그 밖의 조각은 코드 도트(render)를 그린 뒤 색만 v3 로 옮긴다(palette_v3.REMAP — 모양은 한 화소도 바꾸지 않는다)."""
+        import palette_v3 as V3
+        for sub in ('pieces/' + s.group, 'held'):
+            p = os.path.join(FABLE, sub, 'sp-%s.png' % it['id'])
+            if os.path.exists(p):
+                im = Image.open(p).convert('RGBA')
+                assert im.size == (it['w'] * 16, it['h'] * 16), ('다시 그린 그림 크기가 조각 칸과 다르다', it['id'], im.size)
+                return im
+        return V3.remap(s.render(it).img(), V3.role_of(s.group, it['id']))
+
     def export(s, only=None):
         d = os.path.join(OUT, s.group, '_gate'); os.makedirs(d, exist_ok=True)
         rows = []
         for it in s.items:
             if only and it['id'] not in only: continue
-            c = s.render(it); path = os.path.join(d, 'sp-%s.png' % it['id']); save(c, path)
+            path = os.path.join(d, 'sp-%s.png' % it['id']); save(s.picture(it), path)
             rows.append(dict(png=os.path.basename(path), kind=it['kind'], name=it['name'], label='steampunk-city/sp-' + it['id']))
         if not only:
             with open(os.path.join(d, 'items.jsonl'), 'w') as f:

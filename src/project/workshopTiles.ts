@@ -220,14 +220,36 @@ export function bakeWorkshopObject(project: ProjectLike, tilesetId: string, inpu
 export interface ParkedWorkshopTiles {
   readonly tiles: readonly { readonly oldId: number; readonly graft: TileGraft; readonly pass: PassFlag; readonly priority: "lower" | "upper"; readonly terrain: number; readonly meta: TileAiMetadata | undefined }[];
   readonly kits: readonly SectionStructureKitDef[];
+  /** 떼는 동안 맵 칸의 공방 번호를 보관 번호(PARKED_TILE_BASE + 순번)로 바꿔 두었는가 — attachWorkshopTiles 가 그 번호만 새 번호로 되돌린다. */
+  readonly mapCellsParked?: true;
 }
+
+/**
+ * 떼어 둔 공방 칸을 가리키던 맵 칸이 잠시 쓰는 번호(어떤 칩셋 칸 수보다 크다).
+ * 왜(2026-11-12 실측, 저장본 r1-fantasy): 번들 시트가 S 칸 자라면 로드 정규화가 사본의 이식 꼬리를 S 만큼 뒤로 민다(localTailRelocation.ts).
+ * 공방 칸의 옛 번호가 W 이고 W−S 에 다른 이식 칸이 있으면, 밀린 그 칸이 W 에 앉는다 — 맵에는 «옛 공방 칸 W» 와 «밀려 온 칸 W» 가 같은 숫자로 남고,
+ * 다시 붙일 때 W → 새 공방 번호로 고치면서 밀려 온 칸까지 공방 그림으로 바뀌었다. 떼는 순간 공방을 가리키는 맵 칸을 보관 번호로 비켜 두면 섞이지 않는다.
+ */
+const PARKED_TILE_BASE = 0x40000000;
 
 /**
  * 공방 칸과 킷을 칩셋에서 떼어 낸다. 칸 배열은 번들 끝(공방이 끼운 빈 칸까지 빼고)으로 줄인다.
  * 공방 칸 뒤에 다른 이식이 있으면(공방이 만들지 않은 배치) 건드리지 않고 null.
  */
-export function detachWorkshopTiles(tileset: TilesetDef): ParkedWorkshopTiles | null {
-  return detachGraftedTiles(tileset, isWorkshopGraft, isWorkshopKit);
+export function detachWorkshopTiles(tileset: TilesetDef, project?: ProjectLike): ParkedWorkshopTiles | null {
+  const parked = detachGraftedTiles(tileset, isWorkshopGraft, isWorkshopKit);
+  if (!parked || !project || !parked.tiles.length) return parked;
+  // 그 칩셋 맵의 공방 칸 번호를 보관 번호로 비켜 둔다(위 PARKED_TILE_BASE) — 그 사이 번들 ensure 가 다른 칸을 같은 번호로 옮겨도 섞이지 않는다.
+  const park = new Map(parked.tiles.map((tile, k) => [tile.oldId, PARKED_TILE_BASE + k] as const));
+  for (const map of Object.values(project.maps ?? {})) {
+    if (map.tilesetId !== tileset.id) continue;
+    for (const key of MAP_LAYER_KEYS) {
+      const layer = map[key];
+      if (!layer) continue;
+      for (let i = 0; i < layer.length; i++) layer[i] = park.get(layer[i]!) ?? layer[i]!;
+    }
+  }
+  return { ...parked, mapCellsParked: true };
 }
 
 /**
@@ -270,6 +292,7 @@ export function attachWorkshopTiles(project: ProjectLike, tilesetId: string, par
   const tileset = project.tilesets[tilesetId];
   if (!tileset) return false;
   const remap = new Map<number, number>();
+  const unpark = new Map<number, number>();
   if (parked.tiles.length) {
     const base = appendBase(tileset);
     padTo(tileset, base);
@@ -277,6 +300,7 @@ export function attachWorkshopTiles(project: ProjectLike, tilesetId: string, par
     parked.tiles.forEach((tile, k) => {
       const id = base + k;
       remap.set(tile.oldId, id);
+      unpark.set(PARKED_TILE_BASE + k, id);
       tileset.tileGrafts!.push({ ...tile.graft, targetTile: id });
       tileset.passability[id] = { ...tile.pass };
       tileset.priority[id] = tile.priority;
@@ -293,13 +317,15 @@ export function attachWorkshopTiles(project: ProjectLike, tilesetId: string, par
   // 다시 붙이는 김에 옛 태그 킷을 설명서로 옮긴다(불러올 때마다 ensureBundledTilesets 가 지나가는 자리).
   for (const kit of kits) migrateLegacyWorkshopKit(kit, tileset.tileSize);
   tileset.structureKits = [...(tileset.structureKits ?? []), ...kits];
-  if (moved) {
+  // 맵 칸: 떼면서 보관 번호로 비켜 둔 사본은 그 번호만 되돌린다(옛 번호 자리에 그사이 다른 칸이 옮겨 와 있을 수 있다). 아니면 예전처럼 옛 번호 → 새 번호.
+  const reCell = parked.mapCellsParked ? (tile: number): number => unpark.get(tile) ?? tile : re;
+  if (moved || parked.mapCellsParked) {
     for (const map of Object.values(project.maps ?? {})) {
       if (map.tilesetId !== tilesetId) continue;
       for (const key of MAP_LAYER_KEYS) {
         const layer = map[key];
         if (!layer) continue;
-        for (let i = 0; i < layer.length; i++) layer[i] = re(layer[i]!);
+        for (let i = 0; i < layer.length; i++) layer[i] = reCell(layer[i]!);
       }
     }
   }

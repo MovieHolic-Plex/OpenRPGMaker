@@ -65,22 +65,35 @@ export function objectSetting(tileset: TilesetDef, mapName: string): string {
 const words = (text: string): string[] => text.trim().split(/[\s·,/()]+/u).filter(Boolean);
 const squash = (text: string): string => text.replace(/[\s·,/()]+/gu, "").toLowerCase();
 
-type Existing = { readonly id: string; readonly name: string; readonly how: string };
+type Existing = { readonly id: string; readonly name: string; readonly how: string; /** 킷이 그 이름을 태그로 그대로 달고 있다(칩셋 데이터의 선언). */ readonly declared?: true };
 
-/** 이름이 맞는 이미 있는 기물 — 칩셋 구조 킷(어떤 출처든)과 손 도트 실내 가구. 이름 전체 또는 끝 낱말(2글자 이상)이 들어 있으면 맞다. */
+/**
+ * 이름이 맞는 이미 있는 기물 — 칩셋 구조 킷(어떤 출처든)과 손 도트 실내 가구.
+ * 맞는 정도 순으로 낸다(여덟 개에서 자르므로 순서가 답이다):
+ *  0 킷이 그 이름을 **태그로 그대로** 달았거나 킷 이름이 그 이름과 같다 — 한 글자 이름(샘)도 여기서는 맞는다. 낱말 목록이 아니라 칩셋 데이터가 답한다.
+ *  1 이름 전체(2글자 이상)가 킷 이름·id 에 들어 있다.
+ *  2 끝 낱말(2글자 이상)만 들어 있다.
+ */
 export function existingMatches(project: Project, tileset: TilesetDef, title: string): Existing[] {
   const full = squash(title);
   const head = words(title).at(-1) ?? "";
-  const needles = [full, ...(head.length >= 2 && squash(head) !== full ? [squash(head)] : [])].filter((needle) => needle.length >= 2);
-  if (!needles.length) return [];
+  const tail = head.length >= 2 && squash(head) !== full ? squash(head) : "";
+  if (!full) return [];
+  const needles = [full, tail].filter((needle) => needle.length >= 2);
   const hit = (text: string): boolean => needles.some((needle) => squash(text).includes(needle));
-  const out: Existing[] = [];
+  const rank = (name: string, id: string, tags: readonly string[]): number => {
+    if (squash(name) === full || tags.some((tag) => squash(tag) === full)) return 0;
+    if (full.length >= 2 && (squash(name).includes(full) || squash(id).includes(full))) return 1;
+    return tail && (squash(name).includes(tail) || squash(id).includes(tail)) ? 2 : -1;
+  };
+  const ranked: { readonly row: Existing; readonly rank: number }[] = [];
   for (const kit of tileset.structureKits ?? []) {
     if (kit.width > 8 || kit.height > 8) continue; // 건물·구역 킷은 기물이 아니다
-    if (hit(kit.name ?? "") || hit(kit.id)) {
-      out.push({ id: kit.id, name: kit.name ?? kit.id, how: kit.learnedFrom === "workshop" || kit.learnedFrom === "pack-preset" ? "stamp_tileset_object" : "stamp_object(kit:id) 또는 stamp_tileset_object" });
-    }
+    const r = rank(kit.name ?? "", kit.id, kit.ai?.tags ?? []);
+    if (r < 0) continue;
+    ranked.push({ rank: r, row: { id: kit.id, name: kit.name ?? kit.id, how: kit.learnedFrom === "workshop" || kit.learnedFrom === "pack-preset" ? "stamp_tileset_object" : "stamp_object(kit:id) 또는 stamp_tileset_object", ...(r === 0 ? { declared: true as const } : {}) } });
   }
+  const out: Existing[] = ranked.sort((a, b) => a.rank - b.rank).map((entry) => entry.row); // 안정 정렬 — 같은 정도 안에서는 킷 순서
   if (tileset.id === ATLAS_BIOME_INTERIOR_ID) {
     for (const needle of new Set([title.trim(), head])) {
       if (!needle) continue;
@@ -171,7 +184,17 @@ export function buildObjectGenRequest(project: Project, args: Record<string, unk
     if (PERSON_HEAD.test(head)) {
       throw new ToolError(`「${title}」은(는) 사람·동물이다 — 이 도구는 캐릭터를 그리지 않는다. 사람은 캐릭터 칩(이벤트 그림)으로 놓는다(place_npc 등).`, { code: "people-not-generated" });
     }
+    const notThese = new Set(Array.isArray(args.notThese) ? args.notThese.filter((id): id is string => typeof id === "string") : []);
+    const existing = options.skipExisting ? [] : existingMatches(project, tileset, title).filter((row) => !notThese.has(row.id));
+    const existsError = (rows: readonly { id: string; name: string; how: string }[]): ToolError => new ToolError(
+      `「${title}」과(와) 이름이 맞는 기물이 이 칩셋에 이미 있다 — 새로 그리지 말고 이것을 써라: ${rows.map((row) => `${row.id}(${row.name}) → ${row.how}`).join(" · ")}. `
+      + "모두 봤는데 요청과 다른 물건이면 그 id 들을 notThese 에 적어 다시 불러라.",
+      { code: "object-exists", mapId: map.id },
+    );
     if (TERRAIN_HEAD.test(head)) {
+      // 끝 낱말은 지형(길·바닥)이지만 칩셋 킷이 그 이름을 태그로 그대로 달았으면 그 킷이 답이다(예: 널빤지 길 조각) — 「칸 타일이 없다」고 돌려보내지 않는다.
+      const declared = existing.filter((row) => row.declared);
+      if (declared.length) throw existsError(declared);
       throw new ToolError(`「${title}」은(는) 지형·바닥·벽 칸이다 — 이 도구는 기물 하나만 그린다. 칸 타일이 없으면 ask_missing_tiles 로 묻는다.`, { code: "terrain-not-object" });
     }
     const objectKind = (OBJECT_GEN_KINDS as readonly string[]).includes(String(args.objectKind)) ? args.objectKind as ObjectGenKind : null;
@@ -210,15 +233,7 @@ export function buildObjectGenRequest(project: Project, args: Record<string, unk
       }
       base = { x, y };
     }
-    const notThese = new Set(Array.isArray(args.notThese) ? args.notThese.filter((id): id is string => typeof id === "string") : []);
-    const existing = options.skipExisting ? [] : existingMatches(project, tileset, title).filter((row) => !notThese.has(row.id));
-    if (existing.length) {
-      throw new ToolError(
-        `「${title}」과(와) 이름이 맞는 기물이 이 칩셋에 이미 있다 — 새로 그리지 말고 이것을 써라: ${existing.map((row) => `${row.id}(${row.name}) → ${row.how}`).join(" · ")}. `
-        + "모두 봤는데 요청과 다른 물건이면 그 id 들을 notThese 에 적어 다시 불러라.",
-        { code: "object-exists", mapId: map.id },
-      );
-    }
+    if (existing.length) throw existsError(existing);
     const gateKind = typeof args.gateKind === "string" && (GATE_KINDS as readonly string[]).includes(args.gateKind) ? args.gateKind : undefined;
     const request: ObjectGenRequest = {
       kind: "workshop-object-request", harnessId, tilesetId: tileset.id, tilesetName: tileset.name, mapId: map.id,

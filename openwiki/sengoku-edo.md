@@ -92,6 +92,13 @@ QA 대상은 엔진 렌더러 원본 해상도다. 성하마을·성·신사/절
 - 칸 번호(jp_city 와 같은 규칙): **옛 칸은 옛 그림 그대로, 다시 그린 지붕은 시트 끝의 새 칸**(1061 → 1227, 새 칸 166)이고 다시 그린 10채의 키트만 새 칸을 가리킨다. 이미 깔린 맵은 전과 똑같이 보이고 새로 찍는 건물만 새 지붕이다. `se_bake_lib.Outdoor.keep_old_cells(옛 시트)` + `put`: 이미 번호를 받은 자리 키의 그림이 옛 시트의 그 칸과 다르면 옛 칸에 옛 그림을 남기고 `키@r<그림 해시>` 로 새 번호를 받는다(다시 구워도 같은 번호 — 두 번 구워 시트·정의·핀 해시 동일 확인). 검사(모델 없음, `~/z-project/assistant-fable-runs/redraw/roofs/laid_check.py`): 옛 칸 1061개 중 새 시트에서 화소가 달라진 칸 0 · 옛 칸의 통행/우선순위 변화 0 · 옛 키트 28채를 찍은 맵(11×175칸)을 옛 시트/새 시트로 그린 그림의 다른 화소 0.
 - 남은 것: `se-castle-turret`(2단 지붕 — 상자를 손으로 나눠야 한다), 예외(천수각·탑·종루·문·도리이). 표·전후 그림 http://mdc-server:18301/roof-orthogonal.html
 
+## 조수 v2 의 실내 종류 (2026-11-12)
+
+조수 v2 세계 표(`src/ai/v2/place/world.ts`)가 방 구성 여섯을 실내 종류로 싣는다: `farmhouse`(minka) · `townhouse`(machiya) · `inn`(ryokan-1f) · `samurai-house` · `dojo` · `castle-hall`.
+방 구성 도구(`build_hand_interior_room`, `layout:{program, seed}`)로 짓고, 바깥 맵의 그 건물 문(농가 / 마치야·가게·대장간 / 여관·온천 / 무가 저택 / 도장 / 천수각)에 잇는다.
+전에는 실내 종류가 0이라 «촌장 집» 같은 실내 요청이 거절됐다. 표·크기·남은 것(여관 2층·다실)은 `openwiki/assistant-v2.md` 「전국·에도 세계의 실내 종류」.
+방 구성을 더하거나 이름을 바꾸면(`src/assets/sengokuEdoRoomTemplates.json programs`) 그 표의 `value` 와 `test/aiV2SengokuRooms.test.ts` 를 같이 고친다.
+
 ## 조수 실측
 
 `/tmp/se-gemini/rerun.sh` 는 `/tmp/ai-gemini/rerun.sh` 사본이다. 실제 편집기 입력창 경로로 gemini-3.8-flash(high)를 새 기본 프로젝트에서 돌린다. 세 판 모두 SQLite 에 저장한 뒤 다시 읽었고, 해시가 같았다(reloadEqual true).

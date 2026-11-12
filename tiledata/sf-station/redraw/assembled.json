@@ -1,0 +1,1238 @@
+{
+"batch": "fable-redraw-sf_station-2026-11-12",
+"redrawn": [
+"3d-printer",
+"airlock",
+"airlock-inner",
+"airlock-wide",
+"analysis-console",
+"antenna-mast",
+"asphalt",
+"at-deck",
+"at-lightline",
+"at-rail",
+"at-regolith-path",
+"at-road",
+"at-wall-hull",
+"at-wall-viewport",
+"at-wall-white",
+"barrier",
+"battery-bank",
+"beacon",
+"bed-single",
+"bench",
+"boulder-cluster",
+"bunk",
+"captain-chair",
+"cargo-container-int",
+"cargo-crate",
+"cargo-floor",
+"cargo-hangar",
+"cargo-lift-pad",
+"cargo-pallet",
+"centrifuge",
+"comms-relay",
+"console-big",
+"console-desk",
+"container",
+"container-stack",
+"control-tower",
+"cooling-plant",
+"crate-stack",
+"crater",
+"crew-chair",
+"crew-floor",
+"crosswalk",
+"cryo-bank",
+"cryo-pod",
+"deck-grate",
+"deck-hazard",
+"deck-lane-h",
+"deck-lane-v",
+"deck-plate",
+"dish",
+"dish-small",
+"elevator-door",
+"fire-extinguisher",
+"fuel-tank",
+"fume-hood",
+"galley-counter",
+"galley-fridge",
+"gas-tank-pair",
+"glass-floor",
+"greenhouse-dome",
+"hab-block",
+"hab-dome",
+"hab-dome-l",
+"hab-dome-s",
+"hab-module",
+"hab-module-3",
+"hatch-floor",
+"holo-table",
+"hydro-soil",
+"hydroponic-rack",
+"lab-bench",
+"lab-floor",
+"lab-module",
+"lab-sink-bench",
+"landing-pad",
+"landing-plate",
+"lane-dash",
+"locker",
+"locker-row",
+"med-bed",
+"med-cabinet",
+"med-scanner",
+"mess-table",
+"microscope-station",
+"neon-sign-tower",
+"oxygen-tank-row",
+"pilot-seat",
+"pipe-cluster",
+"planter-box",
+"pod-car",
+"porthole-planet",
+"porthole-star",
+"power-conduit",
+"puddle",
+"radiator-panel",
+"radome-tower",
+"reactor",
+"reactor-building",
+"regolith",
+"rock-regolith-l",
+"rock-regolith-m",
+"rock-regolith-s",
+"rover",
+"rug-hex",
+"server-rack",
+"shower-pod",
+"shuttle",
+"sidewalk",
+"sign-chunky",
+"sink-unit",
+"solar-array",
+"solar-array-l",
+"specimen-tank",
+"stool",
+"street-ac-cluster",
+"street-apartment",
+"street-arcade",
+"street-atm-kiosk",
+"street-barrier-stripe",
+"street-bench-neon",
+"street-bollard",
+"street-capsule-hotel",
+"street-cargo-drone",
+"street-clinic",
+"street-club",
+"street-crate-pile",
+"street-data-center",
+"street-drone-garage",
+"street-drone-pad",
+"street-holo-ad",
+"street-hover-bike",
+"street-kiosk",
+"street-lamp-post",
+"street-manhole",
+"street-market-stall-a",
+"street-market-stall-b",
+"street-neon-arrow",
+"street-neon-bars-wall",
+"street-neon-billboard",
+"street-neon-flat-strip",
+"street-neon-ring-wall",
+"street-noodle-shop",
+"street-planter-neon",
+"street-pod-car-cyan",
+"street-pod-taxi",
+"street-pod-truck",
+"street-puddle-neon",
+"street-sign-vertical",
+"street-tower-l",
+"street-tower-m",
+"street-tower-s",
+"street-transit-station",
+"street-transit-stop",
+"street-trash-bin",
+"street-vending-cyan",
+"tube-cross",
+"tube-h",
+"vending",
+"vending-int",
+"vent-grill",
+"vent-stack",
+"void-star",
+"wall-face-hull",
+"wall-face-viewport",
+"wall-face-white",
+"wall-lamp",
+"wall-map-display",
+"wall-pipes",
+"wall-screen-a",
+"wall-screen-b",
+"wall-screen-c"
+],
+"byCode": [
+"at-deck",
+"at-lightline",
+"at-rail",
+"at-regolith-path",
+"at-road",
+"at-wall-hull",
+"at-wall-viewport",
+"at-wall-white",
+"crosswalk",
+"lane-dash"
+],
+"keptOld": [
+"docking-gate"
+],
+"pieces": {
+"deck-plate": {
+"source": "fable",
+"units": [
+"g-deck-plate"
+]
+},
+"deck-grate": {
+"source": "fable",
+"units": [
+"g-deck-grate"
+]
+},
+"deck-hazard": {
+"source": "fable",
+"units": [
+"g-deck-hazard"
+]
+},
+"deck-lane-h": {
+"source": "fable",
+"units": [
+"g-deck-lane-h"
+]
+},
+"deck-lane-v": {
+"source": "fable",
+"units": [
+"g-deck-lane-v"
+]
+},
+"lab-floor": {
+"source": "fable",
+"units": [
+"g-lab-floor"
+]
+},
+"crew-floor": {
+"source": "fable",
+"units": [
+"g-crew-floor"
+]
+},
+"cargo-floor": {
+"source": "fable",
+"units": [
+"g-cargo-floor"
+]
+},
+"glass-floor": {
+"source": "fable",
+"units": [
+"g-glass-floor"
+]
+},
+"void-star": {
+"source": "fable",
+"units": [
+"g-void-star"
+]
+},
+"regolith": {
+"source": "fable",
+"units": [
+"g-regolith"
+]
+},
+"landing-plate": {
+"source": "fable",
+"units": [
+"g-landing-plate"
+]
+},
+"asphalt": {
+"source": "fable",
+"units": [
+"g-asphalt"
+]
+},
+"sidewalk": {
+"source": "fable",
+"units": [
+"g-sidewalk"
+]
+},
+"puddle": {
+"source": "fable",
+"units": [
+"g-puddle"
+]
+},
+"hydro-soil": {
+"source": "fable",
+"units": [
+"g-hydro-soil"
+]
+},
+"lane-dash": {
+"source": "code",
+"units": [
+"g-asphalt"
+]
+},
+"crosswalk": {
+"source": "code",
+"units": [
+"g-asphalt"
+]
+},
+"at-deck": {
+"source": "code",
+"units": [
+"g-deck-plate"
+]
+},
+"at-road": {
+"source": "code",
+"units": [
+"g-asphalt"
+]
+},
+"at-regolith-path": {
+"source": "code",
+"units": [
+"g-regolith",
+"g-regolith-path"
+]
+},
+"at-rail": {
+"source": "code",
+"units": [
+"g-rail"
+]
+},
+"at-lightline": {
+"source": "code",
+"units": []
+},
+"at-wall-hull": {
+"source": "code",
+"units": [
+"w-hull"
+]
+},
+"at-wall-viewport": {
+"source": "code",
+"units": [
+"w-hull"
+]
+},
+"at-wall-white": {
+"source": "code",
+"units": [
+"w-white"
+]
+},
+"wall-face-hull": {
+"source": "fable",
+"units": [
+"w-hull"
+]
+},
+"wall-face-white": {
+"source": "fable",
+"units": [
+"w-white"
+]
+},
+"wall-face-viewport": {
+"source": "fable",
+"units": [
+"wf-viewport",
+"w-hull"
+]
+},
+"hab-module-3": {
+"source": "fable",
+"units": [
+"hab-module-3.roof",
+"hab-module-3.wall"
+]
+},
+"hab-dome-l": {
+"source": "fable",
+"units": [
+"hab-dome-l.roof",
+"hab-dome-l.wall"
+]
+},
+"hab-block": {
+"source": "fable",
+"units": [
+"hab-block.roof",
+"hab-block.wall"
+]
+},
+"cargo-hangar": {
+"source": "fable",
+"units": [
+"cargo-hangar.roof",
+"cargo-hangar.wall"
+]
+},
+"street-data-center": {
+"source": "fable",
+"units": [
+"street-data-center.roof",
+"street-data-center.wall"
+]
+},
+"street-tower-s": {
+"source": "fable",
+"units": [
+"street-tower-s.roof",
+"street-tower-s.mid",
+"street-tower-s.wall"
+]
+},
+"street-tower-m": {
+"source": "fable",
+"units": [
+"street-tower-m.roof",
+"street-tower-m.mid",
+"street-tower-m.wall"
+]
+},
+"street-tower-l": {
+"source": "fable",
+"units": [
+"street-tower-l.roof",
+"street-tower-l.mid",
+"street-tower-l.wall"
+]
+},
+"street-apartment": {
+"source": "fable",
+"units": [
+"street-apartment.roof",
+"street-apartment.mid",
+"street-apartment.wall"
+]
+},
+"hab-dome": {
+"source": "fable",
+"units": [
+"hab-dome"
+]
+},
+"airlock": {
+"source": "fable",
+"units": [
+"airlock"
+]
+},
+"neon-sign-tower": {
+"source": "fable",
+"units": [
+"neon-sign-tower"
+]
+},
+"console-desk": {
+"source": "fable",
+"units": [
+"console-desk"
+]
+},
+"vending": {
+"source": "fable",
+"units": [
+"vending"
+]
+},
+"cargo-crate": {
+"source": "fable",
+"units": [
+"cargo-crate"
+]
+},
+"reactor": {
+"source": "fable",
+"units": [
+"reactor"
+]
+},
+"solar-array": {
+"source": "fable",
+"units": [
+"solar-array"
+]
+},
+"dish": {
+"source": "fable",
+"units": [
+"dish"
+]
+},
+"pod-car": {
+"source": "fable",
+"units": [
+"pod-car"
+]
+},
+"server-rack": {
+"source": "fable",
+"units": [
+"server-rack"
+]
+},
+"bunk": {
+"source": "fable",
+"units": [
+"bunk"
+]
+},
+"hab-dome-s": {
+"source": "fable",
+"units": [
+"hab-dome-s"
+]
+},
+"greenhouse-dome": {
+"source": "fable",
+"units": [
+"greenhouse-dome"
+]
+},
+"hab-module": {
+"source": "fable",
+"units": [
+"hab-module"
+]
+},
+"lab-module": {
+"source": "fable",
+"units": [
+"lab-module"
+]
+},
+"airlock-wide": {
+"source": "fable",
+"units": [
+"airlock-wide"
+]
+},
+"docking-gate": {
+"source": "old",
+"units": [
+"docking-gate"
+]
+},
+"tube-h": {
+"source": "fable",
+"units": [
+"tube-h"
+]
+},
+"tube-cross": {
+"source": "fable",
+"units": [
+"tube-cross"
+]
+},
+"control-tower": {
+"source": "fable",
+"units": [
+"control-tower"
+]
+},
+"radome-tower": {
+"source": "fable",
+"units": [
+"radome-tower"
+]
+},
+"reactor-building": {
+"source": "fable",
+"units": [
+"reactor-building"
+]
+},
+"cooling-plant": {
+"source": "fable",
+"units": [
+"cooling-plant"
+]
+},
+"shuttle": {
+"source": "fable",
+"units": [
+"shuttle"
+]
+},
+"fuel-tank": {
+"source": "fable",
+"units": [
+"fuel-tank"
+]
+},
+"gas-tank-pair": {
+"source": "fable",
+"units": [
+"gas-tank-pair"
+]
+},
+"solar-array-l": {
+"source": "fable",
+"units": [
+"solar-array-l"
+]
+},
+"dish-small": {
+"source": "fable",
+"units": [
+"dish-small"
+]
+},
+"antenna-mast": {
+"source": "fable",
+"units": [
+"antenna-mast"
+]
+},
+"radiator-panel": {
+"source": "fable",
+"units": [
+"radiator-panel"
+]
+},
+"battery-bank": {
+"source": "fable",
+"units": [
+"battery-bank"
+]
+},
+"oxygen-tank-row": {
+"source": "fable",
+"units": [
+"oxygen-tank-row"
+]
+},
+"crate-stack": {
+"source": "fable",
+"units": [
+"crate-stack"
+]
+},
+"container": {
+"source": "fable",
+"units": [
+"container"
+]
+},
+"container-stack": {
+"source": "fable",
+"units": [
+"container-stack"
+]
+},
+"beacon": {
+"source": "fable",
+"units": [
+"beacon"
+]
+},
+"sign-chunky": {
+"source": "fable",
+"units": [
+"sign-chunky"
+]
+},
+"barrier": {
+"source": "fable",
+"units": [
+"barrier"
+]
+},
+"vent-stack": {
+"source": "fable",
+"units": [
+"vent-stack"
+]
+},
+"comms-relay": {
+"source": "fable",
+"units": [
+"comms-relay"
+]
+},
+"rover": {
+"source": "fable",
+"units": [
+"rover"
+]
+},
+"landing-pad": {
+"source": "fable",
+"units": [
+"landing-pad"
+]
+},
+"rock-regolith-s": {
+"source": "fable",
+"units": [
+"rock-regolith-s"
+]
+},
+"rock-regolith-m": {
+"source": "fable",
+"units": [
+"rock-regolith-m"
+]
+},
+"rock-regolith-l": {
+"source": "fable",
+"units": [
+"rock-regolith-l"
+]
+},
+"boulder-cluster": {
+"source": "fable",
+"units": [
+"boulder-cluster"
+]
+},
+"crater": {
+"source": "fable",
+"units": [
+"crater"
+]
+},
+"street-noodle-shop": {
+"source": "fable",
+"units": [
+"street-noodle-shop"
+]
+},
+"street-arcade": {
+"source": "fable",
+"units": [
+"street-arcade"
+]
+},
+"street-club": {
+"source": "fable",
+"units": [
+"street-club"
+]
+},
+"street-clinic": {
+"source": "fable",
+"units": [
+"street-clinic"
+]
+},
+"street-capsule-hotel": {
+"source": "fable",
+"units": [
+"street-capsule-hotel"
+]
+},
+"street-drone-garage": {
+"source": "fable",
+"units": [
+"street-drone-garage"
+]
+},
+"street-transit-station": {
+"source": "fable",
+"units": [
+"street-transit-station"
+]
+},
+"street-market-stall-a": {
+"source": "fable",
+"units": [
+"street-market-stall-a"
+]
+},
+"street-market-stall-b": {
+"source": "fable",
+"units": [
+"street-market-stall-b"
+]
+},
+"street-kiosk": {
+"source": "fable",
+"units": [
+"street-kiosk"
+]
+},
+"street-neon-billboard": {
+"source": "fable",
+"units": [
+"street-neon-billboard"
+]
+},
+"street-neon-arrow": {
+"source": "fable",
+"units": [
+"street-neon-arrow"
+]
+},
+"street-holo-ad": {
+"source": "fable",
+"units": [
+"street-holo-ad"
+]
+},
+"street-sign-vertical": {
+"source": "fable",
+"units": [
+"street-sign-vertical"
+]
+},
+"street-neon-bars-wall": {
+"source": "fable",
+"units": [
+"street-neon-bars-wall"
+]
+},
+"street-neon-ring-wall": {
+"source": "fable",
+"units": [
+"street-neon-ring-wall"
+]
+},
+"street-neon-flat-strip": {
+"source": "fable",
+"units": [
+"street-neon-flat-strip"
+]
+},
+"street-pod-car-cyan": {
+"source": "fable",
+"units": [
+"street-pod-car-cyan"
+]
+},
+"street-pod-taxi": {
+"source": "fable",
+"units": [
+"street-pod-taxi"
+]
+},
+"street-pod-truck": {
+"source": "fable",
+"units": [
+"street-pod-truck"
+]
+},
+"street-hover-bike": {
+"source": "fable",
+"units": [
+"street-hover-bike"
+]
+},
+"street-drone-pad": {
+"source": "fable",
+"units": [
+"street-drone-pad"
+]
+},
+"street-cargo-drone": {
+"source": "fable",
+"units": [
+"street-cargo-drone"
+]
+},
+"street-vending-cyan": {
+"source": "fable",
+"units": [
+"street-vending-cyan"
+]
+},
+"street-atm-kiosk": {
+"source": "fable",
+"units": [
+"street-atm-kiosk"
+]
+},
+"street-trash-bin": {
+"source": "fable",
+"units": [
+"street-trash-bin"
+]
+},
+"street-bench-neon": {
+"source": "fable",
+"units": [
+"street-bench-neon"
+]
+},
+"street-planter-neon": {
+"source": "fable",
+"units": [
+"street-planter-neon"
+]
+},
+"street-lamp-post": {
+"source": "fable",
+"units": [
+"street-lamp-post"
+]
+},
+"street-bollard": {
+"source": "fable",
+"units": [
+"street-bollard"
+]
+},
+"street-barrier-stripe": {
+"source": "fable",
+"units": [
+"street-barrier-stripe"
+]
+},
+"street-manhole": {
+"source": "fable",
+"units": [
+"street-manhole"
+]
+},
+"street-ac-cluster": {
+"source": "fable",
+"units": [
+"street-ac-cluster"
+]
+},
+"street-transit-stop": {
+"source": "fable",
+"units": [
+"street-transit-stop"
+]
+},
+"street-crate-pile": {
+"source": "fable",
+"units": [
+"street-crate-pile"
+]
+},
+"street-puddle-neon": {
+"source": "fable",
+"units": [
+"street-puddle-neon"
+]
+},
+"console-big": {
+"source": "fable",
+"units": [
+"console-big"
+]
+},
+"pilot-seat": {
+"source": "fable",
+"units": [
+"pilot-seat"
+]
+},
+"crew-chair": {
+"source": "fable",
+"units": [
+"crew-chair"
+]
+},
+"captain-chair": {
+"source": "fable",
+"units": [
+"captain-chair"
+]
+},
+"stool": {
+"source": "fable",
+"units": [
+"stool"
+]
+},
+"bench": {
+"source": "fable",
+"units": [
+"bench"
+]
+},
+"mess-table": {
+"source": "fable",
+"units": [
+"mess-table"
+]
+},
+"bed-single": {
+"source": "fable",
+"units": [
+"bed-single"
+]
+},
+"med-bed": {
+"source": "fable",
+"units": [
+"med-bed"
+]
+},
+"med-scanner": {
+"source": "fable",
+"units": [
+"med-scanner"
+]
+},
+"med-cabinet": {
+"source": "fable",
+"units": [
+"med-cabinet"
+]
+},
+"cryo-pod": {
+"source": "fable",
+"units": [
+"cryo-pod"
+]
+},
+"cryo-bank": {
+"source": "fable",
+"units": [
+"cryo-bank"
+]
+},
+"lab-bench": {
+"source": "fable",
+"units": [
+"lab-bench"
+]
+},
+"lab-sink-bench": {
+"source": "fable",
+"units": [
+"lab-sink-bench"
+]
+},
+"microscope-station": {
+"source": "fable",
+"units": [
+"microscope-station"
+]
+},
+"centrifuge": {
+"source": "fable",
+"units": [
+"centrifuge"
+]
+},
+"fume-hood": {
+"source": "fable",
+"units": [
+"fume-hood"
+]
+},
+"specimen-tank": {
+"source": "fable",
+"units": [
+"specimen-tank"
+]
+},
+"analysis-console": {
+"source": "fable",
+"units": [
+"analysis-console"
+]
+},
+"holo-table": {
+"source": "fable",
+"units": [
+"holo-table"
+]
+},
+"3d-printer": {
+"source": "fable",
+"units": [
+"3d-printer"
+]
+},
+"hydroponic-rack": {
+"source": "fable",
+"units": [
+"hydroponic-rack"
+]
+},
+"planter-box": {
+"source": "fable",
+"units": [
+"planter-box"
+]
+},
+"locker": {
+"source": "fable",
+"units": [
+"locker"
+]
+},
+"locker-row": {
+"source": "fable",
+"units": [
+"locker-row"
+]
+},
+"galley-counter": {
+"source": "fable",
+"units": [
+"galley-counter"
+]
+},
+"galley-fridge": {
+"source": "fable",
+"units": [
+"galley-fridge"
+]
+},
+"vending-int": {
+"source": "fable",
+"units": [
+"vending-int"
+]
+},
+"shower-pod": {
+"source": "fable",
+"units": [
+"shower-pod"
+]
+},
+"sink-unit": {
+"source": "fable",
+"units": [
+"sink-unit"
+]
+},
+"pipe-cluster": {
+"source": "fable",
+"units": [
+"pipe-cluster"
+]
+},
+"power-conduit": {
+"source": "fable",
+"units": [
+"power-conduit"
+]
+},
+"cargo-pallet": {
+"source": "fable",
+"units": [
+"cargo-pallet"
+]
+},
+"cargo-container-int": {
+"source": "fable",
+"units": [
+"cargo-container-int"
+]
+},
+"cargo-lift-pad": {
+"source": "fable",
+"units": [
+"cargo-lift-pad"
+]
+},
+"elevator-door": {
+"source": "fable",
+"units": [
+"elevator-door"
+]
+},
+"airlock-inner": {
+"source": "fable",
+"units": [
+"airlock-inner"
+]
+},
+"hatch-floor": {
+"source": "fable",
+"units": [
+"hatch-floor"
+]
+},
+"rug-hex": {
+"source": "fable",
+"units": [
+"rug-hex"
+]
+},
+"wall-screen-a": {
+"source": "fable",
+"units": [
+"wall-screen-a"
+]
+},
+"wall-screen-b": {
+"source": "fable",
+"units": [
+"wall-screen-b"
+]
+},
+"wall-screen-c": {
+"source": "fable",
+"units": [
+"wall-screen-c"
+]
+},
+"wall-map-display": {
+"source": "fable",
+"units": [
+"wall-map-display"
+]
+},
+"porthole-star": {
+"source": "fable",
+"units": [
+"porthole-star"
+]
+},
+"porthole-planet": {
+"source": "fable",
+"units": [
+"porthole-planet"
+]
+},
+"wall-lamp": {
+"source": "fable",
+"units": [
+"wall-lamp"
+]
+},
+"vent-grill": {
+"source": "fable",
+"units": [
+"vent-grill"
+]
+},
+"wall-pipes": {
+"source": "fable",
+"units": [
+"wall-pipes"
+]
+},
+"fire-extinguisher": {
+"source": "fable",
+"units": [
+"fire-extinguisher"
+]
+}
+}
+}

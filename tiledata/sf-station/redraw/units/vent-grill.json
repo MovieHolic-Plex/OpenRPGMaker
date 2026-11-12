@@ -1,0 +1,39 @@
+{
+"unit": "vent-grill",
+"name": "wall vent grille",
+"w": 16,
+"h": 16,
+"cls": "wallm",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:0",
+"b": "ink:1",
+"c": "s_hull:0",
+"d": "s_hull:1",
+"e": "s_hull:2",
+"f": "s_hull:3",
+"g": "s_hull:4",
+"h": "s_hull:5"
+},
+"rows": [
+"................",
+"................",
+"..bbbbbbbbbbbb..",
+"..bhchhhhhhcgb..",
+"..bhffffffffeb..",
+"..bgaaaaaaaaeb..",
+"..bgffffffffeb..",
+"..bgaaaaaaaaeb..",
+"..bgffffffffeb..",
+"..bgaaaaaaaaeb..",
+"..bgffffffffeb..",
+"..bgaaaaaaaaeb..",
+"..beceeeeeecdb..",
+"..bbbbbbbbbbbb..",
+"................",
+"................"
+],
+"note": "Blue-grey wall vent grille, four dark slats with lit upper edges, four corner screws."
+}

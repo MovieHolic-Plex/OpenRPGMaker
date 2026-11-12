@@ -1,0 +1,43 @@
+{
+"unit": "centrifuge",
+"name": "centrifuge",
+"w": 16,
+"h": 16,
+"cls": "prop",
+"role": "structure",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "ink:0",
+"b": "ink:1",
+"w": "s_white:3",
+"v": "s_white:2",
+"u": "s_white:1",
+"t": "s_white:0",
+"g": "s_glass:0",
+"h": "s_glass:1",
+"i": "s_glass:2",
+"k": "s_hull:4",
+"o": "a_orange:1",
+"p": "a_orange:0"
+},
+"rows": [
+"....bbbbbbbb....",
+"..bbwwwwwwwwbb..",
+".bwwwvttttvwwvb.",
+"bwwvtihhkhhgtvvb",
+"bwwvthkkkkkgtvvb",
+"bwwvthhgkgggtvvb",
+"bwwwvtttttttvvub",
+"bvwwwwwwwwwvvuub",
+"buvvwwwwwwvvuutb",
+"bvuuvvvvvvuuuttb",
+"bvvvvvvvvuuuuttb",
+"bvvvvvopvuuuuttb",
+"bvvvvvvvuuuuuttb",
+"btuuuuuuuuuutttb",
+".bttuuuuuuttttb.",
+"..bbbbbbbbbbbb.."
+],
+"note": "White squat centrifuge, elliptical top with glass lid and rotor cross, orange lamp on front."
+}

@@ -3,7 +3,7 @@
 import { isPassable } from "@/project/collision";
 import { isUntouchedMap } from "@/project/projectBlankness";
 import type { GameMap, Project } from "@/project/types";
-import { parseWorldStyle, type WorldKind, type WorldSetting } from "../world";
+import { parseWorldStyle, ROOM_PROGRAM_TOOL, type WorldKind, type WorldSetting } from "../world";
 import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 import { onePassRefusal } from "../onePass";
 import { roadExitNote } from "./villagePool";
@@ -72,7 +72,9 @@ function compose(run: BuildRun, world: WorldSetting, kind: WorldKind, name: stri
     let res;
     // 다른 맵으로 나가는 변(바깥 장소만) — exits 를 받는 구성기가 그 변까지 길을 낸다.
     const out = { ...(exits?.length && !kind.indoor && composer.exits ? { exits } : {}), ...(planned ? { program: planned } : {}) };
-    if (composer.newMap && !mapId) res = run.call(tool, { [composer.param]: c.value, newMap: { name }, seed, ...out });
+    // 방 구성 도구는 맵을 스스로 만든다(크기는 방 구성이 정한다) — 못 지으면 맵이 남지 않아 씨앗만 바꿔 다시 부른다.
+    if (tool === ROOM_PROGRAM_TOOL) res = run.call(tool, { tileset: world.tilesetId, name, layout: { program: c.value, seed } });
+    else if (composer.newMap && !mapId) res = run.call(tool, { [composer.param]: c.value, newMap: { name }, seed, ...out });
     else {
       if (!mapId) {
         const made = run.call("create_map", { name, width: size.w, height: size.h, tilesetId: world.tilesetId });

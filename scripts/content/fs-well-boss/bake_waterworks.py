@@ -8,7 +8,7 @@
 다리(layer="upper")는 위층(upperTiles)에 둔다 — 투명 화소 밑으로 맵의 물·바닥이 비치고, 위층 통행(데크 걸음·난간 막힘)이 물 칸을 덮는다. 그리기 우선은 lower(사람 밑).
 3/4 관문(hard rule): 조각마다 object_gate.refusal(context="bundle"). 지금은 보정 프로필이 없어 오너 위임 허용
 (tiledata/fs-well-boss/decisions/*.json, Discord 원문·메시지 id·파일 해시)만 통과한다.
-시트 순서: … → 호숫가(bake_lakeshore.py, 34,048~34,815) → 옛 상수도(이것).
+시트 순서: … → 호숫가(bake_lakeshore.py, 34,048~34,815) → 옛 상수도(이것) → 이야기 기물(beodeul-objects/bake.py, 34,944~ — 이 스크립트가 끝에서 다시 부른다).
 """
 import argparse, json, pathlib, sys
 from PIL import Image
@@ -100,6 +100,9 @@ def main():
     TS_PATH.write_text(json.dumps(ts, ensure_ascii=False, separators=(",", ":")) + "\n")
     SHEET_JSON.write_text(json.dumps(dict(count=new_count, tilesPerRow=COLS)) + "\n")
     print(f"옛 상수도 꼬리 {BASE}..{new_count - 1}: {[i for i, *_ in ok]}")
+    # 이 꼬리를 다시 쓰면 시트·칸 표가 여기서 잘린다 — 바로 뒤 이야기 기물 꼬리(34,944~)를 다시 붙인다(그 굽기는 자기 관문 출구를 다시 부른다).
+    import subprocess
+    subprocess.run([sys.executable, str(ROOT / "scripts/content/beodeul-objects/bake.py")], cwd=ROOT, check=True)
     return 2 if blocked else 0
 
 

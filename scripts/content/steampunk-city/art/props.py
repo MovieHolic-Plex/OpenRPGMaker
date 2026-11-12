@@ -423,7 +423,7 @@ def stack_smoke(c, f):
 
 
 def sheet(path=None, z=3):
-    items = [(it['id'], R.render(it).img()) for it in R.items]
+    items = [(it["id"], R.picture(it)) for it in R.items]
     return contact(items, path or os.path.join(OUT, 'props', 'preview.png'), z=z, W=2000)
 
 

@@ -1,0 +1,35 @@
+{
+"unit": "g-cargo-floor",
+"name": "cargo bay diamond-plate floor, 2 tiles",
+"w": 32,
+"h": 16,
+"cls": "ground",
+"role": "ground",
+"mirror": false,
+"shot": 1,
+"legend": {
+"a": "g_road:0",
+"b": "g_road:1",
+"c": "g_road:2",
+"y": "a_yellow:0"
+},
+"rows": [
+"bcbbbcbbbcbbbcbbbcbbbcbbbcbbbcbb",
+"cbbbcbbbcbbbcbbbcbbbcbbbcbbbcbbb",
+"bbbbbaabbbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbbbaabbbbb",
+"bbcbbbcbbbcbbbcbbbcbbbcbbbcbbbcb",
+"bbbcbbbcbbbcbbbcbbbcbbbcbbbcbbbc",
+"bbbbbbbbbbbbabbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbyyyybyyyyyyybyyy",
+"bcbbbcbbbcbbbcbbyybyyyyyayyyyyby",
+"cbbbcbbbcbbbcbbbcbbbcbbbcbbbcbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbaabbbbbbbbaabbbbbbbbbb",
+"bbcbbbcbbbcbbbcbbbcbbbcbbbcbbbcb",
+"bbbcbbbcbbbcbbbcbbbcbbbcbbbcbbbc",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+],
+"note": "Diamond-plate steel with alternating diagonal tread dashes, few scuffs; tile 2 adds worn yellow safety line."
+}

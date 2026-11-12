@@ -1,0 +1,946 @@
+{
+"items": [
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-snow.png",
+"kind": "terrain",
+"label": "sn-snow",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-snow-b.png",
+"kind": "terrain",
+"label": "sn-snow-b",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-snow-c.png",
+"kind": "terrain",
+"label": "sn-snow-c",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-snow-d.png",
+"kind": "terrain",
+"label": "sn-snow-d",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-snow-shade.png",
+"kind": "terrain",
+"label": "sn-snow-shade",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-pack.png",
+"kind": "terrain",
+"label": "sn-pack",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-pack-sled.png",
+"kind": "terrain",
+"label": "sn-pack-sled",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-pack-sled-v.png",
+"kind": "terrain",
+"label": "sn-pack-sled-v",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-ice.png",
+"kind": "terrain",
+"label": "sn-ice",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-ice-clear.png",
+"kind": "terrain",
+"label": "sn-ice-clear",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-ice-crack.png",
+"kind": "terrain",
+"label": "sn-ice-crack",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-ice-dust.png",
+"kind": "terrain",
+"label": "sn-ice-dust",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-tundra.png",
+"kind": "terrain",
+"label": "sn-tundra",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-frost.png",
+"kind": "terrain",
+"label": "sn-frost",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-slush.png",
+"kind": "terrain",
+"label": "sn-slush",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-boards.png",
+"kind": "terrain",
+"label": "sn-boards",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-boards-v.png",
+"kind": "terrain",
+"label": "sn-boards-v",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-flagstone.png",
+"kind": "terrain",
+"label": "sn-flagstone",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-hearthstone.png",
+"kind": "terrain",
+"label": "sn-hearthstone",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-water.png",
+"kind": "terrain",
+"label": "sn-water",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-water-f1.png",
+"kind": "terrain",
+"label": "sn-water-f1",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-water-f2.png",
+"kind": "terrain",
+"label": "sn-water-f2",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-cabin-s.png",
+"kind": "structure",
+"label": "sn-cabin-s",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-cabin-m.png",
+"kind": "structure",
+"label": "sn-cabin-m",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-cabin-l.png",
+"kind": "structure",
+"label": "sn-cabin-l",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-cabin-turf.png",
+"kind": "structure",
+"label": "sn-cabin-turf",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-longhouse.png",
+"kind": "structure",
+"label": "sn-longhouse",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-meadhall.png",
+"kind": "structure",
+"label": "sn-meadhall",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-stave-church.png",
+"kind": "structure",
+"label": "sn-stave-church",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-sauna.png",
+"kind": "structure",
+"label": "sn-sauna",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-smokehouse.png",
+"kind": "structure",
+"label": "sn-smokehouse",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-fishing-hut.png",
+"kind": "structure",
+"label": "sn-fishing-hut",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-ice-house.png",
+"kind": "structure",
+"label": "sn-ice-house",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-watchtower.png",
+"kind": "structure",
+"label": "sn-watchtower",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-storehouse.png",
+"kind": "structure",
+"label": "sn-storehouse",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-mill.png",
+"kind": "structure",
+"label": "sn-mill",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-barn.png",
+"kind": "structure",
+"label": "sn-barn",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-smithy.png",
+"kind": "structure",
+"label": "sn-smithy",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-palisade-gate.png",
+"kind": "structure",
+"label": "sn-palisade-gate",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-ice-cave.png",
+"kind": "structure",
+"label": "sn-ice-cave",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/buildings/_gate/sn-frozen-falls.png",
+"kind": "structure",
+"label": "sn-frozen-falls",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-pine-s.png",
+"kind": "organic",
+"label": "sn-pine-s",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-pine-m.png",
+"kind": "organic",
+"label": "sn-pine-m",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-pine-l.png",
+"kind": "organic",
+"label": "sn-pine-l",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-pine-pair.png",
+"kind": "organic",
+"label": "sn-pine-pair",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-birch.png",
+"kind": "organic",
+"label": "sn-birch",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-birch-s.png",
+"kind": "organic",
+"label": "sn-birch-s",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-bush.png",
+"kind": "organic",
+"label": "sn-bush",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-boulder-s.png",
+"kind": "organic",
+"label": "sn-boulder-s",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-boulder-l.png",
+"kind": "organic",
+"label": "sn-boulder-l",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-stump.png",
+"kind": "organic",
+"label": "sn-stump",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-drift.png",
+"kind": "organic",
+"label": "sn-drift",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-cairn.png",
+"kind": "structure",
+"label": "sn-cairn",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-rune-stone.png",
+"kind": "structure",
+"label": "sn-rune-stone",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-reeds.png",
+"kind": "organic",
+"label": "sn-reeds",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-woodpile.png",
+"kind": "structure",
+"label": "sn-woodpile",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-logs.png",
+"kind": "organic",
+"label": "sn-logs",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-chopping-block.png",
+"kind": "round_body",
+"label": "sn-chopping-block",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-fish-rack.png",
+"kind": "frame",
+"label": "sn-fish-rack",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-hide-rack.png",
+"kind": "frame",
+"label": "sn-hide-rack",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-brazier.png",
+"kind": "container",
+"label": "sn-brazier",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-brazier-f1.png",
+"kind": "container",
+"label": "sn-brazier-f1",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-brazier-f2.png",
+"kind": "container",
+"label": "sn-brazier-f2",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-bonfire.png",
+"kind": "organic",
+"label": "sn-bonfire",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-bonfire-f1.png",
+"kind": "organic",
+"label": "sn-bonfire-f1",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-bonfire-f2.png",
+"kind": "organic",
+"label": "sn-bonfire-f2",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-sled.png",
+"kind": "low_furniture",
+"label": "sn-sled",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-sled-wood.png",
+"kind": "low_furniture",
+"label": "sn-sled-wood",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-ski-rack.png",
+"kind": "container",
+"label": "sn-ski-rack",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-barrel.png",
+"kind": "round_body",
+"label": "sn-barrel",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-barrels.png",
+"kind": "round_body",
+"label": "sn-barrels",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-crates.png",
+"kind": "box",
+"label": "sn-crates",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-sacks.png",
+"kind": "other",
+"label": "sn-sacks",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-well.png",
+"kind": "structure",
+"label": "sn-well",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-signpost.png",
+"kind": "column",
+"label": "sn-signpost",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-lamp-post.png",
+"kind": "column",
+"label": "sn-lamp-post",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-banner-aurora.png",
+"kind": "wall_mounted",
+"label": "sn-banner-aurora",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-banner-aurora-b.png",
+"kind": "wall_mounted",
+"label": "sn-banner-aurora-b",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-stall-fish.png",
+"kind": "structure",
+"label": "sn-stall-fish",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-stall-fur.png",
+"kind": "structure",
+"label": "sn-stall-fur",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-stall-wares.png",
+"kind": "structure",
+"label": "sn-stall-wares",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-ice-wall.png",
+"kind": "structure",
+"label": "sn-ice-wall",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-ice-wall-post.png",
+"kind": "structure",
+"label": "sn-ice-wall-post",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-fishing-spot.png",
+"kind": "other",
+"label": "sn-fishing-spot",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-boat.png",
+"kind": "other",
+"label": "sn-boat",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-tent.png",
+"kind": "structure",
+"label": "sn-tent",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-hay.png",
+"kind": "organic",
+"label": "sn-hay",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-trough.png",
+"kind": "container",
+"label": "sn-trough",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-cauldron.png",
+"kind": "container",
+"label": "sn-cauldron",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-anvil.png",
+"kind": "other",
+"label": "sn-anvil",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-millstones.png",
+"kind": "round_body",
+"label": "sn-millstones",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-water-barrel.png",
+"kind": "container",
+"label": "sn-water-barrel",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-seal-altar.png",
+"kind": "box",
+"label": "sn-seal-altar",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-spring.png",
+"kind": "container",
+"label": "sn-spring",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/props/_gate/sn-bundle.png",
+"kind": "box",
+"label": "sn-bundle",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-floor-plank.png",
+"kind": "terrain",
+"label": "sn-floor-plank",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-floor-stone.png",
+"kind": "terrain",
+"label": "sn-floor-stone",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-floor-ice.png",
+"kind": "terrain",
+"label": "sn-floor-ice",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-floor-sauna.png",
+"kind": "terrain",
+"label": "sn-floor-sauna",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-ceiling.png",
+"kind": "terrain",
+"label": "sn-ceiling",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-ceiling-ice.png",
+"kind": "terrain",
+"label": "sn-ceiling-ice",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-wall-log-u.png",
+"kind": "terrain",
+"label": "sn-wall-log-u",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-wall-log-d.png",
+"kind": "terrain",
+"label": "sn-wall-log-d",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-wall-plank-u.png",
+"kind": "terrain",
+"label": "sn-wall-plank-u",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-wall-plank-d.png",
+"kind": "terrain",
+"label": "sn-wall-plank-d",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-wall-ice-u.png",
+"kind": "terrain",
+"label": "sn-wall-ice-u",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-wall-ice-d.png",
+"kind": "terrain",
+"label": "sn-wall-ice-d",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-wall-window-u.png",
+"kind": "terrain",
+"label": "sn-wall-window-u",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-wall-window-d.png",
+"kind": "terrain",
+"label": "sn-wall-window-d",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-wall-door-u.png",
+"kind": "terrain",
+"label": "sn-wall-door-u",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-wall-door-d.png",
+"kind": "terrain",
+"label": "sn-wall-door-d",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-hearth.png",
+"kind": "tall_furniture",
+"label": "sn-hearth",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-hearth-f1.png",
+"kind": "tall_furniture",
+"label": "sn-hearth-f1",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-hearth-f2.png",
+"kind": "tall_furniture",
+"label": "sn-hearth-f2",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-bed-fur.png",
+"kind": "low_furniture",
+"label": "sn-bed-fur",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-bunk-bed.png",
+"kind": "tall_furniture",
+"label": "sn-bunk-bed",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-chest.png",
+"kind": "box",
+"label": "sn-chest",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-long-table.png",
+"kind": "low_furniture",
+"label": "sn-long-table",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-bench.png",
+"kind": "seat",
+"label": "sn-bench",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-stool.png",
+"kind": "seat",
+"label": "sn-stool",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-keg-rack.png",
+"kind": "frame",
+"label": "sn-keg-rack",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-bar-counter.png",
+"kind": "low_furniture",
+"label": "sn-bar-counter",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-shelf.png",
+"kind": "wall_mounted",
+"label": "sn-shelf",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-weapon-rack.png",
+"kind": "wall_mounted",
+"label": "sn-weapon-rack",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-antler-mount.png",
+"kind": "wall_mounted",
+"label": "sn-antler-mount",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-drying-herbs.png",
+"kind": "wall_mounted",
+"label": "sn-drying-herbs",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-lantern.png",
+"kind": "wall_mounted",
+"label": "sn-lantern",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-rug-fur.png",
+"kind": "flat",
+"label": "sn-rug-fur",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-cauldron-in.png",
+"kind": "container",
+"label": "sn-cauldron-in",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-cauldron-in-f1.png",
+"kind": "container",
+"label": "sn-cauldron-in-f1",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-cauldron-in-f2.png",
+"kind": "container",
+"label": "sn-cauldron-in-f2",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-sauna-stove.png",
+"kind": "container",
+"label": "sn-sauna-stove",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-sauna-stove-f1.png",
+"kind": "container",
+"label": "sn-sauna-stove-f1",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-sauna-stove-f2.png",
+"kind": "container",
+"label": "sn-sauna-stove-f2",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-sauna-bench.png",
+"kind": "seat",
+"label": "sn-sauna-bench",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-water-bucket.png",
+"kind": "container",
+"label": "sn-water-bucket",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-ice-crystal.png",
+"kind": "organic",
+"label": "sn-ice-crystal",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-ice-pillar.png",
+"kind": "column",
+"label": "sn-ice-pillar",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-frozen-chest.png",
+"kind": "box",
+"label": "sn-frozen-chest",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-stalagmite-ice.png",
+"kind": "organic",
+"label": "sn-stalagmite-ice",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-firepit.png",
+"kind": "container",
+"label": "sn-firepit",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-firepit-f1.png",
+"kind": "container",
+"label": "sn-firepit-f1",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-firepit-f2.png",
+"kind": "container",
+"label": "sn-firepit-f2",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-record-stand.png",
+"kind": "low_furniture",
+"label": "sn-record-stand",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-scroll.png",
+"kind": "debris",
+"label": "sn-scroll",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/interior/_gate/sn-chair.png",
+"kind": "seat",
+"label": "sn-chair",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-at-pack.png",
+"kind": "terrain",
+"label": "sn-at-pack",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-at-ice.png",
+"kind": "terrain",
+"label": "sn-at-ice",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-at-tundra.png",
+"kind": "terrain",
+"label": "sn-at-tundra",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-at-frost.png",
+"kind": "terrain",
+"label": "sn-at-frost",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-at-slush.png",
+"kind": "terrain",
+"label": "sn-at-slush",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/terrain/_gate/sn-at-water.png",
+"kind": "terrain",
+"label": "sn-at-water",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/_assembled/asm-palisade-wall.png",
+"kind": "structure",
+"label": "asm-palisade-wall",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/_assembled/asm-fenced-cabin.png",
+"kind": "structure",
+"label": "asm-fenced-cabin",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/_assembled/asm-cabin-smoke.png",
+"kind": "structure",
+"label": "asm-cabin-smoke",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/_assembled/asm-cabin-smoke-f1.png",
+"kind": "structure",
+"label": "asm-cabin-smoke-f1",
+"chipset": "snow_north"
+},
+{
+"png": "tiledata/snow-north/_assembled/asm-cabin-smoke-f2.png",
+"kind": "structure",
+"label": "asm-cabin-smoke-f2",
+"chipset": "snow_north"
+}
+]
+}

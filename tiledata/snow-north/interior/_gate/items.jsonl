@@ -46,3 +46,6 @@
 {"png": "sn-firepit.png", "kind": "container", "name": "회관 가운데 화덕(돌 둘레 + 장작불)", "label": "snow-north/sn-firepit"}
 {"png": "sn-firepit-f1.png", "kind": "container", "name": "회관 가운데 화덕(돌 둘레 + 장작불) (프레임 2)", "label": "snow-north/sn-firepit-f1"}
 {"png": "sn-firepit-f2.png", "kind": "container", "name": "회관 가운데 화덕(돌 둘레 + 장작불) (프레임 3)", "label": "snow-north/sn-firepit-f2"}
+{"png": "sn-record-stand.png", "kind": "low_furniture", "name": "기록 책 받침대(통나무 독서대 위 펼친 책)", "label": "snow-north/sn-record-stand"}
+{"png": "sn-scroll.png", "kind": "debris", "name": "두루마리 쪽지(바닥에 놓인 자작 껍질 두루마리)", "label": "snow-north/sn-scroll"}
+{"png": "sn-chair.png", "kind": "seat", "name": "나무 의자(모피 방석)", "label": "snow-north/sn-chair"}
