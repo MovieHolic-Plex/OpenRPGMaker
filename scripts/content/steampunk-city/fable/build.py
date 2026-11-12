@@ -5,7 +5,8 @@
   python3 scripts/content/steampunk-city/fable/build.py --check    # 쓰지 않고, 지금 pieces/ 와 화소가 같은지만 본다
 
 - 조각 하나 = 칩셋 조각 하나(SINGLE): 바닥·소품·거리 시설. 물 프레임 2·3 은 이음매 없는 물 칸을 코드로 민 것.
-- 큰 물체: 부분 조각을 이어 붙인다(기관차 40×48 둘 · 지브 기중기 48×32 둘 · 비행선 기낭 셋 + 곤돌라).
+- 큰 물체: 부분 조각을 이어 붙인다(기관차 40×48 둘 · 지브 기중기 48×32 둘 · 비행선 기낭 셋 + 곤돌라 · 대심장 기관 본체 48×48 + 곁 탑 16×48).
+- 이야기 기물(묶음 story, 2026-11-13): s-<id> 한 장 = sp-<id> 한 장, 대심장 기관만 이어 붙인다.
 - 건물 18채(SPECS): 지붕 모듈을 가로로 이어 직사각형 지붕 덩이를 만들고, 벽 층 모듈을 16px 칸으로 잘라 층을 쌓고, 문 모듈을 옛 문 칸에 맞춰 놓고, 굴뚝·지붕창·천창·시계 등을 얹는다.
   그을린 벽돌은 벽돌 단을 한 단 내린 것, 차양 색은 색 바꿔치기. 건물을 고치려면 SPECS 한 줄을 고치면 된다(문 칸은 bake 의 entrance 와 같아야 한다 — 끝에서 검사한다).
 - 검사(수치일 뿐 판정이 아니다): 지붕 끝 x 퍼짐 2px 이하(직각 지붕), 문 열림 폭 16 이상·높이 22~34(주인공 칩 속 사람 16×24), 한 층 ≥ 24.
@@ -200,6 +201,7 @@ SINGLE = {   # 조각 하나 = 옛 조각 하나: 새 id → (묶음, 옛 id)
  'g-floor-stone': ('interior', 'floor-stone'), 'g-stairs-down': ('interior', 'stairs-down'),
  **{f'q-{k}': ('props', k) for k in ('plaza-lamp', 'fence', 'fence-v', 'stall-fruit', 'stall-parts', 'stall-fish')},
  **{f'q-{k}': ('street', k) for k in ('clock-post', 'poster-column', 'rail-signal', 'buffer-stop', 'kiosk')}, 'q-handcart': ('vehicles', 'handcart'),
+ **{f's-{k}': ('story', k) for k in ('ledger-desk', 'stop-lever', 'lever-wall', 'hatch-down', 'room-door')},      # 이야기 기물(2026-11-13)
 }
 
 
@@ -230,7 +232,8 @@ def build():
     lamp = C.src('p-gas-lamp')        # 1단계 시범에서 그린 가스등(색만 옮김)
     if lamp is not None: out[('props', 'gas-lamp')] = lamp
     for oid, g, size, parts in (('locomotive', 'vehicles', (80, 48), [('x-loco-w', 0, 0), ('x-loco-e', 40, 0)]), ('jib-crane', 'street', (48, 64), [('x-crane-top', 0, 0), ('x-crane-base', 0, 32)]),
-                                ('airship-docked', 'street', (128, 80), [('x-air-w', 0, 0), ('x-air-m', 43, 0), ('x-air-e', 85, 0), ('x-air-gondola', 32, 48)])):
+                                ('airship-docked', 'street', (128, 80), [('x-air-w', 0, 0), ('x-air-m', 43, 0), ('x-air-e', 85, 0), ('x-air-gondola', 32, 48)]),
+                                ('great-heart', 'story', (64, 48), [('x-heart-main', 0, 0), ('x-heart-side', 48, 0)])):
         im = joined(parts, size)
         if im is None: left.append((g, oid, '부분 조각이 다 나오지 않음'))
         else: out[(g, oid)] = im

@@ -5,6 +5,7 @@
 
 - waiver-manifest.json: `npm run harness -- object-gate owner-waive --manifest …` 가 읽는 목록. 라벨의 무리 = fable/(pieces/·held/ 에 그림이 있는 조각: Fable 한 방과 그 조립) · recolour/(코드 도트의 색만 옮긴 조각).
 - recolour-trail.json: 면제 묶음에 싣지 못하는 장별 흔적. `before`(2026-11-12 다시 굽기 전의 화소 해시·옛 영수증)는 그대로 두고 지금 화소 해시만 고친다.
+- story-manifest.json: 이야기 기물(묶음 story, art/story.py — Fable 5.2 medium 한 방과 그 조립)만의 목록. 묶음 fable-story-steampunk-city-2026-11-13 의 입력이다(큰 묶음과 따로 — 큰 묶음을 다시 쓰지 않는다).
 면제 기록 자체는 이 스크립트가 쓰지 않는다 — 오너의 말이 있을 때 owner-waive 단계로만 쓴다(openwiki/harnesses/object-gate.md «오너 면제»).
 """
 import json, os, sys
@@ -32,11 +33,17 @@ def main():
             assert t['group'] == grp and t['kind'] == r['kind'], ('무리·종류가 흔적과 다르다', g, pid)
             t['pixelSha256'] = OG.pixel_sha256(os.path.join(C.ROOT, rel))
             trail.append(t)
+    story = []
+    for line in open(os.path.join(TD, 'story', '_gate', 'items.jsonl'), encoding='utf-8'):
+        r = json.loads(line); pid = r['png'][:-4]
+        assert os.path.exists(os.path.join(C.PIECES, 'story', r['png'])), ('이야기 기물은 Fable 한 방 그림이어야 한다', pid)
+        story.append(dict(png=f'tiledata/steampunk-city/story/_gate/{r["png"]}', kind=r['kind'], chipset='steampunk_city', label=f'story/{pid}'))
     n = {k: sum(1 for t in trail if t['group'] == k) for k in ('fable', 'recolour')}
     wr = lambda p, o: open(p, 'w', encoding='utf-8').write(json.dumps(o, ensure_ascii=False, indent=1) + '\n')
     wr(os.path.join(C.FABLE, 'waiver-manifest.json'), dict(note='object-gate owner-waive 의 --manifest 입력(저장소 뿌리에서 돌린다). 묶음 fable-redraw-steampunk-city-2026-11-12. 두 무리: fable/(Fable 5.2 medium 한 방 그림과 그 조립) · recolour/(옛 조각의 색만 옮긴 것). 기록은 owner-waive 단계만 쓴다.', items=items))
     wr(tp, dict(note=old['note'], counts=n, items=trail))
-    print(n, len(items))
+    wr(os.path.join(C.FABLE, 'story-manifest.json'), dict(note='object-gate owner-waive 의 --manifest 입력(저장소 뿌리에서 돌린다). 묶음 fable-story-steampunk-city-2026-11-13 — 이야기 기물(Fable 5.2 medium 한 방 그림과 그 조립, tiledata/steampunk-city/objects/spec.json). 출구 bundle·shared.', items=story))
+    print(n, len(items), 'story', len(story))
 
 
 if __name__ == '__main__':

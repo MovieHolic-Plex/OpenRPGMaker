@@ -1,0 +1,311 @@
+{
+ "chipset": "steampunk_city",
+ "only": [
+  "hatch-down",
+  "ledger-desk",
+  "stop-lever"
+ ],
+ "fresh": {
+  "kits": 6,
+  "of": 6,
+  "count": 1355,
+  "referenceDocs": [
+   "sp-steampunk/sp-howto",
+   "sp-steampunk/sp-dictionary",
+   "sp-steampunk/sp-ex-street",
+   "sp-steampunk/sp-ex-industrial",
+   "sp-steampunk/sp-ex-dock",
+   "sp-steampunk/sp-ex-boiler-room",
+   "sp-steampunk/sp-ex-tavern",
+   "sp-steampunk/sp-errors",
+   "sp-steampunk/sp-story-objects"
+  ],
+  "tablesMatchCount": true
+ },
+ "sheet": [
+  {
+   "id": "sp-ledger-desk",
+   "name": "기록부 책상(펼친 일지 장부·깃펜 잉크병·놋쇠 등)",
+   "size": "2×2",
+   "kind": "low_furniture",
+   "place": "tall",
+   "cells": [
+    1329,
+    1330,
+    1331,
+    1332
+   ],
+   "blocked": "(0,1) (1,1)"
+  },
+  {
+   "id": "sp-stop-lever",
+   "name": "정지 레버(바닥 받침대 위 큰 놋쇠 레버)",
+   "size": "1×2",
+   "kind": "other",
+   "place": "tall",
+   "cells": [
+    1333,
+    1334
+   ],
+   "blocked": "(0,1)"
+  },
+  {
+   "id": "sp-lever-wall",
+   "name": "벽 레버(리벳 철판 상자 + 놋쇠 손잡이)",
+   "size": "1×2",
+   "kind": "wall_mounted",
+   "place": "wallmount",
+   "cells": [
+    1335,
+    1336
+   ],
+   "blocked": "(0,0) (0,1)"
+  },
+  {
+   "id": "sp-hatch-down",
+   "name": "지하 입구 해치(무쇠 틀 + 내려가는 돌계단)",
+   "size": "2×2",
+   "kind": "flat",
+   "place": "decal",
+   "cells": [
+    1337,
+    1338,
+    1339,
+    1340
+   ],
+   "blocked": "없음(밟고 지나감)"
+  },
+  {
+   "id": "sp-room-door",
+   "name": "철문(방과 방 사이 리벳 무쇠 문)",
+   "size": "1×2",
+   "kind": "wall_structure",
+   "place": "walldoor",
+   "cells": [
+    1341,
+    1342
+   ],
+   "blocked": "(0,0) (0,1)"
+  },
+  {
+   "id": "sp-great-heart",
+   "name": "대심장 기관(구리 보일러 심장 엔진 — 화실 불빛·동맥 배관·조속기 탑)",
+   "size": "4×3",
+   "kind": "other",
+   "place": "tall",
+   "cells": [
+    1343,
+    1344,
+    1345,
+    1346,
+    1347,
+    1348,
+    1349,
+    1350,
+    1351,
+    1352,
+    1353,
+    1354
+   ],
+   "blocked": "(0,1) (1,1) (2,1) (3,1) (0,2) (1,2) (2,2) (3,2)"
+  }
+ ],
+ "cellGate": {
+  "baseSheet": "768×448",
+  "sheet": "768×464",
+  "newCells": 26,
+  "newCellIndexes": [
+   1329,
+   1330,
+   1331,
+   1332,
+   1333,
+   1334,
+   1335,
+   1336,
+   1337,
+   1338,
+   1339,
+   1340,
+   1341,
+   1342,
+   1343,
+   1344,
+   1345,
+   1346,
+   1347,
+   1348,
+   1349,
+   1350,
+   1351,
+   1352,
+   1353,
+   1354
+  ],
+  "bundleUncovered": 0,
+  "storeUncovered": 26
+ },
+ "existing": {
+  "source": "assistant-fable-runs/r1s-fun/project",
+  "kitsAsLoaded": 0,
+  "countAsLoaded": 1344,
+  "kitsAfterEnsure": 6,
+  "countAfterEnsure": 1488,
+  "mapsOnThisChipset": 7,
+  "localGraftsAsLoaded": [
+   1211,
+   1212,
+   1213,
+   1214,
+   1248,
+   1249,
+   1296,
+   1297
+  ],
+  "localGraftsAfterEnsure": [
+   1355,
+   1356,
+   1357,
+   1358,
+   1392,
+   1393,
+   1440,
+   1441
+  ],
+  "mapPicturesUnchanged": true,
+  "reopenedPicturesSame": true,
+  "save": "saved",
+  "reopenedKits": 6,
+  "reopenedStable": true,
+  "referenceDocsAfterEnsure": [
+   "sp-steampunk/sp-howto",
+   "sp-steampunk/sp-dictionary",
+   "sp-steampunk/sp-ex-street",
+   "sp-steampunk/sp-ex-industrial",
+   "sp-steampunk/sp-ex-dock",
+   "sp-steampunk/sp-ex-boiler-room",
+   "sp-steampunk/sp-ex-tavern",
+   "sp-steampunk/sp-errors",
+   "sp-steampunk/sp-story-objects"
+  ]
+ },
+ "words": [
+  {
+   "object": "ledger-desk",
+   "word": "일지",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "ledger-desk",
+   "word": "기록부",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "ledger-desk",
+   "word": "장부",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "stop-lever",
+   "word": "레버",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "2/3",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "stop-lever",
+   "word": "정지 레버",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "hatch-down",
+   "word": "지하 입구",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  },
+  {
+   "object": "hatch-down",
+   "word": "해치",
+   "listTool": "list_tileset_objects",
+   "list_tileset_objects": "1/1",
+   "draw_object": "이 기물을 이른다(첫째)"
+  }
+ ],
+ "map": {
+  "tool": "compose_steampunk_city_map",
+  "args": {
+   "style": "street",
+   "seed": 1
+  },
+  "size": "48×36",
+  "start": {
+   "x": 0,
+   "y": 35
+  }
+ },
+ "placed": [
+  {
+   "object": "ledger-desk",
+   "kit": "sp-ledger-desk",
+   "asked": "(23,25)",
+   "at": "(23,25)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,1) (1,1)",
+   "tool": "sp-ledger-desk 를 (23,26)에 놓았다"
+  },
+  {
+   "object": "hatch-down",
+   "kit": "sp-hatch-down",
+   "asked": "(20,25)",
+   "at": "(20,25)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "없음",
+   "tool": "sp-hatch-down 를 (20,26)에 놓았다"
+  },
+  {
+   "object": "stop-lever",
+   "kit": "sp-stop-lever",
+   "asked": "(26,25)",
+   "at": "(26,25)",
+   "ok": true,
+   "moved": false,
+   "blockedAsDeclared": true,
+   "blocked": "(0,1)",
+   "tool": "sp-stop-lever 를 (26,26)에 놓았다"
+  }
+ ],
+ "scene": {
+  "crop": "칸 (16,21)–(32,31)",
+  "size": "272×176",
+  "heroes": [
+   {
+    "x": 23,
+    "y": 27,
+    "why": "ledger-desk 앞"
+   },
+   {
+    "x": 21,
+    "y": 25,
+    "why": "hatch-down 옆(밟고 지나가는 바닥 그림)"
+   },
+   {
+    "x": 27,
+    "y": 26,
+    "why": "stop-lever 옆"
+   }
+  ]
+ }
+}

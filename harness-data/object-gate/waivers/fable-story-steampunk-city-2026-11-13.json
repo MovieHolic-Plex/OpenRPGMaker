@@ -1,0 +1,299 @@
+{
+ "schema": "oprn-object-gate-owner-waiver/1",
+ "id": "fable-story-steampunk-city-2026-11-13",
+ "owner": "구워도 되고 앞으로는 전부 오너 면제다 (FABLE 5.2 는 한번에 다 잘만든다)",
+ "decidedAt": "2026-11-12",
+ "recordedBy": "스팀펑크 이야기 기물 작업자 Claude Code(감독 세션 0306a26a 가 맡긴 과제 F) — AGENTS.md «Fable 5.2 가 그린 그림은 오너의 상시 말씀으로 owner-waive 묶음에 넣어 굽는다», 다시 그리기 계약 §8",
+ "contexts": [
+  "bundle",
+  "shared"
+ ],
+ "note": "오너가 2026-11-12 감독의 질문 1(«Fable 로 다시 그린 그림 … 판정 없이 오너 면제로 번들에 구워도 됩니까? (스토어에는 안 올립니다)»)에 한 답. steampunk_city 이야기 기물 6장 — Claude Fable 5.2 medium 한 방(조각당 호출 1번, 7호출 $0.87, 다시 부른 것 없음): 기록부 책상 · 정지 레버 · 벽 레버 · 지하 입구 해치 · 방 사이 철문 · 대심장 기관(본체 48×48 + 곁 탑 16×48 을 코드로 이음). 화소는 모델이 낸 그대로(역할 팔레트 v3 맞춤). 목록 tiledata/steampunk-city/objects/spec.json.",
+ "items": [
+  {
+   "pixelSha256": "ccd8134757680ea21dc20db78081849f22151305041512b134de239a458da850",
+   "kind": "low_furniture",
+   "label": "steampunk_city/story/sp-ledger-desk",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "0bb8d4cfa58ab220",
+     "0eee83f7da5e6493",
+     "6fd3072eead4d74e",
+     "9fa49bf7abe29ecc"
+    ],
+    "24": [
+     "041796cbb4676b0e",
+     "0702dfc5c9bda26f",
+     "0aac109e922131f9",
+     "4c8ec98b546c2acb",
+     "4e70e91dc4d0530d",
+     "4f8f7e6a33e5a3b4",
+     "51bf7b259d20b5ad",
+     "6d41586d180f999f",
+     "7742df6778f3557f",
+     "7f1d94b70d4bfdef",
+     "90d2e3406c8033d9",
+     "9cce660290eb7414",
+     "c86e2960b06ae85a",
+     "d23bb6279eb1593c",
+     "d4185f8cd9db82b4",
+     "d5ed0b7522d910ac",
+     "dbb838fd6da25ad7",
+     "ddce0869492cbd73",
+     "df4943caab0f0538",
+     "df955d10006316d5",
+     "e100602be356cb7c",
+     "e249843bfb1482da",
+     "e63bfdbb641c650b",
+     "e6e3289e03b9d541"
+    ],
+    "32": [
+     "96059b87972338e1"
+    ],
+    "48": [
+     "59f276ca49445c57",
+     "890b54c3ebd99f18",
+     "a237a57c3de25225",
+     "b584c33d2b65e185",
+     "f15252b81bf7b68b",
+     "f4ff0d710aaf71cf"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "1e619c068790ad9539f6a454aafedb06897a5310c8021f9fe10f55ba82f74d43",
+   "kind": "other",
+   "label": "steampunk_city/story/sp-stop-lever",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "142473319d168ca4",
+     "51d998041d3e9ad8"
+    ],
+    "24": [
+     "0377405d56715785",
+     "14623a0c0fbc9116",
+     "54fec431d943a1e8",
+     "654da7727110f293",
+     "6bbb036be63a74b9",
+     "6bbdd0c4a18dd1f2",
+     "7ba2e7fb541752d6",
+     "8f6f5e87eff44e57",
+     "ca1dc0da74dae46a",
+     "dda6f814bace4bf0",
+     "f82b4dc4c3ad803a",
+     "fca7ee50d7b458aa"
+    ],
+    "32": [
+     "252ca217b21ce299",
+     "93b55c8e196b203a",
+     "ca7a3b1704de9d6b"
+    ],
+    "48": [
+     "0019181c2b9c47eb",
+     "1c7ccf2b025f3c36",
+     "60e3f6db3a9a9469",
+     "9015bd688adbaab9",
+     "92b7dd56b28c8a4d",
+     "9ae34d1eca982203"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c80e494254090079129b97a7b548e71c85e7c7e33a92702bf223b6f7ae5399e7",
+   "kind": "wall_mounted",
+   "label": "steampunk_city/story/sp-lever-wall",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "02a9205ba264e4b2",
+     "28b1450ba3433b23"
+    ],
+    "24": [
+     "15c6eb8aa500b03c",
+     "268af208511859d2",
+     "6789aa0409ab884b",
+     "7c8553695cd525bc",
+     "903d4b2119355386",
+     "94dee79cb1252318",
+     "9fed7aa0e84e70b3",
+     "a0d1c736c22a1e20",
+     "a2798e3b76afb234",
+     "adf567f94eca2086",
+     "d2098cba3dabb664",
+     "d9c6cfef204c3f98"
+    ],
+    "32": [
+     "718ce9d383ec6254",
+     "8483447ad136e19a",
+     "aedcf5af96d4cfce"
+    ],
+    "48": [
+     "013aab3d4538eb5e",
+     "2de0ff60982ff62d",
+     "48dd9adb55f8ad84",
+     "7c2ecff73ba35aab",
+     "b8cb73960e433261",
+     "f7d785fd84009e38"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "9eaa987f7c9f82fa3ce9e7530484a70ae944e90e925c9ccb89510865044371bd",
+   "kind": "flat",
+   "label": "steampunk_city/story/sp-hatch-down",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "0b70f39ae9f21468",
+     "4ec9bc849a2ddd51",
+     "842ea4044054aeff",
+     "85a00a0220f77af4"
+    ],
+    "24": [
+     "1a178843260c804a",
+     "2d53465f4ca81f2d",
+     "2d74d3d2d8297a78",
+     "3f496cc6e6c34a45",
+     "422536055e2fccc1",
+     "4d33683ac59070bf",
+     "5caee24b625572ab",
+     "6aa560d53978c9e7",
+     "763589f2c61c430c",
+     "7849c7e862427709",
+     "84177728719d589d",
+     "86c190e4553cccb8",
+     "9bb820a0d1f93b77",
+     "a0c65a2b192f24ce",
+     "a1225978e6e86785",
+     "a476bc2bfce54c1a",
+     "ad6678d25c71e3b9",
+     "dc61e730b7ac4c8b",
+     "df2b34e4cf944c61",
+     "e9dd51ed4c50309c",
+     "eb5d6eea58317ec1",
+     "ed83fc854200ada3",
+     "f9e1a52e2e9d8c15",
+     "fb8fc5b2eeffbac4"
+    ],
+    "32": [
+     "700b430d0feed23a"
+    ],
+    "48": [
+     "0cd81402ab3823a9",
+     "5aceb9c850771cd5",
+     "70a4760d3d29f35e",
+     "7459d1c74a2c6a93",
+     "b036f0ff1f2a8496",
+     "c0a03466717fcf78"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "7391136f8bae547a6515a13c7a057fdf375800ecb6520ef08875e4bed7983f89",
+   "kind": "wall_structure",
+   "label": "steampunk_city/story/sp-room-door",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "0e42de75ea0fd712",
+     "916784226dffabd0"
+    ],
+    "24": [
+     "1613b0794be49d7d",
+     "18d44bd0195d768d",
+     "1aa252d7e9c82c89",
+     "2a1cf8e961119762",
+     "2bc3aacc1dd4108f",
+     "36c327535ae8f123",
+     "732eddfed24d94f1",
+     "88a05401a89efb80",
+     "a07176b870439bd2",
+     "b14303081dbd0e9d",
+     "d5383879531f25e9",
+     "e974717d78794cd7"
+    ],
+    "32": [
+     "60a431a133c73b51",
+     "996e08f970420eef",
+     "c487c19f5102ff05"
+    ],
+    "48": [
+     "2b06f1ba1e685e76",
+     "5b14f07f464e0bcc",
+     "5f59da76bb95643d",
+     "62bcc66ec2a8b45e",
+     "80c56cb5bc40c56e",
+     "ddc502fa05e89edf"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c3e4ded17a0a72b63700826a90aa8ecaf1598e740553570b62e8a5d2f3bb4621",
+   "kind": "other",
+   "label": "steampunk_city/story/sp-great-heart",
+   "width": 64,
+   "height": 48,
+   "cells": {
+    "16": [
+     "03e08ebae45278c0",
+     "2a440ace325de890",
+     "3c3112dedda59a23",
+     "3c478826a4cec08f",
+     "5da1f603b6cfcf0c",
+     "7e18b291be2cc2e2",
+     "868b3322b93e42d3",
+     "a767d0c6ba20bf65",
+     "a7947fed3f211c6f",
+     "b642256af1d67310",
+     "c5e8b03cb5e64134",
+     "eb7291dfe277bf42"
+    ],
+    "24": [
+     "02200c84d8bdaafe",
+     "0c87be29f59d45e9",
+     "0eabf778f20f31be",
+     "47772274297c25e0",
+     "4a7fa13b7eb3a401",
+     "5800cc33570a44ea",
+     "6249191e62e58bc0",
+     "6911f8c1ec05c725",
+     "71e765f449fc6cc6",
+     "a2edfb9bab5a6882",
+     "b0bceb960aedd226",
+     "b9fbe47af196aac5",
+     "bab88c3876c52b7c",
+     "d451d6f9882c5b6a",
+     "dca3d014f9ffe48d",
+     "eeb3f8498e041b5e",
+     "ef2c314f39181988",
+     "f1ddda69c6a19eb8"
+    ],
+    "32": [
+     "06395f056646033a",
+     "300108aee30891ed",
+     "6388fc9f2f69a78f",
+     "7bb7b5ecb10c3633",
+     "bda41cb51660fe34",
+     "c760ab8e757fbd06",
+     "de9078bfcca6fe5c",
+     "e0874ca853f2f64e"
+    ],
+    "48": [
+     "2df076c5671e641e",
+     "401050d8d5258a0b",
+     "487adcc7ab834683",
+     "72ee5d41e7d39f36",
+     "99d067e4daf192f1",
+     "e05f8d9d73b43aea"
+    ]
+   }
+  }
+ ]
+}

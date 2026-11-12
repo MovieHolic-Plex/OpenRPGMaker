@@ -65,7 +65,11 @@ KIND = {
  "frame": "open frame (iron railing) - posts and rails; the top rail shows a 1-row lit top edge; no ground",
  "structure": "small structure (stall, kiosk) - its roof or awning is a RECTANGLE seen from above/front over the top 35-45% of the canvas (vertical left and right edges, as wide at the bottom as at the top), with the open front (counter, goods, window) below it",
  "part": "one part of a larger machine or vehicle that a script joins with its neighbour part",
- "feat": "a small part pasted by a script onto a roof or wall (transparent around it)"
+ "feat": "a small part pasted by a script onto a roof or wall (transparent around it)",
+ "desk": "low furniture (desk, counter, lectern) — the TOP is seen from above as a band at least 8 rows deep carrying the things that lie on it, with the front face (drawers, legs) below it",
+ "wallmount": "mounted flat on an interior wall face — seen from the front; a box that sticks out of the wall shows a 1-2 row lit top ledge",
+ "walldoor": "a door set in an interior wall face - one wall column wide and as tall as the wall, seen from the front, fully opaque",
+ "floorhatch": "lies flat in the ground (a hatch, a floor opening) - seen from above; nothing stands higher than a kerb"
 }
 
 _C_ROOF = """== VIEW CONTRACT: the ROOF BLOCK of a building in an ORTHOGRAPHIC top-down view (drawings that break it are rejected) ==
@@ -96,6 +100,18 @@ C_PROP = """== VIEW CONTRACT: orthographic 3/4 top view (drawings that break it 
 C_FEAT = """== VIEW CONTRACT: a small part that a script pastes onto a roof or a wall ==
 - Orthographic camera, front-above; verticals vertical, horizontals horizontal; no side faces, no perspective. Light from the upper left.
 - Transparent ("." ) wherever the part is not: a script pastes it over a roof or wall picture. The part fills the canvas as far as its shape allows. No ground, no background wall or slates around it."""
+C_WALLMOUNT = """== VIEW CONTRACT: a thing mounted on an INTERIOR WALL FACE (drawings that break it are rejected) ==
+- The room wall of this game is a flat face two tiles (32 pixels) tall seen from the front (south); picture 1 shows it with the player below it. This piece hangs on that face, so it is seen from the FRONT: verticals vertical, horizontals horizontal, no perspective, no side faces.
+- A part that sticks out of the wall (a box, a ledge, a lever arm) is lit on its top and left edges and shaded on its right and bottom edges; a box shows a 1-2 row lit top ledge. Light comes from the upper left.
+- Transparent ("." ) wherever the piece is not: the wall shows through. Do not draw the wall, the floor or a shadow."""
+C_WALLDOOR = """== VIEW CONTRACT: a DOOR SET IN AN INTERIOR WALL FACE (drawings that break it are rejected) ==
+- The room wall of this game is a flat face two tiles (32 pixels) tall seen from the front (south); picture 1 shows it with the player below it. This piece REPLACES one 16-pixel-wide column of that wall from its top row to the floor line, so it is FULLY OPAQUE: no "." anywhere.
+- Seen from the front: verticals vertical, horizontals horizontal, no perspective, no side faces, no floor, no threshold sticking out. Light from the upper left: the left and top edges of frame and panels are lit, right edges and undersides are shaded.
+- The player (16 px wide, 24 px tall) stands directly below it and walks through it: the door leaf is as wide as the column allows and at least 26 rows tall, and its foot is on the last row."""
+C_FLOORHATCH = """== VIEW CONTRACT: an OPENING THAT LIES FLAT IN THE GROUND (drawings that break it are rejected) ==
+- Seen from above by the same orthographic camera as the ground tiles: a rectangle that fills the whole canvas, FULLY OPAQUE (no "." anywhere). The player walks onto it, so nothing stands up from it: no railing posts, no lid standing open, no walls.
+- The frame around the opening is a flat band lit on its upper and left edges. Inside, steps going DOWN toward the north are horizontal bands that get darker toward the top of the canvas (the deepest step is at the top); each step has a 1-row lighter front edge.
+- It is not a repeating tile and it does not show the pavement around it."""
 C_ROOF = _C_ROOF + """
 - THIS ROOF IS A MODULE THAT A SCRIPT REPEATS SIDE BY SIDE to make roofs of any width: column {last} touches column 0 of the next copy. The slate joints, the ridge capping and the eave gutter must continue across that edge (wrap in x). So do NOT draw end copings, chimneys, dormers or anything unique - only the repeating roof surface, ridge and eave. The script adds ends and roof furniture."""
 C_WALLMOD = """== VIEW CONTRACT: a WALL MODULE of a building in an orthographic top-down view ==
@@ -122,5 +138,7 @@ class Jobs:
     def __init__(self):
         self.J = []
 
-    def add(self, pid, ko, name, w, h, cls, kind, text, needs=(), group=None, old=None, cap=None, contract=None, prio=None):
-        self.J.append(dict(id=pid, ko=ko, name=name, w=w, h=h, cls=cls, kind=kind, text=text, needs=[list(n) for n in needs], group=group, old=old, cap=cap or cap_for(w, h), contract=contract, prio=prio))
+    def add(self, pid, ko, name, w, h, cls, kind, text, needs=(), group=None, old=None, cap=None, contract=None, prio=None, imgs=None, opaque=False):
+        """imgs: 이 조각만 다른 참고 그림을 볼 때 draw.IMG 의 열쇠. opaque: 투명 화소가 없는 조각(문·바닥 해치)."""
+        self.J.append(dict(id=pid, ko=ko, name=name, w=w, h=h, cls=cls, kind=kind, text=text, needs=[list(n) for n in needs], group=group, old=old, cap=cap or cap_for(w, h), contract=contract, prio=prio,
+                           imgs=imgs, opaque=opaque))

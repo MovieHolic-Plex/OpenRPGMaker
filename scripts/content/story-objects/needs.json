@@ -1,0 +1,12 @@
+{
+ "_doc": "이야기 수요 재고(needs.mts)가 읽는 표 — 탐침 전용이다(조수·v2 코드가 읽는 목록이 아니다). needs = 이야기의 단계가 자주 쓰는 물건 다섯 갈래와 그것을 키트 이름·꼬리표에서 찾을 낱말. exclude = 낱말이 글자만 걸린 엉뚱한 키트(id 정규식) — 눈으로 보고 뺀 것. skip = 재지 않는 칩셋(월드맵·몬스터 수집 시트·버들항의 딸린 시트). centre 는 낱말이 아니라 크기로 잰다(입구 없는 물건 키트 6~20칸, natureLike 에 걸리는 나무·밭·탈것·가게 정면은 뺀다).",
+ "needs": {
+  "log": { "label": "일지·기록부를 읽는 책상/받침", "words": ["일지", "기록부", "장부", "일기장", "책상", "독서대", "ledger", "logbook", "journal", "desk", "lectern"], "maxCells": 12 },
+  "lever": { "label": "당기는 레버·스위치", "words": ["레버", "lever", "스위치", "switch", "조작반", "제어반"], "maxCells": 12 },
+  "down": { "label": "아래로 내려가는 길(계단·해치·사다리)", "words": ["지하 입구", "해치", "내려가는 계단", "계단통", "사다리", "뚜껑문", "hatch", "trapdoor", "cellar", "ladder"], "maxCells": 12 },
+  "door": { "label": "방과 방 사이 문(건물 입구가 아닌 문 그림)", "words": ["문", "방문", "철문", "나무 문", "미닫이", "door"], "maxCells": 6 }
+ },
+ "exclude": "indoor|doormat|door_pots|oshiire|ivy-arch|hay-loaf|wand-display|post-slot|vent-stack|pod-car|bunk|deck-plate|granary|bleachers|window|stairs up|stairs-up|stair-up|-stair$|iron-stair|stair-hut|subway-[abc]$|gate-|train-door",
+ "natureLike": "나무|tree|pine|maple|zelkova|송|솔|버들|수관|고목|고사목|밭|plot|전선|wire|숲|덤불|야자|아카시아|가문비|아라우카리아|자작|소철|다리|bridge|차|car|van|버스|트럭|열차|전차|기관차|coach|셔틀|포드|노점|stall|코트|court|관람석|가게 정면|cave|구름|cloud|양탄자|rug|빨랫줄",
+ "skip": "^(monster_|emerald_|worldmap_|beodeul_(reviewed|massing|organic))"
+}

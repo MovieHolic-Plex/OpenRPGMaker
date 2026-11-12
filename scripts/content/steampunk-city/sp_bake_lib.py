@@ -67,9 +67,10 @@ class Pins:
         open(self.path, 'w', encoding='utf-8').write(json.dumps(out, ensure_ascii=False, indent=0) + '\n')
 
 
-def cell_pc(kind, cell_img, row, rows, foot=None, blocked_floor=False, x=0, solid_cells=None):
+def cell_pc(kind, cell_img, row, rows, foot=None, blocked_floor=False, x=0, solid_cells=None, overlay=False):
     """한 칸의 통행 종류. 비어 있으면 None.
     - terrain/flat: 불투명이면 floor(blocked_floor 면 solidfloor — 물·배관 도랑·석축), 투명이면 flat.
+      overlay 면 불투명 칸도 flat — 바닥 위에 덧찍는 그림(지하 입구 해치)이라 아래층 바닥을 바꾸지 않고 위층·사람 밑에 놓인다.
     - debris: star. organic: 윗줄 star·밑줄 solid.
     - 그 밖(서 있는 소품·건물): foot(발자국 줄 수)가 주어지면 맨 아래 foot 줄만 solid, 그 위는 star(뒤로 지나가면 위에 그려진다).
       solid_cells 가 주어지면 그 (x, y) 만 solid 이고 나머지 칸은 star(문형 기중기 다리 사이로 지나간다).
@@ -77,7 +78,7 @@ def cell_pc(kind, cell_img, row, rows, foot=None, blocked_floor=False, x=0, soli
     a = np.asarray(cell_img)[:, :, 3]
     if not a.any(): return None
     opaque = bool((a == 255).all())
-    if kind in ('terrain', 'flat'): return ('solidfloor' if blocked_floor else 'floor') if opaque else 'flat'
+    if kind in ('terrain', 'flat'): return ('solidfloor' if blocked_floor else 'floor') if opaque and not overlay else 'flat'
     if kind == 'debris': return 'star'
     if kind == 'organic' and rows > 1 and row < rows - 1: return 'star'
     if solid_cells is not None: return 'solid' if (x, row) in solid_cells else 'star'
@@ -151,7 +152,7 @@ class Outdoor:
             for x in range(W):
                 crop = lambda s: s.crop((x * T, y * T, x * T + T, y * T + T))
                 pc = cell_pc(p['kind'], crop(frames[0] if frames else im), y, H, foot=p.get('foot'), blocked_floor=p.get('blocked', False), x=x,
-                             solid_cells=set(map(tuple, p['solid_cells'])) if p.get('solid_cells') else None)
+                             solid_cells=set(map(tuple, p['solid_cells'])) if p.get('solid_cells') else None, overlay=bool(p.get('overlay')))
                 if pc is None: continue
                 if y == H - 1 and x in ent: pc = 'solid'
                 where = f' ({x + 1},{y + 1})' if W * H > 1 else ''
@@ -200,7 +201,8 @@ class Outdoor:
                       themes=[self.theme], origin='ai', confidence='high', snap='floor', anchor=dict(dx=W // 2, dy=H - 1))
             if nfr > 1: ai['tags'].append(f'애니메이션 {nfr}프레임')
             # stamp_tileset_object(조수의 키트 찍기 도구)가 읽는 종류 낱말: decal 바닥 표시 · overhead 머리 위(낙하물) · prop 막힘(기본)
-            ai['tags'].append('decal' if p['kind'] == 'flat' else 'overhead' if p['kind'] == 'debris' else 'prop')
+            # stamp_kind 를 적은 조각은 그 낱말(wallmount = 벽면 안에만 찍힌다 — 발이 바닥에 와야 하는 prop 규칙 대신).
+            ai['tags'].append(p.get('stamp_kind') or ('decal' if p['kind'] == 'flat' else 'overhead' if p['kind'] == 'debris' else 'prop'))
             kit = dict(id=p['id'], kind='section', name=p['name'], width=W, height=H, tileSize=16, rows=rows, learnedFrom='pack-preset', ai=ai)
             ent = p.get('entrance')
             if ent:
