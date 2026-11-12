@@ -374,7 +374,8 @@ function drawEventCharset(context: PngContext, project: Project, event: GameMap[
     }
     // 필드 적의 생성 몬스터 그림(generated-enemy-*): 런타임은 초상 한 장을 32px(2칸) 상자에 맞춰 발밑 가운데로 그린다(eventSpriteResources fitSize 32).
     // 칩 칸으로 자르면 투명 구석만 잘려 적이 안 보였다(2026-10-23 assistant-dungeons VQA 「투명 적」).
-    if (!asset && !uploaded && generatedMonsterSpriteUrl(spriteId)) {
+    // 프로젝트에 넣은 적 그림(업로드 kind monster — 폴른 스타 · v2 현행 세트)도 같은 초상 한 장이다. 칩 칸으로 자르면 96px 그림의 왼쪽 위 구석만 나왔다(2026-11-12 r1s-fun).
+    if (uploaded?.kind === "monster" || (!asset && !uploaded && generatedMonsterSpriteUrl(spriteId))) {
       const scale = (size * 2) / Math.max(raster.width, raster.height);
       const dw = Math.max(1, Math.round(raster.width * scale)), dh = Math.max(1, Math.round(raster.height * scale));
       context.drawImage(raster, 0, 0, raster.width, raster.height, ex + Math.round((size - dw) / 2), ey + size - dh, dw, dh);

@@ -4,6 +4,7 @@ import { runGameCheck } from "@/qa/gameCheck";
 import { buildReportHtml, renderMapPng, renderToolRegionPngBase64 } from "../scripts/qa-game/render.mts";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
+import { installCurrentMonsterArt, preloadCurrentMonsterArt } from "@/assets/currentMonsterArt";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { buildQaFixture } from "./fixtures/qaGame/qaGameFixtures";
 
@@ -79,6 +80,29 @@ describe("qa-game render — 헤드리스 맵 PNG + 자체완결 report.html", (
     const cropped = Buffer.from(renderToolRegionPngBase64(project, region.data), "base64");
     expect([PNG.sync.read(cropped).width, PNG.sync.read(cropped).height]).toEqual([32, 16]);
     expect(rgbAt(cropped, 20, 8)).toEqual([...COLORS[3]]);
+  });
+
+  it("프로젝트에 넣은 적 그림(업로드 monster)은 초상 한 장을 2칸 상자에 그린다 — 칩 칸으로 자르지 않는다", async () => {
+    // 2026-11-12 r1s-fun: 현행 세트 적(96px 초상)을 걷기 칩 칸(24×32)으로 잘라 투명 구석만 그렸다 — 명세 은행 맵 그림에서 적이 안 보였다.
+    const { project, map: row } = uploadedTilesetProject(5);
+    const map: GameMap = { ...row, height: 4, lowerTiles: Array.from({ length: 20 }, () => 3) , upperTiles: Array.from({ length: 20 }, () => -1) };
+    project.maps[map.id] = map;
+    const bare = PNG.sync.read(renderMapPng(project, map).png);
+    const id = "generated-enemy-spirit-fire";
+    await preloadCurrentMonsterArt();
+    installCurrentMonsterArt(project, [id]);
+    map.events = [{ id: "foe", x: 2, y: 3, trigger: { kind: "action" }, commands: [], pages: [{ id: "p0", name: "p0", conditions: [], graphic: { sprite: { type: "bundled", id }, direction: "down", pattern: 0 },
+      trigger: { kind: "action" }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [] }] }] as unknown as GameMap["events"];
+    const drawn = PNG.sync.read(renderMapPng(project, map).png);
+    let changed = 0, minX = 999, maxX = -1, minY = 999, maxY = -1;
+    for (let i = 0; i < drawn.width * drawn.height; i += 1) {
+      if ([0, 1, 2].every((c) => drawn.data[i * 4 + c] === bare.data[i * 4 + c])) continue;
+      changed += 1; const x = i % drawn.width, y = Math.floor(i / drawn.width);
+      minX = Math.min(minX, x); maxX = Math.max(maxX, x); minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+    }
+    expect(changed).toBeGreaterThan(100);
+    // 발밑 가운데(칸 2,3) 기준 32px 상자 안.
+    expect([minX >= 24, maxX < 56, minY >= 32, maxY < 64]).toEqual([true, true, true, true]);
   });
 
   it("업로드 그림을 못 찾으면 기본 칩셋으로 대신 그리지 않고 도구 이미지는 실패한다", () => {

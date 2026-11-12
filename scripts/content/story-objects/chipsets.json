@@ -177,5 +177,20 @@
     "seed": 1
    }
   }
+ },
+ "jp_city": {
+  "spec": "tiledata/jp-city/objects/spec.json",
+  "ask": "tiledata/jp-city/objects/ask.json",
+  "kitPrefix": "jp-",
+  "sheet": "public/assets/jp-city/jp-city-chipset.png",
+  "map": {
+   "width": 56,
+   "height": 40,
+   "tool": "compose_jp_city_street",
+   "args": {
+    "style": "residential",
+    "seed": 1
+   }
+  }
  }
 }
