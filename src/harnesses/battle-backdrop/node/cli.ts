@@ -392,7 +392,15 @@ function fitNearest(img: Rgba, w: number, h: number): Rgba {
   return { width: w, height: h, data };
 }
 
-async function callOpus(content: unknown[]): Promise<{ raw: string; text: string; model: string; runId: string }> {
+type OpusReply = { raw: string; text: string; model: string; runId: string; costUsd?: number };
+
+/**
+ * 검수 호출 두 길. 기본은 OpenAI 꼴 중계기(BATTLE_BACKDROP_OPUS_URL · klb/claude-opus-5.5).
+ * `BATTLE_BACKDROP_OPUS_VIA=claude-cli` 면 object-gate 최종 판정과 같은 로컬 Claude 경로(`claude -p --model claude-opus-5-5 --effort medium`, 도구 없음)로 묻는다 —
+ * 중계기가 503 으로 서 있던 날(2026-11-11~12)에도 검수가 돌게. 두 길 모두 요청·응답 모델이 Opus 가 아니면 멈춘다.
+ */
+async function callOpus(content: unknown[]): Promise<OpusReply> {
+  if (process.env.BATTLE_BACKDROP_OPUS_VIA === "claude-cli") return callOpusCli(content);
   const base = (process.env.BATTLE_BACKDROP_OPUS_URL ?? "http://127.0.0.1:10200/v1").replace(/\/$/u, "");
   const model = process.env.BATTLE_BACKDROP_OPUS_MODEL ?? "klb/claude-opus-5.5";
   if (!isOpusModel(model)) throw new Error(`검수 모델 ${model} 은 Opus 가 아니다 — Opus 만 검수한다`);
@@ -406,6 +414,39 @@ async function callOpus(content: unknown[]): Promise<{ raw: string; text: string
   if (!isOpusModel(d.model)) throw new Error(`응답 모델 ${d.model} 은 Opus 가 아니다`);
   if (!d.id) throw new Error("응답에 run id 가 없다");
   return { raw, text: d.choices?.[0]?.message?.content ?? "", model: d.model!, runId: d.id };
+}
+
+function callOpusCli(content: unknown[]): Promise<OpusReply> {
+  const model = process.env.BATTLE_BACKDROP_OPUS_MODEL ?? "claude-opus-5-5";
+  if (!isOpusModel(model)) throw new Error(`검수 모델 ${model} 은 Opus 가 아니다 — Opus 만 검수한다`);
+  // OpenAI 꼴 그림 칸(image_url data URI) → Anthropic 꼴(image base64).
+  const blocks = (content as { type: string; text?: string; image_url?: { url: string } }[]).map((c) => {
+    if (c.type !== "image_url") return c;
+    const m = /^data:(image\/[a-z]+);base64,(.+)$/u.exec(c.image_url?.url ?? "");
+    if (!m) throw new Error("검수 그림이 data URI 가 아니다");
+    return { type: "image", source: { type: "base64", media_type: m[1], data: m[2] } };
+  });
+  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "oprn-backdrop-review-"));
+  return new Promise((done, fail) => {
+    const child = spawn(process.env.CLAUDE_BIN ?? "claude", ["-p", "--input-format", "stream-json", "--output-format", "stream-json", "--verbose", "--model", model, "--effort", "medium",
+      "--tools", "", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', "--setting-sources", "", "--disable-slash-commands", "--no-session-persistence"], { cwd, stdio: ["pipe", "pipe", "pipe"] });
+    let out = "", err = "";
+    const timer = setTimeout(() => { child.kill("SIGKILL"); fail(new Error("claude -p 시간 초과(20분)")); }, 20 * 60 * 1000);
+    child.stdout.on("data", (c) => { out += c; });
+    child.stderr.on("data", (c) => { err += c; });
+    child.on("error", (e) => { clearTimeout(timer); fail(e); });
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      const events = out.split("\n").filter((l) => l.startsWith("{")).flatMap((l) => { try { return [JSON.parse(l) as Record<string, unknown>]; } catch { return []; } });
+      const result = events.find((e) => e.type === "result") as { is_error?: boolean; result?: string; session_id?: string; total_cost_usd?: number; modelUsage?: Record<string, unknown> } | undefined;
+      if (!result || result.is_error) return fail(new Error(`claude -p 실패(code ${code}): ${String(result?.result ?? err ?? out).slice(0, 300)}`));
+      const used = Object.keys(result.modelUsage ?? {});
+      if (!used.length || used.some((m) => !isOpusModel(m))) return fail(new Error(`응답 모델 ${used.join(",") || "없음"} 은 Opus 가 아니다`));
+      if (!result.session_id) return fail(new Error("응답에 run id 가 없다"));
+      done({ raw: JSON.stringify(result), text: String(result.result ?? ""), model: used[0]!, runId: result.session_id, ...(typeof result.total_cost_usd === "number" ? { costUsd: result.total_cost_usd } : {}) });
+    });
+    child.stdin.end(`${JSON.stringify({ type: "user", message: { role: "user", content: blocks } })}\n`);
+  });
 }
 
 async function review(argv: string[]): Promise<number> {
@@ -435,8 +476,9 @@ async function review(argv: string[]): Promise<number> {
   const content: unknown[] = [{ type: "text", text: backdropReviewPrompt(run.facts, shown) }, { type: "text", text: "MAP:" }, png(readPng(path.join(dir, "reference.png")))];
   for (const x of items) content.push({ type: "text", text: `Label ${x.entry.label}:` }, png(x.img));
   let reply = await callOpus(content);
+  let costUsd = reply.costUsd ?? 0;
   let answers = parseBackdropReview(reply.text, shown);
-  if (!answers) { reply = await callOpus(content); answers = parseBackdropReview(reply.text, shown); }
+  if (!answers) { reply = await callOpus(content); costUsd += reply.costUsd ?? 0; answers = parseBackdropReview(reply.text, shown); }
   fs.mkdirSync(REVIEWS, { recursive: true });
   const rawFile = path.join(REVIEWS, `${id}.json`);
   fs.writeFileSync(rawFile, reply.raw);
@@ -445,6 +487,7 @@ async function review(argv: string[]): Promise<number> {
   const batch: ReviewBatch = {
     id, at: now(), standard: BACKDROP_REVIEW_STANDARD, model: reply.model, runId: reply.runId,
     rawFile: path.relative(ROOT, rawFile), rawSha256: sha(reply.raw), entries, answers: answers ?? {}, counted, reason,
+    ...(costUsd > 0 ? { costUsd: Math.round(costUsd * 10000) / 10000 } : {}),
   };
   (run.reviews ??= []).push(batch);
   writeJson(LEDGER, ledger);
@@ -452,7 +495,7 @@ async function review(argv: string[]): Promise<number> {
     const a = answers?.[e.label];
     console.log(`${e.control ? `디코이(${e.control})` : `후보 ${e.letter}`} #${e.label}: ${a ? `${a.v} ${a.score} — ${a.why}` : "답 없음"}`);
   }
-  console.log(`[battle-backdrop] ${run.id} 검수 ${id} (${reply.model}) — ${counted ? "효력 있음" : "효력 없음"}: ${reason}`);
+  console.log(`[battle-backdrop] ${run.id} 검수 ${id} (${reply.model}${costUsd > 0 ? ` · $${costUsd.toFixed(2)}` : ""}) — ${counted ? "효력 있음" : "효력 없음"}: ${reason}`);
   return counted ? 0 : 1;
 }
 
