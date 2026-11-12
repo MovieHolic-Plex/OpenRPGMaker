@@ -18,7 +18,7 @@
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
 import { declaredDoorCells } from "../place/entrances";
-import { hostMentions, isDoorName, objectBaseName, objectCells, unreachableEvents } from "../judge/eventReach";
+import { hostMentions, isDoorEvent, objectBaseName, objectCells, unreachableEvents } from "../judge/eventReach";
 import { repairEventReach } from "../place/reachRepairs";
 import { staleBody } from "./examineSpot";
 import { objectAt, tileLabel } from "../place/cells";
@@ -113,7 +113,7 @@ export function alignClueObjects(run: BuildRun, mapId: string): string[] {
   // 옛 자리 가구에 맞춰 넓힌 몸 사각은 먼저 지운다 — 남의 칸을 덮어 옮길 자리를 막는다(examineSpot.staleBody).
   for (const ev of run.ctx.project.maps[mapId]!.events) if (!sprited(ev)) staleBody(run, mapId, ev.id, []);
   const map0 = run.ctx.project.maps[mapId]!;
-  const movable = (ev: GameEvent) => !sprited(ev) && !isDoorName(nameOf(ev)) && !JSON.stringify(ev.pages ?? []).includes("\"transfer\"");
+  const movable = (ev: GameEvent) => !sprited(ev) && !isDoorEvent(run.ctx.project, ev) && !JSON.stringify(ev.pages ?? []).includes("\"transfer\"");
   const pointers: Want[] = [];
   const selves: Want[] = [];
   for (const ev of map0.events) {
@@ -184,7 +184,7 @@ export function alignClueObjects(run: BuildRun, mapId: string): string[] {
     const doors = declaredDoorCells(project, map);
     const doorCells = new Set(doors.map((d) => d.y * map.width + d.x));
     for (const ev of map.events) {
-      if (!isDoorName(nameOf(ev)) || sprited(ev) || JSON.stringify(ev.pages ?? []).includes("\"transfer\"") || !doors.length || onCells(map, ev, doorCells)) continue;
+      if (!isDoorEvent(project, ev) || sprited(ev) || JSON.stringify(ev.pages ?? []).includes("\"transfer\"") || !doors.length || onCells(map, ev, doorCells)) continue;
       const before = { x: ev.x, y: ev.y };
       const snapshot = run.ctx.project;
       repairEventReach(run, mapId, [ev.id]);

@@ -4,6 +4,9 @@
 import { pickFittedTroops, pickSpot } from "@/editor/tools/jrpgVolumeTools";
 import { isPassable } from "@/project/collision";
 import { walkStart } from "./cells";
+import { behindBuildingStrip } from "./entrances";
+import { incomingLandings } from "./where";
+import { laneCells } from "./placementRules";
 import { applyThemeBackdrop, placeThemeOf, themeFieldTroops, usableLoot } from "./placeTheme";
 import type { BuildRun } from "../shared/types";
 import { leadEnemyId, useCurrentArt } from "../story/currentFoes";
@@ -11,6 +14,8 @@ import { leadEnemyId, useCurrentArt } from "../story/currentFoes";
 type Cell = { readonly x: number; readonly y: number };
 /** 맵 넓이에 따른 보이는 적 수 — 방 한 칸짜리 묘실은 하나, 큰 바깥 맵은 셋. */
 const foeCount = (cells: number): number => (cells >= 1200 ? 3 : cells >= 280 ? 2 : 1);
+/** 보이는 적이 주인공을 알아채는 거리(칸) — 곁을 지나가면 덤비고, 멀리 돌아가면 피할 수 있다. */
+const NOTICE_RANGE = 3;
 
 /**
  * 한 맵에 적·상자를 둔다. 둔 것이 있으면 한 줄(없으면 undefined). entrance = 그 맵에 들어오는 칸(없으면 가장 큰 걸음 덩이).
@@ -19,9 +24,17 @@ const foeCount = (cells: number): number => (cells >= 1200 ? 3 : cells >= 280 ? 
 export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { readonly x: number; readonly y: number } | undefined, salt: number, onGap?: (line: string) => void): string | undefined {
   const map0 = run.ctx.project.maps[mapId];
   if (!map0) return undefined;
-  const origin: Cell = entrance && isPassable(run.ctx.project, map0, entrance.x, entrance.y) ? { x: entrance.x, y: entrance.y } : walkStart(run.ctx.project, map0);
+  // 들어오는 칸 = 이 맵으로 오는 이동의 도착 칸(이은 뒤에 부른다). 구성기의 «들어서는 칸» 은 맵 한가운데일 수 있어 그 다음에 본다.
+  const landings = incomingLandings(run.ctx.project, mapId).filter((c) => isPassable(run.ctx.project, map0, c.x, c.y));
+  const origin: Cell = landings[0] ?? (entrance && isPassable(run.ctx.project, map0, entrance.x, entrance.y) ? { x: entrance.x, y: entrance.y } : walkStart(run.ctx.project, map0));
   const foeId = (n: number) => `ev_${mapId}_wfoe${n}`, chestId = `ev_${mapId}_wchest`;
   const taken = new Set<string>();
+  // 건물 뒤 띠에는 적·상자를 두지 않는다 — 지붕 줄 뒤에 숨는다.
+  const strip = behindBuildingStrip(run.ctx.project, map0);
+  // 어느 도착 칸에서든 다섯 걸음 안에는 적·상자를 두지 않는다 — 들어서자마자 싸우지 않게(맵에 문이 여럿이면 첫 문만 재면 다른 문 앞에 적이 선다).
+  // 차도·선로 칸도 피한다 — 끝맺음 관문의 «사람 자리» 가 상자·적에게도 같은 것을 짚는다(명세 은행 r1s-fun: 보물상자가 선로 칸 (1,32) 에).
+  const lanes = laneCells(run.ctx.project, map0);
+  const hidden = (c: Cell) => !!strip[c.y * map0.width + c.x] || lanes.has(c.y * map0.width + c.x) || landings.some((l) => Math.abs(l.x - c.x) + Math.abs(l.y - c.y) <= 5);
   const backdrop = applyThemeBackdrop(run.ctx.project, mapId);
   if (backdrop.gap) onGap?.(backdrop.gap);
   const themed = themeFieldTroops(run.ctx.project, mapId);
@@ -33,21 +46,23 @@ export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { rea
     const map = run.ctx.project.maps[mapId]!;
     if (map.events.some((e) => e.id === foeId(n))) continue;
     // 들어온 칸에서 중간~먼 쪽으로 퍼뜨린다(문 앞에서 바로 싸우지 않게 최소 6걸음).
-    const spot = pickSpot(run.ctx.project, map, origin, taken, 0.45 + (0.4 * (n - 1)) / Math.max(1, want - 1), 6);
+    const spot = pickSpot(run.ctx.project, map, origin, taken, 0.45 + (0.4 * (n - 1)) / Math.max(1, want - 1), 6, hidden);
     if (!spot) break;
     const troopId = troops[(salt + n) % troops.length]!;
     // 세우는 적의 현행 그림을 먼저 넣는다 — 놓는 도구가 그 그림(전투 그림)으로 세운다(옛 걷기 칩이 아니라).
     useCurrentArt(run.ctx.project, leadEnemyId(run.ctx.project, troopId));
     // 보이는 적은 걷는다 — 서 있기만 하는 적은 말 걸 사람으로 읽힌다(«해골 NPC 를 조사하자 전투»). 두 방향 · 한 칸 왕복까지 해 보고 그래도 없을 때만 세워 둔다.
     const walks = [{ length: 2, axis: n % 2 ? "horizontal" : "vertical" }, { length: 2, axis: n % 2 ? "vertical" : "horizontal" }, { length: 1, axis: "any" }];
-    const placed = walks.some((patrol) => run.call("place_field_enemy", { mapId, x: spot.x, y: spot.y, troopId, behavior: "patrol", patrol, id: foeId(n) }).ok)
+    // 걷다가 주인공이 가까이(세 칸 안) 오면 알아채고 다가온다 — 순찰만 하는 적은 주인공 바로 옆을 스쳐 지나가고도 싸움을 걸지 않았다.
+    const placed = walks.some((patrol) => run.call("place_field_enemy", { mapId, x: spot.x, y: spot.y, troopId, behavior: "chase", sightRange: NOTICE_RANGE, pace: "slow", patrol, id: foeId(n) }).ok)
+      || walks.some((patrol) => run.call("place_field_enemy", { mapId, x: spot.x, y: spot.y, troopId, behavior: "patrol", patrol, id: foeId(n) }).ok)
       || run.call("place_field_enemy", { mapId, x: spot.x, y: spot.y, troopId, behavior: "stationary", id: foeId(n) }).ok;
     if (placed) foes += 1;
   }
   let chest = false;
   const map = run.ctx.project.maps[mapId]!;
   if (!map.events.some((e) => e.id === chestId)) {
-    const spot = pickSpot(run.ctx.project, map, origin, taken, 0.97, 6);
+    const spot = pickSpot(run.ctx.project, map, origin, taken, 0.97, 6, hidden);
     if (spot) chest = !!run.call("place_chest", { mapId, x: spot.x, y: spot.y, id: chestId, name: "깊은 곳의 보물상자", contents: usableLoot(run.ctx.project, salt) }).ok;
   }
   if (!foes && !chest && !backdrop.note) return undefined;

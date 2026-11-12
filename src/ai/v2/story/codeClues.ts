@@ -184,3 +184,17 @@ export function humanizeBlueprintTokens(project0: Project): { project: Project; 
   }
   return notes.length ? { project, notes } : { project: project0, notes };
 }
+
+/**
+ * 조각 단서(「7 _ 9 _」「_ 2 _ _」「_ _ _ 4」)를 자리별로 겹치면 답이 되는가 — 되면 답이 단서에 적힌 것으로 본다(사슬 빌더의 «정답이 어느 단서에도 없다» 경고).
+ * 전에는 경고가 떠 모델이 맞는 단서를 고쳐 썼다.
+ */
+export function codeSpreadOver(code: string, lines: readonly string[]): boolean {
+  const n = [...code].length; const got: (string | undefined)[] = new Array(n).fill(undefined);
+  for (const line of lines) for (const m of line.matchAll(/[0-9A-Za-z_＿?○□*](?:[\s·-]*[0-9A-Za-z_＿?○□*])*/gu)) {
+    const toks = [...m[0].replace(/[\s·-]/gu, "")];
+    if (toks.length !== n) continue;
+    toks.forEach((t, i) => { if (/[0-9A-Za-z]/u.test(t)) got[i] = got[i] ?? t; });
+  }
+  return got.join("") === code;
+}

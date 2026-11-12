@@ -15,6 +15,8 @@ import { fixObjectSheetFacing, showExaminedThing } from "./examineArt";
 import { examineHint, lightUnseenThing, settleExamineSpot } from "./examineSpot";
 import { isPersonName, personGraphicFor } from "./personName";
 import { REREAD_PERSON, REREAD_THING } from "./rereadPage";
+import { settleStepThing } from "./stepThings";
+import { codeSpreadOver } from "./codeClues";
 
 type Obj = Record<string, unknown>;
 const STEPS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
@@ -51,8 +53,8 @@ export interface ChainLink {
   readonly needsAll?: readonly string[];
   /** 이 고리는 사람이다 — 이름(역할)으로 캐릭터 칩을 고른다(이름에 직함이 없어도). 적 이름이면 적 칩. */
   readonly person?: string;
-  /** 이 고리는 사물이다(청사진 단계 종류 find·puzzle) — 그림 없는 칸을 기본 주민 칩으로 세우지 않는다(이름의 머리 명사가 사물 목록에 없어도). */
-  readonly thing?: boolean;
+  /** 이 고리는 사물이다(청사진 단계 종류 find·puzzle; 조사 단계는 "find" — 이름에 「문」이 있어도 문이 아니다) — 그림 없는 칸을 기본 주민 칩으로 세우지 않는다(이름의 머리 명사가 사물 목록에 없어도). */
+  readonly thing?: boolean | "find";
   /** 이 이벤트는 앞 경로의 다른 사람이었다(청사진 다시 쓰기로 이름이 바뀜) — 그림을 새 이름으로 다시 고른다. */
   readonly relook?: boolean;
   /** 이 고리 이벤트의 그림을 정해 준다(싸우는 상대의 전투 그림과 같은 종류의 필드 그림) — 그림 없는 칸일 때만 쓴다. */
@@ -66,6 +68,8 @@ export interface ChainLink {
    * leaves: 이긴 뒤 맵에서 사라진다(몬스터 그림으로 선 상대) — 「모래 속으로 물러난다」 뒤에도 그 자리에 서 있지 않게. 사람은 남아 doneLines 를 말한다.
    */
   readonly battle?: { readonly troopId: string; readonly winLines?: readonly string[]; readonly leaves?: boolean };
+  /** 이 고리는 그 장소에 그려진 물건 칸에 앉는다(story/stepThings) — 반짝임을 달지 않는다. */
+  readonly onArt?: boolean;
   /** ending: 엔딩을 부르기 바로 앞의 서술 줄(싸움이 있으면 이긴 뒤). */
   readonly closeLines?: readonly string[];
   /** ending: 엔딩 직전에 조건(앞 고리의 flag·물건 이름)이 맞으면 보이는 줄 — 고른 것에 따라 결말 한 줄이 달라진다. */
@@ -265,6 +269,12 @@ function pickupDoneLines(link: ChainLink): readonly string[] {
   return link.doneLines ?? ["비어 있다."];
 }
 
+/** 소지품 설명 — 그 물건을 준 사람, 아니면 찾은 곳의 이름. */
+const itemSource = (link: ChainLink): string | undefined => {
+  const giver = link.speaker?.trim(), spot = link.name?.trim();
+  return giver ? `${giver}에게서 받았다.` : spot ? `「${spot}」에서 찾았다.` : undefined;
+};
+
 /** 이름 need 를 켜는 스위치 — 사슬이 선언한 「…「need」…」 깃발 중 실제로 어떤 이벤트가 켜는 것, 아니면 이름이 need 인 이벤트가 켜는 스위치(하나뿐일 때). */
 function switchFromProject(project: { maps: Record<string, { events: readonly { name?: string; pages?: readonly unknown[] }[] }>; storyFlags?: readonly { kind?: string; targetId?: string; description?: string }[] }, need: string): string | undefined {
   const setBy = (node: unknown, out: Set<string>): void => {
@@ -309,7 +319,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
   }
   const chainKey = slug(args.name || "chain");
   const have = new Map<string, { kind: "flag"; switchId: string } | { kind: "item"; itemId: string }>();
-  const itemId = (name: string, keep?: string): string => {
+  const itemId = (name: string, keep?: string, from?: string): string => {
     const db = run.ctx.project.database.items ?? [];
     // 전에 지어 둔 물건이면 이름만 새 이름으로 — 같은 id 를 쓰면 그 물건으로 잠가 둔 문이 그대로 열린다.
     const kept = keep ? db.find((it) => it.id === keep) : undefined;
@@ -320,7 +330,8 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     const found = db.find((it) => it.id === name || it.name === name);
     if (found) return found.id;
     const id = `item_${chainKey}_${slug(name)}`;
-    const res = run.call("upsert_item", { item: { id, name, description: `${args.name} — 열쇠·단서 물건`, price: 0, consumable: false } });
+    // 소지품 설명도 플레이어가 읽는다 — 어디서 났는지를 이름으로 적는다(사슬 이름·갈래 낱말은 쓰지 않는다).
+    const res = run.call("upsert_item", { item: { id, name, description: from ?? "길을 여는 데 쓰는 물건.", price: 0, consumable: false } });
     if (!res.ok) warnings.push(`물건 ${name} 을 만들지 못했다: ${String(res.summary).slice(0, 120)}`);
     return id;
   };
@@ -468,7 +479,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
       const person = personGraphicFor(run.ctx.project, map, link.person ?? personName!);
       if (person) { look.graphic = person.graphic; invisible = false; personNotes.push(`${personName} → 「${person.label}」`); }
     }
-    const basePage = (extra: Obj): Obj => ({ trigger: look.trigger ?? { kind: "action" }, priority: look.priority ?? "same", graphic: look.graphic ?? (link.thing && invisible ? { transparent: true } : {}), ...(look.movement ? { movement: look.movement } : {}), ...(look.animationType ? { animationType: look.animationType } : {}), ...(invisible ? { nearSparkle: { radius: 2 } } : (look.nearSparkle ? { nearSparkle: look.nearSparkle } : {})), conditions: [], ...extra });
+    const basePage = (extra: Obj): Obj => ({ trigger: look.trigger ?? { kind: "action" }, priority: look.priority ?? "same", graphic: look.graphic ?? (link.thing && invisible ? { transparent: true } : {}), ...(look.movement ? { movement: look.movement } : {}), ...(look.animationType ? { animationType: look.animationType } : {}), ...(invisible && !link.onArt ? { nearSparkle: { radius: 2 } } : (look.nearSparkle ? { nearSparkle: look.nearSparkle } : {})), conditions: [], ...extra });
     const need = link.needsCondition?.length ? link.needsCondition.map((c) => ({ ...c })) : condFor(link.needs);
     if (typeof need === "string") return fail(`${index + 1}번 고리: ${need}`);
     // needsAll: 전부 — 페이지 조건으로 더한다(r8 flash 가 needsAll 을 줬는데 무시돼 단서 없이도 번호를 넣을 수 있었다).
@@ -485,7 +496,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     let gave: { switchId?: string; itemId?: string } | undefined;
     const rewardCmds = (): Obj[] => {
       const out: Obj[] = [...say(link.reward?.lines)];
-      if (link.reward?.item) { const it = itemId(link.reward.item, link.reward.itemId); gave = { ...gave, itemId: it }; have.set(link.reward.item, { kind: "item", itemId: it }); out.push({ kind: "changeItem", itemId: it, op: "+=", amount: 1 }); if (!link.reward.lines?.length) out.push({ kind: "text", body: `『${link.reward.item}』${josa(link.reward.item, "을/를")} 얻었다.` }); }
+      if (link.reward?.item) { const it = itemId(link.reward.item, link.reward.itemId, itemSource(link)); gave = { ...gave, itemId: it }; have.set(link.reward.item, { kind: "item", itemId: it }); out.push({ kind: "changeItem", itemId: it, op: "+=", amount: 1 }); if (!link.reward.lines?.length) out.push({ kind: "text", body: `『${link.reward.item}』${josa(link.reward.item, "을/를")} 얻었다.` }); }
       if (link.reward?.flag) { const sw = flag(link.reward.flag, `${args.name}: ${link.reward.flag}`, link.reward.switchId); gave = { ...gave, switchId: sw }; have.set(link.reward.flag, { kind: "flag", switchId: sw }); out.push({ kind: "setSwitch", switchId: sw, value: true }); }
       return out;
     };
@@ -578,12 +589,12 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
   }
   // 걸어 가서 말을 걸 수 있는 자리인가(2026-10-28 mt2 deepseek: 모델이 준 칸의 쪽지가 한 칸 통로를 막아 자물쇠에 못 갔다).
   // 막힌 고리·길목을 막는 고리는 가까운 닿는 칸으로 옮기고, 문 이름 고리는 그림 문 칸에 붙인다. 문 막기(seal) 전에 한다.
-  const reachNotes: string[] = [];
+  const reachNotes: string[] = [], missingArt: string[] = [];
   for (const mapId of [...new Set(eventIds.map((e) => e.mapId))]) {
     // 막다른 남쪽 출구는 메우고 문 고리를 북벽 문 그림으로(exitDress) — 자리 고치기 전에 해야 문이 그 그림 칸에 붙는다.
     const exits = dressInteriorExits(run, mapId);
     if (exits.notes.length) reachNotes.push(`출구 마감: ${exits.notes.join(" / ")}`);
-    const fixed = repairEventReach(run, mapId, eventIds.filter((e) => e.mapId === mapId).map((e) => e.eventId));
+    const fixed = repairEventReach(run, mapId, eventIds.filter((e) => e.mapId === mapId).map((e) => e.eventId), undefined, new Set(eventIds.filter((_, i) => args.links[i]?.thing === "find").map((e) => e.eventId)));
     if (fixed.moved.length) reachNotes.push(`닿게 옮김: ${fixed.moved.join(", ")}`);
     for (const s of fixed.stuck) warnings.push(`걸어 가서 조사할 자리를 못 찾았다: ${s}`);
   }
@@ -596,24 +607,18 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     const settled = link?.role === "door" ? [] : settleExamineSpot(run, e.mapId, e.eventId, examineHint(link?.role, [link?.reward?.item]));
     if (settled.length) reachNotes.push(`조사 칸: ${settled.join(", ")}`);
     else { const shown = showExaminedThing(run, e.mapId, e.eventId); if (shown) warnings.push(shown); }
-    // 그래도 보이지 않는 조사 칸(맨바닥 · 큰 그림의 한 칸)은 늘 빛나게 — 경로가 거쳐야 하는 것은 화면에 보여야 한다.
-    const lit = link?.role === "door" ? undefined : lightUnseenThing(run, e.mapId, e.eventId);
+    // 단계가 쓰게 하는 물건은 맨바닥에 남기지 않는다 — 가장 가까운 그림에 앉히고, 그 이름의 그림이 아니면 «없는 그림» 으로 적는다.
+    const seated: ReturnType<typeof settleStepThing> = link?.thing && link.role !== "door" ? settleStepThing(run, e.mapId, e.eventId, link.thing === "find") : {};
+    if (seated.note) reachNotes.push(seated.note);
+    if (seated.gap) missingArt.push(seated.gap);
+    // 그래도 보이지 않는 조사 칸(맨바닥 · 큰 그림의 한 칸 · 단계 물건이 앉은 이름 다른 그림)은 늘 빛나게 — 경로가 거쳐야 하는 것은 화면에 보여야 한다.
+    const lit = link?.role === "door" ? undefined : lightUnseenThing(run, e.mapId, e.eventId, !!link?.thing);
     if (lit) reachNotes.push(lit);
   }
   // 답이 단서에 실제로 적혀 있는가.
-  // 조각 단서(「7 _ 9 _」「_ 2 _ _」「_ _ _ 4」)는 자리별로 겹쳐 답이 되면 적힌 것으로 본다 — 전에는 경고가 떠 모델이 맞는 단서를 고쳐 썼다.
-  const overlaid = (code: string, lines: readonly string[]): boolean => {
-    const n = [...code].length; const got: (string | undefined)[] = new Array(n).fill(undefined);
-    for (const line of lines) for (const m of line.matchAll(/[0-9A-Za-z_＿?○□*](?:[\s·-]*[0-9A-Za-z_＿?○□*])*/gu)) {
-      const toks = [...m[0].replace(/[\s·-]/gu, "")];
-      if (toks.length !== n) continue;
-      toks.forEach((t, i) => { if (/[0-9A-Za-z]/u.test(t)) got[i] = got[i] ?? t; });
-    }
-    return got.join("") === code;
-  };
-  for (const link of args.links) if ((link.role === "code" || link.role === "ending") && link.code && !args.links.some((l) => l !== link && [...(l.lines ?? []), ...(l.reward?.lines ?? []), ...(l.doneLines ?? [])].some((line) => line.includes(link.code!))) && !overlaid(link.code, args.links.filter((l) => l !== link).flatMap((l) => [...(l.lines ?? []), ...(l.reward?.lines ?? [])]))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
+  for (const link of args.links) if ((link.role === "code" || link.role === "ending") && link.code && !args.links.some((l) => l !== link && [...(l.lines ?? []), ...(l.reward?.lines ?? []), ...(l.doneLines ?? [])].some((line) => line.includes(link.code!))) && !codeSpreadOver(link.code, args.links.filter((l) => l !== link).flatMap((l) => [...(l.lines ?? []), ...(l.reward?.lines ?? [])]))) warnings.push(`정답 ${link.code} 이 어느 단서 lines 에도 없다 — 플레이어가 답을 알 길이 없다`);
   const seals = doors.filter((d) => args.links.find((l) => (l.eventId ?? "") === d.eventId)?.seal !== false).map((d) => sealLockedRoom(run, d.mapId, d.eventId));
   for (const s of seals) if (!s.ok) warnings.push(s.summary);
   const sealNote = `${reachNotes.length ? ` ${reachNotes.join(" / ")}.` : ""}${seals.length ? ` ${seals.map((s) => s.summary).join(" / ")}` : ""}`;
-  return { ok: true, mapIds: [...new Set(eventIds.map((e) => e.mapId))], eventIds, gives, summary: `퍼즐 사슬 「${args.name}」 ${args.links.length}고리를 지었다(${args.links.map((l) => l.role).join(" → ")}).${personNotes.length ? ` 사람 그림: ${personNotes.join(", ")}.` : ""}${sealNote}`, warnings, missingArt: [], calls: [] };
+  return { ok: true, mapIds: [...new Set(eventIds.map((e) => e.mapId))], eventIds, gives, summary: `퍼즐 사슬 「${args.name}」 ${args.links.length}고리를 지었다(${args.links.map((l) => l.role).join(" → ")}).${personNotes.length ? ` 사람 그림: ${personNotes.join(", ")}.` : ""}${sealNote}`, warnings, missingArt, calls: [] };
 }

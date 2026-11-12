@@ -130,6 +130,13 @@ function normalizeEnemyReactions(reactions: readonly Partial<EnemyReaction>[] | 
 /** 도트 숲 겹 배경. 옛 숲 레퍼런스 그림(generated-battle-reference-forest)은 2026-10-03 deprecated/ 로 옮겼다. */
 export const DEFAULT_BATTLE_FIELD_BACKGROUND_ID = "battle-scenery-forest";
 
+/**
+ * «그 맵 그대로» 전투 배경 — 그림이 아니라 표지다. 맵 `battleBackground`(또는 트룹 배경)가 이 값이면 그 전투만 필드 화면을 찍어 배경으로 깐다
+ * (프로젝트 전체 `system.battleBackdrop: "field"` 와 같은 그림, 맵 단위). 그 장소에 맞는 측면 배경 그림이 없을 때 다른 지형 그림 대신 쓴다.
+ * 필드 화면을 못 찍는 자리(편집기 전투 시험)에서는 스킨의 빈 무대가 보인다.
+ */
+export const FIELD_BATTLE_BACKGROUND_ID = "battle-scenery-field";
+
 /** Only rewrite panoramas that read as unusable battle fields (noise / pure black night). */
 const SKY_PANORAMA_BATTLEBACK_IDS = new Set([
   "easyrpg-backdrop-night-sky1",

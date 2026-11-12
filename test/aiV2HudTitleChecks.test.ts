@@ -92,7 +92,8 @@ describe("v2 HUD / title choice (fs-use-tools HUD; 2026-11-11 the HUD is derived
     map.events = [{ id: "ev_fight", name: "적", x: 1, y: 1, trigger: { kind: "action" }, commands: [], pages: [{ id: "p0", conditions: [], trigger: { kind: "action" }, commands: [{ kind: "battleProcessing" }] }] }] as never;
     p.system.fieldHud = normalizeFieldHud({ theme: "adventure", vitals: true, objective: true });
     expect(reconcileFieldHud(p, "용사가 마왕을 잡는 RPG").length).toBe(1);
-    expect(p.system.fieldHud!.theme).toBe("classic");
+    // 턴제 전투만 있는 게임: 체력은 전투 화면과 메뉴에 있다 — 필드에는 목표 줄만(2026-11-13).
+    expect(resolvedHudWidgets(p.system.fieldHud!)).toEqual([]);
     expect(p.system.fieldHud!.objective).toBe(true);
     expect(reconcileFieldHud(p, "용사가 마왕을 잡는 RPG")).toEqual([]);
   });

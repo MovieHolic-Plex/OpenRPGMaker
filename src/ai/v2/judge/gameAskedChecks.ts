@@ -1,5 +1,6 @@
 // 게임 내용 검사 — 요청이 바란 것이 실제로 있나: 효과(날씨·화면·소리), 세계(상점·시간·문·맵·보상·조우·적), 엔딩·상태·물건, 전투.
 import { simulateBattle } from "@/battle/simulate";
+import { startHealingItem } from "../story/healingAccess";
 import { splitScriptSpeaker } from "@/project/endingSummary";
 import { asksChaseNotBattleMusic, asksComboSkill, asksCure, asksOpenField, asksTimedWhereabouts, asksWorkingShop, buildsWholeGame, namesRandomEncounters } from "../request/readers";
 import { enemyIdentityProblems } from "./enemyChecks";
@@ -179,6 +180,8 @@ export function battleChecks({ before, after, task, cmds }: GameCheck): Finding[
     const party = after.system.startActorIds ?? [];
     const level = Math.max(1, ...party.map((id) => after.database.actors.find((a) => a.id === id)?.initialLevel ?? 1));
     const seen = new Set<string>();
+    const potion = startHealingItem(after);
+    const potions = potion ? Math.max(0, after.session.inventory?.[potion] ?? 0) : 0;
     // 이 실행 전에도 그 이벤트에 있던 전투는 새로 저작한 것이 아니다(2026-10-25 실조수: 보스전 음악만 바꿨는데 드래곤 능력치를 깎았다).
     const had = new Set<string>();
     for (const ev of eventsOf(before).values()) for (const row of allCommands(ev)) if (row.cmd.kind === "battleProcessing") had.add(`${ev.mapId}/${ev.id}#${String(row.cmd.troopId)}`);
@@ -189,7 +192,8 @@ export function battleChecks({ before, after, task, cmds }: GameCheck): Finding[
       seen.add(c.troopId);
       if (!after.database.troops.some((t) => t.id === c.troopId) || !party.length) continue;
       try {
-        const sim = simulateBattle({ project: after, troopId: c.troopId, heroLevel: level, n: 20, seed: 7, useSkills: true });
+        // 플레이어는 들고 시작한 회복약을 쓴다 — 맨몸으로만 재면 «공격만으로는 못 이기는 보스»(끝맺음이 약·기술로 이기게 맞춘 것)를 막다른 길로 읽는다.
+        const sim = simulateBattle({ project: after, troopId: c.troopId, heroLevel: level, n: 20, seed: 7, useSkills: true, ...(potions > 0 && potion ? { inventory: { [potion]: potions }, potionItemId: potion } : {}) });
         if (sim.winRate === 0) problems.push(tagged("game", "전투", `${r.ev.id} 가 여는 전투(${c.troopId})를 시작 파티(Lv${level})로 모의 20판 해 보니 한 번도 못 이긴다 — 플레이어가 그 전에 레벨을 올릴 길이 없으면 게임이 막힌다. upsert_enemy 로 HP·공격을 낮추거나(simulate_battle 로 승률 40~80% 확인), 지는 이야기 전투면 canLose:true.`, { variant: "unwinnable", target: { mapId: r.ev.mapId, eventId: r.ev.id } }));
       } catch { /* 모의 실패는 넘어간다 */ }
     }

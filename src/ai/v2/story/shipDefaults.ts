@@ -15,7 +15,7 @@ import { fitGateLevelCurve, fitRouteLevelsToGates } from "./monsterRouteLevels";
 import { fitRequiredBattlesToStarters } from "./monsterRequiredBattles";
 import { equipMonsterCampaign } from "./monsterCampaignGifts";
 import { beginFitBudget, enterFastFit, FitBudgetExceeded, restoreFitState, snapshotFitState } from "./monsterFitBudget";
-import { Obj, reconcileFieldHud, premiseOf, fillBattleBgm, fillBattleBackgrounds, fillPartyLooks, fillPartyNames, fillWindowLook } from "./shipLookDefaults";
+import { Obj, reconcileFieldHud, premiseOf, fillBattleBgm, fillBattleBackgrounds, fillEnemyHpLook, fillPartyLooks, fillPartyNames, fillWindowLook } from "./shipLookDefaults";
 import { moveEntrancesOntoArt, fillStaleObjectives, moveRepeatingStartObjective, pullBackStartObjective, fillGymArrivalObjectives, hasFinal, quietFieldGuides } from "./shipObjectiveDefaults";
 
 /** 출하 기본값을 채운다. 바꾼 항목 설명을 돌려준다(없으면 빈 배열). task 는 실행 지시문(앞선 요청 메모 포함). */
@@ -91,7 +91,13 @@ export function applyLookDefaults(project: Project, story = ""): string[] {
   const applied: string[] = [];
   const left = new Set(editorDefaultsLeft(project).map((b) => b.id));
   if (left.has("battle-bgm")) applied.push(...fillBattleBgm(project, story));
-  if (left.has("battle-background")) applied.push(...fillBattleBackgrounds(project, editorDefaultsLeft(project).find((b) => b.id === "battle-background")?.evidence ?? ""));
+  // 출하 검사는 맵 다섯 장까지만 이른다 — 전투가 나는 맵이 더 많으면 남은 맵이 런타임 짐작(실내 = 동굴 · 모르면 숲)으로 떨어지므로 다 채울 때까지 돈다.
+  for (let round = 0; round < 40; round += 1) {
+    const filled = fillBattleBackgrounds(project, editorDefaultsLeft(project).find((b) => b.id === "battle-background")?.evidence ?? "");
+    if (!filled.length) break;
+    applied.push(...filled);
+  }
+  applied.push(...fillEnemyHpLook(project));
   if (left.has("hero-look") || left.has("party-faces")) applied.push(...fillPartyLooks(project, story));
   // 이름은 모습 뒤(고른 칩의 성별로 이름을 고른다), 엔딩 맺음 앞(맺음 글이 새 이름을 쓴다).
   if (left.has("party-names")) applied.push(...fillPartyNames(project, story));

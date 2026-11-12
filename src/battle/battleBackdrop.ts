@@ -1,5 +1,6 @@
 import {
   DEFAULT_BATTLE_FIELD_BACKGROUND_ID,
+  FIELD_BATTLE_BACKGROUND_ID,
   normalizeBattleFieldBackgroundId,
 } from "@/project/databaseEnemyTroopRecordModel";
 import { terrainRecordAt } from "@/project/terrainAt";
@@ -27,6 +28,9 @@ export function resolveBattleBackdrop(input: {
   const id = resolveBattleBackdropId(input);
   return input.project.system.battleUiStyle === "pokemon" ? pokemonBattleBackdropId(id) : id;
 }
+
+/** 이 전투의 배경이 «그 맵 그대로»(필드 화면)인가 — 고른 배경 id 가 표지(FIELD_BATTLE_BACKGROUND_ID)일 때. */
+export const isFieldBattleBackdrop = (resourceId: string | undefined): boolean => resourceId === FIELD_BATTLE_BACKGROUND_ID;
 
 /** 포켓몬 전투의 정본 바닥(GBA 줄무늬). 이 id 의 배경 그림은 포켓몬 스킨 CSS 가 숨긴다. */
 export const POKEMON_BATTLE_BACKDROP_ID = "battle-skin-pokemon-backdrop";
@@ -115,6 +119,8 @@ export function interiorBattleBackground(project: Project, mapId: string | undef
 }
 
 const FOREST_MAP_NAME = /숲|삼림|밀림|수풀|forest|woods?\b/iu;
+/** 맵 이름이 숲을 말하는가(숲 겹 배경이 그 장소와 같은 종류인 맵). */
+export const isForestNamedMap = (project: Project, mapId: string | undefined): boolean => FOREST_MAP_NAME.test((mapId ? project.maps[mapId]?.name : undefined) ?? "");
 const DESERT_MAP_NAME = /사막|오아시스|모래|desert|oasis/iu;
 const OPEN_PLACE_MAP_NAME = /마을|도시|항구|성채|성곽|성문|광장|거리|시가지|폐허|town|city|village|harbou?r|ruins?\b|plaza/iu;
 

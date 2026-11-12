@@ -5,6 +5,7 @@ import { battleStepBypass, isBattleStep, isCodeStep, victoryGatedSwitches } from
 import { foeTroop } from "./stepFoeTroop";
 import { fitTroopCopy } from "@/editor/tools/bossThreatScaling";
 import { simulateBattle } from "@/battle/simulate";
+import { PATH_TROOP_PREFIX } from "./pathBattleBudget";
 import { planObjective } from "../judge/objectivePlan";
 import { OBJECTIVE_SURFACE } from "../judge/objectiveCommand";
 import { norm, sameName, mapFor, josa, RawPage } from "./blueprintPathNames";
@@ -249,11 +250,17 @@ export function finishStepOnBossVictoryIn(project: Project): string[] {
   if (!bp) return [];
   const notes: string[] = [];
   const won = victoryGatedSwitches(project);
+  const stepEventOf = (step: (typeof bp.steps)[number]) => {
+    const map = mapFor(project, step.place);
+    return map?.events.find((e) => e.id === step.event) ?? map?.events.find((e) => norm(String((e as { name?: string }).name ?? "")) === norm(step.event))
+      ?? map?.events.find((e) => !e.id.startsWith("ev_objective") && sameName(String((e as { name?: string }).name ?? ""), step.event));
+  };
+  // 싸움이 제 단계인 이벤트 — 그 승리는 그 단계를 끝낼 뿐, 다음 단계(레버·문)는 플레이어가 직접 한다.
+  const stepFights = new Set(bp.steps.map((s) => stepEventOf(s)?.id).filter((id): id is string => Boolean(id)));
   for (const step of bp.steps) {
     const map = mapFor(project, step.place);
     if (!map) continue;
-    const ev = map.events.find((e) => e.id === step.event) ?? map.events.find((e) => norm(String((e as { name?: string }).name ?? "")) === norm(step.event))
-      ?? map.events.find((e) => !e.id.startsWith("ev_objective") && sameName(String((e as { name?: string }).name ?? ""), step.event));
+    const ev = stepEventOf(step);
     if (!ev) continue;
     const gates = new Set<string>();
     for (const page of (ev.pages ?? []) as unknown as RawPage[]) {
@@ -264,7 +271,7 @@ export function finishStepOnBossVictoryIn(project: Project): string[] {
       const setsW = (list: unknown): boolean => Array.isArray(list) && list.some((c) => (c as { kind?: string; switchId?: string }).kind === "setSwitch" && (c as { switchId?: string }).switchId === w && (c as { value?: unknown }).value !== false);
       const calls = (list: unknown): boolean => Array.isArray(list) && list.some((c) => (c as { kind?: string; eventId?: string }).kind === "callMapEvent" && (c as { eventId?: string }).eventId === ev.id);
       for (const holder of map.events) {
-        if (holder.id === ev.id || !JSON.stringify(holder.pages ?? []).includes('"battleProcessing"')) continue;
+        if (holder.id === ev.id || stepFights.has(holder.id) || !JSON.stringify(holder.pages ?? []).includes('"battleProcessing"')) continue;
         let touched = false;
         // 승리 갈래(fork battleResult victory 의 then, battleProcessing 의 victoryBranch) 중 W 를 켜는 목록 끝에 부르기를 단다.
         const visit = (node: unknown): unknown => {
@@ -336,8 +343,9 @@ export function fitUnwinnableStepBattlesIn(project: Project, write?: (mapId: str
             if (!verdict.has(troopId)) {
               let replace: string | undefined;
               try {
-                const sim = simulateBattle({ project, troopId, heroLevel: level, partyActorIds: party, n: 12, seed: 7, useSkills: true });
-                if (sim.winRate < STEP_BATTLE_MIN_WIN) {
+                // 길 맞춤 사본(troop_path_*)은 끝맺음 path-battles 가 «가진 회복약을 쓰는 플레이» 로 이미 쟀다 — 맨몸으로 다시 재 맞추면 턴마다 사본이 쌓인다.
+                const sim = troopId.startsWith(PATH_TROOP_PREFIX) ? undefined : simulateBattle({ project, troopId, heroLevel: level, partyActorIds: party, n: 12, seed: 7, useSkills: true });
+                if (sim && sim.winRate < STEP_BATTLE_MIN_WIN) {
                   const fitted = fitTroopCopy(project, troopId, "boss");
                   if (fitted && fitted !== troopId) { replace = fitted; notes.push(`「${ev.name ?? ev.id}」 전투 ${troopId}(승률 ${Math.round(sim.winRate * 100)}%)를 시작 파티에 맞춘 ${fitted} 로`); }
                 }

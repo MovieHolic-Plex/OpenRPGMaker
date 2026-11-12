@@ -34,9 +34,16 @@ export function tilesetHasHidingFurniture(project: Project, tilesetId: string): 
 
 const STEP: Record<Dir, readonly [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
 
-/** 추격 페이지(movement.type chase)가 있는 이벤트들. */
+/** 닿으면 여느 전투(이겨서 치우는 싸움 — 져도 되는 벌 전투가 아닌 것)가 열리는 페이지 — 보이는 적(place_field_enemy)이다. */
+const fightsOnTouch = (page: EventPage): boolean =>
+  (page.commands ?? []).some((cmd) => cmd.kind === "battleProcessing" && (cmd as { canLose?: boolean }).canLose !== true);
+
+/**
+ * 숨어서 피해야 하는 추격자 — 추격 페이지(movement.type chase)가 있는 이벤트들. 주인공을 알아채고 다가와 싸움을 거는 보이는 적은 뺀다
+ * (싸우거나 도망치는 상대다 — 2026-11-12 세계 채우기의 적이 알아채게 하자 맵마다 «은신처 없음» 출하 막힘이 섰다).
+ */
 export function chaserEvents(map: GameMap): GameEvent[] {
-  return (map.events ?? []).filter((ev) => (ev.pages ?? []).some((page) => page.movement?.type === "chase"));
+  return (map.events ?? []).filter((ev) => (ev.pages ?? []).some((page) => page.movement?.type === "chase" && !fightsOnTouch(page)));
 }
 
 /** 추격자 집 칸 + 순찰(route) 칸들. */

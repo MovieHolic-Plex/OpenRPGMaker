@@ -30,12 +30,16 @@ const SIZED = /^([a-z]+) (\d+)x(\d+)$/u;
 /** 칩셋 목록(영어, 짧게) — 범주별로 `id WxH k[^N]`. k: f 바닥에 서서 막음 · w 북벽 벽면 바로 아래 첫 바닥 줄 · h 벽면 윗줄(걸이) · d 밟는 바닥 무늬. ^N = 그림이 N칸 위로 솟음. */
 export function layoutCatalog(S: HandInteriorSpec, opts: { categories?: readonly string[]; limit?: number } = {}): string {
   const by = new Map<string, string[]>();
+  const tableKind = new Map<string, string>();
   for (const [id, o] of Object.entries(S.objects)) {
     if (o.kind === "door" || o.kind === "sidedoor") continue;
     if (opts.categories && !opts.categories.includes(o.category)) continue;
     const up = Math.round((o.up ?? 0) / 16);
-    const k = o.stairs ? `s${o.stairs === "up" ? "u" : "d"}` : RULE[o.kind] ?? "f";
-    const entry = `${id} ${o.w}x${Math.max(1, o.h)} ${k}${up > 0 ? `^${up}` : ""}`;
+    const k = `${o.stairs ? `s${o.stairs === "up" ? "u" : "d"}` : RULE[o.kind] ?? "f"}${up > 0 ? `^${up}` : ""}`;
+    // 크기 표(dining 2x1 …)의 구운 크기들은 «sized tables» 줄이 한 번에 말한다 — 크기마다 다시 싣지 않는다(놓는 법은 그 줄에 붙인다).
+    const sized = /^(\S+) \d+x\d+$/u.exec(id)?.[1];
+    if (sized && S.tables[sized]) { tableKind.set(sized, k); continue; }
+    const entry = `${id} ${o.w}x${Math.max(1, o.h)} ${k}`;
     (by.get(o.category) ?? by.set(o.category, []).get(o.category)!).push(entry);
   }
   const groups = [...by.entries()].sort((a, b) => b[1].length - a[1].length);
@@ -44,7 +48,7 @@ export function layoutCatalog(S: HandInteriorSpec, opts: { categories?: readonly
   return [
     `floors: ${Object.keys(S.floors).join(", ")}`,
     `walls: ${Object.keys(S.walls).join(", ")}`,
-    `sized tables (any WxH in the id, e.g. "dining 3x2"; counter/kcounter are 1 row): ${Object.entries(S.tables).map(([k, t]) => `${k}${t.oneRow ? "(1 row)" : ""}`).join(", ")}`,
+    `sized tables (any WxH in the id, e.g. "dining 3x2"; counter/kcounter are 1 row; kind letter as for objects): ${Object.entries(S.tables).map(([k, t]) => `${k}${t.oneRow ? "(1 row)" : ""}${tableKind.has(k) ? ` ${tableKind.get(k)}` : ""}`).join(", ")}`,
     `carpets (any rect, walkable): ${Object.keys(S.lines).filter((k) => S.lines[k]!.kind === "flat").join(", ")}`,
     `daises (any rect, walkable raised platform): ${Object.keys(S.daises).join(", ")}`,
     `objects — ${total} pieces in ${groups.length} categories, grouped as category (count): id WxH kind (f = stands on floor, blocks walking · w = against the north wall, on the first floor row under a wall face · h = wall-mounted, on the UPPER wall-face row · d = walkable floor decal · su/sd = stairs up/down: su is a 3-wide x 3-tall kit on a north wall with free floor south of it, sd a hole in the floor entered from the south · ^N = art N cells taller, drawn upward). Use the whole list, not only the suggested slice: find_pieces(category, tags) returns every piece of a category (or matching words) with its placement and the rooms it is used in.`,

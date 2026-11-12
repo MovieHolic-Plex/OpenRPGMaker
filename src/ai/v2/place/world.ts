@@ -54,6 +54,11 @@ export interface WorldKind {
   readonly home?: true;
   /** 실내 종류: 이 방으로 들어가는 문이 어느 집 문인가(구성기가 돌려주는 집 키트·이름에 맞춘다) — 얼음 동굴 방은 얼음 동굴 입구, 묘실은 피라미드 입구. */
   readonly door?: RegExp;
+  /**
+   * 실내 종류: 땅 밑에 있는 방이다 — 바깥 맵에서는 내려가는 길(해치·바닥 계단: 땅에 얹는 …-down 계단 키트, place/stairLinks.stampWayDown)로 들어간다.
+   * 그 칩셋에 그런 키트가 없으면 예전처럼 door 의 건물 문. 장소 이름의 «지하» 를 읽지 않으려고 종류에 적는다.
+   */
+  readonly below?: true;
   /** 구성기로 짓는다. 없으면 spec 으로 종전 빌더(버들항 마을·던전·실내)가 짓는다. */
   readonly compose?: ComposedKind;
   readonly spec?: Pick<PlaceSpec, "type"> & Partial<PlaceSpec>;
@@ -89,8 +94,8 @@ export interface WorldSetting {
 
 const out = (id: string, ko: string, about: string, size: readonly [number, number], flags: { danger?: true; value?: string } = {}): WorldKind =>
   ({ id, ko, about, ...(flags.danger ? { danger: true as const } : {}), compose: { value: flags.value ?? id, size } });
-const room = (id: string, ko: string, about: string, size: readonly [number, number], door: RegExp, flags: { danger?: true; home?: true; value?: string; tool?: string } = {}): WorldKind =>
-  ({ id, ko, about, indoor: true, door, ...(flags.danger ? { danger: true as const } : {}), ...(flags.home ? { home: true as const } : {}), compose: { value: flags.value ?? id, size, ...(flags.tool ? { tool: flags.tool } : {}) } });
+const room = (id: string, ko: string, about: string, size: readonly [number, number], door: RegExp, flags: { danger?: true; home?: true; below?: true; value?: string; tool?: string } = {}): WorldKind =>
+  ({ id, ko, about, indoor: true, door, ...(flags.danger ? { danger: true as const } : {}), ...(flags.home ? { home: true as const } : {}), ...(flags.below ? { below: true as const } : {}), compose: { value: flags.value ?? id, size, ...(flags.tool ? { tool: flags.tool } : {}) } });
 const classic = (id: string, ko: string, about: string, spec: WorldKind["spec"], flags: { indoor?: true; danger?: true } = {}): WorldKind => ({ id, ko, about, ...flags, spec });
 
 /** 세계 표. 방 크기는 구성기가 짜는 크기 그대로(100칸 미만 방은 세는 맵이 못 되어 싣지 않는다: 사우나 11×9·사막 가게 10×8). 찻집은 13×9 에서만 짜진다(12×9 는 문에서 안 닿는 바닥이 남는다 — scripts/qa/assistant-v2/worldProbe.mts 로 잰다). */
@@ -191,7 +196,7 @@ export const WORLDS: readonly WorldSetting[] = [
       room("tavern", "선술집", "tavern interior", [18, 13], /tavern|선술집/u),
       room("workshop", "공방", "inventor's workshop", [16, 11], /workshop|공방|gears/u),
       room("lab", "연구실", "laboratory", [15, 11], /apoth|약방|pump/u),
-      room("boiler-room", "보일러실", "boiler room", [15, 11], /boiler|보일러/u, { danger: true }),
+      room("boiler-room", "보일러실", "boiler room below the street", [15, 11], /boiler|보일러/u, { danger: true, below: true }),
       room("engine-room", "기관실", "engine room", [17, 12], /factory|공장|station/u, { danger: true }),
     ],
   },

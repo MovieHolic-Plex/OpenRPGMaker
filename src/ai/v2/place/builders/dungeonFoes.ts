@@ -1,6 +1,6 @@
 // 던전의 적·보스 — 주제 낱말로 적 그림 고르기(enemyArtFor), 닮은 적 무리, 트룹 만들기(ensureFoeTroop)·층별 트룹 계획(planTroops). 짓기는 dungeon.ts.
 import { dungeonTheme } from "@/editor/tools/dungeonThemeTroops";
-import { fitEnemyToStartParty, fitWithinTarget } from "@/editor/tools/bossThreatScaling";
+import { addFitSkills, fitEnemyToStartParty, fitWithinTarget } from "@/editor/tools/bossThreatScaling";
 import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
 import { type DungeonType } from "@/editor/dungeonKit/types";
 import type { EnemyRecord, Project } from "@/project/types";
@@ -121,7 +121,7 @@ export function ensureFoeTroop(run: BuildRun, enemyId: string, role: "field" | "
   // 맞춤이 목표(승률·손실 상한)에 못 닿으면 마릿수를 줄인다 — 독을 거는 종 둘은 공격을 바닥까지 내려도 Lv1 혼자에게 한 판 손실이 38%였고
   // 같은 무리 둘과 다른 무리 하나를 이어 싸우면 76%였다(2026-11-12 은행 lay-main-mine, 코볼트 대역 고블린 정찰병).
   while (fit && count > 1 && !fitWithinTarget(fit, role)) { count -= 1; fit = fitEnemyToStartParty(project, { ...source, id: enemyIdCopy, stats } as unknown as EnemyRecord, role, count); }
-  if (fit) { copy.stats = fit.stats; copy.level = fit.level; if (fit.actions) copy.actions = fit.actions; if (fit.skillIds) copy.skillIds = fit.skillIds; }
+  if (fit) { copy.stats = fit.stats; copy.level = fit.level; if (fit.actions) copy.actions = fit.actions; if (fit.skillIds) copy.skillIds = fit.skillIds; addFitSkills(project, fit); }
   const made = run.call("upsert_enemy", { enemy: copy, role: role === "boss" ? "boss" : "normal" });
   const useId = made.ok ? enemyIdCopy : enemyId;
   const r = run.call("upsert_troop", { troop: { id: troopId, name: role === "field" ? `${source.name} 무리` : name ?? source.name, enemyIds: Array.from({ length: count }, () => useId) } });
