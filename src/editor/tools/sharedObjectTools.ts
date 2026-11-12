@@ -12,6 +12,7 @@ import type { GameMap, Project, StructureKitDef, TilesetDef } from "@/project/ty
 import { catalogEntry, resolveObjectAlias, sharedObjectDef, sharedObjects, sharedPlaces } from "./sharedDesignCatalog";
 import { rejectSettlementPropOnRoute } from "./routePropPolicy";
 import { roadCutAt } from "./roadCutGuard";
+import { lookKit } from "@/project/kitLook";
 import { rejectOnSceneStage } from "./sceneStageGuard";
 import { ToolError, type ToolDefinition } from "./types";
 import { roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
@@ -104,7 +105,9 @@ export function resolveObject(project: Project, requestedId: string): Resolved {
     const tilesetId = rest.slice(0, slash), innerId = rest.slice(slash + 1);
     const source = project.tilesets[tilesetId] ?? fail(`타일셋 ${tilesetId} 이 프로젝트에 없습니다`);
     if (prefix === "kit") {
-      const kit = source.structureKits?.find(entry => entry.id === innerId) ?? fail(`${tilesetId} 에 킷 ${innerId} 가 없습니다`);
+      const asked = source.structureKits?.find(entry => entry.id === innerId) ?? fail(`${tilesetId} 에 킷 ${innerId} 가 없습니다`);
+      // 조수 실행이면 이 게임의 변형 그림으로(같은 칸 크기·같은 막힌 칸이라 배치·통행은 그대로) — 사람 편집은 고른 킷 그대로.
+      const kit = lookKit(source, asked);
       return { name: kit.name ?? kit.id, source, pattern: kitPattern(kit), assets: {}, defaultLayers: "both",
         entrances: kit.parts?.filter(part => part.kind === "entrance"), kit };
     }
