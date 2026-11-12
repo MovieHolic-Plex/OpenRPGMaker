@@ -6,6 +6,7 @@ import type { GameMap, Project } from "@/project/types";
 import { parseWorldStyle, type WorldKind, type WorldSetting } from "../world";
 import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 import { onePassRefusal } from "../onePass";
+import { roadExitNote } from "./villagePool";
 
 type Cell = { readonly x: number; readonly y: number };
 type Door = Cell & { readonly kit?: string };
@@ -134,7 +135,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     ok: true,
     mapIds: [mapId],
     entrance: { mapId, x: entry.x, y: entry.y },
-    summary: `${spec.name}: ${world.name} ${kind.id} ${map.width}×${map.height} (${mapId}, seed ${made.seed})${doors.length ? `, ${doors.length} house doors` : ""}`,
+    summary: `${spec.name}: ${world.name} ${kind.id} ${map.width}×${map.height} (${mapId}, seed ${made.seed})${doors.length ? `, ${doors.length} house doors` : ""}${roadExitNote(made.data)}`,
     warnings: [],
     missingArt: [],
     calls: run.calls.slice(first),
