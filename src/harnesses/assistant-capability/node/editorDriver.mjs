@@ -127,14 +127,25 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
     if(assistantVersion==='v2')localStorage.setItem('oprn:assistant-v2','1');
     window.__capEvents=[];
     const original=window.fetch;
+    // 실행 번호 → 지금 읽고 있는 복제 가지. 이어 받기(GET …&runId=)가 나가면 같은 실행의 앞 가지를 끊는다.
+    // 복제한 본문은 두 가지가 다 끊겨야 연결이 닫히는데, 편집기는 제 가지만 끊는다 — 이 가지를 그대로 두면 이어 받기 한 번마다 연결 하나가 남아
+    // 브라우저의 호스트당 연결 6개를 다 쓰고, 그 뒤 저장·적용 응답이 나가지 못한다
+    // (2026-11-11 purpose-desert 1~4·r1check-fun: 워커 30초 넘는 침묵 4번 → 이어 받기 4번 → 턴 1이 끝맺음에서 30분 멈춤).
+    // 실행 번호를 모르는 스트림(이어 받기를 모르는 호스트)과 다른 실행의 스트림은 서로 끊지 않는다.
+    const runReaders=new Map();
     window.fetch=async function(...args){
-      const response=await original.apply(this,args);
       const endpoint=String(args[0]);
+      const resumeOf=endpoint.includes('/v1/agent/run')?(()=>{try{return new URL(endpoint,location.href).searchParams.get('runId');}catch{return null;}})():null;
+      if(resumeOf){const previous=runReaders.get(resumeOf);if(previous){previous.superseded=true;runReaders.delete(resumeOf);void previous.reader.cancel().catch(()=>{});}}
+      const response=await original.apply(this,args);
       if(endpoint.includes('/v1/agent/run') && response.body){
-        window.__capEvents.push({type:'stream_open',endpoint:'agent',at:Date.now()});
         const reader=response.clone().body.getReader(),decoder=new TextDecoder();let pending='';
-        // An idle resume re-sends the run as GET; the cloned original stream keeps going too. Skip
-        // lines whose outer seq was already seen so events are not counted twice (ledger G20).
+        const runKey=response.headers.get('X-Oprn-Run-Id')||resumeOf;
+        const branch={reader,superseded:false};
+        if(runKey)runReaders.set(runKey,branch);
+        window.__capEvents.push({type:'stream_open',endpoint:'agent',runId:runKey??undefined,resume:Boolean(resumeOf),at:Date.now()});
+        // An idle resume re-sends the run as GET. Skip lines whose outer seq was already seen so events
+        // are not counted twice (ledger G20) — the superseded branch may have read past the editor's last line.
         // A POST starts a new run whose seq restarts at 0; only the GET resume of the same run shares the counter.
         // (Keying by outer.runId alone dropped every event of turn 2 when lines carry no runId.)
         const method=String((args[1]&&args[1].method)||(args[0]&&args[0].method)||'GET').toUpperCase();
@@ -176,8 +187,12 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
         }catch{}};
         void(async()=>{try{for(;;){const {done,value}=await reader.read();if(done)break;
           pending+=decoder.decode(value,{stream:true});const lines=pending.split('\n');pending=lines.pop();for(const line of lines)consume(line);
-        }pending+=decoder.decode();if(pending.trim())consume(pending);window.__capEvents.push({type:'stream_closed',at:Date.now()});
-        }catch(error){window.__capEvents.push({type:'stream_error',message:error.message,at:Date.now()});}})();
+        }
+          if(runKey&&runReaders.get(runKey)===branch)runReaders.delete(runKey);
+          // 끊긴 앞 가지는 턴의 끝이 아니다 — 반쯤 읽은 줄은 버린다(이어 받은 스트림이 그 줄을 다시 보낸다).
+          if(branch.superseded){window.__capEvents.push({type:'stream_superseded',runId:runKey,at:Date.now()});return;}
+          pending+=decoder.decode();if(pending.trim())consume(pending);window.__capEvents.push({type:'stream_closed',at:Date.now()});
+        }catch(error){window.__capEvents.push(branch.superseded?{type:'stream_superseded',runId:runKey,at:Date.now()}:{type:'stream_error',message:error.message,at:Date.now()});}})();
       }
       // Read-only questions can use the chat-completion lane. Expose their
       // settled response to the harness so a real read is not mistaken for a

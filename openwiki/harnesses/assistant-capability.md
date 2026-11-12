@@ -326,6 +326,9 @@ npm run harness -- assistant-capability small-jobs-rescore --run <그 폴더>   
 - 결과 `jobs/<id>/result.json`: `status`(pass·fail·timeout·infra) · `reason` · `check`(outcome·damage·sideEdits) · `toolCalls`(이름 순서, 거절 표시) ·
   `wallMs`(보낸 뒤 가라앉기까지) · `runMs` · `modelCalls` · `tokens`(input·output·cacheRead·검토자) · `systemPromptChars` · `toolsOffered`(+이름) ·
   `complete`(v2 의 `v2.todo.final`) · `persistence` · `trace`(호출 인자·모델이 받은 글 발췌) · `answer`. `before.json.gz`/`after.json.gz` 는 타일셋 본문을 뺀 저장 문서다.
+  Claude Code 고리(`local-cli`, Haiku 측정)는 `prompt_inspection` 사건이 없다 — `systemPromptChars` · `toolsOffered`(+이름) · `toolSchemaChars` 는 턴 끝 `stats.exposure` 의
+  **첫 목록**(`firstList` — 대사 다듬기 패스가 목록을 갈아 끼우기 전의 것)에서 읽는다. `costUsd`(CLI 가 보고한 환산값, 구독 한도 사용 — Pi 고리는 null) · `totalTokens`(캐시 읽기 · 쓰기 포함)도 일마다 적고 `summary.totals` 에 합친다.
+  두 고리는 풀과 첫 목록이 같은 함수(`toolExposure.ts`)지만 늦게 싣는 길이 다르다(CLI 는 목록을 얼리고 `load_tools` → `call_tool{name,args}`) — 통과 · 까닭의 갈래는 견줄 수 있고 **호출 수 · 토큰은 고리 사이에 견주지 않는다**.
 - **통과 = 판정 합격 + 저장·재로드 확인 + 시간 안**. 저장·재로드 확인 = 저장 성공 + 새 컨텍스트가 읽은 맵·자료집이 저장한 것과 같다(`rendererEqual`).
   새 컨텍스트는 부팅하며 한 번 더 저장해 저장 문서의 sha 가 달라질 수 있다(내용 변화 0 — 2026-11-11 실측). 그것은 유실이 아니고, 판정은 그 뒤의 저장 문서를 읽는다. `timeout` 은 그때까지의 저장 결과에 판정을 돌려 까닭에 적되 통과로 세지 않는다.
   `infra` 는 도구 호출 0 + 오류로 턴이 시작하지 못한 경우(모델·호스트 쪽)이고 조수의 불합격과 따로 센다. 어느 것도 다시 돌려 초록으로 바꾸지 않는다 —
@@ -511,7 +514,14 @@ npm run harness -- assistant-capability small-jobs-report --run <그 폴더> --h
 오너 2026-11-11 「JRPG 만 만들게 아니잖아」. 추리·연애·공포·농장·몬스터 수집·퍼즐·액션·경제·여러 엔딩·생존 게임이 쓰는 **장치 하나**를 일 하나로 잰다.
 어느 장치에 도구가 없고 어느 도구가 v2 에 안 실리는지는 `openwiki/assistant-v2-genre-tools.md` 의 재고 표가 적는다 — 이 묶음은 그 표의 줄을 재는 자다.
 묶음 `harness-data/assistant-capability/small-jobs-3.json`(같은 모양), 픽스처는 같은 셋(blank 3 · starter 28 · built 5), 오답 135개 · 다른 모양의 정답 21개.
-실모델 실행은 아직 없다(2026-11-11 — 묶음과 판정만 넣었다).
+
+**Terra 기준선(수리 전, main `03a604e917`, 2026-11-11)** — `~/z-project/assistant-fable-runs/smalljobs/set3-base-03a604e917/`, 쪽 `~/claude-viz/assistant-small-jobs-set3.html`:
+**통과 25/36** · 불합격 10 · 시간 초과 1 · 턴이 «완료»로 끝난 것 22 · 도구 호출 741(오류 52) · 중앙값 16호출 · 2.8분 · 입력 385k 토큰.
+통과하지 못한 11건은 두 원인이다(`causes.json`): 그 장치의 도구가 v2 에 없다 8(액션 전투 맵 · 보관 상자 · 작물 · 낚시 · 기한 엔딩 · 함정 체크포인트 · 잠긴 문 · 포획) · 장치 요청이 장소 짓기/게임 하나로 읽혔다 3(밭 · 액션 슬라임 · 꽃잎 체력 — 68호출 뒤 시간 초과, 맵 하나 삭제).
+통과한 일도 싸지 않다 — 얘기한 사람 수 엔딩 42호출 · 선물 36 · 고백 32 · 증거 내밀기 27 · 제한 시간 25(이벤트 명령 손 조립). 가족별: 추리 3/3 · 연애 4/4 · 달력 3/4 · 공포 3/5 · 농장 1/5 · 경제 2/2 · 몬스터 2/3 · 퍼즐 3/4 · 액션 0/2 · 엔딩 3/3 · 생존 1/1.
+알아 둘 것(`disclosures.json`): `accuse-ending-starter` 첫 시도는 편집기 기동에서 죽어(SQLite «database is locked», 모델 호출 0) 그 일만 한 번 다시 돌렸다 · 기계를 다른 측정과 같이 써서 시간은 길 수 있다 · 화면은 보지 않았다(화면 미검증).
+**실행하는 체크아웃의 소스를 실행 중에 고치지 않는다** — 조수 일꾼은 빌드가 아니라 소스(`scripts/oh-my-pi-worker.ts`)에서 돈다. 첫 실행은 그렇게 오염돼 버렸다(`set3-contaminated-03a604e917/NOT-A-BASELINE.md`).
+수리(`openwiki/assistant-v2-genre-tools.md` 「첫 수리」) 뒤의 같은 실행은 아직 없다.
 
 ```bash
 npm run harness -- assistant-capability small-jobs-selfcheck --set 3 --out <폴더>              # 36/36 sound 여야 한다
@@ -849,6 +859,47 @@ npm run harness -- assistant-capability review --out <실행> --case npc-line \
 ```
 
 검수는 결과 파일 해시와 각 PNG 해시에 묶인다. 결과/그림이 바뀌면 영수증이 무효가 되어 pending으로 돌아간다. 조수 ready는 지도 렌더 완료보다 빠를 수 있으므로 에디터 residentTileCells도 기다린다. `recapture`는 이전 PNG/판정을 capture-history에 보존하고 같은 저장 결과를 새 context에서 읽어 렌더 완료 후 재캡처한다. 모델 호출이나 콘텐츠 수선은 하지 않는다. 검수자 인적 진술의 진실성 자체는 파일 해시로 증명되지 않는다. 별도 검수 모델의 품질과 정상/불량 이미지 교정은 후속 범위다.
+
+## 실행 스트림과 연결 수 — 턴이 끝맺음에서 말없이 멈출 때 (2026-11-12)
+
+**증상.** 조수의 마지막 보고와 끝맺음 마감이 나온 직후 이벤트가 끊기고, 턴 상한(45분)까지 아무 일도 없다. 워커·호스트·편집기 탭 모두 한가하다.
+워커는 적용 응답을 30분 기다리다 «적용 응답을 전달하지 못했습니다(409)» 로 끝난다. 2026-11-11 이 상자의 사막 게임 네 판(`purpose-desert` 1~4)과
+`r1check-fun` 의 턴 1 이 모두 이랬다.
+
+**원인.** 구동기(`node/editorDriver.mjs`)는 `/v1/agent/run` 응답을 `response.clone()` 으로 같이 읽는다. 편집기는 워커가 30초 넘게 조용하면
+제 리더를 끊고 GET `…&runId=…&after=…` 으로 이어 받는데(`src/ai/piAgent/client.ts`), **복제한 본문은 두 가지가 다 끊겨야 연결이 닫힌다.**
+구동기의 가지가 계속 읽고 있어 이어 받기 한 번마다 연결 하나가 남았다. 브라우저는 호스트 하나에 연결을 6개까지만 연다 —
+POST 1 + 이어 받기 4 + 프로젝트 이벤트(EventSource) 1 = 6 이 되면 커밋 기록·저장·적용 응답 요청이 **보내지지도 못한 채** 줄을 선다.
+멈춘 순간의 측정(`purpose-desert4`): 마지막 체크포인트는 대기열에서 나와 적용에 들어갔고, 커밋 기록 요청이 160초째 답이 없고, 주 스레드는 한가했고
+(5초에 300프레임), 탭 → 호스트 연결이 정확히 6개였다. 호스트 로그의 «event loop blocked» 30초 이상이 판마다 네 번(69·49·31·35초 등)이고 멈춤은 네 번째 뒤다.
+
+**고친 것 (세 겹).**
+
+| 겹 | 무엇 |
+|---|---|
+| 구동기 | 실행 번호마다 지금 읽는 복제 가지 하나만 둔다. 이어 받기 요청이 나가면 같은 실행의 앞 가지를 끊고 `stream_superseded` 로 적는다(`stream_closed` 가 아니다 — 그건 «턴이 끝났다» 로 읽힌다). 실행 번호가 다른 스트림은 서로 끊지 않는다 |
+| 호스트 중계 | 편집기가 POST 와 이어 받기에 같은 읽는 이 번호(`?reader=`)를 싣고, 중계(`scripts/lib/piRunRelay.mjs`)가 같은 번호의 앞 스트림을 닫는다 — `openwiki/editor-ai-panel.md` 「실행 기록과 이어 받기」 |
+| 워커 | 장소 짓기·출구 마감 사이에 루프에 차례를 줘 30초 넘는 침묵 자체를 없앤다 — `openwiki/assistant-v2.md` 「워커 루프에 차례 주기」 |
+
+**턴 기록에서 읽는 법** (`session/turns/NNN.json`, 도는 동안은 `session/state.json`):
+
+| 칸 | 뜻 |
+|---|---|
+| `streams.open` · `resumes` | 그 턴에 열린 실행 스트림 수(POST + 이어 받기)와 그중 이어 받기 |
+| `streams.superseded` | 이어 받기에 밀려 끊긴 앞 가지. **`resumes` 와 같아야 한다** — 적으면 앞 스트림이 살아 연결을 쥐고 있다 |
+| `streams.closed` · `errors` | 끝까지 읽고 닫힌 스트림 · 오류로 끊긴 스트림 |
+| `streams.live` · `livePeak` | 아직 읽고 있는 실행 스트림(열림 − 밀려 끊김 − 닫힘 − 오류)과 턴 중 최대. 실행 하나에 1, 이어 받는 순간에만 2 다. **`livePeak` 가 이어 받기 수만큼 늘면 누수이고, 5 면 그 턴은 연결이 모자라 멈춘 것이다** |
+| `sockets.peak` · `atSettle` | 탭 → 호스트의 열린 TCP 연결 수(리눅스 `ss`; 없으면 null) — 턴 중 최대와 가라앉은 순간 |
+
+연결 수에는 쉬는 keep-alive 연결도 들어간다 — 페이지를 막 읽은 뒤나 저장이 몰린 직후에는 멀쩡한 턴에서도 6 이 흔하다(쉬는 연결은 2분쯤 뒤 닫힌다).
+그래서 판정은 `streams` 로 하고, 연결 수는 **2분 넘게 조용한데 6** 일 때만 «여섯 개가 모두 쓰이는 중» 이라는 증거다(멈춘 판에서 본 것이 이것이다).
+
+**모델 없는 재현.** `node scripts/qa/harness-stream-leak.mjs [구동기 경로] [이어 받기 수]` — 가짜 호스트가 끝나지 않는 실행 스트림을 주고, 페이지가 편집기처럼
+제 리더를 끊고 이어 받는다. 고치기 전 구동기(`git show <옛 커밋>:src/harnesses/assistant-capability/node/editorDriver.mjs > 파일`)는 이어 받기 5번 뒤
+평범한 요청이 5초 안에 답을 못 받고 서버 쪽 산 스트림이 6, 고친 뒤는 6~9ms · 산 스트림 1 · `superseded` 5.
+
+**함정.** 가로채기에서 응답 본문을 복제해 읽는 다른 스크립트(`scripts/capture/capture-terrain-*.mjs`)도 같은 모양이다 — 이어 받기가 날 만큼 긴 실행에 쓰면 같은 일이 난다.
+새로 가로채기를 쓸 때는 이어 받기 요청(`runId=` 가 붙은 GET)을 보면 앞 가지를 `cancel()` 한다.
 
 ## 산출물과 확장
 

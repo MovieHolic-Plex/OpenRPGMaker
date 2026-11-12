@@ -99,6 +99,10 @@ describe("Pi 클라이언트 이어 받기", () => {
     expect(turns).toEqual([1, 2]);
     expect(calls[1]).toContain(`runId=${runId}`);
     expect(calls[1]).toContain("after=2");
+    // 읽는 이 번호: POST 와 이어 받기에 같은 값을 싣는다 — 호스트가 같은 번호의 앞 스트림을 끝낸다(scripts/lib/piRunRelay.mjs tail).
+    const readerOf = (call: string) => new URLSearchParams(call.slice(call.indexOf("?") + 1)).get("reader");
+    expect(readerOf(calls[0]!)).toMatch(/^[A-Za-z0-9-]{8,64}$/);
+    expect(readerOf(calls[1]!)).toBe(readerOf(calls[0]!));
   });
 
   it("실행 기록을 모르는 호스트면 끊겼을 때 이어 받지 않고 오류로 끝낸다", async () => {

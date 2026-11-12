@@ -3,6 +3,7 @@ import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import { oneProjectGame } from "../../request/readers";
 import { applyBlueprintAssembly, isPlaceholderTitle } from "@/project/blueprintAssembly";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
+import { carryBuilt } from "../../story/blueprintCarry";
 import { MIN_BLUEPRINT_STEPS, WRITE_BLUEPRINT_SCHEMA, parseBlueprintArgs, stepMixProblems, thinBlueprintReason, walkBlueprint } from "../../story/blueprint";
 import { isEscapeBlueprint } from "../../request/scope";
 import { repairWorldPlaces, worldById, worldPlaceProblems } from "../../place/world";
@@ -40,6 +41,8 @@ export function blueprintVerbs(c: VerbContext) {
         const old = prior.steps.find((o) => o.id === st.id);
         return !st.text && old?.text && old.kind === st.kind && (old.who ?? "") === (st.who ?? "") ? { ...st, text: old.text } : st;
       }) };
+      // 앞 청사진의 단계가 지어 둔 이벤트·스위치도 물려받는다 — 이름만 바꾼 다시 쓰기가 사람을 한 명 더 세우지 않게(story/blueprintCarry.ts).
+      parsed.blueprint = carryBuilt(prior, parsed.blueprint);
       // 갇힌 방 게임(방탈출·밀실)은 세계를 쓰지 않는다 — 방 하나를 설계해 짓는 종전 길이 맡는다(세계의 장소 종류에는 그 방이 없다).
       const oneRoomGame = oneProjectGame(env.ctx.project, String(task ?? "")) || isEscapeBlueprint(parsed.blueprint);
       const world = prior ? worldById(prior.setting) : designed || oneRoomGame ? undefined : requestWorld();

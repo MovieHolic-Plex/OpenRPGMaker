@@ -11,11 +11,14 @@ const PART_AFTER = /^\s*(?:(?:속|안|내부)[가-힣]{0,2}(?![가-힣])|(?:에�
 /** 만들기 동사 앞에 와도 게임이 여전히 만들 대상인 꾸밈말(「짧게」「폐병원 배경으로」「하나」). */
 const ADVERBIAL = /(?:으로|로|게|히|처럼|같이|에서|해서|도록|까지|부터|만큼)$|^(?:하나|한|개|편|판|좀|다|새로|직접|빨리|전부|마저|이어서|계속|함께|제대로|완전히|통째로|알아서)$/u;
 const AFTER_GAME = new RegExp(String.raw`^(\s*(?:을|를))?(\s*(?:하나|한\s*(?:개|편|판)))?([^.!?\n]{0,40}?)\s*(?:${MAKE})`, "iu");
+/** 「… 게임으로 만들어 줘」 — 게임은 만든 결과다(무엇을 그런 게임으로 바꾸라는 말). 지은 것이 있는 프로젝트에서는 그 게임을 고치라는 요청이다(intent.ts). */
+const INTO_A_GAME = new RegExp(String.raw`^\s*(?:으로|로)\s*(?:${MAKE})`, "iu");
 /** 게임이 만들 대상인가 — 「추리 게임 만들어 줘」「게임을 도트 그래픽으로 만들어 줘」. 「게임 속 상점 NPC 만들어 줘」「게임 타이틀 화면 만들어 줘」는 아니다. */
-function gameIsMade(text: string): boolean {
+function gameIsMade(text: string, form: { into?: boolean } = {}): boolean {
   for (const hit of text.matchAll(new RegExp(GAME, "giu"))) {
     const rest = text.slice(hit.index + hit[0].length);
     if (PART_AFTER.test(rest)) continue;
+    if (INTO_A_GAME.test(rest)) { form.into = true; continue; }
     const m = AFTER_GAME.exec(rest);
     if (!m) continue;
     const words = (m[3] ?? "").trim().split(/\s+/u).filter(Boolean);
@@ -41,12 +44,14 @@ const GAME_THEN_MAKE = new RegExp(String.raw`(?:${GAME})\s*(?:하나|한\s*개)?
 export const SINGLE_PLACE = /(방|맵|장소|실내|건물)\s*하나만|다른\s*맵은\s*만들지|(실내|방|맵|장소)(를|을)?\s*(하나\s*)?(만들어|지어)\s*(줘|주세요)/u;
 
 /** 게임 하나를 만들거나 완성하라는 글인가. 까닭(why)은 기록·보고에 쓴다. */
-export function wholeGameAsk(text: string): { readonly asked: boolean; readonly why: string } {
+export function wholeGameAsk(text: string): { readonly asked: boolean; readonly why: string; /** 「…게임으로 만들어 줘」 꼴로만 맞았다. */ readonly into?: boolean } {
   const no = (why: string) => ({ asked: false, why });
   const yes = (why: string) => ({ asked: true, why });
-  const made = gameIsMade(text) || MAKE_THEN_GAME.test(text);
+  const form: { into?: boolean } = {};
+  const made = gameIsMade(text, form) || MAKE_THEN_GAME.test(text);
   if (SINGLE_PLACE.test(text) && !GAME_THEN_MAKE.test(text)) return no("asks for one room or map only");
   if (made) return yes("asks to make a game");
+  if (form.into) return { asked: true, why: "asks to make it into a game («… 게임으로 만들어»)", into: true };
   if (AS_A_GAME.test(text)) return yes("ends with «… as a game»");
   if (FINISH_GAME.test(text)) return yes("asks to make the game playable through to the ending");
   if (CONCEPT_CARD.test(text) && !EDIT_BEFORE_PAREN.test(text)) return yes("one-line concept card with a (genre) tag");

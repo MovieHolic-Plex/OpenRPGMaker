@@ -7,6 +7,7 @@ import { composeWorldRoom } from "./builders/worldPlace";
 import { roleDoors, roomBehind, type RoleDoor } from "./program";
 import { programRoomTags } from "./programMark";
 import type { WorldKind, WorldSetting } from "./world";
+import { yieldToLoop } from "../shared/yieldLoop";
 
 /** 그 역할의 실내 종류 — 세계 표의 실내 종류(같은 구성기 값)를 먼저, 없으면 목적표 전용 방 크기(가게)로. */
 export function programRoomKindOf(world: WorldSetting, role: string): WorldKind | undefined {
@@ -24,11 +25,13 @@ const seedOf = (text: string): number => Math.abs([...text].reduce((h, c) => (h 
  * 이 프로젝트의 모든 역할 건물을 돌며, 실내 종류가 있는데 아직 아무 방도 달리지 않은 문에 방을 지어 잇는다. 되풀이 안전(문에 이동이 있으면 건너뛴다).
  * link = 부모 맵의 문 앞 칸과 새 방의 들어오는 칸을 잇는 일(build_places 의 잇기와 같은 길 — tools/context.ts linkChild).
  */
-export function layProgramRooms(run: BuildRun, world: WorldSetting, link: (parentMapId: string, name: string, roomMapId: string, entrance: { x: number; y: number }, door: { x: number; y: number; kit?: string }) => string): string[] {
+export async function layProgramRooms(run: BuildRun, world: WorldSetting, link: (parentMapId: string, name: string, roomMapId: string, entrance: { x: number; y: number }, door: { x: number; y: number; kit?: string }) => string): Promise<string[]> {
   const notes: string[] = [];
   const pending: { hostId: string; door: RoleDoor }[] = [];
   for (const map of Object.values(run.ctx.project.maps)) for (const door of roleDoors(run.ctx.project, map)) if (!roomBehind(map, door)) pending.push({ hostId: map.id, door });
   for (const { hostId, door } of pending) {
+    // 방 하나를 짓고 나면 루프에 차례를 준다 — 방 여럿을 한 번에 지으면 그 합만큼 워커가 말이 없다.
+    await yieldToLoop();
     const kind = programRoomKindOf(world, door.role);
     const host = run.ctx.project.maps[hostId];
     if (!kind || !host) continue;
