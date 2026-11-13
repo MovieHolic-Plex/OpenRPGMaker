@@ -161,8 +161,11 @@ function strayAfterScene(project: Project, p: ScenePage, id: string): number | u
   return Math.abs(at.x - post.x) + Math.abs(at.y - post.y);
 }
 
-/** 함수가 지은 표지 이벤트 — 같은 관문·같은 종류의 문은 칸마다 같은 글이다(gateKeyedEntrances·gateEntrySteps·잠긴 집 문·막힌 길). */
-const BUILT_SIGN_EVENT = /^ev_(?:world_)?gate_|^ev_locked_door_|^ev_dead_end_/u;
+/**
+ * 함수가 지은 표지 이벤트 — 같은 관문·같은 종류의 문은 칸마다 같은 글이다(gateKeyedEntrances·gateEntrySteps·잠긴 집 문·막힌 길).
+ * 보스 앞 쉼터 결정(ensureBossRest `ev_<맵>_rest`)도 맵마다 같은 글이다 — 보스가 둘인 게임에서 «같은 줄이 두 번» 으로 모델에게 돌아갔다(2026-11-13 r2s-fun).
+ */
+const BUILT_SIGN_EVENT = /^ev_(?:world_)?gate_|^ev_locked_door_|^ev_dead_end_|^ev_.+_rest$/u;
 /** 함수가 여러 자리에 같은 글로 적는 안내 줄 — 남은 단서 목록(«· 아직 …»)과 그 단계 이벤트의 자리(«「X」은 … 에 있다.»). */
 const BUILT_HINT_LINE = /^·\s|^「[^」]{1,40}」[은는이가]\s.{1,60}에 있다[.。]?$/u;
 
