@@ -89,7 +89,21 @@ function factsOf(project: Project, map: GameMap, id: string): Record<string, unk
     ground[key] = (ground[key] ?? 0) + 1;
     if (ov >= 0) { const k2 = `${meta?.[ov]?.label ?? ov}`; floor[k2] = (floor[k2] ?? 0) + 1; }
   }
-  return { id, map: map.name, w: W, h: H, look: tileset.look ?? null, placed, kitPics, canopy, canopyPics, walk, ground, floor };
+  // 숲 속에 설 자리(쪽에서 주인공을 세워 가까이 본다): 걷는 칸 가운데 세 칸 안에 나무·수관 칸이 가장 많은 칸 셋(서로 열 칸 넘게 떨어진 것).
+  const wood = new Uint8Array(n);
+  for (const p of placed) if (p.kind === "tree") for (let y = p.y; y < p.y + p.h; y += 1) for (let x = p.x; x < p.x + p.w; x += 1) wood[y * W + x] = 1;
+  for (const c of canopy) wood[c] = 1;
+  const scored: { x: number; y: number; n: number }[] = [];
+  for (let i = 0; i < n; i += 1) {
+    const x = i % W, y = (i - x) / W;
+    if (x < 6 || y < 5 || x >= W - 6 || y >= H - 4 || !isPassable(project, map, x, y) || at("upperTiles", i) >= 0 || at("upperTiles", i - W) >= 0) continue;
+    let k = 0; for (let dy = -3; dy <= 3; dy += 1) for (let dx = -3; dx <= 3; dx += 1) k += wood[(y + dy) * W + x + dx]!;
+    scored.push({ x, y, n: k });
+  }
+  scored.sort((a, b) => b.n - a.n);
+  const spots: typeof scored = [];
+  for (const s of scored) { if (spots.length >= 3) break; if (spots.every((t) => Math.abs(t.x - s.x) + Math.abs(t.y - s.y) > 10)) spots.push(s); }
+  return { id, map: map.name, w: W, h: H, look: tileset.look ?? null, placed, kitPics, canopy, canopyPics, walk, ground, floor, spots };
 }
 
 const argv = process.argv.slice(2);
