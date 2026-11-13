@@ -91,7 +91,7 @@ export function levelAfter(project: Project, leadId: string | undefined, startLe
 }
 
 /**
- * 보스 앞에 쉬고 온 파티. level = 기준 레벨(minLevel 과 maxLevel 의 가운데 — 길 위 전투를 반쯤 치렀다), potions = 그때 든 약.
+ * 보스 앞에 쉬고 온 파티. level = 기준 레벨(= minLevel — 곧장 온 판. 2026-11-13 키보드 플레이 다섯 보스: 도착 레벨이 넷은 minLevel, 하나는 그보다 하나 아래였다), potions = 그때 든 약.
  * minLevel = 피할 수 있는 전투를 다 피한 판 · maxLevel = 길 위 전투를 다 이긴 판. final = 그 게임의 마지막 보스(밴드의 약 범위와 «공격만» 기준이 다르다).
  */
 export interface BossParty {
@@ -198,11 +198,11 @@ const RAISE_STEPS: readonly { readonly hits: number; readonly hp: number; readon
   { hits: 1.12, hp: 0.9 }, { hits: 1.25, hp: 0.85 },
 ];
 /**
- * 마지막 보스의 껍질 — [평타가 먹히는 몫(원래 방어일 때 대비), HP 에 곱하는 값]. 덜 바꾸는 것부터 해 본다: 한 대만 → 방어를 올린다 → 그만큼 HP 를 내린다.
+ * 마지막 보스의 껍질 — [평타가 먹히는 몫(원래 방어일 때 대비), HP 에 곱하는 값]. 덜 바꾸는 것부터 해 본다: 한 대만 → 방어를 한 단 올리고 HP 를 차례로 내린다 → 방어를 한 단 더.
  * 평타가 덜 먹히는 만큼 기술과 평타의 차이가 벌어진다 — «공격만» 은 싸움이 길어져 지고, 기술로 싸우는 판은 HP 를 내린 만큼 길이가 그대로다.
  * 평타는 원래의 38% 아래로는 내리지 않는다(평타가 0 이 되는 벽은 세우지 않는다). HP 는 올리지 않는다.
  */
-const SHELLS: readonly (readonly [number, number])[] = [[1, 1], [0.75, 1], [0.75, 0.85], [0.55, 0.85], [0.55, 0.7], [0.38, 0.7], [0.38, 0.6], [0.38, 0.5]];
+const SHELLS: readonly (readonly [number, number])[] = [[1, 1], ...[0.75, 0.55, 0.38].flatMap((plainShare) => [1, 0.85, 0.7, 0.6, 0.5].map((hp) => [plainShare, hp] as const))];
 /** 껍질마다 해 보는 한 대의 배율(처음 값 대비) — 작은 것부터, «공격만» 을 막는 가장 작은 한 대를 고른다(약을 가장 덜 쓰는 싸움). */
 const HIT_LEVELS = [1, 1.12, 1.25, 1.4, 1.57, 1.76, 1.97, 2.2, 2.5, 2.8] as const;
 /** 이미 껍질을 찾아 본 보스(능력치·파티가 같은 것) — 끝맺음이 여러 번 돌아도 같은 탐색을 되풀이하지 않는다. */

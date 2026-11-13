@@ -48,14 +48,14 @@ describe("보스 밴드는 쉬고 온 기준 파티로 잰다", () => {
     const ids = project.system.startActorIds!;
     const notes = fitPathBattlesIn(project);
     const line = notes.find((note) => note.startsWith("보스 밴드"))!;
-    // 길 위 전투 하나를 이기면 Lv2 — 도착 Lv1~2 의 가운데(올림)가 기준이다.
-    expect(line).toContain("쉬고 온 Lv2(도착 Lv1~2)");
+    // 길 위 전투 하나를 이기면 Lv2 — 기준은 곧장 온 판(도착 Lv1~2 의 낮은 쪽)이다.
+    expect(line).toContain("쉬고 온 Lv1(도착 Lv1~2)");
     const troopId = pathBattles(project).find((b) => b.role === "boss")!.troopId;
     expect(hpOf(project, troopId)).toBeLessThanOrEqual(hpBefore);
     const potions = project.session.inventory!.item_hi_potion!;
     expect(potions).toBe(3);
-    const attackOnly = simulateBattle({ project, troopId, heroLevel: 2, partyActorIds: ids, n: 24, seed: 11 });
-    const normal = simulateBattle({ project, troopId, heroLevel: 2, partyActorIds: ids, n: 24, seed: 11, useSkills: true, potionHpRatio: SENSIBLE_POTION_HP_RATIO, inventory: { item_hi_potion: potions }, potionItemId: "item_hi_potion" });
+    const attackOnly = simulateBattle({ project, troopId, heroLevel: 1, partyActorIds: ids, n: 24, seed: 11 });
+    const normal = simulateBattle({ project, troopId, heroLevel: 1, partyActorIds: ids, n: 24, seed: 11, useSkills: true, potionHpRatio: SENSIBLE_POTION_HP_RATIO, inventory: { item_hi_potion: potions }, potionItemId: "item_hi_potion" });
     expect(attackOnly.winRate).toBeLessThanOrEqual(BOSS_BAND.attackOnlyMaxWin);
     expect(normal.winRate).toBeGreaterThanOrEqual(BOSS_BAND.minWin);
     expect(normal.avgPotionsUsed).toBeGreaterThanOrEqual(BOSS_BAND.finalPotions[0] - 0.05);

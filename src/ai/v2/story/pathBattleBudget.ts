@@ -44,10 +44,10 @@ export const PRE_BOSS_BUDGET = 0.6;
 /**
  * 길 위 전투 밴드 — 보스가 아닌 전투(잡몹·길목)는 모두 짧다(2026-11-13 r3b-fun: 돌아다니는 «돌 골렘»·«베히모스» 가 HP 580 으로 보스 390·473 보다 무거워 28·33번을 주고받았다).
  * 시작 파티의 여느 플레이로 turns 안에 끝나고(2~5턴), 한 판에 loss 보다 덜 잃는다(이어 싸우는 몫이 더 작으면 그 몫 — lossFloor 아래로는 조이지 않는다),
- * 무리의 HP 합은 그 장소의 보스(그 맵에 보스가 없으면 그 게임에서 가장 가벼운 보스)를 넘지 않는다 — HP 는 원래 값의 절반까지, 그래도 보스보다 무거우면 보스의 HP 까지 내린다.
+ * 무리의 HP 합은 그 장소의 보스(그 맵에 보스가 없으면 그 게임에서 가장 가벼운 보스)를 넘지 않는다 — HP 는 원래 값의 hpFloor 까지, 그래도 보스보다 무거우면 보스의 HP 까지 내린다(공격·기술은 다른 전투처럼 절반까지).
  * 전투 뒤에도 남는 해로운 상태(독)는 길 사본에서 걸지 않는다 — 앞 전투의 독을 지고는 어느 값으로도 이 밴드에 못 든다.
  */
-export const ROAD_BAND = { turns: 5, loss: 0.2, lossFloor: 0.1, minWin: 1 } as const;
+export const ROAD_BAND = { turns: 5, loss: 0.2, lossFloor: 0.1, hpFloor: 0.25, minWin: 1 } as const;
 const ROLE_LIMIT = { field: ROAD_BAND, gate: ROAD_BAND, boss: { loss: 0.7, turns: BOSS_BAND.turns, minWin: BOSS_BAND.minWin } } as const;
 const WEIGHT = { field: 1, gate: 2 } as const;
 const MAX_FIELD_EVENTS = 4;
@@ -288,7 +288,8 @@ const bossShareOf = (project: Project, boss: Battle): number => boss.step === (p
 
 /**
  * 보스마다 그 앞에 쉬고 온 파티를 만나는 순서로 내준다(보스 앞에는 쉼터 결정이 선다 — healingAccess.ensureBossRest).
- * 레벨: 가장 낮게는 피할 수 없는 전투(그 맵까지의 길목 · 앞 보스)만 이기고, 가장 높게는 그 맵까지의 길 위 전투를 다 이기고 — 기준은 그 가운데(올림).
+ * 레벨: 가장 낮게는 피할 수 없는 전투(그 맵까지의 길목 · 앞 보스)만 이기고, 가장 높게는 그 맵까지의 길 위 전투를 다 이기고 — 기준은 가장 낮은 쪽(곧장 가는 플레이어가 그렇게 온다).
+ * 더 싸우고 온 판에게는 보스가 그만큼 쉽다 — 그 값(가장 높게 도착한 판의 «공격만»)은 밴드 줄에 적는다.
  * 맵의 이벤트 순서는 만나는 순서가 아니라 맵 순서와 단계 순서로 센다.
  * 약: 시작 약에서 앞 보스전들의 여느 플레이가 쓴 만큼(spent 의 합)을 뺀 것(내림) — 길 위의 짧은 전투는 약을 쓰지 않는다고 본다.
  */
@@ -301,7 +302,7 @@ function bossArrivals(project: Project, battles: readonly Battle[], bosses: read
       .map((b) => [`${b.mapId}#${b.eventId ?? b.troopId}`, troopExp(project, b.troopId)])).values()].reduce((sum, exp) => sum + exp, 0);
     left = Math.max(0, left - spent);
     const minLevel = levelAfter(project, party.ids[0], party.level, before(["gate"])), maxLevel = levelAfter(project, party.ids[0], party.level, before(["gate", "field"]));
-    return { ids: party.ids, minLevel, maxLevel, level: Math.ceil((minLevel + maxLevel) / 2), final: boss.troopId === bosses[bosses.length - 1]?.troopId, potions: Math.floor(left + 0.05), ...(potion ? { potion } : {}) };
+    return { ids: party.ids, minLevel, maxLevel, level: minLevel, final: boss.troopId === bosses[bosses.length - 1]?.troopId, potions: Math.floor(left + 0.05), ...(potion ? { potion } : {}) };
   };
 }
 
@@ -429,7 +430,7 @@ export function fitPathBattlesIn(project: Project): string[] {
     for (const enemy of project.database.enemies) if (enemyIds.has(enemy.id)) originals.set(enemy.id, { stats: { ...(sourceEnemy(project, enemy, copyId)?.stats ?? enemy.stats) } });
     const skillOriginals = new Map<string, number>();
     for (const skill of project.database.skills) if (skill.id.startsWith(skillPrefix)) skillOriginals.set(skill.id, sourceSkill(project, skill, skillPrefix)?.power ?? skill.power);
-    // 길 위 무리의 HP 는 원래 값의 STAT_FLOOR 아래로는 그 장소 보스의 HP 에 닿는 데까지만 내린다(보스보다 무거운 길 적은 없다 — 그보다 가볍게 만들지는 않는다).
+    // 길 위 무리의 HP 는 하한 아래로도 그 장소 보스의 HP 에 닿는 데까지는 내린다(보스보다 무거운 길 적은 없다).
     const heavy = [...originals.values()].reduce((sum, o) => sum + o.stats.maxHp, 0);
     const hpShare = (value: number) => Number.isFinite(hpCap) && heavy > 0 ? Math.max(1, Math.floor(value * hpCap / heavy)) : Infinity;
     let now = measure(copyId, start);
@@ -441,11 +442,11 @@ export function fitPathBattlesIn(project: Project): string[] {
         if (!enemyIds.has(enemy.id)) continue;
         const s = enemy.stats;
         const o = originals.get(enemy.id)!.stats;
-        const floorOf = (value: number) => Math.max(1, Math.floor(value * STAT_FLOOR));
+        const floorOf = (value: number, floor: number = STAT_FLOOR) => Math.max(1, Math.floor(value * floor));
         const next = {
           ...s,
           ...(strong ? { attack: Math.max(floorOf(o.attack), Math.floor(s.attack * 0.85)), mind: Math.max(floorOf(o.mind), Math.floor(s.mind * 0.85)) } : {}),
-          ...(long || (strong && s.attack <= 1) ? { maxHp: Math.max(Math.min(floorOf(o.maxHp), hpShare(o.maxHp)), Math.floor(s.maxHp * 0.85)) } : {}),
+          ...(long || (strong && s.attack <= 1) ? { maxHp: Math.max(Math.min(floorOf(o.maxHp, role === "boss" ? STAT_FLOOR : ROAD_BAND.hpFloor), hpShare(o.maxHp)), Math.floor(s.maxHp * 0.85)) } : {}),
         };
         if (next.attack !== s.attack || next.mind !== s.mind || next.maxHp !== s.maxHp) { enemy.stats = next; moved = true; }
       }
@@ -474,7 +475,7 @@ export function fitPathBattlesIn(project: Project): string[] {
       project.database.skills = project.database.skills.filter((k) => rowIdsBefore.skills.has(k.id));
       const want = role === "boss" ? `여느 플레이 승률 ≥ ${pct(BOSS_BAND.minWin)} · ${BOSS_BAND.turns}턴 안 · 약 ${bossPotionBand(bossParty?.final ?? false)[1]}개 안` : roadWant;
       // 앞 전투에서 남은 상태(독)를 지고 잰 값이면 그 손실은 이 적의 능력치로 줄지 않는다 — 그 사실을 같이 적는다.
-      notes.push(`${troopId}(${ROLE_KO[role]}${start.length ? `, 남은 상태 ${start.join("·")} 지고` : ""}) 맞추기 미완 — 적 능력치를 원래 값의 ${pct(STAT_FLOOR)}까지 내려도 기준(${want}) 밖이다: 승률 ${pct(now.win)}·손실 ${pct(now.loss)}·${now.turns.toFixed(1)}턴. 원래 값으로 둔다(승률 ${pct(before.win)}·손실 ${pct(before.loss)}·${before.turns.toFixed(1)}턴)`);
+      notes.push(`${troopId}(${ROLE_KO[role]}${start.length ? `, 남은 상태 ${start.join("·")} 지고` : ""}) 맞추기 미완 — 적 능력치를 원래 값의 ${pct(STAT_FLOOR)}${role === "boss" ? "" : `(HP 는 ${pct(ROAD_BAND.hpFloor)})`}까지 내려도 기준(${want}) 밖이다: 승률 ${pct(now.win)}·손실 ${pct(now.loss)}·${now.turns.toFixed(1)}턴. 원래 값으로 둔다(승률 ${pct(before.win)}·손실 ${pct(before.loss)}·${before.turns.toFixed(1)}턴)`);
       return;
     }
     if (copyId !== troopId) rename.set(troopId, copyId);
