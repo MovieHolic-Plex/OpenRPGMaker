@@ -10,7 +10,7 @@
 import beodeulLooks from "./beodeulLooks.json";
 import type { TileGraft, TilesetDef, TilesetLook } from "@/project/types";
 
-export const TILESET_LOOK_PARTS = ["surface", "trees", "woods"] as const;
+export const TILESET_LOOK_PARTS = ["surface", "trees", "woods", "houses", "plaza"] as const;
 export type TilesetLookPart = (typeof TILESET_LOOK_PARTS)[number];
 
 type Sources = Readonly<Record<string, readonly number[]>>;
@@ -111,12 +111,12 @@ export function tilesetLookGround(tilesetId: string, look: TilesetLook | undefin
 
 /** 겉모습 갈래의 선택지 이름(표 순서). 맨 앞 "" 는 «원래 그림». */
 export function tilesetLookOptions(table: TilesetLookTable, part: TilesetLookPart): string[] {
-  return ["", ...Object.keys(table.parts[part].options)];
+  return ["", ...Object.keys(table.parts[part]?.options ?? {})];
 }
 
 /** 사람이 읽는 겉모습 이름(보고·화면용). */
 export function describeTilesetLook(tilesetId: string, look: TilesetLook | undefined): string {
   const table = tilesetLookTableFor(tilesetId);
   if (!table || !look) return "";
-  return TILESET_LOOK_PARTS.map((part) => table.parts[part].options[look[part] ?? ""]?.label).filter(Boolean).join(" / ");
+  return TILESET_LOOK_PARTS.map((part) => table.parts[part]?.options[look[part] ?? ""]?.label).filter(Boolean).join(" / ");
 }

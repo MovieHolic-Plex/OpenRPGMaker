@@ -15,13 +15,15 @@ export interface SunlightArt {
 /** Recover a 2.5D silhouette from the still-present upper art. Detached props get
  * their own ground line; a statue in a stamp must not raise the entire house. */
 export function structureSunlightArt(map: GameMap, p: StructurePlacement, kit: SectionStructureKitDef,
-  source?: SunlightArtSource): SunlightArt {
+  source?: SunlightArtSource, baseTile: (tile: number) => number = tile => tile): SunlightArt {
   const r = SUN_ART_RESOLUTION, width = p.w * r, height = p.h * r;
   const mask = new Uint8Array(width * height);
   for (let y = 0; y < p.h; y++) for (let x = 0; x < p.w; x++) {
     const tile = kit.rows[y]?.upperTiles?.[x] ?? -1;
-    if (tile < 0 || map.upperTiles[(p.y + y) * map.width + p.x + x] !== tile) continue;
-    const alpha = source?.tileMask(tile);
+    // baseTile: 집 벌(게임마다 다른 집 그림)로 찍힌 칸은 원본 킷의 같은 자리 칸으로 읽는다 — 그림자 윤곽은 실제로 찍힌 그림의 것.
+    const placed = map.upperTiles[(p.y + y) * map.width + p.x + x] ?? -1;
+    if (tile < 0 || baseTile(placed) !== tile) continue;
+    const alpha = source?.tileMask(placed);
     for (let py = 0; py < r; py++) for (let px = 0; px < r; px++)
       mask[(y * r + py) * width + x * r + px] = alpha ? alpha[py * r + px]! : 1;
   }

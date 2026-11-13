@@ -2,6 +2,7 @@ import architecture from '@/assets/beodeulArchitectureCatalog.json';
 import catalog from '@/assets/beodeulGroundCatalog.json';
 import { createBeodeulGroundTileset, ensureBeodeulGroundReferences } from '@/project/defaults/beodeulGround';
 import { translateTiles } from '@/project/objectStamp';
+import { houseSetBaseTiles } from '@/project/houseSetKit';
 import { layerTileAt, setLayerTileAt } from '@/project/mapLayers';
 import type { Project, StructureKitDef } from '@/project/types';
 import { ToolError, type ToolDefinition } from './types';
@@ -25,7 +26,9 @@ export function harmonizeBeodeulDaylight(project:Project,mapId:string,options:{s
   // A repeated complete application is a no-op, including its tileset metadata.
   const already=Array.from({length:map.width*map.height},(_,i)=>own(layerTileAt(map,2,i))?.anchor).some(Boolean);
   if(already&&wanted.shadows&&wanted.roads&&wanted.meadow)return{summary:'이 맵에는 공용 일광·접지 보정이 이미 있습니다.',data:{mapId,alreadyApplied:true,changes:0}};
-  const native=(n:number)=>{const g=grafts.get(n);return g?.sourceChipset==='tex_beodeul_city'?g.sourceTile:g?.sourceChipset==='tex_beodeul_door'?(g.sourceTile<8?5743:2333):n;};
+  // 집 벌(게임마다 다른 집 그림) 칸은 원본 킷의 같은 자리 칸으로 읽는다 — 벌 집도 같은 집으로 알아보고 같은 그림자를 받는다(project/houseSetKit.ts).
+  const setBase=houseSetBaseTiles(target);
+  const native=(n0:number)=>{const n=setBase.get(n0)??n0,g=grafts.get(n);return g?.sourceChipset==='tex_beodeul_city'?g.sourceTile:g?.sourceChipset==='tex_beodeul_door'?(g.sourceTile<8?5743:2333):n;};
   const kitIds=new Set([...architecture.buildings.flatMap(b=>[b.id,b.sourceKit]),'bd-tree-03a8f7','bd-tree-3e8732','bd-tree-1a786c']);
   const anchors:Anchor[]=[];
   for(const kit of target.structureKits??[]){
