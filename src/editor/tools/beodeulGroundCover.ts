@@ -38,6 +38,8 @@ export interface BeodeulGroundCoverOptions {
   readonly grove?: Iterable<number>;
   /** 풀밭으로 칠 1층 칸을 더한다 — 숲 던전의 잔잔한 잔디(공용 잔디와 같은 빛의 3×3 무늬). 주지 않으면 공용 잔디와 숲 도로의 숲 잔디만 풀밭이다. */
   readonly ground?: ReadonlySet<number>;
+  /** 이벤트가 선 칸에도 깐다 — 던전은 적·상자를 놓은 뒤에 덧그림을 깔아서, 비우면 적이 걸어 나간 자리에 풀빛 구멍이 남는다. 기본은 비운다(마을·도로). */
+  readonly underEvents?: boolean;
 }
 
 export interface BeodeulGroundCoverReport { floorCells: number; patchCells: number; textures: string[] }
@@ -94,7 +96,7 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
   const levels = map.relief?.levels;
   const lv = (c: number): number => levels?.[c] ?? 0;
   const ramps = map.relief?.ramps;
-  const eventAt = new Set(map.events.map((e) => e.y * W + e.x));
+  const eventAt = new Set(options.underEvents ? [] : map.events.map((e) => e.y * W + e.x));
   // 칸 분류
   const L2 = new Int32Array(n), nat2 = new Int32Array(n);
   const base = new Uint8Array(n);    // 덧그림을 깔 수 있는 바닥 칸(풀 · 큰 물체 아님 · 경사로 아님)
@@ -110,7 +112,7 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
   }
   const used = new Map<number, number>(); // 그림판 칸 → (나중에) 맵 타일셋 칸
   const writes: [number, number][] = []; // [칸, 그림판 칸]
-  const lifts: number[] = [];            // 2층의 수관 끝 칸을 3층으로 올릴 칸
+  const lifts: number[] = [];            // 2층의 수관 끝 칸을 3층으로 올릴 칸(3층의 앞줄 나무 밑동은 4층으로)
   const inMap = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < H;
   /** 덩이 R 의 칸마다 꼭짓점 비트(북서1·북동2·남서4·남동8). 꼭짓점은 둘레 네 칸이 모두 R 이고 같은 단일 때만 안. 맵 밖은 가장 가까운 안쪽 칸을 따른다. */
   const cornerMask = (R: Uint8Array, c: number): number => {
@@ -135,7 +137,11 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
       if (composite !== undefined) { writes.push([c, composite]); used.set(composite, -1); return true; }
       // 숲 수관의 남쪽 끝 줄 칸(2층 — 줄기·뿌리 그림, 비치는 곳으로 바닥이 보인다)은 얹어 구운 그림이 없다. 3층이 비어 있으면 그 수관 칸을 3층으로 올리고
       // 그 밑(2층)에 숲 바닥을 깐다 — 안 그러면 숲 바닥 한가운데 줄기 밑이 풀빛 네모로 남는다. 수관 칸은 어느 층에 있어도 막힌 칸이다.
-      if (!shadow || !forest[c] || !canopyTiles.has(nat2[c]!) || layerTileAt(map, 3, c) >= 0) return false;
+      // 3층에 앞줄 나무의 밑동(plantFrontTrees — 밑동 줄만 3층, 위 줄은 4층)이 서 있으면 그 밑동도 4층으로 올린다(4층이 비어 있을 때만) — 안 그러면
+      // 앞줄 나무 발치마다 풀빛 칸이 남아 밝은 숲 바닥(붉은 흙·마른 풀)에서 풀빛 띠로 읽힌다. 그리는 순서(바닥 < 수관 끝 < 밑동)는 그대로다.
+      if (!shadow || !forest[c] || !canopyTiles.has(nat2[c]!)) return false;
+      const up = layerTileAt(map, 3, c);
+      if (up >= 0 && (kindOf(up) !== 1 || layerTileAt(map, 4, c) >= 0)) return false;
       lift = true;
     }
     const cell = (hash(c % W, Math.floor(c / W), seed + 31) < 0.5 ? overlay.cells : overlay.alt)[mask]!;
@@ -298,7 +304,7 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
 
   if (!writes.length) return report;
   const tr = translateTiles(standOverlaySource(table), ts, used.keys());
-  for (const c of lifts) setLayerTileAt(map, 3, c, L2[c]!);
+  for (const c of lifts) { const up = layerTileAt(map, 3, c); if (up >= 0) setLayerTileAt(map, 4, c, up); setLayerTileAt(map, 3, c, L2[c]!); }
   for (const [c, cell] of writes) { const to = tr.map.get(cell); if (to !== undefined && to >= 0) setLayerTileAt(map, 2, c, to); }
   return report;
 }
