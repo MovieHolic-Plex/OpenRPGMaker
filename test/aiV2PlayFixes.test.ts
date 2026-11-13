@@ -10,7 +10,9 @@ import type { Project } from "@/project/types";
 import { buildingEntrances } from "@/ai/v2/place/entrances";
 import { afterWinLines } from "@/ai/v2/story/playerLines";
 import { stepHandover } from "@/ai/v2/story/stepHandover";
-import { pathBattles } from "@/ai/v2/story/pathBattleBudget";
+import { fitPathBattlesIn, pathBattles } from "@/ai/v2/story/pathBattleBudget";
+import { fitTroopCopy } from "@/editor/tools/bossThreatScaling";
+import { simulateBattle } from "@/battle/simulate";
 import { BOSS_BAND } from "@/ai/v2/story/pathBattleTension";
 
 describe("소지품에 드는 것은 단계의 종류와 화면 글이 정한다", () => {
@@ -107,6 +109,41 @@ describe("싸우는 단계의 상대는 모두 보스다", () => {
     const bosses = pathBattles(project).filter((b) => b.role === "boss").sort((a, b) => (a.step ?? 0) - (b.step ?? 0));
     expect(bosses.map((b) => [b.eventId, b.step])).toEqual([["ev_a", 0], ["ev_b", 1]]);
     expect(pathBattles(project).find((b) => b.eventId === "ev_gate")!.role).toBe("gate");
-    expect(BOSS_BAND).toEqual({ minWin: 0.95, turns: 16, attackOnlyMaxWin: 0.1 });
+    expect(BOSS_BAND).toEqual({ minWin: 0.95, turns: 12, targetTurns: [6, 10], midPotions: [1, 3], finalPotions: [2, 4], attackOnlyMaxWin: 0.1, attackOnlyMaxLeft: 0.5, midAttackOnlyMinWin: 0.5 });
+  });
+});
+
+// 2026-11-13 감독 교정: 보스 셋을 15턴·약 4~5개의 싸움으로 만들고(HP 649 → 952) 시작 약을 두 배로 준 것은 위협이 아니라 부풀리기였다.
+describe("보스 밴드는 HP 와 시작 회복약을 늘리지 않는다", () => {
+  it("한 대만 올리고, 약이 모자라 밴드에 못 들면 그렇게 적는다 — 다시 돌려도 그대로", () => {
+    const project = createBlankProject() as Project;
+    const map = project.maps[project.startMapId]!;
+    const boss = fitTroopCopy(project, "troop_slime", "boss")!;
+    const hpOf = (troopId: string) => project.database.troops.find((t) => t.id === troopId)!.enemyIds.reduce((sum, id) => sum + project.database.enemies.find((e) => e.id === id)!.stats.maxHp, 0);
+    const hpBefore = hpOf(boss);
+    map.events = [...(map.events ?? []),
+      { id: "ev_a", name: "인형", x: 3, y: 3, trigger: { kind: "action" }, pages: [{ id: "p0", name: "p0", conditions: [], trigger: { kind: "action" }, commands: [{ kind: "battleProcessing", troopId: boss, canEscape: false, canLose: false }] }] }] as never;
+    const place = map.name ?? map.id;
+    project.gameBlueprint = { request: "게임", title: "t", genre: "g", premise: "p", playerGoal: "g", ending: { name: "끝", how: "z", feeling: "w" }, steps: [
+      { id: "s1", kind: "battle", place, event: "인형", who: "인형", label: "l" },
+      { id: "s2", kind: "talk", place, event: "촌장", who: "촌장", label: "l" }] } as never;
+    const notes = fitPathBattlesIn(project);
+    const fitted = pathBattles(project).find((b) => b.role === "boss")!.troopId;
+    // 싸우는 단계 하나(마지막 단계는 대화) — 길 위 전투 하나 몫의 약 하나만 들고 시작한다. 보스를 밴드에 넣으려고 더 주지 않는다.
+    expect(Object.values(project.session.inventory ?? {}).reduce((sum, n) => sum + n, 0)).toBe(1);
+    expect(hpOf(fitted)).toBeLessThanOrEqual(hpBefore);
+    const line = notes.find((note) => note.startsWith("보스 밴드"))!;
+    expect(line).toContain("보스 밴드 밖");
+    expect(line).toMatch(/약 [0-9.]+개 < 2개/u);
+    expect(fitPathBattlesIn(project).filter((note) => note.includes("(보스)"))).toEqual([]);
+    expect(hpOf(fitted)).toBeLessThanOrEqual(hpBefore);
+  }, 180_000);
+
+  it("모의전은 깎인 HP 로 시작할 수 있다 — 앞 보스전에서 남긴 HP 를 지고 다음 보스 앞에 서는 판", () => {
+    const project = createBlankProject() as Project;
+    const ids = project.system.startActorIds!;
+    const full = simulateBattle({ project, troopId: "troop_slime", heroLevel: 1, partyActorIds: ids, n: 8, seed: 11 });
+    const worn = simulateBattle({ project, troopId: "troop_slime", heroLevel: 1, partyActorIds: ids, n: 8, seed: 11, startHpRatio: 0.5 });
+    expect(worn.avgHpRemaining).toBeLessThan(full.avgHpRemaining - 100);
   });
 });
