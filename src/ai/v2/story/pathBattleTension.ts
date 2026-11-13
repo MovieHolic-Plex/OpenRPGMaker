@@ -279,7 +279,9 @@ export function raiseBossTension(project: Project, troopId: string, party: BossP
     return true;
   };
   let gaps = threatGaps(party, sensible, attackOnly);
-  for (const share of heal > 0 ? BOSS_HIT_PER_POTION : [Infinity]) {
+  // 앞 보스의 한 대는 첫 단(약 하나의 2/3)을 넘지 않는다 — 사람은 모의(HP 30%)보다 일찍 약을 쓰므로, 한 대가 약 하나에 가까우면 약만 마시는 싸움이 된다
+  // (2026-11-13 r2s-fun 키보드 플레이: 한 대 112 의 인형에게 45% 에서 약을 쓰는 플레이가 약 4개·11번의 명령을 썼다 — 모의는 1.5개·8.1턴).
+  for (const share of heal > 0 ? (party.final ? BOSS_HIT_PER_POTION : BOSS_HIT_PER_POTION.slice(0, 1)) : [Infinity]) {
     hitCap = hero ? Math.min(hero.maxHp * BOSS_HIT_CAP, Number.isFinite(share) ? heal * share : Infinity) : Infinity;
     for (let round = 0; round < RAISE_ROUNDS && gaps.length; round += 1) {
       if (!RAISE_STEPS.some(step)) break;
