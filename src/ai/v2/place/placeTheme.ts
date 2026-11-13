@@ -283,8 +283,10 @@ export function themeFieldTroops(project: Project, mapId: string): { readonly tr
 /**
  * 이 맵에서 싸우는 단계의 상대 무리(보스·중간 보스로 맞춘 사본) — 현행 그림이 있는 종만. 고르는 순서: 상대 이름(who)과 낱말이 겹치는 테마 적 →
  * 이름의 적 낱말이 가리키는 종(dungeonFoes 의 낱말 표, 그림이 없으면 대역) → 단계마다 돌려 고른 테마 우두머리. 테마 표에 없는 세계는 흔한 판타지 목록(COMMON).
+ * taken = 이 게임의 다른 싸우는 단계가 이미 세운 종. 고른 종이 거기 있고 이름이 그 종을 가리킨 것이 아니면(대역 · 돌려 고른 것) 아직 안 쓴 가까운 종으로 바꾼다 —
+ * 테마 우두머리 → 같은 갈래(적 id 머리말이 같은 현행 종: golem_iron → golem_clay) → 테마 길 적. 보스 둘이 같은 전투 그림으로 서지 않게(2026-11-13 r2s-fun: 둘 다 철 골렘).
  */
-export function themeBossTroop(project: Project, mapId: string, who: string | undefined, final: boolean, salt: number): { readonly troopId?: string; readonly gaps: string[] } {
+export function themeBossTroop(project: Project, mapId: string, who: string | undefined, final: boolean, salt: number, taken?: ReadonlySet<string>): { readonly troopId?: string; readonly enemyId?: string; readonly gaps: string[] } {
   const theme = placeThemeOf(project, mapId);
   const map = project.maps[mapId];
   if (!map) return { gaps: [] };
@@ -294,14 +296,17 @@ export function themeBossTroop(project: Project, mapId: string, who: string | un
   // 이름 겹침: 보스 후보는 어느 낱말이든, 길 적은 머리 명사(마지막 낱말)만 — 「모래 수호자」 가 모래 전갈이 되지 않게.
   const akin = want.ids.find((id) => words.some((w) => nameOf(project, id).includes(w))) ?? road.ids.find((id) => !!words.at(-1) && nameOf(project, id).includes(words.at(-1)!));
   const worded = akin ? undefined : currentFoe(project, enemyArtFor(project, who ?? ""));
-  const pick = akin ?? worded?.enemyId ?? want.ids[Math.abs(salt) % Math.max(1, want.ids.length)];
+  const natural = akin ?? worded?.enemyId ?? want.ids[Math.abs(salt) % Math.max(1, want.ids.length)];
+  const named = !!akin || (!!worded && !worded.wanted);
+  const kin = (id: string) => { const head = id.replace(/^enemy_/u, "").split("_")[0]; return project.database.enemies.map((e) => e.id).filter((e) => e.startsWith(`enemy_${head}_`) && hasCurrentArt(project, e)); };
+  const pick = natural && taken?.has(natural) && !named ? [...want.ids, ...kin(natural), ...road.ids].find((id) => !taken.has(id)) ?? natural : natural;
   const troopId = pick ? fitted(project, [pick], final ? "boss" : "midBoss")[0] : undefined;
   if (troopId) useCurrentArt(project, pick);
   const where = placeName(map);
   if (!troopId) return { gaps: foeGaps(theme, "boss", where, "default boss troop", want.undrawn, who?.trim() || entry.wantedFoes || `boss of ${theme?.kind?.about ?? theme?.world.name ?? "this place"}`) };
   // 고른 상대가 바란 그대로면(이름·낱말이 맞았다) 그 밖의 없는 종은 적지 않는다 — 돌려 고른 대역일 때만 그릴 목록을 남긴다.
   const undrawn = akin ? [] : worded ? (worded.wanted ? [worded.wanted] : []) : want.undrawn;
-  return { troopId, gaps: foeGaps(theme, "boss", where, nameOf(project, pick!), undrawn, akin || worded ? undefined : entry.wantedFoes) };
+  return { troopId, enemyId: pick, gaps: foeGaps(theme, "boss", where, nameOf(project, pick!), undrawn, akin || worded ? undefined : entry.wantedFoes) };
 }
 
 /**

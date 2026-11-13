@@ -915,7 +915,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     const overrideFrame = scene.eventGraphicPatternOverrides?.get(event.id);
     const authoredPattern = view.page?.graphic.pattern;
     const pattern = overrideFrame ?? authoredPattern;
-    const spriteTexture = withDerivedFieldFoe(scene, resolveEventSpriteTexture(store.getCurrent(), sprite.id, pattern));
+    const spriteTexture = withDerivedFieldFoe(scene, resolveEventSpriteTexture(store.getCurrent(), sprite.id, pattern), view.page?.graphic);
     if (!spriteTexture) scene.missingResources.add(sprite.id);
     // Static art has one frame. Charset overrides already encode direction/walk.
     const frame =

@@ -17,7 +17,7 @@ import { endingClosing, normalizeGameBlueprint, type GameBlueprint } from "@/pro
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
 import { programAnchor } from "../place/program";
 import { incomingLandings, resolveWhere } from "../place/where";
-import { applyThemeBackdrop } from "../place/placeTheme";
+import { applyThemeBackdrop, themeBossTroop } from "../place/placeTheme";
 import { walkStart } from "../place/cells";
 import type { BuildRun, ContentBuildResult } from "../shared/types";
 import { BLUEPRINT_PATH_IDS, codeStepBypass, escapeLeaks, eventGives, isCodeStep, walkBlueprint } from "./blueprint";
@@ -268,6 +268,12 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   /** 앞 단계의 사람·물건이 알려 준 번호(자물쇠 단계가 code 를 안 줬으면 가장 최근 것이 정답). */
   const heard: string[] = [];
   /** 단계마다 — 자물쇠 단계가 받은 정답(없으면 undefined). 앞 단계의 글이 이 번호를 담으면 그 단계가 번호를 알려 주는 단계다. */
+  /** 싸우는 단계들이 세운 종 — 보스 둘이 같은 전투 그림으로 서지 않게(story/stepFoeTroop). */
+  const foesUsed = new Set<string>();
+  // 마지막 싸움의 상대가 제 종을 먼저 갖는다 — 앞 싸움이 그 종을 가져가 마지막 보스가 대역의 대역으로 서지 않게.
+  const finalMap = lastBattle >= 0 && steps.some((st, i) => st.kind === "battle" && i < lastBattle) ? mapFor(run.ctx.project, steps[lastBattle]!.place) : undefined;
+  const finalFoe = finalMap ? themeBossTroop(run.ctx.project, finalMap.id, steps[lastBattle]!.who?.trim() || undefined, true, lastBattle).enemyId : undefined;
+  if (finalFoe) foesUsed.add(finalFoe);
   const lockCodes = steps.map((st) => (st.kind === "puzzle" || (!st.kind && isCodeStep(st)) ? byId.get(st.id)?.code?.trim() || undefined : undefined));
   steps.forEach((step, k) => {
     const keptBefore = prevKept;
@@ -380,7 +386,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     const choice = options.length >= 2 ? { options: options.map((o, i) => ({ text: o.text.trim(), ...(o.lines?.length ? { lines: o.lines } : {}), flag: `${step.id} 선택 ${i + 1}` })) } : undefined;
     if (choice) for (const [i, o] of options.entries()) if (o.later?.trim()) variants.push({ needs: `${step.id} 선택 ${i + 1}`, lines: [o.later.trim()] });
     // 싸우기(battle): 대사 뒤 그 상대와 싸워 이겨야 보상·엔딩이 이어진다 — 마지막 싸움은 보스, 앞 싸움은 중간 보스 세기.
-    const troopId = step.kind === "battle" && !code ? foeTroop(run.ctx.project, step.id, who, k === lastBattle, map.id, k, artGaps) : undefined;
+    if (k === lastBattle && finalFoe) foesUsed.delete(finalFoe);
+    const troopId = step.kind === "battle" && !code ? foeTroop(run.ctx.project, step.id, who, k === lastBattle, map.id, k, artGaps, foesUsed) : undefined;
     if (troopId) { const bg = applyThemeBackdrop(run.ctx.project, map.id); if (bg.gap) artGaps.push(bg.gap); }
     // 이긴 뒤의 말은 모델이 쓴 것만 — 전투 화면이 승리를 이미 알렸다.
     const battle = troopId ? { troopId, ...(t?.winLines?.length ? { winLines: t.winLines } : {}) } : undefined;
