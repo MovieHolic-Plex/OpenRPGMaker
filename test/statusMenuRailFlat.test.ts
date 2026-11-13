@@ -15,14 +15,15 @@ function flatProject() {
 }
 
 describe("flat status menu rail (painted skins)", () => {
-  it("행동·파티를 펼치고 임무는 그대로, 저장은 꺼내고 시스템은 접는다", () => {
+  // 기록 묶음에는 「전투 기록」·「임무」 가, 시스템 묶음에는 「설정」 이 기본으로 있다 — 이 파일의 옛 기대값(임무 하나 · 설정 없음)을 지금 동작으로 맞췄다(2026-11-13).
+  it("행동·파티를 펼치고 기록은 「기록 ▸」 로, 저장은 꺼내고 시스템은 접는다", () => {
     const project = flatProject();
     // 동료가 있고 몬스터 수집을 하는 게임 — 파티 명령 넷이 다 쓸 데가 있다.
     project.system.monsterCollection = true;
     const session = startSession(project);
     session.partyActorIds = ["actor_hero", "actor_mage", "actor_cleric"];
     expect(listStatusMenuRailIds(project, session)).toEqual([
-      "items", "skills", "equipment", "status", "row", "formation", "monsters", "quests", "save", "system-menu",
+      "items", "skills", "equipment", "status", "row", "formation", "monsters", "record-menu", "save", "system-menu",
     ]);
   });
 
@@ -30,10 +31,10 @@ describe("flat status menu rail (painted skins)", () => {
     const project = flatProject();
     const session = startSession(project);
     expect(session.partyActorIds).toHaveLength(1);
-    expect(listStatusMenuRailIds(project, session)).toEqual(["items", "skills", "equipment", "status", "quests", "save", "system-menu"]);
+    expect(listStatusMenuRailIds(project, session)).toEqual(["items", "skills", "equipment", "status", "record-menu", "save", "system-menu"]);
     // 동료가 생기면 열·진형이 나타난다.
     session.partyActorIds = ["actor_hero", "actor_mage"];
-    expect(listStatusMenuRailIds(project, session)).toEqual(["items", "skills", "equipment", "status", "row", "formation", "quests", "save", "system-menu"]);
+    expect(listStatusMenuRailIds(project, session)).toEqual(["items", "skills", "equipment", "status", "row", "formation", "record-menu", "save", "system-menu"]);
     // 포획 구슬로 한 마리 잡으면 몬스터가 나타난다.
     session.monsterParty = ["monster_1"];
     expect(listStatusMenuRailIds(project, session)).toContain("monsters");
@@ -52,7 +53,7 @@ describe("flat status menu rail (painted skins)", () => {
 
   it("시스템 트레이는 저장을 빼고 로드·대기·타이틀만 담는다", () => {
     const project = flatProject();
-    expect(listStatusMenuGroupCommandIds("system-menu", project, startSession(project))).toEqual(["load", "wait", "to-title"]);
+    expect(listStatusMenuGroupCommandIds("system-menu", project, startSession(project))).toEqual(["load", "wait", "options", "to-title"]);
   });
 
   it("기록 명령이 둘 이상이면 「기록 ▸」 로 접는다", () => {
@@ -62,7 +63,7 @@ describe("flat status menu rail (painted skins)", () => {
     const rail = listStatusMenuRailIds(project, session);
     expect(rail).toContain("record-menu");
     expect(rail).not.toContain("quests");
-    expect(listStatusMenuGroupCommandIds("record-menu", project, session)).toEqual(["quests", "relationships"]);
+    expect(listStatusMenuGroupCommandIds("record-menu", project, session)).toEqual(["battle-reports", "quests", "relationships"]);
   });
 
   it("커서 강조 대상: 펼친 명령은 자신, 접힌 명령은 그룹 항목", () => {
@@ -72,7 +73,7 @@ describe("flat status menu rail (painted skins)", () => {
     expect(statusMenuRailIdForCommand("save", project, session)).toBe("save");
     expect(statusMenuRailIdForCommand("load", project, session)).toBe("system-menu");
     expect(statusMenuRailIdForCommand("to-title", project, session)).toBe("system-menu");
-    expect(statusMenuRailIdForCommand("quests", project, session)).toBe("quests");
+    expect(statusMenuRailIdForCommand("quests", project, session)).toBe("record-menu");
     expect(statusMenuRailIdForCommand("system-menu", project, session)).toBe("system-menu");
   });
 
@@ -82,7 +83,7 @@ describe("flat status menu rail (painted skins)", () => {
     expect(listStatusMenuRailIds(project, session)).toEqual(["items", "skills", "equipment", "party-menu", "record-menu", "system-menu"]);
     expect(statusMenuRailIdForCommand("status", project, session)).toBe("party-menu");
     expect(statusMenuRailIdForCommand("status")).toBe("party-menu");
-    expect(listStatusMenuGroupCommandIds("system-menu", project, session)).toEqual(["save", "load", "wait", "to-title"]);
+    expect(listStatusMenuGroupCommandIds("system-menu", project, session)).toEqual(["save", "load", "wait", "options", "to-title"]);
   });
 });
 
