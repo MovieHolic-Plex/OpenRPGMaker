@@ -65,6 +65,14 @@
 [data-hud-objective-font="pixel"] .zone-feedback-objective { font-family:var(--font-pixel-small); }
 [data-hud-objective-font="round"] .zone-feedback-objective { font-family:var(--font-pixel-legacy); }
 [data-hud-objective-font="clean"] .zone-feedback-objective { font-family:var(--font-system-ui); }
+/* HUD 껍질(project/uiLook.ts 가 글꼴과 판을 함께 정한 게임)은 목표 줄만이 아니라 같은 띠 가족(알림 띠·조작 안내)에도 선다 — 턴제 게임의 필드에는
+   이 띠들뿐이라, 여기가 그 게임의 HUD 다. 판을 정하지 않은 옛 게임(글꼴만 고른 게임 포함)은 [data-hud-panel] 이 없어 그대로다. */
+[data-hud-panel][data-hud-objective-font="pixel"] :is(.zone-feedback-prompt,.objective-card) { font-family:var(--font-pixel-small); }
+[data-hud-panel][data-hud-objective-font="round"] :is(.zone-feedback-prompt,.objective-card) { font-family:var(--font-pixel-legacy); }
+[data-hud-panel][data-hud-objective-font="clean"] :is(.zone-feedback-prompt,.objective-card) { font-family:var(--font-system-ui); }
+[data-hud-panel="paper"] :is(.zone-feedback-objective,.zone-feedback-prompt) { background:rgb(250 242 219 / 0.86); color:rgb(84 60 36); text-shadow:none; }
+[data-hud-panel="paper"] .objective-card { background:rgb(250 242 219 / 0.95); color:rgb(84 60 36); text-shadow:none; }
+[data-hud-panel="paper"] .objective-card-label { color:rgb(160 96 28); }
 .play-stage:has(> [data-testid="main-menu"]) > .field-hud,
 .play-stage:has([data-testid="battle-scene"]) > .field-hud,
 .play-stage:has(> .dialogue-overlay:not(:empty)) > .field-hud { display:none; }

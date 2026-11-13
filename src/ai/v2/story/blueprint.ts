@@ -35,6 +35,7 @@ export const WRITE_BLUEPRINT_SCHEMA = {
       kind: { type: "string", description: "a place kind id from the [World of this game] card" },
       from: { type: "string", description: "name of the place this one is entered from (default: the place listed before it)" },
     }, required: ["name", "kind"] } },
+    look: { type: "string", description: "UI look id offered in the result" },
     playerGoal: { type: "string", description: "one guiding line for a new player (within 140 chars)" },
     steps: { type: "array", minItems: 2, maxItems: 12, items: { type: "object", properties: {
       id: { type: "string", description: "s1, s2 …" },

@@ -15,6 +15,7 @@ import { applyThemeBackdrop } from "../place/placeTheme";
 import { asPresetHud, HUD_SOURCES, normalizeFieldHud, projectCanLoseHp, projectFieldHpChanges, projectHudUse, resolvedHudWidgets, unusedHudGauges } from "@/project/fieldHud";
 import { hudIsStoryTemplate } from "../judge/hudTitleChecks";
 import { battleSites } from "../judge/combatChecks";
+import { applyUiLook, pickUiLook, uiLookEra } from "@/project/uiLook";
 
 export type Obj = Record<string, unknown>;
 
@@ -23,19 +24,19 @@ let factoryCache: Project | undefined;
 const factory = (): Project => (factoryCache ??= createBlankProject() as Project);
 
 /**
- * 필드 HUD 를 아무도 고르지 않았다(편집기 기본 — 하트 체력·숫자). set_field_hud 와 같은 값으로 고른다: 필드에서 체력이 깎일 일(실시간 액션 전투·
- * 피해 명령)이 없으면 끈다({off:true} — 목표 줄만), 있으면 공포는 꽃잎 생명(horror), 싸우는 판타지는 고전 창(classic), 그 밖은 하트 모험(hearts).
- * 턴제 전투만 있는 게임도 끈다 — 체력은 전투 화면과 메뉴에 있고 필드에서는 걷는 내내 움직이지 않는다(2026-11-13 증기의 심장: 한 명 파티 판이 내내 떠 있었다).
- * 실측(2026-11-05 gpt-only-game 6차): 전투 없는 학교 연애가 체력 하트와 「514 / 514」를 내내 띄웠다.
+ * 필드 HUD 를 아무도 고르지 않았다(편집기 기본 — 하트 체력·숫자). 무엇을 띄울지는 이 게임의 사실로 정한다(요청 글의 낱말은 읽지 않는다):
+ *  - 필드에서 체력이 깎일 일(실시간 액션 전투·피해 명령)이 없으면 끈다({off:true} — 목표 줄만). 턴제 전투만 있는 게임도 끈다 — 체력은 전투 화면과 메뉴에 있다
+ *    (2026-11-13 증기의 심장: 한 명 파티 판이 내내 떠 있었다. 2026-11-05 gpt-only-game 6차: 전투 없는 학교 연애가 「514 / 514」를 내내 띄웠다).
+ *  - 깎이면: 고딕 저택·묘지 칩셋의 게임은 꽃잎 생명(horror), 턴제인데 동료가 둘 이상이면 동료 체력 줄(party), 그 밖은 하트(hearts).
+ * 글꼴·판(껍질)은 여기서 정하지 않는다 — fillUiLook 이 게임의 모습 한 벌로 정한다. 전에는 요청 글의 «공포·마왕·판타지» 낱말로 테마를 골랐다(낱말 목록 — 없앴다).
  */
-export function fillFieldHud(project: Project, story: string): string[] {
-  const action = project.system.actionCombat?.enabled === true;
+export function fillFieldHud(project: Project): string[] {
   if (!projectFieldHpChanges(project)) {
     project.system.fieldHud = { theme: "chase", vitals: false, clock: false, tools: false, objective: true, hideEmpty: true, widgets: [] };
     return [projectCanLoseHp(project) ? "필드 HUD 끔(체력은 전투 안에서만 바뀐다 — 목표 줄만)" : "필드 HUD 끔(체력이 줄 일이 없다 — 목표 줄만)"];
   }
-  const premise = premiseOf(project, story);
-  const theme = /공포|호러|귀신|유령|괴담|좀비|horror/iu.test(premise) ? "horror" : !action && /마왕|용사|기사|판타지|RPG|던전/iu.test(premise) ? "classic" : "hearts";
+  const action = project.system.actionCombat?.enabled === true;
+  const theme = uiLookEra(project) === "gothic" ? "horror" : !action && (project.system.startActorIds?.length ?? 0) > 1 ? "party" : "hearts";
   // 목표 줄은 둔다(기본 HUD 에서도 보이던 줄) — normalizeFieldHud 는 빠진 objective 를 끈다.
   const next = normalizeFieldHud({ theme, objective: true });
   delete next.widgets;
@@ -51,14 +52,14 @@ export function fillFieldHud(project: Project, story: string): string[] {
  *    그 판은 체력만 꺼서 「마력 43/43」 막대 하나가 모래 위에 혼자 떠 있었다.
  *  - 저자가 직접 짠 widgets(꽃잎 생명·호감 게이지)는 건드리지 않는다. 전에 뺀 게이지는 전투·기술이 생기면 돌아온다(asPresetHud).
  */
-export function reconcileFieldHud(project: Project, story: string): string[] {
-  if (project.system.fieldHud === undefined || hudIsStoryTemplate(project)) return fillFieldHud(project, story);
+export function reconcileFieldHud(project: Project): string[] {
+  if (project.system.fieldHud === undefined || hudIsStoryTemplate(project)) return fillFieldHud(project);
   const hud = asPresetHud(project.system.fieldHud);
   if (hud.widgets !== undefined) return [];
   // adventure 는 실시간 액션 전투의 HUD 다(체력·마력 막대 + 도구 5칸 + 스태미나 — 화면 왼쪽 위 3분의 1). 턴제 게임에 고른 것은 이름으로 고른 것이라
   // 함수가 고르는 값으로 바꾼다. 몸 게이지를 끄기로 한 것은 지킨다.
   if (hud.theme === "adventure" && project.system.actionCombat?.enabled !== true) {
-    const notes = fillFieldHud(project, story);
+    const notes = fillFieldHud(project);
     if (!hud.vitals && project.system.fieldHud) project.system.fieldHud = { ...project.system.fieldHud, vitals: false };
     return [`필드 HUD adventure(실시간 액션용)는 턴제 게임에 맞지 않아 바꿨다 — ${notes.join(" ")}`];
   }
@@ -358,15 +359,16 @@ function sharedChipLabel(resourceId: string, index: number): string {
 }
 
 /**
- * 대화창·메뉴 모양을 아무도 고르지 않았다 — 장르로 ESC 메뉴 모양(menuUiStyle)을 고른다: 싸우는 판타지는 고전 청색 창, 추리·탈출·공포는 수첩,
- * 그 밖은 여행 세로 명령창. 대사창 룩(연애 VN)·창 스킨은 건드리지 않는다.
+ * 이 게임의 UI 모습 한 벌(project/uiLook.ts) — 대사창 · ESC 메뉴 · 전투 창 · 타이틀 로고/메뉴 · HUD 글꼴/판을 함께 정한다. 끝맺음마다 돈다(멱등).
+ *  - 모델이 청사진의 look 에 적었으면 그것, 전에 입힌 것이 있으면 그것, 아니면 게임의 사실(칩셋 계열의 시대 · 전투 방식 · 대사 중심인가)에 맞는 후보에서
+ *    게임 열쇠(seed)로 하나. 요청 글의 낱말은 읽지 않는다.
+ *  - 축마다 아무도 고르지 않았을 때만 채운다 — 저자·모델이 직접 고른 대사창·메뉴·전투 창·로고는 그대로다(고른 축과 가장 많이 겹치는 세트가 고른다).
+ * 전에는 ESC 메뉴 하나만 요청 글의 «추리·마왕·판타지» 낱말로 골랐다(대사창은 늘 유리, 전투 창은 늘 청색 도트 창).
  */
-export function fillWindowLook(project: Project, story: string): string[] {
-  const premise = project.gameBlueprint ? `${blueprintPremiseText(project, project.gameBlueprint)} ${project.gameBlueprint.ending.how}` : premiseOf(project, story);
-  const style: NonNullable<Project["system"]["menuUiStyle"]> = /추리|탐정|미스터리|사건|탈출|밀실|escape|공포|호러|귀신|유령|horror/iu.test(premise) ? "journal"
-    : /마왕|용사|기사|판타지|RPG|던전|전투|모험/iu.test(premise) || battleSitesExist(project) ? "classic" : "field-list";
-  project.system.menuUiStyle = style;
-  return [`메뉴 모양 → ${style}`];
+export function fillUiLook(project: Project, seed: string): string[] {
+  const picked = pickUiLook(project, seed);
+  const applied = applyUiLook(project, picked.look.id);
+  if (!applied.length) return [];
+  const why = picked.by === "blueprint" ? "청사진이 고름" : picked.by === "kept" ? "전에 고른 모습" : `${picked.facts.era ?? "시대 모름"} · ${picked.facts.combat}${picked.facts.talky ? " · 대사 중심" : ""} — 후보 ${picked.pool.join("/")}`;
+  return [`UI 모습 → ${picked.look.id}(${picked.look.label}; ${why}): ${applied.join(" · ")}`];
 }
-
-const battleSitesExist = (project: Project): boolean => Object.values(project.maps).some((m) => JSON.stringify(m.events ?? []).includes('"battleProcessing"'));

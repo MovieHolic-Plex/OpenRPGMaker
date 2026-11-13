@@ -106,6 +106,20 @@ export const BATTLE_LOOK_PRESETS: Readonly<Record<BattleLookPresetId, BattleLook
   cinema: { group: "modern", label: "영화식", mood: "영화 같은 연출·비극·느와르·여운", summary: "테 없음 · 영화 띠", description: "위아래 검은 띠, 창 테두리 없이 글자만. 흐림과 빛으로 장면을 살린다.", axes: { ...BASE, party: "compact", command: "actor", field: "full", letterbox: true, window: "bare", light: 1, vignette: 2, blur: 2, grade: true } },
 };
 
+/**
+ * 아래 띠(화면 아래 1/3)를 창이 빈틈없이 덮는 배치인가 — 전장은 창 위까지만(band), 명령 창은 왼쪽 아래(corner), 파티는 그 옆 줄 목록(rows).
+ * 기본 프리셋(pixel)의 «아래 두 창» 이다.
+ *
+ * 왜(2026-11-13 확인 빌드 r3s «증기도시의 심장»): «화면 끝까지»(full) 배치는 배경 그림을 아래로 비춰 어둡게 덮는데, 주인공 혼자인 게임에서는
+ * 그 아래 1/3 이 빈 그러데이션으로 남고 명령 창이 화면 한가운데 떠서 목록(아이템·스킬)이 적을 가렸다. 파티 7 × 명령 6 = 42가지를 band 에서 찍어 보면
+ * 작은 창·초상 카드·아래 상자·위 작은 상자·기울인 초상은 주인공 혼자일 때 띠의 반 이상이 비고, 위쪽 가로는 안내 띠와 겹치고, 캐릭터 옆 창·버튼 네 개·사선 블록은
+ * 배틀러 위에 뜨고, 아이콘 줄은 파티 줄을 덮는다(~/claude-viz/av2-ui-look.html). 위 상자(boxesTop)는 고르기 화면은 덮지만 목록 상태를 확인하지 않아 넣지 않았다.
+ * 조수가 자동으로 입히는 모습(project/uiLook.ts)은 이 배치만 쓴다. 저자가 자료집에서 손으로 고르는 프리셋은 그대로다.
+ */
+export function battleLookFillsBand(axes: Pick<BattleLookAxes, "field" | "party" | "command">): boolean {
+  return axes.field === "band" && axes.command === "corner" && axes.party === "rows";
+}
+
 /** 조수용 고르기 안내 한 줄 — `id(라벨)=어울리는 분위기` 를 프리셋 순서대로. */
 export function battleLookMoodGuide(): string {
   return BATTLE_LOOK_PRESET_IDS.map((id) => `${id}(${BATTLE_LOOK_PRESETS[id].label})=${BATTLE_LOOK_PRESETS[id].mood}`).join(" · ");

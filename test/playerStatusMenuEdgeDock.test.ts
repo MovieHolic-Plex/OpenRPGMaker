@@ -72,9 +72,13 @@ describe("player status menu edge dock", () => {
     try {
       const project = createBlankProject();
       project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
+      // 파티 명령 넷이 다 쓸 데가 있는 게임(동료 있음 · 몬스터 수집) — 혼자인 게임의 기본 메뉴는 열·진형·몬스터를 싣지 않는다.
+      project.system.monsterCollection = true;
+      const session = startSession(project);
+      session.partyActorIds = ["actor_hero", "actor_mage"];
       const menu = renderWithFakeDom(() => renderPlayerStatusMenu({
         project,
-        session: startSession(project),
+        session,
         slots: [],
         selectedCommand: "party-menu",
         mode: "function",

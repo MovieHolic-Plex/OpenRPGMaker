@@ -16,12 +16,12 @@ import { fitRequiredBattlesToStarters } from "./monsterRequiredBattles";
 import { equipMonsterCampaign } from "./monsterCampaignGifts";
 import { beginFitBudget, enterFastFit, FitBudgetExceeded, restoreFitState, snapshotFitState } from "./monsterFitBudget";
 import { redressHeroTwins } from "./heroTwins";
-import { Obj, reconcileFieldHud, premiseOf, fillBattleBgm, fillBattleBackgrounds, fillEnemyHpLook, fillPartyLooks, fillPartyNames, fillWindowLook } from "./shipLookDefaults";
+import { Obj, reconcileFieldHud, premiseOf, fillBattleBgm, fillBattleBackgrounds, fillEnemyHpLook, fillPartyLooks, fillPartyNames, fillUiLook } from "./shipLookDefaults";
 import { moveEntrancesOntoArt, fillStaleObjectives, moveRepeatingStartObjective, pullBackStartObjective, fillGymArrivalObjectives, hasFinal, quietFieldGuides } from "./shipObjectiveDefaults";
 
 /** 출하 기본값을 채운다. 바꾼 항목 설명을 돌려준다(없으면 빈 배열). task 는 실행 지시문(앞선 요청 메모 포함). */
-export function applyShipDefaults(project: Project, task = project.gameBlueprint?.request ?? ""): string[] {
-  const applied = applyLookDefaults(project);
+export function applyShipDefaults(project: Project, task = project.gameBlueprint?.request ?? "", lookSeed = ""): string[] {
+  const applied = applyLookDefaults(project, "", lookSeed);
   if (offArtEntrances(project).length) applied.push(...moveEntrancesOntoArt(project));
   if (repeatingStartObjectives(project).length) applied.push(...moveRepeatingStartObjective(project));
   if (lateStartObjective(project)) applied.push(...pullBackStartObjective(project));
@@ -87,7 +87,7 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
  * applyShipDefaults 의 앞부분이고, v1 조수(piAgentRuntime)도 게임 하나를 만드는 요청의 끝에서 부른다 — 실측(2026-11-05 gpt-only-game, Terra 혼자 v1):
  * 다섯 판 모두 엔딩까지 플레이되는데 전투 곡·전투 배경·게임 오버·창 모양이 편집기 기본으로 남았다(v2 끝맺음만 이것을 채웠다).
  */
-export function applyLookDefaults(project: Project, story = ""): string[] {
+export function applyLookDefaults(project: Project, story = "", lookSeed = ""): string[] {
   // 청사진 없는 v1 게임은 요청 글(story)을 이야기로 읽는다 — 제목만으로는 성별·장르를 못 고른다.
   const applied: string[] = [];
   const left = new Set(editorDefaultsLeft(project).map((b) => b.id));
@@ -104,11 +104,12 @@ export function applyLookDefaults(project: Project, story = ""): string[] {
   applied.push(...redressHeroTwins(project));
   // 이름은 모습 뒤(고른 칩의 성별로 이름을 고른다), 엔딩 맺음 앞(맺음 글이 새 이름을 쓴다).
   if (left.has("party-names")) applied.push(...fillPartyNames(project, story));
-  if (left.has("window-look")) applied.push(...fillWindowLook(project, story));
   if (left.has("game-over")) applied.push(...fillGameOver(project, story));
   applied.push(...keepProgressOnDefeat(project));
   if (left.has("combat-leftovers")) applied.push(...clearCombatLeftovers(project));
-  applied.push(...reconcileFieldHud(project, story));
+  applied.push(...reconcileFieldHud(project));
+  // UI 모습 한 벌은 HUD 구성 뒤에 — HUD 의 글꼴·판(껍질)을 그 구성 위에 입힌다. 열쇠는 게임 열쇠(조수 실행의 projectKey), 없으면 제목.
+  applied.push(...fillUiLook(project, lookSeed || project.gameBlueprint?.title || project.meta.title || ""));
   // 제목 그림·엔딩 그림은 함수가 번들 스틸로 대신 깔지 않는다 — 출하 검사(title-image·ending-bg·ending-screen)가 막고 모델이 그림 단계에서 고르거나 만든다.
   return applied;
 }

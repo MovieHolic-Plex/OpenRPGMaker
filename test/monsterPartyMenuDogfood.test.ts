@@ -104,6 +104,9 @@ describe('monster party menu dogfood regressions', () => {
     const rows = createPlayerStatusMenuSnapshot(project, session).partyRows;
     expect(rows[0].actorId).toBe(session.partyActorIds[0]);
     expect(rows[0].monsterInstanceId).toBeUndefined();
+    // 배우 RPG 는 장비가 있고, 동료가 있으면 열·진형도 있다(혼자인 게임의 기본 메뉴는 열·진형을 싣지 않는다 — 2026-11-13).
+    expect(listStatusMenuCommandIds(project, session)).toContain('equipment');
+    session.partyActorIds = [session.partyActorIds[0]!, project.database.actors.find((actor) => actor.id !== session.partyActorIds[0])!.id];
     expect(listStatusMenuCommandIds(project, session)).toEqual(expect.arrayContaining(['equipment', 'row', 'formation']));
     expect(createSaveSnapshot(project, session).partyLevel).toBe(session.actorLevels[session.partyActorIds[0]]);
   });

@@ -900,7 +900,7 @@ r1w-fun 의 대화창에는 이름표만 떴다. 까닭 셋:
 - `set_field_hud`: 고른 테마의 게이지 가운데 이 게임이 쓰지 않는 것은 빼고 저장하고, 답에 `onScreen`·`unused` 를 싣는다(명시한 `vitals:true` 는 그대로).
   테마 설명은 «무엇이 뜨는가» 로 다시 썼다(`toolTextEn.ts` 도).
 - 끝맺음 `reconcileFieldHud`(story/shipLookDefaults.ts, `applyLookDefaults` 가 늘 부른다): 안 골랐거나 템플릿 그대로면 함수가 고르고(체력이 줄 일이 없으면 목표 줄만,
-  공포는 꽃잎, 싸우는 판타지는 classic, 그 밖은 hearts), 턴제 게임에 고른 `adventure`(실시간 액션용)는 그 값으로 바꾸고, 고른 테마에서 안 쓰는 게이지를 뺀다. 전투·기술이 뒤에 생기면 뺀 게이지가 돌아온다. 저자가 짠 widgets 는 안 건드린다.
+  공포는 꽃잎, 싸우는 판타지는 classic, 그 밖은 hearts — 2026-11-13 부터는 낱말이 아니라 사실로: 고딕 칩셋 꽃잎 · 턴제 + 동료 둘 이상 동료 줄 · 그 밖 하트, 아래 «UI 모습 한 벌»), 턴제 게임에 고른 `adventure`(실시간 액션용)는 그 값으로 바꾸고, 고른 테마에서 안 쓰는 게이지를 뺀다. 전투·기술이 뒤에 생기면 뺀 게이지가 돌아온다. 저자가 짠 widgets 는 안 건드린다.
 - «HUD 선택» 관문은 지웠다(관문 하나 줄임) — 모델에게 고르라고 시키는 대신 함수가 게임에서 읽는다. 타이틀 모양 관문은 그대로.
 - **2026-11-13 — «쓰는 게이지» 가 아니라 «필드에서 바뀌는 칸».** `projectHudUse` 의 `hp` 는 이제 «필드에서 체력이 깎인다»(`projectFieldHpChanges`: 실시간 액션 전투·피해 명령)이고 `mp`·`stamina` 는 액션 전투일 때만 참이다.
   턴제 전투만 있는 게임에서는 체력·마력 게이지와 **동료 체력 판**이 `unused` 로 빠지고(`set_field_hud` 의 답 · 끝맺음), `fillFieldHud` 는 그런 게임을 «목표 줄만» 으로 끈다(전에는 classic/hearts).
@@ -2511,6 +2511,95 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
   ③ 반응 없는 입구 107 → 109: 장소만 짓는 명세 둘(lay-base-harbor · lay-base-village-to-field)의 집 목록이 달라 문이 둘·하나 늘었다(끝맺음이 돌지 않는 명세라 문마다 한 줄이 서지 않는다).
   ④ 화살표대로 걸어 못 닿음 515 → 517(jrpg-x1 75 → 83, jrpg-w2 68 → 62): 늘어난 것은 모두 마을 맵의 집 문 하나를 향한 출발 자리다(3 → 12). 장터 광장의 좌판 줄을 돌아가는 길에서 걷는 이가 네 칸씩 지나쳐 오간다 — 화살표 안내의 알려진 약점이고 여기서는 고치지 않았다.
   **배울 것**: ⓐ 킷 그림을 갈아 끼우면 «칸 번호로 건물을 읽는 곳» 이 조용히 0 을 돌려준다 — 은행의 건물·입구 줄이 줄면 먼저 의심한다. ⓑ 끝맺음의 뒤 단계가 사람을 옮기면 출구 마감 지문이 스스로 낡는다(지문은 `lanes-stamp` 가 마감 직후에 찍는다) — 다시 돌 횟수 둘 가운데 하나를 쓴다. 이번에는 자리 고르기에서 막았고, 지문 찍는 자리는 그대로다.
+
+
+## 게임마다 UI 모습 한 벌 — 대사창·메뉴·전투 창·타이틀·HUD 껍질을 세트로 (2026-11-13)
+
+**왜.** 오너 «HUD 선택, 대사창 선택 이런 것들은 ???». 스타일은 축마다 있었다(대사창 17 · ESC 메뉴 14 · 전투 창 프리셋 12 · 타이틀 로고 5 · 타이틀 메뉴 2 · HUD 글꼴 3·판 2).
+끝맺음은 그 가운데 ESC 메뉴 하나만, 요청 글의 낱말(«추리·마왕·판타지»)로 골랐다. 대사창은 모델이 따로 고르지 않으면 유리, 전투 창은 늘 청색 도트 창이었고,
+고른 메뉴가 대사창과 어울리는지는 아무도 보지 않았다. 필드 HUD 테마도 낱말(«공포·용사»)로 골랐다. 두 낱말 목록은 지웠다(리팩토링 규칙: 요청 낱말 목록을 더하지 않는다).
+
+**목록 = 엔진 데이터.** `src/project/uiLook.ts` 의 `UI_LOOKS` — 세트마다 id · 사람용 이름 · 모델이 읽는 영어 한 줄(`fit`, 8낱말 안) · 구성(대사창 · 메뉴 · 전투 창 프리셋(+ 겉판) ·
+타이틀 로고/메뉴 · 윈도스킨 · HUD 글꼴/판) · 함수가 고를 때의 조건(`suits`: 시대 · 전투 방식 · 대사 중심). **이미 있는 스타일만** 쓴다(새 스타일 없음 — `test/uiLook.test.ts` 가 id 를 대조).
+**한 벌은 한 가족이다**(같은 테스트): 밝은 대사창의 세트는 밝은 메뉴(journal · field-list) · 종이 전투 창 · 종이 HUD 판, 어두운 대사창의 세트는 어두운 메뉴 · 어두운 HUD 판.
+
+| id | 대사창 | ESC 메뉴 | 전투 차림(프리셋 + 겉판) | 로고 / 타이틀 메뉴 | HUD 글꼴 · 판 | 맞는 시대(전투) |
+|---|---|---|---|---|---|---|
+| kingdom | retro-blue | classic | pixel | metal / window | round · dark | fantasy (싸움) |
+| storybook | wood | journal | parch | gold / plain | pixel · paper | fantasy · primeval (싸움 없음·턴제) |
+| gilded | gold | party-first-warm | gold | gold / plain | round · dark | fantasy · industrial · gothic (싸움) |
+| rm2003 | classic(+windowskin-default) | retro-2003 | teal | metal / window | round · dark | fantasy · industrial |
+| hanji | joseon | journal | ink + parch | stone / plain | round · paper | eastern |
+| ink-night | float | party-first-warm | ink | stone / plain | round · dark | eastern · gothic (싸움) |
+| handheld | handheld | field-list | teal + parch | plain / window | pixel · paper | monster · fantasy · modern |
+| terminal | terminal | workbench | veil | glow / plain | clean · dark | future |
+| haunted | float | sheet | cinema + ink | stone / plain | round · dark | gothic · industrial |
+| soft | white-card | field-list | soft + parch | plain / plain | clean · paper | modern · fantasy (대사 중심, 싸움 없음·턴제) |
+| cozy | cream | journal | icons + parch | plain / plain | pixel · paper | modern · fantasy · primeval · monster (싸움 없음·턴제) |
+| cinematic | pixel-cinematic | sheet | cinema + veil | plain / plain | clean · dark | 어느 시대든 — 대사 중심일 때만 |
+| glass | glass | workbench | veil | plain / plain | clean · dark | future · modern, 그리고 맞는 세트가 없을 때의 기본 |
+
+**전투 화면은 «차림» 만 프리셋에서 가져오고 배치는 하나다 (2026-11-13 3차, `uiLookBattle`).** 세트가 입히는 `battleLook` = `{ preset, field: band, command: corner, party: rows (+ window) }`.
+프리셋의 창 겉판 · 글꼴 · 무대 연출(빛 · 흐림 · 차례 줄 · 영화 띠)은 쓰고, 프리셋의 배치(화면 끝까지 · 캐릭터 옆 명령 창 · 작은 상태 창 · 초상 카드 · 아이콘 줄 …)는 쓰지 않는다.
+왜: 확인 빌드 r3 의 실제 Sonnet 판(주인공 혼자)에서 rm2003(teal)의 전투 화면은 아래 1/3 이 빈 그러데이션이었고 명령 창이 한가운데 떠서 목록이 적을 가렸다. gilded(gold)는 맵 그대로인 배경에서 상태 창이 거의 안 보였다.
+42가지 배치를 찍어 보고 아래 띠를 창이 다 덮는 것 하나만 남겼다(`battleLookFillsBand` — `openwiki/runtime-battle.md` ④). `test/uiLook.test.ts` 가 모든 세트에서 이 계약을 본다.
+`battleWindow`(«+ parch» 등)는 창의 겉판(`battleLook.window`)만 바꾼다 — 밝은 세트 넷(hanji · handheld · soft · cozy)은 종이색으로, 영화식 둘(haunted · cinematic)은 «테 없음»(bare) 대신 먹빛 · 장막 판으로
+(테 없는 창은 판이 없어 맵 그대로인 배경에서 안내 글 · 승리 창이 타일 위에 맨 글자로 뜬다 — 같은 테스트가 bare 를 막는다).
+세트를 옮길 때는 «지금 보이는» 적 이름표 · 체력 막대를 지킨다(금테 프리셋이 기본으로 켜 둔 이름표가 다른 세트로 옮기며 꺼지지 않게).
+같은 날 전투 CSS 둘을 고쳤다: 목록(아이템 · 스킬)이 덮는 동안 그 밑의 파티 창을 그리지 않는다(`_retro2003.css` — 비치는 창에서 파티 줄이 목록 위로 비쳤다), 결과 창의 글자색이 창 꾸밈을 따른다(`_battle-look.css` — 양피지 창에 흰 글자였다).
+**ESC 메뉴**: 세트의 메뉴 스킨이 무엇이든 기본 메뉴는 그 게임에 쓸 데가 있는 명령만 싣는다(`listStatusMenuCommandIds` — `openwiki/runtime-pre-edit-routing.md`). 같은 테스트가 세트 13개 × 혼자/셋 파티로 본다.
+전투 창을 입혀도 적 이름표·체력 막대(`battleLook.enemyNames·enemyHp`, 끝맺음의 `fillEnemyHpLook`)는 그대로 남고, 그 두 칸은 «전투 창을 직접 골랐다» 로 치지 않는다.
+
+**고르는 길.**
+1. **함수가 기본이다** — 끝맺음(`applyLookDefaults` → `fillUiLook`)이 `pickUiLook` 으로 고른다. 읽는 것은 게임의 사실뿐이다(요청 글은 안 읽는다):
+   - 시대 = 게임이 깐 맵들의 **칩셋 계열**(`UI_LOOK_ERA_BY_FAMILY`: 버들항·설원·사막·하늘섬·해적·마법 학교 = fantasy, 조선·전국 = eastern, 스팀펑크 = industrial,
+     고딕 = gothic, 현대·일본 도시·캠퍼스 = modern, SF = future, 선사 = primeval, 몬스터 수집 = monster). 실내 공용 칩셋(버들항 계열)은 어느 세계에나 섞이므로 다른 시대의 맵이 하나라도 있으면 그쪽.
+   - 전투 방식 = 포켓몬식 전투 화면 / 실시간 액션 / 턴제(`battleProcessing` · 조우표) / 없음.
+   - 대사 중심 = 싸움이 없거나, 청사진 단계의 과반이 talk · choice.
+   - 후보(`uiLookCandidates`) 가운데, 저자·모델이 **이미 직접 고른 축**과 가장 많이 겹치는 것들에서 **게임 열쇠**(조수 실행의 `projectKey`, 없으면 제목) 해시로 하나.
+   - **이미 고른 대사창이 든 세트가 먼저다 — 시대 후보에 없어도.** 대사창은 가장 많이 보이는 축이라, 그것과 안 맞는 메뉴·전투 창을 입히면 한 벌이 아니다
+     (명세 은행 실측: 선사 세계에서 금장 대사창을 고른 게임이 종이 수첩 메뉴 + 아이콘 전투 창을, 증기 도시에서 단말기 대사창을 고른 게임이 청록 입체 창을 받았다).
+     메뉴·전투 창·로고만 고른 게임은 시대 후보 밖으로 나가지 않는다. 어느 세트에도 없는 대사창(흑창 넷 · 전신 대사창)은 그대로 두고 시대 후보에서 고른다.
+2. **모델은 고를 수 있다** — 청사진의 `look` 한 칸(선택). 지시문 카드에는 목록이 없다(카드를 읽을 때 모델은 세계를 모른다). `write_blueprint` 의 답 끝에 그 세계의 후보 **셋까지** 한 줄
+   (`uiLookHint`: « UI look (set look to choose, else code picks): id = fit · …»)이 붙고, 고르고 싶은 모델은 다음 청사진 고치기에 `look` 을 적는다 — 받은 즉시 입힌다
+   (HUD 껍질은 끝맺음이 — 구성이 정해진 뒤). 목록에 없는 id 는 버린다. 다시 쓰는 청사진이 `look` 을 빼면 앞 것을 물려받는다.
+3. 한 번 입힌 세트는 `system.uiLook` 에 적힌다 — 끝맺음을 다시 돌아도, 게임에 전투가 생겨도 같은 모습이다. 청사진의 `look` 이 바뀌면 전에 입힌 값 그대로인 축만 새 세트로 옮긴다.
+
+**입히기(`applyUiLook`)는 축마다 «아무도 고르지 않았을 때» 만.** `set_project_settings` · `set_vn_look` · `set_battle_look` · 사람이 고른 대사창·메뉴·전투 창·로고는 그대로다.
+편집기 기본(유리 대사창 · 도트 메뉴 · 도트 전투 창 · 창 타이틀 메뉴)은 저장 정규화가 지우므로 «일부러 기본을 골랐다» 와 구별되지 않는다 — 안 고른 것으로 본다.
+윈도스킨은 편집기 기본(`windowskin-warm`)일 때만 바꾼다.
+
+**HUD — 껍질과 내용은 다른 일이다.** 세트는 껍질(글꼴 `fieldHud.font` · 판 `fieldHud.panel` — 새 칸, `dark|paper`)만 정한다. 판은 프리셋 칸 가운데 판이 있는 칸과
+목표 줄 · 알림 띠 · 조작 안내에 선다(`[data-hud-panel]` — 턴제 게임의 필드에는 이 띠들뿐이라, 여기가 그 게임의 HUD 다). 무엇을 띄우고 얼마나 크게 띄우는가는
+필드 HUD 예산(`openwiki/runtime-pre-edit-routing.md`)의 일이고 세트가 건드리지 않는다(`test/uiLook.test.ts` 가 칸 id·크기·자리가 그대로임을 본다). 직접 짠 `widgets` 의 판은 그대로다.
+`fillFieldHud` 의 테마(무엇을 띄울지)도 사실로 고른다: 필드에서 체력이 안 깎이면 목표 줄만, 깎이면 고딕 칩셋은 꽃잎(horror), 턴제 + 동료 둘 이상은 동료 체력 줄(party), 그 밖은 하트(hearts).
+
+**그림 공백 — 세트로 짜지 못한 것(새 스타일을 그리지 않았다).**
+
+| 공백 | 지금 |
+|---|---|
+| 흑창 대사창(retro-black · double-line · skew · mono-heavy)에 맞는 **검은 ESC 메뉴 스킨이 없다** | 세트 셋(oldschool · quirky · pop)을 뺐다 — 한 가족이 아니었다(남색·보라·어두운 유리 메뉴). 모델이 흑창 대사창을 직접 고른 게임은 대사창은 그대로, 나머지는 시대 후보에서 받는다 |
+| 스팀펑크(industrial) 전용 황동·구리 스타일 | 가까운 세트로: gilded · rm2003 · haunted |
+| 선사(primeval) 전용 스타일 | 가까운 세트로: storybook · cozy. 실시간 전투인 선사 게임은 맞는 세트가 없어 glass |
+| 흰 휴대기 전투 창(측면 전투) | handheld 는 종이 겉판(parch) — 흰 창은 포켓몬식 전투 화면에만 있다 |
+| 동양(eastern) 대사창은 joseon 하나, SF 대사창은 terminal 하나 | 그 시대의 후보가 둘뿐이다 |
+| 황무지 칩셋의 계열이 `oprn-modern` | 현대와 구별하지 못한다 |
+| 타이틀 | 로고 다섯은 글자 질감만 다르고 메뉴는 창/글자 둘 — 세트 사이의 차이가 가장 작은 축 |
+| 전투 배치 | 아래 띠를 다 덮는 배치가 하나뿐이라 세트 13개의 전투 화면이 창 겉판 · 글꼴 · 연출로만 갈린다. 초상 카드 · 아이콘 줄 · 버튼 네 개 같은 배치는 주인공 혼자인 게임에서 띠가 비거나 배틀러를 가린다 |
+
+안 쓴 스타일: 대사창 흑창 넷(위) · `dual-fullbody-veil`(연애 전신 대사창 — 해상도·전신 그림과 한 묶음이라 `set_vn_look` 이 정한다), 메뉴 `pixel` · `retro-2000` · `party-first` · `classic-vx` · `classic-xp` ·
+`hub` · `ribbon`(뒤 둘은 긴 목표 글이 겹치거나 좁은 칸에 세로로 감긴다 — 스킨 쪽 결함), 전투 창 `line` · `pattern` · `pop`.
+
+**모델에게 가는 글 — 259자.** `write_blueprint` 스키마의 `look` 칸 +74자(설명 한 줄, enum 없음) + 그 도구의 답 끝 한 줄(가장 길 때 185자 — 후보 셋). 지시문 카드는 +0자 —
+`aiV2PromptBudget` 의 상한은 그대로다(게임 하나 요청 35,328 = 상한). `test/uiLook.test.ts` 가 «카드에 look 없음 · 스키마 증분 + 가장 긴 답 한 줄 ≤ 300» 을 잰다.
+
+**재 본 것(모델 없음).**
+- `bun scripts/qa/assistant-v2/uiLookSeeds.mts --project <풀린 프로젝트.json>`: «재밌는 게임 만들어 줘.» 를 열쇠 여섯으로 — 세계 6개, 그리고 지은 게임 하나(증거 판 «증기의 심장», 스팀펑크 · 턴제)를 같은 여섯 열쇠로 — 모습 3개(gilded · rm2003 · haunted). 수치는 `~/claude-viz/av2-ui-look.html` 의 표.
+- 세트마다 같은 일곱 순간(필드 목표 알림 · 고르기 대사 · ESC 메뉴 혼자/셋 · 전투 고르기 장소 배경/맵 배경 · 타이틀)과 전투 상태 아홉 × 배경 둘을, 확인 빌드의 실제 Sonnet 판 «사라진 수호 종» 사본에 입혀 출하 플레이어 960×720 으로 찍었다 — 같은 페이지(3차).
+- 데모 셋(폴른 스타 · 퍼스트 러브 · 시타마치)은 끝맺음을 거치지 않고 `panel` 도 없다 — 2차까지는 타이틀·필드·ESC 메뉴 아홉 장면의 전/후 화면이 같았다. 3차의 메뉴 명령 거르기 · 전투 CSS 뒤로는 다시 찍지 않았다.
+- 골든(157 요청): 확인 묶음 가지 머리(95b4dfe04f) 대비, 그리고 묶음이 main 에 들어간 뒤 main(7c0866a0a2) 대비 두 번 — 둘 다 달라진 요청 151개가 전부 `write_blueprint` 스키마의 `look` 칸 하나이고, 지시문은 157개 모두 한 글자도 안 바뀌었다.
+- 명세 은행 `ab`: 세트를 16개로 두었던 앞선 판에서 두 번(전체 49 · 게임 10) 모두 «나빠진 칸 없음». 세트를 13개로 줄인 뒤로는 **재생하지 않았다**(묶음의 마지막 돌림 몫으로 미뤘다).
+  앞선 재생에서 읽은 것: 은행의 게임 10개는 모두 모델이 대사창을 `set_project_settings` 로 이미 골라 두었다(retro-black 3 · retro-blue 3 · gold 3 · terminal 1). 흑창 셋은 이제 맞는 세트가 없어 시대 후보에서 받는다.
 
 ## 워커 루프에 차례 주기 — 30초 넘는 침묵 없이 (2026-11-12)
 

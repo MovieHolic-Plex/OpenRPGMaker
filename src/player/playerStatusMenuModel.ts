@@ -250,6 +250,12 @@ export type PlayerStatusMenuSnapshot = {
 export type StatusMenuSnapshotOptions = {
   readonly waitModeEnabled?: boolean;
 };
+/** 몬스터 항목에 볼 것이 있나 — 몬스터 수집·몬스터 파티 게임이거나, 지금 데리고 있거나 맡겨 둔 몬스터가 있다(포획 구슬로 잡은 뒤부터 나타난다). */
+function monsterMenuHasContent(project: Project, session: PlaySession): boolean {
+  return usesMonsterParty(project) || project.system.monsterCollection === true || Boolean(monsterCampaign(project))
+    || (session.monsterParty?.length ?? 0) > 0 || (session.monsterBox?.length ?? 0) > 0;
+}
+
 /** O3: hide 관계 rail unless giftSystem, any known friendship keys, or party bonds (system.partyBonds). */
 export function listStatusMenuCommandIds(project: Project, session: PlaySession): StatusMenuCommandId[] {
   const showRelationships =
@@ -269,6 +275,10 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
     }
     if (id === "region-map" || id === "campaign-progress") return Boolean(monsterCampaign(project));
     if (usesMonsterParty(project) && (id === "equipment" || id === "row" || id === "formation")) return false;
+    // 기본 메뉴는 이 게임에 쓸 데가 있는 명령만 싣는다(저작한 메뉴는 작가가 고른 그대로다).
+    // 왜(2026-11-13 확인 빌드 r3b): 주인공 혼자인 턴제 게임의 ESC 메뉴에 「열 바꾸기 · 진형 · 몬스터」 가 떴다 — 평탄 레일 스킨에서는 첫 화면에 그대로 보인다.
+    if (!authored && (id === "row" || id === "formation")) return session.partyActorIds.length >= 2;
+    if (!authored && id === "monsters") return monsterMenuHasContent(project, session);
     // 관계 중심 게임은 호감 기록이 아직 없어도 호감도 항목이 있다 — 비어 있어도 「아직 아무도」 가 보여야 한다. 일정은 퀘스트가 정의된 게임만.
     if (id === "relationships") return showRelationships || relationship;
     if (id === "quests" && relationship) return (project.quests?.length ?? 0) > 0;
