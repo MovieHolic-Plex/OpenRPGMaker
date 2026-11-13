@@ -42,7 +42,7 @@ export interface ChainLink {
   readonly wrongLines?: readonly string[];
   readonly doneLines?: readonly string[];
   /** switchId·itemId: 이 고리가 전에 지어 둔 스위치·물건 — 주면 이름이 바뀌어도 그 id 를 그대로 쓴다(청사진 다시 쓰기, blueprintCarry.ts). */
-  readonly reward?: { readonly item?: string; readonly flag?: string; readonly switchId?: string; readonly itemId?: string; readonly lines?: readonly string[]; readonly ending?: { readonly id?: string; readonly name?: string; readonly epilogue?: string | readonly string[] } };
+  readonly reward?: { readonly item?: string; readonly note?: string; readonly flag?: string; readonly switchId?: string; readonly itemId?: string; readonly lines?: readonly string[]; readonly ending?: { readonly id?: string; readonly name?: string; readonly epilogue?: string | readonly string[] } };
   readonly seal?: boolean;
   /** needs 대신 쓰는 조건 그대로(사슬 밖 이벤트가 켜는 스위치·주는 아이템). */
   readonly needsCondition?: readonly Record<string, unknown>[];
@@ -494,7 +494,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     let gave: { switchId?: string; itemId?: string } | undefined;
     const rewardCmds = (): Obj[] => {
       const out: Obj[] = [...say(link.reward?.lines)];
-      if (link.reward?.item) { const it = itemId(link.reward.item, link.reward.itemId, itemSource(link)); gave = { ...gave, itemId: it }; have.set(link.reward.item, { kind: "item", itemId: it }); out.push({ kind: "changeItem", itemId: it, op: "+=", amount: 1 }); if (!link.reward.lines?.length) out.push({ kind: "text", body: `『${link.reward.item}』${josa(link.reward.item, "을/를")} 얻었다.` }); }
+      if (link.reward?.item) { const it = itemId(link.reward.item, link.reward.itemId, link.reward.note ?? itemSource(link)); gave = { ...gave, itemId: it }; have.set(link.reward.item, { kind: "item", itemId: it }); out.push({ kind: "changeItem", itemId: it, op: "+=", amount: 1 }); if (!link.reward.lines?.length) out.push({ kind: "text", body: `『${link.reward.item}』${josa(link.reward.item, "을/를")} 얻었다.` }); }
       if (link.reward?.flag) { const sw = flag(link.reward.flag, `${args.name}: ${link.reward.flag}`, link.reward.switchId); gave = { ...gave, switchId: sw }; have.set(link.reward.flag, { kind: "flag", switchId: sw }); out.push({ kind: "setSwitch", switchId: sw, value: true }); }
       return out;
     };
