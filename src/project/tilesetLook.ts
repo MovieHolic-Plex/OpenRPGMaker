@@ -10,6 +10,7 @@
 // 프로젝트(이 기능 전에 만든 게임·손으로 만든 게임)는 고르지 않는다 — 한 게임 안에서는 늘 같은 겉모습이고, 옛 맵이 바뀌지 않는다.
 // 요청 낱말은 보지 않는다. 모델이 읽는 글도 없다.
 import { tilesetLookOptions, tilesetLookTableFor, TILESET_LOOK_PARTS, type TilesetLookTable } from "@/assets/tilesetLooks";
+import { tilesetStandTableFor } from "@/assets/tilesetStands";
 import { lookHash } from "./kitLook";
 import type { GameMap, Project, TilesetLook } from "./types";
 
@@ -22,6 +23,9 @@ export function chooseTilesetLook(table: TilesetLookTable, key: string): Tileset
     const pick = options[lookHash(`look|${key}|${table.tilesetId}|${part}`) % options.length]!;
     if (pick) { look[part] = pick; chosen = true; }
   }
+  // 숲 구성·풀밭 얼룩의 그림은 둘째 그림판에 있다 — 그 열쇠도 적어 둔다(미리 싣기·내보내기가 프로젝트 문자열에서 그림판을 찾는다).
+  const stands = tilesetStandTableFor(table.tilesetId);
+  if (stands && (look.stand || look.meadow)) look.standKey = stands.texture;
   return chosen ? look : undefined;
 }
 
