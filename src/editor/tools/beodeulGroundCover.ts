@@ -7,15 +7,21 @@
 //   · 덩이 가장자리는 꼭짓점 넷의 안팎 15꼴(그림판이 들쭉날쭉하게 깎아 둔 칸)이라 네모 판이 서지 않는다. 덩이는 높이 단을 넘지 않는다.
 // 겉모습에 stand·meadow 가 없는 게임(옛 게임 포함)에서는 아무것도 하지 않는다. 난수는 칸 좌표·씨앗 해시뿐이다(시공기의 난수 줄을 쓰지 않는다).
 import groundCatalog from "@/assets/beodeulGroundCatalog.json";
+import forestComposer from "@/assets/beodeulForestComposer.json";
 import { standOverlaySource, tilesetStandTableFor, type GroundOverlay } from "@/assets/tilesetStands";
 import { tilesetLookGround } from "@/assets/tilesetLooks";
 import { BEODEUL_NATURE, BEODEUL_NATURE_TEXTURE } from "@/project/defaults/beodeulNature";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
+import { kitBaseTile } from "@/project/houseSetTiles";
 import { translateTiles } from "@/project/objectStamp";
 import type { GameMap, Project, TilesetLook } from "@/project/types";
 
 const GRASS = 737;
-const WOODLAND_GRASS = (groundCatalog as unknown as { ground?: { woodlandGrass?: number } }).ground?.woodlandGrass ?? -1;
+/** 숲 도로·이야기 길의 «숲 장면 잔디»(기초 칩셋 칸) — 숲 도로는 맵의 풀을 이 칸으로 바꿔 둔다. 이 값을 못 읽으면 숲 도로에 숲 바닥이 한 칸도 깔리지 않는다(2026-11-13: 다른 표에서 읽어 -1 이었다). */
+const WOODLAND_GRASS = (forestComposer as unknown as { ground: { woodlandGrass?: number } }).ground.woodlandGrass ?? -1;
+/** 나무 밑 「짙은 풀」 — 속 칸(버들항 원본 칸 몇 가지)과 가장자리 칸(기초 칩셋의 bdg-dark-grass-*). 숲길의 숲 덩이 밑에 깔린다. */
+const DARK_GRASS_CORE = new Set<number>((forestComposer as unknown as { ground: { darkGrass: { interior: number[] } } }).ground.darkGrass.interior);
+const DARK_GRASS_EDGES = new Set((groundCatalog as unknown as { recipes: { id: string; rows: number[][] }[] }).recipes.filter((r) => r.id.startsWith("bdg-dark-grass-")).flatMap((r) => r.rows.flat()));
 
 export interface BeodeulGroundCoverOptions {
   readonly seed: number;
@@ -25,7 +31,10 @@ export interface BeodeulGroundCoverOptions {
   readonly road?: (cell: number) => boolean;
   /** 물 칸 — 곁에 물가 띠를 둔다. */
   readonly water?: (cell: number) => boolean;
-  /** 숲 바닥으로 덮을 씨앗 칸을 더한다(밑풀 덩이 등). */
+  /**
+   * 숲 바닥으로 덮을 씨앗 칸을 더한다 — 숲길의 숲 덩이 칸(나무 composer 가 선 자리). 이 값을 준 호출에서는 나무 밑 「짙은 풀」 칸도 숲 바닥을 받는다
+   * (짙은 풀이 그 숲의 바닥이다). 주지 않은 호출(마을·도로)에서는 짙은 풀을 건드리지 않는다 — 도로의 짙은 풀은 조우 풀숲이다.
+   */
   readonly grove?: Iterable<number>;
 }
 
@@ -59,7 +68,9 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
   const natureOf = (tile: number): number => { const g = tile >= 0 ? grafts.get(tile) : undefined; return g && g.sourceChipset === BEODEUL_NATURE_TEXTURE ? g.sourceTile : -1; };
   const woodland = (tile: number): boolean => { const g = grafts.get(tile); return !!g && g.sourceChipset === "tex_beodeul_ground" && g.sourceTile === WOODLAND_GRASS; };
   const groundMemo = new Map<number, boolean>();
-  const isGround = (tile: number): boolean => { let v = groundMemo.get(tile); if (v === undefined) { v = tile === GRASS || woodland(tile); groundMemo.set(tile, v); } return v; };
+  const darkToo = options.grove !== undefined;
+  const darkGrass = (tile: number): boolean => { if (DARK_GRASS_CORE.has(tile)) return true; const g = grafts.get(tile); return !!g && g.sourceChipset === "tex_beodeul_ground" && DARK_GRASS_EDGES.has(g.sourceTile); };
+  const isGround = (tile: number): boolean => { let v = groundMemo.get(tile); if (v === undefined) { v = tile === GRASS || woodland(tile) || (darkToo && darkGrass(tile)); groundMemo.set(tile, v); } return v; };
   const canopyTiles = new Set<number>(), shadeTiles = new Set<number>(BEODEUL_NATURE.forestShade.leaf);
   for (const row of BEODEUL_NATURE.forestCanopy.leaf) for (const t of row) if (t >= 0) canopyTiles.add(t);
   const meta = (ts.tileMeta ?? []) as unknown as ({ tags?: string[] } | undefined)[];
@@ -77,6 +88,7 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
     const tiles = kit.rows.flatMap((row) => [...row.tiles, ...(row.upperTiles ?? [])]).filter((t) => t >= 0);
     if (tiles.length && tiles.every((t) => kindOf(t) === 1)) for (const t of tiles) bigTree.add(t);
   }
+  const baseTile = kitBaseTile(ts);   // 숲 구성의 «다른 개체» 나무 칸은 원본 나무 킷의 칸으로 읽는다
   const levels = map.relief?.levels;
   const lv = (c: number): number => levels?.[c] ?? 0;
   const ramps = map.relief?.ramps;
@@ -91,7 +103,7 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
     const up = layerTileAt(map, 3, c), k3 = kindOf(up);
     const upNat = natureOf(up);
     if ((nat2[c]! >= 0 && (canopyTiles.has(nat2[c]!) || shadeTiles.has(nat2[c]!))) || (upNat >= 0 && canopyTiles.has(upNat))) forest[c] = 1;
-    if (k3 === 1 && bigTree.has(up)) tree[c] = 1;
+    if (k3 === 1 && bigTree.has(baseTile(up))) tree[c] = 1;
     base[c] = isGround(layerTileAt(map, 1, c)) && k3 !== 2 && !(ramps?.[c]) && kindOf(layerTileAt(map, 4, c)) !== 2 ? 1 : 0;
   }
   const used = new Map<number, number>(); // 그림판 칸 → (나중에) 맵 타일셋 칸
@@ -132,7 +144,14 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
   if (floor) {
     const shadow = new Map<number, number>();
     for (let i = 0; i + 1 < (floor.shadow ?? []).length; i += 2) shadow.set(floor.shadow![i]!, floor.shadow![i + 1]!);
-    const ok = (c: number): boolean => base[c] === 1 && !eventAt.has(c) && (L2[c]! < 0 || forest[c] === 1 || shadow.has(nat2[c]!));
+    // 숲 그늘 칸(숲 남쪽 아래 줄)도 «둘레가 모두 숲 바닥» 일 때만 숲 바닥에 얹은 그림으로 바꾼다 — 늘 얹어 구웠더니 숲 바닥이 없는 자리에 네모 판이 남았다
+    for (let i = 0; i + 1 < (stand!.shade ?? []).length; i += 2) shadow.set(stand!.shade![i]!, stand!.shade![i + 1]!);
+    // 맵 끝 줄의 풀밭 칸에는 번져 깔지 않는다(숲 칸·시공기가 숲 덩이로 준 칸은 깐다) — 맵 끝은 꼭짓점이 안쪽 칸을 따라가 숲 바닥이 맵 끝을 따라
+    // 곧은 띠로 섰다(숲 도로 표본 맨 윗줄)
+    const groveSet = new Set(options.grove ?? []);
+    const border = (c: number): boolean => { const x = c % W, y = (c - x) / W; return x === 0 || y === 0 || x === W - 1 || y === H - 1; };
+    // 맵 맨 윗줄의 숲 수관 칸에도 깔지 않는다 — 수관의 북쪽 끝 칸은 위 절반이 비쳐, 숲이 맵 위 끝까지 닿은 맵에서 숲 바닥이 맨 윗줄을 따라 곧은 띠로 보였다
+    const ok = (c: number): boolean => base[c] === 1 && !eventAt.has(c) && !(border(c) && !forest[c] && !groveSet.has(c)) && !(c < W && forest[c] === 1) && (L2[c]! < 0 || forest[c] === 1 || shadow.has(nat2[c]!));
     // 씨앗: 숲 수관·그늘 칸, 나무 덩이(7×7 창에 큰 나무 칸이 열여섯 넘게 — 큰 나무 두 그루가 붙어 선 곳), 시공기가 더한 칸.
     // 홀로 선 나무 밑에는 깔지 않는다 — 나무마다 흙빛 판이 붙으면 풀밭이 얼룩덜룩해진다(나무는 제 그림자가 있다).
     const seedCell = new Uint8Array(n);
@@ -143,7 +162,7 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
       for (let dy = -3; dy <= 3; dy += 1) for (let dx = -3; dx <= 3; dx += 1) if (inMap(x + dx, y + dy) && tree[(y + dy) * W + x + dx]) k += 1;
       if (k >= 16) seedCell[c] = 1;
     }
-    for (const c of options.grove ?? []) if (c >= 0 && c < n) seedCell[c] = 1;
+    for (const c of groveSet) if (c >= 0 && c < n) seedCell[c] = 1;
     for (let c = 0; c < n; c += 1) {
       if (!seedCell[c]) continue;
       const x = c % W, y = (c - x) / W;
@@ -154,6 +173,12 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
         // 한 칸 띠는 늘, 두 칸째는 잡음이 높은 곳만 — 덩이 테두리가 물결친다
         if (Math.max(Math.abs(dx), Math.abs(dy)) === 2 && noise(x + dx, y + dy, 3, seed + 7) < 0.45) continue;
         floorR[p] = 1;
+      }
+      // 큰 물결: 잡음이 높은 곳은 세 칸째까지 번진다(숲 가장자리가 한 폭 띠로 읽히지 않게)
+      if (noise(x, y, 7, seed + 17) > 0.62) for (let dy = -3; dy <= 3; dy += 1) for (let dx = -3; dx <= 3; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== 3 || !inMap(x + dx, y + dy)) continue;
+        const p = (y + dy) * W + x + dx;
+        if (!floorR[p] && ok(p) && lv(p) === lv(c) && noise(x + dx, y + dy, 2, seed + 23) > 0.5) floorR[p] = 1;
       }
     }
     // 그림자 칸은 통째로 덮여야 한다 — 그 둘레 칸도 덩이에 넣는다
@@ -169,6 +194,31 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
       for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) if (inMap(x + dx, y + dy) && floorR[(y + dy) * W + x + dx]) k += 1;
       if (k >= 3) floorR[c] = 1;
     }
+    // 모서리 깎기: 덩이의 볼록한 모서리 칸(여덟 이웃 가운데 덩이 칸이 넷 이하)은 두 번에 걸쳐 대부분 비운다 — 나무 덩이가 네모나게 심긴 자리에서
+    // 숲 바닥이 네모 판으로 읽혔다(가장자리만 들쭉날쭉하고 윤곽은 사각형). 숲 수관·그늘 칸과 그림자를 덮어야 하는 칸은 그대로 둔다.
+    for (let pass = 0; pass < 2; pass += 1) {
+      const drop: number[] = [];
+      for (let c = 0; c < n; c += 1) {
+        if (floorR[c] !== 1 || forest[c] || L2[c]! >= 0) continue;
+        const x = c % W, y = (c - x) / W; let k = 0;
+        for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if ((dx || dy) && inMap(x + dx, y + dy) && floorR[(y + dy) * W + x + dx]) k += 1;
+        if (k <= 4 && hash(x, y, seed + 733 + pass) < 0.8) drop.push(c);
+      }
+      for (const c of drop) floorR[c] = 0;
+    }
+    // 곧은 선 풀기: 길·절벽·물·건물처럼 덧그림을 못 까는 칸(또는 다른 단)에 바로 붙은 가장자리 칸은 자리 해시로 반쯤 비운다 —
+    // 숲 바닥이 길·절벽을 따라 자로 그은 선으로 끝나지 않고 풀이 드문드문 끼어든다. 숲 수관·그늘 칸과 그림자를 덮어야 하는 칸은 그대로 둔다.
+    for (let c = 0; c < n; c += 1) {
+      if (!floorR[c] || forest[c] || L2[c]! >= 0) continue;
+      const x = c % W, y = (c - x) / W; let hard = false;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        if (!inMap(x + dx, y + dy)) continue;
+        const p = (y + dy) * W + x + dx;
+        if (!base[p] || lv(p) !== lv(c)) { hard = true; break; }
+      }
+      if (hard && hash(x, y, seed + 911) < 0.5) floorR[c] = 2;
+    }
+    for (let c = 0; c < n; c += 1) if (floorR[c] === 2) floorR[c] = 0;
     // 숲 수관 칸: 속 칸(수관이 3층)은 2층이 비어 있어 덧그림을 깐다. 남쪽 끝 줄·그늘 칸(2층)은 그림판이 숲 바닥 위에 얹어 구운 그림으로 그린다.
     for (let c = 0; c < n; c += 1) if (floorR[c] && (L2[c]! < 0 || !forest[c]) && put(floor, floorR, c, shadow)) report.floorCells += 1;
     report.textures.push(stand!.floor);
@@ -188,14 +238,14 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
     for (let c = 0; c < n; c += 1) if (floorR[c] || forest[c]) { const x = c % W, y = (c - x) / W; for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if (inMap(x + dx, y + dy)) nearFloor[(y + dy) * W + x + dx] = 1; }
     const ok = (c: number): boolean => base[c] === 1 && L2[c]! < 0 && !nearFloor[c];
     const pick = new Int8Array(n).fill(-1);
-    // 1) 얼룩: 재질마다 다른 잡음 — 6칸 물결 위에 3칸 잔물결
+    // 1) 얼룩: 재질마다 다른 잡음 — 9칸 물결 위에 4칸 잔물결. 덩이는 드물고 크게(여섯 칸 물결·문턱 0.6 일 때는 맵마다 비슷한 크기의 얼룩이 잡음처럼 흩어졌다)
     const patchKinds = meadow.patches.map((id) => kindIndex(id)).filter((i) => i >= 0);
     for (let c = 0; c < n; c += 1) {
       if (!ok(c)) continue;
       const x = c % W, y = (c - x) / W;
       for (let k = 0; k < patchKinds.length; k += 1) {
-        const v = noise(x, y, 6, seed + 101 + k * 37) * 0.72 + noise(x, y, 3, seed + 211 + k * 53) * 0.28;
-        if (v > (kinds[patchKinds[k]!]!.small ? 0.7 : 0.6)) { pick[c] = patchKinds[k]!; break; }
+        const v = noise(x, y, 9, seed + 101 + k * 37) * 0.78 + noise(x, y, 4, seed + 211 + k * 53) * 0.22;
+        if (v > (kinds[patchKinds[k]!]!.small ? 0.72 : 0.63)) { pick[c] = patchKinds[k]!; break; }
       }
     }
     // 2) 길가·물가 띠 · 닳은 땅(얼룩을 덮어쓴다)

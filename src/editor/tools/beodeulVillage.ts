@@ -25,7 +25,7 @@ import { translateTiles } from "@/project/objectStamp";
 import groundCatalog from "@/assets/beodeulGroundCatalog.json";
 import { BEODEUL_NATURE, BEODEUL_NATURE_ID, createBeodeulNatureTileset } from "@/project/defaults/beodeulNature";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
-import { planBeodeulCanopy, shapeBeodeulCanopyMask, type BeodeulForestType } from "./beodeulForest";
+import { planBeodeulCanopy, raiseBeodeulCrowns, shapeBeodeulCanopyMask, type BeodeulForestType } from "./beodeulForest";
 import { invalidateReliefSlopes, rampCode, reliefAllowsStep } from "@/project/relief/walk";
 import { CUT_MAX_RISE, reverseCutLength } from "@/project/relief/cutPieces";
 import type { ReliefData } from "@/project/relief/types";
@@ -41,7 +41,8 @@ import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type ToolDefinition } from "./types";
 import { analyzeCityForm } from "./cityForm";
 import { beginConstructionTiles, logConstructionPlan, logConstructionTiles } from "./constructionLog";
-import { activeKitLook, withoutHouseSet } from "@/project/kitLook";
+import { activeKitLook, activeTilesetLook, lookHash, withoutHouseSet, withTreePick } from "@/project/kitLook";
+import { standKitPictures } from "@/project/standKit";
 import { projectTilesetLook } from "@/project/tilesetLook";
 import { houseSetTableFor } from "@/assets/houseSets";
 import { tilesetLookGround } from "@/assets/tilesetLooks";
@@ -322,7 +323,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const water = resolveVillageWater(theme, seed, form, options.water);
   if (options.woods !== undefined && options.woods !== "" && !(BEODEUL_VILLAGE_WOODS as readonly string[]).includes(options.woods)) throw new ToolError(`woods 는 ${BEODEUL_VILLAGE_WOODS.join("·")} 중 하나다(받은 값: ${options.woods}).`, { code: "invalid-args" });
   const denseWoods = options.woods === "dense";
-  const gameLook = projectTilesetLook(draft, TS_ID, activeKitLook());
+  // 타일셋에 적힌 겉모습 → 이 도구 실행이 시작할 때 정해 둔 것(activeTilesetLook — 형제 게임을 피해 고른 것 포함, 같은 실행이 앞서 다른 버들항 맵을 지었어도 같다) → 열쇠로 고른 것.
+  const lookTileset = draft.tilesets[TS_ID];
+  const gameLook = lookTileset?.look ?? (lookTileset ? activeTilesetLook(lookTileset) : undefined) ?? projectTilesetLook(draft, TS_ID, activeKitLook());
   // 숲 생김새: 요청이 숲속 빈터(dense)·산골을 정했으면 그대로 — 아니면 그 게임의 생김새(둘레 숲 벽·작은 덩이와 빈터·가로수 줄). 없으면 예전 그대로(둥근 숲 덩이 몇).
   const woodsLook = denseWoods ? undefined : gameLook?.woods;
   const plazaLook = theme === "river" || theme === "coast" ? PLAZA_LOOKS[gameLook?.plaza ?? ""] : undefined;
@@ -2817,7 +2820,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 밀도(2026-10-11 사용자 지적 「오브젝트 밀도가 너무 높다」 두 번): 덩이 시도·크기를 줄이고 빈 땅을 더 남긴다.
   // 화면당 빈 바닥 상한도 46%→58%(모래·눈 62%→74%) — 그림자가 생겨 덜 채워도 땅이 평평해 보이지 않는다.
   // 과수원(4차 orchards — 세 뙈기, 또는 숲 구성을 고른 게임의 셋에 하나 — 한 뙈기): 같은 과일나무를 네 칸 간격 줄로 심는다(줄 사이 한 칸은 걸어 다닌다).
-  const orchardBlocks = woodsLook === "orchards" ? 3 : stand && seed % 3 === 0 ? 1 : 0;
+  // 줄 맞춘 과수원은 숲 구성이 과일나무 숲일 때만(올리브·오렌지·사과·아몬드 …) — 참나무·전나무 숲 게임에 과일나무 격자가 서지 않게. 숲 구성이 없는 게임은 3차까지의 규칙 그대로.
+  const orchardBlocks = stand ? (stand.orchard ? (woodsLook === "orchards" ? 3 : seed % 3 === 0 ? 1 : 0) : 0) : woodsLook === "orchards" ? 3 : 0;
   if (orchardBlocks && trees.length && (theme === "river" || theme === "coast")) {
     const fruit = (stand ? have(stand.kits.fruit ?? []) : []).map(K).filter((k) => k.w === 3 && k.h <= 4);
     const any = trees.map(K).filter((k, i, all) => all.indexOf(k) === i && k.w === 3 && k.h === 3);
@@ -2851,6 +2855,59 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       } else if (d[c] === 1 && reedKit && r < 0.09 && treeFits(reedKit, x, y - reedKit.h + 1, 2)) claim(reedKit, x, y - reedKit.h + 1, PROP, false);
     }
   }
+  // 둘째 문 잇기: 문이 둘 이상 그려진 건물(ㄱ자 공공 건물·연립)은 등록된 문 하나만 길에 이어져, 다른 문은 풀밭에 바로 붙었다
+  // (2026-10-29 야외 VQA vm2 argon jrpg 「돌벽 집 문 앞에는 길이 없어 문까지 갈 수 없어 보인다」). 그림에 문이 있는 칸마다
+  // 문 앞 칸에서 가장 가까운 길·광장까지 6걸음 안이면 1칸 폭 문 앞 길을 낸다(밭·건물·물은 피한다 — 못 이으면 그대로 둔다).
+  // 숲 구성을 고른 게임은 큰 나무를 세우기 **전에도** 한 번 잇는다(아래) — 큰 나무가 빈 땅을 다 훑어 서면 문에서 길까지의 빈 땅이 막혀 문 앞 길이 빠졌다
+  // (2026-11-13 숲 구성만 고른 게임 한 판: 열쇠 없는 판에 있던 문 앞 길 다섯 칸이 없고 그 자리에 나무가 섰다). 이미 이은 문은 다시 잇지 않는다.
+  const linkPictureDoors = (): void => {
+    const meta = (ts.tileMeta ?? []) as unknown as ({ label?: string } | undefined)[];
+    const doorTile = (t: number | undefined) => { if (t === undefined || t < 0) return false; const l = (meta[t]?.label ?? "").replace(/\s*\([^)]*\)/gu, "").replace(/^.*·\s*/u, "").trim(); return /(?:문|문 ?통로|문칸|door|gate)$/iu.test(l) && !/금고|창문|창틀|문양|문장|포문|뚜껑문|수문|천문|window|safe|hatch/iu.test(l); }; // eventReach isDoorArtLabel 과 같은 판정
+    const fronts = new Set(doorFronts.map((d) => idx(d.x, d.y)));
+    for (const st of stamps) {
+      if (st.v !== BLD) continue;
+      const k = kitIndex.get(st.kit); if (!k) continue;
+      for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) {
+        const row = k.def.rows[j]; if (!row) continue;
+        if (!doorTile(row.upperTiles?.[i]) && !doorTile(row.tiles[i])) continue;
+        // 문 그림의 맨 아래 칸만(위아래 두 칸 문은 아랫칸), 바로 아래가 건물 밖
+        const below = k.def.rows[j + 1];
+        if (below && (doorTile(below.upperTiles?.[i]) || doorTile(below.tiles[i]))) continue;
+        // 문 아래 칸이 키트 밖이거나 키트 안 투명 칸(ㄱ자 건물의 들어간 쪽)이어야 사람이 선다
+        // (아래층 tiles 는 키트가 깐 바탕 땅일 수 있어 윗층만 본다)
+        if (below && (below.upperTiles?.[i] ?? -1) >= 0) continue;
+        const fx = st.x + i, fy = st.y + j + 1;
+        if (!inMap(fx, fy) || fronts.has(idx(fx, fy))) continue;
+        // 키트 상자 안 투명 칸(ㄱ자 건물의 들어간 마당)은 계획상 건물 칸이다 — 길 찾기에서는 빈 땅으로 본다
+        const hollow = new Set<number>();
+        for (let jj = 0; jj < k.h; jj += 1) for (let ii = 0; ii < k.w; ii += 1) if ((k.def.rows[jj]?.upperTiles?.[ii] ?? -1) < 0 && at(st.x + ii, st.y + jj) === BLD) hollow.add(idx(st.x + ii, st.y + jj));
+        const open = (n: number) => occ[n] === FREE || hollow.has(n);
+        if (hollow.has(idx(fx, fy))) set(fx, fy, FREE);
+        const v0 = at(fx, fy);
+        if (v0 === ROAD || v0 === PLAZAC) { fronts.add(idx(fx, fy)); doorFronts.push({ x: fx, y: fy, kit: k.id }); continue; }
+        if (v0 !== FREE) continue;
+        // 6걸음 BFS(빈 땅만)
+        const prev = new Map<number, number>([[idx(fx, fy), -1]]); const q = [idx(fx, fy)]; let hit = -1;
+        for (let h = 0; h < q.length && hit < 0; h += 1) {
+          const c = q[h]!, x = c % W, y = (c - x) / W;
+          let depth = 0; for (let t = c; prev.get(t)! >= 0; t = prev.get(t)!) depth += 1;
+          if (depth >= 6) continue;
+          for (const [dx, dy] of [[0, 1], [-1, 0], [1, 0], [0, -1]] as const) {
+            const nx = x + dx, ny = y + dy; if (!inMap(nx, ny)) continue; const n = idx(nx, ny);
+            if (prev.has(n)) continue;
+            if (rel && !reliefAllowsStep(rel, x, y, nx, ny)) continue;
+            const v = occ[n];
+            if (v === ROAD || v === PLAZAC) { prev.set(n, c); hit = n; break; }
+            if (open(n)) { prev.set(n, c); q.push(n); }
+          }
+        }
+        if (hit < 0) continue;
+        for (let t = prev.get(hit)!; t >= 0; t = prev.get(t)!) occ[t] = ROAD;
+        fronts.add(idx(fx, fy)); doorFronts.push({ x: fx, y: fy, kit: k.id });
+      }
+    }
+  };
+  if (stand) linkPictureDoors();
   // 숲 구성(stand)을 고른 게임: 덩이를 더 여러 번·더 크게(큰 나무 4~7그루) — 숲은 덤불 줄이 아니라 섞인 나무 덩이다.
   const groveMembers: number[] = [];
   // 큰 나무 자리 찾기(숲 구성): 마을의 빈 땅은 길·밭·집 사이 좁은 띠라 아무 칸이나 찍어서는 세 칸 넘는 나무가 거의 서지 못했다
@@ -2992,56 +3049,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
 
   planStep("밭·숲·덤불");
-  // 둘째 문 잇기: 문이 둘 이상 그려진 건물(ㄱ자 공공 건물·연립)은 등록된 문 하나만 길에 이어져, 다른 문은 풀밭에 바로 붙었다
-  // (2026-10-29 야외 VQA vm2 argon jrpg 「돌벽 집 문 앞에는 길이 없어 문까지 갈 수 없어 보인다」). 그림에 문이 있는 칸마다
-  // 문 앞 칸에서 가장 가까운 길·광장까지 6걸음 안이면 1칸 폭 문 앞 길을 낸다(밭·건물·물은 피한다 — 못 이으면 그대로 둔다).
-  {
-    const meta = (ts.tileMeta ?? []) as unknown as ({ label?: string } | undefined)[];
-    const doorTile = (t: number | undefined) => { if (t === undefined || t < 0) return false; const l = (meta[t]?.label ?? "").replace(/\s*\([^)]*\)/gu, "").replace(/^.*·\s*/u, "").trim(); return /(?:문|문 ?통로|문칸|door|gate)$/iu.test(l) && !/금고|창문|창틀|문양|문장|포문|뚜껑문|수문|천문|window|safe|hatch/iu.test(l); }; // eventReach isDoorArtLabel 과 같은 판정
-    const fronts = new Set(doorFronts.map((d) => idx(d.x, d.y)));
-    for (const st of stamps) {
-      if (st.v !== BLD) continue;
-      const k = kitIndex.get(st.kit); if (!k) continue;
-      for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) {
-        const row = k.def.rows[j]; if (!row) continue;
-        if (!doorTile(row.upperTiles?.[i]) && !doorTile(row.tiles[i])) continue;
-        // 문 그림의 맨 아래 칸만(위아래 두 칸 문은 아랫칸), 바로 아래가 건물 밖
-        const below = k.def.rows[j + 1];
-        if (below && (doorTile(below.upperTiles?.[i]) || doorTile(below.tiles[i]))) continue;
-        // 문 아래 칸이 키트 밖이거나 키트 안 투명 칸(ㄱ자 건물의 들어간 쪽)이어야 사람이 선다
-        // (아래층 tiles 는 키트가 깐 바탕 땅일 수 있어 윗층만 본다)
-        if (below && (below.upperTiles?.[i] ?? -1) >= 0) continue;
-        const fx = st.x + i, fy = st.y + j + 1;
-        if (!inMap(fx, fy) || fronts.has(idx(fx, fy))) continue;
-        // 키트 상자 안 투명 칸(ㄱ자 건물의 들어간 마당)은 계획상 건물 칸이다 — 길 찾기에서는 빈 땅으로 본다
-        const hollow = new Set<number>();
-        for (let jj = 0; jj < k.h; jj += 1) for (let ii = 0; ii < k.w; ii += 1) if ((k.def.rows[jj]?.upperTiles?.[ii] ?? -1) < 0 && at(st.x + ii, st.y + jj) === BLD) hollow.add(idx(st.x + ii, st.y + jj));
-        const open = (n: number) => occ[n] === FREE || hollow.has(n);
-        if (hollow.has(idx(fx, fy))) set(fx, fy, FREE);
-        const v0 = at(fx, fy);
-        if (v0 === ROAD || v0 === PLAZAC) { fronts.add(idx(fx, fy)); doorFronts.push({ x: fx, y: fy, kit: k.id }); continue; }
-        if (v0 !== FREE) continue;
-        // 6걸음 BFS(빈 땅만)
-        const prev = new Map<number, number>([[idx(fx, fy), -1]]); const q = [idx(fx, fy)]; let hit = -1;
-        for (let h = 0; h < q.length && hit < 0; h += 1) {
-          const c = q[h]!, x = c % W, y = (c - x) / W;
-          let depth = 0; for (let t = c; prev.get(t)! >= 0; t = prev.get(t)!) depth += 1;
-          if (depth >= 6) continue;
-          for (const [dx, dy] of [[0, 1], [-1, 0], [1, 0], [0, -1]] as const) {
-            const nx = x + dx, ny = y + dy; if (!inMap(nx, ny)) continue; const n = idx(nx, ny);
-            if (prev.has(n)) continue;
-            if (rel && !reliefAllowsStep(rel, x, y, nx, ny)) continue;
-            const v = occ[n];
-            if (v === ROAD || v === PLAZAC) { prev.set(n, c); hit = n; break; }
-            if (open(n)) { prev.set(n, c); q.push(n); }
-          }
-        }
-        if (hit < 0) continue;
-        for (let t = prev.get(hit)!; t >= 0; t = prev.get(t)!) occ[t] = ROAD;
-        fronts.add(idx(fx, fy)); doorFronts.push({ x: fx, y: fy, kit: k.id });
-      }
-    }
-  }
+  linkPictureDoors();
   // 막다른 토막 다듬기: 이웃 포장 칸이 1개 이하인 길 칸(문 앞·맵 가장자리 제외)을 지운다 — 이음길 끝의 혹이 남지 않게
   {
     const front = new Set([...doorFronts.map((d) => idx(d.x, d.y)), ...keepRoad]);
@@ -3157,6 +3165,19 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const undo = new Map<Stamp, { w: number; h: number; layers: number[][] }>();
   const shadowOwner = new Map<number, Stamp>();
   const reviewedStamps: Stamp[] = [];
+  // 숲 구성의 «다른 개체» 그림: 같은 킷의 나무가 가까이(일곱 칸 안) 서면 서로 다른 그림 번호를 준다 — 같은 도장이 나란히 서지 않게.
+  const treePicks = new Map<Stamp, number>();
+  if (stand) {
+    const done: { s: Stamp; pick: number }[] = [];
+    for (const s of stamps) {
+      const pictures = standKitPictures(TS_ID, gameLook?.stand, s.kit);
+      if (pictures < 2) continue;
+      let pick = lookHash(`tree|${seed}|${s.kit}|${s.x}|${s.y}`) % pictures;
+      const near = new Set(done.filter((d) => d.s.kit === s.kit && Math.abs(d.s.x - s.x) <= 7 && Math.abs(d.s.y - s.y) <= 7).map((d) => d.pick));
+      for (let tries = 0; tries < pictures && near.has(pick); tries += 1) pick = (pick + 1) % pictures;
+      treePicks.set(s, pick); done.push({ s, pick });
+    }
+  }
   for (const s of stamps) {
     const k = kitIndex.get(s.kit); if (!k) { failed += 1; warnings.push(`키트 없음: ${s.kit}`); continue; }
     const rect = { x: s.x, y: s.y, w: k.w, h: k.h };
@@ -3166,7 +3187,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) { const c = inMap(s.x + i, s.y + j) ? idx(s.x + i, s.y + j) : -1; for (const L of [1, 2, 3, 4] as const) layers[L - 1]!.push(c < 0 ? -1 : layerTileAt(mm, L, c)); }
       undo.set(s, { w: k.w, h: k.h, layers });
     }
-    try { const put = () => stampObjectTool.run(draft, { objectId: `kit:${TS_ID}/${s.kit}`, mapId, x: s.x, y: s.y }); if (roofsAsked) withoutHouseSet(put); else put(); stamped += 1; }
+    try { const put = () => withTreePick(treePicks.get(s), () => stampObjectTool.run(draft, { objectId: `kit:${TS_ID}/${s.kit}`, mapId, x: s.x, y: s.y })); if (roofsAsked) withoutHouseSet(put); else put(); stamped += 1; }
     catch (e) { failed += 1; if (failed <= 3) warnings.push(`찍기 실패 ${s.kit}@(${s.x},${s.y}): ${(e as Error).message.slice(0, 200)}`); continue; }
     if (reviewedPrefix(s.kit)) reviewedStamps.push(s);
     if (before) appendStructurePlacement(draft.maps[mapId]!, { kitId: s.kit, rect, before });
@@ -3282,6 +3303,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (const [c, t] of want) setLayerTileAt(m, 2, c, tr.map.get(t)!);
       // 남쪽도 숲인 수관 칸은 3층 — 2층은 높이 지형 동서 끝 1px 선보다 먼저 그려져 그 선이 숲을 갈랐다(writeBeodeulCanopy 와 같은 규칙)
       for (const [c, t] of canopyAt) setLayerTileAt(m, c + W < W * H && canopyAt.has(c + W) ? 3 : 2, c, tr.map.get(t)!);
+      // 숲 구성을 고른 게임: 수관 위로 솟은 나무 머리(4층) — 수관 오토타일의 여섯 칸 주기를 자리 해시로 깬다
+      if (stand && canopyAt.size) raiseBeodeulCrowns(m, ts, new Set(canopyAt.keys()), seed);
       logConstructionTiles(m, "stamp", canopyAt.size ? "물가·숲 수관·그림자" : "물가·그림자", { major: false });
     }
     natureStats = { overlay: want.size + canopyAt.size, shadowCells, forestCells: canopyAt.size };

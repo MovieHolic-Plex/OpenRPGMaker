@@ -13,6 +13,8 @@ import { beodeulForestComposer, beodeulNatureTileset, beodeulWoodlandGrass, comp
 import { composeTreesPlaced, type TreePlacement } from "@/project/defaults/treeComposer";
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { translateTiles } from "@/project/objectStamp";
+import { activeTilesetLook } from "@/project/kitLook";
+import { layBeodeulGroundCover } from "@/editor/tools/beodeulGroundCover";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
@@ -323,6 +325,9 @@ export function paintWoodlandOnto(project: Project, map0: GameMap, spec: WoodSpe
     setLayerTileAt(map, 3, c, decor[Math.floor(rng() * decor.length)]!);
   }
   map = project.maps[map0.id]!;
+  // 게임 겉모습(숲 구성·풀밭 얼룩)을 고른 게임: 숲 덩이 밑과 둘레에 그 숲의 바닥을, 열린 풀밭에 얼룩을 깐다(2층 투명 덧그림 — 걷는 칸은 그대로).
+  // 겉모습이 없는 게임(폴른 스타 포함)에서는 아무것도 하지 않는다.
+  layBeodeulGroundCover(project, map, activeTilesetLook(tileset), { seed: (seed * 53 + W * 7 + H) | 0, grove: forest, road: (c) => path.has(c), water: (c) => water.has(c) });
   void isPassable;
   return { map, path, open, forest, water, pockets };
 }
