@@ -244,7 +244,7 @@ function withCharsetCatalog<T>(ctx: ToolContext, project: Project, run: () => T)
   // 게임 열쇠(ctx.lookKey)도 이 구간에만 켠다 — 킷을 푸는 놓기 도구가 ctx 없이 그 게임의 변형 그림을 고른다(project/kitLook.ts).
   // 집 벌처럼 «이번 도구가 그 칩셋의 첫 맵을 지으면 쓰게 될 겉모습» 도 같은 구간에 넘긴다(도구 시작 때의 프로젝트로 한 번만 계산 — 짓는 도중에는 맵이 이미 손댄 맵이 된다).
   const pending = new Map<string, ReturnType<typeof projectTilesetLook>>();
-  const lookOf = (tilesetId: string) => { if (!pending.has(tilesetId)) pending.set(tilesetId, projectTilesetLook(project, tilesetId, ctx.lookKey)); return pending.get(tilesetId); };
+  const lookOf = (tilesetId: string) => { if (!pending.has(tilesetId)) pending.set(tilesetId, projectTilesetLook(project, tilesetId, ctx.lookKey, ctx.lookTaken)); return pending.get(tilesetId); };
   return withKitLook(ctx.assistantRun ? ctx.lookKey : undefined, () => withMonsterTurn(ctx.assistantRun ? { monsterTurn: ctx.monsterTurn === true } : undefined, scoped), lookOf);
 }
 
@@ -558,7 +558,7 @@ export function runToolDefinition(
     if (runnerWarnings.length) exec = { ...exec, warnings: [...runnerWarnings, ...(exec.warnings ?? [])] };
     compactTouchedMapLayers(before, draft);
     // 게임마다 한 가지 겉모습: 이 호출이 그 칩셋의 첫 맵을 지었으면 바닥·길·나무 겉모습을 게임 열쇠로 골라 타일셋에 적는다(project/tilesetLook.ts — 칸 번호는 그대로, 그림만).
-    if (ctx.assistantRun) settleProjectLook(before, draft, ctx.lookKey);
+    if (ctx.assistantRun) settleProjectLook(before, draft, ctx.lookKey, ctx.lookTaken);
     // 장르 잠금은 계열 검사보다 먼저 돈다(허용 칩셋 목록·대안을 알리는 더 구체적인 거부). allowsTilesetChange 도구(예제 통째 가져오기 등)도 거친다 — 프로젝트를 통째로 되돌리거나 갈아 끼우는 도구만 빠진다.
     if (!GENRE_LOCK_EXEMPT_TOOLS.has(name)) {
       const lockWarnings = rejectGenreLockViolation(ctx, before, draft, name);

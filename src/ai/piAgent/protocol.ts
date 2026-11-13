@@ -60,6 +60,11 @@ export interface PiAgentRequest {
   readonly provider: string;
   /** Stable persistence identity for companion-wide map ownership. Omission is conservative. */
   readonly projectKey?: string;
+  /**
+   * 이 기기의 다른 게임들이 이미 쓴 타일셋 겉모습(gameLooks.ts) — 새 게임의 겉모습을 고를 때 덜 쓴 선택지를 먼저 고른다(project/tilesetLook.ts).
+   * 없으면 게임 열쇠 해시만으로 고른다. 모델은 이 값을 보지 않는다.
+   */
+  readonly lookTaken?: readonly import("@/project/types").TilesetLook[];
   /** 비우면 제공자 기본 모델. */
   readonly model?: string;
   readonly task: string;

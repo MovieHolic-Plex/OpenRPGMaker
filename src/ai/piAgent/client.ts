@@ -14,6 +14,7 @@ import { resolvePixelModel } from '../pixelModel';
 import { assistantEngineLead, loadAssistantEngine } from '../localCliEngine';
 import { leadForRequest } from '../v2/turn/split';
 import { loadTeamLead } from '../teamLeadStore';
+import { otherGameLooks, rememberGameLooks } from './gameLooks';
 
 export interface RunPiAgentClientOptions {
   /** Campaign supervisor retains the partial result to repair it; it must inspect production issues before completion. */
@@ -105,6 +106,12 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   if (!request.store) {
     const store = await import("@/editor/assetStore/storeHint").then((m) => m.storeRunHint()).catch(() => undefined);
     if (store) request = { ...request, store };
+  }
+  // 겉모습 퍼뜨리기: 이 기기의 다른 게임들이 이미 쓴 겉모습을 실어 보낸다 — 새 게임이 덜 쓴 숲·바닥을 먼저 고른다(gameLooks.ts). 보내기 전에 이 게임 것도 적어 둔다.
+  rememberGameLooks(request.projectKey, request.project);
+  if (!request.lookTaken) {
+    const lookTaken = otherGameLooks(request.projectKey);
+    if (lookTaken.length) request = { ...request, lookTaken };
   }
   const captureEpoch = inspectionEpoch();
   const doFetch = options.fetchImpl ?? fetch;
@@ -400,6 +407,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   // done 이 왔으면 워커가 거절을 받아 넘긴 것이다(적용 검증 거부·맵 소실 거절은 그 변경만 되돌리고 계속한다) —
   // 그 뒤 끝난 실행을 첫 거절로 실패 처리하면 다 한 작업이 「실패」로 보인다. 멈춰야 할 거절이면 워커가 done 없이 끝난다.
   if (checkpointError && !stale && !done) throw checkpointError;
+  if (done) rememberGameLooks(request.projectKey, done.project);
   if (done && options.returnIncompleteResult) return done;
   if (done?.interiorCompletion?.length) throw new PiAgentClientError(`실내 미완료: ${done.interiorCompletion.length}개 맵에 검사 문제가 남아 완료 처리하지 않았습니다. 실행 기록의 실내 검사 결과를 확인하세요.`);
   if (done?.monsterGameProduction?.issues.length) throw new PiAgentClientError('전체 몬스터 게임 제작 미완료: ' + done.monsterGameProduction.issues.join(' '));

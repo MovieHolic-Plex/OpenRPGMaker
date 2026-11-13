@@ -417,6 +417,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     monsterTurn: request.monsterTurn ?? isMonsterRequestTurn(request.task),
     // 게임 열쇠: 놓기 도구가 같은 종류의 다른 그림(킷 변형)을 이 게임 것으로 고른다 — 한 게임은 한 모습(project/kitLook.ts).
     ...(request.projectKey ? { lookKey: String(request.projectKey) } : {}),
+    // 다른 게임들이 이미 쓴 겉모습 — 겉모습을 처음 고를 때 덜 쓴 선택지를 먼저 고른다(없으면 열쇠 해시만).
+    ...(Array.isArray(request.lookTaken) && request.lookTaken.length ? { lookTaken: request.lookTaken } : {}),
   };
   setClientEditHistory(request.editHistory ?? []);
   setPlanGrid(request.planGrid ?? null);

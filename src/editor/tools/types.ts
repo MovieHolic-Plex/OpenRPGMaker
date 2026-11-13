@@ -62,6 +62,11 @@ export interface ToolContext {
    * 없으면 그림을 갈아 끼우지 않는다(사람 편집·콘텐츠 스크립트·옛 호출자). project/kitLook.ts
    */
   readonly lookKey?: string;
+  /**
+   * 같은 사람이 이미 만든 다른 게임들의 겉모습(그 칩셋 타일셋의 look) — 주면 이 게임의 겉모습을 «덜 쓰인 선택지» 에서 골라 우연히 겹치지 않게 한다
+   * (project/tilesetLook.ts chooseTilesetLook). 형제 게임을 아는 호출자(표본·하네스 묶음 짓기)만 준다. 없으면 게임 열쇠만으로 고른다.
+   */
+  readonly lookTaken?: readonly (import("@/project/types").TilesetLook | undefined)[];
 }
 
 // 툴 내부 실행이 돌려주는 값. runner가 diff/lint/커밋을 처리한다.
