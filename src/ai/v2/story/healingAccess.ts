@@ -198,10 +198,15 @@ function bossEvents(project: Project): { map: GameMap; x: number; y: number; id:
       conditionUsers.set(m[1]!, set);
     }
   }
+  // 싸우는 단계의 상대와 마지막 단계의 이벤트 — 길 위 전투 맞추기(pathBattles)가 보스로 재는 것과 같은 것. 이긴 뒤 스위치 대신 쪽지를 떨어뜨리는 상대도 보스다
+  // (2026-11-13 r2s-fun: 번호 쪽지를 주는 인형 앞의 쉼터가 사라졌다).
+  const steps = project.gameBlueprint?.steps ?? [];
+  const stepBoss = new Set(steps.flatMap((step, i) => step.built?.eventId && (step.kind === "battle" || i === steps.length - 1) ? [`${step.built.mapId}/${step.built.eventId}`] : []));
   const out: { map: GameMap; x: number; y: number; id: string }[] = [];
   for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) {
     const text = JSON.stringify(ev.pages ?? []);
     if (!text.includes('"battleProcessing"')) continue;
+    if (stepBoss.has(`${map.id}/${ev.id}`)) { out.push({ map, x: ev.x, y: ev.y, id: ev.id }); continue; }
     const opensOther = [...text.matchAll(/"kind":"setSwitch"[^}]*?"switchId":"([^"]+)"/gu)].some((m) => gated.has(m[1]!) && [...(conditionUsers.get(m[1]!) ?? [])].some((u) => u !== `${map.id}/${ev.id}`));
     if (/_boss$/u.test(ev.id) || opensOther) out.push({ map, x: ev.x, y: ev.y, id: ev.id });
   }
@@ -213,7 +218,10 @@ function mapHasFullRecovery(map: GameMap): boolean {
   return (map.events ?? []).some((ev) => /"kind":"(?:recoverAll|inn)"/u.test(JSON.stringify(ev.pages ?? [])));
 }
 
-/** 보스 둘레에서 걸어 4~10칸, 둘레 한 칸에 이벤트가 없고 이웃 셋 이상이 트인 칸(보스에 가까운 순·결정적). */
+/**
+ * 보스 둘레에서 걸어 4~10칸, 둘레 한 칸에 이벤트가 없고 이웃 셋 이상이 트인 칸(보스에 가까운 순·결정적).
+ * 보스에서 가로든 세로든 세 칸은 떨어진다 — 싸우는 단계의 상대는 두 배 크기로 서서(scale 2) 두 칸 옆의 결정을 그림이 덮는다(2026-11-13 r2s-fun 기관실).
+ */
 function restCell(project: Project, map: GameMap, boss: { x: number; y: number }, side?: ReadonlySet<string>): { x: number; y: number } | undefined {
   const near = (x: number, y: number) => (map.events ?? []).some((e) => Math.abs(e.x - x) <= 1 && Math.abs(e.y - y) <= 1);
   const open = (x: number, y: number) => [[0, -1], [1, 0], [0, 1], [-1, 0]].filter(([dx, dy]) => isPassableLanding(project, map, x + dx!, y + dy!)).length;
@@ -229,7 +237,7 @@ function restCell(project: Project, map: GameMap, boss: { x: number; y: number }
       next.push({ x, y });
     }
     if (dist >= 4) {
-      const hit = [...next].sort((a, b) => a.y - b.y || a.x - b.x).find((c) => !near(c.x, c.y) && open(c.x, c.y) >= 3 && (!side || side.has(`${c.x},${c.y}`)));
+      const hit = [...next].sort((a, b) => a.y - b.y || a.x - b.x).find((c) => !near(c.x, c.y) && Math.max(Math.abs(c.x - boss.x), Math.abs(c.y - boss.y)) >= 3 && open(c.x, c.y) >= 3 && (!side || side.has(`${c.x},${c.y}`)));
       if (hit) return hit;
     }
     frontier = next;
@@ -248,16 +256,23 @@ export function ensureBossRest(run: BuildRun): string[] {
   const done = new Set<string>();
   for (const boss of bossEvents(project)) {
     const map = run.ctx.project.maps[boss.map.id];
-    if (!map || done.has(map.id) || map.id === project.startMapId || mapHasFullRecovery(map)) continue;
-    done.add(map.id);
+    if (!map || done.has(map.id) || map.id === project.startMapId) continue;
     const id = `ev_${map.id}_rest`;
-    if (map.events.some((e) => e.id === id)) continue;
+    // 우리가 놓은 결정 뒤에 그 맵에 다른 전원 회복(모델이 놓은 저장 지점 등)이 생겼으면 결정을 걷는다 — 한 맵에 쉼터가 둘 서지 않게.
+    const others = map.events.filter((e) => e.id !== id);
+    const mine = map.events.find((e) => e.id === id);
+    if (mine && mapHasFullRecovery({ ...map, events: others })) { map.events = others; notes.push(`${map.name ?? map.id} 보스 앞 쉼터 결정을 걷음 — 그 맵에 다른 전원 회복이 있다`); continue; }
+    if (!mine && mapHasFullRecovery(map)) continue;
+    done.add(map.id);
+    // 이미 놓은 결정은 보스에서 세 칸 떨어져 있으면 그대로 둔다. 놓은 뒤에 보스가 자리를 옮겨 그림이 결정을 덮으면 다시 놓는다.
+    if (mine && Math.max(Math.abs(mine.x - boss.x), Math.abs(mine.y - boss.y)) >= 3) continue;
     // 들어오는 쪽(보스 둘레 3×3 을 지나지 않고 닿는 칸)에 먼저 둔다 — 보스 너머에 두면 회복하러 보스를 지나야 한다. 그런 칸이 없으면 둘레 어디든.
     const blocked = new Set<string>();
     for (let dx = -1; dx <= 1; dx += 1) for (let dy = -1; dy <= 1; dy += 1) blocked.add(`${boss.x + dx},${boss.y + dy}`);
     const side = reachWithout(run.ctx.project, map, blocked, true) ?? undefined;
     const cell = (side ? restCell(run.ctx.project, map, boss, side) : undefined) ?? restCell(run.ctx.project, map, boss);
     if (!cell) continue;
+    if (mine) map.events = others;
     const res = run.call("place_savepoint", { mapId: map.id, x: cell.x, y: cell.y, id, name: "쉼터 결정", heal: true, mode: "both", sparkleRadius: 2 });
     if (res.ok) notes.push(`${map.name ?? map.id} (${cell.x},${cell.y}) 보스 앞 쉼터 결정(전원 회복·저장)`);
   }

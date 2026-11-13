@@ -113,6 +113,40 @@ export function declaredDoorCells(project: Project, map: GameMap): { x: number; 
   return out;
 }
 
+/** 이벤트의 명령이 옮겨 가는 맵 id 들. */
+function transferMaps(node: unknown, out = new Set<string>()): Set<string> {
+  if (Array.isArray(node)) { for (const n of node) transferMaps(n, out); return out; }
+  if (!node || typeof node !== "object") return out;
+  const cmd = node as { kind?: unknown; mapId?: unknown };
+  if (cmd.kind === "transfer" && typeof cmd.mapId === "string") out.add(cmd.mapId);
+  for (const v of Object.values(node)) if (v && typeof v === "object") transferMaps(v, out);
+  return out;
+}
+
+/**
+ * 문 이름 이벤트(자물쇠가 달린 문)가 앉아도 되는 문 칸 — 가로로 맞닿은 문 칸은 한 입구다.
+ * leadsTo(그 이벤트가 여는 장소의 맵)가 있으면 그 맵으로 가는 이동이 선 입구의 남은 칸만, 없으면 어디로도 이어지지 않는 입구의 칸만.
+ * 다른 곳으로 가는 입구의 남은 칸(두 칸 문의 옆 칸)은 남의 건물 문이라 내주지 않는다.
+ */
+export function stepDoorCells(project: Project, map: GameMap, leadsTo?: string): { x: number; y: number }[] {
+  const doors = declaredDoorCells(project, map);
+  const key = (x: number, y: number) => y * map.width + x;
+  const isDoor = new Set(doors.map((d) => key(d.x, d.y)));
+  // 문 칸 위나 바로 앞 칸에 선 이동 이벤트가 그 문의 갈 곳이다.
+  const goes = new Map<number, Set<string>>();
+  for (const ev of map.events ?? []) {
+    const at = isDoor.has(key(ev.x, ev.y)) ? key(ev.x, ev.y) : isDoor.has(key(ev.x, ev.y - 1)) ? key(ev.x, ev.y - 1) : -1;
+    const to = at >= 0 ? transferMaps(ev.pages ?? []) : undefined;
+    if (to?.size) goes.set(at, new Set([...(goes.get(at) ?? []), ...to]));
+  }
+  return doors.filter((d) => {
+    const to = new Set(goes.get(key(d.x, d.y)) ?? []);
+    for (const dir of [-1, 1]) for (let x = d.x + dir; x >= 0 && x < map.width && isDoor.has(key(x, d.y)); x += dir) for (const id of goes.get(key(x, d.y)) ?? []) to.add(id);
+    const free = !(map.events ?? []).some((ev) => ev.x === d.x && ev.y === d.y && transferMaps(ev.pages ?? []).size > 0);
+    return free && (leadsTo ? to.has(leadsTo) : to.size === 0);
+  });
+}
+
 /** 지나다니는 그림(문·계단·창·벽걸이)의 타일 — 조사할 물건으로 바닥에 새로 찍지 않는다(place/fixtures). */
 export function passageTiles(tileset: TilesetDef | undefined): ReadonlySet<number> {
   const room = roomKitTiles(tileset), surface = tilesetSurface(tileset);

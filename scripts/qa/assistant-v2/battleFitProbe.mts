@@ -8,7 +8,7 @@ import path from "node:path";
 import { simulateBattle } from "../../../src/battle/simulate.ts";
 import { actorBattlers } from "../../../src/battle/battleBattlers.ts";
 import { resolveBattleBackdrop } from "../../../src/battle/battleBackdrop.ts";
-import { pathBattles } from "../../../src/ai/v2/story/pathBattleBudget.ts";
+import { bossBandReport, pathBattles } from "../../../src/ai/v2/story/pathBattleBudget.ts";
 import { healingItemIds } from "../../../src/ai/v2/judge/combatChecks.ts";
 import { startHealingItem } from "../../../src/ai/v2/story/healingAccess.ts";
 import { isPassable } from "../../../src/project/collision.ts";
@@ -68,6 +68,8 @@ for (const r of rows) {
   console.log(`[${r.role}${r.touch ? "·닿으면" : ""}] ${r.map} — ${r.name} (${r.enemies.map((e) => `${e.name} Lv${e.level} HP ${e.hp} 공 ${e.attack}${e.hpBar ? "" : " ·HP 숨김"} «${e.skills.join("·")}»`).join(" + ")}) · 배경 ${r.backdrop}`);
   console.log(`    공격만·회복 없음: 승률 ${pct(r.attackOnly.win)} · ${r.attackOnly.turns.toFixed(1)}턴 · HP -${pct(r.attackOnly.lost)}   |   기술+회복약: 승률 ${pct(r.sensible.win)} · ${r.sensible.turns.toFixed(1)}턴 · HP -${pct(r.sensible.lost)} · 약 ${r.sensible.potions.toFixed(1)}개`);
 }
+// 보스 밴드 — 빌더가 재는 그대로(그 보스 앞에 도착하는 파티의 레벨·회복약).
+for (const line of bossBandReport(project)) console.log(line);
 
 if (shotsOut) {
   fs.mkdirSync(shotsOut, { recursive: true });

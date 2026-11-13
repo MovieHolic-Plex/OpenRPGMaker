@@ -9,7 +9,7 @@ import type { Project } from "@/project/types";
 import type { Dir } from "@/player/input";
 import { charsetIdleFrameIndex, isCharsetLikeTextureKey } from "@/player/charsetMotion";
 import { CHARSET_FRAME_WIDTH } from "@/assets/easyrpgRtp";
-import { DERIVED_FIELD_FOE_BASE_FRAME, ensureDerivedFieldFoeTexture } from "@/player/fieldFoeSprite";
+import { DERIVED_FIELD_FOE_BASE_FRAME, ensureDerivedFieldFoe } from "@/player/fieldFoeSprite";
 import { characterRenderScale } from "@/project/characterScale";
 import { normalizeCharacterScale } from "@/project/footprint";
 import type { EventPageGraphic } from "@/project/types";
@@ -25,6 +25,8 @@ export type EventSpriteTexture = {
   readonly monster?: boolean;
   /** Walking sheet derived from battle art: charset frames, scaled like a 24px walking chip. */
   readonly derived?: boolean;
+  /** Derived sheet cut at this many times more detail than the usual chip — the authored scale is divided by it so the on-map size stays the same. */
+  readonly gain?: number;
 };
 
 /** Spatial overlay graphics may use catalog picture/charset ids. Event sprites stay on resolveEventSpriteTexture. */
@@ -87,12 +89,15 @@ export function resolveEventSpriteTexture(
  * when the source texture is not loaded yet or its pixels cannot be read.
  */
 export function withDerivedFieldFoe(
-  scene: Parameters<typeof ensureDerivedFieldFoeTexture>[0],
+  scene: Parameters<typeof ensureDerivedFieldFoe>[0],
   texture: EventSpriteTexture | null,
+  graphic?: Pick<EventPageGraphic, "scale" | "scaleMode">,
 ): EventSpriteTexture | null {
   if (!texture?.monster) return texture;
-  const key = ensureDerivedFieldFoeTexture(scene, texture.texture);
-  return key ? { texture: key, frame: DERIVED_FIELD_FOE_BASE_FRAME, charset: true, derived: true } : texture;
+  // A foe enlarged by a whole number (manual ×2 boss) is cut from the battle art at that much more detail and drawn 1:1 — not a blurred chip stretched ×2.
+  const detail = graphic?.scaleMode === "manual" && Number.isInteger(graphic.scale) && (graphic.scale ?? 1) >= 2 ? graphic.scale! : 1;
+  const made = ensureDerivedFieldFoe(scene, texture.texture, detail);
+  return made ? { texture: made.key, frame: DERIVED_FIELD_FOE_BASE_FRAME, charset: true, derived: true, ...(made.gain > 1 ? { gain: made.gain } : {}) } : texture;
 }
 
 export function isCharsetSpriteTexture(texture: EventSpriteTexture | null): boolean {
@@ -111,7 +116,7 @@ export function eventSpriteScale(
 ): number {
   if (isCharsetSpriteTexture(texture)) {
     // Derived field-foe frames are wider than a 24px chip but must scale exactly like one (never shrink, same on 48px maps).
-    return characterRenderScale(texture?.derived ? CHARSET_FRAME_WIDTH : sprite.width, tileSize, { scale: authoredScale, scaleMode }, referenceTileSize) * mapCharacterFactor;
+    return characterRenderScale(texture?.derived ? CHARSET_FRAME_WIDTH : sprite.width, tileSize, { scale: authoredScale, scaleMode }, referenceTileSize) * mapCharacterFactor / (texture?.gain ?? 1);
   }
   const scale = normalizeCharacterScale(authoredScale);
   if (!texture?.fitSize) return scale;
