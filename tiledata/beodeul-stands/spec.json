@@ -375,13 +375,6 @@
    "slot": "2x2"
   },
   {
-   "id": "tree-fig-3x3-1",
-   "src": "tree-fig-3x3-1.png",
-   "kind": "organic",
-   "species": "fig",
-   "slot": "3x3"
-  },
-  {
    "id": "tree-fig-2x2-1",
    "src": "tree-fig-2x2-1.png",
    "kind": "organic",
@@ -843,22 +836,22 @@
    ],
    "floor": "floor-needles"
   },
-  "figgarden": {
-   "label": "무화과 숲 · 오렌지·올리브",
-   "en": "fig trees with orange and olive",
-   "dominant": "fig",
+  "sunnyslope": {
+   "label": "올리브 숲 · 오렌지·아몬드",
+   "en": "olive slope with orange and almond",
+   "dominant": "olive",
    "companions": [
     "orange",
-    "olive"
+    "blossom"
    ],
-   "accent": "blossom",
-   "giant": "chestnut",
+   "accent": "snag",
+   "giant": "pine",
    "water": "poplar",
    "shrubs": [
-    "oleander",
-    "myrtle",
     "fig",
-    "broom"
+    "broom",
+    "oleander",
+    "myrtle"
    ],
    "floor": "floor-dry"
   },
