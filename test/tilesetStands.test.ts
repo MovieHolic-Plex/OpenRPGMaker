@@ -272,6 +272,34 @@ describe("tileset stands — 게임마다 다른 숲·바닥", () => {
     expect(closed).toBe(0);
   }, 240_000);
 
+  it("깊은 숲(던전 주제 forest): 숲 구성을 고른 게임은 수관 위에 나무 머리가 서고 빈터에 숲 바닥이 깔리며, 걷는 칸·이벤트 자리는 열쇠 없는 숲과 같다", () => {
+    const wood = (key?: string): { project: Project; map: GameMap } => {
+      const project = createBlankProject() as Project;
+      const ctx = { project, currentMapId: project.startMapId, assistantRun: true, ...(key ? { lookKey: key } : {}) } as ToolContext;
+      const spec = { type: "dungeon", theme: "forest", size: "small", name: "깊은 숲", salt: 250118 } as unknown as PlaceSpec;
+      const res = builderFor(spec)!.build(createBuildRun(ctx), spec);
+      expect(res.ok, res.summary).toBe(true);
+      return { project: ctx.project, map: ctx.project.maps[res.mapIds[0]!]! };
+    };
+    const key = ((): string => { for (let n = 0; ; n += 1) { const k = JSON.stringify(["project", `wood-${n}`]); if (chooseTilesetLook(looks, k)?.stand) return k; } })();
+    const plain = wood(), looked = wood(key);
+    expect(standCells(plain.project, plain.map)).toEqual([]);
+    const tileset = looked.project.tilesets[TS]!, map = looked.map;
+    const own = new Set((tileset.tileGrafts ?? []).filter((graft) => graft.sourceChipset === table.texture).map((graft) => graft.targetTile));
+    let floor = 0, crowns = 0;
+    for (let i = 0; i < map.width * map.height; i += 1) {
+      const x = i % map.width, y = Math.floor(i / map.width);
+      if (own.has(layerTileAt(map, 2, i))) floor += 1;
+      if (own.has(layerTileAt(map, 4, i))) { crowns += 1; expect(isPassable(looked.project, map, x, y), `나무 머리 칸 ${i}`).toBe(false); }
+    }
+    // 숲 던전의 바닥은 공용 잔디가 아니라 잔잔한 3×3 잔디다 — 그 칸을 풀밭으로 넘기지 않으면 빈터에 숲 바닥이 한 칸도 깔리지 않는다
+    expect(floor).toBeGreaterThan(100);
+    expect(crowns).toBeGreaterThan(60);
+    expect(walkGrid(looked.project, map)).toBe(walkGrid(plain.project, plain.map));
+    const spots = (m: GameMap): string => m.events.map((event) => `${event.x},${event.y}`).sort().join(" ");
+    expect(spots(map)).toBe(spots(plain.map));
+  }, 240_000);
+
   it("겉모습이 없는 게임·숲 구성 없는 옛 겉모습 게임에는 숲 그림판 칸이 하나도 없다", () => {
     for (const look of [undefined, { surface: "steppe", trees: "birch", woods: "wall" }]) {
       const { project, map } = village(look, look ? JSON.stringify(["project", "old-look"]) : undefined);

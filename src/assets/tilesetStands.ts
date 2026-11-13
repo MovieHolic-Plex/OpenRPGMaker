@@ -68,6 +68,21 @@ export type TilesetStandTable = {
 
 const TABLES: readonly TilesetStandTable[] = [beodeulStands as unknown as TilesetStandTable];
 
+/**
+ * 이 타일셋에서 «바닥에 덧깐 그림» 인 칸을 가리는 함수 — 숲 바닥·풀밭 얼룩의 2층 덧그림 칸(overlays 의 cells·alt)이다.
+ * 그림자·숲 그늘을 얹어 구운 칸(shadow·shade)은 아니다 — 그 자리에는 덧그림이 없을 때도 2층 그림이 있었다.
+ * «2층이 빈 칸» 을 고르는 도구가 덧그림이 깔린 게임에서도 덧그림 없는 게임과 같은 칸을 고르게 한다(v2 던전의 적·상자 자리).
+ */
+export function standGroundCoverTile(tileset: TilesetDef | undefined): (tile: number) => boolean {
+  const table = tileset ? TABLES.find((entry) => entry.tilesetId === tileset.id) : undefined;
+  if (!tileset || !table) return () => false;
+  const plain = new Set<number>();
+  for (const overlay of Object.values(table.overlays)) for (const cell of [...overlay.cells, ...overlay.alt]) if (cell > 0) plain.add(cell);
+  const cover = new Set<number>();
+  for (const graft of tileset.tileGrafts ?? []) if (graft.sourceChipset === table.texture && plain.has(graft.sourceTile)) cover.add(graft.targetTile);
+  return (tile) => cover.has(tile);
+}
+
 /** 숲 그림판 textureKey → 칸 수(bundledChipsetFrameCount 가 쓴다). */
 export function tilesetStandSheetCount(textureKey: string): number | undefined {
   return TABLES.find((table) => table.texture === textureKey)?.count;

@@ -24,7 +24,9 @@ import { asCell, asRoom, chestLoot, field, list, nested, pickTroops, placeRoamer
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { DUNGEON_ENTRANCE_TAG, pickDungeonGateSpot, ENTRANCE_OPTION_SCHEMA, linkEntranceInDraft, parseEntranceOption } from "./dungeonLinkTools";
 import { dungeonTheme, ensureThemeTroop } from "./dungeonThemeTroops";
-import { beodeulNatureTileset, planBeodeulCanopy, writeBeodeulCanopy } from "./beodeulForest";
+import { beodeulNatureTileset, planBeodeulCanopy, raiseBeodeulCrowns, writeBeodeulCanopy } from "./beodeulForest";
+import { layBeodeulGroundCover } from "./beodeulGroundCover";
+import { activeTilesetLook } from "@/project/kitLook";
 import { invalidateReliefSlopes } from "@/project/relief/walk";
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { translateTiles } from "@/project/objectStamp";
@@ -192,6 +194,21 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
       plan = planBeodeulCanopy(map.width, map.height, composed.canopy.style, forest, shadeOk);
     }
     writeBeodeulCanopy(draft, map, tileset, plan);
+    // 숲 구성을 고른 게임(게임 겉모습 stand·meadow): 수관 위로 솟은 나무 머리(4층)가 수관 오토타일의 여섯 칸 주기를 자리 해시로 깨고,
+    // 빈터에는 그 숲의 바닥·풀밭 얼룩(2층 투명 덧그림)이 깔린다. 머리는 이미 막힌 숲 칸 위에만 서고 덧그림은 걷는 칸을 바꾸지 않는다.
+    // 겉모습이 없는 게임·눈 숲(snow)에서는 아무것도 하지 않는다.
+    if (composed.canopy.style === "leaf") {
+      const lookSeed = ((spec.seed ?? 7) * 131 + map.width * 17 + map.height) | 0;
+      raiseBeodeulCrowns(map, tileset, new Set(plan.canopy.keys()), lookSeed);
+      // 숲 던전의 바닥은 공용 잔디가 아니라 잔잔한 3×3 잔디다 — 빈터 칸의 1층에서 흔한 칸(빈터의 3% 넘게)을 풀밭으로 넘긴다. 늪(진흙 바닥)은 넘기지 않는다.
+      const lawn = new Set<number>();
+      if (composed.type === "forest") {
+        const tally = new Map<number, number>(); let open = 0;
+        for (let c = 0; c < map.lowerTiles.length; c += 1) { if (forest.has(c) || wetCells.has(c)) continue; open += 1; const t = map.lowerTiles[c]!; tally.set(t, (tally.get(t) ?? 0) + 1); }
+        for (const [t, k] of tally) if (t >= 0 && k > open * 0.03) lawn.add(t);
+      }
+      layBeodeulGroundCover(draft, map, activeTilesetLook(tileset), { seed: lookSeed, water: (c) => wetCells.has(c), ...(lawn.size ? { ground: lawn } : {}) });
+    }
     if (opened) notes.push(`수관 모양이 안 맞는 한 칸 폭 숲 틈 ${opened}칸은 빈터로 열었다.`);
   }
   // 방마다 이름표 + composed-layout 표식: 큰 홀·통로의 빈 바닥은 필드 적이 돌아다닐 용도로 비운 칸이다.

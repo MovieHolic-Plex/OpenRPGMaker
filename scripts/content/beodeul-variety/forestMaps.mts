@@ -1,7 +1,7 @@
 // 버들항 «숲 맵» 표본(모델 없음) — 조수가 실제로 까는 숲 맵을 게임 여섯으로 지어 1배 그림과 사실을 남긴다.
 // 마을 표본(forestFacts.mts)은 숲이 맵 구석 한 덩이뿐이라 «특히 숲쪽» 을 못 보였다(오너 2026-11-13). 여기서는 숲이 맵의 대부분이다.
 //
-//   [ROOT=<체크아웃>] bun scripts/content/beodeul-variety/forestMaps.mts <결과 폴더> [--tag now] [--games 0,1,2] [--alone] [--project]
+//   [ROOT=<체크아웃>] bun scripts/content/beodeul-variety/forestMaps.mts <결과 폴더> [--tag now] [--games 0,1,2] [--kinds route,path,deep,wood] [--alone] [--project]
 //        --alone: 게임끼리 서로를 모르게 짓는다(다른 게임 기록 없는 첫 게임과 같다)
 //        --project: 맵마다 그 맵이 시작 맵인 프로젝트(<tag>-<종류>-<n>.project.json)도 남긴다 — 플레이어에서 본다
 //
@@ -11,6 +11,7 @@
 //   edge   — author_forest_route : 숲 어귀(terrain edge)
 //   field  — author_forest_route : 트인 들판(terrain field)
 //   deep   — 마을(강가) + 숲 생김새 deep : 마을 가장자리의 깊은 숲
+//   wood   — 던전 주제 forest(청사진 장소 종류 deep-forest «깊은 숲») : 빈터가 이어진 수관 숲 미로
 // 남기는 것: <tag>-<종류>-<n>.png · <tag>-forest.json(맵마다 크기·겉모습·층별 칸 수·걷는 칸·주인공 세울 자리 셋)
 // ROOT 를 주면 그 체크아웃의 코드로 짓는다(전/후 대조 — 같은 스크립트를 두 체크아웃에 돌린다).
 import fs from "node:fs";
@@ -32,6 +33,8 @@ const argv = process.argv.slice(2);
 const out = argv[0]!;
 const tag = argv.includes("--tag") ? argv[argv.indexOf("--tag") + 1]! : "now";
 const only = argv.includes("--games") ? new Set(argv[argv.indexOf("--games") + 1]!.split(",").map(Number)) : undefined;
+const kinds = argv.includes("--kinds") ? new Set(argv[argv.indexOf("--kinds") + 1]!.split(",")) : undefined;
+const wants = (kind: string): boolean => !kinds || kinds.has(kind);
 fs.mkdirSync(out, { recursive: true });
 const NAMES = ["ashvale", "moonharbor", "thornkeep", "reedwater", "saltmere", "oakhollow"];
 const GAMES = NAMES.map((name) => JSON.stringify(["project", `variety-${name}`]));
@@ -91,7 +94,7 @@ for (const [n, key] of GAMES.entries()) {
   if (only && !only.has(n)) continue;
   const lookTaken = argv.includes("--alone") ? undefined : TAKEN[n];
   // 숲 도로
-  try {
+  if (wants("route")) try {
     const ctx = { project: createBlankProject(), assistantRun: true, lookKey: key, lookTaken } as { project: AnyProject; currentMapId?: string };
     ctx.currentMapId = ctx.project.startMapId;
     call(ctx, "create_map", { id: "map_route", name: "숲 도로", width: 40, height: 30, tilesetId: TS });
@@ -99,7 +102,7 @@ for (const [n, key] of GAMES.entries()) {
     record(ctx.project, "map_route", `${tag}-route-${n}`, "route", n);
   } catch (error) { console.log(`${tag}-route-${n}: 짓기 실패 — ${String(error).slice(0, 200)}`); }
   // 마을 + 북쪽 숲길 셋(숲길 · 숲 어귀 · 들판)
-  try {
+  if (wants("path")) try {
     const project = createBlankProject();
     const ctx = { project, currentMapId: project.startMapId, assistantRun: true, lookKey: key, lookTaken } as { project: AnyProject; currentMapId: string };
     const spec = { type: "village", name: "버들 마을", salt: SALTS[n]!, variety: `${key}|숲 곁 마을` };
@@ -110,7 +113,7 @@ for (const [n, key] of GAMES.entries()) {
     ["path", "edge", "field"].forEach((kind, i) => { if (maps[i]) record(ctx.project, maps[i]!, `${tag}-${kind}-${n}`, kind, n); });
   } catch (error) { console.log(`${tag}-path-${n}: 짓기 실패 — ${String(error).slice(0, 200)}`); }
   // 마을 가장자리의 깊은 숲(숲 생김새 deep 이 있는 체크아웃만 — 없으면 그 게임이 고른 생김새 그대로)
-  try {
+  if (wants("deep")) try {
     const project = createBlankProject();
     const ctx = { project, currentMapId: project.startMapId, assistantRun: true, lookKey: key, lookTaken } as { project: AnyProject; currentMapId: string };
     const table = tilesetLookTableFor(TS)!;
@@ -128,5 +131,14 @@ for (const [n, key] of GAMES.entries()) {
       if (res.ok && res.mapIds[0]) record(ctx2.project, res.mapIds[0], `${tag}-deep-${n}`, "deep", n);
     } else if (res.ok && res.mapIds[0]) record(ctx.project, res.mapIds[0], `${tag}-deep-${n}`, "deep", n);
   } catch (error) { console.log(`${tag}-deep-${n}: 짓기 실패 — ${String(error).slice(0, 200)}`); }
+  // 깊은 숲(던전 주제 forest) — 조수의 청사진이 «깊은 숲» 장소로 짓는 맵
+  if (wants("wood")) try {
+    const project = createBlankProject();
+    const ctx = { project, currentMapId: project.startMapId, assistantRun: true, lookKey: key, lookTaken } as { project: AnyProject; currentMapId: string };
+    const spec = { type: "dungeon", theme: "forest", size: "small", name: "깊은 숲", salt: SALTS[n]! };
+    const res = builderFor(spec as never)!.build(createBuildRun(ctx as never), spec as never);
+    if (!res.ok || !res.mapIds[0]) throw new Error(`dungeon: ${res.summary.slice(0, 160)}`);
+    record(ctx.project, res.mapIds[0], `${tag}-wood-${n}`, "wood", n);
+  } catch (error) { console.log(`${tag}-wood-${n}: 짓기 실패 — ${String(error).slice(0, 200)}`); }
 }
-fs.writeFileSync(path.join(out, `${tag}-forest.json`), JSON.stringify({ tag, rows }));
+fs.writeFileSync(path.join(out, `${tag}${kinds ? `-${[...kinds].join("-")}` : ""}-forest.json`), JSON.stringify({ tag, rows }));

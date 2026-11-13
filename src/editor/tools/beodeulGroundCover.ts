@@ -36,6 +36,8 @@ export interface BeodeulGroundCoverOptions {
    * (짙은 풀이 그 숲의 바닥이다). 주지 않은 호출(마을·도로)에서는 짙은 풀을 건드리지 않는다 — 도로의 짙은 풀은 조우 풀숲이다.
    */
   readonly grove?: Iterable<number>;
+  /** 풀밭으로 칠 1층 칸을 더한다 — 숲 던전의 잔잔한 잔디(공용 잔디와 같은 빛의 3×3 무늬). 주지 않으면 공용 잔디와 숲 도로의 숲 잔디만 풀밭이다. */
+  readonly ground?: ReadonlySet<number>;
 }
 
 export interface BeodeulGroundCoverReport { floorCells: number; patchCells: number; textures: string[] }
@@ -70,7 +72,7 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
   const groundMemo = new Map<number, boolean>();
   const darkToo = options.grove !== undefined;
   const darkGrass = (tile: number): boolean => { if (DARK_GRASS_CORE.has(tile)) return true; const g = grafts.get(tile); return !!g && g.sourceChipset === "tex_beodeul_ground" && DARK_GRASS_EDGES.has(g.sourceTile); };
-  const isGround = (tile: number): boolean => { let v = groundMemo.get(tile); if (v === undefined) { v = tile === GRASS || woodland(tile) || (darkToo && darkGrass(tile)); groundMemo.set(tile, v); } return v; };
+  const isGround = (tile: number): boolean => { let v = groundMemo.get(tile); if (v === undefined) { v = tile === GRASS || woodland(tile) || (darkToo && darkGrass(tile)) || !!options.ground?.has(tile); groundMemo.set(tile, v); } return v; };
   const canopyTiles = new Set<number>(), shadeTiles = new Set<number>(BEODEUL_NATURE.forestShade.leaf);
   for (const row of BEODEUL_NATURE.forestCanopy.leaf) for (const t of row) if (t >= 0) canopyTiles.add(t);
   const meta = (ts.tileMeta ?? []) as unknown as ({ tags?: string[] } | undefined)[];
@@ -108,6 +110,7 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
   }
   const used = new Map<number, number>(); // 그림판 칸 → (나중에) 맵 타일셋 칸
   const writes: [number, number][] = []; // [칸, 그림판 칸]
+  const lifts: number[] = [];            // 2층의 수관 끝 칸을 3층으로 올릴 칸
   const inMap = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < H;
   /** 덩이 R 의 칸마다 꼭짓점 비트(북서1·북동2·남서4·남동8). 꼭짓점은 둘레 네 칸이 모두 R 이고 같은 단일 때만 안. 맵 밖은 가장 가까운 안쪽 칸을 따른다. */
   const cornerMask = (R: Uint8Array, c: number): number => {
@@ -126,14 +129,18 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
   const put = (overlay: GroundOverlay, R: Uint8Array, c: number, shadow?: ReadonlyMap<number, number>): boolean => {
     const mask = cornerMask(R, c);
     if (!mask) return false;
+    let lift = false;
     if (L2[c]! >= 0) {
       const composite = mask === 15 ? shadow?.get(nat2[c]!) : undefined;
-      if (composite === undefined) return false;
-      writes.push([c, composite]); used.set(composite, -1);
-      return true;
+      if (composite !== undefined) { writes.push([c, composite]); used.set(composite, -1); return true; }
+      // 숲 수관의 남쪽 끝 줄 칸(2층 — 줄기·뿌리 그림, 비치는 곳으로 바닥이 보인다)은 얹어 구운 그림이 없다. 3층이 비어 있으면 그 수관 칸을 3층으로 올리고
+      // 그 밑(2층)에 숲 바닥을 깐다 — 안 그러면 숲 바닥 한가운데 줄기 밑이 풀빛 네모로 남는다. 수관 칸은 어느 층에 있어도 막힌 칸이다.
+      if (!shadow || !forest[c] || !canopyTiles.has(nat2[c]!) || layerTileAt(map, 3, c) >= 0) return false;
+      lift = true;
     }
     const cell = (hash(c % W, Math.floor(c / W), seed + 31) < 0.5 ? overlay.cells : overlay.alt)[mask]!;
     if (cell <= 0) return false;
+    if (lift) lifts.push(c);
     writes.push([c, cell]); used.set(cell, -1);
     return true;
   };
@@ -219,8 +226,10 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
       if (hard && hash(x, y, seed + 911) < 0.5) floorR[c] = 2;
     }
     for (let c = 0; c < n; c += 1) if (floorR[c] === 2) floorR[c] = 0;
-    // 숲 수관 칸: 속 칸(수관이 3층)은 2층이 비어 있어 덧그림을 깐다. 남쪽 끝 줄·그늘 칸(2층)은 그림판이 숲 바닥 위에 얹어 구운 그림으로 그린다.
-    for (let c = 0; c < n; c += 1) if (floorR[c] && (L2[c]! < 0 || !forest[c]) && put(floor, floorR, c, shadow)) report.floorCells += 1;
+    // 숲 수관 칸: 속 칸(수관이 3층)은 2층이 비어 있어 덧그림을 깐다. 숲 그늘 칸(2층, 숲 남쪽 끝 바로 아래 줄)은 둘레가 모두 숲 바닥일 때 그림판이 숲 바닥 위에 얹어
+    // 구운 그림으로 바꾼다 — 전에는 «숲 칸의 2층 그림» 을 통째로 건너뛰어 그늘 칸이 숲 바닥 한가운데 풀빛 네모로 남았다(숲 던전·마을 숲 가장자리).
+    // 수관의 남쪽 끝 줄(2층, 줄기·뿌리 그림)은 얹어 구운 그림이 없다 — 3층이 비어 있으면 3층으로 올리고 밑에 덧그림을 깐다(put).
+    for (let c = 0; c < n; c += 1) if (floorR[c] && put(floor, floorR, c, shadow)) report.floorCells += 1;
     report.textures.push(stand!.floor);
   }
 
@@ -289,6 +298,7 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
 
   if (!writes.length) return report;
   const tr = translateTiles(standOverlaySource(table), ts, used.keys());
+  for (const c of lifts) setLayerTileAt(map, 3, c, L2[c]!);
   for (const [c, cell] of writes) { const to = tr.map.get(cell); if (to !== undefined && to >= 0) setLayerTileAt(map, 2, c, to); }
   return report;
 }
