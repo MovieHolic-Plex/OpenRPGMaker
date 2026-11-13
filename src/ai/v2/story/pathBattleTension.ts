@@ -11,8 +11,10 @@
 //    여느 플레이(기술·공격, HP 45% 아래에서 약)로 6~10턴(12턴 상한), 약은 앞 보스 1~3개 · 마지막 보스 2~4개. 시작 회복약은 늘리지 않는다.
 //    «공격만·회복 없음»(같은 기준 파티) 은 마지막 보스에게만 못 이기고(승률 ≤ 10%), 앞 보스에게는 이기되(≥ 50%) HP 절반 아래로 끝난다.
 //    쉬지 않고 낮게 도착한 판은 질 수 있다(지면 그 방 입구의 결정 곁에서 다시 선다) — 재는 탐침(자동·정직한 플레이)이 쉼터를 쓰고 여느 플레이처럼 싸운다(기술·약).
-//    올리기는 한 대(공격·마력·길 사본 피해 기술의 위력)만 — HP 는 올리지 않고, 길어지면 내린다. 한 대의 상한에 닿은 기술은 그 자리에 두고 약한 한 대를 마저 올린다
+//    올리기는 한 대(공격·마력·길 사본 피해 기술의 위력) — HP 는 올리지 않고, 길어지면 내린다. 한 대의 상한에 닿은 기술은 그 자리에 두고 약한 한 대를 마저 올린다
 //    (차례마다 고르게 아프다 — 평타 50·기술 130 이 섞인 보스는 운 좋은 «공격만» 이 이긴다).
+//    마지막 보스는 한 대만으로 «공격만» 을 못 막는다(주인공의 기술과 평타의 차이가 작아, 평타로 못 이기게 올리면 기술로도 약 4개 안에 못 이긴다) —
+//    그때는 껍질을 두껍게 한다: 방어를 올리고 그만큼 HP 를 내린다. 평타는 덜 먹히고 기술은 먹힌다 — 여느 플레이의 싸움 길이는 그대로다.
 import { SENSIBLE_POTION_HP_RATIO, simulateBattle } from "@/battle/simulate";
 import { actorBattlers } from "@/battle/battleBattlers";
 import { ACTOR_LEVEL_MAX, normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
@@ -186,8 +188,8 @@ export function bossBandLine(project: Project, troopId: string, party: BossParty
 type Stats = EnemyRecord["stats"];
 const harder = (by: number) => (s: Stats): Stats => ({ ...s, attack: Math.max(1, Math.ceil(s.attack * by)), mind: Math.max(1, Math.ceil(s.mind * by)) });
 /**
- * 한 바퀴에 차례로 해 보는 걸음 — 한 대만 올린다(hits: 공격·마력과 길 사본 피해 기술의 위력에 곱한다, skillsOnly 면 기술의 위력만). HP 는 올리지 않는다.
- * 한 대를 올린 걸음이 바라는 길이를 넘기면(약 쓰는 차례가 늘어서) HP 를 내리며 올리는 걸음을 해 본다.
+ * 한 바퀴에 해 보는 걸음 — hits: 공격·마력과 길 사본 피해 기술의 위력에 곱한다(skillsOnly 면 기술의 위력만) · hp: HP 에 곱한다(1 이하 — 올리지 않는다).
+ * 바퀴마다 여느 플레이의 기준을 지키는 걸음 가운데 위협을 가장 많이 올리는 것을 받는다.
  */
 const RAISE_STEPS: readonly { readonly hits: number; readonly hp: number; readonly skillsOnly?: boolean }[] = [
   { hits: 1.12, hp: 1 }, { hits: 1.25, hp: 1 },
@@ -195,6 +197,16 @@ const RAISE_STEPS: readonly { readonly hits: number; readonly hp: number; readon
   { hits: 1.25, hp: 1, skillsOnly: true },
   { hits: 1.12, hp: 0.9 }, { hits: 1.25, hp: 0.85 },
 ];
+/**
+ * 마지막 보스의 껍질 — [평타가 먹히는 몫(원래 방어일 때 대비), HP 에 곱하는 값]. 덜 바꾸는 것부터 해 본다: 한 대만 → 방어를 올린다 → 그만큼 HP 를 내린다.
+ * 평타가 덜 먹히는 만큼 기술과 평타의 차이가 벌어진다 — «공격만» 은 싸움이 길어져 지고, 기술로 싸우는 판은 HP 를 내린 만큼 길이가 그대로다.
+ * 평타는 원래의 38% 아래로는 내리지 않는다(평타가 0 이 되는 벽은 세우지 않는다). HP 는 올리지 않는다.
+ */
+const SHELLS: readonly (readonly [number, number])[] = [[1, 1], [0.75, 1], [0.75, 0.85], [0.55, 0.85], [0.55, 0.7], [0.38, 0.7], [0.38, 0.6], [0.38, 0.5]];
+/** 껍질마다 해 보는 한 대의 배율(처음 값 대비) — 작은 것부터, «공격만» 을 막는 가장 작은 한 대를 고른다(약을 가장 덜 쓰는 싸움). */
+const HIT_LEVELS = [1, 1.12, 1.25, 1.4, 1.57, 1.76, 1.97, 2.2, 2.5, 2.8] as const;
+/** 이미 껍질을 찾아 본 보스(능력치·파티가 같은 것) — 끝맺음이 여러 번 돌아도 같은 탐색을 되풀이하지 않는다. */
+const shellTried = new Set<string>();
 /** 길 사본의 피해 기술(`skill_path_*`) — 한 대를 올리고 내릴 때 위력도 같은 비율로 움직인다(능력치만 올리면 제 위력으로 치는 기술은 절반만 따라온다). */
 const PATH_SKILL = /^skill_path_/u;
 
@@ -215,8 +227,8 @@ function hardestHit(project: Project, enemy: EnemyRecord, stats: Stats, hero: { 
 }
 
 /**
- * 보스 무리(길 사본 — 적은 `enemy_path_*`)의 한 대를 밴드의 위협에 닿을 때까지 올린다(마지막 보스: «공격만» 으로 못 이긴다 · 앞 보스: «공격만» 이 이기되 HP 절반 아래로 끝난다 · 약을 적어도 쓰게 한다).
- * 바퀴마다 걸음을 차례로 해 보고 여느 플레이의 기준(승률·턴 상한)을 지키는 첫 걸음을 받는다. 위협에 닿거나 받을 걸음이 없으면 멈춘다 — 그래서 다시 돌려도 더 오르지 않는다.
+ * 보스 무리(길 사본 — 적은 `enemy_path_*`)의 한 대(마지막 보스는 껍질도)를 밴드의 위협에 닿을 때까지 올린다(마지막 보스: «공격만» 으로 못 이긴다 · 앞 보스: «공격만» 이 이기되 HP 절반 아래로 끝난다 · 약을 적어도 쓰게 한다).
+ * 바퀴마다 걸음을 모두 해 보고 여느 플레이의 기준(승률·바라는 길이·약의 위쪽 끝)을 지키는 것 가운데 위협을 가장 많이 올리는 걸음을 받는다. 위협에 닿거나 나아지는 걸음이 없으면 멈춘다 — 그래서 다시 돌려도 더 오르지 않는다.
  * HP 는 올리지 않는다. 바꾼 것 한 줄(없으면 undefined).
  */
 export function raiseBossTension(project: Project, troopId: string, party: BossParty): string | undefined {
@@ -234,49 +246,110 @@ export function raiseBossTension(project: Project, troopId: string, party: BossP
   const skillIds = new Set(enemies.flatMap((e) => [...(e.actions ?? []).map((a) => a.skillId), ...(e.skillIds ?? [])]));
   const skills = project.database.skills.filter((k) => skillIds.has(k.id) && PATH_SKILL.test(k.id) && k.effect.kind === "damage" && k.power > 0);
   const before = { attackOnly, sensible, stats: enemies.map((e) => ({ ...e.stats })), powers: skills.map((k) => k.power) };
-  const step = (candidate: (typeof RAISE_STEPS)[number]): boolean => {
+  // 평타(기준 파티 선두)가 그 방어에 주는 피해 — 껍질의 방어를 잰다.
+  const plain = (defense: number) => hero ? Math.max(1, hero.attackPower + Math.floor(hero.attackPower / 2) - Math.floor(defense / 2)) : 1;
+  /** 상한을 넘는 기술은 상한에 둔다(위력을 깎는다) — 약한 한 대(평타)는 마저 오른다. */
+  const clampSkills = (cap: number): void => {
+    if (!hero || !Number.isFinite(cap)) return;
+    for (const k of skills) {
+      const mind = k.effect.kind === "damage" && k.effect.statistic === "mind", hits = k.hitSequence?.length ? k.hitSequence.reduce((sum, n) => sum + n, 0) : 1;
+      const stat = Math.max(...enemies.filter((e) => (e.actions ?? []).some((a) => a.skillId === k.id) || (e.skillIds ?? []).includes(k.id)).map((e) => mind ? e.stats.mind : e.stats.attack), 0);
+      const most = Math.floor(cap / hits) - Math.floor(stat / 2) + Math.floor((mind ? hero.mind : hero.defense) / 2);
+      if (!k.damageFormula && k.power > most) k.power = Math.max(1, most);
+    }
+  };
+  /**
+   * 마지막 보스의 껍질 찾기 — 껍질(방어·HP)마다 «공격만» 을 막는 가장 작은 한 대를 찾고, 그때 여느 플레이가 밴드 안이면 그것으로 둔다. 못 찾으면 처음 값으로 되돌린다.
+   * 한 대가 세질수록 «공격만» 은 덜 이기고 여느 플레이는 약을 더 쓴다 — 그래서 한 대는 작은 것부터 훑고, 여느 플레이가 밴드를 넘으면 그 껍질은 접는다.
+   */
+  const shell = (): boolean => {
+    const cap = hero ? hero.maxHp * BOSS_HIT_CAP : Infinity;
+    const [least, most] = bossPotionBand(true);
+    const put = (hits: number, plainShare: number, hp: number): boolean => {
+      enemies.forEach((e, i) => {
+        const o = before.stats[i]!;
+        const defense = plainShare < 1 ? o.defense + Math.floor(plain(o.defense) * (1 - plainShare)) * 2 : o.defense;
+        e.stats = { ...o, attack: Math.max(1, Math.ceil(o.attack * hits)), mind: Math.max(1, Math.ceil(o.mind * hits)), defense, maxHp: Math.max(Math.ceil(o.maxHp * HP_FLOOR), Math.floor(o.maxHp * hp)) };
+      });
+      skills.forEach((k, i) => { k.power = Math.max(1, Math.round(before.powers[i]! * hits)); });
+      clampSkills(cap);
+      return !hero || !enemies.some((e) => hardestHit(project, e, e.stats, hero) > cap);
+    };
+    for (const [plainShare, hp] of SHELLS) for (const hits of HIT_LEVELS) {
+      if (!put(hits, plainShare, hp)) break;
+      let ao: AttackOnly, play: BossPlay;
+      try { ao = measureBossAttackOnly(project, troopId, party); if (ao.win > BOSS_BAND.attackOnlyMaxWin) continue; play = measureBossSensible(project, troopId, party); } catch { break; }
+      if (!bossSensibleFits(play) || play.turns > BOSS_BAND.targetTurns[1] || (party.potion && play.potions > most + 0.05)) break;
+      if (party.potion && play.potions < least - 0.05) continue;
+      sensible = play; attackOnly = ao;
+      return true;
+    }
+    enemies.forEach((e, i) => { e.stats = before.stats[i]!; });
+    skills.forEach((k, i) => { k.power = before.powers[i]!; });
+    return false;
+  };
+  /** 아직 못 닿은 위협의 크기 — 작을수록 밴드에 가깝다. 마지막 보스 = «공격만» 이 이기는 몫, 앞 보스 = «공격만» 으로 남는 HP. 약의 아래쪽 끝에 모자란 만큼을 더한다. */
+  const threat = (play: BossPlay, ao: AttackOnly) => (party.final ? ao.win : ao.left) + (party.potion ? Math.max(0, bossPotionBand(party.final)[0] - play.potions) * 0.1 : 0);
+  type Tried = { readonly stats: Stats[]; readonly powers: number[]; readonly play: BossPlay; readonly ao: AttackOnly };
+  /** 걸음 하나를 해 보고 되돌린다 — 여느 플레이의 기준을 지키면 그 결과, 아니면 undefined. */
+  const attempt = (candidate: (typeof RAISE_STEPS)[number]): Tried | undefined => {
     const saved = enemies.map((e) => e.stats), powers = skills.map((k) => k.power);
-    const undo = () => { enemies.forEach((e, i) => { e.stats = saved[i]!; }); skills.forEach((k, i) => { k.power = powers[i]!; }); return false; };
+    const undo = () => { enemies.forEach((e, i) => { e.stats = saved[i]!; }); skills.forEach((k, i) => { k.power = powers[i]!; }); return undefined; };
     enemies.forEach((e, i) => {
       const up = candidate.skillsOnly ? e.stats : harder(candidate.hits)(e.stats);
       e.stats = { ...up, maxHp: Math.max(Math.ceil(before.stats[i]!.maxHp * HP_FLOOR), Math.floor(up.maxHp * candidate.hp)) };
     });
     for (const k of skills) k.power = Math.max(1, Math.round(k.power * candidate.hits));
-    // 상한을 넘는 기술은 상한에 둔다(위력을 깎는다) — 약한 한 대(평타)는 마저 오른다. 평타가 상한을 넘으면 걸음을 받지 않는다.
-    if (hero && Number.isFinite(hitCap)) for (const k of skills) {
-      const mind = k.effect.kind === "damage" && k.effect.statistic === "mind", hits = k.hitSequence?.length ? k.hitSequence.reduce((sum, n) => sum + n, 0) : 1;
-      const stat = Math.max(...enemies.filter((e) => (e.actions ?? []).some((a) => a.skillId === k.id) || (e.skillIds ?? []).includes(k.id)).map((e) => mind ? e.stats.mind : e.stats.attack), 0);
-      const most = Math.floor(hitCap / hits) - Math.floor(stat / 2) + Math.floor((mind ? hero.mind : hero.defense) / 2);
-      if (!k.damageFormula && k.power > most) k.power = Math.max(1, most);
-    }
+    clampSkills(hitCap);
     const moved = enemies.some((e, i) => e.stats.attack !== saved[i]!.attack || e.stats.mind !== saved[i]!.mind) || skills.some((k, i) => k.power !== powers[i]);
     if (!moved || (hero && enemies.some((e) => hardestHit(project, e, e.stats, hero) > hitCap))) return undo();
     let next: BossPlay;
     try { next = measureBossSensible(project, troopId, party); } catch { next = NO_PLAY; }
-    // 한 대가 세지면 약 쓰는 차례가 늘어 싸움이 길어진다 — 바라는 길이(targetTurns 의 위쪽 끝)를 넘기는 걸음은 받지 않는다(HP 를 내리는 걸음이 뒤에 있다).
+    // 한 대가 세지면 약 쓰는 차례가 늘어 싸움이 길어진다 — 바라는 길이(targetTurns 의 위쪽 끝)와 약의 위쪽 끝을 넘기는 걸음은 받지 않는다.
     if (!bossSensibleFits(next) || next.turns > Math.max(BOSS_BAND.targetTurns[1], sensible.turns)) return undo();
     if (party.potion && next.potions > Math.max(bossPotionBand(party.final)[1] + 0.05, sensible.potions)) return undo();
     let ao: AttackOnly;
     try { ao = measureBossAttackOnly(project, troopId, party); } catch { return undo(); }
     // 앞 보스는 벽이 되지 않는다 — «공격만» 이 이기지 못하게 되는 걸음은 받지 않는다.
     if (!party.final && ao.win < BOSS_BAND.midAttackOnlyMinWin) return undo();
-    sensible = next; attackOnly = ao;
+    const tried = { stats: enemies.map((e) => e.stats), powers: skills.map((k) => k.power), play: next, ao };
+    undo();
+    return tried;
+  };
+  /** 한 바퀴 — 받을 수 있는 걸음 가운데 위협을 가장 많이 올리는 것을 받는다(같으면 약을 덜 쓰는 것). 나아지는 걸음이 없으면 false. */
+  const step = (): boolean => {
+    let best: Tried | undefined;
+    for (const candidate of RAISE_STEPS) {
+      const tried = attempt(candidate);
+      if (!tried || threat(tried.play, tried.ao) >= threat(sensible, attackOnly) - 1e-6) continue;
+      if (!best || threat(tried.play, tried.ao) < threat(best.play, best.ao) - 1e-6 || (Math.abs(threat(tried.play, tried.ao) - threat(best.play, best.ao)) <= 1e-6 && tried.play.potions < best.play.potions)) best = tried;
+    }
+    if (!best) return false;
+    enemies.forEach((e, i) => { e.stats = best!.stats[i]!; });
+    skills.forEach((k, i) => { k.power = best!.powers[i]!; });
+    sensible = best.play; attackOnly = best.ao;
     return true;
   };
   let gaps = threatGaps(party, sensible, attackOnly);
+  // 마지막 보스는 먼저 밴드 안의 껍질을 찾는다 — 찾으면 그것으로 끝, 못 찾으면 아래의 한 대 올리기로 닿는 데까지.
+  const shellKey = party.final ? JSON.stringify([troopId, before.stats, before.powers, party]) : "";
+  if (party.final && !shellTried.has(shellKey)) {
+    if (shell()) gaps = threatGaps(party, sensible, attackOnly);
+    else shellTried.add(shellKey);
+  }
   // 앞 보스의 한 대는 첫 단(약 하나의 2/3)을 넘지 않는다 — 한 대가 약 하나에 가까우면 약만 마시는 싸움이 된다
   // (2026-11-13 r2s-fun 키보드 플레이: 한 대 112 의 인형에게 45% 에서 약을 쓰는 플레이가 약 4개·11번의 명령을 썼다).
   for (const share of heal > 0 ? (party.final ? BOSS_HIT_PER_POTION : BOSS_HIT_PER_POTION.slice(0, 1)) : [Infinity]) {
     hitCap = hero ? Math.min(hero.maxHp * BOSS_HIT_CAP, Number.isFinite(share) ? heal * share : Infinity) : Infinity;
     for (let round = 0; round < RAISE_ROUNDS && gaps.length; round += 1) {
-      if (!RAISE_STEPS.some(step)) break;
+      if (!step()) break;
       gaps = threatGaps(party, sensible, attackOnly);
     }
   }
   const lead = enemies[0]!;
-  if (enemies.every((e, i) => e.stats.attack === before.stats[i]!.attack && e.stats.maxHp === before.stats[i]!.maxHp) && skills.every((k, i) => k.power === before.powers[i])) return undefined;
+  if (enemies.every((e, i) => e.stats.attack === before.stats[i]!.attack && e.stats.maxHp === before.stats[i]!.maxHp && e.stats.defense === before.stats[i]!.defense) && skills.every((k, i) => k.power === before.powers[i])) return undefined;
   const power = skills.length ? ` · 기술 위력 ${skills.map((k, i) => `${before.powers[i]}→${k.power}`).join("·")}` : "";
-  return `${troopId}(보스) 쉬고 온 Lv${party.level} 의 공격만·회복 없음 승률 ${pct(before.attackOnly.win)} → ${pct(attackOnly.win)}·남는 HP ${pct(before.attackOnly.left)} → ${pct(attackOnly.left)} · 여느 플레이 승률 ${pct(before.sensible.win)} → ${pct(sensible.win)}·${sensible.turns.toFixed(1)}턴·약 ${before.sensible.potions.toFixed(1)} → ${sensible.potions.toFixed(1)}개 — ${lead.name} 공 ${before.stats[0]!.attack}→${lead.stats.attack}·HP ${before.stats[0]!.maxHp}→${lead.stats.maxHp}${power}${gaps.length ? ` (더 올리면 여느 플레이의 기준이 깨져 여기서 멈춤: ${gaps.join(" · ")})` : ""}`;
+  return `${troopId}(보스) 쉬고 온 Lv${party.level} 의 공격만·회복 없음 승률 ${pct(before.attackOnly.win)} → ${pct(attackOnly.win)}·남는 HP ${pct(before.attackOnly.left)} → ${pct(attackOnly.left)} · 여느 플레이 승률 ${pct(before.sensible.win)} → ${pct(sensible.win)}·${sensible.turns.toFixed(1)}턴·약 ${before.sensible.potions.toFixed(1)} → ${sensible.potions.toFixed(1)}개 — ${lead.name} 공 ${before.stats[0]!.attack}→${lead.stats.attack}${lead.stats.defense !== before.stats[0]!.defense ? `·방 ${before.stats[0]!.defense}→${lead.stats.defense}` : ""}·HP ${before.stats[0]!.maxHp}→${lead.stats.maxHp}${power}${gaps.length ? ` (더 올리면 여느 플레이의 기준이 깨져 여기서 멈춤: ${gaps.join(" · ")})` : ""}`;
 }
 
 /**

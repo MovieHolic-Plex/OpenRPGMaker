@@ -44,10 +44,10 @@ export const PRE_BOSS_BUDGET = 0.6;
 /**
  * 길 위 전투 밴드 — 보스가 아닌 전투(잡몹·길목)는 모두 짧다(2026-11-13 r3b-fun: 돌아다니는 «돌 골렘»·«베히모스» 가 HP 580 으로 보스 390·473 보다 무거워 28·33번을 주고받았다).
  * 시작 파티의 여느 플레이로 turns 안에 끝나고(2~5턴), 한 판에 loss 보다 덜 잃는다(이어 싸우는 몫이 더 작으면 그 몫 — lossFloor 아래로는 조이지 않는다),
- * 무리의 HP 합은 그 장소의 보스(그 맵에 보스가 없으면 그 게임에서 가장 가벼운 보스)를 넘지 않는다. HP 는 원래 값의 hpFloor 까지 내린다.
+ * 무리의 HP 합은 그 장소의 보스(그 맵에 보스가 없으면 그 게임에서 가장 가벼운 보스)를 넘지 않는다 — HP 는 원래 값의 절반까지, 그래도 보스보다 무거우면 보스의 HP 까지 내린다.
  * 전투 뒤에도 남는 해로운 상태(독)는 길 사본에서 걸지 않는다 — 앞 전투의 독을 지고는 어느 값으로도 이 밴드에 못 든다.
  */
-export const ROAD_BAND = { turns: 5, loss: 0.2, lossFloor: 0.1, hpFloor: 0.25, minWin: 1 } as const;
+export const ROAD_BAND = { turns: 5, loss: 0.2, lossFloor: 0.1, minWin: 1 } as const;
 const ROLE_LIMIT = { field: ROAD_BAND, gate: ROAD_BAND, boss: { loss: 0.7, turns: BOSS_BAND.turns, minWin: BOSS_BAND.minWin } } as const;
 const WEIGHT = { field: 1, gate: 2 } as const;
 const MAX_FIELD_EVENTS = 4;
@@ -429,6 +429,9 @@ export function fitPathBattlesIn(project: Project): string[] {
     for (const enemy of project.database.enemies) if (enemyIds.has(enemy.id)) originals.set(enemy.id, { stats: { ...(sourceEnemy(project, enemy, copyId)?.stats ?? enemy.stats) } });
     const skillOriginals = new Map<string, number>();
     for (const skill of project.database.skills) if (skill.id.startsWith(skillPrefix)) skillOriginals.set(skill.id, sourceSkill(project, skill, skillPrefix)?.power ?? skill.power);
+    // 길 위 무리의 HP 는 원래 값의 STAT_FLOOR 아래로는 그 장소 보스의 HP 에 닿는 데까지만 내린다(보스보다 무거운 길 적은 없다 — 그보다 가볍게 만들지는 않는다).
+    const heavy = [...originals.values()].reduce((sum, o) => sum + o.stats.maxHp, 0);
+    const hpShare = (value: number) => Number.isFinite(hpCap) && heavy > 0 ? Math.max(1, Math.floor(value * hpCap / heavy)) : Infinity;
     let now = measure(copyId, start);
     for (let round = 0; round < ROUNDS && !fits(now); round += 1) {
       const strong = now.win < limit.minWin || now.over || (role !== "boss" && now.loss > cap);
@@ -438,11 +441,11 @@ export function fitPathBattlesIn(project: Project): string[] {
         if (!enemyIds.has(enemy.id)) continue;
         const s = enemy.stats;
         const o = originals.get(enemy.id)!.stats;
-        const floorOf = (value: number, floor: number = STAT_FLOOR) => Math.max(1, Math.floor(value * floor));
+        const floorOf = (value: number) => Math.max(1, Math.floor(value * STAT_FLOOR));
         const next = {
           ...s,
           ...(strong ? { attack: Math.max(floorOf(o.attack), Math.floor(s.attack * 0.85)), mind: Math.max(floorOf(o.mind), Math.floor(s.mind * 0.85)) } : {}),
-          ...(long || (strong && s.attack <= 1) ? { maxHp: Math.max(floorOf(o.maxHp, role === "boss" ? STAT_FLOOR : ROAD_BAND.hpFloor), Math.floor(s.maxHp * 0.85)) } : {}),
+          ...(long || (strong && s.attack <= 1) ? { maxHp: Math.max(Math.min(floorOf(o.maxHp), hpShare(o.maxHp)), Math.floor(s.maxHp * 0.85)) } : {}),
         };
         if (next.attack !== s.attack || next.mind !== s.mind || next.maxHp !== s.maxHp) { enemy.stats = next; moved = true; }
       }
@@ -456,8 +459,9 @@ export function fitPathBattlesIn(project: Project): string[] {
     }
     const pct = (x: number) => `${Math.round(x * 100)}%`;
     const roadWant = `승률 ${pct(limit.minWin)} · 손실 ≤ ${pct(cap)} · ${limit.turns}턴 안${Number.isFinite(hpCap) ? ` · HP ≤ ${hpCap}(그 장소의 보스)` : ""}`;
-    // 길 위 전투는 기준에 못 들어도 가까워졌으면 내린 값으로 둔다 — 원래 값(보스보다 무거운 580)이 더 멀다.
-    if (!fits(now) && role !== "boss" && now.win >= before.win && (now.turns < before.turns - 0.05 || now.loss < before.loss - 0.005 || hpOf(copyId) < hpOf(troopId))) {
+    // 길 위 전투는 기준에 못 들어도 재 보니 가까워졌으면(짧아졌거나 덜 잃는다) 내린 값으로 둔다 — 원래 값(보스보다 무거운 580)이 더 멀다.
+    // 재 본 값이 그대로면 원래 값으로 되돌린다(능력치만 깎이고 얻는 것이 없다).
+    if (!fits(now) && role !== "boss" && now.win >= before.win && (now.turns < before.turns - 0.05 || now.loss < before.loss - 0.005)) {
       if (copyId !== troopId) rename.set(troopId, copyId);
       notes.push(`${troopId}(${ROLE_KO[role]}${start.length ? `, 남은 상태 ${start.join("·")} 지고` : ""}) 맞추기 미완 — 하한까지 내려도 기준(${roadWant}) 밖이다: 승률 ${pct(now.win)}·손실 ${pct(now.loss)}·${now.turns.toFixed(1)}턴·HP ${hpOf(copyId)}. 가장 가까운 이 값으로 둔다(원래 승률 ${pct(before.win)}·손실 ${pct(before.loss)}·${before.turns.toFixed(1)}턴)`);
       return;
