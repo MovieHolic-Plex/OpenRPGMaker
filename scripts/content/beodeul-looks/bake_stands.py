@@ -305,6 +305,8 @@ def compose(spec, trees, tex, small):
     pics = {it["id"]: it["im"] for it in trees}
     by = {}
     for it in trees: by.setdefault((it["species"], it["slot"]), []).append(it["id"])
+    # 그림 id 순(…-1, …-2) — 첫 그림이 킷 칸에 덮이는 그림이다. 2차의 수종(버들 등)에 이 그림판이 다른 개체 그림을 더해도 첫 그림이 바뀌지 않게 한다.
+    for ids in by.values(): ids.sort()
     table = {"version": 2, "tilesetId": "beodeul_city", "image": "tex_beodeul_city", "texture": "tex_beodeul_stands", "tileSize": T, "tilesPerRow": COLS,
              "note": "생성 파일 — scripts/content/beodeul-looks/bake_stands.py. pairs·small·sources·shadow·shade 는 [원본 칸, 그림판 칸] 쌍을 편 목록(shade = 숲 그늘 칸을 숲 바닥에 얹은 그림 — 둘레가 숲 바닥일 때만 쓴다). cover·variantCover 는 칸마다 불투명 몫(0~100). variants[킷] = 같은 수종의 다른 개체 그림들(줄 목록, 빈 칸 -1). crowns = 숲 수관 위로 솟는 나무 머리(4층). overlays.cells[꼭짓점 비트 북서1·북동2·남서4·남동8] = 그림판 칸(alt = 둘째 벌).",
              "gate": f"3/4 gate not passed — owner waiver {spec['waiver']}", "stands": {}, "meadows": spec["meadows"], "overlays": {}, "worn": spec["worn"], "verge": spec["verge"], "reed": spec["reed"]}

@@ -727,6 +727,20 @@
    "kind": "organic",
    "species": "fern",
    "slot": "2x2"
+  },
+  {
+   "id": "tree-willow-3x4-2",
+   "src": "tree-willow-3x4-2.png",
+   "kind": "organic",
+   "species": "willow",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-willow-3x3-2",
+   "src": "tree-willow-3x3-2.png",
+   "kind": "organic",
+   "species": "willow",
+   "slot": "3x3"
   }
  ],
  "textures": [
