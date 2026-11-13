@@ -336,14 +336,20 @@ def compose(spec, trees, tex, small):
     meta = {it["id"]: it for it in trees}
     variant_memo = {}
     def variant_cells(kid, pid):
-        """변형 그림의 칸 — (킷, 그림)마다 따로 굽는다(같은 화소라도 합치지 않는다): 칸 하나가 원본 킷의 한 자리만 가리켜야 도구가 변형 나무를 그 킷으로 되읽는다."""
+        """변형 그림의 칸 — (킷, 그림)마다 따로 굽는다(같은 화소라도 합치지 않는다): 칸 하나가 원본 킷의 한 자리만 가리켜야 도구가 변형 나무를 그 킷으로 되읽는다.
+
+        그림이 비운 칸이라도 원본 킷에서 막힌 칸이면 빈 그림 칸을 하나 굽는다 — 변형 나무의 발자국(막힌 칸)이 원본 킷과 같아야 한다.
+        (비워 두면 그 칸이 걷는 칸이 돼, 숲 구성을 고른 게임만 던전 장치·적 자리가 달라지고 다른 배치가 뽑혔다 — 첫 그림은 킷 칸에 덮여 원래 막힌 채다.)"""
         if (kid, pid) not in variant_memo:
-            im = np.array(pics[pid]); rows = []
+            im = np.array(pics[pid]); rows = []; kit = kits[kid]
             for y in range(0, im.shape[0], T):
-                row = []
+                row = []; kr = kit["rows"][y // T]
                 for x in range(0, im.shape[1], T):
                     px = im[y:y + T, x:x + T]
-                    if px[:, :, 3].max(): row.append(len(cells)); cells.append(np.ascontiguousarray(px))
+                    up = (kr.get("upperTiles") or [-1] * kit["width"])[x // T]
+                    base = up if up >= 0 else kr["tiles"][x // T]
+                    solid = base >= 0 and not any(ts["passability"][base].values())
+                    if px[:, :, 3].max() or solid: row.append(len(cells)); cells.append(np.ascontiguousarray(px))
                     else: row.append(-1)
                 rows.append(row)
             variant_memo[(kid, pid)] = rows

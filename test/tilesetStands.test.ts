@@ -215,6 +215,19 @@ describe("tileset stands — 게임마다 다른 숲·바닥", () => {
     });
     // 같은 그림을 다시 청하면 같은 칸이다(이식 칸을 두 번 만들지 않는다)
     expect(flat(standVariantKit(tileset, kit, "oakwood", 1)!)).toEqual(to);
+    // 발자국: 변형 그림이 비운 칸이라도 원본 킷에서 막힌 칸이면 (빈 그림) 칸이 있다 — 비워 두면 그 칸이 걷는 칸이 돼
+    // 숲 구성을 고른 게임만 던전 장치·적 자리가 달라졌다(깊은 숲의 버섯 고리가 나무 발치 빈 칸에 섰다)
+    const kits = new Map((tileset.structureKits ?? []).map((def) => [def.id, def]));
+    const solid = (tile: number): boolean => { const pass = tileset.passability[tile]; return !!pass && !pass.up && !pass.down && !pass.left && !pass.right; };
+    const holes: string[] = [];
+    for (const [standId, stand] of Object.entries(table.stands)) for (const [kitId, variants] of Object.entries(stand.variants ?? {})) {
+      const def = kits.get(kitId)!, cells = flat(def);
+      variants.forEach((rows, n) => rows.forEach((row, y) => row.forEach((cell, x) => {
+        const origin = cells[y * def.width + x]!;
+        if (cell < 0 && origin >= 0 && solid(origin)) holes.push(`${standId} ${kitId}#${n + 1} ${x},${y}`);
+      })));
+    }
+    expect(holes).toEqual([]);
   });
 
   it("퍼뜨려 고르기: 다른 게임들의 겉모습을 주면 덜 쓴 숲 구성·다른 주 수종을 먼저 고르고, 주지 않으면 열쇠 해시 그대로다", () => {
