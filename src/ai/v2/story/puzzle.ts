@@ -14,6 +14,7 @@ import { dressInteriorExits } from "../place/exitDress";
 import { fixObjectSheetFacing, showExaminedThing } from "./examineArt";
 import { examineHint, lightUnseenThing, settleExamineSpot } from "./examineSpot";
 import { isPersonName, personGraphicFor } from "./personName";
+import { afterWinLines, sayAs } from "./playerLines";
 import { REREAD_PERSON, REREAD_THING } from "./rereadPage";
 import { settleStepThing } from "./stepThings";
 import { codeSpreadOver } from "./codeClues";
@@ -41,7 +42,7 @@ export interface ChainLink {
   readonly wrongLines?: readonly string[];
   readonly doneLines?: readonly string[];
   /** switchId·itemId: 이 고리가 전에 지어 둔 스위치·물건 — 주면 이름이 바뀌어도 그 id 를 그대로 쓴다(청사진 다시 쓰기, blueprintCarry.ts). */
-  readonly reward?: { readonly item?: string; readonly flag?: string; readonly switchId?: string; readonly itemId?: string; readonly lines?: readonly string[]; readonly ending?: { readonly id?: string; readonly name?: string; readonly epilogue?: string | readonly string[] } };
+  readonly reward?: { readonly item?: string; readonly note?: string; readonly flag?: string; readonly switchId?: string; readonly itemId?: string; readonly lines?: readonly string[]; readonly ending?: { readonly id?: string; readonly name?: string; readonly epilogue?: string | readonly string[] } };
   readonly seal?: boolean;
   /** needs 대신 쓰는 조건 그대로(사슬 밖 이벤트가 켜는 스위치·주는 아이템). */
   readonly needsCondition?: readonly Record<string, unknown>[];
@@ -75,8 +76,9 @@ export interface ChainLink {
   /** ending: 엔딩 직전에 조건(앞 고리의 flag·물건 이름)이 맞으면 보이는 줄 — 고른 것에 따라 결말 한 줄이 달라진다. */
   readonly variants?: readonly { readonly needs: string; readonly lines: readonly string[] }[];
   /** code·ending: 틀린 횟수가 이 수에 닿으면(이상) 틀림 대사 뒤에 hintLines 를 보인다. */
-  readonly hintAfter?: number;
-  readonly hintLines?: readonly string[];
+  readonly hintAfter?: number; readonly hintLines?: readonly string[];
+  /** 이 자물쇠가 여는 다음 장소의 맵 — 그리로 가는 입구에 달린 고리다(story/stepWayOut). 남의 문 칸으로 옮기지 않는다. */
+  readonly opens?: string;
 }
 export interface ChainArgs {
   readonly mapId: string; readonly name: string; readonly links: readonly ChainLink[];
@@ -89,14 +91,11 @@ function trig(page: Obj): string {
   return typeof t === "string" ? t : String((t as Obj | undefined)?.kind ?? "action");
 }
 const say = (lines: readonly string[] | undefined): Obj[] => (lines ?? []).filter((l) => l.trim()).map((body) => ({ kind: "text", body }));
-/** 말하는 사람이 있는 대사 — 「(」로 시작하는 줄은 서술이라 이름을 붙이지 않는다. */
-const sayAs = (lines: readonly string[] | undefined, speaker: string | undefined): Obj[] => (lines ?? []).filter((l) => l.trim())
-  .map((body) => (speaker && !/^\s*[(（]/u.test(body) ? { kind: "text", speaker, body } : { kind: "text", body }));
 
 /** 싸우는 고리: 전투 뒤 이긴 갈래에서만 뒤 명령(보상·엔딩)이 이어진다 — 승리 갈래 밖 진행은 출하 검사(blueprint-battle-bypass)가 막는다. */
 const afterBattle = (link: ChainLink, then: Obj[]): Obj[] => (link.battle
   ? [{ kind: "battleProcessing", troopId: link.battle.troopId, canEscape: false, canLose: false },
-    { kind: "fork", condition: { kind: "battleResult", result: "victory" }, then: [...sayAs(link.battle.winLines, link.speaker), ...then] }]
+    { kind: "fork", condition: { kind: "battleResult", result: "victory" }, then: [...afterWinLines(link.battle.winLines, link.speaker), ...then] }]
   : then);
 
 /** 맵을 고칠 사본 — before 스냅숏과 공유하지 않게 맵 하나만 깊게 복사한다. */
@@ -496,7 +495,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     let gave: { switchId?: string; itemId?: string } | undefined;
     const rewardCmds = (): Obj[] => {
       const out: Obj[] = [...say(link.reward?.lines)];
-      if (link.reward?.item) { const it = itemId(link.reward.item, link.reward.itemId, itemSource(link)); gave = { ...gave, itemId: it }; have.set(link.reward.item, { kind: "item", itemId: it }); out.push({ kind: "changeItem", itemId: it, op: "+=", amount: 1 }); if (!link.reward.lines?.length) out.push({ kind: "text", body: `『${link.reward.item}』${josa(link.reward.item, "을/를")} 얻었다.` }); }
+      if (link.reward?.item) { const it = itemId(link.reward.item, link.reward.itemId, link.reward.note ?? itemSource(link)); gave = { ...gave, itemId: it }; have.set(link.reward.item, { kind: "item", itemId: it }); out.push({ kind: "changeItem", itemId: it, op: "+=", amount: 1 }); if (!link.reward.lines?.length) out.push({ kind: "text", body: `『${link.reward.item}』${josa(link.reward.item, "을/를")} 얻었다.` }); }
       if (link.reward?.flag) { const sw = flag(link.reward.flag, `${args.name}: ${link.reward.flag}`, link.reward.switchId); gave = { ...gave, switchId: sw }; have.set(link.reward.flag, { kind: "flag", switchId: sw }); out.push({ kind: "setSwitch", switchId: sw, value: true }); }
       return out;
     };
@@ -594,7 +593,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     // 막다른 남쪽 출구는 메우고 문 고리를 북벽 문 그림으로(exitDress) — 자리 고치기 전에 해야 문이 그 그림 칸에 붙는다.
     const exits = dressInteriorExits(run, mapId);
     if (exits.notes.length) reachNotes.push(`출구 마감: ${exits.notes.join(" / ")}`);
-    const fixed = repairEventReach(run, mapId, eventIds.filter((e) => e.mapId === mapId).map((e) => e.eventId), undefined, new Set(eventIds.filter((_, i) => args.links[i]?.thing === "find").map((e) => e.eventId)));
+    const fixed = repairEventReach(run, mapId, eventIds.filter((e) => e.mapId === mapId).map((e) => e.eventId), undefined, new Set(eventIds.filter((_, i) => args.links[i]?.thing === "find").map((e) => e.eventId)), new Map(eventIds.flatMap((e, i) => (args.links[i]?.opens ? [[e.eventId, args.links[i]!.opens!] as const] : []))));
     if (fixed.moved.length) reachNotes.push(`닿게 옮김: ${fixed.moved.join(", ")}`);
     for (const s of fixed.stuck) warnings.push(`걸어 가서 조사할 자리를 못 찾았다: ${s}`);
   }
@@ -608,7 +607,7 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
     if (settled.length) reachNotes.push(`조사 칸: ${settled.join(", ")}`);
     else { const shown = showExaminedThing(run, e.mapId, e.eventId); if (shown) warnings.push(shown); }
     // 단계가 쓰게 하는 물건은 맨바닥에 남기지 않는다 — 가장 가까운 그림에 앉히고, 그 이름의 그림이 아니면 «없는 그림» 으로 적는다.
-    const seated: ReturnType<typeof settleStepThing> = link?.thing && link.role !== "door" ? settleStepThing(run, e.mapId, e.eventId, link.thing === "find") : {};
+    const seated: ReturnType<typeof settleStepThing> = link?.thing && link.role !== "door" ? settleStepThing(run, e.mapId, e.eventId, link.thing === "find", !!link.opens) : {};
     if (seated.note) reachNotes.push(seated.note);
     if (seated.gap) missingArt.push(seated.gap);
     // 그래도 보이지 않는 조사 칸(맨바닥 · 큰 그림의 한 칸 · 단계 물건이 앉은 이름 다른 그림)은 늘 빛나게 — 경로가 거쳐야 하는 것은 화면에 보여야 한다.

@@ -53,6 +53,8 @@ export interface SimulateBattleInput {
   readonly switchesOn?: readonly string[];
   /** 영웅 파티 모두가 걸린 채 시작할 상태 id(앞 전투에서 남은 독처럼 전투 뒤에도 유지되는 상태). 생략 = 없음. */
   readonly startStateIds?: readonly string[];
+  /** 영웅 파티가 최대 HP 의 이 몫만 가진 채 시작한다(0~1 — 앞 전투에서 깎인 채 쉬지 않고 온 판). 생략·1 이상 = 풀 HP. */
+  readonly startHpRatio?: number;
 }
 
 /**
@@ -155,7 +157,11 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
     activeSlots: input.activeSlots,
     party: monsterMode
       ? { levels: {}, experience: {}, monsterParty: input.monsterParty, partyActorIds: input.monsterParty!.map((m) => m.instanceId) }
-      : { levels, experience: {}, partyActorIds: [...partyActorIds], ...(input.startStateIds?.length ? { stateIds: Object.fromEntries(partyActorIds.map((id) => [id, [...input.startStateIds!]])) } : {}) },
+      : {
+        levels, experience: {}, partyActorIds: [...partyActorIds],
+        ...(input.startStateIds?.length ? { stateIds: Object.fromEntries(partyActorIds.map((id) => [id, [...input.startStateIds!]])) } : {}),
+        ...(input.startHpRatio !== undefined && input.startHpRatio < 1 ? { vitals: Object.fromEntries(actorBattlers(input.project, { levels, partyActorIds: [...partyActorIds] }).map((b) => [b.id, { hp: Math.max(1, Math.round(b.maxHp * Math.max(0, input.startHpRatio!))), mp: b.maxMp }])) } : {}),
+      },
     partyMonsters: monsterMode ? input.monsterParty : undefined,
     ownerEventId: input.ownerEventId,
     sessionState: { switches: Object.fromEntries((input.switchesOn ?? []).map((id) => [id, true])), variables: {}, inventory, selfSwitches: input.selfSwitches, battleResult: input.battleResult },

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { deriveFieldFoeSheet } from "@/player/fieldFoeSprite";
-import { withDerivedFieldFoe } from "@/player/eventSpriteResources";
+import { deriveFieldFoeSheet, fieldFoeGain } from "@/player/fieldFoeSprite";
+import { eventSpriteScale, withDerivedFieldFoe } from "@/player/eventSpriteResources";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 
 /** 64x64 battler stand-in: a 40x30 body facing right with a bright "head" block on the right edge. */
@@ -44,6 +44,20 @@ describe("derived field-foe sheet", () => {
     const first = row.findIndex((p) => p[3]! > 0);
     expect(row[first]![0]).toBeGreaterThan(200); // rim
     expect(row[first + 1]![0]).toBeLessThan(90); // outline
+  });
+
+  it("cuts a whole-number enlarged foe at that much more detail instead of stretching the small chip (64px art ×2 → 1:1 body)", () => {
+    expect(fieldFoeGain(64, 64, 2)).toBe(2);
+    expect(fieldFoeGain(128, 128, 2)).toBe(2);
+    expect(fieldFoeGain(128, 128, 3)).toBe(2);
+    expect(fieldFoeGain(32, 32, 2)).toBe(1);
+    const sheet = deriveFieldFoeSheet(battler(), 2)!;
+    expect(sheet.frameW).toBe(40 + 4);
+    // the authored ×2 is divided by the gain: same size on the map, drawn from the battle art's own pixels
+    const derived = { texture: "__oprn_field_foe:x@2", frame: 0, charset: true, derived: true, gain: 2 };
+    const plain = { texture: "__oprn_field_foe:x", frame: 0, charset: true, derived: true };
+    expect(eventSpriteScale(derived, { width: 44 }, 2, 16, "manual")).toBe(1);
+    expect(eventSpriteScale(plain, { width: 24 }, 2, 16, "manual")).toBe(2);
   });
 
   it("returns null for fully transparent art", () => {
