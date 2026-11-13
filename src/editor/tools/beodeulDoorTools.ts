@@ -1,4 +1,5 @@
 import { translateTiles } from '@/project/objectStamp';
+import { houseSetBaseTiles } from '@/project/houseSetKit';
 import { createBeodeulDoorTileset, BEODEUL_DOOR_ID, BEODEUL_DOOR_TEXTURE } from '@/project/defaults/beodeulDoor';
 import type { Command, EventPage, GameEvent } from '@/project/types';
 import { ToolError, type ToolDefinition } from './types';
@@ -42,6 +43,10 @@ export const BEODEUL_DOOR_TOOLS: readonly ToolDefinition[] = [{
         bottom:target.tileGrafts?.find(g=>g.sourceChipset===BEODEUL_DOOR_TEXTURE&&g.sourceTile===i+8)?.targetTile}))}};
     const picture=(tile:number|undefined,sourceTile:number)=> tile===sourceTile&&target.image.id==='tex_beodeul_city'
       ||target.tileGrafts?.some(g=>g.targetTile===tile&&g.sourceChipset==='tex_beodeul_city'&&g.sourceTile===sourceTile);
+    // 집 벌(게임마다 다른 집 그림)의 문: 공용 열림 시트는 원본 문 그림에만 맞는다 — 벌 집 문에 덮으면 벽·문 색이 어긋난다. 알아보고 까닭을 말한다.
+    const setBase=houseSetBaseTiles(target);
+    if(!already && (setBase.has(top??-1)||setBase.has(bottom??-1)))
+      throw new ToolError("This door belongs to a house drawn in this game's house set (tileset look.houses). The shared 8-stage door sheet matches only the original bd-house-h101_0 door picture, so it is not applied here — leave this door as it is.",{code:'house-set-door',mapId:map.id});
     if(!already && (!picture(top,5743)||!picture(bottom,2333)))
       throw new ToolError('지원하는 살림집 문(5743/2333)이 아닙니다. 다른 문은 그 그림에 맞춘 열림 시트를 먼저 만들어야 합니다.');
     const returns=(destination?.events??[]).filter(e=>e.pages?.length===1&&e.pages[0].trigger.kind==='playerTouch'

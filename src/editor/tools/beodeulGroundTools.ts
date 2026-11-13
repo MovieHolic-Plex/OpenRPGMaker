@@ -1,3 +1,4 @@
+import { houseSetBaseTiles } from '@/project/houseSetKit';
 import architectureCatalog from '@/assets/beodeulArchitectureCatalog.json';
 import { BEODEUL_GROUND_ID, BEODEUL_GROUND_TEXTURE, BEODEUL_GROUND_RECIPES, createBeodeulGroundTileset } from '@/project/defaults/beodeulGround';
 import { translateTiles } from '@/project/objectStamp';
@@ -51,7 +52,9 @@ export function dressBeodeulGround(project:Project,mapId:string,style:'natural'|
   const grafts=new Map((target.tileGrafts??[]).map(g=>[g.targetTile,g]));
   const own=(n:number)=>grafts.get(n)?.sourceChipset===BEODEUL_GROUND_TEXTURE;
   const hasExisting=Array.from({length:map.width*map.height},(_,i)=>own(layerTileAt(map,2,i))||own(layerTileAt(map,4,i))).some(Boolean);
-  const native=(n:number)=>{const g=grafts.get(n);return g?g.sourceChipset==='tex_beodeul_city'?g.sourceTile:g.sourceChipset==='tex_beodeul_architecture'?n:-1:n;};
+  // 집 벌(게임마다 다른 집 그림)의 칸은 원본 킷의 같은 자리 칸으로 되짚어 본다 — 벌 집도 같은 집으로 찾아 문 앞·둘레를 똑같이 다룬다.
+  const setBase=houseSetBaseTiles(target);
+  const native=(n0:number)=>{const n=setBase.get(n0)??n0;const g=grafts.get(n);return g?g.sourceChipset==='tex_beodeul_city'?g.sourceTile:g.sourceChipset==='tex_beodeul_architecture'?n:-1:n;};
   const indices=new Map<number,number[]>();
   for(let i=0;i<map.width*map.height;i++){
     const n=native(layerTileAt(map,3,i));if(n<0) continue;

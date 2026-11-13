@@ -420,5 +420,41 @@
    "label": "길·밭가 가로수 줄",
    "en": "tree rows along roads and fields"
   }
+ },
+ "houses": {
+  "white": {
+   "label": "흰 회벽·청회색 슬레이트 집",
+   "en": "off-white lime-washed houses with blue-grey slate roofs"
+  },
+  "stone": {
+   "label": "막돌 벽·초가 집",
+   "en": "field-stone houses with thatched roofs"
+  },
+  "timber": {
+   "label": "검은 널벽·너와 집",
+   "en": "tar-black board houses with wooden shingle roofs"
+  },
+  "brick": {
+   "label": "사암·벽돌 벽·테라코타 기와 집",
+   "en": "sandstone and red-brick houses with terracotta tile roofs"
+  }
+ },
+ "plaza": {
+  "round": {
+   "label": "둥근 광장 · 분수",
+   "en": "a round square around a fountain"
+  },
+  "market": {
+   "label": "긴 장터 거리 · 기념 원주",
+   "en": "a long market street with a monument column"
+  },
+  "green": {
+   "label": "큰 나무 아래 쉼터 광장",
+   "en": "a village green under a great tree"
+  },
+  "statue": {
+   "label": "석상 광장 · 화단",
+   "en": "a formal square around a statue with planters"
+  }
  }
 }

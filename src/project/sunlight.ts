@@ -5,6 +5,7 @@ import { reliefLiftField, reliefRenderOptions, type ReliefLiftField } from "./re
 import { reliefGrids } from "./relief/window";
 import { reliefBridgeMask } from "./relief/walk";
 import { structureSunlightArt, SUN_ART_RESOLUTION, type SunlightArt, type SunlightArtSource, type SunlightVolume } from "./sunlightArt";
+import { kitBaseTile } from "./houseSetTiles";
 
 export interface MapSunlight {
   enabled: boolean;
@@ -86,6 +87,7 @@ export class SunlightField {
     this.maxTerrain = this.lift?.maxLift ?? 0;
     const casters: Caster[] = [];
     const kits = new Map(tileset?.structureKits?.map(k => [k.id, k]));
+    const baseTile = kitBaseTile(tileset);
     for (const p of map.structurePlacements ?? []) {
       const kit = kits.get(p.kitId);
       if (kit?.kind !== "section") continue;
@@ -93,7 +95,7 @@ export class SunlightField {
         || /house|cottage|manor|집|주택|저택/i.test(`${kit.id} ${kit.name ?? ""}`);
       const isTree = !isHouse && /tree|나무|수목/i.test(`${kit.id} ${kit.name ?? ""}`);
       if (!isHouse && !isTree) continue;
-      const silhouette = structureSunlightArt(map, p, kit, artSource);
+      const silhouette = structureSunlightArt(map, p, kit, artSource, baseTile);
       if (!silhouette.volumes.length) continue; // erased stamps do not cast ghost shadows
       const volumes = silhouette.volumes;
       const x = Math.min(...volumes.map(v => v.x)), y = Math.min(...volumes.map(v => v.y));

@@ -123,7 +123,8 @@ def compose(spec, tex, trees):
     cells = [np.zeros((T, T, 4), np.uint8)]
     table = {"version": 1, "tilesetId": "beodeul_city", "image": "tex_beodeul_city", "texture": "tex_beodeul_looks", "tileSize": T, "tilesPerRow": COLS,
              "note": "생성 파일 — scripts/content/beodeul-looks/bake.py. targets.ground[i] 칸의 그림 = 그림판 (grounds[바닥].base + i), targets.paved[i] 칸의 그림 = 그림판 (겉모습 base + i). sources·pairs 는 [원본 칸, 그림판 칸] 쌍을 편 목록.",
-             "gate": f"3/4 gate not passed — owner waiver {spec['waiver']}", "parts": {"surface": {"options": {}}, "trees": {"options": {}}, "woods": {"options": spec["woods"]}}}
+             "gate": f"3/4 gate not passed — owner waiver {spec['waiver']}", "parts": {"surface": {"options": {}}, "trees": {"options": {}}, "woods": {"options": spec["woods"]},
+                                                                                             "houses": {"options": spec["houses"]}, "plaza": {"options": spec["plaza"]}}}
     built = {}
     for sid, s in spec["surfaces"].items():
         new = {part: (tex[s[part]] if s.get(part) else None) for part in REF}

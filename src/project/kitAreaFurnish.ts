@@ -15,6 +15,7 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine";
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
 import type { AutotileGroup, GameMap, Project, TilesetDef } from "@/project/types";
+import { kitBaseTile } from "@/project/houseSetTiles";
 import { OPEN_GROUND, openGroundCells, openGroundProps } from "@/project/openGround";
 
 export class FurnishError extends Error {
@@ -166,7 +167,8 @@ export function readGround(project: Project, map: GameMap) {
   /** 물체 = 위층 그림, 지역 바닥도 오토타일(길·물·띠)도 아닌 1층 칸, 이벤트. 이름표를 모르는 칩셋에서는 걸을 수 있는 1층 칸(길·실내 바닥)은 물체가 아니다. */
   const object = (i: number) => map.upperTiles[i] !== -1 || events.has(i)
     || (!ground(i) && !auto.has(map.lowerTiles[i]!) && !(open && tileset.tileMeta?.[map.lowerTiles[i]!]?.passage === "passable"));
-  const isBuilding = (i: number) => building.has(map.lowerTiles[i]!) || building.has(map.upperTiles[i]!);
+  const kitTile = kitBaseTile(tileset);   // 집 벌 칸은 원본 킷의 같은 자리 칸으로 읽는다
+  const isBuilding = (i: number) => building.has(kitTile(map.lowerTiles[i]!)) || building.has(kitTile(map.upperTiles[i]!));
   const isForest = (i: number) => forest.has(map.lowerTiles[i]!) || forest.has(map.upperTiles[i]!);
   return { tileset, W, H, label, ground, object, isBuilding, isForest, events, generic: open !== null };
 }
