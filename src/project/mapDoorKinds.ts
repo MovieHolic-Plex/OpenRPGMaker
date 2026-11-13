@@ -10,6 +10,7 @@
 // 조수 도구(set_map_door, link_jp_city_interior·create_transfer_pair·link_maps 의 자동 기록)와 런타임(정의가 없는 옛 맵의 이동 문)이
 // 같은 함수를 쓴다 — 둘이 같은 문을 같은 종류로 본다.
 import { isPassable } from "@/project/collision";
+import { kitBaseTile } from "@/project/houseSetTiles";
 import { findKitDoor } from "@/project/kitDoors";
 import type { MapDoorDef } from "@/project/eventCommands/doorAnimation";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
@@ -100,11 +101,12 @@ function labelsAt(project: Project, map: GameMap, x: number, y: number): { label
   if (x < 0 || y < 0 || x >= map.width || y >= map.height) return [];
   const tileset = project.tilesets[map.tilesetId];
   const walls = kitWallTiles(tileset);
+  const base = kitBaseTile(tileset);   // 집 벌 칸은 원본 킷의 같은 자리 칸으로 읽는다
   const index = y * map.width + x;
   const out: { label: string; tags: string }[] = [];
   for (const layer of LAYERS) {
     const tile = (map[layer] as ArrayLike<number> | undefined)?.[index] ?? -1;
-    const m = walls.has(tile) ? undefined : metaOf(tileset, tile);
+    const m = walls.has(base(tile)) ? undefined : metaOf(tileset, tile);
     if (m) out.push({ label: (m.label ?? "").trim(), tags: (m.tags ?? []).join(" ") });
   }
   return out;

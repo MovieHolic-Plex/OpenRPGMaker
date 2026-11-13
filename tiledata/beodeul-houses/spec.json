@@ -1,0 +1,23 @@
+{
+  "license": "OPRN bundled asset (game use)",
+  "author": "Claude Fable 5.2 medium (parts, one call per picture; three parts per later set are borrowed from set white and moved to that set's ramps) + code assembly, shading and in-set variants (scripts/content/beodeul-houses/assemble.py)",
+  "waiver": "fable-houses-beodeul-2026-11-13",
+  "sets": {
+    "white": {
+      "label": "흰 회벽 · 청회색 슬레이트 지붕",
+      "en": "lime-washed off-white walls on rubble-stone footings, blue-grey slate roofs, teal woodwork"
+    },
+    "stone": {
+      "label": "막돌 벽 · 초가 지붕",
+      "en": "dry field-stone walls with lime-rendered upper floors, golden thatched roofs, oak doors and green frames"
+    },
+    "timber": {
+      "label": "검은 널벽 · 너와 지붕",
+      "en": "tar-black vertical board walls on grey stone footings, weathered wooden shingle roofs, white frames and dark-red doors"
+    },
+    "brick": {
+      "label": "사암 벽 · 붉은 벽돌 · 테라코타 기와",
+      "en": "honey sandstone walls with red-brick ground floors and plinths, orange terracotta pantile roofs, green shutters"
+    }
+  }
+}

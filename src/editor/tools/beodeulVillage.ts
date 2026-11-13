@@ -41,8 +41,9 @@ import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type ToolDefinition } from "./types";
 import { analyzeCityForm } from "./cityForm";
 import { beginConstructionTiles, logConstructionPlan, logConstructionTiles } from "./constructionLog";
-import { activeKitLook } from "@/project/kitLook";
+import { activeKitLook, withoutHouseSet } from "@/project/kitLook";
 import { projectTilesetLook } from "@/project/tilesetLook";
+import { houseSetTableFor } from "@/assets/houseSets";
 import { tilesetLookGround } from "@/assets/tilesetLooks";
 import { reliefStyleForGround } from "@/project/relief/styles";
 
@@ -257,6 +258,19 @@ const THEMES: Record<BeodeulVillageTheme, ThemeSpec> = {
 
 // 칸 점유(계획 단계)
 /** 집 벽에 붙여야 읽히는 살림 소품(화분·화단 상자·둥근 화분·장작더미). */
+/**
+ * 광장 구성(게임마다 하나 — tileset.look.plaza, 2026-11-13 «광장들이 다 비슷하다»): 모양 · 가운데 기물 · 둘레 꾸밈.
+ * 강가·포구 마을만(사막·설원·늪은 자기 광장 기물이 있다). 우물은 어느 구성에서나 광장에 남는다(이야기 도구가 우물을 찾는다) — 가운데가 아니면 가장자리에.
+ * 가운데 자리(data.plaza x·y)와 큰길이 광장을 지나는 줄은 그대로다. 새 그림 없음 — 버들항에 이미 있는 기물과 1차 변형.
+ */
+interface PlazaLook { rx: number; ry: number; rect?: boolean; wobble: number; center: string[]; ring: string[]; count: number; rows?: boolean; lamps: boolean }
+const PLAZA_LOOKS: Record<string, PlazaLook> = {
+  round: { rx: 4.4, ry: 4.2, wobble: 0, center: ["bd-capital-fountain"], ring: ["bd-prop-bench_wood", "bd-prop-planter_round", "bd-prop-bench_wood", "bd-prop-flower_cart", "bd-prop-planter_round"], count: 5, lamps: true },
+  market: { rx: 7.4, ry: 2.4, rect: true, wobble: 0, center: ["bd-prop-column_monument"], rows: true, count: 8, lamps: false,
+    ring: ["bd-prop-stall_veg", "bd-prop-stall_cheese_meat", "bd-prop-stall_jug_bottle", "bd-prop-stall_herb_flower", "bd-pick-walled-market-cloth-stall", "bd-prop-veg_cart", "bd-prop-crate_apple", "bd-prop-crate_cabbage"] },
+  green: { rx: 5.2, ry: 3.4, wobble: 0.12, center: ["bd-tree-d43edd", "bd-tree-5844f6", "bd-tree-b1d104"], ring: ["bd-prop-bench_wood", "bd-prop-flowerbed", "bd-prop-bench_wood", "bd-obj-notice-board", "bd-prop-flowerbed"], count: 5, lamps: false },
+  statue: { rx: 4.5, ry: 3.4, rect: true, wobble: 0, center: ["bd-prop-statue_sage"], ring: ["bd-prop-planter_round", "bd-prop-hedge", "bd-prop-flowerbed", "bd-prop-bench_wood", "bd-prop-tree_planter", "bd-prop-planter_round"], count: 6, lamps: true },
+};
 const WALL_HUG = /door_pots|flowerbox|planter|woodpile/;
 const FREE = 0, ROAD = 1, WATERC = 2, PLAZAC = 3, BLD = 4, PROP = 5, FIELD = 6, KEEP = 7, POND_RING = 8, FENCE = 9;
 /** 비워 둔 걸음 자리(울타리 문 앞에서 길까지 — 바닥은 바탕 그대로, 나무·소품·밭이 앉지 않는다). */
@@ -309,6 +323,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const gameLook = projectTilesetLook(draft, TS_ID, activeKitLook());
   // 숲 생김새: 요청이 숲속 빈터(dense)·산골을 정했으면 그대로 — 아니면 그 게임의 생김새(둘레 숲 벽·작은 덩이와 빈터·가로수 줄). 없으면 예전 그대로(둥근 숲 덩이 몇).
   const woodsLook = denseWoods ? undefined : gameLook?.woods;
+  const plazaLook = theme === "river" || theme === "coast" ? PLAZA_LOOKS[gameLook?.plaza ?? ""] : undefined;
   const houseLimit = options.houseLimit !== undefined && Number.isInteger(options.houseLimit) && options.houseLimit > 0 ? options.houseLimit : Infinity;
   let terrainName: ReturnType<typeof resolveVillageTerrain>;
   const warnings0: string[] = [];
@@ -374,6 +389,12 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const hasKind = (r: BeodeulRoofPalette, k: string) => ws(r).some((w) => (k === "medium" ? w >= 5 && w <= 6 : w >= 7));
     if ([...wantKinds].some((k) => !hasKind(roofs!, k))) roofs = "red";
   }
+  const roofsAsked = options.roofs !== undefined && options.roofs !== ""; // 지붕 가족을 직접 말한 요청 — 그 마을은 집 벌로 갈아 끼우지 않는다
+  // 집 벌을 고른 게임(tileset.look.houses)은 지붕을 말하지 않은 마을을 붉은 기와 목록으로 짓는다 — 그 목록이 벌 그림으로 통째로 바뀐다.
+  // 씨앗으로 청회색·이끼 집(벌이 덮지 않는 그림)을 섞으면 한 게임 안에 두 가족이 선다. 지붕을 직접 말한 요청(roofs)은 그대로 따른다.
+  if (roofs && roofs !== "red" && (options.roofs === undefined || options.roofs === "") && gameLook?.houses) roofs = "red";
+  // 벌을 쓰는 붉은 기와 목록 마을은 보고의 지붕 이름도 벌 이름으로 적는다 — 조수가 «붉은 기와» 로 읽고 대사를 쓰지 않게.
+  const houseSetLabel = roofs === "red" && !roofsAsked && gameLook?.houses ? houseSetTableFor(TS_ID)?.sets[gameLook.houses]?.label : undefined;
   const palette = roofs ? ROOF_PALETTES[roofs] : null;
   const houses = have(palette ? palette.main : spec.houses).filter(doorAtBottom);
   const accentHouses = palette ? have(palette.accent).filter(doorAtBottom) : [];
@@ -470,6 +491,13 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (let y = shoreY[x]!; y < H; y += 1) set(x, y, WATERC);
     }
   }
+  /** 광장 구성의 판석 자리(네모·둥근 꼴). 구성이 없으면 쓰지 않는다. */
+  const plazaShape = (look: PlazaLook, cx: number, cy: number, grow = 0): number[] => {
+    if (!look.rect) return blob(cx, cy, look.rx + grow, look.ry, look.wobble);
+    const out: number[] = [];
+    for (let y = Math.ceil(cy - look.ry); y <= cy + look.ry; y += 1) for (let x = Math.ceil(cx - look.rx - grow); x <= cx + look.rx + grow; x += 1) if (inMap(x, y)) out.push(idx(x, y));
+    return out;
+  };
   const blob = (cx: number, cy: number, rx: number, ry: number, wob: number): number[] => {
     const out: number[] = []; const ph = rand() * 6.28, f = 2 + Math.floor(rand() * 2);
     for (let y = Math.floor(cy - ry - 2); y <= cy + ry + 2; y += 1) for (let x = Math.floor(cx - rx - 2); x <= cx + rx + 2; x += 1) {
@@ -707,10 +735,11 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const plazaHold: number[] = [];
     {
       // 광장이 없는 모이는 곳(우물·좌판)도 둘레 두 칸은 비워 둔다 — 집이 모이는 곳을 에워싸 큰길·골목이 모두 막혔다(ab r6 강가 마을)
-      const big = (layout.gather?.plaza ?? true) !== false, rx = big ? 5.5 : 2.5, ry = big ? 3.5 : 2.5;
+      const big = (layout.gather?.plaza ?? true) !== false, shaped = big ? plazaLook : undefined;
+      const rx = shaped ? shaped.rx + 1 : big ? 5.5 : 2.5, ry = shaped ? shaped.ry + 0.6 : big ? 3.5 : 2.5;
       const gl = lv[g0]!;
-      for (let y = gy - 3; y <= gy + 3; y += 1) for (let x = gx - 5; x <= gx + 5; x += 1) {
-        if (!inMap(x, y) || ((x - gx) / rx) ** 2 + ((y - gy) / ry) ** 2 > 1) continue; const c = idx(x, y);
+      for (let y = gy - Math.ceil(ry - 0.5); y <= gy + Math.ceil(ry - 0.5); y += 1) for (let x = gx - Math.ceil(rx - 0.5); x <= gx + Math.ceil(rx - 0.5); x += 1) {
+        if (!inMap(x, y) || (shaped?.rect ? Math.abs(x - gx) > rx || Math.abs(y - gy) > ry : ((x - gx) / rx) ** 2 + ((y - gy) / ry) ** 2 > 1)) continue; const c = idx(x, y);
         if (occ[c] === FREE && lv[c] === gl) { occ[c] = PLAZA_HOLD; plazaHold.push(c); }
       }
     }
@@ -1380,7 +1409,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const gl = lv[idx(plazaX, plazaCy)]!;
       const ok = (c: number) => (occ[c] === FREE || occ[c] === ROAD) && lv[c] === gl && !rampCells.has(c);
       // 모이는 곳에서 이어진 칸만(단 너머·건물 뒤로 판석이 번지지 않게)
-      const inBlob = new Set(blob(plazaX, plazaCy, prx, pry, 0.1).filter(ok));
+      if (plazaLook) { prx = Math.round(plazaLook.rx); pry = Math.round(plazaLook.ry); }
+      const inBlob = new Set((plazaLook ? plazaShape(plazaLook, plazaX, plazaCy) : blob(plazaX, plazaCy, prx, pry, 0.1)).filter(ok));
       const s0 = idx(plazaX, plazaCy); const q = inBlob.has(s0) ? [s0] : []; const seenP = new Set(q);
       for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W;
         for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { if (!inMap(x + dx, y + dy)) continue; const n = idx(x + dx, y + dy); if (inBlob.has(n) && !seenP.has(n)) { seenP.add(n); q.push(n); } } }
@@ -1395,6 +1425,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   })();
   // 광장은 큰길 남쪽으로 부풀린다 — 북쪽 띠는 앵커 건물(광장을 보는 여관·회관)이 쓴다
   prx = ri(5, 6); pry = ri(3, 4);
+  if (plazaLook) { prx = Math.round(plazaLook.rx); pry = Math.round(plazaLook.ry); }
   // 남쪽으로 내려가는 이음길이 광장을 가르지 않는 자리로 민다(길이 판석을 가르면 결절점이 둘로 쪼개진다)
   const southLaneXs = connectors.filter((c) => [...c.cells].some((i) => Math.floor(i / W) > (yAt(main, i % W) ?? 0))).map((c) => Math.min(...[...c.cells].map((i) => i % W)));
   plazaX = (() => {
@@ -1405,10 +1436,10 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   })();
   plazaCy = yMainAt(plazaX) + 1.5 + pry;
   // 큰길은 광장 북쪽 가장자리를 그대로 지나간다(길망이 광장에서 끊기지 않게)
-  plazaCells = blob(plazaX, plazaCy, prx, pry, 0.08).filter((c) => occ[c] !== WATERC && occ[c] !== KEEP && !main.cells.has(c));
+  plazaCells = (plazaLook ? plazaShape(plazaLook, plazaX, plazaCy) : blob(plazaX, plazaCy, prx, pry, 0.08)).filter((c) => occ[c] !== WATERC && occ[c] !== KEEP && !main.cells.has(c));
   // 광장은 판석 46칸 안팎 — 소품이 아래층을 덮어도 결절점(24칸)이 남게, 모자라면 가로로 넓힌다
   for (let grow = 1; plazaCells.length < 46 && grow <= 4; grow += 1) {
-    for (const c of blob(plazaX, plazaCy, prx + grow, pry, 0.08)) if (!plazaCells.includes(c) && occ[c] !== WATERC && occ[c] !== KEEP && !main.cells.has(c)) plazaCells.push(c);
+    for (const c of plazaLook ? plazaShape(plazaLook, plazaX, plazaCy, grow) : blob(plazaX, plazaCy, prx + grow, pry, 0.08)) if (!plazaCells.includes(c) && occ[c] !== WATERC && occ[c] !== KEEP && !main.cells.has(c)) plazaCells.push(c);
   }
   // 광장은 한 단 — 광장 자리 큰길과 같은 단만(단 너머로 판석이 번지지 않게)
   if (hasTerrain) { const pl = lv[idx(plazaX, Math.min(H - 1, yMainAt(plazaX)))]!; plazaCells = plazaCells.filter((c) => lv[c] === pl && !rampCells.has(c)); }
@@ -1647,8 +1678,71 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     if (form !== "riverbank") place([choice(spec.plazaRing)]);
     return n;
   }
+  // 광장 구성(게임마다): 가운데 기물 → 우물(가운데가 아니면 가장자리) → 둘레 꾸밈(둥글게 · 장터는 두 줄) → 등
+  const dressPlaza = (look: PlazaLook): number => {
+    let n = 0;
+    const onPlaza = (v: number) => v === PLAZAC;
+    const offStreet = (k: Kit, x: number, y: number): boolean => { for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) if (main.cells.has(idx(x + i, y + j)) || throughPlaza.has(idx(x + i, y + j))) return false; return true; };
+    const cy = Math.round(plazaCy);
+    let centred = false;
+    for (const id of have(look.center)) {
+      const k = K(id); const x = plazaX - Math.floor(k.w / 2);
+      // 가운데 기물은 원래 우물처럼 광장을 지나는 길 줄 위에도 선다 — 광장 판석이 모두 걷는 칸이라 길은 기물을 돌아 이어진다
+      for (const y of [cy - k.h + 2, cy - k.h + 1, cy - k.h + 3]) if (!centred && fits(k, x, y, 0, onPlaza)) { claim(k, x, y, PROP, true); n += 1; centred = true; }
+      if (centred) break;
+    }
+    // 우물은 남긴다(이야기 도구가 우물을 찾는다): 가운데 기물이 섰으면 광장 가장자리 — 가운데에서 먼 판석 자리부터, 길 줄을 피해.
+    // 판석 위에 자리가 없으면 광장 곁 빈 땅에, 그래도 없으면 길 줄 위 판석에라도 세운다. 가운데 기물이 못 섰으면 원래대로 가운데에.
+    for (const id of have(spec.plazaCenter).slice(0, 1)) {
+      const k = K(id); let done = false;
+      const tryAt = (x: number, y: number, ok: () => boolean): boolean => { if (done || !ok()) return false; claim(k, x, y, PROP, true); n += 1; done = true; return true; };
+      if (!centred) tryAt(plazaX - Math.floor(k.w / 2), cy - Math.floor(k.h / 2) + 1, () => fits(k, plazaX - Math.floor(k.w / 2), cy - Math.floor(k.h / 2) + 1, 0, onPlaza));
+      const near: [number, number][] = [];
+      for (let y = cy - pry - 3; y <= cy + pry + 2; y += 1) for (let x = plazaX - prx - 3; x <= plazaX + prx + 2; x += 1) near.push([x, y]);
+      const far = (p: [number, number]) => Math.abs(p[0] + k.w / 2 - plazaX) + Math.abs(p[1] + k.h / 2 - cy) * 1.5;
+      near.sort((p, q) => far(q) - far(p) || p[1] - q[1] || p[0] - q[0]);
+      for (const [x, y] of near) tryAt(x, y, () => fits(k, x, y, 0, onPlaza) && offStreet(k, x, y));
+      near.reverse(); // 광장 곁 빈 땅은 광장에 가까운 자리부터
+      for (const [x, y] of near) tryAt(x, y, () => propFits(k, x, y));
+      for (const [x, y] of near) tryAt(x, y, () => fits(k, x, y, 0, onPlaza));
+    }
+    const ring = have(look.ring);
+    // 둘레 기물의 발(아래 두 줄)은 판석 위·길 줄 밖에 — 좌판 차양 같은 윗줄(사람 위에 그려지는 칸)은 광장 밖 빈 땅이나 길 줄 위로 걸쳐도 된다
+    const standsAt = (k: Kit, x: number, y: number): boolean => {
+      if (!fits(k, x, y, 0, (v) => v === PLAZAC || v === FREE)) return false;
+      for (let j = Math.max(0, k.h - 2); j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) { const c = idx(x + i, y + j); if (occ[c] !== PLAZAC || main.cells.has(c) || throughPlaza.has(c)) return false; }
+      return true;
+    };
+    if (look.rows && ring.length) {
+      // 장터 거리: 북쪽 줄·남쪽 줄에 좌판을 번갈아 — 가운데 줄은 사람이 다니는 길로 비운다
+      let turn = 0;
+      for (const rowY of [cy - pry + 1, cy + pry]) for (let x = plazaX - prx; x <= plazaX + prx && n < look.count + 2; ) {
+        const k = K(ring[turn % ring.length]!); const y = rowY - k.h + 1;
+        if (standsAt(k, x, y)) { claim(k, x, y, PROP, false); n += 1; turn += 1; x += k.w + 1; } else x += 1;
+      }
+    } else if (ring.length) {
+      // 둘레: 가운데에서 타원 둘레만큼 떨어진 판석 자리를 각도 순으로 훑어, 서로 세 칸 넘게 띄워 놓는다
+      const spots: { x: number; y: number; a: number; off: number }[] = [];
+      for (const c of plazaCells) { const x = c % W, y = (c - x) / W; const r = Math.hypot((x - plazaX) / Math.max(1, prx - 1.2), (y - plazaCy) / Math.max(1, pry - 0.8)); if (r > 0.55) spots.push({ x, y, a: Math.atan2(y - plazaCy, x - plazaX), off: Math.abs(r - 1) }); }
+      const phase = rand() * 6.28; const put: { x: number; y: number }[] = [];
+      for (let t = 0; t < look.count; t += 1) {
+        const want = phase + (t / look.count) * 6.28; const k = K(ring[t % ring.length]!);
+        const near = spots.map((sp) => ({ sp, d: Math.abs(Math.atan2(Math.sin(sp.a - want), Math.cos(sp.a - want))) + sp.off * 0.6 })).sort((p, q) => p.d - q.d).slice(0, 14);
+        for (const { sp } of near) {
+          const x = sp.x - Math.floor(k.w / 2), y = sp.y - k.h + 1;
+          if (put.some((q) => Math.abs(q.x - sp.x) + Math.abs(q.y - sp.y) < 3) || !standsAt(k, x, y)) continue;
+          claim(k, x, y, PROP, false); n += 1; put.push({ x: sp.x, y: sp.y }); break;
+        }
+      }
+    }
+    if (look.lamps) for (const lamp of have(spec.plazaLamps).slice(0, 1)) {
+      const k = K(lamp);
+      for (const sx of [-1, 1]) { const x = plazaX + sx * (prx + 1), y = cy - k.h + 1; if (fits(k, x, y)) { claim(k, x, y, PROP, false); n += 1; } }
+    }
+    return n;
+  };
   // 광장: 가운데 우물·모닥불, 둘레 좌판·벤치, 가장자리 등
-  let plazaProps = form !== "plaza" ? gatherProps() : (() => {
+  let plazaProps = form !== "plaza" ? gatherProps() : plazaLook ? dressPlaza(plazaLook) : (() => {
     let n = 0;
     const center = have(spec.plazaCenter);
     if (center.length) { const k = K(center[0]!); const x = plazaX - Math.floor(k.w / 2), y = Math.round(plazaCy) - Math.floor(k.h / 2) + 1;
@@ -2963,7 +3057,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) { const c = inMap(s.x + i, s.y + j) ? idx(s.x + i, s.y + j) : -1; for (const L of [1, 2, 3, 4] as const) layers[L - 1]!.push(c < 0 ? -1 : layerTileAt(mm, L, c)); }
       undo.set(s, { w: k.w, h: k.h, layers });
     }
-    try { stampObjectTool.run(draft, { objectId: `kit:${TS_ID}/${s.kit}`, mapId, x: s.x, y: s.y }); stamped += 1; }
+    try { const put = () => stampObjectTool.run(draft, { objectId: `kit:${TS_ID}/${s.kit}`, mapId, x: s.x, y: s.y }); if (roofsAsked) withoutHouseSet(put); else put(); stamped += 1; }
     catch (e) { failed += 1; if (failed <= 3) warnings.push(`찍기 실패 ${s.kit}@(${s.x},${s.y}): ${(e as Error).message.slice(0, 200)}`); continue; }
     if (reviewedPrefix(s.kit)) reviewedStamps.push(s);
     if (before) appendStructurePlacement(draft.maps[mapId]!, { kitId: s.kit, rect, before });
@@ -3565,7 +3659,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const streetNames = streets.map((s) => s.name);
   return {
     summary: `${terrainSwapped ? `${terrainNote} ` : ""}버들항 ${spec.label} · ${FORM_LABEL[form]}(form ${form}) · 지형 ${TERRAIN_LABEL[terrain.name]}(terrain ${terrain.name}${terrain.name !== terrainName ? `, 요청 ${terrainName} → ${terrain.note}` : hasTerrain ? `, ${terrain.note}, 길 경사로 ${rampCount}곳` : ""}) ${W}×${H} (맵 ${mapId}, seed ${seed}): ${skeletonText()}, 모이는 곳 = ${gather.why}${gatherDoor ? `(${gatherDoor.x},${gatherDoor.y})` : "(자리 없음)"}, ` +
-      `집 ${placedHouses.length}채(${distinct}종${roofs ? `, 지붕 ${ROOF_PALETTE_LABEL[roofs]}(roofs ${roofs})` : ""})${anchors.length ? `, 앵커 ${anchors.map((a) => a.replace(/^bd-(pick-|house-)/, "")).join("·")}` : ""}` +
+      `집 ${placedHouses.length}채(${distinct}종${roofs ? `, 지붕 ${houseSetLabel ?? ROOF_PALETTE_LABEL[roofs]}(roofs ${roofs})` : ""})${anchors.length ? `, 앵커 ${anchors.map((a) => a.replace(/^bd-(pick-|house-)/, "")).join("·")}` : ""}` +
       `${workAt ? `, 일터 「${workAt.name}」` : ""}, 밭 ${fields}${fenceAt.size ? `(울타리 ${fenceAt.size}칸)` : ""}, 나무 ${treeCount}, ${form === "plaza" ? "광장" : "모이는 곳"} 소품 ${plazaProps}. 문 앞 ${doorFronts.length - unreached.length}/${doorFronts.length} 도달. ` +
       (wallInfo ? `성벽 둘레: 성문루 ${wallInfo.gates.length}·틈 ${wallInfo.gaps.length}·망루 ${wallInfo.towers.length}·계단 ${wallInfo.stairs.length}(data.walls). ` : "") +
       (codePlan ? `배치 검사: 집 ${placedHouses.length}/${codePlan.report.requested.houses}채 앉음${houseRepeatNote()}${orchardCount ? ` · 과수원 ${orchardCount}` : ""}${roadPropCount ? ` · 길가 소품 ${roadPropCount}무더기` : ""}${codePlan.report.moved.length ? ` · 옮김 ${codePlan.report.moved.length}(${codePlan.report.moved.slice(0, 4).join(", ")})` : ""}${codePlan.report.failed.length ? ` · 못 놓음 ${codePlan.report.failed.length}(${codePlan.report.failed.slice(0, 4).join("; ")})` : ""}${codePlan.report.roadsFailed.length ? ` · 길 못 냄 ${codePlan.report.roadsFailed.length}(${codePlan.report.roadsFailed.slice(0, 3).join(", ")})` : ""}. ` : "") +

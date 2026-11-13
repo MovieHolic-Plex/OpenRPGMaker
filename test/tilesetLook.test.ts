@@ -21,7 +21,11 @@ import type { Project, TilesetLook } from "@/project/types";
 const TS = "beodeul_city";
 const table = tilesetLookTableFor(TS)!;
 const GAMES = Array.from({ length: 400 }, (_, n) => JSON.stringify(["project", `game-${n}`]));
-const keyWhere = (test: (look: TilesetLook | undefined) => boolean): string => GAMES.find((key) => test(chooseTilesetLook(table, key)))!;
+// 갈래가 다섯(바닥·나무·숲·집 벌·광장)이라 «한 갈래만 고른 게임» 은 드물다 — 찾을 때는 넉넉히 훑는다(해시뿐이라 싸다)
+const keyWhere = (test: (look: TilesetLook | undefined) => boolean): string => {
+  for (let n = 0; n < 40_000; n += 1) { const key = JSON.stringify(["project", `game-${n}`]); if (test(chooseTilesetLook(table, key))) return key; }
+  throw new Error("그런 겉모습을 고르는 게임 열쇠가 없다");
+};
 
 function village(key: string | undefined, salt = 4242): { project: Project; mapId: string } {
   const project = createBlankProject() as Project;
@@ -98,7 +102,7 @@ describe("tileset look — 게임마다 한 가지 겉모습", () => {
   });
 
   it("마을 짓기: 조수 실행이 첫 버들항 맵을 지으면 겉모습이 타일셋에 적히고, 바닥 재질만 고른 게임은 바닥 칸 번호·통행이 열쇠 없는 판과 같다", () => {
-    const key = keyWhere((look) => !!look?.surface && !look.trees && !look.woods && !!tilesetLookGround(TS, look));
+    const key = keyWhere((look) => !!look?.surface && !look.trees && !look.woods && !look.houses && !look.plaza && !!tilesetLookGround(TS, look));
     const plain = village(undefined), looked = village(key);
     expect(plain.project.tilesets[TS]!.look).toBeUndefined();
     const look = looked.project.tilesets[TS]!.look!;

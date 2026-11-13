@@ -24,7 +24,7 @@ import { isMonsterOnlyTool, monsterAssetsAllowed, monsterToolArgViolation, monst
 import { assertMonsterAssetLock, monsterAssetCatalogFilters, MonsterAssetLockError } from "@/project/genreLockMonsterAssetsDiff";
 import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
 import { withKitLook } from "@/project/kitLook";
-import { settleProjectLook } from "@/project/tilesetLook";
+import { projectTilesetLook, settleProjectLook } from "@/project/tilesetLook";
 import { PeopleChipLockError, settlePeopleChipLock } from "@/project/peopleChipLock";
 import { isRetiredEasyRpgTileset, LIBRARY_IMPORT_TOOLS, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { guardWholeRecordRewrite } from "./assistantRewriteGuard";
@@ -242,7 +242,10 @@ function withCharsetCatalog<T>(ctx: ToolContext, project: Project, run: () => T)
   const inner = filter ? () => withNpcGraphicCatalogFilter(filter, run) : run;
   const scoped = visual ? () => withGenreLockVisualCatalog(visual, inner) : inner;
   // 게임 열쇠(ctx.lookKey)도 이 구간에만 켠다 — 킷을 푸는 놓기 도구가 ctx 없이 그 게임의 변형 그림을 고른다(project/kitLook.ts).
-  return withKitLook(ctx.assistantRun ? ctx.lookKey : undefined, () => withMonsterTurn(ctx.assistantRun ? { monsterTurn: ctx.monsterTurn === true } : undefined, scoped));
+  // 집 벌처럼 «이번 도구가 그 칩셋의 첫 맵을 지으면 쓰게 될 겉모습» 도 같은 구간에 넘긴다(도구 시작 때의 프로젝트로 한 번만 계산 — 짓는 도중에는 맵이 이미 손댄 맵이 된다).
+  const pending = new Map<string, ReturnType<typeof projectTilesetLook>>();
+  const lookOf = (tilesetId: string) => { if (!pending.has(tilesetId)) pending.set(tilesetId, projectTilesetLook(project, tilesetId, ctx.lookKey)); return pending.get(tilesetId); };
+  return withKitLook(ctx.assistantRun ? ctx.lookKey : undefined, () => withMonsterTurn(ctx.assistantRun ? { monsterTurn: ctx.monsterTurn === true } : undefined, scoped), lookOf);
 }
 
 /**
