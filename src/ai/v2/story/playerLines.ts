@@ -37,3 +37,18 @@ export function wordlessLine(step: StepNames): string {
   const who = step.who?.trim() || eventNoun(step.event);
   return step.kind === "battle" ? `(${who}${josa(who, "이", "가")} 앞을 막아선다.)` : `(${who}${josa(who, "과", "와")} 이야기를 나누었다.)`;
 }
+
+/** 말하는 사람이 있는 대사 — 「(」로 시작하는 줄은 서술이라 이름을 붙이지 않는다. */
+export const sayAs = (lines: readonly string[] | undefined, speaker: string | undefined): Record<string, unknown>[] => (lines ?? []).filter((l) => l.trim())
+  .map((body) => (speaker && !/^\s*[(（]/u.test(body) ? { kind: "text", speaker, body } : { kind: "text", body }));
+
+/**
+ * 이긴 뒤의 글 — 큰따옴표·낫표로 감싼 줄만 그 상대의 마지막 말(이름표)이고, 나머지는 서술이다: 쓰러진 상대가 제 쓰러짐을 제 입으로 말하지 않는다.
+ * 작은따옴표는 인용한 글(떨어진 쪽지)이라 서술로 둔다.
+ */
+export function afterWinLines(lines: readonly string[] | undefined, speaker: string | undefined): Record<string, unknown>[] {
+  return (lines ?? []).filter((l) => l.trim()).map((body) => {
+    const said = speaker ? /^\s*(?:"(.+)"|“(.+)”|「(.+)」)\s*$/u.exec(body) : null;
+    return said ? { kind: "text", speaker, body: (said[1] ?? said[2] ?? said[3])! } : { kind: "text", body };
+  });
+}

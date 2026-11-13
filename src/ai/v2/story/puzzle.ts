@@ -14,6 +14,7 @@ import { dressInteriorExits } from "../place/exitDress";
 import { fixObjectSheetFacing, showExaminedThing } from "./examineArt";
 import { examineHint, lightUnseenThing, settleExamineSpot } from "./examineSpot";
 import { isPersonName, personGraphicFor } from "./personName";
+import { afterWinLines, sayAs } from "./playerLines";
 import { REREAD_PERSON, REREAD_THING } from "./rereadPage";
 import { settleStepThing } from "./stepThings";
 import { codeSpreadOver } from "./codeClues";
@@ -89,14 +90,11 @@ function trig(page: Obj): string {
   return typeof t === "string" ? t : String((t as Obj | undefined)?.kind ?? "action");
 }
 const say = (lines: readonly string[] | undefined): Obj[] => (lines ?? []).filter((l) => l.trim()).map((body) => ({ kind: "text", body }));
-/** 말하는 사람이 있는 대사 — 「(」로 시작하는 줄은 서술이라 이름을 붙이지 않는다. */
-const sayAs = (lines: readonly string[] | undefined, speaker: string | undefined): Obj[] => (lines ?? []).filter((l) => l.trim())
-  .map((body) => (speaker && !/^\s*[(（]/u.test(body) ? { kind: "text", speaker, body } : { kind: "text", body }));
 
 /** 싸우는 고리: 전투 뒤 이긴 갈래에서만 뒤 명령(보상·엔딩)이 이어진다 — 승리 갈래 밖 진행은 출하 검사(blueprint-battle-bypass)가 막는다. */
 const afterBattle = (link: ChainLink, then: Obj[]): Obj[] => (link.battle
   ? [{ kind: "battleProcessing", troopId: link.battle.troopId, canEscape: false, canLose: false },
-    { kind: "fork", condition: { kind: "battleResult", result: "victory" }, then: [...sayAs(link.battle.winLines, link.speaker), ...then] }]
+    { kind: "fork", condition: { kind: "battleResult", result: "victory" }, then: [...afterWinLines(link.battle.winLines, link.speaker), ...then] }]
   : then);
 
 /** 맵을 고칠 사본 — before 스냅숏과 공유하지 않게 맵 하나만 깊게 복사한다. */

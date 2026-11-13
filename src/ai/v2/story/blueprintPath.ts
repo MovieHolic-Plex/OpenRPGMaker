@@ -111,7 +111,7 @@ export const BUILD_BLUEPRINT_PATH_SCHEMA = {
       options: { type: "array", items: { type: "string" }, description: "make code a choice instead (include the right answer)" },
       wrongLines: { type: "array", items: { type: "string" } },
       on: { type: "string", description: "find/puzzle step: the drawn thing of that place the player uses — a name from build_places «things». The event sits on that piece, so write the lines about it" },
-      winLines: { type: "array", items: { type: "string" }, description: "puzzle step: 1–2 lines shown when the code is right. battle step: 1–2 lines after the player wins — the foe's own words, or narration wrapped in parentheses: «(The beast backs into the reeds.)». A foe drawn as a monster leaves the map after the win, so its doneLines are not shown" },
+      winLines: { type: "array", items: { type: "string" }, description: "puzzle step: 1–2 lines shown when the code is right. battle step: 1–2 lines after the player wins — narration («The beast backs into the reeds.»); the foe's own last words go in double quotes. A foe drawn as a monster leaves the map after the win, so its doneLines are not shown" },
       goal: { type: "string", description: "objective line the player reads while this step is next, said to the player, within 40 chars: «Ask Captain Varga for a way across»" },
       item: { type: "string", description: "name of the thing handed over or picked up here, if any — it enters the inventory and the next step checks it" },
       choices: { type: "array", description: "choice step: the 2–3 options the player picks from", items: { type: "object", properties: {
