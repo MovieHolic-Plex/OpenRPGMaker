@@ -260,16 +260,19 @@ export function ensureBossRest(run: BuildRun): string[] {
     const id = `ev_${map.id}_rest`;
     // 우리가 놓은 결정 뒤에 그 맵에 다른 전원 회복(모델이 놓은 저장 지점 등)이 생겼으면 결정을 걷는다 — 한 맵에 쉼터가 둘 서지 않게.
     const others = map.events.filter((e) => e.id !== id);
-    if (others.length !== map.events.length && mapHasFullRecovery({ ...map, events: others })) { map.events = others; notes.push(`${map.name ?? map.id} 보스 앞 쉼터 결정을 걷음 — 그 맵에 다른 전원 회복이 있다`); continue; }
-    if (mapHasFullRecovery(map)) continue;
+    const mine = map.events.find((e) => e.id === id);
+    if (mine && mapHasFullRecovery({ ...map, events: others })) { map.events = others; notes.push(`${map.name ?? map.id} 보스 앞 쉼터 결정을 걷음 — 그 맵에 다른 전원 회복이 있다`); continue; }
+    if (!mine && mapHasFullRecovery(map)) continue;
     done.add(map.id);
-    if (map.events.some((e) => e.id === id)) continue;
+    // 이미 놓은 결정은 보스에서 세 칸 떨어져 있으면 그대로 둔다. 놓은 뒤에 보스가 자리를 옮겨 그림이 결정을 덮으면 다시 놓는다.
+    if (mine && Math.max(Math.abs(mine.x - boss.x), Math.abs(mine.y - boss.y)) >= 3) continue;
     // 들어오는 쪽(보스 둘레 3×3 을 지나지 않고 닿는 칸)에 먼저 둔다 — 보스 너머에 두면 회복하러 보스를 지나야 한다. 그런 칸이 없으면 둘레 어디든.
     const blocked = new Set<string>();
     for (let dx = -1; dx <= 1; dx += 1) for (let dy = -1; dy <= 1; dy += 1) blocked.add(`${boss.x + dx},${boss.y + dy}`);
     const side = reachWithout(run.ctx.project, map, blocked, true) ?? undefined;
     const cell = (side ? restCell(run.ctx.project, map, boss, side) : undefined) ?? restCell(run.ctx.project, map, boss);
     if (!cell) continue;
+    if (mine) map.events = others;
     const res = run.call("place_savepoint", { mapId: map.id, x: cell.x, y: cell.y, id, name: "쉼터 결정", heal: true, mode: "both", sparkleRadius: 2 });
     if (res.ok) notes.push(`${map.name ?? map.id} (${cell.x},${cell.y}) 보스 앞 쉼터 결정(전원 회복·저장)`);
   }
