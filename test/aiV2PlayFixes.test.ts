@@ -107,6 +107,6 @@ describe("싸우는 단계의 상대는 모두 보스다", () => {
     const bosses = pathBattles(project).filter((b) => b.role === "boss").sort((a, b) => (a.step ?? 0) - (b.step ?? 0));
     expect(bosses.map((b) => [b.eventId, b.step])).toEqual([["ev_a", 0], ["ev_b", 1]]);
     expect(pathBattles(project).find((b) => b.eventId === "ev_gate")!.role).toBe("gate");
-    expect(BOSS_BAND).toEqual({ minWin: 0.95, turns: 14, potions: 5, attackOnlyMaxWin: 0.1 });
+    expect(BOSS_BAND).toEqual({ minWin: 0.95, turns: 16, attackOnlyMaxWin: 0.1 });
   });
 });

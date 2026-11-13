@@ -355,9 +355,9 @@ export function fitPathBattlesIn(project: Project): string[] {
     }
   }
   const measureAs = (bossParty?: BossParty) => (troopId: string, startStateIds: readonly string[] = []) => {
-    if (bossParty) { const m = measureBossSensible(project, troopId, bossParty); return { win: m.win, loss: m.loss, turns: m.turns, potions: m.potions }; }
+    if (bossParty) { const m = measureBossSensible(project, troopId, bossParty); return { win: m.win, loss: m.loss, turns: m.turns }; }
     const r = simulateBattle({ project, troopId, heroLevel: party.level, partyActorIds: party.ids, n: SAMPLES, seed: 11, useSkills: true, startStateIds });
-    return { win: r.winRate, loss: Math.max(0, 1 - r.avgHpRemaining / party.hp), turns: r.avgTurns, potions: 0 };
+    return { win: r.winRate, loss: Math.max(0, 1 - r.avgHpRemaining / party.hp), turns: r.avgTurns };
   };
   const rename = new Map<string, string>();
   for (const [troopId, { role, cap }] of plan) {
@@ -410,7 +410,7 @@ export function fitPathBattlesIn(project: Project): string[] {
       project.database.enemies = project.database.enemies.filter((e) => rowIdsBefore.enemies.has(e.id));
       project.database.skills = project.database.skills.filter((k) => rowIdsBefore.skills.has(k.id));
       const pct = (x: number) => `${Math.round(x * 100)}%`;
-      const want = role === "boss" ? `승률 ≥ ${pct(BOSS_BAND.minWin)} · ${BOSS_BAND.turns}턴 안 · 약 ${BOSS_BAND.potions}개까지` : `승률 ${pct(limit.minWin)} · 손실 ≤ ${pct(cap)} · ${limit.turns}턴 안`;
+      const want = role === "boss" ? `승률 ≥ ${pct(BOSS_BAND.minWin)} · ${BOSS_BAND.turns}턴 안` : `승률 ${pct(limit.minWin)} · 손실 ≤ ${pct(cap)} · ${limit.turns}턴 안`;
       // 앞 전투에서 남은 상태(독)를 지고 잰 값이면 그 손실은 이 적의 능력치로 줄지 않는다 — 그 사실을 같이 적는다.
       notes.push(`${troopId}(${ROLE_KO[role]}${start.length ? `, 남은 상태 ${start.join("·")} 지고` : ""}) 맞추기 미완 — 적 능력치를 원래 값의 ${pct(STAT_FLOOR)}까지 내려도 기준(${want}) 밖이다: 승률 ${pct(now.win)}·손실 ${pct(now.loss)}·${now.turns.toFixed(1)}턴. 원래 값으로 둔다(승률 ${pct(before.win)}·손실 ${pct(before.loss)}·${before.turns.toFixed(1)}턴)`);
       continue;
@@ -443,7 +443,7 @@ export function fitPathBattlesIn(project: Project): string[] {
       for (const entry of map.encounterTable ?? []) if (rename.has(entry.troopId)) entry.troopId = rename.get(entry.troopId)!;
     }
   }
-  // 보스전 몫 — 맞춘 보스마다 그 싸움에서 쓰는 약(낮게 도착해 기술을 쓰는 판 · 높게 도착해 기술 없이 싸우는 판 가운데 많은 쪽)을 시작 소지품이 댄다.
+  // 보스전 몫 — 맞춘 보스마다 가장 낮게 도착한 판이 쓰는 약(기술을 쓰든 안 쓰든 많은 쪽)을 시작 소지품이 댄다.
   // 왜(2026-11-13 r2s-fun 자동 플레이): 보스마다 둘씩만 쳤는데 첫 보스가 넷다섯 개를 써서 마지막 보스 앞에 약이 모자랐다.
   if (potion && bosses.length) {
     const shares = bosses.map((boss) => bossPotionShare(project, rename.get(boss.troopId) ?? boss.troopId, bossParties.get(boss.troopId)!));
