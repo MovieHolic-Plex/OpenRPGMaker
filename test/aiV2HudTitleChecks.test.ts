@@ -52,10 +52,10 @@ describe("v2 HUD / title choice (fs-use-tools HUD; 2026-11-11 the HUD is derived
     for (const map of Object.values(p.maps)) { map.encounterRate = 0; map.events = []; }
     (p.database as { commonEvents?: unknown[] }).commonEvents = [];
     p.system.fieldHud = { ...STORY_SETUP_HUD };
-    expect(reconcileFieldHud(p, "이야기 게임").length).toBe(1);
+    expect(reconcileFieldHud(p).length).toBe(1);
     expect(resolvedHudWidgets(p.system.fieldHud!)).toEqual([]);
     expect(p.system.fieldHud!.objective).toBe(true);
-    expect(reconcileFieldHud(p, "이야기 게임")).toEqual([]);
+    expect(reconcileFieldHud(p)).toEqual([]);
   });
 
   it("vitals:false hides every body gauge, not only health (the lone «마력» bar)", () => {
@@ -81,9 +81,9 @@ describe("v2 HUD / title choice (fs-use-tools HUD; 2026-11-11 the HUD is derived
     if (!skills.length) skills.push({} as never);
     skills[0]!.mpCost = { flat: 5, percentMax: 0 };
     ctx.project.system.actionCombat = { ...(ctx.project.system.actionCombat ?? {}), enabled: true } as never;
-    expect(reconcileFieldHud(ctx.project, "용사 액션 RPG").length).toBe(1);
+    expect(reconcileFieldHud(ctx.project).length).toBe(1);
     expect(resolvedHudWidgets(ctx.project.system.fieldHud!).filter((w) => w.kind === "gauge").map((w) => w.source)).toEqual(["hp", "mp", "stamina"]);
-    expect(reconcileFieldHud(ctx.project, "용사 액션 RPG")).toEqual([]);
+    expect(reconcileFieldHud(ctx.project)).toEqual([]);
   });
 
   it("an action-combat HUD (adventure) picked for a turn-based game is replaced by the derived one", () => {
@@ -91,18 +91,18 @@ describe("v2 HUD / title choice (fs-use-tools HUD; 2026-11-11 the HUD is derived
     const map = Object.values(p.maps)[0]!;
     map.events = [{ id: "ev_fight", name: "적", x: 1, y: 1, trigger: { kind: "action" }, commands: [], pages: [{ id: "p0", conditions: [], trigger: { kind: "action" }, commands: [{ kind: "battleProcessing" }] }] }] as never;
     p.system.fieldHud = normalizeFieldHud({ theme: "adventure", vitals: true, objective: true });
-    expect(reconcileFieldHud(p, "용사가 마왕을 잡는 RPG").length).toBe(1);
+    expect(reconcileFieldHud(p).length).toBe(1);
     // 턴제 전투만 있는 게임: 체력은 전투 화면과 메뉴에 있다 — 필드에는 목표 줄만(2026-11-13).
     expect(resolvedHudWidgets(p.system.fieldHud!)).toEqual([]);
     expect(p.system.fieldHud!.objective).toBe(true);
-    expect(reconcileFieldHud(p, "용사가 마왕을 잡는 RPG")).toEqual([]);
+    expect(reconcileFieldHud(p)).toEqual([]);
   });
 
   it("an authored widget list (petal life, affection gauge) is left alone", () => {
     const p = createBlankProject() as Project;
     p.system.fieldHud = normalizeFieldHud({ theme: "horror", vitals: false, objective: true, widgets: [{ id: "life", source: "variable", variableId: "v1", shape: "petals", label: "" }] });
     const before = JSON.stringify(p.system.fieldHud);
-    expect(reconcileFieldHud(p, "공포")).toEqual([]);
+    expect(reconcileFieldHud(p)).toEqual([]);
     expect(JSON.stringify(p.system.fieldHud)).toBe(before);
   });
 

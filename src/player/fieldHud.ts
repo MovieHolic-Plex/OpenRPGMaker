@@ -65,6 +65,9 @@ export class FieldHud {
     // 「현재 목표」 줄은 HUD 판 밖(zone-feedback)에 있다. 저자가 글꼴을 직접 고른 때만 따라가게 해 기존 게임 모양은 그대로 둔다.
     if (config.font && config.font !== "auto") writeDataset(this.host, "hudObjectiveFont", config.font);
     else if (this.host.dataset.hudObjectiveFont !== undefined) delete this.host.dataset.hudObjectiveFont;
+    // HUD 껍질의 판(project/uiLook.ts) — 목표 줄·알림 띠·조작 안내가 프리셋 칸과 같은 판(종이)으로 선다. 생략 = 어두운 판(지금까지).
+    if (config.panel) writeDataset(this.host, "hudPanel", config.panel);
+    else if (this.host.dataset.hudPanel !== undefined) delete this.host.dataset.hudPanel;
     if (this.root.hidden !== !modern) this.root.hidden = !modern;
     if (!modern) {
       if (this.host.dataset.hudStamina !== undefined) delete this.host.dataset.hudStamina;
@@ -182,7 +185,7 @@ export class FieldHud {
   }
   destroy(): void {
     this.root.remove(); this.mounts.clear();
-    for (const key of ["fieldHud", "hudFont", "hudObjectiveFont", "hudObjective", "hudStamina", "hudHp"]) delete this.host.dataset[key];
+    for (const key of ["fieldHud", "hudFont", "hudObjectiveFont", "hudPanel", "hudObjective", "hudStamina", "hudHp"]) delete this.host.dataset[key];
   }
 }
 
