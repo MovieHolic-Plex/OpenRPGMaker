@@ -34,7 +34,7 @@ function textCommands(node: unknown, out: Cmd[] = []): Cmd[] {
 
 interface Lock { event: GameEvent; commands: Cmd[]; inputAt: number; fork: Cmd; digits: number; code: number }
 
-function locksOf(project: Project): Lock[] {
+export function locksOf(project: Project): Lock[] {
   const out: Lock[] = [];
   for (const map of Object.values(project.maps)) for (const event of map.events ?? []) for (const page of event.pages ?? []) {
     const commands = (page.commands ?? []) as unknown as Cmd[];

@@ -99,6 +99,10 @@ function wantedGender(looks: string | undefined, role: string | undefined): "mal
 
 /** 그 사람에게 맞지 않는 칩(글이 말한 성별과 다르다 · 아이가 아닌데 아이 칩)의 벌점 — 흉상 유무(250)와 검색어 단 차이를 합친 것보다 크고, 이름으로 돌려 고르는 마지막 단(1000)보다 작다. */
 const MISFIT = 600;
+/** 이 게임의 다른 사람이 이미 쓴 칩 — 흉상 없는 칩(250)보다 무겁고 어긋난 칩(MISFIT)보다 가볍다. */
+const REUSED = 260;
+/** 주인공과 같은 모습의 칩 — 다른 칩이 하나라도 있으면 고르지 않는다. */
+const HERO_TWIN = 5000;
 /**
  * 말하지 않은 차림(왕관·메이드복·갑옷·토끼 귀·승복…)의 칩에 주는 벌점 — 이름으로 돌려 고르는 마지막 단(1000)보다 크다. 그냥 주민 칩이 있는 화풍에서만 건다.
  * 왜(2026-11-12 명세 은행): 검색어 단 안의 순위는 «성별만 맞은 칩» 까지 이어지고, 같은 맵에서 쓴 칩은 뒤로 밀려서(15) 주민 둘을 세우고 나면
@@ -151,10 +155,19 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
   }
   // 주인공(시작 파티) 칩은 NPC 에 쓰지 않는다 — 2026-10-29 vm mystery: 용의자 「마부 한스」가 탐정 주인공과 같은 칩으로 서 있었다.
   const resKey = (s: string) => s.replace(/^tex_/u, "").replace(/[_-]/gu, "").toLowerCase();
-  const heroes = new Set((project.system?.startActorIds ?? []).flatMap((id) => {
+  const partyChips = (project.system?.startActorIds ?? []).flatMap((id) => {
     const actor = project.database.actors.find((a) => a.id === id) as { characterResourceId?: string; characterIndex?: number } | undefined;
-    return actor?.characterResourceId ? [`${resKey(actor.characterResourceId)}#${actor.characterIndex ?? 0}`] : [];
-  }));
+    return actor?.characterResourceId ? [{ id: actor.characterResourceId, index: actor.characterIndex ?? 0 }] : [];
+  });
+  const heroes = new Set(partyChips.map((chip) => `${resKey(chip.id)}#${chip.index}`));
+  // 주인공과 같은 사람으로 읽히는 칩도 쓰지 않는다 — 다른 시트의 같은 인물(같은 흉상, 또는 성별·나이·머리가 모두 같은 칩).
+  // 왜(2026-11-13 r3b-fun): 대장장이가 people1 의 «푸른 머리 청년» 으로 섰다 — 주인공(actor4 «파란 머리 청년»)과 시트만 다른 같은 모습이라 둘이 쌍둥이로 보였다.
+  const lookOf = (row: ReturnType<typeof sharedCharsetRow>): string | undefined => {
+    const a = row?.attributes as { gender?: string; age?: string; hair?: string } | undefined;
+    return a?.gender && a.age && a.hair ? `${a.gender}|${a.age}|${a.hair}` : undefined;
+  };
+  const heroLooks = new Set(partyChips.map((chip) => lookOf(sharedCharsetRow(chip.id, chip.index))).filter((look): look is string => !!look));
+  const heroBusts = new Set(partyChips.map((chip) => bustOfChip(chip.id, chip.index)).filter((bust): bust is string => !!bust));
   const overrides = (project as unknown as { charsetLabels?: Parameters<typeof queryNpcGraphics>[2] }).charsetLabels;
   let best: (PersonGraphic & { score: number }) | undefined;
   // 장르 잠금(몬스터 수집·현대 연애)이 강제 중이면 허용 칩만 — 막힌 칩을 골라 place_npc 가 거부하던 길을 미리 막는다.
@@ -212,8 +225,10 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
       // 흉상은 «맞는 칩» 안에서만 앞선다: 성별이 어긋나거나 아이가 아닌데 아이 칩이면(MISFIT) 흉상 유무(250)·검색어 단(100씩)보다 무겁다 —
       // 맞는 칩에 흉상이 없으면 흉상 없는 그 칩이 서고, 대화창에는 이름표만 뜬다(다른 사람 얼굴을 띄우지 않는다).
       const score = qi * 100 + rank + (bustOfChip(e.textureKey, e.characterIndex) ? 0 : face ? 150 : 250) + (fits ? 0 : 120) + (spin || !fits ? 1000 : 0)
-        + (misfitFor(e) ? MISFIT : 0) + (leaning && e.gender && e.gender !== "none" && e.gender !== leaning ? 25 : 0) + (used.has(key) ? 15 * Math.min(used.get(key) ?? 1, 4) : usedElsewhere.has(key) ? 8 : 0)
-        + (heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`) ? 300 : 0)
+        + (misfitFor(e) ? MISFIT : 0) + (leaning && e.gender && e.gender !== "none" && e.gender !== leaning ? 25 : 0)
+        // 이 게임에서 이미 쓴 얼굴은 흉상 없는 맞는 칩보다도 뒤다(REUSED) — 이름 있는 두 사람이 같은 얼굴로 서지 않게. 같은 맵에서 쓴 만큼 더 민다.
+        + (used.has(key) ? REUSED + 15 * Math.min((used.get(key) ?? 1) - 1, 3) : usedElsewhere.has(key) ? REUSED : 0)
+        + (heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`) || heroLooks.has(lookOf(row) ?? "") || heroBusts.has(bustOfChip(e.textureKey, e.characterIndex) ?? "") ? HERO_TWIN : 0)
         + (oddFor(e) ? 80 : 0)
         + (hasPlain && !npcGraphicIsPlain(e) && !npcGraphicNamedBy(`${asked} ${q}`, e) ? UNASKED : 0);
       if (!best || score < best.score) best = { textureKey: e.textureKey, characterIndex: e.characterIndex, label: e.label, query: q, score, ...(face ? { faceResourceId: face } : {}) };

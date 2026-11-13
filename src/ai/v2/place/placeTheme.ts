@@ -305,7 +305,9 @@ export function themeBossTroop(project: Project, mapId: string, who: string | un
   const where = placeName(map);
   if (!troopId) return { gaps: foeGaps(theme, "boss", where, "default boss troop", want.undrawn, who?.trim() || entry.wantedFoes || `boss of ${theme?.kind?.about ?? theme?.world.name ?? "this place"}`) };
   // 고른 상대가 바란 그대로면(이름·낱말이 맞았다) 그 밖의 없는 종은 적지 않는다 — 돌려 고른 대역일 때만 그릴 목록을 남긴다.
-  const undrawn = akin ? [] : worded ? (worded.wanted ? [worded.wanted] : []) : want.undrawn;
+  // 대역으로 선 상대는 제 이름의 그림도 바란 것으로 적는다(«그림자 종지기» · «폭주 중앙 기관» — 그릴 목록에 그 상대가 빠지지 않게).
+  const own = who?.trim() && !named ? [who.trim()] : [];
+  const undrawn = [...own, ...(akin ? [] : worded ? (worded.wanted ? [worded.wanted] : []) : want.undrawn)];
   return { troopId, enemyId: pick, gaps: foeGaps(theme, "boss", where, nameOf(project, pick!), undrawn, akin || worded ? undefined : entry.wantedFoes) };
 }
 
