@@ -6,15 +6,18 @@
 // flash — 판정자가 30분 안에 동굴 거미 두 번째 판에서 시간이 다 됐다(길 전투 셋 + 보스 8.5턴). 길 위 전투 수·전투당 길이도 맞아야 한다.
 //
 // 규칙(시작 파티 Lv·startActorIds, 몬스터 파티 게임은 제외):
-//    보스 = 마지막 단계 이벤트의 전투, 없으면 마지막 단계 맵의 도망 못 치는 전투. 길목 = 그 밖의 도망 못 치는 전투. 잡몹 = 나머지.
+//    보스 = 싸우는 단계(kind battle)의 상대마다 · 마지막 단계 이벤트의 전투, 없으면 마지막 단계 맵의 도망 못 치는 전투. 길목 = 그 밖의 도망 못 치는 전투. 잡몹 = 나머지.
+//    보스는 모두 한 밴드에 맞춘다(pathBattleTension BOSS_BAND) — 그 보스 앞에 도착하는 파티(레벨·든 회복약)로 잰다. 왜(2026-11-13 r2s-fun·r2t-fun 플레이):
+//    마지막 단계가 싸움이 아닌 게임의 보스는 «길목» 으로 재어 영웅이 45 를 잃고 끝났고, 다른 게임의 마지막 보스는 한 대에 100~130 을 쳤다.
 //  - 필수 잡몹(닿으면 싸우는 상징 적 이벤트) 수 상한 MAX_FIELD_EVENTS — 넘는 상징 적은 뒤에서부터 지운다.
 //  - 보스 앞 전투(길목·잡몹)의 모의 HP 손실 합 ≤ PRE_BOSS_BUDGET(길목 무게 2·잡몹 1 로 나눔, 각 상한 있음), 승률 100%(모의 판 전부).
-//    보스는 쉼터(ensureBossRest) 뒤 풀 HP 로 — 승률 ≥ 95%·손실 ≤ 70%. 전투당 평균 턴 상한(잡몹 4 · 길목 6 · 보스 10).
+//    보스는 쉼터(ensureBossRest) 뒤 풀 HP 로 — 기술·회복약을 쓰는 플레이의 승률 ≥ 95%·12턴 안. 전투당 평균 턴 상한(잡몹 4 · 길목 6).
 //  - 길 = 시작 맵 → 단계 맵, 단계 맵 사이를 잇는 통로 맵(mapRoute)까지. 전투 = 이벤트(공통 이벤트 호출 포함)·조우표·옛 조우 목록·필드 스폰.
 //  - 보스 앞 전투는 앞 길 전투에서 걸려 전투 뒤에도 남는 해로운 상태(독)를 지고 잰다(vm5 terra: 독이 다음 박쥐 전투로 이어져 전멸).
 //  - 맞추기는 내리기만: 손실·승률이 넘치면 공격·마력과 적 피해 기술 위력 15%씩, 턴이 넘치면 HP 15%씩. 원본 DB 적·기술은 두고
 //    `troop_path_*`/`enemy_path_*`/`skill_path_*` 사본을 쓴다.
-//  - 시작 소지 회복약이 보스 앞 전투 수 + 보스전 몫(BOSS_POTIONS)보다 적으면 채운다.
+//  - 시작 소지 회복약이 보스 앞 전투 수 + 보스마다 보스전 몫(BOSS_POTIONS)보다 적으면 채운다.
+//  - 하한까지 내려도 기준 밖이면 원래 값으로 두고 «맞추기 미완» 줄에 무엇이 얼마나 밖인지 적는다. 보스마다 밴드 안/밖을 잰 값과 함께 한 줄씩 남긴다.
 //  - 길 위에서 가장 가벼운 전투 한 번으로 한 레벨이 오르게 시작 파티 곡선(같은 곡선 배우 전부)을 줄인다 — 길 위 전투를 다 이겨도 8레벨까지.
 //  - 레벨이 오르면 능력치가 오른다(시작 파티 능력치 곡선의 바닥), 보스는 가진 회복약과 기술을 쓰는 플레이로 재고 «공격만·회복 없음» 으로는
 //    못 이기게 올린다 — story/pathBattleTension.ts.
@@ -32,13 +35,13 @@ import { startHealingItem } from "./healingAccess";
 import { buildsWholeGame } from "../request/readers";
 import { WEAK_FOE_ASK } from "../request/combat";
 import { tagged, type Finding } from "../judge/finding";
-import { BOSS_POTIONS, bossSensibleFits, growStartPartyCurves, levelAfter, measureBossSensible, raiseBossTension, type BossParty } from "./pathBattleTension";
+import { BOSS_BAND, BOSS_POTIONS, bossBandLine, bossSensibleFits, growStartPartyCurves, levelAfter, measureBossSensible, raiseBossTension, type BossParty } from "./pathBattleTension";
 
 type Obj = Record<string, unknown>;
 type Role = "field" | "gate" | "boss";
 
 const PRE_BOSS_BUDGET = 0.6;
-const ROLE_LIMIT = { field: { loss: 0.2, turns: 4, minWin: 1 }, gate: { loss: 0.35, turns: 6, minWin: 1 }, boss: { loss: 0.7, turns: 10, minWin: 0.95 } } as const;
+const ROLE_LIMIT = { field: { loss: 0.2, turns: 4, minWin: 1 }, gate: { loss: 0.35, turns: 6, minWin: 1 }, boss: { loss: 0.7, turns: BOSS_BAND.turns, minWin: BOSS_BAND.minWin } } as const;
 const WEIGHT = { field: 1, gate: 2 } as const;
 const MAX_FIELD_EVENTS = 4;
 const SAMPLES = 24;
@@ -46,8 +49,10 @@ const ROUNDS = 16;
 const STAT_FLOOR = 0.5;
 export const PATH_TROOP_PREFIX = "troop_path_";
 const PATH_SKILL_PREFIX = "skill_path_";
+const ROLE_KO = { field: "잡몹", gate: "길목", boss: "보스" } as const;
 
-type Battle = { mapId: string; eventId?: string; troopId: string; role: Role; touch: boolean };
+/** step = 보스가 선 청사진 단계의 번호(만나는 순서). */
+type Battle = { mapId: string; eventId?: string; troopId: string; role: Role; touch: boolean; step?: number };
 
 function walk(node: unknown, visit: (cmd: Obj) => void): void {
   if (Array.isArray(node)) { for (const item of node) walk(item, visit); return; }
@@ -99,12 +104,15 @@ export function pathBattles(project: Project): Battle[] {
   const last = steps[steps.length - 1];
   const lastMap = last ? blueprintMapFor(project, last.place)?.id : undefined;
   const out: Battle[] = [];
+  // 싸우는 단계의 상대와 마지막 단계의 이벤트 — 이벤트 id·이름 → 단계 번호.
+  const bossStep = new Map<string, number>();
+  steps.forEach((step, i) => { if (step.kind === "battle" || step === last) for (const key of [step.built?.eventId, step.event]) if (key) bossStep.set(key, i); });
   for (const mapId of mapIds) {
     const map = project.maps[mapId];
     if (!map) continue;
     for (const event of map.events ?? []) for (const battle of eventBattles(project, event)) {
-      const isLastStepEvent = !!last && (event.id === last.event || event.name === last.event);
-      out.push({ mapId, eventId: event.id, troopId: battle.troopId, role: isLastStepEvent ? "boss" : battle.canEscape ? "field" : "gate", touch: touchFoe(event) });
+      const step = bossStep.get(event.id) ?? bossStep.get(String(event.name ?? ""));
+      out.push({ mapId, eventId: event.id, troopId: battle.troopId, role: step !== undefined ? "boss" : battle.canEscape ? "field" : "gate", touch: touchFoe(event), ...(step !== undefined ? { step } : {}) });
     }
     const random = map.encounterTable?.length ? map.encounterTable.map((entry) => entry.troopId) : (map.encounterRate ?? 0) > 0 ? map.troopIds ?? [] : [];
     for (const troopId of [...random, ...(map.fieldSpawns ?? []).map((spawn) => spawn.troopId)]) {
@@ -240,6 +248,37 @@ function sourceSkill(project: Project, copy: SkillRecord, skillPrefix: string): 
   return project.database.skills.find((k) => k.id === `skill_${tail}` || k.id === tail);
 }
 
+/** 보스(troopId 마다 하나)를 만나는 순서로. */
+const bossesOf = (battles: readonly Battle[]): Battle[] => [...new Map(battles.filter((b) => b.role === "boss").map((b) => [b.troopId, b])).values()].sort((a, b) => (a.step ?? Infinity) - (b.step ?? Infinity));
+
+/**
+ * 보스마다 그 앞에 도착하는 파티: 가장 낮게는 피할 수 없는 전투(그 맵까지의 길목 · 앞 보스)만 이기고 시작 약에서 앞 보스 몫을 쓴 채,
+ * 가장 높게는 그 맵까지의 길 위 전투를 다 이기고 보스전 몫만 든 채. 맵의 이벤트 순서는 만나는 순서가 아니라 맵 순서와 단계 순서로 센다.
+ */
+function bossArrivals(project: Project, battles: readonly Battle[], bosses: readonly Battle[], party: { ids: string[]; level: number }, potion: string | undefined): Map<string, BossParty> {
+  const mapAt = new Map(pathMapIds(project).map((id, i) => [id, i]));
+  const held = potion ? Math.max(0, project.session.inventory?.[potion] ?? 0) : 0;
+  const arrival = (boss: Battle, nth: number): BossParty => {
+    const before = (roles: readonly Role[]) => [...new Map(battles
+      .filter((b) => (b.role === "boss" ? b.troopId !== boss.troopId && (b.step ?? Infinity) < (boss.step ?? Infinity) : roles.includes(b.role) && (mapAt.get(b.mapId) ?? 0) <= (mapAt.get(boss.mapId) ?? 0)))
+      .map((b) => [`${b.mapId}#${b.eventId ?? b.troopId}`, troopExp(project, b.troopId)])).values()].reduce((sum, exp) => sum + exp, 0);
+    return {
+      ids: party.ids, minLevel: levelAfter(project, party.ids[0], party.level, before(["gate"])), maxLevel: levelAfter(project, party.ids[0], party.level, before(["gate", "field"])),
+      ...(potion ? { potion, startPotions: Math.max(BOSS_POTIONS, held - BOSS_POTIONS * nth) } : {}),
+    };
+  };
+  return new Map(bosses.map((boss, nth) => [boss.troopId, arrival(boss, nth)]));
+}
+
+/** 지은 게임의 보스마다 밴드 안/밖 한 줄(프로젝트를 바꾸지 않는다) — 재는 도구(scripts/qa/assistant-v2/battleFitProbe)가 전/후를 견줄 때 쓴다. */
+export function bossBandReport(project: Project): string[] {
+  const party = partyOf(project);
+  if (!party) return [];
+  const battles = pathBattles(project), bosses = bossesOf(battles);
+  const parties = bossArrivals(project, battles, bosses, party, startHealingItem(project));
+  return bosses.flatMap((boss) => bossBandLine(project, boss.troopId, parties.get(boss.troopId)!) ?? []);
+}
+
 export function fitPathBattlesIn(project: Project): string[] {
   if (!project.gameBlueprint || project.system.battleParty === "monsters" || project.system.monsterBattleParty === true) return [];
   for (const troop of project.database.troops) if (troop.id.startsWith(PATH_TROOP_PREFIX)) repairPathTroop(project, troop);
@@ -263,9 +302,10 @@ export function fitPathBattlesIn(project: Project): string[] {
     battles = battles.filter((b) => !drop.includes(b));
   }
 
-  // 2) 시작 회복약 — 보스 앞 전투 수 + 보스전 몫만큼은 들고 시작한다(보스는 이 약을 쓰는 플레이로 잰다).
-  const hasBoss = battles.some((b) => b.role === "boss");
-  const need = battles.filter((b) => b.role !== "boss" && (b.eventId || b.touch)).length + (hasBoss ? BOSS_POTIONS : 0);
+  // 2) 시작 회복약 — 보스 앞 전투 수 + 보스마다 보스전 몫만큼은 들고 시작한다(보스는 이 약을 쓰는 플레이로 잰다).
+  const bosses = bossesOf(battles);
+  const bossShare = BOSS_POTIONS * bosses.length;
+  const need = battles.filter((b) => b.role !== "boss" && (b.eventId || b.touch)).length + bossShare;
   const heals = healingItemIds(project);
   const inventory = { ...(project.session.inventory ?? {}) };
   const have = Object.entries(inventory).reduce((sum, [id, n]) => sum + (heals.has(id) ? Math.max(0, n) : 0), 0);
@@ -273,7 +313,7 @@ export function fitPathBattlesIn(project: Project): string[] {
   if (need > have && potion) {
     inventory[potion] = (inventory[potion] ?? 0) + (need - have);
     project.session = { ...project.session, inventory };
-    notes.push(`시작 회복약 ${potion} +${need - have}(보스 앞 전투 ${need - (hasBoss ? BOSS_POTIONS : 0)}${hasBoss ? ` + 보스전 ${BOSS_POTIONS}` : ""})`);
+    notes.push(`시작 회복약 ${potion} +${need - have}(보스 앞 전투 ${need - bossShare}${bosses.length ? ` + 보스전 ${BOSS_POTIONS}${bosses.length > 1 ? `×${bosses.length}` : ""}` : ""})`);
   }
 
   // 3) 길 위에서 가장 가벼운 전투 한 번으로 한 레벨 — 모자라면 시작 파티와 같은 곡선을 쓰는 배우들의 경험치 곡선을 같은 비율로 줄인다.
@@ -286,12 +326,7 @@ export function fitPathBattlesIn(project: Project): string[] {
     if (first) notes.push(...fitFirstLevelUp(project, first, party, pathExp));
     notes.push(...growStartPartyCurves(project, party.ids));
   }
-  // 보스 앞에 도착하는 레벨: 가장 낮게는 피할 수 없는 전투(길목)만, 가장 높게는 길 위 전투 전부를 이기고.
-  const expOf = (roles: readonly Role[]) => [...new Map(battles.filter((b) => roles.includes(b.role)).map((b) => [`${b.mapId}#${b.eventId ?? b.troopId}`, troopExp(project, b.troopId)])).values()].reduce((sum, exp) => sum + exp, 0);
-  const bossParty: BossParty = {
-    ids: party.ids, minLevel: levelAfter(project, party.ids[0], party.level, expOf(["gate"])), maxLevel: levelAfter(project, party.ids[0], party.level, expOf(["gate", "field"])),
-    ...(potion ? { potion, startPotions: Math.max(0, project.session.inventory?.[potion] ?? 0) } : {}),
-  };
+  const bossParties = bossArrivals(project, battles, bosses, party, potion);
 
   // 4) 몫: 보스 앞 손실 예산을 길목 2·잡몹 1 무게로 나눈다(상징 적·길목은 이벤트마다, 조우표는 한 번으로 친다).
   const preBoss = battles.filter((b) => b.role !== "boss");
@@ -317,8 +352,8 @@ export function fitPathBattlesIn(project: Project): string[] {
       for (const stateId of lingeringStates(project, b.troopId)) seenStates.add(stateId);
     }
   }
-  const measureAs = (role: Role) => (troopId: string, startStateIds: readonly string[] = []) => {
-    if (role === "boss") { const m = measureBossSensible(project, troopId, bossParty); return { win: m.win, loss: m.loss, turns: m.turns }; }
+  const measureAs = (bossParty?: BossParty) => (troopId: string, startStateIds: readonly string[] = []) => {
+    if (bossParty) { const m = measureBossSensible(project, troopId, bossParty); return { win: m.win, loss: m.loss, turns: m.turns }; }
     const r = simulateBattle({ project, troopId, heroLevel: party.level, partyActorIds: party.ids, n: SAMPLES, seed: 11, useSkills: true, startStateIds });
     return { win: r.winRate, loss: Math.max(0, 1 - r.avgHpRemaining / party.hp), turns: r.avgTurns };
   };
@@ -326,7 +361,7 @@ export function fitPathBattlesIn(project: Project): string[] {
   for (const [troopId, { role, cap }] of plan) {
     const limit = ROLE_LIMIT[role];
     const start = role === "boss" ? [] : carried.get(troopId) ?? [];
-    const measure = measureAs(role);
+    const measure = measureAs(role === "boss" ? bossParties.get(troopId) : undefined);
     let before: ReturnType<typeof measure>;
     try { before = measure(troopId, start); } catch { continue; }
     // 보스는 약을 쓰며 싸우므로 끝난 뒤 남은 HP 가 아니라 이기는가·얼마나 긴가로 본다.
@@ -372,12 +407,15 @@ export function fitPathBattlesIn(project: Project): string[] {
       project.database.troops = project.database.troops.filter((t) => rowIdsBefore.troops.has(t.id));
       project.database.enemies = project.database.enemies.filter((e) => rowIdsBefore.enemies.has(e.id));
       project.database.skills = project.database.skills.filter((k) => rowIdsBefore.skills.has(k.id));
-      notes.push(`${troopId} 맞추기 미완 — 적 능력치를 원래 값의 ${Math.round(STAT_FLOOR * 100)}% 아래로 내려도 기준(승률·손실·턴)을 못 맞춰 원래 값으로 되돌렸다(승률 ${Math.round(now.win * 100)}%)`);
+      const pct = (x: number) => `${Math.round(x * 100)}%`;
+      const want = role === "boss" ? `승률 ≥ ${pct(BOSS_BAND.minWin)} · ${BOSS_BAND.turns}턴 안` : `승률 ${pct(limit.minWin)} · 손실 ≤ ${pct(cap)} · ${limit.turns}턴 안`;
+      // 앞 전투에서 남은 상태(독)를 지고 잰 값이면 그 손실은 이 적의 능력치로 줄지 않는다 — 그 사실을 같이 적는다.
+      notes.push(`${troopId}(${ROLE_KO[role]}${start.length ? `, 남은 상태 ${start.join("·")} 지고` : ""}) 맞추기 미완 — 적 능력치를 원래 값의 ${pct(STAT_FLOOR)}까지 내려도 기준(${want}) 밖이다: 승률 ${pct(now.win)}·손실 ${pct(now.loss)}·${now.turns.toFixed(1)}턴. 원래 값으로 둔다(승률 ${pct(before.win)}·손실 ${pct(before.loss)}·${before.turns.toFixed(1)}턴)`);
       continue;
     }
     if (copyId !== troopId) rename.set(troopId, copyId);
     const pct = (x: number) => `${Math.round(x * 100)}%`;
-    notes.push(`${troopId}(${role === "boss" ? "보스" : role === "gate" ? "길목" : "잡몹"}${start.length ? `, 남은 상태 ${start.join("·")} 지고` : ""}) 승률 ${pct(before.win)}·손실 ${pct(before.loss)}·${before.turns.toFixed(1)}턴 → 승률 ${pct(now.win)}·손실 ${pct(now.loss)}·${now.turns.toFixed(1)}턴(몫 ${pct(cap)})`);
+    notes.push(`${troopId}(${ROLE_KO[role]}${start.length ? `, 남은 상태 ${start.join("·")} 지고` : ""}) 승률 ${pct(before.win)}·손실 ${pct(before.loss)}·${before.turns.toFixed(1)}턴 → 승률 ${pct(now.win)}·손실 ${pct(now.loss)}·${now.turns.toFixed(1)}턴(몫 ${pct(cap)})`);
   }
   // 6) 보스는 «공격만·회복 없음» 으로는 못 이기게 — 길 사본(적·피해 기술 사본)을 올린다. 원본 DB 적은 그대로.
   for (const [troopId, { role }] of plan) {
@@ -387,7 +425,7 @@ export function fitPathBattlesIn(project: Project): string[] {
     const copyId = pathCopy(project, current);
     if (!copyId) continue;
     pathSkillCopies(project, copyId);
-    const note = raiseBossTension(project, copyId, bossParty);
+    const note = raiseBossTension(project, copyId, bossParties.get(troopId)!);
     if (note) { notes.push(note); if (copyId !== troopId) rename.set(troopId, copyId); continue; }
     // 올리지 않았으면 방금 만든 사본을 걷는다(이미 사본이던 무리는 그대로).
     project.database.troops = project.database.troops.filter((t) => rows.troops.has(t.id));
@@ -403,6 +441,8 @@ export function fitPathBattlesIn(project: Project): string[] {
       for (const entry of map.encounterTable ?? []) if (rename.has(entry.troopId)) entry.troopId = rename.get(entry.troopId)!;
     }
   }
+  // 7) 보스마다 밴드 안/밖 — 그 보스 앞에 도착하는 파티로 잰 값 그대로. 밖이면 무엇이 밖인지 적는다(조용히 넘어가지 않는다).
+  for (const boss of bosses) { const line = bossBandLine(project, rename.get(boss.troopId) ?? boss.troopId, bossParties.get(boss.troopId)!); if (line) notes.push(line); }
 
   return notes;
 }
