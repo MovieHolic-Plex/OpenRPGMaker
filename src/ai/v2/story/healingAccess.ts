@@ -218,7 +218,10 @@ function mapHasFullRecovery(map: GameMap): boolean {
   return (map.events ?? []).some((ev) => /"kind":"(?:recoverAll|inn)"/u.test(JSON.stringify(ev.pages ?? [])));
 }
 
-/** 보스 둘레에서 걸어 4~10칸, 둘레 한 칸에 이벤트가 없고 이웃 셋 이상이 트인 칸(보스에 가까운 순·결정적). */
+/**
+ * 보스 둘레에서 걸어 4~10칸, 둘레 한 칸에 이벤트가 없고 이웃 셋 이상이 트인 칸(보스에 가까운 순·결정적).
+ * 보스에서 가로든 세로든 세 칸은 떨어진다 — 싸우는 단계의 상대는 두 배 크기로 서서(scale 2) 두 칸 옆의 결정을 그림이 덮는다(2026-11-13 r2s-fun 기관실).
+ */
 function restCell(project: Project, map: GameMap, boss: { x: number; y: number }, side?: ReadonlySet<string>): { x: number; y: number } | undefined {
   const near = (x: number, y: number) => (map.events ?? []).some((e) => Math.abs(e.x - x) <= 1 && Math.abs(e.y - y) <= 1);
   const open = (x: number, y: number) => [[0, -1], [1, 0], [0, 1], [-1, 0]].filter(([dx, dy]) => isPassableLanding(project, map, x + dx!, y + dy!)).length;
@@ -234,7 +237,7 @@ function restCell(project: Project, map: GameMap, boss: { x: number; y: number }
       next.push({ x, y });
     }
     if (dist >= 4) {
-      const hit = [...next].sort((a, b) => a.y - b.y || a.x - b.x).find((c) => !near(c.x, c.y) && open(c.x, c.y) >= 3 && (!side || side.has(`${c.x},${c.y}`)));
+      const hit = [...next].sort((a, b) => a.y - b.y || a.x - b.x).find((c) => !near(c.x, c.y) && Math.max(Math.abs(c.x - boss.x), Math.abs(c.y - boss.y)) >= 3 && open(c.x, c.y) >= 3 && (!side || side.has(`${c.x},${c.y}`)));
       if (hit) return hit;
     }
     frontier = next;
