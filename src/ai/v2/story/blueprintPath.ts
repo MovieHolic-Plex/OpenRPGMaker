@@ -299,7 +299,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     const joins = twin >= 0 && (!existing || existing.id === ids[twin] || existing.id.startsWith("ev_chain_")) ? stepLink.get(twin) : undefined;
     if (joins !== undefined && existing) {
       // 앞선 빌드가 따로 세운 둘째 몸은 걷는다(함수가 지은 것만).
-      if (existing.id !== ids[twin]) { const gone = existing.id; map.events = map.events.filter((e) => e.id !== gone); warnings.push(`${step.id}: 「${who}」 는 앞 단계의 그 사람이다 — 따로 서 있던 둘째 이벤트(${gone})를 걷고 한 이벤트로 이었다`); }
+      if (existing.id !== ids[twin]) { const gone = existing.id; run.call("remove_event", { mapId: map.id, eventId: gone }); warnings.push(`${step.id}: 「${who}」 는 앞 단계의 그 사람이다 — 따로 서 있던 둘째 이벤트(${gone})를 걷고 한 이벤트로 이었다`); }
       existing = undefined;
     }
     // 자물쇠(puzzle)의 다음 단계가 다른 장소면 그 자물쇠는 그리로 가는 입구에 달린다(story/stepWayOut) — 걸음 수로 고른 자리가 아니다.
