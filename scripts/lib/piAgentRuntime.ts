@@ -2186,7 +2186,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       // v1 은 database 등을 accepted 와 참조로 공유한다(ownHeavyForInPlaceEdits 는 v2 전용) — 제자리로 고치면 마지막 체크포인트가 변경을 못 본다.
       // 채우기가 만지는 네 키(system·maps·database·meta)만 복제한 초안에 적용한다.
       const draft: Project = { ...ctx.project, system: structuredClone(ctx.project.system), maps: structuredClone(ctx.project.maps), database: structuredClone(ctx.project.database), meta: structuredClone(ctx.project.meta) };
-      const filled = applyLookDefaults(draft, request.task);
+      const filled = applyLookDefaults(draft, request.task, request.projectKey ? String(request.projectKey) : "");
       if (filled.length) ctx.project = draft;
       if (filled.length) emit({ type: "execution_status", name: "look_defaults", ok: true, summary: `편집기 기본 겉모습을 채움: ${filled.join(" · ").slice(0, 300)}` });
     }

@@ -1584,6 +1584,11 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
   ② `_rm2000.css` 의 명령 목록은 4행 스크롤포트(`max-height: 4*행`)라 루트 명령을 세로 한 줄로 세우면 다섯째가 잘린다 — 코너 밖 배치는 루트에만 `max-height:none`.
   ③ `화면 끝까지`(field full)는 배틀러 기하를 건드리지 않으려고 배경·배틀러 무리 높이는 1행 그대로 두고 배경을 `-webkit-box-reflect` 로 아래에 비춘 뒤
   흐림·어둠 판(`.battle-field::before`)으로 덮는다. 명령 화살표 이동은 원래 기하 기반(`moveMenuCursor`)이라 마름모·아이콘 줄에서도 그대로 맞는다.
+  **④ 아래 띠를 창이 다 덮는 배치 (2026-11-13, `battleLookFillsBand`).** `field: band` · `command: corner` · `party: rows`(명령 창 + 파티 줄 목록 — 기본 프리셋의 «아래 두 창»). 위 상자(`boxesTop`)도 고르기 화면은 덮지만 목록 상태를 확인하지 않아 넣지 않았다. 확인 빌드의 실제 Sonnet 판(주인공 혼자 · 장소 배경 그림)에서 `teal` 프리셋(full · compact · actor)은 아래 1/3 이 빈 그러데이션이었고
+  명령 창이 화면 한가운데 떠서 아이템·스킬 목록이 적과 이름표를 가렸다. 파티 7 × 명령 6 = 42가지를 band 에서 찍어 보면: `compact`·`cards`·`boxesBottom`·`mini`·`tilt` 는
+  주인공 혼자일 때 띠의 반 이상이 비고, `top` 은 안내 띠·차례 초상과 겹치고, `actor`·`keys`·`fan` 은 배틀러 위에 뜨고, `icons` 는 파티 줄을 덮는다.
+  **조수가 자동으로 입히는 모습**(`project/uiLook.ts` `uiLookBattle`)은 이 배치만 쓴다 — 프리셋에서는 창 겉판·글꼴·무대 연출만 가져온다. 저자가 자료집에서 손으로 고르는 프리셋 12종은 그대로다
+  (full 배치의 빈 띠는 엔진 쪽에 남은 결함이다 — 동료가 여럿이고 배경이 넓은 그림이면 덜 드러난다).
   **도트 측면 전투(`motionStyle: "retro"`)에만 걸린다** — 정면 유리 HUD 는 꾸밈을 안 받는다(_battle-look.css 의 선택자 364개가 전부 측면 배치 DOM 기준).
   (같은 날 정면 스킨 삭제로 아래 갈아타기 규칙도 지웠다 — 꾸밈이 안 보이는 스킨은 이제 pokemon 뿐이고 경고 한 줄만 남는다.) 옛 규칙: 정면 스킨 위에서 꾸밈을 고르면 측면 스킨으로 같이 갈아탄다(2026-10-02, `sideSkinForBattleLook` — rm2000·미설정 → rm2003, 다른 정면 → retro2003,
   측면·pokemon 은 그대로): 자료집 프리셋 카드·칸 변경, 경고 줄의 「측면 스킨으로 바꾸기」 버튼, 조수 `set_project_settings`(같은 호출에서 `uiStyle` 을

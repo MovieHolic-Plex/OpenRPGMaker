@@ -5,6 +5,7 @@ export function validateFieldHud(value: unknown): void {
   if (hud.theme !== undefined) { requireString("system.fieldHud.theme", hud.theme); assert(Object.hasOwn(FIELD_HUD_THEMES, hud.theme as string), "system.fieldHud.theme is not supported"); }
   for (const [key, options] of Object.entries({font: HUD_FONTS, menuStyle: HUD_MENUS})) if (hud[key] !== undefined) { requireString(`system.fieldHud.${key}`, hud[key]); assert(Object.hasOwn(options, hud[key] as string), `system.fieldHud.${key} is not supported`); }
   for (const key of ["vitals", "clock", "tools", "objective", "hideEmpty"]) if (hud[key] !== undefined) requireBoolean(`system.fieldHud.${key}`, hud[key]);
+  if (hud.panel !== undefined) assert(hud.panel === "dark" || hud.panel === "paper", "system.fieldHud.panel is not supported");
   if (hud.widgets === undefined) return;
   const widgets = requireArray("system.fieldHud.widgets", hud.widgets);
   assert(widgets.length <= HUD_WIDGET_LIMIT, "system.fieldHud.widgets exceeds 24 elements");
