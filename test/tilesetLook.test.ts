@@ -21,9 +21,9 @@ import type { Project, TilesetLook } from "@/project/types";
 const TS = "beodeul_city";
 const table = tilesetLookTableFor(TS)!;
 const GAMES = Array.from({ length: 400 }, (_, n) => JSON.stringify(["project", `game-${n}`]));
-// 갈래가 다섯(바닥·나무·숲·집 벌·광장)이라 «한 갈래만 고른 게임» 은 드물다 — 찾을 때는 넉넉히 훑는다(해시뿐이라 싸다)
+// 갈래가 일곱(바닥·나무·숲·집 벌·광장·숲 구성·풀밭 얼룩)이라 «한 갈래만 고른 게임» 은 드물다 — 찾을 때는 넉넉히 훑는다(해시뿐이라 싸다)
 const keyWhere = (test: (look: TilesetLook | undefined) => boolean): string => {
-  for (let n = 0; n < 40_000; n += 1) { const key = JSON.stringify(["project", `game-${n}`]); if (test(chooseTilesetLook(table, key))) return key; }
+  for (let n = 0; n < 600_000; n += 1) { const key = JSON.stringify(["project", `game-${n}`]); if (test(chooseTilesetLook(table, key))) return key; }
   throw new Error("그런 겉모습을 고르는 게임 열쇠가 없다");
 };
 
@@ -98,11 +98,13 @@ describe("tileset look — 게임마다 한 가지 겉모습", () => {
     expect(tilesetLookGrafts({ ...withLook, image: { type: "bundled", id: "tex_other" } })).toEqual([]);
     // 원래 모습만 고른 look(그림 갈래 없음)은 아무것도 겹치지 않는다
     expect(tilesetLookGrafts({ ...tileset, look: { textureKey: table.texture, woods: "wall" } })).toEqual([]);
+    expect(tilesetLookGrafts({ ...tileset, look: { textureKey: table.texture, woods: "wall", meadow: "flowers" } })).toEqual([]);
     expect(tileGraftsTextureSuffix({ ...tileset, look: { textureKey: table.texture, woods: "wall" } })).toBe(tileGraftsTextureSuffix(tileset));
   });
 
   it("마을 짓기: 조수 실행이 첫 버들항 맵을 지으면 겉모습이 타일셋에 적히고, 바닥 재질만 고른 게임은 바닥 칸 번호·통행이 열쇠 없는 판과 같다", () => {
-    const key = keyWhere((look) => !!look?.surface && !look.trees && !look.woods && !look.houses && !look.plaza && !!tilesetLookGround(TS, look));
+    // 풀밭 얼룩(meadow)은 고른 게임으로 — 얼룩은 2층 덧그림이라 1층 칸 번호·통행이 그대로여야 한다(숲 구성 stand 는 나무 자리를 바꾸니 뺀다).
+    const key = keyWhere((look) => !!look?.surface && !look.trees && !look.woods && !look.houses && !look.plaza && !look.stand && !!look.meadow && !!tilesetLookGround(TS, look));
     const plain = village(undefined), looked = village(key);
     expect(plain.project.tilesets[TS]!.look).toBeUndefined();
     const look = looked.project.tilesets[TS]!.look!;

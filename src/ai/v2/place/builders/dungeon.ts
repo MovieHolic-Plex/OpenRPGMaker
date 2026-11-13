@@ -6,6 +6,7 @@ import { isBlankMap } from "@/editor/tools/mapEmptiness";
 import { ensureBossRest, ensureHealingAccess } from "../../story/healingAccess";
 import { DUNGEON_TYPES, type DungeonType } from "@/editor/dungeonKit/types";
 import { isPassable } from "@/project/collision";
+import { standGroundCoverTile } from "@/assets/tilesetStands";
 import { terrainReachability } from "@/project/terrainReachability";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import type { GameMap, Project } from "@/project/types";
@@ -244,6 +245,7 @@ function topUp(run: BuildRun, floors: readonly string[], floorData: readonly Rec
     const bossRoom = rooms.find((r) => r.id === bossRoomId);
     const last = i === floors.length - 1;
     const near = (p: Pt, r: number) => map.events.some((e) => Math.abs(e.x - p.x) + Math.abs(e.y - p.y) <= r);
+    const groundCover = standGroundCoverTile(project.tilesets[map.tilesetId]);
     const cells: (Pt & { d: number; clean: boolean })[] = [];
     for (let y = 1; y < map.height - 1; y++) for (let x = 1; x < map.width - 1; x++) {
       const dd = dist[y * map.width + x]!;
@@ -255,7 +257,9 @@ function topUp(run: BuildRun, floors: readonly string[], floorData: readonly Rec
       const open = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => dist[(y + dy!) * map.width + x + dx!]! >= 0).length;
       if (open < 3) continue;
       // 바닥 덧칠(수관 가장자리·잎 그늘 등)이 없는 칸을 먼저 쓴다 — 큰 나무 수관 끝에 상자가 겹쳐 보였다.
-      cells.push({ x, y, d: dd, clean: (map.lowerOverlayTiles?.[k] ?? -1) < 0 });
+      // 숲 바닥·풀밭 얼룩(게임 겉모습의 2층 덧그림)은 바닥의 한 부분이다 — 덧칠로 치면 겉모습을 고른 게임만 적·상자 자리가 달라진다.
+      const over = map.lowerOverlayTiles?.[k] ?? -1;
+      cells.push({ x, y, d: dd, clean: over < 0 || groundCover(over) });
     }
     // 보이는 적: 탑 층 2마리, 그 밖 3마리 이상(보스방 밖, 입구에서 6걸음 넘게, 서로 떨어지게).
     if (wantsFoes && fieldTroops.length) {

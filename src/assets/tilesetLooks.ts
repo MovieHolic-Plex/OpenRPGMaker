@@ -8,13 +8,17 @@
 // 표·그림판은 scripts/content/beodeul-looks/bake.py 가 굽는다(버들항 시트가 풀밭·길·광장 재질을 «같은 자리 같은 화소» 로 되풀이해 그린 덕에
 // 재질 화소만 바꾼 칸을 코드로 만들 수 있다). 고르기는 project/tilesetLook.ts.
 import beodeulLooks from "./beodeulLooks.json";
+import { tilesetStandTableFor } from "./tilesetStands";
 import type { TileGraft, TilesetDef, TilesetLook } from "@/project/types";
 
-export const TILESET_LOOK_PARTS = ["surface", "trees", "woods", "houses", "plaza"] as const;
+// stand(숲 구성 — 섞인 수종·숲 수관·숲 바닥)·meadow(풀밭 얼룩)는 4차(2026-11-13)에 뒤에 덧붙였다 — 표는 assets/tilesetStands.ts. stand 를 고른 게임은 trees(수종 하나)를 겹치지 않는다.
+export const TILESET_LOOK_PARTS = ["surface", "trees", "woods", "houses", "plaza", "stand", "meadow"] as const;
 export type TilesetLookPart = (typeof TILESET_LOOK_PARTS)[number];
 
 type Sources = Readonly<Record<string, readonly number[]>>;
-type LookOption = { readonly label: string; readonly en?: string; readonly ground?: string; readonly base?: number; readonly sources?: Sources; readonly pairs?: readonly number[] };
+type LookOption = { readonly label: string; readonly en?: string; readonly ground?: string; readonly base?: number; readonly sources?: Sources; readonly pairs?: readonly number[];
+  /** 수종(trees) 선택지: 킷 → 덮은 그림의 칸마다 불투명 몫(0~100) — 숲길의 나무 composer 가 읽는다. */
+  readonly cover?: Readonly<Record<string, readonly number[]>> };
 export type TilesetLookTable = {
   readonly version: number;
   readonly tilesetId: string;
@@ -25,7 +29,7 @@ export type TilesetLookTable = {
   readonly count: number;
   readonly targets: { readonly ground: readonly number[]; readonly paved: readonly number[] };
   readonly grounds: Readonly<Record<string, { readonly base: number; readonly sources?: Sources }>>;
-  readonly parts: Readonly<Record<TilesetLookPart, { readonly options: Readonly<Record<string, LookOption>> }>>;
+  readonly parts: Readonly<Record<Exclude<TilesetLookPart, "stand" | "meadow">, { readonly options: Readonly<Record<string, LookOption>> }>>;
 };
 
 const TABLES: readonly TilesetLookTable[] = [beodeulLooks as unknown as TilesetLookTable];
@@ -53,9 +57,11 @@ function activeTable(tileset: LookTileset): TilesetLookTable | undefined {
 export function tilesetLookSignature(tileset: LookTileset): string {
   const table = activeTable(tileset);
   if (!table || !tileset.look) return "";
-  const { surface = "", trees = "" } = tileset.look;
-  if (!table.parts.surface.options[surface] && !table.parts.trees.options[trees]) return "";
-  return `${table.texture}@${table.version}:${surface}:${trees}`;
+  const { surface = "", trees = "", stand = "" } = tileset.look;
+  const stands = tilesetStandTableFor(table.tilesetId);
+  const standOn = !!stands?.stands[stand];
+  if (!table.parts.surface.options[surface] && !table.parts.trees.options[trees] && !standOn) return "";
+  return `${table.texture}@${table.version}:${surface}:${trees}${standOn ? `:${stands!.texture}@${stands!.version}:${stand}` : ""}`;
 }
 
 const cache = new WeakMap<object, { readonly signature: string; readonly stored: readonly TileGraft[] | undefined; readonly length: number; readonly grafts: readonly TileGraft[] }>();
@@ -73,15 +79,22 @@ export function tilesetLookGrafts(tileset: LookTileset): readonly TileGraft[] {
   if (hit && hit.signature === signature && hit.stored === stored && hit.length === (stored?.length ?? 0)) return hit.grafts;
   const out: TileGraft[] = [];
   const storedTargets = new Set((stored ?? []).map((graft) => graft.targetTile));
+  let sheetOf: { readonly texture: string; readonly tileSize: number; readonly tilesPerRow: number } = table;
   const draw = (targetTile: number, sourceTile: number): void => {
-    out.push({ targetTile, sourceChipset: table.texture, sourceTile, sourceTileSize: table.tileSize, sourceTilesPerRow: table.tilesPerRow });
+    out.push({ targetTile, sourceChipset: sheetOf.texture, sourceTile, sourceTileSize: sheetOf.tileSize, sourceTilesPerRow: sheetOf.tilesPerRow });
   };
   const sheet = (targets: readonly number[], base: number): void => {
     for (let index = 0; index < targets.length; index += 1) if (!storedTargets.has(targets[index]!)) draw(targets[index]!, base + index);
   };
   const bySource = new Map<string, number>();
-  const sources = (rows: Sources | undefined): void => {
-    for (const [chip, pairs] of Object.entries(rows ?? {})) for (let index = 0; index + 1 < pairs.length; index += 2) bySource.set(`${chip}#${pairs[index]}`, pairs[index + 1]!);
+  const sources = (rows: Sources | undefined, into: Map<string, number> = bySource): void => {
+    for (const [chip, pairs] of Object.entries(rows ?? {})) for (let index = 0; index + 1 < pairs.length; index += 2) into.set(`${chip}#${pairs[index]}`, pairs[index + 1]!);
+  };
+  const redraw = (from: Map<string, number>): void => {
+    if (from.size) for (const graft of stored ?? []) {
+      const sourceTile = from.get(`${graft.sourceChipset}#${graft.sourceTile}`);
+      if (sourceTile !== undefined) draw(graft.targetTile, sourceTile);
+    }
   };
   const surface = table.parts.surface.options[tileset.look?.surface ?? ""];
   if (surface) {
@@ -90,15 +103,23 @@ export function tilesetLookGrafts(tileset: LookTileset): readonly TileGraft[] {
     if (surface.base !== undefined) sheet(table.targets.paved, surface.base);
     sources(surface.sources);
   }
-  const trees = table.parts.trees.options[tileset.look?.trees ?? ""];
+  // 숲 구성(stand)을 고른 게임은 수종 하나(trees) 대신 그 구성의 섞인 수종 그림·숲 수관을 겹친다 — 그림판이 다르다(assets/tilesetStands.ts).
+  const stands = tilesetStandTableFor(table.tilesetId);
+  const stand = stands?.stands[tileset.look?.stand ?? ""];
+  const trees = stand ? undefined : table.parts.trees.options[tileset.look?.trees ?? ""];
   if (trees) {
     const pairs = trees.pairs ?? [];
     for (let index = 0; index + 1 < pairs.length; index += 2) if (!storedTargets.has(pairs[index]!)) draw(pairs[index]!, pairs[index + 1]!);
     sources(trees.sources);
   }
-  if (bySource.size) for (const graft of stored ?? []) {
-    const sourceTile = bySource.get(`${graft.sourceChipset}#${graft.sourceTile}`);
-    if (sourceTile !== undefined) draw(graft.targetTile, sourceTile);
+  redraw(bySource);
+  if (stand && stands) {
+    sheetOf = stands;
+    // 나무 킷 칸 + 걸어 넘는 한 칸 풀·덤불(그 숲 바닥의 여섯 그림)
+    for (const pairs of [stand.pairs, stand.small ?? []]) for (let index = 0; index + 1 < pairs.length; index += 2) if (!storedTargets.has(pairs[index]!)) draw(pairs[index]!, pairs[index + 1]!);
+    const standSources = new Map<string, number>();
+    sources(stand.sources, standSources);
+    redraw(standSources);
   }
   cache.set(tileset, { signature, stored, length: stored?.length ?? 0, grafts: out });
   return out;
@@ -111,12 +132,19 @@ export function tilesetLookGround(tilesetId: string, look: TilesetLook | undefin
 
 /** 겉모습 갈래의 선택지 이름(표 순서). 맨 앞 "" 는 «원래 그림». */
 export function tilesetLookOptions(table: TilesetLookTable, part: TilesetLookPart): string[] {
-  return ["", ...Object.keys(table.parts[part]?.options ?? {})];
+  return ["", ...Object.keys(partOptions(table, part))];
+}
+
+function partOptions(table: TilesetLookTable, part: TilesetLookPart): Readonly<Record<string, { readonly label: string }>> {
+  if (part === "stand") return tilesetStandTableFor(table.tilesetId)?.stands ?? {};
+  if (part === "meadow") return tilesetStandTableFor(table.tilesetId)?.meadows ?? {};
+  return table.parts[part]?.options ?? {};
 }
 
 /** 사람이 읽는 겉모습 이름(보고·화면용). */
 export function describeTilesetLook(tilesetId: string, look: TilesetLook | undefined): string {
   const table = tilesetLookTableFor(tilesetId);
   if (!table || !look) return "";
-  return TILESET_LOOK_PARTS.map((part) => table.parts[part]?.options[look[part] ?? ""]?.label).filter(Boolean).join(" / ");
+  const standOn = !!partOptions(table, "stand")[look.stand ?? ""];
+  return TILESET_LOOK_PARTS.filter((part) => !(standOn && part === "trees")).map((part) => partOptions(table, part)[look[part] ?? ""]?.label).filter(Boolean).join(" / ");
 }

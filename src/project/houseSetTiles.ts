@@ -1,8 +1,10 @@
 // 집 벌 칸 → 원본 킷 칸. 벌 집은 맵에 «벌 그림판 이식 칸» 으로 찍힌다(project/houseSetKit.ts) — 칸 번호를 킷의 칸 번호와 견주어
 // 건물·문을 찾는 곳(입구 찾기 · 건물 표시 · 낮 빛 그림자 · 문 낱말 판독 · 채우기의 건물 판정 …)은 이 표로 벌 칸을 원본 칸으로 읽어야
 // 벌 집을 원본 킷과 같은 집으로 알아본다. 벌을 쓰지 않는 타일셋에서는 빈 표다(값이 그대로 돌아온다).
-// 그림 조각 표(assets/houseSets.ts)와 타일셋만 본다 — 찍기 쪽(objectStamp)을 끌어오지 않아 플레이어도 쓸 수 있다.
+// 숲 구성의 «다른 개체» 나무(project/standKit.ts — 숲 그림판 이식 칸)도 같은 표로 원본 나무 킷의 칸으로 읽는다.
+// 그림 조각 표(assets/houseSets.ts · assets/tilesetStands.ts)와 타일셋만 본다 — 찍기 쪽(objectStamp)을 끌어오지 않아 플레이어도 쓸 수 있다.
 import { houseSetTableFor } from "@/assets/houseSets";
+import { tilesetStandTableFor } from "@/assets/tilesetStands";
 import type { StructureKitDef, TilesetDef } from "./types";
 
 const tileAt = (kit: StructureKitDef, x: number, y: number): number => {
@@ -25,19 +27,24 @@ export function houseSetBaseTiles(tileset: Pick<TilesetDef, "id" | "tileGrafts" 
   const grafts = tileset?.tileGrafts;
   if (!tileset || !grafts?.length) return EMPTY;
   const table = houseSetTableFor(tileset.id);
-  if (!table) return EMPTY;
+  const stands = tilesetStandTableFor(tileset.id);
+  if (!table && !stands) return EMPTY;
   const kitCount = tileset.structureKits?.length ?? 0;
   const hit = cache.get(grafts);
   if (hit && hit.length === grafts.length && hit.kits === kitCount) return hit.map;
   let out: Map<number, number> | undefined;
   let kits: Map<string, StructureKitDef> | undefined;
   for (const graft of grafts) {
-    if (graft.sourceChipset !== table.texture) continue;
-    let cells = sheetCells.get(table);
+    const from = table && graft.sourceChipset === table.texture ? table : stands && graft.sourceChipset === stands.texture ? stands : undefined;
+    if (!from) continue;
+    let cells = sheetCells.get(from);
     if (!cells) {
       cells = new Map();
-      for (const set of Object.values(table.sets)) for (const [kitId, variants] of Object.entries(set.kits)) for (const rows of variants) rows.forEach((row, y) => row.forEach((cell, x) => { if (cell >= 0 && !cells!.has(cell)) cells!.set(cell, [kitId, x, y]); }));
-      sheetCells.set(table, cells);
+      const note = (kitId: string, rows: readonly (readonly number[])[]): void => rows.forEach((row, y) => row.forEach((cell, x) => { if (cell >= 0 && !cells!.has(cell)) cells!.set(cell, [kitId, x, y]); }));
+      if (from === table) for (const set of Object.values(table.sets)) for (const [kitId, variants] of Object.entries(set.kits)) for (const rows of variants) note(kitId, rows);
+      // 숲 그림판: 변형 칸은 (킷, 그림)마다 따로 구워져 있다(bake_stands.py) — 칸 하나가 원본 나무 킷의 한 자리만 가리킨다
+      else for (const stand of Object.values(stands!.stands)) for (const [kitId, variants] of Object.entries(stand.variants ?? {})) for (const rows of variants) note(kitId, rows);
+      sheetCells.set(from, cells);
     }
     kits ??= new Map((tileset.structureKits ?? []).map((kit) => [kit.id, kit]));
     const at = cells.get(graft.sourceTile);

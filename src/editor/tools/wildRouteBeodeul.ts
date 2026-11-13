@@ -10,13 +10,17 @@
 // - 숲: 길 둘레 1칸·출구 둘레를 비운 풀밭을 버들항 수관 오토타일(#3259, beodeulForest.ts planBeodeulCanopy)로 덮는다(plantBeodeulForestWall, 2026-10-24).
 // - 길섶: 깊은 숲길 세트의 작은 소품을 드문드문(dressBeodeulVerge).
 
+import { activeTilesetLook } from "@/project/kitLook";
+import { layBeodeulGroundCover } from "./beodeulGroundCover";
 import type { GameMap, Project, Rect, TilesetDef } from "@/project/types";
 import type { Rng } from "@/util/rng";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import type { ToolDefinition } from "./types";
 import { layerTileAt } from "@/project/mapLayers";
-import { beodeulWoodlandGrass, paintBeodeulDarkGrass, planBeodeulCanopy, shapeBeodeulCanopyMask, writeBeodeulCanopy, type BeodeulDarkGrassFamily, type BeodeulForestType } from "./beodeulForest";
+import { tilesetStand } from "@/assets/tilesetStands";
+import { treeHash } from "@/project/defaults/treeComposer";
+import { beodeulWoodlandGrass, paintBeodeulDarkGrass, planBeodeulCanopy, raiseBeodeulCrowns, shapeBeodeulCanopyMask, writeBeodeulCanopy, type BeodeulDarkGrassFamily, type BeodeulForestType } from "./beodeulForest";
 
 const BEODEUL_TEXTURE = "tex_beodeul_city";
 const BEODEUL_ID = "beodeul_city";
@@ -121,6 +125,11 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
   // r4 B(2026-10-21 사용자 승인): 숲 장면의 바닥 잔디만 채도를 조금 낮춘 잔디로 — 공용 잔디 737 그림은 그대로, 이 맵의 칸만 바꾼다.
   const woodlandGrass = beodeulWoodlandGrass(project, tileset);
   if (woodlandGrass >= 0) for (let i = 0; i < map.lowerTiles.length; i++) if (map.lowerTiles[i] === BEODEUL_PLAIN_GRASS) map.lowerTiles[i] = woodlandGrass;
+  // 숲 바닥·풀밭 얼룩(게임 겉모습 stand·meadow — 2층 투명 덧그림이라 걷는 칸은 그대로다). 겉모습에 없으면 아무것도 하지 않는다.
+  const roadSet = new Set(road);
+  // 겉모습은 «이 도구가 시작할 때의 프로젝트» 로 읽는다(activeTilesetLook) — 도로가 그 게임의 첫 버들항 맵이면 아직 타일셋에 적히지 않았고,
+  // 지금 프로젝트로 다시 고르면 방금 칠한 이 맵 때문에 «옛 게임» 으로 읽혀 숲 바닥이 빠졌다.
+  layBeodeulGroundCover(project, map, activeTilesetLook(tileset), { seed: (w * 31 + map.height * 17 + roadCells.length * 7) | 0, road: (c) => roadSet.has(c) });
   return { roadCells: roadCells.length, treeCells, decor };
 }
 
@@ -131,10 +140,10 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
  * 2026-10-24: 나무 composer(#3234 woodland)를 버리고 버들항 마을 숲(#3259)과 같은 수관 오토타일로 바꿨다 —
  * 숲 칸 마스크를 shapeBeodeulCanopyMask 로 다듬고(좁은 띠·작은 덩이·속 빈 덩이 제거) planBeodeulCanopy 가 칸마다 이웃 비트·위상으로
  * 수관과 남쪽 그늘을 고른다. 수관은 막힘·상위, 그늘은 통행. 길 둘레(reserved)에는 쓰지 않아 통행이 보존된다.
- * 인자 rng·forestType·family 는 옛 composer 용이라 쓰지 않는다(호출부 호환을 위해 남김).
+ * 인자 rng·forestType·family 는 옛 composer 용이라 쓰지 않는다(호출부 호환을 위해 남김). stampObject 는 숲 구성을 고른 게임의 만입 덤불·풀을 찍는 데만 쓴다.
  */
 export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: TilesetDef, reserved: ReadonlySet<number>, _rng: Rng,
-  _stampObject: ToolDefinition, _forestType: BeodeulForestType = "broadleaf", _family: BeodeulDarkGrassFamily = "plain"): number {
+  stampObject: ToolDefinition, _forestType: BeodeulForestType = "broadleaf", _family: BeodeulDarkGrassFamily = "plain"): number {
   const w = map.width, h = map.height;
   const empty = (index: number): boolean => ([2, 3, 4] as const).every(L => layerTileAt(map, L, index) < 0);
   const plantable = (x: number, y: number): boolean => {
@@ -147,9 +156,53 @@ export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: 
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (plantable(x, y)) forest.add(y * w + x);
   const free = (c: number): boolean => plantable(c % w, Math.floor(c / w));
   shapeBeodeulCanopyMask(w, h, forest, { canFill: free, minComponent: 16, minExtent: 4, minInterior: 0.15, block: 2 });
+  // 숲 구성을 고른 게임: 길을 따라 곧게 뻗은 숲 끝을 «들쭉날쭉» 하게 — 끝에 닿은 두 칸 × 두 칸 덩이를 자리 해시로 열에 넷쯤 덜어 낸다(만입).
+  // 왜(2026-11-13 «네모난 수관 끝 금지»): 숲 칸은 «길 둘레 한 칸을 뺀 전부» 라 숲 끝이 길과 나란한 곧은 선이었다. 덜어 낸 자리는 걷는 풀밭이 되고
+  // 그 숲 구성의 덤불·풀이 선다(아래). 맵 끝 두 칸은 건드리지 않는다(숲 벽이 열리지 않게). 겉모습 없는 게임·옛 저장은 전과 같다.
+  const stand = tilesetStand(tileset.id, activeTilesetLook(tileset)?.stand);
+  const bays: number[] = [];
+  if (stand) {
+    const seed = (w * 73 + h * 29 + forest.size) | 0;
+    const before = new Set(forest);
+    const edge = (c: number): boolean => {
+      const x = c % w, y = (c - x) / w;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const nx = x + dx, ny = y + dy;
+        if (nx >= 0 && ny >= 0 && nx < w && ny < h && !before.has(ny * w + nx)) return true;
+      }
+      return false;
+    };
+    for (let by = 1; by * 2 + 1 < h - 2; by += 1) for (let bx = 1; bx * 2 + 1 < w - 2; bx += 1) {
+      const cells = [0, 1, 2, 3].map((n) => (by * 2 + (n >> 1)) * w + bx * 2 + (n & 1));
+      if (treeHash(bx, by, seed) % 100 >= 40 || !cells.some((c) => before.has(c) && edge(c))) continue;
+      for (const c of cells) forest.delete(c);
+    }
+    shapeBeodeulCanopyMask(w, h, forest, { canFill: (c) => before.has(c), minComponent: 16, minExtent: 4, minInterior: 0.15, block: 2 });
+    for (const c of before) if (!forest.has(c)) bays.push(c);
+  }
   // 수관 오토타일(beodeul_nature leaf)이 칸마다 이웃 비트로 가장자리를, 숲 남쪽 바로 아래 빈 풀 칸에 그늘을 깐다. 길 둘레(reserved)에는 아무것도 안 쓴다.
   const plan = planBeodeulCanopy(w, h, "leaf", forest, (s) => !forest.has(s) && free(s));
   writeBeodeulCanopy(project, map, tileset, plan);
+  // 숲 구성을 고른 게임: 수관 위로 솟은 나무 머리(4층) — 수관 오토타일의 여섯 칸 주기를 자리 해시로 깬다(숲이 맵의 대부분인 도로에서 격자가 보였다)
+  raiseBeodeulCrowns(map, tileset, new Set(plan.canopy.keys()), (w * 131 + h * 17 + forest.size) | 0);
+  // 만입에 그 숲 구성의 덤불(두 칸 × 두 칸, 막힘)과 한 칸 풀·덤불을 세운다 — 숲 끝이 풀밭과 덤불로 풀린다. 그늘 칸(2층)·이벤트 둘레는 비운다.
+  if (stand && bays.length) {
+    const kits = new Map((tileset.structureKits ?? []).map((kit) => [kit.id, kit] as const));
+    const loud = new Set(stand.loud ?? []);
+    const shrubs = (stand.kits.shrub ?? []).filter((id) => { const kit = kits.get(id); return kit && kit.width === 2 && kit.height === 2 && !loud.has(id); });
+    const small = (tileset.structureKits ?? []).filter((kit) => kit.width === 1 && kit.height === 1 && /^bd-pick-deep-forest-path-(fern|heath|wild)-/.test(kit.id)).map((kit) => kit.id);
+    const bay = new Set(bays);
+    const open = (c: number): boolean => bay.has(c) && empty(c) && !map.events.some((event) => Math.abs(event.x - (c % w)) + Math.abs(event.y - Math.floor(c / w)) <= 1);
+    const seed = (w * 59 + h * 37 + bays.length) | 0;
+    const stamp = (id: string, c: number): void => {
+      try { stampObject.run(project, { objectId: `kit:${tileset.id}/${id}`, mapId: map.id, x: c % w, y: Math.floor(c / w) }); } catch { /* 찍을 수 없는 자리는 건너뛴다 */ }
+    };
+    for (const c of bays) {
+      const roll = treeHash(c % w, Math.floor(c / w), seed);
+      if (shrubs.length && roll % 100 < 22 && [c, c + 1, c + w, c + w + 1].every(open) && (c % w) + 1 < w) stamp(shrubs[(roll >>> 8) % shrubs.length]!, c);
+      else if (small.length && roll % 100 >= 70 && open(c)) stamp(small[(roll >>> 8) % small.length]!, c);
+    }
+  }
   return plan.canopy.size;
 }
 

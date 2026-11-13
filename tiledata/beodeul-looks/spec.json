@@ -86,6 +86,13 @@
    "kind": "terrain",
    "name": "점판암 광장",
    "en": "slate slab plaza"
+  },
+  {
+   "id": "ground-terra",
+   "src": "ground-terra.png",
+   "kind": "terrain",
+   "name": "붉은 흙 바닥",
+   "en": "red Mediterranean earth"
   }
  ],
  "trees": [
@@ -340,6 +347,15 @@
    "roadEdge": "kerb",
    "plaza": "plaza-herring",
    "track": null
+  },
+  "terra": {
+   "label": "붉은 흙 바닥 · 옅은 판석 길 · 자갈 광장",
+   "en": "red earth, pale flagstone streets, cobble square",
+   "ground": "ground-terra",
+   "road": "road-flag",
+   "roadEdge": "kerb",
+   "plaza": "plaza-cobble",
+   "track": "road-gravel"
   }
  },
  "species": {
@@ -419,6 +435,26 @@
   "rows": {
    "label": "길·밭가 가로수 줄",
    "en": "tree rows along roads and fields"
+  },
+  "deep": {
+   "label": "한쪽을 덮은 깊은 숲",
+   "en": "one deep forest covering a side of the map"
+  },
+  "groves": {
+   "label": "나무 덩이와 빈터",
+   "en": "groves of single trees with clearings"
+  },
+  "riverside": {
+   "label": "물가를 따라 선 숲",
+   "en": "a gallery forest along the water"
+  },
+  "orchards": {
+   "label": "과수원과 작은 숲",
+   "en": "orchards and small woods"
+  },
+  "windbreaks": {
+   "label": "밭가 방풍림과 작은 숲",
+   "en": "windbreak rows along the fields and small woods"
   }
  },
  "houses": {

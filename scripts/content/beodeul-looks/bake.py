@@ -207,12 +207,14 @@ def compose(spec, tex, trees):
     clum = (0.299 * crgb[..., 0] + 0.587 * crgb[..., 1] + 0.114 * crgb[..., 2])[cleaf]
     canopy_cuts = np.quantile(clum, [0.08, 0.25, 0.45, 0.65, 0.82, 0.95])  # 밝기 일곱 단 경계
     for sp, info in spec["species"].items():
-        pairs = []
+        pairs, cover = [], {}
         for slot, kit_ids in spec["treeSlots"].items():
             pics = [it for it in spec["trees"] if it["species"] == sp and it["slot"] == slot]
             if not pics: continue
             for n, kid in enumerate(kit_ids):
                 kit = kits[kid]; im = np.array(trees[pics[n % len(pics)]["id"]])
+                # 덮개 값(칸마다 불투명 몫 0~100): 숲길의 나무 composer 가 «이 칸이 뒤 나무를 다 가리는가» 를 이 값으로 본다 — 원래 나무의 값으로 겹치면 수종 그림이 조각난다
+                cover[kid] = [int(round(100 * (im[y * T:(y + 1) * T, x * T:(x + 1) * T, 3] > 127).mean())) for y in range(kit["height"]) for x in range(kit["width"])]
                 assert (kit["width"], kit["height"]) == tuple(int(v) for v in slot.split("x")), kid
                 for y, row in enumerate(kit["rows"]):
                     for x in range(kit["width"]):
@@ -236,7 +238,7 @@ def compose(spec, tex, trees):
                 spairs += [int(t), len(cells)]; cells.append(pic)
             if spairs: sources["tex_beodeul_nature"] = spairs
         if pairs:
-            table["parts"]["trees"]["options"][sp] = {"label": info["label"], "en": info["en"], "pairs": pairs, **({"sources": sources} if sources else {})}
+            table["parts"]["trees"]["options"][sp] = {"label": info["label"], "en": info["en"], "pairs": pairs, "cover": cover, **({"sources": sources} if sources else {})}
     table["count"] = -(-len(cells) // COLS) * COLS
     return cells, table
 
