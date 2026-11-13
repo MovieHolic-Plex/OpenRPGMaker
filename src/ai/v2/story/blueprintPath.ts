@@ -33,6 +33,7 @@ import { gateKeyedEntrances, gateEntrySteps } from "./blueprintPathGates";
 import { gateBattleSteps, orderStepBattles, fitUnwinnableStepBattles } from "./blueprintPathBattles";
 import { storedStepText, modelCode, fixLookLines, tellCode, stepObjectives } from "./blueprintPathText";
 import { hostStepThing } from "./stepThings";
+import { wayOutSpot } from "./stepWayOut";
 import { shownLines, stepHandover } from "./stepHandover";
 import { behindBuildingStrip } from "../place/entrances";
 import { foeGraphic, settleStepFoesIn, themeBattleBackdropsIn } from "./stepFoes";
@@ -280,12 +281,19 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     // 사람 단계(종류를 적은 청사진만): talk·choice 는 맵 가운데쯤, battle 은 들어온 곳에서 가장 먼 안쪽에 선다 — 이름으로 물건을 찾는 조사 자리와 다르다.
     const who = step.who?.trim() || undefined;
     const personal = !!who && (step.kind === "talk" || step.kind === "choice" || step.kind === "battle");
-    const paced = existing ? undefined : spotFor(map, personal ? undefined : `${step.event} 앞`, !!step.kind, step.kind === "battle" ? 0.92 : personal ? 0.45 : 0.3 + 0.13 * (k % 5), personal && step.kind !== "battle" ? who : undefined);
+    // 자물쇠(puzzle)의 다음 단계가 다른 장소면 그 자물쇠는 그리로 가는 입구에 달린다(story/stepWayOut) — 걸음 수로 고른 자리가 아니다.
+    const nextMap = step.kind === "puzzle" && !existing && steps[k + 1] ? mapFor(run.ctx.project, steps[k + 1]!.place) : undefined;
+    const way = nextMap && nextMap.id !== map.id ? wayOutSpot(run.ctx.project, map, nextMap.id, taken.get(map.id) ?? []) : undefined;
+    if (way) taken.set(map.id, [...(taken.get(map.id) ?? []), way.near]);
+    const paced = existing ? undefined : way?.near ?? spotFor(map, personal ? undefined : `${step.event} 앞`, !!step.kind, step.kind === "battle" ? 0.92 : personal ? 0.45 : 0.3 + 0.13 * (k % 5), personal && step.kind !== "battle" ? who : undefined);
     const t = byId.get(step.id);
     // 뒤 자물쇠의 번호를 알려 주는 단계인가 — 이 단계의 화면 글이 그 번호를 담는다(또는 code 칸에 적었다).
     const toldCode = (step.kind && step.kind !== "puzzle" ? t?.code?.trim() : undefined) || lockCodes.slice(k + 1).find((c) => !!c && shownLines(t).some((line) => line.includes(c)));
-    // 조사·퍼즐 단계의 물건은 그 장소에 그려진 물건에 앉는다(story/stepThings) — 맞는 그림이 없을 때만 걸음 수로 고른 빈 칸.
-    const host = paced && (step.kind === "find" || step.kind === "puzzle") ? hostStepThing(run, map.id, step.event, paced, t?.on, taken.get(map.id)) : undefined;
+    // 조사·퍼즐 단계의 물건은 그 장소에 그려진 물건에 앉는다(story/stepThings). 길을 여는 자물쇠는 제 입구의 문 칸이 먼저다(모델이 on 으로 그림을 고르지 않았으면) — 맞는 그림도 문 칸도 없을 때만 고른 빈 칸.
+    // 번호가 적힌 것을 조사하는 단계는 적힌 글이다 — 그 이름의 그림이 없으면 칩셋의 쪽지 그림을 그 자리에 놓는다(없는 그림 줄은 마무리가 적는다).
+    const ownDoor = way?.door && !t?.on?.trim() ? { cell: way.door } : undefined;
+    const host = !paced || (step.kind !== "find" && step.kind !== "puzzle") ? undefined
+      : ownDoor ?? hostStepThing(run, map.id, step.event, paced, t?.on, taken.get(map.id)) ?? (way?.door ? { cell: way.door } : step.kind === "find" && toldCode ? hostStepThing(run, map.id, "쪽지", paced, undefined, taken.get(map.id)) : undefined);
     if (host) taken.set(map.id, [...(taken.get(map.id) ?? []), host.cell]);
     const at = host?.cell ?? paced;
     // 대사를 주지 않았으면 모델이 지은 단계 이벤트(명령이 있고, 마지막이면 엔딩을 부르는 것)는 그대로 둔다 — 빠진 단계만 짓는다
@@ -309,7 +317,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     const lockedDefault = k > 0 ? [lockedHint(steps[k - 1]!, step.place)] : undefined;
     // 사람 앞의 안내는 서술 한 줄로 묶는다(괄호 없는 줄은 그 사람의 말이 된다).
     const lockedPerson = personal && lockedDefault ? [`(${who}${josa(who!, "은", "는")} ${step.kind === "battle" ? "아직 움직이지 않는다" : "아직 할 말이 없는 듯하다"}. ${lockedDefault[0]})`] : undefined;
-    let base: Omit<ChainLink, "role"> = { mapId: map.id, ...(existing ? { eventId: existing.id } : { name: step.event, at: at! }), ...(needs ? { needs } : {}), ...(!needs && prevCondition ? { needsCondition: prevCondition } : {}), ...(personal ? { person: who, speaker: who } : {}), ...(step.kind === "find" ? { thing: "find" as const } : step.kind === "puzzle" ? { thing: true } : {}), ...(host ? { onArt: true } : {}), ...(existing && carried.renamed.has(existing.id) ? { relook: true } : {}) };
+    let base: Omit<ChainLink, "role"> = { mapId: map.id, ...(existing ? { eventId: existing.id } : { name: step.event, at: at! }), ...(needs ? { needs } : {}), ...(!needs && prevCondition ? { needsCondition: prevCondition } : {}), ...(personal ? { person: who, speaker: who } : {}), ...(step.kind === "find" ? { thing: "find" as const } : step.kind === "puzzle" ? { thing: true } : {}), ...(host ? { onArt: true } : {}), ...(way ? { opens: nextMap!.id } : {}), ...(existing && carried.renamed.has(existing.id) ? { relook: true } : {}) };
     prevCondition = undefined;
     // 번호·암호 단계(「비밀번호 입력」「숫자 자물쇠」): 모델이 code 를 안 줬어도 함수가 정답을 정하고, 앞 단계 대사에 답이 없으면
     // 그 답을 적은 단서 고리를 바로 앞에 둔다(앞 단계 결과로 열린다) — 이 단계는 그 단서를 읽어야 열리고 번호를 맞혀야 넘어간다.
