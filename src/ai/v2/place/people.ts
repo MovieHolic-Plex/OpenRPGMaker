@@ -16,7 +16,7 @@ import type { BuildRun, ContentBuildResult, PersonSpec } from "../shared/types";
 import { exitThroats, laneCells, wanderReach } from "./placementRules";
 import { Cell, findMap, eventsOf, eventBlockers, walkStart, keepsMapConnected } from "./cells";
 import { resolveWhere } from "./where";
-import { bustOfChip } from "../story/speakerBust";
+import { bustOfChip, lookOfChip } from "../story/speakerBust";
 
 export const PEOPLE_CARD =
   "People spec: {role,name?,where?,at?,looks?,firstTalk?,laterTalk?,movement?,sells?,mapId?}. " +
@@ -162,11 +162,7 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
   const heroes = new Set(partyChips.map((chip) => `${resKey(chip.id)}#${chip.index}`));
   // 주인공과 같은 사람으로 읽히는 칩도 쓰지 않는다 — 다른 시트의 같은 인물(같은 흉상, 또는 성별·나이·머리가 모두 같은 칩).
   // 왜(2026-11-13 r3b-fun): 대장장이가 people1 의 «푸른 머리 청년» 으로 섰다 — 주인공(actor4 «파란 머리 청년»)과 시트만 다른 같은 모습이라 둘이 쌍둥이로 보였다.
-  const lookOf = (row: ReturnType<typeof sharedCharsetRow>): string | undefined => {
-    const a = row?.attributes as { gender?: string; age?: string; hair?: string } | undefined;
-    return a?.gender && a.age && a.hair ? `${a.gender}|${a.age}|${a.hair}` : undefined;
-  };
-  const heroLooks = new Set(partyChips.map((chip) => lookOf(sharedCharsetRow(chip.id, chip.index))).filter((look): look is string => !!look));
+  const heroLooks = new Set(partyChips.map((chip) => lookOfChip(chip.id, chip.index)).filter((look): look is string => !!look));
   const heroBusts = new Set(partyChips.map((chip) => bustOfChip(chip.id, chip.index)).filter((bust): bust is string => !!bust));
   const overrides = (project as unknown as { charsetLabels?: Parameters<typeof queryNpcGraphics>[2] }).charsetLabels;
   let best: (PersonGraphic & { score: number }) | undefined;
@@ -228,7 +224,7 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
         + (misfitFor(e) ? MISFIT : 0) + (leaning && e.gender && e.gender !== "none" && e.gender !== leaning ? 25 : 0)
         // 이 게임에서 이미 쓴 얼굴은 흉상 없는 맞는 칩보다도 뒤다(REUSED) — 이름 있는 두 사람이 같은 얼굴로 서지 않게. 같은 맵에서 쓴 만큼 더 민다.
         + (used.has(key) ? REUSED + 15 * Math.min((used.get(key) ?? 1) - 1, 3) : usedElsewhere.has(key) ? REUSED : 0)
-        + (heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`) || heroLooks.has(lookOf(row) ?? "") || heroBusts.has(bustOfChip(e.textureKey, e.characterIndex) ?? "") ? HERO_TWIN : 0)
+        + (heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`) || heroLooks.has(lookOfChip(e.textureKey, e.characterIndex) ?? "") || heroBusts.has(bustOfChip(e.textureKey, e.characterIndex) ?? "") ? HERO_TWIN : 0)
         + (oddFor(e) ? 80 : 0)
         + (hasPlain && !npcGraphicIsPlain(e) && !npcGraphicNamedBy(`${asked} ${q}`, e) ? UNASKED : 0);
       if (!best || score < best.score) best = { textureKey: e.textureKey, characterIndex: e.characterIndex, label: e.label, query: q, score, ...(face ? { faceResourceId: face } : {}) };

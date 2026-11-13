@@ -15,6 +15,9 @@ import { bigFigureCell, bigFigureCells } from "@/ai/v2/story/bigFigure";
 import { roadFoeSpecies } from "@/ai/v2/story/stepFoeTroop";
 import { lockStepOrderDoorsIn } from "@/ai/v2/story/blueprintPathGates";
 import { pickPersonGraphic } from "@/ai/v2/place/people";
+import { redressHeroTwins } from "@/ai/v2/story/heroTwins";
+import { bustOfChip, lookOfChip } from "@/ai/v2/story/speakerBust";
+import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { promptTargetName } from "@/player/objectiveTarget";
 import { resolveEventPage } from "@/project/io/pageResolution";
 
@@ -176,6 +179,35 @@ describe("사람 칩은 주인공과 다른 모습이다", () => {
     hero.characterIndex = 0;
     const after = pickPersonGraphic(project, map, "청년", undefined)!;
     expect([after.textureKey, after.characterIndex]).not.toEqual(["tex_easyrpg_charset_people1", 2]);
+  });
+
+  it("주인공의 모습이 나중에 정해지면 먼저 선 쌍둥이를 다시 입힌다 — 걷는 그림과 대화창의 얼굴 둘 다, 성별은 그대로, 다시 돌려도 그대로", () => {
+    const project = createBlankProject() as Project;
+    const map = project.maps[project.startMapId]!;
+    const twin = { sprite: { type: "bundled", id: "tex_easyrpg_charset_people1" }, direction: "left", pattern: charsetFrameIndex({ characterIndex: 2, direction: "left", pattern: 1 }) };
+    const oldBust = bustOfChip("tex_easyrpg_charset_people1", 2)!;
+    map.events = [...(map.events ?? []), { id: "ev_smith", name: "대장장이", x: 3, y: 3, trigger: { kind: "action" }, pages: [{ id: "p0", name: "p0", conditions: [], trigger: { kind: "action" }, graphic: twin,
+      commands: [{ kind: "changeFace", resourceId: oldBust, position: "left", flipHorizontally: false }, { kind: "text", speaker: "대장장이", text: "어서 오게." }] }] }] as never;
+    // 사람이 선 뒤에 주인공이 actor4 «파란 머리 청년» 이 된다(people1 2번 «푸른 머리 청년» 과 시트만 다른 같은 모습).
+    expect(redressHeroTwins(project)).toEqual([]);
+    const hero = project.database.actors.find((a) => a.id === project.system.startActorIds![0])! as { characterResourceId?: string; characterIndex?: number };
+    hero.characterResourceId = "easyrpg-charset-actor4";
+    hero.characterIndex = 0;
+    expect(lookOfChip("tex_easyrpg_charset_people1", 2)).toBe(lookOfChip("easyrpg-charset-actor4", 0));
+    const notes = redressHeroTwins(project);
+    expect(notes).toHaveLength(1);
+    const page = map.events!.find((e) => e.id === "ev_smith")!.pages![0]!;
+    const g = page.graphic as { sprite: { id: string }; pattern: number; direction: string };
+    const now = decodeCharsetFrameIndex(g.pattern);
+    const look = lookOfChip(g.sprite.id, now.characterIndex);
+    expect(look).not.toBe(lookOfChip("easyrpg-charset-actor4", 0));
+    // 성별은 지킨다(나이는 이웃 나이까지 — 청년이 중년으로는 바뀔 수 있다).
+    expect(look?.split("|")[0]).toBe(lookOfChip("easyrpg-charset-actor4", 0)!.split("|")[0]);
+    expect(now.direction).toBe("left");
+    const face = (page.commands![0] as { resourceId?: string }).resourceId;
+    expect(face).not.toBe(oldBust);
+    expect(face).toBe(bustOfChip(g.sprite.id, now.characterIndex) ?? face);
+    expect(redressHeroTwins(project)).toEqual([]);
   });
 });
 

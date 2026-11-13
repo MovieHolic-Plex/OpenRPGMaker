@@ -35,7 +35,7 @@ import type { ActorExperienceCurve, EnemyRecord, GameMap, Project, SkillRecord }
 import { blueprintMapFor } from "./blueprintPathNames";
 import { healingItemIds } from "../judge/combatChecks";
 import { startHealingItem } from "./healingAccess";
-import { BOSS_BAND, BOSS_POTIONS, bossBandLine, bossPotionBand, bossPotionsSpent, bossSensibleFits, growStartPartyCurves, levelAfter, measureBossSensible, raiseBossTension, trimBossLength, type BossParty } from "./pathBattleTension";
+import { BOSS_BAND, BOSS_POTIONS, bossBandLine, bossPotionBand, bossPotionsSpent, bossSensibleFits, growStartPartyCurves, levelAfter, measureBossSensible, raiseBossTension, trimBossLength, type BossOrigin, type BossParty } from "./pathBattleTension";
 
 type Obj = Record<string, unknown>;
 type Role = "field" | "gate" | "boss";
@@ -288,7 +288,7 @@ const bossShareOf = (project: Project, boss: Battle): number => boss.step === (p
 
 /**
  * 보스마다 그 앞에 쉬고 온 파티를 만나는 순서로 내준다(보스 앞에는 쉼터 결정이 선다 — healingAccess.ensureBossRest).
- * 레벨: 가장 낮게는 피할 수 없는 전투(그 맵까지의 길목 · 앞 보스)만 이기고, 가장 높게는 그 맵까지의 길 위 전투를 다 이기고 — 기준은 가장 낮은 쪽(곧장 가는 플레이어가 그렇게 온다).
+ * 레벨: 가장 낮게는 앞 보스만 이기고(길 위의 적은 돌아다니는 것이라 비켜 갈 수 있다 — 도망 못 치는 길목도), 가장 높게는 그 맵까지의 길 위 전투를 다 이기고 — 기준은 가장 낮은 쪽(곧장 가는 플레이어가 그렇게 온다).
  * 더 싸우고 온 판에게는 보스가 그만큼 쉽다 — 그 값(가장 높게 도착한 판의 «공격만»)은 밴드 줄에 적는다.
  * 맵의 이벤트 순서는 만나는 순서가 아니라 맵 순서와 단계 순서로 센다.
  * 약: 시작 약에서 앞 보스전들의 여느 플레이가 쓴 만큼(spent 의 합)을 뺀 것(내림) — 길 위의 짧은 전투는 약을 쓰지 않는다고 본다.
@@ -301,7 +301,7 @@ function bossArrivals(project: Project, battles: readonly Battle[], bosses: read
       .filter((b) => (b.role === "boss" ? b.troopId !== boss.troopId && (b.step ?? Infinity) < (boss.step ?? Infinity) : roles.includes(b.role) && (mapAt.get(b.mapId) ?? 0) <= (mapAt.get(boss.mapId) ?? 0)))
       .map((b) => [`${b.mapId}#${b.eventId ?? b.troopId}`, troopExp(project, b.troopId)])).values()].reduce((sum, exp) => sum + exp, 0);
     left = Math.max(0, left - spent);
-    const minLevel = levelAfter(project, party.ids[0], party.level, before(["gate"])), maxLevel = levelAfter(project, party.ids[0], party.level, before(["gate", "field"]));
+    const minLevel = levelAfter(project, party.ids[0], party.level, before([])), maxLevel = levelAfter(project, party.ids[0], party.level, before(["gate", "field"]));
     return { ids: party.ids, minLevel, maxLevel, level: minLevel, final: boss.troopId === bosses[bosses.length - 1]?.troopId, potions: Math.floor(left + 0.05), ...(potion ? { potion } : {}) };
   };
 }
@@ -487,8 +487,9 @@ export function fitPathBattlesIn(project: Project): string[] {
     const rows = { troops: new Set(project.database.troops.map((t) => t.id)), enemies: new Set(project.database.enemies.map((e) => e.id)), skills: new Set(project.database.skills.map((k) => k.id)) };
     const copyId = pathCopy(project, current);
     if (!copyId) return;
-    pathSkillCopies(project, copyId);
-    const moved = [raiseBossTension(project, copyId, bossParty), trimBossLength(project, copyId, bossParty)].filter((note): note is string => !!note);
+    const skillPrefix = pathSkillCopies(project, copyId);
+    const origin: BossOrigin = { stats: (e) => sourceEnemy(project, e, copyId)?.stats, power: (k) => k.id.startsWith(skillPrefix) ? sourceSkill(project, k, skillPrefix)?.power : undefined };
+    const moved = [raiseBossTension(project, copyId, bossParty, origin), trimBossLength(project, copyId, bossParty)].filter((note): note is string => !!note);
     if (moved.length) { notes.push(...moved); if (copyId !== troopId) rename.set(troopId, copyId); return; }
     // 올리지 않았으면 방금 만든 사본을 걷는다(이미 사본이던 무리는 그대로).
     project.database.troops = project.database.troops.filter((t) => rows.troops.has(t.id));

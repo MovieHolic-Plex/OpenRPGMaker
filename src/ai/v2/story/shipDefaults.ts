@@ -15,6 +15,7 @@ import { fitGateLevelCurve, fitRouteLevelsToGates } from "./monsterRouteLevels";
 import { fitRequiredBattlesToStarters } from "./monsterRequiredBattles";
 import { equipMonsterCampaign } from "./monsterCampaignGifts";
 import { beginFitBudget, enterFastFit, FitBudgetExceeded, restoreFitState, snapshotFitState } from "./monsterFitBudget";
+import { redressHeroTwins } from "./heroTwins";
 import { Obj, reconcileFieldHud, premiseOf, fillBattleBgm, fillBattleBackgrounds, fillEnemyHpLook, fillPartyLooks, fillPartyNames, fillWindowLook } from "./shipLookDefaults";
 import { moveEntrancesOntoArt, fillStaleObjectives, moveRepeatingStartObjective, pullBackStartObjective, fillGymArrivalObjectives, hasFinal, quietFieldGuides } from "./shipObjectiveDefaults";
 
@@ -99,6 +100,8 @@ export function applyLookDefaults(project: Project, story = ""): string[] {
   }
   applied.push(...fillEnemyHpLook(project));
   if (left.has("hero-look") || left.has("party-faces")) applied.push(...fillPartyLooks(project, story));
+  // 주인공의 모습이 정해진 뒤에야 알 수 있다 — 먼저 선 사람이 주인공과 같은 사람으로 보이면 그 사람을 다시 입힌다.
+  applied.push(...redressHeroTwins(project));
   // 이름은 모습 뒤(고른 칩의 성별로 이름을 고른다), 엔딩 맺음 앞(맺음 글이 새 이름을 쓴다).
   if (left.has("party-names")) applied.push(...fillPartyNames(project, story));
   if (left.has("window-look")) applied.push(...fillWindowLook(project, story));
