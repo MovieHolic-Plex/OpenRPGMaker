@@ -6,6 +6,7 @@
 // 한 게임은 한 모습이다: 열쇠 + 원본 id 로 고르므로 그 게임의 우물은 어느 맵에서나 같은 우물이다.
 // 집은 킷마다 따로 고르지 않는다 — 게임의 집 벌(tileset.look.houses) 하나가 가족을 통째로 바꾼다(assets/houseSets.ts).
 import { houseSetKit } from "./houseSetKit";
+import { standVariantKit } from "./standKit";
 import type { StructureKitDef, TilesetDef, TilesetLook } from "./types";
 
 type LookOf = (tilesetId: string) => TilesetLook | undefined;
@@ -34,6 +35,18 @@ export function withKitSite<T>(site: string | undefined, run: () => T): T {
   const previous = activeSite;
   activeSite = site;
   try { return run(); } finally { activeSite = previous; }
+}
+
+let activeTreePick: number | undefined;
+
+/**
+ * 이 구간에서 찍는 나무의 «몇 번째 그림» — 숲 구성의 같은 수종 변형 가운데 하나(project/standKit.ts). 마을 구성기가 옆 나무와 다른 번호를 골라 넘긴다.
+ * 넘기지 않은 호출(도장 도구를 직접 부른 조수 등)은 자리 해시로 고른다.
+ */
+export function withTreePick<T>(pick: number | undefined, run: () => T): T {
+  const previous = activeTreePick;
+  activeTreePick = pick;
+  try { return run(); } finally { activeTreePick = previous; }
 }
 
 let houseSetOff = false;
@@ -92,6 +105,12 @@ export function lookKit(tileset: Pick<TilesetDef, "structureKits"> | TilesetDef 
   if (!houseSetOff && tileset && "passability" in tileset) {
     const set = activeTilesetLook(tileset)?.houses;
     const swapped = set ? houseSetKit(tileset, kit, set, lookHash(`house|${key}|${kit.id}|${site ?? ""}`)) : undefined;
+    if (swapped) return swapped;
+  }
+  // 숲 구성: 이 게임의 숲 구성이 그 나무 킷에 같은 수종의 다른 개체 그림을 두었으면 자리마다 하나를 고른다(0 번은 킷 칸에 덮인 그림 — 킷 그대로).
+  if (tileset && "passability" in tileset) {
+    const stand = activeTilesetLook(tileset)?.stand;
+    const swapped = stand ? standVariantKit(tileset, kit, stand, activeTreePick ?? lookHash(`tree|${key}|${kit.id}|${site ?? ""}`)) : undefined;
     if (swapped) return swapped;
   }
   const variants = kitVariants(tileset, kit.id);

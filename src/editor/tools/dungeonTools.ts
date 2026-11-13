@@ -24,7 +24,9 @@ import { asCell, asRoom, chestLoot, field, list, nested, pickTroops, placeRoamer
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { DUNGEON_ENTRANCE_TAG, pickDungeonGateSpot, ENTRANCE_OPTION_SCHEMA, linkEntranceInDraft, parseEntranceOption } from "./dungeonLinkTools";
 import { dungeonTheme, ensureThemeTroop } from "./dungeonThemeTroops";
-import { beodeulNatureTileset, planBeodeulCanopy, writeBeodeulCanopy } from "./beodeulForest";
+import { beodeulNatureTileset, planBeodeulCanopy, raiseBeodeulCrowns, writeBeodeulCanopy } from "./beodeulForest";
+import { layBeodeulGroundCover } from "./beodeulGroundCover";
+import { activeTilesetLook } from "@/project/kitLook";
 import { invalidateReliefSlopes } from "@/project/relief/walk";
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { translateTiles } from "@/project/objectStamp";
@@ -61,6 +63,8 @@ interface FloorOpts {
   readonly entry: "up" | "down" | "door" | "none";
   readonly exit: "up" | "down" | "none";
   readonly sideDoor?: boolean;
+  /** 채우기·장치가 끝난 뒤 돌릴 마무리(게임 겉모습의 나무 머리·숲 바닥) — 주면 buildFloor 는 여기에 쌓기만 하고 authorDungeon 이 맨 끝에 돌린다. */
+  readonly finish?: (() => void)[];
 }
 
 /** 던전 한 층을 짓는다(옛 author_dungeon 본체). 계단 종류·시드는 floor 가 정한다 — 여러 층 잇기·채우기는 authorDungeon. */
@@ -192,6 +196,27 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
       plan = planBeodeulCanopy(map.width, map.height, composed.canopy.style, forest, shadeOk);
     }
     writeBeodeulCanopy(draft, map, tileset, plan);
+    // 숲 구성을 고른 게임(게임 겉모습 stand·meadow): 수관 위로 솟은 나무 머리(4층)가 수관 오토타일의 여섯 칸 주기를 자리 해시로 깨고,
+    // 빈터에는 그 숲의 바닥·풀밭 얼룩(2층 투명 덧그림)이 깔린다. 머리는 이미 막힌 숲 칸 위에만 서고 덧그림은 걷는 칸을 바꾸지 않는다.
+    // 겉모습이 없는 게임·눈 숲(snow)에서는 아무것도 하지 않는다.
+    // **채우기·장치가 끝난 뒤에** 깐다(floor.finish) — 장치 키트·적·상자 자리 고르기는 «2층이 빈 칸» 을 찾는데, 먼저 깔면 겉모습을 고른 게임만
+    // 장치를 못 놓아 씨앗 고르기가 다른 배치를 골랐다(명세 은행 lay-base-ruins: 같은 명세가 다른 크기의 숲이 됐다). 장치가 1층에 찍은 그림 위에는 깔리지 않는다.
+    if (composed.canopy.style === "leaf") {
+      const lookSeed = (floor.seed * 131 + map.width * 17 + map.height) | 0;
+      const canopyCells = new Set(plan.canopy.keys());
+      // 숲 던전의 바닥은 공용 잔디가 아니라 잔잔한 3×3 잔디다 — 빈터 칸의 1층에서 흔한 칸(빈터의 3% 넘게)을 풀밭으로 넘긴다. 늪(진흙 바닥)은 넘기지 않는다.
+      const lawn = new Set<number>();
+      if (composed.type === "forest") {
+        const tally = new Map<number, number>(); let open = 0;
+        for (let c = 0; c < map.lowerTiles.length; c += 1) { if (forest.has(c) || wetCells.has(c)) continue; open += 1; const t = map.lowerTiles[c]!; tally.set(t, (tally.get(t) ?? 0) + 1); }
+        for (const [t, k] of tally) if (t >= 0 && k > open * 0.03) lawn.add(t);
+      }
+      const finishLook = (): void => {
+        raiseBeodeulCrowns(map, tileset, canopyCells, lookSeed);
+        layBeodeulGroundCover(draft, map, activeTilesetLook(tileset), { seed: lookSeed, water: (c) => wetCells.has(c), underEvents: true, ...(lawn.size ? { ground: lawn } : {}) });
+      };
+      if (floor.finish) floor.finish.push(finishLook); else finishLook();
+    }
     if (opened) notes.push(`수관 모양이 안 맞는 한 칸 폭 숲 틈 ${opened}칸은 빈터로 열었다.`);
   }
   // 방마다 이름표 + composed-layout 표식: 큰 홀·통로의 빈 바닥은 필드 적이 돌아다닐 용도로 비운 칸이다.
@@ -708,6 +733,7 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   delete args.floorDesigns;
   const oneDesign = args.design && typeof args.design === "object" ? args.design : undefined;
   if (oneDesign && floors > 1 && !floorDesigns.length) warnings.push(`고침: 설계(design)가 하나라 마지막 층에만 썼다 — 나머지 ${floors - 1}층은 함수 배치다. 층마다 설계하려면 floorDesigns(아래층부터).`);
+  const lookFinish: (() => void)[] = [];
   for (let k = 1; k <= floors; k += 1) {
     const first = k === 1, last = k === floors;
     // 들어오는 계단: 1층은 바깥과 이을 때만(안 이으면 죽은 계단이 된다). 다음 층부터는 아래층(지하)·위층(탑)에서 오는 계단.
@@ -724,7 +750,7 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
     else if (floorArgs.design) { /* 설계한 층: 방은 설계에서 */ }
     else if (floors > 1 && direction === "up" && !args.rooms && !floorRooms.length) { floorArgs.rooms = towerRooms(last, k, baseSeed, towerPlans[k - 1]?.shape, towerPlans[k - 1]); floorArgs.type = args.type ?? "castle"; }
     else if (floors > 1 && !args.rooms && !args.size && !floorArgs.rooms) floorArgs.size = last ? "medium" : "small";
-    results.push(buildFloor(draft, floorArgs, { seed: baseSeed + (k - 1) * 101, entry, exit }));
+    results.push(buildFloor(draft, floorArgs, { seed: baseSeed + (k - 1) * 101, entry, exit, finish: lookFinish }));
   }
   const datas = results.map((r) => r.data as Record<string, unknown>);
   const mapIds = datas.map((d) => String(d.mapId));
@@ -795,6 +821,8 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   // 주제 장치가 채우기 뒤로 미룬 맵 변경(다리 걷기)
   (gimmickAfter as (() => void) | null)?.();
   for (const f of floorAfter) f();
+  // 게임 겉모습의 나무 머리·숲 바닥(숲·늪 층) — 장치·채우기가 자리를 다 고른 뒤에 깐다(buildFloor 의 floor.finish).
+  for (const f of lookFinish) f();
   // 탑(위로 쌓은 여러 층): 둥근 방 바깥 깊은 천장(8 이웃도 천장)을 비우고 구름 바다 배경을 빈 칸에 비친다 — 검은 허공이 화면 반을 넘었다(dt r2 tower-b 55%).
   // 벽에 닿는 천장 띠는 남아 탑 외벽 두께로 읽힌다. 「하늘 위의 탑」(크로노 트리거 지일 왕국·FF 의 탑).
   // 구름 하늘은 탑(type tower·종류 생략)이나 하늘을 청했을 때만 — 2층 성(vagueWiden 성 레시피)이 구름 위에 떠 그림 도안과 달랐다(2026-11-05 imageplan-honest p4·p10).

@@ -1,0 +1,1592 @@
+{
+ "license": "OPRN 기본 에셋(게임 사용 자유) — 직접 그린 그림",
+ "author": "Claude Fable 5.2 (effort medium) — 나무·덤불·한 칸 풀은 5차(2026-11-14)에 Fable 5.2 medium 일꾼 셋이 원래 나무 킷 19개를 기준으로 코드 도트로 다시 그렸다(활엽수는 원래 수관 조각을 다시 배치·색 옮김). 재질은 그림 하나에 호출 하나",
+ "waiver": "fable-forest-beodeul-2026-11-13",
+ "note": "숲 구성(stand) = 주 수종 · 곁 수종 둘 · 드문 강조 나무 · 큰 나무 · 물가 나무 · 덤불 · 숲 바닥. 굽기 scripts/content/beodeul-looks/bake_stands.py. store 가 looks 인 그림은 tiledata/beodeul-looks 의 것(2차).",
+ "flora": {
+  "orig": {
+   "label": "둥근 활엽수(원래 그림)",
+   "en": "round broadleaf",
+   "ramp": "oak"
+  },
+  "birch": {
+   "label": "자작나무",
+   "en": "birch",
+   "ramp": [
+    "#0e2418",
+    "#143616",
+    "#2e5022",
+    "#47722a",
+    "#618c3b",
+    "#94b353"
+   ],
+   "trunk": [
+    "#e6f0fa",
+    "#d9d2be",
+    "#929491",
+    "#3e403d"
+   ],
+   "roles": [
+    "row"
+   ]
+  },
+  "willow": {
+   "label": "수양버들",
+   "en": "weeping willow",
+   "ramp": [
+    "#071d1b",
+    "#143616",
+    "#2e5022",
+    "#47722a",
+    "#618c3b",
+    "#94b353"
+   ],
+   "roles": [
+    "water"
+   ],
+   "trunk": [
+    "#967042",
+    "#70502e",
+    "#4c3620",
+    "#2e2016"
+   ]
+  },
+  "apple": {
+   "label": "사과나무",
+   "en": "apple tree",
+   "ramp": [
+    "#071f1d",
+    "#08372c",
+    "#0a5134",
+    "#226b39",
+    "#418640",
+    "#8cbf5f"
+   ],
+   "roles": [
+    "fruit"
+   ],
+   "trunk": [
+    "#967042",
+    "#70502e",
+    "#4c3620",
+    "#2e2016"
+   ]
+  },
+  "maple": {
+   "label": "단풍 든 나무",
+   "en": "autumn maple",
+   "ramp": [
+    "#2a1a0f",
+    "#5a1410",
+    "#6d2720",
+    "#a40100",
+    "#b8280e",
+    "#f08a10"
+   ],
+   "loud": true,
+   "trunk": [
+    "#967042",
+    "#70502e",
+    "#4c3620",
+    "#2e2016"
+   ]
+  },
+  "pine": {
+   "label": "우산소나무",
+   "en": "umbrella pine",
+   "ramp": [
+    "#071d1b",
+    "#08372c",
+    "#1c4a44",
+    "#2c6a3a",
+    "#438a48",
+    "#94b353"
+   ],
+   "trunk": [
+    "#967042",
+    "#784824",
+    "#4c3620",
+    "#2e2016"
+   ]
+  },
+  "cypress": {
+   "label": "사이프러스",
+   "en": "Italian cypress",
+   "ramp": [
+    "#071d1b",
+    "#133120",
+    "#254d2c",
+    "#3b6330",
+    "#4b8232",
+    "#94b353"
+   ],
+   "roles": [
+    "row"
+   ],
+   "narrow": true,
+   "trunk": [
+    "#967042",
+    "#70502e",
+    "#4c3620",
+    "#2e2016"
+   ]
+  },
+  "olive": {
+   "label": "올리브나무",
+   "en": "olive tree",
+   "ramp": [
+    "#071d1b",
+    "#162e1e",
+    "#2f4431",
+    "#365536",
+    "#587937",
+    "#94a950"
+   ],
+   "trunk": [
+    "#9b8a73",
+    "#71593f",
+    "#4c3620",
+    "#2e2016"
+   ],
+   "roles": [
+    "fruit"
+   ]
+  },
+  "oak": {
+   "label": "참나무",
+   "en": "oak",
+   "ramp": [
+    "#071d1b",
+    "#133120",
+    "#254d2c",
+    "#366324",
+    "#587937",
+    "#94b353"
+   ],
+   "trunk": [
+    "#967042",
+    "#70502e",
+    "#4c3620",
+    "#2e2016"
+   ]
+  },
+  "poplar": {
+   "label": "포플러",
+   "en": "poplar",
+   "ramp": [
+    "#071d1b",
+    "#143616",
+    "#254d2c",
+    "#366324",
+    "#4b8232",
+    "#94b353"
+   ],
+   "roles": [
+    "row",
+    "water"
+   ],
+   "narrow": true,
+   "loud": true,
+   "trunk": [
+    "#9a7a5c",
+    "#7a5e46",
+    "#594434",
+    "#3a2a20"
+   ]
+  },
+  "chestnut": {
+   "label": "밤나무",
+   "en": "sweet chestnut",
+   "ramp": [
+    "#071d1b",
+    "#063328",
+    "#104c2f",
+    "#296535",
+    "#497f3c",
+    "#94b353"
+   ],
+   "trunk": [
+    "#967042",
+    "#70502e",
+    "#4c3620",
+    "#2e2016"
+   ]
+  },
+  "orange": {
+   "label": "오렌지나무",
+   "en": "orange tree",
+   "ramp": [
+    "#071d1b",
+    "#063328",
+    "#0a5134",
+    "#2c6a3a",
+    "#438a48",
+    "#8cbf5f"
+   ],
+   "roles": [
+    "fruit"
+   ],
+   "trunk": [
+    "#967042",
+    "#70502e",
+    "#4c3620",
+    "#2e2016"
+   ]
+  },
+  "fig": {
+   "label": "무화과나무",
+   "en": "fig tree",
+   "ramp": [
+    "#0c231a",
+    "#133120",
+    "#254d2c",
+    "#3b6330",
+    "#4b8232",
+    "#8bb14e"
+   ],
+   "roles": [
+    "fruit"
+   ],
+   "trunk": [
+    "#baa488",
+    "#9b8a73",
+    "#6c5c4c",
+    "#463d39"
+   ]
+  },
+  "beech": {
+   "label": "구리빛 너도밤나무",
+   "en": "copper beech",
+   "ramp": [
+    "#071d1b",
+    "#451f19",
+    "#6d2720",
+    "#7c3a22",
+    "#a25a30",
+    "#cf9558"
+   ],
+   "trunk": [
+    "#9e9482",
+    "#787172",
+    "#565151",
+    "#3a3334"
+   ],
+   "loud": true
+  },
+  "fir": {
+   "label": "전나무",
+   "en": "silver fir",
+   "ramp": [
+    "#071d1b",
+    "#123423",
+    "#104c2f",
+    "#226b39",
+    "#418640",
+    "#62a85a"
+   ],
+   "roles": [
+    "row"
+   ],
+   "trunk": [
+    "#927757",
+    "#71593f",
+    "#4a3a2b",
+    "#2e2018"
+   ]
+  },
+  "blossom": {
+   "label": "꽃 핀 아몬드나무",
+   "en": "almond tree in blossom",
+   "ramp": [
+    "#231019",
+    "#51283d",
+    "#863736",
+    "#a09088",
+    "#c8b8ae",
+    "#ecd6c6"
+   ],
+   "roles": [
+    "fruit"
+   ],
+   "loud": true,
+   "trunk": [
+    "#70502e",
+    "#4c3620",
+    "#2e2016",
+    "#1c1010"
+   ]
+  },
+  "snag": {
+   "label": "고목(죽은 나무)",
+   "en": "dead tree",
+   "ramp": [
+    "#071d1b",
+    "#063328",
+    "#104c2f",
+    "#296535",
+    "#497f3c",
+    "#94b353"
+   ],
+   "trunk": [
+    "#9a7a5c",
+    "#765c48",
+    "#4f3b2c",
+    "#35251e"
+   ]
+  },
+  "broom": {
+   "label": "금작화 덤불",
+   "en": "flowering broom",
+   "ramp": [
+    "#071d1b",
+    "#123423",
+    "#254d2c",
+    "#3b6330",
+    "#587937",
+    "#94a950"
+   ],
+   "trunk": [
+    "#967042",
+    "#70502e",
+    "#4c3620",
+    "#2e2016"
+   ]
+  },
+  "myrtle": {
+   "label": "도금양 덤불",
+   "en": "myrtle",
+   "ramp": [
+    "#071d1b",
+    "#063328",
+    "#104c2f",
+    "#296535",
+    "#497f3c",
+    "#94b353"
+   ],
+   "trunk": [
+    "#967042",
+    "#70502e",
+    "#4c3620",
+    "#2e2016"
+   ]
+  },
+  "oleander": {
+   "label": "협죽도 덤불",
+   "en": "oleander",
+   "ramp": [
+    "#091f19",
+    "#123423",
+    "#26442d",
+    "#3b6330",
+    "#588232",
+    "#8eaf4c"
+   ],
+   "trunk": [
+    "#967042",
+    "#70502e",
+    "#4c3620",
+    "#2e2016"
+   ]
+  },
+  "juniper": {
+   "label": "노간주 덤불",
+   "en": "juniper",
+   "ramp": [
+    "#071d1b",
+    "#0c2222",
+    "#143c36",
+    "#1c4a44",
+    "#21584e",
+    "#4d7e72"
+   ],
+   "trunk": [
+    "#967042",
+    "#70502e",
+    "#4c3620",
+    "#2e2016"
+   ]
+  },
+  "bramble": {
+   "label": "산딸기 덤불",
+   "en": "bramble",
+   "ramp": [
+    "#071d1b",
+    "#143616",
+    "#2e5022",
+    "#3b6330",
+    "#588232",
+    "#94b353"
+   ],
+   "trunk": [
+    "#7e4a34",
+    "#6a3e30",
+    "#4c2e27",
+    "#2a1410"
+   ]
+  },
+  "fern": {
+   "label": "큰 고사리",
+   "en": "fern clump",
+   "ramp": [
+    "#071f1d",
+    "#08372c",
+    "#0a5134",
+    "#226b39",
+    "#418640",
+    "#8cbf5f"
+   ],
+   "trunk": [
+    "#967042",
+    "#70502e",
+    "#4c3620",
+    "#2e2016"
+   ]
+  }
+ },
+ "trees": [
+  {
+   "id": "tree-pine-4x5-1",
+   "src": "tree-pine-4x5-1.png",
+   "kind": "organic",
+   "species": "pine",
+   "slot": "4x5"
+  },
+  {
+   "id": "tree-pine-3x4-1",
+   "src": "tree-pine-3x4-1.png",
+   "kind": "organic",
+   "species": "pine",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-pine-3x4-2",
+   "src": "tree-pine-3x4-2.png",
+   "kind": "organic",
+   "species": "pine",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-pine-3x3-1",
+   "src": "tree-pine-3x3-1.png",
+   "kind": "organic",
+   "species": "pine",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-pine-3x3-2",
+   "src": "tree-pine-3x3-2.png",
+   "kind": "organic",
+   "species": "pine",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-pine-3x3-3",
+   "src": "tree-pine-3x3-3.png",
+   "kind": "organic",
+   "species": "pine",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-cypress-3x4-1",
+   "src": "tree-cypress-3x4-1.png",
+   "kind": "organic",
+   "species": "cypress",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-cypress-3x4-2",
+   "src": "tree-cypress-3x4-2.png",
+   "kind": "organic",
+   "species": "cypress",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-cypress-2x2-1",
+   "src": "tree-cypress-2x2-1.png",
+   "kind": "organic",
+   "species": "cypress",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-cypress-2x2-2",
+   "src": "tree-cypress-2x2-2.png",
+   "kind": "organic",
+   "species": "cypress",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-olive-3x4-1",
+   "src": "tree-olive-3x4-1.png",
+   "kind": "organic",
+   "species": "olive",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-olive-3x4-2",
+   "src": "tree-olive-3x4-2.png",
+   "kind": "organic",
+   "species": "olive",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-olive-3x3-1",
+   "src": "tree-olive-3x3-1.png",
+   "kind": "organic",
+   "species": "olive",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-olive-3x3-2",
+   "src": "tree-olive-3x3-2.png",
+   "kind": "organic",
+   "species": "olive",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-olive-3x3-3",
+   "src": "tree-olive-3x3-3.png",
+   "kind": "organic",
+   "species": "olive",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-olive-2x2-1",
+   "src": "tree-olive-2x2-1.png",
+   "kind": "organic",
+   "species": "olive",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-olive-2x2-2",
+   "src": "tree-olive-2x2-2.png",
+   "kind": "organic",
+   "species": "olive",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-oak-4x5-1",
+   "src": "tree-oak-4x5-1.png",
+   "kind": "organic",
+   "species": "oak",
+   "slot": "4x5"
+  },
+  {
+   "id": "tree-oak-3x4-1",
+   "src": "tree-oak-3x4-1.png",
+   "kind": "organic",
+   "species": "oak",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-oak-3x4-2",
+   "src": "tree-oak-3x4-2.png",
+   "kind": "organic",
+   "species": "oak",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-oak-3x3-1",
+   "src": "tree-oak-3x3-1.png",
+   "kind": "organic",
+   "species": "oak",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-oak-3x3-2",
+   "src": "tree-oak-3x3-2.png",
+   "kind": "organic",
+   "species": "oak",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-oak-3x3-3",
+   "src": "tree-oak-3x3-3.png",
+   "kind": "organic",
+   "species": "oak",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-poplar-4x5-1",
+   "src": "tree-poplar-4x5-1.png",
+   "kind": "organic",
+   "species": "poplar",
+   "slot": "4x5"
+  },
+  {
+   "id": "tree-poplar-3x4-1",
+   "src": "tree-poplar-3x4-1.png",
+   "kind": "organic",
+   "species": "poplar",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-poplar-3x4-2",
+   "src": "tree-poplar-3x4-2.png",
+   "kind": "organic",
+   "species": "poplar",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-chestnut-3x4-1",
+   "src": "tree-chestnut-3x4-1.png",
+   "kind": "organic",
+   "species": "chestnut",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-chestnut-3x4-2",
+   "src": "tree-chestnut-3x4-2.png",
+   "kind": "organic",
+   "species": "chestnut",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-chestnut-3x3-1",
+   "src": "tree-chestnut-3x3-1.png",
+   "kind": "organic",
+   "species": "chestnut",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-chestnut-3x3-2",
+   "src": "tree-chestnut-3x3-2.png",
+   "kind": "organic",
+   "species": "chestnut",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-orange-3x3-1",
+   "src": "tree-orange-3x3-1.png",
+   "kind": "organic",
+   "species": "orange",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-orange-3x3-2",
+   "src": "tree-orange-3x3-2.png",
+   "kind": "organic",
+   "species": "orange",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-orange-3x3-3",
+   "src": "tree-orange-3x3-3.png",
+   "kind": "organic",
+   "species": "orange",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-orange-2x2-1",
+   "src": "tree-orange-2x2-1.png",
+   "kind": "organic",
+   "species": "orange",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-orange-2x2-2",
+   "src": "tree-orange-2x2-2.png",
+   "kind": "organic",
+   "species": "orange",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-fig-2x2-1",
+   "src": "tree-fig-2x2-1.png",
+   "kind": "organic",
+   "species": "fig",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-fig-2x2-2",
+   "src": "tree-fig-2x2-2.png",
+   "kind": "organic",
+   "species": "fig",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-beech-4x5-1",
+   "src": "tree-beech-4x5-1.png",
+   "kind": "organic",
+   "species": "beech",
+   "slot": "4x5"
+  },
+  {
+   "id": "tree-beech-3x4-1",
+   "src": "tree-beech-3x4-1.png",
+   "kind": "organic",
+   "species": "beech",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-beech-3x4-2",
+   "src": "tree-beech-3x4-2.png",
+   "kind": "organic",
+   "species": "beech",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-beech-3x3-1",
+   "src": "tree-beech-3x3-1.png",
+   "kind": "organic",
+   "species": "beech",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-beech-3x3-2",
+   "src": "tree-beech-3x3-2.png",
+   "kind": "organic",
+   "species": "beech",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-beech-3x3-3",
+   "src": "tree-beech-3x3-3.png",
+   "kind": "organic",
+   "species": "beech",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-fir-3x4-1",
+   "src": "tree-fir-3x4-1.png",
+   "kind": "organic",
+   "species": "fir",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-fir-3x4-2",
+   "src": "tree-fir-3x4-2.png",
+   "kind": "organic",
+   "species": "fir",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-fir-3x3-1",
+   "src": "tree-fir-3x3-1.png",
+   "kind": "organic",
+   "species": "fir",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-fir-3x3-2",
+   "src": "tree-fir-3x3-2.png",
+   "kind": "organic",
+   "species": "fir",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-fir-2x2-1",
+   "src": "tree-fir-2x2-1.png",
+   "kind": "organic",
+   "species": "fir",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-fir-2x2-2",
+   "src": "tree-fir-2x2-2.png",
+   "kind": "organic",
+   "species": "fir",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-blossom-3x4-1",
+   "src": "tree-blossom-3x4-1.png",
+   "kind": "organic",
+   "species": "blossom",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-blossom-3x4-2",
+   "src": "tree-blossom-3x4-2.png",
+   "kind": "organic",
+   "species": "blossom",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-blossom-3x3-1",
+   "src": "tree-blossom-3x3-1.png",
+   "kind": "organic",
+   "species": "blossom",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-blossom-3x3-2",
+   "src": "tree-blossom-3x3-2.png",
+   "kind": "organic",
+   "species": "blossom",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-snag-3x4-1",
+   "src": "tree-snag-3x4-1.png",
+   "kind": "organic",
+   "species": "snag",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-snag-3x3-1",
+   "src": "tree-snag-3x3-1.png",
+   "kind": "organic",
+   "species": "snag",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-broom-2x2-1",
+   "src": "tree-broom-2x2-1.png",
+   "kind": "organic",
+   "species": "broom",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-broom-2x2-2",
+   "src": "tree-broom-2x2-2.png",
+   "kind": "organic",
+   "species": "broom",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-myrtle-2x2-1",
+   "src": "tree-myrtle-2x2-1.png",
+   "kind": "organic",
+   "species": "myrtle",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-myrtle-2x2-2",
+   "src": "tree-myrtle-2x2-2.png",
+   "kind": "organic",
+   "species": "myrtle",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-oleander-2x2-1",
+   "src": "tree-oleander-2x2-1.png",
+   "kind": "organic",
+   "species": "oleander",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-oleander-2x2-2",
+   "src": "tree-oleander-2x2-2.png",
+   "kind": "organic",
+   "species": "oleander",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-juniper-2x2-1",
+   "src": "tree-juniper-2x2-1.png",
+   "kind": "organic",
+   "species": "juniper",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-juniper-2x2-2",
+   "src": "tree-juniper-2x2-2.png",
+   "kind": "organic",
+   "species": "juniper",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-bramble-2x2-1",
+   "src": "tree-bramble-2x2-1.png",
+   "kind": "organic",
+   "species": "bramble",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-bramble-2x2-2",
+   "src": "tree-bramble-2x2-2.png",
+   "kind": "organic",
+   "species": "bramble",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-fern-2x2-1",
+   "src": "tree-fern-2x2-1.png",
+   "kind": "organic",
+   "species": "fern",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-fern-2x2-2",
+   "src": "tree-fern-2x2-2.png",
+   "kind": "organic",
+   "species": "fern",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-willow-3x4-2",
+   "src": "tree-willow-3x4-2.png",
+   "kind": "organic",
+   "species": "willow",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-willow-3x3-2",
+   "src": "tree-willow-3x3-2.png",
+   "kind": "organic",
+   "species": "willow",
+   "slot": "3x3"
+  }
+ ],
+ "textures": [
+  {
+   "id": "floor-litter",
+   "kind": "terrain",
+   "role": "floor",
+   "name": "숲 바닥 · 낙엽",
+   "en": "leaf litter"
+  },
+  {
+   "id": "floor-needles",
+   "kind": "terrain",
+   "role": "floor",
+   "name": "숲 바닥 · 솔잎",
+   "en": "pine needle carpet"
+  },
+  {
+   "id": "floor-moss",
+   "kind": "terrain",
+   "role": "floor",
+   "name": "숲 바닥 · 이끼",
+   "en": "deep moss"
+  },
+  {
+   "id": "floor-roots",
+   "kind": "terrain",
+   "role": "floor",
+   "name": "숲 바닥 · 뿌리 드러난 맨흙",
+   "en": "bare shaded earth with roots"
+  },
+  {
+   "id": "floor-shade",
+   "kind": "terrain",
+   "role": "floor",
+   "name": "숲 바닥 · 그늘진 풀",
+   "en": "shaded woodland grass"
+  },
+  {
+   "id": "floor-dry",
+   "kind": "terrain",
+   "role": "floor",
+   "name": "숲 바닥 · 볕에 마른 흙",
+   "en": "dry orchard earth"
+  },
+  {
+   "id": "meadow-flowers",
+   "kind": "terrain",
+   "role": "patch",
+   "name": "풀밭 얼룩 · 들꽃",
+   "en": "flowering meadow",
+   "avoid": [
+    "ground-sand",
+    "ground-earth",
+    "ground-terra"
+   ]
+  },
+  {
+   "id": "meadow-tall",
+   "kind": "terrain",
+   "role": "patch",
+   "name": "풀밭 얼룩 · 키 큰 거친 풀",
+   "en": "tall rough grass"
+  },
+  {
+   "id": "ground-clover",
+   "kind": "terrain",
+   "role": "patch",
+   "store": "looks",
+   "name": "풀밭 얼룩 · 이끼·토끼풀",
+   "en": "moss and clover",
+   "avoid": [
+    "ground-sand"
+   ]
+  },
+  {
+   "id": "ground-dry",
+   "kind": "terrain",
+   "role": "patch",
+   "store": "looks",
+   "name": "풀밭 얼룩 · 마른 풀",
+   "en": "dry short grass",
+   "avoid": [
+    "ground-clover",
+    "ground-terra"
+   ]
+  },
+  {
+   "id": "ground-earth",
+   "kind": "terrain",
+   "role": "patch",
+   "store": "looks",
+   "name": "풀밭 얼룩 · 맨흙",
+   "en": "bare earth",
+   "small": true
+  },
+  {
+   "id": "ground-lush",
+   "kind": "terrain",
+   "role": "patch",
+   "store": "looks",
+   "name": "풀밭 얼룩 · 짙은 풀",
+   "en": "lush deep meadow",
+   "avoid": [
+    "ground-sand",
+    "ground-earth",
+    "ground-terra"
+   ]
+  }
+ ],
+ "stands": {
+  "pinewood": {
+   "label": "우산소나무 숲 · 사이프러스·올리브",
+   "en": "umbrella pines with cypress and olive",
+   "dominant": "pine",
+   "companions": [
+    "cypress",
+    "olive"
+   ],
+   "accent": "snag",
+   "giant": "pine",
+   "water": "willow",
+   "shrubs": [
+    "juniper",
+    "broom",
+    "myrtle",
+    "olive"
+   ],
+   "floor": "floor-needles"
+  },
+  "olivegrove": {
+   "label": "올리브 숲 · 무화과·사이프러스",
+   "en": "olive grove with fig and cypress",
+   "dominant": "olive",
+   "companions": [
+    "fig",
+    "cypress"
+   ],
+   "accent": "blossom",
+   "giant": "pine",
+   "water": "poplar",
+   "shrubs": [
+    "broom",
+    "oleander",
+    "olive",
+    "myrtle"
+   ],
+   "floor": "floor-dry"
+  },
+  "oakwood": {
+   "label": "참나무 숲 · 밤나무·자작",
+   "en": "oak wood with chestnut and birch",
+   "dominant": "oak",
+   "companions": [
+    "chestnut",
+    "birch"
+   ],
+   "accent": "snag",
+   "giant": "oak",
+   "water": "willow",
+   "shrubs": [
+    "bramble",
+    "fern",
+    "myrtle"
+   ],
+   "floor": "floor-litter"
+  },
+  "chestnutwood": {
+   "label": "밤나무 숲 · 참나무·단풍",
+   "en": "chestnut wood with oak and maple",
+   "dominant": "chestnut",
+   "companions": [
+    "oak",
+    "maple"
+   ],
+   "accent": "snag",
+   "giant": "chestnut",
+   "water": "willow",
+   "shrubs": [
+    "fern",
+    "bramble",
+    "broom"
+   ],
+   "floor": "floor-litter"
+  },
+  "beechwood": {
+   "label": "구리빛 너도밤나무 숲 · 참나무·자작",
+   "en": "copper beech wood with oak and birch",
+   "dominant": "beech",
+   "companions": [
+    "oak",
+    "birch"
+   ],
+   "accent": "snag",
+   "giant": "beech",
+   "water": "willow",
+   "shrubs": [
+    "fern",
+    "bramble",
+    "juniper"
+   ],
+   "floor": "floor-litter"
+  },
+  "firwood": {
+   "label": "전나무 숲 · 자작·소나무",
+   "en": "fir wood with birch and pine",
+   "dominant": "fir",
+   "companions": [
+    "birch",
+    "pine"
+   ],
+   "accent": "snag",
+   "giant": "pine",
+   "water": "willow",
+   "shrubs": [
+    "juniper",
+    "fern",
+    "bramble"
+   ],
+   "floor": "floor-moss"
+  },
+  "poplars": {
+   "label": "포플러 숲 · 버들·자작",
+   "en": "poplars with willow and birch",
+   "dominant": "poplar",
+   "companions": [
+    "willow",
+    "birch"
+   ],
+   "accent": "blossom",
+   "giant": "poplar",
+   "water": "willow",
+   "shrubs": [
+    "oleander",
+    "broom",
+    "fern"
+   ],
+   "floor": "floor-shade"
+  },
+  "citrus": {
+   "label": "오렌지 숲 · 올리브·사이프러스",
+   "en": "orange grove with olive and cypress",
+   "dominant": "orange",
+   "companions": [
+    "olive",
+    "cypress"
+   ],
+   "accent": "blossom",
+   "giant": "pine",
+   "water": "poplar",
+   "shrubs": [
+    "myrtle",
+    "oleander",
+    "orange",
+    "broom"
+   ],
+   "floor": "floor-dry"
+  },
+  "birchwood": {
+   "label": "자작나무 숲 · 전나무·포플러",
+   "en": "birch wood with fir and poplar",
+   "dominant": "birch",
+   "companions": [
+    "fir",
+    "poplar"
+   ],
+   "accent": "snag",
+   "giant": "oak",
+   "water": "willow",
+   "shrubs": [
+    "fern",
+    "juniper",
+    "bramble"
+   ],
+   "floor": "floor-moss"
+  },
+  "willowbank": {
+   "label": "버드나무 숲 · 포플러·참나무",
+   "en": "willows with poplar and oak",
+   "dominant": "willow",
+   "companions": [
+    "poplar",
+    "oak"
+   ],
+   "accent": "blossom",
+   "giant": "oak",
+   "water": "willow",
+   "shrubs": [
+    "fern",
+    "bramble",
+    "oleander"
+   ],
+   "floor": "floor-shade"
+  },
+  "applewood": {
+   "label": "사과나무 숲 · 밤나무·올리브",
+   "en": "apple trees with chestnut and olive",
+   "dominant": "apple",
+   "companions": [
+    "chestnut",
+    "olive"
+   ],
+   "accent": "blossom",
+   "giant": "oak",
+   "water": "willow",
+   "shrubs": [
+    "bramble",
+    "broom",
+    "myrtle"
+   ],
+   "floor": "floor-shade"
+  },
+  "maplewood": {
+   "label": "단풍 숲 · 너도밤나무·참나무",
+   "en": "autumn maples with beech and oak",
+   "dominant": "maple",
+   "companions": [
+    "beech",
+    "oak"
+   ],
+   "accent": "snag",
+   "giant": "chestnut",
+   "water": "willow",
+   "shrubs": [
+    "fern",
+    "bramble",
+    "juniper"
+   ],
+   "floor": "floor-litter"
+  },
+  "cypresshill": {
+   "label": "사이프러스 언덕 · 소나무·올리브",
+   "en": "cypress hill with pine and olive",
+   "dominant": "cypress",
+   "companions": [
+    "pine",
+    "olive"
+   ],
+   "accent": "snag",
+   "giant": "pine",
+   "water": "poplar",
+   "shrubs": [
+    "juniper",
+    "myrtle",
+    "broom"
+   ],
+   "floor": "floor-needles"
+  },
+  "sunnyslope": {
+   "label": "올리브 숲 · 오렌지·아몬드",
+   "en": "olive slope with orange and almond",
+   "dominant": "olive",
+   "companions": [
+    "orange",
+    "blossom"
+   ],
+   "accent": "snag",
+   "giant": "pine",
+   "water": "poplar",
+   "shrubs": [
+    "fig",
+    "broom",
+    "oleander",
+    "myrtle"
+   ],
+   "floor": "floor-dry"
+  },
+  "oldforest": {
+   "label": "둥근 활엽수 옛 숲 · 참나무·전나무",
+   "en": "old round-crowned forest with oak and fir",
+   "dominant": "orig",
+   "companions": [
+    "oak",
+    "fir"
+   ],
+   "accent": "snag",
+   "giant": "oak",
+   "water": "willow",
+   "shrubs": [
+    "fern",
+    "bramble",
+    "myrtle"
+   ],
+   "floor": "floor-moss"
+  },
+  "hillwood": {
+   "label": "소나무 숲 · 밤나무·참나무",
+   "en": "pines with chestnut and oak",
+   "dominant": "pine",
+   "companions": [
+    "chestnut",
+    "oak"
+   ],
+   "accent": "snag",
+   "giant": "chestnut",
+   "water": "willow",
+   "shrubs": [
+    "bramble",
+    "juniper",
+    "fern"
+   ],
+   "floor": "floor-needles"
+  },
+  "almondvale": {
+   "label": "아몬드 꽃 숲 · 사과·포플러",
+   "en": "almond blossom with apple and poplar",
+   "dominant": "blossom",
+   "companions": [
+    "apple",
+    "poplar"
+   ],
+   "accent": "fig",
+   "giant": "poplar",
+   "water": "willow",
+   "shrubs": [
+    "broom",
+    "oleander",
+    "bramble"
+   ],
+   "floor": "floor-shade"
+  },
+  "highwood": {
+   "label": "전나무 숲 · 너도밤나무·참나무",
+   "en": "firs with copper beech and oak",
+   "dominant": "fir",
+   "companions": [
+    "beech",
+    "oak"
+   ],
+   "accent": "snag",
+   "giant": "beech",
+   "water": "willow",
+   "shrubs": [
+    "fern",
+    "juniper",
+    "bramble"
+   ],
+   "floor": "floor-moss"
+  },
+  "garrigue": {
+   "label": "참나무 덤불숲 · 올리브·사이프러스",
+   "en": "oak scrub with olive and cypress",
+   "dominant": "oak",
+   "companions": [
+    "olive",
+    "cypress"
+   ],
+   "accent": "snag",
+   "giant": "pine",
+   "water": "poplar",
+   "shrubs": [
+    "juniper",
+    "broom",
+    "myrtle",
+    "olive"
+   ],
+   "floor": "floor-roots"
+  },
+  "riverwood": {
+   "label": "밤나무 숲 · 포플러·버들",
+   "en": "chestnuts with poplar and willow",
+   "dominant": "chestnut",
+   "companions": [
+    "poplar",
+    "willow"
+   ],
+   "accent": "blossom",
+   "giant": "oak",
+   "water": "willow",
+   "shrubs": [
+    "fern",
+    "oleander",
+    "bramble"
+   ],
+   "floor": "floor-shade"
+  }
+ },
+ "meadows": {
+  "flowers": {
+   "label": "들꽃 · 토끼풀 · 키 큰 풀 얼룩",
+   "en": "patches of wildflowers, clover and tall grass",
+   "patches": [
+    "meadow-flowers",
+    "ground-clover",
+    "meadow-tall"
+   ]
+  },
+  "rough": {
+   "label": "키 큰 풀 · 마른 풀 얼룩 · 맨흙 자리",
+   "en": "patches of tall and dry grass with bare spots",
+   "patches": [
+    "meadow-tall",
+    "ground-dry",
+    "ground-earth"
+   ]
+  },
+  "clover": {
+   "label": "토끼풀 · 짙은 풀 · 들꽃 얼룩",
+   "en": "patches of clover, lush grass and wildflowers",
+   "patches": [
+    "ground-clover",
+    "ground-lush",
+    "meadow-flowers"
+   ]
+  },
+  "dry": {
+   "label": "마른 풀 · 키 큰 풀 · 들꽃 얼룩",
+   "en": "patches of dry grass, tall grass and wildflowers",
+   "patches": [
+    "ground-dry",
+    "meadow-tall",
+    "meadow-flowers"
+   ]
+  },
+  "lush": {
+   "label": "짙은 풀 · 들꽃 · 키 큰 풀 얼룩",
+   "en": "patches of lush grass, wildflowers and tall grass",
+   "patches": [
+    "ground-lush",
+    "meadow-flowers",
+    "meadow-tall"
+   ]
+  },
+  "heath": {
+   "label": "마른 풀 · 토끼풀 얼룩 · 맨흙 자리",
+   "en": "patches of dry grass and clover with bare spots",
+   "patches": [
+    "ground-dry",
+    "ground-clover",
+    "ground-earth"
+   ]
+  }
+ },
+ "worn": "ground-earth",
+ "verge": {
+  "water": "meadow-tall",
+  "road": "ground-dry"
+ },
+ "treeSlots": {
+  "4x5": [
+   "bd-tree-d43edd",
+   "bd-tree-5844f6",
+   "bd-tree-b1d104"
+  ],
+  "3x4": [
+   "bd-tree-1a786c",
+   "bd-tree-d61d7e",
+   "bd-tree-1e09f0",
+   "bd-tree-bdd36e"
+  ],
+  "3x3": [
+   "bd-tree-03a8f7",
+   "bd-tree-a80c85",
+   "bd-tree-3e8732",
+   "bd-tree-7ecdb8"
+  ],
+  "2x2": [
+   "bd-tree-e9d9b3",
+   "bd-tree-cc0fcb",
+   "bd-tree-47e17a",
+   "bd-tree-f4f319",
+   "bd-tree-37f48b",
+   "bd-tree-d105b2",
+   "bd-tree-0f7ed1",
+   "bd-tree-132848"
+  ]
+ },
+ "shadowKits": [
+  "bd-pick-deep-forest-path-stump",
+  "bd-pick-deep-forest-path-log-fallen",
+  "bd-pick-mountain-pass-boulder-m",
+  "bd-pick-mountain-pass-boulder-l",
+  "bd-pick-dungeon-theme-mossy-boulder",
+  "bd-pick-desert-oasis-reed",
+  "bd-mpart-bush-c",
+  "bd-mpart-bush-e"
+ ],
+ "undergrowth": {
+  "floor-litter": [
+   "bd-pick-deep-forest-path-fern-a",
+   "bd-pick-deep-forest-path-fern-b",
+   "bd-pick-deep-forest-path-toadstools-a",
+   "bd-pick-deep-forest-path-toadstools-b",
+   "bd-pick-deep-forest-path-stump",
+   "bd-pick-deep-forest-path-log-fallen",
+   "bd-pick-deep-forest-path-wild-a",
+   "bd-pick-deep-forest-path-stones-a"
+  ],
+  "floor-needles": [
+   "bd-pick-deep-forest-path-stones-a",
+   "bd-pick-deep-forest-path-stones-b",
+   "bd-pick-deep-forest-path-heath-a",
+   "bd-pick-deep-forest-path-heath-b",
+   "bd-pick-mountain-pass-boulder-m",
+   "bd-pick-mountain-pass-scree-a",
+   "bd-pick-deep-forest-path-stump",
+   "bd-pick-deep-forest-path-toadstools-c"
+  ],
+  "floor-moss": [
+   "bd-pick-deep-forest-path-fern-a",
+   "bd-pick-deep-forest-path-fern-b",
+   "bd-pick-deep-forest-path-fern-c",
+   "bd-pick-deep-forest-path-toadstools-a",
+   "bd-pick-deep-forest-path-toadstools-c",
+   "bd-pick-dungeon-theme-mossy-boulder",
+   "bd-pick-deep-forest-path-log-fallen",
+   "bd-pick-deep-forest-path-stump"
+  ],
+  "floor-roots": [
+   "bd-pick-deep-forest-path-stones-a",
+   "bd-pick-deep-forest-path-stones-c",
+   "bd-pick-deep-forest-path-heath-a",
+   "bd-pick-coast-cliff-road-heath-c",
+   "bd-pick-mountain-pass-scree-b",
+   "bd-pick-mountain-pass-boulder-l",
+   "bd-pick-deep-forest-path-wild-b",
+   "bd-pick-deep-forest-path-stump"
+  ],
+  "floor-shade": [
+   "bd-pick-deep-forest-path-wild-a",
+   "bd-pick-deep-forest-path-wild-b",
+   "bd-pick-deep-forest-path-wild-c",
+   "bd-pick-deep-forest-path-fern-c",
+   "bd-pick-wheat-roman-road-wild-a",
+   "bd-pick-deep-forest-path-toadstools-b",
+   "bd-pick-deep-forest-path-log-fallen",
+   "bd-pick-deep-forest-path-stones-b"
+  ],
+  "floor-dry": [
+   "bd-pick-deep-forest-path-stones-a",
+   "bd-pick-deep-forest-path-stones-c",
+   "bd-pick-deep-forest-path-heath-a",
+   "bd-pick-coast-cliff-road-heath-c",
+   "bd-pick-mountain-pass-scree-b",
+   "bd-pick-mountain-pass-boulder-m",
+   "bd-pick-deep-forest-path-wild-b",
+   "bd-pick-wheat-roman-road-wild-b"
+  ]
+ },
+ "reed": "bd-pick-desert-oasis-reed",
+ "small": {
+  "note": "걸어 넘는 한 칸 풀·덤불 — 숲 바닥 종류마다 여섯 그림(96×16 띠: 고사리 둘 · 낮은 덤불 둘 · 들꽃 둘). 고사리·헤더 덤불·들꽃 킷 열두 개의 그림을 그 숲 구성의 것으로 덮는다(bake_stands.py SMALL_KITS).",
+  "strips": {
+   "floor-litter": {
+    "src": "small-litter.png"
+   },
+   "floor-needles": {
+    "src": "small-needles.png"
+   },
+   "floor-moss": {
+    "src": "small-moss.png"
+   },
+   "floor-roots": {
+    "src": "small-roots.png"
+   },
+   "floor-shade": {
+    "src": "small-shade.png"
+   },
+   "floor-dry": {
+    "src": "small-dry.png"
+   }
+  }
+ }
+}

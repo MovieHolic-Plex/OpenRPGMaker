@@ -12,6 +12,10 @@ import { composeTreesPlaced, treeComposerOwnTiles, treeHash, type TreePlacement 
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { BEODEUL_NATURE, BEODEUL_NATURE_ID, createBeodeulNatureTileset } from "@/project/defaults/beodeulNature";
 import { BEODEUL_FOREST_TRUNKS, BEODEUL_FOREST_TRUNKS_ID, createBeodeulForestTrunksTileset } from "@/project/defaults/beodeulForestTrunks";
+import { tilesetLookTableFor } from "@/assets/tilesetLooks";
+import { standOverlaySource, tilesetStand, tilesetStandTableFor } from "@/assets/tilesetStands";
+import { activeTilesetLook } from "@/project/kitLook";
+import { kitTilesFlat, standKitPictures, standVariantKit } from "@/project/standKit";
 
 export const BEODEUL_FOREST_TYPES = ["broadleaf", "conifer", "mixed"] as const;
 export type BeodeulForestType = (typeof BEODEUL_FOREST_TYPES)[number];
@@ -34,8 +38,77 @@ export const BEODEUL_DARK_GRASS_GROUP: Record<BeodeulDarkGrassFamily, string> = 
 export function beodeulForestComposer(project: Project, target: TilesetDef, type: BeodeulForestType): TreeComposerDef {
   const { groundShadeCover: _c, groundShadeRows: _r, ...rest } = structuredClone(data.types[type]);
   const def = rest as unknown as TreeComposerDef;
-  def.sprites = withRedrawnTrunks(project, target, def.sprites);
+  def.sprites = withLookPictures(target, def.sprites, (plain) => withRedrawnTrunks(project, target, plain));
   return def;
+}
+
+/**
+ * 게임 겉모습(숲 구성 stand · 수종 trees)이 나무 킷 칸에 다른 그림을 덮은 타일셋이면 그 그림에 맞춘 정의로 바꾼다:
+ *  · 덮개 값(cover)은 덮인 그림의 것 — 원래 나무의 값으로 겹치면 «뒤 나무를 다 가린다» 고 본 칸이 실은 비어 있어 수종 그림이 조각나 보였다
+ *    (2026-11-13 숲길 표본: 2차의 수종·4차의 숲 구성 게임 모두 숲길 맵이 깨져 있었다).
+ *  · 줄기 다시 그리기(원래 활엽수 줄기 칸)는 하지 않는다 — 덮인 그림이 제 줄기를 그린다.
+ *  · 숲 구성의 «다른 개체» 그림(변형)을 같은 꼴의 그림으로 더한다 — composer 가 가까운 나무와 다른 그림을 고르므로 옆 나무가 갈린다.
+ *  · 숲 구성의 강조 나무(고목·꽃나무 — 역할 accent)·물가 나무는 숲길의 숲 덩이에 쓰지 않는다: 같은 꼴에 다른 그림이 있으면 뺀다. 숲 열 그루에 고목 넷이 섰다.
+ *    눈에 띄는 곁 수종(loud)은 꼴마다 한 그림만 남긴다.
+ * 겉모습이 덮지 않은 킷과 겉모습 없는 타일셋은 rest(원래 길: 줄기 다시 그리기)를 그대로 탄다.
+ */
+function withLookPictures(target: TilesetDef, sprites: TreeComposerSprite[], rest: (plain: TreeComposerSprite[]) => TreeComposerSprite[]): TreeComposerSprite[] {
+  const look = activeTilesetLook(target);
+  const table = tilesetLookTableFor(target.id);
+  const onSheet = !!table && target.image.type === "bundled" && target.image.id === table.image && target.tileSize === 16;
+  const stand = onSheet ? tilesetStand(target.id, look?.stand) : undefined;
+  const cover = stand ? stand.cover : onSheet ? table!.parts.trees.options[look?.trees ?? ""]?.cover : undefined;
+  if (!cover) return rest(sprites);
+  const kits = new Map((target.structureKits ?? []).map((kit) => [kit.id, kit] as const));
+  // 숲 덩이에 흔히 세우지 않는 나무: 강조 나무(고목·꽃나무), 눈에 띄는 곁 수종(loud — 꽃나무·단풍), 물가 나무(버드나무 — 주·곁 수종이 아닐 때).
+  // 숲길 표본(2026-11-13): 꽃나무가 숲의 절반을 차지하거나(양지 비탈) 버드나무 한 그림이 마흔 번 섰다(참나무 숲) — composer 는 꼴마다 그림을 고르게 고른다.
+  const common = new Set([...(stand?.kits.dominant ?? []), ...(stand?.kits.companion ?? [])]);
+  const loud = new Set(stand?.loud ?? []);
+  const accent = new Set([...(stand?.kits.accent ?? []), ...loud, ...(stand?.kits.water ?? []).filter((id) => !common.has(id))]);
+  const calm = sprites.filter((sprite) => !accent.has(sprite.name));
+  const calmShapes = new Set(calm.map((sprite) => sprite.shape));
+  // 눈에 띄는 곁 수종은 꼴마다 한 그림만, 그 꼴에 다른 킷이 셋 넘게 있을 때 남긴다(다른 개체 그림까지 치면 일곱 그루에 하나꼴 — 숲에 꽃나무가 드문드문 선다)
+  const keptLoud = new Set<string>();
+  // 강조 나무뿐인 꼴(예: 3×4 한 그림)은 같은 크기의 다른 그림을 그 꼴로 빌려 쓴다 — 못 빌리면 그대로 둔다
+  sprites = sprites.flatMap((sprite) => {
+    if (!accent.has(sprite.name)) return [sprite];
+    if (calmShapes.has(sprite.shape)) {
+      if (!loud.has(sprite.name) || keptLoud.has(sprite.shape) || calm.filter((other) => other.shape === sprite.shape).length < 3) return [];
+      keptLoud.add(sprite.shape);
+      return [sprite];
+    }
+    const same = calm.filter((other) => other.w === sprite.w && other.h === sprite.h && other.dark === sprite.dark);
+    return same.length ? same.map((other) => ({ ...other, shape: sprite.shape })) : [sprite];
+  });
+  const plain = rest(sprites.filter((sprite) => !cover[sprite.name]));
+  let next = 0;
+  const out: TreeComposerSprite[] = [];
+  for (const sprite of sprites) {
+    const cells = cover[sprite.name], kit = kits.get(sprite.name);
+    if (!cells || !kit || cells.length !== sprite.tiles.length) { if (!cells) out.push(plain[next++]!); else out.push(sprite); continue; }
+    out.push({ ...sprite, tiles: kitTilesFlat(kit), cover: [...cells] });
+    const pictures = stand ? standKitPictures(target.id, look?.stand, sprite.name) : 1;
+    for (let pick = 1; pick < pictures; pick += 1) {
+      const variant = standVariantKit(target, kit, look?.stand, pick), variantCover = stand?.variantCover?.[sprite.name]?.[pick - 1];
+      if (variant && variantCover?.length === sprite.tiles.length) out.push({ ...sprite, name: `${sprite.name}#${pick}`, tiles: kitTilesFlat(variant), cover: [...variantCover] });
+    }
+  }
+  // 숲 구성: 세 칸 × 세 칸 나무(주 수종·곁 수종)도 «세 칸 × 네 칸» 꼴 자리에 선다 — 윗줄을 비운 그림으로 더한다(밑동 칸은 그대로 가운데).
+  // 왜(숲길 표본, 2026-11-13): 숲길의 나무 열에 여섯이 세 칸 × 네 칸 꼴인데 그 꼴의 그림은 주 수종 한 킷(두 장)뿐이라 같은 나무가 예순 번 섰다.
+  // 세 칸 × 세 칸 킷은 수종마다 그림이 석 장이고 곁 수종도 있다 — 같은 자리에 키가 다른 나무가 섞여 숲 윗선도 들쭉날쭉해진다.
+  if (stand) {
+    const tall = out.filter((sprite) => sprite.w === 3 && sprite.h === 4 && !accent.has(sprite.name.split("#")[0]!));
+    const slots = new Map(tall.map((sprite) => [`${sprite.shape}|${sprite.dark}`, sprite] as const));
+    const short = [...new Set([...(stand.kits.dominant ?? []), ...(stand.kits.companion ?? [])])].filter((id) => { const kit = kits.get(id); return kit && kit.width === 3 && kit.height === 3 && !accent.has(id) && stand.cover?.[id]?.length === 9; });
+    for (const like of slots.values()) for (const id of short) {
+      const kit = kits.get(id)!;
+      for (let pick = 0; pick < standKitPictures(target.id, look?.stand, id); pick += 1) {
+        const picture = pick === 0 ? kit : standVariantKit(target, kit, look?.stand, pick), pictureCover = pick === 0 ? stand.cover![id] : stand.variantCover?.[id]?.[pick - 1];
+        if (picture && pictureCover?.length === 9) out.push({ ...like, name: pick ? `${id}#${pick}` : id, tiles: [-1, -1, -1, ...kitTilesFlat(picture)], cover: [0, 0, 0, ...pictureCover] });
+      }
+    }
+  }
+  return out;
 }
 
 /**
@@ -500,6 +573,124 @@ export function writeBeodeulCanopy(project: Project, map: GameMap, target: Tiles
   return n;
 }
 
+const crownHash = (x: number, y: number, seed: number): number => treeHash(x, y, seed * 977 + 13);
+
+/**
+ * 숲 남쪽 끝 줄에 «앞줄 나무» 를 세운다 — 그 숲 구성의 나무 킷(주 수종 · 곁 수종 · 덤불, 다른 개체 그림 포함)을 자리 해시로 골라 밑동을 끝 줄에 둔다.
+ * 왜: 숲 남쪽 끝 줄(밑동 줄)은 수관 오토타일 그림 그대로라 같은 나무 셋이 여섯 칸마다 되풀이됐다(3배로 보면 같은 둥근 수관이 일정한 간격으로 선다).
+ * 밑동 줄 칸은 3층(상위 아님 — 그 앞에 선 주인공이 위에 그려진다), 그 위 줄은 4층 ★. 모두 이미 막힌 숲 칸 위라 통행은 그대로다.
+ * taken 에 4층에 쓴 칸을 더한다(뒤에 얹는 나무 머리가 겹치지 않게). 세운 나무 수.
+ */
+function plantFrontTrees(map: GameMap, target: TilesetDef, standId: string | undefined, stand: NonNullable<ReturnType<typeof tilesetStand>>,
+  forest: ReadonlySet<number>, seed: number, taken: Set<number>): number {
+  const byId = new Map((target.structureKits ?? []).map((kit) => [kit.id, kit] as const));
+  const ids = [...(stand.kits.dominant ?? []), ...(stand.kits.dominant ?? []), ...(stand.kits.companion ?? []), ...(stand.kits.shrub ?? [])];
+  const pool = ids.map((id) => byId.get(id)).filter((kit): kit is NonNullable<typeof kit> => !!kit && kit.width <= 3 && kit.height >= 2 && kit.height <= 4);
+  if (!pool.length) return 0;
+  const loudIds = new Set(stand.loud ?? []);
+  const calm = pool.filter((kit) => !loudIds.has(kit.id)), loud = pool.filter((kit) => loudIds.has(kit.id));
+  const W = map.width, H = map.height;
+  const southEdge = (x: number, y: number): boolean => x >= 0 && x < W && y >= 0 && y < H - 1 && forest.has(y * W + x) && !forest.has((y + 1) * W + x);
+  let placed = 0;
+  for (let y = 1; y < H - 1; y += 1) {
+    let last = "";
+    for (let x = 0; x < W; x += 1) {
+      if (!southEdge(x, y)) continue;
+      const h = crownHash(x, y, seed + 7);
+      if (h % 100 < 40) continue; // 열에 넷은 비운다 — 아래 수관 그림(밑동·하층)이 사이사이 보인다
+      // 눈에 띄는 곁 수종은 스물다섯에 하나꼴 — 밝은 나무가 숲 끝에 줄지어 서면 그것이 도장으로 읽힌다
+      const from = loud.length && (!calm.length || (h >>> 4) % 100 < 4) ? loud : calm;
+      let k = (h >>> 8) % from.length;
+      if (from[k]!.id === last) k = (k + 1) % from.length;
+      const base = from[k]!, kit = standVariantKit(target, base, standId, h >>> 16) ?? base;
+      const top = y - kit.height + 1;
+      if (top < 0) continue;
+      const cellOf = (i: number, j: number): number => { const row = kit.rows[j]; const upper = row?.upperTiles?.[i] ?? -1; return upper >= 0 ? upper : row?.tiles?.[i] ?? -1; };
+      let fits = true;
+      for (let j = 0; j < kit.height && fits; j += 1) for (let i = 0; i < kit.width; i += 1) {
+        const c = (top + j) * W + x + i, bottom = j === kit.height - 1;
+        // 밑동 줄은 한 줄로 곧은 남쪽 끝이어야 하고(빈 칸이어도 — 나무 발치가 풀밭으로 삐져나오지 않게), 위 줄은 그림이 있는 칸만 숲이면 된다
+        if (bottom ? !southEdge(x + i, y) || layerTileAt(map, 3, c) >= 0 : cellOf(i, j) >= 0 && (x + i >= W || !forest.has(c) || layerTileAt(map, 4, c) >= 0 || taken.has(c))) { fits = false; break; }
+      }
+      if (!fits) continue;
+      for (let j = 0; j < kit.height; j += 1) for (let i = 0; i < kit.width; i += 1) {
+        const tile = cellOf(i, j); if (tile < 0) continue;
+        const c = (top + j) * W + x + i;
+        if (j === kit.height - 1) setLayerTileAt(map, 3, c, tile); else { setLayerTileAt(map, 4, c, tile); taken.add(c); }
+      }
+      placed += 1; last = base.id; x += kit.width - 1;
+    }
+  }
+  return placed;
+}
+
+/**
+ * 이어진 숲 수관 위에 «나무 머리» 를 얹는다(4층 ★ — 통행은 아래 수관이 정한다) — 숲 구성을 고른 게임만, 그 구성의 수종 그림으로.
+ * 왜(2026-11-13 오너 «특히 숲쪽», 숲 도로 표본): 수관 오토타일은 가로세로 여섯 칸 주기라 숲이 맵의 대부분인 도로·깊은 숲에서 같은 수관 줄이
+ * 여섯 칸마다 되풀이됐다(3배로 보면 둥근 수관·사이프러스가 격자로 선다). 머리를 드문드문 얹는 것으로는 아래 격자가 그대로 보였다 — 숲 속을
+ * 머리들로 «덮는다»: 세 칸 × 두 칸 구역마다 자리 해시로 «어느 그림 · 구역 안 어디» 를 정하고(주기 없음), 가까운 구역(왼쪽 둘·위 셋)과 같은 그림은 피한다.
+ * 눈에 띄는 곁 수종(accent — 꽃나무·단풍)은 스물다섯에 하나꼴로만, 서로 떨어뜨려 세운다 — 밝은 머리가 여럿 서면 그 머리가 도장으로 읽힌다.
+ * 머리의 모든 칸이 «숲이고 남쪽 두 칸도 숲» 일 때만 놓는다 — 걷는 칸과 그 위 칸(주인공 머리, 키 큰 인물은 두 칸)을 덮지 않는다.
+ * 숲 남쪽 끝 줄에는 먼저 앞줄 나무를 세운다(plantFrontTrees). 놓은 머리·나무 수.
+ */
+export function raiseBeodeulCrowns(map: GameMap, target: TilesetDef, forest: ReadonlySet<number>, seed: number): number {
+  const stand = tilesetStand(target.id, activeTilesetLook(target)?.stand), table = tilesetStandTableFor(target.id);
+  const crowns = stand?.crowns;
+  if (!table || !crowns?.length || !forest.size || target.image.type !== "bundled" || target.image.id !== table.image) return 0;
+  const W = map.width, H = map.height;
+  const isF = (x: number, y: number): boolean => y >= 0 && (x < 0 || x >= W || y >= H || forest.has(y * W + x));
+  const covered = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < H && isF(x, y) && isF(x, y + 1) && isF(x, y + 2) && layerTileAt(map, 4, y * W + x) < 0;
+  // 주 수종 머리가 절반 남짓, 곁 수종이 나머지 — 그림 수대로 고르면 그림이 많은 곁 수종(소나무 다섯 장)이 숲을 차지해 «올리브 숲» 이 솔숲으로 읽혔다
+  // 네 칸 폭 큰 머리(큰 나무)도 강조 머리처럼 드물게만 — 큰 머리는 생김새가 눈에 남아 한 맵에 여섯이 서면 같은 나무로 읽혔다(포플러 숲의 버드나무)
+  const main: number[] = [], side: number[] = [], accent: number[] = [];
+  crowns.forEach((crown, index) => (crown.accent || crown.w >= 4 ? accent : crown.dominant ? main : side).push(index));
+  const rare = (index: number): boolean => !!crowns[index]!.accent || crowns[index]!.w >= 4;
+  const calmAny = main.length + side.length > 0;
+  const BX = 3, BY = 2, cols = Math.ceil(W / BX), rows = Math.ceil(H / BY);
+  const picked = new Int16Array(cols * rows).fill(-1);
+  const at = (bx: number, by: number): number => (bx < 0 || by < 0 || bx >= cols ? -1 : picked[by * cols + bx]!);
+  const writes: [number, number][] = [];
+  const taken = new Set<number>();
+  let placed = plantFrontTrees(map, target, activeTilesetLook(target)?.stand, stand!, forest, seed, taken);
+  for (let by = 0; by < rows; by += 1) for (let bx = 0; bx < cols; bx += 1) {
+    const h = crownHash(bx, by, seed);
+    if (h % 100 < 10) continue; // 열에 하나는 비워 아래 수관이 보인다(숲 속 틈)
+    const pool = accent.length && (!calmAny || (h >>> 4) % 100 < 5) ? accent : main.length && (!side.length || (h >>> 12) % 100 < 58) ? main : side;
+    const near = [at(bx - 1, by), at(bx - 2, by), at(bx - 1, by - 1), at(bx, by - 1), at(bx + 1, by - 1)];
+    // 강조 머리는 둘레 세 구역 안에 다른 강조 머리가 있으면 세우지 않는다
+    if (pool === accent && calmAny) {
+      let crowded = false;
+      for (let dy = -3; dy <= 0 && !crowded; dy += 1) for (let dx = -3; dx <= 3; dx += 1) { const p = at(bx + dx, by + dy); if (p >= 0 && rare(p)) { crowded = true; break; } }
+      if (crowded) continue;
+    }
+    // 그림 → 자리 순으로 맞는 것을 찾는다: 구역 안 흔들림 자리에서 시작해 맞지 않으면 다음 그림·다음 자리(구역마다 네 번까지)
+    let k = (h >>> 8) % pool.length;
+    for (let tries = 0; tries < pool.length && near.includes(pool[k]!); tries += 1) k = (k + 1) % pool.length;
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      const pick = pool[(k + (attempt >> 1)) % pool.length]!, crown = crowns[pick]!;
+      if (attempt >= 2 && near.includes(pick)) continue;
+      const jx = ((h >>> 16) + attempt) % BX, jy = ((h >>> 20) + (attempt & 1)) % BY;
+      const x0 = bx * BX + jx - ((crown.w - BX) >> 1), y0 = by * BY + jy - (crown.h > BY ? 1 : 0);
+      let fits = true;
+      for (let j = 0; j < crown.h && fits; j += 1) for (let i = 0; i < crown.w; i += 1) {
+        if ((crown.rows[j]?.[i] ?? -1) < 0) continue;
+        if (!covered(x0 + i, y0 + j) || taken.has((y0 + j) * W + x0 + i)) { fits = false; break; }
+      }
+      if (!fits) continue;
+      picked[by * cols + bx] = pick; placed += 1;
+      for (let j = 0; j < crown.h; j += 1) for (let i = 0; i < crown.w; i += 1) {
+        const cell = crown.rows[j]?.[i] ?? -1;
+        if (cell >= 0) { const c = (y0 + j) * W + x0 + i; taken.add(c); writes.push([c, cell]); }
+      }
+      break;
+    }
+  }
+  if (!writes.length) return 0;
+  const moved = translateTiles(standOverlaySource(table), target, new Set(writes.map(([, cell]) => cell))).map;
+  for (const [c, cell] of writes) { const to = moved.get(cell); if (to !== undefined && to >= 0) setLayerTileAt(map, 4, c, to); }
+  return placed;
+}
+
 /**
  * 붓·조수 범용 숲(place_props density dense·impassable)을 버들항 맵에 깔 때 — 사각형 area 안에 둥근 숲 덩이(dense: 물결진 타원,
  * impassable: 모서리를 깎은 사각) 를 잡고 수관 오토타일로 덮는다. 길·물·건물(2~4층에 무언가 있는 칸)·막힌 바닥은 건너뛴다.
@@ -536,5 +727,6 @@ export function plantBeodeulCanopyArea(project: Project, map: GameMap, target: T
   shapeBeodeulCanopyMask(W, H, forest, { canFill: inArea, minComponent: 9, minExtent: 3, fillCorners: false });
   const plan = planBeodeulCanopy(W, H, style, forest, (s) => !forest.has(s) && groundOk(s));
   writeBeodeulCanopy(project, map, target, plan);
+  if (style === "leaf") raiseBeodeulCrowns(map, target, new Set(plan.canopy.keys()), seed);
   return { forestCells: plan.canopy.size, shadeCells: plan.shade.size };
 }
