@@ -18,6 +18,8 @@ import { isPassable } from "../../../src/project/collision.ts";
 import { activeTileGrafts } from "../../../src/assets/tileGrafts.ts";
 import { tilesetLookOptions, tilesetLookTableFor } from "../../../src/assets/tilesetLooks.ts";
 import { BEODEUL_NATURE } from "../../../src/project/defaults/beodeulNature.ts";
+import { chooseTilesetLook } from "../../../src/project/tilesetLook.ts";
+import { standKitPictures, standVariantKit } from "../../../src/project/standKit.ts";
 import type { PlaceSpec } from "../../../src/ai/v2/shared/types.ts";
 import type { ToolContext } from "../../../src/editor/tools/types.ts";
 import type { GameMap, Project, StructureKitDef, TilesetDef } from "../../../src/project/types.ts";
@@ -37,6 +39,15 @@ function natureKits(tileset: TilesetDef): KitCells[] {
     const tree = tags.includes("tree");
     const under = !tree && kit.width <= 3 && kit.height <= 2 && (tags.includes("decal") || tags.includes("prop")) && kitTags.some((t) => t === "숲" || t === "필드" || t === "산" || t === "늪");
     if (tree || under) out.push({ kit, kind: tree ? "tree" : "under", cells });
+    // 숲 구성의 «다른 개체» 그림(같은 킷의 둘째·셋째 그림)도 같은 킷으로 읽되 이름에 #번호를 붙인다 — 같은 그림이 몇 번 섰는지를 그림 단위로 센다.
+    const stand = tileset.look?.stand;
+    if (tree && stand) for (let pick = 1; pick < standKitPictures(tileset.id, stand, kit.id); pick += 1) {
+      const variant = standVariantKit(tileset, kit, stand, pick);
+      if (!variant) continue;
+      const vcells: KitCells["cells"] = [];
+      variant.rows.forEach((row, dy) => { for (const layer of [row.tiles, row.upperTiles]) (layer ?? []).forEach((tile, dx) => { if (typeof tile === "number" && tile >= 0) vcells.push({ dx, dy, tile }); }); });
+      if (vcells.length) out.push({ kit: { ...variant, id: `${kit.id}#${pick}` }, kind: "tree", cells: vcells });
+    }
   }
   return out.sort((a, b) => b.cells.length - a.cells.length || a.kit.id.localeCompare(b.kit.id));
 }
@@ -51,7 +62,9 @@ function factsOf(project: Project, map: GameMap, id: string): Record<string, unk
   cellSets.forEach((set, i) => { for (const t of set) { const a = where.get(t); if (a) a.push(i); else where.set(t, [i]); } });
   const claimed = new Set<string>();
   const placed: { kit: string; kind: string; x: number; y: number; w: number; h: number }[] = [];
-  for (const { kit, kind, cells } of natureKits(tileset)) {
+  const found = natureKits(tileset);
+  const kitById = new Map(found.map((entry) => [entry.kit.id, entry.kit] as const));
+  for (const { kit, kind, cells } of found) {
     const anchor = cells[0]!;
     for (const i of where.get(anchor.tile) ?? []) {
       const x = (i % W) - anchor.dx, y = Math.floor(i / W) - anchor.dy;
@@ -67,7 +80,7 @@ function factsOf(project: Project, map: GameMap, id: string): Record<string, unk
   const picOf = (tile: number): [string, number] => grafts.get(tile) ?? [sheet, tile];
   const kitPics: Record<string, [string, number][]> = {};
   for (const p of placed) if (!kitPics[p.kit]) {
-    const kit = tileset.structureKits!.find((k) => k.id === p.kit)!;
+    const kit = kitById.get(p.kit)!;
     kitPics[p.kit] = kit.rows.flatMap((row) => Array.from({ length: kit.width }, (_, x) => { const up = row.upperTiles?.[x] ?? -1; return picOf(up >= 0 ? up : row.tiles[x] ?? -1); }));
   }
   // 이어진 숲 수관: 자연 덧그림의 수관 칸에서 이식된 칸(2·3층)
@@ -118,11 +131,17 @@ if (mode === "build") {
     coast: { name: "갈매기 포구", task: "바닷가에 포구 마을을 만들어 줘", hints: { theme: "coast" } },
   };
   const rows: Record<string, unknown>[] = [];
+  // 여섯 게임은 «한 사람이 차례로 만든 게임» — 뒤 게임은 앞 게임들이 쓴 겉모습을 안다(조수 요청의 lookTaken, src/ai/piAgent/gameLooks.ts). --alone 이면 서로 모른다.
+  const TAKEN = new Map<string, ToolContext["lookTaken"]>();
+  if (!argv.includes("--alone")) {
+    const looks: NonNullable<ToolContext["lookTaken"]>[number][] = [];
+    for (const key of GAMES) { TAKEN.set(key, [...looks]); looks.push(chooseTilesetLook(tilesetLookTableFor(TS)!, key, looks)); }
+  }
   const buildOne = (key: string, salt: number, theme: string, file: string, look?: Record<string, string>): void => {
     const req = REQUEST[theme]!;
     const project = createBlankProject();
     if (look) project.tilesets[TS]!.look = { textureKey: tilesetLookTableFor(TS)!.texture, ...look };
-    const ctx = { project, currentMapId: project.startMapId, assistantRun: true, lookKey: key } as ToolContext;
+    const ctx = { project, currentMapId: project.startMapId, assistantRun: true, lookKey: key, ...(look ? {} : { lookTaken: TAKEN.get(key) }) } as ToolContext;
     const spec = { type: "village", name: req.name, salt, variety: `${key}|${req.task}`, ...(Object.keys(req.hints).length ? { hints: req.hints } : {}) } as PlaceSpec;
     const res = builderFor(spec)!.build(createBuildRun(ctx), spec);
     const map = res.mapIds[0] ? ctx.project.maps[res.mapIds[0]] : undefined;
