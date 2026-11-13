@@ -63,7 +63,8 @@
     "#b77541",
     "#f08a10",
     "#fbc10d"
-   ]
+   ],
+   "loud": true
   },
   "pine": {
    "label": "우산소나무",
@@ -147,7 +148,8 @@
     "row",
     "water"
    ],
-   "narrow": true
+   "narrow": true,
+   "loud": true
   },
   "chestnut": {
    "label": "밤나무",
@@ -200,7 +202,8 @@
     "#d9d2be",
     "#ada29a",
     "#3a3334"
-   ]
+   ],
+   "loud": true
   },
   "fir": {
    "label": "전나무",
@@ -223,7 +226,8 @@
    ],
    "roles": [
     "fruit"
-   ]
+   ],
+   "loud": true
   },
   "snag": {
    "label": "고목(죽은 나무)",
@@ -270,8 +274,29 @@
    "slot": "3x4"
   },
   {
+   "id": "tree-pine-3x4-2",
+   "src": "tree-pine-3x4-2.png",
+   "kind": "organic",
+   "species": "pine",
+   "slot": "3x4"
+  },
+  {
    "id": "tree-pine-3x3-1",
    "src": "tree-pine-3x3-1.png",
+   "kind": "organic",
+   "species": "pine",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-pine-3x3-2",
+   "src": "tree-pine-3x3-2.png",
+   "kind": "organic",
+   "species": "pine",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-pine-3x3-3",
+   "src": "tree-pine-3x3-3.png",
    "kind": "organic",
    "species": "pine",
    "slot": "3x3"
@@ -284,8 +309,22 @@
    "slot": "3x4"
   },
   {
+   "id": "tree-cypress-3x4-2",
+   "src": "tree-cypress-3x4-2.png",
+   "kind": "organic",
+   "species": "cypress",
+   "slot": "3x4"
+  },
+  {
    "id": "tree-cypress-2x2-1",
    "src": "tree-cypress-2x2-1.png",
+   "kind": "organic",
+   "species": "cypress",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-cypress-2x2-2",
+   "src": "tree-cypress-2x2-2.png",
    "kind": "organic",
    "species": "cypress",
    "slot": "2x2"
@@ -298,6 +337,13 @@
    "slot": "3x4"
   },
   {
+   "id": "tree-olive-3x4-2",
+   "src": "tree-olive-3x4-2.png",
+   "kind": "organic",
+   "species": "olive",
+   "slot": "3x4"
+  },
+  {
    "id": "tree-olive-3x3-1",
    "src": "tree-olive-3x3-1.png",
    "kind": "organic",
@@ -305,8 +351,29 @@
    "slot": "3x3"
   },
   {
+   "id": "tree-olive-3x3-2",
+   "src": "tree-olive-3x3-2.png",
+   "kind": "organic",
+   "species": "olive",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-olive-3x3-3",
+   "src": "tree-olive-3x3-3.png",
+   "kind": "organic",
+   "species": "olive",
+   "slot": "3x3"
+  },
+  {
    "id": "tree-olive-2x2-1",
    "src": "tree-olive-2x2-1.png",
+   "kind": "organic",
+   "species": "olive",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-olive-2x2-2",
+   "src": "tree-olive-2x2-2.png",
    "kind": "organic",
    "species": "olive",
    "slot": "2x2"
@@ -326,8 +393,29 @@
    "slot": "3x4"
   },
   {
+   "id": "tree-oak-3x4-2",
+   "src": "tree-oak-3x4-2.png",
+   "kind": "organic",
+   "species": "oak",
+   "slot": "3x4"
+  },
+  {
    "id": "tree-oak-3x3-1",
    "src": "tree-oak-3x3-1.png",
+   "kind": "organic",
+   "species": "oak",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-oak-3x3-2",
+   "src": "tree-oak-3x3-2.png",
+   "kind": "organic",
+   "species": "oak",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-oak-3x3-3",
+   "src": "tree-oak-3x3-3.png",
    "kind": "organic",
    "species": "oak",
    "slot": "3x3"
@@ -347,8 +435,22 @@
    "slot": "3x4"
   },
   {
+   "id": "tree-poplar-3x4-2",
+   "src": "tree-poplar-3x4-2.png",
+   "kind": "organic",
+   "species": "poplar",
+   "slot": "3x4"
+  },
+  {
    "id": "tree-chestnut-3x4-1",
    "src": "tree-chestnut-3x4-1.png",
+   "kind": "organic",
+   "species": "chestnut",
+   "slot": "3x4"
+  },
+  {
+   "id": "tree-chestnut-3x4-2",
+   "src": "tree-chestnut-3x4-2.png",
    "kind": "organic",
    "species": "chestnut",
    "slot": "3x4"
@@ -361,8 +463,29 @@
    "slot": "3x3"
   },
   {
+   "id": "tree-chestnut-3x3-2",
+   "src": "tree-chestnut-3x3-2.png",
+   "kind": "organic",
+   "species": "chestnut",
+   "slot": "3x3"
+  },
+  {
    "id": "tree-orange-3x3-1",
    "src": "tree-orange-3x3-1.png",
+   "kind": "organic",
+   "species": "orange",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-orange-3x3-2",
+   "src": "tree-orange-3x3-2.png",
+   "kind": "organic",
+   "species": "orange",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-orange-3x3-3",
+   "src": "tree-orange-3x3-3.png",
    "kind": "organic",
    "species": "orange",
    "slot": "3x3"
@@ -375,8 +498,22 @@
    "slot": "2x2"
   },
   {
+   "id": "tree-orange-2x2-2",
+   "src": "tree-orange-2x2-2.png",
+   "kind": "organic",
+   "species": "orange",
+   "slot": "2x2"
+  },
+  {
    "id": "tree-fig-2x2-1",
    "src": "tree-fig-2x2-1.png",
+   "kind": "organic",
+   "species": "fig",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-fig-2x2-2",
+   "src": "tree-fig-2x2-2.png",
    "kind": "organic",
    "species": "fig",
    "slot": "2x2"
@@ -396,8 +533,29 @@
    "slot": "3x4"
   },
   {
+   "id": "tree-beech-3x4-2",
+   "src": "tree-beech-3x4-2.png",
+   "kind": "organic",
+   "species": "beech",
+   "slot": "3x4"
+  },
+  {
    "id": "tree-beech-3x3-1",
    "src": "tree-beech-3x3-1.png",
+   "kind": "organic",
+   "species": "beech",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-beech-3x3-2",
+   "src": "tree-beech-3x3-2.png",
+   "kind": "organic",
+   "species": "beech",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-beech-3x3-3",
+   "src": "tree-beech-3x3-3.png",
    "kind": "organic",
    "species": "beech",
    "slot": "3x3"
@@ -410,8 +568,22 @@
    "slot": "3x4"
   },
   {
+   "id": "tree-fir-3x4-2",
+   "src": "tree-fir-3x4-2.png",
+   "kind": "organic",
+   "species": "fir",
+   "slot": "3x4"
+  },
+  {
    "id": "tree-fir-3x3-1",
    "src": "tree-fir-3x3-1.png",
+   "kind": "organic",
+   "species": "fir",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-fir-3x3-2",
+   "src": "tree-fir-3x3-2.png",
    "kind": "organic",
    "species": "fir",
    "slot": "3x3"
@@ -424,6 +596,13 @@
    "slot": "2x2"
   },
   {
+   "id": "tree-fir-2x2-2",
+   "src": "tree-fir-2x2-2.png",
+   "kind": "organic",
+   "species": "fir",
+   "slot": "2x2"
+  },
+  {
    "id": "tree-blossom-3x4-1",
    "src": "tree-blossom-3x4-1.png",
    "kind": "organic",
@@ -431,8 +610,22 @@
    "slot": "3x4"
   },
   {
+   "id": "tree-blossom-3x4-2",
+   "src": "tree-blossom-3x4-2.png",
+   "kind": "organic",
+   "species": "blossom",
+   "slot": "3x4"
+  },
+  {
    "id": "tree-blossom-3x3-1",
    "src": "tree-blossom-3x3-1.png",
+   "kind": "organic",
+   "species": "blossom",
+   "slot": "3x3"
+  },
+  {
+   "id": "tree-blossom-3x3-2",
+   "src": "tree-blossom-3x3-2.png",
    "kind": "organic",
    "species": "blossom",
    "slot": "3x3"
@@ -459,8 +652,22 @@
    "slot": "2x2"
   },
   {
+   "id": "tree-broom-2x2-2",
+   "src": "tree-broom-2x2-2.png",
+   "kind": "organic",
+   "species": "broom",
+   "slot": "2x2"
+  },
+  {
    "id": "tree-myrtle-2x2-1",
    "src": "tree-myrtle-2x2-1.png",
+   "kind": "organic",
+   "species": "myrtle",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-myrtle-2x2-2",
+   "src": "tree-myrtle-2x2-2.png",
    "kind": "organic",
    "species": "myrtle",
    "slot": "2x2"
@@ -473,8 +680,22 @@
    "slot": "2x2"
   },
   {
+   "id": "tree-oleander-2x2-2",
+   "src": "tree-oleander-2x2-2.png",
+   "kind": "organic",
+   "species": "oleander",
+   "slot": "2x2"
+  },
+  {
    "id": "tree-juniper-2x2-1",
    "src": "tree-juniper-2x2-1.png",
+   "kind": "organic",
+   "species": "juniper",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-juniper-2x2-2",
+   "src": "tree-juniper-2x2-2.png",
    "kind": "organic",
    "species": "juniper",
    "slot": "2x2"
@@ -487,8 +708,22 @@
    "slot": "2x2"
   },
   {
+   "id": "tree-bramble-2x2-2",
+   "src": "tree-bramble-2x2-2.png",
+   "kind": "organic",
+   "species": "bramble",
+   "slot": "2x2"
+  },
+  {
    "id": "tree-fern-2x2-1",
    "src": "tree-fern-2x2-1.png",
+   "kind": "organic",
+   "species": "fern",
+   "slot": "2x2"
+  },
+  {
+   "id": "tree-fern-2x2-2",
+   "src": "tree-fern-2x2-2.png",
    "kind": "organic",
    "species": "fern",
    "slot": "2x2"
@@ -573,7 +808,11 @@
    "role": "patch",
    "store": "looks",
    "name": "풀밭 얼룩 · 마른 풀",
-   "en": "dry short grass"
+   "en": "dry short grass",
+   "avoid": [
+    "ground-clover",
+    "ground-terra"
+   ]
   },
   {
    "id": "ground-earth",
@@ -1127,5 +1366,28 @@
    "bd-pick-wheat-roman-road-wild-b"
   ]
  },
- "reed": "bd-pick-desert-oasis-reed"
+ "reed": "bd-pick-desert-oasis-reed",
+ "small": {
+  "note": "걸어 넘는 한 칸 풀·덤불 — 숲 바닥 종류마다 여섯 그림(96×16 띠: 고사리 둘 · 낮은 덤불 둘 · 들꽃 둘). 고사리·헤더 덤불·들꽃 킷 열두 개의 그림을 그 숲 구성의 것으로 덮는다(bake_stands.py SMALL_KITS).",
+  "strips": {
+   "floor-litter": {
+    "src": "small-litter.png"
+   },
+   "floor-needles": {
+    "src": "small-needles.png"
+   },
+   "floor-moss": {
+    "src": "small-moss.png"
+   },
+   "floor-roots": {
+    "src": "small-roots.png"
+   },
+   "floor-shade": {
+    "src": "small-shade.png"
+   },
+   "floor-dry": {
+    "src": "small-dry.png"
+   }
+  }
+ }
 }

@@ -16,7 +16,9 @@ export const TILESET_LOOK_PARTS = ["surface", "trees", "woods", "houses", "plaza
 export type TilesetLookPart = (typeof TILESET_LOOK_PARTS)[number];
 
 type Sources = Readonly<Record<string, readonly number[]>>;
-type LookOption = { readonly label: string; readonly en?: string; readonly ground?: string; readonly base?: number; readonly sources?: Sources; readonly pairs?: readonly number[] };
+type LookOption = { readonly label: string; readonly en?: string; readonly ground?: string; readonly base?: number; readonly sources?: Sources; readonly pairs?: readonly number[];
+  /** 수종(trees) 선택지: 킷 → 덮은 그림의 칸마다 불투명 몫(0~100) — 숲길의 나무 composer 가 읽는다. */
+  readonly cover?: Readonly<Record<string, readonly number[]>> };
 export type TilesetLookTable = {
   readonly version: number;
   readonly tilesetId: string;
@@ -113,8 +115,8 @@ export function tilesetLookGrafts(tileset: LookTileset): readonly TileGraft[] {
   redraw(bySource);
   if (stand && stands) {
     sheetOf = stands;
-    const pairs = stand.pairs;
-    for (let index = 0; index + 1 < pairs.length; index += 2) if (!storedTargets.has(pairs[index]!)) draw(pairs[index]!, pairs[index + 1]!);
+    // 나무 킷 칸 + 걸어 넘는 한 칸 풀·덤불(그 숲 바닥의 여섯 그림)
+    for (const pairs of [stand.pairs, stand.small ?? []]) for (let index = 0; index + 1 < pairs.length; index += 2) if (!storedTargets.has(pairs[index]!)) draw(pairs[index]!, pairs[index + 1]!);
     const standSources = new Map<string, number>();
     sources(stand.sources, standSources);
     redraw(standSources);

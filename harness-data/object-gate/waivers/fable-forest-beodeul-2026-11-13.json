@@ -3,12 +3,12 @@
  "id": "fable-forest-beodeul-2026-11-13",
  "owner": "구워도 되고 앞으로는 전부 오너 면제다 (FABLE 5.2 는 한번에 다 잘만든다)",
  "decidedAt": "2026-11-12",
- "recordedBy": "버들항 숲·바닥 다양화(4차) 작업자 Claude(감독 세션 0306a26a 가 띄운 작업자) — 감독 4차 지시: Fable 5.2 그림은 오너의 상시 면제(bundle·shared 만, 스토어 제외)",
+ "recordedBy": "버들항 숲·바닥 다양화(4차) 작업자 Claude(감독 세션 0306a26a 가 띄운 작업자) — 감독 4차·4차 b 지시: Fable 5.2 그림은 오너의 상시 면제(bundle·shared 만, 스토어 제외)",
  "contexts": [
   "bundle",
   "shared"
  ],
- "note": "버들항 «숲·바닥 다양화» 4차 — 나무 34장(종류 organic: 우산소나무·사이프러스·올리브·참나무·포플러·밤나무·오렌지·무화과·구리빛 너도밤나무·전나무·아몬드 꽃나무·고목과 덤불 여섯), 재질 10장(종류 terrain: 숲 바닥 6 · 풀밭 얼룩 2 · 바닥 2). Claude Fable 5.2 medium, 그림 하나에 호출 하나(깨진 답만 한 번 더). 모양을 코드로 손댄 그림 없음(색만 허용 색에 붙임). 기계 검사 불합격 1장 포함(큰 고사리 — 오른쪽 가장자리에 닿음).",
+ "note": "버들항 «숲·바닥 다양화» 4차 — 나무 67장(종류 organic: 우산소나무·사이프러스·올리브·참나무·포플러·밤나무·오렌지·무화과·구리빛 너도밤나무·전나무·아몬드 꽃나무·고목과 덤불 여섯 34장 + 4차 b 의 같은 수종 «다른 개체» 33장), 재질 10장(종류 terrain: 숲 바닥 6 · 풀밭 얼룩 2 · 바닥 2), 한 칸 풀·덤불 띠 6장(종류 organic: 96×16, 숲 바닥 종류마다 여섯 그림). Claude Fable 5.2 medium, 그림 하나에 호출 하나(깨진 답만 한 번 더). 모양을 코드로 손댄 그림 없음(색만 허용 색에 붙임). 기계 검사 불합격 1장 포함(4차 a 의 큰 고사리 — 오른쪽 가장자리에 닿음).",
  "items": [
   {
    "pixelSha256": "c6eb8a0f55220ebb8dc82dddc50e57e76b77ace5cc6f0660fa65005e02dd9923",
@@ -2435,6 +2435,1990 @@
      "c501d174fb846f9a",
      "eaa9dba4658e6c2d",
      "f31d0ea8a248b009"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "8a8a5bd52318120f0ff7bec7331d1b4d1e2c2eac33031d186f2a8bafbbe58844",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-pine-3x4-2",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "149c174701a7e610",
+     "1b7086c0771bfc38",
+     "2b6311d94087286e",
+     "2f14518fc48b1d87",
+     "414be5de53e7daba",
+     "5aae031f567ede4e",
+     "7ae5fff951e95a49",
+     "850291bb077d39f8",
+     "96245b877cf6bdf1",
+     "b76d5ac5ef3ff021",
+     "f510142a15cd1b0d"
+    ],
+    "24": [
+     "18f890c437433f29",
+     "2063b3cd39a5c90d",
+     "2bee20766fd589b2",
+     "745aa0c1f9aaee40",
+     "75379b02c0f67b6e",
+     "7e665e4e7f23d33a",
+     "b1a1685f98c25d3a",
+     "b1cd567c193fb749",
+     "d428bd248f40f025",
+     "de008ce5c4f259e6",
+     "ef6eb82e99dc3ab1",
+     "f8aee262152554f0"
+    ],
+    "32": [
+     "088dac32aca2d216",
+     "0a20c8ddb5778a8c",
+     "2100f9e8cbf744c5",
+     "26e82043c6c6664c",
+     "2c0ba2edb54a8635",
+     "3cd560b3862294e4",
+     "3cf0072abf02c0f4",
+     "87b65548d1599b94",
+     "da9d96b2fb2926ce",
+     "e8d7577bf115b429",
+     "e95f582e6aa94554",
+     "f4321a837d21f3e9"
+    ],
+    "48": [
+     "04eb9e188e4efcbb",
+     "07955923409e865d",
+     "0e0e6bbe4d07df19",
+     "613d1d28847d4c92"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "342daf628bbd2ae1503959649c3bc6c66b565495a56df0b16e1ad3caf8c21730",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-pine-3x3-2",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "177c6918b3ec79fb",
+     "51c652590e22f980",
+     "5ff129ef330a0728",
+     "8403e71de4cee4d7",
+     "8a7f551204141f98",
+     "92376077ca392d16",
+     "b24c9f4d821dc035",
+     "e7f93e1f1f49eb15"
+    ],
+    "24": [
+     "1c8b06dbeeb9579e",
+     "449315405b8813e2",
+     "59f01c03b47f647c",
+     "77c352c9372aa545"
+    ],
+    "32": [
+     "06e6e388ed6da533",
+     "0bb4d74ff2c61696",
+     "0d35042e7dd927a5",
+     "0fcc4565009b8eaf",
+     "430de87dde81b7cd",
+     "4b33062ea9e76267",
+     "544c227686b158e3",
+     "55310e5e7a840520",
+     "5efb2cf883532e4b",
+     "639fcdcf01d622f7",
+     "6799682f32dbb1ea",
+     "83e288392c2c26fd",
+     "88d63bb2dd4c7e57",
+     "8b70882f869b1104",
+     "95a01ef5da0addb8",
+     "9bf652e2a2a2193b",
+     "b14243d03208ff56",
+     "b40c63e151a8faa8",
+     "ba8a43541260a59a",
+     "c9c9f6607cc4bc9b",
+     "e489b68137ffb7bc",
+     "eee89028df8e9c5f",
+     "fb6c7869806b8d82"
+    ],
+    "48": [
+     "31da62d512725367"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "a04891a25c4c22cd27cf3bc2f776031d4a73de9617a4ad962c670f0d1d2aae09",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-pine-3x3-3",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "09c2771192a567b3",
+     "6114f66c815db04e",
+     "7e620fe5cc3e174f",
+     "b9be91a81c326eb6",
+     "c485aef7cf4bcb1e",
+     "c4d88eb5f9f67cb8",
+     "c7fbce52bda58b9f",
+     "f73c325d6d795663"
+    ],
+    "24": [
+     "01ff95ab3bdbb5fd",
+     "900f296a3b9f7392",
+     "e7457cf754d3d6fd",
+     "fe7f5f0326ef66f1"
+    ],
+    "32": [
+     "094d985f341d1dbc",
+     "14f4930242d876d1",
+     "1d7c2ddba687a803",
+     "2558fcd57d1b5d7f",
+     "2a0550b15acd3dd2",
+     "2e26404619e5592b",
+     "3dea5f3718a3a441",
+     "446ed94a38959a54",
+     "4d203c14e68f3e8c",
+     "532d79ce219efb50",
+     "76ab6bfe77228325",
+     "771fce557b9c0b52",
+     "862d3ca0fa0029ec",
+     "910cd6d1bd767eac",
+     "a2c41247d1faec27",
+     "a446dae3df6979a2",
+     "a596f2322981f65c",
+     "c7d5030ef3f9810d",
+     "c97e04e70621770f",
+     "da4710e7602782b4",
+     "ed59402a7548e393",
+     "faec1f24d61c3e08",
+     "fcf95e6186ca7671"
+    ],
+    "48": [
+     "f44abba39a790693"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "065b7de6bfbee668bdfdc7295cd6602d7402fd448b07194ead2e51955f49d852",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-cypress-3x4-2",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "4783f5f28cd4b276",
+     "5038e024dd4bb434",
+     "7c715e6896994f2a",
+     "a5b10ae5d585cc18",
+     "b59a65db51a2f988",
+     "d36bbda8ef15e67c",
+     "d45ed59b9087a4db",
+     "d509e5165269808f",
+     "dc821751d3879e37"
+    ],
+    "24": [
+     "0e15204c04f517ab",
+     "11a3c3e26df54b20",
+     "21050a14d41ab3c9",
+     "2831a83a5dfb60a5",
+     "6160b3d38f07a0c8",
+     "62c416666be3867e",
+     "972e09a291b0b285",
+     "abad03999b0efa39",
+     "b9e6fc567824bb7f",
+     "bd9abedcd5e93313",
+     "ca484990b3231e5b",
+     "feca25a7a86fcf32"
+    ],
+    "32": [
+     "3988b21be1c323ec",
+     "68435fe7c1e835b2",
+     "68fac7b478bd52bb",
+     "7d94fc3b97cc1ad6",
+     "7f8b16808721d3e6",
+     "8901845a5b15c2e3",
+     "8a48cca464ca3946",
+     "9fb4e9a816baa7c1",
+     "bcde9f75833c969c",
+     "bd27f5875dec90a5",
+     "c66337e3c96bf3ca",
+     "e199236c6d483021"
+    ],
+    "48": [
+     "286485fce295bf62",
+     "d2c14b85395ca25e",
+     "f193cd571efbc3d8",
+     "fea19af8c5f9ed2f"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "53381ad01da171b71afd995adb337796a37de580b451117b15b87d940660c9de",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-cypress-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "2fd1866d170103e5",
+     "5a16aac2020f8e58",
+     "6a180cc36ed51fba",
+     "a5cb111d247a7ce5"
+    ],
+    "24": [
+     "03fe14d40e94034b",
+     "8625debe18fdd1f3",
+     "87a04cc6035624f6",
+     "8a188dea78a01393",
+     "917d0aa66eb4328d",
+     "971507b2ea29aeb6",
+     "a2f055ff79b8691e",
+     "bee7b4505acd8672",
+     "c4b037b22e34afa9",
+     "c4f95a5e0341436c",
+     "c63831c730ec5f02",
+     "d91271fc5fed1a59",
+     "de27e47300f49ba7",
+     "e72d4a497ef3ff50",
+     "eb08bd1962215459",
+     "f0ceb9dbe2d64803"
+    ],
+    "32": [
+     "8777b08d44b13930"
+    ],
+    "48": [
+     "140251a8e28c4f1c",
+     "428878932d5a18e4",
+     "9209f3289eb6860e",
+     "b30ed85af4b3f5d8",
+     "ba53e307817a76e6",
+     "c64066b67915527e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "cbe709fdb848e64c33c89ab75a28c3689f574303de516f1484c8eff940d09081",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-olive-3x4-2",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "06b188f6a0923287",
+     "36aef76d51bca863",
+     "41964a4375f5a2a0",
+     "4d8d93e1481147d6",
+     "6884251e98b83bd5",
+     "76d9b14e44e9d9dc",
+     "8264fc9c47a7796d",
+     "b14e08e748a3862b",
+     "c493da47dfb7e7a8",
+     "e3aec55bdc63e121",
+     "f1b0f62717be12ea"
+    ],
+    "24": [
+     "0aef7202969e0b71",
+     "166375f1b89a96a2",
+     "2e22e3031fc8f980",
+     "7a9b4430be5a7f9c",
+     "88149e3e2d36f2f4",
+     "a47cd6c8e876309e",
+     "c59c21f5c6ec5bba",
+     "d093e6b2c4b2147a",
+     "d90e986c784934f1",
+     "dcd9ac1c71919e34",
+     "f1954f8ce0ce57b5",
+     "ff9254711e83a574"
+    ],
+    "32": [
+     "00695f2444354651",
+     "08ac2b9f24176478",
+     "338a1f03133b60fd",
+     "47734f3a0ae9d022",
+     "b8f7bf8c6f533f5c",
+     "bb2d416ca0e7666a",
+     "bd723c8e8e125181",
+     "c75049517bdccc0b",
+     "e0b8414ac04e59d4",
+     "eb02f411f919b07d",
+     "ebf5b17221849179",
+     "fcb99048e478ab0b"
+    ],
+    "48": [
+     "47300ac9156ab038",
+     "647e869027c39233",
+     "74a4a1b79d38db7f",
+     "86e468631186bea6"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "dad475cfc4dd9e21d595364fe1fbf62646945b7d4942b62848cd28bed0b613da",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-olive-3x3-2",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "102553e2ea45ef96",
+     "280d608aedb3c9e0",
+     "458e4e2c8f7303a0",
+     "4d2b2692a7012a86",
+     "55c9c31c3401b38f",
+     "b57b60dbf90b2d5a",
+     "caf9c2a47a07c663",
+     "d082f8e180dd8b22"
+    ],
+    "24": [
+     "3cb954b9775ca281",
+     "3f04527979ff9348",
+     "7ffbe26e3ca21c88",
+     "e8dcb5f775fe0201"
+    ],
+    "32": [
+     "1008e489a5932650",
+     "15b51a36916188b8",
+     "1c21d99ec16c8121",
+     "1d38828b22de5f19",
+     "1d595634693e7329",
+     "323e2c28092ffcfe",
+     "3dd6371b7bd596fa",
+     "415ee9ceb635177e",
+     "478126b56fbab85e",
+     "4f2297604cf3eacd",
+     "5f9deb0a24c66cfa",
+     "701f559f171fc65d",
+     "70bb1c81faa4f780",
+     "9ab105669a13a11f",
+     "ad23ad7246b082ad",
+     "b4215ba040d7b30a",
+     "b6e5a842928c650d",
+     "d1d69469138b7dad",
+     "da12a38d1aa7944b",
+     "eea1a521607b5fc6",
+     "f1fe30a93d09affc",
+     "f8869f9a056fc525",
+     "f911d226e13412d4"
+    ],
+    "48": [
+     "28ea6f2c9c20c7f1"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "2bf30fcf2507a85804e16e611bc217b81d01b9e182d28433a2f6e91d850b0f4b",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-olive-3x3-3",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "088e2016540573bf",
+     "39c0e4b4c95458f9",
+     "5adf70b2e2e3f185",
+     "6885c386ec6d96b6",
+     "696eb4d872e8419b",
+     "73152f8e057122db",
+     "a46188a870758ffd",
+     "aa45594dee7558cc"
+    ],
+    "24": [
+     "4078c275f43c8f24",
+     "4743a939b464ff92",
+     "8db4dd2328891eee",
+     "984a461eeca1e6bb"
+    ],
+    "32": [
+     "0ffd33833244a5e8",
+     "1deb0e09ba13050d",
+     "20bc013c2cfc6691",
+     "2303048e9590c98a",
+     "28bafecfec246561",
+     "3f25be53c80a33dc",
+     "471d66864230c721",
+     "56a4b0537c15af44",
+     "56b1dc53a20eef01",
+     "5bfa430103327ff4",
+     "5fe13949466086a1",
+     "65aa77c2217ff1c2",
+     "7862b612320ca364",
+     "79a0c7e9adc90052",
+     "888f875abfac8992",
+     "8bba9be2e932f5bc",
+     "8d78fed096e7278d",
+     "9d3f85c16a8c2b7e",
+     "a280a85f91136e3f",
+     "a28e592325698e3e",
+     "a3d27f9f12573994",
+     "bcfa87f15b582a62",
+     "f77283df3d593aed"
+    ],
+    "48": [
+     "6e74850733751897"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "92550d64fa5169a0c102ddd381f3ad1dedf5c656be7408fd20e03a982e18ea78",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-olive-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "226f38057a7f4bf6",
+     "c786e2fdaae13f74",
+     "d1b3878da47d614b",
+     "df0338439b577a38"
+    ],
+    "24": [
+     "04606c7ba36b85af",
+     "3242594199084a88",
+     "3dee79553a8a1bf6",
+     "464c5b84b60658f6",
+     "4b2727f3459fa899",
+     "5a759e46629b5485",
+     "5f9c6d4d4b85828a",
+     "640b6def3cd6c98d",
+     "6e13e8c265507440",
+     "6ea156dbd60d9c29",
+     "79e2dc7876e6c269",
+     "80615b697421fa3b",
+     "86271ee4192edcec",
+     "882225b75927a18b",
+     "88cce025e2fd24ca",
+     "93c34d4b59cc312c",
+     "a6f9882f41402e11",
+     "c8111275f604ca93",
+     "cb05148f386dc7c9",
+     "f515264c0801cf6e",
+     "f65fb3de5638b766",
+     "f93fbd1fdbe15f46",
+     "fd755a7d19cd031f"
+    ],
+    "32": [
+     "6dceaffc0a983392"
+    ],
+    "48": [
+     "4674bd38bf95216f",
+     "55a41eca5b6fce40",
+     "6c63b420a7f3f0e5",
+     "8d7813d296944a09",
+     "d98e12803ea0e4ed",
+     "f5a2759f538e0ca5"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "05aabc80e6962f7175c91199ec0c087949601c2105e050581157cfe0d98ebaec",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-oak-3x4-2",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "045c64723806eeb6",
+     "1f252825e3d6afa8",
+     "431009d029760c26",
+     "6828eb722600e242",
+     "7fcbe53f31a92b99",
+     "cb64152fee6554e2",
+     "d7a3624f531a5e63",
+     "e248c28bc0c1d176",
+     "f85970fa1539a26d",
+     "fb1d6fe9e5c28965",
+     "fe5bfcea66ae7481"
+    ],
+    "24": [
+     "17c47dec658e7088",
+     "2aee0bb1a9187189",
+     "3333530dd2519979",
+     "3f655a8ad2b28b45",
+     "6a4b946bf2151e9a",
+     "74d546ad85e7c569",
+     "7c8f98e6025f9640",
+     "7db01327bcaf8379",
+     "8dec34c14e594572",
+     "d89d0589eee44781",
+     "f2a9df7a94b82483",
+     "f3634e2846c0b430"
+    ],
+    "32": [
+     "0ced76da50510283",
+     "1079ffc2ef5685fe",
+     "1bf5e7c5f9ee57df",
+     "3244d6953058c9e9",
+     "3718ddd58566c06d",
+     "64fd728fffd7e7c7",
+     "7a6783faacd8ff23",
+     "a5e4ca2daa0d6c9a",
+     "c6e2aeaf92345c55",
+     "d41ea8f18e2521d7",
+     "f07b3cc71da25771",
+     "fc7126daedffce77"
+    ],
+    "48": [
+     "69a9c0b38ad0c403",
+     "8681c7e60be1a4d6",
+     "98652dddb499041f",
+     "bf6cb81166d725e0"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c6b9914420b7eeda3975950952da41e7152a83dad519ff4ffaa863435ad0b175",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-oak-3x3-2",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "1fc5df87050a28c3",
+     "361f44f15ddfdd1c",
+     "5fcfc88420754a8d",
+     "627e8fd6b03cc228",
+     "aa1145d932b21d12",
+     "ba66cbb53c4ff3d3",
+     "d0e1ee66d0d117b8",
+     "e6603a9ee8526a2c"
+    ],
+    "24": [
+     "2b1abe82432d4ca5",
+     "519aebbb308d8ac0",
+     "c14c9ba5e6c34345",
+     "da91db05c565d1e1"
+    ],
+    "32": [
+     "0e438a541a6b827e",
+     "1826a6c3ddc63b3d",
+     "1b7010213e62ab99",
+     "1f4a0e15f2db233b",
+     "24810ed9c8b27250",
+     "25e839a26c5a4a47",
+     "2f485fee3fef8ad5",
+     "3582004afc5d18aa",
+     "3ce0be88eeaf7663",
+     "3ffd6cd33aaf9510",
+     "535beee355bca6fd",
+     "62605ddf87732b0b",
+     "62fb169477836407",
+     "6682a07b67af755e",
+     "6938ce7f4fc644e7",
+     "74809256a31e7def",
+     "90817406c68200c1",
+     "a85e3a2d1350716d",
+     "c502171a387cd869",
+     "d7b105ab0da75fe4",
+     "e79296ccd22ba399",
+     "fca46afefd88e9cf",
+     "fd6b956d20ebff71"
+    ],
+    "48": [
+     "18c75b8b24ddb697"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c90856568fa3b1c312d6fa81065db7c792771c88e0faeae7c9302b277d3f72e8",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-oak-3x3-3",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "01083fb19dabd47c",
+     "2f466b6692c426d6",
+     "597d24e2b965d985",
+     "612b420800fa98d1",
+     "7e2ad2053f8838ab",
+     "89154798affb25c7",
+     "a9ec02c96df12169",
+     "b06b975eb82d8404",
+     "c7fbce52bda58b9f"
+    ],
+    "24": [
+     "71bcf92a6d25e17c",
+     "bb9938bddd80606a",
+     "cbcec42396f17bbd",
+     "f858011549b3c157"
+    ],
+    "32": [
+     "043b92f8f0340c26",
+     "15019db63730a3e4",
+     "1fba08052180f54d",
+     "220445da301b5f0b",
+     "2a0550b15acd3dd2",
+     "2e1718c7a4116ac7",
+     "309376fdc22a3bf1",
+     "3cfe2a6246fbf5e9",
+     "40b274d5dd2a84cd",
+     "41579564afbd985d",
+     "773a288457f1b993",
+     "87b454f089afbb2b",
+     "8b445114a13f52c8",
+     "8bb3ddbff00ddd1e",
+     "a29740f648b1c094",
+     "a5a5a02eceb36aca",
+     "aab11fe355c8e23d",
+     "bbdd336e037ccabb",
+     "d86b1a426e1a9717",
+     "dcef38b3e5f22184",
+     "ddbda83546d68e44",
+     "ed7dde0ad843b0e0",
+     "f511416df5335010",
+     "f74fed73e9d22074"
+    ],
+    "48": [
+     "5ee62514c0289136"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "831a2a2a3acb9c03fd7e7353248b430b716de5ccc774e92ab348db34dac0cd08",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-poplar-3x4-2",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "0b67df55effd0e4b",
+     "2a7d53ab446cef4d",
+     "2ec52dd6b8d57f3f",
+     "453a0852e90bb47e",
+     "4d48c06d8a1b6f6b",
+     "4f24da05c51e7dfc",
+     "c8af0414e582b525",
+     "cce91e5fc3207cf8",
+     "d0d053a6aedfa188",
+     "f0bfc8807deeb634"
+    ],
+    "24": [
+     "039d778b4f9b236c",
+     "10f0e10c87f2b679",
+     "4dfd5972620b6226",
+     "4f233325af1b0751",
+     "7749985111225b71",
+     "78d1c40d9045035f",
+     "7ea07a0a0152a00b",
+     "8b0ba92cc94bf3e1",
+     "bbc7ffa072bbfa5e",
+     "c4f6e3a69c575977",
+     "e0cc5b18b2c0687f",
+     "ee77b32534d83da6"
+    ],
+    "32": [
+     "028a29ef9ca7e84e",
+     "139a8da2878b6b82",
+     "28283eb1e5d14a18",
+     "4f7b7c7ead894ab7",
+     "567f39263646747c",
+     "6b033a74a446432f",
+     "722ca83672108581",
+     "84781400f06a9ad9",
+     "a06f7221745619f2",
+     "c2a4363404225f63",
+     "fed700a95cf2ff51",
+     "fee96fb0a90b8c30"
+    ],
+    "48": [
+     "2bfcc693a7d73b5a",
+     "3f86dfe3c8eb4532",
+     "52d67d92c2a12270",
+     "59c8aa0f42f46444"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "8694eb46601149047008acbedf2b6de77d19e0d44f600bfb35c6925dec58a6e2",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-chestnut-3x4-2",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "044e3168c5c0a76c",
+     "4a38b006348bd731",
+     "4a67b64b29b19b3c",
+     "4ba495f498caeba7",
+     "54232cec0d6b442b",
+     "596776173390796d",
+     "6120a0528dd673f1",
+     "92d29a136d90a163",
+     "a8b76bed4d65a6a8",
+     "b6a5109a6c7159e1",
+     "bef1f81ff3175a68"
+    ],
+    "24": [
+     "096eb430fd47e8fb",
+     "27026a5107b29094",
+     "3d54653109fd8039",
+     "439e5027ec1bb336",
+     "507f78e4bab1d65f",
+     "5e1f673d1db531fe",
+     "906e253580502122",
+     "986015f0a0b15a82",
+     "98a695e5a65f324a",
+     "c1155cccd7235875",
+     "ed4fc8fc2748d1c2",
+     "f5235fdafab9158c"
+    ],
+    "32": [
+     "05ff6028697f05d8",
+     "099c1d9a9865d986",
+     "20cbfcca135ab350",
+     "5c4ecf1bcd740190",
+     "7010b163082ac38f",
+     "7735e952bdf5e623",
+     "86411d6c229a4f06",
+     "8b9e739f93cfec59",
+     "9e4d31247e602eec",
+     "c6fd674f58d8c6b6",
+     "e4fbb11fc61116f8",
+     "fe73b9227713df0b"
+    ],
+    "48": [
+     "00ac8d621eed40ba",
+     "46dc8eacc644a379",
+     "dd733e3fd69bc2d8",
+     "f645f8d6b012cf54"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "3c92e89d6de94fadcbb6345656b9b006c33b7b17ac4cc9a58a5fe3b7cee051d3",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-chestnut-3x3-2",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "2705df8ce159b4e2",
+     "3b0bff6b0f99f9f4",
+     "60524f97765f2b42",
+     "723a7bf9ec2d0a61",
+     "8b92fa21f1a8e8a8",
+     "a6f3660b98c3f22d",
+     "b26b62503ca3f4da",
+     "ceb0c243f3a547e7"
+    ],
+    "24": [
+     "106de2d1e53b2ec9",
+     "824d14067a288de6",
+     "97d26744b47cfba5",
+     "b3ad493ec039a1a4"
+    ],
+    "32": [
+     "18ef4c3c90757f0a",
+     "1fafe32fb0e8b3ad",
+     "22edd1b7bffd764e",
+     "26a8b1e7730e127d",
+     "27ff98fd5020480c",
+     "38ae93c2889744d8",
+     "49bf7813c28f991a",
+     "51f137ed309fbfae",
+     "529a3f7d58f8608d",
+     "54768f5b16b3963b",
+     "549f3004d08c85a7",
+     "8815f05708f6e6fd",
+     "9893a2bb44e0faf8",
+     "9ca68243c469bf73",
+     "c325dd36eb5d105c",
+     "c44de04e12b860a3",
+     "c5f13d4dab3d4439",
+     "cd3f4d7953c847fd",
+     "db5b3f366f70184c",
+     "e87866d05d9d4280",
+     "ea24315a29d24a33",
+     "ec9bd233490a1937",
+     "ffe7ac8d09c3e73a"
+    ],
+    "48": [
+     "6edf54c832daf38f"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "37309dbce72764e1fa3621e7283f0431020c95db1d241e877d01b689c9975aa5",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-orange-3x3-2",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "07052c86bd8d25e6",
+     "40a3910897ede6a8",
+     "43afb587928607a0",
+     "6192c79c0d7f469c",
+     "7adc7e0061aeff4c",
+     "8067c8899ad09c8e",
+     "85160aad0d38cfc9",
+     "edf6fd4c8e19ee4e"
+    ],
+    "24": [
+     "2541964132f42363",
+     "88e6be70ec3e5342",
+     "b4356c2cadf41113",
+     "c24e77601076a8b6"
+    ],
+    "32": [
+     "14bf499c36aac558",
+     "1eb443b6c23068fb",
+     "363f017dc458787a",
+     "4f3d71071cefda10",
+     "528dfe10750c1449",
+     "5876d1e3c1e24946",
+     "6403213d043d8932",
+     "647dec3749e6fee1",
+     "7c5baf2148590ff4",
+     "8213e4ec1f969475",
+     "87d1d91491af2c31",
+     "9c96e7c37f8e1e86",
+     "9d009ca2991b8370",
+     "a3117b6abca16779",
+     "ab04e55699a4abac",
+     "b326f488c6353b3d",
+     "c33ecced848b69f9",
+     "d55e871b6b2a9f86",
+     "d654cc075a156643",
+     "e5a296e90f127fae",
+     "f2aae1448fc34b3d",
+     "f8584cd7fd57c89f",
+     "fc48c5da427f55fa"
+    ],
+    "48": [
+     "6e1aeb5386fd5cb0"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e4831929792fa658aaae96845741d3c34d538a548b4679fd2da5497e7889da0f",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-orange-3x3-3",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "1d4f0ac6c40a16f7",
+     "1f2b5d33297e31dd",
+     "4e9d3102453190a4",
+     "4ff216e4d298232d",
+     "8689b12c750dd140",
+     "a37a30f8d3933cd1",
+     "a6e779d74d337601",
+     "a98b02fb7a4dc1c6",
+     "f22b0fe751fc4186"
+    ],
+    "24": [
+     "03d53565302ffa2d",
+     "30806f5f67531196",
+     "8ae675c20d3e4988",
+     "bfa5ffbddbe4c859"
+    ],
+    "32": [
+     "07074506dc06deaf",
+     "191bad956cfb4e9b",
+     "232beeb3451ec371",
+     "2ba23bcd469ea043",
+     "3608137df35ccd88",
+     "3a8dc740433e4404",
+     "3c9a59b302d8c1c4",
+     "4aaf368ae9647bf0",
+     "5be25e7b22eb3000",
+     "628d8158d20cf2e1",
+     "662b0f32b33725ce",
+     "67a24570d69afab2",
+     "6a9daabd3568558f",
+     "7cc108104e0bcdfe",
+     "8555a803e33af01f",
+     "8c5c2cb17baf58da",
+     "a57af792cc0e7382",
+     "a7aa8aee4762d501",
+     "b91dd6ab80ed1abe",
+     "cc508b8e63ef4318",
+     "d7782e8a6cf54c07",
+     "e1707d592a6efb69",
+     "ed8196c45b59306c",
+     "f346118362d5308a"
+    ],
+    "48": [
+     "9137467888260e03"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "3c30a30417a4e79ae70a84ce3d49ac6e69a7bbd70a43026658022939c73f639b",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-orange-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "abc2923ca5104cc2",
+     "c74fe111e5a42e0d",
+     "dd91185953660eba",
+     "f8a839d104c937b6"
+    ],
+    "24": [
+     "0fb0abee0da9b019",
+     "4b7a72320d7f07b8",
+     "5688194f4b35a78d",
+     "5d23260b33d37c23",
+     "6116e6abfa7bf43a",
+     "68368ab44aaa498a",
+     "6984eb674429f4d0",
+     "88e5fc20a156c30f",
+     "8b1720526451a6b4",
+     "9b2bec0bfcce01d6",
+     "ae5da5937826e618",
+     "af979b532ff60504",
+     "b553bb70bbff7caf",
+     "bcadaa420cbb5494",
+     "c6db7bee2b0dd267",
+     "d2f55e0be6b1ae56",
+     "f2bc28d3b6faea96",
+     "f5c457fdf7284092",
+     "f68f316ad67e8317",
+     "fa0974228cd1862e",
+     "fe26c61a7084f1f8",
+     "fefd5f59081188f0"
+    ],
+    "32": [
+     "f0852d0f09bb0131"
+    ],
+    "48": [
+     "052035001a3d31da",
+     "0eed5801f091ad95",
+     "19fe66bea80145a2",
+     "3548e0d1e53bca86",
+     "a94639cd5f349c04",
+     "bba1e02d04fad8f5"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "7b5d3c1458dfeb7721f27b74dd5d95b39b9cfacf7221053ffc4c4f0c06f3df4f",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-fig-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "8087259cdb529243",
+     "892b6260528daf07",
+     "a68f26be36a3f60a",
+     "b2884d48614b245c"
+    ],
+    "24": [
+     "0368375a58cf07f6",
+     "0714c7f0d41acf95",
+     "1ff0f031d39842d1",
+     "257a5d546d480e76",
+     "26df2d9d68eb30ee",
+     "2a66b35e25b1d30b",
+     "2b51e61b58638a4d",
+     "34ba699b175ab1c5",
+     "3d537da9db8d6413",
+     "3f30a5f45161120f",
+     "5faa432e1567ab62",
+     "6baf7ef040be9b53",
+     "72701511b054278d",
+     "7e179f2e94a6811a",
+     "951adf4f7aa7c431",
+     "9ad59fda2e8c1e35",
+     "b4e11a7968c2681a",
+     "cc5415b88d21e6e9",
+     "d6e73820e8d208a7",
+     "e8680a5b3fc91246",
+     "fadb0fc93e3fecb8"
+    ],
+    "32": [
+     "e70d42d5f4ad7ebc"
+    ],
+    "48": [
+     "129a782d190e054b",
+     "2d7bfdb143b6240f",
+     "6620e04ca4627459",
+     "bff5c5d01af9f31c",
+     "de9ae721a025e705",
+     "e94f407e51618cd3"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "6fba79be748c10eef63237cc51207af93c5fb1c44de5898b9d30421e61b1081d",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-beech-3x4-2",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "1e7613aeb9110f2a",
+     "234ccf16321aea7b",
+     "6a373e19c5224510",
+     "80cdffda2535494c",
+     "8aa8801ff489482c",
+     "8d681d90984ff7d4",
+     "aa970829e58629d6",
+     "b8e8aad877d65646",
+     "be8d007d029cdc31",
+     "fae5f9f1c03386f2",
+     "fe885735acf195ff"
+    ],
+    "24": [
+     "00fbca3f56f0277b",
+     "1eebd4b22fe250bb",
+     "4d45e0c24d167364",
+     "5e6fc5545bb234f6",
+     "7acdc92dc5deca49",
+     "7c869e18b191c71b",
+     "7eaf1cdc6d831cb1",
+     "8e3153420effddfe",
+     "917134af9a76627b",
+     "9cf3c4f30c52f1ac",
+     "b275b66106e5ccc7",
+     "b6d6044de4854f7d"
+    ],
+    "32": [
+     "075bd8a83a24d5d3",
+     "083ee9bedb90718d",
+     "0ac712f0064f5a15",
+     "103b0067a3f0ac4b",
+     "11db99de99391494",
+     "32d7b2b16cdb3db4",
+     "6038f1c826e70461",
+     "7c59fa419e3d88ec",
+     "945d0b7b9143c751",
+     "96317f91d4f8721a",
+     "bac9426004caea01",
+     "e1a8e1cd21d777e4"
+    ],
+    "48": [
+     "59ef0cb51ac921d6",
+     "98d31669e6be4ffe",
+     "a4692214bb6d222a",
+     "ff122cdf4f0a2c12"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "54a19e903a7ba031844611853ea653c8dd353089e0d9cd4599e0eb5689028b95",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-beech-3x3-2",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "06f08dbab1bf6c8b",
+     "5b8584dd18f7d1e6",
+     "5ddb809abe9e6812",
+     "a46959f8e29349a6",
+     "b1f10a8c70549a48",
+     "e47c600ea03a5221",
+     "ef53d5b25dd77494",
+     "f1cba05f866b8a65"
+    ],
+    "24": [
+     "338c4f5684375c54",
+     "503f69942a3f521d",
+     "5adbc308798a15e1",
+     "b8d2563f7b89255d"
+    ],
+    "32": [
+     "04da503c148ba2fe",
+     "09bd5c26a7cf2c11",
+     "11e4a4d34837b740",
+     "1c153b58368c9487",
+     "226acd0ba9abd5d7",
+     "29d166ac11ebd43d",
+     "2d50c7cbe2320401",
+     "3f6567b83c40b554",
+     "57652bb0dc9f61be",
+     "63fd665032400ac2",
+     "7c6cabb5a72a9bf5",
+     "849965e8d5f7dcb7",
+     "89b005de6104cbc7",
+     "aa1dd86f8c15efd6",
+     "c11007fb40dedc35",
+     "db43435247921389",
+     "dbd010b55de2ede2",
+     "dec0fd282c79cffe",
+     "e4eb02bb5a22cd63",
+     "e9c5b74205682715",
+     "f14589611dde08e0",
+     "f7dcc7800bb0d2ba",
+     "fd6f9ba121812598"
+    ],
+    "48": [
+     "40070b7330515d47"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "29ba3730e9931c0a27b5bc448b8a80b984f09ee94ff962b4d7272f13bddc7af1",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-beech-3x3-3",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "1d4bd9aeb551e233",
+     "37a64df215baab9f",
+     "57cb24a27f0f7703",
+     "8f1d39a84aa11f76",
+     "9ad57ffd0d1ea27f",
+     "afd3680152e49013",
+     "bc5fe8a3ab3264db",
+     "dc4c3f7da67884f6",
+     "f49907c76cfdbb6a"
+    ],
+    "24": [
+     "87f1e2fc792dc3cc",
+     "d841a7ee37d0f77e",
+     "e81105f6bb8ebdf4",
+     "f53852b0692be1ab"
+    ],
+    "32": [
+     "0931b6febdaebddd",
+     "1839a3f4ff7b3709",
+     "221dc44127baee82",
+     "24a6f1db0b6fd231",
+     "29cf216717c2d295",
+     "33155610c9671521",
+     "42218297265ec97f",
+     "521d436d751f2628",
+     "56d4003c86b1945b",
+     "6d2b48123b8e441a",
+     "7227ada8582e0ee7",
+     "8ea4ae283e48ed73",
+     "927d72c0d841104c",
+     "9491018b1701e1d6",
+     "9aff0c2b0137af6a",
+     "9b7ec7d9fda9ba5d",
+     "a1bd1342fc479c24",
+     "a4ed9130fada4d64",
+     "d9c04fac0e905624",
+     "d9e1d9033ca2da30",
+     "f2a5c7c5ed7847e5",
+     "f30f04f94d7e9255",
+     "f8d168304cc154d0",
+     "fa6c8a2efe527047"
+    ],
+    "48": [
+     "891636557ce02279"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "f61893bc9f59762effa15ee3f02f8ac8b959f089df9939e3ee3bc4f2b62bf283",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-fir-3x4-2",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "19509f1318021e31",
+     "216f38737e89f5d6",
+     "4df7db6de1d30488",
+     "5c445433ebcbb1b6",
+     "6556e4fd604493e2",
+     "757c3b62ba4d69ca",
+     "81339058fcbe223c",
+     "9d847b7f961915d5",
+     "ac9fae718527b084",
+     "b519a235566de660",
+     "d9dc14cb6a011726"
+    ],
+    "24": [
+     "016eae6caf1490c9",
+     "21ca58b2f0db589c",
+     "43e55a1909197a1a",
+     "469eba71cf9cd246",
+     "46cc8b9cad75e4d7",
+     "4886c5cb4e5e1408",
+     "4e15017dc93b0d3e",
+     "6b680f57a7d5edaa",
+     "853d3d94fc4a8cc2",
+     "92d77db2196c6f0e",
+     "ee630525146da911",
+     "f0bb2f812b243f65"
+    ],
+    "32": [
+     "04277928bdf73984",
+     "332ee25a519e6768",
+     "379e95840ba8a45d",
+     "4a24c5c825a3c285",
+     "5311ba1dd9f4310f",
+     "6891c13a414c7777",
+     "af5bbf2181ec5fd0",
+     "c47bb85f4091f5b3",
+     "c52026cc857ea417",
+     "d322a4c794f333f3",
+     "ea287ff401a86ff2",
+     "faa932236df7fe6a"
+    ],
+    "48": [
+     "273c787395c9af38",
+     "4e18a8e3bac42a29",
+     "a3458675d2e9a5fa",
+     "e890779aafcf8f5c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "73eae9bb933e61d61d89fc8d485e6e8c2646c5c3582bffc5bb0e72491a129255",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-fir-3x3-2",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "5319fe967d5624a8",
+     "9eae60f4ccbdbda8",
+     "c3888c393161091f",
+     "db508284b2269742",
+     "e887177ac9d4ab23",
+     "ebf5f10e05b9623f",
+     "f8cd6dd12f95680c",
+     "ffbc6d7eaf12395e"
+    ],
+    "24": [
+     "31546ebffeac8076",
+     "53caf157132da083",
+     "5a69c987501f207a",
+     "b1f8edd95cc49dc1"
+    ],
+    "32": [
+     "0e35d109addec988",
+     "1993d007c6e86b41",
+     "1f71f67ce6399c1b",
+     "46a5188a2ee92c0f",
+     "4b2cddef6a0af564",
+     "4ce53a1e5bf1a322",
+     "4d893f1972f76b1b",
+     "5e529a28d16bb998",
+     "5ee47e4c530817fa",
+     "731ce1e929b46922",
+     "7b322e00c9b3f39b",
+     "7b672e4c4efc81e5",
+     "7db73d3a90598580",
+     "7fb722af8f7734ee",
+     "8154b2f43d20a0cc",
+     "bda1767b34473002",
+     "d598e151bf3b36e6",
+     "d7b5636dc1cd91d9",
+     "e9bdbab106fd4ac1",
+     "e9f062033a75258e",
+     "f14d8386aa10048a",
+     "f46b14e50e26e1a4",
+     "fca7ec36c6c00cea"
+    ],
+    "48": [
+     "b5c80a5f8752c21a"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "947f8801513353a80b30c4e49bddf2f91cd90d254f921e0121a7333d7a075470",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-fir-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "478a71dc9ecd7efe",
+     "58b5566641ec346f",
+     "af7626daad362a14",
+     "fd837270f429ebe4"
+    ],
+    "24": [
+     "338a687356fd7c58",
+     "3e8e3f4fc8e6b859",
+     "46d974ea345dc36a",
+     "53553a80df584b1f",
+     "576c54fd72d18c2f",
+     "579e99a95404c515",
+     "5fdf04162ddd07ab",
+     "600200ee09633ec6",
+     "6b6e648cc5e5c8df",
+     "7694c37ead32b054",
+     "856b5b30a12f0131",
+     "ad9fc44a7298cb1b",
+     "adffaf5a950ba70c",
+     "ba6a8d8c6586b28a",
+     "c40ab678a12543e9",
+     "c85869c1820eb45d",
+     "ca1cb0e38ccd16ec",
+     "ce2197c376dc56bd",
+     "d1c8839ba7e80c39",
+     "d4afa5e866e30de6",
+     "e27642318ba7b4fd",
+     "e9d144951556d225"
+    ],
+    "32": [
+     "c2513fad7285d1fb"
+    ],
+    "48": [
+     "1f2d52ca41471dfd",
+     "26f6f10c89809532",
+     "28ee3c1ec1f1e62a",
+     "38274b6f2957db22",
+     "7eb1900cb6f54161",
+     "dd89456f0855fe3f"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "6767ab08ffc16ee975c6508e4eb2c8b36dbcd2254d38631a3a24866db85db553",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-blossom-3x4-2",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "281aea388efe5f49",
+     "37b9e3c429241ec2",
+     "5abb418992050e6a",
+     "7710d4561ed53e53",
+     "7a87b8d12e1203d7",
+     "b176a454ce219990",
+     "b5d1cc8a17e1032c",
+     "b781ddcc4a10062c",
+     "d655ff6413f5b782",
+     "ed79dff7899be21f",
+     "edc4a4759c543a6e"
+    ],
+    "24": [
+     "51d7c4efa32a4015",
+     "5412b7840d64496f",
+     "81de8f2964b4d546",
+     "932ba55dd0504c5e",
+     "9a54f4172b4ca237",
+     "ad81edd1b17dc3a0",
+     "b0b1b6e7c9027b8a",
+     "be115434bfc7383d",
+     "c2d161b593f93c68",
+     "c3d82b110251a5a5",
+     "eee273825910b0d2",
+     "f4c4d9fd9ac96f51"
+    ],
+    "32": [
+     "22a34c1b1234cc91",
+     "264415be298886e6",
+     "2c84c0a6a0f82a55",
+     "2f9fbdd4b5b32b45",
+     "4117a89ec3fd6b98",
+     "646be8bbd106bee7",
+     "7106fefb0172257a",
+     "7cfbed3f396493c9",
+     "a851d0e23c47156d",
+     "b418f4459e2971e6",
+     "e13127ef2125dc26",
+     "e4d0d662530b552a"
+    ],
+    "48": [
+     "07d4c1f3b9851443",
+     "8fabf0619086f38e",
+     "c6246732bda4b67a",
+     "f6001a30c9152a54"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e0b69dce1d13054a729586822ac0084b8eddab6f0accb21247fb986f590fc66c",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-blossom-3x3-2",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "03ee99c849db931b",
+     "05555f5badaa87f9",
+     "145c4969859a5292",
+     "184ff36d00cdf9da",
+     "5ae479f17f59e178",
+     "8a9614258d29e702",
+     "90c91eddc72f3512",
+     "d35ca9cb868ac566"
+    ],
+    "24": [
+     "04ed28a90529704b",
+     "222c055b0356cfb7",
+     "5ca32f6ba703e4a7",
+     "d633781849ea3ca3"
+    ],
+    "32": [
+     "0ca43da16863ad03",
+     "17a8601fb8001057",
+     "26d9ebf4081019b7",
+     "2a373984d01132c4",
+     "2b09d293c62694d3",
+     "49448c821b31288f",
+     "51067cff0f198acd",
+     "5843cde035a741c5",
+     "5a2a728b437547a0",
+     "61b325bbf0ee618a",
+     "9f032c0ad179d314",
+     "b05cf73084f15347",
+     "bfacaacfcc579028",
+     "c60303ba00ade31a",
+     "c7fc797308e5355e",
+     "cefa8b8068a7de22",
+     "d972327372c9b6eb",
+     "dbf5eb12628e075c",
+     "e52ebe6ea3f9e734",
+     "e6b5c195c00224c1",
+     "eb5e6be7fb39ebba",
+     "f16991ac1fe11f62",
+     "f500fb68d9afa356"
+    ],
+    "48": [
+     "72894c041cf4e92d"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "2768d1e7cbcd57704ba35f5f4b1cef2b434f58f0d2bf48eecf32d7b43e6965c5",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-broom-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "12305857212dd9d8",
+     "26fad0146231a9f4",
+     "bfc1a79498787c2c",
+     "cdbe6fe82172a7d9"
+    ],
+    "24": [
+     "0b26d05c9f6fdd54",
+     "21ccbc8a10da5c7e",
+     "2ff9facc57674669",
+     "355eb1e888472273",
+     "3ee6ab26c804b0dd",
+     "4123b8e63ee7394d",
+     "46b24ebe0cda9a1f",
+     "5575c164d033f01c",
+     "58ae1d44c98176ce",
+     "5a2c28f9b5c20fe1",
+     "7403f5787a10fe5b",
+     "8607cc17b68db43c",
+     "8ce01e49600fb2a7",
+     "95562e426b077847",
+     "9b14a8948497def9",
+     "a58eaa27b33defa3",
+     "c1bdf38056e56f13",
+     "d506283cdaa377dd",
+     "e0a1c6583f892319",
+     "f2fd6e3aa42769d6",
+     "f4d3d6b71a1ac961",
+     "f692c6778a34e0f1"
+    ],
+    "32": [
+     "d7c00b80c1b06fcf"
+    ],
+    "48": [
+     "059bdc6e16be52fb",
+     "37550962193c26a8",
+     "455505c9461c3769",
+     "9625578d81e010e3",
+     "b154d0e0c14080db",
+     "cc0cb7d941b5c673"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "b25032d855d839300612b34e2f0c2d157bd5874b7f9a6205322489f2d069219f",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-myrtle-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "241c2e906eabfd38",
+     "4744fc92e58c5ca1",
+     "635a7e9aad401b5b",
+     "72a1e99966ef6a20"
+    ],
+    "24": [
+     "0703281d336d8b32",
+     "071763f908fdd471",
+     "2f4df94d9f92c002",
+     "48110b75a4df650f",
+     "4c88352e26f21bc6",
+     "50db9d633a73cb73",
+     "52c742f2a8c7982b",
+     "5b56dc0c1c7f7f17",
+     "612a47b94922d1d2",
+     "660984e1d0dc7a5e",
+     "67509694fd8c62bb",
+     "77f947562e2c926e",
+     "7c248f86a2457b31",
+     "96dba40931172446",
+     "9f9c5ae5b30434bb",
+     "a20be9963d831303",
+     "a7c8fd706f689289",
+     "bbaf5a4972b194b1",
+     "d3b315a78d6cd807",
+     "d7997792e7745b79",
+     "efd34dd4a12036ad",
+     "fe1a19f3245378c1"
+    ],
+    "32": [
+     "4305422d31479925"
+    ],
+    "48": [
+     "1291c8719a4f3c51",
+     "19a2de8e77fa09ba",
+     "31e112eb75bccdfb",
+     "8fca5bc8ccf255e9",
+     "901d8bc2275f20fb",
+     "d00d91f6e71454db"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "5843c6bbbbb6a6e415fdf311a91cae38749c73262bb220de88c7eba9179e4564",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-oleander-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "582ec0668c5a8eb5",
+     "a9e84c0a04162a7b",
+     "b86fd61e5724faf4",
+     "c4c28513d51e19b0"
+    ],
+    "24": [
+     "034572d6ce712574",
+     "0692e800213f0e5b",
+     "175438306620959d",
+     "1ff10efa963ce512",
+     "2c4d91f3bc9e5e8f",
+     "2e5638e68ef18d58",
+     "499652706352353a",
+     "56f07a1c3add1c32",
+     "599f442885ab7e26",
+     "8df3e235853c4a57",
+     "925a7ae9baed0c36",
+     "96e242b997c1bedd",
+     "b7486a6c5a67025d",
+     "bd5db9613a2b96f1",
+     "ca5c5c06b6e9086a",
+     "cd3bef738eb8ae39",
+     "dea8ffec1b84276d",
+     "e11d12bb93f2a516",
+     "e3cb2ed92df78d81",
+     "f0b5530f23a0363b",
+     "fdd9b5b7a0a00d20"
+    ],
+    "32": [
+     "d02ab61c96e0018f"
+    ],
+    "48": [
+     "00630c037c9019fc",
+     "2105baa7daa15c27",
+     "3e6833b02eccfc32",
+     "560fbba160674fc7",
+     "89129c4946cfdf84",
+     "ee37350c71c18d52"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "da5521962dfff3a587339abe5062840f3fee374bf6c2a402d20f409e4506adea",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-juniper-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "2ec3bcc1d1793331",
+     "5566f52b250e0484",
+     "69a36c815e95d5d2",
+     "914a00de96369dd3"
+    ],
+    "24": [
+     "00ed0520be5f1965",
+     "05851da36d431caf",
+     "25bc7fad4706d29d",
+     "269fed640ee6bf83",
+     "2eea23775635d161",
+     "39c95661df66190d",
+     "44dd6f15cc5e322a",
+     "61f694b0ad48103d",
+     "909fe29daab63fd2",
+     "9600079205a87525",
+     "9b839b811d422542",
+     "b573fb9837fd07f1",
+     "b5b48ca07e41b20e",
+     "d443ea04c8c70a06",
+     "d8181790ab8401e3",
+     "e09c3ce08088e32c",
+     "e1b7e90e6d931031",
+     "e87f754829199c34"
+    ],
+    "32": [
+     "66dc0f239b8c9f0d"
+    ],
+    "48": [
+     "2026235fdf812db8",
+     "2ef573ab584d43e9",
+     "65f2a80cb1d0dbf9",
+     "9222a17be73d5dab",
+     "b0e77664319da695",
+     "cbfd209d6c117772"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "221935487649c4fe0abac8f5c1bb1f7783604d365003cbb4def5900bcfcf9b14",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-bramble-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "5000db5c3bffdc7f",
+     "60c36014e31f4d45",
+     "914521de7ddf8841",
+     "af98df32b3a26ae8"
+    ],
+    "24": [
+     "020ed11b8c31f270",
+     "3700dbd190448eeb",
+     "3e8513cb6faf4f9a",
+     "550edbcfed5c646b",
+     "6199875fedd3e895",
+     "66dbcb10ac9a7342",
+     "705d66c55c311c02",
+     "7f1fd8d63710b3ea",
+     "93ee5e5218a6df74",
+     "9501eb6b6d1372c4",
+     "97afab01ff6109fe",
+     "a6518d7acc1b0c9f",
+     "ac42454308535ba9",
+     "b21c5453053b6d7d",
+     "b27a04d6ea6058fa",
+     "cf8bee606b1514f0",
+     "dbc8c69ea78f13a6",
+     "dbfde5523dc2599a",
+     "e388180a94bd9953",
+     "e90cc595133cfe70",
+     "f54e22c9a190f5e7",
+     "f6e56be9c1194109",
+     "fdce06cbaa660779"
+    ],
+    "32": [
+     "9ca034f819eee6f1"
+    ],
+    "48": [
+     "12ea9619ac2470c1",
+     "4132900853f53592",
+     "80ab80d272d1b15b",
+     "9aa6b04a63449032",
+     "aad953bed71eb3d8",
+     "b546387e18245ea1"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "8233900b7817ee84ac8695b0b242cbb0949b0dd667ffcf1746bd2632089cecd2",
+   "kind": "organic",
+   "label": "beodeul_stands/tree-fern-2x2-2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "18bbafafe715b859",
+     "26c8c51e027a0e8c",
+     "4e8d8f9bbc96d3a2",
+     "7d17168bb7be4196"
+    ],
+    "24": [
+     "061063c25bceb629",
+     "0a7a1a3c6d331d07",
+     "0ba5746d6cb42c87",
+     "16abb3647669a724",
+     "1dd2058e3a1f9b61",
+     "1fce9def535803d9",
+     "21d05cf29c046ef9",
+     "39dc0976406ba9f4",
+     "3e287acf29823ab2",
+     "69badc51ccc2f794",
+     "72ab97cc76290dd3",
+     "7b393766a584ab64",
+     "8160252a9f0df97f",
+     "86c9a9b44c5644a1",
+     "873af3a53c773a23",
+     "8da0fa2149547db1",
+     "97f64fa0cf4866e2",
+     "a5eec0b01afffccd",
+     "afce9f10ab2e276d",
+     "b5628ddbacd42de0",
+     "d0f6eeb7d0e51907",
+     "e1ab47b78b7cf18c",
+     "f53a4cc1cdb722c8",
+     "f9396e914111923f"
+    ],
+    "32": [
+     "24f85ff90372c17c"
+    ],
+    "48": [
+     "1bc96702478f6f11",
+     "2eaa6f4ced97989c",
+     "38f6915b8e3e32c4",
+     "5f811059d8f0113e",
+     "8c4669d4e0b2127e",
+     "f1cbcdb0b89cf014"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "629bfd59fe3b1a0ba62f8e68f39206d11477e28452fbaef05b47f23ed76e2ee7",
+   "kind": "organic",
+   "label": "beodeul_stands/small-litter",
+   "width": 96,
+   "height": 16,
+   "cells": {
+    "16": [
+     "0ea2a1eca5c5563d",
+     "2d6d8e07fcc95af4",
+     "5ba9afadf4318898",
+     "68f37d7b76ac2c58",
+     "9100c75206ca84f9",
+     "f09c9adb36b5d5e5"
+    ],
+    "24": [
+     "06f52ab9498af176",
+     "6034f7f1f1bf5fd2",
+     "ac5121a963908352",
+     "c8d03bd1fb2f2b5b",
+     "d414ac6a5f8a23a6",
+     "def659b3b5a41e2f",
+     "e0e4634c5e4124a1",
+     "f0ae8c7a65fe968e"
+    ],
+    "32": [
+     "339a3d38d9d965a3",
+     "4e2d416dd71a97f0",
+     "91f764192cd81a62",
+     "c1452df717cc5884",
+     "d293c896eb064cf3",
+     "fe2f28cb402253b8"
+    ],
+    "48": [
+     "07660a76b424b55b",
+     "30bb80571a88a547",
+     "4fb0e815800f3b94",
+     "54e40fe57264162b"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d348d953dac584c3284539b80cf19f45afd71606c4b516e0719f0739fda84cbb",
+   "kind": "organic",
+   "label": "beodeul_stands/small-needles",
+   "width": 96,
+   "height": 16,
+   "cells": {
+    "16": [
+     "0cbf0721a33b10fa",
+     "61725324b8684bfc",
+     "b71eb2c71c03a481",
+     "b80d0918e5991f3e",
+     "d1ba8cdc8e025cbf",
+     "faa71080346432a4"
+    ],
+    "24": [
+     "0e69c804256a6a83",
+     "17b404c6c2c06d8d",
+     "3021625adc9c3afa",
+     "4b8bddae0e501390",
+     "6ae67c283273bd43",
+     "b988407936dcbb81",
+     "bb1be7d2c1de67da",
+     "d87f2027cdc4ca20"
+    ],
+    "32": [
+     "06ab76fe8c5e3801",
+     "3515ef1fba741702",
+     "6a7abcd67c20a8a9",
+     "82a5546f08b61a80",
+     "93a28447a2be7d8d",
+     "de41f5e2700b6f34"
+    ],
+    "48": [
+     "5b573a08192c93cd",
+     "7c3fc9c63c5a0e54",
+     "954528c9be79d84e",
+     "baa015742191f1cc"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "4c1c61313491763b7d76212f04f94ce3c3c57a849afc80e99737a3036962addd",
+   "kind": "organic",
+   "label": "beodeul_stands/small-moss",
+   "width": 96,
+   "height": 16,
+   "cells": {
+    "16": [
+     "191c4d3e1ff45b75",
+     "2acfbc15ec287f5e",
+     "4be2d74090a7fd1a",
+     "4e26d10508075174",
+     "5e658984d9874bb0",
+     "b62c759b79c490cc"
+    ],
+    "24": [
+     "0ed5bfed60c69e3c",
+     "34986679c4c44cfe",
+     "59cfd34fe570bff0",
+     "6e2e66a057f6f39e",
+     "766599d3bfa4cf6f",
+     "8a7c99d04f0cf635",
+     "a0a9c616484ddab8",
+     "c14b93f839bbcb64"
+    ],
+    "32": [
+     "4cef9b63a6b4328f",
+     "709f844c954d3d1a",
+     "834311b046446593",
+     "a09adbf62d36daa3",
+     "d5e08919589bec6e",
+     "f2018f70844744ca"
+    ],
+    "48": [
+     "41376bd7665f43db",
+     "89eb040aec657baf",
+     "c7da5bc6cae83fac",
+     "dcd23e7cac18270b"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "29bea53f40527c39f478f6fa3a439bd9c8a8c91eb195a1bed5d81d01d4b8f7be",
+   "kind": "organic",
+   "label": "beodeul_stands/small-roots",
+   "width": 96,
+   "height": 16,
+   "cells": {
+    "16": [
+     "12377f77a0447075",
+     "233f069dc10b5e99",
+     "357a22f36fd8d0a7",
+     "6a2bafc96b90deb0",
+     "a57f82fc01f80586",
+     "eb1296e0de134b51"
+    ],
+    "24": [
+     "1978f6adf85b42d4",
+     "3c11a6f4b91a0300",
+     "4f429550088c40ae",
+     "70d0ab059665efe8",
+     "8e4ee378d16dfcc1",
+     "8f0bc315b1e15df2",
+     "c076dbfa207797fd",
+     "f3b047d932170991"
+    ],
+    "32": [
+     "0227f681186d3e87",
+     "09e3e527167640e4",
+     "8d8278334b606fd1",
+     "a973d62d24017370",
+     "ba6c88033841f603",
+     "bf3a8d3012138ef9"
+    ],
+    "48": [
+     "b3f92d21042eaced",
+     "e87b2028eba38b5c",
+     "e8897a7b4aa4c019",
+     "fcd508d6e5cc75d1"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "161710ec35fa3defcdecda22553c133262c674538de158fcbe4ba9633518fa3e",
+   "kind": "organic",
+   "label": "beodeul_stands/small-shade",
+   "width": 96,
+   "height": 16,
+   "cells": {
+    "16": [
+     "28e46083fbd6d264",
+     "2b60c3abc538d5d8",
+     "3e07786c8c6cad63",
+     "56a02b14a2de3b77",
+     "739c1958781b94bb",
+     "ff4f560e4f52e401"
+    ],
+    "24": [
+     "03fcef6b9e0be57f",
+     "159dc43945ce60c5",
+     "19aab978e3379ab1",
+     "578fd442731e124c",
+     "89a22b04ea7bdd78",
+     "adf9ce4fb169d260",
+     "bcd324369feced5a",
+     "d79d5c8652f705ce"
+    ],
+    "32": [
+     "949a286d2804f46f",
+     "b48cf807749ecc2f",
+     "cf2ba23650150c07",
+     "d2aae509770422d1",
+     "df353b8df438be5c",
+     "eda7443f3408be56"
+    ],
+    "48": [
+     "29447f25fe46b267",
+     "2fd11560e59f2430",
+     "bd632bbb1f36a43e",
+     "d4d5698e939be98c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "4b44af6f288fb13cf1a67a458bf893240656b6fbf03d967a0b5f13c1d4685c64",
+   "kind": "organic",
+   "label": "beodeul_stands/small-dry",
+   "width": 96,
+   "height": 16,
+   "cells": {
+    "16": [
+     "586a7a7221c75c69",
+     "7a4d36fac5295b95",
+     "c86482682e5b270e",
+     "de601e80a3e4ac16",
+     "e53eefb259dbb808",
+     "eb12bb99f70aff87"
+    ],
+    "24": [
+     "2d4a4d8913cdf838",
+     "412f2bbddfb9f73b",
+     "5003abf73afd069f",
+     "7a79ae44063de9c8",
+     "94016a8c4040ece0",
+     "b9edbf4b9673f4db",
+     "bf9b94df481e776e",
+     "fe95f6bbaec5459f"
+    ],
+    "32": [
+     "131542c38046f881",
+     "205154e4ccb7bf7b",
+     "3fc6fd4c0276ff93",
+     "69d66e36fa041612",
+     "ca2c7a07244a3e34",
+     "cfda9fd80a7e20b8"
+    ],
+    "48": [
+     "3a6b7e76c63a4b92",
+     "5f5e4f20db20b712",
+     "8c875777241380fa",
+     "8c9d050ea6a0a35b"
     ]
    }
   }
