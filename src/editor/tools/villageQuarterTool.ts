@@ -622,7 +622,7 @@ function yardPlaza(draft: Project, map: GameMap, yard: NonNullable<QuarterDef["y
   const ground = [...new Set([...(group.interiorVariants?.flat() ?? []), ...(body !== undefined ? [body] : [])])];
   if (!grass.size || !ground.length) return null;
   // 버들항 자연 시트에서 이식한 칸(나무·꽃·풀 무늬)은 tileMeta 태그가 비어 있다 — 출처 시트로 «걷어도 되는 칸»을 가린다.
-  const softTiles = (ts.tileGrafts ?? []).filter((g) => g.sourceChipset === "tex_beodeul_nature" || g.sourceChipset === "tex_beodeul_ground").map((g) => g.targetTile); // 땅 덧칠(tex_beodeul_ground)도 마당에선 걷는다
+  const softTiles = (ts.tileGrafts ?? []).filter((g) => g.sourceChipset === "tex_beodeul_nature" || g.sourceChipset === "tex_beodeul_ground" || g.sourceChipset === "tex_beodeul_stands").map((g) => g.targetTile); // 땅 덧칠(tex_beodeul_ground)도 마당에선 걷는다
   // 귀 채우기가 아닌 마당(신전 폐허)은 맵마다 크기를 조금 달리한다 — 같은 크기면 같은 조각이 같은 자리에만 들어가 두 맵이 한 도장으로 읽혔다(r2).
   let hsh = 2166136261;
   for (let i = 0; i < map.lowerTiles.length; i += 7) hsh = Math.imul(hsh ^ (map.lowerTiles[i]! + 1), 16777619) >>> 0;

@@ -10,6 +10,9 @@
 // - 숲: 길 둘레 1칸·출구 둘레를 비운 풀밭을 버들항 수관 오토타일(#3259, beodeulForest.ts planBeodeulCanopy)로 덮는다(plantBeodeulForestWall, 2026-10-24).
 // - 길섶: 깊은 숲길 세트의 작은 소품을 드문드문(dressBeodeulVerge).
 
+import { activeKitLook } from "@/project/kitLook";
+import { projectTilesetLook } from "@/project/tilesetLook";
+import { layBeodeulGroundCover } from "./beodeulGroundCover";
 import type { GameMap, Project, Rect, TilesetDef } from "@/project/types";
 import type { Rng } from "@/util/rng";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
@@ -121,6 +124,9 @@ export function paintBeodeulWildRoute(input: BeodeulWildRouteInput): { roadCells
   // r4 B(2026-10-21 사용자 승인): 숲 장면의 바닥 잔디만 채도를 조금 낮춘 잔디로 — 공용 잔디 737 그림은 그대로, 이 맵의 칸만 바꾼다.
   const woodlandGrass = beodeulWoodlandGrass(project, tileset);
   if (woodlandGrass >= 0) for (let i = 0; i < map.lowerTiles.length; i++) if (map.lowerTiles[i] === BEODEUL_PLAIN_GRASS) map.lowerTiles[i] = woodlandGrass;
+  // 숲 바닥·풀밭 얼룩(게임 겉모습 stand·meadow — 2층 투명 덧그림이라 걷는 칸은 그대로다). 겉모습에 없으면 아무것도 하지 않는다.
+  const roadSet = new Set(road);
+  layBeodeulGroundCover(project, map, projectTilesetLook(project, tileset.id, activeKitLook()), { seed: (w * 31 + map.height * 17 + roadCells.length * 7) | 0, road: (c) => roadSet.has(c) });
   return { roadCells: roadCells.length, treeCells, decor };
 }
 
