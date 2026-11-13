@@ -71,6 +71,16 @@ describe("킷 변형 고르기", () => {
     expect(pairs.size).toBe(4);
   });
 
+  it("함께 바뀌는 가족(ai.lookWith): 변형이 으뜸 원본을 가리키면 두 종류가 모든 게임에서 같은 순번으로 갈린다", () => {
+    const { project, tilesetId } = projectWithVariants();
+    const ts = project.tilesets[tilesetId]!;
+    // PAIR_B 의 변형이 «PAIR_A 와 함께» 라고 밝힌다(이어 붙는 벽면 ↔ 창 난 벽면)
+    ts.structureKits!.find((k) => k.id === `${PAIR_B}-v`)!.ai!.lookWith = PAIR_A;
+    const a = ts.structureKits!.find((k) => k.id === PAIR_A)!, b = ts.structureKits!.find((k) => k.id === PAIR_B)!;
+    const pairs = new Set(GAMES.map((key) => `${lookKit(ts, a, key).id === PAIR_A}+${lookKit(ts, b, key).id === PAIR_B}`));
+    expect([...pairs].sort()).toEqual(["false+false", "true+true"]);
+  });
+
   it("실행 구간이 끝나면 열쇠가 꺼진다(중첩 포함)", () => {
     expect(activeKitLook()).toBeUndefined();
     withKitLook("a", () => {

@@ -25,6 +25,9 @@ export function drawHudWidget(node: HTMLElement, widget: HudWidget, reading: Hud
   node.dataset.low = String(ratio <= .25);
   node.dataset.empty = String(ratio === 0);
   node.dataset.showValue = String(widget.showValue);
+  // 한 줄 높이(16 미만)의 칸은 이름표·막대·숫자를 가로 한 줄로 놓고, 좁은(16 미만) 세로 막대는 여백을 줄인다(fieldHud.css data-compact · data-slim).
+  node.dataset.compact = String(widget.height < 16 && widget.kind !== "party" && widget.kind !== "timers");
+  node.dataset.slim = String(widget.width < 16);
   node.setAttribute("aria-label", `${widget.label || widget.kind} ${reading.text ?? `${value} / ${max}`}`);
   for (const attr of ["role", "aria-valuemin", "aria-valuemax", "aria-valuenow"]) node.removeAttribute(attr);
   if (widget.kind === "gauge") {
@@ -87,11 +90,14 @@ export function drawHudWidget(node: HTMLElement, widget: HudWidget, reading: Hud
     }
   } else if (widget.kind === "party") {
     for (const entry of reading.entries ?? []) {
-      const row = hudNode("hud-party-row"), body = hudNode("hud-party-body");
+      // 한 사람에 글 한 줄 높이: 이름 + 가는 막대. 얼굴 그림과 «514 / 514» 숫자는 메뉴에 있다 — 필드 판은 «누가 얼마나 다쳤나» 만 본다
+      // (전에는 얼굴 23px + 이름 + 막대 + 숫자로 한 사람에 24px, 네 명이면 화면 왼쪽 위 90×138 이었다. 2026-11-13).
+      const row = hudNode("hud-party-row");
       const meter = hudNode("hud-party-meter"), fill = hudNode("hud-party-fill");
       fill.style.width = `${Math.max(0, Math.min(100, (entry.value ?? 0) / (entry.max || 1) * 100))}%`;
-      meter.append(fill); body.append(hudNode("hud-party-name", entry.name), meter, hudNode("hud-party-value", `${entry.value} / ${entry.max}`));
-      row.append(picture(entry.icon, entry.name), body); node.append(row);
+      meter.append(fill);
+      row.setAttribute("aria-label", `${entry.name} ${entry.value} / ${entry.max}`);
+      row.append(hudNode("hud-party-name", entry.name), meter); node.append(row);
     }
   } else if (widget.kind === "timers") {
     for (const entry of reading.entries ?? []) node.append(hudNode("hud-effect", `${entry.name}${entry.value !== undefined ? ` ${entry.value}s` : ""}`));

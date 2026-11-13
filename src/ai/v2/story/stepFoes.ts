@@ -114,7 +114,8 @@ export function foeGraphic(project: Project, troopId: string): Record<string, un
   const sprite = (project.database.enemies.find((e) => e.id === leadId) as { monsterResourceId?: string } | undefined)?.monsterResourceId;
   if (!sprite) return undefined;
   // 전투 도트 그림이 있으면 그 그림 그대로 선다 — «같은 종류»의 걷기 칩은 다른 그림이다(황토빛 용이 붉은 용 칩으로 서 있었다).
-  if (isGeneratedMonsterSprite(sprite)) return { sprite: { type: "bundled", id: sprite }, direction: "down", pattern: 0 };
+  // 두 배로 세운다 — 길을 막아선 상대는 돌아다니는 적(2칸)보다 크고, 런타임이 그 배수만큼 덜 줄인 칩을 뽑아 전투 화면의 그 그림으로 읽힌다(player/fieldFoeSprite).
+  if (isGeneratedMonsterSprite(sprite)) return { sprite: { type: "bundled", id: sprite }, direction: "down", pattern: 0, scale: 2, scaleMode: "manual" };
   const cell = fieldGraphicForBattler(sprite);
   return cell ? { sprite: { type: "bundled", id: cell.textureKey }, direction: "down", pattern: charsetFrameIndex({ characterIndex: cell.characterIndex, direction: "down", pattern: 1 }) } : undefined;
 }

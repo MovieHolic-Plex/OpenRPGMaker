@@ -61,7 +61,7 @@ export function normalizeHudWidget(value: unknown, index = 0): HudWidget {
     kind: choice(raw.kind, HUD_KINDS, "gauge"), source: choice(raw.source, HUD_SOURCES, "hp"),
     label: typeof raw.label === "string" ? raw.label.slice(0, 60) : "체력",
     shape: choice(raw.shape, HUD_SHAPES, "bar"), anchor: choice(raw.anchor, HUD_ANCHORS, "top-left"),
-    x: number(raw.x, 10, 0, 1920), y: number(raw.y, 10, 0, 1080), width: number(raw.width, 90, 20, 640), height: number(raw.height, 30, 14, 480),
+    x: number(raw.x, 10, 0, 1920), y: number(raw.y, 10, 0, 1080), width: number(raw.width, 90, 8, 640), height: number(raw.height, 30, 8, 480),
     color: typeof raw.color === "string" && /^#[\da-f]{6}$/i.test(raw.color) ? raw.color : "#e5c878",
     panel: choice(raw.panel, HUD_PANELS, "none"),
     condition: choice(raw.condition, HUD_CONDITIONS, "always"),
@@ -85,37 +85,63 @@ export function normalizeFieldHud(value: unknown): FieldHudConfig {
   }) : undefined;
   return { theme, ...(raw.font !== undefined ? { font: choice(raw.font, HUD_FONTS, "auto") } : {}), ...(raw.menuStyle !== undefined ? { menuStyle: choice(raw.menuStyle, HUD_MENUS, "project") } : {}), vitals: flag("vitals", true), clock: flag("clock", true), tools: flag("tools", true), objective: flag("objective", !["minimal", "collector", "classic", "horror", "chase", "hearts"].includes(theme)), hideEmpty: flag("hideEmpty", true), ...(widgets !== undefined ? { widgets } : {}) };
 }
+/**
+ * 필드 HUD 예산 — 논리 화면에 대한 몫. 화면이 좁다(320×240 을 3배쯤으로 본다): 게임이 보여야 한다.
+ *  - persistent: 늘 떠 있는 것(HUD 칸 + 목표 줄 한 줄)의 넓이 합 ≤ 6%
+ *  - centre: 화면 가운데 60%×60% 에는 늘 떠 있는 것도, 잠깐 뜨는 알림도 두지 않는다
+ *  - prompt: 「Z 조사」 조작 안내 ≤ 4%, 아래 끝
+ *  - objectiveWidth · objectiveHeight: 목표 줄은 폭 45% 까지, 두 줄일 때도 높이 8% 까지
+ * 값은 test/fieldHudBudget.test.ts 가 프리셋과 zoneFeedback.css 에서 잰다.
+ */
+export const HUD_BUDGET = { persistent: 0.06, centre: 0.6, prompt: 0.04, objectiveWidth: 0.45, objectiveHeight: 0.08 } as const;
+/** 목표 줄·조작 안내·알림의 글 크기(논리 px, 높이 240 기준 — zoneFeedback.css 가 같은 값을 --play-ui-scale 로 곱한다). */
+export const HUD_LINE = { font: 7, line: 8.5, padY: 1, padX: 4, promptMaxWidth: 0.6 } as const;
+/** 동료 판 한 줄(논리 px — fieldHud.css): 줄 높이 · 줄 사이 · 판 여백 · 테두리. 네 명이면 4×7 + 3×1 + 2×(3+1) = 39. */
+export const HUD_PARTY_ROW = { row: 7, gap: 1, pad: 2, border: 1 } as const;
+
+/**
+ * 테마 프리셋 — 논리 화면 320×240 에 맞춘 크기다. 화면이 좁다: 늘 떠 있는 칸의 합이 화면의 6% 를 넘지 않고(목표 줄 한 줄 포함),
+ * 가운데 60%×60% 에는 아무것도 두지 않는다(HUD_BUDGET · test/fieldHudBudget.test.ts 가 테마마다 잰다).
+ * 전에는 동료 판 90×138, 시계 76×44, 도구 8칸 218×32, 체력 막대 120×31 … 로 농장 테마는 화면의 20%, 파티 테마는 한 명일 때도 6% 를 덮었다(2026-11-13 오너 «HUD 가 개판»).
+ * 줄인 방법: 이름표·숫자를 떼고 한 줄 높이(높이 16 미만이면 렌더러가 한 줄 배치 — data-compact), 시계는 날짜와 시각을 한 줄로, 슬롯은 11px 칸.
+ * 파티 테마의 도구 8칸은 뺐다(동료 넷 + 시계 + 도구 + 목표 줄이면 예산을 넘는다 — 도구를 쓰는 파티 게임은 widgets 로 직접 짠다).
+ */
 export function hudPreset(theme: FieldHudConfig["theme"]): HudWidget[] {
   const w = (id: string, patch: Partial<HudWidget>) => normalizeHudWidget({ id, ...patch });
-  const clock = w("clock", { kind: "clock", label: "", anchor: "top-right", width: 76, height: 44 });
-  const hp = w("health", { label: "체력", source: "hp", width: 94, height: 30, color: "#df765f" });
-  const toolbar = w("tools", { kind: "slots", source: "tools", label: "도구", anchor: "bottom-center", width: 218, height: 32, slots: 8, autoAvoid: true });
+  const clock = w("clock", { kind: "clock", label: "", shape: "number", anchor: "top-right", x: 6, y: 6, width: 56, height: 12 });
+  const hp = w("health", { label: "", source: "hp", x: 6, y: 6, width: 56, height: 10, color: "#df765f", showValue: false });
+  const toolbar = w("tools", { kind: "slots", source: "tools", label: "", anchor: "bottom-center", y: 6, width: 99, height: 14, slots: 8, autoAvoid: true });
   if (["legacy", "classic", "chase"].includes(theme)) return [];
   if (theme === "collector") return [w("location", { kind: "text", source: "map", label: "", width: 132, height: 28, panel: "paper" })];
   if (theme === "horror") return [w("life", { source: "hp", label: "", shape: "petals", width: 34, height: 44, color: "#b74660", showValue: false })];
   if (theme === "hearts") return [
-    { ...hp, shape: "hearts", label: "", width: 91, height: 22, color: "#ef6a68", showValue: false },
-    w("coins", { kind: "text", source: "gold", label: "G", y: 36, width: 66, height: 20, color: "#f4d17b" }),
-    { ...toolbar, label: "", anchor: "bottom-right", width: 36, height: 36, slots: 1, autoAvoid: false },
+    { ...hp, shape: "hearts", width: 76, height: 15, color: "#ef6a68" },
+    w("coins", { kind: "text", source: "gold", label: "G", x: 6, y: 24, width: 46, height: 12, color: "#f4d17b" }),
+    { ...toolbar, anchor: "bottom-right", x: 6, width: 20, height: 20, slots: 1, autoAvoid: false },
   ];
   if (theme === "farm") return [
     { ...clock, panel: "paper" },
-    w("gold", { kind: "text", source: "gold", label: "소지금", anchor: "top-right", y: 58, width: 76, height: 23, panel: "paper", color: "#bc8a35" }),
-    { ...toolbar, panel: "paper", width: 234, height: 34 },
-    w("energy", { source: "energy", label: "기력", shape: "vertical", anchor: "bottom-right", y: 56, width: 26, height: 82, color: "#83b457", panel: "paper" }),
-    { ...hp, anchor: "bottom-right", x: 41, y: 56, shape: "vertical", width: 26, height: 82, condition: "damaged", panel: "paper" },
+    w("gold", { kind: "text", source: "gold", label: "G", anchor: "top-right", x: 65, y: 6, width: 44, height: 12, panel: "paper", color: "#bc8a35" }),
+    { ...toolbar, panel: "paper" },
+    w("energy", { source: "energy", label: "", shape: "vertical", anchor: "bottom-right", x: 6, y: 6, width: 12, height: 36, color: "#83b457", panel: "paper", showValue: false }),
+    { ...hp, anchor: "bottom-right", x: 21, shape: "vertical", width: 12, height: 36, condition: "damaged", panel: "paper" },
   ];
   if (theme === "survival") return [
-    { ...toolbar, anchor: "top-left", width: 202, height: 32, panel: "dark", slots: 7, autoAvoid: false },
-    { ...hp, anchor: "bottom-left", width: 104, height: 34, panel: "dark" },
-    w("food", { kind: "slots", source: "inventory", label: "휴대 식량", anchor: "bottom-left", y: 49, width: 104, height: 37, slots: 3, panel: "dark" }),
-    w("stamina", { source: "stamina", label: "스태미나", anchor: "bottom-center", y: 12, width: 84, height: 24, condition: "damaged", color: "#d8bf6a" }),
-    { ...clock, width: 65, height: 39, panel: "dark" },
-    w("effects", { kind: "timers", label: "상태", anchor: "top-right", y: 55, width: 75, height: 45, panel: "dark" }),
+    { ...toolbar, anchor: "top-left", x: 6, width: 87, height: 14, panel: "dark", slots: 7, autoAvoid: false },
+    { ...hp, anchor: "bottom-left", panel: "dark" },
+    w("food", { kind: "slots", source: "inventory", label: "", anchor: "bottom-left", x: 6, y: 19, width: 39, height: 14, slots: 3, panel: "dark" }),
+    w("stamina", { source: "stamina", label: "", anchor: "bottom-center", y: 6, width: 60, height: 10, condition: "damaged", color: "#d8bf6a", showValue: false }),
+    { ...clock, panel: "dark" },
+    w("effects", { kind: "timers", label: "", anchor: "top-left", x: 6, y: 23, width: 56, height: 24, panel: "dark" }),
   ];
-  if (theme === "party") return [w("party", { kind: "party", label: "동료", width: 90, height: 138, panel: "dark" }), { ...clock, panel: "dark" }, { ...toolbar, panel: "dark" }];
-  if (theme === "adventure") return [{ ...hp, panel: "dark", width: 120, height: 31 }, w("magic", { source: "mp", label: "마력", y: 45, width: 120, height: 25, color: "#78bddb" }), { ...toolbar, anchor: "bottom-right", width: 154, slots: 5, panel: "dark", autoAvoid: false }, w("stamina", { source: "stamina", label: "기력", shape: "ring", anchor: "bottom-left", width: 40, height: 40, color: "#a3c982", condition: "damaged" })];
-  return [{ ...hp, shape: "hearts", label: "", color: "#fff8df", width: 80, height: 25 }, { ...clock, width: 60, height: 34 }, { ...toolbar, anchor: "bottom-left", width: 40, height: 34, slots: 1, autoAvoid: false }];
+  if (theme === "party") return [w("party", { kind: "party", label: "", x: 6, y: 6, width: 50, height: 38, panel: "dark" }), { ...clock, panel: "dark" }];
+  if (theme === "adventure") return [
+    { ...hp, width: 64 },
+    w("magic", { source: "mp", label: "", x: 6, y: 18, width: 64, height: 10, color: "#78bddb", showValue: false }),
+    { ...toolbar, anchor: "bottom-right", x: 6, width: 63, slots: 5, panel: "dark", autoAvoid: false },
+    w("stamina", { source: "stamina", label: "", shape: "ring", anchor: "bottom-left", x: 6, y: 6, width: 24, height: 24, color: "#a3c982", condition: "damaged", showValue: false }),
+  ];
+  return [{ ...hp, shape: "hearts", color: "#fff8df", width: 70, height: 14 }, clock, { ...toolbar, anchor: "bottom-left", x: 6, width: 18, height: 18, slots: 1, autoAvoid: false }];
 }
 /** 몸 게이지(체력·마력·기력·스태미나). vitals 가 꺼지면 넷이 함께 꺼진다 — 체력만 끄면 「마력 43/43」 막대 하나가 혼자 남았다(2026-11-11 Terra 게임 fun-x1). */
 export const HUD_BODY_SOURCES: readonly HudWidget["source"][] = ["hp", "mp", "energy", "stamina"];
@@ -144,14 +170,54 @@ export function projectCanLoseHp(p: Pick<Project, "maps" | "database">): boolean
   return found;
 }
 
-/** 이 게임이 실제로 쓰는 몸 게이지 — 쓰지 않는 게이지는 필드에 띄울 까닭이 없다. */
+/**
+ * 필드에서 체력이 깎일 수 있는가 — 실시간 액션 전투, 또는 맵·공통 이벤트의 체력 깎기 명령(함정·독 늪·추격자).
+ * 턴제 전투 안에서만 바뀌는 체력은 여기 들지 않는다: 그 숫자는 전투 화면과 메뉴의 것이고, 필드에서는 걷는 내내 한 번도 움직이지 않는다.
+ */
+export function projectFieldHpChanges(p: Pick<Project, "maps" | "database" | "system">): boolean {
+  if (p.system.actionCombat?.enabled === true) return true;
+  let found = false;
+  const walk = (list: unknown): void => {
+    if (found || !Array.isArray(list)) return;
+    for (const raw of list) {
+      if (found) return;
+      if (!raw || typeof raw !== "object") continue;
+      const c = raw as Record<string, unknown>;
+      if (c.kind === "changeActorHp" && (c.op === "-=" || (typeof c.amount === "number" && c.amount < 0))) { found = true; return; }
+      for (const v of Object.values(c)) { if (Array.isArray(v)) walk(v); else if (v && typeof v === "object") for (const inner of Object.values(v as Record<string, unknown>)) if (Array.isArray(inner)) walk(inner); }
+    }
+  };
+  for (const map of Object.values(p.maps)) for (const ev of map.events ?? []) for (const page of ev.pages ?? []) walk(page.commands);
+  for (const ce of (p.database as { commonEvents?: { commands?: unknown }[] }).commonEvents ?? []) walk(ce.commands);
+  return found;
+}
+
+/**
+ * 이 게임에서 «필드에서» 움직이는 몸 게이지 — 필드에서 바뀔 수 없는 것은 필드에 띄울 까닭이 없다(메뉴와 전투 화면에 있다).
+ * hp = 필드에서 깎인다(액션 전투·피해 명령). mp·stamina = 실시간 액션 전투에서만 필드에서 쓴다.
+ * 2026-11-13 전에는 hp 가 «전투가 있다» 였다 — 턴제 게임이 필드에 「514 / 514」 를 내내 띄웠다.
+ */
 export interface HudUse { readonly hp: boolean; readonly mp: boolean; readonly stamina: boolean }
 export function projectHudUse(p: Pick<Project, "maps" | "database" | "system">): HudUse {
   const action = p.system.actionCombat?.enabled === true;
-  const hp = action || projectCanLoseHp(p);
   const costsMp = (cost: unknown): boolean => typeof cost === "number" ? cost > 0 : !!cost && typeof cost === "object" && Object.values(cost as Record<string, unknown>).some((v) => typeof v === "number" && v > 0);
-  const mp = hp && ((p.database as { skills?: { mpCost?: unknown }[] }).skills ?? []).some((s) => costsMp(s.mpCost));
-  return { hp, mp, stamina: action };
+  const mp = action && ((p.database as { skills?: { mpCost?: unknown }[] }).skills ?? []).some((s) => costsMp(s.mpCost));
+  return { hp: projectFieldHpChanges(p), mp, stamina: action };
+}
+/** 필드에서 바뀔 수 없는 칸인가 — 체력·마력·스태미나 게이지와 동료 체력 판(호감 목록은 대화로 바뀌므로 아니다). 기력(energy)은 생활 게임이 필드에서 쓴다. */
+function idleOnField(w: HudWidget, use: HudUse): boolean {
+  if (w.kind === "party") return w.source !== "friendship" && !use.hp;
+  return isBodyGauge(w) && ((w.source === "hp" && !use.hp) || (w.source === "mp" && !use.mp) || (w.source === "stamina" && !use.stamina));
+}
+/**
+ * 필드에 실제로 올리는 칸 — 프리셋 구성(widgets 생략)에서는 이 게임의 필드에서 바뀔 수 없는 칸을 뺀다. 저자가 widgets 를 직접 짰으면 그대로다.
+ * 런타임(player/fieldHud.ts)과 조수 도구가 같은 함수를 쓴다.
+ */
+export function fieldHudWidgets(p: Pick<Project, "maps" | "database" | "system">, config: FieldHudConfig): HudWidget[] {
+  const widgets = resolvedHudWidgets(config);
+  if (config.widgets !== undefined) return widgets;
+  const use = projectHudUse(p);
+  return widgets.filter((w) => !idleOnField(w, use));
 }
 /**
  * widgets 가 그 테마 프리셋에서 몇 칸을 뺀 것뿐이면(조수가 쓰지 않는 게이지를 빼고 저장한 모양) widgets 를 떼어 프리셋 구성으로 되돌린다.
@@ -164,10 +230,10 @@ export function asPresetHud(config: FieldHudConfig): FieldHudConfig {
   const { widgets: _dropped, ...rest } = config;
   return rest;
 }
-/** 고른 HUD 에서 이 게임이 쓰지 않는 몸 게이지(프리셋 구성일 때만 — 저자가 직접 짠 widgets 는 묻지 않는다). */
+/** 고른 HUD 에서 이 게임의 필드에서 바뀔 수 없는 칸 — 몸 게이지와 동료 체력 판(프리셋 구성일 때만 — 저자가 직접 짠 widgets 는 묻지 않는다). */
 export function unusedHudGauges(config: FieldHudConfig, use: HudUse): HudWidget[] {
   if (config.widgets !== undefined) return [];
-  return resolvedHudWidgets(config).filter((w) => isBodyGauge(w) && w.enabled && ((w.source === "hp" && !use.hp) || (w.source === "mp" && !use.mp) || (w.source === "stamina" && !use.stamina)));
+  return resolvedHudWidgets(config).filter((w) => w.enabled && idleOnField(w, use));
 }
 /** 필드에 늘 보이는 것(읽는 쪽은 조수 — 고른 테마가 실제로 무엇을 띄우는지 도구 답에 싣는다). 빈 슬롯처럼 값이 없으면 숨는 칸은 「when filled」. */
 export function hudOnScreen(config: FieldHudConfig): string[] {

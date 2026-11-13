@@ -17,6 +17,7 @@
 | `pick` | `--best`: 효력 있는 Opus 통과 후보 중 최고점(같으면 글자 순)을 현재 도트·저장본 화소 해시에 묶는다. `--by` 에 근거(오너 원문·날짜)를 적는다. 글자를 직접 주는 선택도 남아 있지만 오너 결정 뒤로는 `--best` 를 쓴다 | 원장 `pick` (+ score·batch) |
 | `build` | 고른 그림이 해시와 같을 때만 `kind:"backdrop"` 자원(`battle_backdrop_<판>_<해시8>`)으로 넣고 트룹 `previewBackgroundResourceId` 또는 맵 `battleBackground` 에 건다. SQLite 프로젝트 폴더는 `openLocalProjectStore` 로 저장 → 다시 열어 확인. JSON 은 `--out` 새 파일(또는 `--in-place`) | 원장 `builds[]` |
 | `build --emit <폴더>` | 프로젝트 없이 `<자원id>.json`(`{ resource, target, run, pixelSha256 }` — `resource` 는 그대로 `upsert_resource` 인자) + `<자원id>.png` 를 쓴다. 코드로 프로젝트를 짓는 빌더(플래그십 데모)가 커밋해 두고 `execTool("upsert_resource", { resource })` → 트룹 `previewBackgroundResourceId`/맵 `battleBackground` 에 id 를 건다. 필드 모드 끄기는 `set_project_settings { battle: { backdrop: "default" } }` | 원장 `builds[]`(into = json) |
+| `build --bundle <키>` | **공용 번들의 장소 그림**으로 싣는다(아래 「장소 그림」). Opus 검수로 고른(`pick --best`) 판만, 그 판정이 지금 화소에도 효력이 있을 때만. `public/assets/generated/battle-scenery/<키>/preview.png`(팔레트 PNG) + `src/assets/battleSceneryStills.json` 한 줄 | 원장 `builds[]`(target = `bundle:<키>`) |
 | `status` | 판별 후보·검사·선택·설치 | |
 
 ```bash
@@ -28,7 +29,10 @@ npm run harness -- battle-backdrop review <판>                  # Opus 검수(�
 npm run harness -- battle-backdrop pick <판> --best --by 'opus-review (owner: 이제 사람이 고르지 않아. AI 가 해야함, 2026-11-04)'
 npm run harness -- battle-backdrop build <판> --project <폴더|json> [--target troop:<id>|map:<id>] [--out new.json]
 npm run harness -- battle-backdrop build <판> --emit <폴더> [--target troop:<id>|map:<id>]   # 코드 빌더용 자원 파일
+npm run harness -- battle-backdrop build <판> --bundle <키> --ko "<이름>" --en "<name>"       # 공용 번들 장소 그림 battle-scenery-<키>
 ```
+
+- `capture --indoor|--outdoor` — 구성기 세계의 방(묘실·보일러실 …)은 야외 칩셋 한 장에 깔리고 기후 표시가 없어 하네스가 야외·낮으로 읽는다. 부르는 쪽이 알려 준다(근거 줄에 남는다).
 
 - `--assets-root` — 번들 칩셋 그림(`public/assets/...`)을 읽을 체크아웃. 다른 브랜치 데모(예: `../rpg-zzu-maou`)는 그 브랜치 그림으로 그린다.
 - 다른 브랜치 데모 JSON 은 이 체크아웃의 로더가 자원 id 를 거부한다 → 로더 전체 대신 `restoreBundledTilesetDiffs` 만 해서 그린다.
@@ -41,8 +45,65 @@ npm run harness -- battle-backdrop build <판> --emit <폴더> [--target troop:<
   그래서 마왕 편의점의 밤 편의점 트룹(`troop_mk_manual`)은 `battle-scenery-plains`(낮 풀밭)를 그렸다.
 - 바이옴 id 가 아닌 자원은 한 장 그림으로 `cover` 로 깔린다(640×480 무대 → 좌우가 잘린다). 한 장 그림에는 pixelated 표시가 없어서 2배로 미리 키워 저장한다.
 - 배틀러 발: retro2003 무대 640×480 에서 위 56px(스킨 inset) 아래 424px 영역에 저작 좌표 320×160 의 y 가 **발**로 놓인다(`battleFieldDom.positionBattleNode`, `_retro2003.css`) → 발이 높이 약 57~90%, 몸(약 144px)이 그 위. 그래서 아래 45%(`BACKDROP_GROUND_TOP` 0.55) 를 비운다. 시트의 무대 미리보기 상자가 이 자리다.
-- `system.battleBackdrop === "field"` / `battlePresentation === "onField"` 면 필드 스크린숏이 그려져 이 그림이 안 보인다. 스크린숏이 없으면 트룹 배경으로 떨어진다 — **마왕 편의점 데모가 이 상태다**(`battleBackdrop: "field"` → 밤 편의점에서 트룹의 낮 풀밭). `build` 는 경고하고, `--leave-field-mode` 를 줄 때만 끈다(프로젝트 전체 전투 표시가 바뀐다). 조수 도구도 요약에서 경고한다.
+- `system.battleBackdrop === "field"` / `battlePresentation === "onField"` 면(또는 고른 배경이 `battle-scenery-field` 면 — 아래 「그 맵 그대로」) 필드 스크린숏이 그려져 이 그림이 안 보인다. 스크린숏이 없으면 트룹 배경으로 떨어진다 — **마왕 편의점 데모가 이 상태다**(`battleBackdrop: "field"` → 밤 편의점에서 트룹의 낮 풀밭). `build` 는 경고하고, `--leave-field-mode` 를 줄 때만 끈다(프로젝트 전체 전투 표시가 바뀐다). 조수 도구도 요약에서 경고한다.
 - 바닥 띠 기준: 번들 8장 아래 무늬 밀도 0.02~0.18 → `≤0.22` 그리고 `≤ 위쪽×1.3+0.03`(8장 모두 통과).
+
+## 장소 그림 (번들 한 장 그림, 2026-11-11)
+
+겹 배경은 숲·평원·동굴·눈·사막 다섯뿐이라, 조수 v2 의 테마 세계(사막 묘실 · 증기 도시 보일러실 …)는 대역을 깔고 «없는 그림» 줄을 남겼다
+(`src/ai/v2/place/placeTheme.ts`, 눈가림 플레이: 피라미드 보스전이 숲에서 벌어졌다). 그 빈칸을 이 하네스로 그려 **프로젝트가 아니라 번들에** 싣는다.
+
+- **자리·id**: 겹 배경과 같은 폴더·같은 id 틀 — `public/assets/generated/battle-scenery/<키>/preview.png`, id `battle-scenery-<키>`.
+  목록은 `src/assets/battleSceneryStills.json`(`build --bundle` 이 쓴다, 손으로 고치지 않는다) → `BATTLE_SCENERY_STILLS`(`src/assets/battleSceneryCatalog.ts`).
+- **규격**: 겹 배경 미리보기와 같다 — 640×360 = 320×180 격자 2배(2×2 블록이 같다), 불투명, 32색 이하. 팔레트(색인) PNG 로 써서 한 장 약 10KB
+  (RGBA 로 쓰면 38KB — `encodeIndexedPng`, 쓴 뒤 다시 읽어 화소 해시를 견준다).
+- **푸는 법**: `resolveSceneryBiome` 은 장소 그림 id 에 undefined 를 돌려준다 → 도트 측면 전투가 겹 배경으로 바꾸지 않고 그 한 장을 `cover` 로 깐다(업로드 그림과 같은 길).
+  `generatedAssetResourceResolver` 의 내장 표에 실려 있어 프로젝트에 자원을 넣지 않아도 **새 프로젝트·기존 프로젝트 모두** 주소가 풀리고,
+  자원 참조 검증 · 편집기 그림 고르기(「전투 배경 · <이름> <장소 그림>」) · 조수 자원 목록이 알아보며, 내보내기는 프로젝트가 쓴 id 의 그림만 싣는다.
+  `unknownSceneryIdMessage` 는 이 id 를 받아들이고(지어낸 `battle-scenery-…` 는 여전히 거절), 도구 설명(`BATTLE_BACKDROP_ID_HINT`)에 목록이 붙는다.
+  몬스터 대치(포켓몬식)는 다른 `battle-scenery-*` 와 같이 줄무늬 바닥으로 푼다.
+- **출구 조건**: 번들에는 `pick --best`(Opus 검수 통과 최고점)로 고른 판만 실린다. 디코이를 통과시킨 묶음·3.5 미만·사람이 글자로 고른 판은 거절한다.
+  `test/battleSceneryStills.test.ts` 가 실린 그림의 화소 해시 = 원장의 선택 = 효력 있는 Opus 묶음의 pass 임을 CI 에서 본다.
+- **참고 장소**: `bun scripts/qa/assistant-v2/themeBackdropPlaces.mts <폴더> [키,…]` 가 테마 표가 바라는 배경마다 그 세계·종류의 맵을 구성기로 한 장 깔아
+  프로젝트 JSON 을 남긴다(모델 없음) → `capture --project <폴더>/<키>.project.json --map <맵 id> --run theme-<키> [--indoor] --note "<한 줄>"`.
+- **증명**: `bun scripts/qa/assistant-v2/themeBackdropProof.mts <폴더> [키,…]`(구성기 장소 + 실제 빌더 채우기 → 맵에 저장된 전투 배경 id · 런타임이 고르는 배경) →
+  `THEME_BACKDROP_PROOF=<폴더>/proof.json THEME_BACKDROP_KEY=<키> npm run qa:runtime -- --scenario theme-backdrop --project <폴더>/<키>.proof.project.json` (출하 플레이어 전투 화면).
+- 실린 뒤에는 `placeTheme.ts` 표에서 그 줄에 `still: "<키>"` 를 적는다. 통과 못 한 배경은 `battle-scenery-field`(그 맵 그대로 — 아래) + 없는 그림 줄 그대로 둔다(점수 완화·디코이 빼기·손 기록 금지). 다른 지형 그림을 대역으로 깔지 않는다(2026-11-12).
+
+실린 장소 그림과 검수 점수는 `battleSceneryStills.json` 과 원장이 정본이다(`npm run harness -- battle-backdrop status`).
+
+### 실린 열둘 (2026-11-12)
+
+| 키 | 장소(세계) | 판 | Opus 점수 |
+|---|---|---|---|
+| `tomb` | 묘실(desert_east) | `theme-tomb` | 4.5 |
+| `boiler-room` | 보일러실·기관실(steampunk_city) | `theme-boiler-room` | 4.5 |
+| `brick-street` | 벽돌 거리(steampunk_city 바깥) | `theme-brick-street-flat` | 4.0 |
+| `ice-cave` | 얼음 동굴(snow_north) | `theme-ice-cave` | 4.5 |
+| `beach` | 열대 해변(pirate_isles 바깥) | `theme-beach` | 4.0 |
+| `shipwreck` | 난파선(pirate_isles) | `theme-shipwreck` | 4.5 |
+| `cloud-sea` | 구름 바다(sky_island 바깥) | `theme-cloud-sea` | 4.5 |
+| `sky-shrine` | 하늘 신전(sky_island) | `theme-sky-shrine` | 4.5 |
+| `swamp` | 원시 늪(prehistoric) | `theme-swamp` | 4.5 |
+| `volcano` | 화산(prehistoric) | `theme-volcano` | 4.0 |
+| `edo-town` | 성하마을(sengoku_edo 바깥) | `theme-edo-town` | 4.5 |
+| `station` | 정거장 복도(sf_station) | `theme-station` | 4.5 |
+
+- 벽돌 거리 첫 판(`theme-brick-street`, 후보 8)은 자갈 무늬 때문에 기계 검사 `groundClear` 에서 전부 떨어져 검수에 가지 못했다. «바닥은 무늬 없는 평평한 띠» 를 적은 새 판에서 넷이 검수를 통과했다.
+- 검수 비용: 묶음 열둘 $0.53(묶음마다 원장 `reviews[].costUsd`).
+
+### 검수 경로 — 로컬 Claude (`BATTLE_BACKDROP_OPUS_VIA=claude-cli`)
+
+`review` 는 기본으로 중계기(`klb/claude-opus-5.5`)에 묻는다. 2026-11-11~12 그 중계기가 503 이라 로컬 Claude 경로를 더했다:
+`BATTLE_BACKDROP_OPUS_VIA=claude-cli npm run harness -- battle-backdrop review <판>` → `claude -p --model claude-opus-5-5 --effort medium`(도구·MCP·설정 없이, stream-json 으로 그림을 넣는다).
+지시문·디코이·통과 규칙은 같다. 응답의 `modelUsage` 가 Opus 가 아니면 실패한다(다른 모델로 떨어진 묶음은 효력이 없다). 묶음마다 `costUsd` 를 원장에 적는다.
+
+### 그 맵 그대로 — `battle-scenery-field`
+
+그림이 없는 장소에서 다른 지형 그림을 까는 대신 **필드 화면 위에서 싸운다.** 맵 `battleBackground`(또는 무리 배경)에 `battle-scenery-field` 를 적으면
+`resolveBattleBackdropId` 가 그 id 를 그대로 돌려주고, `playSceneBattle` 이 프로젝트 전체 설정(`system.battleBackdrop === "field"`)과 같은 길로 필드 스냅숏을 배경으로 쓴다
+(겹 배경을 깔지 않고 필드 스프라이트를 숨긴다 — `battleScenery.syncBattleScenery` · `isFieldBattleBackdrop`). 파일이 없는 내장 id 라 내보내기는 싣지 않고, 자원 검증·`unknownSceneryIdMessage`·도구 설명이 알아본다.
+조수 v2 는 세계·종류 표에 그림이 없는 종류와, 표 밖에서 같은 종류라고 말할 수 없는 맵(실내 칩셋·도시 거리)에 이것을 적고 없는 그림 줄을 남긴다 — `openwiki/assistant-v2.md` 「전투가 장소·파티에 맞는다」.
 
 ## 시간·빛
 

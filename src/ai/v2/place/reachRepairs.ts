@@ -4,25 +4,26 @@ import { playerAnchors } from "@/editor/tools/transferReachability";
 import { labelHasWord } from "@/project/labelWords";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { PERSON_SPOT_BAD, personSpotContext, personSpotCost } from "./personSpot";
-import { declaredDoorCells } from "./entrances";
+import { declaredDoorCells, stepDoorCells } from "./entrances";
 import { objectAt, tileLabel } from "./cells";
 import { objectBaseLabel, objectClusterAt } from "@/project/objectFootprint";
 import type { ArtGap } from "@/project/artGap";
 import type { BuildRun } from "../shared/types";
-import { Cell, DIRS, eventBlocks, anchorsOf, reachFrom, blockersOf, bodyReached, nextTo, reachableCells, unreachableEvents, isDoorName, baseLabel, hostWords, itemTileWords, objectCells, singleTileObject, invisibleEvent } from "../judge/eventReach";
+import { Cell, DIRS, eventBlocks, anchorsOf, reachFrom, blockersOf, bodyReached, nextTo, reachableCells, unreachableEvents, isDoorEvent, baseLabel, hostWords, itemTileWords, objectCells, singleTileObject, invisibleEvent } from "../judge/eventReach";
 
 export interface ReachRepair { readonly moved: string[]; readonly stuck: string[] }
 
 /**
  * 이벤트들(순서 = 고리 순서)을 걸어 가 말을 걸 수 있게 고친다.
- *  1) 문 이름 이벤트는 칩셋이 적어 둔 문 칸으로(place/entrances.ts declaredDoorCells — 건물 입구 · 방 키트 문).
+ *  1) 문 이름 이벤트는 칩셋이 적어 둔 문 칸으로(place/entrances.ts stepDoorCells) — 그 이벤트가 여는 장소로 가는 입구의 문 칸, 그런 장소가 없으면 어디로도 이어지지 않는 문 칸.
+ *     다른 곳으로 가는 입구(남의 건물 문)에는 앉히지 않는다. leadsTo = 사슬을 짓는 중이라 아직 청사진에 적히지 않은 자물쇠 단계가 여는 맵(이벤트 id → 맵 id).
  *  2) 이름이 가리키는 물건(책상·책장·벽난로·금고·그림·서랍·상자…)이 맵에 있으면 그 물건 칸 위로 — 앞(아래)에 설 칸이 있는 칸이 먼저.
  *  3) 그래도 막혔거나 길목을 막으면 가까운 닿는 빈 바닥으로(물건 옆 우선).
  *  4) 맞는 물건이 없고 그림 없는 이벤트면 그 명사의 1칸 물건 그림을 칩셋에서 골라 이벤트 칸에 깐다.
  *     칩셋에 그 낱말의 1칸 그림이 없으면 깔지 않고 noArt 에 적는다(비슷한 그림을 대신 고르지 않는다). 문 이름인데 적힌 문 칸이 없는 맵도 noArt.
  * 다른 이벤트(목록 밖 포함)를 못 닿게 만드는 자리는 고르지 않는다.
  */
-export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonly string[], hostsFor?: ReadonlyMap<string, readonly (readonly string[])[]>): ReachRepair & { readonly noArt: ArtGap[] } {
+export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonly string[], hostsFor?: ReadonlyMap<string, readonly (readonly string[])[]>, found?: ReadonlySet<string>, leadsTo?: ReadonlyMap<string, string>): ReachRepair & { readonly noArt: ArtGap[] } {
   const moved: string[] = [];
   const stuck: string[] = [];
   const noArt = new Map<string, ArtGap>();
@@ -58,15 +59,17 @@ export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonl
     let target: Cell | undefined;
     let why = "";
     // 1) 문
-    const door = isDoorName(name);
-    const doors = door ? declaredDoorCells(project, map) : [];
+    const door = isDoorEvent(project, ev, found);
+    const leads = door ? leadsTo?.get(id) ?? opensMapOf(project, id) : undefined;
+    const doors = door ? stepDoorCells(project, map, leads) : [];
     if (door && doors.length) {
       if (doors.some((d) => d.x === ev.x && d.y === ev.y) && judge(here)) continue;
       target = [...doors].sort((a, b) => dist(a) - dist(b)).find((c) => usable(c) && judge(c));
       if (target) why = " 문 그림 칸";
     }
-    // 문 이름인데 이 맵에 칩셋이 적어 둔 문 칸이 하나도 없다 — 이름표가 「…문」인 그림으로 대신 앉히지 않고 적는다(걸어서 지나는 성문·목책 문이 그렇게 잡혔다).
-    if (door && !doors.length) noArt.set(id, { chipset: map.tilesetId, want: "door-piece", wanted: "벽 문 그림", where: `${map.name} ${ev.x},${ev.y}`, standIn: "none", by: "event-reach", note: `「${name || id}」 — 이 맵에 적힌 문 칸이 없다` });
+    // 문 이름인데 앉을 문 칸이 없다 — 이름표가 「…문」인 그림이나 남의 건물 문으로 대신 앉히지 않고 적는다(걸어서 지나는 성문·목책 문 · 야영지 천막 문이 그렇게 잡혔다).
+    // 제 입구 곁에 선 자물쇠(leads)는 그 자리가 제자리라 적지 않는다 — 곁의 물건에 앉히는 쪽(stepThings)이 없는 그림을 적는다.
+    if (door && !doors.length && !leads) noArt.set(id, { chipset: map.tilesetId, want: "door-piece", wanted: "벽 문 그림", where: `${map.name} ${ev.x},${ev.y}`, standIn: "none", by: "event-reach", note: `「${name || id}」 — ${declaredDoorCells(project, map).length ? "이 맵의 문은 모두 다른 곳으로 가는 입구다" : "이 맵에 적힌 문 칸이 없다"}` });
     else if (door) noArt.delete(id);
     // 2) 이름이 가리키는 물건
     let host = false;
@@ -129,6 +132,14 @@ export function repairEventReach(run: BuildRun, mapId: string, eventIds: readonl
     }
   }
   return { moved, stuck, noArt: [...noArt.values()] };
+}
+
+/** 자물쇠 단계(puzzle)의 이벤트가 여는 장소 — 청사진의 다음 단계가 다른 맵에 지어졌으면 그 맵 id. */
+function opensMapOf(project: Project, eventId: string): string | undefined {
+  const steps = project.gameBlueprint?.steps ?? [];
+  const k = steps.findIndex((s) => s.built?.eventId === eventId);
+  const here = steps[k]?.built?.mapId, next = steps[k + 1]?.built?.mapId;
+  return k >= 0 && steps[k]!.kind === "puzzle" && here && next && next !== here ? next : undefined;
 }
 
 // ── 이동 칸 앞 비우기 ─────────────────────────────────────────────────────────────

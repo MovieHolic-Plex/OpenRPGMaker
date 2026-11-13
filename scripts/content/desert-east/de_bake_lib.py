@@ -135,9 +135,12 @@ class Outdoor:
             tids = sorted({t for t, _ in cells.values()})
             if nfr > 1: tids = sorted({t + f for t in tids for f in range(nfr)})
             single_terrain = p['kind'] in ('terrain', 'flat') and W * H == 1
-            gkey = ('w:' + p['wang']) if p.get('wang') else ('t:' + p['id']) if single_terrain else p['group']
+            gkey = ('w:' + p['wang']) if p.get('wang') else ('g:' + p['tile_group']['id']) if p.get('tile_group') else ('t:' + p['id']) if single_terrain else p['group']
             if gkey not in self.groups:
-                if p.get('wang'):
+                if p.get('tile_group'):       # 한 칸 바닥 여러 장을 한 그룹으로(게임마다 고르는 재질 칸 — 조각마다 그룹을 만들지 않는다)
+                    g = p['tile_group']
+                    self.groups[gkey] = dict(id=f"{self.prefix}:{g['id']}", name=g['name'], role='terrain', tileIds=set(), description=g['desc'], placementRules=g['rules'])
+                elif p.get('wang'):
                     self.groups[gkey] = dict(id=f"{self.prefix}:wang-{p['wang']}", name=p['wang_name'], role='terrain', tileIds=set(), description=p['wang_desc'],
                                              placementRules=p['wang_rules'])
                 elif single_terrain:
@@ -163,6 +166,9 @@ class Outdoor:
             if nfr > 1: ai['tags'].append(f'애니메이션 {nfr}프레임')
             # stamp_tileset_object(조수의 키트 찍기 도구)가 읽는 종류 낱말: decal 바닥 표시 · overhead 머리 위(낙하물) · prop 막힘(기본)
             ai['tags'].append(p.get('stamp') or ('decal' if p['kind'] == 'flat' else 'overhead' if p['kind'] == 'debris' else 'prop'))
+            if p.get('variantOf'): ai['variantOf'] = p['variantOf']     # 같은 종류의 다른 그림 — 조수 실행이 게임 열쇠로 원본 대신 고른다(project/kitLook.ts)
+            if p.get('lookWith'): ai['lookWith'] = p['lookWith']         # 함께 바뀌는 가족(벽면 ↔ 창 난 벽) — 그 원본과 같은 순번을 고른다
+            if p.get('ai_role'): ai['role'] = p['ai_role']
             kit = dict(id=p['id'], kind='section', name=p['name'], width=W, height=H, tileSize=16, rows=rows, learnedFrom='pack-preset', ai=ai)
             ent = p.get('entrance')
             if ent:

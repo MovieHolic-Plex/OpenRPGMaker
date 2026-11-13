@@ -7,12 +7,14 @@ import { FITTED_TROOP_PREFIX } from "@/editor/tools/bossThreatScaling";
 /**
  * 싸우는 단계의 상대 무리 — 시작 파티에 맞춘 보스(마지막 싸움)·중간 보스 사본. 상대 이름(who)이 있으면 그 이름을 단 사본을 단계마다 하나 둔다
  * (원본 DB 적은 그대로, 다시 지으면 같은 사본을 고쳐 쓴다). 전투 화면의 적 이름이 청사진의 그 사람이 된다.
+ * taken = 이 게임의 싸우는 단계들이 세운 종(부르는 쪽이 단계마다 같은 집합을 넘긴다) — 보스 둘이 같은 전투 그림으로 서지 않게 고르고, 고른 종을 더한다.
  */
-export function foeTroop(project: Project, stepId: string, who: string | undefined, final: boolean, mapId: string, salt: number, gaps: string[]): string | undefined {
+export function foeTroop(project: Project, stepId: string, who: string | undefined, final: boolean, mapId: string, salt: number, gaps: string[], taken?: Set<string>): string | undefined {
   // 그 장소의 테마에 맞는 상대가 먼저다(사막 유적의 수호자가 늘 «붉은 드래곤» 사본이었다) — 현행 그림이 있는 종에서 고른다(place/placeTheme).
   // 그런 적이 프로젝트 DB 에 하나도 없을 때만(적을 다 바꾼 프로젝트) 종전대로 DB 에서 가장 센 무리.
-  const themed = themeBossTroop(project, mapId, who, final, salt);
+  const themed = themeBossTroop(project, mapId, who, final, salt, taken);
   gaps.push(...themed.gaps);
+  if (themed.enemyId) taken?.add(themed.enemyId);
   const picked = themed.troopId ? undefined : pickFittedTroops(project, undefined);
   const baseId = themed.troopId ?? (final ? picked!.boss : picked!.midBoss) ?? picked!.boss ?? picked!.midBoss ?? picked!.field.at(-1);
   const name = who?.trim();

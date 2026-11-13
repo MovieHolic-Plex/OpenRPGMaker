@@ -572,6 +572,7 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - 전투 배경이 장소와 안 맞을 때(밤 편의점 전투에 낮 풀밭 등) — 그 맵을 보고 맞는 측면 전투 배경을 만든다
 - 트룹·맵의 전투 배경을 새로 그려 설치할 때. 바이옴 기본 배경(battle-scenery-*) 고르기만이면 하네스가 필요 없다
 - 편집기 조수는 generate_battle_backdrop 도구로 같은 핵심(src/editor/battleBackdropCore.ts)을 써서 한 장을 만든다
+- 조수 v2 테마 세계의 «없는 그림»(placeTheme.ts wantedBackdrop — 묘실·보일러실 …)을 공용 번들의 장소 그림 battle-scenery-<키> 로 실을 때 — build --bundle
 
 **단계** (`npm run harness -- battle-backdrop <단계>`):
 - `capture` — 맵 캡처: 프로젝트·맵(또는 트룹으로 전투 맵 찾기)·칸 둘레를 이벤트 없이 그리고 시간·빛·장소 낱말·칩셋 팔레트를 기록한다.
@@ -581,7 +582,7 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `sheet` — 고르기 시트: ~/claude-viz/battle-backdrop-<이름>.html — 캡처 옆 후보 1배·3배·전투 무대 미리보기·검사표.
 - `review` — Opus 검수: 맵 캡처 + 후보 + 숨긴 디코이 3장을 번호로만 보여 주고 Claude Opus 가 1~5점(0.5 단위)으로 매긴다. 디코이를 모두 떨어뜨린 묶음에서 3.5 이상이 통과. 판정은 화소 해시에 묶인다.
 - `pick` — 선택: --best: Opus 통과 후보 중 최고점을 현재 도트 화소 해시에 묶는다. --by 에 근거(오너 원문·날짜)를 남긴다.
-- `build` — 설치: 고른 그림을 kind=backdrop 자원으로 넣고 트룹 previewBackgroundResourceId 또는 맵 battleBackground 에 건다. SQLite 폴더는 저장 후 다시 읽어 확인한다.
+- `build` — 설치: 고른 그림을 kind=backdrop 자원으로 넣고 트룹 previewBackgroundResourceId 또는 맵 battleBackground 에 건다. SQLite 폴더는 저장 후 다시 읽어 확인한다. --bundle <키> 는 Opus 검수로 고른 판을 공용 번들의 장소 그림(battle-scenery-<키>, 모든 프로젝트가 푼다)으로 싣는다.
 - `status` — 현황: 판별 후보·검사·선택·설치 상태.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 있음

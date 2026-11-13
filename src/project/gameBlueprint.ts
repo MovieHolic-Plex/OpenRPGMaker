@@ -19,6 +19,8 @@ export type GameBlueprintStepKind = (typeof STEP_KINDS)[number];
  */
 export interface GameBlueprintStepText {
   lines?: string[];
+  /** find·puzzle: 모델이 고른 «그 장소에 그려진 물건» 의 이름 — 경로를 다시 지을 때도 그 그림에 앉는다(story/stepThings). */
+  on?: string;
   lockedLines?: string[];
   doneLines?: string[];
   /** battle: 이긴 뒤의 말. */
@@ -29,6 +31,10 @@ export interface GameBlueprintStepText {
   options?: string[];
   /** choice: 고를 것 — lines = 고른 뒤의 답, later = 엔딩 직전에 보이는 그 선택의 결과 한 줄. */
   choices?: { text: string; lines?: string[]; later?: string }[];
+  /** 이 단계가 다음 할 일일 때 화면의 「현재 목표」 줄 — 플레이어에게 하는 말. 없으면 사람·물건 이름으로 짓는다(action 은 설계 메모라 화면에 내지 않는다). */
+  goal?: string;
+  /** 이 단계에서 플레이어 손에 들어오는 물건의 이름 — 소지품에 실제로 들어가고 다음 단계가 그 물건을 확인한다. */
+  item?: string;
 }
 
 /**
@@ -56,13 +62,13 @@ export interface GameBlueprintStep {
   place: string;
   /** 그 맵 위 이벤트 이름 — 플레이어가 말을 걸거나 조사하는 대상. */
   event: string;
-  /** 플레이어가 하는 일(「서연에게 말을 건다」). */
+  /** 플레이어가 하는 일(「서연에게 말을 건다」) — 설계 메모. 화면에 내지 않는다. */
   action: string;
-  /** 이 단계가 열리는 조건(사람 말, 첫 단계는 생략). */
+  /** 이 단계가 열리는 조건(사람 말, 첫 단계는 생략) — 설계 메모. 화면에 내지 않는다. */
   needs?: string;
-  /** 이 단계가 남기는 것 — 다음 단계를 여는 열쇠·스위치·호감, 마지막은 엔딩. */
+  /** 이 단계가 남기는 것 — 다음 단계를 여는 열쇠·스위치·호감, 마지막은 엔딩. 깃발 이름이라 화면에 내지 않는다(물건이면 text.item 이 소지품 이름이다). */
   gives: string;
-  /** 이 장면에서 의도한 느낌(설렘·긴장·안도…). */
+  /** 이 장면에서 의도한 느낌(설렘·긴장·안도…) — 설계 메모. 화면에 내지 않는다. */
   feeling: string;
   /** 이 단계 이벤트의 글(build_blueprint_path 가 채운다). */
   text?: GameBlueprintStepText;
@@ -138,8 +144,11 @@ export function normalizeStepText(raw: unknown): GameBlueprintStepText | undefin
   const r = raw as Record<string, unknown>;
   const list = (v: unknown, max: number): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && !!x.trim()).map((x) => x.trim().slice(0, 400)).slice(0, max) : []);
   const out: GameBlueprintStepText = {};
+  if (typeof r.on === "string" && r.on.trim()) out.on = r.on.trim().slice(0, 60);
   for (const key of STEP_TEXT_LISTS) { const got = list(r[key], 8); if (got.length) out[key] = got; }
   if ((typeof r.code === "string" || typeof r.code === "number") && String(r.code).trim()) out.code = String(r.code).trim().slice(0, 24);
+  if (typeof r.goal === "string" && r.goal.trim()) out.goal = r.goal.trim().slice(0, 80);
+  if (typeof r.item === "string" && r.item.trim()) out.item = r.item.trim().slice(0, 40);
   const choices = (Array.isArray(r.choices) ? r.choices : []).flatMap((c) => {
     if (!c || typeof c !== "object") return [];
     const o = c as Record<string, unknown>;

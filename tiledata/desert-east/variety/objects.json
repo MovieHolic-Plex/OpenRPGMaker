@@ -1,0 +1,179 @@
+{
+ "_doc": "새 기물만 탐침 꼴로(build.py 가 쓴다 — 굽기는 spec.json 을 읽는다).",
+ "waiver": "fable-variety-desert-east-2026-11-13",
+ "items": [
+  {
+   "id": "barrel",
+   "src": "de-barrel.png",
+   "name": "나무 통(물·기름)",
+   "en": "wooden barrel",
+   "kind": "round_body",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "words": [
+    "통",
+    "나무 통",
+    "술통",
+    "물통",
+    "barrel"
+   ]
+  },
+  {
+   "id": "barrels",
+   "src": "de-barrels.png",
+   "name": "통 둘(테 두른 나무 통)",
+   "en": "two barrels",
+   "kind": "round_body",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "words": [
+    "통",
+    "나무 통",
+    "술통",
+    "barrels"
+   ]
+  },
+  {
+   "id": "notice-board",
+   "src": "de-notice-board.png",
+   "name": "게시판(나무 판에 붙은 종이·포고문)",
+   "en": "notice board",
+   "kind": "front_prop",
+   "w": 2,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "words": [
+    "게시판",
+    "알림판",
+    "포고문",
+    "공고",
+    "기록판",
+    "notice board"
+   ]
+  },
+  {
+   "id": "stop-lever",
+   "src": "de-stop-lever.png",
+   "name": "바닥 레버(돌 받침 위 큰 놋 레버)",
+   "en": "floor lever",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "레버",
+    "바닥 레버",
+    "스위치",
+    "조작 레버",
+    "lever",
+    "switch"
+   ]
+  },
+  {
+   "id": "hatch-down",
+   "src": "de-hatch-down.png",
+   "name": "지하로 내려가는 돌계단 입구",
+   "en": "stone stairs going down",
+   "kind": "flat",
+   "w": 2,
+   "h": 2,
+   "place": "decal",
+   "block": [],
+   "words": [
+    "계단",
+    "지하",
+    "지하 입구",
+    "입구",
+    "뚜껑문",
+    "내려가는 계단",
+    "stairs",
+    "cellar"
+   ]
+  },
+  {
+   "id": "room-door",
+   "src": "de-room-door.png",
+   "name": "방 문(나무 아치 문)",
+   "en": "arched wooden door between rooms",
+   "kind": "wall_structure",
+   "w": 1,
+   "h": 2,
+   "place": "walldoor",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "문",
+    "door",
+    "방문",
+    "나무 문",
+    "출입문"
+   ]
+  },
+  {
+   "id": "save-crystal",
+   "src": "de-save-crystal.png",
+   "name": "세이브 수정(빛나는 청록 수정 받침)",
+   "en": "glowing save crystal",
+   "kind": "figure",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "words": [
+    "세이브",
+    "세이브 수정",
+    "수정",
+    "저장",
+    "save crystal",
+    "crystal"
+   ]
+  }
+ ]
+}

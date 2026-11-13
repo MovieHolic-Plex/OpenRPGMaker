@@ -9,6 +9,9 @@
 //   - 칩 규약(행 위·오른쪽·아래·왼쪽, 열 3)을 그대로 따르므로 기존 걷기·제자리걸음·방향 처리가 손대지 않고 돈다.
 //     오른쪽 = 원본 방향, 왼쪽 = 좌우 반전. 위·아래는 측면 그림뿐이라 위 = 오른쪽, 아래 = 왼쪽 그림을 쓴다.
 //   - 열 0 = 1px 눌림, 열 1 = 기본, 열 2 = 1px 들림(걸음·제자리걸음 때 통통 튀는 움직임).
+//   - 크게 세운 적(이벤트 그림 scale 이 2 이상의 정수 · manual — 길을 막아선 보스)은 그 배수만큼 덜 줄인 칩을 뽑아 화소 그대로 놓는다.
+//     1/4 칩을 2배로 늘리면 뭉개진 덩어리라 전투 화면의 그 그림으로 읽히지 않았다(2026-11-13 r2s-fun·r2t-fun 플레이: «맵의 보스와 전투의 보스가 다르다»).
+//     같은 크기를 원본 화소로 채운다 — detail 인자. 소수 배율(2.2)은 화소가 맞지 않아 전과 같이 늘린다.
 // 이벤트가 걷기 칩(charset)을 직접 지정했으면 이 경로를 타지 않는다 — 손으로 찍은 필드 칩이 언제나 이긴다.
 // 캔버스가 오염되어(file:// 그림) 화소를 못 읽으면 예전 정지 그림으로 떨어진다.
 import type Phaser from "phaser";
@@ -25,8 +28,8 @@ export function isDerivedFieldFoeTextureKey(key: string): boolean {
   return key.startsWith(DERIVED_FIELD_FOE_PREFIX);
 }
 
-export function derivedFieldFoeTextureKey(sourceKey: string): string {
-  return `${DERIVED_FIELD_FOE_PREFIX}${sourceKey}`;
+export function derivedFieldFoeTextureKey(sourceKey: string, detail = 1): string {
+  return `${DERIVED_FIELD_FOE_PREFIX}${sourceKey}${detail > 1 ? `@${detail}` : ""}`;
 }
 
 /** 아래를 보고 선 기본 프레임(칩 규약: 0번 캐릭터, 아래, 열 1). */
@@ -37,17 +40,21 @@ type Pixels = { readonly w: number; readonly h: number; readonly data: Uint8Clam
 
 const failed = new Set<string>();
 
-/** 전투 그림 텍스처에서 필드 칩 텍스처를 만들어(한 번) 그 키를 돌려준다. 원본이 아직 없거나 화소를 못 읽으면 undefined. */
-export function ensureDerivedFieldFoeTexture(scene: { readonly textures?: unknown }, sourceKey: string): string | undefined {
+/**
+ * 전투 그림 텍스처에서 필드 칩 텍스처를 만들어(한 번) 그 키를 돌려준다. 원본이 아직 없거나 화소를 못 읽으면 undefined.
+ * detail(2 이상의 정수)을 주면 그만큼 덜 줄인 칩을 뽑고, 실제로 얻은 배수(gain — 원본이 작으면 detail 보다 작다)를 같이 돌려준다.
+ */
+export function ensureDerivedFieldFoe(scene: { readonly textures?: unknown }, sourceKey: string, detail: number): { readonly key: string; readonly gain: number } | undefined {
   // 테스트용 가짜 장면·부분 텍스처 관리자에서는 조용히 정지 그림으로 둔다.
   const textures = scene.textures as Partial<Phaser.Textures.TextureManager> | undefined;
   if (!textures?.exists || !textures.get || !textures.addCanvas || typeof document === "undefined") return undefined;
-  const key = derivedFieldFoeTextureKey(sourceKey);
-  if (textures.exists(key)) return key;
   if (failed.has(sourceKey) || !textures.exists(sourceKey)) return undefined;
   try {
     const source = textures.get(sourceKey).getSourceImage() as CanvasImageSource & { width: number; height: number };
-    const sheet = deriveFieldFoeSheet(readPixels(source));
+    const gain = fieldFoeGain(source.width, source.height, detail);
+    const key = derivedFieldFoeTextureKey(sourceKey, gain);
+    if (textures.exists(key)) return { key, gain };
+    const sheet = deriveFieldFoeSheet(readPixels(source), gain);
     if (!sheet) { failed.add(sourceKey); return undefined; }
     const canvas = document.createElement("canvas");
     canvas.width = sheet.w;
@@ -62,7 +69,7 @@ export function ensureDerivedFieldFoeTexture(scene: { readonly textures?: unknow
           col * sheet.frameW, row * sheet.frameH, sheet.frameW, sheet.frameH);
       }
     }
-    return key;
+    return { key, gain };
   } catch {
     failed.add(sourceKey);
     return undefined;
@@ -78,12 +85,21 @@ function readPixels(source: CanvasImageSource & { width: number; height: number 
   return { w: canvas.width, h: canvas.height, data: context.getImageData(0, 0, canvas.width, canvas.height).data };
 }
 
-/** 순수 함수(테스트용): RGBA 화소 → 3열×4행 칩 시트. 불투명 화소가 없으면 null. */
-export function deriveFieldFoeSheet(src: Pixels): (Pixels & { frameW: number; frameH: number }) | null {
+/** 그림 칸 크기의 축소 배수(64px 칸 → 2, 128px 칸 → 4). */
+const baseFactor = (w: number, h: number): number => Math.max(1, Math.round(Math.max(w, h) / TARGET));
+/** detail 배로 덜 줄일 때 실제로 얻는 배수 — 축소 배수를 정수로 나눌 수 있는 만큼만(64px 그림에 3 을 주면 2). */
+export function fieldFoeGain(w: number, h: number, detail: number): number {
+  const base = baseFactor(w, h);
+  for (let g = Math.min(base, Math.max(1, Math.floor(detail))); g > 1; g -= 1) if (base % g === 0) return g;
+  return 1;
+}
+
+/** 순수 함수(테스트용): RGBA 화소 → 3열×4행 칩 시트. 불투명 화소가 없으면 null. gain = 덜 줄이는 배수(fieldFoeGain). */
+export function deriveFieldFoeSheet(src: Pixels, gain = 1): (Pixels & { frameW: number; frameH: number }) | null {
   const box = opaqueBox(src);
   if (!box) return null;
   // 배율은 그림 칸 크기로 정한다(64px 칸 → 정확히 1/2). 몸 상자로 정하면 작은 종(거미 47px)이 축소되지 않아 종마다 크기가 뒤섞인다.
-  const factor = Math.max(1, Math.round(Math.max(src.w, src.h) / TARGET));
+  const factor = Math.max(1, Math.round(baseFactor(src.w, src.h) / gain));
   const body = outline(pool(src, box, factor));
   const frameW = body.w + 0;
   const frameH = body.h + FOOT + LIFT;

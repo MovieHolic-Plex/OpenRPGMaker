@@ -37,6 +37,7 @@ import { runTodoItemCheck } from "../../judge/todoChecks";
 import { COVERABLE } from "../../loop/builderCover";
 import { linkWorldRoom } from "../worldRoomLink";
 import { recordArtGaps } from "@/project/artGap";
+import { drawnThingNames } from "../../place/fixtures";
 import type { VerbContext } from "../context";
 import { keptPlaceResult } from "../../place/keepMapId";
 
@@ -73,11 +74,15 @@ export function placeVerbs(c: VerbContext) {
     const unreached = (path?.unreached ?? []).map((id) => `«${project.maps[id]?.name ?? id}»`);
     const built = mapIds.filter((id) => !before.has(id));
     const ok = !missing.length && !unreached.length;
+    // 조사·퍼즐 단계가 있는 장소마다 거기 그려진 물건 이름 — 모델이 build_blueprint_path 의 steps[].on 으로 고르고 대사를 그 그림에 맞춘다.
+    const thingPlaces = [...new Set((project.gameBlueprint?.steps ?? []).filter((st) => st.kind === "find" || st.kind === "puzzle").map((st) => st.place))];
+    const things = thingPlaces.flatMap((name) => { const map = exact(name); const names = map ? drawnThingNames(project, map, 8) : []; return names.length ? [`«${name}»: ${names.join(", ")}`] : []; });
     const summary = [
       `${world.name}: ${mapIds.length}/${places.length} places stand${built.length ? ` (${built.length} built now)` : ""} — ${rows.filter((r) => r.map).map((r) => `«${r.place.name}» ${r.place.kind} ${r.map!.width}×${r.map!.height} mapId=${r.map!.id}`).join(" · ")}.`,
       ...(adjusted.length ? [`Kinds chosen by code: ${adjusted.join("; ")}.`] : []),
       ...(missing.length ? [`Not built: ${missing.join(", ")} — ${notes.filter((n) => /실패|없다/u.test(n)).join(" / ").slice(0, 400)}`] : []),
       ...(unreached.length ? [`Not reachable on foot from the start: ${unreached.join(", ")} — link each with create_transfer_pair.`] : [`Every place is reachable on foot from the start («${project.maps[project.startMapId]?.name ?? project.startMapId}»).`]),
+      ...(things.length ? [`Things drawn where a find/puzzle step happens (name one as that step's «on»): ${things.join(" · ")}.`] : []),
       ok ? "Next: build_blueprint_path once, then people and events per place (add_people, add_event). These maps are laid by composers in one pass — do not rebuild them with make_place or edit_place." : "",
     ].filter(Boolean).join(" ");
     recordWrite(env, run, toolCallId, verb, args, ok, summary, { mapIds });

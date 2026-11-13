@@ -1672,7 +1672,8 @@
       "triggers": [
         "전투 배경이 장소와 안 맞을 때(밤 편의점 전투에 낮 풀밭 등) — 그 맵을 보고 맞는 측면 전투 배경을 만든다",
         "트룹·맵의 전투 배경을 새로 그려 설치할 때. 바이옴 기본 배경(battle-scenery-*) 고르기만이면 하네스가 필요 없다",
-        "편집기 조수는 generate_battle_backdrop 도구로 같은 핵심(src/editor/battleBackdropCore.ts)을 써서 한 장을 만든다"
+        "편집기 조수는 generate_battle_backdrop 도구로 같은 핵심(src/editor/battleBackdropCore.ts)을 써서 한 장을 만든다",
+        "조수 v2 테마 세계의 «없는 그림»(placeTheme.ts wantedBackdrop — 묘실·보일러실 …)을 공용 번들의 장소 그림 battle-scenery-<키> 로 실을 때 — build --bundle"
       ],
       "seed": "harness-data/battle-backdrop/seed.json",
       "doc": "openwiki/harnesses/battle-backdrop.md",
@@ -1715,7 +1716,7 @@
         {
           "id": "build",
           "title": "설치",
-          "summary": "고른 그림을 kind=backdrop 자원으로 넣고 트룹 previewBackgroundResourceId 또는 맵 battleBackground 에 건다. SQLite 폴더는 저장 후 다시 읽어 확인한다."
+          "summary": "고른 그림을 kind=backdrop 자원으로 넣고 트룹 previewBackgroundResourceId 또는 맵 battleBackground 에 건다. SQLite 폴더는 저장 후 다시 읽어 확인한다. --bundle <키> 는 Opus 검수로 고른 판을 공용 번들의 장소 그림(battle-scenery-<키>, 모든 프로젝트가 푼다)으로 싣는다."
         },
         {
           "id": "status",

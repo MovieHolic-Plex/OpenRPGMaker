@@ -95,12 +95,12 @@ export function tellCode(run: BuildRun, kept: { mapId: string; eventId: string; 
 }
 
 /**
- * 단계마다 「현재 목표」 — 시작 목표(없을 때만)와, 단계 이벤트가 이정표를 켠 바로 뒤에 다음 단계 할 일 + 그 이벤트 자리.
+ * 단계마다 「현재 목표」 — 시작 목표(없을 때만)와, 단계 이벤트가 이정표를 켠 바로 뒤에 다음 단계의 목표 줄(goals[k]) + 그 이벤트 자리.
  * 왜(2026-10-28 mt3 argon escape): 사슬은 함수가 지었지만 목표 줄은 모델 몫이라, 모델이 set_objective 를 잘못 걸자(where 만 줌)
  * 게임 시작부터 마지막 목표만 떠 판정자가 「조사할 위치를 잡는 데 헤맸다」. 이미 목표가 있는 이벤트는 건드리지 않는다
  * (모델이 나중에 같은 이벤트에 set_objective 를 부르면 같은 자리를 바꾼다).
  */
-export function stepObjectives(run: BuildRun, steps: readonly { event: string; action: string }[], made: readonly { step: number; name: string; made?: { mapId: string; eventId: string } }[]): string[] {
+export function stepObjectives(run: BuildRun, goals: readonly string[], made: readonly { step: number; name: string; made?: { mapId: string; eventId: string } }[]): string[] {
   const notes: string[] = [];
   const has = (pages: unknown, auto = false): boolean => (Array.isArray(pages) ? pages : []).some((p: { trigger?: { kind?: string }; commands?: unknown }) => (!auto || ["auto", "parallel"].includes(String(p.trigger?.kind))) && JSON.stringify(p.commands ?? []).includes(OBJECTIVE_SURFACE));
   const write = (plan: ReturnType<typeof planObjective>): boolean => {
@@ -119,12 +119,13 @@ export function stepObjectives(run: BuildRun, steps: readonly { event: string; a
     const cur = made[i]!.made, next = made[i + 1]!.made;
     // 다음 고리가 함수가 덧붙인 번호 단서(step < 0)면 그 단서를 살펴보라고 한다.
     const k = made[i + 1]!.step;
-    const nextStep = k >= 0 ? steps[k] : undefined;
+    const nextGoal = k >= 0 ? goals[k] : undefined;
     const nextName = made[i + 1]!.name;
-    if (!cur || !next || (!nextStep && !nextName)) continue;
+    if (!cur || !next || (!nextGoal && !nextName)) continue;
     const ev = run.ctx.project.maps[cur.mapId]?.events.find((e) => e.id === cur.eventId);
     if (!ev || has(ev.pages)) continue;
-    const text = nextStep ? nextStep.action.trim().replace(/[.。!]+$/u, "").slice(0, 60) : `${nextName}${josa(nextName, "을", "를")} 살펴보자`;
+    // 목표 줄은 플레이어에게 쓴 글(goals — playerLines.stepGoal)이다. 단계의 action 은 설계 메모라 쓰지 않는다.
+    const text = nextGoal ?? `${nextName}${josa(nextName, "을", "를")} 살펴보자`;
     if (write(planObjective(run.ctx.project, { text, eventId: cur.eventId, mapId: cur.mapId, where: next.eventId }))) notes.push(`${String(ev.name ?? ev.id)} 뒤`);
   }
   if (notes.length && run.ctx.project.system.fieldHud?.objective === false) run.call("set_field_hud", { objective: true });

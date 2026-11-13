@@ -5,7 +5,7 @@ import { terrainReachability } from "@/project/terrainReachability";
 import { counterSide, exitThroats, isCounterArt, isShopkeeperName, laneCells } from "./placementRules";
 import { labelHasWord } from "@/project/labelWords";
 import { Cell, DIRS, eventsOf, transferCells, eventBodyCells, eventBlockers, walkReach, walkStart, dist, shortestPathCells, openness, edgeExitCells, groundBlocks, tileLabel, layers, objectAt } from "./cells";
-import { declaredDoorCells, placeMarks } from "./entrances";
+import { behindBuildingStrip, declaredDoorCells, placeMarks } from "./entrances";
 import { roadCells } from "./surface";
 import { personSpotContext, personSpotCost } from "./personSpot";
 import { coveredCell } from "./underRoof";
@@ -523,8 +523,12 @@ export function resolveWhere(
     }
   }
 
-  // 기본: 시작 근처(3~4칸), 트인 곳.
-  const c = pick((q) => Math.abs(dist(q, start) - 3.5) - Math.min(openness(reach, map, q), 14) * 0.05 + (objectAt(map, q) ? 3 : 0));
+  // 기본: 들어서는 칸 근처(3~4칸), 트인 곳. 시작 맵이 아니면 «시작» 은 가장 큰 걸음 덩이의 왼쪽 위 칸일 뿐이라 들어오는 칸에서 잰다 — 건물 뒤 띠는 피한다.
+  // 청사진 단계 이벤트(role "event")는 전처럼 start 에서 잰다 — 종류를 안 적은 옛 청사진의 단계가 전부 문 앞 한 줄에 모였다(명세 은행 jrpg-v2: 길 60칸 → 13칸).
+  // 방 안도 전과 같다 — 지붕 뒤 띠는 바깥 맵의 일이고, 방에서는 문 앞으로 당겨진 사람이 단계 사람 곁을 막았다(jrpg-x1 「강지기의 집」).
+  const arrive = playerStart || opts.role === "event" || indoor ? start : incomingLandings(project, map.id).find((q) => inside(q) && reach[q.y * w + q.x]) ?? start;
+  const strip = indoor ? undefined : behindBuildingStrip(project, map);
+  const c = pick((q) => Math.abs(dist(q, arrive) - 3.5) - Math.min(openness(reach, map, q), 14) * 0.05 + (objectAt(map, q) ? 3 : 0) + (strip?.[q.y * w + q.x] ? 12 : 0));
   if (c) {
     const miss = intent.kind === "default" ? (word ? `자리 낱말 '${word}' 을 몰라` : undefined) : `'${word}' 자리를 이 맵에서 못 찾아`;
     return done(c, { how: "시작 근처", ...(miss ? { note: `${miss} 시작 지점 근처 (${c.x},${c.y}) 에 두었다.`, fallback: true as const } : {}) });

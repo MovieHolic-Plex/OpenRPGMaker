@@ -109,6 +109,9 @@ class Board {
   readonly notes: string[] = [];
   /** 소품 단계 BFS 기준 칸(시작 칸). null 이면 연결 검사를 하지 않는다(구조 단계). */
   start: SteampunkCell | null = null;
+  /** 바깥 맵 — 소품이 걷는 칸 하나를 세 면으로 가둔 «한 칸 주머니» 를 만들면 놓지 않는다(보도의 통·가로등·환기구 사이 한 칸). */
+  openAir = false;
+  private exits(x: number, y: number): number { return [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => this.walk(x + dx!, y + dy!)).length; }
   constructor(readonly W: number, readonly H: number, readonly pal: SteampunkPalette, ground: number, groundUse: Use) {
     this.lower = new Array(W * H).fill(ground);
     this.upper = new Array(W * H).fill(-1);
@@ -206,6 +209,11 @@ class Board {
     const r = { x, y, w: kit.width, h: kit.height };
     if (!this.free(r, margin, allow, topAllow)) return false;
     const before = this.start ? this.reach() : null;
+    const ring: [number, number, number][] = [];
+    if (this.openAir) for (let yy = y - 1; yy <= y + kit.height; yy++) for (let xx = x - 1; xx <= x + kit.width; xx++) {
+      const edge = xx < x || yy < y || xx >= x + kit.width || yy >= y + kit.height;
+      if (edge && this.walk(xx, yy)) ring.push([xx, yy, this.exits(xx, yy)]);
+    }
     const saved: [number, number, number, Use][] = [];
     for (let yy = y; yy < y + kit.height; yy++) for (let xx = x; xx < x + kit.width; xx++) {
       if (!this.in(xx, yy)) continue;
@@ -214,7 +222,7 @@ class Board {
     this.stamp(kitId, x, y, "prop");
     if (before) {
       const after = this.reach();
-      let cut = false;
+      let cut = ring.some(([xx, yy, was]) => was >= 2 && this.walk(xx, yy) && this.exits(xx, yy) <= 1);
       for (const k of before) { if (!after.has(k) && this.walk(k % this.W, Math.floor(k / this.W))) { cut = true; break; } }
       if (cut) { for (const [k, lo, up, u] of saved) { this.lower[k] = lo; this.upper[k] = up; this.use[k] = u; } return false; }
     }
@@ -368,6 +376,34 @@ function backyards(b: Board, rng: () => number, blds: readonly SteampunkBuilding
     if (!b.has(kit)) continue;
     const sz = b.kitSize(kit), bottom = Math.min(a.rect.y + a.rect.h, c.rect.y + c.rect.h) - 2;
     b.propNear(kit, [[gx, bottom - sz.h + 1], [gx + gw - sz.w, bottom - sz.h + 1]], 0, ["lane", "yard"]);
+  }
+}
+
+/** 이 폭까지의 틈은 골목이다 — 건물 밑변 줄에서 가로 담으로 닫는다. 더 넓으면 옆 마당이라 열어 두고 지붕 뒤만 세로 담으로 닫는다. */
+const ALLEY_MAX = 3;
+/**
+ * 건물 줄 뒤를 닫는다 — 지붕 뒤 석탄재 마당은 보이기만 하고 걸어 들어가지 못한다.
+ * 왜(2026-11-13 r2s-fun 플레이): 건물 사이 골목이 보도에서 맵 윗변까지 뚫려 있어 플레이어가 지붕 뒤 두 줄을 걸어 다녔다 — 어디로도 가지 않는 길이다.
+ * 소품을 다 놓은 뒤에 부른다(굴뚝·물탱크가 선 칸은 이미 막혀 있어 건너뛴다).
+ */
+function closeRowBack(b: Board): void {
+  if (!b.has("sp-fence")) return;
+  const post = (kit: string, x: number, y: number) => { if (b.walk(x, y)) b.stamp(kit, x, y, "fence"); };
+  const side = b.has("sp-fence-v") ? "sp-fence-v" : "sp-fence";
+  // 쓰임 없는 땅(석탄재 마당·골목 바닥) — 길·보도·광장이 지붕 뒤로 지나가는 줄(역 앞 건물 줄)은 닫지 않는다.
+  const idle = (x: number, y: number) => !b.in(x, y) || b.use[y * b.W + x] === "lane" || b.use[y * b.W + x] === "yard" || b.use[y * b.W + x] === "prop";
+  for (const baseY of new Set(b.buildings.map((d) => d.rect.y + d.rect.h - 1))) {
+    const row = b.buildings.filter((d) => d.rect.y + d.rect.h - 1 === baseY).sort((a, c) => a.rect.x - c.rect.x);
+    if (!row.every((d) => Array.from({ length: d.rect.w }, (_, i) => idle(d.rect.x + i, d.rect.y - 1)).every(Boolean))) continue;
+    const gaps = row.map((d, i) => ({ x0: i ? row[i - 1]!.rect.x + row[i - 1]!.rect.w : 0, x1: d.rect.x - 1, l: i ? row[i - 1] : undefined, r: d as SteampunkBuilding | undefined }));
+    const last = row[row.length - 1]!;
+    gaps.push({ x0: last.rect.x + last.rect.w, x1: b.W - 1, l: last, r: undefined });
+    for (const g of gaps) {
+      if (g.x1 < g.x0) continue;
+      if (g.x1 - g.x0 + 1 <= ALLEY_MAX) { for (let x = g.x0; x <= g.x1; x++) post("sp-fence", x, baseY); continue; }
+      if (g.l) for (let y = 0; y < g.l.rect.y; y++) post(side, g.x0, y);
+      if (g.r) for (let y = 0; y < g.r.rect.y; y++) post(side, g.x1, y);
+    }
   }
 }
 
@@ -889,7 +925,7 @@ function composeRoom(b: Board, rng: () => number, style: SteampunkRoomStyle): St
       // 접수대: 북쪽 벽에서 한 칸 띄워(뒤 1칸 통로), 앞 2칸 비움
       for (const x of [cx - 1, cx - 2, cx]) if (b.prop("sp-inn-counter", x, fy0 + 1, 0, ["floor"])) { b.reserve({ x, y: fy0, w: 3, h: 1 }); b.reserve({ x, y: fy0 + 3, w: 3, h: 2 }); break; }
       backWall("sp-fireplace", leftFirst ? xs(fx0, cx - 4) : xs(cx + 3, fx1 - 2).reverse());
-      backWall("sp-stairs-up", leftFirst ? xs(cx + 3, fx1 - 1).reverse() : xs(fx0, cx - 3));
+      // 계단은 여기서 놓지 않는다 — 어디로도 가지 않는 계단이 된다. 위층·옆방을 이을 때 잇는 쪽이 계단 키트를 찍는다(조수 v2 place/stairLinks).
       backWall("sp-bookshelf", xs(fx0, fx1));
       deco2("sp-wall-clock-gear", xs(fx0, fx1)); deco2("sp-shelf-wall", xs(fx0, fx1 - 1).reverse());
       if (b.has("sp-rug")) b.propNear("sp-rug", [[cx - 1, fy1 - 4], [cx - 2, fy1 - 4]], 0, ["floor"]);
@@ -927,13 +963,14 @@ export function composeSteampunkCity(spec: SteampunkSpec, pal: SteampunkPalette)
   const rng = mulberry(seed * 7919 + spec.style.length * 131);
   const indoor = (STEAMPUNK_ROOM_STYLES as readonly string[]).includes(spec.style);
   const b = new Board(spec.width, spec.height, pal, pal.tile(indoor ? "ceiling" : "cobble"), indoor ? "ceil" : "road");
+  b.openAir = !indoor;
   const want = spec.buildings ?? [];
   let start: SteampunkCell;
   if (spec.style === "street") start = composeStreet(b, rng, want);
   else if (spec.style === "industrial") start = composeIndustrial(b, rng, want);
   else if (spec.style === "dock") start = composeDock(b, rng, want);
   else start = composeRoom(b, rng, spec.style as SteampunkRoomStyle);
-  if (!indoor) b.variety(seed);
+  if (!indoor) { closeRowBack(b); b.variety(seed); }
   const exits: SteampunkCell[] = [];
   if (indoor) { for (let x = 0; x < b.W; x++) if (b.walk(x, b.H - 1)) exits.push({ x, y: b.H - 1 }); }
   else exits.push(start);

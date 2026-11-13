@@ -40,7 +40,8 @@ describe("desert_east 이야기 기물", () => {
         expect(ts.priority[tile]).toBe(item.place === "decal" ? "lower" : "upper");
       }));
     }
-    expect(next).toBe(ts.count);
+    expect(next).toBe(950); // 이 묶음의 끝. 그 뒤(950~)는 첫 판 늘리기 칸(test/desertEastVariety.test.ts)
+    expect(ts.count).toBeGreaterThanOrEqual(next);
     expect((ts.referenceDocuments ?? []).some((category) => category.documents.some((doc) => doc.id === "de-objects"))).toBe(true);
   });
 
@@ -69,7 +70,8 @@ describe("desert_east 이야기 기물", () => {
     const ts = project.tilesets[DESERT_EAST_ID]!;
     // 928칸 때 저장한 사본을 흉내 낸다: 번들 칸 표는 928 까지, 그 바로 뒤에 다른 칩셋 그림 두 칸(이식)과 그 킷
     for (const key of ["passability", "priority", "terrain", "tileMeta"] as const) (ts as unknown as Record<string, unknown[]>)[key] = (ts as unknown as Record<string, unknown[]>)[key]!.slice(0, FIRST);
-    ts.structureKits = ts.structureKits!.filter((kit) => !IDS.has(kit.id));
+    // 928 뒤에 구운 킷(이야기 기물 8종 + 첫 판 늘리기)은 그때 없었다
+    ts.structureKits = ts.structureKits!.filter((kit) => !kit.rows.some((row) => [...(row.tiles ?? []), ...(row.upperTiles ?? [])].some((tile) => tile >= FIRST)));
     ts.tileGroups = ts.tileGroups!.filter((group) => !group.tileIds.some((tile) => tile >= FIRST));
     ts.passability.push({ up: true, down: true, left: true, right: true }, { up: false, down: false, left: false, right: false });
     ts.priority.push("upper", "lower"); ts.terrain.push(0, 0);

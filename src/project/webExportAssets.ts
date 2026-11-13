@@ -4,6 +4,7 @@ import { findOpeningStillPackEntry } from "@/assets/openingStillPackRuntime";
 import { openingStillPackUrl } from "@/assets/openingStillPackCdn";
 import { BUNDLED_IMAGE_ASSETS, TEX_DIALOGUE_FRAME, TEX_TILESET } from "@/assets/bundled";
 import { isKnownRetiredResource, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { FIELD_BATTLE_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { sharedPortraitExpressionSiblings } from "@/assets/sharedPortraitAssets";
 import { comboBustResourceId, comboMemberActorIds } from "@/project/comboBust";
 import { resolveBattleStaging } from "@/project/battleStaging";
@@ -207,7 +208,7 @@ export function collectRetiredExportReferences(project: Project): readonly strin
   collectStrings({ ...project, audioDescriptions: undefined, monsterMetadata: undefined }, authored);
   // Only ids the author's data actually references — not the implicit runtime defaults collectProjectStrings adds.
   return [...authored]
-    .filter((id) => isKnownRetiredResource(id) && !resolveAssetResourceUrl(id, { project }))
+    .filter((id) => id !== FIELD_BATTLE_BACKGROUND_ID && isKnownRetiredResource(id) && !resolveAssetResourceUrl(id, { project }))
     .sort();
 }
 

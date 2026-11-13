@@ -5,6 +5,7 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import { OBJECTIVE_SURFACE, objectiveCommand, isObjectiveCommand, type ObjectiveTarget } from "./objectiveCommand";
 import { Cell, bare, whereHint, withWhere } from "./objectiveWhere";
 import { rawChild, insertAfterMilestones } from "./objectiveRoutes";
+import { stepGoal } from "../story/playerLines";
 
 interface ObjectivePlan {
   readonly ok: boolean;
@@ -35,7 +36,7 @@ export function lateStartObjective(project: Project): { readonly message: string
   const firstText = `${first.event} ${first.action} ${first.gives ?? ""}`;
   const late = steps.slice(1).some((step) => !/^엔딩$|ending/iu.test(step.gives ?? "") && words(step.gives ?? "").some((w) => message.includes(w) && !firstText.includes(w)));
   if (!late) return undefined;
-  return { message, first: first.action.trim().replace(/[.。!]+$/u, "").slice(0, 60) };
+  return { message, first: stepGoal(first) };
 }
 
 /** 시작 맵에서 맵에 들어올 때마다 다시 도는 자동·병렬 페이지(runsOnce 아님)에 걸린 「현재 목표」 — 그 글. 불러오기·다시 들어오기마다 목표를 처음으로 되돌린다. */

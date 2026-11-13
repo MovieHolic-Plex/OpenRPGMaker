@@ -5,6 +5,7 @@ import { mapRoute } from "@/player/objectiveTarget";
 import { josa } from "@/util/josa";
 import { objectiveCommand, isObjectiveCommand, objectiveTargetOf, setObjectiveTarget, type ObjectiveTarget } from "./objectiveCommand";
 import { Cell, landmarkWord, bare, withWhere } from "./objectiveWhere";
+import { stepGoal } from "../story/playerLines";
 
 /**
  * 전투 승리 스위치로 잠긴 이벤트 → 그 스위치를 켜는 전투 이벤트(같은 맵·다른 맵). 잠김 = 그 스위치를 조건으로 단 페이지와 달지 않은
@@ -96,7 +97,9 @@ export function refreshObjectiveRoutes(project: Project): number {
       // 단계 목표(글이 다음 단계의 할 일 그대로 — stepObjectives 가 건 것)가 가리킬 이벤트 = 다음 단계를 넘기는 이벤트.
       // 같은 이벤트가 여러 단계를 맡으면 어느 페이지의 목표인지 알 수 없어 묶지 않는다.
       const advance = stepNext && stepNext.event.id !== event.id && stepIndexes.length <= 1 ? stepNext : undefined;
-      const stepTexts = (k >= 0 ? [steps[k + 1]?.action] : opening ? [steps[0]?.action, project.gameBlueprint?.playerGoal] : [])
+      // 단계 목표의 글 = 그 단계의 목표 줄(stepGoal). 옛 빌드는 action 을 그대로 걸었다 — 둘 다 알아본다.
+      const nextStepOf = k >= 0 ? steps[k + 1] : opening ? steps[0] : undefined;
+      const stepTexts = [nextStepOf ? stepGoal(nextStepOf) : undefined, nextStepOf?.action, opening && k < 0 ? project.gameBlueprint?.playerGoal : undefined]
         .filter((t): t is string => typeof t === "string").map((t) => t.trim().replace(/[.。!]+$/u, "").slice(0, 60));
       /** 대상이 싸워 이겨야 열리는 이벤트면 그 전투(이름이 없어도)로. */
       const throughBattle = (target: ObjectiveTarget): ObjectiveTarget => {
