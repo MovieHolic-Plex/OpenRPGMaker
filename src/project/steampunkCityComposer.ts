@@ -379,6 +379,34 @@ function backyards(b: Board, rng: () => number, blds: readonly SteampunkBuilding
   }
 }
 
+/** 이 폭까지의 틈은 골목이다 — 건물 밑변 줄에서 가로 담으로 닫는다. 더 넓으면 옆 마당이라 열어 두고 지붕 뒤만 세로 담으로 닫는다. */
+const ALLEY_MAX = 3;
+/**
+ * 건물 줄 뒤를 닫는다 — 지붕 뒤 석탄재 마당은 보이기만 하고 걸어 들어가지 못한다.
+ * 왜(2026-11-13 r2s-fun 플레이): 건물 사이 골목이 보도에서 맵 윗변까지 뚫려 있어 플레이어가 지붕 뒤 두 줄을 걸어 다녔다 — 어디로도 가지 않는 길이다.
+ * 소품을 다 놓은 뒤에 부른다(굴뚝·물탱크가 선 칸은 이미 막혀 있어 건너뛴다).
+ */
+function closeRowBack(b: Board): void {
+  if (!b.has("sp-fence")) return;
+  const post = (kit: string, x: number, y: number) => { if (b.walk(x, y)) b.stamp(kit, x, y, "fence"); };
+  const side = b.has("sp-fence-v") ? "sp-fence-v" : "sp-fence";
+  // 쓰임 없는 땅(석탄재 마당·골목 바닥) — 길·보도·광장이 지붕 뒤로 지나가는 줄(역 앞 건물 줄)은 닫지 않는다.
+  const idle = (x: number, y: number) => !b.in(x, y) || b.use[y * b.W + x] === "lane" || b.use[y * b.W + x] === "yard" || b.use[y * b.W + x] === "prop";
+  for (const baseY of new Set(b.buildings.map((d) => d.rect.y + d.rect.h - 1))) {
+    const row = b.buildings.filter((d) => d.rect.y + d.rect.h - 1 === baseY).sort((a, c) => a.rect.x - c.rect.x);
+    if (!row.every((d) => Array.from({ length: d.rect.w }, (_, i) => idle(d.rect.x + i, d.rect.y - 1)).every(Boolean))) continue;
+    const gaps = row.map((d, i) => ({ x0: i ? row[i - 1]!.rect.x + row[i - 1]!.rect.w : 0, x1: d.rect.x - 1, l: i ? row[i - 1] : undefined, r: d as SteampunkBuilding | undefined }));
+    const last = row[row.length - 1]!;
+    gaps.push({ x0: last.rect.x + last.rect.w, x1: b.W - 1, l: last, r: undefined });
+    for (const g of gaps) {
+      if (g.x1 < g.x0) continue;
+      if (g.x1 - g.x0 + 1 <= ALLEY_MAX) { for (let x = g.x0; x <= g.x1; x++) post("sp-fence", x, baseY); continue; }
+      if (g.l) for (let y = 0; y < g.l.rect.y; y++) post(side, g.x0, y);
+      if (g.r) for (let y = 0; y < g.r.rect.y; y++) post(side, g.x1, y);
+    }
+  }
+}
+
 // ───────────────────────── 거리 ─────────────────────────
 function composeStreet(b: Board, rng: () => number, want: readonly string[]): SteampunkCell {
   const { W, H } = b;
@@ -942,7 +970,7 @@ export function composeSteampunkCity(spec: SteampunkSpec, pal: SteampunkPalette)
   else if (spec.style === "industrial") start = composeIndustrial(b, rng, want);
   else if (spec.style === "dock") start = composeDock(b, rng, want);
   else start = composeRoom(b, rng, spec.style as SteampunkRoomStyle);
-  if (!indoor) b.variety(seed);
+  if (!indoor) { closeRowBack(b); b.variety(seed); }
   const exits: SteampunkCell[] = [];
   if (indoor) { for (let x = 0; x < b.W; x++) if (b.walk(x, b.H - 1)) exits.push({ x, y: b.H - 1 }); }
   else exits.push(start);
