@@ -2523,7 +2523,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 타이틀 로고/메뉴 · 윈도스킨 · HUD 글꼴/판) · 함수가 고를 때의 조건(`suits`: 시대 · 전투 방식 · 대사 중심). **이미 있는 스타일만** 쓴다(새 스타일 없음 — `test/uiLook.test.ts` 가 id 를 대조).
 **한 벌은 한 가족이다**(같은 테스트): 밝은 대사창의 세트는 밝은 메뉴(journal · field-list) · 종이 전투 창 · 종이 HUD 판, 어두운 대사창의 세트는 어두운 메뉴 · 어두운 HUD 판.
 
-| id | 대사창 | ESC 메뉴 | 전투 창(프리셋 + 겉판) | 로고 / 타이틀 메뉴 | HUD 글꼴 · 판 | 맞는 시대(전투) |
+| id | 대사창 | ESC 메뉴 | 전투 차림(프리셋 + 겉판) | 로고 / 타이틀 메뉴 | HUD 글꼴 · 판 | 맞는 시대(전투) |
 |---|---|---|---|---|---|---|
 | kingdom | retro-blue | classic | pixel | metal / window | round · dark | fantasy (싸움) |
 | storybook | wood | journal | parch | gold / plain | pixel · paper | fantasy · primeval (싸움 없음·턴제) |
@@ -2533,13 +2533,21 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 | ink-night | float | party-first-warm | ink | stone / plain | round · dark | eastern · gothic (싸움) |
 | handheld | handheld | field-list | teal + parch | plain / window | pixel · paper | monster · fantasy · modern |
 | terminal | terminal | workbench | veil | glow / plain | clean · dark | future |
-| haunted | float | sheet | cinema | stone / plain | round · dark | gothic · industrial |
+| haunted | float | sheet | cinema + ink | stone / plain | round · dark | gothic · industrial |
 | soft | white-card | field-list | soft + parch | plain / plain | clean · paper | modern · fantasy (대사 중심, 싸움 없음·턴제) |
 | cozy | cream | journal | icons + parch | plain / plain | pixel · paper | modern · fantasy · primeval · monster (싸움 없음·턴제) |
-| cinematic | pixel-cinematic | sheet | cinema | plain / plain | clean · dark | 어느 시대든 — 대사 중심일 때만 |
+| cinematic | pixel-cinematic | sheet | cinema + veil | plain / plain | clean · dark | 어느 시대든 — 대사 중심일 때만 |
 | glass | glass | workbench | veil | plain / plain | clean · dark | future · modern, 그리고 맞는 세트가 없을 때의 기본 |
 
-`battleWindow`(«+ parch») 는 프리셋의 배치는 두고 창의 겉판(`battleLook.window`)만 바꾼다 — 밝은 세트 넷(hanji · handheld · soft · cozy)의 전투 창이 대사창·메뉴와 같은 종이색이 되게.
+**전투 화면은 «차림» 만 프리셋에서 가져오고 배치는 하나다 (2026-11-13 3차, `uiLookBattle`).** 세트가 입히는 `battleLook` = `{ preset, field: band, command: corner, party: rows (+ window) }`.
+프리셋의 창 겉판 · 글꼴 · 무대 연출(빛 · 흐림 · 차례 줄 · 영화 띠)은 쓰고, 프리셋의 배치(화면 끝까지 · 캐릭터 옆 명령 창 · 작은 상태 창 · 초상 카드 · 아이콘 줄 …)는 쓰지 않는다.
+왜: 확인 빌드 r3 의 실제 Sonnet 판(주인공 혼자)에서 rm2003(teal)의 전투 화면은 아래 1/3 이 빈 그러데이션이었고 명령 창이 한가운데 떠서 목록이 적을 가렸다. gilded(gold)는 맵 그대로인 배경에서 상태 창이 거의 안 보였다.
+42가지 배치를 찍어 보고 아래 띠를 창이 다 덮는 것 하나만 남겼다(`battleLookFillsBand` — `openwiki/runtime-battle.md` ④). `test/uiLook.test.ts` 가 모든 세트에서 이 계약을 본다.
+`battleWindow`(«+ parch» 등)는 창의 겉판(`battleLook.window`)만 바꾼다 — 밝은 세트 넷(hanji · handheld · soft · cozy)은 종이색으로, 영화식 둘(haunted · cinematic)은 «테 없음»(bare) 대신 먹빛 · 장막 판으로
+(테 없는 창은 판이 없어 맵 그대로인 배경에서 안내 글 · 승리 창이 타일 위에 맨 글자로 뜬다 — 같은 테스트가 bare 를 막는다).
+세트를 옮길 때는 «지금 보이는» 적 이름표 · 체력 막대를 지킨다(금테 프리셋이 기본으로 켜 둔 이름표가 다른 세트로 옮기며 꺼지지 않게).
+같은 날 전투 CSS 둘을 고쳤다: 목록(아이템 · 스킬)이 덮는 동안 그 밑의 파티 창을 그리지 않는다(`_retro2003.css` — 비치는 창에서 파티 줄이 목록 위로 비쳤다), 결과 창의 글자색이 창 꾸밈을 따른다(`_battle-look.css` — 양피지 창에 흰 글자였다).
+**ESC 메뉴**: 세트의 메뉴 스킨이 무엇이든 기본 메뉴는 그 게임에 쓸 데가 있는 명령만 싣는다(`listStatusMenuCommandIds` — `openwiki/runtime-pre-edit-routing.md`). 같은 테스트가 세트 13개 × 혼자/셋 파티로 본다.
 전투 창을 입혀도 적 이름표·체력 막대(`battleLook.enemyNames·enemyHp`, 끝맺음의 `fillEnemyHpLook`)는 그대로 남고, 그 두 칸은 «전투 창을 직접 골랐다» 로 치지 않는다.
 
 **고르는 길.**
@@ -2577,6 +2585,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 | 동양(eastern) 대사창은 joseon 하나, SF 대사창은 terminal 하나 | 그 시대의 후보가 둘뿐이다 |
 | 황무지 칩셋의 계열이 `oprn-modern` | 현대와 구별하지 못한다 |
 | 타이틀 | 로고 다섯은 글자 질감만 다르고 메뉴는 창/글자 둘 — 세트 사이의 차이가 가장 작은 축 |
+| 전투 배치 | 아래 띠를 다 덮는 배치가 하나뿐이라 세트 13개의 전투 화면이 창 겉판 · 글꼴 · 연출로만 갈린다. 초상 카드 · 아이콘 줄 · 버튼 네 개 같은 배치는 주인공 혼자인 게임에서 띠가 비거나 배틀러를 가린다 |
 
 안 쓴 스타일: 대사창 흑창 넷(위) · `dual-fullbody-veil`(연애 전신 대사창 — 해상도·전신 그림과 한 묶음이라 `set_vn_look` 이 정한다), 메뉴 `pixel` · `retro-2000` · `party-first` · `classic-vx` · `classic-xp` ·
 `hub` · `ribbon`(뒤 둘은 긴 목표 글이 겹치거나 좁은 칸에 세로로 감긴다 — 스킨 쪽 결함), 전투 창 `line` · `pattern` · `pop`.
@@ -2586,8 +2595,8 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 
 **재 본 것(모델 없음).**
 - `bun scripts/qa/assistant-v2/uiLookSeeds.mts --project <풀린 프로젝트.json>`: «재밌는 게임 만들어 줘.» 를 열쇠 여섯으로 — 세계 6개, 그리고 지은 게임 하나(증거 판 «증기의 심장», 스팀펑크 · 턴제)를 같은 여섯 열쇠로 — 모습 3개(gilded · rm2003 · haunted). 수치는 `~/claude-viz/av2-ui-look.html` 의 표.
-- 세트마다 같은 다섯 순간(필드 알림 띠 · 고르기 대사 · ESC 메뉴 · 전투 · 타이틀)을 출하 플레이어로 찍었다 — 같은 페이지.
-- 데모 셋(폴른 스타 · 퍼스트 러브 · 시타마치)은 끝맺음을 거치지 않고 `panel` 도 없다 — 타이틀·필드·ESC 메뉴 아홉 장면의 전/후 화면이 같다(달라진 화소 ≤ 0.05%, 움직이는 것의 몫).
+- 세트마다 같은 일곱 순간(필드 목표 알림 · 고르기 대사 · ESC 메뉴 혼자/셋 · 전투 고르기 장소 배경/맵 배경 · 타이틀)과 전투 상태 아홉 × 배경 둘을, 확인 빌드의 실제 Sonnet 판 «사라진 수호 종» 사본에 입혀 출하 플레이어 960×720 으로 찍었다 — 같은 페이지(3차).
+- 데모 셋(폴른 스타 · 퍼스트 러브 · 시타마치)은 끝맺음을 거치지 않고 `panel` 도 없다 — 2차까지는 타이틀·필드·ESC 메뉴 아홉 장면의 전/후 화면이 같았다. 3차의 메뉴 명령 거르기 · 전투 CSS 뒤로는 다시 찍지 않았다.
 - 골든(157 요청): 확인 묶음 가지 머리(95b4dfe04f) 대비, 그리고 묶음이 main 에 들어간 뒤 main(7c0866a0a2) 대비 두 번 — 둘 다 달라진 요청 151개가 전부 `write_blueprint` 스키마의 `look` 칸 하나이고, 지시문은 157개 모두 한 글자도 안 바뀌었다.
 - 명세 은행 `ab`: 세트를 16개로 두었던 앞선 판에서 두 번(전체 49 · 게임 10) 모두 «나빠진 칸 없음». 세트를 13개로 줄인 뒤로는 **재생하지 않았다**(묶음의 마지막 돌림 몫으로 미뤘다).
   앞선 재생에서 읽은 것: 은행의 게임 10개는 모두 모델이 대사창을 `set_project_settings` 로 이미 골라 두었다(retro-black 3 · retro-blue 3 · gold 3 · terminal 1). 흑창 셋은 이제 맞는 세트가 없어 시대 후보에서 받는다.
