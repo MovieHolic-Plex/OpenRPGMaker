@@ -413,6 +413,18 @@
   border: 1px solid color-mix(in srgb, var(--look-acc) 40%, transparent);
   border-radius: 2px;
 }
+/* 결과 창의 글자색도 창 꾸밈을 따른다 — 겉판만 양피지로 바뀌고 제목·수치·안내는 어두운 창용 흰 글자로 남아 읽히지 않았다(2026-11-13, 세트 storybook 의 승리 창). */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-result-panel {
+  --battle-text: var(--look-text);
+  --battle-text-muted: var(--look-muted);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-result-panel .battle-result-title,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-result-panel .battle-result-next-prompt {
+  text-shadow: var(--look-text-shadow, 0 1px 2px #000);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-result-panel .battle-result-next-prompt {
+  color: var(--look-muted);
+}
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-result-reward-card {
   background: rgba(127, 127, 127, 0.08);
   box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--look-acc) 20%, transparent);

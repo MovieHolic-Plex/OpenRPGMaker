@@ -7,7 +7,7 @@
 //  - 모델이 청사진의 `look` 한 칸에 id 를 적는다(fit 한 줄을 읽고).
 //  - 안 적으면 pickUiLook 이 게임의 사실(칩셋 계열의 시대 · 전투 방식 · 대사 중심인가)과 게임 열쇠로 고른다 — 요청 글의 낱말은 읽지 않는다.
 // 무엇을 띄우고 얼마나 크게 띄우는가(HUD 칸·예산)는 project/fieldHud.ts 의 일이다. 여기는 «껍질» 만 정한다.
-import type { BattleLookPresetId, BattleLookSettings, BattleLookWindow } from "./battleLook";
+import { normalizeBattleLook, resolveBattleLook, type BattleLookPresetId, type BattleLookSettings, type BattleLookWindow } from "./battleLook";
 import type { DialogueStyleId } from "./dialogueStyles";
 import type { HUD_FONTS, FieldHudConfig } from "./fieldHud";
 import { tilesetFamily } from "./tilesetFamily";
@@ -26,8 +26,10 @@ export interface UiLookSet {
   readonly fit: string;
   readonly dialogue: DialogueStyleId;
   readonly menu: MenuUiStyle;
+  /** 전투 화면의 차림 — 이 프리셋의 창 겉판 · 글꼴 · 무대 연출(빛·흐림·차례 줄)을 쓴다. 배치는 프리셋 것이 아니라 «아래 두 창» 하나다(uiLookBattle). */
   readonly battle: BattleLookPresetId;
-  /** 전투 창의 겉판만 바꾼다(battleLook.window) — 프리셋의 배치는 그대로 두고 창 색을 이 세트의 대사창·메뉴에 맞춘다. 생략 = 프리셋의 창. */
+  /** 전투 창의 겉판만 바꾼다(battleLook.window) — 창 색을 이 세트의 대사창·메뉴에 맞춘다. 생략 = 프리셋의 창.
+   *  영화식(cinema)의 «테 없음»(bare)은 쓰지 않는다: 판이 없어 맵 그대로인 배경 위에서 안내 글·승리 창이 읽히지 않는다 — 먹빛·장막 판으로 바꿔 입힌다(테스트). */
   readonly battleWindow?: BattleLookWindow;
   readonly title: { readonly logo: TitleLogoStyle; readonly menu: TitleMenuStyle };
   /** 윈도스킨 그림(「고전 · 윈도스킨」 대사창과 타이틀 창 메뉴가 쓴다). 생략 = 그대로. */
@@ -70,7 +72,7 @@ export const UI_LOOKS: readonly UiLookSet[] = [
     dialogue: "terminal", menu: "workbench", battle: "veil", title: { logo: "glow", menu: "plain" }, hud: { font: "clean", panel: "dark" },
     suits: { eras: ["future"] } },
   { id: "haunted", label: "폐허 · 떠 있는 글", fit: "floating serif text, gothic horror",
-    dialogue: "float", menu: "sheet", battle: "cinema", title: { logo: "stone", menu: "plain" }, hud: { font: "round", panel: "dark" },
+    dialogue: "float", menu: "sheet", battle: "cinema", battleWindow: "ink", title: { logo: "stone", menu: "plain" }, hud: { font: "round", panel: "dark" },
     suits: { eras: ["gothic", "industrial"] } },
   { id: "soft", label: "흰 카드 · 둥근", fit: "soft white cards, school or romance",
     dialogue: "white-card", menu: "field-list", battle: "soft", battleWindow: "parch", title: { logo: "plain", menu: "plain" }, hud: { font: "clean", panel: "paper" },
@@ -79,7 +81,7 @@ export const UI_LOOKS: readonly UiLookSet[] = [
     dialogue: "cream", menu: "journal", battle: "icons", battleWindow: "parch", title: { logo: "plain", menu: "plain" }, hud: { font: "pixel", panel: "paper" },
     suits: { eras: ["modern", "fantasy", "primeval", "monster"], combat: CALM } },
   { id: "cinematic", label: "영화창", fit: "letterboxed film look, story-first",
-    dialogue: "pixel-cinematic", menu: "sheet", battle: "cinema", title: { logo: "plain", menu: "plain" }, hud: { font: "clean", panel: "dark" },
+    dialogue: "pixel-cinematic", menu: "sheet", battle: "cinema", battleWindow: "veil", title: { logo: "plain", menu: "plain" }, hud: { font: "clean", panel: "dark" },
     suits: { eras: "any", talky: true } },
   { id: "glass", label: "유리 · 무난", fit: "neutral glass, minimal sci-fi",
     dialogue: "glass", menu: "workbench", battle: "veil", title: { logo: "plain", menu: "plain" }, hud: { font: "clean", panel: "dark" },
@@ -187,30 +189,43 @@ function lookHash(text: string): number {
  * «기본을 일부러 골랐다» 와 «안 골랐다» 는 구별되지 않는다 — 둘 다 안 고른 것으로 본다.
  */
 interface Stored {
-  readonly dialogue?: string; readonly menu?: string; readonly battle?: string; readonly logo?: string; readonly titleMenu?: string; readonly hudFont?: string; readonly hudPanel?: string;
+  readonly dialogue?: string; readonly menu?: string; readonly battle?: string; readonly battlePreset?: string; readonly logo?: string; readonly titleMenu?: string; readonly hudFont?: string; readonly hudPanel?: string;
   /** 필드 HUD 가 메뉴 모양을 따로 정했다(fieldHud.menuStyle) — 메뉴 축은 그쪽이 이긴다. */
   readonly hudMenu: boolean;
 }
 
-/** 전투 창 축의 값 한 낱말 — 프리셋(+ 겉판을 바꿨으면 그 창). */
-const battleKey = (preset: string, window?: string): string => window ? `${preset}+${window}` : preset;
-const lookBattleKey = (look: UiLookSet): string => battleKey(look.battle, look.battleWindow);
 /** battleLook 안에서 창의 모습이 아닌 칸 — 세트를 입혀도 그대로 둔다. */
-const BATTLE_INFO_KEYS: readonly string[] = ["enemyNames", "enemyHp"];
+const BATTLE_INFO_KEYS = ["enemyNames", "enemyHp"] as const;
+
+/**
+ * 세트가 입히는 전투 화면(battleLook 저장값). 차림은 세트의 프리셋에서, 배치는 늘 «아래 두 창» — 전장은 창 위까지(band) · 명령 창은 왼쪽 아래(corner) ·
+ * 파티는 그 옆 줄 목록(rows). 프리셋이 원래 가진 배치(화면 끝까지 · 캐릭터 옆 명령 창 · 작은 상태 창 …)는 쓰지 않는다 — 주인공 혼자인 게임에서
+ * 아래 1/3 이 비고 목록이 적을 가린다(battleLook.ts battleLookFillsBand, 확인 빌드 r3s). 테스트가 모든 세트에서 battleLookFillsBand 를 본다.
+ */
+export function uiLookBattle(look: UiLookSet): BattleLookSettings {
+  return normalizeBattleLook({ preset: look.battle, field: "band", command: "corner", party: "rows", ...(look.battleWindow ? { window: look.battleWindow } : {}) }) ?? {};
+}
+
+/** 전투 창 축의 값 한 낱말 — 이름표·체력 막대를 뺀 저장값을 정규화해 칸 이름 순으로 적는다. 빈 글 = 편집기 기본(도트 창, 아래 두 창). */
+function battleKeyOf(value: BattleLookSettings | undefined): string {
+  const shape = Object.fromEntries(Object.entries(value ?? {}).filter(([key]) => !(BATTLE_INFO_KEYS as readonly string[]).includes(key)));
+  const normal = (normalizeBattleLook(shape) ?? {}) as Record<string, unknown>;
+  return Object.keys(normal).sort().map((key) => `${key}=${String(normal[key])}`).join(" ");
+}
+const lookBattleKey = (look: UiLookSet): string => battleKeyOf(uiLookBattle(look));
 
 /** 축의 편집기 기본 — 저장되지 않는 값. */
-const AXIS_DEFAULT = { dialogue: "glass", menu: "pixel", battle: "pixel", titleMenu: "window" } as const;
+const AXIS_DEFAULT = { dialogue: "glass", menu: "pixel", battle: "", battlePreset: "pixel", titleMenu: "window" } as const;
 
 function storedMembers(system: Project["system"]): Stored {
   const hud = system.fieldHud;
   const hudMenu = !!hud?.menuStyle && hud.menuStyle !== "project";
   // 적 이름표·체력 막대(끝맺음의 fillEnemyHpLook 이 켠다)는 창의 모습이 아니다 — 그 두 칸은 «전투 창을 골랐다» 로 치지 않는다.
-  const battleKeys = system.battleLook ? Object.keys(system.battleLook).filter((key) => !BATTLE_INFO_KEYS.includes(key)) : [];
-  const battle = !battleKeys.length ? undefined : battleKeys.every((key) => key === "preset" || key === "window") ? battleKey(system.battleLook!.preset ?? AXIS_DEFAULT.battle, system.battleLook!.window) : "custom";
+  const battle = battleKeyOf(system.battleLook);
   return {
     ...(system.dialogueStyle && system.dialogueStyle !== AXIS_DEFAULT.dialogue ? { dialogue: system.dialogueStyle } : {}),
     ...(hudMenu ? { menu: hud!.menuStyle } : system.menuUiStyle && system.menuUiStyle !== AXIS_DEFAULT.menu ? { menu: system.menuUiStyle } : {}),
-    ...(battle && battle !== AXIS_DEFAULT.battle ? { battle } : {}),
+    ...(battle !== AXIS_DEFAULT.battle ? { battle, battlePreset: system.battleLook?.preset ?? AXIS_DEFAULT.battlePreset } : {}),
     ...(system.titleScreen?.logoStyle ? { logo: system.titleScreen.logoStyle } : {}),
     ...(system.titleScreen?.menuStyle && system.titleScreen.menuStyle !== AXIS_DEFAULT.titleMenu ? { titleMenu: system.titleScreen.menuStyle } : {}),
     ...(hud?.font && hud.font !== "auto" ? { hudFont: hud.font } : {}),
@@ -220,7 +235,7 @@ function storedMembers(system: Project["system"]): Stored {
 }
 
 const agreement = (look: UiLookSet, chosen: Stored): number =>
-  (chosen.dialogue === look.dialogue ? 4 : 0) + (chosen.menu === look.menu ? 2 : 0) + (chosen.battle === lookBattleKey(look) ? 2 : 0) + (chosen.logo === look.title.logo ? 1 : 0);
+  (chosen.dialogue === look.dialogue ? 4 : 0) + (chosen.menu === look.menu ? 2 : 0) + (chosen.battlePreset === look.battle ? 2 : 0) + (chosen.logo === look.title.logo ? 1 : 0);
 
 /** 사실에 맞는 세트들 — 시대가 맞고 전투 방식이 맞는 것. 시대를 가리지 않는 세트(영화창)는 대사 중심 게임에서만 낀다. */
 export function uiLookCandidates(facts: UiLookFacts): UiLookSet[] {
@@ -273,10 +288,18 @@ export function applyUiLook(project: Pick<Project, "system">, id: string, option
     s.menuUiStyle = look.menu; out.push(`메뉴 ${look.menu}`);
   }
   if (free(now.battle, before ? lookBattleKey(before) : undefined) && (now.battle ?? AXIS_DEFAULT.battle) !== lookBattleKey(look)) {
-    // 적 이름표·체력 막대는 지킨다 — 세트는 창의 모습(프리셋 + 겉판)만 바꾼다.
-    const kept = Object.fromEntries(Object.entries(s.battleLook ?? {}).filter(([key]) => BATTLE_INFO_KEYS.includes(key))) as BattleLookSettings;
-    s.battleLook = { ...kept, preset: look.battle, ...(look.battleWindow ? { window: look.battleWindow } : {}) };
-    out.push(`전투 창 ${lookBattleKey(look)}`);
+    // 적 이름표·체력 막대는 지킨다 — 세트는 창의 모습(차림 + 겉판 + 아래 두 창 배치)만 바꾼다.
+    // 저장값이 아니라 «지금 보이는 값» 을 지킨다: 프리셋 기본으로 켜져 있어 저장에 없던 이름표(금테 프리셋)가 다른 세트로 옮길 때 꺼지지 않게.
+    // 아무도 켜지 않은 칸은 적지 않는다 — 끝맺음(fillEnemyHpLook)이 «아직 안 정했다» 로 읽고 켠다.
+    const shown = resolveBattleLook(s.battleLook);
+    const kept: BattleLookSettings = {};
+    for (const key of BATTLE_INFO_KEYS) {
+      const stored = s.battleLook?.[key];
+      if (stored !== undefined) kept[key] = stored;
+      else if (shown[key]) kept[key] = true;
+    }
+    s.battleLook = { ...kept, ...uiLookBattle(look) };
+    out.push(`전투 창 ${look.battle}${look.battleWindow ? `+${look.battleWindow}` : ""}`);
   }
   if (s.titleScreen) {
     const title = s.titleScreen;

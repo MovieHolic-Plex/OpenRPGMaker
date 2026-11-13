@@ -391,6 +391,11 @@
   margin-right: 8px;
   z-index: 30;
 }
+/* 목록이 덮는 동안 그 밑의 아래쪽 파티 창은 그리지 않는다(자리는 그대로) — 비치는 창 꾸밈(먹빛·장막·금테·테 없음)에서는 파티 줄이 목록 위로 비쳐
+   「뒤로」·수량 칸과 겹쳤다(2026-11-13 세트 ink-night·gilded 실측). 명령 창이 왼쪽 아래(corner)일 때만 호스트가 파티 자리를 덮는다. 위쪽 상자(boxesTop·mini)는 덮이지 않는다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="corner"]:not([data-look-party="boxesTop"]):not([data-look-party="mini"]):has(.battle-command-menu > .battle-submenu-header) .battle-party {
+  visibility: hidden;
+}
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-panel::before { content: none; }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text strong { font-size: 22px; line-height: 28px; }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text small { font-size: 16px; line-height: 24px; }

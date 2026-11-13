@@ -17,9 +17,37 @@ function flatProject() {
 describe("flat status menu rail (painted skins)", () => {
   it("행동·파티를 펼치고 임무는 그대로, 저장은 꺼내고 시스템은 접는다", () => {
     const project = flatProject();
-    expect(listStatusMenuRailIds(project, startSession(project))).toEqual([
+    // 동료가 있고 몬스터 수집을 하는 게임 — 파티 명령 넷이 다 쓸 데가 있다.
+    project.system.monsterCollection = true;
+    const session = startSession(project);
+    session.partyActorIds = ["actor_hero", "actor_mage", "actor_cleric"];
+    expect(listStatusMenuRailIds(project, session)).toEqual([
       "items", "skills", "equipment", "status", "row", "formation", "monsters", "quests", "save", "system-menu",
     ]);
+  });
+
+  it("기본 메뉴는 쓸 데가 있는 명령만 싣는다 — 혼자면 열·진형이 없고, 몬스터가 없으면 몬스터가 없다", () => {
+    const project = flatProject();
+    const session = startSession(project);
+    expect(session.partyActorIds).toHaveLength(1);
+    expect(listStatusMenuRailIds(project, session)).toEqual(["items", "skills", "equipment", "status", "quests", "save", "system-menu"]);
+    // 동료가 생기면 열·진형이 나타난다.
+    session.partyActorIds = ["actor_hero", "actor_mage"];
+    expect(listStatusMenuRailIds(project, session)).toEqual(["items", "skills", "equipment", "status", "row", "formation", "quests", "save", "system-menu"]);
+    // 포획 구슬로 한 마리 잡으면 몬스터가 나타난다.
+    session.monsterParty = ["monster_1"];
+    expect(listStatusMenuRailIds(project, session)).toContain("monsters");
+    // 접힌 레일의 「파티 ▸」 안도 같다.
+    const folded = createBlankProject();
+    expect(listStatusMenuGroupCommandIds("party-menu", folded, startSession(folded))).toEqual(["status"]);
+  });
+
+  it("저작한 메뉴(configure_field_menu)는 작가가 고른 명령 그대로다 — 혼자여도 진형을 뺏지 않는다", () => {
+    const project = flatProject();
+    project.meta.oprnFieldMenu = { version: 1, entries: [{ command: "items", label: "가방" }, { command: "formation", label: "대열" }, { command: "monsters", label: "동물 친구" }, { command: "save", label: "기록" }] };
+    const rail = listStatusMenuRailIds(project, startSession(project));
+    expect(rail).toContain("formation");
+    expect(rail).toContain("monsters");
   });
 
   it("시스템 트레이는 저장을 빼고 로드·대기·타이틀만 담는다", () => {

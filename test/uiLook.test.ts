@@ -1,14 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { applyLookDefaults } from "@/ai/v2/story/shipDefaults";
 import { BLUEPRINT_CARD, parseBlueprintArgs, WRITE_BLUEPRINT_SCHEMA } from "@/ai/v2/story/blueprint";
-import { BATTLE_LOOK_PRESET_IDS } from "@/project/battleLook";
+import { BATTLE_LOOK_PRESET_IDS, BATTLE_LOOK_PRESETS, battleLookFillsBand, resolveBattleLook } from "@/project/battleLook";
 import { DEFAULT_RUNTIME_WINDOW_SKIN_ID, normalizeSystemRecords } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
 import { DIALOGUE_STYLE_IDS } from "@/project/dialogueStyles";
 import { normalizeFieldHud, resolvedHudWidgets } from "@/project/fieldHud";
 import { listMenuSkinIds } from "@/player/menuSkins/registry";
+import { listStatusMenuCommandIds, listStatusMenuGroupCommandIds, listStatusMenuRailIds } from "@/player/playerStatusMenuModel";
+import { startSession } from "@/project/session";
 import type { Project } from "@/project/types";
-import { applyUiLook, FALLBACK_UI_LOOK_ID, pickUiLook, UI_LOOK_ERA_BY_FAMILY, UI_LOOK_IDS, UI_LOOKS, uiLookById, uiLookCandidates, uiLookFacts, uiLookHint, type UiLookCombat, type UiLookEra } from "@/project/uiLook";
+import { applyUiLook, FALLBACK_UI_LOOK_ID, pickUiLook, UI_LOOK_ERA_BY_FAMILY, UI_LOOK_IDS, UI_LOOKS, uiLookBattle, uiLookById, uiLookCandidates, uiLookFacts, uiLookHint, type UiLookCombat, type UiLookEra } from "@/project/uiLook";
 
 const fight = (p: Project): void => {
   p.maps[p.startMapId!]!.events.push({ id: "ev_slime", name: "슬라임", x: 3, y: 3, pages: [{ conditions: [], trigger: "action", commands: [{ kind: "battleProcessing", troopId: p.database.troops[0]?.id ?? "troop_1" }] }] } as never);
@@ -83,6 +85,49 @@ describe("UI 모습 목록 — 있는 스타일만으로 짠 한 벌", () => {
     }
     // 흑창 대사창(retro-black · double-line · skew · mono-heavy)은 검은 메뉴 스킨이 없어 세트로 짜지 않았다.
     for (const look of UI_LOOKS) expect(["retro-black", "double-line", "skew", "mono-heavy"], look.id).not.toContain(look.dialogue);
+  });
+});
+
+describe("세트는 화면을 비우지도, 쓸 데 없는 명령을 싣지도 않는다 (확인 빌드 r3 의 두 결함)", () => {
+  it("전투 배치 — 어느 세트든 아래 띠를 창이 다 덮는다(전장은 창 위까지 · 명령 창은 왼쪽 아래 · 파티는 그 옆 줄 목록)", () => {
+    // 이 계약이 왜 필요한가: 프리셋 가운데 여섯(teal · gold · icons · soft · pop · cinema)은 전장을 화면 끝까지 쓰는 배치라 그대로 입히면 아래 1/3 이 빈다.
+    expect(BATTLE_LOOK_PRESET_IDS.filter((id) => !battleLookFillsBand(BATTLE_LOOK_PRESETS[id].axes)).length).toBeGreaterThan(0);
+    for (const look of UI_LOOKS) {
+      expect(battleLookFillsBand(resolveBattleLook(uiLookBattle(look))), look.id).toBe(true);
+      // 테 없는 창(bare)은 판이 없다 — 맵을 그대로 배경으로 쓰는 전투에서 안내 글·승리 창이 타일 위에 맨 글자로 뜬다.
+      expect(resolveBattleLook(uiLookBattle(look)).window, look.id).not.toBe("bare");
+      // 입힌 뒤의 저장값으로도 — 끝맺음이 먼저 켠 적 이름표·체력 막대가 있어도, 다른 세트에서 옮겨 와도.
+      for (const from of [undefined, "gilded", "haunted"]) {
+        const p = calm();
+        p.system.battleLook = { enemyHp: true, enemyNames: true };
+        if (from) applyUiLook(p, from);
+        applyUiLook(p, look.id);
+        const resolved = resolveBattleLook(p.system.battleLook);
+        expect(battleLookFillsBand(resolved), `${from ?? "-"} → ${look.id}`).toBe(true);
+        expect(resolved.preset, look.id).toBe(look.battle);
+        expect(resolved.enemyHp && resolved.enemyNames, look.id).toBe(true);
+      }
+    }
+  });
+
+  it("ESC 메뉴 — 어느 세트의 메뉴든 이 게임에 쓸 데 없는 명령(열 바꾸기 · 진형 · 몬스터)을 싣지 않는다", () => {
+    const ABSENT = ["row", "formation", "monsters"];
+    for (const look of UI_LOOKS) {
+      // 주인공 혼자인 턴제 게임.
+      const solo = calm();
+      fight(solo);
+      applyUiLook(solo, look.id, { force: true });
+      const session = startSession(solo);
+      expect(session.partyActorIds, look.id).toHaveLength(1);
+      const shown = [...listStatusMenuRailIds(solo, session), ...listStatusMenuCommandIds(solo, session), ...(listStatusMenuRailIds(solo, session).includes("party-menu") ? listStatusMenuGroupCommandIds("party-menu", solo, session) : [])];
+      for (const id of ABSENT) expect(shown, `${look.id} solo ${id}`).not.toContain(id);
+      expect(shown, look.id).toContain("items");
+      // 동료 셋 — 열·진형은 쓸 데가 생기고, 몬스터는 여전히 없다.
+      session.partyActorIds = ["actor_hero", "actor_mage", "actor_cleric"];
+      const party = listStatusMenuCommandIds(solo, session);
+      expect(party, look.id).toEqual(expect.arrayContaining(["status", "row", "formation"]));
+      expect(party, look.id).not.toContain("monsters");
+    }
   });
 });
 
@@ -181,7 +226,19 @@ describe("입히기", () => {
     applyUiLook(plates, "hanji");
     expect(plates.system.battleLook).toEqual({ enemyHp: true, enemyNames: true, preset: "ink", window: "parch" });
     applyUiLook(plates, "kingdom");
-    expect(plates.system.battleLook).toEqual({ enemyHp: true, enemyNames: true, preset: "pixel" });
+    expect(plates.system.battleLook).toEqual({ enemyHp: true, enemyNames: true });
+    // 프리셋 기본으로 켜져 있어 저장에 없던 이름표(금테)도 지킨다 — 금테 세트를 입히고 끝맺음이 체력 막대만 적어 둔 저장값에서 다른 세트로 옮길 때(확인 빌드 r3b).
+    const implied = calm();
+    applyUiLook(implied, "gilded");
+    implied.system.battleLook = { ...implied.system.battleLook, enemyHp: true };
+    expect(implied.system.battleLook).not.toHaveProperty("enemyNames");
+    applyUiLook(implied, "rm2003");
+    expect(resolveBattleLook(implied.system.battleLook)).toMatchObject({ preset: "teal", enemyNames: true, enemyHp: true });
+    // 아무도 켜지 않은 칸은 적지 않는다 — 끝맺음이 «아직 안 정했다» 로 읽고 켤 수 있게.
+    const bare = calm();
+    applyUiLook(bare, "rm2003");
+    expect(bare.system.battleLook).not.toHaveProperty("enemyNames");
+    expect(bare.system.battleLook).not.toHaveProperty("enemyHp");
     expect(p.system.titleScreen?.logoStyle).toBe("gold");
     expect(p.system.uiLook).toBe("gilded");
     expect(notes.some((note) => note.startsWith("메뉴 "))).toBe(false);
