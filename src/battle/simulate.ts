@@ -21,6 +21,12 @@ export interface StrictBattleScriptCommand {
   readonly switchActorId?: string;
 }
 
+/**
+ * 여느 플레이어가 전투 중에 회복약을 쓰는 HP 문턱(최대 HP 의 몫). 조수 v2 의 보스 밴드(ai/v2/story/pathBattleTension)와
+ * 자동 플레이·정직한 플레이의 전투 수(testing/sceneTestRunner — 배우 파티 게임)가 같이 쓴다. 몬스터 파티 게임은 예전 그대로 0.3.
+ */
+export const SENSIBLE_POTION_HP_RATIO = 0.45;
+
 export interface SimulateBattleInput {
   readonly project: Project;
   readonly troopId: string;
@@ -32,6 +38,8 @@ export interface SimulateBattleInput {
   readonly monsterParty?: readonly MonsterInstance[];
   // 저HP(≤30%) 시 AI가 사용할 회복 아이템 id. 없으면 아이템을 쓰지 않는다.
   readonly potionItemId?: string;
+  /** 회복 아이템을 쓰는 HP 문턱(최대 HP 의 몫, 기본 0.3). 사람은 더 일찍 쓴다 — 조수 v2 의 보스 밴드는 SENSIBLE_POTION_HP_RATIO 로 잰다. */
+  readonly potionHpRatio?: number;
   readonly n?: number;
   readonly seed?: number;
   readonly battleFlow?: BattleFlow;
@@ -201,7 +209,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
           continue;
         }
         turns += 1;
-        const lowHp = actor !== undefined && actor.hp <= actor.maxHp * 0.3;
+        const lowHp = actor !== undefined && actor.hp <= actor.maxHp * (input.potionHpRatio ?? 0.3);
         const hasPotion = input.potionItemId !== undefined && (snap.eventState.inventory[input.potionItemId] ?? 0) > 0;
         if (lowHp && hasPotion && input.potionItemId) {
           rt.performActorCommand({ kind: "item", itemId: input.potionItemId, targetEnemyId: enemy.id });
