@@ -40,10 +40,15 @@ describe("UI 모습 목록 — 있는 스타일만으로 짠 한 벌", () => {
     // 어느 세계·전투 방식에서도 스키마 증분 + 답 한 줄이 300자 안이다.
     const eras = [...new Set(Object.values(UI_LOOK_ERA_BY_FAMILY))];
     let longest = 0;
-    for (const [family] of Object.entries(UI_LOOK_ERA_BY_FAMILY)) for (const withFight of [false, true]) for (const key of ["k1", "k2", "k3", "k4"]) {
+    // 빈 프로젝트는 짓는 데 오래 걸린다 — 싸우는 판/안 싸우는 판 둘만 짓고 칩셋 계열만 바꿔 가며 읽는다.
+    const projects = [false, true].map((withFight) => {
       const p = calm();
-      p.tilesets = { ...p.tilesets, probe: { ...Object.values(p.tilesets)[0]!, id: "probe", family } };
+      p.tilesets = { ...p.tilesets, probe: { ...Object.values(p.tilesets)[0]!, id: "probe" } };
       if (withFight) fight(p);
+      return { withFight, p };
+    });
+    for (const [family] of Object.entries(UI_LOOK_ERA_BY_FAMILY)) for (const { withFight, p } of projects) for (const key of ["k1", "k2", "k3", "k4"]) {
+      (p.tilesets.probe as { family?: string }).family = family;
       const hint = uiLookHint(p, key, "probe");
       longest = Math.max(longest, hint.length);
       expect(hint.split(" = ").length - 1, `${family} ${withFight}`).toBeLessThanOrEqual(3);
