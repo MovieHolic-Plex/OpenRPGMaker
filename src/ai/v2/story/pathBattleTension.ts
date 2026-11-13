@@ -6,7 +6,8 @@
 //
 // 규칙:
 //  - 시작 파티의 능력치 곡선은 레벨마다 눈에 보이게 오른다(바닥: 시작 레벨 값의 몇 % 씩). 원래 곡선이 더 가파른 구간은 그대로.
-//  - 보스는 «가진 회복약과 기술을 쓰는 플레이» 로 재고(가장 낮게 도착해 시작 약을 다 든 판 · 가장 높게 도착해 보스전 몫 BOSS_POTIONS 만 든 판 둘 다),
+//  - 보스는 «회복약을 쓰는 플레이» 로 잰다 — 가장 낮게 도착한 판(기술을 쓰는 플레이 · 기술 없이 공격과 약만 쓰는 플레이, 약은 쓰는 만큼)과
+//    가장 높게 도착해 보스전 몫 BOSS_POTIONS 만 든 판(기술을 쓰는 플레이). 낮게 도착한 판이 쓴 약은 시작 소지품이 댄다(pathBattleBudget 의 시작 회복약).
 //    «공격만·회복 없음» 으로는 못 이기게 올린다(가장 높게 도착하는 레벨). 올리기는 HP 와 공격·마력의 짝(평타 한 대가 영웅 최대 HP 의 40% 를 넘지 않는 데까지 — HP 를 올리며 공격을 내리는 짝도 있다).
 //    기술·약을 쓰는 플레이의 기준(승률·턴)을 깨는 걸음은 받지 않는다 —
 //    그래서 두 플레이의 차이가 작은 보스(쉬는 차례가 많은 행동표, 레벨 차가 큰 길)는 «공격만» 승률이 상한까지 내려가지 않고 멈춘다(그 사실을 줄에 적는다).
@@ -15,11 +16,14 @@ import { actorBattlers } from "@/battle/battleBattlers";
 import { ACTOR_LEVEL_MAX, normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import type { EnemyRecord, Project } from "@/project/types";
 
-/** 보스전 몫으로 시작 소지품에 더 넣는 회복약 수 — 보스 맞추기도 이만큼 가진 플레이로 잰다. */
+/** 보스전 몫으로 시작 소지품에 적어도 넣는 회복약 수 — 길 위 전투를 다 이기고 가장 높게 도착한 판은 이만큼만 든 채로 잰다. */
 export const BOSS_POTIONS = 2;
+/** 가장 낮게 도착한 판이 드는 약 — 쓰는 만큼(쓴 수를 재어 시작 소지품이 그만큼을 댄다). */
+const AMPLE_POTIONS = 99;
 /**
  * 보스 밴드 — 싸우는 단계의 상대는 모두 이 안에 선다(그 보스 앞에 도착하는 파티로 잰다):
- *  기술·회복약을 쓰는 플레이가 이기는 비율 minWin 이상 · turns 턴 안(회복약 쓰는 차례 포함) — 가장 낮게·가장 높게 도착하는 두 판 다.
+ *  회복약을 쓰는 플레이가 이기는 비율 minWin 이상 — 기술을 쓰는 플레이(가장 낮게·가장 높게 도착하는 두 판)도, 기술 없이 공격과 약만 쓰는 플레이(가장 낮게 도착한 판)도.
+ *  기술을 쓰는 플레이는 turns 턴 안(회복약 쓰는 차례 포함, 가장 높게 도착한 판).
  *  «공격만·회복 없음» 으로 이기는 판은 attackOnlyMaxWin 이하(가장 높게 도착하는 레벨).
  */
 export const BOSS_BAND = { minWin: 0.95, turns: 14, attackOnlyMaxWin: 0.1 } as const;
@@ -74,28 +78,50 @@ export function levelAfter(project: Project, leadId: string | undefined, startLe
   return level;
 }
 
-/** 보스 앞에 도착하는 파티 — 가장 낮게(피할 수 있는 전투를 다 피하고, 받은 약을 다 든 채) · 가장 높게(길 위 전투를 다 이기고). */
-export interface BossParty { readonly ids: readonly string[]; readonly minLevel: number; readonly maxLevel: number; readonly potion?: string; readonly startPotions?: number }
+/** 보스 앞에 도착하는 파티 — 가장 낮게(피할 수 있는 전투를 다 피하고) · 가장 높게(길 위 전투를 다 이기고). */
+export interface BossParty { readonly ids: readonly string[]; readonly minLevel: number; readonly maxLevel: number; readonly potion?: string }
 
 const hpAt = (project: Project, ids: readonly string[], level: number): number =>
   actorBattlers(project, { levels: Object.fromEntries(ids.map((id) => [id, level])), partyActorIds: [...ids] }).reduce((sum, b) => sum + b.maxHp, 0);
 
+export interface BossPlay {
+  /** 약을 쓰는 세 플레이 가운데 가장 낮은 승률. */
+  readonly win: number;
+  /** 기술을 쓰는 플레이의 턴(가장 높게 도착한 판 — 길 위 전투를 치른 여느 플레이의 길이). */
+  readonly turns: number;
+  /** 가장 낮게 도착한 판이 잃는 HP(기술을 쓰는 플레이). */
+  readonly loss: number;
+  /** 가장 낮게 도착한 판이 쓰는 약 — 기술을 쓰는 플레이와 안 쓰는 플레이 가운데 많은 쪽(시작 소지품이 대는 수). */
+  readonly potions: number;
+  /** 기술 없이 공격과 약만 쓰는 플레이(가장 낮게 도착한 판)의 승률. */
+  readonly plainWin: number;
+}
+const NO_PLAY: BossPlay = { win: 0, loss: 1, turns: 99, potions: 0, plainWin: 0 };
+
 /**
- * 보스를 «기술 + 가진 회복약» 으로 잰다(쉼터 뒤 풀 HP) — 두 도착을 다 본다: 가장 낮은 레벨로 시작 회복약을 다 들고 · 가장 높은 레벨로 보스전 몫만 들고.
- * 승률은 둘 가운데 낮은 쪽, 턴은 높은 레벨 판(길 위 전투를 치른 여느 플레이의 길이), 손실·쓴 약은 낮은 레벨 판.
+ * 보스를 «회복약을 쓰는 플레이» 로 잰다(쉼터 뒤 풀 HP) — 가장 낮은 레벨로 도착한 판은 기술을 쓰는 플레이와 기술 없이 공격·약만 쓰는 플레이 둘 다(약은 쓰는 만큼),
+ * 가장 높은 레벨로 도착한 판은 보스전 몫만 든 채 기술을 쓰는 플레이. 승률은 셋 가운데 낮은 쪽.
+ * 왜 «기술 없이» 도 재는가(2026-11-13 r2s-fun): 기술을 쓰는 플레이만 재면 공격과 약만 누르는 사람(자동 플레이가 그렇게 한다)은 첫 보스에서 약을 다 쓰고 마지막 보스에서 졌다.
  */
-export function measureBossSensible(project: Project, troopId: string, party: BossParty): { win: number; loss: number; turns: number; potions: number } {
-  const play = (level: number, potions: number) => simulateBattle({
-    project, troopId, heroLevel: level, partyActorIds: party.ids, n: SAMPLES, seed: 11, useSkills: true,
+export function measureBossSensible(project: Project, troopId: string, party: BossParty): BossPlay {
+  const play = (level: number, potions: number, useSkills: boolean) => simulateBattle({
+    project, troopId, heroLevel: level, partyActorIds: party.ids, n: SAMPLES, seed: 11, useSkills,
     ...(party.potion ? { inventory: { [party.potion]: potions }, potionItemId: party.potion } : {}),
   });
-  const weakest = play(party.minLevel, Math.max(BOSS_POTIONS, party.startPotions ?? BOSS_POTIONS));
-  const same = party.minLevel === party.maxLevel && (party.startPotions ?? BOSS_POTIONS) <= BOSS_POTIONS;
-  const strongest = same ? weakest : play(party.maxLevel, BOSS_POTIONS);
+  const weakest = play(party.minLevel, AMPLE_POTIONS, true);
+  const strongest = play(party.maxLevel, BOSS_POTIONS, true);
+  // 회복약이 없는 게임에서 기술 없는 플레이는 «공격만» 과 같다(그쪽은 못 이기는 것이 기준이다) — 재지 않는다.
+  const plain = party.potion ? play(party.minLevel, AMPLE_POTIONS, false) : weakest;
   return {
-    win: Math.min(weakest.winRate, strongest.winRate), turns: strongest.avgTurns, potions: weakest.avgPotionsUsed,
+    win: Math.min(weakest.winRate, strongest.winRate, plain.winRate), turns: strongest.avgTurns, plainWin: plain.winRate,
+    potions: Math.max(weakest.avgPotionsUsed, plain.avgPotionsUsed),
     loss: Math.max(0, 1 - weakest.avgHpRemaining / Math.max(1, hpAt(project, party.ids, party.minLevel))),
   };
+}
+
+/** 그 보스전 몫의 회복약 — 가장 낮게 도착한 판이 쓰는 수를 올림(적어도 BOSS_POTIONS). */
+export function bossPotionShare(project: Project, troopId: string, party: BossParty): number {
+  try { return Math.max(BOSS_POTIONS, Math.ceil(measureBossSensible(project, troopId, party).potions - 1e-9)); } catch { return BOSS_POTIONS; }
 }
 
 /** 보스를 «공격만·회복 없음» 으로 잰다 — 기본은 길 위 전투를 다 이기고 가장 높게 도착하는 레벨. */
@@ -115,13 +141,13 @@ export function bossBandLine(project: Project, troopId: string, party: BossParty
   try { sensible = measureBossSensible(project, troopId, party); attackOnly = measureBossAttackOnly(project, troopId, party); } catch { return undefined; }
   const pct = (v: number) => `${Math.round(v * 100)}%`;
   const out = [
-    ...(sensible.win < BOSS_BAND.minWin ? [`기술+회복약 승률 ${pct(sensible.win)} < ${pct(BOSS_BAND.minWin)}`] : []),
+    ...(sensible.win < BOSS_BAND.minWin ? [`회복약을 쓰는 플레이 승률 ${pct(sensible.win)} < ${pct(BOSS_BAND.minWin)}`] : []),
     ...(sensible.turns > BOSS_BAND.turns ? [`${sensible.turns.toFixed(1)}턴 > ${BOSS_BAND.turns}턴`] : []),
     ...(attackOnly.win > BOSS_BAND.attackOnlyMaxWin ? [`공격만 승률 ${pct(attackOnly.win)} > ${pct(BOSS_BAND.attackOnlyMaxWin)}`] : []),
   ];
   const name = project.database.troops.find((t) => t.id === troopId)?.name ?? troopId;
-  const arrive = `도착 Lv${party.minLevel}${party.maxLevel !== party.minLevel ? `~${party.maxLevel}` : ""}${party.potion ? `·약 ${Math.max(BOSS_POTIONS, party.startPotions ?? BOSS_POTIONS)}~${BOSS_POTIONS}개` : ""}`;
-  return `보스 밴드 ${out.length ? "밖" : "안"} — 「${name}」 ${arrive}: 기술+회복약 승률 ${pct(sensible.win)}·${sensible.turns.toFixed(1)}턴·잃는 HP ${pct(sensible.loss)}·약 ${sensible.potions.toFixed(1)}개 · 공격만 승률 ${pct(attackOnly.win)}${out.length ? ` (밖: ${out.join(" · ")})` : ""}`;
+  const arrive = `도착 Lv${party.minLevel}${party.maxLevel !== party.minLevel ? `~${party.maxLevel}` : ""}`;
+  return `보스 밴드 ${out.length ? "밖" : "안"} — 「${name}」 ${arrive}: 회복약을 쓰는 플레이 승률 ${pct(sensible.win)}(기술 없이 공격+약 ${pct(sensible.plainWin)})·${sensible.turns.toFixed(1)}턴·잃는 HP ${pct(sensible.loss)}·약 ${sensible.potions.toFixed(1)}개 · 공격만·회복 없음 승률 ${pct(attackOnly.win)}${out.length ? ` (밖: ${out.join(" · ")})` : ""}`;
 }
 
 type Stats = EnemyRecord["stats"];
@@ -157,7 +183,7 @@ export function raiseBossTension(project: Project, troopId: string, party: BossP
     const saved = enemies.map((e) => e.stats);
     for (const e of enemies) e.stats = scale(e.stats);
     let next: ReturnType<typeof measureBossSensible>;
-    try { next = measureBossSensible(project, troopId, party); } catch { next = { win: 0, loss: 1, turns: 99, potions: 0 }; }
+    try { next = measureBossSensible(project, troopId, party); } catch { next = NO_PLAY; }
     if (!bossSensibleFits(next)) { enemies.forEach((e, i) => { e.stats = saved[i]!; }); return false; }
     sensible = next;
     return true;
@@ -183,5 +209,5 @@ export function raiseBossTension(project: Project, troopId: string, party: BossP
   // 가장 낮게 도착하는 레벨의 «공격만» 도 같이 적는다 — 길 위 전투를 피해 온 판과 다 이기고 온 판이 다르다.
   let weakest = attackOnly;
   if (party.minLevel !== party.maxLevel) try { weakest = measureBossAttackOnly(project, troopId, party, party.minLevel); } catch { /* 모의 실패는 높은 레벨 값으로 */ }
-  return `${troopId}(보스) 공격만·회복 없음 승률 Lv${party.maxLevel} ${pct(before.attackOnly.win)} → ${pct(attackOnly.win)}${party.minLevel !== party.maxLevel ? ` · Lv${party.minLevel} ${pct(weakest.win)}` : ""} · 기술+회복약(Lv${party.minLevel} 약 ${Math.max(BOSS_POTIONS, party.startPotions ?? BOSS_POTIONS)}개 · Lv${party.maxLevel} 약 ${BOSS_POTIONS}개) 승률 ${pct(before.sensible.win)} → ${pct(sensible.win)}·${sensible.turns.toFixed(1)}턴·약 ${sensible.potions.toFixed(1)}개 — ${lead.name} 공 ${before.stats[0]!.attack}→${lead.stats.attack}·HP ${before.stats[0]!.maxHp}→${lead.stats.maxHp}${attackOnly.win > ATTACK_ONLY_MAX_WIN ? " (더 올리면 기술·약으로도 못 이겨 여기서 멈춤)" : ""}`;
+  return `${troopId}(보스) 공격만·회복 없음 승률 Lv${party.maxLevel} ${pct(before.attackOnly.win)} → ${pct(attackOnly.win)}${party.minLevel !== party.maxLevel ? ` · Lv${party.minLevel} ${pct(weakest.win)}` : ""} · 회복약을 쓰는 플레이(Lv${party.minLevel} 약 쓰는 만큼 · Lv${party.maxLevel} 약 ${BOSS_POTIONS}개) 승률 ${pct(before.sensible.win)} → ${pct(sensible.win)}·${sensible.turns.toFixed(1)}턴·약 ${sensible.potions.toFixed(1)}개 — ${lead.name} 공 ${before.stats[0]!.attack}→${lead.stats.attack}·HP ${before.stats[0]!.maxHp}→${lead.stats.maxHp}${attackOnly.win > ATTACK_ONLY_MAX_WIN ? " (더 올리면 기술·약으로도 못 이겨 여기서 멈춤)" : ""}`;
 }
