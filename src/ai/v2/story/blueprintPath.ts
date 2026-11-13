@@ -323,7 +323,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     if (code) {
       // 앞선 고리 어느 것이든 그 대사에 번호가 있으면 이미 알려 준 것이다 — 사슬은 순서대로만 열리므로 이 단계에 닿은 플레이어는 그 대사를 지났다.
       // 바로 앞 단계만 보면 두세 단계 앞의 기록이 알려 준 번호를 같은 방의 «번호 쪽지»로 한 번 더 읽어야 자물쇠가 열렸다.
-      let told = links.some((l) => [...(l.lines ?? []), ...(l.choice?.options ?? []).flatMap((o) => o.lines ?? [])].some((line) => line.includes(code)));
+      // 플레이어가 그 고리에서 읽는 글 전부 — 이긴 뒤 글(상대가 떨어뜨린 쪽지)에 적힌 번호도 이미 알려 준 것이다(같은 번호의 쪽지를 한 번 더 세우지 않는다).
+      let told = links.some((l) => [...(l.lines ?? []), ...(l.choice?.options ?? []).flatMap((o) => o.lines ?? []), ...(l.battle?.winLines ?? []), ...(l.reward?.lines ?? [])].some((line) => line.includes(code)));
       // 앞 단계가 그대로 둔 단서 이벤트(「비밀번호 단서」를 주는 책상)면 그 대사에 번호를 적는다 — 2026-10-29 vm2 flash: 「『비밀번호 단서』를
       // 알아냈다」 뿐이라 판정자가 단서 내용을 읽을 수 없었다.
       // needs 가 단서 여럿이고 모두 그대로 둔 앞 단계면 번호를 그 순서로 나눠 적는다(2026-10-29 vm4 argon 방탈출: 「첫 번째 숫자 단서」 책상 +
