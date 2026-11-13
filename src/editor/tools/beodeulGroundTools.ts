@@ -1,4 +1,5 @@
 import { houseSetBaseTiles } from '@/project/houseSetKit';
+import { tilesetStandTableFor } from '@/assets/tilesetStands';
 import architectureCatalog from '@/assets/beodeulArchitectureCatalog.json';
 import { BEODEUL_GROUND_ID, BEODEUL_GROUND_TEXTURE, BEODEUL_GROUND_RECIPES, createBeodeulGroundTileset } from '@/project/defaults/beodeulGround';
 import { translateTiles } from '@/project/objectStamp';
@@ -51,6 +52,11 @@ export function dressBeodeulGround(project:Project,mapId:string,style:'natural'|
     throw new ToolError('버들항 16px 맵만 지원합니다. 현재 칩셋을 바꾸지 않습니다.');
   const grafts=new Map((target.tileGrafts??[]).map(g=>[g.targetTile,g]));
   const own=(n:number)=>grafts.get(n)?.sourceChipset===BEODEUL_GROUND_TEXTURE;
+  // 숲 바닥·풀밭 얼룩(게임마다 다른 겉모습의 2층 덧그림, beodeulGroundCover)은 바닥의 한 부분으로 본다 — 얼룩이 있는 게임도
+  // 기초·장작·통·풀포기가 얼룩 없는 판과 같은 자리에 놓인다(통행 격자가 같다). 얼룩 위에 놓일 2층 꾸밈(낙엽·밑동 그늘·닳은 흙)만 얼룩에 자리를 내준다.
+  const coverTexture=tilesetStandTableFor(target.id)?.texture;
+  const cover=(n:number)=>n>=0&&!!coverTexture&&grafts.get(n)?.sourceChipset===coverTexture;
+  const layer2=(i:number)=>{const n=layerTileAt(map,2,i);return cover(n)?-1:n;};
   const hasExisting=Array.from({length:map.width*map.height},(_,i)=>own(layerTileAt(map,2,i))||own(layerTileAt(map,4,i))).some(Boolean);
   // 집 벌(게임마다 다른 집 그림)의 칸은 원본 킷의 같은 자리 칸으로 되짚어 본다 — 벌 집도 같은 집으로 찾아 문 앞·둘레를 똑같이 다룬다.
   const setBase=houseSetBaseTiles(target);
@@ -96,7 +102,7 @@ export function dressBeodeulGround(project:Project,mapId:string,style:'natural'|
   const free=(x:number,y:number)=>{
     if(x<0||y<0||x>=map.width||y>=map.height) return false;
     const i=y*map.width+x;
-    return grass(i)&&!protectedCells.has(i)&&[2,3,4].every(l=>layerTileAt(map,l as TileLayerNo,i)<0);
+    return grass(i)&&!protectedCells.has(i)&&layer2(i)<0&&[3,4].every(l=>layerTileAt(map,l as TileLayerNo,i)<0);
   };
   const start=points.find(p=>isPassable(project,map,p.x,p.y))??{x:0,y:0};
   const before=reachable(project,map,start);
@@ -111,13 +117,15 @@ export function dressBeodeulGround(project:Project,mapId:string,style:'natural'|
       const tx=x+dx,ty=y+dy,i=ty*map.width+tx;
       if(tx<0||ty<0||tx>=map.width||ty>=map.height||!grass(i)||map.relief?.levels[i]) return false;
       if(support){
-        if(layerTileAt(map,r.layer as TileLayerNo,i)>=0||criticalCells.has(i)) return false;
+        if((r.layer===2?layer2(i):layerTileAt(map,r.layer as TileLayerNo,i))>=0||criticalCells.has(i)) return false;
         // Only the foundation's wall row may sit over an existing layer-3 object.
-        if(r.layer===4&&(layerTileAt(map,2,i)>=0 || layerTileAt(map,3,i)>=0&&!(id.startsWith('bdg-foundation')||id==='bdg-tree-neck'))) return false;
+        if(r.layer===4&&(layer2(i)>=0 || layerTileAt(map,3,i)>=0&&!(id.startsWith('bdg-foundation')||id==='bdg-tree-neck'))) return false;
       }
       else if(!free(tx,ty)) return false;
     }
     const changed:number[]=[];
+    // 2층 꾸밈이 얼룩 칸에 걸리면 놓지 않되 놓은 것으로 센다(얼룩에 네모 구멍을 내지 않고, 뒤따르는 자리 고르기는 얼룩 없는 판과 같게)
+    if(r.layer===2&&r.rows.some((row,dy)=>row.some((n,dx)=>n>=0&&cover(layerTileAt(map,2,(y+dy)*map.width+x+dx))))) return true;
     for(let dy=0;dy<r.height;dy++) for(let dx=0;dx<r.width;dx++){
       const n=r.rows[dy]?.[dx];if(n===undefined||n<0) continue;
       const i=(y+dy)*map.width+x+dx;
@@ -149,7 +157,7 @@ export function dressBeodeulGround(project:Project,mapId:string,style:'natural'|
         const n=r.rows[dy]?.[dx];if(n===undefined||n<0)continue;
         const x=a.x+dx,ty=y+dy,i=ty*map.width+x;
         if(x<0||ty<0||x>=map.width||ty>=map.height||map.relief?.levels[i]||criticalCells.has(i)
-          ||layerTileAt(map,2,i)>=0||layerTileAt(map,4,i)>=0)continue;
+          ||layer2(i)>=0||layerTileAt(map,4,i)>=0)continue;
         const houseRow=ty-a.y;
         const ownWall=houseRow>=0&&houseRow<a.h&&((a.kit.rows[houseRow]?.upperTiles ?? [])[dx]??-1)>=0;
         if(layerTileAt(map,3,i)>=0&&!ownWall)continue;
