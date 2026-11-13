@@ -155,7 +155,8 @@ describe("v2 가 세우는 적은 현행 그림이 있는 종", () => {
     // 새끼 용이 그려진 뒤(2026-11-12): 우두머리 후보가 새끼 용·다이어 울프·불의 정령 셋이 되고 그릴 목록에서 빠진다.
     const beast = themeBossTroop(project, mapId, "늪 괴수", false, 2);
     expect(leadArt(project, beast.troopId)).toBe("generated-enemy-spirit-fire");
-    expect(beast.gaps.map((line) => parseArtGap(line)?.wanted)).toEqual(["dinosaurs (raptor, triceratops)", "behemoth-horn", "tiger-saber"]);
+    // 종 이름으로 불리지 않은 우두머리는 제 이름도 그릴 목록에 남는다(2026-11-13 r3b-fun: «그림자 종지기» 가 대역으로 섰는데 그 이름의 줄이 없었다).
+    expect(beast.gaps.map((line) => parseArtGap(line)?.wanted)).toEqual(["dinosaurs (raptor, triceratops)", "늪 괴수", "behemoth-horn", "tiger-saber"]);
     const whelp = themeBossTroop(project, mapId, "새끼 용", true, 0);
     expect(leadArt(project, whelp.troopId)).toBe("generated-enemy-dragon-whelp");
     expect(whelp.gaps).toEqual([]);

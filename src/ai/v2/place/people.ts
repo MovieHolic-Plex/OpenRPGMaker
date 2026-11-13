@@ -99,7 +99,7 @@ function wantedGender(looks: string | undefined, role: string | undefined): "mal
 
 /** 그 사람에게 맞지 않는 칩(글이 말한 성별과 다르다 · 아이가 아닌데 아이 칩)의 벌점 — 흉상 유무(250)와 검색어 단 차이를 합친 것보다 크고, 이름으로 돌려 고르는 마지막 단(1000)보다 작다. */
 const MISFIT = 600;
-/** 이 게임의 다른 사람이 이미 쓴 칩 — 흉상 없는 칩(250)보다 무겁고 어긋난 칩(MISFIT)보다 가볍다. */
+/** 이름 있는 사람(ownFace)을 고를 때, 이 게임의 다른 사람이 이미 쓴 칩 — 흉상 없는 칩(250)보다 무겁고 어긋난 칩(MISFIT)보다 가볍다. 이름 없는 무리(농부 여섯)는 전처럼 주민 칩을 고르게 다시 쓴다. */
 const REUSED = 260;
 /** 주인공과 같은 모습의 칩 — 다른 칩이 하나라도 있으면 고르지 않는다. */
 const HERO_TWIN = 5000;
@@ -140,7 +140,7 @@ function familyFits(map: GameMap, textureKey: string): boolean {
  * 역할·외형에 맞는 «우호적인 사람» 칩 하나. 몬스터·언데드는 역할 자체가 그것일 때만, 짝 얼굴 있는 칩 먼저, 맵 화풍 계열 먼저,
  * 같은 맵에 이미 쓴 칩은 뒤로.
  */
-export function pickPersonGraphic(project: Project, map: GameMap, role: string | undefined, looks: string | undefined): PersonGraphic | undefined {
+export function pickPersonGraphic(project: Project, map: GameMap, role: string | undefined, looks: string | undefined, ownFace = false): PersonGraphic | undefined {
   const asked = `${role ?? ""} ${looks ?? ""}`;
   const hostileOk = HOSTILE.test(asked);
   // 성별: 글에서 읽힌 것(칩 검색과 같은 낱말 표 — «오르텐 할멈» = 여성, «여성 촌장» = 여성)은 꼭 지킨다(어긋나면 MISFIT).
@@ -222,8 +222,10 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
       // 맞는 칩에 흉상이 없으면 흉상 없는 그 칩이 서고, 대화창에는 이름표만 뜬다(다른 사람 얼굴을 띄우지 않는다).
       const score = qi * 100 + rank + (bustOfChip(e.textureKey, e.characterIndex) ? 0 : face ? 150 : 250) + (fits ? 0 : 120) + (spin || !fits ? 1000 : 0)
         + (misfitFor(e) ? MISFIT : 0) + (leaning && e.gender && e.gender !== "none" && e.gender !== leaning ? 25 : 0)
-        // 이 게임에서 이미 쓴 얼굴은 흉상 없는 맞는 칩보다도 뒤다(REUSED) — 이름 있는 두 사람이 같은 얼굴로 서지 않게. 같은 맵에서 쓴 만큼 더 민다.
-        + (used.has(key) ? REUSED + 15 * Math.min((used.get(key) ?? 1) - 1, 3) : usedElsewhere.has(key) ? REUSED : 0)
+        // 이름 있는 사람(ownFace): 이 게임에서 이미 쓴 얼굴은 흉상 없는 맞는 칩보다도 뒤다(REUSED) — 이름 있는 두 사람이 같은 얼굴로 서지 않게. 같은 맵에서 쓴 만큼 더 민다.
+        // 이름 없는 무리는 전과 같다 — 쓴 만큼 조금씩 밀어 주민 칩을 고르게 다시 쓴다(성별이 다른 칩·다른 검색어 단으로 넘어가지 않는다).
+        + (ownFace ? (used.has(key) ? REUSED + 15 * Math.min((used.get(key) ?? 1) - 1, 3) : usedElsewhere.has(key) ? REUSED : 0)
+          : used.has(key) ? 15 * Math.min(used.get(key) ?? 1, 4) : usedElsewhere.has(key) ? 8 : 0)
         + (heroes.has(`${resKey(e.textureKey)}#${e.characterIndex}`) || heroLooks.has(lookOfChip(e.textureKey, e.characterIndex) ?? "") || heroBusts.has(bustOfChip(e.textureKey, e.characterIndex) ?? "") ? HERO_TWIN : 0)
         + (oddFor(e) ? 80 : 0)
         + (hasPlain && !npcGraphicIsPlain(e) && !npcGraphicNamedBy(`${asked} ${q}`, e) ? UNASKED : 0);
@@ -257,8 +259,8 @@ function cleanLines(lines: readonly string[] | undefined): string[] {
  * place_npc 한 번: 역할·외형에 맞는 우호적 사람 칩(짝 얼굴 우선)을 골라 {textureKey,characterIndex} 로 놓는다 — 대사가 있으면
  * place_npc 가 그 칩의 검토된 짝 얼굴을 대사 앞에 붙인다. 고른 칩으로 실패하면 질의 낱말 → 도구 기본 그림 순서로 물러난다.
  */
-export function placeNpcWithGraphic(run: BuildRun, map: GameMap, baseArgs: Record<string, unknown>, role: string | undefined, looks: string | undefined, label: string, warnings: string[]): { result: ReturnType<BuildRun["call"]>; graphic?: PersonGraphic } {
-  const graphic = pickPersonGraphic(run.ctx.project, map, role, looks);
+export function placeNpcWithGraphic(run: BuildRun, map: GameMap, baseArgs: Record<string, unknown>, role: string | undefined, looks: string | undefined, label: string, warnings: string[], ownFace = false): { result: ReturnType<BuildRun["call"]>; graphic?: PersonGraphic } {
+  const graphic = pickPersonGraphic(run.ctx.project, map, role, looks, ownFace);
   if (graphic) {
     const result = run.call("place_npc", { ...baseArgs, graphic: { textureKey: graphic.textureKey, characterIndex: graphic.characterIndex } });
     if (result.ok) {
@@ -379,7 +381,7 @@ export function buildPeople(run: BuildRun, people: readonly PersonSpec[], mapId?
 
     const baseArgs: Record<string, unknown> = { mapId: targetMapId, name: label, x: cell.x, y: cell.y, movement };
     if (pages.length > 0) baseArgs.pages = pages;
-    const placedNpc = placeNpcWithGraphic(run, map, baseArgs, person.role, person.looks, label, warnings);
+    const placedNpc = placeNpcWithGraphic(run, map, baseArgs, person.role, person.looks, label, warnings, !!person.name?.trim());
     const result = placedNpc.result;
     if (!result.ok) {
       warnings.push(`${label}: 놓기 실패 — ${String(result.summary).slice(0, 160)}`);

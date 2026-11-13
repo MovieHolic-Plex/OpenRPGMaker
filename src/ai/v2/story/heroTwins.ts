@@ -43,7 +43,7 @@ export function redressHeroTwins(project: Project): string[] {
     // 모습을 말한 글이 없으면 지금 칩의 성별·나이를 지킨다 — 머리만 다른 같은 부류의 사람으로 바뀐다(청년 남성 대장장이가 젊은 여성이 되지 않게).
     const first = pages.map((page) => page.graphic as Graphic | undefined).find(twin)!;
     const kept = lookOfChip(first.sprite!.id, decodeCharsetFrameIndex(first.pattern!).characterIndex)?.split("|").slice(0, 2).join(" ");
-    const pick = pickPersonGraphic(project, map, step?.who ?? name, step?.looks ?? kept);
+    const pick = pickPersonGraphic(project, map, step?.who ?? name, step?.looks ?? kept, true);
     const asset = pick ? findCharsetAsset(pick.textureKey) : undefined;
     if (!pick || !asset || twin({ sprite: { id: pick.textureKey }, pattern: charsetFrameIndex({ characterIndex: pick.characterIndex, direction: "down", pattern: 1 }) })) continue;
     // 대화창의 얼굴도 그 사람의 것으로 — 옛 칩의 흉상·낱장 얼굴을 건 얼굴 명령을 새 칩의 흉상(없으면 낱장 얼굴, 그것도 없으면 이름표만)으로 바꾼다.

@@ -203,7 +203,9 @@ function pacing(p: Project): string[] {
   of(mapId).entry = at;
   const order: string[] = [mapId];
   for (const st of steps) {
-    const hit = all(p).find(({ ev }) => ev.id === st.event || named(ev) === st.event);
+    // 지은 이벤트(built.eventId)가 먼저다 — 같은 사람의 뒤 단계는 앞 단계의 이벤트를 같이 쓰고 그 이벤트의 이름은 앞 단계의 것이다(이름으로만 찾으면 돌아가는 걸음이 빠진다).
+    const builtId = (st as { built?: { eventId?: string } }).built?.eventId;
+    const hit = (builtId ? all(p).find(({ ev }) => ev.id === builtId) : undefined) ?? all(p).find(({ ev }) => ev.id === st.event || named(ev) === st.event);
     if (!hit) continue;
     for (const door of hit.map.id === mapId ? [] : hops(mapId, hit.map.id) ?? []) {
       at = go(p.maps[mapId]!, at, { x: door.ev.x, y: door.ev.y });

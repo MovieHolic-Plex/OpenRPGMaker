@@ -181,6 +181,24 @@ describe("사람 칩은 주인공과 다른 모습이다", () => {
     expect([after.textureKey, after.characterIndex]).not.toEqual(["tex_easyrpg_charset_people1", 2]);
   });
 
+  it("이름 있는 두 사람은 같은 얼굴로 서지 않는다 — 이름 없는 무리는 주민 칩을 다시 쓴다", () => {
+    const stand = (ownFace: boolean): string[] => {
+      const project = createBlankProject() as Project;
+      const map = project.maps[project.startMapId]!;
+      return ["촌장", "촌장 한켈"].map((who, i) => {
+        const pick = pickPersonGraphic(project, map, who, undefined, ownFace)!;
+        map.events = [...(map.events ?? []), { id: `ev_p${i}`, name: who, x: i, y: 0, pages: [{ id: "p1", conditions: [], trigger: { kind: "action" }, commands: [],
+          graphic: { sprite: { type: "bundled", id: pick.textureKey }, direction: "down", pattern: charsetFrameIndex({ characterIndex: pick.characterIndex, direction: "down", pattern: 1 }) } }] } as unknown as GameEvent];
+        return `${pick.textureKey}#${pick.characterIndex}`;
+      });
+    };
+    const named = stand(true);
+    expect(named[0]).not.toBe(named[1]);
+    const crowd = stand(false);
+    expect(crowd[0]).toBe(crowd[1]);
+    expect(named[0]).toBe(crowd[0]);
+  });
+
   it("주인공의 모습이 나중에 정해지면 먼저 선 쌍둥이를 다시 입힌다 — 걷는 그림과 대화창의 얼굴 둘 다, 성별은 그대로, 다시 돌려도 그대로", () => {
     const project = createBlankProject() as Project;
     const map = project.maps[project.startMapId]!;
