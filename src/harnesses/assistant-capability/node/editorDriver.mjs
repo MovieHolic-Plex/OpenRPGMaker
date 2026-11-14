@@ -126,6 +126,17 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
     // 조수 v2 비교(ai-config 의 assistantVersion:"v2") — 제품 스위치(src/ai/v2/shared/switch.ts)와 같은 칸.
     if(assistantVersion==='v2')localStorage.setItem('oprn:assistant-v2','1');
     window.__capEvents=[];
+    // 편집기 쪽이 내는 상태 줄은 스트림을 타지 않는다(체크포인트 적용 checkpoint.apply · 버린 렌더 응답 render.dropped · 스트림 이어 받기 stream.resume).
+    // 조수 감사 기록(__oprnAiBridge.audit)에서 1초마다 새 줄만 읽어 시각을 붙여 남긴다 — 멈춘 턴에서 «마지막 요청에 답이 갔는가»를 가른다.
+    {let seen=0,last;setInterval(()=>{try{
+      const audit=window.__oprnAiBridge?.audit?.()??[];
+      const from=seen<=audit.length&&(seen===0||audit[seen-1]?.text===last)?seen:Math.max(0,audit.map(entry=>entry?.text).lastIndexOf(last)+1);
+      for(const entry of audit.slice(from)){
+        const hit=/(checkpoint\.apply|render\.dropped|stream\.resume)[^:]*:\s*(.*)/u.exec(String(entry?.text??''));
+        if(hit)window.__capEvents.push({type:'client_status',name:hit[1],summary:hit[2].slice(0,200),at:Date.now()});
+      }
+      seen=audit.length;last=audit.at(-1)?.text;
+    }catch{}},1000);}
     const original=window.fetch;
     // 실행 번호 → 지금 읽고 있는 복제 가지. 이어 받기(GET …&runId=)가 나가면 같은 실행의 앞 가지를 끊는다.
     // 복제한 본문은 두 가지가 다 끊겨야 연결이 닫히는데, 편집기는 제 가지만 끊는다 — 이 가지를 그대로 두면 이어 받기 한 번마다 연결 하나가 남아
@@ -182,6 +193,11 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
               data:event.type==='prompt_inspection'?(event.snapshot?{boundary:event.snapshot.boundary,model:event.snapshot.model,scalars:event.snapshot.scalars,sizes:promptSizes(event.snapshot)}:undefined)
                 :['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair','cutscene.review','cutscene.review.judged','v2.advisor','v2.advisor.recheck','dialogue_polish','dialogue_polish.lint','dialogue_polish.skip','dialogue_polish.speaker_labels'].includes(event.name)?event.data:undefined,
               runId:outer.runId,usage:event.usage,stats:event.type==='done'?event.stats:undefined,at:Date.now()});
+          }
+          // 워커가 편집기에 답을 기다리는 요청(그림 렌더·체크포인트)은 id·도구 이름·시각만 남긴다 — 본문(프로젝트)은 남기지 않는다.
+          // 턴이 «둘 다 노는 채» 멈췄을 때 어느 요청이 답을 못 받았는지 가르는 데 쓴다(2026-11-11 r1stall-fun).
+          if(event?.type==='render_request'||event?.type==='checkpoint'){
+            window.__capEvents.push({type:event.type,name:event.type==='render_request'?event.toolName:undefined,id:event.renderId??event.checkpointId,runId:outer.runId,at:Date.now()});
           }
           if(outer.type==='done'&&event.type!=='done')window.__capEvents.push({type:'done',runId:outer.runId,at:Date.now()});
         }catch{}};
