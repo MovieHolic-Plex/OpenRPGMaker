@@ -32,6 +32,7 @@ import { stateBehavior } from "@/battle/battleStates";
 import { stateClearsOnBattleEnd } from "@/project/battleEndStates";
 import { mapRoute } from "@/player/objectiveTarget";
 import type { ActorExperienceCurve, EnemyRecord, GameMap, Project, SkillRecord } from "@/project/types";
+import { foeOnStoryWay } from "../place/storyWays";
 import { blueprintMapFor } from "./blueprintPathNames";
 import { healingItemIds } from "../judge/combatChecks";
 import { startHealingItem } from "./healingAccess";
@@ -288,8 +289,8 @@ const bossShareOf = (project: Project, boss: Battle): number => boss.step === (p
 
 /**
  * 보스마다 그 앞에 쉬고 온 파티를 만나는 순서로 내준다(보스 앞에는 쉼터 결정이 선다 — healingAccess.ensureBossRest).
- * 레벨: 가장 낮게는 도망 못 치는 전투(그 맵까지의 길목 · 앞 보스)만 이기고, 가장 높게는 그 맵까지의 길 위 전투를 다 이기고 — 기준은 가장 낮은 쪽(곧장 가는 플레이어가 그렇게 온다).
- * 더 싸우고 온 판에게는 보스가 그만큼 쉽다 — 그 값(가장 높게 도착한 판의 «공격만»)은 밴드 줄에 적는다.
+ * 레벨: 가장 낮게는 피할 수 없는 전투(그 맵까지의 길목 · 앞 보스 · 가는 길을 지켜보는 적 — place/storyWays)만 이기고, 가장 높게는 그 맵까지의 길 위 전투를 다 이기고 — 기준은 가장 낮은 쪽(곧장 가는 플레이어가 그렇게 온다).
+ * 마지막 보스의 «공격만» 은 가장 높게 도착한 판으로 잰다(threatLevel) — 어떻게 도착해도 «공격만» 으로는 못 이긴다.
  * 맵의 이벤트 순서는 만나는 순서가 아니라 맵 순서와 단계 순서로 센다.
  * 약: 시작 약에서 앞 보스전들의 여느 플레이가 쓴 만큼(spent 의 합)을 뺀 것(내림) — 길 위의 짧은 전투는 약을 쓰지 않는다고 본다.
  */
@@ -297,12 +298,14 @@ function bossArrivals(project: Project, battles: readonly Battle[], bosses: read
   const mapAt = new Map(pathMapIds(project).map((id, i) => [id, i]));
   let left = potion ? Math.max(0, project.session.inventory?.[potion] ?? 0) : 0;
   return (boss, spent = 0) => {
+    const forced = (b: Battle): boolean => { const ev = b.touch && b.eventId ? project.maps[b.mapId]?.events.find((e) => e.id === b.eventId) : undefined; return !!ev && foeOnStoryWay(project, b.mapId, ev); };
     const before = (roles: readonly Role[]) => [...new Map(battles
-      .filter((b) => (b.role === "boss" ? b.troopId !== boss.troopId && (b.step ?? Infinity) < (boss.step ?? Infinity) : roles.includes(b.role) && (mapAt.get(b.mapId) ?? 0) <= (mapAt.get(boss.mapId) ?? 0)))
+      .filter((b) => (b.role === "boss" ? b.troopId !== boss.troopId && (b.step ?? Infinity) < (boss.step ?? Infinity) : (roles.includes(b.role) || forced(b)) && (mapAt.get(b.mapId) ?? 0) <= (mapAt.get(boss.mapId) ?? 0)))
       .map((b) => [`${b.mapId}#${b.eventId ?? b.troopId}`, troopExp(project, b.troopId)])).values()].reduce((sum, exp) => sum + exp, 0);
     left = Math.max(0, left - spent);
     const minLevel = levelAfter(project, party.ids[0], party.level, before(["gate"])), maxLevel = levelAfter(project, party.ids[0], party.level, before(["gate", "field"]));
-    return { ids: party.ids, minLevel, maxLevel, level: minLevel, final: boss.troopId === bosses[bosses.length - 1]?.troopId, potions: Math.floor(left + 0.05), ...(potion ? { potion } : {}) };
+    const final = boss.troopId === bosses[bosses.length - 1]?.troopId;
+    return { ids: party.ids, minLevel, maxLevel, level: minLevel, threatLevel: final ? maxLevel : minLevel, final, potions: Math.floor(left + 0.05), ...(potion ? { potion } : {}) };
   };
 }
 

@@ -10,6 +10,8 @@ import { placeThemeOf } from "./placeTheme";
 type Cell = { readonly x: number; readonly y: number };
 /** 이 넓이 아래의 맵은 방 한 칸이다 — 적이 알아채는 거리(3칸) 밖으로 돌아갈 틈이 없다. */
 const ROOM_CELLS = 280;
+/** 순찰하는 적이 제자리에서 오가는 거리(칸) — 두 칸 왕복. */
+const PATROL_REACH = 2;
 
 /** 방인가 — 실내 종류이거나 방 한 칸 넓이. 방에 이야기 단계·보스·쉼터가 있으면 돌아다니는 적을 두지 않는다(들어서면 반드시 잡힌다). */
 export const isStoryRoom = (project: Project, mapId: string): boolean => {
@@ -39,7 +41,20 @@ export function storyLanes(project: Project, mapId: string, things: readonly Cel
 }
 /** 그 칸에 선 적이 길 위의 플레이어를 알아채는가 — 길의 칸이 알아채는 거리(notice) + 순찰 두 칸 안에 있다. */
 export const watchesLane = (map: { readonly width: number }, lanes: ReadonlySet<number>, c: Cell, notice: number): boolean => {
-  const reach = notice + 2;
+  const reach = notice + PATROL_REACH;
   for (const i of lanes) if (Math.max(Math.abs((i % map.width) - c.x), Math.abs(Math.floor(i / map.width) - c.y)) <= reach) return true;
   return false;
 };
+
+/**
+ * 그 적(닿으면 싸우는 이벤트)을 플레이어가 피할 수 없는가 — 단계·보스·쉼터가 있는 방 안에 섰거나, 들어오는 칸에서 그것들로 가는 가장 짧은 길을 제 알아채는 거리 안에서 지켜본다.
+ * 모델이 직접 놓은 적(place_field_enemy)도 같은 잣대로 잰다.
+ */
+export function foeOnStoryWay(project: Project, mapId: string, event: { readonly x: number; readonly y: number; readonly pages?: readonly unknown[] }): boolean {
+  const map = project.maps[mapId];
+  const things = map ? storyThings(project, mapId).filter((c) => c.x !== event.x || c.y !== event.y) : [];
+  if (!map || !things.length) return false;
+  if (isStoryRoom(project, mapId)) return true;
+  const sight = Math.max(0, ...(event.pages ?? []).map((page) => Number((page as { movement?: { sightRange?: number } }).movement?.sightRange ?? 0)));
+  return watchesLane(map, storyLanes(project, mapId, things), event, sight);
+}
