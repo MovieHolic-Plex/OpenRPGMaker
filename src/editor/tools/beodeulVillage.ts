@@ -2542,7 +2542,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     plazaCells, work: workAt,
   });
   // 고인 물의 수련 무리와 그 곁 둑의 갈대(beodeulWater.ts) — 강·못에만(바다에는 띄우지 않는다), 건널 자리 둘레는 비운다.
-  const waterLife = naturalWater && theme !== "coast" ? dressBeodeulWaterLife({ W, H, seed, pools: codeT?.pools ?? [],
+  const waterLife = naturalWater && theme !== "coast" ? dressBeodeulWaterLife({ W, H, seed, newKits: !!activeKitLook(), pools: codeT?.pools ?? [],
     // 폭포 위아래 두 줄은 고인 물이 아니다 — 수련을 띄우지 않는다
     wet: (x, y) => at(x, y) === WATERC, crossing: (x, y) => at(x, y) === KEEP || (codeT?.falls ?? []).some((f) => x >= f.x0 - 1 && x <= f.x1 + 1 && y >= f.y - 2 && y <= f.y + 3), taken: (x, y) => inMap(x, y) && onWater.has(idx(x, y)), kit: (id) => kitIndex.get(id),
     placeWater: (k, x, y) => { stamps.push({ kit: k.id, x, y, record: false }); for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) onWater.add(idx(x + i, y + j)); },
@@ -3837,7 +3837,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const streetNames = streets.map((s) => s.name);
   // 한 칸 폭 들길 나루는 널판 대신 물 징검돌로(새 기물 킷이 있는 사본만) — 물결과 깊이 띠가 돌 사이로 보인다. 도달 검사가 끝난 뒤에 바꾼다:
   // 이 시공기의 걷기 검사는 네 층이 모두 걷는 칸이어야 걷는다고 보지만, 게임은 맨 위 그림(징검돌 — 걷는 칸)이 정한다.
-  if (naturalWater && fordStones.length) stoneBeodeulFords(draft.maps[mapId]!, ts, { fords: fordStones.map((f) => f.c), water: fullWater, seed, wet: (c) => occ[c] === WATERC || occ[c] === KEEP });
+  if (naturalWater && fordStones.length) stoneBeodeulFords(draft.maps[mapId]!, ts, { fords: fordStones.map((f) => f.c), water: fullWater, seed, newKits: !!activeKitLook(), wet: (c) => occ[c] === WATERC || occ[c] === KEEP });
   return {
     summary: `${terrainSwapped ? `${terrainNote} ` : ""}버들항 ${spec.label} · ${FORM_LABEL[form]}(form ${form}) · 지형 ${TERRAIN_LABEL[terrain.name]}(terrain ${terrain.name}${terrain.name !== terrainName ? `, 요청 ${terrainName} → ${terrain.note}` : hasTerrain ? `, ${terrain.note}, 길 경사로 ${rampCount}곳` : ""}) ${W}×${H} (맵 ${mapId}, seed ${seed}): ${skeletonText()}, 모이는 곳 = ${gather.why}${gatherDoor ? `(${gatherDoor.x},${gatherDoor.y})` : "(자리 없음)"}, ` +
       `집 ${placedHouses.length}채(${distinct}종${roofs ? `, 지붕 ${houseSetLabel ?? ROOF_PALETTE_LABEL[roofs]}(roofs ${roofs})` : ""})${anchors.length ? `, 앵커 ${anchors.map((a) => a.replace(/^bd-(pick-|house-)/, "")).join("·")}` : ""}` +

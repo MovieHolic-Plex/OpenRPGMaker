@@ -185,6 +185,8 @@ const STEP_STONES = ["bd-obj-step-stone-a", "bd-obj-step-stone-b"] as const;
 export interface WaterLifeKit { readonly id: string; readonly w: number; readonly h: number }
 export interface WaterLifeHost {
   readonly W: number; readonly H: number; readonly seed: number;
+  /** 새 종류 기물(bd-obj-*)을 써도 되는가 — 게임 열쇠가 있는 조수 실행만. 열쇠 없는 짓기(사람 편집·스크립트)는 원래 킷만 쓴다(beodeulObjectSets 와 같은 규칙). */
+  readonly newKits?: boolean;
   /** 고인 물 자리(강 굽이의 소·못 가운데) — 없으면 가장 깊은 자리에서 찾는다. */
   readonly pools: readonly number[];
   wet(x: number, y: number): boolean;
@@ -204,7 +206,7 @@ export interface WaterLifeHost {
  */
 export function dressBeodeulWaterLife(host: WaterLifeHost): { clusters: number; lilies: number; reeds: number } {
   const { W, H } = host, out = { clusters: 0, lilies: 0, reeds: 0 };
-  const have = (ids: readonly string[]) => ids.map((id) => host.kit(id)).filter((k): k is WaterLifeKit => !!k);
+  const have = (ids: readonly string[]) => ids.filter((id) => host.newKits || !id.startsWith("bd-obj-")).map((id) => host.kit(id)).filter((k): k is WaterLifeKit => !!k);
   const wide = have(LILY_WIDE), one = have(LILY_ONE), reeds = have(REEDS);
   if (!wide.length && !one.length) return out;
   let s = lookHash(`waterlife|${host.seed}|${W}|${H}`) || 1;
@@ -265,9 +267,10 @@ export function dressBeodeulWaterLife(host: WaterLifeHost): { clusters: number; 
 
 /**
  * 한 칸 폭 나루(들길이 강을 건너는 널판 줄)를 물 징검돌로 바꾼다 — 1층은 물 그대로(물결·깊이 띠가 돌 사이로 보인다), 3층에 징검돌(걷는 칸).
- * 폭 2 길의 널다리·잔교는 그대로 둔다. 징검돌 킷이 없는 사본에서는 아무것도 하지 않는다. 돌려주는 값 = 바꾼 칸 수.
+ * 폭 2 길의 널다리·잔교는 그대로 둔다. 징검돌 킷이 없는 사본·게임 열쇠가 없는 짓기에서는 아무것도 하지 않는다(널판 그대로). 돌려주는 값 = 바꾼 칸 수.
  */
-export function stoneBeodeulFords(map: GameMap, tileset: TilesetDef, input: { fords: readonly number[]; water: number; wet(cell: number): boolean; seed: number }): number {
+export function stoneBeodeulFords(map: GameMap, tileset: TilesetDef, input: { fords: readonly number[]; water: number; wet(cell: number): boolean; seed: number; newKits?: boolean }): number {
+  if (!input.newKits) return 0;                                           // 징검돌은 새 종류 기물이다 — 게임 열쇠가 있는 조수 실행만
   const kits = STEP_STONES.map((id) => tileset.structureKits?.find((k) => k.id === id)).filter((k) => !!k);
   const stones = kits.map((k) => k!.rows[0]?.upperTiles?.[0] ?? -1).filter((t) => t >= 0);
   if (!stones.length || input.water < 0 || !input.fords.length) return 0;

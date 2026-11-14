@@ -236,9 +236,14 @@ describe("버들항 물 — 시공", () => {
     expect(deepCells).toBeGreaterThan(0);
   });
 
-  it("겉모습이 없는 게임(열쇠 없음)은 물빛을 받지 않는다 — 타일셋에 look 이 적히지 않는다", () => {
-    const { project } = village(undefined);
+  it("겉모습이 없는 게임(열쇠 없음)은 물빛을 받지 않는다 — 타일셋에 look 이 적히지 않고, 새 종류 기물(bd-obj-*)도 놓이지 않는다", () => {
+    const { project, map } = village(undefined);
     expect(project.tilesets[TS]!.look).toBeUndefined();
     expect(tilesetLookGrafts(project.tilesets[TS]!)).toEqual([]);
+    // 수련·갈대·징검돌의 새 킷은 게임 열쇠가 있는 조수 실행만 쓴다(beodeulObjectSets 와 같은 규칙) — 열쇠 없는 짓기는 원래 킷과 널판 그대로
+    const fresh = new Set<number>();
+    for (const kit of project.tilesets[TS]!.structureKits ?? []) if (/^bd-obj-(water-lilies|bulrush|step-stone-)/u.test(kit.id)) for (const row of kit.rows) for (const tile of row.upperTiles ?? []) if (tile >= 0) fresh.add(tile);
+    expect(fresh.size).toBeGreaterThan(0);
+    for (let c = 0; c < map.width * map.height; c += 1) expect(fresh.has(layerTileAt(map, 3, c))).toBe(false);
   });
 });
