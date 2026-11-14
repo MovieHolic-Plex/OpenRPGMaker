@@ -32,6 +32,8 @@ export interface CommonsInput {
   readonly pinned?: (cell: number) => boolean;
   /** 풀로 돌려줘도 되는 길 칸인가(계단·다리가 아닌 맨 길 칸). 주지 않으면 길 칸은 모두 흙으로 남는다. */
   readonly freeRoad?: (cell: number) => boolean;
+  /** 배치가 정한 마당 자리(칸 목록 또는 네모) — 주면 그 자리를 마당으로 칠하고 타원 마당·혀를 스스로 잡지 않는다. 문 앞 닳은 자리·일터 마당은 그대로 둔다. */
+  readonly yard?: { readonly cells?: readonly number[]; readonly rect?: { readonly x: number; readonly y: number; readonly w: number; readonly h: number } } | null;
   /** 길마다 칸 줄(시작 → 끝)과 폭 — 주면 직각 굽이를 깎고 굽이치는 흙 몸을 그 줄을 따라 키운다. */
   readonly paths?: readonly { readonly cells: readonly number[]; readonly width: number }[];
 }
@@ -132,11 +134,22 @@ export function planCommons(inp: CommonsInput): CommonsPlan {
   // 2) 모이는 곳 마당 + 가까운 문 앞으로 뻗는 귀 + 일터 마당 + 문 앞 닳은 자리
   const rx = inp.small ? 3.4 : 4.4 + Math.min(2.4, inp.houses * 0.4), ry = inp.small ? 2.5 : 3.0 + Math.min(1.4, inp.houses * 0.22);
   const before = cand.size;
-  disc(g.x, g.y + 0.5, rx, ry, gl);
+  // 배치가 마당 자리를 주면(집이 그 둘레에 서 있다) 그 칸을 그대로 마당으로 — 네모는 모서리 한 칸을 깎고 가장자리를 칸 잡음으로 들쭉날쭉하게
+  const given: number[] = [];
+  if (inp.yard?.cells) given.push(...inp.yard.cells.filter((c) => c >= 0 && c < W * H));
+  if (inp.yard?.rect) { const r = inp.yard.rect;
+    for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
+      if (!inMap(x, y)) continue;
+      const edge = x === r.x || y === r.y || x === r.x + r.w - 1 || y === r.y + r.h - 1, corner = (x === r.x || x === r.x + r.w - 1) && (y === r.y || y === r.y + r.h - 1);
+      if (corner || (edge && noise(x, y, 2.6, seed + 11) < 0.3)) continue;
+      given.push(idx(x, y));
+    } }
+  for (const c of given) { if (inp.road(c)) kept.add(c); else if (inp.free(c)) cand.add(c); else if (inp.prop(c)) under.add(c); }
+  if (!given.length) disc(g.x, g.y + 0.5, rx, ry, gl);
   // 마당이 집으로 뻗는다(집을 옮기지 않는다): 가까운 집 둘~넷의 문 앞을 씨앗으로, 모이는 곳에서 문 앞까지 혀를 내밀어 한 몸으로 키운다 —
   // 혀는 가는 줄이 아니라 폭이 서너 칸으로 부풀었다 줄었다 하고(잡음), 살짝 휘어 간다. 문 앞에서는 문 앞 닳은 자리와 합쳐진다. 먼 집은 흙길로 닿는다.
   const reach = rx + (inp.small ? 6 : 9);
-  const near = inp.doors.map((d) => ({ d, r: Math.hypot(d.x - g.x, (d.y - g.y) * 1.25) })).filter((o) => o.r > 2 && o.r <= reach && inMap(o.d.x, o.d.y) && inp.level(idx(o.d.x, o.d.y)) === gl).sort((a, b) => a.r - b.r).slice(0, inp.small ? 2 : 4);
+  const near = given.length ? [] : inp.doors.map((d) => ({ d, r: Math.hypot(d.x - g.x, (d.y - g.y) * 1.25) })).filter((o) => o.r > 2 && o.r <= reach && inMap(o.d.x, o.d.y) && inp.level(idx(o.d.x, o.d.y)) === gl).sort((a, b) => a.r - b.r).slice(0, inp.small ? 2 : 4);
   near.forEach(({ d, r: dist }, k) => {
     const steps = Math.max(3, Math.ceil(dist / 1.4));
     const nx = -(d.y + 0.5 - g.y) / (dist || 1), ny = (d.x - g.x) / (dist || 1); // 혀의 옆 방향

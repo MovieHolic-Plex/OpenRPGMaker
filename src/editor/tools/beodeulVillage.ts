@@ -2410,6 +2410,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       };
       const plan = planCommons({ W, H, seed, g: gpt, free: openEarth, road: (c) => occ[c] === ROAD || occ[c] === PLAZAC, prop: (c) => occ[c] === PROP, level: (c) => lv[c]!,
         doors: doorFronts, work: workAt, houses: placedHouses.length, small: ground.rank === "hamlet", pinned, freeRoad: (c) => occ[c] === ROAD && !rampCells.has(c) && !keepRoad.has(c),
+        // 배치가 마당 자리를 주면(layout.yard — 칸 목록이나 네모) 그 자리를 칠한다. 주지 않으면 흙 몸이 스스로 잡는다.
+        yard: (codePlan?.layout as { yard?: { cells?: number[]; rect?: { x: number; y: number; w: number; h: number } } } | undefined)?.yard ?? null,
         ...(codePlan ? { paths: codePlan.paths.map((pth) => ({ cells: pth.cells, width: pth.width })) } : {}) });
       for (const c of plan.earth) occ[c] = ROAD;
       // 흙이 굽이쳐 떠난 길 자리는 풀밭으로 돌아가되 걸음 자리로 비워 둔다 — 나무·숲·밭이 앉으면 그 길로만 닿던 윗단 조각이 갇힌다
