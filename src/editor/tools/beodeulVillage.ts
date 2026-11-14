@@ -3023,6 +3023,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 겉모습 숲: 덩이를 다 세운 뒤에도 길에서 걸어 못 가는 빈 땅(원래 숲이 덮던 단 조각 등)은 숲으로 덮는다 — 들어갈 수 없는 빈터를 남기지 않는다.
     if (woodsStyle || ground.commons || ground.pavedCore) { const open = openFromRoad(forestSet); for (let c = 0; c < W * H; c += 1) if (!open[c] && okCell(c, lv[c]!)) forestSet.add(c); }
     for (const c of summit) forestSet.add(c);
+    // 마을 종류가 있는 마을: 아래 다듬기가 덧붙이는 숲 칸이 길에서 걸어가던 빈 땅을 가두지 않게, 다듬기 전의 숲과 닿는 칸을 적어 둔다(끝에서 견준다).
+    const beforeTrim = villageKind ? { forest: new Set(forestSet), open: openFromRoad(forestSet) } : null;
     // (단 동서 끝 1px 선을 숲으로 둘러 덮던 단계는 걷었다 — 수관 오토타일은 단 너머로 잇지 못해 선 따라 곧게 썰린 숲 벽만 남았다, VQA r1·r2)
     // 다듬기: 이웃 숲이 하나 이하인 혹은 지우고, 셋 이상 숲에 둘러싸인 빈 칸(같은 단)은 메운다 — 가는 가지·바늘구멍 수관이 생기지 않게
     const n4 = (c: number) => { const x = c % W, y = (c - x) / W; let k = 0; for (const [dx, dy] of N4) if (!inMap(x + dx, y + dy) || forestSet.has(idx(x + dx, y + dy))) k += 1; return k; };
@@ -3126,6 +3128,21 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (const c of drop) forestSet.delete(c);
     }
     shapeBeodeulCanopyMask(W, H, forestSet, { canFill: () => false, joins: sameLv, minComponent: canopyStyle === "snow" ? 12 : 16, minExtent: canopyStyle === "snow" ? 3 : 4, minInterior: 0.15, block: 2 }); // 홈이 남긴 가는 끝만 걷는다(메우지 않음)
+    // 다듬기(이웃 셋 메우기 · 수관 모양 메우기)가 덧붙인 숲 칸이 길에서 걸어가던 빈 땅을 가두면 그 칸은 도로 뺀다. 장면이 먼저 자리를 잡으면
+    // 숲 덩이가 장면과 단 끝 사이 좁은 틈에 서고, 다듬기가 그 틈의 하나뿐인 들머리를 메웠다(탐침 thornkeep 흩어진 마을 15판: 못 닿는 윗단 칸 238 → 477).
+    // 종류가 없는 마을은 건드리지 않는다(전과 같은 그림).
+    if (beforeTrim) for (let pass = 0; pass < 8; pass += 1) {
+      const open = openFromRoad(forestSet);
+      const shut = new Set<number>(); for (let c = 0; c < W * H; c += 1) if (beforeTrim.open[c] && !open[c] && occ[c] === FREE && !forestSet.has(c)) shut.add(c);
+      if (!shut.size) break;
+      const drop = [...forestSet].filter((c) => !beforeTrim.forest.has(c) && N4.some(([dx, dy]) => { const x = (c % W) + dx, y = Math.floor(c / W) + dy; return inMap(x, y) && shut.has(idx(x, y)); }));
+      if (!drop.length) break;
+      for (const c of drop) forestSet.delete(c);
+      // 뺀 자리 곁에 남은 가는 끝(2×2 에 못 드는 칸)은 걷는다 — 메우지 않으니 다시 가두지 않는다
+      shapeBeodeulCanopyMask(W, H, forestSet, { canFill: () => false, joins: sameLv, minComponent: 16, minExtent: 4, minInterior: 0.15, block: 2 });
+    }
+    // 가장자리 깎기가 숲과 단 끝 사이에 남긴 띠(숲이던 칸이 빈 땅이 됐는데 길에서 걸어 못 간다)는 도로 숲이다 — 들어갈 수 없는 빈터로 남기지 않는다.
+    if (beforeTrim) { const open = openFromRoad(forestSet); for (let c = 0; c < W * H; c += 1) if (!open[c] && occ[c] === FREE && !forestSet.has(c) && beforeTrim.forest.has(c)) forestSet.add(c); }
     for (let c = 0; c < W * H; c += 1) if (occ[c] === FOREST && !forestSet.has(c)) occ[c] = FREE; // 다듬기로 빠진 산마루(summit) 칸은 풀밭으로
     for (const c of forestSet) occ[c] = FOREST;
   }
@@ -3580,7 +3597,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   paintStep("물 넣기", [WATERC, KEEP]);
 
   // ---------- 12. 찍기 ----------
-  let stamped = 0, failed = 0;
+  let stamped = 0, failed = 0, flooded = 0;
   let natureStats = { overlay: 0, shadowCells: 0, forestCells: 0 };
   const treeKits = new Set([...spec.trees, ...spec.shrubs, ...(spec.pond?.ringTrees ?? [])]);
   const stampKind = (s: Stamp): string => s.v === BLD ? (anchors.includes(s.kit) ? "큰 건물" : "집")
@@ -3615,7 +3632,13 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       undo.set(s, { w: k.w, h: k.h, layers });
     }
     try { const put = () => withTreePick(treePicks.get(s), () => stampObjectTool.run(draft, { objectId: `kit:${TS_ID}/${s.kit}`, mapId, x: s.x, y: s.y })); if (roofsAsked) withoutHouseSet(put); else put(); stamped += 1; }
-    catch (e) { failed += 1; failedStamps.add(s); if (failed <= 3) warnings.push(`찍기 실패 ${s.kit}@(${s.x},${s.y}): ${(e as Error).message.slice(0, 200)}`); continue; }
+    catch (e) {
+      failedStamps.add(s);
+      // 물 칠하기의 한 칸 틈 메우기가 물로 바꾼 뭍 칸(계획은 뭍)에 선 소품: 발이 물 위라 놓이지 않는다. 계획이 틀린 것이 아니라 칠하기가 물가를 편 것이라
+      // 찍기 실패로 세지 않고 따로 센다(data.stampFlooded) — 그 소품이 장면의 조각이면 장면은 깨진 것으로 걷힌다(failedStamps).
+      // 종류가 있는 마을만(열쇠도 이름도 없는 마을의 결과 글은 전과 같다).
+      if (villageKind && !s.record && [...Array(k.w * k.h).keys()].some((n) => { const x = s.x + (n % k.w), y = s.y + Math.floor(n / k.w); if (!inMap(x, y)) return false; const c = idx(x, y); return occ[c] !== WATERC && occ[c] !== KEEP && canalMembers.has(draft.maps[mapId]!.lowerTiles[c]!); })) { flooded += 1; continue; }
+      failed += 1; if (failed <= 3) warnings.push(`찍기 실패 ${s.kit}@(${s.x},${s.y}): ${(e as Error).message.slice(0, 200)}`); continue; }
     if (reviewedPrefix(s.kit)) reviewedStamps.push(s);
     if (before) appendStructurePlacement(draft.maps[mapId]!, { kitId: s.kit, rect, before });
     // 물레방아 맨 아래 줄은 운하 돌 둑에 맞춘 물보라 기둥(반투명 파란 막대)이라 들판 물에서는 떠 보인다 — 바퀴가 물에 잠긴 모습으로 둔다
@@ -4283,7 +4306,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       anchors, work: workAt, ...(coastWork.length ? { coastWork } : {}), houses: placedHouses.length, distinctHouses: distinct,
       doors: doorFronts.map((d) => ({ kit: d.kit, x: d.x, y: d.y, reached: !!seen[idx(d.x, d.y)] })),
       fenceGates: gateInfo, levelReach, ...(upperLost.length ? { upperLost } : {}), opened,
-      ...(bridge ? { bridge } : {}), ...(millBridge ? { millBridge } : {}), fields, trees: treeCount, filler, stamped, stampFailed: failed, nature: natureStats,
+      ...(bridge ? { bridge } : {}), ...(millBridge ? { millBridge } : {}), fields, trees: treeCount, filler, stamped, stampFailed: failed, ...(flooded ? { stampFlooded: flooded } : {}), nature: natureStats,
       terrain: terrain.name, ...(hf && !hfFlat ? { landform: hf.landform, settle: hf.settle, tiers: hf.tiers, high: hf.high } : { landform: "flat", ...(hfFlat ? { settle: "low" } : {}) }), ...(requestedTerrain !== null ? { requestedTerrain, terrainSwapped } : {}), ...(reliefInfo ? { relief: reliefInfo } : {}),
       upper: climbs.map((cl) => ({ level: cl.level, lanes: cl.lanes, path: cl.path, to: cl.to, use: cl.use, ...(cl.lookout ? { lookout: cl.lookout } : {}),
         reach: levelReach[cl.level] ? Math.round((levelReach[cl.level]!.reached / Math.max(1, levelReach[cl.level]!.walk)) * 100) : 0 })),

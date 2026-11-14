@@ -46,11 +46,13 @@ describe("버들항 마을 종류 — 표", () => {
 describe("버들항 마을 종류 — 고르기", () => {
   it("터에 맞는 종류만 고른다 — 바다 마을은 나무꾼 터가 아니고, 성벽 없는 마을은 성읍이 아니다", () => {
     const lumber = villageKindById("lumber-camp")!, cove = villageKindById("fishing-cove")!, garrison = villageKindById("garrison-town")!, harbour = villageKindById("harbour-town")!;
-    expect(villageKindFits(lumber, facts({ water: "sea", deepWoods: true }))).toBe(false);
-    expect(villageKindFits(lumber, facts({ water: "none", deepWoods: true }))).toBe(true);
-    expect(villageKindFits(lumber, facts({ water: "none" }))).toBe(false); // 깊은 숲이 아니다
-    expect(villageKindFits(cove, facts({ water: "sea" }))).toBe(true);
-    expect(villageKindFits(cove, facts({ water: "river" }))).toBe(false);
+    // 나무꾼 터·어촌은 외딴 마을 급이다 — 급이 같은 터에서만 맞는다
+    expect(villageKindFits(lumber, facts({ water: "sea", deepWoods: true, rank: "hamlet" }))).toBe(false);
+    expect(villageKindFits(lumber, facts({ water: "none", deepWoods: true, rank: "hamlet" }))).toBe(true);
+    expect(villageKindFits(lumber, facts({ water: "none", rank: "hamlet" }))).toBe(false); // 깊은 숲이 아니다
+    expect(villageKindFits(cove, facts({ water: "sea", rank: "hamlet" }))).toBe(true);
+    expect(villageKindFits(cove, facts({ water: "sea" }))).toBe(false); // 흙길 마을 급의 바닷가에는 서지 않는다
+    expect(villageKindFits(cove, facts({ water: "river", rank: "hamlet" }))).toBe(false);
     expect(villageKindFits(garrison, facts({ rank: "town" }))).toBe(false);
     expect(villageKindFits(garrison, facts({ rank: "town", walls: true, water: "none" }))).toBe(true);
     expect(villageKindFits(harbour, facts({ water: "sea" }))).toBe(false);

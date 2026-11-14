@@ -702,34 +702,45 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
   // 이번 호출이 새로 만든 성벽 마을이면 맵을 넓혀 두 번까지 다시 짓고, 집이 가장 많이 앉은 크기를 남긴다(같은 seed 라 같은 크기는 같은 마을).
   const housesOf = (x: typeof r) => Number((x.data as { houses?: number }).houses ?? 0);
   const grown: string[] = [];
+  let yardsBuilt = true; // 지금 남은 마을이 장면 터를 두고 지은 것인가
   // 지형 먼저 마을도 단 띠에 집이 다 앉지 않으면 같은 방식으로 넓혀 다시 짓는다(줄어든 마을 단에 맞춘 집 수)
   // 조수가 준 자리(layout)는 그 맵 크기의 땅 좌표다 — 넓혀 다시 지으면 땅이 바뀌어 자리가 어긋난다(못 놓은 자리는 보고로 돌려준다)
   const layoutGiven = !!args.layout && typeof args.layout === "object" && ["gather", "houses", "landmark", "anchor"].some((k) => (args.layout as Record<string, unknown>)[k] !== undefined); // 출구만 준 layout 은 자리를 준 것이 아니다
   if ((walls || (terrainFirst && !walls)) && houseCount !== undefined && !rebuilt && !layoutGiven && housesOf(r) < houseCount) {
     const name = draft.maps[mapId]!.name;
-    const rebuildAt = (w: number, h: number) => {
+    const rebuildAt = (w: number, h: number, yards = true) => {
       requireTool(MAP_TOOLS, "remove_map").run(draft, { mapId });
       createMapTool.run(draft, { id: mapId, name, width: w, height: h, tilesetId: BEODEUL_TILESET_ID, border: "none" });
-      return build();
+      return build(yards);
     };
-    const tried: { w: number; h: number; houses: number }[] = [{ w: draft.maps[mapId]!.width, h: draft.maps[mapId]!.height, houses: housesOf(r) }];
+    const tried: { w: number; h: number; houses: number; yards: boolean }[] = [{ w: draft.maps[mapId]!.width, h: draft.maps[mapId]!.height, houses: housesOf(r), yards: true }];
+    // 마을 종류의 장면 터가 집 한 채를 밀어낸 크기에서는 터 없이도 지어 본다(장면은 남은 빈 땅에서 자리를 찾는다) — 터 때문에 맵을 더 넓히거나 집이 모자란 채 끝나지 않게.
+    // 집 수가 같으면 터를 둔 쪽이 남는다(아래 best 는 먼저 지은 것을 고른다).
+    const withoutYards = (w: number, h: number) => {
+      if (!(r.data as { villageKind?: unknown }).villageKind || housesOf(r) >= houseCount) return;
+      r = rebuildAt(w, h, false);
+      tried.push({ w, h, houses: housesOf(r), yards: false });
+    };
+    withoutYards(tried[0]!.w, tried[0]!.h);
     for (let step = 0; step < 2 && housesOf(r) < houseCount; step += 1) {
       const last = tried[tried.length - 1]!;
       const w = Math.min(VILLAGE_MAX_W, last.w + 8), h = Math.min(VILLAGE_MAX_H, last.h + 6);
       if (w === last.w && h === last.h) break;
       r = rebuildAt(w, h);
-      tried.push({ w, h, houses: housesOf(r) });
+      tried.push({ w, h, houses: housesOf(r), yards: true });
+      withoutYards(w, h);
     }
     const best = tried.reduce((a, b) => (b.houses > a.houses ? b : a));
     const now = tried[tried.length - 1]!;
-    if (best !== now) r = rebuildAt(best.w, best.h);
-    if (tried.length > 1) grown.push(`${walls ? "성벽 띠" : "지형 단 띠"} 때문에 ${tried[0]!.w}×${tried[0]!.h} 에는 집이 ${tried[0]!.houses}채만 앉아 ${best.w}×${best.h} 로 넓혀 다시 지었다(집 ${best.houses}채).`);
+    if (best !== now) r = rebuildAt(best.w, best.h, best.yards);
+    yardsBuilt = best.yards;
+    if (tried.some((t) => t.w !== tried[0]!.w || t.h !== tried[0]!.h)) grown.push(`${walls ? "성벽 띠" : "지형 단 띠"} 때문에 ${tried[0]!.w}×${tried[0]!.h} 에는 집이 ${tried[0]!.houses}채만 앉아 ${best.w}×${best.h} 로 넓혀 다시 지었다(집 ${best.houses}채).`);
   }
   // 마을 종류의 장면 터(미리 비워 둔 마당)가 집·길 자리를 바꿔 문 앞이나 단 건널목이 끊기면 터 없이 다시 짓는다 — 장면은 남은 빈 땅에서 자리를 찾는다.
   // 터 없이도 나아지지 않으면(터 탓이 아니다) 터를 둔 마을로 되돌린다. 같은 seed·같은 크기라 같은 마을이다.
   {
     const cutOff = (x: typeof r) => { const d = x.data as { doors?: { reached: boolean }[]; relief?: { fails?: number } }; return (d.doors ?? []).filter((q) => !q.reached).length * 100 + (d.relief?.fails ?? 0); };
-    if ((r.data as { villageKind?: unknown }).villageKind && cutOff(r) > 0) {
+    if (yardsBuilt && (r.data as { villageKind?: unknown }).villageKind && cutOff(r) > 0) {
       const again = (sceneYards: boolean) => {
         const old = draft.maps[mapId]!;
         if (rebuilt) old.structurePlacements = [];
