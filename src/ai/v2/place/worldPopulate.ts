@@ -96,10 +96,12 @@ export function clearFoesFromStoryWays(run: BuildRun, onGap?: (line: string) => 
     if (!off.length) continue;
     const troopOf = (ev: (typeof foes)[number]["ev"]) => /"troopId":"([^"]+)"/u.exec(JSON.stringify(ev.pages ?? []))?.[1];
     const keep = new Map(off.flatMap(({ ev, n }) => { const id = troopOf(ev); return id ? [[n, id] as const] : []; }));
-    for (const { ev } of off) run.call("remove_event", { mapId, eventId: ev.id });
+    // 걷힌 것만 센다 — 걷기가 거절된 적은 제자리에 그대로 있다(«다른 자리로» 라고 적지 않는다).
+    const gone = off.filter(({ ev }) => run.call("remove_event", { mapId, eventId: ev.id }).ok);
+    if (!gone.length) continue;
     if (!room) populateWorldPlace(run, mapId, undefined, 0, onGap, keep);
-    const back = room ? 0 : off.filter(({ ev }) => run.ctx.project.maps[mapId]!.events.some((e) => e.id === ev.id)).length;
-    notes.push(`「${map.name ?? mapId}」 ${room ? `방에 단계·보스·쉼터가 있어 돌아다니는 적 ${off.length} 걷음` : `단계로 가는 길을 지켜보던 적 ${off.length} — 다른 자리로 ${back}${back < off.length ? ` · 걷음 ${off.length - back}` : ""}`}`);
+    const back = room ? 0 : gone.filter(({ ev }) => run.ctx.project.maps[mapId]!.events.some((e) => e.id === ev.id)).length;
+    notes.push(`「${map.name ?? mapId}」 ${room ? `방에 단계·보스·쉼터가 있어 돌아다니는 적 ${gone.length} 걷음` : `단계로 가는 길을 지켜보던 적 ${gone.length} — 다른 자리로 ${back}${back < gone.length ? ` · 걷음 ${gone.length - back}` : ""}`}`);
   }
   return notes;
 }
