@@ -58,6 +58,10 @@ try{
   await page.getByTestId('title-screen').waitFor({timeout:60000}).catch(async error=>{await page.screenshot({path:out+'/'+theme+'-export-failure.png'});console.error('EXPORT_BOOT_FAILED',JSON.stringify({errors,badAssets,text:await page.locator('body').innerText()}));throw error;});
   await page.getByTestId('title-credits').click();
   await page.locator('dialog.rm-license-dialog').waitFor();
+  // 창은 플레이어용 짧은 크레딧을 먼저 보여 주고, 내보낸 zip 의 assets/ATTRIBUTION.md 는 「전체 출처 문서」 단추로 연다.
+  assert.match(await page.locator('.rm-license-dialog-body').innerText(),/EasyRPG RTP \(CC BY 4\.0\)/);
+  await page.getByTestId('title-credits-full').click();
+  await page.locator(".rm-license-dialog-body[data-view='full']").waitFor();
   assert.match(await page.locator('.rm-license-dialog-body').innerText(),/Opening still release pack v1/);
   await page.screenshot({path:out+'/'+theme+'-export-license.png'});
   await page.keyboard.press('Escape');

@@ -918,9 +918,10 @@ function questsDetail(project: Project, session: PlaySession): StatusMenuDetail 
     title: "임무",
     entries: quests.flatMap((quest) => [
       {
+        // 설명 줄(「임무 요약」「완료한 단계 / 전체 단계」)은 값 없는 꼬리표가 줄줄이 선 것처럼 읽혀 뺐다(2026-11-14 QA).
+        // 줄거리는 값 칸에서 줄을 바꿔 다 보인다(statusMenuEdgeDock.css data-quest-row="summary").
         label: quest.title,
         value: quest.summary,
-        description: "임무 요약",
         testId: `status-menu-quest-${quest.key}`,
         attributes: { "data-quest-row": "summary" },
       },
@@ -929,7 +930,6 @@ function questsDetail(project: Project, session: PlaySession): StatusMenuDetail 
         // 1. 진행 / 1. 대화 / 대기 중 …」). 이 행이 무엇인지 말하는 라벨을 쓴다.
         label: "상태",
         value: `${questStateLabel(quest.state)} (${quest.completedSteps}/${quest.totalSteps})`,
-        description: "완료한 단계 / 전체 단계",
         testId: `status-menu-quest-state-${quest.key}`,
         attributes: { "data-quest-row": "state" },
       },

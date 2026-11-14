@@ -16,7 +16,7 @@ import type { PlaceSpec } from "@/ai/v2/shared/types";
 const KEYS = ["ashvale", "moonharbor", "thornkeep", "reedwater", "saltmere", "oakhollow"].map((name) => JSON.stringify(["project", `variety-${name}`]));
 const TEMPLATE = JSON.stringify(createBlankProject());
 const fresh = () => JSON.parse(TEMPLATE) as Project;
-const facts = (over: Partial<VillageFacts> = {}): VillageFacts => ({ water: "river", tiers: false, deepWoods: false, houses: 4, walls: false, harbour: false, plaza: false, ...over });
+const facts = (over: Partial<VillageFacts> = {}): VillageFacts => ({ water: "river", tiers: false, deepWoods: false, rank: "village", walls: false, harbour: false, plaza: false, ...over });
 
 describe("버들항 마을 종류 — 표", () => {
   it("서른 종류가 넘고, 급 셋에 걸치며, 종류마다 장면이 셋 이상이다", () => {
@@ -51,10 +51,14 @@ describe("버들항 마을 종류 — 고르기", () => {
     expect(villageKindFits(lumber, facts({ water: "none" }))).toBe(false); // 깊은 숲이 아니다
     expect(villageKindFits(cove, facts({ water: "sea" }))).toBe(true);
     expect(villageKindFits(cove, facts({ water: "river" }))).toBe(false);
-    expect(villageKindFits(garrison, facts({ houses: 10 }))).toBe(false);
-    expect(villageKindFits(garrison, facts({ houses: 10, walls: true, water: "none" }))).toBe(true);
-    expect(villageKindFits(harbour, facts({ water: "sea", houses: 4 }))).toBe(false);
-    expect(villageKindFits(harbour, facts({ water: "sea", houses: 4, harbour: true }))).toBe(true);
+    expect(villageKindFits(garrison, facts({ rank: "town" }))).toBe(false);
+    expect(villageKindFits(garrison, facts({ rank: "town", walls: true, water: "none" }))).toBe(true);
+    expect(villageKindFits(harbour, facts({ water: "sea" }))).toBe(false);
+    expect(villageKindFits(harbour, facts({ water: "sea", harbour: true }))).toBe(true);
+    // 급은 바닥의 급과 같아야 한다 — 흙 마당 마을에 읍의 종류가 서지 않는다
+    expect(villageKindFits(villageKindById("smithy-village")!, facts({ rank: "hamlet" }))).toBe(false);
+    expect(villageKindFits(villageKindById("guild-town")!, facts())).toBe(false);
+    expect(villageKindFits(villageKindById("guild-town")!, facts({ rank: "town", plaza: true }))).toBe(true);
     for (const key of KEYS) for (const seed of [1, 7, 42]) {
       const sea = chooseVillageKind(facts({ water: "sea" }), key, seed)!;
       expect(sea.fit.water).toContain("sea");
@@ -74,8 +78,8 @@ describe("버들항 마을 종류 — 고르기", () => {
     // 이름으로 정하면 열쇠 없이도 그 종류다. 표에 없는 이름은 종류가 아니다.
     expect(chooseVillageKind(f, undefined, 7, "smithy-village")?.id).toBe("smithy-village");
     expect(chooseVillageKind(f, KEYS[0], 7, "no-such-kind")).toBeUndefined();
-    // 광장을 청했으면 장터 종류가 먼저다
-    for (const key of KEYS) expect(chooseVillageKind(facts({ plaza: true, houses: 7 }), key, 9)!.fit.square).toBe(true);
+    // 광장을 청한 마을은 읍이다 — 읍 종류가 골라진다
+    for (const key of KEYS) expect(chooseVillageKind(facts({ plaza: true, rank: "town" }), key, 9)!.rank).toBe("town");
   });
 });
 
@@ -149,7 +153,7 @@ describe("버들항 마을 종류 — 짓기", () => {
     expect(a.data.villageKind?.id).toBeTruthy();
     expect(again.data.villageKind?.id).toBe(a.data.villageKind?.id);
     expect(again.data.scenes).toEqual(a.data.scenes);
-    expect(villageKindFits(villageKindById(a.data.villageKind!.id)!, facts({ houses: 7, tiers: true }))).toBe(true);
+    expect(villageKindFits(villageKindById(a.data.villageKind!.id)!, facts({ tiers: true }))).toBe(true);
     // 표에 없는 이름은 거절하지 않고 알린 뒤 그 게임의 종류로 짓는다
     const odd = build("no-such-kind", KEYS[0]);
     expect(odd.data.villageKind?.id).toBe(a.data.villageKind?.id);

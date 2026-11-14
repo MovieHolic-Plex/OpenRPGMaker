@@ -51,6 +51,8 @@ export interface BeodeulSceneHost extends BeodeulObjectHost {
    * 빌더가 아는 칸 목록(있을 때만): 마당(모이는 곳의 다진 흙)·둑 위. 주면 닻 찾기가 그 칸을 쓰고, 없으면 모이는 곳·문·물가·길에서 스스로 찾는다.
    */
   readonly areas?: SceneAreas;
+  /** 읍의 포장 중심부인가 — 그러면 장면이 안뜰 판석 위에 서도 된다(fitsLand 가 판석 칸을 받는다). */
+  readonly paved?: boolean;
   /** 그 킷이 그 자리에서 막는 칸(발). */
   footCells(kit: ObjectKit, x: number, y: number): number[];
   /** 장면 안의 빈 칸을 비워 둔다 — 나무·덤불·밭이 들어오지 않게(걷는 땅 그대로). */
@@ -258,7 +260,7 @@ export function placeVillageScenes(host: BeodeulSceneHost, scenes: readonly Vill
     tried.spots += cands.length;
     const required = set.filter((p) => !p.optional);
     for (const { ox, oy } of cands) {
-      if (!groupOk(ox, oy, onPlaza)) { tried.group += 1; continue; }
+      if (!groupOk(ox, oy, onPlaza || !!host.paved)) { tried.group += 1; continue; }
       for (const flip of lookHash(`scene|${key}|${scene.id}|flip`) % 2 ? [true, false] : [false, true]) {
         if (!required.every((p) => fitsPart(p, ox, oy, flip))) { tried.fit += 1; continue; }
         const use = set.filter((p) => !p.optional || fitsPart(p, ox, oy, flip));

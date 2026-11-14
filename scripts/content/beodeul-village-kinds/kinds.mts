@@ -31,10 +31,11 @@ export function argsFor(kind: VillageKind, seed: number): Record<string, unknown
   if (kind.fit.tiers === "hill") { a.landform = "hill"; a.tiers = 1; } else if (kind.fit.tiers === "flat") a.landform = "flat";
   if (kind.fit.woods === "dense") a.woods = "dense";
   if (kind.fit.walls) a.walls = true;
-  if (kind.fit.square) a.form = "plaza";
+  // 급은 바닥 규칙(settlementRank)이 정한다: 읍 = 성벽이거나 광장을 청한 마을, 외딴 마을 = 집 셋.
+  if (kind.fit.square || (town && !kind.fit.walls)) a.form = "plaza";
   if (kind.fit.harbour) a.harbour = true;
   [a.width, a.height] = kind.fit.harbour ? [84, 40] : town ? [64, 52] : village ? [56, 48] : [44, 40];
-  if (kind.rank === "hamlet") a.houseCount = 4;
+  if (kind.rank === "hamlet") a.houseCount = 3;
   return a;
 }
 

@@ -1,7 +1,7 @@
 # 마을(14) · 읍(6)
 from kinds1 import V, M, F, R, WM, VY, WZ, DF, CC, MP, SW, SR, TR
 VILLAGES = [
- dict(id="market-village", ko="장터 마을", en="Market village", hint="stall rows", rank="village", water=["none", "river", "lake"], tiers="flat", square=True, gather=["장터", "market"], work=["house-mk-market-hall"],
+ dict(id="market-village", ko="장터 마을", en="Market village", hint="stall rows", rank="town", water=["none", "river", "lake"], tiers="flat", square=True, gather=["장터", "market"], work=["house-mk-market-hall"],
   scenes=[["stall-row", "장터 줄", "row of stalls", "plaza", 3, f"prop-stall_veg@0,3 prop-stall_cheese_meat@3,3 prop-stall_jug_bottle@5,3 ?prop-crate_cabbage@1,4 ?prop-crate_apple@4,4 ?obj-egg-baskets@6,4 ?{WM}cloth-stall@7,3 ?obj-bread-stall@10,3 ?obj-awning-booth@12,3"],
           ["weigh-corner", "저울 자리", "weighing corner", "commons", 3, "obj-scales@0,1 prop-goods_pile@1,1 obj-notice-board@4,1 ?obj-crier-stone@3,1 ?obj-tinker-rack@6,1 obj-crate-sack@1,2 ?obj-chicken-crate@3,2 ?obj-fish-slab@4,2"],
           ["carters-stand", "수레 대는 곳", "carters' stand", "entry", 3, f"{WM}wagon@0,2 prop-veg_cart@5,2 {WM}hay-bales@5,0 ?obj-basket-seller@8,2 ?obj-handcart-crates@8,0 ?obj-spice-stall@11,2"]],
@@ -66,7 +66,7 @@ VILLAGES = [
           ["bell-court", "종 뜰", "bell court", "commons", 3, f"obj-bell-frame@0,1 {MP}wayside-cross@2,1 obj-bench-stone@3,1 obj-lamp-stone@5,1 ?obj-alms-table@3,2 ?obj-prie-dieu@2,2 ?obj-reliquary@6,1 ?obj-scriptorium-desk@5,2 ?obj-book-chest@7,2"],
           ["fish-pond-bank", "물고기 못가", "fish-pond bank", "shore", 3, "obj-fishing-rod@0,1 obj-eel-baskets@1,1 obj-bench-log@1,0 ?obj-pond-kerb@3,1 ~obj-water-lilies@1,3"]],
   home=["obj-bed-herbs", "obj-beehive-skeps", "obj-bird-bath", "obj-box-wattle", "obj-broom-bucket"], waterPool=["obj-water-lilies", "obj-duck-house"], wild=["obj-forest-idol", "obj-heather-clump", "org-moss-boulder"]),
- dict(id="festival", ko="축제 마을", en="Festival village", hint="maypole, feast", rank="village", water=["none", "river", "lake"], tiers="flat", square=True, gather=["잔치 마당", "feast green"], work=["house-mk-great-hall", "house-inn"],
+ dict(id="festival", ko="축제 마을", en="Festival village", hint="maypole, feast", rank="town", water=["none", "river", "lake"], tiers="flat", square=True, gather=["잔치 마당", "feast green"], work=["house-mk-great-hall", "house-inn"],
   scenes=[["feast-green", "잔치 마당", "feast green", "plaza", 4, f"obj-maypole@3,2 prop-table_mugs@0,2 prop-table_mugs@5,2 obj-bench-trestle@5,3 ?prop-parasol_table@0,4 ?obj-feast-table@8,2 ?obj-bunting-pole@2,4 ?obj-lantern-line@8,4 ?obj-stage@11,2"],
           ["games-corner", "놀이 자리", "games corner", "commons", 3, "obj-seesaw@0,0 obj-swing@3,1 obj-archery-target@6,1 ?obj-ring-toss@8,1 ?obj-puppet-booth@0,3"],
           ["cook-fire", "잔치 음식 불", "feast cook-fire", "work", 3, "obj-cauldron-hearth@0,1 obj-fire-spit@2,1 obj-bake-oven@3,1 obj-keg-cradle@5,1 ?obj-bonfire-stack@6,1 ?obj-music-stand@0,2"]],

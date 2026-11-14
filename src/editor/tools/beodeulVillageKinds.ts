@@ -6,15 +6,17 @@
 // 요청 낱말은 보지 않는다 — 고르는 데 쓰는 것은 빌더가 이미 가진 사실(물·단·숲·집 수·성벽·항구·광장을 청했는가)과 게임 열쇠·마을 씨앗뿐이다.
 import table from "@/assets/beodeulVillageKinds.json";
 import { lookHash } from "@/project/kitLook";
+import type { SettlementRank } from "./beodeulSettlementRank";
 import { SCENE_ANCHORS, type SceneAnchor, type ScenePiece, type VillageScene } from "./beodeulVillageScenes";
 
-export type VillageRank = "hamlet" | "village" | "town";
+/** 급은 바닥 규칙의 급(beodeulSettlementRank.ts settlementRank)과 같은 것이다 — 따로 셈하지 않는다. */
+export type VillageRank = SettlementRank;
 export type VillageWater = "sea" | "river" | "lake" | "none";
 export interface VillageKind {
   readonly id: string; readonly ko: string; readonly en: string;
   /** 조수가 읽는 두세 낱말(영어). */
   readonly hint: string;
-  /** 외딴 마을(집 3~5) · 마을(6~9) · 읍(10~12). */
+  /** 외딴 마을 · 마을 · 읍 — 바닥의 급과 같은 낱말이다(흙 마당 · 흙길 마을 · 포장 중심부). */
   readonly rank: VillageRank;
   readonly fit: { readonly water: readonly VillageWater[]; readonly tiers?: "hill" | "flat"; readonly woods?: "dense"; readonly walls?: boolean; readonly harbour?: boolean;
     /** 장터·읍 종류 — 광장을 청한 요청에서만 판석 광장 위에 장면을 놓는다. */ readonly square?: boolean };
@@ -55,8 +57,8 @@ export interface VillageFacts {
   readonly tiers: boolean;
   /** 숲속 빈터·깊은 숲·둘레 숲 벽인가. */
   readonly deepWoods: boolean;
-  /** 지을 집 수(앵커 건물 제외). */
-  readonly houses: number;
+  /** 정착지의 급 — settlementRank(성벽·청한 광장 = 읍, 흩어진 농가·집 셋까지 = 외딴 마을, 그 밖 = 마을)이 정한 것. */
+  readonly rank: VillageRank;
   readonly walls: boolean; readonly harbour: boolean;
   /** 판석 광장을 청했는가. */
   readonly plaza: boolean;
@@ -70,23 +72,22 @@ export function villageKindFits(kind: VillageKind, f: VillageFacts): boolean {
   if (kind.fit.harbour && !f.harbour) return false;
   if (f.harbour && kind.rank === "hamlet") return false;
   if (kind.fit.woods === "dense" && !f.deepWoods) return false;
-  // 급: 외딴 마을은 집 다섯까지, 마을은 넷부터, 읍은 여덟부터(성벽·항구는 집 수와 상관없이 읍이 될 수 있다).
-  if (kind.rank === "hamlet") return f.houses <= 5;
-  if (kind.rank === "village") return f.houses >= 4;
-  return f.houses >= 8 || f.walls || f.harbour;
+  // 급: 바닥이 정한 급과 같은 종류만(흙 마당 마을에 읍의 장면이 서지 않게). 항구를 청했으면 항구 종류는 급과 상관없이 맞는다.
+  return kind.rank === f.rank || (!!kind.fit.harbour && f.harbour);
 }
 
 /**
  * 종류를 고른다. named = 요청이 이름으로 정한 종류(표에 있으면 그대로 — 터가 안 맞아도 짓는다, 놓을 수 없는 장면은 빠진다).
  * 이름이 없으면 게임 열쇠가 있을 때만: 터에 맞는 종류를 그 게임의 차례(열쇠 해시)로 세우고, 마을 씨앗으로 차례의 시작을 돌린 뒤,
- * 이 게임의 다른 마을이 이미 쓴 종류(taken)를 건너뛴 첫 번째. 광장을 청했으면 광장 종류가, 깊은 숲이면 숲 종류가 먼저다.
+ * 이 게임의 다른 마을이 이미 쓴 종류(taken)를 건너뛴 첫 번째. 깊은 숲이면 숲 종류가 먼저다.
  * 열쇠도 이름도 없으면 고르지 않는다(사람 편집·스크립트는 전과 같다).
  */
 export function chooseVillageKind(facts: VillageFacts, key: string | undefined, seed: number, named?: string, taken: ReadonlySet<string> = new Set()): VillageKind | undefined {
   if (named) return BY_ID.get(named);
   if (!key) return undefined;
   const fits = BEODEUL_VILLAGE_KINDS.filter((k) => villageKindFits(k, facts));
-  const first = facts.plaza ? fits.filter((k) => k.fit.square) : facts.deepWoods ? fits.filter((k) => k.fit.woods === "dense") : [];
+  // 깊은 숲이면 숲 종류가 먼저다. 광장을 청한 마을은 급이 읍이다 — 읍 종류 가운데서 고른다(장터만이 아니라 길드 거리·운하 읍도 광장을 둔다).
+  const first = facts.deepWoods ? fits.filter((k) => k.fit.woods === "dense") : [];
   const narrowed = first.length ? first : fits;
   const order = [...narrowed].sort((a, b) => lookHash(`village-kind|${key}|${a.id}`) - lookHash(`village-kind|${key}|${b.id}`) || a.id.localeCompare(b.id));
   const start = lookHash(`village-kind|${key}|seed|${seed}`) % order.length;
