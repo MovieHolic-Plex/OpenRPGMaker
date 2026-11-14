@@ -54,6 +54,7 @@ import { settlementGround } from "./beodeulSettlementRank";
 import { planCommons } from "./beodeulCommons";
 import { doorsideSpots, planEdgeDrifts } from "./beodeulEarthDressing";
 import { planTownCore, squareApproaches, squareBox, squareRing, SQUARE_FLOORS, townPrecinct } from "./beodeulTownCore";
+import { planQuay } from "./beodeulQuay";
 
 export const BEODEUL_VILLAGE_THEMES = ["river", "coast", "desert", "snow", "swamp"] as const;
 export type BeodeulVillageTheme = (typeof BEODEUL_VILLAGE_THEMES)[number];
@@ -439,6 +440,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const decalAt = new Set<number>(); // 바닥 소품(풀꽃·밀) 찍은 칸
   const onWater = new Set<number>(); // 물 위 소품(배·오리·얼음 구멍)이 앉은 칸 — 계획 칸은 물 그대로
   const keepRoad = new Set<number>(); // 막다른 길 깎기에서 지키는 길 끝(나루처럼 물가에서 끝나는 길)
+  const quaySet = new Set<number>(); // 포구의 돌 둑 칸(beodeulQuay.ts) — 판석으로 깔고, 잔교의 뭍 끝과 어구가 이 위에 선다
+  const quayWalk = new Set<number>(); // 둑 칸 가운데 걷는 자리(둑이 서기 전에 길이던 칸 — 집 문 앞 · 그 길 바로 아래 칸). 어구를 세우지 않는다
   let ferry: { x: number; y: number } | null = null;
   // 시공 기록: 계획 구역이 끝날 때마다 격자를 남긴다(기록기가 꺼져 있으면 아무것도 안 한다).
   const planStep = (label: string) => logConstructionPlan(mapId, W, H, occ, label, PLAN_CLASSES);
@@ -1857,20 +1860,47 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
     // 코드 지형 포구: 바다로 곧게 뻗는 잔교 하나(낚시 포구 잔교 몸통+머리 키트) — 일터·모이는 곳에 가까운 남향 물가에서, 뭍 끝을 길망에 잇는다.
     // 없으면 포구로 읽히지 않았다(ab14 포구 어촌 두 판 「잔교·부두가 없다」).
+    // 포구의 돌 둑(beodeulQuay.ts): 잔교가 설 물가(없으면 일터·모이는 곳에 가장 가까운 남향 물가)를 곧게 펴(두 줄까지 메운다 — 물을 새로 파지 않는다)
+    // 세 줄 깊이 판석 띠로 깔고 길망에 잇는다. 잔교는 이 둑에서 뻗고 어구는 둑 뒷줄에 선다. 물 칸의 그림·물가 테·물 위 기물은 그대로다.
+    const layQuay = (near: { x: number; y: number }): void => {
+      const q = planQuay({ W, H, near, sea: (c) => occ[c] === WATERC && codeT!.water[c] === 3, land: (c) => (occ[c] === FREE || occ[c] === ROAD) && !rampCells.has(c), level: (c) => lv[c]! });
+      if (!q) return;
+      const was = occ.slice();
+      // 둑 뒤 빈 땅에서 길망까지 — 둑 칸을 잡기 전에 잇는다(잡은 뒤에는 둑이 길로 보여 바로 «닿았다» 가 된다). 둑에 이미 길이 닿아 있으면 그대로.
+      if (!q.cells.some((c) => occ[c] === ROAD) && !q.links.some((p) => linkToRoad(p.x, p.y))) return;
+      for (let c = 0; c < W * H; c += 1) if (occ[c] === ROAD && was[c] !== ROAD) keepRoad.add(c);
+      for (const c of [...q.cells, ...q.fill]) { if (occ[c] === ROAD || (c >= W && occ[c - W] === ROAD)) quayWalk.add(c); occ[c] = PLAZAC; quaySet.add(c); }
+    };
     if (theme === "coast") {
       const stem = kitIndex.get("bd-pick-fishing-port-jetty-stem"), head = kitIndex.get("bd-pick-fishing-port-jetty-head");
       const sea = (x: number, y: number) => inMap(x, y) && codeT!.water[idx(x, y)] === 3 && occ[idx(x, y)] === WATERC;
       const near = workAt ?? codePlan.g;
+      // 잔교의 뭍 끝: 빈 땅·길, 둑이 있으면 둑 위가 먼저다
+      const pierTop = (x: number, y: number) => { const c = idx(x, y), v = occ[c]; return v === FREE || v === ROAD || quaySet.has(c); };
+      const onQuay = (x: number, y: number) => (quaySet.has(idx(x, y)) && quaySet.has(idx(x + 1, y)) ? 1000 : 0);
       let best: { x: number; y: number; len: number; d: number } | null = null;
       if (stem && head) for (let x = 5; x < W - 6; x += 1) for (let y = 2; y < H - 6; y += 1) {
-        const top = occ[idx(x, y)], top2 = occ[idx(x + 1, y)];
-        if (!((top === FREE || top === ROAD) && (top2 === FREE || top2 === ROAD)) || !sea(x, y + 1) || !sea(x + 1, y + 1)) continue;
+        if (!pierTop(x, y) || !pierTop(x + 1, y) || !sea(x, y + 1) || !sea(x + 1, y + 1)) continue;
         let len = 0; while (len < stem.h && sea(x, y + 1 + len) && sea(x + 1, y + 1 + len)) len += 1;
         if (len < 5) continue;
         const hy = y + len; let headOk = hy + head.h < H;
         for (let j = 0; j < head.h && headOk; j += 1) for (let i = 0; i < head.w; i += 1) if (!sea(x - 4 + i, hy + j)) { headOk = false; break; }
         if (!headOk) continue;
-        const d = Math.hypot(x - near.x, y - near.y); if (!best || d < best.d) best = { x, y, len, d };
+        const d = Math.hypot(x - near.x, y - near.y) - onQuay(x, y); if (!best || d < best.d) best = { x, y, len, d };
+      }
+      // 둑은 잔교가 설 자리에 — 잔교 자리를 먼저 찾고, 그 물가에 둑을 낸 뒤 둑 위에서 잔교 자리를 다시 찾는다
+      if (ground.quay && "mat" in spec.plaza && !quaySet.size) {
+        layQuay(best ? { x: best.x, y: best.y } : near);
+        if (quaySet.size) { best = null;
+          if (stem && head) for (let x = 5; x < W - 6; x += 1) for (let y = 2; y < H - 6; y += 1) {
+            if (!pierTop(x, y) || !pierTop(x + 1, y) || !sea(x, y + 1) || !sea(x + 1, y + 1)) continue;
+            let len = 0; while (len < stem.h && sea(x, y + 1 + len) && sea(x + 1, y + 1 + len)) len += 1;
+            if (len < 5) continue;
+            const hy = y + len; let headOk = hy + head.h < H;
+            for (let j = 0; j < head.h && headOk; j += 1) for (let i = 0; i < head.w; i += 1) if (!sea(x - 4 + i, hy + j)) { headOk = false; break; }
+            if (!headOk) continue;
+            const d = Math.hypot(x - near.x, y - near.y) - onQuay(x, y); if (!best || d < best.d) best = { x, y, len, d };
+          } }
       }
       if (best && stem && head && linkToRoad(best.x, best.y, false)) {
         const { x: jx, y: jy, len } = best;
@@ -1884,11 +1914,10 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         // 얕은 바다(평지 포구)는 키트 잔교(몸통 10줄+머리 4줄)가 안 들어간다 — 널판 칸을 직접 깐 폭 2 짧은 잔교(3~6칸)로(ab16 포구 「잔교·부두가 없다」)
         const pcs: { x: number; y: number; len: number; d: number }[] = [];
         for (let x = 4; x < W - 5; x += 1) for (let y = 2; y < H - 4; y += 1) {
-          const t0 = occ[idx(x, y)], t1 = occ[idx(x + 1, y)];
-          if (!((t0 === FREE || t0 === ROAD) && (t1 === FREE || t1 === ROAD))) continue;
+          if (!pierTop(x, y) || !pierTop(x + 1, y)) continue;
           let len = 0; while (len < 6 && sea(x, y + 1 + len) && sea(x + 1, y + 1 + len) && sea(x - 1, y + 1 + len) && sea(x + 2, y + 1 + len)) len += 1;
           if (len < 3 || !sea(x, y + 1 + len) || !sea(x + 1, y + 1 + len)) continue; // 끝 너머도 물(뭍에 닿는 다리가 아니다)
-          pcs.push({ x, y, len, d: Math.hypot(x - near.x, y - near.y) });
+          pcs.push({ x, y, len, d: Math.hypot(x - near.x, y - near.y) - onQuay(x, y) });
         }
         pcs.sort((a, b) => a.d - b.d);
         const pb = pcs.slice(0, 40).find((p) => linkToRoad(p.x, p.y, false)) ?? null;
@@ -1916,6 +1945,32 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const FISH = [...pick("fishing-port", "drying-rack-a drying-rack-b lobster-pots upturned-boat"), "bd-prop-net_rack", "bd-prop-fish_crates", "bd-prop-fish_barrel", "bd-prop-mooring_bollard"];
       const boat = kitIndex.get("bd-pick-swamp-stilt-rowboat");
       const picked: number[] = []; let boats = 0;
+      // 둑이 있으면 어구는 둑 뒷줄에 먼저 선다(앞줄은 걷는 줄 — 잔교 앞 두 열과 그 옆은 비운다). 발(아랫줄)은 둑 위, 윗줄은 둑 뒤 빈 땅에 걸쳐도 된다.
+      if (quaySet.size) {
+        const back = (c: number) => quaySet.has(c) && !quayWalk.has(c) && occ[c] === PLAZAC && !quaySet.has(c - W) && quaySet.has(c + W) && occ[c + W] === PLAZAC;
+        const pierCol = (x: number) => [...quaySet].some((c) => c % W >= x - 1 && c % W <= x + 1 && c + W < W * H && occ[c + W] === KEEP);
+        const ks = have(FISH).map(K);
+        for (const c of [...quaySet].filter(back).sort((a, b) => (a % W) - (b % W))) {
+          if (picked.length >= 4 || !ks.length) break;
+          const x = c % W, y = (c - x) / W;
+          if (picked.some((p) => Math.abs((p % W) - x) < 3)) continue;
+          const k = ks[lookHash(`quay|${seed}|${x}`) % ks.length]!;
+          let ok = fits(k, x, y - k.h + 1, 0, (v) => v === PLAZAC || v === FREE);
+          for (let i = 0; i < k.w && ok; i += 1) if (!back(c + i) || pierCol(x + i)) ok = false;
+          if (!ok) continue;
+          claim(k, x, y - k.h + 1, PROP, false); picked.push(c);
+        }
+        // 앞줄(물에 닿는 줄)에는 네 칸마다 계선주·통·밧줄 — 잔교 앞 두 열과 그 옆은 비운다. 가운데 줄은 걷는 줄로 남는다.
+        const edge = have(["bd-prop-mooring_bollard", "bd-prop-fish_barrel", "bd-obj-rope-coil", "bd-prop-mooring_bollard", "bd-prop-crate_fish", "bd-obj-capstan"]).map(K).filter((k) => k.w === 1 && k.h === 1);
+        const frontRow = [...quaySet].filter((c) => occ[c] === PLAZAC && c + W < W * H && occ[c + W] === WATERC && quaySet.has(c - W)).sort((a, b) => (a % W) - (b % W));
+        let lastX = -9;
+        if (edge.length) for (const c of frontRow) {
+          const x = c % W, y = (c - x) / W;
+          if (x - lastX < 4 || pierCol(x) || quayWalk.has(c) || lookHash(`quayedge|${seed}|${x}`) % 3 === 0) continue;
+          const k = edge[lookHash(`quayedgekit|${seed}|${x}`) % edge.length]!;
+          if (fits(k, x, y, 0, (v) => v === PLAZAC)) { claim(k, x, y, PROP, false); lastX = x; }
+        }
+      }
       for (const { c } of cand) {
         if (picked.length >= 6) break;
         const x = c % W, y = (c - x) / W;
@@ -3337,7 +3392,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   paintStep("길 깔기", [ROAD]);
   {
     const inner = new Set(squareFloor.kit && kitIndex.has(squareFloor.kit) ? square.inner.filter((c) => plazaPaint.includes(c)) : []);
-    paintCells([...plazaPaint.filter((c) => !squareRingSet.has(c) && !inner.has(c)), ...courtUnder.filter((c) => occ[c] === BLD || occ[c] === PROP)], spec.plaza);
+    paintCells([...plazaPaint.filter((c) => !squareRingSet.has(c) && !inner.has(c) && !quaySet.has(c)), ...courtUnder.filter((c) => occ[c] === BLD || occ[c] === PROP)], spec.plaza);
+    // 포구의 돌 둑: 시골 포구는 광장 재료가 흙이므로 둑은 판석 재료로 따로 깐다(어구 밑도)
+    if (quaySet.size) paintCells([...quaySet].filter((c) => occ[c] === PLAZAC || occ[c] === PROP), { mat: PLAZA });
     if (inner.size) paintCells(inner, { kit: squareFloor.kit! });
   }
   paintStep("광장 판석", [PLAZAC]);
@@ -4031,6 +4088,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       streets: streetNames, ...(form === "plaza" ? { plaza: { x: plazaX, y: Math.round(plazaCy), rx: prx, ry: pry } } : {}),
       // 읍의 광장 네모(테 포함)와 안 돌 — 다른 도구가 광장 가장자리·모서리를 찾을 때 읽는다
       ...(squareCells.length ? { square: { ...squareBox(W, squareCells)!, floor: squareFloor.id } } : {}),
+      ...(quaySet.size ? { quay: (() => { const b = squareBox(W, [...quaySet])!; return { ...b, cells: quaySet.size }; })() } : {}),
       gathering: { why: gather.why, ...(gatherDoor ? { door: gatherDoor } : {}) }, fenceCells: fenceAt.size, ...(ferry ? { ferry } : {}), ...(ford ? { ford: { x: ford.x, y: ford.top, stones: fordStones.length } } : {}),
       anchors, work: workAt, ...(coastWork.length ? { coastWork } : {}), houses: placedHouses.length, distinctHouses: distinct,
       doors: doorFronts.map((d) => ({ kit: d.kit, x: d.x, y: d.y, reached: !!seen[idx(d.x, d.y)] })),
