@@ -89,6 +89,12 @@ export const UI_LOOKS: readonly UiLookSet[] = [
 ];
 
 export const UI_LOOK_IDS: readonly string[] = UI_LOOKS.map((look) => look.id);
+
+/** 상점 창의 겉판 — 그 게임의 메뉴와 같은 판·글자색을 쓴다(게임마다 UI 모습 한 벌). blue = 도트 창 그대로. */
+export type ShopSurface = "blue" | "paper" | "cream" | "navy" | "glass";
+const SHOP_SURFACE_BY_MENU: Partial<Record<MenuUiStyle, ShopSurface>> = { journal: "paper", "field-list": "cream", "party-first-warm": "navy", workbench: "glass", sheet: "glass" };
+/** 메뉴 스킨 → 상점 겉판. 세트가 쓰는 메뉴 가운데 청색 도트 창이 아닌 것만 제 판을 갖는다 — 나머지(도트 창 · 청색 창 · 레트로)는 지금까지의 청색 도트 창. */
+export const shopSurfaceForMenu = (menu: string | undefined): ShopSurface => SHOP_SURFACE_BY_MENU[menu as MenuUiStyle] ?? "blue";
 /** 어느 조건에도 맞는 것이 없을 때(시대를 모르는 업로드 칩셋의 게임) — 지금까지의 기본 모습. */
 export const FALLBACK_UI_LOOK_ID = "glass";
 
