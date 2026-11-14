@@ -35,6 +35,15 @@ function renderHint(hint: string): HTMLElement {
 }
 
 const detailContexts = new WeakMap<HTMLElement, { project: Project; detail: StatusMenuDetail; showcase: boolean }>();
+const detailAdjusters = new WeakMap<HTMLElement, (delta: -1 | 1) => void>();
+
+/** 좌우 키로 값을 바꾸는 행이면 바꾸고 true. 그런 행이 아니면 false(← 는 레일로 돌아간다). */
+export function adjustStatusMenuDetailRow(row: HTMLElement | undefined, delta: -1 | 1): boolean {
+  const adjust = row ? detailAdjusters.get(row) : undefined;
+  if (!adjust) return false;
+  adjust(delta);
+  return true;
+}
 
 /** Cursor movement keeps the list, its focus and its scroll position alive. */
 export function updateStatusMenuDetailSelection(panel: HTMLElement, index: number): string | undefined {
@@ -54,6 +63,10 @@ export function updateStatusMenuDetailSelection(panel: HTMLElement, index: numbe
   if (footer) {
     if (entry?.unavailableReason ?? entry?.description) footer.dataset.messageKind = "description";
     else delete footer.dataset.messageKind;
+  }
+  const controls = panel.closest(".oprn-status-menu")?.querySelector<HTMLElement>(".status-menu-controls");
+  if (controls?.dataset.controlsAdjust && controls.dataset.controlsDefault) {
+    controls.textContent = entry?.onAdjust ? controls.dataset.controlsAdjust : controls.dataset.controlsDefault;
   }
   return entry?.unavailableReason ?? entry?.description ?? detail.hint;
 }
@@ -247,6 +260,7 @@ function renderDetailEntry(options: {
         attrs: informationalList ? { role: "listitem" } : undefined,
         dataset: detailEntryDataset(entry, undefined),
       });
+  if (entry.onActivate && entry.onAdjust) detailAdjusters.set(row, entry.onAdjust);
   if (selected) row.classList.add("selected");
   if (entry.textInput) {
     const field = entry.textInput;

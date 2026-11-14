@@ -286,7 +286,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
         : selectedCommand === "items" ? "목록 끝에서 분류·정렬 변경 (본문에서 ↑ 두 번)" : undefined),
       skin.railColumns, skin.id === "field-list",
       options.message === undefined && mode === "function" && selectedEntryDescription(detail, options.selectedDetailActionIndex) !== undefined ? "description" : undefined,
-      resolveDialogueSystem(options.project)
+      resolveDialogueSystem(options.project),
+      mode === "function" && detail.entries.filter((entry) => entry.onActivate && !entry.disabled)[options.selectedDetailActionIndex ?? -1]?.onAdjust !== undefined,
     )
   );
   panel.append(statusMenuDebug(selectedCommand, mode));
@@ -890,6 +891,7 @@ function renderFooter(
   railColumns: number, compact = false,
   messageKind?: "description",
   system?: AuthoredDialogueSystem,
+  adjustable = false,
 ): HTMLElement {
   const footer = el("footer", { class: "status-menu-footer" });
   footer.append(el("div", {
@@ -900,8 +902,9 @@ function renderFooter(
   }));
   footer.append(el("span", {
     class: "status-menu-controls",
-    text: statusMenuControls(mode, railColumns, compact, system),
-    dataset: { testid: "status-menu-controls" },
+    text: mode === "function" && adjustable ? dialogueUiText(system, "controls.adjust") : statusMenuControls(mode, railColumns, compact, system),
+    // 좌우로 값을 바꾸는 줄(설정의 음량)에 커서가 오면 「← 메뉴」 대신 「←→ 조절」을 보인다 — 커서만 옮길 때는 다시 그리지 않으므로 두 글을 실어 둔다.
+    dataset: { testid: "status-menu-controls", ...(mode === "function" ? { controlsDefault: statusMenuControls(mode, railColumns, compact, system), controlsAdjust: dialogueUiText(system, "controls.adjust") } : {}) },
   }));
   return footer;
 }

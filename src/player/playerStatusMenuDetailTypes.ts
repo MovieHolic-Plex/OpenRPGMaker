@@ -43,6 +43,8 @@ export type StatusMenuDetailEntry = {
   /** 글자 입력 행(별명 짓기). 값은 Enter 로 확정, Esc 로 취소 — 키는 입력창이 받고 게임 키로 새지 않는다. */
   readonly textInput?: { readonly value: string; readonly maxLength: number; readonly label: string; readonly onCommit: (value: string) => void; readonly onCancel: () => void };
   readonly onActivate?: () => void;
+  /** 값을 좌우 키로 한 단계씩 내리고 올리는 행(설정의 음량). 이 행에서는 ← 가 레일로 돌아가는 대신 값을 내린다. */
+  readonly onAdjust?: (delta: -1 | 1) => void;
   readonly disabled?: boolean;
   readonly destructive?: boolean;
 };

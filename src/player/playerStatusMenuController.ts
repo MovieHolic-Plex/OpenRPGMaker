@@ -18,7 +18,7 @@ import { store } from "@/project/store";
 import { getPlayerPreferences, updatePlayerPreferences } from "@/player/playerPreferences";
 import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, readAutosave, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
 import { renderPlayerStatusMenu, statusMenuControls } from "@/player/playerStatusMenu";
-import { updateStatusMenuDetailSelection } from "@/player/playerStatusMenuDetailRenderer";
+import { adjustStatusMenuDetailRow, updateStatusMenuDetailSelection } from "@/player/playerStatusMenuDetailRenderer";
 import { animateStatusMenuPage, animateStatusMenuVitals, readStatusMenuVitals } from "@/player/playerStatusMenuMotion";
 import {
   isStatusMenuGroupEntryId,
@@ -522,6 +522,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         stepPocket(direction === "left" ? -1 : 1);
         return true;
       }
+      // 설정의 음량 줄은 좌우 키로 값을 내리고 올린다 — 그 줄에서만 ← 가 레일로 돌아가지 않는다(Esc 로 돌아간다).
+      if ((direction === "left" || direction === "right")
+        && adjustStatusMenuDetailRow(detailActionButtons()[selectedDetailActionIndex], direction === "left" ? -1 : 1)) return emitAndHandle("menu-select");
       if (direction === "left") {
         focusMenuArea("main");
         options.emitMenuJuice("menu-back", currentMenu());
