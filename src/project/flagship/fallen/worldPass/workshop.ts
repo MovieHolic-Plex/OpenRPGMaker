@@ -43,14 +43,14 @@ export function buildWorkshop(project: Project, exec: Exec): void {
   project.system.craftRecipes = [...(project.system.craftRecipes ?? []).filter((r) => !FS_WORKSHOP_RECIPES.some((w) => w.id === r.id)),
     ...FS_WORKSHOP_RECIPES.map(({ pitch: _p, ...r }) => r)];
   const menu: Command[] = [
-    say(NINA, "뭘 만들까? 재료는 네 가방에서 꺼낸다."),
+    say(NINA, "뭘 만들어 줄까? 재료는 네 가방에서 꺼낼게."),
     { kind: "openCraftShop", recipeIds: FS_WORKSHOP_RECIPES.map((r) => r.id), title: "니나의 공방", speaker: NINA } satisfies Command,
     say(NINA, "숲에서 주운 건 버리지 말고 가져와."),
   ];
   putEvent(room, "ev_fs_workshop_nina", NINA, { x: exitCell.x, y: exitCell.y - 4 }, [
     page("ev_fs_workshop_nina_first", "첫 만남", [], [
-      say(NINA, "어서 와. 여긴 재료 공방이야.\n숲에서 주운 송곳니·가죽·비단·불씨를 가져오면 쓸 물건으로 바꿔 줘."),
-      say(NINA, "가방 메뉴 「조합」에서도 두 가지는 직접 섞을 수 있어.\n셋 넘게 드는 건 내 손이 필요하고."),
+      say(NINA, "어서 와. 재료 공방이야.\n송곳니, 가죽, 비단, 불씨. 숲에서 주운 걸\n가져오면 쓸 만한 물건으로 바꿔 줄게."),
+      say(NINA, "두 가지 섞는 건 가방 「조합」에서\n네 손으로도 돼.\n재료가 셋 넘게 드는 건 내가 해 줄게."),
       { kind: "setSelfSwitch", key: "A", value: true } satisfies Command,
       ...menu,
     ], { graphic: chipGraphic("tex_easyrpg_charset_people5", 1), trigger: { kind: "action" } }),
