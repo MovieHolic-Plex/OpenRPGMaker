@@ -10,7 +10,7 @@ import { resolveGraphic, type GraphicSpec } from "@/editor/tools/eventCompile";
 import { isPassable } from "@/project/collision";
 import { questPresetIssue } from './questPresets';
 import { validateQuestReferences } from './questValidation';
-import { GENERIC_GIVER, hostCommands, hostPage, prepareQuestHost, questHost, type QuestHost } from './questHost';
+import { GENERIC_GIVER, hostCommands, hostPage, prepareQuestHost, questHost, settleQuestStepPages, type QuestHost } from './questHost';
 import { settleStepPages } from '../blueprintStepPages';
 import { resolveAnchorPoint } from "@/project/locationAnchors";
 import type { Command, EventPage, EventPageCondition, EventPageGraphic, GameEvent, GameMap, Project, SimpleTriggerKind } from "@/project/types";
@@ -695,6 +695,8 @@ export function compileQuest(project: Project, def: QuestDef, options: QuestComp
 
   // 5) 메타 보존.
   project.quests = [...(project.quests ?? []).filter((quest) => questDefId(quest) !== def.key), def];
+  // 한 사람이 제 의뢰의 주인이면서 다른 의뢰의 들를 곳일 때 — 들를 곳 페이지가 열려 있는 동안 뒤에 선 페이지가 가리지 않게(questHost.settleQuestStepPages).
+  settleQuestStepPages(project);
 
   // drop 소스가 만든 클리어 스위치까지 대략 반영(정확 카운트는 중요치 않음).
   switchesRegistered += def.steps.filter((step) => step.kind === "collect").reduce((sum, step) => sum + (step.kind === "collect" ? step.sources.filter((s) => s.kind === "drop").length : 0), 0);
