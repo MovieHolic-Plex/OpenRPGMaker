@@ -25,7 +25,7 @@
 spec on = water 는 물 칸 위에 놓는 기물(뗏목·부표·수련 — 막힘, 물은 원래 못 걷는다 · 징검돌 — 밟고 건넌다), on = shore 는 물가에 두는 기물.
 
 마을 종류별 기물(spec kinds = 그 기물이 속한 마을 종류 id 목록, common = 여러 종류가 같이 쓰는 것): 킷 태그 `kind:<종류 id>` 로 굽고,
-같은 표를 tiledata/beodeul-objects/kinds.json(킷 id → 종류 id 목록)으로도 쓴다 — 마을 종류 목록·빌더가 읽는다. 종류 이름은 spec kindNames.
+같은 표를 tiledata/beodeul-objects/kinds.json(킷 id 마다 종류 id 목록)으로도 쓴다 — 마을 종류 목록·빌더가 읽는다. 종류 이름은 spec kindNames.
 
 놓는 방식(spec place): prop·tall = 서 있는 기물(block 칸만 막힘, 나머지 칸은 ★ 사람 위에 그려짐) · decal = 밟고 지나가는 바닥 그림(널빤지 길·쪽지 — 위층에 놓여
 물 칸 위에서도 걸을 수 있다). 조수가 찾는 낱말은 코드가 아니라 킷 이름·태그(spec words)에 있다.
@@ -188,7 +188,7 @@ def main():
     CATALOG.write_text(json.dumps(cat, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     kinds = {KIT_PREFIX + it["id"]: it["kinds"] for it in items if it.get("kinds")}
     (STORE / "kinds.json").write_text(json.dumps(dict(
-        _doc="버들항 기물 킷 id → 마을 종류 id 목록(common = 여러 종류가 같이 쓰는 것). spec.json items[].kinds 에서 bake.py 가 만든다 — 손으로 고치지 않는다. 킷 태그 kind:<id> 와 같은 내용이다.",
+        _doc="버들항 기물 킷 id 마다 마을 종류 id 목록(common = 여러 종류가 같이 쓰는 것). spec.json items[].kinds 에서 bake.py 가 만든다 — 손으로 고치지 않는다. 킷 태그 kind:<id> 와 같은 내용이다.",
         names=spec.get("kindNames", {}), kinds=kinds), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(f"이야기 기물 꼬리 {BASE}..{count - 1}: 킷 {len(kits)}개 ({KIT_PREFIX}*) — 변형 {sum(1 for it in items if it.get('variantOf'))}개")
 

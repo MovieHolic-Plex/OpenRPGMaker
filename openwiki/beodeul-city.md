@@ -1254,7 +1254,7 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 변형이 아니라 새 물건이다(`ai.variantOf` 없음). 건물·바닥 타일·나무는 더하지 않았다.
 
 - **한 종류 = 한 벌**: 마을 종류 38개(외딴 마을 18 · 마을 14 · 읍 6)마다 그 종류의 생업 장면에 **같이 놓여야 뜻이 되는** 기물 5~12종, 그리고 여러 종류가 같이 쓰는 공통 59종. 한 벌은 한 자리에 모아 놓는다(낱개로 흩지 않는다).
-- **어느 종류의 것인지**: 킷 태그 `kind:<종류 id>`(여럿일 수 있다 · 공통은 `kind:common`)와 같은 내용의 표 `tiledata/beodeul-objects/kinds.json`(`kinds`: 킷 id → 종류 id 목록, `names`: 종류 id → 이름). 정본은 `spec.json` 의 `items[].kinds` 이고 굽기가 둘을 만든다.
+- **어느 종류의 것인지**: 킷 태그 `kind:<종류 id>`(여럿일 수 있다 · 공통은 `kind:common`)와 같은 내용의 표 `tiledata/beodeul-objects/kinds.json`(`kinds`: 킷 id 마다 종류 id 목록, `names`: 종류 id 마다 이름). 정본은 `spec.json` 의 `items[].kinds` 이고 굽기가 둘을 만든다.
   종류마다 킷 사전은 `tiledata/beodeul-objects/KINDS.md`(참고문서 「마을 종류별 기물 사전」), 규칙은 README 8절.
 
 | 급 | 종류 | 수 | 든 것 |

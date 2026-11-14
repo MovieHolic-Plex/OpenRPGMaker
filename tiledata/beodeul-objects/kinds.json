@@ -1,5 +1,5 @@
 {
- "_doc": "버들항 기물 킷 id → 마을 종류 id 목록(common = 여러 종류가 같이 쓰는 것). spec.json items[].kinds 에서 bake.py 가 만든다 — 손으로 고치지 않는다. 킷 태그 kind:<id> 와 같은 내용이다.",
+ "_doc": "버들항 기물 킷 id 마다 마을 종류 id 목록(common = 여러 종류가 같이 쓰는 것). spec.json items[].kinds 에서 bake.py 가 만든다 — 손으로 고치지 않는다. 킷 태그 kind:<id> 와 같은 내용이다.",
  "names": {
   "fishing-cove": "어부 포구",
   "ferry-landing": "나루터",
