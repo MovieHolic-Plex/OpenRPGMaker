@@ -383,8 +383,10 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       }
       if (counter) {
         // 계산대 칸에 투명한 대리 이벤트 — 손님이 계산대를 보고 말을 걸면 주인의 대사·가게가 열린다.
+        // 이름은 주인 이름 그대로 둔다 — 필드 안내 「Z 조사 · 이름」이 이 이름을 12자까지 보여 주는데, 「(계산대)」를 붙였더니
+        // 「여관 주인 마르타(계…」로 잘린 내부 이름이 떴다(2026-11-14 QA). 대리와 본인은 id(_counter)로 가른다.
         const proxy = JSON.parse(JSON.stringify(npc)) as typeof npc;
-        proxy.id = `${person.id}_counter`; proxy.name = `${person.name}(계산대)`; proxy.x = counter.counter.x; proxy.y = counter.counter.y;
+        proxy.id = `${person.id}_counter`; proxy.name = person.name; proxy.x = counter.counter.x; proxy.y = counter.counter.y;
         for (const page of proxy.pages ?? []) {
           page.id = `${page.id}_counter`;
           page.graphic = { transparent: true } as typeof page.graphic;
