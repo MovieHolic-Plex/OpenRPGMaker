@@ -43,6 +43,7 @@ import { mapWithCommittedEvents } from "@/project/eventDrafts";
 import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
 import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
 import { layerTileAt, shadowAt } from "@/project/mapLayers";
+import { standGroundCoverTile } from "@/assets/tilesetStands";
 import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { store } from "@/project/store";
 import type { Command, MapId, TilesetDef, Trigger } from "@/project/types";
@@ -1315,5 +1316,5 @@ function commonEventHasContent(commands: readonly Command[]): boolean {
 export function applyMapOverrides(scene: PlaySceneContext): void {
   if (!scene.session.mapOverrides[scene.getMapId()]) return;
   invalidateTilePassabilityComponents(scene.map);
-  applyRuntimeMapOverrides(scene.map, scene.session);
+  applyRuntimeMapOverrides(scene.map, scene.session, standGroundCoverTile(store.getCurrent().tilesets[scene.map.tilesetId]));
 }

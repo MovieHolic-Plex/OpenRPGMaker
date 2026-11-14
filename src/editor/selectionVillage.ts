@@ -1,6 +1,7 @@
 import type { GameMap, TilesetDef } from "@/project/types";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { terrainLocked } from "@/project/terrainDesign";
+import { standGroundCoverTile } from "@/assets/tilesetStands";
 import { planQuickHouse, quickHouseKit, quickHouseMinWidth, quickHouseStyles, type QuickHouseOptions } from "./quickHouse";
 import { terrainRoadTile } from "./terrainMaterials";
 import type { SelectionRect } from "./selectionTerrainSummary";
@@ -65,9 +66,10 @@ export function planSelectionVillage(map: GameMap, tileset: TilesetDef, rect: Se
   const roadCells: number[] = [];
   if (road !== undefined) {
     const level = (x: number, y: number) => map.relief?.levels[y * map.width + x] ?? 0;
+    const groundCover = standGroundCoverTile(tileset); // 바닥 덧그림(풀 결 등)은 빈 땅이다
     const free = (x: number, y: number) => {
       const i = y * map.width + x;
-      return inside(rect, x, y) && !used.has(i) && !terrainLocked(map.terrainDesign, i) && layerTileAt(work, 2, i) < 0 && layerTileAt(work, 3, i) < 0
+      return inside(rect, x, y) && !used.has(i) && !terrainLocked(map.terrainDesign, i) && (layerTileAt(work, 2, i) < 0 || groundCover(layerTileAt(work, 2, i))) && layerTileAt(work, 3, i) < 0
         && (map.relief?.ramps?.[i] ?? 0) === 0 && (map.terrainDesign?.waterDepth?.[i] ?? 0) === 0;
     };
     const rows = new Map<number, number[]>();

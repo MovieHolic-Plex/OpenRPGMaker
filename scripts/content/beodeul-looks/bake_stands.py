@@ -19,6 +19,7 @@
 - 변형(variants): 같은 수종·같은 크기의 다른 개체 그림 — 킷 칸에 덮는 그림(pairs)과 달리 찍는 자리마다 골라 쓴다(project/standKit.ts). 덮개 값(cover)은 숲길의 나무 composer 가 읽는다.
 - 솟는 나무 머리(crowns): 수종 그림에서 줄기를 잘라 낸 수관 — 이어진 숲 수관 위(4층)에 자리 해시로 얹어 여섯 칸 주기를 깬다.
 - 한 칸 풀·덤불(small): 숲 바닥 종류마다 여섯 그림(tiledata/beodeul-stands/small) — 모든 게임이 같은 도장이던 고사리·헤더 덤불·들꽃 킷 열두 개를 덮는다.
+- 풀 결(grain, 2026-11-14): 기본 풀 바닥(737) 위에 섞어 까는 2층 칸 — 바닥 재질마다 통칸 변형 넷 · 짙은/옅은 결(15꼴 두 벌 + 속 칸 셋 + 속 칸에 얹은 풀 무늬) · 풀 포기·들꽃·잔돌 투명 칸. 새 그림 없이 코드로 만든다(grain_cells).
 
 무엇을 쓰나
 - public/assets/beodeul-stands/chipset.png(128칸 폭) · src/assets/beodeulStands.json. 버들항 시트·자연 덧그림·타일셋 정의는 한 글자도 바꾸지 않는다.
@@ -147,6 +148,94 @@ def over(base, top):
 
 
 def hex_rgb(h): return tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))
+
+
+# ── 풀 결(grain) — 기본 바닥 칸 하나(737)가 열린 땅을 덮어 한 맵의 풀밭이 평평한 한 판으로 읽혔다(2026-11-14 오너 «기본 바닥타일인 풀 타일들도
+# 좀 다양하게 배치할 수 있게끔»). 새 그림 없음: 바닥 재질 칸(버들항 풀밭 737 · 바닥 겉모습 재질)을 코드로 옮기고·덜고·한 단 짙게/옅게 섞은 칸과,
+# 버들항 시트의 풀 무늬 칸(27808~27813 — 풀 포기·토끼풀·들꽃·잔돌)에서 풀밭과 다른 화소만 떼어 낸 투명 칸이다. 1층 칸은 737 그대로다(2층 덧그림).
+CITY_PNG = ROOT / "public/assets/beodeul-city/beodeul-city-chipset.png"
+GRAIN_SPRIGS = [("tuft", 27808, "풀 포기"), ("tufts", 27809, "풀 포기 둘"), ("clover", 27810, "토끼풀"), ("white", 27811, "흰 들꽃"), ("yellow", 27812, "노란 들꽃"), ("pebble", 27813, "잔돌")]
+GRAIN_ROLLS = [(5, 9), (11, 3), (7, 13), (13, 6)]
+
+
+def _lum(c): return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]
+
+
+def tone_step(tex, d):
+    """재질 칸을 그 칸의 바탕 색 계열 안에서 밝기 순으로 d 칸 옮긴 판(새 색 0). 바탕 색에서 먼 강조 점(꽃·잔돌 빛)은 그대로 둔다."""
+    cols, cnt = np.unique(tex[:, :, :3].reshape(-1, 3), axis=0, return_counts=True)
+    dom = cols[int(np.argmax(cnt))].astype(int)
+    fam = sorted((tuple(int(v) for v in c) for c in cols if np.abs(c.astype(int) - dom).max() <= 40), key=_lum)
+    at = {c: i for i, c in enumerate(fam)}
+    out = tex.copy()
+    for y in range(T):
+        for x in range(T):
+            i = at.get(tuple(int(v) for v in tex[y, x, :3]))
+            if i is not None: out[y, x, :3] = fam[min(len(fam) - 1, max(0, i + d))]
+    return out
+
+
+def tone_mix(a, b, share, seed):
+    m = np.random.default_rng(seed).random((T, T)) < share
+    out = a.copy(); out[m] = b[m]
+    return out
+
+
+def thicket(px, sprig_px, seed):
+    """바탕 칸에 풀 포기 여섯 포기를 심은 우거진 풀 칸 — 포기 그림(투명 칸)을 감아 옮겨 얹으므로 이웃 칸과 이어진다."""
+    rng = np.random.default_rng(seed)
+    out = px.copy()
+    # 세 줄 두 칸 자리에서 고른다(한 칸에 여섯 — 덩이가 한 덩어리의 키 큰 풀로 읽히게)
+    spots = [(int(gy * 5 + rng.integers(0, 4)), int(gx * 8 + rng.integers(0, 6))) for gy in range(3) for gx in range(2)]
+    for i, (dy, dx) in enumerate(spots):
+        src = sprig_px[("tuft", "tufts", "tuft", "clover")[int(rng.integers(0, 4))]][int(rng.integers(0, 2))]
+        out = over(out, np.ascontiguousarray(np.roll(src, (dy, dx), (0, 1))))
+    return out
+
+
+def grain_cells(spec, tex, add):
+    """바닥 재질마다 풀 결 칸: alt(통칸 — 같은 화소를 옮긴 판 넷) · deep/pale(한 단 짙은/옅은 결 — 꼭짓점 15꼴 두 벌 + 속 칸 셋 + 속 칸에 얹은 풀 무늬) · sprigs(투명 칸)."""
+    city = np.array(Image.open(CITY_PNG).convert("RGBA"))
+    cell = lambda n: city[(n // COLS) * T:(n // COLS + 1) * T, (n % COLS) * T:(n % COLS + 1) * T].copy()
+    grass = cell(737)
+    lawn = np.unique(grass[:, :, :3].reshape(-1, 3), axis=0)
+    sprig_px, sprigs = {}, {}
+    raw = [cell(n) for _, n, _ in GRAIN_SPRIGS]
+    # 여섯 무늬 칸에 똑같이 찍힌 화소는 무늬가 아니라 그 칸들의 밑바탕 점이다 — 같이 뺀다(안 빼면 무늬 칸마다 같은 점 열하나가 따라와 격자로 읽힌다)
+    shared = np.all([(r == raw[0]).all(2) for r in raw], axis=0)
+    for (kind, n, _), src in zip(GRAIN_SPRIGS, raw):
+        px = src.copy(); px[(px[:, :, None, :3] == lawn[None, None]).all(3).any(2) | shared] = 0   # 풀밭 네 색도 뺀다 — 다른 바닥 재질 위에 풀빛 점이 남지 않게
+        # 한 종류에 네 장까지: 원본 · 거울 · 칸 안에서 자리를 옮긴 두 장(그림이 칸 밖으로 잘리지 않는 만큼만) — 이웃 칸의 포기가 같은 자리에 서서 격자로 읽히지 않게
+        ys, xs = np.nonzero(px[:, :, 3]); rng = np.random.default_rng(6100 + n)
+        flip = np.ascontiguousarray(px[:, ::-1])
+        variants = [px, flip]
+        for src, (sy, sx) in ((px, (-1, 1)), (flip, (1, -1))):
+            fx = xs if src is px else T - 1 - xs
+            dy = int(round((-ys.min() if sy < 0 else T - 1 - ys.max()) * rng.uniform(0.7, 1.0)))
+            dx = int(round((-fx.min() if sx < 0 else T - 1 - fx.max()) * rng.uniform(0.7, 1.0)))
+            if dy or dx: variants.append(np.ascontiguousarray(np.roll(src, (dy, dx), (0, 1))))
+        sprig_px[kind] = variants
+        sprigs[kind] = [add(v) for v in sprig_px[kind]]
+    out = {}
+    for k, (fid, kinds) in enumerate(spec["grain"]["families"].items()):
+        base = grass if fid == "grass" else tex[fid] if fid in tex else np.array(Image.open(LOOKS / "textures" / f"{fid}.png").convert("RGBA"))
+        assert base.shape == (T, T, 4) and base[:, :, 3].min() == 255, fid
+        seed = 7000 + k * 100
+        roll = lambda px, r: np.ascontiguousarray(np.roll(px, r, (0, 1)))
+        # 통칸 변형은 같은 화소를 옮긴 판뿐이다(빛·점의 수가 같다) — 맨 풀밭에 섞여도 얼룩으로 읽히지 않고 16px 되풀이만 깬다
+        entry = {"alt": [add(roll(base, r)) for r in GRAIN_ROLLS]}
+        for n, (tid, d, share) in enumerate((("deep", -1, 0.6), ("pale", 1, 0.6))):
+            fills = [tone_mix(roll(base, r), roll(tone_step(base, d), r), share, seed + 30 + n * 10 + i) for i, r in enumerate([(0, 0)] + GRAIN_ROLLS[:2])]
+            # 짙은 결 = 우거진 풀: 한 단 짙은 바탕에 풀 포기(시트의 풀 무늬 화소)를 칸마다 여섯 포기 심는다 — 포기를 감아 옮겨 칸끼리 이어진다
+            if tid == "deep": fills = [thicket(px, sprig_px, seed + 60 + i) for i, px in enumerate(fills)]
+            tone = fills[0]
+            entry[tid] = {"cells": [-1] + [add(wang(tone, m, seed + 20 + n * 10)) for m in range(1, 16)], "alt": [-1] + [add(wang(fills[1], m, seed + 25 + n * 10)) for m in range(1, 16)],
+                          "fill": [add(px) for px in fills],
+                          # 결 속 칸에 얹은 풀 무늬(한 칸에 2층 그림은 하나라 따로 굽는다)
+                          "sprigs": {kind: [add(over(fills[(2 - i) % 3], v)) for i, v in enumerate(sprig_px[kind])] for kind in kinds}}
+        entry["sprigs"] = {kind: sprigs[kind] for kind in kinds}
+        out[fid] = entry
+    return out
 
 
 class Canopy:
@@ -308,7 +397,7 @@ def compose(spec, trees, tex, small):
     # 그림 id 순(…-1, …-2) — 첫 그림이 킷 칸에 덮이는 그림이다. 2차의 수종(버들 등)에 이 그림판이 다른 개체 그림을 더해도 첫 그림이 바뀌지 않게 한다.
     for ids in by.values(): ids.sort()
     table = {"version": 2, "tilesetId": "beodeul_city", "image": "tex_beodeul_city", "texture": "tex_beodeul_stands", "tileSize": T, "tilesPerRow": COLS,
-             "note": "생성 파일 — scripts/content/beodeul-looks/bake_stands.py. pairs·small·sources·shadow·shade 는 [원본 칸, 그림판 칸] 쌍을 편 목록(shade = 숲 그늘 칸을 숲 바닥에 얹은 그림 — 둘레가 숲 바닥일 때만 쓴다). cover·variantCover 는 칸마다 불투명 몫(0~100). variants[킷] = 같은 수종의 다른 개체 그림들(줄 목록, 빈 칸 -1). crowns = 숲 수관 위로 솟는 나무 머리(4층). overlays.cells[꼭짓점 비트 북서1·북동2·남서4·남동8] = 그림판 칸(alt = 둘째 벌).",
+             "note": "생성 파일 — scripts/content/beodeul-looks/bake_stands.py. pairs·small·sources·shadow·shade 는 [원본 칸, 그림판 칸] 쌍을 편 목록(shade = 숲 그늘 칸을 숲 바닥에 얹은 그림 — 둘레가 숲 바닥일 때만 쓴다). cover·variantCover 는 칸마다 불투명 몫(0~100). variants[킷] = 같은 수종의 다른 개체 그림들(줄 목록, 빈 칸 -1). crowns = 숲 수관 위로 솟는 나무 머리(4층). overlays.cells[꼭짓점 비트 북서1·북동2·남서4·남동8] = 그림판 칸(alt = 둘째 벌). grains = 풀 결 섞음(게임마다 하나) · grain[바닥 재질] = 그 바닥의 풀 결 칸(alt 통칸 · deep/pale 짙은/옅은 결의 15꼴 두 벌·속 칸 fill·속 칸에 얹은 풀 무늬 sprigs · sprigs 투명 풀 무늬).",
              "gate": f"3/4 gate not passed — owner waiver {spec['waiver']}", "stands": {}, "meadows": spec["meadows"], "overlays": {}, "worn": spec["worn"], "verge": spec["verge"], "reed": spec["reed"]}
     # 덧그림
     nat_cat = json.loads(NATURE_CAT.read_text(encoding="utf-8"))
@@ -415,6 +504,10 @@ def compose(spec, trees, tex, small):
                                 **(lambda loud: {"loud": loud} if loud else {})(sorted(kid for kid, pid in pic.items() if spec["flora"][meta[pid]["species"]].get("loud") and meta[pid]["species"] != stand["dominant"])),
                                 **({"variants": variants, "variantCover": variant_cover} if variants else {}), **({"crowns": crowns} if crowns else {}), **({"small": small_pairs} if small_pairs else {})}
         print(f"  {sid}: 킷 그림 {len(pic)} · 수관 칸 {len(tiles)}(제 그림을 못 가진 자리 {clash[0]} · 그중 이웃 다섯 넘는 꼴 {clash[1]}) · 역할 " + " ".join(f"{r}{len(v)}" for r, v in roles.items() if v))
+    # 풀 결: 앞의 칸 번호가 바뀌지 않게 맨 뒤에 덧붙인다(저장된 게임의 이식이 그림판 칸 번호를 가리킨다)
+    table["grains"] = spec["grain"]["mixes"]
+    table["grain"] = grain_cells(spec, tex, add)
+    table["grainLabels"] = {"alt": "잔풀 결", "deep": "우거진 풀", "pale": "옅은 결", **{kind: name for kind, _, name in GRAIN_SPRIGS}}
     table["count"] = -(-len(cells) // COLS) * COLS
     return cells, table
 
@@ -437,7 +530,7 @@ def main():
     im = sheet_png(cells, table["count"])
     assert im.size[1] <= 4096, f"그림판이 {im.size[1]}px — 4096px(GPU 한도)를 넘는다"
     text = json.dumps(table, ensure_ascii=False, separators=(",", ":")) + "\n"
-    print(f"그림판 {im.size[0]}×{im.size[1]} · 칸 {len(cells)}(표 {table['count']}) · 숲 구성 {len(table['stands'])} · 풀밭 얼룩 {len(table['meadows'])} · 덧그림 재질 {len(table['overlays'])}")
+    print(f"그림판 {im.size[0]}×{im.size[1]} · 칸 {len(cells)}(표 {table['count']}) · 숲 구성 {len(table['stands'])} · 풀밭 얼룩 {len(table['meadows'])} · 덧그림 재질 {len(table['overlays'])} · 풀 결 {len(table['grains'])}(바닥 {len(table['grain'])})")
     if args.check:
         same = OUT_JSON.exists() and OUT_JSON.read_text(encoding="utf-8") == text and OUT_PNG.exists() and np.array_equal(np.array(Image.open(OUT_PNG).convert("RGBA")), np.array(im))
         print("같다" if same else "다르다 — 다시 구워야 한다")

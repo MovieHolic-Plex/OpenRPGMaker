@@ -2,6 +2,7 @@ import type { GameMap, SectionStructureKitDef, TilesetDef } from "@/project/type
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { tilesetHasHouseParts } from "@/project/defaults/forestHarmonyHouseParts";
 import { layerTileAt } from "@/project/mapLayers";
+import { standGroundCoverTile } from "@/assets/tilesetStands";
 import { terrainHeight, terrainSightObstacle } from "@/project/terrainGameplay";
 import { appendStructurePlacement, captureStructureTiles, structurePlacementsOf, structurePlacementAt, structurePlacementIsOverpainted, restoreStructurePlacementTiles, removeStructurePlacement, cellsOwnedByLaterPlacements } from "@/project/structurePlacements";
 import { HOUSE_KITS, houseKitForTileset, mixableHouseKitIds, rectHouseHeight, stampRectHouseKit, type HouseKitId } from "./houseKit";
@@ -120,9 +121,10 @@ export function planQuickHouse(map: GameMap, tileset: TilesetDef, anchor: Terrai
   for (let dy = 0; dy < kit.height; dy++) for (let dx = 0; dx < kit.width; dx++) if (x + dx >= 0 && y + dy >= 0 && x + dx < map.width && y + dy < map.height) out.indices.push((y + dy) * map.width + x + dx);
   if (out.indices.length !== kit.width * kit.height || anchor.y + 1 >= map.height) { out.reason = "집과 문 앞 공간이 맵 안에 들어오게 놓으세요"; return out; }
   const level = terrainHeight(map, anchor.x, anchor.y), placements = structurePlacementsOf(map);
+  const groundCover = standGroundCoverTile(tileset); // 바닥 덧그림(풀 결 등)은 빈 땅이다
   for (const i of out.indices) {
     const cx = i % map.width, cy = Math.floor(i / map.width);
-    if (!terrainEditable(map, i) || layerTileAt(map, 2, i) >= 0 || terrainIsReserved(map, tileset, i) || terrainSightObstacle(map, cx, cy, tileset)
+    if (!terrainEditable(map, i) || (layerTileAt(map, 2, i) >= 0 && !groundCover(layerTileAt(map, 2, i))) || terrainIsReserved(map, tileset, i) || terrainSightObstacle(map, cx, cy, tileset)
       || placements.some(p => cx >= p.x && cx < p.x + p.w && cy >= p.y && cy < p.y + p.h)) { out.reason = "잠금·물·도로·물체를 피해 빈 땅에 놓으세요"; return out; }
     if (Math.abs(terrainHeight(map, cx, cy) - level) > .05) { out.reason = "집 전체가 같은 높이의 땅에 들어오게 놓으세요"; return out; }
   }

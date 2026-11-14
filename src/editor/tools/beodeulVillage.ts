@@ -3783,6 +3783,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 바닥 덧그림(겉모습 stand·meadow): 숲 바닥 · 풀밭 얼룩 · 문 앞 닳은 땅 · 길가·물가 띠. 2층 투명 덧그림이라 걷는 칸은 그대로다 — 다 지은 뒤에 깐다.
   layBeodeulGroundCover(draft, draft.maps[mapId]!, gameLook, {
     seed, worn: doorFronts.map((d) => idx(d.x, d.y)), road: (c) => occ[c] === ROAD || occ[c] === PLAZAC, water: (c) => occ[c] === WATERC || occ[c] === KEEP,
+    grain: false, // 풀 결은 땅 꾸미기(기초·밑동·풀포기)까지 끝난 뒤에 깐다(authorBeodeulTown) — 꾸미기의 자리 고르기가 결 없는 판과 같게
   });
   const distinct = new Set(placedHouses.map((h) => h.id)).size;
   function skeletonText(): string {

@@ -1588,5 +1588,133 @@
     "src": "small-dry.png"
    }
   }
+ },
+ "grain": {
+  "note": "풀 결 — 기본 풀 바닥(737) 위에 섞어 까는 2층 칸(bake_stands.py grain_cells). families: 바닥 재질(grass = 원래 풀밭) → 그 바닥에 둘 풀 무늬 종류. mixes: 게임마다 하나(겉모습 grain) — 결은 나무 줄·물가·절벽·울타리·집 곁을 따라 띠로 깔린다(editor/tools/beodeulGrassGrain.ts): alt 통칸 변형을 깔 몫 · deep/pale [띠가 서는 구간의 물결 칸 수, 문턱] · reach 곁에서 번지는 칸 수 · bloom [풀 무늬 무리 자리 격자 칸 수, 격자 칸마다 무리가 설 몫, 무리 안 몫] · single 무리 밖 낱칸 확률 · sprigs 무리의 풀 무늬 종류별 무게.",
+  "families": {
+   "grass": [
+    "tuft",
+    "tufts",
+    "clover",
+    "white",
+    "yellow",
+    "pebble"
+   ],
+   "ground-dry": [
+    "tuft",
+    "tufts",
+    "yellow",
+    "pebble"
+   ],
+   "ground-clover": [
+    "tuft",
+    "tufts",
+    "clover",
+    "white",
+    "yellow",
+    "pebble"
+   ],
+   "ground-earth": [
+    "tuft",
+    "tufts",
+    "pebble"
+   ],
+   "ground-sand": [
+    "tuft",
+    "tufts",
+    "pebble"
+   ],
+   "ground-terra": [
+    "tuft",
+    "tufts",
+    "pebble"
+   ]
+  },
+  "mixes": {
+   "tufted": {
+    "label": "풀 포기 무성한 풀밭",
+    "en": "lawn with tufts of tall grass along banks and fences",
+    "alt": 0.5,
+    "deep": [9, 0.45],
+    "pale": [
+     9,
+     0.8
+    ],
+    "reach": 3,
+    "bloom": [6, 0.55, 0.8],
+    "single": 0.0015,
+    "sprigs": {
+     "tuft": 3,
+     "tufts": 3,
+     "clover": 1,
+     "white": 0.5,
+     "yellow": 0.5,
+     "pebble": 0.3
+    }
+   },
+   "flowery": {
+    "label": "들꽃·토끼풀이 무리 지어 핀 풀밭",
+    "en": "lawn with drifts of wildflowers and clover by the trees",
+    "alt": 0.5,
+    "deep": [10, 0.52],
+    "pale": [
+     9,
+     0.8
+    ],
+    "reach": 3,
+    "bloom": [6, 0.6, 0.85],
+    "single": 0.0015,
+    "sprigs": {
+     "white": 3,
+     "yellow": 2.5,
+     "clover": 2,
+     "tuft": 0.6,
+     "tufts": 0.3,
+     "pebble": 0.1
+    }
+   },
+   "drift": {
+    "label": "짙고 옅은 결이 넓게 흐르는 풀밭",
+    "en": "lawn with broad darker and lighter drifts",
+    "alt": 0.55,
+    "deep": [12, 0.42],
+    "pale": [
+     11,
+     0.5
+    ],
+    "reach": 4,
+    "bloom": [7, 0.45, 0.75],
+    "single": 0.001,
+    "sprigs": {
+     "tuft": 1,
+     "tufts": 0.5,
+     "clover": 1,
+     "white": 0.4,
+     "yellow": 0.4,
+     "pebble": 0.3
+    }
+   },
+   "stony": {
+    "label": "잔돌 섞인 성긴 풀밭",
+    "en": "thin lawn with pebbles at the cliff feet",
+    "alt": 0.5,
+    "deep": [9, 0.55],
+    "pale": [
+     9,
+     0.45
+    ],
+    "reach": 3,
+    "bloom": [6, 0.5, 0.75],
+    "single": 0.0015,
+    "sprigs": {
+     "pebble": 3,
+     "tuft": 1.5,
+     "tufts": 0.5,
+     "clover": 0.2,
+     "white": 0.2,
+     "yellow": 0.2
+    }
+   }
+  }
  }
 }

@@ -342,6 +342,8 @@ export interface TilesetLook {
   stand?: string;
   /** 풀밭 얼룩(시공기가 읽는 값) — 한 맵의 열린 바닥에 섞어 까는 재질 묶음. 없으면 한 가지 바닥. */
   meadow?: string;
+  /** 풀 결(시공기가 읽는 값) — 기본 풀 바닥 위에 섞어 까는 통칸 변형·짙고 옅은 결·풀 무늬의 섞음. 없으면 한 칸 풀밭(옛 게임). */
+  grain?: string;
   /** 숲 구성·풀밭 얼룩 그림판의 번들 textureKey — textureKey 와 같은 까닭(프로젝트 문자열 수집이 그림판을 찾는다). */
   standKey?: string;
 }

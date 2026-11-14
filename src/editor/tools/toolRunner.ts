@@ -25,6 +25,7 @@ import { assertMonsterAssetLock, monsterAssetCatalogFilters, MonsterAssetLockErr
 import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
 import { withKitLook } from "@/project/kitLook";
 import { projectTilesetLook, settleProjectLook } from "@/project/tilesetLook";
+import { pruneBeodeulGrassGrain } from "./beodeulGrassGrain";
 import { PeopleChipLockError, settlePeopleChipLock } from "@/project/peopleChipLock";
 import { isRetiredEasyRpgTileset, LIBRARY_IMPORT_TOOLS, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { guardWholeRecordRewrite } from "./assistantRewriteGuard";
@@ -308,7 +309,8 @@ function compactTouchedMapLayers(before: Project, draft: Project): void {
     const touched = !previous
       || EXTRA_LAYER_KEYS.some((key) => map[key] !== undefined && previous[key] === undefined)
       || tileBuffersDiffer(previous, map);
-    if (touched) compactMapLayers(map);
+    // 풀 결(버들항 겉모습 grain)은 풀 바닥의 한 부분 — 이 도구가 바닥을 길·밭·물로 바꿔 쓴 칸의 결을 걷는다(beodeulGrassGrain.ts)
+    if (touched) { pruneBeodeulGrassGrain(draft, map); compactMapLayers(map); }
   }
 }
 
