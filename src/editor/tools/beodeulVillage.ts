@@ -1479,6 +1479,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const squareFloor = SQUARE_FLOORS[lookHash(`square|${activeKitLook() ?? ""}|${TS_ID}`) % SQUARE_FLOORS.length]!;
   if (squareCells.length) { const gl = lv[squareCells[0]!];
     for (const c of squareApproaches(W, H, squareBox(W, squareCells)!, (c) => occ[c] === FREE && lv[c] === gl && !rampCells.has(c), (c) => occ[c] === ROAD)) occ[c] = ROAD; }
+  const squareEdge = new Set(squareRing(W, H, squareCells).ring); // 광장 테 줄 — 길 포석으로 깔리므로 기물이 서면 길을 끊는다
   const plazaSet = new Set(plazaCells);
 
   planStep("광장");
@@ -2689,7 +2690,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     fitsLand: (k, x, y) => propFits(K(k.id), x, y),
     fitsPlaza: (k, x, y) => {
       const kk = K(k.id); if (!fits(kk, x, y, 0, (v) => v === PLAZAC || v === FREE)) return false;
-      for (let j = Math.max(0, kk.h - 2); j < kk.h; j += 1) for (let i = 0; i < kk.w; i += 1) { const c = idx(x + i, y + j); if (occ[c] !== PLAZAC || main.cells.has(c) || throughPlaza.has(c)) return false; }
+      for (let j = Math.max(0, kk.h - 2); j < kk.h; j += 1) for (let i = 0; i < kk.w; i += 1) { const c = idx(x + i, y + j); if (occ[c] !== PLAZAC || main.cells.has(c) || throughPlaza.has(c) || squareEdge.has(c)) return false; }
       return true;
     },
     placeLand: (k, x, y, walkOn, slot) => { claim(K(k.id), x, y, walkOn ? FIELD : PROP, false); newObjectStamps.set(stamps[stamps.length - 1]!, slot); if (walkOn) for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) decalAt.add(idx(x + i, y + j)); },
