@@ -315,10 +315,12 @@ export interface VillageResult {
 export function buildBeodeulVillage(draft: Project, mapId: string, theme: BeodeulVillageTheme, seed: number, formArg?: string, terrainArg?: string, forestType: BeodeulForestType = "broadleaf", options: BeodeulVillageOptions = {}): VillageResult {
   let form = resolveVillageForm(theme, seed, formArg);
   const codeT = options.codeTerrain ?? null;
-  // 코드 지형: 마을 모양은 조수가 고른 자리가 정한다 — 모이는 곳에 판석 광장(plaza false 면 우물만)
+  // 코드 지형: 마을 모양은 조수가 고른 자리가 정한다. 모이는 곳은 우물·좌판이 기본이고, 판석 광장은 청했을 때만 깐다 — layout.gather.plaza true,
+  // 또는 그 값을 안 적었고 형태를 "plaza"(장터·교역 마을)로 청했을 때. (2026-11-14 오너 «마을 중앙에 항상 광장을 배치하는 이유는 도대체 뭐지»:
+  // 적지 않은 plaza 를 true 로 읽어 산촌·늪·흩어진 농가까지 전부 광장 마을이 됐다 — 2026-10-11 「중심 광장을 기본으로 삼지 말 것」이 코드 지형 길에서 풀려 있었다.)
   // 흩어진 농가(scatter)를 청했으면 코드 지형에서도 길은 모두 흙 들길로 — 포장 큰길·골목이면 읍내로 읽혔다(ab14 들판 농가 두 판 모두 A)
   const scatterWanted = !!codeT && form === "scatter";
-  if (codeT) form = options.layout?.gather?.plaza === false ? "street" : "plaza";
+  if (codeT) form = (options.layout?.gather?.plaza ?? (formArg === "plaza")) ? "plaza" : "street";
   let roofs = resolveRoofPalette(theme, seed, options.roofs);
   const water = resolveVillageWater(theme, seed, form, options.water);
   if (options.woods !== undefined && options.woods !== "" && !(BEODEUL_VILLAGE_WOODS as readonly string[]).includes(options.woods)) throw new ToolError(`woods 는 ${BEODEUL_VILLAGE_WOODS.join("·")} 중 하나다(받은 값: ${options.woods}).`, { code: "invalid-args" });
@@ -746,7 +748,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const plazaHold: number[] = [];
     {
       // 광장이 없는 모이는 곳(우물·좌판)도 둘레 두 칸은 비워 둔다 — 집이 모이는 곳을 에워싸 큰길·골목이 모두 막혔다(ab r6 강가 마을)
-      const big = (layout.gather?.plaza ?? true) !== false, shaped = big ? plazaLook : undefined;
+      const big = form === "plaza", shaped = big ? plazaLook : undefined;
       const rx = shaped ? shaped.rx + 1 : big ? 5.5 : 2.5, ry = shaped ? shaped.ry + 0.6 : big ? 3.5 : 2.5;
       const gl = lv[g0]!;
       for (let y = gy - Math.ceil(ry - 0.5); y <= gy + Math.ceil(ry - 0.5); y += 1) for (let x = gx - Math.ceil(rx - 0.5); x <= gx + Math.ceil(rx - 0.5); x += 1) {
@@ -892,7 +894,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
     for (const c of network) if (occ[c] === RESV_DOOR || occ[c] === FREE) occ[c] = ROAD;
     for (const sp of spots) if (occ[idx(sp.front.x, sp.front.y)] === RESV_DOOR) occ[idx(sp.front.x, sp.front.y)] = FREE;
-    return { layout, report, spots, g: { x: gx, y: gy }, entrance, fords, plaza: (layout.gather?.plaza ?? true) !== false };
+    return { layout, report, spots, g: { x: gx, y: gy }, entrance, fords, plaza: form === "plaza" };
   })() : null;
   // 늪 널판 마루(길이 아닌 칸)는 비워 둔다(CLEAR) — 소품·늪물·물가 고리가 마루를 먹지 않게
   for (const c of swampDeck) if (occ[c] === FREE) occ[c] = CLEAR;
@@ -1587,7 +1589,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     doorFronts.push({ x: sp.front.x, y: sp.front.y, kit: sp.k.id });
     return true;
   };
-  const gather: { s: Street; x: number; why: string } = codePlan ? { s: main, x: codePlan.g.x, why: codePlan.report.auto ? "자동 배치(가장 넓은 낮은 터)" : "조수가 고른 모이는 곳" } : (() => {
+  const gather: { s: Street; x: number; why: string } = codePlan ? { s: main, x: codePlan.g.x, why: codePlan.report.auto ? "자동 배치(물가 · 큰길 어귀 쪽)" : "조수가 고른 모이는 곳" } : (() => {
     if (form === "plaza") return { s: main, x: plazaX, why: "큰길 위 광장" };
     // 지형 먼저: 모이는 곳(앵커 건물)은 땅이 정한다 — 강을 건너는 나루로 내려가는 길목, 윗단으로 오르는 계단 어귀, (그다음 형태별 자리)
     if (hf && form !== "riverbank" && spec.feature !== "pond") {
@@ -1685,6 +1687,26 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       }
       return false;
     };
+    // 코드 지형의 광장 없는 마을: 우물은 조수가 고른 모이는 곳 자리(비워 둔 둘레 두 칸 안)의 맨땅에 선다 — 판석 어귀가 없어 위의 «판석 위» 조건으로는
+    // 우물이 한 번도 서지 않았다(은행 lay-base-village: 우물이 없어 조수가 stamp_object 로 두 번 더 세웠다). 곁들이 하나는 우물 곁 세 칸 안에.
+    if (codePlan) {
+      const around = (k: Kit, cx: number, cy: number, r: number): [number, number][] => {
+        const out: [number, number, number][] = [];
+        for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) out.push([cx + dx - Math.floor(k.w / 2), cy + dy - k.h + 1, Math.abs(dx) + Math.abs(dy) * 1.2]);
+        return out.sort((p, q) => p[2] - q[2] || p[1] - q[1] || p[0] - q[0]).map(([x, y]) => [x, y]);
+      };
+      const gl = lv[idx(codePlan.g.x, codePlan.g.y)]!;
+      const sameTier = (k: Kit, x: number, y: number) => { for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) if (!inMap(x + i, y + j) || lv[idx(x + i, y + j)] !== gl) return false; return true; };
+      const set = (ids: readonly string[], cx: number, cy: number, r: number): { x: number; y: number } | null => {
+        const pool = have(ids); if (!pool.length) return null;
+        const k = K(pool[0]!);
+        for (const [x, y] of around(k, cx, cy, r)) if (sameTier(k, x, y) && propFits(k, x, y)) { claim(k, x, y, PROP, true); n += 1; return { x: x + Math.floor(k.w / 2), y: y + k.h - 1 }; }
+        return null;
+      };
+      const well = set(spec.plazaCenter, codePlan.g.x, codePlan.g.y, 4);
+      if (well) set([choice(spec.plazaRing)], well.x, well.y, 3);
+      return n;
+    }
     place(spec.plazaCenter);
     if (form !== "riverbank") place([choice(spec.plazaRing)]);
     return n;
