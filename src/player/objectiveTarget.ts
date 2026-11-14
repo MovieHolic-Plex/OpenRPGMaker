@@ -381,9 +381,17 @@ export function objectiveShown(project: Pick<Project, "maps"> & { readonly syste
 const GENERIC_NAME = /^(?:ev[_-]|event|이벤트|npc\b|조사\s*지점$|조사$|단서$|지점$)/iu;
 
 /** 「Z 조사 · 책장」의 이름 부분 — 이벤트 이름(사람이 읽는 이름이면), 문이면 가는 맵 이름, 없으면 그 칸 가구 이름표. */
-export function promptTargetName(project: Pick<Project, "maps">, view: RuntimeEventView | undefined, label: string | null, tileLabel?: string): string | undefined {
+export function promptTargetName(project: Pick<Project, "maps"> & { readonly database?: { readonly actors?: readonly { readonly name?: string }[] } }, view: RuntimeEventView | undefined, label: string | null, tileLabel?: string): string | undefined {
   if (!view || !label) return undefined;
   const clip = (name: string): string => (name.length > 12 ? `${name.slice(0, 11)}…` : name);
+  // 사람 앞(「Z 대화」)의 이름은 그 사람 — 그 페이지 대사의 화자다(주인공 쪽 배우 이름이 아닌 첫 화자). 이벤트 이름은 단계·장면의 이름표일 수 있다
+  // (2026-11-13 r3b-fun: 촌장 앞에 「Z 대화 · 촌장 귀환」).
+  if (label === "Z 대화") {
+    const actors = new Set((project.database?.actors ?? []).map((actor) => actor.name?.trim()).filter(Boolean));
+    const said = speakers(view.page?.commands);
+    const person = said.find((name) => !actors.has(name)) ?? said[0];
+    if (person) return clip(person);
+  }
   if (label === "Z 이동") {
     const targets = new Set<string>();
     transferMapIds(view.page?.commands, targets);
@@ -416,15 +424,19 @@ function tileObjectName(label: string | undefined): string | undefined {
 /** 내부 식별자(영문·숫자·밑줄만, 밑줄 포함 — 「gyd_dais_grass」「mx_map_x_leader」)는 사람에게 보이는 이름이 아니다. */
 const ID_LIKE = /^(?=.*_)[A-Za-z0-9_.:-]+$/u;
 
-function firstSpeaker(commands: unknown): string | undefined {
+/** 그 명령들의 대사 화자 이름 — 나오는 순서대로, 같은 이름은 한 번. */
+function speakers(commands: unknown): string[] {
+  const out: string[] = [];
   const stack: unknown[] = [commands];
   while (stack.length) {
     const node = stack.shift();
     if (Array.isArray(node)) { stack.unshift(...node); continue; }
     if (!node || typeof node !== "object") continue;
     const r = node as Record<string, unknown>;
-    if (r.kind === "text" && typeof r.speaker === "string" && r.speaker.trim() && !ID_LIKE.test(r.speaker.trim())) return r.speaker.trim();
+    if (r.kind === "text" && typeof r.speaker === "string" && r.speaker.trim() && !ID_LIKE.test(r.speaker.trim()) && !out.includes(r.speaker.trim())) out.push(r.speaker.trim());
     for (const v of Object.values(r)) if (v && typeof v === "object") stack.push(v);
   }
-  return undefined;
+  return out;
 }
+
+const firstSpeaker = (commands: unknown): string | undefined => speakers(commands)[0];

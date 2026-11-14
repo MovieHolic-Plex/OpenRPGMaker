@@ -263,6 +263,7 @@ export function fillPartyLooks(project: Project, story: string): string[] {
   const used = new Set<string>([...f.database.actors.filter((a) => (project.system.startActorIds ?? []).includes(a.id)).map((a) => `${a.characterResourceId}#${a.characterIndex ?? 0}`),
     ...party.map((a) => `${a.characterResourceId}#${a.characterIndex ?? 0}`)]);
   // 맵에 선 사람의 칩도 피한다 — 주인공이 마을 사람과 같은 얼굴로 서지 않게(사람을 놓을 때는 주인공 칩을 피하지만 주인공은 그 뒤에 정해진다).
+  // 시트만 다른 같은 모습의 사람은 여기서 피하지 않는다(흉상·전투 그림이 다 있는 주인공 칩이 몇 없다) — 주인공이 정해진 뒤 그 사람을 다시 입힌다(story/heroTwins).
   for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const page of ev.pages ?? []) {
     const g = page.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
     const asset = g?.sprite?.id ? findCharsetAsset(g.sprite.id) : undefined;

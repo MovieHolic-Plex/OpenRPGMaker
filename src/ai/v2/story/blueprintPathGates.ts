@@ -304,7 +304,12 @@ export function lockStepOrderDoorsIn(project: Project): string[] {
     // 시작 맵·앞 단계로 가는 길목(허브 홀)은 잠그지 않는다 — 모든 앞 단계 맵이 B 를 거치지 않고 닿아야 한다
     // (vm3 deepseek 방탈출: 마지막 단계가 현관 홀이라 응접실→홀 문까지 잠그면 서재로 못 간다).
     const others = target.id === project.startMapId || stepEvents.slice(0, k + 1).some((r) => r && !reachWithout(target.id).has(r.map.id)) ? new Set([cur.map.id]) : undefined;
-    const gives = eventGives(project, cur.ev);
+    // 단계가 넘기는 것(지을 때 적어 둔 built 의 스위치·물건)만 문의 조건이 된다 — 그 이벤트가 켜는 다른 스위치(곁가지 퀘스트의 단계 스위치)는 길의 순서가 아니다.
+    // 왜(2026-11-13 r3b-fun): 대장장이(2단계)와 여관 주인(3단계)에 곁가지 퀘스트의 페이지가 붙자 여관 문이 그 퀘스트 스위치를 기다렸다 —
+    // 퀘스트는 여관 안에서 시작돼 문이 영영 안 열렸고(«끝까지 플레이 불가»), 모델이 문을 손으로 다시 쓰는 데 세 턴을 썼다.
+    const all = eventGives(project, cur.ev);
+    const own = step.built?.switchId || step.built?.itemId ? { switches: all.switches.filter((id) => id === step.built!.switchId), items: all.items.filter((id) => id === step.built!.itemId) } : undefined;
+    const gives = own && (own.switches.length || own.items.length) ? own : all;
     const reads = ((nxt.ev.pages ?? []) as unknown as RawPage[]).flatMap((p) => (p.conditions ?? []) as Cond[]);
     const readSwitch = reads.find((c) => c.kind === "switch" && c.value !== false && c.switchId && gives.switches.includes(c.switchId));
     const readItem = reads.find((c) => c.kind === "item" && c.present !== false && c.itemId && gives.items.includes(c.itemId));

@@ -209,7 +209,7 @@ export function buildEvent(run: BuildRun, spec: EventSpec): EventBuildResult {
     if (lines.length) followUps.set(name, lines);
     const base: Record<string, unknown> = { mapId, name, x: cell.x, y: cell.y, movement: "fixed", pages: [{ name, lines }] };
     if (hostId) base.id = `${actorPrefix}${++actorSeq}`;
-    const placed = placeNpcWithGraphic(run, map!, base, name, ab?.looks, name, warnings);
+    const placed = placeNpcWithGraphic(run, map!, base, name, ab?.looks, name, warnings, true);
     if (!placed.result.ok) { warnings.push(`${name} 을(를) 놓지 못했다 — ${String(placed.result.summary).slice(0, 160)}`); return undefined; }
     const d = (placed.result.data ?? {}) as { eventId?: string; x?: number; y?: number };
     if (!d.eventId) return undefined;
