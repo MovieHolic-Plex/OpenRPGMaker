@@ -214,7 +214,7 @@ export function wellData(project: Project, exec: Exec): void {
   troop.battleEventPages = [
     { id: "troop_fs2_well_open", name: "시작 — 소리로 사냥한다", span: "battle", runOnce: true, conditions: [{ kind: "onRound", round: 1 }],
       // 깨우는 장면(ev_fs2_well_wake)에서 이미 「눈이 없어. 소리로 우리를 찾고 있어」를 말했다 — 전투 첫 줄은 같은 말을 되풀이하지 않는다.
-      commands: [say(ELENA, "숨소리도 줄여… 우리가 움직이는 쪽으로 고개를 돌려."), say(KAEL, "아가미가 펴지면 조심해!")] },
+      commands: [say(ELENA, "숨소리도 죽여… 움직이는 쪽으로 고개를 돌려."), say(KAEL, "아가미가 펴지면 조심해!")] },
     { id: "troop_fs2_well_phase2", name: "2페이즈 — 붉은 아가미", span: "battle", runOnce: true,
       conditions: [{ kind: "enemyHpBelow", enemyId: FS2_WELL_BEAST_ENEMY, percent: 50 }],
       commands: [
@@ -222,7 +222,7 @@ export function wellData(project: Project, exec: Exec): void {
         m2("m2-100-change-enemy-state", { target: FS2_WELL_BEAST_ENEMY, operation: "add", value: "state_attack_up" }),
         m2("m2-100-change-enemy-state", { target: FS2_WELL_BEAST_ENEMY, operation: "remove", value: STATE_MOLT }),
         setSw(SW_WELL_P2), setSw(SW_WELL_ECHO),
-        say(ELENA, "벽에 소리를 튕기고 있어… 두 번 모으면 누군가를 덮칠 거야!"),
+        say(ELENA, "벽에 소리를 튕기고 있어… 두 번 모으면 덮친다!"),
       ] },
   ];
   // 전리품 — 아가미 장신구(소리 공격 「둔함」 막기 + 마력). 보스 드롭은 확정이라 이벤트에서 준다.
@@ -304,10 +304,10 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
   });
   if (!clearRubble.length) throw new Error("[fallen-star well] 돌 더미 그림이 찍히지 않았다");
   const crackPage0 = (i: number): EventPage => page(`ev_fs2_well_crack_${i}_p0`, "무너진 돌 더미", [], [
-    narrate("무너진 돌 더미가 통로를 막고 있다.\n틈으로 찬바람이 샌다. 안쪽이 비어 있는 것 같다."),
+    narrate("무너진 돌 더미가 통로를 막고 있다.\n틈으로 찬바람이 샌다. 안쪽이 비었나 보다."),
     { kind: "choices", cancelBehavior: "branch", options: [
         { text: "치운다", branch: [se("cc0-se-osx-metal-04"), shake(3, 700),
-      narrate("우르르 — 돌 더미가 물길로 굴러떨어졌다!"),
+      narrate("우르르. 돌 더미가 물길로 굴러떨어진다!"),
       ...clearRubble,
       setSw(SW_WELL_CRACK),
       say(ELENA, "물지기들 연장 창고야. 벽으로 막아 뒀었네.")] },
@@ -336,7 +336,7 @@ export function applyFallenWellBeast(project: Project, exec: Exec, mapId: string
         setSw(SW_WELL_BEAST_DOWN),
         item(FS2_WELL_GILL, 1),
         narrate("「눈먼 영주의 아가미」를 얻었다.", { context: "system" }),
-        say(ELENA, "…우물이 이제 조용하겠네.\n광장 사람들, 밤마다 이 울음을 들었을 거야."),
+        say(ELENA, "…우물이 이제 조용하겠네.\n광장 사람들, 밤마다 이 울음을 들었겠지."),
         say(KAEL, "하넬 선생님한테 말씀드리자."),
         bgm(SHAFT_BGM),
       ],

@@ -83,18 +83,18 @@ function hanelTalk(obs: GameMap): void {
   if (firstNonText < 1) throw new Error("[fallen-star] 하넬 의뢰 소개 줄이 없다");
   const h1: Command[] = [
     say(H, "왔느냐. 기다리고 있었다."),
-    say(H, "어젯밤 그 별은 떨어지기 직전\n방향을 틀었다."),
-    say(ELENA, "방향을요? 별똥별은 그럴 수 없잖아요."),
-    say(H, "그래. 무언가가 그걸 몰았다."),
+    say(H, "어젯밤 그 별 말이다.\n떨어지기 직전에 방향을 틀더구나."),
+    say(ELENA, "방향을요? 별똥별이 그럴 리가 없잖아요."),
+    say(H, "그래. 누가 몰고 내려온 게다."),
   ];
   const h2: Command[] = [
-    say(H, "서른 해 잠잠하던 북쪽 하늘이\n어젯밤 깜빡였다. 우연이 아니다."),
+    say(H, "서른 해 잠잠하던 북쪽 하늘이\n어젯밤 깜빡였다. 우연일 리 없다."),
     say(H, "심문관보다 먼저 가 다오.\n자세한 얘기는 돌아오면 하마."),
   ];
   ask.splice(0, firstNonText, fork(swOff(SW_MET), [...h1, setSw(SW_MET, true)], h2));
   const choices = ask.find((c) => c.kind === "choices") as (Command & { options: { text: string; branch: Command[] }[] }) | undefined;
   if (choices?.options[1]) {
-    choices.options[1].branch = [say(H, "늦지 않게 채비하고 다시 오너라.")];
+    choices.options[1].branch = [say(H, "채비해서 오너라. 너무 늦지는 말고.")];
   }
 
   // 진행 중 페이지: 갈림 구조(step0→step1→step2→끝)를 새로 짠다. 끝 분기의 보상·스위치·엔딩 명령은 원본 그대로 쓴다.
@@ -111,19 +111,19 @@ function hanelTalk(obs: GameMap): void {
   const endIdx = endCmds.findIndex((c) => c.kind === "triggerEnding");
   const endWithText = endIdx < 0 ? [...endCmds, ...h9] : [...endCmds.slice(0, endIdx), ...h9, ...endCmds.slice(endIdx)];
 
-  const h4: Command[] = [say(H, "북문으로 나가거라. 숲길 끝이 공터다.\n브람에게 먼저 들러 보거라.")];
+  const h4: Command[] = [say(H, "북문으로 나가거라. 숲길 끝이 공터다.\n브람한테 먼저 들르고.")];
   const h5: Command[] = [
     say(H, "브람이 쇠 긁는 소리를 들었다고?\n…그 소리, 나도 들은 적이 있다."),
-    say(H, "서른 해 전에도 그랬지.\n우선 공터부터 살피고 와서 말해 다오."),
+    say(H, "서른 해 전에도 그랬지.\n공터부터 보고 와서 얘기해 다오."),
   ];
   const h6: Command[] = [
     say(H, "별 무늬 열쇠는 서고 바닥의\n돌뚜껑 홈에 맞을 게다. 조심해라."),
     say(H, "아래 방은 내가 닫지 않았다.\n…닫은 것은 내 스승이다. 그것만 안다."),
     say(H, "그 아이가 말을 하는군.\n처음 들었을 때 나는 손이 떨렸다."),
   ];
-  const h7: Command[] = [say(H, "토마의 빵 얘기, 들었느냐?\n작은 일이 먼저 대답을 하는구나.")];
+  const h7: Command[] = [say(H, "토마네 빵 얘기, 들었느냐?\n작은 일이 먼저 대답을 하는구나.")];
   const h8: Command[] = [
-    say(H, "은수저가 돌아왔다고? 토비가 가져갔더냐?\n…별에게 줄 선물이었다니, 나쁘지 않구나."),
+    say(H, "은수저가 돌아왔다고? 토비 짓이었더냐.\n…별한테 줄 선물이라. 기특하구나."),
     say(H, "아이들이란 참. 별 하나 받아 본 적 없으면서\n별한테 선물을 주겠다는구나."),
   ];
   // 여정 단계 (H4 < H5 < H6) 위에 잔 일 반응 H7 < H8 을 덮는다(여정 끝 분기는 가리지 않는다).
@@ -139,7 +139,7 @@ function hanelTalk(obs: GameMap): void {
   // 끝난 뒤 페이지: H10.
   donePage.commands = [
     say(H, "카엘, 엘레나.\n이리스를 집까지 바래다주거라."),
-    say(H, "서른 해 전 일은 그때 마저 얘기하마.\n무사히 다녀오너라, 카엘."),
+    say(H, "서른 해 전 일은 그때 마저 얘기하마.\n몸 성히 다녀오너라, 카엘."),
     say(FS_NAMES.hero, "…다녀올게요, 선생님."),
     say(H, "그래. 기다리마. 가거라."),
   ];
