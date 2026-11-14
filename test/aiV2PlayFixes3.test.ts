@@ -12,6 +12,7 @@ import { SENSIBLE_POTION_HP_RATIO, simulateBattle } from "@/battle/simulate";
 import { fitTroopCopy } from "@/editor/tools/bossThreatScaling";
 import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import { bossDefeatReturns } from "@/ai/v2/story/bossTalkBattles";
+import { chaserEvents, chaserMapsWithoutHiding } from "@/project/chaserHiding";
 import { foeOnStoryWay, isStoryRoom } from "@/ai/v2/place/storyWays";
 import { clearFoesFromStoryWays } from "@/ai/v2/place/worldPopulate";
 import { fitPathBattlesIn, pathBattles } from "@/ai/v2/story/pathBattleBudget";
@@ -76,6 +77,23 @@ describe("길 적에게 져도 그 장소에서 깨어난다", () => {
     expect(def.settings.message).toContain("정신을 차리니 「잠든 왕의 묘실」 입구다.");
     expect(def.settings.message).not.toContain("마을 광장");
     expect(bossDefeatReturns(run)).toEqual([]);
+  });
+
+  it("돌아올 자리를 받은 쫓는 길 적은 여전히 «싸우는 적» 이다 — 숨을 곳을 요구하는 추격자로 읽히지 않는다", () => {
+    // 지는 갈래가 생기면 canLose 가 켜진다. 그것만 보고 «져도 되는 벌 전투의 추격자» 로 읽으면 그 맵에 «숨을 곳 없음» 출하 차단이 선다(r4d-fun 태양 피라미드).
+    const project = withFoe(true);
+    const chase = { type: "chase", speed: 3, frequency: 3, sightRange: 3 };
+    const cave = project.maps.map_cave!;
+    (cave.events[0]!.pages![0] as unknown as Obj).movement = chase;
+    cave.events.push(event("ev_punisher", "", 14, 9, [page([], [{ kind: "battleProcessing", troopId: "troop_slime", canEscape: false, canLose: true, defeatBranch: [{ kind: "text", body: "붙잡혔다." }] }], "eventTouch", { movement: chase })], "eventTouch") as unknown as GameEvent);
+    expect(chaserEvents(cave).map((ev) => ev.id)).toEqual(["ev_punisher"]);
+    const run = runOf(project);
+    expect(bossDefeatReturns(run)).toHaveLength(1);
+    const built = run.ctx.project.maps.map_cave!;
+    expect(commandsOf(built.events[0])[0]!.canLose).toBe(true);
+    expect(chaserEvents(built).map((ev) => ev.id)).toEqual(["ev_punisher"]);
+    built.events = built.events.filter((ev) => ev.id !== "ev_punisher");
+    expect(chaserMapsWithoutHiding(run.ctx.project)).toEqual([]);
   });
 
   it("청사진이 없는 일(장면 하나 고치기)에서는 저장본의 필드 적을 다시 쓰지 않는다", () => {
