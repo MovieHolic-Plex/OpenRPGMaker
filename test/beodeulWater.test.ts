@@ -184,15 +184,16 @@ describe("버들항 물 — 시공", () => {
     expect(hidden).toBeLessThanOrEqual(cells * 0.002);
   });
 
-  it("폭포 곁 다리: 폭포 서너 줄 아래 곧은 두 줄을 건너고, 길이 이미 그 곁에서 건너면 놓지 않는다", () => {
-    const W = 12, H = 16, wet = (c: number) => { const x = c % W; return x >= 4 && x <= 6; };
-    const input = { W, H, falls: [{ x0: 4, x1: 6, y: 5 }], wet, free: (c: number) => !wet(c), level: (c: number) => (Math.floor(c / W) <= 5 ? 2 : 0) };
+  it("폭포 곁 다리: 폭포 위와 아래에서 곧은 두 줄을 건너고, 길이 이미 그 곁에서 건너면 놓지 않는다", () => {
+    const W = 12, H = 20, wet = (c: number) => { const x = c % W; return x >= 4 && x <= 6; };
+    const input = { W, H, falls: [{ x0: 4, x1: 6, y: 8 }], wet, free: (c: number) => !wet(c), level: (c: number) => (Math.floor(c / W) <= 8 ? 2 : 0) };
     const cells = fallBridgeCells({ ...input, crossing: () => false });
-    expect(cells.map((c) => `${c % W},${Math.floor(c / W)}`)).toEqual(["4,8", "5,8", "6,8", "4,9", "5,9", "6,9"]);
-    expect(fallBridgeCells({ ...input, crossing: (c) => c === 9 * W + 5 })).toEqual([]);
+    // 위(윗단)에 하나, 아래(용소 밑)에 하나 — 강이 가른 두 단의 양쪽 둑이 모두 이어진다
+    expect(cells.map((c) => `${c % W},${Math.floor(c / W)}`)).toEqual(["4,4", "5,4", "6,4", "4,5", "5,5", "6,5", "4,11", "5,11", "6,11", "4,12", "5,12", "6,12"]);
+    expect(fallBridgeCells({ ...input, crossing: (c) => c === 12 * W + 5 || c === 3 * W + 5 })).toEqual([]);
     // 두 칸 폭 강은 한 줄(가로가 세로보다 길어야 시공기가 동서 다리로 읽는다)
     const narrow = (c: number) => { const x = c % W; return x >= 4 && x <= 5; };
-    expect(fallBridgeCells({ ...input, falls: [{ x0: 4, x1: 5, y: 5 }], wet: narrow, free: (c) => !narrow(c), crossing: () => false }).map((c) => `${c % W},${Math.floor(c / W)}`)).toEqual(["4,8", "5,8"]);
+    expect(fallBridgeCells({ ...input, falls: [{ x0: 4, x1: 5, y: 8 }], wet: narrow, free: (c) => !narrow(c), crossing: () => false }).map((c) => `${c % W},${Math.floor(c / W)}`)).toEqual(["4,4", "5,4", "4,11", "5,11"]);
   });
 
   it("폭포 그림: 절벽면에 움직이는 폭포 칸을 걸고 물마루·용소를 얹는다 — 프레임 띠가 타일셋에 등록된다", () => {

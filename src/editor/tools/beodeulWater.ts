@@ -290,11 +290,11 @@ export function stoneBeodeulFords(map: GameMap, tileset: TilesetDef, input: { fo
 }
 
 /**
- * 폭포 곁의 다리(참고 그림의 «폭포 바로 아래 널다리»): 폭포 아래 넷째·다섯째 줄(용소 바로 밑)이나 위 셋째·넷째 줄에서 강을 동서로 건너는 널판 칸.
+ * 폭포 곁의 다리(참고 그림의 «폭포 곁 널다리»): 폭포 위 넷째~여섯째 줄(윗단)이나 아래 넷째~일곱째 줄(용소 바로 밑)에서 강을 동서로 건너는 널판 칸.
  * 양쪽 둑이 빈 땅이고 강과 같은 단일 때만, 강 폭이 2~6칸일 때만 놓는다. 이미 건널 자리가 여섯 칸 안에 있으면 놓지 않는다. 돌려주는 값 = 널판을 깔 물 칸.
  */
 export function fallBridgeCells(input: { W: number; H: number; falls: readonly { x0: number; x1: number; y: number }[]; wet(cell: number): boolean; free(cell: number): boolean; level(cell: number): number; crossing(cell: number): boolean }): number[] {
-  const { W, H } = input, out: number[] = [];
+  const { W, H } = input, out: number[] = [], taken = new Set<number>();
   for (const f of input.falls) {
     const mid = Math.round((f.x0 + f.x1) / 2);
     const rowsAt = (y: number): number[] | null => {
@@ -315,8 +315,11 @@ export function fallBridgeCells(input: { W: number; H: number; falls: readonly {
       // 두 칸 폭 강은 한 줄만 놓는다 — 2×2 널판은 시공기의 «널다리 끝 잇기» 가 남북 다리로 읽어 강을 따라 길게 늘였다(가로가 세로보다 길어야 동서 다리다)
       return hi - lo + 1 <= 2 ? cells.slice(0, hi - lo + 1) : cells;
     };
-    const cells = rowsAt(f.y + 3) ?? rowsAt(f.y + 4) ?? rowsAt(f.y + 5) ?? rowsAt(f.y - 4) ?? rowsAt(f.y - 5) ?? rowsAt(f.y + 6) ?? rowsAt(f.y - 6);
-    if (cells) out.push(...cells);
+    // 강이 윗단을 둘로 가르는데 길(경사로)은 한쪽으로만 오르므로, 폭포 위 다리가 없으면 건너편 윗단이 못 가는 땅으로 남는다. 아랫단도 마찬가지다.
+    // 그래서 위·아래를 따로 본다: 위(윗단)에 하나, 아래(용소 밑)에 하나 — 길이 이미 그 곁에서 건너는 쪽은 놓지 않는다.
+    for (const cells of [rowsAt(f.y - 4) ?? rowsAt(f.y - 5) ?? rowsAt(f.y - 6), rowsAt(f.y + 3) ?? rowsAt(f.y + 4) ?? rowsAt(f.y + 5) ?? rowsAt(f.y + 6)]) {
+      if (cells && !cells.some((c) => taken.has(c))) { out.push(...cells); for (const c of cells) for (let dy = -3; dy <= 3; dy += 1) taken.add(c + dy * W); }   // 이웃 폭포의 다리와 세 줄은 띄운다
+    }
   }
   return out;
 }
