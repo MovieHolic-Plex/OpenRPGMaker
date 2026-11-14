@@ -4,7 +4,7 @@
 import { pickFittedTroops, pickSpot } from "@/editor/tools/jrpgVolumeTools";
 import { isPassable } from "@/project/collision";
 import { walkStart } from "./cells";
-import { isStoryRoom, storyLanes, storyThings, watchesLane } from "./storyWays";
+import { isBossRoom, isStoryRoom, storyLanes, storyThings, watchesLane } from "./storyWays";
 import { behindBuildingStrip } from "./entrances";
 import { incomingLandings } from "./where";
 import { laneCells } from "./placementRules";
@@ -37,11 +37,11 @@ export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { rea
   // 차도·선로 칸도 피한다 — 끝맺음 관문의 «사람 자리» 가 상자·적에게도 같은 것을 짚는다(명세 은행 r1s-fun: 보물상자가 선로 칸 (1,32) 에).
   const lanes = laneCells(run.ctx.project, map0);
   const hidden = (c: Cell) => !!strip[c.y * map0.width + c.x] || lanes.has(c.y * map0.width + c.x) || landings.some((l) => Math.abs(l.x - c.x) + Math.abs(l.y - c.y) <= 5);
-  // 이야기가 지나는 방(청사진 단계가 이 장소를 쓴다 · 이미 보스·쉼터가 섰다)에는 돌아다니는 적을 두지 않는다. 바깥 맵에서는 들어오는 칸과 그것들 사이의 길을 지켜보는 자리를 피한다.
+  // 보스 방(도망 못 치는 싸움·쉼터가 섰거나, 청사진의 싸우는 단계가 이 방을 쓴다)에는 돌아다니는 적을 두지 않는다. 바깥 맵에서는 들어오는 칸과 단계·보스·쉼터 사이의 길을 지켜보는 자리를 피한다.
   const things = storyThings(run.ctx.project, mapId);
-  const staged = things.length > 0 || (run.ctx.project.gameBlueprint?.steps ?? []).some((step) => step.place.trim() === (map0.name ?? "").trim());
-  const noFoes = staged && isStoryRoom(run.ctx.project, mapId);
-  const storyWay = things.length ? storyLanes(run.ctx.project, mapId, things) : new Set<number>();
+  const noFoes = isBossRoom(run.ctx.project, mapId);
+  // 길을 비키는 것은 넓은 맵에서만 — 방 한 칸에는 비킬 자리가 없다(보스 방이 아니면 그 장소의 적은 그대로 선다).
+  const storyWay = things.length && !isStoryRoom(run.ctx.project, mapId) ? storyLanes(run.ctx.project, mapId, things) : new Set<number>();
   const foeHidden = (c: Cell) => hidden(c) || watchesLane(map0, storyWay, c, NOTICE_RANGE);
   const backdrop = applyThemeBackdrop(run.ctx.project, mapId);
   if (backdrop.gap) onGap?.(backdrop.gap);
@@ -79,7 +79,7 @@ export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { rea
 
 /**
  * 이야기가 지어진 뒤에 한 번 더 본다 — 세계 채우기는 경로(단계 이벤트·보스·쉼터)보다 먼저 돌아 그것들의 자리를 모른다.
- * 방에 그것들이 섰으면 그 방의 돌아다니는 적을 걷고, 바깥 맵에서 들어오는 칸과 그것들 사이의 길을 지켜보는 적은 같은 무리로 다른 자리에 다시 놓는다(자리가 없으면 걷는다).
+ * 보스 방(도망 못 치는 싸움·쉼터가 선 방)의 돌아다니는 적은 걷고, 그 밖의 맵에서 들어오는 칸과 단계·보스·쉼터 사이의 길을 지켜보는 적은 같은 무리로 다른 자리에 다시 놓는다(자리가 없으면 걷는다).
  * 되풀이 안전. 한 일 한 줄씩.
  */
 export function clearFoesFromStoryWays(run: BuildRun, onGap?: (line: string) => void): string[] {
@@ -90,7 +90,9 @@ export function clearFoesFromStoryWays(run: BuildRun, onGap?: (line: string) => 
     const foes = map.events.flatMap((e) => { const m = WORLD_FOE(mapId).exec(e.id); return m ? [{ ev: e, n: Number(m[1]) }] : []; });
     const things = foes.length ? storyThings(project, mapId) : [];
     if (!things.length) continue;
-    const room = isStoryRoom(project, mapId);
+    const room = isBossRoom(project, mapId);
+    // 보스 방이 아닌 방의 적은 그대로 둔다 — 그 장소의 싸움이다(비킬 자리가 없다. 보스 밴드는 그 싸움을 «피할 수 없는 전투» 로 센다).
+    if (!room && isStoryRoom(project, mapId)) continue;
     const way = room ? undefined : storyLanes(project, mapId, things);
     const off = foes.filter(({ ev }) => room || watchesLane(map, way!, ev, NOTICE_RANGE));
     if (!off.length) continue;
@@ -101,7 +103,7 @@ export function clearFoesFromStoryWays(run: BuildRun, onGap?: (line: string) => 
     if (!gone.length) continue;
     if (!room) populateWorldPlace(run, mapId, undefined, 0, onGap, keep);
     const back = room ? 0 : gone.filter(({ ev }) => run.ctx.project.maps[mapId]!.events.some((e) => e.id === ev.id)).length;
-    notes.push(`「${map.name ?? mapId}」 ${room ? `방에 단계·보스·쉼터가 있어 돌아다니는 적 ${gone.length} 걷음` : `단계로 가는 길을 지켜보던 적 ${gone.length} — 다른 자리로 ${back}${back < gone.length ? ` · 걷음 ${gone.length - back}` : ""}`}`);
+    notes.push(`「${map.name ?? mapId}」 ${room ? `방에 보스·쉼터가 있어 돌아다니는 적 ${gone.length} 걷음` : `단계로 가는 길을 지켜보던 적 ${gone.length} — 다른 자리로 ${back}${back < gone.length ? ` · 걷음 ${gone.length - back}` : ""}`}`);
   }
   return notes;
 }

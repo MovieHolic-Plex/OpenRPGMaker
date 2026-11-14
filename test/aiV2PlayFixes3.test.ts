@@ -13,7 +13,7 @@ import { fitTroopCopy } from "@/editor/tools/bossThreatScaling";
 import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import { bossDefeatReturns } from "@/ai/v2/story/bossTalkBattles";
 import { chaserEvents, chaserMapsWithoutHiding } from "@/project/chaserHiding";
-import { foeOnStoryWay, isStoryRoom } from "@/ai/v2/place/storyWays";
+import { foeOnStoryWay, isBossRoom, isStoryRoom } from "@/ai/v2/place/storyWays";
 import { clearFoesFromStoryWays } from "@/ai/v2/place/worldPopulate";
 import { fitPathBattlesIn, pathBattles } from "@/ai/v2/story/pathBattleBudget";
 import { BOSS_BAND } from "@/ai/v2/story/pathBattleTension";
@@ -103,7 +103,7 @@ describe("길 적에게 져도 그 장소에서 깨어난다", () => {
   });
 });
 
-// 2) 보스·쉼터·단계가 있는 방과 거기로 가는 길에는 돌아다니는 적이 없다(r4d-fun: 가로 13칸 묘실에 쫓는 박쥐 — 스무 판 모두 잡혔다).
+// 2) 보스 방(도망 못 치는 싸움·쉼터가 선 방)과 단계로 가는 길에는 돌아다니는 적이 없다(r4d-fun: 가로 13칸 묘실에 쫓는 박쥐 — 스무 판 모두 잡혔다).
 describe("이야기가 지나는 방과 길의 돌아다니는 적", () => {
   const foe = (mapId: string, x: number, y: number) => event(`ev_${mapId}_wfoe1`, "박쥐", x, y, [page([], [{ kind: "battleProcessing", troopId: "troop_slime", canEscape: true }], "eventTouch")], "eventTouch");
   const boss = (x: number, y: number) => event("ev_boss", "수호자", x, y, [page([], [{ kind: "battleProcessing", troopId: "troop_slime", canEscape: false }])]);
@@ -115,11 +115,36 @@ describe("이야기가 지나는 방과 길의 돌아다니는 적", () => {
     start.events = [event("ev_door", "", 8, 8, [page([], [{ kind: "transfer", mapId: "map_room", x: 6, y: 9 }], "playerTouch")], "playerTouch")] as never;
     room.events = [foe("map_room", 3, 5), boss(6, 2)] as never;
     expect(isStoryRoom(project, "map_room")).toBe(true);
+    expect(isBossRoom(project, "map_room")).toBe(true);
     expect(foeOnStoryWay(project, "map_room", room.events[0]!)).toBe(true);
     const run = runOf(project);
     expect(clearFoesFromStoryWays(run)).toHaveLength(1);
     expect(run.ctx.project.maps.map_room!.events.map((e) => e.id)).toEqual(["ev_boss"]);
     expect(clearFoesFromStoryWays(run)).toEqual([]);
+  });
+
+  it("사람 단계만 있는 방은 보스 방이 아니다 — 그 장소의 적은 그대로 서고(밴드는 피할 수 없는 싸움으로 센다), 싸우는 단계의 방이면 걷는다", () => {
+    // 위험한 장소의 작은 동굴(test/aiV2World 의 얼음 동굴)에는 적이 선다 — 방이라는 까닭만으로 걷지 않는다.
+    const build = (kind: string) => {
+      const { project, start } = twoPlaces();
+      const room = { ...createBlankMap("얼음 굴", 13, 11, start.tilesetId), id: "map_room" };
+      project.maps[room.id] = room;
+      start.events = [event("ev_door", "", 8, 8, [page([], [{ kind: "transfer", mapId: "map_room", x: 6, y: 9 }], "playerTouch")], "playerTouch")] as never;
+      room.events = [foe("map_room", 3, 5), event("ev_hermit", "은자", 6, 2, [page([], [{ kind: "text", speaker: "은자", body: "어서 오게." }])])] as never;
+      project.gameBlueprint = blueprint([{ id: "s1", kind, who: "은자", place: "얼음 굴", event: "은자", label: "l", built: { mapId: "map_room", eventId: "ev_hermit" } }]);
+      return project;
+    };
+    const calm = build("talk");
+    expect(isBossRoom(calm, "map_room")).toBe(false);
+    expect(foeOnStoryWay(calm, "map_room", calm.maps.map_room!.events[0]!)).toBe(true);
+    const calmRun = runOf(calm);
+    expect(clearFoesFromStoryWays(calmRun)).toEqual([]);
+    expect(calmRun.ctx.project.maps.map_room!.events.map((e) => e.id)).toEqual(["ev_map_room_wfoe1", "ev_hermit"]);
+    const fight = build("battle");
+    expect(isBossRoom(fight, "map_room")).toBe(true);
+    const fightRun = runOf(fight);
+    expect(clearFoesFromStoryWays(fightRun)).toHaveLength(1);
+    expect(fightRun.ctx.project.maps.map_room!.events.map((e) => e.id)).toEqual(["ev_hermit"]);
   });
 
   it("넓은 맵에서는 들어오는 칸과 보스 사이의 길을 지켜보는 적만 다른 자리로 옮긴다 — 보스가 없는 맵의 적은 그대로", () => {
