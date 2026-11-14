@@ -12,6 +12,7 @@
 // 지은 뒤 청사진의 place·event 를 실제 맵·이벤트 이름에 맞춰 둔다(출하 검사 walkBlueprint 가 같은 이름으로 걷는다).
 import { alignCodeClues, digitWord } from "./codeClues";
 import { isPassable } from "@/project/collision";
+import { codeReadable } from "@/project/codeReading";
 import type { GameMap } from "@/project/types";
 import { endingClosing, normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
@@ -357,7 +358,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
       // 앞선 고리 어느 것이든 그 대사에 번호가 있으면 이미 알려 준 것이다 — 사슬은 순서대로만 열리므로 이 단계에 닿은 플레이어는 그 대사를 지났다.
       // 바로 앞 단계만 보면 두세 단계 앞의 기록이 알려 준 번호를 같은 방의 «번호 쪽지»로 한 번 더 읽어야 자물쇠가 열렸다.
       // 플레이어가 그 고리에서 읽는 글 전부 — 이긴 뒤 글(상대가 떨어뜨린 쪽지)에 적힌 번호도 이미 알려 준 것이다(같은 번호의 쪽지를 한 번 더 세우지 않는다).
-      let told = links.some((l) => [...(l.lines ?? []), ...(l.choice?.options ?? []).flatMap((o) => o.lines ?? []), ...(l.battle?.winLines ?? []), ...(l.reward?.lines ?? [])].some((line) => line.includes(code)));
+      // 번호 글자가 그대로 있어야만 하는 것이 아니다 — 조각을 잇거나 노래의 수 낱말을 차례로 읽어 그 번호가 나오면 모델의 단서가 이미 답을 정한 것이다(project/codeReading). 그때 답을 적은 쪽지를 덧붙이면 수수께끼가 빈 껍데기가 된다.
+      let told = codeReadable(code, links.map((l) => [...(l.lines ?? []), ...(l.choice?.options ?? []).flatMap((o) => o.lines ?? []), ...(l.battle?.winLines ?? []), ...(l.reward?.lines ?? [])]));
       // 앞 단계가 그대로 둔 단서 이벤트(「비밀번호 단서」를 주는 책상)면 그 대사에 번호를 적는다 — 2026-10-29 vm2 flash: 「『비밀번호 단서』를
       // 알아냈다」 뿐이라 판정자가 단서 내용을 읽을 수 없었다.
       // needs 가 단서 여럿이고 모두 그대로 둔 앞 단계면 번호를 그 순서로 나눠 적는다(2026-10-29 vm4 argon 방탈출: 「첫 번째 숫자 단서」 책상 +
