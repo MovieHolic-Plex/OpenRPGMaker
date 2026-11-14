@@ -126,7 +126,7 @@ export function applyFallenBattleItems(project: Project): void {
   }));
   upsert(db.items, normalizeItemRecord({
     id: FS_SMOKE_PELLET, name: "연막 구슬", type: "special", scope: "ally", price: 80,
-    description: "전투 중에 쓰면 반드시 달아난다.\n물러설 수 없는 싸움에서는 듣지 않는다.",
+    description: "전투 중에 쓰면 반드시 달아난다.\n보스와 싸울 때는 듣지 않는다.",
     iconResourceId: "cc0-jetrel-gen-smoke-ball", imageResourceId: "cc0-jetrel-gen-smoke-ball",
     skillId: "skill_fs_smoke_pellet", activateSkillId: "skill_fs_smoke_pellet", animationId: "anim_magic",
     occasion: "battle", occasionField: false, occasionBattle: true, consumable: true,
