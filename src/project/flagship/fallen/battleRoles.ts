@@ -102,7 +102,7 @@ export function applyFallenBattleRoles(project: Project): void {
   });
   tune("skill_mage_fireball", {
     power: 80, elementId: "fire", mpCost: { flat: 5, percentMax: 0 },
-    description: "한 대상에게 불덩이를 날려\n불 속성 피해를 준다.",
+    description: "적 하나에게 불덩이를 날린다.\n불 속성 피해를 준다.",
   });
   tune("skill_mage_blizzard", {
     power: 54, elementId: "ice", mpCost: { flat: 10, percentMax: 0 },
@@ -116,11 +116,11 @@ export function applyFallenBattleRoles(project: Project): void {
   });
   tune("skill_sleep_mist", {
     mpCost: { flat: 4, percentMax: 0 }, stateEffects: [{ stateId: "state_sleep", chance: 85, operation: "add" }],
-    description: "한 대상을 85% 확률로 재운다.\n맞으면 깨고, 길어야 3차례 잔다.",
+    description: "적 하나를 85% 확률로 재운다.\n맞으면 깨고, 길어야 3차례 잔다.",
   });
   tune("skill_weaken", {
     mpCost: { flat: 3, percentMax: 0 }, stateEffects: [{ stateId: "state_defense_down", chance: 100, operation: "add" }],
-    description: "한 대상의 방어를 반으로 깎는다. 반드시 걸린다.\n피해는 없지만 다음 공격이 세게 들어간다.",
+    description: "적 하나의 방어를 반으로 깎는다. 반드시 걸린다.\n피해는 없지만 다음 공격이 세게 들어간다.",
   });
   tune("skill_heal", {
     power: 40, mpCost: { flat: 4, percentMax: 0 }, stateEffects: [{ stateId: "state_regen", chance: 100, operation: "add" }],
@@ -311,7 +311,7 @@ export function applyFallenBattleRoles(project: Project): void {
   rates("enemy_fs_valen", {}, { state_sleep: "D", state_stop: "E", state_paralysis: "D", state_poison: "C", state_defense_down: "C" });
   tune("skill_fs_judgment", {
     elementId: "holy", power: 120, chargeTurns: 1,
-    description: "한 차례 빛을 모았다가 파티 전체에 쏟아붓는다.\n모으는 차례에 방어하면 덜 다친다.",
+    description: "한 차례 빛을 모았다가 일행 모두에게 쏟아붓는다.\n모으는 차례에 방어하면 덜 다친다.",
   });
   make("skill_hero_cross_slash", "skill_fs_valen_combo", {
     name: "단죄의 연격", power: 52, hitSequence: [1, 1], weaponAffinity: undefined, criticalRate: 10, mpCost: { flat: 0, percentMax: 0 },

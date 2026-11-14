@@ -126,7 +126,7 @@ export function applyFallenBattleItems(project: Project): void {
   }));
   upsert(db.items, normalizeItemRecord({
     id: FS_SMOKE_PELLET, name: "연막 구슬", type: "special", scope: "ally", price: 80,
-    description: "전투 중에 쓰면 반드시 도망친다.\n보스와 싸울 때는 듣지 않는다.",
+    description: "전투 중에 쓰면 반드시 달아난다.\n물러설 수 없는 싸움에서는 듣지 않는다.",
     iconResourceId: "cc0-jetrel-gen-smoke-ball", imageResourceId: "cc0-jetrel-gen-smoke-ball",
     skillId: "skill_fs_smoke_pellet", activateSkillId: "skill_fs_smoke_pellet", animationId: "anim_magic",
     occasion: "battle", occasionField: false, occasionBattle: true, consumable: true,
@@ -174,7 +174,7 @@ export function applyFallenBattleItems(project: Project): void {
   goods(FS_WOLF_FANG, "늑대 송곳니", 35, "창 재료로 쓰는 날카로운 늑대 송곳니다.\n아직 따뜻하다.", "cc0-jetrel-gen-fang-beast");
   goods(FS_WOLF_HIDE, "늑대 가죽", 40, "두껍고 거친 늑대 가죽이다.\n숲지기 브람은 겨울마다 한 장씩 모아 둔다.", "cc0-jetrel-gen-pelt-wolf");
   goods(FS_SPIDER_SILK, "거미 비단", 30, "가볍고 질긴 거미줄 뭉치다.\n햇빛에 비추면 무지갯빛이 돈다.", "cc0-jetrel-gen-thread-silk");
-  goods(FS_VENOM_SAC, "독 주머니", 50, "거미 독이 든 주머니다. 다룰 때 조심해야 한다.\n약방 오든이 비싸게 사 간다.", "cc0-jetrel-gen-poison-flask");
+  goods(FS_VENOM_SAC, "독 주머니", 50, "거미 독이 든 주머니다. 터지면 큰일이다.\n약방 오든이 비싸게 사 간다.", "cc0-jetrel-gen-poison-flask");
   goods(FS_WISP_EMBER, "푸른 불씨", 45, "도깨비불에서 떨어진 불씨다. 차갑게 탄다.\n손은 안 데는데, 주머니는 탄다.", "cc0-jetrel-gen-phoenix-ash");
   goods(FS_STARIRON_SHARD, "별쇠 조각", 220, "별에서 떨어진 쇳조각이다. 차고 환하다.\n만지면 아주 먼 데서 종소리가 들린다.", "cc0-jetrel-gen-ore-iron");
   goods(FS_KEEPER_SEAL, "별지기 인장", 300, "수호상이 쥐고 있던 옛 별지기 인장이다.\n뒷면에 이름 한 줄을 새겼다 지운 자국이 있다.", "cc0-jetrel-gen-badge-guard");
