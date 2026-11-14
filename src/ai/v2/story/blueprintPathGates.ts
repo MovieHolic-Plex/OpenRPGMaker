@@ -330,7 +330,8 @@ export function lockStepOrderDoorsIn(project: Project): string[] {
       const where = doorMap.id !== cur.map.id ? `${cur.map.name ?? cur.map.id}의` : bearing === "바로 옆" ? "바로 옆" : `${bearing}의`;
       const place = String(target.name ?? "").trim();
       const first = itemName ? `${itemName}${josa(itemName, "이", "가")} 있어야 이 길로 갈 수 있을 것 같다.` : place ? `아직 ${place}${towardJosa(place)} 갈 때가 아니다.` : "아직 이 길로 갈 때가 아니다.";
-      const body = `${first} ${speaker ? `먼저 ${where} 「${speaker}」에게 말을 걸어 보자.` : `먼저 ${where} 「${stepName}」${josa(stepName, "을", "를")} 찾아보자.`}`;
+      // 싸움 단계의 상대는 말을 걸 사람이 아니고, 아직 못 본 보스와 그 방의 이름을 길목에서 미리 알리지도 않는다 — 어디로 갈지는 목표 줄이 말한다.
+      const body = step.kind === "battle" ? first : `${first} ${speaker ? `먼저 ${where} 「${speaker}」에게 말을 걸어 보자.` : `먼저 ${where} 「${stepName}」${josa(stepName, "을", "를")} 찾아보자.`}`;
       const next: RawPage[] = [];
       pages.forEach((p, i) => {
         if (!transfersTo(p.commands ?? [], new Set()).has(target.id) || condHas(p, cond)) { next.push(structuredClone(p)); return; }
