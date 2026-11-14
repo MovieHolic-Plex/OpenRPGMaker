@@ -290,7 +290,7 @@ const bossShareOf = (project: Project, boss: Battle): number => boss.step === (p
 /**
  * 보스마다 그 앞에 쉬고 온 파티를 만나는 순서로 내준다(보스 앞에는 쉼터 결정이 선다 — healingAccess.ensureBossRest).
  * 레벨: 가장 낮게는 피할 수 없는 전투(그 맵까지의 길목 · 앞 보스 · 가는 길을 지켜보는 적 — place/storyWays)만 이기고, 가장 높게는 그 맵까지의 길 위 전투를 다 이기고 — 기준은 가장 낮은 쪽(곧장 가는 플레이어가 그렇게 온다).
- * 마지막 보스의 «공격만» 은 가장 높게 도착한 판으로 잰다(threatLevel) — 어떻게 도착해도 «공격만» 으로는 못 이긴다.
+ * 마지막 보스의 «공격만» 은 가장 높게 도착한 판까지 막는다(밴드가 허락하는 데까지 — pathBattleTension 의 guardLevel). 못 막은 레벨의 값은 밴드 줄에 적는다.
  * 맵의 이벤트 순서는 만나는 순서가 아니라 맵 순서와 단계 순서로 센다.
  * 약: 시작 약에서 앞 보스전들의 여느 플레이가 쓴 만큼(spent 의 합)을 뺀 것(내림) — 길 위의 짧은 전투는 약을 쓰지 않는다고 본다.
  */
@@ -304,8 +304,7 @@ function bossArrivals(project: Project, battles: readonly Battle[], bosses: read
       .map((b) => [`${b.mapId}#${b.eventId ?? b.troopId}`, troopExp(project, b.troopId)])).values()].reduce((sum, exp) => sum + exp, 0);
     left = Math.max(0, left - spent);
     const minLevel = levelAfter(project, party.ids[0], party.level, before(["gate"])), maxLevel = levelAfter(project, party.ids[0], party.level, before(["gate", "field"]));
-    const final = boss.troopId === bosses[bosses.length - 1]?.troopId;
-    return { ids: party.ids, minLevel, maxLevel, level: minLevel, threatLevel: final ? maxLevel : minLevel, final, potions: Math.floor(left + 0.05), ...(potion ? { potion } : {}) };
+    return { ids: party.ids, minLevel, maxLevel, level: minLevel, final: boss.troopId === bosses[bosses.length - 1]?.troopId, potions: Math.floor(left + 0.05), ...(potion ? { potion } : {}) };
   };
 }
 
