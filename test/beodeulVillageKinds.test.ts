@@ -97,9 +97,14 @@ describe("버들항 마을 종류 — 장면은 통째로", () => {
     const guard = beodeulRouteGuard(7, 3, { entrance: { x: 0, y: 1 }, gather: null, stops: [{ x: 6, y: 1 }], walkable: () => true, canStep: () => true });
     expect(guard.ok([1 * 7 + 3])).toBe(true); // 한 칸: 위아래로 두 걸음 돌아간다
     expect(guard.ok([0 * 7 + 3, 1 * 7 + 3, 2 * 7 + 3])).toBe(false); // 세 줄을 다 막으면 끊긴다
-    guard.take([1 * 7 + 3]);
+    guard.take([0 * 7 + 3, 1 * 7 + 3]); // 위 두 줄을 막았다 — 아랫줄로 돌아간다
     expect(guard.added()).toBe(2);
-    expect(guard.ok([1 * 7 + 1])).toBe(false); // 처음보다 네 칸 넘게 멀어진다(두 번 돌아감)
+    expect(guard.ok([0 * 7 + 5])).toBe(true); // 길이 더 늘지 않는 칸은 된다
+    expect(guard.ok([1 * 7 + 5, 2 * 7 + 5])).toBe(false); // 한 번 더 돌리면 처음보다 두 칸 넘게 멀어진다 — 조금씩 쌓이는 것도 막는다
+    // 걷는 땅 한쪽을 가두는 자리도 받지 않는다: 3×3 의 구석 (2,2) 를 두 칸으로 에워싸면 그 칸이 갇힌다
+    const pocket = beodeulRouteGuard(3, 3, { entrance: { x: 0, y: 0 }, gather: null, stops: [{ x: 2, y: 0 }], walkable: () => true, canStep: () => true });
+    expect(pocket.ok([2 * 3 + 1])).toBe(true);
+    expect(pocket.ok([2 * 3 + 1, 1 * 3 + 2])).toBe(false);
     // 들를 곳이 없으면 아무것도 막지 않는다
     expect(beodeulRouteGuard(7, 3, undefined).ok([10])).toBe(true);
   });

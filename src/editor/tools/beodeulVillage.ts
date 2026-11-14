@@ -192,6 +192,8 @@ export interface BeodeulVillageOptions {
   kind?: string;
   /** 항구(큰 포구)를 청했는가 — 종류를 고를 때만 쓴다. */
   harbour?: boolean;
+  /** false = 장면 터를 미리 비워 두지 않는다(터 때문에 길이 달라져 문 앞이 끊긴 마을을 다시 지을 때). */
+  sceneYards?: boolean;
   /** 이 맵에서 주인공이 시작하는 칸 — 둘레를 비워 둔다(덤불·기물·장면이 서지 않는다). */
   startCell?: { x: number; y: number };
   /** 코드 지형 위 자리(조수가 그림·요약을 보고 고른다) — 함수는 놓을 수 있는지·길 연결·도달만 검사하고 옮긴 자리·실패를 보고한다. */
@@ -721,21 +723,28 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const codePlan = codeT ? (() => {
     // 출구만 준 layout(요청의 「서쪽 길 끝 동굴」 → spec.exits)은 자리를 준 것이 아니다 — 자리는 자동, 출구는 그대로(2026-10-30 던전 작업자 dd1030g)
     const given = options.layout && (options.layout.gather || options.layout.houses?.length || options.layout.landmark || options.layout.anchor) ? options.layout : null;
-    const auto0 = given ? null : autoLayout(codeT, seed, Number.isFinite(houseLimit) ? houseLimit : villageKind ? kindHouseCount : ri(5, 8), theme === "river" || theme === "coast" || !!options.fishing);
+    const auto0 = given ? null : autoLayout(codeT, seed, Number.isFinite(houseLimit) ? houseLimit : (() => {
+      // 집 수: 이름으로 청한 종류는 급이 정한다. 빌더가 고른 종류는 빌더가 원래 뽑던 수를 그대로 둔다(외딴 마을만 다섯까지) —
+      // 급에 맞춰 한 채를 더하자 좁은 단에서 길이 달라져 계단 하나가 서지 못했다(탐침 coast-plaza-terraces-11: 문 앞 못 닿음 0 → 3).
+      const n = ri(5, 8);
+      return !villageKind ? n : options.kind ? kindHouseCount : villageKind.rank === "hamlet" ? Math.min(n, 5) : villageKind.rank === "town" ? Math.max(n, kindHouseCount) : n;
+    })(), theme === "river" || theme === "coast" || !!options.fishing);
     const layout: VillageLayout = given ?? { ...auto0!, ...(options.layout?.exits?.length ? { exits: options.layout.exits } : {}) };
     const report = { auto: !given, moved: [] as string[], failed: [] as string[], roadsFailed: [] as string[], requested: { houses: layout.houses?.length ?? 0 } };
     const spots: CodeSpot[] = [];
+    // 장면 터(마을 종류)의 칸 — 집은 여기 앉지 않고 길은 되도록 돌아간다(막지는 않는다: 터가 길을 막자 단을 건너는 계단 자리가 밀려 문 앞이 끊겼다).
+    const yardHold = new Set<number>();
     const spotOk = (k: Kit, x: number, y: number): boolean => {
       if (!k.door || x < 1 || y < 1 || x + k.w > W - 1 || y + k.h > H - 2) return false;
       const L0 = lv[idx(x, y)]!;
       for (let j = -1; j <= k.h; j += 1) for (let i = -1; i <= k.w; i += 1) {
         const X = x + i, Y = y + j; if (!inMap(X, Y)) continue; const c = idx(X, Y);
-        if (i >= 0 && j >= 0 && i < k.w && j < k.h) { if ((occ[c] !== FREE && !onBog(c)) || lv[c] !== L0) return false; }
+        if (i >= 0 && j >= 0 && i < k.w && j < k.h) { if ((occ[c] !== FREE && !onBog(c)) || lv[c] !== L0 || yardHold.has(c)) return false; }
         else if (occ[c] === RESV) return false; // 이웃 건물과 한 칸 띄운다
       }
       for (let i = 0; i < k.w; i += 1) for (let kk = 1; kk <= 2; kk += 1) { const Y = y + k.h - 1 + kk; if (Y < H && lv[idx(x + i, Y)]! > L0 + kk - 1) return false; }
       const fx = x + k.door.dx, fy = y + k.door.dy + 1; if (!inMap(fx, fy + 1)) return false; const f = idx(fx, fy);
-      return (occ[f] === FREE || onBog(f)) && lv[f] === L0 && lv[f + W]! >= L0 && (occ[f + W] !== WATERC || onBog(f + W));
+      return (occ[f] === FREE || onBog(f)) && !yardHold.has(f) && lv[f] === L0 && lv[f + W]! >= L0 && (occ[f + W] !== WATERC || onBog(f + W));
     };
     const place = (role: CodeSpot["role"], ks: Kit[], want: LayoutPoint, maxR = 9): CodeSpot | null => {
       for (let r = 0; r <= maxR; r += 1) {
@@ -790,12 +799,12 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 장면 터(마을 종류): 일터 문 곁 마당과 모이는 곳 곁 자리를 집·길보다 먼저 비워 둔다 — 뒤에 찾으면 집·길·밭이 그 곁을 다 차지해
     // 종류의 주 장면(대장간 마당·포도 짜는 마당)이 설 자리가 없다(탐침: 일터 장면 38 가운데 10이 자리 없음). 길은 이 터를 돌아간다.
     const sceneYards = { work: [] as number[], gather: [] as number[] };
-    if (villageKind) {
+    if (villageKind && options.sceneYards !== false) {
       const hold = (into: number[], x0: number, y0: number, w: number, h: number): boolean => {
         if (x0 < 2 || y0 < 2 || x0 + w > W - 2 || y0 + h > H - 3) return false;
         const L0 = lv[idx(x0, y0)]!; const cells: number[] = [];
-        for (let j = 0; j <= h; j += 1) for (let i = 0; i < w; i += 1) { const c = idx(x0 + i, y0 + j); if (occ[c] !== FREE || lv[c] !== L0 || codeT.water[c]) return false; if (j < h) cells.push(c); }
-        for (const c of cells) { occ[c] = RESV; into.push(c); }
+        for (let j = 0; j <= h; j += 1) for (let i = 0; i < w; i += 1) { const c = idx(x0 + i, y0 + j); if (occ[c] !== FREE || lv[c] !== L0 || codeT.water[c] || yardHold.has(c)) return false; if (j < h) cells.push(c); }
+        for (const c of cells) { yardHold.add(c); into.push(c); }
         return true;
       };
       const kitOf = (id: string) => kitIndex.get(id);
@@ -816,8 +825,11 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const gScene = villageKind.scenes.find((sc) => sc.at === "commons" || sc.at === "plaza"), gf = gScene ? sceneFootprint(gScene, kitOf, gScene.at === "plaza") : null;
       if (gf) {
         const far = form === "plaza" ? 7 : 4;
-        const tries: [number, number][] = [[gx + far, gy - Math.floor(gf.h / 2)], [gx - far - gf.w + 1, gy - Math.floor(gf.h / 2)], [gx - Math.floor(gf.w / 2), gy + far - 1], [gx - Math.floor(gf.w / 2), gy - far - gf.h + 2],
-          [gx + far, gy + 1], [gx - far - gf.w + 1, gy + 1], [gx + far, gy - gf.h], [gx - far - gf.w + 1, gy - gf.h]];
+        // 큰길은 모이는 곳에서 출구 쪽으로 곧게 난다 — 그 줄에 걸친 자리는 뒤로 미룬다(터가 큰길 줄을 막으면 길이 돌아 단을 건너는 계단 자리가 밀린다).
+        const ew = layout.exits?.length ? layout.exits.some((e) => e === "west" || e === "east") : W >= H;
+        const across: [number, number][] = [[gx - Math.floor(gf.w / 2), gy - far - gf.h + 2], [gx - Math.floor(gf.w / 2), gy + far - 1], [gx + far, gy - gf.h - 1], [gx - far - gf.w + 1, gy - gf.h - 1], [gx + far, gy + 3], [gx - far - gf.w + 1, gy + 3]];
+        const along: [number, number][] = [[gx + far, gy - Math.floor(gf.h / 2)], [gx - far - gf.w + 1, gy - Math.floor(gf.h / 2)], [gx + far, gy + 1], [gx - far - gf.w + 1, gy + 1], [gx + far, gy - gf.h], [gx - far - gf.w + 1, gy - gf.h]];
+        const tries = ew ? [...across, ...along] : [...along, ...across];
         tries.some(([x, y]) => hold(sceneYards.gather, x, y, gf.w, gf.h));
       }
     }
@@ -871,6 +883,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         if (y + 1 < H && lv[c + W]! < lv[c]!) e += 1.2; // 절벽 끝 바로 위
         const edge = Math.min(x, y, W - 1 - x, H - 1 - y); if (edge === 0) e += 1.5; else if (edge === 1) e += 0.8; // 맵 테두리를 따라 기는 길
         for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const v = at(x + dx, y + dy); if (v === RESV) e += 0.8; else if (v === WATERC && theme !== "swamp") e += 0.4; }
+        if (yardHold.has(c)) e += 6; // 장면 터는 돌아가는 편이 싸다 — 다른 길이 없으면 가로지른다
         if (onBog(c)) e += 0.6; // 늪 널길: 물을 건너도 되지만 진흙 섬이 가까우면 섬을 탄다
         return e;
       },
@@ -945,7 +958,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const width = twinX ? 2 : pth.width;
       for (const c of run.cells) {
         cells.add(c);
-        if (width === 2) { const d: number = twinX || 1, t = run.horizontal ? c + W : c + d; if (t >= 0 && t < W * H && (run.horizontal || ((c % W) + d >= 0 && (c % W) + d < W)) && occ[t] !== RESV && occ[t] !== BLD) cells.add(t); }
+        if (width === 2) { const d: number = twinX || 1, t = run.horizontal ? c + W : c + d; if (t >= 0 && t < W * H && (run.horizontal || ((c % W) + d >= 0 && (c % W) + d < W)) && occ[t] !== RESV && occ[t] !== BLD && !yardHold.has(t)) cells.add(t); }
       }
       for (const c of cells) if (onBog(c)) { occ[c] = FREE; swampDeck.add(c); } else if (occ[c] === WATERC) { occ[c] = KEEP; fords.push(c); }
       const st: Street = { name: pth.name, cells, horizontal: run.horizontal, width };
@@ -953,8 +966,6 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
     for (const c of network) if (occ[c] === RESV_DOOR || occ[c] === FREE) occ[c] = ROAD;
     for (const sp of spots) if (occ[idx(sp.front.x, sp.front.y)] === RESV_DOOR) occ[idx(sp.front.x, sp.front.y)] = FREE;
-    // 장면 터는 길을 다 낸 뒤 «비워 둔 걸음 자리» 로 — 집 곁 소품·문 앞 길이 들어오지 않는다(장면을 놓기 직전에 빈 땅으로 되돌린다).
-    for (const c of [...sceneYards.work, ...sceneYards.gather]) if (occ[c] === RESV) occ[c] = CLEAR;
     return { layout, report, spots, g: { x: gx, y: gy }, entrance, fords, plaza: form === "plaza", sceneYards };
   })() : null;
   // 늪 널판 마루(길이 아닌 칸)는 비워 둔다(CLEAR) — 소품·늪물·물가 고리가 마루를 먹지 않게
@@ -1471,6 +1482,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
   rel = { width: W, height: H, levels: Array.from(lv), ramps: ramps.slice() };
   invalidateReliefSlopes(rel);
+  // 장면 터는 길과 계단을 다 낸 뒤 «비워 둔 걸음 자리» 로 — 뒷길·집 곁 소품·밭이 들어오지 않는다(장면을 놓기 직전에 빈 땅으로 되돌린다).
+  // 계단보다 먼저 바꾸면 깎은 계단의 옆면(빈 땅이어야 한다)을 터가 막아 그 길이 단에서 끊겼다(탐침: 광장 마을 문 앞 못 닿음 13 → 22).
+  if (codePlan) for (const c of [...codePlan.sceneYards.work, ...codePlan.sceneYards.gather]) if (occ[c] === FREE) occ[c] = CLEAR;
 
   planStep("뒷길 고리");
   // ---------- 4. 광장(광장 마을만) ----------
@@ -2472,7 +2486,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       walkable: (x: number, y: number) => { const v = at(x, y); return v === FREE || v === ROAD || v === PLAZAC || v === CLEAR || v === POND_RING || v === KEEP || v === FIELD || (v === PROP && overWalk.has(idx(x, y))); },
       canStep: (x: number, y: number, nx: number, ny: number) => { const a2 = idx(x, y), b2 = idx(nx, ny); return lv[a2] === lv[b2] || !!ramps[a2] || !!ramps[b2] || rampCells.has(a2) || rampCells.has(b2); },
     },
-    ...(villageKind ? { kindPools: { home: villageKind.home, water: villageKind.water, wild: villageKind.wild } } : {}),
+    ...(villageKind ? { kindPools: { home: villageKind.home, water: villageKind.water, wild: villageKind.wild, signs: villageKind.signs, lamps: villageKind.lamps } } : {}),
     gather: gatherCell, entrance: entryCell, workDoor,
     ...(codePlan ? { areas: { workYard: codePlan.sceneYards.work, gatherYard: codePlan.sceneYards.gather } } : {}),
     footCells: (k: { id: string }, x: number, y: number) => footOf(K(k.id), x, y),
@@ -3931,8 +3945,20 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
   }
   const scenesUp = sceneReport.placed.filter((sc) => sc && !sc.lifted);
-  if (villageKind) recordVillageKind(m, villageKind, seed, scenesUp);
   const seen = reachMap();
+  // 설 칸은 다 지은 뒤에 다시 고른다 — 놓을 때 빈 땅이던 칸에 뒤에 나무·덤불이 서면 조수가 그 칸에 사람을 세우지 못한다.
+  // 입구에서 걸어 닿는 칸 가운데 장면 네모에서 세 칸 안, 원래 설 칸에 가장 가까운 것(아랫줄 쪽을 먼저).
+  for (const sc of scenesUp) {
+    if (seen[idx(sc.stand.x, sc.stand.y)]) continue;
+    let best: { x: number; y: number; d: number } | null = null;
+    for (let y = sc.y - 3; y <= sc.y + sc.h + 2; y += 1) for (let x = sc.x - 3; x <= sc.x + sc.w + 2; x += 1) {
+      if (!inMap(x, y) || !seen[idx(x, y)] || (x >= sc.x && x < sc.x + sc.w && y >= sc.y && y < sc.y + sc.h)) continue;
+      const d = Math.hypot(x - sc.stand.x, y - sc.stand.y) + (y < sc.y ? 1.5 : 0);
+      if (!best || d < best.d) best = { x, y, d };
+    }
+    if (best) sc.stand = { x: best.x, y: best.y };
+  }
+  if (villageKind) recordVillageKind(m, villageKind, seed, scenesUp);
   const unreached = doorFronts.filter((d) => !seen[idx(d.x, d.y)]);
   if (unreached.length) warnings.push(`입구에서 닿지 않는 문 앞 ${unreached.length}곳: ${unreached.slice(0, 5).map((d) => `${d.kit}@(${d.x},${d.y})`).join(", ")}`);
   // 울타리 문·단마다 걸을 수 있는 칸 중 입구에서 닿는 몫(단 위의 밭·쓰임이 배경으로 남지 않았는지)

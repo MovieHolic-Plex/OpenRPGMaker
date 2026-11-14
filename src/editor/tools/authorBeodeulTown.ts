@@ -694,7 +694,7 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     layoutNotes.splice(0, layoutNotes.length, ...notes);
     return { codeTerrain: codeTerrainFor(theme, args, m.width, m.height, terrainSeed), layout };
   };
-  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.kind === "string" && args.kind.trim() ? { kind: args.kind.trim() } : {}), ...(args.harbour === true ? { harbour: true } : {}),
+  const build = (sceneYards = true) => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), ...(sceneYards ? {} : { sceneYards: false }), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.kind === "string" && args.kind.trim() ? { kind: args.kind.trim() } : {}), ...(args.harbour === true ? { harbour: true } : {}),
     ...(args._startCell && typeof args._startCell === "object" ? { startCell: args._startCell as { x: number; y: number } } : {}), ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
     ...(args.wallGate === "N" || args.wallGate === "NS" || args.wallGate === "S" ? { wallGate: args.wallGate } : {}), ...(args.wallSideGaps === true ? { wallSideGaps: true } : {}) });
   let r = build();
@@ -724,6 +724,21 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     const now = tried[tried.length - 1]!;
     if (best !== now) r = rebuildAt(best.w, best.h);
     if (tried.length > 1) grown.push(`${walls ? "성벽 띠" : "지형 단 띠"} 때문에 ${tried[0]!.w}×${tried[0]!.h} 에는 집이 ${tried[0]!.houses}채만 앉아 ${best.w}×${best.h} 로 넓혀 다시 지었다(집 ${best.houses}채).`);
+  }
+  // 마을 종류의 장면 터(미리 비워 둔 마당)가 집·길 자리를 바꿔 문 앞이나 단 건널목이 끊기면 터 없이 다시 짓는다 — 장면은 남은 빈 땅에서 자리를 찾는다.
+  // 터 없이도 나아지지 않으면(터 탓이 아니다) 터를 둔 마을로 되돌린다. 같은 seed·같은 크기라 같은 마을이다.
+  {
+    const cutOff = (x: typeof r) => { const d = x.data as { doors?: { reached: boolean }[]; relief?: { fails?: number } }; return (d.doors ?? []).filter((q) => !q.reached).length * 100 + (d.relief?.fails ?? 0); };
+    if ((r.data as { villageKind?: unknown }).villageKind && cutOff(r) > 0) {
+      const again = (sceneYards: boolean) => {
+        const old = draft.maps[mapId]!;
+        if (rebuilt) old.structurePlacements = [];
+        else { requireTool(MAP_TOOLS, "remove_map").run(draft, { mapId }); createMapTool.run(draft, { id: mapId, name: old.name, width: old.width, height: old.height, tilesetId: BEODEUL_TILESET_ID, border: "none" }); }
+        return build(sceneYards);
+      };
+      const plain = again(false);
+      r = cutOff(plain) < cutOff(r) ? plain : again(true);
+    }
   }
   // 요청한 집 수에 못 미치면 요약 맨 앞에 적는다 — 경고에만 두면 「요청대로 지었다」고 보고하기 쉽다
   if (houseCount !== undefined && housesOf(r) < houseCount) grown.push(`집 ${houseCount}채를 요청했지만 ${housesOf(r)}채만 앉았다(${walls ? "성벽 안 " : ""}자리 부족 — 맵을 넓혀 다시 짓거나 그대로 보고할 것).`);

@@ -23,6 +23,8 @@ export interface VillageKind {
   readonly work: readonly string[];
   readonly scenes: readonly VillageScene[];
   readonly home: readonly string[]; readonly water: readonly string[]; readonly wild: readonly string[];
+  /** 공통 기물의 자리 규칙: 간판은 일터·집 문 옆 벽 앞에, 등은 길이 꺾이는 모퉁이에. */
+  readonly signs: readonly string[]; readonly lamps: readonly string[];
 }
 
 const kit = (id: string) => `bd-${id}`;
@@ -34,7 +36,7 @@ function piece(text: string): ScenePiece {
 }
 type RawKind = Omit<VillageKind, "scenes" | "fit" | "rank"> & { rank: string; fit: VillageKind["fit"] & { water: readonly string[] }; scenes: { id: string; ko: string; en: string; at: string; min: number; pieces: string[] }[] };
 export const BEODEUL_VILLAGE_KINDS: readonly VillageKind[] = (table.kinds as unknown as RawKind[]).map((k) => ({
-  ...k, rank: k.rank as VillageRank, fit: k.fit as VillageKind["fit"], work: k.work.map(kit), home: k.home.map(kit), water: k.water.map(kit), wild: k.wild.map(kit),
+  ...k, rank: k.rank as VillageRank, fit: k.fit as VillageKind["fit"], work: k.work.map(kit), home: k.home.map(kit), water: k.water.map(kit), wild: k.wild.map(kit), signs: (k.signs ?? []).map(kit), lamps: (k.lamps ?? []).map(kit),
   scenes: k.scenes.map((s) => {
     if (!(SCENE_ANCHORS as readonly string[]).includes(s.at)) throw new Error(`마을 종류 ${k.id} 장면 ${s.id} 의 닻을 모른다: ${s.at}`);
     return { id: s.id, ko: s.ko, en: s.en, at: s.at as SceneAnchor, min: s.min, pieces: s.pieces.map(piece) };

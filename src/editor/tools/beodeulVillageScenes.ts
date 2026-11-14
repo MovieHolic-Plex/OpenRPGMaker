@@ -32,8 +32,8 @@ export interface PlacedScene {
   readonly id: string; readonly ko: string; readonly en: string; readonly at: SceneAnchor;
   /** 장면이 차지한 네모(뭍 조각의 그림 칸 전부). */
   readonly x: number; readonly y: number; readonly w: number; readonly h: number;
-  /** 사람이 설 칸(장면 곁의 빈 땅). */
-  readonly stand: { x: number; y: number };
+  /** 사람이 설 칸(장면 곁의 빈 땅) — 빌더가 다 지은 뒤 걸어 닿는 칸으로 다시 고른다. */
+  stand: { x: number; y: number };
   readonly required: number; readonly min: number; readonly pieces: number;
   /** 다 찍은 뒤 길목 검사·갇힌 빈터 열기가 조각을 걷어 장면이 깨져 통째로 걷었다. */
   lifted?: boolean;
@@ -216,14 +216,16 @@ export function placeVillageScenes(host: BeodeulSceneHost, scenes: readonly Vill
     }
     const land = parts.filter((p) => !p.water);
     if (land.length < scene.min) return skip("kits");
+    const tried = { spots: 0, group: 0, fit: 0, route: 0 };
+    /** set = 이번에 놓아 볼 뭍 조각들(그 네모로 자리를 찾는다). 놓았으면 true. */
+    const attempt = (set: readonly Part[]): boolean => {
     // 그림 칸의 네모(원점 기준) — 발은 dy 줄, 그림은 그 위로 kit.h 줄.
-    const x0 = Math.min(...land.map((p) => p.dx)), x1 = Math.max(...land.map((p) => p.dx + p.kit.w - 1));
-    const y0 = Math.min(...land.map((p) => p.dy - p.kit.h + 1)), y1 = Math.max(...land.map((p) => p.dy));
+    const x0 = Math.min(...set.map((p) => p.dx)), x1 = Math.max(...set.map((p) => p.dx + p.kit.w - 1));
+    const y0 = Math.min(...set.map((p) => p.dy - p.kit.h + 1)), y1 = Math.max(...set.map((p) => p.dy));
     const bw = x1 - x0 + 1, bh = y1 - y0 + 1;
     // 원점 (ox,oy) · 좌우 뒤집기에서 조각의 왼쪽 위 칸.
     const spot = (p: Part, ox: number, oy: number, flip: boolean) => ({ x: ox + (flip ? x0 + x1 - p.dx - p.kit.w + 1 : p.dx), y: oy + p.dy - p.kit.h + 1 });
     // 판석 광장 장면은 광장 위를 먼저 보고, 안 들어가면 광장 곁 맨땅(모이는 곳 가장자리)으로 간다.
-    const tried = { spots: 0, group: 0, fit: 0, route: 0 };
     for (const onPlaza of scene.at === "plaza" && host.plazaCells.length >= 20 ? [true, false] : [false]) {
     const yardKey = scene.at === "work" ? "work" as const : scene.at === "commons" || (scene.at === "plaza" && !onPlaza) ? "gather" as const : null;
     const ctx: AnchorContext = { ...ctx0, yard: yardKey && !yardUsed[yardKey] ? yardOf[yardKey] : null };
@@ -247,23 +249,25 @@ export function placeVillageScenes(host: BeodeulSceneHost, scenes: readonly Vill
     };
     // 닻 찾기는 sceneAnchorScore 하나가 한다 — 네모마다 점수(작을수록 좋다, Infinity = 여기는 아니다).
     const score = sceneAnchorScore(host, ctx, scene.at, onPlaza);
-    if (!score) { if (onPlaza) continue; return skip("anchor"); }
+    if (!score) continue;
     const cands: { ox: number; oy: number; s: number }[] = [];
     for (let oy = 2 - y0; oy + y1 < H - 2; oy += 1) for (let ox = 2 - x0; ox + x1 < W - 2; ox += 1) {
       const sc = score(boxOf(ox, oy)); if (Number.isFinite(sc)) cands.push({ ox, oy, s: sc + (lookHash(`scene|${key}|${host.seed}|${scene.id}|${ox}|${oy}`) % 1000) / 600 });
     }
     cands.sort((a, b) => a.s - b.s);
     tried.spots += cands.length;
-    const required = land.filter((p) => !p.optional);
+    const required = set.filter((p) => !p.optional);
     for (const { ox, oy } of cands) {
       if (!groupOk(ox, oy, onPlaza)) { tried.group += 1; continue; }
       for (const flip of lookHash(`scene|${key}|${scene.id}|flip`) % 2 ? [true, false] : [false, true]) {
         if (!required.every((p) => fitsPart(p, ox, oy, flip))) { tried.fit += 1; continue; }
-        const use = land.filter((p) => !p.optional || fitsPart(p, ox, oy, flip));
+        const use = set.filter((p) => !p.optional || fitsPart(p, ox, oy, flip));
         if (use.length < scene.min) continue;
         // 장면이 문·모이는 곳·들머리 사이의 걷는 길을 두 칸 넘게 돌리면 그 자리는 아니다.
         const feet = use.flatMap((p) => { const s = spot(p, ox, oy, flip); return walkOn.has(p.kit.id) ? [] : host.footCells(p.kit, s.x, s.y); });
-        if (!guard.ok(feet)) { tried.route += 1; continue; }
+        // 장면 네모 안의 틈(조각 사이에 갇힌 칸)은 갇혀도 된다 — 네모 밖의 걷는 땅을 가두면 안 된다.
+        const inBox = new Set<number>(); { const bb = boxOf(ox, oy); for (let y = bb.y0; y <= bb.y1; y += 1) for (let x = bb.x0; x <= bb.x1; x += 1) inBox.add(idx(x, y)); }
+        if (!guard.ok(feet, inBox)) { tried.route += 1; continue; }
         guard.take(feet);
         for (const p of use) { const s = spot(p, ox, oy, flip); const slot = sceneSlot(at, !p.optional);
           if (onPlaza) host.placePlaza(p.kit, s.x, s.y, slot); else host.placeLand(p.kit, s.x, s.y, walkOn.has(p.kit.id), slot); }
@@ -286,9 +290,20 @@ export function placeVillageScenes(host: BeodeulSceneHost, scenes: readonly Vill
         for (const y of [b.y1 + 1, b.y1, b.y0 - 1]) { for (let i = 0; i <= bw && !stand; i += 1) for (const x of [mid + i, mid - i]) if (inMap(x, y) && open(x, y) && reach[idx(x, y)]! < 99) { stand = { x, y }; break; } if (stand) break; }
         report.placed[at] = { id: scene.id, ko: scene.ko, en: scene.en, at: scene.at, x: b.x0, y: b.y0, w: bw, h: bh, stand: stand ?? { x: mid, y: Math.min(H - 1, b.y1 + 1) },
           required: use.filter((p) => !p.optional).length, min: scene.min, pieces: use.length };
-        return;
+        return true;
       }
     }
+    }
+    return false;
+    };
+    // 먼저 고를 수 있는 조각까지 모두 든 네모로, 안 되면 꼭 있어야 하는 조각의 네모(그 안에 드는 고를 조각만 더해)로 —
+    // 새 그림이 늘어 네모가 커져도 장면이 통째로 빠지지 않는다.
+    if (attempt(land)) return;
+    const must = land.filter((p) => !p.optional);
+    if (must.length < land.length && must.length >= scene.min) {
+      const bx0 = Math.min(...must.map((p) => p.dx)), bx1 = Math.max(...must.map((p) => p.dx + p.kit.w - 1));
+      const by0 = Math.min(...must.map((p) => p.dy - p.kit.h + 1)), by1 = Math.max(...must.map((p) => p.dy));
+      if (attempt(land.filter((p) => !p.optional || (p.dx >= bx0 && p.dx + p.kit.w - 1 <= bx1 && p.dy - p.kit.h + 1 >= by0 && p.dy <= by1)))) return;
     }
     // 후보가 하나도 없으면 이 터에 그 닻이 없는 것이다(물 없는 마을의 물가 장면) — 자리 부족과 따로 센다.
     report.skipped.push({ id: scene.id, ko: scene.ko, why: tried.spots ? "room" : "anchor", tried });

@@ -38,6 +38,20 @@ export function argsFor(kind: VillageKind, seed: number): Record<string, unknown
   return a;
 }
 
+// 종류별 새 그림(2차 331종 — tiledata/beodeul-objects/catalog.json 의 면제 이름으로 가린다): 마을마다 실제로 찍힌 종 수를 센다(3층 칸이 통째로 맞는 것).
+const NEW300 = (JSON.parse(fs.readFileSync(new URL("../../../tiledata/beodeul-objects/catalog.json", import.meta.url), "utf8")).items as { kit: string; waiver?: string; rows: number[][] }[])
+  .filter((item) => item.waiver === "fable-objects300-beodeul-2026-11-14")
+  .map((item) => ({ kit: item.kit, cells: item.rows.flatMap((row, dy) => row.map((tile, dx) => ({ dx, dy, tile })).filter((c) => c.tile >= 0)), w: item.rows[0]!.length, h: item.rows.length }));
+const newKitsOn = (map: any): string[] => {
+  const W = map.width, at = (x: number, y: number) => (map.upperTiles[y * W + x] as number), found = new Set<string>();
+  for (const item of NEW300) {
+    const first = item.cells[0]!;
+    for (let y = 0; y + item.h <= map.height && !found.has(item.kit); y += 1) for (let x = 0; x + item.w <= W; x += 1)
+      if (at(x + first.dx, y + first.dy) === first.tile && item.cells.every((c) => at(x + c.dx, y + c.dy) === c.tile)) { found.add(item.kit); break; }
+  }
+  return [...found];
+};
+const newSeen = new Set<string>();
 const rows: Record<string, unknown>[] = [];
 let asked = 0, placed = 0, noRoom = 0, noKits = 0, lifted = 0, cut = 0, added = 0;
 for (const kind of BEODEUL_VILLAGE_KINDS) {
@@ -66,10 +80,11 @@ for (const kind of BEODEUL_VILLAGE_KINDS) {
   asked += sc.asked; placed += sc.placed; noRoom += room; noKits += kits; lifted += sc.lifted; cut += cells; added += d.routeAdded ?? 0;
   const row = { id: kind.id, ko: kind.ko, rank: kind.rank, ok: true, size: `${W}x${map.height}`, houses: d.houses, work: d.work?.name ?? null, asked: sc.asked, placed: sc.placed, noRoom: room, noKits: kits, lifted: sc.lifted,
     skipped: sc.skipped, cut: cells, routeAdded: d.routeAdded ?? 0, standReached: `${standOk}/${(d.scenes ?? []).length}`, unreached: (d.doors ?? []).filter((x: any) => !x.reached).length, stampFailed: d.stampFailed,
-    scenes: d.scenes, entrance: d.entrance, gather: d.gathering?.door ?? null };
+    scenes: d.scenes, entrance: d.entrance, gather: d.gathering?.door ?? null, newKits: newKitsOn(map), newObjects: d.newObjects };
+  for (const id of row.newKits) newSeen.add(id);
   rows.push(row);
   if (argv.includes("--why")) for (const t of sc.tried ?? []) console.log(`  자리 없음 ${t.id}: 후보 ${t.spots} · 무더기 조건 ${t.group} · 조각 안 들어감 ${t.fit} · 길 돌림 ${t.route}`);
-  console.log(`${kind.id} (${kind.rank}) ${row.size} 집 ${d.houses} · 장면 ${sc.placed}/${sc.asked}${room ? ` · 자리 없음 ${room}` : ""}${kits ? ` · 그림 기다림 ${kits}` : ""}${sc.lifted ? ` · 걷음 ${sc.lifted}` : ""} · 끊긴 칸 ${cells} · 걸음 +${d.routeAdded ?? 0} · 설 칸 ${row.standReached} · 못 닿는 문 ${row.unreached} · 찍기 실패 ${d.stampFailed}`);
+  console.log(`${kind.id} (${kind.rank}) ${row.size} 집 ${d.houses} · 장면 ${sc.placed}/${sc.asked}${room ? ` · 자리 없음 ${room}` : ""}${kits ? ` · 그림 기다림 ${kits}` : ""}${sc.lifted ? ` · 걷음 ${sc.lifted}` : ""} · 새 그림 ${row.newKits.length}종 · 끊긴 칸 ${cells} · 걸음 +${d.routeAdded ?? 0} · 설 칸 ${row.standReached} · 못 닿는 문 ${row.unreached} · 찍기 실패 ${d.stampFailed}`);
   if (png) {
     fs.writeFileSync(path.join(out, `${kind.id}.png`), renderMapPng(ctx.project, map).png);
     const main = (d.scenes ?? [])[0];
@@ -92,5 +107,6 @@ for (const kind of BEODEUL_VILLAGE_KINDS) {
     }
   }
 }
-fs.writeFileSync(path.join(out, "kinds.json"), JSON.stringify({ key, seed: seed0, rows }, null, 1));
+fs.writeFileSync(path.join(out, "kinds.json"), JSON.stringify({ key, seed: seed0, newSeen: [...newSeen].sort(), newTotal: NEW300.length, rows }, null, 1));
+console.log(`새 그림 331종 가운데 이 ${rows.length} 마을에 나온 것 ${newSeen.size}종`);
 console.log(`종류 ${rows.length} · 장면 청함 ${asked} · 통째로 섬 ${placed} · 자리 없어 못 놓음 ${noRoom} · 그림 기다림 ${noKits} · 깨져서 걷음 ${lifted} · 끊긴 걷는 칸 ${cut} · 들를 곳 걸음 +${added}`);

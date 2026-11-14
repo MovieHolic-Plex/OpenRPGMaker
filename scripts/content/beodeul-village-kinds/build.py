@@ -13,6 +13,12 @@ soon = {}
 for line in (open(sys.argv[3]) if len(sys.argv) > 3 else []):
     m = re.match(r'^\| `(bd-obj-[^`]+)` \| [^|]+ \| (\d+)×(\d+) \| ([^|]+) \|', line)
     if m and 'DROPPED' not in line: soon[m.group(1)] = ((int(m.group(2)), int(m.group(3))), '물 위' in m.group(4))
+# 공통 기물(종류와 무관한 59종)은 자리 규칙으로 쓴다: 간판 = 일터·집 문 옆, 등 = 길모퉁이, 살림 = 집 발치 줄(종류마다 둘씩 돌려 가며).
+SIGNS = {"fishing-cove": ["fish"], "waystation": ["stable"], "smithy-village": ["smith"], "market-village": ["item", "bakery"], "weavers": ["tailor"], "ranch": ["stable"], "brewers": ["item"],
+         "harbour-town": ["fish", "item"], "market-town": ["bank", "item", "bakery"], "guild-town": ["bakery", "tailor", "item", "magic"], "scholar-town": ["magic", "item"],
+         "garrison-town": ["weapon", "armour"], "canal-town": ["item", "bank"], "hot-spring": ["item"], "herbalist": ["magic"], "border-post": ["weapon"], "festival": ["bakery"]}
+LAMPS = {"hamlet": ["torch-post", "lantern-ground"], "village": ["lamp-hanging-pole", "torch-post"], "town": ["lamp-twin-stone", "lamp-hanging-pole"]}
+HOUSEHOLD = "rain-barrel stepladder baskets-stack hamper coal-bin wash-stand post-box bird-table dog-bowl-post cat-barrel planter-hanging planter-tiered planter-window-herbs trellis-vine topiary stool-pair bench-barrel-plank handcart-empty cart-water cart-firewood birdcage-stand hand-bell-table trash-heap planter-cart bench-round-tree bench-arbour cart-pedlar planter-boat".split()
 ANCH = {"work", "shore", "commons", "entry", "upper", "house", "behind", "road", "wild", "plaza"}
 bad = []; out = []; stats = []
 def size(i): return have.get(i) or (soon[i][0] if i in soon else None)
@@ -54,7 +60,13 @@ for k in HAMLETS + VILLAGES + TOWNS:
         if k.get(f): fit[f] = k[f]
     for f in ('walls', 'harbour', 'square'):
         if k.get(f): fit[f] = True
-    out.append({"id": k['id'], "ko": k['ko'], "en": k['en'], "hint": k['hint'], "rank": k['rank'], "fit": fit, "gather": {"ko": k['gather'][0], "en": k['gather'][1]},
+    n = len(out)
+    extra = ["obj-" + HOUSEHOLD[(2 * n + j) % len(HOUSEHOLD)] for j in (0, 1)]
+    signs = ["obj-sign-" + x for x in SIGNS.get(k['id'], [])]; lamps = ["obj-" + x for x in LAMPS[k['rank']]]
+    for i in extra + signs + lamps:
+        if 'bd-' + i not in have and 'bd-' + i not in soon: bad.append(f"{k['id']}/common: {i}")
+    k = dict(k, home=k['home'] + [i for i in extra if i not in k['home']])
+    out.append({"signs": signs, "lamps": lamps, "id": k['id'], "ko": k['ko'], "en": k['en'], "hint": k['hint'], "rank": k['rank'], "fit": fit, "gather": {"ko": k['gather'][0], "en": k['gather'][1]},
                 "work": k['work'], "scenes": scenes, "home": k['home'], "water": k['waterPool'], "wild": k['wild']})
     stats.append((k['id'], k['rank'], len(scenes), complete, waiting))
 if bad:
