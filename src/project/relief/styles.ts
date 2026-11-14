@@ -383,7 +383,22 @@ export interface ReliefStyleSpec {
    * log: 완만한 계단(길이 > 오르는 단 수)은 통나무 가로 턱으로 — 디딤판은 윗면 풀, 챌면은 통나무(강조 램프). 없으면 전부 돌.
    */
   readonly carvedStairs?: { readonly log?: boolean; readonly tread?: "top" | "wall" };
+  /**
+   * 자연 면(선택, 2026-11-14 오너 「벽이 그래도 타일 하나를 복사한 느낌은 싫다. 자연스러워야한다」): 절벽 면을 16px 가족 무늬의 되풀이 대신
+   * 절대 좌표의 해시·잡음으로 화소마다 만든다(render.ts natural*). 풀 처마도 열마다 다른 길이로 드리우고, 발치는 닿는 선을 풀 포기·잔돌이 끊는다.
+   * boulders 흙에 박힌 불규칙한 돌덩이(양식 없는 기본 그림의 덩이) · strata 두께가 제각각이고 물결치며 끊기는 가로 켜 · ledges 층층이 턱진 바위
+   * · ribs 폭·높이가 제각각인 세로 바위 갈비 · rock 비스듬한 바위 조각 + 폭이 고르지 않은 세로 금 + 갓돌(참고 그림의 회갈색 바위 절벽).
+   * 경사로 옆벽·계단 챌면은 family 무늬를 그대로 쓴다. 없으면 그림이 예전과 한 바이트도 다르지 않다.
+   */
+  readonly natural?: ReliefNaturalFace;
+  /** 원본 바닥으로 그리는 윗면을 단마다 이만큼 밝게(선택, 0.03 = 단마다 3%) — 높은 땅이 낮은 땅과 다른 빛으로 읽힌다. */
+  readonly topTone?: number;
+  /** 원본 바닥 위에도 절벽이 드리우는 그늘(동쪽으로 긴 그늘·발치 그늘)을 남긴다(선택) — 옆면을 그리지 않고 높이를 알린다. */
+  readonly castShadow?: boolean;
+  /** 계단·경사로 도트를 빌려 쓸 양식(선택, rampArt.json 의 키) — 절벽 모습 양식은 버들항 칩셋 돌계단 조각(grass-steps)을 쓴다. */
+  readonly rampArtOf?: string;
 }
+export type ReliefNaturalFace = "boulders" | "strata" | "ledges" | "ribs" | "rock";
 
 /**
  * 뒤·옆 가장자리 턱. sides: 동·서(옆) 가장자리 옆면 띠를 어디에 그리나 — "all" 모든 옆 가장자리(늪 1차 그대로),
@@ -407,6 +422,15 @@ export const RELIEF_DEFAULT_RIM: ReliefRim = { side: 4, lip: 2, soft: true, side
 
 /** 버들항 풀 둑(grass-steps 와 그 바닥 재질 변형)의 턱: 기본 턱 + 뒤 비탈 12px. 설원·사막 둑(snow-steps·sand-steps)은 아직 예전 그대로다. */
 const GRASS_STEPS_RIM: ReliefRim = { ...RELIEF_DEFAULT_RIM, back: 12 };
+
+/**
+ * 절벽 모습(2026-11-14 오너 「언덕의 느낌도 좀 각양각색으로」) — 게임마다 하나(겉모습 cliff, assets/beodeulLooks.json). 여섯 모두 자연 면이고
+ * 계단은 버들항 칩셋 돌계단 조각이다. 윗면 색은 풀 둑과 같다(원본 바닥으로 그릴 때는 그 바닥 화소를 쓴다).
+ */
+const CLIFF_TOP = ["#1a4c22", "#276d2d", "#3d8d43", "#5fa84a", "#87c464", "#b4e08a"];
+const cliffLook = (natural: ReliefNaturalFace, back: number, topTone: number, wall: string[], accent: string[]): ReliefStyleSpec =>
+  ({ smoothStairs: true, rampArtOf: "grass-steps", rim: { ...RELIEF_DEFAULT_RIM, back }, topTone, castShadow: true, natural, family: "earth", top: CLIFF_TOP, wall, accent });
+const EARTH_WALL = ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], EARTH_ACCENT = ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"];
 
 const MOSS = ["#223319", "#304726", "#415f32", "#56793f", "#6e944f", "#8db266"];
 const SNOW_WHITE = ["#6f8aa8", "#93aecb", "#b7cde3", "#d6e4f1", "#ecf3fa", "#ffffff"];
@@ -453,6 +477,14 @@ export const RELIEF_STYLES: Readonly<Record<string, ReliefStyleSpec>> = {
   "grass-steps@ground-earth": { smoothStairs: true, rim: GRASS_STEPS_RIM, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#3e2616", "#573620", "#71482c", "#8a5e3c", "#967042", "#ab967d"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
   "grass-steps@ground-terra": { smoothStairs: true, rim: GRASS_STEPS_RIM, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#5b351f", "#7c3a22", "#8c4a38", "#94562e", "#aa6633", "#b0953d"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
   "grass-steps@ground-sand": { smoothStairs: true, rim: GRASS_STEPS_RIM, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#7d6f52", "#9a8a66", "#b3a37f", "#e0cf9a", "#ece2c4", "#f4ecd6"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
+  // 절벽 모습 여섯(자연 면). cliff-earth 돌 박힌 흙 둑 · cliff-strata 켜 절벽 · cliff-rubble 회색 막돌 둑 · cliff-ledge 턱진 바위 · cliff-crag 갈비 바위벽
+  // · cliff-rock 회갈색 금 간 바위 절벽(오너가 보던 참고 그림의 절벽).
+  "cliff-earth": cliffLook("boulders", 16, 0.035, EARTH_WALL, EARTH_ACCENT),
+  "cliff-strata": cliffLook("strata", 8, 0.045, ["#2a1b0e", "#4a3018", "#6b4826", "#8b6234", "#aa7d45", "#c89a5a"], EARTH_ACCENT),
+  "cliff-rubble": cliffLook("boulders", 8, 0.03, ["#39332b", "#544b3f", "#6f6454", "#8b7f6b", "#a89c86", "#c6bba5"], MOSS),
+  "cliff-ledge": cliffLook("ledges", 10, 0.04, ["#2b2620", "#463d32", "#665a48", "#877a62", "#a89b80", "#c9bda2"], MOSS),
+  "cliff-crag": cliffLook("ribs", 12, 0.03, ["#231a12", "#3b2c1f", "#57422f", "#735a41", "#907556", "#ad926f"], EARTH_ACCENT),
+  "cliff-rock": cliffLook("rock", 12, 0.03, ["#2a200e", "#42331a", "#5a4826", "#84693e", "#ac8e5a", "#c8ac78"], MOSS),
   "snow-steps": { smoothStairs: true, family: "snow", overlay: "icicles", overlayEvery: 2, top: ["#6a7f9e", "#93a9c6", "#b9cce0", "#d6e3ef", "#e9f1f8", "#ffffff"], wall: ["#2a3040", "#3c4658", "#566479", "#71819a", "#93a3bb", "#b9c6d8"], accent: SNOW_WHITE },
   "sand-steps": { smoothStairs: true, family: "strata", top: ["#5b4d35", "#826e4c", "#ae9366", "#d9b87f", "#f5d090", "#ffefa5"], wall: ["#5a3e22", "#7a5630", "#98703f", "#b58a50", "#cfa566", "#e8c282"], accent: MOSS },
   // 던전 높이 단(2026-10-30 「던전 설계에 높이 단 — 마을과 같은 버들항 계단 조각」): 버들항 동굴 바위 앞면 색(칩셋에서 뽑은 6색)의 흙벽 절벽 + 같은 bd-mpart-stairs 돌계단.
@@ -494,6 +526,9 @@ export interface ReliefWallStyle {
   readonly smoothStairs: boolean;
   readonly carvedStairs: { readonly log: boolean; readonly tread: "top" | "wall" } | null;
   readonly topShade: { readonly band: number; readonly alpha: number } | null;
+  readonly natural: ReliefNaturalFace | null;
+  readonly topTone: number;
+  readonly castShadow: boolean;
 }
 
 const code = (ch: string): number => {
@@ -524,6 +559,7 @@ export function compileReliefStyle(style: string | undefined): ReliefWallStyle |
     rim: spec.rim === false ? null : spec.rim ?? RELIEF_DEFAULT_RIM,
     cornice: !!spec.cornice,
     topShade: spec.tundraTopShade ?? null,
+    natural: spec.natural ?? null, topTone: spec.topTone ?? 0, castShadow: !!spec.castShadow,
     smoothStairs: !!spec.smoothStairs,
     carvedStairs: spec.carvedStairs ? { log: !!spec.carvedStairs.log, tread: spec.carvedStairs.tread ?? "top" } : null,
   };
@@ -533,8 +569,9 @@ export function compileReliefStyle(style: string | undefined): ReliefWallStyle |
 
 /** 바이옴 경사로 도트(tiledata/relief-art/<style>-ramp.ase → scripts/content/build-relief-ramp-art.mjs → rampArt.json). 없으면 undefined. */
 export function reliefRampArt(style: string | undefined): ReliefRampArt | undefined {
-  // 바닥 재질 변형(grass-steps@ground-…)은 원래 양식의 계단 도트를 그대로 쓴다
-  return style ? (rampArt as Record<string, ReliefRampArt>)[style] ?? (rampArt as Record<string, ReliefRampArt>)[style.split("@")[0]!] : undefined;
+  // 바닥 재질 변형(grass-steps@ground-…)은 원래 양식의 계단 도트를, 절벽 모습 양식은 빌려 쓰는 양식(rampArtOf)의 도트를 쓴다
+  const art = rampArt as Record<string, ReliefRampArt>, base = style?.split("@")[0];
+  return style ? art[style] ?? art[base!] ?? art[RELIEF_STYLES[base!]?.rampArtOf ?? ""] : undefined;
 }
 
 /**
