@@ -6,6 +6,8 @@ import { DIR_DELTA as STAGE_DIR_DELTA, planApproach } from "@/project/staging/ap
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { headlessBattleSnapshot, createBattleRuntime, BattleEventInputRequiredError, type BattleResult } from "@/battle/runtime";
 import { predictSkillDamageFor } from "@/battle/battlePredict";
+import { SENSIBLE_POTION_HP_RATIO } from "@/battle/simulate";
+import { DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import type { ActorCommand } from "@/battle/types";
 import { resolveEventPage } from "@/project/io";
 import { checkReachability } from "@/project/lint/reachability";
@@ -2990,7 +2992,8 @@ function battleSnapshotAnswering(state: RunnerState, runtime: ReturnType<typeof 
 }
 
 /**
- * 헤드리스 전투의 한 수. 기본은 「공격」이지만 gen1(포켓몬식)은 기술이 남은 몬스터의 공격을 받지 않는다 —
+ * 헤드리스 전투의 한 수 — 여느 플레이어처럼: HP 가 낮으면 약, 아니면 가진 기술 가운데 가장 센 것, 안 받아 주면 「공격」.
+ * gen1(포켓몬식)은 기술이 남은 몬스터의 공격을 받지 않는다 —
  * 그러면 아무 수도 두지 못해 매 전투를 졌다(2026-09-24 몬스터 수집 도그푸딩: 스타터가 Lv3 야생에 패배).
  * 적을 때리는 기술을 위력 순으로 시도하고, 받아들여지지 않으면 다음 수로 간다.
  */
@@ -3039,7 +3042,9 @@ function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRu
     .sort((a, b) => expected(b) - expected(a) || (b.power ?? 0) - (a.power ?? 0));
   // 플레이어는 체력이 바닥나면 가방의 회복약을 쓴다(몬스터 게임은 교수가 다섯 개를 쥐여 주고, 조수가 지은 게임은 길 위 전투·보스전 몫을 들고 시작한다).
   // 예전에는 몬스터 게임만 그랬다 — 그 밖의 게임은 «공격» 만 눌러, 약을 써야 이기는 보스를 막다른 길로 읽었다(2026-11-12).
-  const potion = active && active.hp > 0 && active.hp <= active.maxHp * 0.3
+  // 배우 파티 게임은 여느 플레이어의 문턱(HP 45%)에서 쓴다 — 조수 v2 의 보스 밴드가 그 플레이로 보스를 맞춘다(쉬고 온 «공격만» 은 마지막 보스에게 진다).
+  const potionAt = project.system.battleModel === "gen1" ? 0.3 : SENSIBLE_POTION_HP_RATIO;
+  const potion = active && active.hp > 0 && active.hp <= active.maxHp * potionAt
     ? project.database.items
       .filter((item) => (item.hpRecovery.flat > 0 || item.hpRecovery.percentMax > 0) && !item.onlyUsableInMenu && !item.onlyEffectiveOnDeadActors
         && (item.occasion === "always" || item.occasion === "battle") && (snapshot.eventState.inventory[item.id] ?? 0) > 0)
@@ -3076,7 +3081,8 @@ function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRu
   const healWithMove: ActorCommand[] = healMove ? [{ kind: "skill", skillId: healMove.id, targetEnemyId }] : [];
   const attempts: ActorCommand[] = project.system.battleModel === "gen1"
     ? [...run, ...healSelf, ...healWithMove, ...throwBall, ...damaging.map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }]
-    : [...healSelf, { kind: "attack", targetEnemyId }];
+    // 배우 파티도 가진 기술 가운데 가장 센 것을 쓴다(MP 가 모자라 안 받으면 다음 수) — 사람은 «공격» 만 누르지 않는다(2026-11-13).
+    : [...healSelf, ...damaging.filter((skill) => skill.id !== DEFAULT_SKILL_ID).map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }];
   for (const command of attempts) {
     runtime.performActorCommand(command);
     const after = read();

@@ -172,7 +172,7 @@ export function buildScene(run: BuildRun, spec: SceneSpec): ContentBuildResult &
     { name: "첫 대화", lines: opening, choices: choices.map((c, i) => ({ text: c.label.trim(), commands: [say(c.reaction), { kind: "setSelfSwitch", key: i ? "B" : "A", value: true }] })) },
     ...choices.map((c, i) => ({ name: `다시 — ${c.label.trim()}`, lines: [c.revisit.trim()], conditions: [{ kind: "selfSwitch", key: i ? "B" : "A", value: true }] })),
   ];
-  const placed = placeNpcWithGraphic(run, map, { mapId, name: spec.partner, x: where.cell.x, y: where.cell.y, movement: "fixed", pages }, spec.role ?? spec.partner, spec.looks, spec.partner, warnings);
+  const placed = placeNpcWithGraphic(run, map, { mapId, name: spec.partner, x: where.cell.x, y: where.cell.y, movement: "fixed", pages }, spec.role ?? spec.partner, spec.looks, spec.partner, warnings, true);
   if (!placed.result.ok) return done(false, [mapId], `${spec.partner} 세우기 실패: ${String(placed.result.summary).slice(0, 300)}`);
   const eventId = (placed.result.data as { eventId?: string } | undefined)?.eventId ?? "";
   if (!placed.graphic?.faceResourceId) warnings.push(`${spec.partner}: 짝 얼굴 있는 그림을 못 골라 대화창 초상이 없다.`);
