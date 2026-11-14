@@ -11,7 +11,7 @@ T = 16
 TPR = 96                     # 열 수. 2026-10-08 48 → 96(4묶음 던전으로 칸이 48열×4096px 한도 12288 을 넘었다).
                              # 칸 번호는 그대로(번호 = 시트 위 순서), 그림 위치만 다시 놓는다 — ensureJpCityTileset 이 48열 사본을 같은 시트로 보고
                              # tilesPerRow 만 고친다(RELAYOUT_FROM). 다시 바꿀 일이 생기면 그 목록에 옛 열 수를 더한다.
-MAX_H = 4096
+MAX_H = 8192                 # 시트 높이 한도(px). 2026-11-14 4096 → 8192(WebGL 최소 보장 텍스처 크기 안 — modern_city 굽기 단언과 같은 값). 열 수는 그대로라 칸 번호는 안 바뀐다. 96열이면 49,152칸.
 MARKER = (0xe0, 0x40, 0xc0)
 
 # 칸 통행 종류(pc) → (priority, passable, passage, 기본 층)  — modern_city bake_lib.PC 와 같은 뜻

@@ -5,7 +5,7 @@
 
 입력  tiledata/jp-city/sources/jp_shopstreet16.png + .catalog.json   (16열 2880칸, 행인 칸 851~1005 는 투명 자리)
       scripts/content/jp-city/blocks/<이름>.py                       (BLOCK_ORDER 에 이름으로 고정한 것만, 없으면 건너뜀)
-출력  public/assets/jp-city/jp-city-chipset.png      시트(96열, 16px 칸, 높이 ≤ 4096)
+출력  public/assets/jp-city/jp-city-chipset.png      시트(96열, 16px 칸, 높이 ≤ 8192 = bake_lib.MAX_H)
       src/assets/jpCitySheet.json                    {count, tilesPerRow}
       src/assets/jpCityTileset.json                  타일셋 정의(통행·층·이름표·그룹·오토타일·구조 키트)
       tiledata/jp-city/pins.json                     자리 키 → 칸 번호(앞 번호 불변, 새 칸은 끝에)
@@ -677,7 +677,7 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
 
     # ---- 7) 번호 마무리 · legacy
     count = pins.next_id
-    assert math.ceil(count / TPR) * 16 <= BL.MAX_H, ('시트 높이 4096px 초과', count)
+    assert math.ceil(count / TPR) * 16 <= BL.MAX_H, ('시트 높이 %dpx 초과' % BL.MAX_H, count)
     legacy = [t for t in range(count) if t not in cells.img]
     for t in legacy:
         otpr = old_png.width // 16 if old_png is not None else TPR      # 옛 시트의 열 수(48열 → 96열 다시 놓기)
