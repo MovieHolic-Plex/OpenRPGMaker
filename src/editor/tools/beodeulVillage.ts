@@ -959,7 +959,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       streets.push(st);
     }
     for (const c of network) if (occ[c] === RESV_DOOR || occ[c] === FREE) occ[c] = ROAD;
-    for (const sp of spots) if (occ[idx(sp.front.x, sp.front.y)] === RESV_DOOR) occ[idx(sp.front.x, sp.front.y)] = FREE;
+    // 마당에 닿은 문 앞 칸은 골목이 없어 빈 땅으로 풀리는데, 우물 곁들이가 그 칸에 앉아 문을 막았다(설원 마을: 생선 상자가 문 앞에) — 마당 집의 문 앞은 길 칸으로 잡아 둔다
+    for (const sp of spots) if (occ[idx(sp.front.x, sp.front.y)] === RESV_DOOR) occ[idx(sp.front.x, sp.front.y)] = yardNet.has(idx(sp.front.x, sp.front.y)) ? ROAD : FREE;
     return { layout, report, spots, g: { x: gx, y: gy }, entrance, fords, plaza: form === "plaza", paths };
   })() : null;
   // 늪 널판 마루(길이 아닌 칸)는 비워 둔다(CLEAR) — 소품·늪물·물가 고리가 마루를 먹지 않게

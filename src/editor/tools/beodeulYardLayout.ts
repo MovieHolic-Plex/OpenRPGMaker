@@ -7,11 +7,11 @@
 // 여기서는 자리만 고른다. 놓을 수 있는지(집 그림 크기·단·물·문 앞)와 길이 닿는지는 시공기(beodeulVillage codePlan)가 env 로 답한다.
 // 마당 후보 몇 곳(단마다 하나 + 둘째)을 실제로 앉혀 보고, 예전 고리 배치보다 길·문·집 수가 나빠지지 않는 것 가운데 마당에 문을 낸 집이 가장 많은 것을 고른다.
 import type { CodeTerrain } from "./beodeulTerrainGen";
-import type { LayoutPoint } from "./beodeulCodeLayout";
+import type { HouseKind, LayoutPoint } from "./beodeulCodeLayout";
 
 export interface YardRect { x0: number; y0: number; x1: number; y1: number }
 /** 자리 요청: corner 가 있으면 (x,y)는 건물 아랫줄의 왼쪽(sw)·오른쪽(se) 모서리, 없으면 건물 가운데. maxR 을 주면 그 고리 안에서만 찾고 못 찾아도 실패로 적지 않는다. */
-export interface YardWant extends LayoutPoint { corner?: "sw" | "se"; maxW?: number; maxR?: number; /** 이 단에만 앉힌다. */ tier?: number; /** 집 크기 무리(좁은 터에서는 small). */ kind?: "small" }
+export interface YardWant extends LayoutPoint { corner?: "sw" | "se"; maxW?: number; maxR?: number; /** 이 단에만 앉힌다. */ tier?: number; /** 집 크기 무리(좁은 터에서는 small). */ kind?: HouseKind }
 export interface YardSeat { x: number; y: number; w: number; h: number; front: LayoutPoint }
 export interface YardPlan extends YardRect {
   level: number;
