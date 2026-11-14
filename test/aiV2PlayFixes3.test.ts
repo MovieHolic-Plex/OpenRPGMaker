@@ -394,6 +394,13 @@ describe("플레이어 화면의 낱말", () => {
     expect(label([fork])).toBe("Z 대화");
     expect(label([stone])).toBe("Z 조사");
     expect(label([fork], {})).toBe("Z 조사");
+    // 서술 한 줄만 남은 «끝난 뒤» 페이지 — 그 이벤트의 다른 페이지에서 말하는 사람이면 여전히 «Z 대화»(r4c-fun 여관 주인 미라). 말한 적 없는 물건은 «Z 조사».
+    const done = page([], [{ kind: "text", body: "(야스민과는 이미 이야기를 마쳤다.)" }], "action", { graphic: chip("people1", 3) });
+    const person = event("ev_yasmin", "야스민", 1, 1, [page([], [{ kind: "text", speaker: "야스민", body: "안녕." }], "action", { graphic: chip("people1", 3) }), done]);
+    const thing = event("ev_stone", "비석", 1, 1, [page([], [stone], "action", { graphic: chip("people1", 3) }), done]);
+    expect(interactionPromptLabel(done as never)).toBe("Z 조사");
+    expect(interactionPromptLabel(done as never, person as never)).toBe("Z 대화");
+    expect(interactionPromptLabel(done as never, thing as never)).toBe("Z 조사");
   });
 });
 
