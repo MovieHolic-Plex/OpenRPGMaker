@@ -159,7 +159,7 @@ export function validateTileset(id: string, value: unknown): void {
   if (tileset.look !== undefined) {
     const look = requireRecord(`tileset ${id}.look`, tileset.look);
     assert(requireString(`tileset ${id}.look.textureKey`, look.textureKey).length > 0, `tileset ${id}: look.textureKey 는 빈 문자열일 수 없습니다.`);
-    for (const part of ["surface", "trees", "woods", "houses", "plaza", "stand", "meadow", "standKey"]) if (look[part] !== undefined) requireString(`tileset ${id}.look.${part}`, look[part]);
+    for (const part of ["surface", "trees", "woods", "houses", "plaza", "stand", "meadow", "grain", "standKey"]) if (look[part] !== undefined) requireString(`tileset ${id}.look.${part}`, look[part]);
   }
   requireString(`tileset ${id}.id`, tileset.id);
   requireString(`tileset ${id}.name`, tileset.name);

@@ -21,7 +21,7 @@ import type { Project, TilesetLook } from "@/project/types";
 const TS = "beodeul_city";
 const table = tilesetLookTableFor(TS)!;
 const GAMES = Array.from({ length: 400 }, (_, n) => JSON.stringify(["project", `game-${n}`]));
-// 갈래가 일곱(바닥·나무·숲·집 벌·광장·숲 구성·풀밭 얼룩)이라 «한 갈래만 고른 게임» 은 드물다 — 찾을 때는 넉넉히 훑는다(해시뿐이라 싸다)
+// 갈래가 여덟(바닥·나무·숲·집 벌·광장·숲 구성·풀밭 얼룩·풀 결 — 풀 결은 늘 하나 고른다)이라 «한 갈래만 고른 게임» 은 드물다 — 찾을 때는 넉넉히 훑는다(해시뿐이라 싸다)
 const keyWhere = (test: (look: TilesetLook | undefined) => boolean): string => {
   for (let n = 0; n < 600_000; n += 1) { const key = JSON.stringify(["project", `game-${n}`]); if (test(chooseTilesetLook(table, key))) return key; }
   throw new Error("그런 겉모습을 고르는 게임 열쇠가 없다");

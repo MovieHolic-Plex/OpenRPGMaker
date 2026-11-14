@@ -52,6 +52,7 @@ import { BEODEUL_COURTYARD_TOOLS } from './beodeulCourtyardTools';
 import { BEODEUL_VEGETATION_TOOLS } from './beodeulVegetationTools';
 import { BEODEUL_LIGHT_TOOLS } from './beodeulLightTools';
 import { BEODEUL_GROUND_TOOLS } from './beodeulGroundTools';
+import { BEODEUL_GRASS_TOOLS } from './beodeulGrassGrain';
 import { BEODEUL_ARCHITECTURE_TOOLS } from './beodeulArchitectureTools';
 import { DIRECTING_GUIDE_TOOLS } from "./directingGuideTools";
 import { ASSISTANT_SKILL_TOOLS } from "./assistantSkillTools";
@@ -364,6 +365,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...MAP_DOOR_TOOLS,
   ...BEODEUL_DOOR_TOOLS,
   ...BEODEUL_GROUND_TOOLS,
+  ...BEODEUL_GRASS_TOOLS,
   ...BEODEUL_LIGHT_TOOLS,
   ...BEODEUL_HAMLET_TOOLS,
   ...BEODEUL_COURTYARD_TOOLS,

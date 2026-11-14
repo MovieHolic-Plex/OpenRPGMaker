@@ -42,8 +42,8 @@ export function chooseTilesetLook(table: TilesetLookTable, key: string, taken?: 
     const pick = options[lookHash(`look|${key}|${table.tilesetId}|${part}`) % options.length]!;
     if (pick) { look[part] = pick; chosen = true; }
   }
-  // 숲 구성·풀밭 얼룩의 그림은 둘째 그림판에 있다 — 그 열쇠도 적어 둔다(미리 싣기·내보내기가 프로젝트 문자열에서 그림판을 찾는다).
-  if (stands && (look.stand || look.meadow)) look.standKey = stands.texture;
+  // 숲 구성·풀밭 얼룩·풀 결의 그림은 둘째 그림판에 있다 — 그 열쇠도 적어 둔다(미리 싣기·내보내기가 프로젝트 문자열에서 그림판을 찾는다).
+  if (stands && (look.stand || look.meadow || look.grain)) look.standKey = stands.texture;
   return chosen ? look : undefined;
 }
 

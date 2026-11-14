@@ -19,7 +19,7 @@ export function runtimeMap(map: GameMap, session: Pick<PlaySession, 'mapOverride
 }
 
 /** Live scenes retain map and tile-array identity for schedules and passability consumers. */
-export function applyRuntimeMapOverrides(map: GameMap, session: Pick<PlaySession, 'mapOverrides'>): void {
+export function applyRuntimeMapOverrides(map: GameMap, session: Pick<PlaySession, 'mapOverrides'>, groundCover?: (tile: number) => boolean): void {
   const overrides = session.mapOverrides[map.id];
   if (!overrides) return;
   let copiedWater = false;
@@ -32,6 +32,8 @@ export function applyRuntimeMapOverrides(map: GameMap, session: Pick<PlaySession
           if (!copiedWater) { map.terrainDesign = cloneTerrainDesign(map.terrainDesign)!; copiedWater = true; }
           map.terrainDesign.waterDepth![index] = 0;
         }
+        // 바닥 덧그림(풀 결 등 — groundCover)은 그 밑 바닥의 한 부분: 이벤트가 바닥 칸을 바꾸면 같이 걷는다(안 걷으면 새 바닥이 덧그림에 가린다)
+        if (layer === 1 && groundCover && tile !== layerTileAt(map, 1, index) && overrides.lower2?.[index] === undefined && groundCover(layerTileAt(map, 2, index))) setLayerTileAt(map, 2, index, -1);
         setLayerTileAt(map, layer, index, tile);
       }
     }
