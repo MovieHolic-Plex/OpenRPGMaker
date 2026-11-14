@@ -15,6 +15,8 @@ import { isPassable } from "@/project/collision";
 import type { GameMap } from "@/project/types";
 import { endingClosing, normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { buildPuzzleChain, type ChainLink } from "./puzzle";
+import { choiceAtThing, samePersonStep } from "./samePerson";
+import { bigFigureCell, bigFigureCells } from "./bigFigure";
 import { programAnchor } from "../place/program";
 import { incomingLandings, resolveWhere } from "../place/where";
 import { applyThemeBackdrop, themeBossTroop } from "../place/placeTheme";
@@ -38,7 +40,7 @@ import { shownLines, stepHandover } from "./stepHandover";
 import { behindBuildingStrip } from "../place/entrances";
 import { foeGraphic, settleStepFoesIn, themeBattleBackdropsIn } from "./stepFoes";
 import { remapGives, settleCarriedSteps } from "./blueprintCarry";
-import { foeTroop } from "./stepFoeTroop";
+import { foeTroop, roadFoeSpecies } from "./stepFoeTroop";
 import { lockedHint, stepGoal, wordlessLine } from "./playerLines";
 
 /**
@@ -235,6 +237,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   /** 고르기 단계가 남긴 «그 선택의 결과» 줄 — 마지막(엔딩) 고리가 읽는다. */
   const variants: { needs: string; lines: string[] }[] = [];
   const linkStep: number[] = [];
+  /** 단계 → 그 단계의 고리 번호(links 안) — 같은 사람의 뒤 단계가 그 고리의 이벤트에 잇는다. */
+  const stepLink = new Map<number, number>();
   /**
    * 고리 하나가 설 칸. 낱말(«책상 앞»)이 그 맵의 물건을 가리키면 그 앞. 종류를 적은 청사진에서 낱말이 없거나(사람) 못 찾았으면
    * 들어온 칸에서 rank(0 가까움 ~ 1 가장 먼 곳)쯤의 길을 막지 않는 칸 — 못 찾은 낱말의 기본 자리는 맵 가장자리 구석이었다.
@@ -269,10 +273,10 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   const heard: string[] = [];
   /** 단계마다 — 자물쇠 단계가 받은 정답(없으면 undefined). 앞 단계의 글이 이 번호를 담으면 그 단계가 번호를 알려 주는 단계다. */
   /** 싸우는 단계들이 세운 종 — 보스 둘이 같은 전투 그림으로 서지 않게(story/stepFoeTroop). */
-  const foesUsed = new Set<string>();
+  const foesUsed = new Set<string>(roadFoeSpecies(run.ctx.project));
   // 마지막 싸움의 상대가 제 종을 먼저 갖는다 — 앞 싸움이 그 종을 가져가 마지막 보스가 대역의 대역으로 서지 않게.
   const finalMap = lastBattle >= 0 && steps.some((st, i) => st.kind === "battle" && i < lastBattle) ? mapFor(run.ctx.project, steps[lastBattle]!.place) : undefined;
-  const finalFoe = finalMap ? themeBossTroop(run.ctx.project, finalMap.id, steps[lastBattle]!.who?.trim() || undefined, true, lastBattle).enemyId : undefined;
+  const finalFoe = finalMap ? themeBossTroop(run.ctx.project, finalMap.id, steps[lastBattle]!.who?.trim() || undefined, true, lastBattle, foesUsed).enemyId : undefined;
   if (finalFoe) foesUsed.add(finalFoe);
   const lockCodes = steps.map((st) => (st.kind === "puzzle" || (!st.kind && isCodeStep(st)) ? byId.get(st.id)?.code?.trim() || undefined : undefined));
   steps.forEach((step, k) => {
@@ -282,23 +286,34 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     let map = mapFor(run.ctx.project, step.place);
     if (!map) { map = prevMap; warnings.push(`${step.id} 장소 「${step.place}」 맵이 없어 「${map.name}」에 두었다`); step.place = map.name || map.id; }
     prevMap = map;
-    const existing = (map.events ?? []).find((e) => e.id === step.event || norm(String((e as { name?: string }).name ?? "")) === norm(step.event))
+    let existing = (map.events ?? []).find((e) => e.id === step.event || norm(String((e as { name?: string }).name ?? "")) === norm(step.event))
       ?? (map.events ?? []).find((e) => !e.id.startsWith("ev_objective") && sameName(String((e as { name?: string }).name ?? ""), step.event));
     // 사람 단계(종류를 적은 청사진만): talk·choice 는 맵 가운데쯤, battle 은 들어온 곳에서 가장 먼 안쪽에 선다 — 이름으로 물건을 찾는 조사 자리와 다르다.
     const who = step.who?.trim() || undefined;
-    const personal = !!who && (step.kind === "talk" || step.kind === "choice" || step.kind === "battle");
+    const t = byId.get(step.id);
+    // 고르기 단계의 who 가 물건이면(제어대·제단) 사람이 아니다 — 사람 칩을 세우지 않고, 글은 말하는 사람 없는 서술이다(samePerson.ts choiceAtThing).
+    const atThing = step.kind === "choice" && choiceAtThing(step, t);
+    const personal = !!who && (step.kind === "talk" || (step.kind === "choice" && !atThing) || step.kind === "battle");
+    // 같은 사람이 같은 장소에서 다시 나오는 단계는 앞 단계의 그 사람이다 — 몸을 하나 더 세우지 않고 그 이벤트의 페이지로 잇는다(puzzle.ts sameAs).
+    const twin = personal && step.kind !== "battle" ? samePersonStep(steps, k, (i) => stepLink.has(i) && mapFor(run.ctx.project, steps[i]!.place)?.id === map!.id) : -1;
+    const joins = twin >= 0 && (!existing || existing.id === ids[twin] || existing.id.startsWith("ev_chain_")) ? stepLink.get(twin) : undefined;
+    if (joins !== undefined && existing) {
+      // 앞선 빌드가 따로 세운 둘째 몸은 걷는다(함수가 지은 것만).
+      if (existing.id !== ids[twin]) { const gone = existing.id; run.call("remove_event", { mapId: map.id, eventId: gone }); warnings.push(`${step.id}: 「${who}」 는 앞 단계의 그 사람이다 — 따로 서 있던 둘째 이벤트(${gone})를 걷고 한 이벤트로 이었다`); }
+      existing = undefined;
+    }
     // 자물쇠(puzzle)의 다음 단계가 다른 장소면 그 자물쇠는 그리로 가는 입구에 달린다(story/stepWayOut) — 걸음 수로 고른 자리가 아니다.
     const nextMap = step.kind === "puzzle" && !existing && steps[k + 1] ? mapFor(run.ctx.project, steps[k + 1]!.place) : undefined;
+    const thingStep = step.kind === "find" || step.kind === "puzzle" || atThing;
     const way = nextMap && nextMap.id !== map.id ? wayOutSpot(run.ctx.project, map, nextMap.id, taken.get(map.id) ?? []) : undefined;
     if (way) taken.set(map.id, [...(taken.get(map.id) ?? []), way.near]);
-    const paced = existing ? undefined : way?.near ?? spotFor(map, personal ? undefined : `${step.event} 앞`, !!step.kind, step.kind === "battle" ? 0.92 : personal ? 0.45 : 0.3 + 0.13 * (k % 5), personal && step.kind !== "battle" ? who : undefined);
-    const t = byId.get(step.id);
+    const paced = existing || joins !== undefined ? undefined : way?.near ?? spotFor(map, personal ? undefined : `${step.event} 앞`, !!step.kind, step.kind === "battle" ? 0.92 : personal ? 0.45 : 0.3 + 0.13 * (k % 5), personal && step.kind !== "battle" ? who : undefined);
     // 뒤 자물쇠의 번호를 알려 주는 단계인가 — 이 단계의 화면 글이 그 번호를 담는다(또는 code 칸에 적었다).
     const toldCode = (step.kind && step.kind !== "puzzle" ? t?.code?.trim() : undefined) || lockCodes.slice(k + 1).find((c) => !!c && shownLines(t).some((line) => line.includes(c)));
     // 조사·퍼즐 단계의 물건은 그 장소에 그려진 물건에 앉는다(story/stepThings). 길을 여는 자물쇠는 제 입구의 문 칸이 먼저다(모델이 on 으로 그림을 고르지 않았으면) — 맞는 그림도 문 칸도 없을 때만 고른 빈 칸.
     // 번호가 적힌 것을 조사하는 단계는 적힌 글이다 — 그 이름의 그림이 없으면 칩셋의 쪽지 그림을 그 자리에 놓는다(없는 그림 줄은 마무리가 적는다).
     const ownDoor = way?.door && !t?.on?.trim() ? { cell: way.door } : undefined;
-    const host = !paced || (step.kind !== "find" && step.kind !== "puzzle") ? undefined
+    const host = !paced || !thingStep ? undefined
       : ownDoor ?? hostStepThing(run, map.id, step.event, paced, t?.on, taken.get(map.id)) ?? (way?.door ? { cell: way.door } : step.kind === "find" && toldCode ? hostStepThing(run, map.id, "쪽지", paced, undefined, taken.get(map.id)) : undefined);
     if (host) taken.set(map.id, [...(taken.get(map.id) ?? []), host.cell]);
     const at = host?.cell ?? paced;
@@ -323,7 +338,8 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     const lockedDefault = k > 0 ? [lockedHint(steps[k - 1]!, step.place)] : undefined;
     // 사람 앞의 안내는 서술 한 줄로 묶는다(괄호 없는 줄은 그 사람의 말이 된다).
     const lockedPerson = personal && lockedDefault ? [`(${who}${josa(who!, "은", "는")} ${step.kind === "battle" ? "아직 움직이지 않는다" : "아직 할 말이 없는 듯하다"}. ${lockedDefault[0]})`] : undefined;
-    let base: Omit<ChainLink, "role"> = { mapId: map.id, ...(existing ? { eventId: existing.id } : { name: step.event, at: at! }), ...(needs ? { needs } : {}), ...(!needs && prevCondition ? { needsCondition: prevCondition } : {}), ...(personal ? { person: who, speaker: who } : {}), ...(step.kind === "find" ? { thing: "find" as const } : step.kind === "puzzle" ? { thing: true } : {}), ...(host ? { onArt: true } : {}), ...(way ? { opens: nextMap!.id } : {}), ...(existing && carried.renamed.has(existing.id) ? { relook: true } : {}) };
+    const seat = existing ? { eventId: existing.id } : joins !== undefined ? { sameAs: joins } : { name: step.event, at: at! };
+    let base: Omit<ChainLink, "role"> = { mapId: map.id, ...seat, ...(needs ? { needs } : {}), ...(!needs && prevCondition ? { needsCondition: prevCondition } : {}), ...(personal ? { person: who, speaker: who } : {}), ...(step.kind === "find" ? { thing: "find" as const } : step.kind === "puzzle" || atThing ? { thing: true } : {}), ...(host ? { onArt: true } : {}), ...(way ? { opens: nextMap!.id } : {}), ...(existing && carried.renamed.has(existing.id) ? { relook: true } : {}) };
     prevCondition = undefined;
     // 번호·암호 단계(「비밀번호 입력」「숫자 자물쇠」): 모델이 code 를 안 줬어도 함수가 정답을 정하고, 앞 단계 대사에 답이 없으면
     // 그 답을 적은 단서 고리를 바로 앞에 둔다(앞 단계 결과로 열린다) — 이 단계는 그 단서를 읽어야 열리고 번호를 맞혀야 넘어간다.
@@ -372,11 +388,12 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
           lines: keyed && needText ? [`${needText}${josa(needText, "으로", "로")} 열자 안에 쪽지가 있다.`, note] : [`${clueName}${josa(clueName, "을", "를")} 살펴보았다.`, note],
           ...(lockedDefault ? { lockedLines: lockedDefault } : {}) });
         linkStep.push(-1);
-        base = { mapId: map.id, ...(existing ? { eventId: existing.id } : { name: step.event, at: at! }), needs: learn, ...(base.thing ? { thing: base.thing } : {}), ...(base.onArt ? { onArt: true } : {}), ...(base.person ? { person: base.person, speaker: base.speaker } : {}) };
+        base = { mapId: map.id, ...seat, needs: learn, ...(base.thing ? { thing: base.thing } : {}), ...(base.onArt ? { onArt: true } : {}), ...(base.person ? { person: base.person, speaker: base.speaker } : {}) };
         clueLearn = learn;
       }
     }
     linkStep.push(k);
+    stepLink.set(k, links.length);
     // 사람 단계에 대사를 안 줬으면 «살펴보았다» 대신 그 단계의 할 일을 서술 한 줄로.
     const said = t?.lines?.length ? t.lines : personal ? [wordlessLine(step)] : [lookLine(step.event)];
     // 번호를 알려 주는 단계인데 대사에 그 번호가 없으면 한 줄 덧붙인다 — 플레이어가 읽은 글에 번호가 있어야 뒤의 자물쇠를 연다.
@@ -394,6 +411,12 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     const foeLook = troopId ? foeGraphic(run.ctx.project, troopId) : undefined;
     // 몬스터 그림으로 선 상대는 이기면 맵에서 사라진다 — 사람 칩으로 선 상대(그림을 못 찾은 사람)는 남아 뒷말을 한다.
     if (battle) base = { ...base, battle: { ...battle, ...(foeLook ? { leaves: true } : {}) }, ...(foeLook ? { graphic: foeLook } : {}) };
+    // 두 배로 서는 상대는 그림이 덮는 칸이 모두 트인 자리에 선다(bigFigure.ts) — 벽·가구에 걸쳐 서지 않게. 새로 세우는 자리만 옮긴다.
+    if (base.at && Number((foeLook as { scale?: number } | undefined)?.scale ?? 1) >= 2) {
+      const stand = bigFigureCell(run.ctx.project, map, base.at, taken.get(map.id) ?? []);
+      taken.set(map.id, [...(taken.get(map.id) ?? []), ...bigFigureCells(map, stand)]);
+      if (stand.x !== base.at.x || stand.y !== base.at.y) base = { ...base, at: stand };
+    }
     // 이 단계에서 소지품에 들어오는 것 — 단계의 종류와 화면 글이 정한다(story/stepHandover). 뒤 자물쇠의 번호를 알려 주는 단계는 번호가 남는 쪽으로.
     const hand = stepHandover(step, t, { last, told: toldCode, leaves: !!foeLook });
     const handed = hand.item;
@@ -452,7 +475,10 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
   // 자물쇠 대사가 입력 전에 결과(«입력하자 열렸다»)를 말하면 정답 뒤로 옮기고, 단서 번호와 정답을 맞춘다(codeClues.ts).
   const aligned = alignCodeClues(run.ctx.project);
   run.ctx.project = aligned.project;
-  const objectiveNotes = stepObjectives(run, steps.map((st) => stepGoal({ ...st, text: { goal: byId.get(st.id)?.goal } })), links.map((l, li) => ({ step: linkStep[li]!, name: l.name ?? "", made: eventIds[li] })));
+  // 자물쇠의 답이 든 goal 은 목표 줄로 쓰지 않는다 — 이름으로 지은 중립 줄이 선다(끝맺음 code-clues 의 codeLeaks 가 남은 것을 마저 고친다).
+  const lockCodeList = links.flatMap((l) => (l.code ? [l.code] : []));
+  const leaked = steps.filter((st) => { const goal = byId.get(st.id)?.goal; return !!goal && lockCodeList.some((c) => goal.includes(c)); }).map((st) => st.id);
+  const objectiveNotes = stepObjectives(run, steps.map((st) => stepGoal({ ...st, text: { goal: leaked.includes(st.id) ? undefined : byId.get(st.id)?.goal } })), links.map((l, li) => ({ step: linkStep[li]!, name: l.name ?? "", made: eventIds[li] })));
   const roles = links.map((l, i) => `${linkStep[i]! < 0 ? `(단서) ${l.name}` : `${steps[linkStep[i]!]!.id} ${steps[linkStep[i]!]!.event}`}(${l.role}${l.code ? ` 번호 ${l.code}` : ""}${l.needs ? ` ← ${l.needs}` : l.needsCondition ? " ← 앞 단계 이벤트가 켜는 것" : ""})`).join(" → ");
-  return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], missingArt: [...new Set([...built.missingArt, ...artGaps])], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}${objectiveNotes.length ? ` 목표 줄: ${objectiveNotes.join(" / ")}` : ""}` };
+  return { ...built, ...(blueprint ? { blueprint } : {}), warnings: [...warnings, ...built.warnings], missingArt: [...new Set([...built.missingArt, ...artGaps])], summary: `${sealed.length ? `${sealed.join(" / ")}. ` : ""}청사진 경로를 지었다: ${kept.length ? `(그대로 둔 단계: ${kept.join(", ")}) ` : ""}${roles} → 엔딩 「${ending!.name ?? ending!.id}」(${ending!.id}). ${built.summary}${objectiveNotes.length ? ` 목표 줄: ${objectiveNotes.join(" / ")}` : ""}${leaked.length ? ` The goal of ${leaked.join(", ")} gave away a lock's code — the objective line was written without it (the player reads the code from the clue). Keep codes out of goal and lockedLines.` : ""}` };
 }

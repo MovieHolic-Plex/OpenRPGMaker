@@ -40,7 +40,7 @@ export const WRITE_BLUEPRINT_SCHEMA = {
     steps: { type: "array", minItems: 2, maxItems: 12, items: { type: "object", properties: {
       id: { type: "string", description: "s1, s2 …" },
       kind: { type: "string", enum: [...STEP_KINDS], description: "talk (a named person) · find (examine or pick up) · battle (win a fight) · puzzle (number lock) · choice (options with different results)" },
-      who: { type: "string", description: "talk · choice · battle: that person's or foe's name (speaker name and character art)" },
+      who: { type: "string", description: "talk · choice · battle: that person's or foe's name (speaker name and character art). Same who again in the same place = the same one character. A choice at a thing (console, altar): the thing's name — its lines show as narration" },
       place: { type: "string", description: "map name (exactly the name you will build)" },
       event: { type: "string", description: "event name on that map (exactly the name you will build)" },
       action: { type: "string", description: "design note: what the player does (never shown)" },

@@ -5,6 +5,7 @@
 // 표정은 대사 줄의 emotion 이 고른다(런타임 dialogueFaceForEmotion) — 함수가 기분을 아는 줄(싸우기 직전)에만 적는다.
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
+import { sharedCharsetRow } from "@/project/sharedCharacterFaceResolver";
 import { findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId } from "@/assets/sharedPortraitAssets";
 import { startStateOf } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
@@ -22,6 +23,15 @@ export function bustOfFace(faceResourceId: string | undefined): string | undefin
 /** 걷기 칩 → 그 인물의 흉상. 짝 얼굴이 없거나 흉상이 안 그려진 칩은 undefined. */
 export function bustOfChip(textureKeyOrId: string | undefined, characterIndex = 0): string | undefined {
   return textureKeyOrId ? bustOfFace(reviewedFaceIdForCharset(textureKeyOrId, characterIndex)) : undefined;
+}
+
+/**
+ * 걷기 칩 → 그 사람의 모습(성별·나이·머리) — 시트가 달라도 이것이 같으면 같은 사람으로 읽힌다(actor4 «파란 머리 청년» 과 people1 «푸른 머리 청년»).
+ * 그림 설명에 셋 가운데 하나라도 없으면 undefined(견줄 수 없다).
+ */
+export function lookOfChip(textureKeyOrId: string | undefined, characterIndex = 0): string | undefined {
+  const a = textureKeyOrId ? sharedCharsetRow(textureKeyOrId, characterIndex)?.attributes as { gender?: string; age?: string; hair?: string } | undefined : undefined;
+  return a?.gender && a.age && a.hair ? `${a.gender}|${a.age}|${a.hair}` : undefined;
 }
 
 function bustOfGraphic(graphic: unknown): string | undefined {

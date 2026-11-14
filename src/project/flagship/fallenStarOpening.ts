@@ -293,7 +293,7 @@ function observatoryShot(): OpeningAnimatic {
     particles("rafter-dust", "snow", "#cdb999", { x: 110, y: -10, width: 320, height: 220 }, 40, 61,
       { parallax: 1.15, blend: undefined, startMs: 120, particles: { preset: "snow", count: 40, seed: 61, speed: 9, size: 1 }, keys: { opacity: [key(120, 0), key(450, 0.7, "ease-out"), key(3000, 0.35)] } }),
     screenFill("bell-light", "#ffd9a0", [key(0, 0.14), key(450, 0, "ease-out")], "screen"),
-    caption("line-bell", [{ atMs: BEAT, text: "천문대 종이 울리기 시작했다." }], 3000, 350),
+    caption("line-bell", [{ atMs: BEAT, text: "천문대 종이 길게 울려 퍼졌다." }], 3000, 350),
   ], { keys: cam, shake: { atMs: 0, durationMs: 600, amplitude: 1.5, frequency: 16, seed: 3 } }, { kind: "cut", durationMs: 1 }, [
     { id: "bell-1", resourceId: SE.bell, atMs: 0, durationMs: 3000, volume: 0.7, fadeOutMs: 200 },
   ]);
@@ -343,7 +343,7 @@ function streetShot(): OpeningAnimatic {
     flicker("smithy-sign", px(30, 41), 22), flicker("workshop-sign", px(37, 41), 22),
     flicker("board", px(39, 32), 20, "#ffd890", 0.35), flicker("post", px(24, 35), 18, "#ffd890", 0.35),
     particles("street-motes", "dust", "#d8ff88", { x: 20, y: 40, width: 480, height: 220 }, 10, 53, { opacity: 0.5 }),
-    caption("line-street", [{ atMs: 300, text: "왕도는 아직 아무것도 모르고 잠들어 있었다." }], 2700),
+    caption("line-street", [{ atMs: 300, text: "왕도는 아직 아무것도 모른 채 잠들어 있었다." }], 2700),
   ], { keys: cam }, { kind: "fade", durationMs: 400 }, [
     { id: "street-bell", resourceId: SE.bell, atMs: 0, durationMs: 3000, volume: 0.35, fadeOutMs: 1800 },
   ]);

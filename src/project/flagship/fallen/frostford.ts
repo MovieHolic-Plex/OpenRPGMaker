@@ -161,8 +161,8 @@ const LAMP_HOUSE: Room = {
     goods: [{ id: "papers", x: 5, y: 5 }, { id: "lamp", x: 6, y: 5 }, { id: "scissors", x: 7, y: 5 }, { id: "candle", x: 5, y: 6 }, { id: "lamp", x: 7, y: 6 }],
   },
   npc: { id: "ev_fs2_frost_lampmaker", name: "등 만드는 소이", chip: "ev_fs_crowd_b", at: { x: 6, y: 4 }, lines: [
-    "오늘이 「대답의 등」 띄우는 밤이에요.\n기름이 모자라서 아껴야 하지만\n등은 띄워야죠.",
-    "등마다 한 줄씩 적어요. 받을 사람이\n누군지 몰라도 돼요.\n「잘 지내」 한마디면 충분해요.",
+    "오늘이 「대답의 등」 띄우는 밤이에요.\n기름이 모자라 아껴 써야 하는데,\n그래도 등은 띄워야죠.",
+    "등마다 한 줄씩 적어요. 받을 사람이\n누군지 몰라도 돼요.\n「잘 지내」 한마디면 돼요.",
     "세린 언니가 그랬어요.\n대답은 받는 사람보다\n하는 사람을 살린다고.",
   ] },
 };
@@ -369,7 +369,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
     pages: [
       { name: "처음", commands: [
         say(HARMA, "별지기 옷이구먼. 오랜만에 보는 옷이야."),
-        say(HARMA, "우리 증조할미가 달에서 온 아이한테\n「잘 지내」 했대. 그 뒤로 이 호숫가에선\n얼어 죽는 사람이 없어."),
+        say(HARMA, "우리 증조할미가 달에서 온 아이한테\n「잘 지내」 했대. 그 뒤로 이 호숫가에선\n얼어 죽은 사람이 없어."),
         say(KAEL, "세린이라는 분을 아세요?"),
         say(HARMA, "세린이? 알지. 등을 제일 멀리 띄우던 애야.\n…그 애 아들이 이번에 탑으로 올라갔어."),
         say(KAEL, "그 사람, 등 띄우는 법은 안 잊었어요."),
@@ -407,7 +407,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
     addEv(project, FS2_FROST_ID, `ev_fs2_frost_hole_${k}`, "얼음 구멍", h, [
       page(`ev_fs2_frost_hole_${k}_idle`, "구멍", [], [narrate("얼음 구멍이다. 검은 물이 천천히 출렁인다.")]),
       page(`ev_fs2_frost_hole_${k}_fish`, "낚는다", [sw(SW_Q5_TAKEN)], [
-        narrate("줄을 내렸다. …얼음 밑에서 뭔가 천천히 돈다."),
+        narrate("줄을 내린다. …얼음 밑에서 뭔가 천천히 돈다."),
         wait(900),
         se("cc0-se-osx-splash-01"),
         emote("player", "exclamation", 700),
@@ -416,7 +416,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
         narrate("「은빛 송어」를 낚았다.", { context: "system" }),
         setSw(SW_Q5_FISH),
       ]),
-      page(`ev_fs2_frost_hole_${k}_done`, "끝", [sw(SW_Q5_FISH)], [narrate("물이 잠잠하다. 한 마리면 충분하다.")]),
+      page(`ev_fs2_frost_hole_${k}_done`, "끝", [sw(SW_Q5_FISH)], [narrate("물이 잠잠하다. 한 마리면 됐다.")]),
     ]);
   });
 
@@ -435,7 +435,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
         { kind: "setVariable", variableId: VAR_BOND_SARAH, op: "+=", value: 1 } as unknown as Command,
         { kind: "callCommonEvent", commonEventId: "ce_party_bond_check" } as unknown as Command,
         fadeIn(600),
-        narrate("의뢰 「징발된 장작」을 마쳤다.\n장작 썰매가 마을로 돌아갔다.\n(여관 무료, 새라 유대 +1)", { context: "system" }),
+        narrate("의뢰 「징발된 장작」을 마쳤다.\n장작 썰매가 마을로 돌아간다.\n(여관 무료, 새라 유대 +1)", { context: "system" }),
         say(SARAH, "어릴 때 아버지 손 잡고\n이 마을에 장작 사러 왔었지."),
       ] },
       { name: "물러남", conditions: [sw(SW_Q6_DONE)], commands: [] },
@@ -490,7 +490,7 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
       say(SARAH, "서리나루다. 장작을 다 뺏겨서\n연기가 저것뿐이야."),
       say(ELENA, "호수 건너 절벽 위에… 저게 하늘탑 문이야?"),
       say(SARAH, "문 앞은 심문회 기사들이 지킨다.\n그냥은 못 들어가."),
-      say(ELENA, "광장 지나 부두 끝에 할머니가 서 있대.\n먼저 그분한테 물어보자."),
+      say(ELENA, "광장 지나 부두 끝에 할머니가 서 있대.\n그분한테 먼저 물어보자."),
       setSw(SW_FROST_ARRIVE),
     ], { trigger: { kind: "auto" }, priority: "below" }),
     page("ev_fs2_frost_arrive_done", "끝", [sw(SW_FROST_ARRIVE)], [], { priority: "below" }),
@@ -530,10 +530,10 @@ function frostFestival(project: Project, exec: Exec, L: FrostLayout): void {
       { kind: "choices", prompt: "등 하나에 한 줄을 적어 띄울까?", options: [
         { text: "「잘 지내」라고 적는다", branch: [
           se("cc0-se-osx-paper-04"),
-          narrate("카엘이 등에 「잘 지내」라고 적고 불을 붙였다.\n등이 바람을 타고 호수 위로 떠올랐다."),
+          narrate("카엘이 등에 「잘 지내」라고 적고 불을 붙인다.\n등이 바람을 타고 호수 위로 떠오른다."),
           flash("#ffc070", 700),
           say(ELENA, "…이리스한테 닿으면 좋겠다."),
-          say(KAEL, "닿을 거야. 대답은 늦게라도 꼭 닿았어."),
+          say(KAEL, "닿을 거야. 늦어도, 대답은 꼭 닿았으니까."),
           setSw(SW_FROST_LAMP),
         ] },
         { text: "그냥 본다", branch: [] },
@@ -623,13 +623,13 @@ function lanternNight(project: Project, exec: Exec): void {
           setSw(SW_VALEN_SWORD),
         ] },
         { text: "등을 같이 띄운다", branch: [
-          narrate("카엘이 등 하나에 불을 붙여\n발렌의 등 곁에 띄웠다."),
+          narrate("카엘이 등 하나에 불을 붙여\n발렌의 등 곁에 띄운다."),
           say(VALEN, "…둘이면 더 멀리 간다.\n어머니가 그러셨지."),
           setSw(SW_VALEN_LANTERN),
           { kind: "fork", condition: { kind: "item", itemId: FS2_CERT_ITEM, present: true }, then: [
             say(KAEL, "세린 씨도 그렇게 대답했을까요?"),
             say(VALEN, "…그 이름을 어디서 들었지."),
-            narrate("카엘이 반쯤 탄 정착 확인서를 내밀었다.\n발렌은 서명란에서 한참 눈을 떼지 못했다."),
+            narrate("카엘이 반쯤 탄 정착 확인서를 내민다.\n발렌은 서명란에서 한참 눈을 떼지 못한다."),
             say(VALEN, "「엄마 문 열어」… 내 글씨다."),
             setSw(SW_VALEN_SERIN),
           ] },
@@ -638,7 +638,7 @@ function lanternNight(project: Project, exec: Exec): void {
       // 쩌억 — 카메라가 북쪽 탑 문으로 올라가 빛기둥을 보여 주고 돌아온다.
       shake(6, 900),
       se("easyrpg-sound-ice2"),
-      narrate("쩌억. 발밑 깊은 데서 얼음이 우는 소리가 났다.", { position: "bottom" }),
+      narrate("쩌억. 발밑 깊은 데서 얼음 우는 소리가 난다.", { position: "bottom" }),
       panTo(L.gateDoor[0]!.x, 5, 1600),
       se("easyrpg-sound-holy3"),
       ...pillarLights,
@@ -650,7 +650,7 @@ function lanternNight(project: Project, exec: Exec): void {
       m2("m2-202-screen-effect", { effect: "tint", value: "neutral", durationMs: 380 }),
       wait(1500),
       // 자막은 화면 아래 — 주인공이 화면 밖이면 창이 위로 뛰어 탑을 가렸다(감독 r3).
-      narrate("절벽 위 탑 문 너머로 빛기둥이 솟았다!", { position: "bottom" }),
+      narrate("절벽 위 탑 문 너머로 빛기둥이 솟는다!", { position: "bottom" }),
       wait(500),
       panBack(1300),
       say(VALEN, "…렌즈가 벌써 열렸군. 늦었다."),
@@ -727,7 +727,7 @@ function iceEscape(project: Project, exec: Exec): void {
     checkpoint: { x: L.shrineFront.x, y: L.shrineFront.y, direction: "up" },
     steps, layer: "lower", collapsedAutotile: FROST_WATER_GROUP, warnSeconds: 1, warnTiles: L.crackTiles, collapseRestOnSuccess: true,
     startText: "", successText: "",
-    failText: "…얼음물에 빠질 뻔했다. 사당 앞에서 다시.", fallText: "발밑 얼음이 꺼졌다!", successSwitchId: SW_ICE_DONE,
+    failText: "…얼음물에 빠질 뻔했다. 사당 앞에서 다시.", fallText: "발밑 얼음이 꺼진다!", successSwitchId: SW_ICE_DONE,
   });
   // 계단에 오른 뒤 — 뒤 얼음이 통째로 꺼진 걸 돌아본다(도구가 남은 칸을 무너뜨린다).
   addEv(project, FS2_FROST_NIGHT_ID, "ev_fs2_lake_crossed", "건넜다", { x: 3, y: 0 }, [
@@ -767,7 +767,7 @@ function lanternNightEvents(project: Project): void {
         { kind: "callCommonEvent", commonEventId: "ce_party_bond_talk" } as unknown as Command,
         fadeOut(1000),
         setSw(SW_NIGHT),
-        narrate("해가 지고, 섬 사당 앞에 등 하나가 떴다."),
+        narrate("해가 진다. 섬 사당 앞에 등 하나가 뜬다."),
         transfer(FS2_FROST_NIGHT_ID, front, "down"),
       ], { graphic: look }),
     page("ev_fs2_frost_innkeeper_after", "탑 뒤", [sw(SW_VALEN_MET)], [
