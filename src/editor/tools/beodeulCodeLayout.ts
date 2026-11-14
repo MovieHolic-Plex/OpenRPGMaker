@@ -7,6 +7,7 @@
 //   - 자동 배치(autoLayout): 모델이 자리를 안 주었을 때만 쓰는 대체 — 가장 넓은 낮은 터에 모이는 곳, 가장 높은 터에 높은 곳 건물,
 //     둘레에 집. 모델이 준 자리를 덮어쓰지 않는다.
 import type { CodeTerrain } from "./beodeulTerrainGen";
+import type { YardPlan } from "./beodeulYardLayout";
 
 export type LayoutEdge = "west" | "east" | "north" | "south";
 export interface LayoutPoint { x: number; y: number }
@@ -39,6 +40,11 @@ export interface VillageLayout {
   props?: LayoutPoint[];
   /** 마을 밖으로 나가는 큰길이 닿는 맵 가장자리(1~2개). */
   exits?: LayoutEdge[];
+  /**
+   * 자동 배치가 잡은 마당(시공기가 채운다 — 입력으로는 읽지 않는다, parseLayout 이 버린다). 가운데 네모·날개·길가 앞마당·테두리 건물.
+   * yard.cells = 마당 칸 전부(y*W+x) — 바닥을 칠하는 쪽이 읽는다. 조수가 자리를 준 마을에는 없다.
+   */
+  yard?: YardPlan;
 }
 
 export const LAYOUT_EDGES: readonly LayoutEdge[] = ["west", "east", "north", "south"];
@@ -81,6 +87,7 @@ function rng(seed: number): () => number {
  * 모델이 자리를 안 주었을 때의 대체 배치. 높은 곳 건물은 가장 높은 터, 집은 가장 넓은 낮은 터의 한가운데 둘레 고리.
  * 모이는 곳은 그 터의 한가운데가 아니라 이유 있는 자리다 — 물이 있으면 물가, 없으면 큰길이 마을로 드는 어귀 쪽(터 가운데에서 맵 가장자리 쪽으로 절반쯤).
  * 판석 광장 여부는 적지 않는다(마을 형태가 정한다).
+ * 집·여관·일터 자리는 시공기가 마당 먼저(beodeulYardLayout.layYardVillage)로 다시 잡는다 — 여기 고리 자리는 마당 터가 없는 땅의 대체이고, 마당 둘레에 못 앉은 집의 마지막 자리다.
  */
 export function autoLayout(t: CodeTerrain, seed: number, houseCount: number, nearWater = false): VillageLayout {
   const rand = rng(seed * 131 + 7);
