@@ -2583,6 +2583,7 @@ GPT 할당량이 없어 2차 모델을 Gemini 4 Argon(`openai-compat:proxy8318` 
 (테 없는 창은 판이 없어 맵 그대로인 배경에서 안내 글 · 승리 창이 타일 위에 맨 글자로 뜬다 — 같은 테스트가 bare 를 막는다).
 세트를 옮길 때는 «지금 보이는» 적 이름표 · 체력 막대를 지킨다(금테 프리셋이 기본으로 켜 둔 이름표가 다른 세트로 옮기며 꺼지지 않게).
 같은 날 전투 CSS 둘을 고쳤다: 목록(아이템 · 스킬)이 덮는 동안 그 밑의 파티 창을 그리지 않는다(`_retro2003.css` — 비치는 창에서 파티 줄이 목록 위로 비쳤다), 결과 창의 글자색이 창 꾸밈을 따른다(`_battle-look.css` — 양피지 창에 흰 글자였다).
+**상점 (2026-11-14)**: 상점 창은 세트에 따로 적지 않는다 — 그 세트의 메뉴 스킨이 판을 정한다(`shopSurfaceForMenu`: journal 은 종이 · field-list 는 크림 · party-first-warm 은 남색 · workbench · sheet 는 유리, 청색 창 계열과 윈도스킨 세트는 전과 같다). 배치·글꼴은 하나이고 색 변수만 바뀐다(`styles/runtime/shop.css` 끝). 아래 「직접 플레이 셋째 판」 8번.
 **ESC 메뉴**: 세트의 메뉴 스킨이 무엇이든 기본 메뉴는 그 게임에 쓸 데가 있는 명령만 싣는다(`listStatusMenuCommandIds` — `openwiki/runtime-pre-edit-routing.md`). 같은 테스트가 세트 13개 × 혼자/셋 파티로 본다.
 전투 창을 입혀도 적 이름표·체력 막대(`battleLook.enemyNames·enemyHp`, 끝맺음의 `fillEnemyHpLook`)는 그대로 남고, 그 두 칸은 «전투 창을 직접 골랐다» 로 치지 않는다.
 
