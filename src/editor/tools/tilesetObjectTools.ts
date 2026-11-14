@@ -9,6 +9,7 @@ import type { GameMap, Project, SectionStructureKitDef, TilesetDef } from "@/pro
 import { isPassable } from "@/project/collision";
 import { lookKit } from "@/project/kitLook";
 import { footprintFromUpper, footprintRefusal } from "@/project/objectFootprint";
+import { checkKitPlacement } from "@/project/kitPlacementRules";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { requireMap } from "./mapHelpers";
 
@@ -310,9 +311,17 @@ const stampTilesetObject: ToolDefinition = {
     // 발자국 검사(project/objectFootprint.ts, 2026-10-21): 서는 물건·바닥 무늬의 발이 허공·벽·천장·물·구조물 위거나
     // 그림이 다른 물체와 겹치면 거부하고, 가장 가까운 빈 바닥 자리를 알려 준다. 탁자 위 한 줄 소품(4층 올림)·다리·벽 걸이는 아래 옛 규칙이 본다.
     const footLabel = `${kit.id} ${kit.name ?? ""}`;
+    // 물 위에 놓는 기물(킷 태그 «물 위» — 뗏목·부표·수련·징검돌): 발이 물 위여야 한다. 뭍의 발자국 검사 대신 놓기 규칙(kitPlacementRules — 모든 칸이 물)이 본다.
+    const onWaterKit = kit.ai?.tags?.includes("물 위") === true;
+    if (onWaterKit && tileset) {
+      for (let ry = 0; ry < repeatY; ry += 1) for (let rx = 0; rx < repeatX; rx += 1) {
+        const broken = checkKitPlacement(map, tileset, kit.id, kit, ox + rx * kit.width, oy + ry * kit.height);
+        if (broken) throw new ToolError(broken, { code: "kit-placement-rule", mapId: map.id, x: ox, y: oy });
+      }
+    }
     const footExempt = /\bbridge\b|footbridge|다리|널다리|돌다리|torch-wall|벽 횃불|횃불|arch-|벽 아치|stairs-up-face|banner|현수막|niche|벽감|chains|사슬|vines|담쟁이/iu.test(footLabel)
       || kit.ai?.tags?.includes("on-road") === true || /^mc-veh-|^jp-prop-(?:car|ad-truck|ricksha|train)|crosswalk|횡단보도|^lane_|^arrow_/iu.test(footLabel);
-    if ((kind === "prop" || kind === "tall" || kind === "decal") && args.overwrite !== true && stacked === 0 && !footExempt) {
+    if ((kind === "prop" || kind === "tall" || kind === "decal") && args.overwrite !== true && stacked === 0 && !footExempt && !onWaterKit) {
       const upperPattern = new Array<number>(width * height).fill(-1);
       for (const w of writes) if (w.layer === "upperTiles") upperPattern[(w.y - oy) * width + (w.x - ox)] = w.tile;
       const cells = footprintFromUpper(width, height, upperPattern, tileset).map((cell) => (kind === "decal" ? { ...cell, foot: true } : cell));
@@ -321,7 +330,7 @@ const stampTilesetObject: ToolDefinition = {
     }
     // 땅에 서는 물체의 막힌 칸이 옥상·외벽·물 위면 거부한다 — 좌표를 「서 있는 칸」으로 착각한 흔한 실수다
     // (2026-09-24 헤드리스 실측: 보도 가로등 at 을 밑칸으로 줘서 건물 옥상 위에 세웠다).
-    if (kind === "prop" || kind === "tall") {
+    if ((kind === "prop" || kind === "tall") && !onWaterKit) {
       const tileset = draft.tilesets[map.tilesetId];
       const kitLabel = `${kit.id} ${kit.name ?? ""}`;
       const isBridge = /\bbridge\b|footbridge|다리|널다리|돌다리/iu.test(kitLabel) && !/말뚝|기둥|post|pier-hut/iu.test(kitLabel);

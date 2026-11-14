@@ -109,7 +109,7 @@ describe("싸우는 단계의 상대는 모두 보스다", () => {
     const bosses = pathBattles(project).filter((b) => b.role === "boss").sort((a, b) => (a.step ?? 0) - (b.step ?? 0));
     expect(bosses.map((b) => [b.eventId, b.step])).toEqual([["ev_a", 0], ["ev_b", 1]]);
     expect(pathBattles(project).find((b) => b.eventId === "ev_gate")!.role).toBe("gate");
-    expect(BOSS_BAND).toEqual({ minWin: 0.95, turns: 12, targetTurns: [6, 10], midPotions: [1, 3], finalPotions: [2, 4], attackOnlyMaxWin: 0.1, attackOnlyMaxLeft: 0.5, midAttackOnlyMinWin: 0.5 });
+    expect(BOSS_BAND).toEqual({ minWin: 0.95, turns: 12, targetTurns: [6, 10], midPotions: [1, 3], finalPotions: [2, 4], attackOnlyMaxWin: 0.1, attackOnlyMaxLeft: 0.5, midAttackOnlyMinWin: 0.5, potionAt: 0.45 });
   });
 });
 
@@ -139,7 +139,7 @@ describe("보스 밴드는 HP 와 시작 회복약을 늘리지 않는다", () =
     expect(hpOf(fitted)).toBeLessThanOrEqual(hpBefore);
   }, 180_000);
 
-  it("모의전은 깎인 HP 로 시작할 수 있다 — 앞 보스전에서 남긴 HP 를 지고 다음 보스 앞에 서는 판", () => {
+  it("모의전은 깎인 HP 로 시작할 수 있다 — 쉬지 않고 온 판을 재 볼 때 쓴다(보스 밴드는 쉬고 온 풀 HP 로 잰다 — aiV2PlayFixes2)", () => {
     const project = createBlankProject() as Project;
     const ids = project.system.startActorIds!;
     const full = simulateBattle({ project, troopId: "troop_slime", heroLevel: 1, partyActorIds: ids, n: 8, seed: 11 });

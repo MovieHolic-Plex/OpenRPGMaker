@@ -31,10 +31,10 @@ export function applyFallenWorldPass(project: Project, exec: Exec, ids: FallenWo
   linkWorkshopDoor(project, exec, ids.hub, FS_WORKSHOP_DOOR, workshopExit(project));
   if (!doorOf(mustMap(project, ids.hub), FS_WORKSHOP_ID)) throw new Error("[fallen-world] 공방 문이 이어지지 않았다");
   hangShopSigns(project, ids.hub, [
-    { mapId: "fs_smithy", title: "로한의 대장간", line: "검·창·갑옷·방패. 손질도 한다." },
+    { mapId: "fs_smithy", title: "로한의 대장간", line: "검, 창, 갑옷, 방패. 손질도 한다." },
     { mapId: FS_WORKSHOP_ID, title: "니나의 재료 공방", line: "숲에서 주운 재료로 약과 병을 만들어 드립니다." },
     { mapId: "fs_inn", title: "별빛 여관", line: "하룻밤 묵고 가세요. 지친 몸이 다 낫습니다." },
-    { mapId: "fs_apothecary", title: "오든 약방", line: "회복약·해독초·약초. 사고팝니다." },
+    { mapId: "fs_apothecary", title: "오든 약방", line: "회복약, 해독초, 약초. 사고팝니다." },
     { mapId: "fs_bakery_home", title: "토마네 빵집", line: "갓 구운 빵. 먹으면 힘이 납니다." },
   ]);
   plantSignpost(project, ids.hub, { x: 24, y: 35 }, [

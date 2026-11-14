@@ -463,7 +463,7 @@ function addBridgeValenAndScopeScene(project: Project, ids: { hub: string; obser
           graphic: { ...srcGraphic, direction: "left", pattern: charsetFrameIndex({ characterIndex: FS_VALEN_CHARSET_INDEX, direction: "left", pattern: 1 }) },
           trigger: { kind: "action" }, priority: "same", overlapForbidden: true, movement: { type: "fixed", speed: 3, frequency: 3 },
           commands: [
-            narrate("작은 등 하나가 천천히 강물을 따라 흘러간다.\n누구 몫의 등인지는 알 수 없다."),
+            narrate("작은 등 하나가 강물을 따라 천천히 흘러간다.\n누구 몫인지는 알 길이 없다."),
             wait(700),
             ...watch("down"),
             narrate("(발렌이 돌아본다. 눈이 마주치기 전에\n장갑을 쥔다.)"),
@@ -483,7 +483,7 @@ function addBridgeValenAndScopeScene(project: Project, ids: { hub: string; obser
     const Q1 = "sw_fs_q_bread_done";
     const nine_a: Command[] = [
       say("이리스", "…이게 하늘이에요?\n이렇게 작은 점들이?"),
-      say(FS_NAMES.hero, "작아 보이는 건 멀어서야."),
+      say(FS_NAMES.hero, "멀어서 작아 보이는 거야."),
       say("이리스", "저렇게 많이 반짝이는데…\n소리는 하나도 안 들려요."),
     ];
     const nine_b: Command[] = [
@@ -784,9 +784,9 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 발렌 서·남쪽 빈 칸에 넷이 서서 발렌을 본다. 주인공이 천문대 문으로 가는 세로 길(시작 칸 좌우 한 칸)과 문 앞은 비운다.
   const start = { x: project.startPos?.x ?? 24, y: project.startPos?.y ?? 23 };
   const crowd: [string, string, number, string, string][] = [
-    ["a", "tex_easyrpg_charset_people4", 0, "광장의 농부", "별 떨어진 걸 두고 이단이라니…\n우리 밭에도 불똥이 튀었는데."],
+    ["a", "tex_easyrpg_charset_people4", 0, "광장의 농부", "별 떨어진 게 이단이래…\n우리 밭에도 불똥 튀었는데."],
     ["b", "tex_easyrpg_charset_people5", 1, "광장의 아낙", "심문관님이 직접 오셨대.\n당분간 숲 쪽엔 얼씬도 말아야지."],
-    ["c", "tex_easyrpg_charset_people4", 2, "광장의 상인", "포고 때문에 북문 길까지 막히면\n오늘 장사는 공쳤네."],
+    ["c", "tex_easyrpg_charset_people4", 2, "광장의 상인", "이러다 북문 길까지 막히면\n오늘 장사는 공치는 거지."],
     ["d", "tex_easyrpg_charset_people1", 6, "광장의 노인", "하늘에서 온 걸 함부로 부르면\n화를 입는 법이야."],
     // 오프닝 아침 그림은 길가에 백성이 늘어서 있다 — 넷은 적었다(VQA r17).
     ["e", "tex_easyrpg_charset_people5", 3, "광장의 처녀", "기사님들 갑옷 좀 봐…\n숲에 진짜 뭐가 떨어졌나 봐."],
@@ -1745,7 +1745,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       say("엘레나", "그리고 이거, 천문대 창고에서 나온 거야.\n검이든 창이든 손에 맞는 걸로 써."),
       { kind: "changeItem", itemId: FS_SWORD_GALE, op: "+=", amount: 1 } as Command,
       { kind: "changeItem", itemId: FS_SPEAR_PIKE, op: "+=", amount: 1 } as Command,
-      narrate("「바람결 검」과 「푸른 불꽃 창」을 받았다.\n「장비」 메뉴에서 바꿔 들면 된다."),
+      narrate("「바람결 검」과 「푸른 불꽃 창」을 받았다.\n무기는 「장비」에서 바꿔 든다."),
     );
   }
   // 관 옆 두 칸 — 한 칸 옆이면 관 앞에 선 카엘과 대각선으로 붙어 24×32 몸이 겹쳐 보였다(가혹 검수 r9 장면 배치).

@@ -54,7 +54,7 @@ const TRAIT_LINE: Readonly<Record<Family, string>> = {
 
 /** 엔진 기본 설명 가운데 「약점」을 말하는 문장을 이 게임에서만 바꾼다(속성 이름만 남긴다). */
 const DESCRIPTION_OVERRIDES: Readonly<Record<string, string>> = {
-  equip_gen_sword_flame: "불 속성 마검이다. 순수 강철 무기보다 값이 비싸다.",
+  equip_gen_sword_flame: "불 속성 마검이다. 그냥 쇠 칼보다 값이 나간다.",
   equip_gen_wand_spark: "불 속성 주문 촉매다. 물리 공격은 낮지만 마력이 오른다.",
   // 「상대의 회피를 무시한다」는 전투 엔진이 읽지 않는 장비 효과다(act2Opening.ts 저작, 다른 레인 소유).
   equip_fs2_rohan_spear: "공격 40.\n로한이 「네가 쓸 몫」으로 벼려 둔 별쇠 창.\n자루 무늬가 새라의 창과 같다.",

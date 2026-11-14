@@ -91,8 +91,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       people: [
         {
           id: "ev_fs_inn_keeper", name: "여관 주인 마르타", query: "젊은 여성", chip: ["tex_easyrpg_charset_people1", 5], behindCounter: true,
-          lines: ["어서 와요, 카엘. 어젯밤 별똥별 봤어요?\n손님들이 밤새 창가에 붙어 있었다니까.", "하룻밤에 30골드예요. 푹 쉬고 가요."],
-          after: ["그 애… 이리스라고 했죠? 방은 넉넉해요.\n교단 눈에 안 띄게 안쪽 방을 써요.", "하룻밤에 30골드예요. 푹 쉬고 가요."],
+          lines: ["어서 와요, 카엘. 어젯밤 별똥별 봤어요?\n손님들이 밤새 창가에 붙어 있었다니까요.", "하룻밤 30골드예요. 푹 쉬고 가요."],
+          after: ["그 애… 이리스라고 했죠? 방은 넉넉해요.\n교단 눈에 안 띄게 안쪽 방을 써요.", "하룻밤 30골드예요. 푹 쉬고 가요."],
           commands: [{ kind: "inn", price: 30 }],
         },
         {
@@ -100,13 +100,13 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
           // 벽난로 앞 — 자동 자리는 짐을 쌓은 뒷광 통로 입구(30,10)에 서서 길을 막았다.
           at: { x: 13, y: 18 },
           lines: ["별 떨어진 밤 노래를 짓고 있소.\n「북쪽 숲에 은빛 알이 내려앉았네」…\n운이 영 안 맞는구려."],
-          after: ["은빛 머리 아가씨라… 노래 속 별의 딸 같구려.\n걱정 마시오. 교단 앞에선 안 부르리다."],
+          after: ["은빛 머리 아가씨라… 노래 속 별의 딸 같구려.\n염려 마시오. 교단 앞에선 안 부르리다."],
         },
         {
           id: "ev_fs_inn_guest", name: "길손", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people4", 3],
           at: { x: 17, y: 6 },
-          lines: ["북쪽 숲 위로 빛기둥이 솟는 걸 봤소.\n새벽부터 교단 기사들이 성문을 지키더군."],
-          after: ["심문관 발렌이 숲으로 갔다더군.\n떨어진 별을 찾는다는데…\n찾아서 어쩔 셈인지 모르겠소."],
+          lines: ["북쪽 숲 위로 빛기둥이 솟는 걸 봤소.\n새벽부터 교단 기사들이 성문을 지키고 섰더구려."],
+          after: ["심문관 발렌이 숲으로 갔다 하오.\n떨어진 별을 찾는다는데…\n찾아서 어쩔 셈인지, 원."],
         },
       ],
     },
@@ -126,7 +126,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       people: [
         {
           id: "ev_fs_apothecary", name: "약재상 오든", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 7], behindCounter: true,
-          lines: ["회복약이랑 약초는 여기서 사고팔지.\n숲에 간다고? 요즘 늑대가 유난히 사나워."],
+          lines: ["회복약이랑 약초는 여기서 사고판다.\n숲에 간다고? 요새 늑대가 유난히 사납던데."],
           after: ["심문관이 약방까지 와서 물어보더군.\n「하늘에서 떨어진 것」 본 사람 없냐고.\n난 못 봤다고 했지."],
           commands: [{ kind: "shop", shopType: "normal", title: "오든 약재상", itemIds: shopItems, allowSell: true }],
         },
@@ -199,7 +199,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       people: [
         {
           id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3], at: { x: 9, y: 14 }, roam: ["living", "kitchen"],
-          lines: ["심문관 발렌이 왔다면서요?\n교단은 그 별을\n「불경한 하늘의 물건」이라 부른대요.", "우리 애가 밤새 창밖만 보더라고요.\n별이 노래를 부른다나요.", "아, 손님. 서랍이나 옷장은 만지지 마세요.\n집 어디서든 저랑 눈 마주치면 다 알아요."],
+          lines: ["심문관 발렌이 왔다면서요?\n교단은 그 별을\n「불경한 하늘의 물건」이라 부른대요.", "우리 애가 밤새 창밖만 보더라고요.\n별이 노래를 부른다나요.", "아, 손님. 서랍이랑 옷장엔 손대지 마세요.\n어느 방에 있든, 제 눈에 띄면 다 알아요."],
           after: ["그 은빛 머리 아가씨, 잘 숨겨요.\n심문관은 한 번 본 얼굴은 안 잊는대요."],
         },
       ],
