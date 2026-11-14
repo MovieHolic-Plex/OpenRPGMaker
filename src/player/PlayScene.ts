@@ -93,7 +93,7 @@ import { runtimeMapViewZoom, runtimePixelDensity } from "@/player/runtimeViewSca
 import { syncMapSkirt } from "@/player/playSceneMapSkirt";
 import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
 import { syncFollowerSceneVisibility, syncFollowerSprites } from "@/player/playSceneFollowers";
-import { startChaseSpawnGrace } from "@/player/chaseSpawnGrace";
+import { startChaseSpawnGrace, startEscapeGrace } from "@/player/chaseSpawnGrace";
 import { syncPartyFollowers } from "@/project/followers";
 import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransitions";
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
@@ -633,6 +633,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     return import("@/player/playSceneBattle").then(({ playBattle }) => {
       if (controller.signal.aborted || this.session !== session || isCurrent?.() === false) return null;
       return playBattle(this, step, startedAt, isCurrent);
+    }).then((result) => {
+      // 도망쳤다 — 곁에 있던 다른 추격자가 곧바로 새 전투를 열지 못하게 도주 유예를 건다(@/player/chaseSpawnGrace).
+      // 접촉 전투·풀숲 조우·필드 스폰 전투가 모두 이 길로 끝난다.
+      if (result === "escape" && this.session === session) startEscapeGrace(session, { mapId: this.map.id, x: this.tileX, y: this.tileY });
+      return result;
     }).finally(() => {
       this.events.off("shutdown", abort);
       this.events.off("destroy", abort);

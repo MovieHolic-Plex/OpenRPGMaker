@@ -245,10 +245,10 @@ export const FS_GEAR_ELITES: Readonly<Record<string, number>> = {
  * 쓰는 적이 없는 속성(타격·활)은 남긴다.
  */
 export const FS_SMITHY_ARMOR_RULES: Readonly<Record<string, { readonly drop: readonly string[]; readonly description: string }>> = {
-  equip_gen_armor_plate: { drop: ["fire"], description: "큰 민첩 손실을 감수하고 타격을 크게 줄이는 전면 중갑입니다." },
-  equip_gen_armor_chain: { drop: ["sword"], description: "고리를 엮어 베기와 마비 충격을 받아 내는 사슬 갑옷입니다." },
-  equip_gen_shield_iron: { drop: ["sword"], description: "철판을 덧대 방어 하락에도 버틸 여지를 주는 중급 방패입니다." },
-  equip_gen_robe_mage: { drop: ["fire", "ice"], description: "정신력을 크게 높이는 정통 원소술사 로브입니다." },
+  equip_gen_armor_plate: { drop: ["fire"], description: "민첩을 크게 내주고 타격을 크게 줄이는 전신 중갑이다." },
+  equip_gen_armor_chain: { drop: ["sword"], description: "고리를 엮은 사슬 갑옷이다. 베기와 마비 충격을 받아 낸다." },
+  equip_gen_shield_iron: { drop: ["sword"], description: "철판을 덧댄 방패다. 방어가 깎여도 좀 더 버틴다." },
+  equip_gen_robe_mage: { drop: ["fire", "ice"], description: "정신력이 크게 오르는 원소술사 로브다." },
 };
 
 /** 대장간 방어구 규칙을 적용한다(두 번 불러도 같다). */

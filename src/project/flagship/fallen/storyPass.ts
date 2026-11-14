@@ -100,21 +100,21 @@ function ensureVariable(project: Project, id: string, name: string): void {
 
 /** 광장 포고 직후 — 엘레나가 약과 무기를 건네는 줄이 안내문처럼 읽혔다. */
 function plazaLines(hub: GameMap): void {
-  rewordAll(hub, "들었지, 카엘", "들었지, 카엘?\n얼른 선생님께 가자. 기다리실 거야.");
-  rewordAll(hub, "아, 이것도 챙겨. 숲에 짐승이 많대.", "이거 챙겨.\n천문대 약장에서 가져왔어.");
+  rewordAll(hub, "들었지, 카엘", "들었지, 카엘?\n얼른 선생님께 가자. 기다리고 계셔.");
+  rewordAll(hub, "아, 이것도 챙겨. 숲에 짐승이 많대.", "자, 이거.\n천문대 약장에서 꺼내 왔어.");
   rewordAll(hub, "그리고 이거, 천문대 창고에서 나온 거야.", "창고에 굴러다니던 검이랑 창도.\n손에 붙는 쪽으로 들어.");
 }
 
 /** 하넬 첫 대화 — 「안에 누가 있을지도」를 먼저 깔고, 엘레나가 같이 가는 이유를 스스로 말한다. */
 function hanelAsk(obs: GameMap): void {
   const hanelId = `ev_${FS_PREFIX}_hanel`;
-  const at = findLine(obs, "무언가가 그걸 몰았다", hanelId);
+  const at = findLine(obs, "누가 몰고 내려온 게다", hanelId);
   at.list.splice(at.index + 1, 0,
-    say(KAEL, "몰았다고요?\n그럼 안에 누가 타고 있었어요?"),
-    say(H, "그럴지도 모르지.\n살아 있거든 교단보다 먼저 손을 내밀어 다오."),
+    say(KAEL, "몰고 내려왔다고요?\n그럼 안에 누가 타고 있었어요?"),
+    say(H, "그럴지도 모르지.\n살아 있거든, 교단보다 먼저 손을 내밀어 다오."),
     say(ELENA, "저도 갈게요.\n별이 방향을 틀었다니, 제 눈으로 봐야겠어요."),
   );
-  rewordAll(obs, "동문 밖이 숲이야. 숲지기 브람 아저씨부터 찾자.", "숲길은 브람 아저씨가 제일 잘 알아.\n먼저 찾아가 보자.", hanelId);
+  rewordAll(obs, "동문 밖이 숲이야. 숲지기 브람 아저씨부터 찾자.", "숲길은 브람 아저씨가 훤해.\n아저씨부터 찾아가자.", hanelId);
 }
 
 /** 브람 — 「누굴 부르는 목소리」를 듣고 카엘이 하넬의 말을 떠올린다. */
@@ -123,7 +123,7 @@ function bramLines(forest: GameMap): void {
   const at = findLine(forest, "사람 목소리도 들리더군", bramId);
   at.list.splice(at.index + 1, 0,
     say(KAEL, "안에 정말 누가 있나 봐."),
-    say(BRAM, "갈 거면 서둘러라.\n그 목소리, 밤새 점점 잦아들더군."),
+    say(BRAM, "갈 거면 서둘러라.\n그 목소리, 밤새 자꾸 잦아들었다."),
   );
   rewordAll(forest, "『살아 있는 손만 연다』", "자국 둘레에 옛 별지기 글자가 있어.\n「살아 있는 손만 연다」…\n선생님 책에서 봤어.");
 }
@@ -168,7 +168,7 @@ function irisJoins(project: Project, forest: GameMap): void {
     emote(irisId, "ellipsis", 800),
     say(IRIS, "저 위요.\n거기서 부르는 소리를 따라왔어요."),
     say(IRIS, "대답하려면 하늘을 보는 큰 눈이 있어야 해요.\n제 눈은 떨어질 때 깨졌어요."),
-    say(ELENA, "큰 눈이면… 망원경 말이구나.\n천문대에 선생님 렌즈가 있어."),
+    say(ELENA, "큰 눈이라면… 망원경이네.\n천문대에 선생님 렌즈가 있어."),
     narrate("이리스가 알 테두리를 붙잡고\n두 사람을 번갈아 본다."),
     say(IRIS, "…그럼 저도 데려가 줄래요?\n여기 혼자 남는 건 싫어요."),
     dock(),
@@ -182,7 +182,7 @@ function irisJoins(project: Project, forest: GameMap): void {
         { text: "여기 숨어 있는 게 안전해", branch: [
           emote(irisId, "ellipsis", 800),
           say(ELENA, "카엘, 숲에 심문관들 쫙 깔렸어.\n여기 혼자 두면 금방 잡혀."),
-          say(KAEL, "…그래, 내 생각이 짧았어.\n같이 가자, 이리스."),
+          say(KAEL, "…그래, 내가 생각이 짧았어.\n같이 가자, 이리스."),
           say(IRIS, "네. 따라갈게요.\n이번엔 안 무서워할게요."),
         ] },
       ],
@@ -196,7 +196,7 @@ function irisJoins(project: Project, forest: GameMap): void {
     keyGain,
     narrate("「별빛 열쇠」를 얻었다."),
     say(ELENA, "이 별 무늬… 서고 바닥 돌뚜껑에\n똑같은 홈이 있어!"),
-    say(KAEL, "얼른 천문대로 돌아가자.\n심문관들이 몰려오기 전에."),
+    say(KAEL, "얼른 천문대로 돌아가자.\n심문관들 몰려오기 전에."),
     ...joined,
   ];
   list.splice(start.index, endAt + 1 - start.index, ...fresh);
@@ -216,9 +216,9 @@ function hanelMeetsIris(project: Project, obs: GameMap): void {
     say(H, "그 아이가, 너희가 숲에서 찾은 별이냐."),
     say(IRIS, "이리스예요.\n하늘에 대답할 렌즈를 찾고 있어요."),
     say(H, "렌즈라면 이 밑에 있다.\n서고 바닥 돌뚜껑 아래, 옛 별지기 방에."),
-    say(H, "그 방은 내가 닫지 않았다.\n…내 스승이 닫으셨지. 그것만 안다."),
+    say(H, "그 방을 닫은 건 내가 아니다.\n…내 스승이 닫으셨지. 아는 건 그뿐이다."),
     say(ELENA, "이리스가 준 열쇠가 그 홈에 맞아요."),
-    say(H, "그럼 내려가거라.\n서두르되, 발밑은 조심하거라."),
+    say(H, "그럼 내려가 보거라.\n서두르되, 발밑은 살피고."),
     setSw(SW_HANEL_MET_IRIS),
   ], [
     say(H, "서고 바닥 돌뚜껑이다.\n조심해 내려가거라."),
@@ -243,7 +243,7 @@ function elderDusk(hub: GameMap): void {
       conditions: [sw(SW_VALEN_MARCHED)],
       commands: [
         say(ELDER, "발렌 님은 해 질 녘마다 다리에서\n등을 하나 띄우시지."),
-        say(ELDER, "오늘은 숲으로 가셨으니 등도 안 뜨겠구먼.\n누굴 위한 등인지는… 물어볼 수도 없고."),
+        say(ELDER, "오늘은 숲으로 가셨으니 등도 안 뜨겠구먼.\n누구 보라고 띄우는지… 물어볼 수도 없고."),
       ],
     } as EventPage,
   ];
@@ -545,7 +545,7 @@ function extraScolds(project: Project, ids: { hub: string; observatory: string }
         { kind: "setSelfSwitch", key: "A", value: true } as Command,
       ];
       hub.events.push(boxEvent(id, { name: "수납 · 심문회 상자" }, spot.x, spot.y, [
-        page(`${id}_p0`, "봉인", [], [narrate("붉은 봉인이 찍힌 심문회 상자다.\n보는 눈이 많아 지금은 손댈 수 없다.")]),
+        page(`${id}_p0`, "봉인", [], [narrate("붉은 봉인이 찍힌 심문회 상자다.\n보는 눈이 많다. 지금은 못 건드린다.")]),
         page(`${id}_p1`, "뒤지기", [sw(SW_VALEN_MARCHED)], [seesFork(rino.id, 7, [
           emote(rino.id, "exclamation", 900),
           ...take,
