@@ -73,7 +73,8 @@ BLOCK_ORDER = ['autotiles_ground', 'autotiles_lines', 'roads', 'buildings', 'str
                'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse',
                'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall',
                'interior_hospital', 'interior_school2', 'interior_office2', 'shitamachi_pack', 'jp_regions_pack', 'jp_inaka_pack', 'jp_forest_r4', 'interior_house3', 'street_stairs',
-               'story_objects']     # story_objects = 이야기 기물(그림 PNG 그대로, 3/4 관문 미통과 — 오너 면제 묶음)
+               'story_objects',     # story_objects = 이야기 기물(그림 PNG 그대로, 3/4 관문 미통과 — 오너 면제 묶음)
+               'fable_city']        # fable_city = Fable 5.2 건물 60 · 옥상 기물 · 시골 기물(그림 PNG 그대로, 3/4 관문 미통과 — 오너 면제 묶음)
 PEOPLE = (851, 1005)            # 행인(Actor1) 자리 — 번들에서 제외, 투명 빈 칸으로 번호만 지킨다
 N_ORIG = 2880
 SIGN_DECOS = ('sign_h', 'vstack', 'wallad', 'vsign', 'plate', 'board', 'rtext', 'facade_ad', 'vision', 'mural')
@@ -688,6 +689,12 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
     # ---- 7b) 일본 로케일 팔레트 계약(src/editor/jpCity/paletteContract.ts): 바깥 칸의 퇴출 램프 색 -> 계약 재료 색. 실내·던전 칸은 손대지 않는다.
     contract = load_contract()
     pal |= contract['colors']
+    # Fable 건물·기물(블록 fable_city)의 확장 건물 팔레트 — 재료마다 6~7단(오너 2026-11-14 «버들항 칩셋급» 렌더링 계약). 계약이 옮기는 색과 겹치지 않는다(겹치면 멈춘다).
+    fpal = os.path.join(ROOT, 'tiledata', 'jp-city', 'fable-city', 'palette.json')
+    if os.path.exists(fpal):
+        fcols = {tuple(int(h[i:i + 2], 16) for i in (1, 3, 5)) for r in json.load(open(fpal, encoding='utf-8'))['ramps'].values() for h in r}
+        assert not (fcols & set(contract['map'])), ('fable-city 팔레트가 계약 퇴출 색을 쓴다', sorted(fcols & set(contract['map']))[:4])
+        pal |= fcols
     contract_px = collections.Counter()
     for t, inf in cells.info.items():
         if is_outdoor_cat(inf['cat']): cells.img[t] = contract_remap(cells.img[t], contract['map'], contract_px)
