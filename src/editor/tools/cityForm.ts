@@ -136,6 +136,13 @@ export function analyzeCityForm(project: Project, map: GameMap): CityFormReport 
       const [ax, ay] = run[0]!, [bx, by] = run[run.length - 1]!;
       if (paved(ax - px, ay - py) || paved(bx + px, by + py)) continue;
       if (run.some(([rx, ry]) => !inMap(rx + dx, ry + dy) || doorFronts.has(idx(rx, ry)) || water(rx + dx, ry + dy))) continue;
+      // 흙 바닥(모랫길 꼬리표, 연석 없는 흙)의 둥근 귀·문 앞 닳은 자리는 길 토막이 아니다 — 같은 폭으로 세 줄 넘게 뒤로 이어진 것만 막다른 길로 센다
+      // (2026-11-14 시골 마을의 흙이 띠가 아니라 번진 몸이 된 뒤, 마당 가장자리의 두세 칸 귀가 모두 «막다른 길» 로 보고됐다).
+      if (run.every(([rx, ry]) => { const k = kinds(map.lowerTiles[idx(rx, ry)]!); return k.includes("sand") && !k.includes("road"); })) {
+        let depth = 1;
+        while (depth < 3 && run.every(([rx, ry]) => paved(rx - dx * depth, ry - dy * depth)) && !paved(ax - px - dx * depth, ay - py - dy * depth) && !paved(bx + px - dx * depth, by + py - dy * depth)) depth += 1;
+        if (depth < 3) continue;
+      }
       deadEnds.push({ at: run[0]!, kind: "street", width: run.length, cells: run });
     }
   }
