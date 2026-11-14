@@ -49,8 +49,8 @@ export function buildWorkshop(project: Project, exec: Exec): void {
   ];
   putEvent(room, "ev_fs_workshop_nina", NINA, { x: exitCell.x, y: exitCell.y - 4 }, [
     page("ev_fs_workshop_nina_first", "첫 만남", [], [
-      say(NINA, "어서 와. 재료 공방이야.\n송곳니, 가죽, 비단, 불씨. 숲에서 주운 걸\n가져오면 쓸 만한 물건으로 바꿔 줄게."),
-      say(NINA, "두 가지 섞는 건 가방 「조합」에서\n네 손으로도 돼.\n재료가 셋 넘게 드는 건 내가 해 줄게."),
+      say(NINA, "어서 와. 재료 공방이야.\n송곳니, 가죽, 비단, 불씨. 주워 오면 쓸 만한 걸로 바꿔 줄게."),
+      say(NINA, "두 가지 섞는 건 가방 「조합」에서 네 손으로도 돼.\n셋 넘게 드는 건 내가 해 줄게."),
       { kind: "setSelfSwitch", key: "A", value: true } satisfies Command,
       ...menu,
     ], { graphic: chipGraphic("tex_easyrpg_charset_people5", 1), trigger: { kind: "action" } }),
