@@ -10,6 +10,7 @@ import { readSettlementAreas, settlementGround, settlementRank } from "@/editor/
 import { planTownCore, squareApproaches, squareBox, squareRing, SQUARE_FLOORS } from "@/editor/tools/beodeulTownCore";
 import { townWallLayout } from "@/editor/tools/beodeulTownWall";
 import { planQuay } from "@/editor/tools/beodeulQuay";
+import { emptyWindows, planLandPlots } from "@/editor/tools/beodeulLandUse";
 import type { ToolContext } from "@/editor/tools/types";
 import type { GameMap, Project } from "@/project/types";
 
@@ -220,4 +221,39 @@ describe("포구의 돌 둑(planQuay)", () => {
     expect(Number(pier[2])).toBeLessThanOrEqual(quay.y1);
     expect((data.doors as { reached: boolean }[]).filter((d) => !d.reached).length).toBe(0);
   }, 240_000);
+});
+
+describe("빈 땅의 쓰임(planLandPlots) — 볼 것 없는 화면에 울타리 두른 밭", () => {
+  // 40×30 맵, 왼쪽 위에 건물 하나(2~7, 2~5)뿐
+  const W = 40, H = 30;
+  const used = new Set<number>(); for (let y = 2; y < 6; y += 1) for (let x = 2; x < 8; x += 1) used.add(y * W + x);
+  const inp = { W, H, seed: 3, used: (c: number) => used.has(c), free: (c: number) => !used.has(c) };
+  it("건물이 걸리지 않는 창이 빈 창이고, 첫 밭 자리는 빈 창을 가장 많이 채운다", () => {
+    const empty = emptyWindows(inp);
+    expect(empty.length).toBe(16);
+    expect(empty.some((e) => e.x === 0 && e.y === 0)).toBe(false); // 건물이 든 창
+    const plots = planLandPlots(inp);
+    expect(plots.length).toBeGreaterThan(0);
+    expect(plots[0]!.windows).toBe(16);
+    for (let i = 1; i < plots.length; i += 1) expect(plots[i]!.windows).toBeLessThanOrEqual(plots[i - 1]!.windows);
+    // 밭(울타리 포함)을 깔면 빈 창이 없어진다
+    const p = plots[0]!; const after = new Set(used);
+    for (let j = -1; j <= p.h; j += 1) for (let i = -1; i <= p.w; i += 1) after.add((p.y + j) * W + p.x + i);
+    expect(emptyWindows({ ...inp, used: (c) => after.has(c) }).length).toBe(0);
+  });
+  it("빈 창이 없거나 빈 땅이 없으면 자리도 없다", () => {
+    expect(planLandPlots({ ...inp, used: () => true })).toEqual([]);
+    expect(planLandPlots({ ...inp, free: () => false })).toEqual([]);
+  });
+
+  it("넓은 시골 마을: 빈 땅에 밭이 더 서고, 울타리 문은 모두 길에서 닿는다 · 읍에는 서지 않는다", () => {
+    const { data } = town({ seed: 8, width: 64, height: 56, houseCount: 4 });
+    expect(data.rank).toBe("village");
+    expect(data.landPlots as number).toBeGreaterThanOrEqual(3);
+    const gates = data.fenceGates as { reached: boolean }[];
+    expect(gates.length).toBeGreaterThanOrEqual(data.landPlots as number);
+    expect(gates.filter((g) => !g.reached).length).toBe(0);
+    expect((data.doors as { reached: boolean }[]).filter((d) => !d.reached).length).toBe(0);
+    expect(town({ walls: true, form: "plaza", seed: 17 }).data.landPlots).toBeUndefined();
+  }, 480_000);
 });
