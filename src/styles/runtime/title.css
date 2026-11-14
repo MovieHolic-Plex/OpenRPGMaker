@@ -197,8 +197,20 @@
 
 .rm-license-dialog-title,
 .rm-license-dialog-hint,
-.rm-license-dialog-close {
+.rm-license-dialog-actions {
   flex: 0 0 auto;
+}
+
+/* 단추 줄: 왼쪽에 「전체 출처 문서」, 오른쪽 끝에 「닫기」. 좁은 화면에서는 줄을 바꾼다. */
+.rm-license-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.rm-license-dialog-close {
+  margin-left: auto;
 }
 
 .rm-license-dialog-hint {
@@ -209,6 +221,7 @@
 }
 
 .rm-license-dialog-close:focus-visible,
+.rm-license-dialog-full:focus-visible,
 .rm-license-dialog-body:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;

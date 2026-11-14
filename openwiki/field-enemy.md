@@ -109,6 +109,13 @@ FF6·크로노 트리거식 「필드에 보이는 적」을 조수가 한 마�
 - **놓친 뒤**: 시야가 끊긴 뒤 400ms(`LOS_GRACE_MS`, horrorRuntime) 동안은 간 쪽을 안다. 그 뒤 마지막 목격 자리 → 달아난 방향 6칸 앞(`lastHeading`·`lastTurn`,
   `pursuitNavigation.searchTarget`) → 그 둘레를 뒤진다. 옛 페이지의 수색 시간은 3500ms 아래로 내려가지 않는다(`chaseSearchLimitMs`).
 - **입장 유예**: 다른 맵에 들어서면 1200ms 동안 추격자가 움직이지 않는다(`extendChaseSpawnGrace`, transferTo). 시작·불러오기 2000ms 는 그대로.
+- **도주 유예**(2026-11-14, `src/player/chaseSpawnGrace.ts` `startEscapeGrace`/`tickEscapeGrace`/`escapeGraceActive`): 전투가 **도주**로 끝나면
+  (`PlayScene.playBattle` — 접촉 전투·풀숲 조우·필드 스폰 전투 모두) 그 맵의 추격자가 제자리에 서고, 이벤트가 먼저 닿아 여는 접촉(`fireEventTouch`)이 열리지 않는다.
+  `ESCAPE_GRACE_MS`(2500ms, 대사·전투 중에는 줄지 않는다) 동안이고, 주인공이 도망친 칸에 그대로 서 있으면 남은 시간이 `ESCAPE_GRACE_AFTER_MOVE_MS`(1500ms) 밑으로
+  줄지 않는다(서 있다가 다시 붙잡히지 않고, 첫 걸음을 뗀 뒤에도 벗어날 시간이 남는다). `ESCAPE_GRACE_CAP_MS`(8000ms)가 지나거나 다른 맵으로 나가면 끝난다.
+  **주인공이 제 발로 적에게 걸어가 부딪히거나 정면에서 확인 키를 누르는 것은 막지 않는다**(playSceneMovement 는 이 값을 보지 않는다).
+  왜: 폴른 스타 숲 어귀에서 도망치자 0.8초 뒤 한 걸음도 떼지 않았는데 곁의 다른 무리가 새 전투를 열었고, 도망친 그 적도 쉼 페이지 3초 뒤 서 있는 주인공에게 다시 붙었다.
+  걸음 수 무적(`encounterGuard.grantEscapeGrace`)은 풀숲 조우만 막는다. 시험 `test/escapeGrace.test.ts`.
 - **도착 보호**(2026-11-01, `src/player/chaseSpawnGrace.ts` `startArrivalShield`/`tickArrivalShield`/`arrivalShielded`): 문·이동 명령으로 다른 맵에
   들어서면(`transferTo`, 같은 맵 안 이동은 아님), 추격자가 주인공을 **새로 알아채지 못한다**(시야·발소리 둘 다). `ARRIVAL_SHIELD_MS`(3000ms, 장면 프레임 시간)가
   지나거나 주인공이 도착 칸에서 `ARRIVAL_SHIELD_STEPS`(맨해튼 3칸) 이상 걸어 나가면 끝난다 — 끝난 뒤에는 저작한 시야 그대로 본다.

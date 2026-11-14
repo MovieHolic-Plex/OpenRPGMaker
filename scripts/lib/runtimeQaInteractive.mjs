@@ -32,7 +32,7 @@ async function readState(page) {
       dialogue: text("dialogue-box"), choices: text("dialogue-choice-frame"),
       battle: Boolean(document.querySelector('[data-testid="battle-scene"]')), battleText: text("battle-scene")?.slice(0, 600) ?? null,
       menu: Boolean(document.querySelector('[data-testid="main-menu"]')), title: Boolean(document.querySelector('[data-testid="title-screen"]')),
-      gameOver: Boolean(document.querySelector('[data-testid="game-over"]')),
+      gameOver: Boolean(document.querySelector('[data-testid="game-over-screen"]')),
       party,
     };
   });

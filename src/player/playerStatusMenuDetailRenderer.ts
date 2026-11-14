@@ -437,9 +437,13 @@ function renderItemFactRows(project: Project, fact: StatusMenuDetailFact): HTMLE
     rows.push(renderItemFactRow("target", display, fact.targeting.scope));
   }
   if (fact.consumption) {
-    const display = fact.consumption.consumable
-      ? `현재 ${fact.consumption.remainingCopyUses}/${fact.consumption.usesPerCopy}회 · 총 ${fact.consumption.remainingUses}회`
-      : "재사용";
+    // 한 번 쓰면 없어지는 물건(대부분)은 「1회용」 한마디면 된다 — 「현재 1/1회 · 총 4회」는 위의 「4개」를 어렵게 한 번 더 말했다(2026-11-14 QA).
+    // 여러 번 쓰는 물건만 지금 것의 남은 횟수와 전체 횟수를 적는다.
+    const display = !fact.consumption.consumable
+      ? "재사용"
+      : fact.consumption.usesPerCopy <= 1
+        ? "1회용"
+        : `지금 것 ${fact.consumption.remainingCopyUses}/${fact.consumption.usesPerCopy}회 · 모두 ${fact.consumption.remainingUses}회`;
     rows.push(renderItemFactRow(
       "consumption",
       display,
@@ -558,13 +562,15 @@ function renderDetailTextChildren(entry: StatusMenuDetailEntry, inlineDescriptio
   // 이 걸리면 뒤쪽 장비가 통째로 사라진다(QA 실측: 8벌 중 3벌만 보이고 '…' 로 끊김,
   // 5개 맵에서 반복). 스킨 CSS 가 어디서 오든 이기도록 행 자체에 인라인으로 펼진다.
   const wraps = entry.testId === "status-menu-owned-equipment-worn";
+  // 이름표와 값이 한 줄 두 칸(이름표 | 값)이면 값 칸이 좁아 세 줄로 접히고, 이름표가 그 가운데 줄 왼쪽에 끼어
+  // 「…방패, / 장착 중 여행자 모자… / 부적…」으로 읽혔다(2026-11-14 QA). 이름표를 윗줄에, 값은 그 아래 줄 전체 폭으로 둔다.
   const children = [
-    el("span", { class: "status-menu-detail-label", text: entry.label }),
+    el("span", { class: "status-menu-detail-label", text: entry.label, ...(wraps ? { attrs: { style: "grid-column:1/-1;align-self:start" } } : {}) }),
     el("span", {
       class: "status-menu-detail-value",
       text: entry.value,
       ...(wraps
-        ? { attrs: { style: "white-space:normal;text-overflow:clip;overflow:visible;overflow-wrap:anywhere;text-align:left;justify-self:stretch" } }
+        ? { attrs: { style: "white-space:normal;text-overflow:clip;overflow:visible;overflow-wrap:anywhere;word-break:keep-all;text-align:left !important;justify-self:stretch;grid-column:1/-1" } }
         : {}),
     }),
   ];

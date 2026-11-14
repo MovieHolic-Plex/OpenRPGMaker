@@ -84,7 +84,7 @@
   },
   {
    "id": "b5-field-fight",
-   "label": "B5 재의 들판 — 도깨비불 떼, 공격만으로 끝까지",
+   "label": "B5 재의 들판 — 도깨비불 떼, 도착 레벨(Lv14)에서 공격만으로 이긴다",
    "mapId": "map_field_north_2",
    "x": 35,
    "y": 19,
@@ -110,11 +110,11 @@
    "party": [
     {
      "actorId": "actor_hero",
-     "level": 7
+     "level": 14
     },
     {
      "actorId": "actor_fs_elena",
-     "level": 7
+     "level": 14
     }
    ],
    "beats": [
@@ -165,7 +165,8 @@
        "kind": "battle",
        "fallback": "attack",
        "untilEnd": true,
-       "timeoutMs": 240000
+       "timeoutMs": 240000,
+       "expect": "victory"
       },
       {
        "kind": "hold",
@@ -188,7 +189,8 @@
       "weapon": "equip_fs2_rohan_spear"
      }
     }
-   }
+   },
+   "note": "이기는지 본다(expect: victory) — 게임 오버·도주로 끝나면 실패한다. 예전에는 Lv7 로 져서 게임 오버가 됐는데도 통과로 셌다(2026-11-14). 레벨은 fallen-star 세트의 B5 체크포인트와 같은 14."
   },
   {
    "id": "b5-village",
