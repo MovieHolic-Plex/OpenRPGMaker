@@ -2277,6 +2277,10 @@ dedicated exported player passed. Do not describe this as all browser checks gre
   전에는 탈출구 presentItem(낡은 열쇠)→triggerEnding 을 열쇠 없이 돌려 「분기가 목표 명령을 건너뜀」 막힘을 냈다(실제 플레이는 엔딩 도달). 회귀 `test/qaGameCheck.test.ts`.
 - 기다리는 애니메이션(`showAnimation{wait:true}`, 2026-11-05 gpt-only-game 8차 마을): 조사·접촉 뒤 `finishHeldAnimations` 가 `wait` 로 애니메이션을 끝까지 돌린 뒤 선택지·맵 이동을 본다.
   전에는 던전 출구 문(`fx:door-open` wait → transfer)에서 멈춘 채 「문을 썼지만 이동하지 않았다」 막힘을 냈다(실제 플레이어는 마을로 돌아감). 회귀 `test/qaGameCheck.test.ts`.
+- 보스 앞의 쉼터와 전투 수(2026-11-13 r3 플레이): 이벤트 전투 앞에서 파티가 60% 아래면 쉬던 것에 더해 **그 전투의 맵에 쉼터(전원 회복 이벤트)가 있으면 풀 HP 가 아닐 때도 쉰다**(`restSpotOn`) —
+  빌더가 보스마다 쉼터를 세우므로 사람은 쉬고 들어간다. 진 뒤 게임 오버가 아니면(쉼터 곁에서 다시 선다) 쉬고 두 번까지 다시 싸운다(`ACTOR_BATTLE_RETRIES`).
+  전투의 수(`testing/sceneTestRunner.actHeadless`, 배우 파티): HP 45% 아래에서 약(`battle/simulate.SENSIBLE_POTION_HP_RATIO`, 전 30%) → 가장 센 피해 기술 → 공격. 전에는 공격만 눌러, 쉬지 않고 깎인 채 온 자동 플레이가
+  보스에게 졌고 빌더가 그 판에 맞춰 보스를 약하게 했다(쉬고 온 사람은 약 없이 공격만으로 이겼다). 보스의 기준은 `openwiki/assistant-v2.md` 「보스 밴드 — 둘째 교정」.
 알려진 한계: `storeParty`/`recallParty` 로 바뀐 파티 구성은 자동 플레이가 모델링하지 않는다(세트 안 배우를 선행 조건으로 보지 않음), 다단계 보스·`oncePerBattle` 은 기존 전투 해결기(첫 적을 계속 공격)에 맡긴다.
 
 **정직한 자동 플레이(2026-11-12, `src/qa/gameCheck/honestPlay.ts`).** `runAutoPlay(project, { honest: true })` · `runGameCheck(project, { honestPlay: true })` 는 계획표의 좌표 대신 **사람이 볼 수 있는 것**만 쓴다 — 조사로 여는 이벤트는 보여야 하고(제 그림 · `page.glow` · 이름이 맞는 그려진 물건, 판정은 `src/project/eventSight.ts`), 숫자 입력의 답은 이미 띄운 글에 있어야 한다. 어기면 그 목표에서 멈추고 까닭 머리말(`HONEST_CAUSES`)을 적는다. 기본값은 기계 플레이 그대로다. 명세 은행은 두 플레이어를 나란히 잰다(«자동 플레이 엔딩 도달» · «정직한 플레이 엔딩 도달»). 배경·규칙 표는 `openwiki/assistant-v2.md` 「길을 따라갈 수 없는 경로」.

@@ -1415,13 +1415,22 @@ function leadLevel(session: PlaySession): number {
 }
 
 /** 리더 몬스터가 지쳤는가 — 체력 90% 아래거나 반 넘게 쓴 기술이 있다. */
-/** 배우 파티 누군가의 HP 가 60% 밑. */
-function partyWornOut(session: PlaySession): boolean {
+/** 배우 파티 누군가의 HP 가 그 몫(기본 60%) 밑. */
+function partyWornOut(session: PlaySession, below = 0.6): boolean {
   return (session.partyActorIds ?? []).some((id) => {
     const vitals = session.actorVitals?.[id];
-    return Boolean(vitals && vitals.maxHp > 0 && vitals.hp < vitals.maxHp * 0.6);
+    return Boolean(vitals && vitals.maxHp > 0 && vitals.hp < vitals.maxHp * below);
   });
 }
+
+/** 그 맵에 지금 말을 걸면 다 낫는 자리(쉼터 결정·샘)가 있는가 — 보스 방의 쉼터는 조금만 깎였어도 쓴다. */
+function restSpotOn(project: Project, mapId: string, session: PlaySession): boolean {
+  return (project.maps[mapId]?.events ?? []).some((event) => triggerOf(event, session) === "action"
+    && JSON.stringify(activeCommands(event, session) ?? []).includes('"recoverAll"'));
+}
+
+/** 배우 파티가 이벤트 전투에 지고도 게임이 이어질 때(패배 분기가 방 입구로 돌려보낸다) 쉬고 다시 도전하는 횟수. */
+const ACTOR_BATTLE_RETRIES = 2;
 
 function wornOut(project: Project, session: PlaySession): boolean {
   const lead = session.monsterInstances?.[session.monsterParty?.[0] ?? ""];
@@ -1693,7 +1702,9 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
   // 무작위 인카운터 전 회복(소모전 판정)과는 별개다. 한 목표에 한 번만(회복이 안 되는 게임에서 맴돌지 않게).
   // 배우 파티(측면 전투)도 같다 — 앞 전투로 HP 가 깎인 채 다음 이벤트 전투에 서지 않고 닿는 회복(샘·쉼터)에 들른다.
   // 왜(2026-10-29 vm4 argon jrpg): 촌장 전투 뒤 HP 214/514 로 곧장 마왕에게 가 졌다 — 촌장 옆 샘·동굴 쉼터가 있었는데 들르지 않았다.
-  if (!healed && (isMonsterPartyGame(project) ? wornOut(project, driver.last.session) : partyWornOut(driver.last.session))
+  // 싸울 맵에 쉼터가 있으면(보스 앞 결정) 조금만 깎였어도 쓴다 — 조수 v2 는 보스를 «쉬고 온 풀 HP» 로 맞춘다(2026-11-13: 쉬지 않고 선 탐침에 맞추느라 보스가 약해졌다).
+  if (!healed && (isMonsterPartyGame(project) ? wornOut(project, driver.last.session)
+    : partyWornOut(driver.last.session) || (partyWornOut(driver.last.session, 1) && restSpotOn(project, targetMap, driver.last.session)))
     && JSON.stringify(visit.page.commands ?? []).includes('"battleProcessing"')) {
     healAtCenter(driver, targetMap);
     checkpoint(driver);
@@ -1727,6 +1738,12 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
     const stalled = driver.last.log.slice(logBefore).find((line) => line.startsWith(`battle ${lostTo[1]}: stalled`));
     if (problem) return trace(goal.label, false, `${failure ?? "이벤트 전투 패배"} — 수련 실패: ${problem} (상대 ${lostTo[1]}, 파티 ${partySummary(project, driver.last.session)})${stalled ? ` · ${stalled}` : ""}`, driver, visit.where);
     return executeGoal(driver, goal, escaped, trained + 1);
+  }
+  // 배우 파티: 이벤트 전투에 졌는데 게임이 이어지면 사람처럼 쉬고 다시 도전한다(운 나쁜 한 판을 막다른 길로 읽지 않는다).
+  if (lost && !isMonsterPartyGame(project) && !driver.last.finalState.gameOver && trained < ACTOR_BATTLE_RETRIES && !goal.done?.(driver.last.session, driver.last)) {
+    checkpoint(driver);
+    if (partyWornOut(driver.last.session, 1)) { healAtCenter(driver, targetMap); checkpoint(driver); }
+    return executeGoal(driver, goal, escaped, trained + 1, true);
   }
   if (failure) return trace(goal.label, false, failure, driver, visit.where);
   if (goal.useItemAfter && goal.done && !goal.done(driver.last.session, driver.last)) {

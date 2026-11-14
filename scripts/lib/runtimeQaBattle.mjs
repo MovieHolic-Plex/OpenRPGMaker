@@ -6,6 +6,8 @@
 //     "commands": 2,                 // 이만큼 명령을 내린 뒤, 연출이 끝나고 다음 명령 카드가 뜰 때까지 기다리고 돌아온다
 //     "untilEnd": false,             // true 면 결과 창까지 누르고 닫는다
 //     "target": 0 | "last" | "enemy-2",
+//     "expect": "victory",           // 전투가 끝났을 때 이겼어야 한다 — 게임 오버·패배·도주로 끝나면 op 가 실패한다(「이길 수 있다」를 보는 체크포인트용).
+//                                    // 없으면 예전대로 「전투 화면이 사라졌다」만 본다(게임 오버로 끝나도 통과한다).
 //     "stopAfter": "skill",          // 기술 명령을 낸 뒤 연출이 시작되면 바로 돌아온다(연출 도중 스크린샷용)
 //     "timeoutMs": 90000 }
 // 배우별 큐는 앞에서부터 하나씩 쓰고, 마지막 하나는 계속 되풀이한다.
@@ -47,6 +49,8 @@ async function readBattleUi(page) {
         .filter((n) => !n.disabled && n.dataset.testid !== "battle-target-cancel").map((n) => n.dataset.testid),
       active: document.querySelector(".battle-actor-status.is-active-actor")?.getAttribute("data-record-id") ?? null,
       resultConfirm: Boolean(document.querySelector('[data-testid="battle-result-confirm"]')),
+      // 결과 창이 승리 결과인가(전리품·경험치 창). 패배·도주 카드는 data-battle-result 가 다르다.
+      victory: document.querySelector('[data-testid="battle-result-panel"]')?.dataset.battleResult === "victory",
       // 승리 뒤 「기술을 배우려면 다른 기술을 잊어야 한다」 장면(emeraldMoveLearnScene) — 결과 창 대신 뜬다.
       moveLearn: Boolean(document.querySelector('[data-testid="emerald-movelearn"]')),
       // 전투 중 이벤트 대사(발렌의 소환 외침 등)는 .dialogue-box 로 뜨고, 그동안 장면은 busy 다.
@@ -90,7 +94,22 @@ export async function readBattleLog(page) {
   return page.evaluate(() => window.__qaBattleLog ?? []);
 }
 
+/**
+ * 전투가 어떻게 끝났는지 — 결과 창 머리글(승리 문구)을 본 적이 있는지와, 전투 화면이 사라진 뒤 게임 오버 화면이 떴는지로 가른다.
+ * 2026-11-14 폴른 스타 QA: 「공격만으로 끝까지」 체크포인트 둘이 게임 오버로 끝났는데 하네스는 「전투 화면이 사라졌다」만 보고 통과로 셌다.
+ */
+async function assertOutcome(page, op, sawVictory) {
+  if (!op.expect) return;
+  if (op.expect !== "victory") throw new Error(`battle op: expect 는 "victory" 만 안다 (받은 값: ${op.expect})`);
+  // 게임 오버 화면은 전투 화면이 걷힌 뒤 한 박자 늦게 뜬다.
+  await sleep(1500);
+  const over = await page.evaluate(() => Boolean(document.querySelector('[data-testid="game-over-screen"]')));
+  if (over) throw new Error("battle op: expect victory — 게임 오버로 끝났다");
+  if (!sawVictory) throw new Error("battle op: expect victory — 승리 결과 창 없이 전투가 끝났다(패배 또는 도주)");
+}
+
 export async function battleQaOp(page, op) {
+  let sawVictory = false;
   const deadline = Date.now() + (op.timeoutMs ?? 90_000);
   const queues = new Map(Object.entries(op.plan ?? {}).map(([actor, value]) => [actor, Array.isArray(value) ? [...value] : [value]]));
   const fallback = op.fallback ?? "attack";
@@ -117,8 +136,10 @@ export async function battleQaOp(page, op) {
     }
     if (!ui.scene) {
       await dumpLog(page, op, issued);
+      await assertOutcome(page, op, sawVictory);
       return { issued, ended: true };
     }
+    if (ui.victory) sawVictory = true;
     if (ui.moveLearn) {
       // 확인키만 누르는 플레이어처럼: 「예」(커서 기본) → 첫 기술(가장 오래 배운 기술)을 잊는다.
       // 빌더 모의전도 그 레벨에서 배운 마지막 네 기술을 쓰므로 같은 기술 구성이 된다.

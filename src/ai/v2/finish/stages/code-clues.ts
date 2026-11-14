@@ -2,6 +2,7 @@
 import type { FinishStage } from "../types";
 import { alignCodeClues, fixDigitClaims, humanizeBlueprintTokens } from "../../story/codeClues";
 import { dropStaleChainClues } from "../../story/clueObjects";
+import { hideLockCodes } from "../../story/codeLeaks";
 
 export const stage: FinishStage = {
   id: "code-clues", phase: "blueprint", order: 50,
@@ -12,8 +13,10 @@ export const stage: FinishStage = {
     const aligned = alignCodeClues(stale.project);
     const digits = fixDigitClaims(aligned.project);
     const human = humanizeBlueprintTokens(digits.project);
-    env.ctx.project = human.project;
-    const fixed = [...aligned.notes, ...digits.notes, ...(human.notes.length ? [`청사진 id 대사 ${human.notes.length}줄을 뜻 낱말로`] : [])];
+    // 자물쇠의 답은 목표 줄·잠긴 안내에 싣지 않는다(codeLeaks.ts) — 번호를 맞춘 뒤에 본다.
+    const hidden = hideLockCodes(human.project);
+    env.ctx.project = hidden.project;
+    const fixed = [...aligned.notes, ...digits.notes, ...(human.notes.length ? [`청사진 id 대사 ${human.notes.length}줄을 뜻 낱말로`] : []), ...hidden.notes];
     if (fixed.length) done.push(`번호·단서 대사: ${fixed.join(" / ").slice(0, 500)}`);
   },
 };

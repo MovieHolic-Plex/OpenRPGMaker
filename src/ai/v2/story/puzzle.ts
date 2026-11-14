@@ -14,6 +14,7 @@ import { dressInteriorExits } from "../place/exitDress";
 import { fixObjectSheetFacing, showExaminedThing } from "./examineArt";
 import { examineHint, lightUnseenThing, settleExamineSpot } from "./examineSpot";
 import { isPersonName, personGraphicFor } from "./personName";
+import { joinPersonPages } from "./samePerson";
 import { afterWinLines, sayAs } from "./playerLines";
 import { REREAD_PERSON, REREAD_THING } from "./rereadPage";
 import { settleStepThing } from "./stepThings";
@@ -30,6 +31,8 @@ export interface ChainLink {
   readonly name?: string;
   readonly at?: { readonly x: number; readonly y: number };
   readonly mapId?: string;
+  /** 이 고리는 앞 고리(이 사슬의 그 번호)와 같은 사람이다 — 새 이벤트를 세우지 않고 그 이벤트의 페이지 뒤에 잇는다(samePerson.ts). */
+  readonly sameAs?: number;
   /** clue: 읽으면 알게 되는 것의 이름(뒤 고리의 needs 가 이 이름을 쓴다). */
   readonly learn?: string;
   /** 이 고리를 쓰려면 먼저 있어야 하는 것 — 앞 고리의 learn·reward.flag 이름 또는 물건 이름. */
@@ -406,6 +409,8 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
       warnings.push(`${index + 1}번 고리(${link.role}): lines 가 성공 글이라 맞혔을 때 나오게 reward.lines 로 옮겼다(lines 는 입력 전 안내)`);
       link = { ...link, lines: undefined, reward: { ...link.reward, lines: link.lines } };
     }
+    const host = link.sameAs !== undefined ? eventIds[link.sameAs] : undefined;
+    if (host) link = { ...link, mapId: host.mapId, eventId: host.eventId, name: undefined, at: undefined };
     const mapId = link.mapId ?? args.mapId;
     const map = run.ctx.project.maps[mapId];
     if (!map) return fail(`${index + 1}번 고리: 맵 ${mapId} 이 없다`);
@@ -581,7 +586,8 @@ export function buildPuzzleChain(run: BuildRun, argsIn: ChainArgs): ContentBuild
       if (typeof attempt === "string") return fail(attempt);
       pages.push(basePage({ conditions: need, commands: gated([...speak(link.lines), ...afterBattle(link, attempt)], "아직 할 수 없다.") }));
     }
-    const res = run.call("upsert_event", { mapId, replacePages: true, event: { id, ...(existing ? {} : { name: link.name ?? `${args.name} ${index + 1}`, x: link.at!.x, y: link.at!.y }), pages } });
+    const written = host && existing ? joinPersonPages((existing.pages ?? []) as unknown as Obj[], pages, need.length > 0) : pages;
+    const res = run.call("upsert_event", { mapId, replacePages: true, event: { id, ...(existing ? {} : { name: link.name ?? `${args.name} ${index + 1}`, x: link.at!.x, y: link.at!.y }), pages: written } });
     if (!res.ok) return fail(`${index + 1}번 고리 이벤트를 쓰지 못했다: ${String(res.summary).slice(0, 300)}`);
     eventIds.push({ mapId, eventId: id });
     gives.push(gave);

@@ -17,7 +17,7 @@ import { enemyIdentityProblems } from "@/ai/v2/judge/enemyChecks";
 import { fitWithinTarget } from "@/editor/tools/bossThreatScaling";
 import { fitPathBattlesIn, PATH_TROOP_PREFIX } from "@/ai/v2/story/pathBattleBudget";
 import { fitUnwinnableStepBattlesIn } from "@/ai/v2/story/blueprintPathBattles";
-import { simulateBattle } from "@/battle/simulate";
+import { SENSIBLE_POTION_HP_RATIO, simulateBattle } from "@/battle/simulate";
 import type { EnemyRecord, GameEvent, Project, SkillRecord } from "@/project/types";
 
 // 2026-11-12 오너가 해 본 판(r1s-fun «증기의 심장»): 공장 거리 전투가 햇살 풀밭에서, 보일러실·기관실 전투가 동굴에서 벌어졌다.
@@ -156,6 +156,7 @@ describe("전투가 파티에 맞는다", () => {
   });
 });
 
+// 2026-11-13 둘째 교정: 보스는 «쉬고 온 풀 HP» 의 기준 파티(곧장 온 판 — 도착 레벨의 낮은 쪽)와 여느 플레이(기술·공격, HP 45% 아래에서 약)로 맞춘다 — 여기서는 Lv1~2 의 Lv1.
 describe("보스는 «공격» 만으로는 못 이긴다", () => {
   it("길 위 전투 수 + 보스전 몫의 회복약을 들고 시작하고, 보스 사본은 약·기술로는 이기고 공격만으로는 진다 — 다시 돌려도 그대로", () => {
     const project = createBlankProject() as Project;
@@ -176,8 +177,7 @@ describe("보스는 «공격» 만으로는 못 이긴다", () => {
     const potion = Object.keys(project.session.inventory ?? {}).find((id) => (project.session.inventory?.[id] ?? 0) >= 3)!;
     expect(potion).toBeDefined();
     const attackOnly = simulateBattle({ project, troopId, heroLevel: 1, partyActorIds: ids, n: 24, seed: 11 });
-    // 길 위 전투를 피해 Lv1 로 온 판은 시작 회복약을 다 들고 있다.
-    const sensible = simulateBattle({ project, troopId, heroLevel: 1, partyActorIds: ids, n: 24, seed: 11, useSkills: true, inventory: { [potion]: project.session.inventory![potion]! }, potionItemId: potion });
+    const sensible = simulateBattle({ project, troopId, heroLevel: 1, partyActorIds: ids, n: 24, seed: 11, useSkills: true, potionHpRatio: SENSIBLE_POTION_HP_RATIO, inventory: { [potion]: project.session.inventory![potion]! }, potionItemId: potion });
     expect(attackOnly.winRate).toBeLessThanOrEqual(0.15);
     expect(sensible.winRate).toBeGreaterThanOrEqual(0.95);
     expect(sensible.avgPotionsUsed).toBeGreaterThan(1);
