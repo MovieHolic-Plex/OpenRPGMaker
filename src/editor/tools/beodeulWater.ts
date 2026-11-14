@@ -312,7 +312,8 @@ export function fallBridgeCells(input: { W: number; H: number; falls: readonly {
         lo = Math.min(lo, a); hi = Math.max(hi, b);
       }
       for (let yy = y - 6; yy <= y + 7; yy += 1) for (let x = lo - 1; x <= hi + 1; x += 1) if (yy >= 0 && yy < H && input.crossing(yy * W + x)) return null;
-      return cells;
+      // 두 칸 폭 강은 한 줄만 놓는다 — 2×2 널판은 시공기의 «널다리 끝 잇기» 가 남북 다리로 읽어 강을 따라 길게 늘였다(가로가 세로보다 길어야 동서 다리다)
+      return hi - lo + 1 <= 2 ? cells.slice(0, hi - lo + 1) : cells;
     };
     const cells = rowsAt(f.y + 3) ?? rowsAt(f.y + 4) ?? rowsAt(f.y + 5) ?? rowsAt(f.y - 4) ?? rowsAt(f.y - 5) ?? rowsAt(f.y + 6) ?? rowsAt(f.y - 6);
     if (cells) out.push(...cells);

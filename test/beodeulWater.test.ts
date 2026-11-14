@@ -190,6 +190,9 @@ describe("버들항 물 — 시공", () => {
     const cells = fallBridgeCells({ ...input, crossing: () => false });
     expect(cells.map((c) => `${c % W},${Math.floor(c / W)}`)).toEqual(["4,8", "5,8", "6,8", "4,9", "5,9", "6,9"]);
     expect(fallBridgeCells({ ...input, crossing: (c) => c === 9 * W + 5 })).toEqual([]);
+    // 두 칸 폭 강은 한 줄(가로가 세로보다 길어야 시공기가 동서 다리로 읽는다)
+    const narrow = (c: number) => { const x = c % W; return x >= 4 && x <= 5; };
+    expect(fallBridgeCells({ ...input, falls: [{ x0: 4, x1: 5, y: 5 }], wet: narrow, free: (c) => !narrow(c), crossing: () => false }).map((c) => `${c % W},${Math.floor(c / W)}`)).toEqual(["4,8", "5,8"]);
   });
 
   it("폭포 그림: 절벽면에 움직이는 폭포 칸을 걸고 물마루·용소를 얹는다 — 프레임 띠가 타일셋에 등록된다", () => {
