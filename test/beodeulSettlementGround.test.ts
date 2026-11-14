@@ -1,12 +1,13 @@
 // 버들항 정착지의 급과 바닥(editor/tools/beodeulSettlementRank.ts · beodeulCommons.ts): 바닥은 정착지의 급을 따른다.
 // 광장도 성벽도 청하지 않은 풀밭 마을은 돌 포장이 없고(길·마당이 한 몸으로 이어진 흙), 문 앞은 모두 흙이며, 집·문 도달은 그대로다.
-// 읍(성벽 · 청한 광장)의 광장은 길 포석 테를 두른 네모다(beodeulTownCore.ts).
+// 읍(성벽 · 청한 광장)은 중심부가 돌바닥이고(beodeulTownCore.ts) 풀은 화단으로만 남으며, 광장은 길 포석 테를 두른 네모다.
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools";
 import { planCommons, straightEarthRuns } from "@/editor/tools/beodeulCommons";
 import { readSettlementAreas, settlementGround, settlementRank } from "@/editor/tools/beodeulSettlementRank";
-import { squareApproaches, squareBox, squareRing, SQUARE_FLOORS } from "@/editor/tools/beodeulTownCore";
+import { planTownCore, squareApproaches, squareBox, squareRing, SQUARE_FLOORS } from "@/editor/tools/beodeulTownCore";
+import { townWallLayout } from "@/editor/tools/beodeulTownWall";
 import type { ToolContext } from "@/editor/tools/types";
 import type { GameMap, Project } from "@/project/types";
 
@@ -136,6 +137,49 @@ describe("읍의 광장 — 테를 두른 네모", () => {
     expect(sq.y1 - sq.y0).toBeGreaterThanOrEqual(6);
     for (const [x, y] of [[sq.x0, sq.y0], [sq.x1, sq.y0], [sq.x0, sq.y1], [sq.x1, sq.y1]] as const) expect(tags(y * map.width + x), `테 모서리 (${x},${y})`).toContain("road");
     for (let y = sq.y0 + 1; y < sq.y1; y += 1) for (let x = sq.x0 + 1; x < sq.x1; x += 1) expect(tags(y * map.width + x), `광장 안 (${x},${y})`).toContain("plaza");
+    expect((data.doors as { reached: boolean }[]).filter((d) => !d.reached).length).toBe(0);
+    expect((map.structurePlacements ?? []).filter((p) => /well/.test(p.kitId)).length).toBe(1);
+  }, 240_000);
+});
+describe("읍의 포장 중심부(planTownCore)", () => {
+  const W = 30, H = 20;
+  const road = new Set(Array.from({ length: W }, (_, x) => 10 * W + x));
+  const building = new Set<number>(); for (let y = 3; y < 7; y += 1) for (let x = 4; x < 10; x += 1) building.add(y * W + x);
+  const plan = planTownCore({ W, H, seed: 5, inside: (c) => { const x = c % W, y = Math.floor(c / W); return x > 0 && y > 0 && x < W - 1 && y < H - 1; },
+    open: (c) => !road.has(c) && !building.has(c), road: (c) => road.has(c), building: (c) => building.has(c), doors: [{ x: 6, y: 7 }] });
+  it("안뜰은 중심부의 빈 칸을 덮고, 화단은 둘레 한 칸이 모두 안뜰인 네모이며 풀 몫은 다섯에 하나를 넘지 않는다", () => {
+    const court = new Set(plan.court);
+    expect(plan.court.some((c) => road.has(c) || building.has(c))).toBe(false);
+    expect(plan.beds.length).toBeGreaterThan(2);
+    let green = 0;
+    for (const b of plan.beds) {
+      green += b.w * b.h;
+      for (let j = -1; j <= b.h; j += 1) for (let i = -1; i <= b.w; i += 1) {
+        const c = (b.y + j) * W + b.x + i, inBed = i >= 0 && j >= 0 && i < b.w && j < b.h;
+        expect(court.has(c), `화단 (${b.x},${b.y}) 의 (${i},${j})`).toBe(!inBed);
+      }
+    }
+    expect(green / (plan.court.length + green)).toBeLessThan(0.2);
+    // 문 앞 길목(문 앞 칸에서 길까지)에는 화단·화분이 없다
+    for (let dy = 0; dy <= 2; dy += 1) expect(court.has((7 + dy) * W + 6)).toBe(true);
+    expect(plan.planters.some((p) => p.x >= 5 && p.x <= 7 && p.y >= 7 && p.y <= 10)).toBe(false);
+  });
+
+  it("성벽 읍: 성벽 안 풀 몫이 넷에 하나 아래, 밭이 없고, 안뜰 판석이 길보다 넓다 · 문은 모두 닿는다", () => {
+    const { project, map, data } = town({ walls: true, form: "plaza", seed: 17 });
+    expect(data.rank).toBe("town");
+    expect(data.fields).toBe(0);
+    const meta = project.tilesets[TS]!.tileMeta ?? [];
+    const tags = (c: number) => (meta[map.lowerTiles[c]!]?.tags ?? []) as readonly string[];
+    const L = townWallLayout(map.width, map.height, 17);
+    let inside = 0, green = 0;
+    for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) if (!L.inBand(x, y)) { inside += 1; if (tags(y * map.width + x).includes("grass")) green += 1; }
+    expect(green / inside).toBeLessThan(0.25);
+    const areas = readSettlementAreas(map, project.tilesets[TS]);
+    expect(areas.court.length).toBeGreaterThan(800);
+    expect(areas.street.length).toBeGreaterThan(200);
+    expect(areas.court.length).toBeGreaterThan(areas.street.length);
+    expect(areas.earth.length).toBe(0);
     expect((data.doors as { reached: boolean }[]).filter((d) => !d.reached).length).toBe(0);
     expect((map.structurePlacements ?? []).filter((p) => /well/.test(p.kitId)).length).toBe(1);
   }, 240_000);
