@@ -1,10 +1,12 @@
 // 버들항 정착지의 급과 바닥(editor/tools/beodeulSettlementRank.ts · beodeulCommons.ts): 바닥은 정착지의 급을 따른다.
 // 광장도 성벽도 청하지 않은 풀밭 마을은 돌 포장이 없고(길·마당이 한 몸으로 이어진 흙), 문 앞은 모두 흙이며, 집·문 도달은 그대로다.
+// 읍(성벽 · 청한 광장)의 광장은 길 포석 테를 두른 네모다(beodeulTownCore.ts).
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools";
 import { planCommons, straightEarthRuns } from "@/editor/tools/beodeulCommons";
 import { readSettlementAreas, settlementGround, settlementRank } from "@/editor/tools/beodeulSettlementRank";
+import { squareApproaches, squareBox, squareRing, SQUARE_FLOORS } from "@/editor/tools/beodeulTownCore";
 import type { ToolContext } from "@/editor/tools/types";
 import type { GameMap, Project } from "@/project/types";
 
@@ -105,5 +107,36 @@ describe("시골 마을의 바닥 — 돌 포장 없이 흙", () => {
   it("사막 마을은 그대로다(제 바닥 표본) — 급은 적히지만 흙 몸을 깔지 않는다", () => {
     const { project, map } = town({ theme: "desert", seed: 17 });
     expect(readSettlementAreas(map, project.tilesets[TS]).earth.length).toBe(0);
+  }, 240_000);
+});
+
+describe("읍의 광장 — 테를 두른 네모", () => {
+  const W = 30, H = 20;
+  const road = new Set(Array.from({ length: W }, (_, x) => 10 * W + x));
+  it("바깥 한 줄이 테, 안이 광장 돌 · 변 가운데에서 길까지 곧은 들목 · 안 돌 목록에 강자갈이 없다", () => {
+    const cells: number[] = []; for (let y = 4; y <= 8; y += 1) for (let x = 5; x <= 11; x += 1) cells.push(y * W + x);
+    const box = squareBox(W, cells)!;
+    expect(box).toEqual({ x0: 5, y0: 4, x1: 11, y1: 8 });
+    const { ring, inner } = squareRing(W, H, cells);
+    expect(ring.length).toBe(20);
+    expect(inner.length).toBe(15);
+    const approach = squareApproaches(W, H, box, (c) => !road.has(c), (c) => road.has(c));
+    expect(approach.map((c) => `${c % W},${Math.floor(c / W)}`).sort()).toEqual(["7,9", "8,9", "9,9"]);
+    expect(SQUARE_FLOORS.length).toBeGreaterThanOrEqual(2);
+    expect(SQUARE_FLOORS.some((f) => /cobble|자갈/.test(`${f.id}${f.label}${f.kit ?? ""}`))).toBe(false);
+  });
+
+  it("광장을 청한 마을: 네 모서리는 길 포석 테, 안은 모두 광장 돌, 우물 하나, 문은 모두 닿는다", () => {
+    const { project, map, data } = town({ form: "plaza" });
+    const meta = project.tilesets[TS]!.tileMeta ?? [];
+    const tags = (c: number) => (meta[map.lowerTiles[c]!]?.tags ?? []) as readonly string[];
+    const sq = data.square as { x0: number; y0: number; x1: number; y1: number; floor: string };
+    expect(SQUARE_FLOORS.map((f) => f.id)).toContain(sq.floor);
+    expect(sq.x1 - sq.x0).toBeGreaterThanOrEqual(6);
+    expect(sq.y1 - sq.y0).toBeGreaterThanOrEqual(6);
+    for (const [x, y] of [[sq.x0, sq.y0], [sq.x1, sq.y0], [sq.x0, sq.y1], [sq.x1, sq.y1]] as const) expect(tags(y * map.width + x), `테 모서리 (${x},${y})`).toContain("road");
+    for (let y = sq.y0 + 1; y < sq.y1; y += 1) for (let x = sq.x0 + 1; x < sq.x1; x += 1) expect(tags(y * map.width + x), `광장 안 (${x},${y})`).toContain("plaza");
+    expect((data.doors as { reached: boolean }[]).filter((d) => !d.reached).length).toBe(0);
+    expect((map.structurePlacements ?? []).filter((p) => /well/.test(p.kitId)).length).toBe(1);
   }, 240_000);
 });
