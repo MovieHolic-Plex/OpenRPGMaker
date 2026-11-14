@@ -668,7 +668,7 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
     const prompt = document.createElement("div");
     prompt.className = "battle-result-next-prompt";
     // 게임 플레이 런타임은 키보드 전용(감독 결정) — "클릭" 안내는 없는 조작을 가리킨다.
-    prompt.textContent = CONTINUE_KEY_PROMPT;
+    prompt.textContent = continuePrompt();
     panel.append(prompt);
   }
   syncPixelResultParty(panel, snapshot, revealStage);
@@ -742,7 +742,7 @@ function syncPixelResultParty(panel: HTMLElement, snapshot: BattleSnapshot, reve
         children: pages,
       }));
       const prompt = panel.querySelector<HTMLElement>(".battle-result-next-prompt");
-      if (prompt) prompt.textContent = `${levelUps.length > 0 ? `레벨 업 ${levelUps.length}명` : "새 기술"} · ${CONTINUE_KEY_PROMPT}`;
+      if (prompt) prompt.textContent = `${levelUps.length > 0 ? `레벨 업 ${levelUps.length}명` : "새 기술"} · ${continuePrompt()}`;
     }
   }
   syncPixelLoot(panel, snapshot);
@@ -1281,4 +1281,10 @@ function markByDataset(root: HTMLElement, key: string, value: string | undefined
 
 function kebabCase(value: string): string {
   return value.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
+}
+
+/** 결과 화면의 「계속」 안내 — 터치 화면(.play-viewport[data-touch-ui])에서는 키 이름 대신 「화면을 눌러 계속」(2026-11-14 QA minor 14). */
+function continuePrompt(): string {
+  const touch = typeof document !== "undefined" && document.querySelector(".play-viewport[data-touch-ui='true']") !== null;
+  return touch ? "화면을 눌러 계속" : CONTINUE_KEY_PROMPT;
 }

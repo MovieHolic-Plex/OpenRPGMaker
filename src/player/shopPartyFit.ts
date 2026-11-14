@@ -139,6 +139,13 @@ export function recoveryPreview(
     const max = kind === "hp" ? vitals.maxHp : vitals.maxMp;
     const current = Math.min(max, kind === "hp" ? vitals.hp : vitals.mp);
     const amount = Math.max(0, Math.floor((max * recovery.percentMax) / 100) + recovery.flat);
+    // 쓰러진 동료에게는 보통 약이 듣지 않고, 되살리는 약은 서 있는 동료에게 듣지 않는다(playerItemUse canApplyItemEffects 와 같은 규칙).
+    // 미리보기가 이를 모르고 「0 → 171」을 보여 줬다(2026-11-14 QA).
+    const dead = vitals.hp <= 0;
+    if (dead !== (item.onlyEffectiveOnDeadActors === true)) {
+      rows.push({ actorId, kind, current, max, next: current, reason: dead ? "쓰러짐" : "대상 아님" });
+      continue;
+    }
     rows.push({ actorId, kind, current, max, next: Math.min(max, current + amount) });
   }
   return rows;

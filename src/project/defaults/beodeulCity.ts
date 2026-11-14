@@ -287,7 +287,7 @@ function extendPickedParts(tileset: TilesetDef, limit: number = sheet.count): bo
  * fable-variety-beodeul-2026-11-12 로 구웠다. 번들 소유라 옛 사본의 같은 id 킷은 번들 것으로 맞춘다.
  */
 export const BEODEUL_OBJECTS_KIT_PREFIX = "bd-obj-";
-/** 이야기 기물 꼬리의 첫 칸(옛 상수도 꼬리 34,816~34,943 바로 뒤). 네 줄(512칸): 34,944~35,455 — 이야기 기물 16종 · 종류별 변형 50종(ai.variantOf) · 새 종류 105종(2026-11-14, 면제 묶음 fable-objects100-beodeul-2026-11-14) 순서로 이어진다. */
+/** 이야기 기물 꼬리의 첫 칸(옛 상수도 꼬리 34,816~34,943 바로 뒤). 한 줄 128칸씩(줄 수는 src/assets/beodeulCitySheet.json 의 count 가 정한다) — 이야기 기물 16종 · 종류별 변형 50종(ai.variantOf) · 새 종류 105종(2026-11-14, 면제 묶음 fable-objects100-beodeul-2026-11-14) · 마을 종류별 기물(2026-11-14, 면제 묶음 fable-objects300-beodeul-2026-11-14, 킷 태그 kind:<종류 id>) 순서로 이어진다. */
 export const BEODEUL_OBJECTS_BASE = 34944;
 
 function mergeShippedKits(tileset: TilesetDef, withWall = true, withGap = true, withYard = true, withCapital = true, withTheme2 = true): boolean {

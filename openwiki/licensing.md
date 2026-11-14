@@ -33,6 +33,10 @@
 - **제3자 글·코드**는 루트 `ATTRIBUTION.md`에 적는다. 2026-10-29 사용자 결정으로 general-good-writing(코드 연규)의 윤문 규칙 문서와
   polish-lint 린터 일부를 들였다(`assistant-skills/dialogue-polish/references/`, `src/vendor/general-good-writing/`). 원본에 라이선스 파일이 없지만
   저작자가 크레딧 표기를 조건으로 사용을 허락했다(2026-10-30). 크레딧은 `ATTRIBUTION.md` 와 「설정 → 정보」에 둔다. 린터는 편집기 조수 도구가 동적 import 로만 부르며 플레이어 그래프에 넣지 않는다.
+- **타이틀 「크레딧」 창**(2026-11-14, `src/player/titleLicenseNotice.ts`): 플레이어에게는 짧은 한국어 크레딧(`PLAYER_CREDITS`)을 먼저 보이고,
+  `assets/ATTRIBUTION.md`(개발 기록이 섞인 영문 원문)는 「전체 출처 문서 (영문)」 단추로만 연다. CC BY 4.0 표기 의무(저작자·라이선스·출처·변경 사실·보증 없음)와
+  REFMAP 표기 줄, general-good-writing 크레딧, 「OPRN BGM 은 AI 로 만든 음악」 문구는 **짧은 글이 직접 진다** — `public/assets/easyrpg/AUTHORS.md` 의 [CC-BY] 저작자나
+  표기 의무가 있는 소재가 바뀌면 `PLAYER_CREDITS` 도 같이 고친다(`test/titleLicenseNotice.test.ts` 가 줄을 고정한다). 내보내기 zip 은 예전대로 `assets/ATTRIBUTION.md` 를 늘 싣는다.
 - **이름:** 공개 저장소 이름은 `OpenRPGMaker`(사용자 결정, 2026-10-07). 제품 표시명은 그대로 `src/brand.ts`의 OPRN 계열이고,
   brand.ts 의 「RPG Maker 계열 표현 금지」는 제품 표시명 규칙이라 그대로 둔다. 무관 고지는 `TRADEMARKS.md` 「RPG Maker」 절.
 - 저작권자 표기는 「OPRN」(2026-10-08 사용자 결정, 법인 설립 전 임시). 법인명이 정해지면 `LICENSE.md`·`LICENSE-RUNTIME.md`·`TRADEMARKS.md`·`CLA.md`에서 함께 바꾼다.
