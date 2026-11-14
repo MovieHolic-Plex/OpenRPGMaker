@@ -11,8 +11,6 @@ import { compileReliefStyle, RELIEF_DEFAULT_RIM, type ReliefWallStyle } from "./
 type Rgb = [number, number, number];
 const D = palette as { G: Rgb[]; B: Rgb[]; TOP: number[]; GROUND: number[]; LIP: Record<"L" | "M" | "R", number[]>; TILES: number[][] };
 const RAMPS = [D.G, D.B];
-// 바이옴의 별도 계단 양식이 없으면 돌 계단을 쓴다. 땅·흙벽 팔레트와 분리해 잔디 계단이 되지 않게 한다.
-const STONE_STAIR_RAMP: Rgb[] = [[47, 49, 46], [72, 75, 70], [103, 107, 98], [137, 141, 129], [176, 180, 165], [210, 213, 199]];
 const { TOP, GROUND, LIP, TILES } = D;
 const LV = Array.from({ length: RELIEF_MAX_LEVEL + 1 }, (_, i) => Math.min(3, Math.floor(i / 3)));
 const OUT_G = 0, OUT_B = 6, DRIP = 6, CW = 14, CH = 8;
@@ -623,12 +621,11 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   // 부분 굽기: ox·oy = 창 원점의 화면 px. 무늬를 읽는 곳은 (화소 + 원점) 절대 좌표를 쓴다. 칸 주기(16)·짝홀만 보는 곳은 그대로 둔다.
   const win = opt.window, ox = win ? win.cx * T : 0, oy = win ? win.cy * T : 0, cy0 = win ? win.cy : 0;
   // gslopes 는 맵 전체 좌표(절대 좌표 패스용), slopes 는 h 기준 좌표(높이·네모 절벽용). 번호는 같다.
-  const gslopes = opt.slopes ?? [];
+  // 디딤판으로 끊는 계단은 벽면에 판 계단 양식(carvedStairs)만 그린다 — 그 밖의 계단은 비탈로 잇고 경사로 도트(칩셋 돌계단 조각)를 입힌다.
+  // 전에는 그런 계단을 렌더러가 회색 벽돌 디딤판으로 칠했다(2026-11-14 오너 「계단을 이딴 식으로 하면 절대 안 된다니까 ?」) — 그 길은 없다.
+  const gslopes = S?.carvedStairs ? opt.slopes ?? [] : (opt.slopes ?? []).map((s) => (s.steps ? { ...s, steps: undefined } : s));
   const slopes = win ? gslopes.map((s) => ({ ...s, x: s.x - win.cx, y: s.y - win.cy })) : gslopes;
-  const stoneStairs = !S?.carvedStairs && slopes.some(s => !!s.steps);
-  const baseRamps = opt.ramps ?? S?.ramps ?? RAMPS;
-  const stoneOffset = baseRamps.length * 6;
-  const ramps = stoneStairs ? [...baseRamps, STONE_STAIR_RAMP] : baseRamps;
+  const baseRamps = opt.ramps ?? S?.ramps ?? RAMPS, ramps = baseRamps;
   const art = !!opt.rampArt;
   // 경사로와 그 둘레 한 칸은 네모 절벽 — 대각선으로 깎이면 경사로 입구가 비스듬히 잘려 비탈이 땅에 붙지 않는다
   const nearRamp = slopes.length
@@ -1024,27 +1021,6 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     }
   }
   const stairOwner = (i: number): number => (cut.length ? cut[i] : 0) || (ssl[i] && kind[i] === 0 && slopes[ssl[i] - 1]?.steps ? ssl[i] : 0);
-  if (stoneStairs) {
-    for (let i = 0; i < N; i++) {
-      const owner = stairOwner(i);
-      if (!owner) continue;
-      const s = gslopes[owner - 1]!, sx = i % PW + ox, py = mpy[i] + oy;
-      const [across, width] = stairAcross(s, sx, py);
-      let shade: number;
-      if (across === 0 || across === width - 1) shade = 1;
-      else if (kind[i] === 1) {
-        // 흙벽 무늬 대신 디딤판 아래 그늘과 짧은 돌 챌면을 구분한다.
-        shade = dep[i] === 0 ? 1 : dep[i] === run[i] - 1 ? 2 : 3;
-        if (run[i] > 4 && (across + Math.floor(sst[i] * s.steps!) * 7) % 16 === 0) shade = Math.max(1, shade - 1);
-      } else {
-        const t = sst[i] * s.steps!, phase = t - Math.floor(t);
-        const treadPixels = (s.dir === "n" || s.dir === "s" ? s.h : s.w) * T / s.steps!;
-        shade = phase < 1 / treadPixels ? 5 : phase > 1 - 1 / treadPixels ? 2 : 4;
-        if (shade === 4 && across % 16 === (Math.floor(t) % 2 ? 8 : 0)) shade = 3;
-      }
-      out[i] = stoneOffset + shade;
-    }
-  }
   const hidCell = new Uint8Array(NC);
   for (let k = 0; k < NC; k++) hidCell[k] = topN[k] && hidN[k] * 2 >= topN[k] ? 1 : 0;
   for (let sy = 0; sy < SH; sy++) for (let sx = 0; sx < PW; sx++) {
@@ -1062,9 +1038,8 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     } else {
       rgba[o] = col[0] * f; rgba[o + 1] = col[1] * f; rgba[o + 2] = col[2] * f; rgba[o + 3] = 255;
     }
-    const stone = stoneStairs && stairOwner(i);
-    if (!stone && shadeA && shadeA[i] && !(rimPx && rimPx[i] >= 0)) { const g = ramps[0][0]; rgba[o] = g[0]; rgba[o + 1] = g[1]; rgba[o + 2] = g[2]; rgba[o + 3] = shadeA[i]; edge[i] = 1; }
-    if (!stone && rimPx && rimPx[i] >= 0) {
+    if (shadeA && shadeA[i] && !(rimPx && rimPx[i] >= 0)) { const g = ramps[0][0]; rgba[o] = g[0]; rgba[o + 1] = g[1]; rgba[o + 2] = g[2]; rgba[o + 3] = shadeA[i]; edge[i] = 1; }
+    if (rimPx && rimPx[i] >= 0) {
       const rc = ramps[(rimPx[i] / 6) | 0][rimPx[i] % 6];
       rgba[o] = rc[0]; rgba[o + 1] = rc[1]; rgba[o + 2] = rc[2]; rgba[o + 3] = 255;
       // 바깥 흙 둑은 벽이다. 실제 바닥 타일로 덮거나 바닥 under 띠로 보내지 않는다.

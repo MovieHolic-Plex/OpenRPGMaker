@@ -439,26 +439,26 @@ const SNOW_WHITE = ["#6f8aa8", "#93aecb", "#b7cde3", "#d6e4f1", "#ecf3fa", "#fff
 export const RELIEF_STYLES: Readonly<Record<string, ReliefStyleSpec>> = {
   // jungle: ramps sampled from the jungle chipset itself (lawn 240, grass rim 619, rock face 651-683) so the drawn cliffs sit
   // in the chipset's colours — the earlier hand-picked browns were redder and the greens more saturated than the tiles
-  jungle: { family: "earth", overlay: "vines", overlayEvery: 2, top: ["#2d531e", "#41792d", "#4c9632", "#579f35", "#62a939", "#73b83e"], wall: ["#1a1615", "#372624", "#4e3324", "#614026", "#6b4e2a", "#8b6a39"], accent: MOSS },
-  tropical: { family: "earth", overlay: "vines", overlayEvery: 3, top: ["#325220", "#47762e", "#5e9d3e", "#76c44d", "#85dd57", "#99ff64"], wall: ["#3b2d1a", "#543f25", "#6c5130", "#84633a", "#9c7544", "#b68950"], accent: MOSS },
-  skyisle: { family: "earth", overlay: "roots", overlayEvery: 2, top: ["#345126", "#4a7437", "#639a49", "#7cc15b", "#8cda67", "#a1fb76"], wall: ["#2d251d", "#3f3529", "#514434", "#635340", "#75624c", "#897358"], accent: MOSS },
-  swamp: { family: "earth", overlay: "roots", overlayEvery: 2, top: ["#373b1f", "#4e542c", "#68703b", "#828c4a", "#939e54", "#a9b660"], wall: ["#241d13", "#34291b", "#423422", "#51402a", "#604c32", "#70583a"], accent: MOSS },
+  jungle: { carvedStairs: { tread: "wall" }, family: "earth", overlay: "vines", overlayEvery: 2, top: ["#2d531e", "#41792d", "#4c9632", "#579f35", "#62a939", "#73b83e"], wall: ["#1a1615", "#372624", "#4e3324", "#614026", "#6b4e2a", "#8b6a39"], accent: MOSS },
+  tropical: { carvedStairs: { tread: "wall" }, family: "earth", overlay: "vines", overlayEvery: 3, top: ["#325220", "#47762e", "#5e9d3e", "#76c44d", "#85dd57", "#99ff64"], wall: ["#3b2d1a", "#543f25", "#6c5130", "#84633a", "#9c7544", "#b68950"], accent: MOSS },
+  skyisle: { carvedStairs: { tread: "wall" }, family: "earth", overlay: "roots", overlayEvery: 2, top: ["#345126", "#4a7437", "#639a49", "#7cc15b", "#8cda67", "#a1fb76"], wall: ["#2d251d", "#3f3529", "#514434", "#635340", "#75624c", "#897358"], accent: MOSS },
+  swamp: { carvedStairs: { tread: "wall" }, family: "earth", overlay: "roots", overlayEvery: 2, top: ["#373b1f", "#4e542c", "#68703b", "#828c4a", "#939e54", "#a9b660"], wall: ["#241d13", "#34291b", "#423422", "#51402a", "#604c32", "#70583a"], accent: MOSS },
   // swamp relief set (2026-09-28, scripts/content/lib/swamp-plans.mjs th.reliefStyle): peat banks for the marsh fields, and the
   // dead marshes' darker, lichen-grey crumbling banks. New keys — the "swamp" style above (fantasy-500 swamp fields) is unchanged.
-  "swamp-peat": { family: "peat", overlay: "roots", overlayEvery: 3, rim: { side: 6, lip: 2 }, top: ["#373b1f", "#4e542c", "#68703b", "#828c4a", "#939e54", "#a9b660"], wall: ["#1a1510", "#2a2118", "#3a2d1f", "#4a3a27", "#5b4930", "#6e5a3c"], accent: MOSS },
-  "swamp-dead": { family: "peat", overlay: "lichen", overlayEvery: 2, rim: { side: 6, lip: 2 }, top: ["#2c3022", "#3c412e", "#4f553b", "#626a48", "#707852", "#838c60"], wall: ["#121112", "#1d1b1a", "#2a2623", "#37322d", "#453f38", "#554e45"], accent: ["#27351f", "#36492b", "#4b6338", "#627f46", "#7c9b58", "#9bb86e"] },
-  plague: { family: "earth", overlay: "roots", overlayEvery: 3, top: ["#343321", "#4a492f", "#62623e", "#7b7a4e", "#8b8a58", "#a09f65"], wall: ["#201c12", "#2d2819", "#393320", "#463e27", "#53492e", "#615636"], accent: MOSS },
-  mushroom: { family: "earth", overlay: "lichen", overlayEvery: 2, top: ["#2a3245", "#3d4762", "#515f83", "#6577a4", "#7286b9", "#839bd5"], wall: ["#1f1b2a", "#2c263c", "#39314d", "#453c5e", "#51476f", "#5f5382"], accent: ["#1d4a4f", "#236a70", "#2b8d92", "#3fb3b0", "#6fd6cc", "#b6f2e6"] },
-  savanna: { family: "strata", top: ["#554928", "#7a683a", "#a28b4d", "#cbae60", "#e5c56c", "#ffe27d"], wall: ["#3c2814", "#55381d", "#6d4825", "#85582d", "#9d6835", "#b8793e"], accent: MOSS },
+  "swamp-peat": { carvedStairs: { tread: "wall" }, family: "peat", overlay: "roots", overlayEvery: 3, rim: { side: 6, lip: 2 }, top: ["#373b1f", "#4e542c", "#68703b", "#828c4a", "#939e54", "#a9b660"], wall: ["#1a1510", "#2a2118", "#3a2d1f", "#4a3a27", "#5b4930", "#6e5a3c"], accent: MOSS },
+  "swamp-dead": { carvedStairs: { tread: "wall" }, family: "peat", overlay: "lichen", overlayEvery: 2, rim: { side: 6, lip: 2 }, top: ["#2c3022", "#3c412e", "#4f553b", "#626a48", "#707852", "#838c60"], wall: ["#121112", "#1d1b1a", "#2a2623", "#37322d", "#453f38", "#554e45"], accent: ["#27351f", "#36492b", "#4b6338", "#627f46", "#7c9b58", "#9bb86e"] },
+  plague: { carvedStairs: { tread: "wall" }, family: "earth", overlay: "roots", overlayEvery: 3, top: ["#343321", "#4a492f", "#62623e", "#7b7a4e", "#8b8a58", "#a09f65"], wall: ["#201c12", "#2d2819", "#393320", "#463e27", "#53492e", "#615636"], accent: MOSS },
+  mushroom: { carvedStairs: { tread: "wall" }, family: "earth", overlay: "lichen", overlayEvery: 2, top: ["#2a3245", "#3d4762", "#515f83", "#6577a4", "#7286b9", "#839bd5"], wall: ["#1f1b2a", "#2c263c", "#39314d", "#453c5e", "#51476f", "#5f5382"], accent: ["#1d4a4f", "#236a70", "#2b8d92", "#3fb3b0", "#6fd6cc", "#b6f2e6"] },
+  savanna: { carvedStairs: { tread: "wall" }, family: "strata", top: ["#554928", "#7a683a", "#a28b4d", "#cbae60", "#e5c56c", "#ffe27d"], wall: ["#3c2814", "#55381d", "#6d4825", "#85582d", "#9d6835", "#b8793e"], accent: MOSS },
   badlands: { family: "strata", smoothStairs: true, top: ["#523221", "#76482f", "#9d603e", "#c4784e", "#dd8858", "#ff9c65"], wall: ["#4c2615", "#6d361e", "#8b4527", "#aa542f", "#c96337", "#eb7441"], accent: MOSS },
   // saltflat: top from the salt lawn (240) and salt ramp, wall the travertine of the cliff face (2683)
-  saltflat: { family: "strata", top: ["#8c8194", "#b3a9ae", "#d8d0c5", "#e0d9ce", "#ece6dc", "#faf6ee"], wall: ["#5f4e3f", "#7c6854", "#947c64", "#b69f84", "#d4bfa3", "#ece0cc"], accent: ["#6c2610", "#a44216", "#d06a22", "#e89a40", "#e4cc40", "#fcf8c4"] },
-  desert: { family: "strata", top: ["#5b4d35", "#826e4c", "#ae9366", "#d9b87f", "#f5d090", "#ffefa5"], wall: ["#5a3e22", "#7a5630", "#98703f", "#b58a50", "#cfa566", "#e8c282"], accent: MOSS },
+  saltflat: { carvedStairs: {}, family: "strata", top: ["#8c8194", "#b3a9ae", "#d8d0c5", "#e0d9ce", "#ece6dc", "#faf6ee"], wall: ["#5f4e3f", "#7c6854", "#947c64", "#b69f84", "#d4bfa3", "#ece0cc"], accent: ["#6c2610", "#a44216", "#d06a22", "#e89a40", "#e4cc40", "#fcf8c4"] },
+  desert: { carvedStairs: {}, family: "strata", top: ["#5b4d35", "#826e4c", "#ae9366", "#d9b87f", "#f5d090", "#ffefa5"], wall: ["#5a3e22", "#7a5630", "#98703f", "#b58a50", "#cfa566", "#e8c282"], accent: MOSS },
   // desert relief rework (2026-09-28, agent/r3-relief-stairs 브랜치의 openwiki/biome-desert.md): sandstone = the desert walls with the stone-stair ramp
   // art (rampArt.json "sandstone": every road climb one flight of cut steps); dune = the lee faces of the giant dune / dune
   // ridge fields in shaded sand (lib/desert bp 'sand') with the sand-slope ramp art; the pyramid's risers are wall decor
-  sandstone: { family: "strata", top: ["#5b4d35", "#826e4c", "#ae9366", "#d9b87f", "#f5d090", "#ffefa5"], wall: ["#5a3e22", "#7a5630", "#98703f", "#b58a50", "#cfa566", "#e8c282"], accent: MOSS },
-  dune: { family: "strata", top: ["#946234", "#bc8a4e", "#d8aa6a", "#ecc88c", "#f0d49e", "#f8e2b2"], wall: ["#3e2412", "#6a4222", "#946234", "#b07e46", "#c89c62", "#dcb47a"], accent: ["#6a4222", "#946234", "#bc8a4e", "#d8aa6a", "#ecc88c", "#f8e2b2"] },
+  sandstone: { carvedStairs: {}, family: "strata", top: ["#5b4d35", "#826e4c", "#ae9366", "#d9b87f", "#f5d090", "#ffefa5"], wall: ["#5a3e22", "#7a5630", "#98703f", "#b58a50", "#cfa566", "#e8c282"], accent: MOSS },
+  dune: { carvedStairs: {}, family: "strata", top: ["#946234", "#bc8a4e", "#d8aa6a", "#ecc88c", "#f0d49e", "#f8e2b2"], wall: ["#3e2412", "#6a4222", "#946234", "#b07e46", "#c89c62", "#dcb47a"], accent: ["#6a4222", "#946234", "#bc8a4e", "#d8aa6a", "#ecc88c", "#f8e2b2"] },
   // desert r3 (2026-09-29, 사용자 「사막맵 계단이랑 경사로를 너무 못만들었는데」): the same sandstone / dune walls, but every climb is a
   // stair cut into the wall face (carvedStairs: stone treads, risers, cheek stones — no ramp art, the stair cells' tiles are not
   // drawn) and the fields' levels are doubled (lib/relief-carve.mjs) so a cliff is a two-cell face, not a line
@@ -490,17 +490,17 @@ export const RELIEF_STYLES: Readonly<Record<string, ReliefStyleSpec>> = {
   // 던전 높이 단(2026-10-30 「던전 설계에 높이 단 — 마을과 같은 버들항 계단 조각」): 버들항 동굴 바위 앞면 색(칩셋에서 뽑은 6색)의 흙벽 절벽 + 같은 bd-mpart-stairs 돌계단.
   "cave-steps": { smoothStairs: true, family: "earth", top: ["#30242a", "#463a3a", "#604e48", "#6c5c54", "#806a5d", "#8d7766"], wall: ["#30242a", "#463a3a", "#604e48", "#6c5c54", "#806a5d", "#8d7766"], accent: ["#2b3934", "#3c4642", "#525a56", "#595b58", "#6f716e", "#929491"] },
   "peat-steps": { smoothStairs: true, family: "peat", overlay: "roots", overlayEvery: 3, rim: { side: 6, lip: 2 }, top: ["#373b1f", "#4e542c", "#68703b", "#828c4a", "#939e54", "#a9b660"], wall: ["#1a1510", "#2a2118", "#3a2d1f", "#4a3a27", "#5b4930", "#6e5a3c"], accent: MOSS },
-  tundra: { family: "snow", overlay: "icicles", overlayEvery: 2, top: ["#444335", "#625f4c", "#827f66", "#a39f7f", "#b8b490", "#d4cfa5"], wall: ["#2a3040", "#3c4658", "#566479", "#71819a", "#93a3bb", "#b9c6d8"], accent: SNOW_WHITE },
+  tundra: { carvedStairs: { tread: "wall" }, family: "snow", overlay: "icicles", overlayEvery: 2, top: ["#444335", "#625f4c", "#827f66", "#a39f7f", "#b8b490", "#d4cfa5"], wall: ["#2a3040", "#3c4658", "#566479", "#71819a", "#93a3bb", "#b9c6d8"], accent: SNOW_WHITE },
   // tundra-snow (설원·툰드라 relief fields 2026-09-28, agent/r3-relief-stairs 브랜치의 openwiki/biome-tundra.md): the rebuilt sheet's snow field (cell 240) as the
   // top ramp — the "tundra" row above keeps the old moss-steppe olive for the fantasy-500 fields that already use it
   "tundra-snow": { family: "snow", smoothStairs: true, overlay: "icicles", overlayEvery: 2, cornice: true, top: ["#6a7f9e", "#93a9c6", "#b9cce0", "#d6e3ef", "#e9f1f8", "#ffffff"], wall: ["#2a3040", "#3c4658", "#566479", "#71819a", "#93a3bb", "#b9c6d8"], accent: SNOW_WHITE },
-  taiga: { family: "snow", overlay: "icicles", overlayEvery: 4, top: ["#29352e", "#3b4c42", "#4e6658", "#627f6e", "#6f907c", "#7fa58f"], wall: ["#23262b", "#33383f", "#454c55", "#5a626c", "#727b86", "#8d97a2"], accent: SNOW_WHITE },
-  elf: { family: "masonry", overlay: "vines", overlayEvery: 3, top: ["#2b4c34", "#3d6d4a", "#529262", "#66b67b", "#73ce8b", "#85eda0"], wall: ["#2e3a36", "#44544e", "#607269", "#7e9187", "#9fb1a6", "#c6d5cb"], accent: MOSS },
+  taiga: { carvedStairs: { tread: "wall" }, family: "snow", overlay: "icicles", overlayEvery: 4, top: ["#29352e", "#3b4c42", "#4e6658", "#627f6e", "#6f907c", "#7fa58f"], wall: ["#23262b", "#33383f", "#454c55", "#5a626c", "#727b86", "#8d97a2"], accent: SNOW_WHITE },
+  elf: { carvedStairs: { tread: "wall" }, family: "masonry", overlay: "vines", overlayEvery: 3, top: ["#2b4c34", "#3d6d4a", "#529262", "#66b67b", "#73ce8b", "#85eda0"], wall: ["#2e3a36", "#44544e", "#607269", "#7e9187", "#9fb1a6", "#c6d5cb"], accent: MOSS },
   gothic: { family: "masonry", smoothStairs: true, overlay: "lichen", overlayEvery: 3, top: ["#20241d", "#2e3329", "#3e4437", "#4d5545", "#57604e", "#646e5a"], wall: ["#181614", "#221f1c", "#2b2724", "#35302c", "#3f3934", "#49423d"], accent: ["#27351f", "#36492b", "#4b6338", "#627f46", "#7c9b58", "#9bb86e"] },
   holy: { family: "masonry", smoothStairs: true, top: ["#39522a", "#51763c", "#6c9d50", "#87c464", "#99dd71", "#b0ff82"], wall: ["#4a4238", "#6b6153", "#8c8170", "#aca08b", "#c9bea7", "#e6dcc6"], accent: MOSS },
   steampunk: { family: "masonry", smoothStairs: true, overlay: "rust", overlayEvery: 2, top: ["#353228", "#4c4739", "#655e4c", "#7e765f", "#8e856b", "#a4997c"], wall: ["#2a1d17", "#3d2a20", "#55392a", "#6d4a36", "#865d44", "#a27456"], accent: ["#4a2412", "#6e3518", "#96491f", "#bd6127", "#d98237", "#f0a54f"] },
   dwarf: { family: "basalt", smoothStairs: true, overlay: "rust", overlayEvery: 4, top: ["#37352f", "#4e4c43", "#68655a", "#827e70", "#938e7f", "#a9a492"], wall: ["#1b1a1e", "#27262c", "#35343c", "#45444e", "#595863", "#71707d"], accent: ["#4a2412", "#6e3518", "#96491f", "#bd6127", "#d98237", "#f0a54f"] },
-  blight: { family: "basalt", overlay: "lichen", overlayEvery: 3, top: ["#29212d", "#3a2f40", "#4e3f56", "#614f6b", "#6e5979", "#7e678b"], wall: ["#1a141d", "#241c2a", "#2f2435", "#392c41", "#43344d", "#4f3d5a"], accent: ["#3b1846", "#56226a", "#74308f", "#9446b2", "#b56ad0", "#d9a0ea"] },
+  blight: { carvedStairs: { tread: "wall" }, family: "basalt", overlay: "lichen", overlayEvery: 3, top: ["#29212d", "#3a2f40", "#4e3f56", "#614f6b", "#6e5979", "#7e678b"], wall: ["#1a141d", "#241c2a", "#2f2435", "#392c41", "#43344d", "#4f3d5a"], accent: ["#3b1846", "#56226a", "#74308f", "#9446b2", "#b56ad0", "#d9a0ea"] },
   crystal: { family: "crystal", smoothStairs: true, top: ["#464450", "#646272", "#868298", "#a7a3be", "#bdb8d7", "#d9d4f7"], wall: ["#2b2939", "#3d3b51", "#4f4b67", "#605c7e", "#716d95", "#847fae"], accent: ["#3d5f8a", "#4f82b8", "#6aa8de", "#8fcaf5", "#bfe6ff", "#effaff"] },
 };
 
@@ -584,7 +584,9 @@ export function reliefStyleForGround(style: string, ground: string | undefined):
 }
 
 /** 자동 계단 경사로를 비탈로 그리는 양식인가(ReliefStyleSpec.smoothStairs). */
-export const reliefSmoothStairs = (style: string | undefined): boolean => !!(style && RELIEF_STYLES[style]?.smoothStairs);
+// 양식 없는 맵(기본 흙벽)과 벽면에 판 계단이 없는 양식은 모두 비탈로 잇는다 — 렌더러가 디딤판을 회색 벽돌로 칠하던 길을 없앴다
+// (2026-11-14 오너 「계단을 이딴 식으로 하면 절대 안 된다니까 ?」). 계단 그림은 그 양식의 경사로 도트(없으면 버들항 칩셋 돌계단 조각, screen.ts)다.
+export const reliefSmoothStairs = (style: string | undefined): boolean => !RELIEF_STYLES[style ?? ""]?.carvedStairs;
 /** 벽면에 판 계단을 칠하는 양식이면 그 설정({ log }), 아니면 null(ReliefStyleSpec.carvedStairs). */
 export const reliefCarvedStairs = (style: string | undefined): { readonly log: boolean } | null =>
   (style && RELIEF_STYLES[style]?.carvedStairs) ? { log: !!RELIEF_STYLES[style]!.carvedStairs!.log } : null;
