@@ -871,7 +871,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       // 집이 먼저다: 장면 터 때문에 집 한 채가 앉을 한 단 평지를 못 찾았으면 터를 풀고 그 집을 다시 앉힌다 — 장면은 뒤에 남은 빈 땅에서 자리를 찾는다
       // (형태 탐침 54판 · 게임 열쇠: 터를 둔 채로는 집 239 → 229).
       // 터를 풀어도 그 집이 못 앉으면(터 탓이 아니다) 터는 그대로 둔다 — 터만 잃고 길·계단 자리가 달라져 문 앞이 끊겼다(형태 탐침 river-plaza-highland-11).
-      if (!sp && yardHold.size) {
+      // 이름으로 청한 종류는 터가 먼저다(그 종류의 장면을 보려고 청한 마을이다 — 터를 풀자 등대 곶의 신호 터·조선소의 밧줄 꼬는 길이 설 자리를 잃었다).
+      if (!sp && yardHold.size && !options.kind) {
         const held = [...yardHold], work = [...sceneYards.work], gather = [...sceneYards.gather];
         report.failed.pop(); yardHold.clear(); sceneYards.work.length = 0; sceneYards.gather.length = 0;
         sp = place("house", [...first, ...small], want);
