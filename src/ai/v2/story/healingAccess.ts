@@ -15,6 +15,7 @@ import { allCommands, battleSites, healingItemIds } from "../judge/combatChecks"
 import { mapRegion } from "../judge/objectiveWhere";
 import { isObjectiveCommand } from "../judge/objectiveCommand";
 import { reachWithout } from "../judge/puzzleChecks";
+import { pickPersonGraphic } from "../place/people";
 import { serviceNeeds, serviceRoom } from "../place/program";
 import { incomingLandings } from "../place/where";
 import type { BuildRun } from "../shared/types";
@@ -170,6 +171,12 @@ function keeperCell(project: Project, room: GameMap): { x: number; y: number } |
   return landing ? pickSpot(project, room, landing, new Set(), 0.7, 3) : undefined;
 }
 
+/** 빌더가 세우는 주인(여관·가게·떠돌이 상인)의 그림 — 이 게임의 다른 사람이 안 쓴 칩으로(사람 고르기). 못 고르면 그 낱말의 첫 칩. */
+function keeperGraphic(project: Project, map: GameMap, role: string, looks: string): Record<string, unknown> {
+  const pick = pickPersonGraphic(project, map, role, looks, true);
+  return pick ? { textureKey: pick.textureKey, characterIndex: pick.characterIndex } : { query: looks };
+}
+
 /** 목적표의 여관(place/program.ts) 안에 여관 주인 — 말을 걸면 전원 회복(값 없음: 시작 맵의 샘과 같은 안전망이다). 결정적·되풀이 안전. */
 function keepInn(run: BuildRun): string[] {
   const project = run.ctx.project;
@@ -180,7 +187,7 @@ function keepInn(run: BuildRun): string[] {
   if (!cell) return [];
   const res = run.call("place_npc", {
     mapId: room.id, x: cell.x, y: cell.y, name: "여관 주인", id: `ev_${room.id}_innkeeper`, movement: "fixed",
-    graphic: { query: "중년 여성 주민" },
+    graphic: keeperGraphic(project, room, "여관 주인", "중년 여성 주민"),
     pages: [{ name: "여관 주인 · 기본", lines: ["먼 길 오셨군요. 방은 비어 있으니 쉬다 가세요."], commands: [{ kind: "recoverAll" }, { kind: "text", body: "푹 쉬었다. 기운이 돌아왔다." }] }],
   });
   return res.ok ? [`${room.name ?? room.id} (${cell.x},${cell.y}) 여관 주인(전원 회복)`] : [];
@@ -328,7 +335,7 @@ export function ensureSupplyShop(run: BuildRun): string[] {
     if (!cell) return [];
     const res = run.call("place_npc", {
       mapId: room.id, x: cell.x, y: cell.y, name: "가게 주인", id: `ev_${room.id}_shopkeeper`, movement: "fixed",
-      graphic: { query: "중년 남성 주민" },
+      graphic: keeperGraphic(project, room, "상인", "중년 남성 주민"),
       pages: [{ name: "가게 주인 · 기본", lines: ["어서 오게. 먼 길 떠나기 전에 약부터 챙기게."], commands: [{ kind: "shop", shopType: "normal", itemIds: goods, allowSell: true }] }],
     });
     return res.ok ? [`${room.name ?? room.id} (${cell.x},${cell.y}) 가게 주인(${goods.join("·")})`] : [];
@@ -361,7 +368,7 @@ export function ensureSupplyShop(run: BuildRun): string[] {
   if (!cell) return [];
   const res = run.call("place_npc", {
     mapId: map.id, x: cell.x, y: cell.y, name: SUPPLY_SHOP_NAME, id: SUPPLY_SHOP_ID, movement: "fixed",
-    graphic: { query: "중년 남성 주민" },
+    graphic: keeperGraphic(project, map, "상인", "중년 남성 주민"),
     // 싸움터가 어디인지(동굴·설원·정거장) 이 단계는 모른다 — 대사에 장소 이름을 넣지 않는다.
     pages: [{ name: `${SUPPLY_SHOP_NAME} · 기본`, lines: ["먼 길 떠나기 전에 약부터 챙기게. 다치면 돌아올 길도 멀다네."], commands: [{ kind: "shop", shopType: "normal", itemIds: goods, allowSell: true }] }],
   });

@@ -340,7 +340,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     // 사람 앞의 안내는 서술 한 줄로 묶는다(괄호 없는 줄은 그 사람의 말이 된다).
     const lockedPerson = personal && lockedDefault ? [`(${who}${josa(who!, "은", "는")} ${step.kind === "battle" ? "아직 움직이지 않는다" : "아직 할 말이 없는 듯하다"}. ${lockedDefault[0]})`] : undefined;
     const seat = existing ? { eventId: existing.id } : joins !== undefined ? { sameAs: joins } : { name: step.event, at: at! };
-    let base: Omit<ChainLink, "role"> = { mapId: map.id, ...seat, ...(needs ? { needs } : {}), ...(!needs && prevCondition ? { needsCondition: prevCondition } : {}), ...(personal ? { person: who, speaker: who } : {}), ...(step.kind === "find" ? { thing: "find" as const } : step.kind === "puzzle" || atThing ? { thing: true } : {}), ...(host ? { onArt: true } : {}), ...(way ? { opens: nextMap!.id } : {}), ...(existing && carried.renamed.has(existing.id) ? { relook: true } : {}) };
+    let base: Omit<ChainLink, "role"> = { mapId: map.id, ...seat, ...(needs ? { needs } : {}), ...(!needs && prevCondition ? { needsCondition: prevCondition } : {}), ...(personal ? { person: who, speaker: who, ...(step.looks ? { looks: step.looks } : {}) } : {}), ...(step.kind === "find" ? { thing: "find" as const } : step.kind === "puzzle" || atThing ? { thing: true } : {}), ...(host ? { onArt: true } : {}), ...(way ? { opens: nextMap!.id } : {}), ...(existing && carried.renamed.has(existing.id) ? { relook: true } : {}) };
     prevCondition = undefined;
     // 번호·암호 단계(「비밀번호 입력」「숫자 자물쇠」): 모델이 code 를 안 줬어도 함수가 정답을 정하고, 앞 단계 대사에 답이 없으면
     // 그 답을 적은 단서 고리를 바로 앞에 둔다(앞 단계 결과로 열린다) — 이 단계는 그 단서를 읽어야 열리고 번호를 맞혀야 넘어간다.

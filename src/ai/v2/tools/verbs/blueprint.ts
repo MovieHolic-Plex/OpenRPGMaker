@@ -10,6 +10,7 @@ import { isEscapeBlueprint } from "../../request/scope";
 import { repairWorldPlaces, worldById, worldPlaceProblems } from "../../place/world";
 import { BUILD_BLUEPRINT_PATH_SCHEMA } from "../../story/blueprintPath";
 import { keepStepText, pathTextProblems } from "../../story/blueprintPathText";
+import { fillPartyLooks } from "../../story/shipLookDefaults";
 import { blueprintMapFor, type PathStepText } from "../../story/blueprintPathNames";
 import { WORLD_BOUNCES, text } from "../support";
 import type { VerbContext } from "../context";
@@ -85,6 +86,8 @@ export function blueprintVerbs(c: VerbContext) {
       // 모델이 고른 모습은 바로 입힌다(끝맺음을 기다리지 않는다 — 짓는 동안의 화면 검수도 그 모습으로 본다). 안 골랐으면 끝맺음이 게임의 사실로 고른다.
       const lookNotes = parsed.blueprint.look ? applyUiLook(env.ctx.project, parsed.blueprint.look, { skipHud: true }) : [];
       if (lookNotes.length) assembled.push(`UI look ${parsed.blueprint.look}`);
+      // 주인공의 모습은 사람을 세우기 전에 정한다 — 뒤에 서는 사람들이 주인공과 같은 칩·같은 모습을 피한다(끝맺음에서 정하면 먼저 선 사람을 다시 입혀야 했다).
+      assembled.push(...fillPartyLooks(env.ctx.project, String(task ?? "")));
       // 맵을 이미 지은 뒤 청사진을 다시 쓴 경우에만 실제로 깐다(빈 맵이면 건너뛴다 — 끝맺음 조립이 다시 부른다).
       try { assembled.push(...applyBlueprintOpening(env.ctx.project)); } catch { /* 끝맺음 조립이 다시 시도한다 */ }
       noteAssembly(assembled);
