@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """버들항 이야기 기물 16종(샘·동굴 입구·유적 입구·빛나는 파편·야영 천막·가축 우리·늪 널빤지 길 넷·곡괭이·게시판·쪽지·봉인 제단·무너진 기둥·기록부)과
 종류별 변형(2026-11-12 — 우물·벤치·이정표·상자·통·모닥불·짚가리·장작더미·가로등·손수레·제단·화로·계선주·빨래·화분·꽃밭·허수아비·입간판·짐 더미의 다른 그림)을
-그리고 새 종류 105종(2026-11-14 — 마을 살림·물가와 물 위·농장·길가와 숲 바닥·절벽 위아래·유적과 묘지, 면제 묶음 fable-objects100-beodeul-2026-11-14)을
-공용 버들항 시트 꼬리 34,944~(한 줄 128칸씩, 지금 네 줄 ~35,455)에 덧붙인다.
+그리고 새 종류 105종(2026-11-14 — 마을 살림·물가와 물 위·농장·길가와 숲 바닥·절벽 위아래·유적과 묘지, 면제 묶음 fable-objects100-beodeul-2026-11-14)과
+마을 종류별 기물(2026-11-14 — 마을 종류 38개의 생업 장면 벌과 공통 기물, 면제 묶음 fable-objects300-beodeul-2026-11-14)을
+공용 버들항 시트 꼬리 34,944~(한 줄 128칸씩, 줄 수는 칸 수에 맞춰 늘어난다)에 덧붙인다.
 
   python3 scripts/content/beodeul-objects/bake.py --dry   # 관문 상태만
   python3 scripts/content/beodeul-objects/bake.py         # 굽는다
@@ -22,6 +23,9 @@
 
 새 종류(variantOf 없음)는 갈아 끼우는 그림이 아니라 새 물건이다 — 마을·길·숲 빌더가 게임 열쇠로 골라 놓는다(src/editor/tools/beodeulObjectSets.ts).
 spec on = water 는 물 칸 위에 놓는 기물(뗏목·부표·수련 — 막힘, 물은 원래 못 걷는다 · 징검돌 — 밟고 건넌다), on = shore 는 물가에 두는 기물.
+
+마을 종류별 기물(spec kinds = 그 기물이 속한 마을 종류 id 목록, common = 여러 종류가 같이 쓰는 것): 킷 태그 `kind:<종류 id>` 로 굽고,
+같은 표를 tiledata/beodeul-objects/kinds.json(킷 id 마다 종류 id 목록)으로도 쓴다 — 마을 종류 목록·빌더가 읽는다. 종류 이름은 spec kindNames.
 
 놓는 방식(spec place): prop·tall = 서 있는 기물(block 칸만 막힘, 나머지 칸은 ★ 사람 위에 그려짐) · decal = 밟고 지나가는 바닥 그림(널빤지 길·쪽지 — 위층에 놓여
 물 칸 위에서도 걸을 수 있다). 조수가 찾는 낱말은 코드가 아니라 킷 이름·태그(spec words)에 있다.
@@ -106,6 +110,8 @@ def kit_of(it, rows, base=None):
     ai["tags"] = [it["place"], "버들항", "기물", "주제 소품", FAMILY_KO.get(it["family"], it["family"]), *it["words"]]
     # 물 위에 놓는 기물(spec on = water): «물 위» 태그 — 놓기 도구의 발자국 검사(뭍의 서는 소품용)가 물 위 부품으로 보고 건너뛴다. 물 칸이어야 한다는 규칙은 kitPlacementRules.ts.
     if it.get("on") == "water": ai["tags"].append("물 위")
+    # 마을 종류(spec kinds): 그 종류의 생업 장면에 같이 놓이는 벌 — 킷 태그 kind:<종류 id> (kinds.json 과 같은 내용)
+    ai["tags"] += [f"kind:{k}" for k in it.get("kinds", [])]
     if base is not None:   # 변형: 원본 킷의 태그(쓰임·장소)도 단다 — 원본을 찾는 태그 검색이 변형도 찾는다. 빈 땅 채우기에는 흩지 않는다(«주제 소품»).
         ai["tags"] += [t for t in base.get("ai", {}).get("tags", []) if t not in ai["tags"] and t not in ("prop", "물체")]
         ai["variantOf"] = base["id"]
@@ -177,8 +183,13 @@ def main():
                license=spec["license"], gate=f"3/4 gate not passed — owner waivers {', '.join(waivers)}",
                items=[dict(id=it["id"], kit=KIT_PREFIX + it["id"], name=it["name"], en=it["en"], kind=it["kind"], width=it["w"], height=it["h"], place=it["place"],
                            rows=rows_of[it["id"]], block=it["block"], words=it["words"], sha256=sha, family=it["family"], waiver=it.get("waiver", spec["waiver"]),
-                           **({"variantOf": it["variantOf"]} if it.get("variantOf") else {}), **({"on": it["on"]} if it.get("on") else {})) for it, sha in zip(items, got)])
+                           **({"variantOf": it["variantOf"]} if it.get("variantOf") else {}), **({"on": it["on"]} if it.get("on") else {}),
+                           **({"kinds": it["kinds"]} if it.get("kinds") else {}), **({"growth": it["growth"]} if it.get("growth") else {})) for it, sha in zip(items, got)])
     CATALOG.write_text(json.dumps(cat, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    kinds = {KIT_PREFIX + it["id"]: it["kinds"] for it in items if it.get("kinds")}
+    (STORE / "kinds.json").write_text(json.dumps(dict(
+        _doc="버들항 기물 킷 id 마다 마을 종류 id 목록(common = 여러 종류가 같이 쓰는 것). spec.json items[].kinds 에서 bake.py 가 만든다 — 손으로 고치지 않는다. 킷 태그 kind:<id> 와 같은 내용이다.",
+        names=spec.get("kindNames", {}), kinds=kinds), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(f"이야기 기물 꼬리 {BASE}..{count - 1}: 킷 {len(kits)}개 ({KIT_PREFIX}*) — 변형 {sum(1 for it in items if it.get('variantOf'))}개")
 
 

@@ -2,7 +2,8 @@
 // 조수가 게임이 바란 낱말로 그 킷에 닿는지(낱말 목록이 아니라 킷 이름·태그로), 실제 놓기 도구로 놓이는지.
 // 종류별 변형(ai.variantOf — 우물·벤치·이정표 등의 다른 그림): 원본 킷과 칸 크기·칸마다 통행·겹침이 같은지, 종류 이름(«우물»)은 여전히 원본을 첫째로 짚는지.
 // 새 종류(2026-11-14 — 마을 살림·물가와 물 위·농장·숲 바닥·절벽 바위·유적과 묘지): 변형이 아닌 새 물건. 낱말로 찾아지는지, 물 위 것은 물 칸에만 놓이는지, 징검돌이 물을 건너게 하는지.
-// 그림은 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12 · 변형은 fable-variety-beodeul-2026-11-12 · 새 종류는 fable-objects100-beodeul-2026-11-14 (굽기 scripts/content/beodeul-objects/bake.py).
+// 마을 종류별 기물(2026-11-14 — 마을 종류마다 생업 장면 한 벌과 공통 기물): 새 종류 뒤에 덧붙는다. 킷 태그 kind:<종류 id> 가 kinds.json 과 같은지, 밟는 물 위 것(줄 나룻배·빨래 디딤판·건널 널)과 걸어 지나는 문.
+// 그림은 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12 · 변형은 fable-variety-beodeul-2026-11-12 · 새 종류는 fable-objects100-beodeul-2026-11-14 · 마을 종류별 기물은 fable-objects300-beodeul-2026-11-14 (굽기 scripts/content/beodeul-objects/bake.py).
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import {
@@ -14,12 +15,15 @@ import { passageMarkForTile } from "@/project/tilesetPassage";
 import { runTool } from "@/editor/tools";
 import type { Project, StructureKitDef } from "@/project/types";
 import catalog from "../tiledata/beodeul-objects/catalog.json";
+import kindTable from "../tiledata/beodeul-objects/kinds.json";
 
 const own = (kits: readonly StructureKitDef[] | undefined) => (kits ?? []).filter((kit) => kit.id.startsWith(BEODEUL_OBJECTS_KIT_PREFIX));
-type CatalogItem = (typeof catalog.items)[number] & { variantOf?: string; on?: string };
+type CatalogItem = (typeof catalog.items)[number] & { variantOf?: string; on?: string; kinds?: string[]; growth?: string };
 const ITEMS = catalog.items as CatalogItem[];
 const NEW_WAIVER = "fable-objects100-beodeul-2026-11-14";
 const NEWS = ITEMS.filter((item) => item.waiver === NEW_WAIVER);
+const KIND_WAIVER = "fable-objects300-beodeul-2026-11-14";
+const KINDS = ITEMS.filter((item) => item.waiver === KIND_WAIVER);
 const variantOf = (kit: StructureKitDef | undefined) => (kit?.ai as { variantOf?: string } | undefined)?.variantOf;
 
 describe("버들항 이야기 기물 꼬리", () => {
@@ -28,7 +32,7 @@ describe("버들항 이야기 기물 꼬리", () => {
     const kits = own(ts.structureKits);
     expect(kits.map((kit) => kit.id)).toEqual(catalog.items.map((item) => item.kit));
     expect(catalog.base).toBe(BEODEUL_OBJECTS_BASE);
-    expect(ITEMS.filter((item) => !item.variantOf && item.waiver !== NEW_WAIVER)).toHaveLength(16);
+    expect(ITEMS.filter((item) => !item.variantOf && item.waiver !== NEW_WAIVER && item.waiver !== KIND_WAIVER)).toHaveLength(16);
     expect(catalog.count % ts.tilesPerRow).toBe(0);
     for (const item of catalog.items) {
       const kit = kits.find((k) => k.id === item.kit)!;
@@ -139,7 +143,8 @@ describe("버들항 이야기 기물 꼬리", () => {
     expect(NEWS.length).toBeGreaterThanOrEqual(100);
     // 덧붙이기 전용: 새 종류는 목록의 끝에 오고, 그 앞 66종(이야기 기물 16 + 변형 50)의 순서는 그대로다
     expect(ITEMS.slice(0, 66).every((item) => item.waiver !== NEW_WAIVER)).toBe(true);
-    expect(ITEMS.slice(66).every((item) => item.waiver === NEW_WAIVER)).toBe(true);
+    expect(ITEMS.slice(66, 66 + NEWS.length).every((item) => item.waiver === NEW_WAIVER)).toBe(true);
+    expect(NEWS).toHaveLength(105);
     expect(ITEMS[0]!.rows[0]![0]).toBe(BEODEUL_OBJECTS_BASE);
     expect(ITEMS[65]!.id).toBe("pile-amphorae");
     expect(ITEMS[65]!.rows).toEqual([[35110, 35111], [35112, 35113]]);
@@ -199,6 +204,109 @@ describe("버들항 이야기 기물 꼬리", () => {
     // 돌 옆 물 칸은 여전히 막혀 있다
     expect(isPassable(ctx.project, map, 5, 7)).toBe(false);
     expect(isPassable(ctx.project, map, 7, 7)).toBe(false);
+  });
+
+  it("마을 종류별 기물은 새 종류 뒤에 덧붙고, 종류마다 한 벌이 있으며 킷 태그 kind:<종류 id> 가 kinds.json 과 같다", () => {
+    const project = createBlankProject() as Project;
+    const ts = project.tilesets[project.maps[project.startMapId]!.tilesetId]!;
+    const kitById = new Map((ts.structureKits ?? []).map((kit) => [kit.id, kit] as const));
+    expect(KINDS.length).toBeGreaterThanOrEqual(280);
+    // 덧붙이기 전용: 앞 171종(이야기 기물 16 + 변형 50 + 새 종류 105)의 자리와 칸 번호는 그대로다
+    expect(ITEMS.slice(0, 171).every((item) => item.waiver !== KIND_WAIVER)).toBe(true);
+    expect(ITEMS.slice(171).every((item) => item.waiver === KIND_WAIVER)).toBe(true);
+    expect(ITEMS[170]!.id).toBe("ruin-fountain");
+    expect(ITEMS[170]!.rows).toEqual([[35364, 35365], [35366, 35367]]);
+    expect(Math.min(...KINDS.flatMap((item) => item.rows.flat()).filter((tile) => tile >= 0))).toBe(35368);
+    const names = kindTable.names as Record<string, string>;
+    const table = kindTable.kinds as Record<string, string[]>;
+    const kindIds = Object.keys(names).filter((id) => id !== "common");
+    expect(kindIds.length).toBeGreaterThanOrEqual(30);
+    expect(Object.keys(table).sort()).toEqual(KINDS.map((item) => item.kit).sort());
+    for (const item of KINDS) {
+      const kit = kitById.get(item.kit)!;
+      expect(variantOf(kit), item.kit).toBeUndefined();
+      expect(kit.ai?.tags).toContain("주제 소품");
+      expect(kit.ai?.tags?.includes("물 위"), item.kit).toBe(item.on === "water");
+      expect(item.kinds!.length, item.kit).toBeGreaterThan(0);
+      expect(item.kinds!.every((id) => id in names), item.kit).toBe(true);
+      expect((kit.ai?.tags ?? []).filter((tag) => tag.startsWith("kind:")).map((tag) => tag.slice(5)), item.kit).toEqual(item.kinds);
+      expect(table[item.kit], item.kit).toEqual(item.kinds);
+      expect(kit.ai?.repeatability, item.kit).toBe(item.growth ? "repeat" : "fixed");
+      expect(item.words.some((word) => /[가-힣]/u.test(word)), item.kit).toBe(true);
+      expect(item.words.some((word) => /^[a-z' -]+$/iu.test(word)), item.kit).toBe(true);
+    }
+    // 종류마다 한 벌(다섯 넘게) — 낱개로는 장면이 되지 않는다
+    for (const id of kindIds) expect(KINDS.filter((item) => item.kinds!.includes(id)).length, id).toBeGreaterThanOrEqual(5);
+    expect(KINDS.filter((item) => item.kinds!.includes("common")).length).toBeGreaterThanOrEqual(50);
+    // 낱말이 그 킷을 첫째로 짚고, 옛 킷이 이름으로 가진 말은 옛 킷이 그대로 받는다
+    const first = (title: string) => existingMatches(project, ts, title)[0]?.id;
+    const has = (id: string) => KINDS.some((item) => item.id === id);
+    for (const [word, id] of [["담금 구유", "quench-trough"], ["편자 걸이", "horseshoe-rack"], ["소금 가마", "salt-pan"], ["사과 압착기", "cider-press"], ["층 분수", "tiered-fountain"], ["빵집 간판", "sign-bakery"], ["cider press", "cider-press"], ["quench trough", "quench-trough"]] as const) {
+      if (has(id)) expect(first(word), word).toBe(`bd-obj-${id}`);
+    }
+    expect(first("우물")).toBe("bd-prop-well_roofed");
+    expect(first("벤치")).toBe("bd-prop-bench_wood");
+    expect(first("맷돌")).toBe("bd-pick-riverside-mill-millstones");
+    expect(first("포도 압착기")).toBe("bd-pick-vineyard-wine-press");
+    expect(first("모루")).toBe("bd-pick-castle-catacombs-anvil-table");
+    expect(first("벌통")).toBe("bd-obj-beehive-skeps");
+    expect(first("묘비")).toBe("bd-obj-gravestone");
+    expect(first("쇠 울타리")).toBe("bd-obj-iron-fence");
+  });
+
+  it("밟는 물 위 것(줄 나룻배·건널 널)은 놓인 물 칸을 걷게 하고, 배와 말뚝은 막힌 그대로다 — 걸어 지나는 문은 빈 칸으로 지난다", () => {
+    const ctx = { project: createBlankProject() as Project, currentMapId: "", assistantRun: true };
+    const mapId = ctx.project.startMapId;
+    ctx.currentMapId = mapId;
+    const shore = ctx.project.tilesets.beodeul_city!.autotileGroups!.find((group) => group.id === "beodeul_lakeshore_grass")!;
+    const water = shore.variantMap!["255"]!;
+    {
+      const map = ctx.project.maps[mapId]!;
+      // 못 8×4: x 1~8, y 6~9 (둘레는 풀)
+      for (let y = 6; y <= 9; y++) for (let x = 1; x <= 8; x++) map.lowerTiles[y * map.width + x] = water;
+    }
+    const has = (id: string) => KINDS.some((item) => item.id === id);
+    const stamp = (objectId: string, x: number, y: number) => runTool(ctx, "stamp_tileset_object", { mapId, objectId, base: { x, y } });
+    const map = () => ctx.project.maps[mapId]!;
+    if (has("gangplank")) {
+      // 뭍에는 거절
+      const before = JSON.stringify(map());
+      expect(stamp("bd-obj-gangplank", 9, 4).ok).toBe(false);
+      expect(JSON.stringify(map())).toBe(before);
+      // 건널 널 둘(1×2)을 세로로 이어 못을 건넌다: (8,5) 풀 → (8,6)~(8,9) 널 → (8,10) 풀
+      expect(stamp("bd-obj-gangplank", 8, 7).ok).toBe(true);
+      expect(stamp("bd-obj-gangplank", 8, 9).ok).toBe(true);
+      for (let y = 5; y < 10; y++) expect(canMove(ctx.project, map(), 8, y, 8, y + 1), `(8,${y})→(8,${y + 1})`).toBe(true);
+      expect(isPassable(ctx.project, map(), 7, 7)).toBe(false);
+    }
+    if (has("ferry-raft")) {
+      // 줄 나룻배 3×2 를 못 윗가에: 뭍 (2,5) 에서 (2,6)·(2,7) 로 올라서고, 그 아래 물 (2,8) 은 막혀 있다
+      expect(stamp("bd-obj-ferry-raft", 1, 7).ok).toBe(true);
+      expect(canMove(ctx.project, map(), 2, 5, 2, 6)).toBe(true);
+      expect(canMove(ctx.project, map(), 2, 6, 2, 7)).toBe(true);
+      expect(isPassable(ctx.project, map(), 2, 8)).toBe(false);
+    }
+    if (has("punt")) {
+      // 삿대 배 2×1: 물 위에만 놓이고 그 칸은 막힌 그대로다
+      expect(stamp("bd-obj-punt", 4, 12).ok).toBe(false);
+      expect(stamp("bd-obj-punt", 5, 9).ok).toBe(true);
+      expect(isPassable(ctx.project, map(), 5, 9)).toBe(false);
+      expect(isPassable(ctx.project, map(), 6, 9)).toBe(false);
+    }
+    // 걸어 지나는 문(맨 아래 줄 가운데가 빈 킷): 풀밭에 놓고 그 빈 칸을 아래에서 위로 지난다
+    const gates = KINDS.filter((item) => item.rows.at(-1)!.some((tile) => tile < 0));
+    // 맵은 20×15 — 못(y 6~9) 위쪽 풀밭 y 1~3 에 나란히 놓는다
+    let gx = 2;
+    for (const gate of gates) {
+      const top = 1, base = top + gate.height - 1;
+      expect(gx + gate.width, gate.kit).toBeLessThan(map().width);
+      expect(stamp(gate.kit, gx, base).ok, gate.kit).toBe(true);
+      gate.rows.at(-1)!.forEach((tile, dx) => {
+        if (tile >= 0) { expect(isPassable(ctx.project, map(), gx + dx, base), `${gate.kit} 기둥`).toBe(false); return; }
+        for (let y = base + 1; y > top - 1; y--) expect(canMove(ctx.project, map(), gx + dx, y, gx + dx, y - 1), `${gate.kit} (${dx}) ${y}→${y - 1}`).toBe(true);
+      });
+      gx += gate.width + 2;
+    }
   });
 
   it("실제 놓기 도구로 놓으면 막힌 칸만 막힌다", () => {
