@@ -190,9 +190,9 @@ function plazaPeople(project: Project, hubId: string): void {
   rewritePages(gate, [
     { name: "기본", conditions: [], commands: [
       gateQ1,
-      say(GATE, "문 나서면 바로 숲이다.\n심문관들은 남쪽 골짜기부터 뒤진다더군."),
-      say(GATE, "숲길은 브람 영감이 훤하다.\n북쪽 숲엔 이틀 안에 심문관이 직접 온다더군."),
-      say(GATE, "별지기가 숲엔 왜 가나. …묻지 않겠다.\n길에서 벗어나지 마라. 늑대가 사납다."),
+      say(GATE, "문 나서면 바로 숲이다.\n심문관들은 남쪽 골짜기부터 뒤진다더라."),
+      say(GATE, "숲길은 브람 영감이 훤하다.\n북쪽 숲엔 이틀 안에 심문관이 직접 온단다."),
+      say(GATE, "별지기가 숲엔 뭐 하러… 아니, 안 묻겠다.\n길 밖으론 나가지 마라. 늑대가 사납다."),
     ] },
     { name: "이리스 합류 뒤", conditions: [sw(SW_IRIS)], commands: [
       gateQ1,
@@ -243,14 +243,14 @@ function placeRino(project: Project, hub: GameMap): void {
       narrate("납작빵을 하나 건넸다."),
       item(FS_BREAD_FLAT, -1),
       say(KNIGHT, "…고맙다. 아침부터 아무것도 못 먹었어."),
-      say(KNIGHT, "심문관님이 이틀 안에 북쪽 숲을 직접 뒤지신다.\n그 전에 숲 지도를 외워 두라시더군."),
+      say(KNIGHT, "심문관님이 이틀 안에 북쪽 숲을 직접 뒤지신대.\n그 전에 숲 지도를 외워 두라셔."),
       say(RINO, "…어디로 가든 난 못 본 거다.\n이름은 리노다. 잊어라."),
       setSw(named),
       setSw(Q1_RINO),
       addVar(Q1_COUNT, 1),
       fork(varCond(Q1_COUNT, ">=", 4), [narrate("납작빵을 모두 전했다. 토마에게 돌아가자.")]),
     ], [
-      rinoSays("…별지기 꼬마들인가.\n오늘은 소란 피우지 마라. 부탁이다."),
+      rinoSays("…별지기 꼬마들이냐.\n오늘은 좀 조용히 지나가라. 부탁이다."),
     ]),
   ];
   // 처음부터 초소에 서 있다 — 행렬이 떠난 뒤에야 나타나 「정문에 병사가 생긴다」로 보였다(사용자 2026-10-28).
@@ -281,25 +281,25 @@ function toma(project: Project): void {
   const known = new Set(fallenBakeryStock(project));
   const pre = FS_BAKERY_PRE_IRIS.filter((id) => known.has(id));
   const full = fallenBakeryStock(project);
-  const preGreeting = say(TOMA, "어서 와요. 오늘은 반죽이 안 부풀어서\n납작빵밖에 없어요.");
+  const preGreeting = say(TOMA, "어서 와요. 오늘은 반죽이 안 부풀어서…\n납작빵밖에 없네요.");
   const reminder: Command[] = [
     say(TOMA, "북문 문지기랑 오스본 어르신,\n심문회 기사님… 숲지기 브람한테도요."),
     fork(has(FS_BREAD_FLAT), [], [narrate("토마가 납작빵을 하나 더 싸 주었다."), item(FS_BREAD_FLAT, 1)]),
   ];
   const complete: Command[] = [
-    say(TOMA, "다 전했어요? 많이 딱딱했죠.\n…다들 뭐라고 하던가요?"),
+    say(TOMA, "다 돌렸어요? 많이 딱딱했죠…\n다들 뭐라던가요?"),
     say(KAEL, "다들 따뜻하대요."),
     say(TOMA, "이 빵, 본 적 있죠?\n천문대 계단에 놓여 있던 거요."),
     say(TOMA, "바구니에 누운 아기가\n배곯을까 봐서요. …이제야 말하네요."),
     say(KAEL, "…토마 아저씨였어요?\n계단에 있던 빵이."),
     say(TOMA, "열일곱 해 동안 한 번도 안 들켰는데,\n오늘 반죽이 안 부풀어서 들켜 버렸어요."),
-    narrate("「별빛빵」을 받았다.\n토마네 가게에서 「별빛빵」을 팔기 시작했다."),
+    narrate("「별빛빵」을 받았다.\n이제 토마네 가게에서 「별빛빵」을 판다."),
     item(FS_BREAD_STARLIGHT, 1),
     setSw(Q1_DONE),
   ];
   rewritePages(event, [
     { name: "기본", conditions: [], commands: [
-      say(TOMA, "아내는 광장에 나가 있어요.\n별 떨어진 밤엔 반죽이 안 부푼다던데…"),
+      say(TOMA, "집사람은 광장에 나가 있어요.\n별 떨어진 밤엔 반죽이 안 부푼다던데…"),
       say(TOMA, "설마 했는데 오늘 새벽엔\n반죽이 정말 안 부풀었어요."),
       setSw(Q1_HEARD),
       preGreeting,
@@ -373,19 +373,19 @@ function innStay(price: number): Command[] {
 }
 function marta(project: Project): void {
   const event = mustEvent(project, "fs_inn", "ev_fs_inn_keeper");
-  const greet = say(MARTA, "어서 와요, 카엘. 어젯밤 별똥별 봤어요?\n손님들이 밤새 창가에 붙어 있었다니까.");
-  const price = say(MARTA, "하룻밤에 30골드예요. 푹 쉬고 가요.");
+  const greet = say(MARTA, "어서 와요, 카엘. 어젯밤 별똥별 봤어요?\n손님들이 밤새 창가에 붙어 있었다니까요.");
+  const price = say(MARTA, "하룻밤 30골드예요. 푹 쉬고 가요.");
   const offer: Command[] = [
-    say(MARTA, "카엘, 잠깐요. 은수저 여섯 벌이 사라졌어요.\n어젯밤까진 분명히 있었는데."),
-    say(MARTA, "손님 중엔 그럴 사람이 없어요.\n짚이는 데가 있긴 한데… 말 못 하겠네요."),
+    say(MARTA, "카엘, 잠깐요. 은수저 여섯 벌이 없어졌어요.\n어젯밤까진 분명히 있었는데."),
+    say(MARTA, "손님 중엔 그럴 사람이 없어요.\n짚이는 데가 있긴 한데… 말은 못 하겠네요."),
     say(MARTA, "찾아 주면 하룻밤 공짜로 재워 줄게요.\n좀 부탁해요, 네?"),
     choices([
       ["찾아 볼게요", [narrate("의뢰 「마르타의 은수저」를 맡았다."), setSw(Q2_ON)]],
-      ["지금은 어려워요", [say(MARTA, "알았어요. 바쁜가 봐요.\n마음 바뀌면 언제든 와요.")]],
+      ["지금은 좀 바빠요", [say(MARTA, "알았어요. 바쁜가 봐요.\n마음 바뀌면 언제든 와요.")]],
     ]),
   ];
   const complete: Command[] = [
-    say(MARTA, "은수저 여섯 벌, 다 있어요. 누가 가져갔어요?\n…토비군요. 알겠어요. 화 안 낼게요."),
+    say(MARTA, "여섯 벌, 다 있네요. 누가 가져갔대요?\n…토비요? 알았어요. 화 안 낼게요."),
     say(MARTA, "약속대로 하룻밤은 공짜예요.\n토비한테는 내가 따로 얘기할게요."),
     item(FS_SILVER_SPOON, -6),
     narrate("「무료 숙박권」을 받았다."),
@@ -401,7 +401,7 @@ function marta(project: Project): void {
     { name: "의뢰를 마침", conditions: [sw(Q2_DONE)], commands: [greet, price, ...innStay(30)] },
     { name: "이리스 합류 뒤", conditions: [sw(SW_IRIS)], commands: [...irisLines, { kind: "inn", price: 0 } as Command] },
     { name: "의뢰 중(Q2)", conditions: [sw(Q2_ON), sw(Q2_DONE, false)], commands: [
-      fork(sw(Q2_FOUND), complete, [say(MARTA, "손님 중엔 그럴 사람이 없어요.\n짚이는 데가 있긴 한데… 말 못 하겠네요.")]),
+      fork(sw(Q2_FOUND), complete, [say(MARTA, "손님 중엔 그럴 사람이 없어요.\n짚이는 데가 있긴 한데… 말은 못 하겠네요.")]),
       fork(sw(SW_IRIS), [{ kind: "inn", price: 0 } as Command], [price, ...innStay(30)]),
     ] },
   ]);
@@ -441,10 +441,10 @@ function rohan(project: Project): void {
   const forged = (rewardId: string, rewardName: string, extra: Command[]): Command[] => [
     ...extra,
     item(EMBER, -1),
-    say(ROHAN, "서른 해 전 새벽샘에서\n나는 창을 들고 서 있었다."),
+    say(ROHAN, "서른 해 전 새벽샘에서\n창을 들고 서 있었다."),
     say(ROHAN, "재를 헤치고 나온 아이가 있었다.\n…그 애 이름이 발렌이었지."),
     say(ROHAN, "그 애한테 내가 뭐라 했는지 아느냐.\n「고개 들어라」. 그 말밖에 못 했다."),
-    say(ROHAN, "좀 더 다정하게 말해 줄걸 그랬다."),
+    say(ROHAN, "…다른 말도 있었을 텐데."),
     say(KAEL, "…아저씨."),
     // 「이 창」은 별쇠 장검을 고른 갈래에서 손에 든 물건과 어긋났다(VQA 2026-10-31) — 벽의 옛 창을 가리키게 한다.
     say(ROHAN, "벽에 건 내 창은 딸 몫이다.\n네 건 따로 만들어 뒀다. 가져가라."),
@@ -476,7 +476,7 @@ function rohan(project: Project): void {
     { name: "첫 방문", conditions: [], commands: [
       say(ROHAN, "…뭘 보나."),
       say(ROHAN, "별지기 꼬마가 대장간엔 웬일이냐.\n쇠 살 돈은 있고?"),
-      say(KAEL, "창이 필요해요. 숲에 늑대가 많아서요."),
+      say(KAEL, "창 사러 왔어요. 숲에 늑대가 많대서요."),
       say(ROHAN, "창은 안 판다.\n돈 말고 이유를 가져와라."),
       setSw(Q3_MET),
       choices([["이유를 가져올게요", ask], ["가게만 볼게요", []]]),
@@ -594,7 +594,7 @@ function bridgeScene(project: Project, hubId: string): string | null {
     say(TOBI, "별한테 줄 거야.\n별에서 애가 온댔단 말이야."),
     say(TOBI, "친구 없이 오면 심심하잖아.\n그래서 제일 반짝이는 걸 골랐어."),
     say(KAEL, "다음부턴 꼭 물어보고 가져가.\n선물은 같이 갖다 주자."),
-    say(KAEL, "대신 은수저는 마르타 누나한테 먼저 돌려주자."),
+    say(KAEL, "그 전에 은수저부터\n마르타 누나한테 돌려주자."),
     narrate("토비가 상자에서 은수저를 꺼내 내민다.\n은수저 여섯 벌을 다 찾았다."),
     item(FS_SILVER_SPOON, 4),
     setSw(Q2_FOUND),

@@ -186,7 +186,11 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
       for (let i = 0; i < map.width * map.height; i += 1) if (ground.has(layerTileAt(map, 2, i))) n += 1;
       return n;
     };
-    expect(lit(looked.project, looked.map)).toBe(lit(plain.project, plain.map));
+    // 견줄 판은 같은 게임의 벌 없는 마을이다 — 이 칸에는 집 곁 「밟힌 흙」(공용 바닥 꾸밈, 빈 2층 칸에만 깔린다)도 들어 있고,
+    // 열쇠가 있으면 새 종류 기물이 먼저 앉아 나무·숲 덧그림 자리가 달라져 그 빈 칸이 달라진다(열쇠 없는 판 2칸 · 이 게임 4칸).
+    // 집을 알아보는지는 아래 앵커 견줌이 열쇠 없는 판과도 그대로 지킨다.
+    expect(lit(looked.project, looked.map)).toBe(lit(sameGame.project, sameGame.map));
+    expect(lit(sameGame.project, sameGame.map)).toBeGreaterThan(0);
     expect(lit(plain.project, plain.map)).toBeGreaterThan(0);
     // 다시 맞춰 보면 벌 집도 원본 킷과 같은 자리의 같은 집으로 잡힌다
     const anchors = (project: Project, map: GameMap) => {
@@ -195,6 +199,7 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
       return JSON.stringify(data.anchors);
     };
     expect(anchors(looked.project, looked.map)).toBe(anchors(plain.project, plain.map));
+    expect(anchors(looked.project, looked.map)).toBe(anchors(sameGame.project, sameGame.map));
   }, 480_000);
 
   it("입구·건물 찾기: 벌 마을의 집 문·건물 칸·놓인 집이 같은 게임의 벌 없는 마을과 같다(v2 가 문을 잇고 잠그는 자리)", () => {

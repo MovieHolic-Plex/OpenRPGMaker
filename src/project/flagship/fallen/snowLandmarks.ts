@@ -353,8 +353,8 @@ function frostRoad(project: Project, mapId: string, start: Cell, gaps: readonly 
   addEvent(p.map, "ev_fs2_snow_wagon", "버려진 짐수레", front, [
     page("ev_fs2_snow_wagon_p", "살핀다", [], [
       narrate("덮개 마차 하나가 바퀴까지 눈에 묻혀 있다.\n심문회 문장이 찍힌 짐 자루가 흩어졌다."),
-      say(who.sarah, "탑 수비대 보급 수레다. 바퀴가 부러지자\n그대로 버리고 갔군."),
-      narrate("짐 사이에 상급 회복약이 하나 끼어 있었다."),
+      say(who.sarah, "탑 수비대 보급 수레다. 바퀴가 부러지니까\n그대로 버리고 갔어."),
+      narrate("짐 사이에 상급 회복약이 하나 끼어 있다."),
       item("item_hi_potion", 1),
       se("cc0-se-osx-bell-01"),
       narrate("「상급 회복약」을 손에 넣었다."),
@@ -443,7 +443,7 @@ function blizzardPass(project: Project, mapId: string, start: Cell, gaps: readon
       narrate("무너진 초소 터에 파수꾼 하나가 얼음에 갇혀 서 있다.\n창을 든 채, 북쪽을 보고 있다."),
       say(who.sarah, "서른 해 전에 버린 고개 초소다.\n한겨울에 교대가 끊겨 그대로 얼었다지."),
       say(who.kael, "창을 놓지 않았네요."),
-      narrate("얼음 발치에 굳은 마력약 병이 하나 박혀 있다.\n엘레나가 손바닥으로 녹여 빼냈다."),
+      narrate("얼음 발치에 굳은 마력약 병이 하나 박혀 있다.\n엘레나가 손바닥으로 녹여 빼낸다."),
       item("item_ether", 1),
       se("cc0-se-osx-bell-01"),
       narrate("「마력약」을 손에 넣었다."),
@@ -463,10 +463,10 @@ function blizzardPass(project: Project, mapId: string, start: Cell, gaps: readon
         page("ev_fs2_snow_view_p", "고갯마루", [], [
           cutBegin(),
           wait(200),
-          say(who.kael, "…잠깐. 바람이 갠다."),
+          say(who.kael, "…잠깐. 눈발이 걷힌다."),
           scroll("up", Math.max(4, view.y - 1), 1400),
           wait(700),
-          narrate("눈발이 걷힌 틈으로 먼 북쪽 하늘이 보였다.\n가늘고 하얀 빛줄기 하나가 구름까지 닿아 있다."),
+          narrate("걷힌 틈으로 먼 북쪽 하늘이 보인다.\n가늘고 하얀 빛줄기 하나가 구름까지 닿아 있다."),
           say(who.elena, "하늘탑이야… 이리스는 저기 있어."),
           say(who.sarah, "이 고개만 내려가면 서리나루다.\n오늘 밤 안에 닿는다."),
           scrollBack(),
