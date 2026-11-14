@@ -5,9 +5,9 @@
   python3 scripts/content/modern-city-street/kr_buildings_asm.py --check    # 크기·지붕 좁아짐(≤2px) 표
 
 recipes.txt 한 줄 = 건물 하나:  id: 줄 / 줄 / … ; ro=기물@x,y … ; sg=글@x,y,글자색[,판색,판폭] …
-  줄(위→아래) = 부품 토큰을 왼→오로. 토큰: 부품id · 부품id~(좌우 뒤집기) · 부품id[x0:x1](가로 자르기) · 부품id*3(되풀이) · slab:이름:WxH(지붕 면 9조각 늘이기) · gap:W(빈 칸)
+  줄(위→아래) = 부품 토큰을 왼→오로. 토큰: 부품id · 부품id~(좌우 뒤집기) · 부품id[x0:x1](가로 자르기) · 부품id*3(되풀이) · slab:이름:WxH(지붕 면 9조각 늘이기) · gap:W(빈 칸) · vgap:H(빈 줄)
   줄 높이 = 가장 큰 부품, 부품은 밑변 맞춤. 줄들은 가운데가 아니라 왼쪽 맞춤(폭이 좁은 줄은 @off 로 민다: 토큰 앞 gap).
-  sg 의 x 자리에 c 를 쓰면 건물 폭 가운데. ro = 옥상 기물(parts/roof-<이름>.png)을 전체 그림 좌표에 얹는다. sg = 한글 간판(Galmuri9, 지어낸 이름) — 판색을 주면 판(폭×12)을 먼저 칠한다.
+  sg 의 x 자리에 c 를 쓰면 건물 폭 가운데. ro = 옥상 기물(parts/roof-<이름>.png)을 전체 그림 좌표에 얹는다. sg = 한글 간판(Galmuri9, 지어낸 이름) — 판색을 주면 판(폭×11)을 먼저 칠한다.
 조립 뒤 바깥 윤곽 1px 을 ink 로 두른다. 색은 modern 팔레트 램프만(ramp:tone).
 """
 import io, os, sys
@@ -40,6 +40,7 @@ def slab(name, w, h, b=4):
     return out
 def token(t):
     if t.startswith('gap:'): return [Image.new('RGBA', (int(t[4:]), 1))]
+    if t.startswith('vgap:'): return [Image.new('RGBA', (1, int(t[5:])))]
     if t.startswith('slab:'): _, n, wh = t.split(':'); w, h = wh.split('x'); return [slab(n, int(w), int(h))]
     n = 1
     if '*' in t: t, n = t.split('*'); n = int(n)
@@ -60,9 +61,10 @@ def recipes():
         l = l.strip()
         if not l or l.startswith('#'): continue
         bid, rest = l.split(':', 1); segs = [s.strip() for s in rest.split(';')]
-        r = dict(rows=[row.split() for row in segs[0].split(' / ')], ro=[], sg=[])
+        r = dict(rows=[row.split() for row in segs[0].split(' / ')], ro=[], ov=[], sg=[])
         for s in segs[1:]:
             if s.startswith('ro='): r['ro'] = [x.split('@') for x in s[3:].split()]
+            elif s.startswith('ov='): r['ov'] = [x.split('@') for x in s[3:].split()]
             elif s.startswith('sg='): r['sg'] = [x.split('@') for x in s[3:].split()]
         out[bid.strip()] = r
     return out
@@ -74,17 +76,23 @@ def build(r):
         for i in ims: R.alpha_composite(i, (x, h - i.height)); x += i.width
         rows.append(R)
     W = max(i.width for i in rows); H = sum(i.height for i in rows); im = Image.new('RGBA', (W, H)); y = 0
-    for R in rows: im.alpha_composite(R, (0, y)); y += R.height
+    for R, row in zip(rows, r['rows']):
+        im.alpha_composite(R, (0, y))
+        sl = [t for t in row if t.startswith('slab:')]
+        if sl: r['roof'] = dict(x=sum(i.width for t in row[:row.index(sl[0])] for i in token(t)), y=y, w=int(sl[0].split(':')[2].split('x')[0]), h=R.height, empty=not r['ro'])   # 지붕 면(화소) — 굽기가 칸으로 옮겨 키트에 적는다
+        y += R.height
     for name, xy in r['ro']:
         x, y = map(int, xy.split(',')); im.alpha_composite(part('roof-' + name), (x, y))
+    for name, xy in r['ov']:
+        x, y = map(int, xy.split(',')); im.alpha_composite(part(name), (x, y))
     for s, spec in r['sg']:
         a = spec.split(','); y = int(a[1]); fg = col(a[2]); m = text_mask(s.replace('_', ' '))
         bw0 = int(a[4]) if len(a) > 4 else m.shape[1] + (6 if len(a) > 3 else 0)
         x = (W - bw0) // 2 if a[0] == 'c' else int(a[0])      # c = 건물 폭 가운데
         if len(a) > 3:
             bw = int(a[4]) if len(a) > 4 else m.shape[1] + 6; d = ImageDraw.Draw(im); r_, t_ = a[3].split(':')
-            d.rectangle((x, y, x + bw - 1, y + 11), fill=col(a[3])); d.line((x, y + 11, x + bw - 1, y + 11), fill=col(f'{r_}:{max(0, int(t_) - 1)}'))
-            tx = x + (bw - m.shape[1]) // 2; ty = y + (11 - m.shape[0]) // 2
+            d.rectangle((x, y, x + bw - 1, y + 10), fill=col(a[3])); d.line((x, y + 10, x + bw - 1, y + 10), fill=col(f'{r_}:{max(0, int(t_) - 1)}'))
+            tx = x + (bw - m.shape[1]) // 2; ty = y + (10 - m.shape[0]) // 2
         else: tx, ty = x, y
         px = im.load()
         for yy in range(m.shape[0]):
@@ -101,6 +109,7 @@ def taper(im, rows=24):
     return max(max(ls) - min(ls), max(rs) - min(rs))
 def main():
     R = recipes(); S = spec(); only = [a for a in sys.argv[1:] if not a.startswith('--')]; done = []; miss = []
+    import json; rp = f'{D}/roofs.json'; roofs = json.load(open(rp)) if os.path.exists(rp) else {}
     for bid, r in R.items():
         if only and bid not in only: continue
         try: im = build(r)
@@ -108,6 +117,8 @@ def main():
         w, h = int(S[bid][4]) * 16, int(S[bid][5]) * 16
         if im.size != (w, h): print('SIZE', bid, im.size, 'want', (w, h)); continue
         im.save(f'{D}/pieces/mc-bld-kr-{bid}.png'); done.append(bid)
+        if r.get('roof'): roofs[bid] = r['roof']
         if '--check' in sys.argv: print(bid, im.size, 'taper', taper(im))
+    json.dump(dict(sorted(roofs.items())), open(rp, 'w'), indent=0)
     print('built', len(done), 'missing parts', miss)
 if __name__ == '__main__': main()

@@ -1,0 +1,301 @@
+{
+"conv": [
+"동네 마트",
+"korean convenience store"
+],
+"bunsik": [
+"떡볶이집",
+"분식",
+"tteokbokki shop"
+],
+"chicken": [
+"치킨",
+"호프집",
+"chicken pub"
+],
+"cafe": [
+"한국 카페",
+"korean cafe"
+],
+"pharmacy": [
+"한국 약국",
+"korean pharmacy"
+],
+"salon": [
+"미용실 건물",
+"헤어숍",
+"korean hair salon"
+],
+"laundry": [
+"세탁소 건물",
+"korean dry cleaner"
+],
+"hardware": [
+"철물",
+"공구상",
+"hardware shop"
+],
+"realty": [
+"부동산 건물",
+"공인중개사",
+"realtor office"
+],
+"lotto": [
+"구멍가게",
+"복권방",
+"슈퍼",
+"corner shop"
+],
+"ricecake": [
+"떡 가게",
+"방앗간",
+"tteok shop"
+],
+"butcher": [
+"정육",
+"고깃집 정육점",
+"butcher shop"
+],
+"fruit": [
+"과일 가게",
+"청과",
+"greengrocer"
+],
+"florist": [
+"꽃집 건물",
+"꽃가게",
+"korean flower shop"
+],
+"stationery": [
+"문방구",
+"문구점 건물",
+"school stationery shop"
+],
+"cobbler": [
+"구둣방",
+"구두 수선",
+"shoe repair booth"
+],
+"policebox": [
+"파출소 건물",
+"지구대",
+"korean police box"
+],
+"guardhouse": [
+"아파트 경비실",
+"guard booth"
+],
+"ticket": [
+"매표소",
+"표 파는 곳",
+"ticket office"
+],
+"toilet": [
+"화장실 건물",
+"public restroom"
+],
+"sangga3": [
+"상가 건물",
+"근린상가",
+"shop building"
+],
+"sangga5": [
+"상가 빌딩",
+"5층 상가 건물",
+"commercial building"
+],
+"villa": [
+"빌라",
+"필로티",
+"piloti housing"
+],
+"dasedae": [
+"다세대",
+"벽돌집",
+"다가구 주택",
+"brick house"
+],
+"hagwon": [
+"학원",
+"입시 학원",
+"hagwon"
+],
+"pcnorae": [
+"PC방",
+"노래방",
+"피시방",
+"karaoke building"
+],
+"clinic": [
+"의원",
+"동네 병원",
+"small clinic"
+],
+"bank": [
+"은행 지점 건물",
+"korean bank"
+],
+"post": [
+"한국 우체국",
+"korean post office"
+],
+"jumin": [
+"주민센터",
+"동사무소",
+"community centre"
+],
+"church": [
+"교회",
+"십자가 첨탑",
+"korean church"
+],
+"bathhouse": [
+"목욕탕",
+"대중탕",
+"사우나 굴뚝",
+"bathhouse"
+],
+"gosiwon": [
+"고시원",
+"고시텔",
+"gosiwon"
+],
+"hanokcafe": [
+"한옥",
+"기와집 카페",
+"hanok"
+],
+"gas": [
+"주유소 건물",
+"korean gas station"
+],
+"carcenter": [
+"카센터",
+"정비소",
+"auto repair"
+],
+"apt-corridor": [
+"복도식 아파트",
+"아파트 동",
+"판상형 아파트",
+"korean apartment block"
+],
+"apt-tower": [
+"타워형 아파트",
+"고층 아파트",
+"apartment tower"
+],
+"officetel": [
+"오피스텔",
+"원룸 건물",
+"officetel"
+],
+"hospital": [
+"종합병원",
+"korean general hospital"
+],
+"elementary": [
+"초등학교",
+"학교 본관",
+"korean elementary school"
+],
+"mart": [
+"대형마트",
+"마트 건물",
+"hypermarket"
+],
+"cinema": [
+"영화관",
+"극장",
+"movie theater"
+],
+"gucheong": [
+"구청",
+"시청",
+"관공서",
+"district office"
+],
+"library": [
+"도서관 건물",
+"korean public library"
+],
+"terminal": [
+"버스 터미널",
+"시외버스 터미널",
+"bus terminal"
+],
+"market": [
+"재래시장",
+"전통시장",
+"시장 아케이드",
+"market arcade"
+],
+"subway": [
+"지하철역 건물",
+"역사",
+"subway station building"
+],
+"dept": [
+"한국 백화점",
+"korean department store"
+],
+"univ": [
+"대학 본관",
+"대학교",
+"university hall"
+],
+"ktx": [
+"기차역",
+"고속철도 역",
+"KTX 역",
+"rail station"
+],
+"ballpark": [
+"야구장",
+"경기장",
+"baseball stadium"
+],
+"convention": [
+"컨벤션 센터",
+"전시장",
+"convention center"
+],
+"broadcast": [
+"방송국",
+"방송사",
+"TV station"
+],
+"factory": [
+"공장",
+"공장 단지",
+"factory"
+],
+"univhospital": [
+"대학병원",
+"상급 병원",
+"university hospital"
+],
+"tower": [
+"전망 타워",
+"전망대",
+"타워",
+"observation tower"
+],
+"palacegate": [
+"궁궐 정문",
+"대문 누각",
+"성문",
+"palace gate"
+],
+"bridgepylon": [
+"다리 주탑",
+"대교",
+"사장교",
+"bridge pylon"
+],
+"clocktower": [
+"시계탑",
+"광장 시계탑",
+"clock tower"
+]
+}

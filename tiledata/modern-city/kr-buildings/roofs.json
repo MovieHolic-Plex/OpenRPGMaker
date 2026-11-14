@@ -1,0 +1,247 @@
+{
+"bank": {
+"x": 0,
+"y": 0,
+"w": 128,
+"h": 48,
+"empty": false
+},
+"bathhouse": {
+"x": 0,
+"y": 48,
+"w": 112,
+"h": 56,
+"empty": false
+},
+"bunsik": {
+"x": 0,
+"y": 0,
+"w": 64,
+"h": 40,
+"empty": false
+},
+"butcher": {
+"x": 0,
+"y": 0,
+"w": 64,
+"h": 40,
+"empty": false
+},
+"cafe": {
+"x": 0,
+"y": 0,
+"w": 64,
+"h": 40,
+"empty": false
+},
+"chicken": {
+"x": 0,
+"y": 0,
+"w": 64,
+"h": 32,
+"empty": false
+},
+"church": {
+"x": 0,
+"y": 0,
+"w": 96,
+"h": 72,
+"empty": true
+},
+"clinic": {
+"x": 0,
+"y": 0,
+"w": 96,
+"h": 48,
+"empty": false
+},
+"cobbler": {
+"x": 0,
+"y": 0,
+"w": 48,
+"h": 16,
+"empty": true
+},
+"conv": {
+"x": 0,
+"y": 0,
+"w": 80,
+"h": 40,
+"empty": false
+},
+"dasedae": {
+"x": 0,
+"y": 0,
+"w": 96,
+"h": 40,
+"empty": false
+},
+"florist": {
+"x": 0,
+"y": 0,
+"w": 48,
+"h": 40,
+"empty": true
+},
+"fruit": {
+"x": 0,
+"y": 0,
+"w": 80,
+"h": 24,
+"empty": false
+},
+"gas": {
+"x": 0,
+"y": 0,
+"w": 128,
+"h": 48,
+"empty": false
+},
+"gosiwon": {
+"x": 0,
+"y": 0,
+"w": 96,
+"h": 24,
+"empty": false
+},
+"guardhouse": {
+"x": 0,
+"y": 0,
+"w": 48,
+"h": 24,
+"empty": true
+},
+"hagwon": {
+"x": 0,
+"y": 0,
+"w": 96,
+"h": 48,
+"empty": false
+},
+"hanokcafe": {
+"x": 0,
+"y": 0,
+"w": 128,
+"h": 48,
+"empty": true
+},
+"hardware": {
+"x": 0,
+"y": 0,
+"w": 80,
+"h": 40,
+"empty": false
+},
+"jumin": {
+"x": 0,
+"y": 0,
+"w": 128,
+"h": 48,
+"empty": false
+},
+"laundry": {
+"x": 0,
+"y": 0,
+"w": 48,
+"h": 40,
+"empty": true
+},
+"lotto": {
+"x": 0,
+"y": 0,
+"w": 48,
+"h": 24,
+"empty": false
+},
+"pcnorae": {
+"x": 0,
+"y": 0,
+"w": 112,
+"h": 32,
+"empty": false
+},
+"pharmacy": {
+"x": 0,
+"y": 0,
+"w": 64,
+"h": 40,
+"empty": false
+},
+"policebox": {
+"x": 0,
+"y": 0,
+"w": 80,
+"h": 40,
+"empty": false
+},
+"post": {
+"x": 0,
+"y": 0,
+"w": 112,
+"h": 48,
+"empty": false
+},
+"realty": {
+"x": 0,
+"y": 0,
+"w": 48,
+"h": 40,
+"empty": true
+},
+"ricecake": {
+"x": 0,
+"y": 0,
+"w": 64,
+"h": 40,
+"empty": true
+},
+"salon": {
+"x": 0,
+"y": 0,
+"w": 64,
+"h": 40,
+"empty": false
+},
+"sangga3": {
+"x": 0,
+"y": 0,
+"w": 96,
+"h": 40,
+"empty": false
+},
+"sangga5": {
+"x": 0,
+"y": 0,
+"w": 96,
+"h": 40,
+"empty": false
+},
+"stationery": {
+"x": 0,
+"y": 0,
+"w": 64,
+"h": 40,
+"empty": false
+},
+"ticket": {
+"x": 0,
+"y": 0,
+"w": 64,
+"h": 24,
+"empty": true
+},
+"toilet": {
+"x": 0,
+"y": 0,
+"w": 64,
+"h": 24,
+"empty": true
+},
+"villa": {
+"x": 0,
+"y": 0,
+"w": 112,
+"h": 56,
+"empty": false
+}
+}

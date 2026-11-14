@@ -45,16 +45,16 @@ cinema|영화관|cinema|large|10|10|4|2|mc_cinema|
 gucheong|구청|district office|large|12|10|5|2|mc_city_hall|
 library|도서관|public library|large|10|8|4|2|mc_library|
 terminal|시외버스 터미널|intercity bus terminal|large|13|8|6|1|mc_bus_terminal|
-market|재래시장 아케이드|traditional market arcade|large|11|7|5|1|mc_underground_mall|
+market|재래시장 아케이드|traditional market arcade|large|11|7|6|2|mc_underground_mall|
 subway|지하철역 지상 건물|subway station building|large|9|7|4|1|mc_station|
-dept|백화점|department store|xlarge|16|12|7|2|mc_department_store|
+dept|백화점|department store|xlarge|16|12|6|4|mc_department_store|
 univ|대학 본관|university main hall|xlarge|18|11|8|2|mc_university|
-ktx|KTX 역사|high-speed rail station|xlarge|20|10|9|2|mc_jr_station|
-ballpark|야구장|baseball stadium|xlarge|20|12|9|2|mc_gym|
+ktx|KTX 역사|high-speed rail station|xlarge|20|10|8|3|mc_jr_station|
+ballpark|야구장|baseball stadium|xlarge|20|12|8|3|mc_gym|
 convention|컨벤션 센터|convention centre|xlarge|18|9|8|2|mc_auditorium|
-broadcast|방송국|broadcasting station|xlarge|15|12|7|1|mc_tv_studio|
-factory|공장 단지|factory complex|xlarge|20|9|9|2|mc_factory|
-univhospital|대학병원|university hospital|xlarge|18|13|8|2|mc_hospital|
+broadcast|방송국|broadcasting station|xlarge|15|12|7|2|mc_tv_studio|
+factory|공장 단지|factory complex|xlarge|20|9|9|1|mc_factory|
+univhospital|대학병원|university hospital|xlarge|18|13|7|1|mc_hospital|
 tower|전망 타워|observation tower|landmark|6|16|2|2|mc_lobby|
 palacegate|한옥 궁궐 정문|hanok palace gate (invented)|landmark|14|9|6|2||
 bridgepylon|큰 다리 주탑|great bridge pylon|landmark|6|14|||| 

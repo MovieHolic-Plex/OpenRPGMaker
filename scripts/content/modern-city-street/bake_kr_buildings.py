@@ -47,10 +47,10 @@ def words():
 
 def items():
     """[dict(id 키트, src, ko, en, w, h, kind 관문 종류, cls, pc(x,y)→칸 통행, …)] — pieces/ 에 그림이 있는 것만."""
-    W = words(); out = []
+    W = words(); out = []; rp = os.path.join(D, 'roofs.json'); RF = json.load(open(rp)) if os.path.exists(rp) else {}
     for i, ko, en, tier, w, h, dx, dw, prog, _sign in lines('buildings.txt'):
         w, h = int(w), int(h); door = [int(dx) + k for k in range(int(dw))] if dx.strip() else []
-        out.append(dict(id='mc-bld-kr-' + i, ko=ko, en=en, w=w, h=h, kind='structure', cls='bld', tier=tier, door=door, program=prog.strip() or None, group='mc:building:kr-' + i,
+        out.append(dict(id='mc-bld-kr-' + i, ko=ko, en=en, w=w, h=h, kind='structure', cls='bld', tier=tier, door=door, program=prog.strip() or None, group='mc:building:kr-' + i, roof=RF.get(i),
                         tags=['country:kr', 'tier:' + tier, 'setting:city', '한국', '한국 건물', TIER_KO[tier], ko, en] + W.get(i, [])))
     for i, ko, en, w, h in lines('roof.txt'):
         out.append(dict(id='mc-roof-kr-' + i, ko=ko, en=en, w=int(w), h=int(h), kind='other', cls='roof', group='mc:prop:kr-roof',
@@ -92,6 +92,10 @@ def kit_of(it, rows):
                   placementRules='땅(보도·광장·마당) 위 위층. 키트 아래 한 줄이 문 앞 접근 칸이어야 한다. 앞줄 건물은 뒷줄보다 나중에 찍는다. 한 맵에 같은 건물은 한 채.', role='building', layerHome='upper')
         ai['tags'] = ['modern-city', 'building'] + it['tags']
         if acc: ai['access'] = acc
+        if it.get('roof'):
+            rf = it['roof']; x0, y0 = math.ceil(rf['x'] / T), math.ceil((rf['y'] + 4) / T); x1, y1 = (rf['x'] + rf['w']) // T, (rf['y'] + rf['h'] - 4) // T
+            if x1 > x0 and y1 > y0:      # 지붕 면 안쪽에 온전히 드는 칸(난간 4px 안) — 옥상 기물(mc-roof-kr-*)을 얹는 자리. empty = 그려 넣은 기물이 없다
+                ai['roofFace'] = dict(dx=x0, dy=y0, w=x1 - x0, h=y1 - y0, empty=bool(rf['empty'])); ai['tags'].append('roof:empty' if rf['empty'] else 'roof:furnished')
         if it['program']: ai['program'] = it['program']; ai['tags'].append('program:' + it['program'])
         kit['rows'] = [dict(tiles=[-1] * w, upperTiles=r) for r in rows]
         if it['door']: kit['parts'] = [dict(id='door', kind='entrance', dx=it['door'][0], dy=h - 1, w=len(it['door']), h=1, note='문 칸(그림) — 문 칸 자체는 막힘, 바로 아래(키트 바깥 한 줄 아래) 칸이 문 앞 접근 칸')]

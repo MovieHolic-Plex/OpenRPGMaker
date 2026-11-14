@@ -1,20 +1,21 @@
 {
  "gate": {
-  "bundle_open": 20,
+  "bundle_open": 50,
   "owner_waiver": {
    "batch": "fable-krbuildings-2026-11-14",
    "note": "3/4 관문 미통과 — 오너 면제(통과가 아니다)"
   }
  },
- "count_before": 13839,
- "count_after": 14206,
- "owned_cells": 367,
- "kits": 20,
+ "count_before": 14206,
+ "count_after": 15035,
+ "owned_cells": 1194,
+ "kits": 50,
  "by": {
-  "bld": 20
+  "bld": 35,
+  "roof": 15
  },
  "sheet": [
   768,
-  4736
+  5024
  ]
 }
