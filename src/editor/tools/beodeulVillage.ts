@@ -3278,7 +3278,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       return mask;
     };
     // 자연 물(강·바다): 물가 둑과 깊이 띠 — 2층 덧그림이라 1층 물의 물결이 비치고 통행·«물인가» 검사는 그대로다(beodeulWater.ts)
-    if (naturalWater) layBeodeulWaterSurface(m, ts, { seed, wet: (n) => occ[n] === WATERC || occ[n] === KEEP, open: (c) => occ[c] === WATERC && m.lowerTiles[c] === fullWater && layerTileAt(m, 2, c) < 0 });
+    if (naturalWater) layBeodeulWaterSurface(m, ts, { seed, wet: (n) => occ[n] === WATERC || occ[n] === KEEP, open: (c) => (occ[c] === WATERC || occ[c] === KEEP) && m.lowerTiles[c] === fullWater && layerTileAt(m, 2, c) < 0 });
     // 설원 얼음 못: 눈 둑 / 늪: 물은 이끼 둑, 이끼 늪 칸은 진흙 둑 — 칸 모양 네모 가장자리를 둥글게
     if (theme === "snow" && pondCells.length) {
       const pond = new Set(pondCells);
@@ -3690,7 +3690,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       if (dirOf.has(f.c)) continue; const comp = [f.c]; dirOf.set(f.c, true);
       for (let i = 0; i < comp.length; i += 1) { const c = comp[i]!, cx = c % W, cy = (c - cx) / W; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const n = idx(cx + dx, cy + dy); if (inMap(cx + dx, cy + dy) && fs.has(n) && !dirOf.has(n)) { dirOf.set(n, true); comp.push(n); } } }
       const xs = comp.map((c) => c % W), ys = comp.map((c) => Math.floor(c / W));
-      const vert = Math.max(...ys) - Math.min(...ys) >= Math.max(...xs) - Math.min(...xs);
+      // 가로세로가 같은 널판(두 칸 폭 강 × 두 칸 폭 길)은 위아래가 물이면 동서 다리다 — 남북 다리로 읽으면 끝 잇기가 널판을 강을 따라 길게 늘인다
+      const spanY = Math.max(...ys) - Math.min(...ys), spanX = Math.max(...xs) - Math.min(...xs);
+      const vert = spanY !== spanX ? spanY > spanX : !comp.some((c) => occ[c - W] === WATERC || occ[c + W] === WATERC);
       for (const c of comp) dirOf.set(c, vert);
     }
     for (const f of fordStones) {
