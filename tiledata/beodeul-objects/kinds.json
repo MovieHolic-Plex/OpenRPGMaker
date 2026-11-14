@@ -1,0 +1,1058 @@
+{
+ "_doc": "버들항 기물 킷 id → 마을 종류 id 목록(common = 여러 종류가 같이 쓰는 것). spec.json items[].kinds 에서 bake.py 가 만든다 — 손으로 고치지 않는다. 킷 태그 kind:<id> 와 같은 내용이다.",
+ "names": {
+  "fishing-cove": "어부 포구",
+  "ferry-landing": "나루터",
+  "mill-hamlet": "물방앗간 마을",
+  "lumber-camp": "나무꾼 터",
+  "shepherd-fold": "양치기 언덕",
+  "bee-hamlet": "양봉 마을",
+  "orchard-hamlet": "과수원 마을",
+  "vineyard": "포도밭 마을",
+  "herbalist": "약초꾼 마을",
+  "waystation": "길목 여인숙",
+  "mining-hamlet": "광부 마을",
+  "quarry": "채석장 마을",
+  "saltern": "소금밭 마을",
+  "reed-marsh": "갈대 마을",
+  "shrine-hamlet": "순례 암자",
+  "border-post": "국경 초소",
+  "hunters-lodge": "사냥꾼 마을",
+  "potters": "도공 마을",
+  "market-village": "장터 마을",
+  "smithy-village": "대장간 마을",
+  "weavers": "직조 마을",
+  "brewers": "양조 마을",
+  "ranch": "방목 목장",
+  "dairy": "낙농 마을",
+  "washing-ford": "빨래터 마을",
+  "hot-spring": "약수 마을",
+  "lighthouse-cape": "등대 곶",
+  "shipwrights": "배 짓는 마을",
+  "graveyard-village": "묘지기 마을",
+  "ruin-side": "유적 곁 마을",
+  "monastery": "수도원 마을",
+  "festival": "축제 마을",
+  "market-town": "성벽 장시",
+  "harbour-town": "항구 읍",
+  "guild-town": "길드 거리",
+  "scholar-town": "학자 읍",
+  "garrison-town": "수비대 성읍",
+  "canal-town": "운하 읍",
+  "common": "여러 종류가 같이 쓰는 것"
+ },
+ "kinds": {
+  "bd-obj-gutting-table": [
+   "fishing-cove"
+  ],
+  "bd-obj-fish-creels": [
+   "fishing-cove"
+  ],
+  "bd-obj-salt-tub": [
+   "fishing-cove"
+  ],
+  "bd-obj-anchor-small": [
+   "fishing-cove"
+  ],
+  "bd-obj-fish-smoker": [
+   "fishing-cove"
+  ],
+  "bd-obj-boat-on-rollers": [
+   "fishing-cove"
+  ],
+  "bd-obj-gull-post": [
+   "fishing-cove",
+   "lighthouse-cape"
+  ],
+  "bd-obj-ferry-raft": [
+   "ferry-landing"
+  ],
+  "bd-obj-ferry-rope-post": [
+   "ferry-landing"
+  ],
+  "bd-obj-fare-box": [
+   "ferry-landing"
+  ],
+  "bd-obj-waiting-bench": [
+   "ferry-landing"
+  ],
+  "bd-obj-luggage": [
+   "ferry-landing",
+   "waystation"
+  ],
+  "bd-obj-ferry-sign": [
+   "ferry-landing"
+  ],
+  "bd-obj-grain-measures": [
+   "mill-hamlet"
+  ],
+  "bd-obj-sieve-trestle": [
+   "mill-hamlet"
+  ],
+  "bd-obj-hand-quern": [
+   "mill-hamlet"
+  ],
+  "bd-obj-grain-hopper": [
+   "mill-hamlet"
+  ],
+  "bd-obj-flour-trough": [
+   "mill-hamlet"
+  ],
+  "bd-obj-sack-hoist": [
+   "mill-hamlet"
+  ],
+  "bd-obj-flume": [
+   "mill-hamlet"
+  ],
+  "bd-obj-saw-horse": [
+   "lumber-camp"
+  ],
+  "bd-obj-sawpit-frame": [
+   "lumber-camp"
+  ],
+  "bd-obj-peeled-logs": [
+   "lumber-camp"
+  ],
+  "bd-obj-log-sledge": [
+   "lumber-camp"
+  ],
+  "bd-obj-sawdust-heap": [
+   "lumber-camp"
+  ],
+  "bd-obj-saw-rack": [
+   "lumber-camp"
+  ],
+  "bd-obj-shingle-bench": [
+   "lumber-camp"
+  ],
+  "bd-obj-wattle-hurdle": [
+   "shepherd-fold"
+  ],
+  "bd-obj-shearing-stool": [
+   "shepherd-fold"
+  ],
+  "bd-obj-wool-sacks": [
+   "shepherd-fold",
+   "weavers"
+  ],
+  "bd-obj-salt-lick": [
+   "shepherd-fold",
+   "ranch"
+  ],
+  "bd-obj-crook-rack": [
+   "shepherd-fold"
+  ],
+  "bd-obj-fleece-rail": [
+   "shepherd-fold"
+  ],
+  "bd-obj-lamb-creep": [
+   "shepherd-fold"
+  ],
+  "bd-obj-box-hives": [
+   "bee-hamlet"
+  ],
+  "bd-obj-honey-press": [
+   "bee-hamlet"
+  ],
+  "bd-obj-honey-shelf": [
+   "bee-hamlet"
+  ],
+  "bd-obj-candle-rack": [
+   "bee-hamlet"
+  ],
+  "bd-obj-bee-smoker": [
+   "bee-hamlet"
+  ],
+  "bd-obj-log-hive": [
+   "bee-hamlet"
+  ],
+  "bd-obj-comb-table": [
+   "bee-hamlet"
+  ],
+  "bd-obj-cider-press": [
+   "orchard-hamlet"
+  ],
+  "bd-obj-apple-bins": [
+   "orchard-hamlet"
+  ],
+  "bd-obj-fruit-baskets": [
+   "orchard-hamlet"
+  ],
+  "bd-obj-cider-stand": [
+   "orchard-hamlet"
+  ],
+  "bd-obj-picking-poles": [
+   "orchard-hamlet"
+  ],
+  "bd-obj-apple-crusher": [
+   "orchard-hamlet"
+  ],
+  "bd-obj-windfalls": [
+   "orchard-hamlet"
+  ],
+  "bd-obj-treading-vat": [
+   "vineyard"
+  ],
+  "bd-obj-dolia": [
+   "vineyard"
+  ],
+  "bd-obj-grape-pannier": [
+   "vineyard"
+  ],
+  "bd-obj-tasting-table": [
+   "vineyard"
+  ],
+  "bd-obj-grape-cart": [
+   "vineyard"
+  ],
+  "bd-obj-bottling-bench": [
+   "vineyard"
+  ],
+  "bd-obj-demijohns": [
+   "vineyard"
+  ],
+  "bd-obj-tincture-table": [
+   "herbalist"
+  ],
+  "bd-obj-mortar-stump": [
+   "herbalist"
+  ],
+  "bd-obj-potion-shelf": [
+   "herbalist"
+  ],
+  "bd-obj-alembic": [
+   "herbalist"
+  ],
+  "bd-obj-mushroom-log": [
+   "herbalist"
+  ],
+  "bd-obj-herb-baskets": [
+   "herbalist"
+  ],
+  "bd-obj-herb-spiral": [
+   "herbalist",
+   "monastery"
+  ],
+  "bd-obj-hay-net-post": [
+   "waystation",
+   "ranch"
+  ],
+  "bd-obj-mounting-block": [
+   "waystation"
+  ],
+  "bd-obj-wheel-jig": [
+   "waystation"
+  ],
+  "bd-obj-loaded-wagon": [
+   "waystation"
+  ],
+  "bd-obj-inn-sign": [
+   "waystation"
+  ],
+  "bd-obj-fodder-bin": [
+   "waystation",
+   "ranch"
+  ],
+  "bd-obj-harness-post": [
+   "waystation",
+   "ranch"
+  ],
+  "bd-obj-shaft-windlass": [
+   "mining-hamlet"
+  ],
+  "bd-obj-ore-table": [
+   "mining-hamlet"
+  ],
+  "bd-obj-crucible-hearth": [
+   "mining-hamlet"
+  ],
+  "bd-obj-miners-lamps": [
+   "mining-hamlet"
+  ],
+  "bd-obj-ore-sacks": [
+   "mining-hamlet"
+  ],
+  "bd-obj-stamp-mill": [
+   "mining-hamlet"
+  ],
+  "bd-obj-ashlar-blocks": [
+   "quarry"
+  ],
+  "bd-obj-stone-crane": [
+   "quarry"
+  ],
+  "bd-obj-masons-bench": [
+   "quarry"
+  ],
+  "bd-obj-stone-sledge": [
+   "quarry"
+  ],
+  "bd-obj-split-boulder": [
+   "quarry"
+  ],
+  "bd-obj-stone-chips": [
+   "quarry"
+  ],
+  "bd-obj-quarry-tools": [
+   "quarry"
+  ],
+  "bd-obj-salt-pan": [
+   "saltern"
+  ],
+  "bd-obj-salt-heap": [
+   "saltern"
+  ],
+  "bd-obj-salt-rakes": [
+   "saltern"
+  ],
+  "bd-obj-brine-tubs": [
+   "saltern"
+  ],
+  "bd-obj-salt-bags": [
+   "saltern"
+  ],
+  "bd-obj-salt-baskets": [
+   "saltern"
+  ],
+  "bd-obj-evaporation-bed": [
+   "saltern"
+  ],
+  "bd-obj-fish-spears": [
+   "reed-marsh"
+  ],
+  "bd-obj-punt": [
+   "reed-marsh"
+  ],
+  "bd-obj-mat-loom": [
+   "reed-marsh"
+  ],
+  "bd-obj-duck-decoy": [
+   "reed-marsh"
+  ],
+  "bd-obj-reed-screen": [
+   "reed-marsh"
+  ],
+  "bd-obj-peat-stack": [
+   "reed-marsh"
+  ],
+  "bd-obj-heron-post": [
+   "reed-marsh"
+  ],
+  "bd-obj-reed-knives": [
+   "reed-marsh"
+  ],
+  "bd-obj-ema-rack": [
+   "shrine-hamlet"
+  ],
+  "bd-obj-votive-candles": [
+   "shrine-hamlet"
+  ],
+  "bd-obj-pilgrim-staves": [
+   "shrine-hamlet"
+  ],
+  "bd-obj-wish-cairn": [
+   "shrine-hamlet"
+  ],
+  "bd-obj-holy-basin": [
+   "shrine-hamlet",
+   "hot-spring"
+  ],
+  "bd-obj-prayer-flags": [
+   "shrine-hamlet"
+  ],
+  "bd-obj-wayside-idol": [
+   "shrine-hamlet"
+  ],
+  "bd-obj-incense-urn": [
+   "shrine-hamlet"
+  ],
+  "bd-obj-palisade-piece": [
+   "border-post"
+  ],
+  "bd-obj-signal-beacon": [
+   "border-post"
+  ],
+  "bd-obj-spear-stack": [
+   "border-post",
+   "garrison-town"
+  ],
+  "bd-obj-post-flag": [
+   "border-post"
+  ],
+  "bd-obj-sandbags": [
+   "border-post"
+  ],
+  "bd-obj-toll-bar": [
+   "border-post"
+  ],
+  "bd-obj-guard-horn-post": [
+   "border-post"
+  ],
+  "bd-obj-caltrops": [
+   "border-post",
+   "garrison-town"
+  ],
+  "bd-obj-bow-rack": [
+   "hunters-lodge"
+  ],
+  "bd-obj-antler-post": [
+   "hunters-lodge"
+  ],
+  "bd-obj-smoke-rack": [
+   "hunters-lodge"
+  ],
+  "bd-obj-arrow-barrel": [
+   "hunters-lodge",
+   "garrison-town"
+  ],
+  "bd-obj-game-pole": [
+   "hunters-lodge"
+  ],
+  "bd-obj-pelt-pile": [
+   "hunters-lodge"
+  ],
+  "bd-obj-snare-bench": [
+   "hunters-lodge"
+  ],
+  "bd-obj-wedging-table": [
+   "potters"
+  ],
+  "bd-obj-pot-shelves": [
+   "potters"
+  ],
+  "bd-obj-clay-pit": [
+   "potters"
+  ],
+  "bd-obj-shard-heap": [
+   "potters"
+  ],
+  "bd-obj-glaze-tubs": [
+   "potters"
+  ],
+  "bd-obj-fired-pots": [
+   "potters"
+  ],
+  "bd-obj-saggars": [
+   "potters"
+  ],
+  "bd-obj-bread-stall": [
+   "market-village"
+  ],
+  "bd-obj-spice-stall": [
+   "market-village"
+  ],
+  "bd-obj-fish-slab": [
+   "market-village",
+   "harbour-town"
+  ],
+  "bd-obj-awning-booth": [
+   "market-village"
+  ],
+  "bd-obj-chicken-crate": [
+   "market-village"
+  ],
+  "bd-obj-egg-baskets": [
+   "market-village"
+  ],
+  "bd-obj-basket-seller": [
+   "market-village"
+  ],
+  "bd-obj-tinker-rack": [
+   "market-village"
+  ],
+  "bd-obj-trip-hammer": [
+   "smithy-village"
+  ],
+  "bd-obj-quench-trough": [
+   "smithy-village"
+  ],
+  "bd-obj-horseshoe-rack": [
+   "smithy-village"
+  ],
+  "bd-obj-scrap-iron": [
+   "smithy-village"
+  ],
+  "bd-obj-tongs-rack": [
+   "smithy-village"
+  ],
+  "bd-obj-smith-wares": [
+   "smithy-village"
+  ],
+  "bd-obj-bar-iron": [
+   "smithy-village"
+  ],
+  "bd-obj-dyed-cloth-line": [
+   "weavers"
+  ],
+  "bd-obj-skein-rack": [
+   "weavers"
+  ],
+  "bd-obj-cloth-bolts": [
+   "weavers"
+  ],
+  "bd-obj-tenter-frame": [
+   "weavers"
+  ],
+  "bd-obj-carding-bench": [
+   "weavers"
+  ],
+  "bd-obj-warp-frame": [
+   "weavers"
+  ],
+  "bd-obj-hop-poles": [
+   "brewers"
+  ],
+  "bd-obj-mash-tun": [
+   "brewers"
+  ],
+  "bd-obj-barrel-pyramid": [
+   "brewers"
+  ],
+  "bd-obj-brew-kettle": [
+   "brewers"
+  ],
+  "bd-obj-hop-sacks": [
+   "brewers"
+  ],
+  "bd-obj-bottle-crates": [
+   "brewers"
+  ],
+  "bd-obj-cooling-tray": [
+   "brewers"
+  ],
+  "bd-obj-shoeing-stocks": [
+   "ranch"
+  ],
+  "bd-obj-grooming-box": [
+   "ranch"
+  ],
+  "bd-obj-gig": [
+   "ranch"
+  ],
+  "bd-obj-paddock-rail": [
+   "ranch"
+  ],
+  "bd-obj-paddock-gate": [
+   "ranch"
+  ],
+  "bd-obj-branding-fire": [
+   "ranch"
+  ],
+  "bd-obj-blanket-rail": [
+   "ranch"
+  ],
+  "bd-obj-cheese-press": [
+   "dairy"
+  ],
+  "bd-obj-milk-cans": [
+   "dairy"
+  ],
+  "bd-obj-cheese-shelf": [
+   "dairy"
+  ],
+  "bd-obj-milking-stool": [
+   "dairy"
+  ],
+  "bd-obj-cream-table": [
+   "dairy"
+  ],
+  "bd-obj-milk-handcart": [
+   "dairy"
+  ],
+  "bd-obj-feed-trough": [
+   "dairy"
+  ],
+  "bd-obj-wash-stone": [
+   "washing-ford"
+  ],
+  "bd-obj-paddle-tub": [
+   "washing-ford"
+  ],
+  "bd-obj-laundry-basket": [
+   "washing-ford"
+  ],
+  "bd-obj-mangle-table": [
+   "washing-ford"
+  ],
+  "bd-obj-wash-plank": [
+   "washing-ford"
+  ],
+  "bd-obj-lye-bucket": [
+   "washing-ford"
+  ],
+  "bd-obj-bleach-green": [
+   "washing-ford"
+  ],
+  "bd-obj-stone-bath": [
+   "hot-spring"
+  ],
+  "bd-obj-steam-spring": [
+   "hot-spring"
+  ],
+  "bd-obj-bath-screen": [
+   "hot-spring"
+  ],
+  "bd-obj-towel-rack": [
+   "hot-spring"
+  ],
+  "bd-obj-dipper-shelf": [
+   "hot-spring"
+  ],
+  "bd-obj-bath-buckets": [
+   "hot-spring"
+  ],
+  "bd-obj-foot-bath": [
+   "hot-spring"
+  ],
+  "bd-obj-signal-mast": [
+   "lighthouse-cape"
+  ],
+  "bd-obj-whalebone-arch": [
+   "lighthouse-cape"
+  ],
+  "bd-obj-buoy-pile": [
+   "lighthouse-cape"
+  ],
+  "bd-obj-fog-horn": [
+   "lighthouse-cape"
+  ],
+  "bd-obj-storm-lantern": [
+   "lighthouse-cape"
+  ],
+  "bd-obj-weather-vane": [
+   "lighthouse-cape"
+  ],
+  "bd-obj-rope-reel": [
+   "lighthouse-cape"
+  ],
+  "bd-obj-hull-frame": [
+   "shipwrights"
+  ],
+  "bd-obj-pitch-pot": [
+   "shipwrights"
+  ],
+  "bd-obj-rope-jack": [
+   "shipwrights"
+  ],
+  "bd-obj-mast-spar": [
+   "shipwrights"
+  ],
+  "bd-obj-figurehead": [
+   "shipwrights"
+  ],
+  "bd-obj-adze-block": [
+   "shipwrights"
+  ],
+  "bd-obj-sailcloth": [
+   "shipwrights"
+  ],
+  "bd-obj-table-tomb": [
+   "graveyard-village"
+  ],
+  "bd-obj-cemetery-gate": [
+   "graveyard-village"
+  ],
+  "bd-obj-family-stone": [
+   "graveyard-village"
+  ],
+  "bd-obj-grave-flowers": [
+   "graveyard-village"
+  ],
+  "bd-obj-grave-lantern": [
+   "graveyard-village"
+  ],
+  "bd-obj-coffin-bier": [
+   "graveyard-village"
+  ],
+  "bd-obj-grave-kerb": [
+   "graveyard-village"
+  ],
+  "bd-obj-dig-plot": [
+   "ruin-side"
+  ],
+  "bd-obj-dig-scaffold": [
+   "ruin-side"
+  ],
+  "bd-obj-inscribed-slabs": [
+   "ruin-side"
+  ],
+  "bd-obj-relic-crate": [
+   "ruin-side"
+  ],
+  "bd-obj-sieve-tripod": [
+   "ruin-side"
+  ],
+  "bd-obj-finds-table": [
+   "ruin-side"
+  ],
+  "bd-obj-spoil-heap": [
+   "ruin-side"
+  ],
+  "bd-obj-scriptorium-desk": [
+   "monastery"
+  ],
+  "bd-obj-alms-table": [
+   "monastery"
+  ],
+  "bd-obj-lavabo": [
+   "monastery"
+  ],
+  "bd-obj-prie-dieu": [
+   "monastery"
+  ],
+  "bd-obj-pond-kerb": [
+   "monastery"
+  ],
+  "bd-obj-reliquary": [
+   "monastery"
+  ],
+  "bd-obj-book-chest": [
+   "monastery",
+   "scholar-town"
+  ],
+  "bd-obj-bunting-pole": [
+   "festival"
+  ],
+  "bd-obj-stage": [
+   "festival"
+  ],
+  "bd-obj-lantern-line": [
+   "festival"
+  ],
+  "bd-obj-ring-toss": [
+   "festival"
+  ],
+  "bd-obj-feast-table": [
+   "festival"
+  ],
+  "bd-obj-music-stand": [
+   "festival"
+  ],
+  "bd-obj-puppet-booth": [
+   "festival"
+  ],
+  "bd-obj-bonfire-stack": [
+   "festival"
+  ],
+  "bd-obj-tiered-fountain": [
+   "market-town"
+  ],
+  "bd-obj-planter-bench": [
+   "market-town"
+  ],
+  "bd-obj-clock-post": [
+   "market-town"
+  ],
+  "bd-obj-banner-arch": [
+   "market-town"
+  ],
+  "bd-obj-crier-stone": [
+   "market-town"
+  ],
+  "bd-obj-guild-arms-post": [
+   "market-town",
+   "guild-town"
+  ],
+  "bd-obj-weigh-house-scale": [
+   "market-town",
+   "harbour-town"
+  ],
+  "bd-obj-flower-urn": [
+   "market-town"
+  ],
+  "bd-obj-customs-desk": [
+   "harbour-town"
+  ],
+  "bd-obj-auction-table": [
+   "harbour-town"
+  ],
+  "bd-obj-oyster-table": [
+   "harbour-town"
+  ],
+  "bd-obj-hand-truck": [
+   "harbour-town"
+  ],
+  "bd-obj-gangplank": [
+   "harbour-town",
+   "canal-town"
+  ],
+  "bd-obj-harbour-light": [
+   "harbour-town"
+  ],
+  "bd-obj-anchor-chain-pile": [
+   "harbour-town"
+  ],
+  "bd-obj-shoe-sign": [
+   "guild-town"
+  ],
+  "bd-obj-cooper-sign": [
+   "guild-town"
+  ],
+  "bd-obj-chandler-sign": [
+   "guild-town"
+  ],
+  "bd-obj-book-sign": [
+   "guild-town"
+  ],
+  "bd-obj-apothecary-sign": [
+   "guild-town"
+  ],
+  "bd-obj-cooper-jig": [
+   "guild-town"
+  ],
+  "bd-obj-candle-dipping": [
+   "guild-town"
+  ],
+  "bd-obj-cobbler-bench": [
+   "guild-town"
+  ],
+  "bd-obj-book-barrow": [
+   "guild-town",
+   "scholar-town"
+  ],
+  "bd-obj-print-press": [
+   "guild-town"
+  ],
+  "bd-obj-garden-sundial": [
+   "scholar-town"
+  ],
+  "bd-obj-pendulum-frame": [
+   "scholar-town"
+  ],
+  "bd-obj-star-slab": [
+   "scholar-town"
+  ],
+  "bd-obj-stone-seat": [
+   "scholar-town"
+  ],
+  "bd-obj-quadrant": [
+   "scholar-town"
+  ],
+  "bd-obj-chalk-board": [
+   "scholar-town"
+  ],
+  "bd-obj-weather-station": [
+   "scholar-town"
+  ],
+  "bd-obj-shield-rack": [
+   "garrison-town"
+  ],
+  "bd-obj-ballista": [
+   "garrison-town"
+  ],
+  "bd-obj-war-drum": [
+   "garrison-town"
+  ],
+  "bd-obj-jump-hurdle": [
+   "garrison-town",
+   "ranch"
+  ],
+  "bd-obj-pell-post": [
+   "garrison-town"
+  ],
+  "bd-obj-armour-chest": [
+   "garrison-town"
+  ],
+  "bd-obj-quintain": [
+   "garrison-town"
+  ],
+  "bd-obj-canal-barge": [
+   "canal-town"
+  ],
+  "bd-obj-mooring-pole": [
+   "canal-town"
+  ],
+  "bd-obj-lock-gate": [
+   "canal-town"
+  ],
+  "bd-obj-canal-lamp": [
+   "canal-town"
+  ],
+  "bd-obj-wall-hoist": [
+   "canal-town"
+  ],
+  "bd-obj-canal-steps": [
+   "canal-town"
+  ],
+  "bd-obj-gondola": [
+   "canal-town"
+  ],
+  "bd-obj-sign-bakery": [
+   "common"
+  ],
+  "bd-obj-sign-smith": [
+   "common"
+  ],
+  "bd-obj-sign-tailor": [
+   "common"
+  ],
+  "bd-obj-sign-fish": [
+   "common"
+  ],
+  "bd-obj-sign-weapon": [
+   "common"
+  ],
+  "bd-obj-sign-armour": [
+   "common"
+  ],
+  "bd-obj-sign-item": [
+   "common"
+  ],
+  "bd-obj-sign-magic": [
+   "common"
+  ],
+  "bd-obj-sign-bank": [
+   "common"
+  ],
+  "bd-obj-sign-stable": [
+   "common"
+  ],
+  "bd-obj-hamper": [
+   "common"
+  ],
+  "bd-obj-birdcage-stand": [
+   "common"
+  ],
+  "bd-obj-bucket-stack": [
+   "common"
+  ],
+  "bd-obj-baskets-stack": [
+   "common"
+  ],
+  "bd-obj-hay-bale": [
+   "common"
+  ],
+  "bd-obj-coal-bin": [
+   "common"
+  ],
+  "bd-obj-cloth-bundles": [
+   "common"
+  ],
+  "bd-obj-tarp-pile": [
+   "common"
+  ],
+  "bd-obj-brick-stack": [
+   "common"
+  ],
+  "bd-obj-picket-fence": [
+   "common"
+  ],
+  "bd-obj-picket-gate": [
+   "common"
+  ],
+  "bd-obj-plank-fence": [
+   "common"
+  ],
+  "bd-obj-stone-gatepost": [
+   "common"
+  ],
+  "bd-obj-split-rail": [
+   "common"
+  ],
+  "bd-obj-rope-fence": [
+   "common"
+  ],
+  "bd-obj-chain-posts": [
+   "common"
+  ],
+  "bd-obj-stile": [
+   "common"
+  ],
+  "bd-obj-iron-gate": [
+   "common"
+  ],
+  "bd-obj-lamp-wall-bracket": [
+   "common"
+  ],
+  "bd-obj-lamp-hanging-pole": [
+   "common"
+  ],
+  "bd-obj-lantern-ground": [
+   "common"
+  ],
+  "bd-obj-lamp-twin-stone": [
+   "common"
+  ],
+  "bd-obj-torch-post": [
+   "common"
+  ],
+  "bd-obj-planter-hanging": [
+   "common"
+  ],
+  "bd-obj-planter-tiered": [
+   "common"
+  ],
+  "bd-obj-planter-window-herbs": [
+   "common"
+  ],
+  "bd-obj-planter-cart": [
+   "common"
+  ],
+  "bd-obj-planter-boat": [
+   "common"
+  ],
+  "bd-obj-trellis-vine": [
+   "common"
+  ],
+  "bd-obj-topiary": [
+   "common"
+  ],
+  "bd-obj-bench-barrel-plank": [
+   "common"
+  ],
+  "bd-obj-bench-round-tree": [
+   "common"
+  ],
+  "bd-obj-bench-arbour": [
+   "common"
+  ],
+  "bd-obj-stool-pair": [
+   "common"
+  ],
+  "bd-obj-picnic-table": [
+   "common"
+  ],
+  "bd-obj-handcart-empty": [
+   "common"
+  ],
+  "bd-obj-cart-water": [
+   "common"
+  ],
+  "bd-obj-cart-firewood": [
+   "common"
+  ],
+  "bd-obj-cart-pedlar": [
+   "common"
+  ],
+  "bd-obj-handcart-crates": [
+   "common"
+  ],
+  "bd-obj-rain-barrel": [
+   "common"
+  ],
+  "bd-obj-wash-stand": [
+   "common"
+  ],
+  "bd-obj-dog-bowl-post": [
+   "common"
+  ],
+  "bd-obj-cat-barrel": [
+   "common"
+  ],
+  "bd-obj-bird-table": [
+   "common"
+  ],
+  "bd-obj-stepladder": [
+   "common"
+  ],
+  "bd-obj-hand-bell-table": [
+   "common"
+  ],
+  "bd-obj-post-box": [
+   "common"
+  ],
+  "bd-obj-trash-heap": [
+   "common"
+  ]
+ }
+}

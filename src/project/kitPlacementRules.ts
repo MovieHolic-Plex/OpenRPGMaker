@@ -47,6 +47,12 @@ export const KIT_PLACEMENT_RULES: Readonly<Record<string, KitPlacementRule>> = {
   "bd-obj-raft-log": WATER_ALL, "bd-obj-coracle": WATER_ALL, "bd-obj-buoy": WATER_ALL, "bd-obj-water-lilies": WATER_ALL, "bd-obj-duck-house": WATER_ALL, "bd-obj-fish-weir": WATER_ALL,
   "bd-obj-step-stone-a": { rules: [{ cells: "all", on: "water" }], why: "물 징검돌은 물 칸 위에만 놓는다(밟고 건너는 돌이다 — 뭍에는 깊은 숲길 징검돌을 쓴다)." },
   "bd-obj-step-stone-b": { rules: [{ cells: "all", on: "water" }], why: "물 징검돌은 물 칸 위에만 놓는다(밟고 건너는 돌이다 — 뭍에는 깊은 숲길 징검돌을 쓴다)." },
+  // 마을 종류별 기물(2026-11-14): 물 위에 뜨거나 물에 선 것(삿대 배·짐배·긴 나룻배·왜가리 말뚝·줄무늬 말뚝·운하 수문)은 막힌 칸 — 물은 원래 못 걷는다.
+  // 줄 나룻배·빨래 디딤판·건널 널은 바닥 그림이라 놓인 물 칸을 걷게 한다(뭍에 닿게 놓는다).
+  "bd-obj-punt": WATER_ALL, "bd-obj-canal-barge": WATER_ALL, "bd-obj-gondola": WATER_ALL, "bd-obj-heron-post": WATER_ALL, "bd-obj-mooring-pole": WATER_ALL, "bd-obj-lock-gate": WATER_ALL,
+  "bd-obj-ferry-raft": { rules: [{ cells: "all", on: "water" }], why: "줄 나룻배는 물 칸 위에만 놓는다(올라서서 건너는 너벅선이다 — 뭍에 닿게 놓는다)." },
+  "bd-obj-wash-plank": { rules: [{ cells: "all", on: "water" }], why: "빨래 디딤판은 물 칸 위에만 놓는다(물가에서 물로 낸 널이다)." },
+  "bd-obj-gangplank": { rules: [{ cells: "all", on: "water" }], why: "건널 널은 물 칸 위에만 놓는다(뭍과 배·뭍과 뭍 사이 물을 건너는 널이다)." },
   "bd-bridge-arch": BRIDGE, "bd-pick-riverside-mill-plank-footbridge": BRIDGE, "bd-pick-mountain-pass-stone-bridge": BRIDGE,
   "bd-river-bridge": BRIDGE,
 };
