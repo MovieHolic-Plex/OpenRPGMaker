@@ -154,7 +154,7 @@ function summitData(project: Project, exec: Exec): void {
   } });
   ensureState(project);
   exec(project, "author_boss_phases", { troopId: FS2_TROOP_COLLECTOR, enemyId: E_COLLECTOR, phases: [
-    { atHpPercent: 60, name: "삼킨 불", message: "회수자의 가슴이 쩍 갈라졌다.\n서른 해 전에 삼킨 불이 새어 나온다.", summonEnemyId: E_EMBER },
+    { atHpPercent: 60, name: "삼킨 불", message: "회수자의 가슴이 쩍 갈라진다.\n서른 해 전에 삼킨 불이 새어 나온다.", summonEnemyId: E_EMBER },
     { atHpPercent: 30, name: "마지막 회수", message: "회수 기한 초과. 남은 불을 전부 거둔다.", enrageStateId: "state_rage" },
   ] });
 
@@ -173,7 +173,7 @@ function summitData(project: Project, exec: Exec): void {
     learnedSkills: [{ level: 1, skillId: "skill_attack" }, { level: 1, skillId: "skill_fs_judgment" }, { level: 1, skillId: "skill_sword_slash" }],
   } });
   exec(project, "add_battle_guest", { troopId: FS2_TROOP_COLLECTOR, actorId: VALEN_ACTOR, atEnemyHpPercent: 70, enemyId: E_COLLECTOR,
-    requireSwitchId: SW_VALEN_GUEST, requireSwitchName: "B13: 발렌과 함께 싸운다", tactic: "attackAll", message: "발렌이 칼을 뽑아 들었다!" });
+    requireSwitchId: SW_VALEN_GUEST, requireSwitchName: "B13: 발렌과 함께 싸운다", tactic: "attackAll", message: "발렌이 칼을 뽑아 든다!" });
   // 넷 연계 — 「네 번째 대답」. 카엘·엘레나·새라·이리스가 모두 서 있어야 뜬다. 이리스 「광선 조준」이 돌아와야 열린다.
   exec(project, "upsert_combo_tech", {
     id: FS2_COMBO_FOURTH_ANSWER, name: "네 번째 대답",
@@ -255,7 +255,7 @@ function summitScenes(project: Project): void {
     se("cc0-se-osx-machine-03"),
     narrate("커다란 렌즈 앞, 발렌이 단말에 손을 얹고 있다.\n렌즈 속 글자가 붉게 흐른다."),
     say(VALEN, "반은 보냈다. 나머지 반만 넣으면\n달은 다시는 아이를 내려보내지 않는다."),
-    say(KAEL, "그 신호, 이리스한테 「오지 마」라고 하는 거잖아요."),
+    say(KAEL, "그 신호, 이리스한테\n「오지 마」라고 하는 거잖아요."),
     say(IRIS, "들려요. 「돌아오지 마」, 「대답하지 마」.\n…차가운 말이에요."),
     face("ev_fs2_top_valen", "down"),
     say(VALEN, "삼십 년 전에 새벽샘이 탔다.\n대답한 값이었다. 두 번은 없다."),
@@ -274,12 +274,12 @@ function summitScenes(project: Project): void {
     say(VALEN, "…선생님."),
     say(BRAM, "숨 차서 죽는 줄 알았다.\n하넬, 할 말 있으면 지금 해라."),
     camTo("ev_fs2_top_hanel", 1000, 2, 12),
-    say(HANEL, "거부를 보낸 건 나다, 발렌.\n별지기 회의가 정했고, 나는 손을 떨지 않았다."),
+    say(HANEL, "거부를 보낸 건 나다, 발렌.\n별지기 회의가 정했다. 내 손은 떨리지도 않았지."),
     say(VALEN, "그럼 그 아이가 두드린 문은…\n선생님이 보낸 답장이었습니까."),
-    say(HANEL, "그래. 그래서 나는 서른 해 동안\n너에게 별 이름만 가르쳤다."),
+    say(HANEL, "그래. 그래서 서른 해 동안\n너한테 별 이름만 가르쳤다."),
     say(HANEL, "…다른 걸 가르칠 낯이 없어서."),
     camTo("ev_fs2_top_valen", 900, 2, 16),
-    narrate("발렌이 왼손 장갑을 쥐었다 폈다."),
+    narrate("발렌이 왼손 장갑을 쥐었다 편다."),
     say(VALEN, "세린."),
     say(VALEN, "…문 너머에서, 그 아이 이름이 세린이었다."),
     wait(600),
@@ -331,7 +331,7 @@ function summitScenes(project: Project): void {
   const ending: Command[] = [
     cutBegin(), letterbox(),
     bgm(IRIS_BGM, 2500),
-    narrate("재가 가라앉았다.\n렌즈의 붉은 글자가 하나씩 꺼져 간다."),
+    narrate("재가 가라앉는다.\n렌즈의 붉은 글자가 하나씩 꺼져 간다."),
     // 렌즈 앞을 비운다 — 발렌은 동쪽으로 한 칸, 하넬·브람은 양옆. 카엘이 렌즈 바로 앞(발렌이 섰던 칸)까지 걸어간다.
     at("ev_fs2_top_hanel", TOP.hanelLens), at("ev_fs2_top_bram", TOP.bramLens), at("ev_fs2_top_valen", TOP.valenLens),
     face("ev_fs2_top_valen", "left"), face("ev_fs2_top_hanel", "up"), face("ev_fs2_top_bram", "up"),
@@ -339,13 +339,13 @@ function summitScenes(project: Project): void {
     camTo("ev_fs2_top_valen", 1400, 2, 16),
     say(IRIS, "거부 신호, 아직 반이 남아 있어요.\n…지울 수는 없어요. 덮을 수만 있어요."),
     say(KAEL, "그럼 덮자. 대답 하나 더 하면 되잖아."),
-    narrate("카엘이 렌즈에 손을 얹었다."),
+    narrate("카엘이 렌즈에 손을 얹는다."),
     fx("sparkle", TOP.lens.x + 1, TOP.lens.y + 3, 1600),
     say(ELENA, "나도. 불씨 지키는 사람도 한 줄은 써야지."),
     say(SARAH, "아버지 몫까지 얹는다."),
     say(HANEL, "…서른 해 늦었다. 그래도 얹으마."),
     face("ev_fs2_top_valen", "up"),
-    narrate("발렌이 장갑을 벗어 렌즈 위에 얹었다."),
+    narrate("발렌이 장갑을 벗어 렌즈 위에 얹는다."),
     say(VALEN, "…세린. 이번엔 문을 열어 두마."),
     wait(500),
     say(KAEL, "잘 지내. …오늘도."),
@@ -364,7 +364,7 @@ function summitScenes(project: Project): void {
     narrate("제3막 「귀환선」은\n다음 업데이트에서 이어집니다.", { position: "center", context: "narration" }),
     fadeIn(800),
     setSw(FS2_SW_STOP_B13),
-    sys("다음 업데이트에서 하늘탑 꼭대기부터 이어 하려면 지금 저장해 두자."),
+    sys("다음 업데이트에서 여기부터 이어 하려면\n지금 저장해 두자."),
     { kind: "openSaveMenu" } as unknown as Command,
   ];
   addEv(project, FS2_TOP, "ev_fs2_top_collector", "재의 회수자", { x: 0, y: 1 }, [

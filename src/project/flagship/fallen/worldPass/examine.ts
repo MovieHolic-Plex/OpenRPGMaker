@@ -14,7 +14,7 @@ export type Examine = { readonly n: number; readonly mapId: string; readonly x: 
 
 export const FALLEN_EXAMINES: readonly Examine[] = [
   { n: 0, mapId: "fs_hub", x: 16, y: 11, name: "물레방아", lines: ["운하 물을 받아 도는 물레방아다.\n천문대 종보다 먼저 삐걱이며 아침을 알린다."] },
-  { n: 2, mapId: "fs_hub", x: 42, y: 19, name: "말 물통", lines: ["말 물통에 별빛이 비친다.\n아이들이 여기에 동전을 던지며 소원을 빈다."] },
+  { n: 2, mapId: "fs_hub", x: 42, y: 19, name: "말 물통", lines: ["말 물통에 별빛이 비친다.\n아이들이 동전을 던져 넣고 소원을 비는 데다."] },
   { n: 3, mapId: "fs_hub", x: 53, y: 19, name: "통행세 초소", lines: ["통행세 초소다. 판자에 세금표가 붙어 있다.\n「소금 한 짐 3G, 별조각 하나 50G」"] },
   { n: 4, mapId: "fs_hub", x: 29, y: 35, name: "선원 궤짝", lines: ["뱃사람의 궤짝이다. 뚜껑에 칼로 새긴 글.\n「북쪽 바다 얼음이 녹으면 돌아온다」"] },
   { n: 5, mapId: "fs_hub", x: 47, y: 29, name: "생선 상자", lines: ["얼음 위에 은빛 생선이 누워 있다.\n서리나루에서 사흘 걸려 왔다고 한다."] },
