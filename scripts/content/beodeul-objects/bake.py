@@ -176,8 +176,8 @@ def main():
                source="scripts/content/beodeul-objects/bake.py (Claude Fable 5.2 medium one-shot pictures, colours taken from the beodeul_city sheet)",
                license=spec["license"], gate=f"3/4 gate not passed — owner waivers {', '.join(waivers)}",
                items=[dict(id=it["id"], kit=KIT_PREFIX + it["id"], name=it["name"], en=it["en"], kind=it["kind"], width=it["w"], height=it["h"], place=it["place"],
-                           rows=rows_of[it["id"]], block=it["block"], words=it["words"], sha256=sha,
-                           **({"variantOf": it["variantOf"]} if it.get("variantOf") else {})) for it, sha in zip(items, got)])
+                           rows=rows_of[it["id"]], block=it["block"], words=it["words"], sha256=sha, family=it["family"], waiver=it.get("waiver", spec["waiver"]),
+                           **({"variantOf": it["variantOf"]} if it.get("variantOf") else {}), **({"on": it["on"]} if it.get("on") else {})) for it, sha in zip(items, got)])
     CATALOG.write_text(json.dumps(cat, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(f"이야기 기물 꼬리 {BASE}..{count - 1}: 킷 {len(kits)}개 ({KIT_PREFIX}*) — 변형 {sum(1 for it in items if it.get('variantOf'))}개")
 

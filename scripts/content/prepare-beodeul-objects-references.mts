@@ -7,7 +7,7 @@
 // 장면은 손으로 칸을 찍지 않고 실제 놓기 도구(stamp_tileset_object)로 놓는다 — 문서의 배열은 도구가 낸 그대로다.
 // 쓰는 것: tiledata/beodeul-objects/{README.md,references.json,example.json,*.png}(정본) · public/assets/beodeul-objects/*.png(128색 학습 사본) ·
 //          src/assets/beodeulCityReferences.json(용도 beodeul-objects 를 넣거나 바꾼다, 문서·그림 id 는 bd-obj- 머리라 번들 소유).
-// 그림은 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12 · 변형은 fable-variety-beodeul-2026-11-12 (굽기: scripts/content/beodeul-objects/bake.py).
+// 그림은 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12 · 변형은 fable-variety-beodeul-2026-11-12 · 새 종류는 fable-objects100-beodeul-2026-11-14 (굽기: scripts/content/beodeul-objects/bake.py).
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
@@ -31,8 +31,11 @@ assert.equal(kits.size, catalog.items.length);
 const shore = ts.autotileGroups!.find((g) => g.id === "beodeul_lakeshore_grass")!;
 const item = (id: string) => catalog.items.find((i) => i.id === id)!;
 // 이야기 기물 16종(원래 목록)과 종류별 변형(variantOf — 같은 종류의 옛 킷과 칸 크기·막힌 칸이 같은 다른 그림, 2026-11-12)
-type CatalogItem = (typeof catalog.items)[number] & { variantOf?: string };
-const STORY = (catalog.items as CatalogItem[]).filter((i) => !i.variantOf);
+// 새 종류(2026-11-14, 면제 묶음 fable-objects100-beodeul-2026-11-14): 갈아 끼우는 그림이 아니라 새 물건 — 마을 살림·물가와 물 위·농장·숲 바닥·절벽 바위·유적과 묘지
+type CatalogItem = (typeof catalog.items)[number] & { variantOf?: string; on?: string };
+const NEW_WAIVER = "fable-objects100-beodeul-2026-11-14";
+const NEWS = (catalog.items as CatalogItem[]).filter((i) => i.waiver === NEW_WAIVER);
+const STORY = (catalog.items as CatalogItem[]).filter((i) => !i.variantOf && i.waiver !== NEW_WAIVER);
 const VARIANTS = (catalog.items as CatalogItem[]).filter((i) => i.variantOf);
 const allKits = new Map((ts.structureKits ?? []).map((k) => [k.id, k] as const));
 const kitOf = (id: string): StructureKitDef => kits.get(BEODEUL_OBJECTS_KIT_PREFIX + id)!;
@@ -129,7 +132,7 @@ const placed: Placement[] = [
 ({ project: sceneProject, map: scene } = stampAll(sceneProject, scene.id, placed));
 const WALK: [number, number][] = [[1, 9], [2, 9], [3, 9], [4, 9], [5, 9], [6, 9], [6, 10], [6, 11], [6, 12]];
 { const f = check(sceneProject, scene, placed, WALK); assert(f.length === 0, `조립 예제는 결함 0 이어야 한다: ${JSON.stringify(f.slice(0, 8))}`); }
-assert.equal(new Set(placed.map((p) => p.id)).size, STORY.length, "예제가 16종을 모두 쓴다");
+assert.equal(STORY.length, 16); assert.equal(new Set(placed.map((p) => p.id)).size, STORY.length, "예제가 16종을 모두 쓴다");
 // 물 위 널빤지가 실제로 물 칸의 막힘을 연다(널빤지를 빼면 같은 칸이 막힌다)
 {
   const bare = structuredClone(sceneProject), bm = bare.maps[scene.id]!;
@@ -216,6 +219,70 @@ for (const mu of V_MUTATIONS) {
   fs.writeFileSync(`${ROOT}/.vbad-${mu.code}.png`, renderMapPng({ ...bad, startMapId: "" } as Project, bm).png);
 }
 
+// ── 장면 4: 새 종류 — 쓰임(가족)마다 줄지어 풀밭에, 물 위 것은 못 위에, 징검돌은 못을 건너는 한 줄로 ──
+const FAMILY_ORDER = ["village", "harbour", "farm", "camp", "road", "forest", "cliff", "grave", "ruin", "story"];
+const FAMILY_KO: Record<string, string> = { village: "마을 살림·일터", harbour: "부두·물가 일", water: "물가·물 위", farm: "농장·과수원·텃밭", camp: "야영·나그네", road: "길가", forest: "숲 바닥", cliff: "절벽 위아래·바위", grave: "묘지", ruin: "유적", story: "이야기 물건" };
+const NW = 40;
+const nPlaced: Placement[] = [];
+let nY = 1;
+{
+  let x = 1, rowH = 0;
+  const land = NEWS.filter((i) => i.on !== "water").sort((a, b) => FAMILY_ORDER.indexOf(a.family === "water" ? "harbour" : a.family) - FAMILY_ORDER.indexOf(b.family === "water" ? "harbour" : b.family));
+  for (const it of land) {
+    if (x + it.width > NW - 1) { x = 1; nY += rowH + 1; rowH = 0; }
+    nPlaced.push({ id: it.id, x, y: nY }); x += it.width + 1; rowH = Math.max(rowH, it.height);
+  }
+  nY += rowH + 1;
+}
+const POND_Y = nY + 1, NH = POND_Y + 6, FORD_X = NW - 5;
+const N_POND: [number, number][] = [];
+for (let y = POND_Y; y < POND_Y + 4; y++) for (let x = 1; x < NW - 1; x++) N_POND.push([x, y]);
+{
+  let x = 3;
+  for (const it of NEWS.filter((i) => i.on === "water" && !i.id.startsWith("step-stone"))) { nPlaced.push({ id: it.id, x, y: POND_Y + 3 - it.height }); x += it.width + 2; }
+  for (let j = 0; j < 4; j++) nPlaced.push({ id: j % 2 ? "step-stone-b" : "step-stone-a", x: FORD_X, y: POND_Y + j });
+}
+let newProject = structuredClone(base);
+let newScene = grassMap(newProject, "map_bd_obj_new", "버들항 새 종류 기물", NW, NH);
+water(newScene, N_POND);
+({ project: newProject, map: newScene } = stampAll(newProject, newScene.id, nPlaced));
+const N_WALK: [number, number][] = Array.from({ length: 6 }, (_, j) => [FORD_X, POND_Y - 1 + j] as [number, number]);
+{ const f = check(newProject, newScene, nPlaced, N_WALK); assert(f.length === 0, `새 종류 장면은 결함 0 이어야 한다: ${JSON.stringify(f.slice(0, 8))}`); }
+assert.equal(new Set(nPlaced.map((p) => p.id)).size, NEWS.length, "새 종류 장면이 모두를 쓴다");
+// 물 위 것: 징검돌을 빼면 그 물 칸이 다시 막히고, 뗏목 칸은 뗏목이 있으나 없으나 막힌 칸이다(물은 원래 못 걷는다)
+{
+  const bare = structuredClone(newProject), bm = bare.maps[newScene.id]!;
+  const raft = nPlaced.find((p) => p.id === "raft-log")!;
+  assert(isPassable(newProject, newScene, FORD_X, POND_Y + 1) && !isPassable(newProject, newScene, raft.x, raft.y));
+  setLayerTileAt(bm, 3, (POND_Y + 1) * NW + FORD_X, -1); setLayerTileAt(bm, 3, raft.y * NW + raft.x, -1);
+  assert(!isPassable(bare, bm, FORD_X, POND_Y + 1) && !isPassable(bare, bm, raft.x, raft.y));
+}
+// 무너진 아치의 가운데 두 칸은 비어 있어 걸어서 지난다
+{ const arch = nPlaced.find((p) => p.id === "ruined-arch")!; assert(canMove(newProject, newScene, arch.x + 1, arch.y + 3, arch.x + 1, arch.y + 2) && canMove(newProject, newScene, arch.x + 1, arch.y + 2, arch.x + 1, arch.y + 1)); }
+// 물 위 것을 뭍에 놓으면, 뭍의 것을 물 위에 놓으면 거절되고 맵이 그대로다
+for (const [id, bx, by] of [["raft-log", 1, NH - 1], ["beehive-skeps", 20, POND_Y + 2], ["step-stone-a", 3, NH - 1]] as const) {
+  const trial = structuredClone(newProject), before = JSON.stringify(trial.maps[newScene.id]);
+  const res = runTool({ project: trial, currentMapId: newScene.id, assistantRun: true }, "stamp_tileset_object", { mapId: newScene.id, objectId: kitOf(id).id, base: { x: bx, y: by } });
+  assert(!res.ok && JSON.stringify(trial.maps[newScene.id]) === before, `${id} @(${bx},${by}) 는 거절되고 맵이 그대로여야 한다: ${res.summary}`);
+}
+const nAt = (id: string) => nPlaced.find((p) => p.id === id)!;
+const N_MUTATIONS: Mutation[] = [
+  { code: "walk-blocked", cell: [FORD_X, POND_Y + 2], title: "징검돌 한 칸 빠짐", how: "못을 건너는 징검돌 넷 가운데 하나를 뺐다 — 물 칸이 드러나 건널 수 없다.",
+    apply: (_p, m) => setLayerTileAt(m, 3, (POND_Y + 2) * NW + FORD_X, -1) },
+  { code: "kit-incomplete", cell: [nAt("dovecote").x, nAt("dovecote").y], title: "비둘기 집 윗칸 빠짐", how: "장대 위 비둘기 집(1×3)의 맨 윗칸을 뺐다 — 집이 잘린다.",
+    apply: (_p, m) => setLayerTileAt(m, 3, nAt("dovecote").y * NW + nAt("dovecote").x, -1) },
+];
+fs.writeFileSync(`${ROOT}/news.png`, renderMapPng({ ...newProject, startMapId: "" } as Project, newScene).png);
+const nErrors: { code: string; cell: [number, number]; detected: Finding[] }[] = [];
+for (const mu of N_MUTATIONS) {
+  const bad = structuredClone(newProject), bm = bad.maps[newScene.id]!;
+  mu.apply(bad, bm);
+  const found = check(bad, bm, nPlaced, N_WALK);
+  assert(found.some((f) => f.code === mu.code && f.x === mu.cell[0] && f.y === mu.cell[1]), `새 종류 ${mu.code} @(${mu.cell}) 를 검사가 못 잡았다: ${JSON.stringify(found)}`);
+  nErrors.push({ code: mu.code, cell: mu.cell, detected: found });
+  fs.writeFileSync(`${ROOT}/.nbad-${mu.code}.png`, renderMapPng({ ...bad, startMapId: "" } as Project, bm).png);
+}
+
 // ── 오류 변조 4종: 실제로 고쳐 놓고 같은 검사가 그 칸을 짚는지 본다 ──
 type Mutation = { code: string; cell: [number, number]; title: string; how: string; apply: (p: Project, m: GameMap) => void };
 const MUTATIONS: Mutation[] = [
@@ -240,7 +307,7 @@ for (const mu of MUTATIONS) {
   fs.writeFileSync(`${ROOT}/.bad-${mu.code}.png`, renderMapPng({ ...bad, startMapId: "" } as Project, bm).png);
 }
 // 그림: 3배 최근접 확대 · 정상/오류 나란히(빨간 상자 = 변조한 맵 칸) · 128색 학습 사본
-execFileSync("python3", ["-c", `
+execFileSync(process.env.BEODEUL_OBJECTS_PYTHON ?? "python3", ["-c", `
 import json, sys
 from PIL import Image, ImageDraw
 root, pub, T = sys.argv[1], sys.argv[2], 16
@@ -271,7 +338,20 @@ for code, (cx, cy) in json.loads(sys.argv[4]):
     d.rectangle((rx, ry, rx + T * 3 - 1, ry + T * 3 - 1), outline=(255, 0, 0), width=2)
     out = Image.new("RGB", (a.width * 2 + 12, a.height), (24, 24, 24)); out.paste(a, (0, 0)); out.paste(b, (a.width + 12, 0))
     learn(out, f"err-variant-{code}.png")
-`, ROOT, PUB, JSON.stringify(MUTATIONS.map((m) => [m.code, m.cell])), JSON.stringify(V_MUTATIONS.map((m) => [m.code, m.cell]))]);
+ns = Image.open(f"{root}/news.png").convert("RGB")
+learn(ns, "new-1x.png"); learn(up(ns, 2), "new-2x.png")
+for code, (cx, cy) in json.loads(sys.argv[5]):
+    bad = Image.open(f"{root}/.nbad-{code}.png").convert("RGB")
+    x0, y0 = max(0, cx - 4), max(0, cy - 3); x1, y1 = min(ns.width // T, x0 + 9), min(ns.height // T, y0 + 7)
+    box = (x0 * T, y0 * T, x1 * T, y1 * T)
+    a, b = up(ns.crop(box)), up(bad.crop(box))
+    d = ImageDraw.Draw(b); rx, ry = (cx - x0) * T * 3, (cy - y0) * T * 3
+    d.rectangle((rx, ry, rx + T * 3 - 1, ry + T * 3 - 1), outline=(255, 0, 0), width=2)
+    out = Image.new("RGB", (a.width * 2 + 12, a.height), (24, 24, 24)); out.paste(a, (0, 0)); out.paste(b, (a.width + 12, 0))
+    learn(out, f"err-new-{code}.png")
+`, ROOT, PUB, JSON.stringify(MUTATIONS.map((m) => [m.code, m.cell])), JSON.stringify(V_MUTATIONS.map((m) => [m.code, m.cell])), JSON.stringify(N_MUTATIONS.map((m) => [m.code, m.cell]))]);
+for (const mu of N_MUTATIONS) fs.rmSync(`${ROOT}/.nbad-${mu.code}.png`);
+fs.rmSync(`${ROOT}/news.png`);
 for (const mu of V_MUTATIONS) fs.rmSync(`${ROOT}/.vbad-${mu.code}.png`);
 fs.rmSync(`${ROOT}/variants.png`);
 for (const mu of MUTATIONS) fs.rmSync(`${ROOT}/.bad-${mu.code}.png`);
@@ -285,6 +365,12 @@ const row = (it: (typeof catalog.items)[number]) => {
   const ent = (kit.parts ?? []).filter((p) => p.kind === "entrance").map((p) => `입구 칸 (${p.dx},${p.dy})`).concat((ai?.access ?? []).map((a) => `접근칸 (${a.dx},${a.dy})`)).join(" · ") || "—";
   return `| \`${kit.id}\` | ${it.name} | ${it.width}×${it.height} | ${cells} | ${it.place === "decal" ? "바닥 그림(밟고 지나감)" : "서 있는 기물"} | ${it.block.map(([x, y]) => `(${x},${y})`).join(" ") || "—"} | ${star} | ${ai?.growthAxis ? `반복(${ai.growthAxis === "horizontal" ? "가로" : "세로"})` : "고정"} | ${ent} | ${it.words.join(", ")} |`;
 };
+const nrow = (it: CatalogItem) => {
+  const kit = kitOf(it.id);
+  const star = it.place === "decal" ? "—" : it.rows.flatMap((r, y) => r.map((t, x) => (t >= 0 && !it.block.some(([bx, by]) => bx === x && by === y) ? `(${x},${y})` : ""))).filter(Boolean).join(" ") || "—";
+  const how = it.on === "water" ? (it.place === "decal" ? "물 위 · 바닥 그림(밟고 건넌다)" : "물 위 · 막힘") : it.place === "decal" ? "바닥 그림(밟고 지나감)" : it.on === "shore" ? "서 있는 기물 · 물가" : "서 있는 기물";
+  return `| \`${kit.id}\` | ${it.name} | ${it.width}×${it.height} | ${it.rows.map((r) => r.join(" ")).join(" / ")} | ${how} | ${it.block.map(([x, y]) => `(${x},${y})`).join(" ") || "—"} | ${star} | ${it.words.join(", ")} |`;
+};
 const vrow = (f: (typeof families)[number]) => f.items.map((it) => {
   const kit = kitOf(it.id);
   return `| \`${f.base.id}\` ${f.base.name ?? ""} | \`${kit.id}\` | ${it.name} | ${it.width}×${it.height} | ${it.rows.map((r) => r.join(" ")).join(" / ")} | ${it.block.map(([x, y]) => `(${x},${y})`).join(" ") || "—"} | ${it.words.join(", ")} |`;
@@ -292,7 +378,7 @@ const vrow = (f: (typeof families)[number]) => f.items.map((it) => {
 const guide = `# 버들항 이야기 기물 16종 — 샘·동굴 입구·유적 입구·게시판·쪽지·봉인 제단·널빤지 길 (bd-obj-*, 2026-11-12)
 
 타일셋 \`beodeul_city\` · 그림 \`public/assets/beodeul-city/beodeul-city-chipset.png\`(텍스처 \`tex_beodeul_city\`) · **16px 칸, 한 줄 128칸**.
-번호 n 의 칸 = 행 ⌊n/128⌋, 열 n mod 128. 이 기물의 칸은 시트 꼬리 **${catalog.base}~${catalog.base + catalog.items.flatMap((i) => i.rows.flat()).filter((n) => n >= 0).length - 1}**(행 ${catalog.base / 128})이다. 다른 칩셋 번호를 섞지 않는다.
+번호 n 의 칸 = 행 ⌊n/128⌋, 열 n mod 128. 이 기물의 칸은 시트 꼬리 **${catalog.base}~${catalog.base + catalog.items.flatMap((i) => i.rows.flat()).filter((n) => n >= 0).length - 1}**(행 ${catalog.base / 128}~${catalog.count / 128 - 1})이다 — 이야기 기물 16종, 종류별 변형(6절), 새 종류(7절) 순서. 다른 칩셋 번호를 섞지 않는다.
 게임들이 바랐는데 그림이 없던 물건이다(조수 실행의 «없는 그림» 장부). 그림 정본 \`tiledata/beodeul-objects/pieces/<id>.png\`, 정의 \`tiledata/beodeul-objects/spec.json\`, 굽기 \`scripts/content/beodeul-objects/bake.py\`.
 **3/4 관문 미통과 — 오너 면제 그림**(면제 묶음 fable-oneshot-2026-11-12, Claude Fable 5.2 한 방 그림). 관문을 통과한 그림이 아니다 — 스토어로는 나가지 않는다.
 
@@ -358,6 +444,62 @@ ${families.map(vrow).join("\n")}
 ${V_MUTATIONS.map((m) => `| \`${m.code}\` | (${m.cell[0]},${m.cell[1]}) | ${m.how} | err-variant-${m.code}.png (왼쪽 정상 · 오른쪽 오류, 빨간 상자) |`).join("\n")}
 
 자동 검사(같은 스크립트): 변형 장면의 킷 칸이 3층에 통째로 있는가 · **변형의 칸마다 엔진 통행(isPassable)이 원본 킷의 같은 칸과 같은가**(\`variant-passage\`). 확인하지 않는 것: 그림이 그 종류로 읽히는지(사람이 1배에서 보고 5장을 뺐다), 게임마다 실제로 갈리는지(\`test/kitLook.test.ts\`·\`scripts/content/beodeul-variety/sixSeeds.mts\`).
+
+## 7. 새 종류 ${NEWS.length}종 — 마을 살림·물가와 물 위·농장·숲 바닥·절벽 바위·유적과 묘지 (2026-11-14)
+
+버들항에 없던 **새 물건**이다(변형이 아니다 — \`ai.variantOf\` 없음, 갈아 끼워지지 않는다). 면제 묶음 ${NEW_WAIVER}, 같은 3/4 관문 미통과 — 오너 면제. 건물·바닥 타일·나무는 없다.
+- 놓는 법은 1·2절과 같다: 3층, \`stamp_tileset_object({ mapId, objectId, base })\` / 조수 v2 \`place_object\`. 서 있는 것은 막힌 칸만 막히고 윗줄은 ★.
+- **물 위에 놓는 것**(표의 «물 위» — 킷 태그 \`물 위\`): **모든 칸이 물 칸이어야 한다**(뭍에 놓으면 거절). 3층에 놓여 물 그림은 그대로 비친다.
+  - 뗏목·가죽배·부표·수련·오리 집·어살: 막힌 칸이다. 물은 원래 못 걷는 칸이라 **통행은 달라지지 않는다** — 걸어서 올라탈 수 없다(타는 배가 아니라 풍경이다).
+  - **물 징검돌 둘**(\`bd-obj-step-stone-a\`·\`-b\`): 바닥 그림이다 — **놓인 물 칸을 걸을 수 있게 된다**. 뭍에서 뭍까지 한 칸씩 이어 놓아 물을 건넌다(두 그림을 번갈아). 한 칸이라도 빠지면 건널 수 없다. 뭍의 징검돌은 깊은 숲길 것(\`bd-pick-deep-forest-path-stones-*\`)을 쓴다.
+- **물가에 두는 것**(표의 «물가» — 부들·낚싯대·부두 기중기·감개·밧줄·노 걸이·그물·통발): 뭍의 걷는 바닥 위, 물에서 한두 칸.
+- **무너진 아치**(\`bd-obj-ruined-arch\` 3×3): 가운데 열 아래 두 칸 (1,1)(1,2) 이 비어 있다 — 그 칸으로 걸어서 지난다. 그 두 칸과 앞뒤 한 칸에 다른 기물을 두지 않는다.
+- **쇠 울타리**(\`bd-obj-iron-fence\` 2×1): 가로로 이어 찍는다(repeat x).
+- 바위(절벽·바위 가족): 절벽(높이 지형) 가장자리 두 칸 안에는 놓지 않는다 — 절벽 위·아래에서 두세 칸 떨어진 자리에.
+- **마을·길 빌더가 스스로 놓는다**(\`src/editor/tools/beodeulObjectSets.ts\`): 강가·포구 마을을 조수 실행으로 지으면 그 게임의 벌(집 곁 살림 · 광장 · 일터 · 물가 · 물 위 · 바위 · 들 · 한 귀퉁이)이 놓이고, 도구 결과 \`data.newObjects\` 에 쓰임마다 놓은 수가 온다. 게임 열쇠로 고르므로 한 게임 안에서는 늘 같은 물건이다.
+  이름을 대서 더 놓을 때는 아래 낱말로 찾는다. 이야기 물건(바위에 꽂힌 검·쇠 우리·지도 탁자·무기 걸이·받침대·덫·길 막이·징검돌)은 빌더가 놓지 않거나 드물다 — 이야기가 부를 때 놓는다.
+
+${["village", "harbour", "water", "farm", "camp", "road", "forest", "cliff", "grave", "ruin", "story"].filter((f) => NEWS.some((i) => i.family === f)).map((f) => `### ${FAMILY_KO[f]} (${NEWS.filter((i) => i.family === f).length})
+
+| 킷 id | 무엇 | 크기 | 칸 번호 | 놓는 방식 | 막힌 칸 | ★ 칸 | 찾는 낱말(킷 태그) |
+|---|---|---|---|---|---|---|---|
+${NEWS.filter((i) => i.family === f).map(nrow).join("\n")}`).join("\n\n")}
+
+그림 \`new-1x.png\`(원본 해상도) · \`new-2x.png\`: 쓰임 순서로 풀밭에 줄지어 놓고, 아래 못에 물 위 것과 못을 건너는 징검돌 한 줄. 전체 배열은 「새 종류 배열」 문서.
+
+| 오류 코드 | 변조한 맵 칸 | 무엇을 했나 | 그림 |
+|---|---|---|---|
+${N_MUTATIONS.map((m) => `| \`${m.code}\` | (${m.cell[0]},${m.cell[1]}) | ${m.how} | err-new-${m.code}.png (왼쪽 정상 · 오른쪽 오류, 빨간 상자) |`).join("\n")}
+
+자동 검사(같은 스크립트): 새 종류 장면의 킷 칸이 3층에 통째로 있는가 · 막힌 칸/걸음 칸이 선언과 같은가 · 징검돌 한 줄을 ${N_WALK.map(([x, y]) => `(${x},${y})`).join("→")} 로 걸어 건널 수 있는가 · 징검돌을 빼면 그 물 칸이 다시 막히는가 · 뗏목 칸은 뗏목이 있으나 없으나 막혀 있는가 · 무너진 아치 밑을 걸어 지날 수 있는가 · 물 위 것을 뭍에, 뭍의 것을 물 위에 놓으면 거절되고 맵이 그대로인가.
+확인하지 않는 것: 그림의 미적 품질·3/4 시점(관문 미통과다 — 기계 검사 불합격 12장을 포함해 모두 구웠다), 빌더가 고른 자리가 보기 좋은지, 모델이 이름으로 잘 찾는지.
+`;
+const newDoc = `# 버들항 새 종류 기물 배열 (${NW}×${NH}, 16px)
+
+\`index = y*${NW} + x\`. 숫자는 \`beodeul_city\` 칸 번호(−1 = 빈 칸). 1층 = 풀 ${GRASS}, 못은 호숫가 오토타일 \`beodeul_lakeshore_grass\`(x 1~${NW - 2}, y ${POND_Y}~${POND_Y + 3}). 3층 = 기물. 2·4층은 비었다.
+실제 놓기 도구(stamp_tileset_object)가 낸 배열 그대로다. 검사 결함 0. 그림 \`new-1x.png\`(원본 ${NW * T}×${NH * T}) · \`new-2x.png\`.
+
+## 놓은 순서 (킷 id · 왼쪽 위 좌표 · base)
+
+${nPlaced.map((p, i) => `${i + 1}. \`${kitOf(p.id).id}\` (${p.x},${p.y}) · base (${p.x},${p.y + item(p.id).height - 1})`).join("\n")}
+
+징검돌 걷기 확인 경로: ${N_WALK.map(([x, y]) => `(${x},${y})`).join("→")}.
+
+## 1층 lowerTiles (한 줄 = 맵 한 줄)
+
+\`\`\`
+${Array.from({ length: NH }, (_, y) => Array.from({ length: NW }, (_, x) => layerTileAt(newScene, 1, y * NW + x)).join(",")).join("\n")}
+\`\`\`
+
+## 3층 upperTiles
+
+\`\`\`
+${Array.from({ length: NH }, (_, y) => Array.from({ length: NW }, (_, x) => layerTileAt(newScene, 3, y * NW + x)).join(",")).join("\n")}
+\`\`\`
+
+## 2층 lowerOverlayTiles · 4층 upperOverlayTiles
+
+모두 −1(쓰지 않는다).
 `;
 const variantsDoc = `# 버들항 기물 종류별 변형 배열 (${VW}×${VH}, 16px)
 
@@ -410,18 +552,20 @@ ${layer(scene, 3).join("\n")}
 
 ${atlasAt.map((p) => `- \`${kitOf(p.id).id}\` (${p.x},${p.y}) ${item(p.id).width}×${item(p.id).height}`).join("\n")}
 `;
-assert(guide.length <= 120000 && example.length <= 120000 && variantsDoc.length <= 120000);
+assert(guide.length <= 120000 && example.length <= 120000 && variantsDoc.length <= 120000 && newDoc.length <= 120000, `문서가 너무 길다: ${guide.length} ${example.length} ${variantsDoc.length} ${newDoc.length}`);
 fs.writeFileSync(`${ROOT}/README.md`, guide);
 fs.writeFileSync(`${ROOT}/example.json`, JSON.stringify({ map: { id: scene.id, width: W, height: H, lowerTiles: scene.lowerTiles, upperTiles: scene.upperTiles }, placed, walk: WALK, entrances: ["3,3", "18,3"], errors,
-  variants: { map: { id: variantScene.id, width: VW, height: VH, upperTiles: variantScene.upperTiles }, placed: vPlaced, errors: vErrors } }, null, 1) + "\n");
+  variants: { map: { id: variantScene.id, width: VW, height: VH, upperTiles: variantScene.upperTiles }, placed: vPlaced, errors: vErrors },
+  news: { map: { id: newScene.id, width: NW, height: NH, lowerTiles: newScene.lowerTiles, upperTiles: newScene.upperTiles }, placed: nPlaced, walk: N_WALK, errors: nErrors } }, null, 1) + "\n");
 const img = (file: string) => `/assets/beodeul-objects/${file}`;
 const category = {
-  id: "beodeul-objects", name: "버들항 · 이야기 기물(샘·입구·제단·게시판·쪽지·널빤지 길)",
-  description: `이야기가 부르는 기물 16종과 종류별 변형 ${VARIANTS.length}종(bd-obj-*, 칸 ${catalog.base}~): 킷 사전·층·통행, 놓는 순서(입구 접근칸·물 위 널빤지 길), 16종을 모두 쓴 조립 예제 배열, 우물·벤치·이정표 등 ${families.length}종류의 다른 그림(원본 킷 id 로 놓으면 게임마다 하나를 고른다), 정상/오류 그림. 3/4 관문 미통과 — 오너 면제 그림.`,
+  id: "beodeul-objects", name: "버들항 · 이야기 기물과 새 종류 기물(샘·입구·제단·널빤지 길 · 살림·물 위·바위·묘지)",
+  description: `이야기가 부르는 기물 16종, 종류별 변형 ${VARIANTS.length}종, 새 종류 ${NEWS.length}종(마을 살림·물가와 물 위·농장·숲 바닥·절벽 바위·유적과 묘지 — 물 위 것은 물 칸 위에만, 징검돌은 밟고 건넌다)(bd-obj-*, 칸 ${catalog.base}~): 킷 사전·층·통행, 놓는 순서(입구 접근칸·물 위 널빤지 길), 16종을 모두 쓴 조립 예제 배열, 우물·벤치·이정표 등 ${families.length}종류의 다른 그림(원본 킷 id 로 놓으면 게임마다 하나를 고른다), 정상/오류 그림. 3/4 관문 미통과 — 오너 면제 그림.`,
   documents: [
     { id: "bd-obj-guide", name: "이야기 기물 사전·실행 순서·검사 범위", markdown: guide },
     { id: "bd-obj-example", name: `이야기 기물 조립 예제 배열(${W}×${H})`, markdown: example },
     { id: "bd-obj-variants", name: `종류별 변형 배열(${VW}×${VH})`, markdown: variantsDoc },
+    { id: "bd-obj-new", name: `새 종류 배열(${NW}×${NH})`, markdown: newDoc },
   ],
   images: [
     { id: "bd-obj-atlas", name: "이야기 기물 16종(목록 순서)", caption: `풀밭 위에 실제 칸을 놓은 그림을 3배 최근접 확대(원본 ${AW * T}×${AH * T}). 자리는 「조립 예제 배열」 문서 끝. 128색 학습 사본 — 게임 소재로 잘라 쓰지 않는다.`, dataUrl: img("atlas-3x.png") },
@@ -429,6 +573,9 @@ const category = {
     { id: "bd-obj-scene-3x", name: `조립 예제 ${W}×${H} (3배 최근접)`, caption: "같은 장면을 3배 최근접 확대. 못 위 널빤지 길 ㄱ자·막다른 잔교, 입구 둘 앞 접근칸이 비어 있다.", dataUrl: img("scene-3x.png") },
     { id: "bd-obj-variants", name: `종류별 변형 ${VARIANTS.length}종 (원본 해상도)`, caption: `원본 ${VW * T}×${VH * T}. 종류마다 한 줄 — 맨 왼쪽이 원본 킷, 그 오른쪽이 변형(칸 크기·막힌 칸이 원본과 같다). 자리는 「종류별 변형 배열」 문서.`, dataUrl: img("variants-1x.png") },
     { id: "bd-obj-variants-3x", name: `종류별 변형 ${VARIANTS.length}종 (3배 최근접)`, caption: "같은 그림을 3배 최근접 확대. 128색 학습 사본 — 게임 소재로 잘라 쓰지 않는다.", dataUrl: img("variants-3x.png") },
+    { id: "bd-obj-new", name: `새 종류 ${NEWS.length}종 (원본 해상도)`, caption: `원본 ${NW * T}×${NH * T}. 쓰임 순서로 풀밭에 줄지어 놓고, 아래 못에 물 위 것과 못을 건너는 징검돌 한 줄. 자리는 「새 종류 배열」 문서.`, dataUrl: img("new-1x.png") },
+    { id: "bd-obj-new-2x", name: `새 종류 ${NEWS.length}종 (2배 최근접)`, caption: "같은 그림을 2배 최근접 확대. 128색 학습 사본 — 게임 소재로 잘라 쓰지 않는다.", dataUrl: img("new-2x.png") },
+    ...N_MUTATIONS.map((m) => ({ id: `bd-obj-err-new-${m.code}`, name: `정상/오류 · ${m.code} · ${m.title}`, caption: `왼쪽 정상 · 오른쪽 오류(빨간 상자 = 새 종류 장면 칸 (${m.cell[0]},${m.cell[1]})). ${m.how} 검사 코드 ${m.code} 검출. 3배 최근접 확대.`, dataUrl: img(`err-new-${m.code}.png`) })),
     ...V_MUTATIONS.map((m) => ({ id: `bd-obj-err-variant-${m.code}`, name: `정상/오류 · ${m.code} · ${m.title}`, caption: `왼쪽 정상 · 오른쪽 오류(빨간 상자 = 변형 장면 칸 (${m.cell[0]},${m.cell[1]})). ${m.how} 검사 코드 ${m.code} 검출. 3배 최근접 확대.`, dataUrl: img(`err-variant-${m.code}.png`) })),
     ...MUTATIONS.map((m) => ({ id: `bd-obj-err-${m.code}`, name: `정상/오류 · ${m.code} · ${m.title}`, caption: `왼쪽 정상 · 오른쪽 오류(빨간 상자 = 맵 칸 (${m.cell[0]},${m.cell[1]})). ${m.how} 검사 코드 ${m.code} 검출. 실제 시트 칸 조립을 3배 최근접 확대.`, dataUrl: img(`err-${m.code}.png`) })),
   ],
@@ -439,4 +586,4 @@ const at = refs.findIndex((c) => c.id === category.id);
 if (at < 0) refs.push(category); else refs[at] = category;
 // prepare-beodeul-city-references.py·wall_refs.py 와 같은 꼴(구조 줄바꿈만, 들여쓰기 없음)
 fs.writeFileSync(REFS, JSON.stringify(refs, null, 1).replace(/\n +/g, "\n") + "\n");
-console.log(JSON.stringify({ variants: VARIANTS.length, families: families.length, variantErrors: vErrors.map((e) => `${e.code}@(${e.cell})`), docs: category.documents.map((d) => [d.id, d.markdown.length]), images: category.images.length, sceneFindings: 0, errors: errors.map((e) => `${e.code}@(${e.cell})`), entrances }));
+console.log(JSON.stringify({ news: NEWS.length, newScene: `${NW}x${NH}`, newErrors: nErrors.map((e) => `${e.code}@(${e.cell})`), variants: VARIANTS.length, families: families.length, variantErrors: vErrors.map((e) => `${e.code}@(${e.cell})`), docs: category.documents.map((d) => [d.id, d.markdown.length]), images: category.images.length, sceneFindings: 0, errors: errors.map((e) => `${e.code}@(${e.cell})`), entrances }));

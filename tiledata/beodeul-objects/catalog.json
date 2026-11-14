@@ -53,7 +53,9 @@
     "물이 솟는 샘",
     "spring"
    ],
-   "sha256": "27d3d711e75531ecc0ddcef4f291b4a5b3b4fec4eae22bd2e334adf01e27a8af"
+   "sha256": "27d3d711e75531ecc0ddcef4f291b4a5b3b4fec4eae22bd2e334adf01e27a8af",
+   "family": "water",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "cave-mouth",
@@ -115,7 +117,9 @@
     "cave mouth",
     "cave entrance"
    ],
-   "sha256": "9c54a704df28010f4bee619c9acd4b6a2322738e629667ff22255331e0f39fd9"
+   "sha256": "9c54a704df28010f4bee619c9acd4b6a2322738e629667ff22255331e0f39fd9",
+   "family": "entrance",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "shard",
@@ -145,7 +149,9 @@
     "별 조각",
     "glowing shard"
    ],
-   "sha256": "fe284046ec9c27f372b8a8bc9d6929d258881819d91552e8f22ee0b336ba47cc"
+   "sha256": "fe284046ec9c27f372b8a8bc9d6929d258881819d91552e8f22ee0b336ba47cc",
+   "family": "story",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "ruin-entrance",
@@ -206,7 +212,9 @@
     "돌 입구",
     "ruin entrance"
    ],
-   "sha256": "99db3df49a75f1fffde89c0c8c17f105934b8192916d978434de1e228389d9d7"
+   "sha256": "99db3df49a75f1fffde89c0c8c17f105934b8192916d978434de1e228389d9d7",
+   "family": "entrance",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "camp-tent",
@@ -244,7 +252,9 @@
     "camp tent",
     "tent"
    ],
-   "sha256": "6d9cc427dc52deeb0293c7b40b23d9e7f03b3fbbab76f36965f0d432b4b41f36"
+   "sha256": "6d9cc427dc52deeb0293c7b40b23d9e7f03b3fbbab76f36965f0d432b4b41f36",
+   "family": "camp",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "livestock-pen",
@@ -316,7 +326,9 @@
     "축사",
     "livestock pen"
    ],
-   "sha256": "2bf56af50163b1464a2e8b6ff66187ee2da671854476269e0c9e2b230461ef1d"
+   "sha256": "2bf56af50163b1464a2e8b6ff66187ee2da671854476269e0c9e2b230461ef1d",
+   "family": "farm",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "plank-ew",
@@ -342,7 +354,9 @@
     "plank walkway",
     "boardwalk"
    ],
-   "sha256": "b909a80c969cbf02d82ac28291b7a1dc232a5afbb308d117c0f177f958750a4d"
+   "sha256": "b909a80c969cbf02d82ac28291b7a1dc232a5afbb308d117c0f177f958750a4d",
+   "family": "swamp",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "plank-ns",
@@ -368,7 +382,9 @@
     "plank walkway",
     "boardwalk"
    ],
-   "sha256": "e63064098d41329708071ed075d3fda9e8f4a493ebb528bd9924bafd909b592b"
+   "sha256": "e63064098d41329708071ed075d3fda9e8f4a493ebb528bd9924bafd909b592b",
+   "family": "swamp",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "plank-corner",
@@ -391,7 +407,9 @@
     "널다리 모퉁이",
     "plank corner"
    ],
-   "sha256": "dab9a51ed29cb3b46ae314fc3b76c86f9f521d194cf582abf9f1a8170735a439"
+   "sha256": "dab9a51ed29cb3b46ae314fc3b76c86f9f521d194cf582abf9f1a8170735a439",
+   "family": "swamp",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "plank-end",
@@ -414,7 +432,9 @@
     "널다리 끝",
     "plank end"
    ],
-   "sha256": "56892e29d59a63331c8abce3391de05d7045e9d95dbab88d04e48ae968a5e4c2"
+   "sha256": "56892e29d59a63331c8abce3391de05d7045e9d95dbab88d04e48ae968a5e4c2",
+   "family": "swamp",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "mining-tools",
@@ -447,7 +467,9 @@
     "pickaxe",
     "mining tools"
    ],
-   "sha256": "99bd6153ce0c6417187a811df60dfa51063dd77f22aa31dc06f333f00d8a1c68"
+   "sha256": "99bd6153ce0c6417187a811df60dfa51063dd77f22aa31dc06f333f00d8a1c68",
+   "family": "mine",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "notice-board",
@@ -485,7 +507,9 @@
     "공고판",
     "notice board"
    ],
-   "sha256": "53d9f9dda6d6972dc7bc172206c881995d1c47c05450ccdb48103c55a36ec6b2"
+   "sha256": "53d9f9dda6d6972dc7bc172206c881995d1c47c05450ccdb48103c55a36ec6b2",
+   "family": "village",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "note",
@@ -509,7 +533,9 @@
     "메모",
     "note"
    ],
-   "sha256": "bca5f58bdcd27775867a85f9dade388a0ccedcd415f7b72a608673791f39ae2f"
+   "sha256": "bca5f58bdcd27775867a85f9dade388a0ccedcd415f7b72a608673791f39ae2f",
+   "family": "story",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "seal-altar",
@@ -548,7 +574,9 @@
     "seal altar",
     "altar"
    ],
-   "sha256": "9a74ae76c4db34ea3eab5f2ad726f7c8232dfc35c66afdc0291ee5460053339e"
+   "sha256": "9a74ae76c4db34ea3eab5f2ad726f7c8232dfc35c66afdc0291ee5460053339e",
+   "family": "story",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "broken-pillar",
@@ -579,7 +607,9 @@
     "돌기둥",
     "broken pillar"
    ],
-   "sha256": "c2aa0723002e1710eb75387afc076ad3cf1619099f955d29c765842565c882a7"
+   "sha256": "c2aa0723002e1710eb75387afc076ad3cf1619099f955d29c765842565c882a7",
+   "family": "ruin",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "record-stand",
@@ -612,7 +642,9 @@
     "record book",
     "ledger"
    ],
-   "sha256": "4cb194af5d79e10ea45567fe069dfcda146ab5f4671b62e76012ffeab3387f35"
+   "sha256": "4cb194af5d79e10ea45567fe069dfcda146ab5f4671b62e76012ffeab3387f35",
+   "family": "story",
+   "waiver": "fable-oneshot-2026-11-12"
   },
   {
    "id": "well-windlass",
@@ -657,6 +689,8 @@
     "windlass well"
    ],
    "sha256": "01bfb774d002893a17051211872961b5079fc9f090146d9e0e0deb85b004b7d9",
+   "family": "water",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-well_roofed"
   },
   {
@@ -704,6 +738,8 @@
     "water pump"
    ],
    "sha256": "342bfc8a12a889ca6e1b4e17fc442eb8b9340d63b5ade751e505608cb6423a2b",
+   "family": "water",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-well_roofed"
   },
   {
@@ -750,6 +786,8 @@
     "wall fountain"
    ],
    "sha256": "b372c026179ce2432a2980c4770fe4400770b048af80c87ec6a4b53f4ba5177b",
+   "family": "water",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-well_roofed"
   },
   {
@@ -782,6 +820,8 @@
     "stone bench"
    ],
    "sha256": "aa5f2f5a1fee7b93fd758f7dc99a0f696a515fde31258f0b18364220ef77b712",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-bench_wood"
   },
   {
@@ -814,6 +854,8 @@
     "log bench"
    ],
    "sha256": "89ac5241ce2e230309595f41962142c0ed64b468045d13f392e47ad76090dca2",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-bench_wood"
   },
   {
@@ -847,6 +889,8 @@
     "trestle bench"
    ],
    "sha256": "d7448cbaca16f1ca28609a04663c2f97622c7623b50bbcbcc6477cb82f080bbe",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-bench_wood"
   },
   {
@@ -878,6 +922,8 @@
     "hanging sign"
    ],
    "sha256": "36cd0f2421960480ad34e4f204137f2ffa6d91e0bbde010ed68dbb1441ec0bb4",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-out-signpost"
   },
   {
@@ -909,6 +955,8 @@
     "milestone"
    ],
    "sha256": "d14cb52e327268a3566e724ba325a0eacee5425d1af068c3adf27f430b53a301",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-out-signpost"
   },
   {
@@ -940,6 +988,8 @@
     "cairn waymark"
    ],
    "sha256": "be408debd27bb717e0961b4ffeb995191dd0530bc094bb59ecc5f3b31a12c260",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-out-signpost"
   },
   {
@@ -968,6 +1018,8 @@
     "closed crate"
    ],
    "sha256": "e4d5e15ddc511624acbfa94921b9b8b5c29f80a7231bc2353629794c7cb0bb1e",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-crate_apple"
   },
   {
@@ -997,6 +1049,8 @@
     "wicker basket"
    ],
    "sha256": "027a6bce02163d205907f68a3e0d696e50bf071c2c3e0f7325814ab9f47c25c8",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-crate_apple"
   },
   {
@@ -1025,6 +1079,8 @@
     "grain sack"
    ],
    "sha256": "0f80fe348910a188f190e7030d225a9d93674b26efe93e11554f69eb553f4397",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-crate_apple"
   },
   {
@@ -1053,6 +1109,8 @@
     "closed barrel"
    ],
    "sha256": "315335624bbffc41f148a27dd0dd255986a27ccef744cccdeda7d42d14ec5fe1",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-fish_barrel"
   },
   {
@@ -1081,6 +1139,8 @@
     "water tub"
    ],
    "sha256": "055d1dfb32475c7ae62d6d57a2e534d12c77b521f14057ca7623a210039ed960",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-fish_barrel"
   },
   {
@@ -1109,6 +1169,8 @@
     "amphora"
    ],
    "sha256": "a7d9c9e593310ab043d36416e826de2772839c5b2b6d4b0f08fff86026b090f7",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-fish_barrel"
   },
   {
@@ -1137,6 +1199,8 @@
     "cooking fire"
    ],
    "sha256": "74bd3d0afe2c9c961ee7f89b877bb98e5c2494dda7dc17a733f92eda446163cd",
+   "family": "camp",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-pick-deep-forest-path-campfire"
   },
   {
@@ -1165,6 +1229,8 @@
     "fire pit"
    ],
    "sha256": "49a3a8bb6ab112e1000fbd134a431e137a94b7313bccc595fc2ce3e5df856157",
+   "family": "camp",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-pick-deep-forest-path-campfire"
   },
   {
@@ -1193,6 +1259,8 @@
     "roasting spit"
    ],
    "sha256": "5b88f8dcb8536bce97ea3eaba7cba5ff1666ef4ccfa4995f2f05020b9ac100ad",
+   "family": "camp",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-pick-deep-forest-path-campfire"
   },
   {
@@ -1242,6 +1310,8 @@
     "hay rack"
    ],
    "sha256": "b21a5f04e25f1ef3f8cde3d30ad17f47d9f13bba73d8f39c01f0c2067242d280",
+   "family": "farm",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-pick-riverside-mill-haystack"
   },
   {
@@ -1291,6 +1361,8 @@
     "hay loaf"
    ],
    "sha256": "9b70470ea3b3ebc7314929dd7c7c9309653fc1dd86dd95d1a11f91f62be8394d",
+   "family": "farm",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-pick-riverside-mill-haystack"
   },
   {
@@ -1324,6 +1396,8 @@
     "chopping block"
    ],
    "sha256": "4996fff3d01d3b2a1ce69340685f93298ec249109f2d7d9ad5f6d355bda4b4e9",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-out-woodpile"
   },
   {
@@ -1357,6 +1431,8 @@
     "firewood bundles"
    ],
    "sha256": "e578762410d16e4f3d51cba40d4a767ab069b30be14d4e13641fa35f194a449e",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-out-woodpile"
   },
   {
@@ -1391,6 +1467,8 @@
     "lantern post"
    ],
    "sha256": "b87f0b22247d3f9882f178f917fc5a1e5aee4ae47249840124dcd2a4212b62d5",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-lamp_crook"
   },
   {
@@ -1425,6 +1503,8 @@
     "cresset"
    ],
    "sha256": "3587c2fa05ad621339149e53737ee539c6e88c24da8139517cc5ddbd1a9f5912",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-lamp_crook"
   },
   {
@@ -1459,6 +1539,8 @@
     "stone lamp"
    ],
    "sha256": "249c384274f2ebead427171569e5aad759f91b5ef5694bd855f3b7effff21cb2",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-lamp_crook"
   },
   {
@@ -1495,6 +1577,8 @@
     "wheelbarrow"
    ],
    "sha256": "2f50000a5f4cd87e553cd3333361c3bbc2c1a2921d9e192e21425e0c49602828",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-veg_cart"
   },
   {
@@ -1532,6 +1616,8 @@
     "barrel cart"
    ],
    "sha256": "3c77b3069f5570a76de10484e3439c6ff2dfc65632da182690826cb7280505cc",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-veg_cart"
   },
   {
@@ -1568,6 +1654,8 @@
     "hay cart"
    ],
    "sha256": "9497d8324581f01f5c76348750d12772dfdee4bc025f26731f5d0549a3debc2a",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-veg_cart"
   },
   {
@@ -1605,6 +1693,8 @@
     "fieldstone altar"
    ],
    "sha256": "2743dc128bbf656f924c1281f27033fef5ae392b1837dc37e83ed83f220469b3",
+   "family": "ruin",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-pick-castle-catacombs-altar-stone"
   },
   {
@@ -1642,6 +1732,8 @@
     "dark altar"
    ],
    "sha256": "7ec3ce5811d6d154fdcf1ee865e71dfd602f010e625c9db7acabfaf4f98ef586",
+   "family": "ruin",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-pick-castle-catacombs-altar-stone"
   },
   {
@@ -1679,6 +1771,8 @@
     "offering table"
    ],
    "sha256": "752b0898d75069f19d2e73fa1a1f3c6c9777defbb6a84b3e2bb23c97d2c04c80",
+   "family": "ruin",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-pick-castle-catacombs-altar-stone"
   },
   {
@@ -1707,6 +1801,8 @@
     "fire basket"
    ],
    "sha256": "2b7540cdb5421555d34856425bf3994eae75d4bb756ad79a58c5484a7cdef1bf",
+   "family": "ruin",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-pick-aqueduct-sewer-brazier"
   },
   {
@@ -1735,6 +1831,8 @@
     "stone brazier"
    ],
    "sha256": "6afdc760850056b2d45c2437e62b4adb4709851e2747b40c817dac2dd55221b8",
+   "family": "ruin",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-pick-aqueduct-sewer-brazier"
   },
   {
@@ -1763,6 +1861,8 @@
     "fire pot"
    ],
    "sha256": "3416e88cda24a0ac71e013165637dde4be8f7c527f0880c2d06444fb4364b229",
+   "family": "ruin",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-pick-aqueduct-sewer-brazier"
   },
   {
@@ -1791,6 +1891,8 @@
     "mooring post"
    ],
    "sha256": "b1fc47e3c42299d00780efb2492ba7d770573a41c0ce9167743d8cc1e052a703",
+   "family": "harbour",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-mooring_bollard"
   },
   {
@@ -1819,6 +1921,8 @@
     "stone bollard"
    ],
    "sha256": "7a599fe427bf91ffa0bf73148855c50c560c000a9b8c1b90f109326b6b0d45b7",
+   "family": "harbour",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-mooring_bollard"
   },
   {
@@ -1856,6 +1960,8 @@
     "clothes horse"
    ],
    "sha256": "381aba31fe3b80ba53642052609e5fb5df2c0f4fb0fca6a7cde890765a3884c7",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-laundry_rack"
   },
   {
@@ -1893,6 +1999,8 @@
     "wash tub"
    ],
    "sha256": "ed5ca4a15c644441b7e80d1ca24adafaaff14ed486cb759a417e19a65a1f8fdb",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-laundry_rack"
   },
   {
@@ -1930,6 +2038,8 @@
     "quilt pole"
    ],
    "sha256": "f2cbcd2b0f1ea8859d5079f88373da9344156f7032d4719c07024ac1cd6053e5",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-laundry_rack"
   },
   {
@@ -1958,6 +2068,8 @@
     "half-barrel planter"
    ],
    "sha256": "48fcdc2c623933972328cf491dadec7fe6ad2d2058954a9528bc376263348760",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-door_pots"
   },
   {
@@ -1986,6 +2098,8 @@
     "stone urn"
    ],
    "sha256": "60fc7197ce08cfc77f72e51abf3d24017c19f7294f49653e4fb613192b39ddec",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-door_pots"
   },
   {
@@ -2019,6 +2133,8 @@
     "stone trough planter"
    ],
    "sha256": "6ae60d5ad50921afc4154083c73adf6569f98a2ef062357c79d2ac78169b65c5",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-flowerbox_long"
   },
   {
@@ -2052,6 +2168,8 @@
     "raised bed"
    ],
    "sha256": "7eb7868c26bb24cdf38cf7f58f07d6d337aa157e4ca92191cb158b0c79e654b6",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-flowerbox_long"
   },
   {
@@ -2085,6 +2203,8 @@
     "rock flower bed"
    ],
    "sha256": "a208493385ef909c26f7116c7990932b10404dcf9d6a9d5862a39d5c31afeba5",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-flowerbed"
   },
   {
@@ -2118,6 +2238,8 @@
     "herb patch"
    ],
    "sha256": "4ef074c7d67c564a8c1d0fa587c2a962eef69109bae5a2a89372e1a8a16d38b6",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-flowerbed"
   },
   {
@@ -2148,6 +2270,8 @@
     "sack scarecrow"
    ],
    "sha256": "79174362bf85936aec5510f9e5aaea20b4e9a1b8e8e0bf9bf2d18bd3b5dc8133",
+   "family": "farm",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-pick-wheat-roman-road-scarecrow"
   },
   {
@@ -2179,6 +2303,8 @@
     "pot scarecrow"
    ],
    "sha256": "24bd1975e8a25739619d3a5140c0f6690e1076d49e355654b9e946dcd4391388",
+   "family": "farm",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-pick-wheat-roman-road-scarecrow"
   },
   {
@@ -2206,6 +2332,8 @@
     "easel sign"
    ],
    "sha256": "65293976e3e2861f78c396c06bce1dabdf60457fe6fb574ad593ee0648c3de26",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-sandwich_board"
   },
   {
@@ -2233,6 +2361,8 @@
     "slate sign"
    ],
    "sha256": "87576a6109043e82968c7b8b292e8ef8d29cf40be197ad4ec1bd244fa0e22aaa",
+   "family": "village",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-sandwich_board"
   },
   {
@@ -2270,6 +2400,8 @@
     "amphora rack"
    ],
    "sha256": "601b1667a794433601103d8ffc1ff15ea0a6e998b2a1072c1fcdf2ff81a43bd6",
+   "family": "harbour",
+   "waiver": "fable-variety-beodeul-2026-11-12",
    "variantOf": "bd-prop-goods_pile"
   },
   {
@@ -2308,7 +2440,9 @@
     "beehive",
     "bee skep"
    ],
-   "sha256": "c4b9866f006687c71f45753ec0f9fb9350bd48e6db407463051db4db04d7c157"
+   "sha256": "c4b9866f006687c71f45753ec0f9fb9350bd48e6db407463051db4db04d7c157",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "loom",
@@ -2346,7 +2480,9 @@
     "loom",
     "weaving loom"
    ],
-   "sha256": "570d47870e6e719ee9b0157d8cacaa182749a75b14df5a309fe1a967a6efc586"
+   "sha256": "570d47870e6e719ee9b0157d8cacaa182749a75b14df5a309fe1a967a6efc586",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "spinning-wheel",
@@ -2376,7 +2512,9 @@
     "실 물레",
     "spinning wheel"
    ],
-   "sha256": "8119c55384643d966b3f8b8580b7f39a14d78e62ad397134b1e69a9662f2c257"
+   "sha256": "8119c55384643d966b3f8b8580b7f39a14d78e62ad397134b1e69a9662f2c257",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "bake-oven",
@@ -2422,7 +2560,9 @@
     "bread oven",
     "bake oven"
    ],
-   "sha256": "5664a2b7b47a33e923ba29871c3742e445dd2eecb30be23b4e7d87c1dce16c41"
+   "sha256": "5664a2b7b47a33e923ba29871c3742e445dd2eecb30be23b4e7d87c1dce16c41",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "grindstone",
@@ -2451,7 +2591,9 @@
     "grindstone",
     "whetstone"
    ],
-   "sha256": "ad90d9da7b3c858b0f380fc72315cda03a67f25e4b93a0cd6e77902c102af2d9"
+   "sha256": "ad90d9da7b3c858b0f380fc72315cda03a67f25e4b93a0cd6e77902c102af2d9",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "potters-wheel",
@@ -2485,7 +2627,9 @@
     "potter's wheel",
     "pottery"
    ],
-   "sha256": "56de2f50200d83e00b70607942c50ca75e53d462aa0ffab1463749e2225d256d"
+   "sha256": "56de2f50200d83e00b70607942c50ca75e53d462aa0ffab1463749e2225d256d",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "dye-vats",
@@ -2523,7 +2667,9 @@
     "dye vats",
     "dyer"
    ],
-   "sha256": "7bc4de966648610f221a90f8e09d63824090e250c71b4708aaa7735ffd408301"
+   "sha256": "7bc4de966648610f221a90f8e09d63824090e250c71b4708aaa7735ffd408301",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "milk-churn",
@@ -2552,7 +2698,9 @@
     "butter churn",
     "milk churn"
    ],
-   "sha256": "5efa391e9970318fe86d0d5c905ec1ba3e80544114e2a2e1c18a2cf6c81f756c"
+   "sha256": "5efa391e9970318fe86d0d5c905ec1ba3e80544114e2a2e1c18a2cf6c81f756c",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "ground-wares",
@@ -2586,7 +2734,9 @@
     "ground stall",
     "street wares"
    ],
-   "sha256": "ac8485f2121a0e68a7004ad8df80b4a78a2a11ab7b9f40ef8c90caa712d36c89"
+   "sha256": "ac8485f2121a0e68a7004ad8df80b4a78a2a11ab7b9f40ef8c90caa712d36c89",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "scales",
@@ -2618,7 +2768,9 @@
     "balance scale",
     "scales"
    ],
-   "sha256": "6b88992898b065b0e8d4509769a8079fab3833fca5654273cf9bbb35ba56cf46"
+   "sha256": "6b88992898b065b0e8d4509769a8079fab3833fca5654273cf9bbb35ba56cf46",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "bell-post",
@@ -2650,7 +2802,9 @@
     "bell post",
     "alarm bell"
    ],
-   "sha256": "2a9ce9587b8fc2916df746e37a706671b372e9f560350b69d30ce5394d423425"
+   "sha256": "2a9ce9587b8fc2916df746e37a706671b372e9f560350b69d30ce5394d423425",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "stocks",
@@ -2688,7 +2842,9 @@
     "stocks",
     "pillory"
    ],
-   "sha256": "a6655151529cab382c070cd60173746e1284c04ed89a789129a123b32d15ce58"
+   "sha256": "a6655151529cab382c070cd60173746e1284c04ed89a789129a123b32d15ce58",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "yoke-buckets",
@@ -2722,7 +2878,9 @@
     "water yoke",
     "carrying pole"
    ],
-   "sha256": "8fbe0a566b0f6e5f2142725d93604957455c360a47c16b2db74e860e1a86a4ac"
+   "sha256": "8fbe0a566b0f6e5f2142725d93604957455c360a47c16b2db74e860e1a86a4ac",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "workbench",
@@ -2756,7 +2914,9 @@
     "workbench",
     "carpenter's bench"
    ],
-   "sha256": "1fccf53aaa72e1f847ce38604dc566f2bc42fc592b62b722a8efc31569e64535"
+   "sha256": "1fccf53aaa72e1f847ce38604dc566f2bc42fc592b62b722a8efc31569e64535",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "seesaw",
@@ -2789,7 +2949,9 @@
     "놀이터",
     "seesaw"
    ],
-   "sha256": "a4d4ede4f62c2f4481ef0b46081c513088ec335f9f2fbff2e8a5c10fd497e9b8"
+   "sha256": "a4d4ede4f62c2f4481ef0b46081c513088ec335f9f2fbff2e8a5c10fd497e9b8",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "swing",
@@ -2826,7 +2988,9 @@
     "놀이터",
     "swing"
    ],
-   "sha256": "06393a9c66cd503237b2a989dcddd0c89f1d1128c84c4ca15eb0bd929478277a"
+   "sha256": "06393a9c66cd503237b2a989dcddd0c89f1d1128c84c4ca15eb0bd929478277a",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "dovecote",
@@ -2861,7 +3025,9 @@
     "dovecote",
     "pigeon house"
    ],
-   "sha256": "7ee633ecee63a502e12f73361319ef885b5e2f806bf1c8846e1edb7724198ffd"
+   "sha256": "7ee633ecee63a502e12f73361319ef885b5e2f806bf1c8846e1edb7724198ffd",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "maypole",
@@ -2896,7 +3062,9 @@
     "maypole",
     "festival pole"
    ],
-   "sha256": "460fd7b4eafa8dfc69f6acfe55967b35b192b187500d8b09b12ae3a214e9de05"
+   "sha256": "460fd7b4eafa8dfc69f6acfe55967b35b192b187500d8b09b12ae3a214e9de05",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "bell-frame",
@@ -2934,7 +3102,9 @@
     "great bell",
     "bell frame"
    ],
-   "sha256": "9acbab27e899c3dbdecbf76657263dd17f122d2acd0afeea528cf7b248128549"
+   "sha256": "9acbab27e899c3dbdecbf76657263dd17f122d2acd0afeea528cf7b248128549",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "saddle-rail",
@@ -2968,7 +3138,9 @@
     "saddle rack",
     "saddle"
    ],
-   "sha256": "9806fceb69e396bbd7245f0c5809b8b9c468cefce106269a396eb9a2509ebd18"
+   "sha256": "9806fceb69e396bbd7245f0c5809b8b9c468cefce106269a396eb9a2509ebd18",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "bird-bath",
@@ -2996,7 +3168,9 @@
     "새 목욕대",
     "bird bath"
    ],
-   "sha256": "c4448c4203e941a44512d8fc5f8565c9a76d694db2db9204602f8741983f9d07"
+   "sha256": "c4448c4203e941a44512d8fc5f8565c9a76d694db2db9204602f8741983f9d07",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "lion-statue",
@@ -3028,7 +3202,9 @@
     "lion statue",
     "guardian statue"
    ],
-   "sha256": "7b7b2354cd1c84e853cbabd6ee0165f9aa1a8829a28c3d6dc2290a128f3a3e00"
+   "sha256": "7b7b2354cd1c84e853cbabd6ee0165f9aa1a8829a28c3d6dc2290a128f3a3e00",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "cart-wheel",
@@ -3057,7 +3233,9 @@
     "cart wheel",
     "wagon wheel"
    ],
-   "sha256": "9bba3452b9c02456709825480b067dfdd40b35442b43f7bf10e86a71f3e2f7cc"
+   "sha256": "9bba3452b9c02456709825480b067dfdd40b35442b43f7bf10e86a71f3e2f7cc",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "tailor-dummy",
@@ -3089,7 +3267,9 @@
     "tailor's dummy",
     "mannequin"
    ],
-   "sha256": "40b33e02656ffe55371e5aa00a67c3393519f21529098f108e9406a68c0f87cf"
+   "sha256": "40b33e02656ffe55371e5aa00a67c3393519f21529098f108e9406a68c0f87cf",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "archery-target",
@@ -3121,7 +3301,9 @@
     "archery target",
     "target"
    ],
-   "sha256": "fcdd04358cb7986218febc02c248f80d9285789a17d06363297713af5b98bb4b"
+   "sha256": "fcdd04358cb7986218febc02c248f80d9285789a17d06363297713af5b98bb4b",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "training-dummy",
@@ -3153,7 +3335,9 @@
     "training dummy",
     "sparring dummy"
    ],
-   "sha256": "9f85aea5bba422ceade91e6d5de60fbd7e4b82c6dd89e92559e0b26f9201cb65"
+   "sha256": "9f85aea5bba422ceade91e6d5de60fbd7e4b82c6dd89e92559e0b26f9201cb65",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "kennel",
@@ -3190,7 +3374,9 @@
     "kennel",
     "dog house"
    ],
-   "sha256": "8c23c90fa79f2071457b7a7e3a306e35d5f37e2ea9bc94fb2fde84af8ce2b664"
+   "sha256": "8c23c90fa79f2071457b7a7e3a306e35d5f37e2ea9bc94fb2fde84af8ce2b664",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "cauldron-hearth",
@@ -3228,7 +3414,9 @@
     "cauldron",
     "stew pot"
    ],
-   "sha256": "a6761ce1fe3bd0b7a3fe691d15c1df077b3a59aca1fc03afb7379e3eff206a9e"
+   "sha256": "a6761ce1fe3bd0b7a3fe691d15c1df077b3a59aca1fc03afb7379e3eff206a9e",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "keg-cradle",
@@ -3257,7 +3445,9 @@
     "keg",
     "tapped barrel"
    ],
-   "sha256": "7e1cce1bbae8e6f9366947cc592addaddf08820f71acf73ea8a531cff2a4af37"
+   "sha256": "7e1cce1bbae8e6f9366947cc592addaddf08820f71acf73ea8a531cff2a4af37",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "broom-bucket",
@@ -3286,7 +3476,9 @@
     "broom",
     "pail"
    ],
-   "sha256": "b3106b54bc1389ad085b51bfaf62611f9cda05ac2af58c0d8a623d3b417310ae"
+   "sha256": "b3106b54bc1389ad085b51bfaf62611f9cda05ac2af58c0d8a623d3b417310ae",
+   "family": "village",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "raft-log",
@@ -3331,7 +3523,10 @@
     "raft",
     "log raft"
    ],
-   "sha256": "384ed9626bb958d253dd3d2c58fdead2ef2a624f1be1b4fdc12a836d3dea7862"
+   "sha256": "384ed9626bb958d253dd3d2c58fdead2ef2a624f1be1b4fdc12a836d3dea7862",
+   "family": "water",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "water"
   },
   {
    "id": "coracle",
@@ -3359,7 +3554,10 @@
     "바구니 배",
     "coracle"
    ],
-   "sha256": "2f0f88e8b83134d25686a162776ba91c5bcbfd76f3796832fd320aab9bbc1e21"
+   "sha256": "2f0f88e8b83134d25686a162776ba91c5bcbfd76f3796832fd320aab9bbc1e21",
+   "family": "water",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "water"
   },
   {
    "id": "bulrush",
@@ -3390,7 +3588,10 @@
     "bulrush",
     "cattail"
    ],
-   "sha256": "34eec331ec00ce10f387d988051f76cd72e07b1784ed09a51a1d00fc64d6ac34"
+   "sha256": "34eec331ec00ce10f387d988051f76cd72e07b1784ed09a51a1d00fc64d6ac34",
+   "family": "water",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "shore"
   },
   {
    "id": "water-lilies",
@@ -3423,7 +3624,10 @@
     "꽃 핀 수련",
     "water lilies in bloom"
    ],
-   "sha256": "5dfd7085519514049e33abe01cb53e721bf6c76776a099f710a7d38f2dca9241"
+   "sha256": "5dfd7085519514049e33abe01cb53e721bf6c76776a099f710a7d38f2dca9241",
+   "family": "water",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "water"
   },
   {
    "id": "step-stone-a",
@@ -3446,7 +3650,10 @@
     "물 위 디딤돌",
     "stepping stone in water"
    ],
-   "sha256": "c3364ad40b63963e8728cbc6e5bfdbba341f03f20c8a5a67e18e8a8e88c02047"
+   "sha256": "c3364ad40b63963e8728cbc6e5bfdbba341f03f20c8a5a67e18e8a8e88c02047",
+   "family": "water",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "water"
   },
   {
    "id": "step-stone-b",
@@ -3469,7 +3676,10 @@
     "물 위 디딤돌",
     "stepping stones in water"
    ],
-   "sha256": "ba9d07818e150218c27aa80b771cbcd362b4169430f6d0dcd0ff05a10e7ae41a"
+   "sha256": "ba9d07818e150218c27aa80b771cbcd362b4169430f6d0dcd0ff05a10e7ae41a",
+   "family": "water",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "water"
   },
   {
    "id": "buoy",
@@ -3497,7 +3707,10 @@
     "물 위 표지",
     "buoy"
    ],
-   "sha256": "997f6e663ac566617e00745f11d619e739a4e63597e968ef060e21442ffc82a7"
+   "sha256": "997f6e663ac566617e00745f11d619e739a4e63597e968ef060e21442ffc82a7",
+   "family": "water",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "water"
   },
   {
    "id": "fishing-rod",
@@ -3529,7 +3742,10 @@
     "fishing rod",
     "fishing spot"
    ],
-   "sha256": "29f7ccb7eb821e6711c2c504542f67ce2ecdfa5059db11e031249eafd9b3223f"
+   "sha256": "29f7ccb7eb821e6711c2c504542f67ce2ecdfa5059db11e031249eafd9b3223f",
+   "family": "water",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "shore"
   },
   {
    "id": "fish-weir",
@@ -3563,7 +3779,10 @@
     "fish weir",
     "fish trap"
    ],
-   "sha256": "59059b1bfba7553457519605996174be80443c94c8f25a8afc9cff3ba5668d44"
+   "sha256": "59059b1bfba7553457519605996174be80443c94c8f25a8afc9cff3ba5668d44",
+   "family": "water",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "water"
   },
   {
    "id": "duck-house",
@@ -3590,7 +3809,10 @@
     "물새 집",
     "duck house"
    ],
-   "sha256": "5a296ad4699bdd04541e6e7d68e4b38a72ed12d935f3cd8fe671086baa795f72"
+   "sha256": "5a296ad4699bdd04541e6e7d68e4b38a72ed12d935f3cd8fe671086baa795f72",
+   "family": "water",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "water"
   },
   {
    "id": "dock-crane",
@@ -3632,7 +3854,10 @@
     "dock crane",
     "hoist"
    ],
-   "sha256": "5842c1dd8e5f5d3a94197ecc5d12914d11132768a3533990ac68981c7dd74cc5"
+   "sha256": "5842c1dd8e5f5d3a94197ecc5d12914d11132768a3533990ac68981c7dd74cc5",
+   "family": "harbour",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "shore"
   },
   {
    "id": "capstan",
@@ -3661,7 +3886,10 @@
     "capstan",
     "winch"
    ],
-   "sha256": "7993f4bee77f405b05e189b8cdf55ac99faec335173602692f87238d0960a300"
+   "sha256": "7993f4bee77f405b05e189b8cdf55ac99faec335173602692f87238d0960a300",
+   "family": "harbour",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "shore"
   },
   {
    "id": "rope-coil",
@@ -3689,7 +3917,10 @@
     "밧줄 더미",
     "rope coil"
    ],
-   "sha256": "3a007457a92b73f44647c2478376bb1d00b6ebfb3f5f08d3ae85e1d02dc177b2"
+   "sha256": "3a007457a92b73f44647c2478376bb1d00b6ebfb3f5f08d3ae85e1d02dc177b2",
+   "family": "harbour",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "shore"
   },
   {
    "id": "oar-rack",
@@ -3721,7 +3952,10 @@
     "oar rack",
     "oars"
    ],
-   "sha256": "9887b13ab7ecf07b164ee9437605eb224b0c7936ff7d40724c4ef22c5757c802"
+   "sha256": "9887b13ab7ecf07b164ee9437605eb224b0c7936ff7d40724c4ef22c5757c802",
+   "family": "harbour",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "shore"
   },
   {
    "id": "net-floats",
@@ -3750,7 +3984,10 @@
     "net heap",
     "net floats"
    ],
-   "sha256": "775b1198d32cf87540808a1a8af3af0664d9cfe9340d11581bf63676587ba114"
+   "sha256": "775b1198d32cf87540808a1a8af3af0664d9cfe9340d11581bf63676587ba114",
+   "family": "harbour",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "shore"
   },
   {
    "id": "eel-baskets",
@@ -3783,7 +4020,10 @@
     "eel trap",
     "fish basket"
    ],
-   "sha256": "12316ed13ed595162faea880dfbe0d17b177fe3dda03f557493c8bcb8570470e"
+   "sha256": "12316ed13ed595162faea880dfbe0d17b177fe3dda03f557493c8bcb8570470e",
+   "family": "harbour",
+   "waiver": "fable-objects100-beodeul-2026-11-14",
+   "on": "shore"
   },
   {
    "id": "plough",
@@ -3817,7 +4057,9 @@
     "plough",
     "plow"
    ],
-   "sha256": "c0169680e98585455e321afe5a04d273e1ed98d9edd111ae69ccd95e33b99f47"
+   "sha256": "c0169680e98585455e321afe5a04d273e1ed98d9edd111ae69ccd95e33b99f47",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "tool-rack",
@@ -3851,7 +4093,9 @@
     "farm tools",
     "tool rack"
    ],
-   "sha256": "c69ac0ce54a18966a50e4d8136301e22962d815efff3b72f63849d9cb146db1d"
+   "sha256": "c69ac0ce54a18966a50e4d8136301e22962d815efff3b72f63849d9cb146db1d",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "bean-poles",
@@ -3883,7 +4127,9 @@
     "bean poles",
     "bean trellis"
    ],
-   "sha256": "2b5698ca5ae5893070f0e4fd85eb956c67a6872d9736709ff4e7cc17ee358d4d"
+   "sha256": "2b5698ca5ae5893070f0e4fd85eb956c67a6872d9736709ff4e7cc17ee358d4d",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "sunflowers",
@@ -3913,7 +4159,9 @@
     "해바라기 밭",
     "sunflower"
    ],
-   "sha256": "8f2a3b69e3c50c3d6fc0fdcef8fb37d61f9bb5ad52d55c596de43ac6c4ae7442"
+   "sha256": "8f2a3b69e3c50c3d6fc0fdcef8fb37d61f9bb5ad52d55c596de43ac6c4ae7442",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "pumpkin-patch",
@@ -3947,7 +4195,9 @@
     "pumpkin patch",
     "pumpkins"
    ],
-   "sha256": "e6783cdb525c8ce986315b4eeee3156185736de6bec35737a04dee9f8024d132"
+   "sha256": "e6783cdb525c8ce986315b4eeee3156185736de6bec35737a04dee9f8024d132",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "cold-frame",
@@ -3981,7 +4231,9 @@
     "cold frame",
     "seedling frame"
    ],
-   "sha256": "6b605a509f73984f7d56d712073574130b9f5339a44257943ea02317fa7f98aa"
+   "sha256": "6b605a509f73984f7d56d712073574130b9f5339a44257943ea02317fa7f98aa",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "compost-heap",
@@ -4014,7 +4266,9 @@
     "거름 더미",
     "compost heap"
    ],
-   "sha256": "0b0096cc0500f3b85903e66075fc7d4e217075f2846fdc6e13c932bf98c07644"
+   "sha256": "0b0096cc0500f3b85903e66075fc7d4e217075f2846fdc6e13c932bf98c07644",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "orchard-ladder",
@@ -4046,7 +4300,9 @@
     "orchard ladder",
     "ladder"
    ],
-   "sha256": "d4d915dc71883a4e719aae9a873631d076d6fcfbe55865815475695f2259409a"
+   "sha256": "d4d915dc71883a4e719aae9a873631d076d6fcfbe55865815475695f2259409a",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "turnip-pile",
@@ -4075,7 +4331,9 @@
     "turnips",
     "root pile"
    ],
-   "sha256": "4c65b3b18fbbc3ca74934e3ef3c9367886fa6faa610b99dea08001816b653747"
+   "sha256": "4c65b3b18fbbc3ca74934e3ef3c9367886fa6faa610b99dea08001816b653747",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "hen-nest",
@@ -4104,7 +4362,9 @@
     "hen nest",
     "nest box"
    ],
-   "sha256": "9441dbb6da7bbae34dd3af2994fc11838c1c7f3d3c04209619b160a2f1df9dd2"
+   "sha256": "9441dbb6da7bbae34dd3af2994fc11838c1c7f3d3c04209619b160a2f1df9dd2",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "rabbit-hutch",
@@ -4136,7 +4396,9 @@
     "토끼 집",
     "rabbit hutch"
    ],
-   "sha256": "b18d57388d190e2278e857d7e3c4b3dcb085e1e4f57d3ffd981045b3b3ac28b6"
+   "sha256": "b18d57388d190e2278e857d7e3c4b3dcb085e1e4f57d3ffd981045b3b3ac28b6",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "hay-manger",
@@ -4170,7 +4432,9 @@
     "hay manger",
     "feeding rack"
    ],
-   "sha256": "45ca402fba85637b9e1b04612bc21f76966f688f8e0180324f9ab31f94f33454"
+   "sha256": "45ca402fba85637b9e1b04612bc21f76966f688f8e0180324f9ab31f94f33454",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "rose-arch",
@@ -4208,7 +4472,9 @@
     "rose arch",
     "garden arch"
    ],
-   "sha256": "5df519ac41cd5780dc09c80df41d89e2758a03e3d730a035022a1ace64d4f41d"
+   "sha256": "5df519ac41cd5780dc09c80df41d89e2758a03e3d730a035022a1ace64d4f41d",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "drying-trays",
@@ -4242,7 +4508,9 @@
     "drying trays",
     "drying rack"
    ],
-   "sha256": "fef11cc03c7c2d7d71c52d128132d535b15bb82a655d3dc0c399c174154d69e8"
+   "sha256": "fef11cc03c7c2d7d71c52d128132d535b15bb82a655d3dc0c399c174154d69e8",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "well-sweep",
@@ -4284,12 +4552,14 @@
     "well sweep",
     "shadoof"
    ],
-   "sha256": "36d3afd68d9cd89bff8b67cc8584a9015198219d59cee4932ad1f2978aea0bf0"
+   "sha256": "36d3afd68d9cd89bff8b67cc8584a9015198219d59cee4932ad1f2978aea0bf0",
+   "family": "farm",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "giant-stump",
    "kit": "bd-obj-giant-stump",
-   "name": "큰 그루터기 · 이끼 낀 고목 밑동",
+   "name": "고목 밑동 · 이끼 낀 거목 그루터기",
    "en": "giant mossy tree stump",
    "kind": "organic",
    "width": 2,
@@ -4316,12 +4586,14 @@
     ]
    ],
    "words": [
-    "큰 그루터기",
     "고목 밑동",
-    "이끼 큰 그루터기",
-    "giant stump"
+    "거목 그루터기",
+    "giant stump",
+    "old stump"
    ],
-   "sha256": "616e8da676dd7b036a7bcf668446cff1e6dc12e51e5907d95df6acf51c691489"
+   "sha256": "616e8da676dd7b036a7bcf668446cff1e6dc12e51e5907d95df6acf51c691489",
+   "family": "forest",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "root-plate",
@@ -4359,12 +4631,14 @@
     "uprooted tree",
     "root plate"
    ],
-   "sha256": "17c573d6023e4efa3f1cff65c4fa10f57b5d7af623426efdcf1052bc77c3c4d3"
+   "sha256": "17c573d6023e4efa3f1cff65c4fa10f57b5d7af623426efdcf1052bc77c3c4d3",
+   "family": "forest",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "berry-bush",
    "kit": "bd-obj-berry-bush",
-   "name": "산딸기 덤불 · 붉은 열매 덤불",
+   "name": "산딸기 덤불 · 붉은 알이 달린 덤불",
    "en": "wild berry bush",
    "kind": "organic",
    "width": 1,
@@ -4383,11 +4657,12 @@
    ],
    "words": [
     "산딸기 덤불",
-    "열매 덤불",
     "딸기 덤불",
-    "berry bush"
+    "wild berry bush"
    ],
-   "sha256": "b5bebe796ac273701492ba759ca70d5c88a6461fd2be7ff6a6bcf5fbaf670928"
+   "sha256": "b5bebe796ac273701492ba759ca70d5c88a6461fd2be7ff6a6bcf5fbaf670928",
+   "family": "forest",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "anthill",
@@ -4415,7 +4690,9 @@
     "anthill",
     "ant mound"
    ],
-   "sha256": "5f0f1ce7719f608544512bb080592812c507d9c950c73f6998dd05b488d12d55"
+   "sha256": "5f0f1ce7719f608544512bb080592812c507d9c950c73f6998dd05b488d12d55",
+   "family": "forest",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "fox-den",
@@ -4444,7 +4721,9 @@
     "fox den",
     "burrow"
    ],
-   "sha256": "1d99dc77aeb18de20a7690985a5af40d91162f2ea3ffc660830d24307290c58f"
+   "sha256": "1d99dc77aeb18de20a7690985a5af40d91162f2ea3ffc660830d24307290c58f",
+   "family": "forest",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "bedroll",
@@ -4478,7 +4757,9 @@
     "bedroll",
     "sleeping roll"
    ],
-   "sha256": "42f23b18645fd0b746c14eed6bd8f59148b9458f7d01f003ce7420f020bf4af5"
+   "sha256": "42f23b18645fd0b746c14eed6bd8f59148b9458f7d01f003ce7420f020bf4af5",
+   "family": "camp",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "lean-to",
@@ -4516,7 +4797,9 @@
     "lean-to",
     "shelter"
    ],
-   "sha256": "adb4f2a7d5b588824fda00facfce56aa4b4e6632cb814d812eff49871ae9478a"
+   "sha256": "adb4f2a7d5b588824fda00facfce56aa4b4e6632cb814d812eff49871ae9478a",
+   "family": "camp",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "traveller-pack",
@@ -4545,7 +4828,9 @@
     "backpack",
     "traveller's pack"
    ],
-   "sha256": "775f549c61b2a7a89bdbd01f009902f410995bb1223737549ecac5105ceac793"
+   "sha256": "775f549c61b2a7a89bdbd01f009902f410995bb1223737549ecac5105ceac793",
+   "family": "camp",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "broken-cart",
@@ -4583,7 +4868,9 @@
     "broken cart",
     "wrecked cart"
    ],
-   "sha256": "8dd1838744854aaee09935ab1082879251957deb367fe2cbd7bf2192268a37eb"
+   "sha256": "8dd1838744854aaee09935ab1082879251957deb367fe2cbd7bf2192268a37eb",
+   "family": "camp",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "charcoal-clamp",
@@ -4621,7 +4908,9 @@
     "charcoal clamp",
     "charcoal mound"
    ],
-   "sha256": "7ec90d92c02128c2261d85b2daaee874ed83e7a3a96367f88297d7814dba2dbd"
+   "sha256": "7ec90d92c02128c2261d85b2daaee874ed83e7a3a96367f88297d7814dba2dbd",
+   "family": "forest",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "road-barrier",
@@ -4655,7 +4944,9 @@
     "road barrier",
     "barricade"
    ],
-   "sha256": "6dd53f93c7a942b999753d690729cb268057ea1961af8dcebab782b01f0fc011"
+   "sha256": "6dd53f93c7a942b999753d690729cb268057ea1961af8dcebab782b01f0fc011",
+   "family": "road",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "leaf-pile",
@@ -4679,7 +4970,9 @@
     "fallen leaves",
     "leaf pile"
    ],
-   "sha256": "de33d9d09c628c99a4bee36106ba1f3aeac16ab146462b023b813117ce1ae7ba"
+   "sha256": "de33d9d09c628c99a4bee36106ba1f3aeac16ab146462b023b813117ce1ae7ba",
+   "family": "forest",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "bear-trap",
@@ -4708,7 +5001,9 @@
     "bear trap",
     "jaw trap"
    ],
-   "sha256": "221a51a9fa66c7d50759e842c6a2879069e62e69ab1eb9507fdced085cb5f611"
+   "sha256": "221a51a9fa66c7d50759e842c6a2879069e62e69ab1eb9507fdced085cb5f611",
+   "family": "forest",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "giant-mushroom",
@@ -4739,7 +5034,9 @@
     "사람 키 버섯",
     "giant mushroom"
    ],
-   "sha256": "e12a8ea67af4160e3ab9eebcdb11f3051cd3cc6cc15fad1e85629b0458395798"
+   "sha256": "e12a8ea67af4160e3ab9eebcdb11f3051cd3cc6cc15fad1e85629b0458395798",
+   "family": "forest",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "forest-idol",
@@ -4771,7 +5068,9 @@
     "forest idol",
     "wooden idol"
    ],
-   "sha256": "86390f483d817ecdc87c5fc3cf0cac1601bceab04cf37d2f7280f35958c4725b"
+   "sha256": "86390f483d817ecdc87c5fc3cf0cac1601bceab04cf37d2f7280f35958c4725b",
+   "family": "forest",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "camp-seat",
@@ -4805,7 +5104,9 @@
     "log seat",
     "camp seat"
    ],
-   "sha256": "d44914a8c55734b71b45a629f22f1acf06048eb609ee2db621fd3de25e251974"
+   "sha256": "d44914a8c55734b71b45a629f22f1acf06048eb609ee2db621fd3de25e251974",
+   "family": "camp",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "boulder-s",
@@ -4828,12 +5129,13 @@
     ]
    ],
    "words": [
-    "작은 바위",
-    "둥근 작은 바위",
-    "돌덩이",
-    "small boulder"
+    "둥근 바위",
+    "무릎 바위",
+    "round boulder"
    ],
-   "sha256": "22cd45fff19ad2f8c842c847e72377c14a965dfc7cdd6e6b8dde8792105358ed"
+   "sha256": "22cd45fff19ad2f8c842c847e72377c14a965dfc7cdd6e6b8dde8792105358ed",
+   "family": "cliff",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "boulder-pair",
@@ -4861,11 +5163,13 @@
     ]
    ],
    "words": [
-    "바위 둘",
-    "낮은 바위 둘",
-    "pair of boulders"
+    "나란한 바위",
+    "낮은 바위 한 쌍",
+    "low boulders"
    ],
-   "sha256": "7a07d6a0351c816f98315239e7b4deaa39bb7f2800cdbfb2e6dfb576b13b322a"
+   "sha256": "7a07d6a0351c816f98315239e7b4deaa39bb7f2800cdbfb2e6dfb576b13b322a",
+   "family": "cliff",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "boulder-tall",
@@ -4893,16 +5197,17 @@
    "words": [
     "선바위",
     "뾰족 바위",
-    "바위 기둥",
     "standing rock",
     "tall boulder"
    ],
-   "sha256": "8187e7db8a70224d194c41429cd10ef8b58f4b76c1c0e274c641263e10a3a82f"
+   "sha256": "8187e7db8a70224d194c41429cd10ef8b58f4b76c1c0e274c641263e10a3a82f",
+   "family": "cliff",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "boulder-huge",
    "kit": "bd-obj-boulder-huge",
-   "name": "큰 바위 · 집채만 한 바위 덩이",
+   "name": "집채 바위 · 집채만 한 바위 덩이",
    "en": "huge boulder",
    "kind": "organic",
    "width": 3,
@@ -4935,13 +5240,14 @@
     ]
    ],
    "words": [
-    "큰 바위",
     "집채 바위",
-    "거석",
+    "집채만 한 바위",
     "huge boulder",
     "great rock"
    ],
-   "sha256": "952f79f27a34828ba3542cb51330ee0e9fe1352e9250784c8220f8e282d5e3a8"
+   "sha256": "952f79f27a34828ba3542cb51330ee0e9fe1352e9250784c8220f8e282d5e3a8",
+   "family": "cliff",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "rock-outcrop",
@@ -5002,7 +5308,9 @@
     "rock outcrop",
     "crag"
    ],
-   "sha256": "d9de9e9814f12317b90a95effa92904139f1b34cae990cc1073d4a7bdbb93f28"
+   "sha256": "d9de9e9814f12317b90a95effa92904139f1b34cae990cc1073d4a7bdbb93f28",
+   "family": "cliff",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "slab-ledge",
@@ -5036,11 +5344,12 @@
    "words": [
     "너럭바위",
     "판바위",
-    "넓적 바위",
     "slab rock",
     "flat rock"
    ],
-   "sha256": "6537f51a1ed05396b1daff759c7d3b68d665e170826983065cff61521167744f"
+   "sha256": "6537f51a1ed05396b1daff759c7d3b68d665e170826983065cff61521167744f",
+   "family": "cliff",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "heather-clump",
@@ -5073,7 +5382,9 @@
     "황야 덤불",
     "heather clump"
    ],
-   "sha256": "5e4ebc7a6155196414a27be6b3d9492acbc11ff79e3060f1f7f44072f6c1fbb9"
+   "sha256": "5e4ebc7a6155196414a27be6b3d9492acbc11ff79e3060f1f7f44072f6c1fbb9",
+   "family": "cliff",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "scree-fan",
@@ -5092,13 +5403,15 @@
    ],
    "block": [],
    "words": [
-    "돌 부스러기",
     "잔돌 밭",
     "비탈 자갈",
+    "돌 비탈",
     "scree",
     "talus"
    ],
-   "sha256": "2a2119ba9688aec28376a2f60bc1d19141d7b99037a997eec879637c422ca271"
+   "sha256": "2a2119ba9688aec28376a2f60bc1d19141d7b99037a997eec879637c422ca271",
+   "family": "cliff",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "rockfall",
@@ -5136,12 +5449,14 @@
     "rockfall",
     "landslide rocks"
    ],
-   "sha256": "bb9ea1915d0b5d51e61ca455bf8e9d069680cf3f71c156784038c44d912eb6b9"
+   "sha256": "bb9ea1915d0b5d51e61ca455bf8e9d069680cf3f71c156784038c44d912eb6b9",
+   "family": "cliff",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "grass-tuft",
    "kit": "bd-obj-grass-tuft",
-   "name": "억새 포기 · 바람에 누운 풀",
+   "name": "바람 풀 · 바람에 누운 긴 풀",
    "en": "windblown grass tuft",
    "kind": "flat",
    "width": 1,
@@ -5154,13 +5469,14 @@
    ],
    "block": [],
    "words": [
-    "억새",
-    "풀 포기",
     "바람 풀",
-    "grass tuft",
+    "누운 풀 포기",
+    "windblown grass",
     "tussock"
    ],
-   "sha256": "06d54210bc022176c3e67e465d8dbd18885da28bb923266778d38c91d773708a"
+   "sha256": "06d54210bc022176c3e67e465d8dbd18885da28bb923266778d38c91d773708a",
+   "family": "cliff",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "gravestone",
@@ -5189,7 +5505,9 @@
     "gravestone",
     "headstone"
    ],
-   "sha256": "275d2f42b8880002a0e4d326d42177f0a98c891f3432505877069974709440fd"
+   "sha256": "275d2f42b8880002a0e4d326d42177f0a98c891f3432505877069974709440fd",
+   "family": "grave",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "grave-cross",
@@ -5221,7 +5539,9 @@
     "stone cross",
     "grave cross"
    ],
-   "sha256": "6c415da3d65875f358717697380dd0f86afd69e9451ac7bfedc398b0ef929f03"
+   "sha256": "6c415da3d65875f358717697380dd0f86afd69e9451ac7bfedc398b0ef929f03",
+   "family": "grave",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "grave-mound",
@@ -5255,7 +5575,9 @@
     "grave mound",
     "fresh grave"
    ],
-   "sha256": "de695ac1d711c98b834ddc0b5148104708f9a39161aae40329cdd9330ac6f819"
+   "sha256": "de695ac1d711c98b834ddc0b5148104708f9a39161aae40329cdd9330ac6f819",
+   "family": "grave",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "mourning-statue",
@@ -5287,7 +5609,9 @@
     "mourning statue",
     "praying statue"
    ],
-   "sha256": "33eea1824ccb33e0f790211c0f8b6b5e9d620e7832da3c8789784cbf7cac5aef"
+   "sha256": "33eea1824ccb33e0f790211c0f8b6b5e9d620e7832da3c8789784cbf7cac5aef",
+   "family": "grave",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "open-grave",
@@ -5317,11 +5641,12 @@
    "words": [
     "파헤친 무덤",
     "빈 무덤",
-    "구덩이",
     "open grave",
     "dug grave"
    ],
-   "sha256": "bf71443c2752c66ad5cb836217c474b5734f9cee95779d195d07cabab39742c6"
+   "sha256": "bf71443c2752c66ad5cb836217c474b5734f9cee95779d195d07cabab39742c6",
+   "family": "grave",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "iron-fence",
@@ -5355,7 +5680,9 @@
     "iron fence",
     "iron railing"
    ],
-   "sha256": "cd2100b56c7ee6e82bbdae41a587360cabc100631d44ddd0231d7bf8cc484635"
+   "sha256": "cd2100b56c7ee6e82bbdae41a587360cabc100631d44ddd0231d7bf8cc484635",
+   "family": "grave",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "dolmen",
@@ -5393,7 +5720,9 @@
     "dolmen",
     "megalith"
    ],
-   "sha256": "7ae513e59b507207a6879f8d1c81e1e1c17b4c9f93c40dc520a9c4af13d4642b"
+   "sha256": "7ae513e59b507207a6879f8d1c81e1e1c17b4c9f93c40dc520a9c4af13d4642b",
+   "family": "ruin",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "ruined-arch",
@@ -5446,7 +5775,9 @@
     "ruined arch",
     "stone arch"
    ],
-   "sha256": "72ddd7eb1b9f7d237352168aab4c65ab539be8e209eb89339aefb352e8c971e0"
+   "sha256": "72ddd7eb1b9f7d237352168aab4c65ab539be8e209eb89339aefb352e8c971e0",
+   "family": "ruin",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "headless-statue",
@@ -5478,7 +5809,9 @@
     "broken statue",
     "headless statue"
    ],
-   "sha256": "16d1aefc0d60474e4d3e5be8feabd221942aa11efda41130095a12f43e778e56"
+   "sha256": "16d1aefc0d60474e4d3e5be8feabd221942aa11efda41130095a12f43e778e56",
+   "family": "ruin",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "mosaic",
@@ -5501,13 +5834,15 @@
    ],
    "block": [],
    "words": [
-    "모자이크",
-    "옛 바닥 그림",
     "깨진 모자이크",
-    "mosaic",
-    "mosaic floor"
+    "옛 바닥 그림",
+    "모자이크 조각",
+    "broken mosaic",
+    "mosaic fragment"
    ],
-   "sha256": "2e81a0c6ceb4be5678ca63e0faacf807b963d0da267e402a01ed2bb9375be534"
+   "sha256": "2e81a0c6ceb4be5678ca63e0faacf807b963d0da267e402a01ed2bb9375be534",
+   "family": "ruin",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "pedestal",
@@ -5530,13 +5865,15 @@
     ]
    ],
    "words": [
-    "받침대",
+    "빈 받침대",
     "대좌",
-    "돌 받침",
-    "pedestal",
+    "돌 대좌",
+    "empty pedestal",
     "plinth"
    ],
-   "sha256": "d3dbd5c288169a61a9b793dd160b4e24674c296ed6e2d713f2ec3a35b3f10033"
+   "sha256": "d3dbd5c288169a61a9b793dd160b4e24674c296ed6e2d713f2ec3a35b3f10033",
+   "family": "story",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "sword-stone",
@@ -5565,7 +5902,9 @@
     "sword in the stone",
     "legendary sword"
    ],
-   "sha256": "1aca3abfb99662b8f98e97dc0dfc17aa00fe0e7ed6daa549c87e0d916143db7e"
+   "sha256": "1aca3abfb99662b8f98e97dc0dfc17aa00fe0e7ed6daa549c87e0d916143db7e",
+   "family": "story",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "dry-well",
@@ -5611,7 +5950,9 @@
     "dry well",
     "ruined well"
    ],
-   "sha256": "1ef50fc2e208f66c753def681214b5c7ab8bcd82616ab2247944fd01448c4190"
+   "sha256": "1ef50fc2e208f66c753def681214b5c7ab8bcd82616ab2247944fd01448c4190",
+   "family": "ruin",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "map-table",
@@ -5645,7 +5986,9 @@
     "map table",
     "war table"
    ],
-   "sha256": "99ec7d804e6579fe0ec2e66326beb81427bec59020cb4d57be85d916c04ecef2"
+   "sha256": "99ec7d804e6579fe0ec2e66326beb81427bec59020cb4d57be85d916c04ecef2",
+   "family": "story",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "iron-cage",
@@ -5683,7 +6026,9 @@
     "iron cage",
     "prisoner cage"
    ],
-   "sha256": "ae0200165e7c576d2c169c4abb5990bb566a417652b6c6ff3d4a6552cea5c3d2"
+   "sha256": "ae0200165e7c576d2c169c4abb5990bb566a417652b6c6ff3d4a6552cea5c3d2",
+   "family": "story",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "weapon-rack",
@@ -5717,7 +6062,9 @@
     "weapon rack",
     "spear rack"
    ],
-   "sha256": "f1aeec1d24fda290d6e4b725e129a853663c4a4c53820c1b8e14470b3a592b14"
+   "sha256": "f1aeec1d24fda290d6e4b725e129a853663c4a4c53820c1b8e14470b3a592b14",
+   "family": "story",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "broken-urn",
@@ -5746,7 +6093,9 @@
     "broken urn",
     "pottery shards"
    ],
-   "sha256": "70f2685abc7fa0f4a06935b2a9cab4224472565f835628acf2256b2724c013ae"
+   "sha256": "70f2685abc7fa0f4a06935b2a9cab4224472565f835628acf2256b2724c013ae",
+   "family": "ruin",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   },
   {
    "id": "ruin-fountain",
@@ -5784,7 +6133,9 @@
     "ruined fountain",
     "dry fountain"
    ],
-   "sha256": "2a004ec76ec58a6ec8d1ef7a4c9d6e3190b236924ebf8c5f5d6fd60ca71bbe4e"
+   "sha256": "2a004ec76ec58a6ec8d1ef7a4c9d6e3190b236924ebf8c5f5d6fd60ca71bbe4e",
+   "family": "ruin",
+   "waiver": "fable-objects100-beodeul-2026-11-14"
   }
  ]
 }
