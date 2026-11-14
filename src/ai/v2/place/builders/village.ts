@@ -13,7 +13,7 @@ import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord
 /** v2 계획 모델에게 주는 유일한 마을 지식(≤900자). */
 export const VILLAGE_CARD =
   "[Village type:village] Beodeul fantasy village. Code makes the land — the first make_place does not build; it returns a land picture (coordinate grid) and a summary. " +
-  "Look at the picture, choose spots in hints.layout and call again to build: gather{x,y,plaza} · landmark (building on the high tier) · anchor (inn) · work (workplace) · houses[{x,y}] (3–12) · fields[{x,y}] · exits (west|east|north|south). " +
+  "Look at the picture, choose spots in hints.layout and call again to build: gather{x,y} (well; plaza:true only for a market town) · landmark (building on the high tier) · anchor (inn) · work (workplace) · houses[{x,y}] (3–12) · fields[{x,y}] · exits (west|east|north|south). " +
   "The function moves each to the nearest buildable spot, links roads, stairs and bridges, and reports moves and failures. Change hints.terrainSeed for different land. " +
     "theme/style: river (grassland farm village — whether there is a river is set separately by water) · coast (fishing port) · desert (desert oasis) · snow (snowfield) · swamp (swamp stilt village). " +
   "Land hints: landform (terraces|hill|slope|plateau|flat) · water (river|none, grassland villages) · high (north|south|west|east|center) · tiers (1–4). " +
@@ -122,7 +122,7 @@ export function villageArgs(spec: PlaceSpec): { args: Record<string, unknown>; m
  */
 export function villageLayoutGuide(theme: string, fishing = false, scatter = false): string {
   const swamp = theme === "swamp";
-  return "hints.layout 에 gather{x,y,plaza}(모이는 곳), landmark(높은 곳 건물 — 높은 단 넓은 터), anchor(여관·회관 — 모이는 곳 곁), work(일터), houses[{x,y}] 3~12(집 가운데), "
+  return "hints.layout 에 gather{x,y}(모이는 곳 — 우물·좌판. 맵이나 터의 한가운데가 아니라 다리·나루 머리, 계단 어귀, 큰길이 드는 어귀, 여관 앞처럼 모일 까닭이 있는 자리. 판석 광장은 장터·교역 마을일 때만 plaza:true), landmark(높은 곳 건물 — 높은 단 넓은 터), anchor(여관·회관 — 모이는 곳 곁), work(일터), houses[{x,y}] 3~12(집 가운데), "
     + "fields[{x,y}](밭), orchards[{x,y}](과수원), pastures[{x,y}](울타리 친 목초지·양), forests[{x,y}](숲 덩이), props[{x,y}](길가 소품 무더기 — 수레·상자·건초·장작·이정표), exits(큰길이 나가는 맵 가장자리) 를 넣는다. "
     + "houses[].kind 에 small·medium·large 를 섞는다(안 섞으면 같은 집 그림이 되풀이된다 — 짓고 나면 반복을 보고한다). "
     + "집 하나는 문 앞까지 약 5×6칸이라 집 가운데끼리 6칸 이상 띄우고(큰 건물은 8칸), 한 단 평지에(단 경계 검은 선을 걸치지 않게) 둔다. "

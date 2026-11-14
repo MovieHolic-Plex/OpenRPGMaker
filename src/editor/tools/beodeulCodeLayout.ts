@@ -14,7 +14,10 @@ export type HouseKind = "small" | "medium" | "large";
 export const HOUSE_KINDS: readonly HouseKind[] = ["small", "medium", "large"];
 
 export interface VillageLayout {
-  /** 모이는 곳(광장·우물 자리). plaza false 면 판석 광장 없이 우물·좌판만. */
+  /**
+   * 모이는 곳(우물·좌판 자리). plaza true 일 때만 판석 광장을 깐다 — 적지 않으면 마을 형태(form "plaza" = 장터·교역 마을)를 따르고, 그것도 없으면 우물뿐이다.
+   * (2026-11-14 오너 «마을 중앙에 항상 광장을 배치하는 이유는 도대체 뭐지»: 적지 않은 값을 true 로 읽어 코드 지형 마을이 전부 광장 마을이 됐다.)
+   */
   gather?: LayoutPoint & { plaza?: boolean };
   /** 높은 곳 건물(망루 집·예배당·사원·사당) 자리 — 보통 높은 단. */
   landmark?: LayoutPoint;
@@ -54,7 +57,7 @@ export function parseLayout(raw: unknown, W: number, H: number): { layout: Villa
     if (cx !== Math.round(x) || cy !== Math.round(y)) notes.push(`${name} (${x},${y}) 가 맵 밖이라 (${cx},${cy}) 로 당겼다.`);
     return { x: cx, y: cy };
   };
-  const g = pt(r.gather, "gather"); if (g) out.gather = { ...g, plaza: (r.gather as Record<string, unknown>).plaza !== false };
+  const g = pt(r.gather, "gather"); if (g) { const p = (r.gather as Record<string, unknown>).plaza; out.gather = { ...g, ...(p === true || p === false ? { plaza: p } : {}) }; }
   const lm = pt(r.landmark, "landmark"); if (lm) out.landmark = lm;
   const an = pt(r.anchor, "anchor"); if (an) out.anchor = an;
   const wk = pt(r.work, "work"); if (wk) out.work = wk;
@@ -74,7 +77,11 @@ function rng(seed: number): () => number {
   return () => { s = (Math.imul(s ^ (s >>> 15), 2246822507) + 0x9e3779b9) >>> 0; s ^= s >>> 13; return (s >>> 0) / 4294967296; };
 }
 
-/** 모델이 자리를 안 주었을 때의 대체 배치. 모이는 곳은 가장 넓은 낮은 터, 높은 곳 건물은 가장 높은 터, 집은 모이는 곳 둘레 고리. */
+/**
+ * 모델이 자리를 안 주었을 때의 대체 배치. 높은 곳 건물은 가장 높은 터, 집은 가장 넓은 낮은 터의 한가운데 둘레 고리.
+ * 모이는 곳은 그 터의 한가운데가 아니라 이유 있는 자리다 — 물이 있으면 물가, 없으면 큰길이 마을로 드는 어귀 쪽(터 가운데에서 맵 가장자리 쪽으로 절반쯤).
+ * 판석 광장 여부는 적지 않는다(마을 형태가 정한다).
+ */
 export function autoLayout(t: CodeTerrain, seed: number, houseCount: number, nearWater = false): VillageLayout {
   const rand = rng(seed * 131 + 7);
   const { W, H } = t;
@@ -95,6 +102,20 @@ export function autoLayout(t: CodeTerrain, seed: number, houseCount: number, nea
     }
     g = best;
   }
+  // 집 고리의 가운데(터 한가운데). 물가 마을은 예전대로 모이는 곳 둘레에 집이 선다
+  let hub: LayoutPoint = g;
+  if (home && !(nearWater && wet.length)) {
+    // 큰길이 드는 가장자리(가로로 긴 맵은 서·동, 세로로 긴 맵은 북·남) 가운데 씨앗이 고른 쪽으로 — 우물 둘레 5×5 가 한 단 마른 땅인 칸 가운데 목표에 가장 가까운 칸
+    const side = rand() < 0.5 ? -1 : 1, wide = W >= H;
+    const tx = wide ? home.cx + side * 0.55 * (side < 0 ? home.cx - home.x0 : home.x1 - home.cx) : home.cx;
+    const ty = wide ? home.cy : home.cy + side * 0.55 * (side < 0 ? home.cy - home.y0 : home.y1 - home.cy);
+    const fits = (x: number, y: number) => { for (let dy = -2; dy <= 2; dy += 1) for (let dx = -2; dx <= 2; dx += 1) { const c = (y + dy) * W + x + dx; if (t.levels[c] !== home.level || t.water[c]) return false; } return true; };
+    let best: LayoutPoint | null = null, bd = Infinity;
+    for (let y = Math.max(3, home.y0 + 2); y <= Math.min(H - 4, home.y1 - 2); y += 1) for (let x = Math.max(4, home.x0 + 2); x <= Math.min(W - 5, home.x1 - 2); x += 1) {
+      const d = Math.hypot(x - tx, y - ty); if (d < bd && fits(x, y)) { bd = d; best = { x, y }; }
+    }
+    if (best && Math.hypot(best.x - home.cx, best.y - home.cy) >= 4) { hub = { x: home.cx, y: home.cy }; g = best; }
+  }
   const top = [...areas].filter((a) => a.level > (home?.level ?? 0)).sort((a, b) => b.level - a.level || b.inner - a.inner)[0];
   const houses: LayoutPoint[] = [];
   const n = Math.max(3, houseCount);
@@ -102,11 +123,11 @@ export function autoLayout(t: CodeTerrain, seed: number, houseCount: number, nea
   for (let i = 0; i < n; i += 1) {
     const a = ph + (i / n) * Math.PI * 2 + (rand() - 0.5) * 0.5;
     const r = 8 + (i % 3) * 4 + rand() * 3;
-    houses.push({ x: Math.max(2, Math.min(W - 3, Math.round(g.x + Math.cos(a) * r * 1.3))), y: Math.max(2, Math.min(H - 3, Math.round(g.y + Math.sin(a) * r * 0.9))) });
+    houses.push({ x: Math.max(2, Math.min(W - 3, Math.round(hub.x + Math.cos(a) * r * 1.3))), y: Math.max(2, Math.min(H - 3, Math.round(hub.y + Math.sin(a) * r * 0.9))) });
   }
   const far = (k: number) => { const a = ph + Math.PI * (0.5 + k); return { x: Math.max(4, Math.min(W - 5, Math.round(g.x + Math.cos(a) * 18))), y: Math.max(4, Math.min(H - 5, Math.round(g.y + Math.sin(a) * 12))) }; };
   return {
-    gather: { ...g, plaza: true },
+    gather: { ...g },
     ...(top ? { landmark: { x: top.cx, y: top.cy } } : {}),
     anchor: { x: g.x + 1, y: g.y - 6 },
     work: far(0.3),
