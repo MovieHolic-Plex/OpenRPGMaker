@@ -148,6 +148,9 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
     const plain = village(undefined, undefined);
     const set = SETS[2]!;
     const looked = village({ houses: set }, KEY);
+    // 통행을 견줄 판은 같은 게임(같은 열쇠)의 벌 없는 마을이다. 열쇠 없는 판과는 통행을 견주지 않는다 —
+    // 열쇠가 있으면 그 게임의 새 종류 기물이 놓여(editor/tools/beodeulObjectSets.ts) 막힌 칸과 그 뒤 나무 자리가 다르다. 집 자리는 열쇠 없는 판과도 같다(아래 spots).
+    const sameGame = village({}, KEY);
     expect(setCellsOnMap(plain.project, plain.map)).toBe(0);
     expect((plain.project.tilesets[TS]!.tileGrafts ?? []).some((graft) => graft.sourceChipset === table.texture)).toBe(false);
     expect(setCellsOnMap(looked.project, looked.map)).toBeGreaterThan(100);
@@ -155,7 +158,8 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
     const spots = (map: GameMap) => (map.structurePlacements ?? []).filter((p) => houseSetCovers(TS, set, p.kitId)).map((p) => `${p.kitId}@${p.x},${p.y}`).sort();
     expect(spots(looked.map)).toEqual(spots(plain.map));
     expect(spots(looked.map).length).toBeGreaterThan(3);
-    for (let y = 0; y < plain.map.height; y += 1) for (let x = 0; x < plain.map.width; x += 1) expect(isPassable(looked.project, looked.map, x, y)).toBe(isPassable(plain.project, plain.map, x, y));
+    expect(setCellsOnMap(sameGame.project, sameGame.map)).toBe(0);
+    for (let y = 0; y < sameGame.map.height; y += 1) for (let x = 0; x < sameGame.map.width; x += 1) expect(isPassable(looked.project, looked.map, x, y)).toBe(isPassable(sameGame.project, sameGame.map, x, y));
     // 결과 글: 지붕 이름 자리에 벌 이름이 온다(모델이 읽는 글에서 달라지는 것은 이것 하나)
     expect(looked.summary).toContain(table.sets[set]!.label);
     expect(plain.summary).not.toContain(table.sets[set]!.label);
@@ -182,7 +186,11 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
       for (let i = 0; i < map.width * map.height; i += 1) if (ground.has(layerTileAt(map, 2, i))) n += 1;
       return n;
     };
-    expect(lit(looked.project, looked.map)).toBe(lit(plain.project, plain.map));
+    // 견줄 판은 같은 게임의 벌 없는 마을이다 — 이 칸에는 집 곁 「밟힌 흙」(공용 바닥 꾸밈, 빈 2층 칸에만 깔린다)도 들어 있고,
+    // 열쇠가 있으면 새 종류 기물이 먼저 앉아 나무·숲 덧그림 자리가 달라져 그 빈 칸이 달라진다(열쇠 없는 판 2칸 · 이 게임 4칸).
+    // 집을 알아보는지는 아래 앵커 견줌이 열쇠 없는 판과도 그대로 지킨다.
+    expect(lit(looked.project, looked.map)).toBe(lit(sameGame.project, sameGame.map));
+    expect(lit(sameGame.project, sameGame.map)).toBeGreaterThan(0);
     expect(lit(plain.project, plain.map)).toBeGreaterThan(0);
     // 다시 맞춰 보면 벌 집도 원본 킷과 같은 자리의 같은 집으로 잡힌다
     const anchors = (project: Project, map: GameMap) => {
@@ -191,6 +199,7 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
       return JSON.stringify(data.anchors);
     };
     expect(anchors(looked.project, looked.map)).toBe(anchors(plain.project, plain.map));
+    expect(anchors(looked.project, looked.map)).toBe(anchors(sameGame.project, sameGame.map));
   }, 480_000);
 
   it("입구·건물 찾기: 벌 마을의 집 문·건물 칸·놓인 집이 같은 게임의 벌 없는 마을과 같다(v2 가 문을 잇고 잠그는 자리)", () => {

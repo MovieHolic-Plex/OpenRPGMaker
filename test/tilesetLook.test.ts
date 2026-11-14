@@ -27,8 +27,9 @@ const keyWhere = (test: (look: TilesetLook | undefined) => boolean): string => {
   throw new Error("그런 겉모습을 고르는 게임 열쇠가 없다");
 };
 
-function village(key: string | undefined, salt = 4242): { project: Project; mapId: string } {
+function village(key: string | undefined, salt = 4242, look?: TilesetLook): { project: Project; mapId: string } {
   const project = createBlankProject() as Project;
+  if (look) project.tilesets[TS]!.look = look; // 겉모습을 미리 적어 고정한다(같은 게임의 «원래 모습» 판을 지을 때)
   const ctx = { project, currentMapId: project.startMapId, assistantRun: true, ...(key ? { lookKey: key } : {}) } as ToolContext;
   const spec = { type: "village", name: "버들 마을", salt } as PlaceSpec;
   const res = builderFor(spec)!.build(createBuildRun(ctx), spec);
@@ -114,7 +115,12 @@ describe("tileset look — 게임마다 한 가지 겉모습", () => {
     const a = plain.project.maps[plain.mapId]!, b = looked.project.maps[looked.mapId]!;
     expect(Array.from(b.lowerTiles)).toEqual(Array.from(a.lowerTiles));
     // (위층은 같지 않다 — 1차의 기물 변형이 같은 열쇠로 게임마다 다른 킷을 찍는다. 통행은 아래에서 칸마다 본다)
-    for (let y = 0; y < a.height; y += 1) for (let x = 0; x < a.width; x += 1) expect(isPassable(looked.project, b, x, y)).toBe(isPassable(plain.project, a, x, y));
+    // 통행을 견줄 판은 같은 게임(같은 열쇠)의 원래 모습 마을이다. 열쇠 없는 판과는 통행을 견주지 않는다 —
+    // 열쇠가 있으면 그 게임의 새 종류 기물이 놓여(editor/tools/beodeulObjectSets.ts) 막힌 칸과 그 뒤 나무 자리가 다르다. 1층 칸 번호는 열쇠 없는 판과도 같다(위).
+    const sameGame = village(key, 4242, { textureKey: table.texture });
+    const c = sameGame.project.maps[sameGame.mapId]!;
+    expect(Array.from(b.lowerTiles)).toEqual(Array.from(c.lowerTiles));
+    for (let y = 0; y < c.height; y += 1) for (let x = 0; x < c.width; x += 1) expect(isPassable(looked.project, b, x, y)).toBe(isPassable(sameGame.project, c, x, y));
     // 절벽 둑은 그 바닥 색 변형 양식을 쓴다(벽·계단은 같다)
     if (b.relief) expect(b.relief.style).toBe(reliefStyleForGround(a.relief!.style!, tilesetLookGround(TS, look)));
     // 같은 게임의 둘째 맵도 같은 겉모습(타일셋에 적힌 값을 읽는다) — 다른 열쇠가 와도 바뀌지 않는다
