@@ -44,7 +44,7 @@
   {
    "id": "party-follow",
    "label": "숲 어귀 — 동료가 주인공이 밟은 칸을 그대로 한 걸음 뒤에서 밟는다 · 메뉴에 저장 없음 · 사당 세이브 포인트",
-   "note": "companions.followMode breadcrumb(기본) · set_project_settings saveAccess savePoints · place_savepoint",
+   "note": "companions.followMode breadcrumb(기본) · set_project_settings saveAccess savePoints · place_savepoint · 필드 적은 먼저 치운다(2026-11-14: 걷는 동안 늑대에게 붙잡혀 전투 화면에서 메뉴·세이브를 찍었다) — 보는 것은 일행 따라오기·메뉴·세이브",
    "mapId": "fs_forest_edge",
    "x": 15,
    "y": 35,
@@ -71,6 +71,11 @@
     {
      "id": "walk",
      "ops": [
+      {
+       "kind": "pressUntilJs",
+       "maxPresses": 1,
+       "fn": "() => { const s = window.__oprnHooksScene; if (!s || !s.map) return false; for (const e of s.map.events) if (e.id.startsWith('ev_field_enemy') || e.id.startsWith('ev_fs_forest_edge_foe')) window.__oprnDebug.setSwitch('sw_' + e.id + '_clear', true); return true; }"
+      },
       {
        "kind": "hold",
        "dir": null,
@@ -4809,7 +4814,7 @@
   {
    "id": "act2-b3-well",
    "label": "제2막 B3 — 광장 우물 → 서고 승강구 → 승강 장치로 천문대, 하넬",
-   "note": "act2Opening.ts observatoryNight — well (40,28) · shaft lift (6,4) · obs (3,19) · Hanel (7,18)",
+   "note": "act2Opening.ts observatoryNight — well (40,28) · 승강 장치는 우물 밑 수문실 (42,23)(예전 승강구 옆 (6,4) 에서 옮겨졌다 — 승강구에서 수문실까지의 던전은 fs-well-boss 세트가 본다, 여기서는 순간이동) · obs (3,19) · Hanel (17,13) — 도착하면 하넬이 부르는 자동 장면이 주인공을 (4,19) 로 한 칸 옮긴다",
    "mapId": "fs2_hub_night",
    "x": 40,
    "y": 29,
@@ -4896,14 +4901,15 @@
      "id": "lift",
      "ops": [
       {
-       "kind": "move",
-       "dir": "right",
-       "steps": 3
+       "kind": "teleport",
+       "mapId": "fs2_well_shaft",
+       "x": 41,
+       "y": 23
       },
       {
        "kind": "hold",
        "dir": null,
-       "ms": 500
+       "ms": 700
       },
       {
        "kind": "move",
@@ -4942,9 +4948,20 @@
        ]
       },
       {
+       "kind": "waitForMap",
+       "mapId": "fs2_obs_night",
+       "timeoutMs": 30000
+      },
+      {
+       "kind": "waitFor",
+       "testid": "dialogue-box",
+       "state": "present",
+       "timeoutMs": 20000
+      },
+      {
        "kind": "hold",
        "dir": null,
-       "ms": 7000
+       "ms": 1000
       }
      ],
      "shot": true
@@ -4956,7 +4973,7 @@
        "kind": "repeatUntil",
        "testid": "dialogue-box",
        "state": "absent",
-       "maxRounds": 6,
+       "maxRounds": 12,
        "ops": [
         {
          "kind": "key",
@@ -4968,6 +4985,13 @@
          "ms": 1100
         }
        ]
+      },
+      {
+       "kind": "waitForPosition",
+       "mapId": "fs2_obs_night",
+       "x": 4,
+       "y": 19,
+       "timeoutMs": 10000
       },
       {
        "kind": "playerRoute",
@@ -4986,15 +5010,15 @@
         },
         {
          "kind": "move",
-         "dir": "right"
-        },
-        {
-         "kind": "move",
-         "dir": "right"
-        },
-        {
-         "kind": "move",
          "dir": "down"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
+        },
+        {
+         "kind": "move",
+         "dir": "right"
         },
         {
          "kind": "move",
@@ -7614,11 +7638,7 @@
         },
         {
          "kind": "move",
-         "dir": "up"
-        },
-        {
-         "kind": "move",
-         "dir": "up"
+         "dir": "left"
         },
         {
          "kind": "move",
@@ -7630,7 +7650,11 @@
         },
         {
          "kind": "move",
-         "dir": "left"
+         "dir": "up"
+        },
+        {
+         "kind": "move",
+         "dir": "up"
         },
         {
          "kind": "move",
@@ -13522,8 +13546,8 @@
   },
   {
    "id": "act2-b9-stop",
-   "label": "제2막 판본 끝 — 하늘탑 4층 꼭대기 계단: 막 카드·회복·저장",
-   "note": "act2Tower.ts floorFour ev_fs2_t4_stair_up (FS2_RELEASE_STOP null)",
+   "label": "제2막 하늘탑 4층 꼭대기 계단 — 이리스가 돌아온 뒤 계단을 밟으면 꼭대기로 올라간다",
+   "note": "act2Tower.ts floorFour ev_world_gate_iout4u (12,7) → fs2_sky_tower_top (16,23). 예전의 「판본 끝」 막 카드·회복·저장(FS2_RELEASE_STOP)은 없어졌다 — id 는 그대로 둔다",
    "mapId": "fs2_sky_tower_f4",
    "x": 12,
    "y": 8,
@@ -13605,57 +13629,6 @@
          "ms": 1100
         }
        ]
-      },
-      {
-       "kind": "move",
-       "dir": "up",
-       "steps": 1,
-       "stepTimeoutMs": 4000
-      },
-      {
-       "kind": "waitFor",
-       "testid": "dialogue-box",
-       "state": "present",
-       "timeoutMs": 15000
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 1000
-      }
-     ],
-     "shot": true
-    },
-    {
-     "id": "card",
-     "ops": [
-      {
-       "kind": "pressUntil",
-       "key": "Enter",
-       "testid": "main-menu",
-       "state": "present",
-       "maxPresses": 20,
-       "timeoutMs": 1500
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 1200
-      }
-     ],
-     "shot": true
-    },
-    {
-     "id": "saved",
-     "ops": [
-      {
-       "kind": "key",
-       "key": "Enter"
-      },
-      {
-       "kind": "hold",
-       "dir": null,
-       "ms": 1500
       }
      ],
      "shot": true
@@ -13664,9 +13637,22 @@
      "id": "stair",
      "ops": [
       {
+       "kind": "move",
+       "dir": "up",
+       "steps": 1,
+       "stepTimeoutMs": 4000
+      },
+      {
+       "kind": "waitForPosition",
+       "mapId": "fs2_sky_tower_top",
+       "x": 16,
+       "y": 23,
+       "timeoutMs": 20000
+      },
+      {
        "kind": "hold",
        "dir": null,
-       "ms": 800
+       "ms": 1500
       }
      ],
      "shot": true
@@ -14222,6 +14208,13 @@
          "dir": "right"
         }
        ]
+      },
+      {
+       "kind": "waitForPosition",
+       "mapId": "fs2_frostford_lamp",
+       "x": 5,
+       "y": 4,
+       "timeoutMs": 10000
       },
       {
        "kind": "hold",

@@ -137,6 +137,8 @@ const goesTo = (target: string) => (e: GameEvent) => JSON.stringify(e).includes(
 // 실내 — 손 도트 실내 v5 방 사각형으로 직접 짠다(옷가게 마네킹·생선 진열대·현대 부엌이 끼던 예제 구성 대신).
 // ════════════════════════════════════════════════════════════════════
 
+// 곁방(침실)은 큰방과 같은 깊이(y1 9)로 짓는다 — 곁방이 얕으면(y1 7) 그 아래 귀퉁이가 건물 밖 「공허」 칸(검정)으로 남고,
+// 작은 맵 여백은 천장 무늬로 덮이므로(playSceneMapSkirt) 방 옆에 검은 네모가 떠 보였다(2026-11-14 QA, 집 셋 모두).
 type Room = { name: string; args: Rec; npc?: { id: string; name: string; chip: string; at: Cell; lines: string[] } };
 
 const LAMP_HOUSE: Room = {
@@ -145,7 +147,7 @@ const LAMP_HOUSE: Room = {
     floor: "boards", wall: "log", ceiling: "wood",
     rooms: [
       { id: "work", x0: 1, y0: 1, x1: 10, y1: 9, floor: "boards", wall: "log" },
-      { id: "bed", x0: 12, y0: 1, x1: 16, y1: 7, floor: "dplank", wall: "log" },
+      { id: "bed", x0: 12, y0: 1, x1: 16, y1: 9, floor: "dplank", wall: "log" },
     ],
     connect: [{ a: "work", b: "bed" }],
     exit: { room: "work", x: 5 },
@@ -170,7 +172,7 @@ const FISHER_HOUSE: Room = {
     floor: "boards", wall: "logdark", ceiling: "wood",
     rooms: [
       { id: "main", x0: 1, y0: 1, x1: 10, y1: 9, floor: "boards", wall: "logdark" },
-      { id: "bed", x0: 12, y0: 1, x1: 15, y1: 7, floor: "dplank", wall: "logdark" },
+      { id: "bed", x0: 12, y0: 1, x1: 15, y1: 9, floor: "dplank", wall: "logdark" },
     ],
     connect: [{ a: "main", b: "bed" }],
     exit: { room: "main", x: 5 },
@@ -195,7 +197,7 @@ const HARMA_HOUSE: Room = {
     floor: "plank", wall: "log", ceiling: "wood",
     rooms: [
       { id: "living", x0: 1, y0: 1, x1: 10, y1: 9, floor: "plank", wall: "log" },
-      { id: "bed", x0: 12, y0: 1, x1: 16, y1: 7, floor: "plank", wall: "log" },
+      { id: "bed", x0: 12, y0: 1, x1: 16, y1: 9, floor: "plank", wall: "log" },
     ],
     connect: [{ a: "living", b: "bed" }],
     exit: { room: "living", x: 6 },

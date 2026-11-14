@@ -42,7 +42,7 @@ import { chooseChaseGoal, trackPlayerMotion, type PlayerMotion } from "@/player/
 import { moverVisualShift, playerVisualShift, rectsTouchVisually } from "@/player/chaseContact";
 import { CHASE_BREATHER_MS, CHASE_SEARCH_SLOWDOWN, CHASE_STAMINA_STEPS, chaseAlertHoldMs, chaseCellMs, chaseTempoAuthored, chaseTires } from "@/project/chaseTempo";
 import { PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
-import { arrivalShielded, tickArrivalShield, tickChaseSpawnGrace } from "@/player/chaseSpawnGrace";
+import { arrivalShielded, escapeGraceActive, tickArrivalShield, tickChaseSpawnGrace, tickEscapeGrace } from "@/player/chaseSpawnGrace";
 import { strollChainPending, strollPauseScale, wanderCommand } from "@/player/npcStroll";
 import { followerOccupiesTile } from "@/player/playSceneFollowers";
 import { nextSessionRandom } from "@/project/session";
@@ -174,7 +174,9 @@ function stoppedStepViews(scene: AutonomousNpcSceneContext, project: ReturnType<
 function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDeltaMs: number): void {
   const project = store.getCurrent();
   // 시작·복귀 직후 은총 시간에는 추격자가 제자리에서 기다린다(시야 판정·접촉 없음, J61).
-  const spawnGrace = tickChaseSpawnGrace(scene, frameDeltaMs);
+  // 도주 유예: 전투에서 도망친 직후에도 추격자는 제자리에서 기다린다(@/player/chaseSpawnGrace «도주 유예»). 대사·전투 중에는 줄지 않는다.
+  const escapeGrace = tickEscapeGrace(scene.session, scene.running ? 0 : frameDeltaMs, { mapId: scene.map.id, x: scene.tileX, y: scene.tileY });
+  const spawnGrace = tickChaseSpawnGrace(scene, frameDeltaMs) || escapeGrace;
   // 도착 보호: 도착 칸 곁·짧은 시간 동안 추격자가 새로 알아채지 않는다(저작 시야는 그대로, horrorRuntime 이 읽는다).
   tickArrivalShield(scene.session, frameDeltaMs, { mapId: scene.map.id, x: scene.tileX, y: scene.tileY });
   // 추격 전술이 쓰는 주인공 진행 방향 — 프레임마다 한 번만 갱신한다(@/player/chaseTactics).
@@ -789,6 +791,8 @@ function tryChaseContact(
 
 function fireEventTouch(scene: AutonomousNpcSceneContext, eventId: string, triggerKind: string, mover?: AutonomousMover): void {
   if (triggerKind !== "eventTouch") return;
+  // 도망친 직후에는 이벤트가 먼저 닿아 여는 일이 없다 — 걸음 도중이던 추격자의 접촉도 여기서 막힌다(주인공이 걸어가 부딪히는 쪽은 그대로 열린다).
+  if (escapeGraceActive(scene.session, scene.map.id)) return;
   if (mover && !scene.running) mover.contactCooldownMs = CHASE_CONTACT_COOLDOWN_MS;
   // 이벤트 실행은 첫 대기까지 동기로 돌아 맵 이벤트 배열을 바꿀 수 있다(소환·제거) — 조회 색인을 버린다.
   invalidateEventIdIndexPass();

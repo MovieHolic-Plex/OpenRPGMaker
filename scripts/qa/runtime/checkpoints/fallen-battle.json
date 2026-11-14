@@ -243,7 +243,7 @@
               "kind": "battle",
               "plan": {
                 "actor_hero": [
-                  "skill_sword_slash@enemy-2",
+                  "skill_fs_star_slash@enemy-2",
                   "skill_hero_rush_pierce@enemy-2"
                 ],
                 "actor_fs_elena": [
@@ -518,7 +518,7 @@
                   "skill_gunner_rapid_fire@enemy-3"
                 ],
                 "actor_hero": [
-                  "skill_sword_slash@enemy-1",
+                  "skill_fs_star_slash@enemy-1",
                   "skill_hero_flame_sword@enemy-3"
                 ],
                 "actor_fs_elena": [

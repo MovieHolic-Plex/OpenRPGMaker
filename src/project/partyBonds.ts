@@ -72,6 +72,9 @@ export function listPartyBondEntries(project: Project, session: PlaySession): Pa
     if (!actor) return [];
     const raw = session.variables?.[member.variableId] ?? 0;
     const value = Math.max(0, Math.min(max, Math.trunc(Number.isFinite(raw) ? raw : 0)));
+    // 아직 만나지 않은 동료는 목록에 올리지 않는다 — 새 게임 직후 「관계」에 2막 동료가 「지금 파티에 없음」으로 먼저 보였다(2026-11-14 QA).
+    // 합류 기록이 따로 없으므로 «지금 파티에 있거나, 유대가 한 번이라도 쌓였으면» 만난 것으로 본다.
+    if (!party.has(actor.id) && value <= 0) return [];
     return [{ actorId: actor.id, variableId: member.variableId, name: session.actorNames?.[actor.id] ?? actor.name, value, max, inParty: party.has(actor.id) }];
   });
 }

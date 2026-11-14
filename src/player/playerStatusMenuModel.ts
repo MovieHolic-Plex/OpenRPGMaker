@@ -288,8 +288,8 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
     if (id === "life-ledger") return hasLifeLedgerData(project, session);
     // 백로그는 저작된 대사 시스템에서 켠 게임에만 — 그 밖의 메뉴(옛 프로젝트 포함)는 그대로다.
     if (id === "backlog") return backlogEnabled(project);
-    // 이야기 일지는 저작했거나(configure_story_journal) 이미 줄이 적힌 게임에만.
-    if (id === "journal") return Boolean(storyJournal(project)) || (session.storyJournal?.length ?? 0) > 0;
+    // 이야기 일지는 줄이 적힌 뒤에만 — 저작만 해 두면 새 게임 직후 아직 만나지도 않은 인물의 「…의 일지」가 빈 채로 보였다(2026-11-14 QA).
+    if (id === "journal") return (session.storyJournal?.length ?? 0) > 0;
     // 괴물 도감은 system.bestiary 를 켠 게임에만(define_bestiary_entry).
     if (id === "bestiary") return Boolean(resolveBestiary(project));
     if (id === "save") return !saveDisabled;

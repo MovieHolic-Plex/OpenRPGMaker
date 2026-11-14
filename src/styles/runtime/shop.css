@@ -1101,7 +1101,7 @@
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row.selected { background: transparent; border: 0; box-shadow: none; }
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row:focus-visible { outline: 0; }
 /* 손가락 커서 — 글리프가 아니라 도트 그림(흰 장갑). */
-.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row.selected::before {
+.runtime-shop-overlay.runtime-shop-preset-pixel :is(.runtime-shop-item-row, .runtime-shop-menu .runtime-shop-menu-choice).selected::before {
   content: "";
   top: 50%;
   bottom: auto;
@@ -1114,6 +1114,38 @@
   animation: runtime-shop-poke 500ms ease-in-out infinite alternate;
 }
 @keyframes runtime-shop-poke { to { transform: translate(2px, -50%); } }
+
+/* 첫 화면(구입·판매·취소) — 큰 카드에 단추 셋이던 것을 물건 목록·ESC 메뉴와 같은 작은 창 + 손가락 커서 목록으로 맞춘다
+   (2026-11-14 QA minor 8 「UI 모습 한 벌」: 첫 화면만 다른 카드 모양이었다). 구조는 그대로, 도트 프리셋에서만 모양을 바꾼다. */
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-menu-shell { align-items: center; height: 100%; justify-content: center; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-greeting-panel { padding: 0.5em 0.4em 0.6em; width: min(48%, 100%); }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-menu { gap: 0.3em; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-menu :is(.runtime-shop-merchant-avatar, .runtime-shop-brand-sub, .runtime-shop-menu-choice-hint, .runtime-shop-keyhints) { display: none; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-menu .runtime-shop-brand { padding: 0 0.6em; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-menu .runtime-shop-brand-title { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-menu .runtime-shop-message { font-size: var(--shop-text-body); line-height: 1.3; padding: 0 0.6em; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-menu .runtime-shop-entry-purse { border-color: var(--shop-line); font-size: var(--shop-text-small); padding: 0.2em 0.6em; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-menu .runtime-shop-menu-choices { flex-direction: column; gap: 0; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-menu .runtime-shop-menu-choice,
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-menu .runtime-shop-menu-choice.rm-nav-item {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  flex: 0 0 auto;
+  flex-direction: row;
+  min-height: calc(var(--play-scale, 2) * 12px);
+  padding: 0.1em 0.6em 0.1em 2.3em;
+  position: relative;
+  text-align: left;
+}
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-menu .runtime-shop-menu-choice.selected { background: transparent; border: 0; box-shadow: none; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-menu .runtime-shop-menu-choice:focus-visible { outline: 0; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-menu .runtime-shop-menu-choice-label { font-size: var(--shop-text-body); }
+
+/* 터치 화면에서는 키보드 안내 줄(「E/Z/Enter/Space 결정」)을 보이지 않는다 — 누를 키가 없다(2026-11-14 QA minor 14). */
+.play-viewport[data-touch-ui="true"] .runtime-shop-keyhints { display: none; }
 
 /* 파티 창 — 네 명이 한 줄로 걷는다. 이름 아래 가장 큰 변화 두 줄. 장비할 수 없는 동료는 회색으로 멈춘다. */
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-panel { padding: 0; overflow: hidden; }

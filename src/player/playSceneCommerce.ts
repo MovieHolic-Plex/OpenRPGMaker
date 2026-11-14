@@ -171,11 +171,17 @@ function layoutPixelInn(overlay: HTMLElement, project: Project, session: PlaySes
       el("span", {
         class: "runtime-inn-summary-gold",
         dataset: { testid: "inn-summary-gold" },
-        children: [
-          `${session.gold.toLocaleString("ko-KR")} → `,
-          el("span", { class: enough ? "is-after" : "is-short", text: enough ? (session.gold - price).toLocaleString("ko-KR") : "부족" }),
-          ` ${goldLabel}`,
-        ],
+        // 모자라면 「10 → 부족 G」가 아니라 가진 돈과 모자란 돈을 적는다(2026-11-14 QA).
+        children: enough
+          ? [
+            `${session.gold.toLocaleString("ko-KR")} → `,
+            el("span", { class: "is-after", text: (session.gold - price).toLocaleString("ko-KR") }),
+            ` ${goldLabel}`,
+          ]
+          : [
+            `${session.gold.toLocaleString("ko-KR")} ${goldLabel} `,
+            el("span", { class: "is-short", text: `(${(price - session.gold).toLocaleString("ko-KR")} ${goldLabel} 부족)` }),
+          ],
       }),
       el("span", { class: "runtime-inn-summary-label", text: "묵으면" }),
       innSummaryLine(hpLabel, hpGain, "inn-summary-hp"),
@@ -220,7 +226,8 @@ function innGauge(label: string, current: number, after: number, max: number, ki
 function innSummaryLine(label: string, gain: number, testId: string): HTMLElement {
   return el("span", {
     class: `runtime-inn-summary-line${gain > 0 ? " gains" : ""}`,
-    text: `${label} +${gain}`,
+    // 이미 가득이면 「HP +0」 대신 「HP 가득」.
+    text: gain > 0 ? `${label} +${gain}` : `${label} 가득`,
     dataset: { testid: testId },
   });
 }
