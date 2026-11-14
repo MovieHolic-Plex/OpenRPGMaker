@@ -46,7 +46,7 @@ describe("버들항 물 그림판", () => {
     const inSheet = (cell: number) => cell === -1 || (cell > 0 && cell < table.count);
     expect(table.shore).toHaveLength(256);
     expect(table.shore.every(inSheet)).toBe(true);
-    expect(table.shore[255]).toBe(-1); // 둘레가 모두 물인 칸에는 둑이 없다
+    expect(table.shore[255]).toBeGreaterThan(0); // 둘레가 모두 물인 물가 칸(좁은 강의 가운데)은 둑 없이 물골 막만 얹는다
     expect(table.deep).toHaveLength(3);
     for (const band of table.deep) { expect(band).toHaveLength(256); expect(band.every(inSheet)).toBe(true); }
     for (const full of table.deepFull) expect(full.length).toBeGreaterThanOrEqual(4);

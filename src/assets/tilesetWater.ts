@@ -24,7 +24,7 @@ export type TilesetWaterLook = {
 export type TilesetWaterTable = {
   readonly version: number; readonly tilesetId: string; readonly image: string; readonly texture: string;
   readonly tileSize: number; readonly tilesPerRow: number; readonly count: number;
-  /** 물가 둑: [이웃 비트 256] → 그림판 칸(-1 = 덧그림 없음). 이웃 비트 = 북서1 북2 북동4 서8 동16 남서32 남64 남동128(물이면 1). */
+  /** 물가 둑: [이웃 비트 256] → 그림판 칸(-1 = 덧그림 없음). 이웃 비트 = 북서1 북2 북동4 서8 동16 남서32 남64 남동128(물이면 1). 얕은 띠 너머는 옅은 물골 막이다(255 = 막만). */
   readonly shore: readonly number[];
   /** 바닥 겉모습(grounds 열쇠)마다 [풀밭 둑 칸, 그 바닥 둑 칸] 쌍. */
   readonly shoreGrounds: Readonly<Record<string, Pairs>>;

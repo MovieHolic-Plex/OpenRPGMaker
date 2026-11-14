@@ -98,6 +98,12 @@ def shore_tile(mask, land):
     out[band & (dw <= 4.4)] = SHALLOW[0]
     out[band & (dw > 4.4)] = SHALLOW[1]
     out[band & (dw > far - 1.4) & (hsh(XX, YY, 17) > 0.6)] = 0     # 띠 안쪽 끝은 점점이 흩어진다
+    # 얕은 띠 너머(강 한가운데 · 못의 둘째 줄)는 옅은 어두운 막 — 좁은 강도 «밝은 물가 + 어두운 물골» 두 띠로 읽히고, 몸통 한 색이 물길을 덮지 않는다
+    core = w & (dw > far)
+    edge = core & (dw <= far + 1.6) & (hsh(XX, YY, 19) > 0.5)
+    cb = blotch(7) >= 0.5
+    out[core & cb] = (*DEEP_RGB, CORE_A[1]); out[core & ~cb] = (*DEEP_RGB, CORE_A[0])
+    out[edge] = 0
     return out
 
 def blotch(seed):
@@ -107,6 +113,7 @@ def blotch(seed):
     return v + (hsh(XX, YY, 40 + seed) - 0.5) * 0.22
 
 DEEP_RGB = (5, 20, 34)
+CORE_A = (20, 32)                  # 물가 칸의 물골 막(얼룩 두 농담) — 첫 깊이 띠(34~)보다 옅다
 DEEP_A = (34, 70, 104)             # 띠마다 바탕 알파. 칸의 농담(tone 0~3)과 칸 안 얼룩이 9 씩 더한다 — 이웃 칸의 농담 경계가 얼룩에 묻힌다
 def deep_tile(mask, level, tone=1, variant=0):
     """level 0·1·2 = 뭍에서 두 칸·네 칸·일곱 칸 넘는 물 칸 묶음. 그 묶음의 칸 계단을 흐리게 편 선 안쪽만 칠하고(가장자리는 들쭉날쭉),
@@ -120,6 +127,9 @@ def deep_tile(mask, level, tone=1, variant=0):
         a = DEEP_A[lv] + 9 * tone
         out[sel & ~bl] = (*DEEP_RGB, a); out[sel & bl] = (*DEEP_RGB, a + 9)
     if level > 0: paint(np.ones((T, T), bool), level - 1)
+    else:                                                          # 첫 띠의 바깥은 물가 칸의 물골 막과 같은 막(사이에 밝은 고리가 남지 않게)
+        cb = blotch(7) >= 0.5
+        out[cb] = (*DEEP_RGB, CORE_A[1]); out[~cb] = (*DEEP_RGB, CORE_A[0])
     keep = (sm > thr) | ((sm > thr - 0.07) & (hsh(XX, YY, 23 + level) > 0.5))
     paint(keep, level)
     if mask == 255:   # 물비늘: 깊은 띠 속의 옅은 가로 잔물결(원래 항구 그림의 밝은 줄)
