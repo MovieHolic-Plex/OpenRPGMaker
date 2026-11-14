@@ -109,6 +109,36 @@ describe("relief wall styles", () => {
     expect(Array.from(b.src)).toEqual(Array.from(a.src));
   });
 
+  it("grass-steps paints a back slope behind the crest, on the low ground's own cells", () => {
+    // a two-level block in the middle of a flat map: its north edge is the crest, the rows north of it are level 0 ground
+    const BW = 12, BH = 12, levels = new Array(BW * BH).fill(0);
+    for (let y = 6; y <= 8; y++) for (let x = 3; x <= 8; x++) levels[y * BW + x] = 2;
+    const draw = (style: string) => { const relief: ReliefData = { width: BW, height: BH, levels, style }; return renderRelief(effectiveHeights(gridFromRelief(relief)), reliefRenderOptions(relief)); };
+    const px = 6 * 16 + 4;
+    const at = (r: ReturnType<typeof draw>, k: number) => {
+      const i = (r.pad + 6 * 16 - 2 * 16 - k) * r.PW + px;   // k px north of the crest outline on screen
+      return { rgba: Array.from(r.rgba.slice(i * 4, i * 4 + 4)), kind: r.kind[i], lev: r.lev[i], row: Math.floor(r.src[i]! / BW) };
+    };
+    const ramp = (style: string, n: number) => { const hex = RELIEF_STYLES[style]!.top[n]!; return [1, 3, 5].map((o) => parseInt(hex.slice(o, o + 2), 16)); };
+    for (const style of ["grass-steps", "grass-steps@ground-sand"]) {
+      const r = draw(style);
+      expect(compileReliefStyle(style)!.rim!.back).toBe(12);
+      expect(at(r, 0)).toMatchObject({ kind: 0, lev: 2, row: 6 });                                   // the crest outline belongs to the raised cell
+      // right behind the crest: two solid rows of the top ramp's shade, then a lighter band, thinning out to nothing after 12 px —
+      // every one of them still a top pixel of the level 0 cell it lies on (a character standing there is not covered, a click picks that cell)
+      for (const k of [1, 2]) expect(at(r, k)).toEqual({ rgba: [...ramp(style, 1), 255], kind: 0, lev: 0, row: 3 });
+      for (const k of [3, 12]) expect(at(r, k)).toEqual({ rgba: [...ramp(style, 2), 255], kind: 0, lev: 0, row: 3 });
+      expect(at(r, 13)).toEqual({ rgba: [0, 0, 0, 0], kind: 0, lev: 0, row: 3 });
+    }
+    // styles without rim.back keep the short earth bank: wall pixels owned by the raised cell, nothing beyond it
+    for (const style of ["grass-cliff", "snow-steps", "sand-steps"]) {
+      const r = draw(style);
+      expect(compileReliefStyle(style)!.rim!.back).toBeUndefined();
+      expect(at(r, 2)).toMatchObject({ kind: 1, row: 6 });
+      expect(at(r, 6).rgba[3]).toBe(0);
+    }
+  });
+
   it("style survives normalize, resize, signature and a save / reload round trip", () => {
     const relief = { ...terrace(), style: "tundra" };
     expect(normalizeRelief(relief, W, H)?.style).toBe("tundra");

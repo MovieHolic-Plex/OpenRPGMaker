@@ -55,6 +55,15 @@ describe("relief 부분 다시 굽기", () => {
   it("최고 단이 바뀌어 pad 가 바뀌어도 같다(버퍼를 밀고 맨 위 띠를 다시 굽는다)", () => {
     expect(paint(hill(40, 34, "grass-cliff"), hill(40, 34), [[8, 4, "set", 6], [8, 4, "set", 0], [30, 2, "mountain", 5]])).toBeGreaterThan(0);
   });
+  it("가장 높은 땅을 낮춰 pad 가 줄어도 같다(옛 그림의 화소는 옛 최고 단까지 들려 있다)", () => {
+    // 6단 둔덕 하나뿐인 맵에서 그 둔덕을 3단으로 낮춘다 — pad 96 → 48. 창 높이를 새 pad 로만 잡으면 옛 둔덕 윗부분이 그림에 남았다.
+    const mound = (style?: string): ReliefData => {
+      const r: ReliefData = { width: 40, height: 33, levels: new Array(40 * 33).fill(0), ...(style ? { style } : {}) };
+      brushRelief(r, 20, 16, "set", { radius: 2, level: 6 });
+      return r;
+    };
+    for (const style of [undefined, "grass-steps", "grass-cliff"]) expect(paint(mound(style), mound(style), [[20, 16, "set", 3]])).toBe(1);
+  });
   it("빈 맵에 처음 칠할 때 평지 그림에서 창으로 굽는다", () => {
     expect(paint(null, hill(40, 34, "swamp-peat"), [[20, 16, "raise"], [22, 16, "raise"], [24, 17, "set", 4]])).toBeGreaterThan(0);
   });

@@ -389,11 +389,24 @@ export interface ReliefStyleSpec {
  * 뒤·옆 가장자리 턱. sides: 동·서(옆) 가장자리 옆면 띠를 어디에 그리나 — "all" 모든 옆 가장자리(늪 1차 그대로),
  * "diag" 북쪽이 함께 트인 대각·모서리 화소만, "none" 옆면 없음(북쪽 뒤 둑·안쪽 턱만). 적지 않으면 "all".
  */
-export interface ReliefRim { readonly side: number; readonly lip: number; readonly soft?: boolean; readonly sides?: "all" | "diag" | "none" }
+export interface ReliefRim {
+  readonly side: number; readonly lip: number; readonly soft?: boolean; readonly sides?: "all" | "diag" | "none";
+  /**
+   * 뒤 비탈(선택, 2026-11-14 오너 「언덕의 위를 표시하지는 못하는거냐 … 위쪽 경사는 잘 구현하질 않네」): 북쪽 가장자리 뒤(낮은 땅) back px 를
+   * 흙 둑 2~3줄 대신 **그 땅 자체의 그늘 비탈**로 칠한다 — 마루 바로 뒤가 가장 어둡고 뒤로 갈수록 성기게 흩어져 바닥에 섞인다.
+   * 남쪽을 보는 절벽 면만 두껍게 그려져 언덕이 「앞만 잘린 판」으로 읽히던 것을, 마루 너머로 넘어가는 면이 있는 덩이로 보이게 한다.
+   * 이 화소는 낮은 땅 칸의 것으로 남는다(주인 줄·집기 칸을 윗단으로 옮기지 않는다) — 언덕 뒤에 선 캐릭터의 발을 덮지 않는다.
+   * 없으면 그림이 예전과 한 바이트도 다르지 않다. 부분 굽기(window.ts REACH 24) 안에 들도록 20 이하로 쓴다.
+   */
+  readonly back?: number;
+}
 
 /** rim 을 적지 않은 양식의 기본 옆면 턱(2026-09-29 렌더러 r2: 북·동·서·대각 가장자리가 1px 선으로 읽히던 것을 모든 양식에서 면으로). */
 // r3 (2026-09-29, 사용자 「동쪽이랑 서쪽은 없는 게 나은 것 같다」): 기본 턱은 동·서 옆면 띠를 그리지 않는다 — 북쪽 뒤 둑·안쪽 턱만.
 export const RELIEF_DEFAULT_RIM: ReliefRim = { side: 4, lip: 2, soft: true, sides: "none" };
+
+/** 버들항 풀 둑(grass-steps 와 그 바닥 재질 변형)의 턱: 기본 턱 + 뒤 비탈 12px. 설원·사막 둑(snow-steps·sand-steps)은 아직 예전 그대로다. */
+const GRASS_STEPS_RIM: ReliefRim = { ...RELIEF_DEFAULT_RIM, back: 12 };
 
 const MOSS = ["#223319", "#304726", "#415f32", "#56793f", "#6e944f", "#8db266"];
 const SNOW_WHITE = ["#6f8aa8", "#93aecb", "#b7cde3", "#d6e4f1", "#ecf3fa", "#ffffff"];
@@ -433,13 +446,13 @@ export const RELIEF_STYLES: Readonly<Record<string, ReliefStyleSpec>> = {
   "grass-cliff": { family: "earth", overlay: "vines", overlayEvery: 4, carvedStairs: { log: true, tread: "wall" }, top: ["#1a4c22", "#276d2d", "#3d8d43", "#5fa84a", "#87c464", "#b4e08a"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
   // 마을 지형 계단(2026-10-30 사용자 「경사로를 전부 계단으로 — 버들항 칩셋 계단 조각」): 바탕 양식과 같은 색·벽에, 자동 계단(5~8)을
   // 칩셋 bd-mpart-stairs 돌계단 화소(rampArt.json *-steps, scripts/content/build-village-stair-art.mts)로 칠한다 — 걷기 규칙은 그대로.
-  "grass-steps": { smoothStairs: true, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#1a4c22", "#276d2d", "#3d8d43", "#5fa84a", "#87c464", "#b4e08a"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
+  "grass-steps": { smoothStairs: true, rim: GRASS_STEPS_RIM, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#1a4c22", "#276d2d", "#3d8d43", "#5fa84a", "#87c464", "#b4e08a"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
   // 게임 겉모습의 바닥 재질에 맞춘 풀 둑 변형(2026-11-12, assets/beodeulLooks.json grounds) — 윗면 가장자리 색만 그 바닥 색이고 벽·계단은 grass-steps 와 같다(reliefStyleForGround).
-  "grass-steps@ground-dry": { smoothStairs: true, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#5a5630", "#7a743e", "#978c4c", "#a0a44c", "#bca860", "#ccb68e"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
-  "grass-steps@ground-clover": { smoothStairs: true, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#16332e", "#1f463f", "#285b51", "#396b42", "#4c7d48", "#6b8b66"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
-  "grass-steps@ground-earth": { smoothStairs: true, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#3e2616", "#573620", "#71482c", "#8a5e3c", "#967042", "#ab967d"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
-  "grass-steps@ground-terra": { smoothStairs: true, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#5b351f", "#7c3a22", "#8c4a38", "#94562e", "#aa6633", "#b0953d"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
-  "grass-steps@ground-sand": { smoothStairs: true, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#7d6f52", "#9a8a66", "#b3a37f", "#e0cf9a", "#ece2c4", "#f4ecd6"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
+  "grass-steps@ground-dry": { smoothStairs: true, rim: GRASS_STEPS_RIM, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#5a5630", "#7a743e", "#978c4c", "#a0a44c", "#bca860", "#ccb68e"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
+  "grass-steps@ground-clover": { smoothStairs: true, rim: GRASS_STEPS_RIM, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#16332e", "#1f463f", "#285b51", "#396b42", "#4c7d48", "#6b8b66"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
+  "grass-steps@ground-earth": { smoothStairs: true, rim: GRASS_STEPS_RIM, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#3e2616", "#573620", "#71482c", "#8a5e3c", "#967042", "#ab967d"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
+  "grass-steps@ground-terra": { smoothStairs: true, rim: GRASS_STEPS_RIM, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#5b351f", "#7c3a22", "#8c4a38", "#94562e", "#aa6633", "#b0953d"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
+  "grass-steps@ground-sand": { smoothStairs: true, rim: GRASS_STEPS_RIM, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#7d6f52", "#9a8a66", "#b3a37f", "#e0cf9a", "#ece2c4", "#f4ecd6"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
   "snow-steps": { smoothStairs: true, family: "snow", overlay: "icicles", overlayEvery: 2, top: ["#6a7f9e", "#93a9c6", "#b9cce0", "#d6e3ef", "#e9f1f8", "#ffffff"], wall: ["#2a3040", "#3c4658", "#566479", "#71819a", "#93a3bb", "#b9c6d8"], accent: SNOW_WHITE },
   "sand-steps": { smoothStairs: true, family: "strata", top: ["#5b4d35", "#826e4c", "#ae9366", "#d9b87f", "#f5d090", "#ffefa5"], wall: ["#5a3e22", "#7a5630", "#98703f", "#b58a50", "#cfa566", "#e8c282"], accent: MOSS },
   // 던전 높이 단(2026-10-30 「던전 설계에 높이 단 — 마을과 같은 버들항 계단 조각」): 버들항 동굴 바위 앞면 색(칩셋에서 뽑은 6색)의 흙벽 절벽 + 같은 bd-mpart-stairs 돌계단.
