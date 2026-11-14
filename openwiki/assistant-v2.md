@@ -222,6 +222,7 @@ Terra 작은 일 `door-roundtrip-starter` — 「잿불 마을 동쪽 끝에서 
 나중에 닿는 일 14 · **v2 어디에도 없는 도구가 든 일 14**. 도구를 내놓거나 고치는 PR 은 그 표의 줄을 지우고 그 줄의 일로 전/후를 잰다.
 같은 쪽 끝에 **고리 설계(제안 · 구현 전)** 가 있다 — 청사진이 한 줄 경로가 아닌 게임(쌓기 · 모으기 · 버티기 · 기르기 · 추리하기)을 장르 낱말 없이 말하는 법.
 
+**둘째 수리(2026-11-12)** — 좁은 도구 넷 `set_npc_affection` · `set_present_reactions` · `set_time_limit` · `add_hud_gauge`(`src/editor/tools/genreDeviceTools.ts`): 기준선에서 27~36호출로 손 조립하던 호감 · 선물 · 고백 · 증거 내밀기 · 제한 시간 · 게이지를 한 호출로. 있던 대사는 그대로 두고 끼운다.
 **첫 수리(2026-11-11)** — 그 쪽 「첫 수리」 절: 장치 도구 열다섯을 풀에 내놓고(`toolGroups.ts V2_GENRE_TOOLS`) 장치 주제(`topics.ts DEVICE_TOPICS`)가 맞으면 사건 쓰기(`upsert_event`)보다 먼저 싣는다.
 셋째 묶음의 닿기: 처음부터 다 실린 일 8 → 27 · 없는 도구가 든 일 14 → 1(몬스터 잠금) · 작은 일로 갈린 일 33 → 36. 큰 하위 스키마 넷을 걷었다(`hide`: `make_chase_scene.onTouch` · `compile_puzzle.onSolve.beats` ·
 `make_action_enemy` 의 둘 · `upsert_item.item.equipmentProfile` — 마지막 것이 main 에서 실패하던 `item-new-built` 닿기를 되돌린다, 상한 3.4만 자는 그대로).

@@ -12,13 +12,13 @@ export type GameTopic =
   | "script" | "items" | "equipment" | "affection" | "time" | "rename" | "gates" | "status" | "weather" | "staging" | "examine" | "maps" | "battle" | "boss"
   | "flashback" | "feelings" | "ending" | "snow" | "forest" | "search" | "fieldEnemy" | "replace" | "opening" | "readable" | "vanish" | "patrol" | "door" | "removeMap" | "chest" | "hero" | "scene"
   | "enemy" | "save" | "light" | "start" | "gameOver" | "quest" | "copy"
-  | "trap" | "lockDoor" | "storage" | "farm" | "fishing" | "deadline" | "readingAids" | "actionCombat" | "monsters" | "starter" | "trainer" | "codeLock" | "gauge" | "hidePush" | "chase" | "lifePetals" | "craft" | "sellPrice";
+  | "trap" | "lockDoor" | "storage" | "farm" | "fishing" | "deadline" | "readingAids" | "actionCombat" | "monsters" | "starter" | "trainer" | "codeLock" | "gauge" | "hidePush" | "chase" | "lifePetals" | "craft" | "sellPrice" | "present" | "timeLimit";
 
 const TOPIC_WORDS: readonly (readonly [GameTopic, RegExp])[] = [
   ["script", SCRIPT_TIER.words],
   ["items", new RegExp(`${SHOP_WORDS.source}|아이템|회복약|포션|회복량|가격`, "iu")],
   ["equipment", new RegExp(String.raw`장비|무기|방어구|갑옷|방패|${kw("검")}|${kw("칼")}|${kw("활")}|공격력|방어력|피해량|데미지|치명타|equipment|weapon|armou?r`, "iu")],
-  ["affection", /호감|신뢰|평판|친밀|우호도|affection|trust|reputation/iu],
+  ["affection", /호감|신뢰|평판|친밀|우호도|선물[을할하]|고백|affection|trust|reputation|\bgifts?\b|\bconfess/iu],
   ["time", new RegExp(String.raw`${kw("낮")}|${kw("밤")}|아침|저녁|새벽|시간대|타이머|제한\s*시간|초\s*안에|분\s*안에|time of day|timer`, "iu")],
   ["rename", /이름|호칭|rename/iu],
   ["gates", /암호|비밀번호|통행료|자물쇠|열쇠|잠긴|잠겨|문지기|보여\s*주|건네|내밀|password|toll|lock/iu],
@@ -72,10 +72,12 @@ const TOPIC_WORDS: readonly (readonly [GameTopic, RegExp])[] = [
   ["lifePetals", /꽃잎|목숨|라이프|\blives\b|life (?:petal|flower)/iu],
   ["craft", /제작대|작업대|제작법|조합법|\d+\s*(?:개|장|병)로[^.!?\n]{0,20}만들|재료로[^.!?\n]{0,14}만들|\b(?:craft(?:ing)?|recipe)\b/iu],
   ["sellPrice", /판매가|팔\s*때|팔면|되팔|파는\s*값|\bsell(?:ing)? price/iu],
+  ["present", /내밀|들이밀|제시|증거|보여\s*주면|\b(?:present|show)(?:s|ing)?\s+(?:an?\s+|the\s+)?(?:item|evidence)/iu],
+  ["timeLimit", /제한\s*시간|\d+\s*(?:초|분)\s*(?:안에|내에|제한)|카운트다운|\b(?:time limit|countdown)\b/iu],
 ];
 
 /** 장치 하나를 짓는 도구가 따로 있는 주제 — 이 주제의 요청은 장소 낱말이 «어디에» 로만 나오면 장소 짓기가 아니다(intent.ts). */
-export const DEVICE_TOPICS: ReadonlySet<GameTopic> = new Set(["trap", "lockDoor", "storage", "farm", "fishing", "deadline", "readingAids", "actionCombat", "monsters", "starter", "trainer", "codeLock", "gauge", "hidePush", "chase", "lifePetals", "craft", "sellPrice"]);
+export const DEVICE_TOPICS: ReadonlySet<GameTopic> = new Set(["trap", "lockDoor", "storage", "farm", "fishing", "deadline", "readingAids", "actionCombat", "monsters", "starter", "trainer", "codeLock", "gauge", "hidePush", "chase", "lifePetals", "craft", "sellPrice", "affection", "present", "timeLimit"]);
 
 /** 데이터베이스 기록 종류 → 그 기록을 고치는 주제. */
 const RECORD_TOPICS: readonly (readonly ["items" | "equipment" | "enemies", GameTopic])[] = [["items", "items"], ["equipment", "equipment"], ["enemies", "enemy"]];
@@ -156,7 +158,10 @@ const SMALL_BY_TOPIC: Readonly<Partial<Record<GameTopic, readonly string[]>>> = 
   lifePetals: ["set_life_flower"],
   craft: ["upsert_craft_recipe", "upsert_item"],
   sellPrice: ["set_sell_prices"],
-  gauge: ["manage_flag_slot"],
+  gauge: ["add_hud_gauge", "manage_flag_slot"],
+  affection: ["set_npc_affection"],
+  present: ["set_present_reactions"],
+  timeLimit: ["set_time_limit"],
   copy: ["duplicate_event"],
   gameOver: ["set_game_over"],
   chest: ["place_chest", "find_empty_ground"],
