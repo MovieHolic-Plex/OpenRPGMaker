@@ -781,7 +781,23 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       };
       // (back bank: side-1 rows of peat going down away from the viewer — lit where it leaves the top, darker to its foot,
       // a grass fringe hanging over its top row; the outline closes it at the foot)
-      if (U) { const n = Math.max(2, side - 1); for (let k = 1; k <= n && sy - k >= 0; k++) { const j = i - k * PW; if (!low(j, c)) break; curPri = k;
+      // 뒤 비탈(rim.back, 2026-11-14): 흙 둑 대신 마루 뒤 낮은 땅 back px 를 그늘 비탈로 — 마루 바로 뒤 두 줄은 짙게(윗면 램프 1),
+      // 그 뒤는 한 단 옅게(2, 넷에 하나 짙은 점), 이어서 바둑판, 끝은 넷에 하나만 남겨 바닥에 섞인다. 무늬는 칸 주기(4)의 약수라
+      // 부분 굽기 창 좌표로 읽어도 전체 그림과 같다. 화소는 낮은 땅 칸의 것으로 남긴다(owner 를 옮기지 않는다): 주인 줄이 윗단이면
+      // 언덕 뒤에 선 캐릭터의 발 12px 를 덮고, 그 자리를 누르면 윗단 칸이 집힌다. 맵 밖 빈 화소(kind < 0)에는 그리지 않는다.
+      if (U && rim.back) {
+        const n = rim.back, n1 = Math.ceil(n / 6), n2 = Math.ceil(n * 5 / 12), n3 = Math.ceil(n * 3 / 4), keep = owner;
+        owner = -1;
+        for (let k = 1; k <= n && sy - k >= 0; k++) {
+          const j = i - k * PW; if (kind[j] !== 0 || !low(j, c)) break;
+          const y = sy - k; curPri = k;
+          if (k <= n1) put(j, 1);
+          else if (k <= n2) put(j, (sx + y) % 4 ? 2 : 1);
+          else if (k <= n3) { if ((sx + y) % 2) put(j, 2); }
+          else if ((sx + 2 * y) % 4 === 0) put(j, 2);
+        }
+        curPri = 0; owner = keep;
+      } else if (U) { const n = Math.max(2, side - 1); for (let k = 1; k <= n && sy - k >= 0; k++) { const j = i - k * PW; if (!low(j, c)) break; curPri = k;
         // soft: no closing outline — the last row dithers into the ground so the bank reads as a slope, not a fenced strip
         if (soft && k === n) { if ((sx + sy) % 2) put(j, tex(sx, sy - k, 0)); continue; }
         put(j, k === n ? OUT_B : k === 1 ? (((sx + ox) >> 1) % 3 ? 4 : 3) : tex(sx, sy - k, k <= 2 ? 2 : 1)); } curPri = 0; }

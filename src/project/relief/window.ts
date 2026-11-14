@@ -165,7 +165,8 @@ export function planReliefPatch(prev: ReliefScene | null, next: ReliefScene, ima
     for (const list of [prevSlopes, slopes]) {
       for (const s of list) if (s.x <= dx1 + 1 && s.x + s.w >= dx0 - 1 && s.y <= dy1 + 1 && s.y + s.h >= dy0 - 1) cmax = Math.max(cmax, Math.ceil(Math.max(s.hi, s.lo)));
     }
-    cmax = Math.min(cmax, pad / T);
+    // 옛 그림의 여백이 더 컸으면(최고 단이 낮아지는 붓질) 옛 화소는 옛 최고 단까지 들려 있다 — 새 pad 로만 자르면 그 윗부분이 창 밖에 남는다
+    cmax = Math.min(cmax, Math.max(pad, image.pad) / T);
     // 덮어쓸 사각형: 바뀐 화소(마칭 스퀘어라 바뀐 칸 둘레 반 칸까지)가 칠하는 화면(윗면은 cmax 단까지 위, 벽은 땅 높이 pad 까지 아래)
     // + 뒤 패스 이웃
     let x0 = Math.max(0, dx0 * T - 8 - REACH), x1 = Math.min(PW, (dx1 + 1) * T + 8 + REACH);
