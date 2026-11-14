@@ -1,6 +1,7 @@
 // 마을 종류 탐침(모델 없음): 종류마다 그 종류에 맞는 터의 마을을 진짜 도구(author_beodeul_town)로 짓고, 장면이 청한 수·통째로 선 수·자리 없어 못 놓은 수,
 // 새 기물·장면이 끊은 걷는 칸(0 이어야 한다), 들를 곳 사이 걸음이 늘어난 칸 수를 적는다. 1배 그림과 주 장면 2배 조각(주인공이 선 칸에 표시)도 남긴다.
-//   bun scripts/content/beodeul-village-kinds/kinds.mts <결과 폴더> [--only id,id] [--key 이름] [--seed N] [--no-png]
+//   bun scripts/content/beodeul-village-kinds/kinds.mts <결과 폴더> [--only id,id] [--key 이름] [--seed N] [--no-png] [--why] [--hero 24x32.png]
+//   --why = 자리 없어 못 놓은 장면의 속(후보·무더기 조건·조각·길 돌림) · --hero = 2배 조각의 설 칸에 그 그림(24×32 주인공)을 세운다
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
@@ -18,6 +19,7 @@ const out = argv[0] && !argv[0].startsWith("--") ? argv[0] : "";
 if (!out) throw new Error("kinds.mts <결과 폴더> [--only id,id] [--key 이름] [--seed N] [--no-png]");
 const only = opt("only", "").split(",").filter(Boolean), keyName = opt("key", "ashvale"), seed0 = Number(opt("seed", "11")), png = !argv.includes("--no-png");
 fs.mkdirSync(out, { recursive: true });
+const heroFile = opt("hero", ""); const hero = heroFile ? PNG.sync.read(fs.readFileSync(heroFile)) : null;
 const base = createBlankProject(); ensureBundledTilesets(base); const TEMPLATE = JSON.stringify(base);
 const key = JSON.stringify(["project", `variety-${keyName}`]);
 
@@ -77,6 +79,14 @@ for (const kind of BEODEUL_VILLAGE_KINDS) {
       const x0 = Math.max(0, main.x - 5), y0 = Math.max(0, main.y - 4), x1 = Math.min(W, main.x + main.w + 5), y1 = Math.min(map.height, main.y + main.h + 5);
       const cw = (x1 - x0) * 32, ch = (y1 - y0) * 32; const crop = new PNG({ width: cw, height: ch });
       PNG.bitblt(full, crop, x0 * 32, y0 * 32, cw, ch, 0, 0);
+      if (hero) { // 주인공을 2배로, 발을 설 칸 아랫변에 맞춰
+        const hx = (main.stand.x - x0) * 32 + 16 - hero.width, hy = (main.stand.y - y0) * 32 + 32 - hero.height * 2;
+        for (let y = 0; y < hero.height * 2; y += 1) for (let x = 0; x < hero.width * 2; x += 1) {
+          const si = (Math.floor(y / 2) * hero.width + Math.floor(x / 2)) * 4; if (hero.data[si + 3]! < 128) continue;
+          const px = hx + x, py = hy + y; if (px < 0 || py < 0 || px >= cw || py >= ch) continue;
+          const di = (py * cw + px) * 4; for (let k = 0; k < 3; k += 1) crop.data[di + k] = hero.data[si + k]!; crop.data[di + 3] = 255;
+        }
+      }
       fs.writeFileSync(path.join(out, `${kind.id}-scene.png`), PNG.sync.write(crop));
       fs.writeFileSync(path.join(out, `${kind.id}-scene.json`), JSON.stringify({ x0, y0, stand: main.stand, name: main.ko }));
     }
