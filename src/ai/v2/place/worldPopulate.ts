@@ -4,6 +4,7 @@
 import { pickFittedTroops, pickSpot } from "@/editor/tools/jrpgVolumeTools";
 import { isPassable } from "@/project/collision";
 import { walkStart } from "./cells";
+import { isStoryRoom, storyLanes, storyThings, watchesLane } from "./storyWays";
 import { behindBuildingStrip } from "./entrances";
 import { incomingLandings } from "./where";
 import { laneCells } from "./placementRules";
@@ -16,12 +17,13 @@ type Cell = { readonly x: number; readonly y: number };
 const foeCount = (cells: number): number => (cells >= 1200 ? 3 : cells >= 280 ? 2 : 1);
 /** 보이는 적이 주인공을 알아채는 거리(칸) — 곁을 지나가면 덤비고, 멀리 돌아가면 피할 수 있다. */
 const NOTICE_RANGE = 3;
+const WORLD_FOE = (mapId: string) => new RegExp(`^ev_${mapId}_wfoe(\\d+)$`, "u");
 
 /**
  * 한 맵에 적·상자를 둔다. 둔 것이 있으면 한 줄(없으면 undefined). entrance = 그 맵에 들어오는 칸(없으면 가장 큰 걸음 덩이).
  * 적 · 전투 배경은 그 장소의 테마에서 고른다(placeTheme) — 사막 피라미드에 «광산 해골 궁수» 와 숲 배경이 섰다. 맞는 그림이 없어 대역을 쓰면 onGap 으로 알린다.
  */
-export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { readonly x: number; readonly y: number } | undefined, salt: number, onGap?: (line: string) => void): string | undefined {
+export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { readonly x: number; readonly y: number } | undefined, salt: number, onGap?: (line: string) => void, keep?: ReadonlyMap<number, string>): string | undefined {
   const map0 = run.ctx.project.maps[mapId];
   if (!map0) return undefined;
   // 들어오는 칸 = 이 맵으로 오는 이동의 도착 칸(이은 뒤에 부른다). 구성기의 «들어서는 칸» 은 맵 한가운데일 수 있어 그 다음에 본다.
@@ -35,6 +37,12 @@ export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { rea
   // 차도·선로 칸도 피한다 — 끝맺음 관문의 «사람 자리» 가 상자·적에게도 같은 것을 짚는다(명세 은행 r1s-fun: 보물상자가 선로 칸 (1,32) 에).
   const lanes = laneCells(run.ctx.project, map0);
   const hidden = (c: Cell) => !!strip[c.y * map0.width + c.x] || lanes.has(c.y * map0.width + c.x) || landings.some((l) => Math.abs(l.x - c.x) + Math.abs(l.y - c.y) <= 5);
+  // 이야기가 지나는 방(청사진 단계가 이 장소를 쓴다 · 이미 보스·쉼터가 섰다)에는 돌아다니는 적을 두지 않는다. 바깥 맵에서는 들어오는 칸과 그것들 사이의 길을 지켜보는 자리를 피한다.
+  const things = storyThings(run.ctx.project, mapId);
+  const staged = things.length > 0 || (run.ctx.project.gameBlueprint?.steps ?? []).some((step) => step.place.trim() === (map0.name ?? "").trim());
+  const noFoes = staged && isStoryRoom(run.ctx.project, mapId);
+  const storyWay = things.length ? storyLanes(run.ctx.project, mapId, things) : new Set<number>();
+  const foeHidden = (c: Cell) => hidden(c) || watchesLane(map0, storyWay, c, NOTICE_RANGE);
   const backdrop = applyThemeBackdrop(run.ctx.project, mapId);
   if (backdrop.gap) onGap?.(backdrop.gap);
   const themed = themeFieldTroops(run.ctx.project, mapId);
@@ -42,13 +50,13 @@ export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { rea
   const troops = themed.troopIds.length ? themed.troopIds : pickFittedTroops(run.ctx.project, undefined).field;
   const want = foeCount(map0.width * map0.height);
   let foes = 0;
-  for (let n = 1; n <= want && troops.length; n++) {
+  for (let n = 1; n <= want && troops.length && !noFoes; n++) {
     const map = run.ctx.project.maps[mapId]!;
     if (map.events.some((e) => e.id === foeId(n))) continue;
     // 들어온 칸에서 중간~먼 쪽으로 퍼뜨린다(문 앞에서 바로 싸우지 않게 최소 6걸음).
-    const spot = pickSpot(run.ctx.project, map, origin, taken, 0.45 + (0.4 * (n - 1)) / Math.max(1, want - 1), 6, hidden);
+    const spot = pickSpot(run.ctx.project, map, origin, taken, 0.45 + (0.4 * (n - 1)) / Math.max(1, want - 1), 6, foeHidden);
     if (!spot) break;
-    const troopId = troops[(salt + n) % troops.length]!;
+    const troopId = keep?.get(n) ?? troops[(salt + n) % troops.length]!;
     // 세우는 적의 현행 그림을 먼저 넣는다 — 놓는 도구가 그 그림(전투 그림)으로 세운다(옛 걷기 칩이 아니라).
     useCurrentArt(run.ctx.project, leadEnemyId(run.ctx.project, troopId));
     // 보이는 적은 걷는다 — 서 있기만 하는 적은 말 걸 사람으로 읽힌다(«해골 NPC 를 조사하자 전투»). 두 방향 · 한 칸 왕복까지 해 보고 그래도 없을 때만 세워 둔다.
@@ -70,6 +78,33 @@ export function populateWorldPlace(run: BuildRun, mapId: string, entrance: { rea
 }
 
 /**
+ * 이야기가 지어진 뒤에 한 번 더 본다 — 세계 채우기는 경로(단계 이벤트·보스·쉼터)보다 먼저 돌아 그것들의 자리를 모른다.
+ * 방에 그것들이 섰으면 그 방의 돌아다니는 적을 걷고, 바깥 맵에서 들어오는 칸과 그것들 사이의 길을 지켜보는 적은 같은 무리로 다른 자리에 다시 놓는다(자리가 없으면 걷는다).
+ * 되풀이 안전. 한 일 한 줄씩.
+ */
+export function clearFoesFromStoryWays(run: BuildRun, onGap?: (line: string) => void): string[] {
+  const notes: string[] = [];
+  for (const mapId of Object.keys(run.ctx.project.maps)) {
+    const project = run.ctx.project;
+    const map = project.maps[mapId]!;
+    const foes = map.events.flatMap((e) => { const m = WORLD_FOE(mapId).exec(e.id); return m ? [{ ev: e, n: Number(m[1]) }] : []; });
+    const things = foes.length ? storyThings(project, mapId) : [];
+    if (!things.length) continue;
+    const room = isStoryRoom(project, mapId);
+    const way = room ? undefined : storyLanes(project, mapId, things);
+    const off = foes.filter(({ ev }) => room || watchesLane(map, way!, ev, NOTICE_RANGE));
+    if (!off.length) continue;
+    const troopOf = (ev: (typeof foes)[number]["ev"]) => /"troopId":"([^"]+)"/u.exec(JSON.stringify(ev.pages ?? []))?.[1];
+    const keep = new Map(off.flatMap(({ ev, n }) => { const id = troopOf(ev); return id ? [[n, id] as const] : []; }));
+    for (const { ev } of off) run.call("remove_event", { mapId, eventId: ev.id });
+    if (!room) populateWorldPlace(run, mapId, undefined, 0, onGap, keep);
+    const back = room ? 0 : off.filter(({ ev }) => run.ctx.project.maps[mapId]!.events.some((e) => e.id === ev.id)).length;
+    notes.push(`「${map.name ?? mapId}」 ${room ? `방에 단계·보스·쉼터가 있어 돌아다니는 적 ${off.length} 걷음` : `단계로 가는 길을 지켜보던 적 ${off.length} — 다른 자리로 ${back}${back < off.length ? ` · 걷음 ${off.length - back}` : ""}`}`);
+  }
+  return notes;
+}
+
+/**
  * 앞선 빌드가 세운 세계 장소의 적·상자가 그 장소의 테마 밖이면 걷고 다시 놓는다 — 적은 앞장선 적의 전투 그림으로 견준다(맞춤 사본도 같은 그림이다).
  * 상자는 제작 재료(쓸 곳 없는 것)를 줄 때만. 이미 맞으면 아무것도 하지 않는다(되풀이 안전).
  */
@@ -79,7 +114,7 @@ export function restockOffThemePlaces(run: BuildRun, onGap?: (line: string) => v
     const project = run.ctx.project;
     const map = project.maps[mapId]!;
     if (!placeThemeOf(project, mapId)?.kind?.danger) continue;
-    const foes = map.events.filter((e) => new RegExp(`^ev_${mapId}_wfoe\\d+$`, "u").test(e.id));
+    const foes = map.events.filter((e) => WORLD_FOE(mapId).test(e.id));
     const chest = map.events.find((e) => e.id === `ev_${mapId}_wchest`);
     if (!foes.length && !chest) continue;
     const spriteOf = (troopId: string): string => {
