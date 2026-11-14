@@ -78,3 +78,53 @@ export function arrivalShielded(session: object, mapId: string): boolean {
   const shield = arrivalShields.get(session);
   return !!shield && shield.mapId === mapId && shield.leftMs > 0;
 }
+
+/**
+ * 도주 유예(escape grace) — 전투에서 도망친 직후, 이벤트 쪽에서 먼저 닿아 여는 접촉 전투를 잠깐 막는다.
+ * 왜(2026-11-14 폴른 스타 QA, 숲 어귀 (15,19)): 늑대 무리에게서 도망치자 0.8초 뒤, 한 걸음도 떼지 않았는데 바로 옆 칸의
+ * 멧돼지 무리가 새 전투를 열었다. 도망친 그 적은 저작 도구가 다는 쉼 페이지(셀프 스위치 B, 3초)와 추격자별 접촉 쿨다운으로
+ * 멈추지만, **곁에 있던 다른 추격자**에게는 아무 유예가 없었고, 쉼 3초가 끝나면 서 있기만 한 주인공에게 같은 적이 다시 붙었다.
+ * 걸음 수로 세는 무적 걸음(@/project/encounterGuard)은 풀숲 조우만 막는다.
+ * 규칙:
+ *   - 도망친 순간부터 필드 시간으로 ESCAPE_GRACE_MS 동안(대사·전투 중에는 줄지 않는다) 이 맵의 추격자는 제자리에 서고,
+ *     이벤트가 먼저 닿는 접촉(eventTouch)은 열리지 않는다.
+ *   - 주인공이 도망친 칸에 그대로 서 있는 동안에는 남은 유예가 ESCAPE_GRACE_AFTER_MOVE_MS 밑으로 줄지 않는다 —
+ *     손을 떼고 서 있다가 다시 붙잡히지 않고, 첫 걸음을 뗀 뒤에도 벗어날 시간이 남는다.
+ *   - 그래도 ESCAPE_GRACE_CAP_MS 가 지나면 끝난다(적 곁에 서서 끝없이 안전하지는 않다). 다른 맵으로 나가도 끝난다
+ *     (새 맵은 도착 보호가 맡는다). 끝난 뒤에는 저작한 그대로 다시 쫓고 닿으면 싸운다.
+ *   - **주인공이 제 발로 적에게 걸어가 부딪히거나 정면에서 확인 키를 누르는 것은 막지 않는다**(playSceneMovement 는 이 값을 보지 않는다).
+ * key 는 세션 객체다 — 불러오기·체크포인트 복귀로 세션이 바뀌면 유예도 사라진다.
+ */
+export const ESCAPE_GRACE_MS = 2500;
+export const ESCAPE_GRACE_AFTER_MOVE_MS = 1500;
+export const ESCAPE_GRACE_CAP_MS = 8000;
+
+interface EscapeGrace { mapId: string; x: number; y: number; leftMs: number; capLeftMs: number }
+const escapeGraces = new WeakMap<object, EscapeGrace>();
+
+/** 전투에서 도망쳤다 — 주인공이 선 칸 (mapId,x,y) 에 도주 유예를 새로 건다. */
+export function startEscapeGrace(session: object, at: { mapId: string; x: number; y: number }, ms = ESCAPE_GRACE_MS): void {
+  escapeGraces.set(session, { mapId: at.mapId, x: at.x, y: at.y, leftMs: Math.max(0, ms), capLeftMs: Math.max(ms, ESCAPE_GRACE_CAP_MS) });
+}
+
+/** 프레임마다: 시간을 빼고(deltaMs — 대사·전투 중이면 0 을 넘긴다), 다 썼거나 다른 맵이면 끝낸다. 아직 유예 중이면 true. */
+export function tickEscapeGrace(session: object, deltaMs: number, player: { mapId: string; x: number; y: number }): boolean {
+  const grace = escapeGraces.get(session);
+  if (!grace) return false;
+  const spent = Math.max(0, deltaMs);
+  grace.capLeftMs -= spent;
+  grace.leftMs -= spent;
+  const standing = player.x === grace.x && player.y === grace.y;
+  if (standing && grace.leftMs < ESCAPE_GRACE_AFTER_MOVE_MS) grace.leftMs = Math.min(ESCAPE_GRACE_AFTER_MOVE_MS, grace.capLeftMs);
+  if (grace.leftMs <= 0 || grace.capLeftMs <= 0 || player.mapId !== grace.mapId) {
+    escapeGraces.delete(session);
+    return false;
+  }
+  return true;
+}
+
+/** 이 맵에서 도주 유예 중인가 — 이벤트가 먼저 닿는 접촉을 열면 안 된다. */
+export function escapeGraceActive(session: object, mapId: string): boolean {
+  const grace = escapeGraces.get(session);
+  return !!grace && grace.mapId === mapId && grace.leftMs > 0 && grace.capLeftMs > 0;
+}

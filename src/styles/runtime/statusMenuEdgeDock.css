@@ -447,6 +447,18 @@
   overflow-wrap: anywhere;
 }
 
+/* 임무 줄거리: 제목 아래 줄 전체 폭으로 줄을 바꿔 다 보인다(설명 줄 없이도 한 줄 말줄임에 걸리지 않게 — 위 nowrap 보다 명확도를 높였다). */
+.oprn-status-menu .status-menu-detail-row[data-quest-row="summary"] .status-menu-detail-label { grid-column: 1 / -1; }
+.oprn-status-menu .status-menu-detail-row.status-menu-detail-row[data-quest-row="summary"] .status-menu-detail-value {
+  grid-column: 1 / -1;
+  justify-self: stretch;
+  overflow: visible;
+  text-align: left;
+  text-overflow: clip;
+  white-space: normal;
+  word-break: keep-all;
+}
+
 /* Story journal lines: full-width prose; erased lines fade, re-read lines keep a quiet mark. */
 .oprn-status-menu .status-menu-detail-row[data-journal-state] {
   grid-template-columns: minmax(0, 1fr) auto;
