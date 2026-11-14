@@ -1518,10 +1518,10 @@ jrpg-x1 은 광산 문이 «서쪽 길 끝»(두 칸 폭 길이라 이벤트 둘
 | 것 | 내용 | 어디서 |
 |---|---|---|
 | 물빛 `look.water` | clear 맑은 청록 187° · deep 깊은 푸른 물 203° · jade 비취빛 177° · tarn 어두운 산못 194°. 겉모습을 받는 새 게임은 늘 하나를 받는다(«원래 그림» 선택지 없음), `look.waterKey` 에 그림판 열쇠 | `src/assets/tilesetLooks.ts`(`TILESET_LOOK_PARTS` 끝에 `water`) · `src/assets/tilesetWater.ts` · `src/project/tilesetLook.ts` |
-| 그림판 `tex_beodeul_water` | 물 화소가 실린 시트 칸 9,258칸을 물빛마다 다시 칠한 칸(물과 풀·포석이 함께 실린 칸은 바닥·길 겉모습마다 한 벌), 물가 둑 256꼴 × 바닥 겉모습, 깊이 띠 셋, 폭포 띠. 시트 화소와 수식뿐 — 새로 그린 그림 없음(관문 항목 없음) | `scripts/content/beodeul-water/bake.py`(`--check`) → `public/assets/beodeul-water/chipset.png` · `src/assets/beodeulWater.json` |
+| 그림판 `tex_beodeul_water` | 물 화소가 실린 시트 칸 9,258칸을 물빛마다 다시 칠한 칸(물과 풀·포석이 함께 실린 칸은 바닥·길 겉모습마다 한 벌), 물가 둑 256꼴 × 바닥 겉모습, 깊이 띠 셋, 폭포 띠. 시트 화소와 수식뿐 — 새로 그린 그림 없음(관문 항목 없음) | 굽기 `scripts/content/beodeul-water/bake.py`(`--check`) · 결과 `public/assets/beodeul-water/chipset.png` · `src/assets/beodeulWater.json` |
 | 깊이·물가 | 2층 ★ 덧그림. 물가 칸: 풀 입술 · 젖은 테 · 옅은 얕은 물 줄 · 얕은 띠 · 그 너머 옅은 물골 막. 안쪽: 뭍에서의 거리(chamfer 5·12·21, 잡음으로 흔든다)로 띠 셋 | `src/editor/tools/beodeulWater.ts` `layBeodeulWaterSurface` · 이미 지은 맵은 `relayBeodeulWaterSurface`(숲길 못 · 풀 둑 던전 물) |
 | 강 모양 | 가운데 줄을 곡선으로 펴고 굽이마다 소로 부풀린다(곧은 데는 두세 칸). 운하·항구 물(돌 둑)은 손대지 않는다 | `src/editor/tools/beodeulRiverShape.ts` `flowingRiverCells` |
-| 폭포 | 강이 단을 따라 내려오고, 단이 내려가는 자리는 상류의 «남쪽 한 걸음» 으로 옮겨 3~5칸 폭으로 떨어진다(3/4 시점에서 보이는 절벽면은 남향뿐). 넓은 소에서는 목을 좁히고 밑은 용소로 넓어진다. 두 단이면 폭포 둘. 강 남쪽 둑은 강을 가리지 않게 물러난다 | `settleRiverLevels` · `clearRiverView` · `bandFallPlan`(평지 요청의 북쪽 띠) → `CodeTerrain.falls` |
+| 폭포 | 강이 단을 따라 내려오고, 단이 내려가는 자리는 상류의 «남쪽 한 걸음» 으로 옮겨 3~5칸 폭으로 떨어진다(3/4 시점에서 보이는 절벽면은 남향뿐). 넓은 소에서는 목을 좁히고 밑은 용소로 넓어진다. 두 단이면 폭포 둘. 강 남쪽 둑은 강을 가리지 않게 물러난다 | `settleRiverLevels` · `clearRiverView` · `bandFallPlan`(평지 요청의 북쪽 띠) · 결과는 `CodeTerrain.falls` |
 | 폭포 그림 | `relief.wallDecor` 에 움직이는 폭포 칸(원본 킷 `bd-waterfall-drop` 화소), 4층에 물마루·용소 물보라 — 절벽 그림이 무엇이든 그 위에 겹친다(`src/project/relief/**` 는 건드리지 않았다) | `hangBeodeulWaterfalls` · 플레이어 `playSceneMapRuntime.ts`·`playSceneRelief.ts` · 1배 그림기 `scripts/qa-game/render.mts` |
 | 물 위 살림 | 소·굽이에 수련 두세 장 무리와 가까운 둑의 갈대, 한 칸 나루는 디딤돌, 폭포 위·아래 널다리. 다리·나루·부두·폭포 줄은 비운다 | `dressBeodeulWaterLife` · `stoneBeodeulFords` · `fallBridgeCells` |
 | 작은 못 | 강 없는 마을(`water: "none"`)은 셋 중 둘이 우묵한 곳에 작은 못을 받는다 | `beodeulTerrainGen.ts` `pond` |
