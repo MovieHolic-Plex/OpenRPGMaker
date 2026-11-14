@@ -134,6 +134,70 @@ function findFfmpeg() {
   return null;
 }
 
+/**
+ * Opt-in continuous recording (QA_VIDEO=1). CDP screencast frames carry the browser's capture time, so each frame is
+ * stored with its offset from T0 — the same clock as trace.jsonl `t`. encode() resamples them to a constant frame rate
+ * where video second s shows the last frame captured at or before T0 + s, i.e. the frame at trace `t` is at t/1000 s.
+ * Frames are buffered on disk during play and encoded after the browser closes, so encoding does not compete with the
+ * session; encode time is reported in summary.video.
+ */
+async function startVideo() {
+  const dir = path.join(OUT, "video-frames");
+  fs.mkdirSync(dir, { recursive: true });
+  const frames = [];
+  const cdp = await ctx.newCDPSession(page);
+  cdp.on("Page.screencastFrame", (f) => {
+    cdp.send("Page.screencastFrameAck", { sessionId: f.sessionId }).catch(() => {});
+    const tMs = f.metadata?.timestamp ? Math.round(f.metadata.timestamp * 1000 - T0) : Date.now() - T0;
+    const file = `${String(frames.length).padStart(6, "0")}.jpg`;
+    fs.writeFileSync(path.join(dir, file), Buffer.from(f.data, "base64"));
+    frames.push({ tMs, file });
+  });
+  await cdp.send("Page.startScreencast", { format: "jpeg", quality: 70, maxWidth: vp.width, maxHeight: vp.height, everyNthFrame: 1 });
+  return {
+    stop: () => cdp.send("Page.stopScreencast"),
+    async encode() {
+      const fps = Number(process.env.QA_VIDEO_FPS ?? 10);
+      const ffmpeg = process.env.QA_VIDEO_FFMPEG ?? findFfmpeg();
+      const t0 = Date.now();
+      frames.sort((a, b) => a.tMs - b.tMs);
+      const out = { file: "video.webm", fps, frames: frames.length, firstFrameMs: frames[0]?.tMs ?? null, durationMs: Date.now() - T0 };
+      if (!frames.length || !ffmpeg) return { ...out, error: frames.length ? "no ffmpeg" : "no frames" };
+      // Before the first screencast frame there is nothing to show: those ticks repeat the first frame.
+      const ticks = Math.ceil(((frames.at(-1).tMs + 1000) * fps) / 1000);
+      const proc = spawn(ffmpeg, ["-y", "-loglevel", "error", "-f", "image2pipe", "-c:v", "mjpeg", "-framerate", String(fps), "-i", "pipe:0",
+        "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2", "-c:v", "libvpx-vp9", "-deadline", "realtime", "-cpu-used", "8", "-b:v", "0", "-crf", "40",
+        "-row-mt", "1", "-pix_fmt", "yuv420p", path.join(OUT, "video.webm")], { stdio: ["pipe", "ignore", "pipe"] });
+      let err = "";
+      proc.stderr.on("data", (d) => { err = (err + d).slice(-400); });
+      proc.stdin.on("error", (e) => { err += ` stdin: ${e.code ?? e}`; });
+      const closed = new Promise((resolve) => proc.on("close", resolve));
+      let k = 0;
+      for (let i = 0; i < ticks; i += 1) {
+        const tick = (i * 1000) / fps;
+        while (k + 1 < frames.length && frames[k + 1].tMs <= tick) k += 1;
+        if (proc.exitCode !== null || proc.stdin.destroyed) break;
+        if (!proc.stdin.write(fs.readFileSync(path.join(dir, frames[k].file)))) await Promise.race([new Promise((r) => proc.stdin.once("drain", r)), closed]);
+      }
+      proc.stdin.end();
+      const code = await closed;
+      if (code === 0 && process.env.QA_VIDEO_KEEP_FRAMES !== "1") fs.rmSync(dir, { recursive: true, force: true });
+      else fs.writeFileSync(path.join(dir, "frames.json"), JSON.stringify(frames));
+      return { ...out, ticks, encodeMs: Date.now() - t0, bytes: code === 0 ? fs.statSync(path.join(OUT, "video.webm")).size : 0, ...(code ? { error: `ffmpeg ${code}: ${err}` } : {}) };
+    },
+  };
+}
+/** Playwright ships an ffmpeg next to its browsers; a system ffmpeg works too. */
+function findFfmpeg() {
+  const root = path.join(process.env.HOME ?? "/root", ".cache/ms-playwright");
+  for (const d of fs.existsSync(root) ? fs.readdirSync(root) : []) {
+    if (!d.startsWith("ffmpeg")) continue;
+    for (const f of ["ffmpeg-linux", "ffmpeg-linux-arm64", "ffmpeg-mac"]) if (fs.existsSync(path.join(root, d, f))) return path.join(root, d, f);
+  }
+  for (const p of ["/usr/bin/ffmpeg", "/usr/local/bin/ffmpeg"]) if (fs.existsSync(p)) return p;
+  return null;
+}
+
 const sleep = (ms) => page.waitForTimeout(ms);
 const visible = (sel) => page.locator(sel).first().isVisible().catch(() => false);
 function note(action) { recent.push({ t: Date.now() - T0, a: action }); if (recent.length > 12) recent.shift(); }

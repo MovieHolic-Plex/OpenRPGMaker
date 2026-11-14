@@ -1,0 +1,24 @@
+#!/bin/bash
+# Agent-side CLI for arm B: talks to the run's warm host (ade-b-host.mjs). See README.md in this folder.
+P=${OPRN_PORT:?}; U=http://127.0.0.1:$P
+j(){ python3 -c 'import json,sys; print(json.dumps(dict(zip(sys.argv[1::2], sys.argv[2::2]))))' "$@"; }
+post(){ curl -s -m 900 -X POST -H 'content-type: application/json' --data-binary @- "$U$1"; echo; }
+case "${1:-help}" in
+  status) curl -s "$U/status"; echo ;;
+  tools) curl -s "$U/tools" | python3 -c 'import json,sys
+q=(sys.argv[1] if len(sys.argv)>1 else "").lower()
+for t in json.load(sys.stdin):
+    if q in (t["name"]+" "+t["description"]).lower(): print(t["name"], "["+t["mode"]+"]", t["description"])' "${2:-}" ;;
+  schema) curl -s "$U/schema?name=$2" | python3 -c 'import json,sys;print(json.dumps(json.load(sys.stdin),ensure_ascii=False,indent=1))' ;;
+  tool)
+    name=$2; args=${3:-'{}'}; map=""; [ "${4:-}" = --map ] && map=$5
+    [ "${args:0:1}" = @ ] && args=$(cat "${args:1}")
+    python3 -c 'import json,sys; print(json.dumps({"name":sys.argv[1],"args":json.loads(sys.argv[2]),**({"map":sys.argv[3]} if sys.argv[3] else {})}))' "$name" "$args" "$map" | post /tool ;;
+  get) j file "$(realpath -m "${2:-project.json}")" | post /get ;;
+  put) j file "$(realpath "$2")" | post /put ;;
+  shot) j map "${2:-}" name "${3:-}" | python3 -c 'import json,sys;d=json.load(sys.stdin);print(json.dumps({k:v for k,v in d.items() if v}))' | post /shot ;;
+  check)
+    f=$(mktemp -d)/p.json; j file "$f" | post /get > /dev/null
+    (cd "$ADE_WT" && timeout 600 bun scripts/qa-game/check.mts --project "$f" --out "$(dirname $f)" --quiet > /dev/null 2>&1; cat "$(dirname $f)/check.txt" 2>/dev/null | head -60) ;;
+  *) sed -n 1,40p "$(dirname "$0")/README.md" ;;
+esac
