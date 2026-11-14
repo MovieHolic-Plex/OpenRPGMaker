@@ -1438,7 +1438,7 @@ function observatoryAlarm(project: Project, obsId: string, hubId: string, siegeF
       say(H, "카엘, 엘레나! …살아 있었구나.", { calling: true }),
       say(H, "방금 북쪽으로 빛줄기가 솟았다.\n온 마을이 보았을 게다.", { calling: true }),
       se("cc0-se-osx-bell-02"),
-      say(H, "발렌이 기사단을 끌고 왔다.\n천문대를 빙 둘러쌌어.", { calling: true }),
+      say(H, "발렌이 기사단을 끌고 왔다.\n천문대를 빙 둘러쌌다.", { calling: true }),
       say(KAEL, "숲에서 순순히 물러가더니…\n여기서 기다리고 있었네요."),
       say(IRIS, "제가 나가면 돼요.\n그럼 아무도 안 다쳐요."),
       say(KAEL, "안 돼."),
