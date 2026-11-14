@@ -1,0 +1,83 @@
+@set cafe-terrace|city
+cafe-table-round|1|1|prop|eu|low_furniture|카페 원탁|round cafe table|카페 탁자;테라스 탁자|Small round bistro table, white marble top ellipse seen from above with a cup and a small vase, dark iron pedestal leg.
+cafe-chair-bistro|1|1|prop|eu|seat|비스트로 의자|bistro chair|카페 의자;테라스 의자|Woven bistro chair facing the viewer: wine-and-cream woven seat seen from above, curved backrest behind it, thin legs.
+cafe-parasol-table|2|3|prop|eu|structure|파라솔 탁자|parasol table set|파라솔;카페 파라솔|A big round parasol seen from front-above (cream canvas with wine-red segments, scalloped edge) on a pole over a round table with two chairs at its sides.
+menu-stand|1|2|prop|eu|front_prop|메뉴판 스탠드|menu stand|메뉴판;메뉴 스탠드|Menu lectern on a post: slanted dark board with white lines of chalk and a small amber fork-and-knife drawing, lamp on top.
+terrace-planter-box|2|1|prop|eu|container|테라스 화단 상자|terrace planter box|화단;플랜터|Long wooden planter box that fences a terrace, filled with a clipped green hedge dotted with pink and white flowers.
+terrace-fence-glass|2|1|prop|eu|frame|테라스 유리 가림막|terrace glass screen|가림막;테라스 난간|Low terrace windscreen: two glass panels in dark frames on a low base, pale blue glass with white glints.
+cafe-table-set-two|2|2|prop|eu|low_furniture|2인 카페 탁자 세트|cafe table for two|카페 탁자 세트|Square table with a red-checked cloth seen from above, two plates, and one chair at each side (left and right), chairs facing the table.
+patio-heater|1|2|prop|eu|column|테라스 난로|patio heater|난로;히터|Tall steel patio heater: round base tank, thin pole, mushroom-shaped reflector hood at the top with an amber glow under it.
+ice-cream-cart|2|2|prop|eu|box|아이스크림 수레|ice-cream cart|아이스크림 수레;젤라토 수레|Push cart with two spoked wheels, white box body with pink stripe, small striped umbrella above, three coloured tubs visible on top.
+wine-crate-display|1|1|prop|eu|box|포도주 상자|wine crate display|와인 상자;포도주 상자|Wooden crate standing open with four dark green bottle tops and straw, one bottle standing beside it.
+@set market|city
+stall-fruit|2|2|prop|eu|structure|과일 좌판|fruit market stall|과일 가게;좌판|Market stall: green-and-white striped canopy seen from above over a counter loaded with red apples, amber oranges and green pears in three clear heaps.
+stall-veg|2|2|prop|eu|structure|채소 좌판|vegetable market stall|채소 가게;좌판|Market stall: plain amber canopy over a counter of leafy greens, orange carrots and white cauliflowers in three heaps.
+stall-fish|2|2|prop|eu|structure|생선 좌판|fish market stall|생선 가게;좌판|Market stall: blue-and-white striped canopy over a counter of white crushed ice with silver-blue fish in rows and one pink fish.
+stall-cheese|2|2|prop|eu|structure|치즈 좌판|cheese market stall|치즈 가게;좌판|Market stall: wine-red canopy over a wooden counter with big amber cheese wheels, one cut open showing a paler wedge.
+stall-flowers|2|2|prop|eu|structure|꽃 좌판|flower market stall|꽃 가게;좌판|Market stall: pink-and-white striped canopy over stepped shelves of flower pots — pink, white, amber blooms over green leaves.
+stall-bread|2|2|prop|eu|structure|빵 좌판|bread market stall|빵 가게;좌판|Market stall: cream canopy over a counter with baskets of amber round loaves, long baguettes standing upright and pretzels.
+stall-hotdog|2|2|prop|na|structure|핫도그 수레|hot dog cart|핫도그;노점|Street food cart: steel box on two wheels with a big amber-and-wine umbrella above, a steam pot lid and two mustard-yellow and red squeeze bottles on top.
+stall-books|2|2|prop|eu|structure|헌책 좌판|second-hand book stall|책 좌판;헌책|Market stall: dark green box canopy over a table of book spines standing in rows — wine, blue, amber, teal — and a small stack lying on the corner.
+@set park|city
+bandstand|3|3|prop|na|structure|야외 음악당|park bandstand|음악당;정자|Octagonal bandstand seen from front-above: teal-green roof drawn as a wide ellipse-like octagon with a finial, white posts and railing below, raised stone base with two steps in front.
+fountain-tiered|3|3|prop|eu|container|3단 분수|tiered stone fountain|분수|Round stone basin (ellipse seen from above) full of blue water, a central pedestal with two smaller bowls stacked, white water falling in thin lines.
+statue-rider|2|3|prop|eu|figure|기마상|equestrian statue|동상;기마상|Verdigris-green bronze statue of a rider on a standing horse, facing the viewer, on a tall pale stone plinth with a dark plaque.
+statue-poet|1|3|prop|eu|figure|시인 동상|standing statue of a poet|동상;석상|Dark bronze standing figure in a long coat holding a book, on a pale stone pedestal whose top face is visible.
+park-bench-iron|2|1|prop|eu|seat|주철 공원 벤치|cast iron park bench|공원 벤치;벤치|Green wooden slat bench with black cast-iron scroll ends, seat slats seen from above, backrest behind.
+park-lamp-lantern|1|3|prop|eu|column|공원 등(랜턴)|park lantern lamp|공원 등;가로등|Black fluted post with a four-sided glass lantern glowing amber, small pointed cap.
+hedge-straight|2|1|prop|eu|organic|다듬은 생울타리|clipped hedge piece|생울타리;울타리 나무|Box hedge clipped square: flat lighter top face seen from above, darker front face, leaf texture. Fills the full 32 px width so pieces join.
+hedge-ball|1|1|prop|eu|organic|공 모양 토피어리|topiary ball|토피어리;둥근 나무|Round clipped topiary ball in a terracotta pot.
+hedge-arch|2|3|prop|eu|organic|생울타리 아치|hedge arch|아치;덩굴 아치|Garden arch of clipped green hedge with pink roses, two thick leafy legs and a rounded top, opening in the middle is transparent.
+playground-slide|2|2|prop|na|structure|미끄럼틀|playground slide|미끄럼틀;놀이터|Children's slide facing the viewer: red ladder platform at the back top, amber chute coming straight down toward the viewer, blue side rails.
+playground-swing|2|2|prop|na|frame|그네|swing set|그네;놀이터|Swing set: blue steel frame (top bar with two splayed legs each side), two hanging swings with red seats on chains.
+playground-seesaw|2|1|prop|na|low_furniture|시소|seesaw|시소;놀이터|Seesaw seen from front-above: long amber plank lying level left to right on a red centre pivot, blue handles at each end.
+sandbox-toys|2|2|prop|na|container|모래 놀이터|sandbox|모래밭;모래 놀이터|Square wooden-framed sandbox seen from above filled with pale sand, a red bucket and a blue spade in it.
+drinking-fountain|1|1|prop|na|column|공원 음수대|drinking fountain|음수대;식수대|Short stone pedestal with a steel bowl on top seen from above and a small arc of water.
+flowerbed-round|2|2|prop|eu|organic|둥근 꽃밭|round flowerbed|꽃밭;화단|Round raised flowerbed with a low stone kerb: rings of pink, white and amber flowers around a small green shrub in the middle.
+pigeons|1|1|flat|eu|organic|비둘기 떼|pigeons on the ground|비둘기;새|Three grey pigeons pecking on the ground seen from above-front, one white. Tiny shadows only.
+@set alley|city
+dumpster-green|2|2|prop|na|box|초록 대형 쓰레기통|green dumpster|덤프스터;쓰레기 컨테이너|Big green steel dumpster with two dark sloping lids seen from above (one propped slightly open showing black bags), ribbed front, small wheels.
+dumpster-blue|2|2|prop|na|box|파란 재활용 컨테이너|blue recycling dumpster|재활용 컨테이너;덤프스터|Big blue steel dumpster, flat closed lid seen from above with a white arrow-triangle mark, cardboard leaning at its side.
+fire-escape-ladder|1|3|prop|na|frame|비상계단 사다리 끝|fire escape drop ladder|비상 사다리;철 사다리|The bottom end of a black iron fire-escape ladder hanging down from above: two rails and rungs, ending 6 px above the ground, small landing grate at the very top.
+crates-stacked|1|2|prop|na|box|쌓인 나무 궤짝|stacked wooden crates|궤짝;나무 상자|Three wooden slat crates stacked slightly askew, the top one open with straw.
+laundry-line-alley|3|2|over|eu|frame|골목 빨랫줄|laundry line between buildings|빨랫줄;빨래|A rope strung straight across the full 48 px width near the top, sagging 2 px, with hanging laundry: white shirt, blue trousers, pink towel, white sheet, amber socks. Nothing else; all the rest transparent.
+backdoor-steps|2|2|prop|na|structure|뒷문 계단|back door steps|뒷문;뒷계단|Three concrete steps seen from above-front leading up to a dark steel back door with a small wired window and a caged lamp above it.
+alley-cat-sitting|1|1|prop|na|figure|앉은 골목 고양이|sitting alley cat|고양이;길고양이|A ginger-amber cat sitting upright facing the viewer, tail curled round, white chest.
+alley-cat-on-bin|1|2|prop|na|figure|쓰레기통 위 고양이|cat on a trash can|고양이;길고양이|A dented steel trash can with a lid, and a black cat with yellow eyes sitting on the lid.
+trash-cans-metal|2|1|prop|na|round_body|양철 쓰레기통 둘|two metal trash cans|쓰레기통;양철통|Two ribbed galvanised trash cans side by side, one lid on, one lid leaning with a black bag bulging out.
+pallet-boxes|2|2|prop|na|box|팰릿 위 상자|boxes on a pallet|팰릿;상자 더미|Wooden pallet with stacked cardboard boxes (amber-brown with pale tape lines), two layers, top faces visible.
+drainpipe-puddle|1|1|flat|na|flat|물웅덩이|puddle|물웅덩이;웅덩이|Irregular shallow puddle seen from above, blue-grey with two white glints. Flat.
+electric-meter-wall|1|2|prop|na|wall_mounted|전기 계량기함|wall electric meter box|계량기;두꺼비집|Grey wall box with a round glass meter dial, a conduit pipe going up from it, small red warning tag.
+@set construction|city
+site-fence-panel|2|2|prop|na|frame|공사장 철망 울타리|construction mesh fence panel|공사 울타리;철망|Temporary fence panel: steel tube frame with grey wire mesh (drawn as sparse diagonal dots, see-through), two concrete block feet. Fills the 32 px width so panels join.
+site-hoarding-wood|2|2|prop|na|wall_structure|공사장 판자 가림벽|wooden site hoarding|가림벽;공사 가림막|Plywood hoarding panel painted pale blue with a darker base band and one amber-and-ink diamond warning sign, top cap board. Fills the 32 px width.
+excavator|3|3|prop|na|other|굴착기|excavator|굴착기;포크레인|Yellow-amber excavator seen from front-above facing right: dark crawler tracks at the bottom, boxy cab with blue glass on the left part, arm rising and folding down to a toothed bucket resting on the ground at the right.
+cone-pair|1|1|prop|na|column|고깔 둘|two traffic cones|고깔;콘|Two orange-brick traffic cones with white bands on dark square bases.
+barrier-striped|2|1|prop|na|frame|줄무늬 바리케이드|striped road barrier|바리케이드;차단대|A-frame road barrier: one long board with wine-red and white diagonal stripes on two splayed legs, small amber lamp on top at the left.
+dirt-pile|2|2|prop|na|organic|흙더미|dirt pile|흙더미;토사|Conical heap of brown earth, lit upper left, with a few stones and a shovel stuck upright in the top.
+site-hut|3|3|prop|na|box|현장 사무소 컨테이너|site office hut|현장 사무소;컨테이너|Portable cabin: pale grey-green ribbed steel box, flat roof seen from above with a vent, front with a door (left) with two steps and a window with blinds (right).
+scaffold-piece|2|3|prop|na|frame|비계 조각|scaffolding bay|비계;아시바|One bay of steel scaffolding: grey tubes, two levels of wooden plank decks seen from above, a diagonal brace, amber safety net strip on the upper level. See-through between tubes.
+cement-mixer|2|2|prop|na|round_body|콘크리트 믹서|cement mixer|믹서;레미콘 혼합기|Small orange-amber drum cement mixer on two wheels with a tilted round drum whose dark opening faces up-left, steel frame and handle.
+brick-pallet|2|1|prop|na|box|벽돌 팰릿|pallet of bricks|벽돌 더미|Pallet with a neat cube of red bricks, top face visible, strapped with two pale bands.
+porta-toilet|1|2|prop|na|box|간이 화장실|portable toilet|간이 화장실|Blue plastic portable toilet cabin: slightly domed white roof seen from above, door with a small vent and a round latch.
+steel-pipes|2|1|prop|na|round_body|강관 더미|stack of steel pipes|파이프;강관|Pyramid of six grey steel pipes seen end-on (dark round openings toward the viewer), wooden chocks.
+@set tram-bus|city
+tram-stop-sign|1|3|prop|eu|column|전차 정류장 표지|tram stop sign|전차 표지;트램 정류장|Tall pole with a ROUND amber sign showing a dark tram front pictogram, a white timetable box lower on the pole.
+tram-shelter|3|3|prop|eu|structure|전차 정류장 쉘터|tram shelter|쉘터;정류장|Glass shelter: dark green flat roof seen from above, glass back wall with a route diagram (coloured line with dots), a bench inside, two green posts.
+ticket-machine|1|2|prop|eu|box|승차권 판매기|ticket machine|표 판매기;발권기|Free-standing ticket machine: blue cabinet, small lit amber screen, coin slot and a white ticket tray, top face visible.
+tram-wire-pole|1|3|prop|eu|column|전차선 기둥|tram wire pole|전차선 기둥;가선주|Tall dark green steel pole with an arm bracket at the top reaching right and two ceramic insulators.
+bus-shelter-ad|3|3|prop|na|structure|버스 쉘터(광고 측면)|bus shelter with ad panel|버스 쉘터;정류장|Bus shelter: flat brown roof seen from above, glass back, wooden bench inside, and at the right end a lit ad panel (amber with a pink ice-cream drawing).
+route-map-board|1|2|prop|eu|front_prop|노선도 안내판|route map board|안내판;노선도|Standing info board on two legs: white panel with a simple map of coloured lines (blue, wine, green) and dots, dark frame with a small roof cap.
+@set seasonal|city
+pumpkin-pile|2|1|prop|na|organic|호박 더미|pile of pumpkins|호박;핼러윈 호박|Five pumpkins of different sizes in a heap, orange-amber with dark ribs and green stems.
+jack-o-lantern|1|1|prop|na|figure|호박등|jack-o'-lantern|호박등;잭오랜턴|One big carved pumpkin with glowing amber triangle eyes and a jagged grin, green stem.
+scarecrow-halloween|1|2|prop|na|figure|핼러윈 허수아비 장식|halloween scarecrow decoration|허수아비 장식;핼러윈|Small decorative scarecrow on a stick with a pumpkin head and a pointed dark-purple-blue witch hat, straw hands, standing in a hay bale.
+ghost-banner|1|2|prop|na|front_prop|유령 깃발 장식|ghost decoration on a pole|유령 장식;핼러윈|A white sheet ghost with two dark eyes hanging from a short pole with a hook, amber bow.
+christmas-tree|2|3|prop|eu|organic|크리스마스트리|christmas tree|크리스마스트리;성탄 나무|Tall green fir cone in three tiers with an amber star on top, wine-red and blue baubles, amber lights, on a small red-wrapped stand.
+gift-pile|1|1|prop|eu|box|선물 상자 더미|pile of gifts|선물;선물 상자|Three wrapped boxes: wine-red with white ribbon, green with amber ribbon, blue small one on top.
+light-garland|3|1|over|eu|frame|전구 줄 장식|string of lights|전구 줄;가랜드|A dark wire across the full 48 px width sagging in two shallow curves, with bulbs every 4 px alternating amber, wine-red, green, blue. Nothing else.
+snowman|1|2|prop|eu|figure|눈사람|snowman|눈사람|Two-ball snowman with a wine-red scarf, dark top hat, carrot nose and stick arms.
+wreath-stand|1|2|prop|eu|front_prop|성탄 화환 스탠드|wreath on a stand|화환;리스|Green fir wreath with a big wine-red bow and amber dots, hanging on a dark iron easel stand.
+leaf-pile|2|1|prop|na|organic|낙엽 더미|autumn leaf pile|낙엽;낙엽 더미|Raked heap of autumn leaves in amber, brick-orange and wine, with a rake standing upright in it.
+leaf-scatter|1|1|flat|na|flat|흩어진 낙엽|scattered autumn leaves|낙엽|A dozen fallen leaves scattered flat on the ground: amber, brick-orange, wine. Flat, no shadow.
+hay-bale-display|2|2|prop|na|box|가을 장식 건초|autumn hay display|가을 장식;건초 장식|Two square straw bales stacked as a step, a pumpkin on the lower one and a pot of wine-red chrysanthemums on the upper one.

@@ -1,0 +1,359 @@
+{
+ "bakery": {
+  "built": true,
+  "size": [
+   4,
+   6
+  ],
+  "roofTaperPx": [
+   0,
+   0
+  ],
+  "notes": []
+ },
+ "icecream": {
+  "built": true,
+  "size": [
+   3,
+   6
+  ],
+  "roofTaperPx": [
+   0,
+   0
+  ],
+  "notes": []
+ },
+ "diner": {
+  "built": true,
+  "size": [
+   5,
+   5
+  ],
+  "roofTaperPx": [
+   0,
+   0
+  ],
+  "notes": []
+ },
+ "barber": {
+  "built": true,
+  "size": [
+   3,
+   7
+  ],
+  "roofTaperPx": [
+   0,
+   0
+  ],
+  "notes": []
+ },
+ "newsstand": {
+  "built": true,
+  "size": [
+   3,
+   5
+  ],
+  "roofTaperPx": [
+   0,
+   0
+  ],
+  "notes": []
+ },
+ "florist": {
+  "built": true,
+  "size": [
+   4,
+   7
+  ],
+  "roofTaperPx": [
+   0,
+   0
+  ],
+  "notes": [
+   "옥상 기물 roof-chimney-stack 가 지붕 면(64x32)에 안 맞아 뺐다"
+  ]
+ },
+ "bookshop": {
+  "built": true,
+  "size": [
+   4,
+   8
+  ],
+  "roofTaperPx": [
+   0,
+   0
+  ],
+  "notes": []
+ },
+ "laundromat": {
+  "built": true,
+  "size": [
+   4,
+   6
+  ],
+  "roofTaperPx": [
+   0,
+   0
+  ],
+  "notes": [
+   "옥상 기물 roof-duct-run 가 지붕 면(64x48)에 안 맞아 뺐다"
+  ]
+ },
+ "police": {
+  "built": true,
+  "size": [
+   5,
+   7
+  ],
+  "roofTaperPx": [
+   0,
+   0
+  ],
+  "notes": [
+   "옥상 기물 roof-door-hut 가 지붕 면(80x32)에 안 맞아 뺐다"
+  ]
+ },
+ "bus-cafe": {
+  "built": true,
+  "size": [
+   5,
+   5
+  ],
+  "roofTaperPx": [
+   0,
+   0
+  ],
+  "notes": []
+ },
+ "walkup": {
+  "built": false,
+  "missing": [
+   "fire-escape",
+   "walkup-deli",
+   "walkup-shop",
+   "walkup-upper",
+   "walkup-upper-b"
+  ]
+ },
+ "pizzeria": {
+  "built": false,
+  "missing": [
+   "pizzeria-door",
+   "pizzeria-upper",
+   "pizzeria-upper-b",
+   "pizzeria-window",
+   "sign-pizza"
+  ]
+ },
+ "pharmacy": {
+  "built": false,
+  "missing": [
+   "pharm-clinic",
+   "pharm-door",
+   "pharm-pier",
+   "pharm-upper",
+   "pharm-window",
+   "sign-cross"
+  ]
+ },
+ "bank": {
+  "built": false,
+  "missing": [
+   "bank-bay",
+   "bank-door",
+   "bank-upper",
+   "bank-upper-mid"
+  ]
+ },
+ "post": {
+  "built": false,
+  "missing": [
+   "post-door",
+   "post-upper",
+   "post-window",
+   "sign-horn"
+  ]
+ },
+ "pub": {
+  "built": false,
+  "missing": [
+   "pub-door",
+   "pub-upper",
+   "pub-window",
+   "sign-mug"
+  ]
+ },
+ "townhouses": {
+  "built": false,
+  "missing": [
+   "th-ground-a",
+   "th-ground-b",
+   "th-ground-c",
+   "th-upper-a",
+   "th-upper-b",
+   "th-upper-c"
+  ]
+ },
+ "garage": {
+  "built": false,
+  "missing": [
+   "garage-bay-open",
+   "garage-bay-shut",
+   "garage-office",
+   "sign-wrench"
+  ]
+ },
+ "townhall": {
+  "built": false,
+  "missing": [
+   "hall-turret",
+   "hall-upper",
+   "hall-upper-mid",
+   "th-arcade",
+   "th-portal"
+  ]
+ },
+ "library": {
+  "built": false,
+  "missing": [
+   "lib-attic",
+   "lib-attic-mid",
+   "lib-bay",
+   "lib-door",
+   "lib-upper",
+   "lib-upper-mid"
+  ]
+ },
+ "school": {
+  "built": false,
+  "missing": [
+   "sch-cupola",
+   "sch-door",
+   "sch-upper",
+   "sch-upper-mid",
+   "sch-wing"
+  ]
+ },
+ "hotel": {
+  "built": false,
+  "missing": [
+   "hot-canopy",
+   "hot-door",
+   "hot-ground",
+   "hot-mansard",
+   "hot-mansard-mid",
+   "hot-upper",
+   "hot-upper-b",
+   "hot-upper-mid"
+  ]
+ },
+ "cinema": {
+  "built": false,
+  "missing": [
+   "cin-blade",
+   "cin-door",
+   "cin-marquee",
+   "cin-poster",
+   "cin-poster-b",
+   "cin-upper",
+   "cin-upper-mid",
+   "cin-upper-top"
+  ]
+ },
+ "department": {
+  "built": false,
+  "missing": [
+   "dep-attic",
+   "dep-attic-mid",
+   "dep-dome",
+   "dep-door",
+   "dep-upper",
+   "dep-upper-b",
+   "dep-upper-mid",
+   "dep-window"
+  ]
+ },
+ "station": {
+  "built": false,
+  "missing": [
+   "sta-arch",
+   "sta-clock-gable",
+   "sta-fan",
+   "sta-portal",
+   "sta-upper",
+   "sta-wing"
+  ]
+ },
+ "mall": {
+  "built": false,
+  "missing": [
+   "mall-anchor",
+   "mall-anchor-b",
+   "mall-anchor-up",
+   "mall-atrium",
+   "mall-atrium-up",
+   "mall-glass",
+   "mall-panel",
+   "mall-shops",
+   "mall-shops-b",
+   "mall-skylight",
+   "sign-bag"
+  ]
+ },
+ "hospital": {
+  "built": false,
+  "missing": [
+   "hos-door",
+   "hos-er-bay",
+   "hos-er-door",
+   "hos-er-wall",
+   "hos-ground",
+   "hos-ground-b",
+   "hos-helipad",
+   "hos-ward",
+   "hos-ward-b",
+   "hos-ward-top",
+   "sign-hospital"
+  ]
+ },
+ "stadium": {
+  "built": false,
+  "missing": [
+   "std-arch",
+   "std-gate",
+   "std-gate-side",
+   "std-light",
+   "std-pitch",
+   "std-scoreboard",
+   "std-upper",
+   "std-upper-mid"
+  ]
+ },
+ "cathedral": {
+  "built": false,
+  "missing": [
+   "cat-belfry",
+   "cat-buttress",
+   "cat-fleche",
+   "cat-gallery",
+   "cat-niche",
+   "cat-portal",
+   "cat-rose",
+   "cat-rose-window",
+   "cat-sideportal",
+   "cat-tower-mid"
+  ]
+ },
+ "clocktower": {
+  "built": false,
+  "missing": [
+   "clk-base",
+   "clk-base-b",
+   "clk-cap",
+   "clk-dial",
+   "clk-face",
+   "clk-shaft",
+   "clk-shaft-b"
+  ]
+ }
+}

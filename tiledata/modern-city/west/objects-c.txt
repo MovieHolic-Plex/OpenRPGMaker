@@ -1,0 +1,65 @@
+@set main-street|city
+hydrant-yellow|1|1|prop|na|column|노란 소화전|yellow fire hydrant|소화전|Squat American fire hydrant painted amber-yellow with a blue-green domed cap and two side nozzles.
+manhole-steam|1|1|flat|na|flat|김 나는 맨홀|steaming manhole cover|맨홀;맨홀 뚜껑|Round dark iron manhole cover seen from above with a ring pattern and three small white steam wisps. Flat.
+planter-barrel-flowers|1|1|prop|na|container|반 술통 화분|half-barrel flower planter|화분;통 화분|Half oak barrel planter with dark hoops full of wine-red and white flowers.
+flag-pole-banner|1|3|prop|na|column|가로 깃발 기둥|street banner pole|깃발;현수기|Tall grey pole with a vertical cloth banner on a side arm: wine-red banner with a white star and an amber fringe at the bottom.
+@set rooftop|city
+roof-ac-unit|1|1|prop|na|box|옥상 실외기|rooftop AC unit|실외기;에어컨 실외기|Pale grey rooftop condenser box: top face with a ROUND dark fan grille seen from above, low louvred front face, on two small feet.
+roof-ac-big|2|2|prop|na|box|옥상 대형 공조기|large rooftop HVAC unit|공조기;옥상 설비|Big pale grey rooftop air handler: top with two round fan grilles side by side, louvred front, a fat duct stub at the left.
+roof-duct-run|2|1|prop|na|box|옥상 덕트|rooftop duct run|덕트;환기 덕트|A square galvanised duct running left to right across the full 32 px on small supports, seam lines, an elbow turning down at the right end.
+roof-vent-mushroom|1|1|prop|na|column|버섯 환기구|mushroom roof vent|환기구;벤트|Short steel pipe with a round mushroom cap seen from above (light ellipse) and a second smaller turbine vent beside it.
+roof-water-tower|2|3|prop|na|round_body|다리 달린 물탱크|rooftop water tower on legs|물탱크;급수탑|Wooden barrel water tank with dark iron hoops and a shallow CONICAL cap seen from above, standing on a steel leg frame with cross braces; a ladder up the front.
+roof-door-hut|2|2|prop|na|box|옥상 출입 계단실|rooftop stair hut|옥상 문;계단실|Small brick stair bulkhead: flat tar top face seen from above with a pale rim, front face red-brown brick with one grey steel door and a lamp.
+roof-skylight|2|1|prop|eu|flat|천창|skylight|천창;스카이라이트|Low glass skylight seen from above: pale steel frame with four blue glass panes and white glints, 3 px high front lip.
+roof-chimney-stack|1|2|prop|eu|column|굴뚝(옹기 굴뚝관)|chimney stack with pots|굴뚝|Red-brown brick chimney stack with a pale stone cap seen from above and two terracotta chimney pots on it, a wisp of pale smoke.
+roof-satellite-dish|1|1|prop|na|other|위성 안테나|satellite dish|위성 안테나;접시 안테나|White round satellite dish tilted up-left on a short mast with its feed arm, dark base plate.
+roof-billboard-frame|3|2|prop|na|front_prop|옥상 광고판(틀)|rooftop billboard on a frame|옥상 광고판;옥상 간판|Wide rooftop sign board standing on a steel lattice frame: wine-red panel with a big white coffee cup pictogram and amber border bulbs. Braces visible below the panel.
+roof-billboard-pizza|3|2|prop|na|front_prop|옥상 광고판(피자)|rooftop billboard, pizza|옥상 광고판;옥상 간판|Wide rooftop sign board on a steel lattice frame: dark green panel with a big amber pizza slice with red dots and a white border.
+roof-laundry-line|2|2|prop|eu|frame|옥상 빨랫줄|rooftop laundry line|빨랫줄;빨래|Two short T-posts with two lines between them and hanging laundry: white sheet, pink shirt, blue shirt, amber towel.
+roof-garden-planters|2|1|prop|eu|container|옥상 텃밭 상자|roof garden planters|옥상 정원;텃밭 상자|Two wooden raised planter boxes side by side: one with green leafy rows and red tomatoes, one with pink and white flowers.
+roof-deck-chairs|2|1|prop|eu|seat|옥상 접이의자|rooftop deck chairs|접이의자;선베드|Two striped canvas deck chairs facing the viewer (wine-white and blue-white stripes) with a tiny round table between them.
+@set farm|rural
+hay-bale-round|1|1|prop|na|round_body|둥근 건초 더미|round hay bale|건초;건초 롤|Big round straw bale standing on its curved side seen end-on: spiral end face toward the viewer, amber straw, lit top.
+hay-bales-square|2|1|prop|na|box|네모 건초 더미|square hay bales|건초;짚단|Three rectangular straw bales, two side by side and one on top across them, twine lines, top faces lit.
+tractor-red|2|2|prop|na|other|빨간 트랙터|red tractor|트랙터|Old red tractor seen from front-above facing right: big dark rear wheel at the left with amber hub, small front wheel at the right, red bonnet, steering wheel and seat, exhaust pipe up.
+plough|2|1|prop|na|other|쟁기|plough|쟁기|Steel plough implement: dark frame bar with three curved shining blades in a row and a hitch at the left.
+windmill-pump|2|4|prop|na|structure|풍차 펌프|wind pump|풍차 펌프;바람개비 펌프|American farm wind pump: tall slim steel lattice tower, at the top a round many-bladed fan wheel facing the viewer (pale blades, dark hub) with a tail vane to the right; small tank at the base.
+water-trough|2|1|prop|na|container|물구유|water trough|물통;구유|Long galvanised steel trough seen from above-front: blue water surface inside the rim, a hand pump at the left end.
+scarecrow|1|2|prop|na|figure|허수아비|scarecrow|허수아비|Scarecrow on a cross pole: straw hat, sack face with stitched smile, blue checked shirt with arms straight out, straw hands.
+chicken-coop|2|2|prop|na|box|닭장|chicken coop|닭장|Small red-brown wooden hen house on short legs: flat plank roof seen from above, front with a little arched hole and a ramp, one white hen at the ramp.
+beehives-white|2|1|prop|na|box|흰 벌통 셋|white beehive boxes|벌통|Three white stacked-box beehives with flat pale lids seen from above and dark entrance slits, one taller than the others.
+fence-white-picket|2|1|prop|na|frame|흰 말뚝 울타리|white picket fence|울타리;흰 울타리|White picket fence section: pointed pickets on two rails, fills the 32 px width so sections join.
+fence-ranch-rail|2|1|prop|na|frame|목장 가로대 울타리|ranch rail fence|목장 울타리;울타리|Brown three-rail ranch fence section with two square posts, fills the 32 px width so sections join.
+fence-gate-farm|2|1|prop|na|frame|농장 문|farm gate|농장 문;울타리 문|Wide wooden five-bar farm gate with a diagonal brace between two taller posts, closed.
+mailbox-post|1|2|prop|na|column|기둥 우편함|rural mailbox on a post|우편함;우체통|Rounded-top grey tin mailbox with a small red flag raised, on a wooden post.
+milk-cans|1|1|prop|eu|round_body|우유 통|milk churns|우유통|Two steel milk churns with lids and side handles, one taller.
+wheelbarrow-hay|2|1|prop|eu|other|손수레|wheelbarrow|손수레;외바퀴 수레|Green steel wheelbarrow seen from front-above facing right, its tray full of amber straw, one wheel at the right, two handles left.
+dog-house|1|1|prop|na|box|개집|dog house|개집|Small wooden kennel with a red flat-fronted roof seen from above and a dark arched doorway, a bone in front.
+grain-sacks|1|1|prop|na|organic|곡식 자루|grain sacks|자루;곡식 자루|Three pale burlap sacks, two standing and one on top, tied necks, one stamped with a wheat ear.
+pig-trough-mud|2|1|prop|na|container|여물통|feed trough|여물통;먹이통|Wooden V trough full of amber feed on two cross feet.
+@set orchard|rural
+apple-tree|2|3|prop|eu|organic|사과나무|apple tree|사과나무;과수|Round-crowned fruit tree: leafy green canopy dotted with clear red apples, short brown trunk.
+orchard-ladder|1|2|prop|eu|frame|과수원 사다리|orchard ladder|사다리|Wooden A-frame picking ladder standing open, five rungs, a basket hanging near the top.
+apple-baskets|2|1|prop|eu|container|사과 바구니|baskets of apples|사과 바구니;과일 바구니|Two wicker bushel baskets full of red apples and one of green apples, round openings seen from above.
+cider-press|2|2|prop|eu|other|사과즙 압착기|cider press|압착기;사과즙 틀|Wooden screw press: sturdy frame, big central iron screw with a cross handle on top, slatted round tub below and a small bucket catching amber juice.
+@set vineyard|rural
+vine-row|2|2|prop|eu|organic|포도 덩굴 줄|vineyard row|포도밭;포도 덩굴|A vine row section seen from the front: two wooden posts with wires, dense green vine leaves along the top and hanging dark blue-purple grape bunches below. Fills the 32 px width so rows join.
+vine-row-end|1|2|prop|eu|organic|포도 덩굴 줄 끝(장미)|vine row end post with rose|포도밭 끝;장미 덤불|Thick end post of a vine row with a pink rose bush planted at its foot and a wire anchor.
+grape-crates|2|1|prop|eu|container|포도 상자|grape harvest crates|포도 상자|Two shallow plastic harvest crates, wine-red and blue, heaped with dark blue grapes; secateurs on the rim.
+wine-barrel-cart|2|2|prop|eu|other|포도주 통 수레|wine barrel cart|통 수레;포도주 수레|Low two-wheeled wooden cart carrying one big oak barrel standing upright with dark hoops, round top visible.
+@set roadside|rural
+gas-pump-retro|1|2|prop|na|column|옛 주유기|retro gas pump|주유기|Rounded 1950s gas pump: wine-red body with a white round globe on top, a dial face, black hose and nozzle on the side.
+billboard-rural|3|3|prop|na|front_prop|들판 광고판(농장 달걀)|roadside billboard, farm eggs|광고판;빌보드|Weathered wooden roadside billboard on two timber legs with braces: cream panel showing a big white egg in a nest and a red rooster. No letters.
+diner-sign-pole|2|4|prop|na|front_prop|식당 기둥 간판|diner sign on a pole|식당 간판;기둥 간판|Tall steel pole carrying a big rounded sign: wine-red panel with a white plate, fork and knife pictogram, amber arrow with bulbs pointing down-left beneath it.
+bus-stop-rural|2|2|prop|eu|structure|시골 버스 정류장|rural bus shelter|버스 정류장;시골 정류장|Small wooden country bus shelter: plank roof seen from above (rectangle), open front with a bench inside, a round sign on the left post.
+road-sign-deer|1|2|prop|na|column|야생동물 주의 표지|deer crossing sign|도로 표지;주의 표지|Amber diamond warning sign with a dark leaping deer pictogram on a steel post.
+tire-stack|1|1|prop|na|round_body|타이어 더미|stack of tyres|타이어|Three old dark tyres stacked, top ring seen from above with the hole, a weed growing through.
+oil-drums|2|1|prop|na|round_body|기름 드럼통|oil drums|드럼통|Three steel drums: wine-red, blue, and rusty brown, round lids seen from above with bung caps.
+@set village-green|rural
+maypole|1|4|prop|eu|column|오월제 기둥|maypole|메이폴;오월 기둥|Very tall white pole with a green wreath ring near the top and long ribbons (wine-red, blue, amber, white) hanging down and spreading slightly; small flower crown on the tip.
+village-well|2|2|prop|eu|container|마을 우물|village well|우물|Round stone well: dark water ellipse inside a pale stone rim, two posts carrying a small tiled rectangular roof, windlass with rope and a bucket on the rim.
+war-memorial|2|3|prop|eu|figure|전쟁 기념비|war memorial|기념비;위령비|Pale stone obelisk on a stepped square base (step tops visible), a bronze plaque and a wine-red wreath of poppies leaning at its foot.
+tree-bench-round|3|3|prop|eu|organic|나무 둘레 벤치|bench around a tree|둘레 벤치;정자나무|Big old tree (broad round green canopy, thick trunk) with a white wooden bench ring around the base of the trunk.
+village-pump|1|2|prop|eu|column|마을 물 펌프|village hand pump|물 펌프;작두 펌프|Dark green cast-iron hand pump with a long curved handle and a spout over a small stone basin.
+notice-board|2|2|prop|eu|front_prop|마을 게시판|village notice board|게시판;알림판|Wooden notice board on two posts with a tiny shingled rectangular roof cap, glass front with pinned white and amber papers.
+duck-pond-ducks|1|1|prop|eu|figure|오리 가족|ducks on the green|오리|A white duck and two amber ducklings walking in a line on the grass.

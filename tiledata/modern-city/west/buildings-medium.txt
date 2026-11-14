@@ -1,0 +1,76 @@
+B|walkup|벽돌 워크업 아파트(1층 상가)|brick walk-up with shops|na|medium|6|4|3|tar|apartment|3|0|워크업 아파트;벽돌 아파트;상가 주택|Four-storey red brick walk-up, shops below, iron fire escape on the front
+F|walkup-shop walkup-door walkup-deli / walkup-upper walkup-upper~ / walkup-upper-b walkup-upper-b~ / walkup-upper walkup-upper~
+O|roof-water-tower roof-door-hut roof-laundry-line
+X|fire-escape|72|-98
+P|walkup-shop|48|48|Ground floor shop of a red-brown brick tenement: a shoe-repair shop front — dark green wooden frame, a big window (36 x 22) showing boots on shelves, a dark green fascia (rows 2-9) with a white boot pictogram, brick pier at the left edge, low stone base.
+P|walkup-door|16|48|Ground floor stair entrance of a brick tenement, exactly 16 wide: a wine-red panelled door 16 x 28 (bottom on the last row) with a glass transom, above it brick with a pale stone lintel and a small round lamp.
+P|walkup-deli|32|48|Ground floor shop of a red-brown brick tenement, 32 wide: a small grocery — window (24 x 22) with stacked tins and a hanging sausage, amber fascia (rows 2-9) with a wine-red apple pictogram, brick pier at the right edge.
+P|walkup-upper|48|32|Upper storey of a red-brown brick tenement, 48 wide: three sash windows (10 x 18) with pale stone lintels and sills, one with a pale curtain, one with a small AC box in it; brick course texture. Fills the canvas.
+P|walkup-upper-b|48|32|Upper storey of a red-brown brick tenement, 48 wide (a variant): three sash windows (10 x 18) with pale stone lintels, one open with a pink blanket hanging out, one with a flower pot on the sill, a thin pale stone string course along the bottom 2 rows. Fills the canvas.
+P|fire-escape|32|56|A black iron fire escape seen from the front, transparent background: two balcony landings (railings with vertical bars, 32 wide, at rows 0-12 and rows 30-42) connected by a diagonal stair ladder between them and a short ladder hanging below the lower landing. Only dark iron lines 1-2 px thick with a few lighter rim pixels; everything between the bars transparent.
+
+B|pizzeria|피자집(위층 살림집)|pizzeria with apartment above|eu|medium|6|3|2|terracotta|cafe|3|0|피자집;피자 가게;이탈리아 식당|Ochre plaster house, wood-oven pizzeria below, shuttered flats above
+F|pizzeria-window pizzeria-door / pizzeria-upper pizzeria-upper~ / pizzeria-upper-b pizzeria-upper-b~
+O|roof-chimney-stack roof-satellite-dish
+X|sign-pizza|24|-42
+P|pizzeria-window|48|48|Ground floor left half of a pizzeria: warm ochre plaster wall on a stone base; a wide arched window (38 x 24) showing a round brick oven mouth glowing amber inside; green-white-wine striped awning across rows 6-14.
+P|pizzeria-door|48|48|Ground floor right half of a pizzeria: warm ochre plaster wall; a glazed wooden door (16 x 28 at x 0-15, bottom on the last row); right of it a window with a red-checked curtain and a menu frame; the same striped awning across rows 6-14; a terracotta pot with a small olive tree at the right.
+P|pizzeria-upper|48|32|Upper storey of an ochre plaster house, 48 wide: two tall windows with dark green louvred shutters open at the sides, a small iron balcony rail under the left one with a pot of red flowers, a few plaster cracks.
+P|pizzeria-upper-b|48|32|Top storey of an ochre plaster house, 48 wide (a variant): two smaller square windows with dark green shutters, one shutter closed; laundry (white, pink) on a short line under the right window; a moulded pale cornice along the top 3 rows.
+P|sign-pizza|22|26|A hanging 3-D shop sign on an iron bracket: a big round pizza seen from the front — amber cheese, wine-red sauce rim, dark red slices of sausage, green leaves — hanging from a scrolled black bracket at the top left. Transparent around it.
+
+B|pharmacy|약국·의원|pharmacy and clinic|na|medium|7|2|3|gravel|hospital-ward|3|0|약국;의원;동네 병원|White tile pharmacy with a doctor's office upstairs, green cross sign
+F|pharm-window pharm-door pharm-clinic / pharm-upper pharm-pier pharm-upper~
+O|roof-ac-big roof-vent-mushroom roof-satellite-dish
+X|sign-cross|56|-34
+P|pharm-window|48|48|Ground floor left part of a pharmacy: white glazed tile wall with a green tile base band; a big window (38 x 22) showing shelves of small bottles and boxes (white, blue, amber); a green fascia (rows 2-9) with a white mortar-and-pestle pictogram.
+P|pharm-door|16|48|Ground floor entrance of a pharmacy, exactly 16 wide: an automatic glass door 16 x 28 (bottom on the last row) with a steel frame and a green stripe at hand height; above it the green fascia band continues (rows 2-9).
+P|pharm-clinic|48|48|Ground floor right part: white glazed tile wall with a green tile base band; a frosted window (24 x 22) with a pale blue blind; right of it a brass plate and a wall lamp; the green fascia continues at rows 2-9 with a white heart-beat line pictogram.
+P|pharm-upper|48|32|Upper storey of a white-tiled building, 48 wide: a ribbon of three square windows with pale blue blinds half down, steel frames, a thin green line under the sills, pale concrete cornice along the top 3 rows.
+P|pharm-pier|16|32|Upper storey pier of a white-tiled building, exactly 16 wide: plain white glazed tiles with a vertical row of small glass blocks down the middle; pale concrete cornice along the top 3 rows.
+P|sign-cross|16|20|A projecting pharmacy sign: a bright green equal-armed cross with a lighter green centre and a thin white rim on a short dark bracket. Transparent around it.
+
+B|bank|작은 은행|small bank|na|medium|7|2|2|copper|bank|3|0|은행;저축은행;금고|Stone bank with four columns and a heavy cornice
+F|bank-bay bank-door bank-bay~ / bank-upper bank-upper-mid bank-upper~
+O|roof-skylight roof-ac-unit
+P|bank-bay|48|48|Ground floor side bay of a small stone bank: pale warm limestone blocks; two engaged round columns with simple capitals standing on a stone plinth; between them a tall barred window (14 x 26) with a dark bronze grille. Fills the canvas.
+P|bank-door|16|48|Ground floor entrance of a stone bank, exactly 16 wide: a tall dark bronze double door 16 x 28 (bottom on the last row) with brass handles; above it a stone lintel with a round bronze medallion showing a coin stack.
+P|bank-upper|48|32|Upper storey of a pale limestone bank, 48 wide: two windows (12 x 16) with small triangular pediments, the tops of the columns below ending in a continuous entablature band along the bottom 4 rows, a heavy dentil cornice along the top 4 rows.
+P|bank-upper-mid|16|32|Upper storey centre of a pale limestone bank, exactly 16 wide: a round clock-like bronze medallion with a dollar-less plain coin relief (no symbols) in a stone wreath; the entablature band along the bottom 4 rows and the dentil cornice along the top 4 rows continue.
+
+B|post|우체국|post office|eu|medium|6|2|3|slate|lobby|2,3|0|우체국;우편 취급소|Yellow plaster post office with a post-horn sign
+F|post-window post-door post-window~ / post-upper post-upper~
+O|roof-chimney-stack roof-skylight
+X|sign-horn|48|-30
+P|post-window|32|48|Ground floor side bay of a post office: warm yellow plaster on a grey stone base; a tall round-arched window (16 x 26) with white frame; under it a wall-mounted yellow letter box with a dark slot. Fills the canvas.
+P|post-door|32|48|Ground floor centre of a post office: warm yellow plaster; a dark green panelled double door (32 x 28, the full width, bottom on the last row) in a grey stone surround with a keystone; two small lanterns beside the arch top.
+P|post-upper|48|32|Upper storey of a yellow plaster public building, 48 wide: three tall windows with white frames and grey stone sills, a flag bracket with a small wine-red and white flag between two of them, a grey stone cornice along the top 3 rows.
+P|sign-horn|24|16|A post office sign plate: a dark yellow-amber oval plaque with a black coiled post horn pictogram and a thin dark rim. Transparent around it.
+
+B|pub|선술집|pub tavern|eu|medium|6|2|3|shingle|cafe|2|0|펍;선술집;주점;맥줏집|Half-timbered tavern with a hanging mug sign
+F|pub-window pub-door pub-window~ / pub-upper pub-upper~
+O|roof-chimney-stack
+X|sign-mug|22|-36
+P|pub-window|32|48|Ground floor side bay of an old tavern: dark brown timber frame with cream plaster infill on a rough stone base; a low wide window of small leaded panes (22 x 16) glowing warm amber; a wooden bench under it and a barrel at the outer edge.
+P|pub-door|32|48|Ground floor centre of an old tavern: dark timber frame with cream plaster; a heavy wine-red plank door with black iron hinges (16 x 28 at x 0-15, bottom on the last row); right of it a blackboard with white chalk squiggles and a lantern above.
+P|pub-upper|48|32|Upper storey of a half-timbered house, 48 wide: dark brown timber posts, rails and two diagonal braces over cream plaster panels; two small-paned windows with window boxes of red flowers; the storey's bottom beam (rows 28-31) is a darker carved bressummer.
+P|sign-mug|22|26|A hanging tavern sign on a scrolled black iron bracket: a 3-D wooden beer mug with a handle, amber beer and a big white foam head. Transparent around it.
+
+B|townhouses|연립 타운하우스(문 셋)|town house row, three doors|eu|medium|6|3|2|clay|apartment|0,2,4|0|타운하우스;연립주택;테라스 하우스|Three narrow pastel town houses sharing walls, each its own colour and door
+F|th-ground-a th-ground-b th-ground-c / th-upper-a th-upper-b th-upper-c / th-upper-a th-upper-b th-upper-c
+O|roof-chimney-stack roof-chimney-stack roof-skylight
+P|th-ground-a|32|48|Ground floor of a narrow town house, 32 wide, pastel BLUE plaster: front door at the left (16 x 28 at x 0-15, bottom on the last row) painted dark blue with a fanlight and one stone step; a sash window at the right with white frame; a dark drainpipe along the right edge.
+P|th-ground-b|32|48|Ground floor of a narrow town house, 32 wide, pastel PINK plaster: front door at the left (16 x 28 at x 0-15, bottom on the last row) painted wine-red with a brass knocker; a window at the right with white frame and a flower box of white flowers; a pale stone base.
+P|th-ground-c|32|48|Ground floor of a narrow town house, 32 wide, pastel YELLOW plaster: front door at the left (16 x 28 at x 0-15, bottom on the last row) painted dark green with a small porch hood; a window at the right with green shutters; a bicycle-free plain stone base; pale quoin stones along the right edge.
+P|th-upper-a|32|32|Upper storey of a narrow pastel BLUE plaster town house, 32 wide: two sash windows (10 x 18) with white frames; thin white string course along the bottom row; a dark drainpipe along the right edge.
+P|th-upper-b|32|32|Upper storey of a narrow pastel PINK plaster town house, 32 wide: one wide window with a small iron balcony and a white frame, pot plants on the balcony; thin white string course along the bottom row.
+P|th-upper-c|32|32|Upper storey of a narrow pastel YELLOW plaster town house, 32 wide: two windows with open dark green shutters; pale quoin stones along the right edge; thin white string course along the bottom row.
+
+B|garage|자동차 정비소|auto repair garage|na|medium|8|1|3|tar|warehouse|6|0|정비소;카센터;자동차 수리점|Low cinder-block garage with two roll-up bays and a small office
+F|garage-bay-open garage-bay-shut garage-office
+O|roof-ac-big roof-duct-run roof-vent-mushroom
+X|sign-wrench|56|6
+P|garage-bay-open|48|48|A garage service bay, OPEN: pale grey painted cinder-block wall; a wide opening (40 x 34, bottom on the last row) with the roll-up door rolled at the top; inside, dark, the front of a blue car raised on a lift and a red tool chest. Yellow-and-ink striped bollards at both sides of the opening.
+P|garage-bay-shut|48|48|A garage service bay, CLOSED: pale grey painted cinder-block wall; a wide steel roll-up door (40 x 34, bottom on the last row) of horizontal ribs with a row of four small windows; a wine-red band painted along the wall top (rows 2-7); a stack of two tyres at the right.
+P|garage-office|32|48|The office end of a garage: pale grey cinder-block wall; a half-glazed steel door at the left (16 x 28 at x 0-15, bottom on the last row); a window at the right with a blind and a small amber lit sign; the wine-red band continues along rows 2-7.
+P|sign-wrench|40|18|A garage roof sign: a long wine-red panel with a white crossed wrench-and-spanner pictogram in the middle and a white tyre ring at each end, thin amber border, two short steel legs. No letters.

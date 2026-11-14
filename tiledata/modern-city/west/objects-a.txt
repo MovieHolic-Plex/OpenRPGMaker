@@ -1,0 +1,43 @@
+# id|w|h|place|flavour|gatekind|ko name|en name|ko words;|brief   (place: prop=bottom row blocks, rest drawn over walker · flat=walk over · over=overlay strip, never blocks)
+@set main-street|city
+parking-meter-twin|1|2|prop|na|column|주차 미터기(쌍두)|twin-head parking meter|주차 미터기;미터기|Grey steel post with TWO rounded meter heads side by side on a T bar, small amber coin dials. Mark: the two round heads.
+mailbox-blue|1|2|prop|na|box|파란 우체통(다리 넷)|blue street mailbox on legs|우체통;편지함|American collection box: blue body with a ROUNDED top, pull-down flap, white label plate, four short legs. Mark: blue dome-top box.
+newsbox-row|2|2|prop|na|box|신문 판매함 줄|row of newspaper vending boxes|신문함;신문 판매대|Three newspaper boxes side by side on pedestals: one brick-red, one blue, one amber, each with a dark window and a white paper inside.
+bus-stop-sign|1|3|prop|na|column|버스 정류장 표지|bus stop sign pole|버스 표지;정류장 표지|Tall thin pole with a blue rectangular sign at the top showing a white bus pictogram, small white timetable plate lower down.
+bus-bench|2|2|prop|na|seat|버스 정류장 벤치(광고 등받이)|bus stop bench with ad backrest|벤치;정류장 벤치|Wooden slat bench whose backrest is an ad board: amber panel with a brick-red stripe (no letters). Seat seen from above.
+street-clock|1|3|prop|eu|column|거리 시계|street clock on a post|시계 기둥;거리 시계|Dark green cast-iron fluted post carrying a ROUND white clock face with dark hands and a small finial on top. Mark: the white dial.
+trash-can-mesh|1|1|prop|na|round_body|철망 쓰레기통|wire mesh trash can|쓰레기통;휴지통|Round green wire litter basket with a darker rim, a bit of white and amber litter visible at the top ellipse.
+bike-rack-hoops|2|1|prop|na|frame|자전거 거치대(고리)|bike rack hoops|자전거 거치대|Three steel inverted-U hoops in a row on the pavement, light grey with dark base plates. No bicycles.
+phone-booth-red|1|3|prop|eu|box|빨간 공중전화 부스|red telephone box|공중전화;전화 부스|Tall wine-red kiosk with a slightly domed roof seen from above, three rows of glass panes on the front, pale crown band under the roof.
+billboard-car|3|3|prop|na|front_prop|기둥 광고판(자동차)|billboard on a post, car ad|광고판;빌보드|Big landscape billboard panel on one thick steel post: sky-blue ad with a brick-red car side view and a white stripe. Catwalk and two lamps under the panel. No letters.
+billboard-burger|3|3|prop|na|front_prop|기둥 광고판(버거)|billboard on a post, burger ad|광고판;빌보드|Big landscape billboard on one thick steel post: amber ad showing a huge burger (bun, green leaf, dark patty). Catwalk with two lamps. No letters.
+billboard-soda|3|3|prop|na|front_prop|기둥 광고판(음료)|billboard on a post, soda ad|광고판;빌보드|Big landscape billboard on one thick steel post: teal ad with a tall glass bottle and bubbles, white splash. Catwalk with two lamps. No letters.
+billboard-holiday|3|3|prop|na|front_prop|기둥 광고판(휴양지)|billboard on a post, holiday ad|광고판;빌보드|Big landscape billboard on one thick steel post: ad of a yellow sun over a blue sea and a green palm island. Catwalk with two lamps. No letters.
+traffic-light-hang|2|3|prop|na|column|신호등(팔 달린 노란 신호등)|traffic light on a mast arm|신호등|Dark pole at the right with an arm reaching left; a YELLOW three-lamp signal head hangs from the arm (red lit on top). Mark: yellow housing.
+street-name-sign|1|3|prop|na|column|길 이름 표지|street name sign post|길 표지;도로명 표지|Thin steel pole topped by two crossed green blade signs with white bars (no letters), small finial ball.
+lamp-twin-globe|1|3|prop|eu|column|쌍구 가로등|twin globe street lamp|가로등;가스등|Dark green ornate post with a short crossbar holding two white-amber glass globes, pointed finial in the middle.
+fire-callbox|1|2|prop|na|column|화재 신고함|fire alarm call box|화재 신고함;비상 신고함|Wine-red small box with a peaked cap on a red pedestal post, white handle plate on the front.
+bollard-chain|2|1|prop|eu|column|쇠사슬 볼라드|chain bollards|볼라드;말뚝|Two short dark cast-iron bollards with round knobs, linked by a drooping chain.
+tree-guard-iron|1|2|prop|eu|organic|철제 보호대 어린 나무|young tree in an iron guard|가로수;어린 나무|Slim young tree with a small round green crown, trunk inside a tall dark iron cage guard.
+flower-lamp-basket|1|3|prop|eu|column|꽃바구니 가로등|lamp post with hanging flower baskets|가로등;꽃 가로등|Dark lamp post with one lantern on top and two hanging baskets of pink flowers on side brackets.
+@set shopfront|city
+sandwich-board-coffee|1|1|prop|eu|front_prop|입간판(커피잔)|sandwich board, coffee cup|입간판;A보드|A-frame board, dark slate face with a white coffee cup drawing and steam, wooden frame.
+sandwich-board-pizza|1|1|prop|na|front_prop|입간판(피자 조각)|sandwich board, pizza slice|입간판;A보드|A-frame board, cream face with an amber-and-red pizza slice drawing, red frame.
+flower-buckets|2|1|prop|eu|container|꽃 양동이 줄|flower buckets|꽃 양동이;꽃통|Four zinc buckets in a row, each full of cut flowers: pink, amber, white, pink. Bucket openings seen from above.
+fruit-crates|2|1|prop|eu|container|과일 궤짝|fruit crates on a stand|과일 상자;과일 궤짝|Two tilted wooden crates on a low stand: one with red apples, one with amber oranges, leaf-green paper edge.
+barrel-table|1|1|prop|eu|round_body|통 탁자|barrel table|통;술통 탁자|Upright oak barrel with dark iron hoops used as a table, round top seen from above with one small glass on it.
+barrels-stack|2|2|prop|eu|round_body|쌓은 술통|stacked barrels|술통;오크통|Two upright barrels with a third standing on top between them, dark hoops, round tops visible.
+awning-red|3|1|over|na|flat|차양 띠(빨강 줄무늬)|awning strip, red stripes|차양;어닝|Shop awning seen from front-above: sloping canvas, vertical wine-red and white stripes, scalloped lower edge, 48 wide and about 12 rows tall at the top of the canvas.
+awning-green|3|1|over|eu|flat|차양 띠(초록 줄무늬)|awning strip, green stripes|차양;어닝|Shop awning: sloping canvas with vertical leaf-green and white stripes, scalloped lower edge, 48 wide and about 12 rows tall at the top of the canvas.
+awning-blue|3|1|over|na|flat|차양 띠(파랑)|awning strip, blue|차양;어닝|Shop awning: plain blue sloping canvas with a lighter top band and a white scalloped valance, 48 wide, about 12 rows tall at the top of the canvas.
+awning-amber|3|1|over|eu|flat|차양 띠(노랑 줄무늬)|awning strip, yellow stripes|차양;어닝|Shop awning: vertical amber and white stripes, straight valance with small scallops, 48 wide, about 12 rows tall at the top of the canvas.
+awning-pink|3|1|over|eu|flat|차양 띠(분홍)|awning strip, pink|차양;어닝|Shop awning: pink canvas with white scalloped valance, 48 wide, about 12 rows tall at the top of the canvas.
+awning-teal|3|1|over|na|flat|차양 띠(청록)|awning strip, teal|차양;어닝|Shop awning: dark teal canvas with white pinstripes and a straight valance, 48 wide, about 12 rows tall at the top of the canvas.
+bread-rack-street|1|2|prop|eu|frame|빵 진열 선반|street bread rack|빵 선반;빵 진열대|Narrow wooden shelf rack on wheels with three shelves of amber loaves and baguettes standing in a basket on top.
+icecream-cone-sign|1|2|prop|na|figure|아이스크림 콘 입간판|giant ice-cream cone sign|아이스크림 간판|Giant standing ice-cream cone statue on a small round base: amber waffle cone, pink scoop, mint scoop, wine cherry.
+postcard-rack|1|2|prop|eu|frame|엽서 회전대|postcard spinner rack|엽서대;엽서 진열대|Tall thin wire spinner rack with rows of small coloured cards (blue, amber, pink, white), round base and round top knob.
+gumball-machine|1|2|prop|na|column|껌볼 자판기|gumball machine|껌볼 기계;뽑기|Wine-red pedestal with a glass globe full of coloured dots (amber, pink, blue, green), red lid.
+shop-bench-planter|2|1|prop|eu|seat|화분 달린 가게 벤치|shop bench with planter ends|벤치;가게 벤치|Wooden bench between two square planter boxes with green shrubs and pink flowers.
+pumpkin-crate|1|1|prop|na|container|호박 궤짝|crate of pumpkins|호박 상자|Wooden crate heaped with three orange-amber pumpkins with green stems.
+milk-crates|1|1|prop|na|box|우유 상자 더미|stacked milk crates|우유 상자;플라스틱 상자|Two plastic crates stacked: blue below, wine-red above slightly turned, white bottles' tops visible in the upper one.
+welcome-mat-rail|1|1|prop|eu|container|우산꽂이|umbrella stand|우산꽂이;우산통|Dark iron umbrella stand with three umbrellas standing in it: wine, blue, amber handles up.

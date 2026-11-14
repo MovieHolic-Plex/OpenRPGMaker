@@ -1,0 +1,70 @@
+# V|x0 cells|roofCells|roofMaterial  starts an extra volume of the same building (bottom-aligned); the F/O/X lines after it belong to that volume.
+B|townhall|시청(시계탑)|town hall with clock|eu|large|9|3|2|slate|lobby|4|3|시청;읍사무소;관청|Baroque plaster town hall, arcade below, clock turret over the middle
+F|th-arcade th-arcade th-portal th-arcade~ th-arcade~ / hall-upper*2 hall-upper-mid hall-upper~*2 / hall-upper*2 hall-upper-mid hall-upper~*2
+O|roof-chimney-stack _ _ roof-chimney-stack
+X|hall-turret|72|-32
+P|th-arcade|32|48|Ground floor arcade bay of a town hall, 32 wide: pale cream plaster with grey stone trim; one round arch on square stone piers (opening 22 wide, dark inside with a faint lit window in the depth); pier halves at both edges so bays join; stone base.
+P|th-portal|16|48|Ground floor main portal of a town hall, exactly 16 wide: a dark oak double door 16 x 28 (bottom on the last row) under a carved grey stone arch; above it a small wine-red and amber coat-of-arms shield (invented: a tower between two stars).
+P|hall-upper|32|32|Upper storey bay of a cream plaster town hall, 32 wide: two tall windows with grey stone surrounds and small pediments, a flat grey pilaster at the left edge, a moulded grey cornice along the top 3 rows. Fills the canvas.
+P|hall-upper-mid|16|32|Upper storey centre bay of a cream plaster town hall, exactly 16 wide: one tall French window with a small stone balcony and a wine-red flag hanging from it; grey cornice along the top 3 rows.
+P|hall-turret|40|48|A clock turret that sits on a roof, seen from the front-above: square cream plaster body with grey corner stones, a big ROUND white clock face with dark hands and amber numerals dots, above it a small blue-grey slate roof drawn as a rectangle of courses with a short spire finial and a weather vane. Transparent around it. Mark: the white dial.
+
+B|library|공공 도서관|public library|na|large|10|3|2|copper|lobby|4,5|0|도서관;시립 도서관|Beaux-arts stone library with a wide stair and lion statues
+F|lib-bay lib-bay lib-door lib-bay~ lib-bay~ / lib-upper*2 lib-upper-mid lib-upper~*2 / lib-attic*2 lib-attic-mid lib-attic~*2
+O|roof-skylight roof-skylight roof-ac-big
+P|lib-bay|32|48|Ground floor bay of a stone library, 32 wide: pale grey rusticated limestone blocks; one tall round-arched window (16 x 30) with dark bronze frame showing warm amber light and book shelves; stone base with a bench-high ledge. Fills the canvas.
+P|lib-door|32|48|Ground floor entrance of a stone library, exactly 32 wide: a wide bronze-and-glass double door (32 x 28, full width, bottom on the last row) between two short stone pedestals each carrying a small seated stone lion; above the door a stone lintel with an open-book relief.
+P|lib-upper|32|32|Upper storey bay of a pale limestone library, 32 wide: two tall windows separated by an engaged column with a leafy capital; a stone balustrade along the bottom 5 rows. Fills the canvas.
+P|lib-upper-mid|32|32|Upper storey centre of a pale limestone library, exactly 32 wide: three narrow arched windows grouped under one big stone arch, a keystone with a lamp-of-knowledge relief; the balustrade along the bottom 5 rows continues.
+P|lib-attic|32|32|Attic storey bay of a pale limestone library, 32 wide: a plain stone frieze with two small square windows and a carved wreath between them, a heavy projecting cornice with dentils along the top 5 rows. Fills the canvas.
+P|lib-attic-mid|32|32|Attic storey centre of a pale limestone library, exactly 32 wide: a low triangular-free FLAT stone tablet panel with a carved open book and two torches, flanked by scrolls; heavy dentil cornice along the top 5 rows.
+
+B|school|학교|school|na|large|12|3|3|tar|office-floor|5,6|0|학교;초등학교;중학교|Red brick schoolhouse with a bell cupola and a flag
+F|sch-wing sch-wing sch-door sch-wing~ sch-wing~ / sch-upper sch-upper sch-upper-mid sch-upper~ sch-upper~ / sch-upper sch-upper sch-upper-mid sch-upper~ sch-upper~
+O|roof-vent-mushroom roof-door-hut _ _ roof-ac-big roof-vent-mushroom
+X|sch-cupola|96|-20
+P|sch-wing|40|48|Ground floor classroom bay of a red brick school, 40 wide: red-brown brick on a pale concrete base; a group of three tall classroom windows with white frames (each 9 x 24) under one pale stone lintel; paper cut-out shapes (amber star, blue circle) stuck inside one window. Fills the canvas.
+P|sch-door|32|48|Ground floor entrance of a red brick school, exactly 32 wide: a wide double door painted dark green (32 x 28, full width, bottom on the last row) with glass panels; above it a pale stone arch panel with a carved open book and a round lamp each side.
+P|sch-upper|40|32|Upper storey classroom bay of a red brick school, 40 wide: a group of three windows with white frames (each 9 x 20) under one pale stone lintel, pale stone sill line, brick texture. Fills the canvas.
+P|sch-upper-mid|32|32|Upper storey centre bay of a red brick school, exactly 32 wide: one big round-arched stair window with white glazing bars; a short flagpole bracket with a wine-red and white flag; brick texture.
+P|sch-cupola|28|44|A school bell cupola that sits on a roof: a square white wooden base, an open belfry with four white posts and a dark bronze bell hanging inside, a small green copper roof drawn as a rectangle-based low cap with a ball finial and a weather vane. Transparent around it.
+
+B|hotel|호텔|hotel|eu|large|9|5|2|zinc|lobby|4|0|호텔;여관;숙소|Five-storey belle-époque hotel, cream stone, iron balconies, mansard attic
+F|hot-ground*2 hot-door hot-ground~*2 / hot-upper*2 hot-upper-mid hot-upper~*2 / hot-upper-b*2 hot-upper-mid hot-upper-b~*2 / hot-upper*2 hot-upper-mid hot-upper~*2 / hot-mansard*2 hot-mansard-mid hot-mansard~*2
+O|roof-chimney-stack roof-skylight roof-chimney-stack
+X|hot-canopy|72|-2
+P|hot-ground|32|48|Ground floor bay of a grand hotel, 32 wide: cream stone with horizontal channel joints; one large arched window (22 x 30) with a wine-red half curtain and amber light; a potted clipped bay tree at the left edge; stone base. Fills the canvas.
+P|hot-door|16|48|Ground floor entrance of a grand hotel, exactly 16 wide: a brass-and-glass revolving door 16 x 28 (bottom on the last row) in a dark frame, a wine-red carpet strip at its foot rows.
+P|hot-upper|32|32|Upper storey bay of a cream stone hotel, 32 wide: two tall French windows with pale blue-grey shutters folded open and a continuous black iron balcony rail along the bottom 8 rows; thin stone band along the top 2 rows. Fills the canvas.
+P|hot-upper-b|32|32|Upper storey bay of a cream stone hotel, 32 wide (a variant): two tall French windows, each with its own small black iron balconette, one with a wine-red awning blind half down; thin stone band along the top 2 rows. Fills the canvas.
+P|hot-upper-mid|16|32|Upper storey centre bay of a cream stone hotel, exactly 16 wide: one tall French window with a black iron balconette, flat stone pilasters at both edges.
+P|hot-mansard|32|32|Mansard attic bay of a hotel seen from the front, 32 wide: steep blue-grey zinc-slate roof face filling the canvas with two dormer windows with rounded tops and white frames; a stone cornice along the bottom 4 rows. Left and right edges vertical. Fills the canvas.
+P|hot-mansard-mid|16|32|Mansard attic centre, exactly 16 wide: blue-grey zinc-slate face with one round oeil-de-boeuf window in an ornate pale frame; stone cornice along the bottom 4 rows.
+P|hot-canopy|40|14|A hotel entrance canopy seen from front-above: a wine-red fabric marquee with a scalloped amber-trimmed valance, its top face visible (6 rows), two thin brass poles at the front corners reaching the bottom row. Transparent around it.
+
+B|cinema|영화관|cinema with marquee|na|large|9|3|3|tar|lobby|4|0|영화관;극장;시네마|Art-deco cinema with a lit marquee and a tall blade sign
+F|cin-poster cin-poster-b cin-door cin-poster-b~ cin-poster~ / cin-upper*2 cin-upper-mid cin-upper~*2 / cin-upper-top*2 cin-upper-mid cin-upper-top~*2
+O|roof-ac-big roof-duct-run _ roof-door-hut
+X|cin-marquee|72|-40
+X|cin-blade|72|-56
+P|cin-poster|32|48|Ground floor bay of an art-deco cinema, 32 wide: cream and teal glazed tile wall; one lit poster case in a brass frame (18 x 26) showing a wine-red rocket over a blue planet; a slim teal fluted fin at the left edge; black tile base. Fills the canvas.
+P|cin-door|16|48|Ground floor entrance of a cinema, exactly 16 wide: glass double doors 16 x 28 (bottom on the last row) with brass push bars and round porthole glass, wine-red carpet at the foot.
+P|cin-upper|32|32|Upper storey bay of an art-deco cinema, 32 wide: smooth cream wall with two vertical teal fluted fins, a zig-zag band along the bottom 4 rows in wine-red and amber. Fills the canvas.
+P|cin-upper-top|32|32|Top storey bay of an art-deco cinema, 32 wide: smooth cream wall with the two teal fins ending in stepped tops, a FLAT parapet band along the top 4 rows in teal with amber dots. Fills the canvas.
+P|cin-upper-mid|16|32|Centre strip of an art-deco cinema upper storey, exactly 16 wide: a plain teal vertical band with a thin amber line at each edge (a sign will be mounted over it).
+P|cin-marquee|48|18|A cinema marquee canopy seen from front-above: its top face (5 rows, dark) and below a white lit sign front with three rows of tiny dark dashes (illegible, not letters) framed by a border of amber bulbs; underside row with small white lamps. Transparent around it.
+P|cin-blade|14|56|A tall vertical cinema blade sign: wine-red blade with rounded top, amber bulbs down both edges, and down its middle five pictograms stacked: a star, a film reel, a star, a film reel, a star (white). Transparent around it.
+
+P|cin-poster-b|32|48|Ground floor bay of an art-deco cinema next to the doors, 32 wide: cream and teal glazed tile wall; one lit poster case (14 x 26) showing a white horse rearing on amber, and right of it a ticket-booth window with a brass grille and a small counter; black tile base. Fills the canvas.
+B|department|백화점|department store|eu|large|11|4|3|zinc|lobby|5|0|백화점;대형 상점|Iron-and-glass department store with big display windows and a glass dome skylight
+F|dep-window dep-window dep-door dep-window~ dep-window~ / dep-upper*2 dep-upper-mid dep-upper~*2 / dep-upper-b*2 dep-upper-mid dep-upper-b~*2 / dep-attic*2 dep-attic-mid dep-attic~*2
+O|roof-ac-big roof-vent-mushroom _ _ roof-vent-mushroom roof-water-tower
+X|dep-dome|88|-14
+P|dep-window|40|48|Ground floor display window bay of a department store, 40 wide: dark green cast-iron frame with slim columns at both edges; one huge display window (34 x 30) showing two dressed mannequins (a wine-red dress, a blue coat) on a pale floor; a cream and amber awning valance along rows 4-10; black stone base.
+P|dep-door|16|48|Ground floor entrance of a department store, exactly 16 wide: brass-framed glass double doors 16 x 28 (bottom on the last row), above them a dark green iron lintel with an amber sunburst ornament.
+P|dep-upper|40|32|Upper storey bay of a department store, 40 wide: pale stone piers at both edges and between them one wide three-part window in dark green iron frames with pale blue glass and white glints; a stone band along the bottom 3 rows.
+P|dep-upper-b|40|32|Upper storey bay of a department store, 40 wide (a variant): pale stone piers at both edges, one wide arched window in dark green iron with a fan-shaped top light, an amber fabric blind half down; stone band along the bottom 3 rows.
+P|dep-upper-mid|16|32|Upper storey centre bay of a department store, exactly 16 wide: a narrow tall bow window in dark green iron and pale blue glass, stone band along the bottom 3 rows.
+P|dep-attic|40|32|Attic storey bay of a department store, 40 wide: pale stone with a row of three small round windows, carved garlands, a heavy cornice along the top 5 rows with a low iron cresting on it.
+P|dep-attic-mid|16|32|Attic centre of a department store, exactly 16 wide: a stone cartouche with an amber-gilt sunburst (invented emblem) and scrolls; heavy cornice along the top 5 rows.
+P|dep-dome|48|40|A glass dome skylight on a flat roof seen from above-front: an ELLIPSE of pale blue glass panes radiating from a small gilt-amber finial at the centre, dark green iron ribs, on a low round stone drum (front face 8 rows). Transparent around it. Mark: the blue ellipse.

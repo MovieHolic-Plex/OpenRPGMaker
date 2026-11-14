@@ -1,0 +1,84 @@
+# B|id|ko|en|flavour|tier|wCells|storeys|roofCells|roofMaterial|program|doorCols(0-based, comma)|topCells|ko words;|type line
+# F|row parts bottom-up, rows separated by " / "; a token is part[*repeat][~ = mirrored] or _N (N px transparent gap). Row height = its parts' height (ground 48, upper 32 unless a part says otherwise)
+# I|roof inset px (roof face narrower than the front on both sides)
+# O|rooftop object ids stamped on the roof face (left to right)        X|part|centre x px|bottom y px relative to the roof/front line (positive = down)
+# P|part|w|h|brief          (a part is drawn once; wall parts fill the canvas edge to edge)
+# M|roof material|brief     (32x32 seamless)
+M|tar|Flat tar-and-gravel roof seen from straight above: dark warm grey (ramp roof) with faint lighter specks and two thin tar seam lines. Quiet, low contrast.
+M|gravel|Flat pale gravel roof seen from above: mid grey-brown pebbles texture (ramp roof tones 2-4, a few body tones), quiet.
+M|clay|Red-brown clay pantile roof seen from above/front: horizontal courses 6 px tall of rounded tiles, each course's lower edge shaded, tiles staggered (ramp brick).
+M|terracotta|Orange terracotta roof tiles seen from above/front: horizontal courses 5 px tall of small rounded tiles, lighter than clay (ramp brick tones 2-4 with amber 0-1 flecks).
+M|slate|Blue-grey slate roof seen from above/front: horizontal courses 5 px tall of flat rectangular slates, staggered joints (ramp slate with a few blue tones).
+M|copper|Verdigris green standing-seam copper roof seen from above: vertical raised seams every 8 px, pale green streaks (ramps mint and teal).
+M|zinc|Pale grey zinc standing-seam roof seen from above: vertical seams every 8 px, soft lighter bands (ramp body).
+M|shingle|Dark brown asphalt shingle roof seen from above/front: horizontal courses 4 px tall with staggered tabs (ramps bark and roof).
+
+B|bakery|빵집|bakery|eu|small|4|1|3|clay|cafe|1|0|빵집;베이커리;제과점|European bakery with a giant 3-D loaf sign above the eave
+F|bakery-door bakery-window
+O|roof-chimney-stack
+X|sign-bread|36|6
+P|bakery-door|32|48|Ground floor, left half of a bakery: cream plaster wall on a low brown stone base; a glazed wooden door (16 wide x 28 high, at x 16-31, bottom on the last row) with a round-arched top light; a wine-red and white striped awning over the door (rows 6-14).
+P|bakery-window|32|48|Ground floor, right half of a bakery: cream plaster wall on a low brown stone base; one big shop window (26 x 22) showing shelves of amber loaves and pretzels; the same wine-red and white striped awning above it (rows 6-14); a flower box under the window.
+P|sign-bread|40|24|A giant 3-D bread sign: one fat golden-amber country loaf with three diagonal score cuts and a darker crust underside, lying on a small dark wooden sign bracket. Transparent around it. Mark: the amber loaf silhouette.
+
+B|icecream|아이스크림 가게|ice-cream parlour|na|small|3|1|2|tar|cafe|1|1|아이스크림 가게;젤라토 가게;빙수 가게|American ice-cream parlour with a giant cone sign on the roof
+F|icecream-front
+O|roof-ac-unit
+X|sign-cone|36|-2
+P|icecream-front|48|48|Whole ground floor of a small ice-cream parlour: pale pink painted clapboard wall, white trim; glazed door in the middle (16 x 28 at x 16-31, bottom on the last row); a small serving window each side with a mint sill; pink and white striped awning across the full width (rows 6-14).
+P|sign-cone|20|30|A giant 3-D ice-cream cone sign standing upright: amber waffle cone point down on a tiny bracket, a pink scoop and a mint-green scoop, a wine-red cherry on top. Transparent around it.
+
+B|diner|모퉁이 식당(다이너)|corner diner|na|small|5|1|2|zinc|cafe|2|0|다이너;식당;간이식당|Chrome roadside-style diner with a rounded corner band
+F|diner-left diner-door diner-left~
+O|roof-vent-mushroom roof-ac-unit
+X|sign-diner|40|4
+P|diner-left|32|48|Left third of a chrome diner front: horizontal bands of polished steel (ramp body, light) with two wine-red stripes; a wide window strip (rows 12-30) showing booth seat backs in wine-red; a low teal-tiled base. Fills the canvas.
+P|diner-door|16|48|Centre of a chrome diner front, exactly 16 wide: a steel-framed glass door 16 x 28 (bottom on the last row) with a round porthole window; above it polished steel bands with two wine-red stripes continuing from the neighbours (stripes at rows 4-5 and 8-9).
+P|sign-diner|44|18|A diner roof sign: a long rounded wine-red panel with amber bulbs along its edge and, in the middle, a white coffee cup with steam and a white fork. No letters. Two short steel legs under it.
+
+B|barber|이발소|barber shop|na|small|3|2|2|tar|lobby|1|0|이발소;이용원;미용실|Narrow two-storey brick barber shop with a striped pole
+F|barber-ground / barber-upper
+O|roof-vent-mushroom roof-ac-unit
+P|barber-ground|48|48|Whole ground floor of a narrow barber shop: red-brown brick piers at both sides; a glazed door at the left-middle (16 x 28 at x 16-31, bottom on the last row); a shop window at the right showing a barber chair back; at the far left a barber pole (white cylinder with wine-red and blue diagonal stripes, steel caps) mounted on the pier; dark green sign band across the top (rows 2-9) with a white scissors pictogram.
+P|barber-upper|48|32|One upper storey of a narrow red-brown brick building: two sash windows (12 x 16 each) with pale stone lintels and sills, a faint brick course texture, a pale stone cornice line along the top 3 rows.
+
+B|newsstand|신문 가판 매점|newsstand kiosk|eu|small|3|1|2|copper|konbini|1|0|가판대;신문 가판;매점|Green cast-iron newspaper kiosk shop
+F|newsstand-front
+O|roof-skylight
+P|newsstand-front|48|48|Whole front of a dark green iron-and-wood kiosk shop: a serving opening in the middle with a counter (x 14-33, rows 14-34) and below it a small half door (16 x 14 at x 16-31, bottom on the last row); racks of magazines as rows of small coloured rectangles (wine, blue, amber, white) on the left and right panels; a scalloped dark green valance along the top rows 2-9.
+
+B|florist|꽃집|flower shop|eu|small|4|2|2|terracotta|konbini|1|0|꽃집;화원;플로리스트|Pastel green flower shop with a flower-box balcony
+F|florist-door florist-window / florist-upper florist-upper~
+O|roof-chimney-stack
+P|florist-door|32|48|Ground floor left half of a flower shop: sage-mint plaster wall; a glazed door painted dark green (16 x 28 at x 16-31, bottom on the last row); a pink and white striped awning above (rows 6-14); a hanging basket of pink flowers at the left edge.
+P|florist-window|32|48|Ground floor right half of a flower shop: sage-mint plaster wall; a big shop window (26 x 22) crowded with bouquets (pink, white, amber blooms and green leaves); the same pink and white striped awning (rows 6-14); a wooden step shelf of potted plants below the window.
+P|florist-upper|32|32|One upper storey bay of a sage-mint plaster house, 32 wide: one tall window with a white frame and open dark green shutters, a window box overflowing with pink and wine-red geraniums, and half of a plain wall each side; a thin white cornice along the top 2 rows. Fills the canvas.
+
+B|bookshop|서점|bookshop|eu|small|4|2|3|slate|konbini|2|0|서점;책방;헌책방|Old-town bookshop, dark blue wooden shopfront under an ochre upper floor
+F|bookshop-window bookshop-door / bookshop-upper bookshop-upper~
+O|roof-chimney-stack roof-skylight
+X|dormer-slate|32|-14
+P|bookshop-window|32|48|Ground floor left half of an old bookshop: dark blue painted wooden shopfront with panelled base; a bay window (28 x 24) showing rows of book spines (wine, amber, teal, cream); a carved fascia band at the top rows 2-9 with a white open-book pictogram.
+P|bookshop-door|32|48|Ground floor right half of an old bookshop: dark blue painted wooden shopfront; a half-glazed door (16 x 28 at x 0-15, bottom on the last row) with a brass handle; right of it a narrow window with a stack of books; the fascia band continues at rows 2-9 (plain dark blue with a thin amber line).
+P|bookshop-upper|32|32|One upper storey bay of an ochre-cream plaster old-town house, 32 wide: one small-paned window with a white frame and wine-red shutters, a wrought iron lamp bracket at the right edge; a thin moulded cornice along the top 2 rows. Fills the canvas.
+P|dormer-slate|16|20|A small roof dormer seen from the front-above: its own little blue-grey slate roof rectangle on top (6 rows), a white-framed window below with four panes, pale cheeks. Transparent around it.
+
+B|laundromat|빨래방|laundromat|na|small|4|1|3|gravel|konbini|0|0|빨래방;코인 세탁소;세탁소|Blue-tiled coin laundry with round washer doors in the window
+F|laundromat-door laundromat-window
+O|roof-ac-unit roof-vent-mushroom roof-duct-run
+P|laundromat-door|32|48|Ground floor left half of a coin laundry: pale blue ceramic tile wall; a glass door with a steel frame (16 x 28 at x 0-15, bottom on the last row); right of it a tall window showing a stack of two washing machines with ROUND dark doors; white sign band across rows 2-9 with three blue bubbles pictogram.
+P|laundromat-window|32|48|Ground floor right half of a coin laundry: pale blue ceramic tile wall; a wide window (28 x 22) showing a row of three white washing machines with ROUND dark glass doors; the white sign band continues across rows 2-9 with a blue T-shirt pictogram; a low dark blue tile base.
+
+B|police|작은 경찰서|small police station|na|small|5|2|2|tar|office-floor|2|0|경찰서;파출소;지구대|Two-storey brick precinct house with twin blue lamps
+F|police-side police-door police-side~ / police-upper-a police-upper-b
+O|roof-satellite-dish roof-door-hut
+P|police-side|32|48|Ground floor side bay of a brick police station: red-brown brick on a pale stone base; one tall window (14 x 22) with a pale stone surround and dark iron bars; a noticeboard beside it. Fills the canvas.
+P|police-door|16|48|Ground floor centre of a brick police station, exactly 16 wide: a dark blue panelled double door 16 x 28 (bottom on the last row) under a pale stone lintel; above the lintel a round BLUE glass lamp glowing pale blue with a white star badge (rows 4-14).
+P|police-upper-a|48|32|Upper storey of a red-brown brick station, 48 wide: three sash windows (10 x 16) with pale stone lintels; a pale stone cornice band along the top 3 rows. Fills the canvas.
+P|police-upper-b|32|32|Upper storey of a red-brown brick station, 32 wide: one sash window (10 x 16) at the left with a pale stone lintel and, at the right, a dark blue shield plaque with a white star; a pale stone cornice band along the top 3 rows. Fills the canvas.
+
+B|bus-cafe|정류장 카페|bus shelter café|eu|small|5|1|2|zinc|cafe|3|0|정류장 카페;대합실 카페;간이 카페|Tram-stop pavilion: half open waiting shelter, half tiny café
+F|buscafe-shelter buscafe-door
+O|roof-skylight roof-vent-mushroom
+P|buscafe-shelter|48|48|Left part of a stop pavilion: an OPEN waiting shelter — two dark green iron posts, a glass back wall with a route map (a coloured line with dots), a wooden bench inside (seat seen from above, rows 30-40), a round amber stop sign with a dark tram pictogram hanging at the top left (rows 2-12). Floor is pale paving.
+P|buscafe-door|32|48|Right part of a stop pavilion: a tiny café — dark green painted wood front; a glazed door (16 x 28 at x 0-15, bottom on the last row); a serving window at the right with a small counter and a white coffee cup on it; a cream fascia (rows 2-9) with a brown coffee-cup pictogram.

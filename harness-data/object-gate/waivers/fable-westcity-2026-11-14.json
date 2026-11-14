@@ -1,0 +1,3928 @@
+{
+ "schema": "oprn-object-gate-owner-waiver/1",
+ "id": "fable-westcity-2026-11-14",
+ "owner": "구워도 되고 앞으로는 전부 오너 면제다 (FABLE 5.2 는 한번에 다 잘만든다)",
+ "decidedAt": "2026-11-12",
+ "recordedBy": "draw-west 일꾼(Claude Fable 5.2 에이전트) — 감독 위임, 오너의 상시 말씀(2026-11-12)",
+ "contexts": [
+  "bundle",
+  "shared"
+ ],
+ "note": "오너가 2026-11-12 질문 «Fable 로 다시 그린 그림을 판정 없이 오너 면제로 번들에 구워도 됩니까» 에 한 답(상시 동의). 서양 도시 세트: Fable 5.2 medium 한 방 부품 + 코드 조립 건물. 3/4 관문 미통과.",
+ "items": [
+  {
+   "pixelSha256": "c1292a12a88a510f6f82bd7dc6a8c95125927ecfc9c43d134c8ed828c3ff327b",
+   "kind": "structure",
+   "label": "modern_city/mc-bld-w-bakery",
+   "width": 64,
+   "height": 96,
+   "cells": {
+    "16": [
+     "06f69a4e3ca82478",
+     "0f81600f17999b67",
+     "11f6933318b05d67",
+     "1370a1f0484643c1",
+     "1da52c9dd41f7476",
+     "599da5f5af8b185d",
+     "70e22d95db08951b",
+     "72803c42b906b0e1",
+     "736d467573e6aa93",
+     "75da6812155c57d2",
+     "7c915f3050d866d1",
+     "85ff0118558c80de",
+     "92c2ab8a35767b51",
+     "a880ba6453e91560",
+     "aa090a3e3b83db7d",
+     "afba1f66a2476873",
+     "c054df7739b19c09",
+     "c0abcfeac42ec5b8",
+     "cc8ec02765c57db7",
+     "cd2276cc5cbd2c24",
+     "cf25473582b8ae95",
+     "d4f8a2299702d408",
+     "dc332f9f0c9a0907",
+     "f474fa8dc89c531a"
+    ],
+    "24": [
+     "11c26e24a35878a7",
+     "1ddab87cc6cc59db",
+     "207cfd9109a4537d",
+     "26b84d8f19142801",
+     "276dfaba0019a4db",
+     "350edb444009fca7",
+     "3762574bf5fc286a",
+     "393c348720cdb6d8",
+     "4cc3ae091858aa1c",
+     "5215e33b3c456992",
+     "59d2c23adcdfd157",
+     "688b57e1612ca5cb",
+     "6dee01d47b7030b7",
+     "7ac21a3c60029ac6",
+     "7e011f31f4639c6a",
+     "7fc0414f32c1dbd0",
+     "84066c2af5b49d37",
+     "8e8793e0dcdb0f7e",
+     "98c53612e682cbb1",
+     "9a70df580c20f6fb",
+     "9eb8ff2f572c1a26",
+     "a9c609a2d2047cc9",
+     "ac906106e439dadf",
+     "b19a75a3fdc39a09",
+     "b2a63818c1493ec2",
+     "b406354017de2025",
+     "d3c14618e935565a",
+     "dc4e37d2e4eb0c59",
+     "df5521a8b68b6e9d",
+     "e6e105ab7b76a5d2",
+     "e7670dd6bead5627",
+     "e7f5fc5c7b3a4c3b",
+     "ec9474ac8fa5808f",
+     "ee5a2c9301b13656",
+     "ee8608bb4d7ed2a8",
+     "fd4f0af210bf1ffb"
+    ],
+    "32": [
+     "579ee09cca68a1d4",
+     "79dfaf651e7b49f2",
+     "81f068554ff8117e",
+     "9393a59dd14004c2",
+     "bffd47b44a96e593",
+     "c4dc40f24111f048"
+    ],
+    "48": [
+     "01b15718dad4ad6d",
+     "18516a246e67dbe3",
+     "1d7c9bb0b77ddb00",
+     "5aa6ea16f55f4df8",
+     "8c82d1b2302119a0",
+     "93a56025a3f28cdd",
+     "aefe03a2283abe01",
+     "cc296ed6d1957e68",
+     "de040ad5608dcbf9",
+     "e34ee7ab3303b853",
+     "e6bc390dac09d686",
+     "f3730717932adffc"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "17e0b72fe9b29deba84b4371a00aad4ba683c4664b7688bb4a24448a32400271",
+   "kind": "structure",
+   "label": "modern_city/mc-bld-w-icecream",
+   "width": 48,
+   "height": 96,
+   "cells": {
+    "16": [
+     "03428bf603b5877c",
+     "049d6ddc342f843b",
+     "221a2bfe9c145a99",
+     "2449b4b2b9de700b",
+     "2572567706bf0892",
+     "70241d16b5851359",
+     "8a83134a3cc93f75",
+     "acdfdf05da159ccf",
+     "c0fe18fda4e405d6",
+     "cb8714667ad6a2e7",
+     "cc10dc4341382573",
+     "ddd2d712c47fec8e",
+     "df4e6af128310ea9",
+     "eb2b39d4dce5cb30",
+     "fc93cd5e3980f9c3"
+    ],
+    "24": [
+     "24a056655386f69e",
+     "387a602186442512",
+     "53aa57edea6f6b8d",
+     "5942055b7ad59505",
+     "88af6711518e70fa",
+     "b85badba4ee6c05d",
+     "d40ab65c48cb6eca",
+     "fc7397fd32fe3f85"
+    ],
+    "32": [
+     "2beb5a6586009968",
+     "31c42831fad782df",
+     "32a7b14b8f3c7a78",
+     "51390861e12c346e",
+     "5b41c10f8eba3b4e",
+     "5baee34d2c4426be",
+     "5f5d8381ab68652d",
+     "6839b84326515efc",
+     "6bf9d48fcffc6141",
+     "6f553230f8a1713d",
+     "75f10247b73a8933",
+     "76a34b9abfc0f34e",
+     "8f214e37e0af7e1b",
+     "9ed87b16bfff2597",
+     "cd525a3fbb5d48db",
+     "dad09ec455fc081c",
+     "e3b7488e3e3136dc",
+     "eddf47ec852ad09b"
+    ],
+    "48": [
+     "83aad6de038800f4",
+     "d102bc86a73870ae"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "76824438c87a76c3a9a75d2217a5cb2694cd794f91a02f13325e35041f6a5947",
+   "kind": "structure",
+   "label": "modern_city/mc-bld-w-diner",
+   "width": 80,
+   "height": 80,
+   "cells": {
+    "16": [
+     "034772a88660ec3a",
+     "1563a30f8bd0b8ba",
+     "20a25214b363c6af",
+     "228731d62d901560",
+     "244c39340bce64a1",
+     "2a61d0e76f7b3ea3",
+     "322ab2bf6ae4d3ea",
+     "4ad1a2fc2e03b639",
+     "52b9e9b00bb768d4",
+     "563b47879dd59844",
+     "5e86424ccdd7d197",
+     "60abec6f07f25a3f",
+     "667f5398a731f1a9",
+     "73987847484a49fd",
+     "8e749668374f7c62",
+     "9277d530de02c512",
+     "9349c8d0cc813262",
+     "b4aba32bdd46d806",
+     "c91ef1aab1eabe85",
+     "ca6c2930a5038e08",
+     "d2784e9cb99b081b",
+     "d6e049262d82dce0",
+     "ded1ea274323ecb0",
+     "edb70591209fbb63",
+     "f230153363e712a7"
+    ],
+    "24": [
+     "01599e0f90b60fdd",
+     "02a05efc0d202510",
+     "04aba461806f7108",
+     "08f6fb535088abb0",
+     "0a4732cfece33091",
+     "0d438166d9f8c7a2",
+     "10f08550204251b4",
+     "15f54e145aeb6c08",
+     "18acb110c4432cc3",
+     "1bc1e2f8f35c6149",
+     "1ed9390538129b7d",
+     "237ca5ad3535f21b",
+     "2452bd62b136c1aa",
+     "27fd46f7673e6be8",
+     "2e25d20f9b92c42d",
+     "2f2f7e895b90f376",
+     "31e07304bfef371c",
+     "31e46296816657d2",
+     "3214716583808c65",
+     "322b5037ff1e46ed",
+     "348d18848a7f2f3d",
+     "396644fd94585547",
+     "3c113bc48aa65d06",
+     "3c1e89b8d83041e8",
+     "3f998a43cadcf3b8",
+     "42106bc8eee827d9",
+     "42fa074ad58d06e8",
+     "4469fca23cbe6ff8",
+     "44fa231d9a36b70c",
+     "4d18dab97339b8c1",
+     "4f33a9186ecc0654",
+     "4feaa2b3f94bd9e1",
+     "534c36e8daa86c5b",
+     "563e98d2544b1b42",
+     "58d266e6e0428f9c",
+     "5bab9b491b914df0",
+     "668c4df0e123b1e1",
+     "67e62e226276d1aa",
+     "6867ccdd2e351e5d",
+     "6dcdbe13ac421f2c",
+     "786ccc1579e7df36",
+     "796e86c88a87bbd9",
+     "7afcba0e8722cb0b",
+     "7db996803dc0d43b",
+     "7db9ec993ab5e4f8",
+     "82f0220d6ab85c1e",
+     "88915e408dd375ed",
+     "889cc902e5f9fcec",
+     "899c1fa9e901209f",
+     "89cf7292ad82688a",
+     "98ec73b416c6e756",
+     "9b396e8190415961",
+     "a16900833fa501b7",
+     "a4a5742f4bf540f7",
+     "a87de108a2715304",
+     "aa049cd99984ce5d",
+     "ae202e652ea66142",
+     "ae39ca9bfe6701e6",
+     "ae6ab98d0a19ee4b",
+     "aeae9bc29b943918",
+     "b036768fb8e42d5f",
+     "b1213f8cfef192ab",
+     "b5400319389e9ae6",
+     "b894561bd1f2da7a",
+     "b967d03288fadb4c",
+     "baed1ba78618beec",
+     "bb435adfc0c670e4",
+     "bbf5d13b73d5f6c2",
+     "bcd5590d70b3fb6b",
+     "bd572a2889c5b861",
+     "c1480e405b8a66e1",
+     "c2f78f52252842d5",
+     "c408ecd9b9e99aba",
+     "c58af1b4ba21c3c1",
+     "ccedfddc1c2e603d",
+     "cd5bc36f160f5084",
+     "d2ec75fb999bab0c",
+     "d3683813d3bdb7e1",
+     "dac5193e3bf11b63",
+     "e000ebe00ef2b185",
+     "e09a7bf9c2327187",
+     "e1fb638b9125ccfa",
+     "e550f83ac604a752",
+     "e5cd1c4d36a5d171",
+     "e68565cde2cfb05e",
+     "e6e7b832085ad35f",
+     "e6ffc0792af02b89",
+     "e715626f3ca9db90",
+     "ee94789430e32ae0",
+     "eedd3aa9b8fc7178",
+     "f27a0aca1298376c",
+     "f359b2e6135272b0",
+     "f418206e138ae326",
+     "f4456f1477771e94",
+     "f83ca87cb29612bf",
+     "ffd0b106f0160f99"
+    ],
+    "32": [
+     "0016879877f6cbb1",
+     "0c857062760d3dc2",
+     "108699c3804b2dec",
+     "1103c234ff7f9c6d",
+     "1644098584eee013",
+     "168e2c2fd1e6a82f",
+     "2714b9ff778eb317",
+     "2820fe59b980f251",
+     "311e3cf824be1138",
+     "3576a12ecbfaa0ac",
+     "3b752e82c480f170",
+     "3c59793783c1686d",
+     "3db3547c34f11c3d",
+     "426f623c50b66842",
+     "434f805bbb66cdf8",
+     "44c35dfd61734718",
+     "4987682bc4d9483d",
+     "4edfa14e89e4d4b5",
+     "6761e1a2153b7952",
+     "6cf7c19563cdd4b7",
+     "705e6a87ad699adc",
+     "717dbfb276f77d0d",
+     "75621a3f15e9b3e2",
+     "7687b3cca16a996a",
+     "76be9944bac37e3c",
+     "777c606969130c56",
+     "79bb5641469591d7",
+     "7f2ea1a61c5ef866",
+     "88c5b25b00f6e2d8",
+     "896db05a79befbc1",
+     "8a572dda5ee4639f",
+     "8a9913b8c048e6b6",
+     "91f26aaceb75c8a4",
+     "9736662703b40bda",
+     "a091c79441cfa1a7",
+     "a379567273b9cb5b",
+     "a41695a2a6bf4977",
+     "ab087876fe25d712",
+     "affad2905ab8ac51",
+     "bd8a60ce01830a17",
+     "c765911b75750fcc",
+     "d6ad8ef1d0206e6a",
+     "d6c3537237096c2b",
+     "dbe6d9b7276d9c34",
+     "e51584c548c76aec",
+     "e5620764adc65c02",
+     "e572977a0c79fe97",
+     "e816f322af127a33",
+     "e969c75c9e489978",
+     "e98122cab8edc7e8",
+     "f08a1a249e049f4c",
+     "f30266542350d52c",
+     "f6ce78c6f70ce237",
+     "f99d4c7d89d8d602"
+    ],
+    "48": [
+     "07b28ca51395ec7e",
+     "1bbb74720d41fe27",
+     "2e9705ec3adf2c54",
+     "33307092bacfd8d2",
+     "3cbfa283733636eb",
+     "437b55bcf2082251",
+     "49a6345704426254",
+     "4a7dfa156e648a90",
+     "58697427152ce6f8",
+     "5ad7c7e349a0b6ec",
+     "66c5ae7c4069d7f4",
+     "670d4c80b4f12ff0",
+     "68f5dbac2385f7e8",
+     "8b986bea3b4910a7",
+     "a96f5b2c8dbf7858",
+     "a9e026d71d49f3ad",
+     "aa1c6b2236e0a968",
+     "b4988ce5923842ed",
+     "b58937ff16fba774",
+     "bf22d3449860cc8a",
+     "c5a25da89bd42c53",
+     "d62f8f14af48c1b5",
+     "e8b3f2ef889fa549",
+     "f4f52753acb2baa2"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "7e412aff8d653ac2040ba25c42cf3f54bb1fa67540a5705599d81ce164c6d7c2",
+   "kind": "structure",
+   "label": "modern_city/mc-bld-w-barber",
+   "width": 48,
+   "height": 112,
+   "cells": {
+    "16": [
+     "0f6c4a58f012341e",
+     "2504ff463f7b5a7e",
+     "274397a757ab91e6",
+     "40233819c65f9e43",
+     "474fa371c45533ee",
+     "4cc3c722993a6e97",
+     "56365501f9b581fb",
+     "5b09363242a99b68",
+     "6788af0c8d0525e9",
+     "6c8bb00a2adc59e0",
+     "7ce0f3dd0ba044f7",
+     "8e8489e50eae0995",
+     "90d34d502e22cebf",
+     "a2f7033fe3ca40bb",
+     "ad4604c536f94b24",
+     "bda7e42b42d15253",
+     "d2725c93ce27cd5d",
+     "dd5ae504c5845080",
+     "e4eccad73ed5a123",
+     "e6d85a91f37a02b9",
+     "fb9bd17fb940c06e"
+    ],
+    "24": [
+     "0dc26e9bacfdb15c",
+     "1c5e6509e74849a8",
+     "350b6a04dfaf3af6",
+     "453ed0a018713fbd",
+     "493ab75b19788ced",
+     "4a18b3e4b09b65bf",
+     "653d26cb41ed174a",
+     "65aafa065294226a",
+     "677726bd97757ed4",
+     "88874495444ce8d8",
+     "909253c35771d9cd",
+     "98cc58fd244e7ada",
+     "9f035a6f0551d63a",
+     "a75b52e5a925b5de",
+     "aaded54ad0ff295f",
+     "c40b7bc2d6b6aa11",
+     "d9b08d3f0284b8c1",
+     "dc15c1cffb67d6b3",
+     "de75cd05085096d0",
+     "fa73f0cab75c0c0d"
+    ],
+    "32": [
+     "0a3e24147055eedc",
+     "1066eebb79e60885",
+     "11a2d25f22d682b1",
+     "1ae2e6c85720095a",
+     "258088d91f33f21d",
+     "26cb70bc99119caf",
+     "27f1383e3fd82b8a",
+     "39d6bc2524062cc6",
+     "3b568e7ef726a14d",
+     "3c5fe5d4e06db260",
+     "49bab19b7b612773",
+     "527e583f0e8bb788",
+     "52c38bbe7d544e5a",
+     "58b0eb5037d6590c",
+     "61f8c0651b708ace",
+     "69bb776fb58c74f4",
+     "6ae98bc6815a3196",
+     "6f3765f5e85cc1d4",
+     "7f0bb57e540e711a",
+     "839874ed4c153d7e",
+     "8445f9a5b99356f2",
+     "88332dcec8ce861f",
+     "8ac2b73b84f02448",
+     "8e6e3dacdaf32635",
+     "8e733e3f4ca1c57e",
+     "94194c00b6b1ea72",
+     "a2a05d5c3adf1877",
+     "a40c4b5f502b607d",
+     "a64012c832e4b0e5",
+     "aa08aac2922ab0aa",
+     "aab77800d7dda0fd",
+     "abe5e6eaa51a2602",
+     "ad5320c8d9ebba72",
+     "b2529379cac83059",
+     "b96ee315670fa42d",
+     "bd0a446d00012b2e",
+     "c0a34eabfaa30ded",
+     "c656359c488e82dc",
+     "d77112c5616615a4",
+     "d780fb9d0ea654f2",
+     "d90e6cc62a3b6921",
+     "dc9ea46b1396742d",
+     "e0e499719ad632cd",
+     "e547f8c6adcf1e58",
+     "e95b24afadb89523",
+     "e96de91211e1607a",
+     "f02376ae6f863464",
+     "f481aae68fd45155"
+    ],
+    "48": [
+     "1a26273571ffd877",
+     "720d2029fc7305ac",
+     "7e4fbfcd953e0662",
+     "9b5432940d38ec85",
+     "a783613e3b2a8049",
+     "a81f841d319dc01e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "8fb41e1a972911f6eb0f9be7484adad0fd82146a76d0941a78f121af356010b5",
+   "kind": "structure",
+   "label": "modern_city/mc-bld-w-newsstand",
+   "width": 48,
+   "height": 80,
+   "cells": {
+    "16": [
+     "058839bb4e35f8e3",
+     "113dbf1d5fda36ef",
+     "18b9b51773390b71",
+     "1d5760e7ee3d0702",
+     "29cb851f890c8646",
+     "7c4da861db63afb2",
+     "7fef0dce49817aaa",
+     "9b799df491726d17",
+     "9c55137f8cddc917",
+     "9fd0174bb833e818",
+     "ab4127a631c72fe7",
+     "b516504c948549eb",
+     "e92b42cb0b2cb11f",
+     "f0d953467af93ff3",
+     "f8622970029f4afe"
+    ],
+    "24": [
+     "047094ed8bca9025",
+     "0f05d2ec04de8cac",
+     "30919f34f21427d3",
+     "34fe7ab992d87e31",
+     "59067fe54303eb58",
+     "5b33dbf48cdf2ef5",
+     "5d6c83d3b194ba75",
+     "7ad546d9e8e61ee2",
+     "7b7fe8a03e04b7dc",
+     "8402e93b80d50a32",
+     "aa14c5e2b9b3738b",
+     "b1bddfa98f988890",
+     "b6afd3f85f5ccf29",
+     "d0ce66b251ff5cd1",
+     "de1e74fe373bce69",
+     "ffb37433e460d437"
+    ],
+    "32": [
+     "02f5933a661f4aa1",
+     "09f217c17b03f8b1",
+     "0c53c0d4bd727309",
+     "0eb1652775d3b5f7",
+     "11f41b5bfc4df8d4",
+     "1a7d1fdcfdee2b8b",
+     "1fa41451c14a883a",
+     "2547d5d443ea3f8b",
+     "2b394e55650c46d2",
+     "2d5379f117c4a038",
+     "590dc022ca749c33",
+     "5b2be5c6f0de6ba7",
+     "61f93314c16603be",
+     "71d5e9508f853662",
+     "7625ddc246d5bbdd",
+     "77ca93f6b84b48c4",
+     "7823b9317df0968a",
+     "7f9b8168a1b34707",
+     "89fdee1b93a3da81",
+     "a1c1bf6905c63103",
+     "a980a02127d0c038",
+     "a9aa920c6f5ef11c",
+     "b3c8be9fe0796968",
+     "b6fed8399b188450",
+     "b944435b43b54536",
+     "c018516eef6f7c67",
+     "c6644ebecd8bebe7",
+     "c7b99fa49682593a",
+     "c9d88c1d1820386b",
+     "cf583049f079c4a5",
+     "d687a2ae0585204f",
+     "da76ee173a8fc3eb",
+     "e2c3f362d0104b7c",
+     "e80be764ffad7af9",
+     "ea4621aabeceb0aa",
+     "f4db5f5854914410"
+    ],
+    "48": [
+     "3dce77e9dc4b9dc0",
+     "684e12b145f65459",
+     "871caaffb04f2b59",
+     "d709ab51d993d22f"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "3e4361bff192bcac5be6a5243c7dce9f225681e543e0468c82e904f72a7d3c79",
+   "kind": "structure",
+   "label": "modern_city/mc-bld-w-florist",
+   "width": 64,
+   "height": 112,
+   "cells": {
+    "16": [
+     "15589a6a98764cfd",
+     "1cc3d8201da6b20e",
+     "1e9bde124b344784",
+     "26ed9f24dcc08997",
+     "3ce2e33af32d6d55",
+     "3e78bc71ee1e7a1a",
+     "4873ec7560532c1f",
+     "4a52ad6c0ad1cf79",
+     "4e9a1cb00a61004f",
+     "5cdce141e9a28cbd",
+     "65415ed39fd31bc7",
+     "75a86c5e2fcfa0b6",
+     "77f941fc5505e389",
+     "7dd85983bedf2c25",
+     "8098e08fba30f52f",
+     "8895ba42ae688cdc",
+     "8aea49a387133c9b",
+     "8dbab77b88116e49",
+     "9203ad5a1312aa1a",
+     "a05e7ccf5fdfcc06",
+     "c63b80569e2dc345",
+     "d51d1690842cf5fd",
+     "d61427150a4fcff8",
+     "da8d0249dcada99e",
+     "dc35c95ef97a3a1f",
+     "e1fdcd6260a09ff3",
+     "e6130e30971164ca",
+     "ef702f8ecca733a0"
+    ],
+    "24": [
+     "02dfb99725b9b29f",
+     "0480e9c1a6746e06",
+     "075ea04487939c9f",
+     "0cb2e9ccf16e0c73",
+     "0d89fd41f900c57c",
+     "1412ead9a2761d57",
+     "18b7eb00c32a2d28",
+     "1c905a622493e862",
+     "1ce1c915e6ee79b5",
+     "1d1fdc791e70ccee",
+     "1eb69db9cab684ae",
+     "1edc3e9e5b377a9b",
+     "2191b870541c4c28",
+     "21a903db430c87ab",
+     "22205d388335a00e",
+     "26c758f950e8964b",
+     "33f164bd4b9c78f7",
+     "36acdc5ddfe34a27",
+     "3d156db67a72db54",
+     "428ad5f006c4479c",
+     "46b9cd104d0575bb",
+     "526d43c9e4f3e2b3",
+     "53880452f9aa5170",
+     "53ddc2aba5862306",
+     "53f4da789f69f485",
+     "59d4989c14d4997f",
+     "5d8a8def8c4f81c6",
+     "5db7c878a2ba1e3f",
+     "5eadea453687b45f",
+     "6193a1d03c0a4783",
+     "62d6115d3c686582",
+     "667a8af2ccf64696",
+     "69fb74074d0517c7",
+     "6d5e3beae3672e63",
+     "6ee27e95a82f4825",
+     "71a4cc3e9b9e7fc6",
+     "71b68124f86404bb",
+     "73e376020d5c319d",
+     "76cce21bfff406f1",
+     "773754c67a67f0a1",
+     "78e1352d1ab86fb1",
+     "879d7f34a4a642cf",
+     "897fe907d8722019",
+     "8bf164fd9151e6ae",
+     "8d5e443e348c38a8",
+     "9023dda5196a4bde",
+     "95abc11a28061c5f",
+     "964c6de8c912a9ff",
+     "973b597a10ca8915",
+     "983fec4bfbc14e79",
+     "98eec8693c65c8d1",
+     "99b716f74c27c430",
+     "99db64d40e281892",
+     "9c16911668051a3a",
+     "9c779738f072ebde",
+     "9eb7c0274a702c56",
+     "a009a7f0bf718c95",
+     "a01fe3dbaed3c739",
+     "a1effebfc327cc96",
+     "a862259c73e5fe42",
+     "a9c500b58d9869a2",
+     "aafd8198fbe9b5cf",
+     "abf0aeee504d5f00",
+     "b0a5c26432e1ea9b",
+     "b0ac72741d6fef71",
+     "b6d781f8a57f165e",
+     "b784bb1693717465",
+     "beae372980b2f46f",
+     "bfb4bf680125e7f5",
+     "c3c5e92d21ff5df7",
+     "c671ec8f3ec070aa",
+     "c7168676cf3ddbf6",
+     "c8ca2f606bddca78",
+     "ca9fc92bd32542f6",
+     "cb13af7c2726f2dc",
+     "cc8bc41c5e6290cd",
+     "d2826a452dcbbb98",
+     "d533bbba65b5ab68",
+     "d77522070dfdf309",
+     "df4843d1584088ec",
+     "e8fc3618756b3124",
+     "ead64f767037b009",
+     "ebdd4ccfeaa568af",
+     "eeee48427f43a71a",
+     "f29d058c4d7a42a7",
+     "f704ec887bd0a2ce",
+     "f89196a63a923037",
+     "fa69522d73bacf30",
+     "fb4c4cf2bb579b31",
+     "fb9407bcdd207eb2"
+    ],
+    "32": [
+     "0561da68c2647935",
+     "1a30a07337709a69",
+     "2380e4831ccb9bd7",
+     "3d54e71f71a3aa14",
+     "441ce5f47ba0ae5e",
+     "5dad62da7f8cdfe4",
+     "78a79790240c23e5",
+     "94d432a2cd7d4856",
+     "a71b3f0a0e53d42e",
+     "a8817fab8ad6ee06",
+     "adec98ba79a9aa08",
+     "bbdc3cc6750def07",
+     "c15f452478266a41",
+     "c28cf9ebe5b0bfd7",
+     "cc1b369f4e3e85a4",
+     "e2a86d2793612444"
+    ],
+    "48": [
+     "07abc0705073eb01",
+     "087eea72cfb3b756",
+     "08fdf93813743fe3",
+     "13abbeebaa9a60c2",
+     "15de940200efca46",
+     "173c72817c85673b",
+     "1bfcca4c6fa92540",
+     "1cfbae32573e8b47",
+     "289d9a165a1b991a",
+     "3a089ec1557a509a",
+     "3c88876b22c88efa",
+     "3ef1ebeb71cb1503",
+     "42f21b2131f68d5c",
+     "52062252dd032c1d",
+     "5aee4c427f42172b",
+     "5fa1f2a1700f3409",
+     "67ce21865bab4d70",
+     "7438ca1b36fdb6c5",
+     "7c222cdef8d60d93",
+     "7e98d731c600c237",
+     "7f0407c7a29f051c",
+     "7fc58898703bbdca",
+     "840d13b34131be47",
+     "8eb845fec2721bd3",
+     "a6acc2efa1b54a9d",
+     "baa4d08a8d1f6764",
+     "c628b8babad1be64",
+     "c6fda419078faa06",
+     "d189cc215cb1d7b6",
+     "d213e21ad0d9a7db",
+     "d69b84b7cb0a93d6",
+     "d93137bf3d9afc48",
+     "dd9f8c30f9640ce9",
+     "defce282aa21e8a2",
+     "ec1c027f2e3356db",
+     "f319278a0057daa4"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "aaa326672e53c29edd54295ed3ba5ed712f6adf13e84cfa3c630c6a502a9b486",
+   "kind": "structure",
+   "label": "modern_city/mc-bld-w-bookshop",
+   "width": 64,
+   "height": 128,
+   "cells": {
+    "16": [
+     "01431302eb70315e",
+     "145c61843be73403",
+     "1eead107d5dd54d8",
+     "220d2d2f99a8ed79",
+     "2849a6aed341e5a0",
+     "3c13ba02a35d1e2b",
+     "3de4d5af114cea37",
+     "41bd2c6cc34d8fa1",
+     "455936e541c9e67f",
+     "49ec23a574dfe8f6",
+     "4bec2442cb129290",
+     "53589f2c9a75b07f",
+     "5582db84fadc9ece",
+     "56e119c4979bfc57",
+     "59fec9268fd3e440",
+     "6d9d5cb24e4be500",
+     "6e6536ec28dfdf44",
+     "763d9e9695ac7df0",
+     "79e708622115797e",
+     "893c6fea59a1315e",
+     "8d66ee3c8dc40d6b",
+     "9b2ab0f6952aa939",
+     "9dd41c6c2ffb66bc",
+     "a4a092e7560f7c57",
+     "acd85ed44c2568ef",
+     "b760118fcd3a633f",
+     "b7be555d7fb4ff5c",
+     "bafc3e877a8ab69c",
+     "ce5099593a57c206",
+     "d2dd6620362441c8",
+     "d7eb2b42c1c6e260",
+     "d98aaf7697fe7785"
+    ],
+    "24": [
+     "002de55311d2384c",
+     "00d25dc9219f6f7b",
+     "021a4f1f0f0c387b",
+     "05a4d58a26d54242",
+     "06599957fdf5360c",
+     "0a20fb356dd8b5d1",
+     "0ba80f4167e303b5",
+     "0d061a474f737c98",
+     "11521bcea1dcaa0d",
+     "12a97bd130b15f58",
+     "162572b25fb310c0",
+     "165eaa7ce40cd1c5",
+     "1783f37d0607279e",
+     "19035fb966dadfb2",
+     "1ba0c6aeca897448",
+     "1d6620e980060e64",
+     "25186fe638ec1f39",
+     "25beaa6cdb59e762",
+     "2687cf67aa25bf7e",
+     "28d1aa290bf09fb8",
+     "2953af0b9790f182",
+     "2aa40e527ddb8dc7",
+     "2b38c49aefe0ccf8",
+     "2c774d616552bcf0",
+     "2fa4bb2275a3d44b",
+     "2fc8ed5f2b15861a",
+     "33e879fee2b5d489",
+     "367e6cd07e628335",
+     "3bf31133b7cdf857",
+     "3c8bc07868084654",
+     "3d85e740c1630740",
+     "3f582e2f379eafa1",
+     "414e24e5e9793e80",
+     "41e2ccad90479b87",
+     "43db974ad8ba47f3",
+     "44a3a3973b7667d2",
+     "44df823438bed920",
+     "47c33ca397e55aff",
+     "50ffd136a394de21",
+     "54bed34addfc692c",
+     "551790eaf8424fb7",
+     "555cf70a117b9b15",
+     "5569f1e2d08a180b",
+     "55e5cb179ef30f37",
+     "56802910813b4f3b",
+     "56ab8f7c6f0ac740",
+     "573eda16da864e4f",
+     "5c9bf214c88feec0",
+     "5db5ea30c4414c94",
+     "5df238963837b862",
+     "5fb943142b537291",
+     "6276c5f97dd33305",
+     "62b4bc0fa6167de6",
+     "69c4324db81ecbbb",
+     "6bff1848a73c6147",
+     "6c137f576c69ff16",
+     "7295aa274cf6ba57",
+     "72a991bca6ad9969",
+     "7564732ed273e0f1",
+     "77e0f846ba486ead",
+     "7c1fc0669dfb05cc",
+     "7e29c6342d92e64a",
+     "7e7735064b1ac94b",
+     "7fe06105591d78b2",
+     "8078b3e6900893d9",
+     "8576fb1a7b0c8cf3",
+     "85e87d35adb6f5bc",
+     "88b7222ffe5c3ca9",
+     "8b358fe62a7953fd",
+     "8c180e50320034ff",
+     "8d1d4733eaa6cefb",
+     "902981d3b1330664",
+     "904c207153ae89dd",
+     "9134206107a9c3fa",
+     "93de709d5b96df96",
+     "985f0215d02ca182",
+     "98e6eea8482650b9",
+     "9a0f224156e89bee",
+     "a31a3bfdf9242db7",
+     "a718b912f47768d8",
+     "ab887af92625b8e1",
+     "b3cc8cb2b2b67543",
+     "b4e59ffe2dcee62c",
+     "b5c11570bce3f846",
+     "b73358bd63cc8b3e",
+     "bb0273b5a209f5f4",
+     "bc4aac4275ed6ae5",
+     "bcb8073196ed9aa5",
+     "bdf9023989708b17",
+     "be730db256e37d28",
+     "c3b74bd9bb08bec1",
+     "c5926fce664a6eb7",
+     "ce4663739c396fce",
+     "cf5f6a827be6f2a2",
+     "cfe8b3cc7e4fe457",
+     "d16ecb8154725fe7",
+     "d2e0ba3fe42303c1",
+     "d618dc934a3368ad",
+     "d7420fed86315b9e",
+     "d867eccf869122f7",
+     "da086443d8092a4d",
+     "da673826c9d3c146",
+     "dc7746fa2a022465",
+     "e19e447d0613aeec",
+     "e7931fdb1857e668",
+     "e879dd436bb168ef",
+     "e96c1c35bb01d88c",
+     "f7a37a23ba9bf5d0"
+    ],
+    "32": [
+     "0dc418dce5a164ab",
+     "b0afb7d48a6208f5",
+     "b0c276f96aa73318",
+     "c7e8d7cabb263d66",
+     "d30bfb1fed70e99f",
+     "d30d0f3bed9519f2",
+     "e741cc9754fb6596",
+     "e919656f34d860a4"
+    ],
+    "48": [
+     "06584071507b60a7",
+     "07d465e8de4a0a70",
+     "0fad0c6899e61d77",
+     "1a5ec3026c595e28",
+     "22af28c2ccfb468c",
+     "2f46dc30174d6fb6",
+     "3d9cb0d80e449e8f",
+     "40a3090d4b96e176",
+     "45be6bca1dd024fc",
+     "4ce11ce8ee4ce603",
+     "55bbf48b807cd627",
+     "587da01eabd5da09",
+     "59003d8e316eb970",
+     "678e4ded5bd121c0",
+     "686815467688ebfa",
+     "6940321051314a55",
+     "6b1e91f511f2062a",
+     "7ca9b8f4c531917e",
+     "84ab6fac361f3d37",
+     "8bb77ab973bd2eba",
+     "906e9149d1ee7c25",
+     "9363ea77388e11d9",
+     "984189b94cad3f4f",
+     "a2973259bbe9f68e",
+     "afa08cb0db33d6c4",
+     "b5c5326cc39e16b2",
+     "bf538d0698c77422",
+     "c73c5d4c4756b7f1",
+     "c85ecfd9fa8479e6",
+     "d96aca2d7d8c6bee",
+     "d99f90f1c3fd5040",
+     "e3a93ffd381de964",
+     "e45a589727a6d21d",
+     "ee33cb78a21b05bf",
+     "fae28ee4cba2c90c",
+     "fe757e174bfae8f5"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "ae703483d9256eb6671934029eac46d5f48edbea37baa175f42f8705d16209c3",
+   "kind": "structure",
+   "label": "modern_city/mc-bld-w-laundromat",
+   "width": 64,
+   "height": 96,
+   "cells": {
+    "16": [
+     "03181901bfb7963b",
+     "0bfe377717e5ad7a",
+     "1db51c5fa19266da",
+     "25b537732465fc9c",
+     "29b03867a55e7daa",
+     "34a6a5e01b784d4f",
+     "39f42a6152ce07f9",
+     "4010c90542372428",
+     "5a82f017e60916e5",
+     "65f73a08a9c63c3f",
+     "72004401ce56ab47",
+     "77963e97cc000371",
+     "7f986bd336942ae9",
+     "7f9870107eb5b8f2",
+     "970384a3e5c00b2c",
+     "978ff6d8e99796be",
+     "a5427498ed5010e0",
+     "af95a7e59d106b7a",
+     "cdab079e3513a2c1",
+     "d5555752292d16e9",
+     "e05e500fa22b944c",
+     "e7c40f456cda13da",
+     "ee34e3ec8a839b19",
+     "f95e7f88a7ab5e4b"
+    ],
+    "24": [
+     "00568069006ace4e",
+     "02dc3e7a8784cef4",
+     "052da7c774a42996",
+     "05994b33334cd3ff",
+     "1728788d21eeae8f",
+     "18bef6471e0fe5d3",
+     "19813868cb525f5c",
+     "1a4fa4a4ee64f618",
+     "1c478bef22f7e0c5",
+     "24cdd7b30e98e4d3",
+     "38226cd38342bf25",
+     "3b11c9d8ade94570",
+     "3c19ca2a2087531d",
+     "46a714c60c0f82d0",
+     "4b1cc8e3a30e389e",
+     "4ed4dc9d219743fa",
+     "5c2a9b74a5e47d13",
+     "68038056c9dc38a8",
+     "74691ad1820ef426",
+     "7cbd7f15094f9910",
+     "7dd10e757d7fff78",
+     "80ad3dbc0b986beb",
+     "8ab94298bbf508e7",
+     "8b74e948fcd9dde4",
+     "9144e2a764acdeb8",
+     "9c9e2e7fa85d72a7",
+     "a2083cedb6c07fef",
+     "a2c024c15e2b15d2",
+     "a633eecb9ea37876",
+     "bfd8d5ef0e38f4e8",
+     "cf3d85b09b50d388",
+     "d2e0c6aec4012120",
+     "dabd9b937a72d767",
+     "e5476205cefef847",
+     "e627d4a7c7c6b97d",
+     "fcfe4b501a5eb9a1"
+    ],
+    "32": [
+     "2a02f228d808304d",
+     "33943fb02c100eac",
+     "7333a23cefc26f46",
+     "7b54959ab8fff3c3",
+     "b05fdad41d733b56",
+     "b285100d78303834"
+    ],
+    "48": [
+     "03872de0070abfa8",
+     "06edbf8d87a2ed64",
+     "0c7201e36e3bfc41",
+     "13869f96c1e0fa77",
+     "4cce025feeb0e256",
+     "7ea17e4ae7e1b0aa",
+     "818c92761b485280",
+     "8b9703a403f65752",
+     "a0e7f44cd5fb1ae7",
+     "a42a90b21b448884",
+     "a5f4b1e247d40801",
+     "be82ac7569301ae7"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "ccbfacd606bb04a63ca54855ed77c1e575315cac9fdc9b816bf96d4c64af6bdd",
+   "kind": "structure",
+   "label": "modern_city/mc-bld-w-police",
+   "width": 80,
+   "height": 112,
+   "cells": {
+    "16": [
+     "0199a022112fc8a2",
+     "08854c8c4052c5c6",
+     "0e942b4a6b521ade",
+     "190a6f0518340f8d",
+     "197b7e7dc18d762c",
+     "20d7b2ffa880318a",
+     "2805ae73333e6fd6",
+     "2eb6414d2d9e334d",
+     "4278eed8c4511a29",
+     "42bce47b6c96fa53",
+     "50abb495ad61304b",
+     "608d2d4dfd019e49",
+     "657f5716368f95bb",
+     "6b7c2c38979e0adb",
+     "6b8c25acb99fa0b2",
+     "6e3ebf5be9029ac0",
+     "736dd5a0816ef93f",
+     "749f8ea8c38e96d5",
+     "7d8b45c67c99b990",
+     "7e583e526fe8d2e3",
+     "915eed705c336678",
+     "935f8a5035365ff3",
+     "a4a00af10a8b8793",
+     "a5fa029bd167b499",
+     "a61ce8b47ba65ce7",
+     "b1919643564f3588",
+     "bbbf502f3838193f",
+     "be829b401de7b687",
+     "cacb25c512238427",
+     "cc1d8550ae568f5a",
+     "d3ec7e037bee42e7",
+     "ebca39d5fd6ac18a",
+     "ecf01d666a91c882",
+     "fa3f64691242e1d1",
+     "fda869ad8221a99b"
+    ],
+    "24": [
+     "00f6c254ada7e024",
+     "0298ba9a2b49aa9a",
+     "06aeb8158450d82e",
+     "06b93b8aae3f1e01",
+     "07341ced5665ef80",
+     "08edc0d2eca10908",
+     "0b32943f789290b2",
+     "0d72dca0184e7b10",
+     "0e25c1a99af07fc1",
+     "0e6f0113f9e657e5",
+     "108371c5333ffa6f",
+     "11eb335e3d3604fc",
+     "1225eb1b8273e7b7",
+     "1247cebe440cb71d",
+     "134fe5306dbdd31f",
+     "18152f6854f01b9a",
+     "19a26ca0618ea8dc",
+     "1aeb803aeab821e1",
+     "1b4312f1adcab193",
+     "1ef1a8b117dacde6",
+     "249a257cb8863560",
+     "279d0d78c0d1328b",
+     "27f0970c13c421a0",
+     "2ab9063dd742e4aa",
+     "2f7dab5c8701e7fb",
+     "301dd779f165ead3",
+     "31d2d004cf13c75b",
+     "335f2fd7645310c5",
+     "35d1de81190c0e3a",
+     "395f36e33b5f5c40",
+     "3a4747cf7edc82af",
+     "3c411b8fdb2db294",
+     "3ee461ab8276a6b8",
+     "402644e41de9d2bf",
+     "468ee6d1401d4126",
+     "4701fb0a369792af",
+     "4962b90def988a57",
+     "4a25f5f0f11f0253",
+     "4fb9c5b1a2482269",
+     "4fffc51deb9774e1",
+     "53205888fa2434f0",
+     "5342877deabc5af5",
+     "5678b6b3c1013804",
+     "577664d43379f657",
+     "57f5eca4ae4cea94",
+     "58cd512300c7e2b0",
+     "58f019d88fc83966",
+     "59277f2db88c329e",
+     "5b624b0648e44d9b",
+     "5c061de01f5773f3",
+     "61cedfa60a5ed035",
+     "644461ef370a35d8",
+     "6b031b590c79a625",
+     "6eb0d11161a6e3d7",
+     "76e5c90c5de79a82",
+     "7742445a4b67683f",
+     "800ba2c561a085d1",
+     "836955c1d40d80ae",
+     "8379bcc8181bfc1f",
+     "85816500caf2142b",
+     "86540afed77989eb",
+     "866b666a6c4f4e22",
+     "8794520e156c2495",
+     "8b7be887ff410601",
+     "8f8685f36a832fe9",
+     "9847b497f531051e",
+     "9cb38a80208904ee",
+     "9da31a5cd22f5468",
+     "9ee1560095cf51f6",
+     "a02b11614383f376",
+     "a129140593639ace",
+     "a5e325f02893f477",
+     "a5f56904c32bd7e3",
+     "a6a9200b16e60c91",
+     "a94a86b7dbbb88c4",
+     "ad7c680a75fc297a",
+     "b0ed55f1ed312993",
+     "b2c6e3ac88595aea",
+     "b9431df561ca8816",
+     "b9ed7604aa6cbcf6",
+     "bae8bdac6168371a",
+     "bcd583cc360b3795",
+     "bd3b5f67204ed30e",
+     "c0de57a48785dc43",
+     "c1655f9353be9d6f",
+     "c2c4ae70ebadd074",
+     "c6cc2ad2be03190b",
+     "c72767d359f9febd",
+     "c74ef7dc9e707525",
+     "c7b375727b101e84",
+     "c7cb0e2f1fe716a1",
+     "c9aa02d9379d2fed",
+     "ca5d4c3af32ef608",
+     "ca8951715bb6c290",
+     "ccf070d190954699",
+     "cd7fe8dee772b990",
+     "ceb9c0905d006cad",
+     "cf722a6d95895c2a",
+     "cfaf132b0702805c",
+     "d122d72a08fe3db1",
+     "d12e6711a5e3e1e1",
+     "d1ee22b3fb1444d4",
+     "d2f406564dedb6e5",
+     "dae37b590d6131fb",
+     "db7f734674aadcc8",
+     "dcf2b3f18de50652",
+     "e0d02f8887711425",
+     "e1f2a4dc4b3edfde",
+     "e3fc0816ee766c33",
+     "ea2b557f40d83086",
+     "eacbcfa86257549d",
+     "f6d856354111c863",
+     "f8b5e309e263d91f",
+     "f9bfeb88f89edc32",
+     "f9dfd9ee789d39bb",
+     "fb9550e90dcdd164",
+     "fc9e002d33e9f35c",
+     "fdcc1075512cd08e",
+     "fe6c90cf224517a8",
+     "fef357759a118753"
+    ],
+    "32": [
+     "02a00e07a8c7f948",
+     "03efa6973e7a7037",
+     "0b093aaa716f0bf5",
+     "0eb9275ac223b1b1",
+     "0f008523c381187c",
+     "123a00721feaae9e",
+     "169fc9f5ddd8e233",
+     "18ac66a4b23c9deb",
+     "1e64ef22d9ffe455",
+     "20aa4c52481bc65b",
+     "20aef1b01c53d34e",
+     "2d1bc7f221407506",
+     "2d79ac3346c88fb1",
+     "311be0e141410446",
+     "389674daef86c58f",
+     "4409d0c9e4f36ece",
+     "4461723a2bdad9e9",
+     "44e5264c7f6de41e",
+     "476a6f1c8b804ffd",
+     "518f1aeab90692d3",
+     "558e100265a67ae4",
+     "56cf99a47b49b160",
+     "5a58c9bb87a1075e",
+     "5b403544063a6233",
+     "5bb00fb4ac668ebc",
+     "63977e94d69390ca",
+     "6c55581f7d1da3cf",
+     "6c7cbab20f238525",
+     "6dd0c55cf54e7038",
+     "6fc82d7488e3a9f5",
+     "71a68c01fe9173d4",
+     "778c02b02c160ba4",
+     "7fb59409a642b44d",
+     "81f5d95aaf53f4e0",
+     "8a129b468b1c2720",
+     "8ba0694e4cfa6426",
+     "8d52cb1a2f3b0f43",
+     "8e289bd1094ceab6",
+     "8f2c1a003cd6ae66",
+     "946a086a7c2c7d3e",
+     "9533e82b69b694e3",
+     "958160dc90557e71",
+     "99feac205627c07a",
+     "a2689ab98883e4c6",
+     "a2d6e9e3b270e0d9",
+     "a37ff0f279abef83",
+     "a60e53f4148a277e",
+     "ab4b129ff532984c",
+     "af631422f1ca37bf",
+     "b2a07c90391f02d6",
+     "b3ef972cea3aa3b1",
+     "b812f528f815825e",
+     "b8693ec080734d02",
+     "b95cf01b40239ebb",
+     "bfa19d6db5ea3b3e",
+     "c3dad8e724cb7d4e",
+     "c9bbef4b8cc1b1ef",
+     "cb0f37fce1fd39f9",
+     "cb542bcded9313fc",
+     "ce93dc1a3bc51c00",
+     "cf0716388b3274ed",
+     "d4bacca032c3f093",
+     "d51bb6ed6c41c521",
+     "d559334b071d3f2e",
+     "d80f2b17d9e0a32b",
+     "dac406b5e9c6e693",
+     "dfcea0d3635e4d82",
+     "e052de8cf2ad73d9",
+     "e3e1aee6c5f6740e",
+     "edc2c6e3ed4924fc",
+     "f8335b763661492e",
+     "ffa128514def7c60"
+    ],
+    "48": [
+     "10d5be065ace9327",
+     "12785cca87c638c0",
+     "14d6068d2dc01270",
+     "176a08259f422eee",
+     "1ae1c529ec132667",
+     "2fc9d50d23f6cc1e",
+     "350f6195ce337a94",
+     "39a549c96f3f8265",
+     "4da65f0cc4a9a00b",
+     "5bb2e3d9fd5abe28",
+     "5f75c7a14f9f2791",
+     "6ffdf211bc5d17b3",
+     "73517a7c31767c56",
+     "74a84092fb79c00c",
+     "7955eb8446903990",
+     "843ca23781d55d5d",
+     "868b41f997a5d203",
+     "898da2c3646fda64",
+     "90a8a87f5f4848dd",
+     "99e15c0b2c4ec145",
+     "a67cb497f89fc1ea",
+     "a6cd4f63461ff546",
+     "a9b5adbbfd3d0ec1",
+     "ac93382a8401c25a",
+     "b86ab2aa8270ac05",
+     "c1b8cefe2397f78e",
+     "c645efbbd4e9ef58",
+     "cae934f591f5c3c8",
+     "d4c8c9d981bf8161",
+     "e495cfacbf24e494",
+     "e7a9032ab06b23f6",
+     "e8ff0a520ec86e07",
+     "f260b0116be55fc5",
+     "f71e4fd2c2b6ac5f",
+     "f7af33499af5bb2e",
+     "ffc6ddac7e19f960"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "844151055bc201f48f3d3c4de174163728de19635e9c88f2479e36c007b302ad",
+   "kind": "structure",
+   "label": "modern_city/mc-bld-w-bus-cafe",
+   "width": 80,
+   "height": 80,
+   "cells": {
+    "16": [
+     "04005f0d0a26f26a",
+     "0a769ce8da51ed68",
+     "0afd23e14e2fa57b",
+     "0d2f4ea037b2e1b2",
+     "164aa23108fad598",
+     "1fbb4230bdb2a8e2",
+     "39a6f4d5d1ccc646",
+     "4891b436dc3dcfa7",
+     "5481946acaeb4527",
+     "57fffb787bbdf336",
+     "8ef4792044fbc07f",
+     "90ef7153833905dc",
+     "944cf7546bec7a52",
+     "9f91ec08071e80be",
+     "a51864ad46ec620e",
+     "a71b5ccbc6645ad1",
+     "ac3f72c2c068ce1f",
+     "b017aba3f4dc143e",
+     "b1564acad1fa180b",
+     "bdd0a92ff460f75f",
+     "c94d2573ea29f12b",
+     "c9b17a7aba27e5d7",
+     "d76766bcb785dad8",
+     "f86298fd1a53ebe2",
+     "fa30072476c8fb72"
+    ],
+    "24": [
+     "02a05efc0d202510",
+     "03901fbfd380439c",
+     "069a7eea88d3ea29",
+     "08551b83560ea813",
+     "08f568a05ca41452",
+     "0a4915846eb6b699",
+     "0cb7721b38b06adc",
+     "0d64d11ba1ef6d4a",
+     "0db2ab2b78a1445d",
+     "0f0e1f3fd5b68cf3",
+     "0f512482286d78ec",
+     "12b8256a4d900355",
+     "17d270c4aaa559fa",
+     "192b8dd3af018ba7",
+     "19517bb21d61bdf5",
+     "1c2e0a0031885448",
+     "201cd607b3b5cd08",
+     "20d6299866767782",
+     "274df2c27354f015",
+     "287d4119fd9b2308",
+     "29db9c9162aa419c",
+     "30a98a3c0befec2b",
+     "322b5037ff1e46ed",
+     "32f9bc8e3d9e1b4e",
+     "339412a479d07179",
+     "3e8d521d77c49f17",
+     "43fba53bd7c43562",
+     "4c8e4e15066ba323",
+     "4f1d01b430c8afe3",
+     "4feaa2b3f94bd9e1",
+     "5156e0cc16d4d473",
+     "5374438f8e8cdf33",
+     "58c6090cbdced9a7",
+     "5a54de784e6bc4e8",
+     "65b1b12c676593ff",
+     "78f4eb0c61083315",
+     "798b675f1d9b4e81",
+     "7db9ec993ab5e4f8",
+     "7fa55d4405acb604",
+     "7fd9ff09eb7fd607",
+     "81d25991e6c764d5",
+     "831f50d948d9436d",
+     "831fa44bef9f107b",
+     "860c3581f26483ab",
+     "87db937f02b6f39d",
+     "881df582f15e6368",
+     "8c1f81e8a56bc8da",
+     "915a49d44301cc05",
+     "93055fb4e9d3ee28",
+     "976b019db10ce323",
+     "99292ffb6123766f",
+     "a4fe55d68ba674a6",
+     "a625e74ab965744a",
+     "a7a729253cb41717",
+     "ab5c51a883838b26",
+     "abe8ffb24e5591cf",
+     "b15b04ef1466af02",
+     "b46e8c5af9a73e23",
+     "b487ec015297740e",
+     "b5400319389e9ae6",
+     "b6d50f053c2ab449",
+     "bd572a2889c5b861",
+     "be408b59a7506fde",
+     "be6d09a49bec062f",
+     "bf9ee6c343f3dde8",
+     "c0d4dbc0b757421b",
+     "c2572f3878a9f4d3",
+     "c306e350dae2aa69",
+     "c58af1b4ba21c3c1",
+     "c8fbb4f2fa207550",
+     "c936b640a07ad55a",
+     "c9a6b0e1aceca59f",
+     "cc41d311950c8a1d",
+     "d36c89ab7522f44e",
+     "d422a0d601dbdea6",
+     "dc2fe9c153ac080c",
+     "dc37c3e01617ccdd",
+     "de150cf987855920",
+     "dfc1982c7ea406fc",
+     "e000ebe00ef2b185",
+     "e97279f1c714686d",
+     "ea62a782c60eb781",
+     "eb72a72d131b64d6",
+     "eb9bce4f631aad9d",
+     "ed70bc5aae060264",
+     "ee1ab629fe2b5c3f",
+     "ee4897a5410f2847",
+     "efc4ac2b25636ea2",
+     "f120a62376707d59",
+     "f15a1f08ef8cece6",
+     "f3064796a627e5de",
+     "f4cf8f10e3052fd4",
+     "f5b5950fb8eb4820",
+     "f83ca87cb29612bf"
+    ],
+    "32": [
+     "01de456d7b9b97d2",
+     "0c9c29720537626f",
+     "0de75340f024fd1a",
+     "0f823c500ac5e56c",
+     "10b429623ef958f6",
+     "15855cc796946436",
+     "15db626165ee9ea2",
+     "1fa4865f0e19c641",
+     "2699977ca4d81639",
+     "33a1bc2ab7a0d2d9",
+     "34665b1890e80dc1",
+     "37279b1e3b38046f",
+     "390bffa740cab833",
+     "3b71c764cc514992",
+     "41df7f548b7f3310",
+     "496256bed0d316d2",
+     "4cfde9ec5a954f2b",
+     "51d7face5656781b",
+     "5366e2e78fcbc81b",
+     "554c067b6ffa06df",
+     "56a78ec02d15ab90",
+     "570b3ebf388c27e0",
+     "5eef2a94ca15fd02",
+     "6113840b40b1efc4",
+     "614453d32c000014",
+     "61fb9d797c68a5f4",
+     "6387b8d438cc43d8",
+     "64c6c9115897e9cb",
+     "66d2b8b6a18911cc",
+     "688d7cff485f959a",
+     "77d6ae77884325f6",
+     "78302c03d7e4cbc0",
+     "7cd268a1d9687fe0",
+     "8e640cee94b7f41f",
+     "9de98befab538bdf",
+     "a173e3e19567b7d3",
+     "ad427e6562a60327",
+     "adf94b6809f93f40",
+     "b2c211e3cc0d37e4",
+     "b38998a8a95c6e3a",
+     "b8f5ab84276f4a33",
+     "bf6d4f40b63b9735",
+     "cc4b3721e1ab821d",
+     "cc581675e0d9b773",
+     "cc647b24e9b20ffc",
+     "cd6962269a315406",
+     "d7d530271a18b5bb",
+     "db1f9ae8170bd785",
+     "dda81ccd4bbcfc6f",
+     "dde474a3ed2ff419",
+     "e7f2ec7614bbabe1",
+     "eac8b497067a99f3",
+     "eb5bcf6c6733b82b",
+     "fda89c099c350287"
+    ],
+    "48": [
+     "081d228c7c2f6b94",
+     "0d08ffd34ef626f7",
+     "12dca142060fe96c",
+     "170592cd068ee956",
+     "285d5a51d45ec0a4",
+     "52dc91c38af57e84",
+     "54c2eea83aae14e9",
+     "5d5e87954ae657bf",
+     "70f653b3ab1b5b65",
+     "7176990e5880de6c",
+     "75786fd54792d345",
+     "77ecc73f84a7a94f",
+     "8021bb3785088cff",
+     "86e742143d73f218",
+     "871d8bec17f9bffb",
+     "9fff8cf89fbbbd07",
+     "ae70cc8b90920bb1",
+     "b1a11e1926942419",
+     "b8cc9ddb771f4632",
+     "c94edaa48071e16f",
+     "ca083a6985332819",
+     "d0a0dfe1cdcb0b65",
+     "f7d693afdfd3b09a",
+     "fbf545a42d68e4ce"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "72c6e2250df3657a36a9d6f4552be91c53db59c080f0d5c828fb00dbe7bd0cfa",
+   "kind": "column",
+   "label": "modern_city/mc-prop-w-parking-meter-twin",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "34ccec53408028bd",
+     "a76814e10eac17ab"
+    ],
+    "24": [
+     "0292d36de839cee3",
+     "42b1dde94f50355e",
+     "5ef5b7341a188117",
+     "8f25e119804be5af",
+     "b1ede5252a9ab97e",
+     "c05730029ab51e82",
+     "d42a9645848f2139",
+     "e5ff49c7538cb1dc",
+     "e693a0e1c13d3d58"
+    ],
+    "32": [
+     "58327f7a5af39675",
+     "a3db14e2f701a44c",
+     "ff3632b44fa4ac27"
+    ],
+    "48": [
+     "07e84f9200ff5038",
+     "143e1a5de69efe48",
+     "35609c1a1189e32c",
+     "b58d4f35ebfe4e91",
+     "c47314abedb38bc6",
+     "d296a6cda7aef38d"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "7b6634902953e0cc451f2c9f375bdedcc46a2122e533035da612c323c6a5a8e3",
+   "kind": "box",
+   "label": "modern_city/mc-prop-w-mailbox-blue",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "447c45e87199d220",
+     "b1af34e157634265"
+    ],
+    "24": [
+     "0fbac66f01799b91",
+     "18fa7a709617e88f",
+     "5685a8c6cc6221c0",
+     "60a90e69f0e7bea9",
+     "78107cda4cb0c955",
+     "9448d425c20bc5c3",
+     "a1e9a2c4f1afaa55",
+     "b0b04ec887ceff7c",
+     "eb7b4cf461a9a32c"
+    ],
+    "32": [
+     "26f6108998b00835",
+     "3908e6398a541990",
+     "68a7b54677f218b4"
+    ],
+    "48": [
+     "4313fc9da4945cdf",
+     "683ba71e75585bc8",
+     "712dfb061258ff9e",
+     "a7b0d7a0b90a0369",
+     "af78284a046964b6",
+     "de0963d8946eaccd"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "00653027b276b07d325b6406217a6bbd18a7d71d351f33c7e1e2f9190ac7e28a",
+   "kind": "box",
+   "label": "modern_city/mc-prop-w-newsbox-row",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "06480450b0db9486",
+     "97d69e9edfa54606",
+     "dfc049191cd867e1",
+     "f166df82c8751d77"
+    ],
+    "24": [
+     "0d92a86b8457a5d5",
+     "119ebae66abd42e7",
+     "126ea669199fa2a6",
+     "1b0cb788ffb9e861",
+     "2124e66c5fd12244",
+     "2831343a294d3c68",
+     "370b1b78ea536a6e",
+     "44e05cb14c642391",
+     "53a7b3cdfab95a60",
+     "66714a3a04c78eb7",
+     "7ef6ac4b43d2ac33",
+     "87efab0524b9f0f5",
+     "aaa3a9a347064b00",
+     "b5d23689d787bc9a",
+     "bf8df73a78252c60",
+     "bfbf25f537e9db02",
+     "d11166ad1ad0c96a",
+     "f36681b5ea2fb595"
+    ],
+    "32": [
+     "010697d35305869e"
+    ],
+    "48": [
+     "2bcb98fc22db7e16",
+     "682a182fe3500073",
+     "69c224d68c150c6f",
+     "91abd5cab51c5085",
+     "b1a0c0c8b190bc6d",
+     "db29a7d7b2047c55"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "f50b4b1d7ecdab97bd242d03a6fb3ca53bdea36f16b18ca7789ac275a078e176",
+   "kind": "column",
+   "label": "modern_city/mc-prop-w-bus-stop-sign",
+   "width": 16,
+   "height": 48,
+   "cells": {
+    "16": [
+     "2afed7fda8761e4a",
+     "9f52099965205b1d",
+     "e22f0a12ef1e8a60"
+    ],
+    "24": [
+     "2e42f36582c46e47",
+     "4569b545489d6be1",
+     "8eba2fffa4aa0565",
+     "be697ed196fb20ed",
+     "cf3e4a351e8fac9f",
+     "edec41e76dd8af46"
+    ],
+    "32": [
+     "08d6a29406adea65",
+     "0b167bb5ceec362f",
+     "2691640aeaaa2c68",
+     "6671e7b443d3cc14",
+     "7c81a83c1c8da0ba",
+     "7fcf935dde5dd2fd",
+     "aa50c1a07e6d6a42",
+     "b79d122f011471ea",
+     "d3028a5812a349eb",
+     "ebb58ecfd705c4ec",
+     "ebc3dd3898f9edf0",
+     "fcc02009cc2b499b"
+    ],
+    "48": [
+     "49bd28b24c2b4dcb",
+     "6ba340734f095087",
+     "ff05c4b1f0d0e3d2"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "6fc2cf783c436deaca15472275448fdd06bfbf91842016b658e9748b5d820731",
+   "kind": "seat",
+   "label": "modern_city/mc-prop-w-bus-bench",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "3e98e3401d492f95",
+     "86740f0c3cf15f68",
+     "ea2ae2d5f1fb6f33",
+     "f6ed97642a99c21a"
+    ],
+    "24": [
+     "09d0abb48b893967",
+     "1049673abe419dfc",
+     "155c0acc027579c0",
+     "2420a866e80d78bf",
+     "2a905d5a0697d3ad",
+     "35ac39bf4149c7db",
+     "40b4c99669dd3fbf",
+     "433b847228d33ee3",
+     "44ab70fa51caf32e",
+     "5564de9cf1e89ec6",
+     "5c09f3ffa89d8cd5",
+     "5d90696bddf621f5",
+     "87dd8d2f09903ae8",
+     "8b7ae910bf86ef5b",
+     "997a7e5cd770e56a",
+     "99d9e438beb782f8",
+     "a65bcadda324deb4",
+     "ac61ed846e65e943",
+     "b5950bac5cb26294",
+     "c871796ac7e9ac44",
+     "d99a635d7c5c7b8e",
+     "de2885f7750232e9",
+     "ec794039702f6288",
+     "f53989679283c067"
+    ],
+    "32": [
+     "8173b4f05d5e2c6d"
+    ],
+    "48": [
+     "0ff8c35aaad58ef5",
+     "1c92a196157140bc",
+     "478407f76684bf75",
+     "60a802bc3f2cd9b4",
+     "acfc67f21363254c",
+     "dda415d3a861c992"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c4ca7da00b997e118ee9c3709e0c09874c3d36d4024bf95d269be158cf10f0bb",
+   "kind": "column",
+   "label": "modern_city/mc-prop-w-street-clock",
+   "width": 16,
+   "height": 48,
+   "cells": {
+    "16": [
+     "0c5fa97ed59e7af1",
+     "5ecdd2c408656a89",
+     "baad762ccf8b2f7c"
+    ],
+    "24": [
+     "024080a7d0949953",
+     "09e9c09abb4b3599",
+     "175afcb346334301",
+     "1e2457b5981f5432",
+     "3177aaaf76ff2b82",
+     "b607c7db3b45f66a"
+    ],
+    "32": [
+     "1a5e705d249d3fd8",
+     "2e25487c0d8de229",
+     "400b0f9e8335184c",
+     "44b83d4466c33fe3",
+     "52f29902b8ba0b98",
+     "85938e6e1b912309",
+     "8a82ee7d2dcef161",
+     "9259197a19ae25ae",
+     "b388fef556f787ab",
+     "b7f59c550fa23bef",
+     "d50cc7291944f67f",
+     "dbfc876376b6d428"
+    ],
+    "48": [
+     "12ba37de3a3dd904",
+     "c685d84a065019e1",
+     "d9c07a3b306d6365"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "34223f2760cb7869cd120d379802d8507caa0274c1b03029bbad82a298b87e8d",
+   "kind": "round_body",
+   "label": "modern_city/mc-prop-w-trash-can-mesh",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "e3481b1d628f3e1f"
+    ],
+    "24": [
+     "354c7c1821c0b4fc",
+     "35cd690ec5194ba5",
+     "3e1e5ba5e299f8c6",
+     "40946a811b0d8223",
+     "4f28c5be11662b2f",
+     "708aba4ed39c3a4d"
+    ],
+    "32": [
+     "0484a96466c45314",
+     "317886368f96ed71",
+     "45db3e6b363e26fa",
+     "82623bf78bde28bb",
+     "af6807829419a4fc",
+     "d7d12fbed083f45d"
+    ],
+    "48": [
+     "45ba9379a3c9bd36",
+     "4aafc7bfe6c898d6",
+     "66ced0c5dc49745f",
+     "742aa662fc86f80a",
+     "85c5ffb6b8dce028",
+     "96a90bc163fe74ae"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e94c3ff341a6e9fae01deae355789052ade51755bb1923886eadb496bac8d69b",
+   "kind": "frame",
+   "label": "modern_city/mc-prop-w-bike-rack-hoops",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "096cb3635610e721",
+     "bf7d2d445b6db8e0"
+    ],
+    "24": [
+     "00254da2a4c0d904",
+     "10a3c3a3fa5f7a1f",
+     "18a89cd8064cdc8c",
+     "346da5f173631ea5",
+     "5389cde5348e50da",
+     "598dd99e1702064f",
+     "7c5fc7c62f68cb5b",
+     "8d4b0ca912b8e7e9",
+     "99aeeba575e247b1",
+     "d32b50aa840cbe6c",
+     "e30ac745530e6ee4",
+     "fa2f569ba3b6a388"
+    ],
+    "32": [
+     "73132009daf80ab1",
+     "94d46043e171c757"
+    ],
+    "48": [
+     "08dde784e45d726c",
+     "1105574e079f3acb",
+     "21f375bbb79bb9ce",
+     "7dbddbe2d19e75af",
+     "9c90c12447227a9e",
+     "b9a52ee91fd6a058"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "7335517eb29e8981d765db5c600535df3face50780963d6cb804ced6dbb5fbb9",
+   "kind": "box",
+   "label": "modern_city/mc-prop-w-phone-booth-red",
+   "width": 16,
+   "height": 48,
+   "cells": {
+    "16": [
+     "88138c7537fb5a4f",
+     "a19c684f187b9f9f",
+     "c3b13e7ac9d7fe14"
+    ],
+    "24": [
+     "16125ed453922018",
+     "4b45b06b82af9720",
+     "609de78c4f285716",
+     "7615fdb6c631d03e",
+     "7852cc7ebb9be31e",
+     "fc62ed1e7728eb48"
+    ],
+    "32": [
+     "029f1be6fce619ff",
+     "13c3fbc553dd1451",
+     "13fd585a46250ba5",
+     "1a2b56186bf7ae6a",
+     "21bc2ec863223716",
+     "683ec216cca783ae",
+     "839d2b4f7975c739",
+     "b8b6e22a2c4a8b11",
+     "c1745eaa23178482",
+     "cd3736158fe7cd84",
+     "e2610f7190fa8050",
+     "fcce63f293b45c77"
+    ],
+    "48": [
+     "4f93790a05144235",
+     "d6003cfbfe2c3b38",
+     "e7b3d4d596a3d306"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "8af0a4c7af1b3fc3b81bb06891ae122f2b99cd0a4962f7e4f1ea9860c8ba889f",
+   "kind": "front_prop",
+   "label": "modern_city/mc-prop-w-billboard-car",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "20e696f7b3831e25",
+     "278b23bacc2eae6e",
+     "323ecfcb0c30f259",
+     "800fee1a474b9750",
+     "92ac65aa7deec7df",
+     "bcbe9da238ed276a",
+     "c8cd13aa7605599a",
+     "ec843c0608e8071f"
+    ],
+    "24": [
+     "19703d52cc053320",
+     "3dfc0124cdce673d",
+     "64305137f2b6ef82",
+     "be8ad4ffa11e2d72"
+    ],
+    "32": [
+     "00b2d3a4bf7aae7f",
+     "0c2ec0a445b06b6b",
+     "26b02b6692c9e398",
+     "28e1b0319bf76372",
+     "2b46978f3008d5a9",
+     "2f835664d4eee970",
+     "3ec9be4f50571d27",
+     "42f8a630b9fa8a46",
+     "4546fac466c30b30",
+     "6773d288198da73d",
+     "6c405a284baa910c",
+     "710265d227cc77c5",
+     "95de7073d37d8b82",
+     "9f34bcc0948c87eb",
+     "b0840ddd21034a67",
+     "c73d63bc5c353a11",
+     "cb790fd3981a1338",
+     "ee1451485bf2157b",
+     "f60652ca424d3c6b",
+     "f6f21554f2c5c081",
+     "fb09fef741db0995",
+     "fd33eecdcd5846d7",
+     "ff381ab72a243c07"
+    ],
+    "48": [
+     "b3557331d79deef3"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "a5b930dc4364734d7abc4f599e0e73991ffdf0de683713f52e9015f6fa4e8804",
+   "kind": "front_prop",
+   "label": "modern_city/mc-prop-w-billboard-burger",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "10a6ed7e35eea8f7",
+     "1e23c683bc12da31",
+     "356ea6958ead39e8",
+     "5eeeb08d2e370c15",
+     "97a1777b9366dbee",
+     "c9623862bac3ef16",
+     "d95d44926fd5a793",
+     "ee36ad1286fc2588"
+    ],
+    "24": [
+     "048c27bbc710f8fb",
+     "164521142687e38e",
+     "83b6f10425021b9a",
+     "c51f84a5cce3cb4c"
+    ],
+    "32": [
+     "1ea8a5dfd76d4020",
+     "28f9c8a9c077afd2",
+     "53f92726f01a641c",
+     "5ce7d49ad960e446",
+     "5e520ca2bbb40f28",
+     "650f5ef791a5c13d",
+     "6c833ca85ad60519",
+     "7572ee09479048d9",
+     "904009aeb57855e0",
+     "a45635951b4ca81f",
+     "a971f00d9afd9cbb",
+     "aa15b812c5f1b074",
+     "ac7d3cdd1948fd28",
+     "b87f6d6b125c4244",
+     "bbf97bb878c4829a",
+     "cd4dbf1cc6ae2052",
+     "d46b80449b5dec6f",
+     "d7c8b8e6a03f1e03",
+     "e40b5065d9495024",
+     "e77480364fbd9dfe",
+     "eaa50e97b16ed933",
+     "f1b5ca82c65eebb2",
+     "f97e5eac5f97a0da"
+    ],
+    "48": [
+     "fb573c5da9cfc675"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "05587457c37480ab6f834678c0d789f03775045f722b5ca565c7c84d76bc93d6",
+   "kind": "front_prop",
+   "label": "modern_city/mc-prop-w-billboard-soda",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "0c44141d83b57626",
+     "8ac30507798a83ec",
+     "92135743e3bbbb9e",
+     "997fc3aef98a585f",
+     "9c8b6e9aaac88347",
+     "a519e2f0cb37ad00",
+     "c6102e15103f5e88",
+     "eb5add5d96474c5c"
+    ],
+    "24": [
+     "2c66c1f410746da4",
+     "2cfb57505f1f9e31",
+     "606c4ccb14d92bb8",
+     "9e7081d3a7b6a426"
+    ],
+    "32": [
+     "08482bbf98aee906",
+     "0ba9120f7f83ac0e",
+     "0cf2f8a2b8fd8923",
+     "33590ba040ddf496",
+     "36292428b9ba5034",
+     "41e8448804b4a172",
+     "46340a3badd9b667",
+     "55c059b61265971e",
+     "57a0160127f49e13",
+     "72bcdfc09c1c6cb5",
+     "7a5f058925aed3ef",
+     "7f1a7f4bfa7ffb64",
+     "8911df2ed1c54787",
+     "8c1e7bd7127d16c0",
+     "8df29434b3e6a88a",
+     "8e8d45aeb18ecf08",
+     "a42a25efda08dc2b",
+     "b35c2811b997a829",
+     "b59b100810e9e1b9",
+     "b9a76248a6011970",
+     "c3364ecbd6aad63b",
+     "ee1ce434cea4296d",
+     "f1e6d1c6b148b694"
+    ],
+    "48": [
+     "292848a1de66ab2b"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "247793ad152210c2afa55cbab17cfd1d19721349ba868c98f1c40287b1670d97",
+   "kind": "front_prop",
+   "label": "modern_city/mc-prop-w-billboard-holiday",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "02e19dfbaf3ffb9f",
+     "5775cb87a9f75ed4",
+     "85b5e79cc89f28c7",
+     "ac3e6af873119ddc",
+     "cfa2bfc8a8865aeb",
+     "d6a3fef5383ac874",
+     "e52b7b0cb02b2c16",
+     "ef2196b4023bc2cc"
+    ],
+    "24": [
+     "48f38e96c086b586",
+     "79c960f6fc65fcab",
+     "965a91fb0ca504b3",
+     "bff101b227323bb2"
+    ],
+    "32": [
+     "0ac603ef7e6825a6",
+     "2f621258cf58a04f",
+     "34561a47bc51e51d",
+     "42f39d8881549084",
+     "432b644574440d95",
+     "434ecbbecb9b99fc",
+     "4c8bb7497e0d176e",
+     "52aa3c9ff9266ee5",
+     "6c431577f2185115",
+     "a6770102af01e6e0",
+     "aaabe7ed756b6ce2",
+     "b3fe1a67f9c806e0",
+     "b5afe4918d933b69",
+     "b66e75e528699b98",
+     "d2c7afa064a622d3",
+     "d7fbef89b88f78df",
+     "dd5cac3f3a05e65c",
+     "e0c083851eecb91c",
+     "eaa16d37aa6d9d66",
+     "ee17ba5748a806ad",
+     "eee935ea9e9a7c43",
+     "f158129bda320773",
+     "f64dcccd8b9f22ab"
+    ],
+    "48": [
+     "cae24aaed56327bf"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "cbe533f8bd70bd7a140a5fc21718b172bef4412e4f2589d3fc8bca0a5ef6dc74",
+   "kind": "column",
+   "label": "modern_city/mc-prop-w-traffic-light-hang",
+   "width": 32,
+   "height": 48,
+   "cells": {
+    "16": [
+     "54af448c214a8e8a",
+     "6258f69e4546fefb",
+     "9f7f4b2298c2157c",
+     "a955cef36705b02b",
+     "c802a28739d8070d",
+     "f017ec06cb46277f"
+    ],
+    "24": [
+     "0711cf9416315807",
+     "2369a734967a85c8",
+     "2fe342ccf36c6df6",
+     "34dc665fe80a2eaf",
+     "8455965924d769b6",
+     "a6afb4ed6d93c9b5",
+     "aebdce09eb08d6c7",
+     "c219d0a2d9fc5e2c",
+     "c4e3949cf501e65d",
+     "da55b5e1683b07e7",
+     "e1eb0b836f6bf494",
+     "e3499a270f3652ae"
+    ],
+    "32": [
+     "280e1597ee59d324",
+     "2feddc8555c110b2",
+     "9625e229c4f4c281",
+     "e8f2150a7d6f2a59"
+    ],
+    "48": [
+     "343e6c841abda542",
+     "64f3009d35240089",
+     "98a117b4ed59f260"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "fc632a6650b0a4e62573152ef0492c1674d4ab19e8dda170beb60dc85d5c1d13",
+   "kind": "column",
+   "label": "modern_city/mc-prop-w-street-name-sign",
+   "width": 16,
+   "height": 48,
+   "cells": {
+    "16": [
+     "17c9cc8855eb50e8",
+     "35da5d05bf1eb6bb",
+     "37d8339064bef537"
+    ],
+    "24": [
+     "0f70d29c29e586cd",
+     "1237f4c24fcc0063",
+     "2a9381ad6b36bc06",
+     "32990134a7029fb5",
+     "79ad331cedd04101",
+     "7f5169221cf05d44"
+    ],
+    "32": [
+     "0888c4575680ac52",
+     "0ac927ccd2b41894",
+     "17c86048614f25f1",
+     "2f7513a1dd148ca8",
+     "7058560897ab9029",
+     "bb4c4cd692966af6",
+     "bb708dfedaf4113a",
+     "bf521c6e2c124849",
+     "db7e6e576b240c5f",
+     "dcf34693c67d9add",
+     "e2a5a4c503ae8dc7",
+     "f026423145946f6d"
+    ],
+    "48": [
+     "0ac38352e23fd3d7",
+     "8b5b016341e9257b",
+     "8b649fe32164ef22"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "a5ee7bc9ced14d294d20376b00803ea5df5b11f334d7284004478cafd1c59d5f",
+   "kind": "column",
+   "label": "modern_city/mc-prop-w-lamp-twin-globe",
+   "width": 16,
+   "height": 48,
+   "cells": {
+    "16": [
+     "30a6eab423897310",
+     "6739dd81f03daaf6",
+     "a810bdff34a51edd"
+    ],
+    "24": [
+     "55668c6c9ed8a9cd",
+     "744f79bdd729a1b0",
+     "86cf01b50b96147a",
+     "ae4d08f74560bdc4",
+     "bd494c7cf9c67fd9",
+     "fc3f5c5cf99ef4da"
+    ],
+    "32": [
+     "0cbb99c42e4a82f3",
+     "152e4d228a28ba42",
+     "252ed66c86614cf2",
+     "28cd1e30469d104c",
+     "8e6d72f816094de2",
+     "8f7e91e02fa43be8",
+     "b128882b2261cdee",
+     "c97c3f341bacbbc0",
+     "cc115aa7f42166a5",
+     "d8964c6222b9e476",
+     "ee2d24d27bd899f8",
+     "f53b0141941bc026"
+    ],
+    "48": [
+     "61923669d8bd273d",
+     "6850dbf4ad8e8ea7",
+     "fafc4f8a20e47201"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "7afe2acc250d904c4a3d242693769b59e89a3cedc4aeee86c50f5e13720dff51",
+   "kind": "column",
+   "label": "modern_city/mc-prop-w-fire-callbox",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "6d9d7428e4c1731d",
+     "bfc13e4e6c9bce1b"
+    ],
+    "24": [
+     "0d62932395dd84e5",
+     "146819bcc0739ba9",
+     "1c77120a77760465",
+     "3171d0cd9b75d383",
+     "45ae19260a00f56b",
+     "478996548c512aaf",
+     "7310116c70b85779",
+     "9d36bead4a520e9e",
+     "bb8d2b30dca0b810",
+     "c56e4a74c053c29e",
+     "e9300d4a8c5f1703",
+     "f6824a6ef48ccaf1"
+    ],
+    "32": [
+     "099d0194639a6515",
+     "797b94c8c6931ca5",
+     "9fec483a27ff12c0"
+    ],
+    "48": [
+     "06f379496af94e80",
+     "3e51de04db8752b2",
+     "9d60069ffd18d978",
+     "b79790813cdbcbd3",
+     "be8bf21554eb7f8b",
+     "d6083f9df48f43da"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "cb24797d971f065dd974b58387936298fe86c835ccf4ac4f61942e277aef9d6e",
+   "kind": "column",
+   "label": "modern_city/mc-prop-w-bollard-chain",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "0adc9154e61e933b",
+     "f05c3448c2d42e5f"
+    ],
+    "24": [
+     "02838d2cd6ba8f26",
+     "161d4770df3849aa",
+     "170b8d4450c70c97",
+     "2157765c39c22ce3",
+     "2df5d32d7bb31666",
+     "4527b321d24c0e4f",
+     "656e7bf7e33c7e4e",
+     "a8523e8b7f6fa8c3",
+     "ad6692c7bfa8e281",
+     "bf75285c8d0018b7",
+     "cc35cb129d255fad",
+     "da1d6e6201e345ae"
+    ],
+    "32": [
+     "27113974aa014c7c",
+     "ac89608ec305efd0"
+    ],
+    "48": [
+     "1e0e778c5eb3d976",
+     "713851fc025ec96e",
+     "76273e245ef7a8f2",
+     "a461b2cc87fd8e0e",
+     "b8f7de0d2859bc55",
+     "e537c53983cebbba"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "83489580a230fa82bc5c1be6d5e314c13cc73afd9721365dab1b482cd2051eab",
+   "kind": "organic",
+   "label": "modern_city/mc-prop-w-tree-guard-iron",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "021191fdff8800dc",
+     "21054b235b80c703"
+    ],
+    "24": [
+     "0c0f1ba64c826a19",
+     "19def4bd17767157",
+     "41dec4991ff92552",
+     "4f93bfb0fa04bc4a",
+     "53b27efde8b45a9d",
+     "672dd2b2db7dd74f",
+     "794c6050924e128a",
+     "7be2c571b71ab8fd",
+     "85028731a43e592e",
+     "8b542b283308e54b",
+     "a4e0cd7d63aa72ea",
+     "b704ab92e216859c"
+    ],
+    "32": [
+     "2a9de3c2d44ccbe5",
+     "5f575f306ef1456f",
+     "779def6e1fa80594"
+    ],
+    "48": [
+     "122604d2ac020c3e",
+     "3da078d2d0444a01",
+     "4e241614904233b9",
+     "7133711d3e3b8a0d",
+     "d50dbb1cfea7d3e2",
+     "f14739f1701e5355"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "2d7811af99d7b488c853cf35d327666b07c30b5acf69f4f9c85415979744d183",
+   "kind": "column",
+   "label": "modern_city/mc-prop-w-flower-lamp-basket",
+   "width": 16,
+   "height": 48,
+   "cells": {
+    "16": [
+     "10a80b7972b5f9c6",
+     "17ba37a854c53056",
+     "e82821ec6119fc91"
+    ],
+    "24": [
+     "211a0cb230e5cacb",
+     "3ad840333322a774",
+     "4808e8e18e1058d2",
+     "7248e8f5d7263c4f",
+     "99142ffcce0ceaf4",
+     "d06edde6e82ec2b8"
+    ],
+    "32": [
+     "02d45d46e3c8361a",
+     "036c48650134b60a",
+     "1e6a88b1fd849989",
+     "2be45784f5924821",
+     "2f5a5dedc903f84f",
+     "35cf4fd30f2784f0",
+     "803a2b9d7bd3c393",
+     "9434961b812ff284",
+     "a1f080f951f55cbc",
+     "bc54a70a64289e79",
+     "d7d24132687bdf33",
+     "ef091131e550ca8f"
+    ],
+    "48": [
+     "664b10a8580ab2b1",
+     "9e912b56852e7c28",
+     "a2bb293a20033e0c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "cce1196fe13a0559ef5048cb7d782c4b9b2dca90c98e9afb5611157886cb8a80",
+   "kind": "front_prop",
+   "label": "modern_city/mc-prop-w-sandwich-board-coffee",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "4df094216b97c2b2"
+    ],
+    "24": [
+     "787383ea36753c62",
+     "813be0eeb83ef5f3",
+     "ad0ced252389ff17",
+     "c42d4c72c9bea994",
+     "dba0acdbaf3c414c",
+     "de1ba6cef3f0aa9a"
+    ],
+    "32": [
+     "06b8dc1cb5c0e4b6",
+     "3801a5053290c6c6",
+     "3e2021a6fce9ceeb",
+     "4d591caee591ed6a",
+     "81f3e3f97a6a739e",
+     "c468b42e3a9be35b"
+    ],
+    "48": [
+     "414e8caddba8c437",
+     "5eeff730af92f91d",
+     "6eef138622788017",
+     "a2aaeca9b5d80c73",
+     "c9a2841ebff28b47",
+     "ec5e405cc7790590"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "13af3951cac3ae608b9c140d35bb6e6629d3727852e7a00ea5587c97d0ca71bb",
+   "kind": "front_prop",
+   "label": "modern_city/mc-prop-w-sandwich-board-pizza",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "7d177387d77f755f"
+    ],
+    "24": [
+     "0828bdce3d1ecae3",
+     "1ac8e3dbe023d962",
+     "3cc9b5c8e5bc5155",
+     "894d05eaa3edc96c",
+     "db33d83feaa11484",
+     "ef030f1ac6e9640e"
+    ],
+    "32": [
+     "00f51fe31728c020",
+     "3a5c2b6ef878cc3a",
+     "3f77500e7f4eef65",
+     "6376d699e23505d6",
+     "66cf3ee56d72badf",
+     "f740ed4d8f524012"
+    ],
+    "48": [
+     "06b6a2cd916794b8",
+     "18447d0cdfe5c927",
+     "323de7327182ff8a",
+     "9b63b148e4b681d8",
+     "d6a372617040b4f6",
+     "e173b1895debc6ad"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "5b17e34a227a6a293cfd22f1170b6b8439aea7c04b3f9f8c3c96cd65bb93ecfc",
+   "kind": "container",
+   "label": "modern_city/mc-prop-w-flower-buckets",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "0b0b81f904eeb353",
+     "23ee66f1be44e7a8"
+    ],
+    "24": [
+     "115506c28607f7c1",
+     "212bfbb31735e49f",
+     "2b333ba3a68971dc",
+     "47a62ca9374fadbc",
+     "48a99d940937b136",
+     "588741dd27bb5099",
+     "5d33d2cdce9248fc",
+     "61ffb3f9b08200e9",
+     "8dfd96dadbc39657",
+     "d73aa837305de927",
+     "f8d5828bc6d43f80",
+     "faa1fd7b24fd4364"
+    ],
+    "32": [
+     "1f0458101605dd23",
+     "febdf5b0e9b7701d"
+    ],
+    "48": [
+     "09bc6d2c4d7554ae",
+     "2718266ac21279ba",
+     "4db6ec322f4d8d1f",
+     "ac78627ba43ce90a",
+     "e0655aee29551ee4",
+     "ed43c46855dccd90"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "0763609fc50bb325e80bc7bf0b08983cf228c2305dd27ea26692d91159eeacb4",
+   "kind": "container",
+   "label": "modern_city/mc-prop-w-fruit-crates",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "513a8a05b5ab0987",
+     "b009d5d07a14ca10"
+    ],
+    "24": [
+     "04c267d717f8b53a",
+     "0cba60979ddedc88",
+     "1491a11c3e48d7cd",
+     "19130f6ec5b5a002",
+     "271aefc2b6e2e654",
+     "4ce4d2578c51481c",
+     "80e156b88fea6fc9",
+     "86f5d2066b9098db",
+     "94dab1783aed1863",
+     "daec1dd8aafd59df",
+     "f1780a8f5e959482",
+     "ff8598ac2a0f1330"
+    ],
+    "32": [
+     "49606038f53c7df5",
+     "75a0c625035e477c"
+    ],
+    "48": [
+     "1b6af9b5f347fd3b",
+     "23212c9f570bd108",
+     "4a714037503bb268",
+     "542b58d7fbfcb9cc",
+     "70842daebd25c6a7",
+     "ab3dcb03a09ff1a9"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d1196a84cdba7bac97b3574edc4057b2eadbe7d50c99eb1ca12ed7c932f8b27b",
+   "kind": "round_body",
+   "label": "modern_city/mc-prop-w-barrel-table",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "d64dcdf67b5e0ed5"
+    ],
+    "24": [
+     "3dda07c4eb793941",
+     "4e36c91abe020abd",
+     "58124a6de0f156d0",
+     "60d6f2bc0e6eea60",
+     "7efb40be21fbb9aa",
+     "929676ddfbf32717"
+    ],
+    "32": [
+     "0efaf0a15a7e692d",
+     "3b93c9195fba3290",
+     "4ee25a91af4e3250",
+     "b3e7832b27f4060a",
+     "dfca77ba48bfa29b",
+     "f536afd63bb4840b"
+    ],
+    "48": [
+     "109d96222e423b0a",
+     "5a4175da3981932b",
+     "7bfb847e35d41973",
+     "c789b558aafea9d4",
+     "eba11ae4e3766eb4",
+     "fca3b73d469f5380"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e901f5a5f8d0ba8adcc37d508e4a6422f1a2cf746a6621d6b20f7e7b5b416dcb",
+   "kind": "round_body",
+   "label": "modern_city/mc-prop-w-barrels-stack",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "3dfca77daf748fcc",
+     "3feb583450305716",
+     "433125b633d70283",
+     "a06b759e798a25ae"
+    ],
+    "24": [
+     "1a83732f018c19ac",
+     "29d1328f961d5377",
+     "302e9047d4e7bb53",
+     "3043dd8893648af9",
+     "5a2636d9fda96eb1",
+     "609d215719afbe4c",
+     "7427c20844616ef2",
+     "761d8b15c3f3b168",
+     "77664874455b1968",
+     "8e37a0df74aeeb5f",
+     "8f10074b2cdb0978",
+     "9113a41470ee7e8c",
+     "91d3f7d9e485e1f4",
+     "98b9d9ebdae8a29e",
+     "b0a21f571b6587ba",
+     "b6c41caa112f9bb7",
+     "c14ec4004feb33f9",
+     "d594bc5a35055aeb",
+     "d5a3e77993c183e5",
+     "d5be99db708bb63d",
+     "d7d674ab6c80c51b",
+     "d889ae20b253c44b"
+    ],
+    "32": [
+     "553f82b436dca224"
+    ],
+    "48": [
+     "675edc52afe52079",
+     "7bfb6772f5df74ca",
+     "a9602ff0bc62f69d",
+     "b9496931d5b95fc9",
+     "eceafa5bad9cf076",
+     "fa2bdf3ac7d97d17"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "b54720008baa1660ab77c30bfb88ea3eec74230fb28de7f6d0c87345a3cd8046",
+   "kind": "flat",
+   "label": "modern_city/mc-prop-w-awning-red",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "3fc09e39b881a516",
+     "49358a1f6067402a",
+     "6d22e37dd86d24fa"
+    ],
+    "24": [
+     "14e48db7cdbcc385",
+     "26e0ec7c87c92908",
+     "576374aeb61c5630",
+     "eff94fe3569b1a5c"
+    ],
+    "32": [
+     "21bf4d7451eb8ab6",
+     "27c32b613c988f07",
+     "648ef67e4de1d3c4",
+     "671d2b7a589daf1f",
+     "7b2fe7394c9c2adc",
+     "9970bd3782cb5745",
+     "aa2fcfa2dfa7dcd9",
+     "b57633acc7fd4ca9",
+     "bd7e0ef1638572d9",
+     "ddce2bacca9ecf6f",
+     "ea369ea199caf0f2",
+     "ff9247384d50659c"
+    ],
+    "48": [
+     "85d741177b826d80",
+     "ad38235c08fdb211"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "77ceb578888a41162a56a90d3a238f15060406b202fdd8674c054b3c59f1a607",
+   "kind": "flat",
+   "label": "modern_city/mc-prop-w-awning-green",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "1e1fdf99f640588d",
+     "625673e0cf040d2f",
+     "ed0f705986809748"
+    ],
+    "24": [
+     "5eb0ac7ea0b27bab",
+     "6deb9c90bf3deb1c",
+     "9167de6c77fec427",
+     "917a43ad4bb8a4fe"
+    ],
+    "32": [
+     "2bc525c526155b21",
+     "45222a4850791ac0",
+     "45c71093caf7341d",
+     "53874eed5d766076",
+     "66b92895151c907f",
+     "7a344dfd23ebb484",
+     "a2247b1e1781abe9",
+     "a4fe7a96b7fcdda3",
+     "b363489805bf45cf",
+     "c2a2af38058e3ba6",
+     "e851d20827b47c9a",
+     "fa8c71c5bb1c9503"
+    ],
+    "48": [
+     "856e284618431d99",
+     "9cec52dd359ea6aa"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "bf188f1fe231dcc834ffac1a13f4b4301cf726b704271d0a834968f8a77a64b7",
+   "kind": "flat",
+   "label": "modern_city/mc-prop-w-awning-blue",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "38571c25bc9f2d30",
+     "444bab799499fbdc",
+     "a0b15f26c2e8fd49"
+    ],
+    "24": [
+     "e4c84b630ed455e3",
+     "fc69fc702bc5da8a",
+     "fdb989a4bb3af9aa",
+     "fe63469dc2ed4208"
+    ],
+    "32": [
+     "08d21db2054c89f8",
+     "1953e071bd2fd921",
+     "3e512ca6751719ac",
+     "4a5dbcdc188a9798",
+     "55a35c474567de2b",
+     "637c628f7850545e",
+     "67d07f9538ed3217",
+     "7ed574c6daff54c6",
+     "8fbe4fbce4db364d",
+     "9ee17e1471cc2f5e",
+     "af0060b51cc4dd54",
+     "ece6628d4cf3df92"
+    ],
+    "48": [
+     "049f22e4ac84e00b",
+     "85a50651e987132e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d80ba14da4ea38449563a46cea72dcd47a8ada9340e0b32372976dbafd1adc06",
+   "kind": "flat",
+   "label": "modern_city/mc-prop-w-awning-amber",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "7e43f9d43f26aac2",
+     "8fee3be4dce5ec2b",
+     "bd395b9bfa002562"
+    ],
+    "24": [
+     "05383fbd2b5f2f54",
+     "1b5b25a8419df9ab",
+     "37905baed164f0dd",
+     "58ff34f1fbc591de"
+    ],
+    "32": [
+     "1d69a5a3ea3a023d",
+     "28bd72fb85742e6b",
+     "3fe950d6df94dba7",
+     "430e075dae443421",
+     "4ea63d3174865d1e",
+     "670439e254460ce6",
+     "6c7b609e976cd7d7",
+     "9e92a2fc0e5fbdc2",
+     "ad656df0952b9244",
+     "b32f9881620a3922",
+     "b8c5ff557e8a4a63",
+     "e36466e38926bc67"
+    ],
+    "48": [
+     "197d9ff7916ed509",
+     "33f292c6b3ee8337"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "f5a03e77564d523fef4cdad0dfaa4da5b392380dfd61910ba61c2c7f11061f21",
+   "kind": "flat",
+   "label": "modern_city/mc-prop-w-awning-pink",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "2bd0c8cf9be63578",
+     "72619cfd3f1c8719",
+     "d7f2bd41e4ff865c"
+    ],
+    "24": [
+     "3430f443e4a01808",
+     "7b4b46bbbaec99fd",
+     "b7f0e8a4c7f7969a",
+     "c65ef83cf9e93ba9"
+    ],
+    "32": [
+     "08cab133222606d6",
+     "0f4923b2bc5f676d",
+     "143bcde62cb79071",
+     "17bf45bf95f47eb7",
+     "1a2fc57f152933c4",
+     "35ee124386a2a4e7",
+     "36c349bad7a5b32b",
+     "a818a98992220c9c",
+     "adb65f8f6f5e4b5f",
+     "c81cc5e6cfc3bfce",
+     "d1b80db793fc7775",
+     "fd0948d9bfd6b297"
+    ],
+    "48": [
+     "18791e8265854c67",
+     "ea8fd91708a315c2"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "4adec9b8c2fa7c70289569aa534343fe55e61e8dd16cd97ce51269ceb5306b1b",
+   "kind": "flat",
+   "label": "modern_city/mc-prop-w-awning-teal",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "0066440365fa7bf6",
+     "1dd81867bcb42b29",
+     "a974b56c015af34b"
+    ],
+    "24": [
+     "14611eb9577e1095",
+     "51c2c061cc704f95",
+     "6e83eff9fdcf5085",
+     "80493498116423e6"
+    ],
+    "32": [
+     "0b70055207f6fe0b",
+     "451564a2b24f4252",
+     "47508e5c9be052ca",
+     "6497c15b4787d594",
+     "749b9a193f5e695f",
+     "787e5581f256da8b",
+     "8bd921a668444fd0",
+     "8fb85b5c1243c6e2",
+     "90c949365356a463",
+     "d59a915b29a4c60b",
+     "f7bc0acf6c9a1686",
+     "fb8c04fd3b720dab"
+    ],
+    "48": [
+     "1680f42a40794305",
+     "ba3b55d0741bb5e0"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "9cbbc4c38df8c74ef0c965738256e42715cbde9e395d31cf216ad49e0afa4c45",
+   "kind": "frame",
+   "label": "modern_city/mc-prop-w-bread-rack-street",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "0797f168d3dc96ca",
+     "69e5444a09e242e8"
+    ],
+    "24": [
+     "16a94aea9b006531",
+     "1cc46c57249ad39f",
+     "213004b5d7b59160",
+     "61d5270f53b74e37",
+     "8883154f37b02835",
+     "9463c3844e0671ec",
+     "9482d439370755bc",
+     "d6f75ede93e4671b",
+     "d914363d923f8511",
+     "eeeb9ef9e09a85b7",
+     "fa6a0fdd657b34fa",
+     "fd255bce4a272139"
+    ],
+    "32": [
+     "02accccaa1221597",
+     "72bbffa17a0b65f6",
+     "80afe29254e6911d"
+    ],
+    "48": [
+     "1b105cf19a86e66d",
+     "1f443b714e4c4cdb",
+     "25f1138f4c2bdb44",
+     "29d57a7b6aec3d07",
+     "4d2a7fc8085a8199",
+     "896597f52d3694f1"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "847b7100816073127f57b570f4d311076cdafb3c62579509c97f098d6c5ac9ea",
+   "kind": "figure",
+   "label": "modern_city/mc-prop-w-icecream-cone-sign",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "692f4a9bc9350dea",
+     "6f9fdbbe56c19e94"
+    ],
+    "24": [
+     "16c84c4f1f42fecb",
+     "2554801a86816bcd",
+     "487baa6fa7952aac",
+     "68eeea8807dae32d",
+     "70477f6477bbd739",
+     "778d0fc975bbb4ee",
+     "82a071ffa17be184",
+     "82b5bcab006c0439",
+     "c5689e18a7bc2f2b",
+     "da194a5b49324c3e",
+     "da85f098c31ea9a3",
+     "f0c13e992633f4ee"
+    ],
+    "32": [
+     "d2b5900ba00f2040",
+     "dd3a007e0b7b1f22",
+     "e1a5ee99eeb798c6"
+    ],
+    "48": [
+     "40febfc0dba02527",
+     "4e21f2a1f2470389",
+     "91b19850e79654e1",
+     "a3913dc5c359a68d",
+     "ed4f7bf6505d4023",
+     "f6161905af473d89"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "2ed3b98be801854cc27300718d10b65f47d12396b9cf908311617564bddb3a65",
+   "kind": "frame",
+   "label": "modern_city/mc-prop-w-postcard-rack",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "26c2228f97e5dd81",
+     "61b50740b3eb7bcb"
+    ],
+    "24": [
+     "0a9df77411667ce9",
+     "0c05aae4316f4531",
+     "1176e5105e413ef0",
+     "24bb0fb0e7115397",
+     "3b3e5fe0ea90b25f",
+     "498001156a808878",
+     "4e17576036c2b1fc",
+     "535fa0706d2f7f74",
+     "571cfcf91ce48ffc",
+     "78f4cec19d6e2cb1",
+     "a70fd18e68a6d899",
+     "a8f4fab154d82998"
+    ],
+    "32": [
+     "050e98b1ebaf9dcc",
+     "7a9ef7974737a3ae",
+     "cad8f2cf04e5d9fd"
+    ],
+    "48": [
+     "1594757f2d9ed390",
+     "2ba64b70acfe16a0",
+     "3d0ec7d6b18fe78d",
+     "a6a0475cbcf8841f",
+     "d1aa1ac0db78e3a4",
+     "de1e797c4d69d713"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "94f8ede5d0f5228fd3684020d56c94970bbc89bd2a482f22db308c196423a3c0",
+   "kind": "column",
+   "label": "modern_city/mc-prop-w-gumball-machine",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "49cabda3b1b269ec",
+     "500d32da8f8ee1b6"
+    ],
+    "24": [
+     "048c4b32ababfebf",
+     "4792900a297bb954",
+     "485fdf9cded5387d",
+     "4dc018705d799e20",
+     "53fbe6dbb80a81cd",
+     "5ee61638bf7f8000",
+     "6f8fd5e9af3a699c",
+     "bb9d773b1e1b6b6b",
+     "c212d117eac1654c",
+     "cd165984061c0ffd",
+     "e9dba58bce88f40e",
+     "ffe0c3637071f75f"
+    ],
+    "32": [
+     "0ac9893b9f806790",
+     "3d5cb65f3cb38abf",
+     "4126c4ad70ce87b3"
+    ],
+    "48": [
+     "51de4982acb38744",
+     "662cdaca8f090b97",
+     "66a4ce076c689c28",
+     "811f974edc6a9c22",
+     "be6043c0f682f09d",
+     "f6dc023a92df4fea"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d27b9fa81594eabbce8455928ef5e349154323c4de456650676f0a6a12d142a9",
+   "kind": "seat",
+   "label": "modern_city/mc-prop-w-shop-bench-planter",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "76ce3a4d6f930deb",
+     "77919fab752397af"
+    ],
+    "24": [
+     "20084254bc5eb7d4",
+     "27eb3297cd6275bc",
+     "3610a60afae81efe",
+     "44ec61429f7fca2a",
+     "53a467701096af0b",
+     "8f161c99581e7c10",
+     "97fdc8bc0e27404e",
+     "a3916213d992827d",
+     "b150ecb38f64f9f6",
+     "baa9c42435a7d74a",
+     "e8e1dc7a0c36308e",
+     "f5bbb2ecacc866d0"
+    ],
+    "32": [
+     "d1276a0359801d0c",
+     "f51a24b1b1a204aa"
+    ],
+    "48": [
+     "1204b336db3a3bff",
+     "1980d17f9aa7bbfc",
+     "49818441625d94db",
+     "8f82e63ff2ca23c1",
+     "b300961e0e4bdc42",
+     "b62beca2915d7ef4"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "ac0b86345eeb780c526ce9925fc9bba9979c383d608b17c4bc7d0ff5a6ffe2d5",
+   "kind": "container",
+   "label": "modern_city/mc-prop-w-pumpkin-crate",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "b443fcac52e7fcbf"
+    ],
+    "24": [
+     "042c7ca14be54ae9",
+     "0ad6d057da6ebd02",
+     "45abbbbba64960a5",
+     "5ae5b25d1140a799",
+     "724bc1cc38dcabbd",
+     "c14aaef99d4ac59e"
+    ],
+    "32": [
+     "0005de600f9c522a",
+     "0be053739be52210",
+     "26a5856a532f465e",
+     "687923c4ee743fe1",
+     "73e680fb69b9f92a",
+     "e499d9bbfcad7b99"
+    ],
+    "48": [
+     "1185a66c2b2cc754",
+     "79992a356096606c",
+     "8099b0fe24ccf390",
+     "99b93c10f72a1cc6",
+     "a4d0ced8a63f7e76",
+     "abb48cfbc61b7775"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "8ba0e13c0b50272938620e88ef132adff33a2e81f867cb41600d94d6ba4c3bcf",
+   "kind": "box",
+   "label": "modern_city/mc-prop-w-milk-crates",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "28ac191f201c1919"
+    ],
+    "24": [
+     "25986b1457706005",
+     "4a6f06c3bdcab469",
+     "52b559b6f4d0f634",
+     "85c14a63ac4cc259",
+     "d84387becb897d3f",
+     "fdc51aca2c12d5c4"
+    ],
+    "32": [
+     "0ece538c879ce45d",
+     "2ddaf5b24fc526f8",
+     "8cd10adf711dec64",
+     "9468f25d53a5c754",
+     "cc87dcdec4e9db35",
+     "e56d12115680d36c"
+    ],
+    "48": [
+     "0fde133de7432fc3",
+     "1144b60b52e960c1",
+     "a45dcbd70f2da58a",
+     "c35fde47dc7e35ba",
+     "cec063c8d7eec209",
+     "d902678af1893598"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c7bfa5fb91e3dfb21652ea16c373d371b7ef2a07aae3b2d084cbc948d6e2fff6",
+   "kind": "container",
+   "label": "modern_city/mc-prop-w-welcome-mat-rail",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "7622a153a4b59b09"
+    ],
+    "24": [
+     "02c5a325ff2a763b",
+     "04abea6e1890dbf9",
+     "46a1099f893e9558",
+     "7bff76b4198b1d06",
+     "d9ac2d128b11e304",
+     "ef6b08ea418ad652"
+    ],
+    "32": [
+     "01efe01f2d1fb1cf",
+     "166af2d078c16834",
+     "6194035638caafc0",
+     "972bdc8272a7a37c",
+     "c7ca87a59eaa8e2e",
+     "cad6ee02e7d4cefc"
+    ],
+    "48": [
+     "009f674f16370d50",
+     "40146d0e4f1e3f15",
+     "50c21d55da6bdcfd",
+     "7e8a1bd11cc0e9eb",
+     "ca100d97a861d6d0",
+     "edb9090efe898693"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c3d7b75caaeb287132e4459dc2b9752a8dfee79a48a0c72522773f962c15ae82",
+   "kind": "column",
+   "label": "modern_city/mc-prop-w-hydrant-yellow",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "8eae60f966be08b7"
+    ],
+    "24": [
+     "310a084dda494d5e",
+     "5d70e4adc0b1579c",
+     "7619671cb1fb7afe",
+     "9ded6e832ec8db50",
+     "a9d9b833716dfaf0",
+     "af1cd15172a7d216"
+    ],
+    "32": [
+     "0c23be352d5d1557",
+     "1aa9ccc4ac21be2d",
+     "33733f36f2455de9",
+     "5650f70b59a6868e",
+     "e2c66c47e006f69b",
+     "efced35e7277f039"
+    ],
+    "48": [
+     "24cb5f999f4562ed",
+     "91c5ec311f62a659",
+     "d231e8d99caa884a",
+     "d35d7a3ebd107185",
+     "d6949f130b30ac71",
+     "fb6ca3024fef15bc"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "4efb2d70adae2d2e6ca11c750377d48edb3b76c20f7774f14a8d4ffc8336aa17",
+   "kind": "flat",
+   "label": "modern_city/mc-prop-w-manhole-steam",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "9a5a05fe0ca50f39"
+    ],
+    "24": [
+     "20913aeb8ca9663e",
+     "5aca48ab97dabba2",
+     "9e4d3a3025e4967e",
+     "e1382f9c3f4336bb",
+     "ec25529bba209974",
+     "f68ab088cddfcc1e"
+    ],
+    "32": [
+     "15c518ca1f62efb2",
+     "5e6afc709e8e46f1",
+     "645c7b215c9f4617",
+     "85f0102cb2052fb2",
+     "d65e916c5d631135",
+     "e99b2138f9d3abd5"
+    ],
+    "48": [
+     "625e6e18534607cf",
+     "71e5eba81137c82a",
+     "b69c5722e9b8a56c",
+     "b84d3f627197918a",
+     "d6713191dbec886e",
+     "fdeb1ffc3dc802c8"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c3711206b9326e818325485c131cd1f7156f841b8a52a39abba38bd1d43c702d",
+   "kind": "container",
+   "label": "modern_city/mc-prop-w-planter-barrel-flowers",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "8c6b7d6b56d69a9c"
+    ],
+    "24": [
+     "244b57ea1b3f0162",
+     "58e51f513d8af154",
+     "705e4daa220f04ee",
+     "926d50fbab729859",
+     "a30f0adbcbecaea0",
+     "d315fd320ed7853a"
+    ],
+    "32": [
+     "131f624cf449776c",
+     "35ddcfb9a09d7288",
+     "42be00c728bb765b",
+     "98838986962cb427",
+     "a0ed52f40e04cc5e",
+     "f8f73281379e7b56"
+    ],
+    "48": [
+     "030991dc5466a973",
+     "305589fa91519e9a",
+     "748ef4051501ebe0",
+     "c966bd4a852ed19c",
+     "f25905a01fe41199",
+     "fd53a129a99493d5"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e61faeaf002ea05fd1410cb2556036a214903f1b762fdfb3f3eaf07ac0a7ecfb",
+   "kind": "column",
+   "label": "modern_city/mc-prop-w-flag-pole-banner",
+   "width": 16,
+   "height": 48,
+   "cells": {
+    "16": [
+     "1a294dcce4658fd9",
+     "db4a5f97859852e9",
+     "fe1f00cb61ba8cf5"
+    ],
+    "24": [
+     "2f19d8000d042960",
+     "4e97d0b725829a21",
+     "69f19ad20758aa61",
+     "7ee9ea1bd0f5a8ff",
+     "ce9d6c1f14b06471",
+     "fc59bf1a55a97bda"
+    ],
+    "32": [
+     "3adc002f8423fec7",
+     "54dfa1d404051a2c",
+     "599eba764976560f",
+     "5f60e3e2ddf40a21",
+     "96298180a68ec49a",
+     "9d9d390427c9ac74",
+     "9e483b98f02a2ccd",
+     "a8b8a7f56dd8f647",
+     "b2fa30d25c1e81b9",
+     "c477328e071db4c9",
+     "d0bcbb3cf7051a5b",
+     "eae49a07069a8625"
+    ],
+    "48": [
+     "3cbd07840aad9811",
+     "6a5021671efe7658",
+     "a3238f7738b66fbe"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e91ed3d524b8352e55eb85387efa692a33df271e5bc783974952a312f80dbc38",
+   "kind": "box",
+   "label": "modern_city/mc-prop-w-roof-ac-unit",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "b3a7580c55fe7fac"
+    ],
+    "24": [
+     "1a31e0d35387d1fd",
+     "42067a5f72ffa5ae",
+     "553a4a5e26504227",
+     "9606c31afeffc354",
+     "af6adef36da1af4e",
+     "d89d32ae405c6042"
+    ],
+    "32": [
+     "50741554ab46a324",
+     "7bc485a0e7ea6d0f",
+     "86d6ee76a945e6f4",
+     "bc88bab126396149",
+     "c7c493bf0d800a8e",
+     "e2109ba9e73289c1"
+    ],
+    "48": [
+     "1dff291083dae475",
+     "33294f4439123fc9",
+     "695ec20b8ad8d431",
+     "85a14860d8882c64",
+     "d21d4e7444bce5e0",
+     "e5062d11c2e3b74d"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "3d58bf61ed24743f156abdf426508af21afeb58d833fa37575247d2e41de96d6",
+   "kind": "box",
+   "label": "modern_city/mc-prop-w-roof-ac-big",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "340373a7336950f8",
+     "beeebc26b596ba54",
+     "d4ee7e5e5218ea14",
+     "e23f3582fa65a98c"
+    ],
+    "24": [
+     "02fb2a69c87d4ec9",
+     "153352a00930b608",
+     "38335b6f834f9384",
+     "3c6c3363d7507431",
+     "3dcafc762c496a79",
+     "412597b40bb9f03a",
+     "53d08798efbf5b3d",
+     "5b56ff3da36a6823",
+     "6f64b5cb4331ce82",
+     "8187ed67f6357422",
+     "8441ab43eaa8d83b",
+     "86f49345d1da152e",
+     "8b40061803c77b12",
+     "9670ef38e6bc756c",
+     "9b61ace1dca0bb20",
+     "a7ec7b9db0c9d4f5",
+     "b14f7c1094947765",
+     "bd4d4dc2a1c6eac2",
+     "bdaac0a9160b21e0",
+     "dbf2abfeb679bda4",
+     "e900db60c664f91f",
+     "ede2824c46dc4426",
+     "efd36d1d1a4e91eb",
+     "f0fa30d8c83c1f60"
+    ],
+    "32": [
+     "46bf6fab7f0c5ddf"
+    ],
+    "48": [
+     "36b0ddc861ed5b69",
+     "506dd8c7f2a29056",
+     "769119eaa086890f",
+     "96d8e52a9b17e4d2",
+     "af7a8826c66b6eda",
+     "f6759f3d5e88b849"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "6c446ca4119d6ca9f473f7c0cdff4d930e75d5650a586c0294b081d5a1fafb1f",
+   "kind": "box",
+   "label": "modern_city/mc-prop-w-roof-duct-run",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "56274f914a17dd87",
+     "d6a8435c8099aae6"
+    ],
+    "24": [
+     "2d20ae2ddf6f2d21",
+     "447f28a8a599908f",
+     "522de15c7afad22c",
+     "5c0f43ab681ca3ad",
+     "8cef23220aea42c6",
+     "8fdc4f9b9d06f732",
+     "ac898b6def36e887",
+     "b4d07f936d74513d",
+     "e2178888a70c32c6",
+     "e9d924c53c57a3f6",
+     "ed8390ea7de8596c",
+     "fd25a285a990415d"
+    ],
+    "32": [
+     "43c4a384097ad90c",
+     "94cc5ce7e1dc329a"
+    ],
+    "48": [
+     "27d27306289a477d",
+     "3f50b43e99dc6237",
+     "c0bc0dbca6c4a20b",
+     "ecc320b338dc0822",
+     "f1e3540d66e43280",
+     "f4baa4257453225a"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e0045d4febb8dfe0d1441f4bba7e85db8f5818d82753d2587654b53d71a45b29",
+   "kind": "column",
+   "label": "modern_city/mc-prop-w-roof-vent-mushroom",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "7795b3220051cdc9"
+    ],
+    "24": [
+     "404c27e0cc67b939",
+     "5be9b20dcdabb21f",
+     "68561c14c40234d4",
+     "6f973224cfd9a73d",
+     "8eade5bdf4347bc8",
+     "b771fa84dcba8ae2"
+    ],
+    "32": [
+     "1dff0ba72141b63a",
+     "437583dd579c251d",
+     "50fbee247c53fcb9",
+     "9bf97ee853855d36",
+     "9ea74efc44dd86ed",
+     "ad170aa931f5dac7"
+    ],
+    "48": [
+     "25fb50679c5cc6fd",
+     "2d2711de611ade1e",
+     "72d9a87ad7e701ea",
+     "8631b3257b4bde40",
+     "a2b99c6f158d6c89",
+     "ec1e69778155f3ef"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "12783569e8ca3f3931001ebe52f1c40e1935c28911e3eb082710590556a921b9",
+   "kind": "round_body",
+   "label": "modern_city/mc-prop-w-roof-water-tower",
+   "width": 32,
+   "height": 48,
+   "cells": {
+    "16": [
+     "1522f740fe99b4d4",
+     "5509728db77cbe41",
+     "602b32f8fecb41a9",
+     "ba09f232e54987c8",
+     "c27a1721abdeecdd",
+     "fe9cfd39546d6c07"
+    ],
+    "24": [
+     "02d321be7079d385",
+     "1e8d3feeca73640f",
+     "33f9d4f6916bf6a6",
+     "39569fb6d292f982",
+     "4dc47f4bf7df1ca3",
+     "4f8266cf1ce33bc2",
+     "51b8e68811b8ee15",
+     "5268347d67807070",
+     "575d84a4b3bc7905",
+     "a7b6bf2ad7d6b76a",
+     "abbb9076540fb7d2",
+     "b2ce2d428f900674"
+    ],
+    "32": [
+     "802e1a8738ed7a4c",
+     "addb12ada5217e3b",
+     "e3a0473f92d65065",
+     "e9e1ff648e379027"
+    ],
+    "48": [
+     "62a6380bd4c380bf",
+     "eb3d224f75348be8",
+     "fd483f071abd548b"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "297e96e6061c45594b4d6dd65d4f9dbc4d522d18c92e10a3a8a15fd78cc236af",
+   "kind": "box",
+   "label": "modern_city/mc-prop-w-roof-door-hut",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "0e92564a03b519ad",
+     "aff5240e05dde7dd",
+     "e50e36ee1816e114",
+     "f538e5b1d5676406"
+    ],
+    "24": [
+     "237852ba7be88e18",
+     "252b9cf0ab1c0a14",
+     "254b63178c9bc804",
+     "3a468f320ae0e5ef",
+     "49843390e16f5f25",
+     "5679cf2f2d897dd4",
+     "655f899f610b9a88",
+     "6bf139ef5dd5cc5b",
+     "772aed51fbb50e4d",
+     "7c5db5da3a3081b3",
+     "8273b849b4ef0146",
+     "83d68fe04a1266d4",
+     "8b3fafac1523b0ba",
+     "97f4346789c90dc4",
+     "9d9b7ab35469bdb7",
+     "aa46ccfd4e5ec151",
+     "b51f8b326bdc9758",
+     "babea053b19282dd",
+     "be8aa4719906bfa1",
+     "c460230ee12ac4d9",
+     "d6f3b41078191823",
+     "f6309fa1c2d389c2",
+     "f72b23ec32992b8e",
+     "fea32799ebf22f51"
+    ],
+    "32": [
+     "6c2ab4c5db4ade14"
+    ],
+    "48": [
+     "4d3d50bda7f06a0c",
+     "69971f1e18a1c7b9",
+     "ac4f5a6ae12fad28",
+     "c38b974fd02f1002",
+     "df65b79ff4cfc2ea",
+     "eeaf3ec0aee9c002"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "126f6ccb8427c4f399042c9405e9af44f2fdc96981b8e95e6e99dee79c776e9e",
+   "kind": "flat",
+   "label": "modern_city/mc-prop-w-roof-skylight",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "9ca3403aed01b3dc",
+     "d56685ac49817ba2"
+    ],
+    "24": [
+     "2813bcb17596437a",
+     "4f95d935d0652e15",
+     "9ff38f7b1b7d7214",
+     "a60c356a9b286bc2",
+     "aabe25c212a6be0d",
+     "aad2d3e83286de27",
+     "ad24c71ec83743e3",
+     "afbe2dcbab57f496",
+     "b6929e2e779d2768",
+     "ca4a5c34abb77b33",
+     "de1b356bfb08d7de",
+     "f1f2891ea6933ea1"
+    ],
+    "32": [
+     "df61c8a7e8e96451",
+     "f20bf672ef878220"
+    ],
+    "48": [
+     "4eccd55cffdd1fc4",
+     "51178842247ebc0d",
+     "632fe461ea7bb740",
+     "871de5c0bb9f2c33",
+     "c811c7207b18c64e",
+     "cbd5b87a2a4dd5a9"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "645a7a94b1ee1df0a01417018f2ff66e84bce65bd85ff918bf5eb7e349808761",
+   "kind": "column",
+   "label": "modern_city/mc-prop-w-roof-chimney-stack",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "36454348ae04dc43",
+     "8084be87fa9de144"
+    ],
+    "24": [
+     "0c3eecdf1114284a",
+     "10b34c967fd19b74",
+     "345c0058f6bf417f",
+     "6362fc51d1e269eb",
+     "6dd57fea75cfb3e3",
+     "8c6d1b9af7cf552d",
+     "9bd6b1da4a770a9a",
+     "a71d335cb12ce6ae",
+     "ab5b8873205026d1",
+     "b926aaf712dcf26c",
+     "d5168d93decffd16",
+     "eb3deb4874c072d1"
+    ],
+    "32": [
+     "778b6972ed64fefd",
+     "b829fd1dfaca1c7e",
+     "eff36a0421f8b7fd"
+    ],
+    "48": [
+     "05a21fa43c185e7f",
+     "5cd77afc5e5baf6f",
+     "6118711a5aa6bc5b",
+     "91dce6dc662594ad",
+     "c6d88238026affc2",
+     "dc5a7e1015a6b22c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "4674a0a49dbf310ac4e9f808a543cae5bd25ee8688bb2823fb0fb92192d795ba",
+   "kind": "other",
+   "label": "modern_city/mc-prop-w-roof-satellite-dish",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "74988e024a00b7f3"
+    ],
+    "24": [
+     "1bbe0caccafbce83",
+     "2c2d08c7df42ea51",
+     "834a66eb51b94f54",
+     "a79a39a8386a5aed",
+     "e9e1b19fce04176c",
+     "ec34a0ddd638325e"
+    ],
+    "32": [
+     "0e8e3a6cb749cc6c",
+     "12aa2a41552286df",
+     "5451f046709487c5",
+     "c4e0dc2af96672b3",
+     "e063c491da7b495d",
+     "fff1d0e0afa91cc9"
+    ],
+    "48": [
+     "302cdf4cd7291c90",
+     "4cc3d7cab0dd984f",
+     "ccd14ba729d08609",
+     "ceaeef470881718e",
+     "e4ea2f044a7dbd2a",
+     "ed7206990e35bced"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d0e6277712728b3e06435b2b73b901d680c5d9055fa2be193099a8676807b69a",
+   "kind": "front_prop",
+   "label": "modern_city/mc-prop-w-roof-billboard-frame",
+   "width": 48,
+   "height": 32,
+   "cells": {
+    "16": [
+     "4584084276edc9bb",
+     "650c90747ffe9578",
+     "b918aca3e12d5197",
+     "cbf3696a8c0aba26",
+     "e773b0de62be6eb9",
+     "fc9880da8d25baf4"
+    ],
+    "24": [
+     "206b32d20e2ce8da",
+     "4543b34b679d5be7",
+     "5987c9cca4e50c4e",
+     "94e682477207155c",
+     "bd2c05e3f240c92d",
+     "c1092704a766704b",
+     "eb9eb9a167199ba7",
+     "f972ea510851155e"
+    ],
+    "32": [
+     "9e90ce56bf3c87db",
+     "aa641a27d0e69955",
+     "b3bf6b4a79ba9c13",
+     "e2bae898deecb921",
+     "e58351e6b4230071",
+     "e5a02f3426013870"
+    ],
+    "48": [
+     "650d79ca1b0eb5fd",
+     "ba9444efeb9b6d8e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c997e93ddc660dc1359581f1d17dd2ae66db540ca7bcf942cfd7ac96a4c32238",
+   "kind": "front_prop",
+   "label": "modern_city/mc-prop-w-roof-billboard-pizza",
+   "width": 48,
+   "height": 32,
+   "cells": {
+    "16": [
+     "2d8eb7f5ed9b9cf8",
+     "6ebd0616a5d55ab1",
+     "ab020c0aed032d9a",
+     "b2a3ef9a71c6fb0e",
+     "d8b4469b78e415e9",
+     "df6e88b500d32e5e"
+    ],
+    "24": [
+     "42336c712eb7e089",
+     "57bee21a46096805",
+     "5a41d6b871664c00",
+     "b5bae648f6c8323a",
+     "cbf01c240c90c430",
+     "d26be5e4d83de768",
+     "d7b49354348b2c00",
+     "e7f5b6dce93644e6"
+    ],
+    "32": [
+     "124c8c9cd599124f",
+     "2bcfb74119307cf3",
+     "326625422bc5bd2f",
+     "62d94c5d7774ef53",
+     "6f1fa52df2862a27",
+     "d12a546dcf06e54a"
+    ],
+    "48": [
+     "2589586ff786384c",
+     "655bc120f5103366"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "8ae9322f392418dda0e9abbc9448606fa77f9f4726fd722b17337d56556e1227",
+   "kind": "frame",
+   "label": "modern_city/mc-prop-w-roof-laundry-line",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "639db3ba5cff35b5",
+     "a15c288cc03bc0c6",
+     "d0a4b66446775cd7",
+     "fdab4103f307dc78"
+    ],
+    "24": [
+     "0296b554731a7f78",
+     "05933e000aad262b",
+     "1aefb6c50f8043af",
+     "1bee566d25a14c0c",
+     "252dd9682c5cc797",
+     "2b2463d908cda624",
+     "2c957209aec40795",
+     "47b283119d4f2f71",
+     "4ff2504f1554a438",
+     "5e83b01dcb5e61e3",
+     "66c25acbe7308cb4",
+     "720aa7d95f1eaceb",
+     "8368fd3c67797624",
+     "87fcc03ca285f1a7",
+     "9975b66c5e98427f",
+     "9b62e0b17724fa87",
+     "a0166569ea7f3436",
+     "a7698b920768fd40",
+     "c5f72dabd3970852",
+     "d067a7af7367ecd6",
+     "d1be478adb5fe06c",
+     "d78dc353a541fb8e",
+     "e7e0abab20baf0d2",
+     "f75068393e0eddab"
+    ],
+    "32": [
+     "8e8acfc37ce9fe32"
+    ],
+    "48": [
+     "002551c5d5ab38b4",
+     "255c121402851178",
+     "3cc522c9e1053da7",
+     "a536d8fee1ca152e",
+     "cfdf7d3be191bd7f",
+     "e7f282f0e3d337ab"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e73fe8f1c2ce964e684ad7a9ad8f5f0a1bb0bfd44971b24e659fde7c7c98f905",
+   "kind": "container",
+   "label": "modern_city/mc-prop-w-roof-garden-planters",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "5e74e2921bbf9dae",
+     "a420a038c67829e8"
+    ],
+    "24": [
+     "02cd30e2c5f23682",
+     "2d1813b42f908009",
+     "2f5834985fb9af61",
+     "32e8a80f898b3717",
+     "511060e52e847617",
+     "5409dbfdd696b956",
+     "63b649273a83c6ff",
+     "818f14d256296a46",
+     "f2736905b1d58866",
+     "f752757e204132b4",
+     "faab9d9e71a676ea",
+     "fbf4a8c655a90e6e"
+    ],
+    "32": [
+     "0c13351352b2d360",
+     "c64d8b5a6d7e5dff"
+    ],
+    "48": [
+     "02498bfd1c2fc2ac",
+     "4bfcb083d53512a8",
+     "78ba36cbcc966be5",
+     "afd7c37c56a862c3",
+     "c442c6574d45ad17",
+     "ea490bf7c1183d68"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "f4d395af298135a4d865f1dbfe4d9dd31e83bea86ae57e23eb6a7e45d45a32e7",
+   "kind": "seat",
+   "label": "modern_city/mc-prop-w-roof-deck-chairs",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "1936e4024abfdba1",
+     "582b363c64b5a8bb"
+    ],
+    "24": [
+     "20bd40eecedde058",
+     "581485185cc11009",
+     "598486203ca3e89f",
+     "69cd96ef218a76b3",
+     "77c5856ae79cb501",
+     "ad0d66c057a4cd12",
+     "b9c3a1c4b3de55c5",
+     "c21ba7144a756634",
+     "c30126902ee50a32",
+     "de16fe452af6a887",
+     "e0db4a9daedda63d",
+     "e603e8c6a4b3d1f1"
+    ],
+    "32": [
+     "05832e3dbacbe7cc",
+     "279e2f1805ddeba2"
+    ],
+    "48": [
+     "293930d35b6de728",
+     "46a77799fa306a70",
+     "4707dd0b17b22ec2",
+     "9e0793c00cd528dd",
+     "b40a48e0dee6dc92",
+     "ed3a7659bf239f95"
+    ]
+   }
+  }
+ ]
+}

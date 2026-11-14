@@ -1,0 +1,95 @@
+B|station|기차역|railway station|eu|xlarge|16|2|2|slate|lobby|7,8|3|기차역;철도역;중앙역|Old-world railway station: tall arched hall in the middle with a clock, two long low wings
+F|sta-wing*3 sta-arch sta-portal sta-arch~ sta-wing~*3 / sta-upper*3 sta-fan sta-fan~ sta-upper~*3
+O|roof-chimney-stack roof-skylight _ _ _ _ roof-skylight roof-chimney-stack
+X|sta-clock-gable|128|-32
+P|sta-wing|32|48|Ground floor wing bay of a railway station, 32 wide: warm buff-yellow brick with red brick bands on a grey stone base; one round-arched window (16 x 28) with dark green frame; half pilasters at both edges so bays join. Fills the canvas.
+P|sta-portal|32|48|Ground floor main doors of a railway station, exactly 32 wide: grey stone; one wide round arch holding glazed dark green double doors (32 x 28, full width, bottom on the last row); the dark green iron and glass canopy strip along rows 4-10.
+P|sta-upper|32|32|Upper storey wing bay of a railway station, 32 wide: buff-yellow brick with a red brick band; a pair of small arched windows; grey stone cornice along the top 3 rows. Fills the canvas.
+P|sta-fan|32|32|LEFT HALF of the upper part of a station entrance hall, exactly 32 wide: grey stone wall with the left half of one huge semicircular fan window (its centre is at the bottom RIGHT corner of the canvas, radius 28) of radiating dark green glazing bars and pale blue glass; stone cornice along the top 3 rows. It will be mirrored to make the right half.
+P|sta-clock-gable|48|44|The crown of a station hall that sits above the roof line: a rectangular grey stone attic block with a big ROUND white clock (dark hands) in a carved surround, flanked by two short stone urns, topped by a small flat blue-grey slate cap and a flagpole with a wine-red pennant. Vertical sides. Transparent around it.
+
+P|sta-arch|16|48|Ground floor side arch of a station entrance, exactly 16 wide: grey stone; one narrow round-arched window (10 x 28) with a dark green frame; a dark green iron and glass canopy strip along rows 4-10. Fills the canvas.
+B|mall|쇼핑몰|shopping mall|na|xlarge|18|2|3|gravel|lobby|8,9|0|쇼핑몰;쇼핑센터;아울렛|Suburban shopping mall: long panel walls, glass atrium entrance, anchor store boxes at both ends
+F|mall-anchor mall-shops mall-shops-b mall-glass mall-atrium mall-glass~ mall-shops~ mall-shops-b~ mall-anchor-b / mall-anchor-up mall-panel*2 mall-atrium-up*2 mall-panel~*2 mall-anchor-up~
+O|roof-ac-big roof-duct-run roof-ac-big roof-vent-mushroom _ _ roof-ac-big roof-duct-run roof-satellite-dish roof-ac-big
+X|mall-skylight|144|-12
+X|sign-bag|144|-66
+P|mall-anchor|48|48|Ground floor of an anchor store at the end of a mall, 48 wide: pale beige precast concrete panels; two display windows (18 x 22) with a mannequin in each (blue, wine-red); a dark teal base band; a teal horizontal stripe along rows 2-5. Fills the canvas.
+P|mall-anchor-b|48|48|Ground floor of the other anchor store of a mall, 48 wide: pale beige precast concrete panels; a home-goods display window (40 x 22) showing a lamp, a sofa end and stacked boxes; dark teal base band; the teal stripe along rows 2-5. Fills the canvas.
+P|mall-shops|32|48|Ground floor shop unit in a mall front, 32 wide: full glass shopfront in a slim dark frame showing racks of clothes (pink, blue, amber); above it a wine-red sign band (rows 2-9) with a white shoe pictogram; beige pier at the left edge.
+P|mall-shops-b|32|48|Ground floor shop unit in a mall front, 32 wide (a variant): full glass shopfront showing shelves of toys (a teddy, coloured blocks, a ball); above it a blue sign band (rows 2-9) with a white star-and-kite pictogram; beige pier at the left edge.
+P|mall-atrium|32|48|Main doors of a mall, exactly 32 wide: two pairs of automatic glass doors (32 x 28 in total, full width, bottom on the last row) in slim steel frames; a flat steel canopy strip along rows 6-10 with small lamps; glass above.
+P|mall-anchor-up|48|32|Upper storey of an anchor store, 48 wide: blank pale beige precast concrete panels with vertical joints every 12 px, one small ventilation grille, a teal coping line along the top 3 rows. Fills the canvas.
+P|mall-panel|32|32|Upper storey of a mall front, 32 wide: pale beige precast panels with a long horizontal strip window (rows 8-16) of dark glass, teal coping line along the top 3 rows. Fills the canvas.
+P|mall-atrium-up|32|32|Upper part of a mall's glass atrium, 32 wide: glass curtain wall of pale blue panes in slim steel frames (grid 8 px), white glints, steel coping along the top 3 rows. Fills the canvas.
+P|mall-skylight|48|36|A long glass atrium skylight on a flat roof, seen from above-front: a rectangle of pale blue glass panes in a white steel grid with a raised ridge line along its middle, low white kerb (front face 5 rows). Vertical left and right edges. Transparent around it.
+P|sign-bag|40|22|A mall pylon sign panel: a white rounded panel with a big wine-red shopping bag pictogram with amber handles and a small blue star on the bag; slim steel frame. No letters. Transparent around it.
+
+P|mall-glass|16|48|Side of a mall's glass entrance, exactly 16 wide: glass curtain wall in slim steel frames; a flat steel canopy strip along rows 6-10; a planter with a shrub along the bottom 10 rows. Fills the canvas.
+B|hospital|종합 병원|general hospital|na|xlarge|16|5|2|gravel|hospital-ward|4,5,13|0|종합 병원;병원;응급실|Modern hospital: tall ward block with ribbon windows, low emergency wing with an ambulance bay
+F|hos-ground hos-ground-b hos-door hos-ground-b~ hos-ground~ / hos-ward*5 / hos-ward-b*5 / hos-ward*5 / hos-ward-top*5
+O|roof-ac-big roof-door-hut roof-ac-big roof-vent-mushroom roof-water-tower
+X|hos-helipad|80|-10
+X|sign-hospital|120|-140
+V|10|2|gravel
+F|hos-er-bay hos-er-door hos-er-wall
+O|roof-ac-big roof-duct-run roof-vent-mushroom
+P|hos-ground|32|48|Ground floor end bay of a hospital, 32 wide: white panel wall with a pale teal base band; one wide window (24 x 20) with a pale blind; a row of small shrubs in a planter along the bottom 6 rows. Fills the canvas.
+P|hos-ground-b|32|48|Ground floor bay of a hospital next to the entrance, 32 wide: full-height lobby glazing in slim steel frames showing a reception desk and two waiting chairs inside; pale teal base band. Fills the canvas.
+P|hos-door|32|48|Main entrance of a hospital, exactly 32 wide: wide automatic glass doors (32 x 28, full width, bottom on the last row) under a flat white canopy (rows 8-13) carrying a teal band; a small round wall lamp each side above the canopy.
+P|hos-ward|32|32|One ward storey bay of a hospital block, 32 wide: white panels with a continuous ribbon window (rows 8-20) of four panes, two with pale teal curtains; a thin grey floor line along the bottom 2 rows. Fills the canvas.
+P|hos-ward-b|32|32|One ward storey bay of a hospital block, 32 wide (a variant): white panels, ribbon window (rows 8-20) of four panes with one open hopper pane and a potted plant on a sill; a pale teal spandrel panel under the window; thin grey floor line along the bottom 2 rows.
+P|hos-ward-top|32|32|Top storey bay of a hospital block, 32 wide: white panels, ribbon window (rows 10-22), above it a pale teal fascia band (rows 2-7) and a white coping along the top 2 rows. Fills the canvas.
+P|hos-helipad|44|32|A rooftop helipad seen from above-front: a round dark grey pad drawn as an ELLIPSE with a white ring and a white capital-H-like cross of two bars (a plain plus sign, not a letter), amber edge lights around it, on a low platform (front face 5 rows). Transparent around it.
+P|sign-hospital|20|20|A hospital wall sign: a white square panel with a bold teal-blue equal-armed cross and a thin teal rim. Transparent around it.
+P|hos-er-bay|48|48|Ambulance bay of an emergency wing, 48 wide: white panel wall; a wide open vehicle bay (40 x 32, bottom on the last row) under a flat canopy with a wine-red band; inside, dim, the back doors of a white ambulance with a wine-red stripe. Fills the canvas.
+P|hos-er-door|16|48|Emergency entrance, exactly 16 wide: glass sliding door 16 x 28 (bottom on the last row); above it a lit wine-red sign box with a white cross (rows 6-15).
+P|hos-er-wall|32|48|End wall of an emergency wing, 32 wide: white panels with a pale teal base band, one window with a blind, an oxygen tank cage (two green cylinders behind a mesh) at the right. Fills the canvas.
+
+B|stadium|경기장|stadium|na|xlarge|20|2|4|zinc|lobby|9,10|0|경기장;스타디움;축구장;야구장|Town ball stadium seen from the street: brick arcade wall, the stand's roof and the green pitch visible on top
+F|std-arch*4 std-gate-side std-gate std-gate-side~ std-arch~*4 / std-upper*4 std-upper-mid std-upper-mid~ std-upper~*4
+I|0
+X|std-pitch|160|-4
+X|std-light|24|-40
+X|std-light|296|-40
+X|std-scoreboard|160|-58
+P|std-arch|32|48|Ground floor bay of a brick stadium wall, 32 wide: red-brown brick; one tall round arch (20 x 34) closed by a dark green iron gate grille; a ticket window with a small amber awning in the pier; concrete base. Half piers at both edges so bays join.
+P|std-gate|32|48|Main gate of a stadium, exactly 32 wide: pale concrete lintel; two pairs of open dark green turnstile gates (32 x 28 in total, full width, bottom on the last row) with steel turnstile bars; above them a wine-red banner (rows 4-12) with two amber pennants.
+P|std-upper|32|32|Upper level bay of a brick stadium wall, 32 wide: red-brown brick with a pair of small arched openings showing the dark underside of the stand, a pale concrete parapet along the top 4 rows with a steel railing. Fills the canvas.
+P|std-upper-mid|32|32|Upper level over a stadium main gate, 32 wide: pale concrete wall with three narrow vertical windows, a parapet along the top 4 rows with a steel railing. Fills the canvas.
+P|std-pitch|48|40|A piece of a stadium interior seen from above (it will be repeated side by side to fill the roof face): top 14 rows = rows of stand seats as horizontal bands of small wine-red and blue seat dots on grey steps; below, 26 rows = mown grass pitch in alternating light and dark green vertical stripes 8 px wide with one white chalk line across at row 30. Fills the canvas edge to edge, tiles horizontally.
+P|std-light|16|48|A stadium floodlight mast: slim grey lattice pole and at the top a rectangular bank of 3 x 4 white-amber lamps tilted toward the viewer in a dark frame. Transparent around it.
+P|std-scoreboard|44|24|A stadium scoreboard on two steel legs: dark panel with amber dot-matrix blocks (two groups of square dots, illegible, not digits), a small white clock circle in the middle, steel frame. Transparent around it.
+
+P|std-gate-side|16|48|Side pier of a stadium main gate, exactly 16 wide: pale concrete pier with a wine-red vertical banner carrying a white ball pictogram, a lamp at the top. Fills the canvas.
+B|cathedral|대성당|cathedral (invented)|eu|landmark|12|3|2|slate|lobby|5,6|6|대성당;성당;교회당|Invented gothic cathedral west front: twin square towers with flat-topped belfries, rose window, three portals
+F|cat-buttress cat-sideportal cat-niche cat-portal cat-niche~ cat-sideportal~ cat-buttress~ / cat-tower-mid*2 cat-rose cat-rose~ cat-tower-mid~*2 / cat-tower-mid*2 cat-gallery cat-gallery~ cat-tower-mid~*2
+I|8
+X|cat-belfry|32|-4
+X|cat-belfry|160|-4
+X|cat-fleche|96|-10
+P|cat-portal|32|48|Central portal of a gothic cathedral, exactly 32 wide: a dark oak double door with black iron hinges (32 x 28, full width, bottom on the last row) under a pointed carved tympanum showing an invented emblem (a sun over a ship) in pale stone.
+P|cat-tower-mid|32|32|One storey bay of a gothic cathedral tower, 32 wide: pale limestone with one tall narrow pointed-arch window with dark louvres, a slim buttress strip at the left edge, a carved string course along the bottom 3 rows. Fills the canvas.
+P|cat-rose|32|32|Wall bay of a gothic cathedral front, 32 wide: pale limestone with small blind pointed arches and a carved quatrefoil, plain enough that a big round window can be mounted over it. Fills the canvas.
+P|cat-gallery|32|32|Upper bay of a gothic cathedral front, 32 wide: a gallery of four small pointed arches each with a tiny pale statue, and above it a low FLAT stone parapet with pinnacle stubs along the top 6 rows (no gable). Fills the canvas.
+P|cat-belfry|48|52|The top of a gothic bell tower that rises above the roof: a square pale limestone belfry stage with two tall pointed openings with dark louvres, corner pinnacles, and a FLAT lead-grey top face seen from above (8 rows) with a low pierced parapet. Vertical sides. Transparent around it.
+P|cat-fleche|16|56|A slender cathedral spirelet (fleche) seen from the front: a thin lead-grey spire with small crockets, an open lantern stage below, a gilt-amber cross-free finial (a ball and a weathercock). Transparent around it.
+
+X|cat-rose-window|96|-58
+P|cat-rose-window|30|30|A big ROUND gothic rose window, 30 px across, transparent outside the circle: carved pale stone ring, stained glass petals in wine-red, blue and amber radiating around a white centre, dark tracery lines.
+P|cat-niche|16|48|Side of a cathedral's central portal, exactly 16 wide: pale limestone with a tall statue niche holding a small pale robed statue on a corbel, a carved canopy above it. Fills the canvas.
+P|cat-sideportal|32|48|Inner ground bay of a gothic cathedral tower, 32 wide: pale limestone; a pointed-arch side portal recess with a closed wine-red plank door raised on two stone steps (decorative), carved orders around it, a small rose ornament above. Fills the canvas.
+P|cat-buttress|32|48|Outer ground bay of a gothic cathedral tower, 32 wide: pale grey-cream limestone; a stepped buttress at the LEFT edge, a tall narrow pointed-arch window with dark tracery, carved band at the top rows; stone base. Fills the canvas.
+B|clocktower|광장 시계탑|clock tower on a square|eu|landmark|4|5|2|copper|lobby|1|0|시계탑;종탑;광장 탑|Free-standing civic clock tower: stone gate base, brick shaft, four-sided clock stage, copper cap
+F|clk-base clk-base-b / clk-shaft clk-shaft~ / clk-shaft-b clk-shaft-b~ / clk-shaft clk-shaft~ / clk-face clk-face~
+I|6
+X|clk-cap|32|-6
+P|clk-base|32|48|Door half of the base of a free-standing clock tower, exactly 32 wide: heavy rusticated grey stone, VERTICAL left edge; an arched doorway with a dark green iron-bound door (16 x 28 at x 16-31, bottom on the last row); a wall lantern left of it.
+P|clk-shaft|32|32|LEFT HALF of a shaft storey of a clock tower, 32 wide: red-brown brick with pale stone corner quoins at the LEFT edge and one narrow slit window with a stone surround near the right edge. It will be mirrored for the right half. Fills the canvas.
+P|clk-shaft-b|32|32|LEFT HALF of a shaft storey of a clock tower, 32 wide (a variant): red-brown brick with pale stone quoins at the LEFT edge, a small round window in a stone ring, a stone string course along the bottom 3 rows. Fills the canvas.
+P|clk-face|32|40|LEFT HALF of the clock stage of a tower, 32 wide and 40 high: pale stone with a corner pilaster at the LEFT edge, carved spandrel ornaments, a heavy cornice along the top 4 rows; plain in the middle-right where a big round dial will be mounted. Fills the canvas.
+P|clk-cap|48|40|The cap of a clock tower, sitting on its flat roof: an open belfry of four slim stone posts with a dark bronze bell inside, covered by a verdigris-green copper cap drawn as a low rounded rectangle with standing seams, a gilt ball finial and a weather vane. Vertical sides. Transparent around it.
+
+X|clk-dial|32|-48
+P|clk-dial|36|36|A very big ROUND tower clock, 36 px across, transparent outside the circle: white dial, dark bronze ring, dark hands at ten past ten, twelve amber hour dots. Mark: the white dial.
+P|clk-base-b|32|48|Other half of the base of a clock tower, exactly 32 wide: heavy rusticated grey stone, VERTICAL right edge; a bronze plaque with a wreath, a small barred window above it and a stone bench along the bottom 10 rows.
