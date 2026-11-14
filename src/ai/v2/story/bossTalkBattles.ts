@@ -20,6 +20,7 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import type { BuildRun } from "../shared/types";
 import { isPassable } from "@/project/collision";
 import { reachableCells } from "../judge/eventReach";
+import { mapRoute } from "@/player/objectiveTarget";
 
 type Obj = Record<string, unknown>;
 const nameOf = (ev: GameEvent) => String((ev as { name?: string }).name ?? "").trim();
@@ -161,30 +162,48 @@ function floodFrom(project: Project, map: GameMap, seeds: { x: number; y: number
   return seen;
 }
 
-/** 전투 맵으로 들어오는 문이 내려 주는 칸들. */
+/** 전투 맵으로 들어오는 문이 내려 주는 칸들 — 게임 시작점에서 가까운 맵에서 오는 문부터(플레이어가 지나온 입구가 앞에 선다). */
 function landingsInto(project: Project, mapId: string): { x: number; y: number }[] {
-  const out: { x: number; y: number }[] = [];
+  const out: { x: number; y: number; from: string }[] = [];
   const visit = (node: unknown, from: string): void => {
     if (Array.isArray(node)) { for (const n of node) visit(n, from); return; }
     if (!node || typeof node !== "object") return;
     const r = node as Obj;
-    if (r.kind === "transfer" && r.mapId === mapId && from !== mapId && typeof r.x === "number" && typeof r.y === "number") out.push({ x: r.x, y: r.y });
+    if (r.kind === "transfer" && r.mapId === mapId && from !== mapId && typeof r.x === "number" && typeof r.y === "number") out.push({ x: r.x, y: r.y, from });
     for (const v of Object.values(r)) if (v && typeof v === "object") visit(v, from);
   };
   for (const m of Object.values(project.maps)) visit(m.events ?? [], m.id);
-  return out;
+  const hops = new Map<string, number>();
+  const far = (from: string): number => { if (!hops.has(from)) hops.set(from, from === project.startMapId ? 0 : mapRoute(project, project.startMapId, from)?.length ?? Infinity); return hops.get(from)!; };
+  return out.map((cell, i) => ({ cell, i })).sort((a, b) => far(a.cell.from) - far(b.cell.from) || a.i - b.i).map(({ cell }) => ({ x: cell.x, y: cell.y }));
 }
 
-/** 지면 안 되는 이벤트 전투에 지면 그 맵 입구(보스 방 앞)로 돌아오게. 한 일 글. */
 /** 도망칠 수 없는 전투(보스)가 든 명령인가. */
-function hasBossBattle(node: unknown): boolean {
-  if (Array.isArray(node)) return node.some(hasBossBattle);
+function hasBossBattle(node: unknown, any = false): boolean {
+  if (Array.isArray(node)) return node.some((n) => hasBossBattle(n, any));
   if (!node || typeof node !== "object") return false;
   const r = node as Obj;
-  if (r.kind === "battleProcessing" && r.canEscape !== true) return true;
-  return Object.values(r).some((v) => v && typeof v === "object" && hasBossBattle(v));
+  if (r.kind === "battleProcessing" && (any || r.canEscape !== true)) return true;
+  return Object.values(r).some((v) => v && typeof v === "object" && hasBossBattle(v, any));
 }
 
+/**
+ * 그 게임 오버 정의의 글 — 기본 글에서 다른 장소를 말하는 문장을 빼고, 깨어나는 곳을 이름으로 말하는 한 줄을 잇는다.
+ * 낱말 목록이 아니라 이 게임의 실제 맵 이름과 견준다(모델의 «정신을 차리니 버들마을 광장이다» 가 신전 입구에서 떴다).
+ */
+function wakeMessage(project: Project, base: string | undefined, place: string, atDoor: boolean): string {
+  const others = Object.values(project.maps).map((m) => (m.name ?? "").trim()).filter((name) => name.length >= 2 && name !== place);
+  const lines = (base ?? "").split(/(?<=[.!?…。])\s+|\n+/u).map((line) => line.trim()).filter(Boolean);
+  const kept = lines.filter((line) => !others.some((name) => line.includes(name)));
+  if (base && kept.length === lines.length && base.includes(place)) return base;
+  const said = kept.join(" ");
+  return said.includes(place) ? said : `${said}${said ? "\n" : ""}정신을 차리니 「${place}」${atDoor ? " 입구" : ""}다.`;
+}
+
+/**
+ * 이벤트 전투에 지면 그 맵 입구로 돌아오게 — 지면 안 되는 전투(보스·길목) 전부, 그리고 청사진 길 위에 선 도망칠 수 있는 적(길 적)까지.
+ * 길 적에게 져도 기본 게임 오버(돌아올 자리 없음 = 게임 시작점)로 가지 않는다. 글은 깨어나는 곳을 말한다. 한 일 글.
+ */
 export function bossDefeatReturns(run: BuildRun): string[] {
   const project = run.ctx.project;
   const system = project.system as unknown as { gameOver?: Obj & { outcome?: string; presentation?: string; recovery?: { mapId?: string } }; gameOvers?: { id: string; name: string; settings: Obj }[]; defaultGameOverId?: string };
@@ -196,13 +215,16 @@ export function bossDefeatReturns(run: BuildRun): string[] {
   const defs = [...(system.gameOvers ?? [])];
   const maps = { ...project.maps };
   let changed = false;
+  // 청사진으로 지은 게임의 길 적(도망칠 수 있는 이벤트 전투)도 같이 — 청사진이 없는 일(장면 하나 고치기)에서는 손대지 않은 저장본의 필드 적을 다시 쓰지 않는다.
+  const road = !!project.gameBlueprint;
   for (const map of Object.values(project.maps)) {
     if (map.id === backTo || map.id === project.startMapId) continue;
     // 도망칠 수 있는 전투(필드 적·잡몹)는 보스가 아니다 — 그대로 둔다. 왜(2026-10-31 sc-1031-b4 opus party-join r1~r3): 손대지 않은
     // 시작 저장본의 지하 던전 필드 적(…_foe1·v2foe1·v2foe2, canEscape true)까지 다시 써서 장면 판정이 그 적을 «바뀐 이벤트»로 골라
     // 시작점을 적 위에 세웠다.
-    const battleEvents = (map.events ?? []).filter((ev) => hasBossBattle(ev.pages ?? []));
+    const battleEvents = (map.events ?? []).filter((ev) => hasBossBattle(ev.pages ?? [], road));
     if (!battleEvents.length) continue;
+    const place = (map.name ?? "").trim();
     const id = `go_back_${map.id}`.slice(0, 80);
     let def = defs.find((g) => g.id === id);
     if (!def) {
@@ -212,6 +234,7 @@ export function bossDefeatReturns(run: BuildRun): string[] {
       const taken = new Set((map.events ?? []).map((e) => `${e.x},${e.y}`));
       const ok = (c: { x: number; y: number }) => c.x >= 0 && c.y >= 0 && c.x < map.width && c.y < map.height && isPassable(project, map, c.x, c.y) && !taken.has(`${c.x},${c.y}`) && (!reach || reach[c.y * map.width + c.x]);
       let spot = landingsInto(project, map.id).find(ok);
+      const atDoor = !!spot;
       if (!spot && reach) {
         const far = (c: { x: number; y: number }) => Math.min(...battleEvents.map((e) => Math.abs(e.x - c.x) + Math.abs(e.y - c.y)));
         const cells: { x: number; y: number; d: number }[] = [];
@@ -220,8 +243,14 @@ export function bossDefeatReturns(run: BuildRun): string[] {
         spot = cells[0];
       }
       if (!spot) continue;
-      def = { id, name: `${map.name ?? map.id} 앞에서 다시`, settings: { ...structuredClone(base), outcome: "recover", recovery: { mapId: map.id, x: spot.x, y: spot.y } } };
+      def = { id, name: `${map.name ?? map.id} 앞에서 다시`, settings: { ...structuredClone(base), outcome: "recover", recovery: { mapId: map.id, x: spot.x, y: spot.y }, ...(place ? { message: wakeMessage(project, (base as { message?: string }).message, place, atDoor) } : {}) } };
       defs.push(def);
+      changed = true;
+    } else if (place) {
+      // 앞선 판이 만든 정의의 글도 깨어나는 곳을 말하게(되풀이 안전 — 이미 말하면 그대로).
+      const rec = (def.settings as { recovery?: { x: number; y: number } }).recovery;
+      const message = wakeMessage(project, (def.settings as { message?: string }).message ?? (base as { message?: string }).message, place, !!rec && landingsInto(project, map.id).some((c) => c.x === rec.x && c.y === rec.y));
+      if (message !== (def.settings as { message?: string }).message) { defs[defs.indexOf(def)] = def = { ...def, settings: { ...def.settings, message } }; changed = true; }
     }
     let n = 0;
     // 전투 뒤에 이어지던 명령(이긴 뒤 글·스위치)은 이긴(·도망친) 갈래로 옮긴다 — 지는 갈래의 gameOver 뒤에도 사건이 이어져
@@ -231,7 +260,7 @@ export function bossDefeatReturns(run: BuildRun): string[] {
         const out: unknown[] = [];
         for (let i = 0; i < node.length; i++) {
           const r0 = node[i] as Obj | null;
-          if (r0 && typeof r0 === "object" && r0.kind === "battleProcessing" && r0.canEscape !== true && r0.canLose !== true && !(Array.isArray(r0.defeatBranch) && (r0.defeatBranch as unknown[]).length)) {
+          if (r0 && typeof r0 === "object" && r0.kind === "battleProcessing" && (road || r0.canEscape !== true) && r0.canLose !== true && !(Array.isArray(r0.defeatBranch) && (r0.defeatBranch as unknown[]).length)) {
             const r = patch({ ...r0, __skip: true }) as Obj;
             delete r.__skip;
             const rest = node.slice(i + 1).map(patch);
