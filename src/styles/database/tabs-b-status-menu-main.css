@@ -272,7 +272,8 @@
   white-space: normal;
 }
 .status-menu-detail-row.has-description .status-menu-detail-description {
-  color: var(--runtime-glass-text);
+  /* 메뉴 스킨의 글자색 — 유리 창의 흰 글자로 고정하면 밝은 스킨(여행 창 · 수첩)에서 크림 바탕 위 흰 글자가 된다. */
+  color: var(--status-edge-ivory, var(--runtime-glass-text));
   display: -webkit-box;
   grid-column: 1 / -1;
   -webkit-box-orient: vertical;
