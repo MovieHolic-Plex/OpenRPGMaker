@@ -265,5 +265,7 @@ export function bandFallPlan(path: readonly number[], water: ArrayLike<number>, 
   for (let x = Math.max(0, x0 - 3); x <= Math.min(W - 1, x1 + 3); x += 1) out[x] = yd;
   for (let x = x1 + 4; x < W; x += 1) out[x] = Math.max(out[x - 1]! - 1, Math.min(out[x - 1]! + 1, out[x]!));
   for (let x = x0 - 4; x >= 0; x -= 1) out[x] = Math.max(out[x + 1]! - 1, Math.min(out[x + 1]! + 1, out[x]!));
+  // 같은 줄 3열 미만 토막은 앞 토막에 붙인다(띠를 처음 그을 때와 같은 규칙) — 한두 열짜리 톱니가 남으면 그 곁을 오르는 길의 계단이 설 절벽 면이 없다
+  { let s = 0; for (let x = 1; x <= W; x += 1) if (x === W || out[x] !== out[s]) { if (x - s < 3 && s > 0) for (let k = s; k < x; k += 1) out[k] = out[s - 1]!; s = x; } }
   return { band: out, x0, x1, y: yd };
 }
