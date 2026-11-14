@@ -6,7 +6,7 @@ import { isStepQuestDef, questFlagIds } from "@/project/quest/questDef";
 import { runSwitchPlay } from "./autoPlay";
 import { allPages, visitPageCommands, type CommandVisit } from "./walk";
 
-export interface QuestPlay { readonly key: string; readonly title: string; readonly ok: boolean; readonly detail: string }
+interface QuestPlay { readonly key: string; readonly title: string; readonly ok: boolean; readonly detail: string }
 
 /** 의뢰 하나에 쓰는 시간(ms). */
 const QUEST_BUDGET_MS = 15_000;
