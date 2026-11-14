@@ -177,7 +177,8 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
       expect(res.ok).toBe(true);
       return (res.data as { houses: { kitId: string; bbox: { x: number; y: number } }[] }).houses.map((h) => `${h.kitId}@${h.bbox.x},${h.bbox.y}`).sort();
     };
-    const plainHouses = seen(plain.project, plain.map);
+    // 견줄 판은 같은 게임의 벌 없는 마을이다(위 spots 와 같은 까닭 — 열쇠가 있으면 마을 종류가 집 자리를 바꾼다)
+    const plainHouses = seen(sameGame.project, sameGame.map);
     expect(seen(looked.project, looked.map)).toEqual(plainHouses);
     expect(plainHouses.length).toBeGreaterThan(2);
     // 낮 빛 맞춤: 마을 짓기가 이미 넣었다 — 그림자·잔디 칸 수가 겉모습 없는 판과 같다(벌 집을 못 알아보면 그 집의 그림자가 빠진다)

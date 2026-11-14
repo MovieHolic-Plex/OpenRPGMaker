@@ -867,7 +867,13 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const small = [...housePool, ...have(spec.houses).filter(doorAtBottom).map(K)].filter((k) => !first.includes(k)).sort((a, b) => (houseUse.get(a.id) ?? 0) - (houseUse.get(b.id) ?? 0) || a.w * a.h - b.w * b.h).slice(0, 3);
       // 고리 거리가 바깥 반복이라 거리 0 에 맞는 작은 대체 집이 거리 1 의 보통 집을 이겼다(2026-10-30 실조수 opus: medium·large 요청 6채가 모두 폭 4) —
       // 요청 크기 무리만으로 4칸 안을 먼저 찾고, 없을 때만 작은 집까지 넣어 9칸까지 찾는다
-      const sp = ((want as { kind?: string }).kind ? place("house", first, want, 4) : null) ?? place("house", [...first, ...small], want);
+      let sp = ((want as { kind?: string }).kind ? place("house", first, want, 4) : null) ?? place("house", [...first, ...small], want);
+      // 집이 먼저다: 장면 터 때문에 집 한 채가 앉을 한 단 평지를 못 찾았으면 터를 풀고 그 집을 다시 앉힌다 — 장면은 뒤에 남은 빈 땅에서 자리를 찾는다
+      // (형태 탐침 54판 · 게임 열쇠: 터를 둔 채로는 집 239 → 229).
+      if (!sp && yardHold.size) {
+        report.failed.pop(); yardHold.clear(); sceneYards.work.length = 0; sceneYards.gather.length = 0;
+        sp = place("house", [...first, ...small], want);
+      }
       if (sp) { last.push(sp.k.id); if (last.length > 2) last.shift(); houseUse.set(sp.k.id, (houseUse.get(sp.k.id) ?? 0) + 1); classUse.set(classOf(sp.k), (classUse.get(classOf(sp.k)) ?? 0) + 1); }
     }
     // 길 — 단은 계단으로만(곧게 3칸 온 뒤 건너고 건넌 뒤 3칸 곧게), 두 단 넘는 낭떠러지는 못 건넌다. 강은 곧게 널다리로.
