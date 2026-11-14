@@ -138,6 +138,21 @@ def wang(tex, mask, seed):
     return out
 
 
+def wang_soft(tex, mask, seed):
+    """wang 과 같은 꼭짓점 칸이되 가장자리를 더 넓게 성긴 점묘로 푼다(풀 결 — 덩이 변이 16px 칸 계단으로 끊겨 보이지 않게)."""
+    if mask == 15: return tex.copy()
+    yy, xx = np.mgrid[0:T, 0:T]
+    u, v = (xx + 0.5) / T, (yy + 0.5) / T
+    nw, ne, sw, se = (mask & 1) > 0, (mask & 2) > 0, (mask & 4) > 0, (mask & 8) > 0
+    f = nw * (1 - u) * (1 - v) + ne * u * (1 - v) + sw * (1 - u) * v + se * u * v
+    val = f + 0.4 * (tile_noise(seed) - 0.5)
+    d = np.random.default_rng(seed + 977).random((T, T))
+    # 안쪽(0.5 위)도 가장자리로 갈수록 성기고, 바깥(0.5 아래)에도 낱 화소가 흩어진다 — 문턱 하나로 자르지 않는다
+    inside = d < np.clip((val - 0.22) / 0.5, 0, 1) ** 1.3
+    out = tex.copy(); out[~inside] = 0
+    return out
+
+
 def over(base, top):
     """불투명 base 위에 top(RGBA)을 얹은 불투명 칸."""
     a = top[:, :, 3:4].astype(float) / 255
@@ -214,6 +229,11 @@ def grain_cells(spec, tex, add):
             dy = int(round((-ys.min() if sy < 0 else T - 1 - ys.max()) * rng.uniform(0.7, 1.0)))
             dx = int(round((-fx.min() if sx < 0 else T - 1 - fx.max()) * rng.uniform(0.7, 1.0)))
             if dy or dx: variants.append(np.ascontiguousarray(np.roll(src, (dy, dx), (0, 1))))
+        # 들꽃은 한 칸 한 송이로는 1배에서 안 보인다 — 두 장을 겹친 «두 무더기» 장을 더한다(무리 안에서 꽃밭으로 읽히게)
+        if kind in ("white", "yellow") and len(variants) >= 4:
+            for i, j in ((0, 3), (1, 2)):
+                both = variants[i].copy(); m = variants[j][:, :, 3] > 0; both[m] = variants[j][m]
+                variants.append(both)
         sprig_px[kind] = variants
         sprigs[kind] = [add(v) for v in sprig_px[kind]]
     out = {}
@@ -224,12 +244,14 @@ def grain_cells(spec, tex, add):
         roll = lambda px, r: np.ascontiguousarray(np.roll(px, r, (0, 1)))
         # 통칸 변형은 같은 화소를 옮긴 판뿐이다(빛·점의 수가 같다) — 맨 풀밭에 섞여도 얼룩으로 읽히지 않고 16px 되풀이만 깬다
         entry = {"alt": [add(roll(base, r)) for r in GRAIN_ROLLS]}
-        for n, (tid, d, share) in enumerate((("deep", -1, 0.6), ("pale", 1, 0.6))):
+        for n, (tid, d, share) in enumerate((("deep", -1, 0.6), ("pale", 1, 0.85))):
             fills = [tone_mix(roll(base, r), roll(tone_step(base, d), r), share, seed + 30 + n * 10 + i) for i, r in enumerate([(0, 0)] + GRAIN_ROLLS[:2])]
+            # 옅은 결은 한 단만으로는 1배에서 안 읽힌다 — 두 단 옅은 화소를 셋에 하나 섞는다
+            if tid == "pale": fills = [tone_mix(px, roll(tone_step(base, 2), r), 0.34, seed + 90 + i) for (i, px), r in zip(enumerate(fills), [(0, 0)] + GRAIN_ROLLS[:2])]
             # 짙은 결 = 우거진 풀: 한 단 짙은 바탕에 풀 포기(시트의 풀 무늬 화소)를 칸마다 여섯 포기 심는다 — 포기를 감아 옮겨 칸끼리 이어진다
             if tid == "deep": fills = [thicket(px, sprig_px, seed + 60 + i) for i, px in enumerate(fills)]
             tone = fills[0]
-            entry[tid] = {"cells": [-1] + [add(wang(tone, m, seed + 20 + n * 10)) for m in range(1, 16)], "alt": [-1] + [add(wang(fills[1], m, seed + 25 + n * 10)) for m in range(1, 16)],
+            entry[tid] = {"cells": [-1] + [add(wang_soft(tone, m, seed + 20 + n * 10)) for m in range(1, 16)], "alt": [-1] + [add(wang_soft(fills[1], m, seed + 25 + n * 10)) for m in range(1, 16)],
                           "fill": [add(px) for px in fills],
                           # 결 속 칸에 얹은 풀 무늬(한 칸에 2층 그림은 하나라 따로 굽는다)
                           "sprigs": {kind: [add(over(fills[(2 - i) % 3], v)) for i, v in enumerate(sprig_px[kind])] for kind in kinds}}
