@@ -1,6 +1,6 @@
 {
  "set": "fs-mob-balance",
- "note": "잡몹·우두머리 균형 눈대중. 공격만 누르는 판의 목표 승률은 100% 가 아니다(잡몹 76% · 우두머리 60%, mobBalance.ts) — 그래서 이 세트는 승패를 판정하지 않고 전투가 끝까지 도는지만 본다(게임 오버로 끝나도 통과). 이길 수 있는지는 fs2-b5 / b5-field-fight(expect: victory)가 본다.",
+ "note": "잡몹·우두머리 균형 눈대중. 공격만 누르는 판의 목표 승률은 100% 가 아니다(잡몹 76% · 우두머리 60%, mobBalance.ts) — 그래서 이 세트는 승패를 판정하지 않고 전투가 끝까지 도는지만 본다(게임 오버로 끝나도 통과). 이길 수 있는지는 fs2-b5 / b5-field-fight(광역 기술, expect: victory)가 본다.",
  "query": {
   "demo": "fallen-star",
   "e2eVitals": "1"
