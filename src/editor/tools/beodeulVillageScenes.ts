@@ -39,7 +39,8 @@ export interface PlacedScene {
   lifted?: boolean;
 }
 export type SceneSkip = "kits" | "room" | "anchor";
-export interface SceneReport { placed: PlacedScene[]; skipped: { id: string; ko: string; why: SceneSkip }[] }
+/** tried = 자리 없음의 속: 닻이 준 후보 수 · 무더기 조건(한 단·트인 둘레·다른 장면과 거리)에서 떨어진 수 · 조각이 안 들어간 수 · 길을 돌려서 뺀 수. */
+export interface SceneReport { placed: PlacedScene[]; skipped: { id: string; ko: string; why: SceneSkip; tried?: { spots: number; group: number; fit: number; route: number } }[] }
 
 export interface BeodeulSceneHost extends BeodeulObjectHost {
   /** 모이는 곳(우물 자리) · 큰길이 맵으로 드는 칸 · 일터 건물 문 앞 칸(건물이 섰을 때). */
@@ -57,9 +58,26 @@ export interface BeodeulSceneHost extends BeodeulObjectHost {
 }
 
 /** 바닥·배치 쪽이 내어 주는 칸 목록(칸 번호 y*W+x). */
-export interface SceneAreas { readonly commons?: readonly number[]; readonly quay?: readonly number[] }
+export interface SceneAreas {
+  readonly commons?: readonly number[]; readonly quay?: readonly number[];
+  /** 빌더가 집·길보다 먼저 비워 둔 장면 터 — 일터 문 곁 마당 · 모이는 곳 곁. 그 닻의 첫 장면이 여기 선다. */
+  readonly workYard?: readonly number[]; readonly gatherYard?: readonly number[];
+}
+/** 장면이 차지하는 네모의 크기(지금 타일셋에 있는 뭍 조각으로) — 빌더가 터를 미리 비울 때 쓴다. 설 수 없는 장면이면 null. */
+export function sceneFootprint(scene: VillageScene, kitOf: (id: string) => ObjectKit | undefined, requiredOnly = false): { w: number; h: number } | null {
+  const land: { k: ObjectKit; dx: number; dy: number }[] = [];
+  for (const p of scene.pieces) {
+    if (p.water) continue;
+    const k = p.ids.map(kitOf).find((x) => !!x);
+    if (!k) { if (!p.optional) return null; continue; }
+    if (!requiredOnly || !p.optional) land.push({ k, dx: p.dx, dy: p.dy });
+  }
+  if (land.length < Math.min(scene.min, requiredOnly ? 1 : scene.min)) return null;
+  const x0 = Math.min(...land.map((p) => p.dx)), x1 = Math.max(...land.map((p) => p.dx + p.k.w - 1)), y0 = Math.min(...land.map((p) => p.dy - p.k.h + 1)), y1 = Math.max(...land.map((p) => p.dy));
+  return { w: x1 - x0 + 1, h: y1 - y0 + 1 };
+}
 interface Box { x0: number; y0: number; x1: number; y1: number }
-interface AnchorContext { reach: Int16Array; settled: Int16Array; baseLevel: number; commons: ReadonlySet<number> | null; quay: ReadonlySet<number> | null }
+interface AnchorContext { /** 미리 비워 둔 터(그 닻의 것) — 네모가 통째로 그 안이면 가장 좋은 자리다. */ yard: ReadonlySet<number> | null; reach: Int16Array; settled: Int16Array; /** 일터 문 앞에서 걸어서(빈 땅·길, 같은 단) 몇 걸음인가 — 99 = 열두 걸음 안에 안 닿는다. */ fromDoor: Int16Array | null; baseLevel: number; hasUpper: boolean; commons: ReadonlySet<number> | null; quay: ReadonlySet<number> | null }
 
 /**
  * 닻 → 네모의 점수(작을수록 좋다 · Infinity = 그 닻의 자리가 아니다). 닻을 찾는 규칙은 모두 여기 있다.
@@ -67,6 +85,11 @@ interface AnchorContext { reach: Int16Array; settled: Int16Array; baseLevel: num
  * 어느 닻이든 집에서 멀면(닻마다 정한 칸 수) 자리가 아니다 — 장면은 집과 마당 곁에 무리로 앉는다.
  */
 function sceneAnchorScore(host: BeodeulSceneHost, ctx: AnchorContext, at: SceneAnchor, onPlaza: boolean): ((b: Box) => number) | null {
+  const base = anchorScore(host, ctx, at, onPlaza), yard = ctx.yard, W0 = host.W;
+  if (!yard) return base;
+  return (b) => { for (let y = b.y0; y <= b.y1; y += 1) for (let x = b.x0; x <= b.x1; x += 1) if (!yard.has(y * W0 + x)) return base ? base(b) : Infinity; return -100; };
+}
+function anchorScore(host: BeodeulSceneHost, ctx: AnchorContext, at: SceneAnchor, onPlaza: boolean): ((b: Box) => number) | null {
   const { W, H } = host;
   const inMap = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H;
   const cx = (b: Box) => Math.floor((b.x0 + b.x1) / 2), cy = (b: Box) => Math.floor((b.y0 + b.y1) / 2);
@@ -87,7 +110,12 @@ function sceneAnchorScore(host: BeodeulSceneHost, ctx: AnchorContext, at: SceneA
     const door = host.workDoor;
     // 문 곁: 문 줄(문 앞에서 남쪽으로 난 걸음 자리)은 비우고 건물 앞줄에서 옆으로 붙는다. 건물이 없으면 일터 자리 둘레.
     // 문 앞에서 남쪽으로 난 걸음 자리(문 줄 세 칸)를 덮지 않으면 길 건너도 된다 — 다만 멀수록 나쁘고 여덟 칸을 넘지 않는다.
-    if (door) return (b) => { const g = gap(b, door); return g < 1 || g > 8 || (b.x0 <= door.x && b.x1 >= door.x && b.y0 <= door.y + 3) ? Infinity : g * 1.5 + Math.abs(b.y0 - door.y) * 0.4; };
+    // 강 건너·절벽 아래는 문 곁이 아니다: 네모 둘레에 문에서 걸어 열 걸음 안에 닿는 칸이 있어야 한다.
+    if (door && ctx.fromDoor) { const walk = ctx.fromDoor; return (b) => {
+      const g = gap(b, door); if (g < 1 || g > 8 || (b.x0 <= door.x && b.x1 >= door.x && b.y0 <= door.y + 3)) return Infinity;
+      let near = 99; for (let y = b.y0 - 1; y <= b.y1 + 1; y += 1) for (let x = b.x0 - 1; x <= b.x1 + 1; x += 1) if (inMap(x, y)) near = Math.min(near, walk[y * W + x]!);
+      return near > 10 ? Infinity : near * 1.2 + g * 0.5 + Math.abs(b.y0 - door.y) * 0.3;
+    }; }
     const w = host.work!; return (b) => { const g = gap(b, w); return g > 5 ? Infinity : g; };
   }
   if (anchor === "commons" || anchor === "plaza") {
@@ -106,7 +134,8 @@ function sceneAnchorScore(host: BeodeulSceneHost, ctx: AnchorContext, at: SceneA
     if (quay) return (b) => (ring(b, 1, (x, y) => quay.has(y * W + x)) + inside(b, (x, y) => quay.has(y * W + x)) && homes(b) <= 9 ? far(b) * 0.25 : Infinity);
     return (b) => (ring(b, 2, kind("water")) && homes(b) <= 8 ? far(b) * 0.25 + homes(b) * 0.4 + (ring(b, 1, kind("water")) ? 0 : 1.5) : Infinity);
   }
-  if (anchor === "upper") return (b) => (host.level(b.x0, b.y1) > ctx.baseLevel && homes(b) >= 2 && homes(b) <= 10 ? homes(b) * 0.5 + far(b) * 0.1 : Infinity);
+  // 높은 단: 마을 단보다 높은 단이 있을 때만 — 마을이 맨 윗단에 앉았으면(더 높은 땅이 없다) 마을 끝의 들로 간다.
+  if (anchor === "upper" && ctx.hasUpper) return (b) => (host.level(b.x0, b.y1) > ctx.baseLevel && homes(b) >= 2 && homes(b) <= 14 ? homes(b) * 0.5 + far(b) * 0.1 : Infinity);
   if (anchor === "house" || anchor === "behind") {
     if (!host.houses.length) return null;
     // 집 옆: 벽에서 한 칸 띄워 집 발치 줄에. 집 뒤: 지붕 윗변에서 한두 칸 위, 집 폭 안에.
@@ -163,7 +192,18 @@ export function placeVillageScenes(host: BeodeulSceneHost, scenes: readonly Vill
     for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W; if (settled[c]! >= 16) continue;
       for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) { const nx = x + dx, ny = y + dy; if (!inMap(nx, ny)) continue; const n = idx(nx, ny); if (settled[n]! > settled[c]! + 1) { settled[n] = settled[c]! + 1; q.push(n); } } } }
   const baseLevel = host.gather ? host.level(host.gather.x, host.gather.y) : host.entrance ? host.level(host.entrance.x, host.entrance.y) : 0;
-  const ctx: AnchorContext = { reach, settled, baseLevel, commons: host.areas?.commons?.length ? new Set(host.areas.commons) : null, quay: host.areas?.quay?.length ? new Set(host.areas.quay) : null };
+  let fromDoor: Int16Array | null = null;
+  if (host.workDoor && inMap(host.workDoor.x, host.workDoor.y)) {
+    fromDoor = new Int16Array(W * H).fill(99); const q = [idx(host.workDoor.x, host.workDoor.y)]; fromDoor[q[0]!] = 0;
+    for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W; if (fromDoor[c]! >= 12) continue;
+      for (const [dx, dy] of N4) { const nx = x + dx, ny = y + dy; if (!inMap(nx, ny) || !open(nx, ny) || host.level(nx, ny) !== host.level(x, y)) continue;
+        const n = idx(nx, ny); if (fromDoor[n]! > fromDoor[c]! + 1) { fromDoor[n] = fromDoor[c]! + 1; q.push(n); } } }
+  }
+  let hasUpper = false;
+  for (let y = 2; y < H - 2 && !hasUpper; y += 1) for (let x = 2; x < W - 2; x += 1) if (host.level(x, y) > baseLevel && host.cell(x, y) === "free" && settled[idx(x, y)]! <= 14) { hasUpper = true; break; }
+  const yardOf = { work: host.areas?.workYard?.length ? new Set(host.areas.workYard) : null, gather: host.areas?.gatherYard?.length ? new Set(host.areas.gatherYard) : null };
+  const yardUsed = { work: false, gather: false };
+  const ctx0 = { reach, settled, fromDoor, baseLevel, hasUpper, commons: host.areas?.commons?.length ? new Set(host.areas.commons) : null, quay: host.areas?.quay?.length ? new Set(host.areas.quay) : null };
   const taken: { x0: number; y0: number; x1: number; y1: number }[] = [];
 
   scenes.forEach((scene, at) => {
@@ -182,11 +222,15 @@ export function placeVillageScenes(host: BeodeulSceneHost, scenes: readonly Vill
     const bw = x1 - x0 + 1, bh = y1 - y0 + 1;
     // 원점 (ox,oy) · 좌우 뒤집기에서 조각의 왼쪽 위 칸.
     const spot = (p: Part, ox: number, oy: number, flip: boolean) => ({ x: ox + (flip ? x0 + x1 - p.dx - p.kit.w + 1 : p.dx), y: oy + p.dy - p.kit.h + 1 });
-    const onPlaza = scene.at === "plaza" && host.plazaCells.length >= 20;
+    // 판석 광장 장면은 광장 위를 먼저 보고, 안 들어가면 광장 곁 맨땅(모이는 곳 가장자리)으로 간다.
+    const tried = { spots: 0, group: 0, fit: 0, route: 0 };
+    for (const onPlaza of scene.at === "plaza" && host.plazaCells.length >= 20 ? [true, false] : [false]) {
+    const yardKey = scene.at === "work" ? "work" as const : scene.at === "commons" || (scene.at === "plaza" && !onPlaza) ? "gather" as const : null;
+    const ctx: AnchorContext = { ...ctx0, yard: yardKey && !yardUsed[yardKey] ? yardOf[yardKey] : null };
     const fitsPart = (p: Part, ox: number, oy: number, flip: boolean): boolean => { const s = spot(p, ox, oy, flip); return onPlaza ? host.fitsPlaza(p.kit, s.x, s.y) : host.fitsLand(p.kit, s.x, s.y); };
     const boxOf = (ox: number, oy: number) => ({ x0: ox + x0, y0: oy + y0, x1: ox + x1, y1: oy + y1 });
     /** 무더기의 조건: 맵 안 · 다른 장면과 두 칸 넘게 · 한 단 · 둘레 한 칸의 절반 넘게 트임 · 둘레에 걸어 닿는 칸. */
-    const groupOk = (ox: number, oy: number): boolean => {
+    const groupOk = (ox: number, oy: number, plazaOk: boolean): boolean => {
       const b = boxOf(ox, oy);
       if (b.x0 < 2 || b.y0 < 2 || b.x1 >= W - 2 || b.y1 >= H - 2) return false;
       if (taken.some((t) => b.x0 <= t.x1 + 3 && b.x1 >= t.x0 - 3 && b.y0 <= t.y1 + 3 && b.y1 >= t.y0 - 3)) return false;
@@ -194,7 +238,8 @@ export function placeVillageScenes(host: BeodeulSceneHost, scenes: readonly Vill
       let ring = 0, free = 0, walkTo = false;
       for (let y = b.y0 - 1; y <= b.y1 + 1; y += 1) for (let x = b.x0 - 1; x <= b.x1 + 1; x += 1) {
         const inside = x >= b.x0 && x <= b.x1 && y >= b.y0 && y <= b.y1;
-        if (inside) { if (host.level(x, y) !== L) return false; continue; }
+        // 네모 안에 길·집·물이 끼면 안 된다(광장 장면은 판석 위) — 길을 걸치고 앉은 무더기는 한 «곳» 으로 읽히지 않고 길목을 막는다.
+        if (inside) { const v = host.cell(x, y); if (host.level(x, y) !== L || v === "road" || v === "building" || v === "water" || v === "out" || (v === "plaza" && !plazaOk)) return false; continue; }
         ring += 1; if (!open(x, y) || host.level(x, y) !== L) continue;
         free += 1; if (reach[idx(x, y)]! < 99) walkTo = true;
       }
@@ -202,31 +247,29 @@ export function placeVillageScenes(host: BeodeulSceneHost, scenes: readonly Vill
     };
     // 닻 찾기는 sceneAnchorScore 하나가 한다 — 네모마다 점수(작을수록 좋다, Infinity = 여기는 아니다).
     const score = sceneAnchorScore(host, ctx, scene.at, onPlaza);
-    if (!score) return skip("anchor");
+    if (!score) { if (onPlaza) continue; return skip("anchor"); }
     const cands: { ox: number; oy: number; s: number }[] = [];
     for (let oy = 2 - y0; oy + y1 < H - 2; oy += 1) for (let ox = 2 - x0; ox + x1 < W - 2; ox += 1) {
       const sc = score(boxOf(ox, oy)); if (Number.isFinite(sc)) cands.push({ ox, oy, s: sc + (lookHash(`scene|${key}|${host.seed}|${scene.id}|${ox}|${oy}`) % 1000) / 600 });
     }
     cands.sort((a, b) => a.s - b.s);
-    const dbg = { cands: cands.length, group: 0, fit: 0, min: 0, guard: 0 };
+    tried.spots += cands.length;
     const required = land.filter((p) => !p.optional);
     for (const { ox, oy } of cands) {
-      if (!groupOk(ox, oy)) { dbg.group += 1; continue; }
+      if (!groupOk(ox, oy, onPlaza)) { tried.group += 1; continue; }
       for (const flip of lookHash(`scene|${key}|${scene.id}|flip`) % 2 ? [true, false] : [false, true]) {
-        if (!required.every((p) => fitsPart(p, ox, oy, flip))) { dbg.fit += 1;
-          if (process.env.SCENE_DEBUG === scene.id && dbg.fit <= 10) { const bad = required.filter((p) => !fitsPart(p, ox, oy, flip)).map((p) => { const sp = spot(p, ox, oy, flip); const kinds: string[] = []; for (let j = 0; j < p.kit.h; j += 1) for (let i = 0; i < p.kit.w; i += 1) kinds.push(`${host.cell(sp.x + i, sp.y + j)[0]}${host.level(sp.x + i, sp.y + j)}`); return `${p.kit.id.slice(-12)}@${sp.x},${sp.y}[${kinds.join("")}]`; }); console.log("  fit-fail", JSON.stringify(boxOf(ox, oy)), bad.join(" ")); }
-          continue; }
+        if (!required.every((p) => fitsPart(p, ox, oy, flip))) { tried.fit += 1; continue; }
         const use = land.filter((p) => !p.optional || fitsPart(p, ox, oy, flip));
         if (use.length < scene.min) continue;
         // 장면이 문·모이는 곳·들머리 사이의 걷는 길을 두 칸 넘게 돌리면 그 자리는 아니다.
         const feet = use.flatMap((p) => { const s = spot(p, ox, oy, flip); return walkOn.has(p.kit.id) ? [] : host.footCells(p.kit, s.x, s.y); });
-        if (!guard.ok(feet)) { dbg.guard += 1; continue; }
+        if (!guard.ok(feet)) { tried.route += 1; continue; }
         guard.take(feet);
         for (const p of use) { const s = spot(p, ox, oy, flip); const slot = sceneSlot(at, !p.optional);
           if (onPlaza) host.placePlaza(p.kit, s.x, s.y, slot); else host.placeLand(p.kit, s.x, s.y, walkOn.has(p.kit.id), slot); }
         const b = boxOf(ox, oy);
         for (let y = b.y0; y <= b.y1 + 1; y += 1) for (let x = b.x0 - 1; x <= b.x1 + 1; x += 1) if (host.cell(x, y) === "free") host.reserve(x, y);
-        taken.push(b);
+        taken.push(b); if (yardKey) yardUsed[yardKey] = true;
         // 물 위 조각: 제자리에서 가장 가까운, 둘레까지 물인 칸(네 칸 안).
         for (const p of parts.filter((q) => q.water)) {
           const want = spot(p, ox, oy, flip); let best: { x: number; y: number; d: number } | null = null;
@@ -246,8 +289,9 @@ export function placeVillageScenes(host: BeodeulSceneHost, scenes: readonly Vill
         return;
       }
     }
-    if (process.env.SCENE_DEBUG) console.log("scene", scene.id, scene.at, JSON.stringify(dbg), "door", JSON.stringify(host.workDoor), "work", JSON.stringify(host.work));
-    skip("room");
+    }
+    // 후보가 하나도 없으면 이 터에 그 닻이 없는 것이다(물 없는 마을의 물가 장면) — 자리 부족과 따로 센다.
+    report.skipped.push({ id: scene.id, ko: scene.ko, why: tried.spots ? "room" : "anchor", tried });
   });
   // 번호(scene:<n>)는 종류의 장면 차례다 — 못 놓은 자리는 비어 있다.
   return report;

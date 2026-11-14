@@ -66,6 +66,7 @@ for (const kind of BEODEUL_VILLAGE_KINDS) {
     skipped: sc.skipped, cut: cells, routeAdded: d.routeAdded ?? 0, standReached: `${standOk}/${(d.scenes ?? []).length}`, unreached: (d.doors ?? []).filter((x: any) => !x.reached).length, stampFailed: d.stampFailed,
     scenes: d.scenes, entrance: d.entrance, gather: d.gathering?.door ?? null };
   rows.push(row);
+  if (argv.includes("--why")) for (const t of sc.tried ?? []) console.log(`  자리 없음 ${t.id}: 후보 ${t.spots} · 무더기 조건 ${t.group} · 조각 안 들어감 ${t.fit} · 길 돌림 ${t.route}`);
   console.log(`${kind.id} (${kind.rank}) ${row.size} 집 ${d.houses} · 장면 ${sc.placed}/${sc.asked}${room ? ` · 자리 없음 ${room}` : ""}${kits ? ` · 그림 기다림 ${kits}` : ""}${sc.lifted ? ` · 걷음 ${sc.lifted}` : ""} · 끊긴 칸 ${cells} · 걸음 +${d.routeAdded ?? 0} · 설 칸 ${row.standReached} · 못 닿는 문 ${row.unreached} · 찍기 실패 ${d.stampFailed}`);
   if (png) {
     fs.writeFileSync(path.join(out, `${kind.id}.png`), renderMapPng(ctx.project, map).png);
