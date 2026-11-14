@@ -91,10 +91,15 @@ export function settleCarriedSteps(project: Project): CarriedSteps {
     return true;
   };
   const pairs: (readonly [string, string])[] = [];
+  // 같은 사람의 뒤 단계는 앞 단계의 이벤트에 이어 지었다(samePerson.ts) — 그 이벤트의 이름·자리는 먼저 만난 단계의 것이다. 뒤 단계가 이름을 바꾸거나 걷지 않는다.
+  const owned = new Set<string>();
   for (const step of bp.steps) {
     const built = step.built;
     const ev = built ? find(built) : undefined;
     if (!built || !ev) continue;
+    const shared = owned.has(`${built.mapId}#${built.eventId}`);
+    owned.add(`${built.mapId}#${built.eventId}`);
+    if (shared) continue;
     const target = mapFor(project, step.place);
     if (!target || target.id !== built.mapId) { remove(built, `${step.id} 단계가 「${step.place}」(으)로 옮겨 갔다`); continue; }
     const name = nameOf(ev);
@@ -110,7 +115,7 @@ export function settleCarriedSteps(project: Project): CarriedSteps {
   swapNames(project, pairs);
   const live = new Set(bp.steps.flatMap((step) => (step.built?.switchId ? [step.built.switchId] : [])));
   for (const built of bp.retired ?? []) {
-    const gone = remove(built, "새 청사진에 그 단계가 없다");
+    const gone = !owned.has(`${built.mapId}#${built.eventId}`) && remove(built, "새 청사진에 그 단계가 없다");
     if (gone && built.switchId && !live.has(built.switchId)) {
       const dropped = dropSwitchConditions(project, built.switchId);
       if (dropped) notes.push(`그 단계가 켜던 스위치를 기다리던 조건 ${dropped}개를 풀었다`);

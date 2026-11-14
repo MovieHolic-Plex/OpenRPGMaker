@@ -85,7 +85,12 @@ export function refreshObjectiveRoutes(project: Project): number {
       // 이 페이지가 이미 그 승리 뒤에만 도는 페이지면(보스 자신·승리 조건 페이지) 잠금 대상을 그대로 가리킨다.
       const pageSwitches = new Set((page.conditions ?? []).map((c) => String((c as { switchId?: string }).switchId ?? "")));
       // 글을 고쳐 쓸 때는 이름 있는 전투만(이름 없는 대상을 글에 넣을 수 없다), 대상(target)은 이름이 없어도 그 전투.
+      // 같은 사람이 여러 단계를 맡은 이벤트(촌장: 첫 단계와 마지막 단계)는 뒤 단계의 페이지만 그 승리 뒤에 열린다 — 그 이벤트가 맡은 첫 단계를 가리키는 목표는 전투로 돌리지 않는다
+      // (2026-11-13: 시작 목표 「촌장에게 …」 가 마지막 보스를 가리켰다).
+      const meant = k >= 0 ? k + 1 : opening ? 0 : -1;
       const battleFor = (target: { map: GameMap; event: GameMap["events"][number] } | undefined) => {
+        const served = target ? steps.flatMap((step, index) => (isStepEvent(step, target.map.id, target.event) ? [index] : [])) : [];
+        if (served.length > 1 && served[0] === meant) return undefined;
         const gate = target ? holders.get(target.event.id) : undefined;
         return gate && gate.holder.event.id !== event.id && !pageSwitches.has(gate.switchId) ? gate.holder : undefined;
       };

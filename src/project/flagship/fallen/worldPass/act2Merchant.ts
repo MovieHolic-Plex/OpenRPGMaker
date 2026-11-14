@@ -39,7 +39,7 @@ export function placeSnowMerchant(project: Project, mapId: string, at: Cell, ent
     stampKit(project, mapId, kit, c);
   }
   const greet = [
-    say(BERN, "이런 눈길에 사람이라니. 반갑네.\n서리나루까지 가게는 여기뿐이야."),
+    say(BERN, "이 눈길에 사람을 다 보네. 반갑구먼.\n서리나루까지 가게는 여기뿐이야."),
     say(BERN, "고개 넘으면 얼음 호수다. 약은 넉넉히 챙겨."),
   ];
   putEvent(map, "ev_fs2_snow_merchant", BERN, at, [

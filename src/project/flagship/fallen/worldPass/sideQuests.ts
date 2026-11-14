@@ -22,7 +22,7 @@ export function noticeBoard(project: Project, hubId: string, front: Cell): void 
   putEvent(hub, "ev_fs_notice_board", "광장 게시판", front, [
     page("ev_fs_notice_board_p", "읽는다", [], [
       narrate("광장 게시판이다. 쪽지 두 장이 꽂혀 있다."),
-      fork(sw(Q4_DONE), [narrate("(약방) 독 주머니 의뢰 — 「끝났음, 고맙소. 오든」")], [narrate("(약방) 거미 독 주머니 두 개 구함.\n해독초가 모자라오. 약방 오든.")]),
+      fork(sw(Q4_DONE), [narrate("(약방) 독 주머니 의뢰. 「끝났음, 고맙소. 오든」")], [narrate("(약방) 거미 독 주머니 두 개 구함.\n해독초가 모자라오. 약방 오든.")]),
       fork(sw(Q5_DONE), [narrate("(꼬마 글씨) 연 찾았어요!! 고마워요")], [narrate("(꼬마 글씨) 빨간 연을 잃어버렸어요.\n북쪽 숲 쪽으로 날아갔어요. 토비.")]),
       fork(sw(Q5_ON, false), [setSw(Q5_ON), narrate("의뢰 「토비의 잃어버린 연」을 맡았다.")]),
     ]),
@@ -33,19 +33,19 @@ export function odenVenomQuest(project: Project): void {
   const oden = mustMap(project, "fs_apothecary").events.find((e) => e.id === "ev_fs_apothecary");
   if (!oden?.pages?.length) throw new Error("[fallen-world] 약방 오든이 없다");
   const offer = fork(sw(Q4_ON, false), [
-    say(ODEN, "덤불거미 독 주머니를 둘만 구해 오겠나.\n독을 알아야 해독초를 달이지."),
+    say(ODEN, "덤불거미 독 주머니 둘만 구해다 주겠나.\n독을 알아야 해독초를 달이지."),
     choices([
       { text: "구해 올게요", branch: [setSw(Q4_ON), narrate("의뢰 「오든의 해독초」를 맡았다.")] },
       { text: "다음에요", branch: [] },
     ]),
   ]);
-  const notYet = say(ODEN, "독 주머니는 숲의 덤불거미가 지닌다.\n두 개다. 서두를 건 없어.");
+  const notYet = say(ODEN, "독 주머니는 숲 덤불거미한테서 나와.\n두 개야. 서두를 건 없고.");
   // 아이템 개수 조건이 없다 — 하나씩 받고, 둘째가 없으면 받은 하나를 돌려준다(townQuests 로한의 송곳니와 같은 꼴).
   const turnIn = fork(all(sw(Q4_ON), sw(Q4_DONE, false)), [
     fork(has(VENOM), [item(VENOM, -1), fork(has(VENOM), [
       item(VENOM, -1),
       narrate("독 주머니 둘을 건넸다."),
-      say(ODEN, "좋아, 터지지 않게 잘 들고 왔군.\n이걸로 해독초 한 솥이다. 수고비다."),
+      say(ODEN, "옳지, 안 터뜨리고 잘 들고 왔군.\n이거면 해독초 한 솥은 나온다. 자, 수고비."),
       item("item_potion", 3),
       se("cc0-se-osx-bell-01"),
       narrate("「회복약」 3개를 받았다."),
@@ -70,7 +70,7 @@ export function tobiKiteQuest(project: Project, forestEdgeId: string, kiteAt: Ce
   putEvent(edge, "ev_fs_q_kite_spot", "나뭇가지에 걸린 연", kiteAt, [
     page("ev_fs_q_kite_spot_idle", "평소", [], [narrate("덤불 위로 빨간 종잇조각이 펄럭인다.")]),
     page("ev_fs_q_kite_spot_on", "의뢰 중", [sw(Q5_ON), sw(Q5_FOUND, false)], [
-      narrate("나뭇가지에 빨간 연이 걸려 있다.\n발끝을 세워 조심스레 떼어 냈다."),
+      narrate("나뭇가지에 빨간 연이 걸려 있다.\n발끝을 세워 조심스레 떼어 낸다."),
       item(KITE, 1), se("cc0-se-osx-bell-01"), narrate("「빨간 연」을 손에 넣었다."), setSw(Q5_FOUND),
     ]),
     page("ev_fs_q_kite_spot_done", "가져감", [sw(Q5_FOUND)], [narrate("연이 걸려 있던 가지가 흔들린다.")]),
@@ -80,7 +80,7 @@ export function tobiKiteQuest(project: Project, forestEdgeId: string, kiteAt: Ce
   const back = fork(all(sw(Q5_FOUND), sw(Q5_DONE, false), has(KITE)), [
     narrate("빨간 연을 돌려주었다."),
     item(KITE, -1),
-    say(TOBI, "내 연! 꼬리 찢어진 것도 그대로네.\n이거, 엄마가 준 용돈인데… 줄게요!"),
+    say(TOBI, "내 연! 꼬리 찢어진 것도 그대로네.\n이거, 엄마가 준 용돈인데… 형 줄게!"),
     gainGold(100), item("item_fs_star_scent", 1),
     narrate("100G와 「별빛 향 주머니」를 받았다."),
     setSw(Q5_DONE),

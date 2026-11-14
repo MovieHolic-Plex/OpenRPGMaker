@@ -20,7 +20,7 @@ export function personGraphicFor(project: Project, map: GameMap, name: string): 
     const graphic = (ev.pages ?? []).map((pg) => pg.graphic as Record<string, unknown> | undefined).find((g) => g?.sprite && g.transparent !== true);
     if (graphic) return { graphic: structuredClone(graphic), label: `${wanted} 의 앞선 모습` };
   }
-  const pick = pickPersonGraphic(project, map, name, undefined);
+  const pick = pickPersonGraphic(project, map, name, undefined, true);
   if (!pick) return undefined;
   return {
     graphic: { sprite: { type: "bundled", id: pick.textureKey }, direction: "down", pattern: charsetFrameIndex({ characterIndex: pick.characterIndex, direction: "down", pattern: 1 }) },
