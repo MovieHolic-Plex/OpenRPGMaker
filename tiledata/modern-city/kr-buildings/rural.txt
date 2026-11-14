@@ -1,0 +1,89 @@
+# id|set|ko|en|w|h|block rows(X solid, * star over walker, . flat walk)
+vinyl-end|vinyl|비닐하우스 앞면(문)|vinyl greenhouse front with door|3|2|***/XXX
+vinyl-body|vinyl|비닐하우스 몸통|vinyl greenhouse body section|3|2|***/XXX
+vinyl-frame|vinyl|비닐하우스 뼈대|bare greenhouse hoops|3|2|***/XXX
+vinyl-tank|vinyl|농업용 물통|blue farm water tank|1|2|*/X
+vinyl-crates|vinyl|모종 상자 더미|seedling tray stack|1|1|X
+vinyl-barrow|vinyl|외발 수레|wheelbarrow|1|1|X
+vinyl-mulch|vinyl|검은 비닐 두둑|black mulch ridge|2|1|..
+paddy-young|paddy|모내기한 논|young rice paddy tile|2|2|../..
+paddy-ripe|paddy|벼 익은 논|ripe rice paddy tile|2|2|XX/XX
+paddy-stubble|paddy|벤 논 그루터기|harvested paddy stubble|2|2|../..
+paddy-sheaf|paddy|볏짚 더미|rice straw stack|2|2|**/XX
+paddy-scarecrow|paddy|허수아비|scarecrow|1|2|*/X
+paddy-gate|paddy|논두렁 물꼬|paddy water gate|1|1|X
+paddy-egret|paddy|백로|egret|1|2|*/X
+paddy-rack|paddy|볏단 말리는 걸이|rice drying rack|3|2|***/XXX
+paddy-pump|paddy|양수기|irrigation pump|1|1|X
+chili-mat|chili|고추 말리는 멍석|chili drying mat|2|1|..
+chili-mat-big|chili|고추 말리는 큰 멍석|large chili drying mat|3|2|.../...
+chili-sack|chili|고추 자루|chili sack|1|1|X
+chili-pyeongsang|chili|마당 평상|yard bench platform|2|2|XX/XX
+chili-sieve|chili|키와 소쿠리|winnow and baskets|1|1|X
+chili-corn|chili|말리는 옥수수 걸이|hanging corn rack|2|2|**/XX
+chili-radish|chili|무청 시래기 줄|dried radish greens line|2|2|**/XX
+jang-stand|jangdok|장독대|crock platform|3|2|XXX/XXX
+jang-big|jangdok|큰 항아리|large crock|1|2|*/X
+jang-small|jangdok|작은 항아리 둘|two small crocks|1|1|X
+jang-meju|jangdok|메주 걸이|hanging meju rack|2|2|**/XX
+jang-well|jangdok|수돗가 펌프|yard hand pump and basin|2|1|XX
+jang-rubber|jangdok|고무 대야|red rubber basin|1|1|X
+hall-jeongja|hall|정자|village pavilion|3|3|***/XXX/XXX
+hall-tree|hall|노거수|old guardian tree|3|4|***/***/.X./.X.
+hall-treebench|hall|나무 아래 평상|platform under tree|2|1|XX
+hall-stone|hall|마을 표지석|village name stone|2|2|**/XX
+hall-jangseung|hall|장승 한 쌍|pair of jangseung posts|2|2|**/XX
+hall-sotdae|hall|솟대|sotdae bird pole|1|3|*/*/X
+hall-speaker|hall|마을 방송 스피커 기둥|village loudspeaker pole|1|3|*/*/X
+hall-board|hall|마을 게시판|village notice board|2|2|**/XX
+hall-exercise|hall|운동 기구|outdoor exercise machine|1|2|*/X
+hall-flag|hall|새마을 깃대|flag poles|1|3|*/*/X
+farm-cultivator|machine|경운기|power tiller with trailer|3|2|***/XXX
+farm-tractor|machine|트랙터|tractor|2|2|**/XX
+farm-rearcar|machine|리어카|handcart|2|1|XX
+farm-truck|machine|농사 1톤 트럭|farm pickup truck|3|2|***/XXX
+farm-sprayer|machine|방제기|crop sprayer|1|1|X
+farm-plow|machine|쟁기와 농기구|plow and tools|1|1|X
+nh-pallet|nonghyup|쌀 포대 팰릿|rice sack pallet|2|2|**/XX
+nh-fertilizer|nonghyup|비료 포대 더미|fertilizer sack stack|2|1|XX
+nh-forklift|nonghyup|지게차|forklift|2|2|**/XX
+nh-scale|nonghyup|계근 저울|platform scale|1|1|X
+nh-boxes|nonghyup|농산물 상자 더미|produce box stack|1|2|*/X
+nh-sign|nonghyup|공판장 간판 기둥|co-op yard sign post|1|2|*/X
+bus-shelter|busstop|시골 버스 정류장|rural bus shelter|3|2|***/XXX
+bus-pole|busstop|정류장 표지 기둥|bus stop pole|1|2|*/X
+bus-chair|busstop|낡은 의자|old chair left at stop|1|1|X
+bus-mirror|busstop|도로 반사경|road mirror|1|2|*/X
+bus-milestone|busstop|이정표 돌|milestone|1|1|X
+orchard-apple|orchard|사과나무|apple tree|2|3|**/**/XX
+orchard-crates|orchard|사과 궤짝 더미|apple crate stack|2|1|XX
+orchard-ladder|orchard|과수원 사다리|orchard ladder|1|2|*/X
+orchard-basket|orchard|사과 바구니|apple basket|1|1|X
+orchard-persimmon|orchard|감나무|persimmon tree|2|3|**/**/XX
+orchard-gotgam|orchard|곶감 걸이|dried persimmon rack|2|2|**/XX
+orchard-net|orchard|새 그물 지주|bird net posts|2|2|**/XX
+barn-trough|barn|소 여물통|cattle feed trough|2|1|XX
+barn-hayroll|barn|건초 롤|hay roll|2|2|**/XX
+barn-silage|barn|사일리지 흰 롤|white silage bale|2|2|**/XX
+barn-cow|barn|한우|cow|2|2|**/XX
+barn-fence|barn|축사 울타리|barn rail fence|2|1|XX
+barn-manure|barn|두엄 더미|compost heap|2|1|XX
+barn-doghouse|barn|개집|doghouse|1|1|X
+barn-chicken|barn|닭장|chicken coop|2|2|**/XX
+fish-pots|fishing|통발 더미|fish trap stack|2|1|XX
+fish-nets|fishing|그물 더미|fishing net pile|2|1|XX
+fish-squid|fishing|말리는 오징어|squid drying rack|3|2|***/XXX
+fish-boat|fishing|작은 배|small fishing boat|3|2|XXX/XXX
+fish-buoys|fishing|부표 더미|buoy pile|1|1|X
+fish-drying|fishing|생선 건조대|fish drying table|2|1|XX
+fish-anchor|fishing|닻|anchor|1|1|X
+fish-tank|fishing|활어 수조|live fish tank|2|1|XX
+fish-light|fishing|작은 등대|small harbour light|1|3|*/*/X
+mt-spring|mountain|약수터|mineral spring|2|2|**/XX
+mt-cairn|mountain|돌탑|stone cairn tower|1|2|*/X
+mt-sign|mountain|등산 표지|hiking trail sign|1|2|*/X
+mt-bench|mountain|통나무 벤치|log bench|2|1|XX
+mt-steps|mountain|나무 계단|log trail steps|2|2|../..
+mt-rope|mountain|밧줄 난간|rope rail posts|2|1|XX
+mt-grave|mountain|봉분|grave mound|2|2|XX/XX
+mt-hives|mountain|벌통|beehives|2|1|XX

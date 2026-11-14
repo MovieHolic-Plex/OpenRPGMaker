@@ -1,0 +1,17 @@
+# id|ko|en|w|h (16px cells; stamped on roof faces, upper layer, all cells block-free decoration)
+tank-yellow|노란 물탱크|yellow rooftop water tank|2|2
+tank-blue|파란 물탱크|blue rooftop water tank|2|2
+oktap|옥탑방|rooftop room|3|2
+ac-row|실외기 줄|row of AC outdoor units|3|1
+pyeongsang|옥상 평상과 화분|rooftop bench platform with pots|3|2
+laundry|옥상 빨랫줄|rooftop clothesline|3|2
+jangdok|옥상 장독대|rooftop crock stand|2|2
+antenna|안테나|TV antenna and dish|1|2
+solar|태양광 판|solar panels|3|2
+duct|환기 덕트|ventilation duct|2|2
+door|옥상 문(계단실)|roof stair door|2|2
+sign|옥상 간판|rooftop billboard|3|2
+garden|옥상 텃밭 상자|rooftop vegetable boxes|2|1
+cooling|냉각탑|cooling tower|2|2
+skylight|천창|skylight|2|1
+tarp|파란 천막 더미|blue tarp pile|2|1

@@ -1,0 +1,39 @@
+# 조립법 — scripts/content/modern-city-street/kr_buildings_asm.py 머리말의 문법. 좌표는 조립된 그림의 화소.
+# ── 소형 20
+conv: slab:concrete:80x40 / conv-g0 conv-g1 ; ro=ac-row@6,6 skylight@44,20 ; sg=별빛마트@c,41,white:2
+bunsik: slab:green:64x40 / bunsik-g0~ bunsik-g1 ; ro=tank-yellow@4,4 garden@30,20 ; sg=달래분식@c,41,white:2
+chicken: slab:concrete:64x32 / chicken-u0 chicken-u1 / chicken-g0~ chicken-g1 ; ro=duct@4,0 ac-row@14,12 ; sg=호야치킨@c,57,wine:0
+cafe: slab:slate:64x40 / cafe-g0 cafe-g1 ; ro=garden@8,6 skylight@24,22 ; sg=카페_봄@c,41,amber:4
+pharmacy: slab:white:64x40 / pharmacy-g0~ pharmacy-g1 ; ro=ac-row@8,6 antenna@46,4 ; sg=온누리약국@c,41,leaf:1
+salon: slab:concrete:64x40 / salon-g0 salon-g1 ; ro=laundry@8,4 ; sg=미소헤어@c,41,white:2
+laundry: slab:green:48x40 / laundry-g0 ; ro=laundry@0,4 ; sg=백조세탁@c,41,white:2
+hardware: slab:panel:80x40 / hardware-g0 hardware-g1 ; ro=tarp@6,20 duct@44,4 ; sg=대성철물@c,41,ink:0
+realty: slab:concrete:48x40 / realty-g0 ; ro=antenna@6,4 garden@14,20 ; sg=부동산@c,41,white:2
+lotto: slab:slate:48x24 / lotto-g0 ; ro=tarp@8,4 ; sg=복권슈퍼@c,25,ink:0
+ricecake: slab:giwa:64x40 / ricecake-g1~ ricecake-g0 ; sg=고운떡집@c,41,white:2
+butcher: slab:white:64x40 / butcher-g0 butcher-g1 ; ro=cooling@4,4 ac-row@12,20 ; sg=한우정육@c,41,white:2
+fruit: slab:panel:80x24 / fruit-g0 fruit-g1 ; ro=tarp@40,4 ; sg=싱싱과일@c,25,white:2
+florist: slab:green:48x40 / florist-g0 ; ro=garden@4,6 garden@14,20 ; sg=꽃담@c,41,white:2
+stationery: slab:concrete:64x40 / stationery-g0~ stationery-g1 ; ro=solar@8,4 ; sg=꿈나무문구@c,41,white:2
+cobbler: slab:panel:48x16 / cobbler-g0
+policebox: slab:white:80x40 / policebox-g0 policebox-g1 ; ro=antenna@8,4 ac-row@28,6 ; sg=파출소@c,41,white:2
+guardhouse: slab:white:48x24 / guardhouse-g0 ; ro=skylight@8,4
+ticket: slab:panel:64x24 / ticket-g1~ ticket-g0 ; ro=ac-row@8,4 ; sg=매표소@c,25,blue:1
+toilet: slab:slate:64x24 / toilet-g0~ toilet-g1 ; ro=skylight@16,4 ; sg=화장실@c,25,white:2
+# ── 중형 16
+sangga3: slab:green:96x40 / sangga3-u0 sangga3-u1 / sangga3-u1 sangga3-u0 / sangga3-g1~ sangga3-g0 ; ro=tank-yellow@6,4 oktap@42,4 ; sg=달빛노래방@4,55,white:2,wine:1,40 미소치과@52,55,white:2,teal:1,40 한솔당구장@4,79,ink:0,amber:3,40 새봄수학@52,79,white:2,blue:2,40 폰수리@6,105,white:2 엄마김밥@52,105,ink:0
+sangga5: slab:concrete:96x40 / sangga5-u0 sangga5-u1 / sangga5-u1~ sangga5-u0 / sangga5-u0 sangga5-u1 / sangga5-u1~ sangga5-u0 / sangga5-g1~ sangga5-g0 ; ro=sign@4,2 ac-row@50,6 antenna@78,4 ; sg=하늘요가@4,55,white:2,azalea:1,40 별빛스터디@4,79,white:2,blue:1,40 튼튼한의원@52,79,white:2,leaf:1,40 누리PC@4,103,amber:4,ink:1,40 미래부동산@4,127,ink:0,amber:3,44 온마트@6,145,white:2 돼지갈비@54,145,white:2
+villa: slab:green:112x40 / villa-u0 villa-u1 villa-u0~ / villa-u0 villa-u1 villa-u0~ / villa-u0 villa-u1 villa-u0~ / villa-g0 villa-g1 villa-g0~ ; ro=tank-blue@6,4 laundry@40,4 jangdok@84,6
+dasedae: slab:brick:96x40 / dasedae-u0 dasedae-u0~ / dasedae-u0~ dasedae-u0 / dasedae-g0 dasedae-g1 ; ro=jangdok@4,4 pyeongsang@34,4 antenna@80,2
+hagwon: slab:concrete:96x40 / hagwon-u0 hagwon-u0 / hagwon-u0 hagwon-u0 / hagwon-u0 hagwon-u0 / hagwon-u0 hagwon-u0 / hagwon-g0 hagwon-g1 ; ro=sign@24,2 ac-row@4,22 ; sg=수학@6,55,ink:0,amber:3,36 영어@54,55,white:2,blue:2,36 논술@6,79,white:2,brick:2,36 과학@54,79,ink:0,amber:3,36 코딩@6,103,white:2,leaf:1,36 미술@54,103,white:2,azalea:1,36 독서실@6,127,white:2,slate:1,36 태권도@54,127,white:2,brick:2,36 새봄학원@c,137,white:2
+pcnorae: slab:slate:112x40 / pcnorae-u0 pcnorae-u1 pcnorae-u0 / pcnorae-u0 pcnorae-u1 pcnorae-u0 / pcnorae-u0 pcnorae-u1 pcnorae-u0 / pcnorae-g0 pcnorae-g1 pcnorae-g2 ; ro=sign@32,2 duct@4,6 ac-row@60,24 ; sg=PC@4,56,amber:4 노래방@60,56,azalea:4 당구@4,80,white:2 코인노래@60,80,amber:4 뽑기@12,113,white:2 24시@76,113,white:2
+clinic: slab:white:96x48 / clinic-u0 clinic-u0 / clinic-g0 clinic-g1 clinic-g2 ; ro=cooling@6,8 ac-row@40,10 solar@44,20 ; sg=연세의원@c,73,white:2
+bank: slab:concrete:128x48 / bank-u0*4 / bank-g0 bank-g1 bank-g0~ ; ro=skylight@48,8 ac-row@8,26 cooling@92,10 ; sg=한솔은행@c,73,white:2
+post: slab:concrete:112x48 / post-u0 post-u1 post-u0 / post-g0 post-g1 post-g2 ; ro=ac-row@8,10 antenna@88,8 skylight@44,26 ; sg=우체국@c,73,white:2
+jumin: slab:green:128x48 / jumin-u0*4 / jumin-g0 jumin-g1 jumin-g0~ ; ro=solar@8,8 ac-row@72,26 ; sg=버들동_주민센터@c,73,white:2
+church: gap:32 church-spire gap:32 / slab:slate:96x32 / church-u0 church-u1 church-u0~ / church-g0 church-g1 church-g0~ ; sg=늘푸른교회@c,100,ink:0,white:1,60
+bathhouse: gap:8 bathhouse-chimney / slab:green:112x8 / bathhouse-u0 bathhouse-u1 bathhouse-u0~ / bathhouse-g0 bathhouse-g1 bathhouse-g2 ; ro=tank-blue@40,62 laundry@64,60 ; sg=옥천목욕탕@c,105,white:2
+gosiwon: slab:concrete:96x40 / gosiwon-u0 gosiwon-u0~ / gosiwon-u0~ gosiwon-u0 / gosiwon-u0 gosiwon-u0~ / gosiwon-u0~ gosiwon-u0 / gosiwon-g1~ gosiwon-g0 ; ro=oktap@4,4 tank-yellow@58,4 ; sg=합격고시원@c,137,white:2
+hanokcafe: slab:giwa:128x48 / hanokcafe-g0 hanokcafe-g1 hanokcafe-g0~ ; sg=다온@56,57,white:2
+gas: slab:white:128x48 / gas-g0 gas-g1 gas-g2 ; ro=sign@40,10
+carcenter: slab:panel:128x40 / carcenter-g0 carcenter-g1 carcenter-g2 ; ro=tarp@8,6 duct@90,4 ; sg=형제카센터@c,41,white:2

@@ -812,6 +812,9 @@ def main():
         # 이야기 기물(보관함·잔해·쪽지·기계 장치·장부, tiledata/modern-city/objects) — 이름 핀(story:*)으로 번호를 고정해 다시 붙인다. 3/4 관문 미통과 — 오너 면제 그림.
         import bake_story
         bake_story.apply()
+        # 한국 건물 60종·옥상 기물·시골 기물(tiledata/modern-city/kr-buildings) — 이름 핀(krb:*)으로 번호를 고정해 다시 붙인다. 3/4 관문 미통과 — 오너 면제 그림.
+        import bake_kr_buildings
+        bake_kr_buildings.apply()
     rep = out['report']
     if a.selftest:
         rep['selftest'] = selftest(a.out_root)

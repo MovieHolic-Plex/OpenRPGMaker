@@ -1,0 +1,61 @@
+# id|ko|en|tier|w|h|doorDx|doorW|program|sign
+conv|편의점|convenience store|small|5|5|3|1|mc_konbini|별빛마트
+bunsik|분식집|snack bar (tteokbokki)|small|4|5|1|1|mc_restaurant|달래분식
+chicken|치킨집|fried chicken shop|small|4|6|1|1|mc_fastfood|호야치킨
+cafe|동네 카페|neighbourhood cafe|small|4|5|2|1|mc_cafe|카페봄
+pharmacy|약국|pharmacy|small|4|5|1|1|mc_pharmacy|온누리약국
+salon|미용실|hair salon|small|4|5|2|1|mc_salon|미소헤어
+laundry|세탁소|dry cleaner|small|3|5|1|1|mc_laundry|백조세탁
+hardware|철물점|hardware store|small|5|5|3|1|mc_warehouse|대성철물
+realty|부동산|real estate office|small|3|5|1|1|mc_realty|행운부동산
+lotto|복권방 겸 구멍가게|lottery and corner shop|small|3|4|0|1|mc_konbini|복권슈퍼
+ricecake|떡집|rice cake shop|small|4|5|1|1|mc_bakery_cafe|고운떡집
+butcher|정육점|butcher|small|4|5|2|1|mc_supermarket|한우정육
+fruit|과일가게|fruit shop|small|5|4|4|1|mc_supermarket|싱싱과일
+florist|꽃집|flower shop|small|3|5|2|1|mc_florist|꽃담
+stationery|문구점|stationery shop|small|4|5|1|1|mc_stationery|꿈나무문구
+cobbler|구둣방 컨테이너|cobbler container booth|small|3|3|0|1||구두수선
+policebox|파출소|police box|small|5|5|2|1|mc_police|파출소
+guardhouse|경비실|apartment guardhouse|small|3|4|2|1||경비실
+ticket|버스 매표소|bus ticket booth|small|4|4|1|1|mc_bus_terminal|매표소
+toilet|공중화장실|public toilet|small|4|4|1|1||화장실
+sangga3|3층 상가|3-storey shop building|medium|6|8|2|1|mc_restaurant|
+sangga5|5층 상가|5-storey shop building|medium|6|11|2|1|mc_office|
+villa|필로티 빌라|piloti villa|medium|7|9|3|1|mc_apartment|
+dasedae|붉은 벽돌 다세대|red-brick multiplex house|medium|6|8|4|1|mc_old_apartment|
+hagwon|학원 건물|cram school building|medium|6|10|2|1|mc_cram_school|새봄학원
+pcnorae|PC방·노래방 건물|PC room and karaoke building|medium|7|9|3|1|mc_karaoke|
+clinic|동네 의원|neighbourhood clinic|medium|6|7|2|2|mc_clinic|연세의원
+bank|은행 지점|bank branch|medium|8|7|3|2|mc_bank|한솔은행
+post|우체국|post office|medium|7|7|3|1|mc_post_office|우체국
+jumin|주민센터|community service centre|medium|8|7|3|2|mc_ward_office|주민센터
+church|교회|church with red cross spire|medium|6|10|2|2|mc_auditorium|늘푸른교회
+bathhouse|목욕탕|public bathhouse with chimney|medium|7|9|3|1|mc_sento_machi|목욕탕
+gosiwon|고시원|gosiwon lodging|medium|6|10|2|1|mc_boarding_house|고시원
+hanokcafe|한옥 카페|hanok cafe|medium|8|6|3|2|mc_tea_room|
+gas|주유소|gas station|medium|8|7|5|1|mc_gas_station|
+carcenter|카센터|car repair shop|medium|8|6|6|1|mc_warehouse|카센터
+apt-corridor|복도식 아파트 동|corridor-type apartment block|large|12|13|5|2|mc_old_apartment|101
+apt-tower|타워형 아파트 동|tower apartment block|large|9|15|4|1|mc_apartment|203
+officetel|오피스텔|officetel|large|9|13|4|1|mc_officetel|
+hospital|종합병원|general hospital|large|12|11|5|2|mc_hospital|
+elementary|초등학교 본관|elementary school|large|13|9|6|1|mc_elementary|
+mart|대형마트|hypermarket|large|13|8|5|3|mc_supermarket|
+cinema|영화관|cinema|large|10|10|4|2|mc_cinema|
+gucheong|구청|district office|large|12|10|5|2|mc_city_hall|
+library|도서관|public library|large|10|8|4|2|mc_library|
+terminal|시외버스 터미널|intercity bus terminal|large|13|8|6|1|mc_bus_terminal|
+market|재래시장 아케이드|traditional market arcade|large|11|7|5|1|mc_underground_mall|
+subway|지하철역 지상 건물|subway station building|large|9|7|4|1|mc_station|
+dept|백화점|department store|xlarge|16|12|7|2|mc_department_store|
+univ|대학 본관|university main hall|xlarge|18|11|8|2|mc_university|
+ktx|KTX 역사|high-speed rail station|xlarge|20|10|9|2|mc_jr_station|
+ballpark|야구장|baseball stadium|xlarge|20|12|9|2|mc_gym|
+convention|컨벤션 센터|convention centre|xlarge|18|9|8|2|mc_auditorium|
+broadcast|방송국|broadcasting station|xlarge|15|12|7|1|mc_tv_studio|
+factory|공장 단지|factory complex|xlarge|20|9|9|2|mc_factory|
+univhospital|대학병원|university hospital|xlarge|18|13|8|2|mc_hospital|
+tower|전망 타워|observation tower|landmark|6|16|2|2|mc_lobby|
+palacegate|한옥 궁궐 정문|hanok palace gate (invented)|landmark|14|9|6|2||
+bridgepylon|큰 다리 주탑|great bridge pylon|landmark|6|14|||| 
+clocktower|광장의 큰 시계탑|plaza clock tower|landmark|4|10||||
