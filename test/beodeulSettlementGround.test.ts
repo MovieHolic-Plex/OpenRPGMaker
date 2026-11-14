@@ -1,5 +1,6 @@
 // 버들항 정착지의 급과 바닥(editor/tools/beodeulSettlementRank.ts · beodeulCommons.ts): 바닥은 정착지의 급을 따른다.
 // 광장도 성벽도 청하지 않은 풀밭 마을은 돌 포장이 없고(길·마당이 한 몸으로 이어진 흙), 문 앞은 모두 흙이며, 집·문 도달은 그대로다.
+// 포구는 잔교가 설 물가를 곧게 편 돌 둑을 낸다(beodeulQuay.ts — 뭍을 넓히는 쪽으로만 메운다).
 // 읍(성벽 · 청한 광장)은 중심부가 돌바닥이고(beodeulTownCore.ts) 풀은 화단으로만 남으며, 광장은 길 포석 테를 두른 네모다.
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
@@ -8,6 +9,8 @@ import { planCommons, straightEarthRuns } from "@/editor/tools/beodeulCommons";
 import { readSettlementAreas, settlementGround, settlementRank } from "@/editor/tools/beodeulSettlementRank";
 import { planTownCore, squareApproaches, squareBox, squareRing, SQUARE_FLOORS } from "@/editor/tools/beodeulTownCore";
 import { townWallLayout } from "@/editor/tools/beodeulTownWall";
+import { planQuay } from "@/editor/tools/beodeulQuay";
+import { emptyWindows, planLandPlots } from "@/editor/tools/beodeulLandUse";
 import type { ToolContext } from "@/editor/tools/types";
 import type { GameMap, Project } from "@/project/types";
 
@@ -183,4 +186,74 @@ describe("읍의 포장 중심부(planTownCore)", () => {
     expect((data.doors as { reached: boolean }[]).filter((d) => !d.reached).length).toBe(0);
     expect((map.structurePlacements ?? []).filter((p) => /well/.test(p.kitId)).length).toBe(1);
   }, 240_000);
+});
+
+describe("포구의 돌 둑(planQuay)", () => {
+  // 물가: y 0~5 뭍, 6~ 바다. 열 8·9 는 물가가 한 줄 들어가 있고(y 5 가 바다) 열 14 는 한 줄 나와 있다(y 6 이 뭍)
+  const W = 24, H = 12;
+  const sea = (c: number) => { const x = c % W, y = Math.floor(c / W); return y >= 6 ? !(x === 14 && y === 6) : (y === 5 && (x === 8 || x === 9)); };
+  it("들어간 물가는 메워 앞줄을 곧게 펴고, 바다로 나온 뭍 앞에서 끝난다 — 물을 새로 파지 않는다", () => {
+    const plan = planQuay({ W, H, near: { x: 12, y: 3 }, sea, land: (c) => !sea(c), level: () => 0 })!;
+    expect(plan.front).toEqual({ x0: 2, x1: 13, y: 5 });
+    expect(plan.fill.map((c) => `${c % W},${Math.floor(c / W)}`).sort()).toEqual(["8,5", "9,5"]);
+    // 메우는 칸은 모두 바다였고, 포장하는 칸은 모두 뭍이었다
+    expect(plan.fill.every((c) => sea(c))).toBe(true);
+    expect(plan.cells.every((c) => !sea(c))).toBe(true);
+    // 앞줄 바로 아래는 모두 바다다(곧은 둑)
+    for (let x = plan.front.x0; x <= plan.front.x1; x += 1) expect(sea((plan.front.y + 1) * W + x), `둑 앞 (${x})`).toBe(true);
+    expect(plan.links.length).toBeGreaterThan(0);
+  });
+  it("바다가 없으면 둑도 없다", () => {
+    expect(planQuay({ W, H, near: { x: 12, y: 3 }, sea: () => false, land: () => true, level: () => 0 })).toBeNull();
+  });
+
+  it("포구 마을: 물에 닿는 판석 둑이 서고, 잔교가 둑에서 뻗고, 문은 모두 닿는다", () => {
+    const { project, map, data } = town({ theme: "coast", seed: 23, houseCount: 4 });
+    const quay = data.quay as { x0: number; y0: number; x1: number; y1: number; cells: number };
+    expect(quay.x1 - quay.x0 + 1).toBeGreaterThanOrEqual(7);
+    expect(quay.cells).toBeGreaterThanOrEqual(14);
+    const areas = readSettlementAreas(map, project.tilesets[TS]);
+    expect(areas.quay.length).toBeGreaterThanOrEqual(5);
+    // 잔교(널 부두)의 뭍 끝이 둑 네모 안이다
+    const pier = /잔교\((\d+),(\d+)\)/.exec((data.coastWork as string[]).join(" "))!;
+    expect(Number(pier[1])).toBeGreaterThanOrEqual(quay.x0);
+    expect(Number(pier[1])).toBeLessThanOrEqual(quay.x1);
+    expect(Number(pier[2])).toBeLessThanOrEqual(quay.y1);
+    expect((data.doors as { reached: boolean }[]).filter((d) => !d.reached).length).toBe(0);
+  }, 240_000);
+});
+
+describe("빈 땅의 쓰임(planLandPlots) — 볼 것 없는 화면에 울타리 두른 밭", () => {
+  // 40×30 맵, 왼쪽 위에 건물 하나(2~7, 2~5)뿐
+  const W = 40, H = 30;
+  const used = new Set<number>(); for (let y = 2; y < 6; y += 1) for (let x = 2; x < 8; x += 1) used.add(y * W + x);
+  const inp = { W, H, seed: 3, used: (c: number) => used.has(c), free: (c: number) => !used.has(c) };
+  it("건물이 걸리지 않는 창이 빈 창이고, 첫 밭 자리는 빈 창을 가장 많이 채운다", () => {
+    const empty = emptyWindows(inp);
+    expect(empty.length).toBe(16);
+    expect(empty.some((e) => e.x === 0 && e.y === 0)).toBe(false); // 건물이 든 창
+    const plots = planLandPlots(inp);
+    expect(plots.length).toBeGreaterThan(0);
+    expect(plots[0]!.windows).toBe(16);
+    for (let i = 1; i < plots.length; i += 1) expect(plots[i]!.windows).toBeLessThanOrEqual(plots[i - 1]!.windows);
+    // 밭(울타리 포함)을 깔면 빈 창이 없어진다
+    const p = plots[0]!; const after = new Set(used);
+    for (let j = -1; j <= p.h; j += 1) for (let i = -1; i <= p.w; i += 1) after.add((p.y + j) * W + p.x + i);
+    expect(emptyWindows({ ...inp, used: (c) => after.has(c) }).length).toBe(0);
+  });
+  it("빈 창이 없거나 빈 땅이 없으면 자리도 없다", () => {
+    expect(planLandPlots({ ...inp, used: () => true })).toEqual([]);
+    expect(planLandPlots({ ...inp, free: () => false })).toEqual([]);
+  });
+
+  it("넓은 시골 마을: 빈 땅에 밭이 더 서고, 울타리 문은 모두 길에서 닿는다 · 읍에는 서지 않는다", () => {
+    const { data } = town({ seed: 8, width: 64, height: 56, houseCount: 4 });
+    expect(data.rank).toBe("village");
+    expect(data.landPlots as number).toBeGreaterThanOrEqual(3);
+    const gates = data.fenceGates as { reached: boolean }[];
+    expect(gates.length).toBeGreaterThanOrEqual(data.landPlots as number);
+    expect(gates.filter((g) => !g.reached).length).toBe(0);
+    expect((data.doors as { reached: boolean }[]).filter((d) => !d.reached).length).toBe(0);
+    expect(town({ walls: true, form: "plaza", seed: 17 }).data.landPlots).toBeUndefined();
+  }, 480_000);
 });
