@@ -1,4 +1,5 @@
-// 코드 지형 마을 프로브 — 10요청을 코드 지형(자동 배치 또는 --layouts json, village-model-layout.mts 출력)으로 짓고 렌더·지표. 사용: bun scripts/qa/village-code-terrain-probe.mts --out <dir> [--only 1,3] [--salt N] [--layouts f]
+// 코드 지형 마을 프로브 — 10요청을 코드 지형(자동 배치 또는 --layouts json, village-model-layout.mts 출력)으로 짓고 렌더·지표. 사용: bun scripts/qa/village-code-terrain-probe.mts --out <dir> [--only 1,3] [--salt N] [--layouts f] [--key 게임열쇠]
+// --key: 그 게임 열쇠의 겉모습(집 벌·바닥·숲)으로 짓는다(조수 실행과 같은 길). 판마다 <n>-C.data.json 을 남긴다(village-yard-measure.mts 가 읽는다).
 import fs from "node:fs";
 import { renderMapPng } from "../../scripts/qa-game/render.mts";
 import { runTool } from "../../src/editor/tools/index.ts";
@@ -23,6 +24,7 @@ const OUT = arg("out", "/tmp/vh/code1"); fs.mkdirSync(OUT, { recursive: true });
 const only = arg("only", "").split(",").filter(Boolean).map(Number);
 const layouts = arg("layouts", "") ? JSON.parse(fs.readFileSync(arg("layouts", ""), "utf8")) : {};
 const salt = Number(arg("salt", "0"));
+const key = arg("key", "");
 
 const base = createBlankProject() as any; ensureBundledTilesets(base);
 const baseJson = JSON.stringify(base);
@@ -31,7 +33,7 @@ for (const c of CASES) {
   if (only.length && !only.includes(c.n)) continue;
   const { args: a0 } = villageArgs({ type: "village", ...c.spec } as any);
   const args: any = { ...a0, ...(c.landform ? { landform: c.landform } : {}), seed: c.seed + salt, id: `v${c.n}C`, name: c.spec.name, ...(layouts[c.n] ? { layout: layouts[c.n].layout, terrainSeed: layouts[c.n].terrainSeed, width: layouts[c.n].width, height: layouts[c.n].height } : {}) };
-  const ctx = { project: JSON.parse(baseJson) };
+  const ctx = { project: JSON.parse(baseJson), ...(key ? { assistantRun: true, lookKey: key } : {}) };
   const t0 = Date.now();
   const r = runTool(ctx as any, "author_beodeul_town", args);
   if (!r.ok) { console.log(c.n, "FAIL", r.summary); rows.push({ n: c.n, ok: false, summary: r.summary }); continue; }

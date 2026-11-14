@@ -192,6 +192,8 @@ export interface BeodeulVillageOptions {
   codeTerrain?: CodeTerrain;
   /** 코드 지형 위 자리(조수가 그림·요약을 보고 고른다) — 함수는 놓을 수 있는지·길 연결·도달만 검사하고 옮긴 자리·실패를 보고한다. */
   layout?: VillageLayout;
+  /** 자동 배치의 마당 후보를 좋은 순서로 몇째부터 쓸까(기본 0). 고른 마당이 계단·문 길을 못 내면 시공기가 스스로 다음 것으로 처음부터 다시 짓고, 후보가 없으면 예전 고리 배치로 짓는다. */
+  yardTry?: number;
 }
 /** 지형 먼저: 맨 윗단 길의 높은 곳 건물(망루가 붙은 집·예배당·저택 · 사원·성자 무덤 · 회관·목욕집 · 사당). */
 const TIER_LANDMARKS: Partial<Record<BeodeulVillageTheme, string[]>> = {
@@ -797,7 +799,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const small = [...housePool, ...have(spec.houses).filter(doorAtBottom).map(K)].filter((k) => !first.includes(k)).sort((a, b) => (houseUse.get(a.id) ?? 0) - (houseUse.get(b.id) ?? 0) || a.w * a.h - b.w * b.h).slice(0, 3);
       // 고리 거리가 바깥 반복이라 거리 0 에 맞는 작은 대체 집이 거리 1 의 보통 집을 이겼다(2026-10-30 실조수 opus: medium·large 요청 6채가 모두 폭 4) —
       // 요청 크기 무리만으로 4칸 안을 먼저 찾고, 없을 때만 작은 집까지 넣어 9칸까지 찾는다
-      const sp = ((want as { kind?: string }).kind ? place("house", first, want, 4) : null) ?? place("house", [...first, ...small], want, want.maxR);
+      const sp = ((want as { kind?: string }).kind ? place("house", first, want, Math.min(4, want.maxR ?? 4)) : null) ?? place("house", [...first, ...small], want, want.maxR);
       if (sp) { last.push(sp.k.id); if (last.length > 2) last.shift(); houseUse.set(sp.k.id, (houseUse.get(sp.k.id) ?? 0) + 1); classUse.set(classOf(sp.k), (classUse.get(classOf(sp.k)) ?? 0) + 1); }
       return sp;
     };
@@ -866,16 +868,17 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         },
         seat: (role, want) => { frontOnYard = !!want.corner; const sp = role === "house" ? seatHouse(want) : place(role, kitsOf(role === "anchor" ? anchorIds : LOW_WORKS[theme] ?? []), want, want.maxR); frontOnYard = false; return sp ? { x: sp.x, y: sp.y, w: sp.k.w, h: sp.k.h, front: sp.front } : null; },
         routes: (gc, on) => {
-          let ex = 0, hs = 0, ot = 0, lm = !spots.some((sp) => sp.role === "landmark"); network.clear();
-          for (const e of exits) { const p = routePath(grid(true), [gc], edgeOf(e), opts(true)) ?? routePath(grid(false), [gc], edgeOf(e), opts(false)) ?? routePath(grid(true), [gc], edgeOf(e, false), opts(true)) ?? routePath(grid(false), [gc], edgeOf(e, false), opts(false)); if (p) { ex += 1; for (const c of p) network.add(c); } }
-          network.add(gc); for (const c of on) network.add(c);
+          let ex = 0, hs = 0, ot = 0, climbs = 0, lm = !spots.some((sp) => sp.role === "landmark"); network.clear();
+          const walk = (p: number[]) => { for (let i = 0; i < p.length; i += 1) { network.add(p[i]!); if (i && lv[p[i]!] !== lv[p[i - 1]!]) climbs += 1; } };
+          for (const e of exits) { const p = routePath(grid(true), [gc], edgeOf(e), opts(true)) ?? routePath(grid(false), [gc], edgeOf(e), opts(false)) ?? routePath(grid(true), [gc], edgeOf(e, false), opts(true)) ?? routePath(grid(false), [gc], edgeOf(e, false), opts(false)); if (p) { ex += 1; walk(p); } }
+          network.add(gc);
           for (const sp of [...spots].sort((a, b) => Math.hypot(a.front.x - (gc % W), a.front.y - Math.floor(gc / W)) - Math.hypot(b.front.x - (gc % W), b.front.y - Math.floor(gc / W)))) {
-            const f = idx(sp.front.x, sp.front.y), p = network.has(f) ? [f] : routePath(grid(false), [f], (c) => network.has(c), opts(false));
-            if (p) { for (const c of p) network.add(c); if (sp.role === "house") hs += 1; else if (sp.role === "landmark") lm = true; else ot += 1; }
+            const f = idx(sp.front.x, sp.front.y), p = network.has(f) || on.has(f) ? [f] : routePath(grid(false), [f], (c) => network.has(c) || (on.has(c) && lv[c] === lv[f]), opts(false));
+            if (p) { walk(p); if (sp.role === "house") hs += 1; else if (sp.role === "landmark") lm = true; else ot += 1; }
           }
-          network.clear(); return { exits: ex, houses: hs, others: ot, landmark: lm };
+          network.clear(); return { exits: ex, houses: hs, others: ot, landmark: lm, climbs };
         },
-      }, { houses: houseWants.length, anchor: !!layout.anchor, work: !!layout.work, loose: houseWants, wide: W >= H, wetOk: theme === "swamp", ...(form === "plaza" ? { plaza: plazaLook ?? { rx: 5, ry: 3 } } : {}) });
+      }, { houses: houseWants.length, anchor: !!layout.anchor, work: !!layout.work, loose: houseWants, wide: W >= H, wetOk: theme === "swamp", skip: options.yardTry ?? 0, ...(form === "plaza" ? { plaza: plazaLook ?? { rx: 5, ry: 3 } } : {}) });
       for (let c = 0; c < W * H; c += 1) if (occ[c] === PLAZA_HOLD) occ[c] = FREE;
       if (yard) { gx = yard.gather.x; gy = yard.gather.y; g0 = idx(gx, gy); Object.assign(layout, { gather: { ...layout.gather, x: gx, y: gy }, fields: yard.fields, yard }); }
     }
@@ -898,7 +901,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     for (const sp of byDist) {
       const f = idx(sp.front.x, sp.front.y), bit = yardBits.find((cs) => cs.includes(f));
       if (yardNet.has(f) || (network.has(f) && !bit)) continue;
-      const path = routePath(grid(false), [f], (c) => (network.has(c) && !bit?.includes(c)) || yardNet.has(c), opts(false));
+      // 마당 칸은 같은 단의 문에만 닿을 자리다 — 다른 단의 문은 길망으로 가서 이미 난 오름길에 합친다(문마다 따로 오르면 계단이 나란히 서서 서로를 막는다)
+      const path = routePath(grid(false), [f], (c) => (network.has(c) && !bit?.includes(c)) || (yardNet.has(c) && lv[c] === lv[f]), opts(false));
       if (!path) {
         report.roadsFailed.push(`${sp.role}(${sp.front.x},${sp.front.y}) 문 앞 길`);
         if (sp.role !== "landmark") { for (let j = 0; j < sp.k.h; j += 1) for (let i = 0; i < sp.k.w; i += 1) occ[idx(sp.x + i, sp.y + j)] = FREE; occ[f] = FREE; spots.splice(spots.indexOf(sp), 1); }
@@ -1467,6 +1471,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     for (const c of [...rampCells]) if (!ramps[c]) rampCells.delete(c);
     if (rampFails) warnings.push(`길이 단을 건너는 곳 ${rampFails}군데에 깎은 계단을 놓지 못했다(${[...failWhy].map(([k, v]) => `${k} ${v}`).join(" · ")}: ${failAt.slice(0, 6).join(", ")}) — 그 길은 단에서 끊긴다.`);
   }
+  // 고른 마당이 계단이나 문 길을 못 냈으면 다음 마당 후보로 처음부터 다시 짓는다(후보가 떨어지면 예전 고리 배치) — 여기까지는 계획뿐이라 맵에 칠한 것이 없다
+  if (codePlan?.layout.yard && (rampFails > 0 || codePlan.report.roadsFailed.length > 0)) return buildBeodeulVillage(draft, mapId, theme, seed, formArg, terrainArg, forestType, { ...options, yardTry: (options.yardTry ?? 0) + 1 });
   rel = { width: W, height: H, levels: Array.from(lv), ramps: ramps.slice() };
   invalidateReliefSlopes(rel);
 
@@ -2337,6 +2343,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
 
   planStep("집 자리");
+  // 자동 배치의 마당은 살림 소품이 앉지 않게 잠깐 비워 둔다(우물·좌판은 이미 섰다) — 소품 밑만 흙으로 칠해져 마당 귀퉁이에 한 칸 혹이 남았다. 흙 마당을 칠하기 직전에 푼다.
+  const yardHeld = (codePlan?.layout.yard?.cells ?? []).filter((c) => occ[c] === FREE);
+  for (const c of yardHeld) occ[c] = CLEAR;
   // 울타리 계획: 사각 테두리 칸마다 조각 종류 — 네 모서리는 모서리 기둥(tl·tr·bl·br), 위·아래 줄은 가로, 옆은 세로.
   // 문 한 칸은 길에 가까운 변(모서리 옆 칸은 피한다)에 비우고, 문 양옆은 난간이 기둥에서 끝나는 끝 조각(endW·endE·endN·endS)이다.
   // (2026-10-11 사용자 「울타리 외곽 마감이 별로, 이어져 있다는 느낌이 안 든다」 — 옛 조각 셋은 위 모서리가 반 칸 삐져나가고 세로와 끊겼다.)
@@ -2475,6 +2484,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
   planStep("살림 소품");
   // 흙 마당(beodeulCommons.ts): 모이는 곳을 품은 다진 흙 한 덩이 · 넓어졌다 좁아지는 길 곁 · 문 앞 닳은 자리 — 밭·숲이 자리를 잡기 전에 흙으로 잡는다.
+  for (const c of yardHeld) if (occ[c] === CLEAR) occ[c] = FREE;
   const earthUnder: number[] = [];
   if (ground.commons) {
     const gpt = codePlan ? codePlan.g : gatherDoor ? { x: gatherDoor.x, y: gatherDoor.y + gather.s.width + 1 } : null;

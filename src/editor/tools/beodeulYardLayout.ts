@@ -11,7 +11,7 @@ import type { LayoutPoint } from "./beodeulCodeLayout";
 
 export interface YardRect { x0: number; y0: number; x1: number; y1: number }
 /** 자리 요청: corner 가 있으면 (x,y)는 건물 아랫줄의 왼쪽(sw)·오른쪽(se) 모서리, 없으면 건물 가운데. maxR 을 주면 그 고리 안에서만 찾고 못 찾아도 실패로 적지 않는다. */
-export interface YardWant extends LayoutPoint { corner?: "sw" | "se"; maxW?: number; maxR?: number; /** 이 단에만 앉힌다. */ tier?: number }
+export interface YardWant extends LayoutPoint { corner?: "sw" | "se"; maxW?: number; maxR?: number; /** 이 단에만 앉힌다. */ tier?: number; /** 집 크기 무리(좁은 터에서는 small). */ kind?: "small" }
 export interface YardSeat { x: number; y: number; w: number; h: number; front: LayoutPoint }
 export interface YardPlan extends YardRect {
   level: number;
@@ -43,8 +43,8 @@ export interface YardEnv {
   seat: (role: "anchor" | "house" | "work", want: YardWant) => YardSeat | null;
   /** 높은 곳 건물을 걷고 (x,y) 가까이에 다시 앉힌다 — 못 앉히면 false(걷은 채로 둔다, 부른 쪽이 mark 로 되돌린다). */
   reseatLandmark: (p: LayoutPoint) => boolean;
-  /** 지금 앉힌 건물로 길이 나는가: 모이는 곳 g 에서 큰길이 닿는 맵 가장자리 수 · 문 앞에서 길망(또는 닿은 마당 칸 on)까지 길이 나는 집 수 · 여관·일터 수. */
-  routes: (g: number, on: ReadonlySet<number>) => { exits: number; houses: number; others: number; landmark: boolean };
+  /** 지금 앉힌 건물로 길이 나는가: 모이는 곳 g 에서 큰길이 닿는 맵 가장자리 수 · 문 앞에서 길망(또는 닿은 마당 칸 on)까지 길이 나는 집 수 · 여관·일터 수 · 높은 곳 건물 · 길이 단을 건너는 횟수(계단 수). */
+  routes: (g: number, on: ReadonlySet<number>) => { exits: number; houses: number; others: number; landmark: boolean; climbs: number };
   rand: () => number;
 }
 
@@ -71,9 +71,10 @@ type Cand = { r: YardRect; s: number; lobes: YardRect[]; level: number };
 
 /**
  * 마당 후보: 한 단 마른 네모이고, 북쪽에 집 줄이 설 깊이가 있고, 옆으로 날개를 낼 수 있는 자리. 단마다 가장 좋은 하나 + 그 단의 둘째(첫째에서 9칸 넘게 떨어진 것).
- * 땅이 정한다 — 물가 좁은 둑에 모이는 곳이 잡혔어도 마당은 집이 설 수 있는 터로 간다. plaza(판석 광장 마을)는 광장 크기의 네모, 날개 없음.
+ * 땅이 정한다 — 물가 좁은 둑에 모이는 곳이 잡혔어도 마당은 집이 설 수 있는 터로 간다. plaza(판석 광장 마을)는 광장 크기의 네모(날개는 광장 옆 맨땅 앞마당).
+ * compact: 좁은 터용 작은 마당만.
  */
-function yardCandidates(t: CodeTerrain, g: LayoutPoint, level: number, houses: number, rand: () => number, free: (c: number) => boolean, opts: { plaza?: { rx: number; ry: number }; wetOk?: boolean }): Cand[] {
+function yardCandidates(t: CodeTerrain, g: LayoutPoint, level: number, houses: number, rand: () => number, free: (c: number) => boolean, opts: { plaza?: { rx: number; ry: number }; wetOk?: boolean }, compact: boolean): Cand[] {
   const { W, H } = t;
   const inMap = (x: number, y: number) => x >= 1 && y >= 1 && x < W - 1 && y < H - 2;
   const search = (L: number, sizes: [number, number][]): Cand[] => {
@@ -96,7 +97,7 @@ function yardCandidates(t: CodeTerrain, g: LayoutPoint, level: number, houses: n
       const north = run(r.x0 - 1, r.x1 + 1, r.y0 - 1, 8);
       // 날개: 가운데 네모 옆으로 두세 줄 내려앉은 덩이 — 그 북쪽 가장자리에도 집이 선다
       const lobes: YardRect[] = [];
-      if (!opts.plaza) for (const side of [-1, 1] as const) {
+      for (const side of [-1, 1] as const) {
         let pick: { l: YardRect; s: number } | null = null;
         for (const off of [3, 2, 4]) for (const lw of [6, 7, 8, 9, 10, 11]) for (const ext of [0, 1]) {
           const l = side < 0 ? { x0: r.x0 - lw, y0: r.y0 + off, x1: r.x0 - 1, y1: r.y1 + ext } : { x0: r.x1 + 1, y0: r.y0 + off, x1: r.x1 + lw, y1: r.y1 + ext };
@@ -124,7 +125,7 @@ function yardCandidates(t: CodeTerrain, g: LayoutPoint, level: number, houses: n
   const tiers = [level, ...[...new Set(t.areas.filter((a) => a.inner >= 12).map((a) => a.level))].filter((L) => L !== level)].slice(0, 4);
   const out: Cand[] = [];
   for (const L of tiers) {
-    let list = search(L, sizes); if (!list.length) list = search(L, small);
+    let list = compact ? [] : search(L, sizes); if (!list.length) list = search(L, small);
     if (!list.length) continue;
     // 단마다 서로 9칸 넘게 떨어진 것 셋까지(모이는 곳의 단) · 둘까지(다른 단)
     const picked: Cand[] = [];
@@ -134,7 +135,8 @@ function yardCandidates(t: CodeTerrain, g: LayoutPoint, level: number, houses: n
   return out;
 }
 
-type YardAsk = { houses: number; anchor: boolean; work: boolean; loose: readonly LayoutPoint[]; wide: boolean; plaza?: { rx: number; ry: number }; wetOk?: boolean };
+type YardAsk = { houses: number; anchor: boolean; work: boolean; loose: readonly LayoutPoint[]; wide: boolean; plaza?: { rx: number; ry: number }; wetOk?: boolean; /** 작은 집만(좁은 터). */ compact?: boolean;
+  /** 좋은 순서로 몇째 마당을 쓸까(0 = 가장 좋은 것) — 고른 마당이 뒤 단계(계단 놓기)에서 깨지면 시공기가 다음 것으로 다시 짓는다. */ skip?: number };
 
 /** 후보 마당 하나에 건물을 앉힌다: 여관이 가운데 네모 북쪽 줄, 집은 날개 북쪽 줄과 여관 곁, 남는 집은 무리, 일터·밭은 마을 몸 바깥. */
 function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want: YardAsk): { plan: YardPlan; houses: YardSeat[] } {
@@ -173,7 +175,7 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
         if (room < 4) { miss = 2; break; }
         // 줄이 자로 그은 선이 되지 않게 한 칸씩 번갈아 물러앉힌다(여관은 마당에 바로)
         const stag = role === "anchor" ? 0 : (n + (env.rand() < 0.5 ? 1 : 0)) % 2;
-        const sp = env.seat(role, { x: cursor, y: to.y0 - 1 - stag, corner: dir > 0 ? "sw" : "se", maxW: room, maxR: 1 });
+        const sp = env.seat(role, { x: cursor, y: to.y0 - 1 - stag, corner: dir > 0 ? "sw" : "se", maxW: room, maxR: 1, ...(want.compact && role === "house" ? { kind: "small" as const } : {}) });
         n += 1;
         if (!sp) { miss += 1; cursor += dir * 2; continue; }
         if (role === "house") houses.push(sp);
@@ -199,7 +201,7 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
   for (let k = 0; k < 4 && left > 0; k += 1) {
     let made = 0;
     for (let size = left <= 3 ? left : Math.min(3, Math.ceil(left / 2)); size >= 1 && !made; size -= 1) {
-      const cw = size === 1 ? 6 : size === 2 ? 11 : 15, ch = 2;
+      const cw = want.compact ? (size === 1 ? 5 : size === 2 ? 10 : 14) : size === 1 ? 6 : size === 2 ? 11 : 15, ch = 2;
       let best: { r: YardRect; s: number } | null = null;
       for (let y0 = 8; y0 + ch < H - 3; y0 += 1) for (let x0 = 2; x0 + cw < W - 2; x0 += 1) {
         const L = t.levels[y0 * W + x0]!;
@@ -242,14 +244,14 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
     workAt = behind.findIndex((p) => !!env.seat("work", { ...p, maxR: 4 }));
     if (workAt < 0 && env.seat("work", { ...behind[0]!, maxR: 12 })) workAt = 0;
   }
-  plan.fields = behind.filter((_, i) => i !== workAt).slice(0, 3);
+  plan.fields = behind.filter((_, i) => i !== workAt).slice(0, 2);
   plan.cells = yardCells(plan, W);
   return { plan, houses };
 }
 
 /**
- * 마당 먼저 배치. 부를 때는 예전 고리 배치가 이미 앉아 있다(견줄 기준). 후보 마당마다 앉혀 보고, 큰길·문 길·집 수가 기준보다 나빠지지 않는 것 가운데
- * 마당에 문을 낸 집이 가장 많은 것으로 남긴다. 맞는 것이 없으면 기준 그대로 두고 null.
+ * 마당 먼저 배치. 부를 때는 예전 고리 배치가 이미 앉아 있다(견줄 기준). 후보 마당마다 앉혀 보고, 큰길·문 길·집 수·높은 곳 건물의 길이 기준보다 나빠지지 않는 것 가운데
+ * 마당에 문을 낸 집이 가장 많은 것으로 남긴다(want.skip 째). 셋(집이 넷보다 적으면 전부)에 못 미치면 작은 마당·작은 집으로 한 번 더 본다. 맞는 것이 없으면 기준 그대로 두고 null.
  */
 export function layYardVillage(t: CodeTerrain, g: LayoutPoint, level: number, env: YardEnv, want: YardAsk): YardPlan | null {
   const { W } = t;
@@ -257,38 +259,41 @@ export function layYardVillage(t: CodeTerrain, g: LayoutPoint, level: number, en
   const base = env.routes(g.y * W + g.x, new Set());
   env.clear();
   const cleared = env.mark();
-  let best: { plan: YardPlan; s: number; keep: () => void } | null = null;
-  for (const cand of yardCandidates(t, g, level, want.houses, env.rand, env.free, want)) {
-    cleared();
-    const { plan, houses } = seatYard(t, cand, g, env, want);
-    const gi = plan.gather.y * W + plan.gather.x;
-    const got = env.routes(gi, new Set(yardParts(plan.cells, W, gi)[0] ?? []));
-    if (got.exits < base.exits || got.houses < base.houses || got.others < base.others) continue;
-    const core = [...rectCells(plan, W), ...plan.lobes.flatMap((l) => rectCells(l, W))];
-    const onTier = houses.filter((s) => t.levels[s.front.y * W + s.front.x] === plan.level);
-    const near = onTier.filter((s) => core.some((c) => Math.max(Math.abs((c % W) - s.front.x), Math.abs(Math.floor(c / W) - s.front.y)) <= 6)).length;
-    const s = 12 * Math.min(near, 4) + 4 * onTier.length + 3 * plan.frame.filter((f) => f.at === "yard").length + (plan.level === level ? 6 : 0)
-      - 0.4 * Math.hypot(plan.gather.x - g.x, plan.gather.y - g.y) + 5 * (got.houses - base.houses);
-    if (!best || s > best.s) best = { plan, s, keep: env.mark() };
-  }
-  if (!best) { start(); return null; }
-  best.keep();
-  // 높은 곳 건물에 길이 닿지 않으면(제 몸이 터의 목을 막은 자리) 높은 단의 다른 터로 옮겨 본다 — 닿는 자리가 없으면 그대로 둔다
-  const plan = best.plan, gi = plan.gather.y * W + plan.gather.x, on = new Set(yardParts(plan.cells, W, gi)[0] ?? []);
-  const now = env.routes(gi, on);
-  if (!now.landmark) {
+  type Routes = ReturnType<YardEnv["routes"]>;
+  /** 높은 곳 건물에 길이 닿지 않으면(제 몸이 터의 목을 막은 자리) 높은 단의 다른 터로 옮겨 본다. */
+  const withLandmark = (gi: number, on: ReadonlySet<number>, now: Routes): Routes => {
+    if (now.landmark) return now;
     const keep = env.mark();
-    let fixed = false;
-    for (const a of [...t.areas].filter((a0) => a0.inner >= 20 && a0.level > 0).sort((a0, b0) => b0.level - a0.level || b0.inner - a0.inner).slice(0, 5)) {
+    for (const a of [...t.areas].filter((a0) => a0.inner >= 20 && a0.level > 0).sort((a0, b0) => b0.level - a0.level || b0.inner - a0.inner).slice(0, 4))
       for (const p of [{ x: a.cx, y: a.cy }, { x: Math.round((a.x0 + a.cx) / 2), y: a.cy }, { x: Math.round((a.x1 + a.cx) / 2), y: a.cy }]) {
         keep();
         if (!env.reseatLandmark(p)) continue;
         const got = env.routes(gi, on);
-        if (got.landmark && got.exits >= now.exits && got.houses >= now.houses && got.others >= now.others) { fixed = true; break; }
+        if (got.landmark && got.exits >= now.exits && got.houses >= now.houses && got.others >= now.others) return got;
       }
-      if (fixed) break;
+    keep();
+    return now;
+  };
+  const good: { plan: YardPlan; s: number; near: number; keep: () => void }[] = [];
+  const goal = Math.min(3, want.houses);
+  for (const compact of [false, true]) {
+    if (compact && (want.plaza || good.some((b) => b.near >= goal))) break;
+    for (const cand of yardCandidates(t, g, level, want.houses, env.rand, env.free, want, compact)) {
+      cleared();
+      const { plan, houses } = seatYard(t, cand, g, env, { ...want, compact });
+      const gi = plan.gather.y * W + plan.gather.x, on = new Set(yardParts(plan.cells, W, gi)[0] ?? []);
+      const got = withLandmark(gi, on, env.routes(gi, on));
+      if (got.exits < base.exits || got.houses < base.houses || got.others < base.others || (base.landmark && !got.landmark)) continue;
+      const core = [...rectCells(plan, W), ...plan.lobes.flatMap((l) => rectCells(l, W))];
+      const onTier = houses.filter((s) => t.levels[s.front.y * W + s.front.x] === plan.level);
+      const near = onTier.filter((s) => core.some((c) => Math.max(Math.abs((c % W) - s.front.x), Math.abs(Math.floor(c / W) - s.front.y)) <= 6)).length;
+      const s = 12 * Math.min(near, 4) + 4 * onTier.length + 3 * plan.frame.filter((f) => f.at === "yard").length + (plan.level === level ? 6 : 0) - (compact ? 4 : 0)
+        - 0.4 * Math.hypot(plan.gather.x - g.x, plan.gather.y - g.y) + 5 * (got.houses - base.houses);
+      good.push({ plan, s, near, keep: env.mark() });
     }
-    if (!fixed) keep();
   }
-  return plan;
+  const best = good.sort((a, b) => b.s - a.s)[want.skip ?? 0];
+  if (!best) { start(); return null; }
+  best.keep();
+  return best.plan;
 }
