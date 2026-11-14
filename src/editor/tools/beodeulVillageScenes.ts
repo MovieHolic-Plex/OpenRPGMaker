@@ -118,7 +118,8 @@ function anchorScore(host: BeodeulSceneHost, ctx: AnchorContext, at: SceneAnchor
       let near = 99; for (let y = b.y0 - 1; y <= b.y1 + 1; y += 1) for (let x = b.x0 - 1; x <= b.x1 + 1; x += 1) if (inMap(x, y)) near = Math.min(near, walk[y * W + x]!);
       return near > 10 ? Infinity : near * 1.2 + g * 0.5 + Math.abs(b.y0 - door.y) * 0.3;
     }; }
-    const w = host.work!; return (b) => { const g = gap(b, w); return g > 5 ? Infinity : g; };
+    // 일터 건물이 없는 작은 마을(집 셋): 일터 자리에서 아홉 칸 안, 집에서 다섯 칸 안 — 가까울수록 좋다.
+    const w = host.work!; return (b) => { const g = gap(b, w); return g > 9 || homes(b) > 5 ? Infinity : g + homes(b) * 0.3; };
   }
   if (anchor === "commons" || anchor === "plaza") {
     // 마당 칸을 받았으면 그 가장자리(네모는 마당 밖에 걸치고 둘레가 마당에 닿는다), 아니면 모이는 곳에서 두세 칸.

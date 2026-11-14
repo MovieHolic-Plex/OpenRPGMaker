@@ -735,10 +735,10 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 출구만 준 layout(요청의 「서쪽 길 끝 동굴」 → spec.exits)은 자리를 준 것이 아니다 — 자리는 자동, 출구는 그대로(2026-10-30 던전 작업자 dd1030g)
     const given = options.layout && (options.layout.gather || options.layout.houses?.length || options.layout.landmark || options.layout.anchor) ? options.layout : null;
     const auto0 = given ? null : autoLayout(codeT, seed, Number.isFinite(houseLimit) ? houseLimit : (() => {
-      // 집 수: 이름으로 청한 종류는 급이 정한다. 빌더가 고른 종류는 빌더가 원래 뽑던 수를 그대로 둔다(외딴 마을만 다섯까지) —
-      // 급에 맞춰 한 채를 더하자 좁은 단에서 길이 달라져 계단 하나가 서지 못했다(탐침 coast-plaza-terraces-11: 문 앞 못 닿음 0 → 3).
+      // 집 수: 이름으로 청한 종류는 급이 정한다. 빌더가 고른 종류는 빌더가 원래 뽑던 수를 그대로 둔다 —
+      // 급에 맞춰 집 수를 바꾸자 길이 달라져 좁은 단에서 계단 하나가 서지 못하고(탐침 coast-plaza-terraces-11: 문 앞 못 닿음 0 → 3) 윗단에 닿는 길이 줄었다.
       const n = ri(5, 8);
-      return !villageKind ? n : options.kind ? kindHouseCount : villageKind.rank === "hamlet" ? Math.min(n, 5) : villageKind.rank === "town" ? Math.max(n, kindHouseCount) : n;
+      return villageKind && options.kind ? kindHouseCount : n;
     })(), theme === "river" || theme === "coast" || !!options.fishing);
     const layout: VillageLayout = given ?? { ...auto0!, ...(options.layout?.exits?.length ? { exits: options.layout.exits } : {}) };
     const report = { auto: !given, moved: [] as string[], failed: [] as string[], roadsFailed: [] as string[], requested: { houses: layout.houses?.length ?? 0 } };
