@@ -1423,6 +1423,10 @@ sys.path.insert(0, os.path.join(ROOT, 'scripts/content/modern-city-street'))
 import refs_story
 story_reference = refs_story.references(ROOT)
 if story_reference: CATS_OUT.append(story_reference)
+# 한국 건물·옥상·시골 기물 용도(mc-kr-buildings)는 scripts/content/modern-city-street/refs_kr_buildings.py 가 따로 만든다 — 같은 방식으로 저장본을 다시 붙인다.
+import refs_kr_buildings
+kr_buildings_reference = refs_kr_buildings.references(ROOT)
+if kr_buildings_reference: CATS_OUT.append(kr_buildings_reference)
 os.makedirs(MD_DIR, exist_ok=True)
 for fn in os.listdir(MD_DIR):
     if fn.endswith('.md'): os.remove(os.path.join(MD_DIR, fn))

@@ -40,7 +40,8 @@ describe("modern_city 이야기 기물", () => {
         expect(ts.priority[tile]).toBe(item.place === "decal" ? "lower" : "upper");
       }));
     }
-    expect(next).toBe(ts.count);
+    expect(next).toBe(FIRST + 8); // 이 묶음 여덟 칸 — 그 뒤에는 다른 묶음(한국 건물 등)이 덧붙는다
+    expect(ts.count).toBeGreaterThanOrEqual(next);
     expect((ts.referenceDocuments ?? []).some((category) => category.documents.some((doc) => doc.id === "mc-story-objects"))).toBe(true);
   });
 
