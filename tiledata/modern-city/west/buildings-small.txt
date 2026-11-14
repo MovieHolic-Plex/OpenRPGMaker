@@ -4,9 +4,9 @@
 # O|rooftop object ids stamped on the roof face (left to right)        X|part|centre x px|bottom y px relative to the roof/front line (positive = down)
 # P|part|w|h|brief          (a part is drawn once; wall parts fill the canvas edge to edge)
 # M|roof material|brief     (32x32 seamless)
-M|tar|Flat tar-and-gravel roof seen from straight above: dark warm grey bitumen (ramp tar, tones 1-4) densely strewn with gravel specks of single pixels in lighter and darker tones, a few tar-seam lines and patches one tone darker, a faint stain or two. Reads as rough felt, not as a flat fill.
-M|gravel|Flat pale pebble-ballast roof seen from above: small 1-2 px pebbles in 4-5 tones of ramps stone and concrete, each pebble with a lighter top-left pixel and a darker lower-right pixel, evenly dense.
-M|clay|Red clay roof tiles seen from above (ramp tile): individual tiles 4 px wide in courses 4 px tall, staggered by 2 px per course; each tile has an orange lit top-left (tones 5-6), a red body (tones 3-4) and a maroon gap at its right and lower edge (tones 1-2). Like the reference roof.
+M|tar|Flat tar-and-felt roof seen from straight above (ramp tar, tones 2-3 as the calm base): felt sheets 16 px wide with a 1 px seam line one tone darker between them (seams offset between rows 16 px tall), a few 2-4 px patches of the adjacent tone, two small tar repair patches one tone darker. Calm — at most 8% of the pixels differ from the base, only adjacent tones, no salt-and-pepper.
+M|gravel|Flat pale gravel-ballast roof seen from above (ramp stone tones 3-4 as the calm base): a sparse scatter of small pebble clusters of 2-3 px in the ADJACENT tone only, covering at most 8% of the area, plus two faint 1 px drain lines one tone darker crossing the tile. Calm and light; no salt-and-pepper, no dark dots, no joints.
+M|clay|Red clay roof tiles seen from above (ramp tile), built exactly like the reference roof: countable tiles 4 px wide x 4 px tall in rows, each row offset by 2 px; every tile = a 1 px orange light line along its top (tone 5), two rows of red body (tones 3-4, the left pixel lighter), and a 1 px maroon gap line below it and at its right edge (tone 1-2, never ink). No blocks bigger than 4 px, no black.
 M|terracotta|Sun-bleached orange terracotta roof tiles seen from above (ramps tile tones 4-6 and ochre tones 2-4, gaps in tile 2): individual tiles 4 px wide in courses 4 px tall, staggered by 2 px; a few single tiles darker or mossy (leaf 1).
 M|slate|Blue-grey slate roof seen from above (ramp slate, with a few stone tones): individual rectangular slates 4 px wide in courses 4 px tall, staggered joints; each slate with a lighter top edge and a dark lower-right gap (slate 0-1); some slates one tone lighter or with a lichen pixel.
 M|copper|Verdigris copper standing-seam roof seen from above (ramp copper): vertical raised seams every 8 px (a light line with a dark line to its right), between them streaky green patina in 4-5 tones with darker drip stains, horizontal sheet joints every 16 px offset between bays.
@@ -65,9 +65,9 @@ P|dormer-slate|16|20|A small roof dormer seen from the front-above: its own litt
 
 B|laundromat|빨래방|laundromat|na|small|4|1|3|gravel|konbini|0|0|빨래방;코인 세탁소;세탁소|Blue-tiled coin laundry with round washer doors in the window
 F|laundromat-door laundromat-window
-O|roof-ac-unit roof-vent-mushroom roof-duct-run
-P|laundromat-door|32|48|Ground floor left half of a coin laundry: pale blue ceramic tile wall; a glass door with a steel frame (16 x 28 at x 0-15, bottom on the last row); right of it a tall window showing a stack of two washing machines with ROUND dark doors; white sign band across rows 2-9 with three blue bubbles pictogram.
-P|laundromat-window|32|48|Ground floor right half of a coin laundry: pale blue ceramic tile wall; a wide window (28 x 22) showing a row of three white washing machines with ROUND dark glass doors; the white sign band continues across rows 2-9 with a blue T-shirt pictogram; a low dark blue tile base.
+O|roof-ac-unit roof-vent-mushroom roof-skylight
+P|laundromat-door|32|48|Ground floor left half of a coin laundry: pale blue glazed ceramic tile wall (ramp sky; joint grid of 4 x 4 tiles one tone darker, lighter rows at the top, darker toward the foot, NO dots); a glass door with a steel frame (16 x 28 at x 0-15, bottom on the last row); right of it a tall window showing a stack of two washing machines with ROUND dark doors; white sign band across rows 2-9 with three blue bubbles pictogram.
+P|laundromat-window|32|48|Ground floor right half of a coin laundry: pale blue glazed ceramic tile wall (ramp sky; joint grid of 4 x 4 tiles one tone darker, lighter rows at the top, darker toward the foot, NO dots); a wide window (28 x 22) showing a row of three white enamel washing machines (smooth, shaded in bands, no dots) with ROUND dark glass doors; the white sign band continues across rows 2-9 with a blue T-shirt pictogram; a low dark blue tile base.
 
 B|police|작은 경찰서|small police station|na|small|5|2|2|tar|office-floor|2|0|경찰서;파출소;지구대|Two-storey brick precinct house with twin blue lamps
 F|police-side police-door police-side~ / police-upper-a police-upper-b
