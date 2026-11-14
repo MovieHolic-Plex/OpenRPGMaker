@@ -144,7 +144,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       result.summary+=' 석조 교회와 마당을 연결했습니다.';
     }
     if(mapId&&['river','coast','city'].includes(theme)) {
-      const dressing=dressBeodeulGround(draft,mapId,'living',Number(args.seed));
+      const dressing=dressBeodeulGround(draft,mapId,'living',Number(args.seed),!!(result.data as {villageKind?:unknown}|undefined)?.villageKind);
       result.data={...(result.data as Record<string,unknown>),groundDressing:dressing.data};
       result.summary+=` ${dressing.summary}`;
     }

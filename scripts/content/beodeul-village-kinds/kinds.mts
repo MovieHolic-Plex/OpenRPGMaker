@@ -76,7 +76,8 @@ for (const kind of BEODEUL_VILLAGE_KINDS) {
   const bare = JSON.parse(JSON.stringify(map)); for (const c of own) { bare.upperTiles[c] = -1; if (bare.upperOverlayTiles) bare.upperOverlayTiles[c] = -1; }
   const was = computeReachableCells({ ...ctx.project, maps: { ...ctx.project.maps, [map.id]: bare } }, bare, start.x, start.y);
   const has = (s: any, x: number, y: number) => s.has(`${x},${y}`) || s.has(y * W + x);
-  let cells = 0; for (let y = 0; y < map.height; y += 1) for (let x = 0; x < W; x += 1) if (!own.has(y * W + x) && isPassable(ctx.project, map, x, y) && has(was, x, y) && !has(now, x, y)) cells += 1;
+  let cells = 0; const cutAt: string[] = []; for (let y = 0; y < map.height; y += 1) for (let x = 0; x < W; x += 1) if (!own.has(y * W + x) && isPassable(ctx.project, map, x, y) && has(was, x, y) && !has(now, x, y)) { cells += 1; cutAt.push(`${x},${y}`); }
+  if (cells && argv.includes("--why")) console.log(`  끊긴 칸: ${cutAt.slice(0, 24).join(" ")} · 장면 ${(d.scenes ?? []).map((s: any) => `${s.id}(${s.x},${s.y} ${s.w}x${s.h})`).join(" ")}`);
   const standOk = (d.scenes ?? []).filter((s: any) => has(now, s.stand.x, s.stand.y)).length;
   asked += sc.asked; placed += sc.placed; noRoom += room; noKits += kits; lifted += sc.lifted; cut += cells; added += d.routeAdded ?? 0;
   const row = { id: kind.id, ko: kind.ko, rank: kind.rank, ok: true, size: `${W}x${map.height}`, houses: d.houses, work: d.work?.name ?? null, asked: sc.asked, placed: sc.placed, noRoom: room, noKits: kits, lifted: sc.lifted,

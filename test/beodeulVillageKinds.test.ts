@@ -78,6 +78,8 @@ describe("버들항 마을 종류 — 고르기", () => {
     // 이름으로 정하면 열쇠 없이도 그 종류다. 표에 없는 이름은 종류가 아니다.
     expect(chooseVillageKind(f, undefined, 7, "smithy-village")?.id).toBe("smithy-village");
     expect(chooseVillageKind(f, KEYS[0], 7, "no-such-kind")).toBeUndefined();
+    // 그 급의 종류가 터에 없으면 급을 풀어 고른다: 광장을 청한 포구(바다의 읍 종류는 항구뿐)도 바다 종류 하나를 받는다
+    for (const key of KEYS) expect(chooseVillageKind(facts({ water: "sea", plaza: true, rank: "town" }), key, 9)!.fit.water).toContain("sea");
     // 광장을 청한 마을은 읍이다 — 읍 종류가 골라진다
     for (const key of KEYS) expect(chooseVillageKind(facts({ plaza: true, rank: "town" }), key, 9)!.rank).toBe("town");
   });

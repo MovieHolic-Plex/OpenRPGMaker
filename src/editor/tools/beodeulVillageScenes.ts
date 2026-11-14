@@ -132,9 +132,11 @@ function anchorScore(host: BeodeulSceneHost, ctx: AnchorContext, at: SceneAnchor
     return (b) => { const g = gap(b, e); return g < 3 || g > 10 || !ring(b, 1, kind("road")) ? Infinity : Math.abs(g - 5); };
   }
   if (anchor === "shore") {
+    // 둑(물에 맞닿은 포장 칸)이 있으면 그 곁이 가장 좋고, 둑이 짧아 자리가 없으면 여느 물가로 간다.
     const quay = ctx.quay;
-    if (quay) return (b) => (ring(b, 1, (x, y) => quay.has(y * W + x)) + inside(b, (x, y) => quay.has(y * W + x)) && homes(b) <= 9 ? far(b) * 0.25 : Infinity);
-    return (b) => (ring(b, 2, kind("water")) && homes(b) <= 8 ? far(b) * 0.25 + homes(b) * 0.4 + (ring(b, 1, kind("water")) ? 0 : 1.5) : Infinity);
+    const bank = (b: Box) => (ring(b, 2, kind("water")) && homes(b) <= 8 ? far(b) * 0.25 + homes(b) * 0.4 + (ring(b, 1, kind("water")) ? 0 : 1.5) : Infinity);
+    if (quay) return (b) => (ring(b, 1, (x, y) => quay.has(y * W + x)) + inside(b, (x, y) => quay.has(y * W + x)) && homes(b) <= 9 ? far(b) * 0.25 - 20 : bank(b));
+    return bank;
   }
   // 높은 단: 마을 단보다 높은 단이 있을 때만 — 마을이 맨 윗단에 앉았으면(더 높은 땅이 없다) 마을 끝의 들로 간다.
   if (anchor === "upper" && ctx.hasUpper) return (b) => (host.level(b.x0, b.y1) > ctx.baseLevel && homes(b) >= 2 && homes(b) <= 14 ? homes(b) * 0.5 + far(b) * 0.1 : Infinity);

@@ -2503,41 +2503,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
   }
   planStep("살림 소품");
-  // 흙 마당(beodeulCommons.ts): 모이는 곳을 품은 다진 흙 한 덩이 · 넓어졌다 좁아지는 길 곁 · 문 앞 닳은 자리 — 밭·숲이 자리를 잡기 전에 흙으로 잡는다.
-  const earthUnder: number[] = [];
-  const earthCells: number[] = []; // 흙 마당 칸 — 마을 종류의 모이는 곳 장면이 그 가장자리에 앉는다
-  if (ground.commons) {
-    const gpt = codePlan ? codePlan.g : gatherDoor ? { x: gatherDoor.x, y: gatherDoor.y + gather.s.width + 1 } : null;
-    const openEarth = (c: number): boolean => {
-      if (occ[c] !== FREE || rampCells.has(c)) return false;
-      const x = c % W, y = (c - x) / W;
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
-        if (!inMap(x + dx, y + dy)) continue; const n = idx(x + dx, y + dy);
-        if (lv[n] !== lv[c] || occ[n] === WATERC || occ[n] === KEEP || rampCells.has(n)) return false; // 절벽 끝·발치, 물가, 계단 옆구리는 풀로 남긴다
-      }
-      return y < 2 || lv[c - 2 * W] === lv[c];
-    };
-    if (gpt) {
-      // 계단·다리·나루·울타리 문 곁 뼈대는 제자리(흙이 떠나지 않는다)
-      const pinned = (c: number): boolean => {
-        const x = c % W, y = (c - x) / W;
-        for (let dy = -2; dy <= 2; dy += 1) for (let dx = -2; dx <= 2; dx += 1) { if (!inMap(x + dx, y + dy)) continue; const n = idx(x + dx, y + dy); if (rampCells.has(n) || occ[n] === KEEP || lv[n] !== lv[c] || keepRoad.has(n)) return true; }
-        return false;
-      };
-      const plan = planCommons({ W, H, seed, g: gpt, free: openEarth, road: (c) => occ[c] === ROAD || occ[c] === PLAZAC, prop: (c) => occ[c] === PROP, level: (c) => lv[c]!,
-        doors: doorFronts, work: workAt, houses: placedHouses.length, small: ground.rank === "hamlet", pinned, freeRoad: (c) => occ[c] === ROAD && !rampCells.has(c) && !keepRoad.has(c),
-        // 배치가 마당 자리를 주면(layout.yard — 칸 목록이나 네모) 그 자리를 칠한다. 주지 않으면 흙 몸이 스스로 잡는다.
-        yard: (codePlan?.layout as { yard?: { cells?: number[]; rect?: { x: number; y: number; w: number; h: number } } } | undefined)?.yard ?? null,
-        ...(codePlan ? { paths: codePlan.paths.map((pth) => ({ cells: pth.cells, width: pth.width })) } : {}) });
-      for (const c of plan.earth) occ[c] = ROAD;
-      earthCells.push(...plan.earth);
-      // 흙이 굽이쳐 떠난 길 자리는 풀밭으로 돌아가되 걸음 자리로 비워 둔다 — 나무·숲·밭이 앉으면 그 길로만 닿던 윗단 조각이 갇힌다
-      for (const c of plan.bare) if (occ[c] === ROAD) occ[c] = CLEAR;
-      earthUnder.push(...plan.under);
-    }
-  }
   // 마을 종류의 장면은 밭·목초지·숲보다 먼저 자리를 잡는다 — 뒤에 잡으면 밭이 일터 곁과 모이는 곳 둘레를 다 차지해 장면이 설 자리가 없다(탐침: 117 장면 가운데 28이 자리 없음).
   const newObjectStamps = new Map<Stamp, string>(); // 새 기물의 찍기 → 쓰임 이름(13 에서 길목에 선 것을 걷어 낼 때 쓴다)
+  const heldOpen = new Set<number>(); // 여기서 비워 둔 걸음 칸(이야기 자리·장면 둘레) — 흙 마당·안뜰 판석은 이 칸을 덮어도 된다
   const dressOn = (theme === "river" || theme === "coast") && (!!activeKitLook() || !!villageKind);
   // 들머리: 큰길이 맵으로 드는 칸(13 의 입구와 같은 자리 — 성문은 그때 정해진다).
   const entryCell = codePlan?.entrance ?? (form === "riverbank" && entryLane ? { x: W - 1, y: yAt(entryLane, W - 1) ?? yMainBase } : { x: 0, y: yMainAt(0) });
@@ -2545,10 +2513,10 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 이야기가 사람을 세우는 자리는 비워 둔다(2026-11-14 은행 jrpg-w2·lay-main-harbor: 새 기물이 먼저 앉자 밀려난 헤더 덤불이 시작 칸과 그 곁 오프닝 자리에 섰다):
   // 시작 칸 둘레 네 칸 · 맵 가장자리로 나가는 길 끝의 곁 두 칸 · 문 앞 칸의 아래·옆 · 모이는 곳 둘레 두 칸. 빈 땅만 CLEAR 로 — 나무·덤불·풀꽃·기물·장면이 서지 않는다.
   if (dressOn) {
-    const hold = (x: number, y: number, r: number) => { for (let j = -r; j <= r; j += 1) for (let i = -r; i <= r; i += 1) if (at(x + i, y + j) === FREE) occ[idx(x + i, y + j)] = CLEAR; };
+    const hold = (x: number, y: number, r: number) => { for (let j = -r; j <= r; j += 1) for (let i = -r; i <= r; i += 1) if (at(x + i, y + j) === FREE) { occ[idx(x + i, y + j)] = CLEAR; heldOpen.add(idx(x + i, y + j)); } };
     if (options.startCell) hold(options.startCell.x, options.startCell.y, 4);
     for (let c = 0; c < W * H; c += 1) { if (occ[c] !== ROAD) continue; const x = c % W, y = (c - x) / W; if (x === 0 || y === 0 || x === W - 1 || y === H - 1) hold(x, y, 2); }
-    for (const d of doorFronts) for (const [dx, dy] of [[0, 1], [-1, 0], [1, 0], [-1, 1], [1, 1], [0, 2]] as const) if (at(d.x + dx, d.y + dy) === FREE) occ[idx(d.x + dx, d.y + dy)] = CLEAR;
+    for (const d of doorFronts) for (const [dx, dy] of [[0, 1], [-1, 0], [1, 0], [-1, 1], [1, 1], [0, 2]] as const) if (at(d.x + dx, d.y + dy) === FREE) { occ[idx(d.x + dx, d.y + dy)] = CLEAR; heldOpen.add(idx(d.x + dx, d.y + dy)); }
     if (gatherCell) hold(gatherCell.x, gatherCell.y, 2);
   }
   // 새 기물·장면의 윗줄(사람 위에 그려지는 걸음 칸) — 계획 칸은 소품이지만 걷는 칸이다.
@@ -2562,6 +2530,13 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 둑 위(읍): 물에 맞닿은 포장 칸 — readSettlementAreas 의 quay 와 같은 뜻(칠하기 전이라 계획 칸으로 센다). 부두 장면이 그 곁에 앉는다.
   const quayCells: number[] = [];
   if (ground.pavedCore) for (let c = 0; c < W * H; c += 1) { if (occ[c] !== ROAD && occ[c] !== PLAZAC) continue; const x = c % W, y = (c - x) / W; if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => at(x + dx!, y + dy!) === WATERC)) quayCells.push(c); }
+  // 배치가 준 마당 자리(layout.yard — 칸 목록이나 네모): 모이는 곳 장면이 그 가장자리에 앉는다(마당 속은 걷는 자리). 주지 않으면 모이는 곳에서 두세 칸.
+  const yardGiven: number[] = (() => {
+    const y0 = (codePlan?.layout as { yard?: { cells?: number[]; rect?: { x: number; y: number; w: number; h: number } } } | undefined)?.yard;
+    if (y0?.cells?.length) return y0.cells.filter((c) => c >= 0 && c < W * H);
+    const out: number[] = []; if (y0?.rect) for (let j = 0; j < y0.rect.h; j += 1) for (let i = 0; i < y0.rect.w; i += 1) if (inMap(y0.rect.x + i, y0.rect.y + j)) out.push(idx(y0.rect.x + i, y0.rect.y + j));
+    return out;
+  })();
   let newWaterPut = 0; // 물 위에 얹은 새 기물(장면의 부표·수련 포함) — 흩어 놓는 단계가 센 것과 합쳐 보고한다
   const objectHost = {
     W, H, key: activeKitLook(), seed, coast: theme === "coast",
@@ -2594,16 +2569,49 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     ...(villageKind ? { kindPools: { home: villageKind.home, water: villageKind.water, wild: villageKind.wild, signs: villageKind.signs, lamps: villageKind.lamps } } : {}),
     gather: gatherCell, entrance: entryCell, workDoor,
     // 장면이 앉을 바닥 구역: 미리 비워 둔 터(코드 지형) · 흙 마당 칸(급이 흙 바닥일 때 — readSettlementAreas 의 earth 와 같은 칸, 장면은 그 가장자리에 앉고 속은 걷는 자리로 남는다).
-    areas: { ...(codePlan ? { workYard: codePlan.sceneYards.work, gatherYard: codePlan.sceneYards.gather } : {}), ...(earthCells.length ? { commons: earthCells } : {}), ...(quayCells.length >= 8 ? { quay: quayCells } : {}) },
+    areas: { ...(codePlan ? { workYard: codePlan.sceneYards.work, gatherYard: codePlan.sceneYards.gather } : {}), ...(yardGiven.length ? { commons: yardGiven } : {}), ...(quayCells.length >= 8 ? { quay: quayCells } : {}) },
     footCells: (k: { id: string }, x: number, y: number) => footOf(K(k.id), x, y),
     // 읍의 중심부에서는 비워 두지 않는다 — 비워 둔 칸은 판석이 덮지 않아 장면 둘레에 풀 띠가 남는다(돌바닥이라 나무·밭이 들어오지 않는다).
-    reserve: (x: number, y: number) => { if (!ground.pavedCore && at(x, y) === FREE) occ[idx(x, y)] = CLEAR; },
+    reserve: (x: number, y: number) => { if (!ground.pavedCore && at(x, y) === FREE) { occ[idx(x, y)] = CLEAR; heldOpen.add(idx(x, y)); } },
   };
   if (codePlan) for (const c of [...codePlan.sceneYards.work, ...codePlan.sceneYards.gather]) if (occ[c] === CLEAR) occ[c] = FREE;
   const routeGuard = beodeulRouteGuard(W, H, dressOn ? objectHost.route : undefined);
   // 마을 종류의 장면(beodeulVillageScenes.ts): 통째로, 다 들어갈 자리가 있을 때만. 흩어 놓는 물건보다 먼저 — 넓은 자리를 먼저 잡는다.
   const sceneReport: SceneReport = villageKind ? placeVillageScenes(objectHost, villageKind.scenes, activeKitLook() ?? villageKind.id, WALK_ON, routeGuard) : { placed: [], skipped: [] };
   if (villageKind && workAt) { const ws = sceneReport.placed.find((sc) => sc && sc.at === "work"); if (ws) workAt = { ...workAt, name: ws.ko }; }
+  // 흙 마당은 장면 뒤에 깐다 — 흙이 먼저 깔리면 일터 문 곁과 모이는 곳 둘레가 모두 흙(길)이 되어 장면이 설 풀밭이 없다(탐침: 외딴 마을 일터 장면 18 가운데 6이 자리 없음).
+  // 흙은 장면 둘레의 비워 둔 칸까지 번지고 장면 밑으로도 깔린다 — 장면이 흙 마당 가장자리에 앉은 모양이 된다. 마당 한가운데(모이는 곳 둘레 두 칸)는 장면이 서지 않는 걷는 자리다.
+  // 흙 마당(beodeulCommons.ts): 모이는 곳을 품은 다진 흙 한 덩이 · 넓어졌다 좁아지는 길 곁 · 문 앞 닳은 자리 — 밭·숲이 자리를 잡기 전에 흙으로 잡는다.
+  const earthUnder: number[] = [];
+  if (ground.commons) {
+    const gpt = codePlan ? codePlan.g : gatherDoor ? { x: gatherDoor.x, y: gatherDoor.y + gather.s.width + 1 } : null;
+    const openEarth = (c: number): boolean => {
+      if ((occ[c] !== FREE && !heldOpen.has(c)) || rampCells.has(c)) return false;
+      const x = c % W, y = (c - x) / W;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        if (!inMap(x + dx, y + dy)) continue; const n = idx(x + dx, y + dy);
+        if (lv[n] !== lv[c] || occ[n] === WATERC || occ[n] === KEEP || rampCells.has(n)) return false; // 절벽 끝·발치, 물가, 계단 옆구리는 풀로 남긴다
+      }
+      return y < 2 || lv[c - 2 * W] === lv[c];
+    };
+    if (gpt) {
+      // 계단·다리·나루·울타리 문 곁 뼈대는 제자리(흙이 떠나지 않는다)
+      const pinned = (c: number): boolean => {
+        const x = c % W, y = (c - x) / W;
+        for (let dy = -2; dy <= 2; dy += 1) for (let dx = -2; dx <= 2; dx += 1) { if (!inMap(x + dx, y + dy)) continue; const n = idx(x + dx, y + dy); if (rampCells.has(n) || occ[n] === KEEP || lv[n] !== lv[c] || keepRoad.has(n)) return true; }
+        return false;
+      };
+      const plan = planCommons({ W, H, seed, g: gpt, free: openEarth, road: (c) => occ[c] === ROAD || occ[c] === PLAZAC, prop: (c) => occ[c] === PROP, level: (c) => lv[c]!,
+        doors: doorFronts, work: workAt, houses: placedHouses.length, small: ground.rank === "hamlet", pinned, freeRoad: (c) => occ[c] === ROAD && !rampCells.has(c) && !keepRoad.has(c),
+        // 배치가 마당 자리를 주면(layout.yard — 칸 목록이나 네모) 그 자리를 칠한다. 주지 않으면 흙 몸이 스스로 잡는다.
+        yard: (codePlan?.layout as { yard?: { cells?: number[]; rect?: { x: number; y: number; w: number; h: number } } } | undefined)?.yard ?? null,
+        ...(codePlan ? { paths: codePlan.paths.map((pth) => ({ cells: pth.cells, width: pth.width })) } : {}) });
+      for (const c of plan.earth) occ[c] = ROAD;
+      // 흙이 굽이쳐 떠난 길 자리는 풀밭으로 돌아가되 걸음 자리로 비워 둔다 — 나무·숲·밭이 앉으면 그 길로만 닿던 윗단 조각이 갇힌다
+      for (const c of plan.bare) if (occ[c] === ROAD) occ[c] = CLEAR;
+      earthUnder.push(...plan.under);
+    }
+  }
   // 읍의 장면은 안뜰 판석을 깔기 전에 자리를 잡는다 — 뒤에 잡으면 화단·좌판·화분이 안뜰을 다 차지한다. 판석은 장면 둘레와 밑으로 깔린다.
   // 읍의 포장 중심부(beodeulTownCore.ts): 성벽 안 전부(성벽이 없으면 광장 둘레 구획)를 안뜰 판석으로 덮고, 풀은 네모 화단으로만 남긴다 — 밭·숲이 자리를 잡기 전에.
   const courtUnder: number[] = [];
@@ -2614,7 +2622,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const inside = (c: number): boolean => (wallLayout ? !wallLayout.inBand(c % W, Math.floor(c / W)) : !!precinct && lv[c] === gl && precinct.has(c));
     const openCourt = (c: number): boolean => {
       // 비워 둔 걸음 자리(문 앞 곁·시작 칸 둘레·장면 터)도 돌바닥으로 덮는다 — 안 덮으면 안뜰에 맨흙 네모가 남는다
-      if ((occ[c] !== FREE && occ[c] !== CLEAR) || rampCells.has(c)) return false;
+      if ((occ[c] !== FREE && !heldOpen.has(c)) || rampCells.has(c)) return false;
       const x = c % W, y = (c - x) / W;
       for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { if (!inMap(x + dx, y + dy)) return false; const n = idx(x + dx, y + dy); if (lv[n] !== lv[c] || occ[n] === WATERC || occ[n] === KEEP || occ[n] === POND_RING || rampCells.has(n)) return false; }
       return true;

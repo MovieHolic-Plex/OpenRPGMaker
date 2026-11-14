@@ -65,7 +65,7 @@ export interface VillageFacts {
 }
 
 /** 그 종류가 이 터에 어울리는가 — 바다 마을은 나무꾼 터가 아니고, 성벽 없는 마을은 수비대 성읍이 아니다. */
-export function villageKindFits(kind: VillageKind, f: VillageFacts): boolean {
+export function villageKindFits(kind: VillageKind, f: VillageFacts, anyRank = false): boolean {
   if (!kind.fit.water.includes(f.water)) return false;
   if (kind.fit.tiers === "hill" && !f.tiers) return false;
   if (!!kind.fit.walls !== f.walls) return false;
@@ -73,7 +73,7 @@ export function villageKindFits(kind: VillageKind, f: VillageFacts): boolean {
   if (f.harbour && kind.rank === "hamlet") return false;
   if (kind.fit.woods === "dense" && !f.deepWoods) return false;
   // 급: 바닥이 정한 급과 같은 종류만(흙 마당 마을에 읍의 장면이 서지 않게). 항구를 청했으면 항구 종류는 급과 상관없이 맞는다.
-  return kind.rank === f.rank || (!!kind.fit.harbour && f.harbour);
+  return anyRank || kind.rank === f.rank || (!!kind.fit.harbour && f.harbour);
 }
 
 /**
@@ -85,7 +85,10 @@ export function villageKindFits(kind: VillageKind, f: VillageFacts): boolean {
 export function chooseVillageKind(facts: VillageFacts, key: string | undefined, seed: number, named?: string, taken: ReadonlySet<string> = new Set()): VillageKind | undefined {
   if (named) return BY_ID.get(named);
   if (!key) return undefined;
-  const fits = BEODEUL_VILLAGE_KINDS.filter((k) => villageKindFits(k, facts));
+  // 그 급의 종류가 이 터에 하나도 없으면(광장을 청한 포구 — 바다의 읍 종류는 항구뿐이다) 급을 풀어 터에 맞는 것 가운데서 고른다.
+  const ranked = BEODEUL_VILLAGE_KINDS.filter((k) => villageKindFits(k, facts));
+  const fits = ranked.length ? ranked : BEODEUL_VILLAGE_KINDS.filter((k) => villageKindFits(k, facts, true));
+  if (!fits.length) return undefined;
   // 깊은 숲이면 숲 종류가 먼저다. 광장을 청한 마을은 급이 읍이다 — 읍 종류 가운데서 고른다(장터만이 아니라 길드 거리·운하 읍도 광장을 둔다).
   const first = facts.deepWoods ? fits.filter((k) => k.fit.woods === "dense") : [];
   const narrowed = first.length ? first : fits;
