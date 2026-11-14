@@ -298,14 +298,18 @@ export function fallBridgeCells(input: { W: number; H: number; falls: readonly {
   for (const f of input.falls) {
     const mid = Math.round((f.x0 + f.x1) / 2);
     const rowsAt = (y: number): number[] | null => {
-      if (y < 2 || y + 1 > H - 3 || !input.wet(y * W + mid)) return null;
+      if (y < 2 || y + 1 > H - 3) return null;
+      // 강은 폭포 위아래에서 옆으로 굽는다 — 폭포 가운데 열이 그 줄에서 뭍이면 다섯 칸 안의 가장 가까운 물 칸에서 잰다
+      let at = -1;
+      for (let d = 0; d <= 5 && at < 0; d += 1) for (const x of [mid - d, mid + d]) if (x > 1 && x < W - 2 && input.wet(y * W + x) && input.wet((y + 1) * W + x)) { at = x; break; }
+      if (at < 0) return null;
       const cells: number[] = []; let lo = W, hi = -1;
       for (const yy of [y, y + 1]) {
-        let a = mid, b = mid;
+        let a = at, b = at;
         while (a > 1 && input.wet(yy * W + a - 1)) a -= 1;
         while (b < W - 2 && input.wet(yy * W + b + 1)) b += 1;
-        if (!input.wet(yy * W + mid) || b - a + 1 < 2 || b - a + 1 > 6) return null;
-        const l = yy * W + a - 1, r = yy * W + b + 1, lv = input.level(yy * W + mid);
+        if (b - a + 1 < 2 || b - a + 1 > 6) return null;
+        const l = yy * W + a - 1, r = yy * W + b + 1, lv = input.level(yy * W + at);
         if (!input.free(l) || !input.free(r) || input.level(l) !== lv || input.level(r) !== lv) return null;
         if (hi >= 0 && (a !== lo || b !== hi)) return null;                    // 두 줄의 폭이 같아야 한다(다르면 널판이 T자로 놓였다)
         for (let x = a; x <= b; x += 1) cells.push(yy * W + x);
