@@ -376,13 +376,12 @@ export function ensureSupplyShop(run: BuildRun): string[] {
 }
 
 /**
- * 시작 맵에 상점이 있는데 시작 돈이 0 이면 그 상점의 가장 싼 회복약 둘 값을 시작 돈으로 준다(10 단위 올림, 100~300). 결정적·되풀이 안전(돈이 있으면 그대로).
- * 왜(2026-10-29 vm6 argon jrpg 판정 major): 목표가 「장비를 갖춘 뒤 동굴로」인데 소지금 0G — 마을 상인의 약(105G·150G)을 아무것도 살 수 없었고
- * 돈은 동굴 적을 잡아야 들어왔다. 판정자는 돈 벌 길을 찾다 시간을 썼다.
+ * 첫 상점(시작 맵의 상점 · 목적표가 세운 가게)의 가장 싼 HP 회복약 하나를 시작 돈으로 살 수 없으면 그 약 둘 값을 시작 돈으로 준다(10 단위 올림, 100~300 — 약 하나 값보다는 늘 많게).
+ * 결정적·되풀이 안전(살 수 있으면 그대로). 왜(2026-10-29 vm6): 소지금 0G 로 마을 상인의 약을 아무것도 살 수 없었다.
+ * 값은 HP 를 되찾는 약으로 잰다 — 가장 싼 «약»(해독초 40G)으로 재면 시작 돈 100G 에 회복약 105G 를 하나도 못 산다.
  */
 export function ensureStartingGold(run: BuildRun): string[] {
   const project = run.ctx.project;
-  if ((project.session.gold ?? 0) > 0) return [];
   const map = project.maps[project.startMapId];
   if (!map) return [];
   const ids = new Set<string>();
@@ -391,9 +390,13 @@ export function ensureStartingGold(run: BuildRun): string[] {
   for (const m of [map, ...(shopRoom && project.maps[shopRoom.mapId] ? [project.maps[shopRoom.mapId]!] : [])]) for (const ev of m.events ?? []) for (const p of ev.pages ?? []) for (const c of (p.commands ?? []) as unknown as Record<string, unknown>[]) {
     if (c.kind === "shop" && Array.isArray(c.itemIds)) for (const id of c.itemIds) ids.add(String(id));
   }
-  const prices = project.database.items.filter((i) => ids.has(i.id) && (i.price ?? 0) > 0 && (healingItemIds(project).has(i.id) || i.type === "medicine")).map((i) => i.price ?? 0).sort((a, b) => a - b);
-  if (!prices.length) return [];
-  const want = Math.min(300, Math.max(100, Math.ceil(((prices[0] ?? 0) * 2) / 10) * 10));
+  const heals = healingItemIds(project);
+  const priced = project.database.items.filter((i) => ids.has(i.id) && (i.price ?? 0) > 0);
+  const potions = priced.filter((i) => heals.has(i.id)).map((i) => i.price ?? 0).sort((a, b) => a - b);
+  const prices = potions.length ? potions : priced.filter((i) => i.type === "medicine").map((i) => i.price ?? 0).sort((a, b) => a - b);
+  const had = project.session.gold ?? 0, cheapest = prices[0];
+  if (cheapest === undefined || had >= cheapest) return [];
+  const want = Math.max(cheapest, Math.min(300, Math.max(100, Math.ceil((cheapest * 2) / 10) * 10)));
   run.ctx.project = { ...project, session: { ...project.session, gold: want } };
-  return [`시작 돈 0G → ${want}G (상점의 가장 싼 약 ${prices[0]}G 둘 값)`];
+  return [`시작 돈 ${had}G → ${want}G (첫 상점의 가장 싼 ${potions.length ? "회복약" : "약"} ${cheapest}G 둘 값)`];
 }
