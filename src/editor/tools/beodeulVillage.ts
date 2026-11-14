@@ -192,8 +192,6 @@ export interface BeodeulVillageOptions {
   codeTerrain?: CodeTerrain;
   /** 코드 지형 위 자리(조수가 그림·요약을 보고 고른다) — 함수는 놓을 수 있는지·길 연결·도달만 검사하고 옮긴 자리·실패를 보고한다. */
   layout?: VillageLayout;
-  /** false 면 자동 배치가 마당을 잡지 않는다(예전 고리 배치) — 마당 배치가 길·문에서 더 나빴을 때 author_beodeul_town 이 견주어 보려고 쓴다. */
-  yardLayout?: boolean;
 }
 /** 지형 먼저: 맨 윗단 길의 높은 곳 건물(망루가 붙은 집·예배당·저택 · 사원·성자 무덤 · 회관·목욕집 · 사당). */
 const TIER_LANDMARKS: Partial<Record<BeodeulVillageTheme, string[]>> = {
@@ -848,7 +846,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const exits = layout.exits?.length ? layout.exits : (W >= H ? ["west", "east"] as const : ["north", "south"] as const);
     // 자동 배치는 마당 먼저(beodeulYardLayout.ts): 한 단 마른 터에 마당을 잡고 여관·집이 그 테두리에 문을 마당으로 내고 선다. 남는 집은 두세 채 무리.
     // 위에서 앉힌 예전 고리 배치가 기준이다 — 마당 후보마다 앉혀 보고 큰길·문 길·집 수가 기준보다 나빠지지 않을 때만 바꾼다. 조수가 자리를 주었으면(given) 하지 않는다.
-    if (!given && options.yardLayout !== false) {
+    if (!given) {
       const mark = () => { const o = occ.slice(), sp = [...spots], dk = [...swampDeck], mv = [...report.moved], fl = [...report.failed], hu = [...houseUse], cu = [...classUse];
         return () => { occ.set(o); spots.splice(0, spots.length, ...sp); swampDeck.clear(); for (const c of dk) swampDeck.add(c); report.moved.splice(0, report.moved.length, ...mv); report.failed.splice(0, report.failed.length, ...fl);
           houseUse.clear(); for (const [k, v] of hu) houseUse.set(k, v); classUse.clear(); for (const [k, v] of cu) classUse.set(k, v); }; };
