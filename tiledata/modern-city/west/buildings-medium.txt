@@ -1,7 +1,7 @@
 B|walkup|벽돌 워크업 아파트(1층 상가)|brick walk-up with shops|na|medium|6|4|3|tar|apartment|3|0|워크업 아파트;벽돌 아파트;상가 주택|Four-storey red brick walk-up, shops below, iron fire escape on the front
 F|walkup-shop walkup-door walkup-deli / walkup-upper walkup-upper~ / walkup-upper-b walkup-upper-b~ / walkup-upper walkup-upper~
 O|roof-water-tower roof-door-hut roof-laundry-line
-X|fire-escape|72|-98
+X|fire-escape|72|102
 P|walkup-shop|48|48|Ground floor shop of a red-brown brick tenement: a shoe-repair shop front — dark green wooden frame, a big window (36 x 22) showing boots on shelves, a dark green fascia (rows 2-9) with a white boot pictogram, brick pier at the left edge, low stone base.
 P|walkup-door|16|48|Ground floor stair entrance of a brick tenement, exactly 16 wide: a wine-red panelled door 16 x 28 (bottom on the last row) with a glass transom, above it brick with a pale stone lintel and a small round lamp.
 P|walkup-deli|32|48|Ground floor shop of a red-brown brick tenement, 32 wide: a small grocery — window (24 x 22) with stacked tins and a hanging sausage, amber fascia (rows 2-9) with a wine-red apple pictogram, brick pier at the right edge.

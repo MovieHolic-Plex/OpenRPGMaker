@@ -4,14 +4,14 @@
 # O|rooftop object ids stamped on the roof face (left to right)        X|part|centre x px|bottom y px relative to the roof/front line (positive = down)
 # P|part|w|h|brief          (a part is drawn once; wall parts fill the canvas edge to edge)
 # M|roof material|brief     (32x32 seamless)
-M|tar|Flat tar-and-gravel roof seen from straight above: dark warm grey (ramp roof) with faint lighter specks and two thin tar seam lines. Quiet, low contrast.
-M|gravel|Flat pale gravel roof seen from above: mid grey-brown pebbles texture (ramp roof tones 2-4, a few body tones), quiet.
-M|clay|Red-brown clay pantile roof seen from above/front: horizontal courses 6 px tall of rounded tiles, each course's lower edge shaded, tiles staggered (ramp brick).
-M|terracotta|Orange terracotta roof tiles seen from above/front: horizontal courses 5 px tall of small rounded tiles, lighter than clay (ramp brick tones 2-4 with amber 0-1 flecks).
-M|slate|Blue-grey slate roof seen from above/front: horizontal courses 5 px tall of flat rectangular slates, staggered joints (ramp slate with a few blue tones).
-M|copper|Verdigris green standing-seam copper roof seen from above: vertical raised seams every 8 px, pale green streaks (ramps mint and teal).
-M|zinc|Pale grey zinc standing-seam roof seen from above: vertical seams every 8 px, soft lighter bands (ramp body).
-M|shingle|Dark brown asphalt shingle roof seen from above/front: horizontal courses 4 px tall with staggered tabs (ramps bark and roof).
+M|tar|Flat tar-and-gravel roof seen from straight above: dark warm grey bitumen (ramp tar, tones 1-4) densely strewn with gravel specks of single pixels in lighter and darker tones, a few tar-seam lines and patches one tone darker, a faint stain or two. Reads as rough felt, not as a flat fill.
+M|gravel|Flat pale pebble-ballast roof seen from above: small 1-2 px pebbles in 4-5 tones of ramps stone and concrete, each pebble with a lighter top-left pixel and a darker lower-right pixel, evenly dense.
+M|clay|Red clay roof tiles seen from above (ramp tile): individual tiles 4 px wide in courses 4 px tall, staggered by 2 px per course; each tile has an orange lit top-left (tones 5-6), a red body (tones 3-4) and a maroon gap at its right and lower edge (tones 1-2). Like the reference roof.
+M|terracotta|Sun-bleached orange terracotta roof tiles seen from above (ramps tile tones 4-6 and ochre tones 2-4, gaps in tile 2): individual tiles 4 px wide in courses 4 px tall, staggered by 2 px; a few single tiles darker or mossy (leaf 1).
+M|slate|Blue-grey slate roof seen from above (ramp slate, with a few stone tones): individual rectangular slates 4 px wide in courses 4 px tall, staggered joints; each slate with a lighter top edge and a dark lower-right gap (slate 0-1); some slates one tone lighter or with a lichen pixel.
+M|copper|Verdigris copper standing-seam roof seen from above (ramp copper): vertical raised seams every 8 px (a light line with a dark line to its right), between them streaky green patina in 4-5 tones with darker drip stains, horizontal sheet joints every 16 px offset between bays.
+M|zinc|Zinc standing-seam roof seen from above (ramp zinc): vertical seams every 8 px (light line + dark line), between them soft mottled grey in 4-5 tones with rivet dots and pale water streaks, horizontal sheet joints every 16 px offset between bays.
+M|shingle|Dark wooden shingle roof seen from above (ramps timber and tar): individual shingles 4 px wide in courses 4 px tall with staggered joints, each with a lighter top edge and a dark gap; weathered — some shingles greyer, a moss pixel here and there.
 
 B|bakery|빵집|bakery|eu|small|4|1|3|clay|cafe|1|0|빵집;베이커리;제과점|European bakery with a giant 3-D loaf sign above the eave
 F|bakery-door bakery-window
@@ -24,7 +24,7 @@ P|sign-bread|40|24|A giant 3-D bread sign: one fat golden-amber country loaf wit
 B|icecream|아이스크림 가게|ice-cream parlour|na|small|3|1|2|tar|cafe|1|1|아이스크림 가게;젤라토 가게;빙수 가게|American ice-cream parlour with a giant cone sign on the roof
 F|icecream-front
 O|roof-ac-unit
-X|sign-cone|36|-2
+X|sign-cone|36|-14
 P|icecream-front|48|48|Whole ground floor of a small ice-cream parlour: pale pink painted clapboard wall, white trim; glazed door in the middle (16 x 28 at x 16-31, bottom on the last row); a small serving window each side with a mint sill; pink and white striped awning across the full width (rows 6-14).
 P|sign-cone|20|30|A giant 3-D ice-cream cone sign standing upright: amber waffle cone point down on a tiny bracket, a pink scoop and a mint-green scoop, a wine-red cherry on top. Transparent around it.
 

@@ -1,0 +1,38 @@
+{
+ "_doc": "서양 도시 세트의 확장 건물 팔레트(역할별 재질 줄, 어두운 쪽은 보라·남색으로 · 밝은 쪽은 따뜻하게). tile·plaster·rubble·timber·glass 는 버들항 여관(tiledata/beodeul-city/render-full/city6.png)에서 잰 색, 나머지는 같은 규칙으로 늘린 것. 그림은 그린 뒤 코드로 이 색에 붙인다(OKLab 최근접).",
+ "ramps": {
+  "ink":      ["#101018", "#1c1626", "#2b203f"],
+  "tile":     ["#2b203f", "#50243a", "#6a2c38", "#863736", "#a3492f", "#c67832", "#e39a4c"],
+  "plaster":  ["#6d6363", "#928484", "#bcaaa0", "#d9c4b4", "#ecd6c6", "#f8eadc"],
+  "rubble":   ["#2b203f", "#703f57", "#8a6468", "#aa8a7e", "#c4ad9c", "#d9d2be"],
+  "timber":   ["#2d1909", "#312210", "#452a17", "#633712", "#6f4725", "#885a26", "#a9743a"],
+  "glass":    ["#051123", "#071528", "#212d42", "#2f4a6a", "#4f86a8", "#8fd0e0"],
+  "brick":    ["#3a1f2e", "#5a2a30", "#7a3a33", "#96493a", "#b05e44", "#c87a58", "#dba888"],
+  "stone":    ["#3b3446", "#5e5562", "#857b80", "#a89e9a", "#c9c0b4", "#e4ddcc"],
+  "concrete": ["#2c3040", "#4a5060", "#6c7380", "#8f969e", "#b3b8ba", "#d4d6d2"],
+  "slate":    ["#1c2238", "#2c3550", "#40506a", "#566b82", "#74899a", "#9aaab4"],
+  "tar":      ["#25212e", "#3a3440", "#4d4650", "#615a60", "#777072", "#8f8886"],
+  "copper":   ["#173a3a", "#23564e", "#347a66", "#4f9c7e", "#7fbf9a", "#b4dcb8"],
+  "zinc":     ["#3a4150", "#566070", "#7a8794", "#9eabb4", "#c0cbd0", "#e0e7e8"],
+  "pink":     ["#6a3a50", "#9a5a68", "#c88088", "#e4a4a0", "#f2c4b8", "#fae0d4"],
+  "sage":     ["#2f4440", "#4a6a5c", "#6f9078", "#96b294", "#bcd0b0", "#dce6cc"],
+  "sky":      ["#2a3558", "#44598a", "#6a86b0", "#92aecc", "#bcd0e0", "#dfeaf0"],
+  "ochre":    ["#5a3420", "#8a5626", "#b87e34", "#d8a44c", "#ecc674", "#f8e2a4"],
+  "green":    ["#0f2420", "#1a3a30", "#285544", "#3a735a", "#559274", "#7fb494"],
+  "navy":     ["#10142c", "#1c2448", "#2c3a6c", "#405894", "#5f7fb8", "#8eaad4"],
+  "wine":     ["#2d0a1c", "#5a1024", "#881a2c", "#b02c34", "#d4503c", "#ec8060"],
+  "teal":     ["#0c2a30", "#144850", "#1f6a70", "#30908e", "#58b4a8", "#94d6c4"],
+  "amber":    ["#6a3c10", "#9a5c14", "#c8841c", "#e8ac2c", "#f6d05c", "#fceca0"],
+  "white":    ["#7a7488", "#a8a2b0", "#d0ccd4", "#eceae8", "#ffffff"],
+  "leaf":     ["#143a27", "#24542c", "#3b7a34", "#5ba236", "#8cc458", "#c4e890"],
+  "bloom":    ["#8a1c50", "#c03c74", "#e06c98", "#f4a4c0"]
+ },
+ "desc": {
+  "ink": "darkest accents only (deep gaps, door cracks) — never a frame around things",
+  "tile": "red clay roof tiles (maroon shadow, orange light)", "plaster": "cream plaster / render", "rubble": "rubble stone wall (violet mortar, warm stones)", "timber": "wood: beams, doors, frames, crates",
+  "glass": "window glass (navy, cyan glint)", "brick": "red brick (violet-brown shadow, warm light, last tone = pale mortar)", "stone": "cut limestone / pale trim", "concrete": "concrete, cinder block, steel",
+  "slate": "blue-grey slate roof", "tar": "flat tar-and-gravel roof", "copper": "verdigris copper", "zinc": "zinc / chrome / painted pale metal", "pink": "pink plaster or paint", "sage": "sage-green plaster or paint",
+  "sky": "pale blue plaster, paint or tile", "ochre": "ochre / yellow plaster", "green": "dark green paint, cast iron", "navy": "navy / blue paint", "wine": "wine-red to red paint, cloth", "teal": "teal paint, tile",
+  "amber": "gold, bread, lamp light", "white": "white paint, cloth, enamel (violet shade)", "leaf": "plants", "bloom": "pink flowers"
+ }
+}
