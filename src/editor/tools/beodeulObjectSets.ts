@@ -43,7 +43,7 @@ export function beodeulVergeObjects(has: (id: string) => boolean, key: string | 
   return beodeulObjectPick(one, 3, key, "verge");
 }
 
-/** 숲 끝 만입(두 칸 × 두 칸 빈터)에 덤불 대신 설 수 있는 큰 것 — 큰 그루터기·뽑힌 나무·너럭바위·낙석. */
+/** 숲 끝 만입(두 칸 × 두 칸 빈터)에 덤불 대신 설 수 있는 큰 것 — 고목 밑동·뽑힌 나무·너럭바위·낙석. */
 export function beodeulBayObjects(has: (id: string) => boolean, key: string | undefined): string[] {
   if (!key) return [];
   return beodeulObjectPick(O("giant-stump root-plate slab-ledge rockfall").filter(has), 2, key, "bay");
@@ -64,8 +64,9 @@ export interface BeodeulObjectHost {
   fitsLand(kit: ObjectKit, x: number, y: number): boolean;
   /** 광장 자리: 발이 판석 위 · 광장을 지나는 길 줄 밖. */
   fitsPlaza(kit: ObjectKit, x: number, y: number): boolean;
-  placeLand(kit: ObjectKit, x: number, y: number, walkOn: boolean): void;
-  placePlaza(kit: ObjectKit, x: number, y: number): void;
+  /** slot = 쓰임 이름(돌려주는 표의 열쇠) — 빌더가 나중에 걷어 낼 때 그 쓰임의 수를 줄인다. */
+  placeLand(kit: ObjectKit, x: number, y: number, walkOn: boolean, slot: string): void;
+  placePlaza(kit: ObjectKit, x: number, y: number, slot: string): void;
   /** 물 위: 계획 칸은 물로 남기고 그림만 얹는다. */
   placeWater(kit: ObjectKit, x: number, y: number): void;
   waterTaken(x: number, y: number): boolean;
@@ -101,13 +102,13 @@ export function dressBeodeulObjects(host: BeodeulObjectHost): Record<string, num
   const apart = (x: number, y: number, d: number) => !taken.some((t) => Math.abs(t.x - x) < d && Math.abs(t.y - y) < d);
   const land = (k: ObjectKit, x: number, y: number, slot: string): boolean => {
     if (!host.fitsLand(k, x, y)) return false;
-    host.placeLand(k, x, y, WALK_ON.has(k.id)); taken.push({ x, y }); placed[slot] = (placed[slot] ?? 0) + 1; return true;
+    host.placeLand(k, x, y, WALK_ON.has(k.id), slot); taken.push({ x, y }); placed[slot] = (placed[slot] ?? 0) + 1; return true;
   };
 
-  // 1. 집 곁 살림: 집 두 채에 하나꼴, 벽에서 한 칸 띄워 집 발치 줄에.
+  // 1. 집 곁 살림: 집 네 채에 셋꼴, 벽에서 한 칸 띄워 집 발치 줄에.
   const home = pick([...POOLS.home, ...(host.coast ? POOLS.homeCoast : [])], 5, "home");
   if (home.length) host.houses.forEach((h, i) => {
-    if (rand() > 0.55) return;
+    if (rand() > 0.75) return;
     const k = home[i % home.length]!;
     const sides = rand() < 0.5 ? [1, -1] : [-1, 1];
     for (const gap of [1, 2]) for (const sd of sides) {
@@ -123,7 +124,7 @@ export function dressBeodeulObjects(host: BeodeulObjectHost): Record<string, num
     for (const k of plaza) for (const c of spots) {
       const x = (c % W) - Math.floor(k.w / 2), y = Math.floor(c / W) - k.h + 1;
       if (!apart(x, y, 4) || !host.fitsPlaza(k, x, y)) continue;
-      host.placePlaza(k, x, y); taken.push({ x, y }); placed.plaza! += 1; break;
+      host.placePlaza(k, x, y, "plaza"); taken.push({ x, y }); placed.plaza! += 1; break;
     }
   }
 
@@ -171,7 +172,25 @@ export function dressBeodeulObjects(host: BeodeulObjectHost): Record<string, num
     }
   }
 
-  // 5. 바위: 높이 단이 있는 마을은 단이 바뀌는 곳에서 두세 칸 떨어진 자리(절벽 위·아래)에 — 절벽 끝 두 칸 안은 비운다(절벽 그림이 가린다).
+  // 5. 한 귀퉁이: 게임마다 하나(묘지·옛 터·야영·마른 우물터). 길에서 세 칸 안에 닿는 빈 땅 8×6 에, 놓이는 것만.
+  //    바위·들보다 먼저 잡는다 — 뒤에 잡으면 흩어 놓은 것들이 넓은 빈 땅을 다 갈라 놓아 한 번도 서지 않는다(여섯 마을 표본에서 0번이었다).
+  const names = Object.keys(CORNERS).sort();
+  const corner = CORNERS[names[lookHash(`objset|${key}|corner`) % names.length]!]!;
+  const spots: number[] = [];
+  for (let y = 2; y + 6 < H - 2; y += 1) for (let x = 2; x + 8 < W - 2; x += 1) {
+    let free = 0, reach = false;
+    for (let j = 0; j < 6; j += 1) for (let i = 0; i < 8; i += 1) { if (host.cell(x + i, y + j) === "free") free += 1; const d = road[idx(x + i, y + j)]!; if (d >= 1 && d <= 3) reach = true; }
+    if (free >= 44 && reach) spots.push(idx(x, y));
+  }
+  for (const c of shuffled(spots).slice(0, 12)) {
+    const x0 = c % W, y0 = Math.floor(c / W);
+    const parts = corner.map(([id, dx, dy]) => ({ k: host.kit(id), x: x0 + dx, y: y0 + dy })).filter((p): p is { k: ObjectKit; x: number; y: number } => !!p.k);
+    if (parts.filter((p) => host.fitsLand(p.k, p.x, p.y)).length < Math.min(4, parts.length)) continue;
+    for (const p of parts) land(p.k, p.x, p.y, "corner");
+    break;
+  }
+
+  // 6. 바위: 높이 단이 있는 마을은 단이 바뀌는 곳에서 두세 칸 떨어진 자리(절벽 위·아래)에 — 절벽 끝 두 칸 안은 비운다(절벽 그림이 가린다).
   //    평지 마을은 길에서 두세 칸 든 들에 둘쯤.
   const rock = pick(POOLS.rock, 4, "rock");
   if (rock.length) {
@@ -195,7 +214,7 @@ export function dressBeodeulObjects(host: BeodeulObjectHost): Record<string, num
     }
   }
 
-  // 6. 들: 길에서 두세 칸 든 빈 땅에 그 게임의 들 물건 네 가지를 다섯쯤.
+  // 7. 들: 길에서 두세 칸 든 빈 땅에 그 게임의 들 물건 네 가지를 다섯쯤.
   const wild = pick(POOLS.wild, 4, "wild");
   if (wild.length) {
     const ring: number[] = [];
@@ -208,21 +227,57 @@ export function dressBeodeulObjects(host: BeodeulObjectHost): Record<string, num
     }
   }
 
-  // 7. 한 귀퉁이: 게임마다 하나(묘지·옛 터·야영·마른 우물터). 길에서 두 칸 넘게 들고 여덟 칸 안인 빈 땅 8×6 에, 놓이는 것만.
-  const names = Object.keys(CORNERS).sort();
-  const corner = CORNERS[names[lookHash(`objset|${key}|corner`) % names.length]!]!;
-  const spots: number[] = [];
-  for (let y = 2; y + 6 < H - 2; y += 1) for (let x = 2; x + 8 < W - 2; x += 1) {
-    let free = 0, reach = false;
-    for (let j = 0; j < 6; j += 1) for (let i = 0; i < 8; i += 1) { if (host.cell(x + i, y + j) === "free") free += 1; const d = road[idx(x + i, y + j)]!; if (d >= 1 && d <= 3) reach = true; }
-    if (free >= 44 && reach && apart(x, y, 9)) spots.push(idx(x, y));
-  }
-  for (const c of shuffled(spots).slice(0, 12)) {
-    const x0 = c % W, y0 = Math.floor(c / W);
-    const parts = corner.map(([id, dx, dy]) => ({ k: host.kit(id), x: x0 + dx, y: y0 + dy })).filter((p): p is { k: ObjectKit; x: number; y: number } => !!p.k);
-    if (parts.filter((p) => host.fitsLand(p.k, p.x, p.y)).length < Math.min(4, parts.length)) continue;
-    for (const p of parts) land(p.k, p.x, p.y, "corner");
-    break;
-  }
   return placed;
+}
+
+/**
+ * 다 찍은 뒤의 검사: 새 기물이 걷는 땅을 가르는가. 그 기물이 없으면 서로 닿을 두 덩이가 그 기물 때문에 따로라면 길목에 선 것이다 — 걷어 낼 번호를 돌려준다.
+ * 왜 놓을 때가 아니라 뒤인가: 놓을 때는 빈 땅이던 옆 칸에 나중에 나무·숲·밑풀이 서서, 기물과 나무가 함께 풀밭 뒤쪽을 가둔다
+ * (탐침: 열쇠 둘 × 마을 아홉에서 걷는 칸 62칸이 갇혔고, 한 마을은 흙무덤 하나가 65칸을 막았다). 단이 다른 칸(절벽 위아래)은 원래 따로이므로 세지 않는다.
+ * walk = 지금 그 칸을 걸을 수 있는가(네 층), step = 두 이웃 칸 사이를 디딜 수 있는가(높이).
+ */
+export function beodeulObjectsCuttingWays(
+  W: number, H: number, objects: readonly { x: number; y: number; w: number; h: number }[],
+  walk: (x: number, y: number) => boolean, step: (x: number, y: number, nx: number, ny: number) => boolean,
+): number[] {
+  const N4 = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
+  const open = new Uint8Array(W * H);
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) open[y * W + x] = walk(x, y) ? 1 : 0;
+  const label = (): Int32Array => {
+    const comp = new Int32Array(W * H).fill(-1); let n = 0;
+    for (let c0 = 0; c0 < W * H; c0 += 1) {
+      if (!open[c0] || comp[c0]! >= 0) continue;
+      const q = [c0]; comp[c0] = n;
+      for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W;
+        for (const [dx, dy] of N4) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue; const m = ny * W + nx;
+          if (open[m] && comp[m]! < 0 && step(x, y, nx, ny)) { comp[m] = n; q.push(m); } } }
+      n += 1;
+    }
+    return comp;
+  };
+  // 새 기물을 모두 걷어 낸 땅에서 시작해 하나씩 다시 세운다 — 세웠을 때 그 둘레의 걷는 칸이 두 덩이로 갈리면 그 기물은 세우지 않는다.
+  // (하나씩 걷어 보는 것으로는 두 기물이 나란히 막은 목을 못 잡는다: 어느 하나만 걷어도 여전히 막혀 있다.)
+  const cellsOf = objects.map((o) => {
+    const cells: number[] = [];
+    for (let j = 0; j < o.h; j += 1) for (let i = 0; i < o.w; i += 1) { const x = o.x + i, y = o.y + j; if (x >= 0 && y >= 0 && x < W && y < H && !open[y * W + x]) cells.push(y * W + x); }
+    return cells;
+  });
+  for (const cells of cellsOf) for (const c of cells) open[c] = 1;
+  const lift: number[] = [];
+  cellsOf.forEach((cells, at) => {
+    if (!cells.length) return;
+    for (const c of cells) open[c] = 0;
+    const comp = label();
+    const mine = new Set(cells), seen = new Set<number>(); let cuts = false;
+    for (const c0 of cells) {
+      if (seen.has(c0)) continue;
+      const group = [c0]; seen.add(c0); const sides = new Set<number>();
+      for (let h = 0; h < group.length; h += 1) { const c = group[h]!, x = c % W, y = (c - x) / W;
+        for (const [dx, dy] of N4) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H || !step(x, y, nx, ny)) continue; const m = ny * W + nx;
+          if (open[m]) sides.add(comp[m]!); else if (mine.has(m) && !seen.has(m)) { seen.add(m); group.push(m); } } }
+      if (sides.size > 1) cuts = true;
+    }
+    if (cuts) { lift.push(at); for (const c of cells) open[c] = 1; }
+  });
+  return lift;
 }

@@ -3445,7 +3445,7 @@
     "keg",
     "tapped barrel"
    ],
-   "sha256": "7e1cce1bbae8e6f9366947cc592addaddf08820f71acf73ea8a531cff2a4af37",
+   "sha256": "1e1c780906b263070dd07c03eeeb68d0be126efb0ba4059ff974795169934878",
    "family": "village",
    "waiver": "fable-objects100-beodeul-2026-11-14"
   },
@@ -5001,7 +5001,7 @@
     "bear trap",
     "jaw trap"
    ],
-   "sha256": "221a51a9fa66c7d50759e842c6a2879069e62e69ab1eb9507fdced085cb5f611",
+   "sha256": "8f49e117b0a4e8e6bbc6ae28d3cbc1105c1274e72051554761faadc99c057677",
    "family": "forest",
    "waiver": "fable-objects100-beodeul-2026-11-14"
   },
@@ -5871,7 +5871,7 @@
     "empty pedestal",
     "plinth"
    ],
-   "sha256": "d3dbd5c288169a61a9b793dd160b4e24674c296ed6e2d713f2ec3a35b3f10033",
+   "sha256": "935aefb178cbc20222626d4b8bb776ae7fab0b38d9ade8db88d24aed10c8c569",
    "family": "story",
    "waiver": "fable-objects100-beodeul-2026-11-14"
   },

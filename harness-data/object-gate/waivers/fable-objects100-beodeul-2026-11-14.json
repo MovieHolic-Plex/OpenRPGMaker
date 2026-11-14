@@ -8,7 +8,7 @@
   "bundle",
   "shared"
  ],
- "note": "버들항 새 종류 기물 105장 — Claude Fable 5.2 medium 한 방(claude -p, 행 문자열 · 약하게 읽힌 16장만 결함을 적어 한 번 더), 색은 버들항 기물이 이미 쓰는 748색에 코드로 붙임. 모양을 코드로 손댄 그림 없음. 기계 검사 불합격 12장 포함(윗줄 닿음 C 10 · 윗면 밝기 F 1 · 바닥 뜸 G 1), Opus·판정 모델 없음. 자료 ~/z-project/assistant-fable-runs/objects-100/draw · 페이지 beodeul-objects-100.html.",
+ "note": "버들항 새 종류 기물 105장 — Claude Fable 5.2 medium 한 방(claude -p, 행 문자열 · 약하게 읽힌 19장만 결함을 적어 한 번 더), 색은 버들항 기물이 이미 쓰는 748색에 코드로 붙임. 모양을 코드로 손댄 그림 없음. 기계 검사 불합격 11장 포함(윗줄 닿음 C 8 · 윗면 밝기 F 2 · 바닥 뜸 G 1), Opus·판정 모델 없음. 자료 ~/z-project/assistant-fable-runs/objects-100/draw · 페이지 beodeul-objects-100.html.",
  "items": [
   {
    "pixelSha256": "c4b9866f006687c71f45753ec0f9fb9350bd48e6db407463051db4db04d7c157",
@@ -1215,38 +1215,38 @@
    }
   },
   {
-   "pixelSha256": "7e1cce1bbae8e6f9366947cc592addaddf08820f71acf73ea8a531cff2a4af37",
+   "pixelSha256": "1e1c780906b263070dd07c03eeeb68d0be126efb0ba4059ff974795169934878",
    "kind": "round_body",
    "label": "beodeul_city/bd-keg-cradle",
    "width": 16,
    "height": 16,
    "cells": {
     "16": [
-     "29d75b90044f0639"
+     "452b4a0e487dc38c"
     ],
     "24": [
-     "074d01624b96cc45",
-     "22a494d3bc37b2db",
-     "4f3835c443662131",
-     "4ff380f50f498337",
-     "60ee3a6cc5f0fad4",
-     "d658553899480fe6"
+     "21fc15c68d8796ed",
+     "23054c006fdb251d",
+     "3fd9769f8a9fe2c5",
+     "6b2970a50c6e0445",
+     "83c21370b9048a9d",
+     "ef62fc0faccbab93"
     ],
     "32": [
-     "15600aace0129d73",
-     "41bcf51f712abcde",
-     "5cb28fdc76a6191f",
-     "b6e7af6644254e09",
-     "bb89451442aa7031",
-     "e99ba9b91a7cfbb2"
+     "05cf9c9a4dbcbe69",
+     "3e7e29c50736de2b",
+     "8bd70efb96ceeede",
+     "965630682610ac91",
+     "aa0c82ab147dae38",
+     "da2ead98c7a3799c"
     ],
     "48": [
-     "1c7495c992601998",
-     "5bd05f1ac6743d10",
-     "7fa4d786ea8827bb",
-     "b3cb140d481cc7e6",
-     "e4fd6554dcaa4b0e",
-     "e878e9d20180e69f"
+     "2d139ae3e3db3db8",
+     "6327390babc02886",
+     "7c5a7ed94090710c",
+     "8026d896e780e94d",
+     "83ad7b49c686bdf8",
+     "bfc1414f209b9a7a"
     ]
    }
   },
@@ -3014,38 +3014,38 @@
    }
   },
   {
-   "pixelSha256": "221a51a9fa66c7d50759e842c6a2879069e62e69ab1eb9507fdced085cb5f611",
+   "pixelSha256": "8f49e117b0a4e8e6bbc6ae28d3cbc1105c1274e72051554761faadc99c057677",
    "kind": "other",
    "label": "beodeul_city/bd-bear-trap",
    "width": 16,
    "height": 16,
    "cells": {
     "16": [
-     "735c89f1cc76e309"
+     "66568c471a16a347"
     ],
     "24": [
-     "149c10e4151e6bf5",
-     "4a5c50c5f593725d",
-     "4f8fa16930e60654",
-     "5df9118306f17efb",
-     "6c3c575bb371d496",
-     "e0289743a6cf2797"
+     "0287137450a83206",
+     "4adac33ad5aa39d9",
+     "5faaa422285ef5da",
+     "670f38c55dbd55d2",
+     "673590edbbd555a3",
+     "d2a6d9bc74a35846"
     ],
     "32": [
-     "0e604b21417c1870",
-     "2525dabc9d9821c4",
-     "64a2418212d0cc0d",
-     "71eaa000ab5a2014",
-     "83da11e48ff95e8c",
-     "f0cfc7eabd4430d4"
+     "23b0968d729ce915",
+     "26355cbf245dcc27",
+     "4e403026fe20c9ec",
+     "553876c352bf9572",
+     "6cc06175842cc703",
+     "b0971bebbf0f0a19"
     ],
     "48": [
-     "16da119f93b8bd23",
-     "27c40ae0f5b9ad45",
-     "723f34916c5fd57f",
-     "b55534d805f6c4d0",
-     "ccbd0c9304675f1f",
-     "f97ffd157d572aed"
+     "34923cad3a963476",
+     "4fb707620e8ed735",
+     "6ff58d7c2a611b28",
+     "a4ca8e27ee6014f5",
+     "ef989fa1818decb1",
+     "fc37b44e42f2fee6"
     ]
    }
   },
@@ -4018,38 +4018,38 @@
    }
   },
   {
-   "pixelSha256": "d3dbd5c288169a61a9b793dd160b4e24674c296ed6e2d713f2ec3a35b3f10033",
+   "pixelSha256": "935aefb178cbc20222626d4b8bb776ae7fab0b38d9ade8db88d24aed10c8c569",
    "kind": "column",
    "label": "beodeul_city/bd-pedestal",
    "width": 16,
    "height": 16,
    "cells": {
     "16": [
-     "23489ab4d43ed304"
+     "8a573757c40f67d8"
     ],
     "24": [
-     "3566fb35afe2d8ba",
-     "4fce3b60c70a4a1d",
-     "89eea220e267326a",
-     "a12df9cbeccde983",
-     "e850eeaf4d90803f",
-     "fcc59094ff4da60f"
+     "16efc3ba93a3d868",
+     "20b7a6daac6017d8",
+     "529e30e94938339f",
+     "bbf1b7b50861aac9",
+     "effd8fd953bd5fa2",
+     "fb779668c6760f62"
     ],
     "32": [
-     "16fcb836cc3553c4",
-     "412f8635161d9e28",
-     "567337db997eeb27",
-     "6ea01dd7cea8a7f3",
-     "7fb29d51b94f16d7",
-     "c0bae15feb7c20f4"
+     "10675498fb96b7fb",
+     "55616c961733acdc",
+     "67df73f0b0b09f12",
+     "8a6227ef1c3d0de7",
+     "a719508578f504e5",
+     "b19df3bd799d4dff"
     ],
     "48": [
-     "010aee7e18e84ab1",
-     "43dc53cffc86f0b5",
-     "898d1c1348f55978",
-     "a29217a280b84c49",
-     "dda1cb6ccbe55e24",
-     "f7aef3ca5e13a93e"
+     "0275fc32bd98e60e",
+     "0ea1c5cb4524d104",
+     "344d130f84ab1377",
+     "6f97d1f73114112f",
+     "6fd24f28ad80bfcf",
+     "7709b3c3bc128ff3"
     ]
    }
   },

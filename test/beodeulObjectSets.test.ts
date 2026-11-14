@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools";
-import { beodeulBayObjects, beodeulObjectPick, beodeulVergeObjects } from "@/editor/tools/beodeulObjectSets";
+import { beodeulBayObjects, beodeulObjectPick, beodeulObjectsCuttingWays, beodeulVergeObjects } from "@/editor/tools/beodeulObjectSets";
 import { layerTileAt } from "@/project/mapLayers";
 import type { GameMap, Project } from "@/project/types";
 import catalog from "../tiledata/beodeul-objects/catalog.json";
@@ -44,6 +44,22 @@ describe("버들항 새 종류 기물 — 게임마다 한 벌", () => {
     expect(beodeulBayObjects(() => true, undefined)).toEqual([]);
     expect(beodeulVergeObjects(() => true, KEYS[0]).length).toBe(3);
     expect(beodeulVergeObjects(() => false, KEYS[0])).toEqual([]);
+  });
+
+  it("길목에 선 기물만 걷어 낸다 — 걷는 땅을 둘로 가르는 것, 나란히 목을 막은 둘 가운데 뒤의 것", () => {
+    // '#' 막힌 칸 · '.' 걷는 칸 · 'o' 기물이 선 칸(막힘)
+    const cutting = (rows: string[], objects: { x: number; y: number; w: number; h: number }[]) =>
+      beodeulObjectsCuttingWays(rows[0]!.length, rows.length, objects, (x, y) => rows[y]?.[x] === ".", () => true);
+    // 한 칸 폭 길 한가운데: 양쪽이 갈린다
+    expect(cutting(["#######", "...o...", "#######"], [{ x: 3, y: 1, w: 1, h: 1 }])).toEqual([0]);
+    // 트인 풀밭 한가운데: 돌아갈 수 있다
+    expect(cutting([".....", ".....", "..o..", ".....", "....."], [{ x: 2, y: 2, w: 1, h: 1 }])).toEqual([]);
+    // 두 칸 폭 목을 둘이 나란히 막았다: 하나만 걷으면 열린다 — 뒤의 것만 걷는다(하나씩 걷어 보는 검사로는 못 잡는 경우)
+    expect(cutting(["#####", "..o..", "..o..", "#####"], [{ x: 2, y: 1, w: 1, h: 1 }, { x: 2, y: 2, w: 1, h: 1 }])).toEqual([1]);
+    // 막다른 한 칸(위·아래 끝)을 가두는 것도 걷는다
+    expect(cutting(["##.##", "..o..", "..o..", "##.##"], [{ x: 2, y: 1, w: 1, h: 1 }, { x: 2, y: 2, w: 1, h: 1 }])).toEqual([0, 1]);
+    // 디딜 수 없는 사이(단이 다른 칸)는 원래 따로다 — 그 경계에 선 기물은 길목이 아니다
+    expect(beodeulObjectsCuttingWays(5, 1, [{ x: 2, y: 0, w: 1, h: 1 }], (x) => x !== 2, (x, _y, nx) => (x < 2) === (nx < 2) && x !== 2 && nx !== 2)).toEqual([]);
   });
 
   it("조수 실행(게임 열쇠)으로 지은 강가 마을에는 새 기물이 놓이고, 열쇠가 없으면 하나도 없다 — 문 앞 도달·찍기 실패는 같다", () => {
