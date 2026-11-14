@@ -190,10 +190,13 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   const sideParty = skin.sideParty && !snapshot.relationship && !snapshot.story && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
     ? renderSidePartyMini(options.project, snapshot)
     : undefined;
+  const plainSaveList = (selectedCommand === "save" || selectedCommand === "load")
+    && !options.slots.some((slot) => slot.kind === "present" && slot.snapshot.monsterSummary);
   const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
     selectedActionIndex: options.selectedDetailActionIndex,
     // 쇼케이스는 작업 패널에서만 — 트레이·확인 카드는 명령 버튼 목록이라 그릴 그림이 없다.
-    showcase: (!detail.layout?.startsWith("campaign-") || detail.layout === "campaign-box") && selectedCommand !== "options" && !options.targetItemId && presentation === "work-panel",
+    // 저장·불러오기는 행이 장소·플레이 시간·레벨을, 아래 안내 줄이 저장 날짜를 보인다 — 같은 저장 정보를 요약으로 한 번 더 그리지 않는다(2026-11-14 QA minor 9).
+    showcase: (!detail.layout?.startsWith("campaign-") || detail.layout === "campaign-box") && selectedCommand !== "options" && !plainSaveList && !options.targetItemId && presentation === "work-panel",
     side: sideParty,
   });
   detailPanel.dataset.statusMenuPresentation = presentation;

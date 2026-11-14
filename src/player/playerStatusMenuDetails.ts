@@ -1365,9 +1365,9 @@ function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<Statu
   };
 }
 
-// 행의 오른쪽은 칸을 고르기 전에 비교하는 값이다. 「저장됨」만 있으면 세 칸이 같아 보이고,
-// 플레이 시간만으로는 더 짧은 옛 저장을 다시 이은 뒤의 최신 칸을 구분하지 못한다.
-// 레벨과 저장 시각을 행에 두고, 장소·플레이 시간·전체 날짜는 고른 칸의 설명에 둔다.
+// 행의 오른쪽은 칸을 고르기 전에 비교하는 값이다 — 장소 · 플레이 시간 · 레벨. 「저장됨」만 있으면 세 칸이 같아 보인다.
+// 플레이 시간만으로는 더 짧은 옛 저장을 다시 이은 뒤의 최신 칸을 구분하지 못하므로, 고른 칸의 저장 날짜를 아래 안내 줄에 한 번 보인다.
+// 예전에는 같은 저장 정보가 행 · 목록 아래 요약 · 안내 줄에 세 번 나왔다(2026-11-14 QA minor 9). 요약(쇼케이스)은 이 화면에서 그리지 않는다.
 function saveSlotEntryParts(
   slot: SaveSlotReadResult,
   confirmingOverwrite: boolean,
@@ -1390,14 +1390,12 @@ function saveSlotEntryParts(
       }
       const lines = [
         snapshot.projectTitle,
-        snapshot.mapName,
-        [level, played].filter(Boolean).join(" · "),
         when,
         vnCard && snapshot.sceneLine ? `“${snapshot.sceneLine}”` : "",
       ].filter((line) => Boolean(line));
       return {
-        value: saveSlotGlance(snapshot, confirmingOverwrite, text),
-        description: lines.join("\n"),
+        value: confirmingOverwrite ? text("save.overwrite") : [snapshot.mapName, played, level].filter(Boolean).join(" · ") || text("save.saved"),
+        description: lines.join(" · ") || undefined,
       };
     }
     case "present": return savedSnapshotParts(slot.snapshot, confirmingOverwrite, vnCard, text);    default: return assertNever(slot);
@@ -1430,10 +1428,6 @@ function savedSnapshotParts(
   vnCard: boolean,
   text: (key: VnUiKey) => string,
 ): { value: string; description?: string } {
-  const parts = [snapshot.projectTitle];
-  if (typeof snapshot.partyLevel === "number") parts.push(`L${snapshot.partyLevel}`);
-  if (snapshot.mapName) parts.push(snapshot.mapName);
-  if (typeof snapshot.playTimeSeconds === "number") parts.push(formatPlayTime(snapshot.playTimeSeconds));
   const monster = snapshot.monsterSummary;
   if (monster) {
     // 몬스터 수집 게임: 고른 칸의 쇼케이스(설명)에 도감·배지·주인공·장소·시간·파티. 행의 오른쪽 값은 짧게 둔다(쇼케이스가 열리면 목록 폭이 좁다).
@@ -1441,15 +1435,13 @@ function savedSnapshotParts(
     const where = [progress, monster.trainer, snapshot.mapName, typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined, `파티 ${monster.party}`];
     return { value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"), description: where.filter(Boolean).join(" / ") };
   }
-  // 미연시 세이브 카드(saveCards): 날짜와 저장 시점의 마지막 대사 한 줄을 함께 보인다.
-  if (vnCard) {
-    const when = formatSaveDate(snapshot.savedAt);
-    if (when) parts.push(when);
-    if (snapshot.sceneLine) parts.push(`“${snapshot.sceneLine}”`);
-  }
+  // 줄에는 장소 · 플레이 시간 · 레벨, 안내 줄에는 게임 이름과 저장 날짜(미연시 세이브 카드면 마지막 대사 한 줄도) — 수동 저장 칸과 같은 꼴.
+  const level = typeof snapshot.partyLevel === "number" ? `L${snapshot.partyLevel}` : undefined;
+  const played = typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined;
+  const rest = [snapshot.projectTitle, formatSaveDate(snapshot.savedAt) || undefined, vnCard && snapshot.sceneLine ? `“${snapshot.sceneLine}”` : undefined];
   return {
-    value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"),
-    description: parts.join(" / "),
+    value: confirmingOverwrite ? text("save.overwrite") : [snapshot.mapName, played, level].filter(Boolean).join(" · ") || text("save.saved"),
+    description: rest.filter(Boolean).join(" / "),
   };
 }
 
