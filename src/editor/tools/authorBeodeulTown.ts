@@ -111,6 +111,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
           pastures: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"] }, description: "울타리 친 목초지(양·짚가리) 자리 — 풀밭 마을(river·coast)" },
           exits: { type: "array", items: { type: "string", enum: [...LAYOUT_EDGES] }, description: "큰길이 마을 밖으로 나가는 맵 가장자리(1~2)" },
         } },
+      kind: { type: "string", description: "Village kind id (river/coast villages): sets the trade scenes, the work building and the house-side props. Omit to let the game pick one that fits the land." },
       fishing: { type: "boolean", description: "강가 어촌(theme river): 물가 길에 그물 말림대·통발·엎어 둔 배·계류 말뚝과 물에 매어 둔 배를 둔다. 사용자가 어촌·어부를 말할 때." },
       harbour: { type: "boolean", description: `true 이고 가로 ${HARBOUR_W} 이상이면 맨 아래에 항구 호수를 붙인다(세로 ${HARBOUR_H}칸 추가).` },
     },
@@ -131,7 +132,9 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     const onStart=typeof args.mapId==='string'&&args.mapId===startMap;
     if(onStart) draft.startMapId='';
     let result:ToolExecResult;
-    try{ result=legacySmall?buildSmallBeodeulVillage(draft,args):buildTown(draft,args); }
+    // 시작 맵 위에 지으면 시작 칸 둘레를 비워 둔다(덤불·기물·장면) — 주인공이 덤불 그림 위에서 시작하지 않게(2026-11-14 은행 lay-main-harbor).
+    const townArgs=onStart&&draft.startPos?{...args,_startCell:{x:draft.startPos.x,y:draft.startPos.y}}:args;
+    try{ result=legacySmall?buildSmallBeodeulVillage(draft,args):buildTown(draft,townArgs); }
     finally{ if(onStart) draft.startMapId=startMap; }
     const theme=String(args.theme??(args.harbour===true?'coast':'river'));
     const mapId=(result.data as {mapId?:string}|undefined)?.mapId;
@@ -691,7 +694,8 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     layoutNotes.splice(0, layoutNotes.length, ...notes);
     return { codeTerrain: codeTerrainFor(theme, args, m.width, m.height, terrainSeed), layout };
   };
-  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
+  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.kind === "string" && args.kind.trim() ? { kind: args.kind.trim() } : {}), ...(args.harbour === true ? { harbour: true } : {}),
+    ...(args._startCell && typeof args._startCell === "object" ? { startCell: args._startCell as { x: number; y: number } } : {}), ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
     ...(args.wallGate === "N" || args.wallGate === "NS" || args.wallGate === "S" ? { wallGate: args.wallGate } : {}), ...(args.wallSideGaps === true ? { wallSideGaps: true } : {}) });
   let r = build();
   // 성벽 띠가 가장자리를 먹어 요청한 집 수가 다 앉지 않는다(2026-10-22 조수 시험 r3: 5채 요청 → 44×32 에서 2채, 조수가 52×38 로 다시 지어 3채).

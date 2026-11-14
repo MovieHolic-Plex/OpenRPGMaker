@@ -9,6 +9,7 @@ import { behindBuildingStrip, declaredDoorCells, placeMarks } from "./entrances"
 import { roadCells } from "./surface";
 import { personSpotContext, personSpotCost } from "./personSpot";
 import { coveredCell } from "./underRoof";
+import { villageSceneByWord } from "@/project/villageKindPlan";
 
 export interface WhereResolution {
   /** 사람이 설 칸 — 물건(footprint)이면 발밑 맨 아래 줄의 왼쪽 칸(generate_missing_object·stamp_tileset_object 의 base). */
@@ -330,6 +331,16 @@ export function resolveWhere(
       const moved = c.x !== at.x || c.y !== at.y;
       return done(c, { ...(moved ? { note: `at (${at.x},${at.y}) 은 ${fp ? `${fp.w}×${fp.foot + fp.over} 물건을 놓을 수 없는` : "못 서는"} 칸이라 (${c.x},${c.y}) 로 옮겼다.` } : {}), how: `칸 (${c.x},${c.y})` });
     }
+  }
+
+  // 마을 종류의 장면 이름(«대장간 마당»·«그물 말리는 터» — 빌더가 맵에 적어 둔 것): 그 무더기 곁의 설 칸에서 가장 가까운 쓸 수 있는 칸.
+  const sceneHit = fp ? undefined : villageSceneByWord(map, word);
+  if (sceneHit) {
+    const stand = sceneHit.front ?? { x: sceneHit.x + Math.floor(sceneHit.w / 2), y: sceneHit.y + sceneHit.h };
+    const box = { x0: sceneHit.x, y0: sceneHit.y, x1: sceneHit.x + sceneHit.w - 1, y1: sceneHit.y + sceneHit.h - 1 };
+    const off = (q: Cell) => Math.max(q.x < box.x0 ? box.x0 - q.x : q.x > box.x1 ? q.x - box.x1 : 0, q.y < box.y0 ? box.y0 - q.y : q.y > box.y1 ? q.y - box.y1 : 0);
+    const c = pick((q) => (off(q) >= 1 && off(q) <= 3 ? dist(q, stand) : Infinity));
+    if (c) return done(c, { anchor: { x: sceneHit.x, y: sceneHit.y }, how: `${sceneHit.label}(${sceneHit.x},${sceneHit.y}) 곁`, face: dirTowardCell(c, { x: Math.round((box.x0 + box.x1) / 2), y: Math.round((box.y0 + box.y1) / 2) }) });
   }
 
   // 도움 함수: 방 안 칸의 벽 쪽(이웃이 방 밖이거나, 가구 아닌 못 가는 칸·벽 그림).

@@ -21,7 +21,8 @@ const POOLS = {
   rock: O("boulder-s boulder-pair boulder-tall boulder-huge rock-outcrop slab-ledge rockfall scree-fan heather-clump grass-tuft"),
 } as const;
 /** 걷는 바닥 그림(사람 아래) — 빌더가 «바닥 소품» 으로 센다. */
-const WALK_ON = new Set(O("leaf-pile grass-tuft scree-fan mosaic"));
+export const WALK_ON: ReadonlySet<string> = new Set([...O("leaf-pile grass-tuft scree-fan mosaic windfalls stone-chips evaporation-bed bleach-green dig-plot star-slab"),
+  "bd-org-flowers-patch", "bd-org-shroom-ring", "bd-org-grass-reeds", "bd-org-fern-s", "bd-org-shroom-red"]);
 /** 마을 한 귀퉁이(게임마다 하나): 묘지 · 옛 터 · 나그네 야영. [킷, 왼쪽 위에서 dx, dy]. */
 const CORNERS: Record<string, readonly (readonly [string, number, number])[]> = {
   grave: [["bd-obj-iron-fence", 0, 0], ["bd-obj-iron-fence", 2, 0], ["bd-obj-iron-fence", 4, 0], ["bd-obj-gravestone", 0, 2], ["bd-obj-grave-cross", 2, 1], ["bd-obj-gravestone", 4, 2],
@@ -73,13 +74,49 @@ export interface BeodeulObjectHost {
   readonly houses: readonly { x: number; y: number; w: number; h: number }[];
   readonly plazaCells: readonly number[];
   readonly work: { x: number; y: number } | null;
+  /** 들를 곳(문 앞·모이는 곳·들머리)과 계획 칸의 걸음 — 주면 기물·장면이 그 사이 걷는 길을 두 칸 넘게 돌리지 않는다. */
+  readonly route?: RouteFacts;
+  /** 마을 종류가 정한 물건(집 곁·물 위·들). 주면 그 게임의 벌 대신 이것을 쓰고, 장면이 맡는 광장·일터·한 귀퉁이 흩뿌리기는 하지 않는다. */
+  readonly kindPools?: { readonly home: readonly string[]; readonly water: readonly string[]; readonly wild: readonly string[] };
+}
+export interface RouteFacts {
+  readonly entrance: { x: number; y: number } | null;
+  readonly gather: { x: number; y: number } | null;
+  readonly stops: readonly { x: number; y: number }[];
+  /** 계획에서 걷는 칸인가 · 두 이웃 칸 사이를 디딜 수 있는가(단은 계단으로만). */
+  walkable(x: number, y: number): boolean;
+  canStep(x: number, y: number, nx: number, ny: number): boolean;
+}
+/** 들를 곳 사이의 걷는 거리를 지키는 문지기. ok(막을 칸) = 그 칸들을 막아도 어느 들를 곳도 두 칸 넘게 멀어지지 않는가. take = 막았다고 적는다. */
+export interface RouteGuard { ok(cells: readonly number[]): boolean; take(cells: readonly number[]): void; /** 지금까지 늘어난 걸음(들를 곳마다 더한 값). */ added(): number }
+export function beodeulRouteGuard(W: number, H: number, route: RouteFacts | undefined, slack = 2): RouteGuard {
+  if (!route || !route.stops.length) return { ok: () => true, take: () => undefined, added: () => 0 };
+  const blocked = new Uint8Array(W * H);
+  const from = [route.entrance, route.gather].filter((p): p is { x: number; y: number } => !!p).map((p) => p.y * W + p.x);
+  const stops = route.stops.map((p) => p.y * W + p.x);
+  const walk = (c: number) => !blocked[c] && route.walkable(c % W, Math.floor(c / W));
+  const dists = (extra: ReadonlySet<number> | null): number[][] => from.map((s) => {
+    const d = new Int32Array(W * H).fill(-1); const q = [s]; d[s] = 0;
+    for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue; const n = ny * W + nx;
+        if (d[n]! >= 0 || extra?.has(n) || !walk(n) || !route.canStep(x, y, nx, ny)) continue; d[n] = d[c]! + 1; q.push(n); } }
+    return stops.map((t) => d[t]!);
+  });
+  const first = dists(null); let now = first;
+  const worse = (next: number[][]): boolean => next.some((row, i) => row.some((v, j) => { const was = now[i]![j]!; return was >= 0 && (v < 0 || v > was + slack || v > first[i]![j]! + slack * 2); }));
+  return {
+    ok: (cells) => !worse(dists(new Set(cells))),
+    take: (cells) => { for (const c of cells) blocked[c] = 1; now = dists(null); },
+    added: () => now.reduce((sum, row, i) => sum + row.reduce((a, v, j) => a + (v >= 0 && first[i]![j]! >= 0 ? v - first[i]![j]! : 0), 0), 0),
+  };
 }
 
 /** 새 기물을 마을에 놓는다. 돌려주는 값: 쓰임마다 놓은 수. */
-export function dressBeodeulObjects(host: BeodeulObjectHost): Record<string, number> {
+export function dressBeodeulObjects(host: BeodeulObjectHost, guard: RouteGuard = beodeulRouteGuard(host.W, host.H, host.route)): Record<string, number> {
   const placed: Record<string, number> = { home: 0, plaza: 0, work: 0, shore: 0, water: 0, wild: 0, rock: 0, corner: 0 };
-  const key = host.key;
+  const key = host.key ?? (host.kindPools ? "kind" : undefined);
   if (!key) return placed;
+  const kind = host.kindPools;
   const { W, H } = host;
   let s = lookHash(`objects|${key}|${host.seed}`) || 1;
   const rand = () => { s = (Math.imul(s ^ (s >>> 15), 2246822507) + 0x9e3779b9) >>> 0; s ^= s >>> 13; return (s >>> 0) / 4294967296; };
@@ -100,13 +137,16 @@ export function dressBeodeulObjects(host: BeodeulObjectHost): Record<string, num
   };
   const taken: { x: number; y: number }[] = [];
   const apart = (x: number, y: number, d: number) => !taken.some((t) => Math.abs(t.x - x) < d && Math.abs(t.y - y) < d);
+  const cellsOf = (k: ObjectKit, x: number, y: number): number[] => { const out: number[] = []; for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) out.push(idx(x + i, y + j)); return out; };
   const land = (k: ObjectKit, x: number, y: number, slot: string): boolean => {
     if (!host.fitsLand(k, x, y)) return false;
+    // 걷는 바닥 그림이 아니면 들를 곳 사이의 길을 두 칸 넘게 돌리지 않는 자리에만
+    if (!WALK_ON.has(k.id)) { const cells = cellsOf(k, x, y); if (!guard.ok(cells)) return false; guard.take(cells); }
     host.placeLand(k, x, y, WALK_ON.has(k.id), slot); taken.push({ x, y }); placed[slot] = (placed[slot] ?? 0) + 1; return true;
   };
 
   // 1. 집 곁 살림: 집 네 채에 셋꼴, 벽에서 한 칸 띄워 집 발치 줄에.
-  const home = pick([...POOLS.home, ...(host.coast ? POOLS.homeCoast : [])], 5, "home");
+  const home = kind ? kits(kind.home) : pick([...POOLS.home, ...(host.coast ? POOLS.homeCoast : [])], 5, "home");
   if (home.length) host.houses.forEach((h, i) => {
     if (rand() > 0.75) return;
     const k = home[i % home.length]!;
@@ -118,18 +158,19 @@ export function dressBeodeulObjects(host: BeodeulObjectHost): Record<string, num
   });
 
   // 2. 광장: 그 게임의 장터 물건 셋까지, 서로 세 칸 넘게 띄워.
-  const plaza = pick(POOLS.plaza, 3, "plaza");
+  const plaza = kind ? [] : pick(POOLS.plaza, 3, "plaza");
   if (plaza.length && host.plazaCells.length) {
     const spots = shuffled([...host.plazaCells]);
     for (const k of plaza) for (const c of spots) {
       const x = (c % W) - Math.floor(k.w / 2), y = Math.floor(c / W) - k.h + 1;
       if (!apart(x, y, 4) || !host.fitsPlaza(k, x, y)) continue;
+      const cells = cellsOf(k, x, y); if (!guard.ok(cells)) continue; guard.take(cells);
       host.placePlaza(k, x, y, "plaza"); taken.push({ x, y }); placed.plaza! += 1; break;
     }
   }
 
   // 3. 일터 곁: 두세 가지.
-  if (host.work) {
+  if (host.work && !kind) {
     const work = pick(host.coast ? POOLS.workCoast : POOLS.work, 3, "work");
     for (const k of work) for (let t = 0; t < 30; t += 1) {
       const x = Math.round(host.work.x + (rand() * 2 - 1) * 5) - Math.floor(k.w / 2), y = Math.round(host.work.y + (rand() * 2 - 1) * 3.5) - k.h + 1;
@@ -160,7 +201,7 @@ export function dressBeodeulObjects(host: BeodeulObjectHost): Record<string, num
     }
   }
   if (waterCells.length) {
-    const water = pick(host.coast ? POOLS.waterCoast : POOLS.water, 3, "water");
+    const water = kind ? kits(kind.water) : pick(host.coast ? POOLS.waterCoast : POOLS.water, 3, "water");
     let n = 0;
     for (const c of shuffled(waterCells)) {
       if (n >= 4 || !water.length) break;
@@ -182,7 +223,7 @@ export function dressBeodeulObjects(host: BeodeulObjectHost): Record<string, num
     for (let j = 0; j < 6; j += 1) for (let i = 0; i < 8; i += 1) { if (host.cell(x + i, y + j) === "free") free += 1; const d = road[idx(x + i, y + j)]!; if (d >= 1 && d <= 3) reach = true; }
     if (free >= 44 && reach) spots.push(idx(x, y));
   }
-  for (const c of shuffled(spots).slice(0, 12)) {
+  for (const c of kind ? [] : shuffled(spots).slice(0, 12)) {
     const x0 = c % W, y0 = Math.floor(c / W);
     const parts = corner.map(([id, dx, dy]) => ({ k: host.kit(id), x: x0 + dx, y: y0 + dy })).filter((p): p is { k: ObjectKit; x: number; y: number } => !!p.k);
     if (parts.filter((p) => host.fitsLand(p.k, p.x, p.y)).length < Math.min(4, parts.length)) continue;
@@ -215,7 +256,7 @@ export function dressBeodeulObjects(host: BeodeulObjectHost): Record<string, num
   }
 
   // 7. 들: 길에서 두세 칸 든 빈 땅에 그 게임의 들 물건 네 가지를 다섯쯤.
-  const wild = pick(POOLS.wild, 4, "wild");
+  const wild = kind ? kits(kind.wild) : pick(POOLS.wild, 4, "wild");
   if (wild.length) {
     const ring: number[] = [];
     for (let y = 2; y < H - 2; y += 1) for (let x = 2; x < W - 2; x += 1) if (host.cell(x, y) === "free" && road[idx(x, y)]! >= 2 && road[idx(x, y)]! <= 4 && awayFromHouses(x, y)) ring.push(idx(x, y));

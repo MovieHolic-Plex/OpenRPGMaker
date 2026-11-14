@@ -5,7 +5,7 @@
 // 자리 검사는 빌더의 것 그대로다(host — 빈 땅·한 단·문 앞·길). 여기서 더 보는 것은 «무더기» 의 조건뿐이다: 한 단 위, 걸어 닿는 곳, 둘레가 트인 곳,
 // 다른 장면과 떨어진 곳(무더기 사이에 빈 땅이 남는다).
 import { lookHash } from "@/project/kitLook";
-import type { BeodeulObjectHost, ObjectKit } from "./beodeulObjectSets";
+import type { BeodeulObjectHost, ObjectKit, RouteGuard } from "./beodeulObjectSets";
 
 /** 장면이 기대는 자리: 일터 건물 문 곁 · 물가 · 모이는 곳 가장자리 · 큰길 어귀 · 높은 단 · 집 옆 · 집 뒤 · 길가 · 들 · 판석 광장. */
 export type SceneAnchor = "work" | "shore" | "commons" | "entry" | "upper" | "house" | "behind" | "road" | "wild" | "plaza";
@@ -50,6 +50,8 @@ export interface BeodeulSceneHost extends BeodeulObjectHost {
    * 빌더가 아는 칸 목록(있을 때만): 마당(모이는 곳의 다진 흙)·둑 위. 주면 닻 찾기가 그 칸을 쓰고, 없으면 모이는 곳·문·물가·길에서 스스로 찾는다.
    */
   readonly areas?: SceneAreas;
+  /** 그 킷이 그 자리에서 막는 칸(발). */
+  footCells(kit: ObjectKit, x: number, y: number): number[];
   /** 장면 안의 빈 칸을 비워 둔다 — 나무·덤불·밭이 들어오지 않게(걷는 땅 그대로). */
   reserve(x: number, y: number): void;
 }
@@ -84,7 +86,8 @@ function sceneAnchorScore(host: BeodeulSceneHost, ctx: AnchorContext, at: SceneA
   if (anchor === "work") {
     const door = host.workDoor;
     // 문 곁: 문 줄(문 앞에서 남쪽으로 난 걸음 자리)은 비우고 건물 앞줄에서 옆으로 붙는다. 건물이 없으면 일터 자리 둘레.
-    if (door) return (b) => { const g = gap(b, door); return g < 1 || g > 5 || (b.x0 <= door.x && b.x1 >= door.x && b.y1 >= door.y) ? Infinity : g * 1.5 + Math.abs(b.y0 - door.y) * 0.6; };
+    // 문 앞에서 남쪽으로 난 걸음 자리(문 줄 세 칸)를 덮지 않으면 길 건너도 된다 — 다만 멀수록 나쁘고 여덟 칸을 넘지 않는다.
+    if (door) return (b) => { const g = gap(b, door); return g < 1 || g > 8 || (b.x0 <= door.x && b.x1 >= door.x && b.y0 <= door.y + 3) ? Infinity : g * 1.5 + Math.abs(b.y0 - door.y) * 0.4; };
     const w = host.work!; return (b) => { const g = gap(b, w); return g > 5 ? Infinity : g; };
   }
   if (anchor === "commons" || anchor === "plaza") {
@@ -140,7 +143,7 @@ interface Part { kit: ObjectKit; dx: number; dy: number; optional: boolean; wate
 const N4 = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
 
 /** 종류의 장면을 차례로 놓는다. key = 게임 열쇠(없으면 종류 이름) — 같은 게임·같은 씨앗은 같은 자리다. */
-export function placeVillageScenes(host: BeodeulSceneHost, scenes: readonly VillageScene[], key: string, walkOn: ReadonlySet<string>): SceneReport {
+export function placeVillageScenes(host: BeodeulSceneHost, scenes: readonly VillageScene[], key: string, walkOn: ReadonlySet<string>, guard: RouteGuard): SceneReport {
   const { W, H } = host;
   const report: SceneReport = { placed: [], skipped: [] };
   const idx = (x: number, y: number) => y * W + x;
@@ -205,13 +208,20 @@ export function placeVillageScenes(host: BeodeulSceneHost, scenes: readonly Vill
       const sc = score(boxOf(ox, oy)); if (Number.isFinite(sc)) cands.push({ ox, oy, s: sc + (lookHash(`scene|${key}|${host.seed}|${scene.id}|${ox}|${oy}`) % 1000) / 600 });
     }
     cands.sort((a, b) => a.s - b.s);
+    const dbg = { cands: cands.length, group: 0, fit: 0, min: 0, guard: 0 };
     const required = land.filter((p) => !p.optional);
     for (const { ox, oy } of cands) {
-      if (!groupOk(ox, oy)) continue;
+      if (!groupOk(ox, oy)) { dbg.group += 1; continue; }
       for (const flip of lookHash(`scene|${key}|${scene.id}|flip`) % 2 ? [true, false] : [false, true]) {
-        if (!required.every((p) => fitsPart(p, ox, oy, flip))) continue;
+        if (!required.every((p) => fitsPart(p, ox, oy, flip))) { dbg.fit += 1;
+          if (process.env.SCENE_DEBUG === scene.id && dbg.fit <= 10) { const bad = required.filter((p) => !fitsPart(p, ox, oy, flip)).map((p) => { const sp = spot(p, ox, oy, flip); const kinds: string[] = []; for (let j = 0; j < p.kit.h; j += 1) for (let i = 0; i < p.kit.w; i += 1) kinds.push(`${host.cell(sp.x + i, sp.y + j)[0]}${host.level(sp.x + i, sp.y + j)}`); return `${p.kit.id.slice(-12)}@${sp.x},${sp.y}[${kinds.join("")}]`; }); console.log("  fit-fail", JSON.stringify(boxOf(ox, oy)), bad.join(" ")); }
+          continue; }
         const use = land.filter((p) => !p.optional || fitsPart(p, ox, oy, flip));
         if (use.length < scene.min) continue;
+        // 장면이 문·모이는 곳·들머리 사이의 걷는 길을 두 칸 넘게 돌리면 그 자리는 아니다.
+        const feet = use.flatMap((p) => { const s = spot(p, ox, oy, flip); return walkOn.has(p.kit.id) ? [] : host.footCells(p.kit, s.x, s.y); });
+        if (!guard.ok(feet)) { dbg.guard += 1; continue; }
+        guard.take(feet);
         for (const p of use) { const s = spot(p, ox, oy, flip); const slot = sceneSlot(at, !p.optional);
           if (onPlaza) host.placePlaza(p.kit, s.x, s.y, slot); else host.placeLand(p.kit, s.x, s.y, walkOn.has(p.kit.id), slot); }
         const b = boxOf(ox, oy);
@@ -236,6 +246,7 @@ export function placeVillageScenes(host: BeodeulSceneHost, scenes: readonly Vill
         return;
       }
     }
+    if (process.env.SCENE_DEBUG) console.log("scene", scene.id, scene.at, JSON.stringify(dbg), "door", JSON.stringify(host.workDoor), "work", JSON.stringify(host.work));
     skip("room");
   });
   // 번호(scene:<n>)는 종류의 장면 차례다 — 못 놓은 자리는 비어 있다.
