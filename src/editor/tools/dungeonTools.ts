@@ -419,7 +419,7 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
     for (let y = ry; y < ry + rh; y += 1) for (let x = rx; x < rx + rw; x += 1) if (isPassable(draft, map, x, y) && !map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) roomCells.push({ x, y }); }
   roomCells.sort((a, b) => Math.hypot(a.x - key.x, a.y - key.y) - Math.hypot(b.x - key.x, b.y - key.y));
   const placedLever = placeLever(draft, map, [...wallFirst(draft, map, roomCells), key], `ev_${map.id}_lever`, "레버", sw,
-    [...block.openCommands, { kind: "text", body: rock ? "쿠르릉… 어디선가 바위가 굴러가는 소리가 울렸다." : "어디선가 쇠창살이 올라가는 소리가 울렸다." } as Command], "녹슨 레버가 있다. 힘껏 당겼다!", "레버는 이미 당겨져 있다.");
+    [...block.openCommands, { kind: "text", body: rock ? "쿠르릉. 어디선가 바위가 굴러가는 소리가 울린다." : "어디선가 쇠창살이 올라가는 소리가 울린다." } as Command], "녹슨 레버다. 힘껏 당긴다.", "레버는 이미 당겨져 있다.");
   if (!placedLever) { warnings.push(`${map.name}: 레버 자리를 못 찾았다`); return ""; }
   const at = placedLever.at;
   return `레버 퍼즐: ${placedLever.wall ? "벽 " : ""}레버 (${at.x},${at.y}${placedLever.wall ? " — 그 아래 칸에서 벽을 보고 조사" : ""}) → ${block.tiles ? "쇠창살문(타일 키트 — 문간 이벤트 " : "쇠창살 "}${block.cells.map((c) => `(${c.x},${c.y})`).join(" ")}${block.tiles ? ")" : "(통로 폭 전체)"} 스위치 ${sw}. 레버는 한 칸짜리 벽 레버 그림이 정상이다 — 다시 짓거나 다른 칩셋의 레버 기물을 찍지 않는다`;

@@ -396,7 +396,7 @@ function polishLines(observatory: GameMap, forest: GameMap, vault: GameMap): voi
     const rec = c as unknown as Record<string, unknown>;
     if (rec.kind === "changeItem" && rec.itemId === "item_shared_fishing_shrimp-1") rec.itemId = "item_hi_potion";
   }
-  replaceLine(vault, `ev_${FS_PREFIX}_vault_chest1`, "보물상자를 열었다! 기본 새우를 손에 넣었다.", [narrate("상자를 열었다.\n「상급 회복약」을 찾았다.")]);
+  replaceLine(vault, `ev_${FS_PREFIX}_vault_chest1`, "「기본 새우」를 얻었다.", [narrate("상자를 열었다.\n「상급 회복약」을 찾았다.")]);
 
   // 보기 셋 선택지는 질문과 함께 띄운다 — 480×270 에서 셋째 보기가 잘리던 것은 엔진이 고쳤다(#3128, 선택 창이 보기 수만큼 자란다).
 
@@ -545,7 +545,7 @@ function stageTalk(event: GameEvent | undefined): void {
  * 대사 종류를 단다 — 서술·안내·석판·외침이 모두 같은 창이라 누가 말하는지 읽기 어려웠다(가혹 검수 r6 「대사」 6.5).
  * 서술은 내레이션 창, 얻음·동료 합류·화로 진행은 시스템 안내, 석판은 표지판, 정해 둔 외침 두 줄은 외침.
  */
-const SYSTEM_LINE = /(얻었다|받았다|손에 넣었다|동료가 되었다|\(\d\/\d\)|상자는 비어 있다)/u;
+const SYSTEM_LINE = /(얻었다|받았다|손에 넣었다|동료가 되었다|\(\d\/\d\)|불붙은 화로는 이제|상자는 비어 있다)/u;
 function tagLineContext(cmd: Command): void {
   const line = cmd as Command & { speaker?: string; body?: string; context?: string };
   if (line.kind !== "text" || typeof line.body !== "string") return;
@@ -1870,7 +1870,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
           say("석판", "첫 불은 동쪽 두 화로 가운데 하나에 붙인다."),
           say("석판", "북서는 남서와 북동보다 먼저 탄다.\n남서는 셋째가 아니다."),
         );
-      } else if (rec.body.startsWith("불길이 역류해 모든 화로가 꺼졌다")) {
+      } else if (rec.body.startsWith("불길이 역류해 화로가 모두 꺼진다")) {
         // VQA 2026-10-31: 엘레나가 석판 답을 그대로 읊어 추론이 사라졌다 — 석판으로 돌려보내기만 한다.
         list.splice(i + 1, 0, say("엘레나", "석판을 다시 읽어 보자."));
       } else if (rec.body === "네 화로가 하나의 불길로 이어지며 창살이 녹아내린다!") {
