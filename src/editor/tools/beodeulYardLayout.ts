@@ -72,9 +72,9 @@ type Cand = { r: YardRect; s: number; lobes: YardRect[]; level: number };
 /**
  * 마당 후보: 한 단 마른 네모이고, 북쪽에 집 줄이 설 깊이가 있고, 옆으로 날개를 낼 수 있는 자리. 단마다 가장 좋은 하나 + 그 단의 둘째(첫째에서 9칸 넘게 떨어진 것).
  * 땅이 정한다 — 물가 좁은 둑에 모이는 곳이 잡혔어도 마당은 집이 설 수 있는 터로 간다. plaza(판석 광장 마을)는 광장 크기의 네모(날개는 광장 옆 맨땅 앞마당).
- * compact: 좁은 터용 작은 마당만.
+ * mode: 0 보통 · 1 좁은 터용 작은 마당만 · 2 얕은 단(여덟 줄 안팎 다랑이)용 띠 마당 — 두 줄 깊이의 긴 흙 띠와 그 북쪽에 작은 집 한 줄.
  */
-function yardCandidates(t: CodeTerrain, g: LayoutPoint, level: number, houses: number, rand: () => number, free: (c: number) => boolean, opts: { plaza?: { rx: number; ry: number }; wetOk?: boolean }, compact: boolean): Cand[] {
+function yardCandidates(t: CodeTerrain, g: LayoutPoint, level: number, houses: number, rand: () => number, free: (c: number) => boolean, opts: { plaza?: { rx: number; ry: number }; wetOk?: boolean }, mode: 0 | 1 | 2): Cand[] {
   const { W, H } = t;
   const inMap = (x: number, y: number) => x >= 1 && y >= 1 && x < W - 1 && y < H - 2;
   const search = (L: number, sizes: [number, number][]): Cand[] => {
@@ -94,7 +94,7 @@ function yardCandidates(t: CodeTerrain, g: LayoutPoint, level: number, houses: n
     for (const [w, h] of sizes) for (let y0 = 8; y0 + h < H - 3; y0 += 1) for (let x0 = 2; x0 + w < W - 2; x0 += 1) {
       const r = { x0, y0, x1: x0 + w - 1, y1: y0 + h - 1 };
       if (!allDry(r)) continue;
-      const north = run(r.x0 - 1, r.x1 + 1, r.y0 - 1, 8);
+      const north = run(r.x0 - 1, r.x1 + 1, r.y0 - 1, mode === 2 ? 6 : 8);
       // 날개: 가운데 네모 옆으로 두세 줄 내려앉은 덩이 — 그 북쪽 가장자리에도 집이 선다
       const lobes: YardRect[] = [];
       for (const side of [-1, 1] as const) {
@@ -121,11 +121,11 @@ function yardCandidates(t: CodeTerrain, g: LayoutPoint, level: number, houses: n
   const sizes: [number, number][] = [];
   if (opts.plaza) sizes.push([2 * Math.ceil(opts.plaza.rx) + 1, 2 * Math.ceil(opts.plaza.ry) + 1]);
   else for (const w of houses <= 4 ? [7, 8, 9] : houses <= 6 ? [8, 9, 10] : [9, 10, 11]) for (const h of houses <= 4 ? [5, 6] : houses <= 6 ? [5, 6, 7] : [6, 7, 8]) sizes.push([w, h]);
-  const small: [number, number][] = opts.plaza ? [[9, 5], [7, 5]] : [[6, 4], [5, 4], [5, 3]];
+  const small: [number, number][] = opts.plaza ? [[9, 5], [7, 5]] : mode === 2 ? [[14, 2], [11, 2], [9, 2]] : [[6, 4], [5, 4], [5, 3]];
   const tiers = [level, ...[...new Set(t.areas.filter((a) => a.inner >= 12).map((a) => a.level))].filter((L) => L !== level)].slice(0, 4);
   const out: Cand[] = [];
   for (const L of tiers) {
-    let list = compact ? [] : search(L, sizes); if (!list.length) list = search(L, small);
+    let list = mode ? [] : search(L, sizes); if (!list.length) list = search(L, small);
     if (!list.length) continue;
     // 단마다 서로 9칸 넘게 떨어진 것 셋까지(모이는 곳의 단) · 둘까지(다른 단)
     const picked: Cand[] = [];
@@ -251,7 +251,7 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
 
 /**
  * 마당 먼저 배치. 부를 때는 예전 고리 배치가 이미 앉아 있다(견줄 기준). 후보 마당마다 앉혀 보고, 큰길·문 길·집 수·높은 곳 건물의 길이 기준보다 나빠지지 않는 것 가운데
- * 마당에 문을 낸 집이 가장 많은 것으로 남긴다(want.skip 째). 셋(집이 넷보다 적으면 전부)에 못 미치면 작은 마당·작은 집으로 한 번 더 본다. 맞는 것이 없으면 기준 그대로 두고 null.
+ * 마당에 문을 낸 집이 가장 많은 것으로 남긴다(want.skip 째). 셋(집이 넷보다 적으면 전부)에 못 미치면 작은 마당·작은 집으로, 그래도 못 미치면 띠 마당으로 더 본다. 맞는 것이 없으면 기준 그대로 두고 null.
  */
 export function layYardVillage(t: CodeTerrain, g: LayoutPoint, level: number, env: YardEnv, want: YardAsk): YardPlan | null {
   const { W } = t;
@@ -276,9 +276,10 @@ export function layYardVillage(t: CodeTerrain, g: LayoutPoint, level: number, en
   };
   const good: { plan: YardPlan; s: number; near: number; keep: () => void }[] = [];
   const goal = Math.min(3, want.houses);
-  for (const compact of [false, true]) {
-    if (compact && (want.plaza || good.some((b) => b.near >= goal))) break;
-    for (const cand of yardCandidates(t, g, level, want.houses, env.rand, env.free, want, compact)) {
+  for (const mode of [0, 1, 2] as const) {
+    if (mode && (want.plaza || good.some((b) => b.near >= goal))) break;
+    const compact = mode > 0;
+    for (const cand of yardCandidates(t, g, level, want.houses, env.rand, env.free, want, mode)) {
       cleared();
       const { plan, houses } = seatYard(t, cand, g, env, { ...want, compact });
       const gi = plan.gather.y * W + plan.gather.x, on = new Set(yardParts(plan.cells, W, gi)[0] ?? []);
