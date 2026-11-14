@@ -51,7 +51,7 @@ export interface BeodeulSceneHost extends BeodeulObjectHost {
    * 빌더가 아는 칸 목록(있을 때만): 마당(모이는 곳의 다진 흙)·둑 위. 주면 닻 찾기가 그 칸을 쓰고, 없으면 모이는 곳·문·물가·길에서 스스로 찾는다.
    */
   readonly areas?: SceneAreas;
-  /** 읍의 포장 중심부인가 — 그러면 장면이 안뜰 판석 위에 서도 된다(fitsLand 가 판석 칸을 받는다). */
+  /** 읍의 포장 중심부이거나 돌 둑이 있는가 — 그러면 장면이 판석 위에 서도 된다(fitsLand 가 판석 칸을 받는다). */
   readonly paved?: boolean;
   /** 그 킷이 그 자리에서 막는 칸(발). */
   footCells(kit: ObjectKit, x: number, y: number): number[];

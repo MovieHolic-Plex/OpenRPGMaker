@@ -2583,9 +2583,10 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     k.def.rows.forEach((row, j) => { for (let i = 0; i < k.w; i += 1) if (blocks(row.upperTiles?.[i] ?? -1) || blocks(row.tiles?.[i] ?? -1)) out.push(idx(x + i, y + j)); });
     return out;
   };
-  // 둑 위(읍): 물에 맞닿은 포장 칸 — readSettlementAreas 의 quay 와 같은 뜻(칠하기 전이라 계획 칸으로 센다). 부두 장면이 그 곁에 앉는다.
-  const quayCells: number[] = [];
-  if (ground.pavedCore) for (let c = 0; c < W * H; c += 1) { if (occ[c] !== ROAD && occ[c] !== PLAZAC) continue; const x = c % W, y = (c - x) / W; if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => at(x + dx!, y + dy!) === WATERC)) quayCells.push(c); }
+  // 둑 위: 포구의 돌 둑 칸(beodeulQuay.ts — 걸음 줄은 뺀다)과, 읍이면 물에 맞닿은 포장 칸(readSettlementAreas 의 quay 와 같은 뜻 — 칠하기 전이라 계획 칸으로 센다).
+  // 부두 장면이 둑 위나 그 곁에 앉는다.
+  const quayCells: number[] = [...quaySet].filter((c) => occ[c] === PLAZAC && !quayWalk.has(c));
+  if (ground.pavedCore) for (let c = 0; c < W * H; c += 1) { if ((occ[c] !== ROAD && occ[c] !== PLAZAC) || quaySet.has(c)) continue; const x = c % W, y = (c - x) / W; if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => at(x + dx!, y + dy!) === WATERC)) quayCells.push(c); }
   // 배치가 준 마당 자리(layout.yard — 칸 목록이나 네모): 모이는 곳 장면이 그 가장자리에 앉는다(마당 속은 걷는 자리). 주지 않으면 모이는 곳에서 두세 칸.
   const yardGiven: number[] = (() => {
     const y0 = (codePlan?.layout as { yard?: { cells?: number[]; rect?: { x: number; y: number; w: number; h: number } } } | undefined)?.yard;
@@ -2599,12 +2600,12 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     kit: (id: string) => kitIndex.get(id),
     cell: (x: number, y: number) => { const v = at(x, y); return v === 255 ? "out" as const : v === FREE ? "free" as const : v === ROAD ? "road" as const : v === PLAZAC ? "plaza" as const : v === WATERC ? "water" as const : v === BLD ? "building" as const : "other" as const; },
     level: (x: number, y: number) => LV(x, y),
-    // 읍의 포장 중심부에서는 안뜰 판석 위도 «뭍» 이다 — 장면이 돌바닥 위에 선다(광장 테 줄·큰길 줄은 비운다).
-    fitsLand: (k: { id: string }, x: number, y: number): boolean => propFits(K(k.id), x, y) || (ground.pavedCore && objectHost.fitsPlaza(k, x, y)),
-    paved: ground.pavedCore,
+    // 읍의 포장 중심부와 포구의 돌 둑에서는 판석 위도 «뭍» 이다 — 장면이 돌바닥 위에 선다(광장 테 줄·큰길 줄·둑의 걸음 줄은 비운다).
+    fitsLand: (k: { id: string }, x: number, y: number): boolean => propFits(K(k.id), x, y) || ((ground.pavedCore || quaySet.size > 0) && objectHost.fitsPlaza(k, x, y)),
+    paved: ground.pavedCore || quaySet.size > 0,
     fitsPlaza: (k: { id: string }, x: number, y: number) => {
       const kk = K(k.id); if (!fits(kk, x, y, 0, (v) => v === PLAZAC || v === FREE)) return false;
-      for (let j = Math.max(0, kk.h - 2); j < kk.h; j += 1) for (let i = 0; i < kk.w; i += 1) { const c = idx(x + i, y + j); if (occ[c] !== PLAZAC || main.cells.has(c) || throughPlaza.has(c) || squareEdge.has(c)) return false; }
+      for (let j = Math.max(0, kk.h - 2); j < kk.h; j += 1) for (let i = 0; i < kk.w; i += 1) { const c = idx(x + i, y + j); if (occ[c] !== PLAZAC || main.cells.has(c) || throughPlaza.has(c) || squareEdge.has(c) || quayWalk.has(c)) return false; }
       return true;
     },
     placeLand: (k: { id: string; w: number; h: number }, x: number, y: number, walkOn: boolean, slot: string) => {
