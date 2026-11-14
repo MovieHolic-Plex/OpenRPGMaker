@@ -43,6 +43,10 @@ export const KIT_PLACEMENT_RULES: Readonly<Record<string, KitPlacementRule>> = {
   "bd-pick-fishing-port-jetty-west": { rules: [{ cells: "all", on: "water", atLeast: 0.6 }], why: "작은 부두는 물로 뻗는다." },
   "bd-pick-fishing-port-jetty-post": { rules: [{ cells: "bottom", on: "water" }], why: "잔교 말뚝은 물에 박는다." },
   "bd-pick-fishing-port-fish-market": { rules: [{ cells: "bottom", on: "water", atLeast: 1 }], why: "생선 시장은 물가에 걸친다 — 맨 아래 줄에 물 칸이 하나 이상." },
+  // 새 종류 기물(2026-11-14): 물 위에 뜨거나 물에 선 것 — 물 칸은 원래 못 걷는 칸이라 통행은 달라지지 않는다. 징검돌만 밟고 건넌다(그 물 칸이 걷는 칸이 된다).
+  "bd-obj-raft-log": WATER_ALL, "bd-obj-coracle": WATER_ALL, "bd-obj-buoy": WATER_ALL, "bd-obj-water-lilies": WATER_ALL, "bd-obj-duck-house": WATER_ALL, "bd-obj-fish-weir": WATER_ALL,
+  "bd-obj-step-stone-a": { rules: [{ cells: "all", on: "water" }], why: "물 징검돌은 물 칸 위에만 놓는다(밟고 건너는 돌이다 — 뭍에는 깊은 숲길 징검돌을 쓴다)." },
+  "bd-obj-step-stone-b": { rules: [{ cells: "all", on: "water" }], why: "물 징검돌은 물 칸 위에만 놓는다(밟고 건너는 돌이다 — 뭍에는 깊은 숲길 징검돌을 쓴다)." },
   "bd-bridge-arch": BRIDGE, "bd-pick-riverside-mill-plank-footbridge": BRIDGE, "bd-pick-mountain-pass-stone-bridge": BRIDGE,
   "bd-river-bridge": BRIDGE,
 };

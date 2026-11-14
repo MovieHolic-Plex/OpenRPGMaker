@@ -21,6 +21,8 @@ const forms = arg("forms", "").split(",").filter(Boolean);
 const terrainsArg = arg("terrains", "").split(",").filter(Boolean); // 생략 = theme 의 지형 전부
 const size = arg("size", ""); // 예: 88x56 (생략 = theme 기본 크기)
 const rebuild = process.argv.includes("--rebuild");
+// --key <게임 열쇠>: 조수 실행처럼 게임 열쇠를 켠다 — 그 게임의 변형 그림·겉모습·새 종류 기물(beodeulObjectSets)이 놓인 마을을 잰다. 생략하면 전과 같다(열쇠 없음).
+const lookKey = arg("key", "");
 fs.mkdirSync(OUT, { recursive: true });
 const base = createBlankProject() as Project; ensureBundledTilesets(base);
 const baseJson = JSON.stringify(base);
@@ -41,7 +43,7 @@ for (const { theme, form, terrain, seed, size, roofs, houseCount, water, woods }
   const extra = { ...(roofs ? { roofs } : {}), ...(houseCount ? { houseCount } : {}), ...(water ? { water } : {}), ...(woods ? { woods } : {}) };
   const [sw, sh] = size ? size.split("x").map(Number) : [];
   {
-    const ctx = { project: JSON.parse(baseJson) as Project };
+    const ctx = { project: JSON.parse(baseJson) as Project, ...(lookKey ? { assistantRun: true, lookKey } : {}) };
     const t0 = Date.now();
     const id = `v_${theme}_${form}_${terrain}_${seed}`;
     // --rebuild: 먼저 다른 seed 로 지어 옛 높이(relief)를 남긴 맵에 같은 mapId 로 다시 짓는다(높이를 아는 stamp_object 가 옛 relief 로 키트를 거절하지 않는지)
@@ -69,10 +71,11 @@ for (const { theme, form, terrain, seed, size, roofs, houseCount, water, woods }
       doors: doors.length, unreached: doors.filter((x) => !x.reached).length, deadCells: cf.deadEnds.filter((x) => x.kind === "cell").length,
       deadStreets: cf.deadEnds.filter((x) => x.kind === "street").length,
       longest: cf.lines.longestLen, longStraight: cf.lines.longStraight.map((l) => `${l.orient}${l.len}@${l.from.join(",")}`), isolated: cf.graph.isolated.length, fields: d.fields, fenceCells: d.fenceCells, trees: d.trees,
-      stampFailed: d.stampFailed, terrain: d.terrain, relief: d.relief,
+      stampFailed: d.stampFailed, newObjects: d.newObjects ?? null, terrain: d.terrain, relief: d.relief,
       stairs: (map.relief?.ramps ?? []).filter((v) => v >= 5 && v <= 8).length, warnings: ((r as any).diff?.warnings ?? r.warnings ?? []), summary: r.summary };
     rows.push(row);
     console.log(name, JSON.stringify({ ms: row.ms, houses: row.houses, unreached: row.unreached, dead: row.deadCells, deadSt: row.deadStreets, long: row.longStraight, longest: row.longest, iso: row.isolated, fence: row.fenceCells, fail: row.stampFailed, terrain: d.terrain, lv: d.relief?.levels, ramps: d.relief?.ramps, rfail: d.relief?.fails, cut: d.relief?.cuts, straddle: d.relief?.straddle, offRoad: d.relief?.rampsOffRoad, rim: d.relief?.roadOnRim, stairs: row.stairs, upMiss: reach.upMiss, ...(d.upperLost ? { lost: d.upperLost } : {}), gateMiss: reach.gateMiss, reach1: reach.reach1, reach2: reach.reach2, gate2: reach.gate2, up2: reach.up2, warn: (((r as any).diff?.warnings ?? r.warnings ?? [])).length }));
   }
 }
 fs.writeFileSync(`${OUT}/report.json`, JSON.stringify(rows, null, 1));
+if (lookKey) for (const r of rows) console.log(r.name, "새 기물", JSON.stringify((r as { newObjects?: unknown }).newObjects), "문 앞 못 닿음", (r as { unreached?: number }).unreached, "찍기 실패", (r as { stampFailed?: number }).stampFailed);

@@ -10,8 +10,9 @@
 // - 숲: 길 둘레 1칸·출구 둘레를 비운 풀밭을 버들항 수관 오토타일(#3259, beodeulForest.ts planBeodeulCanopy)로 덮는다(plantBeodeulForestWall, 2026-10-24).
 // - 길섶: 깊은 숲길 세트의 작은 소품을 드문드문(dressBeodeulVerge).
 
-import { activeTilesetLook } from "@/project/kitLook";
+import { activeKitLook, activeTilesetLook } from "@/project/kitLook";
 import { layBeodeulGroundCover } from "./beodeulGroundCover";
+import { beodeulBayObjects, beodeulVergeObjects } from "./beodeulObjectSets";
 import type { GameMap, Project, Rect, TilesetDef } from "@/project/types";
 import type { Rng } from "@/util/rng";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
@@ -191,6 +192,8 @@ export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: 
     const loud = new Set(stand.loud ?? []);
     const shrubs = (stand.kits.shrub ?? []).filter((id) => { const kit = kits.get(id); return kit && kit.width === 2 && kit.height === 2 && !loud.has(id); });
     const small = (tileset.structureKits ?? []).filter((kit) => kit.width === 1 && kit.height === 1 && /^bd-pick-deep-forest-path-(fern|heath|wild)-/.test(kit.id)).map((kit) => kit.id);
+    // 새 종류 기물(2026-11-14): 그 게임의 큰 것 둘(큰 그루터기·뽑힌 나무·너럭바위·낙석)이 덤불 자리의 넷에 하나쯤을 대신한다 — 숲 끝이 덤불만으로 풀리지 않게.
+    const big = beodeulBayObjects((id) => kits.has(id), activeKitLook());
     const bay = new Set(bays);
     const open = (c: number): boolean => bay.has(c) && empty(c) && !map.events.some((event) => Math.abs(event.x - (c % w)) + Math.abs(event.y - Math.floor(c / w)) <= 1);
     const seed = (w * 59 + h * 37 + bays.length) | 0;
@@ -199,7 +202,7 @@ export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: 
     };
     for (const c of bays) {
       const roll = treeHash(c % w, Math.floor(c / w), seed);
-      if (shrubs.length && roll % 100 < 22 && [c, c + 1, c + w, c + w + 1].every(open) && (c % w) + 1 < w) stamp(shrubs[(roll >>> 8) % shrubs.length]!, c);
+      if (shrubs.length && roll % 100 < 22 && [c, c + 1, c + w, c + w + 1].every(open) && (c % w) + 1 < w) stamp(big.length && (roll >>> 16) % 4 === 0 ? big[(roll >>> 8) % big.length]! : shrubs[(roll >>> 8) % shrubs.length]!, c);
       else if (small.length && roll % 100 >= 70 && open(c)) stamp(small[(roll >>> 8) % small.length]!, c);
     }
   }
@@ -213,6 +216,9 @@ function dressBeodeulVerge(project: Project, map: GameMap, tileset: TilesetDef, 
   const decor = (tileset.structureKits ?? []).filter(kit => kit.width === 1 && kit.height === 1
     && /^bd-pick-deep-forest-path-(fern|heath|wild|stones|stump|toadstools)-/.test(kit.id));
   if (decor.length === 0) return 0;
+  // 새 종류 기물(2026-11-14): 그 게임의 길섶 물건 셋(산딸기 덤불·개미집·여우 굴·낙엽·억새·작은 바위 가운데)을 옛 길섶 소품 사이에 섞는다 — 열쇠가 없으면 전과 같다.
+  const byId = new Map((tileset.structureKits ?? []).map((kit) => [kit.id, kit] as const));
+  for (const id of beodeulVergeObjects((kitId) => byId.has(kitId), activeKitLook())) { const kit = byId.get(id)!; decor.push(kit, kit); }
   let placed = 0;
   for (const index of reserved) {
     if (road.has(index) || map.lowerTiles[index] !== BEODEUL_PLAIN_GRASS || map.upperTiles[index]! >= 0) continue;
