@@ -728,7 +728,8 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
   // 마을 종류의 장면 터(미리 비워 둔 마당)가 집·길 자리를 바꿔 문 앞이나 단 건널목이 끊기면 터 없이 다시 짓는다 — 장면은 남은 빈 땅에서 자리를 찾는다.
   // 터 없이도 나아지지 않으면(터 탓이 아니다) 터를 둔 마을로 되돌린다. 같은 seed·같은 크기라 같은 마을이다.
   {
-    const cutOff = (x: typeof r) => { const d = x.data as { doors?: { reached: boolean }[]; relief?: { fails?: number } }; return (d.doors ?? []).filter((q) => !q.reached).length * 100 + (d.relief?.fails ?? 0); };
+    // 문 앞 길을 못 낸 집(배치가 그 집을 뺀다)도 끊긴 것으로 센다 — 터가 그 길을 막았으면 터 없이 지은 마을에 집이 한 채 더 선다.
+    const cutOff = (x: typeof r) => { const d = x.data as { doors?: { reached: boolean }[]; relief?: { fails?: number }; layout?: { roadsFailed?: unknown[] } }; return (d.doors ?? []).filter((q) => !q.reached).length * 100 + (d.relief?.fails ?? 0) * 10 + (d.layout?.roadsFailed?.length ?? 0); };
     if ((r.data as { villageKind?: unknown }).villageKind && cutOff(r) > 0) {
       const again = (sceneYards: boolean) => {
         const old = draft.maps[mapId]!;

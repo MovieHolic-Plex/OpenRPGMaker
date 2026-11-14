@@ -870,9 +870,12 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       let sp = ((want as { kind?: string }).kind ? place("house", first, want, 4) : null) ?? place("house", [...first, ...small], want);
       // 집이 먼저다: 장면 터 때문에 집 한 채가 앉을 한 단 평지를 못 찾았으면 터를 풀고 그 집을 다시 앉힌다 — 장면은 뒤에 남은 빈 땅에서 자리를 찾는다
       // (형태 탐침 54판 · 게임 열쇠: 터를 둔 채로는 집 239 → 229).
+      // 터를 풀어도 그 집이 못 앉으면(터 탓이 아니다) 터는 그대로 둔다 — 터만 잃고 길·계단 자리가 달라져 문 앞이 끊겼다(형태 탐침 river-plaza-highland-11).
       if (!sp && yardHold.size) {
+        const held = [...yardHold], work = [...sceneYards.work], gather = [...sceneYards.gather];
         report.failed.pop(); yardHold.clear(); sceneYards.work.length = 0; sceneYards.gather.length = 0;
         sp = place("house", [...first, ...small], want);
+        if (!sp) { for (const c of held) yardHold.add(c); sceneYards.work.push(...work); sceneYards.gather.push(...gather); }
       }
       if (sp) { last.push(sp.k.id); if (last.length > 2) last.shift(); houseUse.set(sp.k.id, (houseUse.get(sp.k.id) ?? 0) + 1); classUse.set(classOf(sp.k), (classUse.get(classOf(sp.k)) ?? 0) + 1); }
     }
