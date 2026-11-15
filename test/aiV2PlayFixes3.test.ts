@@ -189,6 +189,11 @@ describe("보스 밴드는 도착할 수 있는 높은 레벨까지 «공격만�
       expect(normal.winRate, `Lv${heroLevel} 여느 플레이`).toBeGreaterThanOrEqual(BOSS_BAND.minWin);
       expect(normal.avgTurns, `Lv${heroLevel} 턴`).toBeLessThanOrEqual(BOSS_BAND.turns);
     }
+    // 껍질은 «공격만» 을 막는 가장 작은 값이라 여느 플레이도 아슬아슬한 값이 뽑힌다 — 기준 파티의 여느 플레이를 많은 판(96)으로도 지킨다
+    // (은행 jrpg-w3: 24판 100% 로 받은 껍질이 300판에서 92% 였고, 자동 플레이가 기준 파티 그대로 서서 졌다).
+    const sure = simulateBattle({ project, troopId, heroLevel: 1, partyActorIds: ids, n: 96, seed: 11, useSkills: true, potionHpRatio: SENSIBLE_POTION_HP_RATIO, inventory: { item_hi_potion: potions }, potionItemId: "item_hi_potion" });
+    expect(sure.winRate, "기준 파티의 여느 플레이(96판)").toBeGreaterThanOrEqual(BOSS_BAND.minWin);
+    expect(line.startsWith("보스 밴드 안")).toBe(true);
   }, 240_000);
 });
 
@@ -249,6 +254,17 @@ describe("이름 있는 사람의 칩", () => {
     expect(label("술탄 하룬")).toBe("왕");
     expect(label("대상 우두머리 카림")).toBe("중년 남성 주민(흑인)");
     expect(label("장로 하산")).toBe("대머리 남성 주민");
+  });
+
+  it("칩이 데려오는 흉상의 나이도 잰다 — 노인 칩이 다 섰어도 «노인» 이 젊은 얼굴의 칩으로 서지 않는다", () => {
+    // 은행 r2t-fun: 노인 칩 둘이 이미 선 주점에 «노인» 요른이 «중년 여성 주민» 칩으로 섰다 — 그 칩의 흉상은 «젊은 여성» 이라 게임 검사가 «나이 든 인물인데 젊은 얼굴» 을 짚었다.
+    const project = createBlankProject() as Project;
+    const map = project.maps[project.startMapId]!;
+    const taken = [["people1", 4], ["people5", 0], ["people1", 1], ["people1", 7], ["people5", 6], ["people1", 6], ["people1", 3], ["actor4", 1]] as const;
+    map.events = taken.map(([sheet, index], n) => event(`ev_t${n}`, `사람${n}`, n, 6, [page([], [], "action", { graphic: chip(sheet, index) })])) as never;
+    const pick = pickPersonGraphic(project, map, "주점 손님", "노인", true)!;
+    expect(pick.label).toBe("대머리 남성 주민");
+    expect(pick.shared).toBe(true);
   });
 
   it("모델이 말한 성별·나이를 지킨다 — «왕» 은 «여왕» 에 걸리지 않는다", () => {

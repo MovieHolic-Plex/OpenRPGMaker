@@ -18,6 +18,7 @@ import { Cell, findMap, eventsOf, eventBlockers, walkStart, keepsMapConnected } 
 import { resolveWhere } from "./where";
 import { worldOf } from "./world";
 import { bustOfChip, lookOfChip } from "../story/speakerBust";
+import { faceLookOf } from "@/assets/faceLooks";
 
 export const PEOPLE_CARD =
   "People spec: {role,name?,where?,at?,looks?,firstTalk?,laterTalk?,movement?,sells?,mapId?}. " +
@@ -178,8 +179,10 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
   type Entry = ReturnType<typeof queryNpcGraphics>[number]["entry"];
   // 그 사람에게 안 맞는 칩: 글이 말한 성별과 다르다 · 아이가 아닌데 아이 칩.
   // 나이는 두 단 넘게 어긋날 때만(«할배» 에 청년 칩 · «소녀» 에 중년 칩) — 이웃 나이(노인 ↔ 중년)는 맞는 것으로 친다.
+  // 칩이 데려오는 흉상의 나이도 같은 자로 잰다 — 칩은 «중년» 인데 그 흉상은 «젊은 여성» 인 칸이 있다(2026-11-15 은행 r2t-fun: «노인» 요른이 그 칩으로 서서 게임 검사가 «나이 든 인물인데 젊은 얼굴» 을 짚었다).
+  const far = (age: string | undefined): boolean => !!saidAge && !!age && Math.abs(AGES.indexOf(saidAge) - AGES.indexOf(age as (typeof AGES)[number])) >= 2;
   const misfitFor = (e: Entry): boolean => (!!said && !!e.gender && e.gender !== "none" && e.gender !== said) || ((e.age === "child" || CHILD_LOOK.test(e.label)) && !CHILD_LOOK.test(asked))
-    || (!!saidAge && !!e.age && Math.abs(AGES.indexOf(saidAge) - AGES.indexOf(e.age)) >= 2);
+    || far(e.age) || far(faceLookOf(bustOfChip(e.textureKey, e.characterIndex) ?? "")?.age);
   // 특이한 차림(이국 터번·닌자·요정·난쟁이·수녀)은 그렇게 말했을 때만 — 마을 촌장이 터번 노인으로 나왔다.
   // 이 세계 사람들의 옷(사막의 터번·전통옷)은 이 게임에서 그냥 주민의 옷이다 — 특이한 차림도 말하지 않은 차림도 아니다.
   const dress = worldOf(project)?.dress;
