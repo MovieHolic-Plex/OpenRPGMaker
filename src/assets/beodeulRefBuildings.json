@@ -1704,6 +1704,157 @@
     "bd-obj-crate-closed",
     "bd-obj-barrel-amphora"
    ]
+  },
+  {
+   "id": "bd-bld-ref-keep-a",
+   "ko": "성 본채",
+   "en": "castle keep",
+   "cat": "castle",
+   "setting": "castle",
+   "tier": "xlarge",
+   "style": "violetslate",
+   "kinds": [
+    "garrison-town",
+    "market-town",
+    "border-post",
+    "guild-town"
+   ],
+   "w": 16,
+   "h": 11,
+   "door": [
+    7,
+    10
+   ],
+   "doorw": 1,
+   "passage": [],
+   "interior": {
+    "rooms": [
+     "great_hall"
+    ]
+   },
+   "included": [],
+   "props": [
+    "bd-obj-banner-arch",
+    "bd-obj-bench-stone",
+    "bd-obj-planter-bench",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-amphora"
+   ]
+  },
+  {
+   "id": "bd-bld-ref-cathedral-a",
+   "ko": "마을 대성당",
+   "en": "village cathedral",
+   "cat": "town",
+   "setting": "town",
+   "tier": "xlarge",
+   "style": "halftimber",
+   "kinds": [
+    "market-village",
+    "market-town",
+    "festival",
+    "pilgrim-town",
+    "garrison-town"
+   ],
+   "w": 13,
+   "h": 12,
+   "door": [
+    6,
+    11
+   ],
+   "doorw": 1,
+   "passage": [],
+   "interior": {
+    "rooms": [
+     "chapel"
+    ]
+   },
+   "included": [],
+   "props": [
+    "bd-obj-bench-trestle",
+    "bd-obj-barrel-pyramid",
+    "bd-obj-crate-closed",
+    "bd-obj-planter-tiered",
+    "bd-obj-cart-barrels",
+    "bd-obj-crate-sack"
+   ]
+  },
+  {
+   "id": "bd-bld-ref-abbey-a",
+   "ko": "수도원",
+   "en": "abbey",
+   "cat": "town",
+   "setting": "rural",
+   "tier": "xlarge",
+   "style": "halftimber",
+   "kinds": [
+    "pilgrim-town",
+    "scholar-town",
+    "herbalist",
+    "vineyard"
+   ],
+   "w": 15,
+   "h": 10,
+   "door": [
+    12,
+    9
+   ],
+   "doorw": 1,
+   "passage": [],
+   "interior": {
+    "rooms": [
+     "library"
+    ]
+   },
+   "included": [],
+   "props": [
+    "bd-obj-bench-trestle",
+    "bd-obj-barrel-pyramid",
+    "bd-obj-crate-closed",
+    "bd-obj-planter-tiered",
+    "bd-obj-cart-barrels",
+    "bd-obj-crate-sack"
+   ]
+  },
+  {
+   "id": "bd-bld-ref-customs-b",
+   "ko": "큰 세관",
+   "en": "great customs house",
+   "cat": "harbour",
+   "setting": "harbour",
+   "tier": "xlarge",
+   "style": "harbourstone",
+   "kinds": [
+    "harbour-town",
+    "canal-town",
+    "shipwrights",
+    "ferry-landing",
+    "border-post"
+   ],
+   "w": 15,
+   "h": 10,
+   "door": [
+    11,
+    9
+   ],
+   "doorw": 1,
+   "passage": [],
+   "interior": {
+    "rooms": [
+     "waiting_room",
+     "storeroom"
+    ]
+   },
+   "included": [],
+   "props": [
+    "bd-obj-rope-coil",
+    "bd-obj-anchor-small",
+    "bd-obj-fish-creels",
+    "bd-obj-net-floats",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-closed",
+    "bd-obj-sack-hoist"
+   ]
   }
  ]
 }

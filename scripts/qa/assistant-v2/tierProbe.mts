@@ -112,7 +112,12 @@ async function one(i: number): Promise<void> {
 }
 
 const only = process.argv.includes("--only") ? Number(process.argv[process.argv.indexOf("--only") + 1]) : -1;
-for (let i = 0; i < count; i++) { if (only >= 0 && i !== only) continue; try { await one(i); } catch (e) { rows.push({ i, village: "?", story: "?", doors: {}, kits: [], rooms: [], notes: [`ERR ${(e as Error).stack?.slice(0, 600)}`] }); } console.log(`[${i + 1}/${count}] ${JSON.stringify(rows.at(-1)).slice(0, 400)}`); }
+// --seeds N: 같은 마을을 난수 씨앗 1..N 으로 되풀이해 짓는다(자동 짓기의 장소 salt 는 Math.random 이다 — 씨앗을 박아야 같은 결과를 다시 낼 수 있다). --rand S: 그 씨앗 하나로. 아무것도 안 주면 마을 i 는 씨앗 i+1 — 같은 명령은 같은 표를 낸다.
+const seedsN = process.argv.includes("--seeds") ? Number(process.argv[process.argv.indexOf("--seeds") + 1]) : 0;
+const randS = process.argv.includes("--rand") ? Number(process.argv[process.argv.indexOf("--rand") + 1]) : 0;
+const pin = (seed: number) => { let v = (seed * 2654435761) >>> 0; Math.random = () => { v = (Math.imul(v, 1103515245) + 12345) >>> 0; return v / 2 ** 32; }; };
+if (seedsN && only >= 0) { for (let sd = 1; sd <= seedsN; sd++) { pin(sd); await one(only); const r = rows.at(-1)!; r.notes.unshift(`seed ${sd}`); console.log(`[seed ${sd}] ${r.rooms.map((q) => `${q.place}←${q.kit ?? "?"} 방${q.roomCount}·맵${q.maps}`).join(" | ")} || ${r.kits.join(",")}`); } }
+else for (let i = 0; i < count; i++) { if (only >= 0 && i !== only) continue; pin(randS || i + 1); try { await one(i); } catch (e) { rows.push({ i, village: "?", story: "?", doors: {}, kits: [], rooms: [], notes: [`ERR ${(e as Error).stack?.slice(0, 600)}`] }); } console.log(`[${i + 1}/${count}] ${JSON.stringify(rows.at(-1)).slice(0, 400)}`); }
 
 // 요약: 방 수 → 지어진 단(한 방 = 소형, 2~4 = 중형, 5~8 = 대형, 9 이상 또는 맵 3장 이상 = 초대형).
 const builtTier = (r: Row["rooms"][number]) => (!r.built ? "못 지음" : r.maps >= 3 || r.roomCount >= 9 ? "xlarge" : r.roomCount >= 5 ? "large" : r.roomCount >= 2 ? "medium" : "small");

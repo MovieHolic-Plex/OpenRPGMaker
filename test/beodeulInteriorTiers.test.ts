@@ -242,7 +242,8 @@ describe("단은 문이 달린 집 킷이 정한다", () => {
     expect(fits(kindOf("inn").building!)).toEqual(expect.arrayContaining(["bd-house-inn", "bd-house-mk-inn", "bd-bld-ref-tavern-a", "bd-bld-ref-tavern-b"]));
     expect(fits(kindOf("hall").building!)).toEqual(expect.arrayContaining(["bd-bld-ref-guildhall-a", "bd-house-mk-town-hall", "bd-house-mk-great-hall"]));
     expect(fits(kindOf("church").building!)).toEqual(expect.arrayContaining(["bd-house-cathedral", "bd-house-mk-chapel"]));
-    expect(fits(kindOf("castle").building!)).toEqual(["bd-bld-ref-gatehall-a"]);
+    expect(fits(kindOf("castle").building!)).toEqual(["bd-bld-ref-gatehall-a", "bd-bld-ref-keep-a"]);
+    expect(fits(kindOf("church").building!)).toContain("bd-bld-ref-cathedral-a");
     // 살림집 킷은 어느 주문에도 맞지 않는다(쓰임이 적히지 않았다)
     for (const need of ["inn", "hall", "church", "castle"].map((id) => kindOf(id).building!)) expect(kitServesBuilding(kit("bd-house-h101_0"), need)).toBe(false);
     // 성 본채 구성은 성읍 갈래 킷에만, 갈래가 다른 초대형 회관은 대형 조합 회관으로
@@ -263,6 +264,20 @@ describe("단은 문이 달린 집 킷이 정한다", () => {
       expect(doors.some((k) => !!k && kitServesBuilding(k, need)), `${kind}: ${doors.map((k) => k?.id).join(" ")}`).toBe(true);
     }
   }, 300_000);
+  it("같은 명세·같은 salt 로 마을을 스무 번 지으면 스무 번 같은 마을이다 — 청한 건물의 문 자리까지", () => {
+    const world = WORLDS.find((w) => w.id === "beodeul")!;
+    const base = worldPlaceSpec(world, world.kinds.find((k) => k.id === "village")!, "시험 마을");
+    const need = world.kinds.find((k) => k.id === "inn")!.building!;
+    const seen = new Set<string>();
+    for (let i = 0; i < 20; i++) {
+      const a = fresh();
+      const r = VILLAGE_BUILDER.build(a.run, { ...base, size: "medium", salt: 11, hints: { ...(base.hints ?? {}), buildings: [need] } } as unknown as PlaceSpec);
+      expect(r.ok, r.summary).toBe(true);
+      const m = a.run.ctx.project.maps[r.mapIds[0]!]!;
+      seen.add(JSON.stringify([(r.state as { doors?: unknown }).doors, m.width, m.height, [...m.lowerTiles], [...m.upperTiles]]));
+    }
+    expect(seen.size).toBe(1);
+  }, 900_000);
   it("큰 집에 방이 모자란 칸 배치가 오면 그 집의 단과 방 수를 말해 거절하고, 고치기를 다 쓰면 구성 표대로 짓는다", () => {
     const a = fresh();
     const one = { map: { w: 9, h: 8 }, entrance: { x: 4, y: 7 }, regions: [{ id: "r", x: 1, y: 1, w: 7, h: 6, floor: "dplank", wall: "plaster" }] };

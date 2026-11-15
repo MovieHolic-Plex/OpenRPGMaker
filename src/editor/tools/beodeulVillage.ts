@@ -928,7 +928,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
           for (let j = 0; j < sp.k.h; j += 1) for (let i = 0; i < sp.k.w; i += 1) occ[idx(sp.x + i, sp.y + j)] = FREE; occ[idx(sp.front.x, sp.front.y)] = FREE; spots.splice(spots.indexOf(sp), 1);
           return !!place("landmark", [sp.k], { ...p, maxR: 6 });
         },
-        seat: (role, want) => { frontOnYard = !!want.corner; const sp = role === "house" ? seatHouse(want) : place(role, kitsOf(role === "anchor" ? anchorIds : LOW_WORKS[theme] ?? []), want, want.maxR); frontOnYard = false; return sp ? { x: sp.x, y: sp.y, w: sp.k.w, h: sp.k.h, front: sp.front } : null; },
+        // 이야기가 청한 큰 건물(wantKits)이 먼저다: 마당 배치가 예전 고리 배치를 걷고 다시 앉힐 때도 앵커·일터 자리는 아직 못 선 청한 건물에 먼저 준다.
+        seat: (role, want) => { frontOnYard = !!want.corner; const asked = role === "house" ? [] : wantKits.map(K).filter((k) => !spots.some((s0) => s0.k.id === k.id));
+          const sp = role === "house" ? seatHouse(want) : (asked.length ? place(role, [asked[0]!], want, want.maxR) : null) ?? place(role, kitsOf(role === "anchor" ? anchorIds : LOW_WORKS[theme] ?? []), want, want.maxR); frontOnYard = false; return sp ? { x: sp.x, y: sp.y, w: sp.k.w, h: sp.k.h, front: sp.front } : null; },
         routes: (gc, on) => {
           let ex = 0, hs = 0, ot = 0, climbs = 0, lm = !spots.some((sp) => sp.role === "landmark"); network.clear();
           const walk = (p: number[]) => { for (let i = 0; i < p.length; i += 1) { network.add(p[i]!); if (i && lv[p[i]!] !== lv[p[i - 1]!]) climbs += 1; } };
@@ -944,6 +946,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (let c = 0; c < W * H; c += 1) if (occ[c] === PLAZA_HOLD) occ[c] = FREE;
       if (yard) { gx = yard.gather.x; gy = yard.gather.y; g0 = idx(gx, gy); Object.assign(layout, { gather: { ...layout.gather, x: gx, y: gy }, fields: yard.fields, forests: yard.woods, yard }); woodsAt = new Set(yard.woodCells); }
     }
+    // 마당 배치가 끝난 뒤에도 못 선 청한 건물은 모이는 곳 둘레의 빈 터에 앉힌다(마당 테두리 자리는 폭이 좁아 큰 건물이 못 들어갈 수 있다).
+    for (const k of wantKits.map(K)) if (!spots.some((sp) => sp.k.id === k.id)) place("anchor", [k], { x: gx, y: gy - Math.ceil(k.h / 2) - 3 }, 14);
     let entrance: { x: number; y: number } | null = null;
     for (const e of exits) {
       let path = routePath(grid(true), [g0], edgeOf(e), opts(true));
