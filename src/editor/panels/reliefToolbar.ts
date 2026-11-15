@@ -58,6 +58,7 @@ const STYLE_LABELS: Readonly<Record<string, string>> = {
   "grass-cliff": "풀 절벽", jungle: "정글", tropical: "열대", skyisle: "하늘섬", swamp: "늪", "swamp-peat": "이탄 늪", "swamp-dead": "죽은 늪",
   plague: "역병", mushroom: "버섯", savanna: "사바나", badlands: "황무지", saltflat: "소금 평원", desert: "사막", sandstone: "사암",
   dune: "모래 언덕", "desert-cut": "사막 깎은 길", "dune-cut": "모래 깎은 길", tundra: "툰드라", "tundra-snow": "눈 덮인 툰드라", taiga: "타이가",
+  "cliff-earth": "돌 박힌 흙 둑", "cliff-strata": "켜 절벽", "cliff-rubble": "막돌 둑", "cliff-ledge": "턱진 바위", "cliff-crag": "갈비 바위벽", "cliff-rock": "바위 절벽",
   elf: "엘프", gothic: "고딕", holy: "신전", steampunk: "증기", dwarf: "드워프", blight: "마른 땅", crystal: "수정",
 };
 

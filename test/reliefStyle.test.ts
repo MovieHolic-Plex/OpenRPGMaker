@@ -3,7 +3,7 @@ import { deserialize, serialize } from "@/project/io";
 import { normalizeRelief, resizeRelief } from "@/project/relief/edit";
 import { effectiveHeights, renderRelief } from "@/project/relief/render";
 import { cellLift, reliefLiftField, reliefPaintsCell, reliefRenderOptions, reliefSignature } from "@/project/relief/screen";
-import { compileReliefStyle, RELIEF_STYLES, RELIEF_WALL_FAMILIES, reliefStyleForTileset } from "@/project/relief/styles";
+import { compileReliefStyle, RELIEF_STYLES, RELIEF_WALL_FAMILIES, reliefRampArt, reliefStyleForGround, reliefStyleForTileset } from "@/project/relief/styles";
 import { gridFromRelief, type ReliefData } from "@/project/relief/types";
 import { createBlankProject } from "@/project/defaults";
 import { reliefSlopes } from "@/project/relief/walk";
@@ -41,20 +41,86 @@ describe("relief wall styles", () => {
     }
   });
 
-  it("default stairs own their stone treads, including the ground-level foot", () => {
-    const relief: ReliefData = { width: W, height: H, levels: new Array(W * H).fill(0), ramps: new Array(W * H).fill(0) };
+  // 2026-11-14 오너 「계단을 이딴 식으로 하면 절대 안 된다니까 ?」: 렌더러가 디딤판 계단을 회색 벽돌로 칠하던 길은 없다.
+  const GRAY_BRICK = new Set(["47,49,46", "72,75,70", "103,107,98", "137,141,129", "176,180,165", "210,213,199"]);
+  const stairScene = (style?: string): ReliefData => {
+    const relief: ReliefData = { width: W, height: H, levels: new Array(W * H).fill(0), ramps: new Array(W * H).fill(0), ...(style ? { style } : {}) };
     for (let y = 1; y < 4; y++) for (let x = 1; x < W - 1; x++) relief.levels[y * W + x] = 3;
     for (let y = 4; y < 8; y++) for (const x of [4, 5]) relief.ramps![y * W + x] = 5;
+    return relief;
+  };
+
+  it("default stairs are the chipset stone-stair art on a continuous flight, opaque down to the foot", () => {
+    const relief = stairScene();
     expect(reliefPaintsCell(relief, 4, 4)).toBe(true);
     expect(reliefPaintsCell(relief, 4, 7)).toBe(true);
+    expect(reliefSlopes(relief)[0]?.steps).toBeUndefined();
     const rendered = renderRelief(effectiveHeights(gridFromRelief(relief)), reliefRenderOptions(relief));
-    const foot = Array.from(rendered.src.keys()).filter(i => rendered.kind[i] === 0 && rendered.slope[i] > 0 && rendered.height[i] === 0);
-    expect(foot.length).toBeGreaterThan(0);
-    for (const i of foot) {
-      const rgb = Array.from(rendered.rgba.slice(i * 4, i * 4 + 3));
+    const flight = Array.from(rendered.src.keys()).filter(i => rendered.kind[i] === 0 && rendered.slope[i] > 0);
+    expect(flight.length).toBeGreaterThan(0);
+    const art = reliefRampArt("grass-steps")!.lit, artColours = new Set<string>();
+    for (let q = 0; q < art.rgba.length; q += 4) artColours.add(`${art.rgba[q]},${art.rgba[q + 1]},${art.rgba[q + 2]}`);
+    let fromArt = 0;
+    for (const i of flight) {
       expect(rendered.rgba[i * 4 + 3]).toBe(255);
-      expect(Math.max(...rgb) - Math.min(...rgb)).toBeLessThan(25);
+      expect(rendered.overSlope?.[i]).toBe(1);
+      if (artColours.has(Array.from(rendered.rgba.slice(i * 4, i * 4 + 3)).join(","))) fromArt += 1;
     }
+    expect(fromArt / flight.length).toBeGreaterThan(0.9);
+  });
+
+  it("no style paints the renderer's gray brick stair — every stair is carved in its own material or the chipset stair art", () => {
+    for (const style of [undefined, ...Object.keys(RELIEF_STYLES)]) {
+      const relief = stairScene(style), spec = style ? RELIEF_STYLES[style]! : undefined;
+      // stepped flights exist only where the style carves them into its own face
+      expect(reliefSlopes(relief).some((s) => !!s.steps), style).toBe(!!spec?.carvedStairs);
+      // even a caller that hands the renderer stepped slopes for a non-carving style gets a continuous flight, never bricks
+      const forced = { ...reliefRenderOptions(relief), slopes: reliefSlopes(relief).map((s) => ({ ...s, steps: 8 })) };
+      for (const opts of [reliefRenderOptions(relief), forced]) {
+        const r = renderRelief(effectiveHeights(gridFromRelief(relief)), opts);
+        const ramp = new Set([...(spec ? [...spec.top, ...spec.wall, ...spec.accent] : [])].map((hex) => [1, 3, 5].map((o) => parseInt(hex.slice(o, o + 2), 16)).join(",")));
+        let gray = 0;
+        for (let i = 0; i < r.src.length; i++) {
+          if (!r.slope[i] || !r.rgba[i * 4 + 3]) continue;
+          const rgb = `${r.rgba[i * 4]},${r.rgba[i * 4 + 1]},${r.rgba[i * 4 + 2]}`;
+          if (GRAY_BRICK.has(rgb) && !ramp.has(rgb)) gray += 1;
+        }
+        expect(gray, style).toBe(0);
+      }
+    }
+  });
+
+  it("cliff looks: natural faces do not repeat a 16px tile, keep the walk shape, and take the chipset stair pieces", () => {
+    const LOOKS = ["cliff-earth", "cliff-strata", "cliff-rubble", "cliff-ledge", "cliff-crag", "cliff-rock"];
+    // a long straight three-cell face: 40 cells wide
+    const BW = 40, BH = 8, levels = new Array(BW * BH).fill(0);
+    for (let y = 1; y < 4; y++) for (let x = 0; x < BW; x++) levels[y * BW + x] = 3;
+    // same geometry as the grass bank they replace (both draw the back slope on the low ground's own cells)
+    const grass = renderRelief(effectiveHeights(gridFromRelief({ width: BW, height: BH, levels, style: "grass-steps" })), { style: "grass-steps" });
+    for (const style of LOOKS) {
+      const spec = RELIEF_STYLES[style]!;
+      expect(spec.natural, style).toBeDefined();
+      expect(spec.carvedStairs, style).toBeUndefined();
+      expect(reliefRampArt(style), style).toBe(reliefRampArt("grass-steps"));
+      const r = renderRelief(effectiveHeights(gridFromRelief({ width: BW, height: BH, levels, style })), { style });
+      expect(Array.from(r.kind), style).toEqual(Array.from(grass.kind));
+      expect(Array.from(r.src), style).toEqual(Array.from(grass.src));
+      // wall rows 8..40 px below the lip: compare each 16px column block with the next one — a tiled face repeats exactly
+      const y0 = r.pad + 4 * 16 - 3 * 16 + 8, block = (bx: number) => { const out: number[] = []; for (let y = y0; y < y0 + 32; y++) for (let x = bx * 16; x < bx * 16 + 16; x++) out.push(r.rgba[(y * r.PW + x) * 4]!, r.rgba[(y * r.PW + x) * 4 + 1]!); return out.join(","); };
+      const blocks = Array.from({ length: BW - 2 }, (_, k) => block(k + 1));
+      expect(new Set(blocks).size, style).toBe(blocks.length);
+      for (let i = 0; i < r.kind.length; i++) if (r.kind[i] === 1) expect(r.rgba[i * 4 + 3]).toBe(255);
+    }
+    // the tiled families do repeat (what the natural faces replace)
+    const tiled = renderRelief(effectiveHeights(gridFromRelief({ width: BW, height: BH, levels, style: "elf" })), { style: "elf" });
+    const y0 = tiled.pad + 4 * 16 - 3 * 16 + 8, tb = (bx: number) => { const out: number[] = []; for (let y = y0; y < y0 + 8; y++) for (let x = bx * 16; x < bx * 16 + 16; x++) out.push(tiled.rgba[(y * tiled.PW + x) * 4]!); return out.join(","); };
+    expect(new Set(Array.from({ length: 12 }, (_, k) => tb(k + 2))).size).toBeLessThan(12);
+    // ground variants of a cliff look exist without a table row and keep its face
+    expect(reliefStyleForGround("cliff-rock", "ground-sand")).toBe("cliff-rock@ground-sand");
+    expect(compileReliefStyle("cliff-rock@ground-sand")!.natural).toBe("rock");
+    expect(compileReliefStyle("cliff-rock@ground-sand")!.ramps[0]).toEqual(compileReliefStyle("grass-steps@ground-sand")!.ramps[0]);
+    expect(reliefStyleForGround("cliff-rock", "ground-nope")).toBe("cliff-rock");
+    expect(RELIEF_STYLES["cliff-rock@ground-sand"]).toBeUndefined();
   });
 
   it("renders a bridge underside with the default two-ramp palette and biome accent palettes", () => {
