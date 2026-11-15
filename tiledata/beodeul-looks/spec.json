@@ -319,7 +319,7 @@
    "road": "road-plank",
    "roadEdge": "plank",
    "plaza": "plaza-cobble",
-   "track": "road-gravel"
+   "track": "road-dirt"
   },
   "coast": {
    "label": "모래 바닥 · 붉은 벽돌 길 · 엇갈린 벽돌 광장",
@@ -355,7 +355,7 @@
    "road": "road-flag",
    "roadEdge": "kerb",
    "plaza": "plaza-cobble",
-   "track": "road-gravel"
+   "track": "road-dirt"
   }
  },
  "species": {

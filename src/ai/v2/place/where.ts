@@ -7,6 +7,7 @@ import { labelHasWord } from "@/project/labelWords";
 import { Cell, DIRS, eventsOf, transferCells, eventBodyCells, eventBlockers, walkReach, walkStart, dist, shortestPathCells, openness, edgeExitCells, groundBlocks, tileLabel, layers, objectAt } from "./cells";
 import { behindBuildingStrip, declaredDoorCells, placeMarks } from "./entrances";
 import { roadCells } from "./surface";
+import { standableYard } from "@/editor/tools/beodeulSettlementRank";
 import { personSpotContext, personSpotCost } from "./personSpot";
 import { coveredCell } from "./underRoof";
 
@@ -302,7 +303,9 @@ export function resolveWhere(
   };
   // 바깥 맵의 사람은 길 위가 아니라 길가에 선다(2026-10-23 3차 몬스터 마을: 주민 둘이 큰길 한가운데 서서 길을 좁혔다).
   const outdoorRoads = !fp && !indoor ? roadCells(project, map) : undefined;
-  const roadCost = (c: Cell): number => (!opts.roadOk && outdoorRoads?.has(c.y * w + c.x) ? 8 : 0);
+  // 넓은 흙 마당의 속은 길 한가운데가 아니다(beodeulSettlementRank.standableYard) — 시골 마을의 사람은 마당·문 앞 닳은 자리에 선다. 길 줄기와 문 바로 앞 칸은 여전히 피한다.
+  const yardOk = outdoorRoads?.size ? standableYard(map, project.tilesets[map.tilesetId], outdoorRoads) : undefined;
+  const roadCost = (c: Cell): number => (!opts.roadOk && outdoorRoads?.has(c.y * w + c.x) && !yardOk?.has(c.y * w + c.x) ? 8 : 0);
   // 실내 사람은 문 곁·가구의 하나뿐인 접근 칸·다른 사람 바로 위아래·양탄자 가운데를 피한다(personSpotCost).
   const spotCtx = !fp && indoor ? personSpotContext(project, map, opts.exceptId) : undefined;
   const spotCost = (c: Cell): number => (spotCtx ? personSpotCost(project, map, c, spotCtx) : 0);
