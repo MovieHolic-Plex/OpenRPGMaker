@@ -346,6 +346,10 @@ export interface TilesetLook {
   grain?: string;
   /** 숲 구성·풀밭 얼룩 그림판의 번들 textureKey — textureKey 와 같은 까닭(프로젝트 문자열 수집이 그림판을 찾는다). */
   standKey?: string;
+  /** 물빛(assets/tilesetWater.ts) — 그 게임의 강·못·바다 색. 없으면 원래 물빛. */
+  water?: string;
+  /** 물 그림판의 번들 textureKey — textureKey 와 같은 까닭(프로젝트 문자열 수집이 그림판을 찾는다). */
+  waterKey?: string;
 }
 
 // "보이지 않는 하네스" 구조 킷(2026-07-19 v2 설계 §③④ 수직 슬라이스).
