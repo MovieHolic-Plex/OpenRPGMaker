@@ -6,6 +6,7 @@ import { standGrainTile, standGroundCoverTile, standOverlaySource, tilesetStandT
 import { createBlankProject } from "@/project/defaults";
 import { chooseTilesetLook } from "@/project/tilesetLook";
 import { runTool } from "@/editor/tools/toolRunner";
+import { protectedHouseCells } from "@/editor/tools/houseProtection";
 import { isPassable } from "@/project/collision";
 import { layerTileAt } from "@/project/mapLayers";
 import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
@@ -174,24 +175,25 @@ describe("버들항 풀 결 — 기본 풀 바닥의 변형", () => {
     const { project, map } = village(BASE);
     const ctx = { project, currentMapId: map.id } as ToolContext;
     const lower = Array.from(map.lowerTiles), walk = walkGrid(project, map), before2 = layer2(map);
-    // 빈 풀밭 2×2 가 가장 많이 든 8×4 자리(마을은 빽빽해 통째로 빈 자리가 없을 수 있다 — 짙은 결은 2×2 가 비어야 한 칸이 선다)
-    const free = (i: number): boolean => map.lowerTiles[i] === GRASS && [2, 3, 4].every((layer) => layerTileAt(map, layer as 2 | 3 | 4, i) < 0) && !map.events.some((e) => e.y * map.width + e.x === i);
-    const block = (x: number, y: number): boolean => [0, 1, map.width, map.width + 1].every((d) => free(y * map.width + x + d));
-    let area = { x: 0, y: 0, w: 8, h: 4 }, most = -1;
-    for (let y = 0; y + 4 <= map.height; y += 1) for (let x = 0; x + 8 <= map.width; x += 1) {
-      let n = 0;
-      for (let dx = 1; dx < 6; dx += 1) if (block(x + dx, y + 1)) n += 1;
-      if (n > most) { most = n; area = { x, y, w: 8, h: 4 }; }
+    // 한가운데 2×2 가 깔 수 있는 풀밭인 8×4 자리(마을은 빽빽해 통째로 빈 자리가 없을 수 있다 — 둥근 덩이의 한가운데 2×2 는 늘 덩이 안이라 그 네 칸에 결이 선다).
+    // 깔 수 있는 칸 = 풀밭(737) · 2~4층 빔 · 이벤트·경사로·완성된 집 자리 아님, 네 칸이 같은 단.
+    const blockedCells = new Set([...map.events.map((e) => e.y * map.width + e.x), ...protectedHouseCells(map).map((cell) => cell.y * map.width + cell.x)]);
+    const free = (i: number): boolean => map.lowerTiles[i] === GRASS && [2, 3, 4].every((layer) => layerTileAt(map, layer as 2 | 3 | 4, i) < 0) && !blockedCells.has(i) && !map.relief?.ramps?.[i];
+    const level = (i: number): number => map.relief?.levels?.[i] ?? 0;
+    let area: { x: number; y: number; w: number; h: number } | undefined;
+    for (let y = 0; y + 4 <= map.height && !area; y += 1) for (let x = 0; x + 8 <= map.width && !area; x += 1) {
+      const centre = [0, 1, map.width, map.width + 1].map((d) => (y + 1) * map.width + x + 3 + d);
+      if (centre.every(free) && centre.every((i) => level(i) === level(centre[0]!))) area = { x, y, w: 8, h: 4 };
     }
-    expect(most).toBeGreaterThan(0);
+    expect(area).toBeDefined();
     const noArea = runTool(ctx, "lay_beodeul_grass", { mapId: map.id, kind: "tall" });
     expect(noArea.ok).toBe(false);
     const laid = runTool(ctx, "lay_beodeul_grass", { mapId: map.id, kind: "tall", area });
     expect(laid.ok, laid.summary).toBe(true);
     let now = ctx.project.maps[map.id]!;
     const cells = grainCells(ctx.project, now);
-    expect(cells.length).toBeGreaterThan(0);
-    for (const i of cells) { const x = i % now.width, y = Math.floor(i / now.width); expect(x >= area.x && x < area.x + 8 && y >= area.y && y < area.y + 4).toBe(true); }
+    expect(cells.length).toBeGreaterThanOrEqual(4);
+    for (const i of cells) { const x = i % now.width, y = Math.floor(i / now.width); expect(x >= area!.x && x < area!.x + 8 && y >= area!.y && y < area!.y + 4).toBe(true); }
     expect(Array.from(now.lowerTiles)).toEqual(lower);
     expect(walkGrid(ctx.project, now)).toBe(walk);
     const flowers = runTool(ctx, "lay_beodeul_grass", { mapId: map.id, kind: "flowers", area });
