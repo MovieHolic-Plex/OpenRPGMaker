@@ -344,7 +344,8 @@ describe("상점의 겉판과 시작 돈", () => {
     for (const surface of new Set(UI_LOOKS.map((look) => shopSurfaceForMenu(look.menu)))) {
       if (surface !== "blue") expect(css, surface).toMatch(new RegExp(`\\.runtime-shop-preset-pixel\\[data-shop-surface="${surface}"\\] \\{[^}]*--shop-ink:`, "u"));
     }
-  });
+    // 빈 프로젝트를 열세 번 갈아 끼운다 — CI 러너에서 15~20초가 걸려 기본 시간 제한(15초)에 걸렸다(실행 43697283598).
+  }, 90_000);
 
   it("첫 상점의 가장 싼 회복약을 못 사는 시작 돈이면 그 약 둘 값으로 올린다 — 살 수 있으면 그대로", () => {
     const gold = (had: number, price: number) => {
