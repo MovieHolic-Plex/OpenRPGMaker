@@ -479,7 +479,7 @@ export const RELIEF_STYLES: Readonly<Record<string, ReliefStyleSpec>> = {
   "grass-steps@ground-sand": { smoothStairs: true, rim: GRASS_STEPS_RIM, family: "earth", overlay: "vines", overlayEvery: 4, top: ["#7d6f52", "#9a8a66", "#b3a37f", "#e0cf9a", "#ece2c4", "#f4ecd6"], wall: ["#24170b", "#432c16", "#634223", "#825a30", "#a2753f", "#c29552"], accent: ["#2e1a0a", "#4a2c12", "#6e4520", "#94632f", "#b98648", "#d8a866"] },
   // 절벽 모습 여섯(자연 면). cliff-earth 돌 박힌 흙 둑 · cliff-strata 켜 절벽 · cliff-rubble 회색 막돌 둑 · cliff-ledge 턱진 바위 · cliff-crag 갈비 바위벽
   // · cliff-rock 회갈색 금 간 바위 절벽(오너가 보던 참고 그림의 절벽).
-  "cliff-earth": cliffLook("boulders", 16, 0.035, EARTH_WALL, EARTH_ACCENT),
+  "cliff-earth": cliffLook("boulders", 12, 0.035, EARTH_WALL, EARTH_ACCENT),
   "cliff-strata": cliffLook("strata", 8, 0.045, ["#2a1b0e", "#4a3018", "#6b4826", "#8b6234", "#aa7d45", "#c89a5a"], EARTH_ACCENT),
   "cliff-rubble": cliffLook("boulders", 8, 0.03, ["#39332b", "#544b3f", "#6f6454", "#8b7f6b", "#a89c86", "#c6bba5"], MOSS),
   "cliff-ledge": cliffLook("ledges", 10, 0.04, ["#2b2620", "#463d32", "#665a48", "#877a62", "#a89b80", "#c9bda2"], MOSS),

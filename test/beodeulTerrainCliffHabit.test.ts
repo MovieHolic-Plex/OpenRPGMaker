@@ -8,6 +8,7 @@ import { runTool } from "@/editor/tools";
 import { reliefSlopes } from "@/project/relief/walk";
 import { reliefRenderOptions } from "@/project/relief/screen";
 import type { Project } from "@/project/types";
+import { isPassable } from "@/project/collision";
 
 const BASE: TerrainGenInput[] = [
   { W: 42, H: 42, seed: 11, water: "river", character: "hill" },
@@ -126,5 +127,29 @@ describe("terrain cliff habit — tier heights and the scalloped cliff line", ()
     expect(data.relief.fails).toBe(0);
     expect(data.doors.filter((d) => !d.reached)).toEqual([]);
     expect(data.levelReach["3"]!.reached / data.levelReach["3"]!.walk).toBeGreaterThan(0.6);
+  }, 240_000);
+
+  it("village: behind a two-cell hill nobody walks where the hero would be fully hidden — those cells become a stepped back bank", () => {
+    const table = tilesetLookTableFor("beodeul_city")!;
+    const project = createBlankProject() as Project;
+    project.tilesets.beodeul_city!.look = { textureKey: table.texture, cliff: "rock" };
+    const ctx = { project };
+    const res = runTool(ctx as never, "author_beodeul_town", { theme: "river", seed: 11, landform: "hill", terrain: "hillside", id: "hill_village", name: "언덕 마을" } as never);
+    expect(res.ok, res.summary).toBe(true);
+    const map = ctx.project.maps.hill_village!, relief = map.relief!, W = map.width, H = map.height, lv = relief.levels;
+    const data = res.data as { hillBehind: { raised: number; open: number; road: number; sample: { x: number; y: number }[] }; doors: { reached: boolean }[] };
+    expect(data.hillBehind.raised).toBeGreaterThan(20);
+    // fully hidden = some cell k rows south is at least k + 1 cells higher (the lifted top covers the whole 32px sprite); stair columns are cut open
+    const ramp = (c: number) => (relief.ramps?.[c] ?? 0) > 0;
+    const hidden = (c: number) => { if (ramp(c)) return false; for (let k = 1; k <= 6 && c + k * W < W * H; k += 1) { if (ramp(c + k * W)) return false; if (lv[c + k * W]! - lv[c]! >= k + 1) return true; } return false; };
+    let left = 0;
+    for (let c = 0; c < W * H; c += 1) if (hidden(c) && isPassable(ctx.project, map, c % W, Math.floor(c / W))) left += 1;
+    // what is left walkable is what the builder reports (roads, door fronts, cells whose bank would cut other ground off) plus hidden cells nobody can reach
+    expect(left).toBeGreaterThanOrEqual(data.hillBehind.open + data.hillBehind.road);
+    expect(data.hillBehind.open + data.hillBehind.road).toBeLessThan(data.hillBehind.raised / 4);
+    // a bank cell is raised ground one step per row down from the hill, with no stair on it; the two tiers are still there
+    for (const { x, y } of data.hillBehind.sample) { const c = y * W + x; expect(lv[c]! % 2).toBe(1); expect(ramp(c)).toBe(false); expect(hidden(c)).toBe(false); }
+    expect(tiersOf(lv)).toEqual(expect.arrayContaining([0, 2, 4]));
+    expect(data.doors.filter((d) => !d.reached)).toEqual([]);
   }, 240_000);
 });

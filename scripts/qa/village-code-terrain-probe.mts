@@ -52,7 +52,7 @@ for (const c of CASES) {
   const runs = map.relief ? longestTierEdgeRuns(map.relief.levels, map.width, map.height) : { south: 0, side: 0 };
   const row = { n: c.n, ms: Date.now() - t0, size: `${map.width}x${map.height}`, houses: d.houses, anchors: d.anchors, unreached: doors.filter((x) => !x.reached).length, doors: doors.length,
     dead: cf.deadEnds.filter((x: any) => x.kind === "cell").length, runSouth: runs.south, runSide: runs.side, style: map.relief?.style ?? null, ramps: d.relief?.ramps, rfail: d.relief?.fails, levels: d.relief?.levels,
-    upMiss: Object.values(lr).reduce((s: number, e: any) => s + (e.walk - e.reached), 0), upWild: Object.values(lr).reduce((s: number, e: any) => s + (e.wild ?? 0), 0),
+    upMiss: Object.values(lr).reduce((s: number, e: any) => s + (e.walk - e.reached), 0), upWild: Object.values(lr).reduce((s: number, e: any) => s + (e.wild ?? 0), 0), hillBehind: d.hillBehind ? { raised: d.hillBehind.raised, open: d.hillBehind.open, road: d.hillBehind.road, sample: d.hillBehind.sample } : null,
     layout: d.layout ? { auto: d.layout.auto, moved: d.layout.moved, failed: d.layout.failed, roadsFailed: d.layout.roadsFailed } : null, terrainSeed: d.terrainSeed, note: d.codeTerrain?.note, summary: r.summary, warnings: (r as any).warnings ?? [] };
   rows.push(row); console.log(c.n, JSON.stringify(row).slice(0, 600));
 }

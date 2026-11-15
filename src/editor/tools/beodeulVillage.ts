@@ -614,6 +614,19 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const hasTerrain = lv.some((v) => v > 0);
   const rampCells = new Set<number>(); // 길 경사로 칸(코드 1~4) — 문 앞·소품 자리로 쓰지 않는다
   const ramps = new Array<number>(W * H).fill(0);
+  /**
+   * 언덕 뒤에서 주인공(24×32)이 온몸이 가려지는 칸인가: 같은 열 남쪽 k 줄째 칸이 k+1 칸 넘게 높다(두 칸 언덕 바로 뒤 1줄, 세 칸 언덕 뒤 2줄).
+   * 윗면은 높이만큼 화면 위로 올라가 그려지므로 그 줄에 선 인물은 `min(32, (높이 차 − k + 1) × 16 + 뒤 비탈 8~12)` 화소가 덮인다 — 높이 차 ≥ k + 1 이면 32 화소 전부.
+   * 높이 차 = k 인 줄(한 칸 언덕 바로 뒤, 두 칸 언덕 뒤 둘째 줄)은 머리 4~8px 이 남는다 — main 의 풀 둑 뒤와 같아 걷는 칸으로 둔다.
+   * 남쪽 오르막 계단(깎은 계단)이 지나는 열은 계단 그림이 언덕을 파므로 가려지지 않는다.
+   * 게임의 절벽 습관으로 만든 땅에만 본다(옛 땅·열쇠 없는 편집은 예전 그대로 — main 은 두 칸 풀 둑 바로 뒤 한 줄이 온몸 가려지는 걷는 칸이다).
+   * 2026-11-15 오너 쪽 검토: 「플레이어가 걸어 들어가 안 보이게 되는 칸」 은 플레이 결함 — 길·문 앞은 이 칸을 피하고, 남는 빈 칸은 뒤 비탈 둑으로 올려 막는다(13 끝).
+   */
+  const hiddenBehind = (c: number): boolean => {
+    if (!codeT?.habit || rampCells.has(c)) return false;
+    for (let k = 1; k <= 6; k += 1) { const n = c + k * W; if (n >= W * H || rampCells.has(n)) return false; if (lv[n]! - lv[c]! >= k + 1) return true; }
+    return false;
+  };
   let rel: ReliefData | null = null; // 경사로까지 정한 뒤(3b) 만든다 — 문 앞 길 찾기가 단을 안다
   // 흩어진 마을의 갈래길은 마감에서 마지막 집 문 앞까지 깎인다 — 그 끝 토막과 거기 놓인 경사로를 믿고 자리를 고르지 않는다(울타리 문·대지 이어짐 계산)
   const branch = (c: number) => form === "scatter" && streets.some((st) => st.name === "갈래길" && st.cells.has(c));
@@ -716,7 +729,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       }
       for (let i = 0; i < k.w; i += 1) for (let kk = 1; kk <= 2; kk += 1) { const Y = y + k.h - 1 + kk; if (Y < H && lv[idx(x + i, Y)]! > L0 + kk - 1) return false; }
       const fx = x + k.door.dx, fy = y + k.door.dy + 1; if (!inMap(fx, fy + 1)) return false; const f = idx(fx, fy);
-      return (occ[f] === FREE || onBog(f)) && lv[f] === L0 && lv[f + W]! >= L0 && (occ[f + W] !== WATERC || onBog(f + W));
+      return (occ[f] === FREE || onBog(f)) && lv[f] === L0 && lv[f + W]! >= L0 && (occ[f + W] !== WATERC || onBog(f + W)) && !hiddenBehind(f);
     };
     const place = (role: CodeSpot["role"], ks: Kit[], want: LayoutPoint, maxR = 9): CodeSpot | null => {
       for (let r = 0; r <= maxR; r += 1) {
@@ -814,6 +827,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       extra: (c: number) => {
         const x = c % W, y = (c - x) / W; let e = network.has(c) ? -0.55 : 0;
         if (y + 1 < H && lv[c + W]! < lv[c]!) e += 1.2; // 절벽 끝 바로 위
+        if (hiddenBehind(c)) e += 6; // 언덕 뒤 가려지는 줄 — 길이 그 줄을 따라가지 않게(건너는 한두 칸은 된다)
         const edge = Math.min(x, y, W - 1 - x, H - 1 - y); if (edge === 0) e += 1.5; else if (edge === 1) e += 0.8; // 맵 테두리를 따라 기는 길
         for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const v = at(x + dx, y + dy); if (v === RESV) e += 0.8; else if (v === WATERC && theme !== "swamp") e += 0.4; }
         if (onBog(c)) e += 0.6; // 늪 널길: 물을 건너도 되지만 진흙 섬이 가까우면 섬을 탄다
@@ -3847,6 +3861,35 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     });
     if (bends && reliefInfo) { const counts: Record<string, number> = {}; for (const v of lv) counts[v] = (counts[v] ?? 0) + 1; reliefInfo.levels = counts; }
   }
+  // 언덕 뒤 가려지는 칸 막기(hiddenBehind): 걸어 들어가면 주인공이 안 보이는 빈 칸을 «뒤 비탈 둑» 으로 올린다 — 언덕 뒤를 한 줄에 한 칸씩 내려오는 층층 둑으로 만들어
+  // (두 칸 언덕 뒤 1줄은 한 칸 둑, 세 칸 언덕 뒤 2줄은 두 칸·한 칸 둑) 계단 없이는 오를 수 없게 한다. 인물은 둑 북쪽 끝에서 멈춘다(그 줄은 한 칸 둑 뒤라 머리가 보인다).
+  // 그 줄에 나무·덤불을 세워 막지 않는다 — 맵 기물은 언덕 윗면보다 위에 그려져 언덕 위에 서 있는 것처럼 보이고(찍기의 높이 규칙이 그 줄의 기물을 거절하는 까닭), 언덕 위를 걷는 인물이 그 그림을 지나간다.
+  // 길·광장·문 앞·집·울타리 안·물은 두고(길은 길 찾기가 이미 피했다), 올렸더니 입구에서 닿던 다른 칸이 안 닿게 되면 그 칸은 되돌린다(걷는 칸으로 남는다 — 수를 보고한다).
+  const hillBehind = { raised: 0, open: 0, road: 0, sample: [] as { x: number; y: number }[] };
+  const backBank = new Set<number>();                                   // 뒤 비탈 둑 칸 — 오를 길을 일부러 두지 않는다(못 닿는 윗단 칸으로 세지 않는다)
+  if (codeT?.habit && m.relief) {
+    const R = m.relief, frontSet = new Set(doorFronts.map((d) => idx(d.x, d.y)));
+    const setLv = (c: number, v: number) => { lv[c] = v; R.levels[c] = v; };
+    let cur = reachMap();
+    // 남쪽 줄부터 — 아래 줄을 올리면 그 윗줄이 새로 가려질 수 있다(세 칸 언덕의 둘째 줄)
+    for (let y = H - 2; y >= 0; y -= 1) for (let x = 0; x < W; x += 1) {
+      const c = idx(x, y);
+      if (!hiddenBehind(c) || !walk(x, y)) continue;
+      if (occ[c] === ROAD || occ[c] === PLAZAC || frontSet.has(c) || occ[c] === WATERC || occ[c] === KEEP || occ[c] === BLD || bldRect.has(c) || fenceInside.has(c)) continue;
+      const was = lv[c]!;
+      let to = was; for (let k = 1; k <= 6 && c + k * W < W * H; k += 1) to = Math.max(to, lv[c + k * W]! - k);
+      setLv(c, to); invalidateReliefSlopes(R);
+      const next = reachMap();
+      let ok = true; for (let n = 0; ok && n < W * H; n += 1) if (cur[n] && !next[n] && n !== c && !hiddenBehind(n) && !backBank.has(n)) ok = false;
+      if (!ok) { setLv(c, was); invalidateReliefSlopes(R); continue; }
+      cur = next; backBank.add(c); hillBehind.raised += 1;
+      if (hillBehind.sample.length < 12) hillBehind.sample.push({ x, y });
+    }
+    // 남은 것: 입구에서 닿는데 여전히 걷는 가려지는 칸(길·문 앞 / 그 밖)
+    for (let c = 0; c < W * H; c += 1) if (cur[c] && hiddenBehind(c) && walk(c % W, Math.floor(c / W))) { if (occ[c] === ROAD || occ[c] === PLAZAC || frontSet.has(c)) hillBehind.road += 1; else hillBehind.open += 1; }
+    if (hillBehind.raised && reliefInfo) { const counts: Record<string, number> = {}; for (const v of lv) counts[v] = (counts[v] ?? 0) + 1; reliefInfo.levels = counts; }
+    if (hillBehind.open + hillBehind.road) warnings.push(`언덕 뒤에서 주인공이 가려지는 칸 ${hillBehind.open + hillBehind.road}곳이 걷는 칸으로 남았다(길·문 앞 ${hillBehind.road} · 막으면 다른 칸이 끊기는 곳 ${hillBehind.open}).`);
+  }
   const seen = reachMap();
   const unreached = doorFronts.filter((d) => !seen[idx(d.x, d.y)]);
   if (unreached.length) warnings.push(`입구에서 닿지 않는 문 앞 ${unreached.length}곳: ${unreached.slice(0, 5).map((d) => `${d.kit}@(${d.x},${d.y})`).join(", ")}`);
@@ -3860,7 +3903,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   if (hasTerrain) for (let c = 0; c < W * H; c += 1) {
     const L = lv[c]!; if (L === 0 || fenceInside.has(c) || bldRect.has(c) || !walk(c % W, Math.floor(c / W))) continue;
     const e = (levelReach[L] ??= { walk: 0, reached: 0, wild: 0 });
-    if (!seen[c] && (summit.has(c) || occ[c] === FOREST)) { e.wild += 1; continue; }
+    if (!seen[c] && (summit.has(c) || occ[c] === FOREST || backBank.has(c) || hiddenBehind(c))) { e.wild += 1; continue; }   // 뒤 비탈 둑과 그 둑에 끊긴 가려지는 칸은 일부러 막은 자리다
     e.walk += 1; if (seen[c]) e.reached += 1;
     else if (upperLost.length < 8) upperLost.push({ x: c % W, y: Math.floor(c / W), level: L });
   }
@@ -3895,7 +3938,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       gathering: { why: gather.why, ...(gatherDoor ? { door: gatherDoor } : {}) }, fenceCells: fenceAt.size, ...(ferry ? { ferry } : {}), ...(ford ? { ford: { x: ford.x, y: ford.top, stones: fordStones.length } } : {}),
       anchors, work: workAt, ...(coastWork.length ? { coastWork } : {}), houses: placedHouses.length, distinctHouses: distinct,
       doors: doorFronts.map((d) => ({ kit: d.kit, x: d.x, y: d.y, reached: !!seen[idx(d.x, d.y)] })),
-      fenceGates: gateInfo, levelReach, ...(upperLost.length ? { upperLost } : {}), opened,
+      fenceGates: gateInfo, levelReach, ...(upperLost.length ? { upperLost } : {}), opened, ...(codeT?.habit ? { hillBehind } : {}),
       ...(bridge ? { bridge } : {}), ...(millBridge ? { millBridge } : {}), fields, trees: treeCount, filler, stamped, stampFailed: failed, nature: natureStats,
       terrain: terrain.name, ...(hf && !hfFlat ? { landform: hf.landform, settle: hf.settle, tiers: hf.tiers, high: hf.high } : { landform: "flat", ...(hfFlat ? { settle: "low" } : {}) }), ...(requestedTerrain !== null ? { requestedTerrain, terrainSwapped } : {}), ...(reliefInfo ? { relief: reliefInfo } : {}),
       upper: climbs.map((cl) => ({ level: cl.level, lanes: cl.lanes, path: cl.path, to: cl.to, use: cl.use, ...(cl.lookout ? { lookout: cl.lookout } : {}),
