@@ -5,7 +5,7 @@ import { pickTroops } from "@/editor/tools/jrpgVolumeTools";
 import { type DungeonType } from "@/editor/dungeonKit/types";
 import type { EnemyRecord, Project } from "@/project/types";
 import type { BuildRun } from "../../shared/types";
-import { currentFoe, hasCurrentArt } from "../../story/currentFoes";
+import { bossArtInUse, currentFoe, distinctBossFoe, hasCurrentArt } from "../../story/currentFoes";
 import { artGapLine } from "@/project/artGap";
 
 /** 적 낱말 → 데이터베이스 적 id(보이는 잡몹). 「불 속성」처럼 종이 없는 말은 주제 적에 맡긴다. */
@@ -176,6 +176,20 @@ export function planTroops(run: BuildRun, plan: DungeonPlan, toolArgs: Record<st
       .map((c) => (c ? [drawn(c[0]), c[1]] as [string, string] : undefined))
       .find((c): c is [string, string] => !!c && !taken.has(lookGroup(c[0])) && !blob(c[0]));
     if (alt) boss = alt; else warnings.push("보스 그림이 잡몹과 닮았다 — 대신할 그림을 찾지 못했다");
+  }
+  // 게임 안에서 보스 그림은 하나씩(story/currentFoes): 이 게임의 다른 곳 보스가 이미 쓰는 그림이면 남은 그림의 가까운 종으로 바꾼다.
+  // 사용자가 보스를 짚었으면(plan.boss) 그대로다. 다시 짓는 던전은 제 옛 보스를 «쓴 그림» 에서 빼고, 옛 보스가 바로 이 그림이면 그대로 둔다(옛 게임은 다시 지어도 같다).
+  if (!plan.boss) {
+    const own = (m: { name?: string }) => { const n = String(m.name ?? ""); return !!place && (n === place || n.startsWith(`${place} `)); };
+    const project = run.ctx.project;
+    const artOfFoe = (id: string) => (project.database.enemies.find((e) => e.id === id) as { monsterResourceId?: string } | undefined)?.monsterResourceId ?? "";
+    const before = new Set<string>(), elsewhere = bossArtInUse(project, own);
+    for (const a of bossArtInUse(project, (m) => !own(m))) before.add(a);
+    if (elsewhere.has(artOfFoe(boss[0])) && !before.has(artOfFoe(boss[0]))) {
+      const key = `${String((run.ctx as { lookKey?: string }).lookKey ?? project.meta?.title ?? "")}|${plan.type}`;
+      const pick = distinctBossFoe(project, boss[0], elsewhere, (id) => taken.has(lookGroup(id)) || blob(id), key);
+      if (pick !== boss[0]) boss = [pick, boss[1]];
+    }
   }
   if (boss[0] !== theme.boss) {
     const id = ensureFoeTroop(run, boss[0], "boss", base.boss, boss[1] || undefined);

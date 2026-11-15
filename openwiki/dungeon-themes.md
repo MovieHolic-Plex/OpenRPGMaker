@@ -133,3 +133,59 @@ type 을 안 준 요청은 지은 층의 type 으로 주제를 고른다.
 - 정본 저장 견본: `bun scripts/qa/dungeons/themes-samples.mts <새 프로젝트 폴더> <out> 1,2` — 열두 종류 × 시드 둘을 한 프로젝트에 지어 SQLite 에 저장·다시 열고 대조(mismatch·lint), 다시 연 사본으로 `<theme>@<seed>-<층>.png`. viz `~/claude-viz/dungeon-themes-2.html`.
 - 도구 경로 증명: `bun scripts/qa/dungeons/themes-proof.mts <out> [case...]` — 24 경우(종류 열둘 × 둘), 층 PNG·이벤트·린트·장치 줄.
 - 조수 실경로: space-craft `dt-<theme>-a|b` 24건(`harness-data/space-craft/seed.json`), 판정 brief `harness-data/space-craft/dungeon-vqa-brief.md` 의 M11(주제로 읽히는가)·M12(두 요청이 복사본인가)·M13(장치가 쓰이는가).
+
+## 던전 겉가죽 — 주제 열둘을 버들항 수준의 새 그림으로 (2026-11-15)
+
+오너: 「던전도 해야하고」 「괜찮네. 근데 뭐 다양하게 만드는 게 중요하니까」. 옛 던전 그림(2026-10 의 코드 손 도트)은 버들항 마을 옆에서 옛 칩셋으로 읽혔고, 게임마다 같은 모습이었다.
+겉가죽은 **배치·벽·천장·물 마스크는 그대로 두고 칸 그림만** 주제의 새 그림으로 바꾼다 — 걷는 칸·막힌 칸의 규칙은 시공기 것이 그대로다.
+
+- 그림: `tiledata/beodeul-dungeon/fable/pieces/*.png` — Claude Fable 5.2 medium 한 방(줄 문자열 → 잠긴 색 줄 `ramps.json`). **3/4 관문 미통과 — 오너 면제**(묶음 `fable-dungeons-beodeul-2026-11-15`, 출구 bundle·shared, 스토어 불가). 면제는 통과가 아니다.
+- 정의: `scripts/content/beodeul-dungeons/make_spec.py`(주제·겉모습·기물 표의 정본, `spec.json`·`waive-manifest.json`·끌어낸 색 줄을 쓴다) → `bake.py`(조각을 16px 칸으로 잘라 `beodeul_city` 꼬리의 제 토막 **52,608~56,703**(고정 4,096칸, `bd-dgn-*`)에 굽고 `src/assets/beodeulDungeonSkins.json` 을 쓴다).
+- 읽기: `src/assets/dungeonSkins.ts`(표·주제 고르기) · 입히기: `src/editor/dungeonKit/beodeul/compose.ts` 의 «겉가죽 입히기» 대목과 `put()` 의 갈아 끼우기 · 2층 덧칸(벽 윗변 입술·물가)과 빛 띠는 `dungeonTools.ts`.
+
+| 주제 | 던전 종류 | 벽 | 바닥 | 물·위험 | 볼거리(층에 하나) |
+|---|---|---|---|---|---|
+| 동굴 cave | cave | 큰 바위 판(두 면·기운 턱) | 침식 바위 5판 | 깊은 물 + 바위 둑 | 큰 수정 |
+| 도적 소굴 hideout | cave + lair | 동굴과 같다 | 동굴과 같다 | 〃 | 두목 자리(천막·우리·지도 탁자·널 마루) |
+| 유적 ruin | temple | 마름돌 + 뇌문 띠 | 옅은 판석 | 돌 테 못 | 큰 기둥·수호 석상 |
+| 가라앉은 신전 sunken | temple + flooded | 대리석 + 물결 띠·물때 | 옥빛 타일 | 맑은 바닷물 | 조개 분수 |
+| 지하묘 crypt | catacomb · labyrinth | 다듬은 돌 + 뾰족 아치 줄·벽감 | 어두운 판석·묘석 | — | 슬퍼하는 천사상 |
+| 성 castle | castle | 큰 성돌 + 쇠고리 | 큰 판석·골풀 | — | 융단 줄·옥좌 |
+| 하수도 sewer | sewer | 붉은 벽돌 + 돌 띠·배수구·관 | 잿빛 포석·창살 | 초록 물 | 큰 물통 |
+| 광산 mine | mine | 곡괭이 자국 바위·갱목·광맥 | 다진 흙·바퀴 자국 | — | 권양기 |
+| 화산 volcano | volcano | 현무암·용암 줄기 | 갈라져 빛나는 판 | 용암 + 식은 둑 | 흑요석 제단 |
+| 얼음굴 ice | ice | 얼음 낀 바위·언 폭포·고드름 | 밟힌 눈·빙판 | 언 물 | 큰 얼음 수정 |
+| 피라미드 pyramid | pyramid | 사암 + 새김 띠·가짜 문 | 사암 판·모래 | — | 스핑크스 |
+| 마법탑 tower | tower | 보랏빛 마름돌 + 별·달 띠·창 | 무늬 타일 | — | 마법진 |
+
+숲·늪(수관 숲)과 마계(허공)는 겉가죽이 없다 — 옛 그림 그대로다.
+
+**게임마다 다르게(한 게임은 한 모습):** 게임 겉모습(`TilesetLook`)의 `dungeon` 갈래가 이름 하나(ember·frost·dusk)를 고른다(`project/tilesetLook.ts`, 다른 갈래와 같은 열쇠 해시). 주제마다 그 순번의
+벽 색 줄(벽 앞면·입술·테·올라가는 계단을 같은 화소에 다른 색 줄로 다시 구운 것)을 쓰고, `dusk` 게임은 횃불·화로·촛불·모닥불이 푸른 혼불(빛 띠도 찬 색)이다. 대안 기물이 여럿인 자리는 이 순번이 소금이다.
+겉모습에 `dungeon` 이 없는 게임(옛 게임·열쇠 없는 편집)은 옛 그림 그대로 — 한 칸도 달라지지 않는다.
+많이 쓰이는 네 주제(동굴·지하묘·성·유적)는 둘째 겉모습(frost)이 **벽·바닥 그림 한 벌을 따로** 갖는다: 동굴 = 종유석 벽 + 갈라진 진흙 바닥, 지하묘 = 벽돌 묘실 벽 + 헤링본 벽돌 바닥, 성 = 회벽·들보 벽 + 마루, 유적 = 다각 쌓기 벽(새김 띠) + 바구니 짜기 타일.
+
+**시공기가 하는 일:**
+- 바닥: 64px 판 여러 장을 4×4칸 덩이마다 섞는다(주제의 판 셋은 조용한 판이 절반 — 빙판·묘석 같은 무늬가 격자로 늘어서지 않는다).
+- 벽 앞면: 64×56 조각 셋을 벽 줄 따라 섞는다(3칸 + 위 8줄은 천장 칸에 얹는 입술). 벽 너머는 어두운 윗면이 멀어질수록 어두워지고(주제마다 물든 어둠), 동·서·남은 옆면 없이 «윗면 테»(한 칸 두께 벽은 양쪽 테를 반씩).
+- 물: 안쪽 칸은 몸통 판, 둑이 그려지는 칸은 **2층의 막힌 덧칸 + 1층은 걷는 바닥 그림**(둑 바깥의 투명한 자리로 물 몸통이 비쳐 네모로 잘려 보였다). 2×2 물 덩이에 들지 않는 칸은 한 칸 폭 물줄기라
+  그린 물줄기 그물(곧은 칸·굽이·세 갈래·네 갈래)에서 고르고, 못 안쪽에서 뭍인 대각이 둘이면 안쪽 모서리 둘을 합친 칸을 쓴다. 화산은 같은 조각을 용암 색 줄로. 다리는 널다리·돌다리 한 칸.
+  물에 잠긴 신전만은 얕은 물을 걸어 건너므로 물가 덧칸이 ★ 이고 1층이 물이다(`wade`).
+- 기물: 옛 꾸밈이 놓으려던 킷 자리에 같은 발자국의 새 그림(`swap`; 더 높으면 아랫줄 맞춤, 벽걸이는 벽 안에서). 그 뒤 주제의 덧놓기(`extras`: 방 안쪽·벽가·벽 앞면·바닥 그림·융단 줄)와 층에 하나뿐인 볼거리(`once`, 가장 넓은 방부터).
+  벽걸이는 맨 벽 앞면에만 건다(계단·문이 깔린 벽 칸을 덮지 않는다 — 봉인된 문이 입구 계단을 덮어 «못 밟는 이동 칸» 이 됐던 자리).
+- 계단: 주제·겉모습의 계단 킷(지은 곳은 문목 계단·네모 구멍, 굴은 거친 구멍) — 옛 계단은 갈색 흙벽 조각이라 얼음굴·성에 박힌 딴 그림이었다.
+- 빛: 불·수정·버섯·초록 등 둘레의 반투명 두 띠를 바닥 마감 층에 깐다(코드가 만든 단색 띠 — 그림이 아니라 관문 대상이 아니다).
+
+**코드가 만든 것(그린 것이 아닌 것):** 겉모습 둘째·셋째 색 줄과 벽 너머 어둠의 물든 색은 그린 색 줄에서 OKLCH 색상·채도만 옮겨 끌어낸다(`ramps.json` 의 `derived`). 화소 모양은 그대로다.
+
+**조수 v2 가 주제를 고르는 법:** `make_place` 의 던전 `theme` 은 닫힌 값 하나다(14종 + `sunken`·`hideout`). 안 주면 게임 열쇠와 장소 이름의 해시로, 이야기 역할(보스가 있거나 3층 이상이면 끝 던전, 아니면 곁 던전)의 후보 중 하나를 고른다
+(`src/ai/v2/place/builders/dungeon.ts` `pickDungeonKind`). 모델의 자유 낱말을 정규식 표로 읽던 것(`TYPE_WORDS`·`GIMMICK_WORDS`·`gimmickCue`)은 없앴다.
+
+**시공기가 «닿지 않는 방» 으로 멈추던 것(main 에도 있던 결함, 2026-11-15):** ① 굴 문법에서 두께 고르기가 좁은 목을 메워 방 하나가 통째로 끊기면 그 방의 바닥이 모두 지워졌다 → 통째로 끊긴 방은 굴을 뚫어 잇는다(`dungeonKit/grid.ts` `tunnelLostRooms`).
+② 바닥 구멍 계단의 도착 칸이 뒤에 놓인 물건 사이에 갇혔다 → 물건을 놓을 때 도착 칸 곁 한 칸은 길에 이어져 있어야 한다(`compose.ts` `arrivals`). 시험 `test/dungeonLostRooms.test.ts`.
+
+**레버·열쇠 문:** 문을 닫은 채 입구에서 레버까지 닿아야 하고, 문은 맵을 앞쪽·뒤쪽으로 실제로 갈라야 한다(`src/editor/tools/dungeonGateAudit.ts` — 시공 도구·판정·시험이 같은 물채움 검사를 쓴다). 뒤에 놓는 궤·쉼 수정이 길을 끊으면 되돌린다.
+**보스 그림:** 한 게임의 보스는 서로 다른 그림을 쓴다(`story/currentFoes.ts` `distinctBossFoe`).
+
+다시 굽는 순서: `make_spec.py` → (그림이 바뀌었으면) `npm run harness -- object-gate owner-waive --manifest tiledata/beodeul-dungeon/fable/waive-manifest.json --batch fable-dungeons-beodeul-2026-11-15 --replace …` → `bake.py` → `bake.py --check`.
+시험: `test/beodeulDungeonSkins.test.ts` · `test/aiV2DungeonKind.test.ts` · `test/dungeonLeverGateReach.test.ts` · `test/aiV2BossArtPerGame.test.ts`. 여러 씨앗 훑기: `scripts/qa/dungeon-gate-sweep.mts`.
