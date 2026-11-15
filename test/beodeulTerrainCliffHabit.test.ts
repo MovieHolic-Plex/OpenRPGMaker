@@ -113,7 +113,12 @@ describe("terrain cliff habit — tier heights and the scalloped cliff line", ()
     expect(res.ok, res.summary).toBe(true);
     const map = ctx.project.maps.crag_village!, relief = map.relief!;
     expect(relief.style).toBe("cliff-crag");
-    expect(tiersOf(relief.levels)).toEqual([0, 3]);
+    // the terrain's own tiers are 0 and 3. Back-bank cells (data.hillBehind — hidden cells behind the hill raised to in-between heights on purpose,
+    // see the next test) are not tiers: where the settlement's earth leaves a hidden cell walkable, one of them appears here too.
+    const banks = (res.data as { hillBehind?: { raised: number; sample: { x: number; y: number }[] } }).hillBehind ?? { raised: 0, sample: [] };
+    expect(banks.raised).toBe(banks.sample.length);
+    const bankCells = new Set(banks.sample.map((p) => p.y * map.width + p.x));
+    expect(tiersOf(Array.from(relief.levels).filter((_, i) => !bankCells.has(i)))).toEqual([0, 3]);
     const slopes = reliefSlopes(relief), art = reliefRenderOptions(relief).slopeArt ?? [];
     expect(slopes.length).toBeGreaterThanOrEqual(1);
     slopes.forEach((s, k) => {
