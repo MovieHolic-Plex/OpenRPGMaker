@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools";
 import { isCentrepieceKit, squareRefusal, squareSpot, squareZones, townSquares, TOWN_SQUARE_TAG } from "@/editor/tools/beodeulSquareGuard";
+import { squareInnerWhole, squareRing } from "@/editor/tools/beodeulTownCore";
 import type { ToolContext } from "@/editor/tools/types";
 import type { GameMap, Project } from "@/project/types";
 
@@ -146,4 +147,31 @@ describe("시공기와 찍기 도구", () => {
     // 가운데 줄은 그대로 비어 있다
     expect(upper(map(), free, cy)).toBe(false);
   }, 240_000);
+});
+
+// 2026-11-15 명세 은행 lay-base-harbor «항구 마을»: 물가에 깎여 계단 꼴이 된 포구 광장을 테와 안으로 나눠 깔자 조각난 안마다 연석이 둘러졌다.
+describe("광장의 안이 한 덩이일 때만 테와 안을 나눠 깐다", () => {
+  const W = 20;
+  const cells = (rects: [number, number, number, number][]): number[] => rects.flatMap(([x0, y0, x1, y1]) => {
+    const out: number[] = [];
+    for (let y = y0; y <= y1; y += 1) for (let x = x0; x <= x1; x += 1) out.push(y * W + x);
+    return out;
+  });
+  it("네모 광장의 안은 한 덩이다", () => {
+    const { ring, inner } = squareRing(W, 20, cells([[3, 3, 9, 8]]));
+    expect(inner.length).toBe(5 * 4);
+    expect(ring.length).toBe(7 * 6 - 5 * 4);
+    expect(squareInnerWhole(W, inner)).toBe(true);
+  });
+  it("계단 꼴로 깎여 안이 둘로 갈라진 광장은 한 덩이가 아니다", () => {
+    // 두 네모가 모서리 한 줄로만 이어진 꼴 — 안은 왼쪽 덩이와 오른쪽 덩이로 갈라진다
+    const { inner } = squareRing(W, 20, [...new Set(cells([[2, 2, 6, 6], [6, 6, 11, 10]]))]);
+    expect(inner.length).toBeGreaterThanOrEqual(6);
+    expect(squareInnerWhole(W, inner)).toBe(false);
+  });
+  it("안이 여섯 칸이 안 되는 광장도 나누지 않는다", () => {
+    const { inner } = squareRing(W, 20, cells([[3, 3, 6, 6]]));
+    expect(inner.length).toBe(4);
+    expect(squareInnerWhole(W, inner)).toBe(false);
+  });
 });

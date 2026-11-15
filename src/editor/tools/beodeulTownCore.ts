@@ -144,6 +144,21 @@ export function squareRing(W: number, H: number, cells: Iterable<number>): { rin
 }
 
 /**
+ * 광장의 안이 한 덩이인가(여섯 칸 이상, 네 방향으로 이어진 하나). 물가에 깎여 계단 꼴이 된 포구 광장은 안이 조각난다 —
+ * 그런 광장을 테와 안으로 나눠 깔면 조각마다 연석이 둘러져 바닥에 작은 네모 줄이 생긴다(2026-11-15 은행 lay-base-harbor «항구 마을»).
+ * 한 덩이가 아니면 바닥은 통째로 길 포석으로 깐다(놓기 규칙의 테·안은 그대로다).
+ */
+export function squareInnerWhole(W: number, inner: readonly number[]): boolean {
+  if (inner.length < 6) return false;
+  const set = new Set(inner), seen = new Set<number>([inner[0]!]), queue = [inner[0]!];
+  for (let k = 0; k < queue.length; k += 1) {
+    const c = queue[k]!, x = c % W;
+    for (const n of [c - W, c + W, x > 0 ? c - 1 : -1, x < W - 1 ? c + 1 : -1]) if (set.has(n) && !seen.has(n)) { seen.add(n); queue.push(n); }
+  }
+  return seen.size === set.size;
+}
+
+/**
  * 광장의 변 가운데로 들어오는 길: 남쪽 변 가운데에서 곧게 내려가(세 칸 폭, 안 되면 한 칸) · 동·서 변 가운데에서 곧게 나가(두 칸 폭)
  * 열네 칸 안에 길을 만나면 그 사이 빈 칸을 길로 낸다. 건물·소품·물에 막히면 그 변은 내지 않는다(북쪽 변은 큰길이 지난다).
  */

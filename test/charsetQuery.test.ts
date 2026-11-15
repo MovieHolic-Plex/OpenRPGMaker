@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { charsetGraphicKey, jrpgHeroesCharsetHint, pickNpcGraphic, queryNpcGraphics, resolveNpcGraphic, withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
+import { charsetGraphicKey, jrpgHeroesCharsetHint, pickNpcGraphic, queryNpcGraphics, resolveNpcGraphic, withNpcGraphicCatalogFilter, unmatchedNpcGraphicTerms } from "@/assets/charsetQuery";
 
 describe("charsetQuery", () => {
   it("할머니 질의를 elder+female 엔트리로 해석한다", () => {
@@ -68,7 +68,12 @@ describe("charsetQuery", () => {
     expect(charsetGraphicKey(resolveNpcGraphic("파란 머리 여성 마법사")!)).toBe("tex_easyrpg_charset_actor4#3");
     expect(queryNpcGraphics("흑발 여성 마법사", 100).some(match => match.entry.textureKey === "tex_easyrpg_charset_actor4")).toBe(false);
     expect(charsetGraphicKey(resolveNpcGraphic("나무 보물상자")!)).toBe("tex_easyrpg_charset_object1#7");
-    expect(queryNpcGraphics("나무 통", 100)).toEqual([]);
+    // 나무 통 칩은 없다. 여러 낱말 질의에 모든 낱말이 맞는 칸이 없으면 검색은 가장 가까운 칸을 주되(#3522, J66 「하얀 드레스 여자 유령」)
+    // 그 칸이 질의 전체를 가리키지 않는다는 것을 unmatchedNpcGraphicTerms 로 가른다 — 준 칸마다 「통」이 안 맞은 낱말로 남아야 한다.
+    // 어느 칸이든 「통」까지 맞는 칸으로 나오면(라벨·꼬리표가 통을 말하면) 떨어진다.
+    const barrel = queryNpcGraphics("나무 통", 100);
+    expect(barrel.map(match => unmatchedNpcGraphicTerms("나무 통", match.entry))).toEqual(barrel.map(() => ["통"]));
+    expect(barrel.map(match => match.entry.label).filter(label => /통/u.test(label))).toEqual([]);
     expect(queryNpcGraphics("금고", 100)).toEqual([]);
     expect(queryNpcGraphics("후드", 100).map(match => charsetGraphicKey(match.entry))).not.toContain("tex_easyrpg_charset_actor2#5");
     expect(queryNpcGraphics("날개", 100).map(match => charsetGraphicKey(match.entry))).not.toContain("tex_easyrpg_charset_people3#7");

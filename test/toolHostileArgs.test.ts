@@ -11,13 +11,16 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import { allTools } from "@/editor/tools/toolRegistry";
 import { createBlankProject } from "@/project/defaults";
+import { serialize } from "@/project/io";
 import type { JsonSchema, ToolResult } from "@/editor/tools/types";
 import { completedHouseProject, houseMap, HOUSE_RECT, mutateProject } from "./fixtures/completedHouse";
 
 type Variant = "empty" | "nulls" | "wrongTypes" | "deepHoles";
 
-// Each variant builds a fresh blank project for every write tool; it exceeded 60s on CI runners.
-const HOSTILE_ARGS_TIMEOUT_MS = 300_000;
+// 변형마다 빈 프로젝트를 한 번 만들어 모든 쓰기 도구가 같은 입력을 받는다. 전에는 도구마다 새로 만들었고, 그 createBlankProject 가 변형 하나의 시간 거의 전부였다
+// (쓰기 도구 360개: 러너에서 변형당 211~225초 가운데 도구 실행은 약 10초, 나머지는 빈 프로젝트 360번 — ci-vitest-files 43720360814 · 한 장비 실측 448초 중 437.6초).
+// 도구는 입력 프로젝트를 제자리에서 고치지 않고 사본(draft)에 쓴다 — 그 약속이 깨지면 뒤 도구가 더럽혀진 입력을 받으므로, 변형 끝에 입력이 그대로인지 직렬화로 확인한다.
+const HOSTILE_ARGS_TIMEOUT_MS = 120_000;
 
 /** 스키마에서 "그럴듯하지만 틀린" 인자를 만든다 — 필수 누락·null 원소·타입 뒤집기·중첩 구멍. */
 function hostileArgs(schema: JsonSchema, variant: Variant): Record<string, unknown> {
@@ -63,10 +66,12 @@ describe("쓰기 툴 적대적 인자 스윕", () => {
   for (const variant of ["empty", "nulls", "wrongTypes", "deepHoles"] as const) {
     it(`${variant} 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다`, async () => {
       const offenders: string[] = [];
+      const blank = createBlankProject();
+      const pristine = serialize(blank);
       for (const tool of writeTools) {
         // Let worker RPC responses drain between synchronous tool calls; no timed wait.
         await scheduler.yield();
-        const ctx = { project: createBlankProject() };
+        const ctx = { project: blank };
         let result: ToolResult;
         try {
           result = runTool(ctx, tool.name, hostileArgs(tool.parameters, variant));
@@ -80,6 +85,8 @@ describe("쓰기 툴 적대적 인자 스윕", () => {
         }
       }
       expect(offenders).toEqual([]);
+      // 어떤 도구도(성공했든 거절했든) 받은 프로젝트 객체를 제자리에서 고치지 않았다 — 모든 도구가 같은 빈 프로젝트에서 출발했다.
+      expect(serialize(blank) === pristine, "a write tool mutated its input project in place").toBe(true);
     }, HOSTILE_ARGS_TIMEOUT_MS);
   }
 });
@@ -108,8 +115,11 @@ describe("postprocessing error boundary", () => {
     const original = ctx.project;
     const before = structuredClone(original);
     const error = new Error("postprocessing fixture failure");
+    // 후처리(집 보호 검사)만 읽는 자리에 던지는 접근자를 둔다 — 집 맵의 배치 계획 구역 목록.
+    // 전에는 draft.maps 에 던지는 맵을 끼웠는데, 실행기가 후처리보다 먼저 모든 맵을 훑어(compactTouchedMapLayers, 공개 기준선부터)
+    // 예외가 실행 단계 경계에서 잡혔다(tool-exception · «실행 실패») — 이 시험이 보려는 후처리 경계(tool-postprocess · «후처리 실패»)에 닿지 못했다.
     const result = mutateProject(ctx, (draft) => {
-      Object.defineProperty(draft.maps, "broken", { enumerable: true, get() { throw error; } });
+      Object.defineProperty(houseMap(draft).layoutPlan!, "regions", { enumerable: true, get() { throw error; } });
     });
     expect(result.ok).toBe(false);
     expect(result.issues).toEqual([{ severity: "error", code: "tool-postprocess", message: error.message }]);

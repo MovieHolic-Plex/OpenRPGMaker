@@ -6,17 +6,23 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { blockedFlag, passableFlag, setPassageMark } from "@/project/tilesetPassage";
 import { confirmUserTileMetadata } from "@/project/tilesetPalette";
-import { completedHouseProject, HOUSE_RECT } from "./fixtures/completedHouse";
+import { completedHouseProject, houseMap, HOUSE_RECT } from "./fixtures/completedHouse";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const MAP_ID = "erase_ground";
 const RECT = { x: 1, y: 1, w: 10, h: 8 };
 
+// 이 파일의 칸 번호(벽 306·13, 풀 240, 바닥 222, 상자 237, 지붕 385 …)와 재료 이름(「목골 석벽 집 벽 확장」·「나무 상자」)은 합본 마을 칩셋의 것이다.
+// 기본 칩셋이 버들항(beodeul_city)으로 바뀌고(2026-09-30) 합본 마을·실내 시트가 번들에서 빠진 뒤(2026-10-07) create_map 은 버들항 맵을 만들어
+// 240 은 벽, 풀은 737 이 됐고 열여섯 경우가 공개 기준선(0d4f13e7c)부터 떨어졌다. 옛 저장본처럼 그 타일셋 정의를 든 프로젝트에서 합본 마을 맵을 만든다
+// — 편집기는 그런 저장본을 계속 읽고, tile_erase 의 «관찰된 바닥» 규칙은 칩셋과 무관하게 같아야 한다.
 function context(): ToolContext {
-  const ctx = { project: createBlankProject() };
+  const ctx = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
   const created = runTool(ctx, "create_map", {
-    id: MAP_ID, name: "Erase ground fixture", width: 12, height: 10, border: "wall", bgm: { mode: "none" },
+    id: MAP_ID, name: "Erase ground fixture", width: 12, height: 10, border: "wall", bgm: { mode: "none" }, tilesetId: COMBINED_TOWN_TILESET_ID,
   });
   expect(created.ok, JSON.stringify(created.issues)).toBe(true);
+  expect(ctx.project.maps[MAP_ID].tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
   return ctx;
 }
 
@@ -164,7 +170,10 @@ describe("tile_erase compatible observed ground", () => {
   });
 
   it.each(["both", "lower", "upper"])("retains recorded house ownership atomically (%s)", (layer) => {
-    const ctx = { project: completedHouseProject() };
+    // 집 픽스처의 바닥(TILE.GRASS 240)도 합본 마을 번호다 — 버들항 맵에서는 240 이 벽이라 «복원할 바닥 없음» 이 집 보호보다 먼저 나왔다.
+    const project = withRetiredEasyRpgTilesets(completedHouseProject());
+    houseMap(project).tilesetId = COMBINED_TOWN_TILESET_ID;
+    const ctx = { project };
     const before = structuredClone(ctx.project);
     const result = runTool(ctx, "tile_erase", { mapId: ctx.project.startMapId, rect: HOUSE_RECT, layer });
     expect(result.ok).toBe(false);
