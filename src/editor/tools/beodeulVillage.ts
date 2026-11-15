@@ -2466,6 +2466,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 숲 몫으로 남긴 빈 땅도 밭·소품이 앉지 않게 비워 둔다 — 숲 덩이를 세우기 직전에 푼다.
   const woodsHeld = (codePlan?.layout.yard?.woodCells ?? []).filter((c) => occ[c] === FREE);
   for (const c of woodsHeld) occ[c] = CLEAR;
+  // 숲이 서는 마을의 마을 몸 = 건물과 마당에서 여섯 칸 안. 밭은 그 안에만 서고 바깥 띠는 숲의 몫이다(감독 2026-11-15).
+  const bodyNear = codePlan?.layout.yard?.woodsFirst ? nearCells(W, H, [...codePlan.layout.yard.cells, ...Array.from(occ.keys()).filter((c) => occ[c] === BLD)], 6) : null;
+  const bodyCells = bodyNear ? Array.from(bodyNear.keys()).filter((c) => bodyNear[c]) : null;
   // 굴 입구 자리(2026-11-15 명세 은행 r3b-fun 버들마을): 마을에 딸린 광산·동굴은 길 곁 갱구(3×4, dungeonLinkTools caveMouthSpotClear)로 이어지는데,
   // 숲·밭·풀포기가 빈 땅을 다 채우면 갱구가 설 바탕 땅이 없어 출입구가 맵 테두리 칸으로 밀려났다. 길 바로 북쪽의 한 단 빈 땅 3×4 를 둘까지 비워 둔다 —
   // 아무것도 앉지 않고 바닥은 바탕 풀 그대로다(갱구가 안 서면 길가 풀밭으로 남는다). 문 칸(오른쪽 아래 바로 밑)과 3×4 의 둘레 한 칸도 걷는 칸으로 비워 둔다.
@@ -2486,11 +2489,13 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       return true;
     };
     const far = (x: number, y: number) => Math.hypot(x - plazaX, y - plazaCy);
+    // 마을 몸(건물·마당에서 여섯 칸 안) 바깥이 먼저다 — 집 곁 길가는 밭의 자리다(몸 안에 두면 30판의 밭이 64 에서 48 로 줄었다). 굴은 마을 어귀 길가에 난다.
+    const inBody = bodyNear ?? nearCells(W, H, [...(codePlan?.layout.yard?.cells ?? []), ...Array.from(occ.keys()).filter((c) => occ[c] === BLD)], 6);
     for (let n = 0; n < 2; n += 1) {
       let best: { x: number; y: number; s: number } | null = null;
       for (let y = 6; y < H - 3; y += 1) for (let x = 4; x < W - 2; x += 1) {
         if (!nookOk(x, y) || gateNooks.some((o) => Math.abs(o.x - x) + Math.abs(o.y - y) < 16)) continue;
-        const d = far(x, y), s = (d < 9 ? d - 30 : Math.min(d, 22)) + ((x * 7 + y * 13 + seed) % 5) * 0.2;
+        const d = far(x, y), s = (d < 9 ? d - 30 : Math.min(d, 22)) - (inBody[idx(x, y)] ? 14 : 0) + ((x * 7 + y * 13 + seed) % 5) * 0.2;
         if (!best || s > best.s) best = { x, y, s };
       }
       if (!best) break;
@@ -2499,9 +2504,6 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (let j = best.y - 5; j <= best.y + 1; j += 1) for (let i = best.x - 3; i <= best.x + 1; i += 1) { const c = idx(i, j); if (occ[c] === FREE && (j <= best.y || i === best.x)) occ[c] = CLEAR; }
     }
   }
-  // 숲이 서는 마을의 마을 몸 = 건물과 마당에서 여섯 칸 안. 밭은 그 안에만 서고 바깥 띠는 숲의 몫이다(감독 2026-11-15).
-  const bodyNear = codePlan?.layout.yard?.woodsFirst ? nearCells(W, H, [...codePlan.layout.yard.cells, ...Array.from(occ.keys()).filter((c) => occ[c] === BLD)], 6) : null;
-  const bodyCells = bodyNear ? Array.from(bodyNear.keys()).filter((c) => bodyNear[c]) : null;
   // 울타리 계획: 사각 테두리 칸마다 조각 종류 — 네 모서리는 모서리 기둥(tl·tr·bl·br), 위·아래 줄은 가로, 옆은 세로.
   // 문 한 칸은 길에 가까운 변(모서리 옆 칸은 피한다)에 비우고, 문 양옆은 난간이 기둥에서 끝나는 끝 조각(endW·endE·endN·endS)이다.
   // (2026-10-11 사용자 「울타리 외곽 마감이 별로, 이어져 있다는 느낌이 안 든다」 — 옛 조각 셋은 위 모서리가 반 칸 삐져나가고 세로와 끊겼다.)
