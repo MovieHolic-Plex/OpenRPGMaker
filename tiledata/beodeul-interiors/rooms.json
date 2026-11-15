@@ -3929,7 +3929,7 @@
    "######.######"
   ],
   "floor": "flag",
-  "wall": "stablew",
+  "wall": "plaster",
   "objects": [
    {
     "id": "tally slate",

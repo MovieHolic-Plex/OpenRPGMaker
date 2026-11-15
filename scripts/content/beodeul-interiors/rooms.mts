@@ -547,7 +547,7 @@ const ROOMS: Room[] = [
     ],
     goods: [[1, 3, "book pile"]] },
   // ══ 폭 — 같은 종류의 다른 집(가난한 집·넉넉한 집·일하는 집) ══
-  { id: "tavern-d", kind: "tavern", building: "bd_inn", floor: "flag", wall: "stablew",
+  { id: "tavern-d", kind: "tavern", building: "bd_inn", floor: "flag", wall: "plaster",
     legend: { t: "tally slate", W: "window", w: "window light", l: "wall lantern", K: "ale kegs rack", S: "barrel stack", B: "bar plank", h: "chair", R: "round table", o: "stool", b: "barrel", k: "keg", z: "brazier", m: "door mat" },
     hang: "...t..W..l.",
     plan: [
