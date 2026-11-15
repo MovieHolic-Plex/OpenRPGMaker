@@ -387,6 +387,7 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 | `jp-school` | 3 | 10 | 손 도트 小学校 33종: 층(트랙 선 2층)·배치 순서·빈칸 규칙 · 사전(칸 번호 전체) · 예제 맵 jp-city-school 전체 1~4층 배열 · 오류 3(`overlay-in-base-layer`·`door-access-blocked`·`anchor-blocked`) |
 | `jp-transit` | 3 | 10 | 탈것 14종·노면전차·지하철: `set_map_transit` 쓰는 법·좌측통행 칸 규칙·정류장·도구 거절 코드 · 키트 사전(거리+역) · さくら町駅 콘코스·승강장 전체 배열과 지하철 노선 · 탈것 도감·실제 런타임 화면 · 오류 2(`fare-gate-bypass`·`anchor-blocked`) |
 | `jp-errors` | 3 | 1 | 코드 → 문서·그림 지도 · 변조 좌표 전체표 · 엔진 판정 대 정의 층 설명 정정(전/후) |
+| `jp-buildings-f` | 3 | 5 | 새 건물 67종(탑 3/4 시점, `jp-bldg-f-*`): 쓰는 법(다음 x = x + w · 문 열 · 지나는 열) · 사전 2쪽(칸 번호 전체·통행 글자는 정의의 통행·층 표에서 읽음) · 역할별 도감 그림 5장. **따로 굽는다** — `refs_fable.py`(아래 「새 건물」 절). 3/4 관문 미통과 — 오너 면제 |
 
 ### 굽는 법 (한 줄)
 
@@ -525,3 +526,17 @@ object-gen 흐름(시점 판정 통과 참고 그림 → Opus 손 도트 A/B →
   (`_gate/assembled.json` → `gate_rooms.EXTRA_MANIFESTS`). 육교 조립·사다리 PASS(미보정 프로필 임시통과), 단상 조립은 눈 4/12 로 REFER → Opus 적대 VQA r24(major 0) 뒤 위임 허용
   (`harness-data/object-gate/vqa/jp-street-stairs.opus-vqa-r24.json`).
 - 출하 플레이어 걷기: `scripts/qa/runtime/jp-street-stairs-fixture.mts` → `jp-street-stairs.scenario.mjs`(육교 오르기·층계참 막힘·상판 건너기·내려오기·옆 막힘·옆 계단으로 단상 건너기·사다리).
+
+## 새 건물 67종 — 탑 3/4 시점 (블록 `fable_city`, `BLOCK_ORDER` 끝, 2026-11-15) — 3/4 관문 미통과 · 오너 면제
+
+오너(2026-11-15): «확대해서 보면 엉망진창인 게 너무많다. 버들항급 퀄리티도 안 되고 … 건물들도 그렇고» · «탑 3/4 뷰가 안지켜진게 좀 보이네. 프롬프트만 다시해서 건물들만 다시해봐. 프롬프트만 매우 강하게, 단, 검증게이트는 넣지말고». 거리 구성기가 세우는 건물을 한 손으로 새로 그렸다. **이 그림들은 3/4 관문을 통과하지 않았다** — 오너 면제 묶음 `fable-jpbuildings-2026-11-14`(`harness-data/object-gate/waivers/`, 도구 `object-gate owner-waive` 로 기록, 67장)가 그림 화소 해시·종류에 묶여 번들·공유 출구만 연다. 스토어 출구는 막힌다.
+
+- **그림**: Claude Fable 5.2 medium 한 방 부품(지붕 윗면 · 층 · 1층, 부품 하나 ≤ 약 3,000화소, 가로 ≤ 64px 조각). 지붕도 모델이 그린다 — 기와 경사(용마루·막새) · 평지붕 바닥과 옥상 기물 · 박공 ㅅ. 시점은 프롬프트로만 지킨다. **시점 검사·판정·자동 재시도는 어디에도 없다.**
+- **코드가 하는 일**(`scripts/content/jp-city/fable_city_build.py`): 부품 쌓기(세로 `stack` · 가로 `cols`, 같은 층 부품을 여러 번) · 간판 글자(Galmuri9 9px, 판·세로 간판·노렌 글자) · 벽 가장자리 한 줄. 큰 건물의 층은 코드가 쌓되 층 그림 둘(A·B)을 번갈아 쌓는다.
+- **자료**: `tiledata/jp-city/fable-city/` — `parts/`(부품 PNG) · `pieces/`(조립된 건물 PNG, 굽기가 읽는 것) · `recipes.json`(쌓는 법·간판) · `palette.json`(거리 일꾼의 바닥 줄 + 기와 색 줄 여섯) · `glyphs9.json` · `spec.json`(킷 정의). `fable_city_build.py` 는 인자 없이 돌리면 조립 결과가 `pieces/` 와 같은지 대조하고 `--write` 로 다시 쓴다.
+- **킷 규약**: id `jp-bldg-f-<이름>`. **키트 폭 = 벽 폭**(양옆 처마 칸 없음 → 다음 x = x + w, 옛 `jp-bldg-*` 의 x + w − 1 과 다르다). 맨 아래 D줄(대부분 2, 담·대문·도리이 1)만 막힘, 그 위는 ★. 문 칸 = (문 열, 맨 아래 줄) `entrance` 부품 + 그 아래 접근칸. **지나는 열**(대문 · 절 산문 · 도리이)은 열 전체가 ★ 이고 `entrance` 없이 접근칸만 둔다(`door-cell-not-solid` 검사 때문). 태그 `street:shop-row|residential|medium|large|landmark` · `tier:small|medium|large|xlarge|landmark` · `roof:tile|flat|gable|none`.
+- **목록**: 상점가 가게 24(폭 3칸, 7칸 높이) · 집 15 + 담 3 + 대문 2 · 중형 9(잡거 빌딩·학원·목욕탕·슈퍼·의원·우체국·파출소·편의점·은행) · 대형 6(맨션·오피스·백화점·호텔·병원·단지, 높이 12~16칸) · 초대형 3(역 앞 상가 빌딩·구청·타워 맨션, 폭 12칸) · 랜드마크 5(신사 본전·절 산문·도리이·역사 정면·큰 목욕탕). 간판은 가나 위주(4배에서 한자가 뭉개졌다), 실제 상표·로고·흰 바탕 빨간 십자는 없다(편의점 띠는 자두색 한 줄, 병원·약국 십자는 초록).
+- **시트 예약**: `bake_lib.RESERVE = {'fable_city': 8064, 'fable_street': 4032}`. 블록마다 예약 구간을 먼저 빈 칸(핀 키 `<블록>/_pad/<n>`)으로 잡아 두고 그림은 가장 낮은 빈 칸부터 채운다 — 건물 일꾼과 거리 일꾼이 서로의 칸 번호를 밀지 않는다. `fable_city` = 20463~28526 가운데 20463~22921 을 썼다. 예약 빈 칸은 핀 검사(`check-pins.mjs`·`base_pin_problems`)와 «옛 칸 화소 변경» 검사에서 뺀다(빈 칸이 그림을 받는 것은 변경이 아니다). 칸 수 28,527 은 예약 굽기 뒤로 그대로다.
+- **참고문서**: 용도 `jp-buildings-f` 는 `python3 scripts/content/jp-city/refs_fable.py` 로 따로 굽는다(이야기 기물 `refs_story.py` 와 같은 길 — `bake_refs.py` 는 끝에서 저장본 `tiledata/jp-city/fable-city/refs/category.json` 을 다시 붙인다). 그림 `public/assets/jp-city-fable-references/`. 통행 글자는 정의에서 읽은 값이고 엔진 실측이 아니다.
+- **알려진 문제(이 일 밖)**: `bake_refs.py --dump` 의 `engine_dump.mts` 는 지금 main 에서 죽는다 — 오토타일 그룹 25개 가운데 8개(`jp-inaka-at-*` 6 · `jp-forest4-bl` · `jp-forest4-bm`)에 `AT_DEMOS` 항목이 없어 580줄에서 `undefined.layer`. 그래서 옛 용도 문서의 칸 수 표기는 다시 굽지 못했다.
+
