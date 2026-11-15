@@ -196,6 +196,8 @@ export interface BeodeulVillageOptions {
   layout?: VillageLayout;
   /** 자동 배치의 마당 후보를 좋은 순서로 몇째부터 쓸까(기본 0). 고른 마당이 계단·문 길을 못 내면 시공기가 스스로 다음 것으로 처음부터 다시 짓고, 후보가 없으면 예전 고리 배치로 짓는다. */
   yardTry?: number;
+  /** 문 앞 자리로 쓰지 않을 칸(y*W+x). 앞서 지은 판에서 입구에서 걸어 닿지 못한 문 앞 주머니 — 부르는 쪽(authorBeodeulTown)이 넘겨 다시 짓는다. */
+  noFront?: readonly number[];
 }
 /** 지형 먼저: 맨 윗단 길의 높은 곳 건물(망루가 붙은 집·예배당·저택 · 사원·성자 무덤 · 회관·목욕집 · 사당). */
 const TIER_LANDMARKS: Partial<Record<BeodeulVillageTheme, string[]>> = {
@@ -319,6 +321,8 @@ export function themeDefaultSize(theme: BeodeulVillageTheme): [number, number] {
 
 export interface VillageResult {
   summary: string; data: Record<string, unknown>; warnings: string[];
+  /** 다 짓고도 입구에서 걸어 닿지 못한 문 앞 칸과, 그 칸에서 걸어 닿는 칸 전부(갇힌 주머니). 비어 있지 않으면 부르는 쪽이 noFront 로 넘겨 다시 짓는다. */
+  doorPockets?: number[];
 }
 
 /** 버들항 마을 문법 시공. map 은 이미 만들어진(크기 확정) 버들항 맵. */
@@ -741,6 +745,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const report = { auto: !given, moved: [] as string[], failed: [] as string[], roadsFailed: [] as string[], requested: { houses: layout.houses?.length ?? 0 } };
     const spots: CodeSpot[] = [];
     let frontOnYard = false; // 마당 테두리 집을 앉히는 동안만: 문 앞이 비워 둔 마당 칸이어도 된다
+    const noFront = new Set(options.noFront ?? []); // 앞 판에서 갇혔던 문 앞 주머니 — 문 앞 자리로 쓰지 않는다
     const spotOk = (k: Kit, x: number, y: number): boolean => {
       if (!k.door || x < 1 || y < 1 || x + k.w > W - 1 || y + k.h > H - 2) return false;
       const L0 = lv[idx(x, y)]!;
@@ -751,7 +756,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       }
       for (let i = 0; i < k.w; i += 1) for (let kk = 1; kk <= 2; kk += 1) { const Y = y + k.h - 1 + kk; if (Y < H && lv[idx(x + i, Y)]! > L0 + kk - 1) return false; }
       const fx = x + k.door.dx, fy = y + k.door.dy + 1; if (!inMap(fx, fy + 1)) return false; const f = idx(fx, fy);
-      return (occ[f] === FREE || onBog(f) || (frontOnYard && occ[f] === PLAZA_HOLD)) && lv[f] === L0 && lv[f + W]! >= L0 && (occ[f + W] !== WATERC || onBog(f + W)) && !hiddenBehind(f);
+      return (occ[f] === FREE || onBog(f) || (frontOnYard && occ[f] === PLAZA_HOLD)) && lv[f] === L0 && lv[f + W]! >= L0 && (occ[f + W] !== WATERC || onBog(f + W)) && !hiddenBehind(f) && !noFront.has(f);
     };
     const place = (role: CodeSpot["role"], ks: Kit[], want: YardWant, maxR = 9): CodeSpot | null => {
       for (let r = 0; r <= maxR; r += 1) {
@@ -4186,6 +4191,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   let opened = 0;
   // 평지 마을도 같다(2026-10-28 jrpg 버들마을: 밀밭 울타리·허수아비·나무가 북쪽 초원의 유일한 입구를 막아 초원 한 덩이가 통째로 갇혔다).
   // 높은 단이 아니면 여섯 칸 이상 덩이만 연다 — 숲 가장자리 나무 틈 한두 칸 때문에 숲을 갉지 않게.
+  const frontCells = new Set(doorFronts.map((d) => idx(d.x, d.y)));
   const lostOf = (seen: Uint8Array): Set<number> => {
     const cand = new Set<number>();
     for (let c = 0; c < W * H; c += 1) if (!seen[c] && !fenceInside.has(c) && !bldRect.has(c) && occ[c] !== WATERC && walk(c % W, Math.floor(c / W))) cand.add(c);
@@ -4195,7 +4201,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const comp = [c0]; done.add(c0);
       for (let h = 0; h < comp.length; h += 1) { const c = comp[h]!, x = c % W, y = (c - x) / W;
         for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const nx = x + dx, ny = y + dy; if (!inMap(nx, ny)) continue; const n = idx(nx, ny); if (cand.has(n) && !done.has(n)) { done.add(n); comp.push(n); } } }
-      if (comp.length >= 6 || comp.some((c) => lv[c]! > 0)) for (const c of comp) out.add(c);
+      if (comp.length >= 6 || comp.some((c) => lv[c]! > 0 || frontCells.has(c))) for (const c of comp) out.add(c); // 문 앞 칸이 든 덩이는 크기와 상관없이 연다
     }
     return out;
   };
@@ -4311,6 +4317,15 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
   const seen = reachMap();
   const unreached = doorFronts.filter((d) => !seen[idx(d.x, d.y)]);
+  // 그래도 못 닿는 문(절벽 끝과 제 건물에 갇힌 턱 · 걷어 낼 수 없는 것에 막힌 자리): 그 문 앞 주머니를 돌려준다 — 부르는 쪽이 그 칸들을 문 앞 자리로 쓰지 않게 하고 다시 짓는다.
+  // (2026-11-15 실모델 확인 빌드 r5: 언덕 위 탑집의 문 앞 19칸이 절벽 끝·덤불 줄·제 건물에 갇혀 아무도 그 문에 갈 수 없었다.)
+  const doorPockets: number[] = [];
+  for (const d of unreached) {
+    const pocket = [idx(d.x, d.y)]; const inPocket = new Set(pocket);
+    for (let h = 0; h < pocket.length && pocket.length < 600; h += 1) { const c = pocket[h]!, x = c % W, y = (c - x) / W; if (!walk(x, y)) continue;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const nx = x + dx, ny = y + dy; if (!walk(nx, ny)) continue; const n = idx(nx, ny); if (seen[n] || inPocket.has(n) || !reliefAllowsStep(m.relief, x, y, nx, ny)) continue; inPocket.add(n); pocket.push(n); } }
+    doorPockets.push(...pocket);
+  }
   if (unreached.length) warnings.push(`입구에서 닿지 않는 문 앞 ${unreached.length}곳: ${unreached.slice(0, 5).map((d) => `${d.kit}@(${d.x},${d.y})`).join(", ")}`);
   // 울타리 문·단마다 걸을 수 있는 칸 중 입구에서 닿는 몫(단 위의 밭·쓰임이 배경으로 남지 않았는지)
   const gateInfo = fenceGates.map((c) => ({ x: c % W, y: Math.floor(c / W), level: lv[c]!, reached: !!seen[c] }));
@@ -4370,6 +4385,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       ...(codePlan && codeT ? { codeTerrain: { character: codeT.character, high: codeT.high, maxLevel: codeT.maxLevel, note: codeT.note }, layout: { ...codePlan.layout, ...(codePlan.layout.yard ? { yard: (({ cells: _c, stubs: _s, fields: _f, gather: _g, woodCells: _w, ...y }) => y)(codePlan.layout.yard) } : {}), auto: codePlan.report.auto, gather: codePlan.g, moved: codePlan.report.moved, failed: codePlan.report.failed, roadsFailed: codePlan.report.roadsFailed, placedHouses: placedHouses.length, requestedHouses: codePlan.report.requested.houses } } : {}),
     },
     warnings,
+    ...(doorPockets.length ? { doorPockets } : {}),
   };
 }
 

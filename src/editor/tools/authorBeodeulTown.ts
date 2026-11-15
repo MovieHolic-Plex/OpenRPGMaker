@@ -708,7 +708,8 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     layoutNotes.splice(0, layoutNotes.length, ...notes);
     return { codeTerrain: codeTerrainFor(theme, args, m.width, m.height, terrainSeed, villageCliffHabit(activeTilesetLook(tileset) ?? projectTilesetLook(draft, BEODEUL_TILESET_ID, activeKitLook()))), layout };
   };
-  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
+  const noFront: number[] = []; // 앞 판에서 갇혔던 문 앞 주머니(아래 «문은 모두 닿아야 한다»)
+  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), ...(noFront.length ? { noFront: [...noFront] } : {}), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
     ...(args.wallGate === "N" || args.wallGate === "NS" || args.wallGate === "S" ? { wallGate: args.wallGate } : {}), ...(args.wallSideGaps === true ? { wallSideGaps: true } : {}) });
   let r = build();
   // 성벽 띠가 가장자리를 먹어 요청한 집 수가 다 앉지 않는다(2026-10-22 조수 시험 r3: 5채 요청 → 44×32 에서 2채, 조수가 52×38 로 다시 지어 3채).
@@ -738,6 +739,21 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     if (best !== now) r = rebuildAt(best.w, best.h);
     if (tried.length > 1) grown.push(`${walls ? "성벽 띠" : "지형 단 띠"} 때문에 ${tried[0]!.w}×${tried[0]!.h} 에는 집이 ${tried[0]!.houses}채만 앉아 ${best.w}×${best.h} 로 넓혀 다시 지었다(집 ${best.houses}채).`);
   }
+  // 문은 모두 입구에서 걸어 닿아야 한다(2026-11-15 실모델 확인 빌드 r5: 언덕 위 탑집의 문 앞이 절벽 끝과 덤불에 갇혀 아무도 그 문에 갈 수 없었다).
+  // 시공기가 기물을 걷어 내고도 못 닿는 문이 남으면, 그 문 앞 주머니를 문 앞 자리로 쓰지 않고 같은 크기로 다시 짓는다 — 그 건물은 옆으로 옮겨 앉거나
+  // (layout.moved) 자리가 없으면 서지 않는다(layout.failed). 네 번째에는 주머니 둘레 여덟 칸까지 피한다.
+  let doorRebuilds = 0;
+  while (r.doorPockets?.length && doorRebuilds < 4) {
+    doorRebuilds += 1;
+    const { name, width, height } = draft.maps[mapId]!;
+    const avoid = new Set(r.doorPockets);
+    if (doorRebuilds === 4) for (const c of r.doorPockets) { const x = c % width, y = (c - x) / width; for (let dy = -8; dy <= 8; dy += 1) for (let dx = -8; dx <= 8; dx += 1) if (x + dx >= 0 && y + dy >= 0 && x + dx < width && y + dy < height) avoid.add((y + dy) * width + x + dx); }
+    for (const c of avoid) if (!noFront.includes(c)) noFront.push(c);
+    if (rebuilt) draft.maps[mapId]!.structurePlacements = [];
+    else { requireTool(MAP_TOOLS, "remove_map").run(draft, { mapId }); createMapTool.run(draft, { id: mapId, name, width, height, tilesetId: BEODEUL_TILESET_ID, border: "none" }); }
+    r = build();
+  }
+  if (doorRebuilds) r = { ...r, warnings: [...r.warnings, `Rebuilt ${doorRebuilds} time(s) so that every building door can be walked to from the entrance: a door front walled in by a terrace edge or decor is not used, so that building was moved (layout.moved) or left out (layout.failed).`] };
   // 요청한 집 수에 못 미치면 요약 맨 앞에 적는다 — 경고에만 두면 「요청대로 지었다」고 보고하기 쉽다
   if (houseCount !== undefined && housesOf(r) < houseCount) grown.push(`집 ${houseCount}채를 요청했지만 ${housesOf(r)}채만 앉았다(${walls ? "성벽 안 " : ""}자리 부족 — 맵을 넓혀 다시 짓거나 그대로 보고할 것).`);
   if (grown.length) r = { ...r, summary: `${grown.join(" ")} ${r.summary}`, warnings: [...grown, ...r.warnings] };
