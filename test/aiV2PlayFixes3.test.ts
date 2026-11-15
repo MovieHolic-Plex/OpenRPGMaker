@@ -23,7 +23,7 @@ import { codeReadable } from "@/project/codeReading";
 import { pickPersonGraphic } from "@/ai/v2/place/people";
 import { redressHeroTwins } from "@/ai/v2/story/heroTwins";
 import { settleSpeakerBustsIn } from "@/ai/v2/story/speakerBust";
-import { lockStepOrderDoorsIn } from "@/ai/v2/story/blueprintPathGates";
+import { lockStepOrderDoorsIn, pointLockedPagesIn } from "@/ai/v2/story/blueprintPathGates";
 import { stepObjectives } from "@/ai/v2/story/blueprintPathText";
 import { ensureStartingGold } from "@/ai/v2/story/healingAccess";
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
@@ -398,7 +398,9 @@ describe("앞 단계가 싸움인 길목의 안내", () => {
       { id: "s1", kind, who: "미라 수호자", place: "잠든 왕의 묘실", event: "미라 수호자", label: "l", built: { mapId: "map_cave", eventId: "ev_boss", itemId: "item_heart" } },
       { id: "s2", kind: "talk", who: "대신", place: "궁전", event: "대신", label: "l", built: { mapId: "map_palace", eventId: "ev_vizier" } }]);
     expect(lockStepOrderDoorsIn(project)).toHaveLength(1);
-    return String(commandsOf(project.maps[project.startMapId]!.events.find((e) => e.id === "ev_to_palace"))[0]!.body);
+    // 잠긴 글에 «먼저 …» 를 붙이는 끝맺음(pointLockedPagesIn)까지 돈 뒤의 글 — 그 단계가 뺀 줄을 다시 붙이지 않는다(은행: 둘째 줄로 돌아왔었다).
+    pointLockedPagesIn(project);
+    return commandsOf(project.maps[project.startMapId]!.events.find((e) => e.id === "ev_to_palace")).filter((c) => c.kind === "text").map((c) => String(c.body)).join(" / ");
   };
 
   it("싸움 단계 뒤의 문은 필요한 것만 말한다 — 말 단계 뒤의 문은 전처럼 그 사람을 가리킨다", () => {

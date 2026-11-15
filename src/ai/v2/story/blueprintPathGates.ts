@@ -188,6 +188,9 @@ export function pointLockedPagesIn(project: Project): string[] {
     const by = setters(need[0]!.kind, need[0]!.id).filter((r) => r.ev.id !== ev.id);
     if (by.length !== 1) continue;
     const src = by[0]!;
+    // 싸워서 얻는 것이면 그 상대를 가리키지 않는다 — 아직 못 본 보스의 이름과 방을 길목이 미리 알리지 않는다(어디로 갈지는 목표 줄이 말한다).
+    // 왜(2026-11-15 은행): 순서 잠금(lockStepOrderDoorsIn)이 싸움 단계의 문에서 뺀 «먼저 잠든 왕의 묘실의 「미라 수호자」에게 말을 걸어 보자» 를 이 단계가 둘째 줄로 다시 붙였다.
+    if (cmdsOf(src.ev).some((c) => c.kind === "battleProcessing")) continue;
     const name = named(src.ev);
     if (!name || /^ev_/u.test(name)) continue;
     const texts = ((pages[lockedAt]!.commands ?? []) as Cmd[]).filter((c) => c.kind === "text");
