@@ -3,7 +3,7 @@
 // 무엇을 놓을지는 칩셋 사양의 표(`personal`)가 정한다 — 묶음(아이·고양이·기도·빨래·사냥꾼·어부…)마다 조각 목록과, 직업 묶음이면 집 이름에서 찾을 별칭.
 // 자리는 벽 쪽(북쪽 줄·옆 줄)과 빈 벽면·빈 탁자 위뿐이고, 넣을 때마다 견본 가구와 같은 검사(문 앞·겹침·조립기 오류·닿지 못하는 바닥)를 지난다(furnish.ts).
 import type { HandInteriorSpec } from "./builder";
-import { hashText } from "./vignettes";
+import { hashText, mixHash } from "./vignettes";
 
 export interface PersonalAsk { readonly key: string; readonly text?: string }
 export interface PersonalPlan { readonly sets: readonly string[]; readonly pieces: readonly string[]; readonly count: number }
@@ -26,5 +26,5 @@ export function personalPlan(S: HandInteriorSpec, kind: string, ask: PersonalAsk
   const pieces: string[] = [];
   for (let i = 0; lists.some((l) => i < l.length); i++) for (const l of lists) if (i < l.length && !pieces.includes(l[i]!)) pieces.push(l[i]!);
   const [lo, hi] = P.count;
-  return { sets, pieces, count: lo + (hashText(`${ask.key}|count`) % Math.max(1, hi - lo + 1)) };
+  return { sets, pieces, count: lo + (mixHash(hashText(`${ask.key}|count`)) % Math.max(1, hi - lo + 1)) };
 }
