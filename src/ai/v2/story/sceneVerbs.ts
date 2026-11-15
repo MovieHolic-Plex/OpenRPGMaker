@@ -106,7 +106,10 @@ export function buildBossEncounter(run: BuildRun, spec: BossEncounterSpec): Cont
   if (!ev) return result(false, run, first, `「${name}」 인물을 세우지 못했다: ${people.summary}`, warnings, [mapId]);
   const sw = `sw_${ev.id}_beaten`;
   const win: Obj = { kind: "setSwitch", switchId: sw, value: true };
-  const battle: Obj = { kind: "battleProcessing", troopSource: "fixed", troopId, canEscape: false, canLose: false, branchOnResult: true,
+  // 전투 화면의 이름은 이 보스의 이름이다 — 같은 그림의 무리가 다른 이름으로 이미 있으면(동굴 빌더의 보스) 이 보스의 사본으로 싸운다.
+  const own = nameFightAfter(run.ctx.project, troopId, name, ev.id, true);
+  run.ctx.project = own.project;
+  const battle: Obj = { kind: "battleProcessing", troopSource: "fixed", troopId: own.troopId, canEscape: false, canLose: false, branchOnResult: true,
     victoryBranch: [...clean(spec.afterWin).map((body) => ({ kind: "text", speaker: name, body })), win], defeatBranch: [], escapeBranch: [] };
   const pages = (ev.pages ?? []).filter((p) => p.id !== `${ev.id}_beaten`);
   let attached = 0;
@@ -124,8 +127,8 @@ export function buildBossEncounter(run: BuildRun, spec: BossEncounterSpec): Cont
   let next = replaceEvent(run.ctx.project, mapId, { ...ev, pages: [...fought, gone] } as GameEvent);
   next = ensureSwitch(next, sw, `${name} 격파`);
   run.ctx.project = next;
-  const troop = next.database.troops.find((t) => t.id === troopId);
-  return result(true, run, first, `보스 「${name}」 ${map.name}(${ev.x},${ev.y}) [${ev.id}] — 말을 걸면 대사 ${lines.length}줄 뒤 보스전(${troop?.name ?? troopId} [${troopId}], 도망 불가), 이기면 ${sw} 켜고 ${later.length ? "다시 말 걸면 뒤 대사" : "사라진다"}. 지면 보스 방 앞에서 다시(끝맺음).`, warnings, [mapId], [{ mapId, eventId: ev.id }]);
+  const troop = next.database.troops.find((t) => t.id === own.troopId);
+  return result(true, run, first, `보스 「${name}」 ${map.name}(${ev.x},${ev.y}) [${ev.id}] — 말을 걸면 대사 ${lines.length}줄 뒤 보스전(${troop?.name ?? own.troopId} [${own.troopId}], 도망 불가), 이기면 ${sw} 켜고 ${later.length ? "다시 말 걸면 뒤 대사" : "사라진다"}. 지면 보스 방 앞에서 다시(끝맺음).`, warnings, [mapId], [{ mapId, eventId: ev.id }]);
 }
 
 /**
@@ -183,7 +186,7 @@ function adoptExistingBoss(run: BuildRun, mapId: string, spec: BossEncounterSpec
     return out;
   };
   const pages = (ev.pages ?? []).map((p) => JSON.stringify(p.commands ?? []).includes('"battleProcessing"') ? { ...p, commands: dress((p.commands ?? []) as unknown[]) as typeof p.commands } : p);
-  run.ctx.project = nameFightAfter(replaceEvent(run.ctx.project, mapId, { ...ev, name, pages } as GameEvent), fightTroop, name, ev.id);
+  run.ctx.project = nameFightAfter(replaceEvent(run.ctx.project, mapId, { ...ev, name, pages } as GameEvent), fightTroop, name, ev.id).project;
   const map = run.ctx.project.maps[mapId]!;
   const troop = run.ctx.project.database.troops.find((t) => t.id === fightTroop);
   return {
@@ -193,19 +196,28 @@ function adoptExistingBoss(run: BuildRun, mapId: string, spec: BossEncounterSpec
 }
 
 /**
- * 물려받은 보스전의 무리와 앞장선 적을 이 보스의 이름으로 부른다 — 이 싸움만 쓰는 무리일 때만(다른 이벤트·조우표가 같이 쓰면 그대로).
+ * 보스전의 무리와 앞장선 적을 이 보스의 이름으로 부른다 — 이 싸움만 쓰는 무리면 그 자리에서 이름을 바꾸고,
+ * 다른 이벤트·조우표가 같이 쓰면 copy 일 때만 이 보스의 사본(무리 + 앞장선 적)을 만들어 그 id 를 돌려준다(아니면 그대로).
  * 왜(2026-11-15 확인 빌드 r5): 동굴 빌더의 보스를 «강의 주인 두꺼비» 로 꾸몄는데 전투 화면의 이름은 빌더의 «깊은 곳의 마왕» 이었다.
+ * 새로 세운 보스도 같은 그림의 무리가 이미 있으면 그 무리(다른 이름)를 그대로 썼다.
  */
-function nameFightAfter(project: Project, troopId: string | undefined, name: string, eventId: string): Project {
+function nameFightAfter(project: Project, troopId: string | undefined, name: string, eventId: string, copy = false): { project: Project; troopId: string | undefined } {
   const troop = project.database.troops.find((t) => t.id === troopId);
   const leadId = troop?.members?.length ? troop.members[0]!.enemyId : troop?.enemyIds?.[0];
-  if (!troop || !leadId || troop.name === name) return project;
+  const lead = project.database.enemies.find((e) => e.id === leadId);
+  if (!troop || !lead || troop.name === name) return { project, troopId };
   const mark = `"troopId":${JSON.stringify(troop.id)}`;
   const shared = Object.values(project.maps).some((m) => (m.events ?? []).some((e) => e.id !== eventId && JSON.stringify(e.pages ?? []).includes(mark))
     || JSON.stringify([m.encounterTable ?? [], m.troopIds ?? [], m.fieldSpawns ?? []]).includes(JSON.stringify(troop.id)))
-    || project.database.troops.some((t) => t.id !== troop.id && [...(t.enemyIds ?? []), ...(t.members ?? []).map((mm) => mm.enemyId)].includes(leadId));
-  if (shared) return project;
-  return { ...project, database: { ...project.database, troops: project.database.troops.map((t) => (t.id === troop.id ? { ...t, name } : t)), enemies: project.database.enemies.map((e) => (e.id === leadId ? { ...e, name } : e)) } } as Project;
+    || project.database.troops.some((t) => t.id !== troop.id && [...(t.enemyIds ?? []), ...(t.members ?? []).map((mm) => mm.enemyId)].includes(lead.id));
+  const db = project.database;
+  if (!shared) return { project: { ...project, database: { ...db, troops: db.troops.map((t) => (t.id === troop.id ? { ...t, name } : t)), enemies: db.enemies.map((e) => (e.id === lead.id ? { ...e, name } : e)) } } as Project, troopId };
+  if (!copy) return { project, troopId };
+  const tail = ([...name].reduce((h, ch) => (Math.imul(h, 31) + ch.charCodeAt(0)) >>> 0, 7) % 46656).toString(36);
+  const ownTroop = `${troop.id}_${tail}`, ownEnemy = `${lead.id}_${tail}`;
+  const swap = (id: string): string => (id === lead.id ? ownEnemy : id);
+  const troopCopy = { ...structuredClone(troop), id: ownTroop, name, enemyIds: (troop.enemyIds ?? []).map(swap), ...(troop.members ? { members: troop.members.map((m) => ({ ...m, enemyId: swap(m.enemyId) })) } : {}) } as typeof troop;
+  return { project: { ...project, database: { ...db, troops: [...db.troops.filter((t) => t.id !== ownTroop), troopCopy], enemies: [...db.enemies.filter((e) => e.id !== ownEnemy), { ...structuredClone(lead), id: ownEnemy, name }] } } as Project, troopId: ownTroop };
 }
 
 /** after 낱말·격파 스위치로 엔딩이 열릴 스위치 고르기. */

@@ -136,6 +136,23 @@ describe("보스의 전투 이름과 그림 — 확인 빌드 r5", () => {
     expect(build(true)).toEqual(["깊은 곳의 마왕", "깊은 곳의 마왕"]);
   });
 
+  it("새로 세운 보스가 이미 다른 이름으로 싸우는 무리를 받으면 제 이름의 사본으로 싸운다 — 앞선 싸움의 이름은 그대로", () => {
+    const project = createBlankProject() as Project;
+    project.database.enemies.push({ ...structuredClone(project.database.enemies[0]!), id: "enemy_x_boss", name: "깊은 곳의 마왕" });
+    project.database.troops.push({ ...structuredClone(project.database.troops[0]!), id: "troop_x_boss", name: "깊은 곳의 마왕", enemyIds: ["enemy_x_boss"], members: [{ enemyId: "enemy_x_boss", x: 0, y: 0 }] } as never);
+    project.maps[project.startMapId]!.events = [event("ev_cave_boss", "깊은 곳의 마왕", 15, 12, [page([], [{ kind: "battleProcessing", troopSource: "fixed", troopId: "troop_x_boss", canEscape: false, canLose: false, branchOnResult: true, victoryBranch: [], defeatBranch: [], escapeBranch: [] }])])] as never;
+    const run = runOf(project);
+    expect(buildBossEncounter(run, { mapId: project.startMapId, boss: { name: "강의 주인 두꺼비", at: { x: 3, y: 3 }, troopId: "troop_x_boss" }, lines: ["꾸르륵."] } as never).ok).toBe(true);
+    const db = run.ctx.project.database;
+    const placed = run.ctx.project.maps[project.startMapId]!.events.find((e) => e.name === "강의 주인 두꺼비")!;
+    const troopId = /"troopId":"([^"]+)"/u.exec(JSON.stringify(placed.pages))![1]!;
+    expect(troopId).not.toBe("troop_x_boss");
+    const troop = db.troops.find((t) => t.id === troopId)!;
+    expect(troop.name).toBe("강의 주인 두꺼비");
+    expect(db.enemies.find((e) => e.id === troop.enemyIds![0])!.name).toBe("강의 주인 두꺼비");
+    expect(db.troops.find((t) => t.id === "troop_x_boss")!.name).toBe("깊은 곳의 마왕");
+  });
+
   it("사람인 적의 이름은 산적 그림을 가리킨다", () => {
     expect(enemyArtFor(createBlankProject() as Project, "밀수꾼 두목")).toBe("enemy_bandit_mask");
   });
