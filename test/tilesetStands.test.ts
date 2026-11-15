@@ -155,8 +155,11 @@ describe("tileset stands — 게임마다 다른 숲·바닥", () => {
   it("마을 짓기: 숲 구성을 고른 게임은 여러 수종·여러 크기의 나무가 서고, 숲 바닥·얼룩은 2층에만 깔려 걷는 칸이 그대로다", () => {
     // 씨앗 250121(2026-11-15, 전에는 250118): 마을 배치가 바뀌어 250118 의 포구는 나무 무리가 몇 그루뿐이라 3×4 나무가 한 그루도 안 뽑혔다(크기 둘) —
     // 보장은 그대로다(주·곁 수종과 덤불 둘 이상, 크기 셋 이상, 덧그림 두 가지). 씨앗 250118·250120~250126 여덟 가운데 일곱이 통과한다.
+    // 씨앗 250123(2026-11-15, 마을 종류가 들어온 뒤): 이 열쇠의 마을은 이제 종류(대장간 마을 · 조선소 …)의 장면이 빈 땅을 먼저 써서 나무 무리가 덜 선다 —
+    // 250121 의 강가 판은 덤불 킷이 0, 포구 판은 나무 크기가 둘이었다. 같은 여덟 씨앗의 강가·포구 열여섯 판 가운데 통과하는 판이 종류 없는 main 은 열다섯, 종류가 서면 열둘이다
+    // (신기루 VM 실측). 250123 은 양쪽에서 두 판 다 통과한다. 보장은 그대로다.
     for (const theme of [undefined, "coast"]) {
-      const { project, map } = village({ stand: "oakwood", meadow: "flowers", woods: "clumps", standKey: table.texture }, JSON.stringify(["project", "stand-village"]), 250121, theme);
+      const { project, map } = village({ stand: "oakwood", meadow: "flowers", woods: "clumps", standKey: table.texture }, JSON.stringify(["project", "stand-village"]), 250123, theme);
       const tileset = project.tilesets[TS]!;
       const stand = tilesetStand(TS, "oakwood")!;
       // 놓인 나무 칸이 주 수종·곁 수종·덤불 킷에 고루 걸친다
