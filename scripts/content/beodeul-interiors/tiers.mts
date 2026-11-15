@@ -393,4 +393,4 @@ export const TIER_PROGRAMS: Record<string, TierProgram> = {
 /** 집 킷의 interior 태그가 구성 이름일 때 그 이름이 가리키는 방 종류. */
 export const KIT_PROGRAMS: Record<string, string> = { tavern: "tavern", manor_1f: "living", tower: "lighthouse", stable: "stable" };
 /** 방 사이 문 — 나무 벽 방과 돌 벽 방. */
-export const TIER_DOORS = { door: { wood: "door oak", stone: "door arch" }, sidedoor: { wood: "sidedoor oak", stone: "sidedoor iron" } };
+export const TIER_DOORS = { door: { wood: "door oak", stone: "door arch" }, sidedoor: { wood: "sidedoor oak", stone: "sidedoor iron", log: "sidedoor log" } };

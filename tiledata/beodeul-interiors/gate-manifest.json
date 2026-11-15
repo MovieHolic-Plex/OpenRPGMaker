@@ -1111,6 +1111,12 @@
    "chipset": "beodeul_city"
   },
   {
+   "png": "tiledata/beodeul-interiors/pieces/sidedoor-log.png",
+   "kind": "structure",
+   "id": "bd-in-sidedoor-log",
+   "chipset": "beodeul_city"
+  },
+  {
    "png": "tiledata/beodeul-interiors/pieces/door-arch.png",
    "kind": "structure",
    "id": "bd-in-door-arch",

@@ -49,7 +49,7 @@ export interface TierTable {
   /** 집 킷의 interior 태그가 방 목록이 아니라 구성 이름일 때(interior:tavern) 그 이름 → 방 종류. */
   readonly kitPrograms?: Readonly<Record<string, string>>;
   /** 방 사이 문: 가로 칸막이(door)·세로 칸막이(sidedoor)의 나무 것·돌 것. */
-  readonly doors?: { readonly door?: { readonly wood?: string; readonly stone?: string }; readonly sidedoor?: { readonly wood?: string; readonly stone?: string } };
+  readonly doors?: { readonly door?: { readonly wood?: string; readonly stone?: string }; readonly sidedoor?: { readonly wood?: string; readonly stone?: string; readonly log?: string } };
 }
 const TABLES: Readonly<Record<string, TierTable>> = { beodeul_city: beodeulTiers as unknown as TierTable };
 /** 그 칩셋의 크기 단 구성 표(없으면 그 칩셋은 한 방짜리만 짓는다). */
@@ -67,7 +67,7 @@ const STONE = /rubble|grey|stone|slumw|brick|rock/u;
  * 평면 한 장을 방 사각형으로. pick(방) = 그 방에 쓸 견본(크기·바닥·벽면). doors = 사양에 있는 문 기물 id(가로 칸막이 door · 세로 칸막이 sidedoor, 나무·돌).
  * 겹치면 맞춤 축으로 조금씩 밀어 본다(견본 크기가 벌마다 달라 한두 칸 어긋날 수 있다). 그래도 안 되면 TierPlanError — 표를 고친다(시험이 모든 구성 × 열쇠를 돈다).
  */
-export function placeTierMap(plan: TierMapPlan, pick: (room: TierRoom) => TierTemplate | undefined, doors: { door?: { wood?: string; stone?: string }; sidedoor?: { wood?: string; stone?: string } } = {}): PlacedTierMap {
+export function placeTierMap(plan: TierMapPlan, pick: (room: TierRoom) => TierTemplate | undefined, doors: { door?: { wood?: string; stone?: string }; sidedoor?: { wood?: string; stone?: string; log?: string } } = {}): PlacedTierMap {
   type R = { id: string; kind: string; template: string; x0: number; y0: number; x1: number; y1: number; floor?: string; wall?: string };
   const done = new Map<string, R>();
   const connect: HandInteriorConnect[] = [];
@@ -76,6 +76,8 @@ export function placeTierMap(plan: TierMapPlan, pick: (room: TierRoom) => TierTe
     const lower = vertical ? (a.y0 > b.y0 ? a : b) : a;
     const stone = STONE.test(lower.wall ?? "") || (!vertical && STONE.test(b.wall ?? ""));
     const set = vertical ? doors.door : doors.sidedoor;
+    // 옆 칸막이의 끝머리는 그 벽의 재질: 통나무 벽이면 통나무 마구리.
+    if (!stone && !vertical && (/^log/u.test(a.wall ?? "") || /^log/u.test(b.wall ?? "")) && doors.sidedoor?.log) return doors.sidedoor.log;
     return stone ? set?.stone ?? set?.wood : set?.wood ?? set?.stone;
   };
   for (const room of plan.rooms) {

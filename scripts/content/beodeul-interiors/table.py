@@ -227,9 +227,11 @@ OBJECTS = [
     # ── 방 사이 문(크기 단: 방이 여럿인 집) — door = 위·아래 방 사이 가로 칸막이의 1칸 틈(틈 칸 + 아래 벽면 두 줄), sidedoor = 왼·오른 방 사이 세로 칸막이의 3줄 틈(끝 벽면 두 줄 + 통로 칸).
     #    사양의 첫 door·sidedoor 가 기본 문이다(rooms.ts doorOf) — 참나무가 먼저, 돌 벽 방에는 크기 단 배치기가 돌 것을 고른다(tierPlan.ts).
     ("door oak", "door-wood", "door", 1, 0, "hall", "칸막이 문틀(참나무 · 열린 널문)", ["방 사이 문"], "structure", {}),
-    ("sidedoor oak", "sidedoor-wood", "sidedoor", 1, 0, "hall", "옆 칸막이 널문(참나무 · 문턱)", ["방 사이 문"], "structure", {}),
+    #    옆문은 문짝이 없는 트인 문목이다(오너 2026-11-16: 「옆으로 여는 문 같은 경우에는 좀 이상한거같고」 — 탑다운 3/4 에서 옆벽의 문짝 면은 보일 수 없다): 위 두 칸 = 칸막이 끝머리, 통로 칸 = 문지방 띠.
+    ("sidedoor oak", "sidepass-wood", "sidedoor", 1, 0, "hall", "옆 칸막이의 트인 문목(널 끝머리 · 문지방)", ["방 사이 문"], "structure", {}),
+    ("sidedoor log", "sidepass-log", "sidedoor", 1, 0, "hall", "옆 칸막이의 트인 문목(통나무 마구리 · 문지방)", ["방 사이 문"], "structure", {}),
     ("door arch", "door-stone", "door", 1, 0, "hall", "칸막이 돌 아치(쇠띠 문짝)", ["방 사이 문"], "structure", {}),
-    ("sidedoor iron", "sidedoor-stone", "sidedoor", 1, 0, "hall", "옆 칸막이 쇠띠 문(돌 문틀 · 문턱)", ["방 사이 문"], "structure", {}),
+    ("sidedoor iron", "sidepass-stone", "sidedoor", 1, 0, "hall", "옆 칸막이의 트인 문목(돌 끝머리 · 돌 문지방)", ["방 사이 문"], "structure", {}),
 ]
 # 크기 따라 느는 깔것(사양 daises — 아홉 조각 48×48: 모서리·변·가운데). 한 칸 폭·한 줄짜리는 굽기가 양쪽 반 칸을 붙여 만든다. (id, 원본, 이름)
 #   방 견본의 daises: [[id, x, 바닥 줄, w, h]] · 도구의 daises. 그 위에 선 가구·밟는 무늬는 조립기가 단 위로 올린다.

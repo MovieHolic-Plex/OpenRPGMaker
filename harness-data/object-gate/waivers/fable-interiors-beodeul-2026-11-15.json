@@ -8,7 +8,7 @@
   "bundle",
   "shared"
  ],
- "note": "버들항 집 안 — 벽면 8 · 바닥 7 · 벽 윗면 테두리 3 · 가구 194(사는 사람의 물건 35 · 큰 공간과 성당·성의 큰 물건 포함) · 단상 3 · 빛 무늬 3 · 탁상 물건 24 — 모두 242장. Claude Fable 5.2 medium 한 방(claude -p, 행 문자열; 결함을 적어 한 번 다시 그린 것 포함). 코드 손질은 칸 앉히기 · 색 줄 옮기기 · 발치 그림자 · 불빛 번짐뿐(scripts/content/beodeul-interiors/prepare.py), 빛 무늬 3장은 코드가 만든 반투명 판. 3/4 관문 미통과 — 오너 면제, 스토어 출구는 막힌 그대로.",
+ "note": "버들항 집 안 — 벽면 8 · 바닥 7 · 벽 윗면 테두리 3 · 가구 195(사는 사람의 물건 35 · 큰 공간과 성당·성의 큰 물건 포함 · 옆 칸막이의 트인 문목 3) · 단상 3 · 빛 무늬 3 · 탁상 물건 24 — 모두 243장. Claude Fable 5.2 medium 한 방(claude -p, 행 문자열; 결함을 적어 한 번 다시 그린 것 포함). 코드 손질은 칸 앉히기 · 색 줄 옮기기 · 발치 그림자 · 불빛 번짐뿐(scripts/content/beodeul-interiors/prepare.py), 빛 무늬 3장은 코드가 만든 반투명 판. 3/4 관문 미통과 — 오너 면제, 스토어 출구는 막힌 그대로.",
  "items": [
   {
    "pixelSha256": "7f8c25e01a4cc454ac14c9d6e362de46e48e135ddbe6d4942bf607e154f173ad",
@@ -7957,43 +7957,84 @@
    }
   },
   {
-   "pixelSha256": "fff85d2c903f9e4541b63cf3e2b88a2b536a50590b9c3551d38553ff25e5c673",
+   "pixelSha256": "af1fe4f382fa67e962e30945431cdf529082f67318c0b5e735d51bbe963849cd",
    "kind": "structure",
    "label": "beodeul_city/bd-in-sidedoor-oak",
    "width": 16,
    "height": 48,
    "cells": {
     "16": [
-     "032676cfe9b6387b",
-     "2547b4069347daa5",
-     "c207f59288eeec6a"
+     "34664645cd975e42",
+     "97095d25d2de4de5",
+     "dbae4965a8492767"
     ],
     "24": [
-     "4321d02b19e995fc",
-     "696660ac09b026d4",
-     "9efb9bd5c9fb7a3a",
-     "f301a9b2bf2b194f",
-     "f5db1ffe4eb7d77c",
-     "f8676b339602972f"
+     "4ba6d1409ce50c8c",
+     "7479b6143f353dc2",
+     "7c79c8ebd9269e20",
+     "9eafd6677b0c3f9f",
+     "a0ff43963c83eb69",
+     "f093f77ec4419593"
     ],
     "32": [
-     "14fb08a6c746d6ab",
-     "23e9d0a0981072be",
-     "350254ff79f2e952",
-     "37cd55098e52c666",
-     "5057104530eff20a",
-     "73f36f0b56ec5bbd",
-     "76d347c1a79d28b1",
-     "91e26b90ffefecfb",
-     "b13c64873f68e097",
-     "d1ec6025bb1f0cdf",
-     "f36f642b37345aad",
-     "fc1857b92ae41406"
+     "0b6a37f409e38182",
+     "133d3e071cd3bc69",
+     "24397564f9142f14",
+     "454434a185e45bbe",
+     "717338f7799ef252",
+     "79506932044dd982",
+     "7bb8e9943d807f3c",
+     "b55c4c3e769e5f65",
+     "b88c26c558c69b66",
+     "bec7dd7ad4343b80",
+     "d9e89eb952c1a571",
+     "f7083920ebef48ef"
     ],
     "48": [
-     "2c1862e3609c1e48",
-     "604774ff65c667a0",
-     "e29ecbdc820e6ed6"
+     "3b06dba264bde5d5",
+     "46c704fc4d7948f5",
+     "a147efd8a1c4f214"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "8f392f799ed0466d7e8d762b36cc5742b1ecabcd97a45b47c7cf3ccec5485004",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-sidedoor-log",
+   "width": 16,
+   "height": 48,
+   "cells": {
+    "16": [
+     "05ddad6db45ca0f8",
+     "232dbddb4bcc6be8",
+     "56c3d82aa91f9ae3"
+    ],
+    "24": [
+     "4e00041699fc1170",
+     "70bdbf1eeb72bb50",
+     "70e7d9f1d606b221",
+     "7a155a4a3cd7ff03",
+     "abe66f45b11f6bf5",
+     "fbfd6bdd8798c3aa"
+    ],
+    "32": [
+     "12d5932aee703067",
+     "1a9a0d7a83f99ab8",
+     "3b73add3287f0763",
+     "3f963515fc0a3d55",
+     "4e5b1d980632a8c7",
+     "4eaf7109afcc08ef",
+     "4f2ee012fee0669f",
+     "53e5788e0448d01e",
+     "9b379b4461bfe6de",
+     "e10e298c811ed416",
+     "ec5eeddc9cf210ed",
+     "f1473bcdf3fa8335"
+    ],
+    "48": [
+     "5905a03f9d86b00a",
+     "8d4580c02c84c3fb",
+     "e60aaadab3cf48a6"
     ]
    }
   },
@@ -8039,43 +8080,43 @@
    }
   },
   {
-   "pixelSha256": "330abaa2e421bd81281549980f4ba6745847b03694358a5ef9ad1858c0d07c78",
+   "pixelSha256": "91128385bb794383dec4e5267d8d2642117c45cd3eae88cd3ccb36a80baf8147",
    "kind": "structure",
    "label": "beodeul_city/bd-in-sidedoor-iron",
    "width": 16,
    "height": 48,
    "cells": {
     "16": [
-     "6c75ba5860eb19ae",
-     "af76b33d46185235",
-     "fa452d778d708ef7"
+     "c2df95fa5bc97c1d",
+     "dec33f5b369a76a7",
+     "f6fa7bbb026ffd38"
     ],
     "24": [
-     "365eb6b4401a2c40",
-     "4b54def37c8dfd48",
-     "527a7a47fbfba3b1",
-     "b2e34b0e5774f185",
-     "d621bc6ca92ca9d6",
-     "f6012cabf088ce7b"
+     "1c1ab8a673a60876",
+     "4cf71cd5416c820d",
+     "4f989546f23ca782",
+     "615bf3195dd67189",
+     "80d949756adad921",
+     "f1eb4f45406f1c55"
     ],
     "32": [
-     "11456cf4c4c00ce7",
-     "16ff4306a61ee7c7",
-     "46f90b212d1453b3",
-     "4a8f47f8f9b53b93",
-     "5a58cad125b99e92",
-     "69c2d6408e6f615d",
-     "7222c8d0742fb7f9",
-     "b835a03a4d806a60",
-     "bcad5f0cdb803833",
-     "c59e1ae94e0c7c6c",
-     "c9dfe8db2cf243c7",
-     "edd5b67f00c8e5e1"
+     "1b3bec6c51e74c4e",
+     "223356c281a0e6d9",
+     "25e6fd966e7ad59d",
+     "28a278e0fef499fd",
+     "54bbe86cfa0e6648",
+     "7156761e9f376cd9",
+     "86dd83ce897b924c",
+     "91fd9687975ac86c",
+     "e4f0fd55d795c0c7",
+     "e84972dde471ec6d",
+     "f515da6645d630d2",
+     "f572107dd02a2886"
     ],
     "48": [
-     "597cba260fda09ed",
-     "a60dac6d4cc5c6b9",
-     "c91e77d226fec926"
+     "3729a99e17da319b",
+     "5f96bea20055924c",
+     "6bf7037f1898de2a"
     ]
    }
   },

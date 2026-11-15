@@ -12,6 +12,7 @@ import { interiorBuilder } from "@/ai/v2/place/builders/interior";
 import { interiorCatalogCard } from "@/ai/v2/prompt/placeSpecs";
 import { kitEntranceCount, kitServesBuilding, kitTier, kitTierByFootprint, type BuildingNeed } from "@/project/kitTier";
 import { BEODEUL_KIT_INTERIOR } from "@/project/defaults/beodeulKitUse";
+import { canMove, isPassable } from "@/project/collision";
 import { WORLDS, worldPlaceSpec } from "@/ai/v2/place/world";
 import { VILLAGE_BUILDER } from "@/ai/v2/place/builders/village";
 import type { ToolContext } from "@/editor/tools/types";
@@ -91,7 +92,7 @@ describe("크기 단 구성 표", () => {
 describe("방 사이 문과 크기 자동 깔것", () => {
   it("문 조각: 가로 칸막이 문은 틈 칸 + 아래 벽면 두 줄, 옆문은 벽면 두 줄 + 통로 칸 — 맨 아래 칸만 바닥 층", () => {
     for (const id of ["door oak", "door arch"]) { const o = S.objects[id]!; expect(o.kind).toBe("door"); expect(o.cells.map((c) => [c[1], c[3]])).toEqual([[0, 3], [1, 3], [2, 2]]); }
-    for (const id of ["sidedoor oak", "sidedoor iron"]) { const o = S.objects[id]!; expect(o.kind).toBe("sidedoor"); expect(o.cells.map((c) => [c[1], c[3]])).toEqual([[-2, 3], [-1, 3], [0, 2]]); }
+    for (const id of ["sidedoor oak", "sidedoor iron", "sidedoor log"]) { const o = S.objects[id]!; expect(o.kind).toBe("sidedoor"); expect(o.cells.map((c) => [c[1], c[3]])).toEqual([[-2, 3], [-1, 3], [0, 2]]); }
     const ts = createBeodeulCityTileset();
     for (const id of ["door oak", "sidedoor iron"]) for (const c of S.objects[id]!.cells) expect(Object.values(ts.passability[c[2]!]!).every(Boolean), id).toBe(true);
   });
@@ -104,7 +105,27 @@ describe("방 사이 문과 크기 자동 깔것", () => {
     const got = placeTierMap({ id: "x", ko: "", exit: "g", rooms: [{ id: "g", kind: "guard_room" }, { id: "j", kind: "jail", at: "E:g:end" }] },
       tierTemplatePicker(tpls.map((t) => ({ ...t, wall: "grey" })), "guard_room", "k"), table.doors);
     expect(got.connect[0]!.door).toBe("sidedoor iron");
+    // 옆 칸막이의 끝머리는 그 벽의 재질 — 통나무 벽이면 통나무 마구리
+    const logs = placeTierMap({ id: "x", ko: "", exit: "g", rooms: [{ id: "g", kind: "guard_room" }, { id: "j", kind: "jail", at: "E:g:end" }] },
+      tierTemplatePicker(tpls.map((t) => ({ ...t, wall: "log" })), "guard_room", "k"), table.doors);
+    expect(logs.connect[0]!.door).toBe("sidedoor log");
   });
+  it("옆문은 트인 문목이다 — 엔진의 충돌 판정으로 통로 칸을 좌우로 건너고, 그 위 끝머리 두 칸으로는 못 들어간다", () => {
+    const a = fresh();
+    const r = buildTier(a.run, { type: "interior", name: "가게" } as never, { tilesetId: a.ts.id, roomSpec: S, outside: { tileset: a.ts.id, tier: "medium", style: "halftimber" }, mainKind: "shop", named: true, varietyKey: "열쇠0|가게", mapId: undefined, force: { program: "m-shop", shape: 0 } } as never, [])!;
+    expect(r.ok, r.summary).toBe(true);
+    const P = a.run.ctx.project, m = P.maps[r.mapIds[0]!]!; const rooms = roomsOf(a.run, m.id) as unknown as { x: number; y: number; w: number; h: number }[];
+    const inRoom = (x: number, y: number) => rooms.some((q) => x >= q.x && y >= q.y && x < q.x + q.w && y < q.y + q.h);
+    const gaps: [number, number][] = [];
+    for (let y = 1; y < m.height - 1; y++) for (let x = 1; x < m.width - 1; x++) if (!inRoom(x, y) && isPassable(P, m, x, y) && inRoom(x - 1, y) && inRoom(x + 1, y)) gaps.push([x, y]);
+    expect(gaps.length).toBeGreaterThan(0);
+    for (const [x, y] of gaps) {
+      expect(canMove(P, m, x - 1, y, x, y) && canMove(P, m, x, y, x + 1, y), `좌→우 ${x},${y}`).toBe(true);
+      expect(canMove(P, m, x + 1, y, x, y) && canMove(P, m, x, y, x - 1, y), `우→좌 ${x},${y}`).toBe(true);
+      expect(canMove(P, m, x, y, x, y - 1), `끝머리 ${x},${y - 1}`).toBe(false);
+      expect(isPassable(P, m, x, y - 2)).toBe(false);
+    }
+  }, 60_000);
   it("돌 단·양탄자는 어떤 크기로도 깔린다(한 칸 폭·한 줄 포함)", () => {
     for (const id of ["dais stone", "dais red", "dais blue"]) expect(Object.keys(S.daises[id]!.pieces)).toHaveLength(32);
     const plan = ["#########", ...Array.from({ length: 8 }, () => "#.......#"), "####.####"];

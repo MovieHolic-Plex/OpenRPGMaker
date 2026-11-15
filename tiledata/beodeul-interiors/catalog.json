@@ -2,12 +2,12 @@
 "tilesetId": "beodeul_city",
 "base": 48512,
 "reserved": 4096,
-"used": 1531,
+"used": 1534,
 "kitPrefix": "bd-in:",
 "waiver": "fable-interiors-beodeul-2026-11-15",
 "gate": "3/4 gate not passed — owner waiver",
 "source": "scripts/content/beodeul-interiors (Claude Fable 5.2 medium one-shot pictures; prepare.py adds floor shadows, light halos and ramp shifts)",
-"objects": 286,
+"objects": 287,
 "reused": 89,
 "pins": {
 "void": 48512,
@@ -1540,6 +1540,9 @@
 "obj/tower bell/0,-1": 50039,
 "obj/tower bell/1,-1": 50040,
 "obj/tower bell/0,0": 50041,
-"obj/tower bell/1,0": 50042
+"obj/tower bell/1,0": 50042,
+"obj/sidedoor log/0,-2": 50043,
+"obj/sidedoor log/0,-1": 50044,
+"obj/sidedoor log/0,0": 50045
 }
 }
