@@ -119,6 +119,8 @@ export function installSessionHooks(c: VerbContext) {
         const composed = !!parseWorldStyle(guess.style);
         const spec0: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(guess) && !composed ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}),
           ...(exitSides.has(name) && !guess.exits?.length ? { exits: exitSides.get(name)! } : {}),
+          // 집 안은 그 집의 바깥을 따른다 — 문이 달린 맵의 칩셋과 그 문의 집 킷을 명세에 적는다(실내 빌더가 칩셋·벽면을 고른다, interiorExterior.ts).
+          ...(isInside(guess) && !composed && env.ctx.project.maps[parent.mapId] ? { exterior: { tileset: env.ctx.project.maps[parent.mapId]!.tilesetId, ...(door?.kit ? { kit: door.kit } : {}) } } : {}),
           ...(composed && programs?.places.has(name) ? { program: programs.places.get(name)!.program } : {}) };
         const builder = builderFor(spec0);
         if (!builder) { notes.push(`「${name}」(${spec0.type}) — 짓는 빌더가 없다`); continue; }
