@@ -9,9 +9,9 @@ import { lookHash } from "@/project/kitLook";
 export const Occ = { Lot: 0, Walk: 1, Road: 2, Water: 3, Prop: 4, Slit: 5, Bldg: 6, Wall: 7 } as const;
 export type Occ = (typeof Occ)[keyof typeof Occ];
 
-/** 큰길(가로): kerb 연석 차도 · lane 보도 없는 생활도로 · mall 보행자 시장 길 · river 하천 · edge 지도 아래 끝 길 */
+/** 큰길(가로): kerb 연석 차도 · lane 보도 없는 생활도로 · path 차가 못 다니는 골목(2줄) · mall 보행자 시장 길 · river 하천 · edge 지도 아래 끝 길 */
 export interface SceneStreet {
-  readonly type: "kerb" | "lane" | "mall" | "river" | "edge";
+  readonly type: "kerb" | "lane" | "path" | "mall" | "river" | "edge";
   readonly y0: number; readonly end: number;
   /** 건물 발 바로 아래 줄(가게 앞 내놓는 줄) */ readonly nA: number;
   /** 북쪽 보도의 연석 줄(낮은 가로 시설) */ readonly nK?: number;

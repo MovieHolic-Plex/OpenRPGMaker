@@ -4,42 +4,42 @@
   "tones": {
     "hai": {
       "ko": "잿빛 포장 동네",
-      "lot": ["자갈 참배길", "거리 · 주차장", "노면전차 軌道敷 포장"],
+      "lot": ["노면전차 軌道敷 포장", "거리 · 주차장"],
       "sidewalk": "보도 연석",
       "road": "생활도로",
       "plaza": "판석 광장",
       "alley": "온천가 돌길(이시다타미)",
-      "yard": "산길 흙",
+      "yard": ["산길 흙", "잔디", "校庭 흙 바닥"],
       "green": "잔디"
     },
     "kinari": {
       "ko": "따뜻한 판석 동네",
-      "lot": ["콘크리트 판석 보도", "산길 흙", "거리 · 땅·잔디·판석·참배길"],
+      "lot": ["거리 · 땅·잔디·판석·참배길", "산길 흙"],
       "sidewalk": "콘크리트 판석 보도",
       "road": "따뜻한 아스팔트 골목",
       "plaza": "판석 광장",
-      "alley": "따뜻한 아스팔트 골목",
-      "yard": "校庭 흙 바닥",
+      "alley": "온천가 돌길(이시다타미)",
+      "yard": ["잔디", "校庭 흙 바닥", "산길 흙"],
       "green": "잔디"
     },
     "ishi": {
-      "ko": "돌길 동네",
-      "lot": ["온천가 돌길(이시다타미)", "자갈 참배길", "산길 흙"],
+      "ko": "흰 판석 동네",
+      "lot": ["자갈 참배길", "노면전차 軌道敷 포장"],
       "sidewalk": "판석 광장",
       "road": "생활도로",
       "plaza": "콘크리트 판석 보도",
       "alley": "온천가 돌길(이시다타미)",
-      "yard": "거리 · 땅·잔디·판석·참배길",
+      "yard": ["산길 흙", "잔디", "거리 · 땅·잔디·판석·참배길"],
       "green": "잔디"
     },
     "tsuchi": {
       "ko": "흙길 낀 옛 동네",
-      "lot": ["자갈 참배길", "산길 흙", "校庭 흙 바닥"],
+      "lot": ["거리 · 땅·잔디·판석·참배길", "노면전차 軌道敷 포장"],
       "sidewalk": "보도 연석",
       "road": "따뜻한 아스팔트 골목",
       "plaza": "콘크리트 판석 보도",
       "alley": "산길 흙",
-      "yard": "잔디",
+      "yard": ["잔디", "산길 흙", "校庭 흙 바닥"],
       "green": "잔디"
     }
   },
@@ -50,9 +50,9 @@
       "en": "station-front shopping street",
       "styles": ["shopping"],
       "main": "kerb",
-      "mainW": [4, 4],
+      "mainW": [3, 4],
       "cross": "kerb",
-      "crossLane": [3, 4],
+      "crossLane": [2, 3],
       "river": 0,
       "tall": true,
       "houseShare": 0.05,
@@ -73,6 +73,12 @@
         "spill": 0.55,
         "kerb": 0.45,
         "south": 0.4
+      },
+      "mainMix": {
+        "shop": 6,
+        "food": 4,
+        "shut": 1,
+        "commercial": 2
       }
     },
     {
@@ -81,9 +87,9 @@
       "en": "riverside shopping street",
       "styles": ["shopping"],
       "main": "kerb",
-      "mainW": [3, 4],
+      "mainW": [3, 3],
       "cross": "kerb",
-      "crossLane": [3, 3],
+      "crossLane": [2, 3],
       "river": 1,
       "tall": false,
       "houseShare": 0.15,
@@ -103,6 +109,11 @@
         "spill": 0.5,
         "kerb": 0.4,
         "south": 0.4
+      },
+      "mainMix": {
+        "shop": 6,
+        "food": 4,
+        "shut": 1
       }
     },
     {
@@ -111,9 +122,9 @@
       "en": "mixed-tenant building downtown",
       "styles": ["shopping"],
       "main": "kerb",
-      "mainW": [4, 4],
+      "mainW": [3, 3],
       "cross": "kerb",
-      "crossLane": [3, 4],
+      "crossLane": [2, 3],
       "river": 0.25,
       "tall": true,
       "houseShare": 0,
@@ -134,6 +145,12 @@
         "spill": 0.5,
         "kerb": 0.5,
         "south": 0.45
+      },
+      "mainMix": {
+        "shop": 6,
+        "food": 4,
+        "shut": 1,
+        "commercial": 2
       }
     },
     {
@@ -144,7 +161,7 @@
       "main": "lane",
       "mainW": [4, 4],
       "cross": "lane",
-      "crossLane": [3, 3],
+      "crossLane": [2, 3],
       "river": 0,
       "tall": false,
       "houseShare": 0.85,
@@ -172,7 +189,7 @@
       "main": "lane",
       "mainW": [4, 4],
       "cross": "lane",
-      "crossLane": [3, 3],
+      "crossLane": [2, 3],
       "river": 1,
       "tall": false,
       "houseShare": 0.8,
@@ -200,7 +217,7 @@
       "main": "lane",
       "mainW": [4, 4],
       "cross": "lane",
-      "crossLane": [3, 3],
+      "crossLane": [2, 3],
       "river": 0.2,
       "tall": false,
       "houseShare": 0.75,
@@ -249,6 +266,12 @@
         "spill": 0.6,
         "kerb": 0.45,
         "south": 0.4
+      },
+      "mainMix": {
+        "shop": 6,
+        "food": 4,
+        "shut": 1,
+        "flavor": 2
       }
     },
     {
@@ -259,7 +282,7 @@
       "main": "mall",
       "mainW": [6, 6],
       "cross": "lane",
-      "crossLane": [3, 3],
+      "crossLane": [2, 3],
       "river": 0,
       "tall": false,
       "houseShare": 0.2,
@@ -279,6 +302,12 @@
         "spill": 0.6,
         "kerb": 0.4,
         "south": 0.35
+      },
+      "mainMix": {
+        "shop": 6,
+        "food": 4,
+        "shut": 1,
+        "flavor": 2
       }
     },
     {
@@ -287,9 +316,9 @@
       "en": "covered shopping arcade",
       "styles": ["shotengai"],
       "main": "kerb",
-      "mainW": [3, 4],
+      "mainW": [3, 3],
       "cross": "arcade",
-      "crossLane": [3, 3],
+      "crossLane": [2, 3],
       "river": 0,
       "tall": false,
       "houseShare": 0.05,
@@ -310,6 +339,12 @@
         "spill": 0.65,
         "kerb": 0.45,
         "south": 0.4
+      },
+      "mainMix": {
+        "shop": 6,
+        "food": 4,
+        "shut": 1,
+        "flavor": 2
       }
     },
     {
@@ -320,7 +355,7 @@
       "main": "mall",
       "mainW": [6, 6],
       "cross": "lane",
-      "crossLane": [3, 3],
+      "crossLane": [2, 3],
       "river": 0.15,
       "tall": false,
       "houseShare": 0.1,
@@ -340,6 +375,12 @@
         "spill": 0.7,
         "kerb": 0.4,
         "south": 0.4
+      },
+      "mainMix": {
+        "shop": 6,
+        "food": 4,
+        "shut": 1,
+        "flavor": 2
       }
     }
   ],

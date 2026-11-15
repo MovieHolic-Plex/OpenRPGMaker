@@ -94,7 +94,7 @@ export function dressStreets(c: SceneCtx, L: SceneLayout, crosswalkTile?: number
     const vs = touching(L, b);
     const inV = (x: number, pad = 0) => vs.some((v) => x >= v.x - pad && x < v.x + v.w + pad);
     let cw = -99;
-    if (s.type === "kerb" || s.type === "lane" || (s.type === "edge" && s.road0 > s.y0)) {
+    if (s.type === "kerb" || s.type === "lane") {
       const rw = s.road1 - s.road0 + 1;
       if (s.type === "kerb") for (let t = 0; t < 10; t++) {                // 횡단보도 하나(4칸) + 보행 신호등
         const x = 4 + Math.floor(rng() * Math.max(1, W - 12));
@@ -111,9 +111,9 @@ export function dressStreets(c: SceneCtx, L: SceneLayout, crosswalkTile?: number
       for (let x = 0; x < W; x++) {                                         // 흰 외측선(교차로·횡단보도 칸은 비운다)
         if (inV(x) || (x >= cw && x < cw + 4)) continue;
         c.raw("jp-mark-edge-n", x, s.road0, "road");
-        if (s.type !== "edge") c.raw("jp-mark-edge-s", x, s.road1, "road");
+        c.raw("jp-mark-edge-s", x, s.road1, "road");
       }
-      if (s.type !== "edge") {
+      {
         const east = rng() < 0.5, laneY = s.road0 + (rw >= 4 ? 1 : 0);
         for (let t = 0; t < 6; t++) { const mx = 2 + Math.floor(rng() * Math.max(1, W - 8)); if (!inV(mx, 1) && !inV(mx + 3, 1) && c.decal(`jp-mark-30-${east ? "e" : "w"}`, mx, east ? s.road0 : s.road1 - 1)) break; }
         const cars = sceneList("doro", "cars");
@@ -150,6 +150,14 @@ export function dressStreets(c: SceneCtx, L: SceneLayout, crosswalkTile?: number
       poles.forEach((px, i) => { const nx = poles[i + 1]; if (nx === undefined) return; const n = nx - (px + 2) + 3; if (n >= 5 && n <= 20 && c.size(`jp-wire-${n}`)) c.late.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/jp-wire-${n}`, mapId: c.mapId, x: px + 2, y: s.road1 - 4 }, optional: true, note: "wire" }); });
       for (let x = 2 + Math.floor(rng() * 5); x < W - 2; ) { const id = !inV(x, 1) && rng() < 0.85 ? c.putAny(lane, x, s.road1, { ...tall, gap: true }) : undefined; if (id) c.scenesUsed.add("jutaku"); x += (id ? c.size(id)![0] : 1) + 3 + Math.floor(rng() * 3); }
       if (kind.pieces.includes("garbage")) for (let t = 0; t < 8; t++) { const x = 2 + Math.floor(rng() * (W - 8)); if (!inV(x, 1) && !inV(x + 4, 1) && c.putFoot("jp-gomi-box", x, s.road1, { ...tall, gap: true })) { c.putFoot("jp-keijiban", x + 3, s.road1, tall); c.piecesUsed.push("garbage"); break; } }
+    } else if (s.type === "path") {
+      // 골목(차 없음): 남쪽 줄에 화분·자전거·쓰레기망·자판기, 가끔 가로등
+      const low = [...sceneList("jutaku", "lane").filter((q) => c.size(q)![1] <= 2), ...sceneList("doro", "back")];
+      for (let x = 1 + Math.floor(rng() * 4); x < W - 2; ) { const id = !inV(x, 1) && rng() < 0.8 ? (rng() < 0.15 ? (c.putFoot("jp-prop-lamp-post", x, s.sB, { ...TALL, over: [...TALL.over, Occ.Slit] }) ? "jp-prop-lamp-post" : undefined) : c.putAny(low, x, s.sB, { gap: true })) : undefined; x += (id ? c.size(id)![0] : 1) + 2 + Math.floor(rng() * 3); }
+    } else if (s.type === "edge") {
+      // 지도 아래 끝 걷는 길: 건물 쪽 줄에 화분·자전거·자판기·게시판(문·대문 앞은 비어 있다)
+      const low = [...sceneList("doro", "back"), ...sceneList("jutaku", "lane").filter((q) => c.size(q)![1] <= 2)];
+      for (let x = 1 + Math.floor(rng() * 4); x < W - 2; ) { const id = !inV(x, 1) && rng() < 0.7 ? c.putAny(low, x, s.nA, { gap: true, over: [Occ.Lot, Occ.Walk, Occ.Slit] }) : undefined; x += (id ? c.size(id)![0] : 1) + 3 + Math.floor(rng() * 4); }
     } else if (s.type === "mall") {
       // 보행자 시장 길: 가운데 두 줄에 노점·포장마차·벤치, 머리 위 초롱 줄, 남쪽 가장자리에 낮은 것
       const stalls = [...sceneList("shotengai", "stall"), ...sceneList("sando", "stall")];

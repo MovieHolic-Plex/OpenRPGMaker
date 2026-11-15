@@ -2,7 +2,7 @@
 // 거리 장면의 구획 조각 — 건물 줄 대신 구획(또는 그 한쪽)을 차지하는 쓰임: 동네 공원 · 신사 경내 · 골목 사당 · 코인 주차장 · 공사장 · 자전거 주차장 · 빈터 · 역 앞 광장.
 // 조각마다 바닥·둘레(담·생울타리·철망)·들어가는 틈·정해진 짜임을 놓는다. 소품 목록은 자료(jpCityStreetKinds.json 의 scenes)에서 읽는다.
 import { Occ, type PutOpts, type SceneBlock, type SceneCtx, type SceneLayout } from "@/project/jpCitySceneCtx";
-import { SCENE_BUILDINGS, sceneList } from "@/project/jpCitySceneKinds";
+import { SCENE_BUILDINGS, sceneList, yardGround } from "@/project/jpCitySceneKinds";
 
 export interface PieceDef {
   readonly minW: number; readonly minH: number; readonly prefW: number;
@@ -26,14 +26,16 @@ function ring(c: SceneCtx, x: number, y: number, w: number, h: number, material:
   ];
   c.edge(cells.filter((q) => !open(q.x, q.y)), material);
 }
+/** 들어가는 틈 앞(길 쪽 두 줄)은 걷는 자리로 비워 둔다 — 가로 시설이 입구를 막지 않게. */
+const keepFront = (c: SceneCtx, x: number, w: number, foot: number) => c.mark(x, foot + 1, w, 2, Occ.Walk, [Occ.Lot]);
 const rect = (b: SceneBlock) => ({ x: b.sx, w: b.ex - b.sx, top: b.band.top, foot: b.band.foot, h: b.band.foot - b.band.top + 1 });
 
 function park(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   const { x, w, top, foot, h } = rect(b), { tone, kind } = c;
-  c.fill(x, top, w, h, kind.noGreen ? tone.yard : tone.green);
+  c.fill(x, top, w, h, kind.noGreen ? yardGround(kind, tone, 0) : tone.green);
   const gx = x + Math.floor(w / 2) - 1;
   c.fill(gx, foot - 2, 2, 3, tone.plaza);
-  c.mark(gx, foot - 2, 2, 3, Occ.Walk);
+  c.mark(gx, foot - 2, 2, 3, Occ.Walk); keepFront(c, gx, 2, foot);
   ring(c, x, top, w, h, kind.noGreen ? "철망 울타리" : "생울타리", (px, py) => py === foot && (px === gx || px === gx + 1));
   if (h >= 9) for (let tx = x + 1 + Math.floor(c.rng() * 2); tx + 4 < x + w; tx += 5 + Math.floor(c.rng() * 4)) if (tx + 4 <= gx - 1 || tx >= gx + 3 || top + 6 < foot - 2) c.putFoot(TREES[Math.floor(c.rng() * 3)]!, tx, top + 6, { gap: true });
   scatter(c, x + 1, foot - 3, w - 2, 3, sceneList("koen", "play"), Math.max(2, Math.floor(w / 4)));
@@ -51,7 +53,7 @@ function shrine(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   c.fill(x, top, w, h, "자갈 참배길");
   c.fill(px, hfoot + 1, 2, foot - hfoot, tone.plaza);
   c.placeKit(hall, hx, hfoot);
-  c.mark(px, hfoot + 1, 2, foot - hfoot, Occ.Walk);
+  c.mark(px, hfoot + 1, 2, foot - hfoot, Occ.Walk); keepFront(c, px - 1, 4, foot);
   ring(c, x, top, w, h, "블록담", (qx, qy) => qy === foot && qx >= px - 1 && qx <= px + 2);
   c.putFoot("jp-torii", px - 1, foot - 1, { base: [Occ.Lot, Occ.Walk], over: [Occ.Lot, Occ.Walk] });
   for (let y = foot - 3; y > hfoot + 1; y -= 3) for (const lx of [px - 1, px + 2]) c.putAny(sceneList("jinja", "lantern"), lx, y);
@@ -70,7 +72,7 @@ function shrineSmall(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   c.fill(x, top, w, h, "자갈 참배길");
   const tx = x + Math.floor((w - 4) / 2);
   ring(c, x, top, w, h, "블록담", (qx, qy) => qy === foot && qx >= tx && qx <= tx + 3);
-  c.mark(tx + 1, foot - 2, 2, 3, Occ.Walk);
+  c.mark(tx + 1, foot - 2, 2, 3, Occ.Walk); keepFront(c, tx, 4, foot);
   c.putFoot("jp-torii", tx, foot - 1, { base: [Occ.Lot, Occ.Walk], over: [Occ.Lot, Occ.Walk] });
   c.putAny(["jp-hokora-jizo", "jp-jizo"], tx + 1, foot - 3);
   for (const lx of [tx - 1, tx + 4]) c.putAny(sceneList("jinja", "lantern"), lx, foot - 2);
@@ -87,6 +89,7 @@ function parking(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   const y0 = foot - rows * 3 + 1;
   c.fill(x, Math.max(top + 1, y0 - 1), w, foot - Math.max(top + 1, y0 - 1) + 1, "거리 · 주차장");
   ring(c, x, Math.max(top, y0 - 2), w, foot - Math.max(top, y0 - 2) + 1, "철망 울타리", () => false, "NEW");
+  keepFront(c, x + 1, Math.min(w - 2, 5), foot);
   const cars = sceneList("doro", "cars").filter((id) => id.includes("-car-"));
   let any = false;
   for (let r = 0; r < rows; r++) for (let k = 0; k < cols; k++) {
@@ -102,11 +105,11 @@ function parking(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
 }
 
 function construction(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
-  const { x, w, top, foot, h } = rect(b), { tone } = c;
+  const { x, w, top, foot, h } = rect(b);
   const y0 = Math.max(top, foot - 7), hh = foot - y0 + 1;
-  c.fill(x, y0, w, hh, tone.yard === "잔디" ? "산길 흙" : tone.yard);
+  c.fill(x, y0, w, hh, "산길 흙");
   const gx = x + 2 + Math.floor(c.rng() * Math.max(1, w - 6));
-  c.mark(gx, foot - 1, 2, 2, Occ.Walk);
+  c.mark(gx, foot - 1, 2, 2, Occ.Walk); keepFront(c, gx, 2, foot);
   ring(c, x, y0, w, hh, "철망 울타리", (qx, qy) => qy === foot && (qx === gx || qx === gx + 1));
   const cabin = sceneList("kouji", "cabin")[0];
   if (cabin) c.put(cabin, gx > x + w / 2 ? x + 1 : x + w - 4, y0 + 1, { baseRows: 2 });
@@ -122,6 +125,7 @@ function bikepark(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   const y0 = Math.max(top, foot - 6);
   c.fill(x, y0, w, foot - y0 + 1, tone.sidewalk);
   ring(c, x, y0, w, foot - y0 + 1, "철망 울타리", () => false, "NEW");
+  keepFront(c, x + 1, 3, foot);
   const shelter = sceneList("churin", "shelter")[0];
   let n = 0;
   if (shelter) for (let sx = x + 1; sx + 6 <= x + w - 1; sx += 7) if (c.put(shelter, sx, y0 + 1, { baseRows: 1 })) n++;
@@ -154,7 +158,7 @@ function station(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   c.fill(x, top, w, h, tone.plaza);
   const kx = x + Math.floor((w - kit.w) / 2), kfoot = Math.min(foot - 3, top + kit.h + Math.max(0, h - kit.h - 6));
   const p = c.placeKit(kit, kx, kfoot);
-  for (const d of p.doors) c.mark(kx + d, kfoot + 1, 1, foot - kfoot, Occ.Walk, [Occ.Lot]);
+  for (const d of p.doors) { c.mark(kx + d, kfoot + 1, 1, foot - kfoot, Occ.Walk, [Occ.Lot]); keepFront(c, kx + d, 1, foot); }
   const plaza = sceneList("ekimae", "plaza");
   scatter(c, x + 1, kfoot + 2, w - 2, Math.max(1, foot - kfoot - 1), plaza, Math.max(4, Math.floor(w / 3)));
   for (const id of sceneList("ekimae", "transit")) for (const sx of c.rng() < 0.5 ? [x + 1, x + w - 7] : [x + w - 7, x + 1]) if (c.putFoot(id, sx, kfoot, { gap: true })) break;
@@ -163,12 +167,12 @@ function station(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
 }
 
 export const PIECES: Readonly<Record<string, PieceDef>> = {
-  park: { minW: 8, minH: 7, prefW: 11, bottom: true, run: park },
-  shrine: { minW: 13, minH: 11, prefW: 15, run: shrine },
+  park: { minW: 8, minH: 7, prefW: 9, bottom: true, run: park },
+  shrine: { minW: 13, minH: 11, prefW: 13, run: shrine },
   "shrine-small": { minW: 6, minH: 6, prefW: 7, run: shrineSmall },
-  parking: { minW: 8, minH: 6, prefW: 14, bottom: true, run: parking },
-  construction: { minW: 9, minH: 6, prefW: 11, run: construction },
-  bikepark: { minW: 8, minH: 5, prefW: 9, bottom: true, run: bikepark },
-  vacant: { minW: 6, minH: 5, prefW: 8, bottom: true, run: vacant },
-  station: { minW: 17, minH: 9, prefW: 20, band: (i, n) => i < n - 1, run: station },
+  parking: { minW: 8, minH: 6, prefW: 8, bottom: true, run: parking },
+  construction: { minW: 9, minH: 6, prefW: 9, run: construction },
+  bikepark: { minW: 8, minH: 5, prefW: 8, bottom: true, run: bikepark },
+  vacant: { minW: 6, minH: 5, prefW: 6, bottom: true, run: vacant },
+  station: { minW: 17, minH: 9, prefW: 17, band: (i, n) => i < n - 1, run: station },
 };

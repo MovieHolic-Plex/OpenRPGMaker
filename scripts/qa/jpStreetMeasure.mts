@@ -19,7 +19,7 @@ export interface JpStreetMeasure {
   /** 같은 그림 두 채 사이 가장 가까운 거리(칸, 체비셰프) — 되풀이가 없으면 -1 */
   readonly nearestRepeat: number;
   readonly props: number; readonly distinctProps: number; readonly propKits: Record<string, number>;
-  readonly roadShare: number; readonly deadBandShare: number; readonly emptyWindows: number; readonly cars: number;
+  readonly roadShare: number; readonly deadBandShare: number; readonly emptyWindows: number; /** 건물도 기물도 없는 8×6 창의 몫(0~1) — 빈 포장이 넓게 드러난 곳 */ readonly emptySmallWindows: number; readonly cars: number;
   readonly doors: number; readonly unreachableDoors: number;
   /** 이웃한 두 건물(같은 발 줄)의 키가 같은 비율 — 줄의 윗선이 들쭉날쭉한가 */
   readonly sameHeightNeighbours: number;
@@ -164,7 +164,13 @@ export function measureJpStreet(project: Project, map: GameMap): JpStreetMeasure
     const n = sum[(y + WH) * (W + 1) + x + WW]! - sum[y * (W + 1) + x + WW]! - sum[(y + WH) * (W + 1) + x]! + sum[y * (W + 1) + x]!;
     if (n === 0) emptyWindows++;
   }
+  let small = 0, smallAll = 0;
+  for (let y = 0; y + 6 <= H; y++) for (let x = 0; x + 8 <= W; x++) {
+    smallAll++;
+    if (sum[(y + 6) * (W + 1) + x + 8]! - sum[y * (W + 1) + x + 8]! - sum[(y + 6) * (W + 1) + x]! + sum[y * (W + 1) + x]! === 0) small++;
+  }
   return {
+    emptySmallWindows: smallAll ? small / smallAll : 0,
     buildings: looks.length, distinctLooks: Object.keys(repeats).length, maxRepeat: top?.[1] ?? 0, maxRepeatLook: top?.[0] ?? "", repeats, nearestRepeat: nearest,
     props, distinctProps: Object.keys(propKits).length, propKits, roadShare: road / N, deadBandShare: dead / N, emptyWindows, cars, doors, unreachableDoors: unreachable,
     sameHeightNeighbours: pairs ? same / pairs : 0,

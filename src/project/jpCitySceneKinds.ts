@@ -8,7 +8,7 @@ import { lookHash } from "@/project/kitLook";
 
 export type SceneStyle = "shopping" | "residential" | "shitamachi" | "shotengai";
 
-export interface SceneTone { readonly ko: string; readonly lot: readonly string[]; readonly sidewalk: string; readonly road: string; readonly plaza: string; readonly alley: string; readonly yard: string; readonly green: string }
+export interface SceneTone { readonly ko: string; readonly lot: readonly string[]; readonly sidewalk: string; readonly road: string; readonly plaza: string; readonly alley: string; /** 주택 필지 바닥(필지마다 돌린다) */ readonly yard: readonly string[]; readonly green: string }
 
 export interface SceneKind {
   readonly id: string; readonly ko: string; readonly en: string; readonly styles: readonly string[];
@@ -17,7 +17,7 @@ export interface SceneKind {
   /** 세로 길: kerb · lane · arcade(비 가림 지붕 시장 길) */
   readonly cross: "kerb" | "lane" | "arcade"; readonly crossLane: readonly number[];
   readonly river: number; readonly tall: boolean; readonly houseShare: number; readonly maxShops: number; readonly noGreen?: boolean;
-  readonly mix: Readonly<Record<string, number>>; readonly pieces: readonly string[]; readonly scenes: readonly string[]; readonly tones: readonly string[];
+  readonly mix: Readonly<Record<string, number>>; /** 맨 위 띠 앞줄(가게가 연달아 서는 줄)의 섞임 — 없으면 mix */ readonly mainMix?: Readonly<Record<string, number>>; readonly pieces: readonly string[]; readonly scenes: readonly string[]; readonly tones: readonly string[];
   readonly density: { readonly spill: number; readonly kerb: number; readonly south: number };
 }
 
@@ -58,4 +58,10 @@ export function pickSceneKind(req: { style: SceneStyle; shops?: readonly string[
 
 export function sceneTone(kind: SceneKind, key: string): SceneTone {
   return SCENE_TONES[kind.tones[(lookHash(`${key}|tone`) >>> 4) % kind.tones.length]!] ?? Object.values(SCENE_TONES)[0]!;
+}
+
+/** 주택 필지·공사장·빈터 바닥: 톤 벌의 필지 재료를 번호로 돌린다. 초록 띠를 쓰지 않는 종류(시타마치·쇼텐가이)는 잔디를 뺀다. */
+export function yardGround(kind: SceneKind, tone: SceneTone, n: number): string {
+  const list = tone.yard.filter((m) => !(kind.noGreen && m === tone.green));
+  return (list.length ? list : ["산길 흙"])[((n % Math.max(1, list.length)) + Math.max(1, list.length)) % Math.max(1, list.length)]!;
 }

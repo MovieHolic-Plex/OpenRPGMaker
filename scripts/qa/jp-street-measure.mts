@@ -52,6 +52,6 @@ jobs.forEach((job, index) => {
   const png = has("png") || has("colour") ? renderMapPng({ ...ctx.project, startMapId: "__none__" }, map).png : undefined;
   if (png && has("png")) fs.writeFileSync(`${OUT}/${job.label}.png`, png);
   rows.push({ label: job.label, style: job.style, seed: job.seed, w: W, h: H, ok: res.ok, summary: res.summary.slice(0, 400), ms: Date.now() - t0, ...m });
-  console.log(`${job.label} ${res.ok ? "ok" : "FAIL " + res.summary.slice(0, 160)} 건물 ${m.buildings} 종류 ${m.distinctLooks} 최대반복 ${m.maxRepeat}(${m.maxRepeatLook}) 소품 ${m.props}/${m.distinctProps}종 도로 ${(m.roadShare * 100).toFixed(1)}% 죽은띠 ${(m.deadBandShare * 100).toFixed(1)}% 빈창 ${m.emptyWindows} 차 ${m.cars} 닿지않는문 ${m.unreachableDoors} ${Date.now() - t0}ms`);
+  console.log(`${job.label} ${res.ok ? "ok" : "FAIL " + res.summary.slice(0, 160)} 건물 ${m.buildings} 종류 ${m.distinctLooks} 최대반복 ${m.maxRepeat}(${m.maxRepeatLook}) 소품 ${m.props}/${m.distinctProps}종 도로 ${(m.roadShare * 100).toFixed(1)}% 죽은띠 ${(m.deadBandShare * 100).toFixed(1)}% 빈창 ${m.emptyWindows} 빈8×6 ${(m.emptySmallWindows * 100).toFixed(1)}% 차 ${m.cars} 닿지않는문 ${m.unreachableDoors} ${Date.now() - t0}ms`);
 });
 fs.writeFileSync(`${OUT}/rows${shardN! > 1 ? `-${shardI}` : ""}.json`, JSON.stringify(rows, null, 1));
