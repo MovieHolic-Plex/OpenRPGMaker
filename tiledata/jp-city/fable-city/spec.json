@@ -1831,6 +1831,100 @@
 ],
 "rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
 "touch": false
+},
+{
+"id": "jp-bldg-f-ekimae",
+"type": "building",
+"name": "역 앞 상가 빌딩",
+"en": "station-front shopping building",
+"kind": "structure",
+"w": 12,
+"h": 16,
+"tier": "xlarge",
+"floors": 6,
+"doors": [
+4,
+5
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:xlarge",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"역 앞 상가 빌딩",
+"station-front shopping building",
+"ショッピング"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"touch": false
+},
+{
+"id": "jp-bldg-f-shiyakusho",
+"type": "building",
+"name": "구청",
+"en": "ward office",
+"kind": "structure",
+"w": 12,
+"h": 14,
+"tier": "xlarge",
+"floors": 5,
+"doors": [
+5,
+6
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:xlarge",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"구청",
+"ward office",
+"くやくしょ"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"program": "jp_office",
+"touch": false
+},
+{
+"id": "jp-bldg-f-tower",
+"type": "building",
+"name": "타워 맨션",
+"en": "tower apartment block",
+"kind": "structure",
+"w": 12,
+"h": 18,
+"tier": "xlarge",
+"floors": 7,
+"doors": [
+4,
+5
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:xlarge",
+"setting:city",
+"street:large",
+"roof:flat"
+],
+"words": [
+"타워 맨션",
+"tower apartment block",
+"ランドリー"
+],
+"rule": "역 앞·간선도로·광장 쪽. 정면 앞에 보도 2칸 이상을 비운다.",
+"touch": false
 }
 ]
 }
