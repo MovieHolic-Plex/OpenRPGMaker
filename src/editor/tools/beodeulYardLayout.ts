@@ -34,6 +34,8 @@ export interface YardPlan extends YardRect {
   woodCells: number[];
   /** 숲이 서는 마을(강가·포구·설원)인가 — 밭은 마을 몸(건물·마당에서 여섯 칸 안)에만 서고 그 바깥 띠는 숲의 몫이다. */
   woodsFirst: boolean;
+  /** 마당에서 떨어진 터(강 건너 bank · 다른 단 tier)에 남긴 집·일터의 문 앞 칸 — 예전 고리 배치가 그 터를 썼을 때만. */
+  apart: (LayoutPoint & { role: "house" | "work"; why: "bank" | "tier" })[];
 }
 
 export interface YardEnv {
@@ -154,7 +156,11 @@ function yardCandidates(t: CodeTerrain, g: LayoutPoint, level: number, houses: n
 }
 
 type YardAsk = { houses: number; anchor: boolean; work: boolean; loose: readonly LayoutPoint[]; wide: boolean; plaza?: { rx: number; ry: number }; wetOk?: boolean; /** 숲 덩이가 서는 마을(강가·포구·설원) — 숲 몫을 남긴다. */ woods?: boolean; /** 작은 집만(좁은 터). */ compact?: boolean;
-  /** 좋은 순서로 몇째 마당을 쓸까(0 = 가장 좋은 것) — 고른 마당이 뒤 단계(계단 놓기)에서 깨지면 시공기가 다음 것으로 다시 짓는다. */ skip?: number };
+  /** 좋은 순서로 몇째 마당을 쓸까(0 = 가장 좋은 것) — 고른 마당이 뒤 단계(계단 놓기)에서 깨지면 시공기가 다음 것으로 다시 짓는다. */ skip?: number;
+  /** 예전 고리 배치가 앉힌 집·일터(건물 가운데 · 문 앞 칸의 마른 땅 덩이와 단) — 마당과 다른 덩이·단에 있던 것은 터마다 하나를 거기에 남긴다. */
+  apart?: readonly (LayoutPoint & { role: "house" | "work"; bank: number; level: number })[];
+  /** 칸의 마른 땅 덩이 번호(강·바다가 가른다). */ bankOf?: (c: number) => number;
+  /** 높은 곳 건물이 선 덩이와 단 — 그 터는 이미 쓰이고 있다. */ landmarkOn?: { bank: number; level: number } };
 
 /** 후보 마당 하나에 건물을 앉힌다: 여관이 가운데 네모 북쪽 줄, 집은 날개 북쪽 줄과 여관 곁, 남는 집은 무리, 일터·밭은 마을 몸 바깥. */
 function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want: YardAsk): { plan: YardPlan; houses: YardSeat[] } {
@@ -163,7 +169,7 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
   // 우물은 마당의 한쪽 삼분 자리(가운데 축을 피한다) — 원래 모이는 곳에 가까운 쪽
   const gx = want.plaza ? Math.round((r.x0 + r.x1) / 2) : (g.x <= (r.x0 + r.x1) / 2 ? r.x0 + Math.max(1, Math.round(w * 0.28)) : r.x1 - Math.max(1, Math.round(w * 0.28)));
   const gy = want.plaza ? Math.round((r.y0 + r.y1) / 2) : r.y0 + Math.min(h - 2, Math.max(2, Math.round(h * 0.6)));
-  const plan: YardPlan = { ...r, level: cand.level, gather: { x: gx, y: gy }, lobes: cand.lobes, courts: [], stubs: [], cells: [], frame: [], fields: [], woods: [], woodCells: [], woodsFirst: !!want.woods };
+  const plan: YardPlan = { ...r, level: cand.level, gather: { x: gx, y: gy }, lobes: cand.lobes, courts: [], stubs: [], cells: [], frame: [], fields: [], woods: [], woodCells: [], woodsFirst: !!want.woods, apart: [] };
   const inMap = (x: number, y: number) => x >= 1 && y >= 1 && x < W - 1 && y < H - 2;
   /** 빈 마른 칸(L 단). */
   const freeDry = (x: number, y: number, L: number) => inMap(x, y) && t.levels[y * W + x] === L && !t.water[y * W + x] && env.free(y * W + x);
@@ -206,6 +212,25 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
   };
   const cx = (r.x0 + r.x1) / 2, cy = (r.y0 + r.y1) / 2;
   let left = want.houses;
+  // 떨어진 터(2026-11-15 감독 «집을 마당으로 모으는 것은 맞다, 강 건너와 윗단의 쓰임을 잃는 것은 아니다»): 예전 고리 배치가 마당과 다른 마른 땅 덩이(강 건너)나
+  // 다른 단에 집·일터를 두었으면 그 터마다 하나는 거기에 남긴다 — 강 건너 먼저, 일터 먼저(집은 마당에 남는다), 둘까지(집이 넷보다 적으면 하나). 집은 마당에 둘 넘게 남을 때만 보낸다.
+  // 강 건너에 문이 서면 시공기가 그 문 앞까지 골목을 내고 물을 건너는 자리에 다리를 놓는다. 높은 곳 건물이 이미 선 터는 쓰이고 있는 터다.
+  let workSeated = false;
+  if (want.apart?.length && want.bankOf && !want.wetOk) {
+    const yb = want.bankOf(gy * W + gx), cap = want.houses >= 4 ? 2 : 1, done = new Set<string>();
+    for (const p of [...want.apart].sort((a, b) => Number(a.bank === yb) - Number(b.bank === yb) || Number(a.role === "house") - Number(b.role === "house"))) {
+      if (plan.apart.length >= cap) break;
+      const far = p.bank !== yb, key = far ? `b${p.bank}` : `l${p.level}`;
+      if ((!far && p.level === plan.level) || done.has(key)) continue;
+      if (want.landmarkOn && want.landmarkOn.bank === p.bank && (far || want.landmarkOn.level === p.level)) continue;
+      if (p.role === "house" ? left <= 2 : workSeated || !want.work) continue;
+      const undo = env.mark();
+      const sp = env.seat(p.role, { x: p.x, y: p.y, maxR: 6, tier: p.level });
+      if (!sp || want.bankOf(sp.front.y * W + sp.front.x) !== p.bank) { undo(); continue; }
+      done.add(key); plan.apart.push({ x: sp.front.x, y: sp.front.y, role: p.role, why: far ? "bank" : "tier" });
+      if (p.role === "house") { houses.push(sp); left -= 1; } else workSeated = true;
+    }
+  }
   // 가운데 줄은 네모 폭보다 한 칸씩 넘쳐도 된다(여관은 폭 8~9). 여관이 줄의 어느 끝에 서는가는 씨앗이 고른다 — 집은 여관이 남긴 자리에 이어 선다
   const mainLine = env.rand() < 0.5 ? line(r, r.x0 - 1, 1, r.x1 + 1, "yard") : line(r, r.x1 + 1, -1, r.x0 - 1, "yard");
   if (want.anchor && !mainLine.next("anchor")) env.seat("anchor", { x: Math.round(cx), y: r.y0 - 6, maxR: 9 });
@@ -258,7 +283,7 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
   const behind = [{ x: x0 - 8, y: cy }, { x: x1 + 8, y: cy }, { x: cx + (env.rand() < 0.5 ? -6 : 6), y: y0 - 6 }, { x: cx, y: y1 + 8 }].map(clamp);
   if (env.rand() < 0.5) [behind[0], behind[1]] = [behind[1]!, behind[0]!];
   let workAt = -1;
-  if (want.work) {
+  if (want.work && !workSeated) {
     workAt = behind.findIndex((p) => !!env.seat("work", { ...p, maxR: 4 }));
     if (workAt < 0 && env.seat("work", { ...behind[0]!, maxR: 12 })) workAt = 0;
   }
@@ -329,10 +354,9 @@ export function layYardVillage(t: CodeTerrain, g: LayoutPoint, level: number, en
     keep();
     return now;
   };
-  const good: { plan: YardPlan; s: number; near: number; keep: () => void }[] = [];
-  const goal = Math.min(3, want.houses);
+  const good: { plan: YardPlan; s: number; near: number; goal: number; keep: () => void }[] = [];
   for (const mode of [0, 1, 2] as const) {
-    if (mode && (want.plaza || good.some((b) => b.near >= goal))) break;
+    if (mode && (want.plaza || good.some((b) => b.near >= b.goal))) break;
     const compact = mode > 0;
     for (const cand of yardCandidates(t, g, level, want.houses, env.rand, env.free, want, mode)) {
       cleared();
@@ -345,7 +369,8 @@ export function layYardVillage(t: CodeTerrain, g: LayoutPoint, level: number, en
       const near = onTier.filter((s) => core.some((c) => Math.max(Math.abs((c % W) - s.front.x), Math.abs(Math.floor(c / W) - s.front.y)) <= 6)).length;
       const s = 12 * Math.min(near, 4) + 4 * onTier.length + 3 * plan.frame.filter((f) => f.at === "yard").length + (plan.level === level ? 6 : 0) - (compact ? 4 : 0)
         - 0.4 * Math.hypot(plan.gather.x - g.x, plan.gather.y - g.y) + 5 * (got.houses - base.houses);
-      good.push({ plan, s, near, keep: env.mark() });
+      // 떨어진 터로 보낸 집은 마당 집의 목표(셋, 집이 셋보다 적으면 전부)에서 뺀다
+      good.push({ plan, s, near, goal: Math.min(3, want.houses - plan.apart.filter((a) => a.role === "house").length), keep: env.mark() });
     }
   }
   const best = good.sort((a, b) => b.s - a.s)[want.skip ?? 0];
