@@ -94,6 +94,9 @@ def covering(pid: str, png: str, context: str = 'bundle'):
         if sub.shape[:2] != part.shape[:2] or not np.array_equal(sub[m][:, :3], part[m][:, :3]):
             why = '문 그림이 조각 %s 에 화소 그대로 없다(다시 그렸다 — gate_rooms.py 후 다시 판정)' % name; continue
         st, w2 = GK.state(e['png'], 'structure', context)
+        if st == 'waived':              # 조각이 오너 면제로 실린 것이면 부품도 같은 면제 묶음에 적혀 있어야 한다(도구가 조각과 함께 적는다)
+            import object_gate as OG
+            if not GK.owner_waived(OG.pixel_sha256(png), 'part', context): why = '조각 %s 는 오너 면제인데 이 부품은 면제 묶음에 없다' % name; continue
         if st: return name, st
         why = '조각 %s: %s' % (name, w2)
     return None, why

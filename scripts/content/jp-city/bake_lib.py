@@ -89,20 +89,52 @@ def reassemble(kit, sheet_img, tpr=TPR):
 
 
 # ------------------------------------------------------------------ 자리 키 핀
+# 블록 예약(2026-11-15 일본 도시 다시 만들기): 시트 끝의 두 블록은 쓰는 칸 수와 상관없이 고정된 번호 구간을 갖는다 — 두 일꾼이 같은 시트에 따로 굽는다.
+# 구간은 그 블록을 처음 굽는 때의 끝 번호부터 RESERVE 칸. 안 쓴 자리는 빈 칸 키 `<블록>/_pad/<n>` 가 지키고, 블록의 새 칸은 가장 낮은 빈 칸 키의 번호를 넘겨받는다.
+RESERVE = {'fable_city': 8064, 'fable_street': 4032}
+PAD = '/_pad/'
+
+
 class Pins:
-    """자리 키 → 칸 번호. 이전 굽기(pins.json)에 있는 키는 그 번호를 그대로, 새 키는 max+1 부터 덧붙인다. 번호는 절대 안 움직인다."""
+    """자리 키 → 칸 번호. 이전 굽기(pins.json)에 있는 키는 그 번호를 그대로, 새 키는 max+1 부터 덧붙인다. 번호는 절대 안 움직인다.
+    예약 블록(RESERVE)의 새 키는 그 블록의 빈 칸 키(_pad) 번호를 낮은 것부터 넘겨받는다 — 구간 밖으로 나가지 않는다."""
     def __init__(self, prev):
         self.map = dict(prev.get('cells', {}))
         self.next_id = (max(self.map.values()) + 1) if self.map else 0
         self.used = {}           # 이번 굽기에서 쓴 키 → 번호
+        self.pads = {}           # 블록 → 빈 칸 키 번호(내림차순 — pop 이 가장 낮은 번호)
+        for k, v in self.map.items():
+            if PAD in k: self.pads.setdefault(k.split('/', 1)[0], []).append(v)
+        for b in self.pads: self.pads[b].sort(reverse=True)
 
     def assign(self, key):
         if key in self.used: return self.used[key]
         tid = self.map.get(key)
         if tid is None:
-            tid = self.next_id; self.next_id += 1; self.map[key] = tid
+            b = key.split('/', 1)[0]
+            if b in RESERVE and b in self.pads:
+                if not self.pads[b]: raise SystemExit('블록 %s 의 예약 %d칸이 다 찼다 — 새 칸 %s 를 둘 자리가 없다' % (b, RESERVE[b], key))
+                tid = self.pads[b].pop(); del self.map['%s%s%d' % (b, PAD, tid)]
+            else:
+                tid = self.next_id; self.next_id += 1
+            self.map[key] = tid
         self.used[key] = tid
         return tid
+
+    def pad(self, block):
+        """예약 블록을 처음 굽는 때: 블록의 칸 바로 뒤에 빈 칸 키를 채워 구간을 RESERVE 칸으로 만든다. 이미 구간이 있으면 아무것도 안 한다."""
+        if block not in RESERVE or block in self.pads: return
+        have = [v for k, v in self.map.items() if k.startswith(block + '/')]
+        assert len(have) <= RESERVE[block], ('블록이 예약보다 크다', block, len(have))
+        assert not have or max(have) == self.next_id - 1 and max(have) - min(have) + 1 == len(have), ('예약 블록의 칸이 시트 끝에 이어져 있지 않다', block)
+        self.pads[block] = []
+        for _ in range(RESERVE[block] - len(have)):
+            tid = self.next_id; self.next_id += 1; self.map['%s%s%d' % (block, PAD, tid)] = tid; self.pads[block].append(tid)
+        self.pads[block].sort(reverse=True)
+
+    def span(self, block):
+        vs = [v for k, v in self.map.items() if k.startswith(block + '/')]
+        return (min(vs), max(vs), len(vs)) if vs else None
 
 
 def base_pin_problems(cells, root, rev='origin/main'):
@@ -116,6 +148,7 @@ def base_pin_problems(cells, root, rev='origin/main'):
     bad = []
     owner = {v: k for k, v in cells.items()}
     for k, v in base.items():
+        if PAD in k and k not in cells and owner.get(v, '').startswith(k.split('/', 1)[0] + '/'): continue      # 예약 구간의 빈 칸을 같은 블록의 새 칸이 넘겨받았다
         if cells.get(k) != v: bad.append(f'{k}: 기준 {v} → 여기 {cells.get(k)}')
         elif owner.get(v) != k: bad.append(f'{v}번: 기준 {k} · 여기 {owner.get(v)}')
         if len(bad) >= 12: break

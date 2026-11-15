@@ -1,0 +1,577 @@
+{
+ "set": "fallen-spear-kael",
+ "note": "폴른 스타 · 창을 든 카엘(ActorRecord.weaponBattleSheets). 픽스처는 scripts/qa/runtime/fallen-battle-fixture.mjs 가 구운 play.json 에서 만든다(--project .omo/fs-battle/fixture.json). 카엘의 전투 그림 노드 data-battle-sheet 로 어느 시트로 섰는지 보고, 공격 연출 동안의 자세·그림 기록을 verify-shots/fs-spear/trace/<id>.json 에 남긴다. 장비는 sessionPatch.actorEquipment 로 입힌다. swap 은 무기가 바뀌는 순간의 기록을 trace/swap-change.json 에 따로 남긴다 — 픽스처의 troop_qa_spear_swap(카엘이 방어하면 창으로 바꾸는 전투 이벤트).",
+ "projectFixture": ".omo/fs-battle/fixture.json",
+ "viewport": {
+  "width": 960,
+  "height": 540
+ },
+ "checkpoints": [
+  {
+   "id": "sword",
+   "label": "검을 장비한 카엘 — 검 시트 그대로",
+   "mapId": "fs_forest_edge",
+   "x": 14,
+   "y": 22,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 8
+    }
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_sword",
+      "shield": "equip_oak_shield",
+      "armor": "equip_leather_armor",
+      "helmet": "equip_traveler_hat",
+      "accessory": "equip_focus_charm"
+     }
+    }
+   },
+   "startEventId": "qa_fight_wolves",
+   "beats": [
+    {
+     "id": "battle",
+     "note": "전투 시작 — 검을 든 대기 자세",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "waitForAttr",
+       "testid": "battle-actor-actor_hero",
+       "attr": "data-battle-sheet",
+       "value": "charset-battler-actor1-0",
+       "timeoutMs": 30000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "strike",
+     "note": "카엘 통상 공격 — 검으로 벤다",
+     "ops": [
+      {
+       "kind": "evalToFile",
+       "fn": "() => { const rec = []; window.__spearTrace = rec; const t0 = performance.now(); let last = ''; const tick = () => { const n = document.querySelector('[data-testid=\"battle-actor-actor_hero\"]'); const s = n ? n.querySelector('.battle-actor-sprite, .battle-actor-image') : null; const cs = s ? getComputedStyle(s) : null; const m = cs ? cs.backgroundImage.match(/(cast\\/)?[^\\/\"]+\\.png/) : null; const row = { sheet: n ? (n.dataset.battleSheet ?? null) : null, pose: n ? (n.dataset.battlePose ?? null) : null, image: m ? m[0] : null, pos: cs ? cs.backgroundPosition : null }; const key = JSON.stringify(row); if (key !== last) { last = key; rec.push({ t: Math.round(performance.now() - t0), ...row }); } if (performance.now() - t0 < 30000 && window.__spearTrace === rec) requestAnimationFrame(tick); }; tick(); return true; }",
+       "out": "verify-shots/fs-spear/trace/sword-start.json"
+      },
+      {
+       "kind": "battle",
+       "plan": {
+        "actor_hero": [
+         "attack@enemy-1"
+        ],
+        "actor_fs_elena": [
+         "defend"
+        ],
+        "actor_fs_iris": [
+         "defend"
+        ],
+        "actor_fs2_sarah": [
+         "defend"
+        ]
+       },
+       "stopAfter": "attack",
+       "logPath": "verify-shots/fs-spear/logs/sword.jsonl",
+       "timeoutMs": 150000,
+       "fallback": "defend"
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "strike-2",
+     "note": "공격 연출 도중",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 120
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "strike-3",
+     "note": "공격 연출 도중",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 120
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "strike-4",
+     "note": "공격 연출 도중",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 120
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "note": "연출이 끝나고 다음 명령 카드",
+     "ops": [
+      {
+       "kind": "battle",
+       "plan": {
+        "actor_fs_elena": [
+         "defend"
+        ],
+        "actor_fs_iris": [
+         "defend"
+        ],
+        "actor_fs2_sarah": [
+         "defend"
+        ]
+       },
+       "commands": 0,
+       "timeoutMs": 150000,
+       "fallback": "defend"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "evalToFile",
+       "fn": "() => ({ trace: window.__spearTrace ?? null, sheets: Object.fromEntries([...document.querySelectorAll('.battle-actor-group .battle-actor')].map((n) => [n.dataset.recordId, n.dataset.battleSheet ?? null])) })",
+       "out": "verify-shots/fs-spear/trace/sword.json"
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "spear",
+   "label": "로한의 창을 장비한 카엘 — 창 시트",
+   "mapId": "fs_forest_edge",
+   "x": 14,
+   "y": 22,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 8
+    }
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_fs2_rohan_spear",
+      "shield": "equip_oak_shield",
+      "armor": "equip_leather_armor",
+      "helmet": "equip_traveler_hat",
+      "accessory": "equip_focus_charm"
+     }
+    }
+   },
+   "startEventId": "qa_fight_wolves",
+   "beats": [
+    {
+     "id": "battle",
+     "note": "전투 시작 — 창을 든 대기 자세",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "waitForAttr",
+       "testid": "battle-actor-actor_hero",
+       "attr": "data-battle-sheet",
+       "value": "charset-battler-actor1-0-spear",
+       "timeoutMs": 30000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "strike",
+     "note": "카엘 통상 공격 — 창으로 찌른다",
+     "ops": [
+      {
+       "kind": "evalToFile",
+       "fn": "() => { const rec = []; window.__spearTrace = rec; const t0 = performance.now(); let last = ''; const tick = () => { const n = document.querySelector('[data-testid=\"battle-actor-actor_hero\"]'); const s = n ? n.querySelector('.battle-actor-sprite, .battle-actor-image') : null; const cs = s ? getComputedStyle(s) : null; const m = cs ? cs.backgroundImage.match(/(cast\\/)?[^\\/\"]+\\.png/) : null; const row = { sheet: n ? (n.dataset.battleSheet ?? null) : null, pose: n ? (n.dataset.battlePose ?? null) : null, image: m ? m[0] : null, pos: cs ? cs.backgroundPosition : null }; const key = JSON.stringify(row); if (key !== last) { last = key; rec.push({ t: Math.round(performance.now() - t0), ...row }); } if (performance.now() - t0 < 30000 && window.__spearTrace === rec) requestAnimationFrame(tick); }; tick(); return true; }",
+       "out": "verify-shots/fs-spear/trace/spear-start.json"
+      },
+      {
+       "kind": "battle",
+       "plan": {
+        "actor_hero": [
+         "attack@enemy-1"
+        ],
+        "actor_fs_elena": [
+         "defend"
+        ],
+        "actor_fs_iris": [
+         "defend"
+        ],
+        "actor_fs2_sarah": [
+         "defend"
+        ]
+       },
+       "stopAfter": "attack",
+       "logPath": "verify-shots/fs-spear/logs/spear.jsonl",
+       "timeoutMs": 150000,
+       "fallback": "defend"
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "strike-2",
+     "note": "공격 연출 도중",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 120
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "strike-3",
+     "note": "공격 연출 도중",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 120
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "strike-4",
+     "note": "공격 연출 도중",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 120
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "note": "연출이 끝나고 다음 명령 카드",
+     "ops": [
+      {
+       "kind": "battle",
+       "plan": {
+        "actor_fs_elena": [
+         "defend"
+        ],
+        "actor_fs_iris": [
+         "defend"
+        ],
+        "actor_fs2_sarah": [
+         "defend"
+        ]
+       },
+       "commands": 0,
+       "timeoutMs": 150000,
+       "fallback": "defend"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "evalToFile",
+       "fn": "() => ({ trace: window.__spearTrace ?? null, sheets: Object.fromEntries([...document.querySelectorAll('.battle-actor-group .battle-actor')].map((n) => [n.dataset.recordId, n.dataset.battleSheet ?? null])) })",
+       "out": "verify-shots/fs-spear/trace/spear.json"
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "swap",
+   "label": "전투 중 검 → 창 — 방어하면 창으로 바꿔 들고 다음 자세부터 창",
+   "mapId": "fs_forest_edge",
+   "x": 14,
+   "y": 22,
+   "facing": "up",
+   "switches": {
+    "sw_fs_main_started": true,
+    "sw_fs_valen_marched": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs2_sarah",
+     "level": 8
+    }
+   ],
+   "sessionPatch": {
+    "actorEquipment": {
+     "actor_hero": {
+      "weapon": "equip_sword",
+      "shield": "equip_oak_shield",
+      "armor": "equip_leather_armor",
+      "helmet": "equip_traveler_hat",
+      "accessory": "equip_focus_charm"
+     }
+    }
+   },
+   "items": {
+    "equip_fs2_rohan_spear": 1
+   },
+   "startEventId": "qa_fight_spear_swap",
+   "beats": [
+    {
+     "id": "battle",
+     "note": "전투 시작 — 검을 든 대기 자세",
+     "ops": [
+      {
+       "kind": "waitFor",
+       "testid": "battle-scene",
+       "timeoutMs": 60000
+      },
+      {
+       "kind": "waitForAttr",
+       "testid": "battle-actor-actor_hero",
+       "attr": "data-battle-sheet",
+       "value": "charset-battler-actor1-0",
+       "timeoutMs": 30000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "swap",
+     "note": "카엘이 방어 → 전투 이벤트가 무기를 로한의 창으로 바꾼다",
+     "ops": [
+      {
+       "kind": "evalToFile",
+       "fn": "() => { const rec = []; window.__spearTrace = rec; const t0 = performance.now(); let last = ''; const tick = () => { const n = document.querySelector('[data-testid=\"battle-actor-actor_hero\"]'); const s = n ? n.querySelector('.battle-actor-sprite, .battle-actor-image') : null; const cs = s ? getComputedStyle(s) : null; const m = cs ? cs.backgroundImage.match(/(cast\\/)?[^\\/\"]+\\.png/) : null; const row = { sheet: n ? (n.dataset.battleSheet ?? null) : null, pose: n ? (n.dataset.battlePose ?? null) : null, image: m ? m[0] : null, pos: cs ? cs.backgroundPosition : null }; const key = JSON.stringify(row); if (key !== last) { last = key; rec.push({ t: Math.round(performance.now() - t0), ...row }); } if (performance.now() - t0 < 30000 && window.__spearTrace === rec) requestAnimationFrame(tick); }; tick(); return true; }",
+       "out": "verify-shots/fs-spear/trace/swap-change-start.json"
+      },
+      {
+       "kind": "battle",
+       "plan": {
+        "actor_hero": [
+         "defend"
+        ],
+        "actor_fs_elena": [
+         "defend"
+        ],
+        "actor_fs_iris": [
+         "defend"
+        ],
+        "actor_fs2_sarah": [
+         "defend"
+        ]
+       },
+       "commands": 4,
+       "logPath": "verify-shots/fs-spear/logs/swap.jsonl",
+       "timeoutMs": 150000,
+       "fallback": "defend"
+      },
+      {
+       "kind": "waitForAttr",
+       "testid": "battle-actor-actor_hero",
+       "attr": "data-battle-sheet",
+       "value": "charset-battler-actor1-0-spear",
+       "timeoutMs": 30000
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "evalToFile",
+       "fn": "() => ({ trace: window.__spearTrace ?? null, sheets: Object.fromEntries([...document.querySelectorAll('.battle-actor-group .battle-actor')].map((n) => [n.dataset.recordId, n.dataset.battleSheet ?? null])) })",
+       "out": "verify-shots/fs-spear/trace/swap-change.json"
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "strike",
+     "note": "바꾼 뒤 통상 공격 — 창으로 찌른다",
+     "ops": [
+      {
+       "kind": "evalToFile",
+       "fn": "() => { const rec = []; window.__spearTrace = rec; const t0 = performance.now(); let last = ''; const tick = () => { const n = document.querySelector('[data-testid=\"battle-actor-actor_hero\"]'); const s = n ? n.querySelector('.battle-actor-sprite, .battle-actor-image') : null; const cs = s ? getComputedStyle(s) : null; const m = cs ? cs.backgroundImage.match(/(cast\\/)?[^\\/\"]+\\.png/) : null; const row = { sheet: n ? (n.dataset.battleSheet ?? null) : null, pose: n ? (n.dataset.battlePose ?? null) : null, image: m ? m[0] : null, pos: cs ? cs.backgroundPosition : null }; const key = JSON.stringify(row); if (key !== last) { last = key; rec.push({ t: Math.round(performance.now() - t0), ...row }); } if (performance.now() - t0 < 30000 && window.__spearTrace === rec) requestAnimationFrame(tick); }; tick(); return true; }",
+       "out": "verify-shots/fs-spear/trace/swap-start.json"
+      },
+      {
+       "kind": "battle",
+       "plan": {
+        "actor_hero": [
+         "attack@enemy-1"
+        ],
+        "actor_fs_elena": [
+         "defend"
+        ],
+        "actor_fs_iris": [
+         "defend"
+        ],
+        "actor_fs2_sarah": [
+         "defend"
+        ]
+       },
+       "stopAfter": "attack",
+       "logPath": "verify-shots/fs-spear/logs/swap.jsonl",
+       "timeoutMs": 150000,
+       "fallback": "defend"
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "strike-2",
+     "note": "공격 연출 도중",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 120
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "strike-3",
+     "note": "공격 연출 도중",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 120
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "strike-4",
+     "note": "공격 연출 도중",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 120
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "after",
+     "note": "연출이 끝나고 다음 명령 카드",
+     "ops": [
+      {
+       "kind": "battle",
+       "plan": {
+        "actor_fs_elena": [
+         "defend"
+        ],
+        "actor_fs_iris": [
+         "defend"
+        ],
+        "actor_fs2_sarah": [
+         "defend"
+        ]
+       },
+       "commands": 0,
+       "timeoutMs": 150000,
+       "fallback": "defend"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "evalToFile",
+       "fn": "() => ({ trace: window.__spearTrace ?? null, sheets: Object.fromEntries([...document.querySelectorAll('.battle-actor-group .battle-actor')].map((n) => [n.dataset.recordId, n.dataset.battleSheet ?? null])) })",
+       "out": "verify-shots/fs-spear/trace/swap.json"
+      }
+     ],
+     "shot": true
+    }
+   ]
+  }
+ ]
+}
