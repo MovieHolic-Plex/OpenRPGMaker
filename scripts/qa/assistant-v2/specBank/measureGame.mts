@@ -162,13 +162,20 @@ try { const ship = shipBlockers(project, task); values.shipBlockers = ship.lengt
 {
   const out = probe("objectiveArrowProbe.mts", ["after", projectFile]);
   const facts = out.split("\n").find((l) => /^== after: 자리/u.test(l)) ?? "";
-  const walk = out.split("\n").find((l) => /^== after 눌러 걷기/u.test(l)) ?? "";
+  // 따라 걷기 = 화살표를 칸마다 다시 읽는 플레이어(2026-11-15 부터 «화살표대로 걸어 못 닿음» 은 이것이다). 눌러 걷기 = 옛 자(4칸씩 누르고 다시 읽기) — 견줌용으로 값만 남긴다(표에는 없다).
+  const walk = out.split("\n").find((l) => /^== after 따라 걷기/u.test(l)) ?? "";
+  const held = out.split("\n").find((l) => /^== after 눌러 걷기/u.test(l)) ?? "";
   if (facts) {
     const spots = num(facts, /자리 (\d+)/u);
     values.arrowFirstStepWrong = [num(facts, /A 첫 걸음 불일치 (\d+)/u), spots];
     values.arrowIntoWall = [num(facts, /B 벽을 본다 (\d+)/u), spots];
     values.arrowAcrossBlocked = [num(facts, /C 막힌 칸 가로지름 (\d+)/u), spots];
     values.arrowWalkUnreached = [num(walk, /못 닿음 (\d+)/u), num(walk, /출발 (\d+)곳/u)];
+    if (held) values.arrowWalkUnreachedHold4 = [num(held, /못 닿음 (\d+)/u), num(held, /출발 (\d+)곳/u)];
+    // 못 닿은 까닭(처음 어긋난 칸의 화살표) — 표에는 없고 게임별 기록(metrics.json)과 bank.json 의 값으로 남는다.
+    if (walk) { values.arrowWalkGuideWrong = num(walk, /안내 틀림 (\d+)/u); values.arrowWalkWalkerLimit = num(walk, /걷는 이 한계 (\d+)/u); values.arrowWalkNoArrow = num(walk, /화살표 없음 (\d+)/u); }
+    lines.arrowWalk = out.split("\n").reduce<string[]>((acc, l) => { if (l.startsWith("## ")) acc.push(l.slice(0, 200)); else if (/^  걷기 .*못 닿음/u.test(l)) acc.push(l.slice(0, 300)); return acc; }, [])
+      .filter((l, i, all) => !l.startsWith("## ") || (all[i + 1] !== undefined && !all[i + 1]!.startsWith("## "))).slice(0, 120);
   }
 }
 
