@@ -46,6 +46,7 @@ STORE = ROOT / "tiledata/beodeul-objects"
 CATALOG = STORE / "catalog.json"
 T, COLS, BASE = 16, 128, 34944
 KIT_PREFIX = "bd-obj-"
+LATER_KIT_PREFIXES = ("bd-house-st-", "bd-st-shadow-", "bd-st-foundation-")   # 이 꼬리 뒤에 붙는 집 양식 꼬리의 킷 — 다시 구워도 그 킷·칸은 그대로 둔다
 FAMILY_KO = {"water": "물가", "entrance": "입구", "story": "이야기 물건", "camp": "야영", "farm": "농장", "swamp": "늪", "mine": "광산", "village": "마을", "ruin": "유적", "harbour": "항구",
              "forest": "숲 바닥", "cliff": "절벽·바위", "grave": "묘지", "road": "길가"}
 OPEN = {k: True for k in ("up", "down", "left", "right")}
@@ -149,15 +150,22 @@ def main():
     sheet_count = json.loads(SHEET_JSON.read_text())["count"]
     if sheet_count < BASE:
         sys.exit(f"시트가 {BASE} 칸보다 짧다({sheet_count}) — 옛 상수도 꼬리(bake_waterworks.py)부터 굽는다")
-    if sheet_count > count:
-        sys.exit(f"시트 count {sheet_count} 가 이 꼬리 끝 {count} 보다 크다 — 뒤에 다른 꼬리가 붙었다. 그 꼬리 굽기가 이 스크립트 뒤에서 다시 돌아야 한다")
     sheet = Image.open(SHEET_PATH).convert("RGBA")
-    out = Image.new("RGBA", (COLS * T, (BASE // COLS + rows) * T), (0, 0, 0, 0))
-    out.alpha_composite(sheet.crop((0, 0, COLS * T, (BASE // COLS) * T)), (0, 0))
     ts = json.loads(TS_PATH.read_text())
+    # 뒤에 다른 꼬리(집 양식 bd-house-st-* — scripts/content/beodeul-house-styles/bake.py)가 붙어 있으면 내 칸 [BASE, count) 만 제자리에서 다시 쓰고 그 뒤는 그대로 둔다.
+    # 그 꼬리는 출하된 칸 번호라 밀 수 없다 — 내 꼬리가 그 첫 칸까지 자라면 멈춘다(그때는 뒤 꼬리 뒤에 새 토막을 연다).
+    total = max(count, sheet_count)
+    foreign = [n for n in range(BASE, min(count, sheet_count)) if ts["tileMeta"][n].get("label") and not ts["tileMeta"][n]["label"].startswith("버들항 기물")]
+    if foreign:
+        sys.exit(f"이 꼬리 끝 {count} 이 뒤 꼬리의 칸 {foreign[0]}(「{ts['tileMeta'][foreign[0]]['label']}」)을 넘는다 — 뒤 꼬리는 출하된 번호라 밀 수 없다. 그 뒤에 새 토막을 연다")
+    after = {k: ts[k][count:] for k in ("passability", "priority", "terrain", "tileMeta")}
+    out = Image.new("RGBA", (COLS * T, total // COLS * T), (0, 0, 0, 0))
+    out.alpha_composite(sheet.crop((0, 0, COLS * T, (BASE // COLS) * T)), (0, 0))
+    if sheet_count > count:
+        out.alpha_composite(sheet.crop((0, count // COLS * T, COLS * T, sheet_count // COLS * T)), (0, count // COLS * T))
     for k in ("passability", "priority", "terrain", "tileMeta"):
         ts[k] = ts[k][:BASE]
-    ts["animationStrips"] = [s for s in ts["animationStrips"] if s["baseTile"] < BASE]
+    ts["animationStrips"] = [s for s in ts["animationStrips"] if s["baseTile"] < BASE or s["baseTile"] >= count]
     for i, (it, x, y, c) in enumerate(cells):
         out.alpha_composite(Image.fromarray(c, "RGBA"), ((i % COLS) * T, (BASE // COLS + i // COLS) * T))
         block = [x, y] in it["block"]
@@ -173,11 +181,14 @@ def main():
         ts["passability"].append(dict(OPEN)); ts["priority"].append("lower"); ts["terrain"].append(0)
         ts["tileMeta"].append(dict(label="", description="", source="bundled-default"))
     kits = [kit_of(it, rows_of[it["id"]], variant_base(it, ts) if it.get("variantOf") else None) for it in items]
-    ts["structureKits"] = [k for k in ts["structureKits"] if not k["id"].startswith(KIT_PREFIX)] + kits
-    ts["count"] = count
+    for k in after: ts[k] += after[k]
+    # 킷 순서: 내 킷은 뒤 꼬리의 킷보다 앞(뒤 꼬리가 없을 때와 같은 자리)
+    later = [k for k in ts["structureKits"] if k["id"].startswith(LATER_KIT_PREFIXES)]
+    ts["structureKits"] = [k for k in ts["structureKits"] if not k["id"].startswith(KIT_PREFIX) and not k["id"].startswith(LATER_KIT_PREFIXES)] + kits + later
+    ts["count"] = total
     out.save(SHEET_PATH, optimize=True)
     TS_PATH.write_text(json.dumps(ts, ensure_ascii=False, separators=(",", ":")) + "\n")
-    SHEET_JSON.write_text(json.dumps(dict(count=count, tilesPerRow=COLS)) + "\n")
+    SHEET_JSON.write_text(json.dumps(dict(count=total, tilesPerRow=COLS)) + "\n")
     cat = dict(tilesetId="beodeul_city", texture="tex_beodeul_city", tileSize=T, tilesPerRow=COLS, base=BASE, count=count, kitPrefix=KIT_PREFIX,
                source="scripts/content/beodeul-objects/bake.py (Claude Fable 5.2 medium one-shot pictures, colours taken from the beodeul_city sheet)",
                license=spec["license"], gate=f"3/4 gate not passed — owner waivers {', '.join(waivers)}",

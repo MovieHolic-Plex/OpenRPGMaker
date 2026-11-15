@@ -15,8 +15,9 @@
 이 그림들은 **3/4 관문 미통과 — 오너 면제 묶음**(styles.json waiver, harness-data/object-gate/waivers)으로 출구를 지난다. 면제는 그림 화소 해시에 묶여 있어
 한 화소라도 바꾸면 굽기가 멈춘다. 면제는 통과가 아니다(스토어 출구는 막힌다).
 
-칸 번호: 덧붙이기 전용. 이미 구운 집은 catalog.json 에 적힌 번호를 지키고, 새 집은 그때의 시트 끝(다음 빈 줄)에 붙는다 — 그래서 이 꼬리는 여러 토막일 수 있고,
-다른 꼬리(기물 bd-obj-* 등)가 그 사이에 자라도 번호가 밀리지 않는다. 본체 칸은 집마다 따로 둔다(화소가 같아도 합치지 않는다 — 칸 하나가 한 집의 한 자리만 가리킨다),
+칸 번호: 덧붙이기 전용. 이미 구운 집은 catalog.json 에 적힌 번호를 지키고, 새 집은 그때의 시트 끝(다음 빈 줄)에 붙는다 — 그래서 이 꼬리는 여러 토막일 수 있다.
+바로 앞 꼬리(이야기 기물 bd-obj-*, scripts/content/beodeul-objects/bake.py)는 아직 자라는 꼬리라, 처음 구울 때 그 뒤에 빈 줄 RESERVE_ROWS 개를 비워 두고 시작한다(그만큼 기물 꼬리가
+제자리에서 자랄 수 있다 — 그 굽기는 뒤 꼬리를 건드리지 않고 자기 칸만 다시 쓰며, 내 첫 칸에 닿으면 멈춘다). 본체 칸은 집마다 따로 둔다(화소가 같아도 합치지 않는다 — 칸 하나가 한 집의 한 자리만 가리킨다),
 그림자·기초 칸은 집끼리 나눠 쓴다. main 을 합치다 시트·정의가 충돌하면 main 것을 받고 이 스크립트를 다시 돌린다(정의에 내 킷이 없으면 처음부터 새 번호로 굽는다).
 쓰는 것: public/assets/beodeul-city/beodeul-city-chipset.png · src/assets/beodeulCityTileset.json · src/assets/beodeulCitySheet.json ·
 tiledata/beodeul-house-styles/catalog.json(칸 번호·막힘·해시) · src/assets/beodeulHouseStyles.json(양식 표 — 빌더·겉모습 고르기가 읽는다).
@@ -35,6 +36,7 @@ STORE = ROOT / "tiledata/beodeul-house-styles"
 CATALOG = STORE / "catalog.json"
 TABLE = ROOT / "src/assets/beodeulHouseStyles.json"
 T, COLS = 16, 128
+RESERVE_ROWS = 16      # 처음 구울 때 앞 꼬리(이야기 기물) 뒤에 비워 두는 줄 수 — 2,048칸
 HOUSE, SHADOW, FOUND = "bd-house-st-", "bd-st-shadow-", "bd-st-foundation-"
 PREFIXES = (HOUSE, SHADOW, FOUND)
 OPEN = {k: True for k in ("up", "down", "left", "right")}
@@ -121,6 +123,8 @@ def main():
         first = min(old["cellNumbers"])
         base = first // COLS * COLS
         assert set(range(first, max(old["cellNumbers"]) + 1)) <= set(old["cellNumbers"]) and ts["count"] - max(old["cellNumbers"]) <= COLS, "내 칸 뒤에 다른 꼬리가 붙었다 — 번호를 다시 매길 수 없다(출하된 번호다)"
+        gap = base - RESERVE_ROWS * COLS      # 비워 둔 줄도 같이 뗀다(아직 비어 있을 때만)
+        if gap >= 0 and not any(ts["tileMeta"][n].get("label") for n in range(gap, base)): base = gap
         for k in ("passability", "priority", "terrain", "tileMeta"):
             ts[k] = ts[k][:base]
         ts["count"] = base
@@ -136,7 +140,7 @@ def main():
                 for x, n in enumerate(row):
                     if n >= 0: number[("body", it["id"], x, y)] = n
         for s, n in old["shared"].items(): number[("shared", s)] = n
-    start = ts["count"]
+    start = ts["count"] if old else ts["count"] + RESERVE_ROWS * COLS
     nxt = [start]
     cell_px, cell_meta = {}, {}
 
@@ -193,7 +197,8 @@ def main():
         if gone: sys.exit(f"구운 집이 빠졌다: {gone} — 덧붙이기 전용이다(빼지 않는다)")
     count = -(-nxt[0] // COLS) * COLS
     new_cells = nxt[0] - start
-    print(f"집 {len(houses)}채 · 칸 {len(cell_px)}개(새 칸 {new_cells}) → 시트 {ts['count']} → {count} ({(count - ts['count']) // COLS}줄 덧붙임)")
+    if not new_cells: count = ts["count"]
+    print(f"집 {len(houses)}채 · 칸 {len(cell_px)}개(새 칸 {new_cells}) → 시트 {ts['count']} → {count} ({(count - ts['count']) // COLS}줄 덧붙임{'' if old else f', 앞 {RESERVE_ROWS}줄은 기물 꼬리 몫으로 비움'})")
     if a.dry:
         return
 
