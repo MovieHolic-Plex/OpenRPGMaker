@@ -274,8 +274,6 @@
   "#d88a1c",
   "#f8dc7a"
  ],
- "filled": {
-  "sp-canopy": 2
- },
+ "filled": {},
  "note": "Claude Fable 5.2 medium 한 방 그림의 잠긴 색 줄. filled = 불투명 판에서 줄 길이가 틀려 빈 화소를 왼쪽 이웃 색으로 메운 수."
 }

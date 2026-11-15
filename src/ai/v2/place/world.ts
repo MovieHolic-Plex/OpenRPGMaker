@@ -107,6 +107,9 @@ export const WORLDS: readonly WorldSetting[] = [
       classic("village", "강가 마을", "farm village by a river (houses, plaza)", { type: "village", theme: "river", size: "small" }),
       classic("port", "포구 마을", "fishing port on the coast", { type: "village", theme: "coast", size: "small" }),
       classic("swamp-village", "늪지 마을", "stilt village in a swamp", { type: "village", theme: "swamp", size: "small" }),
+      // 길목(지나가는 곳 — route 빌더): 꼴은 연결 자료가 정한다(막다른 길·던전 어귀·갈림길·지나가는 길 …)
+      classic("mountain-trail", "산길", "mountain trail between places", { type: "route", theme: "mountain" }),
+      classic("spirit-forest", "정령 숲길", "spirit forest path between places", { type: "route", theme: "spirit" }),
       classic("cave", "동굴", "natural cave", { type: "cave", size: "small" }, { danger: true }),
       classic("mine", "폐광", "abandoned mine with rails", { type: "dungeon", theme: "mine", size: "small" }, { danger: true }),
       classic("catacomb", "지하 묘지", "catacombs under the land", { type: "dungeon", theme: "catacomb", size: "small" }, { danger: true }),

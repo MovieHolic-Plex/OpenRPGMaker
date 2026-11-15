@@ -12,8 +12,7 @@
   · 서 있는 기물(object): 아래 맞춤 킷. 막힌 칸은 PIECES 의 solid(줄·칸), 나머지 그림 칸은 ★(지나가며 가려짐).
   · 바닥 그림(decal): 밟고 지나가는 덧그림 킷.
   · 다리(deck): 두 칸 폭 남북 다리의 [북쪽 끝 · 가운데 · 남쪽 끝] 줄 — 걷는 바닥 칸.
-  · 정령 숲 바닥 판 둘(64px, 16칸씩) · 길 판(64px): 길 칸은 «이웃 길» 비트 16가지 × 위상 16 — 길 판을 굽이진 테 안에만 두고 밖은 바닥 판 A(같은 위상)를 그대로 둔 불투명 칸.
-  · 정령 숲 수관 판(64px): 숲 칸은 «이웃 숲» 비트 16가지 × 위상 16 — 수관 판을 굽이진 테 안에만 둔 투명 덧칸(막힘). 남쪽 끝은 아래 넉 줄을 두 단 어둡게(밑동 그늘).
+  · 정령 숲의 바탕(바닥·길·숲 벽·물)은 버들항 원본 그대로다 — 여기서 굽는 것은 그 위에 얹는 것뿐: 은빛 나무 머리(sp-crown-*, 숲 벽 위 4층 ★) · 빛 자리·빛 이끼(밟는 덧그림) · 기물 · 폭포(sp-falls + 물 장막 sp-falls-veil: 바위턱 두 줄만 걷는 길 칸).
     테 모양·어둡게 내리기는 코드다(그린 화소를 옮기거나 새로 찍지 않는다 — 가리고, 같은 색 줄에서 단을 내릴 뿐).
 
 3/4 관문(hard rule): 조각 그림마다 object-gate 출구 `require_all(context="bundle")` — 하나라도 막히면 아무것도 쓰지 않는다.
@@ -77,10 +76,14 @@ PIECES = [
     P("mt-trail-gate", "등산로 어귀 통나무 문", "trailhead log gate", "object", 3, 3, "structure", cells((0, 1), (0, 2), (2, 1), (2, 2)), ["등산로 입구", "문"]),
     P("mt-tent", "길가 천막과 불 자리", "trail tent with a fire ring", "object", 3, 2, "other", None, ["천막", "야영"]),
     # ── 정령·요정 숲 ──
-    P("sp-ground-a", "정령 숲 이끼 바닥 A", "spirit forest moss floor A", "ground", 4, 4, "terrain"),
-    P("sp-ground-b", "정령 숲 이끼 바닥 B(고사리·토끼풀)", "spirit forest moss floor B", "ground", 4, 4, "terrain"),
-    P("sp-path", "정령 숲 오솔길", "spirit forest path", "path", 4, 4, "terrain"),
-    P("sp-canopy", "정령 숲 수관(숲 벽)", "spirit forest canopy", "canopy", 4, 4, "terrain"),
+    P("sp-crown-a", "은빛 나무 머리(큰 것)", "silver tree crown, big", "object", 3, 3, "organic", [], ["수관", "나무 머리"]),
+    P("sp-crown-b", "은빛 나무 머리(두 갈래)", "silver tree crown, two-lobed", "object", 3, 3, "organic", [], ["수관", "나무 머리"]),
+    P("sp-crown-e", "은빛 고목 머리", "crown of an ancient silver tree", "object", 4, 4, "organic", [], ["수관", "나무 머리"]),
+    P("sp-crown-f", "꽃 핀 나무 머리", "crown of a tree in bloom", "object", 2, 2, "organic", [], ["수관", "나무 머리"]),
+    P("sp-light", "숲 바닥의 빛 자리", "pool of light on the forest floor", "decal", 3, 3, "flat", None, ["빛"]),
+    P("sp-glow-moss", "빛 이끼", "patch of glowing moss", "decal", 2, 2, "flat", None, ["이끼", "빛"]),
+    P("sp-falls", "무지개 폭포(바위벽 · 바위턱 · 못)", "rainbow falls: rock wall, ledge and plunge pool", "falls", 7, 7, "terrain"),
+    P("sp-falls-veil", "폭포 물 장막", "waterfall curtain overlay", "veil", 3, 2, "terrain"),
     P("sp-bridge", "덩굴 다리(남북, 두 칸 폭)", "living vine bridge, north-south", "deck", 2, 3, "terrain"),
     P("sp-tree-gate", "두 고목이 맞닿은 나무 문", "great tree gate", "object", 6, 6, "organic", [("cell", x, y) for x in (0, 1, 4, 5) for y in (2, 3, 4, 5)], ["나무 문", "gate"]),
     P("sp-root-gate", "천년목의 뿌리 문", "giant root gate", "object", 5, 4, "organic", [("cell", x, y) for x in (0, 1, 3, 4) for y in (1, 2, 3)], ["뿌리 문", "gate"]),
@@ -113,33 +116,6 @@ PIECES = [
 def hx(c): return tuple(int(c[i:i + 2], 16) for i in (1, 3, 5))
 
 
-def noise(x, y, seed):
-    h = (x * 374761393 + y * 668265263 + seed * 2246822519) & 0xFFFFFFFF
-    h = ((h ^ (h >> 13)) * 1274126177) & 0xFFFFFFFF
-    return ((h ^ (h >> 16)) & 0xFFFF) / 65536.0
-
-
-def edge_mask(mask, px, py, seed, lo=2, hi=4):
-    """이웃 비트(북 1 · 동 2 · 남 4 · 서 8 이 같은 것)에 맞는 16×16 안쪽 모양 — 이웃 없는 변은 lo~hi 화소 들여 굽이지고(네 화소마다 바뀜), 이웃 없는 두 변이 만나는 모서리는 둥글다.
-    굽이는 판 안의 절대 화소(px, py)로 읽어 같은 변을 잇는 옆 칸과 이어진다."""
-    n, e, s, w = bool(mask & 1), bool(mask & 2), bool(mask & 4), bool(mask & 8)
-    inset = lambda along, line: lo + int(noise(along // 4, line, seed) * (hi - lo + 1))
-    m = np.zeros((T, T), bool); r = 4
-    for y in range(T):
-        for x in range(T):
-            ax, ay = px + x, py + y
-            top = 0 if n else inset(ax, 1000 + py // T)
-            bot = T - 1 - (0 if s else inset(ax, 2000 + py // T))
-            left = 0 if w else inset(ay, 3000 + px // T)
-            right = T - 1 - (0 if e else inset(ay, 4000 + px // T))
-            if not (top <= y <= bot and left <= x <= right): continue
-            ok = True
-            for open_, cx, cy, sx, sy in ((not n and not w, left + r, top + r, -1, -1), (not n and not e, right - r, top + r, 1, -1), (not s and not w, left + r, bot - r, -1, 1), (not s and not e, right - r, bot - r, 1, 1)):
-                if open_ and (x - cx) * sx > 0 and (y - cy) * sy > 0 and (x - cx) ** 2 + (y - cy) ** 2 > r * r: ok = False
-            m[y, x] = ok
-    return m
-
-
 class Bake:
     def __init__(self, ramps):
         self.ramps = ramps
@@ -161,17 +137,17 @@ class Bake:
         return a
 
     def emit(self, px, kind, label, theme, words=()):
-        """칸 하나를 토막에 더하고 번호를 돌려준다. kind: floor(걷는 바닥) · solid(막힌 기물 칸) · star(지나가며 가려지는 기물 칸) · decal(밟는 덧그림) · wall(막힌 덧칸 — 수관)."""
+        """칸 하나를 토막에 더하고 번호를 돌려준다. kind: floor(걷는 바닥) · road(걷는 길 칸 — 칩셋 표면 선언의 길 꼬리표 road 를 단다: 이웃 맵 잇기가 길 어귀로 읽는다) · water(막힌 바닥 — 내) · solid(막힌 기물 칸) · star(지나가며 가려지는 기물 칸) · decal(밟는 덧그림) · wall(막힌 덧칸 — 수관)."""
         assert px.shape == (T, T, 4), px.shape
         key = (kind, px.tobytes())
         if key in self.seen: return self.seen[key]
         n = self.seen[key] = BASE + len(self.cells)
         if n >= END: sys.exit(f"토막 {BLOCK}칸을 넘는다")
-        tags = {"floor": ["floor", "바닥"], "solid": ["prop"], "star": ["prop"], "decal": ["prop", "바닥 그림"], "wall": ["숲", "수관", "덧그림"]}[kind]
-        walk = kind in ("floor", "star", "decal")
+        tags = {"floor": ["floor", "바닥"], "solid": ["prop"], "star": ["prop"], "decal": ["prop", "바닥 그림"], "wall": ["숲", "수관", "덧그림"], "water": ["물", "water"], "road": ["floor", "바닥", "road", "길"]}[kind]
+        walk = kind in ("floor", "road", "star", "decal")
         self.cells.append((px, dict(pass_=OPEN if walk else SHUT, priority="upper" if kind in ("star", "wall") else "lower", label=f"{LABEL} · {label}", description=f"{label}. {GATE_NOTE}",
-                                    tags=["버들항", "길목", "route", f"route:{theme}", *tags, *words], layer="lower" if kind == "floor" else "upper",
-                                    passage={"floor": "passable", "decal": "passable", "star": "star"}.get(kind, "solid"))))
+                                    tags=["버들항", "길목", "route", f"route:{theme}", *tags, *words], layer="lower" if kind in ("floor", "road", "water") else "upper",
+                                    passage={"floor": "passable", "road": "passable", "decal": "passable", "star": "star"}.get(kind, "solid"))))
         return n
 
 
@@ -223,42 +199,27 @@ def main():
         got = require_all(imgs, context="bundle"); gate = f"3/4 gate not passed — owner waiver {WAIVER}"
     print(f"관문(bundle 출구): {len(got)}/{len(imgs)} — {'DEV(관문 없음)' if a.dev else GATE_NOTE + ' 묶음 ' + WAIVER}")
 
-    table = dict(_doc="버들항 길목 표 — scripts/content/beodeul-routes/bake.py 가 굽는다(손으로 고치지 않는다). spirit.ground[판][위상 16 = (y%4)*4 + x%4] · spirit.path[이웃 길 비트 북1 동2 남4 서8][위상 16] · "
-                      "spirit.canopy[이웃 숲 비트][위상 16] · bridge.rope|vine[북쪽 끝 · 가운데 · 남쪽 끝][서 · 동].",
-                 version=1, tilesetId="beodeul_city", kitPrefix=PREFIX, base=BASE, end=END, gate=gate, spirit=dict(ground=[], path=[], canopy=[]), bridge={})
+    table = dict(_doc="버들항 길목 표 — scripts/content/beodeul-routes/bake.py 가 굽는다(손으로 고치지 않는다). "
+                      "spirit.falls{lower·solid·veil}[7][7] · bridge.rope|vine[북쪽 끝 · 가운데 · 남쪽 끝][서 · 동].",
+                 version=3, tilesetId="beodeul_city", kitPrefix=PREFIX, base=BASE, end=END, gate=gate, spirit=dict(), bridge={})
     objs = []
     by = {p["id"]: p for p in PIECES}
-    grid = lambda px, kind, label, theme: [B.emit(px[y * T:(y + 1) * T, x * T:(x + 1) * T], kind, f"{label} ({x},{y})", theme) for y in range(4) for x in range(4)]
-    ga = B.piece("sp-ground-a")
-    table["spirit"]["ground"] = [grid(B.piece(pid), "floor", by[pid]["ko"], "spirit") for pid in ("sp-ground-a", "sp-ground-b")]
-    path = B.piece("sp-path"); rim = hx(ramps["glade"][1])
-    for mask in range(16):
-        row = []
-        for ph in range(16):
-            px_, py_ = (ph % 4) * T, (ph // 4) * T
-            m = edge_mask(mask, px_, py_, 11)
-            cell = ga[py_:py_ + T, px_:px_ + T].copy(); src = path[py_:py_ + T, px_:px_ + T]
-            cell[m] = src[m]
-            # 길 테: 길 안쪽 화소 가운데 바깥(이끼)과 맞닿은 것 아래·오른쪽에 그늘 한 화소(이끼 색 줄의 어두운 단)
-            for y in range(T):
-                for x in range(T):
-                    if not m[y, x] and ((y > 0 and m[y - 1, x]) or (x > 0 and m[y, x - 1])): cell[y, x, :3] = rim
-            row.append(B.emit(cell, "floor", f"정령 숲 오솔길 {mask}·{ph}", "spirit"))
-        table["spirit"]["path"].append(row)
-    can = B.piece("sp-canopy")
-    for mask in range(16):
-        row = []
-        for ph in range(16):
-            px_, py_ = (ph % 4) * T, (ph // 4) * T
-            m = edge_mask(mask, px_, py_, 29, 1, 4)
-            src = can[py_:py_ + T, px_:px_ + T].copy()
-            if not mask & 4: src[T - 5:] = B.shift(src[T - 5:], -2)   # 남쪽 끝: 밑동 그늘
-            cell = np.zeros((T, T, 4), np.uint8); cell[m] = src[m]
-            row.append(B.emit(cell, "wall", f"정령 숲 수관 {mask}·{ph}", "spirit"))
-        table["spirit"]["canopy"].append(row)
+    # 폭포: 바위턱 두 줄(3·4)은 걷는 길 칸(그림이 불투명하다). 나머지 그림 칸은 막힌 칸. 물 장막은 바위턱 가운데 세 칸(2~4) 위에 ★.
+    fa, ve = B.piece("sp-falls"), B.piece("sp-falls-veil")
+    lower, solid, veil = [[-1] * 7 for _ in range(7)], [[-1] * 7 for _ in range(7)], [[-1] * 7 for _ in range(7)]
+    for y in range(7):
+        for x in range(7):
+            c = fa[y * T:(y + 1) * T, x * T:(x + 1) * T]
+            if y in (3, 4):
+                lower[y][x] = B.emit(c, "road", f"{by['sp-falls']['ko']} 바위턱 ({x},{y})", "spirit")
+                if 2 <= x <= 4:
+                    v = ve[(y - 3) * T:(y - 2) * T, (x - 2) * T:(x - 1) * T]
+                    if (v[:, :, 3] > 0).any(): veil[y][x] = B.emit(v, "star", f"{by['sp-falls-veil']['ko']} ({x - 2},{y - 3})", "spirit")
+            elif (c[:, :, 3] > 0).any(): solid[y][x] = B.emit(c, "solid", f"{by['sp-falls']['ko']} ({x},{y})", "spirit")
+    table["spirit"]["falls"] = dict(lower=lower, solid=solid, veil=veil)
     for name, pid in (("rope", "mt-bridge"), ("vine", "sp-bridge")):
         d = B.piece(pid)
-        table["bridge"][name] = [[B.emit(d[r * T:(r + 1) * T, c * T:(c + 1) * T], "floor", f"{by[pid]['ko']} ({c},{r})", "mountain" if name == "rope" else "spirit") for c in range(2)] for r in range(3)]
+        table["bridge"][name] = [[B.emit(d[r * T:(r + 1) * T, c * T:(c + 1) * T], "road", f"{by[pid]['ko']} ({c},{r})", "mountain" if name == "rope" else "spirit") for c in range(2)] for r in range(3)]
     for p in PIECES:
         if p["cls"] not in ("object", "decal"): continue
         kid, rows_ = object_kit(B, p)
@@ -291,7 +252,7 @@ def main():
     ts["structureKits"] = [k for k in ts["structureKits"][:at] if not k["id"].startswith(PREFIX)] + B.kits + [k for k in ts["structureKits"][at:] if not k["id"].startswith(PREFIX)]
     ts["count"] = total
     catalog = dict(tilesetId="beodeul_city", texture="tex_beodeul_city", tileSize=T, tilesPerRow=COLS, kitPrefix=PREFIX, base=BASE, end=END, used=n,
-                   source="scripts/content/beodeul-routes/bake.py (pieces by Claude Fable 5.2 medium one-shot, cut and assembled by code; path and canopy edge cells are the drawn textures behind a code-made edge shape)",
+                   source="scripts/content/beodeul-routes/bake.py (pieces by Claude Fable 5.2 medium one-shot, cut and assembled by code)",
                    gate=gate, pieces=[dict(id=p["id"], kind=p["kind"], sha256=d) for p, d in zip(PIECES, got)], objects=objs)
     outputs = [(TS_PATH, json.dumps(ts, ensure_ascii=False, separators=(",", ":")) + "\n"), (SHEET_JSON, json.dumps(dict(count=total, tilesPerRow=COLS)) + "\n"),
                (CATALOG, json.dumps(catalog, ensure_ascii=False, indent=1) + "\n"), (TABLE, json.dumps(table, ensure_ascii=False, separators=(",", ":")) + "\n")]

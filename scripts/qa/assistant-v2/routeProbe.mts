@@ -100,6 +100,16 @@ for (const key of keys.length ? keys : [""]) for (const seed of seeds) {
   const exitsJoined = !!exit && r.seen.has(exit.y * map.width + exit.x);
   const edge = (c: { x: number; y: number } | undefined) => !c ? "-" : c.y === 0 ? "N" : c.y === map.height - 1 ? "S" : c.x === 0 ? "W" : c.x === map.width - 1 ? "E" : "안";
   const kits = (map.structurePlacements ?? []).length;
+  // 폭포 뒤 길: 물 장막 밑 여섯 칸을 막으면 건너편에 닿지 않아야 한다(돌아가는 길이 없다)
+  if (hero === "rainbow-falls") {
+    const at = ((ctx.project.maps[mapId]?.locations ?? []).find((l) => (l.tags ?? []).includes("route-variant")) ?? { x: 0, y: 0 }) as { x: number; y: number };
+    const W = map.width, wall = new Set<number>(); for (const y of [at.y + 3, at.y + 4]) for (let i = 2; i <= 4; i += 1) wall.add(y * W + at.x + i);
+    const q = [entry.y * W + entry.x], got = new Set(q);
+    for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const nx = x + dx, ny = y + dy, k = ny * W + nx;
+        if (nx < 0 || ny < 0 || nx >= W || ny >= map.height || got.has(k) || wall.has(k) || !canMove(ctx.project, map, x, y, nx, ny)) continue; got.add(k); q.push(k); } }
+    warn = `${warn} | 폭포 ${exit && got.has(exit.y * W + exit.x) ? "돌아가는 길 있음(FAIL)" : "뒤로만 지나간다"}`;
+  }
   rows.push({ id, seed, key, ok, map: mapId, size: `${map.width}x${map.height}`, walk: r.walk, reached: r.reached, islands: r.islands, exitsJoined, edgeRoad: `${edge(entry)}→${edge(exit)}`, variant, layout, hero, side, kits, free, warn: warn.replace(/^[ |]+|[ |]+$/gu, "") });
   if (process.env.DUMP_KITS) fs.writeFileSync(path.join(out, `${id}.kits.json`), JSON.stringify((map.structurePlacements ?? []).map((p) => p.kitId)));
   console.log(`== ${id} ${ok ? "ok" : "FAIL"} ${map.width}x${map.height} 걷는 칸 ${r.walk} · 닿음 ${r.reached} · 섬 ${r.islands} · 출구 ${exitsJoined ? "이어짐" : "끊김"} ${edge(entry)}→${edge(exit)} · ${variant || "-"} [${layout || "-"} / ${hero || "-"} / ${side || "-"}] 빈 자리 ${free} 기물 ${kits}${warn ? ` · ${warn.slice(0, 200)}` : ""}`);

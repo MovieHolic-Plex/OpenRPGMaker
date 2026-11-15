@@ -19,7 +19,7 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { activeKitLook } from "@/project/kitLook";
 import { addMapLocation } from "@/project/mapNamedLocations";
 import { buildThemedRoute, type RouteSideName } from "./routeThemeBuild";
-import { parseRouteTheme, pickRouteVariant, ROUTE_THEMES, ROUTE_THEME_LABEL, routeFeatureWords } from "./routeThemes";
+import { parseRouteFeature, parseRouteShape, parseRouteTheme, pickRouteShape, ROUTE_FEATURES, ROUTE_SHAPE_LABEL, ROUTE_SHAPES, ROUTE_THEMES, ROUTE_THEME_LABEL, routeVariantFor } from "./routeThemes";
 
 type Point = { x: number; y: number };
 const GRASS_LOCATION_PREFIX = "loc_wild_grass_";
@@ -279,8 +279,8 @@ const authorWildRoute: ToolDefinition = {
     + "create_map 으로 만든 빈 잔디 맵에 쓴다(버들항 beodeul_city 계열 — 곧게 뻗다 직각으로 꺾이는 모랫길·길 양옆을 막는 나무 벽·길섶 숲길 소품). 타일을 직접 고르지 않는 결정론 시공이라 참고문서 선행 읽기가 필요 없다. "
     + "exits 는 가장자리 칸 — 다음에 create_transfer_pair 로 그 칸에 문을 단다. 결과 data.trainerSpots 는 길가 트레이너 자리 후보다(place_npc 로 배치). "
     + "이미 타일이 칠해진 맵은 replace:true 일 때만 다시 깐다(이벤트는 보존). "
-    + "theme 을 주면 «길목» 을 짓는다(mountain 산길·등산로 · spirit 정령·요정 숲): exits 대신 sides[들어오는 변, 나가는 변] 을 받고, 그 갈래의 스무 가지(단·돌계단·골짜기 다리·빈터 짜임과 주인공 볼거리 하나, 곁가지 막다른 자리) 가운데 하나를 게임 열쇠와 seed 로 고른다 — "
-    + "결과 data = {variant, hero, entry, exit, heroAt, heroFront(사람·사건 자리), sideAt(쉼터·상자 자리), enemySpots[]}. feature 는 그 갈래의 닫힌 낱말 하나(있어야 할 볼거리).",
+    + "theme 을 주면 «길목» 을 짓는다(mountain 산길·등산로 · spirit 정령·요정 숲): exits 대신 sides(길이 닿는 변 1~4개, 첫째가 들어오는 변)를 받는다. 꼴은 자료가 정한다 — 변 하나면 막다른 길, 셋·넷이면 갈림길, dungeon 을 주면 던전 어귀, 둘이면 그 게임이 덜 쓴 꼴(지나가는 길·건너는 곳·오르는 곳·도는 곳·넓은 곳·숨은 샛길·헤매는 곳·마을 어귀). 가짓수는 게임 열쇠와 seed 가 고른다 — "
+    + "결과 data = {shape, variant, hero, entry, exit, routeExits[{side,x,y}], dungeonGate, heroAt, heroFront(사람·사건 자리), sideAt(쉼터·상자 자리), enemySpots[]}. feature 는 닫힌 낱말 하나(있어야 할 볼거리 — 그 갈래에 없으면 무시).",
   mode: "write",
   invalidArgsExample: { mapId: "map_route_1", exits: [{ x: 14, y: 21 }, { x: 14, y: 0 }], grassPatches: 3, encounters: [{ troopId: "troop_wild_1", weight: 60 }] },
   parameters: {
@@ -288,8 +288,12 @@ const authorWildRoute: ToolDefinition = {
     properties: {
       mapId: { type: "string", description: "시공할 도로 맵 id(create_map 으로 먼저 만든다)" },
       theme: { type: "string", enum: [...ROUTE_THEMES], description: "길목 갈래(주면 exits 대신 sides 를 쓴다): mountain 산길·등산로 · spirit 정령·요정 숲" },
-      sides: { type: "array", description: "(theme) [들어오는 변, 나가는 변] — 기본 ['south','north']", items: { type: "string", enum: ["north", "south", "east", "west"] } },
-      feature: { type: "string", description: "(theme) 있어야 할 볼거리 — 그 갈래의 닫힌 낱말 하나. 모르면 뺀다(게임 열쇠와 seed 가 고른다)" },
+      sides: { type: "array", description: "(theme) 길이 닿는 변 1~4개, 첫째가 들어오는 변 — 기본 ['south','north']", items: { type: "string", enum: ["north", "south", "east", "west"] } },
+      shape: { type: "string", enum: [...ROUTE_SHAPES], description: "(theme) 꼴 — 보통 뺀다(변의 수·dungeon·villageSide 와 게임 열쇠가 고른다)" },
+      dungeon: { type: "string", description: "(theme) 이 길목에 달린 던전의 종류(cave·mine·temple·catacomb·castle·tower …) — 길 끝이나 곁길 끝에 입구 자리를 낸다(data.dungeonGate)" },
+      villageSide: { type: "string", enum: ["north", "south", "east", "west"], description: "(theme) 마을로 이어지는 변 — 그 변 안쪽에 울타리·이정표를 세운다" },
+      villagePaved: { type: "boolean", description: "(theme) 그 마을의 길이 돌 포장인가(읍) — 길 끝이 포석이 된다" },
+      feature: { type: "string", enum: [...ROUTE_FEATURES], description: "(theme) 있어야 할 볼거리 낱말 하나. 모르면 뺀다(게임 열쇠와 seed 가 고른다)" },
       exits: {
         type: "array",
         description: "가장자리 출구 칸 2개 이상 [{x,y}] — 순서대로 길로 잇는다. 예: 남쪽 마을 쪽 (14,21) → 북쪽 동굴 쪽 (14,0)",
@@ -460,21 +464,38 @@ const ROUTE_VARIANT_TAG = "route-variant";
 const SIDE_NAMES: readonly RouteSideName[] = ["north", "south", "east", "west"];
 
 /** theme 을 준 호출 — 길목 갈래의 가짓수 하나를 고르고 깐다(routeThemeBuild.ts). 이름·요청 글은 받지 않는다. */
+const ROUTE_SHAPE_TAG = "route-shape:";
+/** 던전 종류(dungeonKit DUNGEON_TYPES) → 길목에 세우는 입구 구조물(버들항 원본 킷). 없는 종류(동굴·광산·하수도·화산·얼음·숲·늪)는 자리만 비워 두고 던전 잇기가 갱구를 찍는다. */
+const DUNGEON_MOUTH_KIT: Record<string, string> = {
+  temple: "bd-pick-deep-forest-path-ruin-gate", labyrinth: "bd-pick-deep-forest-path-ruin-gate", pyramid: "bd-pick-deep-forest-path-ruin-gate", catacomb: "bd-pick-deep-forest-path-ruin-gate",
+  castle: "bd-wall-gatehouse", tower: "bd-wall-gatehouse", otherworld: "bd-pick-dungeon-theme-portal-gate-open",
+};
+
 function runThemedRoute(draft: Parameters<ToolDefinition["run"]>[0], map: GameMap, tileset: NonNullable<Project["tilesets"][string]>, theme: NonNullable<ReturnType<typeof parseRouteTheme>>, args: Record<string, unknown>): ToolExecResult {
   if (map.width < 24 || map.height < 24) throw new ToolError("길목 맵은 24×24 이상이어야 합니다.", { code: "invalid-args", mapId: map.id });
-  const given = Array.isArray(args.sides) ? args.sides.filter((s): s is RouteSideName => SIDE_NAMES.includes(s as RouteSideName)) : [];
-  const sides: [RouteSideName, RouteSideName] = given.length >= 2 && given[0] !== given[1] ? [given[0]!, given[1]!] : given.length === 1 ? [given[0]!, given[0] === "north" ? "south" : given[0] === "south" ? "north" : given[0] === "east" ? "west" : "east"] : ["south", "north"];
+  // 길이 닿는 변 1~4개(첫째가 들어오는 변). 하나도 없으면 남 → 북.
+  const given = [...new Set(Array.isArray(args.sides) ? args.sides.filter((x): x is RouteSideName => SIDE_NAMES.includes(x as RouteSideName)) : [])];
+  const sides: RouteSideName[] = given.length ? given : ["south", "north"];
   const seed = args.seed === undefined ? 1 : Number(args.seed);
   if (!Number.isInteger(seed)) throw new ToolError("seed 는 정수입니다.", { code: "invalid-args", mapId: map.id });
-  const words = routeFeatureWords(theme);
+  // feature 는 모든 갈래가 같이 쓰는 닫힌 한 벌 — 그 갈래에 그 낱말의 가짓수가 없으면 무시된다(게임 열쇠가 고른다)
   const feature = typeof args.feature === "string" && args.feature.trim() ? args.feature.trim() : undefined;
-  if (feature && !words.includes(feature)) throw new ToolError(`feature «${feature}» 는 ${ROUTE_THEME_LABEL[theme]} 갈래에 없습니다 — ${words.join(" · ")} 중 하나이거나 뺍니다.`, { code: "invalid-args", mapId: map.id });
+  if (feature && !parseRouteFeature(feature)) throw new ToolError(`feature «${feature}» 는 없는 낱말입니다 — ${ROUTE_FEATURES.join(" · ")} 중 하나이거나 뺍니다.`, { code: "invalid-args", mapId: map.id });
   const ground = BEODEUL_PLAIN_GRASS;
   const painted = authoredCells(map, ground);
   if (painted > 0 && args.replace !== true) throw new ToolError(`이 맵에는 이미 칠한 칸이 ${painted}개 있습니다. 다시 깔려면 replace:true 를 주세요(이벤트는 보존).`, { code: "wild-route-map-not-blank", mapId: map.id });
   // 그 게임이 이미 쓴 가짓수는 피한다(다른 길목 맵의 꼬리표) — 이 맵을 다시 깔 때는 제 꼬리표를 빼고 본다.
   const used = new Set(Object.values(draft.maps).filter((m) => m.id !== map.id).flatMap((m) => (m.locations ?? []).filter((l) => (l.tags ?? []).includes(ROUTE_VARIANT_TAG)).map((l) => l.note ?? "")));
-  const variant = pickRouteVariant(theme, activeKitLook() ?? "", seed, feature, used);
+  // 꼴: 이웃 자료(변의 수 · 던전 · 마을)가 정하고, 둘 잇는 길은 그 게임이 덜 쓴 꼴부터(다른 길목 맵의 꼬리표).
+  const dungeon = args.dungeon === undefined || args.dungeon === false ? undefined : String(args.dungeon);
+  const villageSide = SIDE_NAMES.find((x) => x === args.villageSide && sides.includes(x));
+  const usedShapes = new Map<string, number>();
+  for (const m of Object.values(draft.maps)) if (m.id !== map.id) for (const l of m.locations ?? []) for (const t of l.tags ?? []) if (t.startsWith(ROUTE_SHAPE_TAG)) usedShapes.set(t.slice(ROUTE_SHAPE_TAG.length), (usedShapes.get(t.slice(ROUTE_SHAPE_TAG.length)) ?? 0) + 1);
+  const asked = parseRouteShape(args.shape);
+  if (args.shape !== undefined && !asked) throw new ToolError(`shape 는 ${ROUTE_SHAPES.join(" · ")} 중 하나입니다.`, { code: "invalid-args", mapId: map.id });
+  const fitsSides = (sh: (typeof ROUTE_SHAPES)[number]): boolean => sh === "dungeon-mouth" ? !!dungeon : sh === "dead-end" ? sides.length === 1 : sh === "tee" ? sides.length === 3 : sh === "cross" ? sides.length === 4 : sh === "village-gate" ? sides.length === 2 && !!villageSide : sides.length === 2;
+  const shape = asked && fitsSides(asked) ? asked : pickRouteShape(theme, { edges: sides.length, dungeon: !!dungeon, village: !!villageSide }, activeKitLook() ?? "", seed, usedShapes);
+  const variant = routeVariantFor(theme, shape, sides.length, activeKitLook() ?? "", seed, feature, used);
   map.mapRole ??= "field";
   const size = map.width * map.height;
   map.lowerTiles = Array.from({ length: size }, () => ground);
@@ -482,12 +503,13 @@ function runThemedRoute(draft: Parameters<ToolDefinition["run"]>[0], map: GameMa
   delete map.lowerTileStacks; delete map.upperTileStacks; delete map.relief;
   if (map.lowerOverlayTiles) map.lowerOverlayTiles = Array.from({ length: size }, () => TILE.EMPTY);
   if (map.upperOverlayTiles) map.upperOverlayTiles = Array.from({ length: size }, () => TILE.EMPTY);
-  const built = buildThemedRoute({ project: draft, map, tileset, theme, variant, sides, seed });
+  const mouthKit = dungeon ? DUNGEON_MOUTH_KIT[dungeon] : undefined;
+  const built = buildThemedRoute({ project: draft, map, tileset, theme, variant, sides, seed, shape, ...(dungeon ? { dungeon: mouthKit ? { kit: mouthKit } : {} } : {}), ...(villageSide ? { village: { side: villageSide, paved: args.villagePaved === true } } : {}) });
   map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(ROUTE_VARIANT_TAG));
-  addMapLocation(map, { name: `길목 ${variant.hero.ko}`, ...(built.heroAt ?? { x: 0, y: 0, w: 1, h: 1 }), note: variant.id, tags: [ROUTE_VARIANT_TAG, `route:${theme}`] });
+  addMapLocation(map, { name: `길목 ${variant.hero.ko}`, ...(built.heroAt ?? { x: 0, y: 0, w: 1, h: 1 }), note: variant.id, tags: [ROUTE_VARIANT_TAG, `route:${theme}`, `${ROUTE_SHAPE_TAG}${shape}`] });
   return {
-    summary: `${map.name} 길목 시공(${ROUTE_THEME_LABEL[theme]} · ${variant.id}) — 짜임 ${variant.layout} 단 ${variant.tiers}, 볼거리 «${variant.hero.ko}»${built.heroAt ? ` (${built.heroAt.x},${built.heroAt.y})` : " 못 놓음"}, 길 ${built.roadCells}칸 · 숲 ${built.treeCells}칸 · 돌계단 ${built.stairs}칸, 가장자리 (${built.entry.x},${built.entry.y}) → (${built.exit.x},${built.exit.y})${built.sideAt ? `, 곁가지 ${built.sideKind} (${built.sideAt.x},${built.sideAt.y})` : ""}`,
-    data: { mapId: map.id, theme, variant: variant.id, layout: variant.layout, hero: variant.hero.id, heroName: variant.hero.ko, mood: variant.mood ?? null, entry: built.entry, exit: built.exit, exits: [built.entry, built.exit],
+    summary: `${map.name} 길목 시공(${ROUTE_THEME_LABEL[theme]} · ${ROUTE_SHAPE_LABEL[shape]} · ${variant.id}) — 짜임 ${variant.layout} 단 ${variant.tiers}, 볼거리 «${variant.hero.ko}»${built.heroAt ? ` (${built.heroAt.x},${built.heroAt.y})` : " 못 놓음"}, 길 ${built.roadCells}칸 · 숲 ${built.treeCells}칸 · 돌계단 ${built.stairs}칸, 가장자리 (${built.entry.x},${built.entry.y}) → (${built.exit.x},${built.exit.y})${built.sideAt ? `, 곁가지 ${built.sideKind} (${built.sideAt.x},${built.sideAt.y})` : ""}`,
+    data: { mapId: map.id, theme, shape, routeExits: built.exits, dungeonGate: built.dungeonGate ?? null, variant: variant.id, layout: variant.layout, hero: variant.hero.id, heroName: variant.hero.ko, mood: variant.mood ?? null, entry: built.entry, exit: built.exit, exits: [built.entry, built.exit],
       heroAt: built.heroAt ?? null, heroFront: built.heroFront ?? null, side: built.sideKind, sideAt: built.sideAt ?? null, enemySpots: built.enemySpots, sealed: built.sealed },
     ...(built.warnings.length ? { warnings: built.warnings } : {}),
   };

@@ -79,6 +79,8 @@ export interface PlaceSpec {
   readonly entrance?: string;
   /** 나가는 쪽. 실내는 기본 south. */
   readonly exits?: readonly ("south" | "north" | "east" | "west")[];
+  /** 길목(route)의 이웃 — make_game 이 연결 자료에서 채운다(모델이 적지 않는다): 그 변으로 이어지는 장소의 종류(village·route·dungeon …)와, 던전이면 그 종류. */
+  readonly routeLinks?: readonly { readonly side?: "south" | "north" | "east" | "west"; readonly kind: string; readonly dungeonType?: string; readonly paved?: boolean }[];
   /** (세계 장소) 목적표 — build_places 가 청사진에서 정해 넣는다(place/program.ts), 모델은 쓰지 않는다. 구성기가 이 역할 건물과 채움 집만 놓고 맵 크기도 여기서 나온다. */
   readonly program?: import("@/project/settlementProgram").SettlementProgram;
   /** 이미 있는 맵을 그 자리에서 다시 지을 때(고치기·「이 방을」). 생략하면 빌더가 정한다(빈 시작 맵이면 그 맵). */

@@ -369,6 +369,20 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
             parentDoors: parentResult ? villageDoors(parentResult) : [], childDoors: villageDoors(result),
           });
           if (viaRoads?.ok) { linked = true; notes.push(viaRoads.note); }
+          // 길목은 제 길이 닿은 가장자리 칸이 출구다 — 길 어귀끼리 못 맞췄으면 그 칸과 상대 맵의 그 변 칸을 바로 잇는다(가장자리 아무 칸에 문을 내지 않는다).
+          const routeCell = (res: PlaceBuildResult | undefined, want: string): { x: number; y: number } | undefined => {
+            const ex = (res?.state as { routeExits?: { side: string; x: number; y: number }[] } | undefined)?.routeExits ?? [];
+            const hit = ex.find((e) => e.side === want); return hit ? { x: hit.x, y: hit.y } : undefined;
+          };
+          if (!linked && (spec.type === "route" || parentSpec.type === "route")) {
+            const a0 = parentSpec.type === "route" ? routeCell(parentResult, first) : undefined, b0 = spec.type === "route" ? routeCell(result, oppositeSide(first)) : undefined;
+            const spotA = a0 ? undefined : pickTransferSpot(run, parentMap, { side: first, outdoor: true, otherName: cName, buildingDoor: false });
+            const spotB = b0 ? undefined : pickTransferSpot(run, childMap, { side: oppositeSide(first), outdoor: true, otherName: pName, buildingDoor: false });
+            const a = a0 ?? (spotA ? { x: spotA.x, y: spotA.y } : edgeCell(env.ctx.project, env.ctx.project.maps[parentMap]!, first));
+            const b = b0 ?? (spotB ? { x: spotB.x, y: spotB.y } : edgeCell(env.ctx.project, env.ctx.project.maps[childMap]!, oppositeSide(first)));
+            const r = a && b && (a0 || b0) ? run.call("create_transfer_pair", { a: { mapId: parentMap, ...a }, b: { mapId: childMap, ...b } }) : undefined;
+            if (r?.ok) { linked = true; notes.push(`${pName}(${a!.x},${a!.y}) ↔ ${cName}(${b!.x},${b!.y}) — 길목의 길 끝으로 이었다`); }
+          }
           for (const dir of linked ? [] : [first, ...LINK_SIDES.filter((d) => d !== first)]) {
             const r = run.call("link_maps", { from: { mapId: parentMap, exit: { side: dir } }, to: { mapId: childMap, entry: { side: oppositeSide(dir) } } });
             if (!r.ok) continue;

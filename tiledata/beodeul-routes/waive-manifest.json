@@ -127,27 +127,51 @@
 "chipset": "beodeul_city"
 },
 {
-"png": "tiledata/beodeul-routes/pieces/sp-ground-a.png",
-"kind": "terrain",
-"label": "beodeul_routes/sp-ground-a",
+"png": "tiledata/beodeul-routes/pieces/sp-crown-a.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-crown-a",
 "chipset": "beodeul_city"
 },
 {
-"png": "tiledata/beodeul-routes/pieces/sp-ground-b.png",
-"kind": "terrain",
-"label": "beodeul_routes/sp-ground-b",
+"png": "tiledata/beodeul-routes/pieces/sp-crown-b.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-crown-b",
 "chipset": "beodeul_city"
 },
 {
-"png": "tiledata/beodeul-routes/pieces/sp-path.png",
-"kind": "terrain",
-"label": "beodeul_routes/sp-path",
+"png": "tiledata/beodeul-routes/pieces/sp-crown-e.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-crown-e",
 "chipset": "beodeul_city"
 },
 {
-"png": "tiledata/beodeul-routes/pieces/sp-canopy.png",
+"png": "tiledata/beodeul-routes/pieces/sp-crown-f.png",
+"kind": "organic",
+"label": "beodeul_routes/sp-crown-f",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-light.png",
+"kind": "flat",
+"label": "beodeul_routes/sp-light",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-glow-moss.png",
+"kind": "flat",
+"label": "beodeul_routes/sp-glow-moss",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-falls.png",
 "kind": "terrain",
-"label": "beodeul_routes/sp-canopy",
+"label": "beodeul_routes/sp-falls",
+"chipset": "beodeul_city"
+},
+{
+"png": "tiledata/beodeul-routes/pieces/sp-falls-veil.png",
+"kind": "terrain",
+"label": "beodeul_routes/sp-falls-veil",
 "chipset": "beodeul_city"
 },
 {

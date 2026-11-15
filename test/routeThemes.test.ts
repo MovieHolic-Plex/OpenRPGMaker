@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
-import { pickRouteVariant, ROUTE_THEMES, ROUTE_VARIANTS, routeFeatureWords } from "@/editor/tools/routeThemes";
+import { pickRouteVariant, ROUTE_FEATURES, ROUTE_THEMES, ROUTE_VARIANTS, routeFeatureWords } from "@/editor/tools/routeThemes";
 import { createBlankProject } from "@/project/defaults";
 import { canMove, isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
@@ -48,7 +48,15 @@ describe("길목 갈래 표", () => {
     expect(all.length).toBe(20);
     expect(new Set(all.map((v) => v.id)).size).toBe(20);
     expect(new Set(all.map((v) => v.hero.id)).size).toBe(20);
-    expect(new Set(all.map((v) => v.layout)).size).toBeGreaterThanOrEqual(5);
+    expect(new Set(all.map((v) => v.layout)).size).toBeGreaterThanOrEqual(7);
+    // 한 게임 안 스무 장에서 한 짜임이 다섯 장을 넘지 않는다 · 모든 가짓수가 곁가지를 갖는다 · 볼거리 낱말은 모든 갈래가 같이 쓰는 한 벌이다
+    const perLayout = new Map<string, number>();
+    for (const v of all) perLayout.set(v.layout, (perLayout.get(v.layout) ?? 0) + 1);
+    expect(Math.max(...perLayout.values())).toBeLessThanOrEqual(5);
+    expect(all.every((v) => v.side !== "none")).toBe(true);
+    expect(all.every((v) => v.tags.every((t) => (ROUTE_FEATURES as readonly string[]).includes(t)))).toBe(true);
+    // 직각으로만 꺾이지 않는 짜임(굽이)이 갈래마다 있다
+    expect(all.some((v) => ["meander", "switchback", "winding"].includes(v.layout) && (v.hero.site === "beside" || v.hero.site === "line"))).toBe(true);
   });
 
   it("고르기: 열쇠·씨앗으로 갈리고, 쓴 것은 피하고, 닫힌 낱말로 좁힌다 — 이름은 받지 않는다", () => {
@@ -58,15 +66,18 @@ describe("길목 갈래 표", () => {
     for (let i = 0; i < 20; i += 1) used.add(pickRouteVariant("spirit", "game-b", 7, undefined, used).id);
     expect(used.size).toBe(20);   // 같은 열쇠·같은 씨앗이어도 그 게임이 쓴 것은 다시 고르지 않는다
     for (let seed = 0; seed < 10; seed += 1) expect(pickRouteVariant("mountain", "game-c", seed, "bridge").tags).toContain("bridge");
-    expect(pickRouteVariant.length).toBeLessThanOrEqual(5);
+    expect(pickRouteVariant.length).toBeLessThanOrEqual(6);
   });
 
-  it("구운 표: 길·수관 칸은 이웃 비트 16 × 위상 16, 다리는 세 줄 두 칸", () => {
-    const t = skins as unknown as { base: number; end: number; spirit: { ground: number[][]; path: number[][]; canopy: number[][] }; bridge: Record<string, number[][]> };
-    expect(t.spirit.ground.length).toBe(2);
-    for (const table of [t.spirit.path, t.spirit.canopy]) { expect(table.length).toBe(16); for (const row of table) expect(row.length).toBe(16); }
+  it("구운 표: 다리는 세 줄 두 칸, 폭포는 바위턱 두 줄만 걷는 칸 — 정령 숲의 바탕(바닥·길·숲)은 버들항 그대로라 표에 없다", () => {
+    const t = skins as unknown as { base: number; end: number; spirit: { falls: { lower: number[][]; solid: number[][]; veil: number[][] }; ground?: unknown; canopy?: unknown }; bridge: Record<string, number[][]> };
+    expect(t.spirit.ground).toBeUndefined();
+    expect(t.spirit.canopy).toBeUndefined();
+    for (const part of [t.spirit.falls.lower, t.spirit.falls.solid, t.spirit.falls.veil]) { expect(part.length).toBe(7); for (const row of part) expect(row.length).toBe(7); }
+    expect(t.spirit.falls.lower.map((row) => row.filter((n) => n >= 0).length)).toEqual([0, 0, 0, 7, 7, 0, 0]);
+    expect(t.spirit.falls.veil[3]!.map((n) => n >= 0)).toEqual([false, false, true, true, true, false, false]);
     for (const name of ["rope", "vine"]) { expect(t.bridge[name]!.length).toBe(3); for (const row of t.bridge[name]!) expect(row.length).toBe(2); }
-    const cells = [...t.spirit.ground.flat(), ...t.spirit.path.flat(), ...t.spirit.canopy.flat(), ...Object.values(t.bridge).flat(2)];
+    const cells = [...t.spirit.falls.lower.flat().filter((n) => n >= 0), ...Object.values(t.bridge).flat(2)];
     expect(cells.every((n) => n >= t.base && n < t.end)).toBe(true);
   });
 });
@@ -81,12 +92,10 @@ describe("author_wild_route theme", () => {
     expect(r.seen.has(exit.y * map.width + exit.x), `${data.variant} 출구`).toBe(true);
     expect(r.lost, `${data.variant} 닿지 않는 걷는 칸`).toBe(0);
     expect(data.heroAt, `${data.variant} 볼거리`).toBeTruthy();
+    if (data.sideAt) expect(r.seen.has((data.sideAt as Cell).y * map.width + (data.sideAt as Cell).x)).toBe(true);
     expect(map.mapRole).toBe("field");
     expect((map.locations ?? []).some((l) => (l.tags ?? []).includes("route-variant") && l.note === data.variant)).toBe(true);
     for (const spot of data.enemySpots as Cell[]) expect(r.seen.has(spot.y * map.width + spot.x)).toBe(true);
-    // 산길에는 높이 단과 돌계단이, 정령 숲에는 제 바닥 칸이 깔린다
-    const t = skins as unknown as { base: number; end: number };
-    if (theme === "spirit") expect(map.lowerTiles.filter((n) => n >= t.base && n < t.end).length).toBeGreaterThan(map.width * map.height * 0.5);
   }, 60_000);
 
   it("동서로 지나는 길목도 이어진다", () => {
@@ -100,13 +109,79 @@ describe("author_wild_route theme", () => {
   }, 60_000);
 
   it("feature 는 그 갈래의 닫힌 낱말만 — 다리를 청하면 다리가 놓이고, 모르는 낱말은 거절한다", () => {
-    const { data } = buildRoute("mountain", 9, { feature: "bridge" });
+    const { data } = buildRoute("mountain", 9, { feature: "bridge", shape: "crossing" });
     expect(["rope-bridge", "leaf-bridge"]).toContain(data.hero);
     const ctx: ToolContext = { project: createBlankProject(), assistantRun: true, lookKey: "k" };
     runTool(ctx, "create_map", { id: "map_route", name: "길목", width: 32, height: 42, tilesetId: "beodeul_city" }, { dryRun: false });
     expect(runTool(ctx, "author_wild_route", { mapId: "map_route", theme: "mountain", feature: "구름다리" }, { dryRun: false }).ok).toBe(false);
     expect(runTool(ctx, "author_wild_route", { mapId: "map_route", theme: "swamp" }, { dryRun: false }).ok).toBe(false);
   }, 60_000);
+
+  it("꼴은 자료가 정한다: 변 하나 = 막다른 길, 셋 = 세 갈래, 넷 = 네거리, 던전 = 던전 어귀 — 길이 닿은 변마다 가장자리 칸이 있고 모두 걸어서 닿는다", () => {
+    for (const theme of ["mountain", "spirit"] as const) {
+      for (const [sides, shape] of [[["south"], "dead-end"], [["north"], "dead-end"], [["west"], "dead-end"], [["south", "north", "east"], "tee"], [["west", "east", "north", "south"], "cross"]] as const) {
+        const { ctx, map, data } = buildRoute(theme, 7, { sides: [...sides] });
+        expect(data.shape, `${theme} ${sides.join("·")}`).toBe(shape);
+        const exits = data.routeExits as { side: string; x: number; y: number }[];
+        expect(exits.map((e) => e.side).sort()).toEqual([...sides].sort());
+        const r = reach(ctx.project, map, data.entry as Cell);
+        for (const e of exits) {
+          expect(e.side === "north" ? e.y === 0 : e.side === "south" ? e.y === map.height - 1 : e.side === "west" ? e.x === 0 : e.x === map.width - 1).toBe(true);
+          expect(r.seen.has(e.y * map.width + e.x), `${theme} ${shape} ${e.side}`).toBe(true);
+        }
+        expect(r.lost, `${theme} ${shape}`).toBe(0);
+        expect(data.heroAt, `${theme} ${shape} 볼거리`).toBeTruthy();
+      }
+      // 던전 어귀: 변 하나면 길 끝에, 둘이면 곁길 끝에 입구 칸 — 그 남쪽 칸이 걸어서 닿는 길이다
+      for (const sides of [["south"], ["south", "north"]] as const) {
+        const { ctx, map, data } = buildRoute(theme, 5, { sides: [...sides], dungeon: "temple" });
+        expect(data.shape).toBe("dungeon-mouth");
+        const gate = data.dungeonGate as Cell;
+        expect(gate, `${theme} ${sides.length} 던전 입구`).toBeTruthy();
+        const r = reach(ctx.project, map, data.entry as Cell);
+        expect(r.seen.has((gate.y + 1) * map.width + gate.x)).toBe(true);
+        expect(r.lost).toBe(0);
+      }
+    }
+  }, 240_000);
+
+  it("둘 잇는 길은 그 게임이 덜 쓴 꼴부터 — 한 게임의 여덟 장에 꼴이 여섯 가지 넘게 나온다", () => {
+    const ctx: ToolContext = { project: createBlankProject(), assistantRun: true, lookKey: "route-test" };
+    const shapes = new Set<string>();
+    for (let n = 0; n < 8; n += 1) {
+      const id = `map_r${n}`;
+      runTool(ctx, "create_map", { id, name: `길목 ${n}`, width: 36, height: 40, tilesetId: "beodeul_city" }, { dryRun: false });
+      const result = runTool(ctx, "author_wild_route", { mapId: id, theme: "spirit", seed: n }, { dryRun: false });
+      expect(result.ok, result.summary).toBe(true);
+      const data = result.data as Record<string, unknown>, map = ctx.project.maps[id]!;
+      shapes.add(String(data.shape));
+      expect(reach(ctx.project, map, data.entry as Cell).lost, `${data.shape} ${data.variant}`).toBe(0);
+    }
+    expect(shapes.size).toBeGreaterThanOrEqual(6);
+  }, 240_000);
+
+  it("폭포는 물 장막 뒤 바위턱으로만 지나간다", () => {
+    const ctx: ToolContext = { project: createBlankProject(), assistantRun: true, lookKey: "route-test" };
+    let falls = 0;
+    for (let n = 0; n < 6 && !falls; n += 1) {
+      const id = `map_r${n}`;
+      runTool(ctx, "create_map", { id, name: `길목 ${n}`, width: 32, height: 42, tilesetId: "beodeul_city" }, { dryRun: false });
+      const result = runTool(ctx, "author_wild_route", { mapId: id, theme: "spirit", seed: 4, shape: "crossing" }, { dryRun: false });
+      expect(result.ok, result.summary).toBe(true);
+      const data = result.data as Record<string, unknown>, map = ctx.project.maps[id]!, entry = data.entry as Cell, exit = data.exit as Cell;
+      if (data.variant !== "rainbow-falls") continue;
+      falls += 1;
+      const at = data.heroAt as { x: number; y: number }, W = map.width, wall = new Set<number>();
+      for (const y of [at.y + 3, at.y + 4]) for (let i = 2; i <= 4; i += 1) wall.add(y * W + at.x + i);
+      const q = [entry.y * W + entry.x], got = new Set(q);
+      for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const nx = x + dx, ny = y + dy, k = ny * W + nx;
+          if (nx < 0 || ny < 0 || nx >= W || ny >= map.height || got.has(k) || wall.has(k) || !canMove(ctx.project, map, x, y, nx, ny)) continue; got.add(k); q.push(k); } }
+      expect(reach(ctx.project, map, entry).seen.has(exit.y * W + exit.x)).toBe(true);
+      expect(got.has(exit.y * W + exit.x), "폭포를 돌아가는 길").toBe(false);
+    }
+    expect(falls).toBe(1);
+  }, 240_000);
 
   it("theme 없는 옛 호출은 그대로다(exits 필수)", () => {
     const ctx: ToolContext = { project: createBlankProject() };
@@ -125,13 +200,21 @@ describe("조수 v2 route 빌더", () => {
     expect(a.sides).toEqual(["south", "north"]);
     expect(a.seed).not.toBe(c.seed);
     expect(b.seed).not.toBe(a.seed);
-    expect(routeArgs(specOf({ exits: ["west"] })).sides).toEqual(["west", "east"]);
+    expect(routeArgs(specOf({ exits: ["west"] })).sides).toEqual(["west"]);   // 변 하나 = 막다른 길
+    // 이웃 자료(make_game 이 채운다)가 있으면 그것이 변을 정한다 — 던전은 변이 아니다
+    const linked = routeArgs(specOf({ routeLinks: [{ side: "south", kind: "village", paved: true }, { side: "east", kind: "route" }, { kind: "dungeon", dungeonType: "mine" }] }));
+    expect(linked.sides).toEqual(["south", "east"]);
+    expect(linked.dungeon).toBe("mine");
+    expect(linked.villageSide).toBe("south");
+    expect(routeArgs(specOf({ routeLinks: [{ side: "north", kind: "village" }, { kind: "dungeon", dungeonType: "cave" }] })).sides).toEqual(["north"]);
     expect(routeArgs(specOf({ features: ["bridge", "용"] })).feature).toBe("bridge");
     expect(routeArgs(specOf({ features: ["용"] })).warnings.join(" ")).toContain("ignored");
     // 갈래를 안 주면 게임 열쇠가 고른다 — 이름에 «정령» 이 있어도 낱말로 가르지 않는다
     const byKey = new Set(Array.from({ length: 12 }, (_, i) => routeArgs({ type: "route", name: "정령 숲 입구", variety: `game-${i}|r` }).theme));
     expect(byKey.size).toBe(2);
-    for (const theme of ROUTE_THEMES) for (const word of routeFeatureWords(theme)) expect(ROUTE_CARD).toContain(word);
+    for (const theme of ROUTE_THEMES) { expect(ROUTE_CARD).toContain(`${theme} (`); for (const word of routeFeatureWords(theme)) expect(ROUTE_CARD).toContain(word); }
+    // 카드는 갈래마다 «id (풀이)» 한 토막만 자란다 — 갈래마다 낱말 목록을 싣지 않는다(열다섯 갈래에서도 +1,200자 안)
+    expect(ROUTE_CARD.length).toBeLessThanOrEqual(600);
   });
 
   it.each(["mountain", "spirit"] as const)("%s: 지은 결과에 들어오는 칸·볼거리 앞 칸·적 자리가 실린다", (theme) => {

@@ -5,30 +5,39 @@
 // 결과 state 에 들어오는 칸·나가는 칸·볼거리 앞 칸·곁가지 끝·길 위 빈 칸을 싣는다(사람·사건·적을 놓는 쪽이 읽는다).
 import { lookHash } from "@/project/kitLook";
 import { isUntouchedMap } from "@/project/projectBlankness";
-import { parseRouteTheme, ROUTE_THEMES, routeFeatureWords, type RouteTheme } from "@/editor/tools/routeThemes";
+import { parseRouteFeature, parseRouteTheme, ROUTE_FEATURES, ROUTE_THEME_GLOSS, ROUTE_THEMES, type RouteTheme } from "@/editor/tools/routeThemes";
 import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec, Side } from "../../shared/types";
 
-/** v2 계획 모델에게 주는 길목 지식. */
+/**
+ * v2 계획 모델에게 주는 길목 지식. 갈래는 «id (풀이)» 한 토막씩, 볼거리 낱말은 모든 갈래가 같이 쓰는 한 벌 —
+ * 갈래가 열다섯으로 늘어도 카드는 갈래마다 그 한 토막만 자란다(갈래마다 낱말 목록을 싣지 않는다).
+ */
 export const ROUTE_CARD =
-  "[Route type:route] A passage map between places (not a destination): the road runs from one map edge to another, with one landmark of that route and a dead-end side nook. Beodeul chipset. "
-  + `theme = exactly one of: mountain (mountain trail, hiking path, pass) · spirit (spirit or fairy forest); omitted = chosen per game. size small|medium|large. exits = [side you enter from, side you leave by] (default south, north). `
-  + `features (optional, one closed word; omitted = chosen per game): ${ROUTE_THEMES.map((t) => `${t} → ${routeFeatureWords(t).join(" · ")}`).join("; ")}. `
-  + "The result names the landmark and gives free cells: heroFront (a person or event beside the landmark), sideAt (rest spot or chest), enemySpots (visible enemies on the road).";
+  "[Route type:route] A passage map between places. Code lays every cell; the shape follows the links: one way out = the road ends at a landmark, a dungeon placed from it = the road ends at its entrance, 3-4 linked sides = a junction, two = a pass, crossing, climb, loop, meadow or hidden fork (per game). "
+  + `theme (omit = per game): ${ROUTE_THEMES.map((t) => `${t} (${ROUTE_THEME_GLOSS[t]})`).join(" · ")}. `
+  + "size small|medium|large. exits = sides with a way out, 1-4. "
+  + `features = one optional word: ${ROUTE_FEATURES.join(" · ")}. `
+  + "Result: heroFront, sideAt, enemySpots.";
 
 type Cell = { readonly x: number; readonly y: number };
 const SIDES: readonly Side[] = ["north", "south", "east", "west"];
 const OPPOSITE: Record<Side, Side> = { north: "south", south: "north", east: "west", west: "east" };
 const SIZES: Record<NonNullable<PlaceSpec["size"]>, readonly [number, number]> = { small: [28, 34], medium: [32, 42], large: [40, 50] };
 
-/** 명세의 드나드는 변 둘 — 없으면 남 → 북, 하나면 그 맞은편으로. */
-function sidesOf(spec: PlaceSpec): [Side, Side] {
-  const given = (spec.exits ?? []).filter((s): s is Side => SIDES.includes(s as Side));
-  if (given.length >= 2 && given[0] !== given[1]) return [given[0]!, given[1]!];
-  if (given.length === 1) return [given[0]!, OPPOSITE[given[0]!]];
-  return ["south", "north"];
+const INSIDE_KINDS = new Set(["dungeon", "cave", "interior", "house"]);
+/**
+ * 길이 닿는 변 1~4개(첫째가 들어오는 변). make_game 이 채운 이웃(routeLinks)이 있으면 그 가운데 바깥 장소로 가는 변들 — 하나뿐이면 길이 맵 안에서 끝난다.
+ * 이웃 자료가 없으면 명세의 exits(1~4), 그것도 없으면 남 → 북.
+ */
+function sidesOf(spec: PlaceSpec): Side[] {
+  const linked = [...new Set((spec.routeLinks ?? []).filter((l) => !INSIDE_KINDS.has(l.kind) && l.side).map((l) => l.side!))];
+  if (linked.length) return linked;
+  const given = [...new Set((spec.exits ?? []).filter((x): x is Side => SIDES.includes(x as Side)))];
+  if (spec.routeLinks?.length) return given.length ? [given[0]!] : ["south"];   // 이웃이 던전뿐: 들어오는 변 하나
+  return given.length ? given : ["south", "north"];
 }
 
-export function routeArgs(spec: PlaceSpec): { theme: RouteTheme; sides: [Side, Side]; seed: number; feature?: string; width: number; height: number; warnings: string[] } {
+export function routeArgs(spec: PlaceSpec): { theme: RouteTheme; sides: Side[]; seed: number; feature?: string; dungeon?: string; villageSide?: Side; villagePaved?: boolean; width: number; height: number; warnings: string[] } {
   const warnings: string[] = [];
   const key = spec.variety ?? `${spec.name}|${spec.salt ?? 0}`;
   let theme = parseRouteTheme(spec.theme);
@@ -36,16 +45,20 @@ export function routeArgs(spec: PlaceSpec): { theme: RouteTheme; sides: [Side, S
     if (spec.theme) warnings.push(`theme «${spec.theme}» is not a route theme (${ROUTE_THEMES.join(" · ")}) — chosen per game instead.`);
     theme = ROUTE_THEMES[lookHash(`route-theme|${key}`) % ROUTE_THEMES.length]!;
   }
-  const words = routeFeatureWords(theme);
-  const feature = (spec.features ?? []).map((f) => String(f).trim().toLowerCase()).find((f) => words.includes(f));
-  const unknown = (spec.features ?? []).filter((f) => !words.includes(String(f).trim().toLowerCase()));
-  if (unknown.length) warnings.push(`features ${unknown.map((f) => `«${f}»`).join(", ")} are not ${theme} route features (${words.join(" · ")}) — ignored.`);
+  const feature = (spec.features ?? []).map((f) => parseRouteFeature(String(f).trim().toLowerCase())).find((f) => f !== undefined);
+  const unknown = (spec.features ?? []).filter((f) => !parseRouteFeature(String(f).trim().toLowerCase()));
+  if (unknown.length) warnings.push(`features ${unknown.map((f) => `«${f}»`).join(", ")} are not route features (${ROUTE_FEATURES.join(" · ")}) — ignored.`);
   const sides = sidesOf(spec);
+  const seed = lookHash(`route-seed|${key}|${spec.name}`) % 1_000_000;
+  const dungeonLink = (spec.routeLinks ?? []).find((l) => l.kind === "dungeon" || l.kind === "cave");
+  const villageLink = (spec.routeLinks ?? []).find((l) => l.kind === "village" && l.side && sides.includes(l.side));
+  // 맵 꼴: 세로로 긴 것만이 아니다 — 동서로만 지나면 가로로 길고, 갈림길(변 셋·넷)은 정사각·큰 맵, 나머지는 게임 열쇠가 세로·정사각·가로 가운데서 고른다(단은 늘 남북으로 오른다)
   const [w, h] = SIZES[spec.size ?? "medium"];
-  // 동서로 지나는 길목은 가로로 넓게(단은 늘 남북으로 오른다)
-  const sideways = sides.every((s) => s === "east" || s === "west");
-  const width = sideways ? Math.round(h * 0.95) : w, height = sideways ? Math.max(30, w) : h;
-  return { theme, sides, seed: lookHash(`route-seed|${key}|${spec.name}`) % 1_000_000, ...(feature ? { feature } : {}), width, height, warnings };
+  const tall: [number, number] = [w, h], square: [number, number] = [Math.round((w + h) / 2) + 1, Math.round((w + h) / 2) + 1], broad: [number, number] = [Math.round(h * 1.05), Math.max(32, w)], big: [number, number] = [Math.round(h * 1.08), Math.round(h * 1.08)];
+  const sideways = sides.length >= 2 && sides.every((x) => x === "east" || x === "west");
+  const pool = sideways ? [broad, broad, square] : sides.length >= 3 ? [square, big, big] : sides.length === 1 ? [tall, square, tall] : [tall, square, broad, tall];
+  const [width, height] = pool[lookHash(`route-dims|${key}|${spec.name}`) % pool.length]!;
+  return { theme, sides, seed, ...(feature ? { feature } : {}), ...(dungeonLink ? { dungeon: dungeonLink.dungeonType ?? "cave" } : {}), ...(villageLink ? { villageSide: villageLink.side!, villagePaved: villageLink.paved === true } : {}), width, height, warnings };
 }
 
 function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBuildResult {
@@ -62,12 +75,12 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     mapId = (made.data as { mapId?: string } | undefined)?.mapId;
     if (!made.ok || !mapId) return fail(`create_map: ${String(made.summary ?? "").slice(0, 200)}`);
   }
-  const res = run.call("author_wild_route", { mapId, theme: args.theme, sides: args.sides, seed: args.seed, ...(args.feature ? { feature: args.feature } : {}), ...(again ? { replace: true } : {}) });
+  const res = run.call("author_wild_route", { mapId, theme: args.theme, sides: args.sides, seed: args.seed, ...(args.feature ? { feature: args.feature } : {}), ...(args.dungeon ? { dungeon: args.dungeon } : {}), ...(args.villageSide ? { villageSide: args.villageSide, villagePaved: !!args.villagePaved } : {}), ...(again ? { replace: true } : {}) });
   if (!res.ok) {
     if (!again && run.ctx.project.maps[mapId!] && isUntouchedMap(run.ctx.project.maps[mapId!]!)) run.call("remove_map", { mapId });
     return fail(`route «${spec.name}» could not be built: ${String(res.summary ?? "").slice(0, 240)}`);
   }
-  const data = (res.data ?? {}) as { variant?: string; layout?: string; hero?: string; heroName?: string; mood?: string | null; entry?: Cell; exit?: Cell; heroAt?: unknown; heroFront?: Cell | null; side?: string; sideAt?: Cell | null; enemySpots?: Cell[] };
+  const data = (res.data ?? {}) as { shape?: string; routeExits?: { side: Side; x: number; y: number }[]; dungeonGate?: Cell | null; variant?: string; layout?: string; hero?: string; heroName?: string; mood?: string | null; entry?: Cell; exit?: Cell; heroAt?: unknown; heroFront?: Cell | null; side?: string; sideAt?: Cell | null; enemySpots?: Cell[] };
   if (run.ctx.project.maps[mapId!]?.name !== spec.name) run.call("set_map_properties", { mapId, name: spec.name });
   // 안개 낀 가짓수와 정령 숲의 어스름은 실제 조명·날씨로(그림이 아니다)
   if (data.mood === "fog" || args.theme === "spirit") {
@@ -82,12 +95,12 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     ok: true,
     mapIds: [mapId!],
     entrance: { mapId: mapId!, x: entry.x, y: entry.y },
-    summary: `${spec.name}: ${args.theme} route ${map.width}×${map.height} (${mapId}, ${data.variant ?? "?"}) — landmark «${data.heroName ?? "?"}»${data.heroFront ? ` at heroFront (${data.heroFront.x},${data.heroFront.y})` : " (not placed)"}`
-      + `${data.sideAt ? `, side nook ${data.side} (${data.sideAt.x},${data.sideAt.y})` : ""}, enemySpots ${(data.enemySpots ?? []).map((c) => `(${c.x},${c.y})`).join(" ") || "-"}, road ${args.sides[0]} (${entry.x},${entry.y}) → ${args.sides[1]}${data.exit ? ` (${data.exit.x},${data.exit.y})` : ""}`,
+    summary: `${spec.name}: ${args.theme} route ${map.width}×${map.height} (${mapId}, ${data.shape ?? "pass"} · ${data.variant ?? "?"}) — landmark «${data.heroName ?? "?"}»${data.heroFront ? ` at heroFront (${data.heroFront.x},${data.heroFront.y})` : " (not placed)"}`
+      + `${data.sideAt ? `, side nook ${data.side} (${data.sideAt.x},${data.sideAt.y})` : ""}, enemySpots ${(data.enemySpots ?? []).map((c) => `(${c.x},${c.y})`).join(" ") || "-"}, road reaches ${(data.routeExits ?? []).map((e) => `${e.side} (${e.x},${e.y})`).join(" · ") || args.sides.join(" · ")}${data.dungeonGate ? `, dungeon entrance cell (${data.dungeonGate.x},${data.dungeonGate.y})` : ""}`,
     warnings: [...args.warnings, ...(res.warnings ?? []).map(String)],
     missingArt: [],
     calls: run.calls.slice(first),
-    state: { tilesetId: "beodeul_city", theme: args.theme, variant: data.variant, layout: data.layout, hero: data.hero, side: data.side, entry, exit: data.exit, heroAt: data.heroAt, heroFront: data.heroFront ?? undefined, sideAt: data.sideAt ?? undefined, enemySpots: data.enemySpots ?? [], freeSpots: free, start: entry },
+    state: { tilesetId: "beodeul_city", theme: args.theme, shape: data.shape, routeExits: data.routeExits ?? [], ...(data.dungeonGate ? { dungeonGate: data.dungeonGate } : {}), variant: data.variant, layout: data.layout, hero: data.hero, side: data.side, entry, exit: data.exit, heroAt: data.heroAt, heroFront: data.heroFront ?? undefined, sideAt: data.sideAt ?? undefined, enemySpots: data.enemySpots ?? [], freeSpots: free, start: entry },
   };
 }
 

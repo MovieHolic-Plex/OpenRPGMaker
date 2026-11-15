@@ -8,7 +8,8 @@ import { fixPlayerStart } from "../../judge/machineChecks";
 import type { PersonSpec, PlaceBuildResult, PlaceRecord, PlaceSpec } from "../../shared/types";
 import { buildPeople } from "../../place/people";
 import { buildEvent } from "../../story/events";
-import { eventBeats, isInside, orderPlaces, walkGame, type GameSpec } from "../../story/makeGame";
+import { eventBeats, isInside, isOutdoor, orderPlaces, walkGame, type GameSpec } from "../../story/makeGame";
+import { roadMaterial } from "../../place/surface";
 import { gateFor, settleDungeonGates } from "../../place/dungeonGates";
 import { arrivalEntrance } from "../../place/dungeonParts";
 import { designMissingRooms } from "../../place/designRooms";
@@ -58,12 +59,25 @@ export function makeGameVerbs(c: VerbContext & Pick<ReturnType<typeof peopleVerb
           const ar = arrivalEntrance(spec, place.side); spec = ar.spec; if (ar.note) linkNotes.push(ar.note);
           if (parentMap && outsideBuilt(parentMap)) { const g = gateFor(env.ctx.project, parentMap, spec.dungeonDesign, place.side); if (g) spec = { ...spec, gate: g }; }
         }
-        // 길목은 지나가는 곳 — 부모에서 본 방향(side)의 맞은편 변으로 들어와, 이 길목에서 이어지는 다음 장소의 방향(없으면 같은 방향)으로 나간다.
-        if (builder?.id === "route" && !spec.exits?.length) {
+        // 길목의 꼴은 연결 자료가 정한다 — 부모(들어오는 변)와 이 길목에서 이어지는 장소들의 변·종류를 명세에 싣는다(모델이 적지 않는다).
+        // 변 하나 = 막다른 길, 던전이 달리면 던전 어귀, 셋·넷 = 갈림길. 마을로 가는 변은 그 마을 길의 급(돌·흙)을 따른다.
+        if (builder?.id === "route") {
           const OPP = { north: "south", south: "north", east: "west", west: "east" } as const;
-          const into = place.side ? OPP[place.side] : "south";
-          const onward = order.find((p) => p.from === place.key && p.side && p.side !== into)?.side ?? (place.side ?? "north");
-          spec = { ...spec, exits: [into, onward] };
+          const kindOf = (sp: PlaceSpec): string => builderFor(sp)?.id ?? String(sp.type);
+          const pavedOf = (mapId: string | undefined): boolean => { const m = mapId ? env.ctx.project.maps[mapId] : undefined; return !!m && /포석/u.test(roadMaterial(env.ctx.project, m) ?? ""); };
+          const links: NonNullable<PlaceSpec["routeLinks"]>[number][] = [];
+          if (parent) links.push({ side: place.side ? OPP[place.side] : "south", kind: parent.builderId, ...(pavedOf(parentMap) ? { paved: true } : {}) });
+          for (const child of order.filter((p) => p.from === place.key)) {
+            const kind = kindOf(child.spec as PlaceSpec);
+            if (kind === "dungeon" || child.spec.type === "cave") links.push({ kind: "dungeon", dungeonType: String((child.spec as { dungeonDesign?: { type?: string } }).dungeonDesign?.type ?? child.spec.theme ?? (child.spec.type === "cave" ? "cave" : "")) || "cave" });
+            else if (isOutdoor(child.spec as PlaceSpec)) links.push({ side: child.side ?? "north", kind });
+          }
+          if (links.length) spec = { ...spec, routeLinks: links };
+        }
+        // 길목에 달린 던전: 입구는 그 길목이 낸 자리(길 끝·곁길 끝)에 선다.
+        if (builder?.id === "dungeon" && parent?.builderId === "route") {
+          const g = (parent.result.state as { dungeonGate?: { x: number; y: number } } | undefined)?.dungeonGate;
+          if (g && parentMap) spec = { ...spec, gate: { fromMapId: parentMap, x: g.x, y: g.y } };
         }
         if (!builder) { session.missingArt.add(`${spec.name}(${spec.type}) — 이 종류를 짓는 빌더가 없다`); lines.push(`${place.key}: 짓는 빌더 없음`); continue; }
         env.emit({ type: "execution_status", name: "v2.build", ok: true, summary: `${spec.name} 짓는 중(${i + 1}/${order.length}, ${builder.id})` });
@@ -89,7 +103,8 @@ export function makeGameVerbs(c: VerbContext & Pick<ReturnType<typeof peopleVerb
         // 잇기
         if (!parent || !parentMap) continue;
         linkNotes.push(linkChild(parentMap, parent.spec, parent.result, spec, result, place.side));
-        if (builder.id === "dungeon") linkNotes.push(...settleDungeonGates(run, result.mapIds, outsideBuilt, place.side));
+        // 길목에 달린 던전의 입구는 그 길목이 낸 자리(길 끝) 그대로 둔다 — 가장자리로 옮기지 않는다.
+        if (builder.id === "dungeon" && !(parent.builderId === "route" && spec.gate)) linkNotes.push(...settleDungeonGates(run, result.mapIds, outsideBuilt, place.side));
       }
       recordWrite(env, run, `${id}:links`, "make_game", { links: true }, true, linkNotes.join(" / ").slice(0, 400));
       // 사람·사건
