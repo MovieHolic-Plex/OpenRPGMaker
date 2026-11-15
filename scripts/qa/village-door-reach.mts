@@ -1,6 +1,6 @@
 // 마을의 건물 문·이벤트가 시작 칸(큰길이 드는 입구)에서 걸어 닿는지 센다 — 그림도 프로젝트 사본도 쓰지 않는다(숫자만 찍는다).
 // 사용: bun scripts/qa/village-door-reach.mts [--salts 6] [--json 파일]
-//   1) 실모델 확인 빌드 r5 «물레방아가 멈춘 날» 의 기록된 마을 요청(조수가 자리를 준 강가 마을 — 언덕 위 탑집 문이 갇혔다)을 소금을 바꿔 가며 다시 짓는다.
+//   1) 실모델 확인 빌드 r5 «물레방아가 멈춘 날» 의 기록된 마을 요청(조수가 자리를 준 강가 마을 — 언덕 위 탑집 문이 갇혔다)을 씨앗을 바꿔 가며 다시 짓는다(첫 씨앗이 그 판의 것).
 //   2) 탐침의 요청 열 가지(자동 배치)를 소금마다, 게임 열쇠 없이 한 번 · 열쇠를 주어 한 번(그 게임의 기물이 더 놓인다) 짓는다.
 // 닿는지는 엔진의 걸음(canMove — 통행·단·경사로)으로 입구에서 번져 본다. 문 = 놓인 건물의 문 앞 칸(buildingEntrances). 이벤트 = 그 칸이나 이웃 칸.
 import fs from "node:fs";
@@ -10,8 +10,6 @@ import { createBlankProject } from "../../src/project/defaults.ts";
 import { canMove, isPassable } from "../../src/project/collision.ts";
 import { buildingEntrances } from "../../src/ai/v2/place/entrances.ts";
 import { villageArgs } from "../../src/ai/v2/place/builders/village.ts";
-import { builderFor } from "../../src/ai/v2/place/builders/index.ts";
-import { createBuildRun } from "../../src/ai/v2/shared/buildRun.ts";
 
 const arg = (n: string, d: string) => { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] ?? d : d; };
 const SALTS = Math.max(1, Number(arg("salts", "6")));
@@ -54,13 +52,14 @@ function count(project: any, map: any, from: { x: number; y: number }) {
 const rows: any[] = [];
 const add = (group: string, name: string, r: ReturnType<typeof count> | null, note = "") => { rows.push({ group, name, ...(r ?? { doors: 0, lostDoors: [], events: 0, lostEvents: [] }), note }); if (!r || r.lostDoors.length || r.lostEvents.length) console.log(`  ${group} ${name}: ${r ? `못 닿는 문 ${r.lostDoors.join(" ")} · 못 닿는 이벤트 ${r.lostEvents.join(" ")}` : note}`); };
 
+// r5: 조수의 마을 도구가 받은 인자 그대로(villageArgs) + 씨앗을 고정해서 — 자리를 준 마을은 make_place 가 씨앗을 주지 않아 부를 때마다 달라진다(그 판은 52002).
 for (let k = 0; k < SALTS * 2; k += 1) {
-  const salt = k === 0 ? 541543 : 541543 + k * 7919;
-  const ctx: any = { project: JSON.parse(baseJson), assistantRun: true, lookKey: R5_KEY }; ctx.currentMapId = ctx.project.startMapId;
-  const spec = { ...R5, salt };
-  const res: any = builderFor(spec)!.build(createBuildRun(ctx), spec);
-  if (!res.ok) { add("r5", `salt ${salt}`, null, `FAIL ${String(res.summary).slice(0, 120)}`); continue; }
-  add("r5", `salt ${salt}`, count(ctx.project, ctx.project.maps[res.mapIds[0]], res.entrance));
+  const seed = (52002 + k * 7919) % 100000;
+  const ctx: any = { project: JSON.parse(baseJson), assistantRun: true, lookKey: R5_KEY };
+  const { args: a0 } = villageArgs(R5);
+  const r: any = runTool(ctx, "author_beodeul_town", { ...a0, name: R5.name, seed });
+  if (!r.ok) { add("r5", `seed ${seed}`, null, `FAIL ${String(r.summary).slice(0, 120)}`); continue; }
+  add("r5", `seed ${seed}`, count(ctx.project, ctx.project.maps[r.data.mapId], r.data.entrance));
 }
 for (const key of ["", "game-alpha"]) for (let salt = 0; salt < SALTS; salt += 1) for (const c of CASES) {
   const { args: a0 } = villageArgs({ type: "village", ...c.spec } as any);
