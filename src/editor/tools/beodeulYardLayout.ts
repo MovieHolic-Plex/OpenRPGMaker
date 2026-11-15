@@ -243,8 +243,22 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
       if (want.landmarkOn && want.landmarkOn.bank === p.bank && (far || want.landmarkOn.level === p.level)) continue;
       if (p.role === "house" ? left - 1 < Math.min(3, want.houses - 1) : workSeated || !want.work) continue;
       const undo = env.mark();
-      const sp = env.seat(p.role, { x: p.x, y: p.y, maxR: 6, tier: p.level });
-      if (!sp || want.bankOf(sp.front.y * W + sp.front.x) !== p.bank || cutsTier(sp)) { undo(); continue; }
+      // 강 건너 터는 목을 막지 않는 자리를 둘레 여덟 곳까지 더 찾아보고, 그래도 없으면 첫 자리에 그대로 앉힌다 — 좁은 강 건너 터는 어디에 앉혀도 터를 둘로 가르는데,
+      // 그렇다고 비우면 강 건너의 쓰임이 통째로 없어진다(은행 r3b-fun 버들마을: 문 앞 남쪽 띠와 그 북쪽 48칸으로 갈린다고 집을 물렸더니 강 건너에 건물이 하나도 없었다).
+      const tryAt = (dx: number, dy: number): YardSeat | null => {
+        undo();
+        const got = env.seat(p.role, { x: p.x + dx, y: p.y + dy, maxR: 6, tier: p.level });
+        return got && want.bankOf!(got.front.y * W + got.front.x) === p.bank ? got : null;
+      };
+      let sp = tryAt(0, 0);
+      if (sp && cutsTier(sp)) {
+        sp = null;
+        if (far) {
+          for (const [dx, dy] of [[-4, 0], [4, 0], [0, -4], [0, 4], [-4, -4], [4, -4], [-4, 4], [4, 4]] as const) { const got = tryAt(dx, dy); if (got && !cutsTier(got)) { sp = got; break; } }
+          if (!sp) sp = tryAt(0, 0);
+        }
+      }
+      if (!sp) { undo(); continue; }
       done.add(key); plan.apart.push({ x: sp.front.x, y: sp.front.y, role: p.role, why: far ? "bank" : "tier" });
       if (p.role === "house") { houses.push(sp); left -= 1; } else workSeated = true;
     }
