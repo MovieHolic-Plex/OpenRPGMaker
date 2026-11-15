@@ -504,6 +504,19 @@ export const RELIEF_STYLES: Readonly<Record<string, ReliefStyleSpec>> = {
   crystal: { family: "crystal", smoothStairs: true, top: ["#464450", "#646272", "#868298", "#a7a3be", "#bdb8d7", "#d9d4f7"], wall: ["#2b2939", "#3d3b51", "#4f4b67", "#605c7e", "#716d95", "#847fae"], accent: ["#3d5f8a", "#4f82b8", "#6aa8de", "#8fcaf5", "#bfe6ff", "#effaff"] },
 };
 
+/**
+ * 양식 이름 → 명세. 표에 적힌 이름은 그대로, 절벽 모습의 바닥 재질 변형(`cliff-rock@ground-sand`)은 그 자리에서 만든다 —
+ * 절벽 모습(면·계단·턱)에 그 바닥의 풀 둑 변형(grass-steps@ground-…)의 윗면 색만 입힌 것이라 표에 서른 줄을 더 적지 않는다(편집기 양식 목록에도 나오지 않는다).
+ */
+export function reliefStyleSpec(style: string | undefined): ReliefStyleSpec | undefined {
+  if (!style) return undefined;
+  const hit = RELIEF_STYLES[style];
+  if (hit) return hit;
+  const at = style.indexOf("@");
+  const base = at > 0 ? RELIEF_STYLES[style.slice(0, at)] : undefined, ground = at > 0 ? RELIEF_STYLES[`grass-steps${style.slice(at)}`] : undefined;
+  return base?.natural && ground ? { ...base, top: ground.top } : undefined;
+}
+
 /** 칩셋 id(atlas_biome_<biome>) → relief.style. 모르는 칩셋이면 undefined(기본 흙벽 그림). */
 export function reliefStyleForTileset(tilesetId: string | undefined): string | undefined {
   const id = tilesetId?.replace(/^atlas_biome_/, "");
@@ -545,7 +558,7 @@ export function compileReliefStyle(style: string | undefined): ReliefWallStyle |
   if (!style) return null;
   const hit = compiled.get(style);
   if (hit) return hit;
-  const spec = RELIEF_STYLES[style];
+  const spec = reliefStyleSpec(style);
   if (!spec) return null;
   const art = RELIEF_WALL_FAMILIES[spec.family];
   const over = spec.overlay ? RELIEF_WALL_OVERLAYS[spec.overlay] : null;
@@ -571,7 +584,7 @@ export function compileReliefStyle(style: string | undefined): ReliefWallStyle |
 export function reliefRampArt(style: string | undefined): ReliefRampArt | undefined {
   // 바닥 재질 변형(grass-steps@ground-…)은 원래 양식의 계단 도트를, 절벽 모습 양식은 빌려 쓰는 양식(rampArtOf)의 도트를 쓴다
   const art = rampArt as Record<string, ReliefRampArt>, base = style?.split("@")[0];
-  return style ? art[style] ?? art[base!] ?? art[RELIEF_STYLES[base!]?.rampArtOf ?? ""] : undefined;
+  return style ? art[style] ?? art[base!] ?? art[reliefStyleSpec(base)?.rampArtOf ?? ""] : undefined;
 }
 
 /**
@@ -580,13 +593,13 @@ export function reliefRampArt(style: string | undefined): ReliefRampArt | undefi
  */
 export function reliefStyleForGround(style: string, ground: string | undefined): string {
   const name = ground ? `${style}@${ground}` : style;
-  return RELIEF_STYLES[name] ? name : style;
+  return reliefStyleSpec(name) ? name : style;
 }
 
 /** 자동 계단 경사로를 비탈로 그리는 양식인가(ReliefStyleSpec.smoothStairs). */
 // 양식 없는 맵(기본 흙벽)과 벽면에 판 계단이 없는 양식은 모두 비탈로 잇는다 — 렌더러가 디딤판을 회색 벽돌로 칠하던 길을 없앴다
 // (2026-11-14 오너 「계단을 이딴 식으로 하면 절대 안 된다니까 ?」). 계단 그림은 그 양식의 경사로 도트(없으면 버들항 칩셋 돌계단 조각, screen.ts)다.
-export const reliefSmoothStairs = (style: string | undefined): boolean => !RELIEF_STYLES[style ?? ""]?.carvedStairs;
+export const reliefSmoothStairs = (style: string | undefined): boolean => !reliefStyleSpec(style)?.carvedStairs;
 /** 벽면에 판 계단을 칠하는 양식이면 그 설정({ log }), 아니면 null(ReliefStyleSpec.carvedStairs). */
 export const reliefCarvedStairs = (style: string | undefined): { readonly log: boolean } | null =>
-  (style && RELIEF_STYLES[style]?.carvedStairs) ? { log: !!RELIEF_STYLES[style]!.carvedStairs!.log } : null;
+  reliefStyleSpec(style)?.carvedStairs ? { log: !!reliefStyleSpec(style)!.carvedStairs!.log } : null;

@@ -6,6 +6,8 @@
 //   칠하기: 풀 → 포석·모랫길·광장·물 → 밭 → 집(그림자·기초) → 나무 → 소품 → 울타리 → 둑 풀·숲 수관·그림자 → 물 위 길은 널판 → 높이(relief)·계단 그림.
 // 조각 목록은 칩셋 메타(structureKits 의 ai.role·ai.tags·parts.entrance·크기)에서 뽑는다. 모델이 받는 글은 모두 영어다.
 import type { Project, StructureKitDef, TilesetDef, GameMap } from "@/project/types";
+import { tilesetLookReliefStyle } from "@/assets/tilesetLooks";
+import { activeTilesetLook } from "@/project/kitLook";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { BEODEUL_NATURE, BEODEUL_NATURE_ID, createBeodeulNatureTileset } from "@/project/defaults/beodeulNature";
@@ -420,7 +422,7 @@ export function layBboxVillageInDraft(draft: Project, L: BboxVillageLayout, T: B
   {
     const m = map();
     if (lv.some((v) => v > 0)) {
-      m.relief = { width: W, height: H, levels: lv.slice(), ramps: pl.ramps.slice(), style: "grass-steps" } as GameMap["relief"];
+      m.relief = { width: W, height: H, levels: lv.slice(), ramps: pl.ramps.slice(), style: tilesetLookReliefStyle(m.tilesetId, ((ts) => (ts ? activeTilesetLook(ts) : undefined))(draft.tilesets[m.tilesetId]), "grass-steps") } as GameMap["relief"];
       invalidateReliefSlopes(m.relief!);
       const mp = kitDef("bd-mpart-stairs");
       const tileAt = (col: number, row: number) => mp?.rows[row]?.tiles?.[col] ?? -1;

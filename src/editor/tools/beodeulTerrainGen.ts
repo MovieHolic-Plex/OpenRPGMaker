@@ -31,7 +31,16 @@ export interface TerrainGenInput {
   bands?: boolean;
   /** 그림 도안에서 읽은 칸 지도(행 문자열, 칸 하나 = 글자 하나): 0~3 땅 단 · ~ 강 · | 폭포(강으로 그린다) · o 못. 주면 생성한 단·물 대신 이 모양(맵 크기에 맞춰 늘린다). */
   given?: { readonly rows: readonly string[] };
+  /**
+   * 절벽 습관(게임 겉모습 cliff — assets/beodeulLooks.json): 단 하나의 절벽 높이(칸)와 절벽 줄의 굽이. 없으면 예전 그대로(단 하나 = 두 칸, 굽이 없음).
+   * step 단이 둘일 때의 높이 · lone 단이 하나뿐일 때의 높이(외딴 둔덕·띠는 더 높이 세울 수 있다) · straight 절벽 줄이 곧게 이어질 수 있는 가장 긴 칸 수(굽이).
+   * 단이 셋 이상이면 두 칸을 넘지 않는다(세 칸 절벽 셋은 맵 세로를 절벽이 다 먹는다).
+   * 굽이는 여기서 넣지 않고 CodeTerrain.cliffStraight 로 넘긴다 — 시공기가 길·계단·집 자리를 잡은 뒤 빈 땅의 절벽 줄에만 넣는다(scallopTierEdges).
+   * 땅을 만들 때 넣으면 굽이가 길 찾기·계단 자리·숲 덩이를 흔들어 윗단에 못 닿는 칸이 늘었다(2026-11-14 프로브 30마을: 896 → 1095칸). 그림 도안(given) 땅에는 넣지 않는다.
+   */
+  cliff?: TerrainCliffHabit;
 }
+export interface TerrainCliffHabit { readonly step: number; readonly lone?: number; readonly straight?: number }
 
 export interface TerrainArea {
   id: number; level: number; area: number;
@@ -60,6 +69,12 @@ export interface CodeTerrain {
   /** 긴 남향 절벽의 끊을 자리(위 단 칸) — 시공기가 절벽 위·아래에 숲 덩이를 세워 긴 띠를 조각으로 끊어 보이게 한다. */
   cliffBreaks: { x: number; y: number }[];
   maxLevel: number;
+  /** 단 하나의 절벽 높이(칸) — 이웃 단의 levels 차. 길 찾기가 한 번에 오르는 단 차의 기준. */
+  tierStep: number;
+  /** 절벽 줄이 곧게 이어질 수 있는 가장 긴 칸 수(습관의 straight, 없거나 도안 땅이면 0) — 시공기가 길·계단을 놓은 뒤 scallopTierEdges 에 넘긴다. */
+  cliffStraight: number;
+  /** 게임의 절벽 습관(TerrainGenInput.cliff)으로 만든 땅인가 — 시공기가 새 계단 규칙(절벽 끝 길 곁 계단 자리 남기기)을 이 땅에만 쓴다. 옛 땅은 예전 그대로 짓는다. */
+  habit: boolean;
   note: string;
 }
 
@@ -269,6 +284,73 @@ function components(W: number, H: number, same: (a: number, b: number) => boolea
     list.push(cells);
   }
   return { comp, list };
+}
+
+/**
+ * 절벽 줄 굽이(2026-11-14 오너 참고 그림: 절벽 줄이 서너 칸마다 불룩 나오고 들어간다). 같은 두 단 사이의 곧은 가장자리가 maxRun 칸보다 길면
+ * 곧은 토막 2~maxRun 칸마다 폭 2~4칸의 굽이를 하나씩 — 가장자리를 한 칸 밀어 불룩(곶)이나 오목(만)을 만든다. 폭 2칸 이상이라 다듬기(tidyLevels)·
+ * 렌더러 깎기(prune)가 지우지 않고, 밀린 뒤에도 두 단 모두 그 자리에서 두 칸 넘게 남는다. 물 둘레 한 칸·맵 끝 두 칸은 건드리지 않는다.
+ * 남향·북향 가장자리(가로 줄)를 먼저, 동·서 가장자리(세로 줄)를 다음에 — 세로 줄의 굽이는 짧은 남향 면을 만들어 선뿐이던 옆 가장자리가 면으로 끊긴다.
+ * locked(c): 바꾸면 안 되는 칸(길·계단 곁·집·광장 자리) — 굽이의 모든 칸이 풀려 있어야 넣는다. 그래서 길·계단·집 자리는 굽이가 없을 때와 한 칸도 다르지 않다.
+ * accept(cells, was): 굽이 하나를 lv 에 적은 뒤 부른다 — false 면 그 굽이를 되돌리고 반대쪽(불룩 ↔ 오목)을 해 본다. 시공기는 여기서 «닿던 칸이 그대로 닿는가» 를 잰다.
+ */
+export function scallopTierEdges(lv: Uint8Array, water: ArrayLike<number>, W: number, H: number, maxRun: number, rand: () => number, locked?: (c: number) => boolean, accept?: (cells: number[], was: number[]) => boolean): number {
+  const wet = new Uint8Array(W * H);
+  for (let c = 0; c < W * H; c += 1) if (water[c]) { const x = c % W, y = (c - x) / W; for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) { const X = x + dx, Y = y + dy; if (X >= 0 && Y >= 0 && X < W && Y < H) wet[Y * W + X] = 1; } }
+  let made = 0;
+  // 축 하나: (u, v) = 줄 방향·줄에 수직. at(u, v) 가 칸 번호. 가장자리는 v 와 v+1 사이.
+  for (const horiz of [true, false]) {
+    const U = horiz ? W : H, V = horiz ? H : W, at = (u: number, v: number) => (horiz ? v * W + u : u * W + v);
+    const A = (u: number, v: number) => lv[at(u, v)]!;
+    // 그 칸을 lvl 로 바꿔도 되는가: 물 곁이 아니고, 네 이웃이 모두 두 단(a·b) 중 하나
+    const free = (u: number, v: number, a: number, b: number) => {
+      if (u < 2 || v < 2 || u >= U - 2 || v >= V - 2) return false;
+      const c = at(u, v); if (wet[c] || locked?.(c)) return false; const x = c % W, y = (c - x) / W;
+      for (const [dx, dy] of N4) { const n = (y + dy) * W + x + dx; if (lv[n] !== a && lv[n] !== b) return false; }
+      return true;
+    };
+    for (let v = 2; v < V - 3; v += 1) {
+      let u0 = -1, a = -1, b = -1;
+      for (let u = 0; u <= U; u += 1) {
+        const on = u < U && A(u, v) !== A(u, v + 1) && !wet[at(u, v)] && !wet[at(u, v + 1)];
+        if (on && u0 >= 0 && A(u, v) === a && A(u, v + 1) === b) continue;
+        if (u0 >= 0 && u - u0 > maxRun) {
+          let p = u0 + 2 + Math.floor(rand() * Math.max(1, maxRun - 2)), dir = rand() < 0.5 ? 1 : -1;
+          while (p + 2 <= u - 2) {
+            const w = Math.min(2 + Math.floor(rand() * 3), u - 2 - p);
+            // dir 1: 가장자리를 v+1 쪽으로(위 단 a 가 한 칸 내려온다) · -1: v 쪽으로(아래 단 b 가 한 칸 올라온다)
+            let done = false;
+            for (const d of [dir, -dir]) {
+              const tv = d > 0 ? v + 1 : v, to = d > 0 ? a : b, keep = d > 0 ? b : a, far = d > 0 ? [v + 2, v + 3] : [v - 1, v - 2];
+              let ok = w >= 2;
+              for (let k = 0; ok && k < w; k += 1) ok = free(p + k, tv, a, b) && far.every((q) => q >= 0 && q < V && A(p + k, q) === keep);
+              if (!ok) continue;
+              const cells: number[] = [], was: number[] = [];
+              for (let k = 0; k < w; k += 1) { const c = at(p + k, tv); cells.push(c); was.push(lv[c]!); lv[c] = to; }
+              if (accept && !accept(cells, was)) { cells.forEach((c, k) => { lv[c] = was[k]!; }); continue; }
+              made += 1; done = true; break;
+            }
+            // 못 넣은 자리(잠긴 칸·물 곁·되돌린 굽이)는 한 칸만 비켜 다시 해 본다 — 건너뛰면 길·소품이 드문드문 선 절벽에 굽이가 거의 서지 않는다
+            if (!done) { p += 1; continue; }
+            dir = rand() < 0.7 ? -dir : dir;
+            p += w + 2 + Math.floor(rand() * Math.max(1, maxRun - 2));
+          }
+        }
+        if (on) { u0 = u; a = A(u, v); b = A(u, v + 1); } else u0 = -1;
+      }
+    }
+  }
+  return made;
+}
+
+/** 절벽 줄에서 같은 두 단 사이로 곧게 이어진 가장 긴 토막(칸): south = 남향 면(화면에 면으로 보이는 절벽), side = 동·서 가장자리(선). */
+export function longestTierEdgeRuns(levels: ArrayLike<number>, W: number, H: number): { south: number; side: number } {
+  let south = 0, side = 0;
+  for (let y = 0; y + 1 < H; y += 1) { let run = 0, a = -1, b = -1;
+    for (let x = 0; x < W; x += 1) { const p = levels[y * W + x]!, q = levels[(y + 1) * W + x]!; if (p !== q && p === a && q === b) run += 1; else run = p !== q ? 1 : 0; a = p; b = q; if (p > q && run > south) south = run; } }
+  for (let x = 0; x + 1 < W; x += 1) { let run = 0, a = -1, b = -1;
+    for (let y = 0; y < H; y += 1) { const p = levels[y * W + x]!, q = levels[y * W + x + 1]!; if (p !== q && p === a && q === b) run += 1; else run = p !== q ? 1 : 0; a = p; b = q; if (run > side) side = run; } }
+  return { south, side };
 }
 
 const CHAR_LABEL: Record<TerrainCharacter, string> = { hill: "언덕", slope: "산비탈", terraces: "계단식 단", plateau: "고원", flat: "평지" };
@@ -588,7 +670,11 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
   tidyLevels(lv, W, H);
   // 단 하나 = 두 칸 절벽(2026-10-30 ab13 판정 「절벽이 1px 갈색 선 — 높이가 안 읽힌다」): 띠 지형의 마을 위 단처럼 이웃 단 차를 2 로 —
   // 3/4 에서 남향 절벽면이 두 칸 높이로 그려지고, 길은 세 칸 계단으로 오른다.
-  for (let c = 0; c < W * H; c += 1) lv[c] = lv[c]! * 2;
+  // 절벽 습관(2026-11-14): 게임마다 한 칸·두 칸·세 칸 — 단이 하나뿐이면 lone, 둘이면 step, 셋 이상이면 두 칸까지.
+  let tiersCut = 0; for (const v of lv) tiersCut = Math.max(tiersCut, v);
+  const habit = input.cliff;
+  const tierStep = !habit ? 2 : Math.max(1, Math.min(3, Math.round(tiersCut <= 1 ? habit.lone ?? habit.step : tiersCut >= 3 ? Math.min(2, habit.step) : habit.step)));
+  for (let c = 0; c < W * H; c += 1) lv[c] = lv[c]! * tierStep;
   for (let c = 0; c < W * H; c += 1) if (water[c]) { /* 물은 다듬기에서 둑과 같은 단으로 남아 있다 */ }
   let maxLevel = 0; for (const v of lv) maxLevel = Math.max(maxLevel, v);
 
@@ -640,7 +726,7 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
   }
   const counts = new Map<number, number>(); for (let c = 0; c < W * H; c += 1) if (!water[c]) counts.set(lv[c]!, (counts.get(lv[c]!) ?? 0) + 1);
   const note = `코드 지형 · ${CHAR_LABEL[character]}(높은 곳 ${high}) · 단 ${[...counts.keys()].sort().map((k) => `${k}:${counts.get(k)}`).join("/")}${notes.length ? " · " + notes.join(" · ") : ""}`;
-  return { W, H, character, high, height: h, levels: lv, water, river, forest, areas, crossings, cliffBreaks, maxLevel, note };
+  return { W, H, character, high, height: h, levels: lv, water, river, forest, areas, crossings, cliffBreaks, maxLevel, tierStep, cliffStraight: habit?.straight && !input.given ? Math.max(3, habit.straight) : 0, habit: !!habit, note };
 }
 
 /** 모델에게 보여 줄 지형 요약(글) — 좌표는 칸(x 오른쪽, y 아래). */
