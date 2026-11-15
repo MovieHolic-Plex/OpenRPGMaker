@@ -33,7 +33,7 @@ function ring(c: SceneCtx, x: number, y: number, w: number, h: number, material:
 const keepFront = (c: SceneCtx, x: number, w: number, foot: number) => c.mark(x, foot + 1, w, 2, Occ.Walk, [Occ.Lot]);
 const rect = (b: SceneBlock) => ({ x: b.sx, w: b.ex - b.sx, top: b.band.top, foot: b.band.foot, h: b.band.foot - b.band.top + 1 });
 
-const SANMON = "jp-bldg-f-sanmon", TORII = "jp-bldg-f-torii";
+const SANMON = "jp-bldg-f-sanmon", TORII = "jp-bldg-f-torii", EARTH_LOTS = ["vacant", "construction"];
 
 function park(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   const { x, w, top, foot, h } = rect(b), { tone, kind } = c;
@@ -137,6 +137,7 @@ function parking(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
 }
 
 function construction(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
+  if (c.fable && EARTH_LOTS.some((u) => c.piecesUsed.includes(u))) return false;   // 새 거리: 맨땅 필지(빈터·공사장)는 지도에 하나까지
   const { x, w, top, foot, h } = rect(b);
   const y0 = Math.max(top, foot - 7), hh = foot - y0 + 1;
   c.fill(x, y0, w, hh, "산길 흙");
@@ -196,7 +197,7 @@ function estate(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
 }
 
 function vacant(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
-  if (c.fable && c.scenesUsed.has("akichi")) return false;                  // 새 거리: 맨땅 빈터는 지도에 하나까지
+  if (c.fable && EARTH_LOTS.some((u) => c.piecesUsed.includes(u))) return false;   // 새 거리: 맨땅 필지(빈터·공사장)는 지도에 하나까지
   const { x, w, top, foot } = rect(b), { tone, kind } = c;
   const y0 = Math.max(top, foot - 5);
   c.fill(x, y0, w, foot - y0 + 1, kind.noGreen ? "산길 흙" : tone.green);

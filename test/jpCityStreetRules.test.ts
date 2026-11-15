@@ -209,7 +209,7 @@ describe("jp_city new street rules (fable_street pieces)", () => {
 
   it("gives the strip behind a shop row a use with an edge: no earth or lawn against a shop's back wall, one fenced vacant lot per map at most", () => {
     for (const p of plans) {
-      expect(p.plan.pieces.filter((q) => q === "vacant").length, `${p.id}#${p.seed} vacant lots`).toBeLessThanOrEqual(1);
+      expect(p.plan.pieces.filter((q) => q === "vacant" || q === "construction").length, `${p.id}#${p.seed} bare-earth lots (vacant, building site)`).toBeLessThanOrEqual(1);
       if (!["arcade", "ichiba", "ekimae", "monzen"].includes(p.id)) continue;
       const f = p.plan.fable!;
       for (const b of p.plan.placed) if (b.kit && !["house", "apartment", "sacred"].includes(b.kit.cat) && b.y >= 1) for (let x = b.x; x < b.x + b.w; x++) {
