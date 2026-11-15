@@ -407,9 +407,9 @@ describe("앞 단계가 싸움인 길목의 안내", () => {
     return commandsOf(project.maps[project.startMapId]!.events.find((e) => e.id === "ev_to_palace")).filter((c) => c.kind === "text").map((c) => String(c.body)).join(" / ");
   };
 
-  it("싸움 단계 뒤의 문은 필요한 것만 말한다 — 말 단계 뒤의 문은 전처럼 그 사람을 가리킨다", () => {
-    expect(doorText("battle")).toBe("샘의 심장이 있어야 이 길로 갈 수 있을 것 같다.");
-    expect(doorText("talk")).toBe("샘의 심장이 있어야 이 길로 갈 수 있을 것 같다. 먼저 잠든 왕의 묘실의 「미라 수호자」에게 말을 걸어 보자.");
+  it("길목은 필요한 것만 말한다 — 앞 단계가 싸움이든 사람이든 «먼저 … 「○○」» 줄이 없다(끝맺음까지 돈 뒤에도)", () => {
+    // 확인 빌드 r5: 싸움 뒤의 문만 고쳐, 사람 단계 뒤의 길목이 여전히 «먼저 물레강 선술집의 「주모 선이」에게 말을 걸어 보자» 를 말했다.
+    for (const kind of ["battle", "talk", "find"]) expect(doorText(kind), kind).toBe("샘의 심장이 있어야 이 길로 갈 수 있을 것 같다.");
   });
 });
 

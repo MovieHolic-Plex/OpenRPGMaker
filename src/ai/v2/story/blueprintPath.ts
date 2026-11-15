@@ -42,7 +42,7 @@ import { behindBuildingStrip } from "../place/entrances";
 import { foeGraphic, settleStepFoesIn, themeBattleBackdropsIn } from "./stepFoes";
 import { remapGives, settleCarriedSteps } from "./blueprintCarry";
 import { foeTroop, roadFoeSpecies } from "./stepFoeTroop";
-import { lockedHint, stepGoal, wordlessLine } from "./playerLines";
+import { stepGoal, wordlessLine } from "./playerLines";
 
 /**
  * 이미 지은 청사진 단계 이벤트·퍼즐 고리 이벤트를 걸어 가 조사할 수 있는 자리로 옮긴다(내용은 그대로). 옮긴 것 목록.
@@ -335,10 +335,9 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
     }
     const needs = k > 0 ? prevGives : undefined;
     const needText = step.needs && !/^(시작|없음|none|start)$/iu.test(step.needs.trim()) ? step.needs : needs;
-    // 잠긴 안내는 이 단계를 여는 앞 단계의 사람·물건을 이름으로 가리킨다 — needs·gives 는 깃발 이름이라 화면에 내지 않는다(playerLines.ts).
-    const lockedDefault = k > 0 ? [lockedHint(steps[k - 1]!, step.place)] : undefined;
-    // 사람 앞의 안내는 서술 한 줄로 묶는다(괄호 없는 줄은 그 사람의 말이 된다).
-    const lockedPerson = personal && lockedDefault ? [`(${who}${josa(who!, "은", "는")} ${step.kind === "battle" ? "아직 움직이지 않는다" : "아직 할 말이 없는 듯하다"}. ${lockedDefault[0]})`] : undefined;
+    // 잠긴 글은 «왜 아직인가» 만 말한다 — 앞 단계의 사람·물건을 가리키지 않는다(어디로 갈지는 「현재 목표」 줄의 일이다. needs·gives 는 깃발 이름이라 화면에 내지 않는다).
+    // 사람 앞의 글은 서술 한 줄이다(괄호 없는 줄은 그 사람의 말이 된다). 물건·자물쇠는 사슬 빌더의 기본 글(puzzle.ts «지금은 손댈 수 없다» 등).
+    const lockedPerson = personal && k > 0 ? [`(${who}${josa(who!, "은", "는")} ${step.kind === "battle" ? "아직 움직이지 않는다" : "아직 할 말이 없는 듯하다"}.)`] : undefined;
     const seat = existing ? { eventId: existing.id } : joins !== undefined ? { sameAs: joins } : { name: step.event, at: at! };
     let base: Omit<ChainLink, "role"> = { mapId: map.id, ...seat, ...(needs ? { needs } : {}), ...(!needs && prevCondition ? { needsCondition: prevCondition } : {}), ...(personal ? { person: who, speaker: who, ...(step.looks ? { looks: step.looks } : {}) } : {}), ...(step.kind === "find" ? { thing: "find" as const } : step.kind === "puzzle" || atThing ? { thing: true } : {}), ...(host ? { onArt: true } : {}), ...(way ? { opens: nextMap!.id } : {}), ...(existing && carried.renamed.has(existing.id) ? { relook: true } : {}) };
     prevCondition = undefined;
@@ -388,7 +387,7 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
         const note = `쪽지에는 ${digitWord(code.length)} 숫자 「${code}」. 어딘가의 번호인 것 같다.`;
         links.push({ ...base, eventId: undefined, person: undefined, speaker: undefined, thing: true, ...(noteHost ? { onArt: true } : {}), name: clueName, at: where.cell, role: "clue", learn,
           lines: keyed && needText ? [`${needText}${josa(needText, "으로", "로")} 열자 안에 쪽지가 있다.`, note] : [`${clueName}${josa(clueName, "을", "를")} 살펴보았다.`, note],
-          ...(lockedDefault ? { lockedLines: lockedDefault } : {}) });
+        });
         linkStep.push(-1);
         base = { mapId: map.id, ...seat, needs: learn, ...(base.thing ? { thing: base.thing } : {}), ...(base.onArt ? { onArt: true } : {}), ...(base.person ? { person: base.person, speaker: base.speaker } : {}) };
         clueLearn = learn;
@@ -431,17 +430,17 @@ function buildBlueprintPathCore(run: BuildRun, text: readonly PathStepText[] = [
       // 사람이 마지막 단계면: 대사가 없을 때 «살펴보았다»·엔딩 글을 그 사람 입으로 말하게 하지 않는다 — 할 일 한 줄 서술로 열고, 엔딩 글은 (싸움이 있으면 이긴 뒤) 서술로 붙인다.
       const endLines = t?.lines?.length ? t.lines : code ? ["번호 자물쇠다. 알아낸 번호를 맞춰 보자."] : personal ? lines : [lookLine(step.event), ...closing.slice(0, 1)];
       const closingNarration = personal && !t?.lines?.length && !code && closing.length ? { closeLines: [`(${closing[0]!})`] } : {};
-      const locked = modelLocked ?? codeLocked ?? lockedPerson ?? lockedDefault;
+      const locked = modelLocked ?? codeLocked ?? lockedPerson;
       links.push({ ...base, role: "ending", endingId: ending!.id, lines: endLines, ...closingNarration, ...(choice ? { choice } : {}), ...(variants.length ? { variants } : {}), ...(code ? { code, reward: { lines: solvedLines ?? (closing.length ? [closing[0]!] : [SOLVED_LINE]) }, ...(t?.options?.length ? { options: t.options } : {}), ...(t?.wrongLines?.length ? { wrongLines: t.wrongLines } : {}) } : {}), ...(locked ? { lockedLines: locked } : {}) });
     } else if (code) {
-      const locked = modelLocked ?? codeLocked ?? lockedDefault;
+      const locked = modelLocked ?? codeLocked;
       // 맞힌 뒤의 글(winLines)은 맞힌 자리에서 나온다 — 물건을 주지 않는 자물쇠가 말없이 풀리지 않게 기본 한 줄.
       const reward = handReward ? { ...handReward, ...(solvedLines ? { lines: [...solvedLines, `『${handed}』${josa(handed!, "을", "를")} 얻었다.`] } : {}) } : { flag: step.gives, ...keptGives(step), lines: solvedLines ?? [SOLVED_LINE] };
       links.push({ ...base, role: "code", code, ...(t?.options?.length ? { options: t.options } : {}), lines: t?.lines ?? ["번호 자물쇠다. 알아낸 번호를 맞춰 보자."], ...(locked ? { lockedLines: locked } : {}), ...(t?.wrongLines?.length ? { wrongLines: t.wrongLines } : {}), ...(t?.doneLines?.length ? { doneLines: t.doneLines } : {}), reward });
     } else {
       // 깃발(알게 된 것·열린 길)은 켜기만 한다 — 깃발 이름으로 «『…』을 알아냈다» 를 말하지 않는다(무엇을 알았는지는 대사가, 다음 할 일은 목표 줄이 알린다).
       const reward = handReward ? { ...handReward, ...(hand.line ? { lines: [hand.line] } : {}) } : { flag: step.gives, ...keptGives(step) };
-      links.push({ ...base, role: "pickup", lines, reward, ...(choice ? { choice } : {}), ...(t?.lockedLines?.length ? { lockedLines: t.lockedLines } : lockedPerson ? { lockedLines: lockedPerson } : lockedDefault ? { lockedLines: lockedDefault } : {}), ...(personal ? (t?.doneLines?.length ? { doneLines: t.doneLines } : battle ? { doneLines: [`(${who}${josa(who!, "은", "는")} 더는 덤비지 않는다.)`] } : choice ? { doneLines: [`(${who}${josa(who!, "과", "와")}는 이미 이야기를 마쳤다.)`] } : {}) : { doneLines: t?.doneLines?.length ? t.doneLines : ["더는 볼 것이 없다."] }) });
+      links.push({ ...base, role: "pickup", lines, reward, ...(choice ? { choice } : {}), ...(t?.lockedLines?.length ? { lockedLines: t.lockedLines } : lockedPerson ? { lockedLines: lockedPerson } : {}), ...(personal ? (t?.doneLines?.length ? { doneLines: t.doneLines } : battle ? { doneLines: [`(${who}${josa(who!, "은", "는")} 더는 덤비지 않는다.)`] } : choice ? { doneLines: [`(${who}${josa(who!, "과", "와")}는 이미 이야기를 마쳤다.)`] } : {}) : { doneLines: t?.doneLines?.length ? t.doneLines : ["더는 볼 것이 없다."] }) });
     }
     prevGives = handed ?? step.gives;
     ids.push(existing?.id ?? "");
