@@ -24,6 +24,7 @@ function ring(c: SceneCtx, x: number, y: number, w: number, h: number, material:
     ...(sides.includes("N") ? c.hline(x, y, w) : []), ...(sides.includes("S") ? c.hline(x, y + h - 1, w) : []),
     ...(sides.includes("W") ? c.vline(x, y + 1, h - 2) : []), ...(sides.includes("E") ? c.vline(x + w - 1, y + 1, h - 2) : []),
   ];
+  for (const q of cells) if (open(q.x, q.y)) c.openings.add(`${q.x},${q.y}`);   // 새 거리: 트인 자리는 줄 짓기가 메우지 않는다(양옆은 끝 조각)
   c.edge(cells.filter((q) => !open(q.x, q.y)), material);
 }
 /** 들어가는 틈 앞(길 쪽 두 줄)은 걷는 자리로 비워 둔다 — 가로 시설이 입구를 막지 않게. */

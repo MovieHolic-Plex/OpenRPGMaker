@@ -4,6 +4,7 @@
 import { randomBuildingArgs } from "@/project/jpCityStreetComposer";
 import { Occ, type SceneBlock, type SceneCtx, type SceneLayout, type ScenePlaced } from "@/project/jpCitySceneCtx";
 import { SCENE_BUILDINGS, SCENE_ROOFS, sceneList, yardGround } from "@/project/jpCitySceneKinds";
+import { streetTagged } from "@/project/jpCityStreetPieces";
 
 const ASSEMBLED_KO: Readonly<Record<string, string>> = { konbini: "편의점", izakaya: "이자카야", ramen: "라멘집", cafe: "카페", shop: "상점", office: "사무소", garage: "차고", apartment: "아파트", machiya: "마치야", house: "주택", sento: "센토(목욕탕)", bento: "도시락집" };
 const TREES = ["jp-prop-tree-zelkova", "jp-prop-tree-ginkgo", "jp-prop-tree-sakura"];
@@ -62,7 +63,7 @@ function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number,
     // 다음 건물과의 사이: 처마 칸을 나눠 써 벽이 한 칸 틈으로 붙거나(6할) · 그대로 맞대거나 · 골목 한 칸을 더 둔다.
     const r = c.rng();
     share = r < 0.7;
-    if (r >= 0.9) cursor += 1;
+    if (r >= 0.9 && !(c.fable && kit.ml === 0 && kit.mr === 0)) cursor += 1;   // 새 건물(키트 폭 = 벽 폭)은 벽을 맞대 세운다 — 틈은 세로 길뿐
   }
   // 줄 끝에 4칸 넘게 남으면 좁은 조립 건물 한 채(이 지도에 아직 없는 종류, 지도에 셋까지) — 그래도 남는 자투리는 쓰임으로 닫는다.
   for (let n = c.placed.filter((q) => !q.kit).length; ex - cursor >= 4 && n < 3 && !mainRow && !c.fable; n++) {   // 새 거리는 옛 조립 건물을 세우지 않는다
@@ -122,6 +123,7 @@ function roofScene(c: SceneCtx, p: ScenePlaced): void {
 function treeBehind(c: SceneCtx, p: ScenePlaced, top: number): void {
   if (p.y - 4 < top + 1 || p.w < 6 || c.rng() < 0.35) return;
   const x = p.x + 1 + Math.floor(c.rng() * Math.max(1, p.w - 5)), y = p.y - 4;
+  if (c.fable) { c.stPut(streetTagged("gardentree"), x, p.y - 1); return; }   // 새 거리: 지붕 뒤 빈 줄에 마당 나무가 통째로 선다(가리지 않는다)
   if (!c.all(x, y, 4, 4, [Occ.Lot])) return;
   for (let yy = y; yy < y + 4; yy++) for (let xx = x; xx < x + 4; xx++) { c.drawn[yy * c.W + xx] = 1; c.occ[yy * c.W + xx] = Occ.Prop; }
   const id = TREES[Math.floor(c.rng() * TREES.length)]!;

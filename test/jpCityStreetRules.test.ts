@@ -1,0 +1,156 @@
+// 일본 도시 새 거리(fable_street 조각)의 구성 규칙 — 거리 종류 열 가지 × 씨앗 여러 개의 계획을 검사한다(모델·그림 없음).
+// 왜(오너 2026-11-15 «확대해서 보면 엉망진창인 게 너무많다»): 옛 거리는 소품이 차도 위에 서고, 담이 허공에서 끝나고, 같은 그림이 한 화면에 줄지어 섰다.
+// 규칙은 구성기의 검사 함수(auditFable) 하나가 센다 — 여기서는 규칙마다 어긴 것이 0 인지 본다. 측정 스크립트(scripts/qa/jpStreetPlanDump.mts)도 같은 함수를 쓴다.
+import { describe, expect, it } from "vitest";
+import { runTool } from "@/editor/tools/toolRunner";
+import "@/editor/tools/toolRegistry";
+import { laneCells } from "@/ai/v2/place/placementRules";
+import { createBlankProject } from "@/project/defaults";
+import { blankFillTileFor, createStarterMap } from "@/project/defaults/defaultMaps";
+import { createJpCityTileset, JP_CITY_ID } from "@/project/defaults/jpCity";
+import { planJpCityScene, STREET_BAKED, type ScenePlan } from "@/project/jpCitySceneComposer";
+import { Occ } from "@/project/jpCitySceneCtx";
+import { auditFable } from "@/project/jpCitySceneFable";
+import { SCENE_KINDS, SCENE_SIZES, type CatBuilding } from "@/project/jpCitySceneKinds";
+import { GROUND_FAMILIES, STREET_PIECES, STREET_RUNS, streetKitId } from "@/project/jpCityStreetPieces";
+import { inMainWalkComponent, mainWalkComponent } from "@/project/walkComponent";
+import planned from "./fixtures/jpCityFableBuildingsPlanned.json";
+
+const W = 60, H = 48, SEEDS = 12;
+const PLANNED = planned.buildings as unknown as CatBuilding[];
+const plans: { id: string; seed: number; plan: ScenePlan; audit: string[] }[] = [];
+for (const k of SCENE_KINDS) for (let seed = 1; seed <= SEEDS; seed++) {
+  const plan = planJpCityScene({ mapId: "m", width: W, height: H, seed, key: `game-${"abcdefgh"[seed % 8]}`, kind: k.id, style: k.styles[0] as never, fable: true });
+  plans.push({ id: k.id, seed, plan, audit: auditFable(plan.fable!) });
+}
+/** 규칙 이름으로 시작하는 위반 줄(지도 이름을 붙여). */
+const broken = (...rules: string[]) => plans.flatMap((p) => p.audit.filter((v) => rules.some((r) => v.startsWith(r))).map((v) => `${p.id}#${p.seed} ${v}`)).slice(0, 8);
+
+describe("jp_city new street rules (fable_street pieces)", () => {
+  it("covers all ten street kinds over many seeds and names only pieces that exist", () => {
+    expect(SCENE_KINDS.length).toBe(10);
+    expect(plans.length).toBe(10 * SEEDS);
+    expect(broken("unknown piece")).toEqual([]);
+    for (const p of plans) expect(p.plan.fable!.placed.length, `${p.id}#${p.seed}`).toBeGreaterThan(40);
+  });
+
+  it("keeps the carriageway clear: only vehicles and road markings cover a road cell", () => {
+    expect(broken("on-carriageway")).toEqual([]);
+  });
+
+  it("stands every prop on its anchor class (wall, kerb, lot, road, water)", () => {
+    expect(broken("anchor-")).toEqual([]);
+  });
+
+  it("closes every boundary run — no end in mid-air — and opens a house lot with one gate", () => {
+    expect(broken("loose-run-end")).toEqual([]);
+    const gates = plans.filter((p) => p.id === "jutaku").map((p) => p.plan.fable!.runs.reduce((a, r) => a + r.gates.length, 0));
+    expect(Math.min(...gates)).toBeGreaterThanOrEqual(3);
+    // 대문은 필지마다 하나: 같은 줄에서 대문끼리 붙어 서지 않는다
+    for (const p of plans) for (const r of p.plan.fable!.runs) for (const a of r.gates) for (const b of r.gates) if (a !== b && a.y === b.y) expect(Math.abs(a.x - b.x), `${p.id}#${p.seed} ${r.family}`).toBeGreaterThan(2);
+  });
+
+  it("never overlaps two props and never lets the map edge cut one", () => {
+    expect(broken("overlap", "cut-by-edge")).toEqual([]);
+  });
+
+  it("shows the same prop picture at most once in a 20×15 window (trees, boundary runs and floor pieces excepted)", () => {
+    expect(broken("repeat-in-window")).toEqual([]);
+  });
+
+  it("puts an edge piece wherever two ground materials meet", () => {
+    expect(broken("bare-seam")).toEqual([]);
+  });
+
+  it("marks lanes by road class — alleys none, one-lane edge lines, two-lane a centre line — unbroken outside crossings", () => {
+    expect(broken("alley-marking", "edge-line-gap", "centre-line-gap", "centre-line-on-one-lane")).toEqual([]);
+    expect(plans.some((p) => p.plan.fable!.roads.some((r) => r.cls === "two"))).toBe(true);
+    expect(plans.some((p) => p.plan.fable!.roads.some((r) => r.cls === "alley"))).toBe(true);
+  });
+
+  it("keeps earlier measures: no building picture twice on a map, road share and dead strips stay low", () => {
+    let overRoad = 0, overDead = 0;
+    for (const p of plans) {
+      const looks = p.plan.placed.filter((b) => b.kit).map((b) => b.kit!.look ?? b.kit!.id);
+      expect(new Set(looks).size, `${p.id}#${p.seed} repeated building`).toBe(looks.length);
+      const f = p.plan.fable!;
+      const thing = new Uint8Array(W * H);
+      const mark = (x0: number, y0: number, w: number, h: number) => { for (let y = Math.max(0, y0); y < Math.min(H, y0 + h); y++) for (let x = Math.max(0, x0); x < Math.min(W, x0 + w); x++) thing[y * W + x] = 1; };
+      for (const b of p.plan.placed) mark(b.x, b.y, b.w, b.foot - b.y + 1);
+      for (const q of f.placed) if (STREET_PIECES[q.name]?.layer !== "floor" && STREET_PIECES[q.name]?.layer !== "ground") mark(q.x, q.y, q.w, q.h);
+      let road = 0, dead = 0;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        const i = y * W + x;
+        if (f.occ[i] === Occ.Road && !thing[i]) { road++; continue; }
+        if (thing[i] || GROUND_FAMILIES[f.gfam[i]!] === "water") continue;
+        let near = false;
+        for (let dy = -2; dy <= 2 && !near; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H && thing[yy * W + xx]) { near = true; break; } }
+        if (!near) dead++;
+      }
+      if (road / (W * H) > 0.19) overRoad++;
+      if (dead / (W * H) > 0.03) overDead++;
+      expect(road / (W * H), `${p.id}#${p.seed} road share`).toBeLessThanOrEqual(0.23);
+      expect(dead / (W * H), `${p.id}#${p.seed} dead strips`).toBeLessThanOrEqual(0.05);
+    }
+    // 도로 몫 19%·죽은 띠 3% 를 넘는 지도는 드물다(넘는 것은 역 앞처럼 길이 넓은 종류의 몇 씨앗)
+    expect(overRoad).toBeLessThanOrEqual(Math.ceil(plans.length * 0.12));
+    expect(overDead).toBeLessThanOrEqual(Math.ceil(plans.length * 0.05));
+  });
+
+  it("with the planned new-building table it places only jp-bldg-f-* kits, wall to wall, ten or more shops on a 60-cell shop street", () => {
+    let near = 0, touching = 0;
+    for (const id of ["arcade", "ichiba", "monzen", "roji", "zakkyo", "ekimae"]) for (let seed = 1; seed <= 6; seed++) {
+      const plan = planJpCityScene({ mapId: "m", width: W, height: H, seed, key: "game-a", kind: id, style: SCENE_KINDS.find((k) => k.id === id)!.styles[0] as never, fable: true, buildings: PLANNED });
+      const kits = plan.placed.filter((b) => b.kit);
+      expect(kits.every((b) => b.kit!.id.startsWith("jp-bldg-f-")), `${id}#${seed} old kit`).toBe(true);
+      expect(auditFable(plan.fable!), `${id}#${seed}`).toEqual([]);
+      const rows = new Map<number, typeof kits>();
+      for (const b of kits) if (b.kit!.cat !== "house") rows.set(b.foot, [...(rows.get(b.foot) ?? []), b]);
+      const longest = [...rows.values()].sort((a, b) => b.length - a.length)[0] ?? [];
+      expect(longest.length, `${id}#${seed} shops in the longest row`).toBeGreaterThanOrEqual(10);
+      // 벽 맞댐: 같은 줄에서 가까이(두 칸 안) 선 이웃은 거의 다 틈 없이 붙는다(남는 틈은 두 칸 골목 길)
+      for (const row of rows.values()) {
+        const sorted = [...row].sort((a, b) => a.x - b.x);
+        for (let i = 1; i < sorted.length; i++) { const gap = sorted[i]!.x - (sorted[i - 1]!.x + sorted[i - 1]!.w); if (gap <= 2) { near++; if (gap === 0) touching++; } }
+      }
+    }
+    expect(touching / near, `wall-to-wall ${touching}/${near}`).toBeGreaterThanOrEqual(0.97);
+  });
+
+  it("every piece and every boundary-run member the composer names is a baked kit", () => {
+    expect(STREET_BAKED).toBe(true);
+    for (const [name, p] of Object.entries(STREET_PIECES)) for (const g of p.grounds?.length ? p.grounds : [undefined]) expect(SCENE_SIZES[streetKitId(name, g)], streetKitId(name, g)).toEqual([p.w, p.h]);
+    for (const [family, r] of Object.entries(STREET_RUNS)) for (const n of [r.mid, ...r.mids, r.endL, r.endR, r.sideL, r.sideR, r.nw, r.ne, r.sw, r.se, ...(r.gate ?? [])]) if (n) expect(STREET_PIECES[n], `${family}: ${n}`).toBeDefined();
+    for (const f of GROUND_FAMILIES.slice(1)) expect(SCENE_SIZES[`jp-st-gnd-${f}`], f).toBeDefined();
+  });
+
+  it("builds real maps from the baked pieces: every door reachable, asphalt is a lane for passers-by and pavement is not", () => {
+    for (const [style, seed] of [["shopping", 1], ["residential", 2], ["shotengai", 2], ["shitamachi", 3]] as const) {
+      const project = createBlankProject();
+      const tileset = createJpCityTileset();
+      project.tilesets[JP_CITY_ID] = tileset;
+      const hub = createStarterMap();
+      Object.assign(hub, { id: "hub", name: "거리", tilesetId: JP_CITY_ID, width: W, height: H });
+      hub.lowerTiles = new Array(W * H).fill(blankFillTileFor(JP_CITY_ID));
+      hub.upperTiles = new Array(W * H).fill(-1);
+      project.maps.hub = hub;
+      const ctx = { project, assistantRun: true, lookKey: "game-a" };
+      const res = runTool(ctx, "compose_jp_city_street", { mapId: "hub", style, seed, replace: true }, { dryRun: false });
+      expect(res.ok, res.summary).toBe(true);
+      const map = ctx.project.maps.hub!;
+      const walk = mainWalkComponent(ctx.project, map);
+      const doors = (map.locations ?? []).filter((l) => (l.tags ?? []).includes("jp-building")).map((l) => /문 앞 접근칸 \((\d+),(\d+)\)/u.exec(l.note ?? "")).filter((m): m is RegExpExecArray => !!m);
+      expect(doors.length, `${style} seed ${seed}`).toBeGreaterThanOrEqual(6);
+      for (const m of doors) expect(inMainWalkComponent(walk, map, { x: Number(m[1]), y: Number(m[2]) }), `${style} seed ${seed} door front (${m[1]},${m[2]})`).toBe(true);
+      const group = (id: string) => new Set(tileset.tileGroups?.find((g) => g.id === id)?.tileIds ?? []);
+      const tarmac = group("jp:fable-street:gnd-tarmac"), pave = group("jp:fable-street:gnd-pave");
+      expect(tarmac.size).toBeGreaterThan(0);
+      const lanes = laneCells(ctx.project, map);
+      let onTarmac = 0, onPave = 0, paveAsLane = 0, tarmacAsLane = 0;
+      map.lowerTiles.forEach((t, i) => { if (tarmac.has(t)) { onTarmac++; if (lanes.has(i)) tarmacAsLane++; } else if (pave.has(t)) { onPave++; if (lanes.has(i)) paveAsLane++; } });
+      expect(onPave, `${style} seed ${seed} pavement cells`).toBeGreaterThan(100);
+      expect(paveAsLane, `${style} seed ${seed} pavement read as a lane`).toBe(0);
+      if (onTarmac) expect(tarmacAsLane / onTarmac, `${style} seed ${seed} asphalt read as a lane`).toBeGreaterThan(0.9);
+    }
+  });
+});

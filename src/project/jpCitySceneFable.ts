@@ -72,7 +72,7 @@ function roadsOf(c: SceneCtx, L: SceneLayout): FableRoad[] {
   for (const b of L.bands) {
     const s = b.front;
     if (s.type === "kerb") out.push({ dir: "h", cls: s.road1 - s.road0 + 1 >= 4 ? "two" : "one", a: s.road0, b: s.road1, from: 0, to: c.W - 1 });
-    else if (s.type === "lane") out.push({ dir: "h", cls: "one", a: s.road0, b: s.road1, from: 0, to: c.W - 1 });
+    else if (s.type === "lane") out.push({ dir: "h", cls: "one", a: s.road0 + 1, b: s.road1, from: 0, to: c.W - 1 });   // 북쪽 한 줄은 길가 띠
   }
   for (const v of L.vstreets) if (!v.arcade) out.push({ dir: "v", cls: !v.sw ? "alley" : v.lane >= 4 ? "two" : "one", a: v.x + v.sw, b: v.x + v.sw + v.lane - 1, from: v.y0, to: v.y1 });
   return out;
@@ -104,6 +104,7 @@ export function fableMarks(c: SceneCtx, L: SceneLayout, roads: readonly FableRoa
         put(`mark-zebra-h-${row}`, x, y); put(`mark-zebra-h-${row}`, x + 1, y);
         crossings.add(key(x, y)); crossings.add(key(x + 1, y));
         put(`mark-stop-w-${row}`, x - 1, y); put(`mark-stop-e-${row}`, x + 2, y);
+        crossings.add(key(x - 1, y)); crossings.add(key(x + 2, y));         // 정지선 칸까지가 횡단보도다
       }
       for (const [y, side] of [[s.nK ?? s.nA, "s"], [s.sA ?? s.sB, "n"]] as const) for (const xx of [x, x + 1]) if (c.famAt(xx, y) === "pave" && !c.drawn[y * W + xx]) { c.stStamp(`kerb-${side}-tactile`, xx, y); marks.set(key(xx, y), `kerb-${side}-tactile`); }
       break;
@@ -134,22 +135,29 @@ export function fableMarks(c: SceneCtx, L: SceneLayout, roads: readonly FableRoa
  * 모아 둔 경계 칸을 줄로 짓는다. 규칙: 줄의 끝은 건물 옆·다른 줄·필지 끝(바닥 가족이 바뀌는 칸·길)·지도 끝에 닿아야 한다 —
  * 허공에서 끝나는 팔은 닿을 때까지 늘이고(막히면 잘라 낸다). 한 칸 트인 자리(대문 자리)에는 대문과 두 기둥이 선다.
  */
-export function fableRuns(c: SceneCtx): FableRun[] {
+export function fableRuns(c: SceneCtx, isStreet: (x: number, y: number) => boolean = () => false): FableRun[] {
   const { W, H } = c;
   const out: FableRun[] = [];
   const families = [...new Set(c.runCells.map((r) => r.family))];
   const owner = new Map<string, string>();
-  for (const r of c.runCells) for (const q of r.cells) if (c.inside(q.x, q.y) && !owner.has(key(q.x, q.y))) owner.set(key(q.x, q.y), r.family);
+  for (const r of c.runCells) for (const q of r.cells) {
+    if (!c.inside(q.x, q.y) || owner.has(key(q.x, q.y))) continue;
+    if (c.doorFront(q.x, q.y)) { c.openings.add(key(q.x, q.y)); if (c.at(q.x, q.y) === Occ.Wall) c.occ[q.y * W + q.x] = Occ.Walk; continue; }   // 문 앞 칸은 담이 막지 않는다(트인 자리)
+    owner.set(key(q.x, q.y), r.family);
+  }
+  for (const b of c.placed) for (const d of b.doors) c.openings.add(key(b.x + d, b.foot + 1));
   const has = (x: number, y: number) => owner.has(key(x, y));
   const solid = (x: number, y: number) => !c.inside(x, y) || c.at(x, y) === Occ.Bldg || c.at(x, y) === Occ.Slit || c.at(x, y) === Occ.Road || c.at(x, y) === Occ.Water;
-  const free = (x: number, y: number) => c.inside(x, y) && !has(x, y) && (c.at(x, y) === Occ.Lot || c.at(x, y) === Occ.Walk) && !c.drawn[y * W + x];
+  const free = (x: number, y: number) => c.inside(x, y) && !has(x, y) && !c.openings.has(key(x, y)) && (c.at(x, y) === Occ.Lot || c.at(x, y) === Occ.Walk) && !c.drawn[y * W + x];
   const DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]] as const;
   const deg = (x: number, y: number) => DIRS.filter(([dx, dy]) => has(x + dx, y + dy)).length;
-  /** 끝 칸에서 줄이 뻗는 방향 너머가 닿아 있는가: 막힌 칸(건물·길·물·지도 끝) 또는 바닥 가족이 바뀌는 칸(필지 끝). */
-  const attached = (x: number, y: number, dx: number, dy: number) => solid(x + dx, y + dy) || has(x + dx, y + dy) || c.famAt(x + dx, y + dy) !== c.famAt(x, y);
   const gateAt = new Set(c.gates.map((g) => key(g.x, g.y)));
+  /** 끝 칸에서 줄이 뻗는 방향 너머가 닿아 있는가: 막힌 칸(건물·길·물·지도 끝) 또는 바닥 가족이 바뀌는 칸(필지 끝). */
+  const attached = (x: number, y: number, dx: number, dy: number) => solid(x + dx, y + dy) || has(x + dx, y + dy) || isStreet(x + dx, y + dy) || gateAt.has(key(x + dx, y + dy)) || c.openings.has(key(x + dx, y + dy));
+  // 지도 맨 윗줄의 가로 줄은 윗칸(갓돌 칸)이 지도 밖이다 — 짓지 않는다.
+  for (const k of [...owner.keys()]) { const [x, y] = k.split(",").map(Number) as [number, number]; if (y === 0 && !has(x, 1)) { owner.delete(k); c.occ[x] = Occ.Lot; } }
   // 1) 허공에서 끝나는 팔을 늘이거나 잘라 낸다
-  for (let pass = 0; pass < 6; pass++) {
+  for (let pass = 0; pass < 64; pass++) {
     let changed = false;
     for (const k of [...owner.keys()]) {
       const [x, y] = k.split(",").map(Number) as [number, number];
@@ -160,7 +168,7 @@ export function fableRuns(c: SceneCtx): FableRun[] {
       // 끝 칸: 이웃이 하나면 그 반대쪽으로, 외톨이면 가로 양쪽으로 본다
       const outs = nb.length === 1 ? [[-nb[0]![0], -nb[0]![1]] as const] : [[-1, 0] as const, [1, 0] as const];
       for (const [dx, dy] of outs) {
-        if (attached(x, y, dx, dy) || gateAt.has(key(x + dx, y + dy))) continue;
+        if (attached(x, y, dx, dy)) continue;
         // 늘이기: 닿을 때까지(가로 6칸·세로 14칸까지)
         const path: [number, number][] = [];
         let cx = x + dx, cy = y + dy, ok = false;
@@ -215,8 +223,8 @@ export function fableRuns(c: SceneCtx): FableRun[] {
     for (const q of ver) if (!upperOwned.has(key(q.x, q.y)) && STREET_PIECES[q.name]) c.stStamp(q.name, q.x, q.y);
     // 붙지 못한 끝이 남았는가(검사용)
     for (const [x, y] of mine) {
-      const nb = DIRS.filter(([dx, dy]) => inFam(x + dx, y + dy));
-      if (nb.length === 1 && !attached(x, y, -nb[0]![0], -nb[0]![1]) && !gates.some((g) => g.x === x - nb[0]![0] && g.y === y - nb[0]![1])) loose.push({ x, y });
+      const nb = DIRS.filter(([dx, dy]) => has(x + dx, y + dy));   // 다른 가족의 줄과 이어진 것도 이어진 것이다(담이 산울타리로 바뀌는 모퉁이)
+      if (nb.length === 1 && !attached(x, y, -nb[0]![0], -nb[0]![1])) loose.push({ x, y });
     }
     out.push({ family, cells: mine.map(([x, y]) => ({ x, y })), gates, loose });
   }
@@ -284,15 +292,17 @@ export function fableArcade(c: SceneCtx, L: SceneLayout): void {
   const { W } = c;
   for (const v of L.vstreets) {
     if (!v.arcade || v.w < 4 || !STREET_PIECES["arch-l"]) continue;
-    c.fillFamily(v.x, v.y0, v.w, v.y1 - v.y0 + 1, "alley");
     for (const b of L.bands) if (b.index >= v.from && b.index <= v.to) {
       const y0 = b.index === 0 ? 0 : (L.bands[b.index - 1]!.front.sA ?? b.top), y1 = b.front.type === "edge" ? b.front.y0 : (b.front.nK ?? b.foot);
+      c.fillFamily(v.x, y0, v.w, y1 - y0 + 1, "alley");
       c.mark(v.x, y0, v.w, y1 - y0 + 1, Occ.Walk);
       for (const foot of [y1, y0 + 3]) {                                    // 남쪽 입구(큰길 쪽) · 북쪽 입구
         if (foot - 3 < 0 || foot > y1 || (foot === y0 + 3 && (y0 === 0 || y1 - y0 < 9))) continue;
         const signX = v.x + Math.floor((v.w - 2) / 2);
+        const top = foot - STREET_PIECES["arch-l"]!.h + 1, under = (n: string) => top + STREET_PIECES[n]!.h - 1;   // 들보·간판은 기둥 머리에 맞춘다
+        if (top < 0) continue;
         c.stStamp("arch-l", v.x, foot, { late: true }); c.stStamp("arch-r", v.x + v.w - 1, foot, { late: true });
-        for (let x = v.x + 1; x < v.x + v.w - 1; x++) { if (x === signX) { c.stStamp("arch-sign", x, foot - 2, { late: true }); x++; } else c.stStamp("arch-beam", x, foot - 2, { late: true }); }
+        for (let x = v.x + 1; x < v.x + v.w - 1; x++) { if (x === signX) { c.stStamp("arch-sign", x, under("arch-sign"), { late: true }); x++; } else c.stStamp("arch-beam", x, under("arch-beam"), { late: true }); }
         c.mark(v.x + 1, foot - 3, v.w - 2, 4, Occ.Walk);                    // 기둥 사이는 지나다닌다
       }
     }
@@ -344,8 +354,13 @@ export function fableDress(c: SceneCtx, L: SceneLayout): void {
   }
   for (const b of L.bands) {
     const s = b.front;
-    if (s.type !== "kerb" && s.type !== "river") continue;
+    if (s.type !== "kerb" && s.type !== "river" && s.type !== "lane") continue;
     const vs = touching(L, b), inV = (x: number, pad = 0) => vs.some((v) => x >= v.x - pad && x < v.x + v.w + pad);
+    if (s.type === "lane") {
+      // 생활도로의 길가 띠: 전봇대·가로등·표지가 드문드문(윗부분은 북쪽 필지 위에 온다), 사이사이 낮은 것
+      for (let x = 3 + Math.floor(rng() * 5); x < W - 2; x += 5 + Math.floor(rng() * 5)) if (!inV(x, 1)) c.stPut(rng() < 0.6 ? kerbTall : kerbLow, x, s.road0, { lax: true });
+      continue;
+    }
     if (s.nK !== undefined && s.type === "kerb") {
       // 북쪽 연석: 키 큰 것(가로등·전봇대·표지·가로수)의 윗부분은 보도와 필지 위에 온다
       for (let x = 2 + Math.floor(rng() * 4); x < W - 2; x += 3 + Math.floor(rng() * 4)) {
@@ -359,6 +374,30 @@ export function fableDress(c: SceneCtx, L: SceneLayout): void {
     if (s.sA !== undefined && s.type === "kerb") for (let x = 1 + Math.floor(rng() * 4); x < W - 2; x += 3 + Math.floor(rng() * 5)) if (!inV(x, 1) && rng() < kind.density.south + 0.2) c.stPut(kerbLow, x, s.sA, { lax: true });   // 얕은 남쪽 보도: 낮은 것만
   }
   for (let t = 0, n = 0; t < 60 && n < 3 + Math.floor(W / 20); t++) { const x = 1 + Math.floor(rng() * (W - 2)), y = 2 + Math.floor(rng() * (c.H - 3)); if (c.at(x, y) === Occ.Lot && c.famAt(x, y) !== "tarmac" && c.famAt(x, y) !== "water" && c.stPut(critters, x, y)) n++; }
+}
+
+/**
+ * 빈 띠 메우기: 서 있는 것(건물·소품·담)에서 두 칸 넘게 떨어진 필지 칸이 남으면 그 바닥에 맞는 것을 세운다 —
+ * 흙·잔디에는 마당 나무와 정원 것, 포장에는 광장 것(돌 벤치·음수대). 걷는 줄(Walk)은 건드리지 않는다.
+ */
+export function fableFill(c: SceneCtx): void {
+  const { W, H } = c;
+  const soft = [...streetTagged("gardentree"), ...streetTagged("garden")], hard = [...streetTagged("plaza"), ...streetTagged("park").filter((n) => STREET_PIECES[n]!.w === 1 || n === "bench-stone")];
+  const thing = new Uint8Array(W * H);
+  const mark = (x0: number, y0: number, w: number, h: number) => { for (let y = Math.max(0, y0); y < Math.min(H, y0 + h); y++) for (let x = Math.max(0, x0); x < Math.min(W, x0 + w); x++) thing[y * W + x] = 1; };
+  for (const p of c.placed) mark(p.x, p.y, p.w, p.foot - p.y + 1);
+  for (const p of c.stPlaced) if (STREET_PIECES[p.name]?.layer !== "floor" && STREET_PIECES[p.name]?.layer !== "ground") mark(p.x, p.y, p.w, p.h);
+  const dead = (x: number, y: number) => {
+    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H && thing[yy * W + xx]) return false; }
+    return true;
+  };
+  for (let y = 1; y < H; y++) for (let x = 0; x < W; x++) {
+    if (c.at(x, y) !== Occ.Lot || !dead(x, y)) continue;
+    const f = c.famAt(x, y);
+    const pool = f === "earth" || f === "lawn" ? soft : f === "pave" || f === "forecourt" || f === "alley" ? hard : [];
+    const name = pool.length ? c.stPut(pool, x, y) : undefined;
+    if (name) { const p = STREET_PIECES[name]!; mark(x, y - p.h + 1, p.w, p.h); }
+  }
 }
 
 /** 바닥 덧조각(드문드문): 잔디·흙·아스팔트의 한 칸 무늬, 맨홀, 큰길 가운데 줄의 바퀴 띠. 다른 바닥 조각이 있는 칸은 건너뛴다. */
@@ -470,7 +509,27 @@ export function fableFinish(c: SceneCtx, L: SceneLayout): { info: FableInfo; gro
   fableArcade(c, L);
   fableMarks(c, L, roads, crossings, marks);
   fableDress(c, L);
-  const runs = fableRuns(c);
+  // 건물보다 먼저 놓인 것(강가 산책로의 벤치·말뚝)이 문 앞 칸에 서 있으면 치운다 — 모든 문은 걸어서 닿는다.
+  for (let i = c.stPlaced.length - 1; i >= 0; i--) {
+    const p = c.stPlaced[i]!, piece = STREET_PIECES[p.name];
+    if (!piece || piece.layer === "floor" || piece.layer === "ground" || p.anchor === "facade" || p.anchor === "road" || p.anchor === "water" || p.anchor === "run") continue;
+    for (let k = 0; k < p.w; k++) if (c.doorFront(p.x + k, p.y + p.h - 1)) { c.stRemove(i); break; }
+  }
+  // 길의 줄·열(필지 끝): 줄의 끝이 길에 닿으면 붙은 것이다
+  const streetRow = new Uint8Array(c.H);
+  for (const b of L.bands) for (let y = b.front.y0; y <= Math.min(c.H - 1, b.front.end); y++) streetRow[y] = 1;
+  const runs = fableRuns(c, (x, y) => (y >= 0 && y < c.H && streetRow[y] === 1) || L.vstreets.some((v) => x >= v.x && x < v.x + v.w && y >= v.y0 && y <= v.y1));
+  // 줄을 지은 뒤: 기댄 담이 잘려 나간 «벽 앞» 소품은 치운다(벽 없이 서 있는 것이 남지 않게).
+  const solid = (v: number) => v === Occ.Bldg || v === Occ.Wall || v === Occ.Slit;
+  for (let i = c.stPlaced.length - 1; i >= 0; i--) {
+    const p = c.stPlaced[i]!;
+    if (p.anchor !== "wall") continue;
+    const foot = p.y + p.h - 1;
+    let n = 0;
+    for (let x = p.x; x < p.x + p.w; x++) if (solid(c.at(x, foot - 1))) n++;
+    if (n * 2 < p.w) c.stRemove(i);
+  }
+  fableFill(c);
   const borders = fableBorders(c, marks);
   fableAccents(c, new Set([...borders, ...marks.keys()]));
   fableShades(c);

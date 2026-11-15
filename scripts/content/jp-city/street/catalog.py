@@ -50,8 +50,8 @@ def build():
         if short.startswith('f-'):
             s = short[2:]
             tier = tier or 'medium'
-            cat = F_CAT.get(s) or ('landmark' if tier == 'landmark' else 'civic' if tier in ('large', 'xlarge') else 'commercial' if tier == 'medium' else 'shop')
-            role = F_ROLE.get(s) or ('shop' if cat == 'shop' else s)
+            cat = F_CAT.get(s) or ('house' if s.startswith(('house', 'nagaya', 'minka')) else None) or ('landmark' if tier == 'landmark' else 'civic' if tier in ('large', 'xlarge') else 'commercial' if tier == 'medium' else 'shop')
+            role = F_ROLE.get(s) or ('house' if cat == 'house' else None) or ('shop' if cat == 'shop' else s)
         else:
             base = short[:-5] if short.endswith('-shut') else short
             cat = next((CAT_BY_TAG[x] for x in tags if x in CAT_BY_TAG), 'shop')

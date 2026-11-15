@@ -11,7 +11,7 @@
 // 순수 계획 → 단계 목록. 실행은 jpCitySceneRun.ts. 줄·구획 채우기는 jpCitySceneRows.ts · jpCityScenePieces.ts.
 import type { JpStreetPlan } from "@/project/jpCityStreetComposer";
 import { mulberry, Occ, SceneCtx, type SceneBand, type SceneBlock, type SceneLayout, type ScenePlaced, type SceneStreet, type SceneVStreet } from "@/project/jpCitySceneCtx";
-import { pickSceneKind, SCENE_SIZES, sceneEn, sceneTone, type SceneKind, type SceneStyle, type SceneTone } from "@/project/jpCitySceneKinds";
+import { pickSceneKind, SCENE_SIZES, sceneEn, sceneTone, type CatBuilding, type SceneKind, type SceneStyle, type SceneTone } from "@/project/jpCitySceneKinds";
 import { PIECES, type PieceDef } from "@/project/jpCityScenePieces";
 import { dressRiver, dressStreets, placeOverpass } from "@/project/jpCitySceneStreets";
 import { fableFinish, fableRiver, type FableInfo } from "@/project/jpCitySceneFable";
@@ -26,6 +26,7 @@ export interface SceneOptions {
   /** 거리 종류 id 를 직접 고른다(jpCityStreetKinds.json) */ readonly kind?: string;
   readonly crosswalkTile?: number;
   /** 새 조각(fable_street)으로 짓는다 — 기본: 칩셋에 새 조각이 구워져 있으면 켠다 */ readonly fable?: boolean;
+  /** 건물 표를 바꿔 끼운다 — 아직 굽지 않은 새 건물(jp-bldg-f-*)의 예정 표로 계획·규칙을 미리 볼 때(테스트·측정). 게임을 지을 때는 주지 않는다 */ readonly buildings?: readonly CatBuilding[];
 }
 export interface ScenePlan extends JpStreetPlan {
   readonly kind: SceneKind; readonly tone: SceneTone; readonly placed: readonly ScenePlaced[];
@@ -135,6 +136,8 @@ function paintStreets(c: SceneCtx, L: SceneLayout): void {
       c.mark(0, s.road0, W, s.road1 - s.road0 + 1, Occ.Road); c.mark(0, s.sA!, W, 1, Occ.Walk);
     } else if (s.type === "lane") {
       c.fill(0, s.road0, W, 3, SHARED_LANE); c.mark(0, s.road0, W, 3, Occ.Road);
+      // 새 거리: 생활도로의 북쪽 한 줄은 길가 띠(보도 블록) — 사람이 걷고 전봇대·가로등이 선다. 차도는 두 줄(차도 칸에는 차와 노면 표시만 오므로 설 자리를 따로 둔다).
+      if (c.fable) { c.fill(0, s.road0, W, 1, tone.sidewalk); c.mark(0, s.road0, W, 1, Occ.Walk, [Occ.Road]); }
     } else if (s.type === "path") {
       c.fill(0, s.y0, W, 2, tone.alley); c.mark(0, s.y0, W, 1, Occ.Walk);
     } else if (s.type === "mall") {
@@ -220,7 +223,7 @@ export function planJpCityScene(opts: SceneOptions): ScenePlan {
   const kind = pickSceneKind({ style, shops: opts.shops, key, seed, kind: opts.kind });
   const fable = opts.fable ?? STREET_BAKED;
   const tone = fable ? fableTone(sceneTone(kind, key)) : sceneTone(kind, key);
-  const c = new SceneCtx(mapId, W, H, kind, tone, key, seed, mulberry((Math.imul(seed + 1, 0x9e3779b1) ^ lookHash(kind.id)) >>> 0), fable);
+  const c = new SceneCtx(mapId, W, H, kind, tone, key, seed, mulberry((Math.imul(seed + 1, 0x9e3779b1) ^ lookHash(kind.id)) >>> 0), fable, opts.buildings);
   const L = layout(c) as SceneLayout & { overpass?: boolean };
   paintStreets(c, L);
   makeBlocks(L, W);

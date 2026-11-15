@@ -8,10 +8,10 @@ import type { GameMap, Project } from "../../src/project/types.ts";
 const BUILT_KIT = /^jp-(bldg|bx|recipe|house|shop-(?!cover)|apt|mansion|office|tower|school$|station|temple|shrine-hall|gas-office|izakaya-brick|fg-|inaka-(kominka|kawara-farm|kura|dagashiya|wooden-station)|prop-(nakamise|honden|pagoda|kaminarimon|hozomon|led-tower|theatre))/;
 const PART_KIT = /^jp-(sf|roof|door|wire|in|arcade-roof|recipe-part)-/;
 const INFRA_KIT = /^jp-(river|water-(?!tank)|bank|bridge|mark|crosswalk|road-(lane|trunk|mark)|foot-shadow|wall-drain|rail|via|tram|subway|platform|gnd-|pave|school-(ground|gomu|track)|lot-bay|tone-|ground-)/;
-const CAR_KIT = /^jp-(prop-(car|van|bus|ad-truck)|inaka-(keitora|red-tractor)|car-|kei-|taxi|truck)/;
+const CAR_KIT = /^jp-(st-car-|prop-(car|van|bus|ad-truck)|inaka-(keitora|red-tractor)|car-|kei-|taxi|truck)/;
 const EDGE_AUTOTILES = ["jp-wall-block", "jp-hedge", "jp-fence-mesh", "jp-guardrail"];
 const ROAD_AUTOTILES = ["jp-lane-road", "jp-rail-track"];
-const ROAD_GROUPS = ["jp:street:road", "jp:street:lane", "jp:street:crosswalk", "jp:street:rail", "jp:shita-asphalt", "jp:street:lot"];
+const ROAD_GROUPS = ["jp:street:road", "jp:street:lane", "jp:street:crosswalk", "jp:street:rail", "jp:shita-asphalt", "jp:street:lot", "jp:fable-street:gnd-tarmac"];
 const WATER_AUTOTILES = ["jp-water-canal", "jp-water-pond"];
 
 export interface JpStreetMeasure {
@@ -35,8 +35,13 @@ function indexOf(ts: Ts): Index {
   if (hit) return hit;
   const byAnchor: Index["byAnchor"] = new Map();
   const infra = new Set<number>();
+  // 새 거리 조각(fable_street): 바닥 덧그림·테·노면 표시·그늘·둑은 기반 시설, 경계 줄은 담(소품으로 세지 않는다) — 블록의 칸 그룹으로 가른다.
+  const groupTiles = (ids: readonly string[]) => new Set((ts.tileGroups ?? []).filter((g) => ids.includes(g.id)).flatMap((g) => g.tileIds ?? []));
+  const stInfra = groupTiles(["jp:fable-street:border", "jp:fable-street:mark", "jp:fable-street:floor", "jp:fable-street:shade", "jp:fable-street:bank"]), stRun = groupTiles(["jp:fable-street:run"]);
+  for (const t of stInfra) infra.add(t);
   for (const kit of [...(ts.structureKits ?? [])].sort((a, b) => b.width * b.height - a.width * a.height)) {
     if (PART_KIT.test(kit.id)) continue;
+    if (kit.id.startsWith("jp-st-") && kit.rows.every((r) => (r.upperTiles ?? []).every((t) => t < 0 || stInfra.has(t) || stRun.has(t)))) continue;
     if (INFRA_KIT.test(kit.id)) { for (const r of kit.rows) for (const t of [...(r.tiles ?? []), ...(r.upperTiles ?? [])]) if (t >= 0) infra.add(t); continue; }
     let cells = 0, anchor: [number, number, number] | undefined;
     kit.rows.forEach((r, y) => (r.upperTiles ?? []).forEach((t, x) => { if (t >= 0) { cells++; anchor ??= [t, x, y]; } }));
@@ -51,7 +56,7 @@ function indexOf(ts: Ts): Index {
   };
   const band = new Set<number>();
   for (const g of ts.tileGroups ?? []) if (g.id.startsWith("jp:band:") || g.id.startsWith("jp:deco:")) for (const t of g.tileIds ?? []) band.add(t);
-  const out: Index = { byAnchor, edge: set(EDGE_AUTOTILES, []), road: set(ROAD_AUTOTILES, ROAD_GROUPS), water: set(WATER_AUTOTILES, ["jp:street:water"]), band, infra };
+  const out: Index = { byAnchor, edge: new Set([...set(EDGE_AUTOTILES, []), ...stRun]), road: set(ROAD_AUTOTILES, ROAD_GROUPS), water: set(WATER_AUTOTILES, ["jp:street:water", "jp:fable-street:gnd-water"]), band, infra };
   cache.set(ts, out);
   return out;
 }

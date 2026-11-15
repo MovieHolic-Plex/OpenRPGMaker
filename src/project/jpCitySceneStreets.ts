@@ -166,7 +166,8 @@ export function dressStreets(c: SceneCtx, L: SceneLayout, crosswalkTile?: number
         x = px;
       }
       poles.forEach((px, i) => { const nx = poles[i + 1]; if (nx === undefined) return; const n = nx - (px + 2) + 3; if (n >= 5 && n <= 20 && c.size(`jp-wire-${n}`)) c.late.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/jp-wire-${n}`, mapId: c.mapId, x: px + 2, y: s.road1 - 4 }, optional: true, note: "wire" }); });
-      for (let x = 2 + Math.floor(rng() * 5); x < W - 2; ) { const id = !inV(x, 1) && rng() < 0.85 ? c.putAny(lane, x, s.road1, { ...tall, gap: true }) : undefined; if (id) c.scenesUsed.add("jutaku"); x += (id ? c.size(id)![0] : 1) + 3 + Math.floor(rng() * 3); }
+      // 새 거리: 보도 없는 생활도로의 차도 칸에는 차만 선다(차는 위에서 한두 대) — 길가 살림은 필지 쪽 꾸밈이 놓는다
+      if (!c.fable) for (let x = 2 + Math.floor(rng() * 5); x < W - 2; ) { const id = !inV(x, 1) && rng() < 0.85 ? c.putAny(lane, x, s.road1, { ...tall, gap: true }) : undefined; if (id) c.scenesUsed.add("jutaku"); x += (id ? c.size(id)![0] : 1) + 3 + Math.floor(rng() * 3); }
       if (kind.pieces.includes("garbage")) for (let t = 0; t < 8; t++) { const x = 2 + Math.floor(rng() * (W - 8)); if (!inV(x, 1) && !inV(x + 4, 1) && c.putFoot("jp-gomi-box", x, s.road1, { ...tall, gap: true })) { c.putFoot("jp-keijiban", x + 3, s.road1, tall); c.piecesUsed.push("garbage"); break; } }
     } else if (s.type === "path") {
       // 골목(차 없음): 남쪽 줄에 화분·자전거·쓰레기망·자판기, 가끔 가로등

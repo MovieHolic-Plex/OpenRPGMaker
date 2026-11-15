@@ -74,7 +74,8 @@ BLOCK_ORDER = ['autotiles_ground', 'autotiles_lines', 'roads', 'buildings', 'str
                'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall',
                'interior_hospital', 'interior_school2', 'interior_office2', 'shitamachi_pack', 'jp_regions_pack', 'jp_inaka_pack', 'jp_forest_r4', 'interior_house3', 'street_stairs',
                'story_objects',     # story_objects = 이야기 기물(그림 PNG 그대로, 3/4 관문 미통과 — 오너 면제 묶음)
-               'fable_city']        # fable_city = Fable 5.2 건물 60 · 옥상 기물 · 시골 기물(그림 PNG 그대로, 3/4 관문 미통과 — 오너 면제 묶음)
+               'fable_city',        # fable_city = Fable 5.2 건물 60 · 옥상 기물 · 시골 기물(그림 PNG 그대로, 3/4 관문 미통과 — 오너 면제 묶음)
+               'fable_street']      # fable_street = Fable 5.2 거리 바닥·테·노면 표시·경계 줄·가로 소품(그림 PNG 그대로, 3/4 관문 미통과 — 오너 면제 묶음, 예약 4,032칸)
 PEOPLE = (851, 1005)            # 행인(Actor1) 자리 — 번들에서 제외, 투명 빈 칸으로 번호만 지킨다
 N_ORIG = 2880
 SIGN_DECOS = ('sign_h', 'vstack', 'wallad', 'vsign', 'plate', 'board', 'rtext', 'facade_ad', 'vision', 'mural')
