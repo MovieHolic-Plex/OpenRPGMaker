@@ -148,15 +148,16 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
     const plain = village(undefined, undefined);
     const set = SETS[2]!;
     const looked = village({ houses: set }, KEY);
-    // 통행을 견줄 판은 같은 게임(같은 열쇠)의 벌 없는 마을이다. 열쇠 없는 판과는 통행을 견주지 않는다 —
-    // 열쇠가 있으면 그 게임의 새 종류 기물이 놓여(editor/tools/beodeulObjectSets.ts) 막힌 칸과 그 뒤 나무 자리가 다르다. 집 자리는 열쇠 없는 판과도 같다(아래 spots).
+    // 집 자리·통행을 견줄 판은 같은 게임(같은 열쇠)의 벌 없는 마을이다. 열쇠 없는 판과는 견주지 않는다 —
+    // 열쇠가 있으면 그 게임의 마을 종류(editor/tools/beodeulVillageKinds.ts)가 일터 건물과 장면 터를 먼저 잡아 집 자리가 다르고,
+    // 그 게임의 새 종류 기물이 놓여(editor/tools/beodeulObjectSets.ts) 막힌 칸과 그 뒤 나무 자리도 다르다.
     const sameGame = village({}, KEY);
     expect(setCellsOnMap(plain.project, plain.map)).toBe(0);
     expect((plain.project.tilesets[TS]!.tileGrafts ?? []).some((graft) => graft.sourceChipset === table.texture)).toBe(false);
     expect(setCellsOnMap(looked.project, looked.map)).toBeGreaterThan(100);
     expect([looked.map.width, looked.map.height]).toEqual([plain.map.width, plain.map.height]);
     const spots = (map: GameMap) => (map.structurePlacements ?? []).filter((p) => houseSetCovers(TS, set, p.kitId)).map((p) => `${p.kitId}@${p.x},${p.y}`).sort();
-    expect(spots(looked.map)).toEqual(spots(plain.map));
+    expect(spots(looked.map)).toEqual(spots(sameGame.map));
     expect(spots(looked.map).length).toBeGreaterThan(3);
     expect(setCellsOnMap(sameGame.project, sameGame.map)).toBe(0);
     for (let y = 0; y < sameGame.map.height; y += 1) for (let x = 0; x < sameGame.map.width; x += 1) expect(isPassable(looked.project, looked.map, x, y)).toBe(isPassable(sameGame.project, sameGame.map, x, y));
@@ -176,7 +177,8 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
       expect(res.ok).toBe(true);
       return (res.data as { houses: { kitId: string; bbox: { x: number; y: number } }[] }).houses.map((h) => `${h.kitId}@${h.bbox.x},${h.bbox.y}`).sort();
     };
-    const plainHouses = seen(plain.project, plain.map);
+    // 견줄 판은 같은 게임의 벌 없는 마을이다(위 spots 와 같은 까닭 — 열쇠가 있으면 마을 종류가 집 자리를 바꾼다)
+    const plainHouses = seen(sameGame.project, sameGame.map);
     expect(seen(looked.project, looked.map)).toEqual(plainHouses);
     expect(plainHouses.length).toBeGreaterThan(2);
     // 낮 빛 맞춤: 마을 짓기가 이미 넣었다 — 그림자·잔디 칸 수가 겉모습 없는 판과 같다(벌 집을 못 알아보면 그 집의 그림자가 빠진다)

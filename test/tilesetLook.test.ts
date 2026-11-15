@@ -104,7 +104,7 @@ describe("tileset look — 게임마다 한 가지 겉모습", () => {
     expect(tileGraftsTextureSuffix({ ...tileset, look: { textureKey: table.texture, woods: "wall" } })).toBe(tileGraftsTextureSuffix(tileset));
   });
 
-  it("마을 짓기: 조수 실행이 첫 버들항 맵을 지으면 겉모습이 타일셋에 적히고, 바닥 재질만 고른 게임은 바닥 칸 번호·통행이 열쇠 없는 판과 같다", () => {
+  it("마을 짓기: 조수 실행이 첫 버들항 맵을 지으면 겉모습이 타일셋에 적히고, 바닥 재질만 고른 게임은 바닥 칸 번호·통행이 같은 게임의 원래 모습 판과 같다", () => {
     // 풀밭 얼룩(meadow)은 고른 게임으로 — 얼룩은 2층 덧그림이라 1층 칸 번호·통행이 그대로여야 한다(숲 구성 stand 는 나무 자리를 바꾸니 뺀다).
     const key = keyWhere((look) => !!look?.surface && !look.trees && !look.woods && !look.houses && !look.plaza && !look.stand && !!look.meadow && !!tilesetLookGround(TS, look));
     const plain = village(undefined), looked = village(key);
@@ -114,15 +114,10 @@ describe("tileset look — 게임마다 한 가지 겉모습", () => {
     // 직렬화·모양 검사를 지나도 남는다
     expect(deserialize(serialize(looked.project)).tilesets[TS]!.look).toEqual(look);
     const a = plain.project.maps[plain.mapId]!, b = looked.project.maps[looked.mapId]!;
-    // 1층은 열쇠 없는 판과 같다. 하나만 다르다(2026-11-14 물): 한 칸 폭 나루의 널판 칸이 게임 열쇠가 있으면 «물 + 3층 징검돌» 이다(editor/tools/beodeulWater.ts
-    // stoneBeodeulFords — 징검돌은 새 종류 기물이라 열쇠 없는 짓기에는 놓이지 않는다). 그 칸은 물 칸이고 3층이 차 있으며 몇 칸뿐이다.
-    const water = new Set(looked.project.tilesets[TS]!.autotileGroups!.find((g) => g.id === "beodeul_canal_lake_47")!.memberTileIds);
-    const stones = Array.from(b.lowerTiles.keys()).filter((c) => b.lowerTiles[c] !== a.lowerTiles[c]);
-    expect(stones.length).toBeLessThanOrEqual(6);
-    for (const c of stones) { expect(water.has(b.lowerTiles[c]!)).toBe(true); expect(layerTileAt(b, 3, c)).toBeGreaterThanOrEqual(0); expect(water.has(a.lowerTiles[c]!)).toBe(false); }
-    // (위층은 같지 않다 — 1차의 기물 변형이 같은 열쇠로 게임마다 다른 킷을 찍는다. 통행은 아래에서 칸마다 본다)
-    // 통행을 견줄 판은 같은 게임(같은 열쇠)의 원래 모습 마을이다. 열쇠 없는 판과는 통행을 견주지 않는다 —
-    // 열쇠가 있으면 그 게임의 새 종류 기물이 놓여(editor/tools/beodeulObjectSets.ts) 막힌 칸과 그 뒤 나무 자리가 다르다. 1층 칸 번호는 징검돌 나루 칸 말고는 열쇠 없는 판과도 같다(위).
+    // 1층 칸 번호·통행을 견줄 판은 같은 게임(같은 열쇠)의 원래 모습 마을이다. 열쇠 없는 판과는 견주지 않는다 —
+    // 열쇠가 있으면 그 게임의 마을 종류(editor/tools/beodeulVillageKinds.ts)가 일터와 장면 터를 잡아 집·길 자리(1층)가 다르고,
+    // 그 게임의 새 종류 기물이 놓여(editor/tools/beodeulObjectSets.ts) 막힌 칸과 그 뒤 나무 자리도 다르다.
+    expect([b.width, b.height]).toEqual([a.width, a.height]);
     const sameGame = village(key, 4242, { textureKey: table.texture });
     const c = sameGame.project.maps[sameGame.mapId]!;
     expect(Array.from(b.lowerTiles)).toEqual(Array.from(c.lowerTiles));

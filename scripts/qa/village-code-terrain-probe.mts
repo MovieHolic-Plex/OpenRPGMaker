@@ -21,6 +21,8 @@ const CASES: any[] = [
 const arg = (n: string, d: string) => { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] ?? d : d; };
 const OUT = arg("out", "/tmp/vh/code1"); fs.mkdirSync(OUT, { recursive: true });
 const only = arg("only", "").split(",").filter(Boolean).map(Number);
+// --key <게임 열쇠>: 조수 실행처럼 게임 열쇠를 켠다 — 그 게임의 겉모습·새 기물·마을 종류(장면)가 놓인 마을을 잰다. 생략하면 전과 같다(열쇠 없음).
+const lookKey = arg("key", "");
 const layouts = arg("layouts", "") ? JSON.parse(fs.readFileSync(arg("layouts", ""), "utf8")) : {};
 const salt = Number(arg("salt", "0"));
 
@@ -31,7 +33,7 @@ for (const c of CASES) {
   if (only.length && !only.includes(c.n)) continue;
   const { args: a0 } = villageArgs({ type: "village", ...c.spec } as any);
   const args: any = { ...a0, ...(c.landform ? { landform: c.landform } : {}), seed: c.seed + salt, id: `v${c.n}C`, name: c.spec.name, ...(layouts[c.n] ? { layout: layouts[c.n].layout, terrainSeed: layouts[c.n].terrainSeed, width: layouts[c.n].width, height: layouts[c.n].height } : {}) };
-  const ctx = { project: JSON.parse(baseJson) };
+  const ctx = { project: JSON.parse(baseJson), ...(lookKey ? { assistantRun: true, lookKey } : {}) };
   const t0 = Date.now();
   const r = runTool(ctx as any, "author_beodeul_town", args);
   if (!r.ok) { console.log(c.n, "FAIL", r.summary); rows.push({ n: c.n, ok: false, summary: r.summary }); continue; }
