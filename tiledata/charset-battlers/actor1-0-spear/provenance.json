@@ -3,7 +3,7 @@
  "script": "scripts/asset-gen/charset-battler/derive_weapon.py",
  "weapon": "spear",
  "angles": {
-  "attack_windup": 315,
+  "attack_windup": 90,
   "attack_strike": 0,
   "attack": 0,
   "attack_follow": 0,
@@ -43,7 +43,7 @@
   ],
   "attack_windup.png": [
    {
-    "angle": 315,
+    "angle": 90,
     "grip": [
      35,
      29

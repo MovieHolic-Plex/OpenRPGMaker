@@ -6,7 +6,8 @@
 #       손바닥 화소를 기준으로 weapons.py 의 손 도트 무기 격자를 찍는다. 회전·보간·생성은 없다.
 #       원본 인물 폴더(tiledata/charset-battlers/<원본>)와 .omo/weapons 증거 폴더는 쓰지 않는다 — 임시 폴더에서 찍고 결과만 새 폴더로 옮긴다.
 # 창(spear)의 공격 각도: 검은 올려 베지만 창은 찌른다 — 내려치기·공격·뒷동작·기술을 수평(0°)으로 찌르고,
-#       준비 자세는 창끝을 비스듬히 아래로(315°) 겨눈다(수평이면 창대가 얼굴을 가로지른다). 쓰러지는 자세는 검처럼 눕힌다(0°).
+#       준비 자세는 창을 세워 당긴다(90°) — 수평이면 창대가 얼굴을 가로지르고, 비스듬히 아래(315°)면 창이 몸에 묻혀 거의 안 보였다
+#       (2026-11-15 VM 화면 판정). 쓰러지는 자세는 검처럼 눕힌다(0°).
 # 사용: python3 derive_weapon.py actor1-0 spear actor1-0-spear
 #       → tiledata/charset-battlers/actor1-0-spear/*.png + provenance.json (그다음 build.py·build_cast.py actor1-0-spear)
 import json, os, shutil, sys, tempfile
@@ -19,7 +20,7 @@ import cb_lib  # noqa: E402
 
 # 계열마다 검과 다르게 잡는 자세 각도(없는 자세는 weapons.POSE_ANGLES 그대로). 왼쪽을 보는 인물 기준 0=왼쪽, 90=위, 315=왼쪽 아래.
 KIND_ANGLES = {
-    "spear": {"attack_windup": 315, "attack_strike": 0, "attack": 0, "attack_follow": 0, "skill": 0, "dying": 0},
+    "spear": {"attack_windup": 90, "attack_strike": 0, "attack": 0, "attack_follow": 0, "skill": 0, "dying": 0},
 }
 
 
