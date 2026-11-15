@@ -162,6 +162,14 @@ export const LAY_VILLAGE_LAYOUT_TOOL: ToolDefinition = {
   mode: "write",
   parameters: { type: "object", properties: { layout: LAYOUT_ANY, terrain: { type: "object" }, name: { type: "string" }, mapId: { type: "string" }, id: { type: "string" } }, required: ["layout", "terrain"] },
   run(draft, args) {
+    // terrain 은 코드 지형이어야 한다 — 빈 객체가 오면 배치 검사(checkBboxVillage)가 T.levels.slice 에서 TypeError 로 죽어
+    // 부른 쪽이 고칠 수 없는 「실행 실패: Cannot read properties of undefined (reading 'slice')」 가 됐다(toolHostileArgs deepHoles). 읽을 수 있는 거절로 바꾼다.
+    const terrain = args.terrain as { W?: unknown; H?: unknown; levels?: unknown; water?: unknown } | null | undefined;
+    const cellList = (value: unknown): boolean => Array.isArray(value) || ArrayBuffer.isView(value);
+    if (!terrain || typeof terrain !== "object" || !Number.isInteger(terrain.W) || !Number.isInteger(terrain.H) || (terrain.W as number) <= 0 || (terrain.H as number) <= 0
+      || !cellList(terrain.levels) || !cellList(terrain.water)) {
+      throw new ToolError("terrain must be the code terrain { W, H, levels, water }: integers W,H > 0, and levels/water as lists with one entry per cell (W*H).", { code: "invalid-args" });
+    }
     let old: GameEvent[] = [];
     const res = layBboxVillageInDraft(draft, args.layout as BboxVillageLayout, args.terrain as never, { prepare: (W, H) => { const p = prepareMap(draft, args, W, H, "beodeul_city", "village"); old = p.old; return p; } });
     const data = res.data as { mapId: string; entrance: Pt | null; doors: unknown[]; stats: unknown };

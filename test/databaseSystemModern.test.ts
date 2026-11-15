@@ -102,6 +102,10 @@ describe("System workspace contracts", () => {
     expect(normalizeSystemRecords(store.getCurrent().system).titleScreen?.titleGraphic).toMatchObject({ mode: "both", x: 32, y: 24 });
     expect(store.getCurrent().system.titleScreen?.titleGraphic?.resourceId).toBeUndefined();
     expect(undoMapEdit()).toBe(true);
+    // 다시 열기 = 먼저 연 탭은 닫히고 새로 그린다. 첫 탭을 문서에 붙여 둔 채 둘째 탭을 그리면, 가짜 DOM 의 MutationObserver 가 변경 하나마다
+    // 지켜보는 나무 전체(붙어 있는 첫 탭까지)를 훑어(fakeDom FakeNode.contains) 이 한 경우가 러너에서 17.8~37.9초 걸렸고 기본 한도 15초를 넘겼다.
+    // 제품 시간이 아니다 — 첫 탭을 떼면 둘째 그리기는 첫째와 같은 시간이다. 한도는 그대로 둔다.
+    host.remove();
     expect(node(render(), "db-field-title-screen-logo").value).toBe("easyrpg-title-title1");
   });
 

@@ -38,6 +38,8 @@ describe("타이틀 메뉴 라벨", () => {
 
   it("오토세이브가 없으면 resume 이 빠지고 continueGame 만 남는다", () => {
     const ids = listTitleMenuOptions(defaultTitleScreenSettings(), { autosaveAvailable: false }).map((option) => option.id);
-    expect(ids).toEqual(["newGame", "continueGame", "quit"]);
+    // 크레딧은 언제나 종료 앞에 선다(titleScreen.test «always lists credits before quit») — 이 시험이 지키는 것은 «이어 하기 계열은 continueGame 하나뿐» 이다.
+    expect(ids).toEqual(["newGame", "continueGame", "credits", "quit"]);
+    expect(ids).not.toContain("resume");
   });
 });

@@ -5,6 +5,7 @@ import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
+import { isPassable } from "@/project/collision";
 import { layerTileAt } from "@/project/mapLayers";
 import type { GameMap, Project } from "@/project/types";
 
@@ -62,7 +63,20 @@ describe("버들항 도로", () => {
     expect(map.encounterTable?.every(entry => !entry.conditions?.locationId)).toBe(true);
     const dark = tileset.autotileGroups!.find(group => group.id === "beodeul_dark_grass_woodland")!;
     const edge = new Set(dark.memberTileIds);
-    expect(map.lowerTiles.some(tile => edge.has(tile))).toBe(true);   // 나무 밑 짙은 풀은 가장자리 모양으로 풀린다
+    // 숲 벽은 2026-10-24(#3314)부터 수관 오토타일이다 — 나무 composer 와 그 밑에 깔던 짙은 풀을 버렸다. 그래서 «나무 밑 짙은 풀이 가장자리 모양으로 풀린다» 는
+    // 짙은 풀이 깔렸을 때만 묻는다(속 칸이 있으면 가장자리 칸도 있다). 지금 지키는 것은 수관 쪽이다: 수관이 이웃에 맞춰 여러 모양으로 풀리고
+    // (2026-10-20 의 결함 — 같은 수관 그림이 바둑판처럼 되풀이됐다), 덮인 칸은 길섶 소품 몇 칸 말고는 걸어 들어갈 수 없는 벽이다.
+    if (map.lowerTiles.some(tile => tile === 11628)) expect(map.lowerTiles.some(tile => edge.has(tile))).toBe(true);
+    const canopyShapes = new Set<number>();
+    let walkableCovered = 0;
+    for (let i = 0; i < map.width * map.height; i++) {
+      const upper = ([2, 3, 4] as const).map(L => layerTileAt(map, L, i)).filter(tile => tile >= 0);
+      if (!upper.length) continue;
+      upper.forEach(tile => canopyShapes.add(tile));
+      if (isPassable(ctx.project, map, i % map.width, Math.floor(i / map.width))) walkableCovered++;
+    }
+    expect(canopyShapes.size).toBeGreaterThan(30);
+    expect(walkableCovered).toBeLessThan(covered * 0.05);
     const core = (i: number) => map.lowerTiles[i] === 11628;
     for (let y = 0; y + 2 < map.height; y++) for (let x = 0; x + 2 < map.width; x++) {
       const i = y * map.width + x;
