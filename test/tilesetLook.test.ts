@@ -67,7 +67,8 @@ describe("tileset look — 게임마다 한 가지 겉모습", () => {
     expect(GAMES.map((key) => chooseTilesetLook(table, key))).toEqual(picks);
     for (const part of TILESET_LOOK_PARTS) {
       const seen = new Set(picks.map((look) => look?.[part] ?? ""));
-      expect([...seen].sort()).toEqual([...tilesetLookOptions(table, part)].sort());
+      // 집 양식 갈래는 «양식 없음» 을 여러 번 싣는다(원래 가족·집 벌들의 몫) — 선택지는 낱이름으로 견준다
+      expect([...seen].sort()).toEqual([...new Set(tilesetLookOptions(table, part))].sort());
     }
     // 갈래는 서로 따로 갈린다 — 바닥 겉모습이 같아도 나무 수종은 여러 가지
     const steppeTrees = new Set(picks.filter((look) => look?.surface === picks.find((p) => p?.surface)!.surface).map((look) => look?.trees ?? ""));

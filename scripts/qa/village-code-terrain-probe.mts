@@ -23,6 +23,8 @@ const OUT = arg("out", "/tmp/vh/code1"); fs.mkdirSync(OUT, { recursive: true });
 const only = arg("only", "").split(",").filter(Boolean).map(Number);
 const layouts = arg("layouts", "") ? JSON.parse(fs.readFileSync(arg("layouts", ""), "utf8")) : {};
 const salt = Number(arg("salt", "0"));
+// --houseStyle <양식>: 그 양식을 고른 게임으로 짓는다(겉모습을 미리 적는다) · --no-project: 판마다 80MB 짜리 .project.json 사본을 남기지 않는다
+const houseStyle = arg("houseStyle", ""), keepProject = !process.argv.includes("--no-project");
 
 const base = createBlankProject() as any; ensureBundledTilesets(base);
 const baseJson = JSON.stringify(base);
@@ -32,16 +34,17 @@ for (const c of CASES) {
   const { args: a0 } = villageArgs({ type: "village", ...c.spec } as any);
   const args: any = { ...a0, ...(c.landform ? { landform: c.landform } : {}), seed: c.seed + salt, id: `v${c.n}C`, name: c.spec.name, ...(layouts[c.n] ? { layout: layouts[c.n].layout, terrainSeed: layouts[c.n].terrainSeed, width: layouts[c.n].width, height: layouts[c.n].height } : {}) };
   const ctx = { project: JSON.parse(baseJson) };
+  if (houseStyle) ctx.project.tilesets.beodeul_city.look = { textureKey: "tex_beodeul_looks", houseStyle };
   const t0 = Date.now();
   const r = runTool(ctx as any, "author_beodeul_town", args);
   if (!r.ok) { console.log(c.n, "FAIL", r.summary); rows.push({ n: c.n, ok: false, summary: r.summary }); continue; }
   const d = r.data as any; const map = ctx.project.maps[d.mapId]!;
   fs.writeFileSync(`${OUT}/${c.n}-C.png`, renderMapPng(ctx.project, map).png);
-  fs.writeFileSync(`${OUT}/${c.n}-C.project.json`, JSON.stringify({ project: ctx.project, mapId: d.mapId }));
+  if (keepProject) fs.writeFileSync(`${OUT}/${c.n}-C.project.json`, JSON.stringify({ project: ctx.project, mapId: d.mapId }));
   const cf = analyzeCityForm(ctx.project, map);
   const doors = (d.doors ?? []) as { reached: boolean }[];
   const lr = (d.levelReach ?? {}) as Record<string, any>;
-  const row = { n: c.n, ms: Date.now() - t0, size: `${map.width}x${map.height}`, houses: d.houses, anchors: d.anchors, unreached: doors.filter((x) => !x.reached).length, doors: doors.length,
+  const row = { n: c.n, ms: Date.now() - t0, size: `${map.width}x${map.height}`, houses: d.houses, anchors: d.anchors, kits: [...new Set((doors as any[]).map((x) => String((x as any).kit ?? "").replace(/^bd-(house-)?/, "")))].join(" "), unreached: doors.filter((x) => !x.reached).length, doors: doors.length,
     dead: cf.deadEnds.filter((x: any) => x.kind === "cell").length, ramps: d.relief?.ramps, rfail: d.relief?.fails, levels: d.relief?.levels,
     upMiss: Object.values(lr).reduce((s: number, e: any) => s + (e.walk - e.reached), 0), upWild: Object.values(lr).reduce((s: number, e: any) => s + (e.wild ?? 0), 0),
     layout: d.layout ? { auto: d.layout.auto, moved: d.layout.moved, failed: d.layout.failed, roadsFailed: d.layout.roadsFailed } : null, terrainSeed: d.terrainSeed, note: d.codeTerrain?.note, summary: r.summary, warnings: (r as any).warnings ?? [] };

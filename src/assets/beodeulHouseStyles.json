@@ -1,0 +1,10 @@
+{
+ "_doc": "버들항 집 양식 표 — scripts/content/beodeul-house-styles/bake.py 가 굽는다(손으로 고치지 않는다). 아직 구운 양식이 없다.",
+ "version": 1,
+ "tilesetId": "beodeul_city",
+ "gate": "",
+ "kitPrefix": "bd-house-st-",
+ "shadowPrefix": "bd-st-shadow-",
+ "foundationPrefix": "bd-st-foundation-",
+ "styles": {}
+}

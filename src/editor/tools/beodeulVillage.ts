@@ -45,6 +45,7 @@ import { activeKitLook, activeTilesetLook, lookHash, withoutHouseSet, withTreePi
 import { standKitPictures } from "@/project/standKit";
 import { projectTilesetLook } from "@/project/tilesetLook";
 import { houseSetTableFor } from "@/assets/houseSets";
+import { houseStylePools } from "./beodeulHouseStyles";
 import { tilesetLookGround } from "@/assets/tilesetLooks";
 import { tilesetStand, tilesetStandTableFor } from "@/assets/tilesetStands";
 import { layBeodeulGroundCover } from "./beodeulGroundCover";
@@ -406,13 +407,17 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 씨앗으로 청회색·이끼 집(벌이 덮지 않는 그림)을 섞으면 한 게임 안에 두 가족이 선다. 지붕을 직접 말한 요청(roofs)은 그대로 따른다.
   if (roofs && roofs !== "red" && (options.roofs === undefined || options.roofs === "") && gameLook?.houses) roofs = "red";
   // 벌을 쓰는 붉은 기와 목록 마을은 보고의 지붕 이름도 벌 이름으로 적는다 — 조수가 «붉은 기와» 로 읽고 대사를 쓰지 않게.
-  const houseSetLabel = roofs === "red" && !roofsAsked && gameLook?.houses ? houseSetTableFor(TS_ID)?.sets[gameLook.houses]?.label : undefined;
-  const palette = roofs ? ROOF_PALETTES[roofs] : null;
+  // 집 양식을 고른 게임(tileset.look.houseStyle — 새 건축의 집 가족)은 지붕을 말하지 않은 마을을 그 양식의 집으로 짓는다(본 무리·강조·앵커·일터 모두 같은 양식).
+  const styleOf = roofs && !roofsAsked ? houseStylePools(TS_ID, gameLook) : undefined;
+  const style = styleOf && have(styleOf.main).filter(doorAtBottom).length >= 3 ? styleOf : undefined;
+  const houseSetLabel = style ? style.label : roofs === "red" && !roofsAsked && gameLook?.houses ? houseSetTableFor(TS_ID)?.sets[gameLook.houses]?.label : undefined;
+  const palette = style ?? (roofs ? ROOF_PALETTES[roofs] : null);
   const houses = have(palette ? palette.main : spec.houses).filter(doorAtBottom);
   const accentHouses = palette ? have(palette.accent).filter(doorAtBottom) : [];
   // 통나무(log) 마을의 높은 곳 건물·모이는 곳 건물은 그 지붕 무리의 강조 건물(너와 양조장·돌벽집)에서 고른다(2026-10-31 이세계 고딩 VQA:
   // 고블린 통나무 마을에 유럽식 예배당·원통 망루 집·붉은 기와 광장 여관이 섰다 — 테마 목록(TIER_LANDMARKS·spec.anchors)이 지붕을 보지 않았다).
-  const culturePool = (ids: readonly string[]): readonly string[] => (roofs === "log" && accentHouses.length ? accentHouses : ids);
+  const culturePool = (ids: readonly string[]): readonly string[] => (style ? style.anchors : roofs === "log" && accentHouses.length ? accentHouses : ids);
+  const workPool = (ids: readonly string[]): readonly string[] => (style ? style.works : ids);
   if (houses.length < 3) throw new ToolError(`버들항 ${spec.label} 집 키트가 부족하다(${houses.length}). 타일셋을 최신 번들로 갱신할 것.`, { code: "beodeul-kits-missing" });
 
   const occ = new Uint8Array(W * H);
@@ -760,7 +765,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     if (layout.landmark) { const ks = shuffled(doorKits(culturePool(TIER_LANDMARKS[theme] ?? spec.anchors))); if (ks.length) place("landmark", ks, layout.landmark); }
     const anchorIds = roofs === "medieval" && have(MEDIEVAL_ANCHORS).length ? MEDIEVAL_ANCHORS : culturePool(spec.anchors);
     if (layout.anchor) { const ks = shuffled(doorKits(anchorIds)).filter((k) => !spots.some((sp) => sp.k.id === k.id)); if (ks.length) place("anchor", ks, layout.anchor); }
-    if (layout.work) { const ks = shuffled(doorKits(LOW_WORKS[theme] ?? [])); if (ks.length) place("work", ks, layout.work); }
+    if (layout.work) { const ks = shuffled(doorKits(workPool(LOW_WORKS[theme] ?? []))); if (ks.length) place("work", ks, layout.work); }
     const last: string[] = [];
     const houseUse = new Map<string, number>();
     // 조수가 집 자리를 주면 그 수가 정한다(12채까지) — size 의 집 수(3~5)는 자동 배치에만
@@ -777,7 +782,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const order = shuffled(pool).sort((a, b) => (classUse.get(classOf(a)) ?? 0) - (classUse.get(classOf(b)) ?? 0) || (houseUse.get(a.id) ?? 0) - (houseUse.get(b.id) ?? 0));
       const first = order.slice(0, 6);
       // 큰 집(9×9·6×11)만 뽑히면 좁은 단에 하나도 못 앉았다(2026-10-30 다랑이 마을 8채 중 1채) — 가장 작은 집 셋을 뒤에 붙인다
-      const small = [...housePool, ...have(spec.houses).filter(doorAtBottom).map(K)].filter((k) => !first.includes(k)).sort((a, b) => (houseUse.get(a.id) ?? 0) - (houseUse.get(b.id) ?? 0) || a.w * a.h - b.w * b.h).slice(0, 3);
+      const small = [...housePool, ...have(style ? [] : spec.houses).filter(doorAtBottom).map(K)].filter((k) => !first.includes(k)).sort((a, b) => (houseUse.get(a.id) ?? 0) - (houseUse.get(b.id) ?? 0) || a.w * a.h - b.w * b.h).slice(0, 3);
       // 고리 거리가 바깥 반복이라 거리 0 에 맞는 작은 대체 집이 거리 1 의 보통 집을 이겼다(2026-10-30 실조수 opus: medium·large 요청 6채가 모두 폭 4) —
       // 요청 크기 무리만으로 4칸 안을 먼저 찾고, 없을 때만 작은 집까지 넣어 9칸까지 찾는다
       const sp = ((want as { kind?: string }).kind ? place("house", first, want, 4) : null) ?? place("house", [...first, ...small], want);
@@ -2217,7 +2222,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (const st of tierStreets) if (!landmarked && high.length) landmarked = lineLandmark(st, high);
       if (!landmarked && high.length && north) landmarked = lineLandmark(north.s, high);
       tierStreets.forEach((st) => lineStreet(st, 1));
-      const low = have(LOW_WORKS[theme] ?? []).filter((id) => K(id).door && !anchors.includes(id));
+      const low = have(workPool(LOW_WORKS[theme] ?? [])).filter((id) => K(id).door && !anchors.includes(id));
       for (const st of souths) if (st.name === "아랫길" && low.length) lineLandmark(st, low);
     } else for (const s of topStreets) lineStreet(s, 1);
     for (const s of [main, ...(north ? [north.s] : []), ...souths]) lineStreet(s);
@@ -3853,6 +3858,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
 const REVIEWED_SETS = [
   { house: "bd-house-rv-", shadow: "bd-rv-shadow-", foundation: "bd-rv-foundation-" },
   { house: "bd-house-mk-", shadow: "bd-mk-shadow-", foundation: "bd-mk-foundation-" },
+  { house: "bd-house-st-", shadow: "bd-st-shadow-", foundation: "bd-st-foundation-" }, // 집 양식(assets/houseStyles.ts)
 ] as const;
 function reviewedPrefix(kitId: string): (typeof REVIEWED_SETS)[number] | undefined { return REVIEWED_SETS.find((r) => kitId.startsWith(r.house)); }
 /** 허용 건물은 본체(3층)와 같은 원점에 바닥 그림자(2층 *-shadow-*)·기초(4층 *-foundation-*)를 함께 놓는다(beodeulReviewed 배치 규칙). */

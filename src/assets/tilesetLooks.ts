@@ -9,10 +9,13 @@
 // 재질 화소만 바꾼 칸을 코드로 만들 수 있다). 고르기는 project/tilesetLook.ts.
 import beodeulLooks from "./beodeulLooks.json";
 import { tilesetStandTableFor } from "./tilesetStands";
+import { houseSetNames } from "./houseSets";
+import { houseStyleNames, houseStyleTableFor } from "./houseStyles";
 import type { TileGraft, TilesetDef, TilesetLook } from "@/project/types";
 
 // stand(숲 구성 — 섞인 수종·숲 수관·숲 바닥)·meadow(풀밭 얼룩)는 4차(2026-11-13)에 뒤에 덧붙였다 — 표는 assets/tilesetStands.ts. stand 를 고른 게임은 trees(수종 하나)를 겹치지 않는다.
-export const TILESET_LOOK_PARTS = ["surface", "trees", "woods", "houses", "plaza", "stand", "meadow"] as const;
+// houseStyle(집 양식 — 새 건축의 집 가족, assets/houseStyles.ts)은 2026-11-14 에 뒤에 덧붙였다 — 앞 갈래들의 고르기는 그대로다(갈래마다 따로 해시).
+export const TILESET_LOOK_PARTS = ["surface", "trees", "woods", "houses", "plaza", "stand", "meadow", "houseStyle"] as const;
 export type TilesetLookPart = (typeof TILESET_LOOK_PARTS)[number];
 
 type Sources = Readonly<Record<string, readonly number[]>>;
@@ -29,7 +32,7 @@ export type TilesetLookTable = {
   readonly count: number;
   readonly targets: { readonly ground: readonly number[]; readonly paved: readonly number[] };
   readonly grounds: Readonly<Record<string, { readonly base: number; readonly sources?: Sources }>>;
-  readonly parts: Readonly<Record<Exclude<TilesetLookPart, "stand" | "meadow">, { readonly options: Readonly<Record<string, LookOption>> }>>;
+  readonly parts: Readonly<Record<Exclude<TilesetLookPart, "stand" | "meadow" | "houseStyle">, { readonly options: Readonly<Record<string, LookOption>> }>>;
 };
 
 const TABLES: readonly TilesetLookTable[] = [beodeulLooks as unknown as TilesetLookTable];
@@ -132,12 +135,15 @@ export function tilesetLookGround(tilesetId: string, look: TilesetLook | undefin
 
 /** 겉모습 갈래의 선택지 이름(표 순서). 맨 앞 "" 는 «원래 그림». */
 export function tilesetLookOptions(table: TilesetLookTable, part: TilesetLookPart): string[] {
+  // 집 양식: «양식 없음» 이 원래 가족과 집 벌들의 몫을 그대로 쥔다 — 집의 모습 (1 + 벌 수 + 양식 수) 가지가 같은 몫으로 갈린다(벌은 houses 갈래가 따로 고른다).
+  if (part === "houseStyle") return [...Array<string>(1 + houseSetNames(table.tilesetId).length).fill(""), ...houseStyleNames(table.tilesetId)];
   return ["", ...Object.keys(partOptions(table, part))];
 }
 
 function partOptions(table: TilesetLookTable, part: TilesetLookPart): Readonly<Record<string, { readonly label: string }>> {
   if (part === "stand") return tilesetStandTableFor(table.tilesetId)?.stands ?? {};
   if (part === "meadow") return tilesetStandTableFor(table.tilesetId)?.meadows ?? {};
+  if (part === "houseStyle") return houseStyleTableFor(table.tilesetId)?.styles ?? {};
   return table.parts[part]?.options ?? {};
 }
 

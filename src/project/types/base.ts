@@ -338,6 +338,8 @@ export interface TilesetLook {
   houses?: string;
   /** 광장 구성(시공기가 읽는 값) — 모양·가운데 기물·둘레 꾸밈. 없으면 원래 네모 광장과 우물. */
   plaza?: string;
+  /** 집 양식(assets/houseStyles.ts, 시공기가 읽는 값) — 그 게임의 마을이 짓는 집 가족(새 건축: 덩어리·지붕 꼴·비례가 다른 킷 한 무리). 없으면 원래 가족(집 벌 houses 가 있으면 그 그림). */
+  houseStyle?: string;
   /** 숲 구성(assets/tilesetStands.ts) — 주 수종·곁 수종·강조 나무·덤불·숲 바닥. 고른 게임은 trees(수종 하나)를 겹치지 않는다. 없으면 원래 숲. */
   stand?: string;
   /** 풀밭 얼룩(시공기가 읽는 값) — 한 맵의 열린 바닥에 섞어 까는 재질 묶음. 없으면 한 가지 바닥. */

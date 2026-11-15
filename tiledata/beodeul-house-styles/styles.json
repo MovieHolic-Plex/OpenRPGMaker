@@ -1,0 +1,2389 @@
+{
+ "_doc": "버들항 집 양식 여덟 × 열두 집. 킷 id = bd-house-st-<style>-<name> (+ bd-st-shadow-… · bd-st-foundation-…). 문은 맨 아랫줄 칸 (dx, h-1), 문 부품은 1×2(dy = h-2). 발행 뒤 id·크기·문 칸은 바꾸지 않는다.",
+ "styles": [
+  {
+   "id": "halftimber",
+   "name": "목골 상가주택",
+   "en": "half-timbered market town",
+   "ref": "ref4",
+   "desc": "막돌 1층 위에 목골 회벽 위층, 짙은 갈색 너와 박공, 나무 발코니와 바깥 계단, 아치 지하문, 달개 지붕 밑 열린 작업장, 연기 나는 굴뚝. ㄱ·ㅜ 평면, 크기 다른 집이 어깨를 맞댄다.",
+   "ramps": "roof 갈색 너와(새 색 5) · wall 목골 회벽(버들항 회벽) · footing 막돌(버들항 보랏빛 줄눈 막돌) · wood 짙은 참나무(버들항 목재) · accent 붉은 제라늄·놋쇠 간판",
+   "houses": [
+    {
+     "id": "bd-house-st-halftimber-gable",
+     "name": "gable",
+     "ko": "박공 오두막",
+     "en": "half-timbered market town gable cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 4,
+     "h": 6,
+     "door": [
+      1,
+      5
+     ],
+     "shape": "박공 정면 1.5층",
+     "words": [
+      "박공 오두막",
+      "오두막",
+      "목골 상가주택",
+      "cottage",
+      "half-timbered market town",
+      "gable cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-halftimber-eave",
+     "name": "eave",
+     "ko": "처마 오두막",
+     "en": "half-timbered market town eave cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 5,
+     "h": 5,
+     "door": [
+      3,
+      4
+     ],
+     "shape": "처마 정면 단층 + 굴뚝",
+     "words": [
+      "처마 오두막",
+      "오두막",
+      "목골 상가주택",
+      "cottage",
+      "half-timbered market town",
+      "eave cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-halftimber-jetty",
+     "name": "jetty",
+     "ko": "내민 이층집",
+     "en": "half-timbered market town jetty",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 5,
+     "h": 7,
+     "door": [
+      2,
+      6
+     ],
+     "shape": "박공 정면 2층, 위층이 내밀었다",
+     "words": [
+      "내민 이층집",
+      "살림집",
+      "목골 상가주택",
+      "house",
+      "half-timbered market town",
+      "jetty"
+     ]
+    },
+    {
+     "id": "bd-house-st-halftimber-cross",
+     "name": "cross",
+     "ko": "맞배 날개 집",
+     "en": "half-timbered market town cross",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 7,
+     "h": 7,
+     "door": [
+      4,
+      6
+     ],
+     "shape": "처마 정면 2층 + 앞으로 나온 박공 날개",
+     "words": [
+      "맞배 날개 집",
+      "살림집",
+      "목골 상가주택",
+      "house",
+      "half-timbered market town",
+      "cross"
+     ]
+    },
+    {
+     "id": "bd-house-st-halftimber-stair",
+     "name": "stair",
+     "ko": "바깥 계단 집",
+     "en": "half-timbered market town stair",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 6,
+     "h": 6,
+     "door": [
+      1,
+      5
+     ],
+     "shape": "처마 정면 + 바깥 나무 계단과 작은 발코니",
+     "words": [
+      "바깥 계단 집",
+      "살림집",
+      "목골 상가주택",
+      "house",
+      "half-timbered market town",
+      "stair"
+     ]
+    },
+    {
+     "id": "bd-house-st-halftimber-ell",
+     "name": "ell",
+     "ko": "ㄱ자 큰 집",
+     "en": "half-timbered market town ell",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 8,
+     "h": 7,
+     "door": [
+      5,
+      6
+     ],
+     "shape": "박공 정면 본채 + 낮은 처마 날개채와 지붕창",
+     "words": [
+      "ㄱ자 큰 집",
+      "큰 집",
+      "목골 상가주택",
+      "large house",
+      "half-timbered market town",
+      "ell"
+     ]
+    },
+    {
+     "id": "bd-house-st-halftimber-twin",
+     "name": "twin",
+     "ko": "쌍박공 큰 집",
+     "en": "half-timbered market town twin",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 9,
+     "h": 8,
+     "door": [
+      4,
+      7
+     ],
+     "shape": "폭 다른 박공 둘 + 사이 발코니",
+     "words": [
+      "쌍박공 큰 집",
+      "큰 집",
+      "목골 상가주택",
+      "large house",
+      "half-timbered market town",
+      "twin"
+     ]
+    },
+    {
+     "id": "bd-house-st-halftimber-shop",
+     "name": "shop",
+     "ko": "박공 가게집",
+     "en": "half-timbered market town shop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 6,
+     "h": 7,
+     "door": [
+      1,
+      6
+     ],
+     "shape": "박공 정면 2층, 진열창·간판 걸이",
+     "words": [
+      "박공 가게집",
+      "가게집",
+      "목골 상가주택",
+      "shop",
+      "half-timbered market town",
+      "shop"
+     ]
+    },
+    {
+     "id": "bd-house-st-halftimber-awning",
+     "name": "awning",
+     "ko": "차양 가게집",
+     "en": "half-timbered market town awning shop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 7,
+     "h": 6,
+     "door": [
+      5,
+      5
+     ],
+     "shape": "처마 정면, 진열창 차양·지붕창",
+     "words": [
+      "차양 가게집",
+      "가게집",
+      "목골 상가주택",
+      "shop",
+      "half-timbered market town",
+      "awning shop"
+     ]
+    },
+    {
+     "id": "bd-house-st-halftimber-inn",
+     "name": "inn",
+     "ko": "여관",
+     "en": "half-timbered market town inn",
+     "role": "inn",
+     "roleKo": "여관",
+     "roleEn": "inn",
+     "w": 12,
+     "h": 8,
+     "door": [
+      6,
+      7
+     ],
+     "shape": "2층 본채 긴 발코니 + 박공 날개채 + 바깥 계단, 문 위 간판",
+     "words": [
+      "여관",
+      "여관",
+      "목골 상가주택",
+      "inn",
+      "half-timbered market town",
+      "inn"
+     ]
+    },
+    {
+     "id": "bd-house-st-halftimber-smithy",
+     "name": "smithy",
+     "ko": "대장간",
+     "en": "half-timbered market town smithy",
+     "role": "work",
+     "roleKo": "일터",
+     "roleEn": "workplace",
+     "w": 8,
+     "h": 6,
+     "door": [
+      1,
+      5
+     ],
+     "shape": "막돌 박공 채 + 열린 달개 대장간(화덕·모루), 큰 굴뚝",
+     "words": [
+      "대장간",
+      "일터",
+      "목골 상가주택",
+      "workplace",
+      "half-timbered market town",
+      "smithy"
+     ]
+    },
+    {
+     "id": "bd-house-st-halftimber-hall",
+     "name": "hall",
+     "ko": "길드 회관",
+     "en": "half-timbered market town hall",
+     "role": "hall",
+     "roleKo": "예배당·회관",
+     "roleEn": "chapel or hall",
+     "w": 9,
+     "h": 9,
+     "door": [
+      4,
+      8
+     ],
+     "shape": "높은 회관 + 모서리 네모 종탑",
+     "words": [
+      "길드 회관",
+      "예배당·회관",
+      "목골 상가주택",
+      "chapel or hall",
+      "half-timbered market town",
+      "hall"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "log",
+   "name": "산촌 통나무·널집",
+   "en": "mountain log and plank",
+   "ref": "ref1~3",
+   "desc": "짙은 통나무·세로 널벽, 이끼 낀 녹갈색 너와. 본채 + 박공 날개 + 낮은 달개가 붙은 맞배 지붕, 지붕이 집 높이의 절반. 열린 어두운 문, 꽃상자 창, 장작·통·상자, 여관 문 위 간판.",
+   "ramps": "roof 이끼 너와(새 색 5) · wall 짙은 널·통나무(버들항 목재 + 새 색 2) · footing 냇돌(버들항 회색 돌) · wood 밝은 창틀 · accent 꽃상자 노랑·주황",
+   "houses": [
+    {
+     "id": "bd-house-st-log-cabin",
+     "name": "cabin",
+     "ko": "통나무 오두막",
+     "en": "mountain log and plank cabin cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 4,
+     "h": 5,
+     "door": [
+      1,
+      4
+     ],
+     "shape": "박공 정면 한 칸 집",
+     "words": [
+      "통나무 오두막",
+      "오두막",
+      "산촌 통나무·널집",
+      "cottage",
+      "mountain log and plank",
+      "cabin cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-log-hut",
+     "name": "hut",
+     "ko": "장작 헛간 오두막",
+     "en": "mountain log and plank hut cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 5,
+     "h": 5,
+     "door": [
+      2,
+      4
+     ],
+     "shape": "처마 정면 + 장작 달개",
+     "words": [
+      "장작 헛간 오두막",
+      "오두막",
+      "산촌 통나무·널집",
+      "cottage",
+      "mountain log and plank",
+      "hut cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-log-crosswing",
+     "name": "crosswing",
+     "ko": "날개채 집",
+     "en": "mountain log and plank crosswing",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 7,
+     "h": 6,
+     "door": [
+      5,
+      5
+     ],
+     "shape": "처마 본채 + 오른쪽 박공 날개",
+     "words": [
+      "날개채 집",
+      "살림집",
+      "산촌 통나무·널집",
+      "house",
+      "mountain log and plank",
+      "crosswing"
+     ]
+    },
+    {
+     "id": "bd-house-st-log-loft",
+     "name": "loft",
+     "ko": "다락 집",
+     "en": "mountain log and plank loft",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 5,
+     "h": 6,
+     "door": [
+      2,
+      5
+     ],
+     "shape": "박공 정면 1.5층 다락창",
+     "words": [
+      "다락 집",
+      "살림집",
+      "산촌 통나무·널집",
+      "house",
+      "mountain log and plank",
+      "loft"
+     ]
+    },
+    {
+     "id": "bd-house-st-log-porch",
+     "name": "porch",
+     "ko": "마루 집",
+     "en": "mountain log and plank porch",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 6,
+     "h": 6,
+     "door": [
+      3,
+      5
+     ],
+     "shape": "처마 정면 + 널 마루와 디딤 계단",
+     "words": [
+      "마루 집",
+      "살림집",
+      "산촌 통나무·널집",
+      "house",
+      "mountain log and plank",
+      "porch"
+     ]
+    },
+    {
+     "id": "bd-house-st-log-twingable",
+     "name": "twingable",
+     "ko": "쌍날개 큰 집",
+     "en": "mountain log and plank twingable",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 9,
+     "h": 6,
+     "door": [
+      4,
+      5
+     ],
+     "shape": "박공 날개 둘 + 가운데 처마 채(ㄷ자)",
+     "words": [
+      "쌍날개 큰 집",
+      "큰 집",
+      "산촌 통나무·널집",
+      "large house",
+      "mountain log and plank",
+      "twingable"
+     ]
+    },
+    {
+     "id": "bd-house-st-log-farmstead",
+     "name": "farmstead",
+     "ko": "농가 큰 집",
+     "en": "mountain log and plank farmstead",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 8,
+     "h": 7,
+     "door": [
+      2,
+      6
+     ],
+     "shape": "2층 통나무 채 + 낮은 달개 외양간",
+     "words": [
+      "농가 큰 집",
+      "큰 집",
+      "산촌 통나무·널집",
+      "large house",
+      "mountain log and plank",
+      "farmstead"
+     ]
+    },
+    {
+     "id": "bd-house-st-log-trader",
+     "name": "trader",
+     "ko": "산촌 가게",
+     "en": "mountain log and plank trader shop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 6,
+     "h": 6,
+     "door": [
+      4,
+      5
+     ],
+     "shape": "박공 정면, 열린 판매창·널 차양·간판",
+     "words": [
+      "산촌 가게",
+      "가게집",
+      "산촌 통나무·널집",
+      "shop",
+      "mountain log and plank",
+      "trader shop"
+     ]
+    },
+    {
+     "id": "bd-house-st-log-provisions",
+     "name": "provisions",
+     "ko": "잡화 가게",
+     "en": "mountain log and plank provisions shop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 7,
+     "h": 6,
+     "door": [
+      1,
+      5
+     ],
+     "shape": "처마 정면 + 마루, 통·상자, 간판",
+     "words": [
+      "잡화 가게",
+      "가게집",
+      "산촌 통나무·널집",
+      "shop",
+      "mountain log and plank",
+      "provisions shop"
+     ]
+    },
+    {
+     "id": "bd-house-st-log-inn",
+     "name": "inn",
+     "ko": "산장 여관",
+     "en": "mountain log and plank inn",
+     "role": "inn",
+     "roleKo": "여관",
+     "roleEn": "inn",
+     "w": 11,
+     "h": 7,
+     "door": [
+      5,
+      6
+     ],
+     "shape": "ㄷ자: 박공 날개 둘 + 들어간 가운데, 간판",
+     "words": [
+      "산장 여관",
+      "여관",
+      "산촌 통나무·널집",
+      "inn",
+      "mountain log and plank",
+      "inn"
+     ]
+    },
+    {
+     "id": "bd-house-st-log-sawmill",
+     "name": "sawmill",
+     "ko": "제재소",
+     "en": "mountain log and plank sawmill",
+     "role": "work",
+     "roleKo": "일터",
+     "roleEn": "workplace",
+     "w": 8,
+     "h": 6,
+     "door": [
+      6,
+      5
+     ],
+     "shape": "열린 톱질 헛간(통나무 더미) + 오두막",
+     "words": [
+      "제재소",
+      "일터",
+      "산촌 통나무·널집",
+      "workplace",
+      "mountain log and plank",
+      "sawmill"
+     ]
+    },
+    {
+     "id": "bd-house-st-log-chapel",
+     "name": "chapel",
+     "ko": "통나무 예배당",
+     "en": "mountain log and plank chapel",
+     "role": "hall",
+     "roleKo": "예배당·회관",
+     "roleEn": "chapel or hall",
+     "w": 7,
+     "h": 8,
+     "door": [
+      3,
+      7
+     ],
+     "shape": "통나무 예배당 + 작은 종탑",
+     "words": [
+      "통나무 예배당",
+      "예배당·회관",
+      "산촌 통나무·널집",
+      "chapel or hall",
+      "mountain log and plank",
+      "chapel"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "harbourstone",
+   "name": "크림색 석조 항구집",
+   "en": "cream stone harbour",
+   "ref": "ref5",
+   "desc": "크림색 다듬은 돌벽, 테라코타 기와. 좁고 높은 박공 정면이 둘·셋씩 줄지어 서고 아치 문과 창, 뾰족 아치 문간, 장터 차양.",
+   "ramps": "roof 테라코타(버들항 붉은 기와 줄) · wall 크림 돌(버들항 회벽·사암 + 새 색 3) · footing 회색 돌 · wood 짙은 문·덧문 · accent 줄무늬 차양(붉은·청록)",
+   "houses": [
+    {
+     "id": "bd-house-st-harbourstone-narrow",
+     "name": "narrow",
+     "ko": "좁은 박공집",
+     "en": "cream stone harbour narrow cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 4,
+     "h": 7,
+     "door": [
+      1,
+      6
+     ],
+     "shape": "박공 정면 2층, 좁고 높다",
+     "words": [
+      "좁은 박공집",
+      "오두막",
+      "크림색 석조 항구집",
+      "cottage",
+      "cream stone harbour",
+      "narrow cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-harbourstone-low",
+     "name": "low",
+     "ko": "낮은 돌집",
+     "en": "cream stone harbour low cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 5,
+     "h": 5,
+     "door": [
+      2,
+      4
+     ],
+     "shape": "처마 정면 단층, 아치 문",
+     "words": [
+      "낮은 돌집",
+      "오두막",
+      "크림색 석조 항구집",
+      "cottage",
+      "cream stone harbour",
+      "low cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-harbourstone-pair",
+     "name": "pair",
+     "ko": "쌍박공 집",
+     "en": "cream stone harbour pair",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 6,
+     "h": 7,
+     "door": [
+      1,
+      6
+     ],
+     "shape": "폭 다른 박공 둘이 붙었다",
+     "words": [
+      "쌍박공 집",
+      "살림집",
+      "크림색 석조 항구집",
+      "house",
+      "cream stone harbour",
+      "pair"
+     ]
+    },
+    {
+     "id": "bd-house-st-harbourstone-arched",
+     "name": "arched",
+     "ko": "아치 창 집",
+     "en": "cream stone harbour arched",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 5,
+     "h": 7,
+     "door": [
+      2,
+      6
+     ],
+     "shape": "박공 정면, 아치 창과 작은 발코니",
+     "words": [
+      "아치 창 집",
+      "살림집",
+      "크림색 석조 항구집",
+      "house",
+      "cream stone harbour",
+      "arched"
+     ]
+    },
+    {
+     "id": "bd-house-st-harbourstone-stairhouse",
+     "name": "stairhouse",
+     "ko": "돌계단 집",
+     "en": "cream stone harbour stairhouse",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 7,
+     "h": 6,
+     "door": [
+      5,
+      5
+     ],
+     "shape": "처마 정면 + 바깥 돌계단",
+     "words": [
+      "돌계단 집",
+      "살림집",
+      "크림색 석조 항구집",
+      "house",
+      "cream stone harbour",
+      "stairhouse"
+     ]
+    },
+    {
+     "id": "bd-house-st-harbourstone-triple",
+     "name": "triple",
+     "ko": "세 박공 큰 집",
+     "en": "cream stone harbour triple",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 9,
+     "h": 7,
+     "door": [
+      4,
+      6
+     ],
+     "shape": "박공 셋이 한 줄",
+     "words": [
+      "세 박공 큰 집",
+      "큰 집",
+      "크림색 석조 항구집",
+      "large house",
+      "cream stone harbour",
+      "triple"
+     ]
+    },
+    {
+     "id": "bd-house-st-harbourstone-merchant",
+     "name": "merchant",
+     "ko": "상인 저택",
+     "en": "cream stone harbour merchant",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 8,
+     "h": 8,
+     "door": [
+      2,
+      7
+     ],
+     "shape": "3층 ㄱ자 + 계단탑",
+     "words": [
+      "상인 저택",
+      "큰 집",
+      "크림색 석조 항구집",
+      "large house",
+      "cream stone harbour",
+      "merchant"
+     ]
+    },
+    {
+     "id": "bd-house-st-harbourstone-chandler",
+     "name": "chandler",
+     "ko": "선구점",
+     "en": "cream stone harbour chandler shop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 5,
+     "h": 7,
+     "door": [
+      3,
+      6
+     ],
+     "shape": "박공 정면, 차양·도르래 들보",
+     "words": [
+      "선구점",
+      "가게집",
+      "크림색 석조 항구집",
+      "shop",
+      "cream stone harbour",
+      "chandler shop"
+     ]
+    },
+    {
+     "id": "bd-house-st-harbourstone-fishmonger",
+     "name": "fishmonger",
+     "ko": "생선 가게",
+     "en": "cream stone harbour fishmonger shop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 7,
+     "h": 6,
+     "door": [
+      1,
+      5
+     ],
+     "shape": "처마 정면 + 장터 차양 좌판",
+     "words": [
+      "생선 가게",
+      "가게집",
+      "크림색 석조 항구집",
+      "shop",
+      "cream stone harbour",
+      "fishmonger shop"
+     ]
+    },
+    {
+     "id": "bd-house-st-harbourstone-inn",
+     "name": "inn",
+     "ko": "항구 여관",
+     "en": "cream stone harbour inn",
+     "role": "inn",
+     "roleKo": "여관",
+     "roleEn": "inn",
+     "w": 11,
+     "h": 8,
+     "door": [
+      5,
+      7
+     ],
+     "shape": "박공 둘 + 아치 회랑 채, 간판",
+     "words": [
+      "항구 여관",
+      "여관",
+      "크림색 석조 항구집",
+      "inn",
+      "cream stone harbour",
+      "inn"
+     ]
+    },
+    {
+     "id": "bd-house-st-harbourstone-boathouse",
+     "name": "boathouse",
+     "ko": "배 창고",
+     "en": "cream stone harbour boathouse",
+     "role": "work",
+     "roleKo": "일터",
+     "roleEn": "workplace",
+     "w": 8,
+     "h": 6,
+     "door": [
+      6,
+      5
+     ],
+     "shape": "넓은 아치 배 문 + 그물 다락",
+     "words": [
+      "배 창고",
+      "일터",
+      "크림색 석조 항구집",
+      "workplace",
+      "cream stone harbour",
+      "boathouse"
+     ]
+    },
+    {
+     "id": "bd-house-st-harbourstone-hall",
+     "name": "hall",
+     "ko": "세관 회관",
+     "en": "cream stone harbour hall",
+     "role": "hall",
+     "roleKo": "예배당·회관",
+     "roleEn": "chapel or hall",
+     "w": 8,
+     "h": 9,
+     "door": [
+      3,
+      8
+     ],
+     "shape": "뾰족 아치 문간 + 작은 종루",
+     "words": [
+      "세관 회관",
+      "예배당·회관",
+      "크림색 석조 항구집",
+      "chapel or hall",
+      "cream stone harbour",
+      "hall"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "violetslate",
+   "name": "보랏빛 슬레이트 산성집",
+   "en": "violet slate hill town",
+   "ref": "ref6",
+   "desc": "회색 돌과 붉은 벽돌, 보랏빛 슬레이트 지붕. 긴 나무 발코니에 깃발이 걸리고 지붕이 여러 채를 타고 층층이 내려온다.",
+   "ramps": "roof 보랏빛 슬레이트(버들항 남보라 + 새 색 4) · wall 회색 돌(버들항 회색 돌) · wall2 붉은 벽돌(버들항 붉은 줄 + 새 색 2) · wood 밝은 발코니 · accent 보라·금 깃발",
+   "houses": [
+    {
+     "id": "bd-house-st-violetslate-brickcot",
+     "name": "brickcot",
+     "ko": "벽돌 오두막",
+     "en": "violet slate hill town brickcot cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 4,
+     "h": 6,
+     "door": [
+      1,
+      5
+     ],
+     "shape": "박공 정면 벽돌",
+     "words": [
+      "벽돌 오두막",
+      "오두막",
+      "보랏빛 슬레이트 산성집",
+      "cottage",
+      "violet slate hill town",
+      "brickcot cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-violetslate-stonecot",
+     "name": "stonecot",
+     "ko": "돌 오두막",
+     "en": "violet slate hill town stonecot cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 5,
+     "h": 5,
+     "door": [
+      3,
+      4
+     ],
+     "shape": "처마 정면 돌벽 + 지붕창",
+     "words": [
+      "돌 오두막",
+      "오두막",
+      "보랏빛 슬레이트 산성집",
+      "cottage",
+      "violet slate hill town",
+      "stonecot cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-violetslate-balcony",
+     "name": "balcony",
+     "ko": "발코니 집",
+     "en": "violet slate hill town balcony",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 6,
+     "h": 7,
+     "door": [
+      2,
+      6
+     ],
+     "shape": "처마 정면 2층, 긴 발코니와 깃발",
+     "words": [
+      "발코니 집",
+      "살림집",
+      "보랏빛 슬레이트 산성집",
+      "house",
+      "violet slate hill town",
+      "balcony"
+     ]
+    },
+    {
+     "id": "bd-house-st-violetslate-stepped",
+     "name": "stepped",
+     "ko": "층층 지붕 집",
+     "en": "violet slate hill town stepped",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 7,
+     "h": 7,
+     "door": [
+      5,
+      6
+     ],
+     "shape": "높은 채 + 낮은 채, 지붕이 한 단 내려간다",
+     "words": [
+      "층층 지붕 집",
+      "살림집",
+      "보랏빛 슬레이트 산성집",
+      "house",
+      "violet slate hill town",
+      "stepped"
+     ]
+    },
+    {
+     "id": "bd-house-st-violetslate-brickgable",
+     "name": "brickgable",
+     "ko": "벽돌 박공집",
+     "en": "violet slate hill town brickgable",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 5,
+     "h": 7,
+     "door": [
+      2,
+      6
+     ],
+     "shape": "박공 정면 2층, 위층 벽돌",
+     "words": [
+      "벽돌 박공집",
+      "살림집",
+      "보랏빛 슬레이트 산성집",
+      "house",
+      "violet slate hill town",
+      "brickgable"
+     ]
+    },
+    {
+     "id": "bd-house-st-violetslate-manor",
+     "name": "manor",
+     "ko": "날개 저택",
+     "en": "violet slate hill town manor",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 9,
+     "h": 8,
+     "door": [
+      4,
+      7
+     ],
+     "shape": "높은 가운데 + 낮은 두 날개, 발코니",
+     "words": [
+      "날개 저택",
+      "큰 집",
+      "보랏빛 슬레이트 산성집",
+      "large house",
+      "violet slate hill town",
+      "manor"
+     ]
+    },
+    {
+     "id": "bd-house-st-violetslate-towerhouse",
+     "name": "towerhouse",
+     "ko": "탑 집",
+     "en": "violet slate hill town towerhouse",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 8,
+     "h": 8,
+     "door": [
+      5,
+      7
+     ],
+     "shape": "집 + 모서리 네모 탑",
+     "words": [
+      "탑 집",
+      "큰 집",
+      "보랏빛 슬레이트 산성집",
+      "large house",
+      "violet slate hill town",
+      "towerhouse"
+     ]
+    },
+    {
+     "id": "bd-house-st-violetslate-bannershop",
+     "name": "bannershop",
+     "ko": "깃발 가게",
+     "en": "violet slate hill town bannershop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 6,
+     "h": 6,
+     "door": [
+      1,
+      5
+     ],
+     "shape": "처마 정면, 깃발 간판·진열창",
+     "words": [
+      "깃발 가게",
+      "가게집",
+      "보랏빛 슬레이트 산성집",
+      "shop",
+      "violet slate hill town",
+      "bannershop"
+     ]
+    },
+    {
+     "id": "bd-house-st-violetslate-gallery",
+     "name": "gallery",
+     "ko": "회랑 가게",
+     "en": "violet slate hill town gallery shop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 7,
+     "h": 7,
+     "door": [
+      3,
+      6
+     ],
+     "shape": "가게 위 발코니 회랑",
+     "words": [
+      "회랑 가게",
+      "가게집",
+      "보랏빛 슬레이트 산성집",
+      "shop",
+      "violet slate hill town",
+      "gallery shop"
+     ]
+    },
+    {
+     "id": "bd-house-st-violetslate-inn",
+     "name": "inn",
+     "ko": "산성 여관",
+     "en": "violet slate hill town inn",
+     "role": "inn",
+     "roleKo": "여관",
+     "roleEn": "inn",
+     "w": 12,
+     "h": 8,
+     "door": [
+      6,
+      7
+     ],
+     "shape": "긴 발코니, 층층 지붕, 깃발",
+     "words": [
+      "산성 여관",
+      "여관",
+      "보랏빛 슬레이트 산성집",
+      "inn",
+      "violet slate hill town",
+      "inn"
+     ]
+    },
+    {
+     "id": "bd-house-st-violetslate-brewery",
+     "name": "brewery",
+     "ko": "양조장",
+     "en": "violet slate hill town brewery",
+     "role": "work",
+     "roleKo": "일터",
+     "roleEn": "workplace",
+     "w": 8,
+     "h": 6,
+     "door": [
+      2,
+      5
+     ],
+     "shape": "벽돌 채 + 큰 굴뚝 + 열린 통 칸",
+     "words": [
+      "양조장",
+      "일터",
+      "보랏빛 슬레이트 산성집",
+      "workplace",
+      "violet slate hill town",
+      "brewery"
+     ]
+    },
+    {
+     "id": "bd-house-st-violetslate-hall",
+     "name": "hall",
+     "ko": "돌 회관",
+     "en": "violet slate hill town hall",
+     "role": "hall",
+     "roleKo": "예배당·회관",
+     "roleEn": "chapel or hall",
+     "w": 9,
+     "h": 9,
+     "door": [
+      4,
+      8
+     ],
+     "shape": "돌 회관 + 모서리 탑 둘",
+     "words": [
+      "돌 회관",
+      "예배당·회관",
+      "보랏빛 슬레이트 산성집",
+      "chapel or hall",
+      "violet slate hill town",
+      "hall"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "whitecube",
+   "name": "흰 회벽 입방체 집",
+   "en": "whitewashed cube",
+   "ref": "자체",
+   "desc": "흰 회벽 네모 집을 층층이 쌓고 평지붕은 난간 두른 옥상 테라스. 파란 문·덧문, 바깥 계단, 퍼걸러, 화분. 예배당은 파란 둥근 지붕(위에서 본 원).",
+   "ramps": "wall 흰 회벽(버들항 밝은 회벽, 상한 223) · roof 옥상 바닥 연한 모래빛(새 색 3) · wood 퍼걸러 · accent 코발트 파랑(버들항 파랑 + 새 색 2)·부겐빌레아 분홍",
+   "houses": [
+    {
+     "id": "bd-house-st-whitecube-cube",
+     "name": "cube",
+     "ko": "네모 집",
+     "en": "whitewashed cube cube cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 4,
+     "h": 5,
+     "door": [
+      1,
+      4
+     ],
+     "shape": "입방체 하나",
+     "words": [
+      "네모 집",
+      "오두막",
+      "흰 회벽 입방체 집",
+      "cottage",
+      "whitewashed cube",
+      "cube cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-whitecube-stepcube",
+     "name": "stepcube",
+     "ko": "덧채 네모 집",
+     "en": "whitewashed cube stepcube cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 5,
+     "h": 5,
+     "door": [
+      3,
+      4
+     ],
+     "shape": "입방체 + 낮은 덧채",
+     "words": [
+      "덧채 네모 집",
+      "오두막",
+      "흰 회벽 입방체 집",
+      "cottage",
+      "whitewashed cube",
+      "stepcube cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-whitecube-terrace",
+     "name": "terrace",
+     "ko": "옥상 집",
+     "en": "whitewashed cube terrace",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 6,
+     "h": 6,
+     "door": [
+      1,
+      5
+     ],
+     "shape": "넓은 아래채 + 물러난 위채 + 바깥 계단",
+     "words": [
+      "옥상 집",
+      "살림집",
+      "흰 회벽 입방체 집",
+      "house",
+      "whitewashed cube",
+      "terrace"
+     ]
+    },
+    {
+     "id": "bd-house-st-whitecube-pergola",
+     "name": "pergola",
+     "ko": "퍼걸러 집",
+     "en": "whitewashed cube pergola",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 6,
+     "h": 5,
+     "door": [
+      4,
+      4
+     ],
+     "shape": "넓은 단층 + 퍼걸러 테라스",
+     "words": [
+      "퍼걸러 집",
+      "살림집",
+      "흰 회벽 입방체 집",
+      "house",
+      "whitewashed cube",
+      "pergola"
+     ]
+    },
+    {
+     "id": "bd-house-st-whitecube-tallcube",
+     "name": "tallcube",
+     "ko": "삼층 네모 집",
+     "en": "whitewashed cube tallcube",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 5,
+     "h": 7,
+     "door": [
+      2,
+      6
+     ],
+     "shape": "좁은 3단",
+     "words": [
+      "삼층 네모 집",
+      "살림집",
+      "흰 회벽 입방체 집",
+      "house",
+      "whitewashed cube",
+      "tallcube"
+     ]
+    },
+    {
+     "id": "bd-house-st-whitecube-court",
+     "name": "court",
+     "ko": "마당 큰 집",
+     "en": "whitewashed cube court",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 8,
+     "h": 6,
+     "door": [
+      5,
+      5
+     ],
+     "shape": "ㄱ자 입방체 + 계단·아치",
+     "words": [
+      "마당 큰 집",
+      "큰 집",
+      "흰 회벽 입방체 집",
+      "large house",
+      "whitewashed cube",
+      "court"
+     ]
+    },
+    {
+     "id": "bd-house-st-whitecube-villa",
+     "name": "villa",
+     "ko": "층층 큰 집",
+     "en": "whitewashed cube villa",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 9,
+     "h": 7,
+     "door": [
+      3,
+      6
+     ],
+     "shape": "세 단으로 물러나는 입방체, 차양 테라스",
+     "words": [
+      "층층 큰 집",
+      "큰 집",
+      "흰 회벽 입방체 집",
+      "large house",
+      "whitewashed cube",
+      "villa"
+     ]
+    },
+    {
+     "id": "bd-house-st-whitecube-potter",
+     "name": "potter",
+     "ko": "옹기 가게",
+     "en": "whitewashed cube potter shop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 6,
+     "h": 6,
+     "door": [
+      2,
+      5
+     ],
+     "shape": "줄무늬 차양, 항아리",
+     "words": [
+      "옹기 가게",
+      "가게집",
+      "흰 회벽 입방체 집",
+      "shop",
+      "whitewashed cube",
+      "potter shop"
+     ]
+    },
+    {
+     "id": "bd-house-st-whitecube-arcade",
+     "name": "arcade",
+     "ko": "아치 가게",
+     "en": "whitewashed cube arcade shop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 7,
+     "h": 5,
+     "door": [
+      5,
+      4
+     ],
+     "shape": "아치 회랑 앞면 진열창",
+     "words": [
+      "아치 가게",
+      "가게집",
+      "흰 회벽 입방체 집",
+      "shop",
+      "whitewashed cube",
+      "arcade shop"
+     ]
+    },
+    {
+     "id": "bd-house-st-whitecube-inn",
+     "name": "inn",
+     "ko": "언덕 여관",
+     "en": "whitewashed cube inn",
+     "role": "inn",
+     "roleKo": "여관",
+     "roleEn": "inn",
+     "w": 11,
+     "h": 7,
+     "door": [
+      5,
+      6
+     ],
+     "shape": "층층 입방체, 긴 퍼걸러 테라스, 간판",
+     "words": [
+      "언덕 여관",
+      "여관",
+      "흰 회벽 입방체 집",
+      "inn",
+      "whitewashed cube",
+      "inn"
+     ]
+    },
+    {
+     "id": "bd-house-st-whitecube-windmill",
+     "name": "windmill",
+     "ko": "풍차 방앗간",
+     "en": "whitewashed cube windmill",
+     "role": "work",
+     "roleKo": "일터",
+     "roleEn": "workplace",
+     "w": 6,
+     "h": 8,
+     "door": [
+      2,
+      7
+     ],
+     "shape": "둥근 흰 풍차 탑 + 네모 채",
+     "words": [
+      "풍차 방앗간",
+      "일터",
+      "흰 회벽 입방체 집",
+      "workplace",
+      "whitewashed cube",
+      "windmill"
+     ]
+    },
+    {
+     "id": "bd-house-st-whitecube-chapel",
+     "name": "chapel",
+     "ko": "파란 지붕 예배당",
+     "en": "whitewashed cube chapel",
+     "role": "hall",
+     "roleKo": "예배당·회관",
+     "roleEn": "chapel or hall",
+     "w": 7,
+     "h": 8,
+     "door": [
+      3,
+      7
+     ],
+     "shape": "파란 둥근 지붕 + 종 박공",
+     "words": [
+      "파란 지붕 예배당",
+      "예배당·회관",
+      "흰 회벽 입방체 집",
+      "chapel or hall",
+      "whitewashed cube",
+      "chapel"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "turf",
+   "name": "북방 뗏장 지붕 긴 집",
+   "en": "turf-roofed longhouse",
+   "ref": "자체",
+   "desc": "낮은 돌 밑벽과 널 박공, 풀과 들꽃이 자란 뗏장 지붕. 낮고 길다. 박공 끝 엇갈린 용머리 널, 연기 구멍.",
+   "ramps": "roof 뗏장 풀(버들항 풀·잎 줄) · wall 풍화한 회갈색 널(새 색 4) · footing 둥근 돌(버들항 회색 돌) · wood 조각 널 · accent 들꽃 흰·노랑, 붉은 문",
+   "houses": [
+    {
+     "id": "bd-house-st-turf-sodhut",
+     "name": "sodhut",
+     "ko": "뗏장 오두막",
+     "en": "turf-roofed longhouse sodhut cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 4,
+     "h": 5,
+     "door": [
+      1,
+      4
+     ],
+     "shape": "박공 정면 낮은 집",
+     "words": [
+      "뗏장 오두막",
+      "오두막",
+      "북방 뗏장 지붕 긴 집",
+      "cottage",
+      "turf-roofed longhouse",
+      "sodhut cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-turf-lowhouse",
+     "name": "lowhouse",
+     "ko": "낮은 뗏장집",
+     "en": "turf-roofed longhouse lowhouse cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 5,
+     "h": 5,
+     "door": [
+      2,
+      4
+     ],
+     "shape": "처마 정면 + 연기 구멍",
+     "words": [
+      "낮은 뗏장집",
+      "오두막",
+      "북방 뗏장 지붕 긴 집",
+      "cottage",
+      "turf-roofed longhouse",
+      "lowhouse cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-turf-longhouse",
+     "name": "longhouse",
+     "ko": "긴 집",
+     "en": "turf-roofed longhouse longhouse",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 9,
+     "h": 5,
+     "door": [
+      2,
+      4
+     ],
+     "shape": "처마 정면 긴 채, 연기 구멍 둘",
+     "words": [
+      "긴 집",
+      "살림집",
+      "북방 뗏장 지붕 긴 집",
+      "house",
+      "turf-roofed longhouse",
+      "longhouse"
+     ]
+    },
+    {
+     "id": "bd-house-st-turf-twinhouse",
+     "name": "twinhouse",
+     "ko": "쌍둥이 뗏장집",
+     "en": "turf-roofed longhouse twinhouse",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 7,
+     "h": 5,
+     "door": [
+      1,
+      4
+     ],
+     "shape": "박공 둘이 나란히",
+     "words": [
+      "쌍둥이 뗏장집",
+      "살림집",
+      "북방 뗏장 지붕 긴 집",
+      "house",
+      "turf-roofed longhouse",
+      "twinhouse"
+     ]
+    },
+    {
+     "id": "bd-house-st-turf-crosshouse",
+     "name": "crosshouse",
+     "ko": "날개 뗏장집",
+     "en": "turf-roofed longhouse crosshouse",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 6,
+     "h": 6,
+     "door": [
+      4,
+      5
+     ],
+     "shape": "처마 채 + 박공 날개",
+     "words": [
+      "날개 뗏장집",
+      "살림집",
+      "북방 뗏장 지붕 긴 집",
+      "house",
+      "turf-roofed longhouse",
+      "crosshouse"
+     ]
+    },
+    {
+     "id": "bd-house-st-turf-chieftain",
+     "name": "chieftain",
+     "ko": "족장 집",
+     "en": "turf-roofed longhouse chieftain",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 9,
+     "h": 6,
+     "door": [
+      4,
+      5
+     ],
+     "shape": "긴 채 가운데 조각 박공 현관",
+     "words": [
+      "족장 집",
+      "큰 집",
+      "북방 뗏장 지붕 긴 집",
+      "large house",
+      "turf-roofed longhouse",
+      "chieftain"
+     ]
+    },
+    {
+     "id": "bd-house-st-turf-rowhouse",
+     "name": "rowhouse",
+     "ko": "줄 박공 큰 집",
+     "en": "turf-roofed longhouse rowhouse",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 8,
+     "h": 6,
+     "door": [
+      4,
+      5
+     ],
+     "shape": "박공 셋이 뗏장으로 이어졌다",
+     "words": [
+      "줄 박공 큰 집",
+      "큰 집",
+      "북방 뗏장 지붕 긴 집",
+      "large house",
+      "turf-roofed longhouse",
+      "rowhouse"
+     ]
+    },
+    {
+     "id": "bd-house-st-turf-trader",
+     "name": "trader",
+     "ko": "교역 가게",
+     "en": "turf-roofed longhouse trader shop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 6,
+     "h": 5,
+     "door": [
+      1,
+      4
+     ],
+     "shape": "널 판매대·간판 기둥",
+     "words": [
+      "교역 가게",
+      "가게집",
+      "북방 뗏장 지붕 긴 집",
+      "shop",
+      "turf-roofed longhouse",
+      "trader shop"
+     ]
+    },
+    {
+     "id": "bd-house-st-turf-weaver",
+     "name": "weaver",
+     "ko": "직조 가게",
+     "en": "turf-roofed longhouse weaver shop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 7,
+     "h": 5,
+     "door": [
+      5,
+      4
+     ],
+     "shape": "건조 틀, 열린 앞면",
+     "words": [
+      "직조 가게",
+      "가게집",
+      "북방 뗏장 지붕 긴 집",
+      "shop",
+      "turf-roofed longhouse",
+      "weaver shop"
+     ]
+    },
+    {
+     "id": "bd-house-st-turf-inn",
+     "name": "inn",
+     "ko": "벌꿀술 회당 여관",
+     "en": "turf-roofed longhouse inn",
+     "role": "inn",
+     "roleKo": "여관",
+     "roleEn": "inn",
+     "w": 12,
+     "h": 7,
+     "door": [
+      6,
+      6
+     ],
+     "shape": "긴 회당 + 박공 현관, 간판",
+     "words": [
+      "벌꿀술 회당 여관",
+      "여관",
+      "북방 뗏장 지붕 긴 집",
+      "inn",
+      "turf-roofed longhouse",
+      "inn"
+     ]
+    },
+    {
+     "id": "bd-house-st-turf-smokehouse",
+     "name": "smokehouse",
+     "ko": "훈제막",
+     "en": "turf-roofed longhouse smokehouse",
+     "role": "work",
+     "roleKo": "일터",
+     "roleEn": "workplace",
+     "w": 8,
+     "h": 5,
+     "door": [
+      2,
+      4
+     ],
+     "shape": "생선 건조 헛간 + 훈제막",
+     "words": [
+      "훈제막",
+      "일터",
+      "북방 뗏장 지붕 긴 집",
+      "workplace",
+      "turf-roofed longhouse",
+      "smokehouse"
+     ]
+    },
+    {
+     "id": "bd-house-st-turf-chapel",
+     "name": "chapel",
+     "ko": "널 예배당",
+     "en": "turf-roofed longhouse chapel",
+     "role": "hall",
+     "roleKo": "예배당·회관",
+     "roleEn": "chapel or hall",
+     "w": 6,
+     "h": 8,
+     "door": [
+      2,
+      7
+     ],
+     "shape": "층층 지붕 널 예배당",
+     "words": [
+      "널 예배당",
+      "예배당·회관",
+      "북방 뗏장 지붕 긴 집",
+      "chapel or hall",
+      "turf-roofed longhouse",
+      "chapel"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "roundhut",
+   "name": "둥근 흙집 · 원뿔 초가",
+   "en": "round earthen hut",
+   "ref": "자체",
+   "desc": "둥근 흙벽 집에 원뿔 초가(위에서 본 원). 벽에 흙물감 띠무늬, 초가 차양, 기둥 위 곳간. 여러 채가 모여 한 집이 된다.",
+   "ramps": "roof 초가(버들항 짚 줄) · wall 황토(새 색 5) · footing 다진 흙 · wood 기둥 · accent 흰·검붉은 띠무늬, 무늬 천",
+   "houses": [
+    {
+     "id": "bd-house-st-roundhut-hut",
+     "name": "hut",
+     "ko": "둥근 흙집",
+     "en": "round earthen hut hut cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 4,
+     "h": 5,
+     "door": [
+      1,
+      4
+     ],
+     "shape": "둥근 집 하나",
+     "words": [
+      "둥근 흙집",
+      "오두막",
+      "둥근 흙집 · 원뿔 초가",
+      "cottage",
+      "round earthen hut",
+      "hut cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-roundhut-storehut",
+     "name": "storehut",
+     "ko": "곳간 딸린 집",
+     "en": "round earthen hut storehut cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 5,
+     "h": 5,
+     "door": [
+      1,
+      4
+     ],
+     "shape": "둥근 집 + 기둥 위 작은 곳간",
+     "words": [
+      "곳간 딸린 집",
+      "오두막",
+      "둥근 흙집 · 원뿔 초가",
+      "cottage",
+      "round earthen hut",
+      "storehut cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-roundhut-twin",
+     "name": "twin",
+     "ko": "쌍둥이 흙집",
+     "en": "round earthen hut twin",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 7,
+     "h": 5,
+     "door": [
+      3,
+      4
+     ],
+     "shape": "둥근 집 둘 + 초가 현관",
+     "words": [
+      "쌍둥이 흙집",
+      "살림집",
+      "둥근 흙집 · 원뿔 초가",
+      "house",
+      "round earthen hut",
+      "twin"
+     ]
+    },
+    {
+     "id": "bd-house-st-roundhut-bighut",
+     "name": "bighut",
+     "ko": "큰 둥근 집",
+     "en": "round earthen hut bighut",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 6,
+     "h": 6,
+     "door": [
+      2,
+      5
+     ],
+     "shape": "큰 둥근 집, 띠무늬",
+     "words": [
+      "큰 둥근 집",
+      "살림집",
+      "둥근 흙집 · 원뿔 초가",
+      "house",
+      "round earthen hut",
+      "bighut"
+     ]
+    },
+    {
+     "id": "bd-house-st-roundhut-compound",
+     "name": "compound",
+     "ko": "덧채 흙집",
+     "en": "round earthen hut compound",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 8,
+     "h": 6,
+     "door": [
+      2,
+      5
+     ],
+     "shape": "둥근 집 + 네모 평지붕 흙 덧채",
+     "words": [
+      "덧채 흙집",
+      "살림집",
+      "둥근 흙집 · 원뿔 초가",
+      "house",
+      "round earthen hut",
+      "compound"
+     ]
+    },
+    {
+     "id": "bd-house-st-roundhut-elder",
+     "name": "elder",
+     "ko": "어른 집",
+     "en": "round earthen hut elder",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 8,
+     "h": 7,
+     "door": [
+      3,
+      6
+     ],
+     "shape": "두 단 원뿔 초가 큰 집",
+     "words": [
+      "어른 집",
+      "큰 집",
+      "둥근 흙집 · 원뿔 초가",
+      "large house",
+      "round earthen hut",
+      "elder"
+     ]
+    },
+    {
+     "id": "bd-house-st-roundhut-cluster",
+     "name": "cluster",
+     "ko": "세 채 집",
+     "en": "round earthen hut cluster",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 9,
+     "h": 7,
+     "door": [
+      4,
+      6
+     ],
+     "shape": "둥근 집 셋이 모였다",
+     "words": [
+      "세 채 집",
+      "큰 집",
+      "둥근 흙집 · 원뿔 초가",
+      "large house",
+      "round earthen hut",
+      "cluster"
+     ]
+    },
+    {
+     "id": "bd-house-st-roundhut-potter",
+     "name": "potter",
+     "ko": "옹기 가게",
+     "en": "round earthen hut potter shop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 6,
+     "h": 5,
+     "door": [
+      4,
+      4
+     ],
+     "shape": "둥근 집 + 초가 차양 좌판",
+     "words": [
+      "옹기 가게",
+      "가게집",
+      "둥근 흙집 · 원뿔 초가",
+      "shop",
+      "round earthen hut",
+      "potter shop"
+     ]
+    },
+    {
+     "id": "bd-house-st-roundhut-weaver",
+     "name": "weaver",
+     "ko": "베 가게",
+     "en": "round earthen hut weaver shop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 7,
+     "h": 6,
+     "door": [
+      1,
+      5
+     ],
+     "shape": "둥근 집 + 열린 네모 베틀 헛간",
+     "words": [
+      "베 가게",
+      "가게집",
+      "둥근 흙집 · 원뿔 초가",
+      "shop",
+      "round earthen hut",
+      "weaver shop"
+     ]
+    },
+    {
+     "id": "bd-house-st-roundhut-inn",
+     "name": "inn",
+     "ko": "큰 둥근 여관",
+     "en": "round earthen hut inn",
+     "role": "inn",
+     "roleKo": "여관",
+     "roleEn": "inn",
+     "w": 11,
+     "h": 7,
+     "door": [
+      5,
+      6
+     ],
+     "shape": "큰 둥근 회당 + 곁채 둘, 간판",
+     "words": [
+      "큰 둥근 여관",
+      "여관",
+      "둥근 흙집 · 원뿔 초가",
+      "inn",
+      "round earthen hut",
+      "inn"
+     ]
+    },
+    {
+     "id": "bd-house-st-roundhut-kiln",
+     "name": "kiln",
+     "ko": "가마터",
+     "en": "round earthen hut kiln",
+     "role": "work",
+     "roleKo": "일터",
+     "roleEn": "workplace",
+     "w": 7,
+     "h": 6,
+     "door": [
+      5,
+      5
+     ],
+     "shape": "벌집 가마(불) + 둥근 집",
+     "words": [
+      "가마터",
+      "일터",
+      "둥근 흙집 · 원뿔 초가",
+      "workplace",
+      "round earthen hut",
+      "kiln"
+     ]
+    },
+    {
+     "id": "bd-house-st-roundhut-hall",
+     "name": "hall",
+     "ko": "모임 회당",
+     "en": "round earthen hut hall",
+     "role": "hall",
+     "roleKo": "예배당·회관",
+     "roleEn": "chapel or hall",
+     "w": 8,
+     "h": 8,
+     "door": [
+      3,
+      7
+     ],
+     "shape": "기둥 둘레 마루를 두른 큰 둥근 회당",
+     "words": [
+      "모임 회당",
+      "예배당·회관",
+      "둥근 흙집 · 원뿔 초가",
+      "chapel or hall",
+      "round earthen hut",
+      "hall"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tarshed",
+   "name": "검은 타르 어막",
+   "en": "black tarred fishing shed",
+   "ref": "자체",
+   "desc": "검은 타르 널벽에 붉은 테두리 널과 흰 창틀, 회색 널 지붕. 돌 굄 위에 서고 박공에 생선 건조 틀, 그물, 바깥 계단 그물 다락.",
+   "ramps": "wall 검은 타르 널(버들항 먹·남색 어둠 줄) · roof 풍화한 회색 널(버들항 회색 + 새 색 3) · footing 굄돌 · wood 흰 창틀 · accent 철단 붉은 테두리(버들항 붉은 줄)",
+   "houses": [
+    {
+     "id": "bd-house-st-tarshed-shed",
+     "name": "shed",
+     "ko": "어막",
+     "en": "black tarred fishing shed shed cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 4,
+     "h": 5,
+     "door": [
+      1,
+      4
+     ],
+     "shape": "박공 정면 작은 막",
+     "words": [
+      "어막",
+      "오두막",
+      "검은 타르 어막",
+      "cottage",
+      "black tarred fishing shed",
+      "shed cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-tarshed-bothy",
+     "name": "bothy",
+     "ko": "달개 어막",
+     "en": "black tarred fishing shed bothy cottage",
+     "role": "cottage",
+     "roleKo": "오두막",
+     "roleEn": "cottage",
+     "w": 5,
+     "h": 5,
+     "door": [
+      3,
+      4
+     ],
+     "shape": "처마 정면 + 달개",
+     "words": [
+      "달개 어막",
+      "오두막",
+      "검은 타르 어막",
+      "cottage",
+      "black tarred fishing shed",
+      "bothy cottage"
+     ]
+    },
+    {
+     "id": "bd-house-st-tarshed-netloft",
+     "name": "netloft",
+     "ko": "그물 다락 집",
+     "en": "black tarred fishing shed netloft",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 5,
+     "h": 7,
+     "door": [
+      1,
+      6
+     ],
+     "shape": "박공 정면 2층 + 바깥 계단",
+     "words": [
+      "그물 다락 집",
+      "살림집",
+      "검은 타르 어막",
+      "house",
+      "black tarred fishing shed",
+      "netloft"
+     ]
+    },
+    {
+     "id": "bd-house-st-tarshed-crossshed",
+     "name": "crossshed",
+     "ko": "날개 어막",
+     "en": "black tarred fishing shed crossshed",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 7,
+     "h": 6,
+     "door": [
+      5,
+      5
+     ],
+     "shape": "처마 채 + 박공 날개",
+     "words": [
+      "날개 어막",
+      "살림집",
+      "검은 타르 어막",
+      "house",
+      "black tarred fishing shed",
+      "crossshed"
+     ]
+    },
+    {
+     "id": "bd-house-st-tarshed-rowsheds",
+     "name": "rowsheds",
+     "ko": "쌍 어막",
+     "en": "black tarred fishing shed rowsheds",
+     "role": "family",
+     "roleKo": "살림집",
+     "roleEn": "house",
+     "w": 6,
+     "h": 6,
+     "door": [
+      1,
+      5
+     ],
+     "shape": "박공 둘이 붙었다",
+     "words": [
+      "쌍 어막",
+      "살림집",
+      "검은 타르 어막",
+      "house",
+      "black tarred fishing shed",
+      "rowsheds"
+     ]
+    },
+    {
+     "id": "bd-house-st-tarshed-skipper",
+     "name": "skipper",
+     "ko": "선장 집",
+     "en": "black tarred fishing shed skipper",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 8,
+     "h": 7,
+     "door": [
+      2,
+      6
+     ],
+     "shape": "2층 + 붉은 테두리 마루",
+     "words": [
+      "선장 집",
+      "큰 집",
+      "검은 타르 어막",
+      "large house",
+      "black tarred fishing shed",
+      "skipper"
+     ]
+    },
+    {
+     "id": "bd-house-st-tarshed-saltery",
+     "name": "saltery",
+     "ko": "염장 긴 막",
+     "en": "black tarred fishing shed saltery",
+     "role": "large",
+     "roleKo": "큰 집",
+     "roleEn": "large house",
+     "w": 9,
+     "h": 6,
+     "door": [
+      4,
+      5
+     ],
+     "shape": "긴 처마 막, 문 셋 꼴",
+     "words": [
+      "염장 긴 막",
+      "큰 집",
+      "검은 타르 어막",
+      "large house",
+      "black tarred fishing shed",
+      "saltery"
+     ]
+    },
+    {
+     "id": "bd-house-st-tarshed-chandlery",
+     "name": "chandlery",
+     "ko": "선구 가게",
+     "en": "black tarred fishing shed chandlery shop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 6,
+     "h": 6,
+     "door": [
+      4,
+      5
+     ],
+     "shape": "닻 간판",
+     "words": [
+      "선구 가게",
+      "가게집",
+      "검은 타르 어막",
+      "shop",
+      "black tarred fishing shed",
+      "chandlery shop"
+     ]
+    },
+    {
+     "id": "bd-house-st-tarshed-fishshop",
+     "name": "fishshop",
+     "ko": "생선 가게",
+     "en": "black tarred fishing shed fishshop",
+     "role": "shop",
+     "roleKo": "가게집",
+     "roleEn": "shop",
+     "w": 7,
+     "h": 5,
+     "door": [
+      1,
+      4
+     ],
+     "shape": "열린 판매대",
+     "words": [
+      "생선 가게",
+      "가게집",
+      "검은 타르 어막",
+      "shop",
+      "black tarred fishing shed",
+      "fishshop"
+     ]
+    },
+    {
+     "id": "bd-house-st-tarshed-inn",
+     "name": "inn",
+     "ko": "부두 여관",
+     "en": "black tarred fishing shed inn",
+     "role": "inn",
+     "roleKo": "여관",
+     "roleEn": "inn",
+     "w": 11,
+     "h": 7,
+     "door": [
+      5,
+      6
+     ],
+     "shape": "긴 채 + 박공 둘, 간판",
+     "words": [
+      "부두 여관",
+      "여관",
+      "검은 타르 어막",
+      "inn",
+      "black tarred fishing shed",
+      "inn"
+     ]
+    },
+    {
+     "id": "bd-house-st-tarshed-boatshed",
+     "name": "boatshed",
+     "ko": "배 막",
+     "en": "black tarred fishing shed boatshed",
+     "role": "work",
+     "roleKo": "일터",
+     "roleEn": "workplace",
+     "w": 8,
+     "h": 6,
+     "door": [
+      6,
+      5
+     ],
+     "shape": "열린 쌍문 안 뱃머리, 미끄럼 길",
+     "words": [
+      "배 막",
+      "일터",
+      "검은 타르 어막",
+      "workplace",
+      "black tarred fishing shed",
+      "boatshed"
+     ]
+    },
+    {
+     "id": "bd-house-st-tarshed-chapel",
+     "name": "chapel",
+     "ko": "선원 예배당",
+     "en": "black tarred fishing shed chapel",
+     "role": "hall",
+     "roleKo": "예배당·회관",
+     "roleEn": "chapel or hall",
+     "w": 6,
+     "h": 9,
+     "door": [
+      2,
+      8
+     ],
+     "shape": "검은 예배당 + 흰 네모 첨탑",
+     "words": [
+      "선원 예배당",
+      "예배당·회관",
+      "검은 타르 어막",
+      "chapel or hall",
+      "black tarred fishing shed",
+      "chapel"
+     ]
+    }
+   ]
+  }
+ ]
+}

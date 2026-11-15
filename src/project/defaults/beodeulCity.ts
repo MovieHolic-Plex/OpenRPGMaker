@@ -289,12 +289,19 @@ function extendPickedParts(tileset: TilesetDef, limit: number = sheet.count): bo
 export const BEODEUL_OBJECTS_KIT_PREFIX = "bd-obj-";
 /** 이야기 기물 꼬리의 첫 칸(옛 상수도 꼬리 34,816~34,943 바로 뒤). 한 줄 128칸씩(줄 수는 src/assets/beodeulCitySheet.json 의 count 가 정한다) — 이야기 기물 16종 · 종류별 변형 50종(ai.variantOf) · 새 종류 105종(2026-11-14, 면제 묶음 fable-objects100-beodeul-2026-11-14) · 마을 종류별 기물(2026-11-14, 면제 묶음 fable-objects300-beodeul-2026-11-14, 킷 태그 kind:<종류 id>) 순서로 이어진다. */
 export const BEODEUL_OBJECTS_BASE = 34944;
+/**
+ * 집 양식 꼬리(2026-11-14, scripts/content/beodeul-house-styles/bake.py)의 킷 접두사 — 양식마다 집 열두 채 `bd-house-st-<양식>-<집>` 과 그 그림자·기초.
+ * 시트 끝에 덧붙는다(이미 구운 집의 칸 번호는 tiledata/beodeul-house-styles/catalog.json 이 지킨다 — 여러 토막일 수 있다). 3/4 관문 미통과 — 오너 면제 묶음으로 구웠다.
+ * 번들 소유라 옛 사본의 같은 id 킷은 번들 것으로 맞춘다. 이야기 기물 꼬리 뒤라 같은 막힘(theme2Blocked)을 따른다.
+ */
+export const BEODEUL_HOUSE_STYLE_KIT_PREFIXES: readonly string[] = ["bd-house-st-", "bd-st-shadow-", "bd-st-foundation-"];
+const isHouseStyleKit = (id: string): boolean => BEODEUL_HOUSE_STYLE_KIT_PREFIXES.some(prefix => id.startsWith(prefix));
 
 function mergeShippedKits(tileset: TilesetDef, withWall = true, withGap = true, withYard = true, withCapital = true, withTheme2 = true): boolean {
   const shipped = (data().structureKits as unknown as StructureKitDef[]).filter(kit => (withWall || !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX))
     && (withGap || (!kit.id.startsWith(BEODEUL_DUNGEON_GAP_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_DUNGEON_THEME_KIT_PREFIX)))
     // 주제 2 꼬리를 못 받는 사본(그 자리에 이식 칸, 옮길 프로젝트 없이 부름)은 그 뒤 꼬리(동굴 기물·이야기 기물)의 칸도 없다 — 그 킷도 받지 않는다.
-    && (withTheme2 || (!kit.id.startsWith(BEODEUL_DUNGEON_THEME2_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_DUNGEON_CAVE_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_OBJECTS_KIT_PREFIX)))
+    && (withTheme2 || (!kit.id.startsWith(BEODEUL_DUNGEON_THEME2_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_DUNGEON_CAVE_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_OBJECTS_KIT_PREFIX) && !isHouseStyleKit(kit.id)))
     && (withYard || !kit.id.startsWith(BEODEUL_YARD_KIT_PREFIX)) && (withCapital || !kit.id.startsWith(BEODEUL_CAPITAL_KIT_PREFIX)));
   const shippedById = new Map(shipped.map(kit => [kit.id, kit]));
   const current = tileset.structureKits ?? [];
@@ -302,7 +309,7 @@ function mergeShippedKits(tileset: TilesetDef, withWall = true, withGap = true, 
   const kept = current.filter(kit => {
     if (!kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_FARM_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX)
       && !kit.id.startsWith(BEODEUL_DUNGEON_GAP_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_YARD_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_CAPITAL_KIT_PREFIX)
-      && !kit.id.startsWith(BEODEUL_OBJECTS_KIT_PREFIX)) return true;
+      && !kit.id.startsWith(BEODEUL_OBJECTS_KIT_PREFIX) && !isHouseStyleKit(kit.id)) return true;
     const ship = shippedById.get(kit.id);
     if (!ship) { changed = true; return false; }                       // a pick that was dropped from the bundle
     if (JSON.stringify(ship) !== JSON.stringify(kit)) { changed = true; return false; }

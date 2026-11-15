@@ -47,6 +47,9 @@ export const BEODEUL_DOOR_TOOLS: readonly ToolDefinition[] = [{
     const setBase=houseSetBaseTiles(target);
     if(!already && (setBase.has(top??-1)||setBase.has(bottom??-1)))
       throw new ToolError("This door belongs to a house drawn in this game's house set (tileset look.houses). The shared 8-stage door sheet matches only the original bd-house-h101_0 door picture, so it is not applied here — leave this door as it is.",{code:'house-set-door',mapId:map.id});
+    // 집 양식(새 건축의 집 가족)의 문도 같다 — 그 집의 문 그림은 공용 열림 시트와 다른 그림이다.
+    if(!already && target.structureKits?.some(k=>k.id.startsWith('bd-house-st-')&&k.rows.some(r=>(r.upperTiles??[]).some(n=>n>=0&&(n===top||n===bottom)))))
+      throw new ToolError("This door belongs to a house of this game's house style (tileset look.houseStyle). The shared 8-stage door sheet matches only the original bd-house-h101_0 door picture, so it is not applied here — leave this door as it is.",{code:'house-style-door',mapId:map.id});
     if(!already && (!picture(top,5743)||!picture(bottom,2333)))
       throw new ToolError('지원하는 살림집 문(5743/2333)이 아닙니다. 다른 문은 그 그림에 맞춘 열림 시트를 먼저 만들어야 합니다.');
     const returns=(destination?.events??[]).filter(e=>e.pages?.length===1&&e.pages[0].trigger.kind==='playerTouch'
