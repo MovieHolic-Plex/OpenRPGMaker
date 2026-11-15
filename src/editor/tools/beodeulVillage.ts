@@ -2826,17 +2826,21 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const fieldCap = denseWoods ? 2 : bodyNear ? 6 : 5;
     const fieldPts = (codePlan?.layout.fields ?? []).flatMap((p) => [p, { x: p.x + ri(-3, 3), y: p.y + ri(-2, 2) }, { x: p.x + ri(-4, 4), y: p.y + ri(-3, 3) }]);
     let fieldFromLayout = 0;
-    for (let t = 0; t < (bodyNear ? 400 : 140) + upperLeft + fieldPts.length && fields < fieldCap + upperTries.length; t += 1) {
-      const fw = bodyNear ? ri(4, 6) : ri(5, 9), fh = bodyNear ? ri(3, 4) : ri(3, 5); // 마을 몸 안의 밭은 작게 여럿
-      const fp = fieldFromLayout < (codePlan?.layout.fields?.length ?? 0) ? fieldPts.shift() : undefined;
+    // 숲이 먼저인 마을(bodyNear): 집 곁(마을 몸 안)에 작은 밭을 먼저 놓고, 그래도 다섯에 못 미치면 예전처럼 맵 어디든 큰 밭으로 채운다 —
+    // 몸 안에서만 고르자 30판의 밭이 85 에서 52 로 줄고 윗단은 탑집 하나에 맨 잔디였다(2026-11-15 감독). 숲 몫 창(woodsHeld)은 비워 둔 채라 밭이 숲 자리를 먹지 않는다.
+    let bodyLeft = bodyNear ? 400 : 0;
+    for (let t = 0; t < (bodyNear ? 400 : 0) + 140 + upperLeft + fieldPts.length && fields < fieldCap + upperTries.length; t += 1) {
       const ut = upperLeft > 0 ? upperTries[upperLeft % upperTries.length]! : null;
+      const fp = bodyNear && ut ? undefined : fieldFromLayout < (codePlan?.layout.fields?.length ?? 0) ? fieldPts.shift() : undefined;
+      const small = !!bodyNear && !ut && (!!fp || bodyLeft > 0); // 마을 몸 안의 밭은 작게 여럿
+      const fw = small ? ri(4, 6) : ri(5, 9), fh = small ? ri(3, 4) : ri(3, 5);
       if (ut && ut.climb.use.filter((u) => u === "밭").length >= 2) { upperLeft -= 1; continue; }
       let x: number, y: number;
       if (ut) { upperLeft -= 1; const c = ut.cells[Math.floor(rand() * ut.cells.length)]!; x = (c % W) - Math.floor(fw / 2); y = Math.floor(c / W) - Math.floor(fh / 2); if (x < 1 || y < 1 || x + fw >= W || y + fh >= H) continue; }
       else if (fp) { x = fp.x - Math.floor(fw / 2); y = fp.y - Math.floor(fh / 2); if (x < 1 || y < 1 || x + fw >= W || y + fh >= H) continue; }
-      else if (bodyCells) { if (fields >= fieldCap || !bodyCells.length) break; const c = bodyCells[ri(0, bodyCells.length - 1)]!; x = (c % W) - (fw >> 1); y = Math.floor(c / W) - (fh >> 1); if (x < 1 || y < 1 || x + fw >= W || y + fh >= H) continue; }
-      else { if (fields >= fieldCap || (codePlan && !codePlan.report.auto)) break; x = ri(1, W - fw - 1); y = ri(1, H - fh - 1); }
-      if (bodyNear && !bodyNear[idx(x + (fw >> 1), y + (fh >> 1))]) continue;
+      else if (bodyCells && bodyLeft > 0) { bodyLeft -= 1; if (fields >= fieldCap || !bodyCells.length) { bodyLeft = 0; continue; } const c = bodyCells[ri(0, bodyCells.length - 1)]!; x = (c % W) - (fw >> 1); y = Math.floor(c / W) - (fh >> 1); if (x < 1 || y < 1 || x + fw >= W || y + fh >= H) continue; }
+      else { if (fields >= (bodyNear ? 5 : fieldCap) || (codePlan && !codePlan.report.auto)) break; x = ri(1, W - fw - 1); y = ri(1, H - fh - 1); }
+      if (small && !bodyNear![idx(x + (fw >> 1), y + (fh >> 1))]) continue;
       let ok = true;
       for (let j = -1; j <= fh && ok; j += 1) for (let i = -1; i <= fw; i += 1) { const v = at(x + i, y + j); if (v !== FREE && v !== 255) { ok = false; break; } }
       if (ok && hasTerrain) { const fl: number[] = []; for (let j = -1; j <= fh; j += 1) for (let i = -1; i <= fw; i += 1) if (inMap(x + i, y + j)) fl.push(idx(x + i, y + j)); ok = flatCells(fl); }
@@ -2925,7 +2929,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const usedCell = (c: number) => { const v = occ[c]!; return v === BLD || v === PROP || v === FENCE || (v === FIELD && !decalAt.has(c)); };
     const crops = have(spec.field.decals ?? []);
     for (let round = 0; round < 6; round += 1) {
-      const plots = planLandPlots({ W, H, seed: seed + round, used: usedCell, free: (c) => occ[c] === FREE && !rampCells.has(c) && (!bodyNear || bodyNear[c] === 1) });
+      const plots = planLandPlots({ W, H, seed: seed + round, used: usedCell, free: (c) => occ[c] === FREE && !rampCells.has(c) });
       let laid = false;
       for (const p of plots) {
         const cells: number[] = []; for (let j = -1; j <= p.h; j += 1) for (let i = -1; i <= p.w; i += 1) cells.push(idx(p.x + i, p.y + j));
