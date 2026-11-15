@@ -7,6 +7,7 @@ import { lookMismatches, oversizedSprites, pristineFantasyHero, titleBackdropMis
 import { isBodyGauge, projectCanLoseHp, resolvedHudWidgets } from "@/project/fieldHud";
 import { HIDDEN_WORDS } from "../request/asks";
 import { tagged, type Finding } from "./finding";
+import { standGroundCoverTile } from "@/assets/tilesetStands";
 import { type GameCheck, Obj, obj } from "./gameCheckReads";
 
 /** 플레이어 눈에 보이는 것 — 맨땅인 조사 이벤트, 그림 없는 페이지의 대사, 선택지에 남은 제작 메모, 전투를 못 준비하는 메뉴. */
@@ -33,13 +34,15 @@ export function shownChecks({ after, task, changed, cmds }: GameCheck): Finding[
       // 이 칸에 「물건을 찍거나 옮겨라」를 내면 모델이 칸을 일곱 번 옮기고 대사의 자리 말과 어긋났다(2026-10-31 mef3 terra 추리).
       if (examinePages.every((pg) => !!obj((pg as Obj).nearSparkle))) continue;
       const x0 = Number(raw.x), y0 = Number(raw.y), h = Number(map.height);
+      // 바닥 덧그림(숲 바닥·풀밭 얼룩·풀 결 — 2층)은 바닥이다. 물건 타일로 치면 풀 결이 깔린 풀밭의 맨땅 이벤트가 «물건 앞» 으로 지나간다.
+      const groundCover = standGroundCoverTile(after.tilesets[String(map.tilesetId)]);
       let near = false;
       for (const [dx, dy] of [[0, 0], [0, -1]] as const) {
         const x = x0 + dx, y = y0 + dy;
         if (x < 0 || y < 0 || x >= w || y >= h) continue;
         const j = y * w + x;
         const v = (layer: unknown) => Array.isArray(layer) ? Number(layer[j]) : -1;
-        if (v(map.upperTiles) > 0 || v(map.lowerOverlayTiles) > 0) near = true;
+        if (v(map.upperTiles) > 0 || (v(map.lowerOverlayTiles) > 0 && !groundCover(v(map.lowerOverlayTiles)))) near = true;
       }
       const inStamp = ((map.structurePlacements as Obj[] | undefined) ?? []).some((sp) => x0 >= Number(sp.x) && x0 < Number(sp.x) + Number(sp.w) && y0 >= Number(sp.y) && y0 < Number(sp.y) + Number(sp.h));
       if (near || inStamp || at(map.upperTiles) > 0) continue;

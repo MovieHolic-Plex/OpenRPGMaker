@@ -5,11 +5,12 @@
 //   · 1층 바닥 칸·3층 물체·이벤트는 건드리지 않는다. 덧그림 칸은 ★(통행 + 상위)라 통행 판정에서 건너뛴다 — 걷는 칸은 한 칸도 달라지지 않는다.
 //   · 2층이 이미 찬 칸(물가 둑·집 그림자·길 가장자리)은 건너뛴다. 숲 바닥만 나무·밑풀 그림자 칸을 «그 그림자를 얹은 바닥 칸» 으로 바꿔 덮는다.
 //   · 덩이 가장자리는 꼭짓점 넷의 안팎 15꼴(그림판이 들쭉날쭉하게 깎아 둔 칸)이라 네모 판이 서지 않는다. 덩이는 높이 단을 넘지 않는다.
-// 겉모습에 stand·meadow 가 없는 게임(옛 게임 포함)에서는 아무것도 하지 않는다. 난수는 칸 좌표·씨앗 해시뿐이다(시공기의 난수 줄을 쓰지 않는다).
+// 겉모습에 stand·meadow·grain 이 없는 게임(옛 게임 포함)에서는 아무것도 하지 않는다. 풀 결(grain — 기본 풀 바닥의 통칸 변형·짙고 옅은 결·풀 포기)은 beodeulGrassGrain.ts. 난수는 칸 좌표·씨앗 해시뿐이다(시공기의 난수 줄을 쓰지 않는다).
 import groundCatalog from "@/assets/beodeulGroundCatalog.json";
 import forestComposer from "@/assets/beodeulForestComposer.json";
 import { standOverlaySource, tilesetStandTableFor, type GroundOverlay } from "@/assets/tilesetStands";
 import { tilesetLookGround } from "@/assets/tilesetLooks";
+import { layBeodeulGrassGrain } from "./beodeulGrassGrain";
 import { BEODEUL_NATURE, BEODEUL_NATURE_TEXTURE } from "@/project/defaults/beodeulNature";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { kitBaseTile } from "@/project/houseSetTiles";
@@ -38,11 +39,13 @@ export interface BeodeulGroundCoverOptions {
   readonly grove?: Iterable<number>;
   /** 풀밭으로 칠 1층 칸을 더한다 — 숲 던전의 잔잔한 잔디(공용 잔디와 같은 빛의 3×3 무늬). 주지 않으면 공용 잔디와 숲 도로의 숲 잔디만 풀밭이다. */
   readonly ground?: ReadonlySet<number>;
+  /** false 면 풀 결(look.grain)을 여기서 깔지 않는다 — 마을은 땅 꾸미기까지 끝난 뒤에 따로 깐다(authorBeodeulTown). */
+  readonly grain?: boolean;
   /** 이벤트가 선 칸에도 깐다 — 던전은 적·상자를 놓은 뒤에 덧그림을 깔아서, 비우면 적이 걸어 나간 자리에 풀빛 구멍이 남는다. 기본은 비운다(마을·도로). */
   readonly underEvents?: boolean;
 }
 
-export interface BeodeulGroundCoverReport { floorCells: number; patchCells: number; textures: string[] }
+export interface BeodeulGroundCoverReport { floorCells: number; patchCells: number; textures: string[]; /** 풀 결(look.grain — beodeulGrassGrain.ts)로 깐 칸 수. */ grainCells?: number }
 
 const hash = (x: number, y: number, seed: number): number => {
   let h = Math.imul(x * 73856093 ^ y * 19349663 ^ seed * 83492791, 0x27d4eb2d);
@@ -57,7 +60,7 @@ const noise = (x: number, y: number, grid: number, seed: number): number => {
 };
 
 /**
- * 버들항 맵에 그 게임의 숲 바닥·풀밭 얼룩을 깐다. 겉모습에 stand·meadow 가 없으면 아무것도 하지 않는다.
+ * 버들항 맵에 그 게임의 숲 바닥·풀밭 얼룩·풀 결을 깐다. 겉모습에 stand·meadow·grain 이 없으면 아무것도 하지 않는다.
  * 다 지은 맵에 마지막으로 부른다(나무·그림자·숲 수관이 놓인 뒤).
  */
 export function layBeodeulGroundCover(project: Project, map: GameMap, look: TilesetLook | undefined, options: BeodeulGroundCoverOptions): BeodeulGroundCoverReport {
@@ -66,7 +69,12 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
   const table = ts ? tilesetStandTableFor(ts.id) : undefined;
   if (!ts || !table || !look || ts.image.type !== "bundled" || ts.image.id !== table.image) return report;
   const stand = table.stands[look.stand ?? ""], meadow = table.meadows[look.meadow ?? ""];
-  if (!stand && !meadow) return report;
+  // 풀 결(look.grain): 숲 바닥·풀밭 얼룩을 다 깐 뒤, 2층이 비어 남은 풀 칸에 깐다 — 통칸 변형·짙고 옅은 결·풀 포기(beodeulGrassGrain.ts)
+  const grain = (): void => {
+    if (options.grain === false || !table.grains?.[look.grain ?? ""]) return;
+    report.grainCells = layBeodeulGrassGrain(project, map, look.grain, { seed: options.seed | 0, ground: tilesetLookGround(ts.id, look), ...(options.underEvents ? { underEvents: true } : {}) }).cells;
+  };
+  if (!stand && !meadow) { grain(); return report; }
   const W = map.width, H = map.height, n = W * H, seed = options.seed | 0;
   const grafts = new Map((ts.tileGrafts ?? []).map((g) => [g.targetTile, g] as const));
   const natureOf = (tile: number): number => { const g = tile >= 0 ? grafts.get(tile) : undefined; return g && g.sourceChipset === BEODEUL_NATURE_TEXTURE ? g.sourceTile : -1; };
@@ -302,9 +310,11 @@ export function layBeodeulGroundCover(project: Project, map: GameMap, look: Tile
     }
   }
 
-  if (!writes.length) return report;
-  const tr = translateTiles(standOverlaySource(table), ts, used.keys());
-  for (const c of lifts) { const up = layerTileAt(map, 3, c); if (up >= 0) setLayerTileAt(map, 4, c, up); setLayerTileAt(map, 3, c, L2[c]!); }
-  for (const [c, cell] of writes) { const to = tr.map.get(cell); if (to !== undefined && to >= 0) setLayerTileAt(map, 2, c, to); }
+  if (writes.length) {
+    const tr = translateTiles(standOverlaySource(table), ts, used.keys());
+    for (const c of lifts) { const up = layerTileAt(map, 3, c); if (up >= 0) setLayerTileAt(map, 4, c, up); setLayerTileAt(map, 3, c, L2[c]!); }
+    for (const [c, cell] of writes) { const to = tr.map.get(cell); if (to !== undefined && to >= 0) setLayerTileAt(map, 2, c, to); }
+  }
+  grain();
   return report;
 }
