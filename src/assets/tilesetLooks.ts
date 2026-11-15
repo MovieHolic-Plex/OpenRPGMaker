@@ -9,18 +9,22 @@
 // 재질 화소만 바꾼 칸을 코드로 만들 수 있다). 고르기는 project/tilesetLook.ts.
 import beodeulLooks from "./beodeulLooks.json";
 import { tilesetStandTableFor } from "./tilesetStands";
+import { reliefStyleForGround } from "@/project/relief/styles";
 import { tilesetWaterTableFor, waterLookPairs } from "./tilesetWater";
 import type { TileGraft, TilesetDef, TilesetLook } from "@/project/types";
 
 // stand(숲 구성 — 섞인 수종·숲 수관·숲 바닥)·meadow(풀밭 얼룩)는 4차(2026-11-13)에 뒤에 덧붙였다 — 표는 assets/tilesetStands.ts. stand 를 고른 게임은 trees(수종 하나)를 겹치지 않는다.
 // water(물빛)는 2026-11-14 에 뒤에 덧붙였다 — 표는 assets/tilesetWater.ts. 이 갈래에는 «원래 그림» 선택지가 없다(원래 물은 초록 쪽이라 새 게임은 늘 물빛 하나를 받는다).
-export const TILESET_LOOK_PARTS = ["surface", "trees", "woods", "houses", "plaza", "stand", "meadow", "water"] as const;
+// cliff(절벽 모습 — 절벽 면 양식 · 단 높이 습관 · 절벽 줄 굽이, 시공기와 지형 생성기가 읽는 값)는 2026-11-14 에 그 뒤에 덧붙였다 — 앞 갈래들의 고르기는 그대로다(갈래마다 따로 해시).
+export const TILESET_LOOK_PARTS = ["surface", "trees", "woods", "houses", "plaza", "stand", "meadow", "water", "cliff"] as const;
 export type TilesetLookPart = (typeof TILESET_LOOK_PARTS)[number];
 
 type Sources = Readonly<Record<string, readonly number[]>>;
 type LookOption = { readonly label: string; readonly en?: string; readonly ground?: string; readonly base?: number; readonly sources?: Sources; readonly pairs?: readonly number[];
   /** 수종(trees) 선택지: 킷 → 덮은 그림의 칸마다 불투명 몫(0~100) — 숲길의 나무 composer 가 읽는다. */
-  readonly cover?: Readonly<Record<string, readonly number[]>> };
+  readonly cover?: Readonly<Record<string, readonly number[]>>;
+  /** 절벽 모습(cliff) 선택지: 절벽 면 양식(relief/styles.ts) · 단이 둘일 때 단 하나의 높이(칸) · 단이 하나뿐일 때의 높이 · 절벽 줄이 곧게 이어지는 가장 긴 칸 수. */
+  readonly style?: string; readonly step?: number; readonly lone?: number; readonly straight?: number };
 export type TilesetLookTable = {
   readonly version: number;
   readonly tilesetId: string;
@@ -149,10 +153,27 @@ export function tilesetLookGround(tilesetId: string, look: TilesetLook | undefin
   return tilesetLookTableFor(tilesetId)?.parts.surface.options[look?.surface ?? ""]?.ground;
 }
 
-/** 겉모습 갈래의 선택지 이름(표 순서). 맨 앞 "" 는 «원래 그림» — 물빛(water)에는 없다. */
+/**
+ * 이 게임이 그 절벽 양식 자리에 쓰는 양식: 풀 둑(grass-steps)은 게임의 절벽 모습(cliff)으로 바꾸고, 윗면 가장자리 색은 게임의 바닥 재질을 따른다.
+ * 눈·모래·이탄·동굴 둑은 그 바이옴의 양식 그대로다. 겉모습이 없으면(옛 게임·열쇠 없는 편집) 받은 양식 그대로 — 마을·던전 시공기가 같은 함수를 쓴다.
+ */
+export function tilesetLookReliefStyle(tilesetId: string, look: TilesetLook | undefined, style: string): string {
+  const cliff = style === "grass-steps" ? tilesetLookCliff(tilesetId, look)?.style : undefined;
+  return reliefStyleForGround(cliff ?? style, tilesetLookGround(tilesetId, look));
+}
+
+/** 겉모습 갈래의 선택지 이름(표 순서). 맨 앞 "" 는 «원래 그림» — 물빛(water)과 절벽 모습(cliff)에는 없다. */
 export function tilesetLookOptions(table: TilesetLookTable, part: TilesetLookPart): string[] {
-  if (part === "water") return Object.keys(partOptions(table, part));
-  return ["", ...Object.keys(partOptions(table, part))];
+  // 절벽 모습에는 «원래 그림»(되풀이 무늬 풀 둑) 선택지가 없다 — 새 게임은 모두 자연 면 절벽을 받는다(2026-11-14 오너 「벽이 타일 하나를 복사한 느낌은 싫다」). 표에 없으면 비어 있다.
+  const names = Object.keys(partOptions(table, part));
+  if (part === "water") return names;
+  return part === "cliff" && names.length ? names : ["", ...names];
+}
+
+/** 그 겉모습의 절벽 모습(표의 cliff 선택지) — 절벽 면 양식과 단 높이 습관. 고르지 않은 게임(옛 게임·열쇠 없는 편집)은 undefined. */
+export function tilesetLookCliff(tilesetId: string, look: TilesetLook | undefined): { readonly style: string; readonly step: number; readonly lone?: number; readonly straight?: number } | undefined {
+  const option = tilesetLookTableFor(tilesetId)?.parts.cliff?.options[look?.cliff ?? ""];
+  return option?.style && option.step ? { style: option.style, step: option.step, ...(option.lone ? { lone: option.lone } : {}), ...(option.straight ? { straight: option.straight } : {}) } : undefined;
 }
 
 function partOptions(table: TilesetLookTable, part: TilesetLookPart): Readonly<Record<string, { readonly label: string }>> {
