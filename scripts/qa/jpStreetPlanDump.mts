@@ -32,9 +32,10 @@ function one(kind: string, seed: number, key: string) {
   const thing = new Uint8Array(W * H);
   for (const p of plan.placed) for (let y = p.y; y <= p.foot; y++) for (let x = p.x; x < p.x + p.w; x++) if (x >= 0 && y >= 0 && x < W && y < H) thing[y * W + x] = 1;
   for (const p of f.placed) if (STREET_PIECES[p.name]?.layer !== "floor" && STREET_PIECES[p.name]?.layer !== "ground") for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) if (x >= 0 && y >= 0 && x < W && y < H) thing[y * W + x] = 1;
+  for (const k of f.kaki) for (let y = k.y; y < k.y + k.h; y++) for (let x = k.x; x < k.x + k.w; x++) thing[y * W + x] = 1;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const i = y * W + x;
-    if (GROUND_FAMILIES[f.gfam[i]!] === "tarmac" && f.occ[i] === Occ.Road && !thing[i]) { if (wide(f.gfam, x, y)) road++; continue; }   // jpStreetMeasure 와 같은 뜻: 폭 두 칸이 넘는 아스팔트(차도·주차장) 가운데 차가 덮지 않은 칸. 생활도로 포장은 차도 몫이 아니다
+    if (GROUND_FAMILIES[f.gfam[i]!] === "tarmac" && !thing[i]) { if (f.occ[i] === Occ.Road && wide(f.gfam, x, y)) road++; continue; }   // jpStreetMeasure 와 같은 뜻: 폭 두 칸이 넘는 아스팔트(차도·주차장) 가운데 차가 덮지 않은 칸. 생활도로 포장은 차도 몫이 아니다
     if (thing[i] || ["water", "lane", "laneside"].includes(GROUND_FAMILIES[f.gfam[i]!]!) || f.occ[i] === Occ.Road) continue;   // 물·길은 죽은 띠가 아니다
     let near = false;
     for (let dy = -2; dy <= 2 && !near; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H && thing[yy * W + xx]) { near = true; break; } }

@@ -2,7 +2,7 @@
 // 거리 장면의 구획 조각 — 건물 줄 대신 구획(또는 그 한쪽)을 차지하는 쓰임: 동네 공원 · 신사 경내 · 골목 사당 · 코인 주차장 · 공사장 · 자전거 주차장 · 빈터 · 역 앞 광장.
 // 조각마다 바닥·둘레(담·생울타리·철망)·들어가는 틈·정해진 짜임을 놓는다. 소품 목록은 자료(jpCityStreetKinds.json 의 scenes)에서 읽는다.
 import { Occ, type PutOpts, type SceneBlock, type SceneCtx, type SceneLayout } from "@/project/jpCitySceneCtx";
-import { SCENE_BUILDINGS, sceneList, yardGround } from "@/project/jpCitySceneKinds";
+import { SCENE_BUILDINGS, SCENE_SIZES, sceneList, yardGround } from "@/project/jpCitySceneKinds";
 
 export interface PieceDef {
   readonly minW: number; readonly minH: number; readonly prefW: number;
@@ -52,11 +52,14 @@ function shrine(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   const px = x + Math.floor(w / 2) - 1, hx = px - (hall.doors[0] ?? 4), hfoot = top + hall.h;
   if (hx < x + 1 || hx + hall.w > x + w - 1) return false;
   c.fill(x, top, w, h, "자갈 참배길");
-  c.fill(px, hfoot + 1, 2, foot - hfoot, tone.plaza);
+  if (c.fable) c.fillFamily(px, hfoot + 1, 2, foot - hfoot, "alley"); else c.fill(px, hfoot + 1, 2, foot - hfoot, tone.plaza);   // 새 거리: 참배길은 돌 포장
   c.placeKit(hall, hx, hfoot);
   c.mark(px, hfoot + 1, 2, foot - hfoot, Occ.Walk); keepFront(c, px - 1, 4, foot);
-  ring(c, x, top, w, h, "블록담", (qx, qy) => qy === foot && qx >= px - 1 && qx <= px + 2);
-  c.putFoot("jp-torii", px - 1, foot - 1, { base: [Occ.Lot, Occ.Walk], over: [Occ.Lot, Occ.Walk] });
+  // 새 거리: 경내 입구에 산몬(지나가는 문 — 가운데 두 열이 참배길)이 담 선에 선다. 자리가 얕으면 도리이.
+  const SANMON = "jp-bldg-f-sanmon", sm = c.fable ? SCENE_SIZES[SANMON] : undefined;
+  const gate = !!sm && foot - sm[1] > hfoot + 1 && px - 2 > x && px + 4 < x + w && c.stampPassage(SANMON, px - 2, foot, [2, 3]);
+  ring(c, x, top, w, h, "블록담", (qx, qy) => qy === foot && (gate ? qx >= px - 2 && qx <= px + 3 : qx >= px - 1 && qx <= px + 2));
+  if (!gate) c.putFoot("jp-torii", px - 1, foot - 1, { base: [Occ.Lot, Occ.Walk], over: [Occ.Lot, Occ.Walk] });
   for (let y = foot - 3; y > hfoot + 1; y -= 3) for (const lx of [px - 1, px + 2]) c.putAny(sceneList("jinja", "lantern"), lx, y);
   const side = sceneList("jinja", "side");
   scatter(c, x + 1, hfoot + 2, Math.max(1, px - x - 3), Math.max(1, foot - hfoot - 2), side, 2);

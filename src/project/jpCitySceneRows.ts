@@ -37,6 +37,19 @@ function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number,
   const maxH = foot - top + 1;
   const row: ScenePlaced[] = [];
   let cursor = sx, prev: ScenePlaced | undefined, share = false;
+  // 새 거리의 중형 건물: 블록(줄)에 하나까지, 블록 끝(모퉁이)에만 선다. 편의점·슈퍼·은행·우체국은 가게 거리, 파출소는 큰길 줄의 모퉁이(교차로), 의원·학원은 집이 섞이는 동네.
+  let endKit: ScenePlaced | undefined;
+  if (c.fable && ex - sx >= 16 && c.rng() < 0.75) {
+    const roles = [...MEDIUM_SHOP, ...(mainRow || big ? ["koban"] : []), ...(c.kind.houseShare >= 0.15 ? MEDIUM_HOME : [])].map((r) => ({ r, k: c.rng() })).sort((a, b) => a.k - b.k).map((q) => q.r);
+    const left = c.rng() < 0.5;
+    for (const role of roles) {
+      const kit = c.nextKit([], { x: left ? sx : ex - 8, foot }, ex - sx - 9, maxH, { role });
+      if (!kit) continue;
+      const p = c.placeKit(kit, left ? sx : ex - kit.w, foot);
+      if (left) { row.push(p); prev = p; cursor = sx + kit.w; } else { endKit = p; ex -= kit.w; }
+      break;
+    }
+  }
   for (let guard = 0; guard < 40 && ex - cursor >= 3; guard++) {
     const canShare = share && !!prev?.kit && prev.kit.mr === 1;
     const at = { x: cursor, foot };
@@ -73,8 +86,12 @@ function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number,
     row.push(p); cursor = p.x + p.w;
   }
   closeGap(c, cursor, ex, foot);
+  if (endKit) row.push(endKit);
   return row;
 }
+
+/** 중형 건물의 종류(사전의 role): 가게 거리의 블록 끝에 서는 것 · 집이 섞이는 동네에 서는 것. */
+const MEDIUM_SHOP = ["konbini", "market", "bank", "post"], MEDIUM_HOME = ["clinic", "juku"], MEDIUM_RESIDENTIAL = ["clinic", "juku", "sento"];
 
 const FILL_ROLES = ["izakaya", "cafe", "bento", "ramen", "shop", "office", "garage", "konbini"];
 const FILL_CATS = ["shop", "food", "commercial", "public", "shut", "industry", "market", "house", "apartment"];
@@ -245,9 +262,14 @@ function houseRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number
   const kakiRow = kakiOk0 && maxH - 2 >= 7;
   const fDepths = [3, 2].filter((d) => maxH - d >= 7);
   let lastKaki: { wall: string; lotNo: number } | undefined;
+  // 새 거리의 주택가: 줄 머리(블록 끝)에 의원·학원·목욕탕 가운데 하나가 설 수 있다(줄에 하나까지, 가게처럼 앞이 포장).
+  if (c.fable && !wanted.some((r) => MEDIUM_RESIDENTIAL.includes(r)) && ex - sx >= 16 && c.rng() < 0.4) {
+    const role = MEDIUM_RESIDENTIAL.map((r) => ({ r, k: c.rng() })).sort((a, b) => a.k - b.k).map((q) => q.r).find((r) => c.buildingPool.some((b) => b.role === r && !c.placed.some((p) => p.kit?.id === b.id)));
+    if (role) wanted.unshift(role);
+  }
   let x = sx, prevH = 0, lot = Math.floor(c.rng() * 3);
   for (let guard = 0; guard < 30 && ex - x >= 5; guard++, lot++) {
-    const role = wanted[0] === "house" || wanted[0] === "machiya" || wanted[0] === "apartment" || wanted[0] === "sento" ? wanted.shift() : undefined;
+    const role = wanted[0] === "house" || wanted[0] === "machiya" || wanted[0] === "apartment" || MEDIUM_RESIDENTIAL.includes(wanted[0] ?? "") ? wanted.shift() : undefined;
     // 물림 깊이는 집마다: 키 큰 집은 길 쪽으로 나오고 낮은 집은 마당이 깊다(담 선은 한 줄, 집 선은 들쭉날쭉).
     let kit: ReturnType<SceneCtx["nextKit"]>, depth = depths[0]!, carport = false, side = 0;
     const ds = kakiRow ? fDepths : depths;

@@ -118,10 +118,13 @@ describe("jp_city street scene composer", () => {
     const res = JP_CITY_BUILDER.build(run, { type: "street", style: "jp-modern", name: "강변 상점가", features: ["shops", "river", "bridge", "vending"], size: "large" } as unknown as PlaceSpec);
     expect(res.ok, res.summary).toBe(true);
     expect(res.missingArt).toEqual([]);
-    expect(res.summary).toMatch(/street kind «riverside shopping street» \(kawazoi\); scenes: .*riverside walk/);
+    // 강을 청하면 강가 장면이 든 가게 거리가 선다. 어느 종류인지는 «요청 소품이 다 드는 첫 씨앗»이 정하므로(건물 사전이 바뀌면 달라진다) 이름을 못박지 않고,
+    // 요약이 알린 종류 = 도구가 세운 종류임을 본다.
+    const told = /street kind «[^»]+» \(([a-z-]+)\); scenes: .*riverside walk/.exec(res.summary);
+    expect(told, res.summary).not.toBeNull();
     // 미리 본 계획 = 도구가 세운 계획: 도구가 받은 씨앗·꼴로 다시 세운 계획에 다리와 자판기가 있고, 도구가 알린 종류가 같다.
     const composed = seen.find((c) => c.tool === "compose_jp_city_street")!;
-    expect((composed.data as { streetKind?: string }).streetKind).toBe("kawazoi");
+    expect((composed.data as { streetKind?: string }).streetKind).toBe(told![1]);
     const map = ctx.project.maps[res.mapIds[0]!]!;
     const plan = planJpCityScene({ mapId: map.id, width: map.width, height: map.height, seed: Number(composed.args.seed), style: "shopping", key: "game-a", crosswalkTile: sceneCrosswalkTile(ctx.project.tilesets[JP_CITY_ID]) });
     const ids = plan.steps.map((s) => String((s.args as { objectId?: string }).objectId ?? ""));

@@ -1340,6 +1340,311 @@
 "pass": [
 1
 ]
+},
+{
+"id": "jp-bldg-f-juku",
+"type": "building",
+"name": "학원",
+"en": "cram school",
+"kind": "structure",
+"w": 6,
+"h": 9,
+"tier": "medium",
+"floors": 3,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"학원",
+"cram school",
+"じゅく"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_school_annex"
+},
+{
+"id": "jp-bldg-f-sento",
+"type": "building",
+"name": "대중목욕탕",
+"en": "public bath house",
+"kind": "structure",
+"w": 7,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+2,
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:tile"
+],
+"words": [
+"대중목욕탕",
+"public bath house",
+"女"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_sento"
+},
+{
+"id": "jp-bldg-f-super",
+"type": "building",
+"name": "슈퍼마켓",
+"en": "supermarket",
+"kind": "structure",
+"w": 8,
+"h": 6,
+"tier": "medium",
+"floors": 1,
+"doors": [
+2,
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"슈퍼마켓",
+"supermarket",
+"スーパー"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_supermarket"
+},
+{
+"id": "jp-bldg-f-clinic",
+"type": "building",
+"name": "의원",
+"en": "small clinic",
+"kind": "structure",
+"w": 6,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"의원",
+"small clinic",
+"ないか"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_clinic"
+},
+{
+"id": "jp-bldg-f-yubin",
+"type": "building",
+"name": "우체국",
+"en": "post office",
+"kind": "structure",
+"w": 6,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"우체국",
+"post office",
+"ゆうびん"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_post_office"
+},
+{
+"id": "jp-bldg-f-koban",
+"type": "building",
+"name": "파출소",
+"en": "police box",
+"kind": "structure",
+"w": 4,
+"h": 5,
+"tier": "small",
+"floors": 1,
+"doors": [
+1
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:small",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"파출소",
+"police box",
+"こうばん"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_koban"
+},
+{
+"id": "jp-bldg-f-jinja",
+"type": "building",
+"name": "신사 본전",
+"en": "shrine hall",
+"kind": "structure",
+"w": 7,
+"h": 6,
+"tier": "medium",
+"floors": 1,
+"doors": [
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:landmark",
+"roof:tile"
+],
+"words": [
+"신사 본전",
+"shrine hall"
+],
+"rule": "맵에 하나만 둔다. 앞에 광장이나 긴 접근로를 두고 둘레를 비운다.",
+"touch": false
+},
+{
+"id": "jp-bldg-f-sanmon",
+"type": "building",
+"name": "절 산문",
+"en": "temple gate",
+"kind": "structure",
+"w": 6,
+"h": 6,
+"tier": "medium",
+"floors": 1,
+"doors": [
+2,
+3
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:landmark",
+"roof:tile"
+],
+"words": [
+"절 산문",
+"temple gate"
+],
+"rule": "맵에 하나만 둔다. 앞에 광장이나 긴 접근로를 두고 둘레를 비운다.",
+"pass": [
+2,
+3
+],
+"touch": false
+},
+{
+"id": "jp-bldg-f-konbini",
+"type": "building",
+"name": "편의점",
+"en": "convenience store",
+"kind": "structure",
+"w": 6,
+"h": 5,
+"tier": "medium",
+"floors": 1,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"편의점",
+"convenience store",
+"コンビニ"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_konbini"
+},
+{
+"id": "jp-bldg-f-ginko",
+"type": "building",
+"name": "신용금고",
+"en": "credit bank",
+"kind": "structure",
+"w": 7,
+"h": 7,
+"tier": "medium",
+"floors": 2,
+"doors": [
+2
+],
+"depth": 2,
+"tags": [
+"건물",
+"country:jp",
+"tier:medium",
+"setting:city",
+"street:medium",
+"roof:flat"
+],
+"words": [
+"신용금고",
+"credit bank",
+"ぎんこう"
+],
+"rule": "상점가·역 앞 길·간선도로 보도에 정면을 붙여 세운다. 문 앞 보도는 비운다.",
+"program": "jp_office"
 }
 ]
 }

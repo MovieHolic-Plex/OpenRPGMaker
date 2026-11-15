@@ -409,7 +409,7 @@ export function fableDress(c: SceneCtx, L: SceneLayout): void {
 export function fableFill(c: SceneCtx): void {
   const { W, H } = c;
   // 포장 위 빈 자리: 광장 것(돌 벤치·음수대)이 먼저, 그다음 나무 구덩이의 가로수(나무는 되풀이해도 된다)
-  const soft = [...streetTagged("gardentree"), ...streetTagged("garden")], hard = [...streetTagged("plaza"), ...streetTagged("park").filter((n) => STREET_PIECES[n]!.w === 1 || n === "bench-stone")], pitTrees = streetTagged("tree");
+  const soft = [...streetTagged("gardentree"), ...streetTagged("garden")], hard = [...streetTagged("plaza"), ...streetTagged("park").filter((n) => STREET_PIECES[n]!.w === 1 || n === "bench-stone")], pitTrees = streetTagged("tree"), gtrees = streetTagged("gardentree"), kerbLow = streetTagged("kerb-low"), critters = streetTagged("critter");
   const thing = new Uint8Array(W * H);
   const mark = (x0: number, y0: number, w: number, h: number) => { for (let y = Math.max(0, y0); y < Math.min(H, y0 + h); y++) for (let x = Math.max(0, x0); x < Math.min(W, x0 + w); x++) thing[y * W + x] = 1; };
   for (const p of c.placed) mark(p.x, p.y, p.w, p.foot - p.y + 1);
@@ -419,10 +419,15 @@ export function fableFill(c: SceneCtx): void {
     return true;
   };
   for (let y = 1; y < H; y++) for (let x = 0; x < W; x++) {
-    if (c.at(x, y) !== Occ.Lot || !dead(x, y)) continue;
+    if (!dead(x, y)) continue;
     const f = c.famAt(x, y);
+    // 보도: 길게 비어 있는 자리 곁의 연석 줄에 낮은 가로 시설(볼라드·화분·소화전 따위 — 같은 그림은 20×15 창에 한 번), 그것도 다 썼으면 비둘기·고양이
+    if (c.at(x, y) === Occ.Walk) { if (f === "pave") { const n = [0, -1, 1, -2, 2].reduce<string | undefined>((hit, dy) => hit ?? c.stPut(kerbLow, x, y + dy, { lax: true }), undefined) ?? c.stPut(critters, x, y, { lax: true }); if (n) { const p = STREET_PIECES[n]!, q = c.stPlaced[c.stPlaced.length - 1]!; mark(q.x, q.y, p.w, p.h); } } continue; }
+    if (c.at(x, y) !== Occ.Lot) continue;
     const pool = f === "earth" || f === "lawn" ? soft : f === "pave" || f === "forecourt" || f === "alley" ? hard : [];
-    const name = (pool.length ? c.stPut(pool, x, y) : undefined) ?? (pool === hard ? c.stPut(pitTrees, x - 1, y) ?? c.stPut(pitTrees, x, y) : undefined);
+    // 흙·잔디: 정원 것이 다 떨어졌거나(같은 그림은 20×15 창에 한 번) 윗줄이 막혀 못 서면, 마당 나무를 두 줄 아래 발치로 세운다(나무는 되풀이해도 된다).
+    const name = (pool.length ? c.stPut(pool, x, y) : undefined) ?? (pool === hard ? c.stPut(pitTrees, x - 1, y) ?? c.stPut(pitTrees, x, y) : undefined)
+      ?? (pool === soft ? c.stPut(gtrees, x, y + 2) ?? c.stPut(gtrees, x - 1, y + 2) ?? c.stPut(gtrees, x, y + 1) : undefined);
     if (name) { const p = STREET_PIECES[name]!, q = c.stPlaced[c.stPlaced.length - 1]!; mark(q.x, q.y, p.w, p.h); }
   }
 }

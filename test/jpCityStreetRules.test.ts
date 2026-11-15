@@ -119,10 +119,11 @@ describe("jp_city new street rules (fable_street pieces)", () => {
       const mark = (x0: number, y0: number, w: number, h: number) => { for (let y = Math.max(0, y0); y < Math.min(H, y0 + h); y++) for (let x = Math.max(0, x0); x < Math.min(W, x0 + w); x++) thing[y * W + x] = 1; };
       for (const b of p.plan.placed) mark(b.x, b.y, b.w, b.foot - b.y + 1);
       for (const q of f.placed) if (STREET_PIECES[q.name]?.layer !== "floor" && STREET_PIECES[q.name]?.layer !== "ground") mark(q.x, q.y, q.w, q.h);
+      for (const k of f.kaki) mark(k.x, k.y, k.w, k.h);
       let road = 0, dead = 0;
       for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
         const i = y * W + x;
-        if (GROUND_FAMILIES[f.gfam[i]!] === "tarmac" && f.occ[i] === Occ.Road && !thing[i]) { if (wideTarmac(f.gfam, x, y)) road++; continue; }   // 폭 두 칸이 넘는 아스팔트 차도 몫(측정 스크립트와 같은 뜻 — 생활도로 포장은 세지 않는다)
+        if (GROUND_FAMILIES[f.gfam[i]!] === "tarmac" && !thing[i]) { if (f.occ[i] === Occ.Road && wideTarmac(f.gfam, x, y)) road++; continue; }   // 폭 두 칸이 넘는 아스팔트 차도 몫(생활도로 포장·주차장 아스팔트는 차도도 죽은 띠도 아니다)
         if (thing[i] || ["water", "lane", "laneside"].includes(GROUND_FAMILIES[f.gfam[i]!]!) || f.occ[i] === Occ.Road) continue;   // 물·길은 죽은 띠가 아니다
         let near = false;
         for (let dy = -2; dy <= 2 && !near; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H && thing[yy * W + xx]) { near = true; break; } }
@@ -159,6 +160,19 @@ describe("jp_city new street rules (fable_street pieces)", () => {
       }
     }
     expect(touching / near, `wall-to-wall ${touching}/${near}`).toBeGreaterThanOrEqual(0.97);
+  });
+
+  it("stands a medium building (convenience store, supermarket, bank, post office, police box, clinic, cram school, bath) only at a block end, never between two neighbours", () => {
+    let seen = 0;
+    for (const p of plans) {
+      const kits = p.plan.placed.filter((b) => b.kit);
+      for (const m of kits.filter((b) => b.kit!.cat === "medium")) {
+        seen++;
+        const left = kits.some((b) => b !== m && b.foot === m.foot && b.x + b.w === m.x), right = kits.some((b) => b !== m && b.foot === m.foot && b.x === m.x + m.w);
+        expect(left && right, `${p.id}#${p.seed} ${m.kit!.id} at ${m.x},${m.foot}`).toBe(false);
+      }
+    }
+    expect(seen).toBeGreaterThanOrEqual(plans.length);   // 지도마다 평균 한 채는 선다
   });
 
   it("every piece and every boundary-run member the composer names is a baked kit", () => {

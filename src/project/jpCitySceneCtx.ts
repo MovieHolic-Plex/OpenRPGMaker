@@ -369,6 +369,17 @@ export class SceneCtx {
     this.kaki.push({ id, x, y, w, h, gate, lot, ...(door ? { door } : {}) });
     return true;
   }
+  /** 지나가는 문 키트(산몬 따위)를 발 줄 foot 에 찍는다 — pass 열은 걷는 칸, 나머지는 막힌 칸. */
+  stampPassage(id: string, x: number, foot: number, pass: readonly number[]): boolean {
+    const sz = SCENE_SIZES[id];
+    if (!sz) return false;
+    const [w, h] = sz, y = foot - h + 1;
+    if (x < 0 || y < 0 || x + w > this.W || foot >= this.H) return false;
+    for (let yy = y; yy <= foot; yy++) for (let xx = x; xx < x + w; xx++) { const v = this.at(xx, yy); if (this.drawn[yy * this.W + xx] || (v !== Occ.Lot && v !== Occ.Walk)) return false; }
+    for (let yy = y; yy <= foot; yy++) for (let xx = x; xx < x + w; xx++) { const i = yy * this.W + xx; this.drawn[i] = 1; this.occ[i] = pass.includes(xx - x) ? Occ.Walk : Occ.Wall; }
+    this.walls.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${id}`, mapId: this.mapId, x, y }, optional: true, note: "kaki" });
+    return true;
+  }
   /** 앞 건물의 오른쪽 처마 칸을 다음 건물이 덮었을 때 그 한 열을 4층에 되살린다. */
   restoreCol(p: ScenePlaced): void {
     if (p.kit) this.bldgs.push({ tool: "restore_col", args: { mapId: this.mapId, kit: p.kit.id, x: p.x + p.w - 1, y: p.y, col: p.w - 1 }, optional: true, note: "restore" });

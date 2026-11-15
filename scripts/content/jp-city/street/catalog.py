@@ -19,6 +19,9 @@ ZONE_ONLY = {'station-small': 'station', 'school': 'school', 'school-gym': 'scho
 F_CAT = {'ramen': 'food', 'sushi': 'food', 'izakaya': 'food', 'yakitori': 'food', 'kissa': 'food', 'toilet': 'utility', 'bus-shelter': 'utility', 'jizo-hall': 'sacred', 'lottery': 'utility', 'bunka-apart': 'apartment', 'temple-hall': 'sacred', 'grand-temple': 'sacred',
          'community-hall': 'public', 'fire-brigade': 'public', 'dentist': 'public', 'vet': 'public', 'acupuncture': 'public', 'landmark-torii': 'sacred', 'landmark-castle': 'castle',
          'bullet-station': 'station', 'bus-terminal': 'station', 'university': 'school', 'plant': 'industry', 'wholesale-market': 'market', 'ballpark': 'stadium', 'car-repair': 'industry'}
+# 중형 건물: 줄의 섞임이 뽑지 않는다(분류 medium) — 구성기가 블록 끝·모퉁이·주택가에 종류로 불러 세운다. 지나가는 문(산몬)은 건물이 아니다.
+F_MEDIUM = {'juku': 'juku', 'sento': 'sento', 'super': 'market', 'clinic': 'clinic', 'yubin': 'post', 'koban': 'koban', 'konbini': 'konbini', 'ginko': 'bank'}
+F_PASSAGE = {'sanmon'}
 F_ROLE = {'ramen': 'ramen', 'sushi': 'restaurant', 'izakaya': 'izakaya', 'yakitori': 'izakaya', 'kissa': 'cafe', 'sentaku': 'laundry', 'zakkyo': 'office', 'bento': 'bento', 'business-hotel': 'hotel', 'bank': 'bank', 'ryokan': 'ryokan', 'karaoke': 'karaoke', 'pachinko': 'pachinko', 'game-center': 'arcade', 'manga-cafe': 'cafe', 'tea': 'cafe',
           'family-restaurant': 'restaurant', 'soba-stand': 'restaurant', 'takoyaki': 'restaurant', 'taiyaki': 'restaurant', 'hospital': 'clinic', 'dentist': 'clinic', 'vet': 'clinic', 'acupuncture': 'clinic',
           'ward-office': 'office', 'tv-station': 'office', 'library': 'library', 'museum': 'museum', 'cinema': 'cinema', 'police-station': 'koban', 'fire-station': 'fire', 'department-store': 'mall',
@@ -49,10 +52,10 @@ def build():
         tier = next((x[5:] for x in tags if x.startswith('tier:')), None)
         if short.startswith('f-'):
             s = short[2:]
-            if s.startswith('kaki-'): continue                              # 담·대문 키트는 건물이 아니다(집 필지의 길 선에 구성기가 놓는다 — 크기는 sizes 에 있다)
+            if s.startswith('kaki-') or s in F_PASSAGE: continue                              # 담·대문 키트는 건물이 아니다(집 필지의 길 선에 구성기가 놓는다 — 크기는 sizes 에 있다)
             tier = tier or 'medium'
-            cat = F_CAT.get(s) or ('house' if s.startswith(('house', 'nagaya', 'minka', 'machiya-hira')) else 'apartment' if s.startswith('apart-') else None) or ('landmark' if tier == 'landmark' else 'civic' if tier in ('large', 'xlarge') else 'commercial' if tier == 'medium' else 'shop')
-            role = F_ROLE.get(s) or ('machiya' if s.startswith('machiya-hira') else 'house' if cat == 'house' else 'apartment' if cat == 'apartment' else None) or ('shop' if cat == 'shop' else s)
+            cat = ('medium' if s in F_MEDIUM else 'sacred' if s == 'jinja' else None) or F_CAT.get(s) or ('house' if s.startswith(('house', 'nagaya', 'minka', 'machiya-hira')) else 'apartment' if s.startswith('apart-') else None) or ('landmark' if tier == 'landmark' else 'civic' if tier in ('large', 'xlarge') else 'commercial' if tier == 'medium' else 'shop')
+            role = F_MEDIUM.get(s) or ('shrine' if s == 'jinja' else None) or F_ROLE.get(s) or ('machiya' if s.startswith('machiya-hira') else 'house' if cat == 'house' else 'apartment' if cat == 'apartment' else None) or ('shop' if cat == 'shop' else s)
         else:
             base = short[:-5] if short.endswith('-shut') else short
             cat = next((CAT_BY_TAG[x] for x in tags if x in CAT_BY_TAG), 'shop')
