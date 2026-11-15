@@ -49,6 +49,11 @@ const SAMPLES = 24;
 const SURE_SAMPLES = 96;
 /** 그 레벨의 «공격만» 을 재는 판 수. */
 const samplesAt = (party: BossParty, level: number): number => (level > party.level ? SURE_SAMPLES : SAMPLES);
+/**
+ * 마지막 보스의 여느 플레이를 확인하는 판 수 — 껍질은 «공격만» 을 막는 가장 작은 값을 고르므로 여느 플레이도 아슬아슬한 값이 뽑힌다.
+ * 왜(2026-11-15 은행 jrpg-w3 갈증의 망령): 24판 100% 로 받은 껍질(방 28→62, 약 2개)이 300판에서 92% 였고 자동 플레이가 기준 파티 그대로(Lv2 · 풀 HP · 약 2개) 서서 졌다.
+ */
+const playSamples = (party: BossParty): number => (party.final ? SURE_SAMPLES : SAMPLES);
 /** «공격만» 을 막아 보는 레벨의 폭(기준 레벨 위로) — 껍질 찾기가 레벨마다 한 번씩 돈다(보스 하나에 20~40초). */
 const GUARD_SPAN = 2;
 
@@ -131,8 +136,8 @@ const stock = (party: BossParty) => (party.potion ? { inventory: { [party.potion
  * 보스를 «여느 플레이» 로 잰다 — 쉬고 온 그 레벨(기본은 기준 레벨)의 파티가 기술·공격을 쓰고 HP 45% 아래에서 약을 쓴다.
  * 자동 플레이·정직한 플레이도 이렇게 싸운다(testing/sceneTestRunner 의 전투 수: 약 → 가장 센 기술 → 공격).
  */
-export function measureBossSensible(project: Project, troopId: string, party: BossParty, level = party.level): BossPlay {
-  const r = simulateBattle({ project, troopId, heroLevel: level, partyActorIds: party.ids, n: SAMPLES, seed: 11, useSkills: true, potionHpRatio: BOSS_BAND.potionAt, ...stock(party) });
+export function measureBossSensible(project: Project, troopId: string, party: BossParty, level = party.level, n: number = SAMPLES): BossPlay {
+  const r = simulateBattle({ project, troopId, heroLevel: level, partyActorIds: party.ids, n, seed: 11, useSkills: true, potionHpRatio: BOSS_BAND.potionAt, ...stock(party) });
   return { win: r.winRate, turns: r.avgTurns, potions: r.avgPotionsUsed ?? 0, loss: Math.max(0, 1 - r.avgHpRemaining / Math.max(1, hpAt(project, party.ids, level))) };
 }
 
@@ -183,14 +188,15 @@ export function bossBandLine(project: Project, troopId: string, party: BossParty
   let sensible: BossPlay, attackOnly: AttackOnly, high: AttackOnly, highPlay: BossPlay;
   const guard = guardLevel(project, troopId, party);
   try {
-    sensible = measureBossSensible(project, troopId, party); attackOnly = measureBossAttackOnly(project, troopId, party, guard, samplesAt(party, guard));
+    sensible = measureBossSensible(project, troopId, party, party.level, playSamples(party)); attackOnly = measureBossAttackOnly(project, troopId, party, guard, samplesAt(party, guard));
     high = party.maxLevel === guard ? attackOnly : measureBossAttackOnly(project, troopId, party, party.maxLevel, party.final ? SURE_SAMPLES : SAMPLES);
     highPlay = party.maxLevel === party.level ? sensible : measureBossSensible(project, troopId, party, party.maxLevel);
   } catch { return undefined; }
   const most = bossPotionBand(party.final)[1], [shortest, longest] = BOSS_BAND.targetTurns;
   const out = [
     ...(sensible.win < BOSS_BAND.minWin ? [`여느 플레이 승률 ${pct(sensible.win)} < ${pct(BOSS_BAND.minWin)}`] : []),
-    ...(sensible.turns > longest ? [`${sensible.turns.toFixed(1)}턴 > ${longest}턴`] : []),
+    // 줄에 적는 자리수(0.1턴)에서 같은 값은 밖으로 치지 않는다 — 약의 끝과 같은 여유(0.05).
+    ...(sensible.turns > longest + 0.05 ? [`${sensible.turns.toFixed(1)}턴 > ${longest}턴`] : []),
     ...(sensible.turns < shortest ? [`${sensible.turns.toFixed(1)}턴 < ${shortest}턴(짧다 — HP 는 올리지 않는다)`] : []),
     ...threatGaps(party, sensible, attackOnly),
     ...(party.potion && sensible.potions > most + 0.05 ? [`약 ${sensible.potions.toFixed(1)}개 > ${most}개`] : []),
@@ -289,7 +295,7 @@ export function raiseBossTension(project: Project, troopId: string, party: BossP
     }
   };
   /**
-   * 마지막 보스의 껍질 찾기 — 껍질(방어·HP)과 한 대의 상한마다 «공격만» 을 막는 가장 작은 한 대를 찾아, 여느 플레이의 굳은 기준(승률 · 상한 턴 · 약의 위쪽 끝)을 지키는 값들을 모으고,
+   * 마지막 보스의 껍질 찾기 — 껍질(방어·HP)과 한 대의 상한마다 «공격만» 을 막는 가장 작은 한 대를 찾아, 여느 플레이의 굳은 기준(승률 · 상한 턴 · 약의 위쪽 끝 — 많은 판으로 확인한다)을 지키는 값들을 모으고,
    * 밴드 안의 값이 나오면 그것으로, 없으면 밴드에 가장 가까운 값(«공격만» 이 기준보다 더 이기는 몫 → 바라는 길이를 넘는 턴 → 모자란 약의 차례)으로 둔다.
    * 늘 처음 값(origin — 원본 DB 의 적·기술)에서 찾는다: 다시 돌려도 같은 값이고, 고친 값 위에 또 쌓이지 않는다. HP 는 처음 값보다 올리지 않는다. 하나도 못 모으면 false(들어올 때의 값 그대로).
    */
@@ -314,7 +320,7 @@ export function raiseBossTension(project: Project, troopId: string, party: BossP
       enemies.forEach((e, i) => { e.stats = found ? { ...found.stats[i]! } : before.stats[i]!; });
       skills.forEach((k, i) => { k.power = found ? found.powers[i]! : before.powers[i]!; });
       if (!found) return false;
-      try { attackOnly = measureBossAttackOnly(project, troopId, party, guard, samplesAt(party, guard)); sensible = measureBossSensible(project, troopId, party); } catch { return settle(null); }
+      try { attackOnly = measureBossAttackOnly(project, troopId, party, guard, samplesAt(party, guard)); sensible = measureBossSensible(project, troopId, party, party.level, playSamples(party)); } catch { return settle(null); }
       return found.far <= 1e-9 ? true : "near";
     };
     if (shellFound.has(key)) return settle(shellFound.get(key) ?? null);
@@ -337,8 +343,9 @@ export function raiseBossTension(project: Project, troopId: string, party: BossP
       let ao = sure(top);
       while (ao && ao.win > BOSS_BAND.attackOnlyMaxWin && top < strongestAt) { top += 1; ao = sure(top); }
       if (!ao) continue;
+      // 여느 플레이는 적은 판으로 먼저 거르고, 통과한 값만 많은 판으로 확인한다 — 확인에서 떨어지면 다음 껍질로 간다.
       let play: BossPlay;
-      try { play = measureBossSensible(project, troopId, party); } catch { continue; }
+      try { play = measureBossSensible(project, troopId, party); if (bossSensibleFits(play)) play = measureBossSensible(project, troopId, party, party.level, playSamples(party)); } catch { continue; }
       if (!bossSensibleFits(play) || (party.potion && play.potions > most + 0.05)) continue;
       const far = Math.max(0, ao.win - BOSS_BAND.attackOnlyMaxWin) * 10 + Math.max(0, play.turns - BOSS_BAND.targetTurns[1]) * 0.5 + (party.potion ? Math.max(0, least - play.potions) * 0.5 : 0);
       if (!best || far < best.far - 1e-9) best = { stats: enemies.map((e) => ({ ...e.stats })), powers: skills.map((k) => k.power), far };
@@ -426,16 +433,16 @@ export function trimBossLength(project: Project, troopId: string, party: BossPar
   const enemies = project.database.enemies.filter((e) => enemyIds.has(e.id));
   const goal = BOSS_BAND.targetTurns[1];
   let sensible: BossPlay, gaps: number;
-  // «공격만» 은 밴드 줄과 같은 판 수로 잰다 — 적은 판으로 통과한 HP 가 줄에서는 밖으로 나온다.
-  const guard = guardLevel(project, troopId, party), n = samplesAt(party, guard);
-  try { sensible = measureBossSensible(project, troopId, party); gaps = threatGaps(party, sensible, measureBossAttackOnly(project, troopId, party, guard, n)).length; } catch { return undefined; }
+  // «공격만» 과 여느 플레이는 밴드 줄과 같은 판 수로 잰다 — 적은 판으로 통과한 HP 가 줄에서는 밖으로 나온다(24판 10.0턴이 96판에서 10.04턴).
+  const guard = guardLevel(project, troopId, party), n = samplesAt(party, guard), plays = playSamples(party);
+  try { sensible = measureBossSensible(project, troopId, party, party.level, plays); gaps = threatGaps(party, sensible, measureBossAttackOnly(project, troopId, party, guard, n)).length; } catch { return undefined; }
   if (!enemies.length || !bossSensibleFits(sensible) || sensible.turns <= goal || gaps > 0) return undefined;
   const start = { turns: sensible.turns, hp: enemies.map((e) => e.stats.maxHp) };
   for (let round = 0; round < RAISE_ROUNDS && sensible.turns > goal; round += 1) {
     const saved = enemies.map((e) => e.stats);
     enemies.forEach((e, i) => { e.stats = { ...e.stats, maxHp: Math.max(Math.ceil(start.hp[i]! * HP_FLOOR), Math.floor(e.stats.maxHp * 0.93)) }; });
     let next: BossPlay = NO_PLAY, nextGaps = Infinity;
-    if (enemies.some((e, i) => e.stats.maxHp !== saved[i]!.maxHp)) try { next = measureBossSensible(project, troopId, party); nextGaps = threatGaps(party, next, measureBossAttackOnly(project, troopId, party, guard, n)).length; } catch { /* 못 재면 되돌린다 */ }
+    if (enemies.some((e, i) => e.stats.maxHp !== saved[i]!.maxHp)) try { next = measureBossSensible(project, troopId, party, party.level, plays); nextGaps = threatGaps(party, next, measureBossAttackOnly(project, troopId, party, guard, n)).length; } catch { /* 못 재면 되돌린다 */ }
     if (!bossSensibleFits(next) || nextGaps > 0) { enemies.forEach((e, i) => { e.stats = saved[i]!; }); break; }
     sensible = next;
   }
