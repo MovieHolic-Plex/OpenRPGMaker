@@ -16,6 +16,7 @@ import { allPages, conditionLeaves, visitPageCommands, type PageRef, type RawCom
 import { objectClusterAt } from "@/project/objectFootprint";
 import { entranceArtCells } from "../place/entrances";
 import { isPassable } from "@/project/collision";
+import { standGroundCoverTile } from "@/assets/tilesetStands";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { objectiveTargetViews } from "@/player/objectiveTarget";
 import type { RuntimeEventView } from "@/project/runtimeEventState";
@@ -81,8 +82,10 @@ interface StoryEvent {
   readonly visible: boolean;
 }
 
-function drawnAt(map: GameMap, x: number, y: number): boolean {
-  const filled = (layer: readonly number[] | undefined, cx: number, cy: number) => cx >= 0 && cy >= 0 && cx < map.width && cy < map.height && (layer?.[cy * map.width + cx] ?? -1) >= 0;
+function drawnAt(project: Project, map: GameMap, x: number, y: number): boolean {
+  // 바닥 덧그림(숲 바닥·풀밭 얼룩·풀 결 — 2층)은 바닥이다. 그림으로 치면 풀 결이 깔린 풀밭의 빈 칸이 «물건이 그려진 칸» 이 된다.
+  const groundCover = standGroundCoverTile(project.tilesets[map.tilesetId]);
+  const filled = (layer: readonly number[] | undefined, cx: number, cy: number) => { const t = cx >= 0 && cy >= 0 && cx < map.width && cy < map.height ? layer?.[cy * map.width + cx] ?? -1 : -1; return t >= 0 && !(layer === map.lowerOverlayTiles && groundCover(t)); };
   return [map.upperTiles, map.upperOverlayTiles, map.lowerOverlayTiles].some((layer) => filled(layer, x, y) || filled(layer, x, y - 1));
 }
 
@@ -93,7 +96,7 @@ function smallObjectAt(project: Project, map: GameMap, x: number, y: number): bo
     const cluster = objectClusterAt(project, map, x, cy);
     if (cluster) return cluster.cells.length <= SMALL_OBJECT_CELLS;
   }
-  return drawnAt(map, x, y);
+  return drawnAt(project, map, x, y);
 }
 
 function pageVisible(project: Project, page: PageRef, map: GameMap, x: number, y: number): boolean {

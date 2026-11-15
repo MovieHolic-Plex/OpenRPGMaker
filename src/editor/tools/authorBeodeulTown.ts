@@ -24,6 +24,7 @@ import { LAYOUT_EDGES, parseLayout } from "./beodeulCodeLayout";
 import { buildSmallBeodeulVillage } from "./beodeulSmallVillage";
 import { addBeodeulVillageChurch } from './beodeulArchitectureTools';
 import { clearBeodeulGroundDressing, dressBeodeulGround } from "./beodeulGroundTools";
+import { layBeodeulGrassGrainForLook } from "./beodeulGrassGrain";
 
 const BEODEUL_TILESET_ID = "beodeul_city";
 const PAVING = "버들항 길 포석";
@@ -151,6 +152,9 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       const light=harmonizeBeodeulDaylight(draft,mapId);
       result.data={...(result.data as Record<string,unknown>),daylight:light.data};result.summary+=` ${light.summary}`;
     }
+    // 풀 결(게임 겉모습 grain — 기본 풀 바닥의 통칸 변형·짙고 옅은 결·풀 포기): 땅 꾸미기·일광 보정까지 끝난 뒤, 2층이 비어 남은 풀 칸에만 깐다.
+    // 걷는 칸·앞 단계의 자리 고르기는 결 없는 판과 같다(beodeulGrassGrain.ts). 왕도(city)는 원본 풀 칸 배열 그대로 둔다.
+    if (mapId && theme !== 'city') layBeodeulGrassGrainForLook(draft, mapId, Number(args.seed));
     // 시작 칸 점검은 땅 꾸미기(덤불·풀포기)까지 끝난 뒤에 — 꾸미기 덤불이 시작 칸 둘레 틈을 막아 주머니에 가뒀다(2026-10-29 vm1 flash).
     if (mapId && draft.startMapId === mapId) {
       const moved = keepStartWalkable(draft, mapId);

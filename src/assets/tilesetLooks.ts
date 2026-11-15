@@ -14,7 +14,9 @@ import type { TileGraft, TilesetDef, TilesetLook } from "@/project/types";
 
 // stand(숲 구성 — 섞인 수종·숲 수관·숲 바닥)·meadow(풀밭 얼룩)는 4차(2026-11-13)에 뒤에 덧붙였다 — 표는 assets/tilesetStands.ts. stand 를 고른 게임은 trees(수종 하나)를 겹치지 않는다.
 // water(물빛)는 2026-11-14 에 뒤에 덧붙였다 — 표는 assets/tilesetWater.ts. 이 갈래에는 «원래 그림» 선택지가 없다(원래 물은 초록 쪽이라 새 게임은 늘 물빛 하나를 받는다).
-export const TILESET_LOOK_PARTS = ["surface", "trees", "woods", "houses", "plaza", "stand", "meadow", "water"] as const;
+// grain(풀 결 — 기본 풀 바닥 위에 섞어 까는 통칸 변형·짙고 옅은 결·풀 무늬)도 같은 날 뒤에 덧붙였다 — 표는 assets/tilesetStands.ts 의 grains. 이 갈래에도 «원래 그림» 선택지가 없다.
+// 갈래는 저마다 제 이름으로 해시한다(project/tilesetLook.ts) — 갈래가 늘어도 앞 갈래들의 고르기는 그대로다.
+export const TILESET_LOOK_PARTS = ["surface", "trees", "woods", "houses", "plaza", "stand", "meadow", "water", "grain"] as const;
 export type TilesetLookPart = (typeof TILESET_LOOK_PARTS)[number];
 
 type Sources = Readonly<Record<string, readonly number[]>>;
@@ -31,7 +33,7 @@ export type TilesetLookTable = {
   readonly count: number;
   readonly targets: { readonly ground: readonly number[]; readonly paved: readonly number[] };
   readonly grounds: Readonly<Record<string, { readonly base: number; readonly sources?: Sources }>>;
-  readonly parts: Readonly<Record<Exclude<TilesetLookPart, "stand" | "meadow" | "water">, { readonly options: Readonly<Record<string, LookOption>> }>>;
+  readonly parts: Readonly<Record<Exclude<TilesetLookPart, "stand" | "meadow" | "water" | "grain">, { readonly options: Readonly<Record<string, LookOption>> }>>;
 };
 
 const TABLES: readonly TilesetLookTable[] = [beodeulLooks as unknown as TilesetLookTable];
@@ -152,13 +154,16 @@ export function tilesetLookGround(tilesetId: string, look: TilesetLook | undefin
 /** 겉모습 갈래의 선택지 이름(표 순서). 맨 앞 "" 는 «원래 그림» — 물빛(water)에는 없다. */
 export function tilesetLookOptions(table: TilesetLookTable, part: TilesetLookPart): string[] {
   if (part === "water") return Object.keys(partOptions(table, part));
-  return ["", ...Object.keys(partOptions(table, part))];
+  // 풀 결에도 «원래 그림»(한 칸 풀밭) 선택지가 없다 — 새 게임은 모두 결이 있는 풀밭을 받는다(2026-11-14 오너). 표에 결이 없으면 비어 있다.
+  const names = Object.keys(partOptions(table, part));
+  return part === "grain" && names.length ? names : ["", ...names];
 }
 
 function partOptions(table: TilesetLookTable, part: TilesetLookPart): Readonly<Record<string, { readonly label: string }>> {
   if (part === "stand") return tilesetStandTableFor(table.tilesetId)?.stands ?? {};
   if (part === "meadow") return tilesetStandTableFor(table.tilesetId)?.meadows ?? {};
   if (part === "water") return tilesetWaterTableFor(table.tilesetId)?.looks ?? {};
+  if (part === "grain") return tilesetStandTableFor(table.tilesetId)?.grains ?? {};
   return table.parts[part]?.options ?? {};
 }
 
