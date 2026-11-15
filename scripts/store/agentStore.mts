@@ -30,7 +30,7 @@ import {
 } from "../../src/assetStore/format";
 import { basicTilesetFor } from "../../src/assetStore/pack";
 import { pngSize, sniffMime } from "../../src/assetStore/sniff";
-import { passingCellIndex, readBaseline, uncoveredSheetCells } from "../../src/harnesses/object-gate/node/cells";
+import { blockedCellIndex, passingCellIndex, readBaseline, uncoveredSheetCells } from "../../src/harnesses/object-gate/node/cells";
 import { STORE_GATED_KINDS } from "./storeExitGate.mts";
 
 const DEFAULT_BASE = "https://store.openrpgmaker.com";
@@ -162,6 +162,7 @@ function checkPack(pack: Pack, { gate = true }: { gate?: boolean } = {}): { prob
   // 그림 규격 + 3/4 관문. 관문은 영수증만 본다(모델 호출 없음) — 받는 법은 object-gate review.
   const baseline = readBaseline();
   let passing: ReturnType<typeof passingCellIndex> | null = null;
+  let blocked: Set<string> | null = null;   // 서명된 사람 거절·보정된 Opus 불합격이 붙은 그림의 칸 — 기준선에 있어도 막는다(번들 게시기와 같은 규칙)
   for (const asset of Object.values(manifest.content.assets)) {
     if (asset.mime !== "image/png") continue;
     const bytes = blobs.get(asset.blob)!;
@@ -171,9 +172,10 @@ function checkPack(pack: Pack, { gate = true }: { gate?: boolean } = {}): { prob
     if (!GATED_KINDS.has(asset.kind)) continue;
     if (!gate) { notes.push(`${asset.name}: 미리보기라 3/4 관문은 아직 보지 않았다 — submit 할 때 본다.`); continue; }
     passing ??= passingCellIndex("store");
+    blocked ??= blockedCellIndex();
     const image = PNG.sync.read(Buffer.from(bytes));
     const data = new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.length);
-    const uncovered = uncoveredSheetCells({ width: image.width, height: image.height, data, tileSize: STORE_TILE_SIZE }, baseline, passing);
+    const uncovered = uncoveredSheetCells({ width: image.width, height: image.height, data, tileSize: STORE_TILE_SIZE }, baseline, passing, blocked);
     if (uncovered.length > 0) {
       problems.push(`${asset.name}: 3/4 관문 영수증이 없는 칸 ${uncovered.length}개(예: ${uncovered.slice(0, 5).map((cell) => `#${cell.index}`).join(" ")}) — `
         + "새 타일·기물 그림은 `npm run harness -- object-gate review` 로 판정받아 store 출구를 통과해야 한다(AGENTS.md 「3/4 탑뷰 관문」). 관문을 건너뛰거나 기준을 낮추지 마라.");

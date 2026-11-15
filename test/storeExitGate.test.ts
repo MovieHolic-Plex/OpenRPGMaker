@@ -5,6 +5,8 @@
 // 제3자 이름만 봤다. 오너의 상시 규칙 «Fable 5.2 그림은 오너 면제로 번들에 굽고 스토어에는 올리지 않는다» 를 코드가 아니라
 // «돌리지 않는 것» 이 지키고 있었다. 여기서 고정하는 것: 스토어 출구가 열리지 않은 오너 면제 칸이 든 시트는 거절(어느 묶음 몇 칸인지 말한다),
 // 깨끗한 시트는 통과. 2026-11-15 부터 통과하는 칸은 셋이다 — 기준선 · 관문 통과 기록 · 스토어 출구를 적은 오너 면제 묶음.
+// 기준선은 «기준선 커밋의 번들 시트에 이미 실려 있던 칸» 이다(오너 면제 묶음의 칸은 빼고). 기준선에 있어도 서명된 사람 거절 ·
+// 보정된 Opus 불합격이 붙은 그림의 칸은 막힌다.
 // 출구 규칙은 흉내 내지 않고 진짜 것을 쓴다 — 임시 폴더에 면제 묶음·기준선을 놓고 passingCellIndex 가 그것을 읽게 한다.
 // 출구를 넓히는 것도 진짜 길(`object-gate owner-waive-extend` 가 부르는 extendOwnerWaiver)로 한다: Fable 묶음은 넓어지고, Fable 이 아닌 오너 묶음은 거절된다.
 import { createHash } from "node:crypto";
@@ -19,6 +21,7 @@ type Gate = typeof import("../scripts/store/storeExitGate.mts");
 type Cells = typeof import("@/harnesses/object-gate/node/cells");
 type Extend = typeof import("@/harnesses/object-gate/node/waiverExtend");
 type Baseline = typeof import("@/harnesses/object-gate/node/baseline");
+type GateStore = typeof import("@/harnesses/object-gate/node/store");
 
 const TILE = 16;
 /** 한 칸(16×16)을 한 색으로 채운 RGBA. 색이 다르면 칸 해시가 다르다. */
@@ -50,6 +53,9 @@ const packOf = (bytes: Uint8Array, kind: StoreAssetKind = "chipset") => {
 
 const WAIVED = tile(200, 40, 40), CLEAN = tile(40, 200, 40), ALSO_CLEAN = tile(40, 40, 200), UNKNOWN = tile(120, 120, 120);
 const TO_OPEN = tile(200, 200, 40), OWNER_ONLY = tile(40, 200, 200);
+/** 번들 시트에 이미 실려 있어 기준선에 든 칸인데, 그 그림에 서명된 사람 거절 · 보정된 Opus 불합격이 붙은 것. */
+const REJECTED = tile(90, 10, 90), OPUS_FAIL = tile(10, 90, 90);
+const REJECTED_SHA = "d".repeat(64), OPUS_FAIL_SHA = "e".repeat(64);
 const BATCH = "fable-test-beodeul-2026-11-15";
 /** 시험 안에서 스토어 출구를 넓힐 Fable 묶음과, 넓혀지면 안 되는 Fable 아닌 오너 묶음. */
 const FABLE_TO_OPEN = "fable-test-open-2026-11-15", OWNER_BATCH = "owner-test-stairs-2026-11-15";
@@ -60,6 +66,7 @@ let gate: Gate;
 let cells: Cells;
 let waiverExtend: Extend;
 let baseline: Baseline;
+let gateStore: GateStore;
 const batchFile = (id: string) => join(dir, "waivers", `${id}.json`);
 const writeBatch = (id: string, sha: string, rgba: Uint8Array) => writeFileSync(batchFile(id), JSON.stringify({
   schema: "oprn-object-gate-owner-waiver/1", id, owner: "구워도 되고 앞으로는 전부 오너 면제다", decidedAt: "2026-11-15", recordedBy: "test", contexts: ["bundle", "shared"],
@@ -70,22 +77,36 @@ const extend = (batch: string, owner: string | undefined = OWNER_SAYS, contexts 
   waiverExtend.extendOwnerWaiver({ batch, contexts, owner, decidedAt: "2026-11-15", recordedBy: "test — 감독이 전한 오너의 말" }).code;
 
 beforeAll(async () => {
-  // 관문 기록 폴더는 모듈을 읽을 때 정해진다 — 임시 폴더를 가리킨 뒤에 읽는다. 서명 열쇠는 없는 경로로 둔다(읽지 않는다).
+  // 관문 기록 폴더는 모듈을 읽을 때 정해진다 — 임시 폴더를 가리킨 뒤에 읽는다. 서명 열쇠도 임시 폴더의 것이다(시험이 만든 일회용 —
+  // 진짜 열쇠는 읽지 않는다).
   dir = mkdtempSync(join(tmpdir(), "store-exit-gate-"));
   process.env.OBJECT_GATE_DATA = dir;
-  process.env.OBJECT_GATE_HOLD_KEY = join(dir, "no-such-key");
+  process.env.OBJECT_GATE_HOLD_KEY = join(dir, "test-hold.key");
   vi.resetModules();
   cells = await import("@/harnesses/object-gate/node/cells");
   gate = await import("../scripts/store/storeExitGate.mts");
   waiverExtend = await import("@/harnesses/object-gate/node/waiverExtend");
   baseline = await import("@/harnesses/object-gate/node/baseline");
+  gateStore = await import("@/harnesses/object-gate/node/store");
   // 오너 면제 묶음 셋(모두 번들·공용 출구만으로 시작): WAIVED(끝까지 스토어가 안 열린다) · TO_OPEN(시험에서 넓힌다) · OWNER_ONLY(Fable 이 아니다).
   // 기준선: CLEAN · ALSO_CLEAN 칸.
   mkdirSync(join(dir, "waivers"), { recursive: true });
   writeBatch(BATCH, "a".repeat(64), WAIVED);
   writeBatch(FABLE_TO_OPEN, "b".repeat(64), TO_OPEN);
   writeBatch(OWNER_BATCH, "c".repeat(64), OWNER_ONLY);
-  writeFileSync(join(dir, "baseline-cells.txt"), `${cells.cellHash(TILE, CLEAN)}\n${cells.cellHash(TILE, ALSO_CLEAN)}\n`);
+  // 기준선: CLEAN · ALSO_CLEAN, 그리고 «이미 실려 있던» REJECTED · OPUS_FAIL 칸.
+  writeFileSync(join(dir, "baseline-cells.txt"), [CLEAN, ALSO_CLEAN, REJECTED, OPUS_FAIL].map((rgba) => cells.cellHash(TILE, rgba)).join("\n") + "\n");
+  // REJECTED: 영수증(보류) + 검토 화면의 서명된 사람 거절. 서명은 관문의 진짜 길(writeHoldDecision)로 만든다.
+  gateStore.writeReceipt({ schema: "oprn-object-gate-receipt/1", pixelSha256: REJECTED_SHA, width: TILE, height: TILE, kind: "container", name: "rejected-crate", label: "rejected-crate", profileHash: "p", verdict: "refer", reasons: [], runs: [], decidedAt: "2026-11-15T00:00:00Z", cells: cells.receiptCells(TILE, TILE, REJECTED) } as never);
+  gateStore.writeHoldDecision({ schema: "oprn-object-gate-hold-decision/1", pixelSha256: REJECTED_SHA, profileHash: "p", kind: "container", decision: "reject", decidedBy: "owner", decidedAt: "2026-11-15T00:00:00Z", by: "human", via: "review-page", reasons: ["정면 입면도"] });
+  // OPUS_FAIL: 보정된 최종 프로필의 불합격 기록.
+  mkdirSync(join(dir, "final-profiles"), { recursive: true });
+  writeFileSync(join(dir, "final-profiles", "f1.json"), JSON.stringify({ schema: "oprn-object-gate-final-profile/1", profileHash: "f1", status: "calibrated" }));
+  mkdirSync(join(dir, "final", OPUS_FAIL_SHA.slice(0, 2)), { recursive: true });
+  writeFileSync(join(dir, "final", OPUS_FAIL_SHA.slice(0, 2), `${OPUS_FAIL_SHA}.json`), JSON.stringify({
+    schema: "oprn-object-gate-final/1", pixelSha256: OPUS_FAIL_SHA, width: TILE, height: TILE, kind: "container", styleKind: "prop", name: "opus-fail-crate", profileHash: "f1",
+    verdict: "fail", view34: "fail", style: "pass", kindOk: true, sure: true, reasons: ["정면 입면도"], decidedAt: "2026-11-15T00:00:00Z", cells: cells.receiptCells(TILE, TILE, OPUS_FAIL),
+  }));
 });
 
 afterAll(() => {
@@ -103,7 +124,7 @@ describe("번들 게시기의 스토어 출구 칸 검사", () => {
 
   it("오너 면제 칸이 든 시트는 거절하고, 어느 묶음의 몇 칸인지 말한다", () => {
     const reports = gate.storeExitSheetReports(packOf(sheetPng([CLEAN, WAIVED, ALSO_CLEAN])));
-    expect(reports).toEqual([{ asset: "시험 시트", uncovered: 1, waived: { [BATCH]: 1 }, unreceipted: 0, examples: ["#1(1,0)"] }]);
+    expect(reports).toEqual([{ asset: "시험 시트", uncovered: 1, waived: { [BATCH]: 1 }, blocked: 0, unreceipted: 0, examples: ["#1(1,0)"] }]);
     const problems = gate.storeExitProblems(reports);
     expect(problems).toHaveLength(1);
     expect(problems[0]).toContain("스토어 출구(3/4 관문)를 통과하지 못한 칸 1개");
@@ -171,7 +192,43 @@ describe("오너 면제의 스토어 출구 넓히기 — object-gate owner-waiv
   });
 });
 
+describe("기준선에 있어도 막히는 칸 — 서명된 사람 거절 · 보정된 Opus 불합격", () => {
+  it("그 그림들의 칸은 막힌 칸 색인에 들고, 깨끗한 기준선 칸은 들지 않는다", () => {
+    const blocked = cells.blockedCellIndex();
+    expect(blocked.has(cells.cellHash(TILE, REJECTED)!)).toBe(true);
+    expect(blocked.has(cells.cellHash(TILE, OPUS_FAIL)!)).toBe(true);
+    expect(blocked.has(cells.cellHash(TILE, CLEAN)!)).toBe(false);
+  });
+
+  it("서명된 사람 거절이 붙은 그림의 칸은 기준선에 있어도 스토어 출구에서 걸린다", () => {
+    const reports = gate.storeExitSheetReports(packOf(sheetPng([CLEAN, REJECTED])));
+    expect(reports).toEqual([{ asset: "시험 시트", uncovered: 1, waived: {}, blocked: 1, unreceipted: 0, examples: ["#1(1,0)"] }]);
+    expect(gate.storeExitProblems(reports)[0]).toContain("사람 거절·Opus 불합격이 붙은 그림의 칸 1개");
+  });
+
+  it("보정된 Opus 불합격이 붙은 그림의 칸도 기준선에 있어도 걸린다", () => {
+    expect(gate.storeExitSheetReports(packOf(sheetPng([OPUS_FAIL, ALSO_CLEAN])))).toMatchObject([{ uncovered: 1, blocked: 1, unreceipted: 0 }]);
+  });
+
+  it("서명이 맞지 않는 거절 기록은 없는 것과 같다 — 손으로 쓴 파일은 칸을 막지 못한다", () => {
+    const forged = "f".repeat(64), FORGED = tile(150, 60, 10);
+    gateStore.writeReceipt({ schema: "oprn-object-gate-receipt/1", pixelSha256: forged, width: TILE, height: TILE, kind: "container", name: "forged", label: "forged", profileHash: "p", verdict: "refer", reasons: [], runs: [], decidedAt: "2026-11-15T00:00:00Z", cells: cells.receiptCells(TILE, TILE, FORGED) } as never);
+    mkdirSync(join(dir, "approvals", "hold", forged.slice(0, 2)), { recursive: true });
+    writeFileSync(join(dir, "approvals", "hold", forged.slice(0, 2), `${forged}.json`), JSON.stringify({ schema: "oprn-object-gate-hold-decision/1", pixelSha256: forged, profileHash: "p", kind: "container", decision: "reject", decidedBy: "owner", decidedAt: "2026-11-15T00:00:00Z", by: "human", via: "review-page", reasons: [], sig: "0".repeat(64) }));
+    expect(cells.blockedCellIndex().has(cells.cellHash(TILE, FORGED)!)).toBe(false);
+  });
+});
+
 describe("기준선 만들기 — object-gate baseline 의 순수 부분", () => {
+  it("오너 면제 묶음의 칸은 기준선에 넣지 않는다 — 시트마다 몇 칸을 뺐는지 센다", () => {
+    const waived = baseline.waiverCellHashes([readFileSync(batchFile(BATCH), "utf8"), "{ 깨진 글", JSON.stringify({ schema: "다른 것", items: [] })]);
+    expect(waived.batches).toBe(1);
+    expect([...waived.hashes]).toEqual([cells.cellHash(TILE, WAIVED)!]);
+    const built = baseline.baselineFromSheets([{ path: "public/a.png", png: sheetPng([CLEAN, WAIVED, ALSO_CLEAN]) }], waived.hashes);
+    expect(built.hashes).toEqual([cells.cellHash(TILE, CLEAN)!, cells.cellHash(TILE, ALSO_CLEAN)!].sort());
+    expect(built.sheets).toEqual([{ path: "public/a.png", cells: 3, waived: 1, fresh: 2 }]);
+  });
+
   it("시트들의 비지 않은 칸 해시를 겹치지 않게 모으고, 그 커밋에 없던 시트는 건너뛴다", () => {
     const built = baseline.baselineFromSheets([
       { path: "public/a.png", png: sheetPng([CLEAN, ALSO_CLEAN]) },
@@ -179,12 +236,12 @@ describe("기준선 만들기 — object-gate baseline 의 순수 부분", () =>
       { path: "public/c.png", png: null },
     ]);
     expect(built.hashes).toEqual([cells.cellHash(TILE, CLEAN)!, cells.cellHash(TILE, ALSO_CLEAN)!, cells.cellHash(TILE, UNKNOWN)!].sort());
-    expect(built.sheets).toEqual([{ path: "public/a.png", cells: 2, fresh: 2 }, { path: "public/b.png", cells: 2, fresh: 1 }, { path: "public/c.png", missing: true }]);
+    expect(built.sheets).toEqual([{ path: "public/a.png", cells: 2, waived: 0, fresh: 2 }, { path: "public/b.png", cells: 2, waived: 0, fresh: 1 }, { path: "public/c.png", missing: true }]);
   });
 
   it("파일의 설명 줄(#)은 기준선으로 읽히지 않고, 해시 줄만 읽힌다", () => {
     const built = baseline.baselineFromSheets([{ path: "public/a.png", png: sheetPng([CLEAN]) }]);
-    const lines = baseline.baselineFileText(built.hashes, built.sheets).split("\n").filter(Boolean);
+    const lines = baseline.baselineFileText(built.hashes, built.sheets, { batches: 20, hashes: 3 }).split("\n").filter(Boolean);
     expect(lines.filter((line) => /^[0-9a-f]{16}$/.test(line))).toEqual(built.hashes);
     expect(lines.filter((line) => !/^[0-9a-f]{16}$/.test(line)).every((line) => line.startsWith("#"))).toBe(true);
     expect(lines.join("\n")).toContain(baseline.BASELINE_COMMIT);

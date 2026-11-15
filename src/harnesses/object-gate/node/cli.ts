@@ -4,7 +4,7 @@ import { OBJECT_GATE_KINDS, OBJECT_GATE_PROFILE, OBJECT_GATE_WAIVER_ALLOWED_CONT
 import { createInterface } from 'node:readline/promises';
 import { humanDecision, validFrontPropApproval } from '../../_core/objectGate';
 import { existsSync, readFileSync } from 'node:fs';
-import { BASELINE_COMMIT, GATE_INTRODUCED_COMMIT, writeBaseline } from './baseline';
+import { BASELINE_COMMIT, BASELINE_COMMIT_DATE, writeBaseline } from './baseline';
 import { receiptCells } from './cells';
 import { extendOwnerWaiver } from './waiverExtend';
 import { calibratedFinalProfiles, listOwnerWaiverBatches, readFinal, readPng, writeOwnerWaiverBatch } from './store';
@@ -37,11 +37,11 @@ export async function run(argv: string[]): Promise<number> {
     console.log(refusal ? `거절: ${refusal}` : `통과 (${sha.slice(0, 12)})`);
     return refusal ? 3 : 0;
   }
-  // 시트 칸 관문의 기준선(2026-11-15): 관문이 들어온 커밋 바로 앞의 번들 시트 칸을 baseline-cells.txt 로 적는다. 커밋·시트는 baseline.ts 에 고정이다.
+  // 시트 칸 관문의 기준선(2026-11-15): 기준선 커밋의 번들 시트에 이미 실려 있던 칸(오너 면제 묶음의 칸은 빼고)을 baseline-cells.txt 로 적는다. 커밋·시트는 baseline.ts 에 고정이다.
   if (stage === 'baseline') {
     const built = writeBaseline();
-    for (const sheet of built.sheets) console.log('missing' in sheet ? `  ${sheet.path}: 그 커밋에 없다(건너뜀)` : `  ${sheet.path}: 비지 않은 칸 ${sheet.cells} · 새로 더한 해시 ${sheet.fresh}`);
-    console.log(`기준선 ${built.hashes}칸 → ${built.path}\n  관문이 들어온 커밋 ${GATE_INTRODUCED_COMMIT} 바로 앞(${BASELINE_COMMIT.slice(0, 9)})의 시트에서 읽었다. 그 뒤에 들어온 칸은 기준선이 아니다.`);
+    for (const sheet of built.sheets) console.log('missing' in sheet ? `  ${sheet.path}: 그 커밋에 없다(건너뜀)` : `  ${sheet.path}: 비지 않은 칸 ${sheet.cells} · 면제 묶음의 칸이라 뺀 것 ${sheet.waived} · 새로 더한 해시 ${sheet.fresh}`);
+    console.log(`기준선 ${built.hashes}칸 → ${built.path}\n  기준선 커밋 ${BASELINE_COMMIT.slice(0, 9)}(main, ${BASELINE_COMMIT_DATE})의 시트에서 읽었다. 오너 면제 묶음 ${built.waivers.batches}개의 칸(해시 ${built.waivers.hashes}개)은 뺐다 — 면제 규칙으로 간다.\n  그 뒤로 번들에 들어오는 칸은 기준선이 아니다. 사람 거절·Opus 불합격이 붙은 그림의 칸은 기준선에 있어도 출구에서 막는다.`);
     return 0;
   }
   // 오너 면제 묶음(2026-11-12): 오너가 «판정 없이 넣어라» 고 결정한 그림들을 화소 해시·종류에 묶어 적는다. 모델을 부르지 않는다.

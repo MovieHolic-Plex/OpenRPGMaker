@@ -6,8 +6,9 @@
  * 오너 면제 그림이 스토어로 나가는지를 이 경로에서는 코드가 아니라 «돌리지 않는 것» 이 지키고 있었다.
  * 그래서 같은 검사를 여기서도 한다: 스토어 출구를 통과하지 못한 칸이 하나라도 있으면 게시를 거절하고,
  * 몇 칸이 어느 면제 묶음(waivers/<id>.json)의 것인지 말한다. `--dry` · `--target plan` 도 같은 거절을 본다.
- * 통과하는 칸(2026-11-15): ① 기준선(baseline-cells.txt — 관문이 생기기 전부터 번들 시트에 있던 칸) ② 관문을 통과한 기록의 칸
- * ③ 스토어 출구를 적은 오너 면제 묶음의 칸(src/harnesses/_core/objectGate/receipt.ts ownerWaiverApplies). 걸리는 것은 그 셋이 아닌 칸뿐이다.
+ * 통과하는 칸(2026-11-15): ① 기준선(baseline-cells.txt — 기준선 커밋의 번들 시트에 이미 실려 있던 칸, 오너 면제 묶음의 칸은 빼고) ② 관문을 통과한 기록의 칸
+ * ③ 스토어 출구를 적은 오너 면제 묶음의 칸(src/harnesses/_core/objectGate/receipt.ts ownerWaiverApplies). 걸리는 것은 그 셋이 아닌 칸과,
+ * 기준선에 있어도 서명된 사람 거절·보정된 Opus 불합격이 붙은 그림의 칸(blockedCellIndex)이다.
  * 이 게시기에 규칙을 푸는 깃발은 없다 — 올리려면 그 칸을 `object-gate` 로 판정받거나, 그 묶음에 스토어 출구를 연 오너의 말이 기록돼야 한다.
  *
  * 판정은 영수증·면제 기록만 읽는다(모델 호출 없음, 네트워크 없음).
@@ -15,7 +16,7 @@
 import { PNG } from "pngjs";
 import { STORE_TILE_SIZE, type StoreAssetKind, type StorePackManifest } from "../../src/assetStore/format";
 import type { ObjectGateOwnerWaiverBatch, ObjectGateReceipt } from "../../src/harnesses/_core/objectGate";
-import { passingCellIndex, readBaseline, uncoveredSheetCells } from "../../src/harnesses/object-gate/node/cells";
+import { blockedCellIndex, passingCellIndex, readBaseline, uncoveredSheetCells } from "../../src/harnesses/object-gate/node/cells";
 import { listOwnerWaiverBatches } from "../../src/harnesses/object-gate/node/store";
 
 /** 3/4 관문(AGENTS.md hard rule)을 받아야 하는 에셋 종류: 맵에 깔리는 타일·기물 시트. agentStore.mts 와 같은 집합을 쓴다. */
@@ -28,6 +29,8 @@ export interface StoreExitGateDeps {
   readonly passing: Map<string, ObjectGateReceipt>;
   /** 오너 면제 묶음 — 걸린 칸이 어느 묶음의 것인지 말하는 데만 쓴다(통과 여부는 passing 이 정한다). */
   readonly waiverBatches: readonly ObjectGateOwnerWaiverBatch[];
+  /** 어느 출구에서도 막는 그림의 칸(서명된 사람 거절·보정된 Opus 불합격) — 기준선에 있어도 걸린다. `blockedCellIndex()`. */
+  readonly blocked: Set<string>;
 }
 
 export interface StoreExitSheetReport {
@@ -36,14 +39,16 @@ export interface StoreExitSheetReport {
   readonly uncovered: number;
   /** 걸린 칸 가운데 오너 면제 묶음(스토어 출구가 열리지 않은 것)의 것: 묶음 id → 칸 수. */
   readonly waived: Readonly<Record<string, number>>;
-  /** 걸린 칸 가운데 어느 면제 묶음에도 없는 것(판정 기록이 없거나 store 출구에서 떨어진 칸). */
+  /** 걸린 칸 가운데 서명된 사람 거절·보정된 Opus 불합격이 붙은 그림의 것(면제 묶음의 칸이어도 여기에 센다). */
+  readonly blocked: number;
+  /** 걸린 칸 가운데 어느 면제 묶음에도 없고 거절 기록도 없는 것(판정 기록이 없거나 store 출구에서 떨어진 칸). */
   readonly unreceipted: number;
   readonly examples: readonly string[];
 }
 
 /** 저장소의 관문 기록에서 읽는다(harness-data/object-gate — OBJECT_GATE_DATA 로 바꿀 수 있다). */
 export function storeExitGateDeps(): StoreExitGateDeps {
-  return { baseline: readBaseline(), passing: passingCellIndex("store"), waiverBatches: listOwnerWaiverBatches() };
+  return { baseline: readBaseline(), passing: passingCellIndex("store"), waiverBatches: listOwnerWaiverBatches(), blocked: blockedCellIndex() };
 }
 
 type Pack = { readonly manifest: StorePackManifest; readonly blobs: ReadonlyMap<string, Uint8Array> };
@@ -58,18 +63,20 @@ export function storeExitSheetReports(pack: Pack, deps: StoreExitGateDeps = stor
   for (const asset of Object.values(pack.manifest.content.assets)) {
     if (asset.mime !== "image/png" || !STORE_GATED_KINDS.has(asset.kind)) continue;
     const bytes = pack.blobs.get(asset.blob);
-    if (!bytes) { reports.push({ asset: asset.name, uncovered: 0, waived: {}, unreceipted: 0, examples: ["시트 그림(blob)이 팩에 없다"] }); continue; }
+    if (!bytes) { reports.push({ asset: asset.name, uncovered: 0, waived: {}, blocked: 0, unreceipted: 0, examples: ["시트 그림(blob)이 팩에 없다"] }); continue; }
     const image = PNG.sync.read(Buffer.from(bytes));
     const data = new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.length);
-    const uncovered = uncoveredSheetCells({ width: image.width, height: image.height, data, tileSize: STORE_TILE_SIZE }, deps.baseline, deps.passing);
+    const uncovered = uncoveredSheetCells({ width: image.width, height: image.height, data, tileSize: STORE_TILE_SIZE }, deps.baseline, deps.passing, deps.blocked);
     if (uncovered.length === 0) continue;
     const waived: Record<string, number> = {};
-    let unreceipted = 0;
+    let unreceipted = 0, blocked = 0;
     for (const cell of uncovered) {
       const batch = batchOf.get(cell.hash);
-      if (batch) waived[batch] = (waived[batch] ?? 0) + 1; else unreceipted += 1;
+      if (deps.blocked.has(cell.hash)) blocked += 1;
+      else if (batch) waived[batch] = (waived[batch] ?? 0) + 1;
+      else unreceipted += 1;
     }
-    reports.push({ asset: asset.name, uncovered: uncovered.length, waived, unreceipted, examples: uncovered.slice(0, 5).map((cell) => `#${cell.index}(${cell.col},${cell.row})`) });
+    reports.push({ asset: asset.name, uncovered: uncovered.length, waived, blocked, unreceipted, examples: uncovered.slice(0, 5).map((cell) => `#${cell.index}(${cell.col},${cell.row})`) });
   }
   return reports;
 }
@@ -82,6 +89,7 @@ export function storeExitProblems(reports: readonly StoreExitSheetReport[]): str
     const waivedTotal = batches.reduce((sum, [, count]) => sum + count, 0);
     const parts: string[] = [];
     if (waivedTotal > 0) parts.push(`스토어 출구가 열리지 않은 오너 면제 칸 ${waivedTotal}개(${batches.map(([id, count]) => `${id} ${count}`).join(" · ")})`);
+    if (report.blocked > 0) parts.push(`사람 거절·Opus 불합격이 붙은 그림의 칸 ${report.blocked}개(어느 출구에서도 막는다 — 다시 그린다)`);
     if (report.unreceipted > 0) parts.push(`면제 묶음에도 없는 칸 ${report.unreceipted}개(판정 기록이 없거나 store 출구에서 떨어졌다)`);
     return `${report.asset}: 스토어 출구(3/4 관문)를 통과하지 못한 칸 ${report.uncovered}개 — ${parts.join(", ")}. 예: ${report.examples.join(" ")}. `
       + "오너 면제는 그 묶음에 스토어 출구를 연 오너의 말이 기록돼 있을 때만 스토어로 나간다(`object-gate owner-waive-extend` — Fable 묶음만). "
