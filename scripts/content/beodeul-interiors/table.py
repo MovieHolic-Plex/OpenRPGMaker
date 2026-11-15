@@ -7,7 +7,7 @@
   선택: rows(hang 줄 수) · oy(hang 위 여백) · use · pair · stairs · halo(불빛 번짐) · noshadow · remap · desc
 """
 CATS = dict(tavern="주점", home="살림집", shop="가게", kitchen="부엌", store="창고", smith="대장간", bake="빵집", office="회관·사무실", church="예배당",
-            farm="농가·마구간", mill="방앗간", fisher="어부 집", guard="경비실", manor="저택", light="불빛", rug="깔개", stairs="계단", craft="일터")
+            farm="농가·마구간", mill="방앗간", fisher="어부 집", guard="경비실", manor="저택", light="불빛", rug="깔개", stairs="계단", craft="일터", tower="등대·감옥", own="사는 사람의 물건")
 
 # id 는 손 도트 실내 v5 가 이미 쓰는 낱말을 빌린다(plaster·rubble·log·dplank·plank·flag·default·rock …) — 방 짓기 도구의 바닥·벽면·천장 enum 과 v5 견본의 재질 이름이 그대로 통한다(모델이 읽는 글이 늘지 않는다).
 # ── 벽면(48×32 한 칸 폭 3열) · 바닥 · 테두리 ────────────────────────────────────────────
@@ -135,7 +135,7 @@ OBJECTS = [
     ("millstones", "millstones", "floor", 3, 2, "mill", "맷돌과 깔때기", ["방앗간"], "structure", {}),
     ("stable stall", "stall", "wall", 2, 1, "farm", "마구간 칸(여물 시렁·구유)", ["마구간", "헛간"], "frame", {}),
     ("net rail", "net-rack", "hang", 3, 0, "fisher", "그물·말린 생선 걸이", ["어부 집", "배 창고"], "wall_mounted", dict(oy=1)),
-    ("cot", "cot", "floor", 2, 1, "guard", "낮은 침상", ["경비실", "감옥", "등대", "객실"], "low_furniture", dict(use=["sleep"])),
+    ("cot", "cot", "floor", 2, 1, "guard", "낮은 침상", ["경비실", "감옥", "등대", "객실"], "low_furniture", dict(use=["sleep"], remap=[("iron", "brick", {8: 5, 7: 5, 6: 4, 5: 3, 4: 3, 3: 2, 2: 1, 1: 1})])),   # 회색 담요가 돌판으로 읽혔다 — 갈색 모직 담요로
     ("spear stand", "spear-stand", "floor", 1, 1, "guard", "창 세움과 방패", ["경비실", "무기고"], "frame", {}),
     ("dining table", "dining-table", "floor", 4, 1, "manor", "저택 긴 식탁(은 촛대)", ["저택", "식당"], "low_furniture", dict(pair=["high chair"])),
     ("canopy bed", "canopy-bed", "floor", 2, 2, "manor", "캐노피 침대", ["저택", "침실"], "low_furniture", dict(use=["sleep"])),
@@ -155,6 +155,59 @@ OBJECTS = [
     ("aisle runner", ("runner", 0, 0, 16, 16), "flat", 1, 1, "rug", "붉은 통로 깔개(이어 깐다)", ["예배당", "저택"], "flat", dict(use=["walk"])),
     ("stairs up", "stairs-up", "wall", 2, 1, "stairs", "올라가는 나무 계단", ["여관", "집", "창고"], "structure", dict(stairs="up", use=["travel"], noshadow=1)),
     ("cellar hatch", "hatch", "flat", 1, 1, "stairs", "내려가는 지하 문(사다리)", ["창고", "부엌", "주점"], "flat", dict(stairs="down", use=["travel"])),
+    # ── 폭(오너 2026-11-15 «다양하게 만드는 게 중요») — 방 종류를 가르는 큰 물건 ──
+    ("fish rack", "fish-rack", "wall", 2, 1, "fisher", "생선 말리는 덕장", ["어부 집"], "structure", {}),
+    ("boat", "boat", "floor", 3, 1, "fisher", "엎어 둔 나룻배", ["어부 집", "배 창고"], "low_furniture", {}),
+    ("cell bars", ("cell-bars", 0, 0, 16, 32), "floor", 1, 1, "tower", "쇠창살(옆으로 잇는다)", ["감옥"], "structure", dict(noshadow=1)),
+    ("cell door", ("cell-bars", 16, 0, 16, 32), "floor", 1, 1, "tower", "쇠창살 문", ["감옥"], "structure", dict(noshadow=1)),
+    ("pallet", "pallet", "floor", 2, 1, "tower", "짚 요", ["감옥", "가난한 집", "헛간"], "low_furniture", dict(use=["sleep"], remap=[("iron", "brick", {8: 5, 7: 5, 6: 4, 5: 3, 4: 3, 3: 2, 2: 1, 1: 1})])),   # 회색 담요가 돌판으로 읽혔다 — 갈색 모직 담요로(색 줄만 옮긴다)
+    ("spiral stairs", "spiral-stairs", "wall", 2, 1, "tower", "돌 나선 계단", ["등대", "탑"], "structure", dict(stairs="up", use=["travel"], noshadow=1)),
+    ("lighthouse lamp", "lens", "floor", 2, 1, "tower", "등대 큰 등", ["등대"], "structure", dict(use=["light"])),
+    ("telescope", "telescope", "floor", 1, 1, "tower", "삼각대 망원경", ["등대", "서재"], "column", {}),
+    ("kiln", "kiln", "wall", 2, 1, "craft", "도공의 가마", ["도공"], "structure", dict(use=["light"], pair=["hearth glow"])),
+    ("pot drying shelf", "pot-shelf", "wall", 2, 1, "craft", "그릇 말리는 선반", ["도공", "가게"], "box", {}),
+    ("vanity", "vanity", "wall", 2, 1, "manor", "화장대와 거울", ["침실", "저택"], "box", {}),
+    ("globe", "globe", "floor", 1, 1, "office", "지구의", ["서재", "교실", "저택"], "column", {}),
+    ("joiner bench", "joiner-bench", "floor", 2, 1, "craft", "목수 작업대", ["목공"], "low_furniture", {}),
+    ("sawhorse", "sawhorse", "floor", 2, 1, "craft", "톱질 말과 널 더미", ["목공"], "low_furniture", {}),
+    ("china cabinet", "china-cabinet", "wall", 2, 1, "manor", "그릇 장식장", ["저택", "거실"], "box", dict(use=["search"])),
+    # ── 사는 사람의 물건 — 벽에 거는 것(한 장에 여섯) ──
+    ("house shrine", ("p-hang-a", 0, 0, 16, 16), "hang", 1, 0, "own", "작은 기도 감실", ["살림"], "wall_mounted", dict(oy=1, halo=1)),
+    ("boar trophy", ("p-hang-a", 16, 0, 16, 16), "hang", 1, 0, "own", "멧돼지 머리 박제", ["살림"], "wall_mounted", dict(oy=1)),
+    ("mounted fish", ("p-hang-a", 32, 0, 16, 16), "hang", 1, 0, "own", "큰 물고기 박제", ["살림"], "wall_mounted", dict(oy=1)),
+    ("lute", ("p-hang-a", 48, 0, 16, 16), "hang", 1, 0, "own", "걸어 둔 류트", ["살림"], "wall_mounted", dict(oy=1)),
+    ("child drawing", ("p-hang-a", 64, 0, 16, 16), "hang", 1, 0, "own", "아이 그림", ["살림"], "wall_mounted", dict(oy=1)),
+    ("sampler", ("p-hang-a", 80, 0, 16, 16), "hang", 1, 0, "own", "자수 액자", ["살림"], "wall_mounted", dict(oy=1)),
+    ("bow and quiver", ("p-hang-b", 0, 0, 16, 16), "hang", 1, 0, "own", "활과 화살통", ["살림"], "wall_mounted", dict(oy=1)),
+    ("fox pelt", ("p-hang-b", 16, 0, 16, 16), "hang", 1, 0, "own", "여우 가죽", ["살림"], "wall_mounted", dict(oy=1)),
+    ("corn strings", ("p-hang-b", 32, 0, 16, 16), "hang", 1, 0, "own", "옥수수·양파 타래", ["살림"], "wall_mounted", dict(oy=1)),
+    ("portrait pair", ("p-hang-b", 48, 0, 16, 16), "hang", 1, 0, "own", "부부 초상 둘", ["살림"], "wall_mounted", dict(oy=1)),
+    ("helmet and medal", ("p-hang-b", 64, 0, 16, 16), "hang", 1, 0, "own", "투구와 훈장", ["살림"], "wall_mounted", dict(oy=1)),
+    ("glass floats", ("p-hang-b", 80, 0, 16, 16), "hang", 1, 0, "own", "그물에 든 유리 부표", ["살림"], "wall_mounted", dict(oy=1)),
+    ("clothesline", ("p-hang-c", 0, 0, 32, 16), "hang", 2, 0, "own", "빨랫줄", ["살림"], "wall_mounted", dict(oy=1)),
+    ("canary cage", ("p-hang-c", 32, 0, 16, 16), "hang", 1, 0, "own", "카나리아 새장", ["살림"], "wall_mounted", dict(oy=1)),
+    ("scythe", ("p-hang-c", 48, 0, 16, 16), "hang", 1, 0, "own", "낫 두 자루", ["살림"], "wall_mounted", dict(oy=1)),
+    ("straw hat", ("p-hang-c", 64, 0, 16, 16), "hang", 1, 0, "own", "밀짚모자와 숄", ["살림"], "wall_mounted", dict(oy=1)),
+    ("model boat", ("p-hang-c", 80, 0, 16, 16), "hang", 1, 0, "own", "배 모형 선반", ["살림"], "wall_mounted", dict(oy=1)),
+    # ── 사는 사람의 물건 — 바닥에 놓는 것 ──
+    ("sleeping cat", ("p-floor-a", 0, 0, 16, 16), "floor", 1, 1, "own", "자는 고양이와 밥그릇", ["살림"], "other", dict(cx=1)),
+    ("dog bed", ("p-floor-a", 16, 0, 16, 16), "floor", 1, 1, "own", "개 바구니", ["살림"], "other", dict(cx=1)),
+    ("toy horse", ("p-floor-a", 32, 0, 16, 16), "floor", 1, 1, "own", "바퀴 달린 목마", ["살림"], "other", dict(cx=1)),
+    ("rag doll", ("p-floor-a", 48, 0, 16, 16), "floor", 1, 1, "own", "헝겊 인형과 나무토막", ["살림"], "other", dict(cx=1)),
+    ("boots", ("p-floor-a", 64, 0, 16, 16), "floor", 1, 1, "own", "장화와 나막신", ["살림"], "other", dict(cx=1)),
+    ("sewing basket", ("p-floor-a", 80, 0, 16, 16), "floor", 1, 1, "own", "반짇고리", ["살림"], "other", dict(cx=1)),
+    ("geranium", ("p-floor-b", 0, 0, 16, 32), "floor", 1, 1, "own", "걸상 위 제라늄 화분", ["살림"], "column", dict(cx=1)),
+    ("garden tools", ("p-floor-b", 16, 0, 16, 32), "floor", 1, 1, "own", "기대 세운 괭이·갈퀴·삽", ["살림"], "column", dict(cx=1)),
+    ("umbrella jar", ("p-floor-b", 32, 0, 16, 32), "floor", 1, 1, "own", "지팡이·우산 단지", ["살림"], "column", dict(cx=1)),
+    ("washtub", ("p-floor-b", 48, 0, 16, 32), "floor", 1, 1, "own", "빨래통과 빨래판", ["살림"], "other", dict(cx=1)),
+    ("pumpkins", ("p-floor-b", 64, 0, 16, 32), "floor", 1, 1, "own", "호박 더미", ["살림"], "other", dict(cx=1)),
+    ("toolbox", ("p-floor-b", 80, 0, 16, 32), "floor", 1, 1, "own", "목수 연장통", ["살림"], "other", dict(cx=1)),
+    ("rocking horse", ("p-floor-c", 0, 0, 16, 32), "floor", 1, 1, "own", "흔들 목마", ["살림"], "other", dict(cx=1)),
+    ("easel", ("p-floor-c", 16, 0, 16, 32), "floor", 1, 1, "own", "화가의 이젤", ["살림"], "column", dict(cx=1)),
+    ("music stand", ("p-floor-c", 32, 0, 16, 32), "floor", 1, 1, "own", "보면대와 바이올린", ["살림"], "column", dict(cx=1)),
+    ("parrot stand", ("p-floor-c", 48, 0, 16, 32), "floor", 1, 1, "own", "앵무새 새장", ["살림"], "column", dict(cx=1)),
+    ("hat stand", ("p-floor-c", 64, 0, 16, 32), "floor", 1, 1, "own", "외투 걸이", ["살림"], "column", dict(cx=1)),
+    ("blanket chest", ("p-floor-c", 80, 0, 16, 32), "floor", 1, 1, "own", "개어 둔 이불 궤", ["살림"], "box", dict(cx=1)),
 ]
 # 코드로 만드는 빛 무늬(밟는 무늬, 반투명) — prepare.py 가 그린다
 GLOWS = [
@@ -168,6 +221,10 @@ GOODS = [
     ("table candle", ("goods-tavern", 4), "탁자 촛불"), ("apple bowl", ("goods-tavern", 5), "사과 그릇"),
     ("scale", ("goods-shop", 0), "천칭"), ("ledger", ("goods-shop", 1), "장부와 깃펜"), ("cashbox", ("goods-shop", 2), "돈통"), ("sweet jar", ("goods-shop", 3), "사탕 병"),
     ("mortar", ("goods-shop", 4), "막자사발과 약병"), ("table lamp", ("goods-shop", 5), "탁상 등잔"),
+    ("flower vase", ("p-goods-a", 0), "들꽃 병"), ("chess", ("p-goods-a", 1), "두던 체스판"), ("pipe", ("p-goods-a", 2), "담뱃대와 잔"), ("book pile", ("p-goods-a", 3), "책 더미와 안경"),
+    ("knitting", ("p-goods-a", 4), "뜨다 만 목도리"), ("medicine tray", ("p-goods-a", 5), "약병과 숟가락"),
+    ("inkwell", ("p-goods-b", 0), "잉크병과 편지"), ("coins", ("p-goods-b", 1), "동전 더미와 주판"), ("slate and top", ("p-goods-b", 2), "아이 석판과 팽이"), ("teapot", ("p-goods-b", 3), "찻주전자와 잔"),
+    ("tailor things", ("p-goods-b", 4), "가위와 실패"), ("whittling", ("p-goods-b", 5), "깎다 만 나무 오리"),
 ]
 # 이미 구워진 바깥 기물(bd-obj-*) — 칸을 새로 굽지 않고 그 칸 번호를 실내 가구로 등록한다. (실내 id, 킷 꼬리, 갈래, 방 태그)
 EXISTING = [
@@ -201,3 +258,32 @@ EXISTING = [
     ("amphora rack", "pile-amphorae", "store", ["지하", "창고"]), ("clay pots", "fired-pots", "store", ["창고", "도공", "가게"]), ("lecture board", "chalk-board", "office", ["교실"]),
     ("bucket stack", "bucket-stack", "store", ["창고", "마구간"]), ("hand lantern", "lantern-ground", "light", ["창고", "지하"]), ("hop sacks", "hop-sacks", "craft", ["양조장"]),
 ]
+
+# ── 사는 사람의 물건 표(사양의 personal — src/editor/handInterior/personal.ts 가 읽는다) ──────────────────────
+# kinds = 받는 방 종류 · surfaces = 탁상 물건을 올려도 되는 가구(이미 차려진 식탁은 뺀다) · count = [치운 집, 어지른 집] 점 수
+# sets: 별칭(alias)이 없는 것 = 살림 묶음(집 열쇠가 고른다) · 있는 것 = 직업 묶음(집 이름에 그 낱말이 있을 때만 — 칩셋 자료이지 요청 낱말 목록이 아니다)
+PERSONAL = dict(
+    kinds=["living", "bedroom", "fisher"], surfaces=["plain table", "writing desk", "round table", "work table"], count=[2, 5],
+    sets=dict(
+        child=dict(ko="아이가 있는 집", pieces=["toy horse", "rag doll", "child drawing", "rocking horse", "slate and top"]),
+        pets=dict(ko="짐승을 기르는 집", pieces=["sleeping cat", "dog bed", "canary cage", "parrot stand"]),
+        devout=dict(ko="믿음 깊은 집", pieces=["house shrine", "kneeler", "flower vase", "portrait pair"]),
+        laundry=dict(ko="빨래하는 날", pieces=["clothesline", "washtub", "boots", "blanket chest"]),
+        garden=dict(ko="밭 가꾸는 집", pieces=["geranium", "garden tools", "corn strings", "pumpkins", "straw hat"]),
+        reader=dict(ko="책 읽는 집", pieces=["book pile", "chess", "inkwell", "portrait pair", "hat stand"]),
+        arts=dict(ko="노래하고 그리는 집", pieces=["lute", "music stand", "easel", "sampler"]),
+        needle=dict(ko="바느질하는 집", pieces=["sewing basket", "sampler", "knitting", "tailor things", "blanket chest"]),
+        elder=dict(ko="노인이 사는 집", pieces=["umbrella jar", "medicine tray", "pipe", "teapot", "portrait pair"]),
+        hunter=dict(ko="사냥꾼", alias=["사냥꾼", "사냥", "hunter"], pieces=["boar trophy", "bow and quiver", "fox pelt", "bow rack", "boots"]),
+        fisher=dict(ko="어부", alias=["어부", "낚시", "fisher"], pieces=["mounted fish", "glass floats", "model boat", "fishing rod", "boots"]),
+        soldier=dict(ko="병사·경비", alias=["경비", "병사", "군인", "기사", "guard", "soldier", "knight"], pieces=["helmet and medal", "crossed swords", "bow and quiver", "boots"]),
+        farmer=dict(ko="농부", alias=["농부", "농가", "농장", "farmer", "farm"], pieces=["garden tools", "scythe", "corn strings", "pumpkins", "straw hat", "egg baskets"]),
+        carpenter=dict(ko="목수", alias=["목수", "목공", "carpenter"], pieces=["toolbox", "whittling", "boots", "hat stand"]),
+        scholar=dict(ko="학자·촌장", alias=["학자", "서기", "촌장", "이장", "교사", "scholar", "elder", "mayor", "teacher"], pieces=["book pile", "inkwell", "globe", "portrait pair", "chess"]),
+        merchant=dict(ko="상인", alias=["상인", "장사", "merchant", "trader"], pieces=["coins", "hat stand", "portrait pair", "teapot"]),
+        priest=dict(ko="신관", alias=["신관", "사제", "priest"], pieces=["house shrine", "kneeler", "flower vase", "book pile"]),
+        bard=dict(ko="악사", alias=["음유", "악사", "bard", "minstrel"], pieces=["lute", "music stand", "sampler", "pipe"]),
+        tailor=dict(ko="재단사", alias=["재단", "재봉", "tailor", "seamstress"], pieces=["sewing basket", "tailor things", "sampler", "knitting"]),
+        healer=dict(ko="약초꾼·의원", alias=["약초", "의원", "healer", "herbal"], pieces=["medicine tray", "corn strings", "geranium", "teapot"]),
+    ),
+)

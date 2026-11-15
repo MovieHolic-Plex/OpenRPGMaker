@@ -35,6 +35,7 @@ import { addMapLocation, COMPOSED_LAYOUT_TAG } from '@/project/mapNamedLocations
 /** layout 으로 짠 방의 이름표 — 다시 지을 때 이 이름표만 갈아 끼운다. */
 const HAND_LAYOUT_ROOM_TAG = 'hand-layout-room';
 import { programKinds, roomPrograms, roomTemplates } from '@/editor/handInterior/templates';
+import type { PersonalAsk } from '@/editor/handInterior/personal';
 import { genId } from "@/util/id";
 import { assignCreatedMapBgm } from "./mapTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -861,7 +862,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       }
     }
     let graphDecl: RoomGraphDecl | undefined;
-    let picked: { c: LayoutCandidate; variant: number; variants: number; furnish: boolean; vignette?: { picks?: Record<string, string[]>; purposes?: Record<string, string>; seed?: number }; designs?: Record<string, RoomDesign> } | undefined;
+    let picked: { c: LayoutCandidate; variant: number; variants: number; furnish: boolean; vignette?: { picks?: Record<string, string[]>; purposes?: Record<string, string>; seed?: number }; designs?: Record<string, RoomDesign>; personal?: Record<string, PersonalAsk> } | undefined;
     // 청사진 구성기가 있는 공간(오피스 로비·대학 강의동·왕성 알현실·백화점)은 견본 한 벌 대신 청사진 규칙으로 매번 새로 짠다 —
     // 2026-10-18 사용자 반려 「프리셋을 그대로 깔지 말고 AI 가 참고해서, 똑같이 깔지 말고」. 방 목록을 직접 준 layout 은 그대로 따른다.
     let blueprint: BlueprintInteriorArgs | undefined;
@@ -893,7 +894,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         args = kept as typeof args;
         if (dropped.length) fitNotes.push(`layout 이 방 배치를 짜므로 같이 온 ${dropped.join("·")} 는 버리고 layout 대로 지었다(plan·rooms 를 직접 주려면 layout 을 빼라)`);
       }
-      const req = args.layout as LayoutRequest & { variant?: number; furnish?: boolean | "vignette" | "template"; vignettes?: Record<string, string[]>; purposes?: Record<string, string>; composeSeed?: number; designs?: Record<string, RoomDesign>;
+      const req = args.layout as LayoutRequest & { variant?: number; furnish?: boolean | "vignette" | "template"; vignettes?: Record<string, string[]>; purposes?: Record<string, string>; composeSeed?: number; designs?: Record<string, RoomDesign>; personal?: Record<string, PersonalAsk>;
         placed?: { rooms: LayoutCandidate["rooms"]; connect: LayoutCandidate["connect"]; exit: LayoutCandidate["exit"] }; graph?: RoomGraphDecl };
       const variant = Math.max(0, Math.floor(req.variant ?? 0));
       let cands: LayoutCandidate[];
@@ -906,7 +907,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       // furnish:"vignette" = 견본 한 벌 대신 기물 묶음 배치기(vignettes.ts) — 방 용도에 맞는 묶음을 함수가 골라 벽·앞 통로·밀도를 지켜 놓는다.
       // vignettes:{방 id: [묶음 id·몸통 기물 id]} 로 모델이 묶음을 고를 수 있다.
       // designs:{방 id: RoomDesign} = 모델이 설계한 방 — 그 방은 설계대로 놓고 함수는 조화·검사만 한다(designRoom.ts). 다른 방은 아래 가구 길 그대로.
-      picked = { c, variant: Math.min(variant, cands.length - 1), variants: cands.length, furnish: req.furnish !== false, ...(req.designs && typeof req.designs === "object" ? { designs: req.designs } : {}), ...(req.furnish === "vignette" ? { vignette: { ...(req.vignettes ? { picks: req.vignettes } : {}), ...(req.purposes ? { purposes: req.purposes } : {}), ...(typeof req.composeSeed === "number" ? { seed: req.composeSeed } : {}) } } : {}) };
+      picked = { c, variant: Math.min(variant, cands.length - 1), variants: cands.length, furnish: req.furnish !== false, ...(req.designs && typeof req.designs === "object" ? { designs: req.designs } : {}), ...(req.personal && typeof req.personal === "object" ? { personal: req.personal } : {}), ...(req.furnish === "vignette" ? { vignette: { ...(req.vignettes ? { picks: req.vignettes } : {}), ...(req.purposes ? { purposes: req.purposes } : {}), ...(typeof req.composeSeed === "number" ? { seed: req.composeSeed } : {}) } } : {}) };
       const { layout: _l, ...rest } = args;
       args = { ...rest, rooms: c.rooms, connect: c.connect, exit: c.exit };
     }
@@ -962,7 +963,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       const f = furnishWithVignettes(input, restRooms, composed, tilesetId, tileset, spec, picked.vignette);
       input = f.input; vignetteRooms = f.perRoom;
     } else if (picked?.furnish && composed && restRooms.length) {
-      const f = furnishRooms(input, restRooms, composed, tilesetId, tileset, spec, picked.c.styleVariant ?? "A");
+      const f = furnishRooms(input, restRooms, composed, tilesetId, tileset, spec, picked.c.styleVariant ?? "A", picked.personal);
       input = f.input; furnished = f.perRoom;
     }
     let built;
