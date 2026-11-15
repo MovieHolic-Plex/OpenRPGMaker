@@ -312,7 +312,8 @@ export function fableArcade(c: SceneCtx, L: SceneLayout): void {
   if (c.kind.cross !== "arcade" || !STREET_PIECES["canopy-a"]) return;
   const mids = ["canopy-a", "canopy-b", "canopy-a", "canopy-c"];
   const byFoot = new Map<number, typeof c.placed[number][]>();
-  for (const p of c.placed) if (p.kit && p.kit.cat !== "house" && p.kit.cat !== "apartment" && p.h >= 4) byFoot.set(p.foot, [...(byFoot.get(p.foot) ?? []), p]);
+  // 새 건물(jp-bldg-f-*)은 차양·간판이 그림에 들어 있다 — 차양 띠를 얹지 않는다.
+  for (const p of c.placed) if (p.kit && !p.kit.id.startsWith("jp-bldg-f-") && p.kit.cat !== "house" && p.kit.cat !== "apartment" && p.h >= 4) byFoot.set(p.foot, [...(byFoot.get(p.foot) ?? []), p]);
   for (const [foot, row] of byFoot) {
     const cols = new Uint8Array(W);
     for (const p of row) for (let x = p.x + (p.kit?.ml ?? 0); x < p.x + p.w - (p.kit?.mr ?? 0); x++) cols[x] = 1;
@@ -341,7 +342,8 @@ export function fableDress(c: SceneCtx, L: SceneLayout): void {
     const x0 = p.x + p.kit.ml, x1 = p.x + p.w - p.kit.mr, y = p.foot + 1;
     const door = (x: number, w: number) => p.doors.some((d) => p.x + d >= x && p.x + d < x + w);
     for (let x = x0; x < x1; x++) {
-      if (rng() >= (house ? 0.3 : kind.density.spill)) continue;
+      // 새 건물은 가게 앞 물건이 정면 그림에 들어 있다 — 같은 것을 또 늘어놓지 않는다(드문드문만)
+      if (rng() >= (house ? 0.3 : kind.density.spill * (p.kit.id.startsWith("jp-bldg-f-") ? 0.35 : 1))) continue;
       const pool = (house ? front : spill).filter((n) => !door(x, STREET_PIECES[n]!.w) && x + STREET_PIECES[n]!.w <= x1);
       const id = c.stPut(pool, x, y);
       if (id) { c.scenesUsed.add(house ? "jutaku" : "spill"); x += STREET_PIECES[id]!.w; }
