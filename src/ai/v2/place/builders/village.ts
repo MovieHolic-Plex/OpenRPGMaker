@@ -259,6 +259,8 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const asked = num(args.houseCount);
   if (asked !== undefined && houses !== undefined && houses < asked - 1) warnings.push(`집 ${asked}채 요청, 집 ${houses}채만 앉음(앵커 건물 별도) — 지형이 좁으면 size 를 키우거나 variant 를 바꿔 본다`);
   warnings.push(...(result.warnings ?? []));
+  // 숲 구성(stand)을 다 채우지 못한 마을: 쓰기 도구의 경고는 diff.warnings 로 온다 — 그 한 줄(무엇이 모자라고 몇 번 해 봤는지)을 보고에 싣는다. 조용히 넘어가지 않는다.
+  warnings.push(...((result as { diff?: { warnings?: string[] } }).diff?.warnings ?? []).filter((w) => w.startsWith("The stand ") && !warnings.includes(w)));
   if (replacedFrom) warnings.push(`완성된 집 보호로 「${replacedFrom}」 맵을 덮어 지을 수 없어 새 맵 ${builtId} 로 다시 짓고 옛 맵을 지웠다${run.ctx.project.startMapId === builtId ? "(시작 위치도 새 맵으로)" : ""} — 이 마을의 mapId 는 이제 ${builtId} 다.`);
   const start = run.ctx.project.startPos;
   const ent = data.entrance as { x?: number; y?: number } | undefined;
