@@ -149,15 +149,22 @@ def main():
     sheet_count = json.loads(SHEET_JSON.read_text())["count"]
     if sheet_count < BASE:
         sys.exit(f"시트가 {BASE} 칸보다 짧다({sheet_count}) — 옛 상수도 꼬리(bake_waterworks.py)부터 굽는다")
-    if sheet_count > count:
-        sys.exit(f"시트 count {sheet_count} 가 이 꼬리 끝 {count} 보다 크다 — 뒤에 다른 꼬리가 붙었다. 그 꼬리 굽기가 이 스크립트 뒤에서 다시 돌아야 한다")
     sheet = Image.open(SHEET_PATH).convert("RGBA")
-    out = Image.new("RGBA", (COLS * T, (BASE // COLS + rows) * T), (0, 0, 0, 0))
-    out.alpha_composite(sheet.crop((0, 0, COLS * T, (BASE // COLS) * T)), (0, 0))
     ts = json.loads(TS_PATH.read_text())
+    # 뒤에 다른 꼬리(집 양식 bd-house-st-* 38,272~ · 참고 건물 유형 bd-bld-ref-* 46,464~)가 붙어 있으면 내 칸 [BASE, count) 만 제자리에서 다시 쓰고 그 뒤는 그대로 둔다.
+    # 이 꼬리의 몫은 38,271 까지다(집 양식 굽기가 그 앞 16줄을 비워 둔다). 뒤 꼬리는 출하된 칸 번호라 밀 수 없다 — 그 첫 칸까지 자라면 멈춘다(그때는 맨 뒤에 새 토막을 연다).
+    total = max(count, sheet_count)
+    foreign = [n for n in range(BASE, min(count, sheet_count)) if ts["tileMeta"][n].get("label") and not ts["tileMeta"][n]["label"].startswith("버들항 기물")]
+    if foreign:
+        sys.exit(f"이 꼬리 끝 {count} 이 뒤 꼬리의 칸 {foreign[0]}(「{ts['tileMeta'][foreign[0]]['label']}」)을 넘는다 — 뒤 꼬리는 출하된 번호라 밀 수 없다. 그 뒤에 새 토막을 연다")
+    after = {k: ts[k][count:] for k in ("passability", "priority", "terrain", "tileMeta")}
+    out = Image.new("RGBA", (COLS * T, total // COLS * T), (0, 0, 0, 0))
+    out.alpha_composite(sheet.crop((0, 0, COLS * T, (BASE // COLS) * T)), (0, 0))
+    if sheet_count > count:
+        out.alpha_composite(sheet.crop((0, count // COLS * T, COLS * T, sheet_count // COLS * T)), (0, count // COLS * T))
     for k in ("passability", "priority", "terrain", "tileMeta"):
         ts[k] = ts[k][:BASE]
-    ts["animationStrips"] = [s for s in ts["animationStrips"] if s["baseTile"] < BASE]
+    ts["animationStrips"] = [s for s in ts["animationStrips"] if s["baseTile"] < BASE or s["baseTile"] >= count]
     for i, (it, x, y, c) in enumerate(cells):
         out.alpha_composite(Image.fromarray(c, "RGBA"), ((i % COLS) * T, (BASE // COLS + i // COLS) * T))
         block = [x, y] in it["block"]
@@ -173,11 +180,14 @@ def main():
         ts["passability"].append(dict(OPEN)); ts["priority"].append("lower"); ts["terrain"].append(0)
         ts["tileMeta"].append(dict(label="", description="", source="bundled-default"))
     kits = [kit_of(it, rows_of[it["id"]], variant_base(it, ts) if it.get("variantOf") else None) for it in items]
-    ts["structureKits"] = [k for k in ts["structureKits"] if not k["id"].startswith(KIT_PREFIX)] + kits
-    ts["count"] = count
+    for k in after: ts[k] += after[k]
+    # 킷 순서: 내 킷은 목록의 제자리에서 바뀐다(뒤 꼬리의 킷은 그 뒤에 그대로) — 처음이면 끝에 붙는다
+    at = next((i for i, k in enumerate(ts["structureKits"]) if k["id"].startswith(KIT_PREFIX)), len(ts["structureKits"]))
+    ts["structureKits"] = [k for k in ts["structureKits"][:at] if not k["id"].startswith(KIT_PREFIX)] + kits + [k for k in ts["structureKits"][at:] if not k["id"].startswith(KIT_PREFIX)]
+    ts["count"] = total
     out.save(SHEET_PATH, optimize=True)
     TS_PATH.write_text(json.dumps(ts, ensure_ascii=False, separators=(",", ":")) + "\n")
-    SHEET_JSON.write_text(json.dumps(dict(count=count, tilesPerRow=COLS)) + "\n")
+    SHEET_JSON.write_text(json.dumps(dict(count=total, tilesPerRow=COLS)) + "\n")
     cat = dict(tilesetId="beodeul_city", texture="tex_beodeul_city", tileSize=T, tilesPerRow=COLS, base=BASE, count=count, kitPrefix=KIT_PREFIX,
                source="scripts/content/beodeul-objects/bake.py (Claude Fable 5.2 medium one-shot pictures, colours taken from the beodeul_city sheet)",
                license=spec["license"], gate=f"3/4 gate not passed — owner waivers {', '.join(waivers)}",
