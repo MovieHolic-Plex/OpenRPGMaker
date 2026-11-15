@@ -780,6 +780,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 장면 터(마을 종류)의 칸 — 집은 여기 앉지 않고 길은 되도록 돌아간다(막지는 않는다: 터가 길을 막자 단을 건너는 계단 자리가 밀려 문 앞이 끊겼다).
     const yardHold = new Set<number>();
     let frontOnYard = false; // 마당 테두리 집을 앉히는 동안만: 문 앞이 비워 둔 마당 칸이어도 된다
+    let seatAlso: ((k: Kit, x: number, y: number) => boolean) | null = null; // 마당 배치가 종류의 일터를 앉히는 동안만: 그 자리 곁에 일터 장면 터가 설 수 있어야 한다
     const spotOk = (k: Kit, x: number, y: number): boolean => {
       if (!k.door || x < 1 || y < 1 || x + k.w > W - 1 || y + k.h > H - 2) return false;
       const L0 = lv[idx(x, y)]!;
@@ -800,7 +801,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         for (const [dx, dy] of ring) for (const k of ks) {
           // corner(마당 테두리 줄): (x,y) 는 집 아랫줄의 왼쪽·오른쪽 모서리 — 그 밖에는 집 가운데
           const x = want.corner === "sw" ? want.x + dx : want.corner === "se" ? want.x + dx - k.w + 1 : want.x + dx - Math.floor(k.w / 2), y = want.corner ? want.y + dy - k.h + 1 : want.y + dy - Math.floor(k.h / 2);
-          if ((want.maxW && k.w > want.maxW) || !spotOk(k, x, y) || (want.tier !== undefined && lv[idx(x, y)] !== want.tier)) continue;
+          if ((want.maxW && k.w > want.maxW) || !spotOk(k, x, y) || (want.tier !== undefined && lv[idx(x, y)] !== want.tier) || (seatAlso && !seatAlso(k, x, y))) continue;
           // 늪: 물 위 집은 둘레 한 칸까지 널판 마루(말뚝 위 마루) — 집 칸·문 앞도 물이면 마루
           if (theme === "swamp") for (let j = -1; j <= k.h + 1; j += 1) for (let i = -1; i <= k.w; i += 1) { const X = x + i, Y = y + j; if (inMap(X, Y) && onBog(idx(X, Y))) { swampDeck.add(idx(X, Y)); occ[idx(X, Y)] = FREE; } }
           for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) occ[idx(x + i, y + j)] = RESV;
@@ -848,32 +849,50 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 마당 먼저 배치(beodeulYardLayout)가 일터와 집을 다시 앉히면 이 터도 그 일터 곁에 다시 잡는다(workOnly — 모이는 곳 장면은 그 마당 칸에 선다).
     const sceneYards = { work: [] as number[], gather: [] as number[] };
     let yardKeep: ReadonlySet<number> | null = null; // 선 마당의 칸 — 일터 장면 터가 마당을 차지하지 않는다(마당은 집 문 앞이고 모이는 곳 장면의 자리다)
+    const sceneKit = (id: string) => kitIndex.get(id);
+    const workSceneBox = (() => { const sc = villageKind && options.sceneYards !== false ? villageKind.scenes.find((s0) => s0.at === "work") : undefined; return sc ? sceneFootprint(sc, sceneKit) : null; })();
+    // 터가 설 수 있는 네모인가(한 단 빈 땅, 아랫줄 한 줄 더) — 설 수 있으면 그 칸들
+    const yardCellsAt = (x0: number, y0: number, w: number, h: number): number[] | null => {
+      if (x0 < 2 || y0 < 2 || x0 + w > W - 2 || y0 + h > H - 3) return null;
+      const L0 = lv[idx(x0, y0)]!; const cells: number[] = [];
+      for (let j = 0; j <= h; j += 1) for (let i = 0; i < w; i += 1) { const c = idx(x0 + i, y0 + j); if (occ[c] !== FREE || lv[c] !== L0 || codeT.water[c] || yardHold.has(c) || yardKeep?.has(c)) return null; if (j < h) cells.push(c); }
+      return cells;
+    };
+    // 일터 장면 터의 후보: 건물 발치 줄 옆(왼쪽·오른쪽)이 먼저, 안 되면 문에서 일곱 칸 안의 가까운 빈 네모 — 문 줄(문 앞에서 남쪽 세 칸)은 덮지 않는다.
+    const workYardTries = (ws: { y: number; k: Kit; front: { x: number; y: number } }, wf: { w: number; h: number }): [number, number, number][] => {
+      const foot = ws.y + ws.k.h - 1, door = ws.front;
+      const tries: [number, number, number][] = [];
+      for (let y = door.y - 7 - wf.h; y <= door.y + 7; y += 1) for (let x = door.x - 7 - wf.w; x <= door.x + 7; x += 1) {
+        if (x <= door.x && x + wf.w > door.x && y <= door.y + 3 && y + wf.h > ws.y) continue;
+        const gx0 = door.x < x ? x - door.x : door.x > x + wf.w - 1 ? door.x - (x + wf.w - 1) : 0, gy0 = door.y < y ? y - door.y : door.y > y + wf.h - 1 ? door.y - (y + wf.h - 1) : 0;
+        const g = Math.max(gx0, gy0); if (g < 1 || g > 7) continue;
+        tries.push([x, y, g * 2 + Math.abs(y + wf.h - 1 - foot) * 0.7]);
+      }
+      return tries.sort((p, q) => p[2] - q[2] || p[1] - q[1] || p[0] - q[0]);
+    };
+    // 마당 배치는 일터를 집 뒤 마을 몸 바깥에 맨 나중에 앉힌다 — 그 곁에 터가 설 빈 네모가 없으면 종류의 주 장면(방앗간 마당·가마 마당)이 서지 못한다
+    // (종류 탐침 38판: 일터 장면 일곱이 자리 없음). 건물을 그 자리에 앉혔다 치고 터 후보가 하나라도 서는지 본다.
+    const workHasRoom = (k: Kit, x: number, y: number): boolean => {
+      if (!workSceneBox) return true;
+      const front = { x: x + k.door!.dx, y: y + k.door!.dy + 1 }, was: [number, number][] = [];
+      for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) { const c = idx(x + i, y + j); was.push([c, occ[c]!]); occ[c] = RESV; }
+      { const c = idx(front.x, front.y); was.push([c, occ[c]!]); occ[c] = RESV_DOOR; }
+      const ok = workYardTries({ y, k, front }, workSceneBox).some(([tx, ty]) => !!yardCellsAt(tx, ty, workSceneBox.w, workSceneBox.h));
+      for (const [c, v] of was) occ[c] = v;
+      return ok;
+    };
     const holdSceneYards = (workOnly = false): void => {
       yardHold.clear(); sceneYards.work.length = 0; sceneYards.gather.length = 0;
       if (!villageKind || options.sceneYards === false) return;
     {
       const hold = (into: number[], x0: number, y0: number, w: number, h: number): boolean => {
-        if (x0 < 2 || y0 < 2 || x0 + w > W - 2 || y0 + h > H - 3) return false;
-        const L0 = lv[idx(x0, y0)]!; const cells: number[] = [];
-        for (let j = 0; j <= h; j += 1) for (let i = 0; i < w; i += 1) { const c = idx(x0 + i, y0 + j); if (occ[c] !== FREE || lv[c] !== L0 || codeT.water[c] || yardHold.has(c) || yardKeep?.has(c)) return false; if (j < h) cells.push(c); }
+        const cells = yardCellsAt(x0, y0, w, h); if (!cells) return false;
         for (const c of cells) { yardHold.add(c); into.push(c); }
         return true;
       };
-      const kitOf = (id: string) => kitIndex.get(id);
-      const ws = spots.find((sp) => sp.role === "work"), wScene = villageKind.scenes.find((sc) => sc.at === "work"), wf = wScene ? sceneFootprint(wScene, kitOf) : null;
-      if (ws && wf) {
-        // 건물 발치 줄 옆(왼쪽·오른쪽)이 먼저, 안 되면 문에서 일곱 칸 안의 가까운 빈 네모 — 문 줄(문 앞에서 남쪽 세 칸)은 덮지 않는다.
-        const foot = ws.y + ws.k.h - 1, door = ws.front;
-        const tries: [number, number, number][] = [];
-        for (let y = door.y - 7 - wf.h; y <= door.y + 7; y += 1) for (let x = door.x - 7 - wf.w; x <= door.x + 7; x += 1) {
-          if (x <= door.x && x + wf.w > door.x && y <= door.y + 3 && y + wf.h > ws.y) continue;
-          const gx0 = door.x < x ? x - door.x : door.x > x + wf.w - 1 ? door.x - (x + wf.w - 1) : 0, gy0 = door.y < y ? y - door.y : door.y > y + wf.h - 1 ? door.y - (y + wf.h - 1) : 0;
-          const g = Math.max(gx0, gy0); if (g < 1 || g > 7) continue;
-          tries.push([x, y, g * 2 + Math.abs(y + wf.h - 1 - foot) * 0.7]);
-        }
-        tries.sort((p, q) => p[2] - q[2] || p[1] - q[1] || p[0] - q[0]);
-        tries.some(([x, y]) => hold(sceneYards.work, x, y, wf.w, wf.h));
-      }
+      const kitOf = sceneKit;
+      const ws = spots.find((sp) => sp.role === "work"), wf = workSceneBox;
+      if (ws && wf) workYardTries(ws, wf).some(([x, y]) => hold(sceneYards.work, x, y, wf.w, wf.h));
       const gScene = workOnly ? undefined : villageKind.scenes.find((sc) => sc.at === "commons" || sc.at === "plaza"), gf = gScene ? sceneFootprint(gScene, kitOf, gScene.at === "plaza") : null;
       if (gf) {
         const far = form === "plaza" ? 7 : 4;
@@ -999,7 +1018,14 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
           for (let j = 0; j < sp.k.h; j += 1) for (let i = 0; i < sp.k.w; i += 1) occ[idx(sp.x + i, sp.y + j)] = FREE; occ[idx(sp.front.x, sp.front.y)] = FREE; spots.splice(spots.indexOf(sp), 1);
           return !!place("landmark", [sp.k], { ...p, maxR: 6 });
         },
-        seat: (role, want) => { frontOnYard = !!want.corner; const sp = role === "house" ? seatHouse(want) : place(role, kitsOf(role === "anchor" ? anchorIds : kindWork.length ? villageKind!.work : LOW_WORKS[theme] ?? []), want, want.maxR); frontOnYard = false; return sp ? { x: sp.x, y: sp.y, w: sp.k.w, h: sp.k.h, front: sp.front } : null; },
+        seat: (role, want) => { frontOnYard = !!want.corner;
+          let sp = role === "house" ? seatHouse(want) : null;
+          if (role !== "house") {
+            const ks = kitsOf(role === "anchor" ? anchorIds : kindWork.length ? villageKind!.work : LOW_WORKS[theme] ?? []);
+            if (role === "work" && workSceneBox) { seatAlso = workHasRoom; sp = place(role, ks, want, want.maxR); seatAlso = null; }
+            sp ??= place(role, ks, want, want.maxR);
+          }
+          frontOnYard = false; return sp ? { x: sp.x, y: sp.y, w: sp.k.w, h: sp.k.h, front: sp.front } : null; },
         routes: (gc, on) => {
           let ex = 0, hs = 0, ot = 0, climbs = 0, lm = !spots.some((sp) => sp.role === "landmark"); network.clear();
           const walk = (p: number[]) => { for (let i = 0; i < p.length; i += 1) { network.add(p[i]!); if (i && lv[p[i]!] !== lv[p[i - 1]!]) climbs += 1; } };
