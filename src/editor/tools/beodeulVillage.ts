@@ -2487,8 +2487,11 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 아무것도 앉지 않고 바닥은 바탕 풀 그대로다(갱구가 안 서면 길가 풀밭으로 남는다). 문 칸(오른쪽 아래 바로 밑)과 3×4 의 둘레 한 칸도 걷는 칸으로 비워 둔다.
   const gateNooks: { x: number; y: number }[] = [];
   {
+    // 조수가 고른 밭·목초지·과수원 자리는 굴 입구 자리가 차지하지 않는다(흙 몸과 같은 네모 — 명세 은행 lay-main-farm: 밭 자리 (20,32) 위에 굴 자리가 앉아 밭 1 → 0).
+    const asked = codePlan && !codePlan.report.auto ? [...(codePlan.layout.fields ?? []).map((p) => ({ p, rx: 5, ry: 3 })), ...(codePlan.layout.pastures ?? []).map((p) => ({ p, rx: 5, ry: 3 })), ...(codePlan.layout.orchards ?? []).map((p) => ({ p, rx: 7, ry: 4 }))] : [];
     const nookOk = (x: number, y: number): boolean => {
       const g = idx(x, y), L = lv[g];
+      if (asked.some(({ p, rx, ry }) => x + 1 >= p.x - rx && x - 3 <= p.x + rx && y + 1 >= p.y - ry && y - 5 <= p.y + ry)) return false;
       // 문 칸과 그 아래 칸은 걷는 칸이고, 문 칸 곁(아래 두 줄 · 옆 칸)에 길이 닿아 있다 — pickDungeonGateSpot 의 «길 곁» 과 같은 창
       if (occ[g] !== FREE || (occ[g + W] !== ROAD && occ[g + W] !== FREE) || lv[g + W] !== L || rampCells.has(g) || rampCells.has(g + W)) return false;
       let road = false;
