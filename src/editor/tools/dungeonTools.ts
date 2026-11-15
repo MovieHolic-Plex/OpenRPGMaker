@@ -28,6 +28,7 @@ import { beodeulNatureTileset, planBeodeulCanopy, raiseBeodeulCrowns, writeBeode
 import { layBeodeulGroundCover } from "./beodeulGroundCover";
 import { relayBeodeulWaterSurface } from "./beodeulWater";
 import { activeTilesetLook } from "@/project/kitLook";
+import { tilesetLookReliefStyle } from "@/assets/tilesetLooks";
 import { invalidateReliefSlopes } from "@/project/relief/walk";
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { translateTiles } from "@/project/objectStamp";
@@ -152,7 +153,7 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
   map.mapRole = "dungeon";
   // 설계한 높이 단(rooms[].level): 마을 지형과 같은 map.relief + 버들항 돌계단(*-steps). 다시 짓기는 옛 높이를 지운다.
   if (composed.relief) {
-    map.relief = { width: map.width, height: map.height, levels: composed.relief.levels.slice(), ramps: composed.relief.ramps.slice(), style: composed.relief.style };
+    map.relief = { width: map.width, height: map.height, levels: composed.relief.levels.slice(), ramps: composed.relief.ramps.slice(), style: tilesetLookReliefStyle(tileset.id, activeTilesetLook(tileset), composed.relief.style) };
     invalidateReliefSlopes(map.relief);
     const painted = paintReliefStairTiles(map, tileset);
     if (painted.ew) notes.push(`고침: 동서로 오르는 계단 ${painted.ew}칸은 칩셋에 옆 계단 조각이 없어 바닥 비탈로 그렸다(걷기는 계단과 같다).`);
