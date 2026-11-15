@@ -14,6 +14,13 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { buildBossEncounter } from "@/ai/v2/story/sceneVerbs";
 import { enemyArtFor } from "@/ai/v2/place/builders/dungeonFoes";
+import { renderTitleScreen } from "@/player/titleScreen";
+import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
+import { planObjective } from "@/ai/v2/judge/objectivePlan";
+import { objectiveCommand } from "@/ai/v2/judge/objectiveCommand";
+import { createZoneFeedbackModel, currentObjectiveText, updateZoneFeedback } from "@/player/zoneFeedback";
+import { blockCutsPath } from "@/editor/tools/dungeonTools";
+import { localizeCultureSpec } from "@/ai/v2/place/builders/joseon";
 
 type Obj = Record<string, unknown>;
 const page = (conditions: unknown[], commands: unknown[], kind = "action", more: Obj = {}) =>
@@ -130,5 +137,94 @@ describe("보스의 전투 이름과 그림 — 확인 빌드 r5", () => {
 
   it("사람인 적의 이름은 산적 그림을 가리킨다", () => {
     expect(enemyArtFor(createBlankProject() as Project, "밀수꾼 두목")).toBe("enemy_bandit_mask");
+  });
+});
+
+// 두 줄로 접힌 제목의 둘째 줄과 부제가 겹쳤다.
+describe("타이틀 제목의 줄 — 확인 빌드 r5", () => {
+  const titleStyle = (title: string) => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject() as Project;
+      project.system.titleScreen = { ...project.system.titleScreen!, title, logoStyle: "gold", logoSubtitle: "꺼진 불빛을 찾아서" } as never;
+      const handlers = { onNewGame: () => undefined, onResume: () => undefined, onContinue: () => undefined, onCredits: () => undefined, onQuit: () => undefined };
+      const node = findByTestId(renderWithFakeDom(() => renderTitleScreen(project, handlers)), "title-text")!;
+      return { lines: node.dataset.titleLines, whiteSpace: node.style.whiteSpace, textWrap: node.style.textWrap };
+    } finally { restoreDom(); }
+  };
+
+  it("한 줄로 어림한 제목은 줄을 바꾸지 않는다 — 부제는 그 한 줄 높이 아래에 놓인다", () => {
+    // textWrap «balance» 는 줄바꿈까지 켜는 단축 속성이라 nowrap 을 풀었다 — 어림 폭에 딱 맞던 제목이 화면에서 접혔다.
+    expect(titleStyle("갈매기 포구의 꺼진 등대")).toEqual({ lines: "1", whiteSpace: "nowrap", textWrap: "nowrap" });
+    expect(titleStyle("아주 길고 긴 이름을 가진 갈매기 포구의 꺼진 등대 이야기").textWrap).toBe("balance");
+  });
+});
+
+// 메뉴의 «현재 목표» 가 맨 처음 글이고 같은 때 필드의 목표 줄은 다음 할 일이었다.
+describe("현재 목표 — 확인 빌드 r5", () => {
+  it("시작 목표와 같은 글은 이정표 뒤에 걸지 않는다 — 다음 할 일은 건다", () => {
+    // 모델이 «한씨에게 말을 걸어 사정을 듣자» 를 한씨의 이정표 뒤에 걸어, 한씨의 곁 의뢰를 끝내자 목표가 맨 처음으로 돌아갔다.
+    const project = createBlankProject() as Project;
+    const first = "방앗간 주인 한씨에게 말을 걸어 사정을 듣자.";
+    project.maps[project.startMapId]!.events = [
+      event("ev_objective_start", "시작 목표", 1, 1, [page([], [objectiveCommand(`${first} (방앗간: 북쪽)`), { kind: "setSelfSwitch", key: "A", value: true }], "auto")]),
+      event("ev_han", "방앗간 주인 한씨", 5, 5, [page([], [{ kind: "text", speaker: "방앗간 주인 한씨", body: "부탁하네." }, { kind: "setSwitch", switchId: "sw_a", value: true }])])] as never;
+    const again = planObjective(project, { text: first, eventId: "ev_han" });
+    expect(again.ok).toBe(false);
+    expect(again.summary).toContain("start objective");
+    expect(planObjective(project, { text: "어부 도윤에게 강물이 줄어든 까닭을 묻자.", eventId: "ev_han" }).ok).toBe(true);
+  });
+
+  it("필드의 목표 줄과 메뉴의 «현재 목표» 는 같은 글이다 — 한 번 뜬 글이 다시 걸려도", () => {
+    const entries = [{ surface: "objectiveChip", message: "한씨에게 말을 걸자", durationMs: 0 }];
+    const frame = (model: ReturnType<typeof createZoneFeedbackModel>, nowMs: number) => updateZoneFeedback(model, { entries, nowMs, prompt: null, suppressed: false });
+    let shown = frame(createZoneFeedbackModel([]), 0);
+    entries.push({ surface: "objectiveChip", message: "열쇠를 찾아 수로 동굴로 가자", durationMs: 0 });
+    shown = frame(shown.model, 16);
+    expect(shown.view.objective).toBe("열쇠를 찾아 수로 동굴로 가자");
+    entries.push({ surface: "objectiveChip", message: "한씨에게 말을 걸자", durationMs: 0 });
+    shown = frame(shown.model, 32);
+    expect(shown.view.objective).toBe(currentObjectiveText(entries as never));
+    expect(shown.view.objective).toBe("한씨에게 말을 걸자");
+  });
+});
+
+// 레버로 치우는 «막힌 바위» 가 넓은 바닥에 서서 아무 길도 막지 않았다.
+describe("레버 관문의 자리 — 확인 빌드 r5", () => {
+  it("지은 굴의 레버 관문은 길을 끊는다 — 막이를 그대로 두면 그 너머에 닿지 못한다", () => {
+    let gates = 0;
+    for (const type of ["cave", "volcano"]) for (const seed of [1, 2, 3]) {
+      const ctx: ToolContext = { project: createEmptyToolProject("굴") };
+      expect(runTool(ctx, "author_dungeon", { type, size: "small", name: "굴", seed, gimmick: "lever" }, { dryRun: false }).ok).toBe(true);
+      for (const map of Object.values(ctx.project.maps)) {
+        const block = (map.events ?? []).filter((e) => /_lever_gate/u.test(e.id)).map((e) => ({ x: e.x, y: e.y }));
+        if (!block.length) continue;
+        gates += 1;
+        expect(blockCutsPath(ctx.project, map, block), `${type}#${seed}`).toBe(true);
+      }
+    }
+    expect(gates).toBeGreaterThan(0);
+  }, 60_000);
+
+  it("트인 바닥 한 칸은 길을 끊지 않는다", () => {
+    const project = createBlankProject() as Project;
+    expect(blockCutsPath(project, project.maps[project.startMapId]!, [{ x: 8, y: 8 }])).toBe(false);
+  });
+});
+
+// 실내 이름 «물레강 주막» 이 조선 주막을 가져오려다 거절됐다.
+describe("장소 이름의 낱말과 문화권 — 확인 빌드 r5", () => {
+  const inn = { type: "interior", name: "물레강 주막" } as never;
+  const built = (): Project => {
+    const project = createBlankProject() as Project;
+    project.maps[project.startMapId]!.events = [event("ev_well", "우물", 3, 3, [page([], [])])] as never;
+    return project;
+  };
+
+  it("다른 칩셋으로 이미 지은 게임에서는 이름의 «주막» 이 조선 장소로 바꾸지 않는다 — 요청이 조선을 말하면 따른다", () => {
+    expect((localizeCultureSpec(inn, "강가 마을 게임", built()) as { style?: string }).style).toBeUndefined();
+    expect((localizeCultureSpec(inn, "조선 시대 사극 게임", built()) as { style?: string }).style).toBe("joseon");
+    // 아직 지은 맵이 없으면 종전대로 이름으로 고른다.
+    expect((localizeCultureSpec(inn, "강가 마을 게임", createBlankProject() as Project) as { style?: string }).style).toBe("joseon");
   });
 });

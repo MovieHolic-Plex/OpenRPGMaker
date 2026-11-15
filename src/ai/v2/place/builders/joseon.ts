@@ -5,6 +5,7 @@
 // 조선 칩셋으로 한 장을 짓는 결정론 경로는 등록 장소(import_region_reference — 마을 20호·실내 방 6·궁 내부 4·사냥터·동굴)뿐이라
 // 이 빌더는 낱말로 그 장소 하나를 고르고 가져온다. 모델은 칸·좌표를 쓰지 않는다. 고르지 못하는 것은 missingArt 로 알린다.
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
+import { isLivedMap } from "@/editor/tools/livedMap";
 import { prepareTool } from "@/editor/tools/asyncToolRunner";
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
@@ -92,7 +93,7 @@ const JP_PERIOD = /센고쿠|에도|전국\s*시대|사무라이|닌자|sengoku|
  * 마법 학교 → style wizarding(build_wizarding_space), 조선 → joseon(등록 장소), 일본 현대 마을 → jp-modern. 요청 해시를 hints.requestKey 로 실어
  * 빌더가 같은 요청엔 같은 판·다른 요청엔 다른 판을 고르게 한다. style 이 다른 문화권을 말하면 그대로 둔다.
  */
-export function localizeCultureSpec<T extends PlaceSpec>(spec: T, task: string): T {
+export function localizeCultureSpec<T extends PlaceSpec>(spec: T, task: string, project?: { readonly maps: Project["maps"] }): T {
   const style = spec.style ?? "";
   const own = `${spec.name} ${style} ${spec.theme ?? ""}`;
   const keyed = (next: string): T => ({ ...spec, style: next, hints: { ...(spec.hints ?? {}), requestKey: stableHash(task || spec.name) } });
@@ -101,7 +102,11 @@ export function localizeCultureSpec<T extends PlaceSpec>(spec: T, task: string):
   if (/joseon/iu.test(style)) return keyed(style);
   if (OTHER_CULTURE.test(style)) return spec;
   if (wizType && WIZARDING_WORDS.test(own)) return keyed("wizarding");
-  if (JOSEON_WORDS.test(own)) return keyed("joseon");
+  // 장소 이름의 낱말은 그 게임이 이미 다른 칩셋으로 지어졌으면 문화권을 바꾸지 않는다 — 그 게임의 «주막» 은 그 세계의 술집이다(요청 원문·style 이 말한 조선은 그대로 따른다).
+  // 왜(2026-11-15 확인 빌드 r5): 강가 마을(버들항) 게임에서 실내 이름 «물레강 주막» 이 조선 주막을 가져오려다 칩셋 계열 잠금에 거절됐다.
+  const lived = Object.values(project?.maps ?? {}).filter(isLivedMap);
+  const builtElsewhere = lived.length > 0 && !lived.some((map) => map.tilesetId === JOSEON_TILESET_ID);
+  if (JOSEON_WORDS.test(own) && !builtElsewhere) return keyed("joseon");
   if (wizType && WIZARDING_WORDS.test(task)) return keyed("wizarding");
   if (JOSEON_WORDS.test(task)) return keyed("joseon");
   if (spec.type !== "village" || JP_PERIOD.test(own) || JP_PERIOD.test(task)) return spec;
