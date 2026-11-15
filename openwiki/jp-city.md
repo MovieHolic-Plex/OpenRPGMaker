@@ -595,11 +595,12 @@ object-gen 흐름(시점 판정 통과 참고 그림 → Opus 손 도트 A/B →
 - 3/4 관문 미통과 — 오너 면제 묶음 `fable-jpstreet-2026-11-15`(935장, 도구 `object-gate owner-waive` 로 기록). 조각 그림이 한 화소라도 바뀌면 묶음을 다시 적어야 굽힌다.
 
 ### 구성기
-- 켜짐: `STREET_BAKED`(칩셋에 `jp-st-kerb-s` 가 있으면). 열쇠 있는 호출(`planJpCityScene`)이 새 조각으로 짓는다. `SceneOptions.fable` 로 끄고 켤 수 있고, `SceneOptions.buildings` 로 건물 표를 바꿔 끼운다(굽기 전 예정 표 — `test/fixtures/jpCityFableBuildingsPlanned.json`).
+- 켜짐: `STREET_BAKED`(칩셋에 `jp-st-kerb-s` 가 있으면). 열쇠 있는 호출(`planJpCityScene`)이 새 조각으로 짓는다. `SceneOptions.fable` 로 끄고 켤 수 있다. 사전(`jpCityStreetCatalog.json`)에 `jp-bldg-f-*` 가 하나라도 있으면 새 거리는 그것만 세운다(`SceneCtx.buildingPool`) — 문 열·폭은 키트에서 읽은 사전 그대로다. 같은 건물 그림은 한 지도에 한 번뿐이고(요청한 종류라도), 건물이 모자라 남는 앞줄은 필지 쓰임(공원·주차장·작은 신사·자전거 주차·빈터·공사장)이 채운다.
 - 파일: `jpCityStreetPieces.ts`(조각 표·앵커 등급) · `jpCitySceneFable.ts`(강·노면 표시·경계 줄·테·그늘·아케이드·꾸밈·빈 띠 메우기·바닥·검사 `auditFable`) · `jpCitySceneCtx.ts`(`stFits`·`stPut`·`doorFront`) · `jpCitySceneRun.ts`(`ground_cells` 단계 — 가족의 무늬 키트를 읽어 1층에 깐다).
 - 앵커 등급: wall 벽 앞 · kerb 연석 줄 · lot 필지 안 · open 광장·마당 · facade 벽면 · road 차도(차만) · water 물 · floor 바닥 덧그림 · run 경계 줄.
 - 규칙(검사 이름): 차도 칸에는 차와 노면 표시만(`on-carriageway`) · 앵커 자리(`anchor-*`) · 겹침·지도 끝 잘림 없음(`overlap`·`cut-by-edge`) · 같은 그림은 20×15 창에 한 번(`repeat-in-window`, 나무·경계 줄·바닥 조각 제외) · 경계 줄은 끝이 건물·다른 줄·길·지도 끝·트인 자리에 닿는다(`loose-run-end`), 집 필지는 대문 하나 · 재료가 만나는 자리마다 테(`bare-seam`) · 차선은 등급대로(`alley-marking`·`edge-line-gap`·`centre-line-gap`·`centre-line-on-one-lane`) · 문 앞 칸은 비운다.
 - 생활도로(보도 없는 길)·골목·뒷길은 연석 없는 낡은 포장(lane)이다. 가로 생활도로는 북쪽 한 줄이 길가 띠(laneside — 배수로와 흰 선 안쪽: 사람이 걷고 전봇대·가로등이 선다), 필지 쪽에는 배수로 테. 돌길(alley)은 참배길(monzen)·옛 골목(roji) 종류만 쓴다(조율자 2026-11-15). 전선은 바닥 위로 걸지 않는다.
+- 집 필지(새 집 `jp-bldg-f-house-*`·`machiya-hira-*`·`apart-*`): 7칸 키 집이 두 줄 물려 설 수 있는 띠의 집 줄(`houseRow`)은 집 양옆에 마당 1~2칸을 두고 2~3줄 물려 세운다. 길 선에는 건물 쪽 담 키트(`jp-bldg-f-kaki-block/-plaster/-wood`, 2×2 되풀이)와 대문 하나(`kaki-gate-roofed` 3×3 — 세 줄 물린 회벽·판자 담 필지, 아니면 `kaki-gate-modern` 3×2)가 현관 앞에 선다(`SceneCtx.stampKaki`). 담 길이가 짝수가 되게 옆 마당 폭을 고르고, 담 종류는 필지마다 바뀐다. 줄 끝의 자투리는 마지막 집의 담이 이어 닫고, 두 칸 담이 못 서는 한 칸은 거리 쪽 모서리 담(`cornerCell`)이 닫는다. 필지 사이 세로 담은 거리 쪽 줄 조각(블록 담·산울타리·판자 담)이다. 검사: `kaki-loose-end`(담 끝이 다른 담·대문·건물·줄·길에 닿는다) · `kaki-gate-count`(필지에 대문 하나) · `kaki-gate-not-at-door` · `kaki-gate-walk-blocked`(대문에서 현관까지 걷는 칸) · `kaki-mixed-lot`(한 필지 한 담 종류). 담·대문 키트는 사전의 건물 표에 넣지 않고(`catalog.py`), 측정도 건물로 세지 않는다.
 - 세로 길이 강을 건너는 자리 양옆에 다리 난간(`bridge-w/-e`, 끝 기둥 `-n/-s`)이 선다.
 - 도로 몫은 폭 두 칸이 넘는 아스팔트 차도만 센다 — 생활도로 포장은 차도 몫이 아니다(측정·계획 뽑기·테스트 같은 뜻).
 - 굽기: 이미 구운 칸의 그림이 바뀌면 굽기가 멈춘다(`old_cells_changed`). 이 블록이 main 에 들어가기 전에는 예약 굽기(`a2caf8da5`)의 시트·핀으로 되돌린 뒤 다시 굽는다. 들어간 뒤에는 새 키트 id 로 더한다.
