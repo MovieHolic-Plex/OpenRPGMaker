@@ -246,12 +246,16 @@ describe("빈 땅의 쓰임(planLandPlots) — 볼 것 없는 화면에 울타�
     expect(planLandPlots({ ...inp, free: () => false })).toEqual([]);
   });
 
-  it("넓은 시골 마을: 빈 땅에 밭이 더 서고, 울타리 문은 모두 길에서 닿는다 · 읍에는 서지 않는다", () => {
+  // 2026-11-15(감독, PR #4723): 숲이 서는 마을은 마을 몸 바깥 띠를 숲이 맡고 밭은 집 곁에만 선다 — 이 시험의 뜻은 «빈 화면에 밭 셋 이상» 이 아니라
+  // «볼 것 없는 화면(20×15 창)이 남지 않는다» 다. 밭이든 숲 덩이든 창을 채우면 된다(data.emptyScreens — 건물·기물·밭·울타리·숲 덩이가 하나도 안 걸리는 창 수).
+  // 이 판은 강가 자투리 땅에 걸친 창 하나가 남는다(숲 덩이가 설 폭이 없다) — 전에는 0, 밭 셋이 채웠다.
+  it("넓은 시골 마을: 볼 것 없는 화면을 밭이나 숲 덩이가 채우고, 울타리 문은 모두 길에서 닿는다 · 읍에는 빈 화면의 밭이 서지 않는다", () => {
     const { data } = town({ seed: 8, width: 64, height: 56, houseCount: 4 });
     expect(data.rank).toBe("village");
-    expect(data.landPlots as number).toBeGreaterThanOrEqual(3);
+    expect(data.emptyScreens as number).toBeLessThanOrEqual(1);
+    expect((data.nature as { forestCells: number }).forestCells).toBeGreaterThan(200);
     const gates = data.fenceGates as { reached: boolean }[];
-    expect(gates.length).toBeGreaterThanOrEqual(data.landPlots as number);
+    expect(gates.length).toBeGreaterThanOrEqual((data.landPlots as number | undefined) ?? 0);
     expect(gates.filter((g) => !g.reached).length).toBe(0);
     expect((data.doors as { reached: boolean }[]).filter((d) => !d.reached).length).toBe(0);
     expect(town({ walls: true, form: "plaza", seed: 17 }).data.landPlots).toBeUndefined();

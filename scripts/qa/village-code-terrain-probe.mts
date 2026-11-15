@@ -1,4 +1,5 @@
-// 코드 지형 마을 프로브 — 10요청을 코드 지형(자동 배치 또는 --layouts json, village-model-layout.mts 출력)으로 짓고 렌더·지표. 사용: bun scripts/qa/village-code-terrain-probe.mts --out <dir> [--only 1,3] [--salt N] [--layouts f] [--key 게임열쇠]
+// 코드 지형 마을 프로브 — 10요청을 코드 지형(자동 배치 또는 --layouts json, village-model-layout.mts 출력)으로 짓고 렌더·지표. 사용: bun scripts/qa/village-code-terrain-probe.mts --out <dir> [--only 1,3] [--salt N] [--layouts f] [--key 게임열쇠] [--dry]
+// --dry: 그림(png)과 프로젝트 사본(project.json, 판마다 80MB)을 쓰지 않는다 — 숫자(report.json · data.json)만 남긴다.
 // --key: 그 게임 열쇠의 겉모습(집 벌·바닥·숲)으로 짓는다(조수 실행과 같은 길). 판마다 <n>-C.data.json 을 남긴다(village-yard-measure.mts 가 읽는다).
 import fs from "node:fs";
 import { renderMapPng } from "../../scripts/qa-game/render.mts";
@@ -25,6 +26,7 @@ const only = arg("only", "").split(",").filter(Boolean).map(Number);
 const layouts = arg("layouts", "") ? JSON.parse(fs.readFileSync(arg("layouts", ""), "utf8")) : {};
 const salt = Number(arg("salt", "0"));
 const key = arg("key", "");
+const dry = process.argv.includes("--dry");
 
 const base = createBlankProject() as any; ensureBundledTilesets(base);
 const baseJson = JSON.stringify(base);
@@ -38,8 +40,10 @@ for (const c of CASES) {
   const r = runTool(ctx as any, "author_beodeul_town", args);
   if (!r.ok) { console.log(c.n, "FAIL", r.summary); rows.push({ n: c.n, ok: false, summary: r.summary }); continue; }
   const d = r.data as any; const map = ctx.project.maps[d.mapId]!;
-  fs.writeFileSync(`${OUT}/${c.n}-C.png`, renderMapPng(ctx.project, map).png);
-  fs.writeFileSync(`${OUT}/${c.n}-C.project.json`, JSON.stringify({ project: ctx.project, mapId: d.mapId }));
+  if (!dry) {
+    fs.writeFileSync(`${OUT}/${c.n}-C.png`, renderMapPng(ctx.project, map).png);
+    fs.writeFileSync(`${OUT}/${c.n}-C.project.json`, JSON.stringify({ project: ctx.project, mapId: d.mapId }));
+  }
   fs.writeFileSync(`${OUT}/${c.n}-C.data.json`, JSON.stringify({ n: c.n, ask: c.ask, data: d })); // village-yard-measure.mts 가 읽는다(문 앞·모이는 곳·마당)
   const cf = analyzeCityForm(ctx.project, map);
   const doors = (d.doors ?? []) as { reached: boolean }[];
@@ -47,6 +51,7 @@ for (const c of CASES) {
   const row = { n: c.n, ms: Date.now() - t0, size: `${map.width}x${map.height}`, houses: d.houses, anchors: d.anchors, unreached: doors.filter((x) => !x.reached).length, doors: doors.length,
     dead: cf.deadEnds.filter((x: any) => x.kind === "cell").length, ramps: d.relief?.ramps, rfail: d.relief?.fails, levels: d.relief?.levels,
     upMiss: Object.values(lr).reduce((s: number, e: any) => s + (e.walk - e.reached), 0), upWild: Object.values(lr).reduce((s: number, e: any) => s + (e.wild ?? 0), 0),
+    forest: d.nature?.forestCells ?? 0, fields: d.fields ?? 0, landPlots: d.landPlots ?? 0, emptyScreens: d.emptyScreens ?? null,
     layout: d.layout ? { auto: d.layout.auto, moved: d.layout.moved, failed: d.layout.failed, roadsFailed: d.layout.roadsFailed } : null, terrainSeed: d.terrainSeed, note: d.codeTerrain?.note, summary: r.summary, warnings: (r as any).diff?.warnings ?? (r as any).warnings ?? [] };
   rows.push(row); console.log(c.n, JSON.stringify(row).slice(0, 600));
 }

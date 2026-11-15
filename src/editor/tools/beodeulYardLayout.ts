@@ -29,6 +29,11 @@ export interface YardPlan extends YardRect {
   frame: (YardSeat & { role: "anchor" | "house"; at: "yard" | "court" })[];
   /** 집 뒤(마당에서 먼 쪽) 밭 자리. */
   fields: LayoutPoint[];
+  /** 숲 자리(마을 몸 밖 빈 땅의 가운데)와 그 빈 칸 — 시공기가 밭·소품을 놓는 동안 비워 두었다가 숲 덩이 씨앗으로 쓴다. */
+  woods: LayoutPoint[];
+  woodCells: number[];
+  /** 숲이 서는 마을(강가·포구·설원)인가 — 밭은 마을 몸(건물·마당에서 여섯 칸 안)에만 서고 그 바깥 띠는 숲의 몫이다. */
+  woodsFirst: boolean;
 }
 
 export interface YardEnv {
@@ -53,6 +58,19 @@ const rectCells = (r: YardRect, W: number): number[] => { const out: number[] = 
 /** 마당 칸 전부를 네모들에서 다시 센다(앉히는 동안 쓴다 — 다 앉힌 뒤에는 plan.cells). */
 function yardCells(p: Omit<YardPlan, "cells">, W: number): number[] {
   return [...new Set([...rectCells(p, W), ...p.lobes.flatMap((l) => rectCells(l, W)), ...p.courts.flatMap((l) => rectCells(l, W)), ...p.stubs])];
+}
+
+/** 씨앗 칸에서 r 칸 안(대각선 포함)인 칸 — 마을 몸(건물·마당 곁)을 가린다. */
+export function nearCells(W: number, H: number, seeds: Iterable<number>, r: number): Uint8Array {
+  const out = new Uint8Array(W * H); let edge: number[] = [];
+  for (const c of seeds) if (!out[c]) { out[c] = 1; edge.push(c); }
+  for (let k = 0; k < r; k += 1) {
+    const next: number[] = [];
+    for (const c of edge) { const x = c % W, y = (c - x) / W;
+      for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue; const n = ny * W + nx; if (!out[n]) { out[n] = 1; next.push(n); } } }
+    edge = next;
+  }
+  return out;
 }
 
 /** 마당 칸을 잇닿은 덩이로 나눈다 — first 칸이 든 덩이가 맨 앞(길망은 그 덩이에서 시작하고 나머지 덩이는 길로 잇는다). */
@@ -135,7 +153,7 @@ function yardCandidates(t: CodeTerrain, g: LayoutPoint, level: number, houses: n
   return out;
 }
 
-type YardAsk = { houses: number; anchor: boolean; work: boolean; loose: readonly LayoutPoint[]; wide: boolean; plaza?: { rx: number; ry: number }; wetOk?: boolean; /** 작은 집만(좁은 터). */ compact?: boolean;
+type YardAsk = { houses: number; anchor: boolean; work: boolean; loose: readonly LayoutPoint[]; wide: boolean; plaza?: { rx: number; ry: number }; wetOk?: boolean; /** 숲 덩이가 서는 마을(강가·포구·설원) — 숲 몫을 남긴다. */ woods?: boolean; /** 작은 집만(좁은 터). */ compact?: boolean;
   /** 좋은 순서로 몇째 마당을 쓸까(0 = 가장 좋은 것) — 고른 마당이 뒤 단계(계단 놓기)에서 깨지면 시공기가 다음 것으로 다시 짓는다. */ skip?: number };
 
 /** 후보 마당 하나에 건물을 앉힌다: 여관이 가운데 네모 북쪽 줄, 집은 날개 북쪽 줄과 여관 곁, 남는 집은 무리, 일터·밭은 마을 몸 바깥. */
@@ -145,7 +163,7 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
   // 우물은 마당의 한쪽 삼분 자리(가운데 축을 피한다) — 원래 모이는 곳에 가까운 쪽
   const gx = want.plaza ? Math.round((r.x0 + r.x1) / 2) : (g.x <= (r.x0 + r.x1) / 2 ? r.x0 + Math.max(1, Math.round(w * 0.28)) : r.x1 - Math.max(1, Math.round(w * 0.28)));
   const gy = want.plaza ? Math.round((r.y0 + r.y1) / 2) : r.y0 + Math.min(h - 2, Math.max(2, Math.round(h * 0.6)));
-  const plan: YardPlan = { ...r, level: cand.level, gather: { x: gx, y: gy }, lobes: cand.lobes, courts: [], stubs: [], cells: [], frame: [], fields: [] };
+  const plan: YardPlan = { ...r, level: cand.level, gather: { x: gx, y: gy }, lobes: cand.lobes, courts: [], stubs: [], cells: [], frame: [], fields: [], woods: [], woodCells: [], woodsFirst: !!want.woods };
   const inMap = (x: number, y: number) => x >= 1 && y >= 1 && x < W - 1 && y < H - 2;
   /** 빈 마른 칸(L 단). */
   const freeDry = (x: number, y: number, L: number) => inMap(x, y) && t.levels[y * W + x] === L && !t.water[y * W + x] && env.free(y * W + x);
@@ -245,6 +263,43 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
     if (workAt < 0 && env.seat("work", { ...behind[0]!, maxR: 12 })) workAt = 0;
   }
   plan.fields = behind.filter((_, i) => i !== workAt).slice(0, 2);
+  // 숲이 서는 마을(2026-11-15 감독: «숲이 먼저다, 마을 몸 바깥에서» · «밭은 마을 몸 안과 그 가장자리에 작게 여럿»).
+  // 집을 한곳에 모으자 남는 땅을 밭·기물·길이 잘게 갈라 숲 덩이가 설 자리를 잃었다(탐침 30판 숲 칸 4673 → 3787, 숲 없는 판 6 → 8).
+  if (want.woods) {
+    // 밭 자리: 집마다 마당 반대쪽 옆구리(없으면 뒤, 그다음 마당 쪽 옆구리)에 7×5 빈 한 단 땅이 있으면 그 가운데 — 넷까지, 서로 떨어뜨린다.
+    const room = (x: number, y: number) => {
+      for (let dy = -2; dy <= 2; dy += 1) for (let dx = -3; dx <= 3; dx += 1) {
+        if (!inMap(x + dx, y + dy)) return false;
+        const c = (y + dy) * W + x + dx; if (!env.free(c) || t.water[c] || t.levels[c] !== t.levels[y * W + x]) return false;
+      }
+      return true;
+    };
+    const beside: LayoutPoint[] = [];
+    for (const s of all) {
+      if (beside.length >= 4) break;
+      const west = s.x + s.w / 2 < cx, my = s.y + Math.floor(s.h / 2);
+      const p = [{ x: west ? s.x - 5 : s.x + s.w + 4, y: my }, { x: s.x + Math.floor(s.w / 2), y: s.y - 4 }, { x: west ? s.x + s.w + 4 : s.x - 5, y: my }]
+        .find((q) => room(q.x, q.y) && beside.every((o) => Math.abs(o.x - q.x) >= 8 || Math.abs(o.y - q.y) >= 6));
+      if (p) beside.push(p);
+    }
+    plan.fields = beside;
+    // 숲 몫: 마당 둘레와 건물 곁을 뺀 빈 마른 한 단 땅이 가장 넓은 창(13×7) 둘 — 시공기가 기물을 놓는 동안 비워 두었다가 숲 씨앗으로 쓴다.
+    const wins: { x: number; y: number; cells: number[] }[] = [];
+    for (let y = 3; y < H - 3; y += 1) for (let x = 6; x < W - 6; x += 2) {
+      if (x >= r.x0 - 10 && x <= r.x1 + 10 && y >= r.y0 - 7 && y <= r.y1 + 7) continue;
+      if (all.some((s) => s.x - 1 <= x + 6 && s.x + s.w >= x - 6 && s.y - 1 <= y + 3 && s.y + s.h >= y - 3)) continue;
+      if (plan.fields.some((p) => Math.abs(p.x - x) < 10 && Math.abs(p.y - y) < 6)) continue;
+      const L = t.levels[y * W + x], cells: number[] = [];
+      for (let dy = -3; dy <= 3; dy += 1) for (let dx = -6; dx <= 6; dx += 1) { const c = (y + dy) * W + x + dx; if (env.free(c) && !t.water[c] && t.levels[c] === L) cells.push(c); }
+      if (cells.length >= 64) wins.push({ x, y, cells });
+    }
+    wins.sort((a, b) => b.cells.length - a.cells.length || a.y - b.y || a.x - b.x);
+    for (const w0 of wins) {
+      if (plan.woods.length >= 2) break;
+      if (plan.woods.some((q) => Math.abs(q.x - w0.x) < 16 && Math.abs(q.y - w0.y) < 10)) continue;
+      plan.woods.push({ x: w0.x, y: w0.y }); plan.woodCells.push(...w0.cells);
+    }
+  }
   plan.cells = yardCells(plan, W);
   return { plan, houses };
 }
