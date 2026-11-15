@@ -400,7 +400,8 @@ function renderDetailShowcase(project: Project, entry: StatusMenuDetailEntry): H
 
 /** 파티원 한 사람의 상태 장 — 얼굴 · 이름 · 직업과 레벨, 그 아래 구획(HP·MP·상태·다음 레벨 / 능력치 / 장비). 줄 모양은 아이템 정보 줄과 같다. */
 function renderMemberSheet(project: Project, entry: StatusMenuDetailEntry, sheet: NonNullable<StatusMenuDetailEntry["sheet"]>): HTMLElement {
-  const face = sheet.face ? renderDetailFace(project, sheet.face) : null;
+  // 얼굴은 24px — 줄이 열한 개라 32px 얼굴이면 마지막 장비 줄이 창 밖으로 나가는 스킨이 있다.
+  const face = sheet.face ? renderDetailFace(project, sheet.face, 24) : null;
   face?.classList.add("status-menu-showcase-art");
   return el("aside", {
     class: "status-menu-detail-showcase status-menu-member-sheet",
