@@ -7,6 +7,9 @@ import { createBlankProject } from "@/project/defaults";
 import { exteriorLook, exteriorWall } from "@/ai/v2/place/builders/interiorExterior";
 import { interiorTilesetOf, resolveKind } from "@/ai/v2/place/builders/interiorKind";
 import { pickTemplate } from "@/ai/v2/place/builders/interiorFill";
+import { personalPlan } from "@/editor/handInterior/personal";
+import { furnishRooms } from "@/editor/handInterior/furnish";
+import { withComposedRooms } from "@/editor/handInterior/rooms";
 import catalog from "../tiledata/beodeul-interiors/catalog.json";
 
 const S = BEODEUL_INTERIOR_SPEC;
@@ -61,7 +64,8 @@ describe("버들항 실내 사양", () => {
 describe("버들항 방 견본", () => {
   const tpls = roomTemplates(BEODEUL_INTERIOR_TILESET_ID);
   it("견본마다 조립기 오류 없이 지어진다", () => {
-    expect(tpls.length).toBeGreaterThanOrEqual(30);
+    expect(tpls.length).toBeGreaterThanOrEqual(60);
+    expect(new Set(tpls.map((t) => t.kind)).size).toBeGreaterThanOrEqual(31);
     for (const t of tpls) {
       const door = Math.floor((t.w - 1) / 2) + 1, W = t.w + 2;
       const plan = ["#".repeat(W), ...Array.from({ length: t.h }, () => `#${".".repeat(t.w)}#`), "#".repeat(door) + "." + "#".repeat(W - door - 1)];
@@ -113,5 +117,45 @@ describe("집 안은 바깥을 따른다", () => {
     expect(resolveKind(ts.id, { kind: "여관", purpose: "여관" }, notes, "여관", true)).toBe("tavern");
     expect(resolveKind(ts.id, { kind: "방앗간", purpose: "방앗간" }, notes, "방앗간", true)).toBe("mill");
     expect(resolveKind(ts.id, { kind: "대장간", purpose: "대장간" }, notes, "대장간", true)).toBe("forge");
+    // 그 칩셋만 가진 종류는 두루 낱말(오두막 → 살림집)보다 먼저, 여럿이 맞으면 가장 긴 별칭
+    expect(resolveKind(ts.id, { kind: "어부 오두막", purpose: "어부 오두막" }, notes, "어부 오두막", true)).toBe("fisher");
+    expect(resolveKind(ts.id, { kind: "등대", purpose: "등대" }, notes, "등대", true)).toBe("lighthouse");
+    expect(resolveKind(ts.id, { kind: "구둣방", purpose: "구둣방" }, notes, "구둣방", true)).toBe("cobbler");
+    expect(resolveKind(ts.id, { kind: "사냥꾼의 집", purpose: "사냥꾼의 집" }, notes, "사냥꾼의 집", true)).toBe("living");
+  });
+});
+
+describe("사는 사람의 물건", () => {
+  const P = S.personal!;
+  it("표의 조각은 모두 사양에 있고, 직업 묶음만 별칭을 가진다", () => {
+    for (const [id, set] of Object.entries(P.sets)) for (const piece of set.pieces) expect(!!S.objects[piece] || S.goods[piece] !== undefined, `${id}: ${piece}`).toBe(true);
+    for (const id of P.surfaces) expect(S.objects[id]?.surface, id).toBeTruthy();
+    expect(Object.values(P.sets).filter((v) => v.alias?.length).length).toBeGreaterThanOrEqual(8);
+    expect(Object.values(P.sets).filter((v) => !v.alias?.length).length).toBeGreaterThanOrEqual(8);
+  });
+  it("집 이름의 직업이 묶음을 부르고, 이름이 말하지 않은 집은 열쇠가 살림 묶음을 고른다 — 같은 열쇠면 같은 답", () => {
+    const hunter = personalPlan(S, "living", { key: "게임|사냥꾼의 집", text: "사냥꾼의 집" })!;
+    expect(hunter.sets[0]).toBe("hunter"); expect(hunter.pieces[0]).toMatch(/boar trophy|bow and quiver|fox pelt|bow rack|boots/u);
+    const plain = Array.from({ length: 30 }, (_, i) => personalPlan(S, "living", { key: `게임|${i}번 집`, text: `${i}번 집` })!);
+    for (const p of plain) { expect(p.sets.every((id) => !P.sets[id]!.alias?.length)).toBe(true); expect(p.count).toBeGreaterThanOrEqual(P.count[0]); expect(p.count).toBeLessThanOrEqual(P.count[1]); }
+    expect(new Set(plain.map((p) => p.sets.join("+"))).size).toBeGreaterThanOrEqual(8);
+    expect(personalPlan(S, "living", { key: "k", text: "집" })).toEqual(personalPlan(S, "living", { key: "k", text: "집" }));
+    expect(personalPlan(S, "forge", { key: "k", text: "대장간" })).toBeUndefined();
+  });
+  it("같은 견본으로 지은 두 집이 같은 방이 아니고, 넣은 물건이 길을 막지 않는다", () => {
+    const tset = createBeodeulCityTileset();
+    const built = (key: string, text: string) => {
+      const room = { id: "living", kind: "living", x0: 1, y0: 1, x1: 10, y1: 8, floor: "dplank", wall: "plaster", template: "authored-bd-living-a" };
+      const c = withComposedRooms({ floor: "dplank", wall: "plaster", rooms: [room] } as never, S);
+      const composed = c.composed!, base = c.input as Parameters<typeof furnishRooms>[0];
+      const f = furnishRooms(base, [room], composed, BEODEUL_INTERIOR_TILESET_ID, tset, S, "A", { living: { key, text } });
+      const L = buildHandInteriorLayers(f.input, tset, S);
+      expect(L.issues.filter((i) => i.severity === "error")).toEqual([]); expect(L.unreachedFloor).toEqual([]);
+      return f.perRoom.living!;
+    };
+    const a = built("게임|어부의 집", "어부의 집"), b = built("게임|사냥꾼의 집", "사냥꾼의 집"), none = built("게임|한스의 집", "한스의 집");
+    expect(a.dropped).toBe(0); expect(a.personal!.length).toBeGreaterThanOrEqual(2); expect(b.personal!.length).toBeGreaterThanOrEqual(2);
+    expect(a.personal).not.toEqual(b.personal); expect(none.personal!.length).toBeGreaterThanOrEqual(1);
+    expect(a.personal!.some((id) => P.sets.fisher!.pieces.includes(id))).toBe(true);
   });
 });

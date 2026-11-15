@@ -709,6 +709,306 @@
    "chipset": "beodeul_city"
   },
   {
+   "png": "tiledata/beodeul-interiors/pieces/fish-rack.png",
+   "kind": "structure",
+   "id": "bd-in-fish-rack",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/boat.png",
+   "kind": "low_furniture",
+   "id": "bd-in-boat",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/cell-bars.png",
+   "kind": "structure",
+   "id": "bd-in-cell-bars",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/cell-door.png",
+   "kind": "structure",
+   "id": "bd-in-cell-door",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/pallet.png",
+   "kind": "low_furniture",
+   "id": "bd-in-pallet",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/spiral-stairs.png",
+   "kind": "structure",
+   "id": "bd-in-spiral-stairs",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/lighthouse-lamp.png",
+   "kind": "structure",
+   "id": "bd-in-lighthouse-lamp",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/telescope.png",
+   "kind": "column",
+   "id": "bd-in-telescope",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/kiln.png",
+   "kind": "structure",
+   "id": "bd-in-kiln",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/pot-drying-shelf.png",
+   "kind": "box",
+   "id": "bd-in-pot-drying-shelf",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/vanity.png",
+   "kind": "box",
+   "id": "bd-in-vanity",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/globe.png",
+   "kind": "column",
+   "id": "bd-in-globe",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/joiner-bench.png",
+   "kind": "low_furniture",
+   "id": "bd-in-joiner-bench",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sawhorse.png",
+   "kind": "low_furniture",
+   "id": "bd-in-sawhorse",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/china-cabinet.png",
+   "kind": "box",
+   "id": "bd-in-china-cabinet",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/house-shrine.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-house-shrine",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/boar-trophy.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-boar-trophy",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/mounted-fish.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-mounted-fish",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/lute.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-lute",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/child-drawing.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-child-drawing",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sampler.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-sampler",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/bow-and-quiver.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-bow-and-quiver",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/fox-pelt.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-fox-pelt",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/corn-strings.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-corn-strings",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/portrait-pair.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-portrait-pair",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/helmet-and-medal.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-helmet-and-medal",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/glass-floats.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-glass-floats",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/clothesline.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-clothesline",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/canary-cage.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-canary-cage",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/scythe.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-scythe",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/straw-hat.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-straw-hat",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/model-boat.png",
+   "kind": "wall_mounted",
+   "id": "bd-in-model-boat",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sleeping-cat.png",
+   "kind": "other",
+   "id": "bd-in-sleeping-cat",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/dog-bed.png",
+   "kind": "other",
+   "id": "bd-in-dog-bed",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/toy-horse.png",
+   "kind": "other",
+   "id": "bd-in-toy-horse",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/rag-doll.png",
+   "kind": "other",
+   "id": "bd-in-rag-doll",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/boots.png",
+   "kind": "other",
+   "id": "bd-in-boots",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sewing-basket.png",
+   "kind": "other",
+   "id": "bd-in-sewing-basket",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/geranium.png",
+   "kind": "column",
+   "id": "bd-in-geranium",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/garden-tools.png",
+   "kind": "column",
+   "id": "bd-in-garden-tools",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/umbrella-jar.png",
+   "kind": "column",
+   "id": "bd-in-umbrella-jar",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/washtub.png",
+   "kind": "other",
+   "id": "bd-in-washtub",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/pumpkins.png",
+   "kind": "other",
+   "id": "bd-in-pumpkins",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/toolbox.png",
+   "kind": "other",
+   "id": "bd-in-toolbox",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/rocking-horse.png",
+   "kind": "other",
+   "id": "bd-in-rocking-horse",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/easel.png",
+   "kind": "column",
+   "id": "bd-in-easel",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/music-stand.png",
+   "kind": "column",
+   "id": "bd-in-music-stand",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/parrot-stand.png",
+   "kind": "column",
+   "id": "bd-in-parrot-stand",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/hat-stand.png",
+   "kind": "column",
+   "id": "bd-in-hat-stand",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/blanket-chest.png",
+   "kind": "box",
+   "id": "bd-in-blanket-chest",
+   "chipset": "beodeul_city"
+  },
+  {
    "png": "tiledata/beodeul-interiors/pieces/hearth-glow.png",
    "kind": "flat",
    "id": "bd-in-hearth-glow",
@@ -796,6 +1096,78 @@
    "png": "tiledata/beodeul-interiors/pieces/goods-table-lamp.png",
    "kind": "other",
    "id": "bd-in-goods-table-lamp",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-flower-vase.png",
+   "kind": "other",
+   "id": "bd-in-goods-flower-vase",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-chess.png",
+   "kind": "other",
+   "id": "bd-in-goods-chess",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-pipe.png",
+   "kind": "other",
+   "id": "bd-in-goods-pipe",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-book-pile.png",
+   "kind": "other",
+   "id": "bd-in-goods-book-pile",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-knitting.png",
+   "kind": "other",
+   "id": "bd-in-goods-knitting",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-medicine-tray.png",
+   "kind": "other",
+   "id": "bd-in-goods-medicine-tray",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-inkwell.png",
+   "kind": "other",
+   "id": "bd-in-goods-inkwell",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-coins.png",
+   "kind": "other",
+   "id": "bd-in-goods-coins",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-slate-and-top.png",
+   "kind": "other",
+   "id": "bd-in-goods-slate-and-top",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-teapot.png",
+   "kind": "other",
+   "id": "bd-in-goods-teapot",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-tailor-things.png",
+   "kind": "other",
+   "id": "bd-in-goods-tailor-things",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/goods-whittling.png",
+   "kind": "other",
+   "id": "bd-in-goods-whittling",
    "chipset": "beodeul_city"
   }
  ]

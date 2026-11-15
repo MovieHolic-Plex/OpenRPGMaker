@@ -235,6 +235,7 @@ def main():
                 objects=objects, tables={}, lines={}, daises={}, goods={k: n(t) for k, t in spec["goods"].items()},
                 looks=dict(_doc="벽면 → 벽 윗면 테두리, style = 바깥 집 양식 → {견본의 집 벽(plaster 그 집의 벽 · rubble 돌 아래층·불 방): 그 양식에서 설 벽면}. 빌더가 읽는다(src/ai/v2/place/builders/interiorExterior.ts).",
                            edge=TB.WALL_EDGE, style=TB.STYLE_WALLS))
+    full["personal"] = TB.PERSONAL
     if old.get("rooms"): full["rooms"] = old["rooms"]
     # 킷: 가구마다 한 장(bd-in:<id>) — 덧찍기(stamp_object)·고치기가 쓴다. 바깥 빈 땅 채우기는 «주제 소품» 을 흩지 않는다.
     kits = []

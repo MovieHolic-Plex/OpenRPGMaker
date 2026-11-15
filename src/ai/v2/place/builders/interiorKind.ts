@@ -93,6 +93,8 @@ const KIND_WORDS: readonly [RegExp, string[]][] = [
   [/빵/iu, ["bakery_shop", "bakery_oven"]],
 ];
 
+const WORD_KINDS = new Set(KIND_WORDS.flatMap(([, options]) => options));
+
 /** 쓰임 안의 방 낱말 → 방 종류 id 조각(학교의 교무실 → school-staffroom, 병원의 진료실 → cl-exam). */
 const SUBKIND_WORDS: readonly [RegExp, string][] = [
   [/교무실|staff ?room/iu, "staff"], [/보건실|양호실|infirmary/iu, "infirmary"], [/음악실|밴드|band|music/iu, "band"], [/과학실|실험실|science|lab/iu, "sci"],
@@ -137,11 +139,19 @@ export function resolveKind(tilesetId: string, zone: ZoneSpec, notes: string[], 
   }
   if (kinds.has(raw)) return raw;
   const text = `${raw} ${zone.purpose ?? ""}`;
+  const own = HAND_INTERIOR_SPECS[tilesetId];
+  const ownAlias = (among: readonly string[], min = 1): string | undefined => {
+    const hay = `${text} ${placeName}`.toLowerCase();
+    let best: { k: string; len: number; at: number } | undefined;
+    for (const k of among) { if (!kinds.has(k)) continue; for (const a of own?.rooms?.kinds[k]?.alias ?? []) { const at = a.length >= min ? hay.lastIndexOf(a.toLowerCase()) : -1; if (at >= 0 && (!best || a.length > best.len || (a.length === best.len && at > best.at))) best = { k, len: a.length, at }; } }
+    return best?.k;
+  };
+  // 그 칩셋만 가진 방 종류(아래 두루 낱말 표가 낼 수 없는 것 — 어부 오두막·등대·방앗간·도공 일터)는 칩셋 별칭이 먼저다: 「어부 오두막」이 «오두막» 으로 살림집이 되지 않게.
+  if (own?.looks && own.rooms) { const hit = ownAlias(Object.keys(own.rooms.kinds).filter((k) => !WORD_KINDS.has(k)), 2); if (hit) return hit; }
   for (const [re, options] of KIND_WORDS) if (re.test(text)) { const hit = options.find((k) => kinds.has(k)); if (hit) return hit; }
   // 칩셋의 방 표가 제 별칭을 가진 «집 안도 짓는 칩셋»(모습 표 looks — 버들항): 그 별칭이 방 이름에 들어 있으면 그 종류(「촌장 집」→ 살림집 방).
-  // 요청 낱말 목록이 아니라 칩셋 자료다 — 견본이 있는 종류만 답한다.
-  const own = HAND_INTERIOR_SPECS[tilesetId];
-  if (own?.looks && own.rooms) for (const [k, v] of Object.entries(own.rooms.kinds)) if (kinds.has(k) && v.alias.some((a) => a.length >= 1 && `${text} ${placeName}`.toLowerCase().includes(a.toLowerCase()))) return k;
+  // 요청 낱말 목록이 아니라 칩셋 자료다 — 견본이 있는 종류만 답한다. 여럿이 맞으면 가장 긴 별칭, 같으면 글에서 더 뒤에 나온 것(「여관 객실」의 객실).
+  if (own?.looks && own.rooms) { const hit = ownAlias(Object.keys(own.rooms.kinds)); if (hit) return hit; }
   // 쓰임을 아는데 이 칩셋에 그 견본이 없으면 거실로 떨어지지 않게 가장 덜 «집» 같은 방(현관·복도)으로 — 거실 견본은 소파·냉장고를 깐다.
   const known = told ?? ctx;
   const neutral = known ? ["entrance", "corridor", "hall", "lobby", "waiting_room", "storeroom"].find((k) => kinds.has(k)) : undefined;
