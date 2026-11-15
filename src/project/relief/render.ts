@@ -462,37 +462,45 @@ function naturalLedges(ax: number, ay: number): number {
   return clampTone(Math.min(4, sh));
 }
 /**
- * 바위 절벽(참고 그림 3 의 회갈색 바위): 비스듬히 선 길쭉한 밝은 바위 조각(폭 3~5 · 높이 4~6px)이 짙은 틈 사이로 엇갈려 박히고,
- * 폭이 고르지 않은 세로 금이 14~33px 마다 절벽을 내리긋는다(휘고, 군데군데 끊기고, 두 화소로 벌어진다). 금 사이 한 폭은 기둥처럼
- * 왼쪽이 밝고 오른쪽이 어두우며, 폭마다 조각이 기우는 쪽이 다르다. 벽 램프 1~5.
+ * 바위 절벽(참고 그림 3 의 회갈색 바위): 비스듬히 선 밝은 바위 조각이 짙은 틈 사이로 엇갈려 박힌다. 조각은 두 벌 — 큰 조각(폭 6~14 · 높이 9~14px,
+ * 자리 열에 넷쯤)이 먼저 서고 그 사이를 잔 조각(폭 3~5 · 높이 4~6px)이 메워 크기가 고르지 않다. 폭이 고르지 않은 세로 금이 14~33px 마다
+ * 절벽을 내리긋고(휘고, 군데군데 끊기고, 두 화소로 벌어진다) 셋에 하나는 끊기지 않는 긴 금이라 두세 칸 높이를 그대로 잇는다. 금 사이 한 폭은
+ * 기둥처럼 왼쪽이 밝고 오른쪽이 어두우며, 폭마다 조각이 기우는 쪽이 다르다. 벽 램프 1~5.
  */
 function naturalRock(ax: number, ay: number): number {
   const fx = (k: number) => k * 22 + nmix(k, 0, 71) % 12 + Math.round(4 * (vn1(ay * 0.07, 700 + k) - 0.5));
   let k = fdiv(ax, 22) + 1; while (ax < fx(k)) k -= 1;
   const x0 = fx(k), x1 = Math.max(x0 + 6, fx(k + 1)), off = ax - x0, u = off / (x1 - x0);
-  const open = vn1(ay * 0.04, 800 + k) > 0.16, wide = vn1(ay * 0.09, 900 + k) > 0.5;
+  const spine = nmix(k, 5, 71) % 3 === 0;                                    // 긴 금: 끊기지 않고 거의 내내 두 화소
+  const open = spine || vn1(ay * 0.04, 800 + k) > 0.16, wide = vn1(ay * 0.09, 900 + k) > (spine ? 0.22 : 0.5);
   if (open && (off === 0 || (wide && off === 1))) return 1;
-  // 바위 조각: 엇갈린 흩은 격자마다 기운 마름모꼴 조각 하나(폭 3~5 · 높이 4~6px, 일곱에 하나는 빈 자리). 조각 밖은 짙은 틈 —
-  // 조각 오른쪽 아래는 조각 그늘로 가장 짙다. 금 사이 한 폭 안에서는 조각이 같은 쪽으로 기울고, 다섯에 하나만 반대로 눕는다.
+  // 바위 조각: 엇갈린 흩은 격자 칸마다 기운 마름모꼴 조각 하나. 조각 밖은 짙은 틈 — 조각 오른쪽 아래는 조각 그늘로 가장 짙다.
+  // 금 사이 한 폭 안에서는 조각이 같은 쪽으로 기울고, 다섯에 하나만 반대로 눕는다. big = 큰 조각 벌(격자 12×13), 아니면 잔 조각 벌(5×6).
   const lean0 = nmix(k, 3, 71) & 1 ? 0.4 : -0.4;
-  const inChip = (x: number, y: number): number => {
-    const gy = fdiv(y, 6);
+  const inChip = (x: number, y: number, big: boolean): number => {
+    const gw = big ? 12 : 5, gh = big ? 13 : 6, gy = fdiv(y, gh);
     for (let j = gy - 1; j <= gy + 1; j += 1) {
-      const st = j & 1 ? 2 : 0, gx = fdiv(x - st, 5);
+      const st = j & 1 ? gw >> 1 : 0, gx = fdiv(x - st, gw);
       for (let i = gx - 1; i <= gx + 1; i += 1) {
-        const h = nmix(i, j, 72); if (h % 7 === 0) continue;
-        const cx = i * 5 + st + 2 + (h >>> 3) % 2, cy = j * 6 + 2 + (h >>> 5) % 3, hw = 1.3 + ((h >>> 8) % 3) * 0.4, hh = 2.0 + ((h >>> 11) % 3) * 0.5;
-        const lean = (h >>> 14) % 5 === 0 ? -lean0 : lean0, dy = y - cy, dx = x - cx + lean * dy;
-        if (Math.abs(dy) > hh || Math.abs(dx) > hw || Math.abs(dx) / hw + Math.abs(dy) / hh > 1.6) continue;
-        return dy <= -hh + 1 && dx < hw - 0.9 ? 5 : dx >= hw - 0.9 || dy >= hh - 0.9 ? 3 : 4;
+        const h = nmix(i, j, big ? 74 : 72); if (big ? h % 10 >= 4 : h % 7 === 0) continue;
+        const cx = i * gw + st + (gw >> 1) + (h >>> 3) % (big ? 4 : 2), cy = j * gh + (gh >> 1) - 1 + (h >>> 5) % 3;
+        const hw = big ? 3 + ((h >>> 8) % 9) * 0.5 : 1.3 + ((h >>> 8) % 3) * 0.4, hh = big ? 4.5 + ((h >>> 12) % 6) * 0.5 : 2.0 + ((h >>> 11) % 3) * 0.5;
+        const lean = (h >>> 17) % 5 === 0 ? -lean0 : lean0, dy = y - cy, dx = x - cx + lean * dy;
+        if (Math.abs(dy) > hh || Math.abs(dx) > hw || Math.abs(dx) / hw + Math.abs(dy) / hh > (big ? 1.7 : 1.6)) continue;
+        const rim = big ? 1.4 : 0.9;
+        if (dx >= hw - rim || dy >= hh - rim) return 3;
+        // 큰 조각의 면: 왼쪽 위가 밝고, 결 한 줄이 비스듬히 지난다
+        if (big) return dy <= -hh + 1.6 || (dx <= -hw + 1.2 && dy < 0) ? 5 : dx > hw * 0.2 && (h >>> 20) % 2 ? 3 : 4;   // 윗모서리·왼쪽 위 모서리는 밝고, 둘에 하나는 오른쪽 면이 한 톤 어둡다(각진 판)
+        return dy <= -hh + 1 && dx < hw - 0.9 ? 5 : 4;
       }
     }
     return 0;
   };
   const shade = vn2(ax * 0.05, ay * 0.06, 73);
-  let sh = inChip(ax, ay);
-  if (sh) { if (u > 0.8 || shade < 0.26) sh -= 1; }
-  else sh = inChip(ax - 1, ay - 1) || shade < 0.42 ? 1 : 2;
+  let sh = inChip(ax, ay, true);
+  if (!sh) sh = inChip(ax - 1, ay, true) || inChip(ax, ay - 1, true) || inChip(ax + 1, ay, true) ? -1 : inChip(ax, ay, false);   // 큰 조각 둘레 한 화소는 틈
+  if (sh > 0) { if (u > 0.8 || shade < 0.26) sh -= 1; }
+  else sh = sh < 0 || inChip(ax - 1, ay - 1, false) || shade < 0.42 ? 1 : 2;
   if (open && off === (wide ? 2 : 1)) sh -= 1;                               // 금 오른쪽 그늘
   return clampTone(sh);
 }
