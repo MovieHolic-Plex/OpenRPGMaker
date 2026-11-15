@@ -5,7 +5,7 @@
   python3 scripts/content/beodeul-house-styles/bake.py               # 굽는다
   python3 scripts/content/beodeul-house-styles/bake.py --check       # 다시 구워 지금 파일과 같은지만
   python3 scripts/content/beodeul-house-styles/bake.py --dev         # 관문 없이(표의 gate 가 DEV — 시험이 막는다, 커밋하지 않는다)
-  python3 scripts/content/beodeul-house-styles/bake.py --renumber    # 내 칸을 시트 끝에서 떼어 새 번호로(출하 전에만 — main 의 시트가 먼저 자랐을 때)
+  python3 scripts/content/beodeul-house-styles/bake.py --renumber    # 내 칸을 비우고 자리 첫 칸부터 새 번호로(출하 전에만)
 
 그림 정본: tiledata/beodeul-house-styles/<양식>/houses/<집>.png (+ -shadow · -foundation) — assemble.py 가 부품(parts/)을 조립한 것. 목록·칸 크기·문 칸은 styles.json.
 킷(중세 무리 bd-house-mk-* 와 같은 놓는 법): 본체 `bd-house-st-<양식>-<집>` 3층 · 바닥 그림자 `bd-st-shadow-…` 2층 · 기초 `bd-st-foundation-…` 4층, 같은 원점.
@@ -15,9 +15,9 @@
 이 그림들은 **3/4 관문 미통과 — 오너 면제 묶음**(styles.json waiver, harness-data/object-gate/waivers)으로 출구를 지난다. 면제는 그림 화소 해시에 묶여 있어
 한 화소라도 바꾸면 굽기가 멈춘다. 면제는 통과가 아니다(스토어 출구는 막힌다).
 
-칸 번호: 덧붙이기 전용. 이미 구운 집은 catalog.json 에 적힌 번호를 지키고, 새 집은 그때의 시트 끝(다음 빈 줄)에 붙는다 — 그래서 이 꼬리는 여러 토막일 수 있다.
-바로 앞 꼬리(이야기 기물 bd-obj-*, scripts/content/beodeul-objects/bake.py)는 아직 자라는 꼬리라, 처음 구울 때 그 뒤에 빈 줄 RESERVE_ROWS 개를 비워 두고 시작한다(그만큼 기물 꼬리가
-제자리에서 자랄 수 있다 — 그 굽기는 뒤 꼬리를 건드리지 않고 자기 칸만 다시 쓰며, 내 첫 칸에 닿으면 멈춘다). 본체 칸은 집마다 따로 둔다(화소가 같아도 합치지 않는다 — 칸 하나가 한 집의 한 자리만 가리킨다),
+칸 번호: 이 꼬리의 자리는 BASE 38,272 ~ END 46,463 (8,192칸 = 64줄)으로 정해져 있다 — 앞(36,224~38,271, 16줄)은 아직 자라는 이야기 기물 꼬리(bd-obj-*,
+scripts/content/beodeul-objects/bake.py)의 몫으로 비워 두고, 뒤(46,464~)는 참고 건물 유형 꼬리(bd-bld-ref-*)가 쓴다. 덧붙이기 전용: 이미 구운 집은 catalog.json 에 적힌 번호를
+지키고, 새 집은 내 마지막 칸 다음부터 붙는다. 자리를 넘으면 멈춘다. 다른 꼬리의 칸·표·킷은 건드리지 않는다(내 킷은 정의 목록의 제자리에서 바뀐다). 본체 칸은 집마다 따로 둔다(화소가 같아도 합치지 않는다 — 칸 하나가 한 집의 한 자리만 가리킨다),
 그림자·기초 칸은 집끼리 나눠 쓴다. main 을 합치다 시트·정의가 충돌하면 main 것을 받고 이 스크립트를 다시 돌린다(정의에 내 킷이 없으면 처음부터 새 번호로 굽는다).
 쓰는 것: public/assets/beodeul-city/beodeul-city-chipset.png · src/assets/beodeulCityTileset.json · src/assets/beodeulCitySheet.json ·
 tiledata/beodeul-house-styles/catalog.json(칸 번호·막힘·해시) · src/assets/beodeulHouseStyles.json(양식 표 — 빌더·겉모습 고르기가 읽는다).
@@ -36,7 +36,8 @@ STORE = ROOT / "tiledata/beodeul-house-styles"
 CATALOG = STORE / "catalog.json"
 TABLE = ROOT / "src/assets/beodeulHouseStyles.json"
 T, COLS = 16, 128
-RESERVE_ROWS = 16      # 처음 구울 때 앞 꼬리(이야기 기물) 뒤에 비워 두는 줄 수 — 2,048칸
+BASE, END = 38272, 46464      # 이 꼬리의 자리 [BASE, END) — 8,192칸. 앞 16줄은 이야기 기물 꼬리가 자랄 몫, END 부터는 참고 건물 유형 꼬리
+MINE = "버들항 집 · "            # 내 칸 이름표의 머리 — 자리 안의 다른 칸은 비어 있어야 한다
 HOUSE, SHADOW, FOUND = "bd-house-st-", "bd-st-shadow-", "bd-st-foundation-"
 PREFIXES = (HOUSE, SHADOW, FOUND)
 OPEN = {k: True for k in ("up", "down", "left", "right")}
@@ -119,18 +120,21 @@ def main():
         by_id = {k["id"]: [r["upperTiles"] for r in k["rows"]] for k in mine}
         for it in old["houses"]:
             assert by_id.get(it["id"]) == it["rows"], f"{it['id']}: 정의의 칸 번호가 카탈로그와 다르다 — 시트·정의를 main 것으로 되돌리고 다시 굽는다"
+    blank = []                        # --renumber: 비울 내 칸
     if a.renumber and old:
-        first = min(old["cellNumbers"])
-        base = first // COLS * COLS
-        assert set(range(first, max(old["cellNumbers"]) + 1)) <= set(old["cellNumbers"]) and ts["count"] - max(old["cellNumbers"]) <= COLS, "내 칸 뒤에 다른 꼬리가 붙었다 — 번호를 다시 매길 수 없다(출하된 번호다)"
-        gap = base - RESERVE_ROWS * COLS      # 비워 둔 줄도 같이 뗀다(아직 비어 있을 때만)
-        if gap >= 0 and not any(ts["tileMeta"][n].get("label") for n in range(gap, base)): base = gap
-        for k in ("passability", "priority", "terrain", "tileMeta"):
-            ts[k] = ts[k][:base]
-        ts["count"] = base
-        sheet = sheet.crop((0, 0, COLS * T, base // COLS * T))
+        blank = list(old["cellNumbers"])
+        for n in blank:
+            assert ts["tileMeta"][n].get("label", "").startswith(MINE), f"칸 {n} 은 내 칸이 아니다"
+            ts["passability"][n] = dict(OPEN); ts["priority"][n] = "lower"; ts["terrain"][n] = 0; ts["tileMeta"][n] = dict(label="", description="", source="bundled-default")
         old = None
-    ts["structureKits"] = [k for k in ts["structureKits"] if not k["id"].startswith(PREFIXES)]
+        last = max((n for n in range(ts["count"]) if ts["tileMeta"][n].get("label")), default=-1)      # 뒤에 아무 꼬리도 없으면 빈 줄을 떼어 낸다
+        keep = max(-(-(last + 1) // COLS) * COLS, 0)
+        if keep < ts["count"]:
+            for k in ("passability", "priority", "terrain", "tileMeta"): ts[k] = ts[k][:keep]
+            ts["count"] = keep; sheet = sheet.crop((0, 0, COLS * T, keep // COLS * T)); blank = [n for n in blank if n < keep]
+    first_kit = next((i for i, k in enumerate(ts["structureKits"]) if k["id"].startswith(PREFIXES)), None)
+    before_kits = [k for k in ts["structureKits"][:first_kit] if not k["id"].startswith(PREFIXES)] if first_kit is not None else ts["structureKits"]
+    after_kits = [k for k in ts["structureKits"][first_kit:] if not k["id"].startswith(PREFIXES)] if first_kit is not None else []
 
     # 칸 배정: 이미 구운 집은 그 번호(칸 꼴이 같아야 한다), 새 집·새 나눠 쓰는 칸은 시트 끝부터.
     number = {}                       # ("body", 집 id, x, y) | ("shared", 화소 해시) → 칸 번호
@@ -140,7 +144,7 @@ def main():
                 for x, n in enumerate(row):
                     if n >= 0: number[("body", it["id"], x, y)] = n
         for s, n in old["shared"].items(): number[("shared", s)] = n
-    start = ts["count"] if old else ts["count"] + RESERVE_ROWS * COLS
+    start = max(old["cellNumbers"]) + 1 if old else BASE
     nxt = [start]
     cell_px, cell_meta = {}, {}
 
@@ -195,15 +199,17 @@ def main():
     if old:
         gone = [it["id"] for it in old["houses"] if it["id"] not in {h["h"]["id"] for h in houses}]
         if gone: sys.exit(f"구운 집이 빠졌다: {gone} — 덧붙이기 전용이다(빼지 않는다)")
-    count = -(-nxt[0] // COLS) * COLS
     new_cells = nxt[0] - start
-    if not new_cells: count = ts["count"]
-    print(f"집 {len(houses)}채 · 칸 {len(cell_px)}개(새 칸 {new_cells}) → 시트 {ts['count']} → {count} ({(count - ts['count']) // COLS}줄 덧붙임{'' if old else f', 앞 {RESERVE_ROWS}줄은 기물 꼬리 몫으로 비움'})")
+    if nxt[0] > END: sys.exit(f"집 양식 자리 {BASE}..{END - 1} 를 넘는다: 마지막 칸 {nxt[0] - 1} — 자리를 다시 나눠야 한다")
+    if not mine and not blank and any(ts["tileMeta"][n].get("label") for n in range(BASE, min(END, ts["count"]))): sys.exit(f"집 양식 자리 {BASE}..{END - 1} 에 다른 꼬리의 칸이 있다 — 자리를 다시 나눠야 한다")
+    count = max(ts["count"], -(-nxt[0] // COLS) * COLS)
+    print(f"집 {len(houses)}채 · 칸 {len(cell_px)}개(새 칸 {new_cells}) · 자리 {BASE}..{END - 1} 가운데 {nxt[0] - BASE}칸 씀 → 시트 {ts['count']} → {count} ({(count - ts['count']) // COLS}줄 덧붙임)")
     if a.dry:
         return
 
     canvas = Image.new("RGBA", (COLS * T, count // COLS * T), (0, 0, 0, 0))
     canvas.alpha_composite(sheet, (0, 0))
+    for n in blank: canvas.paste((0, 0, 0, 0), ((n % COLS) * T, (n // COLS) * T, (n % COLS + 1) * T, (n // COLS + 1) * T))
     for k in ("passability", "priority", "terrain", "tileMeta"):
         assert len(ts[k]) == ts["count"], k
     for n in range(ts["count"], count):
@@ -215,7 +221,7 @@ def main():
         m = cell_meta[n]
         ts["passability"][n] = dict(m["pass_"]); ts["priority"][n] = "upper"; ts["terrain"][n] = 0
         ts["tileMeta"][n] = dict(label=m["label"], description=m["description"], tags=m["tags"], defaultLayer="upper", passage=m["passage"], source="bundled-default")
-    ts["structureKits"] += kits
+    ts["structureKits"] = before_kits + kits + after_kits      # 내 킷은 목록의 제자리(처음이면 끝)
     ts["count"] = count
     styles = {}
     for st in spec["styles"]:
@@ -224,7 +230,7 @@ def main():
         styles[st["id"]] = dict(label=st["name"], en=st["en"], houses=[dict(id=h["id"], role=h["role"], w=h["width"], h=h["height"]) for h in hs_])
     table = dict(_doc="버들항 집 양식 표 — scripts/content/beodeul-house-styles/bake.py 가 굽는다(손으로 고치지 않는다). 양식마다 집 킷과 역할: 빌더는 오두막·살림집·큰 집을 본 무리로, 가게집을 강조로, 여관·회관·일터를 앵커로 쓴다. 양식 순서가 게임 열쇠의 고르기 순번이므로 새 양식은 끝에 더한다.",
                  version=1, tilesetId="beodeul_city", gate=gate, kitPrefix=HOUSE, shadowPrefix=SHADOW, foundationPrefix=FOUND, styles=styles)
-    catalog = dict(tilesetId="beodeul_city", texture="tex_beodeul_city", tileSize=T, tilesPerRow=COLS, kitPrefix=HOUSE, shadowPrefix=SHADOW, foundationPrefix=FOUND,
+    catalog = dict(tilesetId="beodeul_city", texture="tex_beodeul_city", tileSize=T, tilesPerRow=COLS, base=BASE, end=END, kitPrefix=HOUSE, shadowPrefix=SHADOW, foundationPrefix=FOUND,
                    source="scripts/content/beodeul-house-styles/bake.py (parts by Claude Fable 5.2 medium one-shot + code-made material tiles after original Beodeul patterns, assembled by code)",
                    gate=gate, cellNumbers=sorted(cell_px), shared={k[1]: n for k, n in number.items() if k[0] == "shared" and n in cell_px}, houses=out_houses)
     outputs = [(TS_PATH, json.dumps(ts, ensure_ascii=False, separators=(",", ":")) + "\n"), (SHEET_JSON, json.dumps(dict(count=count, tilesPerRow=COLS)) + "\n"),

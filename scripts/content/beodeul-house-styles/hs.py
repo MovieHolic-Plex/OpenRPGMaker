@@ -205,7 +205,8 @@ class Kit:
                     ys = np.nonzero(cp[:, xx - cx0, 3])[0]
                     if len(ys): s.shade_under(a, xx, xx + 1, cy + int(ys.max()) + 1, 3)
                 rm = np.zeros(a.shape[:2], bool); sub = rm[max(0, cy):cy + cp.shape[0], max(0, cx0):cx0 + cp.shape[1]]; sub |= cp[max(0, -cy):, max(0, -cx0):, 3][:sub.shape[0], :sub.shape[1]] > 0
-                rec['roofs'].append(dict(k='t', exempt=True, mask=rm))
+                rec['roofs'].append(dict(k='t', exempt=True, mask=rm, cx2=2 * cx0 + cp.shape[1]))
+                assert cx0 >= 0 and cx0 + cp.shape[1] <= a.shape[1] and cy >= 0 and 2 * cx0 + cp.shape[1] == 2 * x + w, f"탑 지붕이 그림 밖으로 나가거나 벽 가운데에 서지 않는다: x {x} w {w} 지붕 폭 {cp.shape[1]}"
         elif v['k'] == 'f':                                                       # 평지붕: 옥상 바닥(위에서 본 직사각형) + 난간벽
             th = v['th']; ry = top - th; X0, X1 = x - ov, x + w + ov; rim = s.cfg['rim']; n = len(s.R[rim]) - 1
             s.put(a, s.tile(s.cfg['terrace'], X1 - X0, th + 2, ox=X0 * 3, oy=ry * 5), X0, ry)
@@ -284,13 +285,14 @@ class Kit:
             a[yb - 2, xx] = s.c(f'{f}:{hi}' if (xx * 7) % 11 == 0 else f'{f}:{min(5, hi)}'); a[yb - 1, xx] = s.c(f'{f}:1')
         s.cyl_shade(a, x, w, top, base + 2)
         cone = s.part(v['cone']); ch, cw = cone.shape[:2]; full = np.concatenate([cone, cone[:, ::-1]], axis=1); X0 = x + w // 2 - cw; Y0 = top + v.get('drop', 8) - ch
+        assert w % 2 == 0 and X0 >= 0 and X0 + 2 * cw <= a.shape[1] and Y0 >= 0, f"원뿔 지붕이 그림 밖으로 나간다: x {x} w {w} 원뿔 폭 {2 * cw} (그림 폭 {a.shape[1]})"
         s.put(a, full, X0, Y0)
         rm = np.zeros(a.shape[:2], bool); yy0, xx0 = max(0, Y0), max(0, X0); sub = rm[yy0:Y0 + ch, xx0:X0 + 2 * cw]; sub |= full[yy0 - Y0:, xx0 - X0:, 3][:sub.shape[0], :sub.shape[1]] > 0
         s.shift_floor(a, -1, 1, X0 + cw, 0, X0 + 2 * cw, a.shape[0], rm)                                 # 거울로 맞춘 오른 절반은 한 단 어둡게
         for xx in range(max(0, x), min(a.shape[1], x + w)):
             ys = np.nonzero(rm[:, xx])[0]
             if len(ys): s.shade_under(a, xx, xx + 1, int(ys.max()) + 1, 3)
-        rec['roofs'].append(dict(k='r', exempt=True, mask=rm)); rec['walls'].append((x, top, x + w, base + 2))
+        rec['roofs'].append(dict(k='r', exempt=True, mask=rm, cx2=2 * x + w)); rec['walls'].append((x, top, x + w, base + 2))
     # ── 붙는 것 ─────────────────────────────────────────────────────────
     def feat(s, a, f, H):
         """f: (부품, x, 밑 y[, 옵션]) — 밑 y 는 부품 맨 아랫줄 다음 줄. 옵션: crop (x0,y0,x1,y1) · w 이어 붙일 폭 · flip · dark 어둡게 한 단."""
@@ -319,6 +321,15 @@ def measure(a, rec):
             xs = np.nonzero(r['mask'][y])[0]
             if len(xs): ls.append(int(xs.min())); rs.append(int(xs.max()))
         if ls: worst = max(worst, max(ls) - min(ls), max(rs) - min(rs))
+    return worst
+def asymmetry(rec):
+    """둥근 지붕·탑 지붕(옆선 수직 예외)의 좌우 대칭 편차(px): 줄마다 지붕의 왼 끝·오른 끝이 그 덩어리 벽의 가운데에서 같은 거리인지 — 어긋난 px 가운데 가장 큰 값.
+    정면에서 본 좌우 대칭 꼴이어야 한다 — 옆면 음영은 색으로만 낸다."""
+    worst = 0
+    for r in rec['roofs']:
+        if not r.get('exempt'): continue
+        for y in np.nonzero(r['mask'].any(1))[0]:      # cx2 = 그 덩어리 벽 가운데의 두 배(화소 경계 좌표)
+            xs = np.nonzero(r['mask'][y])[0]; worst = max(worst, abs(int(xs.min()) + int(xs.max()) + 1 - r['cx2']))
     return worst
 def blocked_cells(a, rec, hc, wc):
     """막힌 칸: 벽이 실린 칸(벽 사각형이 칸 높이의 절반 넘게 덮는 칸) — 열마다 맨 아래 불투명 칸은 늘 막힌다. 나머지(지붕·처마)는 사람 위로 그려지는 통행 칸."""
@@ -370,6 +381,8 @@ def build(style, names=None):
         door = r.get('door', 'door'); dp = kit.part(door); assert dp.shape[1] == T, f'{door}: 문 부품은 폭 16px'
         r['feats'] = list(r.get('feats', [])) + [(door, dx * T, r['h'] * T, dict(shade=False))]      # 문은 늘 문 칸 열에 딱 맞게, 맨 아랫줄까지
         a, rec = assemble(kit, r); im = Image.fromarray(a, 'RGBA'); blocked = blocked_cells(a, rec, r['h'], r['w'])
+        host = next((v for v in reversed(r['vols']) if v['x'] <= dx * T and (dx + 1) * T <= v['x'] + v['w'] and v.get('base', r['h'] * T - 2) == r['h'] * T - 2), None)      # 문이 선 덩어리(맨 앞 것)
+        assert not (host and host['k'] == 'r') or 2 * host['x'] + host['w'] == 2 * dx * T + T, f'{style}/{n}: 문 칸 {dx} 이 둥근 벽의 가운데가 아니다(벽 {host["x"]}..{host["x"] + host["w"]})'
         for y in (dy - 1, dy):
             assert a[y * T:(y + 1) * T, dx * T:(dx + 1) * T, 3].any(), f'{style}/{n}: 문 칸 ({dx},{y}) 이 비었다'
             if (dx, y) not in blocked: blocked.append((dx, y))
@@ -377,6 +390,6 @@ def build(style, names=None):
         over = [(kit.part(f[0]), f[1], f[2] - kit.part(f[0]).shape[0]) for f in r.get('over', [])]
         shadow, found, lines = companions(a, blocked, over)
         fl, cols = flatness(im)
-        out[n] = dict(im=im, shadow=shadow, foundation=found, blocked=[list(b) for b in blocked], door=[dx, dy], side=measure(a, rec), flat=fl, cols=cols, lines=lines, spec=sp,
+        out[n] = dict(im=im, shadow=shadow, foundation=found, blocked=[list(b) for b in blocked], door=[dx, dy], side=measure(a, rec), sym=asymmetry(rec), flat=fl, cols=cols, lines=lines, spec=sp,
                       roofs=[r_['k'] for r_ in rec['roofs']], roof=r.get('roof', 'roof'))
     return out

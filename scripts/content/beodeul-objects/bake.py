@@ -46,7 +46,6 @@ STORE = ROOT / "tiledata/beodeul-objects"
 CATALOG = STORE / "catalog.json"
 T, COLS, BASE = 16, 128, 34944
 KIT_PREFIX = "bd-obj-"
-LATER_KIT_PREFIXES = ("bd-house-st-", "bd-st-shadow-", "bd-st-foundation-")   # 이 꼬리 뒤에 붙는 집 양식 꼬리의 킷 — 다시 구워도 그 킷·칸은 그대로 둔다
 FAMILY_KO = {"water": "물가", "entrance": "입구", "story": "이야기 물건", "camp": "야영", "farm": "농장", "swamp": "늪", "mine": "광산", "village": "마을", "ruin": "유적", "harbour": "항구",
              "forest": "숲 바닥", "cliff": "절벽·바위", "grave": "묘지", "road": "길가"}
 OPEN = {k: True for k in ("up", "down", "left", "right")}
@@ -152,8 +151,8 @@ def main():
         sys.exit(f"시트가 {BASE} 칸보다 짧다({sheet_count}) — 옛 상수도 꼬리(bake_waterworks.py)부터 굽는다")
     sheet = Image.open(SHEET_PATH).convert("RGBA")
     ts = json.loads(TS_PATH.read_text())
-    # 뒤에 다른 꼬리(집 양식 bd-house-st-* — scripts/content/beodeul-house-styles/bake.py)가 붙어 있으면 내 칸 [BASE, count) 만 제자리에서 다시 쓰고 그 뒤는 그대로 둔다.
-    # 그 꼬리는 출하된 칸 번호라 밀 수 없다 — 내 꼬리가 그 첫 칸까지 자라면 멈춘다(그때는 뒤 꼬리 뒤에 새 토막을 연다).
+    # 뒤에 다른 꼬리(집 양식 bd-house-st-* 38,272~ · 참고 건물 유형 bd-bld-ref-* 46,464~)가 붙어 있으면 내 칸 [BASE, count) 만 제자리에서 다시 쓰고 그 뒤는 그대로 둔다.
+    # 이 꼬리의 몫은 38,271 까지다(집 양식 굽기가 그 앞 16줄을 비워 둔다). 뒤 꼬리는 출하된 칸 번호라 밀 수 없다 — 그 첫 칸까지 자라면 멈춘다(그때는 맨 뒤에 새 토막을 연다).
     total = max(count, sheet_count)
     foreign = [n for n in range(BASE, min(count, sheet_count)) if ts["tileMeta"][n].get("label") and not ts["tileMeta"][n]["label"].startswith("버들항 기물")]
     if foreign:
@@ -182,9 +181,9 @@ def main():
         ts["tileMeta"].append(dict(label="", description="", source="bundled-default"))
     kits = [kit_of(it, rows_of[it["id"]], variant_base(it, ts) if it.get("variantOf") else None) for it in items]
     for k in after: ts[k] += after[k]
-    # 킷 순서: 내 킷은 뒤 꼬리의 킷보다 앞(뒤 꼬리가 없을 때와 같은 자리)
-    later = [k for k in ts["structureKits"] if k["id"].startswith(LATER_KIT_PREFIXES)]
-    ts["structureKits"] = [k for k in ts["structureKits"] if not k["id"].startswith(KIT_PREFIX) and not k["id"].startswith(LATER_KIT_PREFIXES)] + kits + later
+    # 킷 순서: 내 킷은 목록의 제자리에서 바뀐다(뒤 꼬리의 킷은 그 뒤에 그대로) — 처음이면 끝에 붙는다
+    at = next((i for i, k in enumerate(ts["structureKits"]) if k["id"].startswith(KIT_PREFIX)), len(ts["structureKits"]))
+    ts["structureKits"] = [k for k in ts["structureKits"][:at] if not k["id"].startswith(KIT_PREFIX)] + kits + [k for k in ts["structureKits"][at:] if not k["id"].startswith(KIT_PREFIX)]
     ts["count"] = total
     out.save(SHEET_PATH, optimize=True)
     TS_PATH.write_text(json.dumps(ts, ensure_ascii=False, separators=(",", ":")) + "\n")
