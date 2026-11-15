@@ -11,6 +11,7 @@ import type { GameMap, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 import { runTool } from "./toolRunner";
 import { requireMap } from "./mapHelpers";
+import { relayBeodeulWaterSurface } from "./beodeulWater";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 export type Side = "north" | "south" | "east" | "west";
@@ -468,6 +469,7 @@ const authorForestRoute: ToolDefinition = {
       const built = d ? designedForestSpec(id, name, side, seed0 + i * 97, i === count - 1, field, d, terrain === "edge") : undefined;
       const { spec, entry, exit } = built ?? forestSpec(id, name, side, seed0 + i * 97, i === count - 1, entryU, terrain);
       const result = paintWoodland(draft, spec);
+      relayBeodeulWaterSurface(draft.maps[id], draft.tilesets[draft.maps[id]?.tilesetId ?? ""], seed0 + i * 97);
       if (built) {
         warnings.push(...built.notes.map((n) => `${name}: ${n}`));
         const twin = earlier.find((e) => sameShape(e.line, built.line));

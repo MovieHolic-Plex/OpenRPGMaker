@@ -33,7 +33,7 @@ export const chestOpenScenario = {
     },
     {
       id: "open-chest",
-      note: "조사 → 개봉 SE → 뚜껑 프레임 → 아이템 징글 → 동전 → 「손에 넣었다」 대사창(판정점)",
+      note: "조사 → 개봉 SE → 뚜껑 프레임 → 아이템 징글 → 동전 → 「얻었다」 대사창(판정점)",
       ops: [
         { kind: "action" },
         { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 15_000 },

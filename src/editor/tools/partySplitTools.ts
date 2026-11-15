@@ -9,7 +9,7 @@
 import { canMove } from '@/project/collision';
 import { eventAlwaysBlocks } from '@/project/eventPassageBlock';
 import type { Command, EventPage, GameEvent, GameMap, Project } from '@/project/types';
-import { withJosa } from '@/util/josa';
+import { roJosa, withJosa } from '@/util/josa';
 import { assertEventShape, upsertEventIntoMap } from './eventTools';
 import { crystalGraphic } from './eventCompile';
 import { ensureNamedSwitch } from './flagHelpers';
@@ -526,7 +526,7 @@ export const PARTY_SPLIT_TOOLS: readonly ToolDefinition[] = [
         const other = group.key === 'a' ? groupB : groupA;
         const mine = ifSw(CTRL_B, group.key === 'b', [
           choices(`${other.name} 쪽으로 바꿀까?`, [
-            { text: `${other.name}(으)로 바꾼다`, branch: [sfx('switch-clack'), ...recall(other)] },
+            { text: `${other.name}${roJosa(other.name)} 바꾼다`, branch: [sfx('switch-clack'), ...recall(other)] },
             { text: '그대로 간다', branch: [] },
           ]),
         ], [textCmd(optText(args.switchIdleText) ?? '희미하게 빛나는 구슬이다.')]);
