@@ -94,28 +94,29 @@ describe("버들항 풀 결 — 기본 풀 바닥의 변형", () => {
     expect(deserialize(serialize(project)).tilesets[TS]!.look).toEqual(project.tilesets[TS]!.look);
   });
 
-  it("갈래 더하기: 풀 결과 물빛이 함께 있어도 갈래마다 제 이름으로만 고른다 — 한 갈래가 늘어도 다른 갈래의 값이 밀리지 않는다", () => {
-    // 물빛(water, #4724)과 풀 결(grain)은 같은 날 따로 덧붙었다. 한쪽을 뺀 갈래 목록(= 합치기 전의 두 가지)으로 골라도 남은 갈래의 값이 같아야 한다.
-    expect(TILESET_LOOK_PARTS).toEqual(expect.arrayContaining(["water", "grain"]));
+  it("갈래 더하기: 풀 결·물빛·절벽 모습이 함께 있어도 갈래마다 제 이름으로만 고른다 — 한 갈래가 늘어도 다른 갈래의 값이 밀리지 않는다", () => {
+    // 물빛(water, #4724)·절벽 모습(cliff, #4727)·풀 결(grain)은 같은 날 따로 덧붙었다. 풀 결은 맨 뒤다.
+    // 한 갈래를 뺀 목록(풀 결을 빼면 = main 의 목록)으로 골라도 남은 갈래 — 물빛·절벽 모습과 그 앞의 일곱 — 의 값이 같아야 한다.
+    expect(TILESET_LOOK_PARTS.slice(-3)).toEqual(["water", "cliff", "grain"]);
     const parts = TILESET_LOOK_PARTS as unknown as string[], full = [...parts];
     const keys = Array.from({ length: 400 }, (_, n) => JSON.stringify(["project", `both-${n}`]));
-    const taken: TilesetLook[] = [{ textureKey: looks.texture, surface: "heath", stand: "oakwood", grain: "tufted", water: tilesetLookOptions(looks, "water")[0]!, standKey: table.texture }];
+    const taken: TilesetLook[] = [{ textureKey: looks.texture, surface: "heath", stand: "oakwood", grain: "tufted", water: tilesetLookOptions(looks, "water")[0]!, cliff: tilesetLookOptions(looks, "cliff")[0]!, standKey: table.texture }];
     const pickWith = (list: readonly string[], others?: readonly TilesetLook[]) => {
       parts.splice(0, parts.length, ...list);
       try { return keys.map((key) => chooseTilesetLook(looks, key, others) as Record<string, string | undefined> | undefined); } finally { parts.splice(0, parts.length, ...full); }
     };
     for (const others of [undefined, taken]) {
       const all = pickWith(full, others);
-      for (const dropped of ["grain", "water"]) {
+      for (const dropped of ["grain", "water", "cliff"]) {
         const rest = full.filter((part) => part !== dropped), without = pickWith(rest, others);
         for (let n = 0; n < keys.length; n += 1) for (const part of rest) expect(all[n]?.[part], `${dropped} 빼고 ${keys[n]} ${part}`).toBe(without[n]?.[part]);
         for (const look of without) expect(look?.[dropped]).toBeUndefined();
       }
-      // 두 갈래 모두 «원래 그림» 이 없다 — 새 게임은 물빛 하나·풀 결 하나를 늘 받는다
-      for (const look of all) { expect(look?.water).toBeTruthy(); expect(look?.grain).toBeTruthy(); }
+      // 세 갈래 모두 «원래 그림» 이 없다 — 새 게임은 물빛 하나·절벽 모습 하나·풀 결 하나를 늘 받는다
+      for (const look of all) { expect(look?.water).toBeTruthy(); expect(look?.cliff).toBeTruthy(); expect(look?.grain).toBeTruthy(); }
     }
     expect([...TILESET_LOOK_PARTS]).toEqual(full);
-    // 합치기 전(2026-11-14, 풀 결만 있던 가지)에 지어 본 여섯 게임의 겉모습 — 물빛이 더해진 뒤에도 물빛 말고는 그대로다
+    // 합치기 전(2026-11-14, 풀 결만 있던 가지)에 지어 본 여섯 게임의 겉모습 — 물빛·절벽 모습이 더해진 뒤에도 그 둘 말고는 그대로다
     const before: Record<string, TilesetLook> = {
       "game-a": { textureKey: looks.texture, surface: "heath", houses: "timber", plaza: "statue", stand: "cypresshill", meadow: "rough", grain: "tufted", standKey: table.texture },
       "game-b": { textureKey: looks.texture, surface: "heath", trees: "apple", houses: "timber", plaza: "round", stand: "garrigue", grain: "tufted", standKey: table.texture },
@@ -125,9 +126,9 @@ describe("버들항 풀 결 — 기본 풀 바닥의 변형", () => {
       "game-f": { textureKey: looks.texture, surface: "steppe", woods: "rows", houses: "stone", plaza: "green", stand: "olivegrove", meadow: "clover", grain: "flowery", standKey: table.texture },
     };
     for (const [key, look] of Object.entries(before)) {
-      const { water, waterKey, ...rest } = chooseTilesetLook(looks, key)!;
+      const { water, waterKey, cliff, ...rest } = chooseTilesetLook(looks, key)!;
       expect(rest, key).toEqual(look);
-      expect(water).toBeTruthy(); expect(waterKey).toBeTruthy();
+      expect(water).toBeTruthy(); expect(waterKey).toBeTruthy(); expect(cliff).toBeTruthy();
     }
   });
 
