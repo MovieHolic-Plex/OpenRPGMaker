@@ -20,6 +20,7 @@ import { planObjective } from "@/ai/v2/judge/objectivePlan";
 import { objectiveCommand } from "@/ai/v2/judge/objectiveCommand";
 import { createZoneFeedbackModel, currentObjectiveText, updateZoneFeedback } from "@/player/zoneFeedback";
 import { blockCutsPath } from "@/editor/tools/dungeonTools";
+import { sceneCraftFindings } from "@/ai/v2/judge/sceneCraft";
 import { localizeCultureSpec } from "@/ai/v2/place/builders/joseon";
 import { sayAs } from "@/ai/v2/story/playerLines";
 
@@ -228,6 +229,8 @@ describe("레버 관문의 자리 — 확인 빌드 r5", () => {
         gates += 1;
         expect(blockCutsPath(ctx.project, map, block), `${type}#${seed}`).toBe(true);
       }
+      // 길 폭만큼의 칸이 한 막이다 — 칸마다 같은 글을 «같은 줄이 두 번» 으로 모델에게 돌려보내지 않는다.
+      expect(sceneCraftFindings(createBlankProject(), ctx.project, "굴").filter((f) => f.id === "repeat"), `${type}#${seed}`).toEqual([]);
     }
     expect(gates).toBeGreaterThan(0);
   }, 60_000);
