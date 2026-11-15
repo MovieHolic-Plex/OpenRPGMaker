@@ -3022,8 +3022,15 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
   // 새 종류 기물(2026-11-14, beodeulObjectSets.ts): 풀밭 마을(강가·포구)에 그 게임의 살림·장터·일터·물가·물 위·들·바위·한 귀퉁이 물건을 놓는다.
   // 집·밭·길가 소품이 앉은 뒤, 숲이 서기 전 — 자리 검사는 위의 것 그대로(빈 땅·한 단·문 앞). 게임 열쇠가 없으면 아무것도 놓지 않는다.
+  // 숲이 먼저인 마을(keyedLast)은 숲과 «남은 땅의 쓰임» 밭이 선 뒤에 놓는다: 그 밭은 숲이 남긴 땅에 놓이는데 숲 자리는 먼저 앉은 기물을 비켜 서므로,
+  // 열쇠가 고르는 기물이 숲보다 먼저 앉으면 밭과 울타리 문 앞 골목(1층 바닥)이 게임 열쇠마다 달라진다(열쇠 없는 판과 1층이 아홉 칸 달랐다, test/tilesetLook).
+  // 바닥을 바꾸는 것은 열쇠가 고르는 것보다 앞에 다 정한다 — 기물은 길·집·물가 곁에 서는 것이라 숲 뒤에도 자리가 남는다.
   const newObjectStamps = new Map<Stamp, string>(); // 새 기물의 찍기 → 쓰임 이름(13 에서 길목에 선 것을 걷어 낼 때 쓴다)
-  const newObjects: Record<string, number> = theme !== "river" && theme !== "coast" ? {} : dressBeodeulObjects({
+  let newObjects: Record<string, number> = {};
+  let waterLife = null as ReturnType<typeof dressBeodeulWaterLife> | null;
+  const keyedLast = !!bodyNear && !denseWoods;
+  const dressKeyed = (): void => {
+  newObjects = theme !== "river" && theme !== "coast" ? {} : dressBeodeulObjects({
     W, H, key: activeKitLook(), seed, coast: theme === "coast",
     kit: (id) => kitIndex.get(id),
     cell: (x, y) => { const v = at(x, y); return v === 255 ? "out" : v === FREE ? "free" : v === ROAD ? "road" : v === PLAZAC ? "plaza" : v === WATERC ? "water" : v === BLD ? "building" : "other"; },
@@ -3042,11 +3049,13 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     plazaCells, work: workAt,
   });
   // 고인 물의 수련 무리와 그 곁 둑의 갈대(beodeulWater.ts) — 강·못에만(바다에는 띄우지 않는다), 건널 자리 둘레는 비운다.
-  const waterLife = naturalWater && theme !== "coast" ? dressBeodeulWaterLife({ W, H, seed, newKits: !!activeKitLook(), pools: codeT?.pools ?? [],
+  waterLife = naturalWater && theme !== "coast" ? dressBeodeulWaterLife({ W, H, seed, newKits: !!activeKitLook(), pools: codeT?.pools ?? [],
     // 폭포 위아래 두 줄은 고인 물이 아니다 — 수련을 띄우지 않는다
     wet: (x, y) => at(x, y) === WATERC, crossing: (x, y) => at(x, y) === KEEP || (codeT?.falls ?? []).some((f) => x >= f.x0 - 1 && x <= f.x1 + 1 && y >= f.y - 2 && y <= f.y + 3), taken: (x, y) => inMap(x, y) && onWater.has(idx(x, y)), kit: (id) => kitIndex.get(id),
     placeWater: (k, x, y) => { stamps.push({ kit: k.id, x, y, record: false }); for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) onWater.add(idx(x + i, y + j)); },
     fitsLand: (k, x, y) => propFits(K(k.id), x, y), placeLand: (k, x, y) => { claim(K(k.id), x, y, PROP, false); } }) : null;
+  };
+  if (!keyedLast) dressKeyed();
   // 숲 덩이(2026-10-18 사용자 반려 「버들 마을은 풀이 뭉쳐진 .. '숲' 을 구현하질 못함」): 나무 키트를 3~7그루씩 흩어 심으면
   // 수관 사이로 잔디가 보이는 덤불 뭉치가 된다. 풀밭·설원 마을은 길에서 떨어진 빈 땅에 둥근 숲 덩이(FOREST, 막힘)를 잡고
   // 12b 에서 이어진 수관 오토타일(BEODEUL_NATURE.forestCanopy)로 한 장에 덮는다. 낱 나무 덩이는 숲 가장자리 몇 그루로만 남긴다.
@@ -3312,6 +3321,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const seen = (c: number) => { const v = occ[c]!; return v === BLD || v === PROP || v === FENCE || v === FIELD || v === FOREST || onWater.has(c); };
     for (let round = 0; round < 4; round += 1) { const e = emptyWindows({ W, H, used: seen }); if (!e.length || !e.some((w0) => scanField(w0))) break; lateFields += 1; }
   }
+  if (keyedLast) dressKeyed();
   // 볼 것 없는 화면(20×15 창) 수 — 건물·기물·밭·울타리·숲 덩이·물 위 소품이 하나도 안 걸리는 창. 낱 나무를 심기 전에 센다.
   const emptyScreens = emptyWindows({ W, H, used: (c) => { const v = occ[c]!; return v === BLD || v === PROP || v === FENCE || v === FIELD || v === FOREST || onWater.has(c); } }).length;
   // 낱 나무 덩이: 길에서 3칸 이상 떨어진 빈 땅에 덩이 중심, 덩이마다 3~7그루(숲 덩이가 있으면 몇 덩이만)
