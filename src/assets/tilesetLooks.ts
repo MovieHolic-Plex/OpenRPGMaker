@@ -11,11 +11,13 @@ import beodeulLooks from "./beodeulLooks.json";
 import { tilesetStandTableFor } from "./tilesetStands";
 import { houseSetNames } from "./houseSets";
 import { houseStyleNames, houseStyleTableFor } from "./houseStyles";
+import { tilesetWaterTableFor, waterLookPairs } from "./tilesetWater";
 import type { TileGraft, TilesetDef, TilesetLook } from "@/project/types";
 
 // stand(숲 구성 — 섞인 수종·숲 수관·숲 바닥)·meadow(풀밭 얼룩)는 4차(2026-11-13)에 뒤에 덧붙였다 — 표는 assets/tilesetStands.ts. stand 를 고른 게임은 trees(수종 하나)를 겹치지 않는다.
-// houseStyle(집 양식 — 새 건축의 집 가족, assets/houseStyles.ts)은 2026-11-14 에 뒤에 덧붙였다 — 앞 갈래들의 고르기는 그대로다(갈래마다 따로 해시).
-export const TILESET_LOOK_PARTS = ["surface", "trees", "woods", "houses", "plaza", "stand", "meadow", "houseStyle"] as const;
+// water(물빛)는 2026-11-14 에 뒤에 덧붙였다 — 표는 assets/tilesetWater.ts. 이 갈래에는 «원래 그림» 선택지가 없다(원래 물은 초록 쪽이라 새 게임은 늘 물빛 하나를 받는다).
+// houseStyle(집 양식 — 새 건축의 집 가족, assets/houseStyles.ts)은 2026-11-14 에 그 뒤에 덧붙였다 — 앞 갈래들의 고르기는 그대로다(갈래마다 따로 해시).
+export const TILESET_LOOK_PARTS = ["surface", "trees", "woods", "houses", "plaza", "stand", "meadow", "water", "houseStyle"] as const;
 export type TilesetLookPart = (typeof TILESET_LOOK_PARTS)[number];
 
 type Sources = Readonly<Record<string, readonly number[]>>;
@@ -32,7 +34,7 @@ export type TilesetLookTable = {
   readonly count: number;
   readonly targets: { readonly ground: readonly number[]; readonly paved: readonly number[] };
   readonly grounds: Readonly<Record<string, { readonly base: number; readonly sources?: Sources }>>;
-  readonly parts: Readonly<Record<Exclude<TilesetLookPart, "stand" | "meadow" | "houseStyle">, { readonly options: Readonly<Record<string, LookOption>> }>>;
+  readonly parts: Readonly<Record<Exclude<TilesetLookPart, "stand" | "meadow" | "water" | "houseStyle">, { readonly options: Readonly<Record<string, LookOption>> }>>;
 };
 
 const TABLES: readonly TilesetLookTable[] = [beodeulLooks as unknown as TilesetLookTable];
@@ -60,11 +62,13 @@ function activeTable(tileset: LookTileset): TilesetLookTable | undefined {
 export function tilesetLookSignature(tileset: LookTileset): string {
   const table = activeTable(tileset);
   if (!table || !tileset.look) return "";
-  const { surface = "", trees = "", stand = "" } = tileset.look;
+  const { surface = "", trees = "", stand = "", water = "" } = tileset.look;
   const stands = tilesetStandTableFor(table.tilesetId);
   const standOn = !!stands?.stands[stand];
-  if (!table.parts.surface.options[surface] && !table.parts.trees.options[trees] && !standOn) return "";
-  return `${table.texture}@${table.version}:${surface}:${trees}${standOn ? `:${stands!.texture}@${stands!.version}:${stand}` : ""}`;
+  const waters = tilesetWaterTableFor(table.tilesetId);
+  const waterOn = !!waters?.looks[water];
+  if (!table.parts.surface.options[surface] && !table.parts.trees.options[trees] && !standOn && !waterOn) return "";
+  return `${table.texture}@${table.version}:${surface}:${trees}${standOn ? `:${stands!.texture}@${stands!.version}:${stand}` : ""}${waterOn ? `:${waters!.texture}@${waters!.version}:${water}` : ""}`;
 }
 
 const cache = new WeakMap<object, { readonly signature: string; readonly stored: readonly TileGraft[] | undefined; readonly length: number; readonly grafts: readonly TileGraft[] }>();
@@ -124,6 +128,21 @@ export function tilesetLookGrafts(tileset: LookTileset): readonly TileGraft[] {
     sources(stand.sources, standSources);
     redraw(standSources);
   }
+  // 물: 물가 둑 덧그림은 그 게임의 바닥 재질로(물빛을 고르지 않은 게임도), 물빛을 고른 게임은 물 칸·폭포 칸을 그 물빛으로.
+  // 물과 풀·포석이 함께 실린 칸은 위에서 바닥·길 겉모습이 이미 겹쳤다 — 뒤에 온 것이 이기므로(activeTileGrafts) 그 겉모습 위에 물만 다시 칠한 칸으로 덮는다.
+  const waters = tilesetWaterTableFor(table.tilesetId);
+  if (waters) {
+    sheetOf = waters;
+    const waterSources = new Map<string, number>();
+    const shore = surface?.ground ? waters.shoreGrounds[surface.ground] : undefined;
+    if (shore) sources({ [waters.texture]: shore }, waterSources);
+    const look = waters.looks[tileset.look?.water ?? ""];
+    if (look) {
+      for (const [target, source] of waterLookPairs(waters, tileset.look?.water, surface?.ground, surface?.base !== undefined ? tileset.look?.surface : undefined)) if (!storedTargets.has(target)) draw(target, source);
+      sources(look.sources, waterSources);
+    }
+    redraw(waterSources);
+  }
   cache.set(tileset, { signature, stored, length: stored?.length ?? 0, grafts: out });
   return out;
 }
@@ -133,8 +152,9 @@ export function tilesetLookGround(tilesetId: string, look: TilesetLook | undefin
   return tilesetLookTableFor(tilesetId)?.parts.surface.options[look?.surface ?? ""]?.ground;
 }
 
-/** 겉모습 갈래의 선택지 이름(표 순서). 맨 앞 "" 는 «원래 그림». */
+/** 겉모습 갈래의 선택지 이름(표 순서). 맨 앞 "" 는 «원래 그림» — 물빛(water)에는 없다. */
 export function tilesetLookOptions(table: TilesetLookTable, part: TilesetLookPart): string[] {
+  if (part === "water") return Object.keys(partOptions(table, part));
   // 집 양식: «양식 없음» 이 원래 가족과 집 벌들의 몫을 그대로 쥔다 — 집의 모습 (1 + 벌 수 + 양식 수) 가지가 같은 몫으로 갈린다(벌은 houses 갈래가 따로 고른다).
   if (part === "houseStyle") return [...Array<string>(1 + houseSetNames(table.tilesetId).length).fill(""), ...houseStyleNames(table.tilesetId)];
   return ["", ...Object.keys(partOptions(table, part))];
@@ -143,6 +163,7 @@ export function tilesetLookOptions(table: TilesetLookTable, part: TilesetLookPar
 function partOptions(table: TilesetLookTable, part: TilesetLookPart): Readonly<Record<string, { readonly label: string }>> {
   if (part === "stand") return tilesetStandTableFor(table.tilesetId)?.stands ?? {};
   if (part === "meadow") return tilesetStandTableFor(table.tilesetId)?.meadows ?? {};
+  if (part === "water") return tilesetWaterTableFor(table.tilesetId)?.looks ?? {};
   if (part === "houseStyle") return houseStyleTableFor(table.tilesetId)?.styles ?? {};
   return table.parts[part]?.options ?? {};
 }

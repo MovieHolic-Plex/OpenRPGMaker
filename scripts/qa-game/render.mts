@@ -269,6 +269,11 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
         strip(row.under);
         for (const cell of row.cells) if (cell.paintLower) ctx.drawImage(lower, cell.x * size, row.y * size, size, size, cell.x * size, cell.y, size, size);
         strip(row.over);
+        // 벽면 장식(덩굴·폭포 — relief.wallDecor): 그 칸 윗면 아래 row 번째 줄(게임 화면 playSceneRelief 와 같은 자리)
+        for (const d of map.relief?.wallDecor ?? []) if (d.y === row.y && row.cells[d.x]) {
+          const ts0 = tileset.tileSize, cols = Math.max(1, tileset.tilesPerRow);
+          ctx.drawImage(image, (d.tile % cols) * ts0, Math.floor(d.tile / cols) * ts0, ts0, ts0, d.x * size, row.cells[d.x]!.y + d.row * size, size, size);
+        }
         for (const cell of row.cells) ctx.drawImage(upper, cell.x * size, row.y * size, size, size, cell.x * size, cell.y, size, size);
         sunRow(row.y);
       }
