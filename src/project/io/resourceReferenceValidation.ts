@@ -98,6 +98,7 @@ export function validateActorResources(actor: ActorRecord, resourceIds: Readonly
   validateOptionalResource(`actor ${actor.id}: faceResourceId`, actor.faceResourceId, resourceIds);
   validateOptionalResource(`actor ${actor.id}: characterResourceId`, actor.characterResourceId, resourceIds);
   validateOptionalResource(`actor ${actor.id}: battleCharacterResourceId`, actor.battleCharacterResourceId, resourceIds);
+  for (const [kind, sheet] of Object.entries(actor.weaponBattleSheets ?? {})) validateOptionalResource(`actor ${actor.id}: weaponBattleSheets.${kind}`, sheet, resourceIds);
 }
 
 export function validateItemResources(item: ItemRecord, resourceIds: ReadonlySet<string>): void {

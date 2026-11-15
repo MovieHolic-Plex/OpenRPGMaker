@@ -45,7 +45,8 @@ const CONDITIONAL_RUNTIME_ASSET_GROUPS: readonly ConditionalRuntimeAssetGroup[] 
 /** 액터 어느 하나라도 생성 영웅 전투 시트(또는 레거시 별칭 `hero`)를 쓰는가. */
 export function usesGeneratedHeroBattlers(project: Project): boolean {
   const ids = new Set(BATTLER_HIRES_SHEETS.map((entry) => entry.resourceId));
-  return project.database.actors.some((actor) => actor.battleCharacterResourceId !== undefined && ids.has(actor.battleCharacterResourceId));
+  return project.database.actors.some((actor) => (actor.battleCharacterResourceId !== undefined && ids.has(actor.battleCharacterResourceId))
+    || Object.values(actor.weaponBattleSheets ?? {}).some((sheet) => ids.has(sheet)));
 }
 
 /** 이 프로젝트에서 **빼도 되는** 런타임 에셋 — 조건부 그룹이 명시적으로 지목한 것만이다. */

@@ -1,0 +1,2022 @@
+{
+ "_doc": "버들항 참고 건물 유형 — scripts/content/beodeul-ref-buildings/types_src.py 가 쓴다(손으로 고치지 않는다). 오너의 참고 그림 여섯 장에 서 있는 건물 유형을 버들항 손으로 새로 그린 것(참고 그림은 저장소에 없다, 베끼지 않았다).",
+ "waiver": "fable-refbuildings-beodeul-2026-11-15",
+ "types": [
+  {
+   "name": "plankfarm-a",
+   "id": "bd-bld-ref-plankfarm-a",
+   "ko": "2층 널판 농장집",
+   "en": "two-storey plank farmhouse",
+   "w": 7,
+   "h": 8,
+   "door": [
+    1,
+    7
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-hay-bale",
+    "bd-obj-hay-rack",
+    "bd-obj-wood-faggots",
+    "bd-obj-wood-block",
+    "bd-obj-laundry-horse",
+    "bd-obj-cart-hay",
+    "bd-obj-barrel-tub"
+   ],
+   "tier": "medium",
+   "cat": "farm",
+   "setting": "rural",
+   "style": "log",
+   "kinds": [
+    "orchard-hamlet",
+    "ranch",
+    "dairy",
+    "bee-hamlet",
+    "shepherd-fold",
+    "vineyard",
+    "herbalist"
+   ],
+   "ref": "ref1-1",
+   "shape": "높은 처마 채 + 낮은 처마 왼채, 너와 지붕에 풀빛 처마 띠",
+   "words": [
+    "널판 농장집",
+    "이층 농장집",
+    "plank farmhouse"
+   ],
+   "interiorUse": "farmhouse",
+   "interior": {
+    "rooms": [
+     "living",
+     "kitchen",
+     "bedroom"
+    ]
+   }
+  },
+  {
+   "name": "plankfarm-b",
+   "id": "bd-bld-ref-plankfarm-b",
+   "ko": "장작 달개 널판 농장집",
+   "en": "plank farmhouse with a woodshed lean-to",
+   "w": 8,
+   "h": 7,
+   "door": [
+    5,
+    6
+   ],
+   "included": [
+    "장작 더미"
+   ],
+   "props": [
+    "bd-obj-hay-bale",
+    "bd-obj-hay-rack",
+    "bd-obj-wood-faggots",
+    "bd-obj-wood-block",
+    "bd-obj-laundry-horse",
+    "bd-obj-cart-hay",
+    "bd-obj-barrel-tub"
+   ],
+   "tier": "medium",
+   "cat": "farm",
+   "setting": "rural",
+   "style": "log",
+   "kinds": [
+    "orchard-hamlet",
+    "ranch",
+    "dairy",
+    "bee-hamlet",
+    "shepherd-fold",
+    "vineyard",
+    "herbalist"
+   ],
+   "ref": "ref1-1",
+   "shape": "처마 채 + 왼쪽 낮은 장작 달개",
+   "words": [
+    "장작 달개 농장집",
+    "woodshed farmhouse"
+   ],
+   "interiorUse": "farmhouse",
+   "interior": {
+    "rooms": [
+     "living",
+     "kitchen",
+     "bedroom"
+    ]
+   }
+  },
+  {
+   "name": "deckfarm-a",
+   "id": "bd-bld-ref-deckfarm-a",
+   "ko": "데크 농장집",
+   "en": "farmhouse on a railed deck",
+   "w": 9,
+   "h": 7,
+   "door": [
+    2,
+    6
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-hay-bale",
+    "bd-obj-hay-rack",
+    "bd-obj-wood-faggots",
+    "bd-obj-wood-block",
+    "bd-obj-laundry-horse",
+    "bd-obj-cart-hay",
+    "bd-obj-barrel-tub"
+   ],
+   "tier": "medium",
+   "cat": "farm",
+   "setting": "rural",
+   "style": "log",
+   "kinds": [
+    "orchard-hamlet",
+    "ranch",
+    "dairy",
+    "bee-hamlet",
+    "shepherd-fold",
+    "vineyard",
+    "herbalist"
+   ],
+   "ref": "ref1-3",
+   "shape": "처마 채 + 난간 두른 나무 데크와 디딤 계단",
+   "words": [
+    "데크 농장집",
+    "마루 농장집",
+    "deck farmhouse"
+   ],
+   "interiorUse": "farmhouse",
+   "interior": {
+    "rooms": [
+     "living",
+     "kitchen",
+     "bedroom"
+    ]
+   }
+  },
+  {
+   "name": "deckfarm-b",
+   "id": "bd-bld-ref-deckfarm-b",
+   "ko": "데크 긴 농장집",
+   "en": "long farmhouse on a railed deck",
+   "w": 11,
+   "h": 7,
+   "door": [
+    7,
+    6
+   ],
+   "included": [
+    "큰 독 셋·통"
+   ],
+   "props": [
+    "bd-obj-hay-bale",
+    "bd-obj-hay-rack",
+    "bd-obj-wood-faggots",
+    "bd-obj-wood-block",
+    "bd-obj-laundry-horse",
+    "bd-obj-cart-hay",
+    "bd-obj-barrel-tub"
+   ],
+   "tier": "large",
+   "cat": "farm",
+   "setting": "rural",
+   "style": "log",
+   "kinds": [
+    "orchard-hamlet",
+    "ranch",
+    "dairy",
+    "bee-hamlet",
+    "shepherd-fold",
+    "vineyard",
+    "herbalist"
+   ],
+   "ref": "ref1-3",
+   "shape": "긴 처마 채 + 데크, 켠 널 더미",
+   "words": [
+    "긴 데크 농장집",
+    "long deck farmhouse"
+   ],
+   "interiorUse": "farmhouse",
+   "interior": {
+    "rooms": [
+     "living",
+     "kitchen",
+     "bedroom"
+    ]
+   }
+  },
+  {
+   "name": "tealfarm-a",
+   "id": "bd-bld-ref-tealfarm-a",
+   "ko": "청록 너와 큰 농장집",
+   "en": "big teal-roofed farmhouse",
+   "w": 11,
+   "h": 9,
+   "door": [
+    7,
+    8
+   ],
+   "included": [
+    "사과 상자"
+   ],
+   "props": [
+    "bd-obj-hay-bale",
+    "bd-obj-hay-rack",
+    "bd-obj-wood-faggots",
+    "bd-obj-wood-block",
+    "bd-obj-laundry-horse",
+    "bd-obj-cart-hay",
+    "bd-obj-barrel-tub"
+   ],
+   "tier": "large",
+   "cat": "farm",
+   "setting": "rural",
+   "style": "log",
+   "kinds": [
+    "orchard-hamlet",
+    "ranch",
+    "dairy",
+    "bee-hamlet",
+    "shepherd-fold",
+    "vineyard",
+    "herbalist"
+   ],
+   "ref": "ref1-2",
+   "shape": "처마 긴 채 + 앞 박공 날개, 청록 너와, 자줏빛 널판 벽, 데크",
+   "words": [
+    "청록 지붕 농장집",
+    "지주 집",
+    "teal-roofed farmhouse"
+   ],
+   "interiorUse": "manor",
+   "interior": {
+    "program": "manor_1f"
+   }
+  },
+  {
+   "name": "dormerhall-a",
+   "id": "bd-bld-ref-dormerhall-a",
+   "ko": "지붕창 긴 본채",
+   "en": "long farm hall with dormers",
+   "w": 13,
+   "h": 8,
+   "door": [
+    6,
+    7
+   ],
+   "doorw": 2,
+   "included": [
+    "큰 독 셋·통·상자",
+    "덩굴장미"
+   ],
+   "props": [
+    "bd-obj-hay-bale",
+    "bd-obj-hay-rack",
+    "bd-obj-wood-faggots",
+    "bd-obj-wood-block",
+    "bd-obj-laundry-horse",
+    "bd-obj-cart-hay",
+    "bd-obj-barrel-tub"
+   ],
+   "tier": "large",
+   "cat": "farm",
+   "setting": "rural",
+   "style": "log",
+   "kinds": [
+    "orchard-hamlet",
+    "ranch",
+    "dairy",
+    "bee-hamlet",
+    "shepherd-fold",
+    "vineyard",
+    "herbalist"
+   ],
+   "ref": "ref2-1",
+   "shape": "긴 처마 채 + 지붕창 둘 + 가운데 돌 박공 현관 채, 큰 독과 통",
+   "words": [
+    "농장 본채",
+    "지붕창 본채",
+    "farm hall"
+   ],
+   "interiorUse": "farmhouse",
+   "interior": {
+    "rooms": [
+     "living",
+     "kitchen",
+     "bedroom"
+    ]
+   }
+  },
+  {
+   "name": "dormerhall-b",
+   "id": "bd-bld-ref-dormerhall-b",
+   "ko": "지붕창 본채",
+   "en": "farm hall with a dormer",
+   "w": 9,
+   "h": 7,
+   "door": [
+    2,
+    6
+   ],
+   "included": [
+    "큰 독 셋·통·상자"
+   ],
+   "props": [
+    "bd-obj-hay-bale",
+    "bd-obj-hay-rack",
+    "bd-obj-wood-faggots",
+    "bd-obj-wood-block",
+    "bd-obj-laundry-horse",
+    "bd-obj-cart-hay",
+    "bd-obj-barrel-tub"
+   ],
+   "tier": "medium",
+   "cat": "farm",
+   "setting": "rural",
+   "style": "log",
+   "kinds": [
+    "orchard-hamlet",
+    "ranch",
+    "dairy",
+    "bee-hamlet",
+    "shepherd-fold",
+    "vineyard",
+    "herbalist"
+   ],
+   "ref": "ref2-1",
+   "shape": "처마 채 + 지붕창 하나 + 왼쪽 돌 박공 현관 채",
+   "words": [
+    "작은 농장 본채",
+    "small farm hall"
+   ],
+   "interiorUse": "farmhouse",
+   "interior": {
+    "rooms": [
+     "living",
+     "kitchen",
+     "bedroom"
+    ]
+   }
+  },
+  {
+   "name": "barn-a",
+   "id": "bd-bld-ref-barn-a",
+   "ko": "큰 곳간",
+   "en": "great barn",
+   "w": 9,
+   "h": 9,
+   "door": [
+    1,
+    8
+   ],
+   "doorw": 2,
+   "included": [
+    "통"
+   ],
+   "props": [
+    "bd-obj-hay-bale",
+    "bd-obj-hay-rack",
+    "bd-obj-wood-faggots",
+    "bd-obj-wood-block",
+    "bd-obj-laundry-horse",
+    "bd-obj-cart-hay",
+    "bd-obj-barrel-tub"
+   ],
+   "tier": "large",
+   "cat": "farm",
+   "setting": "rural",
+   "style": "log",
+   "kinds": [
+    "ranch",
+    "dairy",
+    "shepherd-fold",
+    "orchard-hamlet",
+    "mill-hamlet",
+    "market-village"
+   ],
+   "ref": "ref3-5",
+   "shape": "높은 박공 채(두 짝 큰 문) + 처마 날개채(살창)",
+   "words": [
+    "큰 곳간",
+    "곡식 곳간",
+    "great barn",
+    "granary barn"
+   ],
+   "interiorUse": "barn",
+   "interior": {
+    "rooms": [
+     "stable",
+     "storeroom"
+    ]
+   }
+  },
+  {
+   "name": "barn-b",
+   "id": "bd-bld-ref-barn-b",
+   "ko": "박공 헛간",
+   "en": "gable barn",
+   "w": 6,
+   "h": 8,
+   "door": [
+    2,
+    7
+   ],
+   "doorw": 2,
+   "included": [
+    "통"
+   ],
+   "props": [
+    "bd-obj-hay-bale",
+    "bd-obj-hay-rack",
+    "bd-obj-wood-faggots",
+    "bd-obj-wood-block",
+    "bd-obj-laundry-horse",
+    "bd-obj-cart-hay",
+    "bd-obj-barrel-tub"
+   ],
+   "tier": "medium",
+   "cat": "farm",
+   "setting": "rural",
+   "style": "log",
+   "kinds": [
+    "ranch",
+    "dairy",
+    "shepherd-fold",
+    "orchard-hamlet",
+    "mill-hamlet"
+   ],
+   "ref": "ref3-2 · ref3-5",
+   "shape": "박공 채 하나, 두 짝 큰 문과 다락 문",
+   "words": [
+    "박공 헛간",
+    "건초 헛간",
+    "gable barn",
+    "hay barn"
+   ],
+   "interiorUse": "barn",
+   "interior": {
+    "rooms": [
+     "stable",
+     "storeroom"
+    ]
+   }
+  },
+  {
+   "name": "stable-a",
+   "id": "bd-bld-ref-stable-a",
+   "ko": "트인 마구간",
+   "en": "open stable",
+   "w": 8,
+   "h": 6,
+   "door": [
+    6,
+    5
+   ],
+   "included": [
+    "건초 더미·쇠스랑·말"
+   ],
+   "props": [
+    "bd-obj-hay-bale",
+    "bd-obj-hay-rack",
+    "bd-obj-wood-faggots",
+    "bd-obj-wood-block",
+    "bd-obj-laundry-horse",
+    "bd-obj-cart-hay",
+    "bd-obj-barrel-tub"
+   ],
+   "tier": "medium",
+   "cat": "farm",
+   "setting": "town",
+   "style": "halftimber",
+   "kinds": [
+    "waystation",
+    "ranch",
+    "market-town",
+    "garrison-town",
+    "border-post"
+   ],
+   "ref": "ref4-8",
+   "shape": "처마 채, 아래가 트인 건초·말 칸",
+   "words": [
+    "트인 마구간",
+    "말 마구간",
+    "open stable",
+    "horse stable"
+   ],
+   "interiorUse": "stable",
+   "interior": {
+    "program": "stable"
+   }
+  },
+  {
+   "name": "stable-b",
+   "id": "bd-bld-ref-stable-b",
+   "ko": "외양간과 우리",
+   "en": "cowshed with a pen",
+   "w": 10,
+   "h": 6,
+   "door": [
+    1,
+    5
+   ],
+   "included": [
+    "건초 더미·말",
+    "돼지 우리와 여물통"
+   ],
+   "props": [
+    "bd-obj-hay-bale",
+    "bd-obj-hay-rack",
+    "bd-obj-wood-faggots",
+    "bd-obj-wood-block",
+    "bd-obj-laundry-horse",
+    "bd-obj-cart-hay",
+    "bd-obj-barrel-tub"
+   ],
+   "tier": "large",
+   "cat": "farm",
+   "setting": "rural",
+   "style": "log",
+   "kinds": [
+    "ranch",
+    "dairy",
+    "shepherd-fold"
+   ],
+   "ref": "ref4-8 · ref2-1(파생)",
+   "shape": "낮은 긴 처마 채 + 트인 칸 + 울 두른 우리",
+   "words": [
+    "외양간",
+    "가축 우리",
+    "cowshed",
+    "cattle pen"
+   ],
+   "interiorUse": "stable",
+   "interior": {
+    "program": "stable"
+   }
+  },
+  {
+   "name": "rootcellar-a",
+   "id": "bd-bld-ref-rootcellar-a",
+   "ko": "축대 저장굴",
+   "en": "root cellar in a stone bank",
+   "w": 3,
+   "h": 3,
+   "door": [
+    1,
+    2
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-hay-bale",
+    "bd-obj-hay-rack",
+    "bd-obj-wood-faggots",
+    "bd-obj-wood-block",
+    "bd-obj-laundry-horse",
+    "bd-obj-cart-hay",
+    "bd-obj-barrel-tub"
+   ],
+   "tier": "small",
+   "cat": "farm",
+   "setting": "rural",
+   "style": "any",
+   "kinds": [
+    "vineyard",
+    "brewers",
+    "orchard-hamlet",
+    "herbalist",
+    "potters"
+   ],
+   "ref": "ref1-4",
+   "shape": "돌 축대 조각에 아치 굴 문",
+   "words": [
+    "저장굴",
+    "뿌리 채소 굴",
+    "root cellar"
+   ],
+   "interiorUse": "cellar",
+   "interior": {
+    "rooms": [
+     "cellar"
+    ]
+   }
+  },
+  {
+   "name": "rootcellar-b",
+   "id": "bd-bld-ref-rootcellar-b",
+   "ko": "쌍 저장굴",
+   "en": "twin root cellar",
+   "w": 5,
+   "h": 3,
+   "door": [
+    1,
+    2
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-hay-bale",
+    "bd-obj-hay-rack",
+    "bd-obj-wood-faggots",
+    "bd-obj-wood-block",
+    "bd-obj-laundry-horse",
+    "bd-obj-cart-hay",
+    "bd-obj-barrel-tub"
+   ],
+   "tier": "small",
+   "cat": "farm",
+   "setting": "rural",
+   "style": "any",
+   "kinds": [
+    "vineyard",
+    "brewers",
+    "orchard-hamlet",
+    "herbalist",
+    "potters"
+   ],
+   "ref": "ref1-4 · ref4-2",
+   "shape": "돌 축대에 아치 문 둘",
+   "words": [
+    "쌍 저장굴",
+    "술 저장굴",
+    "twin cellar",
+    "wine cellar"
+   ],
+   "interiorUse": "cellar",
+   "interior": {
+    "rooms": [
+     "cellar"
+    ]
+   }
+  },
+  {
+   "name": "storeshed-a",
+   "id": "bd-bld-ref-storeshed-a",
+   "ko": "독·통 저장 헛간",
+   "en": "store shed with jars and barrels",
+   "w": 6,
+   "h": 6,
+   "door": [
+    1,
+    5
+   ],
+   "included": [
+    "큰 독 셋·통·상자"
+   ],
+   "props": [
+    "bd-obj-hay-bale",
+    "bd-obj-hay-rack",
+    "bd-obj-wood-faggots",
+    "bd-obj-wood-block",
+    "bd-obj-laundry-horse",
+    "bd-obj-cart-hay",
+    "bd-obj-barrel-tub"
+   ],
+   "tier": "medium",
+   "cat": "farm",
+   "setting": "rural",
+   "style": "log",
+   "kinds": [
+    "vineyard",
+    "brewers",
+    "potters",
+    "bee-hamlet"
+   ],
+   "ref": "ref2-1 · ref3-1",
+   "shape": "처마 채 + 트인 달개 밑 큰 독과 통",
+   "words": [
+    "저장 헛간",
+    "독 헛간",
+    "store shed"
+   ],
+   "interiorUse": "storehouse",
+   "interior": {
+    "rooms": [
+     "storeroom"
+    ]
+   }
+  },
+  {
+   "name": "tavern-a",
+   "id": "bd-bld-ref-tavern-a",
+   "ko": "누마루 주막",
+   "en": "tavern on posts",
+   "w": 9,
+   "h": 9,
+   "door": [
+    1,
+    8
+   ],
+   "included": [
+    "술청 판매대·통·걸상",
+    "걸이 간판"
+   ],
+   "props": [
+    "bd-obj-bench-trestle",
+    "bd-obj-barrel-pyramid",
+    "bd-obj-crate-closed",
+    "bd-obj-planter-tiered",
+    "bd-obj-cart-barrels",
+    "bd-obj-crate-sack"
+   ],
+   "tier": "large",
+   "cat": "town",
+   "setting": "town",
+   "style": "halftimber",
+   "kinds": [
+    "waystation",
+    "market-village",
+    "market-town",
+    "festival",
+    "brewers"
+   ],
+   "ref": "ref4-1",
+   "shape": "좁고 높은 박공 채 + 기둥 위 마루 채(아래는 트인 술청)",
+   "words": [
+    "누마루 주막",
+    "술청",
+    "open tavern",
+    "tavern on posts"
+   ],
+   "interiorUse": "tavern",
+   "interior": {
+    "program": "tavern"
+   }
+  },
+  {
+   "name": "tavern-b",
+   "id": "bd-bld-ref-tavern-b",
+   "ko": "누마루 차 주막",
+   "en": "tea house on posts",
+   "w": 8,
+   "h": 7,
+   "door": [
+    6,
+    6
+   ],
+   "included": [
+    "술청 판매대·통",
+    "걸이 간판"
+   ],
+   "props": [
+    "bd-obj-bench-trestle",
+    "bd-obj-barrel-pyramid",
+    "bd-obj-crate-closed",
+    "bd-obj-planter-tiered",
+    "bd-obj-cart-barrels",
+    "bd-obj-crate-sack"
+   ],
+   "tier": "medium",
+   "cat": "town",
+   "setting": "town",
+   "style": "halftimber",
+   "kinds": [
+    "waystation",
+    "market-village",
+    "market-town",
+    "festival",
+    "hot-spring"
+   ],
+   "ref": "ref4-1",
+   "shape": "처마 채 + 왼쪽 트인 아래층, 붉은 기와",
+   "words": [
+    "누마루 차 주막",
+    "차 주막",
+    "tea house"
+   ],
+   "interiorUse": "tavern",
+   "interior": {
+    "program": "tavern"
+   }
+  },
+  {
+   "name": "cellarhouse-a",
+   "id": "bd-bld-ref-cellarhouse-a",
+   "ko": "지하문 상가 창고",
+   "en": "merchant store with cellar arches",
+   "w": 10,
+   "h": 9,
+   "door": [
+    7,
+    8
+   ],
+   "included": [
+    "통"
+   ],
+   "props": [
+    "bd-obj-bench-trestle",
+    "bd-obj-barrel-pyramid",
+    "bd-obj-crate-closed",
+    "bd-obj-planter-tiered",
+    "bd-obj-cart-barrels",
+    "bd-obj-crate-sack"
+   ],
+   "tier": "large",
+   "cat": "town",
+   "setting": "town",
+   "style": "halftimber",
+   "kinds": [
+    "market-town",
+    "guild-town",
+    "brewers"
+   ],
+   "ref": "ref4-2",
+   "shape": "처마 본채 + 박공 날개, 아치 지하문 둘, 바깥 계단과 발코니",
+   "words": [
+    "상가 창고",
+    "지하 창고 상가",
+    "merchant store",
+    "cellar store"
+   ],
+   "interiorUse": "storehouse",
+   "interior": {
+    "rooms": [
+     "storeroom"
+    ]
+   }
+  },
+  {
+   "name": "guildhall-a",
+   "id": "bd-bld-ref-guildhall-a",
+   "ko": "격자창 조합 회관",
+   "en": "guild hall with a lattice window band",
+   "w": 8,
+   "h": 7,
+   "door": [
+    1,
+    6
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-bench-trestle",
+    "bd-obj-barrel-pyramid",
+    "bd-obj-crate-closed",
+    "bd-obj-planter-tiered",
+    "bd-obj-cart-barrels",
+    "bd-obj-crate-sack"
+   ],
+   "tier": "large",
+   "cat": "town",
+   "setting": "town",
+   "style": "halftimber",
+   "kinds": [
+    "guild-town",
+    "market-town",
+    "weavers",
+    "scholar-town"
+   ],
+   "ref": "ref4-9",
+   "shape": "큰 처마 채, 위층 격자창 띠, 1층 아치 살창",
+   "words": [
+    "조합 회관",
+    "길드 회관",
+    "guild hall"
+   ],
+   "interiorUse": "hall",
+   "interior": {
+    "rooms": [
+     "great_hall",
+     "study"
+    ]
+   }
+  },
+  {
+   "name": "guildhall-b",
+   "id": "bd-bld-ref-guildhall-b",
+   "ko": "큰 조합 회관",
+   "en": "great guild hall",
+   "w": 11,
+   "h": 8,
+   "door": [
+    5,
+    7
+   ],
+   "included": [
+    "걸이 간판"
+   ],
+   "props": [
+    "bd-obj-bench-trestle",
+    "bd-obj-barrel-pyramid",
+    "bd-obj-crate-closed",
+    "bd-obj-planter-tiered",
+    "bd-obj-cart-barrels",
+    "bd-obj-crate-sack"
+   ],
+   "tier": "xlarge",
+   "cat": "town",
+   "setting": "town",
+   "style": "halftimber",
+   "kinds": [
+    "guild-town",
+    "market-town",
+    "scholar-town"
+   ],
+   "ref": "ref4-9 · ref4-12",
+   "shape": "큰 처마 채 + 쌍 지붕창, 붉은 기와",
+   "words": [
+    "큰 조합 회관",
+    "상인 회관",
+    "great guild hall",
+    "merchants hall"
+   ],
+   "interiorUse": "hall",
+   "interior": {
+    "rooms": [
+     "great_hall",
+     "study"
+    ]
+   }
+  },
+  {
+   "name": "longhouse-a",
+   "id": "bd-bld-ref-longhouse-a",
+   "ko": "두 층 긴 채",
+   "en": "two-storey long workshop",
+   "w": 8,
+   "h": 7,
+   "door": [
+    6,
+    6
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-bench-trestle",
+    "bd-obj-barrel-pyramid",
+    "bd-obj-crate-closed",
+    "bd-obj-planter-tiered",
+    "bd-obj-cart-barrels",
+    "bd-obj-crate-sack"
+   ],
+   "tier": "medium",
+   "cat": "work",
+   "setting": "town",
+   "style": "halftimber",
+   "kinds": [
+    "weavers",
+    "guild-town",
+    "monastery"
+   ],
+   "ref": "ref4-10",
+   "shape": "처마 채, 목골 두 층 격자창",
+   "words": [
+    "직조소",
+    "긴 작업채",
+    "weaving house",
+    "long workshop"
+   ],
+   "interiorUse": "workshop",
+   "interior": {
+    "rooms": [
+     "workshop",
+     "storeroom"
+    ]
+   }
+  },
+  {
+   "name": "lockup-a",
+   "id": "bd-bld-ref-lockup-a",
+   "ko": "창살 낮은 창고",
+   "en": "lock-up store with barred windows",
+   "w": 9,
+   "h": 7,
+   "door": [
+    7,
+    6
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-bench-trestle",
+    "bd-obj-barrel-pyramid",
+    "bd-obj-crate-closed",
+    "bd-obj-planter-tiered",
+    "bd-obj-cart-barrels",
+    "bd-obj-crate-sack"
+   ],
+   "tier": "medium",
+   "cat": "town",
+   "setting": "town",
+   "style": "halftimber",
+   "kinds": [
+    "garrison-town",
+    "border-post",
+    "market-town"
+   ],
+   "ref": "ref4-7",
+   "shape": "처마 긴 채 + 뒤 박공, 1층 창살 낮은 창",
+   "words": [
+    "옥사",
+    "창살 창고",
+    "lock-up",
+    "gaol"
+   ],
+   "interiorUse": "jail",
+   "interior": {
+    "rooms": [
+     "guard_room",
+     "jail"
+    ]
+   }
+  },
+  {
+   "name": "wallstore-a",
+   "id": "bd-bld-ref-wallstore-a",
+   "ko": "성벽 창고",
+   "en": "store room in the town wall",
+   "w": 6,
+   "h": 4,
+   "door": [
+    2,
+    3
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-bench-trestle",
+    "bd-obj-barrel-pyramid",
+    "bd-obj-crate-closed",
+    "bd-obj-planter-tiered",
+    "bd-obj-cart-barrels",
+    "bd-obj-crate-sack"
+   ],
+   "tier": "small",
+   "cat": "town",
+   "setting": "castle",
+   "style": "halftimber",
+   "kinds": [
+    "garrison-town",
+    "market-town"
+   ],
+   "ref": "ref4-6",
+   "shape": "성벽 면 조각에 아치 문과 살창",
+   "words": [
+    "성벽 창고",
+    "성벽 방",
+    "wall store"
+   ],
+   "interiorUse": "storehouse",
+   "interior": {
+    "rooms": [
+     "storeroom"
+    ]
+   }
+  },
+  {
+   "name": "stall-blue",
+   "id": "bd-bld-ref-stall-blue",
+   "ko": "쪽빛 차양 노점",
+   "en": "market stall with a blue awning",
+   "w": 3,
+   "h": 3,
+   "door": null,
+   "included": [],
+   "props": [
+    "bd-obj-bench-trestle",
+    "bd-obj-barrel-pyramid",
+    "bd-obj-crate-closed",
+    "bd-obj-planter-tiered",
+    "bd-obj-cart-barrels",
+    "bd-obj-crate-sack"
+   ],
+   "tier": "small",
+   "cat": "town",
+   "setting": "town",
+   "style": "any",
+   "kinds": [
+    "market-village",
+    "market-town",
+    "festival"
+   ],
+   "ref": "ref4-5",
+   "shape": "천 차양 + 판매대(옹기)",
+   "words": [
+    "쪽빛 차양 노점",
+    "옹기 노점",
+    "blue awning stall"
+   ],
+   "interiorUse": null,
+   "interior": null
+  },
+  {
+   "name": "stall-green",
+   "id": "bd-bld-ref-stall-green",
+   "ko": "초록 차양 노점",
+   "en": "market stall with a green awning",
+   "w": 3,
+   "h": 3,
+   "door": null,
+   "included": [],
+   "props": [
+    "bd-obj-bench-trestle",
+    "bd-obj-barrel-pyramid",
+    "bd-obj-crate-closed",
+    "bd-obj-planter-tiered",
+    "bd-obj-cart-barrels",
+    "bd-obj-crate-sack"
+   ],
+   "tier": "small",
+   "cat": "town",
+   "setting": "town",
+   "style": "any",
+   "kinds": [
+    "market-village",
+    "market-town",
+    "festival"
+   ],
+   "ref": "ref4-5",
+   "shape": "천 차양 + 판매대(채소)",
+   "words": [
+    "초록 차양 노점",
+    "채소 노점",
+    "green awning stall"
+   ],
+   "interiorUse": null,
+   "interior": null
+  },
+  {
+   "name": "stall-striped",
+   "id": "bd-bld-ref-stall-striped",
+   "ko": "줄무늬 차양 생선 좌판",
+   "en": "fish stall with a striped awning",
+   "w": 3,
+   "h": 3,
+   "door": null,
+   "included": [],
+   "props": [
+    "bd-obj-rope-coil",
+    "bd-obj-anchor-small",
+    "bd-obj-fish-creels",
+    "bd-obj-net-floats",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-closed",
+    "bd-obj-sack-hoist"
+   ],
+   "tier": "small",
+   "cat": "harbour",
+   "setting": "harbour",
+   "style": "harbourstone",
+   "kinds": [
+    "harbour-town",
+    "fishing-cove",
+    "canal-town"
+   ],
+   "ref": "ref5-10",
+   "shape": "줄무늬 차양 + 생선 상자",
+   "words": [
+    "줄무늬 차양 좌판",
+    "부두 생선 좌판",
+    "striped awning stall"
+   ],
+   "interiorUse": null,
+   "interior": null
+  },
+  {
+   "name": "stall-cloth",
+   "id": "bd-bld-ref-stall-cloth",
+   "ko": "연두 차양 좌판",
+   "en": "fruit stall with a lime awning",
+   "w": 3,
+   "h": 3,
+   "door": null,
+   "included": [],
+   "props": [
+    "bd-obj-rope-coil",
+    "bd-obj-anchor-small",
+    "bd-obj-fish-creels",
+    "bd-obj-net-floats",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-closed",
+    "bd-obj-sack-hoist"
+   ],
+   "tier": "small",
+   "cat": "harbour",
+   "setting": "harbour",
+   "style": "harbourstone",
+   "kinds": [
+    "harbour-town",
+    "canal-town",
+    "festival"
+   ],
+   "ref": "ref5-10",
+   "shape": "연두 차양 + 과일",
+   "words": [
+    "연두 차양 좌판",
+    "과일 좌판",
+    "fruit stall"
+   ],
+   "interiorUse": null,
+   "interior": null
+  },
+  {
+   "name": "markethall-a",
+   "id": "bd-bld-ref-markethall-a",
+   "ko": "장터 지붕",
+   "en": "open market hall",
+   "w": 8,
+   "h": 6,
+   "door": null,
+   "included": [
+    "판매대·곡식 자루·저울"
+   ],
+   "props": [
+    "bd-obj-bench-trestle",
+    "bd-obj-barrel-pyramid",
+    "bd-obj-crate-closed",
+    "bd-obj-planter-tiered",
+    "bd-obj-cart-barrels",
+    "bd-obj-crate-sack"
+   ],
+   "tier": "large",
+   "cat": "town",
+   "setting": "town",
+   "style": "halftimber",
+   "kinds": [
+    "market-village",
+    "market-town",
+    "festival"
+   ],
+   "ref": "ref4-5 · ref4-1",
+   "shape": "기둥만 선 트인 처마 채, 밑에 판매대",
+   "words": [
+    "장터 지붕",
+    "장옥",
+    "market hall",
+    "market roof"
+   ],
+   "interiorUse": null,
+   "interior": null
+  },
+  {
+   "name": "warehouse-a",
+   "id": "bd-bld-ref-warehouse-a",
+   "ko": "쌍박공 부두 창고",
+   "en": "twin-gable quay warehouse",
+   "w": 7,
+   "h": 9,
+   "door": [
+    1,
+    8
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-rope-coil",
+    "bd-obj-anchor-small",
+    "bd-obj-fish-creels",
+    "bd-obj-net-floats",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-closed",
+    "bd-obj-sack-hoist"
+   ],
+   "tier": "large",
+   "cat": "harbour",
+   "setting": "harbour",
+   "style": "harbourstone",
+   "kinds": [
+    "harbour-town",
+    "canal-town",
+    "shipwrights",
+    "ferry-landing",
+    "saltern"
+   ],
+   "ref": "ref5-1",
+   "shape": "좁고 높은 박공 둘, 도르래 들보",
+   "words": [
+    "쌍박공 창고",
+    "부두 창고",
+    "twin warehouse",
+    "quay warehouse"
+   ],
+   "interiorUse": "warehouse",
+   "interior": {
+    "rooms": [
+     "storeroom",
+     "storeroom"
+    ]
+   }
+  },
+  {
+   "name": "warehouse-b",
+   "id": "bd-bld-ref-warehouse-b",
+   "ko": "박공 부두 창고",
+   "en": "gable quay warehouse",
+   "w": 4,
+   "h": 9,
+   "door": [
+    1,
+    8
+   ],
+   "included": [
+    "통"
+   ],
+   "props": [
+    "bd-obj-rope-coil",
+    "bd-obj-anchor-small",
+    "bd-obj-fish-creels",
+    "bd-obj-net-floats",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-closed",
+    "bd-obj-sack-hoist"
+   ],
+   "tier": "medium",
+   "cat": "harbour",
+   "setting": "harbour",
+   "style": "harbourstone",
+   "kinds": [
+    "harbour-town",
+    "canal-town",
+    "shipwrights",
+    "ferry-landing",
+    "saltern"
+   ],
+   "ref": "ref5-1",
+   "shape": "좁고 높은 박공 하나, 짐 올리는 문",
+   "words": [
+    "좁은 부두 창고",
+    "narrow warehouse"
+   ],
+   "interiorUse": "warehouse",
+   "interior": {
+    "rooms": [
+     "storeroom",
+     "storeroom"
+    ]
+   }
+  },
+  {
+   "name": "warehouse-c",
+   "id": "bd-bld-ref-warehouse-c",
+   "ko": "긴 부두 창고",
+   "en": "long quay warehouse",
+   "w": 9,
+   "h": 7,
+   "door": [
+    2,
+    6
+   ],
+   "included": [
+    "통"
+   ],
+   "props": [
+    "bd-obj-rope-coil",
+    "bd-obj-anchor-small",
+    "bd-obj-fish-creels",
+    "bd-obj-net-floats",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-closed",
+    "bd-obj-sack-hoist"
+   ],
+   "tier": "large",
+   "cat": "harbour",
+   "setting": "harbour",
+   "style": "harbourstone",
+   "kinds": [
+    "harbour-town",
+    "canal-town",
+    "shipwrights",
+    "ferry-landing"
+   ],
+   "ref": "ref5-5",
+   "shape": "처마 채 + 박공, 아치 문 둘",
+   "words": [
+    "긴 부두 창고",
+    "long warehouse"
+   ],
+   "interiorUse": "warehouse",
+   "interior": {
+    "rooms": [
+     "storeroom",
+     "storeroom"
+    ]
+   }
+  },
+  {
+   "name": "cranehouse-a",
+   "id": "bd-bld-ref-cranehouse-a",
+   "ko": "기중기 집",
+   "en": "crane house on stilts",
+   "w": 4,
+   "h": 10,
+   "door": [
+    1,
+    9
+   ],
+   "included": [
+    "통·상자·자루"
+   ],
+   "props": [
+    "bd-obj-rope-coil",
+    "bd-obj-anchor-small",
+    "bd-obj-fish-creels",
+    "bd-obj-net-floats",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-closed",
+    "bd-obj-sack-hoist"
+   ],
+   "tier": "medium",
+   "cat": "harbour",
+   "setting": "harbour",
+   "style": "harbourstone",
+   "kinds": [
+    "harbour-town",
+    "canal-town",
+    "shipwrights",
+    "ferry-landing"
+   ],
+   "ref": "ref5-3",
+   "shape": "기둥 틀 위 좁고 높은 박공 채",
+   "words": [
+    "기중기 집",
+    "다락 창고",
+    "crane house"
+   ],
+   "interiorUse": "warehouse",
+   "interior": {
+    "rooms": [
+     "storeroom",
+     "storeroom"
+    ]
+   }
+  },
+  {
+   "name": "crane-a",
+   "id": "bd-bld-ref-crane-a",
+   "ko": "큰 부두 기중기",
+   "en": "great quay crane",
+   "w": 3,
+   "h": 4,
+   "door": null,
+   "included": [
+    "매달린 상자"
+   ],
+   "props": [
+    "bd-obj-rope-coil",
+    "bd-obj-anchor-small",
+    "bd-obj-fish-creels",
+    "bd-obj-net-floats",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-closed",
+    "bd-obj-sack-hoist"
+   ],
+   "tier": "small",
+   "cat": "harbour",
+   "setting": "harbour",
+   "style": "any",
+   "kinds": [
+    "harbour-town",
+    "canal-town",
+    "shipwrights",
+    "ferry-landing"
+   ],
+   "ref": "ref5-7",
+   "shape": "받침 틀 + 팔 + 도르래",
+   "words": [
+    "큰 부두 기중기",
+    "great quay crane"
+   ],
+   "interiorUse": null,
+   "interior": null
+  },
+  {
+   "name": "crane-b",
+   "id": "bd-bld-ref-crane-b",
+   "ko": "짐 다는 틀",
+   "en": "hoist frame",
+   "w": 3,
+   "h": 4,
+   "door": null,
+   "included": [
+    "통"
+   ],
+   "props": [
+    "bd-obj-rope-coil",
+    "bd-obj-anchor-small",
+    "bd-obj-fish-creels",
+    "bd-obj-net-floats",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-closed",
+    "bd-obj-sack-hoist"
+   ],
+   "tier": "small",
+   "cat": "harbour",
+   "setting": "harbour",
+   "style": "any",
+   "kinds": [
+    "harbour-town",
+    "canal-town",
+    "shipwrights",
+    "ferry-landing",
+    "quarry"
+   ],
+   "ref": "ref5-8",
+   "shape": "기둥 둘 + 가로대 + 받침 단",
+   "words": [
+    "짐 다는 틀",
+    "달아 올리는 틀",
+    "hoist frame"
+   ],
+   "interiorUse": null,
+   "interior": null
+  },
+  {
+   "name": "customs-a",
+   "id": "bd-bld-ref-customs-a",
+   "ko": "세관",
+   "en": "customs house",
+   "w": 8,
+   "h": 9,
+   "door": [
+    5,
+    8
+   ],
+   "included": [
+    "통·상자"
+   ],
+   "props": [
+    "bd-obj-rope-coil",
+    "bd-obj-anchor-small",
+    "bd-obj-fish-creels",
+    "bd-obj-net-floats",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-closed",
+    "bd-obj-sack-hoist"
+   ],
+   "tier": "large",
+   "cat": "harbour",
+   "setting": "harbour",
+   "style": "harbourstone",
+   "kinds": [
+    "harbour-town",
+    "canal-town",
+    "border-post",
+    "ferry-landing"
+   ],
+   "ref": "ref5-4",
+   "shape": "처마 채 + 높은 박공, 높은 격자창 셋, 뾰족 아치 문",
+   "words": [
+    "세관",
+    "항구 조합",
+    "customs house"
+   ],
+   "interiorUse": "office",
+   "interior": {
+    "rooms": [
+     "study",
+     "waiting_room"
+    ]
+   }
+  },
+  {
+   "name": "harbouroffice-a",
+   "id": "bd-bld-ref-harbouroffice-a",
+   "ko": "큰 아치 창 관리소",
+   "en": "harbour office with a great arched window",
+   "w": 8,
+   "h": 7,
+   "door": [
+    5,
+    6
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-rope-coil",
+    "bd-obj-anchor-small",
+    "bd-obj-fish-creels",
+    "bd-obj-net-floats",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-closed",
+    "bd-obj-sack-hoist"
+   ],
+   "tier": "medium",
+   "cat": "harbour",
+   "setting": "harbour",
+   "style": "harbourstone",
+   "kinds": [
+    "harbour-town",
+    "canal-town",
+    "lighthouse-cape"
+   ],
+   "ref": "ref5-2",
+   "shape": "처마 채 + 박공 날개, 큰 반원 아치 창",
+   "words": [
+    "항구 관리소",
+    "항만 사무소",
+    "harbour office"
+   ],
+   "interiorUse": "office",
+   "interior": {
+    "rooms": [
+     "study",
+     "waiting_room"
+    ]
+   }
+  },
+  {
+   "name": "archgate-a",
+   "id": "bd-bld-ref-archgate-a",
+   "ko": "뾰족 아치 문",
+   "en": "pointed arch gateway",
+   "w": 3,
+   "h": 4,
+   "door": [
+    1,
+    3
+   ],
+   "passage": [
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     3
+    ]
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-rope-coil",
+    "bd-obj-anchor-small",
+    "bd-obj-fish-creels",
+    "bd-obj-net-floats",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-closed",
+    "bd-obj-sack-hoist"
+   ],
+   "tier": "small",
+   "cat": "harbour",
+   "setting": "castle",
+   "style": "harbourstone",
+   "kinds": [
+    "harbour-town",
+    "canal-town",
+    "scholar-town",
+    "monastery"
+   ],
+   "ref": "ref5-9",
+   "shape": "홀로 선 돌 뾰족 아치(밑으로 지나간다)",
+   "words": [
+    "뾰족 아치 문",
+    "돌 아치 문",
+    "pointed arch gate"
+   ],
+   "interiorUse": null,
+   "interior": null
+  },
+  {
+   "name": "tower-a",
+   "id": "bd-bld-ref-tower-a",
+   "ko": "성벽 모퉁이 탑",
+   "en": "corner tower of the town wall",
+   "w": 4,
+   "h": 7,
+   "door": null,
+   "included": [],
+   "props": [
+    "bd-obj-banner-arch",
+    "bd-obj-bench-stone",
+    "bd-obj-planter-bench",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-amphora"
+   ],
+   "tier": "medium",
+   "cat": "castle",
+   "setting": "castle",
+   "style": "violetslate",
+   "kinds": [
+    "garrison-town",
+    "market-town",
+    "border-post"
+   ],
+   "ref": "ref6-1",
+   "shape": "네모 돌 탑 + 뾰족지붕, 긴 깃발",
+   "words": [
+    "모퉁이 탑",
+    "뾰족지붕 탑",
+    "corner tower"
+   ],
+   "interiorUse": null,
+   "interior": null
+  },
+  {
+   "name": "tower-b",
+   "id": "bd-bld-ref-tower-b",
+   "ko": "벽돌 망루",
+   "en": "brick watch tower",
+   "w": 4,
+   "h": 8,
+   "door": [
+    1,
+    7
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-banner-arch",
+    "bd-obj-bench-stone",
+    "bd-obj-planter-bench",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-amphora"
+   ],
+   "tier": "medium",
+   "cat": "castle",
+   "setting": "castle",
+   "style": "violetslate",
+   "kinds": [
+    "garrison-town",
+    "market-town",
+    "border-post"
+   ],
+   "ref": "ref6-1 · ref6-6",
+   "shape": "벽돌 탑 + 뾰족지붕, 문",
+   "words": [
+    "벽돌 망루",
+    "brick watch tower"
+   ],
+   "interiorUse": "tower",
+   "interior": {
+    "program": "tower"
+   }
+  },
+  {
+   "name": "tower-c",
+   "id": "bd-bld-ref-tower-c",
+   "ko": "문지기 탑",
+   "en": "gatekeeper's turret",
+   "w": 3,
+   "h": 6,
+   "door": [
+    1,
+    5
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-banner-arch",
+    "bd-obj-bench-stone",
+    "bd-obj-planter-bench",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-amphora"
+   ],
+   "tier": "small",
+   "cat": "castle",
+   "setting": "castle",
+   "style": "violetslate",
+   "kinds": [
+    "garrison-town",
+    "market-town",
+    "border-post"
+   ],
+   "ref": "ref6-2",
+   "shape": "작은 탑 + 보라 문",
+   "words": [
+    "문지기 탑",
+    "gatekeeper turret"
+   ],
+   "interiorUse": "tower",
+   "interior": {
+    "program": "tower"
+   }
+  },
+  {
+   "name": "wallgate-a",
+   "id": "bd-bld-ref-wallgate-a",
+   "ko": "성읍 문",
+   "en": "town wall gate",
+   "w": 5,
+   "h": 5,
+   "door": [
+    2,
+    4
+   ],
+   "passage": [
+    [
+     2,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ]
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-banner-arch",
+    "bd-obj-bench-stone",
+    "bd-obj-planter-bench",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-amphora"
+   ],
+   "tier": "medium",
+   "cat": "castle",
+   "setting": "castle",
+   "style": "violetslate",
+   "kinds": [
+    "garrison-town",
+    "market-town",
+    "border-post"
+   ],
+   "ref": "ref6-3",
+   "shape": "성벽 조각 + 트인 문, 깃발 줄",
+   "words": [
+    "성읍 문",
+    "성벽 문",
+    "town wall gate"
+   ],
+   "interiorUse": null,
+   "interior": null
+  },
+  {
+   "name": "gatehall-a",
+   "id": "bd-bld-ref-gatehall-a",
+   "ko": "문루 회관",
+   "en": "gatehouse hall",
+   "w": 14,
+   "h": 8,
+   "door": [
+    6,
+    7
+   ],
+   "passage": [
+    [
+     6,
+     5
+    ],
+    [
+     7,
+     5
+    ],
+    [
+     6,
+     6
+    ],
+    [
+     7,
+     6
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     7,
+     7
+    ]
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-banner-arch",
+    "bd-obj-bench-stone",
+    "bd-obj-planter-bench",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-amphora"
+   ],
+   "tier": "xlarge",
+   "cat": "castle",
+   "setting": "castle",
+   "style": "violetslate",
+   "kinds": [
+    "garrison-town",
+    "market-town",
+    "border-post",
+    "guild-town"
+   ],
+   "ref": "ref6-4",
+   "shape": "긴 처마 채 + 박공 날개 둘, 밑으로 길이 지난다",
+   "words": [
+    "문루 회관",
+    "길 위 회관",
+    "gatehouse hall"
+   ],
+   "interiorUse": null,
+   "interior": null
+  },
+  {
+   "name": "guardhouse-a",
+   "id": "bd-bld-ref-guardhouse-a",
+   "ko": "탑 달린 관리소",
+   "en": "guardhouse with a tower",
+   "w": 8,
+   "h": 8,
+   "door": [
+    2,
+    7
+   ],
+   "included": [],
+   "props": [
+    "bd-obj-banner-arch",
+    "bd-obj-bench-stone",
+    "bd-obj-planter-bench",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-amphora"
+   ],
+   "tier": "large",
+   "cat": "castle",
+   "setting": "castle",
+   "style": "violetslate",
+   "kinds": [
+    "garrison-town",
+    "market-town",
+    "border-post"
+   ],
+   "ref": "ref6-5 · ref6-1",
+   "shape": "회랑 채 + 모서리 탑(뾰족지붕)",
+   "words": [
+    "탑 달린 관리소",
+    "수비대 관리소",
+    "guardhouse"
+   ],
+   "interiorUse": "office",
+   "interior": {
+    "rooms": [
+     "study",
+     "waiting_room"
+    ]
+   }
+  },
+  {
+   "name": "galleryhouse-a",
+   "id": "bd-bld-ref-galleryhouse-a",
+   "ko": "기둥 회랑 채",
+   "en": "gallery house on posts",
+   "w": 6,
+   "h": 7,
+   "door": [
+    1,
+    6
+   ],
+   "included": [
+    "쌓은 상자와 독"
+   ],
+   "props": [
+    "bd-obj-banner-arch",
+    "bd-obj-bench-stone",
+    "bd-obj-planter-bench",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-amphora"
+   ],
+   "tier": "medium",
+   "cat": "castle",
+   "setting": "castle",
+   "style": "violetslate",
+   "kinds": [
+    "garrison-town",
+    "guild-town",
+    "scholar-town"
+   ],
+   "ref": "ref6-5",
+   "shape": "큰 지붕 채 + 기둥 위 회랑, 밑 트임",
+   "words": [
+    "회랑 채",
+    "기둥 회랑 집",
+    "gallery house"
+   ],
+   "interiorUse": "office",
+   "interior": {
+    "rooms": [
+     "study",
+     "waiting_room"
+    ]
+   }
+  },
+  {
+   "name": "brickstore-a",
+   "id": "bd-bld-ref-brickstore-a",
+   "ko": "벽돌 창고",
+   "en": "brick storehouse",
+   "w": 7,
+   "h": 7,
+   "door": [
+    1,
+    6
+   ],
+   "included": [
+    "큰 독"
+   ],
+   "props": [
+    "bd-obj-banner-arch",
+    "bd-obj-bench-stone",
+    "bd-obj-planter-bench",
+    "bd-obj-crate-closed",
+    "bd-obj-barrel-amphora"
+   ],
+   "tier": "medium",
+   "cat": "castle",
+   "setting": "castle",
+   "style": "violetslate",
+   "kinds": [
+    "garrison-town",
+    "guild-town",
+    "scholar-town",
+    "brewers"
+   ],
+   "ref": "ref6-6",
+   "shape": "처마 채 + 높은 박공, 회랑, 독",
+   "words": [
+    "벽돌 창고",
+    "brick storehouse"
+   ],
+   "interiorUse": "storehouse",
+   "interior": {
+    "rooms": [
+     "storeroom"
+    ]
+   }
+  }
+ ]
+}
