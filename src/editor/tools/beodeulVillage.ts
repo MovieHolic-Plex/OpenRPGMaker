@@ -1780,7 +1780,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     for (const id of have(look.center)) {
       const k = K(id); const x = plazaX - Math.floor(k.w / 2);
       // 가운데 기물은 원래 우물처럼 광장을 지나는 길 줄 위에도 선다 — 광장 판석이 모두 걷는 칸이라 길은 기물을 돌아 이어진다
-      for (const y of [cy - k.h + 2, cy - k.h + 1, cy - k.h + 3]) if (!centred && fits(k, x, y, 0, onPlaza)) { claim(k, x, y, PROP, true); n += 1; centred = true; }
+      // 읍 광장(테 두른 네모)에서는 기물 네모가 통째로 테 안쪽에 든다 — 키 큰 나무(4×5)의 윗줄이 테 줄에 걸치면 길을 끊는다고 찍기가 거절해 가운데 기물이 빠졌다
+      const inside = (y: number): boolean => { if (!sq) return true; for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) if (!sqInner.has(idx(x + i, y + j))) return false; return true; };
+      for (const y of [cy - k.h + 2, cy - k.h + 1, cy - k.h + 3]) if (!centred && inside(y) && fits(k, x, y, 0, onPlaza)) { claim(k, x, y, PROP, true); n += 1; centred = true; }
       if (centred) break;
     }
     // 우물은 남긴다(이야기 도구가 우물을 찾는다): 가운데 기물이 섰으면 광장 가장자리 — 가운데에서 먼 판석 자리부터, 길 줄을 피해.
