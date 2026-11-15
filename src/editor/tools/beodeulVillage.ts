@@ -733,6 +733,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 늪 수상 마을(2026-10-30): 물 위 집 자리·널길 칸 — 물 칸을 널판 마루(땅)로 바꿔 짓는다. 12 단계에서 널판 바닥으로 칠한다.
   const swampDeck = new Set<number>();
   const onBog = (c: number) => theme === "swamp" && !!codeT && occ[c] === WATERC && codeT.water[c] === 2;
+  const noFront = new Set(options.noFront ?? []); // 앞 판에서 갇혔던 문 앞 주머니 — 어느 건물도 문 앞 자리로 쓰지 않는다(spotOk · fits)
   const codePlan = codeT ? (() => {
     // 출구만 준 layout(요청의 「서쪽 길 끝 동굴」 → spec.exits)은 자리를 준 것이 아니다 — 자리는 자동, 출구는 그대로(2026-10-30 던전 작업자 dd1030g)
     const given = options.layout && (options.layout.gather || options.layout.houses?.length || options.layout.landmark || options.layout.anchor) ? options.layout : null;
@@ -745,7 +746,6 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const report = { auto: !given, moved: [] as string[], failed: [] as string[], roadsFailed: [] as string[], requested: { houses: layout.houses?.length ?? 0 } };
     const spots: CodeSpot[] = [];
     let frontOnYard = false; // 마당 테두리 집을 앉히는 동안만: 문 앞이 비워 둔 마당 칸이어도 된다
-    const noFront = new Set(options.noFront ?? []); // 앞 판에서 갇혔던 문 앞 주머니 — 문 앞 자리로 쓰지 않는다
     const spotOk = (k: Kit, x: number, y: number): boolean => {
       if (!k.door || x < 1 || y < 1 || x + k.w > W - 1 || y + k.h > H - 2) return false;
       const L0 = lv[idx(x, y)]!;
@@ -1636,6 +1636,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   };
   const fits = (k: Kit, x: number, y: number, margin = 0, allow: (v: number) => boolean = (v) => v === FREE || v === POND_RING) => {
     if (x < 0 || y < 0 || x + k.w > W || y + k.h > H) return false;
+    if (noFront.size && k.door && inMap(x + k.door.dx, y + k.door.dy + 1) && noFront.has(idx(x + k.door.dx, y + k.door.dy + 1))) return false; // 다시 짓는 판: 갇혔던 주머니에 문을 내지 않는다(띠 지형 집 · 방앗간 · 등대도)
     for (let j = -margin; j < k.h + margin; j += 1) for (let i = -margin; i < k.w + margin; i += 1) {
       const inside = i >= 0 && j >= 0 && i < k.w && j < k.h;
       const v = at(x + i, y + j);
