@@ -5,6 +5,7 @@
 //         울타리 문 밖은 이어진 길.
 //   칠하기: 풀 → 포석·모랫길·광장·물 → 밭 → 집(그림자·기초) → 나무 → 소품 → 울타리 → 둑 풀·숲 수관·그림자 → 물 위 길은 널판 → 높이(relief)·계단 그림.
 // 조각 목록은 칩셋 메타(structureKits 의 ai.role·ai.tags·parts.entrance·크기)에서 뽑는다. 모델이 받는 글은 모두 영어다.
+import { layBeodeulWaterSurface } from "./beodeulWater";
 import type { Project, StructureKitDef, TilesetDef, GameMap } from "@/project/types";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
@@ -384,12 +385,8 @@ export function layBboxVillageInDraft(draft: Project, L: BboxVillageLayout, T: B
   }
   {
     const m = map(); const want = new Map<number, number>(), canopyAt = new Map<number, number>();
-    const N8 = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]] as const;
-    for (const c of all) if (water[c] && !pl.roadMat.has(c) && m.lowerTiles[c] === fullWater) {
-      const x = c % W, y = Math.floor(c / W); let mask = 0;
-      N8.forEach(([dx, dy], b) => { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H || water[ny * W + nx]! > 0) mask |= 1 << b; });
-      const t = BEODEUL_NATURE.bankGrass[mask]!; if (t >= 0) want.set(c, t);
-    }
+    // 물가 둑과 깊이 띠(2층 덧그림 — beodeulWater.ts). 길이 지나는 물 칸(다리)은 비운다.
+    layBeodeulWaterSurface(m, ts, { seed: W * 131 + H * 17 + all.reduce((n, c) => n + (water[c] ? 1 : 0), 0), wet: (c) => water[c]! > 0, open: (c) => !pl.roadMat.has(c) && m.lowerTiles[c] === fullWater && layerTileAt(m, 2, c) < 0 });
     if (pl.forestSet.size) {
       const plan = planBeodeulCanopy(W, H, "leaf", pl.forestSet, (s) => !water[s] && !pl.forestSet.has(s) && layerTileAt(m, 2, s) < 0 && !want.has(s) && !pl.stairCells.has(s) && lv[s] === lv[s - W], (a, b) => lv[a] === lv[b]);
       for (const [c, t] of plan.canopy) canopyAt.set(c, t);
