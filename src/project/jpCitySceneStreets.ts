@@ -192,7 +192,7 @@ export function dressStreets(c: SceneCtx, L: SceneLayout, crosswalkTile?: number
     }
   }
   // 아케이드 지붕(시장 길 세로 구간): 큰길 쪽 끝에 간판 아치, 사이는 지붕 줄(세 줄마다 철 아치). 다른 소품 뒤에 찍어 지붕이 위에 얹힌다.
-  for (const v of L.vstreets) if (v.arcade && FLAVOR_ARCADE.widths.includes(v.w)) for (const b of L.bands) if (b.index >= v.from && b.index <= v.to) {
+  for (const v of L.vstreets) if (!c.fable && v.arcade && FLAVOR_ARCADE.widths.includes(v.w)) for (const b of L.bands) if (b.index >= v.from && b.index <= v.to) {
     const y0 = b.index === 0 ? 0 : (L.bands[b.index - 1]!.front.sA ?? b.top), y1 = b.front.type === "edge" ? b.front.y0 : (b.front.nK ?? b.foot);
     const G = FLAVOR_ARCADE.gateRows;
     const south = y1 < H - 1 ? y1 - G + 1 : -1, north = y0 > 0 ? y0 : -1;

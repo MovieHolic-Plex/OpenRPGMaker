@@ -47,12 +47,37 @@ export function runJpScenePlan(plan: ScenePlan, call: Call, view: () => LotUseVi
     }
     call("stamp_layer_block", { mapId, x: x0, y: y0, layers: { "3": grid }, reshape: false });
   };
+  /**
+   * 새 거리의 바닥: 가족의 무늬 키트(jp-st-gnd-<가족>)를 1층에 찍는다. 무늬 키트의 칸 수가 16 이상이면 이음매 없는 결(지도 좌표로 이어 붙인다 —
+   * 아스팔트는 4×4 칸 덩이마다 두 결 가운데 하나), 그보다 작으면 낱칸을 섞어 깐다(민무늬 칸을 더 자주).
+   */
+  const groundCells = (family: string, rects: readonly { x: number; y: number; w: number; h: number }[]): void => {
+    const lower = (id: string): number[][] | undefined => { const k = kitOf(id); return k ? k.rows.map((r) => [...(r.tiles ?? [])]) : undefined; };
+    const a = lower(`jp-st-gnd-${family}`), b = lower(`jp-st-gnd-${family}-2`);
+    if (!a || !a.length) return;
+    const ph = a.length, pw = a[0]!.length, wrap = pw * ph >= 9 && family !== "pave" && family !== "forecourt" && family !== "water";
+    const hash = (x: number, y: number) => { let h = Math.imul(x + 374761393, 668265263) ^ Math.imul(y + plan.seed * 31 + 1274126177, 2246822519); h = Math.imul(h ^ (h >>> 13), 1274126177); return (h ^ (h >>> 16)) >>> 0; };
+    for (const r of rects) {
+      const grid: number[][] = [];
+      for (let y = r.y; y < r.y + r.h; y++) {
+        const row: number[] = [];
+        for (let x = r.x; x < r.x + r.w; x++) {
+          if (wrap) { const src = b && hash(Math.floor(x / pw), Math.floor(y / ph)) % 2 ? b : a; row.push(src[y % ph]![x % pw]!); }
+          else { const k = hash(x, y) % (pw * ph + 3 * Math.ceil((pw * ph) / 2)); const i = k < pw * ph ? k : (k - pw * ph) % Math.ceil((pw * ph) / 2); row.push(a[Math.floor(i / pw)]![i % pw]!); }
+        }
+        grid.push(row);
+      }
+      call("stamp_layer_block", { mapId, x: r.x, y: r.y, layers: { "1": grid }, reshape: false });
+    }
+  };
   for (const step of plan.steps) {
     const note = step.note ?? "";
     const tryKey = note.startsWith("try:") ? note : undefined;
     if (tryKey && done.has(tryKey)) continue;
     const kitId = step.tool === "stamp_object" ? String(step.args.objectId ?? "").replace("kit:jp_city/", "") : "";
     try {
+      if (step.tool === "ground_cells") { groundCells(String(step.args.family), step.args.rects as { x: number; y: number; w: number; h: number }[]); continue; }
+      if (note === "shade") { const g = upper(kitId); if (g) call("stamp_layer_block", { mapId, x: Number(step.args.x), y: Number(step.args.y), layers: { "3": g }, reshape: false }); continue; }
       if (step.tool === "edge_cells") { edge(step.args.cells as { x: number; y: number }[], String(step.args.material)); continue; }
       if (step.tool === "restore_col") {
         const g = upper(String(step.args.kit)), col = Number(step.args.col);

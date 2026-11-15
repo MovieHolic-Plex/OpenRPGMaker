@@ -11,9 +11,11 @@
 // 순수 계획 → 단계 목록. 실행은 jpCitySceneRun.ts. 줄·구획 채우기는 jpCitySceneRows.ts · jpCityScenePieces.ts.
 import type { JpStreetPlan } from "@/project/jpCityStreetComposer";
 import { mulberry, Occ, SceneCtx, type SceneBand, type SceneBlock, type SceneLayout, type ScenePlaced, type SceneStreet, type SceneVStreet } from "@/project/jpCitySceneCtx";
-import { pickSceneKind, sceneEn, sceneTone, type SceneKind, type SceneStyle, type SceneTone } from "@/project/jpCitySceneKinds";
+import { pickSceneKind, SCENE_SIZES, sceneEn, sceneTone, type SceneKind, type SceneStyle, type SceneTone } from "@/project/jpCitySceneKinds";
 import { PIECES, type PieceDef } from "@/project/jpCityScenePieces";
 import { dressRiver, dressStreets, placeOverpass } from "@/project/jpCitySceneStreets";
+import { fableFinish, fableRiver, type FableInfo } from "@/project/jpCitySceneFable";
+import { STREET_PIECE_COUNT } from "@/project/jpCityStreetPieces";
 import { fillRear, fillRows, rearTop } from "@/project/jpCitySceneRows";
 import { lookHash } from "@/project/kitLook";
 
@@ -23,11 +25,22 @@ export interface SceneOptions {
   /** 게임 열쇠 — 종류·톤·건물 순서를 고른다 */ readonly key: string;
   /** 거리 종류 id 를 직접 고른다(jpCityStreetKinds.json) */ readonly kind?: string;
   readonly crosswalkTile?: number;
+  /** 새 조각(fable_street)으로 짓는다 — 기본: 칩셋에 새 조각이 구워져 있으면 켠다 */ readonly fable?: boolean;
 }
 export interface ScenePlan extends JpStreetPlan {
   readonly kind: SceneKind; readonly tone: SceneTone; readonly placed: readonly ScenePlaced[];
   /** 남은 빈 대지 가운데 빈터 쓰임을 놓아도 되는 칸(1) — 길·산책로·조각 구획 밖 */ readonly lotFree: Uint8Array;
   /** 놓인 장면 벌(이름) · 구획 조각 */ readonly scenes: readonly string[]; readonly pieces: readonly string[];
+  /** 새 거리의 규칙 검사 자료(auditFable) — 새 조각으로 지은 계획에만 */ readonly fable?: FableInfo;
+}
+
+/** 새 거리 조각이 칩셋에 구워져 있는가(사전의 크기 표에 대표 조각이 있다). */
+export const STREET_BAKED = STREET_PIECE_COUNT > 0 && SCENE_SIZES["jp-st-kerb-s"] !== undefined;
+
+/** 새 거리의 톤: 옛 재료 이름 대신 바닥 가족 이름을 쓴다. 게임마다 다른 것은 마당 순서(흙 먼저·잔디 먼저)와 가게 뒤 바닥이다. */
+function fableTone(t: SceneTone): SceneTone {
+  const yard = t.yard.map((m) => (m === t.green ? "@lawn" : "@earth"));
+  return { ...t, lot: ["@forecourt", yard[0] === "@lawn" ? "@alley" : "@forecourt"], sidewalk: "@pave", road: "@tarmac", plaza: "@pave", alley: "@alley", yard: [...new Set(yard)], green: "@lawn" };
 }
 
 const RIVER_W = 3;
@@ -205,13 +218,14 @@ export function planJpCityScene(opts: SceneOptions): ScenePlan {
   const style: SceneStyle = opts.style ?? "shopping";
   const key = opts.key || "default";
   const kind = pickSceneKind({ style, shops: opts.shops, key, seed, kind: opts.kind });
-  const tone = sceneTone(kind, key);
-  const c = new SceneCtx(mapId, W, H, kind, tone, key, seed, mulberry((Math.imul(seed + 1, 0x9e3779b1) ^ lookHash(kind.id)) >>> 0));
+  const fable = opts.fable ?? STREET_BAKED;
+  const tone = fable ? fableTone(sceneTone(kind, key)) : sceneTone(kind, key);
+  const c = new SceneCtx(mapId, W, H, kind, tone, key, seed, mulberry((Math.imul(seed + 1, 0x9e3779b1) ^ lookHash(kind.id)) >>> 0), fable);
   const L = layout(c) as SceneLayout & { overpass?: boolean };
   paintStreets(c, L);
   makeBlocks(L, W);
-  if (L.overpass) placeOverpass(c, L);
-  dressRiver(c, L);
+  if (L.overpass && !fable) placeOverpass(c, L);
+  if (fable) fableRiver(c, L); else dressRiver(c, L);
   assignUses(c, L, opts.shops?.length ?? 0);
   const wanted = [...(opts.shops ?? [])];
   // 구획 바닥: 톤 벌의 대지 재료를 구획마다 돌린다(한 색 한 덩이가 되지 않게)
@@ -231,7 +245,8 @@ export function planJpCityScene(opts: SceneOptions): ScenePlan {
     }
     else fillRows(c, L, b, wanted);
   }
-  dressStreets(c, L, opts.crosswalkTile);
+  dressStreets(c, L, fable ? undefined : opts.crosswalkTile);
+  const fin = fable ? fableFinish(c, L) : undefined;
   const built = c.placed;
   const lotFree = new Uint8Array(W * H);
   for (const b of L.blocks) if (!PIECES[b.use]) for (let y = b.band.top + 1; y <= b.band.foot; y++) for (let x = b.sx; x < b.ex; x++) if (c.occ[y * W + x] === Occ.Lot && !c.drawn[y * W + x]) lotFree[y * W + x] = 1;
@@ -240,7 +255,7 @@ export function planJpCityScene(opts: SceneOptions): ScenePlan {
   const streetEn = (t: string) => ({ kerb: "kerbed road", lane: "shared lane", path: "footpath alley", mall: "pedestrian market street", river: "river with promenade", edge: "bottom walkway" } as Record<string, string>)[t] ?? t;
   const uses = [...new Set([...L.blocks.map((b) => b.use), ...c.piecesUsed])];
   return {
-    steps: c.steps(), mapId, seed, style,
+    steps: fin ? [...fin.ground, ...c.steps()] : c.steps(), mapId, seed, style, ...(fin ? { fable: fin.info } : {}),
     buildings: built.map((p) => ({ role: p.role, x: p.x, foot: p.foot, w: p.w, h: p.h })),
     walkRows: L.bands.flatMap((b) => [b.front.nA, ...(b.front.sA !== undefined ? [b.front.sA] : [])]),
     parks: [],

@@ -3,6 +3,7 @@
 // 계획은 순수하다(지도·칩셋 없이 jpCityStreetCatalog.json 의 크기만 본다) — 조수 빌더가 씨앗을 미리 본다.
 import type { JpStreetStep } from "@/project/jpCityStreetComposer";
 import { SCENE_BUILDINGS, SCENE_LOWER, SCENE_SIZES, type CatBuilding, type SceneKind, type SceneTone } from "@/project/jpCitySceneKinds";
+import { GROUND_FAMILIES, groundFamilyOf, runFamilyOf, streetAlias, streetKitId, STREET_PIECES, type GroundFamily } from "@/project/jpCityStreetPieces";
 import { lookHash } from "@/project/kitLook";
 
 /** 칸 쓰임: 0 빈 대지 · 1 걷는 자리(비워 둔다) · 2 차도 · 3 물·둑 · 4 소품 · 5 처마 틈(건물 옆 1px 윤곽 칸 — 4층 덧그림만) · 6 건물 · 7 담·난간 */
@@ -24,6 +25,8 @@ export interface SceneBand { readonly index: number; top: number; readonly foot:
 export interface SceneVStreet { readonly x: number; readonly lane: number; readonly sw: number; readonly w: number; readonly from: number; readonly to: number; readonly arcade: boolean; readonly main: boolean; readonly y0: number; readonly y1: number }
 export interface SceneBlock { readonly band: SceneBand; sx: number; ex: number; use: string; noRear?: boolean; readonly edgeW: boolean; readonly edgeE: boolean }
 export interface SceneLayout { readonly bands: SceneBand[]; readonly vstreets: SceneVStreet[]; readonly blocks: SceneBlock[] }
+
+const NEW_BUILDINGS: readonly CatBuilding[] = SCENE_BUILDINGS.filter((b) => b.id.startsWith("jp-bldg-f-"));
 
 export function mulberry(seed: number): () => number {
   let s = seed >>> 0;
@@ -72,12 +75,18 @@ export class SceneCtx {
   private readonly order = new Map<string, number>();
   /** 초대형·랜드마크 건물은 한 지도에 하나 */
   private bigPlaced = false;
+  // ── 새 거리(fable_street 조각) ── 칸마다 바닥 가족, 모아 둔 경계 줄 칸, 놓인 새 조각.
+  /** 칸의 바닥 가족(GROUND_FAMILIES 번호) */ readonly gfam: Uint8Array;
+  readonly runCells: { family: string; cells: { x: number; y: number }[] }[] = [];
+  readonly stPlaced: { name: string; look: string; x: number; y: number; w: number; h: number; anchor: string; repeat: boolean }[] = [];
+  /** 대문 자리(집 필지의 길 선에서 문 앞 칸) — 경계 줄 짓기가 여기에 대문 조각을 놓는다 */ readonly gates: { x: number; y: number }[] = [];
 
-  constructor(readonly mapId: string, readonly W: number, readonly H: number, readonly kind: SceneKind, readonly tone: SceneTone, readonly key: string, readonly seed: number, readonly rng: () => number) {
+  constructor(readonly mapId: string, readonly W: number, readonly H: number, readonly kind: SceneKind, readonly tone: SceneTone, readonly key: string, readonly seed: number, readonly rng: () => number, /** 새 조각으로 짓는다 */ readonly fable = false) {
     this.occ = new Uint8Array(W * H);
+    this.gfam = new Uint8Array(W * H);
     this.drawn = new Uint8Array(W * H);
     // 게임마다 다른 건물 순서: 열쇠 + 키트 id 해시. 한 게임 안에서는 맵(씨앗)마다 출발점만 돈다.
-    const ids = [...SCENE_BUILDINGS].sort((a, b) => lookHash(`${key}|${a.id}`) - lookHash(`${key}|${b.id}`));
+    const ids = [...(fable && NEW_BUILDINGS.length ? NEW_BUILDINGS : SCENE_BUILDINGS)].sort((a, b) => lookHash(`${key}|${a.id}`) - lookHash(`${key}|${b.id}`));
     ids.forEach((b, i) => this.order.set(b.id, (i + seed * 7) % ids.length));
   }
 
@@ -96,21 +105,103 @@ export class SceneCtx {
   }
   fill(x: number, y: number, w: number, h: number, material: string): void {
     const x0 = Math.max(0, x), y0 = Math.max(0, y), x1 = Math.min(this.W, x + w), y1 = Math.min(this.H, y + h);
+    if (this.fable) { this.fillFamily(x, y, w, h, groundFamilyOf(material)); return; }
     if (x1 > x0 && y1 > y0) this.ground.push({ tool: "fill_region", args: { mapId: this.mapId, rect: { x: x0, y: y0, w: x1 - x0, h: y1 - y0 }, material }, optional: true, note: "ground" });
   }
+  /** 새 거리: 칸의 바닥 가족을 적는다(바닥 그림은 맨 끝에 가족 표에서 한 번에 찍는다 — fableGround). */
+  fillFamily(x: number, y: number, w: number, h: number, f: GroundFamily): void {
+    const v = GROUND_FAMILIES.indexOf(f);
+    for (let yy = Math.max(0, y); yy < Math.min(this.H, y + h); yy++) for (let xx = Math.max(0, x); xx < Math.min(this.W, x + w); xx++) this.gfam[yy * this.W + xx] = v;
+  }
+  famAt(x: number, y: number): GroundFamily { return this.inside(x, y) ? GROUND_FAMILIES[this.gfam[y * this.W + x]!]! : "none"; }
   /** 담·생울타리·철망·가드레일 — 칸 목록을 한 덩이로(이웃 모양을 맞춰) 3층에 찍는다. */
   edge(cells: readonly { x: number; y: number }[], material: string): void {
     const ok = cells.filter((c) => this.inside(c.x, c.y) && !this.drawn[c.y * this.W + c.x] && (this.at(c.x, c.y) === Occ.Lot || this.at(c.x, c.y) === Occ.Walk));
     if (!ok.length) return;
     for (const c of ok) this.occ[c.y * this.W + c.x] = Occ.Wall;
+    if (this.fable) {
+      const family = runFamilyOf(material);
+      if (!family) { for (const c of ok) this.occ[c.y * this.W + c.x] = Occ.Lot; return; }
+      this.runCells.push({ family, cells: ok.map((c) => ({ x: c.x, y: c.y })) });
+      // 가로 줄 조각은 두 칸 높이다 — 윗칸(갓돌이 그려지는 칸)에 다른 소품이 서지 않게 잡아 둔다. 세로 줄의 칸은 제 윗칸이 같은 줄이다.
+      const mine = new Set(ok.map((c) => `${c.x},${c.y}`));
+      for (const c of ok) if (c.y > 0 && !mine.has(`${c.x},${c.y - 1}`) && this.occ[(c.y - 1) * this.W + c.x] !== Occ.Wall) this.drawn[(c.y - 1) * this.W + c.x] = 1;
+      return;
+    }
     this.walls.push({ tool: "edge_cells", args: { mapId: this.mapId, cells: ok, material }, optional: true, note: "edge" });
   }
   hline(x: number, y: number, w: number): { x: number; y: number }[] { return Array.from({ length: Math.max(0, w) }, (_, k) => ({ x: x + k, y })); }
   vline(x: number, y: number, h: number): { x: number; y: number }[] { return Array.from({ length: Math.max(0, h) }, (_, k) => ({ x, y: y + k })); }
 
-  size(id: string): readonly [number, number] | undefined { return SCENE_SIZES[id]; }
+  size(id: string): readonly [number, number] | undefined {
+    if (!this.fable) return SCENE_SIZES[id];
+    const p = STREET_PIECES[streetAlias(id)[0] ?? ""];
+    return p ? [p.w, p.h] : SCENE_SIZES[id];                                // 대응 조각이 없는 옛 id 는 놓이지 않는다(크기만 답한다 — 부르는 쪽의 칸 셈이 그대로 돈다)
+  }
+
+  // ── 새 거리의 소품 놓기: 조각마다 앵커 등급이 있고 그 자리에만 선다 ──
+  private near(x: number, y: number, w: number, h: number, ok: (v: Occ, xx: number, yy: number) => boolean): boolean {
+    for (let yy = y - 1; yy <= y + h; yy++) for (let xx = x - 1; xx <= x + w; xx++) {
+      if (xx >= x && xx < x + w && yy >= y && yy < y + h) continue;
+      if (!this.inside(xx, yy)) continue;
+      if (ok(this.occ[yy * this.W + xx]! as Occ, xx, yy)) return true;
+    }
+    return false;
+  }
+  /** 이 조각이 발 줄 (x..x+w-1, foot) 에 설 수 있는가 — 지도 안 · 겹침 없음 · 차도 칸을 덮지 않음 · 앵커 자리 · 같은 그림이 20×15 창 안에 없음. */
+  stFits(name: string, x: number, foot: number, o: { stack?: boolean; lax?: boolean } = {}): boolean {
+    const p = STREET_PIECES[name];
+    if (!p) return false;
+    const y = foot - p.h + 1;
+    if (x < 0 || y < 0 || x + p.w > this.W || foot >= this.H) return false;
+    const road = p.anchor === "road", floor = p.layer === "floor";
+    for (let yy = y; yy <= foot; yy++) for (let xx = x; xx < x + p.w; xx++) {
+      const i = yy * this.W + xx, v = this.occ[i]! as Occ;
+      if (this.drawn[i] && !o.stack) return false;
+      if (v === Occ.Road && !road && !(floor && p.tags.includes("road"))) return false;       // 차도 칸에는 차와 노면 조각만
+      if (yy === foot && !floor && !road && p.anchor !== "facade" && p.anchor !== "water" && v !== Occ.Lot && !(o.lax && v === Occ.Walk)) return false;
+    }
+    const fam = (xx: number) => this.famAt(xx, foot);
+    const cols = Array.from({ length: p.w }, (_, k) => x + k);
+    const solid = (v: Occ) => v === Occ.Bldg || v === Occ.Wall || v === Occ.Slit;
+    switch (p.anchor) {
+      case "wall": if (cols.filter((xx) => solid(this.at(xx, foot - 1))).length * 2 < p.w) return false; break;
+      case "kerb": if (!cols.every((xx) => fam(xx) === "pave") || !cols.some((xx) => this.at(xx, foot + 1) === Occ.Road || this.at(xx, foot - 1) === Occ.Road)) return false; break;
+      case "lot": if (!cols.every((xx) => ["forecourt", "earth", "lawn", "alley", "pave"].includes(fam(xx))) || !this.near(x, foot, p.w, 1, (v, xx, yy) => solid(v) || (this.gfam[yy * this.W + xx] !== this.gfam[foot * this.W + x] && v !== Occ.Road))) return false; break;
+      case "open": if (!cols.every((xx) => ["forecourt", "earth", "lawn", "alley", "pave"].includes(fam(xx)))) return false; break;
+      case "facade": if (!cols.every((xx) => this.at(xx, foot) === Occ.Bldg)) return false; break;
+      case "road": if (!cols.every((xx) => this.at(xx, foot) === Occ.Road && fam(xx) === "tarmac")) return false; break;
+      case "water": if (!cols.every((xx) => fam(xx) === "water")) return false; break;
+      case "floor": { const need = p.tags.find((t) => t.startsWith("on:"))?.slice(3).split("+"); if (need && !cols.every((xx) => need.includes(fam(xx)))) return false; break; }
+      default: return false;                                                                    // run 조각은 줄 짓기만 놓는다
+    }
+    if (!p.repeat) { const look = p.look ?? name; for (const q of this.stPlaced) if (q.look === look && Math.abs(q.x - x) < 20 && Math.abs(q.y - y) < 15) return false; }
+    return true;
+  }
+  /** 조각 하나를 놓는다(검사 없이 — stFits 를 통과한 자리 또는 줄 짓기가 정한 자리). */
+  stStamp(name: string, x: number, foot: number, o: { stack?: boolean; early?: boolean; late?: boolean; ground?: GroundFamily } = {}): void {
+    const p = STREET_PIECES[name]!;
+    const y = foot - p.h + 1;
+    for (let yy = Math.max(0, y); yy <= foot; yy++) for (let xx = x; xx < x + p.w; xx++) {
+      const i = yy * this.W + xx;
+      this.drawn[i] = 1;
+      if (yy === foot && p.layer !== "floor" && p.layer !== "ground" && p.anchor !== "road" && p.anchor !== "facade" && p.anchor !== "water") this.occ[i] = p.anchor === "run" ? Occ.Wall : Occ.Prop;
+    }
+    const ground = o.ground ?? this.famAt(x, Math.min(this.H - 1, foot + (p.anchor === "run" ? 1 : 0)));
+    const step: JpStreetStep = { tool: "stamp_object", args: { objectId: `kit:jp_city/${streetKitId(name, ground)}`, mapId: this.mapId, x, y }, optional: true, note: p.layer === "floor" ? "floor2" : p.layer === "ground" ? "bank" : "prop4" };
+    (p.layer === "floor" || p.layer === "ground" ? this.marks : o.early ? this.early : o.late ? this.late : p.anchor === "run" ? this.walls : this.props).push(step);
+    this.stPlaced.push({ name, look: p.look ?? name, x, y, w: p.w, h: p.h, anchor: p.anchor, repeat: p.repeat === true });
+    this.usedProps.set(name, (this.usedProps.get(name) ?? 0) + 1);
+  }
+  /** 후보 조각들 가운데 덜 쓴 것부터 이 발 줄에 서는 첫 조각을 놓는다. */
+  stPut(names: readonly string[], x: number, foot: number, o: { stack?: boolean; early?: boolean; late?: boolean; lax?: boolean; maxW?: number } = {}): string | undefined {
+    const order = names.filter((n) => STREET_PIECES[n] && (o.maxW === undefined || STREET_PIECES[n]!.w <= o.maxW)).map((n) => ({ n, u: this.usedProps.get(n) ?? 0, r: this.rng() })).sort((a, b) => a.u - b.u || a.r - b.r);
+    for (const c of order) if (this.stFits(c.n, x, foot, o)) { this.stStamp(c.n, x, foot, o); return c.n; }
+    return undefined;
+  }
 
   can(id: string, x: number, y: number, o: PutOpts = {}): boolean {
+    if (this.fable) { const sz0 = this.size(id); return !!sz0 && streetAlias(id).some((n) => this.stFits(n, x, y + sz0[1] - 1, o)); }
     const sz = this.size(id);
     if (!sz || (o.layer4 && SCENE_LOWER.has(id))) return false;
     const [w, h] = sz;
@@ -129,6 +220,7 @@ export class SceneCtx {
 
   /** 소품 하나(왼쪽 위 x,y). 자리가 안 되면 false. */
   put(id: string, x: number, y: number, o: PutOpts = {}): boolean {
+    if (this.fable) { const sz0 = this.size(id); return !!sz0 && this.stPut(streetAlias(id), x, y + sz0[1] - 1, o) !== undefined; }
     if (!this.can(id, x, y, o)) return false;
     const [w, h] = this.size(id)!;
     const baseRows = Math.min(h, o.baseRows ?? 1);
@@ -144,11 +236,13 @@ export class SceneCtx {
   }
   /** 발 줄(맨 아래 줄 y)에 맞춰 놓는다. */
   putFoot(id: string, x: number, footY: number, o: PutOpts = {}): boolean {
+    if (this.fable) return this.stPut(streetAlias(id), x, footY, o) !== undefined;
     const sz = this.size(id);
     return !!sz && this.put(id, x, footY - sz[1] + 1, o);
   }
   /** 길 위 표시·차(칸 쓰임을 바꾸지 않는다). */
   decal(id: string, x: number, y: number, note = "road"): boolean {
+    if (this.fable) { const sz0 = this.size(id); return note === "prop" && !!sz0 && this.stPut(streetAlias(id), x, y + sz0[1] - 1) !== undefined; }
     const sz = this.size(id);
     if (!sz || x < 0 || y < 0 || x + sz[0] > this.W || y + sz[1] > this.H) return false;
     for (let yy = y; yy < y + sz[1]; yy++) for (let xx = x; xx < x + sz[0]; xx++) if (this.drawn[yy * this.W + xx]) return false;
@@ -159,11 +253,13 @@ export class SceneCtx {
   }
   /** 1칸 덧그림을 조건 없이(둑·다리·물 반짝임 같은 길·물의 일부). */
   raw(id: string, x: number, y: number, note = "bank"): void {
+    if (this.fable) return;                                                 // 옛 길·물 조각 — 새 거리는 제 조각으로 짓는다(fableStreets)
     if (this.inside(x, y)) this.marks.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${id}`, mapId: this.mapId, x, y }, optional: true, note });
   }
 
   /** 목록에서 이 지도에 가장 덜 쓴 것(같으면 난수). */
   least(pool: readonly string[]): string | undefined {
+    if (this.fable) { const names = [...new Set(pool.flatMap((id) => streetAlias(id)))]; if (!names.length) return undefined; const m = Math.min(...names.map((n) => this.usedProps.get(n) ?? 0)); const b = names.filter((n) => (this.usedProps.get(n) ?? 0) === m); return b[Math.floor(this.rng() * b.length)]; }
     const ok = pool.filter((id) => this.size(id));
     if (!ok.length) return undefined;
     const min = Math.min(...ok.map((id) => this.usedProps.get(id) ?? 0));
@@ -172,12 +268,15 @@ export class SceneCtx {
   }
   /** 목록을 덜 쓴 것부터 돌며 처음 놓이는 것 하나. */
   putAny(pool: readonly string[], x: number, footY: number, o: PutOpts = {}): string | undefined {
+    if (this.fable) return this.stPut([...new Set(pool.flatMap((id) => streetAlias(id)))], x, footY, o);
     const ok = pool.filter((id) => this.size(id)).map((id) => ({ id, n: this.usedProps.get(id) ?? 0, r: this.rng() })).sort((a, b) => a.n - b.n || a.r - b.r);
     for (const c of ok) if (this.putFoot(c.id, x, footY, o)) return c.id;
     return undefined;
   }
 
   // ── 건물 ──
+  /** 새 거리는 새로 그린 건물(jp-bldg-f-*)만 세운다 — 옛 납작한 키트는 고르지 않는다(칩셋에는 남아 옛 지도가 그대로 돈다). */
+  get buildingPool(): readonly CatBuilding[] { return this.fable && NEW_BUILDINGS.length ? NEW_BUILDINGS : SCENE_BUILDINGS; }
   private lookOf(b: CatBuilding): string { return b.look ?? b.id; }
   private dist(a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }): number {
     return Math.max(Math.max(0, Math.max(a.x, b.x) - Math.min(a.x + a.w, b.x + b.w)), Math.max(0, Math.max(a.y, b.y) - Math.min(a.y + a.h, b.y + b.h)));
@@ -188,7 +287,7 @@ export class SceneCtx {
    */
   nextKit(cats: readonly string[], at: { x: number; foot: number }, maxW: number, maxH: number, o: { minH?: number; notH?: number; role?: string; minW?: number; /** 아직 안 세운 그림만 */ fresh?: boolean; /** 초대형·랜드마크를 세워도 되는 자리(맨 뒤 띠의 앞줄) */ big?: boolean } = {}): CatBuilding | undefined {
     const pick = (cat: string | undefined, fresh: boolean): CatBuilding | undefined => {
-      const cands = SCENE_BUILDINGS.filter((b) => (o.role ? b.role === o.role : b.cat === cat) && b.w <= maxW && b.h <= maxH && b.h >= (o.minH ?? 0) && b.w >= (o.minW ?? 0)
+      const cands = this.buildingPool.filter((b) => (o.role ? b.role === o.role : b.cat === cat) && b.w <= maxW && b.h <= maxH && b.h >= (o.minH ?? 0) && b.w >= (o.minW ?? 0)
         && (!(b.tier === "xlarge" || b.tier === "landmark") || (o.big === true && !this.bigPlaced)));
       const scored = cands.map((b) => {
         const prev = this.usedLooks.get(this.lookOf(b)) ?? [];
@@ -202,7 +301,7 @@ export class SceneCtx {
     if (o.role) return pick(undefined, true) ?? pick(undefined, false);                // 요청한 가게는 되풀이여도 세운다
     // 먼저 모든 분류에서 아직 안 세운 그림을 찾고, 다 썼을 때만 멀리 떨어진 되풀이를 허락한다.
     // 되풀이는 이 분류들의 그림을 지도에 다 세웠을 때만(맞는 크기가 없어 남은 것은 되풀이의 이유가 아니다 — 그 자리는 틈·빈터 쓰임이 채운다).
-    const allUsed = SCENE_BUILDINGS.filter((b) => cats.includes(b.cat) && b.tier !== "xlarge" && b.tier !== "landmark").every((b) => this.usedLooks.has(this.lookOf(b)));
+    const allUsed = this.buildingPool.filter((b) => cats.includes(b.cat) && b.tier !== "xlarge" && b.tier !== "landmark").every((b) => this.usedLooks.has(this.lookOf(b)));
     for (const fresh of o.fresh || !allUsed ? [true] : [true, false]) for (const cat of cats) { const hit = pick(cat, fresh); if (hit) return hit; }
     return undefined;
   }

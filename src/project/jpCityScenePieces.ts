@@ -46,7 +46,7 @@ function park(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
 
 function shrine(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   const { x, w, top, foot, h } = rect(b), { tone } = c;
-  const hall = SCENE_BUILDINGS.find((k) => k.id === "jp-bldg-shrine-haiden");
+  const hall = c.fable ? c.buildingPool.find((k) => k.cat === "sacred" && k.w >= 5) : SCENE_BUILDINGS.find((k) => k.id === "jp-bldg-shrine-haiden");
   if (!hall || h < hall.h + 4 || w < hall.w + 4) return false;
   const px = x + Math.floor(w / 2) - 1, hx = px - (hall.doors[0] ?? 4), hfoot = top + hall.h;
   if (hx < x + 1 || hx + hall.w > x + w - 1) return false;
@@ -153,7 +153,7 @@ function vacant(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
 /** 역 앞 광장: 뒤에 작은 역사, 앞은 판석 광장(동상·시계·분수·지하철 출구·매점)과 자전거 보관소·정류장. */
 function station(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   const { x, w, top, foot, h } = rect(b), { tone } = c;
-  const kit = SCENE_BUILDINGS.find((k) => k.id === "jp-bldg-station-small");
+  const kit = c.fable ? c.buildingPool.find((k) => k.role === "station" || k.cat === "station") : SCENE_BUILDINGS.find((k) => k.id === "jp-bldg-station-small");
   if (!kit || w < kit.w + 2 || h < kit.h + 3) return false;
   c.fill(x, top, w, h, tone.plaza);
   const kx = x + Math.floor((w - kit.w) / 2), kfoot = Math.min(foot - 3, top + kit.h + Math.max(0, h - kit.h - 6));

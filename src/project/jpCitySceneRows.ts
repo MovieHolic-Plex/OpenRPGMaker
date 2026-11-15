@@ -45,7 +45,7 @@ function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number,
       const role = wanted[i]!;
       kit = c.nextKit([], at, ex - cursor + (canShare ? 1 : 0), maxH, { role });
       if (kit) wanted.splice(i, 1);
-      else if (!SCENE_BUILDINGS.some((q) => q.role === role) && ASSEMBLED_KO[role] && ex - cursor >= 5) { wanted.splice(i, 1); built = assembled(c, role, cursor, foot, Math.min(6, ex - cursor), maxH); }
+      else if (!c.fable && !SCENE_BUILDINGS.some((q) => q.role === role) && ASSEMBLED_KO[role] && ex - cursor >= 5) { wanted.splice(i, 1); built = assembled(c, role, cursor, foot, Math.min(6, ex - cursor), maxH); }
     }
     if (built) { row.push(built); prev = built; cursor = built.x + built.w; share = false; continue; }
     // 좁은 가게(폭 8칸까지)를 먼저 — 한 줄에 여러 채가 연달아 서게. 섞임에 맞는 것이 없으면 다른 분류의 안 세운 건물로 줄을 잇는다.
@@ -65,7 +65,7 @@ function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number,
     if (r >= 0.9) cursor += 1;
   }
   // 줄 끝에 4칸 넘게 남으면 좁은 조립 건물 한 채(이 지도에 아직 없는 종류, 지도에 셋까지) — 그래도 남는 자투리는 쓰임으로 닫는다.
-  for (let n = c.placed.filter((q) => !q.kit).length; ex - cursor >= 4 && n < 3 && !mainRow; n++) {
+  for (let n = c.placed.filter((q) => !q.kit).length; ex - cursor >= 4 && n < 3 && !mainRow && !c.fable; n++) {   // 새 거리는 옛 조립 건물을 세우지 않는다
     const role = FILL_ROLES.find((r) => !c.placed.some((q) => q.role === r || (q.role === "restaurant" && r === "ramen")));
     if (!role) break;
     const p = assembled(c, role, cursor, foot, Math.min(ex - cursor >= 9 ? 5 : 6, ex - cursor), Math.min(maxH, 9));
@@ -255,6 +255,7 @@ function houseRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number
     if (shopLike) { if (depth >= 1) { c.fill(x, hf + 1, lw, depth, tone.sidewalk); c.mark(x, hf + 1, lw, depth, Occ.Walk, [Occ.Lot]); } }   // 동네 가게 앞은 담 없이 포장
     else if (depth >= 1) {
       const open = new Set<number>();
+      for (const d of kit.doors.slice(0, 1)) c.gates.push({ x: hx + d, y: foot });   // 새 거리: 대문은 길이 들어가는 자리 하나
       for (const d of kit.doors) { open.add(hx + d); c.mark(hx + d, hf + 1, 1, depth + 1, Occ.Walk, [Occ.Lot]); if (depth >= 2) c.fill(hx + d, hf + 1, 1, depth - 1, tone.plaza); }   // 대문에서 현관까지 디딤돌
       const carX = left ? x : hx + kit.w;
       if (carport) {
@@ -266,7 +267,7 @@ function houseRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number
       }
       // 대문 기둥(문 양옆) → 길 선 담 + 옆 필지와의 담. 기둥이 먼저 서고 담은 남은 칸에 한 덩이로 이어진다.
       for (const d of kit.doors.slice(0, 2)) for (const px of [hx + d - 1, hx + d + 1]) if (!open.has(px) && px >= x && px < x + lw) c.put("jp-gatepost", px, foot);
-      const material = kind.noGreen ? "블록담" : ["블록담", "생울타리", "블록담"][lot % 3]!;
+      const material = c.fable ? (kind.noGreen ? ["블록담", "판자담"][lot % 2]! : ["블록담", "생울타리", "판자담"][lot % 3]!) : kind.noGreen ? "블록담" : ["블록담", "생울타리", "블록담"][lot % 3]!;
       const sideWall = gx < ex ? [...c.vline(gx, Math.max(top + 1, hf - 2), foot - Math.max(top + 1, hf - 2)), { x: gx, y: foot }] : [];
       c.edge([...c.hline(x, foot, lw).filter((q) => !open.has(q.x)), ...sideWall], material);
       if (depth >= 2 && kit.doors.length === 1 && c.rng() < 0.5) c.put("jp-prop-gate-iron-open", hx + kit.doors[0]!, foot - 1, { baseRows: 2, base: [Occ.Walk], over: [Occ.Walk] });
@@ -281,6 +282,8 @@ function houseRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number
     for (const sx2 of [hx, hx + kit.w - 1]) if (c.at(sx2, hf) === Occ.Slit && c.rng() < 0.6 && c.putAny(wallSide, sx2, hf, { layer4: true, base: [Occ.Slit], over: [Occ.Slit] })) c.scenesUsed.add("jutaku");
     x = gx + (shopLike ? 0 : 1);
   }
+  // 새 거리: 집 줄의 양 끝도 담으로 닫는다(필지는 닫힌 고리 — 앞줄·옆줄·띠 뒤 담).
+  if (c.fable && row.length) for (const wx of [sx, ex - 1]) c.edge(c.vline(wx, top + 1, foot - top), kind.noGreen ? "블록담" : "생울타리");
   // 줄 끝 자투리: 담 두른 텃밭·빈 마당(포장이 드러나지 않게) — 안은 빈터 쓰임이 채운다.
   if (ex - x >= 2 && row.length) { c.fill(x, top, ex - x, foot - top + 1, yardGround(kind, tone, lot)); c.edge(c.hline(x, foot, ex - x), kind.noGreen ? "블록담" : "생울타리"); }
   return row;
