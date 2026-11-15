@@ -213,11 +213,11 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
   const cx = (r.x0 + r.x1) / 2, cy = (r.y0 + r.y1) / 2;
   let left = want.houses;
   // 떨어진 터(2026-11-15 감독 «집을 마당으로 모으는 것은 맞다, 강 건너와 윗단의 쓰임을 잃는 것은 아니다»): 예전 고리 배치가 마당과 다른 마른 땅 덩이(강 건너)나
-  // 다른 단에 집·일터를 두었으면 그 터마다 하나는 거기에 남긴다 — 강 건너 먼저, 일터 먼저(집은 마당에 남는다), 둘까지(집이 넷보다 적으면 하나). 집은 마당 몫 셋(집이 셋이면 둘)이 남을 때만 보낸다.
+  // 다른 단에 집·일터를 두었으면 하나는 거기에 남긴다 — 강 건너 먼저, 일터 먼저(집은 마당에 남는다), 마을에 하나만(둘을 보내면 떨어진 집과 그 골목이 집 곁 빈 땅을 써서 탐침 30판의 밭이 64 에서 49 로 줄었다). 집은 마당 몫 셋(집이 셋이면 둘)이 남을 때만 보낸다.
   // 강 건너에 문이 서면 시공기가 그 문 앞까지 골목을 내고 물을 건너는 자리에 다리를 놓는다. 높은 곳 건물이 이미 선 터는 쓰이고 있는 터다.
   let workSeated = false;
   if (want.apart?.length && want.bankOf && !want.wetOk) {
-    const yb = want.bankOf(gy * W + gx), cap = want.houses >= 4 ? 2 : 1, done = new Set<string>();
+    const yb = want.bankOf(gy * W + gx), cap = 1, done = new Set<string>();
     for (const p of [...want.apart].sort((a, b) => Number(a.bank === yb) - Number(b.bank === yb) || Number(a.role === "house") - Number(b.role === "house"))) {
       if (plan.apart.length >= cap) break;
       const far = p.bank !== yb, key = far ? `b${p.bank}` : `l${p.level}`;

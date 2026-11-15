@@ -1969,13 +1969,17 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 없으면 포구로 읽히지 않았다(ab14 포구 어촌 두 판 「잔교·부두가 없다」).
     // 포구의 돌 둑(beodeulQuay.ts): 잔교가 설 물가(없으면 일터·모이는 곳에 가장 가까운 남향 물가)를 곧게 펴(두 줄까지 메운다 — 물을 새로 파지 않는다)
     // 세 줄 깊이 판석 띠로 깔고 길망에 잇는다. 잔교는 이 둑에서 뻗고 어구는 둑 뒷줄에 선다. 물 칸의 그림·물가 테·물 위 기물은 그대로다.
-    const layQuay = (nears: readonly { x: number; y: number }[]): void => {
+    const layQuay = (nears: readonly { x: number; y: number }[], pier: (x: number, y: number) => number): void => {
       // 기준 자리(잔교 자리 · 모이는 곳 · 건물 문 앞)마다 둑을 계획해 보고 앞줄이 가장 긴 것으로 낸다(같으면 앞선 기준). 기준 하나의 가장 가까운 물가만 보면 그 물가가 굽은 만 끝일 때
       // 일곱 칸 남짓한 짧은 둑이 났다(2026-11-15 명세 은행 jrpg-w2 갈대항구: 마당 배치로 일터가 만 서쪽 끝으로 가자 둑이 17칸에서 10칸).
-      let q: ReturnType<typeof planQuay> = null;
+      // 잔교는 둑에서 뻗는다 — 첫 기준(잔교 자리)의 둑에 잔교가 설 수 있으면(pier: 2 키트 잔교 · 1 널판 잔교 · 0 못 선다) 그만큼 설 수 있는 둑만 견준다.
+      let q: ReturnType<typeof planQuay> = null, need = -1;
       for (const near of nears) {
         const p = planQuay({ W, H, near, sea: (c) => occ[c] === WATERC && codeT!.water[c] === 3, land: (c) => (occ[c] === FREE || occ[c] === ROAD) && !rampCells.has(c), level: (c) => lv[c]! });
-        if (p && (!q || p.front.x1 - p.front.x0 > q.front.x1 - q.front.x0)) q = p;
+        if (!p) { if (need < 0) need = 0; continue; }
+        let can = 0; for (let x = p.front.x0; x < p.front.x1; x += 1) can = Math.max(can, pier(x, p.front.y));
+        if (need < 0) need = can;
+        if (can >= need && (!q || p.front.x1 - p.front.x0 > q.front.x1 - q.front.x0)) q = p;
       }
       if (!q) return;
       const was = occ.slice();
@@ -2003,7 +2007,16 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       }
       // 둑은 잔교가 설 자리에 — 잔교 자리를 먼저 찾고, 그 물가에 둑을 낸 뒤 둑 위에서 잔교 자리를 다시 찾는다
       if (ground.quay && "mat" in spec.plaza && !quaySet.size) {
-        layQuay([best ? { x: best.x, y: best.y } : near, codePlan.g, ...codePlan.spots.map((sp) => sp.front)]);
+        // 둑 앞줄 (x, y) 에서 잔교가 뻗을 수 있는가 — 아래 두 잔교 찾기와 같은 물 조건(둑이 메울 칸 아래는 이미 바다다)
+        const pierAt = (x: number, y: number): number => {
+          let len = 0; while (len < 10 && sea(x, y + 1 + len) && sea(x + 1, y + 1 + len)) len += 1;
+          if (stem && head && len >= 5 && x >= 5 && x < W - 6) { const hy = y + Math.min(len, stem.h); let headOk = hy + head.h < H;
+            for (let j = 0; j < head.h && headOk; j += 1) for (let i = 0; i < head.w; i += 1) if (!sea(x - 4 + i, hy + j)) { headOk = false; break; }
+            if (headOk) return 2; }
+          let short = 0; while (short < 6 && sea(x, y + 1 + short) && sea(x + 1, y + 1 + short) && sea(x - 1, y + 1 + short) && sea(x + 2, y + 1 + short)) short += 1;
+          return short >= 3 && sea(x, y + 1 + short) && sea(x + 1, y + 1 + short) ? 1 : 0;
+        };
+        layQuay([best ? { x: best.x, y: best.y } : near, codePlan.g, ...codePlan.spots.map((sp) => sp.front)], pierAt);
         if (quaySet.size) { best = null;
           if (stem && head) for (let x = 5; x < W - 6; x += 1) for (let y = 2; y < H - 6; y += 1) {
             if (!pierTop(x, y) || !pierTop(x + 1, y) || !sea(x, y + 1) || !sea(x + 1, y + 1)) continue;
