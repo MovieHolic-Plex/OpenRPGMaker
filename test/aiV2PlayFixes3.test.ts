@@ -314,9 +314,12 @@ describe("글에서 번호가 읽히는가", () => {
 // 7) 상태 쪽의 HP 줄이 밝은 메뉴에서도 읽힌다(r4d-fun: 크림 바탕 위 흰 글자 — 대비 1.06).
 describe("메뉴 설명 줄의 글자색", () => {
   it("설명 줄은 유리 창의 흰 글자가 아니라 그 메뉴 스킨의 글자색을 쓴다", () => {
-    const css = readFileSync("src/styles/database/tabs-b-status-menu-main.css", "utf8");
-    const rule = /\.status-menu-detail-row\.has-description \.status-menu-detail-description \{[^}]*\}/u.exec(css)![0];
+    // 규칙은 runtime 표면의 시트에 산다(database 표면의 시트는 메뉴 스킨의 토큰을 못 쓴다 — check-css-surfaces R4). 같은 선택자로, 그 시트 바로 뒤에 들어온다.
+    const css = readFileSync("src/styles/runtime/statusMenuEdgeDock.css", "utf8");
+    const rule = /^\.status-menu-detail-row\.has-description \.status-menu-detail-description \{[^}]*\}/mu.exec(css)![0];
     expect(rule).toMatch(/color: var\(--status-edge-ivory, var\(--runtime-glass-text\)\);/u);
+    const order = readFileSync("src/styles/runtime/index.css", "utf8");
+    expect(order.indexOf("tabs-b-status-menu-main.css")).toBeLessThan(order.indexOf("statusMenuEdgeDock.css"));
   });
 });
 
