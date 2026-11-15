@@ -99,7 +99,10 @@ describe("reset_project", () => {
     expect(result.proposedCalls).toHaveLength(1);
     expect(result.proposedCalls[0]).toMatchObject({ name: "reset_project", destructive: true, requiresApproval: true });
     expect(session.getProposedProject().meta.title).toBe("새 출발");
-  });
+  // 한도 60초: 빈 프로젝트(수십 MB) 위에서 세션 한 턴을 돈다 — AssistantSession 생성과 턴의 초안 복제·검수(structuredClone · 왕복 직렬화 검사 · 통째 지문)가
+  // 프로젝트를 여러 번 통째로 훑는다. 러너에서 12.5~23.1초였다(ci-full 11-05~11-15 일곱 실행 16.0·12.5·19.5·20.6·21.2·17.9·23.1 · ci-vitest-files 43718681723 에서 16.0)
+  // — 기본 한도 15초를 넘나들고, 기준선(2026-10-26)에도 timeout 으로 적혀 있었다. 그 열흘 사이 커밋에 따라 늘지 않았다. 이 경우만 한도를 둔다.
+  }, 60_000);
 
   it("makes reset-rooted proposal replay all-or-nothing", () => {
     const baseline = createBlankProject();
