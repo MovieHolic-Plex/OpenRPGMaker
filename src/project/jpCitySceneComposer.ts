@@ -16,7 +16,7 @@ import { PIECES, type PieceDef } from "@/project/jpCityScenePieces";
 import { dressRiver, dressStreets, placeOverpass } from "@/project/jpCitySceneStreets";
 import { fableFinish, fableRiver, type FableInfo } from "@/project/jpCitySceneFable";
 import { STREET_PIECE_COUNT } from "@/project/jpCityStreetPieces";
-import { fillRear, fillRows, rearTop } from "@/project/jpCitySceneRows";
+import { backStrip, fillRear, fillRows, rearTop } from "@/project/jpCitySceneRows";
 import { lookHash } from "@/project/kitLook";
 
 export interface SceneOptions {
@@ -71,7 +71,8 @@ function layout(c: SceneCtx): SceneLayout {
   }
   // 띠 높이: 고르게 나누고 남는 줄은 맨 위 띠(뒷줄·고층)가 받는다. 가게 띠는 10줄이면 넉넉하다.
   const heights = new Array<number>(N).fill(0);
-  const each = Math.min(lanes ? 10 : 11, Math.floor(total / N));
+  // 새 거리의 고층 종류(역 앞·잡거 번화가): 아래 띠를 가게 키(7줄)에 맞춰 얕게 잡고 남는 줄을 큰길 띠에 준다 — 16줄 대형 건물이 큰길 줄에 선다.
+  const each = Math.min(c.fable && kind.tall ? 8 : lanes ? 10 : 11, Math.floor(total / N));
   for (let i = 1; i < N; i++) heights[i] = each;
   heights[0] = total - each * (N - 1);
   const bands: SceneBand[] = [];
@@ -195,11 +196,38 @@ function makeBlocks(L: SceneLayout, W: number): void {
 
 /** 구획 쓰임: 종류의 조각(공원·신사·주차장 …)을 맞는 구획에 먼저 놓고(큰 구획은 한쪽을 잘라 쓴다), 나머지는 가게 줄 또는 집 줄. */
 function assignUses(c: SceneCtx, L: SceneLayout, shops: number): void {
-  const { rng, kind } = c;
+  const { rng, kind, tone } = c;
   const N = L.bands.length;
   const want = [...kind.pieces].filter((p) => PIECES[p]).map((p) => ({ p, r: rng() })).sort((a, b) => a.r - b.r).map((x) => x.p);
   const maxPieces = c.W * c.H >= 2400 ? 2 : 1;
   let n = 0;
+  // 새 거리의 깊은 필지: 생활도로 종류에서 골목(두 줄 걷는 길)을 사이에 둔 두 띠의 지도 끝 구획을 합쳐 한 필지로 쓴다(골목은 필지 담에서 끝난다).
+  // 절 경내(길 선의 산몬 · 돌 참배길 · 맨 뒤 본전)와 단지·맨션(앞마당 딸린 대형 건물)이 여기에만 선다 — 얕은 구획에는 세우지 않는다.
+  if (c.fable && kind.main === "lane") {
+    const deepUses = [
+      ...(kind.pieces.includes("shrine") && c.buildingPool.some((k) => k.cat === "sacred") ? [{ use: "shrine", pref: 15 }] : []),
+      ...(kind.houseShare >= 0.7 && c.buildingPool.some((k) => k.role === "danchi" || k.role === "mansion") ? [{ use: "estate", pref: 16 }] : []),
+    ];
+    for (const d of deepUses) {
+      if (rng() > 0.85) continue;
+      const cands: { a: SceneBlock; b: SceneBlock; west: boolean }[] = [];
+      for (let i = 0; i + 1 < N; i++) if (L.bands[i]!.front.type === "path") for (const west of [true, false]) {
+        const a = L.blocks.find((q) => q.band.index === i && !q.use && (west ? q.edgeW : q.edgeE)), b = L.blocks.find((q) => q.band.index === i + 1 && !q.use && (west ? q.edgeW : q.edgeE));
+        if (a && b && Math.min(a.ex, b.ex) - Math.max(a.sx, b.sx) >= 13) cands.push({ a, b, west });
+      }
+      const pick = cands[Math.floor(rng() * cands.length)];
+      if (!pick) continue;
+      const { a, b, west } = pick, lo = Math.max(a.sx, b.sx), hi = Math.min(a.ex, b.ex), avail = hi - lo;
+      const w = avail - d.pref >= 7 ? d.pref : avail, sx = west ? lo : hi - w, ex = sx + w;
+      for (const q of [a, b]) { if (west) q.sx = Math.max(q.sx, ex); else q.ex = Math.min(q.ex, sx); if (q.ex - q.sx < 3) L.blocks.splice(L.blocks.indexOf(q), 1); }
+      const st = a.band.front;
+      c.mark(sx, st.y0, w, st.end - st.y0 + 1, Occ.Lot);                      // 골목 줄도 필지다
+      c.fill(sx, a.band.top, w, b.band.foot - a.band.top + 1, tone.lot[0]!);
+      L.blocks.push({ band: { index: b.band.index, top: a.band.top, foot: b.band.foot, front: b.band.front }, sx, ex, use: d.use, noRear: true, edgeW: west, edgeE: !west });
+      c.deepRows.push({ sx, ex, y: b.band.top });
+      n++;
+    }
+  }
   for (const p of want) {
     if (n >= maxPieces) break;
     const def: PieceDef = PIECES[p]!;
@@ -273,7 +301,12 @@ export function planJpCityScene(opts: SceneOptions): ScenePlan {
       const fTop = rearTop(c, b, Math.max(10, piece.minH));
       const part: SceneBlock = fTop > b.band.top ? { ...b, band: { ...b.band, top: fTop } } : b;
       if (!piece.run(c, L, part)) { b.use = c.kind.houseShare > 0.5 ? "house" : "shop"; fillRows(c, L, b, wanted); }
-      else { c.piecesUsed.push(b.use); fillRear(c, b, fTop, c.kind.houseShare > 0.5); }
+      else {
+        c.piecesUsed.push(b.use); fillRear(c, b, fTop, c.kind.houseShare > 0.5);
+        // 새 거리: 조각이 앞쪽 몇 줄만 쓰면 그 뒤는 뒷길이 받는다(맨땅으로 남지 않게)
+        const h = b.band.foot - b.band.top + 1, used = piece.depth?.(h) ?? h;
+        if (fable && h - used >= 2) backStrip(c, b, [], b.band.top + 1, b.band.foot - used + 1);
+      }
     }
     else fillRows(c, L, b, wanted);
   }

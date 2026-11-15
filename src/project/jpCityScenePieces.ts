@@ -3,11 +3,13 @@
 // 조각마다 바닥·둘레(담·생울타리·철망)·들어가는 틈·정해진 짜임을 놓는다. 소품 목록은 자료(jpCityStreetKinds.json 의 scenes)에서 읽는다.
 import { Occ, type PutOpts, type SceneBlock, type SceneCtx, type SceneLayout } from "@/project/jpCitySceneCtx";
 import { SCENE_BUILDINGS, SCENE_SIZES, sceneList, yardGround } from "@/project/jpCitySceneKinds";
+import { streetTagged } from "@/project/jpCityStreetPieces";
 
 export interface PieceDef {
   readonly minW: number; readonly minH: number; readonly prefW: number;
   /** 맨 아래 띠를 먼저 고른다 */ readonly bottom?: boolean;
   readonly band?: (index: number, bands: number) => boolean;
+  /** 구획 높이 h 가운데 이 조각이 실제로 쓰는 줄 수(앞쪽) — 없으면 통째로 쓴다. 남는 뒤쪽은 뒷길이 받는다(새 거리) */ readonly depth?: (h: number) => number;
   readonly run: (c: SceneCtx, L: SceneLayout, b: SceneBlock) => boolean;
 }
 
@@ -49,6 +51,7 @@ function shrine(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   const { x, w, top, foot, h } = rect(b), { tone } = c;
   const hall = c.fable ? c.buildingPool.find((k) => k.cat === "sacred" && k.w >= 5) : SCENE_BUILDINGS.find((k) => k.id === "jp-bldg-shrine-haiden");
   if (!hall || h < hall.h + 4 || w < hall.w + 4) return false;
+  if (c.fable && c.placed.some((p) => p.kit?.id === hall.id)) return false;      // 새 거리: 같은 본전은 지도에 한 번
   const px = x + Math.floor(w / 2) - 1, hx = px - (hall.doors[0] ?? 4), hfoot = top + hall.h;
   if (hx < x + 1 || hx + hall.w > x + w - 1) return false;
   c.fill(x, top, w, h, "자갈 참배길");
@@ -60,11 +63,14 @@ function shrine(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   const gate = !!sm && foot - sm[1] > hfoot + 1 && px - 2 > x && px + 4 < x + w && c.stampPassage(SANMON, px - 2, foot, [2, 3]);
   ring(c, x, top, w, h, "블록담", (qx, qy) => qy === foot && (gate ? qx >= px - 2 && qx <= px + 3 : qx >= px - 1 && qx <= px + 2));
   if (!gate) c.putFoot("jp-torii", px - 1, foot - 1, { base: [Occ.Lot, Occ.Walk], over: [Occ.Lot, Occ.Walk] });
-  for (let y = foot - 3; y > hfoot + 1; y -= 3) for (const lx of [px - 1, px + 2]) c.putAny(sceneList("jinja", "lantern"), lx, y);
+  // 석등은 참배길 양옆에 짝으로(새 거리: 문 안쪽부터 본전 앞까지 세 줄 걸러 한 쌍)
+  if (c.fable) { for (let y = (gate ? foot - sm![1] : foot) - 2; y > hfoot + 1; y -= 3) if (c.stFits("lantern-stone", px - 1, y) && c.stFits("lantern-stone", px + 2, y)) { c.stPut(["lantern-stone"], px - 1, y); c.stPut(["lantern-stone"], px + 2, y); } }
+  else for (let y = foot - 3; y > hfoot + 1; y -= 3) for (const lx of [px - 1, px + 2]) c.putAny(sceneList("jinja", "lantern"), lx, y);
   const side = sceneList("jinja", "side");
   scatter(c, x + 1, hfoot + 2, Math.max(1, px - x - 3), Math.max(1, foot - hfoot - 2), side, 2);
   scatter(c, px + 4, hfoot + 2, Math.max(1, x + w - px - 6), Math.max(1, foot - hfoot - 2), side, 2);
   for (const tx of [x + 1, x + w - 5]) if (tx + 4 <= hx || tx >= hx + hall.w) c.putFoot(TREES[Math.floor(c.rng() * 2)]!, tx, top + 6, { gap: true });
+  if (c.fable) for (const tx of [x + 1, x + w - 4]) for (let ty = top + 11; ty < foot - 2; ty += 5) c.putFoot(TREES[Math.floor(c.rng() * 2)]!, tx, ty, { gap: true });   // 깊은 경내: 양옆에 나무가 줄지어 선다
   for (const fx of [px - 2, px + 3]) c.putAny(sceneList("jinja", "flag"), fx, foot - 1);
   c.scenesUsed.add("jinja");
   return true;
@@ -142,7 +148,33 @@ function bikepark(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   return n > 0 || w >= 6;
 }
 
+/** 단지·맨션: 필지 맨 뒤에 대형 건물, 앞마당은 포장(자전거 · 작은 놀이터 · 벤치)과 양옆 잔디 심은 띠, 둘레는 산울타리(문 앞이 트인다). 깊은 필지에만. */
+function estate(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
+  const { x, w, top, foot, h } = rect(b), { tone, kind } = c;
+  const kit = c.nextKit([], { x: x + 2, foot: top + 16 }, w - 4, h - 4, { role: c.rng() < 0.5 ? "danchi" : "mansion" }) ?? c.nextKit([], { x: x + 2, foot: top + 16 }, w - 4, h - 4, { role: "danchi" }) ?? c.nextKit([], { x: x + 2, foot: top + 16 }, w - 4, h - 4, { role: "mansion" });
+  if (!kit) return false;
+  const kx = x + Math.floor((w - kit.w) / 2), kfoot = top + kit.h, d0 = kit.doors[0] ?? 1, d1 = kit.doors[kit.doors.length - 1] ?? d0;
+  c.fill(x, top, w, h, kind.noGreen ? tone.sidewalk : tone.green);
+  c.fillFamily(x + 3, kfoot + 1, w - 6, foot - kfoot, "forecourt");
+  c.fillFamily(kx, top + 1, kit.w, kit.h, "forecourt");
+  c.placeKit(kit, kx, kfoot);
+  const px = kx + d0, pw = d1 - d0 + 1;
+  c.mark(px, kfoot + 1, pw, foot - kfoot, Occ.Walk); keepFront(c, px, pw, foot);
+  ring(c, x, top, w, h, kind.noGreen ? "철망 울타리" : "생울타리", (qx, qy) => qy === foot && qx >= px && qx < px + pw);
+  // 건물 앞: 자전거와 화분이 벽에 붙어 서고, 앞마당 한쪽은 작은 놀이터 · 다른 쪽은 벤치
+  const front = [...streetTagged("bike"), ...streetTagged("housefront")];
+  for (let xx = kx; xx < kx + kit.w; ) { const n = xx >= px - 1 && xx <= px + pw ? undefined : c.stPut(front, xx, kfoot + 1); xx += (n ? 2 : 1) + (n ? Math.floor(c.rng() * 2) : 0); }
+  const play = streetTagged("park");
+  if (foot - kfoot >= 4) {
+    for (let xx = x + 4; xx + 2 < px - 1; xx += 3) c.stPut(play, xx, foot - 2);
+    for (let xx = px + pw + 2; xx + 2 < x + w - 3; xx += 4) c.stPut(play, xx, foot - 2);
+  }
+  for (const tx of [x + 1, x + w - 3]) for (let ty = top + 5; ty < foot - 1; ty += 5) c.stPut(streetTagged("gardentree"), tx, ty);
+  return true;
+}
+
 function vacant(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
+  if (c.fable && c.scenesUsed.has("akichi")) return false;                  // 새 거리: 맨땅 빈터는 지도에 하나까지
   const { x, w, top, foot } = rect(b), { tone, kind } = c;
   const y0 = Math.max(top, foot - 5);
   c.fill(x, y0, w, foot - y0 + 1, kind.noGreen ? "산길 흙" : tone.green);
@@ -174,9 +206,10 @@ export const PIECES: Readonly<Record<string, PieceDef>> = {
   park: { minW: 8, minH: 7, prefW: 9, bottom: true, run: park },
   shrine: { minW: 13, minH: 11, prefW: 13, run: shrine },
   "shrine-small": { minW: 6, minH: 6, prefW: 7, run: shrineSmall },
-  parking: { minW: 8, minH: 6, prefW: 8, bottom: true, run: parking },
+  parking: { minW: 8, minH: 6, prefW: 8, bottom: true, depth: (h) => Math.min(h, Math.min(2, Math.floor((h - 1) / 3)) * 3 + 2), run: parking },
   construction: { minW: 9, minH: 6, prefW: 9, run: construction },
-  bikepark: { minW: 8, minH: 5, prefW: 8, bottom: true, run: bikepark },
-  vacant: { minW: 6, minH: 5, prefW: 6, bottom: true, run: vacant },
+  bikepark: { minW: 8, minH: 5, prefW: 8, bottom: true, depth: (h) => Math.min(h, 7), run: bikepark },
+  vacant: { minW: 6, minH: 5, prefW: 6, bottom: true, depth: (h) => Math.min(h, 6), run: vacant },
+  estate: { minW: 13, minH: 18, prefW: 16, run: estate },
   station: { minW: 17, minH: 9, prefW: 17, band: (i, n) => i < n - 1, run: station },
 };

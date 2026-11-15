@@ -21,7 +21,7 @@ export interface SceneKind {
   readonly density: { readonly spill: number; readonly kerb: number; readonly south: number };
 }
 
-export interface CatBuilding { readonly id: string; readonly w: number; readonly h: number; readonly doors: readonly number[]; readonly ml: number; readonly mr: number; readonly cat: string; readonly role: string; readonly tier: string; readonly ko: string; readonly look?: string }
+export interface CatBuilding { readonly id: string; readonly w: number; readonly h: number; readonly doors: readonly number[]; readonly ml: number; readonly mr: number; readonly cat: string; readonly role: string; readonly tier: string; readonly ko: string; readonly look?: string; /** 차가 드나드는 입(차고·구급차 자리): [첫 열, 폭] */ readonly bay?: readonly [number, number] }
 
 const DATA = kindsJson as unknown as { tones: Record<string, SceneTone>; kinds: SceneKind[]; scenes: Record<string, Record<string, string | string[]>>; roofs: Record<string, number[]> };
 const CATALOG = catalogJson as unknown as { buildings: CatBuilding[]; sizes: Record<string, [number, number]>; lower: string[] };

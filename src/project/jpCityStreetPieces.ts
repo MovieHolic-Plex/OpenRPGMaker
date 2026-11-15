@@ -79,6 +79,9 @@ export function streetAlias(id: string): readonly string[] {
   if (STREET_PIECES[id]) return [id];
   return (DATA.alias[id] ?? []).filter((n) => STREET_PIECES[n]);
 }
+/** 혼자 서 있으면 안 되는 조각 — 벽·건물 옆이거나 길 곁에만 선다(대나무 가림 울·석등·물확·마당 수도·창고·개집·빨래·이불). */
+export const STREET_ATTACHED: ReadonlySet<string> = new Set(["sodegaki", "lantern-stone", "basin", "tap", "shed", "doghouse", "laundry", "futon"]);
+
 export function streetTagged(tag: string): string[] { return Object.keys(STREET_PIECES).filter((n) => STREET_PIECES[n]!.tags.includes(tag)); }
 export function groundFamilyOf(material: string): GroundFamily {
   const f = material.startsWith("@") ? material.slice(1) : DATA.groundOf[material];

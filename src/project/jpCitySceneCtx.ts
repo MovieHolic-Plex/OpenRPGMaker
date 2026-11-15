@@ -3,7 +3,7 @@
 // 계획은 순수하다(지도·칩셋 없이 jpCityStreetCatalog.json 의 크기만 본다) — 조수 빌더가 씨앗을 미리 본다.
 import type { JpStreetStep } from "@/project/jpCityStreetComposer";
 import { SCENE_BUILDINGS, SCENE_LOWER, SCENE_SIZES, type CatBuilding, type SceneKind, type SceneTone } from "@/project/jpCitySceneKinds";
-import { GROUND_FAMILIES, groundFamilyOf, runFamilyOf, streetAlias, streetKitId, STREET_PIECES, type GroundFamily } from "@/project/jpCityStreetPieces";
+import { STREET_ATTACHED, GROUND_FAMILIES, groundFamilyOf, runFamilyOf, streetAlias, streetKitId, STREET_PIECES, type GroundFamily } from "@/project/jpCityStreetPieces";
 import { lookHash } from "@/project/kitLook";
 
 /** 칸 쓰임: 0 빈 대지 · 1 걷는 자리(비워 둔다) · 2 차도 · 3 물·둑 · 4 소품 · 5 처마 틈(건물 옆 1px 윤곽 칸 — 4층 덧그림만) · 6 건물 · 7 담·난간 */
@@ -82,6 +82,7 @@ export class SceneCtx {
   /** 칸의 바닥 가족(GROUND_FAMILIES 번호) */ readonly gfam: Uint8Array;
   readonly runCells: { family: string; cells: { x: number; y: number }[] }[] = [];
   readonly stPlaced: { name: string; look: string; x: number; y: number; w: number; h: number; anchor: string; repeat: boolean }[] = [];
+  /** 두 띠를 합친 깊은 필지 안의 띠 경계 줄 — 띠 뒤 담을 여기에는 세우지 않는다 */ readonly deepRows: { sx: number; ex: number; y: number }[] = [];
   /** 집 필지 앞줄의 담·대문 키트(jp-bldg-f-kaki-*)가 놓인 자리 — 검사가 «허공에서 끝나지 않는다 · 필지에 대문 하나»를 본다 */ readonly kaki: SceneKaki[] = [];
   /** 대문 자리(집 필지의 길 선에서 문 앞 칸) — 경계 줄 짓기가 여기에 대문 조각을 놓는다 */ readonly gates: { x: number; y: number }[] = [];
   /** 고리 담의 트인 자리(공원·신사·주차장 입구) — 경계 줄 짓기가 메우지 않고, 그 양옆은 끝 조각으로 맺는다 */ readonly openings = new Set<string>();
@@ -158,7 +159,7 @@ export class SceneCtx {
   private readonly doorFrontSet = new Set<string>();
   /** 건물 문 바로 앞 칸(접근칸)인가 — 서 있는 조각도 담도 여기를 막지 않는다. */
   doorFront(x: number, y: number): boolean {
-    if (this.doorFrontN !== this.placed.length) { this.doorFrontSet.clear(); for (const b of this.placed) for (const d of b.doors) this.doorFrontSet.add(`${b.x + d},${b.foot + 1}`); this.doorFrontN = this.placed.length; }
+    if (this.doorFrontN !== this.placed.length) { this.doorFrontSet.clear(); for (const b of this.placed) { for (const d of b.doors) this.doorFrontSet.add(`${b.x + d},${b.foot + 1}`); const bay = b.kit?.bay; if (bay) for (let k = 0; k < bay[1]; k++) this.doorFrontSet.add(`${b.x + bay[0] + k},${b.foot + 1}`); } this.doorFrontN = this.placed.length; }
     return this.doorFrontSet.has(`${x},${y}`);
   }
   stFits(name: string, x: number, foot: number, o: { stack?: boolean; lax?: boolean } = {}): boolean {
@@ -178,9 +179,10 @@ export class SceneCtx {
     const cols = Array.from({ length: p.w }, (_, k) => x + k);
     const solid = (v: Occ) => v === Occ.Bldg || v === Occ.Wall || v === Occ.Slit;
     switch (p.anchor) {
-      case "wall": if (cols.filter((xx) => solid(this.at(xx, foot - 1))).length * 2 < p.w) return false; break;
+      case "wall": if (cols.filter((xx) => solid(this.at(xx, foot - 1))).length * 2 < p.w && !cols.every((xx) => this.at(xx, foot + 1) === Occ.Bldg)) return false; break;   // 벽 앞, 또는 건물 뒷벽에 붙어(건물 바로 뒤 줄)
       case "kerb": if (!cols.every((xx) => fam(xx) === "pave" || fam(xx) === "laneside") || !cols.some((xx) => this.at(xx, foot + 1) === Occ.Road || this.at(xx, foot - 1) === Occ.Road)) return false; break;
-      case "lot": if (!cols.every((xx) => ["forecourt", "earth", "lawn", "alley", "pave"].includes(fam(xx))) || !this.near(x, foot, p.w, 1, (v, xx, yy) => solid(v) || (this.gfam[yy * this.W + xx] !== this.gfam[foot * this.W + x] && v !== Occ.Road))) return false; break;
+      case "lot": if (STREET_ATTACHED.has(name) && !this.near(x, foot, p.w, 1, (v) => solid(v) || v === Occ.Walk)) return false;   // 혼자 서지 않는 것: 벽·건물 옆이거나 길(디딤돌·통로) 곁
+        if (!cols.every((xx) => ["forecourt", "earth", "lawn", "alley", "pave"].includes(fam(xx))) || !this.near(x, foot, p.w, 1, (v, xx, yy) => solid(v) || (this.gfam[yy * this.W + xx] !== this.gfam[foot * this.W + x] && v !== Occ.Road))) return false; break;
       case "open": if (!cols.every((xx) => ["forecourt", "earth", "lawn", "alley", "pave"].includes(fam(xx)))) return false; break;
       case "facade": if (!cols.every((xx) => this.at(xx, foot) === Occ.Bldg)) return false; break;
       case "road": if (!cols.every((xx) => this.at(xx, foot) === Occ.Road && (fam(xx) === "tarmac" || fam(xx) === "lane"))) return false; break;

@@ -213,5 +213,5 @@ export function dressStreets(c: SceneCtx, L: SceneLayout, crosswalkTile?: number
   }
   // 지도 맨 위 끝과 띠 뒤(윗길 보도에 닿는 줄)의 빈 대지에 담 — 건물 뒤가 허공처럼 열려 보이지 않게.
   c.edge(c.hline(0, 0, W).filter((q) => c.at(q.x, q.y) === Occ.Lot), kind.noGreen ? "블록담" : "생울타리");
-  for (const b of L.bands) if (b.index > 0) c.edge(c.hline(0, b.top, W).filter((q) => c.at(q.x, q.y) === Occ.Lot), "블록담");
+  for (const b of L.bands) if (b.index > 0) c.edge(c.hline(0, b.top, W).filter((q) => c.at(q.x, q.y) === Occ.Lot && !c.deepRows.some((d) => d.y === q.y && q.x >= d.sx && q.x < d.ex)), "블록담");
 }

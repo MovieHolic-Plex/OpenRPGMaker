@@ -3,7 +3,7 @@
 // 왜(오너 2026-11-15, jp-redo/BRIEF.md 6~15): 표지판이 차도에 서고, 담 없는 대문 기둥이 줄지어 서고, 담이 허공에서 끊기고, 포장이 테 없이 맞닿고,
 //   차선이 아무 데서나 끊기고, 아케이드가 평면도 지붕으로 길을 덮었다. 여기 규칙은 그 꼴을 «만들 수 없게» 한다 — 규칙마다 auditScene 의 검사 하나.
 import { Occ, type SceneBand, type SceneCtx, type SceneLayout, type SceneVStreet, type SceneKaki } from "@/project/jpCitySceneCtx";
-import { GROUND_FAMILIES, groundFamilyOf, STREET_PIECES, STREET_RUNS, streetTagged, type GroundFamily } from "@/project/jpCityStreetPieces";
+import { STREET_ATTACHED, GROUND_FAMILIES, groundFamilyOf, STREET_PIECES, STREET_RUNS, streetTagged, type GroundFamily } from "@/project/jpCityStreetPieces";
 import type { JpStreetStep } from "@/project/jpCityStreetComposer";
 
 const key = (x: number, y: number) => `${x},${y}`;
@@ -490,7 +490,9 @@ export function auditFable(f: FableInfo): string[] {
     if (p.anchor !== "road" && !(piece.layer === "floor" && (piece.tags.includes("road") || piece.tags.includes("border"))) && p.anchor !== "run") for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) if (at(x, y) === Occ.Road) { out.push(`on-carriageway ${p.name} (${x},${y})`); y = H; break; }
     // 앵커 자리
     const foot = p.y + p.h - 1, cols = Array.from({ length: p.w }, (_, k) => p.x + k);
-    if (p.anchor === "wall" && cols.filter((x) => solid(at(x, foot - 1))).length * 2 < p.w) out.push(`anchor-wall ${p.name} (${p.x},${foot})`);
+    if (p.anchor === "wall" && cols.filter((x) => solid(at(x, foot - 1))).length * 2 < p.w && !cols.every((x) => at(x, foot + 1) === Occ.Bldg)) out.push(`anchor-wall ${p.name} (${p.x},${foot})`);
+    // 혼자 서지 않는 조각(석등·대나무 가림 울 따위): 한 칸 안에 벽·건물이나 길이 있다
+    if (STREET_ATTACHED.has(p.name)) { let ok = false; for (let y = foot - 1; y <= foot + 1 && !ok; y++) for (let x = p.x - 1; x <= p.x + p.w; x++) { const v = at(x, y); if (!(y === foot && x >= p.x && x < p.x + p.w) && (solid(v) || v === Occ.Walk)) { ok = true; break; } } if (!ok) out.push(`loose-piece ${p.name} (${p.x},${foot})`); }
     if (p.anchor === "kerb" && !(cols.every((x) => fam(x, foot) === "pave" || fam(x, foot) === "laneside") && cols.some((x) => at(x, foot + 1) === Occ.Road || at(x, foot - 1) === Occ.Road))) out.push(`anchor-kerb ${p.name} (${p.x},${foot})`);
     if (p.anchor === "road" && !cols.every((x) => at(x, foot) === Occ.Road)) out.push(`anchor-road ${p.name} (${p.x},${foot})`);
     if (p.anchor === "water" && !cols.every((x) => fam(x, foot) === "water")) out.push(`anchor-water ${p.name} (${p.x},${foot})`);
@@ -590,7 +592,14 @@ export function fableFinish(c: SceneCtx, L: SceneLayout): { info: FableInfo; gro
     const p = c.stPlaced[i]!;
     if (p.anchor !== "lot" && p.anchor !== "open") continue;
     const foot = p.y + p.h - 1;
-    for (let x = p.x; x < p.x + p.w; x++) if (!LOT_FAMS.includes(c.famAt(x, foot))) { c.stRemove(i); break; }
+    let gone = false;
+    for (let x = p.x; x < p.x + p.w; x++) if (!LOT_FAMS.includes(c.famAt(x, foot))) { c.stRemove(i); gone = true; break; }
+    // 혼자 서지 않는 조각: 기댄 담이 잘려 나갔거나 길이 사라졌으면 치운다
+    if (!gone && STREET_ATTACHED.has(p.name)) {
+      let ok = false;
+      for (let y = foot - 1; y <= foot + 1 && !ok; y++) for (let x = p.x - 1; x <= p.x + p.w; x++) { const v = c.at(x, y); if (!(y === foot && x >= p.x && x < p.x + p.w) && (solid(v) || v === Occ.Walk)) { ok = true; break; } }
+      if (!ok) c.stRemove(i);
+    }
   }
   fableFill(c);
   const borders = fableBorders(c, marks);

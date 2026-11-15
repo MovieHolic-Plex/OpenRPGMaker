@@ -106,10 +106,14 @@ def _finalize():
                 t = a[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16].copy()
                 if not t[:, :, 3].any(): row.append(None); brow.append(None); continue
                 lay, pc = cell_pc(it, a, x, y, through)
-                key = (t.tobytes(), pc)
+                # 서 있는 조각의 윗칸: 밑동 줄로 사람과 y 정렬한다(foot-dy:N) — 밑동보다 북쪽에 선 사람은 가려지고 남쪽 사람은 앞에 선다.
+                # 벽면 조각(아치·차양)과 덮개(카포트)는 늘 사람 위다.
+                dy = h - 1 - y
+                foot = ['foot-dy:%d' % dy] if pc == 'star' and dy > 0 and it['layer'] == 'prop' and it['anchor'] not in ('facade', 'water') and 'cover' not in it['tags'] else []
+                key = (t.tobytes(), pc, dy if foot else 0)
                 if key not in seen:
                     local = '%s/%d.%d' % (it['id'], x, y); seen[key] = local
-                    cells[local] = dict(img=Image.fromarray(t, 'RGBA'), pc=pc, label='%s (%d,%d)' % (it['name'], x + 1, y + 1), desc='[키트 %s] %s 의 일부. %s' % (it['id'], it['name'], how), tags=tags)
+                    cells[local] = dict(img=Image.fromarray(t, 'RGBA'), pc=pc, label='%s (%d,%d)' % (it['name'], x + 1, y + 1), desc='[키트 %s] %s 의 일부. %s' % (it['id'], it['name'], how), tags=tags + foot)
                     group_cells[gid].append(local)
                 if lay == 'lo': row.append(None); brow.append(seen[key]); lo_any = True
                 else: row.append(seen[key]); brow.append(None)
