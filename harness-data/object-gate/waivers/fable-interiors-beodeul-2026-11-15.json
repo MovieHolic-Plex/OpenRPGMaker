@@ -8,7 +8,7 @@
   "bundle",
   "shared"
  ],
- "note": "버들항 집 안 — 벽면 8 · 바닥 7 · 벽 윗면 테두리 3 · 가구 152(큰 물건 118 · 사는 사람의 물건 34) · 빛 무늬 3 · 탁상 물건 24. Claude Fable 5.2 medium 한 방(claude -p, 행 문자열; 결함을 적어 다시 그린 것 11장). 코드 손질은 칸 앉히기 · 색 줄 옮기기 · 발치 그림자 · 불빛 번짐뿐(scripts/content/beodeul-interiors/prepare.py), 빛 무늬 3장은 코드가 만든 반투명 판. 3/4 관문 미통과 — 오너 면제, 스토어 출구는 막힌 그대로.",
+ "note": "버들항 집 안 — 벽면 8 · 바닥 7 · 벽 윗면 테두리 3 · 가구 167(큰 물건 118 · 사는 사람의 물건 34 · 큰 공간 15) · 빛 무늬 3 · 탁상 물건 24. Claude Fable 5.2 medium 한 방(claude -p, 행 문자열; 결함을 적어 다시 그린 것 11장). 코드 손질은 칸 앉히기 · 색 줄 옮기기 · 발치 그림자 · 불빛 번짐뿐(scripts/content/beodeul-interiors/prepare.py), 빛 무늬 3장은 코드가 만든 반투명 판. 3/4 관문 미통과 — 오너 면제, 스토어 출구는 막힌 그대로.",
  "items": [
   {
    "pixelSha256": "7f8c25e01a4cc454ac14c9d6e362de46e48e135ddbe6d4942bf607e154f173ad",
@@ -7306,6 +7306,612 @@
      "9786601c07310c14",
      "a47ba7a28e656486",
      "e2cec792d1277c23"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "5b1f9d3c5d3c60258fed1a44d98b36ffa3cd2508768f6484bf0b31d79e19684e",
+   "kind": "column",
+   "label": "beodeul_city/bd-in-stone-column",
+   "width": 16,
+   "height": 48,
+   "cells": {
+    "16": [
+     "61b8b64dc191775e",
+     "eb24d6d8bb334256",
+     "f5ac48f7fdca818c"
+    ],
+    "24": [
+     "107afc2ffc113d4c",
+     "1f86502bd79cc036",
+     "3a0dfc987cabb474",
+     "3d9834e51de65288",
+     "91b817a6c33940d8",
+     "c89a5789e3cb0ef8"
+    ],
+    "32": [
+     "35feaf0db9183e48",
+     "520b0968ba243d44",
+     "62d18ceb31492cce",
+     "6e5e0fdeb849f34d",
+     "8e8d5898e76b0303",
+     "95d8573562ba0400",
+     "961ebff8a7b7fbf3",
+     "9623b486704eae16",
+     "a67057b87bcac4a5",
+     "c5e6d21f0a502abf",
+     "ca40c7de0684cd8f",
+     "fe23941415709f9f"
+    ],
+    "48": [
+     "0dbe96e1e9356a18",
+     "150566b415792280",
+     "87b0a8b9e95371f6"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "181a0d9f03cc40d7c892c81ff7246ba29766ca8d9282c801d2d53e3d8b60ff48",
+   "kind": "column",
+   "label": "beodeul_city/bd-in-oak-post",
+   "width": 16,
+   "height": 48,
+   "cells": {
+    "16": [
+     "2c4c4d1232e05e5a",
+     "98c750afd21803c8",
+     "c42f3ae0f5d29c94"
+    ],
+    "24": [
+     "53ed60ac95c64d84",
+     "7a3d3122fca165a7",
+     "7e811c743c848877",
+     "89ab8693605c7e77",
+     "f00346f914f7be24",
+     "f67dd0bf35a194d4"
+    ],
+    "32": [
+     "0dcd723c68f25bc5",
+     "3494a30203f70b4e",
+     "5b119e90ebbaa31f",
+     "84fecea2706c5f60",
+     "91b4cae527813e2f",
+     "91b68c9d2345010b",
+     "94d91a5cec5df931",
+     "ad504693e95d2ed9",
+     "c2008da88642a195",
+     "d8cd84b5fe543568",
+     "df59b6d6f8f625b5",
+     "f65edcd1a16efba4"
+    ],
+    "48": [
+     "1391b6c237d17bb2",
+     "88bf685780c3e3a3",
+     "c7f8e499e91e2fb5"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "eb5d24dfc6b5f3838e7aea7f02d94f00e7fa6252393d780fe20b0c7f9da81508",
+   "kind": "other",
+   "label": "beodeul_city/bd-in-chandelier",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "328a503d0c8e1150",
+     "34a3c431b3475da2",
+     "c3cd00d27868a344",
+     "c557bb5089343f2a"
+    ],
+    "24": [
+     "03e13c8ee5876de7",
+     "0c337994c1b81ffe",
+     "14ab5ec13916ed62",
+     "157bb4d3d9778312",
+     "18be7ae43d27e886",
+     "238f22171a313c3d",
+     "2a25c30d2c171572",
+     "2f6a85d62db740f3",
+     "37512778b5ec76b2",
+     "37f541ed876d59af",
+     "4fef26c1217b881c",
+     "5a07738d60f6e234",
+     "5e4d99ad360247f8",
+     "70d44bdb143e6917",
+     "8e9177e466220b8f",
+     "a1e647923d3c099a",
+     "aa72b4294d358ca0",
+     "af0392ddfa1cf1d4",
+     "c457dd95b16f3ca4",
+     "cb5a85ed7ce06088",
+     "cba7e6b0c2f609aa",
+     "d15fa336dfbb615c",
+     "e68de2cb178fe08f",
+     "f64eacf9c7116037"
+    ],
+    "32": [
+     "8b9cb1b61e3a4909"
+    ],
+    "48": [
+     "a5e19e6749418ebc",
+     "b0d07d8d863492e2",
+     "b208e37a1c110a00",
+     "b83fe956feb96346",
+     "ce5310bb71869c11",
+     "d189fdbac900315e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "7e8795b7222beb5587675e277da3e7e57f4f02c60034473b0b2987f7d9801fa5",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-throne",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "2d5b61f1da226c46",
+     "46f537b89420d502",
+     "4d475c97589ea3fa",
+     "66307e8aac133254",
+     "a05c2d1817ef0497",
+     "bc605c1f7acc1581",
+     "dbc6737c36d2c892",
+     "dc7db9b0c3cbbb5c",
+     "ee2dacdf716184c6"
+    ],
+    "24": [
+     "58b727d22918e48a",
+     "5ba856a06190ee17",
+     "be8c110f3481d72b",
+     "e3921431c94591f4"
+    ],
+    "32": [
+     "08084622c7651690",
+     "0816896cf7b44130",
+     "12e9de96c48d1aa4",
+     "24945e878b82c389",
+     "32ad5a4575d4f58a",
+     "3c66d62327ec6511",
+     "6f103ad3d07f97d3",
+     "732215bec3c4645d",
+     "75736bd3529bac8f",
+     "7d3fe8b63465b1e0",
+     "7f4d059e6b0a54dc",
+     "85b8be0a37504e94",
+     "87e15cd3b8cccb43",
+     "9fd904ee605f39d3",
+     "a1b9b6c6c0e0cad2",
+     "aceab65d7a6e00dd",
+     "bbf4ab2b1d2dba9a",
+     "cd703b398c56887c",
+     "e2c41fdc4b936117",
+     "e992af9ff8a85a02",
+     "ebc4ae5c2e722aff",
+     "ec6c9bb2642cb55e",
+     "f71417d9f2ea85e9",
+     "fa066a752af41ff1"
+    ],
+    "48": [
+     "20b7e5e04aab58d9"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "aae4b40b0de1ba5998d66122574a1431103210e8700af7031c75e3cbf8fab1a8",
+   "kind": "flat",
+   "label": "beodeul_city/bd-in-royal-runner",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "beefc513d9009ed0",
+     "ccdcd34358863772",
+     "cd4e63da98556ac8"
+    ],
+    "24": [
+     "2e713ee082184268",
+     "57228c5e46f96097",
+     "607375e2bc2bb99f",
+     "f8c89a026ad63825"
+    ],
+    "32": [
+     "49371f5009d28586",
+     "4cd4093f13a188e8",
+     "6adef18cc0361e6a",
+     "8dcd86dc3cd4be3c",
+     "8f6cb6d3dab3186c",
+     "94afa2e49cbf5fc0",
+     "978b8ba09a01dbcc",
+     "9bc9b4dc676c5232",
+     "9d16e1f43ac17126",
+     "a42dfae1492da625",
+     "b6b3d2e1abca92e9",
+     "cdc57723cf20c413"
+    ],
+    "48": [
+     "003274c36bc1518a",
+     "69252c9808c1d2a1"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "b217278a378af61ad188f3d08129df61a7f383463b4b414e5c5ea27cf6d82f72",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-grand-stairs",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "24cd642fb2389fae",
+     "5a766aebcb74a20a",
+     "5cea703f4a3e4519",
+     "6fb680a5f53a1dbf",
+     "8c43e5cc1d1505fb",
+     "afde3509eca4b3fe",
+     "d9c3cf6a52d8a0a7",
+     "e5eeb596117dcb6a",
+     "e98a8891228ac146"
+    ],
+    "24": [
+     "369a3a97277eb872",
+     "d759206dadca0d88",
+     "f2e8b1dce6411c4c",
+     "f30aee18dec3d181"
+    ],
+    "32": [
+     "0e56610a22a46123",
+     "1ade320505c38828",
+     "31810e9781e85ee3",
+     "3d5f67795de95f42",
+     "599901d0065caa72",
+     "649c8ce001e75761",
+     "6af26f9a2f9886da",
+     "7183473b8e6f7173",
+     "776e57bcfc612a33",
+     "948975b9875e2ef3",
+     "9a974bf920abb41d",
+     "9caa1f29a544b43a",
+     "a3aae3c3ebb14813",
+     "a9d7b8bb78068d94",
+     "b7405543b45f1ffd",
+     "bf3ce2851f0f12d2",
+     "c2f6baeba0f18e6c",
+     "d05b1d21784e3836",
+     "d45bf93aa7f583f2",
+     "d4c8e5ce27b008cd",
+     "d65477eafe0537b6",
+     "f30b3ad77fcd22d9",
+     "f8476530e7fb7b8f",
+     "fa71bbfc814bde20"
+    ],
+    "48": [
+     "1f1d73e27837d343"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "04b6c68e3ccdf7bd988953bc6fe023ec2453bd4a43c113c0a9a6841e0c9b9c08",
+   "kind": "flat",
+   "label": "beodeul_city/bd-in-dais-nw",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "e2b2da6d0a95b428"
+    ],
+    "24": [
+     "6f1fd9414b5a4e97",
+     "7e46a61fd98d9a5e",
+     "996c530491df31ed",
+     "a6908ec2a4c35012",
+     "f3a01c658d27e507",
+     "f7a910e22a0307d0"
+    ],
+    "32": [
+     "369c6f4cf9ae6c18",
+     "7a1f3e9ac154fd10",
+     "951edbedfd0950c1",
+     "b71a435774b65c1e",
+     "b857d84ab9fb2c03",
+     "fff650a265558bc8"
+    ],
+    "48": [
+     "30d313edfdc06cc7",
+     "5ea185ac2481868b",
+     "b0bd47ea12004f6b",
+     "bbce1746f2873b4d",
+     "f3a55e71fe3cdb88",
+     "fc22fde951b3d20f"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "51fcdaccd9bc0cb170b345ba129dafaa9d2607ede304913af67cd3dd615afbac",
+   "kind": "flat",
+   "label": "beodeul_city/bd-in-dais-n",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "28e62b450499c1ea"
+    ],
+    "24": [
+     "223e649d571ec451",
+     "43314fef7613c141",
+     "687c6aa587cea358",
+     "716f70bb9f89ca39",
+     "ed12d80d9e67cd3e",
+     "f13b3992b27eaade"
+    ],
+    "32": [
+     "34315ca6b67d802d",
+     "5106a159f2b7a12f",
+     "a005fe578314a187",
+     "a76cd7382831c8c9",
+     "e3b126c50df2ebac",
+     "f7a2c00fa591549b"
+    ],
+    "48": [
+     "2988ef7b6a93c949",
+     "3bec0d8401da9935",
+     "476e11222401aa01",
+     "63c9c5b601492af6",
+     "91801fcee726d348",
+     "f5439f1d021ea2d9"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "5f18275ddfaa4c82faa773f9d7a61e9fb883f1cf001939f841e8d9987115fa3a",
+   "kind": "flat",
+   "label": "beodeul_city/bd-in-dais-ne",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "bf53251977ce0678"
+    ],
+    "24": [
+     "2c7487d3451f34df",
+     "3cc12400accf1dba",
+     "474d5c7851905730",
+     "7d0a1e9b024c0401",
+     "919aa55c357c3317",
+     "d8f50d16e0f08d58"
+    ],
+    "32": [
+     "5588831244183b11",
+     "5e765009294eaa48",
+     "64b3ea139a90c222",
+     "67a00ebfab030e7b",
+     "7b2cc240c56467af",
+     "999ebe83bf0c72a3"
+    ],
+    "48": [
+     "205e2fdda581b28d",
+     "45502f411e7fe774",
+     "5368c98ff7ed66f3",
+     "c4b1667084ae0c94",
+     "e22ca6bc0a6617f4",
+     "e6931659b6b7220c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "fe384951d897b86be067e34940de7788cda536d08722b0b7e0eb3051df398d29",
+   "kind": "flat",
+   "label": "beodeul_city/bd-in-dais-w",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "2576161ea820265d"
+    ],
+    "24": [
+     "19508bd27c9cea01",
+     "36e2a3b1f09cef53",
+     "6d2678a7cf02ef03",
+     "95acc37fa377deb3",
+     "9f3bad5e5e8b630f",
+     "e8336a06ec1875d1"
+    ],
+    "32": [
+     "783f194c9ccd1fb6",
+     "78ba8b6cc1876ccb",
+     "7954006d53c4b472",
+     "898a927ae05c6e6f",
+     "dfaea5c543913b6b",
+     "e2f831238cd6955f"
+    ],
+    "48": [
+     "5667a98d7335000b",
+     "5798553fa0e465f3",
+     "79f1f96d92742308",
+     "9bf9a0fef21163a1",
+     "d6102f2f0a4ba20f",
+     "dbac383c613aa08f"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e24c1939efc59e01b994c645b5604cebf2927a5305c025ce59054e625ea23fef",
+   "kind": "flat",
+   "label": "beodeul_city/bd-in-dais-c",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "8fb375bcf29142e6"
+    ],
+    "24": [
+     "67385fcdb8a8d731",
+     "67825a79c7cbbd9d",
+     "8a321e9d708b2e56",
+     "b2e27cc29bd8a02e",
+     "b97123d7db9eb3d3",
+     "bf4cc0a00849ce78"
+    ],
+    "32": [
+     "000e2c070a5085fc",
+     "2f642846a1472962",
+     "90769fb8806b54bc",
+     "a3a2bfbf737c2142",
+     "a3bfb4e427747b42",
+     "f6c061d7df0d027c"
+    ],
+    "48": [
+     "57bc94cfdca02dc0",
+     "5cb9622591e4f95f",
+     "9d75e55a6b76099e",
+     "cf6021fc9e216202",
+     "f12a7dc3719a9469",
+     "f86d6ef669c0ac5a"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "b9d6faa875f67fc76a41eff6651ac0ed9b5db24320184d65c3374f664d7d28ac",
+   "kind": "flat",
+   "label": "beodeul_city/bd-in-dais-e",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "e1a131236d07b405"
+    ],
+    "24": [
+     "005ab4bcf9f2a8b2",
+     "2c8806bee5120b8f",
+     "2defea1e24d2cb84",
+     "ab9c36fa32c7e0f6",
+     "e645facdd11f612a",
+     "e97a845cbeff0fd2"
+    ],
+    "32": [
+     "477111ec56a92ec5",
+     "a4e5079237a07dfc",
+     "b139e4efaf6de17d",
+     "be206d4e3740b34e",
+     "febb338e4987db78",
+     "ff57356ec4b5f86b"
+    ],
+    "48": [
+     "51295f26aa612095",
+     "5ba88532bd9a566c",
+     "607f4c41127c36ef",
+     "639a274bd899ca60",
+     "7f97b0a853596cb2",
+     "a3c9b04d33872e2f"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "b9de03ba003f7aba1f1fb16435604886899d13d15dfa4ad5062efec64a67a042",
+   "kind": "flat",
+   "label": "beodeul_city/bd-in-dais-sw",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "c2a6b6e0b0278162"
+    ],
+    "24": [
+     "061418d13bcee897",
+     "0e963c88cbd8be90",
+     "7b4f9b602b70c210",
+     "7bc213a455937de9",
+     "991273a916116da4",
+     "d776980071039bb6"
+    ],
+    "32": [
+     "0898ca4cc39a054a",
+     "3b3289cf43d888f3",
+     "a8626813b73735fe",
+     "aac7b2d42c571932",
+     "d9ff91c0186d5d0b",
+     "fc5d9993e050a555"
+    ],
+    "48": [
+     "21774c204c9fcfcd",
+     "4c4d5530bd06951d",
+     "aad1fd9455c7b007",
+     "b46eaa04ba0851bd",
+     "b8f0239b37ad1c74",
+     "c93ce218892947c6"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "7d41c046d9eacd04a705042f2f471be25b964a2d67aa582f850012996ddab535",
+   "kind": "flat",
+   "label": "beodeul_city/bd-in-dais-s",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "51048425d2d9a472"
+    ],
+    "24": [
+     "119f575e7887a504",
+     "17e58a0aa2ad8ef1",
+     "763b01a088ffc56d",
+     "770d2c88319cc523",
+     "88d174f881762c66",
+     "d98b4cc18cfc6697"
+    ],
+    "32": [
+     "0ebbe543e6157fdb",
+     "478c79ca06cb0949",
+     "51842d1dcd2aa5e4",
+     "6423129d7da6ed57",
+     "bdf69378603e71d9",
+     "de254b601ebfd714"
+    ],
+    "48": [
+     "5e0b4a5ece3b5cc3",
+     "8cb8e38ab88c4702",
+     "a6cf3e2e25a637eb",
+     "c9fe26b19e319957",
+     "d0fa8196787db8c9",
+     "d168e37ce8e0867e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "0d71f30b84ba16c29f5729e4c4e8f4f08d3a54f08355c2807fb02a5510df9a5b",
+   "kind": "flat",
+   "label": "beodeul_city/bd-in-dais-se",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "e064a6e4a113088c"
+    ],
+    "24": [
+     "226451f794ac2376",
+     "5e5e2987117eee78",
+     "6c49741aedcaf4c2",
+     "7715efa1f478c91c",
+     "c1dfb1298e19a06d",
+     "dc3b8ab40cdf0288"
+    ],
+    "32": [
+     "0a4681ef2b0c84a9",
+     "0e357dfd3afb0956",
+     "1b7c81b5979b791c",
+     "1d0a46625ce0d627",
+     "67c7e1803e2f2f01",
+     "9b00e82d75793e51"
+    ],
+    "48": [
+     "00a21b3bee2bfd70",
+     "1b7849b5005e5610",
+     "7083e158cc11248f",
+     "b77aa19c9f106c2b",
+     "dd26280f1f2a03aa",
+     "f0a2d0ba97922ce7"
     ]
    }
   },
