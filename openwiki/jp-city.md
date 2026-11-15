@@ -589,29 +589,20 @@ object-gen 흐름(시점 판정 통과 참고 그림 → Opus 손 도트 A/B →
 오너 2026-11-15 «확대해서 보면 엉망진창인 게 너무많다. 버들항급 퀄리티도 안 되고». 거리의 바닥·소품을 한 손(Fable 5.2)으로 다시 그리고, 구성기가 조각마다 «어디에 서는가»를 자료로 읽어 그 자리에만 놓는다. 건물은 건물 일꾼의 `fable_city`(`jp-bldg-f-*`) — 구워지면 그것만 쓴다.
 
 ### 구운 것
-- 블록 `fable_street`, 칸 28527~32558(예약 4,032칸 — `bake_lib.RESERVE`), 쓴 칸 1,435. 조각 318종 · 키트 그림 918장(`jp-st-<조각>` 또는 `jp-st-<조각>--<바닥>` — 바닥별 발치 그림자 변형).
-- 바닥 무늬 7가족(`jp-st-gnd-<가족>`: pave 보도 블록 · forecourt 앞마당 판 · tarmac 아스팔트(결 둘) · alley 골목 돌길 · earth 다진 흙 · lawn 잔디 · water 물), 재료 테(연석·돌 테·잔디 테, 안·바깥 모퉁이), 노면 표시, 둑(면·갓돌·계단·난간), 경계 줄 8가족(wall·hedge·fence·rail·railcap·guard·barricade·net — 끝·가운데·모퉁이·대문), 서 있는 소품 147종.
+- 블록 `fable_street`, 칸 28527~32558(예약 4,032칸 — `bake_lib.RESERVE`), 쓴 칸 1,486. 조각 342종 · 키트 그림 986장(`jp-st-<조각>` 또는 `jp-st-<조각>--<바닥>` — 바닥별 발치 그림자 변형).
+- 바닥 무늬 9가족(`jp-st-gnd-<가족>`: pave 보도 블록 · forecourt 앞마당 판 · tarmac 아스팔트(결 둘 — 연석 큰길·주차장) · lane 생활도로 포장 · laneside 생활도로 길가 띠(배수로·흰 선) · alley 골목 돌길 · earth 다진 흙 · lawn 잔디 · water 물), 재료 테(연석·돌 테·배수로 테·잔디 테, 안·바깥 모퉁이), 다리 난간, 노면 표시, 둑(면·갓돌·계단·난간), 경계 줄 8가족(wall·hedge·fence·rail·railcap·guard·barricade·net — 끝·가운데·모퉁이·대문), 서 있는 소품 147종.
 - 원본 그림 `tiledata/jp-city/fable-street/sheets/` → `scripts/content/jp-city/street/fable_street_spec.py` 가 `pieces/`·`spec.json`·`index.json`·`src/assets/jpCityStreetPieces.json` 을 만든다 → 블록 `scripts/content/jp-city/blocks/fable_street.py` 가 굽는다. 팔레트는 `tiledata/jp-city/fable-city/palette.json`(거리 바닥 램프 lawn·earth·tarmac 포함).
-- 3/4 관문 미통과 — 오너 면제 묶음 `fable-jpstreet-2026-11-15`(898장, 도구 `object-gate owner-waive` 로 기록). 조각 그림이 한 화소라도 바뀌면 묶음을 다시 적어야 굽힌다.
+- 3/4 관문 미통과 — 오너 면제 묶음 `fable-jpstreet-2026-11-15`(935장, 도구 `object-gate owner-waive` 로 기록). 조각 그림이 한 화소라도 바뀌면 묶음을 다시 적어야 굽힌다.
 
 ### 구성기
 - 켜짐: `STREET_BAKED`(칩셋에 `jp-st-kerb-s` 가 있으면). 열쇠 있는 호출(`planJpCityScene`)이 새 조각으로 짓는다. `SceneOptions.fable` 로 끄고 켤 수 있고, `SceneOptions.buildings` 로 건물 표를 바꿔 끼운다(굽기 전 예정 표 — `test/fixtures/jpCityFableBuildingsPlanned.json`).
 - 파일: `jpCityStreetPieces.ts`(조각 표·앵커 등급) · `jpCitySceneFable.ts`(강·노면 표시·경계 줄·테·그늘·아케이드·꾸밈·빈 띠 메우기·바닥·검사 `auditFable`) · `jpCitySceneCtx.ts`(`stFits`·`stPut`·`doorFront`) · `jpCitySceneRun.ts`(`ground_cells` 단계 — 가족의 무늬 키트를 읽어 1층에 깐다).
 - 앵커 등급: wall 벽 앞 · kerb 연석 줄 · lot 필지 안 · open 광장·마당 · facade 벽면 · road 차도(차만) · water 물 · floor 바닥 덧그림 · run 경계 줄.
 - 규칙(검사 이름): 차도 칸에는 차와 노면 표시만(`on-carriageway`) · 앵커 자리(`anchor-*`) · 겹침·지도 끝 잘림 없음(`overlap`·`cut-by-edge`) · 같은 그림은 20×15 창에 한 번(`repeat-in-window`, 나무·경계 줄·바닥 조각 제외) · 경계 줄은 끝이 건물·다른 줄·길·지도 끝·트인 자리에 닿는다(`loose-run-end`), 집 필지는 대문 하나 · 재료가 만나는 자리마다 테(`bare-seam`) · 차선은 등급대로(`alley-marking`·`edge-line-gap`·`centre-line-gap`·`centre-line-on-one-lane`) · 문 앞 칸은 비운다.
-- 생활도로(보도 없는 길)는 북쪽 한 줄이 길가 띠(보도 블록)다 — 사람이 걷고 전봇대·가로등이 선다. 전선은 바닥 위로 걸지 않는다.
+- 생활도로(보도 없는 길)·골목·뒷길은 연석 없는 낡은 포장(lane)이다. 가로 생활도로는 북쪽 한 줄이 길가 띠(laneside — 배수로와 흰 선 안쪽: 사람이 걷고 전봇대·가로등이 선다), 필지 쪽에는 배수로 테. 돌길(alley)은 참배길(monzen)·옛 골목(roji) 종류만 쓴다(조율자 2026-11-15). 전선은 바닥 위로 걸지 않는다.
+- 세로 길이 강을 건너는 자리 양옆에 다리 난간(`bridge-w/-e`, 끝 기둥 `-n/-s`)이 선다.
+- 도로 몫은 폭 두 칸이 넘는 아스팔트 차도만 센다 — 생활도로 포장은 차도 몫이 아니다(측정·계획 뽑기·테스트 같은 뜻).
+- 굽기: 이미 구운 칸의 그림이 바뀌면 굽기가 멈춘다(`old_cells_changed`). 이 블록이 main 에 들어가기 전에는 예약 굽기(`a2caf8da5`)의 시트·핀으로 되돌린 뒤 다시 굽는다. 들어간 뒤에는 새 키트 id 로 더한다.
 - 사람이 서는 자리는 칸 이름표로 갈린다(`placementRules.laneCells`): 아스팔트 칸은 차도, 보도 블록 칸은 걷는 길.
 - 테스트 `test/jpCityStreetRules.test.ts`(거리 종류 10 × 씨앗 12 의 계획 + 지은 지도 4장). 측정 `scripts/qa/jpStreetPlanDump.mts`(계획·검사) · `scripts/qa/jpStreetMeasure.mts`(지은 지도 — 새 조각 그룹을 안다).
 
-### 실측 (2026-11-15, 60×48)
-| 항목 | 값 |
-|---|---|
-| 지은 지도 300장(종류 10 × 씨앗 30) — 같은 건물 그림이 두 번 선 지도 | 0 |
-| 문 / 닿지 않는 문 | 4,767 / 0 |
-| 아스팔트 몫(차도·주차장) 19% 넘는 지도 · 최대 | 0 · 18.5% |
-| 죽은 띠 3% 넘는 지도 · 최대 | 2 · 3.6% |
-| 계획 600장(종류 10 × 씨앗 60)의 규칙 위반 | 0 |
-| 새 건물 예정 표(26채)로 짠 계획 400장 — 옛 건물 · 규칙 위반 · 가게 거리의 가장 긴 줄 | 0 · 0 · 가게 15~18채 |
-
-60×48 급 지도에서는 큰길이 세 줄(한 차로)이다 — 두 차로 큰길(중앙선)은 높이 62줄부터. 보도 없는 세로 골목은 돌길로 깔고, 둘째 세로 길은 아스팔트 몫이 넘치면 돌길 골목으로 낸다.
-새 건물이 26채뿐인 예정 표로는 가게 거리에서 건물 9~23채가 되풀이된다 — 주택·중형 건물까지 구워져야 «한 지도에 같은 건물 한 번»이 새 건물로 지켜진다.

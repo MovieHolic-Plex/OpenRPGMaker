@@ -28,7 +28,7 @@ export interface JpStreetMeasure {
 type Kit = { id: string; width: number; height: number; rows: { tiles?: number[]; upperTiles?: number[] }[] };
 type Ts = { autotileGroups?: { id: string; memberTileIds?: number[] }[]; tileGroups?: { id: string; tileIds?: number[] }[]; structureKits?: Kit[] };
 
-interface Index { byAnchor: Map<number, { kit: Kit; ax: number; ay: number; cells: number }[]>; edge: Set<number>; road: Set<number>; water: Set<number>; band: Set<number>; infra: Set<number> }
+interface Index { lane: Set<number>; byAnchor: Map<number, { kit: Kit; ax: number; ay: number; cells: number }[]>; edge: Set<number>; road: Set<number>; water: Set<number>; band: Set<number>; infra: Set<number> }
 const cache = new WeakMap<object, Index>();
 function indexOf(ts: Ts): Index {
   const hit = cache.get(ts);
@@ -56,7 +56,7 @@ function indexOf(ts: Ts): Index {
   };
   const band = new Set<number>();
   for (const g of ts.tileGroups ?? []) if (g.id.startsWith("jp:band:") || g.id.startsWith("jp:deco:")) for (const t of g.tileIds ?? []) band.add(t);
-  const out: Index = { byAnchor, edge: new Set([...set(EDGE_AUTOTILES, []), ...stRun]), road: set(ROAD_AUTOTILES, ROAD_GROUPS), water: set(WATER_AUTOTILES, ["jp:street:water", "jp:fable-street:gnd-water"]), band, infra };
+  const out: Index = { lane: groupTiles(["jp:fable-street:gnd-lane", "jp:fable-street:gnd-laneside"]), byAnchor, edge: new Set([...set(EDGE_AUTOTILES, []), ...stRun]), road: set(ROAD_AUTOTILES, ROAD_GROUPS), water: set(WATER_AUTOTILES, ["jp:street:water", "jp:fable-street:gnd-water"]), band, infra };
   cache.set(ts, out);
   return out;
 }
@@ -161,6 +161,7 @@ export function measureJpStreet(project: Project, map: GameMap): JpStreetMeasure
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const i = y * W + x;
     if (kind[i] === 2) { if (wide(x, y)) road++; continue; }
+    if (ix.lane.has(map.lowerTiles[i] ?? -1)) continue;                 // 생활도로 포장·길가 띠는 길이다 — 차도 몫에도 죽은 띠에도 세지 않는다
     if (kind[i] === 3 || kind[i] === 1) continue;                    // 물은 죽은 띠가 아니다(석축·둑·빈 포장·빈 대지만 센다)
     let near = false;
     for (let dy = -2; dy <= 2 && !near; dy++) for (let dx = -2; dx <= 2; dx++) {
