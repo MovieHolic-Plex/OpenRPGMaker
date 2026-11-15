@@ -129,6 +129,43 @@ function treeBehind(c: SceneCtx, p: ScenePlaced, top: number): void {
   c.usedProps.set(id, (c.usedProps.get(id) ?? 0) + 1);
 }
 
+/**
+ * 가게 줄 뒤(지붕 위쪽 빈 대지)를 뒷마당으로: 건물마다 대지 포장과 다른 바닥을 깔고 살림(빨래 건조대·쓰레기 수거함·물탱크·창고·프로판·실외기·자전거·화분)을 둔다.
+ * 세로 길에 닿는 끝 필지는 폭·깊이가 되면 주차 한 칸. 왜: 가게 뒤가 어두운 포장 한 면으로 남아 지도에서 가장 흔한 색이 되었다(2026-11-15 조율자).
+ */
+function backYards(c: SceneCtx, row: readonly ScenePlaced[], sx: number, ex: number, yT: number, openW: boolean, openE: boolean): void {
+  const { tone, rng } = c;
+  // 뒷마당 바닥: 흙·자갈·돌길 — 대지 포장과 같은 재료, 아스팔트(차도로 읽힌다)는 뺀다.
+  const grounds = [...new Set([...tone.yard.filter((m) => m !== tone.green), "자갈 참배길", tone.alley])].filter((m) => !tone.lot.includes(m) && m !== tone.road);
+  const pool = sceneList("backalley", "yard");
+  const sorted = [...row].sort((a, b) => a.x - b.x);
+  let bay = false, any = false;
+  sorted.forEach((p, i) => {
+    const x0 = i === 0 ? sx : p.x, x1 = i === sorted.length - 1 ? ex : sorted[i + 1]!.x, yB = p.y - 1, h = yB - yT + 1, w = x1 - x0;
+    if (h < 1 || w < 2 || !c.all(x0, yT, w, h, [Occ.Lot, Occ.Prop, Occ.Slit, Occ.Wall])) return;
+    c.fill(x0, yT, w, h, grounds[(c.placed.indexOf(p) + c.seed) % grounds.length]!);
+    const atW = i === 0 && openW, atE = i === sorted.length - 1 && openE;
+    if (!bay && h >= 3 && w >= 7 && (atW || atE) && c.size("jp-lot-bay") && rng() < 0.7) {
+      const bx = atW ? x0 : x1 - 7;
+      if (c.all(bx, yB - 2, 7, 3, [Occ.Lot])) {
+        c.fill(bx, yB - 2, 7, 3, "거리 · 주차장");
+        c.put("jp-lot-bay", bx, yB - 2, { floor: true, baseRows: 3 });
+        const car = rng() < 0.75 ? c.least(CARS) : undefined;
+        if (car) c.put(car, bx, yB - 2, { baseRows: 3, stack: true });
+        c.putAny(sceneList("chuusha", "sign"), atW ? bx + 6 : bx, yB);
+        c.scenesUsed.add("chuusha"); bay = true;
+      }
+    }
+    for (const [fy, rate] of [[yB, 0.85], ...(h >= 4 ? [[yB - 2, 0.5] as const] : [])] as const) for (let x = x0 + Math.floor(rng() * 2); x < x1; ) {
+      const fit = pool.filter((q) => c.size(q)![1] <= fy - yT + 1 && x + c.size(q)![0] <= x1);
+      const id = rng() < rate ? c.putAny(fit, x, fy, { gap: true, over: [Occ.Lot] }) : undefined;
+      if (id) any = true;
+      x += (id ? c.size(id)![0] : 1) + 1 + Math.floor(rng() * 3);
+    }
+  });
+  if (any) c.scenesUsed.add("backalley");
+}
+
 /** 가게 앞: 발 아래 줄에 내놓은 물건(낮은 것 · 정면에 겹쳐 서는 진열대), 연석 줄에 낮은 가로 시설, 건물 사이 틈에 깃발·실외기. */
 function dressShopFront(c: SceneCtx, row: readonly ScenePlaced[], f: RowFront, sx: number, ex: number): void {
   const { kind } = c;
@@ -270,10 +307,12 @@ export function fillRear(c: SceneCtx, b: SceneBlock, fTop: number, house: boolea
   const ay = fTop - 2, rFoot = ay - 1;
   c.fill(b.sx, ay, b.ex - b.sx, 2, tone.alley);
   c.mark(b.sx, ay, b.ex - b.sx, 1, Occ.Walk, [Occ.Lot]);
-  const back = house || c.rng() < 0.35 ? houseRow(c, b.sx, b.ex, rFoot, b.band.top, []) : shopRow(c, b.sx, b.ex, rFoot, b.band.top, [], { ...kind.mix, food: (kind.mix.food ?? 1) + 3 }, b.band.index === 0);
-  if (!house) dressShopFront(c, back, { nA: ay, paved: true }, b.sx, b.ex);
+  const backHouse = house || c.rng() < 0.35;
+  const back = backHouse ? houseRow(c, b.sx, b.ex, rFoot, b.band.top, []) : shopRow(c, b.sx, b.ex, rFoot, b.band.top, [], { ...kind.mix, food: (kind.mix.food ?? 1) + 3 }, b.band.index === 0);
+  if (!backHouse) dressShopFront(c, back, { nA: ay, paved: true }, b.sx, b.ex);
   dressAlley(c, b.sx, b.ex, ay + 1);
   for (const p of back) { treeBehind(c, p, b.band.top); roofScene(c, p); }
+  if (!backHouse) backYards(c, back, b.sx, b.ex, b.band.top + 1, !b.edgeW, !b.edgeE);
   return back;
 }
 
@@ -290,4 +329,5 @@ export function fillRows(c: SceneCtx, _L: SceneLayout, b: SceneBlock, wanted: st
   else if (!house) dressShopFront(c, row, { nA: s.nA, paved: false }, b.sx, b.ex);
   fillRear(c, b, fTop, house);
   for (const p of row) { treeBehind(c, p, fTop); roofScene(c, p); }
+  if (!house) backYards(c, row, b.sx, b.ex, fTop > band.top ? fTop : band.top + 1, !b.edgeW, !b.edgeE);
 }

@@ -4,7 +4,8 @@
   "tones": {
     "hai": {
       "ko": "잿빛 포장 동네",
-      "lot": ["노면전차 軌道敷 포장", "거리 · 주차장"],
+      "en": "grey paving",
+      "lot": ["노면전차 軌道敷 포장", "콘크리트 판석 보도"],
       "sidewalk": "보도 연석",
       "road": "생활도로",
       "plaza": "판석 광장",
@@ -14,6 +15,7 @@
     },
     "kinari": {
       "ko": "따뜻한 판석 동네",
+      "en": "warm flagstone",
       "lot": ["거리 · 땅·잔디·판석·참배길", "산길 흙"],
       "sidewalk": "콘크리트 판석 보도",
       "road": "따뜻한 아스팔트 골목",
@@ -24,6 +26,7 @@
     },
     "ishi": {
       "ko": "흰 판석 동네",
+      "en": "pale flagstone",
       "lot": ["자갈 참배길", "노면전차 軌道敷 포장"],
       "sidewalk": "판석 광장",
       "road": "생활도로",
@@ -34,6 +37,7 @@
     },
     "tsuchi": {
       "ko": "흙길 낀 옛 동네",
+      "en": "old quarter with dirt lanes",
       "lot": ["거리 · 땅·잔디·판석·참배길", "노면전차 軌道敷 포장"],
       "sidewalk": "보도 연석",
       "road": "따뜻한 아스팔트 골목",
@@ -387,32 +391,40 @@
   "scenes": {
     "spill": {
       "ko": "가게 앞 내놓은 물건",
+      "en": "shop-front goods",
       "low": ["jp-prop-a-frame", "jp-prop-planter", "jp-pots", "jp-prop-bike-rack", "jp-kadan", "jp-asagao", "jp-prop-bench", "jp-prop-garbage-net", "jp-prop-cone", "jp-tsutsuji"],
       "over": ["jp-prop-rack-0", "jp-prop-rack-1", "jp-prop-record-wagon", "jp-prop-pot", "jp-prop-bike-aka", "jp-prop-bike-sora", "jp-prop-bike-midori", "jp-prop-maid-flyer-stand", "jp-prop-smoking-area", "jp-lot-planter"]
     },
     "kado": {
       "ko": "길모퉁이 자판기",
+      "en": "corner vending machines",
       "pair": ["jp-prop-vend-pair", "jp-prop-vend-trio"],
       "single": ["jp-prop-vending-aka", "jp-prop-vending-sora", "jp-prop-vending-midori"]
     },
     "signs": {
       "ko": "간판·깃발",
+      "en": "signs and banners",
       "slit": ["jp-prop-nobori-aka", "jp-prop-nobori-sora", "jp-prop-nobori-midori", "jp-prop-blade-sign-0", "jp-prop-blade-sign-1", "jp-prop-blade-sign-2", "jp-prop-blade-sign-3", "jp-prop-street-flag"]
     },
     "neon": {
       "ko": "네온 간판 기둥",
+      "en": "neon sign posts",
       "tall": ["jp-prop-neon-stack-0", "jp-prop-neon-stack-1", "jp-prop-neon-stack-2", "jp-prop-neon-stack-3", "jp-prop-led-tower-0", "jp-prop-led-tower-1", "jp-prop-akiba-neon-r", "jp-prop-akiba-neon-b"]
     },
     "backalley": {
       "ko": "뒷골목 살림",
+      "en": "back-alley clutter",
+      "yard": ["jp-monohoshi", "jp-gomi-box", "jp-water-tank", "jp-lot-cabin", "jp-propane", "jp-ac-unit", "jp-pots", "jp-prop-garbage-net", "jp-prop-bike-aka", "jp-prop-bike-sora", "jp-prop-bike-midori", "jp-prop-bike-cluster", "jp-lot-veg", "jp-kadan", "jp-prop-vent-tower", "jp-prop-planter", "jp-prop-cat-loaf"],
       "slit": ["jp-ac-unit", "jp-propane", "jp-prop-cat-sit", "jp-prop-cat-loaf", "jp-prop-cat-wood", "jp-sat-dish", "jp-ivy", "jp-glory"]
     },
     "hokora": {
       "ko": "골목 사당",
+      "en": "alley shrine",
       "nook": ["jp-hokora-jizo", "jp-jizo"]
     },
     "shotengai": {
       "ko": "상점가 장식",
+      "en": "shopping-street decorations",
       "cover": ["jp-prop-shop-cover-0", "jp-prop-shop-cover-1", "jp-prop-shop-cover-2", "jp-prop-shop-cover-3"],
       "stall": ["jp-prop-tin-stall-0", "jp-prop-tin-stall-1", "jp-prop-tin-stall-2", "jp-rg-yatai"],
       "hang": ["jp-prop-string-lanterns4"],
@@ -420,21 +432,25 @@
     },
     "jutaku": {
       "ko": "주택가 살림",
+      "en": "house yards",
       "yard": ["jp-pots", "jp-kadan", "jp-asagao", "jp-tsutsuji", "jp-tsutsuji-3", "jp-monohoshi", "jp-prop-planter", "jp-prop-bike-aka", "jp-prop-bike-sora", "jp-prop-bike-midori", "jp-lot-veg", "jp-prop-pot", "jp-lot-planter", "jp-prop-cat-sit", "jp-prop-cat-loaf", "jp-prop-bench", "jp-propane"],
       "wall": ["jp-ac-unit", "jp-propane", "jp-sat-dish", "jp-ivy", "jp-glory", "jp-prop-cat-wood"],
       "lane": ["jp-gomi-box", "jp-keijiban", "jp-prop-garbage-net", "jp-mirror2", "jp-prop-curve-mirror", "jp-hydrant-sign", "jp-prop-stop-sign", "jp-road-sign-tomare", "jp-road-sign-mirror", "jp-road-sign-post", "jp-prop-vending-aka", "jp-prop-vending-sora", "jp-prop-vending-midori", "jp-postbox-red", "jp-prop-post-box", "jp-prop-bollard", "jp-prop-cone", "jp-jizo", "jp-prop-bike-cluster", "jp-pots", "jp-prop-lamp-post", "jp-prop-gaado-light"]
     },
     "tsugaku": {
       "ko": "통학로",
+      "en": "school route",
       "lane": ["jp-road-sign-post", "jp-prop-roadsign", "jp-bus-stop", "jp-prop-bollard"]
     },
     "sando": {
       "ko": "참배길",
+      "en": "shrine approach",
       "path": ["jp-prop-stone-lantern", "jp-prop-lantern-post", "jp-prop-nobori-aka"],
       "stall": ["jp-rg-yatai", "jp-prop-tin-stall-0", "jp-prop-tin-stall-1", "jp-prop-tin-stall-2"]
     },
     "kawa": {
       "ko": "강변 산책로",
+      "en": "riverside walk",
       "rail": ["jp-prop-bench", "jp-prop-planter", "jp-prop-stone-lantern", "jp-prop-bike-rack", "jp-kadan", "jp-pots", "jp-prop-pot", "jp-lot-planter", "jp-asagao", "jp-prop-a-frame", "jp-prop-bollard"],
       "tree": ["jp-prop-tree-sakura"],
       "wall": ["jp-ivy", "jp-glory", "jp-wall-ladder"],
@@ -443,20 +459,24 @@
     },
     "ekimae": {
       "ko": "역 앞",
+      "en": "station front",
       "plaza": ["jp-prop-hachiko", "jp-lot-clock", "jp-lot-fountain", "jp-prop-metro-exit", "jp-bus-stop-sign", "jp-lot-kiosk", "jp-prop-vend-trio", "jp-prop-bench", "jp-lot-planter", "jp-prop-smoking-area"],
       "transit": ["jp-bike-shelter", "jp-bus-stop-sign", "jp-bus-stop"]
     },
     "poles": {
       "ko": "전봇대·가로등",
+      "en": "utility poles and lamps",
       "tall": ["jp-prop-lamp-post", "jp-prop-utility-pole2", "jp-utility-pole-xfmr"]
     },
     "koen": {
       "ko": "동네 공원",
+      "en": "pocket park",
       "play": ["jp-lot-slide", "jp-prop-swing", "jp-lot-sandbox", "jp-lot-spring", "jp-jungle-gym", "jp-tetsubo", "jp-unte", "jp-tires", "jp-prop-slide", "jp-prop-sandbox"],
       "rest": ["jp-prop-bench", "jp-fujidana", "jp-teaarai", "jp-lot-clock", "jp-lot-planter", "jp-tsutsuji-3", "jp-keijiban", "jp-prop-lamp-post"]
     },
     "jinja": {
       "ko": "신사 경내",
+      "en": "shrine grounds",
       "gate": ["jp-torii"],
       "lantern": ["jp-prop-stone-lantern", "jp-prop-lantern-post"],
       "side": ["jp-prop-chozuya", "jp-hokora-jizo", "jp-jizo", "jp-prop-censer", "jp-spring-basin", "jp-keijiban"],
@@ -464,28 +484,33 @@
     },
     "chuusha": {
       "ko": "코인 주차장",
+      "en": "coin parking",
       "bay": ["jp-lot-bay"],
       "sign": ["jp-lot-board", "jp-prop-coin-sign", "jp-prop-coin-p", "jp-road-sign-coin"],
       "extra": ["jp-prop-cone", "jp-prop-vending-sora", "jp-prop-bollard"]
     },
     "kouji": {
       "ko": "공사장",
+      "en": "construction site",
       "cabin": ["jp-lot-cabin"],
       "stuff": ["jp-prop-barricade3", "jp-prop-cone", "jp-keijiban", "jp-tires", "jp-souko", "jp-prop-cone"]
     },
     "churin": {
       "ko": "자전거 주차장",
+      "en": "bicycle parking",
       "shelter": ["jp-bike-shelter"],
       "bikes": ["jp-prop-bike-rack", "jp-prop-bike-cluster", "jp-prop-bike-aka", "jp-prop-bike-sora", "jp-prop-bike-midori"],
       "sign": ["jp-road-sign-post", "jp-prop-bollard"]
     },
     "akichi": {
       "ko": "빈터",
+      "en": "vacant lot",
       "weeds": ["jp-tsutsuji", "jp-tsutsuji-3", "jp-tires", "jp-prop-cat-loaf", "jp-prop-cat-sit", "jp-prop-cone"],
       "sign": ["jp-keijiban"]
     },
     "doro": {
       "ko": "길 표지",
+      "en": "road signs",
       "tall": ["jp-prop-signal", "jp-prop-roadsign", "jp-prop-stop-sign", "jp-hydrant-sign", "jp-bus-stop", "jp-prop-curve-mirror", "jp-mirror2", "jp-road-sign-tomare", "jp-road-sign-mirror", "jp-road-sign-post", "jp-road-signal-car", "jp-road-signal-car-red", "jp-prop-gaado-light", "jp-prop-lantern-post", "jp-bus-stop-sign", "jp-prop-catenary-pole"],
       "back": ["jp-keijiban", "jp-gomi-box", "jp-prop-garbage-net", "jp-prop-bike-cluster", "jp-prop-vending-aka", "jp-prop-vending-sora", "jp-prop-vending-midori", "jp-prop-bench", "jp-prop-planter", "jp-kadan", "jp-prop-bike-rack", "jp-pots", "jp-prop-post-box", "jp-postbox-red", "jp-prop-bollard", "jp-lot-planter", "jp-prop-smoking-area", "jp-prop-bike-aka", "jp-prop-bike-sora"],
       "cars": ["jp-prop-car-white", "jp-prop-car-silver", "jp-prop-car-black", "jp-prop-car-red", "jp-prop-car-blue", "jp-prop-car-taxi", "jp-prop-car-green", "jp-prop-car-navy", "jp-prop-van-white"],
@@ -493,6 +518,7 @@
     },
     "okujo": {
       "ko": "옥상 살림",
+      "en": "rooftop clutter",
       "roof": ["jp-prop-okujo-ac", "jp-prop-okujo-ac-pair", "jp-prop-okujo-tank-round", "jp-prop-okujo-tank-panel", "jp-prop-okujo-tank-tower", "jp-prop-okujo-laundry", "jp-prop-okujo-hokora", "jp-prop-okujo-antenna", "jp-prop-okujo-dish", "jp-prop-okujo-billboard", "jp-prop-okujo-vent", "jp-prop-okujo-duct", "jp-prop-okujo-door", "jp-prop-okujo-planters", "jp-prop-okujo-skylight", "jp-prop-okujo-solar"]
     }
   },

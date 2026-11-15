@@ -93,7 +93,7 @@ export function dressStreets(c: SceneCtx, L: SceneLayout, crosswalkTile?: number
     const s = b.front;
     const vs = touching(L, b);
     const inV = (x: number, pad = 0) => vs.some((v) => x >= v.x - pad && x < v.x + v.w + pad);
-    let cw = -99;
+    let cw = -99, cwW = 4;
     if (s.type === "kerb" || s.type === "lane") {
       const rw = s.road1 - s.road0 + 1;
       if (s.type === "kerb") for (let t = 0; t < 10; t++) {                // 횡단보도 하나(4칸) + 보행 신호등
@@ -108,8 +108,26 @@ export function dressStreets(c: SceneCtx, L: SceneLayout, crosswalkTile?: number
         c.putFoot("jp-road-signal-ped", x - 1, s.nK!); c.putFoot("jp-road-signal-ped-green", x + 4, s.sB, TALL);
         break;
       }
+      // 생활도로: 세로 길 모퉁이 옆에 좁은 횡단보도(2칸, 신호등 없음) — 절반쯤의 거리에만.
+      if (s.type === "lane" && vs.length && crosswalkTile !== undefined && crosswalkTile >= 0 && rng() < 0.5) {
+        const v = vs[Math.floor(rng() * vs.length)]!;
+        const x = rng() < 0.5 && v.x + v.w + 3 < W ? v.x + v.w + 1 : v.x - 3;
+        if (x >= 1 && x + 2 < W && !inV(x, 1) && !inV(x + 1, 1)) {
+          cw = x; cwW = 2;
+          const cells: { x: number; y: number }[] = [];
+          for (let cx = x; cx < x + 2; cx++) for (let y = s.road0; y <= s.road1; y++) { cells.push({ x: cx, y }); c.drawn[y * W + cx] = 1; }
+          c.marks.push({ tool: "paint_tiles", args: { mapId: c.mapId, layer: "2", mode: "cells", tile: crosswalkTile, cells }, optional: true, note: "road" });
+        }
+      }
+      // 연석 큰길과 세로 길이 만나는 모퉁이: 보도 줄이 세로 길 차도를 건너는 칸에 횡단보도 — 보도가 구획 사이로 이어진다(행인이 차도를 밟지 않고 건넌다).
+      if (s.type === "kerb" && crosswalkTile !== undefined && crosswalkTile >= 0) for (const v of vs) {
+        if (!v.sw || v.arcade) continue;
+        const cells: { x: number; y: number }[] = [];
+        for (const y of [s.nA, s.nK!, s.sA!, s.sB]) if (y >= v.y0 && y <= v.y1) for (let x = v.x + v.sw; x < v.x + v.sw + v.lane; x++) { cells.push({ x, y }); c.drawn[y * W + x] = 1; }
+        if (cells.length) c.marks.push({ tool: "paint_tiles", args: { mapId: c.mapId, layer: "2", mode: "cells", tile: crosswalkTile, cells }, optional: true, note: "road" });
+      }
       for (let x = 0; x < W; x++) {                                         // 흰 외측선(교차로·횡단보도 칸은 비운다)
-        if (inV(x) || (x >= cw && x < cw + 4)) continue;
+        if (inV(x) || (x >= cw && x < cw + cwW)) continue;
         c.raw("jp-mark-edge-n", x, s.road0, "road");
         c.raw("jp-mark-edge-s", x, s.road1, "road");
       }
@@ -184,6 +202,12 @@ export function dressStreets(c: SceneCtx, L: SceneLayout, crosswalkTile?: number
     for (let y = top; y <= bottom; y++) put(arcadeRoofKit(v.w, (y - top) % FLAVOR_ARCADE.ribEvery === 1), y);
     if (north >= 0) put(arcadeGateKit(v.w), north);
     if (south >= 0) put(arcadeGateKit(v.w), south);
+    // 지붕 면이 한 색 띠로 길게 이어지지 않게: 몇 줄마다 초롱 줄을 지붕 아래에 건다(4층 덧그림 — 지붕 뒤에 찍어 위에 보인다).
+    const hang = sceneList("shotengai", "hang")[0];
+    if (hang && c.size(hang)![0] <= v.w) for (let y = top + 2 + Math.floor(rng() * 2); y <= bottom - 1; y += 4 + Math.floor(rng() * 2)) {
+      c.late.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${hang}`, mapId: c.mapId, x: v.x + Math.floor((v.w - c.size(hang)![0]) / 2), y }, optional: true, note: "prop4" });
+      c.usedProps.set(hang, (c.usedProps.get(hang) ?? 0) + 1);
+    }
     c.scenesUsed.add("shotengai");
   }
   // 지도 맨 위 끝과 띠 뒤(윗길 보도에 닿는 줄)의 빈 대지에 담 — 건물 뒤가 허공처럼 열려 보이지 않게.

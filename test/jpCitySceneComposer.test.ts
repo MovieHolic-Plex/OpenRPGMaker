@@ -1,13 +1,16 @@
 // 일본 도시 거리 장면 구성기(조수가 짓는 거리, 게임 열쇠가 있는 호출): 같은 건물 그림이 한 지도에 두 번 서지 않고, 게임마다 다른 거리이고,
 // 지은 지도의 모든 건물 문이 큰길에서 걸어서 닿는다. 열쇠 없는 호출은 옛 구성기 그대로다(대표작이 그 배치에 기댄다).
 import { describe, expect, it } from "vitest";
+import { JP_CITY_BUILDER } from "@/ai/v2/place/builders/jpCity";
+import type { BuildRun, PlaceSpec } from "@/ai/v2/shared/types";
 import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
 import { createBlankProject } from "@/project/defaults";
 import { blankFillTileFor, createStarterMap } from "@/project/defaults/defaultMaps";
 import { createJpCityTileset, JP_CITY_ID } from "@/project/defaults/jpCity";
 import { planJpCityScene } from "@/project/jpCitySceneComposer";
-import { pickSceneKind, SCENE_BUILDINGS, SCENE_KINDS, SCENE_SIZES, SCENE_TONES, sceneList } from "@/project/jpCitySceneKinds";
+import { sceneCrosswalkTile } from "@/project/jpCitySceneRun";
+import { pickSceneKind, SCENE_BUILDINGS, SCENE_KINDS, SCENE_SIZES, SCENE_TONES, sceneKindById, sceneList } from "@/project/jpCitySceneKinds";
 import { planJpCityStreet } from "@/project/jpCityStreetComposer";
 import { inMainWalkComponent, mainWalkComponent } from "@/project/walkComponent";
 
@@ -77,5 +80,48 @@ describe("jp_city street scene composer", () => {
     const keyless = compose("shotengai", 11, undefined, 40, 28);
     expect(keyless.res.ok, keyless.res.summary).toBe(true);
     expect(keyless.res.summary).toContain(planJpCityStreet({ mapId: "hub", width: 40, height: 28, seed: 11, style: "shotengai" }).summary.slice(0, 40));
+  });
+
+  it("names the street kind and its scene sets in English in the result, and takes a kind id through style", () => {
+    const keyed = compose("shopping", 1, "game-a");
+    expect(keyed.res.summary).toMatch(/^Street kind «[a-z -]+» \([a-z-]+\) 60×48, ground «[a-z -]+»: \d building rows along .+; block uses .+; scene sets .+; \d+ buildings/);
+    const data = keyed.res.data as { streetKind?: string; streetKindName?: string; scenes?: string[] };
+    expect(sceneKindById(data.streetKind)?.en).toBe(data.streetKindName);
+    expect(data.scenes!.length).toBeGreaterThanOrEqual(3);
+    for (const name of data.scenes!) expect(name).toMatch(/^[a-z -]+$/);
+    // 열쇠 없는 호출이어도 종류를 이름으로 주면 그 종류로 짓는다
+    const named = compose("monzen", 3, undefined, 48, 36);
+    expect(named.res.ok, named.res.summary).toBe(true);
+    expect((named.res.data as { streetKind?: string; style?: string })).toMatchObject({ streetKind: "monzen", style: "shitamachi" });
+  });
+
+  it("closes the lots behind shop rows with backyards and lets quiet lanes have a narrow crosswalk", () => {
+    for (let seed = 1; seed <= 3; seed++) {
+      const plan = planJpCityScene({ mapId: "m", width: 60, height: 48, seed, style: "shopping", key: "game-a" });
+      expect(plan.scenes, `seed ${seed}`).toContain("backalley");
+      const yards = plan.steps.filter((s) => s.tool === "fill_region" && ["산길 흙", "校庭 흙 바닥", "자갈 참배길", "온천가 돌길(이시다타미)"].includes(String((s.args as { material?: string }).material)));
+      expect(yards.length, `seed ${seed}`).toBeGreaterThanOrEqual(3);
+    }
+    const zebra = Array.from({ length: 16 }, (_, seed) => planJpCityScene({ mapId: "m", width: 48, height: 36, seed, style: "residential", key: "game-b", crosswalkTile: 7 }))
+      .filter((p) => p.steps.some((s) => s.tool === "paint_tiles" && (s.args as { tile?: number }).tile === 7));
+    expect(zebra.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("v2 builder previews the plan the tool will really build (game key) and reports the kind", () => {
+    const ctx = { project: createBlankProject(), assistantRun: true, lookKey: "game-a" };
+    const seen: { tool: string; args: Record<string, unknown>; data: unknown }[] = [];
+    const run = { ctx, calls: [], call: (tool: string, args: Record<string, unknown>) => { const r = runTool(ctx, tool, args, { dryRun: false }); seen.push({ tool, args, data: r.data }); return r; } } as unknown as BuildRun;
+    const res = JP_CITY_BUILDER.build(run, { type: "street", style: "jp-modern", name: "강변 상점가", features: ["shops", "river", "bridge", "vending"], size: "large" } as unknown as PlaceSpec);
+    expect(res.ok, res.summary).toBe(true);
+    expect(res.missingArt).toEqual([]);
+    expect(res.summary).toMatch(/street kind «riverside shopping street» \(kawazoi\); scenes: .*riverside walk/);
+    // 미리 본 계획 = 도구가 세운 계획: 도구가 받은 씨앗·꼴로 다시 세운 계획에 다리와 자판기가 있고, 도구가 알린 종류가 같다.
+    const composed = seen.find((c) => c.tool === "compose_jp_city_street")!;
+    expect((composed.data as { streetKind?: string }).streetKind).toBe("kawazoi");
+    const map = ctx.project.maps[res.mapIds[0]!]!;
+    const plan = planJpCityScene({ mapId: map.id, width: map.width, height: map.height, seed: Number(composed.args.seed), style: "shopping", key: "game-a", crosswalkTile: sceneCrosswalkTile(ctx.project.tilesets[JP_CITY_ID]) });
+    const ids = plan.steps.map((s) => String((s.args as { objectId?: string }).objectId ?? ""));
+    expect(ids.some((id) => id.includes("bridge"))).toBe(true);
+    expect(ids.some((id) => id.includes("vending"))).toBe(true);
   });
 });

@@ -1,6 +1,6 @@
 // 조수 v2 일본 도시(jp_city) 빌더 — PlaceSpec(street·house, village+jp-modern) → v1 결정론 도구 인자.
 //   거리: compose_jp_city_street(상가·주택가·시타마치·쇼텐가이) 또는 compose_jp_region(학교·역·신사… 지역 30종).
-//         요청한 소품(자판기·공원·횡단보도…)은 거리 계획(planJpCityStreet, 순수 함수)을 씨앗별로 미리 보고 다 들어가는 씨앗을 고른다.
+//         요청한 소품(자판기·공원·횡단보도…)은 거리 계획(순수 함수 — 게임 열쇠가 있으면 도구가 실제로 쓰는 planJpCityScene, 없으면 planJpCityStreet)을 씨앗별로 미리 보고 다 들어가는 씨앗을 고른다.
 //   집:   build_hand_interior_room({tileset:"jp_city", layout:{program}}) — 일본 집·가게 실내 예제 구성. 2층이면 위층을 짓고 계단을 잇는다.
 // 모델은 칸·좌표를 쓰지 않는다. 도구가 못 하는 것은 missingArt 로 정직하게 보고한다(대체물을 지어내지 않는다).
 import { isBlankMap } from "@/editor/tools/mapEmptiness";
@@ -8,6 +8,9 @@ import { jpRegionById } from "@/editor/jpCity/japaneseRegionsCatalog";
 import { isPassable } from "@/project/collision";
 import { layerTileAt } from "@/project/mapLayers";
 import { JP_CITY_ID } from "@/project/defaults/jpCity";
+import { planJpCityScene } from "@/project/jpCitySceneComposer";
+import { sceneKindById } from "@/project/jpCitySceneKinds";
+import { sceneCrosswalkTile } from "@/project/jpCitySceneRun";
 import { planJpCityStreet, type JpStreetStyle } from "@/project/jpCityStreetComposer";
 import type { GameMap, Project } from "@/project/types";
 import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
@@ -153,7 +156,17 @@ function pickStyle(spec: PlaceSpec, text: string): JpStreetStyle {
 
 const SIZES: Record<string, [number, number]> = { small: [40, 28], medium: [48, 36], large: [60, 48] };
 
-function planView(mapId: string, w: number, h: number, seed: number, style: JpStreetStyle, shops: string[]): PlanView {
+/** 거리 장면 구성기로 지을 때의 미리 보기 조건 — 도구가 실제로 세우는 계획과 같아야 한다(게임 열쇠·횡단보도 칸·이름 붙인 종류). */
+interface SceneView { readonly key: string; readonly crosswalkTile?: number; readonly kind?: string }
+
+function planView(mapId: string, w: number, h: number, seed: number, style: JpStreetStyle, shops: string[], scene?: SceneView): PlanView {
+  if (scene) {
+    const sp = planJpCityScene({ mapId, width: w, height: h, seed, style, shops, key: scene.key, ...(scene.crosswalkTile !== undefined ? { crosswalkTile: scene.crosswalkTile } : {}), ...(scene.kind ? { kind: scene.kind } : {}) });
+    const sids = sp.steps.filter((s) => s.tool === "stamp_object" || s.tool === "build_jp_city_building").map((s) => String((s.args as Record<string, unknown>).objectId ?? (s.args as Record<string, unknown>).kind ?? (s.args as Record<string, unknown>).preset ?? ""));
+    // 횡단보도는 줄무늬 칸을 칠하는 단계라 id 가 없다 — 확인 규칙이 읽는 낱말로 적는다.
+    if (sp.steps.some((s) => s.tool === "paint_tiles" && (s.args as Record<string, unknown>).tile === scene.crosswalkTile)) sids.push("crosswalk");
+    return { ids: sids, parks: sp.pieces.filter((u) => u === "park").length };
+  }
   const plan = planJpCityStreet({ mapId, width: w, height: h, seed, style, shops });
   const ids = plan.steps.filter((s) => s.tool === "stamp_object" || s.tool === "build_jp_city_building").map((s) => String((s.args as Record<string, unknown>).objectId ?? (s.args as Record<string, unknown>).kind ?? (s.args as Record<string, unknown>).preset ?? ""));
   return { ids, parks: plan.parks?.length ?? 0 };
@@ -291,7 +304,12 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
     if (leftovers.length) warnings.push(`${leftovers.join("·")} — ${r.ko} 지도는 지역 문법대로 놓아 하나씩 확인하지 않았다`);
   } else {
     kind = "street";
-    const style = pickStyle(spec, text);
+    // hints.style 에 거리 종류 id(ekimae·kawazoi …)가 오면 그 종류로 짓는다. 도구가 장면 구성기로 짓는 조건(조수 실행의 게임 열쇠, 또는 이름 붙인 종류)이면 미리 보기도 그 계획으로.
+    const named = typeof spec.hints?.style === "string" ? sceneKindById(spec.hints.style) : undefined;
+    const namedStyle = named?.styles[0];
+    const style: JpStreetStyle = namedStyle === "shopping" || namedStyle === "residential" || namedStyle === "shitamachi" || namedStyle === "shotengai" ? namedStyle : pickStyle(spec, text);
+    const gameKey = run.ctx.assistantRun && run.ctx.lookKey?.trim() ? run.ctx.lookKey : named ? "default" : undefined;
+    const sceneView: SceneView | undefined = gameKey ? { key: gameKey, crosswalkTile: sceneCrosswalkTile(run.ctx.project.tilesets[JP_CITY_ID]), ...(named ? { kind: named.id } : {}) } : undefined;
     const shops = [...new Set(SHOP_RULES.filter(([re]) => has(text, re)).map(([, s]) => s))];
     const wantHouses = has(text, /houses?|주택|민가/i);
     const shopsFor = (st: JpStreetStyle): string[] => (st !== "residential" && wantHouses && !shops.includes("house") ? [...shops, "house"] : shops);
@@ -309,12 +327,12 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
     // 주택가·골목 요청은 상가 짜임으로 넘어가지 않는다(2026-10-23 3차: 「주택가 골목」이 이자카야·사무소 거리로 바뀌어 «집 서너 채»를 못 지켰다).
     // 소품 하나를 못 넣는 쪽이 집 거리를 상가로 바꾸는 쪽보다 낫다 — 못 넣은 소품은 missingArt 로 정직하게 알린다.
     const homey = !has(text, /shops?|shopping|store|상점|상가|가게|market|shotengai|arcade|商店街/i) && (wantHouses || style === "residential" || style === "shitamachi");
-    const styles: JpStreetStyle[] = homey
+    const styles: JpStreetStyle[] = named ? [style] : homey
       ? [style, ...(["residential", "shitamachi"] as const).filter((st) => st !== style)]
       : [style, ...(["residential", "shopping"] as const).filter((st) => st !== style)];
     outer: for (const st of styles) {
       for (let s = baseSeed; s < baseSeed + 40; s++) {
-        const view = planView(mapId, w, h, s, st, shopsFor(st));
+        const view = planView(mapId, w, h, s, st, shopsFor(st), sceneView);
         const score = [...checks].reduce((n, [what, f]) => n + (f(view) ? (what === "공원" ? 3 : 1) : 0), 0); // 공원은 구획 하나라 소품보다 무겁다
         if (score > bestScore) { bestScore = score; bestSeed = s; bestStyle = st; }
         if (score === checks.size + (checks.has("공원") ? 2 : 0)) break outer;
@@ -322,10 +340,10 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
     }
     if (bestStyle !== style) warnings.push(`요청 소품이 ${style} 짜임에는 함께 안 들어가 ${bestStyle} 짜임으로 짰다`);
     const finalShops = shopsFor(bestStyle);
-    const finalView = planView(mapId, w, h, bestSeed, bestStyle, finalShops);
+    const finalView = planView(mapId, w, h, bestSeed, bestStyle, finalShops, sceneView);
     for (const [what, f] of checks) if (!f(finalView)) missing.push(`${what}(씨앗 40개 안에서 이 크기·짜임 거리에 함께 못 놓음)`);
     seed = bestSeed;
-    args = { mapId, seed, style: bestStyle, replace: true, ...(finalShops.length ? { shops: finalShops } : {}), ...(avoidance.avoid.length ? { avoidProps: avoidance.avoid } : {}),
+    args = { mapId, seed, style: named ? named.id : bestStyle, replace: true, ...(finalShops.length ? { shops: finalShops } : {}), ...(avoidance.avoid.length ? { avoidProps: avoidance.avoid } : {}),
       ...(typeof spec.hints?.parkForest === "string" ? { parkForest: spec.hints.parkForest } : {}) };
   }
   const res = run.call(kind === "region" ? "compose_jp_region" : "compose_jp_city_street", args);
@@ -336,7 +354,9 @@ function buildStreet(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): Pl
   const rows = Array.isArray(data.walkRows) ? (data.walkRows as number[]) : [];
   const entrance = settleEntrance(run, mapId, rows, warnings);
   const shopsBuilt = Array.isArray(data.shopsBuilt) ? (data.shopsBuilt as string[]) : [];
-  const what = kind === "region" ? `${r!.ko}` : `${String(data.style ?? args.style)} 거리, 건물 ${num(data.built) ?? "?"}채·소품 ${num(data.props) ?? "?"}개`;
+  // 장면 구성기로 지은 거리는 종류와 장면 벌 이름을 요약에 적는다(모델이 읽는 글 — 영어).
+  const sceneNote = typeof data.streetKind === "string" ? ` — street kind «${String(data.streetKindName ?? data.streetKind)}» (${data.streetKind}); scenes: ${(Array.isArray(data.scenes) ? (data.scenes as string[]) : []).join(" · ")}` : "";
+  const what = kind === "region" ? `${r!.ko}` : `${String(data.style ?? args.style)} 거리, 건물 ${num(data.built) ?? "?"}채·소품 ${num(data.props) ?? "?"}개${sceneNote}`;
   const state: JpState = { kind, baseSeed: baseSeed - variant * 101, seed, args };
   return {
     ok: true, mapIds: [mapId], ...(entrance ? { entrance } : {}),

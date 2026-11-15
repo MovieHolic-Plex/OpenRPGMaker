@@ -9,6 +9,11 @@ import type { GameMap } from "@/project/types";
 type Call = (tool: string, args: Record<string, unknown>) => { rect?: { x0: number; y0: number; w: number; h: number }; doors?: readonly { x: number; y: number }[] } | void;
 const EDGE_AUTOTILE: Readonly<Record<string, string>> = { "생울타리": "jp-hedge", "블록담": "jp-wall-block", "철망 울타리": "jp-fence-mesh", "가드레일": "jp-guardrail" };
 
+/** 횡단보도 줄무늬 칸 — 도구와 미리 보기(v2 빌더)가 같은 값으로 계획을 세운다(이 값에 따라 길 표시 자리가 달라진다). */
+export function sceneCrosswalkTile(tileset: { structureKits?: readonly { id: string; rows: readonly { upperTiles?: readonly number[] }[] }[] } | undefined): number | undefined {
+  return (tileset?.structureKits ?? []).find((k) => k.id === "jp-road-lane-crosswalk-h")?.rows.flatMap((row) => row.upperTiles ?? []).find((t) => t >= 0);
+}
+
 export interface SceneBuilt extends JpStreetBuiltBuilding { readonly ko: string }
 
 export function runJpScenePlan(plan: ScenePlan, call: Call, view: () => LotUseView, avoid?: (kitId: string) => boolean): { built: number; skipped: number; props: number; buildings: SceneBuilt[]; lotUses: readonly LotUsePlaced[] } {

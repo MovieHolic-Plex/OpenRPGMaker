@@ -8,7 +8,7 @@ import { lookHash } from "@/project/kitLook";
 
 export type SceneStyle = "shopping" | "residential" | "shitamachi" | "shotengai";
 
-export interface SceneTone { readonly ko: string; readonly lot: readonly string[]; readonly sidewalk: string; readonly road: string; readonly plaza: string; readonly alley: string; /** 주택 필지 바닥(필지마다 돌린다) */ readonly yard: readonly string[]; readonly green: string }
+export interface SceneTone { readonly ko: string; readonly en: string; readonly lot: readonly string[]; readonly sidewalk: string; readonly road: string; readonly plaza: string; readonly alley: string; /** 주택 필지 바닥(필지마다 돌린다) */ readonly yard: readonly string[]; readonly green: string }
 
 export interface SceneKind {
   readonly id: string; readonly ko: string; readonly en: string; readonly styles: readonly string[];
@@ -40,6 +40,8 @@ export function sceneList(scene: string, slot: string): string[] {
   return Array.isArray(v) ? v.filter((id) => SCENE_SIZES[id]) : [];
 }
 export function sceneKo(scene: string): string { const v = DATA.scenes[scene]?.ko; return typeof v === "string" ? v : scene; }
+/** 장면 벌의 영어 이름 — 조수 모델이 읽는 요약에 쓴다. */
+export function sceneEn(scene: string): string { const v = DATA.scenes[scene]?.en; return typeof v === "string" ? v : scene; }
 
 export function sceneKindById(id: string | undefined): SceneKind | undefined { return id ? SCENE_KINDS.find((k) => k.id === id) : undefined; }
 

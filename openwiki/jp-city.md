@@ -525,3 +525,61 @@ object-gen 흐름(시점 판정 통과 참고 그림 → Opus 손 도트 A/B →
   (`_gate/assembled.json` → `gate_rooms.EXTRA_MANIFESTS`). 육교 조립·사다리 PASS(미보정 프로필 임시통과), 단상 조립은 눈 4/12 로 REFER → Opus 적대 VQA r24(major 0) 뒤 위임 허용
   (`harness-data/object-gate/vqa/jp-street-stairs.opus-vqa-r24.json`).
 - 출하 플레이어 걷기: `scripts/qa/runtime/jp-street-stairs-fixture.mts` → `jp-street-stairs.scenario.mjs`(육교 오르기·층계참 막힘·상판 건너기·내려오기·옆 막힘·옆 계단으로 단상 건너기·사다리).
+
+## 거리 장면 구성기 — 조수가 짓는 거리 (2026-11-15)
+
+오너 2026-11-14: «근데 생각해보니까 일본 도시랑 한국 도시는 어떻게할거임 ? 아직 퀄리티가 좀 떨어지는거같은데 .. 오브젝트 수랑 도로 뭐 이것저것»
+
+조수가 짓는 거리(게임 열쇠가 켜진 `compose_jp_city_street` 호출)는 옛 구성기(`jpCityStreetComposer.ts`) 대신 장면 구성기로 짓는다. 열쇠 없는 호출(사람 손 호출·대표작 `shitamachiFourthSeason`)은 옛 배치 그대로다 — 저장된 지도와 대표작이 그 배치에 기댄다.
+
+### 파일
+
+| 파일 | 맡은 일 |
+|---|---|
+| `src/assets/jpCityStreetKinds.json` | 손으로 쓰는 자료: 바닥 톤 4벌, 거리 종류 10가지, 장면 벌(소품 목록), 옥상 면 |
+| `src/assets/jpCityStreetCatalog.json` | 칩셋에서 뽑은 건물·킷 크기 목록. `python3 scripts/content/jp-city/street/catalog.py` 로 다시 만든다(`--check` 는 대조만) |
+| `src/project/jpCitySceneKinds.ts` | 자료 읽기와 종류 고르기(`pickSceneKind`) |
+| `src/project/jpCitySceneComposer.ts` | 계획(`planJpCityScene`, 순수 함수): 띠·길·구획·쓰임 |
+| `src/project/jpCitySceneRows.ts` | 가게 줄·집 줄·뒷골목·뒷마당 |
+| `src/project/jpCityScenePieces.ts` | 구획 조각: 공원·신사·작은 사당·코인 주차·공사장·자전거 주차장·빈터·역 앞 |
+| `src/project/jpCitySceneStreets.ts` | 길 꾸밈: 하천·다리·육교·횡단보도·전봇대·아케이드 |
+| `src/project/jpCitySceneRun.ts` | 계획 실행(담 모양·4층 덧그림·처마 칸 되살리기)과 건물 이름표 |
+| `scripts/qa/jp-street-measure.mts` | 측정(모델 없음): 건물·그림 종류·되풀이·소품 종류·도로 몫·죽은 띠·빈 8×6 창·닿지 않는 문 |
+
+### 거리 종류와 고르는 법
+
+| 꼴(style) | 종류 id |
+|---|---|
+| shopping | `ekimae` 역 앞 상가 · `kawazoi` 강변 상가 · `zakkyo` 잡거빌딩 번화가 |
+| residential | `jutaku` 조용한 주택가 · `kawa-jutaku` 강변 주택가 · `tera-machi` 신사 낀 주택가 |
+| shitamachi | `roji` 시타마치 골목 · `monzen` 참배길 문 앞 거리 |
+| shotengai | `arcade` 아케이드 상점가 · `ichiba` 노천 시장 거리 |
+
+- 종류 하나는 큰길 꼴(연석 차도 · 보도 없는 생활도로 · 보행자 시장 길), 하천, 건물 섞임, 구획 조각, 장면 벌, 바닥 톤을 한 벌로 묶는다.
+- 고르기: 꼴에 맞고 요청한 가게 수를 담을 수 있는 종류 가운데 `(게임 열쇠 해시 + 씨앗)` 번째. 같은 게임·같은 씨앗은 늘 같은 거리이고, 게임이 다르면 종류·톤·건물 순서가 다르다.
+- 이름으로 고르기: `style` 에 종류 id 를 준다(`compose_jp_city_street({style:"kawazoi"})`, v2 는 `hints.style`). 새 인자는 없다. 열쇠 없는 호출이어도 이름을 주면 장면 구성기로 짓는다.
+- v2 빌더(`src/ai/v2/place/builders/jpCity.ts`)는 요청 소품이 다 들어가는 씨앗을 찾을 때 도구가 실제로 세울 계획(같은 열쇠·같은 횡단보도 칸)을 미리 본다. 씨앗이 바뀌면 종류도 돌기 때문에 «강·다리» 요청은 강변 종류에 닿는다.
+- 결과 글: 도구 요약 앞머리와 빌더 요약에 종류 이름과 장면 벌 이름을 영어로 적는다(모델이 읽는 글). 도구 `data` 에 `streetKind`·`streetKindName`·`scenes`·`blockUses`.
+
+### 규칙
+
+- 같은 건물 그림은 한 지도에 한 번. 그 분류의 그림을 다 세웠을 때만 20칸 넘게 떨어진 자리에 되풀이한다. 맞는 크기가 없으면 세우지 않고 틈 쓰임(주차 한 칸 · 자판기 줄 · 화단 + 뒤 담)으로 닫는다.
+- 가게 줄은 벽을 맞대고(처마 칸 겹침) 집은 제 필지 바닥(흙·잔디·자갈) 위에 담·대문·디딤돌·카포트와 함께 선다. 포장은 길과 보도에만.
+- 가게 뒤 대지는 뒷마당이다: 건물마다 대지 포장과 다른 바닥(흙·자갈·돌길)을 깔고 빨래 건조대·쓰레기 수거함·물탱크·창고·프로판·실외기·자전거를 둔다. 세로 길에 닿는 끝 필지는 주차 한 칸.
+- 키 큰 소품(전봇대·가로등·벚나무·간판 기둥)과 건물 정면에 겹치는 진열대는 4층 덧그림으로 찍는다 — `stamp_object` 는 서 있는 그림이 윗층 칸과 겹치면 거절한다.
+- 지은 건물의 문은 모두 큰길에서 걸어서 닿아야 한다(`test/jpCitySceneComposer.test.ts`). 이름표 글 꼴은 옛 구성기와 같아 `link_jp_city_interior` 가 그대로 읽는다.
+- 새 건물(`jp-bldg-f-*`)·옥상 기물(`jp-prop-okujo-*`)이 구워지면 `catalog.py` 를 다시 돌리면 건물은 바로 쓰이고, 옥상 기물은 `jpCityStreetKinds.json` 의 `roofs`(건물 id 와 옥상 면 `[dx, dy, w, h]`)에 적은 건물에만 올라간다.
+
+### 실측 (60×48 · 씨앗 1~6 · 꼴 넷 = 24장, 전 = 열쇠 없는 옛 구성기)
+
+| 항목 | 전 | 후 |
+|---|---|---|
+| 같은 건물 그림 최대 되풀이가 1인 지도 | 0 / 24 | 24 / 24 |
+| 소품 종류 45 이상인 지도(최소) | 0 / 24 (20) | 22 / 24 (40) |
+| 건물도 기물도 없는 8×6 창(평균) | 11.2~12.3% | 0.3~1.4% |
+| 죽은 띠 6% 이하인 지도 | 8 / 24 | 24 / 24 |
+| 닿지 않는 문(52×34 포함 48장) | 51 / 769 | 0 / 604 |
+| 건물 20채 이상인 지도(최소) | 18 / 24 (18) | 8 / 24 (13) |
+| 도로 몫 19% 이하인 지도(최대) | 24 / 24 (17.1%) | 22 / 24 (19.8%) |
+
+건물 수가 준 것은 알려진 한계다: 같은 그림을 되풀이하지 않는데 지금 건물 킷 폭이 7~8칸이라 60칸 줄에 일곱 채쯤 선다. 폭 좁은 새 건물이 구워지면 다시 잰다.

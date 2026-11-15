@@ -11,7 +11,7 @@
 // 순수 계획 → 단계 목록. 실행은 jpCitySceneRun.ts. 줄·구획 채우기는 jpCitySceneRows.ts · jpCityScenePieces.ts.
 import type { JpStreetPlan } from "@/project/jpCityStreetComposer";
 import { mulberry, Occ, SceneCtx, type SceneBand, type SceneBlock, type SceneLayout, type ScenePlaced, type SceneStreet, type SceneVStreet } from "@/project/jpCitySceneCtx";
-import { pickSceneKind, sceneKo, sceneTone, type SceneKind, type SceneStyle, type SceneTone } from "@/project/jpCitySceneKinds";
+import { pickSceneKind, sceneEn, sceneTone, type SceneKind, type SceneStyle, type SceneTone } from "@/project/jpCitySceneKinds";
 import { PIECES, type PieceDef } from "@/project/jpCityScenePieces";
 import { dressRiver, dressStreets, placeOverpass } from "@/project/jpCitySceneStreets";
 import { fillRear, fillRows, rearTop } from "@/project/jpCitySceneRows";
@@ -106,6 +106,12 @@ function layout(c: SceneCtx): SceneLayout {
   return { bands, vstreets, blocks: [], ...(wantOverpass ? { overpass: true } : {}) } as SceneLayout & { overpass?: boolean };
 }
 
+/**
+ * 보도 없는 길(생활도로·골목 세로 길)의 바닥. 사람이 차와 함께 걷는 길이라 톤의 차도 재료 대신 늘 이것을 쓴다 —
+ * «따뜻한 아스팔트 골목» 은 사람 놓기 규칙(placementRules.laneCells)이 차도로 읽어, 보도 없는 주택가에서 행인이 설 칸이 없어진다.
+ */
+const SHARED_LANE = "생활도로";
+
 function paintStreets(c: SceneCtx, L: SceneLayout): void {
   const { W, tone } = c;
   c.fill(0, 0, W, c.H, tone.lot[0]!);
@@ -115,7 +121,7 @@ function paintStreets(c: SceneCtx, L: SceneLayout): void {
       c.fill(0, s.nA, W, 2, tone.sidewalk); c.fill(0, s.road0, W, s.road1 - s.road0 + 1, tone.road); c.fill(0, s.sA!, W, 2, tone.sidewalk);
       c.mark(0, s.road0, W, s.road1 - s.road0 + 1, Occ.Road); c.mark(0, s.sA!, W, 1, Occ.Walk);
     } else if (s.type === "lane") {
-      c.fill(0, s.road0, W, 3, tone.road); c.mark(0, s.road0, W, 3, Occ.Road);
+      c.fill(0, s.road0, W, 3, SHARED_LANE); c.mark(0, s.road0, W, 3, Occ.Road);
     } else if (s.type === "path") {
       c.fill(0, s.y0, W, 2, tone.alley); c.mark(0, s.y0, W, 1, Occ.Walk);
     } else if (s.type === "mall") {
@@ -140,7 +146,7 @@ function paintStreets(c: SceneCtx, L: SceneLayout): void {
       }
       continue;
     }
-    c.fill(v.x + v.sw, v.y0, v.lane, h, tone.road); c.mark(v.x + v.sw, v.y0, v.lane, h, Occ.Road);
+    c.fill(v.x + v.sw, v.y0, v.lane, h, v.sw ? tone.road : SHARED_LANE); c.mark(v.x + v.sw, v.y0, v.lane, h, Occ.Road);
     if (!v.sw) continue;                                                // 보도 없는 골목: 차선 표시 없음
     for (const b of L.bands) if (b.index >= v.from && b.index <= v.to) {
       const y0 = b.top, hh = b.foot - b.top + 1;
@@ -230,13 +236,15 @@ export function planJpCityScene(opts: SceneOptions): ScenePlan {
   const lotFree = new Uint8Array(W * H);
   for (const b of L.blocks) if (!PIECES[b.use]) for (let y = b.band.top + 1; y <= b.band.foot; y++) for (let x = b.sx; x < b.ex; x++) if (c.occ[y * W + x] === Occ.Lot && !c.drawn[y * W + x]) lotFree[y * W + x] = 1;
   const scenes = [...c.scenesUsed];
-  const streetKo = (t: string) => ({ kerb: "연석 차도", lane: "생활도로", path: "골목", mall: "보행자 시장 길", river: "하천", edge: "아래 끝 길" } as Record<string, string>)[t] ?? t;
+  // 요약은 조수 모델이 읽는다 — 영어로, 거리 종류와 장면 벌 이름을 적는다.
+  const streetEn = (t: string) => ({ kerb: "kerbed road", lane: "shared lane", path: "footpath alley", mall: "pedestrian market street", river: "river with promenade", edge: "bottom walkway" } as Record<string, string>)[t] ?? t;
+  const uses = [...new Set([...L.blocks.map((b) => b.use), ...c.piecesUsed])];
   return {
     steps: c.steps(), mapId, seed, style,
     buildings: built.map((p) => ({ role: p.role, x: p.x, foot: p.foot, w: p.w, h: p.h })),
     walkRows: L.bands.flatMap((b) => [b.front.nA, ...(b.front.sA !== undefined ? [b.front.sA] : [])]),
     parks: [],
     kind, tone, placed: built, lotFree, scenes, pieces: c.piecesUsed,
-    summary: `${kind.ko} ${W}×${H} — 띠 ${L.bands.length}줄(발 ${L.bands.map((b) => `y${b.foot}`).join("·")}), 큰길 ${L.bands.slice(0, -1).map((b) => streetKo(b.front.type)).join("·")}, 세로 길 ${L.vstreets.length}, 톤 ${tone.ko}, 구획 ${[...new Set(L.blocks.map((b) => b.use))].join("·")}, 장면 ${scenes.map(sceneKo).join("·")}, 건물 ${built.length}채(${built.map((p) => p.role).join("·")})`,
+    summary: `Street kind «${kind.en}» (${kind.id}) ${W}×${H}, ground «${tone.en}»: ${L.bands.length} building rows along ${[...new Set(L.bands.slice(0, -1).map((b) => streetEn(b.front.type)))].join(" + ")}, ${L.vstreets.length} cross street(s); block uses ${uses.join(" · ")}; scene sets ${scenes.map(sceneEn).join(" · ")}; ${built.length} buildings`,
   };
 }
