@@ -14,20 +14,23 @@ const byHash = <T>(list: readonly T[], salt: string, name: (v: T) => string): T[
 /** 이 방에 놓을 묶음·조각 차례·점 수. 표가 없거나 그 방 종류가 아니면 undefined. 같은 열쇠면 같은 답. */
 export function personalPlan(S: HandInteriorSpec, kind: string, ask: PersonalAsk): PersonalPlan | undefined {
   const P = S.personal;
-  if (!P || !P.kinds.includes(kind)) return undefined;
+  const home = !!P?.kinds.includes(kind), work = P?.byKind?.[kind];
+  if (!P || (!home && !(work && P.sets[work]))) return undefined;
   const text = (ask.text ?? "").toLowerCase();
   const ids = Object.keys(P.sets).sort();
   const hit = (id: string) => Math.max(0, ...(P.sets[id]!.alias ?? []).filter((a) => text.includes(a.toLowerCase())).map((a) => a.length));
   const byCat = ask.cat ? ids.filter((id) => P.sets[id]!.cats?.includes(ask.cat!)).sort()[0] : undefined;
   const byName = ids.filter((id) => hit(id) > 0).sort((a, b) => hit(b) - hit(a) || a.localeCompare(b))[0];
   // 직업 묶음: 집의 갈래(구조 자료)가 먼저, 그다음 집 이름의 별칭 — 둘 다 있으면 둘 다(농장의 사냥꾼 집). 어느 것도 없으면 살림 묶음(아이·짐승·기도·빨래…) 둘을 열쇠가 고른다.
-  const roles = [...new Set([byCat, byName].filter((v): v is string => !!v))];
-  const household = byHash(ids.filter((id) => !P.sets[id]!.alias?.length && !P.sets[id]!.cats?.length), ask.key, (v) => v).slice(0, roles.length ? 1 : 2);
+  // 직업 묶음: 방 종류(일하는 방 — 가게·일터)가 먼저, 다음이 집의 갈래(구조 자료), 그다음 집 이름의 별칭 — 여럿이면 모두(농장의 사냥꾼 집).
+  // 집(kinds)은 살림 묶음(아이·짐승·기도·빨래…)을 열쇠로 더 고른다: 직업이 없으면 둘, 있으면 하나. 일하는 방은 살림 묶음을 섞지 않는다.
+  const roles = [...new Set([work && P.sets[work] ? work : undefined, byCat, byName].filter((v): v is string => !!v))];
+  const household = home ? byHash(ids.filter((id) => !P.sets[id]!.alias?.length && !P.sets[id]!.cats?.length), ask.key, (v) => v).slice(0, roles.length ? 1 : 2) : [];
   const sets = [...roles, ...household].slice(0, 3);
   const known = (id: string) => !!S.objects[id] || S.goods[id] !== undefined;
   const lists = sets.map((id) => byHash(P.sets[id]!.pieces.filter(known), `${ask.key}|${id}`, (v) => v));
   const pieces: string[] = [];
   for (let i = 0; lists.some((l) => i < l.length); i++) for (const l of lists) if (i < l.length && !pieces.includes(l[i]!)) pieces.push(l[i]!);
-  const [lo, hi] = P.count;
+  const [lo, hi] = home ? P.count : P.workCount ?? [1, 3];
   return { sets, pieces, count: lo + (mixHash(hashText(`${ask.key}|count`)) % Math.max(1, hi - lo + 1)) };
 }

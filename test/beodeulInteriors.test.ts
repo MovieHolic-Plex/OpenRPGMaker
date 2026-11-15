@@ -66,7 +66,7 @@ describe("버들항 실내 사양", () => {
 describe("버들항 방 견본", () => {
   const tpls = roomTemplates(BEODEUL_INTERIOR_TILESET_ID);
   it("견본마다 조립기 오류 없이 지어진다", () => {
-    expect(tpls.length).toBeGreaterThanOrEqual(60);
+    expect(tpls.length).toBeGreaterThanOrEqual(75);
     expect(new Set(tpls.map((t) => t.kind)).size).toBeGreaterThanOrEqual(31);
     for (const t of tpls) {
       const door = Math.floor((t.w - 1) / 2) + 1, W = t.w + 2;
@@ -82,6 +82,8 @@ describe("버들항 방 견본", () => {
     for (const k of new Set(tpls.map((t) => t.kind))) expect(S.rooms!.kinds[k], k).toBeTruthy();
   });
   it("같은 종류의 두 벌은 게임 열쇠로 갈린다(작게 지어도)", () => {
+    // 모든 종류가 두 벌 이상이다
+    for (const k of new Set(tpls.map((t) => t.kind))) expect(tpls.filter((t) => t.kind === k).length, k).toBeGreaterThanOrEqual(2);
     for (const kind of ["tavern", "living", "general_store", "forge", "study", "kitchen", "bakery_shop"]) {
       const picked = new Set(Array.from({ length: 24 }, (_, i) => pickTemplate(BEODEUL_INTERIOR_TILESET_ID, kind, "small", { key: `게임 ${i}|${kind}`, single: true, text: kind })!.id));
       expect(picked.size, kind).toBeGreaterThanOrEqual(2);
@@ -151,6 +153,10 @@ describe("사는 사람의 물건", () => {
     expect(new Set(plain.map((p) => p.sets.join("+"))).size).toBeGreaterThanOrEqual(8);
     expect(personalPlan(S, "living", { key: "k", text: "집" })).toEqual(personalPlan(S, "living", { key: "k", text: "집" }));
     expect(personalPlan(S, "forge", { key: "k", text: "대장간" })).toBeUndefined();
+    // 일하는 방은 방 종류가 주인의 직업 묶음을 부른다 — 살림 묶음(아이 장난감·빨래)은 섞지 않고 1~3점
+    const shop = personalPlan(S, "general_store", { key: "k", text: "잡화점" })!;
+    expect(shop.sets).toEqual(["merchant"]); expect(shop.count).toBeLessThanOrEqual(3);
+    for (const [kind, set] of Object.entries(P.byKind!)) { expect(S.rooms!.kinds[kind], kind).toBeTruthy(); expect(P.sets[set], set).toBeTruthy(); }
     // 그 집 킷의 갈래(구조 자료)가 이름보다 먼저 — 농장 집은 농부, 농장의 사냥꾼 집은 농부 + 사냥꾼
     expect(personalPlan(S, "living", { key: "k", text: "한스의 집", cat: "farm" })!.sets[0]).toBe("farmer");
     expect(personalPlan(S, "living", { key: "k", text: "사냥꾼의 집", cat: "farm" })!.sets.slice(0, 2)).toEqual(["farmer", "hunter"]);

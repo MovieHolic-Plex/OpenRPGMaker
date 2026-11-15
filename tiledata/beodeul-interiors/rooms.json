@@ -5203,5 +5203,1239 @@
   ],
   "kind": "weapon_shop",
   "building": "bd_shop"
+ },
+ "cellar-b": {
+  "plan": [
+   "##########",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "####.#####"
+  ],
+  "floor": "earth",
+  "wall": "rubble",
+  "objects": [
+   {
+    "id": "wall lantern",
+    "x": 3,
+    "y": 1
+   },
+   {
+    "id": "barrel stack",
+    "x": 1,
+    "y": 3
+   },
+   {
+    "id": "wine rack",
+    "x": 7,
+    "y": 3
+   },
+   {
+    "id": "amphora rack",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "keg",
+    "x": 6,
+    "y": 5
+   },
+   {
+    "id": "keg",
+    "x": 7,
+    "y": 5
+   },
+   {
+    "id": "crate",
+    "x": 1,
+    "y": 7
+   },
+   {
+    "id": "door mat",
+    "x": 4,
+    "y": 7
+   },
+   {
+    "id": "demijohns",
+    "x": 7,
+    "y": 7
+   },
+   {
+    "id": "hand lantern",
+    "x": 8,
+    "y": 7
+   }
+  ],
+  "goods": [],
+  "kind": "cellar",
+  "building": "bd_inn"
+ },
+ "waiting-b": {
+  "plan": [
+   "##########",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "####.#####"
+  ],
+  "floor": "plank",
+  "wall": "plaster",
+  "objects": [
+   {
+    "id": "window",
+    "x": 1,
+    "y": 1
+   },
+   {
+    "id": "notice board",
+    "x": 4,
+    "y": 1
+   },
+   {
+    "id": "window light",
+    "x": 1,
+    "y": 3
+   },
+   {
+    "id": "record stand",
+    "x": 7,
+    "y": 3
+   },
+   {
+    "id": "bench",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "customs desk",
+    "x": 6,
+    "y": 5
+   },
+   {
+    "id": "cushion bench",
+    "x": 1,
+    "y": 7
+   },
+   {
+    "id": "door mat",
+    "x": 4,
+    "y": 7
+   }
+  ],
+  "goods": [],
+  "kind": "waiting_room",
+  "building": "bd_hall"
+ },
+ "hall-b": {
+  "plan": [
+   "###############",
+   "#.............#",
+   "#.............#",
+   "#.............#",
+   "#.............#",
+   "#.............#",
+   "#.............#",
+   "#.............#",
+   "#.............#",
+   "#.............#",
+   "#######.#######"
+  ],
+  "floor": "dplank",
+  "wall": "plaster",
+  "objects": [
+   {
+    "id": "banner",
+    "x": 3,
+    "y": 1
+   },
+   {
+    "id": "window",
+    "x": 5,
+    "y": 1
+   },
+   {
+    "id": "window",
+    "x": 9,
+    "y": 1
+   },
+   {
+    "id": "banner",
+    "x": 11,
+    "y": 1
+   },
+   {
+    "id": "armor stand",
+    "x": 1,
+    "y": 3
+   },
+   {
+    "id": "window light",
+    "x": 5,
+    "y": 3
+   },
+   {
+    "id": "window light",
+    "x": 9,
+    "y": 3
+   },
+   {
+    "id": "armor stand",
+    "x": 13,
+    "y": 3
+   },
+   {
+    "id": "bench",
+    "x": 3,
+    "y": 5
+   },
+   {
+    "id": "bench",
+    "x": 9,
+    "y": 5
+   },
+   {
+    "id": "long table",
+    "x": 3,
+    "y": 6
+   },
+   {
+    "id": "long table",
+    "x": 9,
+    "y": 6
+   },
+   {
+    "id": "bench",
+    "x": 3,
+    "y": 8
+   },
+   {
+    "id": "bench",
+    "x": 9,
+    "y": 8
+   },
+   {
+    "id": "strongbox",
+    "x": 1,
+    "y": 9
+   },
+   {
+    "id": "door mat",
+    "x": 7,
+    "y": 9
+   },
+   {
+    "id": "floor candle",
+    "x": 13,
+    "y": 9
+   }
+  ],
+  "goods": [],
+  "kind": "great_hall",
+  "building": "bd_hall"
+ },
+ "mill-b": {
+  "plan": [
+   "###########",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#####.#####"
+  ],
+  "floor": "flag",
+  "wall": "rubble",
+  "objects": [
+   {
+    "id": "window",
+    "x": 1,
+    "y": 1
+   },
+   {
+    "id": "wall lantern",
+    "x": 6,
+    "y": 1
+   },
+   {
+    "id": "window light",
+    "x": 1,
+    "y": 3
+   },
+   {
+    "id": "grain hopper",
+    "x": 3,
+    "y": 3
+   },
+   {
+    "id": "ladder",
+    "x": 9,
+    "y": 3
+   },
+   {
+    "id": "sack pile",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "millstones",
+    "x": 6,
+    "y": 5
+   },
+   {
+    "id": "grain sack",
+    "x": 1,
+    "y": 7
+   },
+   {
+    "id": "flour bin",
+    "x": 2,
+    "y": 7
+   },
+   {
+    "id": "door mat",
+    "x": 5,
+    "y": 7
+   },
+   {
+    "id": "hand quern",
+    "x": 9,
+    "y": 7
+   }
+  ],
+  "goods": [],
+  "kind": "mill",
+  "building": "bd_farm"
+ },
+ "brewery-b": {
+  "plan": [
+   "###########",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#####.#####"
+  ],
+  "floor": "ovenf",
+  "wall": "slumw",
+  "objects": [
+   {
+    "id": "window",
+    "x": 3,
+    "y": 1
+   },
+   {
+    "id": "wall lantern",
+    "x": 8,
+    "y": 1
+   },
+   {
+    "id": "mash tun",
+    "x": 1,
+    "y": 3
+   },
+   {
+    "id": "window light",
+    "x": 3,
+    "y": 3
+   },
+   {
+    "id": "ale tun",
+    "x": 6,
+    "y": 3
+   },
+   {
+    "id": "brew kettle",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "hop sacks",
+    "x": 7,
+    "y": 5
+   },
+   {
+    "id": "keg",
+    "x": 1,
+    "y": 7
+   },
+   {
+    "id": "keg",
+    "x": 2,
+    "y": 7
+   },
+   {
+    "id": "door mat",
+    "x": 5,
+    "y": 7
+   },
+   {
+    "id": "bottling bench",
+    "x": 7,
+    "y": 7
+   }
+  ],
+  "goods": [],
+  "kind": "brewery",
+  "building": "bd_farm"
+ },
+ "weaver-b": {
+  "plan": [
+   "##########",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "####.#####"
+  ],
+  "floor": "plank",
+  "wall": "plaster",
+  "objects": [
+   {
+    "id": "window",
+    "x": 1,
+    "y": 1
+   },
+   {
+    "id": "coat pegs",
+    "x": 6,
+    "y": 1
+   },
+   {
+    "id": "window light",
+    "x": 1,
+    "y": 3
+   },
+   {
+    "id": "loom",
+    "x": 3,
+    "y": 3
+   },
+   {
+    "id": "cloth shelf",
+    "x": 7,
+    "y": 3
+   },
+   {
+    "id": "dye vats",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "spinning wheel",
+    "x": 7,
+    "y": 5
+   },
+   {
+    "id": "carding bench",
+    "x": 1,
+    "y": 7
+   },
+   {
+    "id": "door mat",
+    "x": 4,
+    "y": 7
+   },
+   {
+    "id": "laundry basket",
+    "x": 7,
+    "y": 7
+   }
+  ],
+  "goods": [],
+  "kind": "workshop",
+  "building": "bd_farm"
+ },
+ "dining-b": {
+  "plan": [
+   "###########",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#####.#####"
+  ],
+  "floor": "dplank",
+  "wall": "plaster",
+  "objects": [
+   {
+    "id": "curtain window",
+    "x": 3,
+    "y": 1
+   },
+   {
+    "id": "sconce",
+    "x": 7,
+    "y": 1
+   },
+   {
+    "id": "china cabinet",
+    "x": 1,
+    "y": 3
+   },
+   {
+    "id": "window light",
+    "x": 3,
+    "y": 3
+   },
+   {
+    "id": "chair",
+    "x": 3,
+    "y": 5
+   },
+   {
+    "id": "feast table",
+    "x": 4,
+    "y": 5
+   },
+   {
+    "id": "chair",
+    "x": 7,
+    "y": 5
+   },
+   {
+    "id": "chair back",
+    "x": 4,
+    "y": 6
+   },
+   {
+    "id": "chair back",
+    "x": 6,
+    "y": 6
+   },
+   {
+    "id": "door mat",
+    "x": 5,
+    "y": 7
+   },
+   {
+    "id": "floor candle",
+    "x": 9,
+    "y": 7
+   }
+  ],
+  "goods": [],
+  "kind": "dining",
+  "building": "bd_manor"
+ },
+ "classroom-b": {
+  "plan": [
+   "##########",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "####.#####"
+  ],
+  "floor": "plank",
+  "wall": "plaster",
+  "objects": [
+   {
+    "id": "wall map",
+    "x": 1,
+    "y": 1
+   },
+   {
+    "id": "window",
+    "x": 4,
+    "y": 1
+   },
+   {
+    "id": "window light",
+    "x": 4,
+    "y": 3
+   },
+   {
+    "id": "lecture board",
+    "x": 5,
+    "y": 3
+   },
+   {
+    "id": "bookcase",
+    "x": 7,
+    "y": 3
+   },
+   {
+    "id": "slant desk",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "slant desk",
+    "x": 5,
+    "y": 5
+   },
+   {
+    "id": "globe",
+    "x": 8,
+    "y": 5
+   },
+   {
+    "id": "slant desk",
+    "x": 1,
+    "y": 7
+   },
+   {
+    "id": "door mat",
+    "x": 4,
+    "y": 7
+   },
+   {
+    "id": "slant desk",
+    "x": 5,
+    "y": 7
+   }
+  ],
+  "goods": [],
+  "kind": "classroom",
+  "building": "bd_hall"
+ },
+ "jail-b": {
+  "plan": [
+   "##########",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "####.#####"
+  ],
+  "floor": "earth",
+  "wall": "rubble",
+  "objects": [
+   {
+    "id": "key board",
+    "x": 2,
+    "y": 1
+   },
+   {
+    "id": "wall lantern",
+    "x": 5,
+    "y": 1
+   },
+   {
+    "id": "pallet",
+    "x": 1,
+    "y": 3
+   },
+   {
+    "id": "cell bars",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "cell bars",
+    "x": 2,
+    "y": 5
+   },
+   {
+    "id": "cell door",
+    "x": 3,
+    "y": 5
+   },
+   {
+    "id": "cell bars",
+    "x": 5,
+    "y": 5
+   },
+   {
+    "id": "cell bars",
+    "x": 6,
+    "y": 5
+   },
+   {
+    "id": "cell bars",
+    "x": 7,
+    "y": 5
+   },
+   {
+    "id": "cell bars",
+    "x": 8,
+    "y": 5
+   },
+   {
+    "id": "barrel",
+    "x": 1,
+    "y": 7
+   },
+   {
+    "id": "door mat",
+    "x": 4,
+    "y": 7
+   },
+   {
+    "id": "plain table",
+    "x": 6,
+    "y": 7
+   },
+   {
+    "id": "stool",
+    "x": 8,
+    "y": 7
+   }
+  ],
+  "goods": [],
+  "kind": "jail",
+  "building": "bd_tower"
+ },
+ "lighthouse-b": {
+  "plan": [
+   "#########",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "####.####"
+  ],
+  "floor": "dplank",
+  "wall": "grey",
+  "objects": [
+   {
+    "id": "window",
+    "x": 1,
+    "y": 1
+   },
+   {
+    "id": "window light",
+    "x": 1,
+    "y": 3
+   },
+   {
+    "id": "spiral stairs",
+    "x": 5,
+    "y": 3
+   },
+   {
+    "id": "telescope",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "lighthouse lamp",
+    "x": 4,
+    "y": 5
+   },
+   {
+    "id": "cot",
+    "x": 1,
+    "y": 6
+   },
+   {
+    "id": "barrel",
+    "x": 7,
+    "y": 6
+   },
+   {
+    "id": "door mat",
+    "x": 4,
+    "y": 7
+   },
+   {
+    "id": "map table",
+    "x": 6,
+    "y": 7
+   }
+  ],
+  "goods": [],
+  "kind": "lighthouse",
+  "building": "bd_tower"
+ },
+ "pottery-b": {
+  "plan": [
+   "##########",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "####.#####"
+  ],
+  "floor": "earth",
+  "wall": "plaster",
+  "objects": [
+   {
+    "id": "window",
+    "x": 3,
+    "y": 1
+   },
+   {
+    "id": "pot drying shelf",
+    "x": 1,
+    "y": 3
+   },
+   {
+    "id": "window light",
+    "x": 3,
+    "y": 3
+   },
+   {
+    "id": "kiln",
+    "x": 7,
+    "y": 3
+   },
+   {
+    "id": "hearth glow",
+    "x": 6,
+    "y": 4
+   },
+   {
+    "id": "potters wheel",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "clay pots",
+    "x": 7,
+    "y": 6
+   },
+   {
+    "id": "water tub",
+    "x": 1,
+    "y": 7
+   },
+   {
+    "id": "door mat",
+    "x": 4,
+    "y": 7
+   }
+  ],
+  "goods": [],
+  "kind": "pottery",
+  "building": "bd_craft"
+ },
+ "carpentry-b": {
+  "plan": [
+   "##########",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "####.#####"
+  ],
+  "floor": "plank",
+  "wall": "plaster",
+  "objects": [
+   {
+    "id": "tool rail",
+    "x": 1,
+    "y": 1
+   },
+   {
+    "id": "window",
+    "x": 6,
+    "y": 1
+   },
+   {
+    "id": "window light",
+    "x": 6,
+    "y": 3
+   },
+   {
+    "id": "ladder",
+    "x": 8,
+    "y": 3
+   },
+   {
+    "id": "sawhorse",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "joiner bench",
+    "x": 6,
+    "y": 5
+   },
+   {
+    "id": "toolbox",
+    "x": 1,
+    "y": 7
+   },
+   {
+    "id": "door mat",
+    "x": 4,
+    "y": 7
+   },
+   {
+    "id": "firewood",
+    "x": 7,
+    "y": 7
+   }
+  ],
+  "goods": [],
+  "kind": "carpentry",
+  "building": "bd_craft"
+ },
+ "cobbler-b": {
+  "plan": [
+   "#########",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "####.####"
+  ],
+  "floor": "dplank",
+  "wall": "plaster",
+  "objects": [
+   {
+    "id": "peg rail goods",
+    "x": 1,
+    "y": 1
+   },
+   {
+    "id": "window",
+    "x": 4,
+    "y": 1
+   },
+   {
+    "id": "window light",
+    "x": 4,
+    "y": 3
+   },
+   {
+    "id": "cloth shelf",
+    "x": 6,
+    "y": 3
+   },
+   {
+    "id": "shop counter",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "cobbler bench",
+    "x": 5,
+    "y": 5
+   },
+   {
+    "id": "boots",
+    "x": 1,
+    "y": 7
+   },
+   {
+    "id": "door mat",
+    "x": 4,
+    "y": 7
+   },
+   {
+    "id": "hamper",
+    "x": 7,
+    "y": 7
+   }
+  ],
+  "goods": [
+   {
+    "id": "cashbox",
+    "x": 2,
+    "y": 5
+   }
+  ],
+  "kind": "cobbler",
+  "building": "bd_craft"
+ },
+ "printer-b": {
+  "plan": [
+   "###########",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#.........#",
+   "#####.#####"
+  ],
+  "floor": "plank",
+  "wall": "plaster",
+  "objects": [
+   {
+    "id": "wall map",
+    "x": 1,
+    "y": 1
+   },
+   {
+    "id": "notice board",
+    "x": 4,
+    "y": 1
+   },
+   {
+    "id": "window",
+    "x": 7,
+    "y": 1
+   },
+   {
+    "id": "window light",
+    "x": 7,
+    "y": 3
+   },
+   {
+    "id": "scroll shelf",
+    "x": 8,
+    "y": 3
+   },
+   {
+    "id": "printing press",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "printing press",
+    "x": 5,
+    "y": 5
+   },
+   {
+    "id": "slant desk",
+    "x": 7,
+    "y": 6
+   },
+   {
+    "id": "crate",
+    "x": 1,
+    "y": 7
+   },
+   {
+    "id": "door mat",
+    "x": 5,
+    "y": 7
+   },
+   {
+    "id": "book chest",
+    "x": 8,
+    "y": 7
+   },
+   {
+    "id": "floor candle",
+    "x": 9,
+    "y": 7
+   }
+  ],
+  "goods": [],
+  "kind": "printer",
+  "building": "bd_craft"
+ },
+ "library-b": {
+  "plan": [
+   "##########",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "#........#",
+   "####.#####"
+  ],
+  "floor": "dplank",
+  "wall": "plaster",
+  "objects": [
+   {
+    "id": "window",
+    "x": 1,
+    "y": 1
+   },
+   {
+    "id": "window",
+    "x": 8,
+    "y": 1
+   },
+   {
+    "id": "window light",
+    "x": 1,
+    "y": 3
+   },
+   {
+    "id": "bookcase",
+    "x": 2,
+    "y": 3
+   },
+   {
+    "id": "bookcase",
+    "x": 4,
+    "y": 3
+   },
+   {
+    "id": "bookcase",
+    "x": 6,
+    "y": 3
+   },
+   {
+    "id": "window light",
+    "x": 8,
+    "y": 3
+   },
+   {
+    "id": "chair",
+    "x": 2,
+    "y": 5
+   },
+   {
+    "id": "map table",
+    "x": 3,
+    "y": 5
+   },
+   {
+    "id": "globe",
+    "x": 7,
+    "y": 6
+   },
+   {
+    "id": "book chest",
+    "x": 1,
+    "y": 7
+   },
+   {
+    "id": "door mat",
+    "x": 4,
+    "y": 7
+   },
+   {
+    "id": "floor candle",
+    "x": 8,
+    "y": 7
+   }
+  ],
+  "goods": [],
+  "kind": "library",
+  "building": "bd_manor"
+ },
+ "chapel-c": {
+  "plan": [
+   "#########",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "#.......#",
+   "####.####"
+  ],
+  "floor": "grey",
+  "wall": "grey",
+  "objects": [
+   {
+    "id": "stained window",
+    "x": 2,
+    "y": 1
+   },
+   {
+    "id": "stained window",
+    "x": 6,
+    "y": 1
+   },
+   {
+    "id": "floor candle",
+    "x": 1,
+    "y": 3
+   },
+   {
+    "id": "window light",
+    "x": 2,
+    "y": 3
+   },
+   {
+    "id": "altar",
+    "x": 3,
+    "y": 3
+   },
+   {
+    "id": "window light",
+    "x": 6,
+    "y": 3
+   },
+   {
+    "id": "floor candle",
+    "x": 7,
+    "y": 3
+   },
+   {
+    "id": "pew",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "aisle runner",
+    "x": 4,
+    "y": 5
+   },
+   {
+    "id": "pew",
+    "x": 6,
+    "y": 5
+   },
+   {
+    "id": "aisle runner",
+    "x": 4,
+    "y": 6
+   },
+   {
+    "id": "pew",
+    "x": 1,
+    "y": 7
+   },
+   {
+    "id": "aisle runner",
+    "x": 4,
+    "y": 7
+   },
+   {
+    "id": "pew",
+    "x": 6,
+    "y": 7
+   },
+   {
+    "id": "kneeler",
+    "x": 1,
+    "y": 8
+   },
+   {
+    "id": "door mat",
+    "x": 4,
+    "y": 8
+   },
+   {
+    "id": "candelabrum",
+    "x": 7,
+    "y": 8
+   }
+  ],
+  "goods": [],
+  "kind": "chapel",
+  "building": "bd_chapel"
  }
 }

@@ -264,6 +264,11 @@ EXISTING = [
 # sets: cats·alias 가 없는 것 = 살림 묶음(집 열쇠가 고른다) · 있는 것 = 직업 묶음: cats = 그 집 킷의 갈래 태그(cat:farm — 구조 자료, 먼저 읽는다), alias = 집 이름에 든 낱말(다음). 칩셋 자료이지 요청 낱말 목록이 아니다
 PERSONAL = dict(
     kinds=["living", "bedroom", "fisher"], surfaces=["plain table", "writing desk", "round table", "work table"], count=[2, 5],
+    # 일하는 방(가게·일터·회관…)은 그 방 종류가 주인의 직업 묶음을 부른다(구조 자료 — 방 종류 id). 살림 묶음은 섞지 않고 1~3점만.
+    workCount=[1, 3],
+    byKind=dict(general_store="merchant", bakery_shop="merchant", weapon_shop="soldier", pharmacy_shop="healer", tavern="bard", inn_room="traveller", study="scholar", library="scholar", printer="scholar",
+                classroom="scholar", chapel="priest", carpentry="carpenter", workshop="tailor", cobbler="tailor", pottery="potter", guard_room="soldier", stable="farmer", mill="farmer", fisher="fisher",
+                storeroom="merchant", waiting_room="traveller", dining="elder", great_hall="soldier"),
     sets=dict(
         child=dict(ko="아이가 있는 집", pieces=["toy horse", "rag doll", "child drawing", "rocking horse", "slate and top"]),
         pets=dict(ko="짐승을 기르는 집", pieces=["sleeping cat", "dog bed", "canary cage", "parrot stand"]),
@@ -284,6 +289,8 @@ PERSONAL = dict(
         priest=dict(ko="신관", alias=["신관", "사제", "priest"], pieces=["house shrine", "kneeler", "flower vase", "book pile"]),
         bard=dict(ko="악사", alias=["음유", "악사", "bard", "minstrel"], pieces=["lute", "music stand", "sampler", "pipe"]),
         tailor=dict(ko="재단사", alias=["재단", "재봉", "tailor", "seamstress"], pieces=["sewing basket", "tailor things", "sampler", "knitting"]),
+        traveller=dict(ko="나그네", alias=["나그네", "여행자", "traveller"], pieces=["boots", "hat stand", "umbrella jar", "pipe", "inkwell"]),
+        potter=dict(ko="도공", alias=["도공", "옹기장", "potter"], pieces=["flower vase", "geranium", "teapot", "boots"]),
         healer=dict(ko="약초꾼·의원", alias=["약초", "의원", "healer", "herbal"], pieces=["medicine tray", "corn strings", "geranium", "teapot"]),
     ),
 )

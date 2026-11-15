@@ -97,9 +97,9 @@ export interface HandInteriorSpec {
    * style = 바깥 집 양식 → { 견본이 쓴 «집 벽»: 그 양식의 집 안에 설 벽면 }. 조수 v2 실내 빌더가 문이 달린 집의 양식으로 벽면을 바꾼다(표에 없는 벽면은 그대로).
    */
   readonly looks?: { readonly edge?: Readonly<Record<string, string>>; readonly style?: Readonly<Record<string, Readonly<Record<string, string>>>> };
-  /** 사는 사람의 물건 표 — 견본을 심은 방에 그 집 열쇠·집 이름의 직업으로 몇 점 더 놓는다(personal.ts). kinds = 받는 방 종류, surfaces = 탁상 물건을 올려도 되는 가구,
+  /** 사는 사람의 물건 표 — 견본을 심은 방에 그 집 열쇠·집 이름의 직업으로 몇 점 더 놓는다(personal.ts). kinds = 살림 묶음까지 받는 방 종류(집), byKind = 일하는 방 종류 → 그 주인의 직업 묶음(살림 묶음 없이 workCount 점), surfaces = 탁상 물건을 올려도 되는 가구,
    *  count = [적게, 많이] 점 수, sets = 묶음(cats·alias 가 있으면 직업 묶음 — 그 집 킷의 갈래(cats)가 먼저, 다음이 집 이름의 별칭(alias)). */
-  readonly personal?: { readonly kinds: readonly string[]; readonly surfaces: readonly string[]; readonly count: readonly [number, number]; readonly sets: Readonly<Record<string, { readonly ko: string; readonly alias?: readonly string[]; readonly cats?: readonly string[]; readonly pieces: readonly string[] }>> };
+  readonly personal?: { readonly kinds: readonly string[]; readonly byKind?: Readonly<Record<string, string>>; readonly workCount?: readonly [number, number]; readonly surfaces: readonly string[]; readonly count: readonly [number, number]; readonly sets: Readonly<Record<string, { readonly ko: string; readonly alias?: readonly string[]; readonly cats?: readonly string[]; readonly pieces: readonly string[] }>> };
 }
 export const HAND_INTERIOR_SPEC = spec as unknown as HandInteriorSpec;
 /** 일본 실내(jp_city 번들 안) — 같은 모양의 사양을 scripts/content/jp-city/bake_interior_spec.py 가 굽는다. 조립 규칙은 같다. */
