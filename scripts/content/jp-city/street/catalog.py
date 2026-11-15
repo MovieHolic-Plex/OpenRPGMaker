@@ -12,7 +12,7 @@ OUT = os.path.join(ROOT, 'src', 'assets', 'jpCityStreetCatalog.json')
 # 옛 손 도트 건물(jp-bldg-*)의 가게 종류. 없는 id 는 분류 태그로 정한다.
 ROLE = {'conbini': 'konbini', 'shop-izakaya': 'izakaya', 'shop-ramen': 'ramen', 'shop-cafe': 'cafe', 'sento': 'sento', 'house-machiya': 'machiya', 'office6': 'office', 'zakkyo5': 'office',
         'shop-soba': 'restaurant', 'shop-sushi': 'restaurant', 'shop-teishoku': 'restaurant', 'supermarket': 'market', 'market-hall': 'market', 'coin-laundry': 'laundry', 'post-office': 'post',
-        'koban': 'koban', 'clinic': 'clinic', 'kindergarten': 'kindergarten', 'factory': 'factory', 'warehouse': 'warehouse', 'machikoba-home': 'factory', 'gas-office': 'gas'}
+        'station-small': 'station', 'school': 'school', 'school-gym': 'school', 'shrine-haiden': 'shrine', 'koban': 'koban', 'clinic': 'clinic', 'kindergarten': 'kindergarten', 'factory': 'factory', 'warehouse': 'warehouse', 'machikoba-home': 'factory', 'gas-office': 'gas'}
 CAT_BY_TAG = {'단독주택': 'house', '공동주택': 'apartment', '가게': 'shop', '음식점': 'food', '상업 건물': 'commercial', '공공 건물': 'public', '공장·창고': 'industry'}
 ZONE_ONLY = {'station-small': 'station', 'school': 'school', 'school-gym': 'school', 'shrine-haiden': 'shrine', 'gas-office': 'gas', 'market-hall': 'market'}   # 구획(역 앞·교정·경내·주유소)이 부르는 건물 — 줄에 섞지 않는다
 # 새 건물(jp-bldg-f-*, 그리는 일꾼 JP) 가운데 급만으로 분류가 안 되는 것
@@ -23,15 +23,19 @@ F_ROLE = {'bento': 'bento', 'business-hotel': 'hotel', 'bank': 'bank', 'ryokan':
           'family-restaurant': 'restaurant', 'soba-stand': 'restaurant', 'takoyaki': 'restaurant', 'taiyaki': 'restaurant', 'hospital': 'clinic', 'dentist': 'clinic', 'vet': 'clinic', 'acupuncture': 'clinic',
           'ward-office': 'office', 'tv-station': 'office', 'library': 'library', 'museum': 'museum', 'cinema': 'cinema', 'police-station': 'koban', 'fire-station': 'fire', 'department-store': 'mall',
           'shopping-mall': 'mall', 'electronics': 'mall', 'bunka-apart': 'apartment', 'pool-hall': 'gym'}
+FLAVOR = ['jp-shop-greengrocer', 'jp-izakaya-brick-wall', 'jp-vending-stripe-alcove', 'jp-mansion-tile', 'jp-monthly-parking', 'jp-fg-rooftop-dish', 'jp-alley-stair-tree', 'jp-fg-tiled-balcony',
+          'jp-shop-market-kissa', 'jp-shop-market-butcher', 'jp-shop-market-fish', 'jp-shop-market-drug', 'jp-coin-parking', 'jp-shotengai-canopy']
 SKIP_SIZE = re.compile(r'^jp-(in|sf|recipe|door|subway|roof)-')
 
 
 def build():
     t = json.load(open(SRC, encoding='utf-8'))
-    buildings, sizes = [], {}
+    buildings, sizes, lower = [], {}, []
     for k in t['structureKits']:
         kid, w, h = k['id'], k['width'], k['height']
-        if not SKIP_SIZE.match(kid): sizes[kid] = [w, h]
+        if not SKIP_SIZE.match(kid):
+            sizes[kid] = [w, h]
+            if any(v >= 0 for r in k['rows'] for v in (r.get('tiles') or [])): lower.append(kid)   # 제 바닥 칸을 가져오는 키트 — 4층 덧그림으로 찍지 않는다
         if not kid.startswith('jp-bldg-') or '-row-' in kid: continue
         tags = (k.get('ai') or {}).get('tags') or []
         bottom = k['rows'][-1].get('upperTiles') or []
@@ -58,7 +62,12 @@ def build():
         b = dict(id=kid, w=w, h=h, doors=doors, ml=ml, mr=mr, cat=cat, role=role, tier=tier, ko=k.get('name') or kid)
         if short.endswith('-shut'): b['look'] = 'jp-bldg-' + short[:-5]
         buildings.append(b)
-    return dict(_doc='생성물 — scripts/content/jp-city/street/catalog.py. 손으로 고치지 않는다.', buildings=buildings, sizes=sizes)
+    # 시타마치·쇼텐가이 일체형 줄 키트(shitamachi_pack — 문 없는 풍경 건물, 처마 칸 없음). 거리 종류의 mix.flavor 가 부른다.
+    byid = {k['id']: k for k in t['structureKits']}
+    for kid in FLAVOR:
+        k = byid.get(kid)
+        if k: buildings.append(dict(id=kid, w=k['width'], h=k['height'], doors=[], ml=0, mr=0, cat='flavor', role='landmark', tier='small', ko=(k.get('name') or kid).split('(')[0]))
+    return dict(_doc='생성물 — scripts/content/jp-city/street/catalog.py. 손으로 고치지 않는다.', buildings=buildings, sizes=sizes, lower=sorted(lower))
 
 
 if __name__ == '__main__':

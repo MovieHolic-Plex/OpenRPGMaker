@@ -48,6 +48,7 @@ jobs.forEach((job, index) => {
     : runTool(ctx, "compose_jp_city_street", { mapId: id, seed: job.seed, style: job.style, replace: true })) as { ok: boolean; summary: string };
   const map = ctx.project.maps[id]!;
   const m = measureJpStreet(ctx.project, map);
+  if (has("doors")) for (const l of map.locations ?? []) if ((l.note ?? "").includes("닿지 않음")) console.log("  닿지 않는 문:", l.name, l.x, l.y, l.w, l.h, (l.note ?? "").slice(0, 60));
   const png = has("png") || has("colour") ? renderMapPng({ ...ctx.project, startMapId: "__none__" }, map).png : undefined;
   if (png && has("png")) fs.writeFileSync(`${OUT}/${job.label}.png`, png);
   rows.push({ label: job.label, style: job.style, seed: job.seed, w: W, h: H, ok: res.ok, summary: res.summary.slice(0, 400), ms: Date.now() - t0, ...m });

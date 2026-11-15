@@ -5,7 +5,10 @@ import { isPassable } from "@/project/collision";
 import { isJpCityTileset, JP_CITY_FAMILY, JP_CITY_ID } from "@/project/defaults/jpCity";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { labelStreetBuildings, planJpCityStreet, runJpStreetPlan, type JpStreetStyle } from "@/project/jpCityStreetComposer";
+import { planJpCityScene } from "@/project/jpCitySceneComposer";
+import { labelSceneBuildings, runJpScenePlan, type SceneBuilt } from "@/project/jpCitySceneRun";
 import { flavorAvailable } from "@/project/jpShitamachiStreet";
+import { activeKitLook } from "@/project/kitLook";
 import { fillLotUses } from "@/project/jpCityLotUse";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
@@ -129,7 +132,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     if (!isUntouched(map) && args.replace !== true) throw new ToolError("이미 칠한 맵이다 — 지우고 다시 짜려면 replace:true 를 준다(이벤트는 남는다)", { code: "map-not-blank", mapId });
     const asked: JpStreetStyle = args.style === "residential" || args.style === "shitamachi" || args.style === "shotengai" ? args.style : "shopping";
     const style: JpStreetStyle = (asked === "shitamachi" || asked === "shotengai") && !flavorAvailable(tileset, asked) ? "shopping" : asked;
-    const warnings = style !== asked ? [`이 칩셋에 ${asked} 키트가 아직 구워지지 않아 기본 상가 거리(shopping)로 짰다`] : [];
+    const warnings = style !== asked && !activeKitLook() ? [`이 칩셋에 ${asked} 키트가 아직 구워지지 않아 기본 상가 거리(shopping)로 짰다`] : [];
     const shops = Array.isArray(args.shops) ? args.shops.filter((s): s is string => typeof s === "string") : [];
     const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 0;
 
@@ -139,14 +142,21 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     target.lowerTiles.fill(blankFillTileFor(JP_CITY_ID, 0, next.tilesets[map.tilesetId]!));
     for (let i = 0; i < target.lowerTiles.length; i++) { setLayerTileAt(target, 3, i, -1); setLayerTileAt(target, 4, i, -1); clearTileStack(target, "upper", i); }
     const crosswalkTile = (tileset.structureKits ?? []).find((k) => k.id === "jp-road-lane-crosswalk-h")?.rows.flatMap((row) => row.upperTiles ?? []).find((t) => t >= 0);
-    const plan = planJpCityStreet({ mapId, width: target.width, height: target.height, seed, style, shops, crosswalkTile, ...(avoid.length ? { avoidProps: avoid } : {}) });
-    const outcome = runJpStreetPlan(plan, (name, a) => {
+    // 조수가 짓는 거리(게임 열쇠가 켜진 호출)는 거리 장면 구성기로 — 게임마다 종류·톤·건물 순서가 다르다. 열쇠 없는 호출은 옛 배치 그대로(대표작·손 호출).
+    const sceneKey = activeKitLook();
+    const scene = sceneKey ? planJpCityScene({ mapId, width: target.width, height: target.height, seed, style: asked, shops, key: sceneKey, crosswalkTile }) : undefined;
+    const plan = scene ?? planJpCityStreet({ mapId, width: target.width, height: target.height, seed, style, shops, crosswalkTile, ...(avoid.length ? { avoidProps: avoid } : {}) });
+    const callStep = (name: string, a: Record<string, unknown>) => {
       if (avoidedProp(avoid, name, a)) { avoided++; return undefined; }
       const tool = lookup(name);
       if (!tool) throw new ToolError(`도구 ${name} 이 없다`, { code: "unknown-tool" });
       const res = tool.run(next, a);
       return (res.data ?? undefined) as { rect?: { x0: number; y0: number; w: number; h: number }; doors?: { x: number; y: number }[] } | undefined;
-    }, () => ({ map: next.maps[mapId]!, tileset: next.tilesets[map.tilesetId]! }));
+    };
+    const viewNow = () => ({ map: next.maps[mapId]!, tileset: next.tilesets[map.tilesetId]! });
+    const outcome = scene
+      ? runJpScenePlan(scene, callStep, viewNow, avoid.length ? (id) => { if (!avoidedProp(avoid, "stamp_object", { objectId: `kit:jp_city/${id}` })) return false; avoided++; return true; } : undefined)
+      : runJpStreetPlan(plan, callStep, viewNow);
     if (outcome.built < 4) throw new ToolError(`거리를 짜지 못했다 — 건물 ${outcome.built}채만 지어졌다. 맵을 더 크게 하거나 다른 seed 를 준다`, { code: "compose-failed", mapId });
     const built = next.maps[mapId]!;
     // 공원 숲: 공원 구획 뒤쪽(북쪽) 절반 남짓 잔디에 나무 composer 숲(입구 판석·연못·벤치·나무 키트 칸은 건너뛴다).
@@ -161,7 +171,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
       parkForestCells = paintJpForestArea(built, next.tilesets[map.tilesetId]!, want, { forestType: parkForest, grounding: args.grounding !== false, seed })?.floorCells ?? 0;
     }
     built.locations = (built.locations ?? []).filter((l) => !(l.tags ?? []).includes("jp-building"));    // 다시 짜면 옛 건물 위치 이름표는 지운다
-    const labels = labelStreetBuildings(built, outcome.buildings);
+    const labels = scene ? labelSceneBuildings(built, outcome.buildings as SceneBuilt[]) : labelStreetBuildings(built, outcome.buildings);
     // 문 앞이 큰길에서 걸어서 닿지 않는 건물(맵 끝 뒷골목에 갇힌 남쪽 줄 등)은 이름표에 적고 경고한다 — link_jp_city_interior 가 거부한다.
     const walk = mainWalkComponent(next, built);
     const deadDoors: string[] = [];

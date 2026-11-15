@@ -1,0 +1,247 @@
+// project/jpCitySceneRows.ts
+// 거리 장면의 건물 줄 — 가게 줄(벽을 맞대거나 1~3칸 골목 틈, 가게 앞에 물건을 내놓는다)과 집 줄(길에서 물려 세우고 담·대문·마당·카포트).
+// 키가 큰 띠는 뒷골목을 사이에 두고 뒷줄을 한 줄 더 세운다. 건물은 SceneCtx.nextKit 이 골라 한 지도에 같은 그림이 두 번 서지 않는다.
+import { randomBuildingArgs } from "@/project/jpCityStreetComposer";
+import { Occ, type SceneBlock, type SceneCtx, type SceneLayout, type ScenePlaced } from "@/project/jpCitySceneCtx";
+import { SCENE_BUILDINGS, SCENE_ROOFS, sceneList } from "@/project/jpCitySceneKinds";
+
+const ASSEMBLED_KO: Readonly<Record<string, string>> = { konbini: "편의점", izakaya: "이자카야", ramen: "라멘집", cafe: "카페", shop: "상점", office: "사무소", garage: "차고", apartment: "아파트", machiya: "마치야", house: "주택", sento: "센토(목욕탕)", bento: "도시락집" };
+const TREES = ["jp-prop-tree-zelkova", "jp-prop-tree-ginkgo", "jp-prop-tree-sakura"];
+const CARS = ["jp-prop-car-white", "jp-prop-car-silver", "jp-prop-car-black", "jp-prop-car-blue", "jp-prop-car-red", "jp-prop-car-green", "jp-prop-car-navy"];
+
+interface RowFront { /** 건물 발 바로 아래 줄 */ readonly nA: number; /** 연석 줄(없으면 생활도로·뒷골목) */ readonly nK?: number; readonly paved: boolean }
+
+/** 종류의 건물 섞임에서 분류 순서를 뽑는다(무게대로 섞은 순서 — 앞이 먼저 고려된다). */
+function drawCats(c: SceneCtx, mix: Readonly<Record<string, number>>): string[] {
+  return Object.entries(mix).map(([cat, w]) => ({ cat, r: Math.pow(c.rng(), 1 / Math.max(0.01, w)) })).sort((a, b) => b.r - a.r).map((x) => x.cat);
+}
+
+/** 키트가 없는 가게 종류(도시락집·차고)는 조립 건물로 — 후보 여덟(점점 단순), 첫 성공을 쓴다. */
+function assembled(c: SceneCtx, role: string, x: number, foot: number, w: number, rows: number): ScenePlaced {
+  const h = Math.min(rows, 7);
+  const p: ScenePlaced = { role, ko: ASSEMBLED_KO[role] ?? role, x, y: foot - h + 1, w, h, foot, doors: [] };
+  c.placed.push(p);
+  c.mark(x, foot - h + 1, w, h, Occ.Bldg);
+  c.mark(x, foot + 1, w, 1, Occ.Walk, [Occ.Lot]);
+  const side: "L" | "R" = c.rng() < 0.5 ? "L" : "R";
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const args = randomBuildingArgs(c.rng, role, w, attempt, h, side, false);
+    c.bldgs.push({ tool: "build_jp_city_building", args: { mapId: c.mapId, x, y: foot, ...args }, optional: true, note: `try:${c.placed.length - 1}` });
+  }
+  return p;
+}
+
+/** 가게 줄 하나. 돌려주는 값 = 세운 건물들(왼쪽부터). */
+function shopRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number, wanted: string[], mix: Readonly<Record<string, number>>, big = false): ScenePlaced[] {
+  const maxH = foot - top + 1;
+  const row: ScenePlaced[] = [];
+  let cursor = sx, prev: ScenePlaced | undefined, share = false;
+  for (let guard = 0; guard < 40 && ex - cursor >= 3; guard++) {
+    const canShare = share && !!prev?.kit && prev.kit.mr === 1;
+    const at = { x: cursor, foot };
+    // 요청한 가게: 앞에서부터 이 자리에 설 수 있는 첫 종류. 키트가 아예 없는 종류(도시락집·차고)만 조립 건물로 세운다 — 못 세운 것은 다음 자리·다음 줄에서 다시 본다.
+    let kit: ReturnType<SceneCtx["nextKit"]>, built: ScenePlaced | undefined;
+    for (let i = 0; i < wanted.length && !kit && !built; i++) {
+      const role = wanted[i]!;
+      kit = c.nextKit([], at, ex - cursor + (canShare ? 1 : 0), maxH, { role });
+      if (kit) wanted.splice(i, 1);
+      else if (!SCENE_BUILDINGS.some((q) => q.role === role) && ASSEMBLED_KO[role] && ex - cursor >= 5) { wanted.splice(i, 1); built = assembled(c, role, cursor, foot, Math.min(6, ex - cursor), maxH); }
+    }
+    if (built) { row.push(built); prev = built; cursor = built.x + built.w; share = false; continue; }
+    kit ??= c.nextKit(drawCats(c, mix), at, ex - cursor + (canShare ? 1 : 0), maxH, { notH: prev?.h, big });
+    if (!kit) break;
+    let x = canShare && kit.ml === 1 ? cursor - 1 : cursor;
+    if (x + kit.w > ex) { if (x === cursor - 1) break; kit = c.nextKit(drawCats(c, mix), at, ex - cursor, maxH, { notH: prev?.h }); if (!kit) break; x = cursor; }
+    const p = c.placeKit(kit, x, foot);
+    if (prev && x === cursor - 1) c.restoreCol(prev);
+    row.push(p); prev = p; cursor = x + kit.w;
+    // 다음 건물과의 사이: 처마 칸을 나눠 써 벽이 한 칸 틈으로 붙거나(6할) · 그대로 맞대거나 · 골목 한 칸을 더 둔다.
+    const r = c.rng();
+    share = r < 0.6;
+    if (r >= 0.85) cursor += 1;
+  }
+  return row;
+}
+
+/** 평지붕 위 옥상 장면(물탱크·실외기·빨래·안테나 …) — 지붕 면을 아는 건물(jpCityStreetKinds.json roofs)에, 옥상 기물이 칩셋에 있을 때만. */
+function roofScene(c: SceneCtx, p: ScenePlaced): void {
+  const roof = p.kit ? SCENE_ROOFS[p.kit.id] : undefined, pool = sceneList("okujo", "roof");
+  if (!roof || !pool.length) return;
+  const [dx, dy, w, h] = roof as [number, number, number, number];
+  let any = false;
+  for (let x = p.x + dx + Math.floor(c.rng() * 2); x < p.x + dx + w; ) {
+    const id = c.putAny(pool.filter((q) => c.size(q)![1] <= h && x + c.size(q)![0] <= p.x + dx + w), x, p.y + dy + h - 1, { layer4: true, baseRows: h, base: [Occ.Bldg], over: [Occ.Bldg] });
+    if (id) any = true;
+    x += (id ? c.size(id)![0] : 1) + 1 + Math.floor(c.rng() * 3);
+  }
+  if (any) c.scenesUsed.add("okujo");
+}
+
+/** 건물 뒤(지붕 위쪽 빈 줄)에 나무 한 그루 — 건물보다 먼저 찍어 줄기는 지붕에 가리고 수관만 보인다. */
+function treeBehind(c: SceneCtx, p: ScenePlaced, top: number): void {
+  if (p.y - 4 < top + 1 || p.w < 6 || c.rng() < 0.35) return;
+  const x = p.x + 1 + Math.floor(c.rng() * Math.max(1, p.w - 5)), y = p.y - 4;
+  if (!c.all(x, y, 4, 4, [Occ.Lot])) return;
+  for (let yy = y; yy < y + 4; yy++) for (let xx = x; xx < x + 4; xx++) { c.drawn[yy * c.W + xx] = 1; c.occ[yy * c.W + xx] = Occ.Prop; }
+  const id = TREES[Math.floor(c.rng() * TREES.length)]!;
+  c.early.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${id}`, mapId: c.mapId, x, y }, optional: true, note: "prop" });
+  c.usedProps.set(id, (c.usedProps.get(id) ?? 0) + 1);
+}
+
+/** 가게 앞: 발 아래 줄에 내놓은 물건(낮은 것 · 정면에 겹쳐 서는 진열대), 연석 줄에 낮은 가로 시설, 건물 사이 틈에 깃발·실외기. */
+function dressShopFront(c: SceneCtx, row: readonly ScenePlaced[], f: RowFront, sx: number, ex: number): void {
+  const { kind } = c;
+  const has = (s: string) => kind.scenes.includes(s);
+  const base = f.paved ? [Occ.Lot] : [Occ.Road];
+  const low = sceneList("spill", "low"), over = sceneList("spill", "over");
+  const covers = has("shotengai") ? sceneList("shotengai", "cover") : [];
+  // 길모퉁이(세로 길에 닿는 줄 끝): 자판기 한 쌍
+  if (f.nK !== undefined && has("kado")) for (const x of c.rng() < 0.5 ? [ex - 4, sx] : [sx, ex - 4]) if (c.rng() < 0.75 && c.putAny(sceneList("kado", "pair"), x, f.nK)) { c.scenesUsed.add("kado"); break; }
+  for (const p of row) {
+    if (!p.kit || p.kit.cat === "flavor") continue;
+    const x0 = p.x + p.kit.ml, x1 = p.x + p.w - p.kit.mr;
+    const doorAt = (x: number, w: number) => p.doors.some((d) => p.x + d >= x - 0 && p.x + d < x + w);
+    if (f.paved && covers.length && p.w >= 8 && p.kit.cat === "shop" && c.rng() < 0.5) {            // 상점가 가설 진열대(6×2)
+      for (let x = x0; x + 6 <= x1; x++) if (!doorAt(x, 6) && c.putAny(covers, x, f.nA, { layer4: true, base, over: [Occ.Bldg] })) { c.scenesUsed.add("shotengai"); break; }
+    }
+    if (p.kit.cat === "house" || p.kit.cat === "apartment") {                                       // 집 앞: 화분·자전거만
+      for (let x = x0; x < x1; x += 2) if (!doorAt(x, 4) && c.rng() < 0.35) c.putAny(["jp-pots", "jp-kadan", "jp-asagao", "jp-prop-planter"].filter((q) => x + c.size(q)![0] <= x1), x, f.nA, { base });
+      continue;
+    }
+    for (let x = x0; x < x1; x++) {
+      if (c.rng() >= kind.density.spill * 0.55) continue;
+      const tall = c.rng() < 0.5;
+      const id = tall ? c.putAny(over.filter((q) => !doorAt(x, c.size(q)![0]) && x + c.size(q)![0] <= x1), x, f.nA, { layer4: true, base, over: [Occ.Bldg] }) : c.putAny(low.filter((q) => !doorAt(x, c.size(q)![0]) && x + c.size(q)![0] <= x1), x, f.nA, { base });
+      if (id) { c.scenesUsed.add("spill"); x += c.size(id)![0]; }
+    }
+  }
+  // 건물 사이 틈(처마 칸): 깃발·실외기·가스통·고양이 — 4층 덧그림
+  const slit = [...(has("signs") ? sceneList("signs", "slit") : []), ...sceneList("backalley", "slit")];
+  for (const p of row) for (const x of [p.x, p.x + p.w - 1]) {
+    if (c.at(x, p.foot) !== Occ.Slit || c.rng() < 0.3) continue;
+    const id = c.putAny(slit, x, p.foot, { layer4: true, base: [Occ.Slit], over: [Occ.Slit] });
+    if (id) c.scenesUsed.add(sceneList("signs", "slit").includes(id) ? "signs" : "backalley");
+  }
+  // 골목 틈(빈 대지 한두 칸)과 줄 끝 자투리: 돌출 간판 · 사당 · 자판기 · 자전거
+  const gapPool = [...(has("signs") ? ["jp-prop-blade-sign-0", "jp-prop-blade-sign-1", "jp-prop-blade-sign-2", "jp-prop-blade-sign-3"] : []), ...(has("hokora") ? sceneList("hokora", "nook") : []), ...(has("neon") ? sceneList("neon", "tall") : []), "jp-prop-vending-aka", "jp-prop-vending-sora", "jp-prop-vending-midori", "jp-prop-bike-cluster", "jp-gomi-box", "jp-prop-pot"];
+  const foot = row[0]?.foot;
+  if (foot !== undefined) for (let x = sx; x < ex; x++) {
+    if (c.at(x, foot) !== Occ.Lot) continue;
+    let w = 1; while (x + w < ex && c.at(x + w, foot) === Occ.Lot) w++;
+    const id = c.putAny(gapPool.filter((q) => c.size(q)![0] <= w), x, foot, { over: [Occ.Lot, Occ.Slit] });
+    if (id) { if (sceneList("hokora", "nook").includes(id)) c.scenesUsed.add("hokora"); if (sceneList("neon", "tall").includes(id)) c.scenesUsed.add("neon"); }
+    x += w;
+  }
+  // 연석 줄: 낮은 가로 시설
+  if (f.nK !== undefined) {
+    const kerb = ["jp-prop-bench", "jp-prop-bike-rack", "jp-prop-garbage-net", "jp-prop-bollard", "jp-prop-planter", "jp-prop-post-box", "jp-postbox-red", "jp-prop-vending-aka", "jp-prop-vending-sora", "jp-prop-vending-midori", "jp-prop-bike-sora", "jp-prop-bike-aka", "jp-prop-bike-midori", "jp-prop-cone", "jp-pots", "jp-prop-a-frame"];
+    for (let x = sx + 1 + Math.floor(c.rng() * 3); x < ex - 1; ) {
+      const id = c.rng() < kind.density.kerb + 0.35 ? c.putAny(kerb, x, f.nK, { gap: true }) : undefined;
+      x += (id ? c.size(id)![0] : 1) + 2 + Math.floor(c.rng() * 4);
+    }
+  }
+}
+
+/** 집 줄: 길에서 depth 줄 물려 세우고, 길 선에 담(블록담·생울타리)과 대문 기둥, 마당에 살림, 옆에 카포트와 차. */
+function houseRow(c: SceneCtx, sx: number, ex: number, foot: number, top: number, wanted: string[]): ScenePlaced[] {
+  const { tone, kind } = c;
+  const maxH = foot - top + 1;
+  const depth0 = maxH >= 11 ? 3 : maxH >= 8 ? 2 : 0;
+  const row: ScenePlaced[] = [];
+  const yard = sceneList("jutaku", "yard"), wallSide = sceneList("jutaku", "wall");
+  // 집이 다 떨어지면 동네 가게·공공 건물이 섞인다(같은 집을 되풀이하기 전에)
+  const others = Object.keys(kind.mix).filter((k) => k !== "flavor" && k !== "shut");
+  let x = sx, prevH = 0, lot = Math.floor(c.rng() * 3);
+  for (let guard = 0; guard < 30 && ex - x >= 5; guard++, lot++) {
+    const role = wanted[0] === "house" || wanted[0] === "machiya" || wanted[0] === "apartment" || wanted[0] === "sento" ? wanted.shift() : undefined;
+    // 물림 깊이는 집마다: 키 큰 집은 길 쪽으로 나오고 낮은 집은 마당이 깊다(담 선은 한 줄, 집 선은 들쭉날쭉).
+    let kit: ReturnType<SceneCtx["nextKit"]>, depth = depth0, carport = false, side = 0;
+    for (const d of depth0 >= 3 ? [3, 2] : depth0 >= 2 ? [2] : [0]) {
+      carport = d >= 3 && ex - x >= 13 && !!c.size("jp-carport") && c.rng() < 0.5; side = carport ? 5 : 0; depth = d;
+      const at = { x, foot: foot - d };
+      kit = (role ? c.nextKit([], at, ex - x - side, maxH - d, { role }) : undefined)
+        ?? c.nextKit(c.rng() < 0.22 ? ["apartment", "house"] : ["house", "apartment"], at, ex - x - side, maxH - d, { notH: prevH, fresh: true })
+        ?? (d === (depth0 >= 3 ? 2 : depth0) ? c.nextKit(["house", "apartment", ...others], at, ex - x - side, maxH - d, { notH: prevH }) : undefined);
+      if (kit) break;
+    }
+    if (!kit) break;
+    const hf = foot - depth;
+    const left = carport && c.rng() < 0.5;
+    const hx = x + (left ? side : 0), lw = kit.w + side;
+    const p = c.placeKit(kit, hx, hf);
+    const shopLike = kit.cat !== "house" && kit.cat !== "apartment";
+    row.push(p); prevH = kit.h;
+    if (depth >= 2 && shopLike) { c.fill(x, hf + 1, lw, depth, tone.sidewalk); c.mark(x, hf + 1, lw, depth, Occ.Walk, [Occ.Lot]); }   // 동네 가게 앞은 담 없이 포장
+    else if (depth >= 2) {
+      c.fill(x, hf + 1, lw, depth - 1, lot % 2 || kind.noGreen ? tone.yard : tone.green);
+      const open = new Set<number>();
+      for (const d of kit.doors) { open.add(hx + d); c.mark(hx + d, hf + 1, 1, depth, Occ.Walk, [Occ.Lot]); }
+      const carX = left ? x : hx + kit.w;
+      if (carport) {
+        for (let k = 0; k < 5; k++) open.add(carX + k);
+        c.fill(carX, hf + 1, 5, depth, "거리 · 주차장");
+        const car = c.least(CARS);
+        if (car && c.put(car, carX, foot - 3, { baseRows: 3 })) c.put("jp-carport", carX + (left ? 1 : 0), foot - 3, { layer4: true, stack: true, baseRows: 3, base: [Occ.Prop, Occ.Lot], over: [Occ.Prop, Occ.Lot] });
+        c.scenesUsed.add("jutaku");
+      }
+      // 대문 기둥(문 양옆) → 담. 기둥이 먼저 서고 담은 남은 칸에 이어진다.
+      for (const d of kit.doors.slice(0, 2)) for (const gx of [hx + d - 1, hx + d + 1]) if (!open.has(gx) && gx >= x && gx < x + lw) c.put("jp-gatepost", gx, foot);
+      const material = kind.noGreen ? "블록담" : ["블록담", "생울타리", "블록담"][lot % 3]!;
+      c.edge(c.hline(x, foot, lw).filter((q) => !open.has(q.x)), material);
+      if (kit.doors.length === 1 && c.rng() < 0.5) c.put("jp-prop-gate-iron-open", hx + kit.doors[0]!, foot - 1, { baseRows: 2, base: [Occ.Walk], over: [Occ.Walk] });
+      // 마당 살림: 담 안쪽 줄에 화분·화단·빨래·자전거
+      for (let xx = x + (left ? side : 0); xx < hx + kit.w; ) {
+        const id = c.rng() < 0.85 ? c.putAny(yard.filter((q) => xx + c.size(q)![0] <= hx + kit.w), xx, foot - 1, { gap: true }) : undefined;
+        if (id) c.scenesUsed.add("jutaku");
+        xx += (id ? c.size(id)![0] : 1) + 1 + Math.floor(c.rng() * 2);
+      }
+    } else for (let xx = hx + kit.ml; xx < hx + kit.w - kit.mr; xx += 2) if (!kit.doors.includes(xx - hx) && !kit.doors.includes(xx + 1 - hx) && c.rng() < 0.4) c.putAny(["jp-pots", "jp-kadan", "jp-asagao"], xx, foot + 1, { base: [Occ.Lot, Occ.Road] });
+    // 집 옆 처마 틈: 실외기·가스통
+    for (const sx2 of [hx, hx + kit.w - 1]) if (c.at(sx2, hf) === Occ.Slit && c.rng() < 0.6 && c.putAny(wallSide, sx2, hf, { layer4: true, base: [Occ.Slit], over: [Occ.Slit] })) c.scenesUsed.add("jutaku");
+    x += lw + (c.rng() < 0.4 ? 1 : 0);
+  }
+  return row;
+}
+
+/** 뒷골목에 가로 시설: 골목 남쪽 줄(앞줄 지붕 바로 위)에 자판기·자전거·쓰레기망·실외기, 가끔 가로등. */
+function dressAlley(c: SceneCtx, sx: number, ex: number, y: number): void {
+  const low = [...sceneList("doro", "back"), ...sceneList("backalley", "slit").filter((q) => c.size(q)![1] === 1)];
+  for (let x = sx + 1 + Math.floor(c.rng() * 3); x < ex - 1; ) {
+    const id = c.rng() < 0.75 ? (c.rng() < 0.2 ? (c.putFoot("jp-prop-lamp-post", x, y, { layer4: true, over: [Occ.Lot, Occ.Walk, Occ.Slit, Occ.Bldg] }) ? "jp-prop-lamp-post" : undefined) : c.putAny(low, x, y, { gap: true })) : undefined;
+    x += (id ? c.size(id)![0] : 1) + 2 + Math.floor(c.rng() * 4);
+  }
+}
+
+/** 띠가 키 크면(앞줄 위로 6줄 넘게 남으면) 뒷골목 2줄을 두고 뒷줄을 세운다. 돌려주는 값 = 앞줄이 쓸 맨 윗줄. */
+export function rearTop(c: SceneCtx, b: SceneBlock, frontH: number): number {
+  const maxH = b.band.foot - b.band.top + 1;
+  const rear = !b.noRear && c.kind.cross !== "arcade" && maxH - frontH - 2 >= 4 && !(b.edgeW && b.edgeE);
+  return rear ? b.band.foot - frontH + 1 : b.band.top;
+}
+export function fillRear(c: SceneCtx, b: SceneBlock, fTop: number, house: boolean): ScenePlaced[] {
+  if (fTop <= b.band.top) return [];
+  const { kind, tone } = c;
+  const ay = fTop - 2, rFoot = ay - 1;
+  c.fill(b.sx, ay, b.ex - b.sx, 2, tone.alley);
+  c.mark(b.sx, ay, b.ex - b.sx, 1, Occ.Walk, [Occ.Lot]);
+  const back = house || c.rng() < 0.35 ? houseRow(c, b.sx, b.ex, rFoot, b.band.top, []) : shopRow(c, b.sx, b.ex, rFoot, b.band.top, [], { ...kind.mix, food: (kind.mix.food ?? 1) + 3 }, b.band.index === 0);
+  if (!house) dressShopFront(c, back, { nA: ay, paved: true }, b.sx, b.ex);
+  dressAlley(c, b.sx, b.ex, ay + 1);
+  for (const p of back) { treeBehind(c, p, b.band.top); roofScene(c, p); }
+  return back;
+}
+
+/** 구획 하나를 건물 줄로 채운다 — 키 큰 띠는 뒷골목 2줄을 두고 뒷줄을 더 세운다. */
+export function fillRows(c: SceneCtx, _L: SceneLayout, b: SceneBlock, wanted: string[]): void {
+  const { kind } = c;
+  const band = b.band, s = band.front;
+  const house = b.use === "house";
+  const fTop = rearTop(c, b, house ? 12 : 10);
+  const paved = s.type !== "lane" && !(s.type === "edge" && s.road0 === s.y0);
+  const front: RowFront = { nA: s.nA, ...(s.type === "kerb" ? { nK: s.nK! } : {}), paved };
+  const row = house ? houseRow(c, b.sx, b.ex, band.foot, fTop, wanted) : shopRow(c, b.sx, b.ex, band.foot, fTop, wanted, kind.mix, band.index === 0 && fTop === band.top);
+  if (!house && s.type !== "river") dressShopFront(c, row, front, b.sx, b.ex);
+  else if (!house) dressShopFront(c, row, { nA: s.nA, paved: false }, b.sx, b.ex);
+  fillRear(c, b, fTop, house);
+  for (const p of row) { treeBehind(c, p, fTop); roofScene(c, p); }
+}
