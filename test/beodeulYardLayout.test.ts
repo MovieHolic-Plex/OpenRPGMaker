@@ -8,9 +8,9 @@ import type { ToolContext } from "@/editor/tools/types";
 import type { GameMap, Project } from "@/project/types";
 
 type Rect = { x0: number; y0: number; x1: number; y1: number };
-type Yard = Rect & { level: number; lobes: Rect[]; courts: Rect[]; woods: { x: number; y: number }[]; frame: { x: number; y: number; w: number; h: number; front: { x: number; y: number }; role: string; at: string }[] };
+type Yard = Rect & { level: number; lobes: Rect[]; courts: Rect[]; frame: { x: number; y: number; w: number; h: number; front: { x: number; y: number }; role: string; at: string }[] };
 type Door = { kit: string; x: number; y: number; reached: boolean };
-type Data = { mapId: string; houses: number; nature: { forestCells: number }; anchors: string[]; doors: Door[]; layout: { auto: boolean; gather: { x: number; y: number }; yard?: Yard; moved: string[]; houses?: { x: number; y: number }[] } };
+type Data = { mapId: string; houses: number; anchors: string[]; doors: Door[]; layout: { auto: boolean; gather: { x: number; y: number }; yard?: Yard; moved: string[]; houses?: { x: number; y: number }[] } };
 
 function town(args: Record<string, unknown>): { project: Project; map: GameMap; data: Data } {
   const project = createBlankProject() as Project;
@@ -42,10 +42,6 @@ describe("코드 지형 자동 배치 — 마당 먼저", () => {
     expect(data.houses).toBe(args.houseCount);
     expect(data.doors.filter((d) => !d.reached)).toEqual([]);
     expect(housesOnYard(map, data)).toBeGreaterThanOrEqual(3);
-    // 숲 몫: 집을 모아도 마당 둘레 밖 빈 땅에 숲 자리를 남기고 거기 숲 덩이가 선다(남긴 칸 목록은 결과에 싣지 않는다)
-    expect(yard!.woods.length).toBeGreaterThanOrEqual(1);
-    expect("woodCells" in yard!).toBe(false);
-    expect(data.nature.forestCells).toBeGreaterThan(0);
     // 우물은 마당 안에 서되 한가운데 축이 아니다
     const g = data.layout.gather;
     expect(g.x >= yard!.x0 && g.x <= yard!.x1 && g.y >= yard!.y0 && g.y <= yard!.y1).toBe(true);

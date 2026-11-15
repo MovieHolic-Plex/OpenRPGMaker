@@ -882,9 +882,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
           }
           network.clear(); return { exits: ex, houses: hs, others: ot, landmark: lm, climbs };
         },
-      }, { houses: houseWants.length, anchor: !!layout.anchor, work: !!layout.work, loose: houseWants, wide: W >= H, wetOk: theme === "swamp", woods: theme === "river" || theme === "coast" || theme === "snow", skip: options.yardTry ?? 0, ...(form === "plaza" ? { plaza: plazaLook ?? { rx: 5, ry: 3 } } : {}) });
+      }, { houses: houseWants.length, anchor: !!layout.anchor, work: !!layout.work, loose: houseWants, wide: W >= H, wetOk: theme === "swamp", skip: options.yardTry ?? 0, ...(form === "plaza" ? { plaza: plazaLook ?? { rx: 5, ry: 3 } } : {}) });
       for (let c = 0; c < W * H; c += 1) if (occ[c] === PLAZA_HOLD) occ[c] = FREE;
-      if (yard) { gx = yard.gather.x; gy = yard.gather.y; g0 = idx(gx, gy); Object.assign(layout, { gather: { ...layout.gather, x: gx, y: gy }, fields: yard.fields, forests: yard.woods, yard }); }
+      if (yard) { gx = yard.gather.x; gy = yard.gather.y; g0 = idx(gx, gy); Object.assign(layout, { gather: { ...layout.gather, x: gx, y: gy }, fields: yard.fields, yard }); }
     }
     let entrance: { x: number; y: number } | null = null;
     for (const e of exits) {
@@ -2403,9 +2403,6 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 자동 배치의 마당은 살림 소품이 앉지 않게 잠깐 비워 둔다(우물·좌판은 이미 섰다) — 소품 밑만 흙으로 칠해져 마당 귀퉁이에 한 칸 혹이 남았다. 흙 마당을 칠하기 직전에 푼다.
   const yardHeld = (codePlan?.layout.yard?.cells ?? []).filter((c) => occ[c] === FREE);
   for (const c of yardHeld) occ[c] = CLEAR;
-  // 숲 몫으로 남긴 빈 땅도 밭·소품이 앉지 않게 비워 둔다 — 숲 덩이를 세우기 직전에 푼다.
-  const woodsHeld = (codePlan?.layout.yard?.woodCells ?? []).filter((c) => occ[c] === FREE);
-  for (const c of woodsHeld) occ[c] = CLEAR;
   // 울타리 계획: 사각 테두리 칸마다 조각 종류 — 네 모서리는 모서리 기둥(tl·tr·bl·br), 위·아래 줄은 가로, 옆은 세로.
   // 문 한 칸은 길에 가까운 변(모서리 옆 칸은 피한다)에 비우고, 문 양옆은 난간이 기둥에서 끝나는 끝 조각(endW·endE·endN·endS)이다.
   // (2026-10-11 사용자 「울타리 외곽 마감이 별로, 이어져 있다는 느낌이 안 든다」 — 옛 조각 셋은 위 모서리가 반 칸 삐져나가고 세로와 끊겼다.)
@@ -2845,7 +2842,6 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 숲 덩이(2026-10-18 사용자 반려 「버들 마을은 풀이 뭉쳐진 .. '숲' 을 구현하질 못함」): 나무 키트를 3~7그루씩 흩어 심으면
   // 수관 사이로 잔디가 보이는 덤불 뭉치가 된다. 풀밭·설원 마을은 길에서 떨어진 빈 땅에 둥근 숲 덩이(FOREST, 막힘)를 잡고
   // 12b 에서 이어진 수관 오토타일(BEODEUL_NATURE.forestCanopy)로 한 장에 덮는다. 낱 나무 덩이는 숲 가장자리 몇 그루로만 남긴다.
-  for (const c of woodsHeld) if (occ[c] === CLEAR) occ[c] = FREE;
   const canopyStyle: "leaf" | "snow" | null = theme === "snow" ? "snow" : theme === "river" || theme === "coast" ? "leaf" : null;
   const forestSet = new Set<number>();
   if (canopyStyle) {
@@ -2895,8 +2891,6 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     for (const e of codeT?.cliffBreaks ?? []) for (const [dx, dy] of [[0, -2], [0, 4]] as const) endSeeds.push([e.x + dx, e.y + dy]);
     // 조수가 고른 숲 자리(빈 단의 쓰임)
     for (const p of codePlan?.layout.forests ?? []) for (const [dx, dy] of [[0, 0], [-4, 0], [4, 0]] as const) endSeeds.push([p.x + dx, p.y + dy]);
-    // 자동 배치(마당 먼저)가 남긴 숲 자리의 씨앗(맨 뒤 셋) — 조수가 고른 자리와 달리, 덩이가 길에서 걸어가던 빈 땅을 끊으면 세우지 않는다
-    const yardSeeds = codePlan?.layout.yard ? 3 * (codePlan.layout.forests?.length ?? 0) : 0;
     // 둘레 숲 벽(wall): 씨앗을 맵 가장자리 다섯 칸 띠에서만 뽑아 마을을 숲이 두른다(길이 나가는 자리는 길 간격이 틈을 남긴다).
     const edgeSeed = (): [number, number] => { const side = ri(0, 3), depth = ri(0, 5), along = side < 2 ? ri(0, W - 1) : ri(0, H - 1); return side === 0 ? [along, depth] : side === 1 ? [along, H - 1 - depth] : side === 2 ? [depth, along] : [W - 1 - depth, along]; };
     // 깊은 숲(deep): 씨앗을 맵의 한쪽 변(씨앗으로 고른다) 열두 칸 띠에서만. 물가 숲(riverside): 물에서 여섯 칸 안에서만.
@@ -2937,7 +2931,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       if (blob.size < (bigGroves ? 24 : 10)) continue;
       // 겉모습 숲(wall·clumps·rows)은 숲 어울림 대신 자리를 스스로 고르므로, 덩이가 길에서 걸어가던 빈 땅을 끊으면 세우지 않는다(작은 자투리는 덩이에 넣는다).
       // 시골 마을(흙 바닥)도 같다 — 흙 몸이 굽이쳐 길 자리가 달라지면 숲 덩이가 윗단 조각의 하나뿐인 들머리를 막았다(탐침 30장: 못 닿는 윗단 칸 1069 → 1180)
-      if (((woodsStyle || ground.commons || ground.pavedCore) && !fromEnd) || (fromEnd && t >= endSeeds.length - yardSeeds)) {
+      if ((woodsStyle || ground.commons || ground.pavedCore) && !fromEnd) {
         const cut = cutOff(forestSet, blob);
         if (cut.length > (woodsStyle === "deep" ? 48 : 8) || cut.some((c) => !okCell(c, lv[c]!))) continue; // 깊은 숲은 그쪽 빈 땅을 통째로 삼킨다
         for (const c of cut) blob.add(c);
@@ -4189,7 +4183,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       upper: climbs.map((cl) => ({ level: cl.level, lanes: cl.lanes, path: cl.path, to: cl.to, use: cl.use, ...(cl.lookout ? { lookout: cl.lookout } : {}),
         reach: levelReach[cl.level] ? Math.round((levelReach[cl.level]!.reached / Math.max(1, levelReach[cl.level]!.walk)) * 100) : 0 })),
       entrance, ...(wallInfo ? { walls: wallInfo } : {}), ...(Object.values(newObjects).some((n) => n > 0) ? { newObjects } : {}),
-      ...(codePlan && codeT ? { codeTerrain: { character: codeT.character, high: codeT.high, maxLevel: codeT.maxLevel, note: codeT.note }, layout: { ...codePlan.layout, ...(codePlan.layout.yard ? { yard: (({ cells: _c, stubs: _s, fields: _f, gather: _g, woodCells: _w, ...y }) => y)(codePlan.layout.yard) } : {}), auto: codePlan.report.auto, gather: codePlan.g, moved: codePlan.report.moved, failed: codePlan.report.failed, roadsFailed: codePlan.report.roadsFailed, placedHouses: placedHouses.length, requestedHouses: codePlan.report.requested.houses } } : {}),
+      ...(codePlan && codeT ? { codeTerrain: { character: codeT.character, high: codeT.high, maxLevel: codeT.maxLevel, note: codeT.note }, layout: { ...codePlan.layout, ...(codePlan.layout.yard ? { yard: (({ cells: _c, stubs: _s, fields: _f, gather: _g, ...y }) => y)(codePlan.layout.yard) } : {}), auto: codePlan.report.auto, gather: codePlan.g, moved: codePlan.report.moved, failed: codePlan.report.failed, roadsFailed: codePlan.report.roadsFailed, placedHouses: placedHouses.length, requestedHouses: codePlan.report.requested.houses } } : {}),
     },
     warnings,
   };
