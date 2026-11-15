@@ -3,6 +3,7 @@ import { runTool } from "@/editor/tools";
 import { registerCompletedHouse } from "@/editor/tools/houseProtection";
 import { serialize } from "@/project/io";
 import { completedHouseProject, houseMap, HOUSE_RECT, mutateProject } from "./fixtures/completedHouse";
+import { RETIRED_COMBINED_TOWN_TILESET_ID, withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 function emptyContext() {
   const project = completedHouseProject();
@@ -31,14 +32,37 @@ describe("completed house transaction invariant", () => {
     expect(serialize(ctx.project)).toBe(before);
   });
 
-  it("catches global tree-repair spillover even when the tool edits another map", () => {
-    const ctx = { project: completedHouseProject() };
-    const map = houseMap(ctx.project);
-    map.lowerTiles[7 * map.width + 3] = 290; // repair would overwrite protected upper at (3,6)
-    const before = serialize(ctx.project);
-    const result = runTool(ctx, "create_map", { id: "elsewhere", name: "Elsewhere", width: 10, height: 10 });
-    expect(result.issues?.[0]?.code).toBe("protected-house-write");
-    expect(serialize(ctx.project)).toBe(before);
+  it("catches tree-repair spillover into a protected house on the map a tool edits, and leaves trees on other maps alone", () => {
+    // 나무 짝 보정(밑동 290 위에 수관 260)은 합본 마을 칩셋의 것이라 집 맵을 그 칩셋 위에 둔다. 기본 칩셋(버들항)에서는 보정이 돌지 않고,
+    // 픽스처가 깐 TILE.GRASS(240)는 버들항에서 벽이라 create_map 이 start-position 경고만 냈다.
+    const withOrphanTrunk = () => {
+      const project = completedHouseProject();
+      withRetiredEasyRpgTilesets(project);
+      const map = houseMap(project);
+      map.tilesetId = RETIRED_COMBINED_TOWN_TILESET_ID;
+      map.lowerTiles[7 * map.width + 3] = 290; // repair would put a canopy on the protected upper cell (3,6)
+      return { project };
+    };
+    // 실행기는 도구가 타일을 바꾼 맵에서만 나무를 보정한다(toolRunner — «Event/DB/name edits must not normalize trees in this or any other map»).
+    // 그 맵에서 보정이 집 안으로 넘치면 쓰기 전체를 되돌린다.
+    const sameMap = withOrphanTrunk();
+    const before = serialize(sameMap.project);
+    const blocked = mutateProject(sameMap, (draft) => {
+      const map = houseMap(draft);
+      map.lowerTiles[12 * map.width + 12] = 241;
+    });
+    expect(blocked.issues?.[0]?.code).toBe("protected-house-write");
+    expect(blocked.ok).toBe(false);
+    expect(serialize(sameMap.project)).toBe(before);
+    // 다른 맵을 만드는 도구는 집 맵의 나무를 건드리지 않는다 — 넘칠 보정이 없으니 도구는 성공하고 집 맵의 칸은 그대로다.
+    const otherMap = withOrphanTrunk();
+    const house = houseMap(otherMap.project);
+    const lower = [...house.lowerTiles], upper = [...house.upperTiles];
+    const created = runTool(otherMap, "create_map", { id: "elsewhere", name: "Elsewhere", width: 10, height: 10 });
+    expect(created.ok, created.summary).toBe(true);
+    expect(otherMap.project.maps.elsewhere).toBeDefined();
+    expect(houseMap(otherMap.project).lowerTiles).toEqual(lower);
+    expect(houseMap(otherMap.project).upperTiles).toEqual(upper);
   });
 
   it("does not allow removing metadata and then destroying the house", () => {
