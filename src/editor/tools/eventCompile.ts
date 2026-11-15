@@ -9,7 +9,7 @@ import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { resolveCc0IconAssetUrl } from "@/assets/cc0IconAssets";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
-import { npcGraphicCatalogIsFiltered, npcGraphicExampleLabels, pickNpcGraphic, queryNpcGraphics, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
+import { npcGraphicCatalogIsFiltered, npcGraphicExampleLabels, npcGraphicMissNote, pickNpcGraphic, queryNpcGraphics, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
 import { HARNESS_CHARACTER_PREFIX } from '@/project/sharedCharacters';
 import { searchResources } from "@/assets/resourceSearch";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
@@ -206,7 +206,7 @@ export function resolveGraphicQuery(query: string, pick?: GraphicQueryResolveOpt
   if (!entry) {
     const examples = npcGraphicExampleLabels(12).join(", ");
     throw new ToolError(
-      `그래픽 검색어에 맞는 charset 을 찾지 못했습니다: "${query}". 다른 그림으로 대체하지 않습니다. ` +
+      `그래픽 검색어에 맞는 charset 을 찾지 못했습니다: "${query}".${npcGraphicMissNote(query, pick?.overrides)} 다른 그림으로 대체하지 않습니다. ` +
         `사람이면 list_npc_graphics 로 고르고, 물건이면 그 칸에 place_props·paint_tiles 로 물건 타일을 깔고 graphic:{transparent:true} 를 주세요. ` +
         `charset 라벨 예시: ${examples}.` +
         // 필터는 장르 잠금(몬스터 수집·현대 연애)일 수도, 사람 칩 잠금(처음 놓은 사람 칩의 계열)일 수도 있다 — 현대 거리에서 「몬스터 수집 칩만」이라고 적어

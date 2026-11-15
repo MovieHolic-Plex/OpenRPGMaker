@@ -6,7 +6,8 @@ import { createBlankProject } from "@/project/defaults";
 import type { GameEvent, Project } from "@/project/types";
 import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import { buildPeople, pickPersonGraphic } from "@/ai/v2/place/people";
-import { npcGraphicIntent } from "@/assets/charsetQuery";
+import { npcGraphicIntent, pickNpcGraphic, queryNpcGraphics, resolveNpcGraphic, unmatchedNpcGraphicTerms } from "@/assets/charsetQuery";
+import { isPersonName } from "@/ai/v2/story/personName";
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { bossDefeatReturns } from "@/ai/v2/story/bossTalkBattles";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
@@ -265,5 +266,43 @@ describe("사람 단계의 서술 줄 — 확인 빌드 r5", () => {
     expect(about).toEqual({ kind: "text", body: "등대지기는 어두운 등불 앞에서 고개를 떨구고 있다." });
     expect(said!.speaker).toBe("등대지기");
     expect(named!.speaker).toBe("등대지기");
+  });
+});
+
+// 없는 그림의 이름을 graphic:{query} 로 주면 가장 가까운 칸이 조용히 섰다 — 「고양이 석상」 이 살아 있는 고양이, 「나무 통」 이 나무 보물상자.
+// 목록(list_npc_graphics)에 가까운 칸을 보이려던 길(#3522)을 고르기도 같이 탔다. 2026-09-27 전수 조사의 못 placementMatchingAudit 이 그때부터 빨갰다.
+describe("없는 그림의 이름은 고르지 않는다 — 확인 빌드 r5 뒤", () => {
+  const MISSING = ["고양이 석상", "나무 통", "강철 문", "낡은 표지판"];
+
+  it("고르기는 모든 낱말이 맞는 칸만 준다", () => {
+    for (const name of MISSING) {
+      expect(pickNpcGraphic(name), name).toBeNull();
+      expect(resolveNpcGraphic(name), name).toBeNull();
+    }
+    // 다 맞는 칸이 있으면 그대로다 — 성별·나이 낱말은 맞은 것으로 친다.
+    expect(pickNpcGraphic("하얀 드레스 여자")?.gender).toBe("female");
+    expect(resolveNpcGraphic("나무 보물상자")?.label).toBe("나무 보물상자");
+  });
+
+  it("목록·검색은 가장 가까운 칸을 주고, 칸마다 안 맞은 낱말이 남는다", () => {
+    const near = queryNpcGraphics("고양이 석상", 5);
+    expect(near.length).toBeGreaterThan(0);
+    for (const match of near) expect(unmatchedNpcGraphicTerms("고양이 석상", match.entry)).toEqual(["석상"]);
+  });
+
+  it("도구는 다른 그림으로 세우지 않고 거절하며, 어느 낱말이 안 맞았는지 말한다", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const res = runTool(ctx, "place_npc", { mapId: ctx.project.startMapId, x: 2, y: 2, id: "ev_cat", name: "고양이 석상", graphic: { query: "고양이 석상" }, pages: [{ text: "돌로 깎은 고양이다." }] });
+    expect(res.ok).toBe(false);
+    expect(res.issues?.[0]?.code).toBe("graphic-not-found");
+    expect(res.summary).toContain('lacks "석상"');
+    expect(ctx.project.maps[ctx.project.startMapId]!.events.some((e) => e.id === "ev_cat")).toBe(false);
+  });
+
+  it("석상·통은 이름만으로 사람 칩을 받지 않는다 — 역할을 못 알아들은 사람은 전처럼 그냥 주민으로 선다", () => {
+    for (const name of ["고양이 석상", "나무 통", "기사 동상"]) expect(isPersonName(name), name).toBe(false);
+    const project = createBlankProject() as Project;
+    const pick = pickPersonGraphic(project, project.maps[project.startMapId]!, "회관 서기", undefined, true)!;
+    expect(pick.query).toBe("villager");
   });
 });

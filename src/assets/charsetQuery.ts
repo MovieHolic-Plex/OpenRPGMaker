@@ -364,10 +364,14 @@ function defaultNpcGraphics(catalog: readonly CharsetSemanticEntry[] = CHARSET_S
     .sort((a, b) => b.score - a.score);
 }
 
-/** Complete semantic matches; resource pagination must not lose entries after 100. */
+/**
+ * Complete semantic matches; resource pagination must not lose entries after 100.
+ * whole: 모든 낱말이 맞는 칸만(고르기). 목록·검색은 끄고 부른다 — 그때는 다 맞는 칸이 없으면 가장 가까운 칸을 준다(아래).
+ */
 export function findNpcGraphicMatches(
   query: string | undefined,
   overrides?: readonly CharsetLabelOverride[],
+  whole = false,
 ): NpcGraphicMatch[] {
   const catalog = catalogFor(overrides);
   const normalized = normalizeQuery(query ?? "");
@@ -398,10 +402,12 @@ export function findNpcGraphicMatches(
     })
     .filter((match) => match.score > 0)
     .sort((a, b) => b.score - a.score);
-  if (strict.length > 0 || queryTerms.length < 2) return strict;
-  // 모든 낱말을 가진 칸이 없으면 «가장 많은 낱말이 맞는 칸»을 준다(성별·나이 의도는 그대로 지킨다).
+  if (strict.length > 0 || queryTerms.length < 2 || whole) return strict;
+  // 모든 낱말을 가진 칸이 없으면 «가장 많은 낱말이 맞는 칸»을 준다(성별·나이 의도는 그대로 지킨다) — 목록·검색에만. 보는 쪽이 안 맞은 낱말(unmatchedNpcGraphicTerms)을 읽고 고른다.
   // 왜(2026-10-25 심사 J66): 「하얀 드레스 여자 유령」이 0건이라 조수가 「유령」 한 낱말로 다시 찾아 만화풍 흰 시트 유령을
   // 하얀 드레스 여자 자리에 놓았다 — 판정자 눈에 고무 오리였다. 의도 낱말이 아닌 낱말이 하나는 맞아야 한다.
+  // 고르기(pickNpcGraphic · resolveNpcGraphic)는 이 칸들을 받지 않는다: 같은 함수를 타던 동안 graphic:{query:"고양이 석상"} 이 살아 있는 고양이로,
+  // 「나무 통」 이 나무 보물상자로 조용히 섰다(2026-11-15 — 2026-09-27 전수 조사의 못 placementMatchingAudit 이 그때부터 빨갰다).
   const described = queryTerms.filter((term) => !intentTerms.has(term));
   return catalog
     .map((entry) => {
@@ -421,6 +427,16 @@ export function unmatchedNpcGraphicTerms(query: string, entry: CharsetSemanticEn
   return normalized.split(/\s+/).filter((term) => term && !intentTerms.has(term) && textMatchScore(term, entry) <= 0);
 }
 
+/**
+ * 고르기가 거절한 질의에 가장 가까운 칸과 그 칸에 없는 낱말 — 거절 글에 붙여 모델이 어느 낱말이 안 맞았는지 읽게 한다(모델이 읽는 글이라 영어).
+ * 가까운 칸도 없으면 빈 글.
+ */
+export function npcGraphicMissNote(query: string, overrides?: readonly CharsetLabelOverride[]): string {
+  const near = findNpcGraphicMatches(query, overrides)[0]?.entry;
+  const missing = near ? unmatchedNpcGraphicTerms(query, near) : [];
+  return near && missing.length ? ` No chip has every word: the closest, "${near.label}", lacks "${missing.join('", "')}".` : "";
+}
+
 /** 사람(여자·소녀·부인…)이 유령인 인물 — 사람 칩에 반투명 빛(blendMode add)으로 그린다. 시트 유령 몬스터 칩이 아니다. */
 export const GHOST_WORDS = /유령|귀신|원령|망령|혼령|ghost|phantom|spirit/iu;
 export const PERSON_WORDS = /여자|여성|남자|남성|소녀|소년|아이|아가씨|부인|아주머니|할머니|할아버지|노인|신부|하녀|메이드|언니|누나|엄마|어머니|아버지|사람|woman|girl|boy|man|lady|bride|maid/iu;
@@ -434,7 +450,8 @@ export function resolveNpcGraphic(
   query: string,
   overrides?: readonly CharsetLabelOverride[],
 ): CharsetSemanticEntry | null {
-  return queryNpcGraphics(query, 1, overrides)[0]?.entry ?? null;
+  // 모든 낱말이 맞는 칸만 — 없는 그림을 가장 가까운 칸으로 바꾸지 않는다(findNpcGraphicMatches 의 whole).
+  return findNpcGraphicMatches(query, overrides, true)[0]?.entry ?? null;
 }
 
 export type NpcGraphicPickOptions = {
@@ -474,7 +491,8 @@ export function isGenericNpcGraphicQuery(query: string): boolean {
 export function pickNpcGraphic(query: string, options: NpcGraphicPickOptions = {}): CharsetSemanticEntry | null {
   const topK = Math.max(1, Math.min(24, options.sampleTopK ?? 8));
   const poolLimit = Math.max(topK, 16);
-  let matches = queryNpcGraphics(query, poolLimit, options.overrides);
+  // 모든 낱말이 맞는 칸만 — 없으면 null 이고 부르는 쪽이 거절하거나 제 기본 그림으로 선다(가까운 칸은 목록·검색이 안 맞은 낱말과 함께 보인다).
+  let matches = findNpcGraphicMatches(query, options.overrides, true).slice(0, poolLimit);
   if (matches.length === 0) return null;
 
   const avoid = options.avoidKeys;
