@@ -71,7 +71,7 @@ function springHealBeat(tag) {
       { kind: "waitForPosition", mapId: "mx_map_meadow", x: 10, y: 26 },
       { kind: "pressUntilJs", key: "Shift", fn: fieldIdle, maxPresses: 30, settleMs: 500 },
       { kind: "face", dir: "up" },
-      { kind: "pressUntilJs", key: "Enter", fn: `() => /기운이 돌아왔다/.test(document.body.innerText)`, maxPresses: 8, settleMs: 700 },
+      { kind: "pressUntilJs", key: "Enter", fn: `() => /기운이 돌아(온다|왔다)/.test(document.body.innerText)`, maxPresses: 8, settleMs: 700 },
       { kind: "pressUntilJs", key: "Enter", fn: fieldIdle, maxPresses: 6, settleMs: 700 },
     ],
     shot: true,

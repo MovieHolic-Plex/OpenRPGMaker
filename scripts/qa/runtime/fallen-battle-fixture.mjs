@@ -31,6 +31,34 @@ for (const troop of troops) {
   if (at >= 0) events[at] = event; else events.push(event);
   added += 1;
 }
+// 전투 중 무기 바꾸기(checkpoints/fallen-spear-kael.json 의 swap): 늑대 부대 사본 — 카엘이 방어하면 로한의 창으로 바꿔 든다.
+// 소지품에 그 창이 있어야 한다(체크포인트 items). 장비한 무기 계열로 전투 시트를 고르는 규칙(ActorRecord.weaponBattleSheets)이
+// 전투 중에도 다음 자세부터 먹는지 본다.
+const wolves = troops.find((troop) => troop.id === "troop_fs_wolves");
+if (wolves) {
+  const swap = {
+    ...structuredClone(wolves), id: "troop_qa_spear_swap", name: "QA · 전투 중 창으로 바꾸기",
+    battleEventPages: [{
+      id: "page_qa_spear_swap", name: "방어하면 창을 든다", span: "battle",
+      conditions: [{ kind: "actorCommand", actorId: "actor_hero", commandId: "defend" }],
+      commands: [{ kind: "changeEquipment", actorId: "actor_hero", slot: "weapon", equipmentId: "equip_fs2_rohan_spear" }],
+    }],
+  };
+  if (Array.isArray(project.database.troops)) {
+    const at = project.database.troops.findIndex((troop) => troop.id === swap.id);
+    if (at >= 0) project.database.troops[at] = swap; else project.database.troops.push(swap);
+  } else project.database.troops[swap.id] = swap;
+  const id = "qa_fight_spear_swap";
+  const page = {
+    id: `${id}_page`, name: id, conditions: [], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below",
+    overlapForbidden: false, movement: { type: "fixed", speed: 3, frequency: 3 },
+    commands: [{ kind: "battleProcessing", troopId: swap.id, canEscape: true, canLose: true }],
+  };
+  const event = { id, x: 1, y: 1 + added, trigger: { kind: "action" }, commands: [], pages: [page] };
+  const at = events.findIndex((e) => e.id === id);
+  if (at >= 0) events[at] = event; else events.push(event);
+  added += 1;
+}
 forest.events = Array.isArray(forest.events) ? events : Object.fromEntries(events.map((e) => [e.id, e]));
 // 숲을 걷다 우연히 다른 전투가 끼지 않게 한다.
 forest.encounterRate = 0;

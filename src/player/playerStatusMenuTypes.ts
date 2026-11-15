@@ -33,6 +33,7 @@ export type PlayerStatusMenuActions = {
   readonly onOptimizeEquipment?: (actorId: string) => void;
   readonly onSelectBattleReport?: (index: number | undefined) => void;
   readonly onSelectBestiaryEntry?: (entryId: string | undefined) => void;
+  readonly onSelectStatusActor?: (actorId: string) => void;
   readonly onToggleRow: (actorId: string) => void;
   readonly onSelectFormationActor: (actorId: string) => void;
   readonly onMoveFormationActor: (actorId: string, targetIndex: number) => void;

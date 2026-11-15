@@ -46,3 +46,22 @@ describe("오너 면제 — 출구 규칙", () => {
     expect(ask({ final, calibratedFinalProfiles: new Set<string>() })).toBeNull();
   });
 });
+
+// 부품(part) 면제(2026-11-15): 스스로 판정받지 않고 조립 그림에 실려 다니는 부품. `owner-waive` 는 그 조립 그림이 같은 묶음에 있을 때만 적는다.
+// 종류 'part' 로 물을 때만 닿는다 — 종류 없이 묻는 출구·다른 종류로 묻는 출구에는 닿지 않는다(jp_city 굽기 진입 관문 gate_kinds.owner_waived 가 그렇게 묻는다).
+describe("오너 면제 — 조립 그림에 실린 부품(part)", () => {
+  const part = (): ObjectGateOwnerWaiver => ({ ...waiver(), item: { pixelSha256: SHA, kind: "part", label: "jp_city/street_stairs/jp-stage-platform", width: 32, height: 64, cells: {}, partOf: "c".repeat(64) } });
+  it("종류 part 로 물을 때만 효력이 있다", () => {
+    expect(ownerWaiverApplies(part(), SHA, "part", "bundle")).toBe(true);
+    expect(ownerWaiverApplies(part(), SHA, undefined, "bundle")).toBe(false);
+    expect(ownerWaiverApplies(part(), SHA, "structure", "bundle")).toBe(false);
+  });
+  it("해시가 다르거나 스토어 출구면 부품 면제도 없다", () => {
+    expect(ownerWaiverApplies(part(), "b".repeat(64), "part", "bundle")).toBe(false);
+    expect(ownerWaiverApplies(part(), SHA, "part", "store")).toBe(false);
+  });
+  it("부품 면제는 종류 없이 묻는 출구 규칙을 열지 않는다", () => {
+    expect(ask({ waiver: part() })).toContain("영수증이 없다");
+    expect(ask({ waiver: part(), kind: "structure" })).toContain("영수증이 없다");
+  });
+});

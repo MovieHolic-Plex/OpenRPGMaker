@@ -6,7 +6,10 @@ import { harmonizeBeodeulDaylight } from './beodeulLightTools';
 // 이 도구는 scripts/content/lib/beodeul-layout-specs.ts 의 "blocks" 배치(검증 끝난 조립 순서)를 크기에 맞게 매개변수화한 것이다.
 // 원본 도시 배치를 베끼지 않는다: 열 폭·띠 높이·블록 종류·공원 자리를 크기와 seed 로 새로 고른다.
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
-import type { GameMap, Project } from "@/project/types";
+import type { GameMap, Project, TilesetLook } from "@/project/types";
+import { tilesetLookCliff } from "@/assets/tilesetLooks";
+import { activeKitLook, activeTilesetLook } from "@/project/kitLook";
+import { projectTilesetLook } from "@/project/tilesetLook";
 import { isPassable } from "@/project/collision";
 import { largestWalkArea, openStartCell } from "./startOnBuiltMap";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
@@ -18,12 +21,13 @@ import { BEODEUL_YARD_QUARTERS, beodeulYardReserve } from "./villageQuarterTool"
 import { BEODEUL_FOREST_TYPES, parseBeodeulForestType, type BeodeulForestType } from "./beodeulForest";
 import { BEODEUL_ROOF_PALETTES, BEODEUL_VILLAGE_WATERS, BEODEUL_VILLAGE_WOODS, BEODEUL_VILLAGE_FORMS, BEODEUL_VILLAGE_THEMES, buildBeodeulVillage, resolveVillageForm, themeDefaultSize, type BeodeulVillageTheme } from "./beodeulVillage";
 import { VILLAGE_TERRAINS } from "./beodeulTerrain";
-import { generateCodeTerrain, TERRAIN_CHARACTERS, TERRAIN_MAP_CHARS, type CodeTerrain, type TerrainCharacter, type TerrainHigh, type TerrainWater } from "./beodeulTerrainGen";
+import { generateCodeTerrain, TERRAIN_CHARACTERS, TERRAIN_MAP_CHARS, type CodeTerrain, type TerrainCharacter, type TerrainCliffHabit, type TerrainHigh, type TerrainWater } from "./beodeulTerrainGen";
 import { LAYOUT_EDGES, parseLayout } from "./beodeulCodeLayout";
 
 import { buildSmallBeodeulVillage } from "./beodeulSmallVillage";
 import { addBeodeulVillageChurch } from './beodeulArchitectureTools';
 import { clearBeodeulGroundDressing, dressBeodeulGround } from "./beodeulGroundTools";
+import { layBeodeulGrassGrainForLook } from "./beodeulGrassGrain";
 
 const BEODEUL_TILESET_ID = "beodeul_city";
 const PAVING = "버들항 길 포석";
@@ -154,6 +158,9 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       const light=harmonizeBeodeulDaylight(draft,mapId);
       result.data={...(result.data as Record<string,unknown>),daylight:light.data};result.summary+=` ${light.summary}`;
     }
+    // 풀 결(게임 겉모습 grain — 기본 풀 바닥의 통칸 변형·짙고 옅은 결·풀 포기): 땅 꾸미기·일광 보정까지 끝난 뒤, 2층이 비어 남은 풀 칸에만 깐다.
+    // 걷는 칸·앞 단계의 자리 고르기는 결 없는 판과 같다(beodeulGrassGrain.ts). 왕도(city)는 원본 풀 칸 배열 그대로 둔다.
+    if (mapId && theme !== 'city') layBeodeulGrassGrainForLook(draft, mapId, Number(args.seed));
     // 시작 칸 점검은 땅 꾸미기(덤불·풀포기)까지 끝난 뒤에 — 꾸미기 덤불이 시작 칸 둘레 틈을 막아 주머니에 가뒀다(2026-10-29 vm1 flash).
     if (mapId && draft.startMapId === mapId) {
       const moved = keepStartWalkable(draft, mapId);
@@ -609,8 +616,22 @@ function wallsWanted(args: Record<string, unknown>, theme: BeodeulVillageTheme):
 export function usesCodeTerrain(args: Record<string, unknown>, theme: string): boolean {
   return (BEODEUL_VILLAGE_THEMES as readonly string[]).includes(theme) && !wallsWanted(args, theme as BeodeulVillageTheme) && args.terrainGen !== "bands";
 }
-/** 마을 인자 → 코드 지형(같은 인자·크기·씨앗 = 같은 땅). landform·terrain 낱말은 큰 모양 힌트로만 쓴다. */
-export function codeTerrainFor(theme: string, args: Record<string, unknown>, W: number, H: number, seed: number): CodeTerrain {
+/**
+ * 이 게임의 절벽 습관(겉모습 cliff — 단 높이·절벽 줄 굽이). 미리보기와 짓기가 같은 값을 읽어야 미리본 땅과 지은 땅이 같다.
+ * 겉모습이 없는 프로젝트(옛 게임·열쇠 없는 편집·스크립트)는 undefined — 땅이 예전 그대로다.
+ */
+export function villageCliffHabit(look: TilesetLook | undefined): TerrainCliffHabit | undefined {
+  const cliff = tilesetLookCliff(BEODEUL_TILESET_ID, look);
+  return cliff ? { step: cliff.step, ...(cliff.lone ? { lone: cliff.lone } : {}), ...(cliff.straight ? { straight: cliff.straight } : {}) } : undefined;
+}
+
+/** 조수 실행 맥락에서 본 이 게임의 절벽 습관 — 짓기 전에 땅을 미리 만드는 쪽(미리보기·칸 배치)이 짓는 쪽과 같은 땅을 만들게 한다. */
+export function villageCliffHabitFor(ctx: { readonly project: Project; readonly assistantRun?: boolean; readonly lookKey?: string; readonly lookTaken?: readonly (TilesetLook | undefined)[] }): TerrainCliffHabit | undefined {
+  return villageCliffHabit(projectTilesetLook(ctx.project, BEODEUL_TILESET_ID, ctx.assistantRun ? ctx.lookKey : undefined, ctx.lookTaken));
+}
+
+/** 마을 인자 → 코드 지형(같은 인자·크기·씨앗·절벽 습관 = 같은 땅). landform·terrain 낱말은 큰 모양 힌트로만 쓴다. */
+export function codeTerrainFor(theme: string, args: Record<string, unknown>, W: number, H: number, seed: number, cliff?: TerrainCliffHabit): CodeTerrain {
   const lf = typeof args.landform === "string" ? args.landform : "";
   const tr = typeof args.terrain === "string" ? args.terrain : "";
   const character: TerrainCharacter | undefined = (TERRAIN_CHARACTERS as readonly string[]).includes(lf) ? lf as TerrainCharacter
@@ -626,7 +647,7 @@ export function codeTerrainFor(theme: string, args: Record<string, unknown>, W: 
   // 땅 모양 낱말이 없는 강·평지 요청은 동서 띠 하나만(남북 단 경계 토막·평지 한가운데 계단 금지, 2026-10-30 ab19)
   const bands = !(Number.isFinite(tiers0) && tiers0 > 0) && water !== "bog" && ((plain && ch === "hill") || ch === "flat"); // 평지(낱말·기본 모두)도 덩이 둔덕 대신 띠
   const mapRows = Array.isArray(args.terrainMap) && args.terrainMap.length >= 6 && args.terrainMap.every((r) => typeof r === "string" && TERRAIN_MAP_CHARS.test(r)) ? (args.terrainMap as string[]) : undefined;
-  return generateCodeTerrain({ W, H, seed, ...(ch ? { character: ch } : {}), ...(high ? { high } : {}), water, ...(tiers ? { tiers } : {}), ...(bands ? { bands: true } : {}), ...(mapRows ? { given: { rows: mapRows } } : {}) });
+  return generateCodeTerrain({ W, H, seed, ...(ch ? { character: ch } : {}), ...(high ? { high } : {}), water, ...(tiers ? { tiers } : {}), ...(bands ? { bands: true } : {}), ...(theme === "river" && water === "none" ? { pond: true } : {}), ...(mapRows ? { given: { rows: mapRows } } : {}), ...(cliff ? { cliff } : {}) });
 }
 
 function buildVillage(draft: Project, args: Record<string, unknown>, theme: BeodeulVillageTheme): ToolExecResult {
@@ -692,7 +713,7 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     const m = draft.maps[mapId]!;
     const { layout, notes } = parseLayout(args.layout, m.width, m.height);
     layoutNotes.splice(0, layoutNotes.length, ...notes);
-    return { codeTerrain: codeTerrainFor(theme, args, m.width, m.height, terrainSeed), layout };
+    return { codeTerrain: codeTerrainFor(theme, args, m.width, m.height, terrainSeed, villageCliffHabit(activeTilesetLook(tileset) ?? projectTilesetLook(draft, BEODEUL_TILESET_ID, activeKitLook()))), layout };
   };
   const build = (sceneYards = true) => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), ...(sceneYards ? {} : { sceneYards: false }), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.kind === "string" && args.kind.trim() ? { kind: args.kind.trim() } : {}), ...(args.harbour === true ? { harbour: true } : {}),
     ...(args._startCell && typeof args._startCell === "object" ? { startCell: args._startCell as { x: number; y: number } } : {}), ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),

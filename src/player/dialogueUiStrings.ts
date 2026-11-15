@@ -11,11 +11,11 @@ export type DialogueUiKey =
   | "menu.backlog" | "menu.backlogOpen" | "menu.backlogHint" | "menu.backlogDisabled"
   | "option.autoSpeed" | "option.autoSpeedHint" | "option.skipScope" | "option.skipScopeHint" | "option.windowOpacity" | "option.windowOpacityHint"
   | "value.slow" | "value.normal" | "value.fast" | "value.scopeRead" | "value.scopeAll" | "value.on" | "value.off"
-  | "option.title" | "option.footer" | "option.saved" | "option.savedSession" | "option.bgm" | "option.se" | "option.voice" | "option.down" | "option.up" | "option.volumeHint"
+  | "option.title" | "option.footer" | "option.saved" | "option.savedSession" | "option.bgm" | "option.se" | "option.voice" | "option.volumeHint" | "option.volumeHintTouch"
   | "option.textSpeed" | "option.textSpeedHint" | "option.menuMotion" | "option.menuMotionHint"
   | "option.alwaysRun" | "option.alwaysRunHint" | "option.tapToMove" | "option.tapToMoveHint" | "option.stick" | "option.stickHint" | "option.haptics" | "option.hapticsHint"
   | "value.stickAuto" | "value.stickFixed" | "value.stickFloating"
-  | "controls.compact" | "controls.function" | "controls.grid" | "controls.list";
+  | "controls.compact" | "controls.function" | "controls.adjust" | "controls.grid" | "controls.list";
 
 type Row = Readonly<Record<SupportedLocale, string>>;
 
@@ -57,14 +57,14 @@ export const DIALOGUE_UI_STRINGS: Readonly<Record<DialogueUiKey, Row>> = {
   "option.bgm": { ko: "배경 음악", en: "Music", ja: "BGM", zh: "背景音乐" },
   "option.se": { ko: "효과음", en: "Sound effects", ja: "効果音", zh: "音效" },
   "option.voice": { ko: "대사 목소리", en: "Dialogue voice", ja: "会話ボイス", zh: "对话语音" },
-  "option.down": { ko: "줄이기", en: "Lower", ja: "下げる", zh: "调低" },
-  "option.up": { ko: "늘리기", en: "Raise", ja: "上げる", zh: "调高" },
-  "option.volumeHint": { ko: "10%씩 조절합니다. 0%는 음소거입니다.", en: "Adjusts in 10% steps. 0% is mute.", ja: "10%ずつ調整します。0%はミュートです。", zh: "每次调整10%，0%为静音。" },
+  "option.volumeHint": { ko: "←→ 로 10%씩 조절합니다. 0%는 음소거입니다.", en: "Use ←→ to adjust in 10% steps. 0% is mute.", ja: "←→で10%ずつ調整します。0%はミュートです。", zh: "按←→每次调整10%，0%为静音。" },
+  "option.volumeHintTouch": { ko: "누를 때마다 10%씩 올라갑니다. 100% 다음은 0%(음소거)입니다.", en: "Each tap raises it by 10%. After 100% it returns to 0% (mute).", ja: "タップするたびに10%上がります。100%の次は0%(ミュート)です。", zh: "每次点按提高10%，100%之后回到0%（静音）。" },
   "option.textSpeed": { ko: "대사 속도", en: "Text speed", ja: "文字速度", zh: "文字速度" },
   "option.textSpeedHint": { ko: "선택하면 보통 → 빠르게 → 느리게 순서로 바뀝니다.", en: "Cycles Normal, Fast, Slow.", ja: "選ぶと 普通→速い→遅い の順で切り替わります。", zh: "依次切换 普通→快→慢。" },
   "option.menuMotion": { ko: "메뉴 움직임 줄이기", en: "Reduce menu motion", ja: "メニューの動きを減らす", zh: "减少菜单动效" },
   "option.menuMotionHint": { ko: "ESC 메뉴 전환의 이동 효과를 줄입니다. 운영체제의 감소 설정도 존중합니다.", en: "Reduces movement in ESC menu transitions. The system reduce-motion setting is also respected.", ja: "ESCメニュー切り替えの動きを減らします。OSの動き軽減設定にも従います。", zh: "减少ESC菜单切换的动效，同时遵循系统的减少动态设置。" },
   "controls.compact": { ko: "↑↓ 이동 · Enter 선택\nEsc 닫기", en: "Up/Down move · Enter select\nEsc close", ja: "↑↓ 移動 · Enter 選択\nEsc 閉じる", zh: "↑↓ 移动 · Enter 选择\nEsc 关闭" },
+  "controls.adjust": { ko: "↑↓ 항목 이동   ←→ 조절   Esc 뒤로", en: "Up/Down move   Left/Right adjust   Esc back", ja: "↑↓ 項目移動   ←→ 調整   Esc 戻る", zh: "↑↓ 移动项目   ←→ 调整   Esc 返回" },
   "controls.function": { ko: "↑↓ 항목 이동   Enter 결정   ← 메뉴   Esc 뒤로", en: "Up/Down move   Enter confirm   Left menu   Esc back", ja: "↑↓ 項目移動   Enter 決定   ← メニュー   Esc 戻る", zh: "↑↓ 移动项目   Enter 确定   ← 菜单   Esc 返回" },
   "controls.grid": { ko: "↑↓←→ 이동   Enter 선택   Esc 게임으로", en: "Arrows move   Enter select   Esc to game", ja: "↑↓←→ 移動   Enter 選択   Esc ゲームへ", zh: "↑↓←→ 移动   Enter 选择   Esc 回到游戏" },
   "controls.list": { ko: "↑↓ 메뉴 이동   → / Enter 선택   Esc 게임으로", en: "Up/Down menu   Right / Enter select   Esc to game", ja: "↑↓ メニュー移動   → / Enter 選択   Esc ゲームへ", zh: "↑↓ 菜单移动   → / Enter 选择   Esc 回到游戏" },

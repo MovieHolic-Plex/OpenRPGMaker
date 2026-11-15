@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import looks from "@/assets/beodeulLooks.json";
 import sheet from "@/assets/beodeulCitySheet.json";
 import { activeTileGrafts, tileGraftsTextureSuffix } from "@/assets/tileGrafts";
-import { tilesetLookGround, tilesetLookGrafts, tilesetLookOptions, tilesetLookTableFor, TILESET_LOOK_PARTS } from "@/assets/tilesetLooks";
+import { tilesetLookCliff, tilesetLookGround, tilesetLookGrafts, tilesetLookOptions, tilesetLookReliefStyle, tilesetLookTableFor, TILESET_LOOK_PARTS } from "@/assets/tilesetLooks";
 import { bundledChipsetFrameCount, BUNDLED_REFERENCE_CHIPSET_ASSETS } from "@/assets/bundled";
 import { bundledChipsetTilesPerRow } from "@/assets/bundledChipsetGeometry";
 import { createBlankProject } from "@/project/defaults";
@@ -21,7 +21,7 @@ import type { Project, TilesetLook } from "@/project/types";
 const TS = "beodeul_city";
 const table = tilesetLookTableFor(TS)!;
 const GAMES = Array.from({ length: 400 }, (_, n) => JSON.stringify(["project", `game-${n}`]));
-// 갈래가 일곱(바닥·나무·숲·집 벌·광장·숲 구성·풀밭 얼룩)이라 «한 갈래만 고른 게임» 은 드물다 — 찾을 때는 넉넉히 훑는다(해시뿐이라 싸다)
+// 갈래가 열(바닥·나무·숲·집 벌·광장·숲 구성·풀밭 얼룩·물빛·절벽 모습·풀 결 — 뒤 셋은 늘 하나 고른다)이라 «한 갈래만 고른 게임» 은 드물다 — 찾을 때는 넉넉히 훑는다(해시뿐이라 싸다)
 const keyWhere = (test: (look: TilesetLook | undefined) => boolean): string => {
   for (let n = 0; n < 600_000; n += 1) { const key = JSON.stringify(["project", `game-${n}`]); if (test(chooseTilesetLook(table, key))) return key; }
   throw new Error("그런 겉모습을 고르는 게임 열쇠가 없다");
@@ -106,9 +106,11 @@ describe("tileset look — 게임마다 한 가지 겉모습", () => {
   it("마을 짓기: 조수 실행이 첫 버들항 맵을 지으면 겉모습이 타일셋에 적히고, 바닥 재질만 고른 게임은 바닥 칸 번호·통행이 같은 게임의 원래 모습 판과 같다", () => {
     // 풀밭 얼룩(meadow)은 고른 게임으로 — 얼룩은 2층 덧그림이라 1층 칸 번호·통행이 그대로여야 한다(숲 구성 stand 는 나무 자리를 바꾸니 뺀다).
     const key = keyWhere((look) => !!look?.surface && !look.trees && !look.woods && !look.houses && !look.plaza && !look.stand && !!look.meadow && !!tilesetLookGround(TS, look));
-    const plain = village(undefined), looked = village(key);
-    expect(plain.project.tilesets[TS]!.look).toBeUndefined();
+    const looked = village(key);
+    expect(village(undefined).project.tilesets[TS]!.look).toBeUndefined();
     const look = looked.project.tilesets[TS]!.look!;
+    // 견줄 «열쇠 없는 판» 은 같은 절벽 모습만 적어 둔 판이다 — 절벽 모습(cliff)은 단 높이와 절벽 줄 굽이를 정해 땅 자체를 바꾼다(2026-11-14).
+    const plain = village(undefined, 4242, { textureKey: table.texture, cliff: look.cliff! });
     expect(look).toEqual(chooseTilesetLook(table, key));
     // 직렬화·모양 검사를 지나도 남는다
     expect(deserialize(serialize(looked.project)).tilesets[TS]!.look).toEqual(look);
@@ -117,12 +119,23 @@ describe("tileset look — 게임마다 한 가지 겉모습", () => {
     // 열쇠가 있으면 그 게임의 마을 종류(editor/tools/beodeulVillageKinds.ts)가 일터와 장면 터를 잡아 집·길 자리(1층)가 다르고,
     // 그 게임의 새 종류 기물이 놓여(editor/tools/beodeulObjectSets.ts) 막힌 칸과 그 뒤 나무 자리도 다르다.
     expect([b.width, b.height]).toEqual([a.width, a.height]);
-    const sameGame = village(key, 4242, { textureKey: table.texture });
+    // 한 칸 폭 나루의 징검돌(물 + 3층 돌, editor/tools/beodeulWater.ts stoneBeodeulFords)도 같은 열쇠의 두 판에 똑같이 놓인다 — 징검돌 자체는 beodeulWater.test 가 본다.
+    // 같은 게임의 원래 모습 판에도 절벽 모습은 적어 둔다 — 절벽 모습(cliff)은 단 높이와 절벽 줄 굽이를 정해 땅 자체를 바꾼다.
+    const sameGame = village(key, 4242, { textureKey: table.texture, cliff: look.cliff! });
     const c = sameGame.project.maps[sameGame.mapId]!;
     expect(Array.from(b.lowerTiles)).toEqual(Array.from(c.lowerTiles));
     for (let y = 0; y < c.height; y += 1) for (let x = 0; x < c.width; x += 1) expect(isPassable(looked.project, b, x, y)).toBe(isPassable(sameGame.project, c, x, y));
     // 절벽 둑은 그 바닥 색 변형 양식을 쓴다(벽·계단은 같다)
-    if (b.relief) expect(b.relief.style).toBe(reliefStyleForGround(a.relief!.style!, tilesetLookGround(TS, look)));
+    // 절벽은 게임의 절벽 모습 양식에 그 바닥 색을 입힌 것이다(면·계단은 절벽 모습 그대로)
+    if (b.relief) {
+      expect(b.relief.style).toBe(tilesetLookReliefStyle(TS, look, "grass-steps"));
+      expect(b.relief.style).toBe(reliefStyleForGround(tilesetLookCliff(TS, look)!.style, tilesetLookGround(TS, look)));
+      expect(a.relief!.style).toBe(tilesetLookCliff(TS, look)!.style);
+      // 단 높이는 같다. 절벽 줄의 칸은 같지 않을 수 있다 — 굽이는 다 지은 뒤 빈 땅에만 넣으므로(소품·나무 자리를 본다) 기물이 다른 판과 굽이 자리가 다르다
+      // (2026-11-15 CI: 굽이를 땅 만들 때 넣던 판의 «levels 가 같다» 는 두 칸이 달라 깨졌다).
+      const tiers = (levels: ArrayLike<number>) => [...new Set(Array.from(levels))].sort((x, y) => x - y);
+      expect(tiers(b.relief.levels)).toEqual(tiers(a.relief!.levels));
+    }
     // 같은 게임의 둘째 맵도 같은 겉모습(타일셋에 적힌 값을 읽는다) — 다른 열쇠가 와도 바뀌지 않는다
     expect(projectTilesetLook(looked.project, TS, GAMES[0])).toEqual(look);
   }, 240_000);
@@ -152,5 +165,35 @@ describe("tileset look — 게임마다 한 가지 겉모습", () => {
     }
     expect(reliefStyleForGround("grass-steps", undefined)).toBe("grass-steps");
     expect(reliefStyleForGround("snow-steps", Object.keys(table.grounds)[0])).toBe("snow-steps");
+  });
+
+  it("절벽 모습: 새 게임은 모두 하나를 받고, 덧붙인 갈래가 앞 갈래들의 고르기를 바꾸지 않는다", () => {
+    const names = Object.keys(table.parts.cliff!.options);
+    expect(names.length).toBeGreaterThanOrEqual(6);
+    expect(tilesetLookOptions(table, "cliff")).toEqual(names);   // «원래 모습» 선택지가 없다
+    for (const name of names) {
+      const cliff = tilesetLookCliff(TS, { textureKey: table.texture, cliff: name })!;
+      expect(compileReliefStyle(cliff.style)!.natural).not.toBeNull();
+      expect(reliefRampArt(cliff.style)).toBe(reliefRampArt("grass-steps"));
+      for (const tall of [cliff.step, cliff.lone ?? cliff.step]) { expect(tall).toBeGreaterThanOrEqual(1); expect(tall).toBeLessThanOrEqual(3); }
+      expect(cliff.straight).toBeGreaterThanOrEqual(3);
+    }
+    // 두 칸·세 칸 절벽이 표에 있다. 한 칸 절벽은 생성기·시공기가 짓지만(beodeulTerrainCliffHabit.test) 아직 어느 모습에도 주지 않았다 —
+    // 2026-11-15 프로브 30마을에서 한 칸 절벽 마을 5곳의 못 닿는 윗단 칸이 늘었다(두 칸·외딴 세 칸은 0곳).
+    const tall = new Set(names.flatMap((name) => { const c = tilesetLookCliff(TS, { textureKey: table.texture, cliff: name })!; return [c.step, c.lone ?? c.step]; }));
+    expect([...tall].sort()).toEqual([2, 3]);
+    // 절벽 갈래를 뺀 표로 고른 것 = 지금 고른 것에서 cliff 만 뺀 것
+    const { cliff: _cliff, ...rest } = table.parts;
+    const before = { ...table, parts: rest } as unknown as typeof table;
+    for (const key of GAMES.slice(0, 60)) {
+      const now = chooseTilesetLook(table, key)!, { cliff, ...others } = now;
+      expect(names).toContain(cliff);
+      expect(chooseTilesetLook(before, key)).toEqual(others);
+    }
+    // 눈·모래·이탄·동굴 둑은 그 바이옴 양식 그대로, 겉모습이 없으면 받은 양식 그대로
+    const look = chooseTilesetLook(table, GAMES[0]!)!;
+    for (const style of ["snow-steps", "sand-steps", "peat-steps", "cave-steps"]) expect(tilesetLookReliefStyle(TS, look, style)).toBe(style);
+    expect(tilesetLookReliefStyle(TS, undefined, "grass-steps")).toBe("grass-steps");
+    expect(tilesetLookReliefStyle(TS, { textureKey: table.texture, surface: "coast" }, "grass-steps")).toBe("grass-steps@ground-sand");
   });
 });

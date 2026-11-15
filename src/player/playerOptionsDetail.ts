@@ -4,6 +4,7 @@ import { dialogueUiText } from '@/player/dialogueUiStrings';
 import { resolveDialogueSystem, type DialogueSpeed } from '@/project/dialogueSystem';
 import type { StatusMenuDetail, StatusMenuDetailEntry } from '@/player/playerStatusMenuDetailTypes';
 import type { Project } from '@/project/types';
+import { DIALOGUE_STYLES, isDialogueStyleId, resolveDialogueStyleId } from '@/project/dialogueStyles';
 import { resolveTouchControls, type TouchStickMode } from '@/project/touchControls';
 
 const NEXT_STICK: Record<TouchStickMode, TouchStickMode> = { auto: 'fixed', fixed: 'floating', floating: 'auto' };
@@ -12,6 +13,38 @@ const STICK_VALUE = { auto: 'value.stickAuto', fixed: 'value.stickFixed', floati
 /** 터치 UI 로 열린 플레이 화면인가(playSurface 가 data-touch-ui 를 단다). */
 function touchUiActive(): boolean {
   return typeof document !== 'undefined' && document.querySelector('.play-viewport[data-touch-ui="true"]') !== null;
+}
+
+const voiceUse = new WeakMap<Project, boolean>();
+
+/**
+ * 이 게임의 대사에 「대사 목소리」 음량이 듣는 소리가 하나라도 있는가 — 창 모습이 내는 글자 목소리, 화자에 단 목소리, 줄에 단 녹음 음성.
+ * 하나도 없으면 설정에서 그 음량 줄을 보이지 않는다(누를 것이 없는 줄이었다 — 2026-11-14 QA minor 6).
+ * 대사 글자음(textBlip)과 몬스터 장르 글자 소리는 효과음 음량을 따르므로 세지 않는다.
+ */
+export function projectUsesDialogueVoice(project: Project | undefined): boolean {
+  if (!project) return false;
+  const known = voiceUse.get(project);
+  if (known !== undefined) return known;
+  const styleSpeaks = (style: unknown): boolean => isDialogueStyleId(style) && DIALOGUE_STYLES[style].defaultVoice !== 'none';
+  let used = DIALOGUE_STYLES[resolveDialogueStyleId(project.system.dialogueStyle)].defaultVoice !== 'none'
+    || Object.values(project.characters ?? {}).some(profile => {
+      const dialogue = profile.dialogue as { voice?: unknown; style?: unknown } | undefined;
+      return (typeof dialogue?.voice === 'string' && dialogue.voice !== 'none') || styleSpeaks(dialogue?.style);
+    });
+  const walk = (node: unknown): void => {
+    if (used || !node || typeof node !== 'object') return;
+    if (Array.isArray(node)) { for (const item of node) walk(item); return; }
+    const record = node as Record<string, unknown>;
+    if (record.kind === 'text' && ((typeof record.voiceResourceId === 'string' && record.voiceResourceId.trim()) || styleSpeaks(record.style))) { used = true; return; }
+    for (const value of Object.values(record)) walk(value);
+  };
+  if (!used) {
+    for (const map of Object.values(project.maps ?? {})) walk(map.events);
+    walk(project.commonEvents);
+  }
+  voiceUse.set(project, used);
+  return used;
 }
 
 const NEXT_SPEED: Record<DialogueSpeed, DialogueSpeed> = { normal: 'fast', fast: 'slow', slow: 'normal' };
@@ -37,14 +70,18 @@ export function createPlayerOptionsDetail(onChanged?: (message?: string) => void
   };
   const groupLabel = { bgm: text('option.bgm'), se: text('option.se'), voice: text('option.voice') } as const;
   const speedLabel = (speed: DialogueSpeed) => text(`value.${speed}`);
-  const entries: StatusMenuDetailEntry[] = (['bgm', 'se', 'voice'] as const).flatMap(group =>
-    ([-1, 1] as const).map(delta => ({
-      label: `${groupLabel[group]} ${delta < 0 ? text('option.down') : text('option.up')}`,
-      value: `${Math.round(prefs[group] * 100)}%`,
-      description: text('option.volumeHint'),
-      testId: `player-option-${group}-${delta < 0 ? 'down' : 'up'}`,
-      onActivate: () => change({ [group]: Math.round((prefs[group] + delta * 0.1) * 10) / 10 }),
-    })));
+  // 음량은 한 줄에 하나 — ←→ 로 10%씩 내리고 올린다. 예전에는 「줄이기」「늘리기」 두 줄씩이라 같은 숫자가 여섯 줄에 나왔다(2026-11-14 QA minor 6).
+  // 확인 키(와 누르기)는 올리기다 — 100% 다음은 0% 로 돌아가 키보드 없이도 모든 값에 닿는다.
+  const tenths = (value: number) => Math.round(value * 10);
+  const groups = (['bgm', 'se', 'voice'] as const).filter(group => group !== 'voice' || projectUsesDialogueVoice(project));
+  const entries: StatusMenuDetailEntry[] = groups.map(group => ({
+    label: groupLabel[group],
+    value: touchUiActive() ? `${Math.round(prefs[group] * 100)}%` : `◀ ${Math.round(prefs[group] * 100)}% ▶`,
+    description: text(touchUiActive() ? 'option.volumeHintTouch' : 'option.volumeHint'),
+    testId: `player-option-${group}`,
+    onActivate: () => change({ [group]: (tenths(prefs[group]) >= 10 ? 0 : tenths(prefs[group]) + 1) / 10 }),
+    onAdjust: delta => change({ [group]: Math.max(0, Math.min(10, tenths(prefs[group]) + delta)) / 10 }),
+  }));
   entries.push({
     label: text('option.textSpeed'), value: speedLabel(effective.textSpeed),
     description: text('option.textSpeedHint'), testId: 'player-option-text-speed',

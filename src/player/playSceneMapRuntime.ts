@@ -43,6 +43,7 @@ import { mapWithCommittedEvents } from "@/project/eventDrafts";
 import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
 import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
 import { layerTileAt, shadowAt } from "@/project/mapLayers";
+import { standGroundCoverTile } from "@/assets/tilesetStands";
 import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { store } from "@/project/store";
 import type { Command, MapId, TilesetDef, Trigger } from "@/project/types";
@@ -277,6 +278,8 @@ interface TileRenderPass {
   readonly quarters: boolean;
   readonly backing: Map<number, number | null>;
   readonly animations: Map<number, string | null>;
+  /** 높이 지형의 바닥이 절벽 띠에 구워진 맵 — 움직이는 바닥 칸만 그 위에 다시 그린다(줄 depth 로 root 에). */
+  baked?: boolean;
   readonly lakes: Map<number, boolean>;
   readonly above: Map<number, boolean>;
 }
@@ -324,7 +327,17 @@ export function renderTiles<
   };
   // 높이 지형: 절벽 띠와 벽면 장식을 먼저 올린다(만든 GameObject 는 타일과 같이 파괴된다).
   const ground = reliefGroundFromImage(map, tileset, reliefTilesetImage(scene.textures, pass.textureKey));
-  renderReliefLayer(scene, host, { tileSize: pass.size, ground, wallDecor: { textureKey: pass.textureKey, frame: (tile) => `tile_${tile}` } }, (image) => {
+  pass.baked = !!ground;
+  const animatedTile = (tile: number): string | null => tile < 0 ? null : cachedTileValue(pass.animations, tile, () => {
+    const base = tilesetAnimationKeyForTile(tileset, tile);
+    return base ? chipsetAnimationKey(pass.textureKey, base) : null;
+  });
+  // 벽면 장식 가운데 움직이는 칸(폭포)은 스프라이트로 — 절벽면에 걸려도 물줄기가 흐른다.
+  const decorImage = (x: number, y: number, tile: number): TImage => {
+    const key = animatedTile(tile);
+    return (key ? playTileAnimation(rootYSortHost(scene), scene.add.sprite(x, y, pass.textureKey, `tile_${tile}`), key) : scene.add.image(x, y, pass.textureKey, `tile_${tile}`)) as TImage;
+  };
+  renderReliefLayer(scene, host, { tileSize: pass.size, ground, wallDecor: { textureKey: pass.textureKey, frame: (tile) => `tile_${tile}`, create: decorImage } }, (image) => {
     bumpPerfCounter(scene, "tileObjectsCreated");
     trackRootYSortTile(scene, image);
   });
@@ -337,6 +350,10 @@ export function renderTiles<
       for (const tile of tileStackAt(map, "lower", index)) renderTile(drawingScene, tileset, x, y, tile, "lower", pass);
       renderRawTile(drawingScene, tileset, x, y, layerTileAt(map, 2, index), "lower", OVERLAY_LAYER_DEPTH_OFFSET, pass);
       renderShadow(drawingScene, x, y, shadowAt(map, index));
+    } else if (animatedTile(map.lowerTiles[index] ?? -1)) {
+      // 높이 지형 맵의 바닥은 절벽 띠에 한 장으로 구워져 물결이 멈췄다 — 움직이는 칸(물)은 그 위에 다시 그리고, 그 칸의 2층 덧그림(둑·깊은 물 띠)도 함께 얹는다.
+      renderTile(drawingScene, tileset, x, y, map.lowerTiles[index], "lower", pass);
+      renderRawTile(drawingScene, tileset, x, y, layerTileAt(map, 2, index), "lower", OVERLAY_LAYER_DEPTH_OFFSET, pass);
     }
     renderTile(drawingScene, tileset, x, y, map.upperTiles[index], "upper", pass);
     for (const tile of tileStackAt(map, "upper", index)) renderTile(drawingScene, tileset, x, y, tile, "upper", pass);
@@ -653,7 +670,7 @@ function placeMapTileImage<TImage extends RenderedTileImage, TSprite extends Ren
   const liftRows = Math.floor(liftPx / pass.size);
   // 화면 밖 타일은 카메라가 타일 경계를 넘을 때 숨긴다(playSceneTileCulling 주석 참고). 들린 타일은 보이는 줄로 추적한다.
   trackMapTile(rootYSortHost(scene), image, x, y - liftRows);
-  if (liftPx > 0) {
+  if (liftPx > 0 || (pass.baked && layer === "lower")) {
     if (typeof image.y === "number") image.y -= liftPx;
     const solidUpper = layer === "upper" && !alwaysAbove && passageMarkForTile(tileset, tile) !== "o" && passageMarkForTile(tileset, tile) !== "star";
     if (!alwaysAbove && !solidUpper) {
@@ -1315,5 +1332,5 @@ function commonEventHasContent(commands: readonly Command[]): boolean {
 export function applyMapOverrides(scene: PlaySceneContext): void {
   if (!scene.session.mapOverrides[scene.getMapId()]) return;
   invalidateTilePassabilityComponents(scene.map);
-  applyRuntimeMapOverrides(scene.map, scene.session);
+  applyRuntimeMapOverrides(scene.map, scene.session, standGroundCoverTile(store.getCurrent().tilesets[scene.map.tilesetId]));
 }

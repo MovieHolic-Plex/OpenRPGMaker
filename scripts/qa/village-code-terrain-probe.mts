@@ -1,4 +1,5 @@
-// 코드 지형 마을 프로브 — 10요청을 코드 지형(자동 배치 또는 --layouts json, village-model-layout.mts 출력)으로 짓고 렌더·지표. 사용: bun scripts/qa/village-code-terrain-probe.mts --out <dir> [--only 1,3] [--salt N] [--layouts f]
+// 코드 지형 마을 프로브 — 10요청을 코드 지형(자동 배치 또는 --layouts json, village-model-layout.mts 출력)으로 짓고 렌더·지표. 사용: bun scripts/qa/village-code-terrain-probe.mts --out <dir> [--only 1,3] [--salt N] [--layouts f] [--cliff earth|strata|rubble|ledge|crag|rock]
+// --cliff: 게임 겉모습의 절벽 모습만 미리 적고 짓는다(다른 갈래는 원래 모습) — 단 높이·절벽 줄 굽이가 닿는 곳·길을 깨지 않는지 보는 데 쓴다.
 import fs from "node:fs";
 import { renderMapPng } from "../../scripts/qa-game/render.mts";
 import { runTool } from "../../src/editor/tools/index.ts";
@@ -6,6 +7,8 @@ import { ensureBundledTilesets } from "../../src/project/defaults/defaultAssets.
 import { createBlankProject } from "../../src/project/defaults.ts";
 import { analyzeCityForm } from "../../src/editor/tools/cityForm.ts";
 import { villageArgs } from "../../src/ai/v2/place/builders/village.ts";
+import { longestTierEdgeRuns } from "../../src/editor/tools/beodeulTerrainGen.ts";
+import { tilesetLookTableFor } from "../../src/assets/tilesetLooks.ts";
 const CASES: any[] = [
   { n: 1, ask: "강가의 평범한 시골 마을", spec: { name: "버들 마을", theme: "river", size: "medium" }, seed: 7 },
   { n: 2, ask: "언덕 위에 자리 잡은 마을", spec: { name: "언덕 마을", theme: "river", features: ["hillside"], size: "medium" }, landform: "hill", seed: 11 },
@@ -25,6 +28,10 @@ const only = arg("only", "").split(",").filter(Boolean).map(Number);
 const lookKey = arg("key", "");
 const layouts = arg("layouts", "") ? JSON.parse(fs.readFileSync(arg("layouts", ""), "utf8")) : {};
 const salt = Number(arg("salt", "0"));
+const cliff = arg("cliff", "");
+// --habit step,lone,straight: 그 절벽 모습의 습관만 이 실행에서 바꿔 본다(단 높이와 굽이의 영향을 따로 재는 데 쓴다)
+const habit = arg("habit", "").split(",").filter(Boolean).map(Number);
+if (cliff && habit.length === 3) { const option = (tilesetLookTableFor("beodeul_city")!.parts.cliff!.options as Record<string, Record<string, unknown>>)[cliff]!; option.step = habit[0]; option.lone = habit[1]; if (habit[2]) option.straight = habit[2]; else delete option.straight; }
 
 const base = createBlankProject() as any; ensureBundledTilesets(base);
 const baseJson = JSON.stringify(base);
@@ -33,7 +40,8 @@ for (const c of CASES) {
   if (only.length && !only.includes(c.n)) continue;
   const { args: a0 } = villageArgs({ type: "village", ...c.spec } as any);
   const args: any = { ...a0, ...(c.landform ? { landform: c.landform } : {}), seed: c.seed + salt, id: `v${c.n}C`, name: c.spec.name, ...(layouts[c.n] ? { layout: layouts[c.n].layout, terrainSeed: layouts[c.n].terrainSeed, width: layouts[c.n].width, height: layouts[c.n].height } : {}) };
-  const ctx = { project: JSON.parse(baseJson), ...(lookKey ? { assistantRun: true, lookKey } : {}) };
+  const ctx: any = { project: JSON.parse(baseJson), ...(lookKey ? { assistantRun: true, lookKey } : {}) };
+  if (cliff) ctx.project.tilesets.beodeul_city.look = { textureKey: tilesetLookTableFor("beodeul_city")!.texture, cliff };
   const t0 = Date.now();
   const r = runTool(ctx as any, "author_beodeul_town", args);
   if (!r.ok) { console.log(c.n, "FAIL", r.summary); rows.push({ n: c.n, ok: false, summary: r.summary }); continue; }
@@ -43,9 +51,10 @@ for (const c of CASES) {
   const cf = analyzeCityForm(ctx.project, map);
   const doors = (d.doors ?? []) as { reached: boolean }[];
   const lr = (d.levelReach ?? {}) as Record<string, any>;
+  const runs = map.relief ? longestTierEdgeRuns(map.relief.levels, map.width, map.height) : { south: 0, side: 0 };
   const row = { n: c.n, ms: Date.now() - t0, size: `${map.width}x${map.height}`, houses: d.houses, anchors: d.anchors, unreached: doors.filter((x) => !x.reached).length, doors: doors.length,
-    dead: cf.deadEnds.filter((x: any) => x.kind === "cell").length, ramps: d.relief?.ramps, rfail: d.relief?.fails, levels: d.relief?.levels,
-    upMiss: Object.values(lr).reduce((s: number, e: any) => s + (e.walk - e.reached), 0), upWild: Object.values(lr).reduce((s: number, e: any) => s + (e.wild ?? 0), 0),
+    dead: cf.deadEnds.filter((x: any) => x.kind === "cell").length, runSouth: runs.south, runSide: runs.side, style: map.relief?.style ?? null, ramps: d.relief?.ramps, rfail: d.relief?.fails, levels: d.relief?.levels,
+    upMiss: Object.values(lr).reduce((s: number, e: any) => s + (e.walk - e.reached), 0), upWild: Object.values(lr).reduce((s: number, e: any) => s + (e.wild ?? 0), 0), hillBehind: d.hillBehind ? { raised: d.hillBehind.raised, open: d.hillBehind.open, road: d.hillBehind.road, sample: d.hillBehind.sample } : null,
     layout: d.layout ? { auto: d.layout.auto, moved: d.layout.moved, failed: d.layout.failed, roadsFailed: d.layout.roadsFailed } : null, terrainSeed: d.terrainSeed, note: d.codeTerrain?.note, summary: r.summary, warnings: (r as any).warnings ?? [] };
   rows.push(row); console.log(c.n, JSON.stringify(row).slice(0, 600));
 }

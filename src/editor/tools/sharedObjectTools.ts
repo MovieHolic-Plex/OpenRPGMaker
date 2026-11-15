@@ -12,6 +12,9 @@ import type { GameMap, Project, StructureKitDef, TilesetDef } from "@/project/ty
 import { catalogEntry, resolveObjectAlias, sharedObjectDef, sharedObjects, sharedPlaces } from "./sharedDesignCatalog";
 import { rejectSettlementPropOnRoute } from "./routePropPolicy";
 import { roadCutAt } from "./roadCutGuard";
+import { squareSpot } from "./beodeulSquareGuard";
+import { isRoadCell } from "@/ai/v2/place/surface";
+import { protectedHouseCells } from "./houseProtection";
 import { lookKit, withKitSite } from "@/project/kitLook";
 import { rejectOnSceneStage } from "./sceneStageGuard";
 import { ToolError, type ToolDefinition } from "./types";
@@ -180,6 +183,26 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       // 겹침 처리(2026-10-25 J64): 학교 교실에 남은 소파·냉장고 위에 책상을 찍다 11번 거부됐다 — 쓰임에 안 맞는 가구는 걷어 내고,
       // nearest/replace 를 주면 그 자리로 옮기거나 겹친 가구를 걷는다.
       const overlapNotes: string[] = [];
+      // 읍 광장(beodeulSquareGuard): 가운데 기물은 하나, 소품은 가장자리 줄에, 기물끼리 겹치지 않게 — nearest 는 규칙을 지키는 가까운 자리로, 아니면 거부한다.
+      // 발자국 검사 밖에서 본다: 우물·수조(꼬리표 water)는 발자국 검사 대상이 아니어서 광장의 다른 기물 위에 그대로 찍혔다(2026-11-15 r5 «갈매기 포구»).
+      const squarePiece = !!kitDef && layers !== "lower" && kitDef.width <= 8 && kitDef.height <= 8 && !pattern.lower.some((t) => t >= 0) && pattern.upper.some((t) => t >= 0);
+      const squareGate = (): void => {
+        if (!squarePiece || !kitDef) return;
+        const cells = footprintFromUpper(pattern.width, pattern.height, pattern.upper, resolved.source);
+        const label = `「${resolved.name}」(${objectId})`, mode = String(args.onOverlap ?? "refuse");
+        const feetAt = (ox: number, oy: number) => cells.filter((c) => c.foot).map((c) => ({ x: ox + c.dx, y: oy + c.dy }));
+        // 옮길 자리: 발자국 통과 · 발이 길 칸(거리·광장 테) 위가 아님(돌 수조가 거리 턱에 반쯤 걸쳐 섰다) · 보호 칸 밖
+        let ownedCells: Set<number> | undefined; // 완성된 집·시공기 기물의 보호 칸 — 그 위로 옮기면 뒤에서 거절된다
+        const owned = () => ownedCells ??= new Set(protectedHouseCells(map).map((c) => c.y * map.width + c.x));
+        const hit = squareSpot(map, mapTileset, kitDef, { x: Number(args.x), y: Number(args.y) }, cells, label,
+          { replace: mode === "replace", free: (ox, oy) => !footprintRefusal(project, map, cells, ox, oy, label) && !feetAt(ox, oy).some((c) => isRoadCell(project, map, c.x, c.y)) && !cells.some((c) => owned().has((oy + c.dy) * map.width + ox + c.dx)) });
+        if (!hit) return;
+        if (mode === "nearest" && hit.free) {
+          overlapNotes.push(`${hit.message} — stamped on the nearest allowed spot (${hit.free.x},${hit.free.y}) instead`);
+          args = { ...args, x: hit.free.x, y: hit.free.y };
+        } else throw new ToolError(`${hit.message}.${hit.free ? ` Nearest allowed spot: top-left (${hit.free.x},${hit.free.y}) — onOverlap:'nearest' stamps there.` : ""}`, { code: hit.code, mapId: map.id, ...(hit.free ?? {}) });
+      };
+      squareGate();
       if (footprintChecked) {
         const cells = footprintFromUpper(pattern.width, pattern.height, pattern.upper, resolved.source);
         const label = `「${resolved.name}」(${objectId}) ${pattern.width}×${pattern.height}`;
@@ -238,6 +261,7 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
           }
         }
       }
+      squareGate(); // 겹침·길·사람을 비켜 옮긴 자리가 광장 가운데로 들어갔으면 다시 본다
       // 높이 단(map.relief): 그림은 한 단 위에만, 경사로 칸 금지, 남쪽 높은 칸이 아랫줄을 덮지 않게. relief 없는 맵은 그대로.
       const reliefBroken = checkReliefPlacement(map, resolved.source, objectId, resolved.name, pattern, Number(args.x), Number(args.y));
       if (reliefBroken) throw new ToolError(reliefBroken, { code: "relief-placement-rule", mapId: map.id });

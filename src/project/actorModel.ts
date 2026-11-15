@@ -95,6 +95,7 @@ type LegacyActorRecord = {
   readonly characterIndex?: number;
   readonly characterTransparent?: boolean;
   readonly battleCharacterResourceId?: string;
+  readonly weaponBattleSheets?: unknown;
   readonly battleScalePercent?: number;
   readonly battleHitFlash?: unknown;
   readonly critical?: Partial<ActorCritical>;
@@ -167,6 +168,10 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
     characterTransparent: actor.characterTransparent ?? false,
     battleCharacterResourceId: cleanOptionalId(actor.battleCharacterResourceId),
     ...(() => {
+      const weaponBattleSheets = normalizeWeaponBattleSheets(actor.weaponBattleSheets);
+      return weaponBattleSheets ? { weaponBattleSheets } : {};
+    })(),
+    ...(() => {
       const raw = actor.battleScalePercent;
       if (typeof raw !== "number" || !Number.isFinite(raw)) return {};
       const battleScalePercent = Math.round(Math.max(50, Math.min(300, raw)));
@@ -196,6 +201,17 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
       return battleCommandIds ? { battleCommandIds } : {};
     })(),
   };
+}
+
+/** 무기 계열 → 전투 시트 표 — 계열·시트 id 가 둘 다 빈 글이 아닌 줄만 남긴다. 남는 줄이 없으면 표를 두지 않는다(기본 시트를 쓴다). */
+export function normalizeWeaponBattleSheets(value: unknown): Record<string, string> | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const rows: [string, string][] = [];
+  for (const [kind, sheet] of Object.entries(value as Record<string, unknown>)) {
+    const k = kind.trim(), id = typeof sheet === "string" ? sheet.trim() : "";
+    if (k && id) rows.push([k, id]);
+  }
+  return rows.length ? Object.fromEntries(rows) : undefined;
 }
 
 const HIT_FLASH_HEX = /^#[0-9a-f]{6}$/i;

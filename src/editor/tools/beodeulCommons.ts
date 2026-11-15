@@ -68,6 +68,10 @@ export function planCommons(inp: CommonsInput): CommonsPlan {
   const gl = inMap(g.x, g.y) ? inp.level(idx(g.x, g.y)) : 0;
   const cand = new Set<number>(), under = new Set<number>(), kept = new Set<number>();
   const doorAt = new Set(inp.doors.filter((d) => inMap(d.x, d.y)).map((d) => idx(d.x, d.y)));
+  // 맵 가장자리 두 줄에는 흙을 새로 내지 않는다(뼈대 길만 가장자리에 닿는다) — 흙이 가장자리까지 부풀면 출구 없는 길 끝이 생겨 끝맺음이 «막힌 길» 표지를 세우고
+  // 출구 폭이 넓어졌다(2026-11-15 명세 은행: «막힌 길» 이벤트 4 → 15, 가장자리에 닿은 다섯 칸 넘는 길 줄 11 → 29).
+  const rim = (c: number) => { const x = c % W, y = (c - x) / W; return x <= 1 || y <= 1 || x >= W - 2 || y >= H - 2; };
+  const canEarth = (c: number) => inp.free(c) && !rim(c);
   /** 흙 원 하나: 가운데·반지름(세로는 조금 납작하게 — 3/4 시점) · 그 단의 칸만 · 가장자리는 칸 잡음. 원 안의 길 칸은 흙으로 남는다(kept). */
   const disc = (cx: number, cy: number, rx: number, ry: number, level: number): void => {
     for (let y = Math.floor(cy - ry - 1); y <= cy + ry + 1; y += 1) for (let x = Math.floor(cx - rx - 1); x <= cx + rx + 1; x += 1) {
@@ -75,7 +79,7 @@ export function planCommons(inp: CommonsInput): CommonsPlan {
       if (inp.level(c) !== level) continue;
       const r = 1 + 0.14 * (noise(x, y, 2.6, seed + 11) * 2 - 1);
       if (((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 > r * r) continue;
-      if (inp.road(c)) kept.add(c); else if (inp.free(c)) cand.add(c); else if (inp.prop(c)) under.add(c);
+      if (inp.road(c)) kept.add(c); else if (canEarth(c)) cand.add(c); else if (inp.prop(c)) under.add(c);
     }
   };
   const open = (x: number, y: number) => { const X = Math.round(x), Y = Math.round(y); return inMap(X, Y) && (inp.road(idx(X, Y)) || inp.free(idx(X, Y))); };
@@ -144,7 +148,7 @@ export function planCommons(inp: CommonsInput): CommonsPlan {
       if (corner || (edge && noise(x, y, 2.6, seed + 11) < 0.3)) continue;
       given.push(idx(x, y));
     } }
-  for (const c of given) { if (inp.road(c)) kept.add(c); else if (inp.free(c)) cand.add(c); else if (inp.prop(c)) under.add(c); }
+  for (const c of given) { if (inp.road(c)) kept.add(c); else if (canEarth(c)) cand.add(c); else if (inp.prop(c)) under.add(c); }
   if (!given.length) disc(g.x, g.y + 0.5, rx, ry, gl);
   // 마당이 집으로 뻗는다(집을 옮기지 않는다): 가까운 집 둘~넷의 문 앞을 씨앗으로, 모이는 곳에서 문 앞까지 혀를 내밀어 한 몸으로 키운다 —
   // 혀는 가는 줄이 아니라 폭이 서너 칸으로 부풀었다 줄었다 하고(잡음), 살짝 휘어 간다. 문 앞에서는 문 앞 닳은 자리와 합쳐진다. 먼 집은 흙길로 닿는다.
@@ -188,7 +192,7 @@ export function planCommons(inp: CommonsInput): CommonsPlan {
   // 5) 다듬기: 세 면이 흙인 빈 칸은 메우고, 한 면만 닿은 흙 칸(혹)은 걷는다
   for (let pass = 0; pass < 3; pass += 1) {
     for (let c = 0; c < W * H; c += 1) {
-      if (earth.has(c) || !inp.free(c)) continue; const x = c % W, y = (c - x) / W;
+      if (earth.has(c) || !canEarth(c)) continue; const x = c % W, y = (c - x) / W;
       if (N4.filter(([dx, dy]) => inMap(x + dx, y + dy) && solid(idx(x + dx, y + dy)) && inp.level(idx(x + dx, y + dy)) === inp.level(c)).length >= 3) earth.add(c);
     }
     for (const c of [...earth]) { const x = c % W, y = (c - x) / W;

@@ -11,6 +11,7 @@
 // 요청 낱말은 보지 않는다. 모델이 읽는 글도 없다.
 import { tilesetLookOptions, tilesetLookTableFor, TILESET_LOOK_PARTS, type TilesetLookTable } from "@/assets/tilesetLooks";
 import { tilesetStandTableFor } from "@/assets/tilesetStands";
+import { tilesetWaterTableFor } from "@/assets/tilesetWater";
 import { lookHash } from "./kitLook";
 import type { GameMap, Project, TilesetLook } from "./types";
 
@@ -39,11 +40,14 @@ export function chooseTilesetLook(table: TilesetLookTable, key: string, taken?: 
         if (fresh.length) options = fresh;
       }
     }
+    if (!options.length) continue;
     const pick = options[lookHash(`look|${key}|${table.tilesetId}|${part}`) % options.length]!;
     if (pick) { look[part] = pick; chosen = true; }
   }
-  // 숲 구성·풀밭 얼룩의 그림은 둘째 그림판에 있다 — 그 열쇠도 적어 둔다(미리 싣기·내보내기가 프로젝트 문자열에서 그림판을 찾는다).
-  if (stands && (look.stand || look.meadow)) look.standKey = stands.texture;
+  // 숲 구성·풀밭 얼룩·풀 결의 그림은 둘째 그림판에 있다 — 그 열쇠도 적어 둔다(미리 싣기·내보내기가 프로젝트 문자열에서 그림판을 찾는다).
+  if (stands && (look.stand || look.meadow || look.grain)) look.standKey = stands.texture;
+  const waters = tilesetWaterTableFor(table.tilesetId);
+  if (waters && look.water) look.waterKey = waters.texture;
   return chosen ? look : undefined;
 }
 

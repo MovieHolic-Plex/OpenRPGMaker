@@ -11,8 +11,6 @@ import { compileReliefStyle, RELIEF_DEFAULT_RIM, type ReliefWallStyle } from "./
 type Rgb = [number, number, number];
 const D = palette as { G: Rgb[]; B: Rgb[]; TOP: number[]; GROUND: number[]; LIP: Record<"L" | "M" | "R", number[]>; TILES: number[][] };
 const RAMPS = [D.G, D.B];
-// 바이옴의 별도 계단 양식이 없으면 돌 계단을 쓴다. 땅·흙벽 팔레트와 분리해 잔디 계단이 되지 않게 한다.
-const STONE_STAIR_RAMP: Rgb[] = [[47, 49, 46], [72, 75, 70], [103, 107, 98], [137, 141, 129], [176, 180, 165], [210, 213, 199]];
 const { TOP, GROUND, LIP, TILES } = D;
 const LV = Array.from({ length: RELIEF_MAX_LEVEL + 1 }, (_, i) => Math.min(3, Math.floor(i / 3)));
 const OUT_G = 0, OUT_B = 6, DRIP = 6, CW = 14, CH = 8;
@@ -399,6 +397,143 @@ function styledWall(S: ReliefWallStyle, sx: number, d: number, n: number, c: num
   return d === n - 2 ? shift(p, -1) : p;
 }
 
+// ── 자연 면(style.natural, 2026-11-14 오너 「벽이 타일 하나를 복사한 느낌은 싫다. 자연스러워야한다」) ──
+// 16px 무늬를 되풀이하지 않고 절대 좌표(화면 x, 땅 기준 y)의 해시·값 잡음으로 화소마다 만든다 — 부분 굽기 창에서도 전체 그림과 같다.
+// hsh3(FNV)는 아랫비트가 덜 섞여 화소 잡음에 쓰면 빗금이 보인다 — 한 번 더 섞는다.
+const nmix = (a: number, b: number, c: number) => { let v = hsh3(a, b, c); v ^= v >>> 15; v = Math.imul(v, 0x2c1b3c6d) >>> 0; v ^= v >>> 12; v = Math.imul(v, 0x297a2d39) >>> 0; return (v ^ (v >>> 15)) >>> 0; };
+const nu = (a: number, b: number, c: number) => nmix(a, b, c) / 4294967296;
+const vn1 = (t: number, k: number) => { const i = Math.floor(t), f = t - i, a = nu(i, k, 77), b = nu(i + 1, k, 77); return a + (b - a) * f * f * (3 - 2 * f); };
+const vn2 = (x: number, y: number, k: number) => {
+  const i = Math.floor(x), j = Math.floor(y), fx = x - i, fy = y - j, u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
+  const a = nu(i, j, k), b = nu(i + 1, j, k), c = nu(i, j + 1, k), d = nu(i + 1, j + 1, k);
+  return (a + (b - a) * u) * (1 - v) + (c + (d - c) * u) * v;
+};
+const clampTone = (v: number) => Math.max(1, Math.min(5, v));
+/**
+ * 세로 바위 갈비(원래 버들항 도시 절벽 방식): 폭 4~11px 갈비가 저마다 다르게 휘며 내려가고, 왼쪽이 밝고 오른쪽이 어둡다.
+ * 갈비 사이 틈은 이어졌다 끊겼다 해서 이웃 갈비가 붙었다 떨어지고, 갈비마다 다른 높이에서 비스듬히 깨진다. 벽 램프 1~5.
+ */
+function naturalRibs(ax: number, ay: number): number {
+  const xx = ax + Math.round(5 * (vn1(ay * 0.06, 9) - 0.5));
+  const bnd = (k: number) => k * 7 + nmix(k, 0, 3) % 5 + Math.round(3.2 * (vn1(ay * 0.13, 100 + k) - 0.5));
+  let k = fdiv(xx, 7) + 1; while (xx < bnd(k)) k -= 1;
+  const x0 = bnd(k), x1 = Math.max(x0 + 2, bnd(k + 1)), u = (xx - x0) / (x1 - x0);
+  const bh = 15 + nmix(k, 1, 5) % 18, yy = ay + nmix(k, 2, 5) % bh + ((xx - x0) >> 1), j = fdiv(yy, bh), v = yy - j * bh;
+  let sh = 2 + nmix(k, j, 4) % 3;
+  if (xx >= x1 - 1 && vn1(ay * 0.09, 300 + k) > 0.28) return 1;
+  if (u < 0.34) sh += 1; else if (u > 0.7) sh -= 1;
+  if (v === 0 && nmix(k, j, 8) % 4) sh -= 2; else if (v === 1 && nmix(k, j, 8) % 4) sh += 1;
+  const r = nmix(ax, ay, 21) % 11; if (r === 0) sh += 1; else if (r === 1) sh -= 1;
+  return clampTone(sh);
+}
+/** 가로 켜: 두께 3~10px 켜가 물결치며 이어지고(켜마다 물결이 달라 두께가 변한다), 윗선은 밝고 아랫선(층리 틈)은 짙되 군데군데 끊기고, 켜마다 다른 자리에 세로 금. 벽 램프 1~5. */
+function naturalStrata(ax: number, ay: number): number {
+  const yy = ay + Math.round(5 * (vn1(ax * 0.04, 31) - 0.5));
+  const bnd = (k: number) => k * 7 + nmix(k, 0, 13) % 5 + Math.round(3.4 * (vn1(ax * 0.11, 200 + k) - 0.5));
+  let k = fdiv(yy, 7) + 1; while (yy < bnd(k)) k -= 1;
+  const y0 = bnd(k), y1 = Math.max(y0 + 2, bnd(k + 1)), v = yy - y0, h = y1 - y0;
+  let sh = 2 + nmix(k, 0, 14) % 3;
+  if (vn1(ax * 0.05, 400 + k) > 0.72) sh += nmix(k, 3, 14) & 1 ? 1 : -1;
+  if (v >= h - 1 && vn1(ax * 0.1, 500 + k) > 0.22) return 1;
+  if (v === 0) sh += 1;
+  else { const w = 19 + nmix(k, 1, 16) % 17, q = ax + nmix(k, 2, 16) % w + (v >> 1); if (q % w === 0 && nmix(fdiv(q, w), k, 17) % 3) sh -= 1; }
+  const r = nmix(ax, ay, 23) % 11; if (r === 0) sh += 1; else if (r === 1) sh -= 1;
+  return clampTone(sh);
+}
+/**
+ * 턱진 바위: 두께 8~14px 선반이 층층이 — 선반 윗면 한두 줄은 밝고, 몸은 중간, 아래 선반에 닿기 전 두 줄은 짙은 그늘.
+ * 선반 윗선은 물결치고 12~30px 토막마다 한두 화소 어긋나 곧은 줄이 서지 않는다. 토막 셋에 하나만 비스듬한 금이 간다. 벽 램프 1~5.
+ */
+function naturalLedges(ax: number, ay: number): number {
+  const yy = ay + Math.round(4 * (vn1(ax * 0.045, 61) - 0.5));
+  const seg = (k: number) => { const w = 12 + nmix(k, 0, 62) % 19; return fdiv(ax + nmix(k, 1, 62) % 211, w); };
+  const bnd = (k: number) => k * 10 + nmix(k, 0, 63) % 5 + Math.round(3.6 * (vn1(ax * 0.09, 600 + k) - 0.5)) + nmix(seg(k), k, 64) % 3 - 1;
+  let k = fdiv(yy, 10) + 1; while (yy < bnd(k)) k -= 1;
+  const y0 = bnd(k), y1 = Math.max(y0 + 4, bnd(k + 1)), v = yy - y0, h = y1 - y0, b = seg(k);
+  const w = 12 + nmix(k, 0, 62) % 19, u = (ax + nmix(k, 1, 62) % 211) - b * w;
+  if (v === 0) return nmix(ax, k, 66) % 7 ? 5 : 4;
+  if (v === 1) return vn1(ax * 0.3, 650 + k) > 0.35 ? 4 : 3;
+  if (v >= h - 1) return 1;
+  if (v === h - 2) return vn1(ax * 0.17, 660 + k) > 0.3 ? 2 : 1;
+  const tone = vn2(ax * 0.045, ay * 0.07, 67) + 0.25 * (nu(b, k, 65) - 0.5);
+  let sh = tone > 0.62 ? 4 : tone < 0.34 ? 2 : 3;
+  if (nmix(b, k, 68) % 3 === 0) { const cu = u - (v >> 1); if (cu === 2) return 1; if (cu === 3) sh += 1; }
+  const r = nmix(ax, ay, 69) % 12; if (r === 0) sh += 1; else if (r === 1) sh -= 1;
+  return clampTone(Math.min(4, sh));
+}
+/**
+ * 바위 절벽(참고 그림 3 의 회갈색 바위): 비스듬히 선 밝은 바위 조각이 짙은 틈 사이로 엇갈려 박힌다. 조각은 두 벌 — 큰 조각(폭 6~14 · 높이 9~14px,
+ * 자리 열에 넷쯤)이 먼저 서고 그 사이를 잔 조각(폭 3~5 · 높이 4~6px)이 메워 크기가 고르지 않다. 폭이 고르지 않은 세로 금이 14~33px 마다
+ * 절벽을 내리긋고(휘고, 군데군데 끊기고, 두 화소로 벌어진다) 셋에 하나는 끊기지 않는 긴 금이라 두세 칸 높이를 그대로 잇는다. 금 사이 한 폭은
+ * 기둥처럼 왼쪽이 밝고 오른쪽이 어두우며, 폭마다 조각이 기우는 쪽이 다르다. 벽 램프 1~5.
+ */
+function naturalRock(ax: number, ay: number): number {
+  const fx = (k: number) => k * 22 + nmix(k, 0, 71) % 12 + Math.round(4 * (vn1(ay * 0.07, 700 + k) - 0.5));
+  let k = fdiv(ax, 22) + 1; while (ax < fx(k)) k -= 1;
+  const x0 = fx(k), x1 = Math.max(x0 + 6, fx(k + 1)), off = ax - x0, u = off / (x1 - x0);
+  const spine = nmix(k, 5, 71) % 3 === 0;                                    // 긴 금: 끊기지 않고 거의 내내 두 화소
+  const open = spine || vn1(ay * 0.04, 800 + k) > 0.16, wide = vn1(ay * 0.09, 900 + k) > (spine ? 0.22 : 0.5);
+  if (open && (off === 0 || (wide && off === 1))) return 1;
+  // 바위 조각: 엇갈린 흩은 격자 칸마다 기운 마름모꼴 조각 하나. 조각 밖은 짙은 틈 — 조각 오른쪽 아래는 조각 그늘로 가장 짙다.
+  // 금 사이 한 폭 안에서는 조각이 같은 쪽으로 기울고, 다섯에 하나만 반대로 눕는다. big = 큰 조각 벌(격자 12×13), 아니면 잔 조각 벌(5×6).
+  const lean0 = nmix(k, 3, 71) & 1 ? 0.4 : -0.4;
+  const inChip = (x: number, y: number, big: boolean): number => {
+    const gw = big ? 12 : 5, gh = big ? 13 : 6, gy = fdiv(y, gh);
+    for (let j = gy - 1; j <= gy + 1; j += 1) {
+      const st = j & 1 ? gw >> 1 : 0, gx = fdiv(x - st, gw);
+      for (let i = gx - 1; i <= gx + 1; i += 1) {
+        const h = nmix(i, j, big ? 74 : 72); if (big ? h % 10 >= 4 : h % 7 === 0) continue;
+        const cx = i * gw + st + (gw >> 1) + (h >>> 3) % (big ? 4 : 2), cy = j * gh + (gh >> 1) - 1 + (h >>> 5) % 3;
+        const hw = big ? 3 + ((h >>> 8) % 9) * 0.5 : 1.3 + ((h >>> 8) % 3) * 0.4, hh = big ? 4.5 + ((h >>> 12) % 6) * 0.5 : 2.0 + ((h >>> 11) % 3) * 0.5;
+        const lean = (h >>> 17) % 5 === 0 ? -lean0 : lean0, dy = y - cy, dx = x - cx + lean * dy;
+        if (Math.abs(dy) > hh || Math.abs(dx) > hw || Math.abs(dx) / hw + Math.abs(dy) / hh > (big ? 1.7 : 1.6)) continue;
+        const rim = big ? 1.4 : 0.9;
+        if (dx >= hw - rim || dy >= hh - rim) return 3;
+        // 큰 조각의 면: 왼쪽 위가 밝고, 결 한 줄이 비스듬히 지난다
+        if (big) return dy <= -hh + 1.6 || (dx <= -hw + 1.2 && dy < 0) ? 5 : dx > hw * 0.2 && (h >>> 20) % 2 ? 3 : 4;   // 윗모서리·왼쪽 위 모서리는 밝고, 둘에 하나는 오른쪽 면이 한 톤 어둡다(각진 판)
+        return dy <= -hh + 1 && dx < hw - 0.9 ? 5 : 4;
+      }
+    }
+    return 0;
+  };
+  const shade = vn2(ax * 0.05, ay * 0.06, 73);
+  let sh = inChip(ax, ay, true);
+  if (!sh) sh = inChip(ax - 1, ay, true) || inChip(ax, ay - 1, true) || inChip(ax + 1, ay, true) ? -1 : inChip(ax, ay, false);   // 큰 조각 둘레 한 화소는 틈
+  if (sh > 0) { if (u > 0.8 || shade < 0.26) sh -= 1; }
+  else sh = sh < 0 || inChip(ax - 1, ay - 1, false) || shade < 0.42 ? 1 : 2;
+  if (open && off === (wide ? 2 : 1)) sh -= 1;                               // 금 오른쪽 그늘
+  return clampTone(sh);
+}
+/** 자연 면의 풀 처마 깊이(px, 3~6): 열마다 다른 길이로 드리운다(16px 처마 무늬를 되풀이하지 않는다). */
+const naturalLipDepth = (ax: number) => 3 + Math.floor(2.6 * vn1(ax * 0.21, 51)) + (nmix(ax, 7, 53) % 4 === 0 ? 1 : 0);
+/** 풀 처마 한 화소(윗면 램프 1~5): 끝은 짙은 풀 끝, 그 위는 중간, 맨 윗줄은 드문드문 밝은 잎. */
+function naturalLip(ax: number, d: number, depth: number): number {
+  if (d === depth - 1) return nmix(ax, 3, 54) % 3 ? 1 : 2;
+  if (d === depth - 2) return nmix(ax, d, 55) % 4 ? 2 : 3;
+  const r = nmix(ax, d, 56) % 9;
+  return r === 0 ? 4 : r === 1 ? 2 : 3;
+}
+/** 바위 절벽의 갓돌(벽 램프 1~5, -1 = 갓돌 아님): 폭 5~8px 둥근 돌이 절벽 맨 위에 줄지어 얹힌다 — 가운데가 두껍고 양끝이 얇고, 돌 사이·밑은 짙다. */
+function naturalCap(ax: number, d: number): number {
+  const bnd = (k: number) => k * 6 + nmix(k, 0, 81) % 3;
+  let k = fdiv(ax, 6) + 1; while (ax < bnd(k)) k -= 1;
+  const x0 = bnd(k), x1 = bnd(k + 1), w = x1 - x0, u = ax - x0, h = 4 + nmix(k, 1, 81) % 3 - (u === 0 || u === w - 1 ? 1 : 0);
+  if (d > h) return -1;
+  if (d === h) return 1;
+  if (u === w - 1) return d === 0 ? 3 : 2;
+  if (d === h - 1) return 3;
+  return d <= 1 && u < w - 2 ? 5 : 4;
+}
+/** 자연 면 발치(-1 = 그대로): 맨 아랫줄은 짙은 닿는 선, 군데군데 풀 포기(윗면 램프)와 잔돌(벽 램프 밝은 색)이 그 선을 끊는다. */
+function naturalFoot(ax: number, c: number, d: number, n: number): number {
+  const b = n - 1 - d;                                             // 0 = 맨 아랫줄
+  if (b > 4) return -1;
+  const g = fdiv(ax, 3), h = nmix(g, c, 91), kind = h % 5, u = ax - g * 3;
+  if (kind === 0) { const tall = 3 + (h >>> 5) % 3 - (u === 1 ? 0 : 1 + (h >>> 9) % 2); if (b < tall) return b === tall - 1 ? 4 : b === 0 ? 1 : 2 + ((h >>> 11) + u) % 2; }   // 풀 포기
+  else if (kind === 1 && (h >>> 7) % 2 && b < 2 && !(b === 1 && u !== 1)) return b === 1 ? 6 + 5 : u === 2 ? 6 + 2 : 6 + 4;                                          // 잔돌
+  return b === 0 ? OUT_B : -1;
+}
+
 // ── 벽면에 판 계단(style.carvedStairs, r3 2026-09-29): 계단 경사로의 디딤판·챌면을 돌(또는 통나무 턱)로 칠한다 ──
 // across: 계단 폭 방향 위치(px), width: 계단 폭(px). 돌: 양옆 2px 볼돌(바깥 1px 외곽선), 디딤판 앞 1px 코(밝게), 뒤 1px 그늘,
 // 디딤판마다 엇갈린 줄눈. 통나무(log, 완만한 계단): 디딤판은 윗면 그대로, 챌면이 통나무 — 윗줄 밝은 껍질, 아랫줄 그늘, 양끝 나이테.
@@ -494,12 +629,11 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   // 부분 굽기: ox·oy = 창 원점의 화면 px. 무늬를 읽는 곳은 (화소 + 원점) 절대 좌표를 쓴다. 칸 주기(16)·짝홀만 보는 곳은 그대로 둔다.
   const win = opt.window, ox = win ? win.cx * T : 0, oy = win ? win.cy * T : 0, cy0 = win ? win.cy : 0;
   // gslopes 는 맵 전체 좌표(절대 좌표 패스용), slopes 는 h 기준 좌표(높이·네모 절벽용). 번호는 같다.
-  const gslopes = opt.slopes ?? [];
+  // 디딤판으로 끊는 계단은 벽면에 판 계단 양식(carvedStairs)만 그린다 — 그 밖의 계단은 비탈로 잇고 경사로 도트(칩셋 돌계단 조각)를 입힌다.
+  // 전에는 그런 계단을 렌더러가 회색 벽돌 디딤판으로 칠했다(2026-11-14 오너 「계단을 이딴 식으로 하면 절대 안 된다니까 ?」) — 그 길은 없다.
+  const gslopes = S?.carvedStairs ? opt.slopes ?? [] : (opt.slopes ?? []).map((s) => (s.steps ? { ...s, steps: undefined } : s));
   const slopes = win ? gslopes.map((s) => ({ ...s, x: s.x - win.cx, y: s.y - win.cy })) : gslopes;
-  const stoneStairs = !S?.carvedStairs && slopes.some(s => !!s.steps);
-  const baseRamps = opt.ramps ?? S?.ramps ?? RAMPS;
-  const stoneOffset = baseRamps.length * 6;
-  const ramps = stoneStairs ? [...baseRamps, STONE_STAIR_RAMP] : baseRamps;
+  const baseRamps = opt.ramps ?? S?.ramps ?? RAMPS, ramps = baseRamps;
   const art = !!opt.rampArt;
   // 경사로와 그 둘레 한 칸은 네모 절벽 — 대각선으로 깎이면 경사로 입구가 비스듬히 잘려 비탈이 땅에 붙지 않는다
   const nearRamp = slopes.length
@@ -610,14 +744,28 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     const diagN = (x: number) => x >= 0 && x < PW && kind[row + x] === 0 && lev[row + x] === c;
     const cL = d < DRIP && diagN(sx - 1), cR = d < DRIP && diagN(sx + 1);
     const L = !same(sx - 1) && !cL, R = !same(sx + 1) && !cR, EL = !wall(sx - 1) && !cL, ER = !wall(sx + 1) && !cR;
-    const j = jit(ax, c), de = DRIP + j; let p: number;
-    if (S) {
+    // 자연 면 양식의 절벽 화소(경사로 옆벽·챌면은 가족 무늬 그대로): 처마 깊이는 열마다 다르고(갓돌 양식은 0), 16px 처마 무늬를 쓰지 않는다
+    const nat = S?.natural && !ssl[i] ? S.natural : null;
+    const j = jit(ax, c), de = nat ? (nat === "rock" ? 0 : naturalLipDepth(ax)) : DRIP + j; let p: number;
+    if (nat && nat !== "boulders") {
+      // 자연 면(style.natural): 처마(풀 드리움 또는 갓돌) → 좌표로 만든 몸통. 처마 바로 밑 두 줄은 처마 그늘, 발치 세 줄은 짙게.
+      const cap = nat === "rock" ? naturalCap(ax, d) : -1;
+      if (cap >= 0) p = 6 + cap;
+      else if (d < de) p = naturalLip(ax, d, de);
+      else {
+        p = 6 + (nat === "ribs" ? naturalRibs(ax, ay) : nat === "strata" ? naturalStrata(ax, ay) : nat === "ledges" ? naturalLedges(ax, ay) : naturalRock(ax, ay));
+        const under = nat === "rock" ? (d >= 1 && naturalCap(ax, d - 1) >= 0) || (d >= 2 && naturalCap(ax, d - 2) >= 0) : d - de < 2;
+        if (under) p = shift(p, -1);
+        if (d >= n - 3 && d > de + 2) p = shift(p, -1);
+        if (d === n - 1) p = OUT_B;
+      }
+    } else if (S && !nat) {
       p = styledWall(S, ax, d, n, c, ((src[i] / W) | 0) + cy0, ssl[i] !== 0);
       // 경사로 옆벽(동서 경사로의 사다리꼴, 2026-09-29 r2): 몸통 무늬를 한 단 밝게, 위 1줄은 턱, 바깥 외곽선은 4px 넘는 곳만 —
       // 어두운 몸통 + 외곽선만 남은 얇은 끝이 경사로 발치의 검은 세모로 읽혔다
       if (ssl[i]) p = d === n - 1 && n >= 4 ? OUT_B : shift(p, d === 0 ? 3 : 2);
     } else if (d < de) {
-      p = LIP[L ? "L" : R ? "R" : "M"][Math.max(0, d - j) * T + (L ? 0 : R ? 15 : sx % T)];
+      p = nat ? naturalLip(ax, d, de) : LIP[L ? "L" : R ? "R" : "M"][Math.max(0, d - j) * T + (L ? 0 : R ? 15 : sx % T)];
     } else {
       const dd = d - de, ci = chunkIndex(ax, ay), cid = CKa[ci];
       const hr = hsh3(CKX[ci], CKY[ci], 31);
@@ -642,6 +790,8 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       if (d === n - 2) p = shift(p, -1);
       if (d === n - 1) p = OUT_B;
     }
+    // 자연 면 발치: 닿는 선을 풀 포기·잔돌이 끊는다
+    if (nat) { const foot = naturalFoot(ax, c, d, n); if (foot >= 0 && d >= de) p = foot; }
     const slopeSide = !!(S && ssl[i]);   // 경사로 옆벽: 끝 외곽선 말고는 옆 그림자·비스듬한 면 어둡힘을 받지 않는다 — 대각선을 따라 검은 띠가 섰다
     if ((EL || ER) && !(slopeSide && n < 4)) p = OUT_B;
     else if (slopeSide) { /* keep the lifted body colour */ }
@@ -664,6 +814,8 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   const westMax = windowMaxBound(hf, PH, PW, PW, 1, 12, -1);
   const eastMax = windowMaxBound(hf, PH, PW, PW, 1, 4, 1);
   const southMax = windowMaxBound(fl, PW, SH, 1, PW, 6, 1);
+  // 원본 바닥 위에 남길 그늘 세기(0~2, style.castShadow) — 원본 바닥은 지형 그늘을 버리므로 따로 적어 두었다가 곱한다
+  const castS = S?.castShadow && opt.ground ? new Uint8Array(N) : null;
   // 윗면 가장자리와 그늘
   const rampFace = (j: number) => ssl[j]! > 0 && kind[j] === 0 && !slopes[ssl[j]! - 1]!.steps;
   for (let sy = 0; sy < SH; sy++) for (let sx = 0; sx < PW; sx++) {
@@ -737,6 +889,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     // 경사로 도트 면은 도트가 명암을 가진다 — 벽 발치 그늘을 얹으면 비탈 가장자리에 검은 띠가 선다
     // (the floor under a deck takes no foot shadow either: the deck and the gorge walls around it darkened it into a slab)
     if (s && !(art && ssl[i]) && !(bridge && underDeck[i])) out[i] = Math.max(1, out[i] - s);
+    if (castS && s && !ssl[i] && !(bridge && underDeck[i])) castS[i] = s;
   }
   // 뒤·옆 가장자리 턱(rim): 북쪽 가장자리 안쪽 밝은 턱 줄 + 뒤 둑 + 동·서·대각 가장자리 바깥 낮은 땅 위 옆면 띠(벽 램프).
   // 칠한 화소는 가장자리(edge) 표시를 받아 타일 위(over)로 간다. 늪(2026-09-28)에서 시작해 2026-09-29 렌더러 r2 부터
@@ -876,27 +1029,6 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     }
   }
   const stairOwner = (i: number): number => (cut.length ? cut[i] : 0) || (ssl[i] && kind[i] === 0 && slopes[ssl[i] - 1]?.steps ? ssl[i] : 0);
-  if (stoneStairs) {
-    for (let i = 0; i < N; i++) {
-      const owner = stairOwner(i);
-      if (!owner) continue;
-      const s = gslopes[owner - 1]!, sx = i % PW + ox, py = mpy[i] + oy;
-      const [across, width] = stairAcross(s, sx, py);
-      let shade: number;
-      if (across === 0 || across === width - 1) shade = 1;
-      else if (kind[i] === 1) {
-        // 흙벽 무늬 대신 디딤판 아래 그늘과 짧은 돌 챌면을 구분한다.
-        shade = dep[i] === 0 ? 1 : dep[i] === run[i] - 1 ? 2 : 3;
-        if (run[i] > 4 && (across + Math.floor(sst[i] * s.steps!) * 7) % 16 === 0) shade = Math.max(1, shade - 1);
-      } else {
-        const t = sst[i] * s.steps!, phase = t - Math.floor(t);
-        const treadPixels = (s.dir === "n" || s.dir === "s" ? s.h : s.w) * T / s.steps!;
-        shade = phase < 1 / treadPixels ? 5 : phase > 1 - 1 / treadPixels ? 2 : 4;
-        if (shade === 4 && across % 16 === (Math.floor(t) % 2 ? 8 : 0)) shade = 3;
-      }
-      out[i] = stoneOffset + shade;
-    }
-  }
   const hidCell = new Uint8Array(NC);
   for (let k = 0; k < NC; k++) hidCell[k] = topN[k] && hidN[k] * 2 >= topN[k] ? 1 : 0;
   for (let sy = 0; sy < SH; sy++) for (let sx = 0; sx < PW; sx++) {
@@ -914,9 +1046,8 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     } else {
       rgba[o] = col[0] * f; rgba[o + 1] = col[1] * f; rgba[o + 2] = col[2] * f; rgba[o + 3] = 255;
     }
-    const stone = stoneStairs && stairOwner(i);
-    if (!stone && shadeA && shadeA[i] && !(rimPx && rimPx[i] >= 0)) { const g = ramps[0][0]; rgba[o] = g[0]; rgba[o + 1] = g[1]; rgba[o + 2] = g[2]; rgba[o + 3] = shadeA[i]; edge[i] = 1; }
-    if (!stone && rimPx && rimPx[i] >= 0) {
+    if (shadeA && shadeA[i] && !(rimPx && rimPx[i] >= 0)) { const g = ramps[0][0]; rgba[o] = g[0]; rgba[o + 1] = g[1]; rgba[o + 2] = g[2]; rgba[o + 3] = shadeA[i]; edge[i] = 1; }
+    if (rimPx && rimPx[i] >= 0) {
       const rc = ramps[(rimPx[i] / 6) | 0][rimPx[i] % 6];
       rgba[o] = rc[0]; rgba[o + 1] = rc[1]; rgba[o + 2] = rc[2]; rgba[o + 3] = 255;
       // 바깥 흙 둑은 벽이다. 실제 바닥 타일로 덮거나 바닥 under 띠로 보내지 않는다.
@@ -957,7 +1088,11 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       const edgeTone = rimTone >= 0 ? rimTone : edge[i] ? out[i] : -1;
       const shade = cap ? .7 + .05 * out[i]
         : edgeTone >= 0 && edgeTone < 6 ? NATIVE_EDGE_LIGHT[edgeTone]! : 1;
-      const light = shade * (shadeA?.[i] && rimTone < 0 ? 1 - .3 * shadeA[i] / 255 : 1);
+      let light = shade * (shadeA?.[i] && rimTone < 0 ? 1 - .3 * shadeA[i] / 255 : 1);
+      if (!cap && edgeTone < 0) {
+        if (castS?.[i]) light *= 1 - 0.12 * castS[i]!;
+        if (S?.topTone && lev[i]! > 0 && !ssl[i]) light *= 1 + S.topTone * lev[i]!;
+      }
       rgba[o] *= light; rgba[o + 1] *= light; rgba[o + 2] *= light;
     }
   }

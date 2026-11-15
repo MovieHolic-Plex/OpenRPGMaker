@@ -13,6 +13,7 @@
 // 모두 네 방향 통행 가능한 빈 땅이고 다른 새 나무의 둘레와 겹치지 않을 때만 심는다 — 둘레 고리로 언제나 돌아갈 수 있어 연결이 끊기지 않는다.
 // 킷이 없는 칩셋(버들항이 아닌 맵)에서는 아무것도 하지 않는다.
 
+import { waterShoreTiles } from "./beodeulWater";
 import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import type { GameMap, Project, SectionStructureKitDef } from "@/project/types";
@@ -291,11 +292,11 @@ export function applyVariantTerrain(copy: GameMap, tileset: Tileset | undefined,
     // 나무 그림자·풀 물가 가장자리(2층 덧그림)는 잿빛 땅 위에서 초록 테두리·허공 그림자로 남는다.
     if (copy.lowerOverlayTiles) {
       const { toSource } = natureGraftTargets(tileset);
-      const green = greenOverlaySources();
+      const green = greenOverlaySources(), shore = waterShoreTiles(tileset);
       copy.lowerOverlayTiles.forEach((tile, cell) => {
         if (tile === undefined || tile < 0 || !inMask(cell)) return;
         const source = toSource.get(tile);
-        if (source !== undefined && green.has(source)) copy.lowerOverlayTiles![cell] = -1;
+        if ((source !== undefined && green.has(source)) || shore.has(tile)) copy.lowerOverlayTiles![cell] = -1;
       });
     }
   }

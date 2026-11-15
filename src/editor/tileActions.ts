@@ -10,6 +10,7 @@ import { autotileEditTriggersGroup, autotileGroupLayer, autotileGroupLayerView, 
 import { resolveForestCanopyReplacementExemptTileIds } from "@/editor/tools/forestComposition";
 import { repairTreePairsOnMap } from "@/project/lint/repairTreePairs";
 import { clearTileStack } from "@/project/mapOverlayTiles";
+import { standGrainTile } from "@/assets/tilesetStands";
 import { isCombinedTownTileset, isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import {
@@ -916,6 +917,9 @@ function setTileSafe(m: GameMap, layer: TileLayer, x: number, y: number, tile: n
   const i = y * m.width + x;
   clearTileStack(m, layer, i);
   if (layer === "lower") {
+    // 풀 결(버들항 겉모습 grain — 2층)은 그 밑 풀 바닥의 한 부분이다: 바닥을 다른 칸으로 칠하면 같이 걷는다(안 걷으면 새 바닥이 결 칸에 가린다)
+    const over = m.lowerOverlayTiles?.[i] ?? -1;
+    if (over >= 0 && m.lowerTiles[i] !== tile && standGrainTile(store.getCurrent().tilesets[m.tilesetId])(over)) m.lowerOverlayTiles![i] = -1;
     m.lowerTiles[i] = tile;
   } else {
     m.upperTiles[i] = tile;

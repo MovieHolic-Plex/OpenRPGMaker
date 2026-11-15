@@ -247,8 +247,8 @@ export const lifeFullScenario = {
         inventory: { item_potato: 1, item_potato_seed: 2 },
         energy: 99,
         // 실측: 저장 직후 힌트는 "덮어씁니다"가 아니다(그건 이미 채워진 칸을 다시 고를 때다).
-        // 실제 증거는 1번 슬롯이 "저장됨"이 되고 나머지가 "비어 있음"으로 남는 것이다.
-        visibleText: { "status-menu-detail": "1번 저장저장됨" },
+        // 실제 증거는 1번 슬롯에 저장한 곳(봄 밭)이 뜨고 나머지가 "비어 있음"으로 남는 것이다.
+        visibleText: { "status-menu-detail": "1번 저장봄 밭" },
       },
       shot: true,
     },
