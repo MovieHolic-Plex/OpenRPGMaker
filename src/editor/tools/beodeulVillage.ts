@@ -2835,7 +2835,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     for (const [w, h] of (win ? [[7, 4], [6, 4], [5, 3], [4, 3], [3, 3]] : byHouse ? [[5, 3], [4, 3]] : [[7, 4], [6, 4], [5, 3], [4, 3]]) as readonly (readonly [number, number])[]) {
       for (let y = 1; y + h < H - 1; y += 1) for (let x = 1; x + w < W - 1; x += 1) {
         const m = idx(x + (w >> 1), y + (h >> 1)), L = lv[m]!;
-        if (dF[m]! < (win ? 4 : 7)) continue;
+        if (dF[m]! < (win ? 4 : 6)) continue;
         if (win && (x < win.x || y < win.y || x + w > win.x + 20 || y + h > win.y + 15)) continue;
         let ok = true;
         for (let j = -1; j <= h && ok; j += 1) for (let i = -1; i <= w; i += 1) { const c = idx(x + i, y + j); if (occ[c] !== FREE || lv[c] !== L || rampCells.has(c)) { ok = false; break; } }
@@ -3134,7 +3134,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       yardSeeds = endSeeds.length;
       if (!endSeeds.length) return;
     }
-    for (let t = 0; t < endSeeds.length + (late ? 0 : woodsStyle === "wall" ? 480 : woodsStyle && woodsStyle !== "clumps" && woodsStyle !== "rows" ? 420 : woodsStyle === "clumps" ? 420 : denseWoods || highWoods ? 400 : codeT ? 320 : 90) && (late || forestSet.size < goal + endSeeds.length * 12); t += 1) {
+    for (let t = 0; t < endSeeds.length + (late ? 0 : woodsStyle === "wall" ? 480 : woodsStyle && woodsStyle !== "clumps" && woodsStyle !== "rows" ? 420 : woodsStyle === "clumps" ? 420 : denseWoods || highWoods ? 400 : codeT ? (bodyNear ? 640 : 320) : 90) && (late || forestSet.size < goal + endSeeds.length * 12); t += 1) { // 숲이 먼저인 마을은 씨앗을 곱절로 던진다 — 집이 모여 빈 땅이 잘게 갈리면 320번으로는 숲 몫을 못 채웠다(탐침 30판 4,251칸 · 곱절이면 4,521칸 · 기준 4,443)
       const fromEnd = t < endSeeds.length;
       if (!fromEnd && forestSet.size >= goal) break;
       const [sx, sy] = fromEnd ? endSeeds[t]! : woodsStyle === "wall" ? edgeSeed() : woodsStyle === "deep" ? deepSeed() : [ri(0, W - 1), ri(0, H - 1)];
@@ -3305,10 +3305,10 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     for (let c = 0; c < W * H; c += 1) if (occ[c] === FOREST && !forestSet.has(c)) occ[c] = FREE; // 다듬기로 빠진 산마루(summit) 칸은 풀밭으로
     for (const c of forestSet) occ[c] = FOREST;
   }
-  // 남은 땅의 쓰임(2026-11-15 감독 «집을 마당가로 모았다고 나머지 땅이 비면 안 된다»): 숲까지 선 뒤 남은 빈 땅을 훑어 밭을 일곱까지 놓는다 — 숲 뒤라 숲 자리를 먹지 않는다.
+  // 남은 땅의 쓰임(2026-11-15 감독 «집을 마당가로 모았다고 나머지 땅이 비면 안 된다»): 숲까지 선 뒤 남은 빈 땅을 훑어 밭을 여덟까지 놓는다 — 숲 뒤라 숲 자리를 먹지 않는다.
   // 그러고도 볼 것 없는 화면(20×15 창)이 남으면 그 창 안에 한 뙈기를 더 놓는다(수와 상관없이).
   if (bodyNear && !denseWoods) {
-    while (fields < 7 && scanField()) lateFields += 1;
+    while (fields < 8 && scanField()) lateFields += 1;
     const seen = (c: number) => { const v = occ[c]!; return v === BLD || v === PROP || v === FENCE || v === FIELD || v === FOREST || onWater.has(c); };
     for (let round = 0; round < 4; round += 1) { const e = emptyWindows({ W, H, used: seen }); if (!e.length || !e.some((w0) => scanField(w0))) break; lateFields += 1; }
   }
