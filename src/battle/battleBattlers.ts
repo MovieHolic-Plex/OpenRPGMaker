@@ -12,6 +12,7 @@ import { monsterBattleStats, monsterBattleStatsForSpecies, monsterCurrentHp, mon
 import { classLearnedSkillIdsUpToLevel, effectiveActorClassId } from "@/project/sessionClass";
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, ClassBattleCommand, EnemyActionPattern, EnemyId, EnemyRecord, Project, SkillId } from "@/project/types";
 import { resolveBattlerPose } from "@/battle/battlePose";
+import { actorBattleSheetForEquipment } from "@/battle/battleWeaponSheet";
 import type { BattleActionResultSnapshot, BattleBattlerSnapshot } from "@/battle/types";
 import { classicEnemyFormation } from "@/battle/battlerPlacements";
 import type { EquipmentRecord, TroopMemberRecord, TroopRecord } from "@/project/types/database";
@@ -62,7 +63,8 @@ export interface MutableBattler {
   // Event level changes update the existing battler before refreshing derived stats.
   level?: number;
   readonly faceResourceId?: string;
-  readonly battleCharacterResourceId?: string;
+  // 장비한 무기 계열에 따라 고른 전투 시트(battleWeaponSheet.ts). 전투 중 장비가 바뀌면 refreshActorBattlerDerivedStats 가 다시 고른다.
+  battleCharacterResourceId?: string;
   /** 표시용 걷기 칩. 전투 규칙 계산에는 쓰지 않는다. */
   readonly characterResourceId?: string;
   readonly characterIndex?: number;
@@ -162,7 +164,7 @@ export function actorBattlers(
       classId: derived.effectiveClassId,
       level,
       faceResourceId: resolveActorFaceResourceId({ actorFaceResourceIds: overrides?.faceResourceIds }, normalizedActor, project),
-      battleCharacterResourceId: normalizedActor.battleCharacterResourceId,
+      battleCharacterResourceId: actorBattleSheetForEquipment(project, normalizedActor, actorEquipment),
       characterResourceId: normalizedActor.characterResourceId,
       characterIndex: normalizedActor.characterIndex,
       name: overrides?.names?.[actorId] ?? normalizedActor.name,
@@ -287,6 +289,8 @@ export function refreshActorBattlerDerivedStats(
   battler.agility = derived.agility;
   battler.chargeRate = derived.chargeRate;
   battler.equipmentEffects = derived.equipmentEffects;
+  // 무기가 바뀌었으면 전투 시트도 다시 고른다 — 표시 계층은 시트가 달라진 배우만 다음 그리기에서 새 그림으로 세운다.
+  battler.battleCharacterResourceId = actorBattleSheetForEquipment(project, normalizedActor, effectiveEquipment);
   if (input.skills) {
     battler.skillIds = learnedSkillIds(
       project,
