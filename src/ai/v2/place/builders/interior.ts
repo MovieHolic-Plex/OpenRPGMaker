@@ -17,15 +17,21 @@ import { harmonizeRoomGraph, RoomGraphError, type GraphOut } from "@/editor/hand
 import { copiedReference } from "../roomIdeas";
 import { buildFromLayout, hasLayout } from "./interiorLayoutBuild";
 import { LAYOUT_FORMAT, LAYOUT_FORMAT_REGIONS, LAYOUT_GRID_RULES } from "../interiorLayout";
-import { effectiveSpec } from "../interiorCatalog";
+import { effectiveSpec, interiorTilesetFor } from "../interiorCatalog";
 import { Obj, Room, Rebuild, InteriorState, interiorTilesetOf, resolveKind, SHRINK_BARE_PCT, FILL_BARE_PCT, SCALE, findPart } from "./interiorKind";
 import { argsFromRebuild, clean, Attempt, build, reachOk, crashesOf, openingColumns, placeAnchor, fillBare, usedTemplates, rotateTemplate, TemplatePick, pickTemplate } from "./interiorFill";
 import { RoomShape, composeShape } from "./interiorShape";
 import { swapForPurpose, cosyFor, coverZones, designedRoom, dressEmptyRooms } from "./interiorCosy";
 import { buildVenue, addBackDoor, buildUpperFloor } from "./interiorFloors";
+import { buildTier, type TierState } from "./interiorTier";
+import { tierTableOf } from "@/editor/handInterior/tierPlan";
+import { exteriorLook, exteriorWall } from "./interiorExterior";
 
 /** 조합 길로 짓는 방 종류(2026-10-29 서재부터 — 다른 종류는 서재 결과를 본 뒤). */
 const COMPOSED_KINDS: ReadonlySet<string> = new Set(["study"]);
+
+/** 그 단의 집 안에 적어도 있어야 하는 방 수(구성 표의 가장 작은 평면 — 중형 2 · 대형 4 · 초대형 8). */
+const TIER_MIN_ROOMS: Readonly<Record<string, number>> = { medium: 2, large: 4, xlarge: 8 };
 
 export const INTERIOR_CARD = `[Interior interior] make_place({type:"interior", name, layout:{…}}) — inns, taverns, shops, libraries, studies, jails, chapels, forges, guild halls, houses inside.
 - ★ You design every cell: put one cell layout in spec.layout — map size, the landmark, the outer wall ring, partition walls (wall to wall), doors on those walls, the entrance, one label per room (floor, purpose), wall_items bound to a wall (windows, shelves, fireplace, beds, stairs up) and floor objects (catalog ids). Code lays it exactly as written — nothing is added, moved or chosen for you — and checks it: unknown id, overlap, out of bounds, open walls, unlabelled pockets, wall-face rules, a door that joins nothing, unreachable rooms, landmark placement. A failed check comes back as Rejected / You sent / Fixed call: fix exactly what it names. You get 2 repairs; after that, pieces that still fail are left out and the rest is laid.
@@ -51,7 +57,9 @@ export const interiorBuilder: PlaceBuilder = {
     const notes: string[] = [];
     const missing: string[] = [];
     const prev = previous?.result.state as InteriorState | undefined;
-    const sheet = prev ? { tilesetId: prev.tilesetId } : interiorTilesetOf(run.ctx.project, spec);
+    // 바깥(문이 달린 맵)의 칩셋이 집 안도 지으면 그 칩셋·그 집 양식의 벽면으로 짓는다 — 지금 맵이 그 바깥이다(자동 짓기는 부모 맵에서 부른다).
+    const outside = exteriorLook(run.ctx.project, spec, run.ctx.currentMapId ?? run.ctx.project.startMapId);
+    const sheet = prev ? { tilesetId: prev.tilesetId } : interiorTilesetOf(run.ctx.project, spec, run.ctx.currentMapId ?? run.ctx.project.startMapId);
     const tilesetId = sheet.tilesetId;
     if ("note" in sheet && sheet.note) notes.push(sheet.note);
     if (/murim|wuxia|무협|무림|강호|객잔|문파|협객/iu.test(`${spec.name} ${spec.style ?? ""} ${spec.theme ?? ""}`)) missing.push(`${spec.name} — 무협 실내(무림 전용 칩셋 murim_wuxia 가 번들에 없어 ${tilesetId} 로 지었다)`);
@@ -60,10 +68,29 @@ export const interiorBuilder: PlaceBuilder = {
     // hints.newMap: make_place 가 「이번에 지은 다른 장소」를 덮지 않게 새 맵을 요구했다(2026-10-25 G27: 지하 예배당을 지은 맵에 저택을 다시 지어 예배당이 사라졌다).
     const mapId: string | undefined = prev?.mapId ?? spec.mapId ?? (spec.hints?.newMap === true ? undefined : run.ctx.currentMapId ?? run.ctx.project.startMapId);
     // 칸 배치(spec.layout, 2026-10-31): 모델이 모든 칸을 썼다 — 견본·묶음·방 그래프 길을 거치지 않고 그대로 깔고 검증만 한다(interiorLayoutBuild.ts).
-    if (hasLayout(spec)) {
-      const lt = run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] ? HAND_INTERIOR_TILESET_ID : tilesetId;
+    // 큰 집(문이 달린 집 킷의 단이 중형 이상)에 방이 모자란 칸 배치가 오면 그 집의 단과 필요한 방 수를 말해 돌려보낸다 — 고치기를 다 쓰면 구성 표대로 짓는다(interiorTier.ts).
+    const prevTier = (prev as { tier?: TierState } | undefined)?.tier;
+    const houseTier = prevTier ? tierTableOf(tilesetId)?.programs[prevTier.program]?.tier : outside?.tier;
+    const tierRooms = houseTier && tierTableOf(tilesetId) && (prevTier || outside?.tileset === tilesetId) ? TIER_MIN_ROOMS[houseTier] : undefined;
+    const sentRooms = hasLayout(spec) ? Math.max(1, ((spec.layout as { regions?: unknown[] }).regions ?? []).length) : 0;
+    // 거절은 모델이 스스로 큰 건물로 청한 장소에만(큰 건물 종류의 문이거나 size 를 크게 적었다). 평범한 집에 코드가 큰 겉을 골라 준 것이면 어긋남은 코드 몫이다 —
+    // 모델의 배치를 그대로 짓고 «겉은 크고 안은 한 방» 을 사실로 적는다(2026-11-16 은행 jrpg-x1: 모델의 12×10 한 방 «강지기의 집» 이 탑집 킷에 달려 세 번 거절됐다).
+    const askedBig = spec.exterior?.asked === true || spec.size === "large";
+    const smallForHouse = !!tierRooms && hasLayout(spec) && sentRooms < tierRooms;
+    const thinLayout = smallForHouse && askedBig;
+    if (thinLayout && Number(spec.hints?.layoutRepairsLeft ?? 2) > 0) {
+      return { ok: false, mapIds: [], warnings: [], missingArt: [], calls: run.calls,
+        summary: `Rejected: "${spec.name}" is the inside of a ${houseTier} building${outside?.kit ? ` (house kit ${outside.kit})` : ""} — a ${houseTier} building has at least ${tierRooms} rooms, and this layout has ${sentRooms}. Send it again with layout.regions of ${tierRooms} or more rooms joined by openings (set.layout in edit_place), or send it without layout and the builder lays the ${houseTier} plan (rooms, doors between them, stairs to other floors).` };
+    }
+    if (hasLayout(spec) && !thinLayout) {
+      // 모델은 목록 카드의 id 로 썼다 — 카드가 바깥 칩셋의 것이었을 때만(지금 맵의 칩셋이 역할표를 든다, interiorTilesetFor) 그 칩셋으로 깐다.
+      const shown = interiorTilesetFor(run.ctx.project, run.ctx.currentMapId)?.id;
+      const lt = outside && tilesetId === outside.tileset && shown === outside.tileset ? tilesetId : run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] ? HAND_INTERIOR_TILESET_ID : tilesetId;
       const ls = effectiveSpec(run.ctx.project.tilesets[lt]);
-      if (ls) return buildFromLayout(run, spec, ls, lt, mapId);
+      if (ls) {
+        const laid = buildFromLayout(run, spec, ls, lt, mapId, lt === outside?.tileset ? outside : undefined);
+        return smallForHouse && laid.ok ? { ...laid, warnings: [...laid.warnings, `the building outside is ${houseTier}${outside?.kit ? ` (${outside.kit})` : ""}, the inside is laid as you designed it — ${sentRooms} room(s)`] } : laid;
+      }
     }
     // 장소 견본(천문대 등) — 방 종류 견본으로는 주인공 물건이 방을 정하지 못한다(2026-10-23 비교: 천문대가 평범한 서재로 읽혀 v1 8 · v2 3.5).
     const venueText = `${spec.name} ${spec.theme ?? ""} ${(spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ")}`;
@@ -89,6 +116,14 @@ export const interiorBuilder: PlaceBuilder = {
     const firstFloor = zones.filter((z) => !z.floor || z.floor === 1);
     // 게임마다 다른, 같은 입력이면 같은 씨앗 — make_place 가 넣은 variety(프로젝트 열쇠 + 요청문), 없으면 게임 제목. 견본·조합 고르기가 이 열쇠를 쓴다.
     const varietyKey = `${spec.variety ?? run.ctx.project.meta.title ?? ""}|${spec.name}|${spec.theme ?? ""}`;
+    // 크기 단(중형·대형·초대형): 문이 달린 집 킷의 tier 태그가 한 방짜리보다 큰 단이고 칩셋에 그 단의 구성이 있으면 구성 표대로 짓는다(interiorTier.ts).
+    // 모델이 설계한 방(zone.design)이 있으면 그 설계가 먼저다.
+    if ((prevTier || (outside?.tier && outside.tier !== "small")) && tierTableOf(tilesetId) && !(spec.zones ?? []).some((z) => z.design)) {
+      const kindOut: { fallback?: boolean } = {};
+      const mainKind = resolveKind(tilesetId, firstFloor[0] ?? { kind: spec.name, purpose: spec.name }, [], `${spec.name} ${spec.theme ?? ""}`, true, kindOut);
+      const done = buildTier(run, spec, { tilesetId, roomSpec, outside, mainKind, named: !kindOut.fallback, varietyKey, mapId, ...(prevTier ? { prev: prevTier } : {}) }, notes);
+      if (done) return done;
+    }
     const single = firstFloor.length === 1;
     let buildingStyle: string | undefined;
     let shapeOut: RoomShape | undefined;
@@ -186,11 +221,20 @@ export const interiorBuilder: PlaceBuilder = {
     // 빈 바닥은 메우지 않고 방을 줄인다). 구역 vignettes(묶음 id·몸통 기물 id)는 모델이 고른 묶음.
     const picks = Object.fromEntries(rooms.filter((r) => r.zone.vignettes?.length).map((r) => [r.id, [...r.zone.vignettes!]]));
     const purposes = Object.fromEntries(rooms.map((r) => [r.id, `${r.zone.kind} ${r.zone.purpose ?? ""} ${rooms.length === 1 ? `${spec.name} ${spec.theme ?? ""}` : ""}`.trim()]));
+    // 집 벽: 견본의 «집 벽» 자리를 바깥 양식의 벽면으로(같은 칩셋일 때만). 견본이 쓰임으로 정한 벽(부엌·대장간의 돌)은 그대로.
+    const houseWall = (r: (typeof rooms)[number]): string | undefined => {
+      const own = (r as { wall?: string }).wall;
+      if (!outside || outside.tileset !== tilesetId) return own;
+      const tplWall = roomTemplates(tilesetId).find((t) => t.id === (r as { template?: string }).template)?.wall;
+      return exteriorWall(roomSpec, outside, own ?? tplWall);
+    };
     let base: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
-      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, template: (r as { template?: string }).template, floor: (r as { floor?: string }).floor, wall: (r as { wall?: string }).wall, notches: (r as { notches?: unknown }).notches })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}),
+      layout: { rooms: rooms.map((r) => clean({ id: r.id, kind: r.kind, w: r.w, h: r.h, template: (r as { template?: string }).template, floor: (r as { floor?: string }).floor, wall: houseWall(r), notches: (r as { notches?: unknown }).notches })), ...(variant ? { variant } : {}), ...(layoutSeed ? { seed: layoutSeed } : {}),
         ...(graph ? { placed: { rooms: graph.rooms, connect: graph.connect, exit: graph.exit }, graph: graphDecl } : {}),
         ...(shapeOut ? { exitAt: shapeOut.exitAt, composeSeed: hashText(`${varietyKey}|furnish`) % 1_000_000 } : designExit !== undefined ? { exitAt: designExit } : {}),
         ...(designed ? { designs } : {}),
+        // 사는 사람의 물건(칩셋 사양의 personal 표가 있을 때만) — 열쇠에 집 이름이 들어 있어 한 마을의 두 집이 같은 방이 아니다.
+        ...(roomSpec?.personal ? { personal: Object.fromEntries(rooms.filter((r) => !r.vig).map((r) => [r.id, { key: `${varietyKey}|${r.id}`, text: `${spec.name} ${r.zone.purpose ?? ""} ${spec.theme ?? ""}`, ...(outside?.cat ? { cat: outside.cat } : {}) }])) } : {}),
         ...(vignette ? { furnish: "vignette", purposes, ...(Object.keys(picks).length ? { vignettes: picks } : {}) } : {}) } };
     let first = build(run, base);
     if (!first.ok) {

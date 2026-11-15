@@ -1,6 +1,7 @@
 // 칸 배치(spec.layout)로 손 도트 실내를 짓는다 — 검증(interiorLayout.checkLayout) → build_hand_interior_room(plan·zones·objects·lines·daises·start)
 // → 맵 위치 기록(방마다 hand-layout-room·model-designed, 방 그래프 선언·랜드마크, 칸 배치 선언). 함수는 칸·가구·방 수를 고르지 않는다.
 // 고치기 횟수(hints.layoutRepairsLeft)를 다 쓰면 여전히 걸리는 기물만 빼고 나머지를 깐다(무엇을 뺐는지 알린다).
+import { exteriorWall, type ExteriorLook } from "./interiorExterior";
 import type { HandInteriorSpec } from "@/editor/handInterior/builder";
 import { ROOM_GRAPH_TAG } from "@/editor/handInterior/designAreaRecord";
 import type { BuildRun, PlaceBuildResult, PlaceSpec } from "../../shared/types";
@@ -21,7 +22,7 @@ function joins(o: { x: number; y: number; w?: number; h?: number }, a: { x: numb
   return near(a) && near(b);
 }
 
-export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorSpec, tilesetId: string, mapId: string | undefined): PlaceBuildResult {
+export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorSpec, tilesetId: string, mapId: string | undefined, outside?: ExteriorLook): PlaceBuildResult {
   const L = spec.layout as InteriorLayout;
   const tileset = run.ctx.project.tilesets[tilesetId];
   if (!tileset) return { ok: false, mapIds: [], summary: `spec.layout needs a chipset with a room table; ${tilesetId} is missing. Drop layout and use zones.`, warnings: [], missingArt: [], calls: run.calls };
@@ -48,7 +49,7 @@ export function buildFromLayout(run: BuildRun, spec: PlaceSpec, S: HandInteriorS
 
   const input = check.input;
   const args: Record<string, unknown> = { tileset: tilesetId, mapId, name: spec.name, replace: mapId ? true : undefined,
-    plan: input.plan, floor: input.floor, wall: input.wall, zones: input.zones, objects: input.objects, lines: input.lines, daises: input.daises, start: input.start, passages: input.passages };
+    plan: input.plan, floor: input.floor, wall: exteriorWall(S, outside, input.wall), zones: outside ? input.zones?.map((z) => (z.wall ? { ...z, wall: exteriorWall(S, outside, z.wall) } : z)) : input.zones, objects: input.objects, lines: input.lines, daises: input.daises, start: input.start, passages: input.passages };
   const clean = (a: Record<string, unknown>) => Object.fromEntries(Object.entries(a).filter(([, v]) => v !== undefined));
   let r = run.call("build_hand_interior_room", clean(args));
   if (!r.ok && mapId) r = run.call("build_hand_interior_room", clean({ ...args, mapId: undefined, replace: undefined }));

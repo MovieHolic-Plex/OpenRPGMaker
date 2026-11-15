@@ -1,0 +1,855 @@
+// 버들항 집 안 방 견본 — 방 종류마다 여러 벌(한 게임은 게임 열쇠가 고른 한 벌, 두 게임의 주점이 같은 그림이 아니다).
+//   bun scripts/content/beodeul-interiors/rooms.mts           # 견본·방 표를 굽는다(조립기 오류가 있으면 멈춘다)
+//   bun scripts/content/beodeul-interiors/rooms.mts --check   # 검사만
+// 글자 그림(형식은 scripts/content/interior-authored/lib.mts): hang = 벽면 윗줄에 거는 것, plan = 바닥 줄(첫 줄이 북쪽 벽 바로 앞). 기물 글자는 그 기물 왼쪽 위 발밑 칸에만.
+// 방은 작다(오너: 화면의 삼분의 일쯤이 맞다) — 벽 앞 줄에 그 방의 일터, 가운데 통로, 문은 남쪽 가운데(문 칸 위 두 줄은 비운다).
+// 벽면(wall)은 견본의 기본이고, 조수 v2 빌더가 문이 달린 집의 바깥 양식으로 바꾼다(불 방의 막돌·벽돌은 그대로 둔다).
+// 쓰는 것: src/assets/beodeulInteriorRoomTemplates.json · src/assets/beodeulInteriorSpec.json 의 rooms(방 종류·예제 표) · tiledata/beodeul-interiors/rooms.json(조립 입력 — 그림 굽기용)
+import fs from "node:fs";
+import path from "node:path";
+import { toTemplate, type AuthoredRoom } from "../interior-authored/lib.mts";
+import { buildHandInteriorLayers, type HandInteriorSpec } from "../../../src/editor/handInterior/builder.ts";
+import { KIT_PROGRAMS, TIER_DOORS, TIER_PROGRAMS, TIER_ROOMS } from "./tiers.mts";
+import { placeTierMap, tierTemplatePicker } from "../../../src/editor/handInterior/tierPlan.ts";
+
+const ROOT = path.resolve(import.meta.dirname, "../../..");
+const SPEC = path.join(ROOT, "src/assets/beodeulInteriorSpec.json");
+const OUT = path.join(ROOT, "src/assets/beodeulInteriorRoomTemplates.json");
+const TIERS = path.join(ROOT, "src/assets/beodeulInteriorTiers.json");
+const DUMP = path.join(ROOT, "tiledata/beodeul-interiors/rooms.json");
+const TID = "beodeul_city";
+
+/** daises = 크기 자동 깔것(돌 단·양탄자) [id, x, 바닥 줄, w, h] · tier = 크기 단에만 쓰는 견본(방 종류 표·예제 표에 넣지 않는다, tiers.mts). */
+type Room = Omit<AuthoredRoom, "style"> & { building: string; daises?: readonly (readonly [string, number, number, number, number])[]; tier?: boolean };
+/** 방 종류(조수가 쓰는 낱말은 resolveKind 의 방 종류 id 와 같다) → 이름·별칭. */
+const KINDS: Record<string, { ko: string; alias: string[] }> = {
+  tavern: { ko: "주점·여관 홀", alias: ["주점", "선술집", "여관", "주막", "술집", "tavern", "inn"] },
+  living: { ko: "살림집 방", alias: ["집", "민가", "오두막", "농가", "거실", "house", "cottage"] },
+  general_store: { ko: "잡화점", alias: ["잡화점", "가게", "상점", "도구점", "shop", "store"] },
+  weapon_shop: { ko: "무기점", alias: ["무기점", "무기 가게", "weapon shop"] },
+  pharmacy_shop: { ko: "약방", alias: ["약방", "약초 가게", "약제사", "apothecary"] },
+  inn_room: { ko: "객실", alias: ["객실", "여관 방", "손님 방", "guest room"] },
+  bedroom: { ko: "침실", alias: ["침실", "bedroom"] },
+  kitchen: { ko: "부엌", alias: ["부엌", "주방", "kitchen"] },
+  storeroom: { ko: "창고", alias: ["창고", "곳간", "저장", "storeroom", "warehouse"] },
+  cellar: { ko: "지하 술 창고", alias: ["지하", "술 창고", "cellar"] },
+  forge: { ko: "대장간", alias: ["대장간", "smithy", "forge"] },
+  bakery_shop: { ko: "빵집", alias: ["빵집", "빵가게", "bakery"] },
+  study: { ko: "사무실·서재", alias: ["사무실", "회관", "서재", "서기", "office", "study"] },
+  waiting_room: { ko: "대기실", alias: ["대기실", "접수", "waiting room"] },
+  chapel: { ko: "예배당", alias: ["예배당", "성당", "교회", "chapel"] },
+  mill: { ko: "방앗간", alias: ["방앗간", "물방아", "제분", "mill"] },
+  brewery: { ko: "양조장", alias: ["양조장", "양조", "술도가", "brewery"] },
+  workshop: { ko: "직조 일터", alias: ["직조", "베틀", "일터", "공방", "workshop", "weaver"] },
+  stable: { ko: "마구간·헛간", alias: ["마구간", "헛간", "외양간", "stable", "barn"] },
+  guard_room: { ko: "경비실", alias: ["경비실", "초소", "guard room"] },
+  dining: { ko: "저택 식당", alias: ["식당", "dining"] },
+  great_hall: { ko: "회관 큰 방", alias: ["회관", "큰 방", "조합", "great hall", "guild hall"] },
+  classroom: { ko: "교실", alias: ["교실", "서당", "학교", "classroom"] },
+  // 폭(2026-11-15): 그 칩셋만 가진 방 종류 — 별칭이 두루 낱말 표보다 먼저 읽힌다(interiorKind.ts).
+  fisher: { ko: "어부 오두막", alias: ["어부", "어막", "배 창고", "낚시꾼", "fisher", "boathouse"] },
+  jail: { ko: "감옥", alias: ["감옥", "감방", "유치장", "jail", "prison"] },
+  lighthouse: { ko: "등대 방", alias: ["등대", "lighthouse"] },
+  pottery: { ko: "도공 일터", alias: ["도공", "도자기", "옹기", "가마터", "potter"] },
+  carpentry: { ko: "목공 일터", alias: ["목공", "제재", "carpentry", "joinery"] },
+  cobbler: { ko: "구둣방", alias: ["구둣방", "구두", "갖바치", "신발", "cobbler", "shoemaker"] },
+  printer: { ko: "인쇄소", alias: ["인쇄", "활판", "printer", "print shop"] },
+  library: { ko: "서고", alias: ["서고", "도서관", "책방", "library"] },
+};
+const BUILDINGS: Record<string, string> = {
+  bd_inn: "여관·주점 — 홀, 부엌, 지하 술 창고, 위층 객실", bd_house: "살림집 — 방 하나(화덕·식탁·침대) 또는 방과 침실", bd_shop: "가게 — 판매대 앞 손님 줄, 벽 진열",
+  bd_smithy: "대장간 — 화덕·모루·담금 구유", bd_bakery: "빵집 — 화덕·빵 선반·판매대", bd_hall: "회관 — 서기 사무실, 대기실, 큰 방", bd_chapel: "예배당 — 제단·장의자 줄·통로 깔개",
+  bd_farm: "농가·마구간·방앗간·일터", bd_guard: "경비실", bd_manor: "저택 — 식당·침실·서재", bd_store: "창고·지하", bd_fisher: "어부 오두막 — 덕장·그물·엎어 둔 배", bd_tower: "등대·감옥", bd_craft: "일터 — 도공·목공·구둣방·인쇄소",
+};
+
+const ROOMS: Room[] = [
+  // ── 주점·여관 홀 ── 벽: 술통 → 병 선반 → 벽난로 → 창. 바는 왼쪽, 식탁은 오른쪽, 문은 가운데.
+  { id: "tavern-a", kind: "tavern", building: "bd_inn", floor: "dplank", wall: "plaster",
+    legend: { K: "ale kegs rack", s: "bottle shelf", F: "great fireplace", g: "hearth glow", W: "window", w: "window light", c: "sconce", a: "antlers", f: "firewood", B: "bar counter", o: "stool", T: "long table", n: "bench", b: "barrel", k: "keg", S: "grain sack", m: "door mat" },
+    hang: "..s....W.c.a.",
+    plan: [
+      "K...F..f.....",
+      "....g..w....b",
+      ".........n...",
+      "B........T...",
+      ".............",
+      "o.o.o....n...",
+      "Sb....m...kb.",
+    ],
+    goods: [] },
+  { id: "tavern-b", kind: "tavern", building: "bd_inn", floor: "dplank", wall: "plaster",
+    legend: { U: "ale tun", F: "brick fireplace", g: "hearth glow", W: "curtain window", w: "window light", t: "target board", y: "key board", c: "sconce", B: "bar plank", o: "stool", R: "round table", h: "chair", H: "chair back", E: "settle", b: "barrel", f: "firewood", i: "instruments", m: "door mat", X: "stairs up" },
+    hang: "..y.W....t.c.",
+    plan: [
+      "U.....F..f.X.",
+      "....w.g......",
+      "B......h.....",
+      ".......R...E.",
+      "o.o....H.....",
+      "..........R..",
+      "i.b...m...H.b",
+    ] },
+  { id: "tavern-c", kind: "tavern", building: "bd_inn", floor: "flag", wall: "rubble",
+    legend: { K: "ale kegs rack", U: "ale tun", F: "great fireplace", g: "hearth glow", s: "bottle shelf", L: "tally slate", c: "sconce", x: "crossed swords", B: "bar counter", o: "stool", T: "feast table", n: "bench", R: "round table", h: "chair", b: "barrel stack", k: "keg", m: "door mat" },
+    hang: "....sL.....cx",
+    plan: [
+      "K.U....F.....",
+      ".......g.....",
+      "B..........h.",
+      "..........R..",
+      "o.o.o........",
+      "......T......",
+      "b.....m....k.",
+    ] },
+  // ── 살림집 방 ── 화덕·찬장·침대가 벽 앞, 식탁은 가운데 돗자리 위.
+  { id: "living-a", kind: "living", building: "bd_house", floor: "dplank", wall: "plaster",
+    legend: { H: "cooking hearth", g: "hearth glow", W: "window", w: "window light", D: "dresser", t: "tapestry", Q: "quilt bed", M: "rush mat", h: "chair", L: "laid table", o: "stool", r: "rocking chair", C: "chest", s: "spinning wheel", p: "broom and pail", l: "laundry basket", m: "door mat" },
+    hang: "...W...t..",
+    plan: [
+      "H..wD...Q.",
+      "g.........",
+      "r..h......",
+      "..ML.o..C.",
+      "..........",
+      "pl..m...s.",
+    ] },
+  { id: "living-b", kind: "living", building: "bd_house", floor: "dplank", wall: "plaster",
+    legend: { H: "cooking hearth", g: "hearth glow", W: "curtain window", w: "window light", j: "jar shelf", p: "coat pegs", G: "green bed", E: "settle", T: "plain table", h: "chair", c: "cradle", C: "chest", f: "firewood", u: "butter churn", R: "round rug", m: "door mat", a: "loom" },
+    hang: "..j.W..p..",
+    plan: [
+      "H...w.E.G.",
+      "g.........",
+      "f..h....c.",
+      "...T.R....",
+      "..........",
+      "u...m...a.",
+    ],
+    goods: [[4, 3, "bread cheese"]] },
+  { id: "living-c", kind: "living", building: "bd_house", floor: "earth", wall: "hobbitw",
+    legend: { H: "cooking hearth", g: "hearth glow", j: "jar shelf", W: "window", w: "window light", G: "green bed", M: "rush mat", T: "plain table", o: "stool", C: "chest", q: "hand quern", n: "hen nest", b: "water tub", k: "chopping block", m: "door mat" },
+    hang: "..j.W...",
+    plan: [
+      "H...w.G.",
+      "g.......",
+      "..o.....",
+      ".MT...C.",
+      "........",
+      "qb.m.n..",
+    ],
+    goods: [[3, 3, "apple bowl"]] },
+  // ── 가게 ──
+  { id: "store-a", kind: "general_store", building: "bd_shop", floor: "plank", wall: "rubble",
+    legend: { G: "goods shelf", W: "window", w: "window light", P: "peg rail goods", l: "wall lantern", n: "produce bins", d: "candle rack", C: "shop counter", S: "sack pile", b: "barrel", c: "crate", r: "rope coil", h: "hamper", m: "door mat", g: "lamp glow" },
+    hang: "...W.P...",
+    plan: [
+      "G..w.n..d",
+      ".........",
+      "C.....S..",
+      ".........",
+      "cr..m..hb",
+    ] },
+  { id: "store-b", kind: "general_store", building: "bd_shop", floor: "plank", wall: "plaster",
+    legend: { L: "cloth shelf", H: "honey shelf", W: "window", w: "window light", o: "oil lamp", t: "tally slate", C: "shop counter", D: "display table", n: "produce bins", f: "fruit baskets", k: "basket stack", S: "sack pile", b: "barrel", m: "door mat", c: "standing scale" },
+    hang: "....W.ot.",
+    plan: [
+      "L.H.w..kc",
+      ".........",
+      "C....D...",
+      ".........",
+      "n...m..S.",
+    ] },
+  { id: "weapons-a", kind: "weapon_shop", building: "bd_shop", floor: "flag", wall: "rubble",
+    legend: { R: "weapon rack", x: "crossed swords", l: "wall lantern", W: "window", w: "window light", C: "shop counter", A: "armor stand", s: "shield rack", a: "arrow barrel", b: "bow rack", c: "armour chest", m: "door mat" },
+    hang: "..x.W.l..",
+    plan: [
+      "R...w.R.b",
+      ".........",
+      "C.....A..",
+      ".........",
+      "s...m.c.a",
+    ] },
+  { id: "apothecary-a", kind: "pharmacy_shop", building: "bd_shop", floor: "plank", wall: "plaster",
+    legend: { p: "potion shelf", H: "herb rail", W: "window", w: "window light", o: "oil lamp", C: "shop counter", A: "alembic", h: "herb baskets", c: "cauldron", m: "door mat", d: "candle rack" },
+    hang: "..H..W.o.",
+    plan: [
+      "pp...w.pd",
+      ".........",
+      "C.....c..",
+      ".........",
+      "h...m...A",
+    ],
+    goods: [] },
+  // ── 객실·침실 ──
+  { id: "innroom-a", kind: "inn_room", building: "bd_inn", floor: "dplank", wall: "plaster",
+    legend: { W: "curtain window", w: "window light", p: "coat pegs", I: "inn bed", n: "nightstand", C: "chest", R: "round rug", m: "door mat" },
+    hang: "W..p..",
+    plan: [
+      "w.nI..",
+      "......",
+      ".R....",
+      "....C.",
+      "..m...",
+    ] },
+  { id: "innroom-b", kind: "inn_room", building: "bd_inn", floor: "dplank", wall: "plaster",
+    legend: { W: "window", w: "window light", r: "mirror", I: "inn bed", s: "washstand", D: "writing desk", h: "chair back", l: "luggage", m: "door mat", c: "floor candle" },
+    hang: "..r.W.",
+    plan: [
+      "I.s.wc",
+      "......",
+      "...D..",
+      "...h..",
+      "l.m...",
+    ] },
+  { id: "bedroom-a", kind: "bedroom", building: "bd_house", floor: "dplank", wall: "plaster",
+    legend: { A: "wardrobe", W: "curtain window", w: "window light", r: "mirror", Q: "quilt bed", n: "nightstand", C: "chest", R: "round rug", s: "washstand", m: "door mat", k: "hamper" },
+    hang: "..W.r...",
+    plan: [
+      "A.w.nQ.s",
+      "........",
+      "..R.....",
+      "......C.",
+      "k..m....",
+    ] },
+  { id: "bedroom-b", kind: "bedroom", building: "bd_manor", floor: "parquet", wall: "plaster",
+    legend: { P: "portrait", W: "curtain window", w: "window light", c: "sconce", A: "wardrobe", Y: "canopy bed", n: "nightstand", R: "red rug", D: "writing desk", h: "chair back", C: "chest", m: "door mat" },
+    hang: "..W.P..c.",
+    plan: [
+      "A.w.nY...",
+      ".........",
+      ".......D.",
+      ".R.....h.",
+      ".........",
+      "C...m....",
+    ] },
+  // ── 부엌 ── 불 방: 돌·벽돌 바닥과 벽
+  { id: "kitchen-a", kind: "kitchen", building: "bd_inn", floor: "ovenf", wall: "rubble",
+    legend: { K: "kitchen range", g: "hearth glow", P: "pot rail", N: "pantry shelf", T: "work table", S: "stone sink", f: "firewood", b: "water tub", e: "egg baskets", o: "stool", m: "door mat", u: "butter churn" },
+    hang: "...P....",
+    plan: [
+      "K....N.b",
+      "g.......",
+      "....T...",
+      "S.....o.",
+      "f..m..eu",
+    ] },
+  { id: "kitchen-b", kind: "kitchen", building: "bd_house", floor: "flag", wall: "rubble",
+    legend: { K: "kitchen range", g: "hearth glow", j: "jar shelf", P: "pot rail", D: "dresser", T: "work table", S: "stone sink", c: "cauldron", d: "dipper shelf", s: "grain sack", m: "door mat" },
+    hang: "...jP...",
+    plan: [
+      "K....D.d",
+      "g.......",
+      "....T...",
+      "........",
+      "S..m.c.s",
+    ] },
+  // ── 창고·지하 ──
+  { id: "storeroom-a", kind: "storeroom", building: "bd_store", floor: "flag", wall: "rubble",
+    legend: { N: "pantry shelf", L: "ladder", l: "wall lantern", C: "crate stack", B: "barrel stack", S: "sack pile", b: "barrel", c: "crate", r: "rope coil", k: "bucket stack", m: "door mat", a: "amphora rack" },
+    hang: "...l...",
+    plan: [
+      "N.L..a.",
+      ".......",
+      "C....S.",
+      ".......",
+      "bc.m.rk",
+    ] },
+  { id: "storeroom-b", kind: "storeroom", building: "bd_store", floor: "dplank", wall: "stablew",
+    legend: { l: "wall lantern", L: "ladder", C: "crate stack", S: "sack pile", b: "barrel", c: "crate", p: "clay pots", n: "apple bins", h: "sack hoist", m: "door mat", k: "basket stack", s: "salt sacks" },
+    hang: "..l....",
+    plan: [
+      "C.L.S.k",
+      ".......",
+      "n....p.",
+      ".......",
+      "bs.m.cb",
+    ] },
+  { id: "cellar-a", kind: "cellar", building: "bd_inn", floor: "flag", wall: "rubble",
+    legend: { V: "wine rack", K: "ale kegs rack", U: "ale tun", l: "wall lantern", B: "barrel stack", t: "bottle crates", d: "demijohns", k: "keg", n: "bottling bench", m: "door mat", h: "hand lantern" },
+    hang: "....l....",
+    plan: [
+      "V.K...U.d",
+      ".........",
+      "B......t.",
+      ".........",
+      "kk..m.n.h",
+    ] },
+  // ── 대장간 ──
+  { id: "forge-a", kind: "forge", building: "bd_smithy", floor: "flag", wall: "rubble",
+    legend: { F: "forge", g: "hearth glow", T: "tool rail", R: "weapon rack", A: "anvil", Q: "quench trough", W: "workbench", c: "coal bin", i: "iron bars", G: "grindstone", m: "door mat", h: "horseshoe board" },
+    hang: "...T.....",
+    plan: [
+      "F..c..R.h",
+      "g........",
+      ".A.Q.....",
+      "......W..",
+      "i...m...G",
+    ] },
+  { id: "forge-b", kind: "forge", building: "bd_smithy", floor: "earth", wall: "rubble",
+    legend: { F: "forge", g: "hearth glow", T: "tool rail", l: "wall lantern", A: "anvil", Q: "quench trough", W: "workbench", c: "coal bin", i: "iron bars", s: "shield rack", a: "armor stand", m: "door mat", b: "barrel" },
+    hang: "..l...T..",
+    plan: [
+      "c.F.....a",
+      "..g......",
+      "Q..A.....",
+      "......W..",
+      "ib..m.s..",
+    ] },
+  // ── 빵집 ──
+  { id: "bakery-a", kind: "bakery_shop", building: "bd_bakery", floor: "ovenf", wall: "slumw",
+    legend: { O: "bread oven", g: "hearth glow", L: "bread shelf", W: "window", w: "window light", C: "bakery counter", K: "kneading table", S: "sack pile", f: "flour bin", w2: "", m: "door mat", d: "firewood" },
+    hang: ".....W...",
+    plan: [
+      "O..L.w.d.",
+      "g........",
+      "....C....",
+      "K........",
+      "..S.m.f..",
+    ] },
+  { id: "bakery-b", kind: "bakery_shop", building: "bd_bakery", floor: "plank", wall: "plaster",
+    legend: { O: "bread oven", g: "hearth glow", L: "bread shelf", t: "tally slate", o: "oil lamp", C: "bakery counter", K: "kneading table", f: "flour bin", e: "egg baskets", S: "grain sack", m: "door mat" },
+    hang: "...t...o.",
+    plan: [
+      "L.O..L..S",
+      "..g......",
+      "C.....K..",
+      ".........",
+      "f...m..e.",
+    ] },
+  // ── 회관 사무실·대기실·큰 방 ──
+  { id: "office-a", kind: "study", building: "bd_hall", floor: "dplank", wall: "plaster",
+    legend: { S: "scroll shelf", N: "notice board", W: "window", w: "window light", o: "oil lamp", B: "bookcase", h: "high chair", D: "clerk desk", X: "strongbox", R: "red rug", n: "bench", m: "door mat", r: "record stand" },
+    hang: "..N.W.o..",
+    plan: [
+      "S...w..B.",
+      "...h.....",
+      "..D....X.",
+      ".........",
+      "r...m....",
+    ] },
+  { id: "office-b", kind: "study", building: "bd_hall", floor: "parquet", wall: "plaster",
+    legend: { B: "bookcase", M: "wall map", c: "wall clock", W: "curtain window", w: "window light", s: "sconce", S: "scroll shelf", h: "high chair", D: "clerk desk", T: "map table", R: "red rug", k: "book chest", m: "door mat", b: "banner" },
+    hang: "..M.cW.b.",
+    plan: [
+      "B....w.S.",
+      "...h.....",
+      "..D......",
+      "......T..",
+      "k...m....",
+    ] },
+  { id: "waiting-a", kind: "waiting_room", building: "bd_hall", floor: "dplank", wall: "plaster",
+    legend: { N: "notice board", b: "banner", o: "oil lamp", E: "settle", n: "bench", C: "customs desk", r: "record stand", m: "door mat", u: "cushion bench" },
+    hang: "N..b.o.",
+    plan: [
+      "E..r.E.",
+      ".......",
+      "C......",
+      "....u..",
+      "...m...",
+    ] },
+  { id: "hall-a", kind: "great_hall", building: "bd_hall", floor: "parquet", wall: "plaster",
+    legend: { F: "great fireplace", g: "hearth glow", b: "banner", x: "crossed swords", P: "portrait", c: "sconce", T: "dining table", h: "high chair", n: "bench", R: "red rug", A: "armor stand", m: "door mat", S: "strongbox" },
+    hang: "b.x......P.c.",
+    plan: [
+      "A....F......A",
+      ".....g.......",
+      "...h..h..h...",
+      "....T........",
+      "....n....n...",
+      "S.....m......",
+    ] },
+  // ── 예배당 ──
+  { id: "chapel-a", kind: "chapel", building: "bd_chapel", floor: "grey", wall: "grey",
+    legend: { G: "stained window", w: "window light", s: "statue niche", o: "offering box", A: "altar", c: "candelabrum", L: "lectern", p: "pew", r: "aisle runner", m: "door mat", b: "water basin" },
+    hang: "G.s...s.G",
+    plan: [
+      "w.cA..c.w",
+      ".....L...",
+      "....r....",
+      ".p..r.p..",
+      "....r....",
+      ".p..r.p..",
+      "b...m....",
+    ] },
+  { id: "chapel-b", kind: "chapel", building: "bd_chapel", floor: "flag", wall: "plaster",
+    legend: { G: "stained window", w: "window light", o: "offering box", c: "sconce", A: "offering table", k: "kneeler", f: "floor candle", p: "pew", r: "aisle runner", m: "door mat", l: "lavabo" },
+    hang: "..G.oc.",
+    plan: [
+      "f.wA..f",
+      "...k...",
+      "p..r.p.",
+      "...r...",
+      "p..r.p.",
+      "l..m...",
+    ] },
+  // ── 일터 ──
+  { id: "mill-a", kind: "mill", building: "bd_farm", floor: "dplank", wall: "stablew",
+    legend: { l: "wall lantern", L: "ladder", h: "sack hoist", M: "millstones", S: "sack pile", f: "flour bin", g: "grain measures", s: "sieves", k: "grain sack", m: "door mat", H: "grain hopper" },
+    hang: "...l.....",
+    plan: [
+      "S.L....Hh",
+      "...M.....",
+      ".........",
+      "f......s.",
+      "kg..m....",
+    ] },
+  { id: "brewery-a", kind: "brewery", building: "bd_farm", floor: "flag", wall: "rubble",
+    legend: { l: "wall lantern", U: "ale tun", B: "brew kettle", M: "mash tun", n: "bottling bench", t: "bottle crates", h: "hop sacks", b: "barrel stack", m: "door mat", k: "keg" },
+    hang: "....l....",
+    plan: [
+      "U.B..M..k",
+      ".........",
+      "n.....t..",
+      ".........",
+      "h...m..b.",
+    ] },
+  { id: "weaver-a", kind: "workshop", building: "bd_farm", floor: "dplank", wall: "plaster",
+    legend: { W: "window", w: "window light", L: "cloth shelf", o: "oil lamp", m2: "", l: "loom", s: "spinning wheel", c: "carding bench", d: "dye vats", k: "laundry basket", m: "door mat" },
+    hang: "...W..o..",
+    plan: [
+      "L..w.l.d.",
+      ".........",
+      "s....c...",
+      ".........",
+      "k...m....",
+    ] },
+  // ── 마구간·경비실·식당·교실 ──
+  { id: "stable-a", kind: "stable", building: "bd_farm", floor: "earth", wall: "stablew",
+    legend: { T: "stable stall", l: "wall lantern", h: "hay bale", s: "saddle rail", w: "cart wheel", b: "water tub", f: "feed trough", m: "door mat", n: "hen nest", k: "bucket stack", t: "milking stool" },
+    hang: "....l....",
+    plan: [
+      "T.T...T.w",
+      ".........",
+      "h.....s..",
+      ".........",
+      "hk..m.f.n",
+    ] },
+  { id: "guard-a", kind: "guard_room", building: "bd_guard", floor: "flag", wall: "grey",
+    legend: { R: "weapon rack", b: "banner", l: "wall lantern", x: "crossed swords", S: "spear stand", c: "cot", T: "plain table", o: "stool", z: "brazier", a: "arrow barrel", r: "shield rack", m: "door mat", A: "armour chest" },
+    hang: "..b.l.x.",
+    plan: [
+      "R..S..c.",
+      "........",
+      "..oT.z..",
+      "........",
+      "a..m.r..",
+    ],
+    goods: [[3, 2, "tankards"], [4, 2, "table candle"]] },
+  { id: "dining-a", kind: "dining", building: "bd_manor", floor: "parquet", wall: "plaster",
+    legend: { F: "brick fireplace", g: "hearth glow", P: "portrait", c: "wall clock", s: "sconce", D: "dresser", h: "high chair", T: "dining table", H: "chair back", R: "red rug", m: "door mat", A: "armor stand" },
+    hang: "..P.....cs.",
+    plan: [
+      "D...F....A.",
+      "....g......",
+      "...h.h.h...",
+      "...T.......",
+      "...H.H.H...",
+      ".....m.....",
+    ] },
+  { id: "classroom-a", kind: "classroom", building: "bd_hall", floor: "dplank", wall: "plaster",
+    legend: { B: "lecture board", M: "wall map", W: "window", w: "window light", o: "oil lamp", K: "bookcase", L: "lectern", d: "slant desk", k: "book chest", m: "door mat" },
+    hang: "...M.W.o.",
+    plan: [
+      "K.B..w...",
+      "...L.....",
+      "d..d..d..",
+      ".........",
+      "d..dm.d.k",
+    ] },
+  // ══ 폭(오너 2026-11-15 «다양하게 만드는 게 중요») — 새 방 종류 ══
+  { id: "fisher-a", kind: "fisher", building: "bd_fisher", floor: "earth", wall: "stablew",
+    legend: { H: "cooking hearth", g: "hearth glow", R: "fish rack", n: "net rail", l: "wall lantern", c: "cot", B: "boat", G: "gutting table", s: "salt tub", k: "fish creels", o: "oars", b: "barrel", r: "fishing rod", m: "door mat" },
+    hang: "..n....l.",
+    plan: [
+      "H....R...",
+      "g......c.",
+      "........r",
+      "G.....B..",
+      "sk..m..ob",
+    ] },
+  { id: "fisher-b", kind: "fisher", building: "bd_fisher", floor: "dplank", wall: "stablew",
+    legend: { W: "window", w: "window light", R: "fish rack", n: "net rail", H: "cooking hearth", g: "hearth glow", c: "cot", B: "boat", k: "fish creels", s: "salt tub", b: "barrel", o: "oars", m: "door mat" },
+    hang: "W..n....",
+    plan: [
+      "wR....H.",
+      ".....g..",
+      "c......o",
+      "....B...",
+      "k..m..sb",
+    ] },
+  { id: "jail-a", kind: "jail", building: "bd_tower", floor: "flag", wall: "grey",
+    legend: { y: "key board", l: "wall lantern", p: "pallet", x: "cell bars", d: "cell door", T: "plain table", o: "stool", z: "brazier", a: "arrow barrel", S: "spear stand", m: "door mat" },
+    hang: ".y..l....",
+    plan: [
+      "p......p.",
+      ".........",
+      "xxxd.xxxx",
+      ".........",
+      ".oT....z.",
+      "a...m..S.",
+    ],
+    goods: [[2, 4, "tankards"], [3, 4, "table candle"]] },
+  { id: "lighthouse-a", kind: "lighthouse", building: "bd_tower", floor: "flag", wall: "grey",
+    legend: { S: "spiral stairs", W: "window", w: "window light", l: "wall lantern", L: "lighthouse lamp", t: "telescope", M: "map table", b: "barrel", c: "cot", m: "door mat" },
+    hang: "..W..l.",
+    plan: [
+      "S.w....",
+      ".......",
+      "..L..t.",
+      "M.....b",
+      "b..m.c.",
+    ] },
+  { id: "pottery-a", kind: "pottery", building: "bd_craft", floor: "flag", wall: "rubble",
+    legend: { K: "kiln", g: "hearth glow", W: "window", w: "window light", D: "pot drying shelf", f: "firewood", P: "potters wheel", c: "clay pots", t: "water tub", b: "barrel", T: "work table", m: "door mat" },
+    hang: "....W....",
+    plan: [
+      "K...w.D..",
+      "g..f.....",
+      ".....P...",
+      "c........",
+      "tb..m.T..",
+    ] },
+  { id: "carpentry-a", kind: "carpentry", building: "bd_craft", floor: "dplank", wall: "stablew",
+    legend: { W: "window", w: "window light", t: "tool rail", l: "wall lantern", L: "ladder", J: "joiner bench", S: "sawhorse", b: "workbench", f: "firewood", x: "toolbox", g: "grindstone", m: "door mat" },
+    hang: "W..t...l.",
+    plan: [
+      "w.L......",
+      "...J.....",
+      ".........",
+      "S.....b..",
+      "f...m..xg",
+    ] },
+  { id: "cobbler-a", kind: "cobbler", building: "bd_craft", floor: "plank", wall: "plaster",
+    legend: { W: "window", w: "window light", l: "wall lantern", G: "goods shelf", B: "cobbler bench", o: "stool", S: "shop counter", k: "hamper", b: "boots", m: "door mat" },
+    hang: "W.l.....",
+    plan: [
+      "w...G...",
+      "........",
+      "B.o.....",
+      ".....S..",
+      "k..m...b",
+    ],
+    goods: [[6, 3, "cashbox"]] },
+  { id: "printer-a", kind: "printer", building: "bd_craft", floor: "dplank", wall: "plaster",
+    legend: { n: "notice board", W: "window", w: "window light", S: "scroll shelf", P: "printing press", D: "slant desk", c: "crate", k: "book chest", l: "floor candle", m: "door mat" },
+    hang: "..n..W..",
+    plan: [
+      "S....w..",
+      "........",
+      ".P...D..",
+      "........",
+      "c..m..kl",
+    ] },
+  { id: "library-a", kind: "library", building: "bd_manor", floor: "parquet", wall: "plaster",
+    legend: { W: "window", w: "window light", B: "bookcase", S: "scroll shelf", G: "globe", h: "chair", c: "floor candle", D: "writing desk", M: "map table", k: "book chest", m: "door mat" },
+    hang: "....W....",
+    plan: [
+      "B.B.w.S..",
+      "........G",
+      "..h.....c",
+      ".D....M..",
+      "k...m....",
+    ],
+    goods: [[1, 3, "book pile"]] },
+  // ══ 폭 — 같은 종류의 다른 집(가난한 집·넉넉한 집·일하는 집) ══
+  { id: "tavern-d", kind: "tavern", building: "bd_inn", floor: "flag", wall: "plaster",
+    legend: { t: "tally slate", W: "window", w: "window light", l: "wall lantern", K: "ale kegs rack", S: "barrel stack", B: "bar plank", h: "chair", R: "round table", o: "stool", b: "barrel", k: "keg", z: "brazier", m: "door mat" },
+    hang: "...t..W..l.",
+    plan: [
+      "K...S.w....",
+      "...........",
+      "B......h...",
+      "o.o...oR.o.",
+      "bk...m....z",
+    ],
+    goods: [[8, 3, "tankards"]] },
+  { id: "living-d", kind: "living", building: "bd_house", floor: "earth", wall: "plaster",
+    legend: { H: "cooking hearth", g: "hearth glow", W: "window", w: "window light", p: "pallet", o: "stool", T: "plain table", c: "crate", b: "barrel", k: "hen nest", s: "grain sack", m: "door mat" },
+    hang: "....W...",
+    plan: [
+      "H...w...",
+      "g.....p.",
+      "........",
+      "oT....c.",
+      "b..m..ks",
+    ],
+    goods: [[1, 3, "jug"]] },
+  { id: "living-e", kind: "living", building: "bd_house", floor: "parquet", wall: "plaster",
+    legend: { P: "portrait", W: "curtain window", w: "window light", C: "china cabinet", F: "brick fireplace", g: "hearth glow", B: "bookcase", E: "settle", D: "writing desk", h: "chair", L: "laid table", R: "red rug", G: "globe", c: "floor candle", m: "door mat" },
+    hang: "..P....W...",
+    plan: [
+      "C...F..w.B.",
+      "....g......",
+      "E.......D..",
+      "...hL.hR...",
+      "...........",
+      "G....m....c",
+    ] },
+  { id: "living-f", kind: "living", building: "bd_house", floor: "dplank", wall: "plaster",
+    legend: { j: "jar shelf", W: "window", w: "window light", H: "cooking hearth", g: "hearth glow", G: "green bed", h: "chair", b: "workbench", o: "stool", T: "plain table", f: "firewood", k: "hamper", m: "door mat" },
+    hang: "..j.W....",
+    plan: [
+      "H...w..G.",
+      "g........",
+      "......h..",
+      "b....oT..",
+      "f...m..k.",
+    ] },
+  { id: "store-c", kind: "general_store", building: "bd_shop", floor: "plank", wall: "plaster",
+    legend: { p: "peg rail goods", W: "window", w: "window light", r: "rope coil", C: "cloth shelf", S: "shop counter", a: "apple bins", f: "fruit baskets", k: "crate", b: "barrel", h: "herb baskets", m: "door mat" },
+    hang: "p...W....",
+    plan: [
+      "r...w.C..",
+      ".........",
+      "S.....a..",
+      "......f..",
+      "kb..m..h.",
+    ],
+    goods: [[0, 2, "scale"], [2, 2, "cashbox"]] },
+  { id: "bedroom-c", kind: "bedroom", building: "bd_manor", floor: "parquet", wall: "plaster",
+    legend: { P: "portrait", W: "curtain window", w: "window light", V: "vanity", C: "canopy bed", A: "wardrobe", n: "nightstand", R: "red rug", K: "chest", m: "door mat" },
+    hang: "..P..W..",
+    plan: [
+      "V..C.wA.",
+      "..n.....",
+      "..R.....",
+      "......K.",
+      "...m....",
+    ] },
+  { id: "bedroom-d", kind: "bedroom", building: "bd_house", floor: "dplank", wall: "plaster",
+    legend: { W: "window", w: "window light", p: "coat pegs", c: "cot", b: "bedroll", f: "floor candle", l: "laundry basket", k: "hamper", m: "door mat" },
+    hang: "W...p..",
+    plan: [
+      "wc...c.",
+      ".......",
+      "b.....f",
+      ".......",
+      "l..m.k.",
+    ] },
+  { id: "innroom-c", kind: "inn_room", building: "bd_inn", floor: "dplank", wall: "plaster",
+    legend: { W: "window", w: "window light", I: "inn bed", n: "nightstand", R: "round rug", L: "luggage", s: "washstand", m: "door mat" },
+    hang: "...W....",
+    plan: [
+      "I.nw.nI.",
+      "........",
+      "...R....",
+      "L......s",
+      "...m....",
+    ] },
+  { id: "kitchen-c", kind: "kitchen", building: "bd_inn", floor: "flag", wall: "rubble",
+    legend: { p: "pot rail", W: "window", w: "window light", H: "cooking hearth", g: "hearth glow", d: "dipper shelf", T: "work table", c: "cheese press", b: "butter churn", f: "firewood", t: "water tub", q: "hand quern", m: "door mat" },
+    hang: "..p...W.",
+    plan: [
+      "H.....wd",
+      "g.......",
+      "...T...c",
+      "b.......",
+      "f..m.tq.",
+    ],
+    goods: [[3, 2, "bread cheese"]] },
+  { id: "storeroom-c", kind: "storeroom", building: "bd_store", floor: "dplank", wall: "stablew",
+    legend: { l: "wall lantern", A: "amphora rack", L: "ladder", C: "crate stack", B: "barrel stack", D: "customs desk", s: "sack hoist", S: "sack pile", c: "crate", r: "rope coil", b: "barrel", m: "door mat" },
+    hang: "....l.....",
+    plan: [
+      "A.L...C.B.",
+      "..........",
+      "D......s..",
+      ".......S..",
+      "cc..m.r.bb",
+    ] },
+  { id: "guard-b", kind: "guard_room", building: "bd_guard", floor: "flag", wall: "grey",
+    legend: { b: "banner", l: "wall lantern", x: "crossed swords", c: "cot", R: "weapon rack", z: "brazier", A: "armour chest", s: "shield rack", a: "arrow barrel", m: "door mat" },
+    hang: "b..l....x",
+    plan: [
+      "c.....R..",
+      "....z....",
+      "c.....c..",
+      ".........",
+      "A...m.s.a",
+    ] },
+  { id: "office-c", kind: "study", building: "bd_hall", floor: "plank", wall: "plaster",
+    legend: { M: "wall map", W: "window", w: "window light", b: "banner", S: "scroll shelf", h: "high chair", C: "clerk desk", s: "standing scale", k: "strongbox", c: "crate", r: "barrel", m: "door mat" },
+    hang: "M...W...b",
+    plan: [
+      "....wS...",
+      "..h......",
+      ".C.....s.",
+      ".........",
+      "k...m..cr",
+    ],
+    goods: [[1, 2, "ledger"], [3, 2, "table lamp"]] },
+  { id: "stable-b", kind: "stable", building: "bd_farm", floor: "earth", wall: "stablew",
+    legend: { l: "wall lantern", h: "hay bale", T: "stable stall", L: "ladder", M: "hay manger", n: "hen nest", w: "cart wheel", e: "egg baskets", c: "chopping block", p: "garden tools", m: "door mat" },
+    hang: ".....l...",
+    plan: [
+      "hhT.....L",
+      "h........",
+      ".....M...",
+      "n.......w",
+      "ne..m.c.p",
+    ] },
+  { id: "apothecary-b", kind: "pharmacy_shop", building: "bd_shop", floor: "plank", wall: "plaster",
+    legend: { h: "herb rail", W: "window", w: "window light", P: "potion shelf", S: "shop counter", a: "alembic", H: "herb baskets", d: "demijohns", m: "door mat" },
+    hang: "h....W..",
+    plan: [
+      "...PPw.P",
+      "........",
+      "S....a..",
+      "......H.",
+      "d..m....",
+    ],
+    goods: [[1, 2, "mortar"]] },
+  { id: "weapons-b", kind: "weapon_shop", building: "bd_shop", floor: "flag", wall: "rubble",
+    legend: { x: "crossed swords", l: "wall lantern", R: "weapon rack", A: "armor stand", D: "display table", S: "shop counter", s: "shield rack", a: "arrow barrel", b: "bow rack", m: "door mat" },
+    hang: "x....l..",
+    plan: [
+      ".R.R...A",
+      "........",
+      "D....S..",
+      "........",
+      "s..m..ab",
+    ],
+    goods: [[6, 2, "cashbox"]] },
+  // ══ 한 벌뿐이던 종류의 둘째 벌(그림 없이 — 바닥·벽·크기·자리가 다르다) ══
+  { id: "cellar-b", kind: "cellar", building: "bd_inn", floor: "earth", wall: "rubble",
+    legend: { l: "wall lantern", B: "barrel stack", V: "wine rack", A: "amphora rack", k: "keg", c: "crate", d: "demijohns", h: "hand lantern", m: "door mat" },
+    hang: "..l.....",
+    plan: ["B.....V.", "........", "A....kk.", "........", "c..m..dh"] },
+  { id: "waiting-b", kind: "waiting_room", building: "bd_hall", floor: "plank", wall: "plaster",
+    legend: { W: "window", w: "window light", N: "notice board", r: "record stand", n: "bench", C: "customs desk", u: "cushion bench", m: "door mat" },
+    hang: "W..N....",
+    plan: ["w.....r.", "........", "n....C..", "........", "u..m...."] },
+  { id: "hall-b", kind: "great_hall", building: "bd_hall", floor: "dplank", wall: "plaster",
+    legend: { b: "banner", W: "window", w: "window light", A: "armor stand", n: "bench", L: "long table", k: "strongbox", c: "floor candle", m: "door mat" },
+    hang: "..b.W...W.b..",
+    plan: ["A...w...w...A", ".............", "..n.....n....", "..L.....L....", ".............", "..n.....n....", "k.....m.....c"] },
+  { id: "mill-b", kind: "mill", building: "bd_farm", floor: "flag", wall: "rubble",
+    legend: { W: "window", w: "window light", l: "wall lantern", H: "grain hopper", L: "ladder", S: "sack pile", M: "millstones", k: "grain sack", f: "flour bin", q: "hand quern", m: "door mat" },
+    hang: "W....l...",
+    plan: ["w.H.....L", ".........", "S....M...", ".........", "kf..m...q"] },
+  { id: "brewery-b", kind: "brewery", building: "bd_farm", floor: "ovenf", wall: "slumw",
+    legend: { W: "window", w: "window light", l: "wall lantern", M: "mash tun", U: "ale tun", B: "brew kettle", h: "hop sacks", k: "keg", n: "bottling bench", m: "door mat" },
+    hang: "..W....l.",
+    plan: ["M.w..U...", ".........", "B.....h..", ".........", "kk..m.n.."] },
+  { id: "weaver-b", kind: "workshop", building: "bd_farm", floor: "plank", wall: "plaster",
+    legend: { W: "window", w: "window light", p: "coat pegs", l: "loom", L: "cloth shelf", d: "dye vats", s: "spinning wheel", c: "carding bench", k: "laundry basket", m: "door mat" },
+    hang: "W....p..",
+    plan: ["w.l...L.", "........", "d.....s.", "........", "c..m..k."] },
+  { id: "dining-b", kind: "dining", building: "bd_manor", floor: "dplank", wall: "plaster",
+    legend: { W: "curtain window", w: "window light", s: "sconce", C: "china cabinet", h: "chair", F: "feast table", H: "chair back", c: "floor candle", m: "door mat" },
+    hang: "..W...s..",
+    plan: ["C.w......", ".........", "..hF..h..", "...H.H...", "....m...c"] },
+  { id: "classroom-b", kind: "classroom", building: "bd_hall", floor: "plank", wall: "plaster",
+    legend: { M: "wall map", W: "window", w: "window light", B: "lecture board", K: "bookcase", d: "slant desk", G: "globe", m: "door mat" },
+    hang: "M..W....",
+    plan: ["...wB.K.", "........", "d...d..G", "........", "d..md..."] },
+  { id: "jail-b", kind: "jail", building: "bd_tower", floor: "earth", wall: "rubble",
+    legend: { y: "key board", l: "wall lantern", p: "pallet", x: "cell bars", d: "cell door", b: "barrel", T: "plain table", o: "stool", m: "door mat" },
+    hang: ".y..l...",
+    plan: ["p.......", "........", "xxd.xxxx", "........", "b..m.T.o"] },
+  { id: "lighthouse-b", kind: "lighthouse", building: "bd_tower", floor: "dplank", wall: "grey",
+    legend: { W: "window", w: "window light", S: "spiral stairs", t: "telescope", L: "lighthouse lamp", c: "cot", b: "barrel", M: "map table", m: "door mat" },
+    hang: "W......",
+    plan: ["w...S..", ".......", "t..L...", "c.....b", "...m.M."] },
+  { id: "pottery-b", kind: "pottery", building: "bd_craft", floor: "earth", wall: "plaster",
+    legend: { W: "window", w: "window light", D: "pot drying shelf", K: "kiln", g: "hearth glow", P: "potters wheel", c: "clay pots", t: "water tub", m: "door mat" },
+    hang: "..W.....",
+    plan: ["D.w...K.", ".....g..", "P.......", "......c.", "t..m...."] },
+  { id: "carpentry-b", kind: "carpentry", building: "bd_craft", floor: "plank", wall: "plaster",
+    legend: { t: "tool rail", W: "window", w: "window light", L: "ladder", S: "sawhorse", J: "joiner bench", x: "toolbox", f: "firewood", m: "door mat" },
+    hang: "t....W..",
+    plan: [".....w.L", "........", "S....J..", "........", "x..m..f."] },
+  { id: "cobbler-b", kind: "cobbler", building: "bd_craft", floor: "dplank", wall: "plaster",
+    legend: { p: "peg rail goods", W: "window", w: "window light", C: "cloth shelf", S: "shop counter", B: "cobbler bench", b: "boots", k: "hamper", m: "door mat" },
+    hang: "p..W...",
+    plan: ["...w.C.", ".......", "S...B..", ".......", "b..m..k"],
+    goods: [[1, 2, "cashbox"]] },
+  { id: "printer-b", kind: "printer", building: "bd_craft", floor: "plank", wall: "plaster",
+    legend: { M: "wall map", n: "notice board", W: "window", w: "window light", S: "scroll shelf", P: "printing press", D: "slant desk", c: "crate", k: "book chest", l: "floor candle", m: "door mat" },
+    hang: "M..n..W..",
+    plan: ["......wS.", ".........", "P...P....", "......D..", "c...m..kl"] },
+  { id: "library-b", kind: "library", building: "bd_manor", floor: "dplank", wall: "plaster",
+    legend: { W: "window", w: "window light", B: "bookcase", h: "chair", M: "map table", G: "globe", k: "book chest", c: "floor candle", m: "door mat" },
+    hang: "W......W",
+    plan: ["wB.B.B.w", "........", ".hM.....", "......G.", "k..m...c"] },
+  { id: "chapel-c", kind: "chapel", building: "bd_chapel", floor: "grey", wall: "grey",
+    legend: { G: "stained window", w: "window light", f: "floor candle", a: "altar", p: "pew", r: "aisle runner", k: "kneeler", c: "candelabrum", m: "door mat" },
+    hang: ".G...G.",
+    plan: ["fwa..wf", ".......", "p..r.p.", "...r...", "p..r.p.", "k..m..c"] },
+  // ══ 크기 단 — 큰 방 견본(대형 공간의 홀): 기둥 두 줄 · 가운데 융단 길 · 큰 계단 · 샹들리에 ══
+  { id: "hall-l", kind: "great_hall", building: "bd_hall", floor: "dplank", wall: "plaster",
+    legend: { b: "banner", W: "window", w: "window light", A: "armor stand", G: "grand stairs", R: "royal runner", P: "oak post", n: "bench", L: "long table", C: "chandelier", k: "strongbox", c: "floor candle" },
+    hang: "b..W..b.....b..W..b",
+    plan: [
+      "A..w....G......w..A",
+      "........R..........",
+      ".n..P...R.....P.n..",
+      ".L...C..R...C...L..",
+      "........R..........",
+      ".n..P...R.....P.n..",
+      "........R..........",
+      "k.......R.........c",
+    ] },
+];
+
+ROOMS.push(...(TIER_ROOMS as unknown as Room[]));
+
+const spec = JSON.parse(fs.readFileSync(SPEC, "utf8")) as HandInteriorSpec & { rooms?: unknown };
+const check = process.argv.includes("--check");
+const layers: Record<string, unknown> = {};
+const templates = []; const dump: Record<string, unknown> = {}; const examples: unknown[] = []; let bad = 0;
+for (const r0 of ROOMS) {
+  const legend = Object.fromEntries(Object.entries(r0.legend).filter(([k, v]) => k.length === 1 && v));
+  const t = toTemplate({ ...r0, legend, style: "town" } as AuthoredRoom);
+  // id 머리 authored- = 손으로 짠 견본(그 크기에서 조립 검사를 지난 구성 — 빌더가 줄이거나 메우거나 뒤집지 않는다), map 의 town = 화풍 묶음.
+  for (const [id, x, j, w, h] of r0.daises ?? []) t.items.push({ t: "d", id, x, y: j + 2, w, h });
+  const tpl = { ...t, id: `authored-bd-${r0.id}`, map: `authored-town-bd-${r0.id}`, building: r0.building };
+  // 조립 입력: 테두리 1칸 + 벽면 2줄 + 바닥, 문은 남쪽 가운데
+  const W = t.w + 2, door = Math.floor((t.w - 1) / 2) + 1;
+  const plan = ["#".repeat(W), ...Array.from({ length: t.h }, () => `#${".".repeat(t.w)}#`), "#".repeat(door) + "." + "#".repeat(W - door - 1)];
+  const objects = t.items.filter((i) => i.t === "o").map((i) => ({ id: i.id, x: i.x + 1, y: i.y + 1 }));
+  const goods = t.items.filter((i) => i.t === "g").map((i) => ({ id: i.id, x: i.x + 1, y: i.y + 1 }));
+  const daises = t.items.filter((i) => i.t === "d").map((i) => ({ id: i.id, x: i.x + 1, y: i.y + 1, w: i.w!, h: i.h! }));
+  const input = { plan, floor: r0.floor, wall: r0.wall, objects, goods, daises };
+  try {
+    const L = buildHandInteriorLayers(input, undefined, spec);
+    layers[r0.id] = { w: L.width, h: L.height, layers: [L.lowerTiles, L.lowerOverlayTiles, L.upperTiles, L.upperOverlayTiles] };
+    const errs = L.issues.filter((i) => i.severity === "error");
+    for (const e of errs) { bad++; console.error(`${r0.id}: ${e.code} ${e.message}`); }
+    for (const e of L.issues.filter((i) => i.severity !== "error")) console.warn(`  ${r0.id} (warn): ${e.code} ${e.message}`);
+  } catch (e) { bad++; console.error(`${r0.id}: ${(e as Error).message}`); }
+  templates.push(tpl); dump[r0.id] = { ...input, kind: r0.kind, building: r0.building };
+  const count = new Map<string, number>(); for (const i of t.items) if (i.t === "o") count.set(i.id, (count.get(i.id) ?? 0) + 1);
+  if (!r0.tier) examples.push([`authored-town-bd-${r0.id}`, r0.building, r0.kind, [...count].sort()]);
+}
+console.log(`방 ${ROOMS.length}개(크기 단 전용 ${ROOMS.filter((r) => r.tier).length}) · 종류 ${new Set(ROOMS.filter((r) => !r.tier).map((r) => r.kind)).size} · 조립 오류 ${bad}`);
+// 크기 단 구성 표: 구성마다 모든 평면 벌 × 게임 열쇠 여럿으로 방 사각형이 풀리는지(겹침·바깥문 방이 맨 아래) 본다 — 가구까지 짓는 검사는 tiers-check.mts.
+{
+  const tpls = templates as { id: string; kind: string; w: number; h: number; floor: string; wall: string }[];
+  let plans = 0;
+  for (const [pid, p] of Object.entries(TIER_PROGRAMS)) {
+    for (const k of p.serves) if (!tpls.some((t) => t.kind === k)) { bad++; console.error(`${pid}: serves 의 방 종류 ${k} 에 견본이 없다`); }
+    for (const m of [...p.shapes, ...(p.maps ?? [])]) for (let key = 0; key < 24; key++) for (const main of p.serves) {
+      try { placeTierMap(m, tierTemplatePicker(tpls, main, `check-${key}|${m.id}`), TIER_DOORS); plans++; }
+      catch (e) { bad++; console.error(`${pid}/${m.id} (열쇠 ${key}, ${main}): ${(e as Error).message}`); }
+    }
+    for (const l of p.links ?? []) for (const ref of [l.from, l.to]) {
+      const [mk, rk] = ref.split("/");
+      for (const m of mk === "main" ? p.shapes : (p.maps ?? []).filter((q) => q.id === mk)) if (rk !== "*" && !m.rooms.some((r) => r.id === rk)) { bad++; console.error(`${pid}: 길 ${ref} — 평면 ${m.id} 에 방 ${rk} 이 없다`); }
+    }
+  }
+  const by = (t: string) => Object.values(TIER_PROGRAMS).filter((p) => p.tier === t);
+  console.log(`크기 단 구성 — 중형 ${by("medium").length}(평면 ${by("medium").reduce((n, p) => n + p.shapes.length, 0)}) · 대형 ${by("large").length}(평면 ${by("large").reduce((n, p) => n + p.shapes.length, 0)}) · 초대형 ${by("xlarge").length} · 풀어 본 평면 ${plans} · 오류 ${bad}`);
+}
+// 그림 굽기용 층 배열(저장소 밖): BD_LAYERS=<파일> 을 주면 방마다 네 층의 칸 번호를 적는다 — render.py 가 시트에서 그린다.
+if (process.env.BD_LAYERS) fs.writeFileSync(process.env.BD_LAYERS, JSON.stringify(layers));
+if (bad) process.exit(1);
+if (!check) {
+  const programs: Record<string, { map: string; kinds: string[] }[]> = {};
+  for (const r of ROOMS) if (!r.tier) (programs[r.building] ??= []).push({ map: `authored-town-bd-${r.id}`, kinds: [r.kind] });
+  fs.writeFileSync(OUT, JSON.stringify({ version: 1, templates: { [TID]: templates }, programs: { [TID]: programs } }) + "\n");
+  fs.writeFileSync(TIERS, JSON.stringify({ version: 1, tileset: TID, source: "scripts/content/beodeul-interiors/tiers.mts", programs: TIER_PROGRAMS, kitPrograms: KIT_PROGRAMS, doors: TIER_DOORS }) + "\n");
+  const used = new Set(ROOMS.map((r) => r.kind));
+  (spec as { rooms?: unknown }).rooms = { kinds: Object.fromEntries(Object.entries(KINDS).filter(([k]) => used.has(k))), buildings: BUILDINGS, examples, docPrefix: "bd-in-map-" };
+  fs.writeFileSync(SPEC, JSON.stringify(spec) + "\n");
+  fs.writeFileSync(DUMP, JSON.stringify(dump, null, 1) + "\n");
+}
