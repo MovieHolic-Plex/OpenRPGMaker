@@ -2,7 +2,9 @@
 // 광장도 성벽도 청하지 않은 풀밭 마을은 돌 포장이 없고(길·마당이 한 몸으로 이어진 흙), 문 앞은 모두 흙이며, 집·문 도달은 그대로다.
 // 포구는 잔교가 설 물가를 곧게 편 돌 둑을 낸다(beodeulQuay.ts — 뭍을 넓히는 쪽으로만 메운다).
 // 읍(성벽 · 청한 광장)은 중심부가 돌바닥이고(beodeulTownCore.ts) 풀은 화단으로만 남으며, 광장은 길 포석 테를 두른 네모다.
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { tilesetLookPlaza } from "@/assets/tilesetLooks";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools";
 import { planCommons, straightEarthRuns } from "@/editor/tools/beodeulCommons";
@@ -294,5 +296,39 @@ describe("빈 땅의 쓰임(planLandPlots) — 볼 것 없는 화면에 울타�
     expect(gates.filter((g) => !g.reached).length).toBe(0);
     expect((data.doors as { reached: boolean }[]).filter((d) => !d.reached).length).toBe(0);
     expect(town({ walls: true, form: "plaza", seed: 17 }).data.landPlots).toBeUndefined();
+  }, 480_000);
+});
+
+describe("자갈 재질은 시골·마을 급에 쓰지 않는다(오너 «강자갈 마당은 너무 어색하군»)", () => {
+  const PLAZA_TILE = 1509; // «버들항 광장 판석» 몸통 — 겉모습이 이 칸의 그림을 그 게임의 광장 재질로 바꾼다
+  const coast = (look: string | undefined, extra: Record<string, unknown> = {}) => {
+    const project = createBlankProject() as Project;
+    if (look) (project.tilesets[TS] as unknown as { look: unknown }).look = { textureKey: "tex_beodeul_looks", surface: look };
+    const ctx = { project, currentMapId: project.startMapId } as ToolContext;
+    const res = runTool(ctx, "author_beodeul_town", { theme: "coast", seed: 23, houseCount: 4, ...extra });
+    expect(res.ok, res.summary).toBe(true);
+    const data = res.data as { mapId: string; rank: string; quay: { x0: number; y0: number; x1: number; y1: number }; doors: { reached: boolean }[] };
+    const map = ctx.project.maps[data.mapId]!;
+    let plazaTiles = 0;
+    for (let y = data.quay.y0; y <= data.quay.y1; y += 1) for (let x = data.quay.x0; x <= data.quay.x1; x += 1) if (map.lowerTiles[y * map.width + x] === PLAZA_TILE) plazaTiles += 1;
+    return { data, plazaTiles, quay: readSettlementAreas(map, ctx.project.tilesets[TS]).quay.length };
+  };
+  it("굽는 명세: 어느 겉모습도 흙길(정착지의 흙 몸)에 자갈을 쓰지 않고, 표가 겉모습마다 광장 재질 이름을 싣는다", () => {
+    const spec = JSON.parse(readFileSync("tiledata/beodeul-looks/spec.json", "utf8")) as { surfaces: Record<string, { track?: string | null }> };
+    for (const [id, surface] of Object.entries(spec.surfaces)) expect([undefined, null, "road-dirt"], id).toContain(surface.track);
+    expect(tilesetLookPlaza(TS, { textureKey: "tex_beodeul_looks", surface: "frontier" })).toBe("plaza-cobble");
+    expect(tilesetLookPlaza(TS, { textureKey: "tex_beodeul_looks", surface: "heath" })).toBe("plaza-slate");
+    expect(tilesetLookPlaza(TS, undefined)).toBeUndefined();
+  });
+  it("자갈 광장 겉모습의 포구 마을: 둑은 광장 판석 칸이 아니라 청회색 판석 표본 — 다른 겉모습과 읍은 그대로", () => {
+    const plain = coast(undefined), cobble = coast("frontier"), slate = coast("heath"), town = coast("frontier", { form: "plaza" });
+    expect(plain.plazaTiles).toBeGreaterThan(15);
+    expect(cobble.data.rank).toBe("village");
+    expect(cobble.plazaTiles).toBe(0);
+    expect(cobble.quay).toBe(plain.quay); // 둑은 그대로 물에 닿는 포장으로 읽힌다
+    expect(cobble.data.doors.filter((d) => !d.reached).length).toBe(0);
+    expect(slate.plazaTiles).toBe(plain.plazaTiles);
+    expect(town.data.rank).toBe("town");
+    expect(town.plazaTiles).toBeGreaterThan(15);
   }, 480_000);
 });
