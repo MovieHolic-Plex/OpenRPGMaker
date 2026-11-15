@@ -1,0 +1,500 @@
+{
+"_doc": "jp_city Fable 건물 레시피(4판, 탑 3/4) — scripts/content/jp-city/fable_city_build.py 가 parts/ 의 부품 그림(지붕 윗면 포함)을 이 레시피대로 쌓고 간판 글자만 코드로 얹어 pieces/jp-bldg-f-<id>.png 를 만든다. 형식은 그 스크립트 머리말.",
+"buildings": [
+{
+"id": "yaoya",
+"w": 3,
+"h": 7,
+"stack": [
+"r",
+"u",
+"g"
+],
+"signs": [
+[
+"board",
+"青果",
+"green",
+10,
+66
+]
+]
+},
+{
+"id": "furuhon",
+"w": 3,
+"h": 7,
+"stack": [
+"t",
+"u",
+"g"
+],
+"signs": [
+[
+"side",
+"古本",
+"navy",
+33,
+40
+]
+]
+},
+{
+"id": "kissa",
+"w": 4,
+"h": 7,
+"stack": [
+"r",
+"u",
+"g"
+],
+"signs": [
+[
+"board",
+"珈琲",
+"maple",
+18,
+66
+]
+]
+},
+{
+"id": "house-eave",
+"w": 5,
+"h": 7,
+"stack": [
+[
+"rl",
+"rr"
+],
+"u",
+"g"
+]
+},
+{
+"id": "machiya-gable",
+"w": 4,
+"h": 7,
+"stack": [
+"gb",
+"u",
+"g"
+],
+"signs": [
+[
+"board",
+"菓子",
+"wood",
+18,
+46
+]
+]
+},
+{
+"id": "zakkyo",
+"w": 6,
+"h": 9,
+"stack": [
+[
+"tl",
+"tr"
+],
+[
+"u2l",
+"u2r"
+],
+[
+"u1l",
+"u1r"
+],
+[
+"gl",
+"gr"
+]
+],
+"signs": [
+[
+"board",
+"中華",
+"red",
+10,
+96
+],
+[
+"side",
+"囲碁",
+"teal",
+80,
+42
+],
+[
+"side",
+"歯科",
+"blue",
+80,
+70
+]
+]
+},
+{
+"id": "sakana",
+"w": 3,
+"h": 7,
+"stack": [
+"r",
+"u",
+"g"
+],
+"signs": [
+[
+"text",
+"鮮魚",
+14,
+67,
+"white:6",
+"blue:0"
+]
+]
+},
+{
+"id": "niku",
+"w": 3,
+"h": 7,
+"stack": [
+"t",
+"u",
+"g"
+],
+"signs": [
+[
+"board",
+"精肉",
+"red",
+10,
+64
+]
+]
+},
+{
+"id": "pan",
+"w": 4,
+"h": 7,
+"stack": [
+"r",
+"u",
+"g"
+],
+"signs": [
+[
+"side",
+"パン",
+"orange",
+50,
+41
+]
+]
+},
+{
+"id": "hana",
+"w": 3,
+"h": 7,
+"stack": [
+"t",
+"u",
+"g"
+]
+},
+{
+"id": "tofu",
+"w": 3,
+"h": 7,
+"stack": [
+"r",
+"u",
+"g"
+],
+"signs": [
+[
+"text",
+"豆腐",
+14,
+82,
+"navy:1",
+null
+]
+]
+},
+{
+"id": "sake",
+"w": 4,
+"h": 7,
+"stack": [
+"gb",
+"u",
+"g"
+],
+"signs": [
+[
+"board",
+"酒",
+"wood",
+23,
+46
+]
+]
+},
+{
+"id": "kome",
+"w": 3,
+"h": 7,
+"stack": [
+"r",
+"u",
+"g"
+],
+"signs": [
+[
+"board",
+"米",
+"orange",
+15,
+66
+]
+]
+},
+{
+"id": "kusuri",
+"w": 3,
+"h": 7,
+"stack": [
+"t",
+"u",
+"g"
+],
+"signs": [
+[
+"side",
+"薬",
+"green",
+34,
+39
+]
+]
+},
+{
+"id": "tokoya",
+"w": 3,
+"h": 7,
+"stack": [
+"t",
+"u",
+"g"
+]
+},
+{
+"id": "ocha",
+"w": 3,
+"h": 7,
+"stack": [
+"gb",
+"u",
+"g"
+],
+"signs": [
+[
+"text",
+"茶",
+19,
+80,
+"white:6",
+null
+]
+]
+},
+{
+"id": "denki",
+"w": 4,
+"h": 7,
+"stack": [
+"t",
+"u",
+"g"
+],
+"signs": [
+[
+"board",
+"電器",
+"blue",
+18,
+64
+]
+]
+},
+{
+"id": "jitensha",
+"w": 4,
+"h": 7,
+"stack": [
+"r",
+"u",
+"g"
+],
+"signs": [
+[
+"board",
+"自転車",
+"navy",
+12,
+66
+]
+]
+},
+{
+"id": "kanamono",
+"w": 3,
+"h": 7,
+"stack": [
+"r",
+"u",
+"g"
+],
+"signs": [
+[
+"side",
+"金物",
+"maple",
+34,
+41
+]
+]
+},
+{
+"id": "dagashi",
+"w": 3,
+"h": 7,
+"stack": [
+"r",
+"u",
+"g"
+]
+},
+{
+"id": "sentaku",
+"w": 3,
+"h": 7,
+"stack": [
+"t",
+"u",
+"g"
+],
+"signs": [
+[
+"text",
+"洗濯",
+14,
+65,
+"white:6",
+"teal:0"
+]
+]
+},
+{
+"id": "ramen",
+"w": 3,
+"h": 7,
+"stack": [
+"r",
+"u",
+"g"
+],
+"signs": [
+[
+"text",
+"麺",
+19,
+82,
+"white:6",
+null
+]
+]
+},
+{
+"id": "sushi",
+"w": 4,
+"h": 7,
+"stack": [
+"r",
+"u",
+"g"
+],
+"signs": [
+[
+"text",
+"寿司",
+31,
+82,
+"navy:1",
+null
+]
+]
+},
+{
+"id": "izakaya",
+"w": 4,
+"h": 7,
+"stack": [
+"r",
+"u",
+"g"
+],
+"signs": [
+[
+"side",
+"居酒屋",
+"red",
+50,
+41
+]
+]
+},
+{
+"id": "yakitori",
+"w": 3,
+"h": 7,
+"stack": [
+"r",
+"u",
+"g"
+],
+"signs": [
+[
+"text",
+"焼鳥",
+14,
+67,
+"white:6",
+"red:0"
+]
+]
+},
+{
+"id": "bungu",
+"w": 3,
+"h": 7,
+"stack": [
+"t",
+"u",
+"g"
+],
+"signs": [
+[
+"board",
+"文具",
+"teal",
+10,
+64
+]
+]
+}
+]
+}

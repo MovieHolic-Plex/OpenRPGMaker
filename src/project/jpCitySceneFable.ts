@@ -404,7 +404,8 @@ export function fableDress(c: SceneCtx, L: SceneLayout): void {
  */
 export function fableFill(c: SceneCtx): void {
   const { W, H } = c;
-  const soft = [...streetTagged("gardentree"), ...streetTagged("garden")], hard = [...streetTagged("plaza"), ...streetTagged("park").filter((n) => STREET_PIECES[n]!.w === 1 || n === "bench-stone")];
+  // 포장 위 빈 자리: 광장 것(돌 벤치·음수대)이 먼저, 그다음 나무 구덩이의 가로수(나무는 되풀이해도 된다)
+  const soft = [...streetTagged("gardentree"), ...streetTagged("garden")], hard = [...streetTagged("plaza"), ...streetTagged("park").filter((n) => STREET_PIECES[n]!.w === 1 || n === "bench-stone")], pitTrees = streetTagged("tree");
   const thing = new Uint8Array(W * H);
   const mark = (x0: number, y0: number, w: number, h: number) => { for (let y = Math.max(0, y0); y < Math.min(H, y0 + h); y++) for (let x = Math.max(0, x0); x < Math.min(W, x0 + w); x++) thing[y * W + x] = 1; };
   for (const p of c.placed) mark(p.x, p.y, p.w, p.foot - p.y + 1);
@@ -417,8 +418,8 @@ export function fableFill(c: SceneCtx): void {
     if (c.at(x, y) !== Occ.Lot || !dead(x, y)) continue;
     const f = c.famAt(x, y);
     const pool = f === "earth" || f === "lawn" ? soft : f === "pave" || f === "forecourt" || f === "alley" ? hard : [];
-    const name = pool.length ? c.stPut(pool, x, y) : undefined;
-    if (name) { const p = STREET_PIECES[name]!; mark(x, y - p.h + 1, p.w, p.h); }
+    const name = (pool.length ? c.stPut(pool, x, y) : undefined) ?? (pool === hard ? c.stPut(pitTrees, x - 1, y) ?? c.stPut(pitTrees, x, y) : undefined);
+    if (name) { const p = STREET_PIECES[name]!, q = c.stPlaced[c.stPlaced.length - 1]!; mark(q.x, q.y, p.w, p.h); }
   }
 }
 

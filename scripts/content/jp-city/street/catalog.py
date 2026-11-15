@@ -16,10 +16,10 @@ ROLE = {'conbini': 'konbini', 'shop-izakaya': 'izakaya', 'shop-ramen': 'ramen', 
 CAT_BY_TAG = {'단독주택': 'house', '공동주택': 'apartment', '가게': 'shop', '음식점': 'food', '상업 건물': 'commercial', '공공 건물': 'public', '공장·창고': 'industry'}
 ZONE_ONLY = {'station-small': 'station', 'school': 'school', 'school-gym': 'school', 'shrine-haiden': 'shrine', 'gas-office': 'gas', 'market-hall': 'market'}   # 구획(역 앞·교정·경내·주유소)이 부르는 건물 — 줄에 섞지 않는다
 # 새 건물(jp-bldg-f-*, 그리는 일꾼 JP) 가운데 급만으로 분류가 안 되는 것
-F_CAT = {'toilet': 'utility', 'bus-shelter': 'utility', 'jizo-hall': 'sacred', 'lottery': 'utility', 'bunka-apart': 'apartment', 'temple-hall': 'sacred', 'grand-temple': 'sacred',
+F_CAT = {'ramen': 'food', 'sushi': 'food', 'izakaya': 'food', 'yakitori': 'food', 'kissa': 'food', 'toilet': 'utility', 'bus-shelter': 'utility', 'jizo-hall': 'sacred', 'lottery': 'utility', 'bunka-apart': 'apartment', 'temple-hall': 'sacred', 'grand-temple': 'sacred',
          'community-hall': 'public', 'fire-brigade': 'public', 'dentist': 'public', 'vet': 'public', 'acupuncture': 'public', 'landmark-torii': 'sacred', 'landmark-castle': 'castle',
          'bullet-station': 'station', 'bus-terminal': 'station', 'university': 'school', 'plant': 'industry', 'wholesale-market': 'market', 'ballpark': 'stadium', 'car-repair': 'industry'}
-F_ROLE = {'bento': 'bento', 'business-hotel': 'hotel', 'bank': 'bank', 'ryokan': 'ryokan', 'karaoke': 'karaoke', 'pachinko': 'pachinko', 'game-center': 'arcade', 'manga-cafe': 'cafe', 'tea': 'cafe',
+F_ROLE = {'ramen': 'ramen', 'sushi': 'restaurant', 'izakaya': 'izakaya', 'yakitori': 'izakaya', 'kissa': 'cafe', 'sentaku': 'laundry', 'zakkyo': 'office', 'bento': 'bento', 'business-hotel': 'hotel', 'bank': 'bank', 'ryokan': 'ryokan', 'karaoke': 'karaoke', 'pachinko': 'pachinko', 'game-center': 'arcade', 'manga-cafe': 'cafe', 'tea': 'cafe',
           'family-restaurant': 'restaurant', 'soba-stand': 'restaurant', 'takoyaki': 'restaurant', 'taiyaki': 'restaurant', 'hospital': 'clinic', 'dentist': 'clinic', 'vet': 'clinic', 'acupuncture': 'clinic',
           'ward-office': 'office', 'tv-station': 'office', 'library': 'library', 'museum': 'museum', 'cinema': 'cinema', 'police-station': 'koban', 'fire-station': 'fire', 'department-store': 'mall',
           'shopping-mall': 'mall', 'electronics': 'mall', 'bunka-apart': 'apartment', 'pool-hall': 'gym'}

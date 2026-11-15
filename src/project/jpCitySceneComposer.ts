@@ -11,7 +11,7 @@
 // 순수 계획 → 단계 목록. 실행은 jpCitySceneRun.ts. 줄·구획 채우기는 jpCitySceneRows.ts · jpCityScenePieces.ts.
 import type { JpStreetPlan } from "@/project/jpCityStreetComposer";
 import { mulberry, Occ, SceneCtx, type SceneBand, type SceneBlock, type SceneLayout, type ScenePlaced, type SceneStreet, type SceneVStreet } from "@/project/jpCitySceneCtx";
-import { pickSceneKind, SCENE_SIZES, sceneEn, sceneTone, type CatBuilding, type SceneKind, type SceneStyle, type SceneTone } from "@/project/jpCitySceneKinds";
+import { pickSceneKind, SCENE_SIZES, sceneEn, sceneTone, type SceneKind, type SceneStyle, type SceneTone } from "@/project/jpCitySceneKinds";
 import { PIECES, type PieceDef } from "@/project/jpCityScenePieces";
 import { dressRiver, dressStreets, placeOverpass } from "@/project/jpCitySceneStreets";
 import { fableFinish, fableRiver, type FableInfo } from "@/project/jpCitySceneFable";
@@ -26,7 +26,6 @@ export interface SceneOptions {
   /** 거리 종류 id 를 직접 고른다(jpCityStreetKinds.json) */ readonly kind?: string;
   readonly crosswalkTile?: number;
   /** 새 조각(fable_street)으로 짓는다 — 기본: 칩셋에 새 조각이 구워져 있으면 켠다 */ readonly fable?: boolean;
-  /** 건물 표를 바꿔 끼운다 — 아직 굽지 않은 새 건물(jp-bldg-f-*)의 예정 표로 계획·규칙을 미리 볼 때(테스트·측정). 게임을 지을 때는 주지 않는다 */ readonly buildings?: readonly CatBuilding[];
 }
 export interface ScenePlan extends JpStreetPlan {
   readonly kind: SceneKind; readonly tone: SceneTone; readonly placed: readonly ScenePlaced[];
@@ -222,6 +221,25 @@ function assignUses(c: SceneCtx, L: SceneLayout, shops: number): void {
     } else blk.use = p;
     n++;
   }
+  // 새 거리: 같은 건물 그림은 한 지도에 한 번뿐이라, 건물 표의 폭을 다 합쳐도 줄을 못 채우면 남는 길이를 빈터 쓰임(공원·주차장·작은 신사·자전거 주차장·공터·공사장)이 가져간다.
+  // 건물 표가 늘면(집·중형 건물) 이 쓰임은 저절로 줄어든다. 가게 거리의 맨 위 띠(가게 줄)는 건드리지 않는다.
+  if (c.fable) {
+    const poolW = c.buildingPool.filter((b) => b.tier !== "xlarge" && b.tier !== "landmark").reduce((a, b) => a + b.w, 0);
+    const free = () => L.blocks.filter((b) => !b.use).reduce((a, b) => a + (b.ex - b.sx), 0);
+    const extra = ["park", "parking", "shrine-small", "bikepark", "vacant", "construction"].map((p) => ({ p, r: rng() })).sort((a, b) => a.r - b.r).map((x) => x.p);
+    for (let t = 0; t < 12 && free() - poolW > 6; t++) {
+      const p = extra[t % extra.length]!, def: PieceDef = PIECES[p]!;
+      const fits = L.blocks.filter((b) => !b.use && !(kind.mainMix && b.band.index === 0) && b.ex - b.sx >= def.minW && b.band.foot - b.band.top + 1 >= def.minH).sort((a, b) => (b.ex - b.sx) - (a.ex - a.sx));
+      const blk = fits[0];
+      if (!blk) continue;
+      const w = blk.ex - blk.sx, pw = Math.min(w, def.prefW + Math.floor(rng() * 3));
+      if (w - pw >= 7) {
+        const atEast = blk.edgeW ? true : blk.edgeE ? false : rng() < 0.5;
+        L.blocks.push({ band: blk.band, sx: atEast ? blk.ex - pw : blk.sx, ex: atEast ? blk.ex : blk.sx + pw, use: p, edgeW: !atEast && blk.edgeW, edgeE: atEast && blk.edgeE });
+        if (atEast) blk.ex -= pw; else blk.sx += pw;
+      } else blk.use = p;
+    }
+  }
   let shopBlocks = 0;
   for (const b of L.blocks) if (!b.use) { b.use = !(kind.mainMix && b.band.index === 0) && rng() < kind.houseShare ? "house" : "shop"; if (b.use === "shop") shopBlocks++; }
   if (shops > 0 && !shopBlocks) { const b = L.blocks.filter((q) => q.use === "house").sort((p, q) => (q.ex - q.sx) - (p.ex - p.sx))[0]; if (b) b.use = "shop"; }
@@ -234,7 +252,7 @@ export function planJpCityScene(opts: SceneOptions): ScenePlan {
   const kind = pickSceneKind({ style, shops: opts.shops, key, seed, kind: opts.kind });
   const fable = opts.fable ?? STREET_BAKED;
   const tone = fable ? fableTone(sceneTone(kind, key), STONE_KINDS.has(kind.id)) : sceneTone(kind, key);
-  const c = new SceneCtx(mapId, W, H, kind, tone, key, seed, mulberry((Math.imul(seed + 1, 0x9e3779b1) ^ lookHash(kind.id)) >>> 0), fable, opts.buildings);
+  const c = new SceneCtx(mapId, W, H, kind, tone, key, seed, mulberry((Math.imul(seed + 1, 0x9e3779b1) ^ lookHash(kind.id)) >>> 0), fable);
   const L = layout(c) as SceneLayout & { overpass?: boolean };
   paintStreets(c, L);
   makeBlocks(L, W);

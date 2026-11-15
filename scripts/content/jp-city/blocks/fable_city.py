@@ -79,10 +79,10 @@ def _finalize():
             ps = set(it.get('pass', []))
             parts = [dict(kind='entrance', x=c, y=h - 1, w=1, h=1, label='지나는 문' if c in ps else '출입구') for c in it['doors']]
             access = [dict(x=c, y=h) for c in it['doors']]
-            desc = '%s — %s 건물(%s), %d층, 폭 %d칸×높이 %d칸(밑면 막힘 %d줄, 키트 폭 = 벽 폭). 정면 + 위에서 본 지붕 면(직각 지붕). %s%s %s' % (
+            desc = '%s — %s 건물(%s), %d층, 폭 %d칸×높이 %d칸(밑면 막힘 %d줄, 키트 폭 = 벽 폭). 탑 3/4 시점 — 정면 벽 위에 내려다본 지붕 윗면(기와 경사·평지붕 바닥과 옥상 기물·박공)이 그림에 들어 있다. %s%s %s' % (
                 it['name'], TIER_KO[it['tier']], it['en'], it['floors'], w, h, it['depth'],
                 '실내 program %s. ' % it['program'] if it.get('program') else '', '문 열 %s 은 걸어서 지나간다. ' % sorted(ps) if ps else '', how)
-            rules = it['rule'] + ' 다음 건물은 x + %d 에 벽을 맞대 세우거나 1~2칸 골목을 둔다. 아래 %d줄만 막힘이고 그 위는 사람이 뒤로 지나가며 가려지는 칸이다. 문 바로 아래 한 칸은 걷는 바닥으로 둔다.' % (w, it['depth'])
+            rules = it['rule'] + (' 다음 건물은 x + %d 에 벽을 맞대 세우거나 1~2칸 골목을 둔다.' % w if it.get('touch', True) else ' 양옆은 마당·담으로 띄운다(이웃 벽과 맞대지 않는다).') + ' 아래 %d줄만 막힘이고 그 위는 사람이 뒤로 지나가며 가려지는 칸이다. 문 바로 아래 한 칸은 걷는 바닥으로 둔다. 옥상 기물·차양·간판은 그림에 들어 있으니 더 얹지 않는다.' % it['depth']
             ai = dict(snap='floor', tags=tags, description=desc, placementRules=rules, repeatability='fixed', growthAxis=None, anchor=dict(dx=w // 2, dy=h - 1), access=access, role='building')
         else:
             parts = []
@@ -92,7 +92,7 @@ def _finalize():
             ai = dict(snap='floor', tags=tags, description=desc, placementRules=it['rule'], repeatability='repeat' if it.get('tile') else 'fixed', growthAxis='x' if it.get('tile') else None,
                       anchor=dict(dx=0, dy=h - 1), access=[], role='prop')
         kits.append(dict(id=it['id'], name=it['name'], grid=grid, parts=parts, ai=ai))
-    names = dict(building=('Fable 건물(일본)', 'building', '일본 건물 60종(소형~랜드마크)의 칸. 낱칸으로 칠하지 않는다.', '키트(jp-bldg-f-…)로 통째로 찍는다.'),
+    names = dict(building=('Fable 건물(일본)', 'building', '일본 새 건물(가게·집·중형 …, 탑 3/4 시점)의 칸. 낱칸으로 칠하지 않는다.', '키트(jp-bldg-f-…)로 통째로 찍는다.'),
                  okujo=('옥상 기물(일본)', 'prop', '평지붕 위 기물(실외기·물탱크·빨래·사당·안테나·간판 탑 …)의 칸.', '키트(jp-prop-okujo-…)로 지붕 면 위 4층에 찍는다.'),
                  inaka=('시골 기물 2(일본)', 'prop', '일본 시골 장면 벌(논·비닐하우스 마당·농기계·농협 앞·길가 신앙·차밭·과수원·어촌·산길·툇마루 앞마당)의 칸.', '키트(jp-prop-inaka2-…)로 통째로 찍는다. 같은 벌끼리 모아 놓는다.'))
     groups = [dict(id='jp:fable-' + g, name=names[g][0], role=names[g][1], defaultLayer='upper', cells=cs, desc=names[g][2] + ' 3/4 관문 미통과 — 오너 면제 그림.', rules=names[g][3])

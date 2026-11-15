@@ -1,20 +1,16 @@
 // jp_city 새 거리 계획 뽑기(모델·칩셋 없음) — 계획(단계·건물·바닥 가족·놓인 조각)과 규칙 검사 결과를 JSON 으로.
 //   bun scripts/qa/jpStreetPlanDump.mts --kind arcade --seed 1 --key game-a [--w 60 --h 48] --out plan.json     한 장(오프시트 그리기용: 조각 PNG 로 그린다)
-//   --pool planned|six  새 건물 예정 표로 짠다(test/fixtures/jpCityFableBuildingsPlanned.json — 아직 굽지 않은 jp-bldg-f-*)
 //   bun scripts/qa/jpStreetPlanDump.mts --audit --seeds 40 [--w 60 --h 48] --out audit.json                      종류마다 씨앗 여러 개의 검사·수치(그림 없음)
 // 그림은 tiledata/jp-city/fable-street/pieces 의 조각 PNG 로 오프시트 그리기가 그린다(굽기 전에도 같은 그림이 나온다).
 import { writeFileSync } from "node:fs";
 import { planJpCityScene } from "../../src/project/jpCitySceneComposer.ts";
 import { auditFable } from "../../src/project/jpCitySceneFable.ts";
 import { Occ } from "../../src/project/jpCitySceneCtx.ts";
-import { SCENE_BUILDINGS, SCENE_KINDS } from "../../src/project/jpCitySceneKinds.ts";
+import { SCENE_KINDS } from "../../src/project/jpCitySceneKinds.ts";
 import { GROUND_FAMILIES, STREET_PIECES } from "../../src/project/jpCityStreetPieces.ts";
-import planned from "../../test/fixtures/jpCityFableBuildingsPlanned.json";
 
 const arg = (k: string, d?: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1] : d; };
 const W = Number(arg("w", "60")), H = Number(arg("h", "48"));
-// --pool planned: 새 건물 예정 표(시범 여섯 + 상점가 20)만 · --pool six: 시범 여섯만 · --pool mixed: 시범 여섯 + 사전의 건물(그림용 — 새 건물이 다 구워지기 전) · 없으면 사전(구워진 것)
-const POOL = arg("pool") === "planned" ? planned.buildings : arg("pool") === "six" ? planned.buildings.filter((b) => b.pilot) : arg("pool") === "mixed" ? [...planned.buildings.filter((b) => b.pilot), ...SCENE_BUILDINGS] : undefined;
 const STYLE: Record<string, "shopping" | "residential" | "shitamachi" | "shotengai"> = {};
 for (const k of SCENE_KINDS) STYLE[k.id] = k.styles[0] as never;
 
@@ -29,7 +25,7 @@ function wide(g: Uint8Array, x: number, y: number): boolean {
   return Math.min(h, v) >= 2;
 }
 function one(kind: string, seed: number, key: string) {
-  const plan = planJpCityScene({ mapId: "m", width: W, height: H, seed, key, kind, style: STYLE[kind] ?? "shopping", fable: true, ...(POOL ? { buildings: POOL } : {}) });
+  const plan = planJpCityScene({ mapId: "m", width: W, height: H, seed, key, kind, style: STYLE[kind] ?? "shopping", fable: true });
   const f = plan.fable!;
   const audit = auditFable(f);
   let road = 0, bare = 0;
@@ -38,7 +34,7 @@ function one(kind: string, seed: number, key: string) {
   for (const p of f.placed) if (STREET_PIECES[p.name]?.layer !== "floor" && STREET_PIECES[p.name]?.layer !== "ground") for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) if (x >= 0 && y >= 0 && x < W && y < H) thing[y * W + x] = 1;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const i = y * W + x;
-    if (GROUND_FAMILIES[f.gfam[i]!] === "tarmac" && !thing[i]) { if (wide(f.gfam, x, y)) road++; continue; }   // jpStreetMeasure 와 같은 뜻: 폭 두 칸이 넘는 아스팔트(차도·주차장) 가운데 차가 덮지 않은 칸. 생활도로 포장은 차도 몫이 아니다
+    if (GROUND_FAMILIES[f.gfam[i]!] === "tarmac" && f.occ[i] === Occ.Road && !thing[i]) { if (wide(f.gfam, x, y)) road++; continue; }   // jpStreetMeasure 와 같은 뜻: 폭 두 칸이 넘는 아스팔트(차도·주차장) 가운데 차가 덮지 않은 칸. 생활도로 포장은 차도 몫이 아니다
     if (thing[i] || ["water", "lane", "laneside"].includes(GROUND_FAMILIES[f.gfam[i]!]!) || f.occ[i] === Occ.Road) continue;   // 물·길은 죽은 띠가 아니다
     let near = false;
     for (let dy = -2; dy <= 2 && !near; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H && thing[yy * W + xx]) { near = true; break; } }

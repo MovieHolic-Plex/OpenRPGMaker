@@ -10955,7 +10955,7 @@
 "h": 4,
 "layer": "prop",
 "kind": "organic",
-"anchor": "kerb",
+"anchor": "open",
 "name": "가로수(녹나무) · 거리 · 보도 블록 위",
 "tags": [
 "tree"
@@ -10969,7 +10969,7 @@
 "h": 4,
 "layer": "prop",
 "kind": "organic",
-"anchor": "kerb",
+"anchor": "open",
 "name": "가로수(은행) · 거리 · 보도 블록 위",
 "tags": [
 "tree"
@@ -10983,7 +10983,7 @@
 "h": 4,
 "layer": "prop",
 "kind": "organic",
-"anchor": "kerb",
+"anchor": "open",
 "name": "가로수(벚) · 거리 · 보도 블록 위",
 "tags": [
 "tree"
@@ -10997,7 +10997,7 @@
 "h": 4,
 "layer": "prop",
 "kind": "organic",
-"anchor": "kerb",
+"anchor": "open",
 "name": "가로수(느티) · 거리 · 보도 블록 위",
 "tags": [
 "tree"

@@ -82,12 +82,12 @@ export class SceneCtx {
   /** 대문 자리(집 필지의 길 선에서 문 앞 칸) — 경계 줄 짓기가 여기에 대문 조각을 놓는다 */ readonly gates: { x: number; y: number }[] = [];
   /** 고리 담의 트인 자리(공원·신사·주차장 입구) — 경계 줄 짓기가 메우지 않고, 그 양옆은 끝 조각으로 맺는다 */ readonly openings = new Set<string>();
 
-  constructor(readonly mapId: string, readonly W: number, readonly H: number, readonly kind: SceneKind, readonly tone: SceneTone, readonly key: string, readonly seed: number, readonly rng: () => number, /** 새 조각으로 짓는다 */ readonly fable = false, /** 건물 표를 바꿔 끼운다(굽기 전의 예정 표로 계획만 짜 볼 때) */ private readonly pool?: readonly CatBuilding[]) {
+  constructor(readonly mapId: string, readonly W: number, readonly H: number, readonly kind: SceneKind, readonly tone: SceneTone, readonly key: string, readonly seed: number, readonly rng: () => number, /** 새 조각으로 짓는다 */ readonly fable = false) {
     this.occ = new Uint8Array(W * H);
     this.gfam = new Uint8Array(W * H);
     this.drawn = new Uint8Array(W * H);
     // 게임마다 다른 건물 순서: 열쇠 + 키트 id 해시. 한 게임 안에서는 맵(씨앗)마다 출발점만 돈다.
-    const ids = [...(pool ?? (fable && NEW_BUILDINGS.length ? NEW_BUILDINGS : SCENE_BUILDINGS))].sort((a, b) => lookHash(`${key}|${a.id}`) - lookHash(`${key}|${b.id}`));
+    const ids = [...(fable && NEW_BUILDINGS.length ? NEW_BUILDINGS : SCENE_BUILDINGS)].sort((a, b) => lookHash(`${key}|${a.id}`) - lookHash(`${key}|${b.id}`));
     ids.forEach((b, i) => this.order.set(b.id, (i + seed * 7) % ids.length));
   }
 
@@ -296,7 +296,8 @@ export class SceneCtx {
 
   // ── 건물 ──
   /** 새 거리는 새로 그린 건물(jp-bldg-f-*)만 세운다 — 옛 납작한 키트는 고르지 않는다(칩셋에는 남아 옛 지도가 그대로 돈다). */
-  get buildingPool(): readonly CatBuilding[] { return this.pool ?? (this.fable && NEW_BUILDINGS.length ? NEW_BUILDINGS : SCENE_BUILDINGS); }
+  /** 건물 표: 새 거리는 새 건물(jp-bldg-f-*)만 — 사전에 하나라도 구워져 있으면. 문 열·폭은 키트에서 읽은 사전(jpCityStreetCatalog.json) 그대로다. */
+  get buildingPool(): readonly CatBuilding[] { return this.fable && NEW_BUILDINGS.length ? NEW_BUILDINGS : SCENE_BUILDINGS; }
   private lookOf(b: CatBuilding): string { return b.look ?? b.id; }
   private dist(a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }): number {
     return Math.max(Math.max(0, Math.max(a.x, b.x) - Math.min(a.x + a.w, b.x + b.w)), Math.max(0, Math.max(a.y, b.y) - Math.min(a.y + a.h, b.y + b.h)));
@@ -322,7 +323,8 @@ export class SceneCtx {
     // 먼저 모든 분류에서 아직 안 세운 그림을 찾고, 다 썼을 때만 멀리 떨어진 되풀이를 허락한다.
     // 되풀이는 이 분류들의 그림을 지도에 다 세웠을 때만(맞는 크기가 없어 남은 것은 되풀이의 이유가 아니다 — 그 자리는 틈·빈터 쓰임이 채운다).
     const allUsed = this.buildingPool.filter((b) => cats.includes(b.cat) && b.tier !== "xlarge" && b.tier !== "landmark").every((b) => this.usedLooks.has(this.lookOf(b)));
-    for (const fresh of o.fresh || !allUsed ? [true] : [true, false]) for (const cat of cats) { const hit = pick(cat, fresh); if (hit) return hit; }
+    // 새 거리: 같은 건물 그림은 한 지도에 한 번뿐이다 — 다 썼으면 세우지 않는다(남는 자리는 빈터 쓰임·마당이 채운다).
+    for (const fresh of o.fresh || !allUsed || this.fable ? [true] : [true, false]) for (const cat of cats) { const hit = pick(cat, fresh); if (hit) return hit; }
     return undefined;
   }
 

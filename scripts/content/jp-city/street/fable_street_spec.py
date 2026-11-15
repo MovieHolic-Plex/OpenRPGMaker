@@ -302,7 +302,7 @@ def props():
     P('p-bins', [('recycle', 0, 32, 'wall', ['backdoor', 'spill'], '분리수거함'), ('cage', 32, 64, 'kerb', ['kerb-low', 'garbage'], '쓰레기 수거 망'), ('wheelie', 64, 80, 'wall', ['backdoor', 'housefront'], '쓰레기통과 신문 묶음')])
     P('p-planters', [('planter-long', 0, 32, 'kerb', ['kerb-low', 'promenade'], '긴 화단 상자'), ('tub', 32, 48, 'kerb', ['kerb-low', 'promenade'], '꽃 화분'), ('pot-shrub', 48, 64, 'wall', ['housefront', 'spill'], '둥근 나무 화분'), ('pots-b', 64, 80, 'wall', ['housefront'], '화분 둘'), ('styro', 80, 96, 'wall', ['housefront', 'backdoor'], '스티로폼 텃밭')])
     for nm, sheet, x0 in (('tree-zelkova', 'p-tree', 0), ('tree-ginkgo', 'p-trees', 0), ('tree-sakura', 'p-trees', 32), ('tree-camphor', 'p-trees', 64)):
-        piece(nm, sheet, x0, x0 + 32, 'kerb', ['tree'], {'tree-zelkova': '가로수(느티)', 'tree-ginkgo': '가로수(은행)', 'tree-sakura': '가로수(벚)', 'tree-camphor': '가로수(녹나무)'}[nm], repeat=True, wpx=48, canopy=True, lift=9, grounds=['pave'])
+        piece(nm, sheet, x0, x0 + 32, 'open', ['tree'], {'tree-zelkova': '가로수(느티)', 'tree-ginkgo': '가로수(은행)', 'tree-sakura': '가로수(벚)', 'tree-camphor': '가로수(녹나무)'}[nm], repeat=True, wpx=48, canopy=True, lift=9, grounds=['pave'])
     for nm, x0, ko in (('gtree-kaki', 0, '마당 감나무'), ('gtree-pine', 32, '마당 큰 소나무'), ('gtree-osmanthus', 64, '금목서')):
         piece(nm, 'p-gtrees', x0, x0 + 32, 'open', ['gardentree'], ko, repeat=True, canopy=True, grounds=['earth', 'lawn'])
     P('p-shrubs', [('pine', 0, 32, 'lot', ['yard', 'garden'], '정원 소나무'), ('azalea', 32, 48, 'lot', ['yard', 'garden'], '철쭉'), ('hydrangea', 48, 64, 'lot', ['yard', 'garden'], '수국'), ('sasa', 64, 80, 'lot', ['yard', 'garden'], '조릿대'), ('maple-sapling', 80, 96, 'lot', ['yard', 'garden'], '단풍 묘목')])
