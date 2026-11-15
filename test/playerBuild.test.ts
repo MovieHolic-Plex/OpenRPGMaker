@@ -83,15 +83,24 @@ describe("player build output", () => {
 
     try {
       // When
-      await build({
-        configFile: resolve("vite.player.config.ts"),
-        logLevel: "silent",
-        plugins: [importGraphProbe],
-        build: {
-          outDir: outputDir,
-          emptyOutDir: true,
-        },
-      });
+      // 출하 조건으로 짓는다(playerRuntimeCss.test 와 같은 까닭): vitest 의 NODE_ENV=test 로 지으면 import.meta.env.DEV 가 참이라
+      // 출하 빌드에서 빠지는 dev 전용 데모 빌더 import(exportEntry.ts loadFlagshipDemo)가 그래프에 남고 플레이어 번들 관문(#3870)이 빌드를 멈춘다.
+      const previousNodeEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = "production";
+      try {
+        await build({
+          configFile: resolve("vite.player.config.ts"),
+          logLevel: "silent",
+          plugins: [importGraphProbe],
+          build: {
+            outDir: outputDir,
+            emptyOutDir: true,
+          },
+        });
+      } finally {
+        if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
+        else process.env.NODE_ENV = previousNodeEnv;
+      }
       const files = await collectFiles(outputDir);
       const html = await readFile(join(outputDir, "player.html"), "utf8");
       const report = await scanPlayerArtifacts(outputDir);

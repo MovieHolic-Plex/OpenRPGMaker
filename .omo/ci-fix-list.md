@@ -39,7 +39,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `Error: expected { kind: 'not-configured' } to deeply equal { kind: 'connected', source: 'remote' }`
   - [ ] `test/mapEditHistoryProjectSwitch.test.ts`
 - **1** — `AssertionError: expected { width: N, height: N } to be null`
-  - [ ] `test/mapGrowthOnFixRequests.test.ts`
+  - [x] `test/mapGrowthOnFixRequests.test.ts`
 - **1** — `AssertionError: expected { id: 'stat_enemy', …(N) } to match object { …(N) }`
   - [ ] `test/monsterAppearanceAssetIdentity.test.ts`
 - **1** — `AssertionError: expected [] to deeply equal [ N, +N ]`
@@ -70,7 +70,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/tileGrafts.test.ts`
   - [ ] `test/treasureChestPlacement.test.ts`
   - [ ] `test/webExportZipPruning.test.ts`
-  - [ ] `test/wildRouteBeodeul.test.ts`
+  - [x] `test/wildRouteBeodeul.test.ts`
   - [ ] `test/workItemOutcomeTargetMap.test.ts`
   - [ ] `test/workPlanMapOutcomes.test.ts`
 - **23** — `(no message)`
@@ -197,7 +197,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
   - [ ] `test/sharedPortraitAssets.test.ts`
 - **2** — `AssertionError: expected +N to be N // Object.is equality`
   - [ ] `test/shopRuntimeUx.test.ts`
-  - [ ] `test/starterVillage.test.ts`
+  - [x] `test/starterVillage.test.ts`
 - **2** — `AssertionError: expected '당신은 브라우저 기반 ND RPG 에디터의 개발 어시스턴트입니다.\…' to contain 'author_house'`
   - [ ] `test/structureKitPlacementConditions.test.ts`
   - [ ] `test/structureKitTools.test.ts`
@@ -466,7 +466,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: expected [ 'find_tools', …(N) ] to include 'author_house'`
   - [ ] `test/toolExposureQuota.test.ts`
 - **1** — `AssertionError: expected 'start-position' to be 'protected-house-write' // Object.is equality`
-  - [ ] `test/toolHouseProtection.test.ts`
+  - [x] `test/toolHouseProtection.test.ts`
 - **1** — `Error: expected rendered image`
   - [ ] `test/toolImageEventRender.test.ts`
 - **1** — `AssertionError: expected { role: 'tool', …(N) } to not deeply equal { role: 'tool', …(N) }`
@@ -486,7 +486,7 @@ Work order (cheapest first): timeout → fake-DOM/env gaps → combined_town / o
 - **1** — `AssertionError: expected '' to contain '맵 저장'`
   - [ ] `test/uxcEditorShell.test.ts`
 - **1** — `AssertionError: expected error to match asymmetric matcher`
-  - [ ] `test/villageTreePlacement.test.ts`
+  - [x] `test/villageTreePlacement.test.ts`
 - **1** — `AssertionError: {"endings":"true"}: expected true to be false // Object.is equality`
   - [ ] `test/vnExtras.test.ts`
 - **1** — `AssertionError: expected 'missing' to be 'soft' // Object.is equality`
