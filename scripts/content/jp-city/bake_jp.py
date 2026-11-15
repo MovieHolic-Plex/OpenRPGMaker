@@ -368,6 +368,7 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
             raise SystemExit('pins.json 이 origin/main 보다 낡았거나 번호가 다르다 — git fetch 후 origin/main 에 rebase 하고 '
                              'tiledata/jp-city/pins.json 을 origin/main 것으로 둔 뒤 다시 구워라(번호가 밀리면 게시한 장소·사용자 맵이 깨진다).\n  ' + '\n  '.join(chk[0]))
     pins = BL.Pins(prev_pins)
+    prev_pad = {v for k, v in prev_pins.get('cells', {}).items() if BL.PAD in k}
     old_png = Image.open(P['png']).convert('RGBA') if os.path.exists(P['png']) else None
     old_def = json.load(open(P['tileset'], encoding='utf-8')) if os.path.exists(P['tileset']) else None
     cells = Cells(pins, old_png, old_def['count'] if old_def else 0, load_contract()['map'])
@@ -708,6 +709,7 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
         otpr = old_png.width // 16
         for t in range(min(old_def['count'], count)):
             if (t // otpr + 1) * 16 > old_png.height: break
+            if t in prev_pad: continue                                    # 지난 굽기의 예약 빈 칸(bake_lib.RESERVE): 그 블록의 새 칸이 그림을 채우는 자리 — 옛 그림이 아니다
             if not BL.same_image(BL.read_cell(sheet_img, t), BL.read_cell(old_png, t, otpr)): old_changed.append(t)
 
     # ---- 8) 정의 JSON

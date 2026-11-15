@@ -11,8 +11,8 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 15092,
-  "legacy": 10298,
+  "block_cells": 15735,
+  "legacy": 9655,
   "legacy_ids": [
    3747,
    3748,
@@ -110,40 +110,40 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 15092
+   "block": 15735
   }
  },
  "pc_counts": {
-  "star": 7559,
-  "solid": 4369,
+  "star": 8020,
+  "solid": 4551,
   "floor": 4018,
   "solidfloor": 1308,
   "flat": 820,
   "blank": 155
  },
  "kits": {
-  "total": 1568,
+  "total": 1594,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 1392
+   "block-kit": 1418
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 1392
+  "block_kit": 1418
  },
  "groups": {
-  "total": 377,
+  "total": 378,
   "by_kind": {
    "street": 9,
    "band": 60,
    "deco": 73,
    "prop": 11,
-   "block": 224
+   "block": 225
   }
  },
  "autotiles": {
@@ -644,16 +644,16 @@
    },
    {
     "name": "fable_city",
-    "cells": 0,
+    "cells": 643,
     "autotiles": 0,
-    "groups": 0,
-    "kits": 0,
-    "notes": "Fable 5.2 그림 0키트(건물·옥상 기물·시골 기물) — 그림 PNG 를 그대로 자른 칸. 3/4 관문 미통과 — 오너 면제 묶음 ."
+    "groups": 1,
+    "kits": 26,
+    "notes": "Fable 5.2 그림 26키트(건물·옥상 기물·시골 기물) — 그림 PNG 를 그대로 자른 칸. 3/4 관문 미통과 — 오너 면제 묶음 fable-jpbuildings-2026-11-14."
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 1568,
+  "kits_checked": 1594,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -662,7 +662,7 @@
    "fumikiri": 4,
    "underpass": 1,
    "footbridge": 1,
-   "bldg": 77,
+   "bldg": 103,
    "pole": 2,
    "wire": 19,
    "mirror2": 1,
@@ -756,8 +756,8 @@
   "by_code": {},
   "examples": {},
   "tiles_checked": 28527,
-  "kits_checked": 1568,
-  "groups_checked": 377,
+  "kits_checked": 1594,
+  "groups_checked": 378,
   "autotiles_checked": 25
  },
  "relayout_identical": {
@@ -766,7 +766,7 @@
   "ids": []
  },
  "palette": {
-  "allowed_colors": 515,
+  "allowed_colors": 773,
   "cells_with_off_palette": 0,
   "off_palette_examples": {},
   "marker_pixels": 0,
@@ -819,10 +819,10 @@
    }
   }
  },
- "sheet_hash": "4656737ac9a632700f2fdf0213117fe958c2cfd7",
+ "sheet_hash": "49d92c63fa03859b10a0d5f05db2ec1e4581a80a",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 1568,
+  "kits_checked": 1594,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -831,7 +831,7 @@
    "fumikiri": 4,
    "underpass": 1,
    "footbridge": 1,
-   "bldg": 77,
+   "bldg": 103,
    "pole": 2,
    "wire": 19,
    "mirror2": 1,
@@ -925,8 +925,8 @@
   "by_code": {},
   "examples": {},
   "tiles_checked": 28527,
-  "kits_checked": 1568,
-  "groups_checked": 377,
+  "kits_checked": 1594,
+  "groups_checked": 378,
   "autotiles_checked": 25
  },
  "files": {
