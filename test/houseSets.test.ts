@@ -183,7 +183,8 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
     const lit = (project: Project, map: GameMap) => {
       const ground = new Set((project.tilesets[TS]!.tileGrafts ?? []).filter((graft) => graft.sourceChipset === "tex_beodeul_ground").map((graft) => graft.targetTile));
       let n = 0;
-      for (let i = 0; i < map.width * map.height; i += 1) if (ground.has(layerTileAt(map, 2, i))) n += 1;
+      // 2층(집 곁 «밟힌 흙»)과 4층(집 그림자)을 함께 센다 — 시골 급 마을은 문 앞이 이미 흙이라 «밟힌 흙» 이 깔리지 않고(바닥은 정착지의 급을 따른다) 그림자만 남는다
+      for (let i = 0; i < map.width * map.height; i += 1) for (const layer of [2, 4] as const) if (ground.has(layerTileAt(map, layer, i))) n += 1;
       return n;
     };
     // 견줄 판은 같은 게임의 벌 없는 마을이다 — 이 칸에는 집 곁 「밟힌 흙」(공용 바닥 꾸밈, 빈 2층 칸에만 깔린다)도 들어 있고,
@@ -193,12 +194,15 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
     expect(lit(sameGame.project, sameGame.map)).toBeGreaterThan(0);
     expect(lit(plain.project, plain.map)).toBeGreaterThan(0);
     // 다시 맞춰 보면 벌 집도 원본 킷과 같은 자리의 같은 집으로 잡힌다
-    const anchors = (project: Project, map: GameMap) => {
-      const data = harmonizeBeodeulDaylight(structuredClone(project), map.id, { roads: false, meadow: false }).data as { anchors?: unknown[] };
-      expect(data.anchors?.length).toBeGreaterThan(0);
-      return JSON.stringify(data.anchors);
+    const anchors = (project: Project, map: GameMap, housesOnly = false) => {
+      const data = harmonizeBeodeulDaylight(structuredClone(project), map.id, { roads: false, meadow: false }).data as { anchors?: { kit: string }[] };
+      const list = (data.anchors ?? []).filter((anchor) => !housesOnly || /^bd-(house|farm)-/.test(anchor.kit));
+      expect(list.length).toBeGreaterThan(0);
+      return JSON.stringify(list);
     };
-    expect(anchors(looked.project, looked.map)).toBe(anchors(plain.project, plain.map));
+    // 열쇠 없는 판과는 집만 견준다 — 일광 맞춤은 홀로 선 나무도 잡는데, 나무 자리는 열쇠가 있으면 달라진다(위 통행 견줌과 같은 까닭).
+    // 시골 급 마을은 흙 몸 곁에 나무가 홀로 서서 나무 앵커가 잡힌다. 같은 게임의 벌 없는 마을과는 전부 같다.
+    expect(anchors(looked.project, looked.map, true)).toBe(anchors(plain.project, plain.map, true));
     expect(anchors(looked.project, looked.map)).toBe(anchors(sameGame.project, sameGame.map));
   }, 480_000);
 
@@ -248,11 +252,12 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
     const count = (map: GameMap, kit: RegExp) => (map.structurePlacements ?? []).filter((p) => kit.test(p.kitId)).length;
     const centre: Record<string, RegExp> = { round: /fountain/, market: /column_monument/, green: /^bd-tree-d43edd/, statue: /statue/ };
     expect([...tilesetLookOptions(lookTable, "plaza")].filter(Boolean).sort()).toEqual(Object.keys(centre).sort());
-    const classic = village({}, KEY).map;
+    // 광장은 청한 마을에만 선다(form "plaza") — 아래 «광장을 청하지 않은 마을» 시험이 반대쪽을 본다
+    const classic = village({}, KEY, 4242, { form: "plaza" }).map;
     expect(count(classic, /well/)).toBe(1);
     for (const kit of Object.values(centre)) expect(count(classic, kit)).toBe(0);
     for (const plaza of ["round", "market", "statue"]) {
-      const { project, map: built } = village({ plaza }, KEY);
+      const { project, map: built } = village({ plaza }, KEY, 4242, { form: "plaza" });
       expect(count(built, /well/), plaza).toBe(1);
       for (const [name, kit] of Object.entries(centre)) expect(count(built, kit), `${plaza}/${name}`).toBe(name === plaza ? 1 : 0);
       // 광장에 세우는 사람은 가운데 기물의 머리 그림 밑(걸을 수 있지만 윗층 그림이 덮는 칸)에 서지 않는다 — 가려지고, 끝맺음이 옮기면 출구 마감을 한 번 더 쓴다.
@@ -262,6 +267,36 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
         taken.push(spot);
         expect(coveredCell(project, built, spot.x, spot.y), `${plaza}/${word} (${spot.x},${spot.y})`).toBe(false);
       }
+    }
+  }, 480_000);
+
+  // 2026-11-14 오너 «마을 중앙에 항상 광장을 배치하는 이유는 도대체 뭐지»: 코드 지형 마을이 적지 않은 gather.plaza 를 true 로 읽어 전부 광장 마을이 됐다.
+  it("광장을 청하지 않은 마을에는 판석 광장도 가운데 기물도 없고 우물 하나만 선다 · 청하면(form plaza · gather.plaza true) 선다", () => {
+    const count = (map: GameMap, kit: RegExp) => (map.structurePlacements ?? []).filter((p) => kit.test(p.kitId)).length;
+    const centrepiece = /fountain|column_monument|statue/;
+    const built = (extra: Record<string, unknown>) => {
+      const project = createBlankProject() as Project;
+      project.tilesets[TS]!.look = { textureKey: lookTable.texture, plaza: "round" };
+      const ctx = { project, currentMapId: project.startMapId, assistantRun: true, lookKey: KEY } as ToolContext;
+      const res = runTool(ctx, "author_beodeul_town", { theme: "river", seed: 4242, ...extra });
+      expect(res.ok, res.summary).toBe(true);
+      const data = res.data as { mapId: string; form: string; plaza?: unknown };
+      return { map: ctx.project.maps[data.mapId]!, form: data.form, plaza: data.plaza };
+    };
+    const spots = { houses: [{ x: 10, y: 30 }, { x: 30, y: 30 }, { x: 20, y: 38 }] };
+    for (const extra of [{}, { form: "scatter" }, { layout: { gather: { x: 20, y: 30 }, ...spots } }, { layout: { gather: { x: 20, y: 30, plaza: false }, ...spots } }]) {
+      const plain = built(extra);
+      expect(plain.form, JSON.stringify(extra)).not.toBe("plaza");
+      expect(plain.plaza, JSON.stringify(extra)).toBeUndefined();
+      expect(count(plain.map, centrepiece), JSON.stringify(extra)).toBe(0);
+      expect(count(plain.map, /well/), JSON.stringify(extra)).toBe(1);
+    }
+    for (const extra of [{ form: "plaza" }, { layout: { gather: { x: 20, y: 30, plaza: true }, ...spots } }]) {
+      const market = built(extra);
+      expect(market.form, JSON.stringify(extra)).toBe("plaza");
+      expect(market.plaza, JSON.stringify(extra)).toBeDefined();
+      expect(count(market.map, centrepiece), JSON.stringify(extra)).toBe(1);
+      expect(count(market.map, /well/), JSON.stringify(extra)).toBe(1);
     }
   }, 480_000);
 });
