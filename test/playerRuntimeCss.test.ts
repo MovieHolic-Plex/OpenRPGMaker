@@ -133,10 +133,22 @@ describe("exported player runtime CSS", () => {
     outputDirectory = await mkdtemp(join(tmpdir(), "rpgzzu-player-runtime-css-"));
 
     // When: the current player source is built through its production config.
-    await build({
-      configFile: resolve("vite.player.config.ts"),
-      build: { emptyOutDir: true, outDir: outputDirectory },
-    });
+    // Vite 는 NODE_ENV 로 import.meta.env.DEV 를 정한다. vitest 는 NODE_ENV=test 라 그대로 두면 DEV 가 참인 빌드가 되어,
+    // 출하 빌드에서는 통째로 빠지는 dev 전용 가지(exportEntry.ts loadFlagshipDemo 의 편집기 데모 빌더 import)가 그래프에 남고
+    // 플레이어 번들 관문(scripts/lib/playerBundleGuard.mjs, #3870)이 «editor-only modules reached the exported player» 로 빌드를 멈춘다.
+    // 출하 빌드와 같은 조건으로 짓는다 — dev 서버의 플레이어 빌드도 같은 이유로 NODE_ENV=production 자식 프로세스를 쓴다(scripts/lib/devPlayerBundles.ts).
+    // 관문은 그대로 돈다: 출하 조건에서 편집기 전용 모듈이 플레이어에 닿으면 이 빌드가 실패한다.
+    const previousNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = "production";
+    try {
+      await build({
+        configFile: resolve("vite.player.config.ts"),
+        build: { emptyOutDir: true, outDir: outputDirectory },
+      });
+    } finally {
+      if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
+      else process.env.NODE_ENV = previousNodeEnv;
+    }
     emittedCss = await readEmittedCss(outputDirectory);
   }, PLAYER_BUILD_TIMEOUT_MS);
 

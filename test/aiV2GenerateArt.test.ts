@@ -125,16 +125,20 @@ describe("generate_art verb with an undecodable picture", () => {
     ctx: { project, currentMapId: project.startMapId, assistantRun: true }, request: { task: WHOLE, provider: "local-cli:claude", mapIds: [], project },
     emit() {}, record() {}, sideChat: async () => "{}", render: async () => "", checkpoint: async () => {}, generateImage,
   }) as never;
+  // 도구 쓰기는 프로젝트를 새 객체로 갈아 끼운다(env.ctx.project) — 처음 만든 project 변수는 쓰기 전 사본이라, 결과는 실행 문맥의 프로젝트에서 읽는다.
+  // (전에는 두 경우가 옛 project 를 읽었다: 성공 경우는 늘 map-view 라 떨어졌고, 잘린 그림 경우는 등록이 됐어도 통과했을 것이다.)
+  const liveProject = (env: unknown): Project => (env as { ctx: { project: Project } }).ctx.project;
   it("does not register a truncated JPEG: the title stays map-view, one failure is recorded and the gate stays closed to finishing", async () => {
     const project = mapViewGame(); const session = new V2Session();
     const env = envFor(project, async () => ({ dataUrl: JPEG_CUT, mimeType: "image/jpeg", model: "m", provider: "p" }));
     const verb = createV2Tools(env, session).find((t) => t.name === "generate_art")!;
     const res = await verb.execute("a", { target: "title", prompt: "산골 마을에 등불이 켜지는 밤, 붉은 목도리의 여행자" } as never, undefined as never);
     expect(JSON.parse((res.content[0] as { text: string }).text).ok).toBe(false);
-    expect(project.system.titleScreen?.backgroundResourceId).toBe(`map-view:${project.startMapId}`);
+    expect(liveProject(env).system.titleScreen?.backgroundResourceId).toBe(`map-view:${project.startMapId}`);
+    expect(Object.keys(liveProject(env).assets.uploaded).filter((id) => id.startsWith("gen-"))).toEqual([]);
     expect(session.artAttempts.get("title")?.status).toBe("failed");
     expect(session.artAttempts.get("title")?.failures).toBe(1);
-    expect(mapViewArtLines(project, session, true, WHOLE).some((x) => x.includes("타이틀"))).toBe(true);
+    expect(mapViewArtLines(liveProject(env), session, true, WHOLE).some((x) => x.includes("타이틀"))).toBe(true);
   });
   it("registers a complete JPEG and opens the gate for the title", async () => {
     const project = mapViewGame(); const session = new V2Session();
@@ -142,6 +146,9 @@ describe("generate_art verb with an undecodable picture", () => {
     const verb = createV2Tools(env, session).find((t) => t.name === "generate_art")!;
     const res = await verb.execute("a", { target: "title", prompt: "산골 마을에 등불이 켜지는 밤, 붉은 목도리의 여행자" } as never, undefined as never);
     expect(JSON.parse((res.content[0] as { text: string }).text).ok).toBe(true);
-    expect(project.system.titleScreen?.backgroundResourceId).toMatch(/^gen-title-/);
+    const bg = liveProject(env).system.titleScreen?.backgroundResourceId;
+    expect(bg).toMatch(/^gen-title-/);
+    expect(liveProject(env).assets.uploaded[bg!]).toBeDefined();
+    expect(mapViewArtLines(liveProject(env), session, true, WHOLE).filter((x) => x.includes("타이틀"))).toEqual([]);
   });
 });
