@@ -83,6 +83,7 @@ export function passingCellIndex(context: ObjectGateContext, receipts: ObjectGat
   const batches = listOwnerWaiverBatches();
   for (const batch of batches) for (const item of batch.items) {
     const sha = item.pixelSha256;
+    if (item.kind === 'part') continue;      // 부품(part) 면제는 조립 그림에 실려 다닌다 — 칸 색인에는 조립 그림의 칸만 넣는다
     if (objectGateRefusal({ receipt: readReceipt(sha), pixelSha256: sha, kind: item.kind, context, calibratedProfiles: calibrated, approval: null, hold: readHoldDecision(sha), final: readFinal(sha), calibratedFinalProfiles: calibratedFinal, waiver: readOwnerWaiver(sha, batches) })) continue;
     const stand = { schema: 'oprn-object-gate-receipt/1', pixelSha256: sha, width: item.width, height: item.height, kind: item.kind, name: item.label, label: `owner-waiver/${batch.id}/${item.label}`, profileHash: `owner-waiver:${batch.id}`, cells: item.cells } as unknown as ObjectGateReceipt;
     for (const hashes of Object.values(item.cells ?? {})) for (const h of hashes) if (!index.has(h)) index.set(h, stand);

@@ -22,7 +22,9 @@ export type ObjectGateContext = 'bundle' | 'shared' | 'store' | 'workshop-local'
 /** 오너 면제가 닿을 수 있는 출구 — 스토어(밖으로 나가는 팩)는 없다. */
 export const OBJECT_GATE_WAIVER_CONTEXTS = ['bundle', 'shared', 'workshop-local'] as const satisfies readonly ObjectGateContext[];
 /** 오너 면제 묶음의 그림 한 장 — 화소 해시·종류에 묶인다. 한 화소라도 바뀌면 면제도 풀린다. */
-export type ObjectGateOwnerWaiverItem = { pixelSha256: string; kind: ObjectGateKind; label: string; width: number; height: number; cells: Record<string, string[]>; note?: string };
+/** kind 'part'(2026-11-15) = 스스로 판정받지 않고 조립 그림에 실려 다니는 부품. 그 조립 그림(partOf = 그 화소 해시)이 같은 묶음에 있을 때만 `owner-waive` 가 적는다.
+ *  부품 면제는 종류 'part' 로 물을 때만 효력이 있다(종류 없이 묻는 출구에는 닿지 않는다). */
+export type ObjectGateOwnerWaiverItem = { pixelSha256: string; kind: ObjectGateKind | 'part'; label: string; width: number; height: number; cells: Record<string, string[]>; note?: string; partOf?: string };
 /** 오너 면제 묶음(waivers/<id>.json). owner = 오너가 한 말 원문, decidedAt = 그 날짜, recordedBy = 기록한 쪽(감독·에이전트 이름과 위임 근거). */
 export type ObjectGateOwnerWaiverBatch = {
   schema: 'oprn-object-gate-owner-waiver/1'; id: string; owner: string; decidedAt: string; recordedBy: string;
@@ -32,11 +34,12 @@ export type ObjectGateOwnerWaiverBatch = {
 export type ObjectGateOwnerWaiver = { batch: Pick<ObjectGateOwnerWaiverBatch, 'schema' | 'id' | 'owner' | 'decidedAt' | 'recordedBy' | 'contexts'>; item: ObjectGateOwnerWaiverItem };
 
 /** 이 면제가 이 그림·종류·출구에 효력이 있는가. 스토어 출구와 적지 않은 출구에는 없다. */
-export function ownerWaiverApplies(waiver: ObjectGateOwnerWaiver | null | undefined, pixelSha256: string, kind: ObjectGateKind | undefined, context: ObjectGateContext): boolean {
+export function ownerWaiverApplies(waiver: ObjectGateOwnerWaiver | null | undefined, pixelSha256: string, kind: ObjectGateKind | 'part' | undefined, context: ObjectGateContext): boolean {
   if (!waiver || waiver.batch.schema !== 'oprn-object-gate-owner-waiver/1') return false;
   if (context === 'store' || !(OBJECT_GATE_WAIVER_CONTEXTS as readonly string[]).includes(context) || !waiver.batch.contexts.includes(context)) return false;
   if (!waiver.batch.owner?.trim() || !waiver.batch.decidedAt?.trim() || !waiver.batch.recordedBy?.trim()) return false;
   if (waiver.item.pixelSha256 !== pixelSha256) return false;
+  if (waiver.item.kind === 'part') return kind === 'part';
   return !kind || waiver.item.kind === kind;
 }
 
