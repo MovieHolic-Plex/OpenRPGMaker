@@ -261,7 +261,7 @@ EXISTING = [
 
 # ── 사는 사람의 물건 표(사양의 personal — src/editor/handInterior/personal.ts 가 읽는다) ──────────────────────
 # kinds = 받는 방 종류 · surfaces = 탁상 물건을 올려도 되는 가구(이미 차려진 식탁은 뺀다) · count = [치운 집, 어지른 집] 점 수
-# sets: 별칭(alias)이 없는 것 = 살림 묶음(집 열쇠가 고른다) · 있는 것 = 직업 묶음(집 이름에 그 낱말이 있을 때만 — 칩셋 자료이지 요청 낱말 목록이 아니다)
+# sets: cats·alias 가 없는 것 = 살림 묶음(집 열쇠가 고른다) · 있는 것 = 직업 묶음: cats = 그 집 킷의 갈래 태그(cat:farm — 구조 자료, 먼저 읽는다), alias = 집 이름에 든 낱말(다음). 칩셋 자료이지 요청 낱말 목록이 아니다
 PERSONAL = dict(
     kinds=["living", "bedroom", "fisher"], surfaces=["plain table", "writing desk", "round table", "work table"], count=[2, 5],
     sets=dict(
@@ -275,9 +275,9 @@ PERSONAL = dict(
         needle=dict(ko="바느질하는 집", pieces=["sewing basket", "sampler", "knitting", "tailor things", "blanket chest"]),
         elder=dict(ko="노인이 사는 집", pieces=["umbrella jar", "medicine tray", "pipe", "teapot", "portrait pair"]),
         hunter=dict(ko="사냥꾼", alias=["사냥꾼", "사냥", "hunter"], pieces=["boar trophy", "bow and quiver", "fox pelt", "bow rack", "boots"]),
-        fisher=dict(ko="어부", alias=["어부", "낚시", "fisher"], pieces=["mounted fish", "glass floats", "model boat", "fishing rod", "boots"]),
-        soldier=dict(ko="병사·경비", alias=["경비", "병사", "군인", "기사", "guard", "soldier", "knight"], pieces=["helmet and medal", "crossed swords", "bow and quiver", "boots"]),
-        farmer=dict(ko="농부", alias=["농부", "농가", "농장", "farmer", "farm"], pieces=["garden tools", "scythe", "corn strings", "pumpkins", "straw hat", "egg baskets"]),
+        fisher=dict(ko="어부", cats=["harbour"], alias=["어부", "낚시", "fisher"], pieces=["mounted fish", "glass floats", "model boat", "fishing rod", "boots"]),
+        soldier=dict(ko="병사·경비", cats=["castle"], alias=["경비", "병사", "군인", "기사", "guard", "soldier", "knight"], pieces=["helmet and medal", "crossed swords", "bow and quiver", "boots"]),
+        farmer=dict(ko="농부", cats=["farm"], alias=["농부", "농가", "농장", "farmer", "farm"], pieces=["garden tools", "scythe", "corn strings", "pumpkins", "straw hat", "egg baskets"]),
         carpenter=dict(ko="목수", alias=["목수", "목공", "carpenter"], pieces=["toolbox", "whittling", "boots", "hat stand"]),
         scholar=dict(ko="학자·촌장", alias=["학자", "서기", "촌장", "이장", "교사", "scholar", "elder", "mayor", "teacher"], pieces=["book pile", "inkwell", "globe", "portrait pair", "chess"]),
         merchant=dict(ko="상인", alias=["상인", "장사", "merchant", "trader"], pieces=["coins", "hat stand", "portrait pair", "teapot"]),

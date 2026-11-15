@@ -5,7 +5,8 @@
 import type { HandInteriorSpec } from "./builder";
 import { hashText, mixHash } from "./vignettes";
 
-export interface PersonalAsk { readonly key: string; readonly text?: string }
+/** cat = 그 방이 든 집의 갈래(바깥 집 킷의 cat: 태그 — 구조 자료), text = 집·방 이름. 직업 묶음은 cat 이 먼저 부르고, 없으면 이름의 별칭, 그것도 없으면 살림 묶음만. */
+export interface PersonalAsk { readonly key: string; readonly text?: string; readonly cat?: string }
 export interface PersonalPlan { readonly sets: readonly string[]; readonly pieces: readonly string[]; readonly count: number }
 
 const byHash = <T>(list: readonly T[], salt: string, name: (v: T) => string): T[] => [...list].sort((a, b) => hashText(`${salt}|${name(a)}`) - hashText(`${salt}|${name(b)}`) || name(a).localeCompare(name(b)));
@@ -17,10 +18,12 @@ export function personalPlan(S: HandInteriorSpec, kind: string, ask: PersonalAsk
   const text = (ask.text ?? "").toLowerCase();
   const ids = Object.keys(P.sets).sort();
   const hit = (id: string) => Math.max(0, ...(P.sets[id]!.alias ?? []).filter((a) => text.includes(a.toLowerCase())).map((a) => a.length));
-  const role = ids.filter((id) => hit(id) > 0).sort((a, b) => hit(b) - hit(a) || a.localeCompare(b))[0];
-  // 직업 묶음(별칭이 있는 것)은 집 이름이 부를 때만 — 이름이 말하지 않은 집은 살림 묶음(아이·짐승·기도·빨래…) 가운데 열쇠가 고른다.
-  const household = byHash(ids.filter((id) => !P.sets[id]!.alias?.length), ask.key, (v) => v).slice(0, role ? 1 : 2);
-  const sets = [...(role ? [role] : []), ...household];
+  const byCat = ask.cat ? ids.filter((id) => P.sets[id]!.cats?.includes(ask.cat!)).sort()[0] : undefined;
+  const byName = ids.filter((id) => hit(id) > 0).sort((a, b) => hit(b) - hit(a) || a.localeCompare(b))[0];
+  // 직업 묶음: 집의 갈래(구조 자료)가 먼저, 그다음 집 이름의 별칭 — 둘 다 있으면 둘 다(농장의 사냥꾼 집). 어느 것도 없으면 살림 묶음(아이·짐승·기도·빨래…) 둘을 열쇠가 고른다.
+  const roles = [...new Set([byCat, byName].filter((v): v is string => !!v))];
+  const household = byHash(ids.filter((id) => !P.sets[id]!.alias?.length && !P.sets[id]!.cats?.length), ask.key, (v) => v).slice(0, roles.length ? 1 : 2);
+  const sets = [...roles, ...household].slice(0, 3);
   const known = (id: string) => !!S.objects[id] || S.goods[id] !== undefined;
   const lists = sets.map((id) => byHash(P.sets[id]!.pieces.filter(known), `${ask.key}|${id}`, (v) => v));
   const pieces: string[] = [];
