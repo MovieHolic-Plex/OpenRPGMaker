@@ -66,7 +66,7 @@ function flood(p: Project, map: GameMap, from: { x: number; y: number }): Set<nu
 }
 
 let offSide = 0;
-type Row = { id: string; key: string; world: string; route: string; size: string; shape: string; variant: string; hero: string; neighbours: string; linked: string; linksOk: boolean; islands: number; whole: boolean; side: string; warn: string };
+type Row = { id: string; key: string; world: string; route: string; size: string; shape: string; variant: string; hero: string; neighbours: string; linked: string; linksOk: boolean; islands: number; whole: boolean; side: string; warn: string; relief: string; single: number; repeat: number; kitMax: number; forest: number };
 const rows: Row[] = [];
 const measure = (p: Project, map: GameMap, state: Record<string, unknown>, id: string, key: string, world: string, route: string, neigh: { name: string; kind: string; mapId?: string; side?: Side }[], warn: string) => {
   const entry = state.entry as { x: number; y: number };
@@ -94,10 +94,14 @@ const measure = (p: Project, map: GameMap, state: Record<string, unknown>, id: s
     }
   }
   fs.writeFileSync(path.join(out, `${id}.png`), renderMapPng(p, map).png);
+  let shut = 0; for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) if (!isPassable(p, map, x, y)) shut += 1;
+  const steps = (state.pathSteps ?? {}) as { single?: number; repeat?: number };
   const row: Row = { id, key, world, route, size: `${map.width}x${map.height}`, shape: String(state.shape ?? "?"), variant: String(state.variant ?? ""), hero: String(state.hero ?? ""), neighbours: neigh.map((n) => `${n.kind}${n.side ? `:${n.side}` : ""}`).join(" ") || "없음",
-    linked: notes.join(" / "), linksOk: ok, islands: lost, whole: lost === 0, side: String(state.side ?? ""), warn };
+    linked: notes.join(" / "), linksOk: ok, islands: lost, whole: lost === 0, side: String(state.side ?? ""), warn,
+    relief: String(state.relief ?? ""), single: steps.single ?? 0, repeat: steps.repeat ?? 0, kitMax: Number(state.kitMax ?? 0), forest: Math.round((shut / (map.width * map.height)) * 100) };
   rows.push(row);
   console.log(`${ok && lost === 0 ? "ok  " : "FAIL"} ${id} ${row.size} 꼴 ${row.shape} · ${row.variant} [${row.hero}] 이웃 ${row.neighbours} · 닿지 않는 걷는 칸 ${lost} · 곁가지 ${row.side}${warn ? ` · ${warn.slice(0, 160)}` : ""}`);
+  console.log(`       단 ${row.relief || "-"} · 길 계단: 한 칸짜리 ${row.single} · 같은 계단 이어짐 ${row.repeat} · 같은 기물 최다 ${row.kitMax} · 막힌 칸 ${row.forest}%`);
   for (const n of notes) console.log(`       ${n}`);
 };
 
@@ -111,7 +115,7 @@ for (const key of keys) for (const world of only) {
       const spec: PlaceSpec = { type: "route" as PlaceSpec["type"], name: `홀로 선 길목 ${n}`, theme, variety: `${key}|alone` };
       const res = builderFor(spec)!.build(run, spec);
       const map = ctx.project.maps[res.mapIds[0] ?? ""];
-      if (!res.ok || !map) { console.log(`FAIL ${theme}-${key}-alone-${n} ${res.summary.slice(0, 200)}`); rows.push({ id: `${theme}-${key}-alone-${n}`, key, world, route: `a${n}`, size: "", shape: "?", variant: "", hero: "", neighbours: "없음", linked: res.summary.slice(0, 200), linksOk: false, islands: -1, whole: false, side: "", warn: "" }); continue; }
+      if (!res.ok || !map) { console.log(`FAIL ${theme}-${key}-alone-${n} ${res.summary.slice(0, 200)}`); rows.push({ id: `${theme}-${key}-alone-${n}`, key, world, route: `a${n}`, size: "", shape: "?", variant: "", hero: "", neighbours: "없음", linked: res.summary.slice(0, 200), linksOk: false, islands: -1, whole: false, side: "", warn: "", relief: "", single: 0, repeat: 0, kitMax: 0, forest: 0 }); continue; }
       measure(ctx.project, map, (res.state ?? {}) as Record<string, unknown>, `${theme}-${key}-alone-${n}`, key, world, `a${n}`, [], res.warnings.join(" | "));
     }
     continue;
@@ -148,7 +152,7 @@ for (const key of keys) for (const world of only) {
   for (const pl of places.filter((q) => q.kind === "route")) {
     const map = mapOf(pl.key);
     const id = `${theme}-${key}-${world}-${pl.key}`;
-    if (!map) { console.log(`FAIL ${id} 맵 없음`); rows.push({ id, key, world, route: pl.key, size: "", shape: "?", variant: "", hero: "", neighbours: "", linked: "맵 없음", linksOk: false, islands: -1, whole: false, side: "", warn: "" }); continue; }
+    if (!map) { console.log(`FAIL ${id} 맵 없음`); rows.push({ id, key, world, route: pl.key, size: "", shape: "?", variant: "", hero: "", neighbours: "", linked: "맵 없음", linksOk: false, islands: -1, whole: false, side: "", warn: "", relief: "", single: 0, repeat: 0, kitMax: 0, forest: 0 }); continue; }
     const state = (session.places.get(map.id)?.result.state ?? {}) as Record<string, unknown>;
     const neigh = [{ p: places.find((q) => q.key === pl.from)!, side: OPP[pl.side!] }, ...places.filter((q) => q.from === pl.key).map((q) => ({ p: q, side: q.side }))]
       .map(({ p: q, side }) => ({ name: NAME[q.key]!, kind: q.kind, mapId: mapOf(q.key)?.id ?? Object.values(p.maps).find((m) => m.name.startsWith(NAME[q.key]!))?.id, ...(q.kind === "dungeon" ? {} : { side: side as Side }) }));
@@ -166,4 +170,6 @@ for (const key of keys) for (const world of only) {
 fs.writeFileSync(path.join(out, `table-${theme}.json`), JSON.stringify(rows, null, 1));
 const count = new Map<string, number>(); for (const r of rows) count.set(r.shape, (count.get(r.shape) ?? 0) + 1);
 const n = rows.length, top = Math.max(0, ...count.values());
+{ const rc = new Map<string, number>(); for (const r of rows) rc.set(r.relief, (rc.get(r.relief) ?? 0) + 1);
+  console.log(`\nSUMMARY2 ${theme}: 단의 꼴 ${[...rc].sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k || "-"}×${v}`).join(" ")} · 한 칸짜리 계단이 있는 맵 ${rows.filter((r) => r.single > 0).length} · 같은 계단 이어짐 최다 ${Math.max(0, ...rows.map((r) => r.repeat))} · 같은 기물 최다 ${Math.max(0, ...rows.map((r) => r.kitMax))} · 막힌 칸 비율 ${rows.map((r) => `${r.shape}:${r.forest}`).join(" ")}`); }
 console.log(`\nSUMMARY ${theme} ${n}장: 꼴 ${[...count].sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k}×${v}`).join(" ")} · 가장 많은 꼴 ${top}/${n}${top * 4 > n ? " (1/4 넘음)" : ""} · 이웃과 이어짐 ${rows.filter((r) => r.linksOk).length}/${n} · 걷는 칸 모두 닿음 ${rows.filter((r) => r.whole).length}/${n} · 청한 변이 아닌 변으로 이어진 연결 ${offSide} · 맵 꼴 ${[...new Set(rows.map((r) => r.size))].join(" ")}`);

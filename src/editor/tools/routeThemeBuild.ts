@@ -26,6 +26,9 @@ import { BEODEUL_PLAIN_GRASS, BEODEUL_SAND_PATH, dressBeodeulVerge, plantBeodeul
 const BEODEUL_PAVED_ROAD = "버들항 길 포석";
 
 export type RouteSideName = "north" | "south" | "east" | "west";
+/** 단의 꼴 — flat 단 없음 · bands 맵을 가로지르는 띠 · knoll 길 곁 둔덕 · tilt 한쪽으로 기운 비탈 · basin 분지 · shelf 맵 중간에서 끝나는 턱 · peak 길 끝 봉우리. */
+export const ROUTE_RELIEFS = ["flat", "bands", "knoll", "tilt", "basin", "shelf", "peak"] as const;
+export type RouteRelief = (typeof ROUTE_RELIEFS)[number];
 type Cell = { x: number; y: number };
 type Rect = { x: number; y: number; w: number; h: number };
 
@@ -51,6 +54,8 @@ export interface ThemedRouteInput {
   readonly dungeon?: { readonly kit?: string };
   /** 마을로 이어지는 변과 그 마을 길이 돌 포장인가(정착지의 급). */
   readonly village?: { readonly side: RouteSideName; readonly paved: boolean };
+  /** 단의 꼴(바라는 것) — 없으면 씨앗이 고른다. 길이 막아 못 내면 다른 꼴이나 띠가 된다(결과 relief 가 실제로 난 꼴). */
+  readonly relief?: RouteRelief;
 }
 export interface ThemedRouteResult {
   readonly entry: Cell; readonly exit: Cell;
@@ -65,6 +70,11 @@ export interface ThemedRouteResult {
   readonly sideAt?: Cell; readonly sideKind: string;
   /** 길 위 빈 칸(적 자리) — 계단·다리·문에서 떨어진 곳. */
   readonly enemySpots: Cell[];
+  /** 실제로 난 단의 꼴. */
+  readonly relief: RouteRelief;
+  /** 굽은 길의 계단 재기: single = 한 칸짜리 계단(톱니) 수, repeat = 같은 계단이 이어진 가장 긴 횟수. kitMax = 한 장에 가장 많이 선 같은 기물 수(나무·밟는 덧그림·울타리 제외). */
+  readonly pathSteps: { readonly single: number; readonly repeat: number };
+  readonly kitMax: number;
   readonly warnings: string[];
 }
 
@@ -118,7 +128,9 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
   if (terminal) heroBand = high ? 0 : nb - 1;
   else if (nb >= 3 && ((extra.includes("north") && heroBand === nb - 1) || (extra.includes("south") && heroBand === 0))) heroBand = 1;
   const ring = hero.site === "center" && !!hero.ring, wide = shape === "wide";
-  const need = (i: number): number => (i !== heroBand ? 7 : ring ? hero.h + 11 : wide ? Math.max(14, hero.h + 9) : needsSite ? hero.h + (hero.site === "knoll" ? 9 : 7) : 7);
+  // 던전이 달린 지나가는 길: 볼거리 띠가 아닌 띠 하나를 던전 어귀 자리로 넓게 잡는다(가로 길 북쪽에 입구 구조물과 앞마당 — 낮고 넓은 맵에서도 자리가 난다)
+  const dBand = input.dungeon && !terminal && nb >= 2 ? (heroBand === 0 ? 1 : 0) : -1;
+  const need = (i: number): number => (i === dBand ? 15 : i !== heroBand ? 7 : ring ? hero.h + 11 : wide ? Math.max(14, hero.h + 9) : needsSite ? hero.h + (hero.site === "knoll" ? 9 : 7) : 7);
   const gapTotal = cuts.reduce((s, c) => s + c.rows, 0);
   const free = H - gapTotal;
   const wants = Array.from({ length: nb }, (_, i) => need(i));
@@ -155,13 +167,18 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
     cuts[heroBand - 1]!.col = flip ? d : a; cuts[heroBand]!.col = flip ? a : d;
   }
   // 굽이: 직각으로 꺾이지 않고 길이 좌우·위아래로 흔들린다(돌계단·다리 둘레와 볼거리 띠의 가로 길은 곧게)
-  const curvy = (variant.layout === "meander" || variant.layout === "switchback" || variant.layout === "winding") && (hero.site === "beside" || hero.site === "line");
-  const amp = curvy ? (flat ? 2 : 1) : 0;
+  // 곧게 뻗는 것은 줄 세운 길(avenue)과, 길이 볼거리 한가운데를 지나거나 문·석상 사이를 지나는 자리(center·gate·flank·behind)뿐이다 — 나머지는 산길도 정령 숲도 같은 굽은 길 그리기를 쓴다.
+  const curvy = variant.layout !== "avenue" && (hero.site === "beside" || hero.site === "line" || hero.site === "knoll" || hero.site === "bridge");
+  const amp = curvy ? (flat ? 3 : 2) : 0;        // 세로 길이 좌우로 흔들리는 폭
+  const ampH = curvy ? 2 : 0;                    // 가로 길이 위아래로 흔들리는 폭(곁가지·볼거리가 그 줄에 맞춰 있다)
   const lockRow = new Uint8Array(H);
   for (const c of cuts) { const [a, b] = c.kind === "gap" ? [c.at - 3, c.at + c.rows + 2] : c.rise ? [c.at - 3, c.at + 3] : [1, 0]; for (let y = Math.max(0, a); y <= Math.min(H - 1, b); y += 1) lockRow[y] = 1; }
   // 곁가지를 낼 띠(주인공 띠가 아닌 가장 높은 띠)는 가로 길을 띠 위쪽에 둔다 — 길 남쪽에 막다른 빈터 자리가 남는다
-  const sideBand = variant.side === "none" ? -1 : bands.map((b, i) => ({ i, h: b.bot - b.top })).filter((v) => v.i !== heroBand || nb === 1).sort((p, q) => q.h - p.h)[0]?.i ?? -1;
+  const sideBand = variant.side === "none" ? -1 : bands.map((b, i) => ({ i, h: b.bot - b.top })).filter((v) => (v.i !== heroBand || nb === 1) && v.i !== dBand).sort((p, q) => q.h - p.h)[0]?.i ?? -1;
   bands.forEach((b, i) => {
+    if (i === dBand) { b.run = Math.max(b.top + 2, b.bot - 2); return; }
+    // 단의 꼴을 내는 산길: 맨 아래가 아닌 띠는 가로 길을 띠 위쪽에 둔다 — 그 아래 벼랑 줄이 북쪽으로 물러날(기울고 패일) 자리가 생긴다
+    if (!flat && input.relief !== "bands" && variant.layout !== "gorge" && variant.layout !== "brook" && i >= 1 && i !== heroBand && b.bot - b.top >= 8) { b.run = b.top + 2 + ri(0, 1); return; }
     if (i === heroBand && hero.site === "behind") { b.run = Math.max(b.top + 1, Math.min(b.bot - 4, b.top + 4)); return; }
     if (i === sideBand && i !== heroBand && b.bot - b.top >= 9) { b.run = b.top + 2 + ri(0, Math.max(0, Math.min(1, b.bot - b.top - 9))); return; }
     const north = i === heroBand && needsSite ? hero.h + (hero.site === "knoll" ? 6 : 3) : 2;
@@ -184,42 +201,90 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
   const road = new Set<number>();
   const order: number[] = []; // 낮은 끝 → 높은 끝 차례(가운데 줄) — 빈 자리·줄 세우기용
   const put = (x: number, y: number) => { if (inMap(x, y)) { const c = idx(x, y); if (!road.has(c)) { road.add(c); } } };
-  // 흔들림 한 줄: 끝 두 칸과 잠긴 칸은 0, 이웃 칸과는 한 칸 넘게 벌어지지 않는다(두 칸 폭 길이 끊기지 않게)
-  const swayLine = (n: number, range: readonly [number, number] | undefined, locked: (i: number) => boolean): Int8Array => {
-    const o = new Int8Array(n);
-    if (!range || !amp || n < 7) return o;
-    const phase = rnd() * Math.PI * 2, period = 8 + rnd() * 5;
-    for (let i = 0; i < n; i += 1) { const edge = Math.min(i, n - 1 - i); o[i] = edge < 2 || locked(i) ? 0 : Math.max(range[0], Math.min(range[1], Math.round(Math.min(amp, edge - 1) * Math.sin((i / period) * Math.PI * 2 + phase)))); }
-    for (let i = 1; i < n; i += 1) o[i] = Math.max(o[i - 1]! - 1, Math.min(o[i - 1]! + 1, o[i]!));
-    for (let i = n - 2; i >= 0; i -= 1) o[i] = Math.max(o[i + 1]! - 1, Math.min(o[i + 1]! + 1, o[i]!));
-    return o;
+  // 굽은 길 한 줄(버들항 원본 길처럼): 값은 한 칸씩만 바뀌고, 바뀐 뒤에는 2~4칸(가끔 더 길게)을 곧게 간다 — 한 칸씩 꺾이는 톱니가 없다(기울기 1:2 · 1:3 · 1:4 가 섞인다).
+  // 같은 길이의 계단이 세 번 넘게 이어지지 않는다. 처음은 0, 끝은 to(다음 길 쪽으로 기운 값 — 못 가면 줄인다), 잠긴 칸은 0. 돌려주는 줄의 마지막 값이 실제 끝 값이다.
+  const pathSteps = { single: 0, repeat: 0 };
+  const swayLine = (n: number, range: readonly [number, number] | undefined, locked: (i: number) => boolean, to = 0): Int8Array => {
+    if (!range || !amp || n < 6) return new Int8Array(n);
+    const dl = new Int32Array(n).fill(9999);
+    { let d = 9999; for (let i = 0; i < n; i += 1) { d = locked(i) ? 0 : d + 1; dl[i] = d; } d = 9999; for (let i = n - 1; i >= 0; i -= 1) { d = locked(i) ? 0 : d + 1; dl[i] = Math.min(dl[i]!, d); } }
+    const endMax = Math.max(0, Math.min(Math.floor((n - 1) / 2) - 1, Math.floor(dl[n - 1]! / 2) - 1));
+    const end = Math.max(range[0], Math.min(range[1], Math.max(-endMax, Math.min(endMax, to))));
+    const lo = (i: number): number => Math.max(range[0], -Math.floor(i / 2), end - Math.floor((n - 1 - i) / 2), -Math.floor(dl[i]! / 2));
+    const hi = (i: number): number => Math.min(range[1], Math.floor(i / 2), end + Math.floor((n - 1 - i) / 2), Math.floor(dl[i]! / 2));
+    const runs = [2, 3, 4, 3, 2, 4, 3, 5];
+    const gen = (): Int8Array => {
+      const o = new Int8Array(n);
+      let cur = 0, hold = 0, run = 2, lastRun = 0, same = 0, target = 0, rest = ri(1, 4);
+      const nextRun = () => { let r = runs[ri(0, runs.length - 1)]!; if (r === lastRun && same >= 2) r = r === 2 ? 3 : r - 1; same = r === lastRun ? same + 1 : 1; lastRun = r; run = r; };
+      for (let i = 0; i < n; i += 1) {
+        const a = lo(i), b = hi(i);
+        if (cur < a) { cur += 1; hold = 0; } else if (cur > b) { cur -= 1; hold = 0; }
+        else if (hold >= run) {
+          // 닿은 값에서 다섯~아홉 칸을 곧게 간 뒤에야 다시 옮긴다(짧게 나갔다 돌아오는 요철이 없다). 새 값은 두 칸 넘게 떨어진 곳(폭이 되면) — 한 칸 흔들림보다 길게 비스듬히 간다.
+          if (cur === target) { rest -= 1; if (rest <= 0) { const far: number[] = []; for (let v = range[0]; v <= range[1]; v += 1) if (Math.abs(v - cur) >= Math.min(2, range[1] - range[0])) far.push(v); target = far.length ? far[ri(0, far.length - 1)]! : cur; rest = ri(5, 9); } }
+          if (cur !== target) {
+            const nv = cur + Math.sign(target - cur);
+            if (nv >= a && nv <= b && (i + 1 >= n || (nv >= lo(i + 1) && nv <= hi(i + 1)))) { cur = nv; hold = 0; nextRun(); } else target = cur;
+          }
+        }
+        o[i] = cur; hold += 1;
+      }
+      return o;
+    };
+    // 재기: 한 칸짜리 계단(톱니)과 같은 계단(같은 쪽 · 같은 길이)이 이어진 가장 긴 횟수
+    const measure = (o: Int8Array): { single: number; repeat: number } => {
+      let single = 0, repeat = 0, len = 1, lastLen = 0, lastDir = 0, rep = 0;
+      for (let i = 1; i < n; i += 1) {
+        if (o[i] === o[i - 1]) { len += 1; continue; }
+        const dir = Math.sign(o[i]! - o[i - 1]!);
+        if (i - len > 0) { if (len === 1) single += 1; rep = len === lastLen && dir === lastDir ? rep + 1 : 1; repeat = Math.max(repeat, rep); lastLen = len; lastDir = dir; }
+        len = 1;
+      }
+      return { single, repeat };
+    };
+    // 톱니가 나오거나 같은 계단이 세 번 넘게 이어지면 다시 뽑는다(여섯 번까지 — 가장 나은 것을 쓴다)
+    let best = gen(), score = measure(best);
+    for (let t = 0; t < 6 && (score.single > 0 || score.repeat > 3); t += 1) { const o = gen(), m = measure(o); if (m.single < score.single || (m.single === score.single && m.repeat < score.repeat)) { best = o; score = m; } }
+    pathSteps.single += score.single; pathSteps.repeat = Math.max(pathSteps.repeat, score.repeat);
+    return best;
   };
-  const hline = (y: number, xa: number, xb: number, sway?: readonly [number, number]) => {
-    const [x0, x1] = xa <= xb ? [xa, xb] : [xb, xa], n = x1 - x0 + 1, o = swayLine(n, sway, () => false);
-    for (let x = x0; x <= Math.min(W - 1, x1 + 1); x += 1) { const d = o[Math.min(n - 1, x - x0)]!; put(x, y + d); put(x, y + d + 1); }
-    const dir = xa <= xb ? 1 : -1; for (let x = xa; x !== xb + dir; x += dir) order.push(idx(Math.max(0, Math.min(W - 1, x)), y + o[Math.max(0, Math.min(n - 1, x - x0))]!));
+  // 가로 길 xa → xb(가는 차례). 끝이 위아래로 to 만큼 기울 수 있다(다음 세로 길 쪽). 돌려주는 값 = 끝 칸의 줄 어긋남.
+  const hline = (y: number, xa: number, xb: number, sway?: readonly [number, number], to = 0): number => {
+    const n = Math.abs(xb - xa) + 1, dir = xa <= xb ? 1 : -1, o = swayLine(n, sway && ampH ? sway : undefined, () => false, to);
+    const at = (x: number): number => o[Math.max(0, Math.min(n - 1, (x - xa) * dir))]!;
+    for (let x = Math.min(xa, xb); x <= Math.min(W - 1, Math.max(xa, xb) + 1); x += 1) { const d = at(x); put(x, y + d); put(x, y + d + 1); }
+    for (let x = xa; x !== xb + dir; x += dir) order.push(idx(Math.max(0, Math.min(W - 1, x)), y + at(x)));
+    return o[n - 1]!;
   };
-  const vline = (x: number, ya: number, yb: number, sway = false) => {
-    const [y0, y1] = ya <= yb ? [ya, yb] : [yb, ya], n = y1 - y0 + 1, o = swayLine(n, sway ? [-amp, amp] : undefined, (i) => lockRow[y0 + i] === 1);
-    for (let y = y0; y <= Math.min(H - 1, y1 + 1); y += 1) { const d = o[Math.min(n - 1, y - y0)]!; put(x + d, y); put(x + d + 1, y); }
-    const dir = ya <= yb ? 1 : -1; for (let y = ya; y !== yb + dir; y += dir) { const yy = Math.max(0, Math.min(H - 1, y)); order.push(idx(x + o[Math.max(0, Math.min(n - 1, yy - y0))]!, yy)); }
+  // 세로 길 ya → yb(가는 차례). 끝이 좌우로 to 만큼 기울 수 있다(다음 가로 길 쪽). 돌려주는 값 = 끝 칸의 열 어긋남.
+  const vline = (x: number, ya: number, yb: number, sway = false, to = 0): number => {
+    const n = Math.abs(yb - ya) + 1, dir = ya <= yb ? 1 : -1, o = swayLine(n, sway ? [-amp, amp] : undefined, (i) => lockRow[Math.max(0, Math.min(H - 1, ya + i * dir))] === 1, to);
+    const at = (y: number): number => o[Math.max(0, Math.min(n - 1, (y - ya) * dir))]!;
+    for (let y = Math.min(ya, yb); y <= Math.min(H - 1, Math.max(ya, yb) + 1); y += 1) { const d = at(y); put(x + d, y); put(x + d + 1, y); }
+    for (let y = ya; y !== yb + dir; y += dir) { const yy = Math.max(0, Math.min(H - 1, y)); order.push(idx(Math.max(0, Math.min(W - 1, x + at(yy))), yy)); }
+    return o[n - 1]!;
   };
   // 띠 k 의 가로 길이 위아래로 흔들릴 수 있는 폭 — 볼거리 띠는 곧게(자리·앞 칸이 그 줄에 맞춰 있다), 산길은 띠의 단 안에서만
   const swayOf = (k: number): readonly [number, number] | undefined => {
-    if (!amp || k === heroBand) return undefined;
+    if (!ampH || k === heroBand) return undefined;
     const b = bands[k]!;
-    return flat ? [-amp, amp] : [-Math.max(0, Math.min(1, b.run - (b.top + 1))), Math.max(0, Math.min(1, b.bot - 1 - (b.run + 1)))];
+    return flat ? [-ampH, ampH] : [-Math.max(0, Math.min(ampH, b.run - (b.top + 2))), Math.max(0, Math.min(ampH, b.bot - 1 - (b.run + 1)))];
   };
+  // 모서리: 가로 길의 끝은 다음 세로 길이 가는 쪽(북)으로, 세로 길의 끝은 다음 가로 길이 가는 쪽으로 기운다 — 직각 모서리가 비스듬히 꺾인다.
+  const riseAt = (k: number): number => { const r = swayOf(k); if (!r) return 0; const b = bands[k]!; let m = Math.min(2, -r[0]); while (m > 0 && !flat && lockRow[Math.max(0, b.run - m - 1)]) m -= 1; return -m; };
+  const lean = (k: number, fromX: number, toX: number): number => !curvy || k === heroBand || k === sideBand || Math.abs(toX - fromX) < 8 ? 0 : Math.sign(toX - fromX) * 2;
+  const nextX = (k: number): number => cuts[k]?.col ?? (high === "west" ? 0 : high === "east" ? W - 2 : highEnd.x);
   // 낮은 끝에서 첫 띠의 가로 길까지
   let cx = lowEnd.x, cy = lowEnd.y;
-  if (low === "south") { vline(cx, cy, lowBand.run, curvy); cy = lowBand.run; } else if (low === "north") { vline(cx, 0, lowBand.run, curvy); cy = lowBand.run; } else cy = lowBand.run;
+  if (low === "south") { cx += vline(cx, cy, lowBand.run, curvy, lean(0, cx, nextX(0))); cy = lowBand.run; } else if (low === "north") { cx += vline(cx, 0, lowBand.run, curvy, lean(0, cx, nextX(0))); cy = lowBand.run; } else cy = lowBand.run;
   cuts.forEach((c, k) => {
     const next = bands[k + 1]!;
-    hline(cy, cx, c.col, swayOf(k)); cx = c.col;
-    vline(cx, cy, next.run, curvy); cy = next.run;
+    const dy = hline(cy, cx, c.col, swayOf(k), riseAt(k));
+    cx = c.col + vline(c.col, cy + dy, next.run, curvy, lean(k + 1, c.col, nextX(k + 1))); cy = next.run;
   });
-  if (high === "north") { hline(cy, cx, highEnd.x, swayOf(nb - 1)); vline(highEnd.x, cy, 0, curvy); }
-  else if (high === "south") { hline(cy, cx, highEnd.x, swayOf(nb - 1)); vline(highEnd.x, cy, H - 1, curvy); }
+  if (high === "north") { const dy = hline(cy, cx, highEnd.x, swayOf(nb - 1), riseAt(nb - 1)); vline(highEnd.x, cy + dy, 0, curvy); }
+  else if (high === "south") { const dy = hline(cy, cx, highEnd.x, swayOf(nb - 1), Math.min(2, swayOf(nb - 1)?.[1] ?? 0)); vline(highEnd.x, cy + dy, H - 1, curvy); }
   else if (high) hline(cy, cx, highEnd.x === 0 ? 0 : W - 2, swayOf(nb - 1));
   else hline(cy, cx, highEnd.x);
   if (high === "east" || low === "east") for (const y of [high === "east" ? highBand.run : lowBand.run]) { put(W - 1, y); put(W - 1, y + 1); }
@@ -256,12 +321,69 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
   };
   const stairsAt: { x: number; y: number; rise: number }[] = [];
   const gaps: { top: number; rows: number; col: number; gorge: boolean; offN: Int8Array; offS: Int8Array }[] = [];
+  // 단의 꼴: 벼랑 줄이 늘 맵을 곧게 가로지르지 않는다 — 벼랑 줄의 남북 어긋남(열마다)을 꼴마다 다르게 준다. 줄은 한 칸씩만 오르내리고(옆면이 한 칸을 넘지 않는다 — 버들항 벼랑 그림이
+  // 비스듬한 조각으로 잇는다) 돌계단 둘레는 곧다. 길·볼거리·곁가지가 놓인 줄은 넘지 않는다(열마다 길 칸까지의 거리로 자른다).
+  //   tilt 한쪽으로 기운 비탈(서쪽이 내려앉고 동쪽이 올라앉거나 그 반대) · basin 분지(돌계단 둘레만 깊이 패이고 양옆 벼랑이 남쪽으로 감싼다)
+  //   shelf 맵 중간에서 끝나는 턱(한쪽 변에서 뻗어 나온 벼랑이 가운데에서 비스듬히 물러난다) · peak 봉우리(길 끝 꼭대기 한 곳만 솟고 양옆은 낮은 땅으로 흘러내린다)
+  const cliffCuts = cuts.map((c, k) => ({ c, k })).filter(({ c }) => c.kind === "cliff" && c.rise > 0);
+  const gapNear = (k: number): boolean => cuts[k - 1]?.kind === "gap" || cuts[k + 1]?.kind === "gap";
+  const lineOf = new Map<number, Int16Array>();   // 자름 k 의 벼랑 줄(열마다 — 그 줄보다 북쪽이 높다)
+  const profile = (kind: RouteRelief, k: number, atLeast: number): Int8Array | undefined => {
+    const c = cuts[k]!, at = c.at, lower = bands[k]!, upper = bands[k + 1]!;
+    if (gapNear(k)) return undefined;
+    const want = new Int16Array(W), tiltDir = hash01(7, 3, seed + 401) < 0.5 ? -1 : 1, shelfWest = hash01(9, 5, seed + 409) < 0.5;
+    const stepAt = (d: number, salt: number): number => { let v = 0, x = 5; while (d >= x) { v += 1; x += 3 + Math.floor(hash01(v, k + salt, seed + 419) * 3); } return v; };
+    const dist = (x: number): number => (x < c.col ? c.col - x : x - c.col - 1);
+    if (kind === "peak") {
+      if (k !== cuts.length - 1 || high) return undefined;
+      const half = Math.max(8, Math.ceil(hero.w / 2) + 4);
+      for (let x = 0; x < W; x += 1) { const d = dist(x) - half; want[x] = d <= 0 ? 0 : -Math.ceil(d / 2); }
+    } else if (kind === "tilt") for (let x = 0; x < W; x += 1) want[x] = tiltDir * Math.sign(x - c.col) * Math.min(5, stepAt(dist(x), x < c.col ? 0 : 50));
+    else if (kind === "basin") for (let x = 0; x < W; x += 1) want[x] = Math.min(5, stepAt(dist(x), x < c.col ? 0 : 50));
+    else if (kind === "shelf") {
+      const depth = 3 + (hash01(k, 11, seed + 421) < 0.5 ? 1 : 0), edge = shelfWest ? c.col - 7 - Math.floor(hash01(k, 13, seed + 431) * 4) : c.col + 8 + Math.floor(hash01(k, 13, seed + 431) * 4);
+      for (let x = 0; x < W; x += 1) { const d = shelfWest ? edge - x : x - edge; want[x] = d >= 0 ? depth : Math.max(0, depth - Math.ceil(-d / 2)); }
+    } else return undefined;
+    // 열마다 넘지 못하는 줄: 남쪽은 아래 띠의 맨 위 길 칸 두 줄 앞·아래 벼랑 줄 넉 줄 앞, 북쪽은 위 띠의 맨 아래 길 칸 두 줄 뒤(마지막 자름이 아니면 위 자름 넉 줄 앞). 볼거리 띠의 북쪽 벼랑과 곁가지 띠의 남쪽 벼랑은 그대로.
+    const maxS = new Int16Array(W), maxN = new Int16Array(W), below = lineOf.get(k - 1), last = k === cuts.length - 1;
+    for (let x = 0; x < W; x += 1) {
+      let rs = lower.bot + 2, rn = last && kind === "peak" ? -3 : upper.top + 1;
+      for (let y = at; y <= lower.bot; y += 1) if (road.has(idx(x, y))) { rs = y; break; }
+      for (let y = at - 1; y >= upper.top; y -= 1) if (road.has(idx(x, y))) { rn = y; break; }
+      maxS[x] = k === heroBand || k === dBand ? 0 : Math.max(0, Math.min(rs - 2, (below ? below[x]! : H - 1) - 4) - at);
+      maxN[x] = k + 1 === sideBand ? 0 : Math.max(0, at - (rn + 3));
+    }
+    const off = new Int8Array(W);
+    for (let x = 0; x < W; x += 1) {
+      let s = 99, n = 99; for (let d = -2; d <= 2; d += 1) { const q = Math.max(0, Math.min(W - 1, x + d)); s = Math.min(s, maxS[q]!); n = Math.min(n, maxN[q]!); }
+      off[x] = Math.abs(x - c.col) <= 4 || x - c.col === 5 ? 0 : Math.max(-n, Math.min(s, want[x]!));
+    }
+    // 한 칸짜리 턱은 지우고, 이웃 열과는 한 칸씩만 오르내린다
+    for (let pass = 0; pass < 4; pass += 1) {
+      if (pass < 3) for (let x = 1; x < W - 1; x += 1) if (off[x] !== off[x - 1] && off[x] !== off[x + 1]) off[x] = Math.abs(off[x - 1]!) < Math.abs(off[x + 1]!) ? off[x - 1]! : off[x + 1]!;
+      for (let x = 1; x < W; x += 1) { const p = off[x - 1]!, v = off[x]!; if (v * p < 0) off[x] = 0; else if (Math.abs(v) > Math.abs(p) + 1) off[x] = Math.sign(v) * (Math.abs(p) + 1); }
+      for (let x = W - 2; x >= 0; x -= 1) { const p = off[x + 1]!, v = off[x]!; if (v * p < 0) off[x] = 0; else if (Math.abs(v) > Math.abs(p) + 1) off[x] = Math.sign(v) * (Math.abs(p) + 1); }
+    }
+    let big = 0; for (let x = 0; x < W; x += 1) big = Math.max(big, Math.abs(off[x]!));
+    return big >= atLeast ? off : undefined;
+  };
+  const reliefWish: RouteRelief[] = flat || !cliffCuts.length ? [] : [...(terminal && !high && hash01(3, 1, seed + 443) < 0.7 ? ["peak" as const] : []), ...(input.relief && input.relief !== "bands" ? [input.relief] : []),
+    ...(input.relief === "bands" ? [] : (["tilt", "basin", "shelf"] as const).map((r, i, all) => all[(i + (seed % 3)) % 3]!))];
+  let relief: RouteRelief = flat || !cliffCuts.length ? "flat" : "bands";
   { let level = 0;
-    cuts.forEach((c) => {
+    cuts.forEach((c, k) => {
       if (c.kind === "cliff") {
         if (!c.rise) return;
-        const off = wobble([c.col]);
-        for (let x = 0; x < W; x += 1) for (let y = 0; y < c.at + off[x]!; y += 1) lv[idx(x, y)] = lv[idx(x, y)]! + c.rise;
+        let off = wobble([c.col]);
+        // 고른 꼴이 이 자름에서 안 나오면(길이 막는다) 다음 꼴을 본다 — 한 맵은 한 꼴만 쓴다
+        for (const kind of relief === "bands" ? (reliefWish[0] === "peak" && k !== cuts.length - 1 ? [] : reliefWish) : relief === "peak" ? [] : [relief]) {
+          const p = profile(kind, k, relief === "bands" ? 3 : 2); if (!p) continue;
+          for (let x = 0; x < W; x += 1) { let level0 = p[x] === 0; for (let d = -2; d <= 2 && level0; d += 1) if (p[Math.max(0, Math.min(W - 1, x + d))] !== 0) level0 = false; if (!level0) off[x] = p[x]!; }
+          relief = kind; break;
+        }
+        const line = new Int16Array(W);
+        for (let x = 0; x < W; x += 1) { line[x] = c.at + off[x]!; for (let y = 0; y < line[x]!; y += 1) lv[idx(x, y)] = lv[idx(x, y)]! + c.rise; }
+        lineOf.set(k, line);
         level += c.rise;
         stairsAt.push({ x: c.col, y: c.at, rise: c.rise });
       } else {
@@ -269,6 +391,7 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
         gaps.push({ top: c.at, rows: c.rows, col: c.col, gorge, offN: wobble([c.col]), offS: wobble([c.col]) });
       }
     }); }
+  if (relief === "bands" && hero.site === "knoll") relief = "knoll";
   for (const g of gaps) for (let x = 0; x < W; x += 1) {
     const y0 = g.top + (g.gorge ? 0 : g.offN[x]!), y1 = g.top + g.rows - 1 + (g.gorge ? 0 : Math.max(0, g.offS[x]!));
     for (let y = y0; y <= y1; y += 1) {
@@ -434,6 +557,14 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
     return undefined;
   };
   let sideAt: Cell | undefined, sideKind = "none", hiddenAt: Cell | undefined;
+  const sameLevel = (x: number, y: number, w: number, h: number, L: number): boolean => { for (let j = 0; j < h; j += 1) for (let i = 0; i < w; i += 1) if (!inMap(x + i, y + j) || lv[idx(x + i, y + j)] !== L || water[idx(x + i, y + j)]) return false; return true; };
+  // 가로 길이 그 열에 없으면(끝이 기울어 비켜났다) 길이 나올 때까지 그 줄을 따라 잇는다
+  const joinRun = (x: number, run: number, toward: number) => {
+    const near = (xx: number): boolean => { for (let d = -2; d <= 3; d += 1) if (road.has(idx(xx, run + d))) return true; return false; };
+    if (near(x) && near(x + 1)) return;
+    const dir = toward >= x ? 1 : -1;
+    for (let xx = dir > 0 ? x : x + 1; xx >= 1 && xx <= W - 2; xx += dir) { const hit = near(xx); put(xx, run); put(xx, run + 1); if (hit) break; }
+  };
   const furnish = (x0: number, y0: number) => {
     clearings.push({ x: x0, y: y0, w: 4, h: 3 });
     sideAt = { x: x0 + 1, y: y0 + 1 }; sideKind = variant.side;
@@ -450,10 +581,11 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
       const lo = Math.min(a, d), hi = Math.max(a, d);
       // 길에서 남쪽으로 두 칸 내려간 4×3 빈터 — 아래 띠에서 올라오는 계단 열과 겹치지 않게
       const below = i > 0 ? cuts[i - 1]!.col : low === "south" ? lowEnd.x : -99;
-      const xs: number[] = []; for (let x = Math.max(3, lo - 5); x <= Math.min(W - 7, hi + 3); x += 1) if ((x + 5 < below - 1 - amp || x - 1 > below + 2 + amp) && !hitsRect(x, b.run + 2, 4, 4, 1)) xs.push(x);
+      const xs: number[] = []; for (let x = Math.max(3, lo - 5); x <= Math.min(W - 7, hi + 3); x += 1) if ((x + 5 < below - 1 - amp || x - 1 > below + 2 + amp) && !hitsRect(x, b.run + 2, 4, 4, 1) && sameLevel(x, b.run, 4, 6 + (swayOf(i) ? 1 : 0), b.level)) xs.push(x);
       if (!xs.length) continue;
       const x0 = xs[ri(0, xs.length - 1)]!, y0 = b.run + 3 + (swayOf(i) ? 1 : 0);
       if (x0 + 1 < lo) hline(b.run, x0 + 1, lo); else if (x0 + 1 > hi) hline(b.run, hi, x0 + 1);
+      joinRun(x0 + 1, b.run, (lo + hi) / 2);
       for (let y = b.run; y < y0; y += 1) { put(x0 + 1, y); put(x0 + 2, y); }
       furnish(x0, y0);
       break;
@@ -499,6 +631,29 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
       dungeonGate = mouthAt(gx, y);
       break search;
     }
+    // 세로 길 옆에 자리가 없으면(낮고 넓은 맵): 가로 길에서 북쪽으로 세 칸 올라간 곳에 입구 자리를 낸다
+    if (!dungeonGate) for (const { b, i } of bands.map((b, i) => ({ b, i })).sort((p, q) => Number(q.i === dBand) - Number(p.i === dBand) || Number(p.i === heroBand) - Number(q.i === heroBand) || (q.b.run - q.b.top) - (p.b.run - p.b.top))) {
+      if (b.run - b.top < 11) continue;
+      const a = i === 0 ? lowX : cuts[i - 1]!.col, d = cuts[i]?.col ?? highX, x0 = Math.min(a, d), x1 = Math.max(a, d);
+      // 가로 길 위가 먼저, 없으면 그 줄을 따라 길을 늘인 곳(같은 단 안에서만)
+      const onRun = (x: number): boolean => { for (let dd = -2; dd <= 3; dd += 1) if (road.has(idx(x, b.run + dd)) && road.has(idx(x + 1, b.run + dd))) return true; return false; };
+      const xs: { x: number; far: number }[] = [];
+      for (let x = 8; x <= W - 9; x += 1) {
+        if (hitsRect(x - 7, b.run - 10, 15, 8, 0)) continue;
+        let ok = true; for (let yy = b.run - 10; ok && yy <= b.run - 3; yy += 1) for (let xx = x - 7; xx <= x + 7; xx += 1) { const q = idx(xx, yy); if (lv[q] !== b.level || road.has(q) || water[q] || bridge[q]) { ok = false; break; } }
+        if (!ok || !sameLevel(x, b.run - 2, 2, 4, b.level)) continue;
+        const far = onRun(x) ? 0 : x < x0 ? x0 - x : x > x1 ? x - x1 : 1;
+        if (far && !sameLevel(x < x0 ? x : Math.min(x, x1), b.run, Math.abs((x < x0 ? x0 : x1) - x) + 2, 2, b.level)) continue;
+        xs.push({ x, far });
+      }
+      if (!xs.length) continue;
+      const near = Math.min(...xs.map((q) => q.far)), pool = xs.filter((q) => q.far <= near + 2);
+      const gx = pool[ri(0, pool.length - 1)]!.x;
+      joinRun(gx, b.run, (x0 + x1) / 2);
+      for (let yy = b.run - 3; yy <= b.run + 1; yy += 1) { put(gx, yy); put(gx + 1, yy); }
+      dungeonGate = mouthAt(gx, b.run - 4);
+      break;
+    }
     if (!dungeonGate) warnings.push("던전 어귀를 낼 자리가 없다 — 맵을 키운다.");
   }
   // 마을 어귀: 마을로 가는 변 바로 안쪽에 울타리와 이정표, 밭 — 그 끝 여섯 칸의 길은 마을 길의 급(흙·돌)을 따른다
@@ -527,6 +682,32 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
     const n = lateral(); if (!n) break;
     clearings.push({ x: n.x, y: n.y, w: 4, h: 3 });
     want(flat ? "bd-rt-sp-stone-b" : "bd-pick-deep-forest-path-cairn", n.x + 1 + k, n.y);
+  }
+
+  // 정령 숲은 «숲 속 길» 이다: 숲이 길 바로 곁까지 오고(넓은 풀밭은 «넓은 곳» 꼴과 빈터 볼거리뿐), 정령 숲다운 것은 길 곁의 작은 숲속 빈터에 무리 지어 선다 —
+  // 빈터마다 가운데에 큰 것 하나(흰 줄기 정령 나무 · 큰 빛 버섯 · 요정 고리 · 수정 나무 · 어린 정령 나무), 둘레에 작은 것(버섯·꽃·수정·도깨비불).
+  const pockets: { cx: number; cy: number; rx: number; ry: number }[] = [];
+  const pocketKits: { kit: string; x: number; y: number }[] = [];
+  if (flat) {
+    const heroKits = new Set(hero.items.map((it) => it.kit));
+    const centre = ["bd-rt-sp-tree-a", "bd-rt-sp-shroom-l", "bd-rt-sp-fairy-ring", "bd-rt-sp-tree-c", "bd-rt-sp-crystal-tree", "bd-rt-sp-tree-b", "bd-rt-sp-shroom-l", "bd-rt-sp-tree-c"].filter((id) => kitOf(id) && !heroKits.has(id));
+    const every = 11; let n = Math.floor(rnd() * centre.length);
+    for (let k = 6; k < order.length - 5 && centre.length; k += every) {
+      const c = order[k]!, x = c % W, y = (c - x) / W, kd = kitOf(centre[n % centre.length]!)!;
+      const vertical = road.has(idx(x, y - 1)) && road.has(idx(x, y + 1));
+      const first = hash01(x, y, seed + 61) < 0.5 ? -1 : 1;
+      for (const dir of [first, -first]) {
+        // 길 곁 한 칸 띄운 자리(세로 길이면 옆, 가로 길이면 위·아래)
+        const px = vertical ? (dir < 0 ? x - 2 - kd.width : x + 4) : x - Math.floor(kd.width / 2), py = vertical ? y - Math.floor(kd.height / 2) : (dir < 0 ? y - 2 - kd.height : y + 4);
+        if (px < 2 || py < 2 || px + kd.width > W - 2 || py + kd.height > H - 2) continue;
+        if (hitsRect(px - 2, py - 1, kd.width + 4, kd.height + 2, 0) || pockets.some((q) => Math.abs(q.cx - (px + kd.width / 2)) < q.rx + kd.width / 2 + 3 && Math.abs(q.cy - (py + kd.height / 2)) < q.ry + kd.height / 2 + 3)) continue;
+        let ok = true; for (let j = -1; ok && j <= kd.height; j += 1) for (let i = -1; i <= kd.width; i += 1) { const q = idx(px + i, py + j); if (road.has(q) || water[q] || bridge[q] || lane.has(q)) { ok = false; break; } }
+        if (!ok) continue;
+        pocketKits.push({ kit: kd.id, x: px, y: py });
+        pockets.push({ cx: px + kd.width / 2, cy: py + kd.height / 2, rx: kd.width / 2 + 2.2, ry: kd.height / 2 + 1.6 });
+        n += 1; break;
+      }
+    }
   }
 
   // ---------- 7. 물·길 칠하기 ----------
@@ -576,8 +757,13 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
   }
 
   // ---------- 8. 찍기(볼거리·곁가지·줄 세우기) ----------
-  const stampAt = (kit: string, x: number, y: number): boolean => {
-    try { stamp.run(project, { objectId: `kit:${tileset.id}/${kit}`, mapId: map.id, x, y }); return true; } catch { return false; }
+  // 한 장에 같은 기물은 여섯까지(오너: 같은 비석이 스물다섯 서면 묘지다) — 나무·울타리·밟는 덧그림은 세지 않는다. 걷는 칸을 막는 마감(plug)은 force.
+  const SAME_KIT_MAX = 6, uncounted = /fir|pine|fence|leaves|petals|snow-patch|light|glow-moss|sp-tree|crown/u;
+  const kitCount = new Map<string, number>();
+  const stampAt = (kit: string, x: number, y: number, force = false): boolean => {
+    const counted = !force && !uncounted.test(kit), key = /sp-stone-/u.test(kit) ? "bd-rt-sp-stone" : kit;   // 정령석 두 가지는 한 기물로 센다
+    if (counted && (kitCount.get(key) ?? 0) >= SAME_KIT_MAX) return false;
+    try { stamp.run(project, { objectId: `kit:${tileset.id}/${kit}`, mapId: map.id, x, y }); if (counted) kitCount.set(key, (kitCount.get(key) ?? 0) + 1); return true; } catch { return false; }
   };
   let heroPlaced = 0;
   if (falls && SKINS.spirit.falls) {
@@ -591,14 +777,19 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
     }
     heroPlaced += 1;
   }
-  for (const p of placements) if (stampAt(p.kit, p.x, p.y)) heroPlaced += 1; else warnings.push(`${p.kit} 를 (${p.x},${p.y}) 에 놓지 못했다.`);
+  const kitFull = (kit: string): boolean => !uncounted.test(kit) && (kitCount.get(/sp-stone-/u.test(kit) ? "bd-rt-sp-stone" : kit) ?? 0) >= SAME_KIT_MAX;
+  for (const p of placements) if (kitFull(p.kit)) continue; else if (stampAt(p.kit, p.x, p.y)) heroPlaced += 1; else warnings.push(`${p.kit} 를 (${p.x},${p.y}) 에 놓지 못했다.`);
+  for (const p of pocketKits) stampAt(p.kit, p.x, p.y);
   if (missing.size) warnings.push(`칩셋에 없는 킷: ${[...missing].join(", ")}`);
   const blockedByStamp = (c: number): boolean => !isPassable(project, map, c % W, Math.floor(c / W));
   // 길 따라 줄 세우기: 길 가운데 줄을 따라 네 칸마다, 길 바깥 한 칸 떨어진 자리에 번갈아
   const lineSpots: Cell[] = [];
   if (hero.site === "line") {
     let n = 0;
-    for (let k = 3; k < order.length - 3; k += 4) {
+    // 길 전체에 고르게, 많아야 여덟(같은 것은 여섯) — 네 칸마다 빽빽이 세우지 않는다
+    const gapK = Math.max(4, Math.ceil((order.length - 6) / 8));
+    for (let k = 3, placed = false; k < order.length - 3 && n < 8; k += placed ? gapK : 1) {
+      placed = false;
       const c = order[k]!, x = c % W, y = (c - x) / W;
       const vertical = road.has(idx(x, y - 1)) && road.has(idx(x, y + 1)) && !road.has(idx(x - 1, y));
       const sideSign = n % 2 === 0 ? -1 : 1;
@@ -608,7 +799,7 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
       const L = ok ? lv[idx(px, py + kd.height - 1)]! : 0;
       if (ok && hitsRect(px, py, kd.width, kd.height, 0)) ok = false;
       for (let j = 0; ok && j < kd.height; j += 1) for (let i = 0; i < kd.width; i += 1) { const q = idx(px + i, py + j); if (road.has(q) || water[q] || bridge[q] || lv[q] !== L || lv[c] !== L) { ok = false; break; } }
-      if (ok && stampAt(it.kit, px, py)) { lineSpots.push({ x: px, y: py + kd.height - 1 }); clearings.push({ x: px, y: py, w: kd.width, h: kd.height }); n += 1; heroPlaced += 1; }
+      if (ok && stampAt(it.kit, px, py)) { lineSpots.push({ x: px, y: py + kd.height - 1 }); clearings.push({ x: px, y: py, w: kd.width, h: kd.height }); n += 1; heroPlaced += 1; placed = true; }
     }
     if (lineSpots.length) { const m = lineSpots[Math.floor(lineSpots.length / 2)]!; site = { x: m.x, y: m.y, w: 1, h: 1 }; heroFront ??= (() => { const c = order[Math.floor(order.length / 2)]!; return { x: c % W, y: Math.floor(c / W) }; })(); }
     else warnings.push(`«${hero.ko}» 를 길 따라 세울 자리가 없다.`);
@@ -617,12 +808,13 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
   // ---------- 9. 숲 ----------
   const reserved = new Set<number>();
   const reserve = (x: number, y: number, r: number) => { for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) if (inMap(x + dx, y + dy)) reserved.add(idx(x + dx, y + dy)); };
-  const verge = variant.cover === "open" ? 4 : variant.cover === "canopy" ? 1 : flat ? 3 : 2;
+  const verge = variant.cover === "open" ? 4 : variant.cover === "canopy" || flat ? 1 : 2;
   for (const c of road) reserve(c % W, Math.floor(c / W), verge);
   for (const c of lane) { reserved.add(c); road.add(c); }   // 숨은 샛길: 두 칸 폭만 비우고, 뒤 단계(꾸밈·빈 자리)는 길 칸으로 본다
   for (const e of ends) reserve(e.cell.x, e.cell.y, 2);
   for (const r of clearings) for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) if (inMap(x, y)) reserved.add(idx(x, y));
   for (const b of blob) for (let y = Math.floor(b.cy - b.ry); y <= Math.ceil(b.cy + b.ry); y += 1) for (let x = Math.floor(b.cx - b.rx); x <= Math.ceil(b.cx + b.rx); x += 1) if (inMap(x, y) && ((x - b.cx) / b.rx) ** 2 + ((y - b.cy) / b.ry) ** 2 <= 1) reserved.add(idx(x, y));
+  for (const b of pockets) for (let y = Math.floor(b.cy - b.ry); y <= Math.ceil(b.cy + b.ry); y += 1) for (let x = Math.floor(b.cx - b.rx); x <= Math.ceil(b.cx + b.rx); x += 1) if (inMap(x, y) && ((x + 0.5 - b.cx) / b.rx) ** 2 + ((y + 0.5 - b.cy) / b.ry) ** 2 <= 1) reserved.add(idx(x, y));
   // 단이 바뀌는 칸 둘레(절벽 면·끝)와 물가에는 숲을 심지 않는다 — 수관이 절벽 줄에 썰린다
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
     const c = idx(x, y);
@@ -665,7 +857,7 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
     const pool = [...variant.dress, ...(flat ? ["bd-rt-sp-light", "bd-rt-sp-glow-moss", "bd-rt-sp-light"] : [])].filter((id) => kitOf(id));
     if (pool.length) for (let y = 2; y < H - 3; y += 1) for (let x = 2; x < W - 3; x += 1) {
       const c = idx(x, y);
-      if (hash01(x, y, seed + 77) > (variant.cover === "open" ? 0.045 : 0.07)) continue;
+      if (hash01(x, y, seed + 77) > (variant.cover === "open" ? 0.045 : flat ? 0.12 : 0.07)) continue;
       const id = pool[Math.floor(hash01(x, y, seed + 9) * pool.length)]!, kd = kitOf(id)!;
       const flatKit = decal.test(id);
       const L = lv[c]!; let ok = !inClearing(x, y) || flatKit;
@@ -710,7 +902,7 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
   // 들어오는 칸 = 첫째 변의 끝. 나가는 칸 = 다른 가장자리 끝(없으면 맵 안 끝).
   const entry = (ends.find((e) => e.side === input.sides[0]) ?? ends.find((e) => e.side) ?? ends[0]!).cell;
   const exit = (ends.find((e) => e.side && e.cell !== entry) ?? ends.find((e) => e.cell !== entry) ?? ends[0]!).cell;
-  const blockers = (flat ? ["bd-rt-sp-shroom-s", "bd-rt-sp-stone-b"] : ["bd-pick-mountain-pass-boulder-m", "bd-pick-deep-forest-path-stump"]).filter((id) => kitOf(id));
+  const blockers = (flat ? ["bd-rt-sp-shroom-s", "bd-rt-sp-flower"] : ["bd-pick-mountain-pass-boulder-m", "bd-pick-deep-forest-path-stump"]).filter((id) => kitOf(id));
   const flood = (from: Cell, wall?: ReadonlySet<number>): Set<number> => {
     const seen = new Set<number>([idx(from.x, from.y)]), q = [idx(from.x, from.y)];
     for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W;
@@ -720,7 +912,7 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
   };
   const plug = (x: number, y: number): boolean => {
     if (!inMap(x, y) || !isPassable(project, map, x, y)) return false;
-    for (const id of blockers) { const kd = kitOf(id)!; if (kd.width === 1 && kd.height === 1 && stampAt(id, x, y) && !isPassable(project, map, x, y)) return true; }
+    for (const id of blockers) { const kd = kitOf(id)!; if (kd.width === 1 && kd.height === 1 && stampAt(id, x, y, true) && !isPassable(project, map, x, y)) return true; }
     // 놓기 규칙에 걸려 못 찍은 자리는 그 킷의 칸을 3층에 바로 둔다(막힌 칸 하나)
     for (const id of blockers) { const kd = kitOf(id)!; const t = kd.rows[kd.height - 1]?.upperTiles?.[0] ?? -1; if (kd.width === 1 && t >= 0 && tileset.passability[t] && !tileset.passability[t]!.up) { setLayerTileAt(map, 3, idx(x, y), t); return !isPassable(project, map, x, y); } }
     return false;
@@ -784,7 +976,7 @@ export function buildThemedRoute(input: ThemedRouteInput): ThemedRouteResult {
   if (sideAt && !reach.has(idx(sideAt.x, sideAt.y))) { sideAt = undefined; sideKind = "none"; }
   void blockedByStamp;
   const exits = ends.filter((e): e is { side: RouteSideName; cell: Cell } => !!e.side).sort((a, b) => Number(b.cell === entry) - Number(a.cell === entry)).map((e) => ({ side: e.side, x: e.cell.x, y: e.cell.y }));
-  return { entry, exit, exits, ...(dungeonGate ? { dungeonGate } : {}), roadCells: road.size, treeCells, stairs, sealed, ...(site && (heroPlaced > 0 || hero.site === "bridge" || hero.water || dungeonGate) ? { heroAt: site } : {}), ...(heroFront ? { heroFront } : {}), ...(sideAt ? { sideAt } : {}), sideKind, enemySpots, warnings };
+  return { entry, exit, exits, ...(dungeonGate ? { dungeonGate } : {}), roadCells: road.size, treeCells, stairs, sealed, ...(site && (heroPlaced > 0 || hero.site === "bridge" || hero.water || dungeonGate) ? { heroAt: site } : {}), ...(heroFront ? { heroFront } : {}), ...(sideAt ? { sideAt } : {}), sideKind, enemySpots, relief, pathSteps, kitMax: Math.max(0, ...kitCount.values()), warnings };
 }
 
 /**

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
-import { pickRouteVariant, ROUTE_FEATURES, ROUTE_THEMES, ROUTE_VARIANTS, routeFeatureWords } from "@/editor/tools/routeThemes";
+import { pickRouteVariant, ROUTE_FEATURES, ROUTE_LAYOUT_MAX, ROUTE_THEMES, ROUTE_VARIANTS, routeFeatureWords, routeVariantFor } from "@/editor/tools/routeThemes";
 import { createBlankProject } from "@/project/defaults";
 import { canMove, isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
@@ -159,6 +159,53 @@ describe("author_wild_route theme", () => {
     }
     expect(shapes.size).toBeGreaterThanOrEqual(6);
   }, 240_000);
+
+  it("굽은 길은 톱니가 아니다: 한 칸짜리 계단이 없고 같은 계단이 네 번 넘게 이어지지 않는다 — 같은 기물은 한 장에 여섯 이하", () => {
+    for (const theme of ["mountain", "spirit"] as const) for (const seed of [2, 8, 14, 21]) {
+      const { data } = buildRoute(theme, seed);
+      const steps = data.pathSteps as { single: number; repeat: number };
+      expect(steps.single, `${theme} ${seed} ${data.variant}`).toBe(0);
+      expect(steps.repeat, `${theme} ${seed} ${data.variant}`).toBeLessThanOrEqual(4);
+      expect(data.kitMax as number, `${theme} ${seed} ${data.variant}`).toBeLessThanOrEqual(6);
+    }
+  }, 240_000);
+
+  it("정령 숲은 숲 속 길이다: 넓은 곳 꼴이 아니면 걷는 칸 밖은 숲이다(막힌 칸이 맵의 사 할을 넘는다)", () => {
+    for (const [shape, seed] of [["pass", 3], ["hidden-fork", 6], ["maze", 9]] as const) {
+      const { ctx, map, data } = buildRoute("spirit", seed, { shape });
+      let shut = 0;
+      for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) if (!isPassable(ctx.project, map, x, y)) shut += 1;
+      expect(shut / (map.width * map.height), `${shape} ${data.variant}`).toBeGreaterThan(0.4);
+    }
+  }, 240_000);
+
+  it("산길의 단은 가로 띠만이 아니다: 한 게임의 열두 장에 단의 꼴이 네 가지 넘게 나온다(띠 · 기운 비탈 · 분지 · 중간에서 끝나는 턱)", () => {
+    const ctx: ToolContext = { project: createBlankProject(), assistantRun: true, lookKey: "route-test" };
+    const reliefs = new Set<string>();
+    for (let n = 0; n < 12; n += 1) {
+      const id = `map_r${n}`;
+      runTool(ctx, "create_map", { id, name: `길목 ${n}`, width: 38, height: 40, tilesetId: "beodeul_city" }, { dryRun: false });
+      const result = runTool(ctx, "author_wild_route", { mapId: id, theme: "mountain", seed: n }, { dryRun: false });
+      expect(result.ok, result.summary).toBe(true);
+      const data = result.data as Record<string, unknown>, map = ctx.project.maps[id]!;
+      reliefs.add(String(data.relief));
+      expect(reach(ctx.project, map, data.entry as Cell).lost, `${data.relief} ${data.variant}`).toBe(0);
+    }
+    expect([...reliefs].filter((r) => r !== "flat").length, [...reliefs].join(" ")).toBeGreaterThanOrEqual(4);
+    // 막다른 길은 꼭대기 한 곳만 솟은 봉우리가 될 수 있다
+    const peaks = [1, 2, 3, 4, 5, 6].map((seed) => buildRoute("mountain", seed, { sides: ["south"] }).data.relief);
+    expect(peaks).toContain("peak");
+  }, 300_000);
+
+  it("한 게임에서 한 짜임이 다섯을 넘지 않게 고른다", () => {
+    const full = new Map([["winding", ROUTE_LAYOUT_MAX]]);
+    for (let seed = 0; seed < 12; seed += 1) {
+      expect(routeVariantFor("spirit", "maze", 2, "k", seed, undefined, new Set(), full).layout).toBe("forks");
+      expect(routeVariantFor("spirit", "pass", 2, "k", seed, undefined, new Set(), full).layout).not.toBe("winding");
+      expect(routeVariantFor("spirit", "wide", 2, "k", seed, undefined, new Set(), full).layout).not.toBe("winding");
+      expect(routeVariantFor("spirit", "dead-end", 1, "k", seed, undefined, new Set(), full).layout).not.toBe("winding");
+    }
+  });
 
   it("폭포는 물 장막 뒤 바위턱으로만 지나간다", () => {
     const ctx: ToolContext = { project: createBlankProject(), assistantRun: true, lookKey: "route-test" };

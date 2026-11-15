@@ -80,7 +80,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     if (!again && run.ctx.project.maps[mapId!] && isUntouchedMap(run.ctx.project.maps[mapId!]!)) run.call("remove_map", { mapId });
     return fail(`route «${spec.name}» could not be built: ${String(res.summary ?? "").slice(0, 240)}`);
   }
-  const data = (res.data ?? {}) as { shape?: string; routeExits?: { side: Side; x: number; y: number }[]; dungeonGate?: Cell | null; variant?: string; layout?: string; hero?: string; heroName?: string; mood?: string | null; entry?: Cell; exit?: Cell; heroAt?: unknown; heroFront?: Cell | null; side?: string; sideAt?: Cell | null; enemySpots?: Cell[] };
+  const data = (res.data ?? {}) as { relief?: string; pathSteps?: { single: number; repeat: number }; kitMax?: number; sealed?: number; shape?: string; routeExits?: { side: Side; x: number; y: number }[]; dungeonGate?: Cell | null; variant?: string; layout?: string; hero?: string; heroName?: string; mood?: string | null; entry?: Cell; exit?: Cell; heroAt?: unknown; heroFront?: Cell | null; side?: string; sideAt?: Cell | null; enemySpots?: Cell[] };
   if (run.ctx.project.maps[mapId!]?.name !== spec.name) run.call("set_map_properties", { mapId, name: spec.name });
   // 안개 낀 가짓수와 정령 숲의 어스름은 실제 조명·날씨로(그림이 아니다)
   if (data.mood === "fog" || args.theme === "spirit") {
@@ -100,7 +100,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     warnings: [...args.warnings, ...(res.warnings ?? []).map(String)],
     missingArt: [],
     calls: run.calls.slice(first),
-    state: { tilesetId: "beodeul_city", theme: args.theme, shape: data.shape, routeExits: data.routeExits ?? [], ...(data.dungeonGate ? { dungeonGate: data.dungeonGate } : {}), variant: data.variant, layout: data.layout, hero: data.hero, side: data.side, entry, exit: data.exit, heroAt: data.heroAt, heroFront: data.heroFront ?? undefined, sideAt: data.sideAt ?? undefined, enemySpots: data.enemySpots ?? [], freeSpots: free, start: entry },
+    state: { tilesetId: "beodeul_city", theme: args.theme, shape: data.shape, relief: data.relief, pathSteps: data.pathSteps, kitMax: data.kitMax, sealed: data.sealed, routeExits: data.routeExits ?? [], ...(data.dungeonGate ? { dungeonGate: data.dungeonGate } : {}), variant: data.variant, layout: data.layout, hero: data.hero, side: data.side, entry, exit: data.exit, heroAt: data.heroAt, heroFront: data.heroFront ?? undefined, sideAt: data.sideAt ?? undefined, enemySpots: data.enemySpots ?? [], freeSpots: free, start: entry },
   };
 }
 

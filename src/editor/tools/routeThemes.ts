@@ -80,7 +80,8 @@ const R = "bd-rt-";
 const hero = (id: string, ko: string, site: RouteHeroSite, w: number, h: number, items: readonly RouteHeroItem[], more: Partial<RouteHero> = {}): RouteHero => ({ id, ko, site, w, h, items, ...more });
 
 const MT_DRESS = ["bd-pick-mountain-pass-boulder-m", "bd-pick-mountain-pass-alpine-a", "bd-pick-mountain-pass-alpine-b", "bd-pick-deep-forest-path-stump"];
-const SP_DRESS = [`${R}sp-shroom-s`, `${R}sp-flower`, `${R}sp-shroom-m`, `${R}sp-stone-b`];
+// 정령석은 길섶에 흩지 않는다 — 길목·갈림·볼거리 둘레에만 무리 지어 선다(오너: 같은 비석이 스물다섯 서면 묘지다).
+const SP_DRESS = [`${R}sp-shroom-s`, `${R}sp-flower`, `${R}sp-shroom-m`, `${R}sp-crystal`, `${R}sp-wisp`, `${R}sp-flower`];
 
 const MOUNTAIN: readonly RouteVariant[] = [
   { id: "trailhead", ko: "솔바람 등산로", layout: "climb", tiers: 2, side: "rest", cover: "firs", tags: ["gate"], dress: MT_DRESS,
@@ -188,6 +189,9 @@ export function parseRouteShape(value: unknown): RouteShape | undefined {
 const LAYOUT_SHAPE: Partial<Record<RouteLayout, RouteShape>> = { gorge: "crossing", brook: "crossing", falls: "crossing", bog: "crossing", switchback: "climb", ledge: "climb", knoll: "climb", forks: "hidden-fork" };
 export const shapeOfLayout = (layout: RouteLayout): RouteShape => LAYOUT_SHAPE[layout] ?? "pass";
 
+/** 한 게임 안에서 한 짜임이 나올 수 있는 횟수(스무 장에 다섯). */
+export const ROUTE_LAYOUT_MAX = 5;
+
 export interface RouteShapeFacts {
   /** 다른 바깥 맵(마을·길목)으로 이어지는 가장자리 수. */
   readonly edges: number;
@@ -220,24 +224,30 @@ const MOUTH_HERO = hero("dungeon-mouth", "던전 어귀", "beside", 6, 6, []);
  * 꼴에 맞는 가짓수 — 갈래의 스무 가지에서 그 꼴이 쓸 수 있는 것을 게임 열쇠·씨앗으로 고르고(쓴 것은 피한다), 꼴이 요구하는 짜임·자리로 고쳐 돌려준다.
  * 스무 가지 자체는 그대로다(더할 뿐 지우지 않는다).
  */
-export function routeVariantFor(theme: RouteTheme, shape: RouteShape, sides: number, key: string, seed: number, feature?: string, used: ReadonlySet<string> = new Set()): RouteVariant {
+export function routeVariantFor(theme: RouteTheme, shape: RouteShape, sides: number, key: string, seed: number, feature?: string, used: ReadonlySet<string> = new Set(), usedLayouts: ReadonlyMap<string, number> = new Map()): RouteVariant {
   const plain = (v: RouteVariant): boolean => shapeOfLayout(v.layout) === "pass";
-  const pick = (allow: (v: RouteVariant) => boolean): RouteVariant => pickRouteVariant(theme, key, seed, feature, used, allow);
-  const basic: RouteLayout = theme === "mountain" ? "climb" : "winding";
+  // 한 게임에서 한 짜임이 다섯을 넘지 않게: 이미 다섯 번 쓴 짜임의 가짓수는 (다른 것이 있으면) 고르지 않고, 꼴이 짜임을 정해 주는 자리는 덜 쓴 짜임을 쓴다.
+  const full = (l: RouteLayout): boolean => (usedLayouts.get(l) ?? 0) >= ROUTE_LAYOUT_MAX;
+  const pick = (allow: (v: RouteVariant) => boolean, keepsLayout = true): RouteVariant => {
+    const roomy = keepsLayout && ROUTE_VARIANTS[theme].some((v) => allow(v) && !full(v.layout) && (!feature || (v.tags as readonly string[]).includes(feature)));
+    return pickRouteVariant(theme, key, seed, feature, used, roomy ? (v) => allow(v) && !full(v.layout) : allow);
+  };
+  const least = (options: readonly RouteLayout[]): RouteLayout => [...options].sort((p, q) => (usedLayouts.get(p) ?? 0) - (usedLayouts.get(q) ?? 0))[0]!;
+  const basic: RouteLayout = theme === "mountain" ? least(["climb", "meander", "woods"]) : least(["winding", "forks", "avenue"]);
   if (shape === "pass" || shape === "crossing" || shape === "climb") return pick((v) => shapeOfLayout(v.layout) === shape);
   if (shape === "hidden-fork") return theme === "spirit" ? pick((v) => v.layout === "forks") : pick((v) => plain(v) && v.hero.site === "beside");
-  if (shape === "tee" || shape === "cross") { const v = pick((x) => (x.layout === basic || x.layout === "woods") && (x.hero.site === "beside" || x.hero.site === "line")); return { ...v, tiers: Math.max(2, Math.min(3, v.tiers)) }; }
+  if (shape === "tee" || shape === "cross") { const v = pick((x) => (x.layout === "climb" || x.layout === "meander" || x.layout === "winding" || x.layout === "woods") && (x.hero.site === "beside" || x.hero.site === "line")); return { ...v, tiers: Math.max(2, Math.min(3, v.tiers)) }; }
   if (shape === "dead-end") {
     // 길이 볼거리에서 끝난다 — 서 있는 볼거리(문·샘·석상·오두막·바위)만. 문은 그 뒤가 숲으로 막힌 «봉인된 문» 이 된다.
-    const v = pick((x) => (x.hero.site === "beside" || x.hero.site === "knoll" || x.hero.site === "gate" || (x.hero.site === "center" && !x.hero.walkOver)) && x.hero.items.length > 0);
+    const v = pick((x) => (x.hero.site === "beside" || x.hero.site === "knoll" || x.hero.site === "gate" || (x.hero.site === "center" && !x.hero.walkOver)) && x.hero.items.length > 0, false);
     return { ...v, layout: basic, tiers: Math.min(2, v.tiers), hero: { ...v.hero, site: "beside" } };
   }
   if (shape === "dungeon-mouth") {
-    const v = pick((x) => plain(x) && (x.hero.site === "beside" || x.hero.site === "line"));
+    const v = pick((x) => plain(x) && (x.hero.site === "beside" || x.hero.site === "line"), sides >= 2);
     return sides >= 2 ? { ...v, tiers: Math.max(2, Math.min(3, v.tiers)) } : { ...v, layout: basic, tiers: Math.min(2, v.tiers), hero: MOUTH_HERO };
   }
-  if (shape === "loop") { const v = pick(plain), heroes = LOOP_HEROES[theme]; return { ...v, layout: "glade", tiers: 2, hero: heroes[lookHash(`route-loop|${key}|${seed}`) % heroes.length]! }; }
-  if (shape === "maze") { const v = pick((x) => x.hero.site === "line" && plain(x)); return { ...v, layout: "winding", tiers: 3 }; }
+  if (shape === "loop") { const v = pick(plain, false), heroes = LOOP_HEROES[theme]; return { ...v, layout: least(theme === "mountain" ? ["glade", "woods"] : ["glade", "avenue"]), tiers: 2, hero: heroes[lookHash(`route-loop|${key}|${seed}`) % heroes.length]! }; }
+  if (shape === "maze") { const v = pick((x) => x.hero.site === "line" && plain(x), false); return { ...v, layout: least(["winding", "forks"]), tiers: 3 }; }
   // wide · village-gate: 지나가는 길의 가짓수 위에 꼴을 얹는다
   return pick((x) => plain(x) && x.hero.site === "beside");
 }

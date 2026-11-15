@@ -28,7 +28,7 @@ const seeds = Array.from({ length: (s1 ?? s0!) - s0! + 1 }, (_, i) => s0! + i);
 const keys = opt("keys", "").split(",").filter(Boolean);
 fs.mkdirSync(out, { recursive: true });
 
-type Row = { id: string; seed: number; key: string; ok: boolean; map: string; size: string; walk: number; reached: number; islands: number; exitsJoined: boolean; edgeRoad: string; variant: string; layout: string; hero: string; side: string; kits: number; free: number; warn: string };
+type Row = { id: string; seed: number; key: string; ok: boolean; map: string; size: string; walk: number; reached: number; islands: number; exitsJoined: boolean; edgeRoad: string; variant: string; layout: string; hero: string; side: string; kits: number; free: number; warn: string; relief: string; single: number; repeat: number; kitMax: number; forest: number };
 
 /** 걷는 칸 덩이들 — 첫 칸(들어오는 가장자리)에서 닿는 칸 수와 닿지 않는 덩이 수. */
 function reach(project: Project, map: GameMap, from: { x: number; y: number }): { walk: number; reached: number; islands: number; seen: Set<number> } {
@@ -66,14 +66,15 @@ for (const key of keys.length ? keys : [""]) for (const seed of seeds) {
   const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true, ...(key ? { lookKey: key } : {}) };
   const run = createBuildRun(ctx);
   let mapId = "", entry: { x: number; y: number } | undefined, exit: { x: number; y: number } | undefined, warn = "", ok = false;
-  let variant = "", layout = "", hero = "", side = "", free = 0;
+  let variant = "", layout = "", hero = "", side = "", free = 0, relief = "", single = 0, repeat = 0, kitMax = 0;
+  const take = (d: { relief?: string; pathSteps?: { single: number; repeat: number }; kitMax?: number }) => { relief = d.relief ?? ""; single = d.pathSteps?.single ?? 0; repeat = d.pathSteps?.repeat ?? 0; kitMax = d.kitMax ?? 0; };
   try {
     if (mode === "wild") {
       const W = 28, H = 36;
       run.call("create_map", { id: "map_route", name: "길", width: W, height: H, tilesetId: "beodeul_city" });
       entry = { x: 14, y: H - 1 }; exit = { x: 14, y: 0 };
       const r = themed ? run.call("author_wild_route", { mapId: "map_route", theme, sides: ["south", "north"], seed }) : run.call("author_wild_route", { mapId: "map_route", exits: [entry, exit], seed });
-      if (themed) { const d = (r.data ?? {}) as { entry?: { x: number; y: number }; exit?: { x: number; y: number }; variant?: string; layout?: string; hero?: string; side?: string }; entry = d.entry ?? entry; exit = d.exit ?? exit; variant = d.variant ?? ""; layout = d.layout ?? ""; hero = d.hero ?? ""; side = d.side ?? ""; }
+      if (themed) { take((r.data ?? {}) as never); const d = (r.data ?? {}) as { entry?: { x: number; y: number }; exit?: { x: number; y: number }; variant?: string; layout?: string; hero?: string; side?: string }; entry = d.entry ?? entry; exit = d.exit ?? exit; variant = d.variant ?? ""; layout = d.layout ?? ""; hero = d.hero ?? ""; side = d.side ?? ""; }
       ok = r.ok; mapId = "map_route"; warn = [r.ok ? "" : r.summary, ...(r.warnings ?? [])].join(" | ");
     } else if (mode === "forest") {
       run.call("create_map", { id: "map_from", name: "마을", width: 30, height: 24, tilesetId: "beodeul_city" });
@@ -89,12 +90,13 @@ for (const key of keys.length ? keys : [""]) for (const seed of seeds) {
       ok = res.ok; mapId = res.mapIds[0] ?? ""; warn = [res.ok ? "" : res.summary, ...res.warnings].join(" | ");
       const st = (res.state ?? {}) as { entry?: { x: number; y: number }; exit?: { x: number; y: number }; variant?: string; layout?: string; hero?: string; side?: string; freeSpots?: unknown[] };
       entry = st.entry ?? (res.entrance ? { x: res.entrance.x, y: res.entrance.y } : undefined); exit = st.exit;
+      take((res.state ?? {}) as never);
       variant = st.variant ?? ""; layout = st.layout ?? ""; hero = st.hero ?? ""; side = st.side ?? ""; free = st.freeSpots?.length ?? 0;
     }
   } catch (e) { warn = `ERR ${(e as Error).stack?.slice(0, 400)}`; }
   if (oneGame) shared = ctx.project;
   const map = ctx.project.maps[mapId];
-  if (!map || !entry) { rows.push({ id, seed, key, ok: false, map: mapId, size: "", walk: 0, reached: 0, islands: 0, exitsJoined: false, edgeRoad: "", variant, layout, hero, side, kits: 0, free, warn }); console.log(`== ${id} FAIL ${warn.slice(0, 300)}`); continue; }
+  if (!map || !entry) { rows.push({ id, seed, key, ok: false, map: mapId, size: "", walk: 0, reached: 0, islands: 0, exitsJoined: false, edgeRoad: "", variant, layout, hero, side, kits: 0, free, warn, relief, single, repeat, kitMax, forest: 0 }); console.log(`== ${id} FAIL ${warn.slice(0, 300)}`); continue; }
   fs.writeFileSync(path.join(out, `${id}.png`), renderMapPng(ctx.project, map).png);
   const r = reach(ctx.project, map, entry);
   const exitsJoined = !!exit && r.seen.has(exit.y * map.width + exit.x);
@@ -110,11 +112,15 @@ for (const key of keys.length ? keys : [""]) for (const seed of seeds) {
         if (nx < 0 || ny < 0 || nx >= W || ny >= map.height || got.has(k) || wall.has(k) || !canMove(ctx.project, map, x, y, nx, ny)) continue; got.add(k); q.push(k); } }
     warn = `${warn} | 폭포 ${exit && got.has(exit.y * W + exit.x) ? "돌아가는 길 있음(FAIL)" : "뒤로만 지나간다"}`;
   }
-  rows.push({ id, seed, key, ok, map: mapId, size: `${map.width}x${map.height}`, walk: r.walk, reached: r.reached, islands: r.islands, exitsJoined, edgeRoad: `${edge(entry)}→${edge(exit)}`, variant, layout, hero, side, kits, free, warn: warn.replace(/^[ |]+|[ |]+$/gu, "") });
+  let forest = 0;
+  { let shut = 0; for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) if (!isPassable(ctx.project, map, x, y)) shut += 1; forest = Math.round((shut / (map.width * map.height)) * 100); }
+  rows.push({ relief, single, repeat, kitMax, forest, id, seed, key, ok, map: mapId, size: `${map.width}x${map.height}`, walk: r.walk, reached: r.reached, islands: r.islands, exitsJoined, edgeRoad: `${edge(entry)}→${edge(exit)}`, variant, layout, hero, side, kits, free, warn: warn.replace(/^[ |]+|[ |]+$/gu, "") });
   if (process.env.DUMP_KITS) fs.writeFileSync(path.join(out, `${id}.kits.json`), JSON.stringify((map.structurePlacements ?? []).map((p) => p.kitId)));
   console.log(`== ${id} ${ok ? "ok" : "FAIL"} ${map.width}x${map.height} 걷는 칸 ${r.walk} · 닿음 ${r.reached} · 섬 ${r.islands} · 출구 ${exitsJoined ? "이어짐" : "끊김"} ${edge(entry)}→${edge(exit)} · ${variant || "-"} [${layout || "-"} / ${hero || "-"} / ${side || "-"}] 빈 자리 ${free} 기물 ${kits}${warn ? ` · ${warn.slice(0, 200)}` : ""}`);
+  console.log(`       단 ${relief || "-"} · 길 계단: 한 칸짜리 ${single} · 같은 계단 이어짐 ${repeat} · 같은 기물 최다 ${kitMax} · 막힌 칸(숲·물·벼랑) ${forest}%`);
 }
 fs.writeFileSync(path.join(out, `table-${mode}${mode === "place" ? `-${theme}` : ""}.json`), JSON.stringify(rows, null, 1));
 const n = rows.length, joined = rows.filter((r) => r.exitsJoined).length, whole = rows.filter((r) => r.walk > 0 && r.walk === r.reached).length;
 const count = (f: (r: Row) => string) => { const m = new Map<string, number>(); for (const r of rows) m.set(f(r), (m.get(f(r)) ?? 0) + 1); return [...m].sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k || "-"}×${v}`).join(" "); };
+console.log(`SUMMARY2 ${mode} ${n}장: 단의 꼴 ${count((r) => r.relief)} · 한 칸짜리 계단이 있는 맵 ${rows.filter((r) => r.single > 0).length} · 같은 계단 이어짐 최다 ${Math.max(0, ...rows.map((r) => r.repeat))} · 같은 기물 최다 ${Math.max(0, ...rows.map((r) => r.kitMax))} · 막힌 칸 비율 최소 ${Math.min(...rows.map((r) => r.forest))}% 가운데 ${[...rows.map((r) => r.forest)].sort((a, b) => a - b)[Math.floor(n / 2)]}%`);
 console.log(`SUMMARY ${mode} ${n}장: 가장자리 이어짐 ${joined}/${n} · 걷는 칸 모두 닿음 ${whole}/${n} · 짜임 ${count((r) => r.layout)} · 볼거리 ${count((r) => r.hero)}`);
