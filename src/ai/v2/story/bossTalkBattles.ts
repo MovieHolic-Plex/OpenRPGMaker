@@ -197,7 +197,8 @@ function wakeMessage(project: Project, base: string | undefined, place: string, 
   const kept = lines.filter((line) => !others.some((name) => line.includes(name)));
   if (base && kept.length === lines.length && base.includes(place)) return base;
   const said = kept.join(" ");
-  return said.includes(place) ? said : `${said}${said ? "\n" : ""}정신을 차리니 「${place}」${atDoor ? " 입구" : ""}다.`;
+  // 이름이 이미 «입구» 로 끝나는 맵에는 «입구» 를 덧붙이지 않는다(«「수로 동굴 입구」 입구다» — 2026-11-15 확인 빌드 r5).
+  return said.includes(place) ? said : `${said}${said ? "\n" : ""}정신을 차리니 「${place}」${atDoor && !/입구$/u.test(place) ? " 입구" : ""}다.`;
 }
 
 /**
