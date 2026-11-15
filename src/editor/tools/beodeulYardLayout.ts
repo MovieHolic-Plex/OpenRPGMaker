@@ -213,7 +213,7 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
   const cx = (r.x0 + r.x1) / 2, cy = (r.y0 + r.y1) / 2;
   let left = want.houses;
   // 떨어진 터(2026-11-15 감독 «집을 마당으로 모으는 것은 맞다, 강 건너와 윗단의 쓰임을 잃는 것은 아니다»): 예전 고리 배치가 마당과 다른 마른 땅 덩이(강 건너)나
-  // 다른 단에 집·일터를 두었으면 그 터마다 하나는 거기에 남긴다 — 강 건너 먼저, 일터 먼저(집은 마당에 남는다), 둘까지(집이 넷보다 적으면 하나). 집은 마당에 둘 넘게 남을 때만 보낸다.
+  // 다른 단에 집·일터를 두었으면 그 터마다 하나는 거기에 남긴다 — 강 건너 먼저, 일터 먼저(집은 마당에 남는다), 둘까지(집이 넷보다 적으면 하나). 집은 마당 몫 셋(집이 셋이면 둘)이 남을 때만 보낸다.
   // 강 건너에 문이 서면 시공기가 그 문 앞까지 골목을 내고 물을 건너는 자리에 다리를 놓는다. 높은 곳 건물이 이미 선 터는 쓰이고 있는 터다.
   let workSeated = false;
   if (want.apart?.length && want.bankOf && !want.wetOk) {
@@ -223,7 +223,7 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
       const far = p.bank !== yb, key = far ? `b${p.bank}` : `l${p.level}`;
       if ((!far && p.level === plan.level) || done.has(key)) continue;
       if (want.landmarkOn && want.landmarkOn.bank === p.bank && (far || want.landmarkOn.level === p.level)) continue;
-      if (p.role === "house" ? left <= 2 : workSeated || !want.work) continue;
+      if (p.role === "house" ? left - 1 < Math.min(3, want.houses - 1) : workSeated || !want.work) continue;
       const undo = env.mark();
       const sp = env.seat(p.role, { x: p.x, y: p.y, maxR: 6, tier: p.level });
       if (!sp || want.bankOf(sp.front.y * W + sp.front.x) !== p.bank) { undo(); continue; }

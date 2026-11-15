@@ -1969,8 +1969,14 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 없으면 포구로 읽히지 않았다(ab14 포구 어촌 두 판 「잔교·부두가 없다」).
     // 포구의 돌 둑(beodeulQuay.ts): 잔교가 설 물가(없으면 일터·모이는 곳에 가장 가까운 남향 물가)를 곧게 펴(두 줄까지 메운다 — 물을 새로 파지 않는다)
     // 세 줄 깊이 판석 띠로 깔고 길망에 잇는다. 잔교는 이 둑에서 뻗고 어구는 둑 뒷줄에 선다. 물 칸의 그림·물가 테·물 위 기물은 그대로다.
-    const layQuay = (near: { x: number; y: number }): void => {
-      const q = planQuay({ W, H, near, sea: (c) => occ[c] === WATERC && codeT!.water[c] === 3, land: (c) => (occ[c] === FREE || occ[c] === ROAD) && !rampCells.has(c), level: (c) => lv[c]! });
+    const layQuay = (nears: readonly { x: number; y: number }[]): void => {
+      // 기준 자리(잔교 자리 · 모이는 곳 · 건물 문 앞)마다 둑을 계획해 보고 앞줄이 가장 긴 것으로 낸다(같으면 앞선 기준). 기준 하나의 가장 가까운 물가만 보면 그 물가가 굽은 만 끝일 때
+      // 일곱 칸 남짓한 짧은 둑이 났다(2026-11-15 명세 은행 jrpg-w2 갈대항구: 마당 배치로 일터가 만 서쪽 끝으로 가자 둑이 17칸에서 10칸).
+      let q: ReturnType<typeof planQuay> = null;
+      for (const near of nears) {
+        const p = planQuay({ W, H, near, sea: (c) => occ[c] === WATERC && codeT!.water[c] === 3, land: (c) => (occ[c] === FREE || occ[c] === ROAD) && !rampCells.has(c), level: (c) => lv[c]! });
+        if (p && (!q || p.front.x1 - p.front.x0 > q.front.x1 - q.front.x0)) q = p;
+      }
       if (!q) return;
       const was = occ.slice();
       // 둑 뒤 빈 땅에서 길망까지 — 둑 칸을 잡기 전에 잇는다(잡은 뒤에는 둑이 길로 보여 바로 «닿았다» 가 된다). 둑에 이미 길이 닿아 있으면 그대로.
@@ -1997,7 +2003,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       }
       // 둑은 잔교가 설 자리에 — 잔교 자리를 먼저 찾고, 그 물가에 둑을 낸 뒤 둑 위에서 잔교 자리를 다시 찾는다
       if (ground.quay && "mat" in spec.plaza && !quaySet.size) {
-        layQuay(best ? { x: best.x, y: best.y } : near);
+        layQuay([best ? { x: best.x, y: best.y } : near, codePlan.g, ...codePlan.spots.map((sp) => sp.front)]);
         if (quaySet.size) { best = null;
           if (stem && head) for (let x = 5; x < W - 6; x += 1) for (let y = 2; y < H - 6; y += 1) {
             if (!pierTop(x, y) || !pierTop(x + 1, y) || !sea(x, y + 1) || !sea(x + 1, y + 1)) continue;
