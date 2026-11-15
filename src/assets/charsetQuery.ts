@@ -196,14 +196,16 @@ export function npcGraphicPersonQuery(text: string): string | undefined {
   return words.length ? words.join(" ") : undefined;
 }
 
-/** 성별·나이만 가리키는 낱말(낱말 표의 성별·나이 줄의 낱말·꼬리표)과 «주민» — 칩의 차림을 가리키지 않는다. */
-const PERSON_ONLY_WORDS: ReadonlySet<string> = new Set(["주민", ...SYNONYMS.filter((s) => s.gender || s.age).flatMap((s) => [...s.terms, ...(s.tags ?? [])]).map((t) => normalizeQuery(t))]);
+/** 성별·나이만 가리키는 낱말(낱말 표의 성별·나이 줄의 낱말·꼬리표)과 «주민», 시트 갈래 낱말(«주인공») — 칩의 차림을 가리키지 않는다. */
+const PERSON_ONLY_WORDS: ReadonlySet<string> = new Set(["주민", ...SYNONYMS.filter((s) => s.gender || s.age || s.category === "actor").flatMap((s) => [...s.terms, ...(s.tags ?? [])]).map((t) => normalizeQuery(t))]);
+/** 머리 꼬리표(«금발» · «파란머리») — 몸의 생김새이지 차림이 아니다. */
+const HAIR_TAG = /머리$|^(금|흑|백|은)발$/u;
 
 /** 칩의 «차림» 꼬리표 — 성별·나이 낱말과 «주민», 칩 이름을 옮긴 첫 칸을 뺀 것(왕관·메이드·기사·토끼·상인…). */
 function costumeTags(entry: CharsetSemanticEntry): string[] {
   // 꼬리표 첫 칸은 칩 이름을 그대로 옮긴 것이다(«청년 남성» · «어린 소녀») — 그 한 칸만 뺀다. 이름이 곧 차림인 칩(왕·수녀·하녀)은 같은 낱말이 뒤에 한 번 더 있다.
   const label = normalizeQuery(entry.label);
-  return entry.tags.map((t) => normalizeQuery(t)).filter((t, i) => t && !(i === 0 && t === label) && !PERSON_ONLY_WORDS.has(t));
+  return entry.tags.map((t) => normalizeQuery(t)).filter((t, i) => t && !(i === 0 && t === label) && !PERSON_ONLY_WORDS.has(t) && !HAIR_TAG.test(t));
 }
 
 /** 그냥 사람 칩인가 — «주민» 꼬리표가 붙었거나 차림 꼬리표가 하나도 없다(노파 = 노인·여성·할머니뿐). */

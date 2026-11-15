@@ -188,6 +188,9 @@ export function pointLockedPagesIn(project: Project): string[] {
     const by = setters(need[0]!.kind, need[0]!.id).filter((r) => r.ev.id !== ev.id);
     if (by.length !== 1) continue;
     const src = by[0]!;
+    // 싸워서 얻는 것이면 그 상대를 가리키지 않는다 — 아직 못 본 보스의 이름과 방을 길목이 미리 알리지 않는다(어디로 갈지는 목표 줄이 말한다).
+    // 왜(2026-11-15 은행): 순서 잠금(lockStepOrderDoorsIn)이 싸움 단계의 문에서 뺀 «먼저 잠든 왕의 묘실의 「미라 수호자」에게 말을 걸어 보자» 를 이 단계가 둘째 줄로 다시 붙였다.
+    if (cmdsOf(src.ev).some((c) => c.kind === "battleProcessing")) continue;
     const name = named(src.ev);
     if (!name || /^ev_/u.test(name)) continue;
     const texts = ((pages[lockedAt]!.commands ?? []) as Cmd[]).filter((c) => c.kind === "text");
@@ -330,7 +333,8 @@ export function lockStepOrderDoorsIn(project: Project): string[] {
       const where = doorMap.id !== cur.map.id ? `${cur.map.name ?? cur.map.id}의` : bearing === "바로 옆" ? "바로 옆" : `${bearing}의`;
       const place = String(target.name ?? "").trim();
       const first = itemName ? `${itemName}${josa(itemName, "이", "가")} 있어야 이 길로 갈 수 있을 것 같다.` : place ? `아직 ${place}${towardJosa(place)} 갈 때가 아니다.` : "아직 이 길로 갈 때가 아니다.";
-      const body = `${first} ${speaker ? `먼저 ${where} 「${speaker}」에게 말을 걸어 보자.` : `먼저 ${where} 「${stepName}」${josa(stepName, "을", "를")} 찾아보자.`}`;
+      // 싸움 단계의 상대는 말을 걸 사람이 아니고, 아직 못 본 보스와 그 방의 이름을 길목에서 미리 알리지도 않는다 — 어디로 갈지는 목표 줄이 말한다.
+      const body = step.kind === "battle" ? first : `${first} ${speaker ? `먼저 ${where} 「${speaker}」에게 말을 걸어 보자.` : `먼저 ${where} 「${stepName}」${josa(stepName, "을", "를")} 찾아보자.`}`;
       const next: RawPage[] = [];
       pages.forEach((p, i) => {
         if (!transfersTo(p.commands ?? [], new Set()).has(target.id) || condHas(p, cond)) { next.push(structuredClone(p)); return; }

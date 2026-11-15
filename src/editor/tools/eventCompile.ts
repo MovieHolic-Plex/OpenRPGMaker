@@ -734,7 +734,7 @@ function containsCommandKind(commands: readonly Command[], kind: Command["kind"]
  * 얼굴을 `speaker` 가 말하는 줄 바로 앞에만 둔다. 내레이션(화자 없음)·다른 화자 줄 앞에서는 얼굴을 지운다(resourceId "").
  * 바뀔 때만 넣는다. 선택지 갈래는 갈래마다 따로 따지고, 갈래 뒤 첫 줄은 다시 정한다.
  */
-export function placeSpeakerFace(commands: readonly Command[], speaker: string, face: Extract<Command, { kind: "changeFace" }>, start = ""): Command[] {
+export function placeSpeakerFace(commands: readonly Command[], speaker: string, face: Extract<Command, { kind: "changeFace" }>, start: string | undefined = ""): Command[] {
   const out: Command[] = [];
   let current: string | undefined = start;
   for (const command of commands) {
@@ -743,7 +743,8 @@ export function placeSpeakerFace(commands: readonly Command[], speaker: string, 
       if (want !== current) { out.push({ ...face, resourceId: want }); current = want; }
       out.push(command);
     } else if (command.kind === "choices") {
-      const from = current ?? "";
+      // 앞 선택지 뒤에는 걸린 얼굴을 모른다 — 모르는 채로 넘겨 갈래의 첫 줄이 다시 정하게 한다.
+      const from = current;
       out.push({
         ...command,
         options: command.options.map((option) => ({ ...option, branch: placeSpeakerFace(option.branch, speaker, face, from) })),

@@ -524,7 +524,7 @@ function rememberPrompt(session: object, key: string | null): boolean {
 function promptForEvent(event: RuntimeEventView | undefined): string | null {
   if (event?.page?.interaction?.kind === "hiding") return "숨기";
   if (event?.page?.interaction?.kind === "pushable") return "밀기";
-  return interactionPromptLabel(event?.page);
+  return interactionPromptLabel(event?.page, event?.event);
 }
 
 function facingDelta(facing: ZoneFeedbackScene["facing"]): { readonly x: number; readonly y: number } {

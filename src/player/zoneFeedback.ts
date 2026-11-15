@@ -1,5 +1,6 @@
 import type { M2UiCommandState, ObjectiveTargetRef } from "@/project/sessionRuntimeTypes"
-import type { EventPage } from "@/project/types";
+import type { Command, EventPage, GameEvent } from "@/project/types";
+import { nestedCommandLists } from "@/project/authoredCommandIndex";
 
 const BANNER_DURATION_MS = 1500;
 const NO_ZONE_EFFECTS: readonly ZoneFeedbackEffect[] = [];
@@ -134,7 +135,16 @@ export function updateZoneFeedback(model: ZoneFeedbackModel, input: ZoneFeedback
   return resultFrom(next, input, effects ?? NO_ZONE_EFFECTS);
 }
 
-export function interactionPromptLabel(page: EventPage | undefined): string | null {
+/** 이름 붙은 대사가 있는가 — 갈래(조건·선택지) 안까지 본다: 의뢰 페이지는 조건 갈래로 시작해 맨 위에는 대사가 없다. */
+function speaks(commands: readonly Command[]): boolean {
+  return commands.some((command) => (command.kind === "text" && typeof command.speaker === "string" && command.speaker.trim() !== "") || nestedCommandLists(command).some(speaks));
+}
+
+/**
+ * 조사 키 안내의 낱말. `event` 를 주면 그 이벤트의 다른 페이지도 본다 — 어느 페이지에서든 이름 붙은 대사로 말하는 보이는 인물은 사람이라,
+ * 서술 한 줄만 남은 페이지(«(…와는 이미 이야기를 마쳤다.)»)에서도 «Z 대화» 다(같은 사람 앞의 안내가 «대화» 였다가 «조사» 로 바뀌지 않는다).
+ */
+export function interactionPromptLabel(page: EventPage | undefined, event?: GameEvent): string | null {
   if (!page || page.trigger.kind !== "action") return null;
   // 명령이 하나도 없는 페이지는 눌러도 아무 일이 없다 — 「Z 조사」로 부르지 않는다(2026-10-29 vm2 terra jrpg: 시작 칸의 시작 목표
   // 이벤트 「끝」 페이지가 「Z 조사 · 시작 목표」 안내를 띄워 판정자가 시작 자리를 조사 대상으로 읽었다).
@@ -144,9 +154,10 @@ export function interactionPromptLabel(page: EventPage | undefined): string | nu
   // 보이는 인물이 이름 붙은 대사로 말하면 사람이다 — 「조사」가 아니라 「대화」(첫사랑 VQA 1차: 사람 앞에 「Z 조사」).
   // 대화 끝에 장면을 넘기는(transfer) 인물도 사람이다 — 옮기기 검사보다 먼저 본다(첫사랑 r2: 탕비실 지후 앞에 「Z 오르기」).
   const visible = page.graphic && !page.graphic.transparent && page.graphic.sprite;
-  if (visible && page.commands.some((command) => command.kind === "text" && typeof command.speaker === "string" && command.speaker.trim() !== "")) return "Z 대화";
+  if (visible && speaks(page.commands)) return "Z 대화";
   // 문·계단·엘리베이터 — 모두 「오르기」가 아니다. 어디로 가는지 모르니 중립 낱말.
   if (page.commands.some((command) => command.kind === "transfer")) return "Z 이동";
+  if (visible && event?.pages?.some((other) => speaks(other.commands))) return "Z 대화";
   return "Z 조사";
 }
 

@@ -10,8 +10,10 @@ import { isEscapeBlueprint } from "../../request/scope";
 import { repairWorldPlaces, worldById, worldPlaceProblems } from "../../place/world";
 import { BUILD_BLUEPRINT_PATH_SCHEMA } from "../../story/blueprintPath";
 import { keepStepText, pathTextProblems } from "../../story/blueprintPathText";
+import { fillPartyLooks } from "../../story/shipLookDefaults";
 import { blueprintMapFor, type PathStepText } from "../../story/blueprintPathNames";
 import { WORLD_BOUNCES, text } from "../support";
+import { recordStageWrites } from "../../shared/stageWrites";
 import type { VerbContext } from "../context";
 
 /** createV2Tools 에서 뗀 것 — writeBlueprint · buildBlueprintPathVerb. (blueprintVerbs) */
@@ -85,9 +87,12 @@ export function blueprintVerbs(c: VerbContext) {
       // 모델이 고른 모습은 바로 입힌다(끝맺음을 기다리지 않는다 — 짓는 동안의 화면 검수도 그 모습으로 본다). 안 골랐으면 끝맺음이 게임의 사실로 고른다.
       const lookNotes = parsed.blueprint.look ? applyUiLook(env.ctx.project, parsed.blueprint.look, { skipHud: true }) : [];
       if (lookNotes.length) assembled.push(`UI look ${parsed.blueprint.look}`);
+      // 주인공의 모습은 사람을 세우기 전에 정한다 — 뒤에 서는 사람들이 주인공과 같은 칩·같은 모습을 피한다(끝맺음에서 정하면 먼저 선 사람을 다시 입혀야 했다).
+      // 그 쪽지는 진행 줄에만 적는다 — 도구 결과(모델이 읽는 글)에는 싣지 않는다. 쓴 칸은 단계의 쓰기로 기록한다(출하 관문이 «요청에 없는 배우 변경» 으로 짚지 않게).
+      const heroLooks = recordStageWrites(env.ctx.project, session.stageWrites, () => fillPartyLooks(env.ctx.project, String(task ?? "")));
       // 맵을 이미 지은 뒤 청사진을 다시 쓴 경우에만 실제로 깐다(빈 맵이면 건너뛴다 — 끝맺음 조립이 다시 부른다).
       try { assembled.push(...applyBlueprintOpening(env.ctx.project)); } catch { /* 끝맺음 조립이 다시 시도한다 */ }
-      noteAssembly(assembled);
+      noteAssembly([...assembled, ...heroLooks]);
       const walked = walkBlueprint(env.ctx.project);
       await env.checkpoint("write_blueprint");
       // 맺음 글이 없으면 엔딩 화면에 설 글이 없다 — how 는 설계 메모라 대신 내지 않는다(story/shipDefaults.ts fillEndingClosure).

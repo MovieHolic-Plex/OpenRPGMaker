@@ -8,6 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { runGameCheck } from "../../../../src/qa/gameCheck/index.ts";
 import { runAutoPlay } from "../../../../src/qa/gameCheck/autoPlay.ts";
+import { questPlays } from "../../../../src/qa/gameCheck/questPlay.ts";
 import { walkBlueprint } from "../../../../src/ai/v2/story/blueprint.ts";
 import { shipBlockers } from "../../../../src/ai/v2/judge/shipChecks.ts";
 import { buildingEntrances } from "../../../../src/ai/v2/place/entrances.ts";
@@ -75,6 +76,11 @@ try {
     if (honest) { values.honestEnding = [honest.ok && honest.endingReached ? 1 : 0, 1]; if (!honest.ok) lines.honestEnding = [`${honest.failure?.goal ?? ""}: ${honest.failure?.detail.slice(0, 240) ?? ""}`]; }
   }
 } catch (error) { probeErrors.push(`runGameCheck: ${(error as Error).message.slice(0, 200)}`); }
+// 곁 퀘스트마다 완료까지 걸어 본다(qa/gameCheck/questPlay.ts) — 엔딩까지의 자동 플레이는 곁 퀘스트를 밟지 않는다.
+if (autoplay) try {
+  const plays = questPlays(project);
+  if (plays.length) { values.questsCompletable = [plays.filter((p) => p.ok).length, plays.length]; lines.questsCompletable = plays.filter((p) => !p.ok).map((p) => `«${p.title}» ${p.detail.slice(0, 200)}`); }
+} catch (error) { probeErrors.push(`questPlays: ${(error as Error).message.slice(0, 200)}`); }
 try { const bp = walkBlueprint(project).blockers; values.blueprintBlockers = bp.length; lines.blueprintBlockers = bp.map((b) => `${b.id}`); } catch (error) { probeErrors.push(`walkBlueprint: ${(error as Error).message.slice(0, 200)}`); }
 try { const ship = shipBlockers(project, task); values.shipBlockers = ship.length; lines.shipBlockers = ship.map((b) => `${b.id} — ${String(b.message ?? "").replace(/\s+/gu, " ").slice(0, 200)}${(b as { evidence?: string }).evidence ? ` [${(b as { evidence?: string }).evidence}]` : ""}`); } catch (error) { probeErrors.push(`shipBlockers: ${(error as Error).message.slice(0, 200)}`); }
 

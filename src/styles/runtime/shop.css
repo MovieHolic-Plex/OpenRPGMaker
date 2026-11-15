@@ -1057,7 +1057,7 @@
 .runtime-shop-list-caption { padding: 0 0.6em 0.2em; color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-catbar { padding: 0 0.4em 0.3em; border-color: var(--shop-line); }
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-chip { padding: 0 0.5em; font-size: var(--shop-text-small); background: transparent; border-color: var(--shop-line); color: var(--shop-ink-dim); }
-.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-chip.is-active { background: var(--shop-accent); border-color: var(--shop-accent); color: rgba(26, 20, 48, 1); text-shadow: none; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-chip.is-active { background: var(--shop-accent); border-color: var(--shop-accent); color: var(--shop-on-accent, rgba(26, 20, 48, 1)); text-shadow: none; }
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-chip.is-active .runtime-shop-chip-count { color: rgba(26, 20, 48, 0.72); }
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-list { gap: 0; padding: 0; scrollbar-width: none; }
 /* 목록이 창보다 길면 위·아래로 더 있다는 화살표(keepWholeRows marks → data-more-*). 스크롤바 없는 창이라 이것이 없으면
@@ -1172,7 +1172,7 @@
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-walker { zoom: 1.5; }
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-statement-portrait > .runtime-shop-party-walker { zoom: 1.75; }
 .runtime-shop-party-card.is-blocked > .runtime-shop-party-walker { animation: none; filter: grayscale(1) brightness(0.5); }
-.runtime-shop-overlay .runtime-shop-party-card.is-focus { background: var(--shop-accent-soft); box-shadow: inset 0 0 0 1px rgba(255, 226, 122, 0.75); }
+.runtime-shop-overlay .runtime-shop-party-card.is-focus { background: var(--shop-accent-soft); box-shadow: inset 0 0 0 1px var(--shop-focus-line, rgba(255, 226, 122, 0.75)); }
 .runtime-shop-overlay .runtime-shop-party-card:focus-visible { outline: 1px solid var(--shop-accent); outline-offset: -2px; }
 .runtime-shop-party-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .runtime-shop-party-fit { overflow: hidden; min-height: 1.3em; color: var(--shop-ink-dim); font-size: var(--shop-text-small); white-space: nowrap; text-overflow: ellipsis; }
@@ -1417,4 +1417,77 @@
   grid-template-columns: none;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
+}
+
+/* ── 상점 — 메뉴와 같은 판(project/uiLook.ts shopSurfaceForMenu) ───────────────────────
+   도트 비교 상점은 늘 청색 도트 창이었다 — 크림 메뉴·흰 대사창 게임에서 가게만 다른 게임처럼 보였다(2026-11-14 r4d-fun).
+   창 배치·글꼴은 그대로, 색 변수만 그 메뉴 스킨의 값으로 바꾼다. 표식이 없으면(청색 창 계열 메뉴 · 고전 윈도스킨 게임) 아무것도 바꾸지 않는다. */
+.runtime-shop-overlay.runtime-shop-preset-pixel[data-shop-surface] { --shop-focus-line: var(--shop-accent); }
+.runtime-shop-overlay.runtime-shop-preset-pixel:is([data-shop-surface="paper"], [data-shop-surface="cream"]) {
+  --shop-gain: rgba(38, 112, 66, 1);
+  --shop-loss: rgba(170, 45, 40, 1);
+  text-shadow: none;
+}
+.runtime-shop-overlay.runtime-shop-preset-pixel:is([data-shop-surface="paper"], [data-shop-surface="cream"]) .runtime-shop-stat-bar { background: var(--shop-line); }
+.runtime-shop-overlay.runtime-shop-preset-pixel:is([data-shop-surface="paper"], [data-shop-surface="cream"]) .runtime-shop-chip.is-active .runtime-shop-chip-count { color: var(--shop-on-accent); }
+.runtime-shop-overlay.runtime-shop-preset-pixel[data-shop-surface="paper"] {
+  --shop-surface: linear-gradient(90deg, rgba(227, 211, 176, 1), rgba(251, 243, 220, 1) 8%, rgba(244, 232, 202, 1));
+  --shop-surface-flat: rgba(244, 232, 202, 1);
+  --shop-inset: rgba(99, 77, 48, 0.12);
+  --shop-card: rgba(148, 110, 63, 0.07);
+  --shop-line: rgba(126, 91, 52, 0.32);
+  --shop-line-strong: rgba(120, 80, 44, 0.8);
+  --shop-ink: rgba(55, 43, 31, 1);
+  --shop-ink-dim: rgba(105, 84, 62, 1);
+  --shop-accent: rgba(140, 67, 43, 1);
+  --shop-accent-soft: rgba(149, 83, 49, 0.13);
+  --shop-on-accent: rgba(251, 243, 220, 1);
+  --shop-window-edge: 2px 2px 0 rgba(90, 60, 37, 0.8);
+  background: radial-gradient(ellipse at 30% 20%, rgba(96, 72, 48, 1) 0%, rgba(56, 40, 26, 1) 70%);
+}
+.runtime-shop-overlay.runtime-shop-preset-pixel[data-shop-surface="cream"] {
+  --shop-surface: rgba(250, 249, 235, 1);
+  --shop-surface-flat: rgba(250, 249, 235, 1);
+  --shop-inset: rgba(225, 232, 217, 0.7);
+  --shop-card: rgba(231, 231, 210, 0.6);
+  --shop-line: rgba(164, 181, 173, 1);
+  --shop-line-strong: rgba(58, 80, 85, 1);
+  --shop-ink: rgba(41, 59, 67, 1);
+  --shop-ink-dim: rgba(97, 114, 114, 1);
+  --shop-accent: rgba(148, 60, 64, 1);
+  --shop-accent-soft: rgba(225, 232, 217, 1);
+  --shop-on-accent: rgba(250, 249, 235, 1);
+  --shop-window-edge: inset 0 0 0 2px rgba(255, 255, 255, 1), 0 2px 0 rgba(37, 54, 60, 1);
+  background: radial-gradient(ellipse at 30% 20%, rgba(58, 80, 85, 1) 0%, rgba(37, 54, 60, 1) 70%);
+}
+.runtime-shop-overlay.runtime-shop-preset-pixel[data-shop-surface="navy"] {
+  --shop-surface: linear-gradient(180deg, rgba(24, 30, 66, 0.97), rgba(10, 14, 40, 0.98));
+  --shop-surface-flat: rgba(10, 14, 40, 0.98);
+  --shop-inset: rgba(4, 6, 20, 0.45);
+  --shop-card: rgba(255, 255, 255, 0.04);
+  --shop-line: rgba(227, 196, 120, 0.3);
+  --shop-line-strong: rgba(227, 196, 120, 0.75);
+  --shop-ink: rgba(246, 240, 226, 0.98);
+  --shop-ink-dim: rgba(205, 192, 168, 0.9);
+  --shop-accent: rgba(227, 176, 75, 0.95);
+  --shop-accent-soft: rgba(227, 176, 75, 0.2);
+  --shop-window-edge: 0 0 0 1px rgba(4, 6, 20, 1);
+  background: radial-gradient(ellipse at 30% 20%, rgba(16, 20, 44, 1) 0%, rgba(5, 7, 20, 1) 70%);
+  text-shadow: 1px 1px 0 rgba(4, 6, 20, 1);
+}
+.runtime-shop-overlay.runtime-shop-preset-pixel[data-shop-surface="glass"] {
+  --shop-surface: var(--runtime-glass-surface);
+  --shop-surface-flat: var(--runtime-glass-panel);
+  --shop-inset: var(--runtime-glass-inset);
+  --shop-card: var(--runtime-glass-card);
+  --shop-line: var(--runtime-glass-hairline);
+  --shop-line-strong: var(--runtime-glass-hairline-strong);
+  --shop-ink: var(--runtime-glass-text);
+  --shop-ink-dim: var(--runtime-glass-muted);
+  --shop-accent: var(--runtime-glass-accent);
+  --shop-accent-soft: var(--runtime-glass-accent-soft);
+  --shop-on-accent: rgba(8, 10, 22, 1);
+  --shop-window-edge: 0 0 0 1px rgba(4, 6, 16, 1);
+  background: rgba(6, 8, 18, 0.94);
+  text-shadow: none;
 }
