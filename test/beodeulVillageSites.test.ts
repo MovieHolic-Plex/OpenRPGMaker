@@ -56,13 +56,15 @@ describe("마을은 굴 입구가 설 자리를 길 곁에 남긴다", () => {
 });
 
 describe("집을 마당 둘레로 모아도 강 건너 터를 비우지 않는다", () => {
-  it("은행 r3b-fun 버들마을: 집 한 채가 강 건너에 남고 그 문까지 걸어 닿는다 — 마당에는 여관과 집 둘이 문을 낸다", () => {
+  it("은행 r3b-fun 버들마을: 건물 하나가 강 건너에 남고 그 문까지 걸어 닿는다 — 마당에는 여관과 집 둘 이상이 문을 낸다", () => {
     const { project, map, data } = town({ ...BEODEUL }, BEODEUL_KEY);
     const yard = data.layout?.yard;
     expect(yard, "마당 배치").toBeTruthy();
     const far = yard!.apart.filter((a) => a.why === "bank");
     expect(far.length).toBe(1);
-    expect(far[0]!.role).toBe("house");
+    // 강 건너에 남는 것은 예전 고리 배치가 거기 두었던 건물이다. 열쇠 없는 마을에서는 집이고, 이 게임 열쇠는 마을 종류(나무꾼 야영지)를 골라
+    // 그 종류의 일터 건물(오두막)이 강 건너에 서고 집 셋이 모두 마당에 문을 낸다(editor/tools/beodeulVillageKinds.ts). 지키는 것은 «강 건너 터가 비지 않고 그 문에 걸어 닿는다» 다.
+    expect(["house", "work"]).toContain(far[0]!.role);
     const seen = reached(project, map, data.entrance);
     expect(seen[far[0]!.y * map.width + far[0]!.x], "강 건너 집의 문 앞에 걸어 닿는다(다리)").toBe(1);
     expect(data.doors.filter((d) => !d.reached)).toEqual([]);
