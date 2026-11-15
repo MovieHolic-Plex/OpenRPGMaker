@@ -3,7 +3,7 @@
 
 가구 줄: (id, 원본, 종류, 폭, 발밑 줄 수, 갈래, 이름, 방 태그, 관문 종류, 선택)
   원본 = raw/<이름>.png 또는 (이름, x, y, w, h) 로 한 장에서 잘라 낸 조각.
-  종류 floor(바닥에 선 것) · wall(북벽 앞에 선 것) · hang(벽면에 건 것 — 발밑 0, rows 줄) · flat(밟는 무늬).
+  종류 floor(바닥에 선 것) · wall(북벽 앞에 선 것) · hang(벽면에 건 것 — 발밑 0, rows 줄) · flat(밟는 무늬) · door·sidedoor(방 사이 문 — 16×48 그대로).
   선택: over(걸어 지나가고 사람 위에 그리는 것 — 샹들리에) · rows(hang 줄 수) · oy(hang 위 여백) · use · pair · stairs · halo(불빛 번짐) · noshadow · remap · desc
 """
 CATS = dict(tavern="주점", home="살림집", shop="가게", kitchen="부엌", store="창고", smith="대장간", bake="빵집", office="회관·사무실", church="예배당",
@@ -224,6 +224,19 @@ OBJECTS = [
     ("dais sw", ("dais", 0, 32, 16, 16), "flat", 1, 1, "hall", "돌 단 · 앞 왼쪽", ["알현실", "제단", "큰 홀"], "flat", {}),
     ("dais s", ("dais", 16, 32, 16, 16), "flat", 1, 1, "hall", "돌 단 · 앞", ["알현실", "제단", "큰 홀"], "flat", {}),
     ("dais se", ("dais", 32, 32, 16, 16), "flat", 1, 1, "hall", "돌 단 · 앞 오른쪽", ["알현실", "제단", "큰 홀"], "flat", {}),
+    # ── 방 사이 문(크기 단: 방이 여럿인 집) — door = 위·아래 방 사이 가로 칸막이의 1칸 틈(틈 칸 + 아래 벽면 두 줄), sidedoor = 왼·오른 방 사이 세로 칸막이의 3줄 틈(끝 벽면 두 줄 + 통로 칸).
+    #    사양의 첫 door·sidedoor 가 기본 문이다(rooms.ts doorOf) — 참나무가 먼저, 돌 벽 방에는 크기 단 배치기가 돌 것을 고른다(tierPlan.ts).
+    ("door oak", "door-wood", "door", 1, 0, "hall", "칸막이 문틀(참나무 · 열린 널문)", ["방 사이 문"], "structure", {}),
+    ("sidedoor oak", "sidedoor-wood", "sidedoor", 1, 0, "hall", "옆 칸막이 널문(참나무 · 문턱)", ["방 사이 문"], "structure", {}),
+    ("door arch", "door-stone", "door", 1, 0, "hall", "칸막이 돌 아치(쇠띠 문짝)", ["방 사이 문"], "structure", {}),
+    ("sidedoor iron", "sidedoor-stone", "sidedoor", 1, 0, "hall", "옆 칸막이 쇠띠 문(돌 문틀 · 문턱)", ["방 사이 문"], "structure", {}),
+]
+# 크기 따라 느는 깔것(사양 daises — 아홉 조각 48×48: 모서리·변·가운데). 한 칸 폭·한 줄짜리는 굽기가 양쪽 반 칸을 붙여 만든다. (id, 원본, 이름)
+#   방 견본의 daises: [[id, x, 바닥 줄, w, h]] · 도구의 daises. 그 위에 선 가구·밟는 무늬는 조립기가 단 위로 올린다.
+DAISES = [
+    ("dais stone", "dais", "돌 단(크기 자동)"),
+    ("dais red", "carpet-red", "붉은 양탄자(크기 자동)"),
+    ("dais blue", "carpet-blue", "푸른 양탄자(크기 자동)"),
 ]
 # 코드로 만드는 빛 무늬(밟는 무늬, 반투명) — prepare.py 가 그린다
 GLOWS = [

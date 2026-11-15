@@ -23,6 +23,8 @@ import { argsFromRebuild, clean, Attempt, build, reachOk, crashesOf, openingColu
 import { RoomShape, composeShape } from "./interiorShape";
 import { swapForPurpose, cosyFor, coverZones, designedRoom, dressEmptyRooms } from "./interiorCosy";
 import { buildVenue, addBackDoor, buildUpperFloor } from "./interiorFloors";
+import { buildTier, type TierState } from "./interiorTier";
+import { tierTableOf } from "@/editor/handInterior/tierPlan";
 import { exteriorLook, exteriorWall } from "./interiorExterior";
 
 /** 조합 길로 짓는 방 종류(2026-10-29 서재부터 — 다른 종류는 서재 결과를 본 뒤). */
@@ -94,6 +96,15 @@ export const interiorBuilder: PlaceBuilder = {
     const firstFloor = zones.filter((z) => !z.floor || z.floor === 1);
     // 게임마다 다른, 같은 입력이면 같은 씨앗 — make_place 가 넣은 variety(프로젝트 열쇠 + 요청문), 없으면 게임 제목. 견본·조합 고르기가 이 열쇠를 쓴다.
     const varietyKey = `${spec.variety ?? run.ctx.project.meta.title ?? ""}|${spec.name}|${spec.theme ?? ""}`;
+    // 크기 단(중형·대형·초대형): 문이 달린 집 킷의 tier 태그가 한 방짜리보다 큰 단이고 칩셋에 그 단의 구성이 있으면 구성 표대로 짓는다(interiorTier.ts).
+    // 모델이 설계한 방(zone.design)이 있으면 그 설계가 먼저다.
+    const prevTier = (prev as { tier?: TierState } | undefined)?.tier;
+    if ((prevTier || (outside?.tier && outside.tier !== "small")) && tierTableOf(tilesetId) && !(spec.zones ?? []).some((z) => z.design)) {
+      const kindOut: { fallback?: boolean } = {};
+      const mainKind = resolveKind(tilesetId, firstFloor[0] ?? { kind: spec.name, purpose: spec.name }, [], `${spec.name} ${spec.theme ?? ""}`, true, kindOut);
+      const done = buildTier(run, spec, { tilesetId, roomSpec, outside, mainKind, named: !kindOut.fallback, varietyKey, mapId, ...(prevTier ? { prev: prevTier } : {}) }, notes);
+      if (done) return done;
+    }
     const single = firstFloor.length === 1;
     let buildingStyle: string | undefined;
     let shapeOut: RoomShape | undefined;

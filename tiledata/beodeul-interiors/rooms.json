@@ -128,6 +128,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "tavern",
   "building": "bd_inn"
  },
@@ -265,6 +266,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "tavern",
   "building": "bd_inn"
  },
@@ -377,6 +379,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "tavern",
   "building": "bd_inn"
  },
@@ -483,6 +486,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "living",
   "building": "bd_house"
  },
@@ -590,6 +594,7 @@
     "y": 6
    }
   ],
+  "daises": [],
   "kind": "living",
   "building": "bd_house"
  },
@@ -687,6 +692,7 @@
     "y": 6
    }
   ],
+  "daises": [],
   "kind": "living",
   "building": "bd_house"
  },
@@ -772,6 +778,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "general_store",
   "building": "bd_shop"
  },
@@ -857,6 +864,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "general_store",
   "building": "bd_shop"
  },
@@ -942,6 +950,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "weapon_shop",
   "building": "bd_shop"
  },
@@ -1027,6 +1036,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "pharmacy_shop",
   "building": "bd_shop"
  },
@@ -1087,6 +1097,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "inn_room",
   "building": "bd_inn"
  },
@@ -1157,6 +1168,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "inn_room",
   "building": "bd_inn"
  },
@@ -1232,6 +1244,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "bedroom",
   "building": "bd_house"
  },
@@ -1313,6 +1326,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "bedroom",
   "building": "bd_manor"
  },
@@ -1393,6 +1407,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "kitchen",
   "building": "bd_inn"
  },
@@ -1468,6 +1483,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "kitchen",
   "building": "bd_house"
  },
@@ -1543,6 +1559,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "storeroom",
   "building": "bd_store"
  },
@@ -1623,6 +1640,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "storeroom",
   "building": "bd_store"
  },
@@ -1703,6 +1721,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "cellar",
   "building": "bd_inn"
  },
@@ -1783,6 +1802,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "forge",
   "building": "bd_smithy"
  },
@@ -1868,6 +1888,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "forge",
   "building": "bd_smithy"
  },
@@ -1943,6 +1964,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "bakery_shop",
   "building": "bd_bakery"
  },
@@ -2023,6 +2045,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "bakery_shop",
   "building": "bd_bakery"
  },
@@ -2098,6 +2121,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "study",
   "building": "bd_hall"
  },
@@ -2178,6 +2202,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "study",
   "building": "bd_hall"
  },
@@ -2243,6 +2268,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "waiting_room",
   "building": "bd_hall"
  },
@@ -2344,6 +2370,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "great_hall",
   "building": "bd_hall"
  },
@@ -2466,6 +2493,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "chapel",
   "building": "bd_chapel"
  },
@@ -2572,6 +2600,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "chapel",
   "building": "bd_chapel"
  },
@@ -2647,6 +2676,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "mill",
   "building": "bd_farm"
  },
@@ -2717,6 +2747,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "brewery",
   "building": "bd_farm"
  },
@@ -2787,6 +2818,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "workshop",
   "building": "bd_farm"
  },
@@ -2867,6 +2899,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "stable",
   "building": "bd_farm"
  },
@@ -2958,6 +2991,7 @@
     "y": 5
    }
   ],
+  "daises": [],
   "kind": "guard_room",
   "building": "bd_guard"
  },
@@ -3054,6 +3088,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "dining",
   "building": "bd_manor"
  },
@@ -3149,6 +3184,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "classroom",
   "building": "bd_hall"
  },
@@ -3239,6 +3275,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "fisher",
   "building": "bd_fisher"
  },
@@ -3324,6 +3361,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "fisher",
   "building": "bd_fisher"
  },
@@ -3446,6 +3484,7 @@
     "y": 7
    }
   ],
+  "daises": [],
   "kind": "jail",
   "building": "bd_tower"
  },
@@ -3521,6 +3560,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "lighthouse",
   "building": "bd_tower"
  },
@@ -3601,6 +3641,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "pottery",
   "building": "bd_craft"
  },
@@ -3681,6 +3722,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "carpentry",
   "building": "bd_craft"
  },
@@ -3757,6 +3799,7 @@
     "y": 6
    }
   ],
+  "daises": [],
   "kind": "cobbler",
   "building": "bd_craft"
  },
@@ -3827,6 +3870,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "printer",
   "building": "bd_craft"
  },
@@ -3913,6 +3957,7 @@
     "y": 6
    }
   ],
+  "daises": [],
   "kind": "library",
   "building": "bd_manor"
  },
@@ -4024,6 +4069,7 @@
     "y": 6
    }
   ],
+  "daises": [],
   "kind": "tavern",
   "building": "bd_inn"
  },
@@ -4110,6 +4156,7 @@
     "y": 6
    }
   ],
+  "daises": [],
   "kind": "living",
   "building": "bd_house"
  },
@@ -4211,6 +4258,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "living",
   "building": "bd_house"
  },
@@ -4296,6 +4344,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "living",
   "building": "bd_house"
  },
@@ -4387,6 +4436,7 @@
     "y": 5
    }
   ],
+  "daises": [],
   "kind": "general_store",
   "building": "bd_shop"
  },
@@ -4457,6 +4507,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "bedroom",
   "building": "bd_manor"
  },
@@ -4527,6 +4578,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "bedroom",
   "building": "bd_house"
  },
@@ -4597,6 +4649,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "inn_room",
   "building": "bd_inn"
  },
@@ -4688,6 +4741,7 @@
     "y": 5
    }
   ],
+  "daises": [],
   "kind": "kitchen",
   "building": "bd_inn"
  },
@@ -4778,6 +4832,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "storeroom",
   "building": "bd_store"
  },
@@ -4858,6 +4913,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "guard_room",
   "building": "bd_guard"
  },
@@ -4949,6 +5005,7 @@
     "y": 5
    }
   ],
+  "daises": [],
   "kind": "study",
   "building": "bd_hall"
  },
@@ -5039,6 +5096,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "stable",
   "building": "bd_farm"
  },
@@ -5120,6 +5178,7 @@
     "y": 5
    }
   ],
+  "daises": [],
   "kind": "pharmacy_shop",
   "building": "bd_shop"
  },
@@ -5201,6 +5260,7 @@
     "y": 5
    }
   ],
+  "daises": [],
   "kind": "weapon_shop",
   "building": "bd_shop"
  },
@@ -5271,6 +5331,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "cellar",
   "building": "bd_inn"
  },
@@ -5331,6 +5392,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "waiting_room",
   "building": "bd_hall"
  },
@@ -5438,6 +5500,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "great_hall",
   "building": "bd_hall"
  },
@@ -5513,6 +5576,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "mill",
   "building": "bd_farm"
  },
@@ -5588,6 +5652,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "brewery",
   "building": "bd_farm"
  },
@@ -5658,6 +5723,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "workshop",
   "building": "bd_farm"
  },
@@ -5733,6 +5799,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "dining",
   "building": "bd_manor"
  },
@@ -5808,6 +5875,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "classroom",
   "building": "bd_hall"
  },
@@ -5898,6 +5966,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "jail",
   "building": "bd_tower"
  },
@@ -5963,6 +6032,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "lighthouse",
   "building": "bd_tower"
  },
@@ -6028,6 +6098,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "pottery",
   "building": "bd_craft"
  },
@@ -6093,6 +6164,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "carpentry",
   "building": "bd_craft"
  },
@@ -6164,6 +6236,7 @@
     "y": 5
    }
   ],
+  "daises": [],
   "kind": "cobbler",
   "building": "bd_craft"
  },
@@ -6244,6 +6317,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "printer",
   "building": "bd_craft"
  },
@@ -6329,6 +6403,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "library",
   "building": "bd_manor"
  },
@@ -6435,6 +6510,7 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "chapel",
   "building": "bd_chapel"
  },
@@ -6618,7 +6694,221 @@
    }
   ],
   "goods": [],
+  "daises": [],
   "kind": "great_hall",
   "building": "bd_hall"
+ },
+ "corr-a": {
+  "plan": [
+   "###############",
+   "#.............#",
+   "#.............#",
+   "#.............#",
+   "#.............#",
+   "#######.#######"
+  ],
+  "floor": "dplank",
+  "wall": "plaster",
+  "objects": [
+   {
+    "id": "wall lantern",
+    "x": 3,
+    "y": 1
+   },
+   {
+    "id": "tapestry",
+    "x": 8,
+    "y": 1
+   },
+   {
+    "id": "wall lantern",
+    "x": 11,
+    "y": 1
+   },
+   {
+    "id": "crate",
+    "x": 1,
+    "y": 4
+   },
+   {
+    "id": "hat stand",
+    "x": 13,
+    "y": 4
+   }
+  ],
+  "goods": [],
+  "daises": [
+   {
+    "id": "dais red",
+    "x": 2,
+    "y": 3,
+    "w": 11,
+    "h": 1
+   }
+  ],
+  "kind": "t_corridor",
+  "building": "bd_tier"
+ },
+ "corr-b": {
+  "plan": [
+   "#####################",
+   "#...................#",
+   "#...................#",
+   "#...................#",
+   "#...................#",
+   "##########.##########"
+  ],
+  "floor": "dplank",
+  "wall": "plaster",
+  "objects": [
+   {
+    "id": "wall lantern",
+    "x": 3,
+    "y": 1
+   },
+   {
+    "id": "portrait",
+    "x": 9,
+    "y": 1
+   },
+   {
+    "id": "wall lantern",
+    "x": 15,
+    "y": 1
+   },
+   {
+    "id": "barrel",
+    "x": 1,
+    "y": 4
+   },
+   {
+    "id": "cushion bench",
+    "x": 3,
+    "y": 4
+   },
+   {
+    "id": "umbrella jar",
+    "x": 17,
+    "y": 4
+   }
+  ],
+  "goods": [],
+  "daises": [
+   {
+    "id": "dais blue",
+    "x": 2,
+    "y": 3,
+    "w": 17,
+    "h": 1
+   }
+  ],
+  "kind": "t_corridor",
+  "building": "bd_tier"
+ },
+ "corr-c": {
+  "plan": [
+   "###############################",
+   "#.............................#",
+   "#.............................#",
+   "#.............................#",
+   "#.............................#",
+   "###############.###############"
+  ],
+  "floor": "dplank",
+  "wall": "plaster",
+  "objects": [
+   {
+    "id": "wall lantern",
+    "x": 3,
+    "y": 1
+   },
+   {
+    "id": "tapestry",
+    "x": 10,
+    "y": 1
+   },
+   {
+    "id": "portrait pair",
+    "x": 16,
+    "y": 1
+   },
+   {
+    "id": "tapestry",
+    "x": 21,
+    "y": 1
+   },
+   {
+    "id": "wall lantern",
+    "x": 27,
+    "y": 1
+   },
+   {
+    "id": "hat stand",
+    "x": 1,
+    "y": 4
+   },
+   {
+    "id": "cushion bench",
+    "x": 4,
+    "y": 4
+   },
+   {
+    "id": "chest",
+    "x": 25,
+    "y": 4
+   }
+  ],
+  "goods": [],
+  "daises": [
+   {
+    "id": "dais red",
+    "x": 2,
+    "y": 3,
+    "w": 27,
+    "h": 1
+   }
+  ],
+  "kind": "t_corridor",
+  "building": "bd_tier"
+ },
+ "stair-a": {
+  "plan": [
+   "#######",
+   "#.....#",
+   "#.....#",
+   "#.....#",
+   "#.....#",
+   "#.....#",
+   "#.....#",
+   "###.###"
+  ],
+  "floor": "flag",
+  "wall": "rubble",
+  "objects": [
+   {
+    "id": "wall lantern",
+    "x": 4,
+    "y": 1
+   },
+   {
+    "id": "spiral stairs",
+    "x": 1,
+    "y": 3
+   },
+   {
+    "id": "barrel",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "crate",
+    "x": 5,
+    "y": 5
+   }
+  ],
+  "goods": [],
+  "daises": [],
+  "kind": "t_stair",
+  "building": "bd_tier"
  }
 }

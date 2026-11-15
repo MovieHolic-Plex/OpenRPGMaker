@@ -1099,6 +1099,30 @@
    "chipset": "beodeul_city"
   },
   {
+   "png": "tiledata/beodeul-interiors/pieces/door-oak.png",
+   "kind": "structure",
+   "id": "bd-in-door-oak",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sidedoor-oak.png",
+   "kind": "structure",
+   "id": "bd-in-sidedoor-oak",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/door-arch.png",
+   "kind": "structure",
+   "id": "bd-in-door-arch",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/sidedoor-iron.png",
+   "kind": "structure",
+   "id": "bd-in-sidedoor-iron",
+   "chipset": "beodeul_city"
+  },
+  {
    "png": "tiledata/beodeul-interiors/pieces/hearth-glow.png",
    "kind": "flat",
    "id": "bd-in-hearth-glow",
@@ -1114,6 +1138,24 @@
    "png": "tiledata/beodeul-interiors/pieces/lamp-glow.png",
    "kind": "flat",
    "id": "bd-in-lamp-glow",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/nine-dais-stone.png",
+   "kind": "flat",
+   "id": "bd-in-nine-dais-stone",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/nine-dais-red.png",
+   "kind": "flat",
+   "id": "bd-in-nine-dais-red",
+   "chipset": "beodeul_city"
+  },
+  {
+   "png": "tiledata/beodeul-interiors/pieces/nine-dais-blue.png",
+   "kind": "flat",
+   "id": "bd-in-nine-dais-blue",
    "chipset": "beodeul_city"
   },
   {

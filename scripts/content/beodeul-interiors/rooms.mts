@@ -9,14 +9,18 @@ import fs from "node:fs";
 import path from "node:path";
 import { toTemplate, type AuthoredRoom } from "../interior-authored/lib.mts";
 import { buildHandInteriorLayers, type HandInteriorSpec } from "../../../src/editor/handInterior/builder.ts";
+import { KIT_PROGRAMS, TIER_DOORS, TIER_PROGRAMS, TIER_ROOMS } from "./tiers.mts";
+import { placeTierMap, tierTemplatePicker } from "../../../src/editor/handInterior/tierPlan.ts";
 
 const ROOT = path.resolve(import.meta.dirname, "../../..");
 const SPEC = path.join(ROOT, "src/assets/beodeulInteriorSpec.json");
 const OUT = path.join(ROOT, "src/assets/beodeulInteriorRoomTemplates.json");
+const TIERS = path.join(ROOT, "src/assets/beodeulInteriorTiers.json");
 const DUMP = path.join(ROOT, "tiledata/beodeul-interiors/rooms.json");
 const TID = "beodeul_city";
 
-type Room = Omit<AuthoredRoom, "style"> & { building: string };
+/** daises = 크기 자동 깔것(돌 단·양탄자) [id, x, 바닥 줄, w, h] · tier = 크기 단에만 쓰는 견본(방 종류 표·예제 표에 넣지 않는다, tiers.mts). */
+type Room = Omit<AuthoredRoom, "style"> & { building: string; daises?: readonly (readonly [string, number, number, number, number])[]; tier?: boolean };
 /** 방 종류(조수가 쓰는 낱말은 resolveKind 의 방 종류 id 와 같다) → 이름·별칭. */
 const KINDS: Record<string, { ko: string; alias: string[] }> = {
   tavern: { ko: "주점·여관 홀", alias: ["주점", "선술집", "여관", "주막", "술집", "tavern", "inn"] },
@@ -787,6 +791,8 @@ const ROOMS: Room[] = [
     ] },
 ];
 
+ROOMS.push(...(TIER_ROOMS as unknown as Room[]));
+
 const spec = JSON.parse(fs.readFileSync(SPEC, "utf8")) as HandInteriorSpec & { rooms?: unknown };
 const check = process.argv.includes("--check");
 const layers: Record<string, unknown> = {};
@@ -795,13 +801,15 @@ for (const r0 of ROOMS) {
   const legend = Object.fromEntries(Object.entries(r0.legend).filter(([k, v]) => k.length === 1 && v));
   const t = toTemplate({ ...r0, legend, style: "town" } as AuthoredRoom);
   // id 머리 authored- = 손으로 짠 견본(그 크기에서 조립 검사를 지난 구성 — 빌더가 줄이거나 메우거나 뒤집지 않는다), map 의 town = 화풍 묶음.
+  for (const [id, x, j, w, h] of r0.daises ?? []) t.items.push({ t: "d", id, x, y: j + 2, w, h });
   const tpl = { ...t, id: `authored-bd-${r0.id}`, map: `authored-town-bd-${r0.id}`, building: r0.building };
   // 조립 입력: 테두리 1칸 + 벽면 2줄 + 바닥, 문은 남쪽 가운데
   const W = t.w + 2, door = Math.floor((t.w - 1) / 2) + 1;
   const plan = ["#".repeat(W), ...Array.from({ length: t.h }, () => `#${".".repeat(t.w)}#`), "#".repeat(door) + "." + "#".repeat(W - door - 1)];
   const objects = t.items.filter((i) => i.t === "o").map((i) => ({ id: i.id, x: i.x + 1, y: i.y + 1 }));
   const goods = t.items.filter((i) => i.t === "g").map((i) => ({ id: i.id, x: i.x + 1, y: i.y + 1 }));
-  const input = { plan, floor: r0.floor, wall: r0.wall, objects, goods };
+  const daises = t.items.filter((i) => i.t === "d").map((i) => ({ id: i.id, x: i.x + 1, y: i.y + 1, w: i.w!, h: i.h! }));
+  const input = { plan, floor: r0.floor, wall: r0.wall, objects, goods, daises };
   try {
     const L = buildHandInteriorLayers(input, undefined, spec);
     layers[r0.id] = { w: L.width, h: L.height, layers: [L.lowerTiles, L.lowerOverlayTiles, L.upperTiles, L.upperOverlayTiles] };
@@ -811,16 +819,35 @@ for (const r0 of ROOMS) {
   } catch (e) { bad++; console.error(`${r0.id}: ${(e as Error).message}`); }
   templates.push(tpl); dump[r0.id] = { ...input, kind: r0.kind, building: r0.building };
   const count = new Map<string, number>(); for (const i of t.items) if (i.t === "o") count.set(i.id, (count.get(i.id) ?? 0) + 1);
-  examples.push([`authored-town-bd-${r0.id}`, r0.building, r0.kind, [...count].sort()]);
+  if (!r0.tier) examples.push([`authored-town-bd-${r0.id}`, r0.building, r0.kind, [...count].sort()]);
 }
-console.log(`방 ${ROOMS.length}개 · 종류 ${new Set(ROOMS.map((r) => r.kind)).size} · 조립 오류 ${bad}`);
+console.log(`방 ${ROOMS.length}개(크기 단 전용 ${ROOMS.filter((r) => r.tier).length}) · 종류 ${new Set(ROOMS.filter((r) => !r.tier).map((r) => r.kind)).size} · 조립 오류 ${bad}`);
+// 크기 단 구성 표: 구성마다 모든 평면 벌 × 게임 열쇠 여럿으로 방 사각형이 풀리는지(겹침·바깥문 방이 맨 아래) 본다 — 가구까지 짓는 검사는 tiers-check.mts.
+{
+  const tpls = templates as { id: string; kind: string; w: number; h: number; floor: string; wall: string }[];
+  let plans = 0;
+  for (const [pid, p] of Object.entries(TIER_PROGRAMS)) {
+    for (const k of p.serves) if (!tpls.some((t) => t.kind === k)) { bad++; console.error(`${pid}: serves 의 방 종류 ${k} 에 견본이 없다`); }
+    for (const m of [...p.shapes, ...(p.maps ?? [])]) for (let key = 0; key < 24; key++) for (const main of p.serves) {
+      try { placeTierMap(m, tierTemplatePicker(tpls, main, `check-${key}|${m.id}`), TIER_DOORS); plans++; }
+      catch (e) { bad++; console.error(`${pid}/${m.id} (열쇠 ${key}, ${main}): ${(e as Error).message}`); }
+    }
+    for (const l of p.links ?? []) for (const ref of [l.from, l.to]) {
+      const [mk, rk] = ref.split("/");
+      for (const m of mk === "main" ? p.shapes : (p.maps ?? []).filter((q) => q.id === mk)) if (!m.rooms.some((r) => r.id === rk)) { bad++; console.error(`${pid}: 길 ${ref} — 평면 ${m.id} 에 방 ${rk} 이 없다`); }
+    }
+  }
+  const by = (t: string) => Object.values(TIER_PROGRAMS).filter((p) => p.tier === t);
+  console.log(`크기 단 구성 — 중형 ${by("medium").length}(평면 ${by("medium").reduce((n, p) => n + p.shapes.length, 0)}) · 대형 ${by("large").length}(평면 ${by("large").reduce((n, p) => n + p.shapes.length, 0)}) · 초대형 ${by("xlarge").length} · 풀어 본 평면 ${plans} · 오류 ${bad}`);
+}
 // 그림 굽기용 층 배열(저장소 밖): BD_LAYERS=<파일> 을 주면 방마다 네 층의 칸 번호를 적는다 — render.py 가 시트에서 그린다.
 if (process.env.BD_LAYERS) fs.writeFileSync(process.env.BD_LAYERS, JSON.stringify(layers));
 if (bad) process.exit(1);
 if (!check) {
   const programs: Record<string, { map: string; kinds: string[] }[]> = {};
-  for (const r of ROOMS) (programs[r.building] ??= []).push({ map: `authored-town-bd-${r.id}`, kinds: [r.kind] });
+  for (const r of ROOMS) if (!r.tier) (programs[r.building] ??= []).push({ map: `authored-town-bd-${r.id}`, kinds: [r.kind] });
   fs.writeFileSync(OUT, JSON.stringify({ version: 1, templates: { [TID]: templates }, programs: { [TID]: programs } }) + "\n");
+  fs.writeFileSync(TIERS, JSON.stringify({ version: 1, tileset: TID, source: "scripts/content/beodeul-interiors/tiers.mts", programs: TIER_PROGRAMS, kitPrograms: KIT_PROGRAMS, doors: TIER_DOORS }) + "\n");
   const used = new Set(ROOMS.map((r) => r.kind));
   (spec as { rooms?: unknown }).rooms = { kinds: Object.fromEntries(Object.entries(KINDS).filter(([k]) => used.has(k))), buildings: BUILDINGS, examples, docPrefix: "bd-in-map-" };
   fs.writeFileSync(SPEC, JSON.stringify(spec) + "\n");

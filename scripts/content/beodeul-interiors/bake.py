@@ -95,7 +95,7 @@ def corner_keys():
 
 def plan():
     """굽는 칸 전부: [(열쇠, 그림 16×16, 통행 'solid'|'star'|'walk'|'floor', 이름표, 태그)] 와 사양 뼈대(번호 대신 열쇠)."""
-    cells, spec = [], dict(floors={}, walls={}, ceilings={}, ceilingCorners={}, objects={}, goods={})
+    cells, spec = [], dict(floors={}, walls={}, ceilings={}, ceilingCorners={}, objects={}, goods={}, daises={})
     def add(key, im, passage, label, tags):
         cells.append((key, im, passage, label, tags)); return key
     void = add("void", Image.new("RGBA", (T, T), VOID), "solid", f"{LABEL} · 벽 속(바깥 어둠)", ["구조"])
@@ -121,6 +121,13 @@ def plan():
         spec["objects"][oid] = obj_entry(oid, piece(slug(oid)), kind, w, foot, cat, ko, tags, o, add)
     for gid, _src, w, h, ko in TB.GLOWS:
         spec["objects"][gid] = obj_entry(gid, piece(slug(gid)), "flat", w, h, "light", ko, ["불빛"], dict(use=["walk"], desc=ko), add)
+    for did, _src, ko in TB.DAISES:
+        im = piece(f"nine-{slug(did)}"); pieces = {}
+        for col in "LMRS":
+            for row in "TMBS":
+                key = add(f"nine/{did}/{col}{row}", nine_cell(im, col, row), "walk", f"{LABEL} · {ko}", ["깔개", "단"])
+                pieces[f"{col}{row}0"] = pieces[f"{col}{row}1"] = key
+        spec["daises"][did] = dict(ko=ko, pieces=pieces)
     for gid, _src, ko in TB.GOODS:
         spec["goods"][gid] = add(f"goods/{gid}", piece(f"goods-{slug(gid)}"), "star", f"{LABEL} 탁상 물건 · {ko}", ["탁상 물건"])
     return cells, spec, void
@@ -129,19 +136,20 @@ def plan():
 def obj_entry(oid, im, kind, w, foot, cat, ko, tags, o, add):
     rows = im.height // T
     assert im.width == w * T and im.height % T == 0, (oid, im.size)
-    top = 0 if kind in ("hang", "flat") else rows - foot
+    top = 0 if kind in ("hang", "flat", "door") else 2 if kind == "sidedoor" else rows - foot
     cs = []
     for y in range(rows):
         for x in range(w):
             c = cell(im, x, y)
             if not c.getchannel("A").getbbox(): continue
             dy = y - top
-            passage = "star" if o.get("over") else "walk" if kind == "flat" else "solid" if kind in ("floor", "wall") and dy >= 0 else "star"
-            cs.append([x, dy, add(f"obj/{oid}/{x},{dy}", c, passage, f"{LABEL} · {ko}" + (f" ({x},{dy})" if w * rows > 1 else ""), [TB.CATS[cat], *tags]), 3 if kind != "flat" or o.get("stairs") or o.get("over") else 2])
+            sill = kind in ("door", "sidedoor") and y == 2      # 문의 맨 아래 칸(문턱·문설주 밑동)은 바닥 무늬, 위 두 칸은 사람 위에 그린다
+            passage = "star" if o.get("over") else "walk" if kind == "flat" or sill else "solid" if kind in ("floor", "wall") and dy >= 0 else "star"
+            cs.append([x, dy, add(f"obj/{oid}/{x},{dy}", c, passage, f"{LABEL} · {ko}" + (f" ({x},{dy})" if w * rows > 1 else ""), [TB.CATS[cat], *tags]), 2 if sill else 3 if kind != "flat" or o.get("stairs") or o.get("over") else 2])
     b = im.getchannel("A").getbbox()
-    up = 0 if kind in ("hang", "flat") else max(0, (rows - foot) * T - b[1])
+    up = 0 if kind in ("hang", "flat", "door", "sidedoor") else max(0, (rows - foot) * T - b[1])
     e = dict(ko=ko, category=cat, category_ko=TB.CATS[cat], kind=kind, w=w, h=0 if kind == "hang" else foot, up=up, cells=cs,
-             desc=o.get("desc", ko), tags=tags, place=PLACE[kind], pair=o.get("pair", []), use=o.get("use", ["walk"] if kind == "flat" else ["block"]))
+             desc=o.get("desc", ko), tags=tags, place=PLACE[kind], pair=o.get("pair", []), use=o.get("use", ["walk"] if kind in ("flat", "door", "sidedoor") else ["block"]))
     for k in ("stairs", "facing"):
         if o.get(k): e[k] = o[k]
     if kind in ("floor", "wall") and (o.get("surface") or "counter" in e["use"] or "table" in oid or "desk" in oid):
@@ -149,7 +157,21 @@ def obj_entry(oid, im, kind, w, foot, cat, ko, tags, o, add):
     return e
 
 
-PLACE = dict(floor="바닥에 세운다.", wall="북쪽 벽 바로 앞 첫 바닥 줄에 벽에 붙여 세운다.", hang="북쪽 벽면 윗줄에 건다.", flat="바닥에 깐다(밟고 지나간다).")
+PLACE = dict(floor="바닥에 세운다.", wall="북쪽 벽 바로 앞 첫 바닥 줄에 벽에 붙여 세운다.", hang="북쪽 벽면 윗줄에 건다.", flat="바닥에 깐다(밟고 지나간다).",
+             door="위·아래 방 사이 가로 칸막이의 1칸 틈에 단다(layout 의 connect 가 단다).", sidedoor="왼·오른 방 사이 세로 칸막이 3줄 틈의 통로 칸에 단다(layout 의 connect 가 단다).")
+
+
+def nine_cell(im, col, row):
+    """아홉 조각(48×48)에서 한 칸. col L·M·R·S, row T·M·B·S — S(한 칸 폭·한 줄)는 양쪽 끝 칸의 바깥 반씩을 붙인다."""
+    xs = dict(L=[(0, 16)], M=[(16, 32)], R=[(32, 48)], S=[(0, 8), (40, 48)])[col]
+    ys = dict(T=[(0, 16)], M=[(16, 32)], B=[(32, 48)], S=[(0, 8), (40, 48)])[row]
+    out = Image.new("RGBA", (T, T)); oy = 0
+    for y0, y1 in ys:
+        ox = 0
+        for x0, x1 in xs:
+            out.paste(im.crop((x0, y0, x1, y1)), (ox, oy)); ox += x1 - x0
+        oy += y1 - y0
+    return out
 
 
 def existing(ts):
@@ -176,6 +198,7 @@ def gate_items():
     for fid, *_ in TB.FLOORS: items.append((piece(f"floor-{fid}"), "terrain", f"floor-{fid}"))
     for oid, _src, _kind, _w, _f, _c, _ko, _t, gate, _o in TB.OBJECTS: items.append((piece(slug(oid)), gate, slug(oid)))
     for gid, *_ in TB.GLOWS: items.append((piece(slug(gid)), "flat", slug(gid)))
+    for did, *_ in TB.DAISES: items.append((piece(f"nine-{slug(did)}"), "flat", f"nine-{slug(did)}"))
     for gid, *_ in TB.GOODS: items.append((piece(f"goods-{slug(gid)}"), "other", f"goods-{slug(gid)}"))
     return items
 
@@ -232,7 +255,7 @@ def main():
                 walls={k: dict(w, tiles=[n(t) for t in w["tiles"]]) for k, w in spec["walls"].items()},
                 ceilings={k: [n(t) for t in c] for k, c in spec["ceilings"].items()},
                 ceilingCorners={k: {kk: n(t) for kk, t in c.items()} for k, c in spec["ceilingCorners"].items()},
-                objects=objects, tables={}, lines={}, daises={}, goods={k: n(t) for k, t in spec["goods"].items()},
+                objects=objects, tables={}, lines={}, daises={k: dict(d, pieces={kk: n(t) for kk, t in d["pieces"].items()}) for k, d in spec["daises"].items()}, goods={k: n(t) for k, t in spec["goods"].items()},
                 looks=dict(_doc="벽면 → 벽 윗면 테두리, style = 바깥 집 양식 → {견본의 집 벽(plaster 그 집의 벽 · rubble 돌 아래층·불 방): 그 양식에서 설 벽면}. 빌더가 읽는다(src/ai/v2/place/builders/interiorExterior.ts).",
                            edge=TB.WALL_EDGE, style=TB.STYLE_WALLS))
     full["personal"] = TB.PERSONAL
