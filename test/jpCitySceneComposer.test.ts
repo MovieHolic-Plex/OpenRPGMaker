@@ -105,10 +105,10 @@ describe("jp_city street scene composer", () => {
         : plan.steps.filter((s) => s.tool === "fill_region" && ["산길 흙", "校庭 흙 바닥", "자갈 참배길", "온천가 돌길(이시다타미)"].includes(String((s.args as { material?: string }).material)));
       expect(yards.length, `seed ${seed}`).toBeGreaterThanOrEqual(3);
     }
-    const zebra = Array.from({ length: 16 }, (_, seed) => planJpCityScene({ mapId: "m", width: 48, height: 36, seed, style: "residential", key: "game-b", crosswalkTile: 7 }))
+    const zebra = Array.from({ length: 32 }, (_, seed) => planJpCityScene({ mapId: "m", width: 48, height: 36, seed, style: "residential", key: "game-b", crosswalkTile: 7 }))
       // 조용한 길의 좁은 횡단보도: 새 거리에서는 줄무늬 조각(jp-st-mark-zebra-*), 옛 거리에서는 줄무늬 칸 칠하기
       .filter((p) => p.steps.some((s) => (s.tool === "paint_tiles" && (s.args as { tile?: number }).tile === 7) || String((s.args as { objectId?: string }).objectId ?? "").includes("jp-st-mark-zebra")));
-    expect(zebra.length).toBeGreaterThanOrEqual(2);
+    expect(zebra.length).toBeGreaterThanOrEqual(4);   // 씨앗 32개 가운데 넷 이상(넷에 하나꼴로 선다)
   });
 
   it("v2 builder previews the plan the tool will really build (game key) and reports the kind", () => {
