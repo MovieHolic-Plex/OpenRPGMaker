@@ -206,16 +206,20 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
   // 이름으로 돌려 고를 때는 주민 한 줄(«villager» 4명)이 아니라 사람 칩 전체(«마을 사람»)에서 고른다.
   // 돌리기 전에 이 게임이 못 쓰는 칩(장르 잠금·몬스터 수집 전용)도 뺀다 — 넣고 돌리면 그 자리에 걸린 이름이 다음 칩으로 몰린다.
   // hasPlain: 이 화풍에 그냥 주민 칩이 있는가 — 있을 때만 말하지 않은 차림의 칩을 뒤로 민다(현대 칩처럼 주민 꼬리표가 없는 화풍은 순위 그대로).
-  const { pool: wide, plainFamily: hasPlain } = plainPeople(map, queryNpcGraphics("마을 사람", 60, overrides).filter((m) => (!allowed || allowed(m.entry)) && (!monsterOk || monsterOk(m.entry))),
-    (m) => !misfitFor(m.entry) && !oddFor(m.entry), (m) => native(m.entry));
+  const townsfolk = queryNpcGraphics("마을 사람", 60, overrides).filter((m) => (!allowed || allowed(m.entry)) && (!monsterOk || monsterOk(m.entry)));
+  const fitsPerson = (m: (typeof townsfolk)[number]): boolean => !misfitFor(m.entry) && !oddFor(m.entry);
+  const { pool: wide, plainFamily: hasPlain } = plainPeople(map, townsfolk, fitsPerson, (m) => native(m.entry));
+  // 이름 있는 사람: 주민 꼬리표 칩 뒤에 꼬리표 없는 그냥 사람 칩(차림 꼬리표가 없는 «노파»)을 잇는다 — 주민 칩이 모두 선 뒤 같은 얼굴 둘이 되기 전에 그 칩이 선다.
+  // 왜(2026-11-15 확인 빌드 r5): 역할을 못 알아들은 «회관 서기» 가 주민 넷이 다 선 뒤 «등대지기» 와 같은 콧수염 칩으로 섰다 — 안 선 노파 칩은 후보에도 없었다.
+  const spare = ownFace && hasPlain ? townsfolk.filter((m) => familyFits(map, m.entry.textureKey) && plainFor(m.entry) && fitsPerson(m) && !wide.includes(m)) : [];
   queries.forEach((q, qi) => {
     const spin = qi === queries.length - 1;
     // 이름 있는 사람은 이 맵 화풍의 칩을 앞에 세워 서른을 자른다 — 다른 화풍 칩이 많은 낱말(«상인»)에서 이 화풍의 둘째 칩이 잘려 나가면 이름 있는 두 상인이 한 칩으로 선다.
     const found = spin && wide.length >= (hasPlain ? 1 : 3) ? wide : queryNpcGraphics(q, ownFace ? 120 : 30, overrides);
     const matches = found === wide || !ownFace ? found : [...found.filter((m) => familyFits(map, m.entry.textureKey)), ...found.filter((m) => !familyFits(map, m.entry.textureKey))].slice(0, 30);
     const rotate = spin && matches.length > 1 ? nameHash % matches.length : 0;
-    matches.forEach((m, rank0) => {
-      const rank = rotate ? (rank0 - rotate + matches.length) % matches.length : rank0;
+    [...matches, ...(found === wide ? spare : [])].forEach((m, rank0) => {
+      const rank = rotate && rank0 < matches.length ? (rank0 - rotate + matches.length) % matches.length : rank0;
       const e = m.entry;
       const text = `${e.label} ${e.tags.join(" ")} ${e.textureKey}`;
       // 「몬스터 수집」 장르 꼬리표가 붙은 사람 칩(Scarloxy 트레이너·주민)은 적이 아니다 — 그 낱말을 빼고 적 낱말을 본다.
@@ -252,6 +256,26 @@ export function pickPersonGraphic(project: Project, map: GameMap, role: string |
   return pick;
 }
 
+/** 같은 사람인지 견주는 이름 — 끝의 괄호는 그 사람이 선 자리일 뿐이다(«농부 말순 (집)» = «농부 말순»). */
+export const personKey = (name: string | undefined): string => (name ?? "").replace(/\s*[(（][^()（）]*[)）]\s*$/u, "").trim().toLowerCase();
+
+/**
+ * 이 게임 어디엔가 같은 이름으로 이미 선 사람의 칩 — 한 사람이 장소마다 다른 얼굴이 되지 않게(청사진 단계의 사람은 story/personName 이 같은 일을 한다).
+ * 왜(2026-11-15 확인 빌드 r5): 밭의 «농부 말순» 은 중년 여성, 집 안의 «농부 말순 (집)» 은 금발 젊은 여성으로 섰다 — 이름 있는 두 사람이 한 칩을 나눠 쓰지 않게 하는 단이 같은 사람에게도 걸렸다.
+ */
+function standingChipOf(project: Project, name: string): PersonGraphic | undefined {
+  const key = personKey(name);
+  if (!key) return undefined;
+  for (const map of Object.values(project.maps)) for (const e of eventsOf(map)) {
+    if (personKey(e.name) !== key) continue;
+    const g = e.pages?.[0]?.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
+    if (!g?.sprite?.id || typeof g.pattern !== "number" || g.pattern < 3 || !/charset/iu.test(g.sprite.id) || /object/iu.test(g.sprite.id)) continue;
+    const characterIndex = decodeCharsetFrameIndex(g.pattern).characterIndex, row = sharedCharsetRow(g.sprite.id, characterIndex);
+    return { textureKey: g.sprite.id, characterIndex, label: `${(e.name ?? "").trim()} 의 앞선 모습`, query: "", ...(row?.status === "mapped" && row.faceResourceId ? { faceResourceId: row.faceResourceId } : {}) };
+  }
+  return undefined;
+}
+
 /** 놓은 NPC 의 모든 페이지 그림을 그 방향으로 돌려 세운다(문지기는 길 쪽을 본다). */
 function faceNpc(run: BuildRun, mapId: string, eventId: string, dir: Dir): void {
   const map = findMap(run.ctx.project, mapId);
@@ -275,7 +299,7 @@ function cleanLines(lines: readonly string[] | undefined): string[] {
  * place_npc 가 그 칩의 검토된 짝 얼굴을 대사 앞에 붙인다. 고른 칩으로 실패하면 질의 낱말 → 도구 기본 그림 순서로 물러난다.
  */
 export function placeNpcWithGraphic(run: BuildRun, map: GameMap, baseArgs: Record<string, unknown>, role: string | undefined, looks: string | undefined, label: string, warnings: string[], ownFace = false): { result: ReturnType<BuildRun["call"]>; graphic?: PersonGraphic } {
-  const graphic = pickPersonGraphic(run.ctx.project, map, role, looks, ownFace);
+  const graphic = (ownFace ? standingChipOf(run.ctx.project, label) : undefined) ?? pickPersonGraphic(run.ctx.project, map, role, looks, ownFace);
   if (graphic) {
     const result = run.call("place_npc", { ...baseArgs, graphic: { textureKey: graphic.textureKey, characterIndex: graphic.characterIndex } });
     if (result.ok) {
