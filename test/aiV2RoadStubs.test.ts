@@ -56,8 +56,10 @@ const walkable = (project: Project, map: GameMap): number => { let n = 0; for (l
 const SLOW = 240_000;
 
 describe("출구 없는 가장자리 길 — 마을 안에서 끝낸다", () => {
+  // 이 두 시험은 «두 칸 폭 길 둘이 맵 끝에 닿은 마을» 을 본다(가장자리 길 넷 · 걷는 겹 = 묶음의 두 배). 마당 먼저 배치(2026-11-15)에서는 씨앗 7 의 동쪽 길 끝에
+  // 길가 흙 번짐 한 칸이 붙어 묶음이 세 칸이 된다(길은 그래도 걷힌다 — 당긴 길 2 · 뒤 가장자리 길 0) — 그런 마을이 그대로인 씨앗 5 로 본다.
   it("강가 마을: 두 가장자리 길을 걷어 길이 맵 끝에 닿지 않고, 걷는 칸은 그대로이며, 「막힌 길」 표지는 서지 않는다 · 다시 불러도 그대로", () => {
-    const { ctx, mapId } = village();
+    const { ctx, mapId } = village({ seed: 5 });
     const before = ctx.project.maps[mapId]!;
     expect(borderRoad(ctx.project, before)).toBe(4);
     const walk = walkable(ctx.project, before);
@@ -72,7 +74,7 @@ describe("출구 없는 가장자리 길 — 마을 안에서 끝낸다", () => 
   }, SLOW);
 
   it("시작 자리가 그 길 위면 거기서 멈춘다 — 시작 칸은 길로 남고 그 바깥 두 줄만 걷는다", () => {
-    const { ctx, mapId } = village();
+    const { ctx, mapId } = village({ seed: 5 });
     const map = ctx.project.maps[mapId]!;
     const group = eastGroups(ctx.project, map)[0]!;
     const start = { x: map.width - 3, y: group[0]!.y };

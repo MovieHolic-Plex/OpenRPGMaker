@@ -1,4 +1,6 @@
-// 코드 지형 마을 프로브 — 10요청을 코드 지형(자동 배치 또는 --layouts json, village-model-layout.mts 출력)으로 짓고 렌더·지표. 사용: bun scripts/qa/village-code-terrain-probe.mts --out <dir> [--only 1,3] [--salt N] [--layouts f] [--cliff earth|strata|rubble|ledge|crag|rock]
+// 코드 지형 마을 프로브 — 10요청을 코드 지형(자동 배치 또는 --layouts json, village-model-layout.mts 출력)으로 짓고 렌더·지표. 사용: bun scripts/qa/village-code-terrain-probe.mts --out <dir> [--only 1,3] [--salt N] [--layouts f] [--key 게임열쇠] [--dry] [--cliff earth|strata|rubble|ledge|crag|rock]
+// --dry: 그림(png)과 프로젝트 사본(project.json, 판마다 80MB)을 쓰지 않는다 — 숫자(report.json · data.json)만 남긴다.
+// --key: 그 게임 열쇠의 겉모습(집 벌·바닥·숲)으로 짓는다(조수 실행과 같은 길). 판마다 <n>-C.data.json 을 남긴다(village-yard-measure.mts 가 읽는다).
 // --cliff: 게임 겉모습의 절벽 모습만 미리 적고 짓는다(다른 갈래는 원래 모습) — 단 높이·절벽 줄 굽이가 닿는 곳·길을 깨지 않는지 보는 데 쓴다.
 import fs from "node:fs";
 import { renderMapPng } from "../../scripts/qa-game/render.mts";
@@ -24,10 +26,10 @@ const CASES: any[] = [
 const arg = (n: string, d: string) => { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] ?? d : d; };
 const OUT = arg("out", "/tmp/vh/code1"); fs.mkdirSync(OUT, { recursive: true });
 const only = arg("only", "").split(",").filter(Boolean).map(Number);
-// --key <게임 열쇠>: 조수 실행처럼 게임 열쇠를 켠다 — 그 게임의 겉모습·새 기물·마을 종류(장면)가 놓인 마을을 잰다. 생략하면 전과 같다(열쇠 없음).
-const lookKey = arg("key", "");
 const layouts = arg("layouts", "") ? JSON.parse(fs.readFileSync(arg("layouts", ""), "utf8")) : {};
 const salt = Number(arg("salt", "0"));
+const key = arg("key", "");
+const dry = process.argv.includes("--dry");
 const cliff = arg("cliff", "");
 // --habit step,lone,straight: 그 절벽 모습의 습관만 이 실행에서 바꿔 본다(단 높이와 굽이의 영향을 따로 재는 데 쓴다)
 const habit = arg("habit", "").split(",").filter(Boolean).map(Number);
@@ -40,14 +42,17 @@ for (const c of CASES) {
   if (only.length && !only.includes(c.n)) continue;
   const { args: a0 } = villageArgs({ type: "village", ...c.spec } as any);
   const args: any = { ...a0, ...(c.landform ? { landform: c.landform } : {}), seed: c.seed + salt, id: `v${c.n}C`, name: c.spec.name, ...(layouts[c.n] ? { layout: layouts[c.n].layout, terrainSeed: layouts[c.n].terrainSeed, width: layouts[c.n].width, height: layouts[c.n].height } : {}) };
-  const ctx: any = { project: JSON.parse(baseJson), ...(lookKey ? { assistantRun: true, lookKey } : {}) };
+  const ctx = { project: JSON.parse(baseJson), ...(key ? { assistantRun: true, lookKey: key } : {}) };
   if (cliff) ctx.project.tilesets.beodeul_city.look = { textureKey: tilesetLookTableFor("beodeul_city")!.texture, cliff };
   const t0 = Date.now();
   const r = runTool(ctx as any, "author_beodeul_town", args);
   if (!r.ok) { console.log(c.n, "FAIL", r.summary); rows.push({ n: c.n, ok: false, summary: r.summary }); continue; }
   const d = r.data as any; const map = ctx.project.maps[d.mapId]!;
-  fs.writeFileSync(`${OUT}/${c.n}-C.png`, renderMapPng(ctx.project, map).png);
-  fs.writeFileSync(`${OUT}/${c.n}-C.project.json`, JSON.stringify({ project: ctx.project, mapId: d.mapId }));
+  if (!dry) {
+    fs.writeFileSync(`${OUT}/${c.n}-C.png`, renderMapPng(ctx.project, map).png);
+    fs.writeFileSync(`${OUT}/${c.n}-C.project.json`, JSON.stringify({ project: ctx.project, mapId: d.mapId }));
+  }
+  fs.writeFileSync(`${OUT}/${c.n}-C.data.json`, JSON.stringify({ n: c.n, ask: c.ask, data: d })); // village-yard-measure.mts 가 읽는다(문 앞·모이는 곳·마당)
   const cf = analyzeCityForm(ctx.project, map);
   const doors = (d.doors ?? []) as { reached: boolean }[];
   const lr = (d.levelReach ?? {}) as Record<string, any>;
@@ -55,7 +60,8 @@ for (const c of CASES) {
   const row = { n: c.n, ms: Date.now() - t0, size: `${map.width}x${map.height}`, houses: d.houses, anchors: d.anchors, unreached: doors.filter((x) => !x.reached).length, doors: doors.length,
     dead: cf.deadEnds.filter((x: any) => x.kind === "cell").length, runSouth: runs.south, runSide: runs.side, style: map.relief?.style ?? null, ramps: d.relief?.ramps, rfail: d.relief?.fails, levels: d.relief?.levels,
     upMiss: Object.values(lr).reduce((s: number, e: any) => s + (e.walk - e.reached), 0), upWild: Object.values(lr).reduce((s: number, e: any) => s + (e.wild ?? 0), 0), hillBehind: d.hillBehind ? { raised: d.hillBehind.raised, open: d.hillBehind.open, road: d.hillBehind.road, sample: d.hillBehind.sample } : null,
-    layout: d.layout ? { auto: d.layout.auto, moved: d.layout.moved, failed: d.layout.failed, roadsFailed: d.layout.roadsFailed } : null, terrainSeed: d.terrainSeed, note: d.codeTerrain?.note, summary: r.summary, warnings: (r as any).warnings ?? [] };
+    forest: d.nature?.forestCells ?? 0, fields: d.fields ?? 0, landPlots: d.landPlots ?? 0, emptyScreens: d.emptyScreens ?? null,
+    layout: d.layout ? { auto: d.layout.auto, moved: d.layout.moved, failed: d.layout.failed, roadsFailed: d.layout.roadsFailed } : null, terrainSeed: d.terrainSeed, note: d.codeTerrain?.note, summary: r.summary, warnings: (r as any).diff?.warnings ?? (r as any).warnings ?? [] };
   rows.push(row); console.log(c.n, JSON.stringify(row).slice(0, 600));
 }
 fs.writeFileSync(`${OUT}/report.json`, JSON.stringify(rows, null, 1));
