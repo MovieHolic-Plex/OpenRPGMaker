@@ -3,11 +3,12 @@
  *
  * 왜 (2026-11-15): 에이전트 제출 경로(agentStore.mts checkPack)는 맵에 깔리는 시트의 비지 않은 칸이 전부 기준선 또는
  * `passingCellIndex("store")` 에 있어야 통과한다. 번들 게시기는 번들 시트를 통째로 싣는데도 매니페스트 형식과 제3자 이름만 봤다.
- * 오너의 상시 규칙은 «Fable 5.2 그림은 오너 면제로 번들에 굽고 스토어에는 올리지 않는다» 인데(오너 면제는 store 출구에 닿지 않는다 —
- * src/harnesses/_core/objectGate/receipt.ts ownerWaiverApplies), 이 경로에서는 그 규칙을 코드가 아니라 «돌리지 않는 것» 이 지키고 있었다.
- * 그래서 같은 검사를 여기서도 한다: 스토어 출구를 통과하지 못한 칸(면제 칸 포함)이 하나라도 있으면 게시를 거절하고,
+ * 오너 면제 그림이 스토어로 나가는지를 이 경로에서는 코드가 아니라 «돌리지 않는 것» 이 지키고 있었다.
+ * 그래서 같은 검사를 여기서도 한다: 스토어 출구를 통과하지 못한 칸이 하나라도 있으면 게시를 거절하고,
  * 몇 칸이 어느 면제 묶음(waivers/<id>.json)의 것인지 말한다. `--dry` · `--target plan` 도 같은 거절을 본다.
- * 규칙을 푸는 깃발은 없다 — 올리려면 그 칸을 `object-gate` 로 판정받아 store 출구를 통과시킨다.
+ * 통과하는 칸(2026-11-15): ① 기준선(baseline-cells.txt — 관문이 생기기 전부터 번들 시트에 있던 칸) ② 관문을 통과한 기록의 칸
+ * ③ 스토어 출구를 적은 오너 면제 묶음의 칸(src/harnesses/_core/objectGate/receipt.ts ownerWaiverApplies). 걸리는 것은 그 셋이 아닌 칸뿐이다.
+ * 이 게시기에 규칙을 푸는 깃발은 없다 — 올리려면 그 칸을 `object-gate` 로 판정받거나, 그 묶음에 스토어 출구를 연 오너의 말이 기록돼야 한다.
  *
  * 판정은 영수증·면제 기록만 읽는다(모델 호출 없음, 네트워크 없음).
  */
@@ -23,7 +24,7 @@ export const STORE_GATED_KINDS: ReadonlySet<StoreAssetKind> = new Set(["chipset"
 export interface StoreExitGateDeps {
   /** 기준선 칸 해시(baseline-cells.txt). */
   readonly baseline: Set<string>;
-  /** 스토어 출구를 통과한 칸 해시 — `passingCellIndex("store")`. 오너 면제 칸은 여기에 들지 않는다. */
+  /** 스토어 출구를 통과한 칸 해시 — `passingCellIndex("store")`. 오너 면제 칸은 그 묶음이 스토어 출구를 적었을 때만 든다. */
   readonly passing: Map<string, ObjectGateReceipt>;
   /** 오너 면제 묶음 — 걸린 칸이 어느 묶음의 것인지 말하는 데만 쓴다(통과 여부는 passing 이 정한다). */
   readonly waiverBatches: readonly ObjectGateOwnerWaiverBatch[];
@@ -33,7 +34,7 @@ export interface StoreExitSheetReport {
   readonly asset: string;
   /** 스토어 출구를 통과하지 못한 칸 수(기준선에도 통과 기록에도 없는 비지 않은 칸). */
   readonly uncovered: number;
-  /** 걸린 칸 가운데 오너 면제 묶음의 것: 묶음 id → 칸 수. */
+  /** 걸린 칸 가운데 오너 면제 묶음(스토어 출구가 열리지 않은 것)의 것: 묶음 id → 칸 수. */
   readonly waived: Readonly<Record<string, number>>;
   /** 걸린 칸 가운데 어느 면제 묶음에도 없는 것(판정 기록이 없거나 store 출구에서 떨어진 칸). */
   readonly unreceipted: number;
@@ -80,9 +81,10 @@ export function storeExitProblems(reports: readonly StoreExitSheetReport[]): str
     const batches = Object.entries(report.waived).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
     const waivedTotal = batches.reduce((sum, [, count]) => sum + count, 0);
     const parts: string[] = [];
-    if (waivedTotal > 0) parts.push(`오너 면제 칸 ${waivedTotal}개(${batches.map(([id, count]) => `${id} ${count}`).join(" · ")})`);
+    if (waivedTotal > 0) parts.push(`스토어 출구가 열리지 않은 오너 면제 칸 ${waivedTotal}개(${batches.map(([id, count]) => `${id} ${count}`).join(" · ")})`);
     if (report.unreceipted > 0) parts.push(`면제 묶음에도 없는 칸 ${report.unreceipted}개(판정 기록이 없거나 store 출구에서 떨어졌다)`);
     return `${report.asset}: 스토어 출구(3/4 관문)를 통과하지 못한 칸 ${report.uncovered}개 — ${parts.join(", ")}. 예: ${report.examples.join(" ")}. `
-      + "오너 면제는 번들·공용 출구까지다 — 스토어에는 올리지 않는다. 올리려면 그 칸을 `npm run harness -- object-gate review` 로 판정받아 store 출구를 통과시킨다(이 검사를 끄는 깃발은 없다).";
+      + "오너 면제는 그 묶음에 스토어 출구를 연 오너의 말이 기록돼 있을 때만 스토어로 나간다(`object-gate owner-waive-extend` — Fable 묶음만). "
+      + "그 밖의 칸은 `npm run harness -- object-gate final-review` 로 판정받아 store 출구를 통과시킨다(이 검사를 끄는 깃발은 없다).";
   });
 }

@@ -3,7 +3,7 @@
  *
  * 칸 해시 = sha256(`cell${칸크기}:` + 칸 RGBA(완전 투명 화소 RGB→0)) 앞 16자. 빈 칸은 세지 않는다.
  * 시트의 비지 않은 칸은 셋 중 하나여야 한다:
- *   ① 기준선(baseline-cells.txt) — 관문 도입 시점(2026-10-09)에 이미 번들·공용 DB 에 있던 칸(소급 면제, 감사 보고서만)
+ *   ① 기준선(baseline-cells.txt) — 관문 도입 시점(2026-10-09)에 이미 번들 시트에 있던 칸(소급 면제). `object-gate baseline` 이 만든다(baseline.ts)
  *   ② 출구 규칙을 통과한 영수증의 칸 — 영수증은 판정한 원본 PNG 를 칸으로 자른 해시를 들고 있다(정렬 변형 포함)
  *   ③ 둘 다 아니면 거절.
  * 지형 조각도 같다 — kind terrain 으로 판정받는다(판정자 과반이 「서 있는 기물이 아니라 지형」이라 해야 한다).
@@ -79,7 +79,7 @@ export function passingCellIndex(context: ObjectGateContext, receipts: ObjectGat
     const stand = receipt ?? ({ schema: 'oprn-object-gate-receipt/1', pixelSha256: final.pixelSha256, width: final.width, height: final.height, kind: final.kind, name: final.name, label: final.label, profileHash: final.profileHash, verdict: 'pass', reasons: [], runs: [], decidedAt: final.decidedAt, cells: final.cells } as ObjectGateReceipt);
     for (const hashes of Object.values(final.cells ?? {})) for (const h of hashes) index.set(h, stand);
   }
-  // 오너 면제 묶음의 그림(2026-11-12): 출구 규칙이 받아 준 것만 — 스토어 출구·사람 거절·Opus 최종 기록이 있는 그림은 여기서도 빠진다.
+  // 오너 면제 묶음의 그림(2026-11-12): 출구 규칙이 받아 준 것만 — 그 묶음이 적지 않은 출구(스토어는 적힌 묶음에만 열린다)·사람 거절·Opus 최종 기록이 있는 그림은 여기서도 빠진다.
   const batches = listOwnerWaiverBatches();
   for (const batch of batches) for (const item of batch.items) {
     const sha = item.pixelSha256;

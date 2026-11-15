@@ -10,8 +10,11 @@
  *   bundle·shared·store → 보정된 프로필의 「pass」 영수증만. 공방 「그래도 넣기」도 받지 않는다.
  *   workshop-local      → pass, 또는 사람이 직접 누른 「그래도 넣기」 덮어쓰기. 조수·에이전트는 덮어쓸 수 없다.
  *   ④ 오너 면제(2026-11-12, waivers/<묶음>.json): 오너가 «판정 없이 넣어라» 고 결정한 그림 묶음. Opus 최종 기록이 없는 그림에만 효력이 있고,
- *      서명된 사람 거절은 그 위에서 막는다. bundle·shared·workshop-local 만 — **store 출구는 면제를 받지 않는다.** 면제는 «통과» 가 아니다:
- *      보고에는 «3/4 관문 미통과 — 오너 면제» 로 쓴다. 기록은 `object-gate owner-waive` 단계만 쓴다(손으로 쓰지 않는다).
+ *      서명된 사람 거절은 그 위에서 막는다. 기본 출구는 bundle·shared·workshop-local 이다. **store 출구는 그 출구를 적은 오너의 말이 기록된
+ *      묶음에만 열린다**(2026-11-15): 묶음을 만들 때 `--contexts` 에 store 를 적었거나, `owner-waive-extend` 가 그 출구를 넓힘 기록(extensions —
+ *      제 오너 문장·날짜·기록한 쪽을 따로 든다)으로 더한 경우다. 넓힘으로 store 를 여는 것은 Fable 묶음(이름이 fable- 로 시작)뿐이다.
+ *      면제는 «통과» 가 아니다 — 스토어로 나가도 보고에는 «3/4 관문 미통과 — 오너 면제» 로 쓴다.
+ *      기록은 `object-gate owner-waive` · `owner-waive-extend` 단계만 쓴다(손으로 쓰지 않는다).
  * Python 쪽 같은 규칙: src/harnesses/_core/object_gate/__init__.py. 둘을 같이 고친다.
  */
 
@@ -19,8 +22,14 @@ import { OBJECT_GATE_PROFILE, type ObjectGateEyeAnswer, type ObjectGateJudgeAnsw
 
 export type ObjectGateContext = 'bundle' | 'shared' | 'store' | 'workshop-local';
 
-/** 오너 면제가 닿을 수 있는 출구 — 스토어(밖으로 나가는 팩)는 없다. */
+/** 오너 면제의 기본 출구 — 스토어(밖으로 나가는 팩)는 기본값에 없다. `owner-waive` 가 --contexts 없이 적는 출구다. */
 export const OBJECT_GATE_WAIVER_CONTEXTS = ['bundle', 'shared', 'workshop-local'] as const satisfies readonly ObjectGateContext[];
+/** 오너 면제가 닿을 수 있는 출구 전부. store 는 그 출구를 적은 오너의 말이 있는 묶음(또는 넓힘 기록)에만 걸린다. */
+export const OBJECT_GATE_WAIVER_ALLOWED_CONTEXTS = [...OBJECT_GATE_WAIVER_CONTEXTS, 'store'] as const satisfies readonly ObjectGateContext[];
+/** 넓힘으로 store 출구를 열 수 있는 묶음의 이름 머리 — 오너의 말(2026-11-15)은 «Fable 이 만든 것» 이다. 다른 오너 묶음은 넓히지 않는다. */
+export const OBJECT_GATE_STORE_EXTEND_PREFIX = 'fable-';
+/** 묶음을 다시 만들지 않고 출구만 넓힌 기록(`owner-waive-extend`). 그 출구를 연 오너의 말·날짜·기록한 쪽을 묶음 머리와 따로 든다. */
+export type ObjectGateOwnerWaiverExtension = { contexts: ObjectGateContext[]; owner: string; decidedAt: string; recordedBy: string; note?: string };
 /** 오너 면제 묶음의 그림 한 장 — 화소 해시·종류에 묶인다. 한 화소라도 바뀌면 면제도 풀린다. */
 /** kind 'part'(2026-11-15) = 스스로 판정받지 않고 조립 그림에 실려 다니는 부품. 그 조립 그림(partOf = 그 화소 해시)이 같은 묶음에 있을 때만 `owner-waive` 가 적는다.
  *  부품 면제는 종류 'part' 로 물을 때만 효력이 있다(종류 없이 묻는 출구에는 닿지 않는다). */
@@ -29,15 +38,24 @@ export type ObjectGateOwnerWaiverItem = { pixelSha256: string; kind: ObjectGateK
 export type ObjectGateOwnerWaiverBatch = {
   schema: 'oprn-object-gate-owner-waiver/1'; id: string; owner: string; decidedAt: string; recordedBy: string;
   contexts: ObjectGateContext[]; note?: string; items: ObjectGateOwnerWaiverItem[];
+  /** 나중에 넓힌 출구(2026-11-15). 없으면 묶음 머리의 contexts 뿐이다. */
+  extensions?: ObjectGateOwnerWaiverExtension[];
 };
 /** 그림 한 장에 닿은 면제(묶음 머리 + 그 장). */
-export type ObjectGateOwnerWaiver = { batch: Pick<ObjectGateOwnerWaiverBatch, 'schema' | 'id' | 'owner' | 'decidedAt' | 'recordedBy' | 'contexts'>; item: ObjectGateOwnerWaiverItem };
+export type ObjectGateOwnerWaiver = { batch: Pick<ObjectGateOwnerWaiverBatch, 'schema' | 'id' | 'owner' | 'decidedAt' | 'recordedBy' | 'contexts' | 'extensions'>; item: ObjectGateOwnerWaiverItem };
 
-/** 이 면제가 이 그림·종류·출구에 효력이 있는가. 스토어 출구와 적지 않은 출구에는 없다. */
+/** 이 묶음이 이 출구를 적었는가 — 묶음 머리의 contexts, 또는 오너 문장·날짜·기록한 쪽이 다 있는 넓힘 기록. */
+export function ownerWaiverReaches(batch: Pick<ObjectGateOwnerWaiverBatch, 'contexts' | 'extensions'>, context: ObjectGateContext): boolean {
+  if (Array.isArray(batch.contexts) && batch.contexts.includes(context)) return true;
+  return (batch.extensions ?? []).some(e => Array.isArray(e?.contexts) && e.contexts.includes(context) && !!e.owner?.trim() && !!e.decidedAt?.trim() && !!e.recordedBy?.trim());
+}
+
+/** 이 면제가 이 그림·종류·출구에 효력이 있는가. 적지 않은 출구에는 없다 — store 도 그 출구를 적은 묶음에만 있다. */
 export function ownerWaiverApplies(waiver: ObjectGateOwnerWaiver | null | undefined, pixelSha256: string, kind: ObjectGateKind | 'part' | undefined, context: ObjectGateContext): boolean {
   if (!waiver || waiver.batch.schema !== 'oprn-object-gate-owner-waiver/1') return false;
-  if (context === 'store' || !(OBJECT_GATE_WAIVER_CONTEXTS as readonly string[]).includes(context) || !waiver.batch.contexts.includes(context)) return false;
+  if (!(OBJECT_GATE_WAIVER_ALLOWED_CONTEXTS as readonly string[]).includes(context)) return false;
   if (!waiver.batch.owner?.trim() || !waiver.batch.decidedAt?.trim() || !waiver.batch.recordedBy?.trim()) return false;
+  if (!ownerWaiverReaches(waiver.batch, context)) return false;
   if (waiver.item.pixelSha256 !== pixelSha256) return false;
   if (waiver.item.kind === 'part') return kind === 'part';
   return !kind || waiver.item.kind === kind;
@@ -259,7 +277,7 @@ export function objectGateRefusal(input: {
   /** Opus 최종 판정 기록(final/<해시>.json). 보정된 최종 프로필의 것만 효력이 있다. */
   final?: ObjectGateFinal | null;
   calibratedFinalProfiles?: ReadonlySet<string>;
-  /** 오너 면제(waivers/). Opus 최종 기록이 없는 그림에만, store 가 아닌 출구에서만 효력이 있다. 서명된 사람 거절이 그 위에서 막는다. */
+  /** 오너 면제(waivers/). Opus 최종 기록이 없는 그림에만, 그 묶음이 적은 출구에서만 효력이 있다(store 는 적힌 묶음에만). 서명된 사람 거절이 그 위에서 막는다. */
   waiver?: ObjectGateOwnerWaiver | null;
 }): string | null {
   const { receipt, pixelSha256, kind, context } = input;
@@ -274,7 +292,7 @@ export function objectGateRefusal(input: {
     const why = final.reasons.length ? final.reasons.join(' · ') : 'fail';
     return `Opus 최종 판정 불합격(${why}) — 다시 그려 새 해시로 다시 받아라`;
   }
-  // 오너 면제(2026-11-12): Opus 최종 기록이 없는 그림만. 서명된 사람 거절(어느 종류로 했든)이 있으면 면제도 막힌다. 스토어 출구는 받지 않는다.
+  // 오너 면제(2026-11-12): Opus 최종 기록이 없는 그림만. 서명된 사람 거절(어느 종류로 했든)이 있으면 면제도 막힌다. 스토어 출구는 그 출구를 적은 묶음만 받는다.
   if (ownerWaiverApplies(input.waiver, pixelSha256, kind, context)) {
     const rejected = input.hold ? humanDecision(input.hold, { pixelSha256, kind: input.hold.kind } as ObjectGateReceipt) === 'reject' : false;
     if (rejected) return `사람이 검토 화면에서 거절했다(${input.hold!.decidedBy}, ${input.hold!.decidedAt.slice(0, 10)}) — 최종이다. 오너 면제도 이 그림에는 닿지 않는다`;
