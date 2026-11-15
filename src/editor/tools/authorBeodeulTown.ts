@@ -99,7 +99,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       terrainMap: { type: "array", items: { type: "string" }, description: "(선택, 그림 도안에서 읽은 지형 칸 지도) 행 문자열 배열(위에서 아래, 한 글자 = 한 칸): 0–3 땅 단 · ~ 강 · | 폭포(강으로 그린다) · o 못·연못. 주면 코드가 만드는 단·물 대신 이 모양을 맵 크기에 맞춰 늘려 단과 물을 깔고, 계단은 단 경계에 절개 조각 규칙으로 자동 배치한다(못 놓으면 경고). 안 주면 지금처럼." },
       layout: { type: "object", description: "코드 지형 위 자리(지형 미리보기의 좌표, x 오른쪽·y 아래). 함수는 가장 가까운 놓을 수 있는 자리로 옮기고 길을 잇고 옮김·실패를 보고한다. 생략하면 함수가 대신 고른다.",
         properties: {
-          gather: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, plaza: { type: "boolean", description: "판석 광장(기본 true) · false 면 우물·좌판만" } }, required: ["x", "y"], description: "모이는 곳(광장·우물)" },
+          gather: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, plaza: { type: "boolean", description: "true 면 판석 광장을 깐다(장터·교역 마을일 때만). 생략하면 form 이 plaza 일 때만 광장이고, 아니면 우물·좌판만." } }, required: ["x", "y"], description: "모이는 곳(우물·좌판) — 맵 한가운데가 아니라 사람이 모일 까닭이 있는 자리(다리·나루 머리, 계단 어귀, 큰길이 마을로 드는 어귀, 여관 앞)" },
           landmark: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], description: "높은 곳 건물(망루 집·예배당·사원·사당) — 보통 높은 단" },
           anchor: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], description: "큰 건물(여관·회관) — 보통 모이는 곳 곁" },
           work: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], description: "일터(헛간·곳간과 일터 소품)" },
