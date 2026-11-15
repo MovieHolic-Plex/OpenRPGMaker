@@ -216,6 +216,22 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
   // 다른 단에 집·일터를 두었으면 하나는 거기에 남긴다 — 강 건너 먼저, 일터 먼저(집은 마당에 남는다), 마을에 하나만(둘을 보내면 떨어진 집과 그 골목이 집 곁 빈 땅을 써서 탐침 30판의 밭이 64 에서 49 로 줄었다). 집은 마당 몫 셋(집이 셋이면 둘)이 남을 때만 보낸다.
   // 강 건너에 문이 서면 시공기가 그 문 앞까지 골목을 내고 물을 건너는 자리에 다리를 놓는다. 높은 곳 건물이 이미 선 터는 쓰이고 있는 터다.
   let workSeated = false;
+  // 떨어진 터의 건물이 제 단의 목을 막으면 안 된다(탐침 산골 씨앗 24: 윗단 움푹한 터의 목에 집이 서서 그 뒤 66칸이 못 닿는 칸이 됐다 — 기준은 13칸).
+  // 건물을 앉히기 전에 문 앞에서 같은 단 마른 빈 땅으로 번져 닿던 칸 가운데, 앉힌 뒤 못 닿게 된 칸이 열 칸을 넘으면 그 자리는 쓰지 않는다.
+  const cutsTier = (sp: YardSeat): boolean => {
+    const f = sp.front.y * W + sp.front.x, L = t.levels[f];
+    const inside = (c: number) => { const x = c % W, y = (c - x) / W; return x >= sp.x && x < sp.x + sp.w && y >= sp.y && y < sp.y + sp.h; };
+    const flood = (through: boolean): Uint8Array => {
+      const seen = new Uint8Array(W * H), q = [f]; seen[f] = 1;
+      for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const nx = x + dx, ny = y + dy; if (!inMap(nx, ny)) continue; const n = ny * W + nx;
+          if (seen[n] || t.levels[n] !== L || t.water[n] || !(env.free(n) || (through && inside(n)))) continue; seen[n] = 1; q.push(n); } }
+      return seen;
+    };
+    const before = flood(true), after = flood(false);
+    let lost = 0; for (let c = 0; c < W * H; c += 1) if (before[c] && !after[c] && !inside(c)) lost += 1;
+    return lost > 10;
+  };
   if (want.apart?.length && want.bankOf && !want.wetOk) {
     const yb = want.bankOf(gy * W + gx), cap = 1, done = new Set<string>();
     for (const p of [...want.apart].sort((a, b) => Number(a.bank === yb) - Number(b.bank === yb) || Number(a.role === "house") - Number(b.role === "house"))) {
@@ -226,7 +242,7 @@ function seatYard(t: CodeTerrain, cand: Cand, g: LayoutPoint, env: YardEnv, want
       if (p.role === "house" ? left - 1 < Math.min(3, want.houses - 1) : workSeated || !want.work) continue;
       const undo = env.mark();
       const sp = env.seat(p.role, { x: p.x, y: p.y, maxR: 6, tier: p.level });
-      if (!sp || want.bankOf(sp.front.y * W + sp.front.x) !== p.bank) { undo(); continue; }
+      if (!sp || want.bankOf(sp.front.y * W + sp.front.x) !== p.bank || cutsTier(sp)) { undo(); continue; }
       done.add(key); plan.apart.push({ x: sp.front.x, y: sp.front.y, role: p.role, why: far ? "bank" : "tier" });
       if (p.role === "house") { houses.push(sp); left -= 1; } else workSeated = true;
     }

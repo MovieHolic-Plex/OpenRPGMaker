@@ -2831,8 +2831,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     for (const [d, q] of [[dF, qF], [dB, qB]] as const) for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W; if (d[c]! >= 20) continue;
       for (const [dx, dy] of side4) { const n = idx(x + dx, y + dy); if (inMap(x + dx, y + dy) && d[n]! > d[c]! + 1) { d[n] = d[c]! + 1; q.push(n); } } }
     const cands: { x: number; y: number; w: number; h: number; s: number }[] = [];
-    for (const [w, h] of [[7, 4], [6, 4], [5, 3], [4, 3]] as const) {
-      for (let y = 2; y + h < H - 1; y += 1) for (let x = 2; x + w < W - 1; x += 1) {
+    // 볼 것 없는 화면을 채울 때는 세 칸 텃밭까지 본다(굴 입구 자리와 길 사이 다섯 칸 폭 땅)
+    for (const [w, h] of (win ? [[7, 4], [6, 4], [5, 3], [4, 3], [3, 3]] : [[7, 4], [6, 4], [5, 3], [4, 3]]) as readonly (readonly [number, number])[]) {
+      for (let y = 1; y + h < H - 1; y += 1) for (let x = 1; x + w < W - 1; x += 1) {
         const m = idx(x + (w >> 1), y + (h >> 1)), L = lv[m]!;
         if (dF[m]! < (win ? 4 : 7)) continue;
         if (win && (x < win.x || y < win.y || x + w > win.x + 20 || y + h > win.y + 15)) continue;
@@ -2845,7 +2846,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
     cands.sort((a, b) => b.s - a.s || a.y - b.y || a.x - b.x);
     const crops = have(spec.field.decals ?? []);
-    for (const p of cands.slice(0, 24)) {
+    for (const p of cands.slice(0, 600)) { // 울타리 문이 길에 닿는 첫 자리 — 앞 스물넷만 보면 탑집 곁 후보가 모두 문을 못 내 남은 땅이 비었다(산골 씨앗 25)
       if (!planFence(p.x - 1, p.y - 1, p.x + p.w, p.y + p.h, (c) => distRoad[c]!)) continue;
       const crop = crops.length ? crops[lookHash(`plot|${seed}|${p.x}|${p.y}`) % crops.length]! : null;
       for (let j = 0; j < p.h; j += 1) for (let i = 0; i < p.w; i += 1) {
@@ -2904,9 +2905,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       if (fp) { fieldFromLayout += 1; const want = codePlan!.layout.fields!; const k = want.findIndex((w) => Math.abs(w.x - fp.x) <= 4 && Math.abs(w.y - fp.y) <= 3); if (k >= 0) for (let i = fieldPts.length - 1; i >= 0; i -= 1) if (Math.abs(fieldPts[i]!.x - want[k]!.x) <= 4 && Math.abs(fieldPts[i]!.y - want[k]!.y) <= 3) fieldPts.splice(i, 1); }
       cluster(spec.field.edge, x + fw + 1, y + fh - 1, 1, 1);
     }
-    // 집 곁에 밭이 둘도 안 섰으면 숲이 서기 전에 맵의 남은 빈 땅을 훑어 둘까지 채운다 — 숲이 땅을 다 쓰고 나면 밭이 하나도 없는 마을이 남았다(강가 씨앗 8 · 산골 씨앗 23).
-    // 나머지는 숲이 선 뒤에 놓는다(아래 «남은 땅의 쓰임») — 숲보다 먼저 다섯까지 채우면 30판의 숲이 4,492 에서 4,061칸으로 준다.
-    if (bodyNear && !denseWoods) while (fields < 2 && scanField()) { /* 한 뙈기씩 */ }
+    // 집 곁에 밭이 하나도 안 섰으면 숲이 서기 전에 맵의 남은 빈 땅을 훑어 한 뙈기를 놓는다 — 숲이 땅을 다 쓰고 나면 밭이 하나도 없는 마을이 남았다(강가 씨앗 8 · 산골 씨앗 23).
+    // 나머지는 숲이 선 뒤에 놓는다(아래 «남은 땅의 쓰임») — 숲보다 먼저 다섯까지 채우면 탐침 30판의 숲이 4,492 에서 4,061칸, 둘까지면 4,310칸으로 준다(기준 4,443).
+    if (bodyNear && !denseWoods && !fields) scanField();
   }
   // 목초지(2026-10-30 「빈 단에 쓰임을 — 코드가 아니라 조수가 고른 자리로」): 울타리 두른 풀밭에 양 몇 마리·짚가리. 풀밭 마을만(울타리 조각).
   let pastureCount = 0;
