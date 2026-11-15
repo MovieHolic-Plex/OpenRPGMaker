@@ -7,6 +7,7 @@ import { labelHasWord } from "@/project/labelWords";
 import { Cell, DIRS, eventsOf, transferCells, eventBodyCells, eventBlockers, walkReach, walkStart, dist, shortestPathCells, openness, edgeExitCells, groundBlocks, tileLabel, layers, objectAt } from "./cells";
 import { behindBuildingStrip, declaredDoorCells, placeMarks } from "./entrances";
 import { roadCells } from "./surface";
+import { standableYard } from "@/editor/tools/beodeulSettlementRank";
 import { personSpotContext, personSpotCost } from "./personSpot";
 import { coveredCell } from "./underRoof";
 
@@ -289,6 +290,8 @@ export function resolveWhere(
   };
   const cells: Cell[] = [];
   for (let y = 0; y < map.height; y++) for (let x = 0; x < w; x++) if (fits({ x, y })) cells.push({ x, y });
+  // 바깥 맵의 사람은 맵 끝 칸에 서지 않는다 — 한쪽에서만 말을 걸 수 있고 화면 끝에 숨는다(2026-11-15 r5 «물레강 마을»: 입구 곁 주민이 (41,13) 끝 칸에 섰다). 안쪽에 설 칸이 하나도 없을 때만 남긴다.
+  if (!fp && !indoor) { const inner = cells.filter((c) => c.x > 0 && c.y > 0 && c.x < w - 1 && c.y < map.height - 1); if (inner.length) cells.splice(0, cells.length, ...inner); }
 
   const before = walkReach(project, map, start, blockers);
   const connectedWithout = (block: readonly Cell[]): boolean => {
@@ -302,7 +305,9 @@ export function resolveWhere(
   };
   // 바깥 맵의 사람은 길 위가 아니라 길가에 선다(2026-10-23 3차 몬스터 마을: 주민 둘이 큰길 한가운데 서서 길을 좁혔다).
   const outdoorRoads = !fp && !indoor ? roadCells(project, map) : undefined;
-  const roadCost = (c: Cell): number => (!opts.roadOk && outdoorRoads?.has(c.y * w + c.x) ? 8 : 0);
+  // 넓은 흙 마당의 속은 길 한가운데가 아니다(beodeulSettlementRank.standableYard) — 시골 마을의 사람은 마당·문 앞 닳은 자리에 선다. 길 줄기와 문 바로 앞 칸은 여전히 피한다.
+  const yardOk = outdoorRoads?.size ? standableYard(map, project.tilesets[map.tilesetId], outdoorRoads) : undefined;
+  const roadCost = (c: Cell): number => (!opts.roadOk && outdoorRoads?.has(c.y * w + c.x) && !yardOk?.has(c.y * w + c.x) ? 8 : 0);
   // 실내 사람은 문 곁·가구의 하나뿐인 접근 칸·다른 사람 바로 위아래·양탄자 가운데를 피한다(personSpotCost).
   const spotCtx = !fp && indoor ? personSpotContext(project, map, opts.exceptId) : undefined;
   const spotCost = (c: Cell): number => (spotCtx ? personSpotCost(project, map, c, spotCtx) : 0);
