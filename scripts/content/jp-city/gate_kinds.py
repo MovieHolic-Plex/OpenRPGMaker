@@ -110,6 +110,16 @@ def current_profile() -> str:
     _CUR = m.group(1); return _CUR
 
 
+def owner_waived(sha: str, kind: str, context: str = 'bundle') -> bool:
+    """오너 면제 묶음(`object-gate owner-waive` 가 적은 waivers/<묶음>.json)이 이 화소 해시·종류·출구에 닿는가 — 버들항 등 다른 굽기가 쓰는 object_gate 의 같은 규칙.
+    보정된 Opus 최종 판정이 있는 그림과 서명된 사람 거절이 있는 그림에는 닿지 않는다(object_gate.refusal 과 같은 순서)."""
+    import object_gate as OG
+    if OG.final_applies(OG.read_final(sha), sha): return False
+    if not OG.owner_waiver_applies(OG.read_owner_waiver(sha), sha, kind, context): return False
+    held = OG.read_hold_decision(sha)
+    return not (held and OG.human_decision(held, {'pixelSha256': sha, 'kind': held.get('kind')}) == 'reject')
+
+
 def state(png_path: str, kind: str, context: str = 'bundle'):
     """('pass'|'provisional', None) 또는 (None, 이유). provisional = 현재 프로필의 PASS 영수증이지만 프로필이 아직 보정 전.
     영수증이 FAIL 이거나 옛 프로필·다른 종류면 통과로 세지 않는다(OG.refusal 은 보정 여부를 판정보다 먼저 봐서 FAIL 도 「보정 안 됨」으로만 말한다)."""
@@ -121,6 +131,9 @@ def state(png_path: str, kind: str, context: str = 'bundle'):
     human = OG.human_decision(OG.read_hold_decision(sha), rc)
     if human == 'reject': return None, '사람이 검토 화면에서 거절했다 — 최종'
     if human == 'allow' and rc.get('kind') == kind: return 'pass', None
+    # 오너 면제(2026-11-15, 오너: 「서명을 ? 오너 면제로 해 그냥 ....」): 사람 허용 서명을 이 박스에서 확인하지 못하는 그림(열쇠 파일이 저장소 밖 검토 서버에만 있다)은
+    # 도구가 적은 오너 면제 기록이 그 화소 해시에 닿으면 그 자리를 대신한다. 통과가 아니라 'waived' — 보고에는 «오너 면제» 로만 적는다. 면제 기록이 없으면 아래는 전과 같다.
+    if owner_waived(sha, kind, context): return 'waived', None
     if rc.get('kind') != kind: return None, f"영수증 종류({rc.get('kind')})가 요청 종류({kind})와 다르다"
     if rc.get('profileHash') != current_profile() and rc.get('profileHash') not in OG.calibrated_profiles():
         # 이미 출하된 그림의 동결 목록(gate_grandfather.py, 2026-10-21): 화소가 한 점도 안 바뀌었고 옛 프로필 통과 영수증이 있으면 통과.
@@ -134,13 +147,13 @@ def state(png_path: str, kind: str, context: str = 'bundle'):
 def check_all(context: str = 'bundle') -> dict:
     """모든 _gate 키트의 영수증 확인. {'ok':[...], 'bad':[(id, kind, why)], 'total':n}. 모델 호출 없음."""
     import object_gate as OG
-    ok, bad, prov, covered, gf, changed = [], [], [], [], [], []
+    ok, bad, prov, covered, gf, changed, waived = [], [], [], [], [], [], []
     import gate_assembled as GA
     for kid in gate_kits():
         kind = kind_of(kid)
         if is_part(kid):
             name, st = GA.covering(kid, context)
-            if name: covered.append((kid, name + (' [미보정 프로필 임시]' if st == 'provisional' else GF_TAG if st == 'grandfathered' else ''))); continue
+            if name: covered.append((kid, name + (' [미보정 프로필 임시]' if st == 'provisional' else GF_TAG if st == 'grandfathered' else WAIVE_TAG if st == 'waived' else ''))); continue
             bad.append((kid, kind, st)); continue
         png = os.path.join(GATE_DIR, kid + '.png')
         try:
@@ -150,6 +163,7 @@ def check_all(context: str = 'bundle') -> dict:
         if st == 'provisional':                                  # 현재 프로필의 PASS 이지만 프로필이 아직 보정 전 → 임시 통과(보고에 「미보정」 표기)
             prov.append(kid); continue
         if st == 'grandfathered': gf.append(kid); continue
+        if st == 'waived': waived.append(kid); continue
         if why: why = _changed_note(kid, png, why, changed)
         (bad if why else ok).append((kid, kind, why) if why else kid)
     # 시설 실내 블록(병원 hs- · 학교 보강 sx- · 사무실 보강 ox-, 2026-10-14): 새 그림이라 관문을 거친다(옛 실내 블록은 소급 면제).
@@ -158,7 +172,7 @@ def check_all(context: str = 'bundle') -> dict:
     for b, kid, png, kind in inst_items():
         if kind == 'part':
             name, st = GR.covering(kid, png, context)
-            if name: covered.append((kid, 'room ' + name + (' [미보정 프로필 임시]' if st == 'provisional' else GF_TAG if st == 'grandfathered' else ''))); continue
+            if name: covered.append((kid, 'room ' + name + (' [미보정 프로필 임시]' if st == 'provisional' else GF_TAG if st == 'grandfathered' else WAIVE_TAG if st == 'waived' else ''))); continue
             bad.append((kid, kind, st)); continue
         try:
             st, why = state(png, kind, context)
@@ -166,14 +180,17 @@ def check_all(context: str = 'bundle') -> dict:
             st, why = None, f'확인 실패: {e}'
         if st == 'provisional': prov.append(kid); continue
         if st == 'grandfathered': gf.append(kid); continue
+        if st == 'waived': waived.append(kid); continue
         if why: why = _changed_note(kid, png, why, changed)
         (bad if why else ok).append((kid, kind, why) if why else kid)
     gf_cov = [kid for kid, name in covered if name.endswith(GF_TAG)]
+    waived += [kid for kid, name in covered if name.endswith(WAIVE_TAG)]
     return dict(ok=ok, prov=[p if isinstance(p, str) else p[0] for p in prov], covered=covered, bad=bad, grandfathered=gf, grandfathered_covered=gf_cov,
-                changed=changed, total=len(ok) + len(prov) + len(gf) + len(covered) + len(bad))
+                changed=changed, waived=waived, total=len(ok) + len(prov) + len(gf) + len(covered) + len(bad) + len([k for k in waived if k not in {c[0] for c in covered}]))
 
 
 GF_TAG = ' [동결 출하본]'
+WAIVE_TAG = ' [오너 면제 — 통과 아님]'
 
 
 def _changed_note(key, png, why, changed):
@@ -188,6 +205,8 @@ def _changed_note(key, png, why, changed):
 
 def report(res: dict, file=sys.stdout) -> None:
     print(f"[3/4 관문] street_hand·시설 실내 키트 {res['total']}개 중 통과 {len(res['ok'])} + 동결 출하본(화소 그대로) {len(res.get('grandfathered', []))} + 조립 건물 영수증으로 덮임 {len(res.get('covered', []))}(그중 동결 {len(res.get('grandfathered_covered', []))}) + 미보정 프로필 임시통과 {len(res.get('prov', []))}, 영수증 없음/불합격 {len(res['bad'])}", file=file)
+    if res.get('waived'):
+        print(f"[3/4 관문] 오너 면제 {len(res['waived'])}개(통과 아님 — 사람 허용 서명을 이 박스에서 확인하지 못함 — 오너 면제): {', '.join(res['waived'])}", file=file)
     if res.get('changed'):
         print(f"!!! [3/4 관문] 동결 출하본 {len(res['changed'])}개의 화소가 바뀌었다 — 동결이 풀려 새 그림 기준을 거쳐야 한다: {', '.join(res['changed'][:12])}", file=file)
     for kid, name in res.get('covered', [])[:3]: print(f'  {kid}: covered by assembled {name}', file=file)
@@ -207,6 +226,7 @@ def enforce() -> None:
     if res.get('changed'):
         print(f"!!! [3/4 관문] 동결 출하본 {len(res['changed'])}개의 화소가 바뀌었다: {', '.join(res['changed'])}", file=sys.stderr)
     if not res['bad'] and res['total']:
+        if res.get('waived'): print(f"[3/4 관문] 오너 면제 {len(res['waived'])}개(통과 아님 — 사람 허용 서명을 이 박스에서 확인하지 못함 — 오너 면제): {', '.join(res['waived'])}", file=sys.stderr)
         ng, nc = len(res.get('grandfathered', [])), len(res.get('grandfathered_covered', []))
         print(f"[3/4 관문] 동결 출하본(화소 그대로·옛 프로필 통과 영수증) {ng} + 동결 조립 표본으로 덮인 부품 {nc} · 새 영수증 통과 {len(res['ok'])} · 임시 {len(res.get('prov', []))}"
               f" (동결 목록 tiledata/jp-city/gate-grandfathered.json)", file=sys.stderr)
@@ -214,7 +234,8 @@ def enforce() -> None:
         if res.get('prov'):
             print(f"[3/4 관문] 통과 {len(res['ok'])} · 임시통과 {len(res['prov'])} — 판정 프로필이 아직 「보정 안 됨」이다. 보고에 「관문 임시통과(프로필 미보정)」라고 적을 것.", file=sys.stderr)
         else:
-            print(f"[3/4 관문] 통과 {res['total']}/{res['total']} (동결 출하본 포함)")
+            nw = len(res.get('waived', []))
+            print(f"[3/4 관문] 통과 {res['total'] - nw}/{res['total']} (동결 출하본 포함)" + (f" · 오너 면제 {nw}(통과 아님)" if nw else ''))
         return
     report(res, file=sys.stderr)
     print('굽기를 거절한다. 영수증을 받으려면: python3 scripts/content/jp-city/gate_review_all.py 후 npm run harness -- object-gate review --batch /tmp/jp-gate-chunk-N.jsonl\n'
