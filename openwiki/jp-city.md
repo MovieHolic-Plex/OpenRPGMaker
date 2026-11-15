@@ -583,3 +583,22 @@ object-gen 흐름(시점 판정 통과 참고 그림 → Opus 손 도트 A/B →
 | 도로 몫 19% 이하인 지도(최대) | 24 / 24 (17.1%) | 22 / 24 (19.8%) |
 
 건물 수가 준 것은 알려진 한계다: 같은 그림을 되풀이하지 않는데 지금 건물 킷 폭이 7~8칸이라 60칸 줄에 일곱 채쯤 선다. 폭 좁은 새 건물이 구워지면 다시 잰다.
+
+## 새 거리 조각과 규칙 — 블록 `fable_street` (2026-11-15)
+
+오너 2026-11-15 «확대해서 보면 엉망진창인 게 너무많다. 버들항급 퀄리티도 안 되고». 거리의 바닥·소품을 한 손(Fable 5.2)으로 다시 그리고, 구성기가 조각마다 «어디에 서는가»를 자료로 읽어 그 자리에만 놓는다. 건물은 건물 일꾼의 `fable_city`(`jp-bldg-f-*`) — 구워지면 그것만 쓴다.
+
+### 구운 것
+- 블록 `fable_street`, 칸 28527~32558(예약 4,032칸 — `bake_lib.RESERVE`), 쓴 칸 1,435. 조각 318종 · 키트 그림 918장(`jp-st-<조각>` 또는 `jp-st-<조각>--<바닥>` — 바닥별 발치 그림자 변형).
+- 바닥 무늬 7가족(`jp-st-gnd-<가족>`: pave 보도 블록 · forecourt 앞마당 판 · tarmac 아스팔트(결 둘) · alley 골목 돌길 · earth 다진 흙 · lawn 잔디 · water 물), 재료 테(연석·돌 테·잔디 테, 안·바깥 모퉁이), 노면 표시, 둑(면·갓돌·계단·난간), 경계 줄 8가족(wall·hedge·fence·rail·railcap·guard·barricade·net — 끝·가운데·모퉁이·대문), 서 있는 소품 147종.
+- 원본 그림 `tiledata/jp-city/fable-street/sheets/` → `scripts/content/jp-city/street/fable_street_spec.py` 가 `pieces/`·`spec.json`·`index.json`·`src/assets/jpCityStreetPieces.json` 을 만든다 → 블록 `scripts/content/jp-city/blocks/fable_street.py` 가 굽는다. 팔레트는 `tiledata/jp-city/fable-city/palette.json`(거리 바닥 램프 lawn·earth·tarmac 포함).
+- 3/4 관문 미통과 — 오너 면제 묶음 `fable-jpstreet-2026-11-15`(898장, 도구 `object-gate owner-waive` 로 기록). 조각 그림이 한 화소라도 바뀌면 묶음을 다시 적어야 굽힌다.
+
+### 구성기
+- 켜짐: `STREET_BAKED`(칩셋에 `jp-st-kerb-s` 가 있으면). 열쇠 있는 호출(`planJpCityScene`)이 새 조각으로 짓는다. `SceneOptions.fable` 로 끄고 켤 수 있고, `SceneOptions.buildings` 로 건물 표를 바꿔 끼운다(굽기 전 예정 표 — `test/fixtures/jpCityFableBuildingsPlanned.json`).
+- 파일: `jpCityStreetPieces.ts`(조각 표·앵커 등급) · `jpCitySceneFable.ts`(강·노면 표시·경계 줄·테·그늘·아케이드·꾸밈·빈 띠 메우기·바닥·검사 `auditFable`) · `jpCitySceneCtx.ts`(`stFits`·`stPut`·`doorFront`) · `jpCitySceneRun.ts`(`ground_cells` 단계 — 가족의 무늬 키트를 읽어 1층에 깐다).
+- 앵커 등급: wall 벽 앞 · kerb 연석 줄 · lot 필지 안 · open 광장·마당 · facade 벽면 · road 차도(차만) · water 물 · floor 바닥 덧그림 · run 경계 줄.
+- 규칙(검사 이름): 차도 칸에는 차와 노면 표시만(`on-carriageway`) · 앵커 자리(`anchor-*`) · 겹침·지도 끝 잘림 없음(`overlap`·`cut-by-edge`) · 같은 그림은 20×15 창에 한 번(`repeat-in-window`, 나무·경계 줄·바닥 조각 제외) · 경계 줄은 끝이 건물·다른 줄·길·지도 끝·트인 자리에 닿는다(`loose-run-end`), 집 필지는 대문 하나 · 재료가 만나는 자리마다 테(`bare-seam`) · 차선은 등급대로(`alley-marking`·`edge-line-gap`·`centre-line-gap`·`centre-line-on-one-lane`) · 문 앞 칸은 비운다.
+- 생활도로(보도 없는 길)는 북쪽 한 줄이 길가 띠(보도 블록)다 — 사람이 걷고 전봇대·가로등이 선다. 전선은 바닥 위로 걸지 않는다.
+- 사람이 서는 자리는 칸 이름표로 갈린다(`placementRules.laneCells`): 아스팔트 칸은 차도, 보도 블록 칸은 걷는 길.
+- 테스트 `test/jpCityStreetRules.test.ts`(거리 종류 10 × 씨앗 12 의 계획 + 지은 지도 4장). 측정 `scripts/qa/jpStreetPlanDump.mts`(계획·검사) · `scripts/qa/jpStreetMeasure.mts`(지은 지도 — 새 조각 그룹을 안다).

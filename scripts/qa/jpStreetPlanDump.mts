@@ -7,14 +7,14 @@ import { writeFileSync } from "node:fs";
 import { planJpCityScene } from "../../src/project/jpCitySceneComposer.ts";
 import { auditFable } from "../../src/project/jpCitySceneFable.ts";
 import { Occ } from "../../src/project/jpCitySceneCtx.ts";
-import { SCENE_KINDS } from "../../src/project/jpCitySceneKinds.ts";
+import { SCENE_BUILDINGS, SCENE_KINDS } from "../../src/project/jpCitySceneKinds.ts";
 import { GROUND_FAMILIES, STREET_PIECES } from "../../src/project/jpCityStreetPieces.ts";
 import planned from "../../test/fixtures/jpCityFableBuildingsPlanned.json";
 
 const arg = (k: string, d?: string) => { const i = process.argv.indexOf(`--${k}`); return i >= 0 ? process.argv[i + 1] : d; };
 const W = Number(arg("w", "60")), H = Number(arg("h", "48"));
-// --pool planned: 새 건물 예정 표(시범 여섯 + 상점가 20)만 · --pool six: 시범 여섯만(그림용 — 나머지 자리는 빈다) · 없으면 사전(구워진 것)
-const POOL = arg("pool") === "planned" ? planned.buildings : arg("pool") === "six" ? planned.buildings.filter((b) => b.pilot) : undefined;
+// --pool planned: 새 건물 예정 표(시범 여섯 + 상점가 20)만 · --pool six: 시범 여섯만 · --pool mixed: 시범 여섯 + 사전의 건물(그림용 — 새 건물이 다 구워지기 전) · 없으면 사전(구워진 것)
+const POOL = arg("pool") === "planned" ? planned.buildings : arg("pool") === "six" ? planned.buildings.filter((b) => b.pilot) : arg("pool") === "mixed" ? [...planned.buildings.filter((b) => b.pilot), ...SCENE_BUILDINGS] : undefined;
 const STYLE: Record<string, "shopping" | "residential" | "shitamachi" | "shotengai"> = {};
 for (const k of SCENE_KINDS) STYLE[k.id] = k.styles[0] as never;
 
@@ -28,7 +28,7 @@ function one(kind: string, seed: number, key: string) {
   for (const p of f.placed) if (STREET_PIECES[p.name]?.layer !== "floor" && STREET_PIECES[p.name]?.layer !== "ground") for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) if (x >= 0 && y >= 0 && x < W && y < H) thing[y * W + x] = 1;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const i = y * W + x;
-    if (f.occ[i] === Occ.Road && !thing[i]) { road++; continue; }       // jpStreetMeasure 와 같은 뜻: 차가 덮은 칸은 빈 차도가 아니다
+    if (GROUND_FAMILIES[f.gfam[i]!] === "tarmac" && !thing[i]) { road++; continue; }   // jpStreetMeasure 와 같은 뜻: 아스팔트 칸(차도·주차장) 가운데 차가 덮지 않은 것. 돌길 골목은 차도 몫이 아니다
     if (thing[i] || GROUND_FAMILIES[f.gfam[i]!] === "water") continue;
     let near = false;
     for (let dy = -2; dy <= 2 && !near; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H && thing[yy * W + xx]) { near = true; break; } }
@@ -63,7 +63,7 @@ if (process.argv.includes("--audit")) {
   const r = one(arg("kind", "kawazoi")!, Number(arg("seed", "1")), arg("key", "game-a")!);
   const f = r.plan.fable!;
   writeFileSync(arg("out", "plan.json")!, JSON.stringify({
-    W, H, kind: r.plan.kind.id, kindKo: r.plan.kind.ko, summary: r.plan.summary, numbers: r.numbers, audit: r.audit,
+    W, H, seed: Number(arg("seed", "1")), kind: r.plan.kind.id, kindKo: r.plan.kind.ko, summary: r.plan.summary, numbers: r.numbers, audit: r.audit,
     steps: r.plan.steps.map((s) => ({ tool: s.tool, note: s.note, args: s.args })),
     placed: r.plan.placed.map((p) => ({ id: p.kit?.id, role: p.role, x: p.x, y: p.y, w: p.w, h: p.h, foot: p.foot, doors: p.doors })),
     gfam: [...f.gfam], occ: [...f.occ], walkRows: r.plan.walkRows,

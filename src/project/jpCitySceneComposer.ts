@@ -48,7 +48,9 @@ const RIVER_W = 3;
 
 function layout(c: SceneCtx): SceneLayout {
   const { W, H, kind, rng } = c;
-  const rw = kind.mainW[0]! + Math.floor(rng() * (kind.mainW[1]! - kind.mainW[0]! + 1));
+  const rw0 = kind.mainW[0]! + Math.floor(rng() * (kind.mainW[1]! - kind.mainW[0]! + 1));
+  // 새 거리: 60×48 급 지도에 연석 큰길 둘 + 연석 세로 길이면 네 줄 큰길은 아스팔트 몫이 19% 를 넘는다 — 세 줄로 낸다(두 차로 큰길은 높이 62줄부터).
+  const rw = c.fable && kind.main === "kerb" && kind.cross === "kerb" && H < 62 ? Math.min(3, rw0) : rw0;
   const rowsOf = (t: string) => (t === "kerb" ? rw + 4 : t === "lane" ? 3 : t === "path" ? 2 : t === "mall" ? 6 : 10 + RIVER_W);
   const wantRiver = W >= 44 && rng() < kind.river;
   const typesFor = (n: number, river: boolean): SceneStreet["type"][] => {
@@ -93,14 +95,18 @@ function layout(c: SceneCtx): SceneLayout {
 
   // 세로 길: 지도를 끝까지 지나는 큰 길 하나(다리·육교가 여기 선다) + 넓은 지도면 하나 더(끝까지 또는 T자).
   const wantOverpass = kind.pieces.includes("overpass") && kind.cross === "kerb" && bands[0]!.foot - bands[0]!.top + 1 >= 10 && rng() < 0.85;
-  const mk = (x: number, lane: number, from: number, to: number, main: boolean): SceneVStreet => {
-    const sw = kind.cross === "lane" ? 0 : 1;
+  const mk = (x: number, lane: number, from: number, to: number, main: boolean, alley = false): SceneVStreet => {
+    const sw = kind.cross === "lane" || alley ? 0 : 1;
     return { x, lane, sw, w: lane + 2 * sw, from, to, main, arcade: kind.cross === "arcade", y0: from === 0 ? 0 : bands[from - 1]!.front.road1 + 1, y1: to === N - 1 ? H - 1 : bands[to]!.front.road0 - 1 };
   };
   const laneOf = () => (kind.cross === "arcade" ? 3 : kind.crossLane[0]! + Math.floor(rng() * (kind.crossLane[1]! - kind.crossLane[0]! + 1)));
   const vstreets: SceneVStreet[] = [];
   const two = W >= 52 && rng() < 0.8;
-  const mainLane = wantOverpass ? 2 : laneOf();
+  let mainLane = wantOverpass ? 2 : laneOf();
+  if (c.fable && kind.cross === "kerb") {   // 새 거리: 큰길이 넓은 종류(역 앞)는 세로 큰길을 한 칸씩 좁혀 아스팔트 몫을 19% 아래로
+    const rows = bands.reduce((a, b) => a + (b.front.type === "kerb" ? b.front.road1 - b.front.road0 + 1 : b.front.type === "lane" ? 2 : 0), 0);
+    while (mainLane > 2 && (rows * W + mainLane * (H - rows)) / (W * H) > 0.16) mainLane--;
+  }
   const mx = two ? Math.floor(W * (rng() < 0.5 ? 0.28 : 0.6) + rng() * 4) : Math.floor(W * 0.38 + rng() * W * 0.2);
   vstreets.push(mk(Math.max(7, Math.min(W - 12, mx)), mainLane, 0, N - 1, true));
   if (two) {
@@ -114,7 +120,13 @@ function layout(c: SceneCtx): SceneLayout {
       // 맨 위 띠는 가게 줄이 길게 이어지게 둘째 세로 길이 끊지 않는다(가게·시장 거리). 주택가는 T자도 된다.
       if (!lanes || (r < 0.3 && N >= 3)) from = 1; else if (r < 0.55 && N >= 3) to = N - 2;
       if (river >= 0 && from <= river && to > river && rng() < 0.5) { if (river + 1 <= N - 1) from = river + 1; }   // 다리는 하나면 된다 — 가끔 둘
-      vstreets.push(mk(x2, laneOf(), from, to, false));
+      // 새 거리: 둘째 세로 길까지 아스팔트면 차도 몫이 19% 를 넘는 지도는 둘째 길을 돌길 골목(보도 없음, 두 칸)으로 낸다.
+      const lane2 = laneOf();
+      const roadRows = bands.reduce((a, b) => a + (b.front.type === "kerb" ? b.front.road1 - b.front.road0 + 1 : b.front.type === "lane" ? 2 : 0), 0);
+      const span = (f: number, t: number) => (t === N - 1 ? H - 1 : bands[t]!.front.road0 - 1) - (f === 0 ? 0 : bands[f - 1]!.front.road1 + 1) + 1;
+      const asphalt = (roadRows * W + (m.sw ? m.lane * (H - roadRows) : 0) + lane2 * span(from, to)) / (W * H);
+      const alley = c.fable && kind.cross === "kerb" && asphalt > 0.155;   // 주차장·빈터 아스팔트 몫(두세 푼)을 남겨 둔다
+      vstreets.push(mk(x2, alley ? 2 : lane2, from, to, false, alley));
     }
   }
   return { bands, vstreets, blocks: [], ...(wantOverpass ? { overpass: true } : {}) } as SceneLayout & { overpass?: boolean };
@@ -162,7 +174,8 @@ function paintStreets(c: SceneCtx, L: SceneLayout): void {
       }
       continue;
     }
-    c.fill(v.x + v.sw, v.y0, v.lane, h, v.sw ? tone.road : SHARED_LANE); c.mark(v.x + v.sw, v.y0, v.lane, h, Occ.Road);
+    if (c.fable && !v.sw) { for (let y = v.y0; y <= v.y1; y++) if (c.famAt(v.x, y) !== "tarmac") c.fill(v.x, y, v.lane, 1, "@alley"); }   // 새 거리: 보도 없는 골목은 돌길(아스팔트는 차선 있는 길만 — 큰길과 만나는 칸은 큰길 그대로)
+    else c.fill(v.x + v.sw, v.y0, v.lane, h, v.sw ? tone.road : SHARED_LANE); c.mark(v.x + v.sw, v.y0, v.lane, h, Occ.Road);
     if (!v.sw) continue;                                                // 보도 없는 골목: 차선 표시 없음
     for (const b of L.bands) if (b.index >= v.from && b.index <= v.to) {
       const y0 = b.top, hh = b.foot - b.top + 1;

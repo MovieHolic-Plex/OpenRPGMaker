@@ -160,14 +160,14 @@ export class SceneCtx {
   stFits(name: string, x: number, foot: number, o: { stack?: boolean; lax?: boolean } = {}): boolean {
     const p = STREET_PIECES[name];
     if (!p) return false;
-    if (p.layer !== "floor" && p.layer !== "ground" && p.anchor !== "facade" && p.anchor !== "road" && p.anchor !== "water") for (let k = 0; k < p.w; k++) if (this.doorFront(x + k, foot)) return false;
+    if (p.layer !== "floor" && p.layer !== "ground" && p.anchor !== "facade" && p.anchor !== "road" && p.anchor !== "water") for (let k = 0; k < p.w; k++) if (this.doorFront(x + k, foot) || this.doorFront(x + k, foot - 1)) return false;   // 문 앞 두 칸은 비운다
     const y = foot - p.h + 1;
     if (x < 0 || y < 0 || x + p.w > this.W || foot >= this.H) return false;
     const road = p.anchor === "road", floor = p.layer === "floor";
     for (let yy = y; yy <= foot; yy++) for (let xx = x; xx < x + p.w; xx++) {
       const i = yy * this.W + xx, v = this.occ[i]! as Occ;
       if (this.drawn[i] && !o.stack) return false;
-      if (v === Occ.Road && !road && !(floor && p.tags.includes("road"))) return false;       // 차도 칸에는 차와 노면 조각만
+      if (v === Occ.Road && !road && !(floor && (p.tags.includes("road") || p.tags.includes("border")))) return false;       // 차도 칸에는 차와 노면 조각만
       if (yy === foot && !floor && !road && p.anchor !== "facade" && p.anchor !== "water" && v !== Occ.Lot && !(o.lax && v === Occ.Walk)) return false;
     }
     const fam = (xx: number) => this.famAt(xx, foot);

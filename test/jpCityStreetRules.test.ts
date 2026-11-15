@@ -9,7 +9,6 @@ import { createBlankProject } from "@/project/defaults";
 import { blankFillTileFor, createStarterMap } from "@/project/defaults/defaultMaps";
 import { createJpCityTileset, JP_CITY_ID } from "@/project/defaults/jpCity";
 import { planJpCityScene, STREET_BAKED, type ScenePlan } from "@/project/jpCitySceneComposer";
-import { Occ } from "@/project/jpCitySceneCtx";
 import { auditFable } from "@/project/jpCitySceneFable";
 import { SCENE_KINDS, SCENE_SIZES, type CatBuilding } from "@/project/jpCitySceneKinds";
 import { GROUND_FAMILIES, STREET_PIECES, STREET_RUNS, streetKitId } from "@/project/jpCityStreetPieces";
@@ -64,8 +63,16 @@ describe("jp_city new street rules (fable_street pieces)", () => {
 
   it("marks lanes by road class — alleys none, one-lane edge lines, two-lane a centre line — unbroken outside crossings", () => {
     expect(broken("alley-marking", "edge-line-gap", "centre-line-gap", "centre-line-on-one-lane")).toEqual([]);
-    expect(plans.some((p) => p.plan.fable!.roads.some((r) => r.cls === "two"))).toBe(true);
+    expect(plans.some((p) => p.plan.fable!.roads.some((r) => r.cls === "one"))).toBe(true);
     expect(plans.some((p) => p.plan.fable!.roads.some((r) => r.cls === "alley"))).toBe(true);
+    // 두 차로 큰길(중앙선)은 높이 62줄부터 선다 — 60×48 에서는 아스팔트 몫을 지키려고 큰길이 세 줄이다
+    let two = 0;
+    for (const kind of ["ekimae", "zakkyo"]) for (let seed = 1; seed <= 8; seed++) {
+      const tall = planJpCityScene({ mapId: "m", width: 60, height: 64, seed, key: "game-a", kind, style: "shopping", fable: true });
+      expect(auditFable(tall.fable!), `${kind}#${seed} 60×64`).toEqual([]);
+      two += tall.fable!.roads.filter((r) => r.cls === "two").length;
+    }
+    expect(two).toBeGreaterThan(0);
   });
 
   it("keeps earlier measures: no building picture twice on a map, road share and dead strips stay low", () => {
@@ -81,7 +88,7 @@ describe("jp_city new street rules (fable_street pieces)", () => {
       let road = 0, dead = 0;
       for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
         const i = y * W + x;
-        if (f.occ[i] === Occ.Road && !thing[i]) { road++; continue; }
+        if (GROUND_FAMILIES[f.gfam[i]!] === "tarmac" && !thing[i]) { road++; continue; }   // 아스팔트 몫(측정 스크립트와 같은 뜻)
         if (thing[i] || GROUND_FAMILIES[f.gfam[i]!] === "water") continue;
         let near = false;
         for (let dy = -2; dy <= 2 && !near; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H && thing[yy * W + xx]) { near = true; break; } }
@@ -89,12 +96,11 @@ describe("jp_city new street rules (fable_street pieces)", () => {
       }
       if (road / (W * H) > 0.19) overRoad++;
       if (dead / (W * H) > 0.03) overDead++;
-      expect(road / (W * H), `${p.id}#${p.seed} road share`).toBeLessThanOrEqual(0.23);
-      expect(dead / (W * H), `${p.id}#${p.seed} dead strips`).toBeLessThanOrEqual(0.05);
+      expect(road / (W * H), `${p.id}#${p.seed} road share`).toBeLessThanOrEqual(0.19);
+      expect(dead / (W * H), `${p.id}#${p.seed} dead strips`).toBeLessThanOrEqual(0.04);
     }
-    // 도로 몫 19%·죽은 띠 3% 를 넘는 지도는 드물다(넘는 것은 역 앞처럼 길이 넓은 종류의 몇 씨앗)
-    expect(overRoad).toBeLessThanOrEqual(Math.ceil(plans.length * 0.12));
-    expect(overDead).toBeLessThanOrEqual(Math.ceil(plans.length * 0.05));
+    expect(overRoad).toBe(0);
+    expect(overDead).toBeLessThanOrEqual(Math.ceil(plans.length * 0.03));
   });
 
   it("with the planned new-building table it places only jp-bldg-f-* kits, wall to wall, ten or more shops on a 60-cell shop street", () => {

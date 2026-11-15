@@ -454,8 +454,8 @@ export function auditFable(f: FableInfo): string[] {
     if (!piece) { out.push(`unknown piece ${p.name}`); continue; }
     // 지도 끝에 잘린 조각
     if (p.x < 0 || p.y < 0 || p.x + p.w > W || p.y + p.h > H) out.push(`cut-by-edge ${p.name} (${p.x},${p.y})`);
-    // 차도 칸을 덮는 조각(차·노면 조각 제외)
-    if (p.anchor !== "road" && !(piece.layer === "floor" && piece.tags.includes("road")) && p.anchor !== "run") for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) if (at(x, y) === Occ.Road) { out.push(`on-carriageway ${p.name} (${x},${y})`); y = H; break; }
+    // 차도 칸을 덮는 조각(차·노면 표시·재료 테 제외 — 테는 바닥의 일부다)
+    if (p.anchor !== "road" && !(piece.layer === "floor" && (piece.tags.includes("road") || piece.tags.includes("border"))) && p.anchor !== "run") for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) if (at(x, y) === Occ.Road) { out.push(`on-carriageway ${p.name} (${x},${y})`); y = H; break; }
     // 앵커 자리
     const foot = p.y + p.h - 1, cols = Array.from({ length: p.w }, (_, k) => p.x + k);
     if (p.anchor === "wall" && cols.filter((x) => solid(at(x, foot - 1))).length * 2 < p.w) out.push(`anchor-wall ${p.name} (${p.x},${foot})`);
@@ -513,7 +513,7 @@ export function fableFinish(c: SceneCtx, L: SceneLayout): { info: FableInfo; gro
   for (let i = c.stPlaced.length - 1; i >= 0; i--) {
     const p = c.stPlaced[i]!, piece = STREET_PIECES[p.name];
     if (!piece || piece.layer === "floor" || piece.layer === "ground" || p.anchor === "facade" || p.anchor === "road" || p.anchor === "water" || p.anchor === "run") continue;
-    for (let k = 0; k < p.w; k++) if (c.doorFront(p.x + k, p.y + p.h - 1)) { c.stRemove(i); break; }
+    for (let k = 0; k < p.w; k++) if (c.doorFront(p.x + k, p.y + p.h - 1) || c.doorFront(p.x + k, p.y + p.h - 2)) { c.stRemove(i); break; }
   }
   // 길의 줄·열(필지 끝): 줄의 끝이 길에 닿으면 붙은 것이다
   const streetRow = new Uint8Array(c.H);
