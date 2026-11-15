@@ -53,7 +53,7 @@ import { beodeulObjectsCuttingWays, dressBeodeulObjects } from "./beodeulObjectS
 import { settlementGround } from "./beodeulSettlementRank";
 import { planCommons } from "./beodeulCommons";
 import { doorsideSpots, planEdgeDrifts } from "./beodeulEarthDressing";
-import { planTownCore, squareApproaches, squareBox, squareRing, SQUARE_FLOORS, townPrecinct } from "./beodeulTownCore";
+import { planTownCore, squareApproaches, squareBox, squareInnerWhole, squareRing, SQUARE_FLOORS, townPrecinct } from "./beodeulTownCore";
 import { TOWN_SQUARE_TAG } from "./beodeulSquareGuard";
 import { addMapLocation } from "@/project/mapNamedLocations";
 import { planQuay } from "./beodeulQuay";
@@ -3458,14 +3458,16 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 길 → 광장 → 물 순서: fill_region 은 「벽」과 1칸 틈을 메우므로 물이 먼저 있으면 물가 1칸 틈이 길로 메워져 혹이 생긴다
   // 읍의 광장: 테 한 줄은 길 포석(연석이 된다), 안은 그 게임의 광장 돌 한 가지 — 길과 한 번에 깔아 테가 들어오는 길과 이어진다
   const square = squareRing(W, H, squareCells);
-  const squareRingSet = new Set(square.ring.filter((c) => plazaPaint.includes(c)));
+  // 물가에 깎여 안이 조각난 광장은 테와 안을 나누지 않는다 — 통째로 길 포석(beodeulTownCore.squareInnerWhole)
+  const squareWhole = squareInnerWhole(W, square.inner);
+  const squareRingSet = new Set((squareWhole ? square.ring : squareCells).filter((c) => plazaPaint.includes(c)));
   paintCells([...roadCells.filter((c) => !trackCells.has(c) && !swampDeck.has(c)), ...squareRingSet], spec.road);
   // 단 위 윗길·오르막(풀밭 마을)은 모랫길 — 큰길 포석과 다른 밭길·고갯길
   paintCells(roadCells.filter((c) => trackCells.has(c)), { mat: SAND_PATH });
   paintCells([...gateTrack].filter((c) => occ[c] === CLEAR || fenceGates.includes(c)), { mat: SAND_PATH });
   paintStep("길 깔기", [ROAD]);
   {
-    const inner = new Set(squareFloor.kit && kitIndex.has(squareFloor.kit) ? square.inner.filter((c) => plazaPaint.includes(c)) : []);
+    const inner = new Set(squareWhole && squareFloor.kit && kitIndex.has(squareFloor.kit) ? square.inner.filter((c) => plazaPaint.includes(c)) : []);
     paintCells([...plazaPaint.filter((c) => !squareRingSet.has(c) && !inner.has(c) && !quaySet.has(c)), ...courtUnder.filter((c) => occ[c] === BLD || occ[c] === PROP)], spec.plaza);
     // 포구의 돌 둑: 시골 포구는 광장 재료가 흙이므로 둑은 판석 재료로 따로 깐다(어구 밑도)
     if (quaySet.size) paintCells([...quaySet].filter((c) => occ[c] === PLAZAC || occ[c] === PROP), { mat: PLAZA });
