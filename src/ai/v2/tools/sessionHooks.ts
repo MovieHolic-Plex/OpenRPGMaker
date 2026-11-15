@@ -1,5 +1,5 @@
 // 끝맺음 단계가 모델 대신 부르는 것 — 청사진 경로 짓기, 이동 칸 앞 비우기, 청사진 장소 짓기·잇기. 세션에 걸어 둔다.
-import { kitServesBuilding, type BuildingNeed } from "@/project/kitTier";
+import { kitServesBuilding, kitTier, type BuildingNeed } from "@/project/kitTier";
 import { createBuildRun } from "../shared/buildRun";
 import { builderFor } from "../place/builders";
 import { parseWorldStyle, pickWorldDoor, worldKind, worldOf, worldPlaceSpec } from "../place/world";
@@ -128,21 +128,24 @@ export function installSessionHooks(c: VerbContext) {
       const serves = (d: { kit?: string }, need: BuildingNeed) => { const k = kitOf(parent.mapId, d.kit); return !!k && kitServesBuilding(k, need); };
       const pending = plan.slice(plan.findIndex((e) => e.name === name) + 1).map((e) => kindOf(e.place)?.building).filter((b): b is BuildingNeed => !!b);
       const own = kind?.building ? free.find((d) => serves(d, kind.building!)) : undefined;
-      const spare = free.filter((d) => !pending.some((need) => serves(d, need)));
+      // 평범한 실내(집·가게처럼 큰 건물로 청하지 않은 종류)는 작은 겉이 먼저다: 소형·중형 킷의 문을 먼저 주고, 대형·초대형 킷은 그것뿐일 때만(겉은 코드가 고른다 — 모델의 명세보다 큰 겉을 고르지 않는다).
+      const bigOutside = (d: { kit?: string }) => { const k = kitOf(parent.mapId, d.kit); const t = k ? kitTier(k) : undefined; return t === "large" || t === "xlarge"; };
+      const unclaimed = free.filter((d) => !pending.some((need) => serves(d, need)));
+      const modest = kind?.building || (world && kind ? worldPlaceSpec(world, kind, name).size === "large" : false) ? [] : unclaimed.filter((d) => !bigOutside(d));
+      const spare = modest.length ? modest : unclaimed;
       const door = roleDoor ? { x: roleDoor.front.x, y: roleDoor.front.y, kit: roleDoor.kit } : own ?? (world && kind?.indoor ? pickWorldDoor(world, kind, spare.length ? spare : free) : undefined);
       let map = mapOf(name, !!place);
       if (!map) {
         const guess = world && kind ? worldPlaceSpec(world, kind, name) : guessPlaceSpec(name, env.ctx.project, bp.genre, String(task ?? ""));
         const composed = !!parseWorldStyle(guess.style);
         const wanted = guess.type === "village" ? wantedBy.get(name) : undefined;
-        const bigSize = wanted?.some((w) => !w.tiers.includes("medium")) ? "large" : wanted && guess.size === "small" ? "medium" : undefined;
-        const bigBuildings: Partial<PlaceSpec> = wanted ? { hints: { ...(guess.hints ?? {}), buildings: wanted as never }, ...(bigSize ? { size: bigSize } : {}) } : {};
+        const bigBuildings: Partial<PlaceSpec> = wanted ? { hints: { ...(guess.hints ?? {}), buildings: wanted as never } } : {};
         const spec0: PlaceSpec = { ...guess, salt: Math.floor(Math.random() * 1_000_000), variety: placeVariety(env, task), ...(isInside(guess) && !composed ? { mapId: `map_auto_${Math.floor(Math.random() * 1e9).toString(36)}` } : {}),
           ...(exitSides.has(name) && !guess.exits?.length ? { exits: exitSides.get(name)! } : {}),
-          // 이 마을에 달릴 큰 건물 장소가 있으면 그 건물을 세우라고 적는다(마을 빌더 hints.buildings) — 큰 건물이 설 터가 있게 마을도 한 단 크게.
+          // 이 마을에 달릴 큰 건물 장소가 있으면 그 건물을 세우라고 적는다(마을 빌더 hints.buildings). 마을 크기는 올리지 않는다 — size 는 집 수만 늘리고 땅은 그대로라, 올리면 빈 터가 줄어 던전 갱구가 설 자리가 없어진다(2026-11-16 은행 jrpg-x1).
           ...bigBuildings,
           // 집 안은 그 집의 바깥을 따른다 — 문이 달린 맵의 칩셋과 그 문의 집 킷을 명세에 적는다(실내 빌더가 칩셋·벽면을 고른다, interiorExterior.ts).
-          ...(isInside(guess) && !composed && env.ctx.project.maps[parent.mapId] ? { exterior: { tileset: env.ctx.project.maps[parent.mapId]!.tilesetId, ...(door?.kit ? { kit: door.kit } : {}) } } : {}),
+          ...(isInside(guess) && !composed && env.ctx.project.maps[parent.mapId] ? { exterior: { tileset: env.ctx.project.maps[parent.mapId]!.tilesetId, ...(door?.kit ? { kit: door.kit } : {}), ...(kind?.building && own ? { asked: true } : {}) } } : {}),
           ...(composed && programs?.places.has(name) ? { program: programs.places.get(name)!.program } : {}) };
         const builder = builderFor(spec0);
         if (!builder) { notes.push(`「${name}」(${spec0.type}) — 짓는 빌더가 없다`); continue; }

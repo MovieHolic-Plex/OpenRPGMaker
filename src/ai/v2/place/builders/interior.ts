@@ -73,17 +73,24 @@ export const interiorBuilder: PlaceBuilder = {
     const houseTier = prevTier ? tierTableOf(tilesetId)?.programs[prevTier.program]?.tier : outside?.tier;
     const tierRooms = houseTier && tierTableOf(tilesetId) && (prevTier || outside?.tileset === tilesetId) ? TIER_MIN_ROOMS[houseTier] : undefined;
     const sentRooms = hasLayout(spec) ? Math.max(1, ((spec.layout as { regions?: unknown[] }).regions ?? []).length) : 0;
-    const thinLayout = !!tierRooms && hasLayout(spec) && sentRooms < tierRooms;
+    // 거절은 모델이 스스로 큰 건물로 청한 장소에만(큰 건물 종류의 문이거나 size 를 크게 적었다). 평범한 집에 코드가 큰 겉을 골라 준 것이면 어긋남은 코드 몫이다 —
+    // 모델의 배치를 그대로 짓고 «겉은 크고 안은 한 방» 을 사실로 적는다(2026-11-16 은행 jrpg-x1: 모델의 12×10 한 방 «강지기의 집» 이 탑집 킷에 달려 세 번 거절됐다).
+    const askedBig = spec.exterior?.asked === true || spec.size === "large";
+    const smallForHouse = !!tierRooms && hasLayout(spec) && sentRooms < tierRooms;
+    const thinLayout = smallForHouse && askedBig;
     if (thinLayout && Number(spec.hints?.layoutRepairsLeft ?? 2) > 0) {
       return { ok: false, mapIds: [], warnings: [], missingArt: [], calls: run.calls,
-        summary: `Rejected: "${spec.name}" is the inside of a ${houseTier} building${outside?.kit ? ` (house kit ${outside.kit})` : ""} — a ${houseTier} building has at least ${tierRooms} rooms, and this layout has ${sentRooms}. Send make_place again with a layout of ${tierRooms} or more regions joined by openings, or send it without layout and the builder lays the ${houseTier} plan (rooms, doors between them, stairs to other floors).` };
+        summary: `Rejected: "${spec.name}" is the inside of a ${houseTier} building${outside?.kit ? ` (house kit ${outside.kit})` : ""} — a ${houseTier} building has at least ${tierRooms} rooms, and this layout has ${sentRooms}. Send it again with layout.regions of ${tierRooms} or more rooms joined by openings (set.layout in edit_place), or send it without layout and the builder lays the ${houseTier} plan (rooms, doors between them, stairs to other floors).` };
     }
     if (hasLayout(spec) && !thinLayout) {
       // 모델은 목록 카드의 id 로 썼다 — 카드가 바깥 칩셋의 것이었을 때만(지금 맵의 칩셋이 역할표를 든다, interiorTilesetFor) 그 칩셋으로 깐다.
       const shown = interiorTilesetFor(run.ctx.project, run.ctx.currentMapId)?.id;
       const lt = outside && tilesetId === outside.tileset && shown === outside.tileset ? tilesetId : run.ctx.project.tilesets[HAND_INTERIOR_TILESET_ID] ? HAND_INTERIOR_TILESET_ID : tilesetId;
       const ls = effectiveSpec(run.ctx.project.tilesets[lt]);
-      if (ls) return buildFromLayout(run, spec, ls, lt, mapId, lt === outside?.tileset ? outside : undefined);
+      if (ls) {
+        const laid = buildFromLayout(run, spec, ls, lt, mapId, lt === outside?.tileset ? outside : undefined);
+        return smallForHouse && laid.ok ? { ...laid, warnings: [...laid.warnings, `the building outside is ${houseTier}${outside?.kit ? ` (${outside.kit})` : ""}, the inside is laid as you designed it — ${sentRooms} room(s)`] } : laid;
+      }
     }
     // 장소 견본(천문대 등) — 방 종류 견본으로는 주인공 물건이 방을 정하지 못한다(2026-10-23 비교: 천문대가 평범한 서재로 읽혀 v1 8 · v2 3.5).
     const venueText = `${spec.name} ${spec.theme ?? ""} ${(spec.zones ?? []).map((z) => `${z.kind} ${z.purpose ?? ""}`).join(" ")}`;

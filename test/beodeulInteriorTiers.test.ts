@@ -278,10 +278,10 @@ describe("단은 문이 달린 집 킷이 정한다", () => {
     }
     expect(seen.size).toBe(1);
   }, 900_000);
-  it("큰 집에 방이 모자란 칸 배치가 오면 그 집의 단과 방 수를 말해 거절하고, 고치기를 다 쓰면 구성 표대로 짓는다", () => {
+  it("모델이 큰 건물로 청한 장소에 방이 모자란 칸 배치가 오면 그 집의 단과 방 수를 말해 거절하고, 고치기를 다 쓰면 구성 표대로 짓는다. 코드가 큰 겉을 골라 준 평범한 집이면 거절하지 않는다", () => {
     const a = fresh();
     const one = { map: { w: 9, h: 8 }, entrance: { x: 4, y: 7 }, regions: [{ id: "r", x: 1, y: 1, w: 7, h: 6, floor: "dplank", wall: "plaster" }] };
-    const spec = { type: "interior", name: "물레방아 여관", mapId: "map_inn", exterior: { tileset: a.ts.id, kit: "bd-bld-ref-tavern-b" }, layout: one } as unknown as PlaceSpec;
+    const spec = { type: "interior", name: "물레방아 여관", mapId: "map_inn", exterior: { tileset: a.ts.id, kit: "bd-bld-ref-tavern-b", asked: true }, layout: one } as unknown as PlaceSpec;
     const no = interiorBuilder.build(a.run, spec);
     expect(no.ok).toBe(false);
     expect(no.summary).toMatch(/medium building/u); expect(no.summary).toMatch(/at least 2 rooms/u); expect(no.summary).toContain("bd-bld-ref-tavern-b");
@@ -292,6 +292,14 @@ describe("단은 문이 달린 집 킷이 정한다", () => {
     const b = fresh();
     const small = interiorBuilder.build(b.run, { ...spec, exterior: { tileset: b.ts.id, kit: "bd-bld-ref-rootcellar-a" } } as PlaceSpec);
     expect(small.summary).not.toMatch(/building has at least/u);
+    // 평범한 집에 코드가 큰 겉을 골라 줬다(asked 없음): 모델의 한 방 배치를 그대로 짓고, 겉이 크다는 것을 사실로 한 줄 적는다
+    const c = fresh();
+    const plain = interiorBuilder.build(c.run, { ...spec, name: "강지기의 집", exterior: { tileset: c.ts.id, kit: "bd-bld-ref-tavern-b" } } as PlaceSpec);
+    expect(plain.summary).not.toMatch(/building has at least/u);   // 배치 자체의 흠으로 돌려보낼 수는 있어도 단을 이유로 거절하지 않는다
+    if (plain.ok) { expect(roomsOf(c.run, plain.mapIds[0]!).length).toBeLessThanOrEqual(1); expect(plain.warnings.join(" ")).toMatch(/outside is medium/u); }
+    // size 를 크게 적은 장소는 모델이 크게 청한 것이다
+    const d = fresh();
+    expect(interiorBuilder.build(d.run, { ...spec, size: "large", exterior: { tileset: d.ts.id, kit: "bd-bld-ref-tavern-b" } } as PlaceSpec).summary).toMatch(/Rejected.*medium building/u);
   }, 120_000);
   it("실내 빌더: 중형 킷의 문으로 들어가는 여관은 방 넷, 킷을 모르는 여관은 전처럼 한 방", () => {
     const a = fresh();

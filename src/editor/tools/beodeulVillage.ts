@@ -929,7 +929,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
           return !!place("landmark", [sp.k], { ...p, maxR: 6 });
         },
         // 이야기가 청한 큰 건물(wantKits)이 먼저다: 마당 배치가 예전 고리 배치를 걷고 다시 앉힐 때도 앵커·일터 자리는 아직 못 선 청한 건물에 먼저 준다.
-        seat: (role, want) => { frontOnYard = !!want.corner; const asked = role === "house" ? [] : wantKits.map(K).filter((k) => !spots.some((s0) => s0.k.id === k.id));
+        seat: (role, want) => { frontOnYard = !!want.corner; const left = role === "house" ? [] : wantKits.map(K).filter((k) => !spots.some((s0) => s0.k.id === k.id));
+          // 앵커 자리는 첫 청한 건물, 일터 자리는 둘째부터 — 청한 건물 하나가 일터 자리까지 가져가 마을의 제 일터가 빠지지 않게.
+          const asked = role === "work" ? left.slice(1) : left;
           const sp = role === "house" ? seatHouse(want) : (asked.length ? place(role, [asked[0]!], want, want.maxR) : null) ?? place(role, kitsOf(role === "anchor" ? anchorIds : LOW_WORKS[theme] ?? []), want, want.maxR); frontOnYard = false; return sp ? { x: sp.x, y: sp.y, w: sp.k.w, h: sp.k.h, front: sp.front } : null; },
         routes: (gc, on) => {
           let ex = 0, hs = 0, ot = 0, climbs = 0, lm = !spots.some((sp) => sp.role === "landmark"); network.clear();
