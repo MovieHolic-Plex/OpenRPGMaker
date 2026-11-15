@@ -46,7 +46,8 @@ function raiseDungeon(ctx: ToolContext, name: string, type: DungeonType, boss?: 
   return artOfTroop(project, troops.boss);
 }
 
-describe("보스 그림은 게임 안에서 겹치지 않는다", () => {
+// 한 시험이 던전을 여섯~여덟 채 짓는다(한 채 1.5~2.5초, CI 에서는 더 걸린다) — 기본 15초로는 모자란다.
+describe("보스 그림은 게임 안에서 겹치지 않는다", { timeout: 90_000 }, () => {
   it("대역이 한 그림에 몰리는 주제 여섯(지하묘·마법탑·마계·성·얼음굴·화산)을 한 게임에 지어도 보스 그림이 모두 다르다", () => {
     const ctx = game("boss-art-a");
     const types: DungeonType[] = ["catacomb", "tower", "otherworld", "castle", "ice", "volcano"];
