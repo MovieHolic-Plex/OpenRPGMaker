@@ -323,3 +323,31 @@ PERSONAL = dict(
         healer=dict(ko="약초꾼·의원", alias=["약초", "의원", "healer", "herbal"], pieces=["medicine tray", "corn strings", "geranium", "teapot"]),
     ),
 )
+
+# ── 큰 공간의 «다른 것 하나»와 초대형 장소의 주인공(2026-11-16) — 큰 홀이 기둥·식탁의 같은 간격 되풀이로만 차지 않게, 홀마다 하나씩 다른 것 ──
+OBJECTS += [
+    ("stage", "stage", "wall", 4, 1, "hall", "작은 무대(막·발등)", ["큰 주점", "회관"], "structure", {}),
+    ("great hearth", "great-hearth", "wall", 5, 1, "hall", "큰 화덕(꼬챙이 구이·솥)", ["성 부엌", "큰 홀", "수도원 식당"], "structure", dict(use=["light"], pair=["hearth glow"], desc="큰 화덕")),
+    ("guild board", "guild-board", "hang", 3, 0, "hall", "의뢰 게시판 벽", ["회관", "큰 주점", "읍사무소"], "wall_mounted", dict(rows=2, oy=1, use=["read"])),
+    ("pulpit", "pulpit", "floor", 2, 1, "church", "설교단", ["본당", "대성당"], "structure", {}),
+    ("organ", "organ", "wall", 3, 1, "church", "파이프 오르간", ["본당", "대성당"], "structure", {}),
+    ("font", "font", "floor", 1, 1, "church", "세례반", ["본당", "대성당"], "round_body", {}),
+    ("sarcophagus", "sarcophagus", "floor", 2, 1, "church", "기사 석관", ["지하 묘", "대성당"], "box", {}),
+    ("vault door", "vault-door", "wall", 2, 1, "office", "금고 문", ["금고", "세관"], "structure", dict(noshadow=1)),
+    ("weapon wall", "weapon-wall", "hang", 3, 0, "guard", "무기 벽", ["무기고", "병영", "성"], "wall_mounted", dict(rows=2, oy=1)),
+    ("book wall", "book-wall", "wall", 3, 1, "office", "긴 책장과 사다리", ["큰 서고", "수도원"], "frame", dict(use=["read"])),
+    ("reading table", "reading-table", "floor", 3, 1, "office", "긴 열람 탁자", ["큰 서고", "수도원"], "low_furniture", dict(surface=1)),
+    ("cloister well", "cloister-well", "floor", 2, 1, "hall", "안뜰 우물", ["안뜰", "수도원"], "structure", {}),
+    ("stairs down", "stairs-down", "wall", 2, 1, "stairs", "내려가는 돌계단", ["지하", "성", "대성당"], "structure", dict(stairs="down", use=["travel"], noshadow=1)),
+    ("wide tapestry", "wide-tapestry", "hang", 3, 0, "hall", "사냥 그림 큰 벽걸이", ["큰 홀", "성", "저택"], "wall_mounted", dict(rows=2, oy=1)),
+    ("rose window", "rose-window", "hang", 2, 0, "church", "둥근 색유리 창", ["본당", "대성당"], "wall_mounted", dict(rows=2, oy=0, use=["light"])),
+    ("knight statue", "knight-statue", "floor", 1, 1, "hall", "기사 석상", ["성", "큰 홀", "대성당"], "column", {}),
+    ("garden bed", "garden-bed", "floor", 2, 1, "hall", "안뜰 화단(월계수)", ["안뜰", "수도원"], "other", {}),
+    ("treasure", "treasure", "floor", 2, 1, "office", "돈궤와 돈자루", ["금고", "세관", "성"], "box", {}),
+    ("weigh beam", "weigh-beam", "floor", 2, 1, "shop", "큰 대저울", ["세관", "창고", "시장"], "structure", {}),
+    ("cargo stack", "cargo-stack", "floor", 3, 1, "store", "짐 더미(봉인 찍힌 궤·보따리)", ["세관", "부두 창고"], "box", {}),
+    ("war table", "war-table", "floor", 3, 1, "guard", "작전 지도 탁자", ["성", "병영"], "low_furniture", {}),
+    ("confessional", "confessional", "wall", 2, 1, "church", "고해소", ["본당", "대성당"], "structure", {}),
+    ("council bench", "council-bench", "floor", 3, 1, "office", "재판·평의 단상", ["읍사무소", "세관", "회관"], "structure", {}),
+    ("hoist", "hoist", "floor", 2, 1, "store", "짐 끌어올리는 틀", ["창고", "세관", "방앗간"], "structure", {}),
+]

@@ -83,8 +83,9 @@ export function buildTier(run: BuildRun, spec: PlaceSpec, ask: TierAsk, notes: s
   const stairOf = (ref: string) => {
     const [mapKey, roomId, objId] = ref.split("/");
     const b = built.get(mapKey === program.shapes[shape]!.id ? "main" : mapKey ?? "");
-    const room = b?.rb.rooms.find((r) => r.id === roomId);
-    const o = b && room ? b.rb.objects.find((q) => q.id === objId && q.x >= room.x0 && q.x <= room.x1 && q.y >= room.y0 && q.y <= room.y1) : undefined;
+    // 방 id 가 "*" 면 그 맵 어느 방에 있든(평면 벌마다 계단 방이 다를 때).
+    const rooms = b ? b.rb.rooms.filter((r) => roomId === "*" || r.id === roomId) : [];
+    const o = b ? b.rb.objects.find((q) => q.id === objId && rooms.some((room) => q.x >= room.x0 && q.x <= room.x1 && q.y >= room.y0 && q.y <= room.y1)) : undefined;
     return b && o ? { b, mapKey: mapKey!, x: o.x + Math.floor((S.objects[o.id]?.w ?? 1) / 2), y: o.y, dir: S.objects[o.id]?.stairs === "down" ? "down" : "up" } : undefined;
   };
   const links = new Map<string, Record<string, unknown>[]>();

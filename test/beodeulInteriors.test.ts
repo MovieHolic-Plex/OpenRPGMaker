@@ -64,7 +64,8 @@ describe("버들항 실내 사양", () => {
 });
 
 describe("버들항 방 견본", () => {
-  const tpls = roomTemplates(BEODEUL_INTERIOR_TILESET_ID);
+  // 한 방짜리(소형) 견본만 — 크기 단 전용 견본(종류 t_…, 복도·큰 홀)은 방 종류 표에 없고 test/beodeulInteriorTiers.test.ts 가 본다.
+  const tpls = roomTemplates(BEODEUL_INTERIOR_TILESET_ID).filter((t) => !t.kind.startsWith("t_"));
   it("견본마다 조립기 오류 없이 지어진다", () => {
     expect(tpls.length).toBeGreaterThanOrEqual(75);
     expect(new Set(tpls.map((t) => t.kind)).size).toBeGreaterThanOrEqual(31);

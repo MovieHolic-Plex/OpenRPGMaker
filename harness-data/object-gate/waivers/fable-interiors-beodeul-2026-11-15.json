@@ -8080,6 +8080,1141 @@
    }
   },
   {
+   "pixelSha256": "a21e1efde0ef2a5eff2860f599bdef03c1f652b36e2e2cd2c15431488eb13bb4",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-stage",
+   "width": 64,
+   "height": 48,
+   "cells": {
+    "16": [
+     "0e38d87ed8d5437b",
+     "146d98238de841f2",
+     "16daa28173b77758",
+     "19061942585d6971",
+     "23008af67c51e8d7",
+     "27967596f0e7bdd8",
+     "638e49a5129cb199",
+     "66c09a47ae736521",
+     "6b0166e9aa9473c1",
+     "813d458a4ca572ae",
+     "b5c5d0f123d42849",
+     "e6036968430a480a"
+    ],
+    "24": [
+     "066eba6fe0b0a6c4",
+     "072933e3517e8efc",
+     "0cfe411e211ad5f4",
+     "21a3c4c86c6c580b",
+     "365653568bbe67f4",
+     "41ba8505900fc22c",
+     "5a979a15752d47db",
+     "7bf922a631fbdb79",
+     "9903469614b9f83f",
+     "ad4925fb3205cf94",
+     "be235d7e28414497",
+     "bea69506e00a8a36",
+     "c21192022cd1285f",
+     "c5d20ec2baa6e6e3",
+     "cdc93d28e199e091",
+     "dc03b66a00e0cbf7",
+     "e33991447904042d",
+     "ec7c6c8fb4996bca"
+    ],
+    "32": [
+     "26e8aa19946d260c",
+     "4a7c71b1db62b847",
+     "54c8d5f0b8658c50",
+     "6a8ebd2f62958139",
+     "d3512a4478231563",
+     "e88aae4b1cf33b21",
+     "ea9c19f7b69837f4",
+     "f79d3c05dd3ecb08"
+    ],
+    "48": [
+     "42e6259f87ba1c93",
+     "4aeb0fe2594fd284",
+     "8f0fda5e131b73bc",
+     "a1a4a1edab2f8799",
+     "ad7ec9d67fdad55a",
+     "e0f97d6e9624752c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d78fb7357b642978da4c2ed2cd954b6dde026bd8c4a07a337ba0117cfa853ca2",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-great-hearth",
+   "width": 80,
+   "height": 48,
+   "cells": {
+    "16": [
+     "04f7f2df4d28df06",
+     "0510179f4c33d5bb",
+     "245f8a8f20a45ba3",
+     "24abd8beb4b1ad56",
+     "29d8238528e9c84c",
+     "656b65dd245b9168",
+     "6b30864330cb1df1",
+     "89b6c9e1a42bd18b",
+     "957597962bb9ea6d",
+     "997cdff5ff6d136f",
+     "b4ac0d9733be2114",
+     "b72e14127d0dd5b5",
+     "c5074871869df9c8",
+     "d256f69bf754a9cf",
+     "ed64e8403f24fe53"
+    ],
+    "24": [
+     "13b275c4b1a7fe1e",
+     "1a7b9abb691087cc",
+     "1ab4eb559f205149",
+     "2e5e11def458376f",
+     "382237ea89b18208",
+     "45369ca8907fe1c1",
+     "49022544d8d9f400",
+     "6303d6ac2a8d5a3c",
+     "72ca50963af8a60c",
+     "780fae2c317b62d2",
+     "9128ba0056c5e9e0",
+     "9949de32cbff2745",
+     "994c3f2371cbbbc9",
+     "9c608d2c7292f510",
+     "9d7acf7702c732d7",
+     "a03d05b95428f7e1",
+     "a25b827e030cf6e5",
+     "b5dce3dd52ed6477",
+     "b855a43841297f6c",
+     "c21e93a2a4df2dfc",
+     "d31d1f88e0ca10a3",
+     "f8f050efe0798292",
+     "f97cd44a1e52024d",
+     "fd6513b13a439335"
+    ],
+    "32": [
+     "008740f803ac97a7",
+     "00f41ffc1ddd8f61",
+     "055c89797f8b99a6",
+     "12aebeb95e232f29",
+     "17df8525a84c101d",
+     "1ac85f811100821a",
+     "1f0e8024494a4a90",
+     "28899ce5f787bb73",
+     "32c6bef8d70d2a76",
+     "46cfb26b414b945b",
+     "4945bdfa523c699e",
+     "4ad1d2280df0e779",
+     "4ad3d9347204add0",
+     "518d06cda252258b",
+     "5a575ab07f1ca594",
+     "5d84fe1c4576b6af",
+     "6958cdfc92a4aeed",
+     "72830e7203a4e6b6",
+     "760ba6e7311fba62",
+     "76196d7888fcdeba",
+     "7f3d61b63cd46e2d",
+     "81dc56172054fb4c",
+     "862a673af71fbbe3",
+     "869d343be6e62aa2",
+     "8bd4ed85a9ae5ff1",
+     "8fab0637b6ac4c49",
+     "a354dad4b8603f1f",
+     "a879d18d4a9e5820",
+     "aa2cce7f7fff14b1",
+     "b0c3e74493ebc6ec",
+     "be0c10d2f36788cb",
+     "ceb0e30814180689",
+     "d8836e540c0d2a61",
+     "f32650be2c6814c0",
+     "fcb8c341fc98a664",
+     "fe0ebcb19164a967"
+    ],
+    "48": [
+     "42856f00a1a32114",
+     "46d2db71ab9cfd93",
+     "635852d653e05668",
+     "ae15c7aeaeaf1bec",
+     "c8865481c24ac8f8",
+     "e37c768f2cb4d6ff"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "2ec01d02cd89b28e5fac124d36dfa0ce6155867b5dc0cdd3520715ae5e9d6110",
+   "kind": "wall_mounted",
+   "label": "beodeul_city/bd-in-guild-board",
+   "width": 48,
+   "height": 32,
+   "cells": {
+    "16": [
+     "0d07833905b70f2d",
+     "300b4a755479626e",
+     "36ffac69d29bec6e",
+     "a35078a5a05f13b5",
+     "c26404ed39538906",
+     "f11ad9cacca643d9"
+    ],
+    "24": [
+     "05c8b51af39bf0e6",
+     "0b3fecf4325dfbbc",
+     "35ef04e4c16259f4",
+     "3cfdbfcc6abc98a8",
+     "48cc516555fdf4c5",
+     "769f7801945493b1",
+     "86a89282e72cce2c",
+     "f44cbb381e571654"
+    ],
+    "32": [
+     "454c0d658c9ef327",
+     "83726dcd4adab4d4",
+     "8bc4a5118197cad1",
+     "d0670d661f66cb4b",
+     "dccd0d009a6c8524",
+     "e77ccbe03dafc031"
+    ],
+    "48": [
+     "4e4a13575b785ce2",
+     "c8577446c3c9700e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "ac6d1ece8e9e949d492bca79c1b18b29e12c2c70a14fc8074aaf85fa3cd5b40d",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-pulpit",
+   "width": 32,
+   "height": 48,
+   "cells": {
+    "16": [
+     "2d7abba7db41b57b",
+     "402a7a82402a88aa",
+     "6df56b52af2d382c",
+     "77a45e7ca26f76f3",
+     "b86c1284b62024d1",
+     "f5b20f5aec1204fc"
+    ],
+    "24": [
+     "062b331f6f61956c",
+     "2fb4b0dc87e7647d",
+     "495d290edb54137c",
+     "69fdda7dad85ab03",
+     "90db7fb861e27f12",
+     "a96a6fb08884d70f",
+     "bca78c7e876540be",
+     "c0cda94da0306b84",
+     "c3293eb10e368011",
+     "c8920dcee7ee3bdf",
+     "cf6f61f9a2b4d21a",
+     "f9ae0b6a99efb99a"
+    ],
+    "32": [
+     "26b80c3048217354",
+     "574c52b59f8a222e",
+     "aa96682b6d6f1388",
+     "c2ac9c02de0773fd"
+    ],
+    "48": [
+     "80a9b6d0ac825fb0",
+     "853504ec2509b258",
+     "ec4fc4b5a738e02d"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d5d1eb1c3b38b4c190a53012ab76da5f795f48147b9dfc5cd7d75f041531b9bf",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-organ",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "1bf94163038ef6d6",
+     "2537c216f036afa4",
+     "62954a62fcdc5c8b",
+     "7b963aed874c791b",
+     "9ee30351d9891b0b",
+     "a1e67f85f036a91d",
+     "a6c13d4b72e344a8",
+     "c11d3f247abf12ab",
+     "f36d5e53d09d9335"
+    ],
+    "24": [
+     "055c4c424639d629",
+     "981dc342190b2339",
+     "fbcdbe3510d6f13d",
+     "ff85d68e9a21c232"
+    ],
+    "32": [
+     "15c12858656942c2",
+     "23bfd155eac8796b",
+     "2aa1a504337fbb07",
+     "2f70a241b2022e78",
+     "48f48cb94fdb467c",
+     "51d0f1b33a23bc2e",
+     "5962a8474f8140c9",
+     "64d4e3383ea97b4e",
+     "66fc61c6f63076ff",
+     "68ddb2c386442a9a",
+     "70e041fcd2750224",
+     "8cb0addd0c83ccd8",
+     "96f4514c34fd0d73",
+     "9d4cb3e4017996f0",
+     "aa8b815f70e80336",
+     "acaf236ceeffb9cf",
+     "ad1470827db94ccf",
+     "b60774a6316bd477",
+     "c3f132cc0d0394a3",
+     "d0136af0c5daef4c",
+     "d809e26c7f7157e0",
+     "db53a7a6fc626348",
+     "ea4a295708a42d45",
+     "f94100111f29ac77"
+    ],
+    "48": [
+     "1d1151429f337123"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "64eb48bf6c38a33e5d62050d546b869324e06becdf66b4c2e30e7f32894323b4",
+   "kind": "round_body",
+   "label": "beodeul_city/bd-in-font",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "7f6ffb2e6503fd8d",
+     "99d9c136fce5ca24"
+    ],
+    "24": [
+     "5535fbbbf3522191",
+     "572a8748ffbac691",
+     "8d26ac571305fec3",
+     "b5967a9e21fd155d",
+     "d25322bdba108fe5",
+     "d90435debfccd999",
+     "e6926e22a6a991fe",
+     "eb53577b0e78a9fd",
+     "f56029081f52b529"
+    ],
+    "32": [
+     "a836d9f4c33a9594",
+     "b4569d23ab430407",
+     "d67d0c4e422c3b18"
+    ],
+    "48": [
+     "040afecc4ca4cf68",
+     "335c1e877cecf7d0",
+     "38e32373be374b59",
+     "aa2c0a2c6f551471",
+     "d6db6ffc1e848b46",
+     "dedf38ba8cbcd3de"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "5f098970ece1bf9e9be29055b7c1d319a68d46e5b5c1e5e39b32453e42b25eb2",
+   "kind": "box",
+   "label": "beodeul_city/bd-in-sarcophagus",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "45261f74f4c392b7",
+     "b75e1e3297f1e84c",
+     "cd06064140dadb06",
+     "f09ef5871732481f"
+    ],
+    "24": [
+     "20e606f5ffdc975c",
+     "213a5c00751bfef8",
+     "277244eef1ef1f2c",
+     "2bc557472464edbf",
+     "2d131657cb21769a",
+     "53986a351585a308",
+     "58108cade9787783",
+     "5d830ad0c38aa95b",
+     "657ad0f0b094b58f",
+     "7355fec15af16c8b",
+     "7be36feaf73df482",
+     "813bce904a4c3e7a",
+     "bb9490286a68d886",
+     "beed83ea5369831a",
+     "c39e724c45c017c5",
+     "c95d0258fae5e1ad",
+     "c9d881f00c5dcc83",
+     "d174103b2e1c342a",
+     "d986fb727fc9131e",
+     "e8f108348edae65d",
+     "ec59c1913c968402",
+     "ed996720dde37e81",
+     "eeccb0277159ac68",
+     "f7b4927c60033617"
+    ],
+    "32": [
+     "a7007da556700333"
+    ],
+    "48": [
+     "8c52c8a086a97546",
+     "ad8d90b265c83b9c",
+     "bdbefdd9a82d012c",
+     "cb5db5864e9cbbbe",
+     "d0bf18b409acfcab",
+     "d33ef488ea1c3c74"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "34f6d1aab8b0e2ff0ae532e50cc345587484c2e91c6f291ff6ef0ccd81ea6544",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-vault-door",
+   "width": 32,
+   "height": 48,
+   "cells": {
+    "16": [
+     "5cca563d1f10b04c",
+     "8c736f81ba974c0e",
+     "98b73bc5b0f7ba2e",
+     "9e16bb3f847fd6a7",
+     "adb04cc376ff8c71",
+     "cfc9963a398f4850"
+    ],
+    "24": [
+     "43b5f31d8f222ba1",
+     "56420fce6923bdfd",
+     "579d0ed8af9ec8d4",
+     "79d798d2838f4610",
+     "9cf858e41ca0988b",
+     "cf87315e22dd89cf",
+     "d689621a8f8898e5",
+     "da36b0ffee85de7a",
+     "e7e524d2ec6e3cfd",
+     "e94cb6317a616d8f",
+     "fc89cce190b5d9dd",
+     "ff30703d6ed176a6"
+    ],
+    "32": [
+     "23c2d2defcbe470b",
+     "6add0c2d86fdbcfc",
+     "af08e37be1e2d8cf",
+     "f20af5a99560b4f0"
+    ],
+    "48": [
+     "1b4986fbbf307ee0",
+     "f397618d46b9b5fc",
+     "fc4b33c838ed76cc"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "8773eb9733dc2526f7114505ca821118d9697e60cc2c877be997e8a56688483b",
+   "kind": "wall_mounted",
+   "label": "beodeul_city/bd-in-weapon-wall",
+   "width": 48,
+   "height": 32,
+   "cells": {
+    "16": [
+     "4d6d9e812e380a7d",
+     "52f7aa043e1c5954",
+     "6153873d7065032e",
+     "9e6c4f8414922821",
+     "a8cddc023d5763db",
+     "e92598e22f3dca38"
+    ],
+    "24": [
+     "004fadf4fef77d2a",
+     "151b9f6d12c2037c",
+     "3dd0f50858ab7c7d",
+     "8fbcd30b58c0e194",
+     "c03b2549fa3aa37e",
+     "ced625f1b882384d",
+     "e1d25f14b78334d6",
+     "e324e2d227bdf816"
+    ],
+    "32": [
+     "6a7cb9e78ae89204",
+     "6cfc2b7cd34b7727",
+     "d1225c165c4c54e2",
+     "f4022c1a517b6f12",
+     "f87349d165ff47d9",
+     "fcb7eb6b9771d650"
+    ],
+    "48": [
+     "0fa1aae6443cf4b1",
+     "d1571f13d2d981cb"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "eb7d38ca07ee62c7e42dde854faf925b1cd62efbad745590e2f56f46946608f6",
+   "kind": "frame",
+   "label": "beodeul_city/bd-in-book-wall",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "24480967b4ea98dd",
+     "32cab91e9a960165",
+     "4f110282502611c1",
+     "6174d30c9d18ab5f",
+     "6687ab3af1b84ad0",
+     "73b2a6691f962ea1",
+     "b3df52f22137c0e0",
+     "cd8c688373fd3062",
+     "e5a6045ac2294d93"
+    ],
+    "24": [
+     "61154b4066c60c5e",
+     "a0d26483a06969c1",
+     "afdf02af0a14a11c",
+     "fd46d451cb5a80ab"
+    ],
+    "32": [
+     "00af26ea1bab414e",
+     "241f8b134dc6e3b3",
+     "28f8e60f4c2b890f",
+     "303c97c37a46c183",
+     "3e9a2569b629c4c6",
+     "40cda515ae511b03",
+     "47b10ef132147410",
+     "527b82f78111cd79",
+     "556a393e357fad23",
+     "5d2354e6c178becb",
+     "5f3440bc2c24bd9f",
+     "61d1367297c93933",
+     "6998c22558d2cb74",
+     "8cbdee7d4a4df8f9",
+     "8cf2185fa2e48580",
+     "9da1c4bf347a6689",
+     "a3499178dc310f9b",
+     "ad4b286fa38a0b33",
+     "bcccf15a04b13052",
+     "c5ec3720c4e4c185",
+     "d059810df824d012",
+     "d6c62e734276c88a",
+     "d9cd47bf0da05c77",
+     "fa925ba525281047"
+    ],
+    "48": [
+     "8926b20aa765b96c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "3992728fbb8acee86ecaf15a147ea6eaa5682f3a6ced61ed0eb7eb0afd1d3e9b",
+   "kind": "low_furniture",
+   "label": "beodeul_city/bd-in-reading-table",
+   "width": 48,
+   "height": 32,
+   "cells": {
+    "16": [
+     "09e98c29d39f2c54",
+     "1644dc84fbc8db07",
+     "28c326f024b1d65a",
+     "3cf6f51baba4b804",
+     "dca08e6b6d736e28",
+     "df1fe3ce2ed46f35"
+    ],
+    "24": [
+     "5ed7d6cc3ebe7d06",
+     "88ce178520323d0a",
+     "93e7980d2454d861",
+     "a31a746ecd53e690",
+     "a9d612bf4466fc9b",
+     "c48eba13715bf643",
+     "e13f861fc21f025a",
+     "f534779c390d068a"
+    ],
+    "32": [
+     "323ecec6c5fcd292",
+     "3881b37fac013e64",
+     "56b19e8ea06db78f",
+     "78f4130dca4075c5",
+     "94b69425f071568d",
+     "c529b0c828cd35d3"
+    ],
+    "48": [
+     "0b4e70bb4aa7b2c5",
+     "c2da3a01ecf6c9f9"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "5f12ad81bced8410a158f164bc4752e8da1b23aafffb5c1a86e62b43497a29e3",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-cloister-well",
+   "width": 32,
+   "height": 48,
+   "cells": {
+    "16": [
+     "07dc44c0c774a761",
+     "39d80923c1865258",
+     "4527f457d1507411",
+     "57aca1dfd2a43cd6",
+     "999e7f8d8aa53d58",
+     "d43f26aff6e55a09"
+    ],
+    "24": [
+     "1908b67ec0f4448b",
+     "1ad8a2983feb26d2",
+     "1cd0e54128e1ca4c",
+     "30bfd140bdc1101b",
+     "4c48ec84083f4970",
+     "5bdbc3d547fa38bb",
+     "6176fc1b90addea8",
+     "781ffc5824a20a84",
+     "82630d780f4ff725",
+     "a6b4ce5587b5e3b3",
+     "b3edcc8672060123",
+     "f35fda0eaa0dabb4"
+    ],
+    "32": [
+     "14146b123348e07d",
+     "82a584fc1d9ce573",
+     "91b30c1a63d10898",
+     "e6bfe4a65342d315"
+    ],
+    "48": [
+     "08a84d720c7b5baf",
+     "62ff12e51a557873",
+     "fa82a965f59be66d"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "4bf6709b92beafe3be9983d4fe89838ae43ca24b6c7ea7d68468b5297650b1a3",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-stairs-down",
+   "width": 32,
+   "height": 48,
+   "cells": {
+    "16": [
+     "3642af6ac3346814",
+     "6439adebaea65756",
+     "a7aeda08dbe702f1",
+     "b87b0b2b54dfe814",
+     "e4130d97dbf9afea",
+     "fe94cecdea3c35a5"
+    ],
+    "24": [
+     "1af9e0e3f1e726a9",
+     "4a3215489f72d4d9",
+     "59046ef96ae1b9bb",
+     "6e7a65135a0d8a80",
+     "7116978d2948fa1b",
+     "d26c75930a87a5b2",
+     "d4c5c29c49f8096a",
+     "d55adbf536d26f58",
+     "da1472cfe02864e9",
+     "f4a7e6c34b66fbe4",
+     "f5bc2e674a2d38b0",
+     "f6e6dcbba0171d05"
+    ],
+    "32": [
+     "1d225fca9d64b818",
+     "7558894c55e00131",
+     "81311b0603ee5358",
+     "d5b650155f07bd62"
+    ],
+    "48": [
+     "1ddf06808c952242",
+     "61c905000918ba3c",
+     "afb61a147aadfd48"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d64fa73b02fb5b4f6d7ba62919761bb9150f930eb15083eee530e17b4ae192d1",
+   "kind": "wall_mounted",
+   "label": "beodeul_city/bd-in-wide-tapestry",
+   "width": 48,
+   "height": 32,
+   "cells": {
+    "16": [
+     "0e3bd58ef61327d2",
+     "1afb31a6e56ca2d9",
+     "30aeb19f5ec9c3df",
+     "4f6511d90f9494e4",
+     "5c863902f5c4b015",
+     "ac5ec09133d2286b"
+    ],
+    "24": [
+     "07fe7b79e4655721",
+     "4212a96e4e2fd980",
+     "777b478a978b4100",
+     "7efc323e874cf063",
+     "afc6555cd806edd8",
+     "c6b5521b6d950ee5",
+     "dc30e36b4777e71d",
+     "e5e1241341e84d05"
+    ],
+    "32": [
+     "32f468349837c181",
+     "918e6a2fd5c4ea11",
+     "92f44622881a49ce",
+     "ace9322d7f07b38b",
+     "d333e674077e0a58",
+     "ddf3d3f8f7962e09"
+    ],
+    "48": [
+     "950e9f8598d5db77",
+     "ac7883af8787c9a2"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "de513d2df86722652d53ee51d5e56467b9dab1762a3fe255018a89f5a30d561e",
+   "kind": "wall_mounted",
+   "label": "beodeul_city/bd-in-rose-window",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "501e5851697ddca3",
+     "761030ef0f05d447",
+     "e2976f3a83389e1d",
+     "f7f18a8d5cd40af4"
+    ],
+    "24": [
+     "02ea576637186316",
+     "10f16bf7d361899a",
+     "162d28ce27bf0f67",
+     "220cea9647c25a07",
+     "306b8089556ec309",
+     "35dcfda688c6c0ff",
+     "4ff09d2aeddf338e",
+     "55c1a07d1670e599",
+     "6a8d51c7febab5d8",
+     "6d135517fabc4e07",
+     "71d4aed42bde0f70",
+     "8d30fbe16fadf528",
+     "953a543cea52a545",
+     "9bb9f9985f9bdf81",
+     "9e22a2e5a68c856c",
+     "ac715b8778aa9eeb",
+     "c1c566cd0528f90c",
+     "d47294858197a7c2",
+     "d5220f528f07eaa0",
+     "dea29d1b49b202b6",
+     "e403a35d4736cd90",
+     "e5b3da215812d5ee",
+     "f373fd9bbe97c733",
+     "f486f9c82d1e6a90"
+    ],
+    "32": [
+     "2625ef7ccabeb5cc"
+    ],
+    "48": [
+     "0855e6683f3073d9",
+     "34aed2210d58dcdb",
+     "58ccb0563ca13d51",
+     "6fc4adc4dee4ec36",
+     "affe01745489253d",
+     "c439a1825f0ab2d0"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "02f15c76409a5569cf22c142c19b3b87ff2794d23bc779ff31f98abf4a783279",
+   "kind": "column",
+   "label": "beodeul_city/bd-in-knight-statue",
+   "width": 16,
+   "height": 48,
+   "cells": {
+    "16": [
+     "0b1fba900a2d0275",
+     "3691aa40034792d6",
+     "d2d3551623ce7656"
+    ],
+    "24": [
+     "0a4d4fd0079ac9fc",
+     "17b85adc70385650",
+     "26df73b3724e025b",
+     "450d86100e29cc31",
+     "d81a32cbff3b5a2f",
+     "ee252e5eae2d6a52"
+    ],
+    "32": [
+     "06b1531914b894da",
+     "12e9da7f8bd2faf6",
+     "2ef6937a6750f09a",
+     "5c5f04bec422855a",
+     "68b8aea73b8e22d0",
+     "8d978e2e3a08320c",
+     "943d76792a76c426",
+     "ab5ddf669b8da9c3",
+     "cecde7bbc3f4aa1b",
+     "d2c060d36295ad0a",
+     "ed1fd9f8b0d24445",
+     "f74bda035780ef68"
+    ],
+    "48": [
+     "127bba5d80da8dfa",
+     "45662ea9a1e7dcdc",
+     "c39fdec79c4d4718"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e83d5b2af77744d55b3d52566442b540fe44f8666b74501fb90ecbe568c149f3",
+   "kind": "other",
+   "label": "beodeul_city/bd-in-garden-bed",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "14cc79f9b9be205d",
+     "2cb2054d2b4b6cc0",
+     "3adc2892bf5bacfc",
+     "4b49cb2dac618a7c"
+    ],
+    "24": [
+     "0555d95bbc916b3b",
+     "11fca311e951d931",
+     "162413c33d8145de",
+     "1735e8eaf5d18203",
+     "2fc2cf194bf666d9",
+     "33159e0c54b582c3",
+     "3d615ce09d847450",
+     "4f2d9f3dcb9be705",
+     "542812d4cdd4acf6",
+     "5caa5c4b9059feb6",
+     "6d21feffc7aa0ca9",
+     "6fcc48373e0a844b",
+     "705b3fa6427942d8",
+     "a0c7a05195012e7d",
+     "a59273971590a022",
+     "b1342d9b0bc0142b",
+     "b26d4e0186bb5ab4",
+     "b2de6d43e7756f4d",
+     "b771a4469baffeec",
+     "d9ce19be9f44cde9",
+     "e0311666aa7760dd",
+     "ebb791a35e0b0a77",
+     "f3b31685aa6ff464"
+    ],
+    "32": [
+     "37a157ba6a77b2b6"
+    ],
+    "48": [
+     "2a09dd3b920ad996",
+     "2afa6ca0cd14a1d6",
+     "3de43947be5980c0",
+     "abfad69084e95fe4",
+     "b30d48fc3c05e8e6",
+     "c34b7d8a904a401e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e3d7d07a0da258cea91690bf56086bc29ff00fa47c1f64ba19d824e419c0a7a4",
+   "kind": "box",
+   "label": "beodeul_city/bd-in-treasure",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "101b8f4f0542b20b",
+     "d9ccaa959eaab7a8",
+     "fa69154e8a3f3896",
+     "ff9f2a620ee2fc21"
+    ],
+    "24": [
+     "1cbe7ebfcb03eb03",
+     "21ea2271a55130a3",
+     "3199dd98e16aa650",
+     "32948079f77b84ea",
+     "3df652c948414c04",
+     "40eda4c1f9aa0192",
+     "459c7cd48026226f",
+     "461b060e9948a6b7",
+     "52b7c0ae3e2021f4",
+     "6c21d2a235c33f60",
+     "6de307773af3bd9c",
+     "764084fc9db0be00",
+     "797c275eb01b7a59",
+     "86a8f0644bc4c89c",
+     "8ed97f4706d8ecc7",
+     "922557ec4dd46af2",
+     "ad5ffbb8a1223381",
+     "ae87a69a3245ca95",
+     "b09623f0fdb8ba98",
+     "c40d2be10e2110f4",
+     "cac9a51d88af867f",
+     "dbf7b4ac83dfa9cc",
+     "e870f777135b7fde"
+    ],
+    "32": [
+     "d3a4500021afb148"
+    ],
+    "48": [
+     "2321f513b0028c3c",
+     "5b613fc4a79ac0b2",
+     "789f92762719edcb",
+     "bb226946c26b85bf",
+     "db55cb0f52d9a56a",
+     "fbf22da23148f924"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "3b84c617f95bf067c359b3b18827d5ff83d68c35d9fe7e06204e457acbff323c",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-weigh-beam",
+   "width": 32,
+   "height": 48,
+   "cells": {
+    "16": [
+     "039227b5814e90fa",
+     "1ae616a0f3dc7200",
+     "262bbb0d6a4f5dcc",
+     "da1c759ca874a62b",
+     "db340ddc327dd362",
+     "f232c97cbaf70b66"
+    ],
+    "24": [
+     "14e539dec5249b42",
+     "4b12eb4bc022d494",
+     "5649bb01aacf3fdc",
+     "58a9975ed4069ec7",
+     "83022be6d03531b4",
+     "a9b24ec2f5c93afd",
+     "b7ed7967140784ea",
+     "c4e5cf36cc3c7096",
+     "cc9cb4537292af03",
+     "f1f966500baf3cd8",
+     "f42834efb6ff6cc4",
+     "fa44d53fae49f88d"
+    ],
+    "32": [
+     "12eb05c2c15abd79",
+     "1f9be659fce1a329",
+     "4dd203b132e6219d",
+     "92baaa9f14ebe2a8"
+    ],
+    "48": [
+     "4633c4802a016ea2",
+     "69265ed4f6d4a933",
+     "d21577188aafacfa"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "62cf4fb21f09cd18a5feab167f2ae368a67f46aa5ab2fd71abdf1b36a60647dc",
+   "kind": "box",
+   "label": "beodeul_city/bd-in-cargo-stack",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "08617004261dc635",
+     "7781849fd6f77596",
+     "7c2155328be631e9",
+     "893e07ce9eff64e7",
+     "942e63b029dce1b8",
+     "9c1eda192a4255ed",
+     "e85766f75c647440",
+     "e9c5f7f36436afc4",
+     "f15b43cd28118fd7"
+    ],
+    "24": [
+     "2f9724da10316eec",
+     "6bc2b12ee69855d2",
+     "85ac6af3a1d39e6d",
+     "b6d3e5401310f51e"
+    ],
+    "32": [
+     "07d48882a95f5706",
+     "0eb952872afb034e",
+     "11244464834d247f",
+     "216c44aa0039bf57",
+     "2c500f99e1b7495b",
+     "3a94cc5fbf5de182",
+     "40c4ce3f257e86df",
+     "41f762768e9e24a3",
+     "5d40ca7bede6ab44",
+     "68920713990b292b",
+     "716ed6842b2e2343",
+     "738e3d7ba5c0e1c4",
+     "78f70a76a51ca5ff",
+     "812bc5129772759f",
+     "81fe06c87719e172",
+     "8dccb47305d1c1c3",
+     "907a350eda7432a0",
+     "92726843ca87e18c",
+     "94deabcceff1a8ec",
+     "974d942ab5db5c78",
+     "9d14848e64055c0c",
+     "a532b5d627d7d436",
+     "b00f8152f07470a9",
+     "f7f242e17d9dfc80"
+    ],
+    "48": [
+     "94f086d12772d316"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "ee34c48bdcfb616798bf8566f7165833585f3517578307ca05388cf7a984e6e1",
+   "kind": "low_furniture",
+   "label": "beodeul_city/bd-in-war-table",
+   "width": 48,
+   "height": 32,
+   "cells": {
+    "16": [
+     "01522645555dcca8",
+     "057dadc9941db381",
+     "3420462f197b63b8",
+     "9328ea36b928c01a",
+     "9d493bec07c44c05",
+     "d04e905704102a39"
+    ],
+    "24": [
+     "019cd63269e135fd",
+     "3f4029e05c1178c1",
+     "878d22dfbf731703",
+     "a5fcfa4b967c8c78",
+     "dd5aac2255fe72e2",
+     "defbfa67cd4e6703",
+     "f50434451397d051"
+    ],
+    "32": [
+     "14747efef59f30d9",
+     "147e52f536ec5687",
+     "2e4bc65b859538a9",
+     "96661e0e74d52919",
+     "d2451210f0c930c3",
+     "dddb493cbdafd7d7"
+    ],
+    "48": [
+     "4507b0e0bcbe1419",
+     "5937c6505f2b54e8"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e9e0f8c069fdf0f88a8517694fe6fd59eba40430f46f4891d1089d1e3b7330bb",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-confessional",
+   "width": 32,
+   "height": 48,
+   "cells": {
+    "16": [
+     "075c669aa58b143b",
+     "38f233ff453111c5",
+     "3a424ea555ea9f15",
+     "57de9e334903ca1a",
+     "70d42ecf041125a3",
+     "b80f54aa4a64f984"
+    ],
+    "24": [
+     "1a958630ad153d1f",
+     "2b71310d2d9e2316",
+     "4c88779c2df04d48",
+     "5238835bed28ce31",
+     "525de6d1966c571c",
+     "7fee98925587e640",
+     "96e7e6226b88680f",
+     "aebce2dd9a12093f",
+     "bc97a5e482cf97cd",
+     "c462ea15206ea172",
+     "ccef38e5683027cb",
+     "d8c86cf73aa5eefa"
+    ],
+    "32": [
+     "0ae263a82b4e450a",
+     "2aecfd3f118497b6",
+     "990c7a2ff1af10a8",
+     "99b1b1c6e3db5783"
+    ],
+    "48": [
+     "1a6f9eb312ee2479",
+     "3bbfb97a567ffb94",
+     "b99e9f95e82aa55c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e9acc6ec28327b0f8d22b473685c772eebe512cb696618319c6a36e096dd0659",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-council-bench",
+   "width": 48,
+   "height": 32,
+   "cells": {
+    "16": [
+     "440da1f00183a82f",
+     "6de323b482a711e5",
+     "74bc66834e9e8332",
+     "8a0b10657cc364dc",
+     "bff9cffee9d8e29e",
+     "cb03c6c5e4238ca8"
+    ],
+    "24": [
+     "22b54087f6a347c2",
+     "46e979d6b4d629d8",
+     "5ddaf7b2957a0323",
+     "61e39ecdb4b4202e",
+     "713db1acfdddd032",
+     "99cb1f9811fc3838",
+     "d2156cf67a1fcd1b",
+     "dbf0b39275e67d1a"
+    ],
+    "32": [
+     "45504133c98efc24",
+     "5904fd81ddb23d0c",
+     "7931d602036e6b80",
+     "85e92a80c766d583",
+     "8ad092b906ac182a",
+     "a2742197fe31efff"
+    ],
+    "48": [
+     "5da9afbc19797b8b",
+     "719ba80a9551f661"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "a310a131c1f59c7eeddfe32f97097e17838d718cdd64cfec3f3845e0a5e2d41c",
+   "kind": "structure",
+   "label": "beodeul_city/bd-in-hoist",
+   "width": 32,
+   "height": 48,
+   "cells": {
+    "16": [
+     "3426f2b021d62154",
+     "354ab81c4eb4fa91",
+     "59809ba3d5a0865f",
+     "805d2d2dd889ba18",
+     "8bc610e8f924a6a1",
+     "e41504dce8ef6814"
+    ],
+    "24": [
+     "1708ab8770ff4050",
+     "1fa309f721901e05",
+     "369e59341cbfbf45",
+     "3b2486f9e8758d53",
+     "3cd4b88b5da04790",
+     "3ec2312a0489aeb2",
+     "759117af46f30aba",
+     "8d8165f312222e86",
+     "9e64ad67f6396a63",
+     "c1d43de66d3969c1",
+     "c8842921207a04c0",
+     "e57e7f8c711145e3"
+    ],
+    "32": [
+     "c6216c760e6d9fbf",
+     "d73a28fceb0a8e46",
+     "e07d6f57e9d4534b",
+     "f39bcc261757e125"
+    ],
+    "48": [
+     "5683613fa3eb54ee",
+     "b3326abe9fb61a44",
+     "f0b692fd1430df2d"
+    ]
+   }
+  },
+  {
    "pixelSha256": "f547e5f75fd43f45bde7030be8db87e3cefb18c80a4dc3d192e2db3f9e37bbe0",
    "kind": "flat",
    "label": "beodeul_city/bd-in-hearth-glow",

@@ -34,6 +34,25 @@ describe("크기 단 구성 표", () => {
       for (const m of p.shapes) { expect(m.rooms.length, m.id).toBeGreaterThanOrEqual(2); expect(m.exit, m.id).toBeTruthy(); }
     }
   });
+  it("대형 8 구성 × 평면 두 벌, 초대형 4 구성은 맵 3장 이상", () => {
+    const large = programs.filter(([, p]) => p.tier === "large"), xl = programs.filter(([, p]) => p.tier === "xlarge");
+    expect(large.length).toBeGreaterThanOrEqual(8); expect(xl.length).toBeGreaterThanOrEqual(4);
+    for (const [id, p] of large) { expect(p.shapes.length, id).toBeGreaterThanOrEqual(2); for (const m of p.shapes) expect(m.rooms.length, m.id).toBeGreaterThanOrEqual(4); }
+    expect(large.some(([, p]) => p.shapes.some((m) => m.rooms.some((r) => r.kind === "t_court")))).toBe(true);      // 안뜰 둘레
+    expect(large.some(([, p]) => p.shapes.some((m) => m.rooms.some((r) => r.kind === "t_corridor")))).toBe(true);   // 복도 등뼈
+    expect(large.some(([, p]) => (p.maps?.length ?? 0) > 0)).toBe(true);                                             // 층이 다른 것
+    for (const [id, p] of xl) { expect(1 + (p.maps?.length ?? 0), id).toBeGreaterThanOrEqual(3); expect(p.links?.length ?? 0, id).toBeGreaterThanOrEqual(2); expect(p.shapes[0]!.rooms.length, id).toBeGreaterThanOrEqual(10); }
+  });
+  it("큰 홀 견본마다 다른 것 하나가 있다 — 기둥·식탁의 되풀이만으로 차지 않는다", () => {
+    const feature: Record<string, string> = { "tavhall-a": "stage", "tavhall-b": "great hearth", "ghall-b": "guild board", "hall-l": "grand stairs", "council-a": "council bench", "nave-a": "pulpit", "sanct-a": "organ",
+      "throne-a": "throne", "library-l": "reading table", "customs-a": "customs desk", "whall-a": "hoist", "refectory-a": "pulpit", "kitchen-l": "great hearth" };
+    for (const [id, part] of Object.entries(feature)) expect(tpls.find((t) => t.id === `authored-bd-${id}`)?.items.some((i) => i.id === part), id).toBe(true);
+    // 알현실의 양옆 벽은 서로 다르다(같은 창·깃발 줄의 좌우 대칭이 아니다)
+    const throne = tpls.find((t) => t.id === "authored-bd-throne-a")!;
+    const wall = throne.items.filter((i) => i.y === 0 && i.t === "o"), mid = (throne.w - 1) / 2;
+    const side = (left: boolean) => wall.filter((i) => (left ? i.x < mid - 4 : i.x > mid + 4)).map((i) => i.id).sort().join(",");
+    expect(side(true)).not.toBe(side(false));
+  });
   it("한 단 안의 평면 꼴이 한 가지가 아니다 — 옆으로 붙는 것·뒤로 붙는 것·복도에 꿴 것이 다 있다", () => {
     const shapes = programs.filter(([, p]) => p.tier === "medium").flatMap(([, p]) => p.shapes);
     const sides = (m: (typeof shapes)[number]) => new Set(m.rooms.map((r) => r.at?.[0]).filter(Boolean));
@@ -112,6 +131,33 @@ describe("크기 단 짓기", () => {
     };
     expect(new Set(["갑", "을", "병", "정"].map(sig)).size).toBeGreaterThan(1);
   }, 120_000);
+});
+
+describe("대형·초대형 짓기", () => {
+  const go = (id: string, s: number) => {
+    const p = table.programs[id]!; const { run, ts } = fresh(); const notes: string[] = [];
+    const r = buildTier(run, { type: "interior", name: p.ko } as PlaceSpec, { tilesetId: ts.id, roomSpec: S, outside: { tileset: ts.id, tier: p.tier, style: "violetslate" }, mainKind: p.serves[0]!, named: true,
+      varietyKey: `시험|${id}`, mapId: undefined, force: { program: id, shape: s } }, notes);
+    expect(r?.ok, `${id}/${s}: ${notes.join(" / ")}`).toBe(true); expect(r!.missingArt, `${id}/${s}`).toEqual([]);
+    expect(r!.mapIds).toHaveLength(1 + (p.maps?.length ?? 0));
+    return { r: r!, run, p };
+  };
+  it("대형 구성마다 두 평면이 지어지고 딸린 층은 계단으로 오간다", () => {
+    for (const [id, p] of programs.filter(([, q]) => q.tier === "large")) for (let s = 0; s < p.shapes.length; s++) {
+      const { r, run } = go(id, s);
+      expect(roomsOf(run, r.mapIds[0]!)).toHaveLength(p.shapes[s]!.rooms.length);
+      for (const extra of r.mapIds.slice(1)) { expect(JSON.stringify(run.ctx.project.maps[extra]!.events ?? [])).toContain(r.mapIds[0]!); expect(JSON.stringify(run.ctx.project.maps[r.mapIds[0]!]!.events ?? [])).toContain(extra); }
+    }
+  }, 300_000);
+  it("초대형 넷: 본채가 44×32칸을 넘고 맵 3장 이상이 본채와 서로 이어진다", () => {
+    for (const [id] of programs.filter(([, q]) => q.tier === "xlarge")) {
+      const { r, run } = go(id, 0);
+      const main = run.ctx.project.maps[r.mapIds[0]!]!;
+      expect(main.width, id).toBeGreaterThanOrEqual(44); expect(main.height, id).toBeGreaterThanOrEqual(32);
+      expect(r.mapIds.length, id).toBeGreaterThanOrEqual(3);
+      for (const extra of r.mapIds.slice(1)) { expect(JSON.stringify(run.ctx.project.maps[extra]!.events ?? [])).toContain(r.mapIds[0]!); expect(JSON.stringify(main.events ?? [])).toContain(extra); }
+    }
+  }, 300_000);
 });
 
 describe("단은 문이 달린 집 킷이 정한다", () => {

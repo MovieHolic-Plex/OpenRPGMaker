@@ -834,7 +834,7 @@ console.log(`방 ${ROOMS.length}개(크기 단 전용 ${ROOMS.filter((r) => r.ti
     }
     for (const l of p.links ?? []) for (const ref of [l.from, l.to]) {
       const [mk, rk] = ref.split("/");
-      for (const m of mk === "main" ? p.shapes : (p.maps ?? []).filter((q) => q.id === mk)) if (!m.rooms.some((r) => r.id === rk)) { bad++; console.error(`${pid}: 길 ${ref} — 평면 ${m.id} 에 방 ${rk} 이 없다`); }
+      for (const m of mk === "main" ? p.shapes : (p.maps ?? []).filter((q) => q.id === mk)) if (rk !== "*" && !m.rooms.some((r) => r.id === rk)) { bad++; console.error(`${pid}: 길 ${ref} — 평면 ${m.id} 에 방 ${rk} 이 없다`); }
     }
   }
   const by = (t: string) => Object.values(TIER_PROGRAMS).filter((p) => p.tier === t);
