@@ -184,6 +184,24 @@ describe("버들항 물 — 시공", () => {
     expect(hidden).toBeLessThanOrEqual(cells * 0.002);
   });
 
+  it("강 없는 마을의 작은 못은 둥근 덩이다 — 한 칸 폭 물줄기 토막 같은 가는 못은 서지 않는다", () => {
+    let ponds = 0;
+    for (const character of ["flat", "hill", "terraces"] as const) for (let seed = 1; seed <= 24; seed += 1) {
+      const t = generateCodeTerrain({ W: 42, H: 42, seed, water: "none", pond: true, character, tiers: 2 });
+      const cells: number[] = []; for (let c = 0; c < t.W * t.H; c += 1) if (t.water[c] === 2) cells.push(c);
+      if (!cells.length) continue;
+      ponds += 1;
+      const set = new Set(cells);
+      // 네 이웃이 모두 물인 속 칸이 셋 이상
+      expect(cells.filter((c) => set.has(c - 1) && set.has(c + 1) && set.has(c - t.W) && set.has(c + t.W)).length).toBeGreaterThanOrEqual(3);
+      expect(cells.length).toBeLessThanOrEqual(60);
+    }
+    expect(ponds).toBeGreaterThan(20); // 셋 중 둘쯤 못을 받는다
+    // pond 를 주지 않으면 못이 없다(물 없는 마을 그대로)
+    const none = generateCodeTerrain({ W: 42, H: 42, seed: 3, water: "none", character: "hill", tiers: 2 });
+    expect(none.water.some((v) => v > 0)).toBe(false);
+  });
+
   it("폭포 곁 다리: 폭포 위와 아래에서 곧은 두 줄을 건너고, 길이 이미 그 곁에서 건너면 놓지 않는다", () => {
     const W = 12, H = 20, wet = (c: number) => { const x = c % W; return x >= 4 && x <= 6; };
     const input = { W, H, falls: [{ x0: 4, x1: 6, y: 8 }], wet, free: (c: number) => !wet(c), level: (c: number) => (Math.floor(c / W) <= 8 ? 2 : 0) };

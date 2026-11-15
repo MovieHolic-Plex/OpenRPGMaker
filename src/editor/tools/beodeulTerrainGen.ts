@@ -402,7 +402,9 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
     const f = priorityFlood(h, W, H);
     const deep = (c: number) => f[c]! - h[c]! > 0.012;
     const { list } = components(W, H, () => true, (c) => deep(c) && !water[c]);
-    const lakes = list.filter((cs) => cs.length >= 5 && (!smallPond || cs.length <= 40)).sort((a, b) => b.length - a.length).slice(0, 1);
+    // 작은 못은 둥근 덩이여야 한다 — 가는 골짜기 모양 웅덩이는 한 칸 폭 물줄기 토막으로 보였다(명세 은행 lay-base-village-to-field). 네 이웃이 모두 물인 속 칸이 셋은 있어야 못이다.
+    const plump = (cs: readonly number[]): boolean => { const set = new Set(cs); let inner = 0; for (const c of cs) if (set.has(c - 1) && set.has(c + 1) && set.has(c - W) && set.has(c + W)) inner += 1; return inner >= 3; };
+    const lakes = list.filter((cs) => cs.length >= 5 && (!smallPond || (cs.length <= 40 && plump(cs)))).sort((a, b) => b.length - a.length).slice(0, 1);
     for (const cs of lakes) for (const c of cs) water[c] = 2;
     const want = 1;
     let made = lakes.length;
@@ -411,12 +413,13 @@ export function generateCodeTerrain(input: TerrainGenInput): CodeTerrain {
       // 가장 낮은 안쪽 칸 근처에 잡음으로 일그러진 분지
       let best = -1; for (let k = 0; k < 40; k += 1) { const x = 5 + Math.floor(r() * (W - 10)), y = 5 + Math.floor(r() * (H - 10)); const c = y * W + x; if (water[c]) continue; if (best < 0 || h[c]! < h[best]!) best = c; }
       if (best < 0) break;
-      const bx = best % W, by = (best - bx) / W; const rx = smallPond ? 2.3 + r() * 1.5 : 3 + r() * 2.5, ry = rx * (0.6 + r() * 0.5);
-      let n = 0;
+      const bx = best % W, by = (best - bx) / W; const rx = smallPond ? 2.3 + r() * 1.5 : 3 + r() * 2.5, ry = rx * (smallPond ? 0.75 + r() * 0.35 : 0.6 + r() * 0.5);
+      const dug: number[] = [];
       for (let y = Math.max(1, Math.floor(by - ry - 2)); y <= Math.min(H - 2, by + ry + 2); y += 1) for (let x = Math.max(1, Math.floor(bx - rx - 2)); x <= Math.min(W - 2, bx + rx + 2); x += 1) {
-        const ex = (x - bx) / rx, ey = (y - by) / ry; if (ex * ex + ey * ey + 0.45 * ln(x / 3, y / 3) <= 1) { const c = y * W + x; water[c] = 2; n += 1; }
+        const ex = (x - bx) / rx, ey = (y - by) / ry; if (ex * ex + ey * ey + (smallPond ? 0.3 : 0.45) * ln(x / 3, y / 3) <= 1) { const c = y * W + x; if (!water[c]) { water[c] = 2; dug.push(c); } }
       }
-      if (n >= 6) made += 1;
+      if (smallPond && !plump(dug)) { for (const c of dug) water[c] = 0; continue; }   // 가는 조각이면 지우고 다른 자리에서 다시
+      if (dug.length >= 6) made += 1;
     }
     // 못은 한 덩이(2026-10-30 「사막 못이 쪼개진다」): 잡음 일그러짐·채운 웅덩이 합집합이 조각 여럿을 남겼다 — 가장 큰 덩이만 남기고 그 안 구멍은 메운다
     { const { list } = components(W, H, () => true, (c) => water[c] === 2);
