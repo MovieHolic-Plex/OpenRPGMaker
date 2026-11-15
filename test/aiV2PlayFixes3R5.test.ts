@@ -12,6 +12,8 @@ import { bossDefeatReturns } from "@/ai/v2/story/bossTalkBattles";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
+import { buildBossEncounter } from "@/ai/v2/story/sceneVerbs";
+import { enemyArtFor } from "@/ai/v2/place/builders/dungeonFoes";
 
 type Obj = Record<string, unknown>;
 const page = (conditions: unknown[], commands: unknown[], kind = "action", more: Obj = {}) =>
@@ -106,5 +108,27 @@ describe("의뢰의 기본 글 — 확인 빌드 r5", () => {
     expect(vowel).toContain(`{"kind":"text","body":"의뢰 '멈춘 물레방아'를 완수했다!"}`);
     expect(vowel).toContain("의뢰 '멈춘 물레방아'를 수락할까요?");
     expect(compiled("빈 그물")).toContain(`{"kind":"text","body":"의뢰 '빈 그물'을 완수했다!"}`);
+  });
+});
+
+// «강의 주인 두꺼비» 와의 전투 이름이 «깊은 곳의 마왕», «밀수꾼 두목» 이 낫 든 망령.
+describe("보스의 전투 이름과 그림 — 확인 빌드 r5", () => {
+  it("물려받은 보스전의 무리와 앞장선 적을 그 보스의 이름으로 부른다 — 다른 싸움도 쓰는 무리면 그대로", () => {
+    const fight = (troopId: string) => page([], [{ kind: "battleProcessing", troopSource: "fixed", troopId, canEscape: false, canLose: false, branchOnResult: true, victoryBranch: [{ kind: "setSwitch", switchId: "sw_c", value: true }], defeatBranch: [], escapeBranch: [] }]);
+    const build = (shared: boolean) => {
+      const project = createBlankProject() as Project;
+      project.database.enemies.push({ ...structuredClone(project.database.enemies[0]!), id: "enemy_x_boss", name: "깊은 곳의 마왕" });
+      project.database.troops.push({ ...structuredClone(project.database.troops[0]!), id: "troop_x_boss", name: "깊은 곳의 마왕", enemyIds: ["enemy_x_boss"], members: [{ enemyId: "enemy_x_boss", x: 0, y: 0 }] } as never);
+      project.maps[project.startMapId]!.events = [event("ev_cave_boss", "깊은 곳의 마왕", 5, 5, [fight("troop_x_boss")]), ...(shared ? [event("ev_other", "다른 싸움", 9, 9, [fight("troop_x_boss")])] : [])] as never;
+      const run = runOf(project);
+      expect(buildBossEncounter(run, { mapId: project.startMapId, boss: { name: "강의 주인 두꺼비" }, lines: ["꾸르륵."] } as never).ok).toBe(true);
+      return [run.ctx.project.database.troops.find((t) => t.id === "troop_x_boss")!.name, run.ctx.project.database.enemies.find((e) => e.id === "enemy_x_boss")!.name];
+    };
+    expect(build(false)).toEqual(["강의 주인 두꺼비", "강의 주인 두꺼비"]);
+    expect(build(true)).toEqual(["깊은 곳의 마왕", "깊은 곳의 마왕"]);
+  });
+
+  it("사람인 적의 이름은 산적 그림을 가리킨다", () => {
+    expect(enemyArtFor(createBlankProject() as Project, "밀수꾼 두목")).toBe("enemy_bandit_mask");
   });
 });

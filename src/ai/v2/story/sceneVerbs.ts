@@ -183,13 +183,29 @@ function adoptExistingBoss(run: BuildRun, mapId: string, spec: BossEncounterSpec
     return out;
   };
   const pages = (ev.pages ?? []).map((p) => JSON.stringify(p.commands ?? []).includes('"battleProcessing"') ? { ...p, commands: dress((p.commands ?? []) as unknown[]) as typeof p.commands } : p);
-  run.ctx.project = replaceEvent(run.ctx.project, mapId, { ...ev, name, pages } as GameEvent);
+  run.ctx.project = nameFightAfter(replaceEvent(run.ctx.project, mapId, { ...ev, name, pages } as GameEvent), fightTroop, name, ev.id);
   const map = run.ctx.project.maps[mapId]!;
   const troop = run.ctx.project.database.troops.find((t) => t.id === fightTroop);
   return {
     eventId: ev.id,
     summary: `Boss «${name}» is the boss fight that was already on ${map.name ?? mapId} at (${ev.x},${ev.y}) [${ev.id}] — no second boss was placed. It now says ${lines.length} line(s) before the battle${troop ? ` (troop ${troop.name ?? troop.id} [${troop.id}])` : ""}${won.length ? ` and ${won.length} line(s) after winning` : ""}. Winning turns on ${sw ?? "its victory switch"}${sw ? ` — for an ending after this boss call add_ending_scene{afterSwitchId:"${sw}"}` : ""}.`,
   };
+}
+
+/**
+ * 물려받은 보스전의 무리와 앞장선 적을 이 보스의 이름으로 부른다 — 이 싸움만 쓰는 무리일 때만(다른 이벤트·조우표가 같이 쓰면 그대로).
+ * 왜(2026-11-15 확인 빌드 r5): 동굴 빌더의 보스를 «강의 주인 두꺼비» 로 꾸몄는데 전투 화면의 이름은 빌더의 «깊은 곳의 마왕» 이었다.
+ */
+function nameFightAfter(project: Project, troopId: string | undefined, name: string, eventId: string): Project {
+  const troop = project.database.troops.find((t) => t.id === troopId);
+  const leadId = troop?.members?.length ? troop.members[0]!.enemyId : troop?.enemyIds?.[0];
+  if (!troop || !leadId || troop.name === name) return project;
+  const mark = `"troopId":${JSON.stringify(troop.id)}`;
+  const shared = Object.values(project.maps).some((m) => (m.events ?? []).some((e) => e.id !== eventId && JSON.stringify(e.pages ?? []).includes(mark))
+    || JSON.stringify([m.encounterTable ?? [], m.troopIds ?? [], m.fieldSpawns ?? []]).includes(JSON.stringify(troop.id)))
+    || project.database.troops.some((t) => t.id !== troop.id && [...(t.enemyIds ?? []), ...(t.members ?? []).map((mm) => mm.enemyId)].includes(leadId));
+  if (shared) return project;
+  return { ...project, database: { ...project.database, troops: project.database.troops.map((t) => (t.id === troop.id ? { ...t, name } : t)), enemies: project.database.enemies.map((e) => (e.id === leadId ? { ...e, name } : e)) } } as Project;
 }
 
 /** after 낱말·격파 스위치로 엔딩이 열릴 스위치 고르기. */
