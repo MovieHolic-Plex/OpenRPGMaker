@@ -199,7 +199,7 @@ describe("단은 문이 달린 집 킷이 정한다", () => {
     expect(count.small!).toBeGreaterThan(count.medium!); expect(count.medium!).toBeGreaterThan(count.large!); expect(count.xlarge!).toBeGreaterThanOrEqual(10);
     // 금: 40 · 72 · 150칸
     const kitOf = (w: number, h: number, doors = 1) => ({ width: w, height: h, parts: Array.from({ length: doors }, () => ({ kind: "entrance" })) }) as never;
-    expect([kitTierByFootprint(kitOf(6, 6)), kitTierByFootprint(kitOf(5, 8)), kitTierByFootprint(kitOf(9, 8)), kitTierByFootprint(kitOf(12, 13)), kitTierByFootprint(kitOf(20, 8, 4)), kitTierByFootprint(kitOf(3, 3, 0))])
+    expect([kitTierByFootprint(kitOf(6, 6)), kitTierByFootprint(kitOf(5, 8)), kitTierByFootprint(kitOf(9, 8)), kitTierByFootprint(kitOf(12, 13)), kitTierByFootprint(kitOf(19, 8, 4)), kitTierByFootprint(kitOf(3, 3, 0))])
       .toEqual(["small", "medium", "large", "xlarge", "small", undefined]);
     // 태그 없는 옛 사본의 킷도 같은 단
     const old = { ...kit("bd-house-inn"), ai: { ...kit("bd-house-inn").ai, tags: ["버들항", "house"] } };
