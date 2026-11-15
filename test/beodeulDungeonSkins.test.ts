@@ -50,7 +50,7 @@ describe("버들항 던전 겉가죽 표", () => {
     for (const theme of table.themes) {
       expect(theme.looks.length, theme.id).toBeGreaterThanOrEqual(2);
       for (const look of theme.looks) {
-        expect(look.floor.length, theme.id).toBeGreaterThanOrEqual(3);
+        expect(look.floor.length, theme.id).toBeGreaterThanOrEqual(2);
         for (const plate of look.floor) expect(plate).toHaveLength(16);
         expect(look.face.length, theme.id).toBeGreaterThanOrEqual(3);
         for (const piece of look.face) { expect(piece).toHaveLength(4); for (const col of piece) expect(col).toHaveLength(3); }
@@ -69,13 +69,16 @@ describe("버들항 던전 겉가죽 표", () => {
     }
   });
 
-  it("덧칸은 ★ 다: 2층에 깔리는 빛 띠·입술·물가가 칸의 통행을 정하지 않는다 — 벽 칸에 깔린 빛이 벽을 걷는 칸으로 만들던 자리(여러 씨앗 훑기에서 관문을 돌아가는 길이 됐다)", () => {
+  it("덧칸: 2층에 깔리는 빛 띠·입술은 ★ 라 칸의 통행을 정하지 않고, 물가는 막힌 칸이다 — 벽 칸에 깔린 빛이 벽을 걷는 칸으로 만들던 자리(여러 씨앗 훑기에서 관문을 돌아가는 길이 됐다)", () => {
     const ts = createBlankProject().tilesets[TS_ID]!;
     const glow = Object.values(table.glow as Record<string, { rows: number[][] }>).flatMap((g) => g.rows.flat()).filter((t) => t >= 0);
     expect(glow.length).toBeGreaterThan(50);
     for (const t of glow) expect(passageMarkForTile(ts, t), `빛 ${t}`).toBe("star");
     for (const theme of table.themes) for (const look of theme.looks) {
-      const over = [...look.lip.flat(), ...((look as { shore?: number[] }).shore ?? []), ...((look as { shoreIn?: number[] }).shoreIn ?? [])].filter((t) => t >= 0);
+      const over = look.lip.flat().filter((t) => t >= 0);
+      // 물가·물줄기 덧칸은 막힌 칸이다 — 그 밑 1층은 걷는 바닥 그림이라 덧칸이 통행을 정한다
+      const bank = [...((look as { shore?: number[] }).shore ?? []), ...((look as { shoreIn?: number[] }).shoreIn ?? [])].filter((t) => t >= 0);
+      for (const t of bank) expect(passageMarkForTile(ts, t), `${theme.id} 물가 ${t}`).toBe((theme as { wade?: boolean }).wade ? "star" : "x");
       for (const t of over) expect(passageMarkForTile(ts, t), `${theme.id} 덧칸 ${t}`).toBe("star");
     }
   });
@@ -101,40 +104,36 @@ describe("버들항 던전 겉가죽 표", () => {
 });
 
 describe("버들항 던전 겉가죽 입히기", () => {
-  it("옛 게임(겉모습 없음)은 옛 그림 그대로다 — 겉가죽 칸이 한 칸도 없다", () => {
-    for (const [type, extra] of CASES) {
-      const { maps } = build(type, extra, undefined, 5);
-      for (const m of maps) for (const layer of [m.lowerTiles, m.lowerOverlayTiles ?? [], m.upperTiles]) expect(Array.from(layer).some((t) => t >= table.base && t < table.end), type).toBe(false);
-    }
-  });
+  // 던전 한 판을 짓는 데 1~2초가 든다 — 경우마다 한 시험으로 쪼개고 제한 시간을 그 일에 맞게 준다(한 시험에 다 넣으면 기본 15초를 넘는다).
+  it.each(CASES.map(([type, extra]) => [`${type}${Object.keys(extra).map((k) => `+${k}`).join("")}`, type, extra] as const))("옛 게임(겉모습 없음)은 옛 그림 그대로다 — 겉가죽 칸이 한 칸도 없다: %s", (_name, type, extra) => {
+    const { maps } = build(type, extra, undefined, 5);
+    for (const m of maps) for (const layer of [m.lowerTiles, m.lowerOverlayTiles ?? [], m.upperTiles]) expect(Array.from(layer).some((t) => t >= table.base && t < table.end), type).toBe(false);
+  }, 30_000);
 
-  it("입힌 층: 바닥·벽이 그 주제의 칸이고, 막힌 길·못 밟는 이동 칸이 없다 — 종류 × 겉모습 × 씨앗", () => {
-    for (const [type, extra, themeId] of CASES) {
+  it.each(CASES.flatMap(([type, extra, themeId]) => NAMES.map((name, at) => [`${type}${Object.keys(extra).map((k) => `+${k}`).join("")} ${name}`, type, extra, themeId, name, at] as const)))(
+    "입힌 층: 바닥·벽이 그 주제의 칸이고, 막힌 길·못 밟는 이동 칸이 없다 — 씨앗 셋: %s", (_name, type, extra, themeId, name, at) => {
       const theme = table.themes.find((t) => t.id === themeId)!;
-      NAMES.forEach((name, at) => {
-        const look = theme.looks[at % theme.looks.length]!;
-        const mine = new Set([...look.floor.flat(), ...look.face.flat(2)]);
-        for (const seed of [2, 7, 13]) {
-          const { project, maps, ids } = build(type, extra, name, seed);
-          const skinned = maps.filter((m) => Array.from(m.lowerTiles).some((t) => mine.has(t)));
-          expect(skinned.length, `${type} ${name} ${seed}`).toBeGreaterThan(0);
-          // 벽 앞면·벽 너머 칸은 무엇이 덧깔려도 막힌 칸이다
-          const solid = new Set([...look.face.flat(2), ...look.top.flat(2), ...Object.values(look.rim as Record<string, number[]>).flat()]);
-          const tsNow = project.tilesets[TS_ID]!;
-          for (const m of skinned) for (let i = 0; i < m.lowerTiles.length; i += 1) {
-            if (!solid.has(m.lowerTiles[i]!)) continue;
-            if (Object.values(cellPassability(tsNow, m, i)).some(Boolean)) throw new Error(`${type} ${name} ${seed}: 벽 칸 ${i % m.width},${Math.floor(i / m.width)} 이 걷는 칸이다`);
-          }
-          const issues = projectLint(project).filter((i) => i.severity === "error" && (!i.mapId || ids.includes(i.mapId)));
-          expect(issues.map((i) => `${i.code}: ${String(i.message).slice(0, 80)}`), `${type} ${name} ${seed}`).toEqual([]);
+      const look = theme.looks[at % theme.looks.length]!;
+      const mine = new Set([...look.floor.flat(), ...look.face.flat(2)]);
+      // 벽 앞면·벽 너머 칸은 무엇이 덧깔려도 막힌 칸이다
+      const solid = new Set([...look.face.flat(2), ...look.top.flat(2), ...Object.values(look.rim as Record<string, number[]>).flat()]);
+      for (const seed of [2, 7, 13]) {
+        const { project, maps, ids } = build(type, extra, name, seed);
+        const skinned = maps.filter((m) => Array.from(m.lowerTiles).some((t) => mine.has(t)));
+        expect(skinned.length, `${type} ${name} ${seed}`).toBeGreaterThan(0);
+        const tsNow = project.tilesets[TS_ID]!;
+        for (const m of skinned) for (let i = 0; i < m.lowerTiles.length; i += 1) {
+          if (!solid.has(m.lowerTiles[i]!)) continue;
+          if (Object.values(cellPassability(tsNow, m, i)).some(Boolean)) throw new Error(`${type} ${name} ${seed}: 벽 칸 ${i % m.width},${Math.floor(i / m.width)} 이 걷는 칸이다`);
         }
-      });
-    }
-  });
+        const issues = projectLint(project).filter((i) => i.severity === "error" && (!i.mapId || ids.includes(i.mapId)));
+        expect(issues.map((i) => `${i.code}: ${String(i.message).slice(0, 80)}`), `${type} ${name} ${seed}`).toEqual([]);
+      }
+    }, 90_000);
 
   it("갈아 끼운 그림이 길을 막지 않는다: 옛 것이 «길을 안 막는 바닥 그림» 이라 검사 없이 놓이던 자리도 새 그림으로는 길을 다시 본다(물에 잠긴 신전 씨앗 1·3 — 우거진 풀 자리의 석상이 회랑을 막아 방 셋이 끊겼다)", () => {
     for (const seed of [1, 3]) for (const name of NAMES) expect(() => build("temple", { flooded: true }, name, seed), `${name} ${seed}`).not.toThrow();
-  });
+  }, 60_000);
 
   it("한 게임은 한 모습: 같은 겉모습 이름이면 층마다 같은 벽, 다른 이름이면 다른 벽", () => {
     const wall = (name: string, seed: number) => {
@@ -144,5 +143,5 @@ describe("버들항 던전 겉가죽 입히기", () => {
     };
     expect(wall(NAMES[0]!, 3)).toBe(wall(NAMES[0]!, 9));
     expect(wall(NAMES[0]!, 3)).not.toBe(wall(NAMES[1]!, 3));
-  });
+  }, 30_000);
 });

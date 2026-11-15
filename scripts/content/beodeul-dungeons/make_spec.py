@@ -65,7 +65,7 @@ CAVE = dict(
     id="cave", ko="동굴", types=["cave"],
     floor=["cv-bed-a", "cv-bed-b", "cv-bed-c", "cv-bed-d", "cv-bed-e"], faces=["cv-face-a2", "cv-face-b", "cv-face-c"], top=["cv-top"], topRamps=["dark"],
     rimS="cv-edge-s", rimW="cv-edge-w", sliver="slab:4", faceGap="crag:1", shore="cv-shore", shoreIn="cv-shore-in",
-    looks=[dict(id="umber", ko="갈색 바위"), dict(id="slate", ko="푸른 바위", remap={"crag": "cragb"}), dict(id="moss", ko="이끼빛 바위", remap={"crag": "cragc"})],
+    looks=[dict(id="umber", ko="갈색 바위"), dict(id="slate", ko="푸른 종유석 굴", remap={"crag": "cragb"}, faces=["cvb-face-a", "cvb-face-b", "cvb-face-c"], floor=["cvb-floor-a", "cvb-floor-b"], floorWeights=[0.45, 0.55]), dict(id="moss", ko="이끼빛 바위", remap={"crag": "cragc"})],
     objects=[
         O("cave-mushroom", "cv-mushroom", 1, 1, "object", "빛 버섯", "glowing mushrooms", [CV("glow-mushroom")], ["버섯", "mushroom"]),
         O("cave-moss", "cv-moss", 1, 1, "decal", "빛 이끼", "glowing moss", [CV("glow-moss-floor")], ["이끼", "moss"]),
@@ -82,7 +82,7 @@ CAVE = dict(
         O("cave-hollow", "cv-hollow", 3, 2, "decal", "웅덩이 자국", "hollow with a puddle", [], ["웅덩이", "puddle"]),
         O("cave-earth", "cv-earth", 3, 2, "decal", "흙과 자갈", "earth and gravel", [], ["흙", "gravel"]),
     ],
-    extras=[E("cave-crystal", "open", 0.5, 1), E("cave-stalagmite-big", "open", 0.5, 2), E("cave-hollow", "decal", 0.5, 1), E("cave-earth", "decal", 0.8, 2), E("cave-spring", "wall", 0.4, 1)],
+    extras=[E("cave-crystal", "open", 1, 1, once=True), E("cave-stalagmite-big", "open", 0.5, 2), E("cave-hollow", "decal", 0.5, 1), E("cave-earth", "decal", 0.8, 2), E("cave-spring", "wall", 0.4, 1)],
     glowOf={"cave-crystal": "crystal", "cave-mushroom": "spore"},
 )
 
@@ -90,7 +90,7 @@ RUIN = dict(
     id="ruin", ko="유적", types=["temple"],
     floor=["ru-floor"], faces=["ru-wall-a", "ru-wall-b", "ru-wall-c"], top=["ru-top-b", "ru-top-c"], topRamps=["leaf"],
     rimS="ru-rim-s", rimW="ru-rim-w", sliver="lime:2", faceGap="buff:1",
-    looks=[dict(id="buff", ko="잿빛 마름돌"), dict(id="sand", ko="사암", remap={"buff": "buffw"}), dict(id="rose", ko="붉은 돌", remap={"buff": "buffc"})],
+    looks=[dict(id="buff", ko="잿빛 마름돌"), dict(id="sand", ko="사암 다각 쌓기", remap={"buff": "buffw"}, faces=["rub-wall-a", "rub-wall-b", "rub-wall-c"], floor=["rub-floor-a", "rub-floor-b"], floorWeights=[0.4, 0.6]), dict(id="rose", ko="붉은 돌", remap={"buff": "buffc"})],
     objects=[
         O("ruin-column", "ru-pillar", 1, 3, "object", "돌기둥", "stone column", [TP("column-temple"), CC("column-cata")], ["기둥", "column"]),
         O("ruin-column-stump", "ru-stump", 1, 2, "object", "부러진 기둥", "broken column", [TP("column-temple-broken"), SW("column-sewer-broken")], ["기둥", "column"]),
@@ -118,8 +118,8 @@ BUILT = dict(top=["cv-top"], topRamps=["dark"], rimS="mb-rim-s", rimW="mb-rim-w"
 WATER = dict(shore="cv-shore", shoreIn="cv-shore-in")
 
 ICE = dict(
-    id="ice", ko="얼음굴", types=["ice"], **NAT, **WATER, water="cv-water2", bridge="plank",
-    floor=["ic-floor-a", "ic-floor-b", "ic-floor-c"], faces=["ic-face-a", "ic-face-b", "ic-face-c"],
+    id="ice", ko="얼음굴", types=["ice"], **NAT, **WATER, water="cv-water2", bridge="plank", net="nw-net", inner2=True,
+    floor=["ic-floor-a", "ic-floor-b", "ic-floor-c"], faces=["ic2-face-a", "ic2-face-b", "ic2-face-c"],
     borrow={"crag": "frost", "slab": "snow", "dark": "darki", "water": "crystal"}, sliver="snow:4", faceGap="frost:1",
     looks=[dict(id="blue", ko="푸른 얼음"), dict(id="glacier", ko="옥빛 얼음", remap={"frost": "frostb"}), dict(id="dusk", ko="보랏빛 얼음", remap={"frost": "frostc"})],
     objects=[
@@ -136,8 +136,8 @@ ICE = dict(
     glowOf={"ice-crystal": "spore", "ice-great-crystal": "crystal"},
 )
 VOLCANO = dict(
-    id="volcano", ko="화산", types=["volcano"], **NAT, **WATER, water="cv-water2", lava=True, bridge="stone",
-    floor=["vo-floor-a", "vo-floor-b", "vo-floor-c"], faces=["vo-face-a", "vo-face-b", "vo-face-c"],
+    id="volcano", ko="화산", types=["volcano"], **NAT, **WATER, water="cv-water2", lava=True, bridge="stone", net="nw-net", inner2=True,
+    floor=["vo-floor-a", "vo-floor-b", "vo-floor-c"], faces=["vo2-face-a", "vo2-face-b", "vo2-face-c"],
     borrow={"crag": "basalt", "slab": "basalt", "dark": "darkv", "water": "lava", "keep": "basalt"}, sliver="basalt:4", faceGap="basalt:1",
     looks=[dict(id="black", ko="검은 현무암"), dict(id="rust", ko="붉은 현무암", remap={"basalt": "basaltb"}), dict(id="ash", ko="잿빛 현무암", remap={"basalt": "basaltc"})],
     objects=[
@@ -177,7 +177,7 @@ CRYPT = dict(
     id="crypt", ko="지하묘", types=["catacomb", "labyrinth"], **BUILT, bridge="stone",
     floor=["cr-floor-a", "cr-floor-b", "cr-floor-c"], faces=["cr-wall-a", "cr-wall-b", "cr-wall-c"],
     borrow={"keep": "tomb"}, sliver="tomb:3", faceGap="tomb:1",
-    looks=[dict(id="cold", ko="푸른 잿빛 돌"), dict(id="mould", ko="이끼 낀 돌", remap={"tomb": "tombb"}), dict(id="umber", ko="갈색 돌", remap={"tomb": "tombc"})],
+    looks=[dict(id="cold", ko="푸른 잿빛 돌"), dict(id="mould", ko="이끼 낀 벽돌 묘", remap={"tomb": "tombb"}, faces=["crb-wall-a", "crb-wall-b", "crb-wall-c"], floor=["crb-floor-a", "crb-floor-b"], floorWeights=[0.4, 0.6]), dict(id="umber", ko="갈색 돌", remap={"tomb": "tombc"})],
     objects=[
         O("crypt-column", "cr-column", 1, 3, "object", "지하묘 기둥", "crypt pillar", [CC("column-cata")], ["기둥", "pillar"]),
         O("crypt-sarcophagus", "cr-sarcophagus", 2, 2, "object", "석관", "sarcophagus", [TK("sarcophagus-ew"), TK("sarcophagus-ew-open")], ["석관", "sarcophagus"], block=[[0, 1], [1, 1]]),
@@ -235,7 +235,7 @@ CASTLE = dict(
     id="castle", ko="성", types=["castle"], **BUILT,
     floor=["ca-floor-a", "ca-floor-b", "ca-floor-c"], faces=["ca-wall-a", "ca-wall-b", "ca-wall-c"],
     borrow={}, sliver="keep:3", faceGap="keep:1",
-    looks=[dict(id="grey", ko="잿빛 성돌"), dict(id="tan", ko="누런 성돌", remap={"keep": "keepb"}), dict(id="slate", ko="푸른 성돌", remap={"keep": "keepc"})],
+    looks=[dict(id="grey", ko="잿빛 성돌"), dict(id="tan", ko="회벽과 들보", remap={"keep": "keepb"}, faces=["cab-wall-a", "cab-wall-b", "cab-wall-c"], floor=["cab-floor-a", "cab-floor-b"], floorWeights=[0.45, 0.55]), dict(id="slate", ko="푸른 성돌", remap={"keep": "keepc"})],
     objects=[
         O("castle-column", "ca-column", 1, 3, "object", "성 기둥", "castle pier", [CC("column-cata")], ["기둥", "pier"]),
         O("castle-banner", "ca-banner", 1, 2, "mount", "붉은 깃발", "royal banner", [TK("royal-banner"), SW("banner-cult")], ["깃발", "banner"]),
@@ -265,7 +265,7 @@ PYRAMID = dict(
     extras=[E("pyramid-sphinx", "open", 1, 1, once=True), E("pyramid-jackal", "edge", 0.5, 2), E("pyramid-sand", "decal", 1.0, 3)],
 )
 SUNKEN = dict(
-    id="sunken", ko="가라앉은 신전", types=["temple+flooded"], **BUILT, **WATER, water="cv-water2", inherit="ruin", bridge="stone",
+    id="sunken", ko="가라앉은 신전", types=["temple+flooded"], **BUILT, **WATER, water="cv-water2", inherit="ruin", bridge="stone", inner2=True, wade=True,
     floor=["su-floor-a", "su-floor-b", "su-floor-c"], faces=["su-wall-a", "su-wall-b", "su-wall-c"],
     borrow={"keep": "marble", "dark": "darku", "slab": "marble", "crag": "marble", "water": "teal"}, sliver="marble:4", faceGap="marble:1",
     looks=[dict(id="sea", ko="옥빛 대리석"), dict(id="coral", ko="산호빛 대리석", remap={"marble": "marbleb"}), dict(id="deep", ko="쪽빛 대리석", remap={"marble": "marblec"})],
@@ -284,7 +284,7 @@ SUNKEN = dict(
 )
 HIDEOUT = dict(
     id="hideout", ko="도적 소굴", types=["cave+lair"], inherit="cave",
-    **{k: CAVE[k] for k in ("floor", "faces", "top", "topRamps", "rimS", "rimW", "sliver", "faceGap", "shore", "shoreIn")}, water="cv-water2", bridge="plank",
+    **{k: CAVE[k] for k in ("floor", "faces", "top", "topRamps", "rimS", "rimW", "sliver", "faceGap", "shore", "shoreIn")}, water="cv-water2", bridge="plank", net="nw-net", inner2=True, rimPhases=2,
     looks=CAVE["looks"],
     objects=[
         O("hideout-tent", "hd-tent", 3, 2, "object", "가죽 천막", "hide tent", ["bd-dg-goblin-tent"], ["천막", "tent"], block=[[x, y] for y in (0, 1) for x in range(3)]),
@@ -302,7 +302,7 @@ HIDEOUT = dict(
     extras=[E("hideout-chief-seat", "edge", 1, 1, once=True), E("hideout-platform", "decal", 0.6, 2), E("hideout-table", "open", 0.4, 1), E("hideout-cage", "edge", 0.3, 1), E("hideout-weapon-rack", "edge", 0.4, 1)],
     glowOf={"hideout-campfire": "ember", "hideout-table": "ember"},
 )
-CAVE.update(water="cv-water2", bridge="plank")
+CAVE.update(water="cv-water2", bridge="plank", net="nw-net", inner2=True, rimPhases=2)
 RUIN.update(stagger=True, deepFull=True, rimPhases=2)   # 수풀 윗면: 덩이 줄을 어긋나게, 깊은 곳도 온 판으로(32px 되풀이가 수풀 격자로 보였다)
 
 # 계단: 지은 곳은 문목 계단·네모 계단 구멍, 굴은 거친 구멍 — 벽 색 줄(올라감)·바닥 색 줄(내려감)로 옮겨 굽는다
@@ -350,7 +350,10 @@ def _derive(ramps):
 
 # 그리는 중(개발)에는 조각이 아직 없는 주제를 건너뛴다 — DGN_DEV=1 일 때만. 정식 굽기는 모든 조각이 있어야 한다.
 import os
-def _pieces(th): return [*([th["stairs"]["up"], th["stairs"]["down"]] if th.get("stairs") else []), *([f"br-{th['bridge']}-{d}" for d in ("ew", "ns")] if th.get("bridge") else []), *th["floor"], *th["faces"], *th["top"], th["rimS"], th["rimW"], *([th["shore"], th["shoreIn"]] if th.get("shore") else []), *([th["water"]] if th.get("water") else []), *[o["src"] for o in th["objects"]]]
+def _terrain(th):
+    return [*([th["stairs"]["up"], th["stairs"]["down"]] if th.get("stairs") else []), *([f"br-{th['bridge']}-{d}" for d in ("ew", "ns")] if th.get("bridge") else []), *th["floor"], *th["faces"], *th["top"], th["rimS"], th["rimW"],
+            *([th["shore"], th["shoreIn"]] if th.get("shore") else []), *([th["water"]] if th.get("water") else []), *([th["net"]] if th.get("net") else []), *[p for lk in th["looks"] for p in [*lk.get("faces", []), *lk.get("floor", [])]]]
+def _pieces(th): return [*_terrain(th), *[o["src"] for o in th["objects"]]]
 _missing = {th["id"]: [p for p in _pieces(th) if not (ROOT / "tiledata/beodeul-dungeon/fable/pieces" / f"{p}.png").exists()] for th in THEMES}
 if any(_missing.values()):
     if not os.environ.get("DGN_DEV"): raise SystemExit(f"조각이 없다: { {k: v for k, v in _missing.items() if v} }")
@@ -363,7 +366,7 @@ _base = {k: v for k, v in _r["ramps"].items() if k not in _r.get("derived", {}) 
 _d = _derive(_base)
 _r["ramps"] = {**_base, **_d}; _r["derived"] = {k: dict(source=v[0], hue=v[1], chroma=v[2], lightness=v[3]) for k, v in DERIVED.items()}
 RAMPS_PATH.write_text(json.dumps(_r, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-TERRAIN = {p for th in THEMES for p in [*([th["stairs"]["up"], th["stairs"]["down"]] if th.get("stairs") else []), *([f"br-{th['bridge']}-{d}" for d in ("ew", "ns")] if th.get("bridge") else []), *th["floor"], *th["faces"], *th["top"], th["rimS"], th["rimW"], *([th["shore"], th["shoreIn"]] if th.get("shore") else []), *([th["water"]] if th.get("water") else [])]}
+TERRAIN = {p for th in THEMES for p in _terrain(th)}
 # 관문 종류(면제는 화소 해시와 종류에 묶인다): 지형 조각 terrain · 바닥 그림 flat · 벽걸이 wall_mounted · 서 있는 기물 other
 KINDS = {p: "terrain" for p in sorted(TERRAIN)}
 for _grp in [SHARED, *THEMES]:
@@ -375,7 +378,7 @@ SPEC = dict(
     waiver="fable-dungeons-beodeul-2026-11-15",
     lookNames={"ember": {"label": "던전 첫째 색"}, "frost": {"label": "던전 둘째 색"}, "dusk": {"label": "던전 셋째 색"}},
     kinds=KINDS,
-    glows=GLOWS, shared=SHARED, themes=THEMES,
+    terrain=sorted(TERRAIN), glows=GLOWS, shared=SHARED, themes=THEMES,
 )
 OUT.write_text(json.dumps(SPEC, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 print("themes", [t["id"] for t in THEMES], "objects", len(SHARED["objects"]) + sum(len(t["objects"]) for t in THEMES))

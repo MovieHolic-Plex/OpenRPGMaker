@@ -97,9 +97,9 @@ class Bake:
         n = self.seen[key] = BASE + len(self.cells)
         if n >= END: sys.exit(f"토막 {BLOCK}칸을 넘는다 — 겉모습·기물을 줄인다")
         tags = {"floor": ["floor", "바닥"], "wall": ["벽", "wall", "face"], "ceil": ["천장", "wall", "ceiling"], "water": ["water", "물"], "over": ["덧그림"], "glow": ["덧그림", "빛"],
-                "solid": ["prop"], "star": ["prop"], "decal": ["prop", "바닥 그림"], "stair": ["stair", "계단"]}[kind]
+                "solid": ["prop"], "star": ["prop"], "decal": ["prop", "바닥 그림"], "stair": ["stair", "계단"], "bank": ["덧그림", "물가"]}[kind]
         walk = kind in ("floor", "over", "glow", "star", "decal", "stair")
-        self.cells.append((px, dict(pass_=OPEN if walk else SHUT, priority="upper" if kind in ("over", "star", "glow") else "lower",   # 빛 띠도 ★: 벽 앞면 칸에 깔린 빛이 그 칸을 걷는 칸으로 만들었다(관문을 돌아가는 길이 생김)
+        self.cells.append((px, dict(pass_=OPEN if walk else SHUT, priority="upper" if kind in ("over", "star", "glow", "bank") else "lower",   # 빛 띠도 ★: 벽 앞면 칸에 깔린 빛이 그 칸을 걷는 칸으로 만들었다(관문을 돌아가는 길이 생김)
                                     label=f"{LABEL} · {label}", description=f"{label}. {GATE_NOTE if kind != 'glow' else '반투명 빛 띠(그림 아님).'}",
                                     tags=["버들항", "던전", "dungeon", f"dgn:{theme}", *tags], layer="lower" if kind in ("floor", "wall", "ceil", "water", "stair") else "upper",
                                     passage={"floor": "passable", "decal": "passable", "over": "star", "star": "star", "glow": "star", "stair": "passable"}.get(kind, "solid"))))
@@ -114,7 +114,7 @@ def comp(base, over):
 
 
 def build_theme(B, th):
-    tid, ko = th["id"], th["ko"]; out = dict(id=tid, ko=ko, types=th["types"], **({"lava": True} if th.get("lava") else {}), looks=[])
+    tid, ko = th["id"], th["ko"]; out = dict(id=tid, ko=ko, types=th["types"], **({"lava": True} if th.get("lava") else {}), **({"wade": True} if th.get("wade") else {}), looks=[])
     sliver = B.colour(th["sliver"]); gap = B.colour(th["faceGap"])
     bw = th.get("borrow") or {}          # 다른 주제에서 빌린 조각(윗면·테·물가)을 이 주제의 색 줄로
     P = lambda pid: B.remap(B.piece(pid), bw)
@@ -131,29 +131,57 @@ def build_theme(B, th):
     if th.get("bridge"):
         common["bridge"] = {d: B.emit(P(f"br-{th['bridge']}-{d}"), "floor", f"{ko} 다리 {d}", tid) for d in ("ew", "ns")}
     if th.get("shore"):
+        # 물가·물줄기 칸은 «막힌 덧칸»(bank)이고 그 밑 1층은 걷는 바닥 그림이다 — 둑 바깥의 투명한 자리로 물 몸통이 비쳐 네모로 잘려 보였다(화산: 둑 밖의 붉은 네모).
+        BK = "over" if th.get("wade") else "bank"   # 얕은 물을 걸어 건너는 주제(물에 잠긴 신전)는 물가도 ★ 덧칸 — 물 칸의 통행은 물 깊이가 정한다
         sh, si = P(th["shore"]), P(th["shoreIn"])
         if th.get("water"): common["water"] = [n for row in B.grid(P(th["water"]), "water", f"{ko} 물", tid, 4, 4) for n in row]
         else: common["water"] = [n for row in B.grid(sh[T:3 * T, T:3 * T], "water", f"{ko} 물", tid, 2, 2) for n in row]
         shore = []
         for y in range(4):
             for x in range(4):
-                shore.append(-1 if (x in (1, 2) and y in (1, 2)) else B.emit(sh[y * T:(y + 1) * T, x * T:(x + 1) * T], "over", f"{ko} 물가 ({x},{y})", tid))
+                shore.append(-1 if (x in (1, 2) and y in (1, 2)) else B.emit(sh[y * T:(y + 1) * T, x * T:(x + 1) * T], BK, f"{ko} 물가 ({x},{y})", tid))
         common["shore"] = shore
-        common["shoreIn"] = [B.emit(si[y * T:(y + 1) * T, x * T:(x + 1) * T], "over", f"{ko} 물가 안쪽 모서리 ({x},{y})", tid) for y in range(2) for x in range(2)]
+        ins = [si[y * T:(y + 1) * T, x * T:(x + 1) * T] for y in range(2) for x in range(2)]   # 0 남동이 뭍 · 1 남서 · 2 북동 · 3 북서
+        common["shoreIn"] = [B.emit(c, BK, f"{ko} 물가 안쪽 모서리 {k}", tid) for k, c in enumerate(ins)]
+        if th.get("inner2"):
+            # 안쪽 모서리 둘이 한 칸에 드는 자리(물줄기가 못에서 나가는 목): 화소마다 가까운 모서리의 한 모서리 그림에서 가져온다. 열쇠 = 뭍인 대각(북서 1 · 북동 2 · 남서 4 · 남동 8)
+            corner = {1: (ins[3], (0, 0)), 2: (ins[2], (15, 0)), 4: (ins[1], (0, 15)), 8: (ins[0], (15, 15))}
+            two = {}
+            for m in (3, 5, 10, 12, 6, 9):
+                o = np.zeros((T, T, 4), np.uint8); bits = [b for b in (1, 2, 4, 8) if m & b]
+                for y in range(T):
+                    for x in range(T):
+                        b = min(bits, key=lambda k: (x - corner[k][1][0]) ** 2 + (y - corner[k][1][1]) ** 2)
+                        o[y, x] = corner[b][0][y, x]
+                two[str(m)] = B.emit(o, BK, f"{ko} 물가 안쪽 모서리 둘 {m}", tid)
+            common["shoreIn2"] = two
         cell = lambda x, y: sh[y * T:(y + 1) * T, x * T:(x + 1) * T]
         def vcell(cy):
             o = np.zeros((T, T, 4), np.uint8); o[:, :8] = cell(0, cy)[:, 5:13]; o[:, 8:] = cell(3, cy)[:, 3:11]; return o
         def hcell(cx):
             o = np.zeros((T, T, 4), np.uint8); o[:8] = cell(cx, 0)[4:12]; o[8:] = cell(cx, 3)[3:11]; return o
         dot = np.zeros((T, T, 4), np.uint8); dot[:8, :8] = cell(0, 0)[4:12, 5:13]; dot[:8, 8:] = cell(3, 0)[4:12, 3:11]; dot[8:, :8] = cell(0, 3)[3:11, 5:13]; dot[8:, 8:] = cell(3, 3)[3:11, 3:11]
-        common["narrow"] = dict(v=[B.emit(vcell(k), "over", f"{ko} 좁은 물줄기 세로 {k}", tid) for k in range(4)], h=[B.emit(hcell(k), "over", f"{ko} 좁은 물줄기 가로 {k}", tid) for k in range(4)],
-                                dot=B.emit(dot, "over", f"{ko} 웅덩이", tid))
+        E_ = lambda px, label: B.emit(px, BK, f"{ko} {label}", tid)
+        nar = dict(dot=E_(dot, "웅덩이"))
+        if th.get("net"):
+            # 그린 물줄기 그물(5×5칸: 바깥 고리 + 가운데 십자): 곧은 칸 · 굽이 넷 · 세 갈래 넷 · 네 갈래. 열쇠 = 물인 이웃(북 1 · 동 2 · 남 4 · 서 8). 끝 칸만 못 그림에서 잘라 쓴다.
+            net = P(th["net"]); nc = lambda x, y: net[y * T:(y + 1) * T, x * T:(x + 1) * T]
+            nar["v"] = [E_(vcell(0), "좁은 물줄기 세로 끝(위)"), E_(nc(0, 1), "물줄기 세로 1"), E_(nc(0, 3), "물줄기 세로 2"), E_(vcell(3), "좁은 물줄기 세로 끝(아래)")]
+            nar["h"] = [E_(hcell(0), "좁은 물줄기 가로 끝(왼)"), E_(nc(1, 0), "물줄기 가로 1"), E_(nc(3, 0), "물줄기 가로 2"), E_(hcell(3), "좁은 물줄기 가로 끝(오른)")]
+            nar["net"] = {str(m): E_(nc(x, y), f"물줄기 갈림 {m}") for m, (x, y) in {6: (0, 0), 12: (4, 0), 3: (0, 4), 9: (4, 4), 14: (2, 0), 11: (2, 4), 7: (0, 2), 13: (4, 2), 15: (2, 2)}.items()}
+        else:
+            nar["v"] = [E_(vcell(k), f"좁은 물줄기 세로 {k}") for k in range(4)]; nar["h"] = [E_(hcell(k), f"좁은 물줄기 가로 {k}") for k in range(4)]
+        common["narrow"] = nar
     for li, lk in enumerate(th["looks"]):
         rm = lk.get("remap") or {}; nm = f"{ko}·{lk['ko']}"
-        faces = [B.remap(P(p), rm) for p in th["faces"]]
+        faces = [B.remap(P(p), rm) for p in lk.get("faces", th["faces"])]   # 겉모습이 제 벽 한 벌을 가지면 그것(둘째 벽 짜임)
         rs, rw = B.remap(P(th["rimS"]), rm), B.remap(P(th["rimW"]), rm); re = rw[:, ::-1]
         top0 = tops[0]
         look = dict(id=lk["id"], ko=lk["ko"], **({"stagger": True} if th.get("stagger") else {}), **({"floorWeights": th["floorWeights"]} if th.get("floorWeights") else {}), **common)
+        if lk.get("floor"):   # 겉모습이 제 바닥 한 벌을 가지면 그것(둘째 바닥 재료)
+            look["floor"] = [[n for row in B.grid(P(f), "floor", f"{nm} 바닥 {i + 1}", tid, 4, 4) for n in row] for i, f in enumerate(lk["floor"])]
+            look.pop("floorWeights", None)
+            if lk.get("floorWeights"): look["floorWeights"] = lk["floorWeights"]
         st = th.get("stairs")
         if st:   # 계단: 벽 앞면 두 칸(올라감)은 겉모습의 벽 색 줄로, 바닥 한 칸(내려감)은 바닥 색 줄로 — 킷으로 굽는다(시공기가 옛 계단 킷 대신 쓴다)
             up = B.remap(B.remap(B.piece(st["up"]), st.get("upRemap")), rm); down = B.remap(B.piece(st["down"]), st.get("downRemap"))
@@ -260,8 +288,7 @@ def main():
     spec = json.loads((STORE / "spec.json").read_text(encoding="utf-8"))
     ramps = json.loads((STORE / "ramps.json").read_text(encoding="utf-8"))["ramps"]
     B = Bake(spec, ramps)
-    used = sorted({p for th in spec["themes"] for p in [*th["floor"], *th["faces"], *th["top"], th["rimS"], th["rimW"], *([th["shore"], th["shoreIn"]] if th.get("shore") else []), *([th["water"]] if th.get("water") else []), *([f"br-{th['bridge']}-{d}" for d in ("ew", "ns")] if th.get("bridge") else []), *([th["stairs"]["up"], th["stairs"]["down"]] if th.get("stairs") else [])]}
-                  | {ob["src"] for grp in [spec["shared"], *spec["themes"]] for ob in grp.get("objects", [])})
+    used = sorted(set(spec["terrain"]) | {ob["src"] for grp in [spec["shared"], *spec["themes"]] for ob in grp.get("objects", [])})
     waiver = spec.get("waiver", "")
     imgs = [(Image.open(STORE / "pieces" / f"{p}.png").convert("RGBA"), spec["kinds"][p], f"beodeul_dungeons/{p}") for p in used]
     if a.dev:

@@ -627,16 +627,30 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
         const i = idx(x, y);
         if (!liquid[i] || !isFloor(x, y) || bridge[i]) continue;
-        lower[i] = L.water!.length === 16 ? L.water![(y & 3) * 4 + (x & 3)]! : L.water![(y & 1) * 2 + (x & 1)]!;
         const n = wat(x, y - 1), s = wat(x, y + 1), w = wat(x - 1, y), e = wat(x + 1, y);
+        const nw = wat(x - 1, y - 1), ne = wat(x + 1, y - 1), sw = wat(x - 1, y + 1), se = wat(x + 1, y + 1);
         let t = -1;
-        if (!w && !e && L.narrow) t = !n && !s ? L.narrow.dot : L.narrow.v[!n ? 0 : !s ? 3 : 1 + (y & 1)]!;
-        else if (!n && !s && L.narrow) t = L.narrow.h[!w ? 0 : !e ? 3 : 1 + (x & 1)]!;
-        else {
-          t = L.shore![(!n ? 0 : !s ? 3 : 1 + (y & 1)) * 4 + (!w ? 0 : !e ? 3 : 1 + (x & 1))]!;
-          if (t < 0) t = !wat(x - 1, y - 1) ? L.shoreIn![3]! : !wat(x + 1, y - 1) ? L.shoreIn![2]! : !wat(x - 1, y + 1) ? L.shoreIn![1]! : !wat(x + 1, y + 1) ? L.shoreIn![0]! : -1;
+        // 2×2 물 덩이에 들지 않는 칸은 한 칸 폭 물줄기다: 끝·곧은 칸·굽이·갈림을 물인 이웃(북 1 · 동 2 · 남 4 · 서 8)으로 고른다
+        const wide = (n && e && ne) || (n && w && nw) || (s && e && se) || (s && w && sw);
+        const m = (n ? 1 : 0) | (e ? 2 : 0) | (s ? 4 : 0) | (w ? 8 : 0);
+        if (!wide && L.narrow) {
+          if (m === 0) t = L.narrow.dot;
+          else if (!w && !e) t = L.narrow.v[!n ? 0 : !s ? 3 : 1 + (y & 1)]!;
+          else if (!n && !s) t = L.narrow.h[!w ? 0 : !e ? 3 : 1 + (x & 1)]!;
+          else t = L.narrow.net?.[m] ?? -1;
         }
+        if (t < 0) {   // 못: 가장자리 칸은 못 그림의 가장자리, 안쪽 칸은 뭍인 대각마다 안쪽 모서리(둘이면 둘을 합친 칸)
+          t = L.shore![(!n ? 0 : !s ? 3 : 1 + (y & 1)) * 4 + (!w ? 0 : !e ? 3 : 1 + (x & 1))]!;
+          if (t < 0) {
+            const d = (nw ? 0 : 1) | (ne ? 0 : 2) | (sw ? 0 : 4) | (se ? 0 : 8);
+            const one = (k: number) => (k & 1 ? L.shoreIn![3]! : k & 2 ? L.shoreIn![2]! : k & 4 ? L.shoreIn![1]! : L.shoreIn![0]!);
+            if (d) t = L.shoreIn2?.[d] ?? L.shoreIn2?.[[3, 5, 10, 12, 6, 9].find((k) => (d & k) === k) ?? -1] ?? one(d);
+          }
+        }
+        // 둑이 그려진 칸: 2층의 막힌 덧칸 + 1층은 걷는 바닥 그림(둑 바깥 투명한 자리로 바닥이 보인다). 덧칸이 없는 안쪽 칸만 물 몸통.
         if (t >= 0) skinOverlay.set(i, t);
+        if (t >= 0 && !skin.theme.wade) lower[i] = L.floor[floorPick(x, y)]![(y & 3) * 4 + (x & 3)]!;
+        else lower[i] = L.water!.length === 16 ? L.water![(y & 3) * 4 + (x & 3)]! : L.water![(y & 1) * 2 + (x & 1)]!;
       }
     }
   }
@@ -687,6 +701,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const stand = (x: number, y: number) => isFloor(x, y) && !blocked[idx(x, y)] && passTile(lower[idx(x, y)]!) && (upper[idx(x, y)]! < 0 || passTile(upper[idx(x, y)]!));
   // 입구 칸과 문 칸들 — 물건 하나를 놓을 때마다 여기서 모두 닿는지 본다(줄째 비워 두는 대신 길만 지킨다: 큰 홀 가운데가 비지 않게).
   const keyCells: [number, number][] = [];
+  /** 계단·문 앞 도착 칸 — 물건 자리로는 막아 두지만(blocked) 곁 칸 하나는 길에 이어져 있어야 한다. */
+  const arrivals: [number, number][] = [];
   for (const c of corridors) keyCells.push([c.rect.x + Math.floor(c.rect.w / 2), c.rect.y + Math.floor(c.rect.h / 2)]);
   rooms.forEach((r, ri) => {
     // 방 대표 칸 = 방 아랫변 가운데에 가장 가까운 걸을 수 있는 칸(호수·수로 방은 가운데가 물이다)
@@ -722,6 +738,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     if (!seen) return false;
     // 방마다: 그 방 바닥 중 걸을 수 있는 칸이 하나라도 닿았나 + 모든 문 칸이 닿았나
     for (const [x, y] of keyCells) if (stand(x, y) && !seen[idx(x, y)]) return false;
+    // 도착 칸이 뒤에 놓이는 물건에 둘러싸이면 그 층에 들어서자마자 갇힌다(큰 2층 하수도 씨앗 3: 구멍 계단 양옆에 해골·밸브)
+    for (const [x, y] of arrivals) if (!([[1, 0], [-1, 0], [0, 1], [0, -1]] as const).some(([dx, dy]) => stand(x + dx, y + dy) && seen[idx(x + dx, y + dy)])) return false;
     if (reachedBefore) for (let i = 0; i < W * H; i += 1) if (reachedBefore[i] && !seen[i] && stand(i % W, (i - (i % W)) / W)) return false;
     return rooms.every((r, ri) => { for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) if (roomAt[idx(x, y)] === ri && seen[idx(x, y)]) return true; return false; });
   };
@@ -935,6 +953,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       if (lo >= 0) lower[idx(q.x + dx, q.y + dy)] = lo;
     }
     for (let dx = 0; dx < def.width; dx += 1) blocked[idx(q.x + dx, q.y + 2)] = 1;
+    arrivals.push([q.x, q.y + 2]);
     return { x: q.x, y: q.y + 1, front: { x: q.x, y: q.y + 2 }, kind: "up" };
   };
   /** 나무 문(1×2)을 벽 두 줄에 건다 — 이동 이벤트는 문 아랫칸(부딪쳐 들어간다), 앞 칸은 비워 둔다. */
@@ -965,7 +984,12 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       if (!connected()) { cells.forEach(([X, Y], k) => { lower[idx(X, Y)] = was[k]!; blocked[idx(X, Y)] = 0; }); continue; }
       const ex = x, ey = y + def.height - 1;   // 이동 칸: 왼쪽 아래(1×1 이면 그 칸)
       const fr = front(ex, ey) ?? { x: ex, y: ey + 1 };
+      // 도착 칸도 길에 이어져 있어야 한다: 구멍 옆에 먼저 놓인 물건(해골·밸브) 사이에 도착 칸이 갇히면 그 층의 모든 방이
+      // «입구에서 걸어 닿지 않는 방» 이 됐다(큰 2층 하수도 씨앗 3 — 2026-11-15 여러 씨앗 훑기). 그런 자리는 건너뛴다.
+      const reach = flood();
+      if (!inb(fr.x, fr.y) || !stand(fr.x, fr.y) || !reach?.[idx(fr.x, fr.y)]) { cells.forEach(([X, Y], k) => { lower[idx(X, Y)] = was[k]!; blocked[idx(X, Y)] = 0; }); continue; }
       blocked[idx(fr.x, fr.y)] = 1;   // 도착 칸은 물건·이벤트 자리로 쓰지 않는다
+      arrivals.push([fr.x, fr.y]);
       return { x: ex, y: ey, front: fr, kind: "down" };
     }
     return null;

@@ -24,12 +24,22 @@
   "ca-wall-a": "terrain",
   "ca-wall-b": "terrain",
   "ca-wall-c": "terrain",
+  "cab-floor-a": "terrain",
+  "cab-floor-b": "terrain",
+  "cab-wall-a": "terrain",
+  "cab-wall-b": "terrain",
+  "cab-wall-c": "terrain",
   "cr-floor-a": "terrain",
   "cr-floor-b": "terrain",
   "cr-floor-c": "terrain",
   "cr-wall-a": "terrain",
   "cr-wall-b": "terrain",
   "cr-wall-c": "terrain",
+  "crb-floor-a": "terrain",
+  "crb-floor-b": "terrain",
+  "crb-wall-a": "terrain",
+  "crb-wall-b": "terrain",
+  "crb-wall-c": "terrain",
   "cv-bed-a": "terrain",
   "cv-bed-b": "terrain",
   "cv-bed-c": "terrain",
@@ -44,12 +54,17 @@
   "cv-shore-in": "terrain",
   "cv-top": "terrain",
   "cv-water2": "terrain",
-  "ic-face-a": "terrain",
-  "ic-face-b": "terrain",
-  "ic-face-c": "terrain",
+  "cvb-face-a": "terrain",
+  "cvb-face-b": "terrain",
+  "cvb-face-c": "terrain",
+  "cvb-floor-a": "terrain",
+  "cvb-floor-b": "terrain",
   "ic-floor-a": "terrain",
   "ic-floor-b": "terrain",
   "ic-floor-c": "terrain",
+  "ic2-face-a": "terrain",
+  "ic2-face-b": "terrain",
+  "ic2-face-c": "terrain",
   "mb-rim-s": "terrain",
   "mb-rim-w": "terrain",
   "mn-face-a": "terrain",
@@ -58,6 +73,7 @@
   "mn-floor-a": "terrain",
   "mn-floor-b": "terrain",
   "mn-floor-c": "terrain",
+  "nw-net": "terrain",
   "py-floor-a": "terrain",
   "py-floor-b": "terrain",
   "py-floor-c": "terrain",
@@ -72,6 +88,11 @@
   "ru-wall-a": "terrain",
   "ru-wall-b": "terrain",
   "ru-wall-c": "terrain",
+  "rub-floor-a": "terrain",
+  "rub-floor-b": "terrain",
+  "rub-wall-a": "terrain",
+  "rub-wall-b": "terrain",
+  "rub-wall-c": "terrain",
   "st-down-built": "terrain",
   "st-down-rock": "terrain",
   "st-up-built": "terrain",
@@ -95,12 +116,12 @@
   "tw-wall-a": "terrain",
   "tw-wall-b": "terrain",
   "tw-wall-c": "terrain",
-  "vo-face-a": "terrain",
-  "vo-face-b": "terrain",
-  "vo-face-c": "terrain",
   "vo-floor-a": "terrain",
   "vo-floor-b": "terrain",
   "vo-floor-c": "terrain",
+  "vo2-face-a": "terrain",
+  "vo2-face-b": "terrain",
+  "vo2-face-c": "terrain",
   "cv-torch": "wall_mounted",
   "ru-brazier": "other",
   "sh-bones": "flat",
@@ -233,6 +254,116 @@
   "hd-banner": "wall_mounted",
   "hd-chief-seat": "other"
  },
+ "terrain": [
+  "br-plank-ew",
+  "br-plank-ns",
+  "br-stone-ew",
+  "br-stone-ns",
+  "ca-floor-a",
+  "ca-floor-b",
+  "ca-floor-c",
+  "ca-wall-a",
+  "ca-wall-b",
+  "ca-wall-c",
+  "cab-floor-a",
+  "cab-floor-b",
+  "cab-wall-a",
+  "cab-wall-b",
+  "cab-wall-c",
+  "cr-floor-a",
+  "cr-floor-b",
+  "cr-floor-c",
+  "cr-wall-a",
+  "cr-wall-b",
+  "cr-wall-c",
+  "crb-floor-a",
+  "crb-floor-b",
+  "crb-wall-a",
+  "crb-wall-b",
+  "crb-wall-c",
+  "cv-bed-a",
+  "cv-bed-b",
+  "cv-bed-c",
+  "cv-bed-d",
+  "cv-bed-e",
+  "cv-edge-s",
+  "cv-edge-w",
+  "cv-face-a2",
+  "cv-face-b",
+  "cv-face-c",
+  "cv-shore",
+  "cv-shore-in",
+  "cv-top",
+  "cv-water2",
+  "cvb-face-a",
+  "cvb-face-b",
+  "cvb-face-c",
+  "cvb-floor-a",
+  "cvb-floor-b",
+  "ic-floor-a",
+  "ic-floor-b",
+  "ic-floor-c",
+  "ic2-face-a",
+  "ic2-face-b",
+  "ic2-face-c",
+  "mb-rim-s",
+  "mb-rim-w",
+  "mn-face-a",
+  "mn-face-b",
+  "mn-face-c",
+  "mn-floor-a",
+  "mn-floor-b",
+  "mn-floor-c",
+  "nw-net",
+  "py-floor-a",
+  "py-floor-b",
+  "py-floor-c",
+  "py-wall-a",
+  "py-wall-b",
+  "py-wall-c",
+  "ru-floor",
+  "ru-rim-s",
+  "ru-rim-w",
+  "ru-top-b",
+  "ru-top-c",
+  "ru-wall-a",
+  "ru-wall-b",
+  "ru-wall-c",
+  "rub-floor-a",
+  "rub-floor-b",
+  "rub-wall-a",
+  "rub-wall-b",
+  "rub-wall-c",
+  "st-down-built",
+  "st-down-rock",
+  "st-up-built",
+  "st-up-rock",
+  "su-floor-a",
+  "su-floor-b",
+  "su-floor-c",
+  "su-wall-a",
+  "su-wall-b",
+  "su-wall-c",
+  "sw-floor-a",
+  "sw-floor-b",
+  "sw-floor-c",
+  "sw-wall-a",
+  "sw-wall-b",
+  "sw-wall-c",
+  "sw-water",
+  "tw-floor-a",
+  "tw-floor-b",
+  "tw-floor-c",
+  "tw-wall-a",
+  "tw-wall-b",
+  "tw-wall-c",
+  "vo-floor-a",
+  "vo-floor-b",
+  "vo-floor-c",
+  "vo2-face-a",
+  "vo2-face-b",
+  "vo2-face-c"
+ ],
  "glows": [
   {
    "id": "torch",
@@ -660,10 +791,23 @@
     },
     {
      "id": "slate",
-     "ko": "푸른 바위",
+     "ko": "푸른 종유석 굴",
      "remap": {
       "crag": "cragb"
-     }
+     },
+     "faces": [
+      "cvb-face-a",
+      "cvb-face-b",
+      "cvb-face-c"
+     ],
+     "floor": [
+      "cvb-floor-a",
+      "cvb-floor-b"
+     ],
+     "floorWeights": [
+      0.45,
+      0.55
+     ]
     },
     {
      "id": "moss",
@@ -912,8 +1056,9 @@
     {
      "id": "cave-crystal",
      "cls": "open",
-     "per": 0.5,
-     "max": 1
+     "per": 1,
+     "max": 1,
+     "once": true
     },
     {
      "id": "cave-stalagmite-big",
@@ -946,6 +1091,9 @@
    },
    "water": "cv-water2",
    "bridge": "plank",
+   "net": "nw-net",
+   "inner2": true,
+   "rimPhases": 2,
    "stairs": {
     "up": "st-up-rock",
     "down": "st-down-rock",
@@ -985,10 +1133,23 @@
     },
     {
      "id": "sand",
-     "ko": "사암",
+     "ko": "사암 다각 쌓기",
      "remap": {
       "buff": "buffw"
-     }
+     },
+     "faces": [
+      "rub-wall-a",
+      "rub-wall-b",
+      "rub-wall-c"
+     ],
+     "floor": [
+      "rub-floor-a",
+      "rub-floor-b"
+     ],
+     "floorWeights": [
+      0.4,
+      0.6
+     ]
     },
     {
      "id": "rose",
@@ -1366,15 +1527,17 @@
    "shoreIn": "cv-shore-in",
    "water": "cv-water2",
    "bridge": "plank",
+   "net": "nw-net",
+   "inner2": true,
    "floor": [
     "ic-floor-a",
     "ic-floor-b",
     "ic-floor-c"
    ],
    "faces": [
-    "ic-face-a",
-    "ic-face-b",
-    "ic-face-c"
+    "ic2-face-a",
+    "ic2-face-b",
+    "ic2-face-c"
    ],
    "borrow": {
     "crag": "frost",
@@ -1586,15 +1749,17 @@
    "water": "cv-water2",
    "lava": true,
    "bridge": "stone",
+   "net": "nw-net",
+   "inner2": true,
    "floor": [
     "vo-floor-a",
     "vo-floor-b",
     "vo-floor-c"
    ],
    "faces": [
-    "vo-face-a",
-    "vo-face-b",
-    "vo-face-c"
+    "vo2-face-a",
+    "vo2-face-b",
+    "vo2-face-c"
    ],
    "borrow": {
     "crag": "basalt",
@@ -2133,10 +2298,23 @@
     },
     {
      "id": "mould",
-     "ko": "이끼 낀 돌",
+     "ko": "이끼 낀 벽돌 묘",
      "remap": {
       "tomb": "tombb"
-     }
+     },
+     "faces": [
+      "crb-wall-a",
+      "crb-wall-b",
+      "crb-wall-c"
+     ],
+     "floor": [
+      "crb-floor-a",
+      "crb-floor-b"
+     ],
+     "floorWeights": [
+      0.4,
+      0.6
+     ]
     },
     {
      "id": "umber",
@@ -2913,10 +3091,23 @@
     },
     {
      "id": "tan",
-     "ko": "누런 성돌",
+     "ko": "회벽과 들보",
      "remap": {
       "keep": "keepb"
-     }
+     },
+     "faces": [
+      "cab-wall-a",
+      "cab-wall-b",
+      "cab-wall-c"
+     ],
+     "floor": [
+      "cab-floor-a",
+      "cab-floor-b"
+     ],
+     "floorWeights": [
+      0.45,
+      0.55
+     ]
     },
     {
      "id": "slate",
@@ -3317,6 +3508,8 @@
    "water": "cv-water2",
    "inherit": "ruin",
    "bridge": "stone",
+   "inner2": true,
+   "wade": true,
    "floor": [
     "su-floor-a",
     "su-floor-b",
@@ -3587,6 +3780,9 @@
    "shoreIn": "cv-shore-in",
    "water": "cv-water2",
    "bridge": "plank",
+   "net": "nw-net",
+   "inner2": true,
+   "rimPhases": 2,
    "looks": [
     {
      "id": "umber",
@@ -3594,10 +3790,23 @@
     },
     {
      "id": "slate",
-     "ko": "푸른 바위",
+     "ko": "푸른 종유석 굴",
      "remap": {
       "crag": "cragb"
-     }
+     },
+     "faces": [
+      "cvb-face-a",
+      "cvb-face-b",
+      "cvb-face-c"
+     ],
+     "floor": [
+      "cvb-floor-a",
+      "cvb-floor-b"
+     ],
+     "floorWeights": [
+      0.45,
+      0.55
+     ]
     },
     {
      "id": "moss",

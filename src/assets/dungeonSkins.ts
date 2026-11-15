@@ -37,7 +37,11 @@ export interface DungeonSkinLook {
   /** 물 위 다리 한 칸(걷는 방향 동서 · 남북). */
   readonly bridge?: { readonly ew: number; readonly ns: number };
   /** 한 칸 폭 물줄기: v 세로(위 끝·가운데 둘·아래 끝) · h 가로(왼 끝·가운데 둘·오른 끝) · dot 한 칸 웅덩이. */
-  readonly narrow?: { readonly v: readonly number[]; readonly h: readonly number[]; readonly dot: number };
+  readonly narrow?: { readonly v: readonly number[]; readonly h: readonly number[]; readonly dot: number;
+    /** 굽이·세 갈래·네 갈래 칸: 열쇠 = 물인 이웃(북 1 · 동 2 · 남 4 · 서 8). 그린 물줄기 그물이 있는 주제만. */
+    readonly net?: Readonly<Record<string, number>> };
+  /** 안쪽 모서리 둘이 한 칸에 드는 자리: 열쇠 = 뭍인 대각(북서 1 · 북동 2 · 남서 4 · 남동 8). */
+  readonly shoreIn2?: Readonly<Record<string, number>>;
 }
 
 /** 덧놓는 기물. cls: open 방 안쪽 · edge 벽가 · wall 북쪽 벽 앞면 · decal 바닥 그림 · run 방 한가운데 세로 줄(융단). once = 그 층에 하나뿐인 볼거리(가장 넓은 방부터). */
@@ -50,6 +54,8 @@ export interface DungeonSkinTheme {
   readonly types: readonly string[];
   /** 흐르는 것이 용암인 주제(화산) — 물 칸 그림이 용암 그림이다. */
   readonly lava?: boolean;
+  /** 얕은 물을 걸어 건너는 주제(물에 잠긴 신전): 물가 덧칸이 ★ 이고 그 밑 1층은 물 몸통이다 — 물 칸의 통행은 물 깊이(terrainDesign.waterDepth)가 정한다. */
+  readonly wade?: boolean;
   readonly looks: readonly DungeonSkinLook[];
   /** 옛 킷 id → 그 자리에 놓을 새 킷들(여럿이면 자리 해시로 하나). 새 킷이 더 높으면 아랫줄을 맞춘다. */
   readonly swap: Readonly<Record<string, readonly string[]>>;

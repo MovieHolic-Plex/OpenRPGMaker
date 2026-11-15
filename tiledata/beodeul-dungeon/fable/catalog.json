@@ -6,1099 +6,1204 @@
  "kitPrefix": "bd-dgn-",
  "base": 52608,
  "end": 56704,
- "used": 3956,
+ "used": 4070,
  "source": "scripts/content/beodeul-dungeons/bake.py (pieces by Claude Fable 5.2 medium one-shot, cut and assembled by code; looks are the same pixels on another locked ramp)",
- "gate": "3/4 gate not passed — owner waiver fable-dungeons-beodeul-2026-11-15",
+ "gate": "DEV",
  "pieces": [
   {
    "id": "br-plank-ew",
    "kind": "terrain",
-   "sha256": "36f93a368269f58807f20882baa21d7e35051ae4725638aa4e478d09203fd062"
+   "sha256": "6a08d63f4060d901feb2b8240b29dee5ea2e33388b10fc6451917e57b3f90d2c"
   },
   {
    "id": "br-plank-ns",
    "kind": "terrain",
-   "sha256": "9a3d0b580984da735333d41b87aabfb6798525e8e4aa3c35c6787079ee042192"
+   "sha256": "bb733c70681c712a2317d779fb958a7ec3d980de3196c12e601d3df2926d0704"
   },
   {
    "id": "br-stone-ew",
    "kind": "terrain",
-   "sha256": "130c0b0ead5075c18a652f6317da6ebcb723a75e6fe84cd7cded6928e8e83f61"
+   "sha256": "e0ea0144cb1b13896d301e3f8080e95ecc8c04c11633ce60d53f6ac51c33f581"
   },
   {
    "id": "br-stone-ns",
    "kind": "terrain",
-   "sha256": "32265a102652691a7318c8d71437399d31491ac7eb8c90561a1c255e867f77fd"
+   "sha256": "ab0af27a18de59ba500380be49bc74342e4ba707c08ca3284e33f114f38059c6"
   },
   {
    "id": "ca-armor",
    "kind": "other",
-   "sha256": "ae07eaf9f4bbaa47c3976e7d274709b007b137f832eb9b13bd755f6db64a010f"
+   "sha256": "29dbf77f3884b124a68e0b4eab6b8291a8f4067cdb1d53d79f43c98568871db0"
   },
   {
    "id": "ca-banner",
    "kind": "wall_mounted",
-   "sha256": "dd8a76857bf07055f2984d1069d493dad57c84569108f09d6f0ff75b14658f40"
+   "sha256": "ebcb8100b9cea11f042595fa260cbb29c88f3430c692397c6a7f22db8342b9b3"
   },
   {
    "id": "ca-carpet",
    "kind": "flat",
-   "sha256": "61422a00b17d1915bee5f394502f4ae685edbe3e079eeab0340892ab017aebae"
+   "sha256": "7c481af9d08c01ecf75160e86eb9fab466b6c20cdc30287c7f94ba2b1a561326"
   },
   {
    "id": "ca-column",
    "kind": "other",
-   "sha256": "3e4f1b5496402c5113d611b4bc78713386a289923b6047beba6e7700800af6e6"
+   "sha256": "ed5d480629e5ac43e2d0d6b62e2bcb70981baf41420fe8fd37cf805f4ed20c5e"
   },
   {
    "id": "ca-floor-a",
    "kind": "terrain",
-   "sha256": "e47f7de854a986fd0a620625c294d4e0f809790b4039f228244c0b35b7e6572e"
+   "sha256": "ac6d0704906a0a7bad0f97a522db9c88ecc7811a567f7796df875584b288c8f1"
   },
   {
    "id": "ca-floor-b",
    "kind": "terrain",
-   "sha256": "45d36ac1a0b156c00e517fc963430c4490bfde890505dc3181f1abcb25f055e9"
+   "sha256": "4da1f4feb9af598db8064f50f71441f08ed90e17c82b909b544f400100861dbb"
   },
   {
    "id": "ca-floor-c",
    "kind": "terrain",
-   "sha256": "c7901c27c6b75e0130e519dffd16608f272340fffbcd83ad7fd90b79ffbf3464"
+   "sha256": "cbe9f0d6f42a6252dac8ec5a3ffdc1b55eda1413b0c4c3e7d071ddc32c3f0f12"
   },
   {
    "id": "ca-throne",
    "kind": "other",
-   "sha256": "c4d6f1ba8fa3ad11a1c06409a708fdeb3d403cb212c8b76997e8785ae96770aa"
+   "sha256": "72e4cfa063cea8f77290536c3e2ca0e7b9f40705badbb8680c09fe9c09be9872"
   },
   {
    "id": "ca-wall-a",
    "kind": "terrain",
-   "sha256": "21e04b108b25420590d19a56e2c7c9c8d5f7c33272054e85cc35c488d4197880"
+   "sha256": "ace4a3f1d223b7218183b582fc53f628c83224e9ad3379ba243464dd116dae82"
   },
   {
    "id": "ca-wall-b",
    "kind": "terrain",
-   "sha256": "031b0bb006a7c1216a5de54d8e423190788f0250ffb0bae55ae7425b505f7ca0"
+   "sha256": "f7efc86a201339d0e95109d374978cd9645cb8ba3a068ccdf2a91a7007cae64d"
   },
   {
    "id": "ca-wall-c",
    "kind": "terrain",
-   "sha256": "88c6c6c2ec45a6b3469c6111d3feeb2e163ce4af1a297fbbb631a9c2915df895"
+   "sha256": "a3042525706de77d4a6f9484d0e1e6e6f3dc4ed098605b7f5de23578f8e8aac8"
   },
   {
    "id": "ca-weapon-rack",
    "kind": "other",
-   "sha256": "d22b0413a24bf1b291d6b642e1128dce93524801078e1e8dbe0e0f89b19c9b34"
+   "sha256": "20330bf21cff305ac670570cedb7230ff4823758b64d3797ee39d4903c8b9cf5"
+  },
+  {
+   "id": "cab-floor-a",
+   "kind": "terrain",
+   "sha256": "e48abc787f986a258c30b967bb9566c8b3b4d1598f9dfa495260fe267770bf79"
+  },
+  {
+   "id": "cab-floor-b",
+   "kind": "terrain",
+   "sha256": "253854601a66dd9a52fdf2cd0c23d67e16193ca677ae23f7bce1a6104fbeeeb7"
+  },
+  {
+   "id": "cab-wall-a",
+   "kind": "terrain",
+   "sha256": "955229f4b0faf24308a523ad9b9d3f18651577baa9049948c187892b9d668b7b"
+  },
+  {
+   "id": "cab-wall-b",
+   "kind": "terrain",
+   "sha256": "334555bd63235fda69179063960ba6ae0d46fdde7276f2fd5d101e5301f8b60a"
+  },
+  {
+   "id": "cab-wall-c",
+   "kind": "terrain",
+   "sha256": "fa0057ada24551b2e8aaf28c5fff380d56b73466197eed537f468bfd7b6d608c"
   },
   {
    "id": "cr-altar",
    "kind": "other",
-   "sha256": "d01ebfc9222120296cdc0f7073bac892addfe404beec3efd5170cd32d2897ee7"
+   "sha256": "852b493cae21341122f4a944cd1051f37b4024fa9255467b7184c8a71a1aba58"
   },
   {
    "id": "cr-angel",
    "kind": "other",
-   "sha256": "d5da6b8ea75d56fefd2a2e839bf402c4a8eec19320c69ee5290c8f7d0f15646e"
+   "sha256": "b87a99b0b1004908e4d0386f4fb1600f82337b194aeebf23e9ee086bce9f928d"
   },
   {
    "id": "cr-banner",
    "kind": "wall_mounted",
-   "sha256": "8eedeef77a971c314fe63875e2c2a10ff2553d1ebdd4e696e842298a686ac831"
+   "sha256": "877126e55615aaeb1d0d5ddc8cfaa21180881f8a059e4f2223b5e524c547eb1a"
   },
   {
    "id": "cr-candelabra",
    "kind": "other",
-   "sha256": "ed51556744237cff443c7782e9d3dee7501adda29ebb5d78d63598f8840b507d"
+   "sha256": "ee030ffb24808d898acc6e788c0b09a48d032b9aceff780e47f97da09d666020"
   },
   {
    "id": "cr-column",
    "kind": "other",
-   "sha256": "6591faa5ca3b3a63e79336e773493affdd46ee55dcbb1c4035d14d4f2b8dc3f9"
+   "sha256": "b47c5940bad63a87e08d8bbea2881dc915bd1934e08e9fef8377d3d1ee497db2"
   },
   {
    "id": "cr-floor-a",
    "kind": "terrain",
-   "sha256": "f35f7c9fbb7d7c2316fa5996f908462e8aefeee53e9dbd06874cf4a69bd2c789"
+   "sha256": "a9cf1934a3da976654a8ae440c9ddaaf079de9b680c8dea8d4df9c5496152ca7"
   },
   {
    "id": "cr-floor-b",
    "kind": "terrain",
-   "sha256": "cae5dd2508e24bf8c067385a6ff4518820bea243b243fc35843d245508dae8dc"
+   "sha256": "10e49981b0d0db06ad358124d14a72fe4ed0d0ac238cb47a92b96dbbc71ed184"
   },
   {
    "id": "cr-floor-c",
    "kind": "terrain",
-   "sha256": "0d98fc8c601c56a874389d5fd134bc34cccd4da6e24e5f963f96bc243105778d"
+   "sha256": "ed5aad2a2a344a28d075c22ec79a40e3b164716e2dac4e80c6acc19993c7e980"
   },
   {
    "id": "cr-niche-skull",
    "kind": "wall_mounted",
-   "sha256": "13a513718314c5a72d5263c8be21104d76125d4f8cfa2a367045546a88ae63e0"
+   "sha256": "4186dd51099118715541c677dfe797774aaa85b048aa033287f630553616c0fd"
   },
   {
    "id": "cr-ossuary",
    "kind": "wall_mounted",
-   "sha256": "a9248f160c76c21f2a3fd4c4fe8029776a77d1268c55d4eae192d3fabc7983be"
+   "sha256": "027fd1bb975e526aa95321dc6e507e5f7e7ccf935b295546b96f1bb3f879813f"
   },
   {
    "id": "cr-sarcophagus",
    "kind": "other",
-   "sha256": "fda14e0110a1adaabc151ec01e39bb1292cf3b934f062a6b919fb863fbfd8d09"
+   "sha256": "45f887273c55dca1cdb0a7161055a8c2471f80160d8d7e606b2a249810bed384"
   },
   {
    "id": "cr-sarcophagus-ns",
    "kind": "other",
-   "sha256": "f1bf693ee21679a56859bb73e753582a980001d6cb06930948231d20517cebf2"
+   "sha256": "9aef5784511c2d866ea318448071a5d2c10fc2eb47bb11af6f07a645215748fe"
   },
   {
    "id": "cr-sarcophagus-open",
    "kind": "other",
-   "sha256": "2dc4964bf50f51e5f30bb9bc18f15e7e1bd240b1802e2429435ffa65dd783415"
+   "sha256": "f75098be9f90a458204a50852fdfd85cdc61a9742312519e200c4299f4fd1639"
   },
   {
    "id": "cr-tomb-slab",
    "kind": "flat",
-   "sha256": "7d11abc798f6617071d01cae136e4fbffc92b313f14259d7f2722859fe41b668"
+   "sha256": "1b6c2a6f754a7c51f9ea0ac8a50c17e3895f15be0665d39863fcf4923cd7adb5"
   },
   {
    "id": "cr-wall-a",
    "kind": "terrain",
-   "sha256": "913bb8998fc833eb08db2df05326c7f4ec9a3966607c6a63d236ad7788465a4e"
+   "sha256": "2169c55c5d6653faeaabbcd40a4db65962b6267b53b5cb1d1e07a7dc2ce4d425"
   },
   {
    "id": "cr-wall-b",
    "kind": "terrain",
-   "sha256": "93bd5bffe65e588e7dceaad4e1b5cf7ed29a8e4c0789898c6b491d093df2b6ce"
+   "sha256": "ccf1b1f7d24bf7bed4303296d7f8197cb198542c0caf05786fd22512851461ed"
   },
   {
    "id": "cr-wall-c",
    "kind": "terrain",
-   "sha256": "f77004b67d0edda84f02f5cbee6ef89d665345fc92f299dcb0f31d54d2827b4b"
+   "sha256": "cea9d15f8d38123adbce8eae8deda0cd29a1c0b163d5bf81e30faa1421017df1"
+  },
+  {
+   "id": "crb-floor-a",
+   "kind": "terrain",
+   "sha256": "263651264db3f554c48afab492850ffe9c723e769e9cf216895cac9574c00da3"
+  },
+  {
+   "id": "crb-floor-b",
+   "kind": "terrain",
+   "sha256": "15961463b72217f910dead1a29fb59eef22aaae58129fce90cd985ffaeedea5e"
+  },
+  {
+   "id": "crb-wall-a",
+   "kind": "terrain",
+   "sha256": "4b0816939565598e161eead2074d66dc8132d163b4764fb83bb6b7999adceb11"
+  },
+  {
+   "id": "crb-wall-b",
+   "kind": "terrain",
+   "sha256": "cfa6c9921f1b8dc4270d446eb427f0e4afc04420337077c0a102f4457a0eca3a"
+  },
+  {
+   "id": "crb-wall-c",
+   "kind": "terrain",
+   "sha256": "9ff54bfa7e9d87f84b62dc5d6afd3ca2b775e9812b9854c3ac37fe8c562a137c"
   },
   {
    "id": "cv-bed-a",
    "kind": "terrain",
-   "sha256": "b156637b6194bae3218f9ac115f65c940d545a0ffb7fa4663f77087f64656c9a"
+   "sha256": "176a28d7a990db3eb11a01c3eea60fa019e51ffbb25cf1ead71d8cf4cf264334"
   },
   {
    "id": "cv-bed-b",
    "kind": "terrain",
-   "sha256": "9c14cc66983baa3d675eb185c998afd20c85ee1e7bd4798c5f647b1967243fd7"
+   "sha256": "9021ff33b21537b722ed6a994b112ea06deb775e76296d823af253e6d11d1611"
   },
   {
    "id": "cv-bed-c",
    "kind": "terrain",
-   "sha256": "47b40247964594aec13697bc7580de6dae8e0d118d0211c7f899560c15fba737"
+   "sha256": "8865fb8c1f0a431aa4c29b8e3e7f6cd7c32018b80bdbe3f9f8f810579605f0d0"
   },
   {
    "id": "cv-bed-d",
    "kind": "terrain",
-   "sha256": "d72adcab53900f36425cdc3a8ba02111e49bc5b6b1aecc67e5d25d2e07ee6f8f"
+   "sha256": "05eac3cd479be98eb1426a6e875a795c153cc4cba439897e3e758da5297b3f0e"
   },
   {
    "id": "cv-bed-e",
    "kind": "terrain",
-   "sha256": "0824650c1aa55a74a93b9841eb3b7d34198bf39fd69e3078e0b5c038c62da692"
+   "sha256": "30454b621ed07707ff23e860a47273592121037eebc7b653e59d054e785c3140"
   },
   {
    "id": "cv-bones",
    "kind": "other",
-   "sha256": "c0a4a7cd48e69ac59e1a339d9c49ea0750065959ffb29b58eb944c97a1b6a794"
+   "sha256": "dc9abf0cbddeb4031af858bfa7d3e09cb998a5a31ce9d23796f3325d275d945f"
   },
   {
    "id": "cv-crystal",
    "kind": "other",
-   "sha256": "ee8181fa3e2749ea6e7dd209f69224cc307469967ea63126f8cff83fa6548261"
+   "sha256": "abc5425751ef7c28860eb89a6807b3fb2c7a8f641c7bc41caad42fbc2b02752f"
   },
   {
    "id": "cv-earth",
    "kind": "flat",
-   "sha256": "6aaef6a9932d3491f172045efa59bba8fd2471273bbe4bcbcc2f53d4ab70c5d2"
+   "sha256": "f0cdfe9a4b4f0f16f566645f2e6c051a5976027304137237b37ed405b219b5a6"
   },
   {
    "id": "cv-edge-s",
    "kind": "terrain",
-   "sha256": "b29d7c4c72750f43ff98e540e1d26877504a8a74494907052de299ae68d11245"
+   "sha256": "4d64d94e57a04f2173f5b549abc5110a90d68546eeb0f3be57fe205299572c61"
   },
   {
    "id": "cv-edge-w",
    "kind": "terrain",
-   "sha256": "557a49e582a3eaa77646f9bf437c63ed4201a80e45a7e2b0bad747a86cae51be"
+   "sha256": "4879af9472fb1d7747f17b810c3fe666ceacee5919519082b65cdefea6795a2b"
   },
   {
    "id": "cv-face-a2",
    "kind": "terrain",
-   "sha256": "9d333fd70a6ab9faceaf30d39bc606c64c01a55c501ba3bd94d2e8121feb6d2d"
+   "sha256": "6831bd93ccf162a0151438fd0ad385010c232c9a9939d60a1713f80306232afb"
   },
   {
    "id": "cv-face-b",
    "kind": "terrain",
-   "sha256": "5f91c59792bd58a02b20388e522237d407a4ec28907193eb6e1453f01f85e9d9"
+   "sha256": "7fa28150aa0e5ea69141653c064f70cc9dcc9beeeb46cdebe5874e7635f25359"
   },
   {
    "id": "cv-face-c",
    "kind": "terrain",
-   "sha256": "435b6bd58ca8786e3cfc628fdcffcaa481d3f344526f6e466c43e9de1568a8b8"
+   "sha256": "578bfe138beaf2387db82a80785390951c47627744faee953250c06ac32b4e08"
   },
   {
    "id": "cv-fall",
    "kind": "wall_mounted",
-   "sha256": "5e4c89ef02d94a0a2c26a34b535992d8ead05ade7133eab82bb4843f845e2b1f"
+   "sha256": "9a0f5ff6d2b30a297a33142549fe280c17692ad8a0fdae999d5bff5c9719fae6"
   },
   {
    "id": "cv-hollow",
    "kind": "flat",
-   "sha256": "5e0c8b787ef5a17a461917b42d88a988839fe4134365a48126a777a129f4e15a"
+   "sha256": "13b41bb646b298d1183a0ef30ef19b5b105b1f439ef11c05e1ebb5ef1ca07403"
   },
   {
    "id": "cv-moss",
    "kind": "flat",
-   "sha256": "c550a4b721249e3d8a39da4579cff958bab6c3c947b80eecef100e45c7efcdd7"
+   "sha256": "87134125c60e736702dc626e24110f2be17698b2480e5dd857cbc843c71d4794"
   },
   {
    "id": "cv-mushroom",
    "kind": "other",
-   "sha256": "b65d2841be990a58ad8020173aa5382a91a038c4a16cea787f44ab0a39f9beac"
+   "sha256": "1d2187bf031eb7b1561659f0f664fc1db5a834cc0e6f8c93b34f494078971008"
   },
   {
    "id": "cv-pebbles",
    "kind": "flat",
-   "sha256": "f13edc4db3dd35a311d928ecf7560a5aeecd8e796b096b3d476b56e08049c437"
+   "sha256": "b39e9b0245efb963a7875b6d9967f91f2b5e50cbd4b1288d39bc80892c6929b8"
   },
   {
    "id": "cv-rocks",
    "kind": "other",
-   "sha256": "2ce528f6a7b274b4db381ffade8208567a30d9c0ea9862805290dcec0e30bb4a"
+   "sha256": "98220269bfa8ff3e294e62cef3c919d7d0b91a2b921a72613aa0ecbfd3cb61b7"
   },
   {
    "id": "cv-shore",
    "kind": "terrain",
-   "sha256": "0ff887e80fef60e1c6dd0cfe49c94298cc27418e4eecfb26fdc7b4b9c3c88f13"
+   "sha256": "db89bcf54acf050e272869bdd5883d43cf66c6cf9b3c590636b6c2f9e95c7f56"
   },
   {
    "id": "cv-shore-in",
    "kind": "terrain",
-   "sha256": "0a7ce70901869d67547165aafdfe8ca19342fcd0305fca1abdb0e52191189e2b"
+   "sha256": "b3e0256291dec057134d83ae65e562af601b960983fb5f5afa22b875d2c781b8"
   },
   {
    "id": "cv-spike-a",
    "kind": "other",
-   "sha256": "641db92a8f47a80e04e4ebc0200fa9cbdf4dffd597f1982903f164cfc6a81b00"
+   "sha256": "61e45ad576814f11d6ae3701d7bd3c9baf0c76bc96880c4c90d776164d60ad8a"
   },
   {
    "id": "cv-spike-b",
    "kind": "other",
-   "sha256": "56487df20c5afb404b9e5ee203b2f773ef726e803d2bb67d45ec0392c668a39f"
+   "sha256": "f6caddb87481ea05619440f219ffc6c65e7b4f62831b26ecd8f5dffd06450fa1"
   },
   {
    "id": "cv-stalactites",
    "kind": "wall_mounted",
-   "sha256": "b83e5eec348c529cca6c9c7410fa2a27f640050a7abf4f608ff509e815aa8bc4"
+   "sha256": "b9b106bad006b479d2c1c0df7b4e1b82ce2715bdfe4717d3312b1b11fed4f017"
   },
   {
    "id": "cv-stalag-big",
    "kind": "other",
-   "sha256": "c44424db837d343e6e647208fca9c8497df896553c52a741411fb41d9acf9eb8"
+   "sha256": "225bfb2c99ba4172b594187d96a5b808e80e747618036d7209afa5c110693283"
   },
   {
    "id": "cv-stalag-set",
    "kind": "other",
-   "sha256": "639f6c0ab930ecc7d66ce580cd0c02a2f9b10edb4e1b892aa4f6ec01955d0ddd"
+   "sha256": "8ee5e0c0058d2176fcdb04ab2ee6ddd67a087e8ad25a707939efeaaa9f5a0ed3"
   },
   {
    "id": "cv-top",
    "kind": "terrain",
-   "sha256": "387f04847d8c3dfe096d5fc089697a655c23b31348b8090d28129e420c253ae6"
+   "sha256": "ceaa41de87690870c7c8c216ac631150a3e028369c8e146a09ba8a2da21f6d73"
   },
   {
    "id": "cv-torch",
    "kind": "wall_mounted",
-   "sha256": "4d5581484fb866cca800e25bb992c304f0035f57d5b7b8253fdc349dc6f61458"
+   "sha256": "1a43266111c8dbf855159c5f4a17c3a4ce64c0c44795c66a6d43d883bae1a4c6"
   },
   {
    "id": "cv-vines",
    "kind": "wall_mounted",
-   "sha256": "686bccce2c880207391c85324602be7e7e9a59a3d6641d6e315078be4d246557"
+   "sha256": "525632c476e5cc0dad87e59d967f6ec4c05688ce7f2f532fe2357b20b7a7d7f9"
   },
   {
    "id": "cv-water2",
    "kind": "terrain",
-   "sha256": "d3ba5e560cf5de642410c735dd5c48c14012bc358acfd98114ec6ee2239a6f0c"
+   "sha256": "99e51560ded56eb97e9ecf246cef415d5db1c0dd03f7f906f2baee3a93f9d03c"
+  },
+  {
+   "id": "cvb-face-a",
+   "kind": "terrain",
+   "sha256": "280e1012262a39b2ff7f04e9e69c0483897a1d0c2668736cf25d400abf9650db"
+  },
+  {
+   "id": "cvb-face-b",
+   "kind": "terrain",
+   "sha256": "3aa2f31ec83ebf0f78a1a2b88bbd2b90f77ad2cc03461bfeee2cf93eeed7dbf8"
+  },
+  {
+   "id": "cvb-face-c",
+   "kind": "terrain",
+   "sha256": "b62788555b7503427ec4a6314ad45bac923aeb4affdff2991c1a4e0d090b3459"
+  },
+  {
+   "id": "cvb-floor-a",
+   "kind": "terrain",
+   "sha256": "caaa1b964a25bb8ef0f0d2793e3d522fff89cf31fd1311c6c7805b2921608a63"
+  },
+  {
+   "id": "cvb-floor-b",
+   "kind": "terrain",
+   "sha256": "e4738380e6e0358fc915373fcf5105ba4e864723afdd19d1a4ec8684700440d3"
   },
   {
    "id": "hd-banner",
    "kind": "wall_mounted",
-   "sha256": "45507466a04f14267c6ade66c2bdf3e38913c48c1a091af0ac493573b02a176f"
+   "sha256": "f678e34326f896ccdff5ec28867600b1e75e37d42fd75d914e6b0adfb65a3e09"
   },
   {
    "id": "hd-bones",
    "kind": "flat",
-   "sha256": "bd11aabd2f38960e25c365cc70a80b228d61de89dc2cd72c46eb9175db65b4cf"
+   "sha256": "8ea5de4eb8c9a4fc54bed18ecb9ad18e975af13a2a1f726607cc0ad9dccea528"
   },
   {
    "id": "hd-cage",
    "kind": "other",
-   "sha256": "a2f22b6d73f17ae51037d7b117de56bc076c8ee4d7a626ff86ce75c0b5f8c8ac"
+   "sha256": "9ad804fd9a07efcdfb2e3b12c3572614eebd8dfc5c3bd9b301617964843ba626"
   },
   {
    "id": "hd-campfire",
    "kind": "other",
-   "sha256": "afa9c851f195898d965035d7293f98ce9bfc7beee400e43293320445557996e5"
+   "sha256": "cfd251a1f48b9a8978bb3ce5e083a3f76d2976a526287127686de22306ee43d1"
   },
   {
    "id": "hd-chief-seat",
    "kind": "other",
-   "sha256": "710307a2170b8c8d47db5d8234215e2bdaf0d6bb9e0731e3397178e0e862f86f"
+   "sha256": "2c6529ec0c3c1ce3051d4429184e4979273c5731667cc0226a5621bfa8bb657d"
   },
   {
    "id": "hd-hide-rack",
    "kind": "other",
-   "sha256": "26355a9b53596e6bf65f4877d4e43b2d8a2703aeb9a5981d804e475fdf6773ba"
+   "sha256": "8459a39e3dd6117ad94183726457fb466e9a1f0c54d9ff41f99f43585fd29e46"
   },
   {
    "id": "hd-loot",
    "kind": "other",
-   "sha256": "24fda9d399d04bff79e4f00428874fc0bab8aea283791d4372fc05e639fb8d5d"
+   "sha256": "49a2d8d8ec7d2bdc1a70eda3da710acef424f15f86082dc679f00cea1c11ee06"
   },
   {
    "id": "hd-platform",
    "kind": "flat",
-   "sha256": "cbbb3aef9ca041786f62f479cdccb533b04f29e374112df27a0d5e02ed04504b"
+   "sha256": "fd4bb6e7456141a3af3bf7cbac64ac856746c0fbe88a7325b6550f26c6d9d172"
   },
   {
    "id": "hd-table",
    "kind": "other",
-   "sha256": "bb85866625e815242ae9f94d7d3f75b37b73e28b19980d3e3f4adb728330b81e"
+   "sha256": "77b8246b4807493b25e2cc52bfb71a3c3e42d27b96997e46edc8f0316c92840e"
   },
   {
    "id": "hd-tent",
    "kind": "other",
-   "sha256": "d9af0a63fa36e14a29ac88d1be9df094457df115dd24eab9ca4eaa1a8d10827b"
+   "sha256": "f5a2e7930471c53ef29bb302f0ae86259973042506ac5a2958042b2f50581ae5"
   },
   {
    "id": "hd-weapon-rack",
    "kind": "other",
-   "sha256": "d58a5bdbe1488528b0633a7da58229ede13e6a103d580d183092bbb03697cba6"
+   "sha256": "00c9c6a26e6419aa30b7c1c39a619132f0764b71821992ecee34764d5d9c8fee"
   },
   {
    "id": "ic-crystal",
    "kind": "other",
-   "sha256": "b0f29352577b419fafc5f9853cd7258bac745bdf7f686a0073d35d1422208483"
+   "sha256": "84cf6c7d3576a9c12aa03cceada403b19bb24d88847a2e034bf67ce3e79e0eb6"
   },
   {
    "id": "ic-drift",
    "kind": "flat",
-   "sha256": "ce66c281a6ff0bb49a20ebf2bb8a446f040aa7e6cdad2e176da10426d27f208a"
-  },
-  {
-   "id": "ic-face-a",
-   "kind": "terrain",
-   "sha256": "e7fe6aeeb4e4299eca7026406de19a16bbe06238dcbb716153983d32557e9179"
-  },
-  {
-   "id": "ic-face-b",
-   "kind": "terrain",
-   "sha256": "191fccde19e85cf65c8d494cec61a8a9774bb18949f965233aa06572756f4639"
-  },
-  {
-   "id": "ic-face-c",
-   "kind": "terrain",
-   "sha256": "0d283dfcaead84d54a5d2366182963d72d7c3890370b077f885ae60965a10240"
+   "sha256": "1a910f3565ac1502416508ecf8ce7659fcbd53fe867735c902e49a60190a13de"
   },
   {
    "id": "ic-floor-a",
    "kind": "terrain",
-   "sha256": "cd8e4e06bb461ca22a868fb98e54c0068e7a77af4b819e8609a6c8c4d0f9fe8f"
+   "sha256": "b91ddcc2936931e4d0b67cde65f4db02cc01fa7e33aee88663c7fd06ae45fbab"
   },
   {
    "id": "ic-floor-b",
    "kind": "terrain",
-   "sha256": "9e9ce7997d661124472ddf4342ee482b62d1c1fad1e03b464f9d687c165a495a"
+   "sha256": "d148dcbf155b6937ef38e907470c171d36082fd2c525da57aeedfc3bb497bbf8"
   },
   {
    "id": "ic-floor-c",
    "kind": "terrain",
-   "sha256": "034e1114fa93c292750ffe490a01955e6debd99594329f0f1dd0d36c03158ab6"
+   "sha256": "14525a30b138197b4ba549ae9a18be1d63e3bf6243b7668699cffe797d280b6f"
   },
   {
    "id": "ic-frozen",
    "kind": "other",
-   "sha256": "5ab67bbdc48654f6411b8e315156cbeb978e24ccbadec8f35b4161140f13a52d"
+   "sha256": "b200984405a9dd58fdb08642ba505eed493931e735a9df1cf4cb1a7299f5d53f"
   },
   {
    "id": "ic-great",
    "kind": "other",
-   "sha256": "f0a5f6c95eba452294b6b508d437102fa143b377971374cee194d9798db204d1"
+   "sha256": "342ad9f9846576a0af122d46656b5d618a0a310b8430c4ee81b653fa76a558df"
   },
   {
    "id": "ic-icicles",
    "kind": "wall_mounted",
-   "sha256": "aaefe38c31ab37e34316290e2779353b383456d2770f67ec52e74c9b8a88cb56"
+   "sha256": "20d40d82947792c69f18c75e786cd91b71cc3b234bad63ae7a8d0b1e39dd6c59"
   },
   {
    "id": "ic-mound",
    "kind": "other",
-   "sha256": "dce837d98c545a83d2793931000cd2df1beb7ab0d60abdd47f7db3cb1184643b"
+   "sha256": "7274e67808538a7bea03aba27ca292f5f04bee6d2c8d6f1fb0d7bc82e298c2d4"
   },
   {
    "id": "ic-pillar",
    "kind": "other",
-   "sha256": "8169f9f650bf7a5341f89a85f3708231c1c98c8f05768805d2686a1b264c9239"
+   "sha256": "15d328bcf2d93b6201fa22fecc8d7805d01d4e59613846e9fa2c9041fea7307e"
   },
   {
    "id": "ic-rock",
    "kind": "other",
-   "sha256": "3c09977490266c72670d1057ad1963b05721a2fb83d6d454d88cd05d4ce71127"
+   "sha256": "29c9b9c2c74d3f3b0be00e6d7559317c59a9f39eb0431ef4135591462b3b10ba"
+  },
+  {
+   "id": "ic2-face-a",
+   "kind": "terrain",
+   "sha256": "494809a67bb09b45c3140f4b6e4a1156eb1e9e0f1ac9973f0769046efbb75ebb"
+  },
+  {
+   "id": "ic2-face-b",
+   "kind": "terrain",
+   "sha256": "76be1117a3c2b153da00dac9bfa2c15f4587c24aa697efb545eb590b539ea5b1"
+  },
+  {
+   "id": "ic2-face-c",
+   "kind": "terrain",
+   "sha256": "8638902295623c1f2f947c7b6fec3f5dfdd869a6d606274833da6f24225a35ef"
   },
   {
    "id": "mb-rim-s",
    "kind": "terrain",
-   "sha256": "1c89c75bece07bca13f17d6fa4267cd10a4af87aa3fbf43e75d0475b7d601adc"
+   "sha256": "90f200fedee6a1b2f3e81a8ff18bdf8e0f02f5a61ae4cea9e13548054bf24ac7"
   },
   {
    "id": "mb-rim-w",
    "kind": "terrain",
-   "sha256": "19dd2d4651b6c0d93077a2d7b139c09b58751523dbd428c97accf8b3f26ca9de"
+   "sha256": "463005e094427508bbaa9c60a6ac6a802113980aa3af3d6e16d4513f163933f3"
   },
   {
    "id": "mn-face-a",
    "kind": "terrain",
-   "sha256": "624825d2e0d98a7b86b54581915053a6683d7fe4c5aa60da166b54513d74b03a"
+   "sha256": "64f324bf57ff121a7ae13086a9bf5dfacce27293d3b2fbb16dd0f318efc43e1b"
   },
   {
    "id": "mn-face-b",
    "kind": "terrain",
-   "sha256": "fe440c141afe3032142f442949780d156ea8763e248a04ac2028ed5b3911e501"
+   "sha256": "9af12ddb89c1430f633fd284f05ae85b86f3087903f0a6387e3e23518f7192da"
   },
   {
    "id": "mn-face-c",
    "kind": "terrain",
-   "sha256": "522309fa59249a3edfd3de838e6b44c7caa89b9a66e24c63937646f4aea6e1a3"
+   "sha256": "a726b5b930f7af639b5d13d7d1d2efb3af799a29a530dc2804a770396cba6f45"
   },
   {
    "id": "mn-floor-a",
    "kind": "terrain",
-   "sha256": "9e09d0c9106cbcd5bce4bb1e651c76ebd85650911046cee3a8a485b862136a5b"
+   "sha256": "c154ee2acb1e6e63516e6936dcde4d9a7d57acde7b8a6245f4173396c571a44c"
   },
   {
    "id": "mn-floor-b",
    "kind": "terrain",
-   "sha256": "d3d66374643edac4685be6d4d40b6efc51d8ded2d659469efc08414ee64c8a7b"
+   "sha256": "66b13ad105c0ee8ef17446af2c1b6983f77fea05e897f8fcdd1fe59b7409ad22"
   },
   {
    "id": "mn-floor-c",
    "kind": "terrain",
-   "sha256": "9e20c5065be4739efe0c63b2d8b0b564835a19649a8bae746eff12b8a7c03d2b"
+   "sha256": "8e917cba4001ea14e6e552970d065427611d4991d5ebd2f562353bdb8eb4b905"
   },
   {
    "id": "mn-hoist",
    "kind": "other",
-   "sha256": "a2b5c49319bba64ccc14a95976d6c524db13567249f4eea272ea5badee1cb884"
+   "sha256": "bc3cbc4f9c54ef23140b750409280c5764b6c40ac862457a5c0c6f417a7d7e92"
   },
   {
    "id": "mn-lamp",
    "kind": "other",
-   "sha256": "3d8000ce86e20e8e4e0b22f2c8a2acd8ee11bdd2f28a64ac0d56f0f8af1735b9"
+   "sha256": "ae974f9587ef71b3ed4409a184bbcd5dac89709a308e4feea0ee4eee65f4019c"
   },
   {
    "id": "mn-minecart",
    "kind": "other",
-   "sha256": "8dfff6ab3095ddc5fbbbbc2a0f818219015bd45791e6197a38e569dcd1e5fa8f"
+   "sha256": "1eed9b27c7c5f5aea0a89bdb65b92fb85908f951b2ae77de590354812e65e027"
   },
   {
    "id": "mn-ore",
    "kind": "other",
-   "sha256": "e4ad0e17d44ac8f6382932217b906687ff4bbd26ac2c1421d2d5c9a7cfe23f1c"
+   "sha256": "345fd8be6d8fc7cec7649fc21d0b20cb33dbb76bf30f9d69cd9fbf365c8367ee"
   },
   {
    "id": "mn-ore-vein",
    "kind": "wall_mounted",
-   "sha256": "663ac93afeb2ccbb83760406b527002c1ba92d05ff559a075b54f7474c13455d"
+   "sha256": "2e62e6a84d5f1f31037e0442c199a2eeec48b8b7be0c434e535364d7b83f93a7"
   },
   {
    "id": "mn-ore-vein-iron",
    "kind": "wall_mounted",
-   "sha256": "e33c93884483b6aaa3c017bd7ee2893b6fd57a3c986cd39d59b8e7abcfa1649a"
+   "sha256": "7ccdb0fa1fcad91b7774deb0d7185e430823994c1a1ae2dd968559dae83a518b"
   },
   {
    "id": "mn-post",
    "kind": "other",
-   "sha256": "4772c792fbbb81e5c6f6bc5cde3454e8db293f254ec2fef2aae6e8c6174a5210"
+   "sha256": "9c59822a43f00f0ba1b0a29c1077667346f39c096c439905b738c70d5c564d9c"
   },
   {
    "id": "mn-rocks",
    "kind": "other",
-   "sha256": "a5b5a9ff08c5c21ca146941a4a484309b281300bb249805b7222933bf511044f"
+   "sha256": "c2f0e84bfc58042cd1fe2edc6cedf7e1246c795f422d79b10630347d2421e9f5"
   },
   {
    "id": "mn-timber-frame",
    "kind": "wall_mounted",
-   "sha256": "6ac4b8d99b4b74e4444edf00292624f16b2c50018e04aaf5e92b22d7a2ab362e"
+   "sha256": "08a216ccefa46b025f79bb508db38055cc08efefdf1d6342bd599d583805d7f4"
   },
   {
    "id": "mn-tools",
    "kind": "other",
-   "sha256": "d4f2add1105b7be989f9a90e03baf5a4d8cb22482a2fc9910fcd2b050513d807"
+   "sha256": "aac0c1fbd6d046338332ac2096487a8279657eb53d6befbcfecd4b6e5d4d601d"
+  },
+  {
+   "id": "nw-net",
+   "kind": "terrain",
+   "sha256": "f2758ac50d871f4fc069ebd4af77a047e0db1e956a52c006c807215756c559a0"
   },
   {
    "id": "py-column",
    "kind": "other",
-   "sha256": "5b1aaa023c3794e56d95480e19b5d17c4ff96b7c64cb779919e2d898ec1ac5a2"
+   "sha256": "0666dd85ede51cb1aed6e40326a172efb59bc15c232f9241dfa23f15f8139559"
   },
   {
    "id": "py-floor-a",
    "kind": "terrain",
-   "sha256": "fac7aa67a8c86ae0b058e7881b91a0501a1c1b3542db238325df3b0f3b29b6f3"
+   "sha256": "7d740fe407bed247513621b2819421266fb3da54a67e557848832219efce0ca0"
   },
   {
    "id": "py-floor-b",
    "kind": "terrain",
-   "sha256": "c2973b22db439408a0a5de1e9fb8b6e7b042e5dec71b0ec8ac0c1e0f7716d082"
+   "sha256": "5d34e50402a1b748ce492a82103e14a22658e82d88bd46146e0e58d88aacc21d"
   },
   {
    "id": "py-floor-c",
    "kind": "terrain",
-   "sha256": "93b030e2a9a842251ffe68d02cb648fdff3d5c3e312c0285fb6f87bf871684f1"
+   "sha256": "66d3e27a17facec1b55101caaca28e5fb1d572acf874df58372f8e4bbd4f2e33"
   },
   {
    "id": "py-gold",
    "kind": "other",
-   "sha256": "685da9cd1684496868c8745f58f0e07ab6a5898b6ff232d4dbe7d01d99c0bf1b"
+   "sha256": "807c18a6632ef518ffd0e0682cd0f6ecf1d11d4a11c249f42dda74f2b45f6fa7"
   },
   {
    "id": "py-jackal",
    "kind": "other",
-   "sha256": "9e59f718178aa42630ed06997176ad74efbf1182513f5a16c323155fd11b8d9a"
+   "sha256": "e858d616feedeb6fda74606ee9cabbe800ddc2021a52661efaa745f4f3dc02fb"
   },
   {
    "id": "py-jars",
    "kind": "other",
-   "sha256": "cfba7837dcda40e883d1e48bd145a580e618db9cb4b91f9ff7798c67003bbc33"
+   "sha256": "7790ea9f0966b0098f0aa763eba22cbf27fec23aa0fa56c73950e09d8adb9eee"
   },
   {
    "id": "py-obelisk",
    "kind": "other",
-   "sha256": "b879f05b72658169263c627a5f6659748f0cea2d9b21aba8226ba37e8a4993b8"
+   "sha256": "9ee6b9696ea2f006beb85f056e35de2b7668a43e7fd76513ac41c6610d853382"
   },
   {
    "id": "py-sand",
    "kind": "flat",
-   "sha256": "b6a31d3ff53d3976f27b816092d7ae9023f09c067bbd14485c8a0cfec5bdc5dc"
+   "sha256": "e49a57fd93c9f358958b05de3a7b61564bb62877d35df6b515b0e39eb3500698"
   },
   {
    "id": "py-sarcophagus",
    "kind": "other",
-   "sha256": "eff22a848a41d212e72fa324d19d0a7e1a117fc99fcc5a7a2164eb33269315ad"
+   "sha256": "2c0c196058b51475ee9bd7378aac565a47e083f4758a7d31e7ce414766ebda0d"
   },
   {
    "id": "py-scarab",
    "kind": "other",
-   "sha256": "53bae797e2cbb6f6b3e21d87784ec8528606be8134d19b7da8257b9577116e7f"
+   "sha256": "1517ed53fb672e7677113fe1b0b28c88971e03e78701bbc421024205ce81ff2a"
   },
   {
    "id": "py-sphinx",
    "kind": "other",
-   "sha256": "d7cb4ba47c2b0bae067a4ba8d373d7f35a96e3883584d5e3923c0488cb396f27"
+   "sha256": "0a81cece8cb62d3611a0a4b21f45e63d904b733cea0cb6e51af761d38348111b"
   },
   {
    "id": "py-wall-a",
    "kind": "terrain",
-   "sha256": "0c3f9414361e586b6a4519df471abd1cfca0acdaefc2e6f13df01cfc983ebedf"
+   "sha256": "2a067d5d823a6b7848d540163d11204918c39f42510f0cffcf8bc99894711162"
   },
   {
    "id": "py-wall-b",
    "kind": "terrain",
-   "sha256": "d9fc79f448c5bdadce18f2f668653363f6c9d763a624b3b1445ac7b1ce7223c4"
+   "sha256": "8331228ca1f6567a281d797721b3c6dd689a643dfcb6c20b20b642f312763d28"
   },
   {
    "id": "py-wall-c",
    "kind": "terrain",
-   "sha256": "a11a27a5b0820f9d4ebbff471b804c7769178bf1684dbb93583ab157c7cd8791"
+   "sha256": "2fc8ca2a32c8226e37c58028b841eace1703cfc6013e39c74da9bf0a02886134"
   },
   {
    "id": "ru-altar",
    "kind": "other",
-   "sha256": "6b42cd566e290f31b1261712e18b9b424379bfba461689b077a3858b366f7479"
+   "sha256": "07fa709ded205bf54288aa01ec1ced742b2c37b167a4d9d1c288ee0266020ed1"
   },
   {
    "id": "ru-brazier",
    "kind": "other",
-   "sha256": "92d152b333d3c051863debd3d4787666fd69bf3b21b317cb58533b0cb33f5ae7"
+   "sha256": "b68e22d9b1faa4a8bce888cba19d846883d5d84e4f4a61533830aa311ec745c5"
   },
   {
    "id": "ru-broken",
    "kind": "other",
-   "sha256": "083c6e83657c72306226ad990a45dc22aecba7172e73151817fdff36325cda9b"
+   "sha256": "756bbda0fa34b6814409c3957f8bbdc6f535a59e8aad799cfba21af09fa0b7ee"
   },
   {
    "id": "ru-chips",
    "kind": "flat",
-   "sha256": "f98f792c936081af8e5e211c2aa7173cd7d4b4cd0d53881c5273d09c9df24638"
+   "sha256": "978a0d0b4aa6037541e1d99888a4b7001f844ff9307e921b58b1da7964d62143"
   },
   {
    "id": "ru-column",
    "kind": "other",
-   "sha256": "9623af41875e6a53c36ceac81b3915b5c7ae87f210a7b2b04d62d843bc785f52"
+   "sha256": "ce26c9dfefb77f4c541d406e881e9ff1497787f1622fba065804fefafbcfd217"
   },
   {
    "id": "ru-door",
    "kind": "wall_mounted",
-   "sha256": "c0b4ed180a68bf33f669363a4a47c78bd8383e742d8f9fd1e648f3fca6168178"
+   "sha256": "70cd8fbe31755c31b687668a38d3476209401d41183daf6f55fe605448738c05"
   },
   {
    "id": "ru-floor",
    "kind": "terrain",
-   "sha256": "d4d2649114682c464a3cc23e15e97ee6886a6064d34c08b4e52480db356c4d1f"
+   "sha256": "299fb3d927d23731fb349477ed987e796db7cf1790eaa7e7739e8b9d19d6e619"
   },
   {
    "id": "ru-ivy",
    "kind": "wall_mounted",
-   "sha256": "6b1cf3b43ceeb5bcfc9fd7be49b9ed7fc276fc9d2b8f866c360c5bc48dfc719b"
+   "sha256": "bd1530acd00f8b9293bd7edfd302a94a3c81b276cf5ef9e4024c7ec100db3b8c"
   },
   {
    "id": "ru-leaves",
    "kind": "flat",
-   "sha256": "57500c8a6c238c1ad1f637eee1a3a60ed40d5dae48242aba354e8edfbf5f99d8"
+   "sha256": "b17867f6d9eb587fa82932dcd126376cf911fb7c233c3d6727a0bc000cbe386e"
   },
   {
    "id": "ru-mosaic",
    "kind": "flat",
-   "sha256": "73833693acb3dad681f36a633d693076cdd96b992c46e8c98d02e1be63c57ebb"
+   "sha256": "0de58bc5f84b744a4f2782ca4187dedd423c6c832f6fadeafcbe5e6ad9c7569a"
   },
   {
    "id": "ru-niche-urn",
    "kind": "wall_mounted",
-   "sha256": "9c6ab784b28a051019379ec29c2185d2fe0888e7f89a1dd8d0419ab70fea7b37"
+   "sha256": "886ff5841415593bf9952962e8a52599d8aa4b9f51340e8d6e69efc60abc077a"
   },
   {
    "id": "ru-pillar",
    "kind": "other",
-   "sha256": "7d0fa05b49ff70c41d6203a08065f74157838c01393d0f72c188276a5a254cba"
+   "sha256": "d0acf87b3c86c6acfbf89e01c320877613c4e241dcdeb2ca1e4e0745da7f8f5b"
   },
   {
    "id": "ru-pool",
    "kind": "other",
-   "sha256": "2e9a9ce7a5a25375ed2d7dd77ebb28a8e40805f3c8d0397ba7c55c44ddff6cd0"
+   "sha256": "66c0c7ed38747efe51fbc8ca8085aa38a14cb4eaf7925895853063ffd0fa460e"
   },
   {
    "id": "ru-rim-s",
    "kind": "terrain",
-   "sha256": "8b599aa368ca2b96bb7b46d60d6d011767a4a657dfb01315f0ae2120dbf074a2"
+   "sha256": "b72578a980380c28b756ebd3fa4b044527356b87789778a2b0a7771a96a1edfd"
   },
   {
    "id": "ru-rim-w",
    "kind": "terrain",
-   "sha256": "bf5d1559976a947d230a25e13978344c7c75cfa9867422275e0669f13fed8ea8"
+   "sha256": "302dc0fe629a2601593406c3b3b186977cfbe8d85be97481d7f9ff1ca905ab19"
   },
   {
    "id": "ru-rubble",
    "kind": "other",
-   "sha256": "51fe0c5e5f7c521936fb5c32fb3b53d36e392bfabbb8d830d22b84f9d561aaf1"
+   "sha256": "904253d618125af82fc1b1342ccc650d53783109017b473ded26ec7705aeb03e"
   },
   {
    "id": "ru-statue",
    "kind": "other",
-   "sha256": "fed2b76c6b1bef41fc21f3d4ce68e5e782f8c954c281ad88f4d94bf4debaf944"
+   "sha256": "ae78cc712aff1331a7f671d225e5c999419b9ad306378395c9d50dec022a8bcf"
   },
   {
    "id": "ru-stump",
    "kind": "other",
-   "sha256": "fe25d45b7901d8b9a99ccc189c4992a5e02cc1efd7570c50ff07a7b7e902cdaa"
+   "sha256": "d4bb13e58b8cf9af35a5cbfd0b0b12e8464dc3c7da6138c907c5eedb753484a9"
   },
   {
    "id": "ru-top-b",
    "kind": "terrain",
-   "sha256": "058f7a7ca7d07a9d2bee30fbba5bda153822608fcbf3cfff912f4b9ddd8170db"
+   "sha256": "d65060e0c839b38252184b84b7af600ce808b232943157ba7e8b28ee4a2bea8d"
   },
   {
    "id": "ru-top-c",
    "kind": "terrain",
-   "sha256": "023f8453a9487cd181ef2eb1523bff788489c9e65b3e1dc43e392357d19f9283"
+   "sha256": "f9dd09caf37b0f655e933d706406c9aff571686545d401d1b67a687d46c80fd6"
   },
   {
    "id": "ru-vines",
    "kind": "wall_mounted",
-   "sha256": "6842422840c9d58b90ebf600fdfa8548573f963b631b91a8b9ebaaf68547d2b1"
+   "sha256": "952007a731526efff5f0a4316b3748c300c52721e814110a846a067fd5ed6d29"
   },
   {
    "id": "ru-wall-a",
    "kind": "terrain",
-   "sha256": "9d70f3cedf11b450ecfc0cd37df49f37f7ca3434357bb895f2b8fdce5f9de774"
+   "sha256": "ea7b6d5f2bdc42ebab236e54fa42814f770752c362d36de19117c50c5b783e24"
   },
   {
    "id": "ru-wall-b",
    "kind": "terrain",
-   "sha256": "c81f7cb31d331bcfa9e5d33a060618828bbeedd1d8add004bcf99dc029b7ce4c"
+   "sha256": "c87586b6d212482472d5e018b0603c1b65fc1490dc53f1c29208eaeb44068fed"
   },
   {
    "id": "ru-wall-c",
    "kind": "terrain",
-   "sha256": "aa18a2b640f32b9feb4bf8fee97f7128a156bf9975ae50789839d6fedc48d990"
+   "sha256": "75b531a182535ea6094537f8da38e632bf1bfe7180bffc444876a212f6eae05d"
+  },
+  {
+   "id": "rub-floor-a",
+   "kind": "terrain",
+   "sha256": "0ab1429c7923610ec0f3c7754c97099399f23623151af78adab9410051f7cdf0"
+  },
+  {
+   "id": "rub-floor-b",
+   "kind": "terrain",
+   "sha256": "adf3a2c05fcd3f1f115cc3b1aa743f7aed472aed7c116e5b217eb1c8b1efe5c9"
+  },
+  {
+   "id": "rub-wall-a",
+   "kind": "terrain",
+   "sha256": "ab90b720820eaf01b20a69309c5f798831bf5941ed133f63b5a270968bf6dc6f"
+  },
+  {
+   "id": "rub-wall-b",
+   "kind": "terrain",
+   "sha256": "97b3ebfce1f8ba681f3f61bcd1333f6d75f5ad8ab341ae90adbf90b8e958398d"
+  },
+  {
+   "id": "rub-wall-c",
+   "kind": "terrain",
+   "sha256": "6932405597909b9f875aa1729f3ae995c6d1b9d6c5d579fef7196c8bbd8d08a4"
   },
   {
    "id": "sh-barrel",
    "kind": "other",
-   "sha256": "73ead54df9c38560e7d660951a521be2a002c25cc07447864ec7114453b359fc"
+   "sha256": "2c4705fd3b38e814cec47ba1ff5ed2ca9251afa3df1aa3544e766479dbdb7fe5"
   },
   {
    "id": "sh-bones",
    "kind": "flat",
-   "sha256": "3741a9c17f5ea5a408e2f5c709ae47124a05b79019155d777b35913830f371ad"
+   "sha256": "4336a55c57356c0d7ff167b0c270c76881b7bde05ea4669c382f80e1176781f9"
   },
   {
    "id": "sh-bucket",
    "kind": "other",
-   "sha256": "1649eea08259eb5d10e712d588a685ca06c0d87a297228df1b8e16e575bb7aff"
+   "sha256": "c7ecbe1ac3b170a6cf1ae222ea7b673a8882efbacf61399b11dfc2c68a573ff3"
   },
   {
    "id": "sh-campfire",
    "kind": "other",
-   "sha256": "d941a8e94f97ef905c7870250b8f5f20e100d1b61d87248e90dadedea9b1920f"
+   "sha256": "e05744b4d4b8f562d35a46974b5a87b5d0d27ea9bcd0017c14298be6f25db006"
   },
   {
    "id": "sh-candles",
    "kind": "other",
-   "sha256": "069df78a43142d1a66bf3bf5d2d93c3143d11a1dcacad513aa6ad5d28aa84963"
+   "sha256": "4202dd4e7c5ff093e7dcd8aef08559703d14aeb4f2479b3c58ab1dec2a73c5d3"
   },
   {
    "id": "sh-chains",
    "kind": "wall_mounted",
-   "sha256": "4286ef8c439326ba2fabe42d0ec18a05107c6c4a7504fcbf0b8dbe81affc9409"
+   "sha256": "7213f6e57f728f7dc1fc3a0fdb5250ffa5319f911e8e4683997ae8e888a2b215"
   },
   {
    "id": "sh-crate",
    "kind": "other",
-   "sha256": "bdec0f36957652708a46ca05e3359c727af066bc46cf99aa27120ae5586b0f32"
+   "sha256": "d7f5006391ca153bda6f46d91cfe2ebc827594323308a2d0b9ea1b2ae90fc420"
   },
   {
    "id": "sh-cratestack",
    "kind": "other",
-   "sha256": "f6507fd63d9859e720996446f09fd64e1a613dafcbc80b8fe3ca7f4f522f0aaa"
+   "sha256": "820109286cbab1904b6bde65a4175637cb47774c05b712251381593f284a451f"
   },
   {
    "id": "sh-rubble",
    "kind": "flat",
-   "sha256": "05e704c9f4cad817f19f623cdf37ae15de281135f94036364f23c4f23a03bb1e"
+   "sha256": "82587ef19bf79fc505ac380fb70dd29135636e60b97b18561abff19015937700"
   },
   {
    "id": "sh-sacks",
    "kind": "other",
-   "sha256": "763e529af846c2c5acf489ee715b27fe3bd56c210236e34af65892765c155f86"
+   "sha256": "00e25648cb6ce3144241ea356df96cfcc438db8a9a74c24893e32338ca90f9ab"
   },
   {
    "id": "sh-skulls",
    "kind": "other",
-   "sha256": "5cf51d933a6662c352f104a364dcf2d9e583fb75214e73244d68d9ed31d98a64"
+   "sha256": "e3d626ddb2dc34ec1dcb5cc34835a041a4826b173741dc5d6b9d5a203cafaaf6"
   },
   {
    "id": "st-down-built",
    "kind": "terrain",
-   "sha256": "fce71eef09490cfc19707a81b28d226403cdf392a03ec1ec42a593006366fbd0"
+   "sha256": "47d361650d124eec9e0d83db6bac934432d36ad6f88f47b7aeb77d85c9e7f993"
   },
   {
    "id": "st-down-rock",
    "kind": "terrain",
-   "sha256": "ad28224f01acc423ad3c2bd1cc6d642a47d32ba22d1d402d09e396024c51a3e5"
+   "sha256": "f2687e8c716d533eb015ef792f011561bbd7f82bdb5e99fa10e638508d532708"
   },
   {
    "id": "st-up-built",
    "kind": "terrain",
-   "sha256": "fe95d12bc89180fae03ec3182646908cc66feb9e881b28fa3b7c6da699d02bc5"
+   "sha256": "833b0d0f6b672b2fa63c9320c58c6af8ed9652e4e82f12dc825faebf7bbbb000"
   },
   {
    "id": "st-up-rock",
    "kind": "terrain",
-   "sha256": "8ed8fa87bd7233927a635d8dff7129326f5091dc6da8a271ade636f1c97c5724"
+   "sha256": "9250d005b34cde9d7096af06034fe0086f22936cf977ac31ef43660b84fcb813"
   },
   {
    "id": "su-amphora",
    "kind": "other",
-   "sha256": "1a3166b0dc7d36e064f617f8f1bdb5c58d06a52d0b113b7136e602feddef3cb4"
+   "sha256": "508975079092c3bc14902e3d7b2569ea47feecf7d87f1d5afb63d7187f4e5620"
   },
   {
    "id": "su-column",
    "kind": "other",
-   "sha256": "7a2bf30e516e55ce5e77b8d4818c65497dd378349bf798a7fce70ea19915917b"
+   "sha256": "065f649112a9c1cfaf3f7a4708e476a35c454b67d769e6e961e4f1b9fc699c9d"
   },
   {
    "id": "su-coral",
    "kind": "other",
-   "sha256": "341e90f4865888f11a1aa6e3a60ca1af55367214685974f2179f4802fb5b3c3b"
+   "sha256": "af098481fdbac74fdfad11d56a6a84e1a70250101b98f6248df49984311d85f9"
   },
   {
    "id": "su-floor-a",
    "kind": "terrain",
-   "sha256": "33491fccdcd833a84867c041a55108d5daa494686954952f28c8bdd68283038a"
+   "sha256": "64f95a10b297359f4dda53c45e01be153931989643e1e96c6eedcb13b0b48a2a"
   },
   {
    "id": "su-floor-b",
    "kind": "terrain",
-   "sha256": "e82deb75aa43b3c12ba65c5581ecb79fef6a94e97fe638a5818cc7e8147861ea"
+   "sha256": "3d477819f9673ccc5d79033c268c4ef095d468ecb8ff15dbd4a6f328772f0c51"
   },
   {
    "id": "su-floor-c",
    "kind": "terrain",
-   "sha256": "5bc9710dfba87e98cda13a6e8b1c0ff89de264321cecb884ff5457e705f7d37f"
+   "sha256": "338b29a4230a9efe57835518a6086a9f301396b7ff1a6aee1567bc83d0ffed09"
   },
   {
    "id": "su-fountain",
    "kind": "other",
-   "sha256": "87f46bb45ff5aa16ec26e7a6e7adf69f92e67a4252e0d7fe4c35844b1fd15f3d"
+   "sha256": "a8f2c96340bc35ff0f8588d330ca848599243000492c0a34924096c92382878c"
   },
   {
    "id": "su-shell",
    "kind": "other",
-   "sha256": "81d57d8af90dbd13b31ad90a62ee8589371fc89b48d21b99da9402ac5b782a9f"
+   "sha256": "c64616e460511e0ac9e53240e8a83750b8d52db908b71f429e87d9eba90e29f4"
   },
   {
    "id": "su-statue",
    "kind": "other",
-   "sha256": "e83c0caf3e6b22d9381c90bf27f689b727b86dcfb151ff68da4a2658a5365474"
+   "sha256": "f455f5482cd30b1910ae515a6c15b3909ebf28c6aa6ed787558655e9586a8751"
   },
   {
    "id": "su-trident",
    "kind": "other",
-   "sha256": "fef92bd7d519ba3330559ba82af74c4e65e1f26e594e9ce145e2c4fa7b96ac29"
+   "sha256": "42ce00051e6c71c8cca386e3866582d81b54645d1a71e02721c268cd3707f7ef"
   },
   {
    "id": "su-wall-a",
    "kind": "terrain",
-   "sha256": "8ed6a52505191a88f8e6686ba10185bebd31c0c59a59c60f50a17b83e55a6a32"
+   "sha256": "8fe27019de5f4ccf4e894064b1ec925bd6547c3328d6fc7da57d7bcb1c20f5c6"
   },
   {
    "id": "su-wall-b",
    "kind": "terrain",
-   "sha256": "c98c24c88110a4dc5b11e87deec6051df0f9862b26f9e4e22339b1a5cea7db18"
+   "sha256": "d68cb52c8a97dbce9a54c0af3c3419d000db0be619324dc59d8dbce41208b99c"
   },
   {
    "id": "su-wall-c",
    "kind": "terrain",
-   "sha256": "8c1bc445d2af406cde2f2cc622f6fb35adb8d078daddb8a537d221860c6e7838"
+   "sha256": "8638fc0ead1892567e077b5859dce90310aca7f2a8bc81a648c67cb6bbac37a8"
   },
   {
    "id": "su-weed",
    "kind": "flat",
-   "sha256": "1a02c06d41d1bea661819cffd3e8f948ebe77e165288dcd0ea4318a9a6bfd6fc"
+   "sha256": "5891f26a62e7091895f91a570bbd675bb9ec0014031a30a83950f07464e0f2dc"
   },
   {
    "id": "sw-bars",
    "kind": "wall_mounted",
-   "sha256": "dc9327c7d1028173f80a01f0cdd3667dcc1ee6b271984e01a1f7e769947e4cbc"
+   "sha256": "e0f12650d16ad5ddd5910fd74f056616e420d86518a97fc54ea935e743015851"
   },
   {
    "id": "sw-cistern",
    "kind": "other",
-   "sha256": "3e274b71791a252c4831f873ee67698b738c444d09ed2a1737beb7df6d45cc87"
+   "sha256": "15afca910b75a7616ff55e2bc36ba5ad5216b6103765ae06bab94f5460857017"
   },
   {
    "id": "sw-floor-a",
    "kind": "terrain",
-   "sha256": "f97368d4a75232f69ff193a90b5b953bd3d7d5dddbbda4d96950904f23bb73d8"
+   "sha256": "8437aeaf17f8c73d16f2076164ddfc46298411f3191bca854beb8a0d16708e58"
   },
   {
    "id": "sw-floor-b",
    "kind": "terrain",
-   "sha256": "c381433b8838b0a46ba2ed45828cac445334d98c1b537c5b4010e9f04443f174"
+   "sha256": "2ae7ff1349172157eb9de56e9335b2e85266a7ebf78304ed49e9337a6f38a1c3"
   },
   {
    "id": "sw-floor-c",
    "kind": "terrain",
-   "sha256": "1f05642ce1f7d6ba89f1582f21e3b3e611b62a74121cc6b37a2e110a342e6f87"
+   "sha256": "2fbeb1f1e2d4a0d7621584f1b63f9d929d7e075ef5c32030bc4772f202a433d1"
   },
   {
    "id": "sw-grate",
    "kind": "flat",
-   "sha256": "bef922dd836aaba646cf588822456ef9f1c3c667246d344fa2ca3769e6fc6112"
+   "sha256": "61204094d49f0b9551f0f729487a62707720a4b7b055af5f8ba5599b60b102e9"
   },
   {
    "id": "sw-outfall",
    "kind": "wall_mounted",
-   "sha256": "746a9e4eff5cdf177f583c0eeba0ee64bb4249c0946ba8103b33e5e527feb542"
+   "sha256": "e6a948d0191c8d1678009521c2ab0e25ac90910928698d8ad30b554264a0b3b6"
   },
   {
    "id": "sw-pier",
    "kind": "other",
-   "sha256": "e00971436398bfeb09d927d7bdb35e65d94df364d183f7f6639815bca16f8a3b"
+   "sha256": "3b44f4135b68bceeb42bcb64d98e63bd59c8e268b1909ad8dd33e3e51b39d972"
   },
   {
    "id": "sw-slime",
    "kind": "flat",
-   "sha256": "08480a32fa48538d5ae9e430646f1c128fef0a1da48b26365dc071a3ad9dadb4"
+   "sha256": "2e0af99a6ac52e97046062efd506276d6a1ead6dc642d00730d124b7f15e5e5d"
   },
   {
    "id": "sw-valve",
    "kind": "other",
-   "sha256": "4273e0d7822c43bd5e94e566dc04f90ce6ffc0a5f3f6d0f2be8a557d17339a87"
+   "sha256": "cb45a0b20d139e58cbee055a163f61c8d7a2be1623f88217d4a84aea0d911bdf"
   },
   {
    "id": "sw-wall-a",
    "kind": "terrain",
-   "sha256": "35adedd5bae768260cbae3a344557f6c48b686c5b62b5f0bd580ec0da0286016"
+   "sha256": "013e76847eaacc257118cbcd2759c1bbf32ae40a9ac67e40a1a0f0fab1d84749"
   },
   {
    "id": "sw-wall-b",
    "kind": "terrain",
-   "sha256": "5a531a3f34116b2fc8ad8191a99d046c9948ce864b5f79ac638f21573c975a28"
+   "sha256": "cd60c441fb1972abb2c91d3c1bd87548a47630325a0ba9dea741b24e0d3107d7"
   },
   {
    "id": "sw-wall-c",
    "kind": "terrain",
-   "sha256": "f8213847e97c76c098d8e8bfa904dc6f0fe75bd16fe265146df781008eb4759e"
+   "sha256": "7b06eda784d36cd099d5b01e75bd71b3105f8a27e64bb6b557dba2b21b46e1b8"
   },
   {
    "id": "sw-wall-lamp",
    "kind": "wall_mounted",
-   "sha256": "1b271f0f12151dfb79f228459a101c4ca8598c1cb588f409e2e9e95f96fea34a"
+   "sha256": "e00697b86295935b42eb686d9b68cafe1307f3d302a3f5635651a0a67f14cbb2"
   },
   {
    "id": "sw-water",
    "kind": "terrain",
-   "sha256": "342bb30490dbfd1fc662507a53524948880cb8a1731faf2c0f25dcee345627d4"
+   "sha256": "18f10f355f9c98e7e54564a40a18695ca938a1caea52416e2545a3037ae1077f"
   },
   {
    "id": "tw-bookshelf",
    "kind": "other",
-   "sha256": "233676812620feb8a2d455c183b097f2b0d81e00a2e12ac6115d2a88c00f80b7"
+   "sha256": "f75522434cdab76e68c6b71572f094f892816954487a23477cea1a4e1f25dccb"
   },
   {
    "id": "tw-bookshelf-tall",
    "kind": "other",
-   "sha256": "cae5323907aadf4a32c811605cc5f6a10bb3541a95352023bb0a99df05121a57"
+   "sha256": "2d17fc08bfb472ad04ad280ab2ff898514180f95a98d71639e9f94811578c681"
   },
   {
    "id": "tw-candelabra",
    "kind": "other",
-   "sha256": "a46ce67b6caa154720500d5be31fd105a944f560e9569969673ea0dc2f45e8b8"
+   "sha256": "ddabe410c934ae22ddadf1917bf43b535ac893bf31f6239399234f7fddb689ce"
   },
   {
    "id": "tw-circle",
    "kind": "flat",
-   "sha256": "f3beba03360050a763f2aebf3eb4210192ff3a088e09005d597bbf66dac3f4ce"
+   "sha256": "cf6dac02bab07e582d9c11a6f6c30ba041fb5101ff85fe91f7e9270490a1326e"
   },
   {
    "id": "tw-floor-a",
    "kind": "terrain",
-   "sha256": "f6d8a205f14a1a4e3d9b11435a7ddbc019fc451f4250943e9e2df3d732da469e"
+   "sha256": "8b2e4bc1939a50fccfffd8f5e45af0cb7f9e39b11496099080eeaa7b9a95df94"
   },
   {
    "id": "tw-floor-b",
    "kind": "terrain",
-   "sha256": "02c890bc4019c4704abd992f0f4714b3e0ff2e7b8329cbe6f42293f9e568a15f"
+   "sha256": "d9fc8c188e994c75271a804e415f239b513c17269356a07c3789df4858b1fe61"
   },
   {
    "id": "tw-floor-c",
    "kind": "terrain",
-   "sha256": "aa42188893c3db72f3ef6e4f37f0938659cb6e2cd05b7207e377ec2b5c1cf83d"
+   "sha256": "56242863d883db8e9ee3c528da9d8da3082aee4de8a4cdd3d32cdaa428db8968"
   },
   {
    "id": "tw-globe",
    "kind": "other",
-   "sha256": "8dbd02214999f474bff85f6a3f52847c682e7aa092aaf05db66939efbe6b7be8"
+   "sha256": "58f36b8c0f8ff368cec4b49a5fe0fc0da010f5ac761199d4df1dc45bbfb71f9d"
   },
   {
    "id": "tw-lectern",
    "kind": "other",
-   "sha256": "6d4d4a6200009969e58065314a0407d7ebeee0d5998ab731ee09a5416e67a8b4"
+   "sha256": "09b7950865ac260889b584a6cfad1bf7644403446d4762d8304e1b389ad5748b"
   },
   {
    "id": "tw-orrery",
    "kind": "other",
-   "sha256": "4e9749d1d3986bf7d737305b02fef0da07f1111293a0b5e32cee76bc53626e92"
+   "sha256": "6a62bc5769cd39537707a2c90ccd21f4d9e240ba4b86832812ffed5271dedc30"
   },
   {
    "id": "tw-pedestal",
    "kind": "other",
-   "sha256": "d1ea66b3ea6583d8d59f43b428454dcf29174cabe13ea78ef55fcedac029ec09"
+   "sha256": "9945e15720c314892005fa1e5d6838904f0e7467cd98d34fdb33d431352c2e33"
   },
   {
    "id": "tw-rug",
    "kind": "flat",
-   "sha256": "f03d8e52e97210a01a223e4abfecc84b5b88f2fb7776093ce0894d3628fea381"
+   "sha256": "d78280eff0822082b88c109a1d0d6c71db7158863267a67e4d92743a4e762523"
   },
   {
    "id": "tw-wall-a",
    "kind": "terrain",
-   "sha256": "0a65b26ccb74ace7d74b1f76869031587ed1a3af9d2abc8f083a8654d2302640"
+   "sha256": "4d3bb2644c123835efd11e7279ca713f3ddfff8b0211b76720ede51f1ce98ad7"
   },
   {
    "id": "tw-wall-b",
    "kind": "terrain",
-   "sha256": "2d737315ce979f0dae3793c1b31c6bbf4f42040fe8a158ca8b021561d0df7a3d"
+   "sha256": "87625f0b8fdeb8aa428ffe23746a954b0f7be8f1d5d25c70c4452f34e2e2d860"
   },
   {
    "id": "tw-wall-c",
    "kind": "terrain",
-   "sha256": "eb76b514f83cff701ad91900970cd445ca02997b245c048dc32f26471e81194e"
+   "sha256": "d9b90eda0b8650eaa77d3baf61b974144e6a8c4c515b64e372d4160a3c0815b1"
   },
   {
    "id": "vo-altar",
    "kind": "other",
-   "sha256": "0e6788eb29c12100adccd53f22a457b19e503f7c0913028f2e25f6b2149b030c"
+   "sha256": "bcca6b6a0cae1010f2002f333f71e926b0d73e7e8308bb304d98d3bfb6d77192"
   },
   {
    "id": "vo-columns",
    "kind": "other",
-   "sha256": "6c035825b83941a9221db0b3decbecfd4457e85958770b72fd8c595827fb1559"
+   "sha256": "96c93b1da5d07491f05532cb0703f4baca014297436a2885d7ade6ead141bca3"
   },
   {
    "id": "vo-embers",
    "kind": "flat",
-   "sha256": "0dbac8a1d04c6532fa92d3e6525e4f20bb7312b83ac2254a3a4fbbefbaa366b2"
-  },
-  {
-   "id": "vo-face-a",
-   "kind": "terrain",
-   "sha256": "83751dd3f6ff3efdcdcd1b1023d426ddfe046887004cd8d19c62c5bdfb7e2a96"
-  },
-  {
-   "id": "vo-face-b",
-   "kind": "terrain",
-   "sha256": "7fa5009dd0cf0e751c2ed7592f1c9da66df499ca5d08db84ab7bd72693107c9f"
-  },
-  {
-   "id": "vo-face-c",
-   "kind": "terrain",
-   "sha256": "e53a85c0f2ebca8ee7e956b93d906b4c03fefb130e78154e74cd540c016635ff"
+   "sha256": "ddb970c524043b7a2a49969190caad1b87cee2596618e7f9e2c3516a49d4a729"
   },
   {
    "id": "vo-firecrystal",
    "kind": "other",
-   "sha256": "3e24795ba275800727434c0dab691f292499adb03059d3068bd16e3a9d43f4b5"
+   "sha256": "b29e2b8cc719e879d79bb07df557c886f6760e8070918fa1f0f794cb6e91a32a"
   },
   {
    "id": "vo-floor-a",
    "kind": "terrain",
-   "sha256": "aaf03e31f17abbc81e1231da5cad0438f10c9ff4646c1b2d400faf263a029985"
+   "sha256": "df0958f079f7932fbd8cbab1d84f0999beaced491e25fee49d95e0a839caf4b5"
   },
   {
    "id": "vo-floor-b",
    "kind": "terrain",
-   "sha256": "00fce3af4ed065da2d583efc9cca5a2fe6323e41760b6bab1a8744a714e67f67"
+   "sha256": "301a7792cc3b4b13f9c68faacfeb74d7e5c77bd6d7716cf490d7fc3aaf06b70b"
   },
   {
    "id": "vo-floor-c",
    "kind": "terrain",
-   "sha256": "4255734a20fdcb3a688546f2ba3964fd46e4c4c444ee2ac6b7cd0d5395a8587a"
+   "sha256": "6896e212c82319e0b53770c2ae93197f0a45e080a12a3eea0bcf64b1476322ea"
   },
   {
    "id": "vo-lavafall",
    "kind": "wall_mounted",
-   "sha256": "bb2635786fbf13f15b9c12919ed1860e0b4e9b37123812e7b4b7ff9be354b519"
+   "sha256": "c2faa7e793554fa4fea83c691a0b3aea8b63b60f0a4228db72edfecade18b57f"
   },
   {
    "id": "vo-spike",
    "kind": "other",
-   "sha256": "4bb859b11be4b32df72ec6d0e016cb7e5c60a1a75b5befc4e86d855ce5442d66"
+   "sha256": "5da613f8717a9aebde450c78b357b457a09e9e81bae24938e892f6f3d0f63905"
   },
   {
    "id": "vo-spike-tall",
    "kind": "other",
-   "sha256": "941378d1c1e8aa6f11309a0c4b005b5a0afe8a6b325fa81bd9e7f03b44d72ad5"
+   "sha256": "dc93c8f46e07319de2467153ae5929d317dc6da419bd46b2de47cf95b8ac6c8e"
   },
   {
    "id": "vo-vent",
    "kind": "other",
-   "sha256": "c58b323bb0a0813db32485d462e9b597e6930b292ac83eeb242ac4a33d88b62c"
+   "sha256": "bccc8894a6f041224846c19a9e1df704d610dd41c0fa0f2fd54eee83ec216e64"
+  },
+  {
+   "id": "vo2-face-a",
+   "kind": "terrain",
+   "sha256": "c4b14645b4e43990c7da0c483977823c896ca1440e81852f1a04f3fb6820307c"
+  },
+  {
+   "id": "vo2-face-b",
+   "kind": "terrain",
+   "sha256": "26857887e7916cc6079b51d4692faf45000a48ea02876606aa34aca0713dcf59"
+  },
+  {
+   "id": "vo2-face-c",
+   "kind": "terrain",
+   "sha256": "df0d5a36a5536abfa7acca811af94ae99ae29a089bd584d7c4fb7ec02629f105"
   }
  ],
  "objects": [
@@ -1313,7 +1418,7 @@
    "theme": "cave",
    "rows": [
     [
-     53214
+     53207
     ]
    ]
   },
@@ -1323,7 +1428,7 @@
    "theme": "cave",
    "rows": [
     [
-     53215
+     53208
     ]
    ]
   },
@@ -1333,10 +1438,10 @@
    "theme": "cave",
    "rows": [
     [
-     53216
+     53209
     ],
     [
-     53217
+     53210
     ]
    ]
   },
@@ -1346,10 +1451,10 @@
    "theme": "cave",
    "rows": [
     [
-     53218
+     53211
     ],
     [
-     53219
+     53212
     ]
    ]
   },
@@ -1359,10 +1464,10 @@
    "theme": "cave",
    "rows": [
     [
-     53220
+     53213
     ],
     [
-     53221
+     53214
     ]
    ]
   },
@@ -1372,10 +1477,10 @@
    "theme": "cave",
    "rows": [
     [
-     53222
+     53215
     ],
     [
-     53223
+     53216
     ]
    ]
   },
@@ -1385,7 +1490,7 @@
    "theme": "cave",
    "rows": [
     [
-     53224
+     53217
     ]
    ]
   },
@@ -1395,16 +1500,16 @@
    "theme": "cave",
    "rows": [
     [
-     53225,
-     53226
+     53218,
+     53219
     ],
     [
-     53227,
-     53228
+     53220,
+     53221
     ],
     [
-     53229,
-     53230
+     53222,
+     53223
     ]
    ]
   },
@@ -1414,12 +1519,12 @@
    "theme": "cave",
    "rows": [
     [
-     53231,
-     53232
+     53224,
+     53225
     ],
     [
-     53233,
-     53234
+     53226,
+     53227
     ]
    ]
   },
@@ -1429,12 +1534,12 @@
    "theme": "cave",
    "rows": [
     [
-     53235,
-     53236
+     53228,
+     53229
     ],
     [
-     53237,
-     53238
+     53230,
+     53231
     ]
    ]
   },
@@ -1444,12 +1549,12 @@
    "theme": "cave",
    "rows": [
     [
-     53239,
-     53240
+     53232,
+     53233
     ],
     [
-     53241,
-     53242
+     53234,
+     53235
     ]
    ]
   },
@@ -1459,13 +1564,13 @@
    "theme": "cave",
    "rows": [
     [
-     53243
+     53236
     ],
     [
-     53244
+     53237
     ],
     [
-     53245
+     53238
     ]
    ]
   },
@@ -1475,14 +1580,14 @@
    "theme": "cave",
    "rows": [
     [
-     53246,
-     53247,
-     53248
+     53239,
+     53240,
+     53241
     ],
     [
-     53249,
-     53250,
-     53251
+     53242,
+     53243,
+     53244
     ]
    ]
   },
@@ -1492,14 +1597,14 @@
    "theme": "cave",
    "rows": [
     [
-     53252,
-     53253,
-     53254
+     53245,
+     53246,
+     53247
     ],
     [
-     53255,
-     53256,
-     53257
+     53248,
+     53249,
+     53250
     ]
    ]
   },
@@ -1509,13 +1614,13 @@
    "theme": "ruin",
    "rows": [
     [
-     53587
+     53612
     ],
     [
-     53588
+     53613
     ],
     [
-     53589
+     53614
     ]
    ]
   },
@@ -1525,10 +1630,10 @@
    "theme": "ruin",
    "rows": [
     [
-     53590
+     53615
     ],
     [
-     53591
+     53616
     ]
    ]
   },
@@ -1538,13 +1643,13 @@
    "theme": "ruin",
    "rows": [
     [
-     53592
+     53617
     ],
     [
-     53593
+     53618
     ],
     [
-     53594
+     53619
     ]
    ]
   },
@@ -1554,10 +1659,10 @@
    "theme": "ruin",
    "rows": [
     [
-     53595
+     53620
     ],
     [
-     53596
+     53621
     ]
    ]
   },
@@ -1567,12 +1672,12 @@
    "theme": "ruin",
    "rows": [
     [
-     53597,
-     53598
+     53622,
+     53623
     ],
     [
-     53599,
-     53600
+     53624,
+     53625
     ]
    ]
   },
@@ -1582,7 +1687,7 @@
    "theme": "ruin",
    "rows": [
     [
-     53601
+     53626
     ]
    ]
   },
@@ -1592,16 +1697,16 @@
    "theme": "ruin",
    "rows": [
     [
-     53602,
-     53603
+     53627,
+     53628
     ],
     [
-     53604,
-     53605
+     53629,
+     53630
     ],
     [
-     53606,
-     53607
+     53631,
+     53632
     ]
    ]
   },
@@ -1611,12 +1716,12 @@
    "theme": "ruin",
    "rows": [
     [
-     53608,
-     53609
+     53633,
+     53634
     ],
     [
-     53610,
-     53611
+     53635,
+     53636
     ]
    ]
   },
@@ -1626,19 +1731,19 @@
    "theme": "ruin",
    "rows": [
     [
-     53612,
-     53613,
-     53614
+     53637,
+     53638,
+     53639
     ],
     [
-     53615,
-     53616,
-     53617
+     53640,
+     53641,
+     53642
     ],
     [
-     53618,
-     53619,
-     53620
+     53643,
+     53644,
+     53645
     ]
    ]
   },
@@ -1648,20 +1753,20 @@
    "theme": "ruin",
    "rows": [
     [
-     53621,
-     53622
+     53646,
+     53647
     ],
     [
-     53623,
-     53624
+     53648,
+     53649
     ],
     [
-     53625,
-     53626
+     53650,
+     53651
     ],
     [
-     53627,
-     53628
+     53652,
+     53653
     ]
    ]
   },
@@ -1671,14 +1776,14 @@
    "theme": "ruin",
    "rows": [
     [
-     53629,
-     53630,
-     53631
+     53654,
+     53655,
+     53656
     ],
     [
-     53632,
-     53633,
-     53634
+     53657,
+     53658,
+     53659
     ]
    ]
   },
@@ -1688,22 +1793,22 @@
    "theme": "ruin",
    "rows": [
     [
-     53635,
-     53636,
-     53637,
-     53638
+     53660,
+     53661,
+     53662,
+     53663
     ],
     [
-     53639,
-     53640,
-     53641,
-     53642
+     53664,
+     53665,
+     53666,
+     53667
     ],
     [
-     53643,
-     53644,
-     53645,
-     53646
+     53668,
+     53669,
+     53670,
+     53671
     ]
    ]
   },
@@ -1713,16 +1818,16 @@
    "theme": "ruin",
    "rows": [
     [
-     53647,
-     53648
+     53672,
+     53673
     ],
     [
-     53649,
-     53650
+     53674,
+     53675
     ],
     [
-     53651,
-     53652
+     53676,
+     53677
     ]
    ]
   },
@@ -1732,16 +1837,16 @@
    "theme": "ruin",
    "rows": [
     [
-     53653,
-     53654
+     53678,
+     53679
     ],
     [
-     53655,
-     53656
+     53680,
+     53681
     ],
     [
-     53657,
-     53658
+     53682,
+     53683
     ]
    ]
   },
@@ -1751,8 +1856,8 @@
    "theme": "ruin",
    "rows": [
     [
-     53659,
-     53660
+     53684,
+     53685
     ]
    ]
   },
@@ -1762,10 +1867,10 @@
    "theme": "ice",
    "rows": [
     [
-     54000
+     54040
     ],
     [
-     54001
+     54041
     ]
    ]
   },
@@ -1779,8 +1884,8 @@
      -1
     ],
     [
-     54002,
-     54003
+     54042,
+     54043
     ]
    ]
   },
@@ -1790,7 +1895,7 @@
    "theme": "ice",
    "rows": [
     [
-     54004
+     54044
     ]
    ]
   },
@@ -1800,10 +1905,10 @@
    "theme": "ice",
    "rows": [
     [
-     54005
+     54045
     ],
     [
-     54006
+     54046
     ]
    ]
   },
@@ -1813,7 +1918,7 @@
    "theme": "ice",
    "rows": [
     [
-     54007
+     54047
     ]
    ]
   },
@@ -1823,10 +1928,10 @@
    "theme": "ice",
    "rows": [
     [
-     54008
+     54048
     ],
     [
-     54009
+     54049
     ]
    ]
   },
@@ -1836,16 +1941,16 @@
    "theme": "ice",
    "rows": [
     [
-     54010,
-     54011
+     54050,
+     54051
     ],
     [
-     54012,
-     54013
+     54052,
+     54053
     ],
     [
-     54014,
-     54015
+     54054,
+     54055
     ]
    ]
   },
@@ -1855,19 +1960,19 @@
    "theme": "ice",
    "rows": [
     [
-     54016,
-     54017,
-     54018
+     54056,
+     54057,
+     54058
     ],
     [
-     54019,
-     54020,
-     54021
+     54059,
+     54060,
+     54061
     ],
     [
-     54022,
-     54023,
-     54024
+     54062,
+     54063,
+     54064
     ]
    ]
   },
@@ -1877,7 +1982,7 @@
    "theme": "volcano",
    "rows": [
     [
-     54365
+     54420
     ]
    ]
   },
@@ -1887,7 +1992,7 @@
    "theme": "volcano",
    "rows": [
     [
-     54366
+     54421
     ]
    ]
   },
@@ -1897,7 +2002,7 @@
    "theme": "volcano",
    "rows": [
     [
-     54367
+     54422
     ]
    ]
   },
@@ -1907,7 +2012,7 @@
    "theme": "volcano",
    "rows": [
     [
-     54368
+     54423
     ]
    ]
   },
@@ -1917,10 +2022,10 @@
    "theme": "volcano",
    "rows": [
     [
-     54369
+     54424
     ],
     [
-     54370
+     54425
     ]
    ]
   },
@@ -1930,12 +2035,12 @@
    "theme": "volcano",
    "rows": [
     [
-     54371,
-     54372
+     54426,
+     54427
     ],
     [
-     54373,
-     54374
+     54428,
+     54429
     ]
    ]
   },
@@ -1945,13 +2050,13 @@
    "theme": "volcano",
    "rows": [
     [
-     54375
+     54430
     ],
     [
-     54376
+     54431
     ],
     [
-     54377
+     54432
     ]
    ]
   },
@@ -1961,14 +2066,14 @@
    "theme": "volcano",
    "rows": [
     [
-     54378,
-     54379,
-     54380
+     54433,
+     54434,
+     54435
     ],
     [
-     54381,
-     54382,
-     54383
+     54436,
+     54437,
+     54438
     ]
    ]
   },
@@ -1978,12 +2083,12 @@
    "theme": "mine",
    "rows": [
     [
-     54647,
-     54648
+     54702,
+     54703
     ],
     [
-     54649,
-     54650
+     54704,
+     54705
     ]
    ]
   },
@@ -1997,8 +2102,8 @@
      -1
     ],
     [
-     54651,
-     54652
+     54706,
+     54707
     ]
    ]
   },
@@ -2008,14 +2113,14 @@
    "theme": "mine",
    "rows": [
     [
-     54653,
-     54654,
-     54655
+     54708,
+     54709,
+     54710
     ],
     [
-     54656,
+     54711,
      -1,
-     54657
+     54712
     ]
    ]
   },
@@ -2025,16 +2130,16 @@
    "theme": "mine",
    "rows": [
     [
-     54658,
-     54659
+     54713,
+     54714
     ],
     [
-     54660,
-     54661
+     54715,
+     54716
     ],
     [
-     54662,
-     54663
+     54717,
+     54718
     ]
    ]
   },
@@ -2044,12 +2149,12 @@
    "theme": "mine",
    "rows": [
     [
-     54664,
-     54665
+     54719,
+     54720
     ],
     [
-     54666,
-     54667
+     54721,
+     54722
     ]
    ]
   },
@@ -2059,12 +2164,12 @@
    "theme": "mine",
    "rows": [
     [
-     54668,
-     54669
+     54723,
+     54724
     ],
     [
-     54670,
-     54671
+     54725,
+     54726
     ]
    ]
   },
@@ -2074,12 +2179,12 @@
    "theme": "mine",
    "rows": [
     [
-     54672,
-     54673
+     54727,
+     54728
     ],
     [
-     54674,
-     54675
+     54729,
+     54730
     ]
    ]
   },
@@ -2089,10 +2194,10 @@
    "theme": "mine",
    "rows": [
     [
-     54676
+     54731
     ],
     [
-     54677
+     54732
     ]
    ]
   },
@@ -2102,7 +2207,7 @@
    "theme": "mine",
    "rows": [
     [
-     54678
+     54733
     ]
    ]
   },
@@ -2112,19 +2217,19 @@
    "theme": "mine",
    "rows": [
     [
-     54679,
-     54680,
-     54681
+     54734,
+     54735,
+     54736
     ],
     [
-     54682,
-     54683,
-     54684
+     54737,
+     54738,
+     54739
     ],
     [
-     54685,
-     54686,
-     54687
+     54740,
+     54741,
+     54742
     ]
    ]
   },
@@ -2134,13 +2239,13 @@
    "theme": "crypt",
    "rows": [
     [
-     54955
+     55033
     ],
     [
-     54956
+     55034
     ],
     [
-     54957
+     55035
     ]
    ]
   },
@@ -2150,12 +2255,12 @@
    "theme": "crypt",
    "rows": [
     [
-     54958,
-     54959
+     55036,
+     55037
     ],
     [
-     54960,
-     54961
+     55038,
+     55039
     ]
    ]
   },
@@ -2165,10 +2270,10 @@
    "theme": "crypt",
    "rows": [
     [
-     54962
+     55040
     ],
     [
-     54963
+     55041
     ]
    ]
   },
@@ -2178,10 +2283,10 @@
    "theme": "crypt",
    "rows": [
     [
-     54964
+     55042
     ],
     [
-     54965
+     55043
     ]
    ]
   },
@@ -2191,10 +2296,10 @@
    "theme": "crypt",
    "rows": [
     [
-     54966
+     55044
     ],
     [
-     54967
+     55045
     ]
    ]
   },
@@ -2204,14 +2309,14 @@
    "theme": "crypt",
    "rows": [
     [
-     54968,
-     54969,
-     54970
+     55046,
+     55047,
+     55048
     ],
     [
-     54971,
-     54972,
-     54973
+     55049,
+     55050,
+     55051
     ]
    ]
   },
@@ -2221,10 +2326,10 @@
    "theme": "crypt",
    "rows": [
     [
-     54974
+     55052
     ],
     [
-     54975
+     55053
     ]
    ]
   },
@@ -2234,10 +2339,10 @@
    "theme": "crypt",
    "rows": [
     [
-     54976
+     55054
     ],
     [
-     54977
+     55055
     ]
    ]
   },
@@ -2247,12 +2352,12 @@
    "theme": "crypt",
    "rows": [
     [
-     54978,
-     54979
+     55056,
+     55057
     ],
     [
-     54980,
-     54981
+     55058,
+     55059
     ]
    ]
   },
@@ -2262,12 +2367,12 @@
    "theme": "crypt",
    "rows": [
     [
-     54982,
-     54983
+     55060,
+     55061
     ],
     [
-     54984,
-     54985
+     55062,
+     55063
     ]
    ]
   },
@@ -2277,16 +2382,16 @@
    "theme": "crypt",
    "rows": [
     [
-     54986,
-     54987
+     55064,
+     55065
     ],
     [
-     54988,
-     54989
+     55066,
+     55067
     ],
     [
-     54990,
-     54991
+     55068,
+     55069
     ]
    ]
   },
@@ -2296,7 +2401,7 @@
    "theme": "sewer",
    "rows": [
     [
-     55320
+     55398
     ]
    ]
   },
@@ -2306,13 +2411,13 @@
    "theme": "sewer",
    "rows": [
     [
-     55321
+     55399
     ],
     [
-     55322
+     55400
     ],
     [
-     55323
+     55401
     ]
    ]
   },
@@ -2322,10 +2427,10 @@
    "theme": "sewer",
    "rows": [
     [
-     55324
+     55402
     ],
     [
-     55325
+     55403
     ]
    ]
   },
@@ -2335,12 +2440,12 @@
    "theme": "sewer",
    "rows": [
     [
-     55326,
-     55327
+     55404,
+     55405
     ],
     [
-     55328,
-     55329
+     55406,
+     55407
     ]
    ]
   },
@@ -2350,12 +2455,12 @@
    "theme": "sewer",
    "rows": [
     [
-     55330,
-     55331
+     55408,
+     55409
     ],
     [
-     55332,
-     55333
+     55410,
+     55411
     ]
    ]
   },
@@ -2365,10 +2470,10 @@
    "theme": "sewer",
    "rows": [
     [
-     55334
+     55412
     ],
     [
-     55335
+     55413
     ]
    ]
   },
@@ -2378,7 +2483,7 @@
    "theme": "sewer",
    "rows": [
     [
-     55336
+     55414
     ]
    ]
   },
@@ -2388,19 +2493,19 @@
    "theme": "sewer",
    "rows": [
     [
-     55337,
-     55338,
-     55339
+     55415,
+     55416,
+     55417
     ],
     [
-     55340,
-     55341,
-     55342
+     55418,
+     55419,
+     55420
     ],
     [
-     55343,
-     55344,
-     55345
+     55421,
+     55422,
+     55423
     ]
    ]
   },
@@ -2410,12 +2515,12 @@
    "theme": "tower",
    "rows": [
     [
-     55586,
-     55587
+     55664,
+     55665
     ],
     [
-     55588,
-     55589
+     55666,
+     55667
     ]
    ]
   },
@@ -2425,16 +2530,16 @@
    "theme": "tower",
    "rows": [
     [
-     55590,
-     55591
+     55668,
+     55669
     ],
     [
-     55592,
-     55593
+     55670,
+     55671
     ],
     [
-     55594,
-     55595
+     55672,
+     55673
     ]
    ]
   },
@@ -2444,10 +2549,10 @@
    "theme": "tower",
    "rows": [
     [
-     55596
+     55674
     ],
     [
-     55597
+     55675
     ]
    ]
   },
@@ -2457,10 +2562,10 @@
    "theme": "tower",
    "rows": [
     [
-     55598
+     55676
     ],
     [
-     55599
+     55677
     ]
    ]
   },
@@ -2470,10 +2575,10 @@
    "theme": "tower",
    "rows": [
     [
-     55600
+     55678
     ],
     [
-     55601
+     55679
     ]
    ]
   },
@@ -2483,12 +2588,12 @@
    "theme": "tower",
    "rows": [
     [
-     55602,
-     55603
+     55680,
+     55681
     ],
     [
-     55604,
-     55605
+     55682,
+     55683
     ]
    ]
   },
@@ -2498,10 +2603,10 @@
    "theme": "tower",
    "rows": [
     [
-     55606
+     55684
     ],
     [
-     55607
+     55685
     ]
    ]
   },
@@ -2511,19 +2616,19 @@
    "theme": "tower",
    "rows": [
     [
-     55608,
-     55609,
-     55610
+     55686,
+     55687,
+     55688
     ],
     [
-     55611,
-     55612,
-     55613
+     55689,
+     55690,
+     55691
     ],
     [
-     55614,
-     55615,
-     55616
+     55692,
+     55693,
+     55694
     ]
    ]
   },
@@ -2533,16 +2638,16 @@
    "theme": "tower",
    "rows": [
     [
-     55617,
-     55618
+     55695,
+     55696
     ],
     [
-     55619,
-     55620
+     55697,
+     55698
     ],
     [
-     55621,
-     55622
+     55699,
+     55700
     ]
    ]
   },
@@ -2552,13 +2657,13 @@
    "theme": "castle",
    "rows": [
     [
-     55888
+     55996
     ],
     [
-     55889
+     55997
     ],
     [
-     55890
+     55998
     ]
    ]
   },
@@ -2568,10 +2673,10 @@
    "theme": "castle",
    "rows": [
     [
-     55891
+     55999
     ],
     [
-     55892
+     56000
     ]
    ]
   },
@@ -2581,10 +2686,10 @@
    "theme": "castle",
    "rows": [
     [
-     55893
+     56001
     ],
     [
-     55894
+     56002
     ]
    ]
   },
@@ -2594,10 +2699,10 @@
    "theme": "castle",
    "rows": [
     [
-     55895
+     56003
     ],
     [
-     55896
+     56004
     ]
    ]
   },
@@ -2607,12 +2712,12 @@
    "theme": "castle",
    "rows": [
     [
-     55897,
-     55898
+     56005,
+     56006
     ],
     [
-     55899,
-     55900
+     56007,
+     56008
     ]
    ]
   },
@@ -2622,12 +2727,12 @@
    "theme": "castle",
    "rows": [
     [
-     55901,
-     55902
+     56009,
+     56010
     ],
     [
-     55903,
-     55904
+     56011,
+     56012
     ]
    ]
   },
@@ -2637,13 +2742,13 @@
    "theme": "pyramid",
    "rows": [
     [
-     56170
+     56278
     ],
     [
-     56171
+     56279
     ],
     [
-     56172
+     56280
     ]
    ]
   },
@@ -2653,10 +2758,10 @@
    "theme": "pyramid",
    "rows": [
     [
-     56173
+     56281
     ],
     [
-     56174
+     56282
     ]
    ]
   },
@@ -2670,8 +2775,8 @@
      -1
     ],
     [
-     56175,
-     56176
+     56283,
+     56284
     ]
    ]
   },
@@ -2681,13 +2786,13 @@
    "theme": "pyramid",
    "rows": [
     [
-     56177
+     56285
     ],
     [
-     56178
+     56286
     ],
     [
-     56179
+     56287
     ]
    ]
   },
@@ -2697,7 +2802,7 @@
    "theme": "pyramid",
    "rows": [
     [
-     56180
+     56288
     ]
    ]
   },
@@ -2707,8 +2812,8 @@
    "theme": "pyramid",
    "rows": [
     [
-     56181,
-     56182
+     56289,
+     56290
     ]
    ]
   },
@@ -2718,10 +2823,10 @@
    "theme": "pyramid",
    "rows": [
     [
-     56183
+     56291
     ],
     [
-     56184
+     56292
     ]
    ]
   },
@@ -2731,10 +2836,10 @@
    "theme": "pyramid",
    "rows": [
     [
-     56185
+     56293
     ],
     [
-     56186
+     56294
     ]
    ]
   },
@@ -2744,14 +2849,14 @@
    "theme": "pyramid",
    "rows": [
     [
-     56187,
-     56188,
-     56189
+     56295,
+     56296,
+     56297
     ],
     [
-     56190,
-     56191,
-     56192
+     56298,
+     56299,
+     56300
     ]
    ]
   },
@@ -2761,13 +2866,13 @@
    "theme": "sunken",
    "rows": [
     [
-     56501
+     56615
     ],
     [
-     56502
+     56616
     ],
     [
-     56503
+     56617
     ]
    ]
   },
@@ -2777,7 +2882,7 @@
    "theme": "sunken",
    "rows": [
     [
-     56504
+     56618
     ]
    ]
   },
@@ -2787,7 +2892,7 @@
    "theme": "sunken",
    "rows": [
     [
-     56505
+     56619
     ]
    ]
   },
@@ -2797,7 +2902,7 @@
    "theme": "sunken",
    "rows": [
     [
-     56506
+     56620
     ]
    ]
   },
@@ -2807,7 +2912,7 @@
    "theme": "sunken",
    "rows": [
     [
-     56507
+     56621
     ]
    ]
   },
@@ -2817,10 +2922,10 @@
    "theme": "sunken",
    "rows": [
     [
-     56508
+     56622
     ],
     [
-     56509
+     56623
     ]
    ]
   },
@@ -2830,16 +2935,16 @@
    "theme": "sunken",
    "rows": [
     [
-     56510,
-     56511
+     56624,
+     56625
     ],
     [
-     56512,
-     56513
+     56626,
+     56627
     ],
     [
-     56514,
-     56515
+     56628,
+     56629
     ]
    ]
   },
@@ -2849,19 +2954,19 @@
    "theme": "sunken",
    "rows": [
     [
-     56516,
-     56517,
-     56518
+     56630,
+     56631,
+     56632
     ],
     [
-     56519,
-     56520,
-     56521
+     56633,
+     56634,
+     56635
     ],
     [
-     56522,
-     56523,
-     56524
+     56636,
+     56637,
+     56638
     ]
    ]
   },
@@ -2871,14 +2976,14 @@
    "theme": "hideout",
    "rows": [
     [
-     56525,
-     56526,
-     56527
+     56639,
+     56640,
+     56641
     ],
     [
-     56528,
-     56529,
-     56530
+     56642,
+     56643,
+     56644
     ]
    ]
   },
@@ -2888,12 +2993,12 @@
    "theme": "hideout",
    "rows": [
     [
-     56531,
-     56532
+     56645,
+     56646
     ],
     [
-     56533,
-     56534
+     56647,
+     56648
     ]
    ]
   },
@@ -2903,7 +3008,7 @@
    "theme": "hideout",
    "rows": [
     [
-     56535
+     56649
     ]
    ]
   },
@@ -2913,7 +3018,7 @@
    "theme": "hideout",
    "rows": [
     [
-     56536
+     56650
     ]
    ]
   },
@@ -2923,7 +3028,7 @@
    "theme": "hideout",
    "rows": [
     [
-     56537
+     56651
     ]
    ]
   },
@@ -2933,12 +3038,12 @@
    "theme": "hideout",
    "rows": [
     [
-     56538,
-     56539
+     56652,
+     56653
     ],
     [
-     56540,
-     56541
+     56654,
+     56655
     ]
    ]
   },
@@ -2948,12 +3053,12 @@
    "theme": "hideout",
    "rows": [
     [
-     56542,
-     56543
+     56656,
+     56657
     ],
     [
-     56544,
-     56545
+     56658,
+     56659
     ]
    ]
   },
@@ -2963,12 +3068,12 @@
    "theme": "hideout",
    "rows": [
     [
-     56546,
-     56547
+     56660,
+     56661
     ],
     [
-     56548,
-     56549
+     56662,
+     56663
     ]
    ]
   },
@@ -2978,14 +3083,14 @@
    "theme": "hideout",
    "rows": [
     [
-     56550,
-     56551,
-     56552
+     56664,
+     56665,
+     56666
     ],
     [
-     56553,
-     56554,
-     56555
+     56667,
+     56668,
+     56669
     ]
    ]
   },
@@ -2995,10 +3100,10 @@
    "theme": "hideout",
    "rows": [
     [
-     56556
+     56670
     ],
     [
-     56557
+     56671
     ]
    ]
   },
@@ -3008,16 +3113,16 @@
    "theme": "hideout",
    "rows": [
     [
-     56558,
-     56559
+     56672,
+     56673
     ],
     [
-     56560,
-     56561
+     56674,
+     56675
     ],
     [
-     56562,
-     56563
+     56676,
+     56677
     ]
    ]
   }
