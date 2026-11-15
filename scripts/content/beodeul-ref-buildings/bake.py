@@ -34,7 +34,8 @@ STORE = ROOT / "tiledata/beodeul-ref-buildings"
 CATALOG = STORE / "catalog.json"
 TABLE = ROOT / "src/assets/beodeulRefBuildings.json"
 T, COLS, BASE = 16, 128, 46464
-BIG = 52608      # 둘째 토막(2026-11-16): 첫 토막(46,464~48,511)은 44채로 찼고 바로 뒤는 실내 토막(48,512~52,607)이다 — 초대형 건물(types 의 block="big")은 그 뒤에 굽는다
+BIG = 60800      # 둘째 토막 60,800~61,823(1,024칸, 감독 배정 2026-11-16): 첫 토막(46,464~48,511)은 44채로 찼다. 그 뒤는 실내(48,512~52,607) · 던전(52,608~56,703) · 길목(56,704~60,799)의 토막이다 — 초대형 건물(types 의 block="big")은 그 뒤에 굽는다
+BIG_END = 61824
 PREFIX = "bd-bld-ref-"
 LABEL = "버들항 참고 건물"
 OPEN = {k: True for k in ("up", "down", "left", "right")}
@@ -123,6 +124,7 @@ def main():
                         blocked=sorted([list(b) for b in it["blocked"]]), roof=it["rep"]["roof"], roofVolumes=it["rep"]["roofVolumes"], roofSideDeviationPx=it["rep"]["roofSideDeviationPx"],
                         flatPercent=it["rep"]["flatPercent"], colours=it["rep"]["colours"], sha256=digest, waiver=waiver))
     big_end = -(-n // COLS) * COLS if first_end is not None else None
+    assert big_end is None or big_end <= BIG_END, f"둘째 토막이 넘친다: {n} > {BIG_END}"
     end = first_end if first_end is not None else -(-n // COLS) * COLS; total = max(big_end or end, ts["count"])
     spans = [(BASE, end)] + ([(BIG, big_end)] if big_end else [])
     print(f"건물 {len(items)}채 · 칸 {n - BASE}개 → 내 토막 {BASE}..{end - 1} ({(end - BASE) // COLS}줄) · 시트 {ts['count']} → {total} ({total // COLS * T}px)")

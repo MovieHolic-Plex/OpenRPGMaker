@@ -168,11 +168,11 @@ def R():
         dict(k='g', x=60, w=50, floors=[('ashlar', 8), ('brick', 34), ('brick', 30)], rd=16, rise=20, ov=2, inset=False, feats=[('banner', 79, 62), ('vwin-tall', 66, 100)])],
         feats=[('gallery', 4, 84, dict(w=54)), ('jars', 84, 110, dict(crop=(0, 0, 28, 26)))])
     # ── 초대형: 성 본채 · 마을 대성당 · 수도원 · 큰 세관 (있는 부품만으로 조립) ──
-    H['keep-a'] = dict(roof='slate', door='vdoor', vols=[
+    H['keep-a'] = dict(roof='slate', door=('passage', 112, 176, dict(shade=False)), vols=[
         dict(k='e', x=44, w=168, floors=[('ashlar', 46), ('ashlar', 34)], rh=42, ov=2, inset=False,
              feats=[('chimney-brick', 62, 76), ('chimney-brick', 180, 76), ('sdormer', 56, 94, dict(lift=1)), ('sdormer', 180, 94, dict(lift=1)), ('vwin-box', 54, 120), ('vwin-box', 184, 120), ('vwin-tall', 58, 164), ('vwin-tall', 182, 164)]),
-        dict(k='g', x=88, w=64, floors=[('ashlar', 46), ('ashlar', 36)], rd=24, rise=24, ov=2, inset=False,
-             feats=[('vwin-box', 111, 122), ('banner', 96, 120), ('banner', 132, 120), ('slit', 98, 160), ('slit', 134, 160)]),
+        dict(k='g', x=92, w=72, floors=[('ashlar', 52), ('ashlar', 34)], rd=24, rise=24, ov=2, inset=False,
+             feats=[('vwin-box', 119, 118), ('banner', 100, 116), ('banner', 144, 116), ('slit', 98, 156), ('slit', 150, 156)]),
         dict(k='s', x=2, w=44, floors=[('ashlar', 46), ('ashlar', 40), ('ashlar', 34)], sh=38, ov=2, inset=False,
              feats=[('towerband', 2, 68, dict(shade=False)), ('slit', 20, 96), ('banner', 18, 126), ('vwin-box', 15, 160)]),
         dict(k='s', x=210, w=44, floors=[('ashlar', 46), ('ashlar', 40), ('ashlar', 34)], sh=38, ov=2, inset=False,
@@ -190,7 +190,7 @@ def R():
              feats=[('win-attic', 26, 58), ('bigarch', 17, 112), ('talllattice', 12, 152), ('talllattice', 40, 152)]),
         dict(k='g', x=180, w=58, floors=[('stone', 40), ('plaster', 34)], rd=22, rise=24, ov=2, inset=False,
              feats=[('lattice-win', 190, 108), ('lattice-win', 214, 108), ('win-attic', 204, 76), ('win-plain', 218, 146)])],
-        feats=[('hallbay', 60, 158, dict(w=120, crop=(0, 0, 120, 40), shade=False))])
+        feats=[('bigarch', 63, 152), ('bigarch', 92, 152), ('bigarch', 121, 152), ('bigarch', 150, 152)])
     H['customs-b'] = dict(roof='tile', door='archdoor', vols=[
         dict(k='e', x=2, w=146, floors=[('buff', 34), ('cream', 34)], rh=40, ov=2,
              feats=[('chimney-grey', 26, 72), ('chimney-grey', 112, 72), ('dormer', 50, 92), ('dormer', 84, 92), ('win-shutter', 10, 114), ('win-shutter', 44, 114), ('win-shutter', 78, 114), ('win-shutter', 112, 114), ('bigarch', 18, 154), ('bigarch', 92, 154)]),

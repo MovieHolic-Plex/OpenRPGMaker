@@ -69,10 +69,10 @@ TYPES = [
  t("guardhouse-a", "탑 달린 관리소", "guardhouse with a tower", 8, 8, 2, "large", "castle", "castle", "violetslate", WALLK, "ref6-5 · ref6-1", "회랑 채 + 모서리 탑(뾰족지붕)", ["탑 달린 관리소", "수비대 관리소", "guardhouse"], "office"),
  t("galleryhouse-a", "기둥 회랑 채", "gallery house on posts", 6, 7, 1, "medium", "castle", "castle", "violetslate", ["garrison-town", "guild-town", "scholar-town"], "ref6-5", "큰 지붕 채 + 기둥 위 회랑, 밑 트임", ["회랑 채", "기둥 회랑 집", "gallery house"], "office"),
  t("brickstore-a", "벽돌 창고", "brick storehouse", 7, 7, 1, "medium", "castle", "castle", "violetslate", ["garrison-town", "guild-town", "scholar-town", "brewers"], "ref6-6", "처마 채 + 높은 박공, 회랑, 독", ["벽돌 창고", "brick storehouse"], "storehouse"),
- # ── 초대형(2026-11-16): 이야기가 청하는 성·대성당·수도원·큰 세관의 바깥 — 실내 크기 단 초대형 구성의 집. 시트의 둘째 토막(block="big")에 굽는다 ──
- t("keep-a", "성 본채", "castle keep", 16, 11, 7, "xlarge", "castle", "castle", "violetslate", WALLK + ["guild-town"], "새로 지음(성읍 조각의 부품)", "긴 처마 본채 + 가운데 박공 현관 채 + 양끝 뾰족지붕 탑", ["성", "성 본채", "castle keep", "keep"], "keep"),
+ # ── 초대형(2026-11-16): 이야기가 청하는 성·대성당·수도원·큰 세관의 바깥 — 실내 크기 단 초대형 구성의 집. 시트의 둘째 토막(block="big", 60,800~)에 굽는다 ──
+ t("keep-a", "성 본채", "castle keep", 16, 11, 7, "xlarge", "castle", "castle", "violetslate", WALLK + ["guild-town"], "새로 지음(성읍 조각의 부품)", "긴 처마 본채 + 가운데 박공 문루 채(두 칸 폭 아치 성문) + 양끝 뾰족지붕 탑", ["성", "성 본채", "castle keep", "keep"], "keep", doorw=2),
  t("cathedral-a", "마을 대성당", "village cathedral", 13, 12, 6, "xlarge", "town", "town", "halftimber", MARK + ["pilgrim-town", "garrison-town"], "새로 지음(읍 건물의 부품)", "높은 박공 본당 + 왼쪽 종탑(뾰족지붕) + 오른쪽 낮은 측랑", ["대성당", "성당", "cathedral", "minster"], "cathedral"),
- t("abbey-a", "수도원", "abbey", 15, 10, 12, "xlarge", "town", "rural", "halftimber", ["pilgrim-town", "scholar-town", "herbalist", "vineyard"], "새로 지음(읍 건물의 부품)", "긴 처마 채(아래는 회랑) + 왼쪽 높은 박공 예배당 + 오른쪽 박공 서고", ["수도원", "수도원 서고", "abbey", "monastery"], "abbey"),
+ t("abbey-a", "수도원", "abbey", 15, 10, 12, "xlarge", "town", "rural", "halftimber", ["pilgrim-town", "scholar-town", "herbalist", "vineyard"], "새로 지음(읍 건물의 부품)", "긴 처마 채(아래층 둥근 아치 창 넷) + 왼쪽 높은 박공 예배당 + 오른쪽 박공 서고", ["수도원", "수도원 서고", "abbey", "monastery"], "abbey"),
  t("customs-b", "큰 세관", "great customs house", 15, 10, 11, "xlarge", "harbour", "harbour", "harbourstone", PORTK + ["border-post"], "새로 지음(항구 건물의 부품)", "긴 처마 채(큰 아치 창 둘) + 오른쪽 높은 박공 홀(높은 격자창 넷)", ["큰 세관", "세관 청사", "great customs house"], "customs"),
 ]
 # 실내: 손 도트 실내 칩셋(atlas_biome_interior)의 build_hand_interior_room 이 받는 이름 — program(방 구성 이름) 또는 rooms(방 종류 목록). 2026-11-15 에 roomPrograms·roomTemplates 로 확인했다.
