@@ -4,7 +4,6 @@
 // 읍(성벽 · 청한 광장)은 중심부가 돌바닥이고(beodeulTownCore.ts) 풀은 화단으로만 남으며, 광장은 길 포석 테를 두른 네모다.
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { tilesetLookPlaza } from "@/assets/tilesetLooks";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools";
 import { planCommons, straightEarthRuns } from "@/editor/tools/beodeulCommons";
@@ -299,36 +298,42 @@ describe("빈 땅의 쓰임(planLandPlots) — 볼 것 없는 화면에 울타�
   }, 480_000);
 });
 
-describe("자갈 재질은 시골·마을 급에 쓰지 않는다(오너 «강자갈 마당은 너무 어색하군»)", () => {
-  const PLAZA_TILE = 1509; // «버들항 광장 판석» 몸통 — 겉모습이 이 칸의 그림을 그 게임의 광장 재질로 바꾼다
-  const coast = (look: string | undefined, extra: Record<string, unknown> = {}) => {
-    const project = createBlankProject() as Project;
-    if (look) (project.tilesets[TS] as unknown as { look: unknown }).look = { textureKey: "tex_beodeul_looks", surface: look };
-    const ctx = { project, currentMapId: project.startMapId } as ToolContext;
-    const res = runTool(ctx, "author_beodeul_town", { theme: "coast", seed: 23, houseCount: 4, ...extra });
-    expect(res.ok, res.summary).toBe(true);
-    const data = res.data as { mapId: string; rank: string; quay: { x0: number; y0: number; x1: number; y1: number }; doors: { reached: boolean }[] };
-    const map = ctx.project.maps[data.mapId]!;
-    let plazaTiles = 0;
-    for (let y = data.quay.y0; y <= data.quay.y1; y += 1) for (let x = data.quay.x0; x <= data.quay.x1; x += 1) if (map.lowerTiles[y * map.width + x] === PLAZA_TILE) plazaTiles += 1;
-    return { data, plazaTiles, quay: readSettlementAreas(map, ctx.project.tilesets[TS]).quay.length };
-  };
-  it("굽는 명세: 어느 겉모습도 흙길(정착지의 흙 몸)에 자갈을 쓰지 않고, 표가 겉모습마다 광장 재질 이름을 싣는다", () => {
-    const spec = JSON.parse(readFileSync("tiledata/beodeul-looks/spec.json", "utf8")) as { surfaces: Record<string, { track?: string | null }> };
-    for (const [id, surface] of Object.entries(spec.surfaces)) expect([undefined, null, "road-dirt"], id).toContain(surface.track);
-    expect(tilesetLookPlaza(TS, { textureKey: "tex_beodeul_looks", surface: "frontier" })).toBe("plaza-cobble");
-    expect(tilesetLookPlaza(TS, { textureKey: "tex_beodeul_looks", surface: "heath" })).toBe("plaza-slate");
-    expect(tilesetLookPlaza(TS, undefined)).toBeUndefined();
+describe("자갈 재질은 어느 급에도 쓰지 않는다(오너 «강자갈 마당은 너무 어색하군» · «광장이 이렇게 깔끔해야 맞지»)", () => {
+  type Surface = { road?: string; roadEdge?: string; plaza?: string; track?: string | null; en: string };
+  const spec = JSON.parse(readFileSync("tiledata/beodeul-looks/spec.json", "utf8")) as { surfaces: Record<string, Surface> };
+  it("굽는 명세: 어느 겉모습도 광장에 강자갈을, 거리에 맨흙·자갈을, 흙길(정착지의 흙 몸)에 자갈을 쓰지 않는다", () => {
+    expect(Object.keys(spec.surfaces).length).toBeGreaterThanOrEqual(6);
+    for (const [id, surface] of Object.entries(spec.surfaces)) {
+      expect([undefined, null, "road-dirt"], id).toContain(surface.track);
+      expect(surface.plaza, id).not.toBe("plaza-cobble");
+      expect(["road-dirt", "road-gravel"], id).not.toContain(surface.road);
+      // 읍의 광장 테는 길 재질로 깐다 — 길이 포장이어야 광장과 거리가 한 몸이다(턱 있는 포석)
+      expect(surface.roadEdge, id).toBe("kerb");
+      expect(surface.en, id).not.toMatch(/cobble|gravel|dirt road/);
+    }
   });
-  it("자갈 광장 겉모습의 포구 마을: 둑은 광장 판석 칸이 아니라 청회색 판석 표본 — 다른 겉모습과 읍은 그대로", () => {
-    const plain = coast(undefined), cobble = coast("frontier"), slate = coast("heath"), town = coast("frontier", { form: "plaza" });
-    expect(plain.plazaTiles).toBeGreaterThan(15);
-    expect(cobble.data.rank).toBe("village");
-    expect(cobble.plazaTiles).toBe(0);
-    expect(cobble.quay).toBe(plain.quay); // 둑은 그대로 물에 닿는 포장으로 읽힌다
-    expect(cobble.data.doors.filter((d) => !d.reached).length).toBe(0);
-    expect(slate.plazaTiles).toBe(plain.plazaTiles);
-    expect(town.data.rank).toBe("town");
-    expect(town.plazaTiles).toBeGreaterThan(15);
+  it("맨흙·마른 풀 겉모습의 포구 읍: 광장 테와 안이 모두 깔리고(테는 길 포석 · 안은 광장 돌), 둑은 광장 판석 그대로다", () => {
+    const PLAZA_TILE = 1509; // «버들항 광장 판석» 몸통 — 겉모습이 이 칸의 그림을 그 게임의 광장 재질로 바꾼다
+    for (const look of ["steppe", "frontier"]) {
+      const project = createBlankProject() as Project;
+      (project.tilesets[TS] as unknown as { look: unknown }).look = { textureKey: "tex_beodeul_looks", surface: look };
+      const ctx = { project, currentMapId: project.startMapId } as ToolContext;
+      const res = runTool(ctx, "author_beodeul_town", { theme: "coast", seed: 23, houseCount: 4, form: "plaza" });
+      expect(res.ok, res.summary).toBe(true);
+      const data = res.data as { mapId: string; rank: string; square: { x0: number; y0: number; x1: number; y1: number }; quay?: { x0: number; y0: number; x1: number; y1: number }; doors: { reached: boolean }[] };
+      const map = ctx.project.maps[data.mapId]!;
+      expect(data.rank, look).toBe("town");
+      expect(data.doors.filter((d) => !d.reached).length, look).toBe(0);
+      const meta = ctx.project.tilesets[TS]!.tileMeta ?? [];
+      const tags = (x: number, y: number) => (meta[map.lowerTiles[y * map.width + x]!]?.tags ?? []) as readonly string[];
+      const sq = data.square;
+      for (const [x, y] of [[sq.x0, sq.y0], [sq.x1, sq.y0], [sq.x0, sq.y1], [sq.x1, sq.y1]] as const) expect(tags(x, y), `${look} 테 (${x},${y})`).toContain("road");
+      for (let y = sq.y0 + 1; y < sq.y1; y += 1) for (let x = sq.x0 + 1; x < sq.x1; x += 1) expect(tags(x, y), `${look} 안 (${x},${y})`).toContain("plaza");
+      if (data.quay) {
+        let plazaTiles = 0;
+        for (let y = data.quay.y0; y <= data.quay.y1; y += 1) for (let x = data.quay.x0; x <= data.quay.x1; x += 1) if (map.lowerTiles[y * map.width + x] === PLAZA_TILE) plazaTiles += 1;
+        expect(plazaTiles, look).toBeGreaterThan(15);
+      }
+    }
   }, 480_000);
 });

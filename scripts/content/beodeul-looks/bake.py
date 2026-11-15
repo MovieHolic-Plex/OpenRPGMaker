@@ -190,8 +190,7 @@ def compose(spec, tex, trees):
             grounds[gid] = {"base": base, **({"sources": sources} if sources else {})}
         base = len(cells)
         cells.extend(built[sid]["tex_beodeul_city"][paved_targets])
-        # plaza = 그 겉모습의 광장 재질 이름 — 시공기가 «자갈 재질은 시골·마을 급에 쓰지 않는다» 를 지킬 때 읽는다(2026-11-15)
-        table["parts"]["surface"]["options"][sid] = {"label": s["label"], "en": s["en"], **({"ground": gid} if gid else {}), **({"plaza": s["plaza"]} if s.get("plaza") else {}), "base": base}
+        table["parts"]["surface"]["options"][sid] = {"label": s["label"], "en": s["en"], **({"ground": gid} if gid else {}), "base": base}
     table["grounds"] = grounds
     # 표가 덮지 않는 바뀐 칸이 없어야 한다
     covered = np.zeros(len(city), bool); covered[ground_targets] = True; covered[paved_targets] = True
