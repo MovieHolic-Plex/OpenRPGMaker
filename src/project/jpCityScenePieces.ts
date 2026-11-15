@@ -33,9 +33,12 @@ function ring(c: SceneCtx, x: number, y: number, w: number, h: number, material:
 const keepFront = (c: SceneCtx, x: number, w: number, foot: number) => c.mark(x, foot + 1, w, 2, Occ.Walk, [Occ.Lot]);
 const rect = (b: SceneBlock) => ({ x: b.sx, w: b.ex - b.sx, top: b.band.top, foot: b.band.foot, h: b.band.foot - b.band.top + 1 });
 
+const SANMON = "jp-bldg-f-sanmon", TORII = "jp-bldg-f-torii";
+
 function park(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   const { x, w, top, foot, h } = rect(b), { tone, kind } = c;
-  c.fill(x, top, w, h, kind.noGreen ? yardGround(kind, tone, 0) : tone.green);
+  if (c.fable && kind.noGreen) c.fillFamily(x, top, w, h, "forecourt");       // 새 거리: 초록을 안 쓰는 종류의 놀이터는 포장 마당(맨흙은 빈터 하나뿐)
+  else c.fill(x, top, w, h, kind.noGreen ? yardGround(kind, tone, 0) : tone.green);
   const gx = x + Math.floor(w / 2) - 1;
   c.fill(gx, foot - 2, 2, 3, tone.plaza);
   c.mark(gx, foot - 2, 2, 3, Occ.Walk); keepFront(c, gx, 2, foot);
@@ -59,12 +62,16 @@ function shrine(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   c.placeKit(hall, hx, hfoot);
   c.mark(px, hfoot + 1, 2, foot - hfoot, Occ.Walk); keepFront(c, px - 1, 4, foot);
   // 새 거리: 경내 입구에 산몬(지나가는 문 — 가운데 두 열이 참배길)이 담 선에 선다. 자리가 얕으면 도리이.
-  const SANMON = "jp-bldg-f-sanmon", sm = c.fable ? SCENE_SIZES[SANMON] : undefined;
-  const gate = !!sm && foot - sm[1] > hfoot + 1 && px - 2 > x && px + 4 < x + w && c.stampPassage(SANMON, px - 2, foot, [2, 3]);
+  const sm = c.fable ? SCENE_SIZES[SANMON] : undefined;
+  const gate = !!sm && c.kind.id === "tera-machi" && foot - sm[1] > hfoot + 1 && px - 2 > x && px + 4 < x + w && c.stampPassage(SANMON, px - 2, foot, [2, 3]);
+  // 산몬이 서지 않는 경내(신사): 참배길이 깊으면(도리이 뒤로 두 줄 넘게) 길 선에 도리이(지나가는 문 — 가운데 두 열). 얕으면 문 없이 담만 트인다.
+  const tr = c.fable ? SCENE_SIZES[TORII] : undefined;
+  const torii = !gate && !!tr && foot - tr[1] > hfoot + 1 && c.stampPassage(TORII, px - 1, foot, [1, 2]);
+  const gateH = gate ? sm![1] : torii ? tr![1] : 0;
   ring(c, x, top, w, h, "블록담", (qx, qy) => qy === foot && (gate ? qx >= px - 2 && qx <= px + 3 : qx >= px - 1 && qx <= px + 2));
-  if (!gate) c.putFoot("jp-torii", px - 1, foot - 1, { base: [Occ.Lot, Occ.Walk], over: [Occ.Lot, Occ.Walk] });
+  if (!c.fable) c.putFoot("jp-torii", px - 1, foot - 1, { base: [Occ.Lot, Occ.Walk], over: [Occ.Lot, Occ.Walk] });
   // 석등은 참배길 양옆에 짝으로(새 거리: 문 안쪽부터 본전 앞까지 세 줄 걸러 한 쌍)
-  if (c.fable) { for (let y = (gate ? foot - sm![1] : foot) - 2; y > hfoot + 1; y -= 3) if (c.stFits("lantern-stone", px - 1, y, { pair: true }) && c.stFits("lantern-stone", px + 2, y, { pair: true })) { c.stStamp("lantern-stone", px - 1, y, { pair: true }); c.stStamp("lantern-stone", px + 2, y, { pair: true }); } }
+  if (c.fable) { for (let y = foot - gateH - 2; y > hfoot + 1; y -= 3) if (c.stFits("lantern-stone", px - 1, y, { pair: true }) && c.stFits("lantern-stone", px + 2, y, { pair: true })) { c.stStamp("lantern-stone", px - 1, y, { pair: true }); c.stStamp("lantern-stone", px + 2, y, { pair: true }); } }
   else for (let y = foot - 3; y > hfoot + 1; y -= 3) for (const lx of [px - 1, px + 2]) c.putAny(sceneList("jinja", "lantern"), lx, y);
   const side = sceneList("jinja", "side");
   scatter(c, x + 1, hfoot + 2, Math.max(1, px - x - 3), Math.max(1, foot - hfoot - 2), side, 2);
@@ -79,6 +86,21 @@ function shrine(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
 /** 골목 사당: 도리이 하나 뒤에 작은 감실 · 돌등롱 · 나무. */
 function shrineSmall(c: SceneCtx, _L: SceneLayout, b: SceneBlock): boolean {
   const { x, w, top, foot, h } = rect(b);
+  if (c.fable) {
+    // 새 거리: 길 선에 도리이(지나가는 문), 돌 참배길 끝 뒤 담에 지장 사당, 참배길 양옆에 석등 한 쌍 — 도리이가 못 서는 자리에는 만들지 않는다.
+    const tr = SCENE_SIZES[TORII], fx = x + Math.floor((w - 4) / 2);
+    if (!tr || h < tr[1] + 3 || w < 6 || c.scenesUsed.has("jinja") || !c.stampPassage(TORII, fx, foot, [1, 2])) return false;   // 사당·신사는 지도에 하나
+    c.fill(x, top, w, h, "자갈 참배길");
+    ring(c, x, top, w, h, "블록담", (qx, qy) => qy === foot && qx >= fx && qx <= fx + 3);
+    c.fillFamily(fx + 1, top + 2, 2, foot - top - 1, "alley");
+    c.mark(fx + 1, top + 2, 2, foot - top - 1, Occ.Walk); keepFront(c, fx, 4, foot);
+    c.stPut(["jizo"], fx + 1, top + 1, { lax: true });
+    const ly = Math.min(foot - tr[1] - 1, top + 3);
+    if (ly > top + 1 && c.stFits("lantern-stone", fx, ly, { pair: true }) && c.stFits("lantern-stone", fx + 3, ly, { pair: true })) { c.stStamp("lantern-stone", fx, ly, { pair: true }); c.stStamp("lantern-stone", fx + 3, ly, { pair: true }); }
+    if (h >= 9 && w >= 10) c.putFoot(TREES[Math.floor(c.rng() * 3)]!, x + 1, top + 6);
+    c.scenesUsed.add("jinja");
+    return true;
+  }
   c.fill(x, top, w, h, "자갈 참배길");
   const tx = x + Math.floor((w - 4) / 2);
   ring(c, x, top, w, h, "블록담", (qx, qy) => qy === foot && qx >= tx && qx <= tx + 3);

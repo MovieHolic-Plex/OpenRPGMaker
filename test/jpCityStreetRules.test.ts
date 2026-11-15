@@ -48,6 +48,8 @@ describe("jp_city new street rules (fable_street pieces)", () => {
 
   it("stands every prop on its anchor class (wall, kerb, lot, road, water)", () => {
     expect(broken("anchor-")).toEqual([]);
+    // 혼자 서지 않는 조각(대나무 가림 울·석등·물확·수도·헛간·개집·빨래)은 벽·건물 옆이거나 걷는 길 곁에 붙어 선다
+    expect(broken("loose-piece")).toEqual([]);
   });
 
   it("closes every boundary run — no end in mid-air — and opens a house lot with one gate", () => {
@@ -80,7 +82,8 @@ describe("jp_city new street rules (fable_street pieces)", () => {
       const stone = p.id === "monzen" || p.id === "roji";
       // 돌길은 참배길(monzen)·옛 골목(roji) 종류와 신사 경내의 참배길(본전 앞 두 칸 폭)에만 깔린다
       const shrine = p.plan.placed.some((b) => b.kit?.cat === "sacred");
-      if (!stone) expect(fam(p, "alley"), `${p.id}#${p.seed} stone paving`).toBeLessThanOrEqual(shrine ? 2 * 11 : 0);
+      const gate = p.plan.steps.some((s) => /jp-bldg-f-(torii|sanmon)$/.test(String((s.args as { objectId?: string }).objectId)));
+      if (!stone) expect(fam(p, "alley"), `${p.id}#${p.seed} stone paving`).toBeLessThanOrEqual(shrine || gate ? 2 * 16 : 0);
       // 차가 다니는 칸은 아스팔트(연석 큰길)이거나 생활도로 포장이거나, 돌길 종류의 돌길이다
       const f = p.plan.fable!;
       for (let i = 0; i < f.occ.length; i++) if (f.occ[i] === Occ.Road) expect(["tarmac", "lane", ...(stone ? ["alley"] : [])], `${p.id}#${p.seed} road cell ${i}`).toContain(GROUND_FAMILIES[f.gfam[i]!]);
@@ -154,7 +157,7 @@ describe("jp_city new street rules (fable_street pieces)", () => {
       const rows = new Map<number, typeof kits>();
       for (const b of kits) if (b.kit!.cat !== "house") rows.set(b.foot, [...(rows.get(b.foot) ?? []), b]);
       const longest = [...rows.values()].sort((a, b) => b.length - a.length)[0] ?? [];
-      expect(longest.length, `${p.id}#${p.seed} shops in the longest row`).toBeGreaterThanOrEqual(10);
+      expect(longest.length, `${p.id}#${p.seed} shops in the longest row`).toBeGreaterThanOrEqual(p.id === "ekimae" || p.id === "zakkyo" ? 8 : 10);   // 고층 종류는 12칸 초대형·역사 정면이 줄에 선다
       // 벽 맞댐: 같은 줄에서 가까이(두 칸 안) 선 이웃은 거의 다 틈 없이 붙는다(남는 틈은 두 칸 골목 길)
       for (const row of rows.values()) {
         const sorted = [...row].sort((a, b) => a.x - b.x);
@@ -175,6 +178,66 @@ describe("jp_city new street rules (fable_street pieces)", () => {
       }
     }
     expect(seen).toBeGreaterThanOrEqual(plans.length);   // 지도마다 평균 한 채는 선다
+  });
+
+  it("stands large and extra-large buildings at a street end of a block, each kind once per map, one extra-large at most on the tall kinds, car mouths open to the street", () => {
+    let large = 0, xl = 0, station = 0;
+    for (const p of plans) {
+      const f = p.plan.fable!, kits = p.plan.placed.filter((b) => b.kit);
+      const big = kits.filter((b) => b.kit!.cat === "large" || b.kit!.cat === "xlarge");
+      for (const m of big) {
+        const left = kits.some((b) => b !== m && b.foot === m.foot && b.x + b.w === m.x), right = kits.some((b) => b !== m && b.foot === m.foot && b.x === m.x + m.w);
+        expect(left && right, `${p.id}#${p.seed} ${m.kit!.id} at ${m.x},${m.foot}`).toBe(false);
+      }
+      expect(new Set(big.map((b) => b.kit!.role)).size, `${p.id}#${p.seed} same large kind twice`).toBe(big.length);
+      const xs = kits.filter((b) => b.kit!.cat === "xlarge"), st = kits.filter((b) => b.kit!.role === "station-front");
+      expect(xs.length, `${p.id}#${p.seed} extra-large`).toBeLessThanOrEqual(1);
+      expect(st.length, `${p.id}#${p.seed} station fronts`).toBeLessThanOrEqual(1);
+      if (xs.length) expect(["ekimae", "zakkyo"], `${p.id}#${p.seed}`).toContain(p.id);
+      if (st.length) expect(p.id).toBe("ekimae");
+      expect(kits.filter((b) => b.kit!.role === "sento" || b.kit!.role === "big-bath").length, `${p.id}#${p.seed} baths`).toBeLessThanOrEqual(1);
+      large += big.length - xs.length; xl += xs.length; station += st.length;
+      // 차가 드나드는 입(차고·구급차 자리·주차장 입구) 앞 세 줄에는 담·난간이 서지 않는다
+      for (const b of kits) if (b.kit!.bay) for (let x = b.x + b.kit!.bay[0]; x < b.x + b.kit!.bay[0] + b.kit!.bay[1]; x++) for (let y = b.foot + 1; y <= Math.min(H - 1, b.foot + 3); y++) {
+        expect(f.occ[y * W + x], `${p.id}#${p.seed} ${b.kit!.id} bay ${x},${y}`).not.toBe(Occ.Wall);
+      }
+    }
+    expect(large).toBeGreaterThanOrEqual(20);
+    expect(xl).toBeGreaterThanOrEqual(6);
+    expect(station).toBeGreaterThanOrEqual(3);
+  });
+
+  it("gives the strip behind a shop row a use with an edge: no earth or lawn against a shop's back wall, one fenced vacant lot per map at most", () => {
+    for (const p of plans) {
+      expect(p.plan.pieces.filter((q) => q === "vacant").length, `${p.id}#${p.seed} vacant lots`).toBeLessThanOrEqual(1);
+      if (!["arcade", "ichiba", "ekimae", "monzen"].includes(p.id)) continue;
+      const f = p.plan.fable!;
+      for (const b of p.plan.placed) if (b.kit && !["house", "apartment", "sacred"].includes(b.kit.cat) && b.y >= 1) for (let x = b.x; x < b.x + b.w; x++) {
+        expect(["earth", "lawn"], `${p.id}#${p.seed} behind ${b.kit.id} at ${x},${b.y - 1}`).not.toContain(GROUND_FAMILIES[f.gfam[(b.y - 1) * W + x]!]);
+      }
+    }
+  });
+
+  it("stands the temple gate only on a deep precinct of tera-machi — gate on the street line, hall behind it on the same axis, stone lanterns in pairs along the approach — and one shrine gate per map at most", () => {
+    let gates = 0;
+    for (const p of plans) {
+      const f = p.plan.fable!;
+      const steps = p.plan.steps.map((s) => s.args as { objectId?: string; x?: number; y?: number });
+      const sanmon = steps.filter((a) => String(a.objectId).endsWith("/jp-bldg-f-sanmon")), torii = steps.filter((a) => String(a.objectId).endsWith("/jp-bldg-f-torii"));
+      expect(sanmon.length + torii.length, `${p.id}#${p.seed} gates`).toBeLessThanOrEqual(1);
+      for (const g of sanmon) {
+        gates++;
+        expect(p.id).toBe("tera-machi");
+        const [gw] = SCENE_SIZES["jp-bldg-f-sanmon"]!;
+        const hall = p.plan.placed.find((b) => b.kit?.cat === "sacred" && b.foot < g.y! && b.x + b.doors[0]! >= g.x! && b.x + b.doors[0]! < g.x! + gw);
+        expect(hall, `${p.id}#${p.seed} hall behind the gate`).toBeDefined();
+        expect(g.y! - hall!.foot, `${p.id}#${p.seed} approach depth`).toBeGreaterThanOrEqual(6);
+        const lanterns = f.placed.filter((q) => q.name === "lantern-stone" && q.y > hall!.foot && q.y < g.y! && q.x >= g.x! && q.x < g.x! + gw);
+        expect(lanterns.length, `${p.id}#${p.seed} lanterns`).toBeGreaterThanOrEqual(4);
+        for (const l of lanterns) expect(lanterns.filter((q) => q.y === l.y).length, `${p.id}#${p.seed} lantern pair at y=${l.y}`).toBe(2);
+      }
+    }
+    expect(gates).toBeGreaterThanOrEqual(3);
   });
 
   it("every piece and every boundary-run member the composer names is a baked kit", () => {

@@ -20,14 +20,16 @@ F_CAT = {'ramen': 'food', 'sushi': 'food', 'izakaya': 'food', 'yakitori': 'food'
          'community-hall': 'public', 'fire-brigade': 'public', 'dentist': 'public', 'vet': 'public', 'acupuncture': 'public', 'landmark-torii': 'sacred', 'landmark-castle': 'castle',
          'bullet-station': 'station', 'bus-terminal': 'station', 'university': 'school', 'plant': 'industry', 'wholesale-market': 'market', 'ballpark': 'stadium', 'car-repair': 'industry'}
 # 중형 건물: 줄의 섞임이 뽑지 않는다(분류 medium) — 구성기가 블록 끝·모퉁이·주택가에 종류로 불러 세운다. 지나가는 문(산몬)은 건물이 아니다.
-F_MEDIUM = {'juku': 'juku', 'sento': 'sento', 'super': 'market', 'clinic': 'clinic', 'yubin': 'post', 'koban': 'koban', 'konbini': 'konbini', 'ginko': 'bank'}
-F_PASSAGE = {'sanmon'}
+F_MEDIUM = {'juku': 'juku', 'sento': 'sento', 'super': 'market', 'clinic': 'clinic', 'yubin': 'post', 'koban': 'koban', 'konbini': 'konbini', 'ginko': 'bank', 'osento': 'big-bath'}
+F_PASSAGE = {'sanmon', 'torii'}
 # 대형 건물: 분류 large — 큰길 줄의 블록 끝(오피스·호텔·백화점·병원)과 주택가의 깊은 필지(단지·맨션)에 구성기가 종류로 불러 세운다.
 F_LARGE = {'mansion': 'mansion', 'office': 'office-tower', 'depato': 'mall', 'hotel': 'hotel', 'byoin': 'hospital', 'danchi': 'danchi'}
 # 차가 드나드는 입(차고·구급차 자리·주차장 입구): 키트에 부품이 없어 문이 아닌 쪽(더 넓은 쪽)으로 읽는다 — 그 앞에는 담·가로 시설을 두지 않는다.
 # 초대형(블록 면 하나를 차지): 역 앞 상가 빌딩 · 구청 · 타워 맨션 — 지도에 하나까지
 F_XL = {'ekimae': 'station-mall', 'shiyakusho': 'ward-office', 'tower': 'tower-mansion'}
 # 차가 드나드는 입(차고·구급차 자리·주차장 입구)의 열 [첫 열, 폭] — 키트에 그 부품이 없어 그림에서 읽어 적었다(건물 일꾼이 부품을 달면 거기서 읽는다)
+# 랜드마크(구성기가 자리를 정해 부른다 — 줄 섞기에는 안 나온다): 역사 정면
+F_LANDMARK = {'eki': 'station-front'}
 F_BAY = {'house-tile-d': [0, 3], 'byoin': [4, 4], 'office': [4, 4], 'shiyakusho': [9, 3], 'tower': [9, 3]}
 F_ROLE = {'ramen': 'ramen', 'sushi': 'restaurant', 'izakaya': 'izakaya', 'yakitori': 'izakaya', 'kissa': 'cafe', 'sentaku': 'laundry', 'zakkyo': 'office', 'bento': 'bento', 'business-hotel': 'hotel', 'bank': 'bank', 'ryokan': 'ryokan', 'karaoke': 'karaoke', 'pachinko': 'pachinko', 'game-center': 'arcade', 'manga-cafe': 'cafe', 'tea': 'cafe',
           'family-restaurant': 'restaurant', 'soba-stand': 'restaurant', 'takoyaki': 'restaurant', 'taiyaki': 'restaurant', 'hospital': 'clinic', 'dentist': 'clinic', 'vet': 'clinic', 'acupuncture': 'clinic',
@@ -60,9 +62,9 @@ def build():
         if short.startswith('f-'):
             s = short[2:]
             if s.startswith('kaki-') or s in F_PASSAGE: continue                              # 담·대문 키트는 건물이 아니다(집 필지의 길 선에 구성기가 놓는다 — 크기는 sizes 에 있다)
-            tier = 'xlarge' if s in F_XL else tier or 'medium'
-            cat = ('medium' if s in F_MEDIUM else 'large' if s in F_LARGE else 'xlarge' if s in F_XL else 'sacred' if s == 'jinja' else None) or F_CAT.get(s) or ('house' if s.startswith(('house', 'nagaya', 'minka', 'machiya-hira')) else 'apartment' if s.startswith('apart-') else None) or ('landmark' if tier == 'landmark' else 'civic' if tier in ('large', 'xlarge') else 'commercial' if tier == 'medium' else 'shop')
-            role = F_MEDIUM.get(s) or F_LARGE.get(s) or F_XL.get(s) or ('shrine' if s == 'jinja' else None) or F_ROLE.get(s) or ('machiya' if s.startswith('machiya-hira') else 'house' if cat == 'house' else 'apartment' if cat == 'apartment' else None) or ('shop' if cat == 'shop' else s)
+            tier = 'xlarge' if s in F_XL else 'medium' if s in F_MEDIUM or s in F_LANDMARK else tier or 'medium'   # 급은 자리 규칙이 본다: 큰 목욕탕·역사 정면은 제 자리 규칙이 따로 있다
+            cat = ('medium' if s in F_MEDIUM else 'large' if s in F_LARGE else 'xlarge' if s in F_XL else 'landmark' if s in F_LANDMARK else 'sacred' if s == 'jinja' else None) or F_CAT.get(s) or ('house' if s.startswith(('house', 'nagaya', 'minka', 'machiya-hira')) else 'apartment' if s.startswith('apart-') else None) or ('landmark' if tier == 'landmark' else 'civic' if tier in ('large', 'xlarge') else 'commercial' if tier == 'medium' else 'shop')
+            role = F_MEDIUM.get(s) or F_LARGE.get(s) or F_XL.get(s) or F_LANDMARK.get(s) or ('shrine' if s == 'jinja' else None) or F_ROLE.get(s) or ('machiya' if s.startswith('machiya-hira') else 'house' if cat == 'house' else 'apartment' if cat == 'apartment' else None) or ('shop' if cat == 'shop' else s)
         else:
             base = short[:-5] if short.endswith('-shut') else short
             cat = next((CAT_BY_TAG[x] for x in tags if x in CAT_BY_TAG), 'shop')
