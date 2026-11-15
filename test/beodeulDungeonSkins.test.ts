@@ -55,8 +55,12 @@ describe("버들항 던전 겉가죽 표", () => {
         expect(look.face.length, theme.id).toBeGreaterThanOrEqual(3);
         for (const piece of look.face) { expect(piece).toHaveLength(4); for (const col of piece) expect(col).toHaveLength(3); }
         for (const key of ["N", "E", "W", "Ef", "Wf", "NE", "NW", "cE", "cW"]) expect((look.rim as Record<string, number[]>)[key], `${theme.id} ${key}`).toHaveLength(4);
-        const all = JSON.stringify(look).match(/-?\d+/g)!.map(Number);
-        expect(all.every(inBlock), `${theme.id}/${look.id}`).toBe(true);
+        // 표에 적힌 칸 번호(값만 — 열쇠와 바닥 몫은 칸 번호가 아니다)는 모두 제 토막 안이다
+        const tiles: number[] = [];
+        const walk = (v: unknown): void => { if (typeof v === "number") tiles.push(v); else if (Array.isArray(v)) v.forEach(walk); else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) if (k !== "floorWeights") walk(x); };
+        walk(look);
+        expect(tiles.length, `${theme.id}/${look.id}`).toBeGreaterThan(100);
+        expect(tiles.filter((t) => !inBlock(t)), `${theme.id}/${look.id}`).toEqual([]);
         // 벽 앞면은 막힌 칸, 바닥은 걷는 칸
         for (const t of look.face.flat(2)) expect(Object.values(ts.passability[t]!).some(Boolean)).toBe(false);
         for (const t of look.floor.flat()) expect(Object.values(ts.passability[t]!).every(Boolean)).toBe(true);
