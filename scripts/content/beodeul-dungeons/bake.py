@@ -99,10 +99,10 @@ class Bake:
         tags = {"floor": ["floor", "바닥"], "wall": ["벽", "wall", "face"], "ceil": ["천장", "wall", "ceiling"], "water": ["water", "물"], "over": ["덧그림"], "glow": ["덧그림", "빛"],
                 "solid": ["prop"], "star": ["prop"], "decal": ["prop", "바닥 그림"], "stair": ["stair", "계단"]}[kind]
         walk = kind in ("floor", "over", "glow", "star", "decal", "stair")
-        self.cells.append((px, dict(pass_=OPEN if walk else SHUT, priority="upper" if kind in ("over", "star") else "lower",
+        self.cells.append((px, dict(pass_=OPEN if walk else SHUT, priority="upper" if kind in ("over", "star", "glow") else "lower",   # 빛 띠도 ★: 벽 앞면 칸에 깔린 빛이 그 칸을 걷는 칸으로 만들었다(관문을 돌아가는 길이 생김)
                                     label=f"{LABEL} · {label}", description=f"{label}. {GATE_NOTE if kind != 'glow' else '반투명 빛 띠(그림 아님).'}",
                                     tags=["버들항", "던전", "dungeon", f"dgn:{theme}", *tags], layer="lower" if kind in ("floor", "wall", "ceil", "water", "stair") else "upper",
-                                    passage={"floor": "passable", "decal": "passable", "glow": "passable", "over": "star", "star": "star", "stair": "passable"}.get(kind, "solid"))))
+                                    passage={"floor": "passable", "decal": "passable", "over": "star", "star": "star", "glow": "star", "stair": "passable"}.get(kind, "solid"))))
         return n
 
     def grid(self, a, kind, label, theme, cols, rows, ox=0, oy=0):

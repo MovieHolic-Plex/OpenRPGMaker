@@ -26,7 +26,8 @@ const withLint = process.argv.includes("--lint");
 
 // 판마다 새 프로젝트 — 큰 칩셋 표(tilesets)는 읽기만 하므로 한 벌을 같이 쓴다(통째 복제는 판마다 1.3초).
 const BASE = createBlankProject(); applyGenrePreset(BASE, "adventure-jrpg");
-const freshProject = (): typeof BASE => ({ ...structuredClone({ ...BASE, tilesets: {} }), tilesets: BASE.tilesets });
+// 린트를 볼 때는 판마다 통째로 새로 만든다 — 숲·늪은 칩셋 표에 칸을 덧붙여 한 벌을 같이 쓰면 다음 판의 직렬화 왕복이 «passability 길이 불일치» 로 깨진다(훑기 탓이지 게임 탓이 아니다).
+const freshProject = (): typeof BASE => { if (withLint) { const p = createBlankProject(); applyGenrePreset(p, "adventure-jrpg"); return p; } return { ...structuredClone({ ...BASE, tilesets: {} }), tilesets: BASE.tilesets }; };
 let built = 0, withGate = 0, failures = 0;
 const byCode: Record<string, number> = {}, placed: Record<string, number> = {};
 const fail = (row: Record<string, unknown>) => { failures += 1; byCode[String(row.code)] = (byCode[String(row.code)] ?? 0) + 1; process.stdout.write(`${JSON.stringify(row)}\n`); };

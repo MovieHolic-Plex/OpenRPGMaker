@@ -8,7 +8,9 @@ import { tilesetLookOptions, tilesetLookTableFor, TILESET_LOOK_PARTS } from "@/a
 import { composeDungeon } from "@/editor/dungeonKit/beodeul/compose";
 import { AUTHOR_BEODEUL_DUNGEON_ALIAS } from "@/editor/tools/dungeonTools";
 import { createBlankProject } from "@/project/defaults";
+import { cellPassability } from "@/project/collision";
 import { withKitLook } from "@/project/kitLook";
+import { passageMarkForTile } from "@/project/tilesetPassage";
 import { projectLint } from "@/project/lint/projectLint";
 import { chooseTilesetLook } from "@/project/tilesetLook";
 import type { TilesetLook } from "@/project/types";
@@ -67,6 +69,17 @@ describe("버들항 던전 겉가죽 표", () => {
     }
   });
 
+  it("덧칸은 ★ 다: 2층에 깔리는 빛 띠·입술·물가가 칸의 통행을 정하지 않는다 — 벽 칸에 깔린 빛이 벽을 걷는 칸으로 만들던 자리(여러 씨앗 훑기에서 관문을 돌아가는 길이 됐다)", () => {
+    const ts = createBlankProject().tilesets[TS_ID]!;
+    const glow = Object.values(table.glow as Record<string, { rows: number[][] }>).flatMap((g) => g.rows.flat()).filter((t) => t >= 0);
+    expect(glow.length).toBeGreaterThan(50);
+    for (const t of glow) expect(passageMarkForTile(ts, t), `빛 ${t}`).toBe("star");
+    for (const theme of table.themes) for (const look of theme.looks) {
+      const over = [...look.lip.flat(), ...((look as { shore?: number[] }).shore ?? []), ...((look as { shoreIn?: number[] }).shoreIn ?? [])].filter((t) => t >= 0);
+      for (const t of over) expect(passageMarkForTile(ts, t), `${theme.id} 덧칸 ${t}`).toBe("star");
+    }
+  });
+
   it("주제 고르기: 던전 종류마다 제 주제, 깃발(소굴·물에 잠김)이 붙은 주제가 먼저다. 겉모습이 없으면 입히지 않는다", () => {
     const ts = createBlankProject().tilesets[TS_ID]!;
     for (const [type, extra, theme] of CASES) {
@@ -105,6 +118,13 @@ describe("버들항 던전 겉가죽 입히기", () => {
           const { project, maps, ids } = build(type, extra, name, seed);
           const skinned = maps.filter((m) => Array.from(m.lowerTiles).some((t) => mine.has(t)));
           expect(skinned.length, `${type} ${name} ${seed}`).toBeGreaterThan(0);
+          // 벽 앞면·벽 너머 칸은 무엇이 덧깔려도 막힌 칸이다
+          const solid = new Set([...look.face.flat(2), ...look.top.flat(2), ...Object.values(look.rim as Record<string, number[]>).flat()]);
+          const tsNow = project.tilesets[TS_ID]!;
+          for (const m of skinned) for (let i = 0; i < m.lowerTiles.length; i += 1) {
+            if (!solid.has(m.lowerTiles[i]!)) continue;
+            if (Object.values(cellPassability(tsNow, m, i)).some(Boolean)) throw new Error(`${type} ${name} ${seed}: 벽 칸 ${i % m.width},${Math.floor(i / m.width)} 이 걷는 칸이다`);
+          }
           const issues = projectLint(project).filter((i) => i.severity === "error" && (!i.mapId || ids.includes(i.mapId)));
           expect(issues.map((i) => `${i.code}: ${String(i.message).slice(0, 80)}`), `${type} ${name} ${seed}`).toEqual([]);
         }

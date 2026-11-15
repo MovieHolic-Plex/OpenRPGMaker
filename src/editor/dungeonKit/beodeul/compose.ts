@@ -765,6 +765,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
       }
       if (upper[idx(X, Y)]! >= 0 || blocked[idx(X, Y)]) return false;
       if (skin && usedId !== kitId && isWall(X, Y) && !skinFaceTiles.has(lower[idx(X, Y)]!)) return false;
+      // 겉가죽 층의 바닥 그림(걷는 칸 그림, ★ 아님)은 걷는 바닥 위에만 — 벽 줄에 걸치면 그 벽 칸이 걷는 칸이 된다(마법진 3×3 이 북벽에 걸쳤다)
+      if (skin && up >= 0 && ts.priority[up] !== "upper" && passTile(up) && !isWalk(X, Y)) return false;
       if (doorstep[idx(X, Y)] && isFloor(X, Y)) return false;
       cells.push({ x: X, y: Y, lo, up });
     }
